@@ -62,6 +62,10 @@ Choose views that answer a question. A broad sheet can establish shape; a part-l
 
 Inspect the actual images. Render on the default neutral grey backdrop first. Only when a sheet you have seen shows a part merging with it, add `backdrop` to `capture`: `light` when the merging part is darker than the grey (near-black iron, dark wood), `dark` when it is lighter (near-white, pale grey, emissive). Read the echoed `capture.backdrop`. Check silhouette, proportion, orientation, attachment, and ground contact. If the request calls for a finished asset, repair concrete gaps visible at its intended viewing distance rather than stopping at a blockout. Do not repeat the same render without a new question or change.
 
+Do not darken albedo to compensate for review lighting; preserve the intended material colour and check material-faithful GPU views and the destination renderer.
+
+Base colour is the factor multiplied by the texture; tinting both can darken the colour twice. Keep one neutral, or choose the factor so their product in linear colour space equals the intended albedo.
+
 For specified openings and travel limits, measure usable space including protruding
 teeth, fasteners or trim. Nominal plate spacing alone does not establish clearance.
 For overall dimensions, use the rendered revision's `bounds.size` in metres,

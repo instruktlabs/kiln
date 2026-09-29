@@ -30,6 +30,8 @@ not the entire assembly. Report unmeasured joints explicitly.
 
 Read `capture.backdrop` in image results: views are on a neutral grey unless a capture asked for `dark` or `light`, and a silhouette judged on the wrong assumption about the backdrop is not evidence. Check material and camera fidelity independently. A fallback image may still answer a geometry question, but it cannot establish faithful PBR appearance. Keep unresolved export or material findings visible in the delivery report.
 
+Do not darken albedo to compensate for review lighting; preserve the intended material colour and check material-faithful GPU views and the destination renderer.
+
 ## In the destination
 
 For Blender, Unity or FBX, read the [engine handoff guide](references/engine-handoff.md) before choosing import settings or trying the experimental exporter. Check the actual target importer and render pipeline; a successful Kiln preview alone does not establish destination compatibility.

@@ -103,7 +103,7 @@ function parse(argv: readonly string[]) {
     shot: value('--shot'),
     measureParts: value('--measure-parts'),
     requirements: value('--requirements'),
-    render: resolveRenderMode(value('--render') ?? 'auto'),
+    render: resolveRenderMode(value('--render')),
     renderPort: value('--render-port'),
     input: {
       clip: value('--clip'),

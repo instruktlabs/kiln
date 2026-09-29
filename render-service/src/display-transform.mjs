@@ -2,7 +2,7 @@
  * The display transform the renderer applies to every HDR pixel, and its inverse.
  *
  * `renderDisplayTarget` draws into three's HalfFloat framebuffer and then runs
- * the output pass: ACES filmic tone mapping at the preset's exposure, then the
+ * the output pass: the preset's tone mapping and exposure, then the
  * sRGB transfer function. The scene background is cleared into that framebuffer
  * like any other pixel, so a backdrop set as a plain colour came out of the pass
  * shifted -- the neutral `#aab1bc` read back as (203, 207, 213) -- while the
@@ -12,13 +12,16 @@
  * tone mapping. So the backdrop stays inside the pass, and this module answers
  * "which linear clear colour comes out as exactly that byte triple".
  *
- * The forward transform is a port of three r185's `acesFilmicToneMapping` and
+ * The legacy forward transform is a port of three's `acesFilmicToneMapping` and
  * `sRGBTransferOETF`, with the matrices read row-major; it reproduces pixels
  * measured on a dawn-d3d12 device to within rounding. The inverse is analytic:
  * both matrices invert, and the RRT/ODT fit is a rational function whose inverse
  * is one quadratic per channel. Every answer is checked through the forward
  * transform before it is returned, so drift in either direction is an error
- * here rather than a quietly wrong backdrop.
+ * here rather than a quietly wrong backdrop. Review Neutral uses the Khronos
+ * PBR Neutral construction with a smaller, rig-calibrated glare offset. Its
+ * shoulder, desaturation and toe each have an analytic inverse below. Keeping
+ * both paths here preserves v1 captures and avoids post-composite edge fringes.
  */
 
 // sRGB => XYZ => D65_2_D60 => AP1 => RRT_SAT
@@ -30,6 +33,49 @@ const ACES_OUTPUT = Object.freeze([
   1.60475, -0.53108, -0.07367, -0.10208, 1.10813, -0.00605, -0.00327, -0.07276, 1.07602,
 ]);
 const FIT = Object.freeze({ a: 0.0245786, b: 0.000090537, c: 0.983729, d: 0.432951, e: 0.238081 });
+
+export const TONE_MAPPINGS = Object.freeze(['aces', 'review-neutral']);
+// A versioned rendering choice, not a caller-adjustable colour correction.
+// Khronos Neutral uses 0.04. This room rig's measured dielectric glare is lower.
+// The GPU node imports these same constants; changes require a new preset ID.
+export const REVIEW_NEUTRAL = Object.freeze({
+  offset: 0.015,
+  startCompression: 0.785,
+  desaturation: 0.15,
+});
+
+function assertToneMapping(name) {
+  if (!TONE_MAPPINGS.includes(name)) throw new Error(`unknown tone mapping: ${name}`);
+}
+
+function reviewNeutral(linear, exposure) {
+  const { offset, startCompression: start, desaturation } = REVIEW_NEUTRAL;
+  let color = linear.map((c) => c * exposure);
+  const minimum = Math.min(...color);
+  const glare = minimum < 2 * offset ? minimum - (minimum * minimum) / (4 * offset) : offset;
+  color = color.map((c) => c - glare);
+  const peak = Math.max(...color);
+  if (peak < start) return color;
+  const d = 1 - start;
+  const newPeak = 1 - (d * d) / (peak + 1 - 2 * start);
+  const whiteMix = 1 - 1 / (desaturation * (peak - newPeak) + 1);
+  return color.map((c) => ((c * newPeak) / peak) * (1 - whiteMix) + newPeak * whiteMix);
+}
+
+function reviewNeutralInverse(display, exposure) {
+  const { offset, startCompression: start, desaturation } = REVIEW_NEUTRAL;
+  const newPeak = Math.max(...display);
+  let color = display;
+  if (newPeak >= start) {
+    const d = 1 - start;
+    const peak = 2 * start - 1 + (d * d) / (1 - newPeak);
+    const whiteMix = 1 - 1 / (desaturation * (peak - newPeak) + 1);
+    color = display.map((c) => (((c - newPeak * whiteMix) / (1 - whiteMix)) * peak) / newPeak);
+  }
+  const minimum = Math.min(...color);
+  const originalMinimum = minimum < offset ? Math.sqrt(4 * offset * minimum) : minimum + offset;
+  return color.map((c) => (c + originalMinimum - minimum) / exposure);
+}
 
 function multiply(m, v) {
   return [0, 1, 2].map((row) => m[row * 3] * v[0] + m[row * 3 + 1] * v[1] + m[row * 3 + 2] * v[2]);
@@ -80,15 +126,17 @@ export function srgbDecode(e) {
 }
 
 /** ACES filmic tone mapping of a linear working-space colour, clamped to [0, 1]. */
-export function toneMap(linear, exposure) {
+export function toneMap(linear, exposure, mapping = 'aces') {
+  assertToneMapping(mapping);
+  if (mapping === 'review-neutral') return reviewNeutral(linear, exposure);
   const scaled = linear.map((c) => (c * exposure) / 0.6);
   const fitted = multiply(ACES_INPUT, scaled).map(rrtOdtFit);
   return multiply(ACES_OUTPUT, fitted).map((c) => Math.min(1, Math.max(0, c)));
 }
 
 /** The byte triple a linear colour reads back as after the output pass. */
-export function displayBytes(linear, exposure) {
-  return toneMap(linear, exposure).map((c) => Math.round(srgbEncode(c) * 255));
+export function displayBytes(linear, exposure, mapping = 'aces') {
+  return toneMap(linear, exposure, mapping).map((c) => Math.round(srgbEncode(c) * 255));
 }
 
 function assertExposure(exposure) {
@@ -101,8 +149,9 @@ function assertExposure(exposure) {
  * error when the tone mapping cannot reach it (saturated colours leave the
  * gamut on the way back through the matrices).
  */
-export function linearForDisplayBytes(bytes, exposure) {
+export function linearForDisplayBytes(bytes, exposure, mapping = 'aces') {
   assertExposure(exposure);
+  assertToneMapping(mapping);
   if (
     !Array.isArray(bytes) ||
     bytes.length !== 3 ||
@@ -112,9 +161,14 @@ export function linearForDisplayBytes(bytes, exposure) {
       `display bytes must be three integers in 0..255 (got ${JSON.stringify(bytes)})`,
     );
   const display = bytes.map((b) => srgbDecode(b / 255));
-  const fitted = multiply(ACES_OUTPUT_INVERSE, display).map(rrtOdtFitInverse);
-  const linear = multiply(ACES_INPUT_INVERSE, fitted).map((c) => (c * 0.6) / exposure);
-  const reached = displayBytes(linear, exposure);
+  const linear =
+    mapping === 'review-neutral'
+      ? reviewNeutralInverse(display, exposure)
+      : multiply(
+          ACES_INPUT_INVERSE,
+          multiply(ACES_OUTPUT_INVERSE, display).map(rrtOdtFitInverse),
+        ).map((c) => (c * 0.6) / exposure);
+  const reached = displayBytes(linear, exposure, mapping);
   if (
     linear.some((c) => !Number.isFinite(c) || c < 0) ||
     reached.some((c, index) => c !== bytes[index])
@@ -133,6 +187,6 @@ export function hexToBytes(hex) {
 }
 
 /** The linear clear colour that makes a backdrop read back as its own hex. */
-export function backdropClearColor(hex, exposure) {
-  return linearForDisplayBytes(hexToBytes(hex), exposure);
+export function backdropClearColor(hex, exposure, mapping = 'aces') {
+  return linearForDisplayBytes(hexToBytes(hex), exposure, mapping);
 }

@@ -183,7 +183,7 @@ export const DEFAULT_PRESENTATION_PARAMETERS_V1 = deepFreeze(
   parsePresentationParametersV1({
     schemaVersion: PRESENTATION_DOCUMENT_V1_SCHEMA_VERSION,
     grid: { columns: 3, rows: 1, cellWidth: 512, cellHeight: 512 },
-    lightingPresetId: 'neutral-studio-v2',
+    lightingPresetId: 'review-neutral-v1',
     receiptPolicy: {
       requirePerCameraOutputSha256: true,
       requireOutputSetSha256: true,

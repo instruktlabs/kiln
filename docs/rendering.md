@@ -27,6 +27,50 @@ safety. See `kiln animation --help` for the complete options.
 
 CPU views show silhouette, orientation, proportion, and contact. They do not reproduce the asset's PBR materials. Use GPU views to review textures, roughness, metalness, and normal relief. GPU output can vary by device and driver.
 
+### Review lighting
+
+New GPU tool captures use **`review-neutral-v1`**. The rig uses the room PMREM
+environment at intensity 0.4352, white hemisphere light at 1.0879, and white
+key/fill/rim lights at 0.136/0.0204/0.0204. The directional positions remain
+`[4,7,5]`, `[-4,3,2]`, and `[-2,5,-5]`; shadows remain off. Exposure is 0.9.
+
+Review Neutral derives from the [Khronos PBR Neutral construction](https://github.com/KhronosGroup/ToneMapping/tree/main/PBR_Neutral),
+with glare compensation reduced from 0.04 to 0.015 for this measured rig,
+compression starting at 0.785 and highlight desaturation 0.15. It is a Kiln
+variant, not the unmodified Khronos mapper. The white lights and gentler display
+transform preserve base-colour hue while leaving orientation and specular cues.
+The analytic inverse keeps every named backdrop inside the tone-mapped pass,
+so clear pixels match the CPU table and silhouettes retain the existing MSAA path.
+
+In the calibrated D3D12 chart, a key-facing metalness-0, roughness-1 panel authored
+as sRGB `#C0362C` reads `(193,51,40)`, compared with `(255,177,147)` under
+`neutral-studio-v1`. Mean CIEDE2000 error over 24 ColorChecker sRGB patches plus
+that orange is 0.51 for the new rig, versus 28.09 for tool v1. This is a reference
+orientation calibration, not a promise that every shaded pixel equals its albedo.
+Roughness, surface orientation, reflections and the destination's lighting still
+change appearance. Review dark silhouettes on neutral or light when they merge
+with the dark backdrop. GPU images remain visual evidence only; QA receives no pixels.
+
+Author albedo for the material and its calibrated destination; do not darken it
+to compensate for bright review lighting. Existing assets compensated for v1 may
+look too dark in the new rig and need individual material review. There is no
+automatic albedo conversion.
+
+`neutral-studio-v1` and `gallery-studio-v1` retain their original lights and ACES
+exposures (1.38 and 0.9). Camera requests that already accept `lightingPresetId`
+can still select either ID; HTTP uses `lighting_preset_id`. Legacy direction-only
+requests use the new default. The website poster script continues to select
+`gallery-studio-v1`. Composer's former `neutral-studio-v2` default had no renderer
+definition; new presentation documents now use `review-neutral-v1`. Saved
+documents naming the unsupported ID require an explicit edit; it is not aliased.
+
+The tool input schemas and cache-key format are unchanged. An explicit lighting
+ID separates camera cache entries. Renderer source and dependency fingerprints
+also invalidate captures with an omitted lighting ID after this upgrade; old
+receipts retain their producer identity. Upgrade the host and renderer together.
+An incompatible service already on the shared socket is reported, never replaced
+automatically. Existing cached images remain historical evidence of their old rig.
+
 ### Running the GPU renderer
 
 [`render-service/`](../render-service/) in this repository is the renderer: GLB bytes in, PBR PNG views
@@ -55,8 +99,14 @@ own CLI process; it cannot refresh a different running session.
 
 `kiln discover --capabilities --json` and MCP `kiln_discover({capabilities:true})`
 report `renderer` readiness without starting a renderer or requesting an image.
-The CLI reads `KILN_RENDER` and `KILN_RENDER_PORT_URL`; MCP reports its session's
-selected route and attached port. `configured` describes routing, not successful
+Renderer selection uses an explicit `--render` first, then `KILN_RENDER`, then
+`auto`. The selected value must be `auto`, `cpu` or `gpu`; an explicit valid option
+overrides even an invalid environment value. This applies to render/capture,
+generation, inspection, animation, saving and migration rebuilds. `edit` only edits
+retained source and never selects a renderer. With `KILN_RENDER=cpu` and no override,
+CLI commands neither discover nor start a render service. The CLI also reads
+`KILN_RENDER_PORT_URL`; MCP reports its session's selected route and attached port.
+`configured` describes routing, not successful
 rendering. `on-demand` means local dependencies are ready but no GPU has been tested;
 `available` means compatible health responded. `authentication-required` means a
 token is missing; `authentication-unverified` means one is configured but public

@@ -70,7 +70,7 @@ check(
     health.lightingPresetIds.every((id) => health.capabilities.includes(`render.profile.${id}`)) &&
     typeof health.backend === 'string' &&
     health.backend.length > 0 &&
-    health.presentationProfile === 'neutral-studio-v1' &&
+    health.presentationProfile === 'review-neutral-v1' &&
     health.authRequired === true,
   JSON.stringify(health.capabilities),
 );
@@ -141,7 +141,7 @@ check('six views', Array.isArray(r.views) && r.views.length === 6);
 check('rendererId present', typeof r.rendererId === 'string' && r.rendererId.startsWith('dawn-'));
 check(
   'render reports the fixed presentation profile',
-  r.presentationProfile === 'neutral-studio-v1',
+  r.presentationProfile === 'review-neutral-v1',
 );
 const png0 = Buffer.from(r.views?.[0] ?? '', 'base64');
 check('view is PNG', png0[0] === 0x89 && png0[1] === 0x50, `${png0.length}B`);

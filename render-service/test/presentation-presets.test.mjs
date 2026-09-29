@@ -33,9 +33,47 @@ function recursivelyFrozen(value) {
 }
 
 describe('versioned presentation preset registry', () => {
+  it('defaults new captures to a calibrated, white review rig and retains both v1 IDs', () => {
+    assert.equal(DEFAULT_PRESENTATION_PRESET_ID, 'review-neutral-v1');
+    const review = getPresentationPreset('review-neutral-v1');
+    assert.equal(review.toneMapping, 'review-neutral');
+    assert.deepEqual(review.environment, { type: 'room', sigma: 0.04, intensity: 0.4352 });
+    assert.equal(review.exposure, 0.9);
+    assert.deepEqual(review.ambient, {
+      type: 'hemisphere',
+      sky: 0xffffff,
+      ground: 0xffffff,
+      intensity: 1.0879,
+    });
+    for (const [role, intensity] of [
+      ['key', 0.136],
+      ['fill', 0.0204],
+      ['rim', 0.0204],
+    ]) {
+      assert.equal(review[role].color, 0xffffff);
+      assert.equal(review[role].intensity, intensity);
+    }
+    assert.equal(recursivelyFrozen(review), true);
+    assert.equal(
+      validateRenderMode({ cameras: [camera], width: 512, height: 512 }).lightingPresetId,
+      review.id,
+    );
+    for (const id of ['neutral-studio-v1', 'gallery-studio-v1']) {
+      assert.equal(
+        validateRenderMode({ cameras: [camera], width: 512, height: 512, lighting_preset_id: id })
+          .lightingPresetId,
+        id,
+      );
+    }
+    assert.equal(isPresentationPresetId('neutral-studio-v2'), false);
+  });
   it('pins neutral-studio-v1 to the byte/visual-equivalent renderer values', () => {
-    assert.equal(DEFAULT_PRESENTATION_PRESET_ID, 'neutral-studio-v1');
-    assert.deepEqual(PRESENTATION_PRESET_IDS, ['neutral-studio-v1', 'gallery-studio-v1']);
+    assert.equal(DEFAULT_PRESENTATION_PRESET_ID, 'review-neutral-v1');
+    assert.deepEqual(PRESENTATION_PRESET_IDS, [
+      'neutral-studio-v1',
+      'gallery-studio-v1',
+      'review-neutral-v1',
+    ]);
     assert.equal(Object.isFrozen(PRESENTATION_PRESET_IDS), true);
     assert.equal(Object.isFrozen(PRESENTATION_PRESET_CAPABILITIES), true);
     assert.equal(SUPPORTED_LIGHTING_PRESET_ID, DEFAULT_PRESENTATION_PRESET_ID);
@@ -141,6 +179,7 @@ describe('versioned presentation preset registry', () => {
     assert.deepEqual(PRESENTATION_PRESET_CAPABILITIES, [
       'render.profile.neutral-studio-v1',
       'render.profile.gallery-studio-v1',
+      'render.profile.review-neutral-v1',
     ]);
     assert.ok(
       PRESENTATION_PRESET_CAPABILITIES.every((capability) =>
@@ -155,8 +194,12 @@ describe('versioned presentation preset registry', () => {
       },
       true,
     );
-    assert.equal(health.presentationProfile, 'neutral-studio-v1');
-    assert.deepEqual(health.lightingPresetIds, ['neutral-studio-v1', 'gallery-studio-v1']);
+    assert.equal(health.presentationProfile, 'review-neutral-v1');
+    assert.deepEqual(health.lightingPresetIds, [
+      'neutral-studio-v1',
+      'gallery-studio-v1',
+      'review-neutral-v1',
+    ]);
     assert.notEqual(health.lightingPresetIds, PRESENTATION_PRESET_IDS);
     assert.equal(health.authRequired, true);
   });

@@ -36519,7 +36519,7 @@ var init_render_capabilities = __esm(() => {
 });
 
 // src/cli-render-mode.ts
-function resolveRenderMode(value) {
+function resolveRenderMode(value = process.env["KILN_RENDER"] ?? "auto") {
   if (value === "auto" || value === "cpu" || value === "gpu")
     return value;
   throw new Error(`--render must be auto, cpu or gpu (got: ${value})`);
@@ -37157,7 +37157,7 @@ async function assetMain(argv) {
       throw new Error("save requires source/ref and --name");
     const store = localProgramStore();
     const programRef = programRefPattern.test(input) ? input : await retainProgram(store, new TextDecoder().decode(await fileBytes(input)));
-    const context = await createPackagedLocalToolContext(await buildRenderPort(resolveRenderMode(flags.render ?? "auto"), undefined));
+    const context = await createPackagedLocalToolContext(await buildRenderPort(resolveRenderMode(flags.render), undefined));
     const def = createKilnProgramToolRegistry({
       ...context,
       requirements,
@@ -37549,7 +37549,7 @@ function parse4(argv) {
     shot: value("--shot"),
     measureParts: value("--measure-parts"),
     requirements: value("--requirements"),
-    render: resolveRenderMode(value("--render") ?? "auto"),
+    render: resolveRenderMode(value("--render")),
     renderPort: value("--render-port"),
     input: {
       clip: value("--clip"),
@@ -37800,7 +37800,7 @@ function parse5(argv) {
     request: value("--request"),
     views: value("--views"),
     json: flags.has("--json"),
-    render: resolveRenderMode(value("--render") ?? "auto"),
+    render: resolveRenderMode(value("--render")),
     renderPort: value("--render-port"),
     requirements: value("--requirements")
   };
@@ -38740,6 +38740,7 @@ EXAMPLES
   kiln render examples/crate.kiln.js --views sheet.png --backdrop light
 `;
 function parseArgs(argv) {
+  let renderOption;
   const args = {
     command: undefined,
     positional: [],
@@ -38787,7 +38788,7 @@ function parseArgs(argv) {
         break;
       }
       case "--render":
-        args.render = resolveRenderMode(next());
+        renderOption = resolveRenderMode(next());
         break;
       case "--render-port":
         args.renderPort = next();
@@ -38818,6 +38819,7 @@ function parseArgs(argv) {
           args.positional.push(a);
     }
   }
+  args.render = resolveRenderMode(renderOption);
   return args;
 }
 async function readCaptureRecipe(args) {

@@ -64,7 +64,7 @@ describe('backdrop table', () => {
     // source a GPU sheet could disagree with a CPU sheet about.
     const serviceSrc = join(import.meta.dir, '..', '..', '..', 'render-service', 'src');
     expect(readFileSync(join(serviceSrc, 'renderer.mjs'), 'utf8')).toContain(
-      'backdropClearColor(BACKDROP_HEX[backdrop], preset.exposure)',
+      'backdropClearColor(BACKDROP_HEX[backdrop], preset.exposure, preset.toneMapping)',
     );
     expect(readFileSync(join(serviceSrc, 'presentation-presets.mjs'), 'utf8')).not.toContain(
       'background',

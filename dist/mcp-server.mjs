@@ -34988,7 +34988,7 @@ function createRenderCapabilitiesReader(mode, portUrl, options = {}) {
 
 // src/cli-render-mode.ts
 var CLI_VIEW_RENDER_TIMEOUT_MS = 20000;
-function resolveRenderMode(value) {
+function resolveRenderMode(value = process.env["KILN_RENDER"] ?? "auto") {
   if (value === "auto" || value === "cpu" || value === "gpu")
     return value;
   throw new Error(`--render must be auto, cpu or gpu (got: ${value})`);

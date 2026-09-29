@@ -8,6 +8,35 @@ const png = encodePng(new Uint8Array(128 * 128 * 3), 128, 128);
 const glb = new Uint8Array([1]);
 const hash = `sha256:${createHash('sha256').update(glb).digest('hex')}` as const;
 const camera = cameraFromBounds({ min: [-1, -1, -1], max: [1, 1, 1] }, [1, 0, 0]);
+
+test('review and legacy lighting never share cached GPU cells', async () => {
+  let calls = 0;
+  const port = createCachedRenderPort(
+    async (request) => {
+      calls++;
+      return {
+        ok: true,
+        rendererId: 'gpu',
+        cameras: request.cameras,
+        width: 128,
+        height: 128,
+        viewsPng: [png],
+        derivativeFidelity: { materialFaithful: true, inputGlbSha256: hash },
+      };
+    },
+    { cache: new MemoryCaptureCache(), identity: () => 'same-producer' },
+  );
+  const request = { glb, cameras: [camera], width: 128, height: 128 };
+  for (const lightingPresetId of [
+    'neutral-studio-v1',
+    'review-neutral-v1',
+    'neutral-studio-v1',
+    'review-neutral-v1',
+  ]) {
+    await port({ ...request, lightingPresetId });
+  }
+  expect(calls).toBe(2);
+});
 test('GPU cells reuse independently of requested order and invalidate on camera/backend changes', async () => {
   let calls = 0;
   let identity = 'gpu-v1';

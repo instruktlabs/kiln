@@ -101,7 +101,8 @@ downstream use of the output.
 Camera mode is additive and exact: 1-12 perspective cameras with `position`, `target`, `up`,
 `fovDeg`, `aspect`, `near`, `far`. Integer `width`/`height` are required, bounded 1-4096, capped at
 16,777,216 total pixels, and every camera aspect must equal `width / height`. It is mutually
-exclusive with `views`, `size`, and `beauty_size`. The only lighting identity is `neutral-studio-v1`;
+exclusive with `views`, `size`, and `beauty_size`. The default lighting identity is `review-neutral-v1`;
+`neutral-studio-v1` and `gallery-studio-v1` remain selectable for historical captures.
 `/health.lightingPresetIds` advertises the registry.
 
 `backdrop` names one of `neutral`, `dark` or `light` from `src/backdrops.mjs`, the same table the

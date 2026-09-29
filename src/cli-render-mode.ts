@@ -25,7 +25,8 @@ export {
 export type RenderMode = 'auto' | 'cpu' | 'gpu';
 /** In-loop timeout. Artifact callers supply their own larger deadline through the port owner. */
 export const CLI_VIEW_RENDER_TIMEOUT_MS = 20_000;
-export function resolveRenderMode(value: string): RenderMode {
+/** An explicit option wins over the environment; omission defaults to auto. */
+export function resolveRenderMode(value = process.env['KILN_RENDER'] ?? 'auto'): RenderMode {
   if (value === 'auto' || value === 'cpu' || value === 'gpu') return value;
   throw new Error(`--render must be auto, cpu or gpu (got: ${value})`);
 }
