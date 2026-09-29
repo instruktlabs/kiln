@@ -93,7 +93,22 @@
       "General vehicle physics",
       "Mobile walking and driving"
     ],
-    "command": "node scene/serve.mjs"
+    "command": "node scene/serve.mjs",
+    "pack": {
+      "schema": "kiln.scene-pack/1",
+      "id": "farm",
+      "release": "r34",
+      "three": "0.186.0",
+      "source": "packages/farm/dist/r34/standalone",
+      "base": "/scene-packs/farm/r34/",
+      "sealedFiles": 34,
+      "sealedBytes": 7326021,
+      "totalFiles": 37,
+      "totalBytes": 7360911,
+      "packJsonSha256": "e852bf1953a2737cc55f89077db45f5291c2e8218a6e9d03febfaf412fdc9045",
+      "sha256sumsSha256": "d1bff1b76a29e6ac012f846adc8ba499ecc2dcbd09f790444ec68b6ca0ecf405",
+      "noticesSha256": "4bf6f2bd1d803606c88eb540c8e207ddee4a76be4d12fe14d6110bb7505e4ebc"
+    }
   },
   "floorRevision": {
     "recordedAt": "2026-09-29T03:57:53.773Z",

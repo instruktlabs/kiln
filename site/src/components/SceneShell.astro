@@ -1,4 +1,5 @@
 ---
+import { farmSceneIncluded } from "virtual:kiln-farm-scene";
 import { farmScene } from "../data/scenes";
 import { imageQualification, FULL_WIDTH_IMAGE_SIZES } from "../lib/catalog";
 import { PACKS_ENABLED } from "../lib/config";
@@ -36,7 +37,9 @@ import { PACKS_ENABLED } from "../lib/config";
         <p>
           {farmScene.available
             ? "Explore the Farm in your browser."
-            : "The browser scene is being rebuilt. Explore opens its current in-production status."}
+            : farmSceneIncluded
+              ? "Explore opens a preview of the rebuilt Farm. It is still being qualified; the scene download remains the current runnable version."
+              : "The browser scene is being rebuilt. Explore opens its current in-production status."}
         </p>
         <p class="mt-2 text-sm text-dim">
           Desktop play · Mobile orbit viewing. Load only when you choose
@@ -57,6 +60,13 @@ import { PACKS_ENABLED } from "../lib/config";
       <button type="button" class="btn btn-secondary" data-exit>
         Exit scene
       </button>
+      {farmSceneIncluded && (
+        <p class="flex flex-1 flex-wrap items-center justify-center gap-x-4 gap-y-1 text-sm text-dim">
+          <span>Preview, still being qualified.</span>
+          <a href={`${farmScene.assetBase}THIRD-PARTY-NOTICES.txt`}>Software notices</a>
+          <a href={`${farmScene.assetBase}licenses/ASSET-LICENSE.txt`}>Asset licence</a>
+        </p>
+      )}
       <button type="button" class="btn btn-secondary" data-fullscreen>
         Enter fullscreen
       </button>
@@ -89,11 +99,23 @@ import { PACKS_ENABLED } from "../lib/config";
       const status = this.querySelector<HTMLElement>("[data-status]")!;
       const loading = this.querySelector<HTMLElement>("[data-loading]")!;
       let contentReady = false;
+      // data-scene-state is idle, loading, ready or error; data-scene-phase is the scene's
+      // latest progress phase. Both are read by the browser checks.
+      const setState = (state: string) => {
+        this.dataset.sceneState = state;
+      };
+      setState("idle");
       const ready = () => {
         if (active.hidden) return;
         contentReady = true;
         loading.hidden = true;
         status.textContent = "Scene ready.";
+        setState("ready");
+      };
+      const progress = (update: { phase: string; text: string }) => {
+        if (contentReady || active.hidden) return;
+        this.dataset.scenePhase = update.phase;
+        loading.textContent = update.text;
       };
       const inertElements: { element: HTMLElement; inert: boolean }[] = [];
       const background = (hide: boolean) => {
@@ -119,12 +141,15 @@ import { PACKS_ENABLED } from "../lib/config";
           branch = branch.parentElement;
         }
       };
-      const fail = () => {
+      const fail = (error?: Error) => {
         session.stop();
         status.classList.remove("sr-only");
         status.classList.add("p-6");
         status.textContent =
           "The scene could not load. Check your connection and try Explore again. The Farm downloads remain available.";
+        this.dataset.sceneError =
+          (error as { code?: string } | undefined)?.code ?? "runtime";
+        setState("error");
         explore.focus();
       };
       const session = createIslandSession(
@@ -135,15 +160,21 @@ import { PACKS_ENABLED } from "../lib/config";
           return mountFarmScene(mount, {
             assetBase: this.dataset.assetBase!,
             onReady: ready,
-            onError: fail,
+            onProgress: progress,
+            // The scene may report a fatal error from inside React's commit; leave it first.
+            onError: (error) => queueMicrotask(() => fail(error)),
           });
         },
-        (state) => {
+        (state, error) => {
           const showing = state === "loading" || state === "ready";
           if (state === "loading") {
             contentReady = false;
             loading.textContent = "Loading the scene…";
+            delete this.dataset.scenePhase;
+            delete this.dataset.sceneError;
+            setState("loading");
           }
+          if (state === "idle") setState("idle");
           loading.hidden = !showing || contentReady;
           background(showing);
           intro.hidden = showing;
@@ -151,7 +182,7 @@ import { PACKS_ENABLED } from "../lib/config";
           status.classList.add("sr-only");
           status.classList.remove("p-6");
           status.textContent = "";
-          if (state === "error") fail();
+          if (state === "error") fail(error);
           if (state === "loading") exit.focus();
         },
       );

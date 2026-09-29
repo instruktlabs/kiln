@@ -8,3 +8,5 @@ public/fonts/
 public/apple-touch-icon.png
 public/favicon-*.png
 public/standalone/
+public/scene-packs/
+.tmp/

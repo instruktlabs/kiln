@@ -41,10 +41,13 @@ try {
   const requests = [];
   page.on('request', (request) => requests.push(request.url()));
   await page.goto(new URL('/scenes/farm/', base).href, { waitUntil: 'networkidle0' });
-  assert.equal(requests.some((url) => /(?:FarmScene|react-dom|AssetViewerRuntime|three\.module)/.test(url)), false);
-  results.behaviors.push('Farm pre-Explore loads no React/Three scene module.');
+  assert.equal(requests.some((url) => /(?:\/(?:mount|RoomEnvironment|AssetViewerRuntime)[.-][\w-]+\.js|\/scene-packs\/|three\.module)/.test(url)), false);
+  results.behaviors.push('Farm pre-Explore loads no React/Three scene module and no scene pack file.');
   await page.click('[data-explore]');
-  await page.waitForSelector('[data-mount] h2');
+  // The island is ready when the scene reports its first complete frame (or, in a build without
+  // the scene package, when the stand-in mounts). Either way the shell says so in data-scene-state.
+  await page.waitForFunction(() => ['ready', 'error'].includes(document.querySelector('farm-scene-shell')?.dataset.sceneState), { timeout: 120000 });
+  assert.equal(await page.$eval('farm-scene-shell', (element) => element.dataset.sceneState), 'ready', 'The Farm island must reach its ready state.');
   assert.equal(await page.$eval('[data-exit]', (element) => element === document.activeElement), true);
   assert.equal(await page.$eval('body > header', (element) => element.inert), true);
   await mkdir(join(review, 'screenshots/scene-open'), { recursive: true });
@@ -67,7 +70,7 @@ try {
   assert.equal(await page.$eval('[data-mount]', (element) => element.childElementCount), 0);
   assert.equal(await page.$eval('[data-explore]', (element) => element === document.activeElement), true);
   assert.equal(await page.$eval('body > header', (element) => element.inert), false);
-  results.behaviors.push('Explore mounts the production stub, focuses Exit, covers the window and hides the background from focus; Exit unmounts, restores background and focuses Explore.');
+  results.behaviors.push('Explore mounts the Farm island and waits for its ready state, focuses Exit, covers the window and hides the background from focus; Exit unmounts, restores background and focuses Explore.');
 
   const brokenScene = await browser.newPage();
   await brokenScene.setRequestInterception(true);

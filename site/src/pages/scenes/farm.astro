@@ -1,15 +1,21 @@
 ---
+import { farmSceneIncluded } from "virtual:kiln-farm-scene";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import SceneShell from "../../components/SceneShell.astro";
 import { farmScene } from "../../data/scenes";
 import { FULL_WIDTH_IMAGE_SIZES } from "../../lib/catalog";
 import { PACKS_ENABLED } from "../../lib/config";
+// The Farm preview stays out of search results and the sitemap whatever
+// farm.scene.available says; qualification, not this flag, decides when that changes.
 ---
 
 <BaseLayout
   title="Shapes & Seasons Farm scene"
-  description="The interactive Farm is being rebuilt. View its status, device notes and current runnable scene download."
-  noindex={!farmScene.available}
+  description={farmSceneIncluded
+    ? "A preview of the rebuilt interactive Farm, still being qualified. View its device notes and the current runnable scene download."
+    : "The interactive Farm is being rebuilt. View its status, device notes and current runnable scene download."}
+  noindex
+  nofollow
   breadcrumbs={[
     { label: "Scenes", href: "/scenes/" },
     { label: "Farm", href: "/scenes/farm/" },

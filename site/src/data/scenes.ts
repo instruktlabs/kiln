@@ -5,7 +5,9 @@ export const farmScene = {
   available: farm.scene.available,
   name: farm.name,
   href: '/scenes/farm/',
-  assetBase: farm.scene.assetBase,
+  /** The staged scene pack the browser scene loads (scripts/scene-pack.mjs); `farm.scene.assetBase` stays the R2 base of the download archives. */
+  assetBase: farm.scene.pack.base,
+  pack: farm.scene.pack,
   poster: farm.scene.poster.src,
   posterImage: farm.scene.poster,
   posterWidth: farm.scene.poster.width,
