@@ -1,0 +1,136 @@
+---
+interface Props {
+  name: string;
+  modelUrl: string;
+  poster: string;
+  posterAlt?: string;
+  posterWidth?: number;
+  posterHeight?: number;
+  srcsetWebp?: string;
+  srcsetAvif?: string;
+}
+const {
+  name,
+  modelUrl,
+  poster,
+  posterAlt = `${name}, rendered from the downloadable revision`,
+  posterWidth = 1024,
+  posterHeight = 1024,
+  srcsetWebp,
+  srcsetAvif,
+} = Astro.props;
+---
+
+<asset-viewer
+  data-name={name}
+  data-model={modelUrl}
+  class="block border border-rule bg-stage"
+>
+  <div data-poster>
+    <picture>
+      {srcsetAvif && (
+        <source
+          type="image/avif"
+          srcset={srcsetAvif}
+          sizes="(max-width: 768px) 100vw, 70vw"
+        />
+      )}
+      <img
+        src={poster}
+        srcset={srcsetWebp}
+        sizes="(max-width: 768px) 100vw, 70vw"
+        width={posterWidth}
+        height={posterHeight}
+        alt={posterAlt}
+        class="block aspect-square max-h-viewer w-full object-contain"
+        fetchpriority="high"
+      />
+    </picture>
+  </div>
+  <div class="flex flex-wrap items-center gap-4 border-t border-rule bg-sheet p-4">
+    <button type="button" data-open hidden class="btn">
+      Open 3D view
+    </button>
+    <button type="button" data-close hidden class="btn btn-secondary">
+      Close 3D view
+    </button>
+    <p data-status role="status" class="text-sm text-dim">
+      Drag to orbit after opening. The model starts stationary.
+    </p>
+  </div>
+  <div data-mount hidden class="min-h-viewer"></div>
+  <noscript>
+    <p class="p-4">
+      Enable JavaScript to inspect the model in 3D. The poster, source and
+      downloads remain available.
+    </p>
+  </noscript>
+</asset-viewer>
+<script>
+  import { createIslandSession } from "./island-session";
+  class AssetViewerElement extends HTMLElement {
+    private stop?: () => void;
+    connectedCallback() {
+      const open = this.querySelector<HTMLButtonElement>("[data-open]")!;
+      const close = this.querySelector<HTMLButtonElement>("[data-close]")!;
+      const poster = this.querySelector<HTMLElement>("[data-poster]")!;
+      const mount = this.querySelector<HTMLElement>("[data-mount]")!;
+      const status = this.querySelector<HTMLElement>("[data-status]")!;
+      const session = createIslandSession(
+        async () => {
+          if (import.meta.env.DEV)
+            await import("@vitejs/plugin-react/preamble");
+          const { mountAssetViewer } = await import("./AssetViewerRuntime");
+          return mountAssetViewer(mount, {
+            name: this.dataset.name!,
+            modelUrl: this.dataset.model!,
+            onError: () => {
+              session.stop();
+              status.textContent =
+                "The 3D view is unavailable. The poster and downloads are still available.";
+              open.focus();
+            },
+          });
+        },
+        (state) => {
+          const showing = state === "loading" || state === "ready";
+          mount.hidden = !showing;
+          poster.hidden = showing;
+          open.hidden = showing;
+          close.hidden = !showing;
+          status.textContent =
+            state === "error"
+              ? "The 3D view could not load. Check your connection and try again; downloads remain available."
+              : state === "loading"
+                ? "Loading the 3D viewer…"
+                : showing
+                  ? "Drag to orbit. Scroll or pinch to zoom. Keyboard controls are below the model."
+                  : "Drag to orbit after opening. The model starts stationary.";
+          if (state === "loading") close.focus();
+          if (state === "error") open.focus();
+        },
+      );
+      const start = () => void session.start();
+      const stop = () => {
+        session.stop();
+        open.focus();
+      };
+      const onPageHide = () => session.stop();
+      open.hidden = false;
+      open.addEventListener("click", start);
+      close.addEventListener("click", stop);
+      window.addEventListener("pagehide", onPageHide);
+      this.stop = () => {
+        session.stop();
+        open.removeEventListener("click", start);
+        close.removeEventListener("click", stop);
+        window.removeEventListener("pagehide", onPageHide);
+      };
+    }
+    disconnectedCallback() {
+      this.stop?.();
+    }
+  }
+  if (!customElements.get("asset-viewer"))
+    customElements.define("asset-viewer", AssetViewerElement);
+</script>

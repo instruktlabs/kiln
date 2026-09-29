@@ -1,0 +1,216 @@
+---
+import { farmScene } from "../data/scenes";
+import { imageQualification, FULL_WIDTH_IMAGE_SIZES } from "../lib/catalog";
+import { PACKS_ENABLED } from "../lib/config";
+---
+
+<farm-scene-shell
+  class="block border border-rule bg-stage"
+  data-asset-base={farmScene.assetBase}
+>
+  <div data-intro>
+    {PACKS_ENABLED && (
+      <picture>
+        <source
+          type="image/avif"
+          srcset={farmScene.posterImage.srcsetAvif}
+          sizes={FULL_WIDTH_IMAGE_SIZES}
+        />
+        <img
+          src={farmScene.poster}
+          srcset={farmScene.posterImage.srcsetWebp}
+          sizes={FULL_WIDTH_IMAGE_SIZES}
+          width={farmScene.posterWidth}
+          height={farmScene.posterHeight}
+          alt="The Farm scene with barn, farmhouse, fields, animals, woodland and stream"
+          class="max-h-scene w-full object-cover"
+          fetchpriority="high"
+        />
+      </picture>
+    )}
+    {PACKS_ENABLED && imageQualification(farmScene.posterImage) && (
+      <p class="bg-sheet px-6 pt-4 text-caption text-dim">{imageQualification(farmScene.posterImage)}</p>
+    )}
+    <div class="flex flex-wrap items-center justify-between gap-6 bg-sheet p-6">
+      <div class="max-w-prose">
+        <p>
+          {farmScene.available
+            ? "Explore the Farm in your browser."
+            : "The browser scene is being rebuilt. Explore opens its current in-production status."}
+        </p>
+        <p class="mt-2 text-sm text-dim">
+          Desktop play · Mobile orbit viewing. Load only when you choose
+          Explore.
+        </p>
+      </div>
+      <button type="button" class="btn" data-explore hidden>
+        Explore
+      </button>
+    </div>
+  </div>
+  <div
+    data-active
+    hidden
+    class="fixed inset-0 z-50 flex flex-col overflow-auto bg-paper"
+  >
+    <div class="flex flex-wrap items-center justify-between gap-4 border-b border-rule p-4">
+      <button type="button" class="btn btn-secondary" data-exit>
+        Exit scene
+      </button>
+      <button type="button" class="btn btn-secondary" data-fullscreen>
+        Enter fullscreen
+      </button>
+    </div>
+    <p data-loading role="status" class="p-6">
+      Loading the scene…
+    </p>
+    <div data-mount class="min-h-viewer flex-1"></div>
+  </div>
+  <p data-status role="status" class="sr-only"></p>
+  <noscript>
+    <p class="bg-sheet p-6">
+      JavaScript is required for interactive scenes. The scene download can be
+      run on your machine.
+    </p>
+  </noscript>
+</farm-scene-shell>
+<script>
+  import { createIslandSession } from "./island-session";
+  class FarmSceneShell extends HTMLElement {
+    private dispose?: () => void;
+    connectedCallback() {
+      const intro = this.querySelector<HTMLElement>("[data-intro]")!;
+      const active = this.querySelector<HTMLElement>("[data-active]")!;
+      const mount = this.querySelector<HTMLElement>("[data-mount]")!;
+      const explore = this.querySelector<HTMLButtonElement>("[data-explore]")!;
+      const exit = this.querySelector<HTMLButtonElement>("[data-exit]")!;
+      const fullscreen =
+        this.querySelector<HTMLButtonElement>("[data-fullscreen]")!;
+      const status = this.querySelector<HTMLElement>("[data-status]")!;
+      const loading = this.querySelector<HTMLElement>("[data-loading]")!;
+      let contentReady = false;
+      const ready = () => {
+        if (active.hidden) return;
+        contentReady = true;
+        loading.hidden = true;
+        status.textContent = "Scene ready.";
+      };
+      const inertElements: { element: HTMLElement; inert: boolean }[] = [];
+      const background = (hide: boolean) => {
+        if (!hide) {
+          for (const { element, inert } of inertElements) element.inert = inert;
+          inertElements.length = 0;
+          return;
+        }
+        if (inertElements.length) return;
+        let branch: HTMLElement = this;
+        while (branch.parentElement) {
+          for (const sibling of branch.parentElement.children) {
+            if (
+              sibling !== branch &&
+              sibling instanceof HTMLElement &&
+              !["SCRIPT", "STYLE", "LINK"].includes(sibling.tagName)
+            ) {
+              inertElements.push({ element: sibling, inert: sibling.inert });
+              sibling.inert = true;
+            }
+          }
+          if (branch.parentElement === document.body) break;
+          branch = branch.parentElement;
+        }
+      };
+      const fail = () => {
+        session.stop();
+        status.classList.remove("sr-only");
+        status.classList.add("p-6");
+        status.textContent =
+          "The scene could not load. Check your connection and try Explore again. The Farm downloads remain available.";
+        explore.focus();
+      };
+      const session = createIslandSession(
+        async () => {
+          if (import.meta.env.DEV)
+            await import("@vitejs/plugin-react/preamble");
+          const { mountFarmScene } = await import("../scenes/farm/mount");
+          return mountFarmScene(mount, {
+            assetBase: this.dataset.assetBase!,
+            onReady: ready,
+            onError: fail,
+          });
+        },
+        (state) => {
+          const showing = state === "loading" || state === "ready";
+          if (state === "loading") {
+            contentReady = false;
+            loading.textContent = "Loading the scene…";
+          }
+          loading.hidden = !showing || contentReady;
+          background(showing);
+          intro.hidden = showing;
+          active.hidden = !showing;
+          status.classList.add("sr-only");
+          status.classList.remove("p-6");
+          status.textContent = "";
+          if (state === "error") fail();
+          if (state === "loading") exit.focus();
+        },
+      );
+      const leave = () => {
+        session.stop();
+        if (document.fullscreenElement === this)
+          void document.exitFullscreen().catch(() => {});
+        explore.focus();
+      };
+      const start = () => void session.start();
+      const toggleFullscreen = async () => {
+        try {
+          if (document.fullscreenElement === this)
+            await document.exitFullscreen();
+          else await this.requestFullscreen();
+          loading.hidden = contentReady;
+        } catch {
+          loading.hidden = false;
+          loading.textContent =
+            "Fullscreen is unavailable in this browser. You can continue in the page.";
+        }
+      };
+      const syncFullscreen = () => {
+        fullscreen.textContent =
+          document.fullscreenElement === this
+            ? "Leave fullscreen"
+            : "Enter fullscreen";
+      };
+      const onKey = (event: KeyboardEvent) => {
+        if (
+          event.key === "Escape" &&
+          !document.fullscreenElement &&
+          !active.hidden
+        )
+          leave();
+      };
+      const onPageHide = () => session.stop();
+      fullscreen.hidden = !document.fullscreenEnabled;
+      explore.hidden = false;
+      explore.addEventListener("click", start);
+      exit.addEventListener("click", leave);
+      fullscreen.addEventListener("click", toggleFullscreen);
+      this.addEventListener("keydown", onKey);
+      document.addEventListener("fullscreenchange", syncFullscreen);
+      window.addEventListener("pagehide", onPageHide);
+      this.dispose = () => {
+        session.stop();
+        explore.removeEventListener("click", start);
+        exit.removeEventListener("click", leave);
+        fullscreen.removeEventListener("click", toggleFullscreen);
+        this.removeEventListener("keydown", onKey);
+        document.removeEventListener("fullscreenchange", syncFullscreen);
+        window.removeEventListener("pagehide", onPageHide);
+      };
+    }
+    disconnectedCallback() {
+      this.dispose?.();
+    }
+  }
+  if (!customElements.get("farm-scene-shell"))
+    customElements.define("farm-scene-shell", FarmSceneShell);
+</script>

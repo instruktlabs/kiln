@@ -1,0 +1,132 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import AssetCard from "../../components/AssetCard.astro";
+import { assets } from "../../lib/catalog";
+const categories = [...new Set(assets.map((asset) => asset.category))].sort();
+---
+
+<BaseLayout
+  title="Gallery — source, revisions and models | Kiln"
+  description="Inspect 23 Farm assets and the standalone Golden Gate Bridge, with exact source, revision histories, GLBs and review status."
+  breadcrumbs={[{ label: "Gallery", href: "/gallery/" }]}
+  ogImage="/social/gallery.webp"
+>
+  <div class="container">
+    <div class="grid gap-6 py-8 md:grid-cols-2">
+      <h1>Assets with their source attached.</h1>
+      <div>
+        <p class="lead">
+          Every model here keeps its source, revision and review record.
+          Acceptance is stated on each asset.
+        </p>
+        <a href="/gallery/archive/" class="text-link mt-3">
+          Browse the earlier, unreviewed archive →
+        </a>
+      </div>
+    </div>
+    {assets.length > 0 ? (
+      <>
+        <form
+          id="gallery-filters"
+          class="mt-6 grid grid-cols-2 items-end gap-4 border-y border-ink py-5 md:flex md:flex-wrap md:gap-5"
+          hidden
+          aria-label="Filter assets"
+        >
+          <label class="grid min-w-0 gap-2 font-mono text-code">
+            Pack
+            <select
+              id="pack-filter"
+              class="min-h-11 w-full min-w-0 border border-ink bg-sheet px-3 py-2"
+            >
+              <option value="all">All assets</option>
+              <option value="farm">Shapes &amp; Seasons Farm</option>
+              <option value="standalone">Standalone</option>
+            </select>
+          </label>
+          <label class="grid min-w-0 gap-2 font-mono text-code">
+            Category
+            <select
+              id="category-filter"
+              class="min-h-11 w-full min-w-0 border border-ink bg-sheet px-3 py-2"
+            >
+              <option value="all">All categories</option>
+              {categories.map((category) => (
+                <option value={category}>{category}</option>
+              ))}
+            </select>
+          </label>
+          <button type="submit" class="btn btn-secondary">
+            Apply filters
+          </button>
+          <button type="reset" class="btn btn-secondary">
+            Reset filters
+          </button>
+          <p
+            role="status"
+            id="gallery-count"
+            class="col-span-2 py-3 font-mono text-code"
+          >
+            {assets.length} assets
+          </p>
+        </form>
+        <script is:inline>
+          document.getElementById("gallery-filters").hidden = false;
+        </script>
+        <div
+          class="mt-8 grid grid-cols-2 gap-x-4 gap-y-10 md:grid-cols-3 md:gap-x-6 lg:grid-cols-4"
+          id="asset-grid"
+        >
+          {assets.map((asset) => (
+            <AssetCard asset={asset} headingLevel="h2" />
+          ))}
+        </div>
+        <p id="gallery-empty" hidden class="border-b border-rule py-12">
+          No assets match these filters. Try another category or reset the
+          filters.
+        </p>
+      </>
+    ) : (
+      <p class="my-8 max-w-reading border-y border-rule py-8">
+        The Commons catalog is being prepared for publication.{" "}
+        <a href="/gallery/archive/" class="text-ember underline">
+          Explore the existing archive.
+        </a>
+      </p>
+    )}
+  </div>
+</BaseLayout>
+<script>
+  import { matchesAsset } from "../../lib/navigation";
+  const form = document.querySelector<HTMLFormElement>("#gallery-filters");
+  if (form) {
+    const pack = document.querySelector<HTMLSelectElement>("#pack-filter")!;
+    const category =
+      document.querySelector<HTMLSelectElement>("#category-filter")!;
+    const rows = [...document.querySelectorAll<HTMLElement>("[data-asset]")];
+    const update = () => {
+      let count = 0;
+      for (const row of rows) {
+        const match = matchesAsset(
+          {
+            pack: row.dataset.pack ?? null,
+            category: row.dataset.category ?? "",
+          },
+          pack.value,
+          category.value,
+        );
+        row.hidden = !match;
+        if (match) count++;
+      }
+      document.querySelector("#gallery-count")!.textContent =
+        `${count} ${count === 1 ? "asset" : "assets"}`;
+      document.querySelector<HTMLElement>("#gallery-empty")!.hidden = count > 0;
+    };
+    form.hidden = false;
+    form.addEventListener("submit", (event) => {
+      event.preventDefault();
+      update();
+    });
+    form.addEventListener("change", update);
+    form.addEventListener("reset", () => requestAnimationFrame(update));
+  }
+</script>

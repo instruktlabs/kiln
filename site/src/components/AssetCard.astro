@@ -1,0 +1,48 @@
+---
+import ResponsiveImage from "./ResponsiveImage.astro";
+import { number, imageQualification, type CatalogAsset } from "../lib/catalog";
+interface Props {
+  asset: CatalogAsset;
+  headingLevel?: "h2" | "h3";
+}
+const { asset, headingLevel = "h3" } = Astro.props;
+const Heading = headingLevel;
+---
+
+<article
+  data-asset
+  data-pack={asset.pack ?? "standalone"}
+  data-category={asset.category}
+  class="group min-w-0 border-t border-rule"
+>
+  <a href={`/gallery/${asset.slug}/`} class="block text-ink no-underline">
+    <div class="bg-stage transition-colors group-hover:bg-sheet">
+      <ResponsiveImage
+        image={asset.poster}
+        sizes="(max-width: 639px) 50vw, (max-width: 1023px) 33vw, 25vw"
+        class="aspect-square w-full object-contain"
+      />
+    </div>
+    <div class="flex flex-wrap items-baseline justify-between gap-2 pt-4">
+      <Heading class="text-lg font-semibold tracking-tight md:text-title">
+        {asset.name}
+      </Heading>
+      <span aria-hidden="true" class="text-ember">
+        ↗
+      </span>
+    </div>
+  </a>
+  <p class="mt-1 font-mono text-code text-dim">
+    {number(asset.metrics.triangles)} triangles · {asset.category}
+  </p>
+  {imageQualification(asset.poster) && (
+    <p class="mt-2 text-caption text-dim">Exterior view from the parent revision.</p>
+  )}
+  <p class="mt-2 text-caption text-dim">
+    {asset.review.ownerAccepted
+      ? "Owner approved"
+      : asset.review.status === "changes-requested"
+        ? "Earlier delivery · accepted child recorded"
+        : "Review in progress"}
+  </p>
+</article>

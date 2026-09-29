@@ -1,0 +1,32 @@
+[
+  {
+    "stage": "first",
+    "requestedModel": "gpt-6-astra",
+    "requestedEffort": "ultra",
+    "harness": "codex",
+    "harnessVersion": "0.157.1",
+    "confirmedEffort": null,
+    "confirmation": "Requested in receipt and invocation; effective reasoning effort not independently confirmed.",
+    "source": {
+      "receipt": "showcase/runs/astra-golden-gate/first/receipt.json",
+      "receiptSha256": "793c4e1a402d5062241224e2da54350d071fe076a053793fec6bb19efdea8c8a",
+      "invocation": "showcase/runs/astra-golden-gate/first/invocation.json",
+      "invocationSha256": "40b0bf60fb3e59e4f7fa3c4667c6ceb04ef8112994c1da8c2d047fcf5d4c87a7"
+    }
+  },
+  {
+    "stage": "review-1",
+    "requestedModel": "gpt-6-astra",
+    "requestedEffort": "ultra",
+    "harness": "codex",
+    "harnessVersion": "0.157.1",
+    "confirmedEffort": null,
+    "confirmation": "Requested in receipt and invocation; effective reasoning effort not independently confirmed.",
+    "source": {
+      "receipt": "showcase/runs/astra-golden-gate/review-1/receipt.json",
+      "receiptSha256": "ae8c01c6d98ea0b87eda8bfe414c1c18b5fa9d1c65fcdaa4eefd4218fa34edb7",
+      "invocation": "showcase/runs/astra-golden-gate/review-1/invocation.json",
+      "invocationSha256": "058cde99ffdbf569f6b275e4341fd39a7cd077174b337cd7441bc93b7f58f74f"
+    }
+  }
+]

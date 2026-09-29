@@ -1,0 +1,71 @@
+---
+import { Code } from "astro:components";
+import { workbenchContrast } from "../lib/shiki-contrast";
+import type { ComponentProps } from "astro/types";
+interface Props {
+  code: string;
+  lang?: ComponentProps<typeof Code>["lang"];
+  label?: string;
+}
+const { code, lang = "javascript", label = "Source" } = Astro.props;
+---
+
+<div class="min-w-0 border border-rule bg-sheet">
+  <div class="flex items-center justify-between gap-4 border-b border-rule px-4 py-1">
+    <span class="font-mono text-code text-dim">{label}</span>
+    <button
+      type="button"
+      class="min-h-11 px-2 font-mono text-code text-ember"
+      data-copy-code
+      hidden
+      aria-label={`Copy ${label}`}
+    >
+      Copy
+    </button>
+    <span data-copy-status role="status" class="sr-only"></span>
+  </div>
+  <section
+    class="overflow-x-auto p-4"
+    tabindex="0"
+    aria-label={`${label}, horizontally scrollable`}
+  >
+    <Code code={code} lang={lang} theme="github-light" transformers={[workbenchContrast]} />
+  </section>
+  <p class="border-t border-rule px-4 py-1 font-mono text-code text-dim">
+    Scroll code horizontally ↔
+  </p>
+</div>
+<script>
+  document
+    .querySelectorAll<HTMLButtonElement>("[data-copy-code]")
+    .forEach((button) => {
+      button.hidden = false;
+      button.addEventListener("click", async () => {
+        const codeElement =
+          button.parentElement?.nextElementSibling?.querySelector("code");
+        const status =
+          button.parentElement?.querySelector("[data-copy-status]");
+        if (status) status.textContent = "";
+        try {
+          await navigator.clipboard.writeText(codeElement?.textContent ?? "");
+          button.textContent = "Copied";
+          if (status) status.textContent = "Code copied to clipboard.";
+        } catch {
+          if (codeElement) {
+            const range = document.createRange();
+            range.selectNodeContents(codeElement);
+            const selection = window.getSelection();
+            selection?.removeAllRanges();
+            selection?.addRange(range);
+          }
+          button.textContent = "Code selected";
+          if (status)
+            status.textContent =
+              "Clipboard unavailable. Code selected; use your browser’s copy command.";
+        }
+        setTimeout(() => {
+          button.textContent = "Copy";
+        }, 2000);
+      });
+    });
+</script>

@@ -1,0 +1,605 @@
+{
+  "schemaVersion": 1,
+  "id": "golden-gate-bridge",
+  "slug": "golden-gate-bridge",
+  "name": "Golden Gate Bridge",
+  "pack": null,
+  "category": "Architecture",
+  "description": "A metre-scale procedural suspension bridge with Art Deco towers, main cables, suspenders and a six-lane roadway.",
+  "assetId": "a_9fafaa6e7f4c4868a372e8f3b0b84738",
+  "revisionId": "r_9f4b0e76ea634be083de8a5e38c4e838",
+  "parentRevision": "r_62e15876bd6d4e6b8fb72be910eafb42",
+  "metrics": {
+    "triangles": 299788,
+    "meshes": 167,
+    "materials": 8,
+    "bounds": [
+      91.44000244140625,
+      231.36464002250074,
+      2067.96
+    ],
+    "boundsMin": [
+      -45.720001220703125,
+      -0.6000000238418579,
+      -1033.98
+    ],
+    "boundsMax": [
+      45.720001220703125,
+      230.76463999865888,
+      1033.98
+    ],
+    "clips": [],
+    "partPaths": [
+      "GoldenGateBridge/SouthTower/SouthTower_Pier/SouthTower_Pier_Mesh_Footing",
+      "GoldenGateBridge/SouthTower/SouthTower_Pier/SouthTower_Pier_Mesh_PierBody",
+      "GoldenGateBridge/SouthTower/SouthTower_LegWest/SouthTower_LegWest_Mesh_Tier1",
+      "GoldenGateBridge/SouthTower/SouthTower_LegWest/SouthTower_LegWest_Mesh_Tier2",
+      "GoldenGateBridge/SouthTower/SouthTower_LegWest/SouthTower_LegWest_Mesh_Tier3",
+      "GoldenGateBridge/SouthTower/SouthTower_LegWest/SouthTower_LegWest_Mesh_Tier4",
+      "GoldenGateBridge/SouthTower/SouthTower_LegWest/SouthTower_LegWest_Mesh_Tier5",
+      "GoldenGateBridge/SouthTower/SouthTower_LegWest/SouthTower_LegWest_Mesh_FluteRibs",
+      "GoldenGateBridge/SouthTower/SouthTower_LegWest/SouthTower_LegWest_Mesh_PlateSeams",
+      "GoldenGateBridge/SouthTower/SouthTower_LegWest/SouthTower_LegWest_Mesh_RivetRows",
+      "GoldenGateBridge/SouthTower/SouthTower_CrownWest/SouthTower_CrownWest_Mesh_SaddleBed",
+      "GoldenGateBridge/SouthTower/SouthTower_CrownWest/SouthTower_CrownWest_Mesh_CurvedSaddle",
+      "GoldenGateBridge/SouthTower/SouthTower_CrownWest/SouthTower_CrownWest_Mesh_SaddleGussets",
+      "GoldenGateBridge/SouthTower/SouthTower_CrownWest/SouthTower_CrownWest_Mesh_TaperedSaddleCover",
+      "GoldenGateBridge/SouthTower/SouthTower_CrownWest/SouthTower_CrownWest_Mesh_BeaconFoot",
+      "GoldenGateBridge/SouthTower/SouthTower_CrownWest/SouthTower_CrownWest_Mesh_AircraftWarningLens",
+      "GoldenGateBridge/SouthTower/SouthTower_CrownWest/SouthTower_CrownWest_Mesh_BeaconCap",
+      "GoldenGateBridge/SouthTower/SouthTower_LegEast/SouthTower_LegEast_Mesh_Tier1",
+      "GoldenGateBridge/SouthTower/SouthTower_LegEast/SouthTower_LegEast_Mesh_Tier2",
+      "GoldenGateBridge/SouthTower/SouthTower_LegEast/SouthTower_LegEast_Mesh_Tier3",
+      "GoldenGateBridge/SouthTower/SouthTower_LegEast/SouthTower_LegEast_Mesh_Tier4",
+      "GoldenGateBridge/SouthTower/SouthTower_LegEast/SouthTower_LegEast_Mesh_Tier5",
+      "GoldenGateBridge/SouthTower/SouthTower_LegEast/SouthTower_LegEast_Mesh_FluteRibs",
+      "GoldenGateBridge/SouthTower/SouthTower_LegEast/SouthTower_LegEast_Mesh_PlateSeams",
+      "GoldenGateBridge/SouthTower/SouthTower_LegEast/SouthTower_LegEast_Mesh_RivetRows",
+      "GoldenGateBridge/SouthTower/SouthTower_CrownEast/SouthTower_CrownEast_Mesh_SaddleBed",
+      "GoldenGateBridge/SouthTower/SouthTower_CrownEast/SouthTower_CrownEast_Mesh_CurvedSaddle",
+      "GoldenGateBridge/SouthTower/SouthTower_CrownEast/SouthTower_CrownEast_Mesh_SaddleGussets",
+      "GoldenGateBridge/SouthTower/SouthTower_CrownEast/SouthTower_CrownEast_Mesh_TaperedSaddleCover",
+      "GoldenGateBridge/SouthTower/SouthTower_CrownEast/SouthTower_CrownEast_Mesh_BeaconFoot",
+      "GoldenGateBridge/SouthTower/SouthTower_CrownEast/SouthTower_CrownEast_Mesh_AircraftWarningLens",
+      "GoldenGateBridge/SouthTower/SouthTower_CrownEast/SouthTower_CrownEast_Mesh_BeaconCap",
+      "GoldenGateBridge/SouthTower/SouthTower_Portal1/SouthTower_Portal1_Mesh_Core",
+      "GoldenGateBridge/SouthTower/SouthTower_Portal1/SouthTower_Portal1_Mesh_RecessedDecoPanels",
+      "GoldenGateBridge/SouthTower/SouthTower_Portal1/SouthTower_Portal1_Mesh_SteppedBordersAndHaunches",
+      "GoldenGateBridge/SouthTower/SouthTower_Portal1/SouthTower_Portal1_Mesh_PortalRivets",
+      "GoldenGateBridge/SouthTower/SouthTower_Portal2/SouthTower_Portal2_Mesh_Core",
+      "GoldenGateBridge/SouthTower/SouthTower_Portal2/SouthTower_Portal2_Mesh_RecessedDecoPanels",
+      "GoldenGateBridge/SouthTower/SouthTower_Portal2/SouthTower_Portal2_Mesh_SteppedBordersAndHaunches",
+      "GoldenGateBridge/SouthTower/SouthTower_Portal2/SouthTower_Portal2_Mesh_PortalRivets",
+      "GoldenGateBridge/SouthTower/SouthTower_Portal3/SouthTower_Portal3_Mesh_Core",
+      "GoldenGateBridge/SouthTower/SouthTower_Portal3/SouthTower_Portal3_Mesh_RecessedDecoPanels",
+      "GoldenGateBridge/SouthTower/SouthTower_Portal3/SouthTower_Portal3_Mesh_SteppedBordersAndHaunches",
+      "GoldenGateBridge/SouthTower/SouthTower_Portal3/SouthTower_Portal3_Mesh_PortalRivets",
+      "GoldenGateBridge/SouthTower/SouthTower_Portal4/SouthTower_Portal4_Mesh_Core",
+      "GoldenGateBridge/SouthTower/SouthTower_Portal4/SouthTower_Portal4_Mesh_RecessedDecoPanels",
+      "GoldenGateBridge/SouthTower/SouthTower_Portal4/SouthTower_Portal4_Mesh_SteppedBordersAndHaunches",
+      "GoldenGateBridge/SouthTower/SouthTower_Portal4/SouthTower_Portal4_Mesh_PortalRivets",
+      "GoldenGateBridge/SouthTower/SouthTower_BelowRoadBracing/SouthTower_BelowRoadBracing_Mesh_XMembers",
+      "GoldenGateBridge/SouthTower/SouthTower_BelowRoadBracing/SouthTower_BelowRoadBracing_Mesh_ConnectionPlates",
+      "GoldenGateBridge/NorthTower/NorthTower_Pier/NorthTower_Pier_Mesh_Footing",
+      "GoldenGateBridge/NorthTower/NorthTower_Pier/NorthTower_Pier_Mesh_PierBody",
+      "GoldenGateBridge/NorthTower/NorthTower_LegWest/NorthTower_LegWest_Mesh_Tier1",
+      "GoldenGateBridge/NorthTower/NorthTower_LegWest/NorthTower_LegWest_Mesh_Tier2",
+      "GoldenGateBridge/NorthTower/NorthTower_LegWest/NorthTower_LegWest_Mesh_Tier3",
+      "GoldenGateBridge/NorthTower/NorthTower_LegWest/NorthTower_LegWest_Mesh_Tier4",
+      "GoldenGateBridge/NorthTower/NorthTower_LegWest/NorthTower_LegWest_Mesh_Tier5",
+      "GoldenGateBridge/NorthTower/NorthTower_LegWest/NorthTower_LegWest_Mesh_FluteRibs",
+      "GoldenGateBridge/NorthTower/NorthTower_LegWest/NorthTower_LegWest_Mesh_PlateSeams",
+      "GoldenGateBridge/NorthTower/NorthTower_LegWest/NorthTower_LegWest_Mesh_RivetRows",
+      "GoldenGateBridge/NorthTower/NorthTower_CrownWest/NorthTower_CrownWest_Mesh_SaddleBed",
+      "GoldenGateBridge/NorthTower/NorthTower_CrownWest/NorthTower_CrownWest_Mesh_CurvedSaddle",
+      "GoldenGateBridge/NorthTower/NorthTower_CrownWest/NorthTower_CrownWest_Mesh_SaddleGussets",
+      "GoldenGateBridge/NorthTower/NorthTower_CrownWest/NorthTower_CrownWest_Mesh_TaperedSaddleCover",
+      "GoldenGateBridge/NorthTower/NorthTower_CrownWest/NorthTower_CrownWest_Mesh_BeaconFoot",
+      "GoldenGateBridge/NorthTower/NorthTower_CrownWest/NorthTower_CrownWest_Mesh_AircraftWarningLens",
+      "GoldenGateBridge/NorthTower/NorthTower_CrownWest/NorthTower_CrownWest_Mesh_BeaconCap",
+      "GoldenGateBridge/NorthTower/NorthTower_LegEast/NorthTower_LegEast_Mesh_Tier1",
+      "GoldenGateBridge/NorthTower/NorthTower_LegEast/NorthTower_LegEast_Mesh_Tier2",
+      "GoldenGateBridge/NorthTower/NorthTower_LegEast/NorthTower_LegEast_Mesh_Tier3",
+      "GoldenGateBridge/NorthTower/NorthTower_LegEast/NorthTower_LegEast_Mesh_Tier4",
+      "GoldenGateBridge/NorthTower/NorthTower_LegEast/NorthTower_LegEast_Mesh_Tier5",
+      "GoldenGateBridge/NorthTower/NorthTower_LegEast/NorthTower_LegEast_Mesh_FluteRibs",
+      "GoldenGateBridge/NorthTower/NorthTower_LegEast/NorthTower_LegEast_Mesh_PlateSeams",
+      "GoldenGateBridge/NorthTower/NorthTower_LegEast/NorthTower_LegEast_Mesh_RivetRows",
+      "GoldenGateBridge/NorthTower/NorthTower_CrownEast/NorthTower_CrownEast_Mesh_SaddleBed",
+      "GoldenGateBridge/NorthTower/NorthTower_CrownEast/NorthTower_CrownEast_Mesh_CurvedSaddle",
+      "GoldenGateBridge/NorthTower/NorthTower_CrownEast/NorthTower_CrownEast_Mesh_SaddleGussets",
+      "GoldenGateBridge/NorthTower/NorthTower_CrownEast/NorthTower_CrownEast_Mesh_TaperedSaddleCover",
+      "GoldenGateBridge/NorthTower/NorthTower_CrownEast/NorthTower_CrownEast_Mesh_BeaconFoot",
+      "GoldenGateBridge/NorthTower/NorthTower_CrownEast/NorthTower_CrownEast_Mesh_AircraftWarningLens",
+      "GoldenGateBridge/NorthTower/NorthTower_CrownEast/NorthTower_CrownEast_Mesh_BeaconCap",
+      "GoldenGateBridge/NorthTower/NorthTower_Portal1/NorthTower_Portal1_Mesh_Core",
+      "GoldenGateBridge/NorthTower/NorthTower_Portal1/NorthTower_Portal1_Mesh_RecessedDecoPanels",
+      "GoldenGateBridge/NorthTower/NorthTower_Portal1/NorthTower_Portal1_Mesh_SteppedBordersAndHaunches",
+      "GoldenGateBridge/NorthTower/NorthTower_Portal1/NorthTower_Portal1_Mesh_PortalRivets",
+      "GoldenGateBridge/NorthTower/NorthTower_Portal2/NorthTower_Portal2_Mesh_Core",
+      "GoldenGateBridge/NorthTower/NorthTower_Portal2/NorthTower_Portal2_Mesh_RecessedDecoPanels",
+      "GoldenGateBridge/NorthTower/NorthTower_Portal2/NorthTower_Portal2_Mesh_SteppedBordersAndHaunches",
+      "GoldenGateBridge/NorthTower/NorthTower_Portal2/NorthTower_Portal2_Mesh_PortalRivets",
+      "GoldenGateBridge/NorthTower/NorthTower_Portal3/NorthTower_Portal3_Mesh_Core",
+      "GoldenGateBridge/NorthTower/NorthTower_Portal3/NorthTower_Portal3_Mesh_RecessedDecoPanels",
+      "GoldenGateBridge/NorthTower/NorthTower_Portal3/NorthTower_Portal3_Mesh_SteppedBordersAndHaunches",
+      "GoldenGateBridge/NorthTower/NorthTower_Portal3/NorthTower_Portal3_Mesh_PortalRivets",
+      "GoldenGateBridge/NorthTower/NorthTower_Portal4/NorthTower_Portal4_Mesh_Core",
+      "GoldenGateBridge/NorthTower/NorthTower_Portal4/NorthTower_Portal4_Mesh_RecessedDecoPanels",
+      "GoldenGateBridge/NorthTower/NorthTower_Portal4/NorthTower_Portal4_Mesh_SteppedBordersAndHaunches",
+      "GoldenGateBridge/NorthTower/NorthTower_Portal4/NorthTower_Portal4_Mesh_PortalRivets",
+      "GoldenGateBridge/NorthTower/NorthTower_BelowRoadBracing/NorthTower_BelowRoadBracing_Mesh_XMembers",
+      "GoldenGateBridge/NorthTower/NorthTower_BelowRoadBracing/NorthTower_BelowRoadBracing_Mesh_ConnectionPlates",
+      "GoldenGateBridge/SouthFender/SouthFender_Mesh_EllipticalWall",
+      "GoldenGateBridge/MainCableWest/MainCableWest_Mesh_ContinuousCable",
+      "GoldenGateBridge/MainCableEast/MainCableEast_Mesh_ContinuousCable",
+      "GoldenGateBridge/Deck/Deck_Mesh_Roadway",
+      "GoldenGateBridge/Deck/Deck_Mesh_Underdeck",
+      "GoldenGateBridge/Deck/Deck_Mesh_EastWalk",
+      "GoldenGateBridge/Deck/Deck_Mesh_WestWalk",
+      "GoldenGateBridge/Deck/Deck_SidewalkRailings/Deck_SidewalkRailings_Mesh_OuterOpenRailings",
+      "GoldenGateBridge/Deck/Deck_SidewalkRailings/Deck_SidewalkRailings_Mesh_RoadSafetyRailings",
+      "GoldenGateBridge/Deck/Deck_Mesh_EastCurb",
+      "GoldenGateBridge/Deck/Deck_Mesh_WestCurb",
+      "GoldenGateBridge/Deck/Deck_MovableMedian/Deck_MovableMedian_Mesh_LinkedConcreteUnits",
+      "GoldenGateBridge/Deck/Deck_LaneMarkings/Deck_LaneMarkings_Mesh_BrokenLaneLines",
+      "GoldenGateBridge/Deck/Deck_LaneMarkings/Deck_LaneMarkings_Mesh_EastEdgeLine",
+      "GoldenGateBridge/Deck/Deck_LaneMarkings/Deck_LaneMarkings_Mesh_WestEdgeLine",
+      "GoldenGateBridge/Deck/Deck_Mesh_DrainSlots",
+      "GoldenGateBridge/Deck/Deck_Mesh_ExpansionJoints",
+      "GoldenGateBridge/Deck/Deck_ArtDecoLampStandards/Deck_ArtDecoLampStandards_EastLampArray/Deck_ArtDecoLampStandards_EastLampArray_Mesh_StandardsAndTwinArms",
+      "GoldenGateBridge/Deck/Deck_ArtDecoLampStandards/Deck_ArtDecoLampStandards_EastLampArray/Deck_ArtDecoLampStandards_EastLampArray_Mesh_AmberLenses",
+      "GoldenGateBridge/Deck/Deck_ArtDecoLampStandards/Deck_ArtDecoLampStandards_WestLampArray/Deck_ArtDecoLampStandards_WestLampArray_Mesh_StandardsAndTwinArms",
+      "GoldenGateBridge/Deck/Deck_ArtDecoLampStandards/Deck_ArtDecoLampStandards_WestLampArray/Deck_ArtDecoLampStandards_WestLampArray_Mesh_AmberLenses",
+      "GoldenGateBridge/Deck/Deck_TowerSidewalkBrackets/Deck_TowerSidewalkBrackets_Mesh_CantileverKnees",
+      "GoldenGateBridge/SuspendersWest/SuspendersWest_Mesh_RopePairs",
+      "GoldenGateBridge/SuspendersWest/SuspendersWest_Mesh_CableBands",
+      "GoldenGateBridge/SuspendersWest/SuspendersWest_Mesh_ClampFlangesBolts",
+      "GoldenGateBridge/SuspendersWest/SuspendersWest_Mesh_DeckClevises",
+      "GoldenGateBridge/SuspendersEast/SuspendersEast_Mesh_RopePairs",
+      "GoldenGateBridge/SuspendersEast/SuspendersEast_Mesh_CableBands",
+      "GoldenGateBridge/SuspendersEast/SuspendersEast_Mesh_ClampFlangesBolts",
+      "GoldenGateBridge/SuspendersEast/SuspendersEast_Mesh_DeckClevises",
+      "GoldenGateBridge/DeckLateralBracing/DeckLateralBracing_Mesh_CrossFramesAndLateralX",
+      "GoldenGateBridge/DeckTrussWest/DeckTrussWest_Mesh_RolledChords",
+      "GoldenGateBridge/DeckTrussWest/DeckTrussWest_Mesh_ChordsPostsDiagonals",
+      "GoldenGateBridge/DeckTrussWest/DeckTrussWest_Mesh_GussetPlates",
+      "GoldenGateBridge/DeckTrussEast/DeckTrussEast_Mesh_RolledChords",
+      "GoldenGateBridge/DeckTrussEast/DeckTrussEast_Mesh_ChordsPostsDiagonals",
+      "GoldenGateBridge/DeckTrussEast/DeckTrussEast_Mesh_GussetPlates",
+      "GoldenGateBridge/SouthAnchorage/SouthAnchorage_Mesh_AnchorageHousing",
+      "GoldenGateBridge/SouthAnchorage/SouthAnchorage_PylonEast/SouthAnchorage_PylonEast_Mesh_PylonShaft",
+      "GoldenGateBridge/SouthAnchorage/SouthAnchorage_PylonEast/SouthAnchorage_PylonEast_Mesh_SteppedCrown",
+      "GoldenGateBridge/SouthAnchorage/SouthAnchorage_PylonEast/SouthAnchorage_PylonEast_Mesh_UpperCrown",
+      "GoldenGateBridge/SouthAnchorage/SouthAnchorage_PylonEast/SouthAnchorage_PylonEast_Mesh_ChevronFlutes",
+      "GoldenGateBridge/SouthAnchorage/SouthAnchorage_PylonEast/SouthAnchorage_PylonEast_Mesh_AccessDoorReveal",
+      "GoldenGateBridge/SouthAnchorage/SouthAnchorage_PylonEast/SouthAnchorage_PylonEast_Mesh_InsetAccessDoor",
+      "GoldenGateBridge/SouthAnchorage/SouthAnchorage_PylonWest/SouthAnchorage_PylonWest_Mesh_PylonShaft",
+      "GoldenGateBridge/SouthAnchorage/SouthAnchorage_PylonWest/SouthAnchorage_PylonWest_Mesh_SteppedCrown",
+      "GoldenGateBridge/SouthAnchorage/SouthAnchorage_PylonWest/SouthAnchorage_PylonWest_Mesh_UpperCrown",
+      "GoldenGateBridge/SouthAnchorage/SouthAnchorage_PylonWest/SouthAnchorage_PylonWest_Mesh_ChevronFlutes",
+      "GoldenGateBridge/SouthAnchorage/SouthAnchorage_PylonWest/SouthAnchorage_PylonWest_Mesh_AccessDoorReveal",
+      "GoldenGateBridge/SouthAnchorage/SouthAnchorage_PylonWest/SouthAnchorage_PylonWest_Mesh_InsetAccessDoor",
+      "GoldenGateBridge/SouthAnchorage/SouthAnchorage_Mesh_FormworkCourseLines",
+      "GoldenGateBridge/SouthAnchorage/SouthAnchorage_Mesh_HousingPilasters",
+      "GoldenGateBridge/NorthAnchorage/NorthAnchorage_Mesh_AnchorageHousing",
+      "GoldenGateBridge/NorthAnchorage/NorthAnchorage_PylonEast/NorthAnchorage_PylonEast_Mesh_PylonShaft",
+      "GoldenGateBridge/NorthAnchorage/NorthAnchorage_PylonEast/NorthAnchorage_PylonEast_Mesh_SteppedCrown",
+      "GoldenGateBridge/NorthAnchorage/NorthAnchorage_PylonEast/NorthAnchorage_PylonEast_Mesh_UpperCrown",
+      "GoldenGateBridge/NorthAnchorage/NorthAnchorage_PylonEast/NorthAnchorage_PylonEast_Mesh_ChevronFlutes",
+      "GoldenGateBridge/NorthAnchorage/NorthAnchorage_PylonEast/NorthAnchorage_PylonEast_Mesh_AccessDoorReveal",
+      "GoldenGateBridge/NorthAnchorage/NorthAnchorage_PylonEast/NorthAnchorage_PylonEast_Mesh_InsetAccessDoor",
+      "GoldenGateBridge/NorthAnchorage/NorthAnchorage_PylonWest/NorthAnchorage_PylonWest_Mesh_PylonShaft",
+      "GoldenGateBridge/NorthAnchorage/NorthAnchorage_PylonWest/NorthAnchorage_PylonWest_Mesh_SteppedCrown",
+      "GoldenGateBridge/NorthAnchorage/NorthAnchorage_PylonWest/NorthAnchorage_PylonWest_Mesh_UpperCrown",
+      "GoldenGateBridge/NorthAnchorage/NorthAnchorage_PylonWest/NorthAnchorage_PylonWest_Mesh_ChevronFlutes",
+      "GoldenGateBridge/NorthAnchorage/NorthAnchorage_PylonWest/NorthAnchorage_PylonWest_Mesh_AccessDoorReveal",
+      "GoldenGateBridge/NorthAnchorage/NorthAnchorage_PylonWest/NorthAnchorage_PylonWest_Mesh_InsetAccessDoor",
+      "GoldenGateBridge/NorthAnchorage/NorthAnchorage_Mesh_FormworkCourseLines",
+      "GoldenGateBridge/NorthAnchorage/NorthAnchorage_Mesh_HousingPilasters"
+    ]
+  },
+  "poster": {
+    "src": "/standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/classic-neutral.webp",
+    "width": 1032,
+    "height": 1032,
+    "alt": "Golden Gate Bridge seen obliquely from above, showing both towers and the suspended roadway.",
+    "srcsetWebp": "/standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/classic-neutral-320.webp 320w, /standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/classic-neutral-480.webp 480w, /standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/classic-neutral-672.webp 672w, /standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/classic-neutral-768.webp 768w, /standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/classic-neutral-1024.webp 1024w",
+    "srcsetAvif": "/standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/classic-neutral-320.avif 320w, /standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/classic-neutral-480.avif 480w, /standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/classic-neutral-672.avif 672w, /standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/classic-neutral-768.avif 768w, /standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/classic-neutral-1024.avif 1024w",
+    "inputPath": "standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/classic-neutral.png"
+  },
+  "reviewImage": {
+    "src": "/standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/review-sheet-neutral.webp",
+    "width": 1168,
+    "height": 780,
+    "alt": "Six GPU review views of the Golden Gate Bridge.",
+    "srcsetWebp": "/standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/review-sheet-neutral-320.webp 320w, /standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/review-sheet-neutral-480.webp 480w, /standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/review-sheet-neutral-672.webp 672w, /standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/review-sheet-neutral-768.webp 768w, /standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/review-sheet-neutral-1024.webp 1024w",
+    "srcsetAvif": "/standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/review-sheet-neutral-320.avif 320w, /standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/review-sheet-neutral-480.avif 480w, /standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/review-sheet-neutral-672.avif 672w, /standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/review-sheet-neutral-768.avif 768w, /standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/review-sheet-neutral-1024.avif 1024w",
+    "inputPath": "standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/review-sheet-neutral.png"
+  },
+  "captures": [
+    {
+      "src": "/standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/water-level-neutral.webp",
+      "width": 1032,
+      "height": 1032,
+      "alt": "Golden Gate Bridge GPU capture: water level.",
+      "srcsetWebp": "/standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/water-level-neutral-320.webp 320w, /standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/water-level-neutral-480.webp 480w, /standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/water-level-neutral-672.webp 672w, /standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/water-level-neutral-768.webp 768w, /standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/water-level-neutral-1024.webp 1024w",
+      "srcsetAvif": "/standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/water-level-neutral-320.avif 320w, /standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/water-level-neutral-480.avif 480w, /standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/water-level-neutral-672.avif 672w, /standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/water-level-neutral-768.avif 768w, /standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/water-level-neutral-1024.avif 1024w",
+      "inputPath": "standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/water-level-neutral.png"
+    },
+    {
+      "src": "/standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/deck-neutral.webp",
+      "width": 1032,
+      "height": 1032,
+      "alt": "Golden Gate Bridge GPU capture: deck.",
+      "srcsetWebp": "/standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/deck-neutral-320.webp 320w, /standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/deck-neutral-480.webp 480w, /standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/deck-neutral-672.webp 672w, /standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/deck-neutral-768.webp 768w, /standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/deck-neutral-1024.webp 1024w",
+      "srcsetAvif": "/standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/deck-neutral-320.avif 320w, /standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/deck-neutral-480.avif 480w, /standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/deck-neutral-672.avif 672w, /standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/deck-neutral-768.avif 768w, /standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/deck-neutral-1024.avif 1024w",
+      "inputPath": "standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/deck-neutral.png"
+    },
+    {
+      "src": "/standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/tower-top-neutral.webp",
+      "width": 1032,
+      "height": 1032,
+      "alt": "Golden Gate Bridge GPU capture: tower top.",
+      "srcsetWebp": "/standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/tower-top-neutral-320.webp 320w, /standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/tower-top-neutral-480.webp 480w, /standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/tower-top-neutral-672.webp 672w, /standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/tower-top-neutral-768.webp 768w, /standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/tower-top-neutral-1024.webp 1024w",
+      "srcsetAvif": "/standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/tower-top-neutral-320.avif 320w, /standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/tower-top-neutral-480.avif 480w, /standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/tower-top-neutral-672.avif 672w, /standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/tower-top-neutral-768.avif 768w, /standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/tower-top-neutral-1024.avif 1024w",
+      "inputPath": "standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/tower-top-neutral.png"
+    },
+    {
+      "src": "/standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/elevation-neutral.webp",
+      "width": 1032,
+      "height": 1032,
+      "alt": "Golden Gate Bridge GPU capture: elevation.",
+      "srcsetWebp": "/standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/elevation-neutral-320.webp 320w, /standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/elevation-neutral-480.webp 480w, /standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/elevation-neutral-672.webp 672w, /standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/elevation-neutral-768.webp 768w, /standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/elevation-neutral-1024.webp 1024w",
+      "srcsetAvif": "/standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/elevation-neutral-320.avif 320w, /standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/elevation-neutral-480.avif 480w, /standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/elevation-neutral-672.avif 672w, /standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/elevation-neutral-768.avif 768w, /standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/elevation-neutral-1024.avif 1024w",
+      "inputPath": "standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/elevation-neutral.png"
+    }
+  ],
+  "sourcePath": "/sources/golden-gate-bridge.kiln.js",
+  "sourceSha256": "5bfd30103aaf6aa620da252562e5e9de135eba69b5c36823f0e12a7e99c87f81",
+  "modelPath": "/models/standalone/golden-gate-bridge.glb",
+  "runtimeDownload": {
+    "path": "standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/golden-gate-runtime.glb",
+    "bytes": 13484976,
+    "sha256": "1e987a994d5a0a8183782aa19d4e225b9715fb0bd503402a5b3a14df8190a7f9",
+    "url": "https://assets.kilnstudio.tools/standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/golden-gate-runtime.glb"
+  },
+  "editableDownload": {
+    "path": "standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/golden-gate-editable.zip",
+    "bytes": 13586620,
+    "sha256": "8456ce298158edb5233dc40573aaa970bf5432271762fe66d281effd6652077c",
+    "url": "https://assets.kilnstudio.tools/standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/golden-gate-editable.zip"
+  },
+  "provenance": {
+    "originalModel": "GPT-6 Astra",
+    "refinementModels": [],
+    "history": [
+      {
+        "stage": "True-scale blockout",
+        "revisionId": "r_003e29ccca7d4149952dbeb38d260e57",
+        "model": "GPT-6 Astra",
+        "modelId": "gpt-6-astra",
+        "requestedEffort": "ultra",
+        "confirmedEffort": null,
+        "harness": "codex",
+        "harnessVersion": "0.157.1"
+      },
+      {
+        "stage": "Structure",
+        "revisionId": "r_864fdb9b078c447fb61e6db945342eb1",
+        "model": "GPT-6 Astra",
+        "modelId": "gpt-6-astra",
+        "requestedEffort": "ultra",
+        "confirmedEffort": null,
+        "harness": "codex",
+        "harnessVersion": "0.157.1"
+      },
+      {
+        "stage": "Deck and end structures",
+        "revisionId": "r_e6fc425ac972452a927d2e9e768dc3c5",
+        "model": "GPT-6 Astra",
+        "modelId": "gpt-6-astra",
+        "requestedEffort": "ultra",
+        "confirmedEffort": null,
+        "harness": "codex",
+        "harnessVersion": "0.157.1"
+      },
+      {
+        "stage": "Materials",
+        "revisionId": "r_891f756291cf4b4c9865bc30c5627908",
+        "model": "GPT-6 Astra",
+        "modelId": "gpt-6-astra",
+        "requestedEffort": "ultra",
+        "confirmedEffort": null,
+        "harness": "codex",
+        "harnessVersion": "0.157.1"
+      },
+      {
+        "stage": "Geometry repairs and optimization",
+        "revisionId": "r_62e15876bd6d4e6b8fb72be910eafb42",
+        "model": "GPT-6 Astra",
+        "modelId": "gpt-6-astra",
+        "requestedEffort": "ultra",
+        "confirmedEffort": null,
+        "harness": "codex",
+        "harnessVersion": "0.157.1"
+      },
+      {
+        "stage": "Final paint/concrete correction",
+        "revisionId": "r_9f4b0e76ea634be083de8a5e38c4e838",
+        "model": "GPT-6 Astra",
+        "modelId": "gpt-6-astra",
+        "requestedEffort": "ultra",
+        "confirmedEffort": null,
+        "harness": "codex",
+        "harnessVersion": "0.157.1"
+      }
+    ],
+    "requests": [
+      {
+        "stage": "first",
+        "requestedModel": "gpt-6-astra",
+        "requestedEffort": "ultra",
+        "harness": "codex",
+        "harnessVersion": "0.157.1",
+        "confirmedEffort": null,
+        "confirmation": "Requested in receipt and invocation; effective reasoning effort not independently confirmed.",
+        "source": {
+          "receipt": "showcase/runs/astra-golden-gate/first/receipt.json",
+          "receiptSha256": "793c4e1a402d5062241224e2da54350d071fe076a053793fec6bb19efdea8c8a",
+          "invocation": "showcase/runs/astra-golden-gate/first/invocation.json",
+          "invocationSha256": "40b0bf60fb3e59e4f7fa3c4667c6ceb04ef8112994c1da8c2d047fcf5d4c87a7"
+        }
+      },
+      {
+        "stage": "review-1",
+        "requestedModel": "gpt-6-astra",
+        "requestedEffort": "ultra",
+        "harness": "codex",
+        "harnessVersion": "0.157.1",
+        "confirmedEffort": null,
+        "confirmation": "Requested in receipt and invocation; effective reasoning effort not independently confirmed.",
+        "source": {
+          "receipt": "showcase/runs/astra-golden-gate/review-1/receipt.json",
+          "receiptSha256": "ae8c01c6d98ea0b87eda8bfe414c1c18b5fa9d1c65fcdaa4eefd4218fa34edb7",
+          "invocation": "showcase/runs/astra-golden-gate/review-1/invocation.json",
+          "invocationSha256": "058cde99ffdbf569f6b275e4341fd39a7cd077174b337cd7441bc93b7f58f74f"
+        }
+      }
+    ]
+  },
+  "revisions": [
+    {
+      "stage": "True-scale blockout",
+      "revisionId": "r_003e29ccca7d4149952dbeb38d260e57",
+      "model": "GPT-6 Astra",
+      "modelId": "gpt-6-astra",
+      "requestedEffort": "ultra",
+      "confirmedEffort": null,
+      "harness": "codex",
+      "harnessVersion": "0.157.1"
+    },
+    {
+      "stage": "Structure",
+      "revisionId": "r_864fdb9b078c447fb61e6db945342eb1",
+      "model": "GPT-6 Astra",
+      "modelId": "gpt-6-astra",
+      "requestedEffort": "ultra",
+      "confirmedEffort": null,
+      "harness": "codex",
+      "harnessVersion": "0.157.1"
+    },
+    {
+      "stage": "Deck and end structures",
+      "revisionId": "r_e6fc425ac972452a927d2e9e768dc3c5",
+      "model": "GPT-6 Astra",
+      "modelId": "gpt-6-astra",
+      "requestedEffort": "ultra",
+      "confirmedEffort": null,
+      "harness": "codex",
+      "harnessVersion": "0.157.1"
+    },
+    {
+      "stage": "Materials",
+      "revisionId": "r_891f756291cf4b4c9865bc30c5627908",
+      "model": "GPT-6 Astra",
+      "modelId": "gpt-6-astra",
+      "requestedEffort": "ultra",
+      "confirmedEffort": null,
+      "harness": "codex",
+      "harnessVersion": "0.157.1"
+    },
+    {
+      "stage": "Geometry repairs and optimization",
+      "revisionId": "r_62e15876bd6d4e6b8fb72be910eafb42",
+      "model": "GPT-6 Astra",
+      "modelId": "gpt-6-astra",
+      "requestedEffort": "ultra",
+      "confirmedEffort": null,
+      "harness": "codex",
+      "harnessVersion": "0.157.1"
+    },
+    {
+      "stage": "Final paint/concrete correction",
+      "revisionId": "r_9f4b0e76ea634be083de8a5e38c4e838",
+      "model": "GPT-6 Astra",
+      "modelId": "gpt-6-astra",
+      "requestedEffort": "ultra",
+      "confirmedEffort": null,
+      "harness": "codex",
+      "harnessVersion": "0.157.1"
+    }
+  ],
+  "review": {
+    "status": "review-in-progress",
+    "ownerAccepted": false,
+    "scope": "Export integrity passed for this revision. A further review round is in progress; this candidate will be replaced. Artistic acceptance and destination performance are not established."
+  },
+  "license": "CC0-1.0",
+  "licenseScope": "Original procedural geometry and embedded maps are CC0. Reference photographs are excluded; software retains its own licenses.",
+  "sceneDeepLink": null,
+  "referenceLedger": "/sources/golden-gate-bridge/REFERENCE.md",
+  "publishedDimensions": [
+    {
+      "quantity": "Suspension structure",
+      "published": "6,450 ft",
+      "metres": "1,965.96",
+      "source": "D1"
+    },
+    {
+      "quantity": "Main span",
+      "published": "4,200 ft",
+      "metres": "1,280.16",
+      "source": "D1"
+    },
+    {
+      "quantity": "Each side span",
+      "published": "1,125 ft",
+      "metres": "342.90",
+      "source": "D1"
+    },
+    {
+      "quantity": "Tower stations",
+      "published": "derived",
+      "metres": "Z = ±640.08",
+      "source": "D1"
+    },
+    {
+      "quantity": "Suspension ends",
+      "published": "derived",
+      "metres": "Z = ±982.98",
+      "source": "D1"
+    },
+    {
+      "quantity": "Tower height above water",
+      "published": "746 ft",
+      "metres": "227.3808",
+      "source": "D1"
+    },
+    {
+      "quantity": "Tower height above roadway",
+      "published": "500 ft",
+      "metres": "152.40",
+      "source": "D1"
+    },
+    {
+      "quantity": "Tower roadway elevation",
+      "published": "derived 246 ft",
+      "metres": "74.9808",
+      "source": "D1, subtraction"
+    },
+    {
+      "quantity": "Midspan soffit clearance",
+      "published": "220 ft",
+      "metres": "67.056",
+      "source": "D1"
+    },
+    {
+      "quantity": "Bridge width / nominal cable-plane spacing",
+      "published": "90 ft",
+      "metres": "27.432",
+      "source": "D1; cable spacing interpreted from brief"
+    },
+    {
+      "quantity": "Road between curbs",
+      "published": "62 ft",
+      "metres": "18.8976",
+      "source": "D1"
+    },
+    {
+      "quantity": "Sidewalk, each",
+      "published": "10 ft",
+      "metres": "3.048",
+      "source": "D1"
+    },
+    {
+      "quantity": "Tower leg base",
+      "published": "33 × 54 ft",
+      "metres": "10.0584 × 16.4592",
+      "source": "D1"
+    },
+    {
+      "quantity": "Main cable diameter",
+      "published": "36-3/8 in",
+      "metres": ".923925",
+      "source": "D1"
+    },
+    {
+      "quantity": "Suspender diameter",
+      "published": "2-11/16 in",
+      "metres": ".0682625",
+      "source": "D1"
+    },
+    {
+      "quantity": "Suspender / cable-band pitch",
+      "published": "50 ft",
+      "metres": "15.24",
+      "source": "D1"
+    },
+    {
+      "quantity": "Suspender quantity",
+      "published": "250 pairs",
+      "metres": "500 ropes",
+      "source": "D1"
+    },
+    {
+      "quantity": "Truss depth",
+      "published": "25 ft",
+      "metres": "7.62",
+      "source": "task reference; pending primary corroboration"
+    },
+    {
+      "quantity": "Truss vertical pitch",
+      "published": "25 ft",
+      "metres": "7.62",
+      "source": "D2 p.2"
+    },
+    {
+      "quantity": "Outer railing post pitch",
+      "published": "12.5 ft",
+      "metres": "3.81",
+      "source": "D2 p.2"
+    },
+    {
+      "quantity": "Lamp standard pitch, each side",
+      "published": "150 ft",
+      "metres": "45.72",
+      "source": "D2 p.2"
+    },
+    {
+      "quantity": "Historical outer railing height",
+      "published": "4 ft",
+      "metres": "1.2192",
+      "source": "District historic resources study, detail research"
+    },
+    {
+      "quantity": "Movable median width × height",
+      "published": "12 × 32 in",
+      "metres": ".3048 × .8128",
+      "source": "District movable median information, detail research"
+    }
+  ],
+  "referenceSources": [
+    {
+      "id": "D1",
+      "name": "Golden Gate Bridge District: Design & construction stats",
+      "url": "https://www.goldengate.org/bridge/history-research/statistics-data/design-construction-stats/"
+    },
+    {
+      "id": "D2",
+      "name": "Golden Gate Bridge District: Historic resources",
+      "url": "https://www.goldengate.org/assets/1/6/suicide-deterrent-finding-of-effect.pdf"
+    },
+    {
+      "id": "H",
+      "name": "Library of Congress: HAER CA-31",
+      "url": "https://www.loc.gov/item/ca1355/"
+    }
+  ],
+  "limits": [
+    "Visual reconstruction, not an engineering survey.",
+    "1937 suspension composition with requested modern median, lighting and later lateral bracing.",
+    "Secondary details include declared estimates.",
+    "No terrain, water, traffic, people or approach viaducts."
+  ]
+}

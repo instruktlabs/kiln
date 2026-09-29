@@ -1,0 +1,430 @@
+{
+  "base": "https://assets.kilnstudio.tools/",
+  "files": [
+    {
+      "path": "media/farm/r33/cutout/barn.webp",
+      "bytes": 41946,
+      "sha256": "f5a3c4be8b84feeb823b46bdeec43e7ca50534b5f5f4932a745d58542881fdba"
+    },
+    {
+      "path": "media/farm/r33/cutout/barrel.webp",
+      "bytes": 26746,
+      "sha256": "b348ee735585925fd592a69e66b5f4d6711c61cbc1b7d9fcae6191ed6775bad8"
+    },
+    {
+      "path": "media/farm/r33/cutout/cabbage-stage-1.webp",
+      "bytes": 10352,
+      "sha256": "4d26890932a244fa4b55e362fbc3597917f6ef1ec38aaef310dbc76ae3432244"
+    },
+    {
+      "path": "media/farm/r33/cutout/cabbage-stage-2.webp",
+      "bytes": 18492,
+      "sha256": "a65b6f7a8ccd924fb2fd1925d9f2e01af81cf6b4a44e4cb5156781d3eef17a84"
+    },
+    {
+      "path": "media/farm/r33/cutout/cabbage-stage-3.webp",
+      "bytes": 17948,
+      "sha256": "c574a1cddb275a23f9716f10fea671b4e47fea377c01282e27cbe13671b67a43"
+    },
+    {
+      "path": "media/farm/r33/cutout/cabbage-stage-4.webp",
+      "bytes": 13928,
+      "sha256": "501c524aa02719ff046ab59a290d5dac0c27c0585c74d8c03eac75bac1d1c4d4"
+    },
+    {
+      "path": "media/farm/r33/cutout/chicken.webp",
+      "bytes": 13174,
+      "sha256": "ee48e755c445f08399e9681b0bf511dfb3ebd6f38a9ec4aeeb1690b5906d1762"
+    },
+    {
+      "path": "media/farm/r33/cutout/cow.webp",
+      "bytes": 24918,
+      "sha256": "a0d86e0e1c413a57aecfa47ae49a4b098b9dabcc7c253e19666826beb6d0d6a1"
+    },
+    {
+      "path": "media/farm/r33/cutout/faceted-tree.webp",
+      "bytes": 13126,
+      "sha256": "f3346424b9e40d48d654ee6ac492859f0ea0a13cb1951e038407ffd23a19d53d"
+    },
+    {
+      "path": "media/farm/r33/cutout/farmer.webp",
+      "bytes": 22576,
+      "sha256": "17981f7f161d4870a67746f5f0e020b99936ece5d8b2f5c570a88fae76f2ffa1"
+    },
+    {
+      "path": "media/farm/r33/cutout/farmhouse.webp",
+      "bytes": 48088,
+      "sha256": "593f4eabcad96fd3dae964bab3efd3dba2ec9ae02f96d12fa79455d1fbd0bc77"
+    },
+    {
+      "path": "media/farm/r33/cutout/fence-corner.webp",
+      "bytes": 21442,
+      "sha256": "c5b9ec05e7a43e2d8cae91e54bcbd90546963cb52e4255139fc017d00de294ae"
+    },
+    {
+      "path": "media/farm/r33/cutout/fence-gate.webp",
+      "bytes": 24586,
+      "sha256": "318189936b9246eb0ae56d74843738c1183e504859c0cff53eea74b277704509"
+    },
+    {
+      "path": "media/farm/r33/cutout/fence-straight.webp",
+      "bytes": 17700,
+      "sha256": "afc05b7400125ce2d8366595bd9c6ae47b14f6032ab69c6deefa82a5bc65a9a4"
+    },
+    {
+      "path": "media/farm/r33/cutout/hay-bale.webp",
+      "bytes": 35794,
+      "sha256": "ddf4a603ca30281eda7d59fa75f3aeaf3d8521f853d980f0572c537d9d614cbc"
+    },
+    {
+      "path": "media/farm/r33/cutout/pumpkin-plant.webp",
+      "bytes": 16134,
+      "sha256": "2591495355fec4494886049b17ca390090390c0cd11035ad89b8810f7ea1c0fc"
+    },
+    {
+      "path": "media/farm/r33/cutout/rock-cluster.webp",
+      "bytes": 8184,
+      "sha256": "21b06a92ad9502c25b88e7acc741dd1533565003fc583463ca91fccd2304cd6f"
+    },
+    {
+      "path": "media/farm/r33/cutout/sheep.webp",
+      "bytes": 15802,
+      "sha256": "d5188e8a5493d30b195f408204b32eccbe0458eacc4708e5b485590b97099fb0"
+    },
+    {
+      "path": "media/farm/r33/cutout/tractor.webp",
+      "bytes": 38572,
+      "sha256": "254cc7e9beaa183faad39a9f1d8d4921cbe0b1c86aeb86602a33cff9841a62bd"
+    },
+    {
+      "path": "media/farm/r33/cutout/trailer.webp",
+      "bytes": 20544,
+      "sha256": "5789fde5049d4d351bbad5fddf70efbb3cc4b917746c620186a3600180ebeffb"
+    },
+    {
+      "path": "media/farm/r33/cutout/watermill.webp",
+      "bytes": 44976,
+      "sha256": "805cea14341a2f138e50200358e415a7c8319df9109a74063726aedcc41d519b"
+    },
+    {
+      "path": "media/farm/r33/cutout/wheat.webp",
+      "bytes": 34686,
+      "sha256": "ccc996877d87444f908fbfd8868ae39b9056066503d0b60af2682e46549d10e2"
+    },
+    {
+      "path": "media/farm/r33/cutout/windmill.webp",
+      "bytes": 42124,
+      "sha256": "9aefeea5dfbf30092bf3e375491e2a492053ee08f9f50cbeeb4cafbfa9bf9c26"
+    },
+    {
+      "path": "media/farm/r33/poster/barn.webp",
+      "bytes": 38334,
+      "sha256": "9beb00628f3a5e8c22c4a9452f6e8703582b08c155ce6230a265eb64a4832546"
+    },
+    {
+      "path": "media/farm/r33/poster/barrel.webp",
+      "bytes": 40336,
+      "sha256": "ec0087a0c4b518939d647e394352546ebd6dd6da5829811b6ce6303452f19897"
+    },
+    {
+      "path": "media/farm/r33/poster/cabbage-stage-1.webp",
+      "bytes": 18010,
+      "sha256": "86ab780b628156bc2f9a320dd5b791080c081ed6a2af8ca67daf13491d5b2a0a"
+    },
+    {
+      "path": "media/farm/r33/poster/cabbage-stage-2.webp",
+      "bytes": 29314,
+      "sha256": "cc5bc27c7b90e6c8f814469e64acbc0298b4d6e4af59b7558ee5ec8eb9429b7b"
+    },
+    {
+      "path": "media/farm/r33/poster/cabbage-stage-3.webp",
+      "bytes": 30868,
+      "sha256": "e9d22d5a57edc1bcad22dd29a69ced03aef6b6441e32a052f8ee1b2277a53ac8"
+    },
+    {
+      "path": "media/farm/r33/poster/cabbage-stage-4.webp",
+      "bytes": 28792,
+      "sha256": "f8ad2da54aa8a9a83d77e8becdb458ee71da5753dce3c8d6ba24f5321802c1f8"
+    },
+    {
+      "path": "media/farm/r33/poster/chicken.webp",
+      "bytes": 23500,
+      "sha256": "7a646fff5b670bdba7060ac447b298918e8ef4b3737e84a2614c14920ea9e0e9"
+    },
+    {
+      "path": "media/farm/r33/poster/cow.webp",
+      "bytes": 38580,
+      "sha256": "d816c3f03e876059128bf2005725c65c1dbe40004a7ea1cee06b513bb88fbe7e"
+    },
+    {
+      "path": "media/farm/r33/poster/faceted-tree.webp",
+      "bytes": 24578,
+      "sha256": "c0335202d8881c13fd051593b64a3191e2ebd70cac95cbcc12523157e6f27a29"
+    },
+    {
+      "path": "media/farm/r33/poster/farmer.webp",
+      "bytes": 29220,
+      "sha256": "d6bf3c7a779bcbabeac7fce319121a0f2a372512aaa5288a7a4133d475a8cd7d"
+    },
+    {
+      "path": "media/farm/r33/poster/farmhouse.webp",
+      "bytes": 43930,
+      "sha256": "4185d5dde829a8e042925cae18bfc55bd8c8a4b45e0f6d04f01a0d2380908555"
+    },
+    {
+      "path": "media/farm/r33/poster/fence-corner.webp",
+      "bytes": 15322,
+      "sha256": "14be4dd4ff5393bd33f135c5c005c85d4a509b3899b7e236c92042a43dde0d4b"
+    },
+    {
+      "path": "media/farm/r33/poster/fence-gate.webp",
+      "bytes": 17300,
+      "sha256": "ea28f94b40e0f523e7e89138c7df36a9f4cafdbd64e96bde133a397e071d0b9f"
+    },
+    {
+      "path": "media/farm/r33/poster/fence-straight.webp",
+      "bytes": 13560,
+      "sha256": "1f579c3a4a806950165d5046dfd596d491b96379746d3e073fbdad6a5cbceb26"
+    },
+    {
+      "path": "media/farm/r33/poster/hay-bale.webp",
+      "bytes": 26724,
+      "sha256": "67839b91e2795fe77528968a123dc3ac894d0dbdf001fa37f0745c1d9a9c4221"
+    },
+    {
+      "path": "media/farm/r33/poster/pumpkin-plant.webp",
+      "bytes": 28190,
+      "sha256": "9a688731a90bf962e257d85a264da7e8b704d01e5d6e2acebfcb7fca39b9a4da"
+    },
+    {
+      "path": "media/farm/r33/poster/rock-cluster.webp",
+      "bytes": 18974,
+      "sha256": "f3e4514d4249ad3964ad028bc724f035f9bbbc8dadf5e13d8c97fdfbb196359b"
+    },
+    {
+      "path": "media/farm/r33/poster/sheep.webp",
+      "bytes": 24966,
+      "sha256": "756fb7c42a16438bc4ceadef3efe87f5b27b5b2efa6c17dc4368d4350eb7a427"
+    },
+    {
+      "path": "media/farm/r33/poster/tractor.webp",
+      "bytes": 39178,
+      "sha256": "e38017cc03196b841ce23b716bcb2570ce226c3bb4507a68dffbb3a4ce873356"
+    },
+    {
+      "path": "media/farm/r33/poster/trailer.webp",
+      "bytes": 22784,
+      "sha256": "c4ebec9fd6716875d77b08163b3597931a0c6f24890d1c64dfb24b27ea880e22"
+    },
+    {
+      "path": "media/farm/r33/poster/watermill.webp",
+      "bytes": 43268,
+      "sha256": "28b0f04ce7ba921d794f1476a63a98f1bbe2cd980144413961782b8438b365c0"
+    },
+    {
+      "path": "media/farm/r33/poster/wheat.webp",
+      "bytes": 46452,
+      "sha256": "06c621bd8037f5bd5386aa394228aa6859b023ecc39233f9fce7a029dc3a49b5"
+    },
+    {
+      "path": "media/farm/r33/poster/windmill.webp",
+      "bytes": 36796,
+      "sha256": "c3dc4f94ec0f12d9d77fee1fa682ee72ee2063839faae871182c5faa59ce05c9"
+    },
+    {
+      "path": "media/farm/r33/scene/farm-scene-close.webp",
+      "bytes": 297300,
+      "sha256": "b1b7900553e1411e85b0c0fb0ca4fcd68bdf665cd92986e42d6e55d24934d0ce"
+    },
+    {
+      "path": "media/farm/r33/scene/farm-scene-portrait.webp",
+      "bytes": 434316,
+      "sha256": "8893a1384f3338b90796ee567f30097270458b9758d6993455e9c87aabfd2b35"
+    },
+    {
+      "path": "media/farm/r33/scene/farm-scene-wide.webp",
+      "bytes": 277896,
+      "sha256": "38573236fca7945484ba3b83a2b4c827bdb572298a41e9abe5ef88fb6d53fe83"
+    },
+    {
+      "path": "media/farm/revisions/farmhouse-floor-after.webp",
+      "bytes": 10424,
+      "sha256": "24a68dd0afb641a66a2a31e7409aefd4560d69dfdf2ddb8f67712a4c64d1a861"
+    },
+    {
+      "path": "media/farm/revisions/farmhouse-floor-before.webp",
+      "bytes": 7178,
+      "sha256": "78678859b60065bf0130ddf45927e0e3b77b0159b06e99fd854d4188af6931fd"
+    },
+    {
+      "path": "packs/farm/r33/downloads.json",
+      "bytes": 1073,
+      "sha256": "55127746cec4e750e08d7aec3a274c156903991255c86a4b3b0e25ac2d05f0ec"
+    },
+    {
+      "path": "packs/farm/r33/README.md",
+      "bytes": 497,
+      "sha256": "339c9660946857fee3813d5d818591d05cb46185d22e4f654df0cc2bc93a9f23"
+    },
+    {
+      "path": "packs/farm/r33/shapes-and-seasons-farm-editable.zip",
+      "bytes": 22422357,
+      "sha256": "5650bd42da35192f0b93e01164e8479ed22935be1a56d69b9bfef0aa1fa8d02a"
+    },
+    {
+      "path": "packs/farm/r33/shapes-and-seasons-farm-runtime.zip",
+      "bytes": 7672584,
+      "sha256": "4d6902406d186631360770b894b217858c51df27964a1ad9b50b064dd3ced61c"
+    },
+    {
+      "path": "packs/farm/r33/shapes-and-seasons-farm-scene.zip",
+      "bytes": 4289186,
+      "sha256": "d7b8c0c55c1278573773fec51ddd93b205b3497b260ddb4c77a27f462d67760c"
+    },
+    {
+      "path": "standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/ASSET-LICENSE.txt",
+      "bytes": 666,
+      "sha256": "4e67514323d7ce285182999736df6a9eed1510959998494c7adafe7d17bb0506"
+    },
+    {
+      "path": "standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/classic-dark.png",
+      "bytes": 81655,
+      "sha256": "25145d346dc473cf1f4373eae65248d47c6fa5cc3343b04959fe4a3fb0cf7be2"
+    },
+    {
+      "path": "standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/classic-light.png",
+      "bytes": 75477,
+      "sha256": "144bea661346a48eaaa6207c559a3f0266a65a6cdda79135849b6ff54ea82f0e"
+    },
+    {
+      "path": "standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/classic-neutral.png",
+      "bytes": 78324,
+      "sha256": "6da6a32d46a6605fc95351dc4ef33b07662089221ad4383e78722bc55dc7bcb0"
+    },
+    {
+      "path": "standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/deck-dark.png",
+      "bytes": 460407,
+      "sha256": "43e8dc9ef936914437d3c5342eb3e85d09929501510c6386a841c4e910b95e9d"
+    },
+    {
+      "path": "standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/deck-light.png",
+      "bytes": 437136,
+      "sha256": "d3e6841d6ffa4861c615da86022e39d9209dcd712deb1b6279d23d530990da78"
+    },
+    {
+      "path": "standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/deck-neutral.png",
+      "bytes": 445920,
+      "sha256": "a92514dc9404e9134ffbd02f69f80fa5d03a5925f7d246045e71a286c782dd8b"
+    },
+    {
+      "path": "standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/elevation-dark.png",
+      "bytes": 18120,
+      "sha256": "7dc6b36831b8b606bc086f41bccb674321f6423f2b7968a63c8626025b922c60"
+    },
+    {
+      "path": "standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/elevation-light.png",
+      "bytes": 14758,
+      "sha256": "13e71288a96d24d455cfaaabd89fe6e9724d2a6487facb7a802da99fe7cf1b73"
+    },
+    {
+      "path": "standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/elevation-neutral.png",
+      "bytes": 16418,
+      "sha256": "83be2ded6f8b67613c7817ccc09151701ba6f00d4cd4d9ea16cfad86e6bc7fc3"
+    },
+    {
+      "path": "standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/review-sheet-dark.png",
+      "bytes": 41723,
+      "sha256": "a1cf2c10da3dae1fa8dcd794a9b0a3a5cb355c22d447f2c2a93155784f2c2a35"
+    },
+    {
+      "path": "standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/review-sheet-light.png",
+      "bytes": 38112,
+      "sha256": "bdb9d630fb5990aebbf0f0128ce7fe259a776d3376059b6dacbbfe700b16f4cb"
+    },
+    {
+      "path": "standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/review-sheet-neutral.png",
+      "bytes": 39648,
+      "sha256": "f23ce47ac97a1f73678d70fbd3d285697898c2572445a45fc73ea309d50e9746"
+    },
+    {
+      "path": "standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/tower-top-dark.png",
+      "bytes": 453594,
+      "sha256": "dd9fb3d7f2663db7715968cf2220908942ea61b41b7e756e851fcddf09e52538"
+    },
+    {
+      "path": "standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/tower-top-light.png",
+      "bytes": 419500,
+      "sha256": "e762e1f2552eef4f33933c4589af3cdab83cfa4224b73ec2e7e8538a9685aa6a"
+    },
+    {
+      "path": "standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/tower-top-neutral.png",
+      "bytes": 436382,
+      "sha256": "b32dbf4322c87b00ef90753afcd102b1d9c258eb418326c07ba47553ba55af5a"
+    },
+    {
+      "path": "standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/water-level-dark.png",
+      "bytes": 429710,
+      "sha256": "62aedd3f9886c1fe3d6db722dbc41521b9a8ed2511a4af3a0fb6907098b916ca"
+    },
+    {
+      "path": "standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/water-level-light.png",
+      "bytes": 406083,
+      "sha256": "2a7d8c96a3e2d2f80e68ba2c85780a375c670db7b28dc510868d4f717ac3e9fa"
+    },
+    {
+      "path": "standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/water-level-neutral.png",
+      "bytes": 416493,
+      "sha256": "60fa1ced87d529419306a5f01f35b975027b9d0a4a30b4e5709db1decd315be9"
+    },
+    {
+      "path": "standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/golden-gate-editable.zip",
+      "bytes": 13586620,
+      "sha256": "8456ce298158edb5233dc40573aaa970bf5432271762fe66d281effd6652077c"
+    },
+    {
+      "path": "standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/golden-gate-runtime.glb",
+      "bytes": 13484976,
+      "sha256": "1e987a994d5a0a8183782aa19d4e225b9715fb0bd503402a5b3a14df8190a7f9"
+    },
+    {
+      "path": "standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/golden-gate-runtime.kiln-metadata.json",
+      "bytes": 333,
+      "sha256": "04f197193356dd3f233e99c82fae9f0c182f1492d4606b36dcd0744ea5426605"
+    },
+    {
+      "path": "standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/golden-gate.glb",
+      "bytes": 13484752,
+      "sha256": "3327f53cf4bf2a31fae50bd4eab52197a5d12a189d71bfb915bdcf4007c82e4d"
+    },
+    {
+      "path": "standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/golden-gate.kiln.js",
+      "bytes": 22531,
+      "sha256": "5bfd30103aaf6aa620da252562e5e9de135eba69b5c36823f0e12a7e99c87f81"
+    },
+    {
+      "path": "packs/farm/r34/downloads.json",
+      "bytes": 1456,
+      "sha256": "cce732de28f812371146ed9fd5eaaa00649ec77fe9fd3b5d6c94d437c5f5d8d5"
+    },
+    {
+      "path": "packs/farm/r34/shapes-and-seasons-farm-runtime.zip",
+      "bytes": 7680392,
+      "sha256": "5673740a511a2d68ef990882b815d4ce3aaa802bf8b06ba1e4ce6329367d875d"
+    },
+    {
+      "path": "packs/farm/r34/shapes-and-seasons-farm-editable.zip",
+      "bytes": 22433293,
+      "sha256": "2e596172626e7498052a839ba6785c99f4475c72be2f329e0836c354a0fdfcd7"
+    },
+    {
+      "path": "packs/farm/r34/shapes-and-seasons-farm-scene.zip",
+      "bytes": 4295548,
+      "sha256": "955aa5a8dee11f63a7205ee5c04cbe9e7112958870745bdaebd8baff23467f86"
+    },
+    {
+      "path": "media/farm/r34/poster/farmhouse.png",
+      "bytes": 371927,
+      "sha256": "574cb8b30c8f12209c7a2cec212d1511757ab7b4417d073bdb13b2255bf19f38"
+    }
+  ]
+}

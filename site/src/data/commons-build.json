@@ -1,0 +1,854 @@
+{
+  "schemaVersion": 1,
+  "images": [
+    {
+      "src": "/media/farm/r33/cutout/farmhouse.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "Cream masonry house with a charcoal gabled roof, olive shutters and a timber porch.",
+      "srcsetWebp": "/media/farm/r33/cutout/farmhouse-320.webp 320w, /media/farm/r33/cutout/farmhouse-480.webp 480w, /media/farm/r33/cutout/farmhouse-672.webp 672w, /media/farm/r33/cutout/farmhouse-768.webp 768w, /media/farm/r33/cutout/farmhouse-1024.webp 1024w",
+      "srcsetAvif": "/media/farm/r33/cutout/farmhouse-320.avif 320w, /media/farm/r33/cutout/farmhouse-480.avif 480w, /media/farm/r33/cutout/farmhouse-672.avif 672w, /media/farm/r33/cutout/farmhouse-768.avif 768w, /media/farm/r33/cutout/farmhouse-1024.avif 1024w",
+      "inputPath": "media/farm/r33/cutout/farmhouse.webp",
+      "sourceRevisionId": "r_37f835d35a1040fc9f64d6f3b271eac5",
+      "exactRevision": false,
+      "revisionQualification": "Exterior view from r33, revision r_37f835d35a1040fc9f64d6f3b271eac5. Exterior geometry and bounds are unchanged; this view was not re-rendered for r34, so window tint may differ."
+    },
+    {
+      "src": "/media/farm/r34/poster/farmhouse.webp",
+      "width": 1168,
+      "height": 780,
+      "alt": "Six saved review views of Farmhouse.",
+      "srcsetWebp": "/media/farm/r34/poster/farmhouse-320.webp 320w, /media/farm/r34/poster/farmhouse-480.webp 480w, /media/farm/r34/poster/farmhouse-672.webp 672w, /media/farm/r34/poster/farmhouse-768.webp 768w, /media/farm/r34/poster/farmhouse-1024.webp 1024w",
+      "srcsetAvif": "/media/farm/r34/poster/farmhouse-320.avif 320w, /media/farm/r34/poster/farmhouse-480.avif 480w, /media/farm/r34/poster/farmhouse-672.avif 672w, /media/farm/r34/poster/farmhouse-768.avif 768w, /media/farm/r34/poster/farmhouse-1024.avif 1024w",
+      "inputPath": "media/farm/r34/poster/farmhouse.png",
+      "sourceRevisionId": "r_01f97f5e943e4c2693b6db8596f3e353",
+      "exactRevision": true
+    },
+    {
+      "src": "/media/farm/r33/cutout/barn.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "Red timber barn with white door bracing, a grey roof and an open side shelter.",
+      "srcsetWebp": "/media/farm/r33/cutout/barn-320.webp 320w, /media/farm/r33/cutout/barn-480.webp 480w, /media/farm/r33/cutout/barn-672.webp 672w, /media/farm/r33/cutout/barn-768.webp 768w, /media/farm/r33/cutout/barn-1024.webp 1024w",
+      "srcsetAvif": "/media/farm/r33/cutout/barn-320.avif 320w, /media/farm/r33/cutout/barn-480.avif 480w, /media/farm/r33/cutout/barn-672.avif 672w, /media/farm/r33/cutout/barn-768.avif 768w, /media/farm/r33/cutout/barn-1024.avif 1024w",
+      "inputPath": "media/farm/r33/cutout/barn.webp"
+    },
+    {
+      "src": "/media/farm/r33/poster/barn.webp",
+      "width": 1168,
+      "height": 780,
+      "alt": "Six rendered review views of Barn.",
+      "srcsetWebp": "/media/farm/r33/poster/barn-320.webp 320w, /media/farm/r33/poster/barn-480.webp 480w, /media/farm/r33/poster/barn-672.webp 672w, /media/farm/r33/poster/barn-768.webp 768w, /media/farm/r33/poster/barn-1024.webp 1024w",
+      "srcsetAvif": "/media/farm/r33/poster/barn-320.avif 320w, /media/farm/r33/poster/barn-480.avif 480w, /media/farm/r33/poster/barn-672.avif 672w, /media/farm/r33/poster/barn-768.avif 768w, /media/farm/r33/poster/barn-1024.avif 1024w",
+      "inputPath": "media/farm/r33/poster/barn.webp"
+    },
+    {
+      "src": "/media/farm/r33/cutout/windmill.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "Open timber wind pump with a metal rotor, tail vane and four braced legs.",
+      "srcsetWebp": "/media/farm/r33/cutout/windmill-320.webp 320w, /media/farm/r33/cutout/windmill-480.webp 480w, /media/farm/r33/cutout/windmill-672.webp 672w, /media/farm/r33/cutout/windmill-768.webp 768w, /media/farm/r33/cutout/windmill-1024.webp 1024w",
+      "srcsetAvif": "/media/farm/r33/cutout/windmill-320.avif 320w, /media/farm/r33/cutout/windmill-480.avif 480w, /media/farm/r33/cutout/windmill-672.avif 672w, /media/farm/r33/cutout/windmill-768.avif 768w, /media/farm/r33/cutout/windmill-1024.avif 1024w",
+      "inputPath": "media/farm/r33/cutout/windmill.webp"
+    },
+    {
+      "src": "/media/farm/r33/poster/windmill.webp",
+      "width": 1168,
+      "height": 780,
+      "alt": "Six rendered review views of Windmill.",
+      "srcsetWebp": "/media/farm/r33/poster/windmill-320.webp 320w, /media/farm/r33/poster/windmill-480.webp 480w, /media/farm/r33/poster/windmill-672.webp 672w, /media/farm/r33/poster/windmill-768.webp 768w, /media/farm/r33/poster/windmill-1024.webp 1024w",
+      "srcsetAvif": "/media/farm/r33/poster/windmill-320.avif 320w, /media/farm/r33/poster/windmill-480.avif 480w, /media/farm/r33/poster/windmill-672.avif 672w, /media/farm/r33/poster/windmill-768.avif 768w, /media/farm/r33/poster/windmill-1024.avif 1024w",
+      "inputPath": "media/farm/r33/poster/windmill.webp"
+    },
+    {
+      "src": "/media/farm/r33/cutout/watermill.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "Pale masonry mill house with a gabled roof and an exposed timber waterwheel.",
+      "srcsetWebp": "/media/farm/r33/cutout/watermill-320.webp 320w, /media/farm/r33/cutout/watermill-480.webp 480w, /media/farm/r33/cutout/watermill-672.webp 672w, /media/farm/r33/cutout/watermill-768.webp 768w, /media/farm/r33/cutout/watermill-1024.webp 1024w",
+      "srcsetAvif": "/media/farm/r33/cutout/watermill-320.avif 320w, /media/farm/r33/cutout/watermill-480.avif 480w, /media/farm/r33/cutout/watermill-672.avif 672w, /media/farm/r33/cutout/watermill-768.avif 768w, /media/farm/r33/cutout/watermill-1024.avif 1024w",
+      "inputPath": "media/farm/r33/cutout/watermill.webp"
+    },
+    {
+      "src": "/media/farm/r33/poster/watermill.webp",
+      "width": 1168,
+      "height": 780,
+      "alt": "Six rendered review views of Watermill.",
+      "srcsetWebp": "/media/farm/r33/poster/watermill-320.webp 320w, /media/farm/r33/poster/watermill-480.webp 480w, /media/farm/r33/poster/watermill-672.webp 672w, /media/farm/r33/poster/watermill-768.webp 768w, /media/farm/r33/poster/watermill-1024.webp 1024w",
+      "srcsetAvif": "/media/farm/r33/poster/watermill-320.avif 320w, /media/farm/r33/poster/watermill-480.avif 480w, /media/farm/r33/poster/watermill-672.avif 672w, /media/farm/r33/poster/watermill-768.avif 768w, /media/farm/r33/poster/watermill-1024.avif 1024w",
+      "inputPath": "media/farm/r33/poster/watermill.webp"
+    },
+    {
+      "src": "/media/farm/r33/cutout/fence-straight.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "Two timber rails between pointed posts, with a two-metre post-centre span.",
+      "srcsetWebp": "/media/farm/r33/cutout/fence-straight-320.webp 320w, /media/farm/r33/cutout/fence-straight-480.webp 480w, /media/farm/r33/cutout/fence-straight-672.webp 672w, /media/farm/r33/cutout/fence-straight-768.webp 768w, /media/farm/r33/cutout/fence-straight-1024.webp 1024w",
+      "srcsetAvif": "/media/farm/r33/cutout/fence-straight-320.avif 320w, /media/farm/r33/cutout/fence-straight-480.avif 480w, /media/farm/r33/cutout/fence-straight-672.avif 672w, /media/farm/r33/cutout/fence-straight-768.avif 768w, /media/farm/r33/cutout/fence-straight-1024.avif 1024w",
+      "inputPath": "media/farm/r33/cutout/fence-straight.webp"
+    },
+    {
+      "src": "/media/farm/r33/poster/fence-straight.webp",
+      "width": 1168,
+      "height": 780,
+      "alt": "Six rendered review views of fence-straight.",
+      "srcsetWebp": "/media/farm/r33/poster/fence-straight-320.webp 320w, /media/farm/r33/poster/fence-straight-480.webp 480w, /media/farm/r33/poster/fence-straight-672.webp 672w, /media/farm/r33/poster/fence-straight-768.webp 768w, /media/farm/r33/poster/fence-straight-1024.webp 1024w",
+      "srcsetAvif": "/media/farm/r33/poster/fence-straight-320.avif 320w, /media/farm/r33/poster/fence-straight-480.avif 480w, /media/farm/r33/poster/fence-straight-672.avif 672w, /media/farm/r33/poster/fence-straight-768.avif 768w, /media/farm/r33/poster/fence-straight-1024.avif 1024w",
+      "inputPath": "media/farm/r33/poster/fence-straight.webp"
+    },
+    {
+      "src": "/media/farm/r33/cutout/fence-corner.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "Two matching timber fence runs joined at a right-angle corner post.",
+      "srcsetWebp": "/media/farm/r33/cutout/fence-corner-320.webp 320w, /media/farm/r33/cutout/fence-corner-480.webp 480w, /media/farm/r33/cutout/fence-corner-672.webp 672w, /media/farm/r33/cutout/fence-corner-768.webp 768w, /media/farm/r33/cutout/fence-corner-1024.webp 1024w",
+      "srcsetAvif": "/media/farm/r33/cutout/fence-corner-320.avif 320w, /media/farm/r33/cutout/fence-corner-480.avif 480w, /media/farm/r33/cutout/fence-corner-672.avif 672w, /media/farm/r33/cutout/fence-corner-768.avif 768w, /media/farm/r33/cutout/fence-corner-1024.avif 1024w",
+      "inputPath": "media/farm/r33/cutout/fence-corner.webp"
+    },
+    {
+      "src": "/media/farm/r33/poster/fence-corner.webp",
+      "width": 1168,
+      "height": 780,
+      "alt": "Six rendered review views of fence-corner.",
+      "srcsetWebp": "/media/farm/r33/poster/fence-corner-320.webp 320w, /media/farm/r33/poster/fence-corner-480.webp 480w, /media/farm/r33/poster/fence-corner-672.webp 672w, /media/farm/r33/poster/fence-corner-768.webp 768w, /media/farm/r33/poster/fence-corner-1024.webp 1024w",
+      "srcsetAvif": "/media/farm/r33/poster/fence-corner-320.avif 320w, /media/farm/r33/poster/fence-corner-480.avif 480w, /media/farm/r33/poster/fence-corner-672.avif 672w, /media/farm/r33/poster/fence-corner-768.avif 768w, /media/farm/r33/poster/fence-corner-1024.avif 1024w",
+      "inputPath": "media/farm/r33/poster/fence-corner.webp"
+    },
+    {
+      "src": "/media/farm/r33/cutout/fence-gate.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "Braced timber gate with visible hinges and a three-metre usable opening.",
+      "srcsetWebp": "/media/farm/r33/cutout/fence-gate-320.webp 320w, /media/farm/r33/cutout/fence-gate-480.webp 480w, /media/farm/r33/cutout/fence-gate-672.webp 672w, /media/farm/r33/cutout/fence-gate-768.webp 768w, /media/farm/r33/cutout/fence-gate-1024.webp 1024w",
+      "srcsetAvif": "/media/farm/r33/cutout/fence-gate-320.avif 320w, /media/farm/r33/cutout/fence-gate-480.avif 480w, /media/farm/r33/cutout/fence-gate-672.avif 672w, /media/farm/r33/cutout/fence-gate-768.avif 768w, /media/farm/r33/cutout/fence-gate-1024.avif 1024w",
+      "inputPath": "media/farm/r33/cutout/fence-gate.webp"
+    },
+    {
+      "src": "/media/farm/r33/poster/fence-gate.webp",
+      "width": 1168,
+      "height": 780,
+      "alt": "Six rendered review views of fence-gate.",
+      "srcsetWebp": "/media/farm/r33/poster/fence-gate-320.webp 320w, /media/farm/r33/poster/fence-gate-480.webp 480w, /media/farm/r33/poster/fence-gate-672.webp 672w, /media/farm/r33/poster/fence-gate-768.webp 768w, /media/farm/r33/poster/fence-gate-1024.webp 1024w",
+      "srcsetAvif": "/media/farm/r33/poster/fence-gate-320.avif 320w, /media/farm/r33/poster/fence-gate-480.avif 480w, /media/farm/r33/poster/fence-gate-672.avif 672w, /media/farm/r33/poster/fence-gate-768.avif 768w, /media/farm/r33/poster/fence-gate-1024.avif 1024w",
+      "inputPath": "media/farm/r33/poster/fence-gate.webp"
+    },
+    {
+      "src": "/media/farm/r33/cutout/tractor.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "Orange open-seat tractor with rear wheel guards, treaded tyres and a front grille.",
+      "srcsetWebp": "/media/farm/r33/cutout/tractor-320.webp 320w, /media/farm/r33/cutout/tractor-480.webp 480w, /media/farm/r33/cutout/tractor-672.webp 672w, /media/farm/r33/cutout/tractor-768.webp 768w, /media/farm/r33/cutout/tractor-1024.webp 1024w",
+      "srcsetAvif": "/media/farm/r33/cutout/tractor-320.avif 320w, /media/farm/r33/cutout/tractor-480.avif 480w, /media/farm/r33/cutout/tractor-672.avif 672w, /media/farm/r33/cutout/tractor-768.avif 768w, /media/farm/r33/cutout/tractor-1024.avif 1024w",
+      "inputPath": "media/farm/r33/cutout/tractor.webp"
+    },
+    {
+      "src": "/media/farm/r33/poster/tractor.webp",
+      "width": 1168,
+      "height": 780,
+      "alt": "Six rendered review views of Vintage tractor (review 2, motion, UV-exact merge).",
+      "srcsetWebp": "/media/farm/r33/poster/tractor-320.webp 320w, /media/farm/r33/poster/tractor-480.webp 480w, /media/farm/r33/poster/tractor-672.webp 672w, /media/farm/r33/poster/tractor-768.webp 768w, /media/farm/r33/poster/tractor-1024.webp 1024w",
+      "srcsetAvif": "/media/farm/r33/poster/tractor-320.avif 320w, /media/farm/r33/poster/tractor-480.avif 480w, /media/farm/r33/poster/tractor-672.avif 672w, /media/farm/r33/poster/tractor-768.avif 768w, /media/farm/r33/poster/tractor-1024.avif 1024w",
+      "inputPath": "media/farm/r33/poster/tractor.webp"
+    },
+    {
+      "src": "/media/farm/r33/cutout/trailer.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "Four-wheel timber farm trailer with low side boards and a drawbar.",
+      "srcsetWebp": "/media/farm/r33/cutout/trailer-320.webp 320w, /media/farm/r33/cutout/trailer-480.webp 480w, /media/farm/r33/cutout/trailer-672.webp 672w, /media/farm/r33/cutout/trailer-768.webp 768w, /media/farm/r33/cutout/trailer-1024.webp 1024w",
+      "srcsetAvif": "/media/farm/r33/cutout/trailer-320.avif 320w, /media/farm/r33/cutout/trailer-480.avif 480w, /media/farm/r33/cutout/trailer-672.avif 672w, /media/farm/r33/cutout/trailer-768.avif 768w, /media/farm/r33/cutout/trailer-1024.avif 1024w",
+      "inputPath": "media/farm/r33/cutout/trailer.webp"
+    },
+    {
+      "src": "/media/farm/r33/poster/trailer.webp",
+      "width": 1168,
+      "height": 780,
+      "alt": "Six rendered review views of Trailer (Shapes & Seasons Farm Pack).",
+      "srcsetWebp": "/media/farm/r33/poster/trailer-320.webp 320w, /media/farm/r33/poster/trailer-480.webp 480w, /media/farm/r33/poster/trailer-672.webp 672w, /media/farm/r33/poster/trailer-768.webp 768w, /media/farm/r33/poster/trailer-1024.webp 1024w",
+      "srcsetAvif": "/media/farm/r33/poster/trailer-320.avif 320w, /media/farm/r33/poster/trailer-480.avif 480w, /media/farm/r33/poster/trailer-672.avif 672w, /media/farm/r33/poster/trailer-768.avif 768w, /media/farm/r33/poster/trailer-1024.avif 1024w",
+      "inputPath": "media/farm/r33/poster/trailer.webp"
+    },
+    {
+      "src": "/media/farm/r33/cutout/barrel.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "Upright wooden barrel with a closed stave lid and three dark metal hoops.",
+      "srcsetWebp": "/media/farm/r33/cutout/barrel-320.webp 320w, /media/farm/r33/cutout/barrel-480.webp 480w, /media/farm/r33/cutout/barrel-672.webp 672w, /media/farm/r33/cutout/barrel-768.webp 768w, /media/farm/r33/cutout/barrel-1024.webp 1024w",
+      "srcsetAvif": "/media/farm/r33/cutout/barrel-320.avif 320w, /media/farm/r33/cutout/barrel-480.avif 480w, /media/farm/r33/cutout/barrel-672.avif 672w, /media/farm/r33/cutout/barrel-768.avif 768w, /media/farm/r33/cutout/barrel-1024.avif 1024w",
+      "inputPath": "media/farm/r33/cutout/barrel.webp"
+    },
+    {
+      "src": "/media/farm/r33/poster/barrel.webp",
+      "width": 1168,
+      "height": 780,
+      "alt": "Six rendered review views of Farm barrel.",
+      "srcsetWebp": "/media/farm/r33/poster/barrel-320.webp 320w, /media/farm/r33/poster/barrel-480.webp 480w, /media/farm/r33/poster/barrel-672.webp 672w, /media/farm/r33/poster/barrel-768.webp 768w, /media/farm/r33/poster/barrel-1024.webp 1024w",
+      "srcsetAvif": "/media/farm/r33/poster/barrel-320.avif 320w, /media/farm/r33/poster/barrel-480.avif 480w, /media/farm/r33/poster/barrel-672.avif 672w, /media/farm/r33/poster/barrel-768.avif 768w, /media/farm/r33/poster/barrel-1024.avif 1024w",
+      "inputPath": "media/farm/r33/poster/barrel.webp"
+    },
+    {
+      "src": "/media/farm/r33/cutout/hay-bale.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "Rectangular golden hay bale held by two parallel twine bands.",
+      "srcsetWebp": "/media/farm/r33/cutout/hay-bale-320.webp 320w, /media/farm/r33/cutout/hay-bale-480.webp 480w, /media/farm/r33/cutout/hay-bale-672.webp 672w, /media/farm/r33/cutout/hay-bale-768.webp 768w, /media/farm/r33/cutout/hay-bale-1024.webp 1024w",
+      "srcsetAvif": "/media/farm/r33/cutout/hay-bale-320.avif 320w, /media/farm/r33/cutout/hay-bale-480.avif 480w, /media/farm/r33/cutout/hay-bale-672.avif 672w, /media/farm/r33/cutout/hay-bale-768.avif 768w, /media/farm/r33/cutout/hay-bale-1024.avif 1024w",
+      "inputPath": "media/farm/r33/cutout/hay-bale.webp"
+    },
+    {
+      "src": "/media/farm/r33/poster/hay-bale.webp",
+      "width": 1168,
+      "height": 780,
+      "alt": "Six rendered review views of Farm hay bale.",
+      "srcsetWebp": "/media/farm/r33/poster/hay-bale-320.webp 320w, /media/farm/r33/poster/hay-bale-480.webp 480w, /media/farm/r33/poster/hay-bale-672.webp 672w, /media/farm/r33/poster/hay-bale-768.webp 768w, /media/farm/r33/poster/hay-bale-1024.webp 1024w",
+      "srcsetAvif": "/media/farm/r33/poster/hay-bale-320.avif 320w, /media/farm/r33/poster/hay-bale-480.avif 480w, /media/farm/r33/poster/hay-bale-672.avif 672w, /media/farm/r33/poster/hay-bale-768.avif 768w, /media/farm/r33/poster/hay-bale-1024.avif 1024w",
+      "inputPath": "media/farm/r33/poster/hay-bale.webp"
+    },
+    {
+      "src": "/media/farm/r33/cutout/farmer.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "Farmer in blue overalls and a brimmed hat, carrying a three-prong pitchfork.",
+      "srcsetWebp": "/media/farm/r33/cutout/farmer-320.webp 320w, /media/farm/r33/cutout/farmer-480.webp 480w, /media/farm/r33/cutout/farmer-672.webp 672w, /media/farm/r33/cutout/farmer-768.webp 768w, /media/farm/r33/cutout/farmer-1024.webp 1024w",
+      "srcsetAvif": "/media/farm/r33/cutout/farmer-320.avif 320w, /media/farm/r33/cutout/farmer-480.avif 480w, /media/farm/r33/cutout/farmer-672.avif 672w, /media/farm/r33/cutout/farmer-768.avif 768w, /media/farm/r33/cutout/farmer-1024.avif 1024w",
+      "inputPath": "media/farm/r33/cutout/farmer.webp"
+    },
+    {
+      "src": "/media/farm/r33/poster/farmer.webp",
+      "width": 1168,
+      "height": 780,
+      "alt": "Six rendered review views of Rowan - faithful draw consolidation.",
+      "srcsetWebp": "/media/farm/r33/poster/farmer-320.webp 320w, /media/farm/r33/poster/farmer-480.webp 480w, /media/farm/r33/poster/farmer-672.webp 672w, /media/farm/r33/poster/farmer-768.webp 768w, /media/farm/r33/poster/farmer-1024.webp 1024w",
+      "srcsetAvif": "/media/farm/r33/poster/farmer-320.avif 320w, /media/farm/r33/poster/farmer-480.avif 480w, /media/farm/r33/poster/farmer-672.avif 672w, /media/farm/r33/poster/farmer-768.avif 768w, /media/farm/r33/poster/farmer-1024.avif 1024w",
+      "inputPath": "media/farm/r33/poster/farmer.webp"
+    },
+    {
+      "src": "/media/farm/r33/cutout/cow.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "Brown-and-cream cow with small horns, a pink muzzle and dark hooves.",
+      "srcsetWebp": "/media/farm/r33/cutout/cow-320.webp 320w, /media/farm/r33/cutout/cow-480.webp 480w, /media/farm/r33/cutout/cow-672.webp 672w, /media/farm/r33/cutout/cow-768.webp 768w, /media/farm/r33/cutout/cow-1024.webp 1024w",
+      "srcsetAvif": "/media/farm/r33/cutout/cow-320.avif 320w, /media/farm/r33/cutout/cow-480.avif 480w, /media/farm/r33/cutout/cow-672.avif 672w, /media/farm/r33/cutout/cow-768.avif 768w, /media/farm/r33/cutout/cow-1024.avif 1024w",
+      "inputPath": "media/farm/r33/cutout/cow.webp"
+    },
+    {
+      "src": "/media/farm/r33/poster/cow.webp",
+      "width": 1168,
+      "height": 780,
+      "alt": "Six rendered review views of Buttercup • faceted farm cow.",
+      "srcsetWebp": "/media/farm/r33/poster/cow-320.webp 320w, /media/farm/r33/poster/cow-480.webp 480w, /media/farm/r33/poster/cow-672.webp 672w, /media/farm/r33/poster/cow-768.webp 768w, /media/farm/r33/poster/cow-1024.webp 1024w",
+      "srcsetAvif": "/media/farm/r33/poster/cow-320.avif 320w, /media/farm/r33/poster/cow-480.avif 480w, /media/farm/r33/poster/cow-672.avif 672w, /media/farm/r33/poster/cow-768.avif 768w, /media/farm/r33/poster/cow-1024.avif 1024w",
+      "inputPath": "media/farm/r33/poster/cow.webp"
+    },
+    {
+      "src": "/media/farm/r33/cutout/sheep.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "Sheep with a faceted white fleece, dark face and four dark legs.",
+      "srcsetWebp": "/media/farm/r33/cutout/sheep-320.webp 320w, /media/farm/r33/cutout/sheep-480.webp 480w, /media/farm/r33/cutout/sheep-672.webp 672w, /media/farm/r33/cutout/sheep-768.webp 768w, /media/farm/r33/cutout/sheep-1024.webp 1024w",
+      "srcsetAvif": "/media/farm/r33/cutout/sheep-320.avif 320w, /media/farm/r33/cutout/sheep-480.avif 480w, /media/farm/r33/cutout/sheep-672.avif 672w, /media/farm/r33/cutout/sheep-768.avif 768w, /media/farm/r33/cutout/sheep-1024.avif 1024w",
+      "inputPath": "media/farm/r33/cutout/sheep.webp"
+    },
+    {
+      "src": "/media/farm/r33/poster/sheep.webp",
+      "width": 1168,
+      "height": 780,
+      "alt": "Six rendered review views of Sheep — first review.",
+      "srcsetWebp": "/media/farm/r33/poster/sheep-320.webp 320w, /media/farm/r33/poster/sheep-480.webp 480w, /media/farm/r33/poster/sheep-672.webp 672w, /media/farm/r33/poster/sheep-768.webp 768w, /media/farm/r33/poster/sheep-1024.webp 1024w",
+      "srcsetAvif": "/media/farm/r33/poster/sheep-320.avif 320w, /media/farm/r33/poster/sheep-480.avif 480w, /media/farm/r33/poster/sheep-672.avif 672w, /media/farm/r33/poster/sheep-768.avif 768w, /media/farm/r33/poster/sheep-1024.avif 1024w",
+      "inputPath": "media/farm/r33/poster/sheep.webp"
+    },
+    {
+      "src": "/media/farm/r33/cutout/chicken.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "White hen with a red comb, yellow legs and raised tail feathers.",
+      "srcsetWebp": "/media/farm/r33/cutout/chicken-320.webp 320w, /media/farm/r33/cutout/chicken-480.webp 480w, /media/farm/r33/cutout/chicken-672.webp 672w, /media/farm/r33/cutout/chicken-768.webp 768w, /media/farm/r33/cutout/chicken-1024.webp 1024w",
+      "srcsetAvif": "/media/farm/r33/cutout/chicken-320.avif 320w, /media/farm/r33/cutout/chicken-480.avif 480w, /media/farm/r33/cutout/chicken-672.avif 672w, /media/farm/r33/cutout/chicken-768.avif 768w, /media/farm/r33/cutout/chicken-1024.avif 1024w",
+      "inputPath": "media/farm/r33/cutout/chicken.webp"
+    },
+    {
+      "src": "/media/farm/r33/poster/chicken.webp",
+      "width": 1168,
+      "height": 780,
+      "alt": "Six rendered review views of Chicken.",
+      "srcsetWebp": "/media/farm/r33/poster/chicken-320.webp 320w, /media/farm/r33/poster/chicken-480.webp 480w, /media/farm/r33/poster/chicken-672.webp 672w, /media/farm/r33/poster/chicken-768.webp 768w, /media/farm/r33/poster/chicken-1024.webp 1024w",
+      "srcsetAvif": "/media/farm/r33/poster/chicken-320.avif 320w, /media/farm/r33/poster/chicken-480.avif 480w, /media/farm/r33/poster/chicken-672.avif 672w, /media/farm/r33/poster/chicken-768.avif 768w, /media/farm/r33/poster/chicken-1024.avif 1024w",
+      "inputPath": "media/farm/r33/poster/chicken.webp"
+    },
+    {
+      "src": "/media/farm/r33/cutout/cabbage-stage-1.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "Small cabbage seedling emerging from a low, faceted soil patch.",
+      "srcsetWebp": "/media/farm/r33/cutout/cabbage-stage-1-320.webp 320w, /media/farm/r33/cutout/cabbage-stage-1-480.webp 480w, /media/farm/r33/cutout/cabbage-stage-1-672.webp 672w, /media/farm/r33/cutout/cabbage-stage-1-768.webp 768w, /media/farm/r33/cutout/cabbage-stage-1-1024.webp 1024w",
+      "srcsetAvif": "/media/farm/r33/cutout/cabbage-stage-1-320.avif 320w, /media/farm/r33/cutout/cabbage-stage-1-480.avif 480w, /media/farm/r33/cutout/cabbage-stage-1-672.avif 672w, /media/farm/r33/cutout/cabbage-stage-1-768.avif 768w, /media/farm/r33/cutout/cabbage-stage-1-1024.avif 1024w",
+      "inputPath": "media/farm/r33/cutout/cabbage-stage-1.webp"
+    },
+    {
+      "src": "/media/farm/r33/poster/cabbage-stage-1.webp",
+      "width": 1168,
+      "height": 780,
+      "alt": "Six rendered review views of cabbage-stage-1.",
+      "srcsetWebp": "/media/farm/r33/poster/cabbage-stage-1-320.webp 320w, /media/farm/r33/poster/cabbage-stage-1-480.webp 480w, /media/farm/r33/poster/cabbage-stage-1-672.webp 672w, /media/farm/r33/poster/cabbage-stage-1-768.webp 768w, /media/farm/r33/poster/cabbage-stage-1-1024.webp 1024w",
+      "srcsetAvif": "/media/farm/r33/poster/cabbage-stage-1-320.avif 320w, /media/farm/r33/poster/cabbage-stage-1-480.avif 480w, /media/farm/r33/poster/cabbage-stage-1-672.avif 672w, /media/farm/r33/poster/cabbage-stage-1-768.avif 768w, /media/farm/r33/poster/cabbage-stage-1-1024.avif 1024w",
+      "inputPath": "media/farm/r33/poster/cabbage-stage-1.webp"
+    },
+    {
+      "src": "/media/farm/r33/cutout/cabbage-stage-2.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "Young cabbage with spreading pale-green leaves on a soil patch.",
+      "srcsetWebp": "/media/farm/r33/cutout/cabbage-stage-2-320.webp 320w, /media/farm/r33/cutout/cabbage-stage-2-480.webp 480w, /media/farm/r33/cutout/cabbage-stage-2-672.webp 672w, /media/farm/r33/cutout/cabbage-stage-2-768.webp 768w, /media/farm/r33/cutout/cabbage-stage-2-1024.webp 1024w",
+      "srcsetAvif": "/media/farm/r33/cutout/cabbage-stage-2-320.avif 320w, /media/farm/r33/cutout/cabbage-stage-2-480.avif 480w, /media/farm/r33/cutout/cabbage-stage-2-672.avif 672w, /media/farm/r33/cutout/cabbage-stage-2-768.avif 768w, /media/farm/r33/cutout/cabbage-stage-2-1024.avif 1024w",
+      "inputPath": "media/farm/r33/cutout/cabbage-stage-2.webp"
+    },
+    {
+      "src": "/media/farm/r33/poster/cabbage-stage-2.webp",
+      "width": 1168,
+      "height": 780,
+      "alt": "Six rendered review views of cabbage-stage-2.",
+      "srcsetWebp": "/media/farm/r33/poster/cabbage-stage-2-320.webp 320w, /media/farm/r33/poster/cabbage-stage-2-480.webp 480w, /media/farm/r33/poster/cabbage-stage-2-672.webp 672w, /media/farm/r33/poster/cabbage-stage-2-768.webp 768w, /media/farm/r33/poster/cabbage-stage-2-1024.webp 1024w",
+      "srcsetAvif": "/media/farm/r33/poster/cabbage-stage-2-320.avif 320w, /media/farm/r33/poster/cabbage-stage-2-480.avif 480w, /media/farm/r33/poster/cabbage-stage-2-672.avif 672w, /media/farm/r33/poster/cabbage-stage-2-768.avif 768w, /media/farm/r33/poster/cabbage-stage-2-1024.avif 1024w",
+      "inputPath": "media/farm/r33/poster/cabbage-stage-2.webp"
+    },
+    {
+      "src": "/media/farm/r33/cutout/cabbage-stage-3.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "Open cabbage rosette with layered green leaves and an upright centre.",
+      "srcsetWebp": "/media/farm/r33/cutout/cabbage-stage-3-320.webp 320w, /media/farm/r33/cutout/cabbage-stage-3-480.webp 480w, /media/farm/r33/cutout/cabbage-stage-3-672.webp 672w, /media/farm/r33/cutout/cabbage-stage-3-768.webp 768w, /media/farm/r33/cutout/cabbage-stage-3-1024.webp 1024w",
+      "srcsetAvif": "/media/farm/r33/cutout/cabbage-stage-3-320.avif 320w, /media/farm/r33/cutout/cabbage-stage-3-480.avif 480w, /media/farm/r33/cutout/cabbage-stage-3-672.avif 672w, /media/farm/r33/cutout/cabbage-stage-3-768.avif 768w, /media/farm/r33/cutout/cabbage-stage-3-1024.avif 1024w",
+      "inputPath": "media/farm/r33/cutout/cabbage-stage-3.webp"
+    },
+    {
+      "src": "/media/farm/r33/poster/cabbage-stage-3.webp",
+      "width": 1168,
+      "height": 780,
+      "alt": "Six rendered review views of cabbage-stage-3.",
+      "srcsetWebp": "/media/farm/r33/poster/cabbage-stage-3-320.webp 320w, /media/farm/r33/poster/cabbage-stage-3-480.webp 480w, /media/farm/r33/poster/cabbage-stage-3-672.webp 672w, /media/farm/r33/poster/cabbage-stage-3-768.webp 768w, /media/farm/r33/poster/cabbage-stage-3-1024.webp 1024w",
+      "srcsetAvif": "/media/farm/r33/poster/cabbage-stage-3-320.avif 320w, /media/farm/r33/poster/cabbage-stage-3-480.avif 480w, /media/farm/r33/poster/cabbage-stage-3-672.avif 672w, /media/farm/r33/poster/cabbage-stage-3-768.avif 768w, /media/farm/r33/poster/cabbage-stage-3-1024.avif 1024w",
+      "inputPath": "media/farm/r33/poster/cabbage-stage-3.webp"
+    },
+    {
+      "src": "/media/farm/r33/cutout/cabbage-stage-4.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "Mature pale-green cabbage head held by broad outer leaves.",
+      "srcsetWebp": "/media/farm/r33/cutout/cabbage-stage-4-320.webp 320w, /media/farm/r33/cutout/cabbage-stage-4-480.webp 480w, /media/farm/r33/cutout/cabbage-stage-4-672.webp 672w, /media/farm/r33/cutout/cabbage-stage-4-768.webp 768w, /media/farm/r33/cutout/cabbage-stage-4-1024.webp 1024w",
+      "srcsetAvif": "/media/farm/r33/cutout/cabbage-stage-4-320.avif 320w, /media/farm/r33/cutout/cabbage-stage-4-480.avif 480w, /media/farm/r33/cutout/cabbage-stage-4-672.avif 672w, /media/farm/r33/cutout/cabbage-stage-4-768.avif 768w, /media/farm/r33/cutout/cabbage-stage-4-1024.avif 1024w",
+      "inputPath": "media/farm/r33/cutout/cabbage-stage-4.webp"
+    },
+    {
+      "src": "/media/farm/r33/poster/cabbage-stage-4.webp",
+      "width": 1168,
+      "height": 780,
+      "alt": "Six rendered review views of cabbage-stage-4.",
+      "srcsetWebp": "/media/farm/r33/poster/cabbage-stage-4-320.webp 320w, /media/farm/r33/poster/cabbage-stage-4-480.webp 480w, /media/farm/r33/poster/cabbage-stage-4-672.webp 672w, /media/farm/r33/poster/cabbage-stage-4-768.webp 768w, /media/farm/r33/poster/cabbage-stage-4-1024.webp 1024w",
+      "srcsetAvif": "/media/farm/r33/poster/cabbage-stage-4-320.avif 320w, /media/farm/r33/poster/cabbage-stage-4-480.avif 480w, /media/farm/r33/poster/cabbage-stage-4-672.avif 672w, /media/farm/r33/poster/cabbage-stage-4-768.avif 768w, /media/farm/r33/poster/cabbage-stage-4-1024.avif 1024w",
+      "inputPath": "media/farm/r33/poster/cabbage-stage-4.webp"
+    },
+    {
+      "src": "/media/farm/r33/cutout/wheat.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "Cluster of golden wheat stems with narrow leaves and upright seed heads.",
+      "srcsetWebp": "/media/farm/r33/cutout/wheat-320.webp 320w, /media/farm/r33/cutout/wheat-480.webp 480w, /media/farm/r33/cutout/wheat-672.webp 672w, /media/farm/r33/cutout/wheat-768.webp 768w, /media/farm/r33/cutout/wheat-1024.webp 1024w",
+      "srcsetAvif": "/media/farm/r33/cutout/wheat-320.avif 320w, /media/farm/r33/cutout/wheat-480.avif 480w, /media/farm/r33/cutout/wheat-672.avif 672w, /media/farm/r33/cutout/wheat-768.avif 768w, /media/farm/r33/cutout/wheat-1024.avif 1024w",
+      "inputPath": "media/farm/r33/cutout/wheat.webp"
+    },
+    {
+      "src": "/media/farm/r33/poster/wheat.webp",
+      "width": 1168,
+      "height": 780,
+      "alt": "Six rendered review views of Wheat.",
+      "srcsetWebp": "/media/farm/r33/poster/wheat-320.webp 320w, /media/farm/r33/poster/wheat-480.webp 480w, /media/farm/r33/poster/wheat-672.webp 672w, /media/farm/r33/poster/wheat-768.webp 768w, /media/farm/r33/poster/wheat-1024.webp 1024w",
+      "srcsetAvif": "/media/farm/r33/poster/wheat-320.avif 320w, /media/farm/r33/poster/wheat-480.avif 480w, /media/farm/r33/poster/wheat-672.avif 672w, /media/farm/r33/poster/wheat-768.avif 768w, /media/farm/r33/poster/wheat-1024.avif 1024w",
+      "inputPath": "media/farm/r33/poster/wheat.webp"
+    },
+    {
+      "src": "/media/farm/r33/cutout/pumpkin-plant.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "Low pumpkin vine with green leaves and two faceted orange fruits.",
+      "srcsetWebp": "/media/farm/r33/cutout/pumpkin-plant-320.webp 320w, /media/farm/r33/cutout/pumpkin-plant-480.webp 480w, /media/farm/r33/cutout/pumpkin-plant-672.webp 672w, /media/farm/r33/cutout/pumpkin-plant-768.webp 768w, /media/farm/r33/cutout/pumpkin-plant-1024.webp 1024w",
+      "srcsetAvif": "/media/farm/r33/cutout/pumpkin-plant-320.avif 320w, /media/farm/r33/cutout/pumpkin-plant-480.avif 480w, /media/farm/r33/cutout/pumpkin-plant-672.avif 672w, /media/farm/r33/cutout/pumpkin-plant-768.avif 768w, /media/farm/r33/cutout/pumpkin-plant-1024.avif 1024w",
+      "inputPath": "media/farm/r33/cutout/pumpkin-plant.webp"
+    },
+    {
+      "src": "/media/farm/r33/poster/pumpkin-plant.webp",
+      "width": 1168,
+      "height": 780,
+      "alt": "Six rendered review views of Pumpkin plant.",
+      "srcsetWebp": "/media/farm/r33/poster/pumpkin-plant-320.webp 320w, /media/farm/r33/poster/pumpkin-plant-480.webp 480w, /media/farm/r33/poster/pumpkin-plant-672.webp 672w, /media/farm/r33/poster/pumpkin-plant-768.webp 768w, /media/farm/r33/poster/pumpkin-plant-1024.webp 1024w",
+      "srcsetAvif": "/media/farm/r33/poster/pumpkin-plant-320.avif 320w, /media/farm/r33/poster/pumpkin-plant-480.avif 480w, /media/farm/r33/poster/pumpkin-plant-672.avif 672w, /media/farm/r33/poster/pumpkin-plant-768.avif 768w, /media/farm/r33/poster/pumpkin-plant-1024.avif 1024w",
+      "inputPath": "media/farm/r33/poster/pumpkin-plant.webp"
+    },
+    {
+      "src": "/media/farm/r33/cutout/faceted-tree.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "Small deciduous tree with a branching brown trunk and a faceted green crown.",
+      "srcsetWebp": "/media/farm/r33/cutout/faceted-tree-320.webp 320w, /media/farm/r33/cutout/faceted-tree-480.webp 480w, /media/farm/r33/cutout/faceted-tree-672.webp 672w, /media/farm/r33/cutout/faceted-tree-768.webp 768w, /media/farm/r33/cutout/faceted-tree-1024.webp 1024w",
+      "srcsetAvif": "/media/farm/r33/cutout/faceted-tree-320.avif 320w, /media/farm/r33/cutout/faceted-tree-480.avif 480w, /media/farm/r33/cutout/faceted-tree-672.avif 672w, /media/farm/r33/cutout/faceted-tree-768.avif 768w, /media/farm/r33/cutout/faceted-tree-1024.avif 1024w",
+      "inputPath": "media/farm/r33/cutout/faceted-tree.webp"
+    },
+    {
+      "src": "/media/farm/r33/poster/faceted-tree.webp",
+      "width": 1168,
+      "height": 780,
+      "alt": "Six rendered review views of faceted-tree.",
+      "srcsetWebp": "/media/farm/r33/poster/faceted-tree-320.webp 320w, /media/farm/r33/poster/faceted-tree-480.webp 480w, /media/farm/r33/poster/faceted-tree-672.webp 672w, /media/farm/r33/poster/faceted-tree-768.webp 768w, /media/farm/r33/poster/faceted-tree-1024.webp 1024w",
+      "srcsetAvif": "/media/farm/r33/poster/faceted-tree-320.avif 320w, /media/farm/r33/poster/faceted-tree-480.avif 480w, /media/farm/r33/poster/faceted-tree-672.avif 672w, /media/farm/r33/poster/faceted-tree-768.avif 768w, /media/farm/r33/poster/faceted-tree-1024.avif 1024w",
+      "inputPath": "media/farm/r33/poster/faceted-tree.webp"
+    },
+    {
+      "src": "/media/farm/r33/cutout/rock-cluster.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "Group of low, pale faceted rocks with a larger central stone.",
+      "srcsetWebp": "/media/farm/r33/cutout/rock-cluster-320.webp 320w, /media/farm/r33/cutout/rock-cluster-480.webp 480w, /media/farm/r33/cutout/rock-cluster-672.webp 672w, /media/farm/r33/cutout/rock-cluster-768.webp 768w, /media/farm/r33/cutout/rock-cluster-1024.webp 1024w",
+      "srcsetAvif": "/media/farm/r33/cutout/rock-cluster-320.avif 320w, /media/farm/r33/cutout/rock-cluster-480.avif 480w, /media/farm/r33/cutout/rock-cluster-672.avif 672w, /media/farm/r33/cutout/rock-cluster-768.avif 768w, /media/farm/r33/cutout/rock-cluster-1024.avif 1024w",
+      "inputPath": "media/farm/r33/cutout/rock-cluster.webp"
+    },
+    {
+      "src": "/media/farm/r33/poster/rock-cluster.webp",
+      "width": 1168,
+      "height": 780,
+      "alt": "Six rendered review views of rock-cluster.",
+      "srcsetWebp": "/media/farm/r33/poster/rock-cluster-320.webp 320w, /media/farm/r33/poster/rock-cluster-480.webp 480w, /media/farm/r33/poster/rock-cluster-672.webp 672w, /media/farm/r33/poster/rock-cluster-768.webp 768w, /media/farm/r33/poster/rock-cluster-1024.webp 1024w",
+      "srcsetAvif": "/media/farm/r33/poster/rock-cluster-320.avif 320w, /media/farm/r33/poster/rock-cluster-480.avif 480w, /media/farm/r33/poster/rock-cluster-672.avif 672w, /media/farm/r33/poster/rock-cluster-768.avif 768w, /media/farm/r33/poster/rock-cluster-1024.avif 1024w",
+      "inputPath": "media/farm/r33/poster/rock-cluster.webp"
+    },
+    {
+      "src": "/media/farm/r33/scene/farm-scene-wide.webp",
+      "width": 1440,
+      "height": 925,
+      "alt": "Farm scene, wide elevated view: watermill and stream at top, red barn, cream farmhouse with porch, tractor and trailer, fenced paddocks with sheep, wheat field, low-poly woodland. Landscape.",
+      "srcsetWebp": "/media/farm/r33/scene/farm-scene-wide-320.webp 320w, /media/farm/r33/scene/farm-scene-wide-480.webp 480w, /media/farm/r33/scene/farm-scene-wide-672.webp 672w, /media/farm/r33/scene/farm-scene-wide-768.webp 768w, /media/farm/r33/scene/farm-scene-wide-1024.webp 1024w, /media/farm/r33/scene/farm-scene-wide-1440.webp 1440w",
+      "srcsetAvif": "/media/farm/r33/scene/farm-scene-wide-320.avif 320w, /media/farm/r33/scene/farm-scene-wide-480.avif 480w, /media/farm/r33/scene/farm-scene-wide-672.avif 672w, /media/farm/r33/scene/farm-scene-wide-768.avif 768w, /media/farm/r33/scene/farm-scene-wide-1024.avif 1024w, /media/farm/r33/scene/farm-scene-wide-1440.avif 1440w",
+      "inputPath": "media/farm/r33/scene/farm-scene-wide.webp",
+      "sourceDelivery": "r33",
+      "exactRevision": false,
+      "revisionQualification": "Scene view from r33. Layout and exterior are unchanged; it was not re-captured for r34. Farmhouse windows may differ at pixel level."
+    },
+    {
+      "src": "/media/farm/revisions/farmhouse-floor-before.webp",
+      "width": 508,
+      "height": 384,
+      "alt": "Farmhouse interior before the floor revision, with a masonry-looking floor.",
+      "srcsetWebp": "/media/farm/revisions/farmhouse-floor-before-320.webp 320w, /media/farm/revisions/farmhouse-floor-before-480.webp 480w",
+      "srcsetAvif": "/media/farm/revisions/farmhouse-floor-before-320.avif 320w, /media/farm/revisions/farmhouse-floor-before-480.avif 480w",
+      "inputPath": "media/farm/revisions/farmhouse-floor-before.webp"
+    },
+    {
+      "src": "/media/farm/revisions/farmhouse-floor-after.webp",
+      "width": 508,
+      "height": 384,
+      "alt": "Farmhouse interior after the revision, with honey-coloured wooden floorboards.",
+      "srcsetWebp": "/media/farm/revisions/farmhouse-floor-after-320.webp 320w, /media/farm/revisions/farmhouse-floor-after-480.webp 480w",
+      "srcsetAvif": "/media/farm/revisions/farmhouse-floor-after-320.avif 320w, /media/farm/revisions/farmhouse-floor-after-480.avif 480w",
+      "inputPath": "media/farm/revisions/farmhouse-floor-after.webp"
+    },
+    {
+      "src": "/standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/classic-neutral.webp",
+      "width": 1032,
+      "height": 1032,
+      "alt": "Golden Gate Bridge seen obliquely from above, showing both towers and the suspended roadway.",
+      "srcsetWebp": "/standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/classic-neutral-320.webp 320w, /standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/classic-neutral-480.webp 480w, /standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/classic-neutral-672.webp 672w, /standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/classic-neutral-768.webp 768w, /standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/classic-neutral-1024.webp 1024w",
+      "srcsetAvif": "/standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/classic-neutral-320.avif 320w, /standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/classic-neutral-480.avif 480w, /standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/classic-neutral-672.avif 672w, /standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/classic-neutral-768.avif 768w, /standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/classic-neutral-1024.avif 1024w",
+      "inputPath": "standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/classic-neutral.png"
+    },
+    {
+      "src": "/standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/review-sheet-neutral.webp",
+      "width": 1168,
+      "height": 780,
+      "alt": "Six GPU review views of the Golden Gate Bridge.",
+      "srcsetWebp": "/standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/review-sheet-neutral-320.webp 320w, /standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/review-sheet-neutral-480.webp 480w, /standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/review-sheet-neutral-672.webp 672w, /standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/review-sheet-neutral-768.webp 768w, /standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/review-sheet-neutral-1024.webp 1024w",
+      "srcsetAvif": "/standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/review-sheet-neutral-320.avif 320w, /standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/review-sheet-neutral-480.avif 480w, /standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/review-sheet-neutral-672.avif 672w, /standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/review-sheet-neutral-768.avif 768w, /standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/review-sheet-neutral-1024.avif 1024w",
+      "inputPath": "standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/review-sheet-neutral.png"
+    },
+    {
+      "src": "/standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/water-level-neutral.webp",
+      "width": 1032,
+      "height": 1032,
+      "alt": "Golden Gate Bridge GPU capture: water level.",
+      "srcsetWebp": "/standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/water-level-neutral-320.webp 320w, /standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/water-level-neutral-480.webp 480w, /standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/water-level-neutral-672.webp 672w, /standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/water-level-neutral-768.webp 768w, /standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/water-level-neutral-1024.webp 1024w",
+      "srcsetAvif": "/standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/water-level-neutral-320.avif 320w, /standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/water-level-neutral-480.avif 480w, /standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/water-level-neutral-672.avif 672w, /standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/water-level-neutral-768.avif 768w, /standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/water-level-neutral-1024.avif 1024w",
+      "inputPath": "standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/water-level-neutral.png"
+    },
+    {
+      "src": "/standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/deck-neutral.webp",
+      "width": 1032,
+      "height": 1032,
+      "alt": "Golden Gate Bridge GPU capture: deck.",
+      "srcsetWebp": "/standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/deck-neutral-320.webp 320w, /standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/deck-neutral-480.webp 480w, /standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/deck-neutral-672.webp 672w, /standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/deck-neutral-768.webp 768w, /standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/deck-neutral-1024.webp 1024w",
+      "srcsetAvif": "/standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/deck-neutral-320.avif 320w, /standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/deck-neutral-480.avif 480w, /standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/deck-neutral-672.avif 672w, /standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/deck-neutral-768.avif 768w, /standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/deck-neutral-1024.avif 1024w",
+      "inputPath": "standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/deck-neutral.png"
+    },
+    {
+      "src": "/standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/tower-top-neutral.webp",
+      "width": 1032,
+      "height": 1032,
+      "alt": "Golden Gate Bridge GPU capture: tower top.",
+      "srcsetWebp": "/standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/tower-top-neutral-320.webp 320w, /standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/tower-top-neutral-480.webp 480w, /standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/tower-top-neutral-672.webp 672w, /standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/tower-top-neutral-768.webp 768w, /standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/tower-top-neutral-1024.webp 1024w",
+      "srcsetAvif": "/standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/tower-top-neutral-320.avif 320w, /standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/tower-top-neutral-480.avif 480w, /standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/tower-top-neutral-672.avif 672w, /standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/tower-top-neutral-768.avif 768w, /standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/tower-top-neutral-1024.avif 1024w",
+      "inputPath": "standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/tower-top-neutral.png"
+    },
+    {
+      "src": "/standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/elevation-neutral.webp",
+      "width": 1032,
+      "height": 1032,
+      "alt": "Golden Gate Bridge GPU capture: elevation.",
+      "srcsetWebp": "/standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/elevation-neutral-320.webp 320w, /standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/elevation-neutral-480.webp 480w, /standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/elevation-neutral-672.webp 672w, /standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/elevation-neutral-768.webp 768w, /standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/elevation-neutral-1024.webp 1024w",
+      "srcsetAvif": "/standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/elevation-neutral-320.avif 320w, /standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/elevation-neutral-480.avif 480w, /standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/elevation-neutral-672.avif 672w, /standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/elevation-neutral-768.avif 768w, /standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/elevation-neutral-1024.avif 1024w",
+      "inputPath": "standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/elevation-neutral.png"
+    }
+  ],
+  "archives": [
+    "packs/farm/r34/shapes-and-seasons-farm-runtime.zip",
+    "packs/farm/r34/shapes-and-seasons-farm-editable.zip",
+    "packs/farm/r34/shapes-and-seasons-farm-scene.zip",
+    "standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/golden-gate-editable.zip"
+  ],
+  "sources": [
+    {
+      "archive": "packs/farm/r34/shapes-and-seasons-farm-editable.zip",
+      "member": "sources/farmhouse.kiln.js",
+      "output": "sources/farmhouse.kiln.js",
+      "bytes": 23633,
+      "sha256": "74fda08c6343b2a257c0da185f1486a0ca23392d6574fc8f55eeb37c74fd9fde"
+    },
+    {
+      "archive": "packs/farm/r34/shapes-and-seasons-farm-editable.zip",
+      "member": "sources/barn.kiln.js",
+      "output": "sources/barn.kiln.js",
+      "bytes": 25268,
+      "sha256": "f2a9f05c744355354d4ec34f841a69bae2ee9f4e42bbc94df653f4bea4c6064a"
+    },
+    {
+      "archive": "packs/farm/r34/shapes-and-seasons-farm-editable.zip",
+      "member": "sources/windmill.kiln.js",
+      "output": "sources/windmill.kiln.js",
+      "bytes": 28218,
+      "sha256": "fbbeb5d8db9b925f48194c533e0b6130681bf7f86b05d8b19ce898b049e0f5e6"
+    },
+    {
+      "archive": "packs/farm/r34/shapes-and-seasons-farm-editable.zip",
+      "member": "sources/watermill.kiln.js",
+      "output": "sources/watermill.kiln.js",
+      "bytes": 33643,
+      "sha256": "1f4ce4eecbd06a160a249760ec97c29cb85a26182bc92a390d520c9027607809"
+    },
+    {
+      "archive": "packs/farm/r34/shapes-and-seasons-farm-editable.zip",
+      "member": "sources/fence-straight.kiln.js",
+      "output": "sources/fence-straight.kiln.js",
+      "bytes": 10132,
+      "sha256": "b8cbd11566ddb0b24c6740372fe0e3b20f71128621d950f970950f226d55ffdf"
+    },
+    {
+      "archive": "packs/farm/r34/shapes-and-seasons-farm-editable.zip",
+      "member": "sources/fence-corner.kiln.js",
+      "output": "sources/fence-corner.kiln.js",
+      "bytes": 10416,
+      "sha256": "98df0c6ca88fa698155cbb26bf0e573d1141671aa27e4dea78e7ed21e8238439"
+    },
+    {
+      "archive": "packs/farm/r34/shapes-and-seasons-farm-editable.zip",
+      "member": "sources/fence-gate.kiln.js",
+      "output": "sources/fence-gate.kiln.js",
+      "bytes": 13612,
+      "sha256": "a6a2b7f79388bf5b9a9df88d141c0fab50f292cd5ef5281d5101e6af39cde440"
+    },
+    {
+      "archive": "packs/farm/r34/shapes-and-seasons-farm-editable.zip",
+      "member": "sources/tractor.kiln.js",
+      "output": "sources/tractor.kiln.js",
+      "bytes": 15253,
+      "sha256": "f88bff51dc25a2f55b87022b7fba5cf262697a4db6142a804b463f73bcc9bfb8"
+    },
+    {
+      "archive": "packs/farm/r34/shapes-and-seasons-farm-editable.zip",
+      "member": "sources/trailer.kiln.js",
+      "output": "sources/trailer.kiln.js",
+      "bytes": 13910,
+      "sha256": "a96ad2121938bd0bb19227b6c09bc795c2826c8917ff13db27e6a78bb5ef0e25"
+    },
+    {
+      "archive": "packs/farm/r34/shapes-and-seasons-farm-editable.zip",
+      "member": "sources/barrel.kiln.js",
+      "output": "sources/barrel.kiln.js",
+      "bytes": 5228,
+      "sha256": "e5e60ecd101a1b085e25b50d8ce816d7b20559fef2d844905949030291601818"
+    },
+    {
+      "archive": "packs/farm/r34/shapes-and-seasons-farm-editable.zip",
+      "member": "sources/hay-bale.kiln.js",
+      "output": "sources/hay-bale.kiln.js",
+      "bytes": 3837,
+      "sha256": "b5b108a698a79773644e2c78dc0e607c2a1bdae83e5055f231f2b6b6f74d1556"
+    },
+    {
+      "archive": "packs/farm/r34/shapes-and-seasons-farm-editable.zip",
+      "member": "sources/farmer.kiln.js",
+      "output": "sources/farmer.kiln.js",
+      "bytes": 14775,
+      "sha256": "7010571156b45214fe30b2a1e006f455c2fab2ab20afc613857f9fd8f63aec79"
+    },
+    {
+      "archive": "packs/farm/r34/shapes-and-seasons-farm-editable.zip",
+      "member": "sources/cow.kiln.js",
+      "output": "sources/cow.kiln.js",
+      "bytes": 15271,
+      "sha256": "c86b013a267d6d77bb69ee04cd5363769a2972ad18da4f83864c85aa975222cd"
+    },
+    {
+      "archive": "packs/farm/r34/shapes-and-seasons-farm-editable.zip",
+      "member": "sources/sheep.kiln.js",
+      "output": "sources/sheep.kiln.js",
+      "bytes": 6815,
+      "sha256": "0154c712f15b2d8a0288110601cf63886c7b29dad9773f3170b9c23b767db3f1"
+    },
+    {
+      "archive": "packs/farm/r34/shapes-and-seasons-farm-editable.zip",
+      "member": "sources/chicken.kiln.js",
+      "output": "sources/chicken.kiln.js",
+      "bytes": 7714,
+      "sha256": "bb9691903443556777e3ab0a6d8fc136b7924d3d63a7bc600925936c9e26d77e"
+    },
+    {
+      "archive": "packs/farm/r34/shapes-and-seasons-farm-editable.zip",
+      "member": "sources/cabbage-stage-1.kiln.js",
+      "output": "sources/cabbage-stage-1.kiln.js",
+      "bytes": 7951,
+      "sha256": "8d35f86994bda197c31f47a3e17fef18ae7632fb6a1dc60ed0091351547bff16"
+    },
+    {
+      "archive": "packs/farm/r34/shapes-and-seasons-farm-editable.zip",
+      "member": "sources/cabbage-stage-2.kiln.js",
+      "output": "sources/cabbage-stage-2.kiln.js",
+      "bytes": 7951,
+      "sha256": "24fc870a9d339af5a9b5d6c6b431158d0e984b26bb63ec97a5d8a9e51e9647cc"
+    },
+    {
+      "archive": "packs/farm/r34/shapes-and-seasons-farm-editable.zip",
+      "member": "sources/cabbage-stage-3.kiln.js",
+      "output": "sources/cabbage-stage-3.kiln.js",
+      "bytes": 8007,
+      "sha256": "ab421dc345a9beb9e51fd6c523957be7f044cd559b024a6ef461e79d0017bd09"
+    },
+    {
+      "archive": "packs/farm/r34/shapes-and-seasons-farm-editable.zip",
+      "member": "sources/cabbage-stage-4.kiln.js",
+      "output": "sources/cabbage-stage-4.kiln.js",
+      "bytes": 10653,
+      "sha256": "eda27b2a42289a99cda7aea846eefa2ed6dc35ab56331ee65d8f8f392454ebdc"
+    },
+    {
+      "archive": "packs/farm/r34/shapes-and-seasons-farm-editable.zip",
+      "member": "sources/wheat.kiln.js",
+      "output": "sources/wheat.kiln.js",
+      "bytes": 4167,
+      "sha256": "c8cc41a113683887a811796613fe44abe7d2be8302144de5cc22516169a1e669"
+    },
+    {
+      "archive": "packs/farm/r34/shapes-and-seasons-farm-editable.zip",
+      "member": "sources/pumpkin-plant.kiln.js",
+      "output": "sources/pumpkin-plant.kiln.js",
+      "bytes": 5788,
+      "sha256": "961ce83ff3c51969181f0175aaf7947bd5b518631b1a3cf276e3e379e5168d0a"
+    },
+    {
+      "archive": "packs/farm/r34/shapes-and-seasons-farm-editable.zip",
+      "member": "sources/faceted-tree.kiln.js",
+      "output": "sources/faceted-tree.kiln.js",
+      "bytes": 3793,
+      "sha256": "f19c2b60aed5b04a47b7454614b3c2bdb20abbb7f087c8a719129d92f349d5ef"
+    },
+    {
+      "archive": "packs/farm/r34/shapes-and-seasons-farm-editable.zip",
+      "member": "sources/rock-cluster.kiln.js",
+      "output": "sources/rock-cluster.kiln.js",
+      "bytes": 1890,
+      "sha256": "2ee4fed4c668f28260911affd4a9ee9c58cf1b416fcbd4a3fe1d657e97191868"
+    },
+    {
+      "archive": "standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/golden-gate-editable.zip",
+      "profile": "editable",
+      "member": "a_9fafaa6e7f4c4868a372e8f3b0b84738/r_9f4b0e76ea634be083de8a5e38c4e838/source.kiln.js",
+      "output": "sources/golden-gate-bridge.kiln.js",
+      "bytes": 22531,
+      "sha256": "5bfd30103aaf6aa620da252562e5e9de135eba69b5c36823f0e12a7e99c87f81"
+    }
+  ],
+  "models": [
+    {
+      "archive": "packs/farm/r34/shapes-and-seasons-farm-runtime.zip",
+      "member": "models/farmhouse.glb",
+      "output": "models/farm/farmhouse.glb",
+      "bytes": 549584,
+      "sha256": "1b02596b30e3417e3f8336893694f2614002e28154408803b145154097de8512"
+    },
+    {
+      "archive": "packs/farm/r34/shapes-and-seasons-farm-runtime.zip",
+      "member": "models/barn.glb",
+      "output": "models/farm/barn.glb",
+      "bytes": 618912,
+      "sha256": "eae958ffee9be52c2f61c86859f138a1e999be3d3056dab9cb76df6286ea0041"
+    },
+    {
+      "archive": "packs/farm/r34/shapes-and-seasons-farm-runtime.zip",
+      "member": "models/windmill.glb",
+      "output": "models/farm/windmill.glb",
+      "bytes": 454760,
+      "sha256": "089e966217cbd05c81a123ab2419d9d9c172bb7567f30ef2f7020cc790c8148f"
+    },
+    {
+      "archive": "packs/farm/r34/shapes-and-seasons-farm-runtime.zip",
+      "member": "models/watermill.glb",
+      "output": "models/farm/watermill.glb",
+      "bytes": 580264,
+      "sha256": "b57f29056cf3b072058d65016b753551f146c4cace974458087bceaaab4d0ce0"
+    },
+    {
+      "archive": "packs/farm/r34/shapes-and-seasons-farm-runtime.zip",
+      "member": "models/fence-straight.glb",
+      "output": "models/farm/fence-straight.glb",
+      "bytes": 59260,
+      "sha256": "1468e8ca49f97a89b5a84e032960fc7b6b29e8b18adee0b1a86692aae6b2c496"
+    },
+    {
+      "archive": "packs/farm/r34/shapes-and-seasons-farm-runtime.zip",
+      "member": "models/fence-corner.glb",
+      "output": "models/farm/fence-corner.glb",
+      "bytes": 83084,
+      "sha256": "9af793228f396dce42eafacdd98b0203a714648b4e716c389656114217dde6cd"
+    },
+    {
+      "archive": "packs/farm/r34/shapes-and-seasons-farm-runtime.zip",
+      "member": "models/fence-gate.glb",
+      "output": "models/farm/fence-gate.glb",
+      "bytes": 162020,
+      "sha256": "e3e01d01c48333f7af74b2c8907eb42a2b4cfe66816570c7e4d49203a63b0366"
+    },
+    {
+      "archive": "packs/farm/r34/shapes-and-seasons-farm-runtime.zip",
+      "member": "models/tractor.glb",
+      "output": "models/farm/tractor.glb",
+      "bytes": 409684,
+      "sha256": "8185aea55248ec02eb49de46eb04d85c2cdd9a9f9a1d485d649d79009c3f1117"
+    },
+    {
+      "archive": "packs/farm/r34/shapes-and-seasons-farm-runtime.zip",
+      "member": "models/trailer.glb",
+      "output": "models/farm/trailer.glb",
+      "bytes": 183252,
+      "sha256": "6394d8c51b0c368a25f21d644630370cd6d8267dbd999642587460cb7a2b90de"
+    },
+    {
+      "archive": "packs/farm/r34/shapes-and-seasons-farm-runtime.zip",
+      "member": "models/barrel.glb",
+      "output": "models/farm/barrel.glb",
+      "bytes": 237868,
+      "sha256": "1d9b5c726d770a2875c52aa9bfa079c7f180877e3da0337be1a815c42c62c534"
+    },
+    {
+      "archive": "packs/farm/r34/shapes-and-seasons-farm-runtime.zip",
+      "member": "models/hay-bale.glb",
+      "output": "models/farm/hay-bale.glb",
+      "bytes": 242504,
+      "sha256": "1388fb610ef8ee3240f472ce45d89eb80fd78c2bdda46c7889563b653bd3fbd4"
+    },
+    {
+      "archive": "packs/farm/r34/shapes-and-seasons-farm-runtime.zip",
+      "member": "models/farmer.glb",
+      "output": "models/farm/farmer.glb",
+      "bytes": 1009436,
+      "sha256": "5f57902dc80999aadbd9442150bd54778ad02ac8177ce1a7a8c897f675f7293a"
+    },
+    {
+      "archive": "packs/farm/r34/shapes-and-seasons-farm-runtime.zip",
+      "member": "models/cow.glb",
+      "output": "models/farm/cow.glb",
+      "bytes": 371896,
+      "sha256": "d79307b03c4003cee0748d15bdaf1a6593434a8ad72de9f383fc9616e7084ce6"
+    },
+    {
+      "archive": "packs/farm/r34/shapes-and-seasons-farm-runtime.zip",
+      "member": "models/sheep.glb",
+      "output": "models/farm/sheep.glb",
+      "bytes": 391632,
+      "sha256": "41a9b3f464888e5e6f9c820d07181d64d6a544503d40401a753f8d628d76a20e"
+    },
+    {
+      "archive": "packs/farm/r34/shapes-and-seasons-farm-runtime.zip",
+      "member": "models/chicken.glb",
+      "output": "models/farm/chicken.glb",
+      "bytes": 373720,
+      "sha256": "8ee9087d4e0c0b9dfed9f992e133ac67d9d21e6effc788c2fb89ce80cd884e4d"
+    },
+    {
+      "archive": "packs/farm/r34/shapes-and-seasons-farm-runtime.zip",
+      "member": "models/cabbage-stage-1.glb",
+      "output": "models/farm/cabbage-stage-1.glb",
+      "bytes": 164988,
+      "sha256": "e6b177606ffefd4d4c9437fb9150f37a717202133796cb52e469c22e2570fe0c"
+    },
+    {
+      "archive": "packs/farm/r34/shapes-and-seasons-farm-runtime.zip",
+      "member": "models/cabbage-stage-2.glb",
+      "output": "models/farm/cabbage-stage-2.glb",
+      "bytes": 170768,
+      "sha256": "cbe951aa364a017889f03b5a60a31a6b9c5398064a5b20f7f1c5b6fb9332bec6"
+    },
+    {
+      "archive": "packs/farm/r34/shapes-and-seasons-farm-runtime.zip",
+      "member": "models/cabbage-stage-3.glb",
+      "output": "models/farm/cabbage-stage-3.glb",
+      "bytes": 176528,
+      "sha256": "ff9525150fe7f99142df59c36a316502d4830789e25efea70b5c9c38ecb1da9d"
+    },
+    {
+      "archive": "packs/farm/r34/shapes-and-seasons-farm-runtime.zip",
+      "member": "models/cabbage-stage-4.glb",
+      "output": "models/farm/cabbage-stage-4.glb",
+      "bytes": 187596,
+      "sha256": "8e6b8ea974b75843d7671641f2c3fa2ebd3f10a19810b6759d15ec9c4662bacb"
+    },
+    {
+      "archive": "packs/farm/r34/shapes-and-seasons-farm-runtime.zip",
+      "member": "models/wheat.glb",
+      "output": "models/farm/wheat.glb",
+      "bytes": 352648,
+      "sha256": "d13360234d2092d0982f385aed401f4f926e3ccacc593cd0cb5a95dcdea79b25"
+    },
+    {
+      "archive": "packs/farm/r34/shapes-and-seasons-farm-runtime.zip",
+      "member": "models/pumpkin-plant.glb",
+      "output": "models/farm/pumpkin-plant.glb",
+      "bytes": 155080,
+      "sha256": "22b9c424461cbc904b21e7d17a4862e2a034545912839147b314ba6f813c8371"
+    },
+    {
+      "archive": "packs/farm/r34/shapes-and-seasons-farm-runtime.zip",
+      "member": "models/faceted-tree.glb",
+      "output": "models/farm/faceted-tree.glb",
+      "bytes": 123176,
+      "sha256": "0f6eceb07f207eb27071767a8d0c7fae7a618efd623942219da1f2d29497b0c4"
+    },
+    {
+      "archive": "packs/farm/r34/shapes-and-seasons-farm-runtime.zip",
+      "member": "models/rock-cluster.glb",
+      "output": "models/farm/rock-cluster.glb",
+      "bytes": 39784,
+      "sha256": "6b6e767ed170aa1631a54e5d6df3d3335146a94cdedb5c49bf17b3659a93252d"
+    },
+    {
+      "path": "standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/golden-gate-runtime.glb",
+      "output": "models/standalone/golden-gate-bridge.glb",
+      "bytes": 13484976,
+      "sha256": "1e987a994d5a0a8183782aa19d4e225b9715fb0bd503402a5b3a14df8190a7f9"
+    }
+  ]
+}

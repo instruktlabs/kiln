@@ -1,0 +1,81 @@
+---
+import { readFile } from "node:fs/promises";
+import { resolve } from "node:path";
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+import type { Specimen } from "../../../types";
+import { SITE } from "../../../lib/config";
+const specimens: Specimen[] = JSON.parse(
+  await readFile(resolve("public/assets/index.json"), "utf8"),
+);
+const title = (name: string) =>
+  name
+    .split("-")
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ");
+const description =
+  "Earlier examples from earlier Kiln versions, not reviewed to the pack standard. Browse their source, model downloads and recorded provenance.";
+---
+
+<BaseLayout
+  title="Archive · Earlier Kiln examples"
+  description={description}
+  ogImage="/social/archive.webp"
+  breadcrumbs={[
+    { label: "Gallery", href: "/gallery/" },
+    { label: "Archive", href: "/gallery/archive/" },
+  ]}
+  jsonLd={{
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    name: "Kiln archive",
+    url: `${SITE}/gallery/archive/`,
+    description,
+  }}
+>
+  <div class="container pt-5">
+    <div class="max-w-reading">
+      <h1>Earlier Kiln examples</h1>
+      <p class="lead mt-6">
+        Earlier examples from earlier Kiln versions, not reviewed to the pack
+        standard.
+      </p>
+      <p class="mt-4">
+        These {specimens.length} historical examples retain their source, model
+        and authorship records. They may contain modelling issues. Build checks
+        do not establish their visual quality.
+      </p>
+      <a class="text-link mt-4" href="/gallery/">
+        Browse the reviewed asset gallery <span aria-hidden="true">→</span>
+      </a>
+    </div>
+    <ul class="mt-10 grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+      {specimens.map((specimen, index) => (
+        <li class="min-w-0 border-b border-rule pb-5">
+          <a
+            class="group block text-ink no-underline"
+            href={`/gallery/archive/${specimen.name}/`}
+          >
+            <img
+              src={`/${specimen.thumb}`}
+              width="560"
+              height="560"
+              alt={`Historical render of ${title(specimen.name)}`}
+              loading={index < 4 ? "eager" : "lazy"}
+              decoding="async"
+              class="aspect-square w-full border border-rule bg-stage object-contain"
+            />
+            <h2 class="mt-4 text-title font-semibold group-hover:underline">
+              {title(specimen.name)}
+            </h2>
+          </a>
+          {specimen.caption && (
+            <p class="mt-2 text-caption">{specimen.caption}</p>
+          )}
+          <p class="mt-3 font-mono text-code text-dim">
+            {specimen.tris.toLocaleString("en-US")} triangles · {specimen.model}
+          </p>
+        </li>
+      ))}
+    </ul>
+  </div>
+</BaseLayout>

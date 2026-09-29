@@ -1,0 +1,61 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { farmScene } from "../../data/scenes";
+import { PACKS_ENABLED } from "../../lib/config";
+---
+
+<BaseLayout
+  title="Scenes made with Kiln"
+  description="Explore scenes built from Kiln assets. The Farm browser scene is being rebuilt; its runnable scene is available in the pack download."
+  breadcrumbs={[{ label: "Scenes", href: "/scenes/" }]}
+  ogImage="/social/scenes.webp"
+>
+  <div class="container py-12 md:py-20">
+    <h1 class="max-w-prose font-semibold">See the assets together.</h1>
+    <p class="mt-6 max-w-prose text-lg">
+      Scenes put individual assets into a place you can explore. They load only
+      when you choose to open them.
+    </p>
+    <article class="mt-12 grid gap-8 border-t border-ink pt-8 md:grid-cols-2">
+      {PACKS_ENABLED && (
+        <a href={farmScene.href} aria-label="View the Farm scene">
+          <picture>
+            <source
+              type="image/avif"
+              srcset={farmScene.posterImage.srcsetAvif}
+              sizes="(max-width: 768px) 100vw, 50vw"
+            />
+            <img
+              src={farmScene.poster}
+              srcset={farmScene.posterImage.srcsetWebp}
+              sizes="(max-width: 768px) 100vw, 50vw"
+              width={farmScene.posterWidth}
+              height={farmScene.posterHeight}
+              alt="Barn, farmhouse and fields in the Farm scene"
+              class="w-full border border-rule"
+              loading="lazy"
+            />
+          </picture>
+        </a>
+      )}
+      <div>
+        <h2 class="font-semibold">{farmScene.name}</h2>
+        <p class="mt-4 max-w-prose">{farmScene.description}</p>
+        <p class="mt-4 max-w-prose">
+          The browser scene is being rebuilt. The current runnable scene is
+          included in the Farm scene download.
+        </p>
+        <a href={farmScene.href} class="btn btn-secondary mt-6">
+          View the scene status
+        </a>
+      </div>
+    </article>
+    <div class="mt-12 border-t border-rule pt-8">
+      <h2 class="font-semibold">Terafab is in production.</h2>
+      <p class="mt-4 max-w-prose">
+        Terafab is a working title for the next pack and scene. There is no
+        browser scene to explore yet.
+      </p>
+    </div>
+  </div>
+</BaseLayout>

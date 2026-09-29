@@ -1,4 +1,4 @@
-name: Gallery
+name: Website
 
 # The gallery is built, not published from a folder of exported meshes: every GLB
 # it serves comes out of running `examples/*.kiln.js` through the engine on the
@@ -10,6 +10,10 @@ on:
     paths:
       - 'examples/**'
       - 'site/**'
+      - 'docs/**'
+      - 'skills/**'
+      - 'bun.lock'
+      - 'package.json'
       - 'src/**'
       - 'scripts/authorship.ts'
       - 'README.md'
@@ -19,6 +23,10 @@ on:
     paths:
       - 'examples/**'
       - 'site/**'
+      - 'docs/**'
+      - 'skills/**'
+      - 'bun.lock'
+      - 'package.json'
       - 'src/**'
       - 'scripts/authorship.ts'
       - 'README.md'
@@ -35,10 +43,13 @@ permissions:
 
 env:
   KILN_RENDER: cpu
+  # R2 Commons files are staged locally but not uploaded yet. Set this repository
+  # variable to 1 only after uploading and verifying the pinned manifest files.
+  KILN_SITE_PACKS: ${{ vars.KILN_SITE_PACKS || '0' }}
 
 jobs:
   build:
-    name: build the gallery
+    name: build the website
     # Was pinned to windows-2022 because poster receipts asserted exact GLB bytes
     # captured there, and platform float math genuinely does change them --
     # measured, and in both the JSON and BIN chunks, so no canonical form fixes
@@ -48,6 +59,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+
+      - name: Setup Node
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 22.23.2
+
+      - name: Pin maintainer npm
+        run: npm install --global npm@12.0.2
 
       - name: Setup Bun
         uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2
@@ -69,9 +88,20 @@ jobs:
         run: bun install --frozen-lockfile
         working-directory: site
 
+      - name: Sync repository documentation
+        run: bunx astro sync
+        working-directory: site
+
       - name: Typecheck the site
         run: bunx tsc --noEmit
         working-directory: site
+
+      - name: Check Astro templates
+        run: bunx astro check
+        working-directory: site
+
+      - name: Lint site source
+        run: bunx biome check site/src
 
       # Not closing a gap: `bun run test` is `bun test src scripts`, and bun treats
       # those as SUBSTRING filters on paths, so `site/scripts` already matched and
@@ -95,11 +125,15 @@ jobs:
         working-directory: site
 
       - name: Build the site
-        run: bunx vite build
+        run: bun run build
         working-directory: site
 
       - name: Verify source, downloads and poster records
         run: bun scripts/verify-assets.mjs
+        working-directory: site
+
+      - name: Verify static HTML, links and discovery files
+        run: node scripts/validate-static.mjs --out .cache/validation
         working-directory: site
 
       - uses: actions/configure-pages@45bfe0192ca1faeb007ade9deae92b16b8254a0d # v6.0.0

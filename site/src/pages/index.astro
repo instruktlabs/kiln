@@ -1,0 +1,500 @@
+---
+import { readFile } from "node:fs/promises";
+import { resolve } from "node:path";
+import { getCollection } from "astro:content";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import HeroDrawing from "../components/HeroDrawing.astro";
+import ResponsiveImage from "../components/ResponsiveImage.astro";
+import CodeBlock from "../components/CodeBlock.astro";
+import { farm, bridge, number, bounds } from "../lib/catalog";
+import { hero } from "../lib/hero";
+import {
+  HARNESSES,
+  INSTALL_COMMAND,
+  WORKSPACE_COMMAND,
+  PACKS_ENABLED,
+  REPO,
+  VERSION,
+  VERSION_SHORT,
+} from "../lib/config";
+import exchange from "../data/home-exchange.json";
+import { PUBLIC_EXAMPLES } from "../../scripts/collection.mjs";
+const house = farm.assets[0]!;
+const docs = new Set((await getCollection("docs")).map((doc) => doc.id));
+const docHref = (slug: string) =>
+  docs.has(slug) ? `/docs/${slug}/` : `${REPO}/blob/main/docs/${slug}.md`;
+const source = PACKS_ENABLED
+  ? await readFile(resolve("public", house.sourcePath.slice(1)), "utf8")
+  : "";
+const excerpt = source.split("\n").slice(0, 11).join("\n");
+const floor = farm.floorRevision;
+const ship = [
+  [
+    "MCP server",
+    "17 tools on the packaged local host: discover, render, inspect, revise and retain exact work.",
+    "tools",
+  ],
+  [
+    "CLI",
+    "Render source, export a GLB or manage saved revisions from your terminal.",
+    "install",
+  ],
+  [
+    "TypeScript library",
+    "Use the engine and its host ports in your own application.",
+    "architecture",
+  ],
+  [
+    "Agent skills",
+    "Workspace setup, authoring, refinement, QA, scene composition and batch dispatch.",
+    "clean-room",
+  ],
+  [
+    "GPU render service",
+    "Optional material-faithful views. CPU fallback checks geometry and reports its fidelity.",
+    "rendering",
+  ],
+  [
+    "Local Workshop",
+    "Library, optional Projects and Live Review share saved assets and observation records.",
+    "projects-and-live-review",
+  ],
+  [
+    "Material library",
+    "Pin material records and texture maps; keep recipes and provenance with the asset.",
+    "material-library",
+  ],
+];
+const [discover, render, edit, save] = exchange.events;
+const toolExample = `kiln_discover(${JSON.stringify(discover!.arguments)})
+// → ${JSON.stringify({ id: discover!.result.id })}
+// … further catalog fields omitted
+
+kiln_render(${JSON.stringify(render!.arguments)})
+// → ${JSON.stringify({ ok: render!.result.ok, programRef: render!.result.programRef, tris: render!.result.tris })}
+// … capture arguments, views and further checks omitted
+
+kiln_edit(${JSON.stringify(edit!.arguments, null, 2)})
+// → ${JSON.stringify({ ok: edit!.result.ok, programRef: edit!.result.programRef, parentRef: edit!.result.parentRef })}
+// … six edits, capture arguments and preservation evidence omitted
+
+kiln_save(${JSON.stringify(save!.arguments, null, 2)})
+// → asset.revisionId: ${save!.result.asset!.revisionId}
+// … project arguments, file hashes and further result fields omitted`;
+const floorIncluded = house.revisionId === floor.asset.revisionId;
+---
+
+<BaseLayout
+  title="Kiln — build and revise 3D assets with your coding agent"
+  description="Your coding agent writes JavaScript. Kiln renders views, checks geometry and saves editable 3D assets as GLBs with their source. Runs locally; MIT licensed."
+  preloadImage={
+    PACKS_ENABLED
+      ? {
+          src: hero.asset.poster.src,
+          srcset: hero.asset.poster.srcsetAvif,
+          sizes: "(max-width: 767px) 95vw, 48vw",
+        }
+      : undefined
+  }
+  jsonLd={{
+    "@context": "https://schema.org",
+    "@type": "SoftwareSourceCode",
+    name: "Kiln",
+    description:
+      "Local tools for coding agents to build and revise 3D assets as JavaScript.",
+    codeRepository: REPO,
+    programmingLanguage: "TypeScript",
+    license: `${REPO}/blob/main/LICENSE`,
+    version: VERSION,
+  }}
+>
+  <script slot="head" is:inline define:vars={{ known: PUBLIC_EXAMPLES }}>
+    function redirectLegacy() {
+      if (!location.hash.startsWith("#/")) return;
+      const slug = location.hash.slice(2).replace(/\/$/, "");
+      location.replace(
+        known.includes(slug)
+          ? "/gallery/archive/" + slug + "/"
+          : "/gallery/archive/",
+      );
+    }
+    window.addEventListener("hashchange", redirectLegacy);
+    redirectLegacy();
+  </script>
+  <div class="container pt-6 md:pt-8">
+    <div class="drawing-sheet">
+      <div class="grid items-center gap-4 px-5 pt-8 md:grid-cols-2 md:px-8 md:pt-4">
+        <div class="py-6 md:py-12">
+          <h1 class="max-w-lead">
+            Build and revise 3D assets with your coding agent.
+          </h1>
+          <p class="lead mt-6">
+            Your agent writes the asset as JavaScript; Kiln runs it, returns
+            rendered views and structural checks, and exports a GLB with its
+            source.
+          </p>
+          <div class="mt-8 flex flex-wrap gap-3">
+            <a href="/docs/install/" class="btn">
+              Get Kiln {VERSION_SHORT} <span aria-hidden="true">→</span>
+            </a>
+            <a href="/gallery/" class="btn btn-secondary">
+              Browse the gallery
+            </a>
+          </div>
+          <p class="mt-6 max-w-lead font-mono text-code text-dim">
+            MIT · runs on your machine · MCP, CLI, TypeScript library and agent
+            skills · {VERSION_SHORT} source release
+          </p>
+        </div>
+        {PACKS_ENABLED && <HeroDrawing />}
+      </div>
+      <div
+        class="mt-6 flex flex-wrap items-center gap-x-5 gap-y-3 border-t border-ink bg-stage px-5 py-5 font-mono text-code md:mt-8 md:px-8"
+        role="group"
+        aria-label="Asset authoring loop"
+      >
+        <span>Describe</span>
+        <span aria-hidden="true">→</span>
+        <span>Write source</span>
+        <span aria-hidden="true">→</span>
+        <span>Render &amp; check</span>
+        <span aria-hidden="true">→</span>
+        <span>Revise</span>
+        <span aria-hidden="true">→</span>
+        <span>Save GLB + source</span>
+      </div>
+    </div>
+  </div>
+  {PACKS_ENABLED && (
+    <>
+      <section class="container pt-16 md:pt-24" aria-labelledby="loop-heading">
+        <div class="grid gap-6 md:grid-cols-2 md:gap-12">
+          <h2 id="loop-heading">
+            The source is something your agent can change.
+          </h2>
+          <p class="max-w-reading text-dim">
+            A roof pitch, a named part, a material pin: the shape has an
+            editable definition. Kiln returns views and geometry checks so your
+            agent can inspect what the program actually built.
+          </p>
+        </div>
+        <div class="mt-8 grid items-start gap-6 lg:grid-cols-2">
+          <div class="min-w-0">
+            <CodeBlock
+              code={excerpt}
+              label="Farmhouse · source.kiln.js (excerpt)"
+            />
+            <p class="mt-3 break-all font-mono text-code text-dim">
+              Source from the sealed {farm.revision} farmhouse,{" "}
+              {house.revisionId}.
+            </p>
+          </div>
+          <figure>
+            <ResponsiveImage image={house.reviewImage} />
+            <figcaption class="mt-3 font-mono text-code text-dim">
+              The saved GPU review sheet: front, right, back, left, top and
+              three-quarter views.
+            </figcaption>
+          </figure>
+        </div>
+        <dl class="mt-8 grid gap-6 border-y border-rule py-6 sm:grid-cols-3">
+          <div>
+            <dt class="font-mono text-code text-dim">Triangles</dt>
+            <dd class="mt-1 text-2xl font-semibold">
+              {number(house.metrics.triangles)}
+            </dd>
+          </div>
+          <div>
+            <dt class="font-mono text-code text-dim">Bounds · metres</dt>
+            <dd class="mt-1 text-title font-semibold">
+              {bounds(house.metrics.bounds)}
+            </dd>
+          </div>
+          <div>
+            <dt class="font-mono text-code text-dim">Named parts</dt>
+            <dd class="mt-1 break-words font-mono text-code">
+              Mesh_RoofShingles
+              <br />
+              Mesh_PorchTimber
+            </dd>
+          </div>
+        </dl>
+      </section>
+      <section
+        class="container pt-16 md:pt-24"
+        aria-labelledby="revision-heading"
+      >
+        <div class="grid gap-8 lg:grid-cols-12 lg:gap-12">
+          <div class="lg:col-span-5">
+            <h2 id="revision-heading">Change the floor. Keep the house.</h2>
+            <p class="mt-6 max-w-reading">
+              The owner said the ground floor read as brick and asked for wood.
+              Gemini 3.8 Flash via <code>agy</code> edited the source written by
+              Claude Opus 5.5.
+            </p>
+            <p class="mt-4 max-w-reading">
+              Kiln rendered the room before and after. The comparison found 132
+              exterior probes identical and unchanged bounds. Fourteen meshes,
+              all transforms and all materials stayed unchanged; the stone shell
+              was re-tessellated around the new floor.
+            </p>
+            <p class="mt-4 max-w-reading">
+              The child revision keeps its parent and model attribution.{" "}
+              {floor.ownerAccepted
+                ? "The owner has accepted the floor revision."
+                : "Owner acceptance of the floor is pending."}{" "}
+              {floorIncluded
+                ? "The current downloads include the accepted wood floor."
+                : `The sealed ${farm.revision} downloads still contain the earlier floor.`}
+            </p>
+            <a class="text-link mt-3" href="/gallery/farmhouse/">
+              Inspect the farmhouse and its history →
+            </a>
+          </div>
+          <div class="min-w-0 lg:col-span-7">
+            <div class="grid gap-4 sm:grid-cols-2">
+              <figure>
+                <ResponsiveImage image={floor.before} />
+                <figcaption class="mt-2 font-mono text-code">
+                  Before · masonry-looking floor
+                </figcaption>
+              </figure>
+              <figure>
+                <ResponsiveImage image={floor.after} />
+                <figcaption class="mt-2 font-mono text-code">
+                  After · wood floor
+                  {floor.ownerAccepted
+                    ? ", owner accepted"
+                    : ", review pending"}
+                </figcaption>
+              </figure>
+            </div>
+            <dl class="mt-6 border-y border-rule py-4 font-mono text-code">
+              <div class="grid gap-1 py-2 sm:grid-cols-4">
+                <dt class="text-dim">Parent</dt>
+                <dd class="break-all sm:col-span-3">{floor.parentRevision}</dd>
+              </div>
+              <div class="grid gap-1 py-2 sm:grid-cols-4">
+                <dt class="text-dim">Child</dt>
+                <dd class="break-all sm:col-span-3">
+                  {floor.asset.revisionId}
+                </dd>
+              </div>
+              <div class="grid gap-1 py-2 sm:grid-cols-4">
+                <dt class="text-dim">Attribution</dt>
+                <dd class="sm:col-span-3">gemini-3.8-flash-high · agy</dd>
+              </div>
+            </dl>
+          </div>
+        </div>
+        <div class="mt-10 grid gap-6 border-t border-ink pt-6 md:grid-cols-2">
+          <div>
+            <h3>Checks make the limits visible.</h3>
+            <p class="mt-4 max-w-reading text-dim">
+              The wood-floor candidate has 4,080 triangles. Its QA report
+              accepts the structural result with a runtime warning. Checks read
+              geometry and export data, never pixels; they do not replace the
+              owner’s review.
+            </p>
+            <p class="mt-3 text-caption text-dim">
+              The report records 10 visual-quality observations, including
+              overlap between Mesh_DoorLeaf and Mesh_DoorHardware. Twelve images
+              exceed the four-image portable web budget.
+            </p>
+          </div>
+          <dl class="border-y border-rule font-mono text-code">
+            {[
+              ["acceptance", "accepted"],
+              ["disposition", "warn"],
+              ["exportIntegrity", "pass · 0 glTF errors / warnings"],
+              ["requirementReadiness", "pass"],
+              ["promptAlignment", "notEvaluated"],
+              ["visualQuality", "pass · 10 observations"],
+              ["runtimeCost", "warn · 10 mat / 16 geo / 16 draws"],
+            ].map(([key, value]) => (
+              <div class="flex flex-wrap justify-between gap-2 border-b border-rule px-3 py-2 last:border-b-0">
+                <dt>{key}</dt>
+                <dd
+                  class={value?.startsWith("warn") ? "text-ember" : "text-wire"}
+                >
+                  {value}
+                </dd>
+              </div>
+            ))}
+          </dl>
+        </div>
+      </section>
+    </>
+  )}
+  <section class="container section-space" aria-labelledby="agent-heading">
+    <div class="grid gap-8 border-t border-ink pt-8 lg:grid-cols-2 lg:gap-12">
+      <div class="min-w-0">
+        <h2 id="agent-heading">Your coding agent drives the same tools.</h2>
+        <p class="mt-6 max-w-reading">
+          Kiln has no model of its own. Your agent supplies the model; no
+          separate model key is needed.
+        </p>
+        <p class="mt-4 max-w-reading">
+          Create a workspace with <code>kiln-init</code>. It writes the MCP
+          configuration and skills for your harness. Follow the generated{" "}
+          <code>START.md</code> to connect.
+        </p>
+        <ul
+          class="mt-5 flex flex-wrap gap-2"
+          aria-label="Supported harness flags"
+        >
+          {HARNESSES.map((h) => (
+            <li class="border border-rule bg-sheet px-3 py-2 font-mono text-code">
+              --harness {h}
+            </li>
+          ))}
+        </ul>
+        <div class="mt-6">
+          <CodeBlock
+            code={WORKSPACE_COMMAND}
+            lang="bash"
+            label="Create an asset workspace"
+          />
+        </div>
+      </div>
+      <div class="min-w-0">
+        <CodeBlock
+          code={toolExample}
+          label="Recorded farmhouse tool exchange · abridged"
+        />
+        <p class="mt-3 text-caption text-dim">
+          {exchange.description} Ellipses mark omitted payloads; local paths and
+          host identifiers are removed.{" "}
+          <a href="/docs/tools/" class="text-ember underline">
+            Read the complete tool contracts.
+          </a>
+        </p>
+      </div>
+    </div>
+  </section>
+  <section class="container" aria-labelledby="ships-heading">
+    <div class="grid items-end gap-6 md:grid-cols-2">
+      <h2 id="ships-heading">The local toolchain ships together.</h2>
+      <p class="max-w-reading text-dim">
+        The {VERSION_SHORT} source release includes the tools, authoring
+        guidance and local review interface. Add the GPU service when material
+        appearance matters.
+      </p>
+    </div>
+    <dl class="mt-8 border-t border-ink">
+      {ship.map(([name, description, slug]) => (
+        <div class="grid gap-2 border-b border-rule py-5 md:grid-cols-12 md:gap-6">
+          <dt class="font-semibold md:col-span-3">
+            <a class="text-link" href={docHref(slug!)}>
+              {name}
+            </a>
+          </dt>
+          <dd class="max-w-reading self-center md:col-span-9">{description}</dd>
+        </div>
+      ))}
+    </dl>
+  </section>
+  <section class="container section-space" aria-labelledby="made-heading">
+    <h2 id="made-heading" class="max-w-reading">
+      The saved work is yours to inspect.
+    </h2>
+    <p class="mt-5 max-w-reading text-dim">
+      Browse the models, read the source and follow their revisions. Commons
+      assets can be used without installing Kiln.
+    </p>
+    {PACKS_ENABLED ? (
+      <div class="mt-8 grid gap-8 md:grid-cols-3">
+        <article class="md:col-span-2">
+          <a href="/packs/farm/" class="no-underline">
+            <ResponsiveImage
+              image={farm.scene.poster}
+              sizes="(max-width: 768px) 100vw, 65vw"
+            />
+            <h3 class="mt-5 text-ink">Shapes &amp; Seasons Farm</h3>
+          </a>
+          <p class="mt-2 max-w-reading text-dim">
+            23 assets, their editable source and a runnable scene. Runtime,
+            editable and scene downloads retain their own notices and
+            provenance.
+          </p>
+          <a class="text-link mt-2" href="/packs/farm/">
+            Browse the Farm pack →
+          </a>
+        </article>
+        <article>
+          <a href="/gallery/golden-gate-bridge/" class="no-underline">
+            <ResponsiveImage
+              image={bridge.poster}
+              sizes="(max-width: 768px) 100vw, 33vw"
+            />
+            <h3 class="mt-5 text-ink">Golden Gate Bridge</h3>
+          </a>
+          <p class="mt-2 text-dim">
+            A standalone asset with published-dimension references, procedural
+            source and GPU captures.{" "}
+            {bridge.review.ownerAccepted
+              ? "Owner accepted."
+              : "Review is in progress."}
+          </p>
+        </article>
+      </div>
+    ) : (
+      <p class="mt-8 border-y border-rule py-6">
+        The Commons catalog is being prepared for publication. The archive
+        remains available below.
+      </p>
+    )}
+    <div class="mt-10 grid gap-8 border-y border-rule py-6 md:grid-cols-2">
+      <div>
+        <h3 class="text-title">Terafab (working title)</h3>
+        <p class="mt-2 max-w-reading text-dim">
+          In production: a chip fab pack with process tools, wafer transport and
+          a scene where the factory runs.
+        </p>
+        <a href="/packs/terafab/" class="text-link">
+          Production note →
+        </a>
+      </div>
+      <div>
+        <h3 class="text-title">Earlier examples</h3>
+        <p class="mt-2 max-w-reading text-dim">
+          Earlier examples from earlier Kiln versions, not reviewed to the pack
+          standard.
+        </p>
+        <a class="text-link" href="/gallery/archive/">
+          Open the archive →
+        </a>
+      </div>
+    </div>
+  </section>
+  <section class="container" aria-labelledby="start-heading">
+    <div class="grid gap-8 border-t border-ink pt-8 lg:grid-cols-12 lg:gap-12">
+      <div class="lg:col-span-4">
+        <h2 id="start-heading">Start with a source release.</h2>
+        <p class="mt-5 max-w-reading">
+          Use Node.js 20.15+ on the 20.x line, or 22.2 and later. The npm
+          package is still unpublished.
+        </p>
+        <p class="mt-4 max-w-reading text-dim">
+          The v{VERSION} tag is pending publication. These are the{" "}
+          {VERSION_SHORT} installation commands for the release.
+        </p>
+        <a href="/docs/install/" class="text-link mt-3">
+          Read the installation guide →
+        </a>
+      </div>
+      <div class="min-w-0 space-y-4 lg:col-span-8">
+        <CodeBlock
+          code={`mkdir kiln-install\ncd kiln-install\nnpm init -y\n${INSTALL_COMMAND}`}
+          lang="bash"
+          label={`Install Kiln ${VERSION_SHORT}`}
+        />
+        <CodeBlock
+          code={`${WORKSPACE_COMMAND}\ncd ../my-assets\n# Follow START.md for your harness`}
+          lang="bash"
+          label="Connect your coding agent"
+        />
+      </div>
+    </div>
+  </section>
+</BaseLayout>

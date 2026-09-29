@@ -1,0 +1,31 @@
+---
+import type { CatalogImage } from "../lib/catalog";
+interface Props {
+  image: CatalogImage;
+  sizes?: string;
+  eager?: boolean;
+  class?: string;
+}
+const {
+  image,
+  sizes = "(max-width: 768px) 100vw, 50vw",
+  eager = false,
+  class: className = "w-full",
+} = Astro.props;
+---
+
+<picture>
+  <source type="image/avif" srcset={image.srcsetAvif} sizes={sizes} />
+  <img
+    src={image.src}
+    srcset={image.srcsetWebp}
+    sizes={sizes}
+    width={image.width}
+    height={image.height}
+    alt={image.alt}
+    loading={eager ? "eager" : "lazy"}
+    decoding="async"
+    fetchpriority={eager ? "high" : undefined}
+    class={className}
+  />
+</picture>

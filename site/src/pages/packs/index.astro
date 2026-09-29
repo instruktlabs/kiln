@@ -1,0 +1,81 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import ResponsiveImage from "../../components/ResponsiveImage.astro";
+import { farm } from "../../lib/catalog";
+import { PACKS_ENABLED } from "../../lib/config";
+---
+
+<BaseLayout
+  title="Kiln Commons — editable 3D asset packs"
+  description="Kiln Commons packs include runtime GLBs, editable source and provenance. Browse Shapes & Seasons Farm and the in-production Terafab pack."
+  breadcrumbs={[{ label: "Packs", href: "/packs/" }]}
+  ogImage="/social/packs.webp"
+>
+  <div class="container">
+    <h1 class="max-w-reading py-8">Kiln Commons</h1>
+    <p class="lead">
+      Asset packs made with Kiln. Use the GLBs in your application, or keep the
+      source and revise them with your coding agent.
+    </p>
+    {PACKS_ENABLED && (
+      <article class="mt-12 grid items-center gap-8 border-y border-rule py-8 lg:grid-cols-3">
+        <a href="/packs/farm/" class="lg:col-span-2">
+          <ResponsiveImage
+            image={farm.scene.poster}
+            eager
+            sizes="(max-width: 1024px) 100vw, 65vw"
+          />
+        </a>
+        <div>
+          <h2>Shapes &amp; Seasons Farm</h2>
+          <p class="mt-5">
+            23 assets: buildings, animals, crops, fencing and farm equipment.
+          </p>
+          <p class="mt-4 text-dim">
+            Runtime, editable and scene profiles. {farm.ownerApprovedAssets} of{" "}
+            {farm.assetCount} assets approved by the owner; the farmhouse floor
+            refinement awaits review.
+          </p>
+          <a href="/packs/farm/" class="text-link mt-4">
+            Inspect the pack and downloads →
+          </a>
+        </div>
+      </article>
+    )}
+    <div class="mt-12 grid gap-8 md:grid-cols-2">
+      <div>
+        <h2 class="text-subheading">Terafab (working title)</h2>
+        <p class="mt-4 max-w-reading">
+          In production: process tools, wafer transport and a scene where the
+          chip factory runs.
+        </p>
+        <a href="/packs/terafab/" class="text-link mt-2">
+          Read the production note →
+        </a>
+      </div>
+      <div>
+        <h2 class="text-subheading">Choose the files you need.</h2>
+        <p class="mt-4 max-w-reading">
+          Runtime profiles contain GLBs and metadata. Editable profiles add
+          source and rebuilding dependencies. Scene profiles include a runnable
+          demonstration. You do not need Kiln to use the runtime models.
+        </p>
+      </div>
+    </div>
+    <div class="mt-12 border-t border-ink pt-6">
+      <h2 class="text-subheading">
+        Asset content and software have separate licenses.
+      </h2>
+      <p class="mt-4 max-w-reading">
+        {farm.licenseScope} Preserve the supplied licenses, material records and
+        scene software notices.
+      </p>
+      <a
+        href="https://creativecommons.org/publicdomain/zero/1.0/"
+        class="text-link mt-2"
+      >
+        Read CC0-1.0 ↗
+      </a>
+    </div>
+  </div>
+</BaseLayout>

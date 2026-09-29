@@ -1,4 +1,11 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+---
+interface Props {
+  size?: number;
+}
+const { size = 32 } = Astro.props;
+---
+
+<svg width={size} height={size} viewBox="0 0 32 32" aria-hidden="true">
   <path d="M16 4 28 10 16 16 4 10z" fill="#e8823c" />
   <path d="M4 10 16 16v12L4 22z" fill="#7d2f19" />
   <path d="M16 16 28 10v12l-12 6z" fill="#a44024" />

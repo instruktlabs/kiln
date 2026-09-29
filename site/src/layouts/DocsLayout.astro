@@ -1,0 +1,272 @@
+---
+import type { MarkdownHeading } from "astro";
+import BaseLayout from "./BaseLayout.astro";
+import DocsNav from "../components/docs/DocsNav.astro";
+import DocsToc from "../components/docs/DocsToc.astro";
+interface Props {
+  title: string;
+  description: string;
+  current?: string;
+  headings?: MarkdownHeading[];
+  source?: string;
+}
+const { title, description, current, headings = [], source } = Astro.props;
+const breadcrumbs = current
+  ? [
+      { label: "Docs", href: "/docs/" },
+      { label: title, href: `/docs/${current}/` },
+    ]
+  : [{ label: "Docs", href: "/docs/" }];
+---
+
+<BaseLayout
+  title={`${title} · Kiln docs`}
+  description={description}
+  breadcrumbs={breadcrumbs}
+  ogImage="/social/docs.webp"
+>
+  <div class="container py-8 lg:py-12">
+    <div class="mb-6 space-y-3 lg:hidden">
+      <details class="docs-disclosure">
+        <summary class="min-h-11 cursor-pointer py-3 font-semibold">
+          Browse documentation
+        </summary>
+        <div class="py-4">
+          <DocsNav current={current} label="Documentation menu" />
+        </div>
+      </details>
+      {headings.length > 0 && (
+        <details class="docs-disclosure">
+          <summary class="min-h-11 cursor-pointer py-3 font-semibold">
+            On this page
+          </summary>
+          <div class="py-4">
+            <DocsToc headings={headings} label="On this page menu" />
+          </div>
+        </details>
+      )}
+    </div>
+    <div class="flex items-start gap-8 xl:gap-12">
+      <aside
+        aria-label="Documentation sidebar"
+        class="hidden w-48 shrink-0 lg:block"
+      >
+        <div class="sticky top-8 max-h-screen overflow-y-auto pb-8">
+          <DocsNav current={current} />
+        </div>
+      </aside>
+      <div class="min-w-0 flex-1">
+        <article class="prose prose-kiln max-w-none docs-prose">
+          <slot />
+        </article>
+        {source && (
+          <p class="mt-12 border-t border-rule pt-6 text-sm">
+            <a href={source}>Read this page in the repository</a>
+          </p>
+        )}
+      </div>
+      {headings.length > 0 && (
+        <aside
+          aria-label="Page table of contents"
+          class="hidden w-48 shrink-0 xl:block"
+        >
+          <div class="sticky top-8 max-h-screen overflow-y-auto pb-8">
+            <DocsToc headings={headings} />
+          </div>
+        </aside>
+      )}
+    </div>
+  </div>
+  <p class="sr-only" data-docs-copy-status aria-live="polite"></p>
+</BaseLayout>
+
+<script>
+  const copyStatus = document.querySelector<HTMLElement>(
+    "[data-docs-copy-status]",
+  );
+  for (const button of document.querySelectorAll<HTMLButtonElement>(
+    "[data-copy-docs]",
+  )) {
+    button.hidden = false;
+    button.addEventListener("click", async () => {
+      const code = button.closest(".docs-code")?.querySelector("code");
+      if (!code) return;
+      try {
+        await navigator.clipboard.writeText(code.textContent ?? "");
+        button.textContent = "Copied";
+        if (copyStatus) copyStatus.textContent = "Code copied to clipboard.";
+        window.setTimeout(() => {
+          button.textContent = "Copy code";
+        }, 2000);
+      } catch {
+        const selection = window.getSelection();
+        selection?.selectAllChildren(code);
+        if (copyStatus)
+          copyStatus.textContent =
+            "Code selected. Use your device’s copy command.";
+      }
+    });
+  }
+</script>
+
+<style is:global>
+  .docs-nav-link,
+  .docs-toc-link {
+    text-decoration: none;
+    color: var(--color-dim);
+  }
+  .docs-nav-link:hover,
+  .docs-nav-link[aria-current="page"],
+  .docs-toc-link:hover {
+    color: var(--color-ember);
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+  }
+  .docs-disclosure {
+    border-block: 1px solid var(--color-rule);
+  }
+  .docs-prose {
+    overflow-wrap: anywhere;
+  }
+  .docs-prose > p,
+  .docs-prose > ul,
+  .docs-prose > ol {
+    max-width: 72ch;
+  }
+  .docs-prose h1 {
+    font-family: var(--font-sans);
+    font-weight: 600;
+    font-stretch: 112%;
+    line-height: 1.1;
+    letter-spacing: -0.025em;
+  }
+  .docs-prose h2,
+  .docs-prose h3,
+  .docs-prose h4 {
+    scroll-margin-top: 2rem;
+  }
+  .docs-prose a:not(.docs-heading-link) {
+    text-underline-offset: 0.18em;
+  }
+  .docs-heading-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 2.75rem;
+    min-height: 2.75rem;
+    margin-inline-start: 0.25rem;
+    font-family: var(--font-mono);
+    font-size: 0.75em;
+    font-weight: 400;
+    text-decoration: none;
+    color: var(--color-ember);
+  }
+  .docs-local-note {
+    color: var(--color-dim);
+    font-size: 0.875em;
+  }
+  .docs-code {
+    margin-block: 1.5rem;
+    border: 1px solid var(--color-rule);
+    max-width: 100%;
+  }
+  .docs-code-actions {
+    min-height: 3.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding-inline: 1rem;
+    min-height: 2.75rem;
+    border-bottom: 1px solid var(--color-rule);
+    font-size: 0.75rem;
+    font-family: var(--font-mono);
+  }
+  .docs-code-actions > span {
+    padding-block: 0.5rem;
+    color: var(--color-dim);
+  }
+  .docs-code-actions button {
+    flex-shrink: 0;
+    min-height: 2.75rem;
+    padding-inline: 0.5rem;
+    text-decoration: underline;
+    text-underline-offset: 0.18em;
+    color: var(--color-ember);
+    cursor: pointer;
+  }
+  .docs-code pre {
+    margin: 0;
+    padding: 1.25rem;
+    overflow-x: auto;
+    white-space: pre;
+    border-radius: 0;
+    font-size: 0.8125rem;
+    line-height: 1.8;
+    overflow-wrap: normal;
+  }
+  .docs-code code {
+    font-family: var(--font-mono);
+  }
+  .docs-table-scroll {
+    max-width: 100%;
+    overflow-x: auto;
+    margin-block: 1.5rem;
+    border: 1px solid var(--color-rule);
+  }
+  .docs-table-scroll table {
+    margin: 0;
+    min-width: 100%;
+    font-size: 0.875rem;
+  }
+  .docs-table-scroll th,
+  .docs-table-scroll td {
+    padding: 0.75rem 1rem;
+    vertical-align: top;
+    min-width: 8rem;
+  }
+  .docs-table-scroll th {
+    text-align: left;
+    background: var(--color-stage);
+  }
+  .docs-table-scroll tr + tr {
+    border-top: 1px solid var(--color-rule);
+  }
+  @media (max-width: 47.99rem) {
+    .docs-table-labelled thead {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip-path: inset(50%);
+    }
+    .docs-table-labelled table,
+    .docs-table-labelled tbody,
+    .docs-table-labelled tr,
+    .docs-table-labelled td {
+      display: block;
+      width: 100%;
+    }
+    .docs-table-labelled td {
+      border: 0;
+      padding-block: 0.5rem;
+    }
+    .docs-table-labelled td::before {
+      content: attr(data-label);
+      display: block;
+      margin-bottom: 0.25rem;
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--color-dim);
+    }
+    .docs-table-labelled tr {
+      padding-block: 0.5rem;
+    }
+  }
+  @media (min-width: 80rem) {
+    .docs-prose {
+      max-width: 75ch;
+    }
+  }
+</style>

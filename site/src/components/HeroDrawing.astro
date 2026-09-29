@@ -1,0 +1,50 @@
+---
+import { hero } from "../lib/hero";
+import { bounds, imageQualification } from "../lib/catalog";
+import ResponsiveImage from "./ResponsiveImage.astro";
+const asset = hero.asset;
+---
+
+<figure class="min-w-0 self-center">
+  <div class="relative aspect-square">
+    <ResponsiveImage
+      image={asset.poster}
+      sizes="(max-width: 767px) 95vw, 48vw"
+      eager
+      class="h-full w-full object-contain"
+    />
+    <svg class="drawing-annotations" viewBox="0 0 614 614" aria-hidden="true">
+      <path d="M38 450V140M32 450h12M32 140h12M62 450H24M62 140H24" />
+      <text x="28" y="304" transform="rotate(-90 28 304)" text-anchor="middle">
+        {asset.metrics.bounds[1]?.toFixed(2)} m
+      </text>
+      <path d="M95 535H552M95 520v28M552 520v28" />
+      <text x="325" y="539" text-anchor="middle">
+        {asset.metrics.bounds[2]?.toFixed(2)} m · Z
+      </text>
+      {hero.callouts.map((part) => (
+        <g>
+          <circle cx={part.x} cy={part.y} r="3" fill="currentColor" />
+          <path
+            d={`M${part.x} ${part.y} L${part.endX - 12} ${part.endY} H${part.endX}`}
+          />
+          <text x={part.endX} y={part.endY - 8} text-anchor="end">
+            {part.name}
+          </text>
+        </g>
+      ))}
+    </svg>
+  </div>
+  <figcaption class="grid gap-2 border-t border-ink bg-paper px-4 py-3 font-mono text-code sm:grid-cols-2">
+    <a href={`/gallery/${asset.slug}/`} class="font-medium text-ember">
+      {asset.name} ↗
+    </a>
+    <span class="sm:text-right">{bounds(asset.metrics.bounds)} m</span>
+    <span class="break-all text-dim sm:col-span-2">
+      Revision {asset.revisionId}
+    </span>
+    {imageQualification(asset.poster) && (
+      <span class="min-w-0 break-words text-dim sm:col-span-2">{imageQualification(asset.poster)}</span>
+    )}
+  </figcaption>
+</figure>

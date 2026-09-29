@@ -1,0 +1,3815 @@
+{
+  "schemaVersion": 1,
+  "id": "farm",
+  "name": "Shapes & Seasons Farm",
+  "description": "A low-poly farm collection with buildings, fencing, crops, animals and working animation clips.",
+  "revision": "r34",
+  "projectRevision": "r_0000000034_a1b09b00d04071160c72e6b52723e88e274da032319ca118738b53f73bc796cd",
+  "fullPackAccepted": true,
+  "ownerApprovedAssets": 23,
+  "assetCount": 23,
+  "materialRecords": 10,
+  "textureMaps": 30,
+  "license": "CC0-1.0",
+  "licenseScope": "CC0-1.0 covers authored asset content only, to the extent of the owner’s rights. Kiln, the scene code, Three.js, BVH, Field Grass and other components retain their own licenses.",
+  "downloads": [
+    {
+      "profile": "runtime",
+      "archive": "shapes-and-seasons-farm-runtime.zip",
+      "bytes": 7680392,
+      "sha256": "5673740a511a2d68ef990882b815d4ce3aaa802bf8b06ba1e4ce6329367d875d",
+      "files": 107,
+      "assets": 23,
+      "path": "packs/farm/r34/shapes-and-seasons-farm-runtime.zip",
+      "url": "https://assets.kilnstudio.tools/packs/farm/r34/shapes-and-seasons-farm-runtime.zip",
+      "contents": [
+        "23 standalone runtime GLBs",
+        "Asset metadata and provenance",
+        "Applicable license notices"
+      ],
+      "compatibility": "Standard glTF 2.0 with Three.js consumer checks recorded. Godot, Unity, Unreal, Roblox, USDZ and s&box conversion are not qualified by this download."
+    },
+    {
+      "profile": "editable",
+      "archive": "shapes-and-seasons-farm-editable.zip",
+      "bytes": 22433293,
+      "sha256": "2e596172626e7498052a839ba6785c99f4475c72be2f329e0836c354a0fdfcd7",
+      "files": 130,
+      "assets": 23,
+      "path": "packs/farm/r34/shapes-and-seasons-farm-editable.zip",
+      "url": "https://assets.kilnstudio.tools/packs/farm/r34/shapes-and-seasons-farm-editable.zip",
+      "contents": [
+        "23 asset sources",
+        "10 material records and 30 texture maps",
+        "Pinned rebuild kit and authoring metadata"
+      ],
+      "compatibility": "The image-free rebuild needs no provider or GPU service. It was verified in a fresh extraction of the exact master on Windows Node v24.20.0, which is not a cross-platform guarantee."
+    },
+    {
+      "profile": "scene",
+      "archive": "shapes-and-seasons-farm-scene.zip",
+      "bytes": 4295548,
+      "sha256": "955aa5a8dee11f63a7205ee5c04cbe9e7112958870745bdaebd8baff23467f86",
+      "files": 117,
+      "assets": 23,
+      "path": "packs/farm/r34/shapes-and-seasons-farm-scene.zip",
+      "url": "https://assets.kilnstudio.tools/packs/farm/r34/shapes-and-seasons-farm-scene.zip",
+      "contents": [
+        "Runnable scene and editable scene modules",
+        "Runtime assets",
+        "Bundled browser dependencies and notices"
+      ],
+      "compatibility": "WebGPU with WebGL2 fallback. A reference application, not a complete farming game or physics engine; see metadata/performance-and-devices.md for tested configurations and limits."
+    }
+  ],
+  "scene": {
+    "available": false,
+    "status": "in-production",
+    "assetBase": "https://assets.kilnstudio.tools/packs/farm/r34/",
+    "poster": {
+      "src": "/media/farm/r33/scene/farm-scene-wide.webp",
+      "width": 1440,
+      "height": 925,
+      "alt": "Farm scene, wide elevated view: watermill and stream at top, red barn, cream farmhouse with porch, tractor and trailer, fenced paddocks with sheep, wheat field, low-poly woodland. Landscape.",
+      "srcsetWebp": "/media/farm/r33/scene/farm-scene-wide-320.webp 320w, /media/farm/r33/scene/farm-scene-wide-480.webp 480w, /media/farm/r33/scene/farm-scene-wide-672.webp 672w, /media/farm/r33/scene/farm-scene-wide-768.webp 768w, /media/farm/r33/scene/farm-scene-wide-1024.webp 1024w, /media/farm/r33/scene/farm-scene-wide-1440.webp 1440w",
+      "srcsetAvif": "/media/farm/r33/scene/farm-scene-wide-320.avif 320w, /media/farm/r33/scene/farm-scene-wide-480.avif 480w, /media/farm/r33/scene/farm-scene-wide-672.avif 672w, /media/farm/r33/scene/farm-scene-wide-768.avif 768w, /media/farm/r33/scene/farm-scene-wide-1024.avif 1024w, /media/farm/r33/scene/farm-scene-wide-1440.avif 1440w",
+      "inputPath": "media/farm/r33/scene/farm-scene-wide.webp",
+      "sourceDelivery": "r33",
+      "exactRevision": false,
+      "revisionQualification": "Scene view from r33. Layout and exterior are unchanged; it was not re-captured for r34. Farmhouse windows may differ at pixel level."
+    },
+    "description": "The interactive site scene is being rebuilt in React Three Fiber. The scene download contains the current runnable version.",
+    "desktop": [
+      "Third-person play as Rowan",
+      "Doors and gates",
+      "Bridge crossing",
+      "Tractor driving"
+    ],
+    "mobile": [
+      "Orbit viewing"
+    ],
+    "excluded": [
+      "Trailer towing",
+      "General vehicle physics",
+      "Mobile walking and driving"
+    ],
+    "command": "node scene/serve.mjs"
+  },
+  "floorRevision": {
+    "recordedAt": "2026-09-29T03:57:53.773Z",
+    "status": "owner-accepted",
+    "projectRevision": "r_0000000034_a1b09b00d04071160c72e6b52723e88e274da032319ca118738b53f73bc796cd",
+    "asset": {
+      "collectionId": "agy-farmhouse-floor",
+      "assetId": "a_793e1ebd4c32465ab937d93215ec2a50",
+      "revisionId": "r_01f97f5e943e4c2693b6db8596f3e353"
+    },
+    "savedGlbSha256": "sha256:4ce807341d6b6b7e8e1a722eb6cba7ebaedc3d978a7749b5f0e09027bec53eba",
+    "captures": [
+      {
+        "name": "before-receipt",
+        "images": [
+          "before-floor-views.png",
+          "before-hero.png"
+        ],
+        "fidelity": {
+          "version": "kiln.view-fidelity.v1",
+          "requested": "full-preferred",
+          "delivered": "full-material",
+          "materialFaithful": true,
+          "exactArtifact": false,
+          "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1074",
+          "inputGlbSha256": "sha256:d163dee75d62869bc887135da82007938a7908293cff57dc68b9670ded3ea2e0",
+          "degraded": false,
+          "reasonCodes": [
+            "IN_LOOP_BUILD_NOT_PERSISTED"
+          ]
+        }
+      },
+      {
+        "name": "after-receipt",
+        "images": [
+          "after-floor-views.png",
+          "after-hero.png"
+        ],
+        "fidelity": {
+          "version": "kiln.view-fidelity.v1",
+          "requested": "full-preferred",
+          "delivered": "full-material",
+          "materialFaithful": true,
+          "exactArtifact": false,
+          "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1074",
+          "inputGlbSha256": "sha256:4ce807341d6b6b7e8e1a722eb6cba7ebaedc3d978a7749b5f0e09027bec53eba",
+          "degraded": false,
+          "reasonCodes": [
+            "IN_LOOP_BUILD_NOT_PERSISTED"
+          ]
+        }
+      }
+    ],
+    "geometryReport": "review/production/farmhouse-floor-geometry.json",
+    "review": "Wood floor verified: 12 downward interior rays land on Mesh_InteriorFloor (Farm honey wood) at y 0.38 instead of the stone foundation top at 0.40. Fourteen meshes, all transforms and all materials unchanged; Mesh_ShellStone re-tessellated around the floor with 132 exterior probes identical before/after; bounds unchanged. Material-faithful GPU interior and hero views before/after. Fresh editable import/rebuild matches the exact saved artifact. Gemini 3.8 Flash High via agy refined the Opus 5.5 house, High requested; owner accepted the edit on 29 September 2026.",
+    "ownerAccepted": true,
+    "limits": [
+      "Portable wood material from the existing Farm honey-wood record; no new texture maps.",
+      "GPU and runtime visual checks do not qualify performance while this PC is under competing load.",
+      "Pack delivery archives and the proving scene still carry the glazed revision until they are rebuilt."
+    ],
+    "parentRevision": "r_37f835d35a1040fc9f64d6f3b271eac5",
+    "before": {
+      "src": "/media/farm/revisions/farmhouse-floor-before.webp",
+      "width": 508,
+      "height": 384,
+      "alt": "Farmhouse interior before the floor revision, with a masonry-looking floor.",
+      "srcsetWebp": "/media/farm/revisions/farmhouse-floor-before-320.webp 320w, /media/farm/revisions/farmhouse-floor-before-480.webp 480w",
+      "srcsetAvif": "/media/farm/revisions/farmhouse-floor-before-320.avif 320w, /media/farm/revisions/farmhouse-floor-before-480.avif 480w",
+      "inputPath": "media/farm/revisions/farmhouse-floor-before.webp"
+    },
+    "after": {
+      "src": "/media/farm/revisions/farmhouse-floor-after.webp",
+      "width": 508,
+      "height": 384,
+      "alt": "Farmhouse interior after the revision, with honey-coloured wooden floorboards.",
+      "srcsetWebp": "/media/farm/revisions/farmhouse-floor-after-320.webp 320w, /media/farm/revisions/farmhouse-floor-after-480.webp 480w",
+      "srcsetAvif": "/media/farm/revisions/farmhouse-floor-after-320.avif 320w, /media/farm/revisions/farmhouse-floor-after-480.avif 480w",
+      "inputPath": "media/farm/revisions/farmhouse-floor-after.webp"
+    },
+    "ownerAcceptance": {
+      "assetId": "farmhouse",
+      "revisionId": "r_01f97f5e943e4c2693b6db8596f3e353",
+      "ownerAccepted": true,
+      "date": "2026-09-29",
+      "statement": "Yes, the farmhouse wood floor revision passes.",
+      "source": "site-build/FEEDBACK-site-review-1.md",
+      "sourceSha256": "842c9056a0e13aaa02d8bf6e8eff3e5f6dd1d9cfdb617a76e91651ae04d2b835"
+    },
+    "reviewAtCapture": "Wood floor verified: 12 downward interior rays land on Mesh_InteriorFloor (Farm honey wood) at y 0.38 instead of the stone foundation top at 0.40. Fourteen meshes, all transforms and all materials unchanged; Mesh_ShellStone re-tessellated around the floor with 132 exterior probes identical before/after; bounds unchanged. Material-faithful GPU interior and hero views before/after. Fresh editable import/rebuild matches the exact saved artifact. Gemini 3.8 Flash High via agy refined the Opus 5.5 house, High requested; owner accepted the edit on 29 September 2026."
+  },
+  "assets": [
+    {
+      "id": "farmhouse",
+      "slug": "farmhouse",
+      "name": "Farmhouse",
+      "pack": "farm",
+      "category": "Buildings",
+      "description": "Cream masonry house with a charcoal gabled roof, olive shutters and a timber porch.",
+      "assetId": "a_793e1ebd4c32465ab937d93215ec2a50",
+      "revisionId": "r_01f97f5e943e4c2693b6db8596f3e353",
+      "parentRevision": "r_37f835d35a1040fc9f64d6f3b271eac5",
+      "metrics": {
+        "triangles": 4080,
+        "meshes": 16,
+        "materials": 10,
+        "bounds": [
+          9.115701913833618,
+          6.96999979019165,
+          9.050000190734863
+        ],
+        "boundsMin": [
+          -3.4657018184661865,
+          0,
+          -4.650000095367432
+        ],
+        "boundsMax": [
+          5.650000095367432,
+          6.96999979019165,
+          4.400000095367432
+        ],
+        "clips": [],
+        "partPaths": [
+          "Farmhouse/Shell/Mesh_ShellMasonry",
+          "Farmhouse/Shell/Mesh_ShellStone",
+          "Farmhouse/Shell/Mesh_ShellTrim",
+          "Farmhouse/Shell/Mesh_ShellGlass",
+          "Farmhouse/Shell/Mesh_ChimneyFlue",
+          "Farmhouse/Shell/Mesh_InteriorCeiling",
+          "Farmhouse/Shell/Mesh_InteriorFloor",
+          "Farmhouse/Roof/Mesh_RoofShingles",
+          "Farmhouse/Porch/Mesh_PorchTimber",
+          "Farmhouse/Porch/Mesh_PorchPlinth",
+          "Farmhouse/Porch/Mesh_PorchRoof",
+          "Farmhouse/Steps/Mesh_StepTreads",
+          "Farmhouse/Shutters/Mesh_ShutterPanels",
+          "Farmhouse/Shutters/Mesh_ShutterHinges",
+          "Farmhouse/Door/Joint_FrontDoor/Mesh_DoorLeaf",
+          "Farmhouse/Door/Joint_FrontDoor/Mesh_DoorHardware"
+        ]
+      },
+      "poster": {
+        "src": "/media/farm/r33/cutout/farmhouse.webp",
+        "width": 1024,
+        "height": 1024,
+        "alt": "Cream masonry house with a charcoal gabled roof, olive shutters and a timber porch.",
+        "srcsetWebp": "/media/farm/r33/cutout/farmhouse-320.webp 320w, /media/farm/r33/cutout/farmhouse-480.webp 480w, /media/farm/r33/cutout/farmhouse-672.webp 672w, /media/farm/r33/cutout/farmhouse-768.webp 768w, /media/farm/r33/cutout/farmhouse-1024.webp 1024w",
+        "srcsetAvif": "/media/farm/r33/cutout/farmhouse-320.avif 320w, /media/farm/r33/cutout/farmhouse-480.avif 480w, /media/farm/r33/cutout/farmhouse-672.avif 672w, /media/farm/r33/cutout/farmhouse-768.avif 768w, /media/farm/r33/cutout/farmhouse-1024.avif 1024w",
+        "inputPath": "media/farm/r33/cutout/farmhouse.webp",
+        "sourceRevisionId": "r_37f835d35a1040fc9f64d6f3b271eac5",
+        "exactRevision": false,
+        "revisionQualification": "Exterior view from r33, revision r_37f835d35a1040fc9f64d6f3b271eac5. Exterior geometry and bounds are unchanged; this view was not re-rendered for r34, so window tint may differ."
+      },
+      "reviewImage": {
+        "src": "/media/farm/r34/poster/farmhouse.webp",
+        "width": 1168,
+        "height": 780,
+        "alt": "Six saved review views of Farmhouse.",
+        "srcsetWebp": "/media/farm/r34/poster/farmhouse-320.webp 320w, /media/farm/r34/poster/farmhouse-480.webp 480w, /media/farm/r34/poster/farmhouse-672.webp 672w, /media/farm/r34/poster/farmhouse-768.webp 768w, /media/farm/r34/poster/farmhouse-1024.webp 1024w",
+        "srcsetAvif": "/media/farm/r34/poster/farmhouse-320.avif 320w, /media/farm/r34/poster/farmhouse-480.avif 480w, /media/farm/r34/poster/farmhouse-672.avif 672w, /media/farm/r34/poster/farmhouse-768.avif 768w, /media/farm/r34/poster/farmhouse-1024.avif 1024w",
+        "inputPath": "media/farm/r34/poster/farmhouse.png",
+        "sourceRevisionId": "r_01f97f5e943e4c2693b6db8596f3e353",
+        "exactRevision": true
+      },
+      "sourcePath": "/sources/farmhouse.kiln.js",
+      "sourceSha256": "74fda08c6343b2a257c0da185f1486a0ca23392d6574fc8f55eeb37c74fd9fde",
+      "modelPath": "/models/farm/farmhouse.glb",
+      "runtimeDownload": {
+        "path": "packs/farm/r34/models/farmhouse.glb",
+        "url": "https://assets.kilnstudio.tools/packs/farm/r34/models/farmhouse.glb",
+        "bytes": 549584,
+        "sha256": "1b02596b30e3417e3f8336893694f2614002e28154408803b145154097de8512",
+        "archive": "packs/farm/r34/shapes-and-seasons-farm-runtime.zip",
+        "member": "models/farmhouse.glb"
+      },
+      "provenance": {
+        "originalModel": "Claude Opus 5.5",
+        "refinementModels": [
+          "Claude Opus 5.5",
+          "Gemini 3.8 Flash High"
+        ],
+        "history": [
+          {
+            "stage": "first",
+            "revisionId": "r_8420afabf8fb4d58997ea50b7d13c4c9",
+            "parentRevisionId": null,
+            "model": "Claude Opus 5.5",
+            "modelId": "claude-opus-5-5",
+            "requestedEffort": "high",
+            "confirmedEffort": null,
+            "harness": "claude",
+            "harnessVersion": "2.1.280",
+            "confirmation": "native-harness-model; high requested, effective effort not separately exposed"
+          },
+          {
+            "stage": "review-1",
+            "revisionId": "r_1cf8330fa49e41c1b19e691ee80d0aad",
+            "parentRevisionId": "r_8420afabf8fb4d58997ea50b7d13c4c9",
+            "model": "Claude Opus 5.5",
+            "modelId": "claude-opus-5-5",
+            "requestedEffort": "high",
+            "confirmedEffort": null,
+            "harness": "claude",
+            "harnessVersion": "2.1.280",
+            "confirmation": "native-stream-model; high requested, effective effort not separately exposed"
+          },
+          {
+            "stage": "review-2",
+            "revisionId": "r_37f835d35a1040fc9f64d6f3b271eac5",
+            "parentRevisionId": "r_1cf8330fa49e41c1b19e691ee80d0aad",
+            "model": "Claude Opus 5.5",
+            "modelId": "claude-opus-5-5",
+            "requestedEffort": "high",
+            "confirmedEffort": null,
+            "harness": "claude",
+            "harnessVersion": "2.1.280",
+            "confirmation": "native-stream-model; high requested, effective effort not separately exposed"
+          },
+          {
+            "stage": "first",
+            "revisionId": "r_01f97f5e943e4c2693b6db8596f3e353",
+            "parentRevisionId": "r_37f835d35a1040fc9f64d6f3b271eac5",
+            "model": "Gemini 3.8 Flash High",
+            "modelId": "gemini-3.8-flash-high",
+            "requestedEffort": "high",
+            "confirmedEffort": null,
+            "harness": "agy",
+            "harnessVersion": "1.2.12",
+            "confirmation": "native-init model confirmed; High encoded in model ID and explicitly requested, effective effort not independently exposed"
+          }
+        ]
+      },
+      "revisions": [
+        {
+          "stage": "first",
+          "revisionId": "r_8420afabf8fb4d58997ea50b7d13c4c9",
+          "parentRevisionId": null,
+          "model": "Claude Opus 5.5",
+          "modelId": "claude-opus-5-5",
+          "requestedEffort": "high",
+          "confirmedEffort": null,
+          "harness": "claude",
+          "harnessVersion": "2.1.280",
+          "confirmation": "native-harness-model; high requested, effective effort not separately exposed"
+        },
+        {
+          "stage": "review-1",
+          "revisionId": "r_1cf8330fa49e41c1b19e691ee80d0aad",
+          "parentRevisionId": "r_8420afabf8fb4d58997ea50b7d13c4c9",
+          "model": "Claude Opus 5.5",
+          "modelId": "claude-opus-5-5",
+          "requestedEffort": "high",
+          "confirmedEffort": null,
+          "harness": "claude",
+          "harnessVersion": "2.1.280",
+          "confirmation": "native-stream-model; high requested, effective effort not separately exposed"
+        },
+        {
+          "stage": "review-2",
+          "revisionId": "r_37f835d35a1040fc9f64d6f3b271eac5",
+          "parentRevisionId": "r_1cf8330fa49e41c1b19e691ee80d0aad",
+          "model": "Claude Opus 5.5",
+          "modelId": "claude-opus-5-5",
+          "requestedEffort": "high",
+          "confirmedEffort": null,
+          "harness": "claude",
+          "harnessVersion": "2.1.280",
+          "confirmation": "native-stream-model; high requested, effective effort not separately exposed"
+        },
+        {
+          "stage": "first",
+          "revisionId": "r_01f97f5e943e4c2693b6db8596f3e353",
+          "parentRevisionId": "r_37f835d35a1040fc9f64d6f3b271eac5",
+          "model": "Gemini 3.8 Flash High",
+          "modelId": "gemini-3.8-flash-high",
+          "requestedEffort": "high",
+          "confirmedEffort": null,
+          "harness": "agy",
+          "harnessVersion": "1.2.12",
+          "confirmation": "native-init model confirmed; High encoded in model ID and explicitly requested, effective effort not independently exposed"
+        }
+      ],
+      "review": {
+        "status": "accepted",
+        "ownerAccepted": true,
+        "scope": "Exact delivered revision matches the current owner-accepted revision.",
+        "recordedAt": "2026-09-29",
+        "source": "site-build/FEEDBACK-site-review-1.md"
+      },
+      "license": "CC0-1.0",
+      "sceneDeepLink": null
+    },
+    {
+      "id": "barn",
+      "slug": "barn",
+      "name": "Barn",
+      "pack": "farm",
+      "category": "Buildings",
+      "description": "Red timber barn with white door bracing, a grey roof and an open side shelter.",
+      "assetId": "a_a59fa53b5b9043239ae8cc29b6a0119f",
+      "revisionId": "r_c0234dc50e0443f4a8819cdf754b22da",
+      "parentRevision": null,
+      "metrics": {
+        "triangles": 2674,
+        "meshes": 23,
+        "materials": 6,
+        "bounds": [
+          10.600000381469727,
+          9.109563827514648,
+          11.770662307739258
+        ],
+        "boundsMin": [
+          -5.300000190734863,
+          0,
+          -5.885331201254013
+        ],
+        "boundsMax": [
+          5.300000190734863,
+          9.109563827514648,
+          5.8853311064852445
+        ],
+        "clips": [
+          "Open",
+          "Close"
+        ],
+        "partPaths": [
+          "Barn/BarnBody/Structure/Mesh_Structure_red",
+          "Barn/BarnBody/Structure/Mesh_Structure_honey",
+          "Barn/BarnBody/Structure/Mesh_Structure_cream",
+          "Barn/BarnBody/Structure/Mesh_Structure_masonry",
+          "Barn/BarnBody/Structure/Mesh_Structure_iron",
+          "Barn/BarnBody/MainRoof/Mesh_MainRoof_roof",
+          "Barn/BarnBody/MainRoof/Mesh_MainRoof_honey",
+          "Barn/BarnBody/Cupola/Mesh_Cupola_red",
+          "Barn/BarnBody/Cupola/Mesh_Cupola_cream",
+          "Barn/BarnBody/Cupola/Mesh_Cupola_roof",
+          "Barn/BarnBody/Cupola/Mesh_Cupola_honey",
+          "Barn/BarnBody/Cupola/Mesh_Cupola_iron",
+          "Barn/BarnBody/Awning/Mesh_Awning_roof",
+          "Barn/BarnBody/Awning/Mesh_Awning_honey",
+          "Barn/BarnBody/Awning/Mesh_Awning_masonry",
+          "Barn/BarnBody/Doors/Joint_DoorRight/Mesh_DoorRight_honey",
+          "Barn/BarnBody/Doors/Joint_DoorRight/Mesh_DoorRight_red",
+          "Barn/BarnBody/Doors/Joint_DoorRight/Mesh_DoorRight_cream",
+          "Barn/BarnBody/Doors/Joint_DoorRight/Mesh_DoorRight_iron",
+          "Barn/BarnBody/Doors/Joint_DoorLeft/Mesh_DoorLeft_honey",
+          "Barn/BarnBody/Doors/Joint_DoorLeft/Mesh_DoorLeft_red",
+          "Barn/BarnBody/Doors/Joint_DoorLeft/Mesh_DoorLeft_cream",
+          "Barn/BarnBody/Doors/Joint_DoorLeft/Mesh_DoorLeft_iron"
+        ]
+      },
+      "poster": {
+        "src": "/media/farm/r33/cutout/barn.webp",
+        "width": 1024,
+        "height": 1024,
+        "alt": "Red timber barn with white door bracing, a grey roof and an open side shelter.",
+        "srcsetWebp": "/media/farm/r33/cutout/barn-320.webp 320w, /media/farm/r33/cutout/barn-480.webp 480w, /media/farm/r33/cutout/barn-672.webp 672w, /media/farm/r33/cutout/barn-768.webp 768w, /media/farm/r33/cutout/barn-1024.webp 1024w",
+        "srcsetAvif": "/media/farm/r33/cutout/barn-320.avif 320w, /media/farm/r33/cutout/barn-480.avif 480w, /media/farm/r33/cutout/barn-672.avif 672w, /media/farm/r33/cutout/barn-768.avif 768w, /media/farm/r33/cutout/barn-1024.avif 1024w",
+        "inputPath": "media/farm/r33/cutout/barn.webp"
+      },
+      "reviewImage": {
+        "src": "/media/farm/r33/poster/barn.webp",
+        "width": 1168,
+        "height": 780,
+        "alt": "Six rendered review views of Barn.",
+        "srcsetWebp": "/media/farm/r33/poster/barn-320.webp 320w, /media/farm/r33/poster/barn-480.webp 480w, /media/farm/r33/poster/barn-672.webp 672w, /media/farm/r33/poster/barn-768.webp 768w, /media/farm/r33/poster/barn-1024.webp 1024w",
+        "srcsetAvif": "/media/farm/r33/poster/barn-320.avif 320w, /media/farm/r33/poster/barn-480.avif 480w, /media/farm/r33/poster/barn-672.avif 672w, /media/farm/r33/poster/barn-768.avif 768w, /media/farm/r33/poster/barn-1024.avif 1024w",
+        "inputPath": "media/farm/r33/poster/barn.webp"
+      },
+      "sourcePath": "/sources/barn.kiln.js",
+      "sourceSha256": "f2a9f05c744355354d4ec34f841a69bae2ee9f4e42bbc94df653f4bea4c6064a",
+      "modelPath": "/models/farm/barn.glb",
+      "runtimeDownload": {
+        "path": "packs/farm/r34/models/barn.glb",
+        "url": "https://assets.kilnstudio.tools/packs/farm/r34/models/barn.glb",
+        "bytes": 618912,
+        "sha256": "eae958ffee9be52c2f61c86859f138a1e999be3d3056dab9cb76df6286ea0041",
+        "archive": "packs/farm/r34/shapes-and-seasons-farm-runtime.zip",
+        "member": "models/barn.glb"
+      },
+      "provenance": {
+        "originalModel": "Claude Opus 5.5",
+        "refinementModels": [],
+        "history": [
+          {
+            "stage": "first",
+            "revisionId": "r_c0234dc50e0443f4a8819cdf754b22da",
+            "parentRevisionId": null,
+            "model": "Claude Opus 5.5",
+            "modelId": "claude-opus-5-5",
+            "requestedEffort": "high",
+            "confirmedEffort": null,
+            "harness": "claude",
+            "harnessVersion": "2.1.280",
+            "confirmation": "native-stream-model; high requested, effective effort not separately exposed"
+          }
+        ]
+      },
+      "revisions": [
+        {
+          "stage": "first",
+          "revisionId": "r_c0234dc50e0443f4a8819cdf754b22da",
+          "parentRevisionId": null,
+          "model": "Claude Opus 5.5",
+          "modelId": "claude-opus-5-5",
+          "requestedEffort": "high",
+          "confirmedEffort": null,
+          "harness": "claude",
+          "harnessVersion": "2.1.280",
+          "confirmation": "native-stream-model; high requested, effective effort not separately exposed"
+        }
+      ],
+      "review": {
+        "status": "accepted",
+        "ownerAccepted": true,
+        "scope": "Exact delivered revision matches the current owner-accepted revision.",
+        "recordedAt": "2026-09-29",
+        "source": "site-build/FEEDBACK-site-review-1.md"
+      },
+      "license": "CC0-1.0",
+      "sceneDeepLink": null
+    },
+    {
+      "id": "windmill",
+      "slug": "windmill",
+      "name": "Windmill",
+      "pack": "farm",
+      "category": "Buildings",
+      "description": "Open timber wind pump with a metal rotor, tail vane and four braced legs.",
+      "assetId": "windmill",
+      "revisionId": "r_ef9045311dd040258e0143345c171d6f",
+      "parentRevision": "r_3836995ebcad486b88d50b05464a390d",
+      "metrics": {
+        "triangles": 4328,
+        "meshes": 4,
+        "materials": 2,
+        "bounds": [
+          2.8824999928474426,
+          7.08,
+          2.5
+        ],
+        "boundsMin": [
+          -1.9225000143051147,
+          0,
+          -1.25
+        ],
+        "boundsMax": [
+          0.9599999785423279,
+          7.08,
+          1.25
+        ],
+        "clips": [
+          "Spin"
+        ],
+        "partPaths": [
+          "Windmill/Mesh_TowerWood",
+          "Windmill/Mesh_TowerMetal",
+          "Windmill/Joint_Rotor/Mesh_RotorHub",
+          "Windmill/Joint_Rotor/Mesh_RotorBlades"
+        ]
+      },
+      "poster": {
+        "src": "/media/farm/r33/cutout/windmill.webp",
+        "width": 1024,
+        "height": 1024,
+        "alt": "Open timber wind pump with a metal rotor, tail vane and four braced legs.",
+        "srcsetWebp": "/media/farm/r33/cutout/windmill-320.webp 320w, /media/farm/r33/cutout/windmill-480.webp 480w, /media/farm/r33/cutout/windmill-672.webp 672w, /media/farm/r33/cutout/windmill-768.webp 768w, /media/farm/r33/cutout/windmill-1024.webp 1024w",
+        "srcsetAvif": "/media/farm/r33/cutout/windmill-320.avif 320w, /media/farm/r33/cutout/windmill-480.avif 480w, /media/farm/r33/cutout/windmill-672.avif 672w, /media/farm/r33/cutout/windmill-768.avif 768w, /media/farm/r33/cutout/windmill-1024.avif 1024w",
+        "inputPath": "media/farm/r33/cutout/windmill.webp"
+      },
+      "reviewImage": {
+        "src": "/media/farm/r33/poster/windmill.webp",
+        "width": 1168,
+        "height": 780,
+        "alt": "Six rendered review views of Windmill.",
+        "srcsetWebp": "/media/farm/r33/poster/windmill-320.webp 320w, /media/farm/r33/poster/windmill-480.webp 480w, /media/farm/r33/poster/windmill-672.webp 672w, /media/farm/r33/poster/windmill-768.webp 768w, /media/farm/r33/poster/windmill-1024.webp 1024w",
+        "srcsetAvif": "/media/farm/r33/poster/windmill-320.avif 320w, /media/farm/r33/poster/windmill-480.avif 480w, /media/farm/r33/poster/windmill-672.avif 672w, /media/farm/r33/poster/windmill-768.avif 768w, /media/farm/r33/poster/windmill-1024.avif 1024w",
+        "inputPath": "media/farm/r33/poster/windmill.webp"
+      },
+      "sourcePath": "/sources/windmill.kiln.js",
+      "sourceSha256": "fbbeb5d8db9b925f48194c533e0b6130681bf7f86b05d8b19ce898b049e0f5e6",
+      "modelPath": "/models/farm/windmill.glb",
+      "runtimeDownload": {
+        "path": "packs/farm/r34/models/windmill.glb",
+        "url": "https://assets.kilnstudio.tools/packs/farm/r34/models/windmill.glb",
+        "bytes": 454760,
+        "sha256": "089e966217cbd05c81a123ab2419d9d9c172bb7567f30ef2f7020cc790c8148f",
+        "archive": "packs/farm/r34/shapes-and-seasons-farm-runtime.zip",
+        "member": "models/windmill.glb"
+      },
+      "provenance": {
+        "originalModel": "Gemini 3.8 Flash High",
+        "refinementModels": [
+          "Gemini 3.8 Flash High"
+        ],
+        "history": [
+          {
+            "stage": "first",
+            "revisionId": "r_085711a1e21046feb9d11fd9c9e2046e",
+            "parentRevisionId": null,
+            "model": "Gemini 3.8 Flash High",
+            "modelId": "gemini-3.8-flash-high",
+            "requestedEffort": "high",
+            "confirmedEffort": null,
+            "harness": "agy",
+            "harnessVersion": "1.2.9",
+            "confirmation": "native-init model confirmed; High encoded in model ID and explicitly requested, effective effort not independently exposed"
+          },
+          {
+            "stage": "review-1",
+            "revisionId": "r_3836995ebcad486b88d50b05464a390d",
+            "parentRevisionId": "r_085711a1e21046feb9d11fd9c9e2046e",
+            "model": "Gemini 3.8 Flash High",
+            "modelId": "gemini-3.8-flash-high",
+            "requestedEffort": "high",
+            "confirmedEffort": null,
+            "harness": "agy",
+            "harnessVersion": "1.2.9",
+            "confirmation": "native-init model confirmed; High encoded in model ID and explicitly requested, effective effort not independently exposed"
+          },
+          {
+            "stage": "review-2",
+            "revisionId": "r_ef9045311dd040258e0143345c171d6f",
+            "parentRevisionId": "r_3836995ebcad486b88d50b05464a390d",
+            "model": "Gemini 3.8 Flash High",
+            "modelId": "gemini-3.8-flash-high",
+            "requestedEffort": "high",
+            "confirmedEffort": null,
+            "harness": "agy",
+            "harnessVersion": "1.2.9",
+            "confirmation": "native-init model confirmed; High encoded in model ID and explicitly requested, effective effort not independently exposed"
+          }
+        ]
+      },
+      "revisions": [
+        {
+          "stage": "first",
+          "revisionId": "r_085711a1e21046feb9d11fd9c9e2046e",
+          "parentRevisionId": null,
+          "model": "Gemini 3.8 Flash High",
+          "modelId": "gemini-3.8-flash-high",
+          "requestedEffort": "high",
+          "confirmedEffort": null,
+          "harness": "agy",
+          "harnessVersion": "1.2.9",
+          "confirmation": "native-init model confirmed; High encoded in model ID and explicitly requested, effective effort not independently exposed"
+        },
+        {
+          "stage": "review-1",
+          "revisionId": "r_3836995ebcad486b88d50b05464a390d",
+          "parentRevisionId": "r_085711a1e21046feb9d11fd9c9e2046e",
+          "model": "Gemini 3.8 Flash High",
+          "modelId": "gemini-3.8-flash-high",
+          "requestedEffort": "high",
+          "confirmedEffort": null,
+          "harness": "agy",
+          "harnessVersion": "1.2.9",
+          "confirmation": "native-init model confirmed; High encoded in model ID and explicitly requested, effective effort not independently exposed"
+        },
+        {
+          "stage": "review-2",
+          "revisionId": "r_ef9045311dd040258e0143345c171d6f",
+          "parentRevisionId": "r_3836995ebcad486b88d50b05464a390d",
+          "model": "Gemini 3.8 Flash High",
+          "modelId": "gemini-3.8-flash-high",
+          "requestedEffort": "high",
+          "confirmedEffort": null,
+          "harness": "agy",
+          "harnessVersion": "1.2.9",
+          "confirmation": "native-init model confirmed; High encoded in model ID and explicitly requested, effective effort not independently exposed"
+        }
+      ],
+      "review": {
+        "status": "accepted",
+        "ownerAccepted": true,
+        "scope": "Exact delivered revision matches the current owner-accepted revision.",
+        "recordedAt": "2026-09-29",
+        "source": "site-build/FEEDBACK-site-review-1.md"
+      },
+      "license": "CC0-1.0",
+      "sceneDeepLink": null
+    },
+    {
+      "id": "watermill",
+      "slug": "watermill",
+      "name": "Watermill",
+      "pack": "farm",
+      "category": "Buildings",
+      "description": "Pale masonry mill house with a gabled roof and an exposed timber waterwheel.",
+      "assetId": "watermill",
+      "revisionId": "r_f8ab38b03b5a4fb691b860d9fb076200",
+      "parentRevision": "r_81d32327d04846c0b18842a28c66bb64",
+      "metrics": {
+        "triangles": 4052,
+        "meshes": 14,
+        "materials": 5,
+        "bounds": [
+          5.860000133514404,
+          4.940000081062317,
+          5.304852724075317
+        ],
+        "boundsMin": [
+          -2.9200000762939453,
+          -2.3841858265427618e-8,
+          -2.7248528003692627
+        ],
+        "boundsMax": [
+          2.940000057220459,
+          4.940000057220459,
+          2.5799999237060547
+        ],
+        "clips": [
+          "Spin",
+          "DoorOpen"
+        ],
+        "partPaths": [
+          "Watermill/Building/Mesh_Building_Masonry",
+          "Watermill/Building/Mesh_Building_Wood",
+          "Watermill/Building/DoorPivot/Mesh_DoorLeaf_Wood",
+          "Watermill/Building/DoorPivot/Mesh_DoorLeaf_Metal",
+          "Watermill/Building/Mesh_WindowFront_Glass",
+          "Watermill/Building/Mesh_WindowBack_Glass",
+          "Watermill/Building/Mesh_WindowLeft_Glass",
+          "Watermill/Building/Roof/Mesh_Roof_Masonry",
+          "Watermill/Building/Roof/Mesh_Roof_Shingles",
+          "Watermill/Building/Roof/Mesh_Roof_Wood",
+          "Watermill/Gantry/Mesh_Gantry_Wood",
+          "Watermill/Gantry/Mesh_Gantry_Metal",
+          "Watermill/Joint_WheelRotor/Mesh_Wheel_Wood",
+          "Watermill/Joint_WheelRotor/Mesh_Wheel_Metal"
+        ]
+      },
+      "poster": {
+        "src": "/media/farm/r33/cutout/watermill.webp",
+        "width": 1024,
+        "height": 1024,
+        "alt": "Pale masonry mill house with a gabled roof and an exposed timber waterwheel.",
+        "srcsetWebp": "/media/farm/r33/cutout/watermill-320.webp 320w, /media/farm/r33/cutout/watermill-480.webp 480w, /media/farm/r33/cutout/watermill-672.webp 672w, /media/farm/r33/cutout/watermill-768.webp 768w, /media/farm/r33/cutout/watermill-1024.webp 1024w",
+        "srcsetAvif": "/media/farm/r33/cutout/watermill-320.avif 320w, /media/farm/r33/cutout/watermill-480.avif 480w, /media/farm/r33/cutout/watermill-672.avif 672w, /media/farm/r33/cutout/watermill-768.avif 768w, /media/farm/r33/cutout/watermill-1024.avif 1024w",
+        "inputPath": "media/farm/r33/cutout/watermill.webp"
+      },
+      "reviewImage": {
+        "src": "/media/farm/r33/poster/watermill.webp",
+        "width": 1168,
+        "height": 780,
+        "alt": "Six rendered review views of Watermill.",
+        "srcsetWebp": "/media/farm/r33/poster/watermill-320.webp 320w, /media/farm/r33/poster/watermill-480.webp 480w, /media/farm/r33/poster/watermill-672.webp 672w, /media/farm/r33/poster/watermill-768.webp 768w, /media/farm/r33/poster/watermill-1024.webp 1024w",
+        "srcsetAvif": "/media/farm/r33/poster/watermill-320.avif 320w, /media/farm/r33/poster/watermill-480.avif 480w, /media/farm/r33/poster/watermill-672.avif 672w, /media/farm/r33/poster/watermill-768.avif 768w, /media/farm/r33/poster/watermill-1024.avif 1024w",
+        "inputPath": "media/farm/r33/poster/watermill.webp"
+      },
+      "sourcePath": "/sources/watermill.kiln.js",
+      "sourceSha256": "1f4ce4eecbd06a160a249760ec97c29cb85a26182bc92a390d520c9027607809",
+      "modelPath": "/models/farm/watermill.glb",
+      "runtimeDownload": {
+        "path": "packs/farm/r34/models/watermill.glb",
+        "url": "https://assets.kilnstudio.tools/packs/farm/r34/models/watermill.glb",
+        "bytes": 580264,
+        "sha256": "b57f29056cf3b072058d65016b753551f146c4cace974458087bceaaab4d0ce0",
+        "archive": "packs/farm/r34/shapes-and-seasons-farm-runtime.zip",
+        "member": "models/watermill.glb"
+      },
+      "provenance": {
+        "originalModel": "Gemini 3.8 Flash High",
+        "refinementModels": [
+          "Gemini 3.8 Flash High",
+          "GPT-6 Astra"
+        ],
+        "history": [
+          {
+            "stage": "first",
+            "revisionId": "r_5af83fcc55b94a55a6ad438df47d0a0b",
+            "parentRevisionId": null,
+            "model": "Gemini 3.8 Flash High",
+            "modelId": "gemini-3.8-flash-high",
+            "requestedEffort": "high",
+            "confirmedEffort": null,
+            "harness": "agy",
+            "harnessVersion": "1.2.9",
+            "confirmation": "native-init model confirmed; High encoded in model ID and explicitly requested, effective effort not independently exposed"
+          },
+          {
+            "stage": "review-1",
+            "revisionId": "r_8b9c8ecdf01c4de2a8ce832fac572020",
+            "parentRevisionId": "r_5af83fcc55b94a55a6ad438df47d0a0b",
+            "model": "Gemini 3.8 Flash High",
+            "modelId": "gemini-3.8-flash-high",
+            "requestedEffort": "high",
+            "confirmedEffort": null,
+            "harness": "agy",
+            "harnessVersion": "1.2.9",
+            "confirmation": "native-init model confirmed; High encoded in model ID and explicitly requested, effective effort not independently exposed"
+          },
+          {
+            "stage": "review-2",
+            "revisionId": "r_e21e46605a38498ab1ff80c6dfc7e20d",
+            "parentRevisionId": "r_8b9c8ecdf01c4de2a8ce832fac572020",
+            "model": "Gemini 3.8 Flash High",
+            "modelId": "gemini-3.8-flash-high",
+            "requestedEffort": "high",
+            "confirmedEffort": null,
+            "harness": "agy",
+            "harnessVersion": "1.2.9",
+            "confirmation": "native-init model confirmed; High encoded in model ID and explicitly requested, effective effort not independently exposed"
+          },
+          {
+            "stage": "review-3-saved-intermediate",
+            "revisionId": "r_be6949c5595246a891c8a0a0e96ef0a5",
+            "parentRevisionId": "r_e21e46605a38498ab1ff80c6dfc7e20d",
+            "model": "Gemini 3.8 Flash High",
+            "modelId": "gemini-3.8-flash-high",
+            "requestedEffort": "high",
+            "confirmedEffort": null,
+            "harness": "agy",
+            "harnessVersion": "1.2.9",
+            "confirmation": "native-init model confirmed; High encoded in model ID and explicitly requested, effective effort not independently exposed"
+          },
+          {
+            "stage": "review-3",
+            "revisionId": "r_81d32327d04846c0b18842a28c66bb64",
+            "parentRevisionId": "r_be6949c5595246a891c8a0a0e96ef0a5",
+            "model": "Gemini 3.8 Flash High",
+            "modelId": "gemini-3.8-flash-high",
+            "requestedEffort": "high",
+            "confirmedEffort": null,
+            "harness": "agy",
+            "harnessVersion": "1.2.9",
+            "confirmation": "native-init model confirmed; High encoded in model ID and explicitly requested, effective effort not independently exposed"
+          },
+          {
+            "stage": "first",
+            "revisionId": "r_f8ab38b03b5a4fb691b860d9fb076200",
+            "parentRevisionId": "r_81d32327d04846c0b18842a28c66bb64",
+            "model": "GPT-6 Astra",
+            "modelId": "gpt-6-astra",
+            "requestedEffort": "high",
+            "confirmedEffort": "high",
+            "harness": "codex",
+            "harnessVersion": "0.157.1",
+            "confirmation": "native-turn-context"
+          }
+        ]
+      },
+      "revisions": [
+        {
+          "stage": "first",
+          "revisionId": "r_5af83fcc55b94a55a6ad438df47d0a0b",
+          "parentRevisionId": null,
+          "model": "Gemini 3.8 Flash High",
+          "modelId": "gemini-3.8-flash-high",
+          "requestedEffort": "high",
+          "confirmedEffort": null,
+          "harness": "agy",
+          "harnessVersion": "1.2.9",
+          "confirmation": "native-init model confirmed; High encoded in model ID and explicitly requested, effective effort not independently exposed"
+        },
+        {
+          "stage": "review-1",
+          "revisionId": "r_8b9c8ecdf01c4de2a8ce832fac572020",
+          "parentRevisionId": "r_5af83fcc55b94a55a6ad438df47d0a0b",
+          "model": "Gemini 3.8 Flash High",
+          "modelId": "gemini-3.8-flash-high",
+          "requestedEffort": "high",
+          "confirmedEffort": null,
+          "harness": "agy",
+          "harnessVersion": "1.2.9",
+          "confirmation": "native-init model confirmed; High encoded in model ID and explicitly requested, effective effort not independently exposed"
+        },
+        {
+          "stage": "review-2",
+          "revisionId": "r_e21e46605a38498ab1ff80c6dfc7e20d",
+          "parentRevisionId": "r_8b9c8ecdf01c4de2a8ce832fac572020",
+          "model": "Gemini 3.8 Flash High",
+          "modelId": "gemini-3.8-flash-high",
+          "requestedEffort": "high",
+          "confirmedEffort": null,
+          "harness": "agy",
+          "harnessVersion": "1.2.9",
+          "confirmation": "native-init model confirmed; High encoded in model ID and explicitly requested, effective effort not independently exposed"
+        },
+        {
+          "stage": "review-3-saved-intermediate",
+          "revisionId": "r_be6949c5595246a891c8a0a0e96ef0a5",
+          "parentRevisionId": "r_e21e46605a38498ab1ff80c6dfc7e20d",
+          "model": "Gemini 3.8 Flash High",
+          "modelId": "gemini-3.8-flash-high",
+          "requestedEffort": "high",
+          "confirmedEffort": null,
+          "harness": "agy",
+          "harnessVersion": "1.2.9",
+          "confirmation": "native-init model confirmed; High encoded in model ID and explicitly requested, effective effort not independently exposed"
+        },
+        {
+          "stage": "review-3",
+          "revisionId": "r_81d32327d04846c0b18842a28c66bb64",
+          "parentRevisionId": "r_be6949c5595246a891c8a0a0e96ef0a5",
+          "model": "Gemini 3.8 Flash High",
+          "modelId": "gemini-3.8-flash-high",
+          "requestedEffort": "high",
+          "confirmedEffort": null,
+          "harness": "agy",
+          "harnessVersion": "1.2.9",
+          "confirmation": "native-init model confirmed; High encoded in model ID and explicitly requested, effective effort not independently exposed"
+        },
+        {
+          "stage": "first",
+          "revisionId": "r_f8ab38b03b5a4fb691b860d9fb076200",
+          "parentRevisionId": "r_81d32327d04846c0b18842a28c66bb64",
+          "model": "GPT-6 Astra",
+          "modelId": "gpt-6-astra",
+          "requestedEffort": "high",
+          "confirmedEffort": "high",
+          "harness": "codex",
+          "harnessVersion": "0.157.1",
+          "confirmation": "native-turn-context"
+        }
+      ],
+      "review": {
+        "status": "accepted",
+        "ownerAccepted": true,
+        "scope": "Exact delivered revision matches the current owner-accepted revision.",
+        "recordedAt": "2026-09-29",
+        "source": "site-build/FEEDBACK-site-review-1.md"
+      },
+      "license": "CC0-1.0",
+      "sceneDeepLink": null
+    },
+    {
+      "id": "fence-straight",
+      "slug": "fence-straight",
+      "name": "Straight fence",
+      "pack": "farm",
+      "category": "Fencing",
+      "description": "Two timber rails between pointed posts, with a two-metre post-centre span.",
+      "assetId": "fence-straight",
+      "revisionId": "r_05420c8a915d45e69257f61914d02ec3",
+      "parentRevision": null,
+      "metrics": {
+        "triangles": 464,
+        "meshes": 3,
+        "materials": 1,
+        "bounds": [
+          2.1500000059604645,
+          1.159999966621399,
+          0.16200000047683716
+        ],
+        "boundsMin": [
+          -1.0750000029802322,
+          0,
+          -0.08100000023841858
+        ],
+        "boundsMax": [
+          1.0750000029802322,
+          1.159999966621399,
+          0.08100000023841858
+        ],
+        "clips": [],
+        "partPaths": [
+          "FenceStraight/Post_End_NegX/Mesh_PostNegX",
+          "FenceStraight/Post_End_PosX/Mesh_PostPosX",
+          "FenceStraight/Mesh_Rails"
+        ]
+      },
+      "poster": {
+        "src": "/media/farm/r33/cutout/fence-straight.webp",
+        "width": 1024,
+        "height": 1024,
+        "alt": "Two timber rails between pointed posts, with a two-metre post-centre span.",
+        "srcsetWebp": "/media/farm/r33/cutout/fence-straight-320.webp 320w, /media/farm/r33/cutout/fence-straight-480.webp 480w, /media/farm/r33/cutout/fence-straight-672.webp 672w, /media/farm/r33/cutout/fence-straight-768.webp 768w, /media/farm/r33/cutout/fence-straight-1024.webp 1024w",
+        "srcsetAvif": "/media/farm/r33/cutout/fence-straight-320.avif 320w, /media/farm/r33/cutout/fence-straight-480.avif 480w, /media/farm/r33/cutout/fence-straight-672.avif 672w, /media/farm/r33/cutout/fence-straight-768.avif 768w, /media/farm/r33/cutout/fence-straight-1024.avif 1024w",
+        "inputPath": "media/farm/r33/cutout/fence-straight.webp"
+      },
+      "reviewImage": {
+        "src": "/media/farm/r33/poster/fence-straight.webp",
+        "width": 1168,
+        "height": 780,
+        "alt": "Six rendered review views of fence-straight.",
+        "srcsetWebp": "/media/farm/r33/poster/fence-straight-320.webp 320w, /media/farm/r33/poster/fence-straight-480.webp 480w, /media/farm/r33/poster/fence-straight-672.webp 672w, /media/farm/r33/poster/fence-straight-768.webp 768w, /media/farm/r33/poster/fence-straight-1024.webp 1024w",
+        "srcsetAvif": "/media/farm/r33/poster/fence-straight-320.avif 320w, /media/farm/r33/poster/fence-straight-480.avif 480w, /media/farm/r33/poster/fence-straight-672.avif 672w, /media/farm/r33/poster/fence-straight-768.avif 768w, /media/farm/r33/poster/fence-straight-1024.avif 1024w",
+        "inputPath": "media/farm/r33/poster/fence-straight.webp"
+      },
+      "sourcePath": "/sources/fence-straight.kiln.js",
+      "sourceSha256": "b8cbd11566ddb0b24c6740372fe0e3b20f71128621d950f970950f226d55ffdf",
+      "modelPath": "/models/farm/fence-straight.glb",
+      "runtimeDownload": {
+        "path": "packs/farm/r34/models/fence-straight.glb",
+        "url": "https://assets.kilnstudio.tools/packs/farm/r34/models/fence-straight.glb",
+        "bytes": 59260,
+        "sha256": "1468e8ca49f97a89b5a84e032960fc7b6b29e8b18adee0b1a86692aae6b2c496",
+        "archive": "packs/farm/r34/shapes-and-seasons-farm-runtime.zip",
+        "member": "models/fence-straight.glb"
+      },
+      "provenance": {
+        "originalModel": "Claude Opus 5.5",
+        "refinementModels": [],
+        "history": [
+          {
+            "stage": "first",
+            "revisionId": "r_05420c8a915d45e69257f61914d02ec3",
+            "parentRevisionId": null,
+            "model": "Claude Opus 5.5",
+            "modelId": "claude-opus-5-5",
+            "requestedEffort": "high",
+            "confirmedEffort": null,
+            "harness": "claude",
+            "harnessVersion": "2.1.280",
+            "confirmation": "native-stream-model; high requested, effective effort not separately exposed"
+          }
+        ]
+      },
+      "revisions": [
+        {
+          "stage": "first",
+          "revisionId": "r_05420c8a915d45e69257f61914d02ec3",
+          "parentRevisionId": null,
+          "model": "Claude Opus 5.5",
+          "modelId": "claude-opus-5-5",
+          "requestedEffort": "high",
+          "confirmedEffort": null,
+          "harness": "claude",
+          "harnessVersion": "2.1.280",
+          "confirmation": "native-stream-model; high requested, effective effort not separately exposed"
+        }
+      ],
+      "review": {
+        "status": "accepted",
+        "ownerAccepted": true,
+        "scope": "Exact delivered revision matches the current owner-accepted revision.",
+        "recordedAt": "2026-09-29",
+        "source": "site-build/FEEDBACK-site-review-1.md"
+      },
+      "license": "CC0-1.0",
+      "sceneDeepLink": null
+    },
+    {
+      "id": "fence-corner",
+      "slug": "fence-corner",
+      "name": "Corner fence",
+      "pack": "farm",
+      "category": "Fencing",
+      "description": "Two matching timber fence runs joined at a right-angle corner post.",
+      "assetId": "fence-corner",
+      "revisionId": "r_071590a217854c5cbefb90275d3a6887",
+      "parentRevision": null,
+      "metrics": {
+        "triangles": 724,
+        "meshes": 3,
+        "materials": 1,
+        "bounds": [
+          2.1559999734163284,
+          1.159999966621399,
+          2.162000000476837
+        ],
+        "boundsMin": [
+          -1.0809999704360962,
+          0,
+          -1.0810000002384186
+        ],
+        "boundsMax": [
+          1.0750000029802322,
+          1.159999966621399,
+          1.0810000002384186
+        ],
+        "clips": [],
+        "partPaths": [
+          "FenceCorner/Mesh_CornerFrame",
+          "FenceCorner/Post_End_A/Mesh_PostA",
+          "FenceCorner/Post_End_B/Mesh_PostB"
+        ]
+      },
+      "poster": {
+        "src": "/media/farm/r33/cutout/fence-corner.webp",
+        "width": 1024,
+        "height": 1024,
+        "alt": "Two matching timber fence runs joined at a right-angle corner post.",
+        "srcsetWebp": "/media/farm/r33/cutout/fence-corner-320.webp 320w, /media/farm/r33/cutout/fence-corner-480.webp 480w, /media/farm/r33/cutout/fence-corner-672.webp 672w, /media/farm/r33/cutout/fence-corner-768.webp 768w, /media/farm/r33/cutout/fence-corner-1024.webp 1024w",
+        "srcsetAvif": "/media/farm/r33/cutout/fence-corner-320.avif 320w, /media/farm/r33/cutout/fence-corner-480.avif 480w, /media/farm/r33/cutout/fence-corner-672.avif 672w, /media/farm/r33/cutout/fence-corner-768.avif 768w, /media/farm/r33/cutout/fence-corner-1024.avif 1024w",
+        "inputPath": "media/farm/r33/cutout/fence-corner.webp"
+      },
+      "reviewImage": {
+        "src": "/media/farm/r33/poster/fence-corner.webp",
+        "width": 1168,
+        "height": 780,
+        "alt": "Six rendered review views of fence-corner.",
+        "srcsetWebp": "/media/farm/r33/poster/fence-corner-320.webp 320w, /media/farm/r33/poster/fence-corner-480.webp 480w, /media/farm/r33/poster/fence-corner-672.webp 672w, /media/farm/r33/poster/fence-corner-768.webp 768w, /media/farm/r33/poster/fence-corner-1024.webp 1024w",
+        "srcsetAvif": "/media/farm/r33/poster/fence-corner-320.avif 320w, /media/farm/r33/poster/fence-corner-480.avif 480w, /media/farm/r33/poster/fence-corner-672.avif 672w, /media/farm/r33/poster/fence-corner-768.avif 768w, /media/farm/r33/poster/fence-corner-1024.avif 1024w",
+        "inputPath": "media/farm/r33/poster/fence-corner.webp"
+      },
+      "sourcePath": "/sources/fence-corner.kiln.js",
+      "sourceSha256": "98df0c6ca88fa698155cbb26bf0e573d1141671aa27e4dea78e7ed21e8238439",
+      "modelPath": "/models/farm/fence-corner.glb",
+      "runtimeDownload": {
+        "path": "packs/farm/r34/models/fence-corner.glb",
+        "url": "https://assets.kilnstudio.tools/packs/farm/r34/models/fence-corner.glb",
+        "bytes": 83084,
+        "sha256": "9af793228f396dce42eafacdd98b0203a714648b4e716c389656114217dde6cd",
+        "archive": "packs/farm/r34/shapes-and-seasons-farm-runtime.zip",
+        "member": "models/fence-corner.glb"
+      },
+      "provenance": {
+        "originalModel": "Claude Opus 5.5",
+        "refinementModels": [],
+        "history": [
+          {
+            "stage": "first",
+            "revisionId": "r_071590a217854c5cbefb90275d3a6887",
+            "parentRevisionId": null,
+            "model": "Claude Opus 5.5",
+            "modelId": "claude-opus-5-5",
+            "requestedEffort": "high",
+            "confirmedEffort": null,
+            "harness": "claude",
+            "harnessVersion": "2.1.280",
+            "confirmation": "native-stream-model; high requested, effective effort not separately exposed"
+          }
+        ]
+      },
+      "revisions": [
+        {
+          "stage": "first",
+          "revisionId": "r_071590a217854c5cbefb90275d3a6887",
+          "parentRevisionId": null,
+          "model": "Claude Opus 5.5",
+          "modelId": "claude-opus-5-5",
+          "requestedEffort": "high",
+          "confirmedEffort": null,
+          "harness": "claude",
+          "harnessVersion": "2.1.280",
+          "confirmation": "native-stream-model; high requested, effective effort not separately exposed"
+        }
+      ],
+      "review": {
+        "status": "accepted",
+        "ownerAccepted": true,
+        "scope": "Exact delivered revision matches the current owner-accepted revision.",
+        "recordedAt": "2026-09-29",
+        "source": "site-build/FEEDBACK-site-review-1.md"
+      },
+      "license": "CC0-1.0",
+      "sceneDeepLink": null
+    },
+    {
+      "id": "fence-gate",
+      "slug": "fence-gate",
+      "name": "Fence gate",
+      "pack": "farm",
+      "category": "Fencing",
+      "description": "Braced timber gate with visible hinges and a three-metre usable opening.",
+      "assetId": "fence-gate",
+      "revisionId": "r_af2ceeafc87f44759b2af1448beb76b3",
+      "parentRevision": null,
+      "metrics": {
+        "triangles": 984,
+        "meshes": 6,
+        "materials": 2,
+        "bounds": [
+          3.5500000059604644,
+          1.159999966621399,
+          0.16200000047683716
+        ],
+        "boundsMin": [
+          -1.7750000029802322,
+          0,
+          -0.08100000023841858
+        ],
+        "boundsMax": [
+          1.7750000029802322,
+          1.159999966621399,
+          0.08100000023841858
+        ],
+        "clips": [
+          "Open",
+          "Close"
+        ],
+        "partPaths": [
+          "FenceGate/Post_Hinge/Mesh_HingePostWood",
+          "FenceGate/Post_Hinge/Mesh_Pintles",
+          "FenceGate/Post_Latch/Mesh_LatchPostWood",
+          "FenceGate/Post_Latch/Mesh_Keeper",
+          "FenceGate/Joint_GateLeaf/Mesh_LeafWood",
+          "FenceGate/Joint_GateLeaf/Mesh_LeafMetal"
+        ]
+      },
+      "poster": {
+        "src": "/media/farm/r33/cutout/fence-gate.webp",
+        "width": 1024,
+        "height": 1024,
+        "alt": "Braced timber gate with visible hinges and a three-metre usable opening.",
+        "srcsetWebp": "/media/farm/r33/cutout/fence-gate-320.webp 320w, /media/farm/r33/cutout/fence-gate-480.webp 480w, /media/farm/r33/cutout/fence-gate-672.webp 672w, /media/farm/r33/cutout/fence-gate-768.webp 768w, /media/farm/r33/cutout/fence-gate-1024.webp 1024w",
+        "srcsetAvif": "/media/farm/r33/cutout/fence-gate-320.avif 320w, /media/farm/r33/cutout/fence-gate-480.avif 480w, /media/farm/r33/cutout/fence-gate-672.avif 672w, /media/farm/r33/cutout/fence-gate-768.avif 768w, /media/farm/r33/cutout/fence-gate-1024.avif 1024w",
+        "inputPath": "media/farm/r33/cutout/fence-gate.webp"
+      },
+      "reviewImage": {
+        "src": "/media/farm/r33/poster/fence-gate.webp",
+        "width": 1168,
+        "height": 780,
+        "alt": "Six rendered review views of fence-gate.",
+        "srcsetWebp": "/media/farm/r33/poster/fence-gate-320.webp 320w, /media/farm/r33/poster/fence-gate-480.webp 480w, /media/farm/r33/poster/fence-gate-672.webp 672w, /media/farm/r33/poster/fence-gate-768.webp 768w, /media/farm/r33/poster/fence-gate-1024.webp 1024w",
+        "srcsetAvif": "/media/farm/r33/poster/fence-gate-320.avif 320w, /media/farm/r33/poster/fence-gate-480.avif 480w, /media/farm/r33/poster/fence-gate-672.avif 672w, /media/farm/r33/poster/fence-gate-768.avif 768w, /media/farm/r33/poster/fence-gate-1024.avif 1024w",
+        "inputPath": "media/farm/r33/poster/fence-gate.webp"
+      },
+      "sourcePath": "/sources/fence-gate.kiln.js",
+      "sourceSha256": "a6a2b7f79388bf5b9a9df88d141c0fab50f292cd5ef5281d5101e6af39cde440",
+      "modelPath": "/models/farm/fence-gate.glb",
+      "runtimeDownload": {
+        "path": "packs/farm/r34/models/fence-gate.glb",
+        "url": "https://assets.kilnstudio.tools/packs/farm/r34/models/fence-gate.glb",
+        "bytes": 162020,
+        "sha256": "e3e01d01c48333f7af74b2c8907eb42a2b4cfe66816570c7e4d49203a63b0366",
+        "archive": "packs/farm/r34/shapes-and-seasons-farm-runtime.zip",
+        "member": "models/fence-gate.glb"
+      },
+      "provenance": {
+        "originalModel": "Claude Opus 5.5",
+        "refinementModels": [],
+        "history": [
+          {
+            "stage": "first",
+            "revisionId": "r_af2ceeafc87f44759b2af1448beb76b3",
+            "parentRevisionId": null,
+            "model": "Claude Opus 5.5",
+            "modelId": "claude-opus-5-5",
+            "requestedEffort": "high",
+            "confirmedEffort": null,
+            "harness": "claude",
+            "harnessVersion": "2.1.280",
+            "confirmation": "native-stream-model; high requested, effective effort not separately exposed"
+          }
+        ]
+      },
+      "revisions": [
+        {
+          "stage": "first",
+          "revisionId": "r_af2ceeafc87f44759b2af1448beb76b3",
+          "parentRevisionId": null,
+          "model": "Claude Opus 5.5",
+          "modelId": "claude-opus-5-5",
+          "requestedEffort": "high",
+          "confirmedEffort": null,
+          "harness": "claude",
+          "harnessVersion": "2.1.280",
+          "confirmation": "native-stream-model; high requested, effective effort not separately exposed"
+        }
+      ],
+      "review": {
+        "status": "accepted",
+        "ownerAccepted": true,
+        "scope": "Exact delivered revision matches the current owner-accepted revision.",
+        "recordedAt": "2026-09-29",
+        "source": "site-build/FEEDBACK-site-review-1.md"
+      },
+      "license": "CC0-1.0",
+      "sceneDeepLink": null
+    },
+    {
+      "id": "tractor",
+      "slug": "tractor",
+      "name": "Tractor",
+      "pack": "farm",
+      "category": "Vehicles",
+      "description": "Orange open-seat tractor with rear wheel guards, treaded tyres and a front grille.",
+      "assetId": "tractor",
+      "revisionId": "r_ebeeb57adda343dd98d575e97ca24f92",
+      "parentRevision": "r_da190ce15ed94159b61d4633efbc12ef",
+      "metrics": {
+        "triangles": 7196,
+        "meshes": 21,
+        "materials": 5,
+        "bounds": [
+          3.108790874481201,
+          2.299983835220337,
+          1.809999942779541
+        ],
+        "boundsMin": [
+          -1.5537909269332886,
+          0.00001611709594728783,
+          -0.9049999713897705
+        ],
+        "boundsMax": [
+          1.5549999475479126,
+          2.299999952316284,
+          0.9049999713897705
+        ],
+        "clips": [
+          "ArticulationProbe",
+          "Wheels",
+          "Steer"
+        ],
+        "partPaths": [
+          "Tractor/Joint_SteeringWheelMount/Mesh_SteeringWheel_Seat",
+          "Tractor/Joint_Wheel_RL/Mesh_Tire_RL",
+          "Tractor/Joint_Wheel_RL/Mesh_Wheel_RL_Paint",
+          "Tractor/Joint_Wheel_RL/Mesh_Bolts_RL",
+          "Tractor/Joint_Steer_FL/Joint_Wheel_FL/Mesh_Tire_FL",
+          "Tractor/Joint_Steer_FL/Joint_Wheel_FL/Mesh_Wheel_FL_Paint",
+          "Tractor/Joint_Steer_FL/Joint_Wheel_FL/Mesh_Bolts_FL",
+          "Tractor/Joint_Steer_FL/Mesh_Spindle_FL",
+          "Tractor/Joint_Wheel_RR/Mesh_Tire_RR",
+          "Tractor/Joint_Wheel_RR/Mesh_Wheel_RR_Paint",
+          "Tractor/Joint_Wheel_RR/Mesh_Bolts_RR",
+          "Tractor/Joint_Steer_FR/Joint_Wheel_FR/Mesh_Tire_FR",
+          "Tractor/Joint_Steer_FR/Joint_Wheel_FR/Mesh_Wheel_FR_Paint",
+          "Tractor/Joint_Steer_FR/Joint_Wheel_FR/Mesh_Bolts_FR",
+          "Tractor/Joint_Steer_FR/Mesh_Spindle_FR",
+          "Tractor/Mesh_Body_Iron",
+          "Tractor/Mesh_Body_Iron_NoUV",
+          "Tractor/Mesh_Body_Paint_NoUV",
+          "Tractor/Mesh_Body_Paint",
+          "Tractor/Mesh_Body_Seat_NoUV",
+          "Tractor/Mesh_HitchPin"
+        ]
+      },
+      "poster": {
+        "src": "/media/farm/r33/cutout/tractor.webp",
+        "width": 1024,
+        "height": 1024,
+        "alt": "Orange open-seat tractor with rear wheel guards, treaded tyres and a front grille.",
+        "srcsetWebp": "/media/farm/r33/cutout/tractor-320.webp 320w, /media/farm/r33/cutout/tractor-480.webp 480w, /media/farm/r33/cutout/tractor-672.webp 672w, /media/farm/r33/cutout/tractor-768.webp 768w, /media/farm/r33/cutout/tractor-1024.webp 1024w",
+        "srcsetAvif": "/media/farm/r33/cutout/tractor-320.avif 320w, /media/farm/r33/cutout/tractor-480.avif 480w, /media/farm/r33/cutout/tractor-672.avif 672w, /media/farm/r33/cutout/tractor-768.avif 768w, /media/farm/r33/cutout/tractor-1024.avif 1024w",
+        "inputPath": "media/farm/r33/cutout/tractor.webp"
+      },
+      "reviewImage": {
+        "src": "/media/farm/r33/poster/tractor.webp",
+        "width": 1168,
+        "height": 780,
+        "alt": "Six rendered review views of Vintage tractor (review 2, motion, UV-exact merge).",
+        "srcsetWebp": "/media/farm/r33/poster/tractor-320.webp 320w, /media/farm/r33/poster/tractor-480.webp 480w, /media/farm/r33/poster/tractor-672.webp 672w, /media/farm/r33/poster/tractor-768.webp 768w, /media/farm/r33/poster/tractor-1024.webp 1024w",
+        "srcsetAvif": "/media/farm/r33/poster/tractor-320.avif 320w, /media/farm/r33/poster/tractor-480.avif 480w, /media/farm/r33/poster/tractor-672.avif 672w, /media/farm/r33/poster/tractor-768.avif 768w, /media/farm/r33/poster/tractor-1024.avif 1024w",
+        "inputPath": "media/farm/r33/poster/tractor.webp"
+      },
+      "sourcePath": "/sources/tractor.kiln.js",
+      "sourceSha256": "f88bff51dc25a2f55b87022b7fba5cf262697a4db6142a804b463f73bcc9bfb8",
+      "modelPath": "/models/farm/tractor.glb",
+      "runtimeDownload": {
+        "path": "packs/farm/r34/models/tractor.glb",
+        "url": "https://assets.kilnstudio.tools/packs/farm/r34/models/tractor.glb",
+        "bytes": 409684,
+        "sha256": "8185aea55248ec02eb49de46eb04d85c2cdd9a9f9a1d485d649d79009c3f1117",
+        "archive": "packs/farm/r34/shapes-and-seasons-farm-runtime.zip",
+        "member": "models/tractor.glb"
+      },
+      "provenance": {
+        "originalModel": "Claude Opus 5.5",
+        "refinementModels": [
+          "Claude Opus 5.5"
+        ],
+        "history": [
+          {
+            "stage": "first",
+            "revisionId": "r_879ebb7fd95f47278745f5c1ced8bb21",
+            "parentRevisionId": null,
+            "model": "Claude Opus 5.5",
+            "modelId": "claude-opus-5-5",
+            "requestedEffort": "high",
+            "confirmedEffort": null,
+            "harness": "claude",
+            "harnessVersion": "2.1.280",
+            "confirmation": "native-stream-model"
+          },
+          {
+            "stage": "review-1",
+            "revisionId": "r_d7cde4de08714737bf76449e58ddcb56",
+            "parentRevisionId": "r_879ebb7fd95f47278745f5c1ced8bb21",
+            "model": "Claude Opus 5.5",
+            "modelId": "claude-opus-5-5",
+            "requestedEffort": "high",
+            "confirmedEffort": null,
+            "harness": "claude",
+            "harnessVersion": "2.1.280",
+            "confirmation": "native-stream-model"
+          },
+          {
+            "stage": "review-2-saved-intermediate",
+            "revisionId": "r_da190ce15ed94159b61d4633efbc12ef",
+            "parentRevisionId": "r_d7cde4de08714737bf76449e58ddcb56",
+            "model": "Claude Opus 5.5",
+            "modelId": "claude-opus-5-5",
+            "requestedEffort": "high",
+            "confirmedEffort": null,
+            "harness": "claude",
+            "harnessVersion": "2.1.280",
+            "confirmation": "native-stream-model; high requested, effective effort not separately exposed"
+          },
+          {
+            "stage": "review-2",
+            "revisionId": "r_ebeeb57adda343dd98d575e97ca24f92",
+            "parentRevisionId": "r_da190ce15ed94159b61d4633efbc12ef",
+            "model": "Claude Opus 5.5",
+            "modelId": "claude-opus-5-5",
+            "requestedEffort": "high",
+            "confirmedEffort": null,
+            "harness": "claude",
+            "harnessVersion": "2.1.280",
+            "confirmation": "native-stream-model; high requested, effective effort not separately exposed"
+          }
+        ]
+      },
+      "revisions": [
+        {
+          "stage": "first",
+          "revisionId": "r_879ebb7fd95f47278745f5c1ced8bb21",
+          "parentRevisionId": null,
+          "model": "Claude Opus 5.5",
+          "modelId": "claude-opus-5-5",
+          "requestedEffort": "high",
+          "confirmedEffort": null,
+          "harness": "claude",
+          "harnessVersion": "2.1.280",
+          "confirmation": "native-stream-model"
+        },
+        {
+          "stage": "review-1",
+          "revisionId": "r_d7cde4de08714737bf76449e58ddcb56",
+          "parentRevisionId": "r_879ebb7fd95f47278745f5c1ced8bb21",
+          "model": "Claude Opus 5.5",
+          "modelId": "claude-opus-5-5",
+          "requestedEffort": "high",
+          "confirmedEffort": null,
+          "harness": "claude",
+          "harnessVersion": "2.1.280",
+          "confirmation": "native-stream-model"
+        },
+        {
+          "stage": "review-2-saved-intermediate",
+          "revisionId": "r_da190ce15ed94159b61d4633efbc12ef",
+          "parentRevisionId": "r_d7cde4de08714737bf76449e58ddcb56",
+          "model": "Claude Opus 5.5",
+          "modelId": "claude-opus-5-5",
+          "requestedEffort": "high",
+          "confirmedEffort": null,
+          "harness": "claude",
+          "harnessVersion": "2.1.280",
+          "confirmation": "native-stream-model; high requested, effective effort not separately exposed"
+        },
+        {
+          "stage": "review-2",
+          "revisionId": "r_ebeeb57adda343dd98d575e97ca24f92",
+          "parentRevisionId": "r_da190ce15ed94159b61d4633efbc12ef",
+          "model": "Claude Opus 5.5",
+          "modelId": "claude-opus-5-5",
+          "requestedEffort": "high",
+          "confirmedEffort": null,
+          "harness": "claude",
+          "harnessVersion": "2.1.280",
+          "confirmation": "native-stream-model; high requested, effective effort not separately exposed"
+        }
+      ],
+      "review": {
+        "status": "accepted",
+        "ownerAccepted": true,
+        "scope": "Exact delivered revision matches the current owner-accepted revision.",
+        "recordedAt": "2026-09-29",
+        "source": "site-build/FEEDBACK-site-review-1.md"
+      },
+      "license": "CC0-1.0",
+      "sceneDeepLink": null
+    },
+    {
+      "id": "trailer",
+      "slug": "trailer",
+      "name": "Farm trailer",
+      "pack": "farm",
+      "category": "Vehicles",
+      "description": "Four-wheel timber farm trailer with low side boards and a drawbar.",
+      "assetId": "trailer",
+      "revisionId": "r_c72e516ce16949cfbddedbc9155efa06",
+      "parentRevision": "r_840702d1024946fbbc21e95ac5f00672",
+      "metrics": {
+        "triangles": 3944,
+        "meshes": 21,
+        "materials": 5,
+        "bounds": [
+          4.044999983906746,
+          1.0800000286102294,
+          2.270000010728836
+        ],
+        "boundsMin": [
+          -1.5149999856948853,
+          1.4305114759416426e-8,
+          -1.135000005364418
+        ],
+        "boundsMax": [
+          2.529999998211861,
+          1.0800000429153442,
+          1.135000005364418
+        ],
+        "clips": [
+          "Wheels",
+          "Steer"
+        ],
+        "partPaths": [
+          "Trailer/Mesh_Bed_Wood",
+          "Trailer/Mesh_Bed_Hardware",
+          "Trailer/Mesh_Chassis_Metal",
+          "Trailer/Joint_Wheel_RL/Mesh_Wheel_Rubber_RL",
+          "Trailer/Joint_Wheel_RL/Mesh_Wheel_Rim_RL",
+          "Trailer/Joint_Wheel_RL/Mesh_Wheel_Hub_RL",
+          "Trailer/Joint_Wheel_RL/Mesh_Wheel_Hardware_RL",
+          "Trailer/Joint_Wheel_RR/Mesh_Wheel_Rubber_RR",
+          "Trailer/Joint_Wheel_RR/Mesh_Wheel_Rim_RR",
+          "Trailer/Joint_Wheel_RR/Mesh_Wheel_Hub_RR",
+          "Trailer/Joint_Wheel_RR/Mesh_Wheel_Hardware_RR",
+          "Trailer/Joint_Steer/Mesh_Steer_Frame",
+          "Trailer/Joint_Steer/Joint_Wheel_FL/Mesh_Wheel_Rubber_FL",
+          "Trailer/Joint_Steer/Joint_Wheel_FL/Mesh_Wheel_Rim_FL",
+          "Trailer/Joint_Steer/Joint_Wheel_FL/Mesh_Wheel_Hub_FL",
+          "Trailer/Joint_Steer/Joint_Wheel_FL/Mesh_Wheel_Hardware_FL",
+          "Trailer/Joint_Steer/Joint_Wheel_FR/Mesh_Wheel_Rubber_FR",
+          "Trailer/Joint_Steer/Joint_Wheel_FR/Mesh_Wheel_Rim_FR",
+          "Trailer/Joint_Steer/Joint_Wheel_FR/Mesh_Wheel_Hub_FR",
+          "Trailer/Joint_Steer/Joint_Wheel_FR/Mesh_Wheel_Hardware_FR",
+          "Trailer/Joint_Steer/Joint_Hitch/Mesh_Hitch_Ring_Assembly"
+        ]
+      },
+      "poster": {
+        "src": "/media/farm/r33/cutout/trailer.webp",
+        "width": 1024,
+        "height": 1024,
+        "alt": "Four-wheel timber farm trailer with low side boards and a drawbar.",
+        "srcsetWebp": "/media/farm/r33/cutout/trailer-320.webp 320w, /media/farm/r33/cutout/trailer-480.webp 480w, /media/farm/r33/cutout/trailer-672.webp 672w, /media/farm/r33/cutout/trailer-768.webp 768w, /media/farm/r33/cutout/trailer-1024.webp 1024w",
+        "srcsetAvif": "/media/farm/r33/cutout/trailer-320.avif 320w, /media/farm/r33/cutout/trailer-480.avif 480w, /media/farm/r33/cutout/trailer-672.avif 672w, /media/farm/r33/cutout/trailer-768.avif 768w, /media/farm/r33/cutout/trailer-1024.avif 1024w",
+        "inputPath": "media/farm/r33/cutout/trailer.webp"
+      },
+      "reviewImage": {
+        "src": "/media/farm/r33/poster/trailer.webp",
+        "width": 1168,
+        "height": 780,
+        "alt": "Six rendered review views of Trailer (Shapes & Seasons Farm Pack).",
+        "srcsetWebp": "/media/farm/r33/poster/trailer-320.webp 320w, /media/farm/r33/poster/trailer-480.webp 480w, /media/farm/r33/poster/trailer-672.webp 672w, /media/farm/r33/poster/trailer-768.webp 768w, /media/farm/r33/poster/trailer-1024.webp 1024w",
+        "srcsetAvif": "/media/farm/r33/poster/trailer-320.avif 320w, /media/farm/r33/poster/trailer-480.avif 480w, /media/farm/r33/poster/trailer-672.avif 672w, /media/farm/r33/poster/trailer-768.avif 768w, /media/farm/r33/poster/trailer-1024.avif 1024w",
+        "inputPath": "media/farm/r33/poster/trailer.webp"
+      },
+      "sourcePath": "/sources/trailer.kiln.js",
+      "sourceSha256": "a96ad2121938bd0bb19227b6c09bc795c2826c8917ff13db27e6a78bb5ef0e25",
+      "modelPath": "/models/farm/trailer.glb",
+      "runtimeDownload": {
+        "path": "packs/farm/r34/models/trailer.glb",
+        "url": "https://assets.kilnstudio.tools/packs/farm/r34/models/trailer.glb",
+        "bytes": 183252,
+        "sha256": "6394d8c51b0c368a25f21d644630370cd6d8267dbd999642587460cb7a2b90de",
+        "archive": "packs/farm/r34/shapes-and-seasons-farm-runtime.zip",
+        "member": "models/trailer.glb"
+      },
+      "provenance": {
+        "originalModel": "Gemini 3.8 Flash High",
+        "refinementModels": [
+          "Gemini 3.8 Flash High"
+        ],
+        "history": [
+          {
+            "stage": "first",
+            "revisionId": "r_5d3ac9b353a84acfa1b350136b37015d",
+            "parentRevisionId": null,
+            "model": "Gemini 3.8 Flash High",
+            "modelId": "gemini-3.8-flash-high",
+            "requestedEffort": "high",
+            "confirmedEffort": null,
+            "harness": "agy",
+            "harnessVersion": "1.2.9",
+            "confirmation": "native-init model confirmed; High encoded in model ID and explicitly requested, effective effort not independently exposed"
+          },
+          {
+            "stage": "review-1",
+            "revisionId": "r_840702d1024946fbbc21e95ac5f00672",
+            "parentRevisionId": "r_5d3ac9b353a84acfa1b350136b37015d",
+            "model": "Gemini 3.8 Flash High",
+            "modelId": "gemini-3.8-flash-high",
+            "requestedEffort": "high",
+            "confirmedEffort": null,
+            "harness": "agy",
+            "harnessVersion": "1.2.9",
+            "confirmation": "native-init model confirmed; High encoded in model ID and explicitly requested, effective effort not independently exposed"
+          },
+          {
+            "stage": "review-2",
+            "revisionId": "r_c72e516ce16949cfbddedbc9155efa06",
+            "parentRevisionId": "r_840702d1024946fbbc21e95ac5f00672",
+            "model": "Gemini 3.8 Flash High",
+            "modelId": "gemini-3.8-flash-high",
+            "requestedEffort": "high",
+            "confirmedEffort": null,
+            "harness": "agy",
+            "harnessVersion": "1.2.9",
+            "confirmation": "native-init model confirmed; High encoded in model ID and explicitly requested, effective effort not independently exposed"
+          }
+        ]
+      },
+      "revisions": [
+        {
+          "stage": "first",
+          "revisionId": "r_5d3ac9b353a84acfa1b350136b37015d",
+          "parentRevisionId": null,
+          "model": "Gemini 3.8 Flash High",
+          "modelId": "gemini-3.8-flash-high",
+          "requestedEffort": "high",
+          "confirmedEffort": null,
+          "harness": "agy",
+          "harnessVersion": "1.2.9",
+          "confirmation": "native-init model confirmed; High encoded in model ID and explicitly requested, effective effort not independently exposed"
+        },
+        {
+          "stage": "review-1",
+          "revisionId": "r_840702d1024946fbbc21e95ac5f00672",
+          "parentRevisionId": "r_5d3ac9b353a84acfa1b350136b37015d",
+          "model": "Gemini 3.8 Flash High",
+          "modelId": "gemini-3.8-flash-high",
+          "requestedEffort": "high",
+          "confirmedEffort": null,
+          "harness": "agy",
+          "harnessVersion": "1.2.9",
+          "confirmation": "native-init model confirmed; High encoded in model ID and explicitly requested, effective effort not independently exposed"
+        },
+        {
+          "stage": "review-2",
+          "revisionId": "r_c72e516ce16949cfbddedbc9155efa06",
+          "parentRevisionId": "r_840702d1024946fbbc21e95ac5f00672",
+          "model": "Gemini 3.8 Flash High",
+          "modelId": "gemini-3.8-flash-high",
+          "requestedEffort": "high",
+          "confirmedEffort": null,
+          "harness": "agy",
+          "harnessVersion": "1.2.9",
+          "confirmation": "native-init model confirmed; High encoded in model ID and explicitly requested, effective effort not independently exposed"
+        }
+      ],
+      "review": {
+        "status": "accepted",
+        "ownerAccepted": true,
+        "scope": "Exact delivered revision matches the current owner-accepted revision.",
+        "recordedAt": "2026-09-29",
+        "source": "site-build/FEEDBACK-site-review-1.md"
+      },
+      "license": "CC0-1.0",
+      "sceneDeepLink": null
+    },
+    {
+      "id": "barrel",
+      "slug": "barrel",
+      "name": "Wooden barrel",
+      "pack": "farm",
+      "category": "Props",
+      "description": "Upright wooden barrel with a closed stave lid and three dark metal hoops.",
+      "assetId": "a_4616f66723ea4946ad6a77c20520e396",
+      "revisionId": "r_5cc08ab44fe3401cb1c4184a4d362bca",
+      "parentRevision": null,
+      "metrics": {
+        "triangles": 1452,
+        "meshes": 2,
+        "materials": 2,
+        "bounds": [
+          0.6499999761581421,
+          0.8999999761581421,
+          0.6499999761581421
+        ],
+        "boundsMin": [
+          -0.32499998807907104,
+          0,
+          -0.32499998807907104
+        ],
+        "boundsMax": [
+          0.32499998807907104,
+          0.8999999761581421,
+          0.32499998807907104
+        ],
+        "clips": [],
+        "partPaths": [
+          "Barrel/Mesh_Closed_staves_lid_base",
+          "Barrel/Mesh_Three_fitted_hoops"
+        ]
+      },
+      "poster": {
+        "src": "/media/farm/r33/cutout/barrel.webp",
+        "width": 1024,
+        "height": 1024,
+        "alt": "Upright wooden barrel with a closed stave lid and three dark metal hoops.",
+        "srcsetWebp": "/media/farm/r33/cutout/barrel-320.webp 320w, /media/farm/r33/cutout/barrel-480.webp 480w, /media/farm/r33/cutout/barrel-672.webp 672w, /media/farm/r33/cutout/barrel-768.webp 768w, /media/farm/r33/cutout/barrel-1024.webp 1024w",
+        "srcsetAvif": "/media/farm/r33/cutout/barrel-320.avif 320w, /media/farm/r33/cutout/barrel-480.avif 480w, /media/farm/r33/cutout/barrel-672.avif 672w, /media/farm/r33/cutout/barrel-768.avif 768w, /media/farm/r33/cutout/barrel-1024.avif 1024w",
+        "inputPath": "media/farm/r33/cutout/barrel.webp"
+      },
+      "reviewImage": {
+        "src": "/media/farm/r33/poster/barrel.webp",
+        "width": 1168,
+        "height": 780,
+        "alt": "Six rendered review views of Farm barrel.",
+        "srcsetWebp": "/media/farm/r33/poster/barrel-320.webp 320w, /media/farm/r33/poster/barrel-480.webp 480w, /media/farm/r33/poster/barrel-672.webp 672w, /media/farm/r33/poster/barrel-768.webp 768w, /media/farm/r33/poster/barrel-1024.webp 1024w",
+        "srcsetAvif": "/media/farm/r33/poster/barrel-320.avif 320w, /media/farm/r33/poster/barrel-480.avif 480w, /media/farm/r33/poster/barrel-672.avif 672w, /media/farm/r33/poster/barrel-768.avif 768w, /media/farm/r33/poster/barrel-1024.avif 1024w",
+        "inputPath": "media/farm/r33/poster/barrel.webp"
+      },
+      "sourcePath": "/sources/barrel.kiln.js",
+      "sourceSha256": "e5e60ecd101a1b085e25b50d8ce816d7b20559fef2d844905949030291601818",
+      "modelPath": "/models/farm/barrel.glb",
+      "runtimeDownload": {
+        "path": "packs/farm/r34/models/barrel.glb",
+        "url": "https://assets.kilnstudio.tools/packs/farm/r34/models/barrel.glb",
+        "bytes": 237868,
+        "sha256": "1d9b5c726d770a2875c52aa9bfa079c7f180877e3da0337be1a815c42c62c534",
+        "archive": "packs/farm/r34/shapes-and-seasons-farm-runtime.zip",
+        "member": "models/barrel.glb"
+      },
+      "provenance": {
+        "originalModel": "GPT-6 Astra",
+        "refinementModels": [],
+        "history": [
+          {
+            "stage": "first",
+            "revisionId": "r_5cc08ab44fe3401cb1c4184a4d362bca",
+            "parentRevisionId": null,
+            "model": "GPT-6 Astra",
+            "modelId": "gpt-6-astra",
+            "requestedEffort": "high",
+            "confirmedEffort": "high",
+            "harness": "codex",
+            "harnessVersion": "0.157.1",
+            "confirmation": "native-turn-context"
+          }
+        ]
+      },
+      "revisions": [
+        {
+          "stage": "first",
+          "revisionId": "r_5cc08ab44fe3401cb1c4184a4d362bca",
+          "parentRevisionId": null,
+          "model": "GPT-6 Astra",
+          "modelId": "gpt-6-astra",
+          "requestedEffort": "high",
+          "confirmedEffort": "high",
+          "harness": "codex",
+          "harnessVersion": "0.157.1",
+          "confirmation": "native-turn-context"
+        }
+      ],
+      "review": {
+        "status": "accepted",
+        "ownerAccepted": true,
+        "scope": "Exact delivered revision matches the current owner-accepted revision.",
+        "recordedAt": "2026-09-29",
+        "source": "site-build/FEEDBACK-site-review-1.md"
+      },
+      "license": "CC0-1.0",
+      "sceneDeepLink": null
+    },
+    {
+      "id": "hay-bale",
+      "slug": "hay-bale",
+      "name": "Hay bale",
+      "pack": "farm",
+      "category": "Props",
+      "description": "Rectangular golden hay bale held by two parallel twine bands.",
+      "assetId": "a_f9554e11d9704dd19187e541df8f2f94",
+      "revisionId": "r_aed1744fc5a34d32bb98f9f9bcfd5d0a",
+      "parentRevision": null,
+      "metrics": {
+        "triangles": 916,
+        "meshes": 2,
+        "materials": 2,
+        "bounds": [
+          1,
+          0.5,
+          0.5
+        ],
+        "boundsMin": [
+          -0.5,
+          0,
+          -0.25
+        ],
+        "boundsMax": [
+          0.5,
+          0.5,
+          0.25
+        ],
+        "clips": [],
+        "partPaths": [
+          "HayBale/Mesh_Compressed_straw",
+          "HayBale/Mesh_Two_continuous_twine_loops"
+        ]
+      },
+      "poster": {
+        "src": "/media/farm/r33/cutout/hay-bale.webp",
+        "width": 1024,
+        "height": 1024,
+        "alt": "Rectangular golden hay bale held by two parallel twine bands.",
+        "srcsetWebp": "/media/farm/r33/cutout/hay-bale-320.webp 320w, /media/farm/r33/cutout/hay-bale-480.webp 480w, /media/farm/r33/cutout/hay-bale-672.webp 672w, /media/farm/r33/cutout/hay-bale-768.webp 768w, /media/farm/r33/cutout/hay-bale-1024.webp 1024w",
+        "srcsetAvif": "/media/farm/r33/cutout/hay-bale-320.avif 320w, /media/farm/r33/cutout/hay-bale-480.avif 480w, /media/farm/r33/cutout/hay-bale-672.avif 672w, /media/farm/r33/cutout/hay-bale-768.avif 768w, /media/farm/r33/cutout/hay-bale-1024.avif 1024w",
+        "inputPath": "media/farm/r33/cutout/hay-bale.webp"
+      },
+      "reviewImage": {
+        "src": "/media/farm/r33/poster/hay-bale.webp",
+        "width": 1168,
+        "height": 780,
+        "alt": "Six rendered review views of Farm hay bale.",
+        "srcsetWebp": "/media/farm/r33/poster/hay-bale-320.webp 320w, /media/farm/r33/poster/hay-bale-480.webp 480w, /media/farm/r33/poster/hay-bale-672.webp 672w, /media/farm/r33/poster/hay-bale-768.webp 768w, /media/farm/r33/poster/hay-bale-1024.webp 1024w",
+        "srcsetAvif": "/media/farm/r33/poster/hay-bale-320.avif 320w, /media/farm/r33/poster/hay-bale-480.avif 480w, /media/farm/r33/poster/hay-bale-672.avif 672w, /media/farm/r33/poster/hay-bale-768.avif 768w, /media/farm/r33/poster/hay-bale-1024.avif 1024w",
+        "inputPath": "media/farm/r33/poster/hay-bale.webp"
+      },
+      "sourcePath": "/sources/hay-bale.kiln.js",
+      "sourceSha256": "b5b108a698a79773644e2c78dc0e607c2a1bdae83e5055f231f2b6b6f74d1556",
+      "modelPath": "/models/farm/hay-bale.glb",
+      "runtimeDownload": {
+        "path": "packs/farm/r34/models/hay-bale.glb",
+        "url": "https://assets.kilnstudio.tools/packs/farm/r34/models/hay-bale.glb",
+        "bytes": 242504,
+        "sha256": "1388fb610ef8ee3240f472ce45d89eb80fd78c2bdda46c7889563b653bd3fbd4",
+        "archive": "packs/farm/r34/shapes-and-seasons-farm-runtime.zip",
+        "member": "models/hay-bale.glb"
+      },
+      "provenance": {
+        "originalModel": "GPT-6 Astra",
+        "refinementModels": [],
+        "history": [
+          {
+            "stage": "first",
+            "revisionId": "r_aed1744fc5a34d32bb98f9f9bcfd5d0a",
+            "parentRevisionId": null,
+            "model": "GPT-6 Astra",
+            "modelId": "gpt-6-astra",
+            "requestedEffort": "high",
+            "confirmedEffort": "high",
+            "harness": "codex",
+            "harnessVersion": "0.157.1",
+            "confirmation": "native-turn-context"
+          }
+        ]
+      },
+      "revisions": [
+        {
+          "stage": "first",
+          "revisionId": "r_aed1744fc5a34d32bb98f9f9bcfd5d0a",
+          "parentRevisionId": null,
+          "model": "GPT-6 Astra",
+          "modelId": "gpt-6-astra",
+          "requestedEffort": "high",
+          "confirmedEffort": "high",
+          "harness": "codex",
+          "harnessVersion": "0.157.1",
+          "confirmation": "native-turn-context"
+        }
+      ],
+      "review": {
+        "status": "accepted",
+        "ownerAccepted": true,
+        "scope": "Exact delivered revision matches the current owner-accepted revision.",
+        "recordedAt": "2026-09-29",
+        "source": "site-build/FEEDBACK-site-review-1.md"
+      },
+      "license": "CC0-1.0",
+      "sceneDeepLink": null
+    },
+    {
+      "id": "farmer",
+      "slug": "farmer",
+      "name": "Farmer",
+      "pack": "farm",
+      "category": "Characters",
+      "description": "Farmer in blue overalls and a brimmed hat, carrying a three-prong pitchfork.",
+      "assetId": "a_2ff8e7e260894a879fb49e63a8521915",
+      "revisionId": "r_d0e65e4d47aa4449a07ed288a78d461b",
+      "parentRevision": "r_4168ca8e7b2c40f3a6168d160c76ed64",
+      "metrics": {
+        "triangles": 8800,
+        "meshes": 30,
+        "materials": 12,
+        "bounds": [
+          0.5979999899864197,
+          1.8959999990463259,
+          0.9210000027418137
+        ],
+        "boundsMin": [
+          -0.2849999949932098,
+          4.768371586472142e-9,
+          -0.36699999952316287
+        ],
+        "boundsMax": [
+          0.31299999499320985,
+          1.8960000038146974,
+          0.5540000032186508
+        ],
+        "clips": [
+          "Idle",
+          "Walk"
+        ],
+        "partPaths": [
+          "Farmer/Joint_Pelvis/Mesh_OverallSeat",
+          "Farmer/Joint_Pelvis/Joint_LeftHip/Joint_LeftKnee/Joint_LeftAnkle/Mesh_LeftBoot",
+          "Farmer/Joint_Pelvis/Joint_LeftHip/Joint_LeftKnee/Joint_LeftAnkle/Mesh_BootSole-1",
+          "Farmer/Joint_Pelvis/Joint_LeftHip/Joint_LeftKnee/Joint_LeftAnkle/Mesh_Consolidated_Joint_LeftAnkle_0",
+          "Farmer/Joint_Pelvis/Joint_LeftHip/Joint_LeftKnee/Mesh_Consolidated_Joint_LeftKnee_0",
+          "Farmer/Joint_Pelvis/Joint_LeftHip/Mesh_Consolidated_Joint_LeftHip_0",
+          "Farmer/Joint_Pelvis/Joint_RightHip/Joint_RightKnee/Joint_RightAnkle/Mesh_RightBoot",
+          "Farmer/Joint_Pelvis/Joint_RightHip/Joint_RightKnee/Joint_RightAnkle/Mesh_BootSole1",
+          "Farmer/Joint_Pelvis/Joint_RightHip/Joint_RightKnee/Joint_RightAnkle/Mesh_Consolidated_Joint_RightAnkle_0",
+          "Farmer/Joint_Pelvis/Joint_RightHip/Joint_RightKnee/Mesh_Consolidated_Joint_RightKnee_0",
+          "Farmer/Joint_Pelvis/Joint_RightHip/Mesh_Consolidated_Joint_RightHip_0",
+          "Farmer/Joint_Chest/Mesh_Neck",
+          "Farmer/Joint_Chest/Joint_Head/Joint_Hat/Mesh_HatBand",
+          "Farmer/Joint_Chest/Joint_Head/Joint_Hat/Mesh_Consolidated_Joint_Hat_0",
+          "Farmer/Joint_Chest/Joint_Head/Mesh_Consolidated_Joint_Head_0",
+          "Farmer/Joint_Chest/Joint_Head/Mesh_Consolidated_Joint_Head_1",
+          "Farmer/Joint_Chest/Joint_Head/Mesh_Consolidated_Joint_Head_2",
+          "Farmer/Joint_Chest/Joint_Head/Mesh_Consolidated_Joint_Head_3",
+          "Farmer/Joint_Chest/Joint_LeftShoulder/Joint_LeftElbow/Mesh_RolledCuff-1",
+          "Farmer/Joint_Chest/Joint_LeftShoulder/Joint_LeftElbow/Mesh_Consolidated_Joint_LeftElbow_0",
+          "Farmer/Joint_Chest/Joint_LeftShoulder/Mesh_Consolidated_Joint_LeftShoulder_0",
+          "Farmer/Joint_Chest/Joint_RightShoulder/Joint_RightElbow/Mesh_RolledCuff1",
+          "Farmer/Joint_Chest/Joint_RightShoulder/Joint_RightElbow/Joint_RightHandToolAttachment/Joint_Pitchfork/Mesh_WoodHandle",
+          "Farmer/Joint_Chest/Joint_RightShoulder/Joint_RightElbow/Joint_RightHandToolAttachment/Joint_Pitchfork/Mesh_Consolidated_Joint_Pitchfork_0",
+          "Farmer/Joint_Chest/Joint_RightShoulder/Joint_RightElbow/Joint_RightHandToolAttachment/Mesh_Consolidated_Joint_RightHandToolAttachment_0",
+          "Farmer/Joint_Chest/Joint_RightShoulder/Joint_RightElbow/Mesh_Consolidated_Joint_RightElbow_0",
+          "Farmer/Joint_Chest/Joint_RightShoulder/Mesh_Consolidated_Joint_RightShoulder_0",
+          "Farmer/Joint_Chest/Mesh_Consolidated_Joint_Chest_0",
+          "Farmer/Joint_Chest/Mesh_Consolidated_Joint_Chest_1",
+          "Farmer/Joint_Chest/Mesh_Consolidated_Joint_Chest_2"
+        ]
+      },
+      "poster": {
+        "src": "/media/farm/r33/cutout/farmer.webp",
+        "width": 1024,
+        "height": 1024,
+        "alt": "Farmer in blue overalls and a brimmed hat, carrying a three-prong pitchfork.",
+        "srcsetWebp": "/media/farm/r33/cutout/farmer-320.webp 320w, /media/farm/r33/cutout/farmer-480.webp 480w, /media/farm/r33/cutout/farmer-672.webp 672w, /media/farm/r33/cutout/farmer-768.webp 768w, /media/farm/r33/cutout/farmer-1024.webp 1024w",
+        "srcsetAvif": "/media/farm/r33/cutout/farmer-320.avif 320w, /media/farm/r33/cutout/farmer-480.avif 480w, /media/farm/r33/cutout/farmer-672.avif 672w, /media/farm/r33/cutout/farmer-768.avif 768w, /media/farm/r33/cutout/farmer-1024.avif 1024w",
+        "inputPath": "media/farm/r33/cutout/farmer.webp"
+      },
+      "reviewImage": {
+        "src": "/media/farm/r33/poster/farmer.webp",
+        "width": 1168,
+        "height": 780,
+        "alt": "Six rendered review views of Rowan - faithful draw consolidation.",
+        "srcsetWebp": "/media/farm/r33/poster/farmer-320.webp 320w, /media/farm/r33/poster/farmer-480.webp 480w, /media/farm/r33/poster/farmer-672.webp 672w, /media/farm/r33/poster/farmer-768.webp 768w, /media/farm/r33/poster/farmer-1024.webp 1024w",
+        "srcsetAvif": "/media/farm/r33/poster/farmer-320.avif 320w, /media/farm/r33/poster/farmer-480.avif 480w, /media/farm/r33/poster/farmer-672.avif 672w, /media/farm/r33/poster/farmer-768.avif 768w, /media/farm/r33/poster/farmer-1024.avif 1024w",
+        "inputPath": "media/farm/r33/poster/farmer.webp"
+      },
+      "sourcePath": "/sources/farmer.kiln.js",
+      "sourceSha256": "7010571156b45214fe30b2a1e006f455c2fab2ab20afc613857f9fd8f63aec79",
+      "modelPath": "/models/farm/farmer.glb",
+      "runtimeDownload": {
+        "path": "packs/farm/r34/models/farmer.glb",
+        "url": "https://assets.kilnstudio.tools/packs/farm/r34/models/farmer.glb",
+        "bytes": 1009436,
+        "sha256": "5f57902dc80999aadbd9442150bd54778ad02ac8177ce1a7a8c897f675f7293a",
+        "archive": "packs/farm/r34/shapes-and-seasons-farm-runtime.zip",
+        "member": "models/farmer.glb"
+      },
+      "provenance": {
+        "originalModel": "GPT-6 Astra",
+        "refinementModels": [
+          "GPT-6 Astra"
+        ],
+        "history": [
+          {
+            "stage": "first",
+            "revisionId": "r_4168ca8e7b2c40f3a6168d160c76ed64",
+            "parentRevisionId": null,
+            "model": "GPT-6 Astra",
+            "modelId": "gpt-6-astra",
+            "requestedEffort": "high",
+            "confirmedEffort": "high",
+            "harness": "codex",
+            "harnessVersion": "0.157.1",
+            "confirmation": "native-turn-context"
+          },
+          {
+            "stage": "review-1",
+            "revisionId": "r_d0e65e4d47aa4449a07ed288a78d461b",
+            "parentRevisionId": "r_4168ca8e7b2c40f3a6168d160c76ed64",
+            "model": "GPT-6 Astra",
+            "modelId": "gpt-6-astra",
+            "requestedEffort": "high",
+            "confirmedEffort": "high",
+            "harness": "codex",
+            "harnessVersion": "0.157.1",
+            "confirmation": "native-turn-context"
+          }
+        ]
+      },
+      "revisions": [
+        {
+          "stage": "first",
+          "revisionId": "r_4168ca8e7b2c40f3a6168d160c76ed64",
+          "parentRevisionId": null,
+          "model": "GPT-6 Astra",
+          "modelId": "gpt-6-astra",
+          "requestedEffort": "high",
+          "confirmedEffort": "high",
+          "harness": "codex",
+          "harnessVersion": "0.157.1",
+          "confirmation": "native-turn-context"
+        },
+        {
+          "stage": "review-1",
+          "revisionId": "r_d0e65e4d47aa4449a07ed288a78d461b",
+          "parentRevisionId": "r_4168ca8e7b2c40f3a6168d160c76ed64",
+          "model": "GPT-6 Astra",
+          "modelId": "gpt-6-astra",
+          "requestedEffort": "high",
+          "confirmedEffort": "high",
+          "harness": "codex",
+          "harnessVersion": "0.157.1",
+          "confirmation": "native-turn-context"
+        }
+      ],
+      "review": {
+        "status": "accepted",
+        "ownerAccepted": true,
+        "scope": "Exact delivered revision matches the current owner-accepted revision.",
+        "recordedAt": "2026-09-29",
+        "source": "site-build/FEEDBACK-site-review-1.md"
+      },
+      "license": "CC0-1.0",
+      "sceneDeepLink": null
+    },
+    {
+      "id": "cow",
+      "slug": "cow",
+      "name": "Cow",
+      "pack": "farm",
+      "category": "Animals",
+      "description": "Brown-and-cream cow with small horns, a pink muzzle and dark hooves.",
+      "assetId": "a_9372329bbe72499583efe2ad019a0068",
+      "revisionId": "r_712f18b9a9d9450ab77bddd59bd1c515",
+      "parentRevision": "r_5b11e37547f143f08b7b48d7fab51df4",
+      "metrics": {
+        "triangles": 3860,
+        "meshes": 41,
+        "materials": 9,
+        "bounds": [
+          2.270129968015675,
+          1.6921278417110444,
+          1.0800000095367432
+        ],
+        "boundsMin": [
+          -0.9734442884998589,
+          -5.960464510845753e-9,
+          -0.5400000047683716
+        ],
+        "boundsMax": [
+          1.2966856795158161,
+          1.6921278357505798,
+          0.5400000047683716
+        ],
+        "clips": [
+          "Walk",
+          "Idle",
+          "Graze",
+          "ArticulationProbe"
+        ],
+        "partPaths": [
+          "Cow/Joint_GaitBody/Mesh_Torso",
+          "Cow/Joint_GaitBody/Joint_Neck/Joint_Head/Mesh_HeadAndJaw",
+          "Cow/Joint_GaitBody/Joint_Neck/Joint_Head/Mesh_Muzzle",
+          "Cow/Joint_GaitBody/Joint_Neck/Joint_Head/Mesh_Nostril-1",
+          "Cow/Joint_GaitBody/Joint_Neck/Joint_Head/Mesh_EyeSocket-1",
+          "Cow/Joint_GaitBody/Joint_Neck/Joint_Head/Mesh_Eye-1",
+          "Cow/Joint_GaitBody/Joint_Neck/Joint_Head/Mesh_EyeCatchlight-1",
+          "Cow/Joint_GaitBody/Joint_Neck/Joint_Head/Joint_Ear-1/Mesh_EarLeaf-1",
+          "Cow/Joint_GaitBody/Joint_Neck/Joint_Head/Mesh_Horn-1",
+          "Cow/Joint_GaitBody/Joint_Neck/Joint_Head/Mesh_Nostril1",
+          "Cow/Joint_GaitBody/Joint_Neck/Joint_Head/Mesh_EyeSocket1",
+          "Cow/Joint_GaitBody/Joint_Neck/Joint_Head/Mesh_Eye1",
+          "Cow/Joint_GaitBody/Joint_Neck/Joint_Head/Mesh_EyeCatchlight1",
+          "Cow/Joint_GaitBody/Joint_Neck/Joint_Head/Joint_Ear1/Mesh_EarLeaf1",
+          "Cow/Joint_GaitBody/Joint_Neck/Joint_Head/Mesh_Horn1",
+          "Cow/Joint_GaitBody/Joint_GrazeNeck/Mesh_NeckMass",
+          "Cow/Joint_GaitBody/Joint_ForeLeftRoot/Mesh_ForeLeftUpper",
+          "Cow/Joint_GaitBody/Joint_ForeLeftRoot/Joint_ForeLeftKnee/Mesh_ForeLeftShank",
+          "Cow/Joint_GaitBody/Joint_ForeLeftRoot/Joint_ForeLeftKnee/Joint_ForeLeftAnkle/Mesh_ForeLeftPasternBlend",
+          "Cow/Joint_GaitBody/Joint_ForeLeftRoot/Joint_ForeLeftKnee/Joint_ForeLeftAnkle/Mesh_ForeLeftHoof",
+          "Cow/Joint_GaitBody/Joint_ForeRightRoot/Mesh_ForeRightUpper",
+          "Cow/Joint_GaitBody/Joint_ForeRightRoot/Joint_ForeRightKnee/Mesh_ForeRightShank",
+          "Cow/Joint_GaitBody/Joint_ForeRightRoot/Joint_ForeRightKnee/Joint_ForeRightAnkle/Mesh_ForeRightPasternBlend",
+          "Cow/Joint_GaitBody/Joint_ForeRightRoot/Joint_ForeRightKnee/Joint_ForeRightAnkle/Mesh_ForeRightHoof",
+          "Cow/Joint_GaitBody/Joint_HindLeftRoot/Mesh_HindLeftThigh",
+          "Cow/Joint_GaitBody/Joint_HindLeftRoot/Joint_HindLeftStifle/Mesh_HindLeftTibia",
+          "Cow/Joint_GaitBody/Joint_HindLeftRoot/Joint_HindLeftStifle/Joint_HindLeftHock/Mesh_HindLeftMetatarsal",
+          "Cow/Joint_GaitBody/Joint_HindLeftRoot/Joint_HindLeftStifle/Joint_HindLeftHock/Joint_HindLeftAnkle/Mesh_HindLeftPasternBlend",
+          "Cow/Joint_GaitBody/Joint_HindLeftRoot/Joint_HindLeftStifle/Joint_HindLeftHock/Joint_HindLeftAnkle/Mesh_HindLeftHoof",
+          "Cow/Joint_GaitBody/Joint_HindRightRoot/Mesh_HindRightThigh",
+          "Cow/Joint_GaitBody/Joint_HindRightRoot/Joint_HindRightStifle/Mesh_HindRightTibia",
+          "Cow/Joint_GaitBody/Joint_HindRightRoot/Joint_HindRightStifle/Joint_HindRightHock/Mesh_HindRightMetatarsal",
+          "Cow/Joint_GaitBody/Joint_HindRightRoot/Joint_HindRightStifle/Joint_HindRightHock/Joint_HindRightAnkle/Mesh_HindRightPasternBlend",
+          "Cow/Joint_GaitBody/Joint_HindRightRoot/Joint_HindRightStifle/Joint_HindRightHock/Joint_HindRightAnkle/Mesh_HindRightHoof",
+          "Cow/Joint_GaitBody/Mesh_Udder",
+          "Cow/Joint_GaitBody/Mesh_Teat-0.53_-0.105",
+          "Cow/Joint_GaitBody/Mesh_Teat-0.53_0.105",
+          "Cow/Joint_GaitBody/Mesh_Teat-0.34_-0.105",
+          "Cow/Joint_GaitBody/Mesh_Teat-0.34_0.105",
+          "Cow/Joint_GaitBody/Joint_TailAttachment/Mesh_TailStem",
+          "Cow/Joint_GaitBody/Joint_TailAttachment/Mesh_TailTuft"
+        ]
+      },
+      "poster": {
+        "src": "/media/farm/r33/cutout/cow.webp",
+        "width": 1024,
+        "height": 1024,
+        "alt": "Brown-and-cream cow with small horns, a pink muzzle and dark hooves.",
+        "srcsetWebp": "/media/farm/r33/cutout/cow-320.webp 320w, /media/farm/r33/cutout/cow-480.webp 480w, /media/farm/r33/cutout/cow-672.webp 672w, /media/farm/r33/cutout/cow-768.webp 768w, /media/farm/r33/cutout/cow-1024.webp 1024w",
+        "srcsetAvif": "/media/farm/r33/cutout/cow-320.avif 320w, /media/farm/r33/cutout/cow-480.avif 480w, /media/farm/r33/cutout/cow-672.avif 672w, /media/farm/r33/cutout/cow-768.avif 768w, /media/farm/r33/cutout/cow-1024.avif 1024w",
+        "inputPath": "media/farm/r33/cutout/cow.webp"
+      },
+      "reviewImage": {
+        "src": "/media/farm/r33/poster/cow.webp",
+        "width": 1168,
+        "height": 780,
+        "alt": "Six rendered review views of Buttercup • faceted farm cow.",
+        "srcsetWebp": "/media/farm/r33/poster/cow-320.webp 320w, /media/farm/r33/poster/cow-480.webp 480w, /media/farm/r33/poster/cow-672.webp 672w, /media/farm/r33/poster/cow-768.webp 768w, /media/farm/r33/poster/cow-1024.webp 1024w",
+        "srcsetAvif": "/media/farm/r33/poster/cow-320.avif 320w, /media/farm/r33/poster/cow-480.avif 480w, /media/farm/r33/poster/cow-672.avif 672w, /media/farm/r33/poster/cow-768.avif 768w, /media/farm/r33/poster/cow-1024.avif 1024w",
+        "inputPath": "media/farm/r33/poster/cow.webp"
+      },
+      "sourcePath": "/sources/cow.kiln.js",
+      "sourceSha256": "c86b013a267d6d77bb69ee04cd5363769a2972ad18da4f83864c85aa975222cd",
+      "modelPath": "/models/farm/cow.glb",
+      "runtimeDownload": {
+        "path": "packs/farm/r34/models/cow.glb",
+        "url": "https://assets.kilnstudio.tools/packs/farm/r34/models/cow.glb",
+        "bytes": 371896,
+        "sha256": "d79307b03c4003cee0748d15bdaf1a6593434a8ad72de9f383fc9616e7084ce6",
+        "archive": "packs/farm/r34/shapes-and-seasons-farm-runtime.zip",
+        "member": "models/cow.glb"
+      },
+      "provenance": {
+        "originalModel": "GPT-6 Astra",
+        "refinementModels": [
+          "GPT-6 Astra"
+        ],
+        "history": [
+          {
+            "stage": "first",
+            "revisionId": "r_9aa737c9bf3047fc926a9a56d97e1f4a",
+            "parentRevisionId": null,
+            "model": "GPT-6 Astra",
+            "modelId": "gpt-6-astra",
+            "requestedEffort": "high",
+            "confirmedEffort": "high",
+            "harness": "codex",
+            "harnessVersion": "0.157.1",
+            "confirmation": "native-turn-context"
+          },
+          {
+            "stage": "review-1",
+            "revisionId": "r_096543acdc2541ec8e2829d6e04122cc",
+            "parentRevisionId": "r_9aa737c9bf3047fc926a9a56d97e1f4a",
+            "model": "GPT-6 Astra",
+            "modelId": "gpt-6-astra",
+            "requestedEffort": "high",
+            "confirmedEffort": "high",
+            "harness": "codex",
+            "harnessVersion": "0.157.1",
+            "confirmation": "native-turn-context"
+          },
+          {
+            "stage": "review-2",
+            "revisionId": "r_035a38e8b3d04bad8ffd53c2c43789d5",
+            "parentRevisionId": "r_096543acdc2541ec8e2829d6e04122cc",
+            "model": "GPT-6 Astra",
+            "modelId": "gpt-6-astra",
+            "requestedEffort": "high",
+            "confirmedEffort": "high",
+            "harness": "codex",
+            "harnessVersion": "0.157.1",
+            "confirmation": "native-turn-context"
+          },
+          {
+            "stage": "review-3",
+            "revisionId": "r_48950344f03a48129dd1a31eaab6cdf1",
+            "parentRevisionId": "r_035a38e8b3d04bad8ffd53c2c43789d5",
+            "model": "GPT-6 Astra",
+            "modelId": "gpt-6-astra",
+            "requestedEffort": "high",
+            "confirmedEffort": "high",
+            "harness": "codex",
+            "harnessVersion": "0.157.1",
+            "confirmation": "native-turn-context"
+          },
+          {
+            "stage": "review-4",
+            "revisionId": "r_8295d1435f804ec48aaedcf7dd61da50",
+            "parentRevisionId": "r_48950344f03a48129dd1a31eaab6cdf1",
+            "model": "GPT-6 Astra",
+            "modelId": "gpt-6-astra",
+            "requestedEffort": "high",
+            "confirmedEffort": "high",
+            "harness": "codex",
+            "harnessVersion": "0.157.1",
+            "confirmation": "native-turn-context"
+          },
+          {
+            "stage": "review-5",
+            "revisionId": "r_5b11e37547f143f08b7b48d7fab51df4",
+            "parentRevisionId": "r_8295d1435f804ec48aaedcf7dd61da50",
+            "model": "GPT-6 Astra",
+            "modelId": "gpt-6-astra",
+            "requestedEffort": "high",
+            "confirmedEffort": "high",
+            "harness": "codex",
+            "harnessVersion": "0.157.1",
+            "confirmation": "native-turn-context"
+          },
+          {
+            "stage": "review-6",
+            "revisionId": "r_712f18b9a9d9450ab77bddd59bd1c515",
+            "parentRevisionId": "r_5b11e37547f143f08b7b48d7fab51df4",
+            "model": "GPT-6 Astra",
+            "modelId": "gpt-6-astra",
+            "requestedEffort": "high",
+            "confirmedEffort": "high",
+            "harness": "codex",
+            "harnessVersion": "0.157.1",
+            "confirmation": "native-turn-context"
+          }
+        ]
+      },
+      "revisions": [
+        {
+          "stage": "first",
+          "revisionId": "r_9aa737c9bf3047fc926a9a56d97e1f4a",
+          "parentRevisionId": null,
+          "model": "GPT-6 Astra",
+          "modelId": "gpt-6-astra",
+          "requestedEffort": "high",
+          "confirmedEffort": "high",
+          "harness": "codex",
+          "harnessVersion": "0.157.1",
+          "confirmation": "native-turn-context"
+        },
+        {
+          "stage": "review-1",
+          "revisionId": "r_096543acdc2541ec8e2829d6e04122cc",
+          "parentRevisionId": "r_9aa737c9bf3047fc926a9a56d97e1f4a",
+          "model": "GPT-6 Astra",
+          "modelId": "gpt-6-astra",
+          "requestedEffort": "high",
+          "confirmedEffort": "high",
+          "harness": "codex",
+          "harnessVersion": "0.157.1",
+          "confirmation": "native-turn-context"
+        },
+        {
+          "stage": "review-2",
+          "revisionId": "r_035a38e8b3d04bad8ffd53c2c43789d5",
+          "parentRevisionId": "r_096543acdc2541ec8e2829d6e04122cc",
+          "model": "GPT-6 Astra",
+          "modelId": "gpt-6-astra",
+          "requestedEffort": "high",
+          "confirmedEffort": "high",
+          "harness": "codex",
+          "harnessVersion": "0.157.1",
+          "confirmation": "native-turn-context"
+        },
+        {
+          "stage": "review-3",
+          "revisionId": "r_48950344f03a48129dd1a31eaab6cdf1",
+          "parentRevisionId": "r_035a38e8b3d04bad8ffd53c2c43789d5",
+          "model": "GPT-6 Astra",
+          "modelId": "gpt-6-astra",
+          "requestedEffort": "high",
+          "confirmedEffort": "high",
+          "harness": "codex",
+          "harnessVersion": "0.157.1",
+          "confirmation": "native-turn-context"
+        },
+        {
+          "stage": "review-4",
+          "revisionId": "r_8295d1435f804ec48aaedcf7dd61da50",
+          "parentRevisionId": "r_48950344f03a48129dd1a31eaab6cdf1",
+          "model": "GPT-6 Astra",
+          "modelId": "gpt-6-astra",
+          "requestedEffort": "high",
+          "confirmedEffort": "high",
+          "harness": "codex",
+          "harnessVersion": "0.157.1",
+          "confirmation": "native-turn-context"
+        },
+        {
+          "stage": "review-5",
+          "revisionId": "r_5b11e37547f143f08b7b48d7fab51df4",
+          "parentRevisionId": "r_8295d1435f804ec48aaedcf7dd61da50",
+          "model": "GPT-6 Astra",
+          "modelId": "gpt-6-astra",
+          "requestedEffort": "high",
+          "confirmedEffort": "high",
+          "harness": "codex",
+          "harnessVersion": "0.157.1",
+          "confirmation": "native-turn-context"
+        },
+        {
+          "stage": "review-6",
+          "revisionId": "r_712f18b9a9d9450ab77bddd59bd1c515",
+          "parentRevisionId": "r_5b11e37547f143f08b7b48d7fab51df4",
+          "model": "GPT-6 Astra",
+          "modelId": "gpt-6-astra",
+          "requestedEffort": "high",
+          "confirmedEffort": "high",
+          "harness": "codex",
+          "harnessVersion": "0.157.1",
+          "confirmation": "native-turn-context"
+        }
+      ],
+      "review": {
+        "status": "accepted",
+        "ownerAccepted": true,
+        "scope": "Exact delivered revision matches the current owner-accepted revision.",
+        "recordedAt": "2026-09-29",
+        "source": "site-build/FEEDBACK-site-review-1.md"
+      },
+      "license": "CC0-1.0",
+      "sceneDeepLink": null
+    },
+    {
+      "id": "sheep",
+      "slug": "sheep",
+      "name": "Sheep",
+      "pack": "farm",
+      "category": "Animals",
+      "description": "Sheep with a faceted white fleece, dark face and four dark legs.",
+      "assetId": "a_651be6309989462090d919031e134031",
+      "revisionId": "r_85d1e3a7c375412c9ba181f788753148",
+      "parentRevision": null,
+      "metrics": {
+        "triangles": 5076,
+        "meshes": 23,
+        "materials": 6,
+        "bounds": [
+          1.59546582698822,
+          0.8846353006362916,
+          0.6933591961860657
+        ],
+        "boundsMin": [
+          -0.640465841293335,
+          0.0030000030994415117,
+          -0.34667959809303284
+        ],
+        "boundsMax": [
+          0.9549999856948852,
+          0.8876353037357331,
+          0.34667959809303284
+        ],
+        "clips": [
+          "Idle",
+          "Walk",
+          "Graze"
+        ],
+        "partPaths": [
+          "Sheep_Placement/Mesh_Fleece",
+          "Sheep_Placement/Joint_Neck/Mesh_NeckFleece",
+          "Sheep_Placement/Joint_Neck/Joint_Head/Mesh_Forelock",
+          "Sheep_Placement/Joint_Neck/Joint_Head/Mesh_Face",
+          "Sheep_Placement/Joint_Neck/Joint_Head/Mesh_EarInner",
+          "Sheep_Placement/Joint_Neck/Joint_Head/Mesh_Eyes",
+          "Sheep_Placement/Joint_Neck/Joint_Head/Mesh_EyeGlints",
+          "Sheep_Placement/Joint_Neck/Joint_Head/Mesh_Nostrils",
+          "Sheep_Placement/Joint_Tail/Mesh_TailFleece",
+          "Sheep_Placement/Joint_FL_Hip/Mesh_FL_Upper",
+          "Sheep_Placement/Joint_FL_Hip/Joint_FL_Elbow/Mesh_FL_Lower",
+          "Sheep_Placement/Joint_FL_Hip/Joint_FL_Elbow/Joint_FL_Ankle/Joint_FL_Foot/Mesh_FL_Hoof",
+          "Sheep_Placement/Joint_FR_Hip/Mesh_FR_Upper",
+          "Sheep_Placement/Joint_FR_Hip/Joint_FR_Elbow/Mesh_FR_Lower",
+          "Sheep_Placement/Joint_FR_Hip/Joint_FR_Elbow/Joint_FR_Ankle/Joint_FR_Foot/Mesh_FR_Hoof",
+          "Sheep_Placement/Joint_HL_Hip/Mesh_HL_Upper",
+          "Sheep_Placement/Joint_HL_Hip/Joint_HL_Stifle/Mesh_HL_Lower",
+          "Sheep_Placement/Joint_HL_Hip/Joint_HL_Stifle/Joint_HL_Hock/Mesh_HL_Pastern",
+          "Sheep_Placement/Joint_HL_Hip/Joint_HL_Stifle/Joint_HL_Hock/Joint_HL_Foot/Mesh_HL_Hoof",
+          "Sheep_Placement/Joint_HR_Hip/Mesh_HR_Upper",
+          "Sheep_Placement/Joint_HR_Hip/Joint_HR_Stifle/Mesh_HR_Lower",
+          "Sheep_Placement/Joint_HR_Hip/Joint_HR_Stifle/Joint_HR_Hock/Mesh_HR_Pastern",
+          "Sheep_Placement/Joint_HR_Hip/Joint_HR_Stifle/Joint_HR_Hock/Joint_HR_Foot/Mesh_HR_Hoof"
+        ]
+      },
+      "poster": {
+        "src": "/media/farm/r33/cutout/sheep.webp",
+        "width": 1024,
+        "height": 1024,
+        "alt": "Sheep with a faceted white fleece, dark face and four dark legs.",
+        "srcsetWebp": "/media/farm/r33/cutout/sheep-320.webp 320w, /media/farm/r33/cutout/sheep-480.webp 480w, /media/farm/r33/cutout/sheep-672.webp 672w, /media/farm/r33/cutout/sheep-768.webp 768w, /media/farm/r33/cutout/sheep-1024.webp 1024w",
+        "srcsetAvif": "/media/farm/r33/cutout/sheep-320.avif 320w, /media/farm/r33/cutout/sheep-480.avif 480w, /media/farm/r33/cutout/sheep-672.avif 672w, /media/farm/r33/cutout/sheep-768.avif 768w, /media/farm/r33/cutout/sheep-1024.avif 1024w",
+        "inputPath": "media/farm/r33/cutout/sheep.webp"
+      },
+      "reviewImage": {
+        "src": "/media/farm/r33/poster/sheep.webp",
+        "width": 1168,
+        "height": 780,
+        "alt": "Six rendered review views of Sheep — first review.",
+        "srcsetWebp": "/media/farm/r33/poster/sheep-320.webp 320w, /media/farm/r33/poster/sheep-480.webp 480w, /media/farm/r33/poster/sheep-672.webp 672w, /media/farm/r33/poster/sheep-768.webp 768w, /media/farm/r33/poster/sheep-1024.webp 1024w",
+        "srcsetAvif": "/media/farm/r33/poster/sheep-320.avif 320w, /media/farm/r33/poster/sheep-480.avif 480w, /media/farm/r33/poster/sheep-672.avif 672w, /media/farm/r33/poster/sheep-768.avif 768w, /media/farm/r33/poster/sheep-1024.avif 1024w",
+        "inputPath": "media/farm/r33/poster/sheep.webp"
+      },
+      "sourcePath": "/sources/sheep.kiln.js",
+      "sourceSha256": "0154c712f15b2d8a0288110601cf63886c7b29dad9773f3170b9c23b767db3f1",
+      "modelPath": "/models/farm/sheep.glb",
+      "runtimeDownload": {
+        "path": "packs/farm/r34/models/sheep.glb",
+        "url": "https://assets.kilnstudio.tools/packs/farm/r34/models/sheep.glb",
+        "bytes": 391632,
+        "sha256": "41a9b3f464888e5e6f9c820d07181d64d6a544503d40401a753f8d628d76a20e",
+        "archive": "packs/farm/r34/shapes-and-seasons-farm-runtime.zip",
+        "member": "models/sheep.glb"
+      },
+      "provenance": {
+        "originalModel": "GPT-6 Astra",
+        "refinementModels": [],
+        "history": [
+          {
+            "stage": "first",
+            "revisionId": "r_85d1e3a7c375412c9ba181f788753148",
+            "parentRevisionId": null,
+            "model": "GPT-6 Astra",
+            "modelId": "gpt-6-astra",
+            "requestedEffort": "high",
+            "confirmedEffort": "high",
+            "harness": "codex",
+            "harnessVersion": "0.157.1",
+            "confirmation": "native-turn-context"
+          }
+        ]
+      },
+      "revisions": [
+        {
+          "stage": "first",
+          "revisionId": "r_85d1e3a7c375412c9ba181f788753148",
+          "parentRevisionId": null,
+          "model": "GPT-6 Astra",
+          "modelId": "gpt-6-astra",
+          "requestedEffort": "high",
+          "confirmedEffort": "high",
+          "harness": "codex",
+          "harnessVersion": "0.157.1",
+          "confirmation": "native-turn-context"
+        }
+      ],
+      "review": {
+        "status": "accepted",
+        "ownerAccepted": true,
+        "scope": "Exact delivered revision matches the current owner-accepted revision.",
+        "recordedAt": "2026-09-29",
+        "source": "site-build/FEEDBACK-site-review-1.md"
+      },
+      "license": "CC0-1.0",
+      "sceneDeepLink": null
+    },
+    {
+      "id": "chicken",
+      "slug": "chicken",
+      "name": "Chicken",
+      "pack": "farm",
+      "category": "Animals",
+      "description": "White hen with a red comb, yellow legs and raised tail feathers.",
+      "assetId": "a_24662327a44745b1949873011a4b17be",
+      "revisionId": "r_b0b9b724b40e4d09a17c8dd8408fba62",
+      "parentRevision": "r_954a6aab116c454896f2dc92385444f7",
+      "metrics": {
+        "triangles": 4392,
+        "meshes": 13,
+        "materials": 4,
+        "bounds": [
+          0.4739326739311218,
+          0.45899999897181987,
+          0.22599999606609344
+        ],
+        "boundsMin": [
+          -0.286932674407959,
+          -1.0430813157658037e-10,
+          -0.11299999803304672
+        ],
+        "boundsMax": [
+          0.18699999952316285,
+          0.45899999886751175,
+          0.11299999803304672
+        ],
+        "clips": [
+          "Idle",
+          "Walk",
+          "Peck"
+        ],
+        "partPaths": [
+          "Chicken_Placement/RigOrigin/BodyPivot/Mesh_Body_Wings_Tail_ThighPlumage",
+          "Chicken_Placement/RigOrigin/NeckBasePivot/Mesh_NeckLower",
+          "Chicken_Placement/RigOrigin/NeckUpperPivot/Mesh_NeckUpper",
+          "Chicken_Placement/RigOrigin/HeadPivot/Mesh_Head",
+          "Chicken_Placement/RigOrigin/HeadPivot/Mesh_Beak",
+          "Chicken_Placement/RigOrigin/HeadPivot/Mesh_Comb_Wattle",
+          "Chicken_Placement/RigOrigin/HeadPivot/Mesh_Eyes",
+          "Chicken_Placement/RigOrigin/Leg_Left/Shin_Left/Mesh_Shin_Left",
+          "Chicken_Placement/RigOrigin/Leg_Left/Hock_Left/Mesh_Tarsus_Left",
+          "Chicken_Placement/RigOrigin/Foot_Left/Mesh_FootSolid_Left",
+          "Chicken_Placement/RigOrigin/Leg_Right/Shin_Right/Mesh_Shin_Right",
+          "Chicken_Placement/RigOrigin/Leg_Right/Hock_Right/Mesh_Tarsus_Right",
+          "Chicken_Placement/RigOrigin/Foot_Right/Mesh_FootSolid_Right"
+        ]
+      },
+      "poster": {
+        "src": "/media/farm/r33/cutout/chicken.webp",
+        "width": 1024,
+        "height": 1024,
+        "alt": "White hen with a red comb, yellow legs and raised tail feathers.",
+        "srcsetWebp": "/media/farm/r33/cutout/chicken-320.webp 320w, /media/farm/r33/cutout/chicken-480.webp 480w, /media/farm/r33/cutout/chicken-672.webp 672w, /media/farm/r33/cutout/chicken-768.webp 768w, /media/farm/r33/cutout/chicken-1024.webp 1024w",
+        "srcsetAvif": "/media/farm/r33/cutout/chicken-320.avif 320w, /media/farm/r33/cutout/chicken-480.avif 480w, /media/farm/r33/cutout/chicken-672.avif 672w, /media/farm/r33/cutout/chicken-768.avif 768w, /media/farm/r33/cutout/chicken-1024.avif 1024w",
+        "inputPath": "media/farm/r33/cutout/chicken.webp"
+      },
+      "reviewImage": {
+        "src": "/media/farm/r33/poster/chicken.webp",
+        "width": 1168,
+        "height": 780,
+        "alt": "Six rendered review views of Chicken.",
+        "srcsetWebp": "/media/farm/r33/poster/chicken-320.webp 320w, /media/farm/r33/poster/chicken-480.webp 480w, /media/farm/r33/poster/chicken-672.webp 672w, /media/farm/r33/poster/chicken-768.webp 768w, /media/farm/r33/poster/chicken-1024.webp 1024w",
+        "srcsetAvif": "/media/farm/r33/poster/chicken-320.avif 320w, /media/farm/r33/poster/chicken-480.avif 480w, /media/farm/r33/poster/chicken-672.avif 672w, /media/farm/r33/poster/chicken-768.avif 768w, /media/farm/r33/poster/chicken-1024.avif 1024w",
+        "inputPath": "media/farm/r33/poster/chicken.webp"
+      },
+      "sourcePath": "/sources/chicken.kiln.js",
+      "sourceSha256": "bb9691903443556777e3ab0a6d8fc136b7924d3d63a7bc600925936c9e26d77e",
+      "modelPath": "/models/farm/chicken.glb",
+      "runtimeDownload": {
+        "path": "packs/farm/r34/models/chicken.glb",
+        "url": "https://assets.kilnstudio.tools/packs/farm/r34/models/chicken.glb",
+        "bytes": 373720,
+        "sha256": "8ee9087d4e0c0b9dfed9f992e133ac67d9d21e6effc788c2fb89ce80cd884e4d",
+        "archive": "packs/farm/r34/shapes-and-seasons-farm-runtime.zip",
+        "member": "models/chicken.glb"
+      },
+      "provenance": {
+        "originalModel": "GPT-6 Astra",
+        "refinementModels": [
+          "GPT-6 Astra"
+        ],
+        "history": [
+          {
+            "stage": "first",
+            "revisionId": "r_954a6aab116c454896f2dc92385444f7",
+            "parentRevisionId": null,
+            "model": "GPT-6 Astra",
+            "modelId": "gpt-6-astra",
+            "requestedEffort": "high",
+            "confirmedEffort": "high",
+            "harness": "codex",
+            "harnessVersion": "0.157.1",
+            "confirmation": "native-turn-context"
+          },
+          {
+            "stage": "review-1",
+            "revisionId": "r_b0b9b724b40e4d09a17c8dd8408fba62",
+            "parentRevisionId": "r_954a6aab116c454896f2dc92385444f7",
+            "model": "GPT-6 Astra",
+            "modelId": "gpt-6-astra",
+            "requestedEffort": "high",
+            "confirmedEffort": "high",
+            "harness": "codex",
+            "harnessVersion": "0.157.1",
+            "confirmation": "native-turn-context"
+          }
+        ]
+      },
+      "revisions": [
+        {
+          "stage": "first",
+          "revisionId": "r_954a6aab116c454896f2dc92385444f7",
+          "parentRevisionId": null,
+          "model": "GPT-6 Astra",
+          "modelId": "gpt-6-astra",
+          "requestedEffort": "high",
+          "confirmedEffort": "high",
+          "harness": "codex",
+          "harnessVersion": "0.157.1",
+          "confirmation": "native-turn-context"
+        },
+        {
+          "stage": "review-1",
+          "revisionId": "r_b0b9b724b40e4d09a17c8dd8408fba62",
+          "parentRevisionId": "r_954a6aab116c454896f2dc92385444f7",
+          "model": "GPT-6 Astra",
+          "modelId": "gpt-6-astra",
+          "requestedEffort": "high",
+          "confirmedEffort": "high",
+          "harness": "codex",
+          "harnessVersion": "0.157.1",
+          "confirmation": "native-turn-context"
+        }
+      ],
+      "review": {
+        "status": "accepted",
+        "ownerAccepted": true,
+        "scope": "Exact delivered revision matches the current owner-accepted revision.",
+        "recordedAt": "2026-09-29",
+        "source": "site-build/FEEDBACK-site-review-1.md"
+      },
+      "license": "CC0-1.0",
+      "sceneDeepLink": null
+    },
+    {
+      "id": "cabbage-stage-1",
+      "slug": "cabbage-stage-1",
+      "name": "Cabbage stage 1: seedling",
+      "pack": "farm",
+      "category": "Crops",
+      "description": "Small cabbage seedling emerging from a low, faceted soil patch.",
+      "assetId": "a_09011570b0f340828c78f18e37258e4d",
+      "revisionId": "r_b2a06d73eefb4ca7b0617685bc560ef2",
+      "parentRevision": "r_d12c02cad96e430abe440795c06b2cc5",
+      "metrics": {
+        "triangles": 336,
+        "meshes": 3,
+        "materials": 3,
+        "bounds": [
+          0.28168223798274994,
+          0.10300000151619315,
+          0.27668702602386475
+        ],
+        "boundsMin": [
+          -0.1416822373867035,
+          -0.003000000026077032,
+          -0.13754123449325562
+        ],
+        "boundsMax": [
+          0.14000000059604645,
+          0.10000000149011612,
+          0.13914579153060913
+        ],
+        "clips": [],
+        "partPaths": [
+          "CabbageSlot/Mesh_SoilMound",
+          "CabbageSlot/Plant/Mesh_Leaves_Dark",
+          "CabbageSlot/Plant/Mesh_Leaves_Light_And_Stem"
+        ]
+      },
+      "poster": {
+        "src": "/media/farm/r33/cutout/cabbage-stage-1.webp",
+        "width": 1024,
+        "height": 1024,
+        "alt": "Small cabbage seedling emerging from a low, faceted soil patch.",
+        "srcsetWebp": "/media/farm/r33/cutout/cabbage-stage-1-320.webp 320w, /media/farm/r33/cutout/cabbage-stage-1-480.webp 480w, /media/farm/r33/cutout/cabbage-stage-1-672.webp 672w, /media/farm/r33/cutout/cabbage-stage-1-768.webp 768w, /media/farm/r33/cutout/cabbage-stage-1-1024.webp 1024w",
+        "srcsetAvif": "/media/farm/r33/cutout/cabbage-stage-1-320.avif 320w, /media/farm/r33/cutout/cabbage-stage-1-480.avif 480w, /media/farm/r33/cutout/cabbage-stage-1-672.avif 672w, /media/farm/r33/cutout/cabbage-stage-1-768.avif 768w, /media/farm/r33/cutout/cabbage-stage-1-1024.avif 1024w",
+        "inputPath": "media/farm/r33/cutout/cabbage-stage-1.webp"
+      },
+      "reviewImage": {
+        "src": "/media/farm/r33/poster/cabbage-stage-1.webp",
+        "width": 1168,
+        "height": 780,
+        "alt": "Six rendered review views of cabbage-stage-1.",
+        "srcsetWebp": "/media/farm/r33/poster/cabbage-stage-1-320.webp 320w, /media/farm/r33/poster/cabbage-stage-1-480.webp 480w, /media/farm/r33/poster/cabbage-stage-1-672.webp 672w, /media/farm/r33/poster/cabbage-stage-1-768.webp 768w, /media/farm/r33/poster/cabbage-stage-1-1024.webp 1024w",
+        "srcsetAvif": "/media/farm/r33/poster/cabbage-stage-1-320.avif 320w, /media/farm/r33/poster/cabbage-stage-1-480.avif 480w, /media/farm/r33/poster/cabbage-stage-1-672.avif 672w, /media/farm/r33/poster/cabbage-stage-1-768.avif 768w, /media/farm/r33/poster/cabbage-stage-1-1024.avif 1024w",
+        "inputPath": "media/farm/r33/poster/cabbage-stage-1.webp"
+      },
+      "sourcePath": "/sources/cabbage-stage-1.kiln.js",
+      "sourceSha256": "8d35f86994bda197c31f47a3e17fef18ae7632fb6a1dc60ed0091351547bff16",
+      "modelPath": "/models/farm/cabbage-stage-1.glb",
+      "runtimeDownload": {
+        "path": "packs/farm/r34/models/cabbage-stage-1.glb",
+        "url": "https://assets.kilnstudio.tools/packs/farm/r34/models/cabbage-stage-1.glb",
+        "bytes": 164988,
+        "sha256": "e6b177606ffefd4d4c9437fb9150f37a717202133796cb52e469c22e2570fe0c",
+        "archive": "packs/farm/r34/shapes-and-seasons-farm-runtime.zip",
+        "member": "models/cabbage-stage-1.glb"
+      },
+      "provenance": {
+        "originalModel": "GPT-6 Astra",
+        "refinementModels": [
+          "GPT-6 Astra"
+        ],
+        "history": [
+          {
+            "stage": "first",
+            "revisionId": "r_d12c02cad96e430abe440795c06b2cc5",
+            "parentRevisionId": null,
+            "model": "GPT-6 Astra",
+            "modelId": "gpt-6-astra",
+            "requestedEffort": "high",
+            "confirmedEffort": "high",
+            "harness": "codex",
+            "harnessVersion": "0.157.1",
+            "confirmation": "native-turn-context"
+          },
+          {
+            "stage": "review-1",
+            "revisionId": "r_b2a06d73eefb4ca7b0617685bc560ef2",
+            "parentRevisionId": "r_d12c02cad96e430abe440795c06b2cc5",
+            "model": "GPT-6 Astra",
+            "modelId": "gpt-6-astra",
+            "requestedEffort": "high",
+            "confirmedEffort": "high",
+            "harness": "codex",
+            "harnessVersion": "0.157.1",
+            "confirmation": "native-turn-context"
+          }
+        ]
+      },
+      "revisions": [
+        {
+          "stage": "first",
+          "revisionId": "r_d12c02cad96e430abe440795c06b2cc5",
+          "parentRevisionId": null,
+          "model": "GPT-6 Astra",
+          "modelId": "gpt-6-astra",
+          "requestedEffort": "high",
+          "confirmedEffort": "high",
+          "harness": "codex",
+          "harnessVersion": "0.157.1",
+          "confirmation": "native-turn-context"
+        },
+        {
+          "stage": "review-1",
+          "revisionId": "r_b2a06d73eefb4ca7b0617685bc560ef2",
+          "parentRevisionId": "r_d12c02cad96e430abe440795c06b2cc5",
+          "model": "GPT-6 Astra",
+          "modelId": "gpt-6-astra",
+          "requestedEffort": "high",
+          "confirmedEffort": "high",
+          "harness": "codex",
+          "harnessVersion": "0.157.1",
+          "confirmation": "native-turn-context"
+        }
+      ],
+      "review": {
+        "status": "accepted",
+        "ownerAccepted": true,
+        "scope": "Exact delivered revision matches the current owner-accepted revision.",
+        "recordedAt": "2026-09-29",
+        "source": "site-build/FEEDBACK-site-review-1.md"
+      },
+      "license": "CC0-1.0",
+      "sceneDeepLink": null
+    },
+    {
+      "id": "cabbage-stage-2",
+      "slug": "cabbage-stage-2",
+      "name": "Cabbage stage 2: young leaves",
+      "pack": "farm",
+      "category": "Crops",
+      "description": "Young cabbage with spreading pale-green leaves on a soil patch.",
+      "assetId": "a_08757663177947d9b1362c8bd03b8008",
+      "revisionId": "r_d2cb82ca31fd4fe8883da87ece0e9a1d",
+      "parentRevision": "r_c089c9d4f93b4ac7af374e72a12b2033",
+      "metrics": {
+        "triangles": 648,
+        "meshes": 3,
+        "materials": 3,
+        "bounds": [
+          0.28168223798274994,
+          0.20300000300630927,
+          0.28505539894104004
+        ],
+        "boundsMin": [
+          -0.1416822373867035,
+          -0.003000000026077032,
+          -0.13754123449325562
+        ],
+        "boundsMax": [
+          0.14000000059604645,
+          0.20000000298023224,
+          0.14751416444778442
+        ],
+        "clips": [],
+        "partPaths": [
+          "CabbageSlot/Mesh_SoilMound",
+          "CabbageSlot/Plant/Mesh_Leaves_Dark",
+          "CabbageSlot/Plant/Mesh_Leaves_Light_And_Stem"
+        ]
+      },
+      "poster": {
+        "src": "/media/farm/r33/cutout/cabbage-stage-2.webp",
+        "width": 1024,
+        "height": 1024,
+        "alt": "Young cabbage with spreading pale-green leaves on a soil patch.",
+        "srcsetWebp": "/media/farm/r33/cutout/cabbage-stage-2-320.webp 320w, /media/farm/r33/cutout/cabbage-stage-2-480.webp 480w, /media/farm/r33/cutout/cabbage-stage-2-672.webp 672w, /media/farm/r33/cutout/cabbage-stage-2-768.webp 768w, /media/farm/r33/cutout/cabbage-stage-2-1024.webp 1024w",
+        "srcsetAvif": "/media/farm/r33/cutout/cabbage-stage-2-320.avif 320w, /media/farm/r33/cutout/cabbage-stage-2-480.avif 480w, /media/farm/r33/cutout/cabbage-stage-2-672.avif 672w, /media/farm/r33/cutout/cabbage-stage-2-768.avif 768w, /media/farm/r33/cutout/cabbage-stage-2-1024.avif 1024w",
+        "inputPath": "media/farm/r33/cutout/cabbage-stage-2.webp"
+      },
+      "reviewImage": {
+        "src": "/media/farm/r33/poster/cabbage-stage-2.webp",
+        "width": 1168,
+        "height": 780,
+        "alt": "Six rendered review views of cabbage-stage-2.",
+        "srcsetWebp": "/media/farm/r33/poster/cabbage-stage-2-320.webp 320w, /media/farm/r33/poster/cabbage-stage-2-480.webp 480w, /media/farm/r33/poster/cabbage-stage-2-672.webp 672w, /media/farm/r33/poster/cabbage-stage-2-768.webp 768w, /media/farm/r33/poster/cabbage-stage-2-1024.webp 1024w",
+        "srcsetAvif": "/media/farm/r33/poster/cabbage-stage-2-320.avif 320w, /media/farm/r33/poster/cabbage-stage-2-480.avif 480w, /media/farm/r33/poster/cabbage-stage-2-672.avif 672w, /media/farm/r33/poster/cabbage-stage-2-768.avif 768w, /media/farm/r33/poster/cabbage-stage-2-1024.avif 1024w",
+        "inputPath": "media/farm/r33/poster/cabbage-stage-2.webp"
+      },
+      "sourcePath": "/sources/cabbage-stage-2.kiln.js",
+      "sourceSha256": "24fc870a9d339af5a9b5d6c6b431158d0e984b26bb63ec97a5d8a9e51e9647cc",
+      "modelPath": "/models/farm/cabbage-stage-2.glb",
+      "runtimeDownload": {
+        "path": "packs/farm/r34/models/cabbage-stage-2.glb",
+        "url": "https://assets.kilnstudio.tools/packs/farm/r34/models/cabbage-stage-2.glb",
+        "bytes": 170768,
+        "sha256": "cbe951aa364a017889f03b5a60a31a6b9c5398064a5b20f7f1c5b6fb9332bec6",
+        "archive": "packs/farm/r34/shapes-and-seasons-farm-runtime.zip",
+        "member": "models/cabbage-stage-2.glb"
+      },
+      "provenance": {
+        "originalModel": "GPT-6 Astra",
+        "refinementModels": [
+          "GPT-6 Astra"
+        ],
+        "history": [
+          {
+            "stage": "first",
+            "revisionId": "r_c089c9d4f93b4ac7af374e72a12b2033",
+            "parentRevisionId": null,
+            "model": "GPT-6 Astra",
+            "modelId": "gpt-6-astra",
+            "requestedEffort": "high",
+            "confirmedEffort": "high",
+            "harness": "codex",
+            "harnessVersion": "0.157.1",
+            "confirmation": "native-turn-context"
+          },
+          {
+            "stage": "review-1",
+            "revisionId": "r_d2cb82ca31fd4fe8883da87ece0e9a1d",
+            "parentRevisionId": "r_c089c9d4f93b4ac7af374e72a12b2033",
+            "model": "GPT-6 Astra",
+            "modelId": "gpt-6-astra",
+            "requestedEffort": "high",
+            "confirmedEffort": "high",
+            "harness": "codex",
+            "harnessVersion": "0.157.1",
+            "confirmation": "native-turn-context"
+          }
+        ]
+      },
+      "revisions": [
+        {
+          "stage": "first",
+          "revisionId": "r_c089c9d4f93b4ac7af374e72a12b2033",
+          "parentRevisionId": null,
+          "model": "GPT-6 Astra",
+          "modelId": "gpt-6-astra",
+          "requestedEffort": "high",
+          "confirmedEffort": "high",
+          "harness": "codex",
+          "harnessVersion": "0.157.1",
+          "confirmation": "native-turn-context"
+        },
+        {
+          "stage": "review-1",
+          "revisionId": "r_d2cb82ca31fd4fe8883da87ece0e9a1d",
+          "parentRevisionId": "r_c089c9d4f93b4ac7af374e72a12b2033",
+          "model": "GPT-6 Astra",
+          "modelId": "gpt-6-astra",
+          "requestedEffort": "high",
+          "confirmedEffort": "high",
+          "harness": "codex",
+          "harnessVersion": "0.157.1",
+          "confirmation": "native-turn-context"
+        }
+      ],
+      "review": {
+        "status": "accepted",
+        "ownerAccepted": true,
+        "scope": "Exact delivered revision matches the current owner-accepted revision.",
+        "recordedAt": "2026-09-29",
+        "source": "site-build/FEEDBACK-site-review-1.md"
+      },
+      "license": "CC0-1.0",
+      "sceneDeepLink": null
+    },
+    {
+      "id": "cabbage-stage-3",
+      "slug": "cabbage-stage-3",
+      "name": "Cabbage stage 3: leafy rosette",
+      "pack": "farm",
+      "category": "Crops",
+      "description": "Open cabbage rosette with layered green leaves and an upright centre.",
+      "assetId": "a_2bde941a4c8448bb827fccd8a4eb517c",
+      "revisionId": "r_8a446c3c2f514e358f8f897c420ecd0a",
+      "parentRevision": "r_5d4a7f112edf4aa18a6250209a4ab306",
+      "metrics": {
+        "triangles": 960,
+        "meshes": 3,
+        "materials": 3,
+        "bounds": [
+          0.4699999988079071,
+          0.35299999406561255,
+          0.45330294966697693
+        ],
+        "boundsMin": [
+          -0.23164372146129608,
+          -0.003000000026077032,
+          -0.21766819059848785
+        ],
+        "boundsMax": [
+          0.23835627734661102,
+          0.3499999940395355,
+          0.23563475906848907
+        ],
+        "clips": [],
+        "partPaths": [
+          "CabbageSlot/Mesh_SoilMound",
+          "CabbageSlot/Plant/Mesh_Leaves_Dark",
+          "CabbageSlot/Plant/Mesh_Leaves_Light_And_Stem"
+        ]
+      },
+      "poster": {
+        "src": "/media/farm/r33/cutout/cabbage-stage-3.webp",
+        "width": 1024,
+        "height": 1024,
+        "alt": "Open cabbage rosette with layered green leaves and an upright centre.",
+        "srcsetWebp": "/media/farm/r33/cutout/cabbage-stage-3-320.webp 320w, /media/farm/r33/cutout/cabbage-stage-3-480.webp 480w, /media/farm/r33/cutout/cabbage-stage-3-672.webp 672w, /media/farm/r33/cutout/cabbage-stage-3-768.webp 768w, /media/farm/r33/cutout/cabbage-stage-3-1024.webp 1024w",
+        "srcsetAvif": "/media/farm/r33/cutout/cabbage-stage-3-320.avif 320w, /media/farm/r33/cutout/cabbage-stage-3-480.avif 480w, /media/farm/r33/cutout/cabbage-stage-3-672.avif 672w, /media/farm/r33/cutout/cabbage-stage-3-768.avif 768w, /media/farm/r33/cutout/cabbage-stage-3-1024.avif 1024w",
+        "inputPath": "media/farm/r33/cutout/cabbage-stage-3.webp"
+      },
+      "reviewImage": {
+        "src": "/media/farm/r33/poster/cabbage-stage-3.webp",
+        "width": 1168,
+        "height": 780,
+        "alt": "Six rendered review views of cabbage-stage-3.",
+        "srcsetWebp": "/media/farm/r33/poster/cabbage-stage-3-320.webp 320w, /media/farm/r33/poster/cabbage-stage-3-480.webp 480w, /media/farm/r33/poster/cabbage-stage-3-672.webp 672w, /media/farm/r33/poster/cabbage-stage-3-768.webp 768w, /media/farm/r33/poster/cabbage-stage-3-1024.webp 1024w",
+        "srcsetAvif": "/media/farm/r33/poster/cabbage-stage-3-320.avif 320w, /media/farm/r33/poster/cabbage-stage-3-480.avif 480w, /media/farm/r33/poster/cabbage-stage-3-672.avif 672w, /media/farm/r33/poster/cabbage-stage-3-768.avif 768w, /media/farm/r33/poster/cabbage-stage-3-1024.avif 1024w",
+        "inputPath": "media/farm/r33/poster/cabbage-stage-3.webp"
+      },
+      "sourcePath": "/sources/cabbage-stage-3.kiln.js",
+      "sourceSha256": "ab421dc345a9beb9e51fd6c523957be7f044cd559b024a6ef461e79d0017bd09",
+      "modelPath": "/models/farm/cabbage-stage-3.glb",
+      "runtimeDownload": {
+        "path": "packs/farm/r34/models/cabbage-stage-3.glb",
+        "url": "https://assets.kilnstudio.tools/packs/farm/r34/models/cabbage-stage-3.glb",
+        "bytes": 176528,
+        "sha256": "ff9525150fe7f99142df59c36a316502d4830789e25efea70b5c9c38ecb1da9d",
+        "archive": "packs/farm/r34/shapes-and-seasons-farm-runtime.zip",
+        "member": "models/cabbage-stage-3.glb"
+      },
+      "provenance": {
+        "originalModel": "GPT-6 Astra",
+        "refinementModels": [
+          "GPT-6 Astra"
+        ],
+        "history": [
+          {
+            "stage": "first",
+            "revisionId": "r_5d4a7f112edf4aa18a6250209a4ab306",
+            "parentRevisionId": null,
+            "model": "GPT-6 Astra",
+            "modelId": "gpt-6-astra",
+            "requestedEffort": "high",
+            "confirmedEffort": "high",
+            "harness": "codex",
+            "harnessVersion": "0.157.1",
+            "confirmation": "native-turn-context"
+          },
+          {
+            "stage": "review-1",
+            "revisionId": "r_8a446c3c2f514e358f8f897c420ecd0a",
+            "parentRevisionId": "r_5d4a7f112edf4aa18a6250209a4ab306",
+            "model": "GPT-6 Astra",
+            "modelId": "gpt-6-astra",
+            "requestedEffort": "high",
+            "confirmedEffort": "high",
+            "harness": "codex",
+            "harnessVersion": "0.157.1",
+            "confirmation": "native-turn-context"
+          }
+        ]
+      },
+      "revisions": [
+        {
+          "stage": "first",
+          "revisionId": "r_5d4a7f112edf4aa18a6250209a4ab306",
+          "parentRevisionId": null,
+          "model": "GPT-6 Astra",
+          "modelId": "gpt-6-astra",
+          "requestedEffort": "high",
+          "confirmedEffort": "high",
+          "harness": "codex",
+          "harnessVersion": "0.157.1",
+          "confirmation": "native-turn-context"
+        },
+        {
+          "stage": "review-1",
+          "revisionId": "r_8a446c3c2f514e358f8f897c420ecd0a",
+          "parentRevisionId": "r_5d4a7f112edf4aa18a6250209a4ab306",
+          "model": "GPT-6 Astra",
+          "modelId": "gpt-6-astra",
+          "requestedEffort": "high",
+          "confirmedEffort": "high",
+          "harness": "codex",
+          "harnessVersion": "0.157.1",
+          "confirmation": "native-turn-context"
+        }
+      ],
+      "review": {
+        "status": "accepted",
+        "ownerAccepted": true,
+        "scope": "Exact delivered revision matches the current owner-accepted revision.",
+        "recordedAt": "2026-09-29",
+        "source": "site-build/FEEDBACK-site-review-1.md"
+      },
+      "license": "CC0-1.0",
+      "sceneDeepLink": null
+    },
+    {
+      "id": "cabbage-stage-4",
+      "slug": "cabbage-stage-4",
+      "name": "Cabbage stage 4: mature head",
+      "pack": "farm",
+      "category": "Crops",
+      "description": "Mature pale-green cabbage head held by broad outer leaves.",
+      "assetId": "a_aa109475a9844b21978c64219f07308e",
+      "revisionId": "r_9bf8450fc5294c9d9dca1960625be36a",
+      "parentRevision": "r_2c02e97337a94b0eb3750be7200ed374",
+      "metrics": {
+        "triangles": 1524,
+        "meshes": 4,
+        "materials": 4,
+        "bounds": [
+          0.5999999940395355,
+          0.4529999881051481,
+          0.5784885287284851
+        ],
+        "boundsMin": [
+          -0.29545485973358154,
+          -0.003000000026077032,
+          -0.27749869227409363
+        ],
+        "boundsMax": [
+          0.304545134305954,
+          0.44999998807907104,
+          0.3009898364543915
+        ],
+        "clips": [],
+        "partPaths": [
+          "CabbageSlot/Mesh_SoilMound",
+          "CabbageSlot/Plant/Mesh_Leaves_Dark",
+          "CabbageSlot/Plant/Mesh_Leaves_Light_And_Stem",
+          "CabbageSlot/Plant/Mesh_Head_Pale"
+        ]
+      },
+      "poster": {
+        "src": "/media/farm/r33/cutout/cabbage-stage-4.webp",
+        "width": 1024,
+        "height": 1024,
+        "alt": "Mature pale-green cabbage head held by broad outer leaves.",
+        "srcsetWebp": "/media/farm/r33/cutout/cabbage-stage-4-320.webp 320w, /media/farm/r33/cutout/cabbage-stage-4-480.webp 480w, /media/farm/r33/cutout/cabbage-stage-4-672.webp 672w, /media/farm/r33/cutout/cabbage-stage-4-768.webp 768w, /media/farm/r33/cutout/cabbage-stage-4-1024.webp 1024w",
+        "srcsetAvif": "/media/farm/r33/cutout/cabbage-stage-4-320.avif 320w, /media/farm/r33/cutout/cabbage-stage-4-480.avif 480w, /media/farm/r33/cutout/cabbage-stage-4-672.avif 672w, /media/farm/r33/cutout/cabbage-stage-4-768.avif 768w, /media/farm/r33/cutout/cabbage-stage-4-1024.avif 1024w",
+        "inputPath": "media/farm/r33/cutout/cabbage-stage-4.webp"
+      },
+      "reviewImage": {
+        "src": "/media/farm/r33/poster/cabbage-stage-4.webp",
+        "width": 1168,
+        "height": 780,
+        "alt": "Six rendered review views of cabbage-stage-4.",
+        "srcsetWebp": "/media/farm/r33/poster/cabbage-stage-4-320.webp 320w, /media/farm/r33/poster/cabbage-stage-4-480.webp 480w, /media/farm/r33/poster/cabbage-stage-4-672.webp 672w, /media/farm/r33/poster/cabbage-stage-4-768.webp 768w, /media/farm/r33/poster/cabbage-stage-4-1024.webp 1024w",
+        "srcsetAvif": "/media/farm/r33/poster/cabbage-stage-4-320.avif 320w, /media/farm/r33/poster/cabbage-stage-4-480.avif 480w, /media/farm/r33/poster/cabbage-stage-4-672.avif 672w, /media/farm/r33/poster/cabbage-stage-4-768.avif 768w, /media/farm/r33/poster/cabbage-stage-4-1024.avif 1024w",
+        "inputPath": "media/farm/r33/poster/cabbage-stage-4.webp"
+      },
+      "sourcePath": "/sources/cabbage-stage-4.kiln.js",
+      "sourceSha256": "eda27b2a42289a99cda7aea846eefa2ed6dc35ab56331ee65d8f8f392454ebdc",
+      "modelPath": "/models/farm/cabbage-stage-4.glb",
+      "runtimeDownload": {
+        "path": "packs/farm/r34/models/cabbage-stage-4.glb",
+        "url": "https://assets.kilnstudio.tools/packs/farm/r34/models/cabbage-stage-4.glb",
+        "bytes": 187596,
+        "sha256": "8e6b8ea974b75843d7671641f2c3fa2ebd3f10a19810b6759d15ec9c4662bacb",
+        "archive": "packs/farm/r34/shapes-and-seasons-farm-runtime.zip",
+        "member": "models/cabbage-stage-4.glb"
+      },
+      "provenance": {
+        "originalModel": "GPT-6 Astra",
+        "refinementModels": [
+          "GPT-6 Astra"
+        ],
+        "history": [
+          {
+            "stage": "first",
+            "revisionId": "r_939bc6cdf7d241bd84fa3568b02dfe8b",
+            "parentRevisionId": null,
+            "model": "GPT-6 Astra",
+            "modelId": "gpt-6-astra",
+            "requestedEffort": "high",
+            "confirmedEffort": "high",
+            "harness": "codex",
+            "harnessVersion": "0.157.1",
+            "confirmation": "native-turn-context"
+          },
+          {
+            "stage": "review-1",
+            "revisionId": "r_2c02e97337a94b0eb3750be7200ed374",
+            "parentRevisionId": "r_939bc6cdf7d241bd84fa3568b02dfe8b",
+            "model": "GPT-6 Astra",
+            "modelId": "gpt-6-astra",
+            "requestedEffort": "high",
+            "confirmedEffort": "high",
+            "harness": "codex",
+            "harnessVersion": "0.157.1",
+            "confirmation": "native-turn-context"
+          },
+          {
+            "stage": "review-2",
+            "revisionId": "r_9bf8450fc5294c9d9dca1960625be36a",
+            "parentRevisionId": "r_2c02e97337a94b0eb3750be7200ed374",
+            "model": "GPT-6 Astra",
+            "modelId": "gpt-6-astra",
+            "requestedEffort": "high",
+            "confirmedEffort": "high",
+            "harness": "codex",
+            "harnessVersion": "0.157.1",
+            "confirmation": "native-turn-context"
+          }
+        ]
+      },
+      "revisions": [
+        {
+          "stage": "first",
+          "revisionId": "r_939bc6cdf7d241bd84fa3568b02dfe8b",
+          "parentRevisionId": null,
+          "model": "GPT-6 Astra",
+          "modelId": "gpt-6-astra",
+          "requestedEffort": "high",
+          "confirmedEffort": "high",
+          "harness": "codex",
+          "harnessVersion": "0.157.1",
+          "confirmation": "native-turn-context"
+        },
+        {
+          "stage": "review-1",
+          "revisionId": "r_2c02e97337a94b0eb3750be7200ed374",
+          "parentRevisionId": "r_939bc6cdf7d241bd84fa3568b02dfe8b",
+          "model": "GPT-6 Astra",
+          "modelId": "gpt-6-astra",
+          "requestedEffort": "high",
+          "confirmedEffort": "high",
+          "harness": "codex",
+          "harnessVersion": "0.157.1",
+          "confirmation": "native-turn-context"
+        },
+        {
+          "stage": "review-2",
+          "revisionId": "r_9bf8450fc5294c9d9dca1960625be36a",
+          "parentRevisionId": "r_2c02e97337a94b0eb3750be7200ed374",
+          "model": "GPT-6 Astra",
+          "modelId": "gpt-6-astra",
+          "requestedEffort": "high",
+          "confirmedEffort": "high",
+          "harness": "codex",
+          "harnessVersion": "0.157.1",
+          "confirmation": "native-turn-context"
+        }
+      ],
+      "review": {
+        "status": "accepted",
+        "ownerAccepted": true,
+        "scope": "Exact delivered revision matches the current owner-accepted revision.",
+        "recordedAt": "2026-09-29",
+        "source": "site-build/FEEDBACK-site-review-1.md"
+      },
+      "license": "CC0-1.0",
+      "sceneDeepLink": null
+    },
+    {
+      "id": "wheat",
+      "slug": "wheat",
+      "name": "Wheat clump",
+      "pack": "farm",
+      "category": "Crops",
+      "description": "Cluster of golden wheat stems with narrow leaves and upright seed heads.",
+      "assetId": "a_d28071473b804df89b2b52e36100608d",
+      "revisionId": "r_254f9bdf4d004a7796033d5fe348a3e3",
+      "parentRevision": "r_723550c59e0a44948ebf51a3526fa455",
+      "metrics": {
+        "triangles": 1488,
+        "meshes": 4,
+        "materials": 2,
+        "bounds": [
+          0.45956331491470337,
+          0.9039393982384354,
+          0.48051224648952484
+        ],
+        "boundsMin": [
+          -0.2281663566827774,
+          -0.0038206300232559443,
+          -0.22793839871883392
+        ],
+        "boundsMax": [
+          0.23139695823192596,
+          0.9001187682151794,
+          0.2525738477706909
+        ],
+        "clips": [],
+        "partPaths": [
+          "Wheat/Plant/Mesh_Stalks",
+          "Wheat/Plant/Mesh_TwelveSeedHeads",
+          "Wheat/Plant/Mesh_StrawLeaves",
+          "Wheat/Mesh_Soil"
+        ]
+      },
+      "poster": {
+        "src": "/media/farm/r33/cutout/wheat.webp",
+        "width": 1024,
+        "height": 1024,
+        "alt": "Cluster of golden wheat stems with narrow leaves and upright seed heads.",
+        "srcsetWebp": "/media/farm/r33/cutout/wheat-320.webp 320w, /media/farm/r33/cutout/wheat-480.webp 480w, /media/farm/r33/cutout/wheat-672.webp 672w, /media/farm/r33/cutout/wheat-768.webp 768w, /media/farm/r33/cutout/wheat-1024.webp 1024w",
+        "srcsetAvif": "/media/farm/r33/cutout/wheat-320.avif 320w, /media/farm/r33/cutout/wheat-480.avif 480w, /media/farm/r33/cutout/wheat-672.avif 672w, /media/farm/r33/cutout/wheat-768.avif 768w, /media/farm/r33/cutout/wheat-1024.avif 1024w",
+        "inputPath": "media/farm/r33/cutout/wheat.webp"
+      },
+      "reviewImage": {
+        "src": "/media/farm/r33/poster/wheat.webp",
+        "width": 1168,
+        "height": 780,
+        "alt": "Six rendered review views of Wheat.",
+        "srcsetWebp": "/media/farm/r33/poster/wheat-320.webp 320w, /media/farm/r33/poster/wheat-480.webp 480w, /media/farm/r33/poster/wheat-672.webp 672w, /media/farm/r33/poster/wheat-768.webp 768w, /media/farm/r33/poster/wheat-1024.webp 1024w",
+        "srcsetAvif": "/media/farm/r33/poster/wheat-320.avif 320w, /media/farm/r33/poster/wheat-480.avif 480w, /media/farm/r33/poster/wheat-672.avif 672w, /media/farm/r33/poster/wheat-768.avif 768w, /media/farm/r33/poster/wheat-1024.avif 1024w",
+        "inputPath": "media/farm/r33/poster/wheat.webp"
+      },
+      "sourcePath": "/sources/wheat.kiln.js",
+      "sourceSha256": "c8cc41a113683887a811796613fe44abe7d2be8302144de5cc22516169a1e669",
+      "modelPath": "/models/farm/wheat.glb",
+      "runtimeDownload": {
+        "path": "packs/farm/r34/models/wheat.glb",
+        "url": "https://assets.kilnstudio.tools/packs/farm/r34/models/wheat.glb",
+        "bytes": 352648,
+        "sha256": "d13360234d2092d0982f385aed401f4f926e3ccacc593cd0cb5a95dcdea79b25",
+        "archive": "packs/farm/r34/shapes-and-seasons-farm-runtime.zip",
+        "member": "models/wheat.glb"
+      },
+      "provenance": {
+        "originalModel": "GPT-6 Astra",
+        "refinementModels": [
+          "GPT-6 Astra"
+        ],
+        "history": [
+          {
+            "stage": "first",
+            "revisionId": "r_723550c59e0a44948ebf51a3526fa455",
+            "parentRevisionId": null,
+            "model": "GPT-6 Astra",
+            "modelId": "gpt-6-astra",
+            "requestedEffort": "high",
+            "confirmedEffort": "high",
+            "harness": "codex",
+            "harnessVersion": "0.157.1",
+            "confirmation": "native-turn-context"
+          },
+          {
+            "stage": "review-1",
+            "revisionId": "r_254f9bdf4d004a7796033d5fe348a3e3",
+            "parentRevisionId": "r_723550c59e0a44948ebf51a3526fa455",
+            "model": "GPT-6 Astra",
+            "modelId": "gpt-6-astra",
+            "requestedEffort": "high",
+            "confirmedEffort": "high",
+            "harness": "codex",
+            "harnessVersion": "0.157.1",
+            "confirmation": "native-turn-context"
+          }
+        ]
+      },
+      "revisions": [
+        {
+          "stage": "first",
+          "revisionId": "r_723550c59e0a44948ebf51a3526fa455",
+          "parentRevisionId": null,
+          "model": "GPT-6 Astra",
+          "modelId": "gpt-6-astra",
+          "requestedEffort": "high",
+          "confirmedEffort": "high",
+          "harness": "codex",
+          "harnessVersion": "0.157.1",
+          "confirmation": "native-turn-context"
+        },
+        {
+          "stage": "review-1",
+          "revisionId": "r_254f9bdf4d004a7796033d5fe348a3e3",
+          "parentRevisionId": "r_723550c59e0a44948ebf51a3526fa455",
+          "model": "GPT-6 Astra",
+          "modelId": "gpt-6-astra",
+          "requestedEffort": "high",
+          "confirmedEffort": "high",
+          "harness": "codex",
+          "harnessVersion": "0.157.1",
+          "confirmation": "native-turn-context"
+        }
+      ],
+      "review": {
+        "status": "accepted",
+        "ownerAccepted": true,
+        "scope": "Exact delivered revision matches the current owner-accepted revision.",
+        "recordedAt": "2026-09-29",
+        "source": "site-build/FEEDBACK-site-review-1.md"
+      },
+      "license": "CC0-1.0",
+      "sceneDeepLink": null
+    },
+    {
+      "id": "pumpkin-plant",
+      "slug": "pumpkin-plant",
+      "name": "Pumpkin plant",
+      "pack": "farm",
+      "category": "Crops",
+      "description": "Low pumpkin vine with green leaves and two faceted orange fruits.",
+      "assetId": "a_6cd60125b1274f1481ee2a5f37accb3f",
+      "revisionId": "r_38897e8a2b944c38a4f4428ab39f4a2b",
+      "parentRevision": "r_7ee90bce755f42d9a7e338883e5ad48e",
+      "metrics": {
+        "triangles": 1566,
+        "meshes": 5,
+        "materials": 4,
+        "bounds": [
+          1.4128055572509766,
+          0.4208210585638881,
+          0.944446325302124
+        ],
+        "boundsMin": [
+          -0.7019412517547607,
+          -0.006000000052154064,
+          -0.47205650806427
+        ],
+        "boundsMax": [
+          0.7108643054962158,
+          0.414821058511734,
+          0.472389817237854
+        ],
+        "clips": [],
+        "partPaths": [
+          "PumpkinPlant/Plant/Mesh_ConnectedVineAndFruitStems",
+          "PumpkinPlant/Plant/Mesh_ThickOliveLeaves",
+          "PumpkinPlant/Plant/Mesh_LargeLobedPumpkin",
+          "PumpkinPlant/Plant/Mesh_SmallLobedPumpkin",
+          "PumpkinPlant/Mesh_Soil"
+        ]
+      },
+      "poster": {
+        "src": "/media/farm/r33/cutout/pumpkin-plant.webp",
+        "width": 1024,
+        "height": 1024,
+        "alt": "Low pumpkin vine with green leaves and two faceted orange fruits.",
+        "srcsetWebp": "/media/farm/r33/cutout/pumpkin-plant-320.webp 320w, /media/farm/r33/cutout/pumpkin-plant-480.webp 480w, /media/farm/r33/cutout/pumpkin-plant-672.webp 672w, /media/farm/r33/cutout/pumpkin-plant-768.webp 768w, /media/farm/r33/cutout/pumpkin-plant-1024.webp 1024w",
+        "srcsetAvif": "/media/farm/r33/cutout/pumpkin-plant-320.avif 320w, /media/farm/r33/cutout/pumpkin-plant-480.avif 480w, /media/farm/r33/cutout/pumpkin-plant-672.avif 672w, /media/farm/r33/cutout/pumpkin-plant-768.avif 768w, /media/farm/r33/cutout/pumpkin-plant-1024.avif 1024w",
+        "inputPath": "media/farm/r33/cutout/pumpkin-plant.webp"
+      },
+      "reviewImage": {
+        "src": "/media/farm/r33/poster/pumpkin-plant.webp",
+        "width": 1168,
+        "height": 780,
+        "alt": "Six rendered review views of Pumpkin plant.",
+        "srcsetWebp": "/media/farm/r33/poster/pumpkin-plant-320.webp 320w, /media/farm/r33/poster/pumpkin-plant-480.webp 480w, /media/farm/r33/poster/pumpkin-plant-672.webp 672w, /media/farm/r33/poster/pumpkin-plant-768.webp 768w, /media/farm/r33/poster/pumpkin-plant-1024.webp 1024w",
+        "srcsetAvif": "/media/farm/r33/poster/pumpkin-plant-320.avif 320w, /media/farm/r33/poster/pumpkin-plant-480.avif 480w, /media/farm/r33/poster/pumpkin-plant-672.avif 672w, /media/farm/r33/poster/pumpkin-plant-768.avif 768w, /media/farm/r33/poster/pumpkin-plant-1024.avif 1024w",
+        "inputPath": "media/farm/r33/poster/pumpkin-plant.webp"
+      },
+      "sourcePath": "/sources/pumpkin-plant.kiln.js",
+      "sourceSha256": "961ce83ff3c51969181f0175aaf7947bd5b518631b1a3cf276e3e379e5168d0a",
+      "modelPath": "/models/farm/pumpkin-plant.glb",
+      "runtimeDownload": {
+        "path": "packs/farm/r34/models/pumpkin-plant.glb",
+        "url": "https://assets.kilnstudio.tools/packs/farm/r34/models/pumpkin-plant.glb",
+        "bytes": 155080,
+        "sha256": "22b9c424461cbc904b21e7d17a4862e2a034545912839147b314ba6f813c8371",
+        "archive": "packs/farm/r34/shapes-and-seasons-farm-runtime.zip",
+        "member": "models/pumpkin-plant.glb"
+      },
+      "provenance": {
+        "originalModel": "GPT-6 Astra",
+        "refinementModels": [
+          "GPT-6 Astra"
+        ],
+        "history": [
+          {
+            "stage": "first-saved-intermediate",
+            "revisionId": "r_8fc93ed74d2544b8ab4769c7b54fc60e",
+            "parentRevisionId": null,
+            "model": "GPT-6 Astra",
+            "modelId": "gpt-6-astra",
+            "requestedEffort": "high",
+            "confirmedEffort": "high",
+            "harness": "codex",
+            "harnessVersion": "0.157.1",
+            "confirmation": "native-turn-context"
+          },
+          {
+            "stage": "first",
+            "revisionId": "r_7ee90bce755f42d9a7e338883e5ad48e",
+            "parentRevisionId": "r_8fc93ed74d2544b8ab4769c7b54fc60e",
+            "model": "GPT-6 Astra",
+            "modelId": "gpt-6-astra",
+            "requestedEffort": "high",
+            "confirmedEffort": "high",
+            "harness": "codex",
+            "harnessVersion": "0.157.1",
+            "confirmation": "native-turn-context"
+          },
+          {
+            "stage": "review-1",
+            "revisionId": "r_38897e8a2b944c38a4f4428ab39f4a2b",
+            "parentRevisionId": "r_7ee90bce755f42d9a7e338883e5ad48e",
+            "model": "GPT-6 Astra",
+            "modelId": "gpt-6-astra",
+            "requestedEffort": "high",
+            "confirmedEffort": "high",
+            "harness": "codex",
+            "harnessVersion": "0.157.1",
+            "confirmation": "native-turn-context"
+          }
+        ]
+      },
+      "revisions": [
+        {
+          "stage": "first-saved-intermediate",
+          "revisionId": "r_8fc93ed74d2544b8ab4769c7b54fc60e",
+          "parentRevisionId": null,
+          "model": "GPT-6 Astra",
+          "modelId": "gpt-6-astra",
+          "requestedEffort": "high",
+          "confirmedEffort": "high",
+          "harness": "codex",
+          "harnessVersion": "0.157.1",
+          "confirmation": "native-turn-context"
+        },
+        {
+          "stage": "first",
+          "revisionId": "r_7ee90bce755f42d9a7e338883e5ad48e",
+          "parentRevisionId": "r_8fc93ed74d2544b8ab4769c7b54fc60e",
+          "model": "GPT-6 Astra",
+          "modelId": "gpt-6-astra",
+          "requestedEffort": "high",
+          "confirmedEffort": "high",
+          "harness": "codex",
+          "harnessVersion": "0.157.1",
+          "confirmation": "native-turn-context"
+        },
+        {
+          "stage": "review-1",
+          "revisionId": "r_38897e8a2b944c38a4f4428ab39f4a2b",
+          "parentRevisionId": "r_7ee90bce755f42d9a7e338883e5ad48e",
+          "model": "GPT-6 Astra",
+          "modelId": "gpt-6-astra",
+          "requestedEffort": "high",
+          "confirmedEffort": "high",
+          "harness": "codex",
+          "harnessVersion": "0.157.1",
+          "confirmation": "native-turn-context"
+        }
+      ],
+      "review": {
+        "status": "accepted",
+        "ownerAccepted": true,
+        "scope": "Exact delivered revision matches the current owner-accepted revision.",
+        "recordedAt": "2026-09-29",
+        "source": "site-build/FEEDBACK-site-review-1.md"
+      },
+      "license": "CC0-1.0",
+      "sceneDeepLink": null
+    },
+    {
+      "id": "faceted-tree",
+      "slug": "faceted-tree",
+      "name": "Faceted deciduous tree",
+      "pack": "farm",
+      "category": "Nature",
+      "description": "Small deciduous tree with a branching brown trunk and a faceted green crown.",
+      "assetId": "a_4148a17f25a141ccb3cfaf29b75af776",
+      "revisionId": "r_6d5dd832c32b4d8682942980d02cde1b",
+      "parentRevision": null,
+      "metrics": {
+        "triangles": 760,
+        "meshes": 4,
+        "materials": 4,
+        "bounds": [
+          3.1822952032089233,
+          4.469456672668457,
+          3.617492914199829
+        ],
+        "boundsMin": [
+          -1.648310899734497,
+          0,
+          -1.8566194772720337
+        ],
+        "boundsMax": [
+          1.5339843034744263,
+          4.469456672668457,
+          1.7608734369277954
+        ],
+        "clips": [],
+        "partPaths": [
+          "FacetedTree/Mesh_Trunk_and_major_branches",
+          "FacetedTree/Mesh_Crown_west_and_east",
+          "FacetedTree/Mesh_Crown_front_and_back",
+          "FacetedTree/Mesh_Crown_upper_dome"
+        ]
+      },
+      "poster": {
+        "src": "/media/farm/r33/cutout/faceted-tree.webp",
+        "width": 1024,
+        "height": 1024,
+        "alt": "Small deciduous tree with a branching brown trunk and a faceted green crown.",
+        "srcsetWebp": "/media/farm/r33/cutout/faceted-tree-320.webp 320w, /media/farm/r33/cutout/faceted-tree-480.webp 480w, /media/farm/r33/cutout/faceted-tree-672.webp 672w, /media/farm/r33/cutout/faceted-tree-768.webp 768w, /media/farm/r33/cutout/faceted-tree-1024.webp 1024w",
+        "srcsetAvif": "/media/farm/r33/cutout/faceted-tree-320.avif 320w, /media/farm/r33/cutout/faceted-tree-480.avif 480w, /media/farm/r33/cutout/faceted-tree-672.avif 672w, /media/farm/r33/cutout/faceted-tree-768.avif 768w, /media/farm/r33/cutout/faceted-tree-1024.avif 1024w",
+        "inputPath": "media/farm/r33/cutout/faceted-tree.webp"
+      },
+      "reviewImage": {
+        "src": "/media/farm/r33/poster/faceted-tree.webp",
+        "width": 1168,
+        "height": 780,
+        "alt": "Six rendered review views of faceted-tree.",
+        "srcsetWebp": "/media/farm/r33/poster/faceted-tree-320.webp 320w, /media/farm/r33/poster/faceted-tree-480.webp 480w, /media/farm/r33/poster/faceted-tree-672.webp 672w, /media/farm/r33/poster/faceted-tree-768.webp 768w, /media/farm/r33/poster/faceted-tree-1024.webp 1024w",
+        "srcsetAvif": "/media/farm/r33/poster/faceted-tree-320.avif 320w, /media/farm/r33/poster/faceted-tree-480.avif 480w, /media/farm/r33/poster/faceted-tree-672.avif 672w, /media/farm/r33/poster/faceted-tree-768.avif 768w, /media/farm/r33/poster/faceted-tree-1024.avif 1024w",
+        "inputPath": "media/farm/r33/poster/faceted-tree.webp"
+      },
+      "sourcePath": "/sources/faceted-tree.kiln.js",
+      "sourceSha256": "f19c2b60aed5b04a47b7454614b3c2bdb20abbb7f087c8a719129d92f349d5ef",
+      "modelPath": "/models/farm/faceted-tree.glb",
+      "runtimeDownload": {
+        "path": "packs/farm/r34/models/faceted-tree.glb",
+        "url": "https://assets.kilnstudio.tools/packs/farm/r34/models/faceted-tree.glb",
+        "bytes": 123176,
+        "sha256": "0f6eceb07f207eb27071767a8d0c7fae7a618efd623942219da1f2d29497b0c4",
+        "archive": "packs/farm/r34/shapes-and-seasons-farm-runtime.zip",
+        "member": "models/faceted-tree.glb"
+      },
+      "provenance": {
+        "originalModel": "GPT-6 Astra",
+        "refinementModels": [],
+        "history": [
+          {
+            "stage": "first",
+            "revisionId": "r_6d5dd832c32b4d8682942980d02cde1b",
+            "parentRevisionId": null,
+            "model": "GPT-6 Astra",
+            "modelId": "gpt-6-astra",
+            "requestedEffort": "high",
+            "confirmedEffort": "high",
+            "harness": "codex",
+            "harnessVersion": "0.157.1",
+            "confirmation": "native-turn-context"
+          }
+        ]
+      },
+      "revisions": [
+        {
+          "stage": "first",
+          "revisionId": "r_6d5dd832c32b4d8682942980d02cde1b",
+          "parentRevisionId": null,
+          "model": "GPT-6 Astra",
+          "modelId": "gpt-6-astra",
+          "requestedEffort": "high",
+          "confirmedEffort": "high",
+          "harness": "codex",
+          "harnessVersion": "0.157.1",
+          "confirmation": "native-turn-context"
+        }
+      ],
+      "review": {
+        "status": "accepted",
+        "ownerAccepted": true,
+        "scope": "Exact delivered revision matches the current owner-accepted revision.",
+        "recordedAt": "2026-09-29",
+        "source": "site-build/FEEDBACK-site-review-1.md"
+      },
+      "license": "CC0-1.0",
+      "sceneDeepLink": null
+    },
+    {
+      "id": "rock-cluster",
+      "slug": "rock-cluster",
+      "name": "Rock cluster",
+      "pack": "farm",
+      "category": "Nature",
+      "description": "Group of low, pale faceted rocks with a larger central stone.",
+      "assetId": "a_8269607aa5f44ad5b4cb11756dba2966",
+      "revisionId": "r_37cde8b1f8d344aa8f6142aeab61a62e",
+      "parentRevision": null,
+      "metrics": {
+        "triangles": 400,
+        "meshes": 1,
+        "materials": 1,
+        "bounds": [
+          1.069482833147049,
+          0.6531799808144569,
+          1.4962182641029358
+        ],
+        "boundsMin": [
+          -0.5987911224365234,
+          -0.03999999910593033,
+          -0.7549765110015869
+        ],
+        "boundsMax": [
+          0.4706917107105255,
+          0.6131799817085266,
+          0.7412417531013489
+        ],
+        "clips": [],
+        "partPaths": [
+          "RockCluster/Mesh_Five_adjoining_stones"
+        ]
+      },
+      "poster": {
+        "src": "/media/farm/r33/cutout/rock-cluster.webp",
+        "width": 1024,
+        "height": 1024,
+        "alt": "Group of low, pale faceted rocks with a larger central stone.",
+        "srcsetWebp": "/media/farm/r33/cutout/rock-cluster-320.webp 320w, /media/farm/r33/cutout/rock-cluster-480.webp 480w, /media/farm/r33/cutout/rock-cluster-672.webp 672w, /media/farm/r33/cutout/rock-cluster-768.webp 768w, /media/farm/r33/cutout/rock-cluster-1024.webp 1024w",
+        "srcsetAvif": "/media/farm/r33/cutout/rock-cluster-320.avif 320w, /media/farm/r33/cutout/rock-cluster-480.avif 480w, /media/farm/r33/cutout/rock-cluster-672.avif 672w, /media/farm/r33/cutout/rock-cluster-768.avif 768w, /media/farm/r33/cutout/rock-cluster-1024.avif 1024w",
+        "inputPath": "media/farm/r33/cutout/rock-cluster.webp"
+      },
+      "reviewImage": {
+        "src": "/media/farm/r33/poster/rock-cluster.webp",
+        "width": 1168,
+        "height": 780,
+        "alt": "Six rendered review views of rock-cluster.",
+        "srcsetWebp": "/media/farm/r33/poster/rock-cluster-320.webp 320w, /media/farm/r33/poster/rock-cluster-480.webp 480w, /media/farm/r33/poster/rock-cluster-672.webp 672w, /media/farm/r33/poster/rock-cluster-768.webp 768w, /media/farm/r33/poster/rock-cluster-1024.webp 1024w",
+        "srcsetAvif": "/media/farm/r33/poster/rock-cluster-320.avif 320w, /media/farm/r33/poster/rock-cluster-480.avif 480w, /media/farm/r33/poster/rock-cluster-672.avif 672w, /media/farm/r33/poster/rock-cluster-768.avif 768w, /media/farm/r33/poster/rock-cluster-1024.avif 1024w",
+        "inputPath": "media/farm/r33/poster/rock-cluster.webp"
+      },
+      "sourcePath": "/sources/rock-cluster.kiln.js",
+      "sourceSha256": "2ee4fed4c668f28260911affd4a9ee9c58cf1b416fcbd4a3fe1d657e97191868",
+      "modelPath": "/models/farm/rock-cluster.glb",
+      "runtimeDownload": {
+        "path": "packs/farm/r34/models/rock-cluster.glb",
+        "url": "https://assets.kilnstudio.tools/packs/farm/r34/models/rock-cluster.glb",
+        "bytes": 39784,
+        "sha256": "6b6e767ed170aa1631a54e5d6df3d3335146a94cdedb5c49bf17b3659a93252d",
+        "archive": "packs/farm/r34/shapes-and-seasons-farm-runtime.zip",
+        "member": "models/rock-cluster.glb"
+      },
+      "provenance": {
+        "originalModel": "GPT-6 Astra",
+        "refinementModels": [],
+        "history": [
+          {
+            "stage": "first",
+            "revisionId": "r_37cde8b1f8d344aa8f6142aeab61a62e",
+            "parentRevisionId": null,
+            "model": "GPT-6 Astra",
+            "modelId": "gpt-6-astra",
+            "requestedEffort": "high",
+            "confirmedEffort": "high",
+            "harness": "codex",
+            "harnessVersion": "0.157.1",
+            "confirmation": "native-turn-context"
+          }
+        ]
+      },
+      "revisions": [
+        {
+          "stage": "first",
+          "revisionId": "r_37cde8b1f8d344aa8f6142aeab61a62e",
+          "parentRevisionId": null,
+          "model": "GPT-6 Astra",
+          "modelId": "gpt-6-astra",
+          "requestedEffort": "high",
+          "confirmedEffort": "high",
+          "harness": "codex",
+          "harnessVersion": "0.157.1",
+          "confirmation": "native-turn-context"
+        }
+      ],
+      "review": {
+        "status": "accepted",
+        "ownerAccepted": true,
+        "scope": "Exact delivered revision matches the current owner-accepted revision.",
+        "recordedAt": "2026-09-29",
+        "source": "site-build/FEEDBACK-site-review-1.md"
+      },
+      "license": "CC0-1.0",
+      "sceneDeepLink": null
+    }
+  ],
+  "deliveryReview": {
+    "revision": "r34",
+    "fullPackAccepted": true,
+    "acceptedAssets": 23,
+    "total": 23,
+    "source": "packs/farm/r34/downloads.json and exact-revision review records"
+  },
+  "ownerReview": {
+    "acceptedAssets": 23,
+    "total": 23,
+    "status": "all-current-revisions-accepted",
+    "date": "2026-09-29",
+    "statement": "Yes, the farmhouse wood floor revision passes.",
+    "source": "site-build/FEEDBACK-site-review-1.md",
+    "revisions": [
+      {
+        "id": "farmhouse",
+        "revisionId": "r_01f97f5e943e4c2693b6db8596f3e353",
+        "ownerAccepted": true
+      },
+      {
+        "id": "barn",
+        "revisionId": "r_c0234dc50e0443f4a8819cdf754b22da",
+        "ownerAccepted": true
+      },
+      {
+        "id": "windmill",
+        "revisionId": "r_ef9045311dd040258e0143345c171d6f",
+        "ownerAccepted": true
+      },
+      {
+        "id": "watermill",
+        "revisionId": "r_f8ab38b03b5a4fb691b860d9fb076200",
+        "ownerAccepted": true
+      },
+      {
+        "id": "fence-straight",
+        "revisionId": "r_05420c8a915d45e69257f61914d02ec3",
+        "ownerAccepted": true
+      },
+      {
+        "id": "fence-corner",
+        "revisionId": "r_071590a217854c5cbefb90275d3a6887",
+        "ownerAccepted": true
+      },
+      {
+        "id": "fence-gate",
+        "revisionId": "r_af2ceeafc87f44759b2af1448beb76b3",
+        "ownerAccepted": true
+      },
+      {
+        "id": "tractor",
+        "revisionId": "r_ebeeb57adda343dd98d575e97ca24f92",
+        "ownerAccepted": true
+      },
+      {
+        "id": "trailer",
+        "revisionId": "r_c72e516ce16949cfbddedbc9155efa06",
+        "ownerAccepted": true
+      },
+      {
+        "id": "barrel",
+        "revisionId": "r_5cc08ab44fe3401cb1c4184a4d362bca",
+        "ownerAccepted": true
+      },
+      {
+        "id": "hay-bale",
+        "revisionId": "r_aed1744fc5a34d32bb98f9f9bcfd5d0a",
+        "ownerAccepted": true
+      },
+      {
+        "id": "farmer",
+        "revisionId": "r_d0e65e4d47aa4449a07ed288a78d461b",
+        "ownerAccepted": true
+      },
+      {
+        "id": "cow",
+        "revisionId": "r_712f18b9a9d9450ab77bddd59bd1c515",
+        "ownerAccepted": true
+      },
+      {
+        "id": "sheep",
+        "revisionId": "r_85d1e3a7c375412c9ba181f788753148",
+        "ownerAccepted": true
+      },
+      {
+        "id": "chicken",
+        "revisionId": "r_b0b9b724b40e4d09a17c8dd8408fba62",
+        "ownerAccepted": true
+      },
+      {
+        "id": "cabbage-stage-1",
+        "revisionId": "r_b2a06d73eefb4ca7b0617685bc560ef2",
+        "ownerAccepted": true
+      },
+      {
+        "id": "cabbage-stage-2",
+        "revisionId": "r_d2cb82ca31fd4fe8883da87ece0e9a1d",
+        "ownerAccepted": true
+      },
+      {
+        "id": "cabbage-stage-3",
+        "revisionId": "r_8a446c3c2f514e358f8f897c420ecd0a",
+        "ownerAccepted": true
+      },
+      {
+        "id": "cabbage-stage-4",
+        "revisionId": "r_9bf8450fc5294c9d9dca1960625be36a",
+        "ownerAccepted": true
+      },
+      {
+        "id": "wheat",
+        "revisionId": "r_254f9bdf4d004a7796033d5fe348a3e3",
+        "ownerAccepted": true
+      },
+      {
+        "id": "pumpkin-plant",
+        "revisionId": "r_38897e8a2b944c38a4f4428ab39f4a2b",
+        "ownerAccepted": true
+      },
+      {
+        "id": "faceted-tree",
+        "revisionId": "r_6d5dd832c32b4d8682942980d02cde1b",
+        "ownerAccepted": true
+      },
+      {
+        "id": "rock-cluster",
+        "revisionId": "r_37cde8b1f8d344aa8f6142aeab61a62e",
+        "ownerAccepted": true
+      }
+    ]
+  },
+  "handoff": {
+    "source": "farm-pilot/delivery/farm-r34-documented-downloads/site-handoff.json",
+    "sha256": "2dca60c2d82e51c46ce52fa851d119c65b1f9df82965562cb201b6a4a229009b",
+    "previousDelivery": "r33"
+  },
+  "deliveryHistory": [
+    {
+      "revision": "r33",
+      "projectRevision": "r_0000000033_e782d188f2d265d553cb6881db5298a1b63cd7d7337ae2cce9250b4ad1623a90",
+      "fullPackAccepted": false,
+      "acceptedAssets": 22,
+      "total": 23,
+      "downloads": [
+        {
+          "profile": "runtime",
+          "path": "packs/farm/r33/shapes-and-seasons-farm-runtime.zip",
+          "bytes": 7672584,
+          "sha256": "4d6902406d186631360770b894b217858c51df27964a1ad9b50b064dd3ced61c"
+        },
+        {
+          "profile": "editable",
+          "path": "packs/farm/r33/shapes-and-seasons-farm-editable.zip",
+          "bytes": 22422357,
+          "sha256": "5650bd42da35192f0b93e01164e8479ed22935be1a56d69b9bfef0aa1fa8d02a"
+        },
+        {
+          "profile": "scene",
+          "path": "packs/farm/r33/shapes-and-seasons-farm-scene.zip",
+          "bytes": 4289186,
+          "sha256": "d7b8c0c55c1278573773fec51ddd93b205b3497b260ddb4c77a27f462d67760c"
+        }
+      ]
+    }
+  ],
+  "qualification": {
+    "performanceQualified": false,
+    "publicationAuthorized": false,
+    "note": "Owner approval records visual review. Scene performance qualification remains open."
+  }
+}
