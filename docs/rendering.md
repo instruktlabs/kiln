@@ -100,7 +100,8 @@ own CLI process; it cannot refresh a different running session.
 `kiln discover --capabilities --json` and MCP `kiln_discover({capabilities:true})`
 report `renderer` readiness without starting a renderer or requesting an image.
 Renderer selection uses an explicit `--render` first, then `KILN_RENDER`, then
-`auto`. The selected value must be `auto`, `cpu` or `gpu`; an explicit valid option
+`auto`. The selected value must be `auto`, `cpu` or `gpu`; an invalid value names
+its source (`--render` or `KILN_RENDER`) in the error. An explicit valid option
 overrides even an invalid environment value. This applies to render/capture,
 generation, inspection, animation, saving and migration rebuilds. `edit` only edits
 retained source and never selects a renderer. With `KILN_RENDER=cpu` and no override,

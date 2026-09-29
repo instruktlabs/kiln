@@ -142,7 +142,7 @@ export function createLocalToolContext(
   };
 }
 
-/** CLI/MCP startup: durable build reuse only for a verifiable packaged Node worker. */
+/** Packaged Node provenance is independent of reuse; non-disk hosts scan on first save. */
 export async function createPackagedLocalToolContext(
   base: KilnToolContext = {},
   env: Record<string, string | undefined> = process.env,
@@ -176,18 +176,34 @@ export async function createPackagedLocalToolContext(
   const policy = env.KILN_BUILD_CACHE ?? 'disk';
   if (!['disk', 'memory', 'off'].includes(policy))
     throw new Error('KILN_BUILD_CACHE must be disk, memory, or off.');
+  const packagedNode =
+    !process.versions.bun &&
+    !import.meta.url.endsWith('.ts') &&
+    context.localExecution.mode === 'subprocess';
+  let pendingIdentity: ReturnType<typeof installedRuntimeIdentity> | undefined;
+  const identityForHost = () =>
+    (pendingIdentity ??= installedRuntimeIdentity(installationRoot).then((identity) => {
+      if (identity.identity) context.localExecution.runtimeIdentity = identity.identity;
+      else context.localExecution.cacheReason = identity.reason;
+      return identity;
+    }));
+  if (packagedNode) {
+    context.prepareBuildProvenance = async () => {
+      await identityForHost();
+    };
+  }
   if (policy === 'off' || base.cacheEvaluations === false) {
     context.cacheEvaluations = false;
     context.localExecution.cacheScope = 'disabled';
     return context;
   }
   if (policy === 'memory') return managed();
-  if (process.versions.bun || context.localExecution.mode !== 'subprocess') {
+  if (!packagedNode) {
     context.localExecution.cacheReason =
       'Disk reuse requires the packaged Node subprocess evaluator; this host uses process memory.';
     return managed();
   }
-  const identity = await installedRuntimeIdentity(installationRoot);
+  const identity = await identityForHost();
   if (!identity.identity) {
     context.localExecution.cacheReason = identity.reason;
     return managed();

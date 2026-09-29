@@ -160,7 +160,7 @@ for (const { name, args } of commands) {
   test(`${name}: invalid environment fails before service discovery`, async () => {
     const result = await run(args, 'invalid-render-mode');
     expect(result.code).not.toBe(0);
-    expect(result.stdout + result.stderr).toContain('--render must be auto, cpu or gpu');
+    expect(result.stdout + result.stderr).toContain('KILN_RENDER must be auto, cpu or gpu');
     expect(result.paths).toEqual([]);
   });
 
@@ -176,6 +176,13 @@ test('an invalid explicit render option is not replaced by the CPU environment',
   const result = await run([...commands[0]!.args, '--render', 'invalid-render-mode']);
   expect(result.code).not.toBe(0);
   expect(result.stdout + result.stderr).toContain('--render must be auto, cpu or gpu');
+  expect(result.paths).toEqual([]);
+});
+
+test('discovery names an invalid environment before probing a renderer', async () => {
+  const result = await run(['discover', '--capabilities', '--json'], 'invalid-render-mode');
+  expect(result.code).not.toBe(0);
+  expect(result.stdout + result.stderr).toContain('KILN_RENDER must be auto, cpu or gpu');
   expect(result.paths).toEqual([]);
 });
 

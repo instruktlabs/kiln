@@ -152,6 +152,8 @@ export interface KilnToolContext {
   assetBuildOptions?: Record<string, unknown>;
   geometryPolicy?: import('../geometry-export').GeometryExportPolicy;
   localExecution?: import('../local-runtime').LocalExecution;
+  /** Host-only, lazy provenance scan for saved builds; independent of evaluator reuse. */
+  prepareBuildProvenance?: () => Promise<void>;
   evaluationControls?: () => import('../evaluator/protocol').EvaluatorPortCallControlsV2;
   captureLimits?: import('../views/capture-limits').CaptureLimits;
   captureCache?: CaptureCache;
@@ -2660,6 +2662,7 @@ export async function buildProgramAssetDraft(
 ): Promise<
   Pick<import('../assets').AssetDraft, 'code' | 'glb' | 'preview' | 'previewInfo' | 'build'>
 > {
+  await context.prepareBuildProvenance?.();
   const callContext = {
     ...context,
     requirements: toolRequirements(context).binding,

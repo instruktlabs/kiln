@@ -28925,12 +28925,13 @@ var init_build_cache_node = __esm(() => {
 
 // src/runtime-identity.ts
 import { createHash as createHash10 } from "node:crypto";
-import { readFile as readFile3, readdir as readdir3, realpath as realpath2, stat as stat4 } from "node:fs/promises";
+import { lstat as lstat3, readFile as readFile3, readdir as readdir3, realpath as realpath2, stat as stat4 } from "node:fs/promises";
 import { createRequire } from "node:module";
 import { dirname as dirname2, join as join5, relative } from "node:path";
 async function installedRuntimeIdentity(root, limits = {}) {
   let bytes = 0;
   let files = 0;
+  const absentPackages = [];
   const maxBytes = limits.maxBytes ?? 512 * 1024 * 1024;
   const maxFiles = limits.maxFiles ?? 40000;
   const manifest = async (directory) => JSON.parse(await readFile3(join5(directory, "package.json"), "utf8"));
@@ -28980,11 +28981,17 @@ async function installedRuntimeIdentity(root, limits = {}) {
           for (const modules of require2.resolve.paths(name) ?? []) {
             const candidate = join5(modules, name);
             try {
-              if ((await manifest(candidate)).name === name)
-                return await realpath2(candidate);
-            } catch {}
+              await lstat3(candidate);
+            } catch (error) {
+              if (error.code === "ENOENT")
+                continue;
+              throw error;
+            }
+            if ((await manifest(candidate)).name !== name)
+              throw new Error(`Cannot identify installed dependency ${name}.`);
+            return await realpath2(candidate);
           }
-          throw new Error(`Cannot resolve installed dependency ${name}.`);
+          return;
         }
       }
       let directory = dirname2(found);
@@ -29035,15 +29042,15 @@ async function installedRuntimeIdentity(root, limits = {}) {
         ])
       ].sort(compare);
       for (const name of names) {
-        let child;
-        try {
-          child = await resolvePackage(directory, name);
-        } catch {
-          if (name in (metadata.optionalDependencies ?? {}) || metadata.peerDependenciesMeta?.[name]?.optional) {
-            records.push([`${prefix}/${name}`, "optional-absent"]);
-            continue;
-          }
-          throw new Error(`Cannot fingerprint missing installed dependency ${name}.`);
+        const child = await resolvePackage(directory, name);
+        if (child === undefined) {
+          const kind = Object.hasOwn(metadata.optionalDependencies ?? {}, name) ? "optional-absent" : !Object.hasOwn(metadata.dependencies ?? {}, name) && Object.hasOwn(metadata.peerDependencies ?? {}, name) ? "peer-absent" : undefined;
+          if (!kind)
+            throw new Error(`Cannot fingerprint missing installed dependency ${name}.`);
+          const path = `${prefix}/${name}`;
+          records.push([path, kind]);
+          absentPackages.push({ path, kind });
+          continue;
         }
         await visit(child, `${prefix}/${name}`);
       }
@@ -29063,9 +29070,14 @@ async function installedRuntimeIdentity(root, limits = {}) {
       },
       dependencies: records
     };
-    return { identity: `sha256:${digest3(JSON.stringify(inputs))}`, files, bytes };
+    return { identity: `sha256:${digest3(JSON.stringify(inputs))}`, files, bytes, absentPackages };
   } catch (error) {
-    return { reason: error instanceof Error ? error.message : String(error), files, bytes };
+    return {
+      reason: error instanceof Error ? error.message : String(error),
+      files,
+      bytes,
+      absentPackages
+    };
   }
 }
 var digest3 = (bytes) => createHash10("sha256").update(bytes).digest("hex"), compare = (a, b) => a < b ? -1 : a > b ? 1 : 0;
@@ -29183,6 +29195,20 @@ async function createPackagedLocalToolContext(base = {}, env = process.env, inst
   const policy = env.KILN_BUILD_CACHE ?? "disk";
   if (!["disk", "memory", "off"].includes(policy))
     throw new Error("KILN_BUILD_CACHE must be disk, memory, or off.");
+  const packagedNode = !process.versions.bun && !import.meta.url.endsWith(".ts") && context.localExecution.mode === "subprocess";
+  let pendingIdentity;
+  const identityForHost = () => pendingIdentity ??= installedRuntimeIdentity(installationRoot).then((identity) => {
+    if (identity.identity)
+      context.localExecution.runtimeIdentity = identity.identity;
+    else
+      context.localExecution.cacheReason = identity.reason;
+    return identity;
+  });
+  if (packagedNode) {
+    context.prepareBuildProvenance = async () => {
+      await identityForHost();
+    };
+  }
   if (policy === "off" || base.cacheEvaluations === false) {
     context.cacheEvaluations = false;
     context.localExecution.cacheScope = "disabled";
@@ -29190,11 +29216,11 @@ async function createPackagedLocalToolContext(base = {}, env = process.env, inst
   }
   if (policy === "memory")
     return managed();
-  if (process.versions.bun || context.localExecution.mode !== "subprocess") {
+  if (!packagedNode) {
     context.localExecution.cacheReason = "Disk reuse requires the packaged Node subprocess evaluator; this host uses process memory.";
     return managed();
   }
-  const identity = await installedRuntimeIdentity(installationRoot);
+  const identity = await identityForHost();
   if (!identity.identity) {
     context.localExecution.cacheReason = identity.reason;
     return managed();
@@ -35512,6 +35538,7 @@ function createKilnProgramToolRegistry(suppliedContext = {}) {
   }));
 }
 async function buildProgramAssetDraft(code, context, backdrop) {
+  await context.prepareBuildProvenance?.();
   const callContext = {
     ...context,
     requirements: toolRequirements(context).binding
@@ -36519,10 +36546,12 @@ var init_render_capabilities = __esm(() => {
 });
 
 // src/cli-render-mode.ts
-function resolveRenderMode(value = process.env["KILN_RENDER"] ?? "auto") {
-  if (value === "auto" || value === "cpu" || value === "gpu")
-    return value;
-  throw new Error(`--render must be auto, cpu or gpu (got: ${value})`);
+function resolveRenderMode(value) {
+  const source = value === undefined ? "KILN_RENDER" : "--render";
+  const selected = value ?? process.env["KILN_RENDER"] ?? "auto";
+  if (selected === "auto" || selected === "cpu" || selected === "gpu")
+    return selected;
+  throw new Error(`${source} must be auto, cpu or gpu (got: ${selected})`);
 }
 function makeLazyRenderPort(start, token, sourceFingerprint, initialUrl) {
   let resolving = initialUrl ? Promise.resolve({
@@ -36690,7 +36719,7 @@ var init_cli_render_mode = __esm(() => {
 // src/assets-node.ts
 import { createHash as createHash14, randomUUID as randomUUID4 } from "node:crypto";
 import { readFileSync as readFileSync4 } from "node:fs";
-import { lstat as lstat3, mkdir as mkdir4, readFile as readFile4, readdir as readdir4, realpath as realpath3, rename as rename3, rm, writeFile as writeFile4 } from "node:fs/promises";
+import { lstat as lstat4, mkdir as mkdir4, readFile as readFile4, readdir as readdir4, realpath as realpath3, rename as rename3, rm, writeFile as writeFile4 } from "node:fs/promises";
 import { homedir, platform } from "node:os";
 import { dirname as dirname5, join as join11, relative as relative3, resolve as resolve6, sep } from "node:path";
 async function verifyAssetRecord(record) {
@@ -36730,7 +36759,7 @@ class FileAssetLibrary {
       assetIdSchema.parse(part);
       path = join11(path, part);
       try {
-        const entry = await lstat3(path);
+        const entry = await lstat4(path);
         if (entry.isSymbolicLink())
           throw new Error("Collection symlinks are not supported");
         const rel = relative3(canonical, await realpath3(path));
@@ -36772,7 +36801,7 @@ class FileAssetLibrary {
   }
   async file(dir, name, limit = ASSET_LIMIT) {
     const path = join11(dir, name);
-    const info = await lstat3(path);
+    const info = await lstat4(path);
     if (!info.isFile() || info.isSymbolicLink() || info.size > limit)
       throw new Error("Invalid collection file");
     return new Uint8Array(await readFile4(path));
@@ -37438,7 +37467,7 @@ async function discoveryMain(argv) {
   }
   try {
     const context = parsed.input.capabilities ? await createPackagedLocalToolContext({
-      renderCapabilities: createRenderCapabilitiesReader(resolveRenderMode(process.env.KILN_RENDER ?? "auto"))
+      renderCapabilities: createRenderCapabilitiesReader(resolveRenderMode())
     }) : {};
     const result = await createKilnDiscoveryDef(context).run(parsed.input);
     console.log(parsed.json ? JSON.stringify(result) : result.text);
@@ -38466,7 +38495,7 @@ async function migrationRebuildMain(argv) {
     const source = args.options["--source"] ? await readMigrationText(args.options["--source"], "--source") : undefined;
     const legacyIntent = args.options["--legacy-intent"] ? JSON.parse(await readMigrationText(args.options["--legacy-intent"], "--legacy-intent")) : undefined;
     const context = await createPackagedLocalToolContext({
-      ...await buildRenderPort(resolveRenderMode(args.options["--render"] ?? process.env.KILN_RENDER ?? "auto"), undefined),
+      ...await buildRenderPort(resolveRenderMode(args.options["--render"]), undefined),
       requirements,
       assetLibrary: localAssetLibrary()
     });

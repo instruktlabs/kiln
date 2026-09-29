@@ -111,9 +111,39 @@ Advanced geometry callbacks also have operation-specific input limits. Those che
 
 ## What a build identity covers
 
-Disk reuse requires a verified packaged Node worker. At host startup Kiln checks the worker bytes against its build manifest, then fingerprints the actual installed dependency code and data, including WASM and native assets. The identity also includes the engine build, Node/platform/architecture, evaluation policy and requested build options. A dependency version range or lockfile alone does not identify an npm installation.
+Packaged Node subprocess saves and migration rebuilds record the installed runtime
+identity in `build.engine` and `localExecution.runtimeIdentity`, independently of
+`KILN_BUILD_CACHE=disk|memory|off` or `cacheEvaluations: false`. Disk reuse checks the
+identity at host startup. Memory, off and host-disabled reuse defer that scan until
+the first save or migration needs provenance; ordinary reads and disposable renders
+do not trigger it. The host context retains one promise/result, including a failure,
+so concurrent or repeated saves do not rescan the installation.
 
-Unknown dependencies, an unverifiable installation or unsupported execution modes fall back to process memory. Hosts must restart after changing an installation while it is running. Programs intended for reuse must be deterministic; source that reads ambient time or external state cannot promise reproducible output. Function-bearing material resolvers bypass generic caching unless encapsulated by a host evaluator with a complete dependency identity.
+Kiln checks the packaged worker bytes against its build manifest, then fingerprints
+the actual installed dependency code and data, including WASM and native assets.
+That identity includes the engine build and Node/platform/architecture; the cache
+key additionally includes evaluation policy and requested build options. A dependency
+version range or lockfile alone does not identify an npm installation.
+
+An absent transitive `peerDependencies` entry is fingerprinted as `peer-absent`,
+whether required or optional. An absent `optionalDependencies` entry is separately
+recorded as `optional-absent`. Present packages contribute their installed bytes,
+so installing a previously absent peer changes the identity. Thus `--omit=peer`
+installations retain verified provenance when the remaining closure is identifiable.
+Missing regular dependencies, malformed installed packages and other unidentified
+inputs still prevent verification. The engine's own optional generation peers stay
+outside the worker closure.
+
+An unverifiable installation keeps `build.engine: "source-development:unverified"`
+and exposes the failure in `localExecution.cacheReason`, including with memory or
+off policies. Disk reuse then falls back to process memory; disabled reuse stays
+disabled. In-process, isolated, Bun and source-development execution do not claim
+the packaged Node worker's identity and retain the unverified label. Hosts must
+restart after changing an installation while it is running. Programs intended for
+reuse must be deterministic; source that reads ambient time or external state
+cannot promise reproducible output. Function-bearing material resolvers bypass
+generic caching unless encapsulated by a host evaluator with a complete dependency
+identity.
 
 The cache bypasses known ambient time and random APIs, including `Date`, `performance`, `crypto`, `Math.random` and Three.js random helpers. This conservative source check is not a proof that arbitrary JavaScript is pure. Prefer an explicit seed and ordinary deterministic functions when reproducible revisions matter.
 
