@@ -85,10 +85,16 @@ export async function discoveryMain(argv: readonly string[]): Promise<number> {
   }
   try {
     // Ordinary catalog reads do not initialize a host, store, renderer or evaluator.
+    // Capabilities describe the host the MCP server builds: the same collections and
+    // program store, read without creating either.
     const context = parsed.input.capabilities
-      ? await createPackagedLocalToolContext({
-          renderCapabilities: createRenderCapabilitiesReader(resolveRenderMode()),
-        })
+      ? {
+          ...(await createPackagedLocalToolContext({
+            renderCapabilities: createRenderCapabilitiesReader(resolveRenderMode()),
+            assetLibrary: (await import('./assets-node')).localAssetLibrary(),
+          })),
+          programStore: (await import('./program-store-node')).localProgramStore(),
+        }
       : {};
     const result = (await createKilnDiscoveryDef(context).run(parsed.input)) as DiscoveryResponse;
     console.log(parsed.json ? JSON.stringify(result) : result.text);

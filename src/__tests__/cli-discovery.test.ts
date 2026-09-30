@@ -6,14 +6,14 @@ import { tmpdir } from 'node:os';
 import { discoveryMain } from '../discovery-cli';
 
 const entry = resolve(import.meta.dir, '../cli.ts');
-function invoke(args: string[]) {
+function invoke(args: string[], env: Record<string, string> = {}) {
   const cwd = mkdtempSync(join(tmpdir(), 'kiln-discovery-cli-'));
   try {
     const result = spawnSync(process.execPath, [entry, 'discover', ...args], {
       cwd,
       encoding: 'utf8',
       windowsHide: true,
-      env: { ...process.env, KILN_RENDER: 'cpu' },
+      env: { ...process.env, KILN_RENDER: 'cpu', ...env },
       timeout: 20_000,
     });
     expect(readdirSync(cwd)).toEqual([]);
@@ -64,6 +64,31 @@ test('CLI capability inspection reports the selected renderer without creating a
     configured: false,
     required: false,
   });
+});
+
+test('CLI capabilities report the collections and program store the MCP host injects', () => {
+  const roots = mkdtempSync(join(tmpdir(), 'kiln-discovery-roots-'));
+  try {
+    const result = invoke(['--capabilities', '--json'], {
+      KILN_COLLECTIONS: JSON.stringify({
+        project: join(roots, 'project'),
+        shared: join(roots, 'shared'),
+      }),
+      KILN_PROGRAM_STORE: join(roots, 'programs'),
+    });
+    expect(result.status).toBe(0);
+    const { assets, source } = JSON.parse(result.stdout).capabilities;
+    expect(assets.available).toBe(true);
+    expect(assets.collections.map((entry: { id: string }) => entry.id)).toEqual([
+      'project',
+      'shared',
+    ]);
+    expect(source.storage).toMatchObject({ entries: 0, bytes: 0 });
+    // Reading capabilities creates no collection or store directory.
+    expect(readdirSync(roots)).toEqual([]);
+  } finally {
+    rmSync(roots, { recursive: true, force: true });
+  }
 });
 
 test('CLI exact details preserve ordering and unknown IDs fail atomically', async () => {
