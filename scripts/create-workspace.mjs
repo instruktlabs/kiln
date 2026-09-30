@@ -93,7 +93,36 @@ function managedFiles(root, runtime, harness, nodeExecutable) {
     env: { KILN_PROGRAM_STORE: store, KILN_RENDER: 'auto', KILN_WORKSPACE: root },
   };
   const files = {
-    'kiln.mjs': `// Generated runtime launcher. Repair paths with kiln-init <workspace> --repair.\nimport { dirname, join } from 'node:path';\nimport { fileURLToPath } from 'node:url';\nprocess.env.KILN_WORKSPACE = dirname(fileURLToPath(import.meta.url));\nprocess.env.KILN_PROGRAM_STORE = join(process.env.KILN_WORKSPACE, '.kiln', 'programs');\ntry {\n  const { assertWorkspaceCurrent } = await import(${quote(pathToFileURL(join(runtime, 'scripts/create-workspace.mjs')).href)});\n  await assertWorkspaceCurrent(dirname(fileURLToPath(import.meta.url)), ${quote(runtime)});\n  const { main } = await import(${quote(pathToFileURL(join(runtime, 'dist/cli.mjs')).href)});\n  process.exitCode = await main(process.argv.slice(2));\n} catch (error) {\n  console.error(error.message + '\\nIf the installation moved, run kiln-init <workspace> --repair from the current Kiln installation.');\n  process.exitCode = 1;\n}\n`,
+    // The MCP server runs the pinned Node. Another Node version can change float digits
+    // in exported GLB JSON, so the CLI re-executes under the same interpreter.
+    'kiln.mjs': [
+      '// Generated runtime launcher. Repair paths with kiln-init <workspace> --repair.',
+      "import { spawnSync } from 'node:child_process';",
+      "import { existsSync, realpathSync } from 'node:fs';",
+      "import { dirname, join } from 'node:path';",
+      "import { fileURLToPath } from 'node:url';",
+      '// Run under the Node the MCP server uses, so both surfaces export identical bytes.',
+      `const pinned = ${quote(nodeExecutable)};`,
+      "const canonical = (path) => (process.platform === 'win32' ? realpathSync(path).toLowerCase() : realpathSync(path));",
+      'if (!process.env.KILN_PINNED_NODE && existsSync(pinned) && canonical(process.execPath) !== canonical(pinned)) {',
+      "  const child = spawnSync(pinned, [...process.execArgv, fileURLToPath(import.meta.url), ...process.argv.slice(2)], { stdio: 'inherit', env: { ...process.env, KILN_PINNED_NODE: '1' } });",
+      "  if (child.error) console.error('Could not start the workspace Node ' + pinned + ': ' + child.error.message + '. Run kiln-init <workspace> --repair.');",
+      '  process.exit(child.status ?? 1);',
+      '}',
+      'delete process.env.KILN_PINNED_NODE;',
+      'process.env.KILN_WORKSPACE = dirname(fileURLToPath(import.meta.url));',
+      "process.env.KILN_PROGRAM_STORE = join(process.env.KILN_WORKSPACE, '.kiln', 'programs');",
+      'try {',
+      `  const { assertWorkspaceCurrent } = await import(${quote(pathToFileURL(join(runtime, 'scripts/create-workspace.mjs')).href)});`,
+      `  await assertWorkspaceCurrent(dirname(fileURLToPath(import.meta.url)), ${quote(runtime)});`,
+      `  const { main } = await import(${quote(pathToFileURL(join(runtime, 'dist/cli.mjs')).href)});`,
+      '  process.exitCode = await main(process.argv.slice(2));',
+      '} catch (error) {',
+      "  console.error(error.message + '\\nIf the installation moved, run kiln-init <workspace> --repair from the current Kiln installation.');",
+      '  process.exitCode = 1;',
+      '}',
+      '',
+    ].join('\n'),
   };
   if (harness === 'claude') files['.mcp.json'] = quote({ mcpServers: { kiln_workspace: mcp } });
   if (harness === 'codex') {
@@ -267,7 +296,7 @@ Author and refine assets in this directory. The engine is installed separately. 
 
 Two surfaces drive the same engine and share .kiln/programs, so either is fine and you can mix them freely. The kiln_workspace MCP server returns each render as an image in your context. The node kiln.mjs CLI writes renders to disk, so read the PNG back before judging anything visual. A server named kiln may be a different installation; do not substitute it silently, and report the setup problem instead. To check, call kiln_discover with { capabilities: true } and compare capabilities.engine.installUrl against runtime in .kiln/workspace.json.
 
-If the shell cannot resolve node, read manifest.node (the node field in .kiln/workspace.json) and substitute that quoted absolute executable. In PowerShell: & "ABSOLUTE_NODE_PATH" kiln.mjs discover --json. Use the same substitution for a generated harness launcher such as codex.mjs; no global PATH change is needed.
+If the shell cannot resolve node, read manifest.node (the node field in .kiln/workspace.json) and substitute that quoted absolute executable. In PowerShell: & "ABSOLUTE_NODE_PATH" kiln.mjs discover --json. Use the same substitution for a generated harness launcher such as codex.mjs; no global PATH change is needed. kiln.mjs itself always runs the CLI under that recorded Node, the one the MCP server uses, so a CLI export and kiln_save of one programRef are byte-identical.
 
 Read the skill for your task from skills/ in this directory, never a global plugin copy. The maintained copies are there, mirrored into .claude/skills/ and .agents/skills/ because harnesses scan different directories. Use kiln_discover with no arguments for a compact overview and starting createRoot/createPart signatures. Search in ordinary modeling language with { query: "curved hollow tube" }; fetch complete contracts with { ids: ["sweepProfile"] }. Search and overview return six summaries by default, with current family/kind/tags filters and offset/limit pagination. Exact ids accepts up to six distinct IDs or executable names. Recipes are optional guidance, and no asset-category selection or separate search model is required. CLI equivalents are node kiln.mjs discover --query "curved hollow tube" and node kiln.mjs discover --id sweepProfile --json.
 
