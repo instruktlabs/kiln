@@ -308,9 +308,10 @@ export function measureSurfaceDistance(root: unknown, input: AttachmentMeasureme
 }
 
 /**
- * A short, pair-local explanation for a path that names no node: a bare name, or an
- * exact path under the wrong root. It suggests at most five exact paths instead of
- * listing the scene, which made one wrong root cost thousands of tokens per pair.
+ * A short, pair-local explanation for a subject that selects no single node: a missing
+ * or shared name, or an exact path under the wrong root. It suggests at most five exact
+ * paths instead of listing the scene, which made one wrong root cost thousands of tokens
+ * per pair.
  */
 function surfacePathProblem(
   subjects: readonly { path: string; name: string }[],
@@ -323,7 +324,13 @@ function surfacePathProblem(
       .join(', ')}${nodes.length > 5 ? `, and ${nodes.length - 5} more` : ''}`;
   if (!path.startsWith('/')) {
     const named = subjects.filter((s) => s.name === path);
-    return `${JSON.stringify(path)} is not an exact path; paths start with / as partListing shows them.${named.length ? ` Nodes named ${JSON.stringify(path)}: ${list(named)}.` : ''}`;
+    if (named.length > 1)
+      return `${named.length} nodes are named ${JSON.stringify(path)}; choose one exact path: ${list(named)}.`;
+    const wanted = path.toLowerCase();
+    const similar = subjects.filter(
+      (s) => s.name.length > 0 && s.name.toLowerCase().includes(wanted),
+    );
+    return `No node is named ${JSON.stringify(path)}.${similar.length ? ` Similar: ${list(similar)}.` : ' Exact paths start with / as partListing shows them.'}`;
   }
   const last = path.split('/').pop() ?? '';
   let name = last.replace(/\[\d+\]$/, '');
@@ -338,7 +345,11 @@ function surfacePathProblem(
   return `No node has path ${JSON.stringify(path)}.${misrooted ? ` Paths start with ${rootPath}.` : ''}${similar.length ? ` Nodes named ${JSON.stringify(name)}: ${list(similar)}.` : ''}`;
 }
 
-/** Bounded independent queries. A failed or incomplete pair never disappears behind successful ones. */
+/**
+ * Bounded independent queries. Each subject is an exact path (it starts with /) or an
+ * unambiguous node name, as measure subjects are. A failed or incomplete pair never
+ * disappears behind successful ones.
+ */
 export function measureSurfacePairs(root: unknown, pairs: readonly (readonly [string, string])[]) {
   if (
     pairs.length < 1 ||
@@ -348,9 +359,14 @@ export function measureSurfacePairs(root: unknown, pairs: readonly (readonly [st
         pair.length !== 2 || pair.some((path) => typeof path !== 'string' || path.length > 4096),
     )
   )
-    throw new Error('Surface pairs require 1..12 pairs of exact subject paths.');
+    throw new Error('Surface pairs require 1..12 pairs of exact paths or node names.');
   const subjects = listCameraSubjects(root);
   const known = new Set(subjects.map((subject) => subject.path));
+  const resolve = (subject: string) => {
+    if (subject.startsWith('/')) return known.has(subject) ? subject : undefined;
+    const named = subjects.filter((s) => s.name === subject);
+    return named.length === 1 ? named[0]!.path : undefined;
+  };
   const results = pairs.map(
     (
       paths,
@@ -359,17 +375,18 @@ export function measureSurfacePairs(root: unknown, pairs: readonly (readonly [st
       measurement?: ReturnType<typeof measureSurfaceDistance>;
       error?: string;
     } => {
-      const problems = paths.flatMap((path) => {
-        const problem = known.has(path) ? undefined : surfacePathProblem(subjects, path);
-        return problem ? [problem] : [];
-      });
-      if (problems.length) return { paths, error: problems.join(' ') };
+      const [from, to] = paths.map(resolve);
+      const problems = paths.flatMap((path) =>
+        resolve(path) === undefined ? [surfacePathProblem(subjects, path)] : [],
+      );
+      if (problems.length || from === undefined || to === undefined)
+        return { paths, error: problems.join(' ') };
       try {
         return {
           paths,
           measurement: measureSurfaceDistance(root, {
-            from: { subject: { path: paths[0] } },
-            to: { subject: { path: paths[1] } },
+            from: { subject: { path: from } },
+            to: { subject: { path: to } },
           }),
         };
       } catch (error) {

@@ -66,7 +66,8 @@ and the closest points alongside an in-context view. Zero can mean touching or
 intersecting; a whole-assembly minimum may find an unrelated contact. Keep
 unmeasured interfaces unverified even when overall structural QA passes.
 Batch up to 12 intended pairs with `surfacePairs: [[A, B], [C, D]]` instead of
-repeating the same inspection. Read every `surfaceMeasurements.results` entry;
+repeating the same inspection. Each entry is an exact `listParts` path such as
+`/Park%20Bench[0]/Bench[0]/Mesh_Seat[0]`, or an unambiguous node name as `measure` takes. Read every `surfaceMeasurements.results` entry;
 `status: partial` includes failed or unfinished checks. Set `image: false` and
 omit camera controls for numeric checks after reviewing a relevant image.
 

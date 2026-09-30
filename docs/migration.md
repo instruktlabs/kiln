@@ -69,8 +69,8 @@ Changes to results and messages:
 - **Inspection** evaluates with optimisation off, so it reports the materials the program
   authored. Saved previews drawn from the persisted GLB record `exactArtifact: true`.
 - **Errors.** Ambiguous or missing subjects list the candidate paths; unknown camera keys
-  name the accepted keys (`fovDeg`, not `fov`); a bare `surfacePairs` path fails on its
-  own pair with candidates.
+  name the accepted keys (`fovDeg`, not `fov`); `surfacePairs` take exact paths or
+  unambiguous node names, and a missing or shared name fails on its own pair with candidates.
 - **Paths and hosts.** On Windows, collection roots in Git Bash form (`/c/...`) are
   refused with the setting named; use `C:/...`. The asset viewer accepts `127.0.0.1`,
   `localhost` and `[::1]` on its own port.

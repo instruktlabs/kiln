@@ -32,7 +32,11 @@ touch one neighbor while its other end floats. Review named separation findings
 against those intended connections even when other contact checks pass. Zero surface distance
 can mean intersection; it is appropriate evidence for neither a required gap
 nor a sound mechanical fitting by itself. Select the actual interface parts,
-not the entire assembly. Report unmeasured joints explicitly.
+not the entire assembly. Report unmeasured joints explicitly. `surfacePairs` subjects
+are exact `listParts` paths, such as `/Park%20Bench[0]/Bench[0]/Mesh_Seat[0]` for
+`createPart("Seat", ...)` under `createRoot("Bench")` in an asset named `Park Bench`,
+or unambiguous node names as `measure` takes; a missing or shared name fails its own
+pair and lists candidate paths.
 
 Read `capture.backdrop` in image results: views are on a neutral grey unless a capture asked for `dark` or `light`, and a silhouette judged on the wrong assumption about the backdrop is not evidence. Check material and camera fidelity independently. A fallback image may still answer a geometry question, but it cannot establish faithful PBR appearance. Keep unresolved export or material findings visible in the delivery report.
 

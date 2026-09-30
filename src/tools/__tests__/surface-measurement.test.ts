@@ -83,7 +83,7 @@ test('numeric batch inspection retains every requested pair and spends no image 
   expect(normal.error).toContain('pixel budget');
 });
 
-test('a bare or misrooted surface path fails its own pair briefly and names the exact path', async () => {
+test('surface pairs take exact paths or unambiguous names, as measure subjects do', async () => {
   const inspect = createKilnProgramToolRegistry().find((t) => t.name === 'kiln_inspect')!;
   const a = '/Surface%20gap[0]/Root[0]/Mesh_A[0]',
     b = '/Surface%20gap[0]/Root[0]/Mesh_B[0]';
@@ -91,18 +91,32 @@ test('a bare or misrooted surface path fails its own pair briefly and names the 
     code,
     image: false,
     surfacePairs: [
+      ['Mesh_A', 'Mesh_B'],
       ['Mesh_A', b],
+      ['Mesh', b],
       ['/Wrong[0]/Root[0]/Mesh_A[0]', b],
       [a, b],
     ],
   })) as KilnInspectResult;
   expect(output.ok).toBe(true);
-  const [bare, misrooted, good] = output.surfaceMeasurements!.results;
-  expect(bare!.error).toContain('"Mesh_A" is not an exact path');
-  expect(bare!.error).toContain(a);
+  const [named, mixed, missing, misrooted, good] = output.surfaceMeasurements!.results;
+  for (const measured of [named, mixed, good]) {
+    expect(measured!.error).toBeUndefined();
+    expect(measured!.measurement?.distance).toBeCloseTo(0.001, 7);
+  }
+  expect(missing!.error).toContain('No node is named "Mesh"');
+  expect(missing!.error).toContain(a);
   expect(misrooted!.error).toContain('No node has path "/Wrong[0]/Root[0]/Mesh_A[0]"');
   expect(misrooted!.error).toContain('Paths start with /Surface%20gap[0]');
   expect(misrooted!.error).toContain(a);
-  for (const failed of [bare, misrooted]) expect(failed!.error!.length).toBeLessThan(400);
-  expect(good!.measurement?.distance).toBeCloseTo(0.001, 7);
+  const twins = (await inspect.run({
+    code: code.replace("'B',", "'A',"),
+    image: false,
+    surfacePairs: [['Mesh_A', '/Surface%20gap[0]/Root[0]/Mesh_A[1]']],
+  })) as KilnInspectResult;
+  const [ambiguous] = twins.surfaceMeasurements!.results;
+  expect(ambiguous!.error).toContain('2 nodes are named "Mesh_A"');
+  expect(ambiguous!.error).toContain('/Surface%20gap[0]/Root[0]/Mesh_A[1]');
+  for (const failed of [missing, misrooted, ambiguous])
+    expect(failed!.error!.length).toBeLessThan(400);
 });

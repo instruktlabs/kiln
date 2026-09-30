@@ -89,7 +89,8 @@ records how projects, materials and Live Review were qualified.
   count. The instanceability grade says it is informational, the blend-area budget
   names its largest materials, and `kiln_inspect` evaluates without optimisation.
 - **Errors that name candidates.** Ambiguous and missing subjects, unknown camera keys
-  (`fovDeg` for `fov`) and bare `surfacePairs` paths list what would have matched.
+  (`fovDeg` for `fov`) and missing or shared `surfacePairs` names list what would have
+  matched. `surfacePairs` take exact paths or unambiguous node names, as `measure` does.
   Animation `measureParts` entries carry each node's world origin.
 - **Setup and CLI.** A workspace's `kiln.mjs` re-executes under the Node recorded at
   setup, so CLI exports equal `kiln_save` bytes. `.kiln/workspace.json` names the
