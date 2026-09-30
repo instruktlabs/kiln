@@ -74,7 +74,10 @@ export interface ExtrudeProfileOptions {
   twist?: number;
   /** Top scale: `0.5` shrinks both axes by half, `0` makes a pyramid/cone. */
   taper?: number | [number, number];
-  /** Intermediate slices along the sweep. Auto-raised to 16 when twisting. */
+  /**
+   * Intermediate rings between the two caps, a whole number >= 0. Default 0
+   * (caps joined by one band of side faces); 16 when twisting.
+   */
   divisions?: number;
   /** Sweep axis. Default `y`, matching `cylinderGeo`. */
   axis?: SweepAxis;
@@ -260,6 +263,9 @@ export async function extrudeProfile(
   } = options;
   assertPositive(depth, 'extrudeProfile: depth');
   if (bevel < 0) throw new Error(`extrudeProfile: bevel must be >= 0 (got ${bevel}).`);
+  if (divisions !== undefined && !(Number.isInteger(divisions) && divisions >= 0)) {
+    throw new Error(`extrudeProfile: divisions must be a whole number >= 0 (got ${divisions}).`);
+  }
   for (let i = 0; i < holes.length; i++) {
     assertFiniteProfile(holes[i] as Profile2D, `extrudeProfile: holes[${i}]`);
   }
@@ -291,8 +297,10 @@ export async function extrudeProfile(
       section = track(bevelCrossSection(section, bevel, bevelStyle, segments, 'extrudeProfile'));
     }
 
-    // Twist needs intermediate slices or it interpolates as a single shear.
-    const nDivisions = divisions ?? (twist !== 0 ? 16 : 1);
+    // Twist needs intermediate slices or it interpolates as a single shear. A
+    // straight or tapered sweep is exact with none: each ring would only add
+    // coplanar side triangles.
+    const nDivisions = divisions ?? (twist !== 0 ? 16 : 0);
     const solid = section.extrude(depth, nDivisions, twist, normalizeTaper(taper), center);
     try {
       return orientSweep(manifoldToGeometry(solid, { smooth }), axis);

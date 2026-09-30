@@ -634,6 +634,8 @@ define(
       'Profile and path checks use their respective extents, not fixed world-unit cutoffs; up specifies a direction regardless of its nonzero magnitude. Output positions remain Float32.',
       'Closed paths omit the repeated endpoint and require twist to be a multiple of 360 degrees.',
       'Transported frames and per-station positive scales define the cross-section.',
+      "cap is true (both ends, default), false, 'start' or 'end'; a one-ended cap needs an open path.",
+      'creaseAngle is degrees in [0, 180], default 60. Side panels meeting at more than it, across a profile corner or a path station, get separate vertices and a hard shading edge; hexagons and finer profiles stay smooth at the default.',
     ],
   },
   {
@@ -1685,7 +1687,7 @@ define(
     origin: 'center defaults true; center false starts depth at the selected-axis origin.',
     parameters: [
       'Finite closed outline, optional finite hole outlines, positive depth.',
-      'Twist is degrees; taper is dimensionless; divisions controls longitudinal sampling.',
+      'Twist is degrees; taper is dimensionless; divisions is a whole number >= 0 of intermediate rings, default 0 (16 when twisting).',
       'Bevel uses profile units. If its inward offset empties the section, execution rejects with repair advice: reduce bevel below half the narrowest width, disable it, or widen the section.',
     ],
   },

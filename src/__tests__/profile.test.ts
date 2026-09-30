@@ -237,6 +237,26 @@ describe('extrudeProfile', () => {
     expect(err(twisted)).toBeLessThan(exact * 0.05);
   });
 
+  it('an untwisted extrude has no intermediate ring by default', async () => {
+    // Two 12-gon caps of 10 triangles each plus 12 side quads: 20 + 24.
+    const slab = await extrudeProfile(circleProfile(1, 12), { depth: 0.2 });
+    expect(triCount(slab)).toBe(44);
+    // An explicit division still adds one ring of 12 side quads.
+    const ringed = await extrudeProfile(circleProfile(1, 12), { depth: 0.2, divisions: 1 });
+    expect(triCount(ringed)).toBe(68);
+    // Twisting keeps its 16-slice default.
+    const twisted = await extrudeProfile(circleProfile(1, 12), { depth: 0.2, twist: 30 });
+    expect(triCount(twisted)).toBe(20 + 24 * 17);
+  });
+
+  it('rejects divisions that are not a whole number >= 0', async () => {
+    for (const divisions of [-1, 1.5, Number.NaN, Number.POSITIVE_INFINITY]) {
+      await expect(extrudeProfile(UNIT_SQUARE, { divisions })).rejects.toThrow(
+        /divisions must be a whole number >= 0/,
+      );
+    }
+  });
+
   it('sweeps along the requested axis', async () => {
     const along = async (axis: 'x' | 'y' | 'z') =>
       boxSize(await extrudeProfile(UNIT_SQUARE, { depth: 3, axis }));

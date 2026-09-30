@@ -176,13 +176,13 @@ export const geometryPrimitives: readonly HelperSpec[] = [
   {
     name: 'sweepProfile',
     signature:
-      'sweepProfile(profile: [x,z][], path: [x,y,z][], opts?: { cap?: true, closed?: false, up?: [x,y,z], twist?: 0, scale?: number | [x,z][] })',
+      "sweepProfile(profile: [x,z][], path: [x,y,z][], opts?: { cap?: true | false | 'start' | 'end', creaseAngle?: 60, closed?: false, up?: [x,y,z], twist?: 0, scale?: number | [x,z][] })",
     returns: 'THREE.BufferGeometry',
     category: 'curves',
     description:
       'Sweeps a simple noncircular profile along polyline stations using transported frames. Supports total twist in degrees and per-station scales. Generates UVs and optional caps.',
     promptNotes:
-      'First version supports one simple profile without holes. Closed paths omit the repeated endpoint and require twist to be a multiple of 360. up sets the initial profile +Z direction and cannot parallel the path. Tight-turn warnings do not replace visual inspection for self-intersections.',
+      "First version supports one simple profile without holes. Closed paths omit the repeated endpoint and require twist to be a multiple of 360. up sets the initial profile +Z direction and cannot parallel the path. cap caps both ends by default; 'start' or 'end' caps only that end of an open path. creaseAngle (degrees) keeps side faces meeting at more than it hard-edged, at profile corners and sharp path corners: at the default 60, squares, triangles and pentagons stay faceted while hexagons and finer profiles shade smooth; 180 smooths every edge. Tight-turn warnings do not replace visual inspection for self-intersections.",
     example:
       'const rail = sweepProfile([[-.1,-.2],[.1,-.2],[.1,.2],[-.1,.2]], [[0,0,0],[0,1,0],[1,2,0]]);',
   },

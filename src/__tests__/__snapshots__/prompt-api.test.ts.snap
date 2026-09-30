@@ -408,7 +408,7 @@ await roundedBoxGeo(width: number, height: number, depth: number, radius: number
   // — build() must be async and the call must use await.
   // e.g. const geo = await roundedBoxGeo(1.2, 0.6, 0.8, 0.05); createPart('Console', geo,
   // plastic, { position: [0, 0.3, 0], parent: root });
-await extrudeProfile(profile: [number, number][], opts?: { depth?: 1, holes?: [number, number][][], bevel?: 0, bevelStyle?: 'round' | 'chamfer', segments?: 12, twist?: 0, taper?: number | [number, number], divisions?: number, axis?: 'x' | 'y' | 'z', center?: true, smooth?: false })
+await extrudeProfile(profile: [number, number][], opts?: { depth?: 1, holes?: [number, number][][], bevel?: 0, bevelStyle?: 'round' | 'chamfer', segments?: 12, twist?: 0, taper?: number | [number, number], divisions?: 0, axis?: 'x' | 'y' | 'z', center?: true, smooth?: false })
   // Sweeps a closed 2D outline into a watertight solid, with optional holes, corner
   // rounding/chamfering, twist, and taper. The way to build any cross-section that is not a box
   // or a cylinder: L-brackets, I-beams, gaskets, washers, star and gear plates, signage,
@@ -417,10 +417,12 @@ await extrudeProfile(profile: [number, number][], opts?: { depth?: 1, holes?: [n
   // where d is extrusion depth. For a desired XZ footprint on axis y, pass [X,-Z]; positive
   // profile v projects toward -Z. The bevel rounds the edges PARALLEL to the sweep axis (the
   // profile corners) — the two flat caps stay sharp. For a box rounded on all twelve edges use
-  // roundedBoxGeo instead. Holes are subtracted, so their winding order does not matter. A
-  // bevel larger than half the outline's narrowest feature throws rather than silently
-  // returning an empty solid. Output is manifold, so it feeds straight into boolUnion /
-  // boolDiff / boolIntersect. Async — await it inside an async build().
+  // roundedBoxGeo instead. Holes are subtracted, so their winding order does not matter.
+  // divisions is the whole number (>= 0) of intermediate rings between the caps: default 0, or
+  // 16 when twisting; a straight or tapered sweep needs none. A bevel larger than half the
+  // outline's narrowest feature throws rather than silently returning an empty solid. Output is
+  // manifold, so it feeds straight into boolUnion / boolDiff / boolIntersect. Async — await it
+  // inside an async build().
   // e.g. // L-bracket, inner AND outer corners filleted const outline = [[0, 0], [2, 0], [2,
   // 0.4], [0.4, 0.4], [0.4, 2], [0, 2]]; const geo = await extrudeProfile(outline, { depth:
   // 0.5, bevel: 0.06 }); createPart('Bracket', geo, steel, { parent: root });
@@ -491,13 +493,17 @@ mergeVertices(geometry: BufferGeometry, opts?: { tolerance?: 1e-4, positionOnly?
   // 0]);
 
 // Curves
-sweepProfile(profile: [x,z][], path: [x,y,z][], opts?: { cap?: true, closed?: false, up?: [x,y,z], twist?: 0, scale?: number | [x,z][] })
+sweepProfile(profile: [x,z][], path: [x,y,z][], opts?: { cap?: true | false | 'start' | 'end', creaseAngle?: 60, closed?: false, up?: [x,y,z], twist?: 0, scale?: number | [x,z][] })
   // Sweeps a simple noncircular profile along polyline stations using transported frames.
   // Supports total twist in degrees and per-station scales. Generates UVs and optional caps.
   // NOTE: First version supports one simple profile without holes. Closed paths omit the
   // repeated endpoint and require twist to be a multiple of 360. up sets the initial profile +Z
-  // direction and cannot parallel the path. Tight-turn warnings do not replace visual
-  // inspection for self-intersections.
+  // direction and cannot parallel the path. cap caps both ends by default; 'start' or 'end'
+  // caps only that end of an open path. creaseAngle (degrees) keeps side faces meeting at more
+  // than it hard-edged, at profile corners and sharp path corners: at the default 60, squares,
+  // triangles and pentagons stay faceted while hexagons and finer profiles shade smooth; 180
+  // smooths every edge. Tight-turn warnings do not replace visual inspection for
+  // self-intersections.
   // e.g. const rail = sweepProfile([[-.1,-.2],[.1,-.2],[.1,.2],[-.1,.2]],
   // [[0,0,0],[0,1,0],[1,2,0]]);
 loftProfiles(sections: { profile: [x,z][], frame?: { origin, rotation } }[], opts?: { cap?: true })

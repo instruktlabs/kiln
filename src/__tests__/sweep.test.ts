@@ -214,6 +214,156 @@ it('transports a noncircular profile with twist and variable scale deterministic
     [-1, 1],
   ]);
 });
+const polygon = (sides: number): [number, number][] =>
+  Array.from({ length: sides }, (_, i) => [
+    Math.cos((i / sides) * Math.PI * 2),
+    Math.sin((i / sides) * Math.PI * 2),
+  ]);
+const straight: [number, number, number][] = [
+  [0, 0, 0],
+  [0, 2, 0],
+];
+/** Side-face normals of a sweep along +Y, where profile [x, z] lands on world X/Z. */
+function sideFaceNormals(profile: [number, number][]): THREE.Vector3[] {
+  return profile.map(([x0, z0], i) => {
+    const [x1, z1] = profile[(i + 1) % profile.length]!;
+    return new THREE.Vector3(z1 - z0, 0, x0 - x1).normalize();
+  });
+}
+function normalsOf(g: THREE.BufferGeometry): THREE.Vector3[] {
+  const n = g.getAttribute('normal');
+  return Array.from({ length: n.count }, (_, i) => new THREE.Vector3().fromBufferAttribute(n, i));
+}
+const alignedWithAny = (normal: THREE.Vector3, faces: THREE.Vector3[]) =>
+  faces.some((face) => Math.abs(normal.dot(face)) > 1 - 1e-6);
+
+it('keeps hard profile corners face-aligned and fine profiles smooth by default', () => {
+  const rectangle: [number, number][] = [
+    [-1, -0.5],
+    [1, -0.5],
+    [1, 0.5],
+    [-1, 0.5],
+  ];
+  for (const profile of [rectangle, polygon(3), polygon(5)]) {
+    const g = sweepProfile(profile, straight, { cap: false });
+    const faces = sideFaceNormals(profile);
+    for (const normal of normalsOf(g)) expect(alignedWithAny(normal, faces)).toBe(true);
+    expect(geometryDiagnostics(g).boundaryEdges).toBe(profile.length * 2);
+  }
+  for (const sides of [6, 16]) {
+    const profile = polygon(sides);
+    const g = sweepProfile(profile, straight, { cap: false });
+    // Smooth: both panels share each ring vertex (plus the one UV seam copy), so
+    // no vertex takes a single face's normal.
+    expect(g.getAttribute('position').count).toBe(2 * (sides + 1));
+    for (const normal of normalsOf(g))
+      expect(alignedWithAny(normal, sideFaceNormals(profile))).toBe(false);
+  }
+  // The angle is adjustable: 180 smooths the rectangle, 30 creases the hexagon.
+  const rounded = sweepProfile(rectangle, straight, { cap: false, creaseAngle: 180 });
+  expect(
+    normalsOf(rounded).some((normal) => !alignedWithAny(normal, sideFaceNormals(rectangle))),
+  ).toBe(true);
+  const faceted = sweepProfile(polygon(6), straight, { cap: false, creaseAngle: 30 });
+  for (const normal of normalsOf(faceted))
+    expect(alignedWithAny(normal, sideFaceNormals(polygon(6)))).toBe(true);
+  expect(() => sweepProfile(square, straight, { creaseAngle: 181 })).toThrow(/creaseAngle/);
+  expect(() => sweepProfile(square, straight, { creaseAngle: Number.NaN })).toThrow(/creaseAngle/);
+});
+
+it('creases a sharp path corner and keeps the closed seam consistent', () => {
+  const elbow = (options: { creaseAngle?: number } = {}) =>
+    sweepProfile(
+      polygon(16),
+      [
+        [0, 0, 0],
+        [0, 3, 0],
+        [3, 3, 0],
+      ],
+      options,
+    );
+  /** Widest normal split, in degrees, among coincident vertices on the corner mitre. */
+  function mitreSplit(g: THREE.BufferGeometry): number {
+    const p = g.getAttribute('position'),
+      normals = normalsOf(g),
+      groups = new Map<string, THREE.Vector3[]>();
+    for (let i = 0; i < p.count; i++) {
+      if (Math.abs(p.getX(i) + p.getY(i) - 3) > 1e-6 || p.getY(i) < 2) continue;
+      const key = [p.getX(i), p.getY(i), p.getZ(i)].map((v) => v.toFixed(5)).join();
+      groups.set(key, [...(groups.get(key) ?? []), normals[i]!]);
+    }
+    expect(groups.size).toBe(16);
+    let widest = 0;
+    for (const list of groups.values())
+      for (const a of list) for (const b of list) widest = Math.max(widest, a.angleTo(b));
+    return THREE.MathUtils.radToDeg(widest);
+  }
+  // A 90 degree corner splits the mitre ring; each copy shades with its own run.
+  expect(mitreSplit(elbow())).toBeGreaterThan(45);
+  expect(mitreSplit(elbow({ creaseAngle: 180 }))).toBeLessThan(1e-3);
+  expect(geometryDiagnostics(elbow())).toMatchObject({
+    boundaryEdges: 0,
+    nonManifoldEdges: 0,
+    orientationConflicts: 0,
+  });
+  const frame = sweepProfile(
+    square.map(([x, z]) => [x * 0.1, z * 0.1] as [number, number]),
+    [
+      [0, 0, 0],
+      [2, 0, 0],
+      [2, 0, 2],
+      [0, 0, 2],
+    ],
+    { closed: true, up: [0, 1, 0] },
+  );
+  expect(geometryDiagnostics(frame)).toMatchObject({
+    boundaryEdges: 0,
+    nonManifoldEdges: 0,
+    orientationConflicts: 0,
+  });
+  // Every normal of the mitred square frame is axis-aligned, the closing corner too.
+  for (const normal of normalsOf(frame))
+    expect(Math.max(Math.abs(normal.x), Math.abs(normal.y), Math.abs(normal.z))).toBeGreaterThan(
+      1 - 1e-6,
+    );
+});
+
+it("cap 'start' and 'end' close exactly one end", () => {
+  const triangles = (g: THREE.BufferGeometry) => g.index!.count / 3;
+  const open = sweepProfile(square, straight, { cap: false });
+  const both = sweepProfile(square, straight);
+  expect(triangles(both) - triangles(open)).toBe(4);
+  for (const [cap, closedY, openY] of [
+    ['start', 0, 2],
+    ['end', 2, 0],
+  ] as const) {
+    const g = sweepProfile(square, straight, { cap });
+    expect(triangles(g) - triangles(open)).toBe(2);
+    const diagnostics = geometryDiagnostics(g);
+    expect(diagnostics).toMatchObject({ boundaryEdges: 4, orientationConflicts: 0 });
+    // The remaining boundary is the uncapped end.
+    const p = g.getAttribute('position');
+    const capY = new Set<number>();
+    for (let i = open.getAttribute('position').count; i < p.count; i++) capY.add(p.getY(i));
+    expect([...capY]).toEqual([closedY]);
+    expect(closedY).not.toBe(openY);
+  }
+  expect(() =>
+    sweepProfile(
+      square,
+      [
+        [0, 0, 0],
+        [4, 0, 0],
+        [0, 0, 4],
+      ],
+      { closed: true, cap: 'start' },
+    ),
+  ).toThrow(/cap/);
+  expect(() => sweepProfile(square, straight, { cap: 'both' as unknown as boolean })).toThrow(
+    /cap/,
+  );
+});
+
 it('closes a transported loop with matched UV seams', () => {
   const path: [number, number, number][] = Array.from({ length: 16 }, (_, i) => [
     5 * Math.cos((i / 16) * Math.PI * 2),

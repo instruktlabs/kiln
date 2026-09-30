@@ -12,7 +12,16 @@ export interface LoftSection {
 export interface LoftOptions {
   cap?: boolean;
 }
-export interface SweepOptions extends LoftOptions {
+export interface SweepOptions {
+  /** Cap both ends (default true), neither, or only the `'start'` or `'end'` of an open path. */
+  cap?: boolean | 'start' | 'end';
+  /**
+   * Degrees. Side faces meeting at more than this angle, across a profile corner or
+   * a path corner, get separate vertices and a hard shading edge. Default 60: squares,
+   * triangles and pentagons stay faceted, hexagons and finer profiles shade smooth.
+   * 180 smooths every edge.
+   */
+  creaseAngle?: number;
   closed?: boolean;
   /** Reference for the first profile's +Z axis, projected perpendicular to the path. */
   up?: Point3;
@@ -74,12 +83,38 @@ function profilePoints(profile: readonly ProfilePoint[]): THREE.Vector2[] {
   return points;
 }
 
+/** Which ends of an open loft or sweep are capped. */
+interface CapEnds {
+  start: boolean;
+  end: boolean;
+}
+
+/** Slack so a regular hexagon's exact 60 degree corners stay smooth at the default. */
+const CREASE_TOLERANCE_DEGREES = 1e-2;
+
+/** Normal of the side panel a-b over c-d, matching its (a, c, b), (b, c, d) winding. */
+function panelNormal(
+  a: THREE.Vector3,
+  b: THREE.Vector3,
+  c: THREE.Vector3,
+  d: THREE.Vector3,
+): THREE.Vector3 {
+  return d.clone().sub(a).cross(b.clone().sub(c));
+}
+
+function isCrease(first: THREE.Vector3, second: THREE.Vector3, creaseAngle: number): boolean {
+  if (!(first.lengthSq() > 0 && second.lengthSq() > 0)) return false;
+  const angle = Math.atan2(first.clone().cross(second).length(), first.dot(second));
+  return THREE.MathUtils.radToDeg(angle) > creaseAngle + CREASE_TOLERANCE_DEGREES;
+}
+
 function buildLoft(
   rings: THREE.Vector3[][],
   profiles: THREE.Vector2[][],
   closed: boolean,
-  cap: boolean,
+  cap: CapEnds,
   firstFrameForward?: THREE.Vector3,
+  creaseAngle?: number,
 ): THREE.BufferGeometry {
   const n = rings[0]!.length,
     positions: number[] = [],
@@ -94,22 +129,66 @@ function buildLoft(
   const total = lengths[lengths.length - 1]!;
   if (!(total > 0) || !Number.isFinite(total))
     throw new Error('loft section centers must progress along a finite nonzero path');
+  // Side panels that meet at more than creaseAngle, across a profile corner
+  // (column) or a path station (ring), get their own vertex copies so the
+  // shading edge stays hard. Without an angle every edge is shared and smooth.
+  const panels = rings
+    .slice(0, -1)
+    .map((ring, i) =>
+      ring.map((origin, j) =>
+        panelNormal(origin, ring[(j + 1) % n]!, rings[i + 1]![j]!, rings[i + 1]![(j + 1) % n]!),
+      ),
+    );
+  const hardColumn = Array.from(
+    { length: n },
+    (_, j) =>
+      creaseAngle !== undefined &&
+      panels.some((row) => isCrease(row[(j - 1 + n) % n]!, row[j]!, creaseAngle)),
+  );
+  const hardRing = rings.map(
+    (_, i) =>
+      creaseAngle !== undefined &&
+      i > 0 &&
+      i < rings.length - 1 &&
+      panels[i - 1]!.some((panel, j) => isCrease(panel, panels[i]![j]!, creaseAngle)),
+  );
+  const hardClosure =
+    closed &&
+    creaseAngle !== undefined &&
+    panels[panels.length - 1]!.some((panel, j) => isCrease(panel, panels[0]![j]!, creaseAngle));
+  // A block is one ring's vertices: slots 0..n (slot n repeats vertex 0 for the
+  // UV seam), then one slot per creased interior column for the panel ending there.
+  const extraSlot = new Map<number, number>();
+  for (let j = 1; j < n; j++) if (hardColumn[j]) extraSlot.set(j, n + 1 + extraSlot.size);
+  const endSlot = (j: number) => (j === n ? n : (extraSlot.get(j) ?? j));
+  const blockSize = n + 1 + extraSlot.size,
+    blockRing: number[] = [],
+    nearBlock: number[] = [],
+    farBlock: number[] = [];
   for (let i = 0; i < rings.length; i++) {
+    farBlock.push(blockRing.length);
+    blockRing.push(i);
+    if (hardRing[i]) blockRing.push(i);
+    nearBlock.push(blockRing.length - 1);
+  }
+  for (const i of blockRing) {
     const ring = rings[i]!,
       distance = [0];
     for (let j = 1; j <= n; j++)
       distance.push(distance[j - 1]! + ring[j % n]!.distanceTo(ring[j - 1]!));
-    for (let j = 0; j <= n; j++) {
+    for (const j of [...Array.from({ length: n + 1 }, (_, j) => j), ...extraSlot.keys()]) {
       positions.push(...ring[j % n]!.toArray());
       uvs.push(distance[j]! / distance[n]!, lengths[i]! / total);
     }
   }
   for (let i = 0; i < rings.length - 1; i++)
     for (let j = 0; j < n; j++) {
-      const a = i * (n + 1) + j,
-        b = a + 1,
-        c = a + n + 1,
-        d = c + 1;
+      const near = nearBlock[i]! * blockSize,
+        far = farBlock[i + 1]! * blockSize;
+      const a = near + j,
+        b = near + endSlot(j + 1),
+        c = far + j,
+        d = far + endSlot(j + 1);
       const origin = rings[i]![j]!,
         ab = rings[i]![(j + 1) % n]!.clone().sub(origin),
         ac = rings[i + 1]![j]!.clone().sub(origin),
@@ -157,8 +236,9 @@ function buildLoft(
         indices.push(a, c, middle, c, d, middle, d, b, middle, b, a, middle);
       } else indices.push(a, c, b, b, c, d);
     }
-  if (cap && !closed)
+  if (!closed)
     for (const station of [0, rings.length - 1]) {
+      if (!(station === 0 ? cap.start : cap.end)) continue;
       const ring = rings[station]!,
         profile = profiles[station]!;
       const start = positions.length / 3;
@@ -182,30 +262,40 @@ function buildLoft(
     for (let i = 0; i < indices.length; i += 3)
       [indices[i + 1], indices[i + 2]] = [indices[i + 2]!, indices[i + 1]!];
   const out = meshGeo({ positions, indices, uvs });
-  // The duplicated profile UV seam should not become a shading seam.
   const normal = out.getAttribute('normal');
-  for (let i = 0; i < rings.length; i++) {
-    const a = i * (n + 1),
-      b = a + n;
+  const share = (a: number, b: number) => {
     const sum = new THREE.Vector3()
       .fromBufferAttribute(normal, a)
       .add(new THREE.Vector3().fromBufferAttribute(normal, b))
       .normalize();
     normal.setXYZ(a, sum.x, sum.y, sum.z);
     normal.setXYZ(b, sum.x, sum.y, sum.z);
-  }
-  if (closed)
-    for (let j = 0; j <= n; j++) {
-      const a = j,
-        b = (rings.length - 1) * (n + 1) + j;
-      const sum = new THREE.Vector3()
-        .fromBufferAttribute(normal, a)
-        .add(new THREE.Vector3().fromBufferAttribute(normal, b))
-        .normalize();
-      normal.setXYZ(a, sum.x, sum.y, sum.z);
-      normal.setXYZ(b, sum.x, sum.y, sum.z);
-    }
+  };
+  // The duplicated profile UV seam should not become a shading seam unless it
+  // is a crease; neither should a closed path's repeated first ring.
+  if (!hardColumn[0])
+    for (let block = 0; block < blockRing.length; block++)
+      share(block * blockSize, block * blockSize + n);
+  if (closed && !hardClosure)
+    for (let k = 0; k < blockSize; k++)
+      share(nearBlock[0]! * blockSize + k, farBlock[rings.length - 1]! * blockSize + k);
   return out;
+}
+
+/** Legacy loft capping: any truthy `cap` closes both ends. */
+function loftCapEnds(cap: unknown): CapEnds {
+  const both = Boolean(cap ?? true);
+  return { start: both, end: both };
+}
+
+function sweepCapEnds(cap: SweepOptions['cap'] | null, closed: boolean): CapEnds {
+  if (cap === undefined || cap === null || cap === true) return { start: true, end: true };
+  if (cap === false) return { start: false, end: false };
+  if (cap !== 'start' && cap !== 'end')
+    throw new Error("sweepProfile cap must be true, false, 'start' or 'end'");
+  if (closed)
+    throw new Error(`sweepProfile cap '${cap}' needs an open path; a closed sweep has no ends`);
+  return { start: cap === 'start', end: cap === 'end' };
 }
 
 /** Profiles lie in local XZ planes; first-section travel determines outward winding. No holes. */
@@ -229,7 +319,7 @@ export function loftProfiles(
     rings,
     profiles,
     false,
-    options.cap ?? true,
+    loftCapEnds(options.cap),
     new THREE.Vector3(0, 1, 0).transformDirection(frames[0]!),
   );
   out.userData.kilnGeometryWarnings = [
@@ -255,6 +345,10 @@ export function sweepProfile(
   if (!Number.isFinite(twist)) throw new Error('sweepProfile twist must be finite degrees');
   if (closed && Math.abs(twist / 360 - Math.round(twist / 360)) > 1e-8)
     throw new Error('closed sweep twist must be a multiple of 360 degrees');
+  const creaseAngle = options.creaseAngle ?? 60;
+  if (!Number.isFinite(creaseAngle) || creaseAngle < 0 || creaseAngle > 180)
+    throw new Error('sweepProfile creaseAngle must be between 0 and 180 degrees');
+  const cap = sweepCapEnds(options.cap, closed);
   if (
     path.length < (closed ? 3 : 2) ||
     path.some((p) => p.length !== 3 || !p.every(Number.isFinite))
@@ -365,7 +459,9 @@ export function sweepProfile(
     rings,
     rings.map(() => points),
     closed,
-    options.cap ?? true,
+    cap,
+    undefined,
+    creaseAngle,
   );
   warnings.push({
     code: 'SWEEP_SELF_INTERSECTION_UNCHECKED',

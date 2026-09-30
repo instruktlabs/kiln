@@ -735,13 +735,13 @@ const PRIMITIVES: HelperSpec[] = [
   {
     name: 'extrudeProfile',
     signature:
-      "await extrudeProfile(profile: [number, number][], opts?: { depth?: 1, holes?: [number, number][][], bevel?: 0, bevelStyle?: 'round' | 'chamfer', segments?: 12, twist?: 0, taper?: number | [number, number], divisions?: number, axis?: 'x' | 'y' | 'z', center?: true, smooth?: false })",
+      "await extrudeProfile(profile: [number, number][], opts?: { depth?: 1, holes?: [number, number][][], bevel?: 0, bevelStyle?: 'round' | 'chamfer', segments?: 12, twist?: 0, taper?: number | [number, number], divisions?: 0, axis?: 'x' | 'y' | 'z', center?: true, smooth?: false })",
     returns: 'Promise<THREE.BufferGeometry>',
     category: 'csg',
     description:
       'Sweeps a closed 2D outline into a watertight solid, with optional holes, corner rounding/chamfering, twist, and taper. The way to build any cross-section that is not a box or a cylinder: L-brackets, I-beams, gaskets, washers, star and gear plates, signage, extruded trim.',
     promptNotes:
-      "Profile (u,v) maps to XYZ as axis x: (d,v,-u), axis y: (u,d,-v), axis z: (u,v,d), where d is extrusion depth. For a desired XZ footprint on axis y, pass [X,-Z]; positive profile v projects toward -Z. The bevel rounds the edges PARALLEL to the sweep axis (the profile corners) — the two flat caps stay sharp. For a box rounded on all twelve edges use roundedBoxGeo instead. Holes are subtracted, so their winding order does not matter. A bevel larger than half the outline's narrowest feature throws rather than silently returning an empty solid. Output is manifold, so it feeds straight into boolUnion / boolDiff / boolIntersect. Async — await it inside an async build().",
+      "Profile (u,v) maps to XYZ as axis x: (d,v,-u), axis y: (u,d,-v), axis z: (u,v,d), where d is extrusion depth. For a desired XZ footprint on axis y, pass [X,-Z]; positive profile v projects toward -Z. The bevel rounds the edges PARALLEL to the sweep axis (the profile corners) — the two flat caps stay sharp. For a box rounded on all twelve edges use roundedBoxGeo instead. Holes are subtracted, so their winding order does not matter. divisions is the whole number (>= 0) of intermediate rings between the caps: default 0, or 16 when twisting; a straight or tapered sweep needs none. A bevel larger than half the outline's narrowest feature throws rather than silently returning an empty solid. Output is manifold, so it feeds straight into boolUnion / boolDiff / boolIntersect. Async — await it inside an async build().",
     example:
       "// L-bracket, inner AND outer corners filleted\nconst outline = [[0, 0], [2, 0], [2, 0.4], [0.4, 0.4], [0.4, 2], [0, 2]];\nconst geo = await extrudeProfile(outline, { depth: 0.5, bevel: 0.06 });\ncreatePart('Bracket', geo, steel, { parent: root });",
   },
