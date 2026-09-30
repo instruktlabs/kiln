@@ -442,6 +442,28 @@ export async function withCameraVisibility<T>(
     for (const [node, visible] of restore) node.visible = visible;
   }
 }
+/**
+ * glTF carries no per-mesh visibility, so a derivative GLB serialized from a
+ * scene isolated by {@link withCameraVisibility} would ship the hidden meshes to
+ * the GPU. Returns the root itself when nothing is hidden, else a pruned clone;
+ * the caller's scene is never mutated and restores `.visible` itself.
+ */
+export function withoutHiddenMeshes(root: Object3D): Object3D {
+  const hidden = (node: Object3D) =>
+    (node as Object3D & { isMesh?: boolean }).isMesh === true && node.visible === false;
+  let any = false;
+  root.traverse((node) => {
+    if (hidden(node)) any = true;
+  });
+  if (!any) return root;
+  const copy = root.clone(true);
+  const drop: Object3D[] = [];
+  copy.traverse((node) => {
+    if (hidden(node)) drop.push(node);
+  });
+  for (const node of drop) node.removeFromParent();
+  return copy;
+}
 /** Flat geometry renderer with exact orthographic/perspective projection and near/far clipping. */
 export function rasterizeCamera(
   root: unknown,

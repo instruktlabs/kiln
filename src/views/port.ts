@@ -204,6 +204,7 @@ export async function captureViewsViaPort(
       execution?.signal?.throwIfAborted();
       const { loadGlbReviewScene } = await import('./index');
       const { renderCaptureGrid } = await import('./camera-capture');
+      const { withoutHiddenMeshes } = await import('./camera');
       const { renderSceneToGLB } = await import('../render');
       const loaded = await loadGlbReviewScene(Uint8Array.from(glb));
       let rendererId = '';
@@ -212,9 +213,11 @@ export async function captureViewsViaPort(
         capture,
         async (input) => {
           execution?.signal?.throwIfAborted();
-          const derivative = await renderSceneToGLB(input.root as import('three').Object3D, {
-            derivative: true,
-          });
+          // An isolated shot hides the other meshes; send the GPU only what it may draw.
+          const derivative = await renderSceneToGLB(
+            withoutHiddenMeshes(input.root as import('three').Object3D),
+            { derivative: true },
+          );
           const result = await captureViewPngsViaPort(
             port,
             derivative.bytes,

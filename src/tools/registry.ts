@@ -485,21 +485,8 @@ async function renderDerivativeCell(
   // hidden geometry to the GPU service and makes isolate a silent no-op on exactly
   // the material-faithful path it is most useful on. Prune on a copy: the caller
   // restores `.visible` afterwards and must not observe a mutated scene.
-  let hasHidden = false;
-  derivativeRoot.traverse((node) => {
-    const mesh = node as THREE.Mesh;
-    if (mesh.isMesh && mesh.visible === false) hasHidden = true;
-  });
-  if (hasHidden) {
-    if (derivativeRoot === (input.root as THREE.Object3D))
-      derivativeRoot = derivativeRoot.clone(true);
-    const drop: THREE.Object3D[] = [];
-    derivativeRoot.traverse((node) => {
-      const mesh = node as THREE.Mesh;
-      if (mesh.isMesh && mesh.visible === false) drop.push(node);
-    });
-    for (const node of drop) node.removeFromParent();
-  }
+  const { withoutHiddenMeshes } = await import('../views/camera');
+  derivativeRoot = withoutHiddenMeshes(derivativeRoot);
   const rendered = await renderSceneToGLB(derivativeRoot, {
     // The scene here was loaded back from a GLB this engine already produced
     // and adjudicated. Submitting it for judgement a second time fails on the

@@ -63,7 +63,7 @@ needs a renderer for `image:false` listings. Paths belong to that evaluated revi
 
 Replace the sample path with one returned for your asset. Paths encode node names and distinguish same-name siblings with occurrence indices. They are scoped to the evaluated revision; a topology-changing edit can change them.
 
-`relativeTo` accepts `world`, `asset`, or `part`. Part-local directions follow the selected node's transformed axes. The camera frames its world bounds. `visibility:"context"` retains surrounding geometry; `"isolate"` hides other meshes for that shot. Inspection does not alter the saved program or exported original asset.
+`relativeTo` accepts `world`, `asset`, or `part`. Part-local directions follow the selected node's transformed axes. The camera frames its world bounds. `visibility:"context"` retains surrounding geometry; `"isolate"` hides other meshes for that shot. GPU and CPU views both draw only the subject subtree, so an isolated LOD group shows no sibling parts. Inspection does not alter the saved program or exported original asset.
 
 An explicit camera uses world positions in the asset's units:
 
