@@ -77,3 +77,23 @@ test('new catalog entries and aliases enter the next index without hand-maintain
   added.aliases[0] = 'mutated after indexing';
   expect((await after.search('quasar frobnicator'))[0]?.id).toBe('operation:novelFixture');
 });
+
+test('everyday object words reach the reviewed structure and material entries', async () => {
+  // Dogfood run C (C-A2): "bench" found nothing and "cast iron" expanded to cost/caster.
+  const run = createDiscoveryService(
+    entries,
+    createLexicalDiscoveryIndex(entries),
+    async () => ({}),
+  );
+  const ids = async (query: string) => (await run({ query })).entries.map((entry) => entry.id);
+  expect((await ids('bench')).slice(0, 3)).toContain('recipe:joined-frame-v1');
+  expect((await ids('bench slats')).slice(0, 3)).toContain('operation:arrayLinear');
+  expect((await ids('table legs')).slice(0, 3)).toContain('recipe:joined-frame-v1');
+  const metal = await run({ query: 'cast iron metal' });
+  expect(metal.entries[0]?.id).toBe('recipe:material-painted-metal-v1');
+  for (const entry of metal.entries.slice(0, 3))
+    expect(
+      (entry as { match?: { evidence?: { expandedTerms: string[] } } }).match?.evidence
+        ?.expandedTerms ?? [],
+    ).not.toContain('cost');
+});

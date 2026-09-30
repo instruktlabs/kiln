@@ -13,7 +13,14 @@ export const constructionRecipes: readonly RecipeEntry[] = [
       'Keep both ends of braces attached after resizing a frame by deriving them from the same post endpoints. Separate intended joints from surfaces that must remain apart; adapt to supports, furniture, chassis or scaffolding.',
     family: 'structure',
     tags: ['brace', 'frame', 'attachment', 'junction', 'clearance', 'resize'],
-    aliases: ['floating support bars', 'disconnected struts', 'joined beams'],
+    aliases: [
+      'floating support bars',
+      'disconnected struts',
+      'joined beams',
+      'bench frame',
+      'table legs and rails',
+      'chair or stool frame',
+    ],
     intents: ['connect both ends of a support', 'resize a frame without detached braces'],
     stability: 'experimental',
     related: [

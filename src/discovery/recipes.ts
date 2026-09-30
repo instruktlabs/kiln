@@ -21,7 +21,7 @@ const materialWords: Record<string, string[]> = {
   wood: ['wooden', 'timber', 'grain', 'plank'],
   stone: ['rock', 'masonry', 'mineral'],
   rubber: ['tire', 'tyre', 'grip', 'seal'],
-  'painted-metal': ['paint', 'coating', 'vehicle panel'],
+  'painted-metal': ['paint', 'coating', 'vehicle panel', 'cast iron', 'steel'],
   cloth: ['fabric', 'woven', 'textile'],
   skin: ['flesh', 'organic surface'],
   glass: ['transparent', 'window', 'translucent'],
