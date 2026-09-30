@@ -2,6 +2,7 @@
 import type { LiveOperation, LiveSnapshot } from '../live-review';
 import type { ProjectRevision } from '../projects';
 import { createAssetStage } from './scene';
+import { describeLevels, levelLabels } from './lod';
 import {
   reconcileReview,
   selectReviewOperation,
@@ -262,6 +263,7 @@ export function mountLiveReview() {
       currentStage?.dispose();
       currentStage = undefined;
       loadedCurrent = undefined;
+      el('live-level-field').hidden = true;
       el('live-stage-status').textContent = 'No completed artifact available for this run.';
       el('live-stage-label').textContent = 'Current';
       renderActions();
@@ -295,11 +297,22 @@ export function mountLiveReview() {
       el('live-performance').replaceChildren();
       loadedCurrent = operation;
       renderActions();
+      // MSFT_lod chains open at LOD0, or at the level already chosen when this build has it.
+      const levelSelect = el<HTMLSelectElement>('live-level');
+      const chosen = Number(levelSelect.value || 0);
+      levelSelect.replaceChildren(
+        ...levelLabels(result.levels ?? []).map((label, i) => new Option(label, String(i))),
+      );
+      el('live-level-field').hidden = !result.levels;
+      const level = result.levels && chosen < result.levels.length ? chosen : 0;
+      levelSelect.value = String(level);
+      currentStage.level(level);
+      comparisonStage?.level(level);
       currentStage.wire(wire);
       currentStage.navigation(el<HTMLSelectElement>('live-navigation').value);
       el('live-stage-status').textContent = '';
       el('live-stage-label').textContent =
-        `${result.triangles.toLocaleString()} triangles · ${result.meshes} meshes · ${shortId(operation.operationId)}`;
+        `${result.levels ? describeLevels(result.levels) : `${result.triangles.toLocaleString()} triangles`} · ${result.meshes} meshes · ${shortId(operation.operationId)}`;
       if (comparisonStage) comparisonStage.setView(currentStage.view());
     } catch (error) {
       if (ticket !== loadGeneration) return;
@@ -344,6 +357,7 @@ export function mountLiveReview() {
       loadedComparison = operation;
       el('compare-stage-label').textContent = `Pinned · ${shortId(operation.operationId)}`;
       if (currentStage) comparisonStage.setView(currentStage.view());
+      comparisonStage.level(Number(el<HTMLSelectElement>('live-level').value || 0));
       comparisonStage.wire(wire);
       comparisonStage.navigation(el<HTMLSelectElement>('live-navigation').value);
       el('compare-stage-status').textContent = '';
@@ -546,6 +560,11 @@ export function mountLiveReview() {
   el('live-frame').onclick = () => {
     currentStage?.reset();
     if (currentStage) comparisonStage?.setView(currentStage.view());
+  };
+  el<HTMLSelectElement>('live-level').onchange = (event) => {
+    const level = Number((event.target as HTMLSelectElement).value);
+    currentStage?.level(level);
+    comparisonStage?.level(level);
   };
   el('live-wire').onclick = () => {
     wire = !wire;

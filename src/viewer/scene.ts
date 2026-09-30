@@ -13,6 +13,13 @@ import {
 } from './camera-state';
 import { summarizeFrameTimes, type StagePerformanceReceipt } from './performance';
 import { acceptLoadedResource } from './load-guard';
+import {
+  countTriangles,
+  detachedLevels,
+  loadViewerLevels,
+  showLevel,
+  type ViewerLevels,
+} from './lod';
 
 /** The gallery's local studio lighting, orbit controls, and framing in a small standalone surface. */
 export function createAssetStage(container: HTMLElement) {
@@ -69,6 +76,8 @@ export function createAssetStage(container: HTMLElement) {
   scene.add(sun);
   scene.add(new THREE.HemisphereLight(0xe1edda, 0x4d493d, 1.7));
   let root: THREE.Group | undefined;
+  /** MSFT_lod chains of the loaded model; lower levels stay detached until chosen. */
+  let levels: ViewerLevels | undefined;
   let mixer: THREE.AnimationMixer | undefined;
   let clips: THREE.AnimationClip[] = [];
   let running = true;
@@ -259,10 +268,14 @@ export function createAssetStage(container: HTMLElement) {
         return url;
       });
       const parsed = await new GLTFLoader(manager).parseAsync(Uint8Array.from(bytes).buffer, '');
+      const parsedLevels = await loadViewerLevels(parsed);
       const gltf = acceptLoadedResource(
         parsed,
         () => !disposed && current === generation && options.isCurrent?.() !== false,
-        (stale) => disposeModel(stale.scene),
+        (stale) => {
+          disposeModel(stale.scene);
+          for (const level of detachedLevels(parsedLevels)) disposeModel(level);
+        },
       );
       if (!gltf) return undefined;
       const previousView =
@@ -272,8 +285,10 @@ export function createAssetStage(container: HTMLElement) {
         mixer?.uncacheRoot(root);
         scene.remove(root);
         disposeModel(root);
+        for (const level of detachedLevels(levels)) disposeModel(level);
       }
       root = gltf.scene;
+      levels = parsedLevels;
       firstFrameStart = loadStarted;
       loadToFirstFrameMs = undefined;
       scene.add(root);
@@ -294,22 +309,29 @@ export function createAssetStage(container: HTMLElement) {
         );
         controls.update();
       }
-      let triangles = 0,
-        meshes = 0;
+      let meshes = 0;
       const materials = new Set<THREE.Material>();
       root.traverse((o) => {
         const mesh = o as THREE.Mesh;
         if (!mesh.isMesh) return;
         meshes++;
-        triangles +=
-          ((mesh.geometry.index?.count ?? mesh.geometry.attributes.position?.count ?? 0) / 3) *
-          ((mesh as THREE.InstancedMesh).isInstancedMesh ? (mesh as THREE.InstancedMesh).count : 1);
         for (const m of Array.isArray(mesh.material) ? mesh.material : [mesh.material])
           materials.add(m);
       });
       // Publish identity with the scene, before another queued selection can run.
       options.onCommit?.();
-      return { triangles, meshes, materials: materials.size, clips: clips.map((c) => c.name) };
+      return {
+        triangles: countTriangles(root),
+        meshes,
+        materials: materials.size,
+        clips: clips.map((c) => c.name),
+        /** Triangles at each level of detail, LOD0 first, when the GLB has MSFT_lod chains. */
+        ...(levels ? { levels: levels.triangles } : {}),
+      };
+    },
+    /** Draw every MSFT_lod chain at `index` (0 is LOD0); a shorter chain shows its last level. */
+    level(index: number) {
+      if (levels) showLevel(levels, index);
     },
     reset,
     cancelMeasurement,
@@ -357,12 +379,13 @@ export function createAssetStage(container: HTMLElement) {
       }
     },
     wire(value: boolean) {
-      root?.traverse((o) => {
-        const mesh = o as THREE.Mesh;
-        if (mesh.isMesh)
-          for (const m of Array.isArray(mesh.material) ? mesh.material : [mesh.material])
-            if ('wireframe' in m) m.wireframe = value;
-      });
+      for (const model of root ? [root, ...detachedLevels(levels)] : [])
+        model.traverse((o) => {
+          const mesh = o as THREE.Mesh;
+          if (mesh.isMesh)
+            for (const m of Array.isArray(mesh.material) ? mesh.material : [mesh.material])
+              if ('wireframe' in m) m.wireframe = value;
+        });
     },
     lighting(value: string) {
       renderer.toneMappingExposure = value === 'bright' ? 1.65 : value === 'soft' ? 0.85 : 1.15;
@@ -386,6 +409,7 @@ export function createAssetStage(container: HTMLElement) {
       renderer.domElement.removeEventListener('keyup', keyUp);
       renderer.domElement.removeEventListener('blur', clearKeys);
       if (root) disposeModel(root);
+      for (const level of detachedLevels(levels)) disposeModel(level);
       environment.dispose();
       renderer.dispose();
       container.replaceChildren();

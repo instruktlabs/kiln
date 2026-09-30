@@ -8,6 +8,7 @@ import {
 } from '../assets';
 import { assetAttributionRows } from './attribution';
 import { createAssetStage } from './scene';
+import { levelLabels } from './lod';
 import { assetViewerSelection } from './deep-link';
 import { exportAssetGlb } from '../asset-export';
 import { mountDashboard } from './dashboard';
@@ -421,6 +422,9 @@ async function openDetail(entry: Entry) {
   const animation = el<HTMLSelectElement>('animation');
   animation.replaceChildren(new Option('Rest pose', ''));
   el<HTMLButtonElement>('play').disabled = true;
+  const level = el<HTMLSelectElement>('level');
+  level.replaceChildren();
+  level.hidden = true;
   try {
     stage ??= createAssetStage(el('stage'));
     const data = await bytes(entry, 'asset.glb');
@@ -436,8 +440,15 @@ async function openDetail(entry: Entry) {
     stage.wire(false);
     stage.navigation(el<HTMLSelectElement>('library-navigation').value);
     stage.lighting(el<HTMLSelectElement>('lighting').value);
+    // A GLB with MSFT_lod chains opens at LOD0 and counts every level's triangles.
+    if (info.levels) {
+      level.append(...levelLabels(info.levels).map((label, i) => new Option(label, String(i))));
+      level.hidden = false;
+    }
     for (const [value, label] of [
-      [info.triangles.toLocaleString(), 'triangles'],
+      ...(info.levels
+        ? info.levels.map((count, i) => [count.toLocaleString(), `LOD${i} triangles`])
+        : [[info.triangles.toLocaleString(), 'triangles']]),
       [info.meshes, 'meshes'],
       [info.materials, 'materials'],
       [`${(data.length / 1024).toFixed(0)} KB`, 'GLB'],
@@ -550,6 +561,8 @@ el<HTMLSelectElement>('animation').onchange = (event) => {
   stage?.clip(value === '' ? -1 : Number(value));
   el<HTMLButtonElement>('play').disabled = value === '';
 };
+el<HTMLSelectElement>('level').onchange = (event) =>
+  stage?.level(Number((event.target as HTMLSelectElement).value));
 el('play').onclick = () => {
   paused = !paused;
   stage?.pause(paused);
