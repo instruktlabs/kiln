@@ -43,7 +43,7 @@ seats and articulated joins, use the interface guidance in
 
 For Blender, Unity or an FBX handoff, read the [engine handoff guide](references/engine-handoff.md). Prefer direct GLB import. The established exporter remains the default; the guide explains when an explicitly identified experimental comparison is useful. Preserve the baseline output, report the selected backend and destination checks, and do not change global host settings silently.
 
-Write ordinary JavaScript with `meta` and `build()`. Keep dimensions that should change together in named parameters. Use [geometry recipes](references/geometry-recipes.md) for freeform surfaces, deformations, lofts, Boolean materials, or repeated parts. A model can author its own equations and topology; it does not need to assemble everything from boxes.
+Write ordinary JavaScript with `meta` and `build()`. Keep dimensions that should change together in named parameters. Use [geometry recipes](references/geometry-recipes.md) for freeform surfaces, deformations, lofts, Boolean materials, or repeated parts. A model can author its own equations and topology; it does not need to assemble everything from boxes. Build one tier unless the brief asks for level-of-detail tiers; when it does, name and declare them as [levels of detail](references/geometry-recipes.md#levels-of-detail-only-when-the-brief-asks) describes.
 
 For connected assemblies, derive mating points from shared dimensions in the same
 local frame. Identify the intended neighbor at each end of a support, and separate

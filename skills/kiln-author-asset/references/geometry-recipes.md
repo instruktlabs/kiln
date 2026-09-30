@@ -162,11 +162,44 @@ to find copied nodes; do not guess their generated names. Shared resources need
 copying before independent buffer/material edits. Flat hierarchies are still useful
 for independent components.
 
-For LOD tiers, give each tier's group a name token such as `LOD0`, `Body_LOD1` or
-`lod2`. QA then treats the tiers as alternates instead of overlapping or disconnected
-parts. All tiers render together in a default sheet; review one tier with a shot whose
-subject is its group and `visibility: "isolate"`. Kiln keeps an imported GLB's
-`MSFT_lod` chain through save and export but does not build one from named groups.
+## Levels of detail only when the brief asks
+
+Build one tier unless the brief asks for level-of-detail tiers. When it does, build
+every tier from one routine parameterised by level and emit the tiers as sibling
+groups under one parent, named with one stem and a level token: `LOD0`, `LOD1`,
+`LOD2`, or `Body_LOD0`, `Body_LOD1`. LOD0 is the full-detail tier. Parts every level
+shares, such as wheels, stay outside the set. Then declare the set once, LOD0 first:
+
+```js
+// Screen fraction of a bounding sphere of radius r at distance d (50 degree vertical FOV, 16:9).
+const coverage = (r, d) => (Math.PI * (r / (2 * d * Math.tan((25 * Math.PI) / 180))) ** 2) / (16 / 9);
+const tiers = [0, 1, 2].map((lod) => {
+  const group = new THREE.Group();
+  group.name = `Body_LOD${lod}`;
+  root.add(group);
+  buildBody(group, lod); // your routine, less detail as lod rises
+  return group;
+});
+// LOD1 from 60 m, LOD2 from 250 m, culled beyond 1.5 km, for a body of radius 2.5 m.
+defineLod(tiers, { screenCoverage: [coverage(2.5, 60), coverage(2.5, 250), coverage(2.5, 1500)] });
+```
+
+`screenCoverage[i]` is the smallest fraction of the screen, 0 to 1, at which level
+`i` still draws; the values strictly decrease, the set is culled below the last
+one, and a last value of 0 never culls. Compute each set's values from the bounding
+radius of that set's LOD0 and the brief's switch distances, with the brief's field
+of view or the one above when it names none. To make a shared part vanish with the
+last body tier, give it its own set with an empty group as its last level, named for
+example `Wheel_FL_LOD0` and `Wheel_FL_LOD1`, and declare
+`defineLod([wheel, farWheel], { screenCoverage: [coverage(0.35, 250), 0] })`.
+
+Two or more sibling tiers without `defineLod`, a gap in the levels, a missing LOD0
+or a set declared inside another tier fail the build with `LOD_SET`, which names
+the fix. A lone token is only a label. QA treats tiers as alternates instead of
+overlapping or disconnected parts. All tiers render together in a default sheet;
+review one tier with a shot whose subject is its group and `visibility: "isolate"`.
+Kiln keeps an imported GLB's `MSFT_lod` chain through save and export but does not
+build one from named groups.
 
 ## Implicit fields are experimental
 
