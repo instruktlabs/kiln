@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import { GLTFExporter } from 'three/addons/exporters/GLTFExporter.js';
 import type { Document } from '@gltf-transform/core';
 import { createGltfIO } from './gltf-io';
+import { openShellExtras } from './open-shell';
 import { rigExtrasForExport } from './rig-export';
 import type { AuthorExtras } from './user-data-extras';
 import {
@@ -136,7 +137,12 @@ export async function communitySceneDocument(
       copy = new THREE.Mesh(geometry, spriteMaterial);
       THREE.Object3D.prototype.copy.call(copy, shadow, false);
     }
-    Object.assign(copy.userData, authorExtras?.node(source), rigExtrasForExport(source));
+    Object.assign(
+      copy.userData,
+      authorExtras?.node(source),
+      rigExtrasForExport(source),
+      openShellExtras(source),
+    );
     const semantic = source.userData[KILN_SEMANTIC_EXTRAS_KEY];
     if (semantic !== undefined) {
       const checked = validateSemanticMetadataV1(semantic);

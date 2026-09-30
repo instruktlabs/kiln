@@ -4,6 +4,7 @@ import { renderSceneToGLB } from '../render';
 import { validateRequirementsQaReport } from './requirements-report';
 import { resolveRequirementsContext } from '../requirements-context';
 import { collectRequirementsSceneEvidence, runRequirementsSceneQa } from './requirements-run';
+import { markOpenShell } from '../open-shell';
 
 function box(name: string, x: number) {
   const mesh = new THREE.Mesh(new THREE.BoxGeometry(), new THREE.MeshStandardMaterial());
@@ -67,6 +68,29 @@ test('open sheets remain exportable and their incomplete volume coverage cannot 
   });
   // Open parts leave pairs unmeasured; that is not a truncated budget.
   expect(findings(qa).some((f) => f.code === `${ruleId}_TRUNCATED`)).toBe(false);
+  // Without a mark nothing is acknowledged, and the metrics keep their earlier keys.
+  expect(qa.dimensions.visualQuality.metrics?.partVolumeAcknowledgedParts).toBeUndefined();
+  expect(validateRequirementsQaReport(qa, resolveRequirementsContext())).toEqual(qa);
+});
+
+test('a marked open sheet is acknowledged, and its volume coverage still reads as partial', async () => {
+  const sheet = new THREE.Mesh(new THREE.PlaneGeometry(2, 2), new THREE.MeshStandardMaterial());
+  sheet.name = 'Sheet';
+  markOpenShell(sheet, 'A single-sided sign face');
+  const { qaReport: qa } = await renderSceneToGLB(scene(box('Box', 0), sheet));
+  expect(qa.acceptance).toBe('accepted');
+  expect(findings(qa).map((f) => f.code)).toEqual([`${ruleId}_ACKNOWLEDGED`]);
+  expect(findings(qa)[0]!.message).toContain('"A single-sided sign face"');
+  // The mark records intent; the pair with the sheet is still unmeasured, not clear.
+  expect(qa.rules.find((r) => r.id === ruleId)?.status).toBe('notEvaluated');
+  expect(qa.dimensions.visualQuality.status).toBe('notEvaluated');
+  expect(qa.dimensions.visualQuality.metrics).toMatchObject({
+    partVolumeCoverage: 'partial',
+    partVolumeUnmeasurablePairs: 1,
+    partVolumeSkipped: 0,
+    partVolumeAcknowledgedParts: 1,
+    partVolumeAcknowledgedPairs: 1,
+  });
   expect(validateRequirementsQaReport(qa, resolveRequirementsContext())).toEqual(qa);
 });
 

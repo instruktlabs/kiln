@@ -813,6 +813,51 @@ define(
   },
 );
 define(
+  'markOpenShell',
+  {
+    ...nodeFacts,
+    units: 'No lengths; reason is text of 1 to 200 characters after trimming.',
+    origin: 'Not a placement operation.',
+    ownership:
+      'Writes one validated mark to part.userData.kilnOpenShell; creates no nodes and changes no geometry.',
+    coordinates: 'Not a placement operation.',
+    parameters: [
+      'part: a scene node, such as the mesh createPart returned or a group; a mark on a group covers the meshes under it.',
+      'reason: why the shell is open, 1 to 200 characters after trimming.',
+    ],
+    semantics: [
+      'QA reports a marked part that cannot be built as a closed solid as GEO_PART_SELF_INTERSECTION_ACKNOWLEDGED with the reason, instead of GEO_PART_SELF_INTERSECTION_UNMEASURED.',
+      'Overlapping pairs with the marked part stay unmeasured and are counted; overlap there is not ruled out. Overlap between other parts is still measured and reported.',
+      'A marked part that builds as a closed solid is measured like any other part. A part skipped for its size, draw range, instancing or invalid indices is still reported as unmeasured.',
+      'Both exporters write the mark as the node extras kilnOpenShell: { schemaVersion: 1, reason }; import restores it to userData.',
+      'Invalid arguments, or a kilnOpenShell value this helper did not write, are an OPEN_SHELL build error.',
+    ],
+    cost: 'Metadata on one node: about 50 bytes of extras plus the reason.',
+  },
+  {
+    references: ['src/open-shell.ts', 'src/qa/self-intersection.ts'],
+    tags: ['qa', 'hierarchy', 'export'],
+    aliases: [
+      'open shell',
+      'intentionally open',
+      'not manifold',
+      'single-sided sheet',
+      'acknowledge unmeasured part',
+    ],
+    intents: ['mark a part that is open on purpose'],
+    summary:
+      'Marks a part that is open on purpose (a C-channel closed by end plates, a single-sided sheet) with the reason, so QA reports it as acknowledged rather than unmeasured.',
+    limitations: [
+      'A mark states intent and measures nothing: overlap with the part stays unmeasured and part-volume coverage stays partial.',
+      'Close a part that is meant to be solid instead of marking it.',
+    ],
+    related: [
+      { name: 'createPart', relation: 'companion' },
+      { name: 'geometryDiagnostics', relation: 'companion' },
+    ],
+  },
+);
+define(
   'beamBetween',
   {
     ...nodeFacts,

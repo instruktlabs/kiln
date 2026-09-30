@@ -45,6 +45,15 @@
  * boolean stops being bounded-time in any useful sense. Skipped parts are
  * reported, never dropped quietly.
  *
+ * ## Intentionally open shells
+ *
+ * A part the author marked with `markOpenShell` (on itself or an ancestor)
+ * that cannot be built as a closed solid is listed in `acknowledged` with the
+ * author's reason, not in `skipped`. Nothing else changes: it is still
+ * attempted as a solid, a marked part that closes is measured like any other,
+ * a mark covers no other reason to skip, and every pair it leaves unmeasured
+ * is still counted. A mark states intent; it is never a measurement.
+ *
  * ## Determinism
  *
  * Parts are collected in traversal order, candidates with equal box overlap
@@ -54,6 +63,7 @@
  */
 
 import * as THREE from 'three';
+import { openShellIntent } from '../open-shell';
 import { lodLevel } from './lod';
 import type { QaContext, QaFinding } from './types';
 import { KILN_ENGINE_QA_OWNER, type QaRule } from './registry';
@@ -102,6 +112,11 @@ export interface PartPenetrationEvidenceV1 {
   pairsTested: number;
   /** Candidate pairs with a part that could not be built as a closed solid. */
   pairsUnmeasurable: number;
+  /**
+   * Of pairsUnmeasurable, the pairs whose unbuildable parts are all acknowledged open shells.
+   * Present only with `acknowledged`. Overlap in these pairs is not ruled out.
+   */
+  pairsUnmeasurableAcknowledged?: number;
   /** Candidate pairs left unvisited by the boolean or solid-build budget. */
   pairsNotReached: number;
   /** Overlapping pairs on different LOD levels: alternates, deliberately not compared. */
@@ -112,6 +127,12 @@ export interface PartPenetrationEvidenceV1 {
   skipped: { part: string; reason: string }[];
   /** Pairs whose shared volume exceeds the contact threshold, worst first. */
   penetrations: PartPenetrationPairV1[];
+  /**
+   * Parts marked with `markOpenShell` that could not be built as a closed solid, in traversal
+   * order: `reason` is why, as in `skipped`; `intent` is the author's reason for the mark.
+   * Present only when non-empty. These parts are not in `skipped`.
+   */
+  acknowledged?: { part: string; reason: string; intent: string }[];
 }
 
 interface AnalyzedPart {
@@ -123,6 +144,8 @@ interface AnalyzedPart {
   scale: number;
   /** LOD level from the part or an ancestor name; undefined belongs to every level. */
   lod: number | undefined;
+  /** The author's `markOpenShell` reason on the part or an ancestor. */
+  intent: string | undefined;
 }
 
 /** An overlapping pair, by traversal index, with its box overlap over the smaller box. */
@@ -223,7 +246,16 @@ function collectParts(
       });
       return;
     }
-    parts.push({ name, mesh, box, triangles, center, scale, lod: lodLevel(mesh) });
+    parts.push({
+      name,
+      mesh,
+      box,
+      triangles,
+      center,
+      scale,
+      lod: lodLevel(mesh),
+      intent: openShellIntent(mesh),
+    });
   });
 
   return parts;
@@ -348,7 +380,8 @@ export async function analyzePartPenetration(
   // Each part is built once. `null` records a part that cannot be a closed solid, so
   // every later pair with it is unmeasurable without spending the boolean budget.
   const solids = new Map<number, InstanceType<typeof Manifold> | null>();
-  const unbuildable: { index: number; reason: string }[] = [];
+  // `open`: manifold could not close the part, the one failure a mark acknowledges.
+  const unbuildable: { index: number; reason: string; open: boolean }[] = [];
   const build = (index: number): InstanceType<typeof Manifold> | null | undefined => {
     if (solids.has(index)) return solids.get(index)!;
     if (solids.size === MAX_SOLID_BUILDS) return undefined;
@@ -365,13 +398,18 @@ export async function analyzePartPenetration(
         mesh.merge();
         solid = new Manifold(mesh);
       } else {
-        unbuildable.push({ index, reason: 'its triangle positions or indices are invalid' });
+        unbuildable.push({
+          index,
+          reason: 'its triangle positions or indices are invalid',
+          open: false,
+        });
       }
     } catch (err) {
       // Failure to build a closed solid is unmeasured, never evidence of no intersection.
       unbuildable.push({
         index,
         reason: `a valid closed solid could not be measured (${err instanceof Error ? err.message : String(err)})`,
+        open: true,
       });
       solid = null;
     }
@@ -381,10 +419,12 @@ export async function analyzePartPenetration(
 
   const penetrations: PartPenetrationPairV1[] = [];
   const rangeSkips: PartPenetrationEvidenceV1['skipped'] = [];
+  const unmeasured: CandidatePair[] = [];
   try {
     for (const pair of candidates) {
       if (solids.get(pair.a) === null || solids.get(pair.b) === null) {
         base.pairsUnmeasurable++;
+        unmeasured.push(pair);
         continue;
       }
       // Building also classifies parts past the boolean budget, within the build budget,
@@ -393,6 +433,7 @@ export async function analyzePartPenetration(
       const sb = sa === null ? null : build(pair.b);
       if (sa === null || sb === null) {
         base.pairsUnmeasurable++;
+        unmeasured.push(pair);
         continue;
       }
       if (!sa || !sb || base.pairsTested === MAX_NARROW_PHASE_PAIRS) {
@@ -449,12 +490,28 @@ export async function analyzePartPenetration(
     for (const solid of solids.values()) solid?.delete();
   }
   base.truncated = !!base.broadPhaseTruncated || base.pairsNotReached > 0;
-  // Unbuildable parts are reported in traversal order, whatever order reached them.
+  // Unbuildable parts are reported in traversal order, whatever order reached them. An open
+  // part the author marked is acknowledged with the mark's reason; every other one is skipped.
   unbuildable.sort((x, y) => x.index - y.index);
-  skipped.push(
-    ...unbuildable.map(({ index, reason }) => ({ part: parts[index]!.name, reason })),
-    ...rangeSkips,
-  );
+  const acknowledged: NonNullable<PartPenetrationEvidenceV1['acknowledged']> = [];
+  const acknowledgedIndices = new Set<number>();
+  for (const { index, reason, open } of unbuildable) {
+    const part = parts[index]!;
+    if (open && part.intent !== undefined) {
+      acknowledged.push({ part: part.name, reason, intent: part.intent });
+      acknowledgedIndices.add(index);
+    } else skipped.push({ part: part.name, reason });
+  }
+  skipped.push(...rangeSkips);
+  if (acknowledged.length) {
+    base.acknowledged = acknowledged;
+    // A pair is acknowledged only when every part that left it unmeasured is acknowledged.
+    base.pairsUnmeasurableAcknowledged = unmeasured.filter((pair) =>
+      [pair.a, pair.b]
+        .filter((index) => solids.get(index) === null)
+        .every((index) => acknowledgedIndices.has(index)),
+    ).length;
+  }
 
   // Worst first, then by name so equal-volume pairs keep a stable order.
   penetrations.sort(
@@ -504,6 +561,70 @@ export const SELF_INTERSECTION_QA_RULE: QaRule = Object.freeze({
 
 /** Names listed per unmeasured reason; the count covers the rest. */
 const UNMEASURED_NAMES_SHOWN = 5;
+/** Author reasons listed for acknowledged open shells; the count covers the rest. */
+const ACKNOWLEDGED_REASONS_SHOWN = 5;
+
+/** `"A", "B" and 3 more` for the first names of a group. */
+const namedParts = (parts: readonly string[]): string => {
+  const named = parts.slice(0, UNMEASURED_NAMES_SHOWN).map((part) => JSON.stringify(part));
+  const more =
+    parts.length > UNMEASURED_NAMES_SHOWN
+      ? ` and ${parts.length - UNMEASURED_NAMES_SHOWN} more`
+      : '';
+  return `${named.join(', ')}${more}`;
+};
+
+/**
+ * Open shells the author marked: one line per mark reason and build failure, the author's words
+ * quoted, and the pairs left unmeasured because of these parts alone. Overlap there stays open.
+ */
+function acknowledgedFinding(
+  acknowledged: NonNullable<PartPenetrationEvidenceV1['acknowledged']>,
+  pairs: number,
+): QaFinding {
+  const groups = new Map<string, { intent: string; reason: string; parts: string[] }>();
+  for (const { part, reason, intent } of acknowledged) {
+    const key = JSON.stringify([intent, reason]);
+    const group = groups.get(key);
+    if (group) group.parts.push(part);
+    else groups.set(key, { intent, reason, parts: [part] });
+  }
+  const listed = [...groups.values()];
+  const shown = listed.slice(0, ACKNOWLEDGED_REASONS_SHOWN);
+  const lines = shown.map(
+    ({ intent, reason, parts }) =>
+      `${parts.length} marked ${JSON.stringify(intent)}, because ${reason}: ${namedParts(parts)}.`,
+  );
+  const rest = listed.slice(ACKNOWLEDGED_REASONS_SHOWN);
+  if (rest.length) {
+    const count = rest.reduce((sum, group) => sum + group.parts.length, 0);
+    lines.push(
+      `${count} more ${count === 1 ? 'part' : 'parts'} marked with ${rest.length} other ${rest.length === 1 ? 'reason' : 'reasons'}.`,
+    );
+  }
+  const one = acknowledged.length === 1;
+  const which = one ? 'this part' : 'these parts';
+  const pairText =
+    pairs === 1
+      ? ` 1 overlapping part pair was not measured because of ${which} alone; overlap there is not ruled out.`
+      : pairs > 1
+        ? ` ${pairs} overlapping part pairs were not measured because of ${which} alone; overlap there is not ruled out.`
+        : '';
+  return {
+    code: 'GEO_PART_SELF_INTERSECTION_ACKNOWLEDGED',
+    disposition: 'observe' as const,
+    dimension: 'visualQuality' as const,
+    profile: 'geometry.selfIntersection',
+    message:
+      `${acknowledged.length} ${one ? 'part' : 'parts'} marked intentionally open (markOpenShell) ${one ? 'was' : 'were'} not measured as ${one ? 'a closed solid' : 'closed solids'}. ` +
+      `${lines.join(' ')}${pairText}`,
+    measurement: {
+      name: 'acknowledgedOpenShells',
+      actual: acknowledged.length,
+      breakdown: { pairsUnmeasurable: pairs },
+    },
+  };
+}
 
 /** Shared observation kernel; the measurement is derived by the engine, never asset metadata. */
 export function inspectPartPenetration(evidence?: PartPenetrationEvidenceV1): readonly QaFinding[] {
@@ -526,6 +647,10 @@ export function inspectPartPenetration(evidence?: PartPenetrationEvidenceV1): re
   }));
 
   const pairsUnmeasurable = evidence.pairsUnmeasurable ?? 0;
+  const acknowledged = evidence.acknowledged ?? [];
+  const pairsAcknowledged = acknowledged.length
+    ? Math.min(evidence.pairsUnmeasurableAcknowledged ?? 0, pairsUnmeasurable)
+    : 0;
   if (evidence.truncated) {
     const pairsNotReached = evidence.pairsNotReached ?? 0;
     findings.push({
@@ -556,21 +681,18 @@ export function inspectPartPenetration(evidence?: PartPenetrationEvidenceV1): re
       if (parts) parts.push(part);
       else byReason.set(reason, [part]);
     }
-    const reasons = [...byReason].map(([reason, parts]) => {
-      const named = parts.slice(0, UNMEASURED_NAMES_SHOWN).map((part) => JSON.stringify(part));
-      const more =
-        parts.length > UNMEASURED_NAMES_SHOWN
-          ? ` and ${parts.length - UNMEASURED_NAMES_SHOWN} more`
-          : '';
-      return `${parts.length} because ${reason}: ${named.join(', ')}${more}.`;
-    });
+    const reasons = [...byReason].map(
+      ([reason, parts]) => `${parts.length} because ${reason}: ${namedParts(parts)}.`,
+    );
     const one = evidence.skipped.length === 1;
     const includes = one ? 'this part' : 'one of these parts';
+    // Pairs left unmeasured only by acknowledged open shells are counted with those.
+    const unmarked = pairsUnmeasurable - pairsAcknowledged;
     const pairs =
-      pairsUnmeasurable === 1
+      unmarked === 1
         ? ` 1 overlapping part pair includes ${includes} and was not measured.`
-        : pairsUnmeasurable > 1
-          ? ` ${pairsUnmeasurable} overlapping part pairs include ${includes} and were not measured.`
+        : unmarked > 1
+          ? ` ${unmarked} overlapping part pairs include ${includes} and were not measured.`
           : '';
     findings.push({
       code: 'GEO_PART_SELF_INTERSECTION_UNMEASURED',
@@ -580,6 +702,7 @@ export function inspectPartPenetration(evidence?: PartPenetrationEvidenceV1): re
       message: `${evidence.skipped.length} part-volume ${one ? 'measurement was' : 'measurements were'} unavailable. ${reasons.join(' ')}${pairs} ${one ? 'This part is' : 'These parts are'} not certified clear.`,
     });
   }
+  if (acknowledged.length) findings.push(acknowledgedFinding(acknowledged, pairsAcknowledged));
 
   return findings;
 }

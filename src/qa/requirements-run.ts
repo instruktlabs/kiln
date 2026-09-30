@@ -215,7 +215,9 @@ export function runRequirementsSceneQa(
     if (decision.ruleId === SELF_INTERSECTION_QA_RULE.id) {
       const volume = evidence.partPenetration;
       if (volume) {
-        const partial = volume.truncated || volume.skipped.length > 0;
+        const acknowledged = volume.acknowledged?.length ?? 0;
+        // An acknowledged open shell leaves its pairs unmeasured as surely as a skipped part.
+        const partial = volume.truncated || volume.skipped.length > 0 || acknowledged > 0;
         if (!partial) executedRules.push(decision.ruleId);
         findings.push(...inspectPartPenetration(volume));
         Object.assign(geometryMetrics, {
@@ -230,6 +232,12 @@ export function runRequirementsSceneQa(
           partVolumePairsNotReached: volume.pairsNotReached,
           partVolumeLodAlternatePairs: volume.pairsLodAlternates,
           partVolumeSkipped: volume.skipped.length,
+          ...(acknowledged > 0
+            ? {
+                partVolumeAcknowledgedParts: acknowledged,
+                partVolumeAcknowledgedPairs: volume.pairsUnmeasurableAcknowledged ?? 0,
+              }
+            : {}),
         });
       } else if (evidence.partPenetrationFailed) {
         findings.push({

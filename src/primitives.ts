@@ -23,6 +23,8 @@ import { createJointChain } from './character';
 import { describeAssembly, replicateAssembly } from './assembly';
 import { defineLod } from './lod';
 export { defineLod } from './lod';
+import { markOpenShell } from './open-shell';
+export { markOpenShell } from './open-shell';
 export * from './assembly';
 export { createRoofPlanes } from './architecture';
 export type { RoofPlanesOptions } from './architecture';
@@ -2112,6 +2114,7 @@ export function buildSandboxGlobals(
     createWheelAssembly: wrap('createWheelAssembly', createWheelAssembly),
     createPart: wrap('createPart', createPart),
     defineLod: wrap('defineLod', defineLod),
+    markOpenShell: wrap('markOpenShell', markOpenShell),
     capsuleGeo: wrapGeo('capsuleGeo', capsuleGeo),
     capsuleXGeo: wrapGeo('capsuleXGeo', capsuleXGeo),
     capsuleYGeo: wrapGeo('capsuleYGeo', capsuleYGeo),

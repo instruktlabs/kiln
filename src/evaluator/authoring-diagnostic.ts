@@ -29,7 +29,8 @@ export type AuthoringDiagnostic =
   | 'MATERIAL_RECIPE_OVERRIDE'
   | 'PROGRAM_TYPE_ERROR'
   | 'PROGRAM_RANGE_ERROR'
-  | 'LOD_SET';
+  | 'LOD_SET'
+  | 'OPEN_SHELL';
 // Names no identifier on purpose. The identifier is only available from the
 // sandboxed exception message, and this module's contract is that no captured
 // identifier, path, message or stack crosses that boundary. Pointing at the
@@ -64,9 +65,12 @@ export const PROGRAM_RANGE_ERROR_ADVICE =
   'The program or a helper it called threw a RangeError: a number was outside its allowed range, for example a non-positive size, an invalid array length or segment count, or unbounded recursion. Check the helper arguments against kiln_discover.';
 export const LOD_SET_ADVICE =
   'Levels of detail: sibling nodes whose names share a stem and carry LOD0, LOD1, ... tokens (Body_LOD0, Body_LOD1) form one set. A set needs LOD0 and consecutive levels under one parent, outside any other tier, and one defineLod([lod0, lod1, ...], { screenCoverage: [...] }) call listing its tiers in level order with one value per level, each from 0 to 1 and strictly decreasing; the last may be 0, which never culls. Build one tier without LOD tokens unless the brief asks for levels. Call kiln_discover with ids ["defineLod"].';
+export const OPEN_SHELL_ADVICE =
+  'markOpenShell(part, reason) marks a part as intentionally open: part is the mesh createPart returned or a group whose meshes it covers, and reason is a non-empty string of at most 200 characters saying why, for example markOpenShell(rail, "C-channel closed by the end plates"). The engine owns the kilnOpenShell userData key; set it only through markOpenShell. Call kiln_discover with ids ["markOpenShell"].';
 export function authoringDiagnosticAdvice(diagnostic: AuthoringDiagnostic | undefined): string {
   if (diagnostic === 'UNINITIALIZED_BINDING') return UNINITIALIZED_BINDING_ADVICE;
   if (diagnostic === 'LOD_SET') return LOD_SET_ADVICE;
+  if (diagnostic === 'OPEN_SHELL') return OPEN_SHELL_ADVICE;
   if (diagnostic === 'BUILD_RESULT') return BUILD_RESULT_ADVICE;
   if (diagnostic === 'MATERIAL_RECIPE_OVERRIDE') return MATERIAL_RECIPE_OVERRIDE_ADVICE;
   if (diagnostic === 'PROGRAM_TYPE_ERROR') return PROGRAM_TYPE_ERROR_ADVICE;

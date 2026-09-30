@@ -17,6 +17,7 @@ import {
 } from './self-intersection';
 import type { QaContext } from './types';
 import { createAssetIntentV1 } from '../contracts';
+import { markOpenShell } from '../open-shell';
 
 function boxAt(name: string, size: [number, number, number], at: [number, number, number]) {
   const mesh = new THREE.Mesh(new THREE.BoxGeometry(...size));
@@ -515,5 +516,139 @@ describe('the QA rule', () => {
     expect(findings.map((f) => f.message)).toEqual([
       '1 part-volume measurement was unavailable. 1 because a valid closed solid could not be measured (Not manifold): "Sheet". 1 overlapping part pair includes this part and was not measured. This part is not certified clear.',
     ]);
+  });
+});
+
+// -----------------------------------------------------------------------------
+// Intentionally open shells (R52)
+// -----------------------------------------------------------------------------
+
+describe('intentionally open shells', () => {
+  const NOT_CLOSED = 'a valid closed solid could not be measured (Not manifold)';
+  const RAIL = 'C-channel closed by the end plates';
+  const evaluate = (partPenetration: unknown) =>
+    SELF_INTERSECTION_QA_RULE.evaluate({
+      intent: createAssetIntentV1({ category: 'prop' }),
+      derivedEvidence: { source: 'engine-scene-analysis', partPenetration },
+    });
+
+  test('a marked open shell is acknowledged with its reason; other parts are still measured', async () => {
+    const e = await analyzePartPenetration(
+      sceneOf(
+        markOpenShell(openBox('Rail', 2), RAIL),
+        boxAt('Plate', [0.5, 0.5, 0.5], [0, 0, 0]),
+        openBox('Duct', 1),
+        boxAt('A', [1, 1, 1], [5, 0, 0]),
+        boxAt('B', [1, 1, 1], [5.5, 0, 0]),
+      ),
+    );
+    expect(e.acknowledged).toEqual([{ part: 'Rail', reason: NOT_CLOSED, intent: RAIL }]);
+    expect(e.skipped).toEqual([{ part: 'Duct', reason: NOT_CLOSED }]);
+    // Rail-Plate is unmeasured because of the marked rail alone; Rail-Duct and Plate-Duct
+    // also involve the unmarked duct.
+    expect(e.pairsUnmeasurable).toBe(3);
+    expect(e.pairsUnmeasurableAcknowledged).toBe(1);
+    expect(pairNames(e)).toEqual([['A', 'B']]);
+
+    const findings = evaluate(e);
+    expect(findings.map((f) => f.code)).toEqual([
+      'GEO_PART_SELF_INTERSECTION',
+      'GEO_PART_SELF_INTERSECTION_UNMEASURED',
+      'GEO_PART_SELF_INTERSECTION_ACKNOWLEDGED',
+    ]);
+    expect(findings[1]!.message).toBe(
+      '1 part-volume measurement was unavailable. 1 because a valid closed solid could not be measured (Not manifold): "Duct". 2 overlapping part pairs include this part and were not measured. This part is not certified clear.',
+    );
+    const acknowledged = findings[2]!;
+    expect(acknowledged).toMatchObject({
+      disposition: 'observe',
+      dimension: 'visualQuality',
+      profile: 'geometry.selfIntersection',
+    });
+    expect(acknowledged.message).toBe(
+      '1 part marked intentionally open (markOpenShell) was not measured as a closed solid. 1 marked "C-channel closed by the end plates", because a valid closed solid could not be measured (Not manifold): "Rail". 1 overlapping part pair was not measured because of this part alone; overlap there is not ruled out.',
+    );
+    expect(acknowledged.measurement).toEqual({
+      name: 'acknowledgedOpenShells',
+      actual: 1,
+      breakdown: { pairsUnmeasurable: 1 },
+    });
+  });
+
+  test('a mark on a group covers the open meshes inside it and never hides their overlap', async () => {
+    const kit = markOpenShell(
+      group('Kit', openBox('Shell', 2), boxAt('Core', [0.5, 0.5, 0.5], [0, 0, 0])),
+      'Shell is a single sheet',
+    );
+    const e = await analyzePartPenetration(
+      sceneOf(kit, boxAt('Pin', [0.5, 0.5, 0.5], [0.25, 0, 0])),
+    );
+    // The closed core under the mark is measured like any part, and its overlap reported.
+    expect(pairNames(e)).toEqual([['Core', 'Pin']]);
+    expect(e.acknowledged).toEqual([
+      { part: 'Shell', reason: NOT_CLOSED, intent: 'Shell is a single sheet' },
+    ]);
+    expect(e.skipped).toEqual([]);
+    expect(e.pairsUnmeasurable).toBe(2);
+    expect(e.pairsUnmeasurableAcknowledged).toBe(2);
+    expect(evaluate(e).map((f) => f.code)).toEqual([
+      'GEO_PART_SELF_INTERSECTION',
+      'GEO_PART_SELF_INTERSECTION_ACKNOWLEDGED',
+    ]);
+  });
+
+  test('a closed marked part is measured, and a mark covers no other reason to skip', async () => {
+    const closed = markOpenShell(boxAt('Closed', [1, 1, 1], [0, 0, 0]), 'Thought to be open');
+    const partial = markOpenShell(boxAt('Partial', [1, 1, 1], [0, 0, 0]), 'Drawn in part');
+    partial.geometry.setDrawRange(0, 6);
+    const e = await analyzePartPenetration(
+      sceneOf(closed, partial, boxAt('Other', [1, 1, 1], [0.5, 0, 0])),
+    );
+    expect(pairNames(e)).toEqual([['Closed', 'Other']]);
+    expect(e.skipped).toEqual([
+      {
+        part: 'Partial',
+        reason: 'partial triangle draw ranges are unsupported by part-volume analysis',
+      },
+    ]);
+    // Evidence without an acknowledged part keeps its earlier shape.
+    expect('acknowledged' in e).toBe(false);
+    expect('pairsUnmeasurableAcknowledged' in e).toBe(false);
+  });
+
+  test('acknowledged parts group by reason, list a bounded number and count only their own pairs', () => {
+    const evidence = (pairs: number, acknowledged: unknown[]) => ({
+      schemaVersion: 1,
+      source: 'engine-scene-analysis',
+      partsAnalyzed: 20,
+      candidatePairs: 30,
+      pairsTested: 5,
+      pairsUnmeasurable: 25,
+      pairsUnmeasurableAcknowledged: pairs,
+      pairsNotReached: 0,
+      pairsLodAlternates: 0,
+      truncated: false,
+      skipped: [],
+      acknowledged,
+      penetrations: [],
+    });
+    const rails = Array.from({ length: 7 }, (_, i) => ({
+      part: `Rail_${i}`,
+      reason: NOT_CLOSED,
+      intent: RAIL,
+    }));
+    const canopy = { part: 'Canopy', reason: NOT_CLOSED, intent: 'A single sheet' };
+    expect(evaluate(evidence(25, [...rails, canopy])).map((f) => f.message)).toEqual([
+      '8 parts marked intentionally open (markOpenShell) were not measured as closed solids. 7 marked "C-channel closed by the end plates", because a valid closed solid could not be measured (Not manifold): "Rail_0", "Rail_1", "Rail_2", "Rail_3", "Rail_4" and 2 more. 1 marked "A single sheet", because a valid closed solid could not be measured (Not manifold): "Canopy". 25 overlapping part pairs were not measured because of these parts alone; overlap there is not ruled out.',
+    ]);
+    // Seven reasons: five are listed, the rest are counted.
+    const many = Array.from({ length: 7 }, (_, i) => ({
+      part: `Sheet_${i}`,
+      reason: NOT_CLOSED,
+      intent: `Sheet ${i}`,
+    }));
+    expect(evaluate(evidence(0, many))[0]!.message).toBe(
+      '7 parts marked intentionally open (markOpenShell) were not measured as closed solids. 1 marked "Sheet 0", because a valid closed solid could not be measured (Not manifold): "Sheet_0". 1 marked "Sheet 1", because a valid closed solid could not be measured (Not manifold): "Sheet_1". 1 marked "Sheet 2", because a valid closed solid could not be measured (Not manifold): "Sheet_2". 1 marked "Sheet 3", because a valid closed solid could not be measured (Not manifold): "Sheet_3". 1 marked "Sheet 4", because a valid closed solid could not be measured (Not manifold): "Sheet_4". 2 more parts marked with 2 other reasons.',
+    );
   });
 });

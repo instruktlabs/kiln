@@ -55,6 +55,14 @@ defineLod(levels: Object3D[], opts: { screenCoverage: number[] })
   // e.g. const tiers = ['Body_LOD0', 'Body_LOD1', 'Body_LOD2'].map((name) => { const g = new
   // THREE.Group(); g.name = name; root.add(g); return g; }); defineLod(tiers, { screenCoverage:
   // [0.25, 0.06, 0.01] });
+markOpenShell(part: Object3D, reason: string)
+  // Marks a part that is open on purpose, such as a C-channel closed by separate end plates or
+  // a single-sided sheet, with the reason. QA reports it as an acknowledged open shell instead
+  // of an unexplained unmeasured part.
+  // NOTE: Only for shells open by design; close a part meant to be solid instead. A mark on a
+  // group covers its meshes. Overlap with a marked part stays unmeasured, not clear.
+  // e.g. const rail = createPart('Rail', new THREE.CylinderGeometry(0.2, 0.2, 2, 16, 1, true),
+  // steel, { parent: root }); markOpenShell(rail, 'Tube closed by the end plates');
 beamBetween(name, start: [x,y,z], end: [x,y,z], radius, material, opts?: { segments, parent })
   // Creates a cylindrical rail/strut exactly between two endpoints in its parent frame. Derive
   // attachment endpoints from the neighboring geometry; the helper does not find joints or join

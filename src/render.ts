@@ -30,6 +30,7 @@ import { collectLodSets } from './lod';
 import { applyLodChains, summarizeLodChains } from './lod-export';
 import { applyNodeVisibility, drawnSceneBounds, summarizeHiddenNodes } from './node-visibility';
 import { communitySceneDocument, resolveGltfExporter } from './community-exporter';
+import { openShellExtras } from './open-shell';
 import { rigExtrasForExport } from './rig-export';
 import { type AuthorExtras, collectAuthorExtras } from './user-data-extras';
 import {
@@ -733,7 +734,11 @@ function bridgeNode(
   // after validation. A malformed reserved payload is an authoring error rather than
   // something the bridge may silently drop.
   const semanticValue = threeObj.userData[KILN_SEMANTIC_EXTRAS_KEY];
-  const extras = { ...authorExtras?.node(threeObj), ...rigExtrasForExport(threeObj) };
+  const extras = {
+    ...authorExtras?.node(threeObj),
+    ...rigExtrasForExport(threeObj),
+    ...openShellExtras(threeObj),
+  };
   let semanticForExport = semanticValue;
   if ((threeObj as THREE.Object3D & { isSprite?: boolean }).isSprite) {
     // glTF has no native Sprite primitive. The bridge emits a quad below and

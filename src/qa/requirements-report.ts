@@ -92,10 +92,12 @@ export function createRequirementsQaReport(
   const dimensions = Object.fromEntries(
     REQUIREMENTS_QA_DIMENSIONS.map((dimension) => {
       const selected = findings.filter((finding) => finding.dimension === dimension);
+      // An acknowledged open shell still leaves overlap unmeasured: intent is not a measurement.
       const partialObservation = selected.some(
         (finding) =>
           finding.code === 'GEO_PART_SELF_INTERSECTION_UNMEASURED' ||
-          finding.code === 'GEO_PART_SELF_INTERSECTION_TRUNCATED',
+          finding.code === 'GEO_PART_SELF_INTERSECTION_TRUNCATED' ||
+          finding.code === 'GEO_PART_SELF_INTERSECTION_ACKNOWLEDGED',
       );
       const status = selected.some((f) => f.disposition === 'block')
         ? 'block'

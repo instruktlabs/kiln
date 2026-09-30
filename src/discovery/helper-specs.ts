@@ -160,6 +160,18 @@ const PRIMITIVES: HelperSpec[] = [
       'Only when the brief asks for LOD tiers; otherwise build one tier. Tiers are sibling nodes named with one stem and consecutive LOD<n> tokens. screenCoverage has one value per level, strictly decreasing; below the last the asset is culled, and a last value of 0 never culls.',
   },
   {
+    name: 'markOpenShell',
+    signature: 'markOpenShell(part: Object3D, reason: string)',
+    returns: 'Object3D (part, unchanged)',
+    category: 'structure',
+    description:
+      'Marks a part that is open on purpose, such as a C-channel closed by separate end plates or a single-sided sheet, with the reason. QA reports it as an acknowledged open shell instead of an unexplained unmeasured part.',
+    example:
+      "const rail = createPart('Rail', new THREE.CylinderGeometry(0.2, 0.2, 2, 16, 1, true), steel, { parent: root });\nmarkOpenShell(rail, 'Tube closed by the end plates');",
+    promptNotes:
+      'Only for shells open by design; close a part meant to be solid instead. A mark on a group covers its meshes. Overlap with a marked part stays unmeasured, not clear.',
+  },
+  {
     name: 'beamBetween',
     signature:
       'beamBetween(name, start: [x,y,z], end: [x,y,z], radius, material, opts?: { segments, parent })',
