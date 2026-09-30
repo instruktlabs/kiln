@@ -1,5 +1,6 @@
 // Renderer-owned, versioned presentation definitions. Requests select an ID;
 // no caller-controlled light/color/exposure object crosses the HTTP boundary.
+import { TONE_MAPPINGS } from './display-transform.mjs';
 
 const PRESET_KEYS = Object.freeze([
   'id',
@@ -80,11 +81,23 @@ function validateDirectional(value, path) {
 export const SHADOW_FILTERS = Object.freeze(['basic', 'pcf', 'vsm']);
 
 function validatePreset(preset) {
-  exactKeys(preset, PRESET_KEYS, 'presentation preset');
+  exactKeys(
+    preset,
+    [...PRESET_KEYS, ...(Object.hasOwn(preset, 'toneMapping') ? ['toneMapping'] : [])],
+    'presentation preset',
+  );
+  if (preset.toneMapping !== undefined && !TONE_MAPPINGS.includes(preset.toneMapping))
+    throw new TypeError(`${preset.id}.toneMapping is unsupported`);
   if (!/^[a-z0-9]+(?:-[a-z0-9]+)*-v[1-9][0-9]*$/.test(preset.id)) {
     throw new TypeError('presentation preset id must end in a positive version');
   }
-  exactKeys(preset.environment, ['type', 'sigma'], `${preset.id}.environment`);
+  exactKeys(
+    preset.environment,
+    ['type', 'sigma', ...(Object.hasOwn(preset.environment, 'intensity') ? ['intensity'] : [])],
+    `${preset.id}.environment`,
+  );
+  if (preset.environment.intensity !== undefined)
+    finite(preset.environment.intensity, `${preset.id}.environment.intensity`, { minimum: 0 });
   if (preset.environment.type !== 'room')
     throw new TypeError(`${preset.id}.environment.type must be room`);
   finite(preset.environment.sigma, `${preset.id}.environment.sigma`, { minimum: 0 });
@@ -168,9 +181,25 @@ definitions.push(
   }),
 );
 
+// New review captures use measured white illumination. Both v1 definitions
+// above remain byte-for-byte selectable; an existing receipt never changes rig.
+definitions.push(
+  validatePreset({
+    ...definitions[0],
+    id: 'review-neutral-v1',
+    toneMapping: 'review-neutral',
+    environment: { type: 'room', sigma: 0.04, intensity: 0.4352 },
+    exposure: 0.9,
+    ambient: { type: 'hemisphere', sky: 0xffffff, ground: 0xffffff, intensity: 1.0879 },
+    key: { ...definitions[0].key, color: 0xffffff, intensity: 0.136 },
+    fill: { ...definitions[0].fill, color: 0xffffff, intensity: 0.0204 },
+    rim: { ...definitions[0].rim, color: 0xffffff, intensity: 0.0204 },
+  }),
+);
+
 for (const definition of definitions) deepFreeze(definition);
 export const PRESENTATION_PRESET_IDS = Object.freeze(definitions.map(({ id }) => id));
-export const DEFAULT_PRESENTATION_PRESET_ID = PRESENTATION_PRESET_IDS[0];
+export const DEFAULT_PRESENTATION_PRESET_ID = 'review-neutral-v1';
 export const PRESENTATION_PRESET_CAPABILITIES = Object.freeze(
   PRESENTATION_PRESET_IDS.map((id) => `render.profile.${id}`),
 );

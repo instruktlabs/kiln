@@ -93,6 +93,7 @@ interface Args extends WorkspaceSelection {
 }
 
 export function parseArgs(argv: readonly string[]): Args {
+  let renderOption: RenderMode | undefined;
   const args: Args = {
     command: undefined,
     positional: [],
@@ -139,7 +140,7 @@ export function parseArgs(argv: readonly string[]): Args {
         break;
       }
       case '--render':
-        args.render = resolveRenderMode(next());
+        renderOption = resolveRenderMode(next());
         break;
       case '--render-port':
         args.renderPort = next();
@@ -181,6 +182,7 @@ export function parseArgs(argv: readonly string[]): Args {
         else args.positional.push(a);
     }
   }
+  args.render = resolveRenderMode(renderOption);
   Object.assign(args, cliWorkspaceSelection(args.projectId, args.projectRevision, args.noProject));
   return args;
 }

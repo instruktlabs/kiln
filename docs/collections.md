@@ -145,7 +145,13 @@ committed earlier revisions if a later filesystem operation fails. Retrying is s
 
 The manifest records source/GLB/preview hashes, parent revision, build warnings,
 integration/QA information, effective host options and runtime identity when verified.
-Source-development or unverified hosts are labelled explicitly. Briefs and model
+Packaged Node subprocess saves record that identity in `build.engine` with disk,
+memory or disabled build reuse. Missing transitive peers in `--omit=peer`
+installations are identifiable absence states; missing regular dependencies or
+unidentified inputs still prevent verification. Memory/off hosts compute provenance
+on their first save, retaining any failure reason in `localExecution.cacheReason`.
+See [runtime identity](runtime.md#what-a-build-identity-covers) for the exact scope.
+Source-development, Bun, in-process or unverified hosts are labelled explicitly. Briefs and model
 attribution are supplied context, not authenticated authorship claims.
 
 The source depends on Kiln: preserve the indicated engine installation/version for

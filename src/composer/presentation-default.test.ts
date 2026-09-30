@@ -21,7 +21,7 @@ describe('default PresentationDocumentV1', () => {
     expect(parameters).toMatchObject({
       schemaVersion: 'kiln.presentation.v1',
       grid: { columns: 3, rows: 1, cellWidth: 512, cellHeight: 512 },
-      lightingPresetId: 'neutral-studio-v2',
+      lightingPresetId: 'review-neutral-v1',
       receiptPolicy: {
         requirePerCameraOutputSha256: true,
         requireOutputSetSha256: true,

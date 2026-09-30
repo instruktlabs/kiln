@@ -202,7 +202,7 @@ export async function assetMain(argv: readonly string[]): Promise<number> {
       ? input
       : await retainProgram(store, new TextDecoder().decode(await fileBytes(input)));
     const context = await createPackagedLocalToolContext(
-      await buildRenderPort(resolveRenderMode(flags.render ?? 'auto'), undefined),
+      await buildRenderPort(resolveRenderMode(flags.render), undefined),
     );
     const def = createKilnProgramToolRegistry({
       ...context,

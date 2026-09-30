@@ -117,7 +117,7 @@ function parse(argv: readonly string[]) {
     measureParts: value('--measure-parts'),
     requirements: value('--requirements'),
     materials: value('--materials'),
-    render: resolveRenderMode(value('--render') ?? 'auto'),
+    render: resolveRenderMode(value('--render')),
     renderPort: value('--render-port'),
     input: {
       ...selection,

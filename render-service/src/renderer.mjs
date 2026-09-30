@@ -21,6 +21,7 @@ import {
 } from './presentation-presets.mjs';
 import { BACKDROP_HEX } from './backdrops.mjs';
 import { backdropClearColor } from './display-transform.mjs';
+import { reviewNeutralToneMapping } from './review-tone-mapping.mjs';
 
 export { MAX_VIEW_DIRS, validateViewDirs } from './contract.mjs';
 import { beautyCameraSpec, orthoDepth, orthoHalfExtent } from './framing.mjs';
@@ -50,8 +51,8 @@ const { RoomEnvironment } = await import('three/addons/environments/RoomEnvironm
  */
 export const PRESENTATION_PROFILE_ID = DEFAULT_PRESENTATION_PRESET_ID;
 const defaultPresentation = getPresentationPreset(PRESENTATION_PROFILE_ID);
-// Compatibility exports retain their exact shapes/values while the renderer
-// itself now consumes the registry definition below.
+// Compatibility exports mirror the selected default. Versioned legacy values
+// remain available from getPresentationPreset('neutral-studio-v1').
 export const PRESENTATION_EXPOSURE = defaultPresentation.exposure;
 export const PRESENTATION_LIGHTS = Object.freeze({
   hemisphere: Object.freeze({
@@ -125,6 +126,7 @@ export async function initRenderer(opts = {}) {
     outputBufferType: THREE.HalfFloatType,
   });
   await renderer.init();
+  renderer.library.addToneMapping(reviewNeutralToneMapping, THREE.CustomToneMapping);
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.toneMappingExposure = PRESENTATION_EXPOSURE;
@@ -227,6 +229,8 @@ for (const name of SHADOW_FILTERS) {
 
 function applyPresentationPreset(renderer, scene, root, preset, environment, backdrop) {
   renderer.toneMappingExposure = preset.exposure;
+  renderer.toneMapping =
+    preset.toneMapping === 'review-neutral' ? THREE.CustomToneMapping : THREE.ACESFilmicToneMapping;
   renderer.shadowMap.enabled = preset.shadows.enabled;
   if (preset.shadows.enabled) renderer.shadowMap.type = SHADOW_MAP_TYPES[preset.shadows.type];
   // The backdrop is cleared into the HDR framebuffer and tone-mapped with the
@@ -234,10 +238,11 @@ function applyPresentationPreset(renderer, scene, root, preset, environment, bac
   // exactly the table's bytes -- the value the CPU rasterizer paints. Reflections
   // come from `environment`, never from the backdrop.
   scene.background = new THREE.Color().setRGB(
-    ...backdropClearColor(BACKDROP_HEX[backdrop], preset.exposure),
+    ...backdropClearColor(BACKDROP_HEX[backdrop], preset.exposure, preset.toneMapping),
     THREE.LinearSRGBColorSpace,
   );
   scene.environment = environment;
+  scene.environmentIntensity = preset.environment.intensity ?? 1;
 
   const ambient = preset.ambient;
   scene.add(new THREE.HemisphereLight(ambient.sky, ambient.ground, ambient.intensity));

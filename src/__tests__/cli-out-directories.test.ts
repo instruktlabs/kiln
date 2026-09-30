@@ -33,7 +33,9 @@ it('creates the directories leading to every CLI destination', async () => {
   try {
     const glb = join(directory, 'render', 'deep', 'crate.glb');
     const views = join(directory, 'views', 'deep', 'sheet.png');
-    const rendered = run(['render', example, '--out', glb, '--views', views]);
+    // Pin this metallic fixture to CPU independently of the environment so it
+    // never discovers or starts the machine's shared GPU service.
+    const rendered = run(['render', example, '--render', 'cpu', '--out', glb, '--views', views]);
     expect(rendered.stderr.toString()).toBe('');
     expect(rendered.exitCode).toBe(0);
     expect(await wrote(glb)).toBe(true);
@@ -42,7 +44,7 @@ it('creates the directories leading to every CLI destination', async () => {
     const expectedViews = await readFile(views);
     await writeFile(glb, 'previous GLB');
     await writeFile(views, 'previous PNG');
-    const replaced = run(['render', example, '--out', glb, '--views', views]);
+    const replaced = run(['render', example, '--render', 'cpu', '--out', glb, '--views', views]);
     expect(replaced.exitCode).toBe(0);
     expect(await readFile(glb)).toEqual(expectedGlb);
     expect(await readFile(views)).toEqual(expectedViews);

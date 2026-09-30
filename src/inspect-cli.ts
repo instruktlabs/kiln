@@ -100,7 +100,7 @@ function parse(argv: readonly string[]) {
     request: value('--request'),
     views: value('--views'),
     json: flags.has('--json'),
-    render: resolveRenderMode(value('--render') ?? 'auto'),
+    render: resolveRenderMode(value('--render')),
     renderPort: value('--render-port'),
     requirements: value('--requirements'),
     selection: cliWorkspaceSelection(

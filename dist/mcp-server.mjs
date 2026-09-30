@@ -36058,6 +36058,7 @@ var assetSelector = {
   revisionId: z17.string().regex(/^[a-z][a-z0-9_-]{0,79}$/)
 };
 async function buildProgramAssetDraft(code, context, backdrop) {
+  await context.prepareBuildProvenance?.();
   const callContext = {
     ...context,
     requirements: toolRequirements(context).binding
@@ -36883,9 +36884,11 @@ function createRenderCapabilitiesReader(mode, portUrl, options = {}) {
 // src/cli-render-mode.ts
 var CLI_VIEW_RENDER_TIMEOUT_MS = 20000;
 function resolveRenderMode(value) {
-  if (value === "auto" || value === "cpu" || value === "gpu")
-    return value;
-  throw new Error(`--render must be auto, cpu or gpu (got: ${value})`);
+  const source = value === undefined ? "KILN_RENDER" : "--render";
+  const selected = value ?? process.env["KILN_RENDER"] ?? "auto";
+  if (selected === "auto" || selected === "cpu" || selected === "gpu")
+    return selected;
+  throw new Error(`${source} must be auto, cpu or gpu (got: ${selected})`);
 }
 function makeLazyRenderPort(start, token, sourceFingerprint, initialUrl) {
   let resolving = initialUrl ? Promise.resolve({
@@ -37278,7 +37281,7 @@ class FileBuildCache {
 
 // src/runtime-identity.ts
 import { createHash as createHash15 } from "node:crypto";
-import { readFile as readFile6, readdir as readdir5, realpath as realpath3, stat as stat3 } from "node:fs/promises";
+import { lstat as lstat4, readFile as readFile6, readdir as readdir5, realpath as realpath3, stat as stat3 } from "node:fs/promises";
 import { createRequire as createRequire2 } from "node:module";
 import { dirname as dirname5, join as join11, relative as relative4 } from "node:path";
 var digest7 = (bytes) => createHash15("sha256").update(bytes).digest("hex");
@@ -37286,6 +37289,7 @@ var compare2 = (a, b) => a < b ? -1 : a > b ? 1 : 0;
 async function installedRuntimeIdentity(root, limits = {}) {
   let bytes = 0;
   let files = 0;
+  const absentPackages = [];
   const maxBytes = limits.maxBytes ?? 512 * 1024 * 1024;
   const maxFiles = limits.maxFiles ?? 40000;
   const manifest = async (directory) => JSON.parse(await readFile6(join11(directory, "package.json"), "utf8"));
@@ -37335,11 +37339,17 @@ async function installedRuntimeIdentity(root, limits = {}) {
           for (const modules of require2.resolve.paths(name) ?? []) {
             const candidate = join11(modules, name);
             try {
-              if ((await manifest(candidate)).name === name)
-                return await realpath3(candidate);
-            } catch {}
+              await lstat4(candidate);
+            } catch (error) {
+              if (error.code === "ENOENT")
+                continue;
+              throw error;
+            }
+            if ((await manifest(candidate)).name !== name)
+              throw new Error(`Cannot identify installed dependency ${name}.`);
+            return await realpath3(candidate);
           }
-          throw new Error(`Cannot resolve installed dependency ${name}.`);
+          return;
         }
       }
       let directory = dirname5(found);
@@ -37390,15 +37400,15 @@ async function installedRuntimeIdentity(root, limits = {}) {
         ])
       ].sort(compare2);
       for (const name of names) {
-        let child;
-        try {
-          child = await resolvePackage(directory, name);
-        } catch {
-          if (name in (metadata.optionalDependencies ?? {}) || metadata.peerDependenciesMeta?.[name]?.optional) {
-            records.push([`${prefix}/${name}`, "optional-absent"]);
-            continue;
-          }
-          throw new Error(`Cannot fingerprint missing installed dependency ${name}.`);
+        const child = await resolvePackage(directory, name);
+        if (child === undefined) {
+          const kind = Object.hasOwn(metadata.optionalDependencies ?? {}, name) ? "optional-absent" : !Object.hasOwn(metadata.dependencies ?? {}, name) && Object.hasOwn(metadata.peerDependencies ?? {}, name) ? "peer-absent" : undefined;
+          if (!kind)
+            throw new Error(`Cannot fingerprint missing installed dependency ${name}.`);
+          const path = `${prefix}/${name}`;
+          records.push([path, kind]);
+          absentPackages.push({ path, kind });
+          continue;
         }
         await visit(child, `${prefix}/${name}`);
       }
@@ -37418,9 +37428,14 @@ async function installedRuntimeIdentity(root, limits = {}) {
       },
       dependencies: records
     };
-    return { identity: `sha256:${digest7(JSON.stringify(inputs))}`, files, bytes };
+    return { identity: `sha256:${digest7(JSON.stringify(inputs))}`, files, bytes, absentPackages };
   } catch (error) {
-    return { reason: error instanceof Error ? error.message : String(error), files, bytes };
+    return {
+      reason: error instanceof Error ? error.message : String(error),
+      files,
+      bytes,
+      absentPackages
+    };
   }
 }
 
@@ -37436,7 +37451,7 @@ import { join as join13 } from "node:path";
 
 // src/projects-node.ts
 import { createHash as createHash16, randomUUID as randomUUID5 } from "node:crypto";
-import { link as link3, lstat as lstat4, mkdir as mkdir5, open, readdir as readdir6, realpath as realpath4, unlink as unlink3 } from "node:fs/promises";
+import { link as link3, lstat as lstat5, mkdir as mkdir5, open, readdir as readdir6, realpath as realpath4, unlink as unlink3 } from "node:fs/promises";
 import { join as join12, relative as relative5, resolve as resolve6, sep as sep3 } from "node:path";
 init_projects();
 var missing = (error) => error.code === "ENOENT";
@@ -37477,7 +37492,7 @@ class FileProjectStore {
           if (!exists(error))
             throw error;
         });
-      const info = await lstat4(path);
+      const info = await lstat5(path);
       if (info.isSymbolicLink())
         throw new Error("Project symlinks are not supported");
       if (!info.isDirectory())
@@ -37504,7 +37519,7 @@ class FileProjectStore {
   }
   async load(projectId, directory, sequence) {
     const path = join12(directory, filename(sequence));
-    const info = await lstat4(path);
+    const info = await lstat5(path);
     if (!info.isFile() || info.isSymbolicLink() || info.size > MAX_PROJECT_BYTES)
       throw new Error("Invalid or oversized project revision file");
     const handle = await open(path, "r");
@@ -37712,7 +37727,7 @@ import { createHash as createHash17, randomUUID as randomUUID6 } from "node:cryp
 import {
   link as link4,
   mkdir as mkdir6,
-  lstat as lstat5,
+  lstat as lstat6,
   readdir as readdir7,
   readFile as readFile7,
   rename as rename4,
@@ -37977,7 +37992,7 @@ class FileLiveReview {
           if (!collision(error))
             throw error;
         });
-      const info = await lstat5(path);
+      const info = await lstat6(path);
       if (!info.isDirectory() || info.isSymbolicLink())
         throw new Error("Unsafe live directory");
       const rel = relative6(canonical, await realpath5(path));
@@ -37986,7 +38001,7 @@ class FileLiveReview {
     }
   }
   async boundedFile(path, limit) {
-    const info = await lstat5(path);
+    const info = await lstat6(path);
     if (!info.isFile() || info.isSymbolicLink() || info.size > limit)
       throw new Error("Invalid live file");
     const data = new Uint8Array(await readFile7(path));
@@ -38014,7 +38029,7 @@ class FileLiveReview {
       if (!collision(error))
         throw error;
     });
-    const info = await lstat5(directory);
+    const info = await lstat6(directory);
     if (!info.isDirectory() || info.isSymbolicLink())
       throw new Error("Unsafe live lock directory");
     const candidate = join14(directory, `.candidate-${process.pid}-${token}.tmp`);
@@ -38035,7 +38050,7 @@ class FileLiveReview {
         if (latest) {
           try {
             const prior = z18.object({ pid: z18.number().int().positive(), token: z18.string().uuid() }).strict().parse(JSON.parse(new TextDecoder().decode(await this.boundedFile(join14(directory, latest), 1024))));
-            const released = await lstat5(join14(directory, `${latest}.released`)).then((entry) => {
+            const released = await lstat6(join14(directory, `${latest}.released`)).then((entry) => {
               if (!entry.isFile() || entry.isSymbolicLink() || entry.size !== 0)
                 throw new Error("Invalid lock release");
               return true;
@@ -38316,7 +38331,7 @@ class FileLiveReview {
   async record(operationId) {
     await this.root();
     const directory = this.path(operationId);
-    const info = await lstat5(directory);
+    const info = await lstat6(directory);
     if (!info.isDirectory() || info.isSymbolicLink())
       throw new Error("Unsafe live directory");
     const raw = JSON.parse(new TextDecoder().decode(await this.boundedFile(join14(directory, "record.json"), metadataLimit)));
@@ -38338,7 +38353,7 @@ class FileLiveReview {
       throw new Error("Invalid artifact descriptor");
     if (state.operation.captures.some((file) => !/^capture-\d{1,2}\.png$/.test(file.name)))
       throw new Error("Invalid capture descriptor");
-    state.operation.pinned = await lstat5(join14(directory, "pinned")).then((s) => {
+    state.operation.pinned = await lstat6(join14(directory, "pinned")).then((s) => {
       if (!s.isFile() || s.isSymbolicLink())
         throw new Error("Invalid live pin");
       return true;
@@ -38360,7 +38375,7 @@ class FileLiveReview {
     for (const entry of await readdir7(directory, { withFileTypes: true })) {
       if (!entry.isFile() || entry.isSymbolicLink())
         throw new Error("Invalid live directory entry");
-      bytes += (await lstat5(join14(directory, entry.name))).size;
+      bytes += (await lstat6(join14(directory, entry.name))).size;
     }
     this.storedSizes.set(state, bytes);
     return state;
@@ -38475,7 +38490,7 @@ class FileLiveReview {
       if (!collision(error))
         throw error;
     });
-    if ((await lstat5(directory)).isSymbolicLink())
+    if ((await lstat6(directory)).isSymbolicLink())
       throw new Error("Unsafe live directory");
     for (const [name, data] of Object.entries(blobs))
       await this.atomic(join14(directory, name), data);
@@ -38484,7 +38499,7 @@ class FileLiveReview {
   }
   async remove(operationId) {
     const directory = this.path(operationId);
-    const info = await lstat5(directory);
+    const info = await lstat6(directory);
     if (!info.isDirectory() || info.isSymbolicLink())
       throw new Error("Unsafe live directory");
     await rm3(directory, { recursive: true, force: true });
@@ -38716,6 +38731,20 @@ async function createPackagedLocalToolContext(base = {}, env = process.env, inst
   const policy = env.KILN_BUILD_CACHE ?? "disk";
   if (!["disk", "memory", "off"].includes(policy))
     throw new Error("KILN_BUILD_CACHE must be disk, memory, or off.");
+  const packagedNode = !process.versions.bun && !import.meta.url.endsWith(".ts") && context.localExecution.mode === "subprocess";
+  let pendingIdentity;
+  const identityForHost = () => pendingIdentity ??= installedRuntimeIdentity(installationRoot).then((identity) => {
+    if (identity.identity)
+      context.localExecution.runtimeIdentity = identity.identity;
+    else
+      context.localExecution.cacheReason = identity.reason;
+    return identity;
+  });
+  if (packagedNode) {
+    context.prepareBuildProvenance = async () => {
+      await identityForHost();
+    };
+  }
   if (policy === "off" || base.cacheEvaluations === false) {
     context.cacheEvaluations = false;
     context.localExecution.cacheScope = "disabled";
@@ -38723,11 +38752,11 @@ async function createPackagedLocalToolContext(base = {}, env = process.env, inst
   }
   if (policy === "memory")
     return managed();
-  if (process.versions.bun || context.localExecution.mode !== "subprocess") {
+  if (!packagedNode) {
     context.localExecution.cacheReason = "Disk reuse requires the packaged Node subprocess evaluator; this host uses process memory.";
     return managed();
   }
-  const identity = await installedRuntimeIdentity(installationRoot);
+  const identity = await identityForHost();
   if (!identity.identity) {
     context.localExecution.cacheReason = identity.reason;
     return managed();
@@ -39017,7 +39046,7 @@ if (isDirectEntry(import.meta.url)) {
       process.exit(1);
     }
   }
-  const mode = resolveRenderMode(process.env["KILN_RENDER"] ?? "auto");
+  const mode = resolveRenderMode();
   const context = await createPackagedLocalToolContext({
     ...await buildRenderPort(mode, process.env["KILN_RENDER_PORT_URL"], { autoSpawn: true }),
     requirements,

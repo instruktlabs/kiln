@@ -1,5 +1,5 @@
 import { createHash } from 'node:crypto';
-import { readFile, readdir, realpath, stat } from 'node:fs/promises';
+import { lstat, readFile, readdir, realpath, stat } from 'node:fs/promises';
 import { createRequire } from 'node:module';
 import { dirname, join, relative } from 'node:path';
 
@@ -16,6 +16,7 @@ export interface InstalledRuntimeIdentity {
   reason?: string;
   files: number;
   bytes: number;
+  absentPackages: Array<{ path: string; kind: 'optional-absent' | 'peer-absent' }>;
 }
 const digest = (bytes: string | Uint8Array) => createHash('sha256').update(bytes).digest('hex');
 const compare = (a: string, b: string) => (a < b ? -1 : a > b ? 1 : 0);
@@ -30,6 +31,7 @@ export async function installedRuntimeIdentity(
 ): Promise<InstalledRuntimeIdentity> {
   let bytes = 0;
   let files = 0;
+  const absentPackages: InstalledRuntimeIdentity['absentPackages'] = [];
   const maxBytes = limits.maxBytes ?? 512 * 1024 * 1024;
   const maxFiles = limits.maxFiles ?? 40000;
   const manifest = async (directory: string): Promise<Package> =>
@@ -83,10 +85,18 @@ export async function installedRuntimeIdentity(
           for (const modules of require.resolve.paths(name) ?? []) {
             const candidate = join(modules, name);
             try {
-              if ((await manifest(candidate)).name === name) return await realpath(candidate);
-            } catch {}
+              await lstat(candidate);
+            } catch (error) {
+              if ((error as NodeJS.ErrnoException).code === 'ENOENT') continue;
+              throw error;
+            }
+            // A present but malformed, unreadable or dangling package is unknown,
+            // not absent. Never turn those failures into an optional/peer marker.
+            if ((await manifest(candidate)).name !== name)
+              throw new Error(`Cannot identify installed dependency ${name}.`);
+            return await realpath(candidate);
           }
-          throw new Error(`Cannot resolve installed dependency ${name}.`);
+          return undefined;
         }
       }
       let directory = dirname(found);
@@ -141,18 +151,21 @@ export async function installedRuntimeIdentity(
         ]),
       ].sort(compare);
       for (const name of names) {
-        let child: string;
-        try {
-          child = await resolvePackage(directory, name);
-        } catch {
-          if (
-            name in (metadata.optionalDependencies ?? {}) ||
-            metadata.peerDependenciesMeta?.[name]?.optional
-          ) {
-            records.push([`${prefix}/${name}`, 'optional-absent']);
-            continue;
-          }
-          throw new Error(`Cannot fingerprint missing installed dependency ${name}.`);
+        const child = await resolvePackage(directory, name);
+        if (child === undefined) {
+          // optionalDependencies may override dependencies, as in npm. A peer
+          // declaration alone must never make a regular dependency optional.
+          const kind = Object.hasOwn(metadata.optionalDependencies ?? {}, name)
+            ? 'optional-absent'
+            : !Object.hasOwn(metadata.dependencies ?? {}, name) &&
+                Object.hasOwn(metadata.peerDependencies ?? {}, name)
+              ? 'peer-absent'
+              : undefined;
+          if (!kind) throw new Error(`Cannot fingerprint missing installed dependency ${name}.`);
+          const path = `${prefix}/${name}`;
+          records.push([path, kind]);
+          absentPackages.push({ path, kind });
+          continue;
         }
         await visit(child, `${prefix}/${name}`);
       }
@@ -174,8 +187,13 @@ export async function installedRuntimeIdentity(
       },
       dependencies: records,
     };
-    return { identity: `sha256:${digest(JSON.stringify(inputs))}`, files, bytes };
+    return { identity: `sha256:${digest(JSON.stringify(inputs))}`, files, bytes, absentPackages };
   } catch (error) {
-    return { reason: error instanceof Error ? error.message : String(error), files, bytes };
+    return {
+      reason: error instanceof Error ? error.message : String(error),
+      files,
+      bytes,
+      absentPackages,
+    };
   }
 }

@@ -416,7 +416,7 @@ if (isDirectEntry(import.meta.url)) {
       process.exit(1);
     }
   }
-  const mode = resolveRenderMode(process.env['KILN_RENDER'] ?? 'auto');
+  const mode = resolveRenderMode();
   // One probe before the first connection, so no client attach waits on a network
   // round trip -- but NOT a decision that lasts the session. `autoSpawn` hands
   // back a port that starts the packaged renderer on the first view that needs

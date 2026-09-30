@@ -87,9 +87,7 @@ export async function discoveryMain(argv: readonly string[]): Promise<number> {
     // Ordinary catalog reads do not initialize a host, store, renderer or evaluator.
     const context = parsed.input.capabilities
       ? await createPackagedLocalToolContext({
-          renderCapabilities: createRenderCapabilitiesReader(
-            resolveRenderMode(process.env.KILN_RENDER ?? 'auto'),
-          ),
+          renderCapabilities: createRenderCapabilitiesReader(resolveRenderMode()),
         })
       : {};
     const result = (await createKilnDiscoveryDef(context).run(parsed.input)) as DiscoveryResponse;

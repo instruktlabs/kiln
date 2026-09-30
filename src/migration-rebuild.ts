@@ -244,10 +244,7 @@ export async function migrationRebuildMain(argv: readonly string[]): Promise<num
       ? JSON.parse(await readMigrationText(args.options['--legacy-intent'], '--legacy-intent'))
       : undefined;
     const context = await createPackagedLocalToolContext({
-      ...(await buildRenderPort(
-        resolveRenderMode(args.options['--render'] ?? process.env.KILN_RENDER ?? 'auto'),
-        undefined,
-      )),
+      ...(await buildRenderPort(resolveRenderMode(args.options['--render']), undefined)),
       requirements,
       assetLibrary: localAssetLibrary(),
     });
