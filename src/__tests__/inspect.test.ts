@@ -8,6 +8,7 @@
 
 import { describe, expect, test } from 'bun:test';
 
+import { type EvaluatorPortV2, resolveEvaluatorPortV2 } from '../evaluator/protocol';
 import { inspect } from '../inspect';
 
 const CHEST_CODE = `
@@ -65,6 +66,19 @@ const EMPTY_CODE = `
 const meta = { name: 'Empty' };
 function build() {
   return createRoot('Empty');
+}
+`;
+
+const SWATCHES_CODE = `
+const meta = { name: 'Swatches', category: 'prop' };
+function build() {
+  const root = createRoot('Swatches');
+  [0xaa3333, 0x33aa33, 0x3333aa, 0xaaaa33, 0x33aaaa].forEach((colour, i) => {
+    createPart('Swatch' + i, boxGeo(0.4, 0.4, 0.4), gameMaterial(colour), {
+      position: [i * 0.5, 0.2, 0], parent: root,
+    });
+  });
+  return root;
 }
 `;
 
@@ -145,5 +159,33 @@ describe('kiln.inspect', () => {
 
   test('fails closed when evaluator QA blocks a pivots-only scene', async () => {
     await expect(inspect(EMPTY_CODE)).rejects.toMatchObject({ stage: 'scene' });
+  });
+
+  test('inspects the authored scene even when bake optimization is configured', async () => {
+    const previous = process.env['KILN_BAKE_OPTIMIZE'];
+    process.env['KILN_BAKE_OPTIMIZE'] = 'palette';
+    try {
+      const inspectedMaterials: number[] = [];
+      const port = resolveEvaluatorPortV2(undefined, 'trusted-local');
+      const spy: EvaluatorPortV2 = {
+        render: async (code, options, controls) => {
+          const result = await port.render(code, options, controls);
+          const glb = new Uint8Array(result.glb);
+          const jsonLength = new DataView(glb.buffer, glb.byteOffset).getUint32(12, true);
+          const json = JSON.parse(new TextDecoder().decode(glb.subarray(20, 20 + jsonLength)));
+          inspectedMaterials.push(json.materials.length);
+          return result;
+        },
+      };
+      const r = await inspect(SWATCHES_CODE, { evaluatorPort: spy });
+
+      // Palette consolidation would have merged the five swatches into one
+      // palette-textured material before inspection.
+      expect(inspectedMaterials).toEqual([5]);
+      expect(r.materials).toBe(5);
+    } finally {
+      if (previous === undefined) delete process.env['KILN_BAKE_OPTIMIZE'];
+      else process.env['KILN_BAKE_OPTIMIZE'] = previous;
+    }
   });
 });

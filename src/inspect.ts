@@ -255,10 +255,12 @@ export async function inspect(
     evaluatorProfile?: EvaluatorExecutionProfileV2;
   } = {},
 ): Promise<InspectResult> {
+  // Inspect the authored scene: a configured KILN_BAKE_OPTIMIZE must not merge
+  // materials or meshes before the report is taken.
   const rendered = await resolveEvaluatorPortV2(
     options.evaluatorPort,
     options.evaluatorProfile ?? 'trusted-local',
-  ).render(code, { requirements: options.requirements });
+  ).render(code, { optimize: 'off', requirements: options.requirements });
   const { root, clips } = await loadGlbReviewScene(rendered.glb);
 
   const primitivesUsed = detectPrimitivesUsed(code);
