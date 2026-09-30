@@ -182,6 +182,36 @@ interface Tri {
   doubleSided: boolean;
 }
 
+/**
+ * Opaque triangles first in scene order, then translucent ones farthest-first,
+ * as a GPU renderer composites them. Drawn in scene order, a translucent pane
+ * listed before the parts behind it wrote its depth first and hid them, so a
+ * glazed opening read as empty. `distance` grows away from the viewer; ties keep
+ * scene order, so the result stays deterministic.
+ */
+export function compositingOrder<T extends { v: ArrayLike<number>; alpha: number }>(
+  tris: readonly T[],
+  distance: (x: number, y: number, z: number) => number,
+): T[] {
+  const opaque: T[] = [];
+  const translucent: Array<{ tri: T; key: number; index: number }> = [];
+  for (const [index, tri] of tris.entries()) {
+    if (tri.alpha >= 1) {
+      opaque.push(tri);
+      continue;
+    }
+    const v = tri.v;
+    const key = distance(
+      (v[0]! + v[3]! + v[6]!) / 3,
+      (v[1]! + v[4]! + v[7]!) / 3,
+      (v[2]! + v[5]! + v[8]!) / 3,
+    );
+    translucent.push({ tri, key, index });
+  }
+  translucent.sort((a, b) => b.key - a.key || a.index - b.index);
+  return [...opaque, ...translucent.map((entry) => entry.tri)];
+}
+
 /** Collect world-space triangles + base colors from a (possibly cross-realm) scene. */
 export function collectTriangles(root: DuckObject3D): {
   tris: Tri[];
@@ -356,7 +386,12 @@ export function rasterizeView(
   const sy = new Float64Array(3);
   const sz = new Float64Array(3);
 
-  for (const tri of tris) {
+  // Orthographic: distance from the viewer runs against the view axis `z`.
+  const ordered = compositingOrder(
+    tris,
+    (px, py, pz) => -((px - center[0]) * z[0] + (py - center[1]) * z[1] + (pz - center[2]) * z[2]),
+  );
+  for (const tri of ordered) {
     // World-space face normal (flat shading; robust under non-uniform scale).
     const e1: Vec3 = [tri.v[3]! - tri.v[0]!, tri.v[4]! - tri.v[1]!, tri.v[5]! - tri.v[2]!];
     const e2: Vec3 = [tri.v[6]! - tri.v[0]!, tri.v[7]! - tri.v[1]!, tri.v[8]! - tri.v[2]!];

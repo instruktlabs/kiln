@@ -25,7 +25,7 @@ safety. See `kiln animation --help` for the complete options.
 | `--render gpu` | Require GPU rendering; report failure if unavailable |
 | `--render-port URL` | Select a GPU render service |
 
-CPU views show silhouette, orientation, proportion, and contact. They do not reproduce the asset's PBR materials. Use GPU views to review textures, roughness, metalness, and normal relief. GPU output can vary by device and driver.
+CPU views show silhouette, orientation, proportion, and contact. They do not reproduce the asset's PBR materials. Translucent (opacity below 1) surfaces are composited after opaque geometry, farthest first, so parts behind glazing stay visible whatever order the scene lists them in. Use GPU views to review textures, roughness, metalness, and normal relief. GPU output can vary by device and driver.
 
 ### Review lighting
 

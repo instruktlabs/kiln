@@ -1,5 +1,5 @@
 import { Vector3, Matrix4, Euler, type Object3D } from 'three';
-import { collectTriangles, measureBounds, orbitDir } from './raster';
+import { collectTriangles, compositingOrder, measureBounds, orbitDir } from './raster';
 import { resolveBackdrop, type BackdropId } from './background';
 
 export type CameraVec3 = [number, number, number];
@@ -497,7 +497,12 @@ export function rasterizeCamera(
   };
   const key = new Vector3(1.5, 2, 1).normalize();
   const srgb = (n: number) => (n <= 0.0031308 ? n * 12.92 : 1.055 * n ** (1 / 2.4) - 0.055);
-  for (const tri of collectTriangles(root as Object3D).tris) {
+  const ordered = compositingOrder(collectTriangles(root as Object3D).tris, (px, py, pz) =>
+    camera.projection === 'perspective'
+      ? Math.hypot(px - position.x, py - position.y, pz - position.z)
+      : (position.x - px) * z.x + (position.y - py) * z.y + (position.z - pz) * z.z,
+  );
+  for (const tri of ordered) {
     const world = [0, 1, 2].map(
       (i) => new Vector3(tri.v[i * 3]!, tri.v[i * 3 + 1]!, tri.v[i * 3 + 2]!),
     );
