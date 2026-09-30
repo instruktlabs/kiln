@@ -125,6 +125,10 @@ The ones that cost real time:
   sandbox and moves approval to `on-request`.
 - **A bare temp directory is not a trusted directory.** codex needs `--skip-git-repo-check`;
   cursor-agent needs `--trust`.
+- **An older Claude Code does not know newer model ids.** On 29 September 2026 a driver's
+  pinned Claude Code 2.1.280 rejected the 5.5 models that 2.1.284 accepted. A driver that
+  installs its own copy must pin a release that knows the requested model; one short
+  `smoke:harness` turn shows the refusal before a batch spends time.
 
 ## Long-running sessions and compaction
 
