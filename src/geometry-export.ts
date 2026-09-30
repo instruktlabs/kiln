@@ -71,13 +71,58 @@ export function geometryAttributeValues(
   return values;
 }
 
+/** One helper note (a code and message, or a legacy string) and the meshes that carry it. */
+type GeometryNoteGroup = {
+  code?: string;
+  text?: string;
+  meshes: Set<THREE.Object3D>;
+  names: string[];
+};
+
+const NOTE_NAMES_SHOWN = 3;
+
+/** Name the first few distinct meshes; repeated names carry a count instead of repeating. */
+function noteMeshList(names: readonly string[]): string {
+  const counts = new Map<string, number>();
+  for (const name of names) counts.set(name, (counts.get(name) ?? 0) + 1);
+  const shown = [...counts].slice(0, NOTE_NAMES_SHOWN);
+  const covered = shown.reduce((sum, [, count]) => sum + count, 0);
+  const parts = shown.map(([name, count]) => (count > 1 ? `${name} x${count}` : name));
+  if (names.length > covered) parts.push(`+${names.length - covered} more`);
+  return parts.join(', ');
+}
+
+function formatNoteGroup({ code, text, names }: GeometryNoteGroup): string {
+  if (code === undefined) {
+    const who = names.length === 1 ? names[0] : `${names.length} meshes (${noteMeshList(names)})`;
+    return `${who}: ${text}`;
+  }
+  if (names.length === 1) return `${names[0]}: ${code}${text === undefined ? '' : ` ${text}`}`;
+  return `${code} (${names.length} meshes: ${noteMeshList(names)})${text === undefined ? '' : `: ${text}`}`;
+}
+
 /** Check export data before bounds, texture baking or GLB conversion can obscure its origin. */
 export function inspectGeometryExport(
   root: THREE.Object3D,
   policy: GeometryExportPolicy = 'warn',
   exporter: 'legacy' | 'three' = 'legacy',
 ): string[] {
-  const warnings: string[] = [];
+  // Helper notes repeat on every mesh a helper built. One line per distinct note, in order of
+  // first occurrence, keeps a 17-part loft from producing 17 identical warnings.
+  const warnings: (string | GeometryNoteGroup)[] = [];
+  const noteGroups = new Map<string, GeometryNoteGroup>();
+  const addNote = (mesh: THREE.Object3D, name: string, code?: string, text?: string) => {
+    const key = JSON.stringify([code ?? null, text ?? null]);
+    let group = noteGroups.get(key);
+    if (!group) {
+      group = { code, text, meshes: new Set(), names: [] };
+      noteGroups.set(key, group);
+      warnings.push(group);
+    }
+    if (group.meshes.has(mesh)) return;
+    group.meshes.add(mesh);
+    group.names.push(name);
+  };
   const attributes = geometryExportAttributes(exporter);
   root.traverse((node) => {
     const mesh = node as THREE.Mesh;
@@ -131,13 +176,18 @@ export function inspectGeometryExport(
       const notes: unknown = geometry.userData[key];
       if (!Array.isArray(notes)) continue;
       for (const note of notes) {
-        if (typeof note === 'string') warnings.push(`${name}: ${note}`);
+        if (typeof note === 'string') addNote(mesh, name, undefined, note);
         else if (note && typeof note === 'object' && 'code' in note)
-          warnings.push(
-            `${name}: ${String(note.code)}${'message' in note ? ` ${String(note.message)}` : ''}`,
+          addNote(
+            mesh,
+            name,
+            String(note.code),
+            'message' in note ? String(note.message) : undefined,
           );
       }
     }
   });
-  return warnings;
+  return warnings.map((warning) =>
+    typeof warning === 'string' ? warning : formatNoteGroup(warning),
+  );
 }
