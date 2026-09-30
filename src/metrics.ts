@@ -52,9 +52,13 @@ export type InstanceabilityGrade = 'A' | 'B' | 'C' | 'D' | 'F';
 
 export interface InstanceabilityReport {
   grade: InstanceabilityGrade;
-  /** One-line human summary, e.g. "B — 2 materials, 14 draw calls, opaque". */
+  /**
+   * One line that marks the grade informational and names what set it, e.g. "D (informational,
+   * not a QA verdict), set by 9 distinct materials (D at 7-12). Also: 1 transparent material
+   * (lowers only A/B to C); 20 geometries; 30 draw calls."
+   */
   summary: string;
-  /** Why the grade landed where it did (advisory bullet points). */
+  /** Why the grade landed where it did (advisory bullet points); the first names the driver. */
   reasons: string[];
   metrics: InstanceabilityMetrics;
 }
@@ -146,6 +150,21 @@ export function collectGlbMetrics(doc: Document, triangles?: number): Instanceab
   };
 }
 
+/** Distinct-material bands that set the base grade. */
+const MATERIAL_GRADE_BANDS: readonly {
+  grade: InstanceabilityGrade;
+  max: number;
+  range: string;
+}[] = [
+  { grade: 'A', max: 1, range: '0-1' },
+  { grade: 'B', max: 3, range: '2-3' },
+  { grade: 'C', max: 6, range: '4-6' },
+  { grade: 'D', max: 12, range: '7-12' },
+  { grade: 'F', max: Number.POSITIVE_INFINITY, range: '13+' },
+];
+
+const counted = (n: number, one: string, many: string): string => `${n} ${n === 1 ? one : many}`;
+
 /**
  * Grade instanceability A–F. Kiln-tuned, advisory only.
  *
@@ -159,61 +178,64 @@ export function collectGlbMetrics(doc: Document, triangles?: number): Instanceab
  * F. Skinning only means the asset is clone-rendered rather than statically GPU-
  * instanced — which is fine at the placement counts Kiln City sees. We note it
  * and grade the remaining axes.
+ *
+ * The summary says the grade is informational and names what set it, so a
+ * secondary fact (glass on an asset whose material count set D) is not read as
+ * the cause.
  */
 export function gradeInstanceability(
   metrics: InstanceabilityMetrics,
   opts: { category?: string } = {},
 ): InstanceabilityReport {
-  const reasons: string[] = [];
   const m = metrics;
 
   // Base grade from distinct-material cardinality (the collapsible axis).
-  let grade: InstanceabilityGrade;
-  if (m.uniqueMaterials <= 1) grade = 'A';
-  else if (m.uniqueMaterials <= 3) grade = 'B';
-  else if (m.uniqueMaterials <= 6) grade = 'C';
-  else if (m.uniqueMaterials <= 12) grade = 'D';
-  else grade = 'F';
+  const band = MATERIAL_GRADE_BANDS.find((b) => m.uniqueMaterials <= b.max)!;
+  let grade = band.grade;
+  const materials = `${counted(m.uniqueMaterials, 'distinct material', 'distinct materials')} (${band.grade} at ${band.range})`;
 
-  const order: InstanceabilityGrade[] = ['A', 'B', 'C', 'D', 'F'];
-  const demote = (to: InstanceabilityGrade, why: string) => {
-    if (order.indexOf(to) > order.indexOf(grade)) {
-      grade = to;
-      reasons.push(why);
-    } else {
-      reasons.push(why);
-    }
-  };
+  // Transparency forces per-object depth sort, and per-asset texture sprawl (un-atlased) is a
+  // scaling cost: each lowers an A or B to C and has no effect on a C or worse.
+  const transparency =
+    m.transparentMaterials > 0
+      ? counted(m.transparentMaterials, 'transparent material', 'transparent materials')
+      : undefined;
+  const textures = m.textureCount > 4 ? `${m.textureCount} textures` : undefined;
+  const drivers: string[] = [];
+  const also: string[] = [];
+  if ((grade === 'A' || grade === 'B') && (transparency || textures)) {
+    grade = 'C';
+    if (transparency) drivers.push(`${transparency} (lowers A/B to C)`);
+    if (textures) drivers.push(`${textures} (over 4 lowers A/B to C)`);
+    also.push(materials);
+  } else {
+    drivers.push(materials);
+    if (transparency) also.push(`${transparency} (lowers only A/B to C)`);
+    if (textures) also.push(`${textures} (over 4 lowers only A/B to C)`);
+  }
+  also.push(
+    counted(m.uniqueGeometries, 'geometry', 'geometries'),
+    counted(m.drawCalls, 'draw call', 'draw calls'),
+  );
+  // Skinned: informational, NOT a grade penalty. Clone-rendered by design.
+  if (m.skinned) also.push('skinned (clone-rendered, not penalized)');
+  const setBy = drivers.join(' and ');
 
-  reasons.push(
+  const reasons = [
+    `grade ${grade} set by ${setBy}`,
     `${m.uniqueMaterials} material${m.uniqueMaterials === 1 ? '' : 's'}, ` +
       `${m.uniqueGeometries} geometr${m.uniqueGeometries === 1 ? 'y' : 'ies'}, ` +
       `${m.drawCalls} draw call${m.drawCalls === 1 ? '' : 's'}`,
-  );
-
-  // Transparency forces per-object depth sort — caps at C.
-  if (m.transparentMaterials > 0) {
-    demote('C', `${m.transparentMaterials} transparent material(s) force per-object sort`);
-  }
-
-  // Per-asset texture sprawl (un-atlased) is a scaling cost — soft penalty.
-  if (m.textureCount > 4) {
-    demote('C', `${m.textureCount} textures (consider atlasing) `.trim());
-  }
-
-  // Skinned: informational, NOT a grade penalty. Clone-rendered by design.
-  if (m.skinned) {
+  ];
+  if (transparency)
+    reasons.push(`${m.transparentMaterials} transparent material(s) force per-object sort`);
+  if (textures) reasons.push(`${m.textureCount} textures (consider atlasing)`);
+  if (m.skinned)
     reasons.push(
       'skinned/animated — clone-rendered (not statically GPU-instanced); fine at low counts',
     );
-  }
-
   if (opts.category) reasons.push(`category: ${opts.category}`);
 
-  const summary =
-    `${grade} — ${m.uniqueMaterials} mat / ${m.uniqueGeometries} geo / ${m.drawCalls} draws` +
-    (m.transparentMaterials > 0 ? ', transparent' : ', opaque') +
-    (m.skinned ? ', skinned' : '');
-
+  const summary = `${grade} (informational, not a QA verdict), set by ${setBy}. Also: ${also.join('; ')}.`;
   return { grade, summary, reasons, metrics: m };
 }

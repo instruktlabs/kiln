@@ -171,6 +171,42 @@ describe('gradeInstanceability (advisory rubric)', () => {
     const r = gradeInstanceability(baseMetrics({ uniqueMaterials: 1, textureCount: 6 }));
     expect(['C', 'D', 'F']).toContain(r.grade);
   });
+  it('the summary is informational and names what set the grade', () => {
+    // Nine materials set D; the glass does not, so it must not read as the cause.
+    const r = gradeInstanceability(
+      baseMetrics({
+        uniqueMaterials: 9,
+        transparentMaterials: 1,
+        uniqueGeometries: 20,
+        drawCalls: 30,
+      }),
+    );
+    expect(r.grade).toBe('D');
+    expect(r.summary).toBe(
+      'D (informational, not a QA verdict), set by 9 distinct materials (D at 7-12). Also: 1 transparent material (lowers only A/B to C); 20 geometries; 30 draw calls.',
+    );
+    expect(r.reasons[0]).toBe('grade D set by 9 distinct materials (D at 7-12)');
+  });
+  it('a grade lowered by transparency or textures names that driver', () => {
+    expect(gradeInstanceability(baseMetrics({ transparentMaterials: 1 })).summary).toBe(
+      'C (informational, not a QA verdict), set by 1 transparent material (lowers A/B to C). Also: 1 distinct material (A at 0-1); 1 geometry; 1 draw call.',
+    );
+    const both = gradeInstanceability(
+      baseMetrics({ uniqueMaterials: 2, transparentMaterials: 2, textureCount: 6, skinned: true }),
+    );
+    expect(both.summary).toBe(
+      'C (informational, not a QA verdict), set by 2 transparent materials (lowers A/B to C) and 6 textures (over 4 lowers A/B to C). Also: 2 distinct materials (B at 2-3); 1 geometry; 1 draw call; skinned (clone-rendered, not penalized).',
+    );
+    expect(both.reasons[0]).toBe(
+      'grade C set by 2 transparent materials (lowers A/B to C) and 6 textures (over 4 lowers A/B to C)',
+    );
+    expect(gradeInstanceability(baseMetrics({ uniqueMaterials: 5, textureCount: 6 })).summary).toBe(
+      'C (informational, not a QA verdict), set by 5 distinct materials (C at 4-6). Also: 6 textures (over 4 lowers only A/B to C); 1 geometry; 1 draw call.',
+    );
+    expect(gradeInstanceability(baseMetrics({ uniqueMaterials: 13 })).summary).toStartWith(
+      'F (informational, not a QA verdict), set by 13 distinct materials (F at 13+).',
+    );
+  });
 });
 
 describe('render.meta carries the instanceability report', () => {
