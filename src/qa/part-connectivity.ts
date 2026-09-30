@@ -34,6 +34,7 @@
  */
 
 import * as THREE from 'three';
+import { lodLevel } from './lod';
 import { KILN_ENGINE_QA_OWNER, type QaRule } from './registry';
 import type { QaContext, QaFinding } from './types';
 
@@ -69,16 +70,31 @@ export interface PartConnectivityReportV1 {
   /** Size of the largest bounding-box component; not a required attachment target. */
   mainComponentSize: number;
   exempt: string[];
+  /** Visible meshes on LOD levels above 0: alternates of the analyzed parts, left out. */
+  lodExcluded: number;
   groups: DisconnectedGroupV1[];
 }
 
-function collectParts(root: THREE.Object3D, exempt: string[]): ConnectivityPart[] {
+/**
+ * Visible meshes only, matching the part-volume observation: a hidden proxy or spare is
+ * not part of what is shown. LOD levels above 0 are alternates of level 0 rather than
+ * parts shown with it, so they are counted and left out instead of forming groups.
+ */
+function collectParts(
+  root: THREE.Object3D,
+  exempt: string[],
+): { parts: ConnectivityPart[]; lodExcluded: number } {
   const parts: ConnectivityPart[] = [];
+  let lodExcluded = 0;
   root.updateWorldMatrix(true, true);
-  root.traverse((node) => {
+  root.traverseVisible((node) => {
     const mesh = node as THREE.Mesh;
     if (!mesh.isMesh || !mesh.geometry) return;
     const name = mesh.name || '(unnamed mesh)';
+    if ((lodLevel(mesh) ?? 0) > 0) {
+      lodExcluded++;
+      return;
+    }
     if (EXEMPT_NAME.test(name)) {
       exempt.push(name);
       return;
@@ -87,7 +103,7 @@ function collectParts(root: THREE.Object3D, exempt: string[]): ConnectivityPart[
     if (box.isEmpty()) return;
     parts.push({ name, box });
   });
-  return parts;
+  return { parts, lodExcluded };
 }
 
 /** Shortest distance between two boxes; 0 when they touch or overlap. */
@@ -106,11 +122,12 @@ function boxGap(a: THREE.Box3, b: THREE.Box3): number {
  */
 export function analyzePartConnectivity(root: THREE.Object3D): PartConnectivityReportV1 {
   const exempt: string[] = [];
-  const parts = collectParts(root, exempt);
+  const { parts, lodExcluded } = collectParts(root, exempt);
   const report: PartConnectivityReportV1 = {
     partsAnalyzed: parts.length,
     mainComponentSize: parts.length,
     exempt,
+    lodExcluded,
     groups: [],
   };
   if (parts.length < 2) return report;
@@ -191,6 +208,12 @@ export function analyzePartConnectivity(root: THREE.Object3D): PartConnectivityR
 export function inspectPartConnectivity(scene: unknown): readonly QaFinding[] {
   if (!(scene instanceof THREE.Object3D)) return [];
   const report = analyzePartConnectivity(scene);
+  const lodNote =
+    report.lodExcluded === 1
+      ? ' 1 part on an LOD level above 0 was not analyzed.'
+      : report.lodExcluded > 1
+        ? ` ${report.lodExcluded} parts on LOD levels above 0 were not analyzed.`
+        : '';
   return report.groups.map((group) => {
     const listed = group.parts.map((p) => JSON.stringify(p)).join(', ');
     const subject =
@@ -202,12 +225,13 @@ export function inspectPartConnectivity(scene: unknown): readonly QaFinding[] {
       disposition: 'observe' as const,
       dimension: 'visualQuality' as const,
       profile: 'geometry.partConnectivity',
-      message: `${subject} separate from the largest component in the rest-pose bounding boxes; the nearest box gap is ${group.gap.toFixed(3)} m. This may be intentional. Box adjacency is not physical attachment evidence.`,
+      message: `${subject} separate from the largest component in the rest-pose bounding boxes of visible parts; the nearest box gap is ${group.gap.toFixed(3)} m. This may be intentional. Box adjacency is not physical attachment evidence.${lodNote}`,
       affected: { node: group.parts[0]! },
       measurement: {
         name: 'gapToMainComponent',
         actual: group.gap,
         expected: CONNECTIVITY_TOLERANCE,
+        ...(report.lodExcluded ? { breakdown: { lodExcludedParts: report.lodExcluded } } : {}),
       },
       repairText:
         'Check whether the separation is intentional. If the brief requires attachment, inspect the named group and its intended interface before moving it. snapTo aligns bounding boxes; verify actual surfaces and required clearances afterward.',

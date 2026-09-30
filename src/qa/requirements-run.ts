@@ -221,11 +221,14 @@ export function runRequirementsSceneQa(
         Object.assign(geometryMetrics, {
           partVolumeCoverage: partial ? 'partial' : 'complete-static-pairs',
           partVolumeScope:
-            'Visible static closed mesh pairs; excludes intra-mesh intersections, motion, open surfaces and usable passage space. Positive overlap may be intentional.',
+            'Visible static closed mesh pairs, except alternates on different LOD levels; excludes intra-mesh intersections, motion, open surfaces and usable passage space. Positive overlap may be intentional.',
           partVolumeEligibleParts: volume.partsAnalyzed,
           partVolumeCandidatePairs: volume.candidatePairs,
           partVolumeCandidatesLowerBound: volume.broadPhaseTruncated === true,
           partVolumePairsTested: volume.pairsTested,
+          partVolumeUnmeasurablePairs: volume.pairsUnmeasurable,
+          partVolumePairsNotReached: volume.pairsNotReached,
+          partVolumeLodAlternatePairs: volume.pairsLodAlternates,
           partVolumeSkipped: volume.skipped.length,
         });
       } else if (evidence.partPenetrationFailed) {

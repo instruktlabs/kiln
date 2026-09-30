@@ -28,12 +28,18 @@
  * staged:
  *
  * 1. **Broad phase** — world-space AABB overlap, capped at 250,000 pair checks.
- *    Retains at most 64 candidate pairs. Rejects separated pairs for
- *    the price of six comparisons. Parts that do not share a bounding box
- *    cannot share volume.
- * 2. **Narrow phase** — one boolean per surviving pair, capped by
- *    {@link MAX_NARROW_PHASE_PAIRS}. If the cap is hit, the analysis says so in
- *    `truncated` instead of silently checking less than it claims.
+ *    Rejects separated pairs for the price of six comparisons. Parts that do
+ *    not share a bounding box cannot share volume. Parts on different LOD
+ *    levels are alternates, not parts present together, and are not compared.
+ * 2. **Narrow phase** — candidates are visited deepest box overlap first
+ *    (overlap volume over the smaller box). Each part is built as a solid at
+ *    most once, capped by {@link MAX_SOLID_BUILDS}; a pair with a part that
+ *    cannot be built (an open shell) is unmeasurable and costs no boolean.
+ *    Builds left once every pair is classified check the parts met only
+ *    beside such a part, so open parts are named rather than left unexamined.
+ *    Booleans are capped by {@link MAX_NARROW_PHASE_PAIRS}. Pairs either cap
+ *    leaves unvisited are counted and reported in `truncated` instead of
+ *    silently checking less than the analysis claims.
  *
  * Meshes are also capped at {@link MAX_PART_TRIANGLES}; above that a single
  * boolean stops being bounded-time in any useful sense. Skipped parts are
@@ -41,20 +47,24 @@
  *
  * ## Determinism
  *
- * Parts are collected in traversal order and compared in a fixed pair order,
- * volumes are rounded to a fixed precision, and findings are sorted by name.
- * The same scene yields the same report on every run and every machine.
+ * Parts are collected in traversal order, candidates with equal box overlap
+ * keep traversal pair order, volumes are rounded to a fixed precision, and
+ * findings are sorted by name. The same scene yields the same report on every
+ * run and every machine.
  */
 
 import * as THREE from 'three';
+import { lodLevel } from './lod';
 import type { QaContext, QaFinding } from './types';
 import { KILN_ENGINE_QA_OWNER, type QaRule } from './registry';
 
 /** Above this, one boolean is no longer bounded-time in any useful sense. */
 export const MAX_PART_TRIANGLES = 20000;
-/** Narrow-phase budget. Broad phase normally leaves far fewer than this. */
+/** Narrow-phase boolean budget. Broad phase normally leaves far fewer than this. */
 export const MAX_NARROW_PHASE_PAIRS = 64;
-/** Bound pair discovery even when many boxes overlap; retain only the narrow-phase budget. */
+/** Solid-build budget: as many parts as the boolean budget could ever need. */
+export const MAX_SOLID_BUILDS = 2 * MAX_NARROW_PHASE_PAIRS;
+/** Bound pair discovery even when many boxes overlap. */
 export const MAX_BROAD_PHASE_PAIRS = 250_000;
 /**
  * Intersection volume below this fraction of the smaller part's volume is
@@ -81,13 +91,22 @@ export interface PartPenetrationEvidenceV1 {
   source: 'engine-scene-analysis';
   /** Eligible mesh parts collected; not every part necessarily reaches a boolean. */
   partsAnalyzed: number;
-  /** Overlapping pairs found; a lower bound when broadPhaseTruncated is true. */
+  /**
+   * Overlapping pairs found, excluding LOD alternates; a lower bound when
+   * broadPhaseTruncated is true. Equals pairsTested + pairsUnmeasurable + pairsNotReached.
+   */
   candidatePairs: number;
   /** Pair discovery itself exhausted its budget; later pairs were not considered. */
   broadPhaseTruncated?: boolean;
   /** Pairs a boolean was actually run on. */
   pairsTested: number;
-  /** True when either pair-discovery or narrow-phase budget stopped analysis short. */
+  /** Candidate pairs with a part that could not be built as a closed solid. */
+  pairsUnmeasurable: number;
+  /** Candidate pairs left unvisited by the boolean or solid-build budget. */
+  pairsNotReached: number;
+  /** Overlapping pairs on different LOD levels: alternates, deliberately not compared. */
+  pairsLodAlternates: number;
+  /** True when pair discovery or the narrow-phase budgets left pairs unexamined. */
   truncated: boolean;
   /** Parts skipped, with the reason — never silently dropped. */
   skipped: { part: string; reason: string }[];
@@ -102,6 +121,28 @@ interface AnalyzedPart {
   triangles: number;
   center: THREE.Vector3;
   scale: number;
+  /** LOD level from the part or an ancestor name; undefined belongs to every level. */
+  lod: number | undefined;
+}
+
+/** An overlapping pair, by traversal index, with its box overlap over the smaller box. */
+interface CandidatePair {
+  a: number;
+  b: number;
+  overlap: number;
+}
+
+const boxVolume = (box: THREE.Box3): number =>
+  (box.max.x - box.min.x) * (box.max.y - box.min.y) * (box.max.z - box.min.z);
+
+/** Shared box volume over the smaller box's volume, 0..1; 0 for flat boxes. */
+function boxOverlapRatio(a: THREE.Box3, b: THREE.Box3): number {
+  const shared =
+    Math.max(0, Math.min(a.max.x, b.max.x) - Math.max(a.min.x, b.min.x)) *
+    Math.max(0, Math.min(a.max.y, b.max.y) - Math.max(a.min.y, b.min.y)) *
+    Math.max(0, Math.min(a.max.z, b.max.z) - Math.max(a.min.z, b.min.z));
+  const ratio = shared / Math.min(boxVolume(a), boxVolume(b));
+  return Number.isFinite(ratio) ? ratio : 0;
 }
 
 /** Fixed precision so a report is byte-comparable across runs. */
@@ -182,7 +223,7 @@ function collectParts(
       });
       return;
     }
-    parts.push({ name, mesh, box, triangles, center, scale });
+    parts.push({ name, mesh, box, triangles, center, scale, lod: lodLevel(mesh) });
   });
 
   return parts;
@@ -264,6 +305,9 @@ export async function analyzePartPenetration(
     partsAnalyzed: parts.length,
     candidatePairs: 0,
     pairsTested: 0,
+    pairsUnmeasurable: 0,
+    pairsNotReached: 0,
+    pairsLodAlternates: 0,
     truncated: false,
     skipped,
     penetrations: [],
@@ -271,7 +315,7 @@ export async function analyzePartPenetration(
   if (parts.length < 2) return base;
 
   // Broad phase first, so an unwinnable scene never pays for WASM init.
-  const candidates: Array<[AnalyzedPart, AnalyzedPart]> = [];
+  const candidates: CandidatePair[] = [];
   let considered = 0;
   broadPhase: for (let i = 0; i < parts.length; i++) {
     for (let j = i + 1; j < parts.length; j++) {
@@ -279,25 +323,36 @@ export async function analyzePartPenetration(
         base.broadPhaseTruncated = true;
         break broadPhase;
       }
-      if (parts[i]!.box.intersectsBox(parts[j]!.box)) {
-        base.candidatePairs++;
-        if (candidates.length < MAX_NARROW_PHASE_PAIRS) candidates.push([parts[i]!, parts[j]!]);
+      const a = parts[i]!;
+      const b = parts[j]!;
+      if (!a.box.intersectsBox(b.box)) continue;
+      if (a.lod !== undefined && b.lod !== undefined && a.lod !== b.lod) {
+        base.pairsLodAlternates++;
+        continue;
       }
+      candidates.push({ a: i, b: j, overlap: boxOverlapRatio(a.box, b.box) });
     }
   }
-  base.truncated = !!base.broadPhaseTruncated || base.candidatePairs > candidates.length;
+  base.candidatePairs = candidates.length;
+  base.truncated = !!base.broadPhaseTruncated;
   if (candidates.length === 0) return base;
-
-  const tested = candidates;
+  // Deepest box overlap first: a small part buried in another's box is the likeliest
+  // real overlap, a grazing contact the least. Ties keep traversal pair order.
+  candidates.sort((x, y) => y.overlap - x.overlap || x.a - y.a || x.b - y.b);
 
   const Module = await import('manifold-3d');
   const wasm = await Module.default();
   wasm.setup();
   const { Manifold, Mesh } = wasm;
 
-  const cache = new Map<THREE.Mesh, InstanceType<typeof Manifold> | null>();
-  const build = (part: AnalyzedPart): InstanceType<typeof Manifold> | null => {
-    if (cache.has(part.mesh)) return cache.get(part.mesh)!;
+  // Each part is built once. `null` records a part that cannot be a closed solid, so
+  // every later pair with it is unmeasurable without spending the boolean budget.
+  const solids = new Map<number, InstanceType<typeof Manifold> | null>();
+  const unbuildable: { index: number; reason: string }[] = [];
+  const build = (index: number): InstanceType<typeof Manifold> | null | undefined => {
+    if (solids.has(index)) return solids.get(index)!;
+    if (solids.size === MAX_SOLID_BUILDS) return undefined;
+    const part = parts[index]!;
     let solid: InstanceType<typeof Manifold> | null = null;
     try {
       const arrays = meshToArrays(part);
@@ -310,27 +365,43 @@ export async function analyzePartPenetration(
         mesh.merge();
         solid = new Manifold(mesh);
       } else {
-        skipped.push({ part: part.name, reason: 'its triangle positions or indices are invalid' });
+        unbuildable.push({ index, reason: 'its triangle positions or indices are invalid' });
       }
     } catch (err) {
       // Failure to build a closed solid is unmeasured, never evidence of no intersection.
-      skipped.push({
-        part: part.name,
+      unbuildable.push({
+        index,
         reason: `a valid closed solid could not be measured (${err instanceof Error ? err.message : String(err)})`,
       });
       solid = null;
     }
-    cache.set(part.mesh, solid);
+    solids.set(index, solid);
     return solid;
   };
 
   const penetrations: PartPenetrationPairV1[] = [];
+  const rangeSkips: PartPenetrationEvidenceV1['skipped'] = [];
   try {
-    for (const [a, b] of tested) {
-      const sa = build(a);
-      const sb = build(b);
-      if (!sa || !sb) continue;
+    for (const pair of candidates) {
+      if (solids.get(pair.a) === null || solids.get(pair.b) === null) {
+        base.pairsUnmeasurable++;
+        continue;
+      }
+      // Building also classifies parts past the boolean budget, within the build budget,
+      // so every open part the candidates reach is named rather than left unexamined.
+      const sa = build(pair.a);
+      const sb = sa === null ? null : build(pair.b);
+      if (sa === null || sb === null) {
+        base.pairsUnmeasurable++;
+        continue;
+      }
+      if (!sa || !sb || base.pairsTested === MAX_NARROW_PHASE_PAIRS) {
+        base.pairsNotReached++;
+        continue;
+      }
       base.pairsTested++;
+      const a = parts[pair.a]!;
+      const b = parts[pair.b]!;
 
       let overlap: InstanceType<typeof Manifold> | null = null;
       const scale = Math.max(a.scale, b.scale);
@@ -346,7 +417,7 @@ export async function analyzePartPenetration(
           if (fraction > CONTACT_VOLUME_FRACTION) {
             const assetVolume = volume * scale ** 3;
             if (!Number.isFinite(assetVolume) || !(assetVolume > 0)) {
-              skipped.push({
+              rangeSkips.push({
                 part: a.name,
                 reason: `intersection with ${JSON.stringify(b.name)} is outside representable volume range`,
               });
@@ -367,9 +438,23 @@ export async function analyzePartPenetration(
         scaledB.delete();
       }
     }
+    // A part met only beside partners already known to be unbuildable was never built.
+    // Measurable pairs had the build budget first; what remains classifies these parts,
+    // so an open part is named even when its partner already made the pair unmeasurable.
+    for (const pair of candidates) {
+      if (solids.get(pair.a) === null) build(pair.b);
+      else if (solids.get(pair.b) === null) build(pair.a);
+    }
   } finally {
-    for (const solid of cache.values()) solid?.delete();
+    for (const solid of solids.values()) solid?.delete();
   }
+  base.truncated = !!base.broadPhaseTruncated || base.pairsNotReached > 0;
+  // Unbuildable parts are reported in traversal order, whatever order reached them.
+  unbuildable.sort((x, y) => x.index - y.index);
+  skipped.push(
+    ...unbuildable.map(({ index, reason }) => ({ part: parts[index]!.name, reason })),
+    ...rangeSkips,
+  );
 
   // Worst first, then by name so equal-volume pairs keep a stable order.
   penetrations.sort(
@@ -417,6 +502,9 @@ export const SELF_INTERSECTION_QA_RULE: QaRule = Object.freeze({
   },
 });
 
+/** Names listed per unmeasured reason; the count covers the rest. */
+const UNMEASURED_NAMES_SHOWN = 5;
+
 /** Shared observation kernel; the measurement is derived by the engine, never asset metadata. */
 export function inspectPartPenetration(evidence?: PartPenetrationEvidenceV1): readonly QaFinding[] {
   if (!evidence) return [];
@@ -437,22 +525,59 @@ export function inspectPartPenetration(evidence?: PartPenetrationEvidenceV1): re
       'Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion.',
   }));
 
+  const pairsUnmeasurable = evidence.pairsUnmeasurable ?? 0;
   if (evidence.truncated) {
+    const pairsNotReached = evidence.pairsNotReached ?? 0;
     findings.push({
       code: 'GEO_PART_SELF_INTERSECTION_TRUNCATED',
       disposition: 'observe' as const,
       dimension: 'visualQuality' as const,
       profile: 'geometry.selfIntersection',
-      message: `Only ${evidence.pairsTested} of ${evidence.broadPhaseTruncated ? 'at least ' : ''}${evidence.candidatePairs} overlapping part pairs were checked (analysis budget). Parts beyond that were not examined.`,
+      message:
+        `Tested ${evidence.pairsTested} of ${evidence.broadPhaseTruncated ? 'at least ' : ''}${evidence.candidatePairs} overlapping part pairs: ` +
+        `${pairsUnmeasurable} involve parts that could not be measured, ${pairsNotReached} were beyond the analysis budget (${MAX_NARROW_PHASE_PAIRS} booleans, ${MAX_SOLID_BUILDS} solids).` +
+        (evidence.broadPhaseTruncated
+          ? ` Pair discovery stopped after ${MAX_BROAD_PHASE_PAIRS} box comparisons.`
+          : '') +
+        ' Unreached pairs were not examined; the most overlapping bounding boxes were tested first.',
+      measurement: {
+        name: 'overlappingPartPairsTested',
+        actual: evidence.pairsTested,
+        expected: evidence.candidatePairs,
+        breakdown: { pairsUnmeasurable, pairsNotReached },
+      },
     });
   }
   if (evidence.skipped.length) {
+    // One line per reason: an asset with forty open shells needs the reason once, not forty times.
+    const byReason = new Map<string, string[]>();
+    for (const { part, reason } of evidence.skipped) {
+      const parts = byReason.get(reason);
+      if (parts) parts.push(part);
+      else byReason.set(reason, [part]);
+    }
+    const reasons = [...byReason].map(([reason, parts]) => {
+      const named = parts.slice(0, UNMEASURED_NAMES_SHOWN).map((part) => JSON.stringify(part));
+      const more =
+        parts.length > UNMEASURED_NAMES_SHOWN
+          ? ` and ${parts.length - UNMEASURED_NAMES_SHOWN} more`
+          : '';
+      return `${parts.length} because ${reason}: ${named.join(', ')}${more}.`;
+    });
+    const one = evidence.skipped.length === 1;
+    const includes = one ? 'this part' : 'one of these parts';
+    const pairs =
+      pairsUnmeasurable === 1
+        ? ` 1 overlapping part pair includes ${includes} and was not measured.`
+        : pairsUnmeasurable > 1
+          ? ` ${pairsUnmeasurable} overlapping part pairs include ${includes} and were not measured.`
+          : '';
     findings.push({
       code: 'GEO_PART_SELF_INTERSECTION_UNMEASURED',
       disposition: 'observe' as const,
       dimension: 'visualQuality' as const,
       profile: 'geometry.selfIntersection',
-      message: `${evidence.skipped.length} part-volume measurements were unavailable: ${evidence.skipped.map((s) => `${JSON.stringify(s.part)}: ${s.reason}`).join('; ')}. These parts are not certified clear.`,
+      message: `${evidence.skipped.length} part-volume ${one ? 'measurement was' : 'measurements were'} unavailable. ${reasons.join(' ')}${pairs} ${one ? 'This part is' : 'These parts are'} not certified clear.`,
     });
   }
 

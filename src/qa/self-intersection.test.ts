@@ -221,7 +221,15 @@ describe('determinism and bounds', () => {
     expect(e.broadPhaseTruncated).toBe(true);
     expect(e.candidatePairs).toBeLessThan(499500);
     expect(e.pairsTested).toBe(64);
+    expect(e.pairsUnmeasurable).toBe(0);
+    expect(e.pairsNotReached).toBe(e.candidatePairs - 64);
     expect(e.truncated).toBe(true);
+    const truncated = SELF_INTERSECTION_QA_RULE.evaluate({
+      intent: createAssetIntentV1({ category: 'prop' }),
+      derivedEvidence: { source: 'engine-scene-analysis', partPenetration: e },
+    }).find((f) => f.code === 'GEO_PART_SELF_INTERSECTION_TRUNCATED');
+    expect(truncated!.message).toStartWith(`Tested 64 of at least ${e.candidatePairs} `);
+    expect(truncated!.message).toContain('Pair discovery stopped after 250000 box comparisons.');
   });
 
   test('overlap advice preserves intentional joints and measurement limits', () => {
@@ -286,6 +294,108 @@ describe('determinism and bounds', () => {
 });
 
 // -----------------------------------------------------------------------------
+// Which pairs the bounded budget reaches
+// -----------------------------------------------------------------------------
+
+/** A box missing one face: an open shell manifold cannot close. */
+function openBox(name: string, size: number) {
+  const geometry = new THREE.BoxGeometry(size, size, size);
+  geometry.setIndex(Array.from(geometry.getIndex()!.array).slice(0, 30));
+  geometry.clearGroups();
+  const mesh = new THREE.Mesh(geometry);
+  mesh.name = name;
+  return mesh;
+}
+
+function group(name: string, ...children: THREE.Object3D[]) {
+  const node = new THREE.Group();
+  node.name = name;
+  node.add(...children);
+  return node;
+}
+
+describe('pair selection within the budget', () => {
+  test('parts in different LOD levels are alternates, not overlapping parts', async () => {
+    const e = await analyzePartPenetration(
+      sceneOf(
+        group('Car_LOD0', boxAt('Body', [1, 1, 1], [0, 0, 0])),
+        group('Car_LOD1', boxAt('BodyLow', [1, 1, 1], [0, 0, 0])),
+        boxAt('Trim_lod1', [1, 1, 1], [0, 0, 0]),
+        boxAt('Driver', [1, 1, 1], [0, 0, 0]),
+        boxAt('Glod2', [1, 1, 1], [0, 0, 0]),
+      ),
+    );
+    // Body (LOD0) against BodyLow and Trim_lod1 (LOD1) are alternates. Untagged parts and
+    // parts on the same level still share space with each other; "Glod2" carries no tag.
+    expect(pairNames(e)).not.toContainEqual(['Body', 'BodyLow']);
+    expect(pairNames(e)).not.toContainEqual(['Body', 'Trim_lod1']);
+    expect(pairNames(e)).toContainEqual(['BodyLow', 'Trim_lod1']);
+    expect(e.penetrations).toHaveLength(8);
+    expect(e.pairsLodAlternates).toBe(2);
+    expect(e.candidatePairs).toBe(8);
+    expect(e.pairsTested).toBe(8);
+  });
+
+  test('an open shell containing the assembly does not use up the boolean budget', async () => {
+    // 64 bolts inside the shell's box would fill every pair slot in traversal order
+    // before the two inner parts that actually interpenetrate were reached.
+    const bolts = Array.from({ length: 64 }, (_, i) =>
+      boxAt(
+        `Bolt_${i}`,
+        [0.5, 0.5, 0.5],
+        [-3 + 2 * (i % 4), -3 + 2 * (Math.floor(i / 4) % 4), -3 + 2 * Math.floor(i / 16)],
+      ),
+    );
+    const e = await analyzePartPenetration(
+      sceneOf(
+        openBox('HeadShell', 10),
+        ...bolts,
+        boxAt('InnerA', [1, 1, 1], [0, 0, 0]),
+        boxAt('InnerB', [1, 1, 1], [0.5, 0, 0]),
+      ),
+    );
+    expect(pairNames(e)).toEqual([['InnerA', 'InnerB']]);
+    expect(e.candidatePairs).toBe(67);
+    expect(e.pairsTested).toBe(1);
+    expect(e.pairsUnmeasurable).toBe(66);
+    expect(e.pairsNotReached).toBe(0);
+    expect(e.truncated).toBe(false);
+    expect(e.skipped.map((s) => s.part)).toEqual(['HeadShell']);
+  });
+
+  test('a part whose every pair already has an unmeasurable partner is still named', async () => {
+    // The first shell decides the pair, but the second must not read as measured.
+    const e = await analyzePartPenetration(sceneOf(openBox('OpenA', 2), openBox('OpenB', 1)));
+    expect(e.skipped.map((s) => s.part)).toEqual(['OpenA', 'OpenB']);
+    expect(e.candidatePairs).toBe(1);
+    expect(e.pairsTested).toBe(0);
+    expect(e.pairsUnmeasurable).toBe(1);
+    expect(e.pairsNotReached).toBe(0);
+    expect(e.truncated).toBe(false);
+  });
+
+  test('the most overlapping boxes are tested first when the budget runs out', async () => {
+    // 69 barely touching neighbours come first in traversal order; the one deeply
+    // overlapping pair comes last and must still be measured.
+    const row = Array.from({ length: 70 }, (_, i) =>
+      boxAt(`Row_${i}`, [1, 1, 1], [i * 0.9995, 0, 0]),
+    );
+    const e = await analyzePartPenetration(
+      sceneOf(
+        ...row,
+        boxAt('LateA', [1, 1, 1], [200, 0, 0]),
+        boxAt('LateB', [1, 1, 1], [200.5, 0, 0]),
+      ),
+    );
+    expect(pairNames(e)).toEqual([['LateA', 'LateB']]);
+    expect(e.candidatePairs).toBe(70);
+    expect(e.pairsTested).toBe(64);
+    expect(e.pairsNotReached).toBe(6);
+    expect(e.truncated).toBe(true);
+  });
+});
+
+// -----------------------------------------------------------------------------
 // The rule
 // -----------------------------------------------------------------------------
 
@@ -333,6 +443,9 @@ describe('the QA rule', () => {
         partsAnalyzed: 40,
         candidatePairs: 200,
         pairsTested: 64,
+        pairsUnmeasurable: 20,
+        pairsNotReached: 116,
+        pairsLodAlternates: 0,
         truncated: true,
         skipped: [],
         penetrations: [],
@@ -341,6 +454,66 @@ describe('the QA rule', () => {
 
     expect(findings).toHaveLength(1);
     expect(findings[0]!.code).toBe('GEO_PART_SELF_INTERSECTION_TRUNCATED');
-    expect(findings[0]!.message).toContain('64 of 200');
+    expect(findings[0]!.disposition).toBe('observe');
+    expect(findings[0]!.message).toBe(
+      'Tested 64 of 200 overlapping part pairs: 20 involve parts that could not be measured, 116 were beyond the analysis budget (64 booleans, 128 solids). Unreached pairs were not examined; the most overlapping bounding boxes were tested first.',
+    );
+    expect(findings[0]!.measurement).toEqual({
+      name: 'overlappingPartPairsTested',
+      actual: 64,
+      expected: 200,
+      breakdown: { pairsUnmeasurable: 20, pairsNotReached: 116 },
+    });
+  });
+
+  test('pairs left unmeasured by open parts are not reported as a truncated budget', () => {
+    const reason = 'a valid closed solid could not be measured (Not manifold)';
+    const findings = SELF_INTERSECTION_QA_RULE.evaluate(
+      contextWith({
+        schemaVersion: 1,
+        source: 'engine-scene-analysis',
+        partsAnalyzed: 45,
+        candidatePairs: 60,
+        pairsTested: 10,
+        pairsUnmeasurable: 50,
+        pairsNotReached: 0,
+        pairsLodAlternates: 0,
+        truncated: false,
+        skipped: [
+          ...Array.from({ length: 40 }, (_, i) => ({ part: `Shell_${i}`, reason })),
+          { part: 'Dense', reason: '30000 triangles exceeds the 20000-triangle analysis budget' },
+        ],
+        penetrations: [],
+      }),
+    );
+
+    expect(findings.map((f) => f.code)).toEqual(['GEO_PART_SELF_INTERSECTION_UNMEASURED']);
+    expect(findings[0]!.disposition).toBe('observe');
+    expect(findings[0]!.message).toBe(
+      '41 part-volume measurements were unavailable. 40 because a valid closed solid could not be measured (Not manifold): "Shell_0", "Shell_1", "Shell_2", "Shell_3", "Shell_4" and 35 more. 1 because 30000 triangles exceeds the 20000-triangle analysis budget: "Dense". 50 overlapping part pairs include one of these parts and were not measured. These parts are not certified clear.',
+    );
+  });
+
+  test('a single unmeasured part reads in the singular', () => {
+    const findings = SELF_INTERSECTION_QA_RULE.evaluate(
+      contextWith({
+        schemaVersion: 1,
+        source: 'engine-scene-analysis',
+        partsAnalyzed: 2,
+        candidatePairs: 1,
+        pairsTested: 0,
+        pairsUnmeasurable: 1,
+        pairsNotReached: 0,
+        pairsLodAlternates: 0,
+        truncated: false,
+        skipped: [
+          { part: 'Sheet', reason: 'a valid closed solid could not be measured (Not manifold)' },
+        ],
+        penetrations: [],
+      }),
+    );
+    expect(findings.map((f) => f.message)).toEqual([
+      '1 part-volume measurement was unavailable. 1 because a valid closed solid could not be measured (Not manifold): "Sheet". 1 overlapping part pair includes this part and was not measured. This part is not certified clear.',
+    ]);
   });
 });

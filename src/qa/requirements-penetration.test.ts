@@ -59,6 +59,14 @@ test('open sheets remain exportable and their incomplete volume coverage cannot 
   expect(qa.rules.find((r) => r.id === ruleId)?.status).toBe('notEvaluated');
   expect(qa.dimensions.visualQuality.status).toBe('notEvaluated');
   expect(qa.dimensions.visualQuality.metrics?.partVolumeCoverage).toBe('partial');
+  expect(qa.dimensions.visualQuality.metrics).toMatchObject({
+    partVolumeCandidatePairs: 1,
+    partVolumePairsTested: 0,
+    partVolumeUnmeasurablePairs: 1,
+    partVolumePairsNotReached: 0,
+  });
+  // Open parts leave pairs unmeasured; that is not a truncated budget.
+  expect(findings(qa).some((f) => f.code === `${ruleId}_TRUNCATED`)).toBe(false);
   expect(validateRequirementsQaReport(qa, resolveRequirementsContext())).toEqual(qa);
 });
 
@@ -68,7 +76,13 @@ test('truncated pair coverage is visible without rejecting intentional overlaps'
   expect(qa.acceptance).toBe('accepted');
   expect(qa.rules.find((r) => r.id === ruleId)?.status).toBe('notEvaluated');
   expect(qa.dimensions.visualQuality.status).toBe('notEvaluated');
-  expect(qa.dimensions.visualQuality.metrics?.partVolumePairsTested).toBe(64);
+  expect(qa.dimensions.visualQuality.metrics).toMatchObject({
+    partVolumeCandidatePairs: 78,
+    partVolumePairsTested: 64,
+    partVolumeUnmeasurablePairs: 0,
+    partVolumePairsNotReached: 14,
+    partVolumeLodAlternatePairs: 0,
+  });
   expect(findings(qa).some((f) => f.code === `${ruleId}_TRUNCATED`)).toBe(true);
 });
 
@@ -91,11 +105,14 @@ test('disabled QA does not run or fabricate volume measurements', async () => {
 
 test('an unavailable observation retains findings but cannot report a successful measurement', async () => {
   const root = scene(box('A', 0), box('B', 0.5));
+  const traverseVisible = root.traverseVisible;
   root.traverseVisible = () => {
     throw new Error('Injected analyzer failure');
   };
   const context = resolveRequirementsContext();
   const evidence = await collectRequirementsSceneEvidence(context, root);
+  // Only the volume pre-pass fails; the synchronous observations read the scene normally.
+  root.traverseVisible = traverseVisible;
   const qa = runRequirementsSceneQa(context, root, [], {}, evidence);
   expect(qa.acceptance).toBe('accepted');
   expect(qa.rules.find((r) => r.id === ruleId)?.status).toBe('notEvaluated');

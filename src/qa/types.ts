@@ -29,6 +29,8 @@ export interface QaMeasurement {
   expected?: number | string | boolean | null;
   threshold?: number;
   unit?: string;
+  /** Named counts that explain `actual`, such as why some candidates were not measured. */
+  breakdown?: Record<string, number>;
 }
 
 /** Stable, machine-readable finding returned by every new QA rule. */

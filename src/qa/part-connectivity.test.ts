@@ -167,6 +167,70 @@ describe('exemptions', () => {
 });
 
 // -----------------------------------------------------------------------------
+// Only parts that are present together are connected
+// -----------------------------------------------------------------------------
+
+function group(name: string, ...children: THREE.Object3D[]) {
+  const node = new THREE.Group();
+  node.name = name;
+  node.add(...children);
+  return node;
+}
+
+describe('parts that are not shown together', () => {
+  test('hidden meshes and hidden subtrees do not form separate groups', () => {
+    const proxy = boxAt('CollisionProxy', [0.2, 0.2, 0.2], [5, 0, 0]);
+    proxy.visible = false;
+    const spare = group('SpareParts', boxAt('SpareWheel', [0.5, 0.5, 0.5], [-5, 0, 0]));
+    spare.visible = false;
+    const report = analyzePartConnectivity(
+      sceneOf(
+        boxAt('Body', [1, 1, 1], [0, 0, 0]),
+        boxAt('Lid', [1, 0.2, 1], [0, 0.6, 0]),
+        proxy,
+        spare,
+      ),
+    );
+    expect(report.groups).toEqual([]);
+    expect(report.partsAnalyzed).toBe(2);
+  });
+
+  test('LOD1+ alternates are excluded from the main analysis and counted', () => {
+    // An offset low-detail copy is an alternate of the body, not a detached group.
+    const lowDetail = group(
+      'Tree_LOD1',
+      boxAt('TrunkLow', [1, 1, 1], [0, 0, 0]),
+      boxAt('CrownLow', [1, 1, 1], [0, 1, 0]),
+    );
+    lowDetail.position.x = 10;
+    const scene = sceneOf(
+      group(
+        'Tree_LOD0',
+        boxAt('Trunk', [1, 1, 1], [0, 0, 0]),
+        boxAt('Crown', [1, 1, 1], [0, 1, 0]),
+      ),
+      lowDetail,
+      boxAt('Sign_lod2', [0.2, 0.2, 0.2], [-5, 0, 0]),
+      boxAt('Handle', [0.2, 0.2, 0.2], [5, 0, 0]),
+    );
+    const report = analyzePartConnectivity(scene);
+    expect(report.groups.map((g) => g.parts)).toEqual([['Handle']]);
+    expect(report.partsAnalyzed).toBe(3);
+    expect(report.lodExcluded).toBe(3);
+
+    const [finding] = PART_CONNECTIVITY_QA_RULE.evaluate(context(scene));
+    expect(finding!.disposition).toBe('observe');
+    expect(finding!.message).toContain('3 parts on LOD levels above 0 were not analyzed.');
+    expect(finding!.measurement).toEqual({
+      name: 'gapToMainComponent',
+      actual: report.groups[0]!.gap,
+      expected: 0.02,
+      breakdown: { lodExcludedParts: 3 },
+    });
+  });
+});
+
+// -----------------------------------------------------------------------------
 // Rule wiring
 // -----------------------------------------------------------------------------
 
