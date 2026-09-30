@@ -154,6 +154,7 @@ provenance and does not control the lifetime of other clients' work.
 
 ```bash
 bun run kiln service status   # installation, health, build identity and lifetime
+bun run kiln service start    # start a managed local service now, or report the current one
 bun run kiln service reprobe  # fresh check; nonzero unless a running service is verified compatible
 bun run kiln service stop     # explicitly stop the verified configured local service
 ```
@@ -161,6 +162,12 @@ bun run kiln service stop     # explicitly stop the verified configured local se
 `status` and `reprobe` do not install packages or stop services. The old `service prune`
 command is removed. `stop` rechecks the configured loopback service's identity before
 signaling it; a remote service's reported PID never authorizes killing a local process.
+`start` uses the same launcher as an on-demand view and prints the port, renderer, process,
+lifetime and build fingerprint. It joins a current service rather than starting a second
+one, and exits nonzero without starting anything when the installation is not ready or a
+stale, foreign or unknown listener holds the socket; it never replaces a listener. The
+service it starts is managed, so it exits after its idle timeout and the next view that
+needs it starts it again; start one by hand, as above, for a service that stays running.
 
 **Either way it binds loopback, and widening that costs a token.** `POST /render` takes a 48 MB GLB
 and renders it on the GPU one frame at a time, so an exposed bind with no auth hands any caller on
@@ -170,12 +177,14 @@ warning. `RENDER_SERVICE_ALLOW_UNAUTHENTICATED=1` waives that when something in 
 already authenticates for it. The container image sets `HOST=0.0.0.0` itself, because a container
 binding loopback is unreachable through `-p`.
 
-For local render services, client sessions automatically inherit `RENDER_SERVICE_TOKEN` as a fallback when `KILN_RENDER_TOKEN` is unset, whether starting on demand or joining an existing local service sharing the same environment on port 8000. `KILN_RENDER_TOKEN` remains the explicit client credential: set it to override the local token or to authenticate against a remote service. Explicit remote endpoints (`--render-port URL` or `KILN_RENDER_PORT_URL`) never infer credentials from `RENDER_SERVICE_TOKEN` and require `KILN_RENDER_TOKEN` directly. See the service README for deployment and authentication options.
+For local render services, client sessions automatically inherit `RENDER_SERVICE_TOKEN` as a fallback when `KILN_RENDER_TOKEN` is unset, whether starting on demand or joining an existing local service sharing the same environment on port 8000. `KILN_RENDER_TOKEN` remains the explicit client credential: set it to override the local token or to authenticate against a remote service. Explicit remote endpoints (`--render-port URL` or `KILN_RENDER_PORT_URL`) never infer credentials from `RENDER_SERVICE_TOKEN` and require `KILN_RENDER_TOKEN` directly. An explicit URL with exactly the shared local socket's origin (`http://127.0.0.1:8000`, or the `KILN_RENDER_SERVICE_PORT` port) names that socket, not another device, so it is the local route with local credentials. See the service README for deployment and authentication options.
 
 `--render cpu` neither probes nor starts a service. Local `auto` and `gpu` can start one
 on demand; `gpu` requires a successful GPU result instead of accepting a CPU fallback.
 An explicitly selected remote URL stays remote on failure and never starts a local GPU
-as a substitute. Use the same compatible Kiln build on the renderer device.
+as a substitute. A URL naming the shared local socket takes the local route instead: it
+joins or starts the local service on demand, and starts it again after a managed service
+exits idle. Use the same compatible Kiln build on the renderer device.
 
 In `auto` mode, ordinary untextured scenes with zero metalness and no advanced
 material extensions select CPU views,

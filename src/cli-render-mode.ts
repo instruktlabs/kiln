@@ -13,6 +13,7 @@ import {
   inspectLocalRenderService,
   localRenderServiceState,
   localRenderServiceUrl,
+  namesLocalRenderService,
   renderServiceDir,
   renderServiceSourceFingerprint,
   startLocalRenderService,
@@ -149,7 +150,11 @@ export async function buildRenderPort(
   });
   // Keep route and credentials fixed for the lifetime of this host. Reprobe
   // refreshes readiness, not ambient configuration or the loaded source build.
-  const explicitUrl = portUrl || process.env['KILN_RENDER_PORT_URL'];
+  // A URL naming the shared local socket takes the local route below, so it can
+  // wake a managed service after its idle exit.
+  const configuredUrl = portUrl || process.env['KILN_RENDER_PORT_URL'];
+  const explicitUrl =
+    configuredUrl && !namesLocalRenderService(configuredUrl) ? configuredUrl : undefined;
   const dir = options?.serviceDir ?? renderServiceDir();
   const url = localRenderServiceUrl();
   const source = mode === 'cpu' ? undefined : renderServiceSourceFingerprint(dir);

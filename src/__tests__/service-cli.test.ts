@@ -1,4 +1,4 @@
-/** Local renderer status and explicit stop; retired prune never mutates shared lifetime. */
+/** Local renderer status, explicit start and stop; retired prune never mutates shared lifetime. */
 import { createServer, type Server } from 'node:http';
 import type { AddressInfo } from 'node:net';
 import type { ChildProcess } from 'node:child_process';
@@ -8,7 +8,7 @@ import { join, resolve } from 'node:path';
 import { afterEach, describe, expect, it } from 'bun:test';
 
 import { serviceMain } from '../service-cli';
-import { renderServiceSourceFingerprint } from '../render-service-host';
+import { inspectLocalRenderService, renderServiceSourceFingerprint } from '../render-service-host';
 import {
   deadPid,
   exited,
@@ -19,6 +19,8 @@ import {
 } from './helpers/fake-render-service';
 
 const children: ChildProcess[] = [];
+/** Services `kiln service start` launched detached; the test kills them by pid. */
+const ownedPids: number[] = [];
 const servers: Server[] = [];
 const directories: string[] = [];
 const saved = {
@@ -27,6 +29,11 @@ const saved = {
 };
 
 afterEach(async () => {
+  for (const pid of ownedPids.splice(0)) {
+    try {
+      process.kill(pid);
+    } catch {}
+  }
   await Promise.all(
     children.splice(0).map(async (child) => {
       if (child.exitCode === null && child.signalCode === null) child.kill();
@@ -34,7 +41,13 @@ afterEach(async () => {
     }),
   );
   await Promise.all(
-    servers.splice(0).map((s) => new Promise<void>((done) => s.close(() => done()))),
+    servers.splice(0).map(
+      (s) =>
+        new Promise<void>((done) => {
+          s.closeAllConnections();
+          s.close(() => done());
+        }),
+    ),
   );
   await Promise.all(directories.splice(0).map((d) => removeDirectory(d)));
   for (const [key, value] of [
@@ -65,6 +78,16 @@ async function run(argv: string[]): Promise<{ code: number; out: string; err: st
     error: (line) => err.push(line),
   });
   return { code, out: out.join('\n'), err: err.join('\n') };
+}
+
+/** A listener on a fresh loopback port, configured as the shared local socket. */
+async function occupy(handler: Parameters<typeof createServer>[1]): Promise<number> {
+  const server = createServer(handler);
+  servers.push(server);
+  await new Promise<void>((done) => server.listen(0, '127.0.0.1', done));
+  const port = (server.address() as AddressInfo).port;
+  process.env['KILN_RENDER_SERVICE_PORT'] = String(port);
+  return port;
 }
 
 async function alive(port: number): Promise<boolean> {
@@ -162,5 +185,75 @@ describe('kiln service', () => {
     expect(err).toContain('not a render service');
     expect(err).toContain('KILN_RENDER_SERVICE_PORT');
     expect(server.listening).toBe(true);
+  });
+
+  it('start launches a managed renderer, reports its identity, and joins a current one', async () => {
+    const { port } = await installation();
+    const url = `http://127.0.0.1:${port}`;
+    const started = await run(['start']);
+    const probe = await inspectLocalRenderService(url);
+    if (probe.kind === 'service') ownedPids.push(probe.instance.pid);
+    expect(started.err).toBe('');
+    expect(started.code).toBe(0);
+    if (probe.kind !== 'service') throw new Error(`nothing is listening on ${url}`);
+    expect(probe.stale).toBe(false);
+    const { pid } = probe.instance;
+    expect(started.out).toContain(`render service   ${url}`);
+    expect(started.out).toContain(`port             ${port}`);
+    expect(started.out).toContain(`started          managed renderer, pid ${pid}`);
+    expect(started.out).toContain('listening        yes  fake-renderer');
+    expect(started.out).toContain(`process          pid ${pid}, started by session ${process.pid}`);
+    expect(started.out).toContain('lifetime         managed, idle timeout 300000ms');
+    expect(started.out).toContain(`build            ${probe.health.compatibility.fingerprint}`);
+
+    const joined = await run(['start']);
+    expect(joined.err).toBe('');
+    expect(joined.code).toBe(0);
+    expect(joined.out).toContain(`already running  pid ${pid}; nothing was started`);
+    const after = await inspectLocalRenderService(url);
+    expect(after.kind === 'service' && after.instance.pid).toBe(pid);
+  });
+
+  it('start never replaces a listener it cannot join, and needs a ready installation', async () => {
+    const { dir, port } = await installation();
+    const stale = await spawnFakeRenderService(dir, port, {
+      FAKE_SOURCE_FINGERPRINT: `sha256:${'0'.repeat(64)}`,
+    });
+    children.push(stale);
+    const refusedStale = await run(['start']);
+    expect(refusedStale.code).toBe(1);
+    expect(refusedStale.err).toContain(`pid ${stale.pid}`);
+    expect(refusedStale.err).toContain('runs different source');
+    expect(refusedStale.err).toContain('nothing was started');
+    expect(stale.exitCode).toBeNull();
+    expect(await alive(port)).toBe(true);
+
+    const foreignPort = await occupy((_req, res) => {
+      res.writeHead(200, { 'content-type': 'text/html' });
+      res.end('<html>');
+    });
+    const refusedForeign = await run(['start']);
+    expect(refusedForeign.code).toBe(1);
+    expect(refusedForeign.err).toContain(`port ${foreignPort} is in use`);
+    expect(refusedForeign.err).toContain('nothing was started');
+
+    // A listener that never answers is unknown, not a busy renderer to replace.
+    await occupy(() => {});
+    const refusedUnknown = await run(['start']);
+    expect(refusedUnknown.code).toBe(1);
+    expect(refusedUnknown.err).toContain('is unknown');
+    expect(refusedUnknown.err).toContain('nothing was started');
+    expect(servers.every((server) => server.listening)).toBe(true);
+
+    const empty = join(dir, 'not-an-installation');
+    await mkdir(empty);
+    process.env['KILN_RENDER_SERVICE_DIR'] = empty;
+    const freshPort = await freePort();
+    process.env['KILN_RENDER_SERVICE_PORT'] = String(freshPort);
+    const refusedSetup = await run(['start']);
+    expect(refusedSetup.code).toBe(1);
+    expect(refusedSetup.err).toContain(`does not ship ${empty}`);
+    expect(refusedSetup.err).toContain('nothing was started');
+    expect(await alive(freshPort)).toBe(false);
   });
 });

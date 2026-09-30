@@ -5,7 +5,7 @@ import { inspectLocalRenderService, startLocalRenderService } from '../render-se
 import { captureViewPngsViaPort } from '../views/port';
 import { makeRemoteRenderPort, validateRenderServiceHealth } from '../render-service-client';
 import { buildRenderPort } from '../cli-render-mode';
-import { fakeRenderHealth } from './helpers/fake-render-service';
+import { fakeRenderHealth, freePort } from './helpers/fake-render-service';
 import { probeCaptureIdentity } from '../render-service-client';
 import { serviceMain } from '../service-cli';
 
@@ -207,12 +207,16 @@ test('health rejects missing or contradictory protocol, dependency, build, capab
 test('an explicit remote failure never starts or substitutes a local renderer', async () => {
   const url = await serve({ ok: true, rendererId: 'outdated' });
   let starts = 0;
-  const context = await buildRenderPort('gpu', url, {
-    start: async () => {
-      starts++;
-      return url;
-    },
-  });
+  const start = async () => {
+    starts++;
+    return url;
+  };
+  // A URL naming the shared local socket takes the local route, which reports an
+  // incompatible listener instead of replacing it.
+  await expect(buildRenderPort('gpu', url, { start })).rejects.toThrow(/incompatible/);
+  // Any other endpoint is remote: its failure surfaces on render and starts nothing.
+  process.env.KILN_RENDER_SERVICE_PORT = String(await freePort());
+  const context = await buildRenderPort('gpu', url, { start });
   await expect(context.viewRenderPort!({ glb: new Uint8Array([1]) })).rejects.toThrow(/protocol/);
   expect(starts).toBe(0);
 });

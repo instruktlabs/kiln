@@ -1,4 +1,4 @@
-import { fakeRenderHealth } from './helpers/fake-render-service';
+import { fakeRenderHealth, freePort } from './helpers/fake-render-service';
 /** Strict health verification, explicit remote selection, and token isolation. */
 import { createServer, type Server } from 'node:http';
 import type { AddressInfo } from 'node:net';
@@ -79,7 +79,10 @@ it.each(['opt-out', 'explicit-remote'] as const)(
     const url = await serve(0);
     try {
       delete process.env.KILN_RENDER_PORT_URL;
-      process.env.KILN_RENDER_SERVICE_PORT = new URL(url).port;
+      // A URL naming the shared local socket takes the local route, so the explicit
+      // remote case keeps the local socket elsewhere.
+      process.env.KILN_RENDER_SERVICE_PORT =
+        selection === 'explicit-remote' ? String(await freePort()) : new URL(url).port;
       const context = await buildRenderPort(
         'auto',
         selection === 'explicit-remote' ? url : undefined,

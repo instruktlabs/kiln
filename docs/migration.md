@@ -341,7 +341,9 @@ fidelity separately: a correct camera does not establish faithful PBR shading.
 
 The CLI accepts the same capture object from a JSON file:
 `node kiln.mjs render REF --capture cameras.json --views chosen.png`.
-Use grid output for this single PNG destination. This avoids copying image data
+Grid output writes that one PNG. With `output: "separate"` it writes one PNG per shot
+beside the stem instead, `chosen.shot-01.png`, `chosen.shot-02.png` and so on, and
+no sheet; `--json` lists each file with its shot name. This avoids copying image data
 from a tool response and reuses the evaluated asset.
 
 The GPU service now preserves HDR values until tone mapping and conversion to

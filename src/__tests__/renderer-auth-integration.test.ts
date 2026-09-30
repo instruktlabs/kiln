@@ -3,7 +3,7 @@ import { createServer } from 'node:http';
 import type { AddressInfo } from 'node:net';
 import { buildRenderPort } from '../cli-render-mode';
 import { makeRemoteRenderPort, readRenderServiceHealth } from '../render-service-client';
-import { fakeRenderHealth } from './helpers/fake-render-service';
+import { fakeRenderHealth, freePort } from './helpers/fake-render-service';
 
 test('the shared host authenticates locally while explicit clients preserve remote credential isolation', async () => {
   const token = 'fixture-only-local-token';
@@ -62,14 +62,26 @@ test('the shared host authenticates locally while explicit clients preserve remo
     expect((await shared.viewRenderPort!(request)).ok).toBe(true);
     expect(authorizedUploads).toBe(1);
 
-    // An explicit endpoint is a remote route even when its URL happens to be loopback.
+    // An explicit URL naming the shared local socket is that socket, so it takes the
+    // local route and the local credential rather than being treated as another device.
+    const named = await buildRenderPort('auto', url, { autoSpawn: false });
+    expect(await named.renderCapabilities!()).toMatchObject({
+      target: 'local',
+      authentication: 'configured-unverified',
+    });
+    expect((await named.viewRenderPort!(request)).ok).toBe(true);
+    expect(authorizedUploads).toBe(2);
+
+    // Any other explicit endpoint is a remote route even when its URL happens to be
+    // loopback: it never receives the local service token.
+    process.env.KILN_RENDER_SERVICE_PORT = String(await freePort());
     const remote = await buildRenderPort('auto', url, { autoSpawn: false });
     expect(await remote.renderCapabilities!()).toMatchObject({
       target: 'remote',
       authentication: 'missing',
     });
     await expect(remote.viewRenderPort!(request)).rejects.toThrow(/requires authentication/);
-    expect(uploads).toBe(1);
+    expect(uploads).toBe(2);
     expect(await readRenderServiceHealth(url)).toEqual(before);
   } finally {
     for (const [key, value] of previous) {

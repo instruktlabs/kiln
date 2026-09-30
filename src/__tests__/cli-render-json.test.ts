@@ -3,8 +3,10 @@ import { createHash } from 'node:crypto';
 import { mkdir, mkdtemp, readFile, readdir, rm, writeFile } from 'node:fs/promises';
 import { join, resolve } from 'node:path';
 import { createKilnProgramToolRegistry } from '../tools/registry';
+import { createKilnSourceDef } from '../tools/programs';
 import { createLocalToolContext } from '../local-runtime';
 import { MemoryProgramStore } from '../program-store';
+import { FileProgramStore } from '../program-store-node';
 import { decodePng } from '../views/png';
 import { localWorkspaceRoot } from '../workspace-location';
 
@@ -159,7 +161,65 @@ test('render JSON reports argument/build/view errors and only files actually wri
   expect(partial.files[0].kind).toBe('glb');
   expect(partial.files[0].bytes).toBe((await readFile(join(directory, 'partial.glb'))).length);
   expect(await readFile(join(directory, 'protected.png'), 'utf8')).toBe('existing image');
-  expect(run(['source', 'source.js', '--json']).exitCode).not.toBe(0);
+  expect(run(['source', 'source.js', '--json']).exitCode).toBe(0);
+});
+
+test('source JSON is the shared kiln_source result, pages like it, and exports with a receipt', async () => {
+  const shared = createKilnSourceDef(new FileProgramStore(join(directory, 'programs')));
+  const imported = run(['source', 'source.js', '--json']);
+  expect(imported.stderr.toString()).toBe('');
+  expect(imported.exitCode).toBe(0);
+  const saved = JSON.parse(imported.stdout.toString());
+  expect(saved.programRef).toMatch(/^p_[a-f0-9]{12}$/);
+  expect(saved.code).toBe(source);
+  expect(saved).toEqual(await shared.run({ programRef: saved.programRef }));
+  const read = run(['source', saved.programRef, '--json']);
+  expect(read.exitCode).toBe(0);
+  expect(JSON.parse(read.stdout.toString())).toEqual(saved);
+  const query = "createPart('Box'";
+  const found = run(['source', saved.programRef, '--json', '--query', query, '--limit', '40']);
+  expect(found.exitCode).toBe(0);
+  expect(JSON.parse(found.stdout.toString())).toEqual(
+    await shared.run({ programRef: saved.programRef, query, limit: 40 }),
+  );
+  const page = run(['source', saved.programRef, '--offset', '10', '--limit', '20', '--json']);
+  expect(page.exitCode).toBe(0);
+  const second = JSON.parse(page.stdout.toString());
+  expect(second).toEqual(await shared.run({ programRef: saved.programRef, offset: 10, limit: 20 }));
+  expect(second.nextOffset).toBe(30);
+  const exported = run(['source', saved.programRef, '--json', '--out', 'exported.js']);
+  expect(exported.exitCode).toBe(0);
+  const bytes = await readFile(join(directory, 'exported.js'));
+  expect(bytes.toString('utf8')).toBe(source);
+  expect(JSON.parse(exported.stdout.toString())).toEqual({
+    ok: true,
+    programRef: saved.programRef,
+    files: [{ kind: 'source', path: join(directory, 'exported.js'), bytes: bytes.length }],
+  });
+  for (const args of [
+    [],
+    ['p_000000000000'],
+    [saved.programRef, '--out', 'exported.js'],
+    [saved.programRef, '--out', 'other.js', '--offset', '1'],
+    [saved.programRef, '--limit', '0'],
+    ['source.js', '--out', 'other.js'],
+    [saved.programRef, '--unknown'],
+    [saved.programRef, '--offset', 'next'],
+  ]) {
+    const failed = run(['source', ...args, '--json']);
+    expect(failed.exitCode).not.toBe(0);
+    const output = JSON.parse(failed.stdout.toString());
+    expect(output.ok).toBe(false);
+    expect(output.error).toBeString();
+    expect(output.files).toEqual([]);
+  }
+  expect(await readdir(directory)).not.toContain('other.js');
+  const missingValue = run(['source', saved.programRef, '--json', '--query']);
+  expect(missingValue.exitCode).toBe(2);
+  expect(JSON.parse(missingValue.stdout.toString())).toMatchObject({ ok: false, files: [] });
+  // Paging belongs to source --json; other commands and plain source refuse it.
+  expect(run(['source', saved.programRef, '--query', 'Box']).exitCode).not.toBe(0);
+  expect(run(['render', 'source.js', '--query', 'Box', '--json']).exitCode).not.toBe(0);
 });
 
 test('authored console messages stay off CLI JSON stdout in trusted in-process mode', async () => {

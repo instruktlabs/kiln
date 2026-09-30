@@ -53,6 +53,10 @@ node kiln.mjs render RETURNED_REF --out revised.glb --views revised.png
 ```
 
 Replace `RETURNED_REF` with the reference returned for the revision you want to save.
+`source --json` prints the `kiln_source` result for the file's new reference or the
+given one: one page, the first 8,000 characters unless `--offset`, `--limit` or `--query`
+say otherwise; continue from `nextOffset`. With `--out`, `--json` prints
+`{ ok, programRef, files }` naming the written file. Failures print `ok: false` and an error.
 Source export refuses to overwrite an existing file. The saved JavaScript is portable;
 a reference needs a store containing that source.
 

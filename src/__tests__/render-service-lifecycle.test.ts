@@ -217,6 +217,56 @@ test('explicit local stop rechecks identity and never signals a remote-reported 
   expect(await terminateRenderService(url, probe)).toBe(true);
   expect(await exited(child)).toBe(true);
 });
+test.each([
+  ['auto', 'KILN_RENDER_PORT_URL'],
+  ['gpu', '--render-port'],
+] as const)(
+  '%s with %s naming the local socket starts the managed service and wakes it after an idle exit',
+  async (mode, selection) => {
+    const { dir, url } = await installation();
+    const oldUrl = process.env.KILN_RENDER_PORT_URL;
+    if (selection === 'KILN_RENDER_PORT_URL') process.env.KILN_RENDER_PORT_URL = `${url}/`;
+    try {
+      const context = await buildRenderPort(mode, selection === '--render-port' ? url : undefined, {
+        serviceDir: dir,
+      });
+      expect(await context.renderCapabilities!()).toMatchObject({
+        target: 'local',
+        status: 'on-demand',
+        autoStart: true,
+      });
+      const request = {
+        glb: new Uint8Array([1]),
+        viewDirs: [[1, 0, 0]] as [number, number, number][],
+        size: 128,
+      };
+      expect((await context.viewRenderPort!(request)).rendererId).toBe(FAKE_RENDERER_ID);
+      const first = await inspectLocalRenderService(url, dir);
+      if (first.kind !== 'service')
+        throw new Error(`expected a started service, got ${first.kind}`);
+      ownedPids.push(first.instance.pid);
+      expect(first.instance.mode).toBe('managed');
+      // A managed service exits after its idle timeout; stand in for that exit.
+      process.kill(first.instance.pid);
+      const deadline = Date.now() + 10_000;
+      while ((await inspectLocalRenderService(url, dir, 500)).kind !== 'absent') {
+        if (Date.now() > deadline) throw new Error('fixture service did not exit');
+        await new Promise((done) => setTimeout(done, 50));
+      }
+      expect((await context.viewRenderPort!(request)).rendererId).toBe(FAKE_RENDERER_ID);
+      const second = await inspectLocalRenderService(url, dir);
+      if (second.kind !== 'service')
+        throw new Error(`expected a restarted service, got ${second.kind}`);
+      ownedPids.push(second.instance.pid);
+      expect(second.instance.pid).not.toBe(first.instance.pid);
+    } finally {
+      if (oldUrl === undefined) delete process.env.KILN_RENDER_PORT_URL;
+      else process.env.KILN_RENDER_PORT_URL = oldUrl;
+    }
+  },
+  // Two fixture service cold starts; on Windows each goes through Start-Process (~2s measured).
+  40_000,
+);
 test('local lazy clients restart after a refused socket without retrying a render failure', async () => {
   let starts = 0;
   const port = makeLazyRenderPort(async () => {

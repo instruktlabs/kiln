@@ -4,6 +4,7 @@ import { readRenderServiceHealth } from './render-service-client';
 import {
   localRenderServiceState,
   localRenderServiceUrl,
+  namesLocalRenderService,
   renderServiceDir,
   renderServiceSourceFingerprint,
   explainRenderServiceState,
@@ -41,7 +42,9 @@ export function createRenderCapabilitiesReader(
   portUrl?: string,
   options: { autoSpawn?: boolean; serviceDir?: string; injectedStart?: boolean } = {},
 ): () => Promise<RenderCapabilities> {
-  const remote = portUrl || process.env.KILN_RENDER_PORT_URL;
+  const configured = portUrl || process.env.KILN_RENDER_PORT_URL;
+  // A URL naming the shared local socket is the local route, as buildRenderPort selects it.
+  const remote = configured && !namesLocalRenderService(configured) ? configured : undefined;
   const url = remote || localRenderServiceUrl();
   const token =
     process.env.KILN_RENDER_TOKEN ?? (!remote ? process.env.RENDER_SERVICE_TOKEN : undefined);

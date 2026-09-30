@@ -11,6 +11,7 @@ import { prepareDestination, writeDestinationAtomic } from './cli-output';
 import { isDirectEntry } from './direct-entry';
 import { createPackagedLocalToolContext } from './local-runtime';
 import { createKilnProgramToolRegistry, type KilnToolContext } from './tools/registry';
+import { createKilnSourceDef } from './tools/programs';
 import { BACKDROP_IDS, isBackdropId, type BackdropId } from './views/background';
 import { resolveRenderMode, buildRenderPort, describeDrawnBy } from './cli-render-mode';
 import type { RenderMode } from './cli-render-mode';
@@ -40,17 +41,19 @@ USAGE
   kiln generate "<prompt>"  [options]    author a program with a model, then render
   kiln source <file.js>                 save a source snapshot and print its programRef
   kiln source <programRef> --out file.js export a revision without model transcription
+  kiln source <file.js|ref> --json       the kiln_source result: one page of exact source
   kiln edit <programRef> --edits <json>  anchored source edits; returns a new revision
   kiln discover [options]               ranked helpers, recipes and host capabilities
   kiln migrate intent|manifest <file>   explicit legacy conversion review (see --help)
   kiln animation <program.js|ref> [options]  review sampled motion of an exported clip
   kiln inspect <program.js|ref> [options]    close-up views and surface/anchor measurements
-  kiln service status|stop|reprobe        the shared GPU render service (see below)
+  kiln service status|start|stop|reprobe  the shared GPU render service (see below)
 
 OPTIONS
   --out <path>            GLB output path            (default: out.glb)
   --views <path>          contact sheet PNG path     (default: none)
-  --capture <file.json>  camera recipe for --views  (grid output; max 1 MiB)
+  --capture <file.json>  camera recipe for --views  (max 1 MiB); output "separate"
+                         writes <views stem>.shot-01.png, ... instead of one sheet
   --backdrop <id>         neutral | dark | light     (default: neutral)
   --render <mode>         auto | cpu | gpu           (default: auto)
   --render-port <url>     remote GPU render service
@@ -62,6 +65,11 @@ OPTIONS
   --no-project          standalone authoring, overriding KILN_PROJECT
   --materials <json>    exact material dependency pins, with or without a project
   --json                 render: one JSON receipt, no embedded image or GLB bytes
+                         source: kiln_source JSON, first 8000 characters by default;
+                         with --out, a receipt naming the written file
+  --offset <n>           source --json: page start; pass the returned nextOffset
+  --limit <n>            source --json: page size in characters (1-16000)
+  --query <text>         source --json: find literal text at or after --offset
   -h, --help              this message
 
 EXAMPLES
@@ -88,6 +96,10 @@ interface Args extends WorkspaceSelection {
   requirements?: RequirementsBinding;
   noProject?: boolean;
   materialsFile?: string;
+  /** source --json paging, passed through to the shared kiln_source definition. */
+  offset?: string;
+  limit?: string;
+  query?: string;
   help: boolean;
   json: boolean;
 }
@@ -165,6 +177,15 @@ export function parseArgs(argv: readonly string[]): Args {
       case '--materials':
         args.materialsFile = next();
         break;
+      case '--offset':
+        args.offset = next();
+        break;
+      case '--limit':
+        args.limit = next();
+        break;
+      case '--query':
+        args.query = next();
+        break;
       case '--max-steps': {
         const n = Number(next());
         // Zero is the documented "no cap" value, so it has to be accepted here
@@ -214,8 +235,6 @@ async function readCaptureRecipe(args: Args): Promise<unknown> {
   if (!def) throw new Error('kiln_render is missing from the MCP tool surface');
   // Schema validation needs a selector but does not resolve or write this placeholder.
   def.inputSchema.parse({ programRef: `sha256:${'0'.repeat(64)}`, capture });
-  if ((capture as { output?: unknown } | null)?.output === 'separate')
-    throw new Error('--capture supports grid output only for one --views PNG. Set output to grid.');
   return capture;
 }
 
@@ -241,7 +260,13 @@ function applyBackdrop(args: Args): unknown {
  */
 interface RenderCliReceipt extends Record<string, unknown> {
   programRef?: string;
-  files: { kind: 'glb' | 'image'; path: string; bytes: number }[];
+  /** `shot` names the capture shot a separate-output image shows. */
+  files: { kind: 'glb' | 'image'; path: string; bytes: number; shot?: string }[];
+}
+
+/** Commands of this parser whose --json output includes failures, as `{ ok: false, error, files }`. */
+function jsonCommand(command: string | undefined): boolean {
+  return command === 'render' || command === 'source';
 }
 
 function jsonRenderFailure(error: unknown, receipt: RenderCliReceipt = { files: [] }): void {
@@ -339,15 +364,38 @@ async function emit(
     if (failure?.ok === false && typeof failure.error === 'string' && failure.error.trim()) {
       throw new Error(failure.error.slice(0, 2048));
     }
-    const media = def.media?.(output);
-    if (!media) throw new Error('kiln_render returned no image');
-    await writeDestinationAtomic(resolvePath(args.views), media.png);
-    Object.assign(receipt, media.json);
-    receipt.files.push({ kind: 'image', path: resolvePath(args.views), bytes: media.png.length });
     // Report what actually drew the pixels, not what was configured. The engine
     // routes to the port only when the scene needs PBR shading, so a GPU that was
     // available and correctly skipped must not be reported as if it had drawn.
-    log(`  ${args.views}  (${describeDrawnBy(output, context)})`);
+    const drawnBy = describeDrawnBy(output, context);
+    // Separate capture output is one image per shot, checked first as MCP does.
+    // Each lands beside the --views stem; no composite sheet is written.
+    const separate = def.mediaMulti?.(output);
+    if (separate) {
+      const suffix = extname(args.views);
+      const stem = suffix ? args.views.slice(0, -suffix.length) : args.views;
+      const shots = (output as { cameraShots?: { name?: unknown }[] }).cameraShots;
+      for (const [index, png] of separate.pngs.entries()) {
+        const view = `${stem}.shot-${String(index + 1).padStart(2, '0')}.png`;
+        const shot = shots?.[index]?.name;
+        await writeDestinationAtomic(resolvePath(view), png);
+        receipt.files.push({
+          kind: 'image',
+          path: resolvePath(view),
+          bytes: png.length,
+          ...(typeof shot === 'string' ? { shot } : {}),
+        });
+        log(`  ${view}${typeof shot === 'string' ? `  ${shot}` : ''}  (${drawnBy})`);
+      }
+      Object.assign(receipt, separate.json);
+    } else {
+      const media = def.media?.(output);
+      if (!media) throw new Error('kiln_render returned no image');
+      await writeDestinationAtomic(resolvePath(args.views), media.png);
+      Object.assign(receipt, media.json);
+      receipt.files.push({ kind: 'image', path: resolvePath(args.views), bytes: media.png.length });
+      log(`  ${args.views}  (${drawnBy})`);
+    }
   }
   if (args.json) console.log(JSON.stringify({ ...receipt, ok: true }));
   return { ...captured, ...receipt, ok: true };
@@ -498,25 +546,57 @@ async function cmdGenerate(args: Args): Promise<number> {
   }
 }
 
+function integerOption(name: string, value: string | undefined): number | undefined {
+  if (value === undefined) return undefined;
+  if (!/^\d+$/.test(value))
+    throw new Error(`${name} must be a non-negative integer (got ${value})`);
+  return Number(value);
+}
+
 async function cmdSource(args: Args): Promise<number> {
   const input = args.positional[0];
   if (!input || args.positional.length !== 1)
     throw new Error('source requires one file path or programRef.');
   const store = localProgramStore();
-  if (input.startsWith('sha256:') || programRefPattern.test(input)) {
+  const isRef = input.startsWith('sha256:') || programRefPattern.test(input);
+  if (args.out && !isRef)
+    throw new Error('Use source <programRef> --out <new-file.js> to export a saved revision.');
+  if (args.out && (args.offset ?? args.limit ?? args.query) !== undefined)
+    throw new Error('--offset, --limit and --query page source --json output, not --out exports.');
+  if (isRef && args.out) {
     const code = await store.get(input);
-    if (args.out) {
-      await writeFile(await prepareDestination(resolvePath(args.out)), code, {
-        encoding: 'utf8',
-        flag: 'wx',
-      });
-      console.log(`Saved ${input} to ${args.out}`);
-    } else process.stdout.write(code);
-  } else {
-    if (args.out)
-      throw new Error('Use source <programRef> --out <new-file.js> to export a saved revision.');
-    console.log(await retainProgram(store, await readFile(resolvePath(input), 'utf8')));
+    const path = resolvePath(args.out);
+    await writeFile(await prepareDestination(path), code, { encoding: 'utf8', flag: 'wx' });
+    if (!args.json) console.log(`Saved ${input} to ${args.out}`);
+    else
+      console.log(
+        JSON.stringify({
+          ok: true,
+          programRef: input,
+          files: [{ kind: 'source', path, bytes: Buffer.byteLength(code, 'utf8') }],
+        }),
+      );
+    return 0;
   }
+  if (!args.json) {
+    if (isRef) process.stdout.write(await store.get(input));
+    else console.log(await retainProgram(store, await readFile(resolvePath(input), 'utf8')));
+    return 0;
+  }
+  // A file is saved first, then read back like any retained revision. The output is
+  // exactly what kiln_source returns over MCP: one bounded page, continued by nextOffset.
+  const programRef = isRef
+    ? input
+    : await retainProgram(store, await readFile(resolvePath(input), 'utf8'));
+  const offset = integerOption('--offset', args.offset);
+  const limit = integerOption('--limit', args.limit);
+  const result = await createKilnSourceDef(store).run({
+    programRef,
+    ...(offset === undefined ? {} : { offset }),
+    ...(limit === undefined ? {} : { limit }),
+    ...(args.query === undefined ? {} : { query: args.query }),
+  });
+  console.log(JSON.stringify(result));
   return 0;
 }
 
@@ -591,7 +671,7 @@ async function runMain(argv: readonly string[]): Promise<number> {
   try {
     args = parseArgs(argv);
   } catch (err) {
-    if (argv[0] === 'render' && argv.includes('--json')) jsonRenderFailure(err);
+    if (jsonCommand(argv[0]) && argv.includes('--json')) jsonRenderFailure(err);
     else console.error(err instanceof Error ? err.message : String(err));
     return 2;
   }
@@ -621,10 +701,15 @@ async function runMain(argv: readonly string[]): Promise<number> {
       throw new Error(
         '--project, --project-revision, --no-project and --materials are supported by render and generate only.',
       );
-    if (args.json && args.command !== 'render')
+    if (args.json && !jsonCommand(args.command))
       throw new Error(
-        "--json is supported by render here; use each other command's documented output options.",
+        "--json is supported by render and source here; use each other command's documented output options.",
       );
+    if (
+      (args.offset !== undefined || args.limit !== undefined || args.query !== undefined) &&
+      !(args.command === 'source' && args.json)
+    )
+      throw new Error('--offset, --limit and --query are supported by source --json only.');
     if (args.requirementsFile !== undefined) {
       if (args.command !== 'render' && args.command !== 'generate')
         throw new Error('--requirements is supported by render and generate only.');
@@ -650,7 +735,7 @@ async function runMain(argv: readonly string[]): Promise<number> {
         return 2;
     }
   } catch (err) {
-    if (args.json && args.command === 'render') {
+    if (args.json && jsonCommand(args.command)) {
       jsonRenderFailure(err);
       return 1;
     }

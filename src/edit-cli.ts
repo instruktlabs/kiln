@@ -9,7 +9,7 @@ import { cliWorkspaceSelection, readMaterialDependencies } from './workspace-cli
 
 export const EDIT_USAGE = `
 SOURCE EDITS
-  kiln edit <programRef> --edits <edits.json>
+  kiln edit <programRef> --edits <edits.json> [--json]
        [--project <id> | --no-project] [--project-revision <revision>] [--materials <json>]
 
 The JSON file contains an array of 1–20 { oldString, newString, replaceAll? }
@@ -17,9 +17,10 @@ replacements, applied in order by the shared kiln_edit tool. Anchors must match
 exactly and uniquely unless replaceAll is true. A failed batch changes nothing.
 The file must be valid UTF-8 JSON, no larger than 1 MiB.
 
-Returns JSON with a new immutable programRef, applied counts and a bounded diff.
-The original revision is retained. This command edits source without evaluating
-or rendering it. Review the new revision with kiln render before saving/delivery.
+Returns JSON with a new immutable programRef, applied counts and a bounded diff;
+--json is accepted for symmetry and changes nothing. The original revision is
+retained. This command edits source without evaluating or rendering it. Review
+the new revision with kiln render before saving/delivery.
 Use kiln source <programRef> --out <new-file.js> to export exact revised source.
 Import a file first with kiln source <file.js>. Use the same workspace/store.
 Exit codes: 0 success/help; 1 edit/input failure; 2 command usage.
@@ -56,7 +57,8 @@ export async function editMain(argv: readonly string[]): Promise<number> {
   let valid = true;
   for (let index = 1; index < argv.length; index++) {
     const flag = argv[index]!;
-    if (flag === '--no-project' && !Object.hasOwn(flags, flag)) {
+    // Valueless switches. Edit output is always JSON, so --json only confirms it.
+    if ((flag === '--no-project' || flag === '--json') && !Object.hasOwn(flags, flag)) {
       flags[flag] = 'true';
       continue;
     }

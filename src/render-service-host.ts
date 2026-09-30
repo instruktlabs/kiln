@@ -21,6 +21,21 @@ export function localRenderServicePort(env: Readonly<NodeJS.ProcessEnv> = proces
 export function localRenderServiceUrl(env: Readonly<NodeJS.ProcessEnv> = process.env): string {
   return `http://127.0.0.1:${localRenderServicePort(env)}`;
 }
+/**
+ * An explicit renderer URL with the shared local socket's origin names that socket,
+ * not another device, so hosts give it the local route: join, start on demand and
+ * restart after an idle exit, with local credentials.
+ */
+export function namesLocalRenderService(
+  url: string,
+  env: Readonly<NodeJS.ProcessEnv> = process.env,
+): boolean {
+  try {
+    return new URL(url).origin === new URL(localRenderServiceUrl(env)).origin;
+  } catch {
+    return false;
+  }
+}
 export function renderServiceNodeArguments(dir: string): string[] {
   return [
     '--import',

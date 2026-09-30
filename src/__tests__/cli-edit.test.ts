@@ -59,6 +59,32 @@ test('CLI edits immutable references through the shared tool without evaluating 
   });
 });
 
+test('CLI edit accepts --json, the flag every other machine-readable command takes', async () => {
+  await fixture(async (directory, store) => {
+    const ref = await retainProgram(store, original);
+    const edits = [{ oldString: "'Arm'", newString: "'Wrist'" }];
+    await writeFile(join(directory, 'edits.json'), JSON.stringify(edits));
+    // Edit output is always JSON; --json is accepted in any position and changes nothing.
+    for (const args of [
+      [ref, '--edits', 'edits.json', '--json'],
+      [ref, '--json', '--edits', 'edits.json'],
+    ]) {
+      const result = cli(directory, ['edit', ...args]);
+      expect(result.stderr.toString()).toBe('');
+      expect(result.exitCode).toBe(0);
+      const output = JSON.parse(result.stdout.toString());
+      expect(output.ok).toBe(true);
+      expect(await store.get(output.programRef)).toBe(original.replace("'Arm'", "'Wrist'"));
+    }
+    const failed = cli(directory, ['edit', 'p_123456789abc', '--edits', 'edits.json', '--json']);
+    expect(failed.exitCode).toBe(1);
+    expect(JSON.parse(failed.stdout.toString()).ok).toBe(false);
+    expect(
+      cli(directory, ['edit', ref, '--edits', 'edits.json', '--json', '--json']).exitCode,
+    ).toBe(2);
+  });
+});
+
 test('CLI edit failure is atomic and reports ambiguity, failed batch position and missing revisions', async () => {
   await fixture(async (directory, store) => {
     const ref = await retainProgram(store, "const name = 'Arm'; const other = 'Arm';");
