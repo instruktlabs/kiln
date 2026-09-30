@@ -176,7 +176,8 @@ kiln_inspect({ programRef: REF, image: false,
 ```
 
 Use up to 12 pairs. Each subject is an exact path from `listParts` or an
-unambiguous node name, as `measure` takes. Read every `surfaceMeasurements.results`
+unambiguous node name, as `measure` takes (`createPart("Seat", ...)` names its mesh
+`Mesh_Seat`). Read every `surfaceMeasurements.results`
 entry: it contains either `measurement` or an explicit `error`. Overall status
 is `partial` if any pair failed or remained incomplete; successful pairs are
 still returned. Each pair retains the single-measurement work limit. This batch
