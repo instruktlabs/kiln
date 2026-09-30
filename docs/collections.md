@@ -176,6 +176,9 @@ The GLB itself remains self-contained. After importing the editable asset, use
 saved material revisions and exporter settings; it reports whether the GLB hash matches.
 CPU preview fidelity is recorded; use the interactive material rendering to inspect
 appearance, and the structural report for geometry checks. GPU pixels are not QA evidence.
+`preview.fidelity` describes the saved preview. A preview drawn from the saved
+`asset.glb` bytes records `exactArtifact: true` and an `inputGlbSha256` equal to the
+manifest's GLB hash; a derivative review surface stays `exactArtifact: false`.
 
 The local browser host binds to loopback, serves only configured collections and
 bundled viewer files, and rejects cross-origin requests and writes. It has no remote

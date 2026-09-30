@@ -69,6 +69,7 @@ import {
 import { ViewEvidenceHistoryStore } from '../views/evidence-history';
 import { BACKDROP_IDS, DEFAULT_BACKDROP_ID, type BackdropId } from '../views/background';
 import { MAX_CAPTURE_SHOT_SIZE } from '../views/capture-limits';
+import { persistedPreviewFidelity } from './preview-fidelity';
 import type { TextureUsage } from '../textures';
 
 // =============================================================================
@@ -2739,7 +2740,9 @@ export async function buildProgramAssetDraft(
     if (!result.ok || !result.pngBase64) throw new Error(result.error ?? 'Preview unavailable');
     preview = Uint8Array.from(Buffer.from(result.pngBase64, 'base64'));
     previewInfo = {
-      fidelity: result.viewFidelity,
+      fidelity: result.derivativeReceipts
+        ? result.viewFidelity
+        : await persistedPreviewFidelity(result.viewFidelity, rendered.glb),
       backdrop: result.capture?.backdrop ?? DEFAULT_BACKDROP_ID,
     };
   } catch (error) {

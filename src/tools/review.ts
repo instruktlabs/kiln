@@ -14,6 +14,7 @@ import { assertSavedRequirementsAuthorized } from '../requirements-assets';
 import { programReference } from '../program-store';
 import { BACKDROP_IDS } from '../views/background';
 import type { KilnToolDef } from './registry';
+import { persistedPreviewFidelity } from './preview-fidelity';
 
 export interface ReviewStore {
   snapshot(options?: { cursor?: string; projectId?: string }): Promise<LiveSnapshot>;
@@ -125,7 +126,7 @@ export function createKilnReviewDef(context: {
         glb: glb!,
         preview,
         previewInfo: {
-          fidelity: operation.viewFidelity,
+          fidelity: await persistedPreviewFidelity(operation.viewFidelity, glb!),
           ...(preview && capture.success && capture.data.backdrop
             ? { backdrop: capture.data.backdrop }
             : {}),

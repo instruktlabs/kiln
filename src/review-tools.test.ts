@@ -35,6 +35,18 @@ test('review save preserves recorded GLB/source and refuses revision or policy m
         },
       ],
       result: { capture: { backdrop: 'dark' } },
+      // The CLI reviewed an in-loop build; saving persists exactly those bytes.
+      viewFidelity: {
+        version: 'kiln.view-fidelity.v1',
+        requested: 'full-preferred',
+        delivered: 'geometry-flat',
+        materialFaithful: false,
+        exactArtifact: false,
+        rendererId: 'cpu-raster:fixture',
+        inputGlbSha256: rendered.artifactGlbSha256,
+        degraded: false,
+        reasonCodes: ['IN_LOOP_BUILD_NOT_PERSISTED'],
+      },
       phases: [],
       artifact: {
         name: 'asset.glb',
@@ -76,6 +88,11 @@ test('review save preserves recorded GLB/source and refuses revision or policy m
     expect(record.manifest.build?.options.reviewOperationId).toBe(op.operationId);
     expect(record.manifest.build?.options.instance).toBe(rendered.rebuildOptions!.instance);
     expect(record.manifest.preview?.backdrop).toBe('dark');
+    expect(record.manifest.preview?.fidelity).toMatchObject({
+      exactArtifact: true,
+      inputGlbSha256: record.manifest.files['asset.glb']!.sha256,
+      reasonCodes: [],
+    });
     await expect(tool.run({ ...input, expectedRevision: 1 })).rejects.toThrow(/revision/i);
     evaluation.requirements = {
       ...evaluation.requirements,
