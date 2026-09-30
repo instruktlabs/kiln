@@ -55,6 +55,20 @@ test('recipe retrieval finds related ordinary language without changing host pol
   }
   expect(capabilityReads).toBe(0);
 });
+test('a bare recipe slug selects its recipe and search prints the id materialRecipe takes', async () => {
+  const query = createDiscovery(async () => ({}));
+  // Dogfood A-A2 / B-A2: agents copy the search id without its kind prefix.
+  const bare = await query({ ids: ['material-wood-v1'] });
+  expect(bare.error).toBeUndefined();
+  expect(bare.entries.map((e) => e.id)).toEqual(['recipe:material-wood-v1']);
+  const twice = await query({ ids: ['material-wood-v1', 'recipe:material-wood-v1'] });
+  expect(twice.error?.code).toBe('DUPLICATE_ID');
+  for (const id of MATERIAL_RECIPE_IDS) {
+    const slug = id.split('.').slice(2, -1).join('-');
+    const found = await query({ query: `${slug.replace('-', ' ')} material` });
+    expect(found.text).toContain(`materialRecipe(${JSON.stringify(id)})`);
+  }
+});
 test('every published recipe example executes in the authoring sandbox and exports cleanly', async () => {
   const entries = recipes();
   expect(entries.length).toBeGreaterThanOrEqual(17);

@@ -63,6 +63,16 @@ export function createDiscoveryService(
   const byName = new Map(
     entries.filter((entry) => entry.kind !== 'recipe').map((entry) => [entry.name, entry]),
   );
+  // An id without its kind prefix (material-wood-v1) also selects the entry, when only
+  // one kind uses that slug; canonical ids and search output stay unchanged.
+  const slugOf = (entry: DiscoveryEntry) => entry.id.slice(entry.id.indexOf(':') + 1);
+  const slugUses = new Map<string, number>();
+  for (const entry of entries) slugUses.set(slugOf(entry), (slugUses.get(slugOf(entry)) ?? 0) + 1);
+  const bySlug = new Map(
+    entries.filter((entry) => slugUses.get(slugOf(entry)) === 1).map((e) => [slugOf(e), e]),
+  );
+  const select = (selector: string) =>
+    byId.get(selector) ?? byName.get(selector) ?? bySlug.get(selector);
   const families = new Set(entries.map((entry) => entry.family));
   const tags = new Set(entries.flatMap((entry) => entry.tags));
   const orientation: NonNullable<DiscoveryResponse['orientation']> = {
@@ -148,7 +158,7 @@ export function createDiscoveryService(
       });
     }
     if (input.mode === 'detail') {
-      const selected = input.ids.map((id) => byId.get(id) ?? byName.get(id));
+      const selected = input.ids.map(select);
       const unknown = input.ids.filter((_, offset) => !selected[offset]);
       if (unknown.length) {
         const removed = unknown.flatMap((id) => {
@@ -178,7 +188,7 @@ export function createDiscoveryService(
         return error(
           input.mode,
           'DUPLICATE_ID',
-          'Each exact selector must identify a different catalog entry. A name and its canonical ID refer to the same entry.',
+          'Each exact selector must identify a different catalog entry. A name or unprefixed slug and its canonical ID refer to the same entry.',
         );
       }
       return finish({
@@ -206,7 +216,7 @@ export function createDiscoveryService(
       (!input.tags || input.tags.every((tag) => entry.tags.includes(tag)));
     let matches: Summary[];
     if (input.query) {
-      const exact = byId.get(input.query) ?? byName.get(input.query);
+      const exact = select(input.query);
       const ordered = await ranked(input.query);
       const candidates = exact
         ? [

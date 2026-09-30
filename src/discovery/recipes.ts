@@ -44,7 +44,7 @@ const materialRecipes: RecipeEntry[] = MATERIAL_RECIPE_IDS.map((id) => {
     id: `recipe:material-${slug}-v1`,
     kind: 'recipe',
     name: `${descriptor.name} material baseline`,
-    summary: `${descriptor.description} Optional editable surface recipe; the example is a material swatch, not a finished asset.`,
+    summary: `${descriptor.description} Call await materialRecipe(${JSON.stringify(id)}). Optional editable surface recipe; the example is a material swatch, not a finished asset.`,
     family: 'materials',
     tags: ['material', 'pbr', 'surface', slug],
     aliases: materialWords[slug] ?? [],

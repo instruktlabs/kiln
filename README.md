@@ -345,8 +345,11 @@ Use `kiln_discover` to find operations, assemblies and optional recipes in ordin
 modeling language. An empty request returns a compact overview with starting
 signatures and six summaries. For example, search with `{ query: "curved hollow tube" }`,
 then request `{ ids: ["sweepProfile"] }` for a complete contract and example. Exact
-batches accept up to six distinct IDs or executable names. Search is local and needs
-no separate model, network call, or asset-category selection.
+batches accept up to six distinct IDs or executable names. Recipes take the id the
+search prints, with or without its prefix: `{ ids: ["recipe:material-wood-v1"] }` or
+`{ ids: ["material-wood-v1"] }`. A material recipe's summary names the call it stands
+for, `await materialRecipe("kiln.material.wood.v1")`. Search is local and needs no
+separate model, network call, or asset-category selection.
 
 The same workflow is available from your asset workspace in the CLI:
 
