@@ -374,7 +374,7 @@ Build a program and return geometry metrics, a bounded part-path preview and ima
               ]
             },
             "backdrop": {
-              "description": "Neutral grey unless a sheet shows merging: light if the part is darker, dark if lighter.",
+              "description": "neutral (default); light for dark parts, dark for light parts.",
               "type": "string",
               "enum": [
                 "neutral",
@@ -436,7 +436,7 @@ Build a program and return geometry metrics, a bounded part-path preview and ima
               }
             },
             "backdrop": {
-              "description": "Neutral grey unless a sheet shows merging: light if the part is darker, dark if lighter.",
+              "description": "neutral (default); light for dark parts, dark for light parts.",
               "type": "string",
               "enum": [
                 "neutral",
@@ -447,6 +447,14 @@ Build a program and return geometry metrics, a bounded part-path preview and ima
           },
           "additionalProperties": false
         }
+      ]
+    },
+    "detail": {
+      "description": "compact (default) counts repeated findings; full returns every finding and rule",
+      "type": "string",
+      "enum": [
+        "compact",
+        "full"
       ]
     },
     "programRef": {
@@ -691,6 +699,20 @@ Review animation images, poseBounds and loopClosure endpoint evidence. An open e
       "enum": [
         "locked",
         "follow"
+      ]
+    },
+    "size": {
+      "description": "Frame size in px; default 256.",
+      "type": "integer",
+      "minimum": 128,
+      "maximum": 1024
+    },
+    "detail": {
+      "description": "compact (default) counts repeated findings; full returns every finding and rule",
+      "type": "string",
+      "enum": [
+        "compact",
+        "full"
       ]
     },
     "code": {
@@ -945,7 +967,7 @@ Render roof-off floor-plan, dollhouse, and eye-level cutaway views. Optional ver
           ]
         },
         "backdrop": {
-          "description": "Neutral grey unless a sheet shows merging: light if the part is darker, dark if lighter.",
+          "description": "neutral (default); light for dark parts, dark for light parts.",
           "type": "string",
           "enum": [
             "neutral",
@@ -1623,7 +1645,7 @@ Atomically apply ordered exact-string replacements and render. Copy anchors from
               ]
             },
             "backdrop": {
-              "description": "Neutral grey unless a sheet shows merging: light if the part is darker, dark if lighter.",
+              "description": "neutral (default); light for dark parts, dark for light parts.",
               "type": "string",
               "enum": [
                 "neutral",
@@ -1685,7 +1707,7 @@ Atomically apply ordered exact-string replacements and render. Copy anchors from
               }
             },
             "backdrop": {
-              "description": "Neutral grey unless a sheet shows merging: light if the part is darker, dark if lighter.",
+              "description": "neutral (default); light for dark parts, dark for light parts.",
               "type": "string",
               "enum": [
                 "neutral",
@@ -1784,7 +1806,7 @@ Save a completed source revision into the user-requested collection, or project 
       "default": "project",
       "type": "string",
       "pattern": "^[a-z][a-z0-9_-]{0,79}$",
-      "description": "Destination collection ID. Discover available IDs with kiln_assets action=collections. Follow an explicit user destination; otherwise use project."
+      "description": "Collection ID (list with kiln_assets action=collections): the user destination, else project."
     },
     "programRef": {
       "type": "string"
@@ -1885,7 +1907,7 @@ collections discovers storage; catalog searches all configured collections; list
       "default": "project",
       "type": "string",
       "pattern": "^[a-z][a-z0-9_-]{0,79}$",
-      "description": "Destination collection ID. Discover available IDs with kiln_assets action=collections. Follow an explicit user destination; otherwise use project."
+      "description": "Collection ID (list with kiln_assets action=collections): the user destination, else project."
     },
     "assetId": {
       "type": "string",
@@ -1941,7 +1963,7 @@ Present one exact saved revision. Supporting MCP App clients show an interactive
       "default": "project",
       "type": "string",
       "pattern": "^[a-z][a-z0-9_-]{0,79}$",
-      "description": "Destination collection ID. Discover available IDs with kiln_assets action=collections. Follow an explicit user destination; otherwise use project."
+      "description": "Collection ID (list with kiln_assets action=collections): the user destination, else project."
     },
     "assetId": {
       "type": "string",
@@ -1980,7 +2002,7 @@ Export one saved revision. Default editable returns exact GLB, source, preview, 
       "default": "project",
       "type": "string",
       "pattern": "^[a-z][a-z0-9_-]{0,79}$",
-      "description": "Destination collection ID. Discover available IDs with kiln_assets action=collections. Follow an explicit user destination; otherwise use project."
+      "description": "Collection ID (list with kiln_assets action=collections): the user destination, else project."
     },
     "assetId": {
       "type": "string",
@@ -2029,7 +2051,7 @@ Copy a pinned asset revision between configured collections, preserving identity
       "default": "project",
       "type": "string",
       "pattern": "^[a-z][a-z0-9_-]{0,79}$",
-      "description": "Destination collection ID. Discover available IDs with kiln_assets action=collections. Follow an explicit user destination; otherwise use project."
+      "description": "Collection ID (list with kiln_assets action=collections): the user destination, else project."
     },
     "assetId": {
       "type": "string",
@@ -2043,7 +2065,7 @@ Copy a pinned asset revision between configured collections, preserving identity
       "default": "project",
       "type": "string",
       "pattern": "^[a-z][a-z0-9_-]{0,79}$",
-      "description": "Destination collection ID. Discover available IDs with kiln_assets action=collections. Follow an explicit user destination; otherwise use project."
+      "description": "Collection ID (list with kiln_assets action=collections): the user destination, else project."
     }
   },
   "required": [

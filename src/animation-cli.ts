@@ -18,6 +18,7 @@ ANIMATION REVIEW
   --shot <file.json>       one shared camera shot, including subject and camera
   --measure-parts <json>   file containing 1..16 {name} or {path} selectors
   --framing <mode>         locked (default) or follow
+  --size <128..1024>       frame size in px (default 256)
   --per-frame             write motion.frame-01.png, motion.frame-02.png, ...
   --render <mode>          auto | cpu | gpu; gpu requires material-faithful frames
   --render-port <url>      select a remote renderer
@@ -75,6 +76,7 @@ function parse(argv: readonly string[]) {
         '--shot',
         '--measure-parts',
         '--framing',
+        '--size',
         '--render',
         '--render-port',
         '--requirements',
@@ -126,6 +128,7 @@ function parse(argv: readonly string[]) {
       ...(flags.has('--frames') ? { frames: Number(value('--frames')) } : {}),
       ...(flags.has('--camera') ? { camera: value('--camera') } : {}),
       ...(flags.has('--framing') ? { framing: value('--framing') } : {}),
+      ...(flags.has('--size') ? { size: Number(value('--size')) } : {}),
       ...(flags.has('--per-frame') ? { perFrame: true } : {}),
     },
   };
@@ -176,7 +179,8 @@ export async function animationMain(argv: readonly string[]): Promise<number> {
       programRef?: string;
     };
     try {
-      output = (await tool.run({ ...source, ...input })) as typeof output;
+      // CLI receipts are machine output: keep the complete QA report.
+      output = (await tool.run({ ...source, ...input, detail: 'full' })) as typeof output;
     } finally {
       await context.liveReview?.flush?.();
     }

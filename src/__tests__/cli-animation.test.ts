@@ -161,6 +161,27 @@ test('CLI samples real clips with the same frames as the shared tool and preserv
       Buffer.from([137, 80, 78, 71]),
     );
 
+    // The frame size is selectable, and the CLI receipt keeps the complete QA report.
+    const sized = run([
+      result.programRef,
+      '--clip',
+      'Swing',
+      '--frames',
+      '2',
+      '--size',
+      '384',
+      '--render',
+      'cpu',
+      '--views',
+      'sized.png',
+      '--json',
+    ]);
+    expect(sized.stderr.toString()).toBe('');
+    expect(sized.exitCode).toBe(0);
+    const sizedResult = JSON.parse(sized.stdout.toString());
+    expect(decodePng(await readFile(sizedResult.images[0].path)).width).toBeGreaterThan(2 * 384);
+    expect(Array.isArray(sizedResult.qaReport.rules)).toBe(true);
+
     await writeFile(join(directory, 'guard.png'), 'existing image');
     const absent = run([
       result.programRef,
@@ -181,6 +202,8 @@ test('CLI samples real clips with the same frames as the shared tool and preserv
       ['--phases', '0,2'],
       ['--frames', '2', '--frames', '3'],
       ['--unknown', 'value'],
+      ['--size', '64'],
+      ['--size', 'big'],
     ]) {
       const rejected = run([
         result.programRef,

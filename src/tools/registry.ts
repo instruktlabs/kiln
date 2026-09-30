@@ -23,6 +23,12 @@ import { listAssetCatalog } from '../asset-catalog';
 import { createKilnMaterialDef } from './materials';
 import { createKilnReviewDef, type ReviewStore } from './review';
 import { withWorkspaceContext } from './workspace';
+import {
+  compactReviewResult,
+  partsHint,
+  reviewDetailInput,
+  type ReviewDetail,
+} from './review-detail';
 import { createCachedEvaluatorPort, MemoryBuildCache, type BuildCache } from '../build-cache';
 import * as THREE from 'three';
 
@@ -689,9 +695,7 @@ const renderInput = z.object({
 const backdropInput = z
   .enum(BACKDROP_IDS as [BackdropId, ...BackdropId[]])
   .optional()
-  .describe(
-    'Neutral grey unless a sheet shows merging: light if the part is darker, dark if lighter.',
-  );
+  .describe('neutral (default); light for dark parts, dark for light parts.');
 
 const legacyCaptureInput = z
   .object({
@@ -879,7 +883,11 @@ const captureInput = z
     'Use legacy preset/cells for an orbit sheet, or version kiln.capture.v1 with 1..9 shots for exact part framing, local axes, perspective and separate images. Omit for six default views.',
   );
 
-const renderViewsInput = renderInput.extend({ capture: captureInput });
+const renderViewsInput = renderInput.extend({ capture: captureInput, detail: reviewDetailInput });
+
+/** The requested review detail; anything but 'full' is compact, and invalid input fails parsing later. */
+const requestedDetail = (input: unknown): ReviewDetail =>
+  (input as { detail?: unknown } | null)?.detail === 'full' ? 'full' : 'compact';
 
 /** Unified-agent schema: the working buffer supplies `code`, while the model
  * still owns the deliberately bounded camera selection. Keeping this derived
@@ -905,6 +913,8 @@ const screenshotAnimationInput = z.object({
     .optional()
     .describe('Ordered phase fractions 0..1; mutually exclusive with frames.'),
   framing: z.enum(['locked', 'follow']).optional(),
+  size: z.number().int().min(128).max(1024).optional().describe('Frame size in px; default 256.'),
+  detail: reviewDetailInput,
   code: z
     .string()
     .describe('Kiln source code to execute; must define animate() returning the named clip.'),
@@ -1038,8 +1048,7 @@ async function partPreview(root: THREE.Object3D): Promise<PartPreview> {
       ? {}
       : {
           partsNextOffset: page.nextOffset,
-          partsHint:
-            'For remaining paths use kiln_inspect with image:false and listParts:{offset:80}. listParts.query filters names/paths; follow partListing.nextOffset on the same programRef and query.',
+          partsHint: partsHint(page.nextOffset),
         }),
   };
 }
@@ -1513,8 +1522,11 @@ export function createKilnRenderViewsDef(context: KilnToolContext = {}): KilnToo
     mediaMulti: screenshotAnimationMediaMulti,
     inputSchema: renderViewsInput,
     run: async (input) =>
-      guardCaptureBudget('kiln_render', input, statefulContext, () =>
-        runRenderViews(renderViewsInput.parse(input), statefulContext),
+      compactReviewResult(
+        await guardCaptureBudget('kiln_render', input, statefulContext, () =>
+          runRenderViews(renderViewsInput.parse(input), statefulContext),
+        ),
+        requestedDetail(input),
       ),
     media: screenshotMedia,
   };
@@ -1578,6 +1590,7 @@ async function runScreenshotAnimation(
       ...(input.framing ? { framing: input.framing } : {}),
       ...(input.camera ? { camera: input.camera } : {}),
       ...(input.perFrame ? { perFrame: true } : {}),
+      ...(input.size ? { size: input.size } : {}),
       renderDerivativeCell: (cell) => renderDerivativeCell(cell, context),
     });
     if (!r.ok) {
@@ -1669,8 +1682,11 @@ export function createKilnScreenshotAnimationDef(context: KilnToolContext = {}):
     description: KILN_SCREENSHOT_ANIMATION_DESCRIPTION,
     inputSchema: screenshotAnimationInput,
     run: async (input) =>
-      guardCaptureBudget('kiln_screenshot_animation', input, statefulContext, () =>
-        runScreenshotAnimation(screenshotAnimationInput.parse(input), statefulContext),
+      compactReviewResult(
+        await guardCaptureBudget('kiln_screenshot_animation', input, statefulContext, () =>
+          runScreenshotAnimation(screenshotAnimationInput.parse(input), statefulContext),
+        ),
+        requestedDetail(input),
       ),
     media: screenshotAnimationMedia,
     mediaMulti: screenshotAnimationMediaMulti,
@@ -1805,8 +1821,10 @@ export function createKilnViewInteriorDef(context: KilnToolContext = {}): KilnTo
     description: KILN_VIEW_INTERIOR_DESCRIPTION,
     inputSchema: viewInteriorInput,
     run: async (input) =>
-      guardCaptureBudget('kiln_view_interior', input, statefulContext, () =>
-        runViewInterior(viewInteriorInput.parse(input), statefulContext),
+      compactReviewResult(
+        await guardCaptureBudget('kiln_view_interior', input, statefulContext, () =>
+          runViewInterior(viewInteriorInput.parse(input), statefulContext),
+        ),
       ),
     media: screenshotMedia,
   };
@@ -2135,8 +2153,10 @@ export function createKilnInspectDef(context: KilnToolContext = {}): KilnToolDef
     description: KILN_INSPECT_DESCRIPTION,
     inputSchema: inspectInput,
     run: async (input) =>
-      guardCaptureBudget('kiln_inspect', input, statefulContext, () =>
-        runInspect(inspectInput.parse(input), statefulContext),
+      compactReviewResult(
+        await guardCaptureBudget('kiln_inspect', input, statefulContext, () =>
+          runInspect(inspectInput.parse(input), statefulContext),
+        ),
       ),
     media: screenshotMedia,
   };
@@ -2330,8 +2350,10 @@ export function createKilnEditDef(context: KilnToolContext = {}): KilnToolDef {
     description: KILN_EDIT_DESCRIPTION,
     inputSchema: editInput,
     run: async (input) =>
-      guardCaptureBudget('kiln_edit', input, statefulContext, () =>
-        runEdit(editInput.parse(input), statefulContext),
+      compactReviewResult(
+        await guardCaptureBudget('kiln_edit', input, statefulContext, () =>
+          runEdit(editInput.parse(input), statefulContext),
+        ),
       ),
     media: (output) => {
       const o = output as KilnEditResult | undefined;
@@ -2413,6 +2435,7 @@ async function guardCaptureBudget(
       render?: boolean;
       image?: boolean;
       shot?: unknown;
+      size?: number;
     };
     if (name === 'kiln_edit' && args.render === false) return await run();
     if (name === 'kiln_inspect' && args.image === false) return await run();
@@ -2427,7 +2450,7 @@ async function guardCaptureBudget(
       compose = Boolean(args.shot);
     } else if (name === 'kiln_screenshot_animation') {
       cells = args.frameTimes?.length ?? args.frames ?? 6;
-      size = 256;
+      size = args.size ?? 256;
     } else if (name === 'kiln_view_interior') {
       cells = 3;
       size = 256;
@@ -2685,7 +2708,7 @@ const assetSelector = {
     .string()
     .regex(/^[a-z][a-z0-9_-]{0,79}$/)
     .describe(
-      'Destination collection ID. Discover available IDs with kiln_assets action=collections. Follow an explicit user destination; otherwise use project.',
+      'Collection ID (list with kiln_assets action=collections): the user destination, else project.',
     )
     .default('project'),
   assetId: z.string().regex(/^[a-z][a-z0-9_-]{0,79}$/),

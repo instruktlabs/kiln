@@ -70,7 +70,9 @@ skill-resource reader adds `kiln_skill_resource` to either native set.
 
 Both skins use unified `kiln_render`: metrics, part paths, QA, images and fidelity share one
 evaluation. `kiln_screenshot`, the mutable-buffer factories and the surface selector are
-retired. `kiln_validate` is the image-free syntax check.
+retired. `kiln_validate` is the image-free syntax check. Review results are compact by
+default and `detail: 'full'` returns the complete QA report; compaction happens at the
+output boundary, after the retained artifact is recorded (`src/tools/review-detail.ts`).
 
 Native completion uses `kiln_finish({programRef})`, defined in the registry. It selects an
 exact retained reviewed artifact without re-evaluation; completion and QA acceptance stay

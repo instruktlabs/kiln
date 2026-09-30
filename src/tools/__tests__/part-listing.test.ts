@@ -1,5 +1,6 @@
 import { expect, test } from 'bun:test';
 import { createKilnProgramToolRegistry } from '../registry';
+import { COMPACT_PART_PREVIEW } from '../review-detail';
 
 const code = `const meta={name:'Part inventory'};function build(){
 const root=createRoot('Root'), m=gameMaterial('#888888');
@@ -32,18 +33,23 @@ interface Output {
 
 test('all render paths identify their bounded part preview and the next inspection page', async () => {
   const render = createKilnProgramToolRegistry().find((t) => t.name === 'kiln_render')!;
-  for (const [tool, controls] of [
-    [render, { capture: { preset: '1x1' } }],
-    [render, { capture: { version: 'kiln.capture.v1', shots: [{}], size: 128 } }],
+  for (const [detail, preview] of [
+    [undefined, COMPACT_PART_PREVIEW],
+    ['full', 80],
   ] as const) {
-    const output = (await tool.run({ code, ...controls })) as Output;
-    expect(output.ok).toBe(true);
-    expect(output.parts).toHaveLength(80);
-    expect(output.partsTotal).toBeGreaterThan(80);
-    expect(output.partsTruncated).toBe(true);
-    expect(output.partsNextOffset).toBe(80);
-    expect(output.partsHint).toContain('listParts');
-    expect(output.parts.some((p) => p.name === 'Lug / [left]')).toBe(false);
+    for (const controls of [
+      { capture: { preset: '1x1' } },
+      { capture: { version: 'kiln.capture.v1', shots: [{}], size: 128 } },
+    ]) {
+      const output = (await render.run({ code, ...controls, detail })) as Output;
+      expect(output.ok).toBe(true);
+      expect(output.parts).toHaveLength(preview);
+      expect(output.partsTotal).toBeGreaterThan(80);
+      expect(output.partsTruncated).toBe(true);
+      expect(output.partsNextOffset).toBe(preview);
+      expect(output.partsHint).toContain(`listParts:{offset:${preview}}`);
+      expect(output.parts.some((p) => p.name === 'Lug / [left]')).toBe(false);
+    }
   }
 });
 

@@ -91,7 +91,8 @@ test('render JSON describes exact files and preserves shared image/requirements 
     { KILN_EVALUATOR_MODE: 'in-process', KILN_WORKSPACE: directory },
   );
   const tool = createKilnProgramToolRegistry(context).find((t) => t.name === 'kiln_render')!;
-  const expected = await tool.run({ code: source, capture: { preset: '1x1' } });
+  // The CLI receipt is the full-detail form of the shared tool result.
+  const expected = await tool.run({ code: source, capture: { preset: '1x1' }, detail: 'full' });
   await context.liveReview?.flush?.();
   expect(
     (await readdir(join(directory, '.kiln', 'review'))).filter((name) => name.startsWith('op_')),

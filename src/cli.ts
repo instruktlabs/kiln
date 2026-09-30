@@ -331,6 +331,8 @@ async function emit(
     const output = await def.run({
       programRef,
       ...(args.captureRecipe === undefined ? {} : { capture: args.captureRecipe }),
+      // The receipt is machine output: keep the complete QA report and part preview.
+      detail: 'full',
     });
     captured = output as Record<string, unknown>;
     const failure = output as { ok?: unknown; error?: unknown } | null;
