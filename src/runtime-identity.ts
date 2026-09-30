@@ -13,6 +13,8 @@ type Package = {
 };
 export interface InstalledRuntimeIdentity {
   identity?: string;
+  /** The dist build identity (`dist/build.json`) that a workspace manifest records. */
+  buildIdentity?: string;
   reason?: string;
   files: number;
   bytes: number;
@@ -187,7 +189,13 @@ export async function installedRuntimeIdentity(
       },
       dependencies: records,
     };
-    return { identity: `sha256:${digest(JSON.stringify(inputs))}`, files, bytes, absentPackages };
+    return {
+      identity: `sha256:${digest(JSON.stringify(inputs))}`,
+      buildIdentity: worker.identity,
+      files,
+      bytes,
+      absentPackages,
+    };
   } catch (error) {
     return {
       reason: error instanceof Error ? error.message : String(error),

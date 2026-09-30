@@ -121,6 +121,8 @@ for (const policy of ['off', 'memory']) {
     const result = run(policy);
     expect(result.engine).toBe(result.expected);
     expect(result.execution.runtimeIdentity).toBe(result.expected);
+    // The dist build identity a workspace manifest records, reported under its own name.
+    expect(result.execution.buildIdentity).toBe(sha('provenance-fixture'));
     expect(result.absent).toContainEqual({
       path: 'dependencies/kiln-provenance-fixture/kiln-provenance-omitted-peer',
       kind: 'peer-absent',
@@ -140,6 +142,7 @@ for (const policy of ['off', 'memory']) {
     const result = run(policy, 'invalid');
     expect(result.engine).toBe('source-development:unverified');
     expect(result.execution.runtimeIdentity).toBeUndefined();
+    expect(result.execution.buildIdentity).toBeUndefined();
     expect(result.execution.cacheReason).toContain('No valid packaged worker identity');
   });
 }

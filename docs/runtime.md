@@ -113,6 +113,17 @@ Advanced geometry callbacks also have operation-specific input limits. Those che
 
 ## What a build identity covers
 
+Two hashes identify a local Kiln and they answer different questions. The **build
+identity** names the dist bundles built from one engine source (`dist/build.json`);
+`.kiln/workspace.json` records it as `buildIdentity` (workspaces created before 0.9
+called it `runtimeIdentity`) and discovery reports it as `execution.buildIdentity`.
+The **installed runtime identity** also covers the installed dependency closure and the
+Node version, platform and architecture that ran it; discovery reports it as
+`execution.runtimeIdentity` and saves record it as `build.engine`. Compare
+`buildIdentity` with the workspace manifest to confirm the server runs the build the
+workspace was set up against, and `build.engine` with `execution.runtimeIdentity` to
+tie a saved revision to the host that produced it.
+
 Packaged Node subprocess saves and migration rebuilds record the installed runtime
 identity in `build.engine` and `localExecution.runtimeIdentity`, independently of
 `KILN_BUILD_CACHE=disk|memory|off` or `cacheEvaluations: false`. Disk reuse checks the

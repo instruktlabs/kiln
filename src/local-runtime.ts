@@ -28,7 +28,10 @@ export interface LocalExecution {
   cacheScope: 'process' | 'disk' | 'disabled';
   cacheBytes?: number;
   cacheReason?: string;
+  /** Installed runtime identity: worker bytes, installed dependencies and Node/platform. */
   runtimeIdentity?: string;
+  /** The dist build identity alone; `.kiln/workspace.json` records the same value. */
+  buildIdentity?: string;
 }
 
 let scope = 0;
@@ -224,8 +227,10 @@ export async function createPackagedLocalToolContext(
   let pendingIdentity: ReturnType<typeof installedRuntimeIdentity> | undefined;
   const identityForHost = () =>
     (pendingIdentity ??= installedRuntimeIdentity(installationRoot).then((identity) => {
-      if (identity.identity) context.localExecution.runtimeIdentity = identity.identity;
-      else context.localExecution.cacheReason = identity.reason;
+      if (identity.identity) {
+        context.localExecution.runtimeIdentity = identity.identity;
+        context.localExecution.buildIdentity = identity.buildIdentity;
+      } else context.localExecution.cacheReason = identity.reason;
       return identity;
     }));
   if (packagedNode) {
@@ -274,6 +279,7 @@ export async function createPackagedLocalToolContext(
     cacheScope: 'disk',
     cacheBytes,
     runtimeIdentity: identity.identity,
+    buildIdentity: identity.buildIdentity,
   };
   return managed();
 }

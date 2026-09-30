@@ -233,7 +233,8 @@ leftovers rather than anything this repository ships, but both answer tool calls
 announcing what they are.
 
 Call `kiln_discover` with `{ capabilities: true }` and compare `capabilities.engine` --
-`version` and `installUrl` -- against `runtime` in `.kiln/workspace.json`. Workspaces also
+`version` and `installUrl` -- against `runtime` in `.kiln/workspace.json`, and
+`execution.buildIdentity` against its `buildIdentity` ([identities](runtime.md#what-a-build-identity-covers)). Workspaces also
 register under their own `kiln_workspace` name. Report a mismatch rather than silently
 substituting it.
 

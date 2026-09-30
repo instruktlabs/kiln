@@ -226,6 +226,34 @@ it('diagnoses and upgrades a same-version runtime and all skill copies without c
   }
 }, 30000);
 
+it('records the dist build identity under its own name and accepts the legacy field', async () => {
+  const temp = await mkdtemp(join(tmpdir(), 'kiln-build-identity-'));
+  try {
+    const runtime = join(temp, 'runtime'),
+      root = join(temp, 'workspace');
+    await fixture(runtime, 'before');
+    expect(invoke(root, runtime).status).toBe(0);
+    const manifestPath = join(root, '.kiln/workspace.json');
+    const manifest = JSON.parse(await readFile(manifestPath, 'utf8'));
+    // Discovery's execution.runtimeIdentity and a save's build.engine are the installed
+    // runtime identity, a different hash; this field names the dist build only.
+    expect(manifest.buildIdentity).toBe(`sha256:${sha('before')}`);
+    expect(manifest.runtimeIdentity).toBeUndefined();
+    // Manifests written before the rename carry the same value as runtimeIdentity.
+    const { buildIdentity, ...rest } = manifest;
+    await put(manifestPath, JSON.stringify({ ...rest, runtimeIdentity: buildIdentity }));
+    const check = JSON.parse(invoke(root, runtime, { check: true }).stdout);
+    expect(check.runtimeChanged).toBe(false);
+    expect(check.status).toBe('current');
+    expect(invoke(root, runtime, { upgrade: true }).status).toBe(0);
+    const upgraded = JSON.parse(await readFile(manifestPath, 'utf8'));
+    expect(upgraded.buildIdentity).toBe(buildIdentity);
+    expect(upgraded.runtimeIdentity).toBeUndefined();
+  } finally {
+    await rm(temp, { recursive: true, force: true });
+  }
+}, 30000);
+
 it('stops actual CLI and MCP startup on stale skill copies, then restores CLI discovery after upgrade', async () => {
   const temp = await mkdtemp(join(tmpdir(), 'kiln-upgrade-startup-'));
   try {

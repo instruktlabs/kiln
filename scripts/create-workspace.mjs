@@ -470,7 +470,8 @@ async function upgradeWorkspace(root, runtime, previous, manifest, files, check)
     previous.runtime !== runtime ||
     previous.node !== manifest.node ||
     previous.runtimeVersion !== manifest.runtimeVersion ||
-    previous.runtimeIdentity !== manifest.runtimeIdentity ||
+    // Manifests written before 0.9 named the same dist build identity runtimeIdentity.
+    (previous.buildIdentity ?? previous.runtimeIdentity) !== manifest.buildIdentity ||
     JSON.stringify(previous.runtimeHashes) !== JSON.stringify(manifest.runtimeHashes);
   const changes = entries.filter((e) => !['current', 'customized'].includes(e.status));
   const conflicts = entries.filter((e) => e.status === 'conflict');
@@ -632,8 +633,10 @@ export async function createWorkspace(directory, harness = 'claude', options = {
     harness,
     runtime,
     runtimeVersion: pkg.version,
-    runtimeIdentity: JSON.parse(await readFile(join(runtime, 'dist/build.json'), 'utf8')).entries
-      .cli.identity,
+    // The dist build identity. The installed runtime identity that discovery reports as
+    // execution.runtimeIdentity and saves record as build.engine is a different hash.
+    buildIdentity: JSON.parse(await readFile(join(runtime, 'dist/build.json'), 'utf8')).entries.cli
+      .identity,
     runtimeHashes: {
       cli: hash(await readFile(join(runtime, 'dist/cli.mjs'))),
       mcp: hash(await readFile(join(runtime, 'dist/mcp-server.mjs'))),
