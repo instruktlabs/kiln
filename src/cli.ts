@@ -316,6 +316,9 @@ async function emit(
     ...(result.buildCache ? { buildCache: result.buildCache } : {}),
     tris: result.tris,
     bounds: result.integrationManifest.bounds,
+    ...(result.integrationManifest.levelsOfDetail
+      ? { levelsOfDetail: result.integrationManifest.levelsOfDetail }
+      : {}),
     artifactGlbSha256: result.artifactGlbSha256,
     glbBytes: result.glb.length,
     warnings: result.warnings,
@@ -344,6 +347,15 @@ async function emit(
     if (Array.isArray(size)) {
       log(`  bounds  ${size.map((n) => Number(n).toFixed(2)).join(' x ')} m`);
     }
+  }
+  // Tris and bounds above are LOD0's; each chain lists every level's count.
+  for (const chain of result.integrationManifest.levelsOfDetail ?? []) {
+    const coverage = chain.screenCoverage
+      ? `  screen coverage ${chain.screenCoverage.join(' / ')}`
+      : '';
+    log(
+      `  LOD ${chain.path}  ${chain.levels.map((level) => level.triangles).join(' / ')} tris${coverage}`,
+    );
   }
   for (const w of result.warnings) log(`  warning: ${w}`);
 

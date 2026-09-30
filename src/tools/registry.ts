@@ -36,7 +36,7 @@ import * as THREE from 'three';
 import { validate, type ValidationIssue } from '../validation';
 import { appendSourceCheck } from '../evaluator/source-check';
 import { inspectSceneStructure, renderSceneToGLB, type RenderResult } from '../render';
-import type { AssetCategory, AssetIntentV1 } from '../contracts';
+import type { AssetCategory, AssetIntentV1, LevelOfDetailChainV1 } from '../contracts';
 import type { AssetQaReport } from '../qa';
 import type { RequirementsBinding } from '../requirements-store';
 import {
@@ -1195,6 +1195,9 @@ export interface KilnRenderViewsResult extends PartPreview {
   distinctMaterials?: number;
   bbox?: { min: number[]; max: number[]; size: number[] };
   lowestPart?: { name: string; y: number };
+  /** MSFT_lod chains: each level's name, shot path and triangles. `tris`, `bbox` and default
+   *  views cover LOD0 and the parts outside every chain. */
+  levelsOfDetail?: LevelOfDetailChainV1[];
   /** Post-dedup instanceability grade (informational): how cheap to render at scale. */
   instanceability?: { grade: string; summary: string };
   /** Structured deterministic report; five dimensions remain separate. */
@@ -1220,6 +1223,12 @@ export interface KilnRenderViewsResult extends PartPreview {
   viewEvidence?: ViewEvidenceHistoryV1;
   warnings: string[];
   error?: string;
+}
+
+/** The written GLB's MSFT_lod chains, when it has any. */
+function levelsOfDetailField(rendered: RenderResult): { levelsOfDetail?: LevelOfDetailChainV1[] } {
+  const chains = rendered.integrationManifest?.levelsOfDetail;
+  return chains?.length ? { levelsOfDetail: chains } : {};
 }
 
 /** Evaluate once, then return metrics, structural advisories and views. Failed builds are image-free. */
@@ -1298,6 +1307,7 @@ async function runRenderViews(
           : {}),
         bbox: metrics.bbox,
         lowestPart: metrics.lowestPart,
+        ...levelsOfDetailField(rendered),
         views: grid.views,
         capture: grid.capture,
         ...(grid.captureCache ? { captureCache: grid.captureCache } : {}),
@@ -1457,6 +1467,7 @@ async function runRenderViews(
         : {}),
       bbox: metrics.bbox,
       lowestPart: metrics.lowestPart,
+      ...levelsOfDetailField(rendered),
       ...(rendered.meta.instanceability
         ? {
             instanceability: {

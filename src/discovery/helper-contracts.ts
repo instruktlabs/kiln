@@ -792,12 +792,14 @@ define(
     ],
     semantics: [
       'Level i draws while the asset covers at least screenCoverage[i] of the screen; below the last value it is culled.',
+      'Export writes the set as one MSFT_lod chain: LOD0 stays in the scene and lists the lower levels, which leave it; LOD0 extras.MSFT_screencoverage holds the thresholds.',
+      'Reported triangles and bounds count LOD0; levelsOfDetail in render results lists each level with its triangles and path.',
       'A set of two or more tiers without this declaration, with a gap, or without LOD0 is an LOD_SET build error.',
     ],
     cost: 'Metadata on one node; lower levels still cost file size.',
   },
   {
-    references: ['src/lod.ts'],
+    references: ['src/lod.ts', 'src/lod-export.ts'],
     tags: ['hierarchy', 'lod', 'export'],
     aliases: ['level of detail', 'LOD tiers', 'MSFT_lod', 'screen coverage'],
     intents: ['export level-of-detail tiers as one chain'],

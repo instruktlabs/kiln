@@ -5,13 +5,24 @@
  * scene and lists lower levels by node index in `extensions.MSFT_lod.ids`; the lower levels
  * live outside every scene, and a material may list lower-cost materials the same way. The
  * fixture here is written the way another tool writes it (patched glTF JSON packed by hand),
- * so it does not depend on Kiln's own extension support. Every seam that re-saves bytes must
- * keep each chain with valid ids, and a pass that would move or fold a LOD node stands down.
+ * so it does not depend on Kiln's own extension support. A second fixture is the same buses
+ * written by Kiln from declared tiers (`defineLod`), which carries no material chain. Every seam
+ * that re-saves bytes must keep each chain with valid ids, and a pass that would move or fold a
+ * LOD node stands down.
  */
 import { describe, expect, test } from 'bun:test';
 import { Document, Format, type Buffer as GltfBuffer, type Material } from '@gltf-transform/core';
+import * as THREE from 'three';
 import { createGltfIO } from '../gltf-io';
-import { composeSceneGLB, optimizeGlbBytes, packKitGlb, snapGlbToPalette } from '../render';
+import { defineLod } from '../lod';
+import { createRoot, gameMaterial } from '../primitives';
+import {
+  composeSceneGLB,
+  optimizeGlbBytes,
+  packKitGlb,
+  renderSceneToGLB,
+  snapGlbToPalette,
+} from '../render';
 
 interface NodeJson {
   name?: string;
@@ -30,6 +41,7 @@ interface GlbJson {
 }
 
 const SCREEN_COVERAGE = [0.5, 0.2, 0.01];
+const KILN_COVERAGE = [0.4, 0.1, 0];
 
 function glbJson(bytes: Uint8Array): GlbJson {
   const view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
@@ -144,6 +156,59 @@ async function lodGlb(copies = 1): Promise<Uint8Array> {
   return packGlb(json, Object.values(resources)[0]!);
 }
 
+/**
+ * The same buses authored in Kiln: `Bus_n` holds its three tiers as sibling mesh nodes
+ * declared with defineLod, and Kiln's own export writes the chain. The bodies share one
+ * geometry and material, so five copies still cross the GPU-instancing threshold.
+ */
+async function kilnLodGlb(copies = 1): Promise<Uint8Array> {
+  const root = createRoot('Fleet');
+  const paint = gameMaterial('#cc3319');
+  const trim = gameMaterial('#1a4db3');
+  const tyre = gameMaterial('#0d0d0d');
+  const sign = gameMaterial('#e6e633');
+  const body = new THREE.BoxGeometry(2, 2, 2);
+  const bodyMid = new THREE.BoxGeometry(1.9, 1.9, 1.9);
+  const bodyFar = new THREE.BoxGeometry(1.8, 1.8, 1.8);
+  const signBox = new THREE.BoxGeometry(0.4, 0.4, 0.4);
+  const mesh = (name: string, geometry: THREE.BufferGeometry, material: THREE.Material) => {
+    const node = new THREE.Mesh(geometry, material);
+    node.name = name;
+    return node;
+  };
+  for (let i = 0; i < copies; i++) {
+    const name = copies === 1 ? 'Bus' : `Bus_${i}`;
+    const group = new THREE.Group();
+    group.name = name;
+    group.position.set(5 + 3 * i, 0, 0);
+    root.add(group);
+    const tiers = [
+      mesh(`${name}_LOD0`, body, paint),
+      mesh(`${name}_LOD1`, bodyMid, trim),
+      mesh(`${name}_LOD2`, bodyFar, tyre),
+    ];
+    const signNode = mesh(`${name}_Sign`, signBox, sign);
+    signNode.position.set(0, 1.5, 0);
+    group.add(tiers[0]!, signNode, tiers[1]!, tiers[2]!);
+    defineLod(tiers, { screenCoverage: KILN_COVERAGE });
+  }
+  const rendered = await renderSceneToGLB(root, { optimize: 'off', instance: 'off' });
+  return rendered.bytes;
+}
+
+interface LodFixture {
+  label: string;
+  make: (copies?: number) => Promise<Uint8Array>;
+  coverage: number[];
+  /** Another tool's fixture also chains the body material; Kiln never writes one. */
+  materialChain: boolean;
+}
+
+const FIXTURES: LodFixture[] = [
+  { label: 'imported', make: lodGlb, coverage: SCREEN_COVERAGE, materialChain: true },
+  { label: 'Kiln-authored', make: kilnLodGlb, coverage: KILN_COVERAGE, materialChain: false },
+];
+
 function sceneNodeIndices(json: GlbJson): Set<number> {
   const reached = new Set<number>();
   const visit = (index: number) => {
@@ -166,9 +231,10 @@ function parentName(json: GlbJson, index: number): string | undefined {
 /**
  * Asserts one intact chain per bus: LOD0 in the scene under its own group, lower levels
  * resolving to distinct off-scene nodes with the expected names, the coverage extras kept,
- * and the body material listing one lower-cost material. Returns the material chain names.
+ * and, for a fixture with one, the body material listing one lower-cost material. Returns the
+ * material chain names.
  */
-function expectLodChains(bytes: Uint8Array, buses: string[]): string[][] {
+function expectLodChains(bytes: Uint8Array, buses: string[], fixture: LodFixture): string[][] {
   const json = glbJson(bytes);
   expect(json.extensionsUsed ?? []).toContain('MSFT_lod');
   const inScene = sceneNodeIndices(json);
@@ -191,9 +257,13 @@ function expectLodChains(bytes: Uint8Array, buses: string[]): string[][] {
       expect(nodes[id]?.mesh).toBeDefined();
       levels.add(id);
     }
-    expect(node.extras?.['MSFT_screencoverage']).toEqual(SCREEN_COVERAGE);
+    expect(node.extras?.['MSFT_screencoverage']).toEqual(fixture.coverage);
     const materialIndex = json.meshes?.[node.mesh!]?.primitives[0]?.material;
     const materialIds = lodIds(json.materials?.[materialIndex!]?.extensions);
+    if (!fixture.materialChain) {
+      expect(materialIds).toBeUndefined();
+      continue;
+    }
     expect(materialIds).toHaveLength(1);
     expect(materialIds![0]).not.toBe(materialIndex);
     const lower = json.materials?.[materialIds![0]!];
@@ -204,72 +274,82 @@ function expectLodChains(bytes: Uint8Array, buses: string[]): string[][] {
   return materialChains;
 }
 
-describe('MSFT_lod survives Kiln GLB rewrites', () => {
-  test('a Kiln read and write keeps node and material LOD chains', async () => {
-    const io = createGltfIO();
-    const bytes = await io.writeBinary(await io.readBinary(await lodGlb()));
+for (const fixture of FIXTURES) {
+  describe(`MSFT_lod (${fixture.label}) survives Kiln GLB rewrites`, () => {
+    test('a Kiln read and write keeps node and material LOD chains', async () => {
+      const io = createGltfIO();
+      const bytes = await io.writeBinary(await io.readBinary(await fixture.make()));
 
-    expect(expectLodChains(bytes, ['Bus'])).toEqual([['Paint', 'Paint_low']]);
-  });
-
-  test('palette consolidation keeps levels that only MSFT_lod references', async () => {
-    const result = await optimizeGlbBytes(await lodGlb(), { mode: 'palette' });
-
-    expect(result?.summary?.mode).toBe('palette');
-    // palette() rebinds the body to a clone; the chain moves with it and stays distinct.
-    const [[body, lower]] = expectLodChains(result!.bytes, ['Bus']) as [[string, string]];
-    expect(body).toMatch(/^PaletteMaterial/);
-    expect(lower).toBe('Paint_low');
-  });
-
-  test('full consolidation degrades to palette instead of flattening a LOD chain', async () => {
-    const result = await optimizeGlbBytes(await lodGlb(), { mode: 'full' });
-
-    expect(result?.summary?.mode).toBe('palette');
-    expectLodChains(result!.bytes, ['Bus']);
-  });
-
-  test('GPU instancing stands down rather than fold LOD nodes into a batch', async () => {
-    const bytes = await lodGlb(5);
-
-    expect(await optimizeGlbBytes(bytes, { mode: 'off', instance: 'on' })).toBeUndefined();
-    const combined = await optimizeGlbBytes(bytes, { mode: 'palette', instance: 'on' });
-    expect(combined?.instancing).toBeUndefined();
-    expect(glbJson(combined!.bytes).extensionsUsed ?? []).not.toContain('EXT_mesh_gpu_instancing');
-    expectLodChains(
-      combined!.bytes,
-      [0, 1, 2, 3, 4].map((i) => `Bus_${i}`),
-    );
-  });
-
-  test('palette snap and kit packing keep the chain', async () => {
-    const bytes = await lodGlb();
-    const snapped = await snapGlbToPalette(bytes, [{ color: '#cc3311' }, { color: '#2255aa' }]);
-    const packed = await packKitGlb(bytes, {
-      variants: [{ name: 'Night', slots: [{ color: '#112233' }] }],
-      ktx2: false,
+      expect(expectLodChains(bytes, ['Bus'], fixture)).toEqual(
+        fixture.materialChain ? [['Paint', 'Paint_low']] : [],
+      );
     });
 
-    expect(snapped?.snapped).toBeGreaterThan(0);
-    expectLodChains(snapped!.bytes, ['Bus']);
-    expect(packed?.summary.variantsAdded).toEqual(['Night']);
-    expectLodChains(packed!.bytes, ['Bus']);
-  });
+    test('palette consolidation keeps levels that only MSFT_lod references', async () => {
+      const result = await optimizeGlbBytes(await fixture.make(), { mode: 'palette' });
 
-  test('scene composition keeps each placement on its own chain', async () => {
-    const bytes = await lodGlb();
-    const place = (x: number) => ({
-      bytes,
-      transform: {
-        pos: [x, 0, 0] as [number, number, number],
-        rotDeg: [0, 0, 0] as [number, number, number],
-        scale: [1, 1, 1] as [number, number, number],
-      },
+      expect(result?.summary?.mode).toBe('palette');
+      // palette() rebinds the body to a clone; the chain moves with it and stays distinct.
+      const chains = expectLodChains(result!.bytes, ['Bus'], fixture);
+      if (fixture.materialChain) {
+        const [[body, lower]] = chains as [[string, string]];
+        expect(body).toMatch(/^PaletteMaterial/);
+        expect(lower).toBe('Paint_low');
+      }
     });
 
-    for (const optimize of ['palette', 'full'] as const) {
-      const scene = await composeSceneGLB([place(0), place(20)], { optimize });
-      expectLodChains(scene.bytes, ['Bus', 'Bus']);
-    }
+    test('full consolidation degrades to palette instead of flattening a LOD chain', async () => {
+      const result = await optimizeGlbBytes(await fixture.make(), { mode: 'full' });
+
+      expect(result?.summary?.mode).toBe('palette');
+      expectLodChains(result!.bytes, ['Bus'], fixture);
+    });
+
+    test('GPU instancing stands down rather than fold LOD nodes into a batch', async () => {
+      const bytes = await fixture.make(5);
+
+      expect(await optimizeGlbBytes(bytes, { mode: 'off', instance: 'on' })).toBeUndefined();
+      const combined = await optimizeGlbBytes(bytes, { mode: 'palette', instance: 'on' });
+      expect(combined?.instancing).toBeUndefined();
+      expect(glbJson(combined!.bytes).extensionsUsed ?? []).not.toContain(
+        'EXT_mesh_gpu_instancing',
+      );
+      expectLodChains(
+        combined!.bytes,
+        [0, 1, 2, 3, 4].map((i) => `Bus_${i}`),
+        fixture,
+      );
+    });
+
+    test('palette snap and kit packing keep the chain', async () => {
+      const bytes = await fixture.make();
+      const snapped = await snapGlbToPalette(bytes, [{ color: '#cc3311' }, { color: '#2255aa' }]);
+      const packed = await packKitGlb(bytes, {
+        variants: [{ name: 'Night', slots: [{ color: '#112233' }] }],
+        ktx2: false,
+      });
+
+      expect(snapped?.snapped).toBeGreaterThan(0);
+      expectLodChains(snapped!.bytes, ['Bus'], fixture);
+      expect(packed?.summary.variantsAdded).toEqual(['Night']);
+      expectLodChains(packed!.bytes, ['Bus'], fixture);
+    });
+
+    test('scene composition keeps each placement on its own chain', async () => {
+      const bytes = await fixture.make();
+      const place = (x: number) => ({
+        bytes,
+        transform: {
+          pos: [x, 0, 0] as [number, number, number],
+          rotDeg: [0, 0, 0] as [number, number, number],
+          scale: [1, 1, 1] as [number, number, number],
+        },
+      });
+
+      for (const optimize of ['palette', 'full'] as const) {
+        const scene = await composeSceneGLB([place(0), place(20)], { optimize });
+        expectLodChains(scene.bytes, ['Bus', 'Bus'], fixture);
+      }
+    });
   });
-});
+}

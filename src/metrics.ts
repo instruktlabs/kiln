@@ -63,6 +63,45 @@ export interface InstanceabilityReport {
   metrics: InstanceabilityMetrics;
 }
 
+function primTris(prim: import('@gltf-transform/core').Primitive): number {
+  const count = prim.getIndices()?.getCount() ?? prim.getAttribute('POSITION')?.getCount() ?? 0;
+  switch (prim.getMode()) {
+    case 4:
+      return Math.floor(count / 3); // TRIANGLES
+    case 5: // TRIANGLE_STRIP
+    case 6:
+      return Math.max(0, count - 2); // TRIANGLE_FAN
+    default:
+      return 0; // points and lines are not triangles
+  }
+}
+
+function instanceCopies(node: import('@gltf-transform/core').Node): number {
+  const ext = node.getExtension('EXT_mesh_gpu_instancing') as {
+    getAttribute?: (name: string) => { getCount(): number } | null;
+  } | null;
+  if (!ext) return 1;
+  return (
+    ext.getAttribute?.('TRANSLATION')?.getCount() ??
+    ext.getAttribute?.('ROTATION')?.getCount() ??
+    ext.getAttribute?.('SCALE')?.getCount() ??
+    1
+  );
+}
+
+/** Placed triangles in one node's subtree, instance copies included, whether or not a scene
+ *  reaches it: the per-level count of an `MSFT_lod` chain. */
+export function nodeTriangles(node: import('@gltf-transform/core').Node): number {
+  let triangles = 0;
+  const mesh = node.getMesh();
+  if (mesh) {
+    const copies = instanceCopies(node);
+    for (const prim of mesh.listPrimitives()) triangles += primTris(prim) * copies;
+  }
+  for (const child of node.listChildren()) triangles += nodeTriangles(child);
+  return triangles;
+}
+
 /**
  * Collect instanceability metrics from a baked glTF Document.
  *
@@ -81,38 +120,14 @@ export function collectGlbMetrics(doc: Document, triangles?: number): Instanceab
   let meshNodes = 0;
   let meshInstances = 0;
 
-  const primTris = (prim: import('@gltf-transform/core').Primitive): number => {
-    const count = prim.getIndices()?.getCount() ?? prim.getAttribute('POSITION')?.getCount() ?? 0;
-    switch (prim.getMode()) {
-      case 4:
-        return Math.floor(count / 3); // TRIANGLES
-      case 5: // TRIANGLE_STRIP
-      case 6:
-        return Math.max(0, count - 2); // TRIANGLE_FAN
-      default:
-        return 0; // points and lines are not triangles
-    }
-  };
-
   // Walk every node in every scene; a node referencing a mesh issues one draw
   // per primitive. Shared meshes (dedup-instanced) are referenced by multiple
   // nodes and therefore counted multiple times — that's the real draw cost,
   // and the real rendered-triangle total. A node batched by the M1c pass
   // (EXT_mesh_gpu_instancing) is ONE draw per primitive but renders N copies,
   // so its triangles multiply by the instance count while drawCalls stay 1 —
-  // exactly what a supporting GPU does with it.
-  const instanceCopies = (node: import('@gltf-transform/core').Node): number => {
-    const ext = node.getExtension('EXT_mesh_gpu_instancing') as {
-      getAttribute?: (name: string) => { getCount(): number } | null;
-    } | null;
-    if (!ext) return 1;
-    return (
-      ext.getAttribute?.('TRANSLATION')?.getCount() ??
-      ext.getAttribute?.('ROTATION')?.getCount() ??
-      ext.getAttribute?.('SCALE')?.getCount() ??
-      1
-    );
-  };
+  // exactly what a supporting GPU does with it. Nodes outside every scene, such
+  // as the lower levels of an MSFT_lod chain, are not drawn and not counted.
   const visit = (node: import('@gltf-transform/core').Node): void => {
     const mesh = node.getMesh();
     if (mesh) {

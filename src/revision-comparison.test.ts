@@ -5,6 +5,7 @@ import { compareRevisionGlbs } from './revision-comparison';
 import { loadGlbReviewScene } from './views/glb';
 import { listCameraSubjects } from './views/camera';
 import { renderGLBInProcess as render } from './render';
+import { TIERED_CAR, TIERED_CAR_CHAINS } from './__tests__/helpers/lod-fixture';
 
 test('animation-only edits cannot hide behind unchanged static geometry', async () => {
   const code = `function build(){const r=createRoot('Root');const j=createPivot('Joint',[0,0,0],r);createPart('Body',boxGeo(1,1,1),gameMaterial('#888888'),{parent:j});return r;}
@@ -201,4 +202,47 @@ test('scene title changes retain node identity and report both exact inspection 
     beforePath: path,
     afterPath: '/Revised%20%2F%20title[0]/Root[0]/Part[0]',
   });
+});
+
+test('an MSFT_lod chain compares every level at the path it takes in LOD0 place', async () => {
+  const before = (await render(TIERED_CAR)).glb;
+  const same = await compareRevisionGlbs(before, before);
+  // Car; five LOD0 nodes with the body's two parts and four tyres; two lower body levels with
+  // a part each; four empty wheel levels.
+  expect(same.summary).toEqual({
+    added: 0,
+    removed: 0,
+    changed: 0,
+    unchanged: 1 + (5 + 2 + 4) + 2 * 2 + 4,
+  });
+  // Headline bounds are LOD0's: the 3 m far block is a level, not part of the drawn asset.
+  expect(same.before.bounds!.max[1]).toBeCloseTo(1.5, 6);
+
+  const narrower = TIERED_CAR.replace(
+    'boxGeo(4 - lod * 0.5,',
+    'boxGeo(lod === 1 ? 3.6 : 4 - lod * 0.5,',
+  );
+  const changed = await compareRevisionGlbs(before, (await render(narrower)).glb);
+  const level = `${TIERED_CAR_CHAINS[0]!.levels[1]!.path}`;
+  expect(changed.changes.map((change) => [change.path, change.fields])).toEqual([
+    [level, ['bounds']],
+    [`${level}/Mesh_Shell1[0]`, ['geometry', 'bounds']],
+  ]);
+  expect(changed.changes[1]!.afterBounds!.size[0]).toBeCloseTo(3.6, 6);
+
+  // A level sits under LOD0's parent: moving the parent moves every level's bounds.
+  const moved = await compareRevisionGlbs(
+    before,
+    (
+      await render(
+        TIERED_CAR.replace("createRoot('Car');", "createRoot('Car'); root.position.x = 2;"),
+      )
+    ).glb,
+  );
+  const far = moved.changes.find(
+    (change) => change.path === TIERED_CAR_CHAINS[0]!.levels[2]!.path,
+  )!;
+  expect(far.fields).toContain('bounds');
+  expect(far.afterBounds!.min[0]! - far.beforeBounds!.min[0]!).toBeCloseTo(2, 6);
+  expect(moved.after.bounds!.max[1]).toBeCloseTo(1.5, 6);
 });

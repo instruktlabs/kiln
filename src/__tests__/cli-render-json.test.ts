@@ -9,6 +9,7 @@ import { MemoryProgramStore } from '../program-store';
 import { FileProgramStore } from '../program-store-node';
 import { decodePng } from '../views/png';
 import { localWorkspaceRoot } from '../workspace-location';
+import { TIERED_CAR, TIERED_CAR_CHAINS, TIERED_CAR_TRIANGLES } from './helpers/lod-fixture';
 
 const source = `const meta={name:'ReceiptBox'};function build(){const r=createRoot('Root');
 createPart('Box',boxGeo(1,2,3),gameMaterial('#809080'),{parent:r,position:[0,1,0]});return r;}`;
@@ -235,4 +236,25 @@ test('authored console messages stay off CLI JSON stdout in trusted in-process m
   expect(JSON.parse(result.stdout.toString()).ok).toBe(true);
   expect(result.stderr.toString()).toContain('asset diagnostic');
   expect(result.stderr.toString()).toContain('asset info');
+});
+
+test('render reports each LOD chain in the receipt and in plain output', async () => {
+  await writeFile(join(directory, 'tiered.js'), TIERED_CAR);
+  const json = run(['render', 'tiered.js', '--render', 'cpu', '--out', 'tiered.glb', '--json']);
+  expect(json.exitCode).toBe(0);
+  const receipt = JSON.parse(json.stdout.toString());
+  expect(receipt.tris).toBe(TIERED_CAR_TRIANGLES.headline);
+  expect(receipt.bounds.max[1]).toBeCloseTo(1.5, 6);
+  expect(receipt.levelsOfDetail).toEqual(TIERED_CAR_CHAINS);
+
+  const plain = run(['render', 'tiered.js', '--render', 'cpu', '--out', 'tiered.glb']);
+  expect(plain.exitCode).toBe(0);
+  const text = plain.stdout.toString();
+  expect(text).toContain(
+    `  LOD ${TIERED_CAR_CHAINS[0]!.path}  24 / 12 / 12 tris  screen coverage 0.004 / 0.0002 / 0.000006`,
+  );
+  expect(text.match(/^ {2}LOD /gm)).toHaveLength(TIERED_CAR_CHAINS.length);
+  expect(run(['render', 'source.js', '--out', 'plain.glb']).stdout.toString()).not.toContain(
+    '  LOD ',
+  );
 });

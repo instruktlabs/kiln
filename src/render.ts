@@ -27,6 +27,7 @@ import { AuthoringDiagnosticError, rethrowAuthoringError } from './evaluator/aut
 import * as THREE from 'three';
 import { createGltfIO, MSFT_LOD } from './gltf-io';
 import { collectLodSets } from './lod';
+import { applyLodChains, summarizeLodChains } from './lod-export';
 import { communitySceneDocument, resolveGltfExporter } from './community-exporter';
 import { rigExtrasForExport } from './rig-export';
 import {
@@ -221,6 +222,7 @@ export async function inspectGlbIntegration(
   const minTuple: [number, number, number] = [min[0]!, min[1]!, min[2]!];
   const maxTuple: [number, number, number] = [max[0]!, max[1]!, max[2]!];
   const minY = minTuple[1];
+  const levelsOfDetail = summarizeLodChains(doc);
 
   return {
     schemaVersion: 'kiln.integration-manifest.v1',
@@ -258,6 +260,7 @@ export async function inspectGlbIntegration(
       transparentMaterials: metrics.transparentMaterials,
       skinned: metrics.skinned,
     },
+    ...(levelsOfDetail.length ? { levelsOfDetail } : {}),
     structuralQa: {
       hasDefaultScene: explicitDefault !== null,
       finiteBounds,
@@ -1430,9 +1433,11 @@ export async function renderSceneToGLB(
   const exporter = resolveGltfExporter(opts.gltfExporter);
   // A set of LOD tiers needs its declared thresholds before anything is written. A
   // derivative re-serializes a review scene that has no declarations, so it is not judged.
-  if (opts.derivative !== true) collectLodSets(root);
+  const lodSets = opts.derivative === true ? [] : collectLodSets(root);
   const warnings = inspectGeometryExport(root, opts.geometryPolicy, exporter);
-  const tris = countTriangles(root);
+  // The headline counts what a plain loader draws: LOD0 and the parts outside every set.
+  let tris = countTriangles(root);
+  for (const set of lodSets) for (const level of set.levels.slice(1)) tris -= countTriangles(level);
   const materialRecipeApplications = collectMaterialRecipeApplications(root);
   const materialResourceProvenance = collectMaterialResourceProvenance(root);
 
@@ -1515,6 +1520,9 @@ export async function renderSceneToGLB(
         scene.setExtras({ [REVIEW_CLIPS_EXTRAS_KEY]: review });
     }
   }
+  // Each declared set becomes one MSFT_lod chain before any pass merges or prunes nodes, so
+  // those passes see the chain and keep its levels.
+  applyLodChains(root, lodSets, doc);
 
   // Dedupe accessors/materials/meshes so instanced parts (4 wheels, 10 posts,
   // 12 windows) share a single underlying resource in the GLB. Cuts file

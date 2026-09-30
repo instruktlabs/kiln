@@ -196,10 +196,12 @@ example `Wheel_FL_LOD0` and `Wheel_FL_LOD1`, and declare
 Two or more sibling tiers without `defineLod`, a gap in the levels, a missing LOD0
 or a set declared inside another tier fail the build with `LOD_SET`, which names
 the fix. A lone token is only a label. QA treats tiers as alternates instead of
-overlapping or disconnected parts. All tiers render together in a default sheet;
-review one tier with a shot whose subject is its group and `visibility: "isolate"`.
-Kiln keeps an imported GLB's `MSFT_lod` chain through save and export but does not
-build one from named groups.
+overlapping or disconnected parts. Every GLB Kiln writes carries each set as one
+`MSFT_lod` chain: LOD0 stays in the scene, the lower levels leave it, and LOD0's
+`extras.MSFT_screencoverage` holds your thresholds. A loader without the extension
+draws LOD0, so reported triangles and bounds are LOD0's and the parts outside every
+set; `levelsOfDetail` in the render result lists each level's triangles and path. A
+default sheet draws LOD0. An imported GLB's chains are kept through save and export.
 
 ## Implicit fields are experimental
 

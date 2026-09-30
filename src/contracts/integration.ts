@@ -19,6 +19,27 @@ export interface IntegrationBoundsV1 {
   center: [number, number, number];
 }
 
+/** One level of an `MSFT_lod` chain in the written GLB. */
+export interface LevelOfDetailLevelV1 {
+  /** 0 is LOD0, the node in the scene; higher numbers are the chain's lower levels in order. */
+  level: number;
+  name: string;
+  /** Inspection path of the level: a shot subject that draws this level in LOD0's place. */
+  path: string;
+  /** Placed triangles in the level's subtree. */
+  triangles: number;
+}
+
+/** One node `MSFT_lod` chain: LOD0 in the scene and the lower levels it lists. */
+export interface LevelOfDetailChainV1 {
+  /** Inspection path of the LOD0 node. */
+  path: string;
+  /** `extras.MSFT_screencoverage` on LOD0, when it is a list of numbers. */
+  screenCoverage?: number[];
+  /** LOD0 first. */
+  levels: LevelOfDetailLevelV1[];
+}
+
 export interface IntegrationManifestV1 {
   schemaVersion: 'kiln.integration-manifest.v1';
   analyzerVersion: 1;
@@ -46,6 +67,9 @@ export interface IntegrationManifestV1 {
     transparentMaterials: number;
     skinned: boolean;
   };
+  /** Node `MSFT_lod` chains in scene order, when the GLB has any. The bounds and render
+   *  metrics above count LOD0 only, which is what a loader without the extension draws. */
+  levelsOfDetail?: LevelOfDetailChainV1[];
   structuralQa: {
     hasDefaultScene: boolean;
     finiteBounds: boolean;

@@ -1,13 +1,21 @@
-import type { Accessor, Material, Node, Primitive } from '@gltf-transform/core';
+import {
+  type Accessor,
+  type Material,
+  type Node,
+  type Primitive,
+  PropertyType,
+} from '@gltf-transform/core';
 import { ALL_EXTENSIONS } from '@gltf-transform/extensions';
 import { Box3, Matrix4, Vector3 } from 'three';
-import { createGltfIO } from './gltf-io';
+import { createGltfIO, type Lod, MSFT_LOD } from './gltf-io';
 
 type Bounds = { min: number[]; max: number[]; size: number[] } | null;
 type Field = 'geometry' | 'material' | 'transform' | 'bounds';
 interface Part {
   name: string;
   node: Node;
+  /** World matrix where the node is drawn; a chain's lower level takes LOD0's parent. */
+  world: number[];
   primitives: Primitive[];
   bounds: Bounds;
 }
@@ -45,6 +53,13 @@ const MAX_VERTICES = 2000000;
 const ACCESSOR_IGNORED = new Set(['name', 'extras', 'buffer']);
 const MATERIAL_IGNORED = new Set(['name', 'extras']);
 
+/** The lower levels an `MSFT_lod` node lists, highest detail first. */
+function lowerLevels(node: Node): Node[] {
+  return (node.getExtension<Lod>(MSFT_LOD)?.listLevels() ?? []).filter(
+    (level): level is Node => level.propertyType === PropertyType.NODE,
+  );
+}
+
 function bounds(box: Box3): Bounds {
   return box.isEmpty()
     ? null
@@ -64,7 +79,7 @@ async function snapshot(bytes: Uint8Array) {
   if (bytes.byteLength > MAX_GLB_BYTES) throw new Error('Revision comparison GLB exceeds 64 MiB.');
   const io = createGltfIO();
   const json = await io.binaryToJSON(bytes);
-  const supported = new Set(ALL_EXTENSIONS.map((ext) => ext.EXTENSION_NAME));
+  const supported = new Set([...ALL_EXTENSIONS.map((ext) => ext.EXTENSION_NAME), MSFT_LOD]);
   if (json.json.extensionsUsed?.some((name) => !supported.has(name)))
     throw new Error('Revision comparison cannot ignore an unknown glTF extension.');
   // The evaluator returns self-contained GLB. Never fetch external resources here.
@@ -90,11 +105,17 @@ async function snapshot(bytes: Uint8Array) {
     throw new Error('Revision comparison does not support skins.');
   const parts = new Map<string, Part>();
   let vertices = 0;
-  const visit = (siblings: Node[], parent: string, depth: number): Box3 => {
+  const visit = (siblings: Node[], parent: string, depth: number, parentWorld: Matrix4): Box3 => {
     if (depth > 128) throw new Error('Revision comparison hierarchy exceeds 128 levels.');
     const names = new Set<string>();
     const combined = new Box3();
-    for (const node of siblings) {
+    // A chain's lower levels are compared where a loader places them, beside LOD0 under the
+    // same parent; only what a loader without the extension draws counts toward the bounds.
+    const placed = siblings.flatMap((node) => [
+      { node, drawn: true },
+      ...lowerLevels(node).map((level) => ({ node: level, drawn: false })),
+    ]);
+    for (const { node, drawn } of placed) {
       const name = node.getName();
       if (!name || names.has(name))
         throw new Error(
@@ -105,13 +126,16 @@ async function snapshot(bytes: Uint8Array) {
       if (parts.size >= MAX_NODES || path.length > 4096)
         throw new Error('Revision comparison exceeds node/path budget.');
       const mesh = node.getMesh();
-      if (node.listExtensions().length || mesh?.listExtensions().length)
+      if (
+        node.listExtensions().some((extension) => extension.extensionName !== MSFT_LOD) ||
+        mesh?.listExtensions().length
+      )
         throw new Error(
           'Revision comparison does not support node/mesh extensions (including instancing).',
         );
       const primitives = mesh?.listPrimitives() ?? [];
       const own = new Box3();
-      const matrix = new Matrix4().fromArray(node.getWorldMatrix());
+      const matrix = parentWorld.clone().multiply(new Matrix4().fromArray(node.getMatrix()));
       if (matrix.elements.some((value) => !Number.isFinite(value)))
         throw new Error('Revision comparison requires finite transforms.');
       for (const primitive of primitives) {
@@ -139,11 +163,11 @@ async function snapshot(bytes: Uint8Array) {
           own.expandByPoint(point);
         }
       }
-      const part: Part = { name, node, primitives, bounds: null };
+      const part: Part = { name, node, world: matrix.toArray(), primitives, bounds: null };
       parts.set(path, part);
-      own.union(visit(node.listChildren(), path, depth + 1));
+      own.union(visit(node.listChildren(), path, depth + 1, matrix));
       part.bounds = bounds(own);
-      combined.union(own);
+      if (drawn) combined.union(own);
     }
     return combined;
   };
@@ -152,7 +176,7 @@ async function snapshot(bytes: Uint8Array) {
   const scenePath = `/${encodeURIComponent(scenes[0]!.getName() || 'Scene')}[0]`;
   // The scene wrapper carries the asset title, not a node identity. Match exported
   // nodes relative to it and expose each revision's real inspection path below.
-  const box = visit(scenes[0]!.listChildren(), '', 0);
+  const box = visit(scenes[0]!.listChildren(), '', 0, new Matrix4());
   const nodePaths = new Map([...parts].map(([path, part]) => [part.node, path]));
   const animation = new Map<string, AnimationChannelSnapshot>();
   const clipNames = new Set<string>();
@@ -327,8 +351,8 @@ export async function compareRevisionGlbs(
       )
         fields.push('material');
       if (
-        JSON.stringify([a.node.getMatrix(), a.node.getWorldMatrix()]) !==
-        JSON.stringify([b.node.getMatrix(), b.node.getWorldMatrix()])
+        JSON.stringify([a.node.getMatrix(), a.world]) !==
+        JSON.stringify([b.node.getMatrix(), b.world])
       )
         fields.push('transform');
       if (JSON.stringify(a.bounds) !== JSON.stringify(b.bounds)) fields.push('bounds');
@@ -353,7 +377,7 @@ export async function compareRevisionGlbs(
   return {
     version: 'kiln.revision-comparison.v1' as const,
     scope:
-      'Exact exported static mesh data and rest transforms; named hierarchy paths. Animation channels are reported separately. Metadata, visual equivalence, intent and physical fit are not assessed.',
+      'Exact exported static mesh data and rest transforms; named hierarchy paths. MSFT_lod lower levels are compared at the path they take beside LOD0, and bounds are LOD0 only. Animation channels are reported separately. Metadata (including LOD switch thresholds), visual equivalence, intent and physical fit are not assessed.',
     animation: {
       scope:
         'Exact exported channel target, interpolation, key times and values, matched by clip name and node path. Renames are add/remove. Equivalent motions may have different key data; metadata and playback behavior are not assessed.',

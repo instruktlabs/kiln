@@ -323,8 +323,8 @@ export async function runW7VegetationLodExperiment(): Promise<W7VegetationLodExp
       disposition: 'DONE_GATE_CLOSED',
       rationale: [
         'The experimental root LOD extras do not survive the current final-byte pipeline, so recorded bounds/cost and target identity cannot round-trip.',
-        'All three groups are exported for ordinary consumers even when lower groups are marked hidden; triangle/visual parity remains 1.442857x the baseline.',
-        'No engine, Studio, or starter public consumer contract exists that can select exactly one level without a new schema/runtime expansion.',
+        'All three groups are still written to the file, since 0.9.0 with the lower two as MSFT_lod levels outside the scene; every mesh in the file totals 1.442857x the baseline triangles.',
+        'Selecting one level is the declared-tier MSFT_lod contract (defineLod) since 0.9.0, not this root extras record.',
       ],
     },
   };
