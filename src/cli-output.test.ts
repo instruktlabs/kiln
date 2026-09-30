@@ -139,6 +139,16 @@ it('publishes an exclusive sidecar and GLB only after complete staging', () =>
     expect(await readFile(glb, 'utf8')).toBe('complete GLB');
   }));
 
+it('refuses an existing destination by name and keeps the EEXIST code', () =>
+  fixture(async (directory) => {
+    const glb = join(directory, 'asset.glb');
+    await writeFile(glb, 'existing GLB');
+    const refused = writeNewDestinationsAtomic([{ path: glb, data: 'new GLB' }]);
+    await expect(refused).rejects.toThrow(`${glb} already exists and is never replaced`);
+    await expect(refused).rejects.toMatchObject({ code: 'EEXIST' });
+    expect(await readFile(glb, 'utf8')).toBe('existing GLB');
+  }));
+
 it('rolls back only owned published outputs when the later exclusive publish fails', () =>
   fixture(async (directory) => {
     const sidecar = join(directory, 'asset.json');

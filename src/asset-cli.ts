@@ -8,7 +8,7 @@ import { ASSET_LIMIT, assetIdSchema, decodeAssetBundle } from './assets';
 import { localProgramStore } from './program-store-node';
 import { programRefPattern, retainProgram } from './program-store';
 import { createKilnProgramToolRegistry } from './tools/registry';
-import { prepareDestination, writeNewDestinationsAtomic } from './cli-output';
+import { writeNewDestinationsAtomic } from './cli-output';
 import { exportAssetGlb } from './asset-export';
 import { createPackagedLocalToolContext } from './local-runtime';
 import { buildRenderPort, resolveRenderMode } from './cli-render-mode';
@@ -40,6 +40,9 @@ ASSETS & VIEWER
   kiln asset <id> <revision> --rebuild --out rebuilt.glb [--requirements file]
   kiln export <id> <revision> --out asset.zip [--format bundle|glb|source]
        [--profile editable|runtime]   runtime writes GLB + sibling metadata JSON
+       [--json]   receipt naming each file with its bytes and sha256
+       export never replaces an existing file: an export hands off one exact
+       saved revision, while render --out replaces its own working output
   kiln import <asset.zip|asset.glb> [--collection project] [--name <name>]
                                           prints the directory of each imported revision
   kiln view [collection-directory|asset.glb|asset.zip] [--port 4318]
@@ -103,6 +106,11 @@ export async function assetMain(argv: readonly string[]): Promise<number> {
     }
     if (arg === '--category' || arg.startsWith('--category='))
       throw new Error(CATEGORY_MIGRATION_MESSAGE);
+    // The CLI's --json rule (cli-json.ts) leaves the switch only on export's receipt.
+    if (arg === '--json' && command === 'export') {
+      flags.json = 'true';
+      continue;
+    }
     if (arg === '--restore' || arg === '--rebuild' || arg === '--no-project') {
       flags[arg.slice(2)] = 'true';
       continue;
@@ -342,6 +350,7 @@ export async function assetMain(argv: readonly string[]): Promise<number> {
         throw new Error('Unknown export profile');
       const format = flags.format ?? (profile === 'runtime' ? 'glb' : 'bundle');
       if (!['bundle', 'glb', 'source'].includes(format)) throw new Error('Unknown export format');
+      const written: { kind: string; path: string; data: Uint8Array }[] = [];
       if (profile === 'runtime') {
         if (format !== 'glb')
           throw new Error('Runtime profile requires GLB format; use editable for source or bundle');
@@ -356,16 +365,42 @@ export async function assetMain(argv: readonly string[]): Promise<number> {
           { path: metadataPath, data: output.metadata.bytes },
           { path: destination, data: output.glb },
         ]);
-        console.log(`Saved ${destination}\nSaved ${metadataPath}`);
-        return 0;
+        written.push(
+          { kind: 'glb', path: destination, data: output.glb },
+          { kind: 'metadata', path: metadataPath, data: output.metadata.bytes },
+        );
+      } else {
+        const bytes =
+          format === 'bundle'
+            ? await library.exportBundle([record])
+            : record.files[format === 'glb' ? 'asset.glb' : 'source.kiln.js'];
+        if (!bytes) throw new Error('Source unavailable');
+        const destination = resolve(flags.out);
+        await writeNewDestinationsAtomic([{ path: destination, data: bytes }]);
+        written.push({ kind: format, path: destination, data: bytes });
       }
-      const bytes =
-        format === 'bundle'
-          ? await library.exportBundle([record])
-          : record.files[format === 'glb' ? 'asset.glb' : 'source.kiln.js'];
-      if (!bytes) throw new Error('Source unavailable');
-      await writeFile(await prepareDestination(resolve(flags.out)), bytes, { flag: 'wx' });
-      console.log(`Saved ${resolve(flags.out)}`);
+      if (!flags.json) console.log(written.map(({ path }) => `Saved ${path}`).join('\n'));
+      else
+        console.log(
+          JSON.stringify(
+            {
+              ok: true,
+              collection,
+              assetId,
+              revisionId,
+              profile,
+              format,
+              files: written.map(({ kind, path, data }) => ({
+                kind,
+                path,
+                bytes: data.byteLength,
+                sha256: `sha256:${createHash('sha256').update(data).digest('hex')}`,
+              })),
+            },
+            null,
+            2,
+          ),
+        );
     }
   } else if (command === 'import') {
     const file = positional[0];

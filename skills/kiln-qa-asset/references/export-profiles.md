@@ -67,7 +67,8 @@ periods, underscores or hyphens, beginning with a letter or digit. The generated
 sidecar filename must be at most 200 characters; Windows device names are rejected.
 Directory paths may be absolute, but **only the sibling filename** enters provenance.
 
-Exports refuse to overwrite either destination. Runtime stages both complete files,
+Exports never replace either destination; the error names the existing file. `--json`
+prints a receipt naming both files with their `bytes` and `sha256`. Runtime stages both complete files,
 then publishes the sidecar before the GLB using exclusive hard links on the destination
 filesystem. A caught failure rolls back files owned by that call and preserves existing
 files. Filesystems must support hard links. This is not a crash/power-loss transaction:

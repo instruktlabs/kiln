@@ -57,7 +57,9 @@ it('creates the directories leading to every CLI destination', async () => {
     expect(run(['source', programRef, '--out', copy]).exitCode).toBe(0);
     expect(await wrote(copy)).toBe(true);
     await writeFile(copy, 'keep edited source');
-    expect(run(['source', programRef, '--out', copy]).exitCode).not.toBe(0);
+    const refused = run(['source', programRef, '--out', copy]);
+    expect(refused.exitCode).not.toBe(0);
+    expect(refused.stderr.toString()).toContain(`${copy} already exists and is never replaced`);
     expect(await readFile(copy, 'utf8')).toBe('keep edited source');
 
     const saved = run(['save', programRef, '--name', 'Crate', '--render', 'cpu']);

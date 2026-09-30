@@ -117,6 +117,27 @@ describe('kiln service', () => {
     expect(out).toContain('installation     ready');
   });
 
+  it('status --json prints the same facts as one receipt; start and stop refuse --json', async () => {
+    const { dir, port } = await installation();
+    for (const command of ['status', 'reprobe']) {
+      const { code, out, err } = await run([command, '--json']);
+      // Exit codes are unchanged: reprobe still fails while nothing is listening.
+      expect(code).toBe(command === 'status' ? 0 : 1);
+      expect(err).toBe('');
+      expect(JSON.parse(out)).toEqual({
+        url: `http://127.0.0.1:${port}`,
+        installation: { state: 'ready', directory: dir },
+        listener: { kind: 'absent' },
+      });
+    }
+    for (const command of ['start', 'stop']) {
+      const refused = await run([command, '--json']);
+      expect(refused.code).toBe(2);
+      expect(refused.err).toContain('service status|reprobe');
+      expect(refused.err).toContain('export');
+    }
+  });
+
   it('status names the process, its owner and whether its source is current', async () => {
     const { dir, port } = await installation();
     const child = await spawnFakeRenderService(dir, port, {
@@ -127,6 +148,14 @@ describe('kiln service', () => {
     expect(out).toContain('listening        yes  fake-renderer');
     expect(out).toContain(`pid ${child.pid}, started by hand`);
     expect(out).toContain('source           current');
+    const receipt = JSON.parse((await run(['status', '--json'])).out);
+    expect(receipt.listener).toMatchObject({
+      kind: 'service',
+      rendererId: 'fake-renderer',
+      pid: child.pid,
+      ownerPid: null,
+      source: 'current',
+    });
   }, 30_000);
 
   it('retired prune reports its replacement while explicit stop stops a verified local process', async () => {

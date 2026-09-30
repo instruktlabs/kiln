@@ -9,12 +9,16 @@ import {
   startLocalRenderService,
   terminateRenderService,
   type LocalRenderServiceProbe,
+  type LocalRenderServiceState,
 } from './render-service-host';
+import { JSON_OPTION_MESSAGE } from './cli-json';
 export const SERVICE_USAGE = `Usage:
   kiln service status     inspect installation and the shared local renderer
   kiln service start      start a managed local renderer now, or report the current one
   kiln service reprobe    refresh readiness after an installation or service change
   kiln service stop       explicitly stop the verified local renderer
+
+status and reprobe take --json to print the same facts as one JSON receipt.
 
 Managed renderers use a bounded idle lifetime shared by all sessions; the next
 local view that needs one starts it again. start never replaces a listener it
@@ -48,6 +52,45 @@ function logService(
   io.log(
     `authentication   ${!probe.health.authRequired ? 'not required' : clientToken() ? 'required; client token configured (not verified by health)' : 'required; set KILN_RENDER_TOKEN to the matching renderer token'}`,
   );
+}
+/** status and reprobe --json: the facts the text lines print, as one receipt. */
+function statusReceipt(
+  url: string,
+  dir: string,
+  state: LocalRenderServiceState,
+  probe: LocalRenderServiceProbe,
+): object {
+  const installation =
+    state === 'ready'
+      ? { state, directory: dir }
+      : { state, directory: dir, message: explainRenderServiceState(state, dir) };
+  if (probe.kind === 'absent') return { url, installation, listener: { kind: 'absent' } };
+  if (probe.kind !== 'service')
+    return {
+      url,
+      installation,
+      listener: { kind: probe.kind, message: describeUnavailableService(url, probe) },
+    };
+  return {
+    url,
+    installation,
+    listener: {
+      kind: 'service',
+      rendererId: probe.rendererId,
+      pid: probe.instance.pid,
+      ownerPid: probe.instance.ownerPid,
+      mode: probe.instance.mode,
+      idleTimeoutMs: probe.instance.idleTimeoutMs,
+      source: probe.stale ? 'incompatible' : 'current',
+      protocol: probe.health.protocol,
+      build: probe.health.compatibility.fingerprint,
+      authentication: !probe.health.authRequired
+        ? 'not-required'
+        : clientToken()
+          ? 'token-configured'
+          : 'token-missing',
+    },
+  };
 }
 /**
  * Start the shared local renderer through the same path on-demand views use, or
@@ -117,7 +160,12 @@ export async function serviceMain(
     );
     return 2;
   }
-  if (!['status', 'start', 'reprobe', 'stop'].includes(command) || argv.length !== 1) {
+  const json = argv.length === 2 && argv[1] === '--json';
+  if (json && (command === 'start' || command === 'stop')) {
+    io.error(JSON_OPTION_MESSAGE);
+    return 2;
+  }
+  if (!['status', 'start', 'reprobe', 'stop'].includes(command) || argv.length !== (json ? 2 : 1)) {
     io.error(`unknown service command: ${argv.join(' ')}\n${SERVICE_USAGE}`);
     return 2;
   }
@@ -127,6 +175,13 @@ export async function serviceMain(
   if (command === 'start') return startService(io, url, dir, probe);
   if (command === 'status' || command === 'reprobe') {
     const state = localRenderServiceState(dir);
+    const missingToken = probe.kind === 'service' && probe.health.authRequired && !clientToken();
+    const code =
+      command === 'reprobe' && (probe.kind !== 'service' || probe.stale || missingToken) ? 1 : 0;
+    if (json) {
+      io.log(JSON.stringify(statusReceipt(url, dir, state, probe), null, 2));
+      return code;
+    }
     io.log(`render service   ${url}`);
     io.log(
       `installation     ${state === 'ready' ? `ready (${dir}); GPU checked at startup` : explainRenderServiceState(state, dir)}`,
@@ -134,10 +189,7 @@ export async function serviceMain(
     if (probe.kind === 'absent') io.log('listening        no');
     else if (probe.kind === 'service') logService(io, probe);
     else io.log(`listening        ${describeUnavailableService(url, probe)}`);
-    const missingToken = probe.kind === 'service' && probe.health.authRequired && !clientToken();
-    return command === 'reprobe' && (probe.kind !== 'service' || probe.stale || missingToken)
-      ? 1
-      : 0;
+    return code;
   }
   if (probe.kind === 'absent') {
     io.log(`nothing is listening on ${url}`);

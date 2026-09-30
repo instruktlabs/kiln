@@ -134,7 +134,15 @@ node kiln.mjs import workbench.zip --collection library
 node kiln.mjs asset ASSET_ID REVISION_ID --collection library --restore
 ```
 
-Exports refuse to overwrite existing files. ZIPs are ordinary archives containing
+An export never replaces an existing file. It hands off one exact saved revision, so a
+second export to the same path fails and names the file; choose a new `--out`. This
+differs from `render --out`, which replaces its own working output on every run. Add
+`--json` for a receipt naming each written file with its `bytes` and `sha256`.
+Across the CLI, `--json` prints a receipt from `render`, `source`, `export`, `discover`,
+`inspect`, `animation` and `service status`/`reprobe`; `edit`, `save`, `collections`,
+`assets`, `asset`, `import`, `project`, `material`, `review` and `migrate` print JSON
+already and accept it; `generate`, `view`, `collections add` and `service start`/`stop`
+refuse it with a message naming these commands. ZIPs are ordinary archives containing
 one or more complete revisions. Source restore needs no original program store.
 Source is capped at 1 MiB; normal evaluator limits can be lower. Bundles are bounded,
 filenames are allowlisted and hashes are verified on import/read. GLBs must embed

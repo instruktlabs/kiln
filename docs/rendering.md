@@ -159,7 +159,9 @@ bun run kiln service reprobe  # fresh check; nonzero unless a running service is
 bun run kiln service stop     # explicitly stop the verified configured local service
 ```
 
-`status` and `reprobe` do not install packages or stop services. The old `service prune`
+`status --json` and `reprobe --json` print the same facts as one receipt (`url`,
+`installation`, `listener`) with the same exit codes. `status` and `reprobe` do not
+install packages or stop services. The old `service prune`
 command is removed. `stop` rechecks the configured loopback service's identity before
 signaling it; a remote service's reported PID never authorizes killing a local process.
 `start` uses the same launcher as an on-demand view and prints the port, renderer, process,

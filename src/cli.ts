@@ -4,10 +4,10 @@
  * or run the optional model-driven generation loop. Rendering a GLB and its views
  * shares one evaluation through the program-aware registry.
  */
-import { open, readFile, writeFile } from 'node:fs/promises';
+import { open, readFile } from 'node:fs/promises';
 import { resolve as resolvePath, extname } from 'node:path';
 
-import { prepareDestination, writeDestinationAtomic } from './cli-output';
+import { writeDestinationAtomic, writeNewDestinationsAtomic } from './cli-output';
 import { isDirectEntry } from './direct-entry';
 import { createPackagedLocalToolContext } from './local-runtime';
 import { createKilnProgramToolRegistry, type KilnToolContext } from './tools/registry';
@@ -24,6 +24,7 @@ import { ASSET_USAGE } from './asset-cli';
 import { PROJECT_USAGE } from './project-cli';
 import { REVIEW_USAGE } from './review-cli';
 import { SERVICE_USAGE } from './service-cli';
+import { applyJsonOption, JSON_OPTION_MESSAGE } from './cli-json';
 import { DISCOVERY_USAGE } from './discovery-cli';
 import { ANIMATION_USAGE } from './animation-cli';
 import { EDIT_USAGE } from './edit-cli';
@@ -67,6 +68,9 @@ OPTIONS
   --json                 render: one JSON receipt, no embedded image or GLB bytes
                          source: kiln_source JSON, first 8000 characters by default;
                          with --out, a receipt naming the written file
+                         export, discover, inspect, animation and service
+                         status|reprobe print receipts; commands that print
+                         JSON already accept it; generate and view refuse it
   --offset <n>           source --json: page start; pass the returned nextOffset
   --limit <n>            source --json: page size in characters (1-16000)
   --query <text>         source --json: find literal text at or after --offset
@@ -566,7 +570,7 @@ async function cmdSource(args: Args): Promise<number> {
   if (isRef && args.out) {
     const code = await store.get(input);
     const path = resolvePath(args.out);
-    await writeFile(await prepareDestination(path), code, { encoding: 'utf8', flag: 'wx' });
+    await writeNewDestinationsAtomic([{ path, data: code }]);
     if (!args.json) console.log(`Saved ${input} to ${args.out}`);
     else
       console.log(
@@ -633,6 +637,12 @@ async function runMain(argv: readonly string[]): Promise<number> {
   } catch (error) {
     console.error(error instanceof Error ? error.message : String(error));
     return 1;
+  }
+  try {
+    argv = applyJsonOption(argv);
+  } catch (error) {
+    console.error(error instanceof Error ? error.message : String(error));
+    return 2;
   }
   if (argv[0] === 'edit') return (await import('./edit-cli')).editMain(argv.slice(1));
   if (argv[0] === 'migrate') return (await import('./migration-cli')).migrationMain(argv.slice(1));
@@ -701,10 +711,7 @@ async function runMain(argv: readonly string[]): Promise<number> {
       throw new Error(
         '--project, --project-revision, --no-project and --materials are supported by render and generate only.',
       );
-    if (args.json && !jsonCommand(args.command))
-      throw new Error(
-        "--json is supported by render and source here; use each other command's documented output options.",
-      );
+    if (args.json && !jsonCommand(args.command)) throw new Error(JSON_OPTION_MESSAGE);
     if (
       (args.offset !== undefined || args.limit !== undefined || args.query !== undefined) &&
       !(args.command === 'source' && args.json)

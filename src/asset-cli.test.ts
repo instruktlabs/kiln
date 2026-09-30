@@ -1,5 +1,6 @@
 import { expect, test } from 'bun:test';
 import { spawnSync } from 'node:child_process';
+import { createHash } from 'node:crypto';
 import { mkdtemp, readFile, rm, readdir } from 'node:fs/promises';
 import { join, resolve } from 'node:path';
 import { tmpdir } from 'node:os';
@@ -48,7 +49,9 @@ test('CLI saves, exports, imports, and restores a revision across independent st
     const asset = JSON.parse(saved.stdout).asset;
     const file = join(root, 'crate.zip');
     expect(run('first', ['export', asset.assetId, asset.revisionId, '--out', file]).status).toBe(0);
-    expect(run('first', ['export', asset.assetId, asset.revisionId, '--out', file]).status).toBe(1);
+    const again = run('first', ['export', asset.assetId, asset.revisionId, '--out', file]);
+    expect(again.status).toBe(1);
+    expect(again.stderr).toContain(`${file} already exists and is never replaced`);
     expect(decodeAssetBundle(new Uint8Array(await readFile(file)))[0]!.manifest.revisionId).toBe(
       asset.revisionId,
     );
@@ -77,38 +80,67 @@ test('CLI saves, exports, imports, and restores a revision across independent st
     expect(restored.status).toBe(0);
     expect(JSON.parse(restored.stdout).programRef).toMatch(/^p_/);
     expect(run('second', ['import', file]).status).toBe(0);
-    expect(JSON.parse(run('second', ['assets']).stdout).assets.length).toBe(1);
+    // Commands that print JSON already accept --json and ignore it; view prints none.
+    expect(JSON.parse(run('second', ['assets', '--json']).stdout).assets.length).toBe(1);
+    const view = run('second', ['view', '--json']);
+    expect(view.status).toBe(2);
+    expect(view.stderr).toContain('service status|reprobe');
     const canonical = decodeAssetBundle(new Uint8Array(await readFile(file)))[0]!.files[
       'asset.glb'
     ]!;
     const editable = join(root, 'editable.glb');
-    expect(
-      run('first', [
-        'export',
-        asset.assetId,
-        asset.revisionId,
-        '--out',
-        editable,
-        '--format',
-        'glb',
-        '--profile',
-        'editable',
-      ]).status,
-    ).toBe(0);
+    const sha256 = (bytes: Uint8Array) =>
+      `sha256:${createHash('sha256').update(bytes).digest('hex')}`;
+    const editableRun = run('first', [
+      'export',
+      asset.assetId,
+      asset.revisionId,
+      '--out',
+      editable,
+      '--format',
+      'glb',
+      '--profile',
+      'editable',
+      '--json',
+    ]);
+    expect(editableRun.status).toBe(0);
+    expect(JSON.parse(editableRun.stdout)).toEqual({
+      ok: true,
+      collection: 'project',
+      assetId: asset.assetId,
+      revisionId: asset.revisionId,
+      profile: 'editable',
+      format: 'glb',
+      files: [{ kind: 'glb', path: editable, bytes: canonical.length, sha256: sha256(canonical) }],
+    });
     expect(new Uint8Array(await readFile(editable))).toEqual(Uint8Array.from(canonical));
     const runtime = join(root, 'runtime.glb');
-    expect(
-      run('first', [
-        'export',
-        asset.assetId,
-        asset.revisionId,
-        '--out',
-        runtime,
-        '--profile',
-        'runtime',
-      ]).status,
-    ).toBe(0);
-    const metadata = JSON.parse(await readFile(join(root, 'runtime.kiln-metadata.json'), 'utf8'));
+    const runtimeRun = run('first', [
+      'export',
+      asset.assetId,
+      asset.revisionId,
+      '--out',
+      runtime,
+      '--profile',
+      'runtime',
+      '--json',
+    ]);
+    expect(runtimeRun.status).toBe(0);
+    const metadataPath = join(root, 'runtime.kiln-metadata.json');
+    const receipt = JSON.parse(runtimeRun.stdout);
+    expect(receipt).toMatchObject({ ok: true, profile: 'runtime', format: 'glb' });
+    expect(receipt.files).toEqual(
+      await Promise.all(
+        [
+          ['glb', runtime],
+          ['metadata', metadataPath],
+        ].map(async ([kind, path]) => {
+          const bytes = new Uint8Array(await readFile(path!));
+          return { kind, path, bytes: bytes.length, sha256: sha256(bytes) };
+        }),
+      ),
+    );
+    const metadata = JSON.parse(await readFile(metadataPath, 'utf8'));
     expect(metadata.version).toBe('kiln.runtime-metadata.v1');
     expect(metadata.source.revisionId).toBe(asset.revisionId);
     const runtimeBefore = await readFile(runtime);

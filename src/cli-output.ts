@@ -100,7 +100,17 @@ export async function writeNewDestinationsAtomic(
       }
     }
     for (const output of staged) {
-      await link(output.temporary, output.path);
+      try {
+        await link(output.temporary, output.path);
+      } catch (error) {
+        if ((error as NodeJS.ErrnoException).code !== 'EEXIST') throw error;
+        throw Object.assign(
+          new Error(
+            `${output.path} already exists and is never replaced; choose a new output path or remove the file.`,
+          ),
+          { code: 'EEXIST' },
+        );
+      }
       output.published = true;
     }
   } catch (error) {

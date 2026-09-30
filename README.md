@@ -236,7 +236,9 @@ For application delivery, export with `--profile runtime --out asset.glb` to mov
 Kiln's animation review metadata into a hash-linked JSON sidecar. Native glTF animation
 still plays without that sidecar. The default `editable` profile preserves saved files
 exactly; keep its ZIP for source and build records. The delivery profile is independent
-of the established/experimental converter selected during generation.
+of the established/experimental converter selected during generation. An export never
+replaces an existing file, unlike `render --out`, because it hands off one exact saved
+revision; `--json` prints a receipt with each file's `bytes` and `sha256`.
 [Which options to use, why they exist, and examples](docs/export-profiles.md#which-option-should-i-use)
 are also included in the authoring and QA skills installed into new asset workspaces.
 
