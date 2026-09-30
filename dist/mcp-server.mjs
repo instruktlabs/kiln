@@ -70,6 +70,8 @@ var init_texture_contract = __esm(() => {
 function authoringDiagnosticAdvice(diagnostic) {
   if (diagnostic === "UNINITIALIZED_BINDING")
     return UNINITIALIZED_BINDING_ADVICE;
+  if (diagnostic === "LOD_SET")
+    return LOD_SET_ADVICE;
   if (diagnostic === "BUILD_RESULT")
     return BUILD_RESULT_ADVICE;
   if (diagnostic === "MATERIAL_RECIPE_OVERRIDE")
@@ -132,7 +134,7 @@ function rethrowAuthoringError(error) {
   }
   throw error;
 }
-var UNBOUND_VARIABLE_ADVICE = "Check variable spelling and scope: generated code used an undeclared variable. Read the current source and check declarations before retrying. If it was meant to be a Kiln helper, call kiln_discover to confirm the exact name and signature; the sandbox exposes only those globals.", GEAR_RADII_ORDER_ADVICE = "gearGeo requires boreRadius < rootRadius < tipRadius; specify rootRadius when changing tipRadius. Omitted radii keep their absolute defaults.", ROUNDED_BOX_RADIUS_ADVICE = "roundedBoxGeo: radius must be less than half the smallest dimension. Reduce radius or increase the smallest dimension; equality is invalid.", PROCEDURAL_TEXTURE_UNKNOWN_KEY_ADVICE = 'Remove unsupported proceduralTexture fields. Call kiln_discover with ids ["proceduralTexture"] and use only the documented fields for the selected layer op.', MATERIAL_FRACTION_RANGE_ADVICE = "Material fractions must be finite numbers between 0 and 1, inclusive. In proceduralTexture, mortarWidth and stagger are fractions, not pixels; opacity uses the same range. materialRecipe roughness, metalness, opacity, alphaCutoff and emissiveIntensity use 0..1. portableMaterial roughness, metalness and alphaCutoff also use 0..1; its emissiveIntensity has a separate 0..64 range. Call kiln_discover for the exact field contracts.", PARAMETRIC_PERIODIC_ENDPOINT_ADVICE = "Periodic parametricSurface endpoints must return matching positions. For periodicU, sample(uMin, v) and sample(uMax, v) must match; for periodicV, sample(u, vMin) and sample(u, vMax) must match.", PROFILE_HOLES_UNSUPPORTED_ADVICE = "loftProfiles and sweepProfile: holes are unsupported in options or sections. Use extrudeProfile for a holed cross-section with optional twist/taper; independently varying contours need explicit geometry or solid subtraction. cap:false does not create inner walls or thickness.", PROFILE_CORRESPONDENCE_COLLAPSE_ADVICE = "loftProfiles or sweepProfile: corresponding profile edges collapse between stations. Check matching start vertices and vertex order; for an intended twist, add intermediate sections or path stations. No automatic correspondence repair is applied. Other self-intersections remain unchecked.", UNINITIALIZED_BINDING_ADVICE = "A const, let or class binding was read before its declaration ran (temporal dead zone). Move the declaration above the first code that reads it; top-level constants must be declared before other top-level code uses them. kiln_validate names the binding and line when the read runs immediately.", BUILD_RESULT_ADVICE = 'Define a top-level function build() (it may be async) that returns the root Object3D, for example const root = createRoot("Name"); ...; return root;. A build() that returns nothing, or returns a geometry or material, is rejected.', MATERIAL_RECIPE_OVERRIDE_ADVICE = 'materialRecipe takes a listed kiln.material.*.v1 ID and only the overrides that recipe allows; the allowed overrides differ by recipe (the emissive recipe has no metalness). Call kiln_discover with ids ["materialRecipe"] to see what each recipe allows; kiln_validate names the recipe and key when both are literals.', PROGRAM_TYPE_ERROR_ADVICE = "The program or a helper it called threw a TypeError: a value had the wrong type. Usually something is undefined (a function without a return, an un-awaited async helper such as roundedBoxGeo, extrudeProfile or materialRecipe, or a misspelt property) or a non-function was called. Run kiln_validate, then check the helper contract with kiln_discover.", PROGRAM_RANGE_ERROR_ADVICE = "The program or a helper it called threw a RangeError: a number was outside its allowed range, for example a non-positive size, an invalid array length or segment count, or unbounded recursion. Check the helper arguments against kiln_discover.", AuthoringDiagnosticError;
+var UNBOUND_VARIABLE_ADVICE = "Check variable spelling and scope: generated code used an undeclared variable. Read the current source and check declarations before retrying. If it was meant to be a Kiln helper, call kiln_discover to confirm the exact name and signature; the sandbox exposes only those globals.", GEAR_RADII_ORDER_ADVICE = "gearGeo requires boreRadius < rootRadius < tipRadius; specify rootRadius when changing tipRadius. Omitted radii keep their absolute defaults.", ROUNDED_BOX_RADIUS_ADVICE = "roundedBoxGeo: radius must be less than half the smallest dimension. Reduce radius or increase the smallest dimension; equality is invalid.", PROCEDURAL_TEXTURE_UNKNOWN_KEY_ADVICE = 'Remove unsupported proceduralTexture fields. Call kiln_discover with ids ["proceduralTexture"] and use only the documented fields for the selected layer op.', MATERIAL_FRACTION_RANGE_ADVICE = "Material fractions must be finite numbers between 0 and 1, inclusive. In proceduralTexture, mortarWidth and stagger are fractions, not pixels; opacity uses the same range. materialRecipe roughness, metalness, opacity, alphaCutoff and emissiveIntensity use 0..1. portableMaterial roughness, metalness and alphaCutoff also use 0..1; its emissiveIntensity has a separate 0..64 range. Call kiln_discover for the exact field contracts.", PARAMETRIC_PERIODIC_ENDPOINT_ADVICE = "Periodic parametricSurface endpoints must return matching positions. For periodicU, sample(uMin, v) and sample(uMax, v) must match; for periodicV, sample(u, vMin) and sample(u, vMax) must match.", PROFILE_HOLES_UNSUPPORTED_ADVICE = "loftProfiles and sweepProfile: holes are unsupported in options or sections. Use extrudeProfile for a holed cross-section with optional twist/taper; independently varying contours need explicit geometry or solid subtraction. cap:false does not create inner walls or thickness.", PROFILE_CORRESPONDENCE_COLLAPSE_ADVICE = "loftProfiles or sweepProfile: corresponding profile edges collapse between stations. Check matching start vertices and vertex order; for an intended twist, add intermediate sections or path stations. No automatic correspondence repair is applied. Other self-intersections remain unchecked.", UNINITIALIZED_BINDING_ADVICE = "A const, let or class binding was read before its declaration ran (temporal dead zone). Move the declaration above the first code that reads it; top-level constants must be declared before other top-level code uses them. kiln_validate names the binding and line when the read runs immediately.", BUILD_RESULT_ADVICE = 'Define a top-level function build() (it may be async) that returns the root Object3D, for example const root = createRoot("Name"); ...; return root;. A build() that returns nothing, or returns a geometry or material, is rejected.', MATERIAL_RECIPE_OVERRIDE_ADVICE = 'materialRecipe takes a listed kiln.material.*.v1 ID and only the overrides that recipe allows; the allowed overrides differ by recipe (the emissive recipe has no metalness). Call kiln_discover with ids ["materialRecipe"] to see what each recipe allows; kiln_validate names the recipe and key when both are literals.', PROGRAM_TYPE_ERROR_ADVICE = "The program or a helper it called threw a TypeError: a value had the wrong type. Usually something is undefined (a function without a return, an un-awaited async helper such as roundedBoxGeo, extrudeProfile or materialRecipe, or a misspelt property) or a non-function was called. Run kiln_validate, then check the helper contract with kiln_discover.", PROGRAM_RANGE_ERROR_ADVICE = "The program or a helper it called threw a RangeError: a number was outside its allowed range, for example a non-positive size, an invalid array length or segment count, or unbounded recursion. Check the helper arguments against kiln_discover.", LOD_SET_ADVICE = 'Levels of detail: sibling nodes whose names share a stem and carry LOD0, LOD1, ... tokens (Body_LOD0, Body_LOD1) form one set. A set needs LOD0 and consecutive levels under one parent, outside any other tier, and one defineLod([lod0, lod1, ...], { screenCoverage: [...] }) call listing its tiers in level order with one value per level, each from 0 to 1 and strictly decreasing; the last may be 0, which never culls. Build one tier without LOD tokens unless the brief asks for levels. Call kiln_discover with ids ["defineLod"].', AuthoringDiagnosticError;
 var init_authoring_diagnostic = __esm(() => {
   AuthoringDiagnosticError = class AuthoringDiagnosticError extends Error {
     diagnostic;
@@ -7205,6 +7207,16 @@ var init_helper_specs = __esm(() => {
       promptNotes: "AUTO-ADDS to opts.parent. NEVER call parent.add(createPart(...)) — pass { parent } instead. rotation is DEGREES — writing radians (e.g. 0.785 or Math.PI/4) silently produces ~zero rotation."
     },
     {
+      name: "defineLod",
+      signature: "defineLod(levels: Object3D[], opts: { screenCoverage: number[] })",
+      returns: "Object3D[] (levels, unchanged)",
+      category: "structure",
+      description: "Declares one set of level-of-detail tiers, LOD0 (full detail) first, and the minimum screen coverage (0..1) at which each level draws.",
+      example: `const tiers = ['Body_LOD0', 'Body_LOD1', 'Body_LOD2'].map((name) => { const g = new THREE.Group(); g.name = name; root.add(g); return g; });
+defineLod(tiers, { screenCoverage: [0.25, 0.06, 0.01] });`,
+      promptNotes: "Only when the brief asks for LOD tiers; otherwise build one tier. Tiers are sibling nodes named with one stem and consecutive LOD<n> tokens. screenCoverage has one value per level, strictly decreasing; below the last the asset is culled, and a last value of 0 never culls."
+    },
+    {
       name: "beamBetween",
       signature: "beamBetween(name, start: [x,y,z], end: [x,y,z], radius, material, opts?: { segments, parent })",
       returns: "THREE.Object3D (prefixed `Mesh_`)",
@@ -11890,18 +11902,136 @@ var init_prop = __esm(() => {
   ];
 });
 
+// src/lod.ts
+function lodName(name) {
+  const match = LOD_TOKEN.exec(name);
+  if (!match)
+    return;
+  const start = match.index + match[1].length;
+  const end = start + 3 + match[2].length;
+  const token = name.slice(start, start + 3);
+  return {
+    level: Number(match[2]),
+    stem: `${name.slice(0, start)}\x00${name.slice(end)}`,
+    pattern: `${name.slice(0, start)}${token}<n>${name.slice(end)}`
+  };
+}
+function fail(message) {
+  throw new AuthoringDiagnosticError("LOD_SET", message);
+}
+function coverageProblem(values, levels) {
+  if (!Array.isArray(values) || values.length !== levels)
+    return `screenCoverage needs one value per level (${levels})`;
+  for (const [index, value] of values.entries()) {
+    if (typeof value !== "number" || !Number.isFinite(value) || value < 0 || value > 1)
+      return `screenCoverage[${index}] must be a number from 0 to 1`;
+    if (index > 0 && value >= values[index - 1])
+      return "screenCoverage must be strictly decreasing, LOD0 first; the last value may be 0, which never culls";
+  }
+  return;
+}
+function format(values) {
+  try {
+    return JSON.stringify(values) ?? String(values);
+  } catch {
+    return String(values);
+  }
+}
+function defineLod(levels, options) {
+  if (!Array.isArray(levels) || levels.length < 2 || levels.some((level) => level?.isObject3D !== true))
+    fail(`defineLod: levels must list at least two tier nodes, LOD0 first, as in ${EXAMPLE}.`);
+  const first = lodName(levels[0].name);
+  for (const [index, level] of levels.entries()) {
+    const parsed = lodName(level.name);
+    if (!parsed || parsed.level !== index || parsed.stem !== first?.stem) {
+      const expected = first ? first.pattern.replace("<n>", String(index)) : `a name with the token LOD${index}`;
+      fail(`defineLod: level ${index} is named ${JSON.stringify(level.name)}; name each tier with one stem and its level's token in order (${expected}).`);
+    }
+  }
+  const parents = new Set(levels.map((level) => level.parent));
+  if (!parents.has(null) && parents.size > 1)
+    fail(`defineLod: the tiers of ${JSON.stringify(first.pattern)} must share the same parent; lower levels replace LOD0 in place.`);
+  const coverage = options?.screenCoverage;
+  const problem = coverageProblem(coverage, levels.length);
+  if (problem)
+    fail(`defineLod: ${problem}; got ${format(coverage)}. For example ${EXAMPLE}.`);
+  const declaration = { screenCoverage: [...coverage] };
+  levels[0].userData[KILN_LOD_KEY] = declaration;
+  return levels;
+}
+function declarationOf(node) {
+  return node.userData?.[KILN_LOD_KEY];
+}
+function collectLodSets(root) {
+  const sets = [];
+  const declaredBases = new Set;
+  const visit = (parent) => {
+    const groups = new Map;
+    const untagged = [];
+    for (const child of parent.children) {
+      const name = lodName(child.name);
+      if (!name) {
+        untagged.push(child);
+        continue;
+      }
+      const members = groups.get(name.stem) ?? [];
+      members.push({ node: child, name });
+      groups.set(name.stem, members);
+    }
+    for (const members of groups.values()) {
+      const pattern = members[0].name.pattern;
+      const where = `${JSON.stringify(pattern)} under ${JSON.stringify(parent.name || "(unnamed)")}`;
+      if (members.length === 1)
+        continue;
+      const ordered = [...members].sort((a, b) => a.name.level - b.name.level);
+      const found = ordered.map((member) => member.name.level);
+      if (found.some((level, index) => level !== index))
+        fail(`LOD set ${where} has levels ${found.join(", ")}; a set needs LOD0 and consecutive levels with no repeats.`);
+      const levels = ordered.map((member) => member.node);
+      const declaration = declarationOf(levels[0]);
+      const names = levels.map((level) => level.name).join(", ");
+      if (declaration === undefined)
+        fail(`LOD set ${where} (${names}) has no screen coverage. Declare it once: defineLod([${names}], { screenCoverage: [...] }) with one value per level, from 0 to 1, strictly decreasing.`);
+      const coverage = declaration?.screenCoverage;
+      if (Array.isArray(coverage) && coverage.length !== levels.length)
+        fail(`LOD set ${where} declares ${coverage.length} levels but has ${levels.length} (${names}); call defineLod again with every tier.`);
+      const problem = coverageProblem(coverage, levels.length);
+      if (problem)
+        fail(`LOD set ${where}: ${problem}.`);
+      declaredBases.add(levels[0]);
+      sets.push({ parent, levels, screenCoverage: [...coverage] });
+    }
+    for (const child of untagged)
+      visit(child);
+  };
+  visit(root);
+  root.traverse((node) => {
+    const declaration = declarationOf(node);
+    if (declaration === undefined || declaredBases.has(node))
+      return;
+    const coverage = declaration?.screenCoverage;
+    const count = Array.isArray(coverage) ? coverage.length : "its";
+    fail(`${JSON.stringify(node.name)} declares ${count} levels with defineLod but is not the LOD0 of a set of sibling tiers; attach every tier under the same parent (sets cannot nest inside another tier).`);
+  });
+  return sets;
+}
+var LOD_TOKEN, KILN_LOD_KEY = "kilnLodV1", EXAMPLE = "defineLod([body0, body1, body2], { screenCoverage: [0.25, 0.06, 0.01] })";
+var init_lod = __esm(() => {
+  init_authoring_diagnostic();
+  LOD_TOKEN = /(^|[^a-z0-9])lod(\d+)([^a-z0-9]|$)/i;
+});
+
 // src/qa/lod.ts
 function lodLevel(node) {
   for (let current = node;current; current = current.parent) {
-    const match = LOD_TAG.exec(current.name);
+    const match = LOD_TOKEN.exec(current.name);
     if (match)
       return Number(match[2]);
   }
   return;
 }
-var LOD_TAG;
-var init_lod = __esm(() => {
-  LOD_TAG = /(^|[^a-z0-9])lod(\d+)([^a-z0-9]|$)/i;
+var init_lod2 = __esm(() => {
+  init_lod();
 });
 
 // src/qa/part-connectivity.ts
@@ -12034,7 +12164,7 @@ function inspectPartConnectivity(scene) {
 }
 var CONNECTIVITY_TOLERANCE = 0.02, EXEMPT_NAME, PART_CONNECTIVITY_QA_RULE;
 var init_part_connectivity = __esm(() => {
-  init_lod();
+  init_lod2();
   init_registry();
   EXEMPT_NAME = /(?:^|_)(?:leaf|leaves|foliage|frond|card|decal|billboard|petal)/i;
   PART_CONNECTIVITY_QA_RULE = Object.freeze({
@@ -12375,7 +12505,7 @@ function inspectPartPenetration(evidence) {
 }
 var MAX_PART_TRIANGLES = 20000, MAX_NARROW_PHASE_PAIRS = 64, MAX_SOLID_BUILDS, MAX_BROAD_PHASE_PAIRS = 250000, CONTACT_VOLUME_FRACTION = 0.001, boxVolume = (box) => (box.max.x - box.min.x) * (box.max.y - box.min.y) * (box.max.z - box.min.z), round = (n) => Math.round(n * 1e9) / 1e9, roundVolume = (n) => Number(n.toPrecision(9)), SELF_INTERSECTION_QA_RULE, UNMEASURED_NAMES_SHOWN = 5;
 var init_self_intersection = __esm(() => {
-  init_lod();
+  init_lod2();
   init_registry();
   MAX_SOLID_BUILDS = 2 * MAX_NARROW_PHASE_PAIRS;
   SELF_INTERSECTION_QA_RULE = Object.freeze({
@@ -18044,6 +18174,230 @@ var init_requirements_run = __esm(() => {
   ]);
 });
 
+// src/metrics.ts
+function primTris(prim) {
+  const count = prim.getIndices()?.getCount() ?? prim.getAttribute("POSITION")?.getCount() ?? 0;
+  switch (prim.getMode()) {
+    case 4:
+      return Math.floor(count / 3);
+    case 5:
+    case 6:
+      return Math.max(0, count - 2);
+    default:
+      return 0;
+  }
+}
+function instanceCopies(node) {
+  const ext = node.getExtension("EXT_mesh_gpu_instancing");
+  if (!ext)
+    return 1;
+  return ext.getAttribute?.("TRANSLATION")?.getCount() ?? ext.getAttribute?.("ROTATION")?.getCount() ?? ext.getAttribute?.("SCALE")?.getCount() ?? 1;
+}
+function nodeTriangles(node) {
+  let triangles = 0;
+  const mesh = node.getMesh();
+  if (mesh) {
+    const copies = instanceCopies(node);
+    for (const prim of mesh.listPrimitives())
+      triangles += primTris(prim) * copies;
+  }
+  for (const child of node.listChildren())
+    triangles += nodeTriangles(child);
+  return triangles;
+}
+function collectGlbMetrics(doc, triangles) {
+  const root = doc.getRoot();
+  const geomSet = new Set;
+  const matSet = new Set;
+  let drawCalls = 0;
+  let derivedTris = 0;
+  let meshNodes = 0;
+  let meshInstances = 0;
+  const visit = (node) => {
+    const mesh = node.getMesh();
+    if (mesh) {
+      const copies = instanceCopies(node);
+      meshNodes += 1;
+      meshInstances += copies;
+      for (const prim of mesh.listPrimitives()) {
+        drawCalls += 1;
+        geomSet.add(prim);
+        derivedTris += primTris(prim) * copies;
+        const mat = prim.getMaterial();
+        if (mat)
+          matSet.add(mat);
+      }
+    }
+    for (const child of node.listChildren())
+      visit(child);
+  };
+  for (const scene of root.listScenes()) {
+    for (const node of scene.listChildren())
+      visit(node);
+  }
+  const transparentMaterials = root.listMaterials().filter((m) => m.getAlphaMode() === "BLEND").length;
+  return {
+    uniqueGeometries: geomSet.size,
+    uniqueMaterials: matSet.size,
+    meshNodes,
+    meshInstances,
+    drawCalls,
+    textureCount: root.listTextures().length,
+    skinned: root.listSkins().length > 0,
+    transparentMaterials,
+    triangles: triangles ?? derivedTris
+  };
+}
+function gradeInstanceability(metrics, opts = {}) {
+  const m = metrics;
+  const band = MATERIAL_GRADE_BANDS.find((b) => m.uniqueMaterials <= b.max);
+  let grade = band.grade;
+  const materials = `${counted(m.uniqueMaterials, "distinct material", "distinct materials")} (${band.grade} at ${band.range})`;
+  const transparency = m.transparentMaterials > 0 ? counted(m.transparentMaterials, "transparent material", "transparent materials") : undefined;
+  const textures = m.textureCount > 4 ? `${m.textureCount} textures` : undefined;
+  const drivers = [];
+  const also = [];
+  if ((grade === "A" || grade === "B") && (transparency || textures)) {
+    grade = "C";
+    if (transparency)
+      drivers.push(`${transparency} (lowers A/B to C)`);
+    if (textures)
+      drivers.push(`${textures} (over 4 lowers A/B to C)`);
+    also.push(materials);
+  } else {
+    drivers.push(materials);
+    if (transparency)
+      also.push(`${transparency} (lowers only A/B to C)`);
+    if (textures)
+      also.push(`${textures} (over 4 lowers only A/B to C)`);
+  }
+  also.push(counted(m.uniqueGeometries, "geometry", "geometries"), counted(m.drawCalls, "draw call", "draw calls"));
+  if (m.skinned)
+    also.push("skinned (clone-rendered, not penalized)");
+  const setBy = drivers.join(" and ");
+  const reasons = [
+    `grade ${grade} set by ${setBy}`,
+    `${m.uniqueMaterials} material${m.uniqueMaterials === 1 ? "" : "s"}, ` + `${m.uniqueGeometries} geometr${m.uniqueGeometries === 1 ? "y" : "ies"}, ` + `${m.drawCalls} draw call${m.drawCalls === 1 ? "" : "s"}`
+  ];
+  if (transparency)
+    reasons.push(`${m.transparentMaterials} transparent material(s) force per-object sort`);
+  if (textures)
+    reasons.push(`${m.textureCount} textures (consider atlasing)`);
+  if (m.skinned)
+    reasons.push("skinned/animated — clone-rendered (not statically GPU-instanced); fine at low counts");
+  if (opts.category)
+    reasons.push(`category: ${opts.category}`);
+  const summary = `${grade} (informational, not a QA verdict), set by ${setBy}. Also: ${also.join("; ")}.`;
+  return { grade, summary, reasons, metrics: m };
+}
+var MATERIAL_GRADE_BANDS, counted = (n, one, many) => `${n} ${n === 1 ? one : many}`;
+var init_metrics = __esm(() => {
+  MATERIAL_GRADE_BANDS = [
+    { grade: "A", max: 1, range: "0-1" },
+    { grade: "B", max: 3, range: "2-3" },
+    { grade: "C", max: 6, range: "4-6" },
+    { grade: "D", max: 12, range: "7-12" },
+    { grade: "F", max: Number.POSITIVE_INFINITY, range: "13+" }
+  ];
+});
+
+// src/lod-export.ts
+import { PropertyType as PropertyType2 } from "@gltf-transform/core";
+function exportedRoot(doc) {
+  const scene = doc.getRoot().getDefaultScene() ?? doc.getRoot().listScenes()[0];
+  const top = scene?.listChildren() ?? [];
+  if (top.length !== 1)
+    throw new Error("LOD export expects the exporter to write one root node.");
+  return top[0];
+}
+function applyLodChains(root, sets, doc) {
+  if (sets.length === 0)
+    return;
+  const top = exportedRoot(doc);
+  const exported = (node) => {
+    const path = [];
+    for (let current = node;current !== root; current = current.parent) {
+      if (!current.parent)
+        throw new Error(`LOD export: ${node.name} is outside the asset root.`);
+      path.unshift(current.parent.children.indexOf(current));
+    }
+    let target = top;
+    for (const index of path)
+      target = target?.listChildren()[index];
+    if (!target || (target.getName() || "") !== (node.name || ""))
+      throw new Error(`LOD export could not find the written node for ${JSON.stringify(node.name)}.`);
+    return target;
+  };
+  const chains = sets.map((set) => ({
+    set,
+    parent: exported(set.parent),
+    levels: set.levels.map(exported)
+  }));
+  const extension = doc.createExtension(MSFTLod);
+  for (const { set, parent, levels } of chains) {
+    const [base, ...lower] = levels;
+    const lod = extension.createLod();
+    for (const level of lower) {
+      parent.removeChild(level);
+      lod.addLevel(level);
+    }
+    base.setExtension(MSFT_LOD, lod);
+    base.setExtras({ ...base.getExtras(), [MSFT_SCREENCOVERAGE]: [...set.screenCoverage] });
+  }
+}
+function occurrence(siblings, index, name) {
+  let count = 0;
+  for (let i = 0;i < index; i++)
+    if (siblings[i].getName() === name)
+      count++;
+  return count;
+}
+function screenCoverageOf(node) {
+  const value = node.getExtras()[MSFT_SCREENCOVERAGE];
+  return Array.isArray(value) && value.every((item) => typeof item === "number") ? [...value] : undefined;
+}
+function listLodChainNodes(doc) {
+  const scene = doc.getRoot().getDefaultScene() ?? doc.getRoot().listScenes()[0];
+  if (!scene)
+    return [];
+  const chains = [];
+  const visit = (siblings, parentPath) => {
+    siblings.forEach((node, index) => {
+      const at = (name) => `${parentPath}${segment(name, occurrence(siblings, index, name))}`;
+      const path = at(node.getName());
+      const lower = (node.getExtension(MSFT_LOD)?.listLevels() ?? []).filter((level) => level.propertyType === PropertyType2.NODE);
+      if (lower.length > 0)
+        chains.push({
+          levels: [node, ...lower],
+          paths: [path, ...lower.map((level) => at(level.getName()))]
+        });
+      visit(node.listChildren(), path);
+    });
+  };
+  visit(scene.listChildren(), segment(scene.getName() || "Scene", 0));
+  return chains;
+}
+function summarizeLodChains(doc) {
+  return listLodChainNodes(doc).map(({ levels, paths }) => {
+    const screenCoverage = screenCoverageOf(levels[0]);
+    return {
+      path: paths[0],
+      ...screenCoverage ? { screenCoverage } : {},
+      levels: levels.map((level, number) => ({
+        level: number,
+        name: level.getName(),
+        path: paths[number],
+        triangles: nodeTriangles(level)
+      }))
+    };
+  });
+}
+var MSFT_SCREENCOVERAGE = "MSFT_screencoverage", segment = (name, occurrence) => `/${encodeURIComponent(name)}[${occurrence}]`;
+var init_lod_export = __esm(() => {
+  init_gltf_io();
+  init_metrics();
+});
+
 // src/rig-export.ts
 function rigExtrasForExport(node) {
   const extras = {};
@@ -23114,6 +23468,7 @@ function buildSandboxGlobals(usage, options = {}) {
     createWheelGeometrySet: wrap("createWheelGeometrySet", createWheelGeometrySet),
     createWheelAssembly: wrap("createWheelAssembly", createWheelAssembly),
     createPart: wrap("createPart", createPart),
+    defineLod: wrap("defineLod", defineLod),
     capsuleGeo: wrapGeo("capsuleGeo", capsuleGeo),
     capsuleXGeo: wrapGeo("capsuleXGeo", capsuleXGeo),
     capsuleYGeo: wrapGeo("capsuleYGeo", capsuleYGeo),
@@ -23223,6 +23578,8 @@ var init_primitives = __esm(() => {
   init_geometry_budget();
   init_character();
   init_assembly();
+  init_lod();
+  init_lod();
   init_architecture2();
   init_architecture2();
   init_gears();
@@ -23257,121 +23614,6 @@ var init_primitives = __esm(() => {
   cylinderYGeo = cylinderGeo;
   capsuleYGeo = capsuleGeo;
   coneYGeo = coneGeo;
-});
-
-// src/metrics.ts
-function collectGlbMetrics(doc, triangles) {
-  const root = doc.getRoot();
-  const geomSet = new Set;
-  const matSet = new Set;
-  let drawCalls = 0;
-  let derivedTris = 0;
-  let meshNodes = 0;
-  let meshInstances = 0;
-  const primTris = (prim) => {
-    const count = prim.getIndices()?.getCount() ?? prim.getAttribute("POSITION")?.getCount() ?? 0;
-    switch (prim.getMode()) {
-      case 4:
-        return Math.floor(count / 3);
-      case 5:
-      case 6:
-        return Math.max(0, count - 2);
-      default:
-        return 0;
-    }
-  };
-  const instanceCopies = (node) => {
-    const ext = node.getExtension("EXT_mesh_gpu_instancing");
-    if (!ext)
-      return 1;
-    return ext.getAttribute?.("TRANSLATION")?.getCount() ?? ext.getAttribute?.("ROTATION")?.getCount() ?? ext.getAttribute?.("SCALE")?.getCount() ?? 1;
-  };
-  const visit = (node) => {
-    const mesh = node.getMesh();
-    if (mesh) {
-      const copies = instanceCopies(node);
-      meshNodes += 1;
-      meshInstances += copies;
-      for (const prim of mesh.listPrimitives()) {
-        drawCalls += 1;
-        geomSet.add(prim);
-        derivedTris += primTris(prim) * copies;
-        const mat = prim.getMaterial();
-        if (mat)
-          matSet.add(mat);
-      }
-    }
-    for (const child of node.listChildren())
-      visit(child);
-  };
-  for (const scene of root.listScenes()) {
-    for (const node of scene.listChildren())
-      visit(node);
-  }
-  const transparentMaterials = root.listMaterials().filter((m) => m.getAlphaMode() === "BLEND").length;
-  return {
-    uniqueGeometries: geomSet.size,
-    uniqueMaterials: matSet.size,
-    meshNodes,
-    meshInstances,
-    drawCalls,
-    textureCount: root.listTextures().length,
-    skinned: root.listSkins().length > 0,
-    transparentMaterials,
-    triangles: triangles ?? derivedTris
-  };
-}
-function gradeInstanceability(metrics, opts = {}) {
-  const m = metrics;
-  const band = MATERIAL_GRADE_BANDS.find((b) => m.uniqueMaterials <= b.max);
-  let grade = band.grade;
-  const materials = `${counted(m.uniqueMaterials, "distinct material", "distinct materials")} (${band.grade} at ${band.range})`;
-  const transparency = m.transparentMaterials > 0 ? counted(m.transparentMaterials, "transparent material", "transparent materials") : undefined;
-  const textures = m.textureCount > 4 ? `${m.textureCount} textures` : undefined;
-  const drivers = [];
-  const also = [];
-  if ((grade === "A" || grade === "B") && (transparency || textures)) {
-    grade = "C";
-    if (transparency)
-      drivers.push(`${transparency} (lowers A/B to C)`);
-    if (textures)
-      drivers.push(`${textures} (over 4 lowers A/B to C)`);
-    also.push(materials);
-  } else {
-    drivers.push(materials);
-    if (transparency)
-      also.push(`${transparency} (lowers only A/B to C)`);
-    if (textures)
-      also.push(`${textures} (over 4 lowers only A/B to C)`);
-  }
-  also.push(counted(m.uniqueGeometries, "geometry", "geometries"), counted(m.drawCalls, "draw call", "draw calls"));
-  if (m.skinned)
-    also.push("skinned (clone-rendered, not penalized)");
-  const setBy = drivers.join(" and ");
-  const reasons = [
-    `grade ${grade} set by ${setBy}`,
-    `${m.uniqueMaterials} material${m.uniqueMaterials === 1 ? "" : "s"}, ` + `${m.uniqueGeometries} geometr${m.uniqueGeometries === 1 ? "y" : "ies"}, ` + `${m.drawCalls} draw call${m.drawCalls === 1 ? "" : "s"}`
-  ];
-  if (transparency)
-    reasons.push(`${m.transparentMaterials} transparent material(s) force per-object sort`);
-  if (textures)
-    reasons.push(`${m.textureCount} textures (consider atlasing)`);
-  if (m.skinned)
-    reasons.push("skinned/animated — clone-rendered (not statically GPU-instanced); fine at low counts");
-  if (opts.category)
-    reasons.push(`category: ${opts.category}`);
-  const summary = `${grade} (informational, not a QA verdict), set by ${setBy}. Also: ${also.join("; ")}.`;
-  return { grade, summary, reasons, metrics: m };
-}
-var MATERIAL_GRADE_BANDS, counted = (n, one, many) => `${n} ${n === 1 ? one : many}`;
-var init_metrics = __esm(() => {
-  MATERIAL_GRADE_BANDS = [
-    { grade: "A", max: 1, range: "0-1" },
-    { grade: "B", max: 3, range: "2-3" },
-    { grade: "C", max: 6, range: "4-6" },
-    { grade: "D", max: 12, range: "7-12" },
-    { grade: "F", max: Number.POSITIVE_INFINITY, range: "13+" }
-  ];
 });
 
 // src/qa/gltf.ts
@@ -25865,6 +26107,80 @@ var init_capture = __esm(() => {
   };
 });
 
+// src/views/lod.ts
+function registerReviewLodChains(root, chains) {
+  if (chains.length > 0)
+    CHAINS.set(root, chains);
+}
+function reviewLodChains(root) {
+  return typeof root === "object" && root !== null ? CHAINS.get(root) ?? [] : [];
+}
+function drawnLevels(root) {
+  return reviewLodChains(root).map((chain) => {
+    const drawn = chain.levels.findIndex((level) => level.parent !== null);
+    return drawn < 0 ? 0 : drawn + 1;
+  });
+}
+function swap(out, into) {
+  const parent = out.parent;
+  parent.children[parent.children.indexOf(out)] = into;
+  into.parent = parent;
+  out.parent = null;
+}
+function levelForSubject(root, subject) {
+  const chains = reviewLodChains(root);
+  if (chains.length === 0 || typeof subject !== "object" || subject === null)
+    return;
+  const byPath = typeof subject.path === "string";
+  if (!byPath && typeof subject.name !== "string")
+    return;
+  const subjects = listCameraSubjects(root);
+  if (subjects.some((entry) => byPath ? entry.path === subject.path : entry.name === subject.name))
+    return;
+  const paths = new Map(subjects.map((entry) => [entry.node, entry.path]));
+  const matches = [];
+  for (const chain of chains) {
+    const parent = chain.base.parent;
+    const parentPath = parent ? paths.get(parent) : undefined;
+    if (!parent || parentPath === undefined)
+      continue;
+    const before = parent.children.slice(0, parent.children.indexOf(chain.base));
+    chain.levels.forEach((level, index) => {
+      const occurrence = before.filter((sibling) => sibling.name === level.name).length;
+      const own = `/${encodeURIComponent(level.name)}[0]`;
+      const at = `${parentPath}/${encodeURIComponent(level.name)}[${occurrence}]`;
+      for (const entry of listCameraSubjects(level)) {
+        const path = at + entry.path.slice(own.length);
+        if (byPath ? path === subject.path : entry.name === subject.name)
+          matches.push({ chain, level: index + 1, path });
+      }
+    });
+  }
+  if (matches.length > 1)
+    throw new Error(`ambiguous camera subject: ${matches.length} nodes in lower levels of detail match ${JSON.stringify(subject.path ?? subject.name)}; choose one path: ${matches.map((match) => match.path).join(", ")}`);
+  return matches[0];
+}
+async function withSubjectLevel(root, subject, run) {
+  const scene = root;
+  const match = levelForSubject(scene, subject);
+  if (!match)
+    return run(drawnLevels(root));
+  const level = match.chain.levels[match.level - 1];
+  swap(match.chain.base, level);
+  scene.updateMatrixWorld(true);
+  try {
+    return await run(drawnLevels(root));
+  } finally {
+    swap(level, match.chain.base);
+    scene.updateMatrixWorld(true);
+  }
+}
+var CHAINS;
+var init_lod3 = __esm(() => {
+  init_camera();
+  CHAINS = new WeakMap;
+});
+
 // src/views/camera-capture.ts
 function validateAdvancedCapture(config) {
   for (const key of Object.keys(config))
@@ -25884,7 +26200,14 @@ function validateAdvancedCapture(config) {
 }
 async function renderCaptureGrid(root, config, render, limits) {
   validateAdvancedCapture(config);
-  const shots = config.shots.map((s) => resolveAssetCamera(root, s));
+  const plans = [];
+  for (const request of config.shots)
+    plans.push(await withSubjectLevel(root, request.subject, async (levels) => ({
+      subject: request.subject,
+      shot: resolveAssetCamera(root, request),
+      levels
+    })));
+  const shots = plans.map((plan) => plan.shot);
   const size = config.size ?? 384;
   const cols = config.cols ?? Math.min(3, shots.length);
   const backdrop = resolveCaptureBackdrop(config.backdrop);
@@ -25892,10 +26215,10 @@ async function renderCaptureGrid(root, config, render, limits) {
   const cells = [];
   const perFramePngs = [];
   const derivativeReceipts = [];
-  for (const shot of shots) {
+  for (const { subject, shot } of plans) {
     const dir = shot.camera.position.map((n, i) => n - shot.camera.target[i]);
     const view = { name: shot.name, dir };
-    const png = await withCameraVisibility(root, shot, async () => {
+    const png = await withSubjectLevel(root, subject, () => withCameraVisibility(root, shot, async () => {
       if (render) {
         const result = await render({
           root,
@@ -25909,7 +26232,7 @@ async function renderCaptureGrid(root, config, render, limits) {
         return result.png;
       }
       return encodePng(rasterizeCamera(root, shot.camera, size, true, backdrop), size, size);
-    });
+    }));
     const decoded = decodePng(png);
     if (decoded.width !== size || decoded.height !== size)
       throw new Error("capture cell dimensions do not match request");
@@ -25935,6 +26258,7 @@ async function renderCaptureGrid(root, config, render, limits) {
     cameraShots: shots,
     perFramePngs,
     derivativeReceipts,
+    ...reviewLodChains(root).length ? { viewLevels: plans.map((plan) => plan.levels) } : {},
     ...derivativeReceipts.length ? {
       captureCache: {
         hit: derivativeReceipts.every((r) => r.captureCache?.hit),
@@ -25951,6 +26275,7 @@ var init_camera_capture = __esm(() => {
   init_png();
   init_grid();
   init_annotate();
+  init_lod3();
 });
 
 // src/views/architecture.ts
@@ -26407,6 +26732,13 @@ async function loadGlbReviewScene(bytes) {
   root.updateMatrixWorld(true);
   if (meshCount === 0)
     throw new GlbGeometryFlatError("GLB_FLAT_NO_RENDERABLE_GEOMETRY", "Final GLB contains no renderable geometry.");
+  const sceneMeshCount = meshCount;
+  const sceneInstanceCount = instanceCount;
+  const sceneReasons = new Set(reasons);
+  registerReviewLodChains(root, listLodChainNodes(document).map(({ levels: [base, ...lower] }) => ({
+    base: nodeMap.get(base),
+    levels: lower.some((level) => nodeMap.has(level)) ? [] : lower.map(buildNode)
+  })));
   const nativeClips = document.getRoot().listAnimations().map((animation) => withLoopIntent(new AnimationClip4(animation.getName(), -1, animation.listChannels().flatMap((channel) => {
     const node = channel.getTargetNode();
     const path = channel.getTargetPath();
@@ -26429,14 +26761,16 @@ async function loadGlbReviewScene(bytes) {
   return {
     root,
     clips,
-    reasonCodes: REASON_ORDER.filter((reason) => reasons.has(reason)),
-    meshCount,
-    instanceCount
+    reasonCodes: REASON_ORDER.filter((reason) => sceneReasons.has(reason)),
+    meshCount: sceneMeshCount,
+    instanceCount: sceneInstanceCount
   };
 }
 var GLB_GEOMETRY_FLAT_REASON, REASON_ORDER, REVIEW_CLIPS_EXTRAS_KEY = "kilnReviewClipsV1", REVIEW_CLIP_LIMITS, GlbGeometryFlatError, glbIO;
 var init_glb = __esm(() => {
   init_gltf_io();
+  init_lod_export();
+  init_lod3();
   GLB_GEOMETRY_FLAT_REASON = {
     TEXTURE_SAMPLING_UNSUPPORTED: "GLB_FLAT_TEXTURE_SAMPLING_UNSUPPORTED",
     KTX2_SAMPLING_UNSUPPORTED: "GLB_FLAT_KTX2_SAMPLING_UNSUPPORTED",
@@ -27923,6 +28257,7 @@ async function inspectGlbIntegration(bytes, opts = {}) {
   const minTuple = [min[0], min[1], min[2]];
   const maxTuple = [max[0], max[1], max[2]];
   const minY = minTuple[1];
+  const levelsOfDetail = summarizeLodChains(doc);
   return {
     schemaVersion: "kiln.integration-manifest.v1",
     analyzerVersion: 1,
@@ -27959,6 +28294,7 @@ async function inspectGlbIntegration(bytes, opts = {}) {
       transparentMaterials: metrics.transparentMaterials,
       skinned: metrics.skinned
     },
+    ...levelsOfDetail.length ? { levelsOfDetail } : {},
     structuralQa: {
       hasDefaultScene: explicitDefault !== null,
       finiteBounds,
@@ -28430,8 +28766,12 @@ async function renderSceneToGLB(root, opts = {}) {
   if (opts.geometryPolicy !== undefined && !["warn", "strict"].includes(opts.geometryPolicy))
     throw new Error("geometryPolicy must be warn or strict");
   const exporter = resolveGltfExporter(opts.gltfExporter);
+  const lodSets = opts.derivative === true ? [] : collectLodSets(root);
   const warnings = inspectGeometryExport(root, opts.geometryPolicy, exporter);
-  const tris = countTriangles(root);
+  let tris = countTriangles(root);
+  for (const set of lodSets)
+    for (const level of set.levels.slice(1))
+      tris -= countTriangles(level);
   const materialRecipeApplications = collectMaterialRecipeApplications(root);
   const materialResourceProvenance = collectMaterialResourceProvenance(root);
   for (const w of inspectGeneratedAnimation(root, clips))
@@ -28480,6 +28820,7 @@ async function renderSceneToGLB(root, opts = {}) {
         scene.setExtras({ [REVIEW_CLIPS_EXTRAS_KEY2]: review });
     }
   }
+  applyLodChains(root, lodSets, doc);
   if (opts.dedup !== false) {
     try {
       await doc.transform(dedup());
@@ -28807,6 +29148,8 @@ var init_render = __esm(() => {
   init_requirements_run();
   init_authoring_diagnostic();
   init_gltf_io();
+  init_lod();
+  init_lod_export();
   init_community_exporter();
   init_rig_export();
   init_geometry_export();
@@ -28850,7 +29193,7 @@ function isRecord5(value) {
 function hasExactKeys(value, allowed) {
   return Object.keys(value).every((key) => allowed.includes(key));
 }
-function fail(kind) {
+function fail2(kind) {
   throw new Error(`invalid evaluator ${kind}`);
 }
 function validRequestId(value) {
@@ -28900,18 +29243,18 @@ function decodeEvaluatorResultV2(json, maxGlbBytes, expectedRequestId) {
   try {
     value = JSON.parse(json);
   } catch {
-    return fail("result");
+    return fail2("result");
   }
   if (!isRecord5(value) || !hasExactKeys(value, ["version", "requestId", "ok", "render", "error"]) || value.version !== EVALUATOR_RESULT_VERSION || !validRequestId(value.requestId) || typeof value.ok !== "boolean") {
-    return fail("result");
+    return fail2("result");
   }
   if (expectedRequestId !== undefined && value.requestId !== expectedRequestId)
-    fail("result");
+    fail2("result");
   if (!value.ok) {
     if (value.render !== undefined)
-      return fail("result");
+      return fail2("result");
     if (!isRecord5(value.error) || !hasExactKeys(value.error, ["code", "message", "qa", "diagnostic"])) {
-      return fail("result");
+      return fail2("result");
     }
     const codes = [
       "INPUT_INVALID",
@@ -28925,21 +29268,21 @@ function decodeEvaluatorResultV2(json, maxGlbBytes, expectedRequestId) {
       "PROTOCOL_ERROR"
     ];
     if (!codes.includes(value.error.code) || typeof value.error.message !== "string" || value.error.message !== evaluatorOutcomeMessage(value.error.code)) {
-      return fail("result");
+      return fail2("result");
     }
-    if (value.error.diagnostic !== undefined && (value.error.code !== "EXECUTION_REJECTED" || value.error.diagnostic !== "UNBOUND_VARIABLE" && value.error.diagnostic !== "GEAR_RADII_ORDER" && value.error.diagnostic !== "ROUNDED_BOX_RADIUS" && value.error.diagnostic !== "PROCEDURAL_TEXTURE_UNKNOWN_KEY" && value.error.diagnostic !== "PROCEDURAL_TEXTURE_BLEND" && value.error.diagnostic !== "MATERIAL_FRACTION_RANGE" && value.error.diagnostic !== "MATERIAL_RECIPE_TEXTURE_BINDING" && value.error.diagnostic !== "PORTABLE_TEXTURE_REFERENCE" && value.error.diagnostic !== "PORTABLE_COLOR_ARGUMENT" && value.error.diagnostic !== "PARAMETRIC_PERIODIC_ENDPOINT" && value.error.diagnostic !== "PROFILE_HOLES_UNSUPPORTED" && value.error.diagnostic !== "PROFILE_BEVEL_COLLAPSE" && value.error.diagnostic !== "PROFILE_CORRESPONDENCE_COLLAPSE" && value.error.diagnostic !== "REMOVED_HELPER" && value.error.diagnostic !== "TUBE_RADIUS" && value.error.diagnostic !== "TAPER_CONE_AXIS" && value.error.diagnostic !== "SOLID_FLOAT32_COLLAPSE" && value.error.diagnostic !== "MESH_DATA_NONFINITE" && value.error.diagnostic !== "MATERIAL_ALPHA_MODE" && value.error.diagnostic !== "MATERIAL_COLOR_ARGUMENT" && value.error.diagnostic !== "PART_NAME_ARGUMENT" && value.error.diagnostic !== "PART_GEOMETRY_ARGUMENT" && value.error.diagnostic !== "PART_MATERIAL_ARGUMENT" && value.error.diagnostic !== "MATERIAL_PACKED_CHANNELS" && value.error.diagnostic !== "UNINITIALIZED_BINDING" && value.error.diagnostic !== "BUILD_RESULT" && value.error.diagnostic !== "MATERIAL_RECIPE_OVERRIDE" && value.error.diagnostic !== "PROGRAM_TYPE_ERROR" && value.error.diagnostic !== "PROGRAM_RANGE_ERROR"))
-      return fail("result");
+    if (value.error.diagnostic !== undefined && (value.error.code !== "EXECUTION_REJECTED" || value.error.diagnostic !== "UNBOUND_VARIABLE" && value.error.diagnostic !== "GEAR_RADII_ORDER" && value.error.diagnostic !== "ROUNDED_BOX_RADIUS" && value.error.diagnostic !== "PROCEDURAL_TEXTURE_UNKNOWN_KEY" && value.error.diagnostic !== "PROCEDURAL_TEXTURE_BLEND" && value.error.diagnostic !== "MATERIAL_FRACTION_RANGE" && value.error.diagnostic !== "MATERIAL_RECIPE_TEXTURE_BINDING" && value.error.diagnostic !== "PORTABLE_TEXTURE_REFERENCE" && value.error.diagnostic !== "PORTABLE_COLOR_ARGUMENT" && value.error.diagnostic !== "PARAMETRIC_PERIODIC_ENDPOINT" && value.error.diagnostic !== "PROFILE_HOLES_UNSUPPORTED" && value.error.diagnostic !== "PROFILE_BEVEL_COLLAPSE" && value.error.diagnostic !== "PROFILE_CORRESPONDENCE_COLLAPSE" && value.error.diagnostic !== "REMOVED_HELPER" && value.error.diagnostic !== "TUBE_RADIUS" && value.error.diagnostic !== "TAPER_CONE_AXIS" && value.error.diagnostic !== "SOLID_FLOAT32_COLLAPSE" && value.error.diagnostic !== "MESH_DATA_NONFINITE" && value.error.diagnostic !== "MATERIAL_ALPHA_MODE" && value.error.diagnostic !== "MATERIAL_COLOR_ARGUMENT" && value.error.diagnostic !== "PART_NAME_ARGUMENT" && value.error.diagnostic !== "PART_GEOMETRY_ARGUMENT" && value.error.diagnostic !== "PART_MATERIAL_ARGUMENT" && value.error.diagnostic !== "MATERIAL_PACKED_CHANNELS" && value.error.diagnostic !== "UNINITIALIZED_BINDING" && value.error.diagnostic !== "BUILD_RESULT" && value.error.diagnostic !== "MATERIAL_RECIPE_OVERRIDE" && value.error.diagnostic !== "PROGRAM_TYPE_ERROR" && value.error.diagnostic !== "PROGRAM_RANGE_ERROR" && value.error.diagnostic !== "LOD_SET"))
+      return fail2("result");
     if (value.error.qa !== undefined) {
       if (value.error.code !== "QA_BLOCKED" || !isRecord5(value.error.qa) || !hasExactKeys(value.error.qa, ["report", "stage", "gltfValidation"]) || !validRequirementsQaReport(value.error.qa.report) || !["scene", "final-glb"].includes(String(value.error.qa.stage)) || value.error.qa.gltfValidation !== undefined && !validGltfValidation(value.error.qa.gltfValidation)) {
-        return fail("result");
+        return fail2("result");
       }
     } else if (value.error.code === "QA_BLOCKED") {
-      return fail("result");
+      return fail2("result");
     }
     return value;
   }
   if (value.error !== undefined || !isRecord5(value.render))
-    fail("result");
+    fail2("result");
   const renderKeys = [
     "glbBase64",
     "artifactGlbSha256",
@@ -28957,44 +29300,44 @@ function decodeEvaluatorResultV2(json, maxGlbBytes, expectedRequestId) {
     "rebuildOptions"
   ];
   if (!hasExactKeys(value.render, renderKeys) || typeof value.render.glbBase64 !== "string" || !validInteger(value.render.tris, 0, Number.MAX_SAFE_INTEGER) || !isRecord5(value.render.meta) || !Array.isArray(value.render.warnings) || !value.render.warnings.every((warning) => typeof warning === "string") || !isRecord5(value.render.integrationManifest)) {
-    fail("result");
+    fail2("result");
   }
   let requirements;
   if (value.render.rebuildOptions !== undefined && !rebuildOptionsSchema.strict().safeParse(value.render.rebuildOptions).success)
-    fail("result");
+    fail2("result");
   if (value.render.materialLibraryDependencies !== undefined) {
     if (!Array.isArray(value.render.materialLibraryDependencies) || value.render.materialLibraryDependencies.length > 16)
-      fail("result");
+      fail2("result");
     try {
       for (const manifest of value.render.materialLibraryDependencies)
         validateMaterialManifestIdentity(manifest);
     } catch {
-      return fail("result");
+      return fail2("result");
     }
   }
   try {
     requirements = validateRequirementsContext(value.render.requirements);
     validateRequirementsQaReport(value.render.meta.qaReport, requirements);
   } catch {
-    return fail("result");
+    return fail2("result");
   }
   const glb = Buffer.from(value.render.glbBase64, "base64");
   if (glb.byteLength > maxGlbBytes || glb.toString("base64") !== value.render.glbBase64)
-    fail("result");
+    fail2("result");
   if (!isSha256(value.render.artifactGlbSha256))
-    fail("result");
+    fail2("result");
   const actualHash = `sha256:${createHash9("sha256").update(glb).digest("hex")}`;
   if (actualHash !== value.render.artifactGlbSha256)
-    fail("result");
+    fail2("result");
   const diagnosticViews = value.render.diagnosticViews;
   if (diagnosticViews !== undefined && !Array.isArray(diagnosticViews))
-    fail("result");
+    fail2("result");
   const decodedViews = diagnosticViews?.map((candidate) => {
     if (!isRecord5(candidate) || typeof candidate.pngBase64 !== "string")
-      return fail("result");
+      return fail2("result");
     const png = Buffer.from(candidate.pngBase64, "base64");
     if (png.toString("base64") !== candidate.pngBase64)
-      return fail("result");
+      return fail2("result");
     const { pngBase64: _, ...view } = candidate;
     return { ...view, png };
   });
@@ -29852,6 +30195,9 @@ var init_measurement = __esm(() => {
 });
 
 // src/revision-comparison.ts
+import {
+  PropertyType as PropertyType3
+} from "@gltf-transform/core";
 import { ALL_EXTENSIONS as ALL_EXTENSIONS2 } from "@gltf-transform/extensions";
 import { Box3 as Box322, Matrix4 as Matrix413, Vector3 as Vector334 } from "three";
 async function accessorFingerprint(accessor) {
@@ -29864,6 +30210,9 @@ async function accessorFingerprint(accessor) {
     accessor.getNormalized(),
     await digest4(new Uint8Array(array.buffer, array.byteOffset, array.byteLength))
   ];
+}
+function lowerLevels(node) {
+  return (node.getExtension(MSFT_LOD)?.listLevels() ?? []).filter((level) => level.propertyType === PropertyType3.NODE);
 }
 function bounds(box) {
   return box.isEmpty() ? null : {
@@ -29881,7 +30230,7 @@ async function snapshot3(bytes) {
     throw new Error("Revision comparison GLB exceeds 64 MiB.");
   const io = createGltfIO();
   const json = await io.binaryToJSON(bytes);
-  const supported = new Set(ALL_EXTENSIONS2.map((ext) => ext.EXTENSION_NAME));
+  const supported = new Set([...ALL_EXTENSIONS2.map((ext) => ext.EXTENSION_NAME), MSFT_LOD]);
   if (json.json.extensionsUsed?.some((name) => !supported.has(name)))
     throw new Error("Revision comparison cannot ignore an unknown glTF extension.");
   if (json.json.buffers?.some((b) => b.uri && !json.resources[b.uri]) || json.json.images?.some((i) => i.uri))
@@ -29899,12 +30248,16 @@ async function snapshot3(bytes) {
     throw new Error("Revision comparison does not support skins.");
   const parts = new Map;
   let vertices = 0;
-  const visit = (siblings, parent, depth) => {
+  const visit = (siblings, parent, depth, parentWorld) => {
     if (depth > 128)
       throw new Error("Revision comparison hierarchy exceeds 128 levels.");
     const names = new Set;
     const combined = new Box322;
-    for (const node of siblings) {
+    const placed = siblings.flatMap((node) => [
+      { node, drawn: true },
+      ...lowerLevels(node).map((level) => ({ node: level, drawn: false }))
+    ]);
+    for (const { node, drawn } of placed) {
       const name = node.getName();
       if (!name || names.has(name))
         throw new Error("Revision comparison requires unique nonempty sibling names; rename ambiguous nodes before comparing.");
@@ -29913,11 +30266,11 @@ async function snapshot3(bytes) {
       if (parts.size >= MAX_NODES || path.length > 4096)
         throw new Error("Revision comparison exceeds node/path budget.");
       const mesh = node.getMesh();
-      if (node.listExtensions().length || mesh?.listExtensions().length)
+      if (node.listExtensions().some((extension) => extension.extensionName !== MSFT_LOD) || mesh?.listExtensions().length)
         throw new Error("Revision comparison does not support node/mesh extensions (including instancing).");
       const primitives = mesh?.listPrimitives() ?? [];
       const own = new Box322;
-      const matrix = new Matrix413().fromArray(node.getWorldMatrix());
+      const matrix = parentWorld.clone().multiply(new Matrix413().fromArray(node.getMatrix()));
       if (matrix.elements.some((value) => !Number.isFinite(value)))
         throw new Error("Revision comparison requires finite transforms.");
       for (const primitive of primitives) {
@@ -29943,18 +30296,19 @@ async function snapshot3(bytes) {
           own.expandByPoint(point);
         }
       }
-      const part = { name, node, primitives, bounds: null };
+      const part = { name, node, world: matrix.toArray(), primitives, bounds: null };
       parts.set(path, part);
-      own.union(visit(node.listChildren(), path, depth + 1));
+      own.union(visit(node.listChildren(), path, depth + 1, matrix));
       part.bounds = bounds(own);
-      combined.union(own);
+      if (drawn)
+        combined.union(own);
     }
     return combined;
   };
   if (scenes[0].listExtensions().length)
     throw new Error("Revision comparison does not support scene extensions.");
   const scenePath = `/${encodeURIComponent(scenes[0].getName() || "Scene")}[0]`;
-  const box = visit(scenes[0].listChildren(), "", 0);
+  const box = visit(scenes[0].listChildren(), "", 0, new Matrix413);
   const nodePaths = new Map([...parts].map(([path, part]) => [part.node, path]));
   const animation = new Map;
   const clipNames = new Set;
@@ -30060,7 +30414,7 @@ async function compareRevisionGlbs(before, after, page = {}) {
         return am !== bm && !(am && bm && memo(materialMemo, am, bm, () => am.equals(bm, MATERIAL_IGNORED)));
       }))
         fields.push("material");
-      if (JSON.stringify([a.node.getMatrix(), a.node.getWorldMatrix()]) !== JSON.stringify([b.node.getMatrix(), b.node.getWorldMatrix()]))
+      if (JSON.stringify([a.node.getMatrix(), a.world]) !== JSON.stringify([b.node.getMatrix(), b.world]))
         fields.push("transform");
       if (JSON.stringify(a.bounds) !== JSON.stringify(b.bounds))
         fields.push("bounds");
@@ -30085,7 +30439,7 @@ async function compareRevisionGlbs(before, after, page = {}) {
   }
   return {
     version: "kiln.revision-comparison.v1",
-    scope: "Exact exported static mesh data and rest transforms; named hierarchy paths. Animation channels are reported separately. Metadata, visual equivalence, intent and physical fit are not assessed.",
+    scope: "Exact exported static mesh data and rest transforms; named hierarchy paths. MSFT_lod lower levels are compared at the path they take beside LOD0, and bounds are LOD0 only. Animation channels are reported separately. Metadata (including LOD switch thresholds), visual equivalence, intent and physical fit are not assessed.",
     animation: {
       scope: "Exact exported channel target, interpolation, key times and values, matched by clip name and node path. Renames are add/remove. Equivalent motions may have different key data; metadata and playback behavior are not assessed.",
       summary: animationSummary,
@@ -31814,6 +32168,35 @@ define2("createPart", {
   limitations: [
     "Attach once using parent; do not separately add the returned node to another parent."
   ]
+});
+define2("defineLod", {
+  ...nodeFacts,
+  units: "screenCoverage values are fractions of the screen area, 0..1; no lengths.",
+  origin: "Each lower level keeps its own transform and replaces LOD0 under the same parent.",
+  ownership: "Records the thresholds on the LOD0 node; creates no nodes and moves nothing until export.",
+  coordinates: "Not a placement operation.",
+  parameters: [
+    "levels: two or more sibling tier nodes named with one stem and tokens LOD0, LOD1, ... in order.",
+    "screenCoverage: one value per level, each from 0 to 1, strictly decreasing, LOD0 first; the last may be 0, which never culls."
+  ],
+  semantics: [
+    "Level i draws while the asset covers at least screenCoverage[i] of the screen; below the last value it is culled.",
+    "Export writes the set as one MSFT_lod chain: LOD0 stays in the scene and lists the lower levels, which leave it; LOD0 extras.MSFT_screencoverage holds the thresholds.",
+    "Reported triangles and bounds count LOD0; levelsOfDetail in render results lists each level with its triangles and path.",
+    "A set of two or more tiers without this declaration, with a gap, or without LOD0 is an LOD_SET build error."
+  ],
+  cost: "Metadata on one node; lower levels still cost file size."
+}, {
+  references: ["src/lod.ts", "src/lod-export.ts"],
+  tags: ["hierarchy", "lod", "export"],
+  aliases: ["level of detail", "LOD tiers", "MSFT_lod", "screen coverage"],
+  intents: ["export level-of-detail tiers as one chain"],
+  summary: "Declares LOD tiers (sibling nodes named Body_LOD0, Body_LOD1, ...) and their screen-coverage thresholds. Use only when the brief asks for LOD tiers.",
+  limitations: [
+    "Tiers are authored, not generated: Kiln simplifies no geometry.",
+    "Sets cannot nest inside another tier; material LOD chains are not created."
+  ],
+  related: [{ name: "createPart", relation: "companion" }]
 });
 define2("beamBetween", {
   ...nodeFacts,
@@ -36115,6 +36498,16 @@ function screenshotMedia(output) {
   const { pngBase64: _png, ...json } = o;
   return { png: new Uint8Array(Buffer.from(o.pngBase64, "base64")), json };
 }
+function levelsOfDetailField(rendered, viewLevels) {
+  const chains = rendered.integrationManifest?.levelsOfDetail;
+  return chains?.length ? {
+    levelsOfDetail: chains.map((chain, index) => ({
+      ...chain,
+      drawn: viewLevels.map((levels) => levels[index] ?? 0)
+    }))
+  } : {};
+}
+var lod0Views = (views) => Array.from({ length: views }, () => []);
 async function retainReviewedArtifact(input, rendered, reviewed, context) {
   context.evaluationControls?.().signal?.throwIfAborted();
   if (!context.programArtifacts)
@@ -36165,6 +36558,7 @@ async function runRenderViews(input, context, onEvaluated) {
         } : {},
         bbox: metrics.bbox,
         lowestPart: metrics.lowestPart,
+        ...levelsOfDetailField(rendered, grid.viewLevels ?? lod0Views(grid.views.length)),
         views: grid.views,
         capture: grid.capture,
         ...grid.captureCache ? { captureCache: grid.captureCache } : {},
@@ -36269,6 +36663,7 @@ async function runRenderViews(input, context, onEvaluated) {
       } : {},
       bbox: metrics.bbox,
       lowestPart: metrics.lowestPart,
+      ...levelsOfDetailField(rendered, lod0Views(grid.views.length)),
       ...rendered.meta.instanceability ? {
         instanceability: {
           grade: rendered.meta.instanceability.grade,
@@ -36547,67 +36942,81 @@ async function runInspect(input, context) {
       ...comparison ? { comparison } : {}
     };
     if (input.image === false)
-      return { ok: true, ...evaluationEvidence(evaluated), ...measurements };
-    if (input.shot) {
-      await Promise.resolve().then(() => init_views());
-      const grid = await renderCaptureGrid(root, { version: "kiln.capture.v1", shots: [input.shot], size: 512 }, (cell) => renderDerivativeCell(cell, context));
       return {
         ok: true,
         ...evaluationEvidence(evaluated),
-        cameraShot: grid.cameraShots[0],
-        subjectFrame: describeSubjectFrame(root, input.shot.subject),
-        ...measurements,
-        pngBase64: grid.perFramePngs[0].toString("base64"),
-        width: 512,
-        height: 512,
-        viewFidelity: derivativeReviewFidelity(grid.derivativeReceipts)
+        ...levelsOfDetailField(evaluated, []),
+        ...measurements
       };
+    await Promise.resolve().then(() => init_lod3());
+    if (input.shot) {
+      const shot = input.shot;
+      await Promise.resolve().then(() => init_views());
+      return await withSubjectLevel(root, shot.subject, async (levels) => {
+        const grid = await renderCaptureGrid(root, { version: "kiln.capture.v1", shots: [shot], size: 512 }, (cell) => renderDerivativeCell(cell, context));
+        return {
+          ok: true,
+          ...evaluationEvidence(evaluated),
+          cameraShot: grid.cameraShots[0],
+          subjectFrame: describeSubjectFrame(root, shot.subject),
+          ...levelsOfDetailField(evaluated, [levels]),
+          ...measurements,
+          pngBase64: grid.perFramePngs[0].toString("base64"),
+          width: 512,
+          height: 512,
+          viewFidelity: derivativeReviewFidelity(grid.derivativeReceipts)
+        };
+      });
     }
-    const r = prepareInspectView(root, {
-      ...input.part !== undefined ? { part: input.part } : {},
-      ...input.view !== undefined ? { view: input.view } : {},
-      ...input.azimuthDeg !== undefined ? { azimuthDeg: input.azimuthDeg } : {},
-      ...input.elevationDeg !== undefined ? { elevationDeg: input.elevationDeg } : {},
-      ...input.zoom !== undefined ? { zoom: input.zoom } : {},
-      ...input.isolate !== undefined ? { isolate: input.isolate } : {}
-    });
-    if (!r.ok) {
+    const part = input.part?.trim();
+    return await withSubjectLevel(root, part ? { name: part } : undefined, async (levels) => {
+      const r = prepareInspectView(root, {
+        ...input.part !== undefined ? { part: input.part } : {},
+        ...input.view !== undefined ? { view: input.view } : {},
+        ...input.azimuthDeg !== undefined ? { azimuthDeg: input.azimuthDeg } : {},
+        ...input.elevationDeg !== undefined ? { elevationDeg: input.elevationDeg } : {},
+        ...input.zoom !== undefined ? { zoom: input.zoom } : {},
+        ...input.isolate !== undefined ? { isolate: input.isolate } : {}
+      });
+      if (!r.ok) {
+        return {
+          ok: false,
+          view: r.view,
+          zoom: r.zoom,
+          error: r.error,
+          availableParts: r.availableParts
+        };
+      }
+      const rendered = await renderDerivativeCell({
+        root: r.root,
+        label: r.part ? `inspect:${r.part}` : "inspect:whole-asset",
+        view: r.viewSpec,
+        size: r.size,
+        frameBounds: r.frameBounds
+      }, context);
+      const viewFidelity = derivativeReviewFidelity([rendered.receipt]);
+      const viewEvidence = viewFidelity ? context.viewEvidenceHistory?.record("kiln_inspect", viewFidelity) : undefined;
+      const from = `the ${r.view} view (azimuth ${r.azimuthDeg}deg, elevation ${r.elevationDeg}deg)`;
+      const framed = r.part ? `Framed part "${r.part}" (with its descendants) from ${from} at zoom ${r.zoom}.` + (r.isolated ? " Everything else is hidden, so nothing in this image occludes it." : " Surrounding geometry is still drawn and may occlude it.") : `Framed the whole asset from ${from}.`;
       return {
-        ok: false,
+        ok: true,
+        ...evaluationEvidence(evaluated),
+        ...r.part ? { part: r.part } : {},
+        ...levelsOfDetailField(evaluated, [levels]),
+        ...measurements,
         view: r.view,
+        azimuthDeg: r.azimuthDeg,
+        elevationDeg: r.elevationDeg,
         zoom: r.zoom,
-        error: r.error,
-        availableParts: r.availableParts
+        isolated: r.isolated,
+        framed,
+        width: r.size,
+        height: r.size,
+        pngBase64: rendered.png.toString("base64"),
+        ...viewFidelity ? { viewFidelity } : {},
+        ...viewEvidence ? { viewEvidence } : {}
       };
-    }
-    const rendered = await renderDerivativeCell({
-      root: r.root,
-      label: r.part ? `inspect:${r.part}` : "inspect:whole-asset",
-      view: r.viewSpec,
-      size: r.size,
-      frameBounds: r.frameBounds
-    }, context);
-    const viewFidelity = derivativeReviewFidelity([rendered.receipt]);
-    const viewEvidence = viewFidelity ? context.viewEvidenceHistory?.record("kiln_inspect", viewFidelity) : undefined;
-    const from = `the ${r.view} view (azimuth ${r.azimuthDeg}deg, elevation ${r.elevationDeg}deg)`;
-    const framed = r.part ? `Framed part "${r.part}" (with its descendants) from ${from} at zoom ${r.zoom}.` + (r.isolated ? " Everything else is hidden, so nothing in this image occludes it." : " Surrounding geometry is still drawn and may occlude it.") : `Framed the whole asset from ${from}.`;
-    return {
-      ok: true,
-      ...evaluationEvidence(evaluated),
-      ...r.part ? { part: r.part } : {},
-      ...measurements,
-      view: r.view,
-      azimuthDeg: r.azimuthDeg,
-      elevationDeg: r.elevationDeg,
-      zoom: r.zoom,
-      isolated: r.isolated,
-      framed,
-      width: r.size,
-      height: r.size,
-      pngBase64: rendered.png.toString("base64"),
-      ...viewFidelity ? { viewFidelity } : {},
-      ...viewEvidence ? { viewEvidence } : {}
-    };
+    });
   } catch (err) {
     return {
       ok: false,
