@@ -1,4 +1,4 @@
-import { AuthoringDiagnosticError, type AuthoringDiagnostic } from './authoring-diagnostic';
+import { programErrorDiagnostic, type AuthoringDiagnostic } from './authoring-diagnostic';
 import type { RenderGlbOptions, RenderResult } from '../render';
 import { renderGLBInProcess } from '../render';
 import { AssetQaBlockedError } from '../qa/run';
@@ -101,11 +101,7 @@ export async function evaluateEvaluatorRequestV2(
     } else if (error instanceof EvaluatorPortError && error.code === 'DEADLINE_EXCEEDED') {
       wire = failure(request.requestId, 'DEADLINE_EXCEEDED');
     } else {
-      wire = failure(
-        request.requestId,
-        'EXECUTION_REJECTED',
-        error instanceof AuthoringDiagnosticError ? error.diagnostic : undefined,
-      );
+      wire = failure(request.requestId, 'EXECUTION_REJECTED', programErrorDiagnostic(error));
     }
   } finally {
     clearTimeout(timer);

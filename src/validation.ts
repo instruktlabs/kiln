@@ -8,6 +8,8 @@
  *  - Infinite loops (`while(true)`, `for(;;)` without break) — AST
  *  - Recursive `build()` calls that'd blow the stack — AST
  *  - Ambient-runtime, dynamic-code, and raw material-constructor access — AST
+ *  - Lexical bindings read before their declaration runs, and literal
+ *    materialRecipe IDs or overrides the recipe does not list — AST
  *  - Triangle budget estimate — AST sum of geometry calls
  *  - Syntax errors — acorn throws with line numbers
  *
@@ -28,6 +30,7 @@ import { listHelperSpecs } from './discovery/helper-specs';
 import { REMOVED_AUTHORING_HELPERS } from './geometry-catalog';
 import { sourceBindings } from './source-bindings';
 import { AuthoringDiagnosticError } from './evaluator/authoring-diagnostic';
+import { analyzeBuildTimeThrows } from './source-runtime-checks';
 
 // =============================================================================
 // Types
@@ -280,6 +283,7 @@ export function validate(code: string, _opts: { category?: string } = {}): Valid
   // --- Structural checks --------------------------------------------------
 
   issues.push(...analyzeGeneratedSourceSafety(ast));
+  issues.push(...analyzeBuildTimeThrows(ast));
 
   const structure = analyzeTopLevel(ast);
 
@@ -364,7 +368,8 @@ export function validate(code: string, _opts: { category?: string } = {}): Valid
  * Unknown calls are warnings; recognized removed globals are migration errors.
  * Removed globals use lexical visibility; a local in an unrelated scope must
  * not hide a migration error. Unknown-call advisories retain their conservative
- * whole-program declaration set. Neither check diagnoses TDZ or reachability.
+ * whole-program declaration set. Neither check diagnoses reachability; a read
+ * before a lexical declaration runs is TEMPORAL_DEAD_ZONE (source-runtime-checks).
  */
 function unknownHelperWarnings(ast: acorn.Program): ValidationIssue[] {
   const bindings = sourceBindings(ast);

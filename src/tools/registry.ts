@@ -33,7 +33,7 @@ import { createCachedEvaluatorPort, MemoryBuildCache, type BuildCache } from '..
 import * as THREE from 'three';
 
 import { validate, type ValidationIssue } from '../validation';
-import { evaluatorOutcomeMessage } from '../evaluator/protocol';
+import { appendSourceCheck } from '../evaluator/source-check';
 import { inspectSceneStructure, renderSceneToGLB, type RenderResult } from '../render';
 import type { AssetCategory, AssetIntentV1 } from '../contracts';
 import type { AssetQaReport } from '../qa';
@@ -1154,27 +1154,6 @@ function collectSceneMetrics(root: THREE.Object3D): SceneMetrics {
  * Execute Kiln code, render it to an in-memory GLB, and report metrics.
  * Never writes files; never throws — failures come back as { ok:false, error }.
  */
-/**
- * The evaluator's rejection message is deliberately opaque, because nothing
- * from a sandboxed exception may cross that boundary -- not a message, not a
- * stack, not an identifier. A syntax error is the one exception worth making,
- * and it costs nothing: acorn parses host-side before any generated code runs,
- * which is exactly why `kiln_validate` can already report its line and column.
- * Repeating that parse here leaks nothing new and turns an unactionable
- * rejection into a position, without a second round-trip through validate.
- */
-function withSyntaxDetail(message: string, code: string): string {
-  if (!message.startsWith(evaluatorOutcomeMessage('EXECUTION_REJECTED'))) return message;
-  let syntax: string | undefined;
-  try {
-    syntax = validate(code).errors.find((error) => error.startsWith('Syntax error:'));
-  } catch {
-    // A diagnostic must never turn a handled failure into an unhandled one.
-    return message;
-  }
-  return syntax ? `${message} ${syntax}` : message;
-}
-
 // Shared render views
 // =============================================================================
 
@@ -1503,7 +1482,7 @@ async function runRenderViews(
   } catch (err) {
     return {
       ok: false,
-      error: withSyntaxDetail(err instanceof Error ? err.message : String(err), input.code),
+      error: appendSourceCheck(err instanceof Error ? err.message : String(err), input.code),
       warnings: [],
     };
   }
@@ -1636,7 +1615,7 @@ async function runScreenshotAnimation(
     return {
       ok: false,
       frames: 0,
-      error: err instanceof Error ? err.message : String(err),
+      error: appendSourceCheck(err instanceof Error ? err.message : String(err), input.code),
       warnings: [],
     };
   }
@@ -1794,7 +1773,7 @@ async function runViewInterior(
   } catch (err) {
     return {
       ok: false,
-      error: err instanceof Error ? err.message : String(err),
+      error: appendSourceCheck(err instanceof Error ? err.message : String(err), input.code),
       warnings: [],
     };
   }
@@ -2121,7 +2100,7 @@ async function runInspect(
   } catch (err) {
     return {
       ok: false,
-      error: err instanceof Error ? err.message : String(err),
+      error: appendSourceCheck(err instanceof Error ? err.message : String(err), input.code),
     };
   }
 }

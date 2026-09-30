@@ -11,7 +11,7 @@ import {
   appendRequirementsFinalQa,
 } from './qa/requirements-run';
 import type { AssetRequirementsQaReportV2 } from './qa/requirements-report';
-import { rethrowAuthoringError } from './evaluator/authoring-diagnostic';
+import { AuthoringDiagnosticError, rethrowAuthoringError } from './evaluator/authoring-diagnostic';
 /**
  * Headless Kiln GLB Renderer
  *
@@ -370,7 +370,10 @@ export async function executeKilnCode(
     };
 
     if (typeof build !== 'function') {
-      throw new Error('executeKilnCode: generated code did not define `build`');
+      throw new AuthoringDiagnosticError(
+        'BUILD_RESULT',
+        'executeKilnCode: generated code did not define `build`',
+      );
     }
 
     const root = await build();
@@ -380,7 +383,10 @@ export async function executeKilnCode(
     // THREE imported here, so `instanceof THREE.Object3D` returns false.
     // Three.js sets `.isObject3D = true` on the prototype for exactly this case.
     if (!(root as { isObject3D?: boolean })?.isObject3D) {
-      throw new Error('executeKilnCode: build() did not return a THREE.Object3D');
+      throw new AuthoringDiagnosticError(
+        'BUILD_RESULT',
+        'executeKilnCode: build() did not return a THREE.Object3D',
+      );
     }
 
     const clips = animate ? ((await animate(root)) ?? []) : [];

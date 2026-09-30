@@ -130,11 +130,17 @@ export function createLocalToolContext(
         return result;
       }
       const limits = { deadlineMs, maxGlbBytes, maxResponseBytes, ...controls };
-      if (mode === 'isolated') return renderGLBViaIsolatedEvaluator(code, resolved, limits);
-      return renderGLBViaSubprocess(code, resolved, {
-        ...limits,
-        ...(!process.versions.bun ? { maxHeapMb: heapMb } : {}),
-      });
+      try {
+        if (mode === 'isolated') return await renderGLBViaIsolatedEvaluator(code, resolved, limits);
+        return await renderGLBViaSubprocess(code, resolved, {
+          ...limits,
+          ...(!process.versions.bun ? { maxHeapMb: heapMb } : {}),
+        });
+      } catch (error) {
+        // The worker returns only a closed cause; the host still has the source.
+        const { withSourceCheck } = await import('./evaluator/source-check');
+        throw withSourceCheck(error, code);
+      }
     },
   };
   const localExecution: LocalExecution = {

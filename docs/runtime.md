@@ -79,6 +79,18 @@ failed image destination stays unchanged. The command is not a multi-file transa
 Human-readable output remains the default. In trusted in-process mode, authored
 console diagnostics go to stderr; the default subprocess ignores authored stdout.
 
+A program that throws in the subprocess or isolated evaluator is reported as
+`Generated asset execution was rejected.` No message, stack or identifier from the
+program crosses the worker boundary. The worker may add one closed cause, and the host
+turns it into engine-written advice. Causes include a binding read before its
+declaration ran, a `build()` that is missing or returns no Object3D, a `materialRecipe`
+override the recipe does not allow, and a TypeError or RangeError. The host still has
+the source it sent. `kiln_render`, `kiln_inspect`, `kiln_view_interior`,
+`kiln_screenshot_animation` and the CLI parse that source and append `Source check:`
+with up to three codes and lines that `kiln_validate` reports for it. Examples are
+`TEMPORAL_DEAD_ZONE`, `MATERIAL_RECIPE_OVERRIDE`, `UNSAFE_GLOBAL_ACCESS` and
+`SYNTAX_ERROR`. An unrecognised exception stays generic.
+
 ## Animation measurements
 
 CLI `animation --json` and `kiln_screenshot_animation` return `poseBounds` alongside

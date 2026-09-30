@@ -13,6 +13,19 @@
  */
 
 import { geometryPrimitives } from '../geometry-catalog';
+import { MATERIAL_RECIPE_IDS, MATERIAL_RECIPE_LIBRARY_V1 } from '../material-recipes';
+
+/** Allowed overrides per recipe, generated from the library so the note cannot drift. */
+const RECIPE_OVERRIDES_NOTE = (() => {
+  const groups = new Map<string, string[]>();
+  for (const id of MATERIAL_RECIPE_IDS) {
+    const allowed = MATERIAL_RECIPE_LIBRARY_V1[id].allowedOverrides.join(', ');
+    groups.set(allowed, [...(groups.get(allowed) ?? []), id.split('.')[2]!]);
+  }
+  return `Overrides differ by recipe; any other key is rejected: ${[...groups]
+    .map(([allowed, names]) => `${names.join(', ')}: ${allowed}`)
+    .join('; ')}.`;
+})();
 
 export interface HelperSpec {
   /** Function name as it appears in the sandbox. */
@@ -543,7 +556,8 @@ const PRIMITIVES: HelperSpec[] = [
     example:
       "const bark = await materialRecipe('kiln.material.bark.v1', { baseColor: '#6b4328' });",
     promptNotes:
-      'Use only listed kiln.material.*.v1 IDs and approved kiln.texture.* resource IDs. textureResources uses portable slots baseColor, normal, metallicRoughness, emissive and occlusion with ID string values; albedo is a pbrMaterial field, not a recipe slot. Check resource allowedSlots and recipeIds. All numeric overrides (including emissiveIntensity) are finite 0..1. Recipe emission is baked into the core glTF emissive factor. Leaf is MASK, glass is BLEND, and host file paths are forbidden.',
+      'Use only listed kiln.material.*.v1 IDs and approved kiln.texture.* resource IDs. textureResources uses portable slots baseColor, normal, metallicRoughness, emissive and occlusion with ID string values; albedo is a pbrMaterial field, not a recipe slot. Check resource allowedSlots and recipeIds. All numeric overrides (including emissiveIntensity) are finite 0..1. Recipe emission is baked into the core glTF emissive factor. Leaf is MASK, glass is BLEND, and host file paths are forbidden. ' +
+      RECIPE_OVERRIDES_NOTE,
   },
   {
     name: 'compilePortableMaterialSpecV2',

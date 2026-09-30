@@ -489,7 +489,7 @@ export function validateMaterialRecipeRequestV1(value: unknown): MaterialRecipeV
     issues.push({
       code: 'UNSUPPORTED_RECIPE_ID',
       path: 'id',
-      message: `Unsupported material recipe ID ${JSON.stringify(value.id)}.`,
+      message: `Unsupported material recipe ID ${JSON.stringify(value.id)}. Listed IDs: ${MATERIAL_RECIPE_IDS.join(', ')}.`,
     });
   }
   if (value.overrides !== undefined && !isRecord(value.overrides)) {
@@ -506,7 +506,7 @@ export function validateMaterialRecipeRequestV1(value: unknown): MaterialRecipeV
         issues.push({
           code: 'UNSUPPORTED_OVERRIDE',
           path: `overrides.${key}`,
-          message: `Unknown material recipe override ${JSON.stringify(key)}.`,
+          message: `Unknown material recipe override ${JSON.stringify(key)}; ${value.id} accepts ${[...allowed].join(', ')}.`,
         });
         continue;
       }
@@ -514,7 +514,7 @@ export function validateMaterialRecipeRequestV1(value: unknown): MaterialRecipeV
         issues.push({
           code: 'UNSUPPORTED_OVERRIDE',
           path: `overrides.${key}`,
-          message: `${key} is not supported by ${value.id}.`,
+          message: `${key} is not supported by ${value.id}; it accepts ${[...allowed].join(', ')}.`,
         });
         continue;
       }
@@ -648,6 +648,17 @@ function recipeValidationError(issues: MaterialRecipeValidationIssue[]): Error {
     )
   )
     return new AuthoringDiagnosticError('MATERIAL_RECIPE_TEXTURE_BINDING', message);
+  if (
+    issues.some((issue) =>
+      [
+        'UNSUPPORTED_RECIPE_ID',
+        'UNSUPPORTED_OVERRIDE',
+        'INVALID_OVERRIDES',
+        'UNSUPPORTED_SCHEMA_VERSION',
+      ].includes(issue.code),
+    )
+  )
+    return new AuthoringDiagnosticError('MATERIAL_RECIPE_OVERRIDE', message);
   return new TypeError(message);
 }
 

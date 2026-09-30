@@ -276,7 +276,12 @@ await materialRecipe(recipeId, overrides?: { baseColor?, roughness?, metalness?,
   // occlusion with ID string values; albedo is a pbrMaterial field, not a recipe slot. Check
   // resource allowedSlots and recipeIds. All numeric overrides (including emissiveIntensity)
   // are finite 0..1. Recipe emission is baked into the core glTF emissive factor. Leaf is MASK,
-  // glass is BLEND, and host file paths are forbidden.
+  // glass is BLEND, and host file paths are forbidden. Overrides differ by recipe; any other
+  // key is rejected: bark, wood, stone, rubber, painted-metal, cloth: baseColor, roughness,
+  // metalness, doubleSided, textureResources; leaf: baseColor, roughness, alphaCutoff,
+  // doubleSided, textureResources; skin: baseColor, roughness, doubleSided; glass: baseColor,
+  // roughness, opacity, doubleSided; emissive: baseColor, roughness, doubleSided,
+  // emissiveColor, emissiveIntensity, textureResources.
   // e.g. const bark = await materialRecipe('kiln.material.bark.v1', { baseColor: '#6b4328' });
 await compilePortableMaterialSpecV2({ schemaVersion: 2, model: 'pbrMetallicRoughness', name?, baseColor?, roughness?, metalness?, emissive?, emissiveIntensity?, alphaMode?, alphaCutoff?, doubleSided?, textures?: { baseColor?, normal?, metallicRoughness?, emissive?, occlusion? } })
   // Compiles the strict portable material contract. Texture refs are typed procedural V2 specs

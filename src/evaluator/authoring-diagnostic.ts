@@ -23,7 +23,12 @@ export type AuthoringDiagnostic =
   | 'PARAMETRIC_PERIODIC_ENDPOINT'
   | 'PROFILE_HOLES_UNSUPPORTED'
   | 'PROFILE_BEVEL_COLLAPSE'
-  | 'PROFILE_CORRESPONDENCE_COLLAPSE';
+  | 'PROFILE_CORRESPONDENCE_COLLAPSE'
+  | 'UNINITIALIZED_BINDING'
+  | 'BUILD_RESULT'
+  | 'MATERIAL_RECIPE_OVERRIDE'
+  | 'PROGRAM_TYPE_ERROR'
+  | 'PROGRAM_RANGE_ERROR';
 // Names no identifier on purpose. The identifier is only available from the
 // sandboxed exception message, and this module's contract is that no captured
 // identifier, path, message or stack crosses that boundary. Pointing at the
@@ -46,7 +51,22 @@ export const PROFILE_HOLES_UNSUPPORTED_ADVICE =
   'loftProfiles and sweepProfile: holes are unsupported in options or sections. Use extrudeProfile for a holed cross-section with optional twist/taper; independently varying contours need explicit geometry or solid subtraction. cap:false does not create inner walls or thickness.';
 export const PROFILE_CORRESPONDENCE_COLLAPSE_ADVICE =
   'loftProfiles or sweepProfile: corresponding profile edges collapse between stations. Check matching start vertices and vertex order; for an intended twist, add intermediate sections or path stations. No automatic correspondence repair is applied. Other self-intersections remain unchecked.';
+export const UNINITIALIZED_BINDING_ADVICE =
+  'A const, let or class binding was read before its declaration ran (temporal dead zone). Move the declaration above the first code that reads it; top-level constants must be declared before other top-level code uses them. kiln_validate names the binding and line when the read runs immediately.';
+export const BUILD_RESULT_ADVICE =
+  'Define a top-level function build() (it may be async) that returns the root Object3D, for example const root = createRoot("Name"); ...; return root;. A build() that returns nothing, or returns a geometry or material, is rejected.';
+export const MATERIAL_RECIPE_OVERRIDE_ADVICE =
+  'materialRecipe takes a listed kiln.material.*.v1 ID and only the overrides that recipe allows; the allowed overrides differ by recipe (the emissive recipe has no metalness). Call kiln_discover with ids ["materialRecipe"] to see what each recipe allows; kiln_validate names the recipe and key when both are literals.';
+export const PROGRAM_TYPE_ERROR_ADVICE =
+  'The program or a helper it called threw a TypeError: a value had the wrong type. Usually something is undefined (a function without a return, an un-awaited async helper such as roundedBoxGeo, extrudeProfile or materialRecipe, or a misspelt property) or a non-function was called. Run kiln_validate, then check the helper contract with kiln_discover.';
+export const PROGRAM_RANGE_ERROR_ADVICE =
+  'The program or a helper it called threw a RangeError: a number was outside its allowed range, for example a non-positive size, an invalid array length or segment count, or unbounded recursion. Check the helper arguments against kiln_discover.';
 export function authoringDiagnosticAdvice(diagnostic: AuthoringDiagnostic | undefined): string {
+  if (diagnostic === 'UNINITIALIZED_BINDING') return UNINITIALIZED_BINDING_ADVICE;
+  if (diagnostic === 'BUILD_RESULT') return BUILD_RESULT_ADVICE;
+  if (diagnostic === 'MATERIAL_RECIPE_OVERRIDE') return MATERIAL_RECIPE_OVERRIDE_ADVICE;
+  if (diagnostic === 'PROGRAM_TYPE_ERROR') return PROGRAM_TYPE_ERROR_ADVICE;
+  if (diagnostic === 'PROGRAM_RANGE_ERROR') return PROGRAM_RANGE_ERROR_ADVICE;
   if (diagnostic === 'MESH_DATA_NONFINITE')
     return 'meshGeo positions, normals, UVs and tangents must contain finite numbers representable in Float32. Check missing XYZ components, undefined values, division by zero and overflowing calculations before constructing the arrays. Do not replace invalid values blindly with zero; correct the source calculation. Call kiln_discover for the exact meshGeo data contract.';
   if (diagnostic === 'PORTABLE_COLOR_ARGUMENT')
@@ -97,6 +117,24 @@ export class AuthoringDiagnosticError extends Error {
     super(message);
     this.name = 'AuthoringDiagnosticError';
   }
+}
+/**
+ * Closed cause for an error that crosses the worker boundary without a diagnostic.
+ * Built-in error classes only, never message text: a temporal-dead-zone read is
+ * recognised from the engine's own ReferenceError wording, and TypeError and
+ * RangeError name a class of mistake. Anything else stays a generic rejection,
+ * as do policy denials.
+ */
+export function programErrorDiagnostic(error: unknown): AuthoringDiagnostic | undefined {
+  if (error instanceof AuthoringDiagnosticError) return error.diagnostic;
+  if (
+    error instanceof ReferenceError &&
+    /^Cannot access (?:'[^']*' before initialization|uninitialized variable).?$/.test(error.message)
+  )
+    return 'UNINITIALIZED_BINDING';
+  if (error instanceof TypeError) return 'PROGRAM_TYPE_ERROR';
+  if (error instanceof RangeError) return 'PROGRAM_RANGE_ERROR';
+  return undefined;
 }
 export function rethrowAuthoringError(error: unknown): never {
   // Unsupported ambient/resource APIs stay generic, including the legacy loadTexture probe.

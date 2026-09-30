@@ -438,7 +438,12 @@ export function decodeEvaluatorResultV2(
           value.error.diagnostic !== 'PART_NAME_ARGUMENT' &&
           value.error.diagnostic !== 'PART_GEOMETRY_ARGUMENT' &&
           value.error.diagnostic !== 'PART_MATERIAL_ARGUMENT' &&
-          value.error.diagnostic !== 'MATERIAL_PACKED_CHANNELS'))
+          value.error.diagnostic !== 'MATERIAL_PACKED_CHANNELS' &&
+          value.error.diagnostic !== 'UNINITIALIZED_BINDING' &&
+          value.error.diagnostic !== 'BUILD_RESULT' &&
+          value.error.diagnostic !== 'MATERIAL_RECIPE_OVERRIDE' &&
+          value.error.diagnostic !== 'PROGRAM_TYPE_ERROR' &&
+          value.error.diagnostic !== 'PROGRAM_RANGE_ERROR'))
     )
       return fail('result');
     if (value.error.qa !== undefined) {
