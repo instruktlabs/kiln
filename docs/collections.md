@@ -23,8 +23,10 @@ CLI saves accept `--model`, `--harness` and `--author`, matching MCP's optional
 Record requested versus independently confirmed thinking effort and later refiners
 in the description or accompanying production ledger; do not invent unknown values.
 
-Open the printed loopback URL. The viewer shows one card per asset, supports search,
-tags, revision selection, animation playback, wireframe, lighting and downloads.
+Open the printed loopback URL; `localhost` on the same port also works. The viewer
+refuses other hostnames to prevent DNS rebinding. It shows one card per asset,
+supports search, tags, revision selection, animation playback, wireframe, lighting
+and downloads.
 It loads the saved GLB, never executes its JavaScript. Selecting a revision in the
 browser remembers that choice in that browser; it does not update other clients.
 Multiple branch tips are identified on the asset card.
@@ -63,6 +65,16 @@ Paths are stored in the workspace's `.kiln/collections.json`. Restart an existin
 viewer or MCP process after changing this configuration. `KILN_COLLECTIONS` can
 override all defaults with a JSON map, such as `{"project":"/game/assets/kiln","library":"/my-library"}`.
 The configured directories are the only collection roots the server exposes.
+`kiln collections` prints each collection's directory, and `kiln import` prints the
+directory of every revision it copied.
+
+On Windows a configured root must name a drive or a network share, such as
+`C:/Users/you/game-assets` or `\\server\share\kiln`. A Git Bash path such as
+`/c/Users/you/game-assets` has no drive, so Windows would read it as
+`C:\c\Users\you\game-assets` and saving would create that folder silently. Kiln
+refuses such a root, naming the collection, where it was configured, where it would
+have landed and the drive form to write instead. A relative directory given to
+`collections add` resolves against the current directory before it is stored.
 The CLI and MCP derive their workspace from the shared `KILN_PROGRAM_STORE` when set.
 
 An asset directory contains `revisions/<revisionId>/manifest.json`, `asset.glb`, and,

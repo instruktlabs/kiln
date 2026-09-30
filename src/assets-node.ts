@@ -13,7 +13,7 @@ import {
   writeFile,
 } from 'node:fs/promises';
 import { homedir, platform } from 'node:os';
-import { dirname, join, relative, resolve, sep } from 'node:path';
+import { dirname, join, relative, resolve, sep, win32 } from 'node:path';
 import { localWorkspaceRoot } from './workspace-location';
 import {
   assetIdSchema,
@@ -73,6 +73,15 @@ export class FileAssetLibrary implements AssetLibrary {
     const root = this.roots[collection];
     if (!root || !Object.hasOwn(this.roots, collection)) throw new Error('Unknown collection');
     return root;
+  }
+  /** Where a saved revision's files live, for reporting; reads and writes go through `path`. */
+  revisionDirectory(collection: string, assetId: string, revisionId: string): string {
+    return join(
+      this.directory(collection),
+      assetIdSchema.parse(assetId),
+      'revisions',
+      assetIdSchema.parse(revisionId),
+    );
   }
   private async path(collection: string, ...parts: string[]): Promise<string> {
     const root = this.directory(collection);
@@ -334,37 +343,77 @@ export function defaultUserLibraryRoot(
   return join(home, '.local', 'share', 'kiln', 'library');
 }
 
+const windowsDrivePath = /^[A-Za-z]:[\\/]/;
+const windowsSharePath = /^[\\/]{2}[^\\/]+[\\/][^\\/]+/;
+
+/**
+ * Windows resolves a root without a drive, such as Git Bash's `/c/Users/x`, against
+ * the current drive, `C:\c\Users\x`, which saving would then create silently. There a
+ * configured collection root must name a drive or a UNC share. `source` names where
+ * the value was configured.
+ */
+export function assertCollectionRoot(
+  id: string,
+  path: string,
+  operatingSystem = platform(),
+  source?: string,
+): void {
+  if (operatingSystem !== 'win32' || windowsDrivePath.test(path) || windowsSharePath.test(path))
+    return;
+  const gitBash = /^\/([A-Za-z])(?:\/(.*))?$/.exec(path);
+  const suggestion = gitBash
+    ? `${gitBash[1]!.toUpperCase()}:/${gitBash[2] ?? ''}`
+    : 'C:/Users/<you>/<folder>';
+  throw new Error(
+    `Collection ${id} directory ${JSON.stringify(path)}${source ? ` in ${source}` : ''} is not a Windows drive or UNC path; it would resolve to ${win32.resolve(path)}. Write it as ${suggestion}.`,
+  );
+}
+
+function configuredRoots(
+  text: string,
+  source: string,
+  operatingSystem: NodeJS.Platform,
+): Record<string, string> {
+  const value = JSON.parse(text);
+  if (
+    !value ||
+    typeof value !== 'object' ||
+    Array.isArray(value) ||
+    Object.values(value).some((v) => typeof v !== 'string' || !v)
+  )
+    throw new Error('KILN_COLLECTIONS must map collection names to directories');
+  for (const [id, path] of Object.entries(value as Record<string, string>))
+    assertCollectionRoot(id, path, operatingSystem, source);
+  return value;
+}
+
 export function localAssetLibrary(
   env: Record<string, string | undefined> = process.env,
+  operatingSystem = platform(),
 ): FileAssetLibrary {
-  if (env.KILN_COLLECTIONS) {
-    const value = JSON.parse(env.KILN_COLLECTIONS);
-    if (
-      !value ||
-      typeof value !== 'object' ||
-      Array.isArray(value) ||
-      Object.values(value).some((v) => typeof v !== 'string' || !v)
-    )
-      throw new Error('KILN_COLLECTIONS must map collection names to directories');
+  if (env.KILN_COLLECTIONS)
     return new FileAssetLibrary(
-      value,
+      configuredRoots(env.KILN_COLLECTIONS, 'KILN_COLLECTIONS', operatingSystem),
       new FileMaterialLibrary(join(localWorkspaceRoot(env), '.kiln', 'materials')),
     );
-  }
   const config = collectionConfigPath(env);
+  const workspace = dirname(dirname(config));
+  const materials = new FileMaterialLibrary(join(workspace, '.kiln', 'materials'));
+  let text: string | undefined;
   try {
-    const text = readFileSync(config, 'utf8');
-    if (!text.trim()) throw new Error('Collection configuration is empty');
-    return localAssetLibrary({ ...env, KILN_COLLECTIONS: text });
+    text = readFileSync(config, 'utf8');
   } catch (error) {
     if ((error as NodeJS.ErrnoException).code !== 'ENOENT') throw error;
   }
-  const workspace = dirname(dirname(config));
+  if (text !== undefined) {
+    if (!text.trim()) throw new Error('Collection configuration is empty');
+    return new FileAssetLibrary(configuredRoots(text, config, operatingSystem), materials);
+  }
   return new FileAssetLibrary(
     {
       project: join(workspace, 'assets', 'kiln'),
-      library: defaultUserLibraryRoot(env),
+      library: defaultUserLibraryRoot(env, homedir(), operatingSystem),
     },
-    new FileMaterialLibrary(join(workspace, '.kiln', 'materials')),
+    materials,
   );
 }

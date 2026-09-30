@@ -1,4 +1,6 @@
 /// <reference lib="dom" />
+import { LOOPBACK_HOSTNAMES } from '../loopback';
+
 export interface ChatFileHost {
   uploadFile(file: File): Promise<{ fileId: string }>;
   getFileDownloadUrl(input: { fileId: string }): Promise<{ downloadUrl: string }>;
@@ -35,7 +37,7 @@ export async function downloadChatFile(
       const url = new URL(deliveryUrl);
       if (
         url.protocol !== 'https:' &&
-        !(url.protocol === 'http:' && ['127.0.0.1', 'localhost', '[::1]'].includes(url.hostname))
+        !(url.protocol === 'http:' && LOOPBACK_HOSTNAMES.includes(url.hostname))
       )
         throw new Error('Invalid host download URL');
       return { downloadUrl: url.href };

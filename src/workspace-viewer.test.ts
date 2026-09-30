@@ -7,6 +7,53 @@ import { FileWorkspace } from './workspace-node';
 import { FileLiveReview } from './live-review-node';
 import { startAssetViewer } from './asset-viewer';
 import { decodeProjectBundle } from './project-bundle';
+import { hostRequest } from './__tests__/helpers/host-request';
+
+test('a dashboard opened through localhost writes with its own origin; other hosts cannot write', async () => {
+  const root = await mkdtemp(join(tmpdir(), 'kiln-workspace-host-'));
+  const workspace = new FileWorkspace(root);
+  const viewer = await startAssetViewer(new FileAssetLibrary({ project: join(root, 'assets') }), {
+    port: 0,
+    workspace,
+    liveReview: new FileLiveReview(root),
+  });
+  const port = new URL(viewer.url).port;
+  const host = `localhost:${port}`;
+  const post = (requestHost: string, origin: string, body: unknown) =>
+    hostRequest(`${viewer.url}api/projects`, requestHost, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Origin: origin },
+      body: JSON.stringify(body),
+    });
+  try {
+    const created = await post(host, `http://${host}`, {
+      projectId: 'pilot',
+      name: 'Pilot',
+      brief: 'Opened as localhost',
+    });
+    expect(created.status).toBe(201);
+    expect((await workspace.projects.read('pilot')).brief).toBe('Opened as localhost');
+    const read = await hostRequest(`${viewer.url}api/projects/pilot`, host);
+    expect(read.status).toBe(200);
+    expect(JSON.parse(read.body).brief).toBe('Opened as localhost');
+    // The write origin is the one this request's Host named, not any loopback spelling.
+    const crossed = await post(host, viewer.url.slice(0, -1), { projectId: 'crossed', name: 'X' });
+    expect(crossed.status).toBe(403);
+    const rebound = await post(`evil.example:${port}`, `http://evil.example:${port}`, {
+      projectId: 'rebound',
+      name: 'Rebound',
+    });
+    expect(rebound.status).toBe(403);
+    expect(rebound.contentType).toBe('text/plain; charset=utf-8');
+    expect(rebound.body).toContain('DNS rebinding');
+    expect((await workspace.projects.list()).map((project) => project.projectId)).toEqual([
+      'pilot',
+    ]);
+  } finally {
+    await viewer.close();
+    await rm(root, { recursive: true, force: true });
+  }
+});
 
 test('dashboard edits shared project state with explicit conflicts and observes persisted operations', async () => {
   const root = await mkdtemp(join(tmpdir(), 'kiln-workspace-http-'));

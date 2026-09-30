@@ -1,8 +1,8 @@
 import { readFile, writeFile, stat, mkdir, rename } from 'node:fs/promises';
-import { basename, resolve, dirname } from 'node:path';
+import { basename, resolve, dirname, isAbsolute } from 'node:path';
 import { randomUUID } from 'node:crypto';
 import { createHash } from 'node:crypto';
-import { localAssetLibrary, collectionConfigPath } from './assets-node';
+import { assertCollectionRoot, localAssetLibrary, collectionConfigPath } from './assets-node';
 import { listAssetCatalog } from './asset-catalog';
 import { ASSET_LIMIT, assetIdSchema, decodeAssetBundle } from './assets';
 import { localProgramStore } from './program-store-node';
@@ -31,7 +31,7 @@ ASSETS & VIEWER
        [--model <model>] [--harness <harness>] [--author <author>]  declared attribution
        [--backdrop neutral|dark|light]   preview backdrop; the one the reviewed sheet used
        [--project <id> | --no-project] [--project-revision <r>] [--materials <json>]
-  kiln collections                        list configured collection names
+  kiln collections                        list configured collections and their directories
   kiln collections add <name> <directory>  remember another collection root
   --requirements <host-binding.json>      optional host policy for save or asset --restore
   kiln assets [--collection project]      list saved revisions (JSON)
@@ -41,11 +41,14 @@ ASSETS & VIEWER
   kiln export <id> <revision> --out asset.zip [--format bundle|glb|source]
        [--profile editable|runtime]   runtime writes GLB + sibling metadata JSON
   kiln import <asset.zip|asset.glb> [--collection project] [--name <name>]
+                                          prints the directory of each imported revision
   kiln view [collection-directory|asset.glb|asset.zip] [--port 4318]
        [--collection project --asset <id> --revision <revision>]
        [--observe-workspace <directory>]   repeat to review other explicit workspaces
 
 KILN_COLLECTIONS is an optional JSON map of collection names to absolute folders.
+On Windows these name a drive or share, such as C:/Users/you/kiln-assets; a Git Bash
+path such as /c/Users/you/kiln-assets is refused rather than read as C:\\c\\Users\\...
 Defaults: project -> <workspace>/assets/kiln; library -> your OS user-data directory.
 An explicit map replaces both defaults. Existing source/render commands still work.
 View prints a local browser URL and remains running until interrupted.
@@ -162,6 +165,9 @@ export async function assetMain(argv: readonly string[]): Promise<number> {
       const [, name, directory] = positional;
       if (!name || !directory) throw new Error('collections add requires name and directory');
       assetIdSchema.parse(name);
+      // A relative directory resolves against the working directory, as typed. A rooted
+      // one must name a drive on Windows, where /c/Users/x would land in C:\c\Users\x.
+      assertCollectionRoot(name, isAbsolute(directory) ? directory : resolve(directory));
       const roots = Object.fromEntries(
         library.collections().map((c) => [c.id, library.directory(c.id)]),
       );
@@ -176,7 +182,14 @@ export async function assetMain(argv: readonly string[]): Promise<number> {
       console.log(
         `Collection ${name}: ${roots[name]}. Restart running MCP/viewer processes to load it.`,
       );
-    } else console.log(JSON.stringify({ collections: library.collections() }, null, 2));
+    } else {
+      // The CLI names each root so a misconfigured one is visible; the shared
+      // collections() list feeding MCP and the viewer stays name-only.
+      const collections = library
+        .collections()
+        .map((entry) => ({ ...entry, directory: library.directory(entry.id) }));
+      console.log(JSON.stringify({ collections }, null, 2));
+    }
   } else if (command === 'assets') {
     if (flags.all && flags.collection) throw new Error('Use --all or --collection, not both');
     console.log(
@@ -361,7 +374,21 @@ export async function assetMain(argv: readonly string[]): Promise<number> {
     const assets = file.toLowerCase().endsWith('.glb')
       ? [await library.save(collection, { name: flags.name ?? basename(file, '.glb'), glb: bytes })]
       : await library.import(collection, decodeAssetBundle(bytes));
-    console.log(JSON.stringify({ collection, assets }, null, 2));
+    const directory = library.directory(collection);
+    console.log(
+      JSON.stringify(
+        {
+          collection,
+          directory,
+          assets: assets.map((manifest) => ({
+            ...manifest,
+            path: library.revisionDirectory(collection, manifest.assetId, manifest.revisionId),
+          })),
+        },
+        null,
+        2,
+      ),
+    );
   } else if (command === 'view') {
     let target = library;
     let standalone: { name: string; bytes: Uint8Array } | undefined;

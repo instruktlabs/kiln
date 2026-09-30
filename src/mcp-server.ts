@@ -32,6 +32,7 @@ import { createPackagedLocalToolContext } from './local-runtime';
 import { FileLiveReview } from './live-review-node';
 import { localWorkspaceRoot } from './workspace-node';
 import { CATEGORY_MIGRATION_MESSAGE, readHostRequirementsFile } from './requirements-file';
+import { LOOPBACK_HOSTNAMES } from './loopback';
 
 /** Server identity reported in the MCP handshake. */
 export const MCP_SERVER_NAME = 'kiln';
@@ -441,7 +442,7 @@ if (isDirectEntry(import.meta.url)) {
     const base = new URL(deliveryBase);
     if (
       base.protocol !== 'https:' &&
-      !(base.protocol === 'http:' && ['127.0.0.1', 'localhost', '[::1]'].includes(base.hostname))
+      !(base.protocol === 'http:' && LOOPBACK_HOSTNAMES.includes(base.hostname))
     )
       throw new Error('Asset download base must use HTTPS or loopback HTTP');
     context.assetDownloadUrls = async (collection, assetId, revisionId) =>
