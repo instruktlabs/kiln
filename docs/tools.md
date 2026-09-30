@@ -1042,7 +1042,7 @@ List part paths and inspect joints, clearances and edit preservation. listParts 
       "additionalProperties": false
     },
     "surfacePairs": {
-      "description": "[from,to] pairs. Each is an exact listParts path, e.g. /Park%20Bench[0]/Bench[0]/Mesh_Seat[0], or an unambiguous node name as measure takes. Check surfaceMeasurements.status and each result.",
+      "description": "[from,to] pairs of exact listParts paths or unambiguous node names; check surfaceMeasurements.status and each result.",
       "minItems": 1,
       "maxItems": 12,
       "type": "array",

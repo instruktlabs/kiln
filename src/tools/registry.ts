@@ -1848,7 +1848,7 @@ const inspectInput = z.object({
     .max(12)
     .optional()
     .describe(
-      '[from,to] pairs. Each is an exact listParts path, e.g. /Park%20Bench[0]/Bench[0]/Mesh_Seat[0], or an unambiguous node name as measure takes. Check surfaceMeasurements.status and each result.',
+      '[from,to] pairs of exact listParts paths or unambiguous node names; check surfaceMeasurements.status and each result.',
     ),
   compare: z
     .object({
