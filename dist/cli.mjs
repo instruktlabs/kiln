@@ -95,7 +95,13 @@ async function writeNewDestinationsAtomic(outputs) {
       }
     }
     for (const output of staged) {
-      await link(output.temporary, output.path);
+      try {
+        await link(output.temporary, output.path);
+      } catch (error) {
+        if (error.code !== "EEXIST")
+          throw error;
+        throw Object.assign(new Error(`${output.path} already exists and is never replaced; choose a new output path or remove the file.`), { code: "EEXIST" });
+      }
       output.published = true;
     }
   } catch (error) {
@@ -29952,6 +29958,11 @@ var init_program_store = __esm(() => {
 });
 
 // src/program-store-node.ts
+var exports_program_store_node = {};
+__export(exports_program_store_node, {
+  FileProgramStore: () => FileProgramStore,
+  localProgramStore: () => localProgramStore
+});
 import { link as link2, lstat as lstat3, mkdir as mkdir3, readFile as readFile2, readdir as readdir2, stat as stat2, unlink as unlink2, writeFile as writeFile3 } from "node:fs/promises";
 import { randomUUID as randomUUID3 } from "node:crypto";
 import { join as join5 } from "node:path";
@@ -32079,6 +32090,14 @@ var init_asset_materials_node = __esm(() => {
 });
 
 // src/assets-node.ts
+var exports_assets_node = {};
+__export(exports_assets_node, {
+  FileAssetLibrary: () => FileAssetLibrary,
+  assertCollectionRoot: () => assertCollectionRoot,
+  collectionConfigPath: () => collectionConfigPath,
+  localAssetLibrary: () => localAssetLibrary,
+  verifyAssetRecord: () => verifyAssetRecord
+});
 import { createHash as createHash14, randomUUID as randomUUID7 } from "node:crypto";
 import { readFileSync as readFileSync2 } from "node:fs";
 import {
@@ -33260,17 +33279,17 @@ function withProgramReferences(def, store) {
       const args = inputSchema.parse(input);
       const code = typeof args.code === "string" ? args.code : await store.get(args.programRef);
       const parentRef = await retainProgram(store, code);
-      const output = await def.run({ ...args, code });
+      const { programRef: _inner, ...output } = await def.run({ ...args, code });
       if (def.name !== "kiln_edit" || output.ok !== true || typeof output.code !== "string")
-        return { ...output, programRef: parentRef };
+        return { programRef: parentRef, ...output };
       const programRef = await retainProgram(store, output.code);
       const { code: updatedCode, ...rest } = output;
       const includeCode = args.includeCode ?? args.code !== undefined;
       const diff = typeof rest.diff === "string" ? rest.diff : "";
       return {
-        ...rest,
         programRef,
         parentRef,
+        ...rest,
         ...includeCode ? { code: updatedCode } : {
           diff: diff.slice(0, 8000),
           diffTruncated: diff.length > 8000
@@ -35301,7 +35320,13 @@ var init_intents = __esm(() => {
       "ring of supports",
       "arena seating"
     ],
-    arrayLinear: ["linear repetition", "repeat along a line", "straight row", "regular spacing"],
+    arrayLinear: [
+      "linear repetition",
+      "repeat along a line",
+      "straight row",
+      "regular spacing",
+      "bench or fence slats"
+    ],
     wallWithOpening: ["wall aperture", "cut a window", "doorway opening", "door or window in a wall"],
     room: ["hollow enclosure", "walls and floor", "room with doors and windows"],
     createGableShell: ["enclosed building shell", "gable house with openings"],
@@ -35595,7 +35620,14 @@ var init_construction_recipes = __esm(() => {
       summary: "Keep both ends of braces attached after resizing a frame by deriving them from the same post endpoints. Separate intended joints from surfaces that must remain apart; adapt to supports, furniture, chassis or scaffolding.",
       family: "structure",
       tags: ["brace", "frame", "attachment", "junction", "clearance", "resize"],
-      aliases: ["floating support bars", "disconnected struts", "joined beams"],
+      aliases: [
+        "floating support bars",
+        "disconnected struts",
+        "joined beams",
+        "bench frame",
+        "table legs and rails",
+        "chair or stool frame"
+      ],
       intents: ["connect both ends of a support", "resize a frame without detached braces"],
       stability: "experimental",
       related: [
@@ -36205,7 +36237,7 @@ var init_recipes = __esm(() => {
     wood: ["wooden", "timber", "grain", "plank"],
     stone: ["rock", "masonry", "mineral"],
     rubber: ["tire", "tyre", "grip", "seal"],
-    "painted-metal": ["paint", "coating", "vehicle panel"],
+    "painted-metal": ["paint", "coating", "vehicle panel", "cast iron", "steel"],
     cloth: ["fabric", "woven", "textile"],
     skin: ["flesh", "organic surface"],
     glass: ["transparent", "window", "translucent"],
@@ -36225,7 +36257,7 @@ var init_recipes = __esm(() => {
       id: `recipe:material-${slug}-v1`,
       kind: "recipe",
       name: `${descriptor.name} material baseline`,
-      summary: `${descriptor.description} Optional editable surface recipe; the example is a material swatch, not a finished asset.`,
+      summary: `${descriptor.description} Call await materialRecipe(${JSON.stringify(id)}). Optional editable surface recipe; the example is a material swatch, not a finished asset.`,
       family: "materials",
       tags: ["material", "pbr", "surface", slug],
       aliases: materialWords[slug] ?? [],
@@ -36546,6 +36578,12 @@ function createDiscoveryService(source, index, capabilities, retirements = {}) {
   const entries = parseCatalog(source);
   const byId = new Map(entries.map((entry) => [entry.id, entry]));
   const byName = new Map(entries.filter((entry) => entry.kind !== "recipe").map((entry) => [entry.name, entry]));
+  const slugOf = (entry) => entry.id.slice(entry.id.indexOf(":") + 1);
+  const slugUses = new Map;
+  for (const entry of entries)
+    slugUses.set(slugOf(entry), (slugUses.get(slugOf(entry)) ?? 0) + 1);
+  const bySlug = new Map(entries.filter((entry) => slugUses.get(slugOf(entry)) === 1).map((e) => [slugOf(e), e]));
+  const select = (selector) => byId.get(selector) ?? byName.get(selector) ?? bySlug.get(selector);
   const families = new Set(entries.map((entry) => entry.family));
   const tags = new Set(entries.flatMap((entry) => entry.tags));
   const orientation = {
@@ -36622,7 +36660,7 @@ ${JSON.stringify(current, null, 2)}`
       });
     }
     if (input.mode === "detail") {
-      const selected = input.ids.map((id) => byId.get(id) ?? byName.get(id));
+      const selected = input.ids.map(select);
       const unknown = input.ids.filter((_, offset) => !selected[offset]);
       if (unknown.length) {
         const removed = unknown.flatMap((id) => {
@@ -36641,7 +36679,7 @@ ${removed.join(`
       }
       const details = selected;
       if (new Set(details.map((entry) => entry.id)).size !== details.length) {
-        return error(input.mode, "DUPLICATE_ID", "Each exact selector must identify a different catalog entry. A name and its canonical ID refer to the same entry.");
+        return error(input.mode, "DUPLICATE_ID", "Each exact selector must identify a different catalog entry. A name or unprefixed slug and its canonical ID refer to the same entry.");
       }
       return finish({
         version: "kiln.discovery.v1",
@@ -36660,7 +36698,7 @@ ${removed.join(`
     const matchFilter = (entry) => (!input.family || entry.family === input.family) && (!input.kind || entry.kind === input.kind) && (!input.tags || input.tags.every((tag) => entry.tags.includes(tag)));
     let matches;
     if (input.query) {
-      const exact = byId.get(input.query) ?? byName.get(input.query);
+      const exact = select(input.query);
       const ordered = await ranked(input.query);
       const candidates = exact ? [
         { entry: exact, evidence: ordered.find((row) => row.entry.id === exact.id)?.evidence },
@@ -37491,6 +37529,11 @@ function compactReviewResult(result, detail = "compact") {
     out.partsHint = partsHint(COMPACT_PART_PREVIEW);
   }
   return out;
+}
+function compactEditResult(result) {
+  if (!isRecord7(result) || !isRecord7(result.render))
+    return result;
+  return { ...result, render: compactReviewResult(result.render) };
 }
 var COMPACT_PART_PREVIEW = 24, COMPACT_FINDINGS_PER_DIMENSION = 12, reviewDetailInput, partsHint = (offset) => `For remaining paths use kiln_inspect with image:false and listParts:{offset:${offset}}. listParts.query filters names/paths; follow partListing.nextOffset on the same programRef and query.`, isRecord7 = (value) => typeof value === "object" && value !== null && !Array.isArray(value);
 var init_review_detail = __esm(() => {
@@ -38636,7 +38679,11 @@ function surfacePathProblem(subjects, path) {
   const list = (nodes) => `${nodes.slice(0, 5).map((n) => n.path).join(", ")}${nodes.length > 5 ? `, and ${nodes.length - 5} more` : ""}`;
   if (!path.startsWith("/")) {
     const named = subjects.filter((s) => s.name === path);
-    return `${JSON.stringify(path)} is not an exact path; paths start with / as partListing shows them.${named.length ? ` Nodes named ${JSON.stringify(path)}: ${list(named)}.` : ""}`;
+    if (named.length > 1)
+      return `${named.length} nodes are named ${JSON.stringify(path)}; choose one exact path: ${list(named)}.`;
+    const wanted = path.toLowerCase();
+    const similar = subjects.filter((s) => s.name.length > 0 && s.name.toLowerCase().includes(wanted));
+    return `No node is named ${JSON.stringify(path)}.${similar.length ? ` Similar: ${list(similar)}.` : " Exact paths start with / as partListing shows them."}`;
   }
   const last = path.split("/").pop() ?? "";
   let name = last.replace(/\[\d+\]$/, "");
@@ -38650,22 +38697,26 @@ function surfacePathProblem(subjects, path) {
 }
 function measureSurfacePairs(root, pairs) {
   if (pairs.length < 1 || pairs.length > 12 || pairs.some((pair) => pair.length !== 2 || pair.some((path) => typeof path !== "string" || path.length > 4096)))
-    throw new Error("Surface pairs require 1..12 pairs of exact subject paths.");
+    throw new Error("Surface pairs require 1..12 pairs of exact paths or node names.");
   const subjects = listCameraSubjects(root);
   const known = new Set(subjects.map((subject) => subject.path));
+  const resolve = (subject) => {
+    if (subject.startsWith("/"))
+      return known.has(subject) ? subject : undefined;
+    const named = subjects.filter((s) => s.name === subject);
+    return named.length === 1 ? named[0].path : undefined;
+  };
   const results = pairs.map((paths) => {
-    const problems = paths.flatMap((path) => {
-      const problem = known.has(path) ? undefined : surfacePathProblem(subjects, path);
-      return problem ? [problem] : [];
-    });
-    if (problems.length)
+    const [from, to] = paths.map(resolve);
+    const problems = paths.flatMap((path) => resolve(path) === undefined ? [surfacePathProblem(subjects, path)] : []);
+    if (problems.length || from === undefined || to === undefined)
       return { paths, error: problems.join(" ") };
     try {
       return {
         paths,
         measurement: measureSurfaceDistance(root, {
-          from: { subject: { path: paths[0] } },
-          to: { subject: { path: paths[1] } }
+          from: { subject: { path: from } },
+          to: { subject: { path: to } }
         })
       };
     } catch (error) {
@@ -39703,7 +39754,7 @@ function createKilnEditDef(context = {}) {
     mediaMulti: screenshotAnimationMediaMulti,
     description: KILN_EDIT_DESCRIPTION,
     inputSchema: editInput,
-    run: async (input) => compactReviewResult(await guardCaptureBudget("kiln_edit", input, statefulContext, () => runEdit(editInput.parse(input), statefulContext))),
+    run: async (input) => compactEditResult(await guardCaptureBudget("kiln_edit", input, statefulContext, () => runEdit(editInput.parse(input), statefulContext))),
     media: (output) => {
       const o = output;
       if (!o || typeof o.pngBase64 !== "string" || o.pngBase64.length === 0)
@@ -40345,7 +40396,7 @@ var init_registry2 = __esm(() => {
   inspectInput = z19.object({
     image: z19.boolean().optional().describe("False: requires listParts/measure/surfacePairs/compare; no image or camera controls. Default true."),
     listParts: partListInput.optional().describe("List exported-scene paths, including nested parts. Default 80, max 100 per page. Follow partListing.nextOffset with the same programRef/query. image:false avoids rendering."),
-    surfacePairs: z19.array(surfacePairInput).min(1).max(12).optional().describe("[fromPath,toPath] pairs; check surfaceMeasurements.status and each result."),
+    surfacePairs: z19.array(surfacePairInput).min(1).max(12).optional().describe("[from,to] pairs of exact listParts paths or unambiguous node names; check surfaceMeasurements.status and each result."),
     compare: z19.object({
       programRef: z19.string().regex(programRefPattern),
       offset: z19.number().int().min(0).optional(),
@@ -41590,6 +41641,10 @@ async function assetMain(argv) {
     }
     if (arg === "--category" || arg.startsWith("--category="))
       throw new Error(CATEGORY_MIGRATION_MESSAGE);
+    if (arg === "--json" && command === "export") {
+      flags.json = "true";
+      continue;
+    }
     if (arg === "--restore" || arg === "--rebuild" || arg === "--no-project") {
       flags[arg.slice(2)] = "true";
       continue;
@@ -41753,6 +41808,7 @@ async function assetMain(argv) {
       const format = flags.format ?? (profile === "runtime" ? "glb" : "bundle");
       if (!["bundle", "glb", "source"].includes(format))
         throw new Error("Unknown export format");
+      const written = [];
       if (profile === "runtime") {
         if (format !== "glb")
           throw new Error("Runtime profile requires GLB format; use editable for source or bundle");
@@ -41768,15 +41824,33 @@ async function assetMain(argv) {
           { path: metadataPath, data: output.metadata.bytes },
           { path: destination, data: output.glb }
         ]);
-        console.log(`Saved ${destination}
-Saved ${metadataPath}`);
-        return 0;
+        written.push({ kind: "glb", path: destination, data: output.glb }, { kind: "metadata", path: metadataPath, data: output.metadata.bytes });
+      } else {
+        const bytes = format === "bundle" ? await library.exportBundle([record]) : record.files[format === "glb" ? "asset.glb" : "source.kiln.js"];
+        if (!bytes)
+          throw new Error("Source unavailable");
+        const destination = resolve13(flags.out);
+        await writeNewDestinationsAtomic([{ path: destination, data: bytes }]);
+        written.push({ kind: format, path: destination, data: bytes });
       }
-      const bytes = format === "bundle" ? await library.exportBundle([record]) : record.files[format === "glb" ? "asset.glb" : "source.kiln.js"];
-      if (!bytes)
-        throw new Error("Source unavailable");
-      await writeFile8(await prepareDestination(resolve13(flags.out)), bytes, { flag: "wx" });
-      console.log(`Saved ${resolve13(flags.out)}`);
+      if (!flags.json)
+        console.log(written.map(({ path }) => `Saved ${path}`).join(`
+`));
+      else
+        console.log(JSON.stringify({
+          ok: true,
+          collection,
+          assetId,
+          revisionId,
+          profile,
+          format,
+          files: written.map(({ kind, path, data }) => ({
+            kind,
+            path,
+            bytes: data.byteLength,
+            sha256: `sha256:${createHash18("sha256").update(data).digest("hex")}`
+          }))
+        }, null, 2));
     }
   } else if (command === "import") {
     const file = positional[0];
@@ -41855,6 +41929,9 @@ ASSETS & VIEWER
   kiln asset <id> <revision> --rebuild --out rebuilt.glb [--requirements file]
   kiln export <id> <revision> --out asset.zip [--format bundle|glb|source]
        [--profile editable|runtime]   runtime writes GLB + sibling metadata JSON
+       [--json]   receipt naming each file with its bytes and sha256
+       export never replaces an existing file: an export hands off one exact
+       saved revision, while render --out replaces its own working output
   kiln import <asset.zip|asset.glb> [--collection project] [--name <name>]
                                           prints the directory of each imported revision
   kiln view [collection-directory|asset.glb|asset.zip] [--port 4318]
@@ -42191,6 +42268,31 @@ var init_review_cli = __esm(() => {
   init_requirements_file();
 });
 
+// src/cli-json.ts
+function applyJsonOption(argv) {
+  if (!argv.includes("--json"))
+    return argv;
+  const rest = argv.filter((arg) => arg !== "--json");
+  const [command, action] = rest;
+  if (command === "view" || command === "collections" && action === "add")
+    throw new Error(JSON_OPTION_MESSAGE);
+  return PRINTS_JSON.has(command ?? "") ? rest : argv;
+}
+var JSON_OPTION_MESSAGE = "--json prints a JSON receipt from render, source, export, discover, inspect, animation and service status|reprobe; edit, save, collections, assets, asset, import, project, material, review and migrate print JSON already and accept it. generate, view, collections add and service start|stop print no JSON.", PRINTS_JSON;
+var init_cli_json = __esm(() => {
+  PRINTS_JSON = new Set([
+    "save",
+    "collections",
+    "assets",
+    "asset",
+    "import",
+    "project",
+    "material",
+    "review",
+    "migrate"
+  ]);
+});
+
 // src/service-cli.ts
 var exports_service_cli = {};
 __export(exports_service_cli, {
@@ -42208,6 +42310,33 @@ function logService(io, probe) {
   io.log(`protocol         ${probe.health.protocol}`);
   io.log(`build            ${probe.health.compatibility.fingerprint}`);
   io.log(`authentication   ${!probe.health.authRequired ? "not required" : clientToken() ? "required; client token configured (not verified by health)" : "required; set KILN_RENDER_TOKEN to the matching renderer token"}`);
+}
+function statusReceipt(url, dir, state, probe) {
+  const installation = state === "ready" ? { state, directory: dir } : { state, directory: dir, message: explainRenderServiceState(state, dir) };
+  if (probe.kind === "absent")
+    return { url, installation, listener: { kind: "absent" } };
+  if (probe.kind !== "service")
+    return {
+      url,
+      installation,
+      listener: { kind: probe.kind, message: describeUnavailableService(url, probe) }
+    };
+  return {
+    url,
+    installation,
+    listener: {
+      kind: "service",
+      rendererId: probe.rendererId,
+      pid: probe.instance.pid,
+      ownerPid: probe.instance.ownerPid,
+      mode: probe.instance.mode,
+      idleTimeoutMs: probe.instance.idleTimeoutMs,
+      source: probe.stale ? "incompatible" : "current",
+      protocol: probe.health.protocol,
+      build: probe.health.compatibility.fingerprint,
+      authentication: !probe.health.authRequired ? "not-required" : clientToken() ? "token-configured" : "token-missing"
+    }
+  };
 }
 async function startService(io, url, dir, probe) {
   const current = probe.kind === "service" && !probe.stale;
@@ -42252,7 +42381,12 @@ async function serviceMain(argv, io = { log: console.log, error: console.error }
     io.error("kiln service prune was removed: the initiating session exiting does not mean a shared renderer is unused. Use kiln service status, then kiln service stop explicitly when other clients are finished.");
     return 2;
   }
-  if (!["status", "start", "reprobe", "stop"].includes(command) || argv.length !== 1) {
+  const json = argv.length === 2 && argv[1] === "--json";
+  if (json && (command === "start" || command === "stop")) {
+    io.error(JSON_OPTION_MESSAGE);
+    return 2;
+  }
+  if (!["status", "start", "reprobe", "stop"].includes(command) || argv.length !== (json ? 2 : 1)) {
     io.error(`unknown service command: ${argv.join(" ")}
 ${SERVICE_USAGE}`);
     return 2;
@@ -42264,6 +42398,12 @@ ${SERVICE_USAGE}`);
     return startService(io, url, dir, probe);
   if (command === "status" || command === "reprobe") {
     const state = localRenderServiceState(dir);
+    const missingToken = probe.kind === "service" && probe.health.authRequired && !clientToken();
+    const code = command === "reprobe" && (probe.kind !== "service" || probe.stale || missingToken) ? 1 : 0;
+    if (json) {
+      io.log(JSON.stringify(statusReceipt(url, dir, state, probe), null, 2));
+      return code;
+    }
     io.log(`render service   ${url}`);
     io.log(`installation     ${state === "ready" ? `ready (${dir}); GPU checked at startup` : explainRenderServiceState(state, dir)}`);
     if (probe.kind === "absent")
@@ -42272,8 +42412,7 @@ ${SERVICE_USAGE}`);
       logService(io, probe);
     else
       io.log(`listening        ${describeUnavailableService(url, probe)}`);
-    const missingToken = probe.kind === "service" && probe.health.authRequired && !clientToken();
-    return command === "reprobe" && (probe.kind !== "service" || probe.stale || missingToken) ? 1 : 0;
+    return code;
   }
   if (probe.kind === "absent") {
     io.log(`nothing is listening on ${url}`);
@@ -42296,6 +42435,8 @@ var SERVICE_USAGE = `Usage:
   kiln service reprobe    refresh readiness after an installation or service change
   kiln service stop       explicitly stop the verified local renderer
 
+status and reprobe take --json to print the same facts as one JSON receipt.
+
 Managed renderers use a bounded idle lifetime shared by all sessions; the next
 local view that needs one starts it again. start never replaces a listener it
 cannot join. Manual renderers run until stopped. A remote renderer is managed
@@ -42303,6 +42444,7 @@ on its own device.
 `;
 var init_service_cli = __esm(() => {
   init_render_service_host();
+  init_cli_json();
 });
 
 // src/discovery-cli.ts
@@ -42372,9 +42514,13 @@ async function discoveryMain(argv) {
     return 0;
   }
   try {
-    const context = parsed.input.capabilities ? await createPackagedLocalToolContext({
-      renderCapabilities: createRenderCapabilitiesReader(resolveRenderMode())
-    }) : {};
+    const context = parsed.input.capabilities ? {
+      ...await createPackagedLocalToolContext({
+        renderCapabilities: createRenderCapabilitiesReader(resolveRenderMode()),
+        assetLibrary: (await Promise.resolve().then(() => (init_assets_node(), exports_assets_node))).localAssetLibrary()
+      }),
+      programStore: (await Promise.resolve().then(() => (init_program_store_node(), exports_program_store_node))).localProgramStore()
+    } : {};
     const result = await createKilnDiscoveryDef(context).run(parsed.input);
     console.log(parsed.json ? JSON.stringify(result) : result.text);
     return result.error ? 1 : 0;
@@ -43649,7 +43795,7 @@ var init_migration_cli = __esm(() => {
 
 // src/cli.ts
 init_cli_output();
-import { open as open11, readFile as readFile12, writeFile as writeFile9 } from "node:fs/promises";
+import { open as open11, readFile as readFile12 } from "node:fs/promises";
 import { resolve as resolvePath, extname as extname2 } from "node:path";
 
 // src/direct-entry.ts
@@ -43680,6 +43826,7 @@ init_asset_cli();
 init_project_cli();
 init_review_cli();
 init_service_cli();
+init_cli_json();
 init_discovery_cli();
 init_animation_cli();
 init_edit_cli();
@@ -43774,6 +43921,9 @@ OPTIONS
   --json                 render: one JSON receipt, no embedded image or GLB bytes
                          source: kiln_source JSON, first 8000 characters by default;
                          with --out, a receipt naming the written file
+                         export, discover, inspect, animation and service
+                         status|reprobe print receipts; commands that print
+                         JSON already accept it; generate and view refuse it
   --offset <n>           source --json: page start; pass the returned nextOffset
   --limit <n>            source --json: page size in characters (1-16000)
   --query <text>         source --json: find literal text at or after --offset
@@ -44172,7 +44322,7 @@ async function cmdSource(args) {
   if (isRef && args.out) {
     const code = await store.get(input);
     const path = resolvePath(args.out);
-    await writeFile9(await prepareDestination(path), code, { encoding: "utf8", flag: "wx" });
+    await writeNewDestinationsAtomic([{ path, data: code }]);
     if (!args.json)
       console.log(`Saved ${input} to ${args.out}`);
     else
@@ -44221,6 +44371,12 @@ async function runMain(argv) {
   } catch (error) {
     console.error(error instanceof Error ? error.message : String(error));
     return 1;
+  }
+  try {
+    argv = applyJsonOption(argv);
+  } catch (error) {
+    console.error(error instanceof Error ? error.message : String(error));
+    return 2;
   }
   if (argv[0] === "edit")
     return (await Promise.resolve().then(() => (init_edit_cli(), exports_edit_cli))).editMain(argv.slice(1));
@@ -44276,7 +44432,7 @@ async function runMain(argv) {
     if ((args.projectId !== undefined || args.projectRevision !== undefined || args.noProject || args.materialsFile !== undefined) && args.command !== "render" && args.command !== "generate")
       throw new Error("--project, --project-revision, --no-project and --materials are supported by render and generate only.");
     if (args.json && !jsonCommand(args.command))
-      throw new Error("--json is supported by render and source here; use each other command's documented output options.");
+      throw new Error(JSON_OPTION_MESSAGE);
     if ((args.offset !== undefined || args.limit !== undefined || args.query !== undefined) && !(args.command === "source" && args.json))
       throw new Error("--offset, --limit and --query are supported by source --json only.");
     if (args.requirementsFile !== undefined) {

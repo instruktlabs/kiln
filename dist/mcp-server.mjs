@@ -30369,7 +30369,11 @@ function surfacePathProblem(subjects, path) {
   const list = (nodes) => `${nodes.slice(0, 5).map((n) => n.path).join(", ")}${nodes.length > 5 ? `, and ${nodes.length - 5} more` : ""}`;
   if (!path.startsWith("/")) {
     const named = subjects.filter((s) => s.name === path);
-    return `${JSON.stringify(path)} is not an exact path; paths start with / as partListing shows them.${named.length ? ` Nodes named ${JSON.stringify(path)}: ${list(named)}.` : ""}`;
+    if (named.length > 1)
+      return `${named.length} nodes are named ${JSON.stringify(path)}; choose one exact path: ${list(named)}.`;
+    const wanted = path.toLowerCase();
+    const similar = subjects.filter((s) => s.name.length > 0 && s.name.toLowerCase().includes(wanted));
+    return `No node is named ${JSON.stringify(path)}.${similar.length ? ` Similar: ${list(similar)}.` : " Exact paths start with / as partListing shows them."}`;
   }
   const last = path.split("/").pop() ?? "";
   let name = last.replace(/\[\d+\]$/, "");
@@ -30383,22 +30387,26 @@ function surfacePathProblem(subjects, path) {
 }
 function measureSurfacePairs(root, pairs) {
   if (pairs.length < 1 || pairs.length > 12 || pairs.some((pair) => pair.length !== 2 || pair.some((path) => typeof path !== "string" || path.length > 4096)))
-    throw new Error("Surface pairs require 1..12 pairs of exact subject paths.");
+    throw new Error("Surface pairs require 1..12 pairs of exact paths or node names.");
   const subjects = listCameraSubjects(root);
   const known = new Set(subjects.map((subject) => subject.path));
+  const resolve = (subject) => {
+    if (subject.startsWith("/"))
+      return known.has(subject) ? subject : undefined;
+    const named = subjects.filter((s) => s.name === subject);
+    return named.length === 1 ? named[0].path : undefined;
+  };
   const results = pairs.map((paths) => {
-    const problems = paths.flatMap((path) => {
-      const problem = known.has(path) ? undefined : surfacePathProblem(subjects, path);
-      return problem ? [problem] : [];
-    });
-    if (problems.length)
+    const [from, to] = paths.map(resolve);
+    const problems = paths.flatMap((path) => resolve(path) === undefined ? [surfacePathProblem(subjects, path)] : []);
+    if (problems.length || from === undefined || to === undefined)
       return { paths, error: problems.join(" ") };
     try {
       return {
         paths,
         measurement: measureSurfaceDistance(root, {
-          from: { subject: { path: paths[0] } },
-          to: { subject: { path: paths[1] } }
+          from: { subject: { path: from } },
+          to: { subject: { path: to } }
         })
       };
     } catch (error) {
@@ -31024,17 +31032,17 @@ function withProgramReferences(def, store) {
       const args = inputSchema.parse(input);
       const code = typeof args.code === "string" ? args.code : await store.get(args.programRef);
       const parentRef = await retainProgram(store, code);
-      const output = await def.run({ ...args, code });
+      const { programRef: _inner, ...output } = await def.run({ ...args, code });
       if (def.name !== "kiln_edit" || output.ok !== true || typeof output.code !== "string")
-        return { ...output, programRef: parentRef };
+        return { programRef: parentRef, ...output };
       const programRef = await retainProgram(store, output.code);
       const { code: updatedCode, ...rest } = output;
       const includeCode = args.includeCode ?? args.code !== undefined;
       const diff = typeof rest.diff === "string" ? rest.diff : "";
       return {
-        ...rest,
         programRef,
         parentRef,
+        ...rest,
         ...includeCode ? { code: updatedCode } : {
           diff: diff.slice(0, 8000),
           diffTruncated: diff.length > 8000
@@ -33051,7 +33059,13 @@ var discoveryIntents = {
     "ring of supports",
     "arena seating"
   ],
-  arrayLinear: ["linear repetition", "repeat along a line", "straight row", "regular spacing"],
+  arrayLinear: [
+    "linear repetition",
+    "repeat along a line",
+    "straight row",
+    "regular spacing",
+    "bench or fence slats"
+  ],
   wallWithOpening: ["wall aperture", "cut a window", "doorway opening", "door or window in a wall"],
   room: ["hollow enclosure", "walls and floor", "room with doors and windows"],
   createGableShell: ["enclosed building shell", "gable house with openings"],
@@ -33349,7 +33363,14 @@ var constructionRecipes = [
     summary: "Keep both ends of braces attached after resizing a frame by deriving them from the same post endpoints. Separate intended joints from surfaces that must remain apart; adapt to supports, furniture, chassis or scaffolding.",
     family: "structure",
     tags: ["brace", "frame", "attachment", "junction", "clearance", "resize"],
-    aliases: ["floating support bars", "disconnected struts", "joined beams"],
+    aliases: [
+      "floating support bars",
+      "disconnected struts",
+      "joined beams",
+      "bench frame",
+      "table legs and rails",
+      "chair or stool frame"
+    ],
     intents: ["connect both ends of a support", "resize a frame without detached braces"],
     stability: "experimental",
     related: [
@@ -33896,7 +33917,7 @@ var materialWords = {
   wood: ["wooden", "timber", "grain", "plank"],
   stone: ["rock", "masonry", "mineral"],
   rubber: ["tire", "tyre", "grip", "seal"],
-  "painted-metal": ["paint", "coating", "vehicle panel"],
+  "painted-metal": ["paint", "coating", "vehicle panel", "cast iron", "steel"],
   cloth: ["fabric", "woven", "textile"],
   skin: ["flesh", "organic surface"],
   glass: ["transparent", "window", "translucent"],
@@ -33916,7 +33937,7 @@ var materialRecipes = MATERIAL_RECIPE_IDS.map((id) => {
     id: `recipe:material-${slug}-v1`,
     kind: "recipe",
     name: `${descriptor.name} material baseline`,
-    summary: `${descriptor.description} Optional editable surface recipe; the example is a material swatch, not a finished asset.`,
+    summary: `${descriptor.description} Call await materialRecipe(${JSON.stringify(id)}). Optional editable surface recipe; the example is a material swatch, not a finished asset.`,
     family: "materials",
     tags: ["material", "pbr", "surface", slug],
     aliases: materialWords[slug] ?? [],
@@ -34273,6 +34294,12 @@ function createDiscoveryService(source, index, capabilities, retirements = {}) {
   const entries = parseCatalog(source);
   const byId = new Map(entries.map((entry) => [entry.id, entry]));
   const byName = new Map(entries.filter((entry) => entry.kind !== "recipe").map((entry) => [entry.name, entry]));
+  const slugOf = (entry) => entry.id.slice(entry.id.indexOf(":") + 1);
+  const slugUses = new Map;
+  for (const entry of entries)
+    slugUses.set(slugOf(entry), (slugUses.get(slugOf(entry)) ?? 0) + 1);
+  const bySlug = new Map(entries.filter((entry) => slugUses.get(slugOf(entry)) === 1).map((e) => [slugOf(e), e]));
+  const select = (selector) => byId.get(selector) ?? byName.get(selector) ?? bySlug.get(selector);
   const families = new Set(entries.map((entry) => entry.family));
   const tags = new Set(entries.flatMap((entry) => entry.tags));
   const orientation = {
@@ -34349,7 +34376,7 @@ ${JSON.stringify(current, null, 2)}`
       });
     }
     if (input.mode === "detail") {
-      const selected = input.ids.map((id) => byId.get(id) ?? byName.get(id));
+      const selected = input.ids.map(select);
       const unknown = input.ids.filter((_, offset) => !selected[offset]);
       if (unknown.length) {
         const removed = unknown.flatMap((id) => {
@@ -34368,7 +34395,7 @@ ${removed.join(`
       }
       const details = selected;
       if (new Set(details.map((entry) => entry.id)).size !== details.length) {
-        return error(input.mode, "DUPLICATE_ID", "Each exact selector must identify a different catalog entry. A name and its canonical ID refer to the same entry.");
+        return error(input.mode, "DUPLICATE_ID", "Each exact selector must identify a different catalog entry. A name or unprefixed slug and its canonical ID refer to the same entry.");
       }
       return finish({
         version: "kiln.discovery.v1",
@@ -34387,7 +34414,7 @@ ${removed.join(`
     const matchFilter = (entry) => (!input.family || entry.family === input.family) && (!input.kind || entry.kind === input.kind) && (!input.tags || input.tags.every((tag) => entry.tags.includes(tag)));
     let matches;
     if (input.query) {
-      const exact = byId.get(input.query) ?? byName.get(input.query);
+      const exact = select(input.query);
       const ordered = await ranked(input.query);
       const candidates = exact ? [
         { entry: exact, evidence: ordered.find((row) => row.entry.id === exact.id)?.evidence },
@@ -35205,6 +35232,11 @@ function compactReviewResult(result, detail = "compact") {
     out.partsHint = partsHint(COMPACT_PART_PREVIEW);
   }
   return out;
+}
+function compactEditResult(result) {
+  if (!isRecord6(result) || !isRecord6(result.render))
+    return result;
+  return { ...result, render: compactReviewResult(result.render) };
 }
 
 // src/build-cache.ts
@@ -36435,7 +36467,7 @@ var surfacePairInput = z18.array(z18.string().max(4096)).length(2);
 var inspectInput = z18.object({
   image: z18.boolean().optional().describe("False: requires listParts/measure/surfacePairs/compare; no image or camera controls. Default true."),
   listParts: partListInput.optional().describe("List exported-scene paths, including nested parts. Default 80, max 100 per page. Follow partListing.nextOffset with the same programRef/query. image:false avoids rendering."),
-  surfacePairs: z18.array(surfacePairInput).min(1).max(12).optional().describe("[fromPath,toPath] pairs; check surfaceMeasurements.status and each result."),
+  surfacePairs: z18.array(surfacePairInput).min(1).max(12).optional().describe("[from,to] pairs of exact listParts paths or unambiguous node names; check surfaceMeasurements.status and each result."),
   compare: z18.object({
     programRef: z18.string().regex(programRefPattern),
     offset: z18.number().int().min(0).optional(),
@@ -36683,7 +36715,7 @@ function createKilnEditDef(context = {}) {
     mediaMulti: screenshotAnimationMediaMulti,
     description: KILN_EDIT_DESCRIPTION,
     inputSchema: editInput,
-    run: async (input) => compactReviewResult(await guardCaptureBudget("kiln_edit", input, statefulContext, () => runEdit(editInput.parse(input), statefulContext))),
+    run: async (input) => compactEditResult(await guardCaptureBudget("kiln_edit", input, statefulContext, () => runEdit(editInput.parse(input), statefulContext))),
     media: (output) => {
       const o = output;
       if (!o || typeof o.pngBase64 !== "string" || o.pngBase64.length === 0)
