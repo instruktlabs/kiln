@@ -493,6 +493,64 @@ export function measurePartBounds(root: unknown): ReturnType<typeof measureBound
 }
 
 /**
+ * `measurePartBounds` for many nodes of one scene: the same meshes (per-mesh
+ * `visible`, every position vertex, null without a triangle), but each mesh is
+ * transformed once however many requested ancestors contain it.
+ */
+export function createPartBoundsReader(
+  root: unknown,
+): (node: unknown) => ReturnType<typeof measureBounds> | null {
+  (root as DuckObject3D).updateMatrixWorld?.(true);
+  const own = new Map<unknown, { min: Vec3; max: Vec3; tris: number } | null>();
+  const meshBounds = (obj: unknown) => {
+    if (own.has(obj)) return own.get(obj)!;
+    const mesh = obj as DuckMesh;
+    const pos =
+      mesh.isMesh && mesh.visible !== false ? mesh.geometry?.getAttribute?.('position') : undefined;
+    const m = mesh.matrixWorld?.elements;
+    let result: { min: Vec3; max: Vec3; tris: number } | null = null;
+    if (pos && pos.itemSize === 3 && m) {
+      const min: Vec3 = [Infinity, Infinity, Infinity];
+      const max: Vec3 = [-Infinity, -Infinity, -Infinity];
+      const arr = pos.array;
+      for (let i = 0; i < pos.count; i++) {
+        const x = arr[i * 3]!,
+          y = arr[i * 3 + 1]!,
+          z = arr[i * 3 + 2]!;
+        const w: Vec3 = [
+          m[0]! * x + m[4]! * y + m[8]! * z + m[12]!,
+          m[1]! * x + m[5]! * y + m[9]! * z + m[13]!,
+          m[2]! * x + m[6]! * y + m[10]! * z + m[14]!,
+        ];
+        for (let k = 0; k < 3; k++) {
+          if (w[k]! < min[k]!) min[k] = w[k]!;
+          if (w[k]! > max[k]!) max[k] = w[k]!;
+        }
+      }
+      const count = mesh.geometry?.index ? mesh.geometry.index.count : pos.count;
+      result = { min, max, tris: Math.floor(count / 3) };
+    }
+    own.set(obj, result);
+    return result;
+  };
+  return (node) => {
+    const min: Vec3 = [Infinity, Infinity, Infinity];
+    const max: Vec3 = [-Infinity, -Infinity, -Infinity];
+    let tris = 0;
+    (node as DuckObject3D).traverse?.((obj) => {
+      const bounds = meshBounds(obj);
+      if (!bounds) return;
+      tris += bounds.tris;
+      for (let k = 0; k < 3; k++) {
+        if (bounds.min[k]! < min[k]!) min[k] = bounds.min[k]!;
+        if (bounds.max[k]! > max[k]!) max[k] = bounds.max[k]!;
+      }
+    });
+    return tris ? { min, max } : null;
+  };
+}
+
+/**
  * Fraction of non-background pixels — used by tests and occupancy checks. The
  * raster must be measured against the backdrop it was painted with, so pass the
  * same `backdrop` the render used (omitted on both sides means the default).

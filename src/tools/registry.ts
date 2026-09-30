@@ -998,11 +998,13 @@ export interface PartListing {
   matched: number;
   offset: number;
   nextOffset?: number;
-  parts: { path: string; name: string }[];
+  /** Every listed part carries its world placement and bounds. */
+  parts: ({ path: string; name: string } & import('../views/part-placement').PartPlacementV1)[];
 }
 
 interface PartPreview {
-  parts?: PartListing['parts'];
+  /** The render preview stays names and paths; `listParts` adds placement. */
+  parts?: { path: string; name: string }[];
   partsTotal?: number;
   partsTruncated?: boolean;
   partsNextOffset?: number;
@@ -1010,10 +1012,7 @@ interface PartPreview {
 }
 
 /** Same exported-scene paths used by exact camera and measurement selectors. */
-async function listPartPage(
-  root: THREE.Object3D,
-  options: z.infer<typeof partListInput> = {},
-): Promise<PartListing> {
+async function listPartNames(root: THREE.Object3D, options: z.infer<typeof partListInput> = {}) {
   const { listCameraSubjects } = await import('../views/camera');
   const all = listCameraSubjects(root);
   const query = options.query?.trim().toLowerCase();
@@ -1024,21 +1023,34 @@ async function listPartPage(
       )
     : all;
   const offset = options.offset ?? 0;
-  const parts = matches
-    .slice(offset, offset + (options.limit ?? 80))
-    .map(({ path, name }) => ({ path, name }));
-  const nextOffset = offset + parts.length;
+  const page = matches.slice(offset, offset + (options.limit ?? 80));
+  const nextOffset = offset + page.length;
   return {
     total: all.length,
     matched: matches.length,
     offset,
-    parts,
+    page,
     ...(nextOffset < matches.length ? { nextOffset } : {}),
   };
 }
 
+/** A `listParts` page: paths plus world transform, mirroring and bounds per part. */
+async function listPartPage(
+  root: THREE.Object3D,
+  options: z.infer<typeof partListInput> = {},
+): Promise<PartListing> {
+  const { page, ...listing } = await listPartNames(root, options);
+  const { createPartPlacementReader } = await import('../views/part-placement');
+  const placement = createPartPlacementReader(root);
+  return {
+    ...listing,
+    parts: page.map(({ path, name, node }) => ({ path, name, ...placement(node) })),
+  };
+}
+
 async function partPreview(root: THREE.Object3D): Promise<PartPreview> {
-  const page = await listPartPage(root);
+  const { page: parts, ...listing } = await listPartNames(root);
+  const page = { ...listing, parts: parts.map(({ path, name }) => ({ path, name })) };
   return {
     parts: page.parts,
     partsTotal: page.total,
