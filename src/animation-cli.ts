@@ -230,7 +230,7 @@ export async function animationMain(argv: readonly string[]): Promise<number> {
       for (const image of images) console.log(`  ${image.path}`);
       if (output.loopClosure)
         console.log(
-          `  endpoint continuity: ${output.loopClosure.status}; ${output.loopClosure.mismatchCount} mismatched tracks (loop intent and velocity continuity not assessed)`,
+          `  endpoint continuity: ${output.loopClosure.status}; ${output.loopClosure.mismatchCount} mismatched tracks; loop intent ${output.loopClosure.loopIntent} (velocity continuity not assessed)`,
         );
       for (const warning of output.warnings) console.log(`  warning: ${warning}`);
       if (output.unresolvedTracks?.length)

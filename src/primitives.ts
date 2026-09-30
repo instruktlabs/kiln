@@ -1640,11 +1640,15 @@ export function scaleTrack(
  * Supports LINEAR/STEP vector and quaternion tracks, not cubic splines or other channels.
  * Quaternion samples must already be unit length (squared-length tolerance 1e-4).
  * Validates target syntax, not scene existence/uniqueness: use scene inspection/QA for that.
+ * `options.loop` declares intent: true for a cycle, false for a one-shot. It is exported as
+ * the glTF animation extra `kilnLoopIntent` ('loop' | 'once') and reported by animation review;
+ * omitted means unspecified.
  */
 export function createClip(
   name: string,
   duration: number,
   tracks: THREE.KeyframeTrack[],
+  options?: { loop?: boolean },
 ): THREE.AnimationClip {
   if (typeof name !== 'string' || !name.trim())
     throw new Error('Animation clip name must be nonempty.');
@@ -1653,6 +1657,7 @@ export function createClip(
     throw new Error('Animation clip duration must be nonnegative, or -1 for automatic duration.');
   if (!Array.isArray(tracks) || tracks.length === 0)
     throw new Error('Animation clip requires at least one track.');
+  const loop = clipLoopOption(options);
   const names = new Set<string>();
   for (const track of tracks) {
     if (!(track instanceof THREE.KeyframeTrack))
@@ -1704,7 +1709,22 @@ export function createClip(
       );
     }
   }
-  return new THREE.AnimationClip(name, duration, tracks);
+  const clip = new THREE.AnimationClip(name, duration, tracks);
+  if (loop !== undefined) clip.userData.kilnLoopIntent = loop ? 'loop' : 'once';
+  return clip;
+}
+
+function clipLoopOption(options: unknown): boolean | undefined {
+  if (options === undefined) return undefined;
+  if (typeof options !== 'object' || options === null || Array.isArray(options))
+    throw new Error('Animation clip options must be an object such as { loop: true }.');
+  for (const key of Object.keys(options))
+    if (key !== 'loop')
+      throw new Error(`Animation clip option ${key} is unknown; the only option is loop.`);
+  const loop = (options as { loop?: unknown }).loop;
+  if (loop !== undefined && typeof loop !== 'boolean')
+    throw new Error('Animation clip loop must be true (a cycle) or false (a one-shot).');
+  return loop;
 }
 
 // =============================================================================

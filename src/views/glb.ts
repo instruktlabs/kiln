@@ -120,6 +120,12 @@ function record(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
 }
 
+/** Declared loop intent carried by animation extras or the review copy. */
+function withLoopIntent(clip: AnimationClip, intent: unknown): AnimationClip {
+  if (intent === 'loop' || intent === 'once') clip.userData.kilnLoopIntent = intent;
+  return clip;
+}
+
 function reviewClipsFromExtras(extras: unknown): AnimationClip[] | undefined {
   if (!record(extras)) return undefined;
   const envelope = extras[REVIEW_CLIPS_EXTRAS_KEY];
@@ -173,7 +179,10 @@ function reviewClipsFromExtras(extras: unknown): AnimationClip[] | undefined {
         track.interpolation === 'STEP' ? InterpolateDiscrete : InterpolateLinear,
       );
     });
-    return new AnimationClip(candidate.name, candidate.duration, tracks);
+    return withLoopIntent(
+      new AnimationClip(candidate.name, candidate.duration, tracks),
+      candidate.loopIntent,
+    );
   });
 }
 
@@ -628,8 +637,8 @@ export async function loadGlbReviewScene(bytes: Uint8Array): Promise<LoadedGlbRe
   const nativeClips = document
     .getRoot()
     .listAnimations()
-    .map(
-      (animation) =>
+    .map((animation) =>
+      withLoopIntent(
         new AnimationClip(
           animation.getName(),
           -1,
@@ -660,6 +669,8 @@ export async function loadGlbReviewScene(bytes: Uint8Array): Promise<LoadedGlbRe
             ];
           }),
         ),
+        (animation.getExtras() as { kilnLoopIntent?: unknown }).kilnLoopIntent,
+      ),
     );
   const clips = reviewClipsFromExtras(sourceScene.getExtras()) ?? nativeClips;
   return {

@@ -59,6 +59,10 @@ independently of selected image phases. `open` identifies endpoint gaps; `incomp
 cannot certify closure. Quaternion sign changes alone are not gaps. A one-shot
 opening or attack need not return to its initial pose. `closed` establishes only
 endpoint continuity, not smooth velocity, convincing motion or working contacts.
+`loopIntent` reports `createClip(name, duration, tracks, { loop })`: `loop` must
+close (an open declared loop also warns `LOOP_NOT_CLOSED`), `once` may stay open,
+and `unspecified` cannot tell the two apart, so declare intent when a brief says
+whether a clip repeats. The GLB carries it as `animations[].extras.kilnLoopIntent`.
 
 For several moving contacts or attachments, pass `measureParts` with up to 16
 exact `{name}` or `{path}` selectors. Each phase returns `poseBounds.parts` in

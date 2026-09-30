@@ -874,6 +874,29 @@ function bridgeAnimations(
 }
 
 const REVIEW_CLIPS_EXTRAS_KEY = 'kilnReviewClipsV1';
+
+/** Declared loop intent from createClip({ loop }), exported as animations[].extras. */
+function clipLoopIntent(clip: THREE.AnimationClip): 'loop' | 'once' | undefined {
+  const intent = (clip.userData as { kilnLoopIntent?: unknown } | undefined)?.kilnLoopIntent;
+  return intent === 'loop' || intent === 'once' ? intent : undefined;
+}
+
+/** Record loop intent on each exported animation, and report whether every authored
+ * track became a native channel. Only then can review read the native animations
+ * alone, so the bounded review copy stays out of the artifact. */
+function finishNativeAnimations(doc: Document, clips: THREE.AnimationClip[]): boolean {
+  const animations = doc.getRoot().listAnimations();
+  let complete = true;
+  for (const clip of clips) {
+    const matches = animations.filter((animation) => animation.getName() === clip.name);
+    const animation = matches.length === 1 ? matches[0]! : undefined;
+    if (!animation || animation.listChannels().length !== clip.tracks.length) complete = false;
+    const intent = clipLoopIntent(clip);
+    if (animation && intent)
+      animation.setExtras({ ...animation.getExtras(), kilnLoopIntent: intent });
+  }
+  return complete && animations.length === clips.length;
+}
 const REVIEW_CLIP_LIMITS = {
   clips: 32,
   tracks: 256,
@@ -896,6 +919,7 @@ function reviewClipExtras(clips: THREE.AnimationClip[]): Record<string, unknown>
     clips: clips.map((clip) => ({
       name: clip.name,
       duration: clip.duration,
+      ...(clipLoopIntent(clip) ? { loopIntent: clipLoopIntent(clip) } : {}),
       tracks: clip.tracks.map((track) => {
         trackCount++;
         if (trackCount > REVIEW_CLIP_LIMITS.tracks) {
@@ -1421,14 +1445,20 @@ export async function renderSceneToGLB(
     doc.getRoot().setDefaultScene(gltfScene);
 
     if (clips.length > 0) {
-      gltfScene.setExtras({ [REVIEW_CLIPS_EXTRAS_KEY]: reviewClipExtras(clips) });
+      const review = reviewClipExtras(clips);
       bridgeAnimations(doc, buf, nativeClips, nodeMap, warnings);
+      if (!finishNativeAnimations(doc, nativeClips))
+        gltfScene.setExtras({ [REVIEW_CLIPS_EXTRAS_KEY]: review });
     }
   } else {
     const scene = doc.getRoot().getDefaultScene() ?? doc.getRoot().listScenes()[0];
     if (!scene) throw new Error('Community exporter produced no scene.');
     scene.setName(opts.sceneName ?? 'Scene');
-    if (clips.length > 0) scene.setExtras({ [REVIEW_CLIPS_EXTRAS_KEY]: reviewClipExtras(clips) });
+    if (clips.length > 0) {
+      const review = reviewClipExtras(clips);
+      if (!finishNativeAnimations(doc, nativeClips))
+        scene.setExtras({ [REVIEW_CLIPS_EXTRAS_KEY]: review });
+    }
   }
 
   // Dedupe accessors/materials/meshes so instanced parts (4 wheels, 10 posts,

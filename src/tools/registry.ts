@@ -1605,6 +1605,9 @@ async function runScreenshotAnimation(
         ...(r.availableClips ? { availableClips: r.availableClips } : {}),
       };
     }
+    const { loopIntentWarning } = await import('../views/pose');
+    const loopWarning = r.loopClosure && loopIntentWarning(r.clip ?? input.clip, r.loopClosure);
+    if (loopWarning) warnings.push(loopWarning);
     const viewFidelity = derivativeReviewFidelity(r.derivativeReceipts);
     const viewEvidence = viewFidelity
       ? context.viewEvidenceHistory?.record('kiln_screenshot_animation', viewFidelity)

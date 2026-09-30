@@ -101,7 +101,9 @@ kiln_screenshot_animation({ programRef: REF, clip: 'Open',
 `loopClosure` compares local position, rotation and scale at both clip endpoints.
 An open endpoint may be valid for a one-shot action. For a requested loop, review
 the reported gaps; closed endpoints alone do not prove smooth velocity or freedom
-from collisions. An incomplete result lists unassessed tracks.
+from collisions. An incomplete result lists unassessed tracks. `loopIntent` is the
+intent declared with `createClip(..., { loop: true | false })`; a declared loop
+that stays open adds a `LOOP_NOT_CLOSED` warning.
 
 Choose phases for the geometry and clip, not only a regular grid. For a full turn
 with 16 repeated lugs, quarter/eighth turns all repeat the same tread alignment.

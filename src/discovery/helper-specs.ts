@@ -621,12 +621,14 @@ const PRIMITIVES: HelperSpec[] = [
   },
   {
     name: 'createClip',
-    signature: 'createClip(name: string, duration: number, tracks: KeyframeTrack[])',
+    signature:
+      'createClip(name: string, duration: number, tracks: KeyframeTrack[], options?: { loop?: boolean })',
     returns: 'THREE.AnimationClip',
     category: 'animation',
     description:
-      'Validates supported position/quaternion/scale tracks and collects them into a named clip. Duration is seconds (-1 derives from keys); explicit duration must include every key. Returned from animate().',
-    example: "return [createClip('Open', 1, [rotationTrack('Joint_Lid', [...])])];",
+      'Validates supported position/quaternion/scale tracks and collects them into a named clip. Duration is seconds (-1 derives from keys); explicit duration must include every key. loop: true declares a cycle, false a one-shot; exported as the glTF animation extra kilnLoopIntent and reported by animation review. Returned from animate().',
+    example:
+      "return [createClip('Open', 1, [rotationTrack('Joint_Lid', [...])], { loop: false })];",
   },
 
   // ---------------------------------------------------------------------------

@@ -471,7 +471,7 @@ Build a program and return geometry metrics, a bounded part-path preview and ima
 
 ## kiln_screenshot_animation
 
-Review animation images, poseBounds and loopClosure endpoint evidence. An open endpoint is valid for one-shot motion; closed endpoints do not prove smooth velocity. Check motion, attachments and requested clearance; sampled bounds do not certify continuous contact or collision safety. Use shot for camera/subject, frameTimes for phases, and framing locked (default) or follow. Add phases when symmetry hides motion. The program must define animate(). Check viewFidelity before judging materials. Supply code OR a retained programRef. Even invalid drafts return a ref; read it with kiln_source.
+Review animation images, poseBounds and loopClosure endpoint evidence. loopIntent is createClip({loop}); open is valid for one-shots; closed endpoints do not prove smooth velocity. Check motion, attachments and requested clearance; sampled bounds do not certify continuous contact or collision safety. Use shot for camera/subject, frameTimes for phases, and framing locked (default) or follow. Add phases when symmetry hides motion. The program must define animate(). Check viewFidelity before judging materials. Supply code OR a retained programRef. Even invalid drafts return a ref; read it with kiln_source.
 
 <details>
 <summary>Input JSON Schema</summary>

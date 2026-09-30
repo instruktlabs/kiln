@@ -606,11 +606,12 @@ scaleTrack(jointName: string, keyframes: Array<{ time, scale: [x, y, z] }>, inte
   // Uniform or per-axis scale track.
   // e.g. scaleTrack('Joint_Chest', [{ time: 0, scale: [1, 1, 1] }, { time: 1, scale: [1.1, 1.1,
   // 1.1] }]);
-createClip(name: string, duration: number, tracks: KeyframeTrack[])
+createClip(name: string, duration: number, tracks: KeyframeTrack[], options?: { loop?: boolean })
   // Validates supported position/quaternion/scale tracks and collects them into a named clip.
-  // Duration is seconds (-1 derives from keys); explicit duration must include every key.
-  // Returned from animate().
-  // e.g. return [createClip('Open', 1, [rotationTrack('Joint_Lid', [...])])];
+  // Duration is seconds (-1 derives from keys); explicit duration must include every key. loop:
+  // true declares a cycle, false a one-shot; exported as the glTF animation extra
+  // kilnLoopIntent and reported by animation review. Returned from animate().
+  // e.g. return [createClip('Open', 1, [rotationTrack('Joint_Lid', [...])], { loop: false })];
 idleBreathing(bodyJoint: string, duration?: 2, amount?: 0.02, options?: { basePosition?: [x, y, z] })
   // Gentle parent-local Y bob around options.basePosition, default [0,0,0]. Give the authored
   // base explicitly or animate a separate zero-origin pivot.

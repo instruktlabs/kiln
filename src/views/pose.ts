@@ -38,6 +38,7 @@ export interface DuckClip {
   name?: string;
   duration?: number;
   tracks?: DuckTrack[];
+  userData?: { kilnLoopIntent?: unknown };
 }
 
 type Prop = 'position' | 'quaternion' | 'scale';
@@ -240,7 +241,8 @@ function sampleTrack(track: PreparedTrack, t: number, out: number[]): void {
 export interface LoopClosureEvidence {
   version: 'kiln.loop-closure.v1';
   status: 'closed' | 'open' | 'incomplete';
-  loopIntent: 'unspecified';
+  /** From createClip({ loop }): 'loop' should close, 'once' may stay open. */
+  loopIntent: 'loop' | 'once' | 'unspecified';
   scope: string;
   tolerances: { positionDistance: number; rotationDegrees: number; scaleDistance: number };
   checkedTracks: number;
@@ -253,6 +255,27 @@ export interface LoopClosureEvidence {
   detailsTruncated: boolean;
 }
 
+function declaredLoopIntent(clip: DuckClip): LoopClosureEvidence['loopIntent'] {
+  const intent = clip.userData?.kilnLoopIntent;
+  return intent === 'loop' || intent === 'once' ? intent : 'unspecified';
+}
+
+/** A declared loop whose end pose differs from its start, as one warning line. */
+export function loopIntentWarning(
+  clipName: string,
+  evidence: LoopClosureEvidence,
+): string | undefined {
+  if (evidence.loopIntent !== 'loop' || evidence.status !== 'open') return undefined;
+  const worst = evidence.mismatches.reduce<LoopClosureEvidence['mismatches'][number] | undefined>(
+    (max, entry) => (!max || entry.delta > max.delta ? entry : max),
+    undefined,
+  );
+  const gap = worst
+    ? ` (${worst.track} differs by ${Number(worst.delta.toPrecision(4))} ${worst.unit})`
+    : '';
+  return `LOOP_NOT_CLOSED: clip "${clipName}" is declared loop: true but its end pose differs from its start${gap}; close the loop or declare loop: false.`;
+}
+
 /** Endpoint C0 continuity, without assuming the clip was intended to loop.
  * Uses the same clamping/interpolation as preview, independent of chosen frames.
  * Quaternion distance is invariant to sign. Does not mutate the scene. */
@@ -261,9 +284,9 @@ export function measureLoopClosure(root: DuckNode, clip: DuckClip): LoopClosureE
   const result: LoopClosureEvidence = {
     version: 'kiln.loop-closure.v1',
     status: 'incomplete',
-    loopIntent: 'unspecified',
+    loopIntent: declaredLoopIntent(clip),
     scope:
-      'Local transform values at time 0 and clip duration; endpoint continuity only. Loop intent, velocity continuity, contacts and collision are not assessed. An open one-shot clip is valid.',
+      'Local transform values at time 0 and clip duration; endpoint continuity only. loopIntent comes from createClip({ loop }): a declared loop should close, a one-shot (once) may stay open, and unspecified intent cannot tell them apart. Velocity continuity, contacts and collision are not assessed.',
     tolerances,
     checkedTracks: 0,
     unassessedTracks: 0,
