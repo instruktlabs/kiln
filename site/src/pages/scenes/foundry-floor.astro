@@ -1,0 +1,30 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import foundryFloor from "../../data/foundry-floor.json";
+---
+
+<BaseLayout
+  title={`${foundryFloor.name} scene — in production`}
+  description={`${foundryFloor.name} is in production: ${foundryFloor.summary}. There is no browser scene to explore yet.`}
+  noindex
+  nofollow
+  breadcrumbs={[
+    { label: "Scenes", href: "/scenes/" },
+    { label: foundryFloor.name, href: foundryFloor.sceneRoute },
+  ]}
+  ogImage="/social/foundry-floor.jpg"
+>
+  <div class="container py-20">
+    <h1 class="max-w-prose font-semibold">
+      The {foundryFloor.name} scene is in production.
+    </h1>
+    <p class="mt-6 max-w-prose text-lg">
+      {foundryFloor.name} is a fictional 2 nm-class chip fab. The pack and its
+      scene are being made; there is no browser scene to explore yet.
+    </p>
+    <p class="mt-4 max-w-prose">{foundryFloor.notice}</p>
+    <a href="/scenes/" class="btn btn-secondary mt-8">
+      Back to scenes
+    </a>
+  </div>
+</BaseLayout>

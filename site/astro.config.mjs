@@ -1,11 +1,12 @@
 import { defineConfig } from 'astro/config';
 import react from '@astrojs/react';
 import tailwindcss from '@tailwindcss/vite';
-import { sceneSourceConfig } from './scripts/scene-source.mjs';
+import { sceneSiteConfig } from './scripts/scene-source.mjs';
 import { workbenchContrast } from './src/lib/shiki-contrast.ts';
 
-// The Farm scene is consumed as source from a scenes workspace (see scripts/scene-source.mjs).
-const scene = sceneSourceConfig();
+// Scene runtimes are built and staged outside this graph (scripts/scene-runtime.mjs, scripts/scene-pack.mjs);
+// the site only learns which are staged (scripts/scene-source.mjs).
+const scene = sceneSiteConfig();
 
 export default defineConfig({
   site: 'https://kilnstudio.tools',
@@ -16,9 +17,6 @@ export default defineConfig({
   markdown: { shikiConfig: { theme: 'github-light', wrap: false, transformers: [workbenchContrast] } },
   vite: {
     plugins: [tailwindcss(), ...scene.plugins],
-    define: scene.define,
-    resolve: scene.resolve,
-    server: scene.server,
     build: { assetsInlineLimit: 0 },
   },
 });

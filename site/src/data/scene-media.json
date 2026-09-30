@@ -1,0 +1,28 @@
+{
+  "golden-gate": {
+    "poster": {
+      "src": "/media/scenes/golden-gate/g3/golden-gate-scene-drive.webp",
+      "width": 1440,
+      "height": 925,
+      "alt": "A blue sedan driving across the deck of the Golden Gate Bridge scene, with traffic ahead and a tower in the distance.",
+      "srcsetWebp": "/media/scenes/golden-gate/g3/golden-gate-scene-drive-320.webp 320w, /media/scenes/golden-gate/g3/golden-gate-scene-drive-480.webp 480w, /media/scenes/golden-gate/g3/golden-gate-scene-drive-672.webp 672w, /media/scenes/golden-gate/g3/golden-gate-scene-drive-768.webp 768w, /media/scenes/golden-gate/g3/golden-gate-scene-drive-1024.webp 1024w, /media/scenes/golden-gate/g3/golden-gate-scene-drive-1440.webp 1440w",
+      "srcsetAvif": "/media/scenes/golden-gate/g3/golden-gate-scene-drive-320.avif 320w, /media/scenes/golden-gate/g3/golden-gate-scene-drive-480.avif 480w, /media/scenes/golden-gate/g3/golden-gate-scene-drive-672.avif 672w, /media/scenes/golden-gate/g3/golden-gate-scene-drive-768.avif 768w, /media/scenes/golden-gate/g3/golden-gate-scene-drive-1024.avif 1024w, /media/scenes/golden-gate/g3/golden-gate-scene-drive-1440.avif 1440w",
+      "inputPath": "media/scenes/golden-gate/g3/golden-gate-scene-drive.png"
+    },
+    "capture": {
+      "tool": "scripts/capture-scene-poster.mjs",
+      "view": "drive",
+      "release": "g3",
+      "size": [
+        1440,
+        925
+      ],
+      "browser": "Chrome/154.0.8037.58",
+      "source": "The staged scene frame page with its controls hidden; nothing composited or retouched.",
+      "runtimeSha256": "01920a6d8ac117032d43c72f21b0321b2ca2043dfd9f3bf5aa24fd43c971820e",
+      "packJsonSha256": "5664e37e25e817961800709c6e734290b1711e375763644fa6e0e40c3a1461b2",
+      "pngBytes": 740592,
+      "pngSha256": "3857c191600273a505ab82dae23d45043a312485f49e2e89381b061a5b5f1e7e"
+    }
+  }
+}

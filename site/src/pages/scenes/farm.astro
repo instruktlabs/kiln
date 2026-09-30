@@ -1,5 +1,5 @@
 ---
-import { farmSceneIncluded } from "virtual:kiln-farm-scene";
+import { sceneRuntimes } from "virtual:kiln-scenes";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import SceneShell from "../../components/SceneShell.astro";
 import { farmScene } from "../../data/scenes";
@@ -11,8 +11,8 @@ import { PACKS_ENABLED } from "../../lib/config";
 
 <BaseLayout
   title="Shapes & Seasons Farm scene"
-  description={farmSceneIncluded
-    ? "A preview of the rebuilt interactive Farm, still being qualified. View its device notes and the current runnable scene download."
+  description={sceneRuntimes.farm
+    ? "A preview of the rebuilt interactive Farm, still being qualified. View its touch controls, device notes and the current runnable scene download."
     : "The interactive Farm is being rebuilt. View its status, device notes and current runnable scene download."}
   noindex
   nofollow
@@ -20,7 +20,7 @@ import { PACKS_ENABLED } from "../../lib/config";
     { label: "Scenes", href: "/scenes/" },
     { label: "Farm", href: "/scenes/farm/" },
   ]}
-  ogImage="/social/scenes.webp"
+  ogImage="/social/scenes.jpg"
   preloadImage={
     PACKS_ENABLED
       ? {
@@ -43,23 +43,28 @@ import { PACKS_ENABLED } from "../../lib/config";
         </a>
       )}
     </div>
-    <SceneShell />
-    <div class="mt-8 grid gap-6 border-t border-rule pt-6 md:grid-cols-2">
+    <SceneShell scene="farm" />
+    <div class="mt-8 grid gap-6 border-t border-rule pt-6 md:grid-cols-2 lg:grid-cols-3">
       <div>
-        <h2 class="text-subheading font-semibold">
-          Play on desktop, orbit on mobile.
-        </h2>
-        <p class="mt-3">
-          {farmScene.desktop} {farmScene.mobile}
-        </p>
+        <h2 class="text-subheading font-semibold">{farmScene.touch.heading}</h2>
+        <p class="mt-3">{farmScene.touch.intro}</p>
+        <ul class="mt-3 list-disc space-y-2 pl-5">
+          {farmScene.touch.controls.map((line) => <li>{line}</li>)}
+        </ul>
       </div>
       <div>
+        <h2 class="text-subheading font-semibold">
+          {farmScene.touch.qualityHeading}
+        </h2>
+        {farmScene.touch.quality.map((line) => <p class="mt-3">{line}</p>)}
+      </div>
+      <div class="md:col-span-2 lg:col-span-1">
         <h2 class="text-subheading font-semibold">
           Use the current scene download.
         </h2>
         <p class="mt-3">
-          {farmScene.exclusions} Extract the scene archive and run{" "}
-          <code>node scene/serve.mjs</code>.
+          {farmScene.desktop} {farmScene.mobile} {farmScene.exclusions} Extract
+          the scene archive and run <code>node scene/serve.mjs</code>.
         </p>
       </div>
     </div>

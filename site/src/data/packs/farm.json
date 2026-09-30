@@ -93,22 +93,7 @@
       "General vehicle physics",
       "Mobile walking and driving"
     ],
-    "command": "node scene/serve.mjs",
-    "pack": {
-      "schema": "kiln.scene-pack/1",
-      "id": "farm",
-      "release": "r34",
-      "three": "0.186.0",
-      "source": "packages/farm/dist/r34/standalone",
-      "base": "/scene-packs/farm/r34/",
-      "sealedFiles": 34,
-      "sealedBytes": 7326021,
-      "totalFiles": 37,
-      "totalBytes": 7360911,
-      "packJsonSha256": "e852bf1953a2737cc55f89077db45f5291c2e8218a6e9d03febfaf412fdc9045",
-      "sha256sumsSha256": "d1bff1b76a29e6ac012f846adc8ba499ecc2dcbd09f790444ec68b6ca0ecf405",
-      "noticesSha256": "4bf6f2bd1d803606c88eb540c8e207ddee4a76be4d12fe14d6110bb7505e4ebc"
-    }
+    "command": "node scene/serve.mjs"
   },
   "floorRevision": {
     "recordedAt": "2026-09-29T03:57:53.773Z",
@@ -251,16 +236,16 @@
         ]
       },
       "poster": {
-        "src": "/media/farm/r33/cutout/farmhouse.webp",
+        "src": "/media/rig/review-neutral-v1/farm/r34/farmhouse.webp",
         "width": 1024,
         "height": 1024,
         "alt": "Cream masonry house with a charcoal gabled roof, olive shutters and a timber porch.",
-        "srcsetWebp": "/media/farm/r33/cutout/farmhouse-320.webp 320w, /media/farm/r33/cutout/farmhouse-480.webp 480w, /media/farm/r33/cutout/farmhouse-672.webp 672w, /media/farm/r33/cutout/farmhouse-768.webp 768w, /media/farm/r33/cutout/farmhouse-1024.webp 1024w",
-        "srcsetAvif": "/media/farm/r33/cutout/farmhouse-320.avif 320w, /media/farm/r33/cutout/farmhouse-480.avif 480w, /media/farm/r33/cutout/farmhouse-672.avif 672w, /media/farm/r33/cutout/farmhouse-768.avif 768w, /media/farm/r33/cutout/farmhouse-1024.avif 1024w",
-        "inputPath": "media/farm/r33/cutout/farmhouse.webp",
-        "sourceRevisionId": "r_37f835d35a1040fc9f64d6f3b271eac5",
-        "exactRevision": false,
-        "revisionQualification": "Exterior view from r33, revision r_37f835d35a1040fc9f64d6f3b271eac5. Exterior geometry and bounds are unchanged; this view was not re-rendered for r34, so window tint may differ."
+        "srcsetWebp": "/media/rig/review-neutral-v1/farm/r34/farmhouse-320.webp 320w, /media/rig/review-neutral-v1/farm/r34/farmhouse-480.webp 480w, /media/rig/review-neutral-v1/farm/r34/farmhouse-672.webp 672w, /media/rig/review-neutral-v1/farm/r34/farmhouse-768.webp 768w, /media/rig/review-neutral-v1/farm/r34/farmhouse-1024.webp 1024w",
+        "srcsetAvif": "/media/rig/review-neutral-v1/farm/r34/farmhouse-320.avif 320w, /media/rig/review-neutral-v1/farm/r34/farmhouse-480.avif 480w, /media/rig/review-neutral-v1/farm/r34/farmhouse-672.avif 672w, /media/rig/review-neutral-v1/farm/r34/farmhouse-768.avif 768w, /media/rig/review-neutral-v1/farm/r34/farmhouse-1024.avif 1024w",
+        "inputPath": "media/rig/review-neutral-v1/farm/r34/farmhouse.png",
+        "sourceRevisionId": "r_01f97f5e943e4c2693b6db8596f3e353",
+        "exactRevision": true,
+        "rig": "review-neutral-v1"
       },
       "reviewImage": {
         "src": "/media/farm/r34/poster/farmhouse.webp",
@@ -461,13 +446,16 @@
         ]
       },
       "poster": {
-        "src": "/media/farm/r33/cutout/barn.webp",
+        "src": "/media/rig/review-neutral-v1/farm/r34/barn.webp",
         "width": 1024,
         "height": 1024,
         "alt": "Red timber barn with white door bracing, a grey roof and an open side shelter.",
-        "srcsetWebp": "/media/farm/r33/cutout/barn-320.webp 320w, /media/farm/r33/cutout/barn-480.webp 480w, /media/farm/r33/cutout/barn-672.webp 672w, /media/farm/r33/cutout/barn-768.webp 768w, /media/farm/r33/cutout/barn-1024.webp 1024w",
-        "srcsetAvif": "/media/farm/r33/cutout/barn-320.avif 320w, /media/farm/r33/cutout/barn-480.avif 480w, /media/farm/r33/cutout/barn-672.avif 672w, /media/farm/r33/cutout/barn-768.avif 768w, /media/farm/r33/cutout/barn-1024.avif 1024w",
-        "inputPath": "media/farm/r33/cutout/barn.webp"
+        "srcsetWebp": "/media/rig/review-neutral-v1/farm/r34/barn-320.webp 320w, /media/rig/review-neutral-v1/farm/r34/barn-480.webp 480w, /media/rig/review-neutral-v1/farm/r34/barn-672.webp 672w, /media/rig/review-neutral-v1/farm/r34/barn-768.webp 768w, /media/rig/review-neutral-v1/farm/r34/barn-1024.webp 1024w",
+        "srcsetAvif": "/media/rig/review-neutral-v1/farm/r34/barn-320.avif 320w, /media/rig/review-neutral-v1/farm/r34/barn-480.avif 480w, /media/rig/review-neutral-v1/farm/r34/barn-672.avif 672w, /media/rig/review-neutral-v1/farm/r34/barn-768.avif 768w, /media/rig/review-neutral-v1/farm/r34/barn-1024.avif 1024w",
+        "inputPath": "media/rig/review-neutral-v1/farm/r34/barn.png",
+        "sourceRevisionId": "r_c0234dc50e0443f4a8819cdf754b22da",
+        "exactRevision": true,
+        "rig": "review-neutral-v1"
       },
       "reviewImage": {
         "src": "/media/farm/r33/poster/barn.webp",
@@ -571,13 +559,16 @@
         ]
       },
       "poster": {
-        "src": "/media/farm/r33/cutout/windmill.webp",
+        "src": "/media/rig/review-neutral-v1/farm/r34/windmill.webp",
         "width": 1024,
         "height": 1024,
         "alt": "Open timber wind pump with a metal rotor, tail vane and four braced legs.",
-        "srcsetWebp": "/media/farm/r33/cutout/windmill-320.webp 320w, /media/farm/r33/cutout/windmill-480.webp 480w, /media/farm/r33/cutout/windmill-672.webp 672w, /media/farm/r33/cutout/windmill-768.webp 768w, /media/farm/r33/cutout/windmill-1024.webp 1024w",
-        "srcsetAvif": "/media/farm/r33/cutout/windmill-320.avif 320w, /media/farm/r33/cutout/windmill-480.avif 480w, /media/farm/r33/cutout/windmill-672.avif 672w, /media/farm/r33/cutout/windmill-768.avif 768w, /media/farm/r33/cutout/windmill-1024.avif 1024w",
-        "inputPath": "media/farm/r33/cutout/windmill.webp"
+        "srcsetWebp": "/media/rig/review-neutral-v1/farm/r34/windmill-320.webp 320w, /media/rig/review-neutral-v1/farm/r34/windmill-480.webp 480w, /media/rig/review-neutral-v1/farm/r34/windmill-672.webp 672w, /media/rig/review-neutral-v1/farm/r34/windmill-768.webp 768w, /media/rig/review-neutral-v1/farm/r34/windmill-1024.webp 1024w",
+        "srcsetAvif": "/media/rig/review-neutral-v1/farm/r34/windmill-320.avif 320w, /media/rig/review-neutral-v1/farm/r34/windmill-480.avif 480w, /media/rig/review-neutral-v1/farm/r34/windmill-672.avif 672w, /media/rig/review-neutral-v1/farm/r34/windmill-768.avif 768w, /media/rig/review-neutral-v1/farm/r34/windmill-1024.avif 1024w",
+        "inputPath": "media/rig/review-neutral-v1/farm/r34/windmill.png",
+        "sourceRevisionId": "r_ef9045311dd040258e0143345c171d6f",
+        "exactRevision": true,
+        "rig": "review-neutral-v1"
       },
       "reviewImage": {
         "src": "/media/farm/r33/poster/windmill.webp",
@@ -742,13 +733,16 @@
         ]
       },
       "poster": {
-        "src": "/media/farm/r33/cutout/watermill.webp",
+        "src": "/media/rig/review-neutral-v1/farm/r34/watermill.webp",
         "width": 1024,
         "height": 1024,
         "alt": "Pale masonry mill house with a gabled roof and an exposed timber waterwheel.",
-        "srcsetWebp": "/media/farm/r33/cutout/watermill-320.webp 320w, /media/farm/r33/cutout/watermill-480.webp 480w, /media/farm/r33/cutout/watermill-672.webp 672w, /media/farm/r33/cutout/watermill-768.webp 768w, /media/farm/r33/cutout/watermill-1024.webp 1024w",
-        "srcsetAvif": "/media/farm/r33/cutout/watermill-320.avif 320w, /media/farm/r33/cutout/watermill-480.avif 480w, /media/farm/r33/cutout/watermill-672.avif 672w, /media/farm/r33/cutout/watermill-768.avif 768w, /media/farm/r33/cutout/watermill-1024.avif 1024w",
-        "inputPath": "media/farm/r33/cutout/watermill.webp"
+        "srcsetWebp": "/media/rig/review-neutral-v1/farm/r34/watermill-320.webp 320w, /media/rig/review-neutral-v1/farm/r34/watermill-480.webp 480w, /media/rig/review-neutral-v1/farm/r34/watermill-672.webp 672w, /media/rig/review-neutral-v1/farm/r34/watermill-768.webp 768w, /media/rig/review-neutral-v1/farm/r34/watermill-1024.webp 1024w",
+        "srcsetAvif": "/media/rig/review-neutral-v1/farm/r34/watermill-320.avif 320w, /media/rig/review-neutral-v1/farm/r34/watermill-480.avif 480w, /media/rig/review-neutral-v1/farm/r34/watermill-672.avif 672w, /media/rig/review-neutral-v1/farm/r34/watermill-768.avif 768w, /media/rig/review-neutral-v1/farm/r34/watermill-1024.avif 1024w",
+        "inputPath": "media/rig/review-neutral-v1/farm/r34/watermill.png",
+        "sourceRevisionId": "r_f8ab38b03b5a4fb691b860d9fb076200",
+        "exactRevision": true,
+        "rig": "review-neutral-v1"
       },
       "reviewImage": {
         "src": "/media/farm/r33/poster/watermill.webp",
@@ -972,13 +966,16 @@
         ]
       },
       "poster": {
-        "src": "/media/farm/r33/cutout/fence-straight.webp",
+        "src": "/media/rig/review-neutral-v1/farm/r34/fence-straight.webp",
         "width": 1024,
         "height": 1024,
         "alt": "Two timber rails between pointed posts, with a two-metre post-centre span.",
-        "srcsetWebp": "/media/farm/r33/cutout/fence-straight-320.webp 320w, /media/farm/r33/cutout/fence-straight-480.webp 480w, /media/farm/r33/cutout/fence-straight-672.webp 672w, /media/farm/r33/cutout/fence-straight-768.webp 768w, /media/farm/r33/cutout/fence-straight-1024.webp 1024w",
-        "srcsetAvif": "/media/farm/r33/cutout/fence-straight-320.avif 320w, /media/farm/r33/cutout/fence-straight-480.avif 480w, /media/farm/r33/cutout/fence-straight-672.avif 672w, /media/farm/r33/cutout/fence-straight-768.avif 768w, /media/farm/r33/cutout/fence-straight-1024.avif 1024w",
-        "inputPath": "media/farm/r33/cutout/fence-straight.webp"
+        "srcsetWebp": "/media/rig/review-neutral-v1/farm/r34/fence-straight-320.webp 320w, /media/rig/review-neutral-v1/farm/r34/fence-straight-480.webp 480w, /media/rig/review-neutral-v1/farm/r34/fence-straight-672.webp 672w, /media/rig/review-neutral-v1/farm/r34/fence-straight-768.webp 768w, /media/rig/review-neutral-v1/farm/r34/fence-straight-1024.webp 1024w",
+        "srcsetAvif": "/media/rig/review-neutral-v1/farm/r34/fence-straight-320.avif 320w, /media/rig/review-neutral-v1/farm/r34/fence-straight-480.avif 480w, /media/rig/review-neutral-v1/farm/r34/fence-straight-672.avif 672w, /media/rig/review-neutral-v1/farm/r34/fence-straight-768.avif 768w, /media/rig/review-neutral-v1/farm/r34/fence-straight-1024.avif 1024w",
+        "inputPath": "media/rig/review-neutral-v1/farm/r34/fence-straight.png",
+        "sourceRevisionId": "r_05420c8a915d45e69257f61914d02ec3",
+        "exactRevision": true,
+        "rig": "review-neutral-v1"
       },
       "reviewImage": {
         "src": "/media/farm/r33/poster/fence-straight.webp",
@@ -1079,13 +1076,16 @@
         ]
       },
       "poster": {
-        "src": "/media/farm/r33/cutout/fence-corner.webp",
+        "src": "/media/rig/review-neutral-v1/farm/r34/fence-corner.webp",
         "width": 1024,
         "height": 1024,
         "alt": "Two matching timber fence runs joined at a right-angle corner post.",
-        "srcsetWebp": "/media/farm/r33/cutout/fence-corner-320.webp 320w, /media/farm/r33/cutout/fence-corner-480.webp 480w, /media/farm/r33/cutout/fence-corner-672.webp 672w, /media/farm/r33/cutout/fence-corner-768.webp 768w, /media/farm/r33/cutout/fence-corner-1024.webp 1024w",
-        "srcsetAvif": "/media/farm/r33/cutout/fence-corner-320.avif 320w, /media/farm/r33/cutout/fence-corner-480.avif 480w, /media/farm/r33/cutout/fence-corner-672.avif 672w, /media/farm/r33/cutout/fence-corner-768.avif 768w, /media/farm/r33/cutout/fence-corner-1024.avif 1024w",
-        "inputPath": "media/farm/r33/cutout/fence-corner.webp"
+        "srcsetWebp": "/media/rig/review-neutral-v1/farm/r34/fence-corner-320.webp 320w, /media/rig/review-neutral-v1/farm/r34/fence-corner-480.webp 480w, /media/rig/review-neutral-v1/farm/r34/fence-corner-672.webp 672w, /media/rig/review-neutral-v1/farm/r34/fence-corner-768.webp 768w, /media/rig/review-neutral-v1/farm/r34/fence-corner-1024.webp 1024w",
+        "srcsetAvif": "/media/rig/review-neutral-v1/farm/r34/fence-corner-320.avif 320w, /media/rig/review-neutral-v1/farm/r34/fence-corner-480.avif 480w, /media/rig/review-neutral-v1/farm/r34/fence-corner-672.avif 672w, /media/rig/review-neutral-v1/farm/r34/fence-corner-768.avif 768w, /media/rig/review-neutral-v1/farm/r34/fence-corner-1024.avif 1024w",
+        "inputPath": "media/rig/review-neutral-v1/farm/r34/fence-corner.png",
+        "sourceRevisionId": "r_071590a217854c5cbefb90275d3a6887",
+        "exactRevision": true,
+        "rig": "review-neutral-v1"
       },
       "reviewImage": {
         "src": "/media/farm/r33/poster/fence-corner.webp",
@@ -1192,13 +1192,16 @@
         ]
       },
       "poster": {
-        "src": "/media/farm/r33/cutout/fence-gate.webp",
+        "src": "/media/rig/review-neutral-v1/farm/r34/fence-gate.webp",
         "width": 1024,
         "height": 1024,
         "alt": "Braced timber gate with visible hinges and a three-metre usable opening.",
-        "srcsetWebp": "/media/farm/r33/cutout/fence-gate-320.webp 320w, /media/farm/r33/cutout/fence-gate-480.webp 480w, /media/farm/r33/cutout/fence-gate-672.webp 672w, /media/farm/r33/cutout/fence-gate-768.webp 768w, /media/farm/r33/cutout/fence-gate-1024.webp 1024w",
-        "srcsetAvif": "/media/farm/r33/cutout/fence-gate-320.avif 320w, /media/farm/r33/cutout/fence-gate-480.avif 480w, /media/farm/r33/cutout/fence-gate-672.avif 672w, /media/farm/r33/cutout/fence-gate-768.avif 768w, /media/farm/r33/cutout/fence-gate-1024.avif 1024w",
-        "inputPath": "media/farm/r33/cutout/fence-gate.webp"
+        "srcsetWebp": "/media/rig/review-neutral-v1/farm/r34/fence-gate-320.webp 320w, /media/rig/review-neutral-v1/farm/r34/fence-gate-480.webp 480w, /media/rig/review-neutral-v1/farm/r34/fence-gate-672.webp 672w, /media/rig/review-neutral-v1/farm/r34/fence-gate-768.webp 768w, /media/rig/review-neutral-v1/farm/r34/fence-gate-1024.webp 1024w",
+        "srcsetAvif": "/media/rig/review-neutral-v1/farm/r34/fence-gate-320.avif 320w, /media/rig/review-neutral-v1/farm/r34/fence-gate-480.avif 480w, /media/rig/review-neutral-v1/farm/r34/fence-gate-672.avif 672w, /media/rig/review-neutral-v1/farm/r34/fence-gate-768.avif 768w, /media/rig/review-neutral-v1/farm/r34/fence-gate-1024.avif 1024w",
+        "inputPath": "media/rig/review-neutral-v1/farm/r34/fence-gate.png",
+        "sourceRevisionId": "r_af2ceeafc87f44759b2af1448beb76b3",
+        "exactRevision": true,
+        "rig": "review-neutral-v1"
       },
       "reviewImage": {
         "src": "/media/farm/r33/poster/fence-gate.webp",
@@ -1321,13 +1324,16 @@
         ]
       },
       "poster": {
-        "src": "/media/farm/r33/cutout/tractor.webp",
+        "src": "/media/rig/review-neutral-v1/farm/r34/tractor.webp",
         "width": 1024,
         "height": 1024,
         "alt": "Orange open-seat tractor with rear wheel guards, treaded tyres and a front grille.",
-        "srcsetWebp": "/media/farm/r33/cutout/tractor-320.webp 320w, /media/farm/r33/cutout/tractor-480.webp 480w, /media/farm/r33/cutout/tractor-672.webp 672w, /media/farm/r33/cutout/tractor-768.webp 768w, /media/farm/r33/cutout/tractor-1024.webp 1024w",
-        "srcsetAvif": "/media/farm/r33/cutout/tractor-320.avif 320w, /media/farm/r33/cutout/tractor-480.avif 480w, /media/farm/r33/cutout/tractor-672.avif 672w, /media/farm/r33/cutout/tractor-768.avif 768w, /media/farm/r33/cutout/tractor-1024.avif 1024w",
-        "inputPath": "media/farm/r33/cutout/tractor.webp"
+        "srcsetWebp": "/media/rig/review-neutral-v1/farm/r34/tractor-320.webp 320w, /media/rig/review-neutral-v1/farm/r34/tractor-480.webp 480w, /media/rig/review-neutral-v1/farm/r34/tractor-672.webp 672w, /media/rig/review-neutral-v1/farm/r34/tractor-768.webp 768w, /media/rig/review-neutral-v1/farm/r34/tractor-1024.webp 1024w",
+        "srcsetAvif": "/media/rig/review-neutral-v1/farm/r34/tractor-320.avif 320w, /media/rig/review-neutral-v1/farm/r34/tractor-480.avif 480w, /media/rig/review-neutral-v1/farm/r34/tractor-672.avif 672w, /media/rig/review-neutral-v1/farm/r34/tractor-768.avif 768w, /media/rig/review-neutral-v1/farm/r34/tractor-1024.avif 1024w",
+        "inputPath": "media/rig/review-neutral-v1/farm/r34/tractor.png",
+        "sourceRevisionId": "r_ebeeb57adda343dd98d575e97ca24f92",
+        "exactRevision": true,
+        "rig": "review-neutral-v1"
       },
       "reviewImage": {
         "src": "/media/farm/r33/poster/tractor.webp",
@@ -1523,13 +1529,16 @@
         ]
       },
       "poster": {
-        "src": "/media/farm/r33/cutout/trailer.webp",
+        "src": "/media/rig/review-neutral-v1/farm/r34/trailer.webp",
         "width": 1024,
         "height": 1024,
         "alt": "Four-wheel timber farm trailer with low side boards and a drawbar.",
-        "srcsetWebp": "/media/farm/r33/cutout/trailer-320.webp 320w, /media/farm/r33/cutout/trailer-480.webp 480w, /media/farm/r33/cutout/trailer-672.webp 672w, /media/farm/r33/cutout/trailer-768.webp 768w, /media/farm/r33/cutout/trailer-1024.webp 1024w",
-        "srcsetAvif": "/media/farm/r33/cutout/trailer-320.avif 320w, /media/farm/r33/cutout/trailer-480.avif 480w, /media/farm/r33/cutout/trailer-672.avif 672w, /media/farm/r33/cutout/trailer-768.avif 768w, /media/farm/r33/cutout/trailer-1024.avif 1024w",
-        "inputPath": "media/farm/r33/cutout/trailer.webp"
+        "srcsetWebp": "/media/rig/review-neutral-v1/farm/r34/trailer-320.webp 320w, /media/rig/review-neutral-v1/farm/r34/trailer-480.webp 480w, /media/rig/review-neutral-v1/farm/r34/trailer-672.webp 672w, /media/rig/review-neutral-v1/farm/r34/trailer-768.webp 768w, /media/rig/review-neutral-v1/farm/r34/trailer-1024.webp 1024w",
+        "srcsetAvif": "/media/rig/review-neutral-v1/farm/r34/trailer-320.avif 320w, /media/rig/review-neutral-v1/farm/r34/trailer-480.avif 480w, /media/rig/review-neutral-v1/farm/r34/trailer-672.avif 672w, /media/rig/review-neutral-v1/farm/r34/trailer-768.avif 768w, /media/rig/review-neutral-v1/farm/r34/trailer-1024.avif 1024w",
+        "inputPath": "media/rig/review-neutral-v1/farm/r34/trailer.png",
+        "sourceRevisionId": "r_c72e516ce16949cfbddedbc9155efa06",
+        "exactRevision": true,
+        "rig": "review-neutral-v1"
       },
       "reviewImage": {
         "src": "/media/farm/r33/poster/trailer.webp",
@@ -1679,13 +1688,16 @@
         ]
       },
       "poster": {
-        "src": "/media/farm/r33/cutout/barrel.webp",
+        "src": "/media/rig/review-neutral-v1/farm/r34/barrel.webp",
         "width": 1024,
         "height": 1024,
         "alt": "Upright wooden barrel with a closed stave lid and three dark metal hoops.",
-        "srcsetWebp": "/media/farm/r33/cutout/barrel-320.webp 320w, /media/farm/r33/cutout/barrel-480.webp 480w, /media/farm/r33/cutout/barrel-672.webp 672w, /media/farm/r33/cutout/barrel-768.webp 768w, /media/farm/r33/cutout/barrel-1024.webp 1024w",
-        "srcsetAvif": "/media/farm/r33/cutout/barrel-320.avif 320w, /media/farm/r33/cutout/barrel-480.avif 480w, /media/farm/r33/cutout/barrel-672.avif 672w, /media/farm/r33/cutout/barrel-768.avif 768w, /media/farm/r33/cutout/barrel-1024.avif 1024w",
-        "inputPath": "media/farm/r33/cutout/barrel.webp"
+        "srcsetWebp": "/media/rig/review-neutral-v1/farm/r34/barrel-320.webp 320w, /media/rig/review-neutral-v1/farm/r34/barrel-480.webp 480w, /media/rig/review-neutral-v1/farm/r34/barrel-672.webp 672w, /media/rig/review-neutral-v1/farm/r34/barrel-768.webp 768w, /media/rig/review-neutral-v1/farm/r34/barrel-1024.webp 1024w",
+        "srcsetAvif": "/media/rig/review-neutral-v1/farm/r34/barrel-320.avif 320w, /media/rig/review-neutral-v1/farm/r34/barrel-480.avif 480w, /media/rig/review-neutral-v1/farm/r34/barrel-672.avif 672w, /media/rig/review-neutral-v1/farm/r34/barrel-768.avif 768w, /media/rig/review-neutral-v1/farm/r34/barrel-1024.avif 1024w",
+        "inputPath": "media/rig/review-neutral-v1/farm/r34/barrel.png",
+        "sourceRevisionId": "r_5cc08ab44fe3401cb1c4184a4d362bca",
+        "exactRevision": true,
+        "rig": "review-neutral-v1"
       },
       "reviewImage": {
         "src": "/media/farm/r33/poster/barrel.webp",
@@ -1785,13 +1797,16 @@
         ]
       },
       "poster": {
-        "src": "/media/farm/r33/cutout/hay-bale.webp",
+        "src": "/media/rig/review-neutral-v1/farm/r34/hay-bale.webp",
         "width": 1024,
         "height": 1024,
         "alt": "Rectangular golden hay bale held by two parallel twine bands.",
-        "srcsetWebp": "/media/farm/r33/cutout/hay-bale-320.webp 320w, /media/farm/r33/cutout/hay-bale-480.webp 480w, /media/farm/r33/cutout/hay-bale-672.webp 672w, /media/farm/r33/cutout/hay-bale-768.webp 768w, /media/farm/r33/cutout/hay-bale-1024.webp 1024w",
-        "srcsetAvif": "/media/farm/r33/cutout/hay-bale-320.avif 320w, /media/farm/r33/cutout/hay-bale-480.avif 480w, /media/farm/r33/cutout/hay-bale-672.avif 672w, /media/farm/r33/cutout/hay-bale-768.avif 768w, /media/farm/r33/cutout/hay-bale-1024.avif 1024w",
-        "inputPath": "media/farm/r33/cutout/hay-bale.webp"
+        "srcsetWebp": "/media/rig/review-neutral-v1/farm/r34/hay-bale-320.webp 320w, /media/rig/review-neutral-v1/farm/r34/hay-bale-480.webp 480w, /media/rig/review-neutral-v1/farm/r34/hay-bale-672.webp 672w, /media/rig/review-neutral-v1/farm/r34/hay-bale-768.webp 768w, /media/rig/review-neutral-v1/farm/r34/hay-bale-1024.webp 1024w",
+        "srcsetAvif": "/media/rig/review-neutral-v1/farm/r34/hay-bale-320.avif 320w, /media/rig/review-neutral-v1/farm/r34/hay-bale-480.avif 480w, /media/rig/review-neutral-v1/farm/r34/hay-bale-672.avif 672w, /media/rig/review-neutral-v1/farm/r34/hay-bale-768.avif 768w, /media/rig/review-neutral-v1/farm/r34/hay-bale-1024.avif 1024w",
+        "inputPath": "media/rig/review-neutral-v1/farm/r34/hay-bale.png",
+        "sourceRevisionId": "r_aed1744fc5a34d32bb98f9f9bcfd5d0a",
+        "exactRevision": true,
+        "rig": "review-neutral-v1"
       },
       "reviewImage": {
         "src": "/media/farm/r33/poster/hay-bale.webp",
@@ -1922,13 +1937,16 @@
         ]
       },
       "poster": {
-        "src": "/media/farm/r33/cutout/farmer.webp",
+        "src": "/media/rig/review-neutral-v1/farm/r34/farmer.webp",
         "width": 1024,
         "height": 1024,
         "alt": "Farmer in blue overalls and a brimmed hat, carrying a three-prong pitchfork.",
-        "srcsetWebp": "/media/farm/r33/cutout/farmer-320.webp 320w, /media/farm/r33/cutout/farmer-480.webp 480w, /media/farm/r33/cutout/farmer-672.webp 672w, /media/farm/r33/cutout/farmer-768.webp 768w, /media/farm/r33/cutout/farmer-1024.webp 1024w",
-        "srcsetAvif": "/media/farm/r33/cutout/farmer-320.avif 320w, /media/farm/r33/cutout/farmer-480.avif 480w, /media/farm/r33/cutout/farmer-672.avif 672w, /media/farm/r33/cutout/farmer-768.avif 768w, /media/farm/r33/cutout/farmer-1024.avif 1024w",
-        "inputPath": "media/farm/r33/cutout/farmer.webp"
+        "srcsetWebp": "/media/rig/review-neutral-v1/farm/r34/farmer-320.webp 320w, /media/rig/review-neutral-v1/farm/r34/farmer-480.webp 480w, /media/rig/review-neutral-v1/farm/r34/farmer-672.webp 672w, /media/rig/review-neutral-v1/farm/r34/farmer-768.webp 768w, /media/rig/review-neutral-v1/farm/r34/farmer-1024.webp 1024w",
+        "srcsetAvif": "/media/rig/review-neutral-v1/farm/r34/farmer-320.avif 320w, /media/rig/review-neutral-v1/farm/r34/farmer-480.avif 480w, /media/rig/review-neutral-v1/farm/r34/farmer-672.avif 672w, /media/rig/review-neutral-v1/farm/r34/farmer-768.avif 768w, /media/rig/review-neutral-v1/farm/r34/farmer-1024.avif 1024w",
+        "inputPath": "media/rig/review-neutral-v1/farm/r34/farmer.png",
+        "sourceRevisionId": "r_d0e65e4d47aa4449a07ed288a78d461b",
+        "exactRevision": true,
+        "rig": "review-neutral-v1"
       },
       "reviewImage": {
         "src": "/media/farm/r33/poster/farmer.webp",
@@ -2098,13 +2116,16 @@
         ]
       },
       "poster": {
-        "src": "/media/farm/r33/cutout/cow.webp",
+        "src": "/media/rig/review-neutral-v1/farm/r34/cow.webp",
         "width": 1024,
         "height": 1024,
         "alt": "Brown-and-cream cow with small horns, a pink muzzle and dark hooves.",
-        "srcsetWebp": "/media/farm/r33/cutout/cow-320.webp 320w, /media/farm/r33/cutout/cow-480.webp 480w, /media/farm/r33/cutout/cow-672.webp 672w, /media/farm/r33/cutout/cow-768.webp 768w, /media/farm/r33/cutout/cow-1024.webp 1024w",
-        "srcsetAvif": "/media/farm/r33/cutout/cow-320.avif 320w, /media/farm/r33/cutout/cow-480.avif 480w, /media/farm/r33/cutout/cow-672.avif 672w, /media/farm/r33/cutout/cow-768.avif 768w, /media/farm/r33/cutout/cow-1024.avif 1024w",
-        "inputPath": "media/farm/r33/cutout/cow.webp"
+        "srcsetWebp": "/media/rig/review-neutral-v1/farm/r34/cow-320.webp 320w, /media/rig/review-neutral-v1/farm/r34/cow-480.webp 480w, /media/rig/review-neutral-v1/farm/r34/cow-672.webp 672w, /media/rig/review-neutral-v1/farm/r34/cow-768.webp 768w, /media/rig/review-neutral-v1/farm/r34/cow-1024.webp 1024w",
+        "srcsetAvif": "/media/rig/review-neutral-v1/farm/r34/cow-320.avif 320w, /media/rig/review-neutral-v1/farm/r34/cow-480.avif 480w, /media/rig/review-neutral-v1/farm/r34/cow-672.avif 672w, /media/rig/review-neutral-v1/farm/r34/cow-768.avif 768w, /media/rig/review-neutral-v1/farm/r34/cow-1024.avif 1024w",
+        "inputPath": "media/rig/review-neutral-v1/farm/r34/cow.png",
+        "sourceRevisionId": "r_712f18b9a9d9450ab77bddd59bd1c515",
+        "exactRevision": true,
+        "rig": "review-neutral-v1"
       },
       "reviewImage": {
         "src": "/media/farm/r33/poster/cow.webp",
@@ -2375,13 +2396,16 @@
         ]
       },
       "poster": {
-        "src": "/media/farm/r33/cutout/sheep.webp",
+        "src": "/media/rig/review-neutral-v1/farm/r34/sheep.webp",
         "width": 1024,
         "height": 1024,
         "alt": "Sheep with a faceted white fleece, dark face and four dark legs.",
-        "srcsetWebp": "/media/farm/r33/cutout/sheep-320.webp 320w, /media/farm/r33/cutout/sheep-480.webp 480w, /media/farm/r33/cutout/sheep-672.webp 672w, /media/farm/r33/cutout/sheep-768.webp 768w, /media/farm/r33/cutout/sheep-1024.webp 1024w",
-        "srcsetAvif": "/media/farm/r33/cutout/sheep-320.avif 320w, /media/farm/r33/cutout/sheep-480.avif 480w, /media/farm/r33/cutout/sheep-672.avif 672w, /media/farm/r33/cutout/sheep-768.avif 768w, /media/farm/r33/cutout/sheep-1024.avif 1024w",
-        "inputPath": "media/farm/r33/cutout/sheep.webp"
+        "srcsetWebp": "/media/rig/review-neutral-v1/farm/r34/sheep-320.webp 320w, /media/rig/review-neutral-v1/farm/r34/sheep-480.webp 480w, /media/rig/review-neutral-v1/farm/r34/sheep-672.webp 672w, /media/rig/review-neutral-v1/farm/r34/sheep-768.webp 768w, /media/rig/review-neutral-v1/farm/r34/sheep-1024.webp 1024w",
+        "srcsetAvif": "/media/rig/review-neutral-v1/farm/r34/sheep-320.avif 320w, /media/rig/review-neutral-v1/farm/r34/sheep-480.avif 480w, /media/rig/review-neutral-v1/farm/r34/sheep-672.avif 672w, /media/rig/review-neutral-v1/farm/r34/sheep-768.avif 768w, /media/rig/review-neutral-v1/farm/r34/sheep-1024.avif 1024w",
+        "inputPath": "media/rig/review-neutral-v1/farm/r34/sheep.png",
+        "sourceRevisionId": "r_85d1e3a7c375412c9ba181f788753148",
+        "exactRevision": true,
+        "rig": "review-neutral-v1"
       },
       "reviewImage": {
         "src": "/media/farm/r33/poster/sheep.webp",
@@ -2496,13 +2520,16 @@
         ]
       },
       "poster": {
-        "src": "/media/farm/r33/cutout/chicken.webp",
+        "src": "/media/rig/review-neutral-v1/farm/r34/chicken.webp",
         "width": 1024,
         "height": 1024,
         "alt": "White hen with a red comb, yellow legs and raised tail feathers.",
-        "srcsetWebp": "/media/farm/r33/cutout/chicken-320.webp 320w, /media/farm/r33/cutout/chicken-480.webp 480w, /media/farm/r33/cutout/chicken-672.webp 672w, /media/farm/r33/cutout/chicken-768.webp 768w, /media/farm/r33/cutout/chicken-1024.webp 1024w",
-        "srcsetAvif": "/media/farm/r33/cutout/chicken-320.avif 320w, /media/farm/r33/cutout/chicken-480.avif 480w, /media/farm/r33/cutout/chicken-672.avif 672w, /media/farm/r33/cutout/chicken-768.avif 768w, /media/farm/r33/cutout/chicken-1024.avif 1024w",
-        "inputPath": "media/farm/r33/cutout/chicken.webp"
+        "srcsetWebp": "/media/rig/review-neutral-v1/farm/r34/chicken-320.webp 320w, /media/rig/review-neutral-v1/farm/r34/chicken-480.webp 480w, /media/rig/review-neutral-v1/farm/r34/chicken-672.webp 672w, /media/rig/review-neutral-v1/farm/r34/chicken-768.webp 768w, /media/rig/review-neutral-v1/farm/r34/chicken-1024.webp 1024w",
+        "srcsetAvif": "/media/rig/review-neutral-v1/farm/r34/chicken-320.avif 320w, /media/rig/review-neutral-v1/farm/r34/chicken-480.avif 480w, /media/rig/review-neutral-v1/farm/r34/chicken-672.avif 672w, /media/rig/review-neutral-v1/farm/r34/chicken-768.avif 768w, /media/rig/review-neutral-v1/farm/r34/chicken-1024.avif 1024w",
+        "inputPath": "media/rig/review-neutral-v1/farm/r34/chicken.png",
+        "sourceRevisionId": "r_b0b9b724b40e4d09a17c8dd8408fba62",
+        "exactRevision": true,
+        "rig": "review-neutral-v1"
       },
       "reviewImage": {
         "src": "/media/farm/r33/poster/chicken.webp",
@@ -2629,13 +2656,16 @@
         ]
       },
       "poster": {
-        "src": "/media/farm/r33/cutout/cabbage-stage-1.webp",
+        "src": "/media/rig/review-neutral-v1/farm/r34/cabbage-stage-1.webp",
         "width": 1024,
         "height": 1024,
         "alt": "Small cabbage seedling emerging from a low, faceted soil patch.",
-        "srcsetWebp": "/media/farm/r33/cutout/cabbage-stage-1-320.webp 320w, /media/farm/r33/cutout/cabbage-stage-1-480.webp 480w, /media/farm/r33/cutout/cabbage-stage-1-672.webp 672w, /media/farm/r33/cutout/cabbage-stage-1-768.webp 768w, /media/farm/r33/cutout/cabbage-stage-1-1024.webp 1024w",
-        "srcsetAvif": "/media/farm/r33/cutout/cabbage-stage-1-320.avif 320w, /media/farm/r33/cutout/cabbage-stage-1-480.avif 480w, /media/farm/r33/cutout/cabbage-stage-1-672.avif 672w, /media/farm/r33/cutout/cabbage-stage-1-768.avif 768w, /media/farm/r33/cutout/cabbage-stage-1-1024.avif 1024w",
-        "inputPath": "media/farm/r33/cutout/cabbage-stage-1.webp"
+        "srcsetWebp": "/media/rig/review-neutral-v1/farm/r34/cabbage-stage-1-320.webp 320w, /media/rig/review-neutral-v1/farm/r34/cabbage-stage-1-480.webp 480w, /media/rig/review-neutral-v1/farm/r34/cabbage-stage-1-672.webp 672w, /media/rig/review-neutral-v1/farm/r34/cabbage-stage-1-768.webp 768w, /media/rig/review-neutral-v1/farm/r34/cabbage-stage-1-1024.webp 1024w",
+        "srcsetAvif": "/media/rig/review-neutral-v1/farm/r34/cabbage-stage-1-320.avif 320w, /media/rig/review-neutral-v1/farm/r34/cabbage-stage-1-480.avif 480w, /media/rig/review-neutral-v1/farm/r34/cabbage-stage-1-672.avif 672w, /media/rig/review-neutral-v1/farm/r34/cabbage-stage-1-768.avif 768w, /media/rig/review-neutral-v1/farm/r34/cabbage-stage-1-1024.avif 1024w",
+        "inputPath": "media/rig/review-neutral-v1/farm/r34/cabbage-stage-1.png",
+        "sourceRevisionId": "r_b2a06d73eefb4ca7b0617685bc560ef2",
+        "exactRevision": true,
+        "rig": "review-neutral-v1"
       },
       "reviewImage": {
         "src": "/media/farm/r33/poster/cabbage-stage-1.webp",
@@ -2762,13 +2792,16 @@
         ]
       },
       "poster": {
-        "src": "/media/farm/r33/cutout/cabbage-stage-2.webp",
+        "src": "/media/rig/review-neutral-v1/farm/r34/cabbage-stage-2.webp",
         "width": 1024,
         "height": 1024,
         "alt": "Young cabbage with spreading pale-green leaves on a soil patch.",
-        "srcsetWebp": "/media/farm/r33/cutout/cabbage-stage-2-320.webp 320w, /media/farm/r33/cutout/cabbage-stage-2-480.webp 480w, /media/farm/r33/cutout/cabbage-stage-2-672.webp 672w, /media/farm/r33/cutout/cabbage-stage-2-768.webp 768w, /media/farm/r33/cutout/cabbage-stage-2-1024.webp 1024w",
-        "srcsetAvif": "/media/farm/r33/cutout/cabbage-stage-2-320.avif 320w, /media/farm/r33/cutout/cabbage-stage-2-480.avif 480w, /media/farm/r33/cutout/cabbage-stage-2-672.avif 672w, /media/farm/r33/cutout/cabbage-stage-2-768.avif 768w, /media/farm/r33/cutout/cabbage-stage-2-1024.avif 1024w",
-        "inputPath": "media/farm/r33/cutout/cabbage-stage-2.webp"
+        "srcsetWebp": "/media/rig/review-neutral-v1/farm/r34/cabbage-stage-2-320.webp 320w, /media/rig/review-neutral-v1/farm/r34/cabbage-stage-2-480.webp 480w, /media/rig/review-neutral-v1/farm/r34/cabbage-stage-2-672.webp 672w, /media/rig/review-neutral-v1/farm/r34/cabbage-stage-2-768.webp 768w, /media/rig/review-neutral-v1/farm/r34/cabbage-stage-2-1024.webp 1024w",
+        "srcsetAvif": "/media/rig/review-neutral-v1/farm/r34/cabbage-stage-2-320.avif 320w, /media/rig/review-neutral-v1/farm/r34/cabbage-stage-2-480.avif 480w, /media/rig/review-neutral-v1/farm/r34/cabbage-stage-2-672.avif 672w, /media/rig/review-neutral-v1/farm/r34/cabbage-stage-2-768.avif 768w, /media/rig/review-neutral-v1/farm/r34/cabbage-stage-2-1024.avif 1024w",
+        "inputPath": "media/rig/review-neutral-v1/farm/r34/cabbage-stage-2.png",
+        "sourceRevisionId": "r_d2cb82ca31fd4fe8883da87ece0e9a1d",
+        "exactRevision": true,
+        "rig": "review-neutral-v1"
       },
       "reviewImage": {
         "src": "/media/farm/r33/poster/cabbage-stage-2.webp",
@@ -2895,13 +2928,16 @@
         ]
       },
       "poster": {
-        "src": "/media/farm/r33/cutout/cabbage-stage-3.webp",
+        "src": "/media/rig/review-neutral-v1/farm/r34/cabbage-stage-3.webp",
         "width": 1024,
         "height": 1024,
         "alt": "Open cabbage rosette with layered green leaves and an upright centre.",
-        "srcsetWebp": "/media/farm/r33/cutout/cabbage-stage-3-320.webp 320w, /media/farm/r33/cutout/cabbage-stage-3-480.webp 480w, /media/farm/r33/cutout/cabbage-stage-3-672.webp 672w, /media/farm/r33/cutout/cabbage-stage-3-768.webp 768w, /media/farm/r33/cutout/cabbage-stage-3-1024.webp 1024w",
-        "srcsetAvif": "/media/farm/r33/cutout/cabbage-stage-3-320.avif 320w, /media/farm/r33/cutout/cabbage-stage-3-480.avif 480w, /media/farm/r33/cutout/cabbage-stage-3-672.avif 672w, /media/farm/r33/cutout/cabbage-stage-3-768.avif 768w, /media/farm/r33/cutout/cabbage-stage-3-1024.avif 1024w",
-        "inputPath": "media/farm/r33/cutout/cabbage-stage-3.webp"
+        "srcsetWebp": "/media/rig/review-neutral-v1/farm/r34/cabbage-stage-3-320.webp 320w, /media/rig/review-neutral-v1/farm/r34/cabbage-stage-3-480.webp 480w, /media/rig/review-neutral-v1/farm/r34/cabbage-stage-3-672.webp 672w, /media/rig/review-neutral-v1/farm/r34/cabbage-stage-3-768.webp 768w, /media/rig/review-neutral-v1/farm/r34/cabbage-stage-3-1024.webp 1024w",
+        "srcsetAvif": "/media/rig/review-neutral-v1/farm/r34/cabbage-stage-3-320.avif 320w, /media/rig/review-neutral-v1/farm/r34/cabbage-stage-3-480.avif 480w, /media/rig/review-neutral-v1/farm/r34/cabbage-stage-3-672.avif 672w, /media/rig/review-neutral-v1/farm/r34/cabbage-stage-3-768.avif 768w, /media/rig/review-neutral-v1/farm/r34/cabbage-stage-3-1024.avif 1024w",
+        "inputPath": "media/rig/review-neutral-v1/farm/r34/cabbage-stage-3.png",
+        "sourceRevisionId": "r_8a446c3c2f514e358f8f897c420ecd0a",
+        "exactRevision": true,
+        "rig": "review-neutral-v1"
       },
       "reviewImage": {
         "src": "/media/farm/r33/poster/cabbage-stage-3.webp",
@@ -3029,13 +3065,16 @@
         ]
       },
       "poster": {
-        "src": "/media/farm/r33/cutout/cabbage-stage-4.webp",
+        "src": "/media/rig/review-neutral-v1/farm/r34/cabbage-stage-4.webp",
         "width": 1024,
         "height": 1024,
         "alt": "Mature pale-green cabbage head held by broad outer leaves.",
-        "srcsetWebp": "/media/farm/r33/cutout/cabbage-stage-4-320.webp 320w, /media/farm/r33/cutout/cabbage-stage-4-480.webp 480w, /media/farm/r33/cutout/cabbage-stage-4-672.webp 672w, /media/farm/r33/cutout/cabbage-stage-4-768.webp 768w, /media/farm/r33/cutout/cabbage-stage-4-1024.webp 1024w",
-        "srcsetAvif": "/media/farm/r33/cutout/cabbage-stage-4-320.avif 320w, /media/farm/r33/cutout/cabbage-stage-4-480.avif 480w, /media/farm/r33/cutout/cabbage-stage-4-672.avif 672w, /media/farm/r33/cutout/cabbage-stage-4-768.avif 768w, /media/farm/r33/cutout/cabbage-stage-4-1024.avif 1024w",
-        "inputPath": "media/farm/r33/cutout/cabbage-stage-4.webp"
+        "srcsetWebp": "/media/rig/review-neutral-v1/farm/r34/cabbage-stage-4-320.webp 320w, /media/rig/review-neutral-v1/farm/r34/cabbage-stage-4-480.webp 480w, /media/rig/review-neutral-v1/farm/r34/cabbage-stage-4-672.webp 672w, /media/rig/review-neutral-v1/farm/r34/cabbage-stage-4-768.webp 768w, /media/rig/review-neutral-v1/farm/r34/cabbage-stage-4-1024.webp 1024w",
+        "srcsetAvif": "/media/rig/review-neutral-v1/farm/r34/cabbage-stage-4-320.avif 320w, /media/rig/review-neutral-v1/farm/r34/cabbage-stage-4-480.avif 480w, /media/rig/review-neutral-v1/farm/r34/cabbage-stage-4-672.avif 672w, /media/rig/review-neutral-v1/farm/r34/cabbage-stage-4-768.avif 768w, /media/rig/review-neutral-v1/farm/r34/cabbage-stage-4-1024.avif 1024w",
+        "inputPath": "media/rig/review-neutral-v1/farm/r34/cabbage-stage-4.png",
+        "sourceRevisionId": "r_9bf8450fc5294c9d9dca1960625be36a",
+        "exactRevision": true,
+        "rig": "review-neutral-v1"
       },
       "reviewImage": {
         "src": "/media/farm/r33/poster/cabbage-stage-4.webp",
@@ -3187,13 +3226,16 @@
         ]
       },
       "poster": {
-        "src": "/media/farm/r33/cutout/wheat.webp",
+        "src": "/media/rig/review-neutral-v1/farm/r34/wheat.webp",
         "width": 1024,
         "height": 1024,
         "alt": "Cluster of golden wheat stems with narrow leaves and upright seed heads.",
-        "srcsetWebp": "/media/farm/r33/cutout/wheat-320.webp 320w, /media/farm/r33/cutout/wheat-480.webp 480w, /media/farm/r33/cutout/wheat-672.webp 672w, /media/farm/r33/cutout/wheat-768.webp 768w, /media/farm/r33/cutout/wheat-1024.webp 1024w",
-        "srcsetAvif": "/media/farm/r33/cutout/wheat-320.avif 320w, /media/farm/r33/cutout/wheat-480.avif 480w, /media/farm/r33/cutout/wheat-672.avif 672w, /media/farm/r33/cutout/wheat-768.avif 768w, /media/farm/r33/cutout/wheat-1024.avif 1024w",
-        "inputPath": "media/farm/r33/cutout/wheat.webp"
+        "srcsetWebp": "/media/rig/review-neutral-v1/farm/r34/wheat-320.webp 320w, /media/rig/review-neutral-v1/farm/r34/wheat-480.webp 480w, /media/rig/review-neutral-v1/farm/r34/wheat-672.webp 672w, /media/rig/review-neutral-v1/farm/r34/wheat-768.webp 768w, /media/rig/review-neutral-v1/farm/r34/wheat-1024.webp 1024w",
+        "srcsetAvif": "/media/rig/review-neutral-v1/farm/r34/wheat-320.avif 320w, /media/rig/review-neutral-v1/farm/r34/wheat-480.avif 480w, /media/rig/review-neutral-v1/farm/r34/wheat-672.avif 672w, /media/rig/review-neutral-v1/farm/r34/wheat-768.avif 768w, /media/rig/review-neutral-v1/farm/r34/wheat-1024.avif 1024w",
+        "inputPath": "media/rig/review-neutral-v1/farm/r34/wheat.png",
+        "sourceRevisionId": "r_254f9bdf4d004a7796033d5fe348a3e3",
+        "exactRevision": true,
+        "rig": "review-neutral-v1"
       },
       "reviewImage": {
         "src": "/media/farm/r33/poster/wheat.webp",
@@ -3322,13 +3364,16 @@
         ]
       },
       "poster": {
-        "src": "/media/farm/r33/cutout/pumpkin-plant.webp",
+        "src": "/media/rig/review-neutral-v1/farm/r34/pumpkin-plant.webp",
         "width": 1024,
         "height": 1024,
         "alt": "Low pumpkin vine with green leaves and two faceted orange fruits.",
-        "srcsetWebp": "/media/farm/r33/cutout/pumpkin-plant-320.webp 320w, /media/farm/r33/cutout/pumpkin-plant-480.webp 480w, /media/farm/r33/cutout/pumpkin-plant-672.webp 672w, /media/farm/r33/cutout/pumpkin-plant-768.webp 768w, /media/farm/r33/cutout/pumpkin-plant-1024.webp 1024w",
-        "srcsetAvif": "/media/farm/r33/cutout/pumpkin-plant-320.avif 320w, /media/farm/r33/cutout/pumpkin-plant-480.avif 480w, /media/farm/r33/cutout/pumpkin-plant-672.avif 672w, /media/farm/r33/cutout/pumpkin-plant-768.avif 768w, /media/farm/r33/cutout/pumpkin-plant-1024.avif 1024w",
-        "inputPath": "media/farm/r33/cutout/pumpkin-plant.webp"
+        "srcsetWebp": "/media/rig/review-neutral-v1/farm/r34/pumpkin-plant-320.webp 320w, /media/rig/review-neutral-v1/farm/r34/pumpkin-plant-480.webp 480w, /media/rig/review-neutral-v1/farm/r34/pumpkin-plant-672.webp 672w, /media/rig/review-neutral-v1/farm/r34/pumpkin-plant-768.webp 768w, /media/rig/review-neutral-v1/farm/r34/pumpkin-plant-1024.webp 1024w",
+        "srcsetAvif": "/media/rig/review-neutral-v1/farm/r34/pumpkin-plant-320.avif 320w, /media/rig/review-neutral-v1/farm/r34/pumpkin-plant-480.avif 480w, /media/rig/review-neutral-v1/farm/r34/pumpkin-plant-672.avif 672w, /media/rig/review-neutral-v1/farm/r34/pumpkin-plant-768.avif 768w, /media/rig/review-neutral-v1/farm/r34/pumpkin-plant-1024.avif 1024w",
+        "inputPath": "media/rig/review-neutral-v1/farm/r34/pumpkin-plant.png",
+        "sourceRevisionId": "r_38897e8a2b944c38a4f4428ab39f4a2b",
+        "exactRevision": true,
+        "rig": "review-neutral-v1"
       },
       "reviewImage": {
         "src": "/media/farm/r33/poster/pumpkin-plant.webp",
@@ -3480,13 +3525,16 @@
         ]
       },
       "poster": {
-        "src": "/media/farm/r33/cutout/faceted-tree.webp",
+        "src": "/media/rig/review-neutral-v1/farm/r34/faceted-tree.webp",
         "width": 1024,
         "height": 1024,
         "alt": "Small deciduous tree with a branching brown trunk and a faceted green crown.",
-        "srcsetWebp": "/media/farm/r33/cutout/faceted-tree-320.webp 320w, /media/farm/r33/cutout/faceted-tree-480.webp 480w, /media/farm/r33/cutout/faceted-tree-672.webp 672w, /media/farm/r33/cutout/faceted-tree-768.webp 768w, /media/farm/r33/cutout/faceted-tree-1024.webp 1024w",
-        "srcsetAvif": "/media/farm/r33/cutout/faceted-tree-320.avif 320w, /media/farm/r33/cutout/faceted-tree-480.avif 480w, /media/farm/r33/cutout/faceted-tree-672.avif 672w, /media/farm/r33/cutout/faceted-tree-768.avif 768w, /media/farm/r33/cutout/faceted-tree-1024.avif 1024w",
-        "inputPath": "media/farm/r33/cutout/faceted-tree.webp"
+        "srcsetWebp": "/media/rig/review-neutral-v1/farm/r34/faceted-tree-320.webp 320w, /media/rig/review-neutral-v1/farm/r34/faceted-tree-480.webp 480w, /media/rig/review-neutral-v1/farm/r34/faceted-tree-672.webp 672w, /media/rig/review-neutral-v1/farm/r34/faceted-tree-768.webp 768w, /media/rig/review-neutral-v1/farm/r34/faceted-tree-1024.webp 1024w",
+        "srcsetAvif": "/media/rig/review-neutral-v1/farm/r34/faceted-tree-320.avif 320w, /media/rig/review-neutral-v1/farm/r34/faceted-tree-480.avif 480w, /media/rig/review-neutral-v1/farm/r34/faceted-tree-672.avif 672w, /media/rig/review-neutral-v1/farm/r34/faceted-tree-768.avif 768w, /media/rig/review-neutral-v1/farm/r34/faceted-tree-1024.avif 1024w",
+        "inputPath": "media/rig/review-neutral-v1/farm/r34/faceted-tree.png",
+        "sourceRevisionId": "r_6d5dd832c32b4d8682942980d02cde1b",
+        "exactRevision": true,
+        "rig": "review-neutral-v1"
       },
       "reviewImage": {
         "src": "/media/farm/r33/poster/faceted-tree.webp",
@@ -3585,13 +3633,16 @@
         ]
       },
       "poster": {
-        "src": "/media/farm/r33/cutout/rock-cluster.webp",
+        "src": "/media/rig/review-neutral-v1/farm/r34/rock-cluster.webp",
         "width": 1024,
         "height": 1024,
         "alt": "Group of low, pale faceted rocks with a larger central stone.",
-        "srcsetWebp": "/media/farm/r33/cutout/rock-cluster-320.webp 320w, /media/farm/r33/cutout/rock-cluster-480.webp 480w, /media/farm/r33/cutout/rock-cluster-672.webp 672w, /media/farm/r33/cutout/rock-cluster-768.webp 768w, /media/farm/r33/cutout/rock-cluster-1024.webp 1024w",
-        "srcsetAvif": "/media/farm/r33/cutout/rock-cluster-320.avif 320w, /media/farm/r33/cutout/rock-cluster-480.avif 480w, /media/farm/r33/cutout/rock-cluster-672.avif 672w, /media/farm/r33/cutout/rock-cluster-768.avif 768w, /media/farm/r33/cutout/rock-cluster-1024.avif 1024w",
-        "inputPath": "media/farm/r33/cutout/rock-cluster.webp"
+        "srcsetWebp": "/media/rig/review-neutral-v1/farm/r34/rock-cluster-320.webp 320w, /media/rig/review-neutral-v1/farm/r34/rock-cluster-480.webp 480w, /media/rig/review-neutral-v1/farm/r34/rock-cluster-672.webp 672w, /media/rig/review-neutral-v1/farm/r34/rock-cluster-768.webp 768w, /media/rig/review-neutral-v1/farm/r34/rock-cluster-1024.webp 1024w",
+        "srcsetAvif": "/media/rig/review-neutral-v1/farm/r34/rock-cluster-320.avif 320w, /media/rig/review-neutral-v1/farm/r34/rock-cluster-480.avif 480w, /media/rig/review-neutral-v1/farm/r34/rock-cluster-672.avif 672w, /media/rig/review-neutral-v1/farm/r34/rock-cluster-768.avif 768w, /media/rig/review-neutral-v1/farm/r34/rock-cluster-1024.avif 1024w",
+        "inputPath": "media/rig/review-neutral-v1/farm/r34/rock-cluster.png",
+        "sourceRevisionId": "r_37cde8b1f8d344aa8f6142aeab61a62e",
+        "exactRevision": true,
+        "rig": "review-neutral-v1"
       },
       "reviewImage": {
         "src": "/media/farm/r33/poster/rock-cluster.webp",

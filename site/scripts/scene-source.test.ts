@@ -1,8 +1,8 @@
 import { afterEach, describe, expect, test } from 'bun:test';
 import { mkdir, mkdtemp, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
-import { join, resolve } from 'node:path';
-import { SCENE_DEDUPE, duplicatePackages, exportAliases, resolveScenesDir, sceneSourceConfig } from './scene-source.mjs';
+import { join } from 'node:path';
+import { SCENE_DEDUPE, SCENE_FLAG_MODULE, THREE_FACADE, duplicatePackages, exportAliases, packageRoots, resolveScenesDir, sceneSiteConfig, stagedScenes, threeFacade } from './scene-source.mjs';
 
 const directories: string[] = [];
 afterEach(async () => {
@@ -15,7 +15,7 @@ const temp = async () => {
 };
 const json = (path: string, value: unknown) => mkdir(join(path, '..'), { recursive: true }).then(() => writeFile(path, JSON.stringify(value)));
 
-/** A workspace with the two source packages the site consumes. */
+/** A workspace with the two source packages the site builds into the Farm runtime. */
 async function workspace(root: string) {
   await json(join(root, 'packages/farm/package.json'), { exports: { '.': './src/index.ts' } });
   await json(join(root, 'packages/scene-kit/package.json'), {
@@ -62,6 +62,11 @@ describe('source aliases', () => {
     await json(join(root, 'package.json'), { exports: { './*': './src/*.ts' } });
     expect(() => exportAliases(root, '@kiln-scenes/x')).toThrow('Unsupported');
   });
+
+  test('bare three resolves to the scene kit facade, the way the kit builds a public scene', () => {
+    expect(THREE_FACADE).toBe('packages/scene-kit/src/renderer/three-runtime.ts');
+    expect(threeFacade('C:\\scenes')).toBe('C:/scenes/packages/scene-kit/src/renderer/three-runtime.ts');
+  });
 });
 
 describe('one copy of the shared packages', () => {
@@ -84,37 +89,64 @@ describe('one copy of the shared packages', () => {
     expect(duplicatePackages(ids).find((entry) => entry.name === 'three')?.copies).toHaveLength(2);
     expect(SCENE_DEDUPE).toEqual(['three', 'react', 'react-dom', '@react-three/fiber']);
   });
+
+  test('lists the package roots a bundle used, one entry per guarded package', () => {
+    const roots = packageRoots([at('three/build/a.js'), at('three/build/b.js'), at('react/index.js')]);
+    expect([...roots.get('three') ?? []]).toEqual(['C:/site/node_modules/three']);
+    expect([...roots.get('react') ?? []]).toEqual(['C:/site/node_modules/react']);
+    expect(roots.get('react-dom')?.size).toBe(0);
+  });
 });
 
-describe('site build settings', () => {
-  async function site(root: string, staged: boolean) {
-    await json(join(root, 'src/data/packs/farm.json'), { scene: { pack: { base: '/scene-packs/farm/r34/' } } });
-    if (staged) await json(join(root, 'public/scene-packs/farm/r34/pack.json'), {});
+describe('staged scenes', () => {
+  const record = { base: '/scene-packs/farm/r34/' };
+  const runtime = { kind: 'module', url: '/scene-runtime/farm/farm-abc.js', file: 'farm-abc.js', bytes: 10, gzipBytes: 5, sha256: 'a'.repeat(64) };
+
+  /** A site directory holding the catalog and whichever halves of each scene are staged. */
+  async function site(root: string, { farmRuntime, farmPack, goldenGate }: { farmRuntime: boolean; farmPack: boolean; goldenGate?: boolean }) {
+    await json(join(root, 'src/data/scene-packs.json'), { farm: record, 'golden-gate': { base: '/scene-packs/golden-gate/g3/' } });
+    if (farmRuntime) await json(join(root, 'public/scene-runtime/farm/runtime.json'), runtime);
+    if (farmPack) await json(join(root, 'public/scene-packs/farm/r34/pack.json'), {});
+    if (goldenGate) {
+      await json(join(root, 'public/scene-runtime/golden-gate/runtime.json'), { ...runtime, kind: 'frame', url: '/scene-runtime/golden-gate/frame.html' });
+      await json(join(root, 'public/scene-packs/golden-gate/g3/pack.json'), {});
+    }
     return root;
   }
 
-  test('consumes the workspace as source when a pack is staged', async () => {
+  test('a scene is included only when both its runtime and its pack are staged', async () => {
     const root = await temp();
-    const scenes = await workspace(join(root, 'scenes'));
-    const config = sceneSourceConfig({ site: await site(join(root, 'site'), true), env: { KILN_SITE_SCENES_DIR: scenes } });
-    expect(config.included).toBe(true);
-    expect(config.resolve.dedupe).toEqual(SCENE_DEDUPE);
-    expect(config.define).toEqual({ 'import.meta.env.KILN_DEV': false, 'import.meta.env.KILN_TEST': false });
-    expect(config.server.fs.allow).toEqual([join(root, 'site'), scenes]);
-    const specifiers = ['@kiln-scenes/farm', '@kiln-scenes/scene-kit', '@kiln-scenes/scene-kit/instancing'];
-    for (const specifier of specifiers) expect(config.resolve.alias.some((alias: { find: RegExp }) => alias.find.test(specifier))).toBe(true);
-    expect(config.plugins.map((plugin: { name: string }) => plugin.name)).toContain('kiln-scene-single-copy');
+    const both = stagedScenes(await site(join(root, 'both'), { farmRuntime: true, farmPack: true }));
+    expect(both.farm).toEqual({ kind: 'module', url: runtime.url, file: runtime.file, bytes: 10, gzipBytes: 5, sha256: runtime.sha256 });
+    expect(both['golden-gate']).toBeNull();
+    expect(stagedScenes(await site(join(root, 'runtime-only'), { farmRuntime: true, farmPack: false })).farm).toBeNull();
+    expect(stagedScenes(await site(join(root, 'pack-only'), { farmRuntime: false, farmPack: true })).farm).toBeNull();
+    expect(stagedScenes(join(root, 'empty'))).toEqual({ farm: null, 'golden-gate': null });
   });
 
-  test('falls back to the site stand-in without a workspace or without a staged pack', async () => {
+  test('a frame-kind scene is served through its frame page', async () => {
     const root = await temp();
-    const scenes = await workspace(join(root, 'scenes'));
-    for (const [env, staged] of [[{ KILN_SITE_SCENES_DIR: 'off' }, true], [{ KILN_SITE_SCENES_DIR: scenes }, false]] as const) {
-      const directory = await site(join(root, `site-${String(staged)}-${env.KILN_SITE_SCENES_DIR === 'off'}`), staged);
-      const config = sceneSourceConfig({ site: directory, env });
-      expect(config.included).toBe(false);
-      expect(config.resolve.alias).toEqual([{ find: /^@kiln-scenes\/farm$/, replacement: resolve(directory, 'src/scenes/farm/unavailable.tsx').replaceAll('\\', '/') }]);
-      expect(config.plugins.map((plugin: { name: string }) => plugin.name)).not.toContain('kiln-scene-single-copy');
-    }
+    const scenes = stagedScenes(await site(root, { farmRuntime: true, farmPack: true, goldenGate: true }));
+    expect(scenes['golden-gate']).toMatchObject({ kind: 'frame', url: '/scene-runtime/golden-gate/frame.html' });
+  });
+
+  test('the pages read what is staged through one virtual module', async () => {
+    const root = await temp();
+    const config = sceneSiteConfig({ site: await site(root, { farmRuntime: true, farmPack: true }) });
+    expect(config.included).toEqual(['farm']);
+    const flag = config.plugins.find((plugin: { name: string }) => plugin.name === 'kiln-scene-flag');
+    expect(SCENE_FLAG_MODULE).toBe('virtual:kiln-scenes');
+    const id = flag.resolveId(SCENE_FLAG_MODULE);
+    expect(id).toBe(`\0${SCENE_FLAG_MODULE}`);
+    expect(flag.resolveId('other')).toBeUndefined();
+    const source = flag.load(id) as string;
+    expect(JSON.parse(source.replace('export const sceneRuntimes = ', '').replace(/;$/, ''))).toEqual({ farm: config.scenes.farm, 'golden-gate': null });
+    expect(flag.load('other')).toBeUndefined();
+  });
+
+  test('the site graph holds no scene code: no alias, no dedupe, no scene packages', async () => {
+    const root = await temp();
+    const config = sceneSiteConfig({ site: await site(root, { farmRuntime: true, farmPack: true }) }) as Record<string, unknown>;
+    expect(Object.keys(config).sort()).toEqual(['included', 'plugins', 'scenes']);
   });
 });

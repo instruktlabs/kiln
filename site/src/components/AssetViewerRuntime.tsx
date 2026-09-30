@@ -3,7 +3,16 @@ import { ContactShadows, Grid, OrbitControls, useGLTF, useProgress } from '@reac
 import { Component, Suspense, useEffect, useMemo, useState, type ReactNode } from 'react';
 import { createRoot } from 'react-dom/client';
 import * as THREE from 'three';
-import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js';
+import { REVIEW_RIG } from '../lib/review-rig';
+import {
+  DEFAULT_TONE_MAPPING,
+  TONE_MAPPINGS,
+  type ToneMappingId,
+  applyReviewRig,
+  applyToneMapping,
+  reviewToneMapping,
+  toneMappingChoice,
+} from '../lib/review-rig-three';
 import { AZIMUTH, frameAsset, orbitDirection } from './viewer-framing';
 
 interface OrbitLike {
@@ -58,30 +67,25 @@ function surfacePoints(root: THREE.Object3D, budget = 4000): THREE.Vector3[] {
 }
 
 /**
- * Image-based lighting from three's own room scene, rather than an HDR fetched
- * from a CDN. Half of these assets are painted metal and every one of them is
- * lit only by what the environment gives it, so a scene with no environment map
- * shows brushed steel as flat grey and makes the engine look worse than it is.
- * Generating the map in the browser costs a few milliseconds once and nothing
- * after that, and it removes a network dependency from the one thing on the page
- * that has to work.
+ * The Kiln review lighting rig, applied to the scene: the room environment at the rig's intensity, a hemisphere
+ * light and key, fill and rim lights fixed in the world, no shadows, the rig's exposure and tone mapping and its
+ * neutral backdrop. These are the values the engine's render service lights every material-review capture with,
+ * and the ones the site's posters were rendered under, so an asset looks the same in its poster and here. Half of
+ * these assets are painted metal and every one is lit only by what the environment gives it, so the environment
+ * is generated in the browser from three's own room scene (a few milliseconds, once) rather than fetched.
  */
-function Ibl() {
+function ReviewLighting() {
   const gl = useThree((s) => s.gl);
   const scene = useThree((s) => s.scene);
-  useEffect(() => {
-    const pmrem = new THREE.PMREMGenerator(gl);
-    const room = new RoomEnvironment();
-    const target = pmrem.fromScene(room, 0.04);
-    scene.environment = target.texture;
-    scene.environmentIntensity = 0.6;
-    return () => {
-      scene.environment = null;
-      target.dispose();
-      room.dispose();
-      pmrem.dispose();
-    };
-  }, [gl, scene]);
+  useEffect(() => applyReviewRig(gl, scene), [gl, scene]);
+  return null;
+}
+
+/** The tone mapping the visitor chose: the rig's own until they pick another (see `TONE_MAPPINGS`). */
+function ToneMapping({ id }: { id: ToneMappingId }) {
+  const gl = useThree((s) => s.gl);
+  const scene = useThree((s) => s.scene);
+  useEffect(() => applyToneMapping(gl, scene, id), [gl, scene, id]);
   return null;
 }
 
@@ -302,6 +306,7 @@ function Viewer({ name, modelUrl, onError }: ViewerProps) {
   const [clips, setClips] = useState<{ id: string; name: string }[]>([]);
   const [clipIndex, setClipIndex] = useState(-1);
   const [paused, setPaused] = useState(false);
+  const [toneMapping, setToneMapping] = useState<ToneMappingId>(DEFAULT_TONE_MAPPING);
   const [command, setCommand] = useState<CameraCommand>();
   const onReady = useMemo(() => () => setReady(true), []);
   const move = (action: CameraCommand['action']) =>
@@ -316,16 +321,14 @@ function Viewer({ name, modelUrl, onError }: ViewerProps) {
           gl={{
             antialias: true,
             alpha: true,
-            toneMapping: THREE.NeutralToneMapping,
-            toneMappingExposure: 1,
+            toneMapping: reviewToneMapping,
+            toneMappingExposure: REVIEW_RIG.exposure,
           }}
           camera={{ fov: 34, position: [6, 3, 5] }}
         >
           <ContextMonitor onError={onError} />
-          <Ibl />
-          <directionalLight position={[radius * 2, radius * 2.6, radius * 1.4]} intensity={1.25} />
-          <directionalLight position={[-radius * 1.8, radius, -radius * 1.6]} intensity={0.35} />
-          <hemisphereLight args={['#cfd8dd', '#2a221c', 0.25]} />
+          <ReviewLighting />
+          <ToneMapping id={toneMapping} />
           <OrbitControls
             makeDefault
             autoRotate={spin}
@@ -359,9 +362,9 @@ function Viewer({ name, modelUrl, onError }: ViewerProps) {
             <Grid
               args={[radius * 10, radius * 10]}
               cellSize={radius / 5}
-              cellColor="#c9c2b5"
+              cellColor="#9ba4b0"
               sectionSize={radius}
-              sectionColor="#625e55"
+              sectionColor="#7b8492"
               fadeDistance={radius * 9}
               fadeStrength={1.4}
               infiniteGrid
@@ -487,6 +490,21 @@ function Viewer({ name, modelUrl, onError }: ViewerProps) {
             </button>
           </>
         )}
+        <label className="flex items-center gap-2">
+          Tone mapping
+          <select
+            data-tone-mapping
+            className="min-h-11 border border-rule bg-sheet px-3 font-mono text-sm"
+            value={toneMapping}
+            onChange={(event) => setToneMapping(toneMappingChoice(event.target.value).id)}
+          >
+            {TONE_MAPPINGS.map((choice) => (
+              <option key={choice.id} value={choice.id}>
+                {choice.label}
+              </option>
+            ))}
+          </select>
+        </label>
       </section>
     </div>
   );

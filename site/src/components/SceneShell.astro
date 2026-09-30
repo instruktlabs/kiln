@@ -1,50 +1,57 @@
 ---
-import { farmSceneIncluded } from "virtual:kiln-farm-scene";
-import { farmScene } from "../data/scenes";
+import { sceneRuntimes } from "virtual:kiln-scenes";
+import { scenes, type SceneId } from "../data/scenes";
 import { imageQualification, FULL_WIDTH_IMAGE_SIZES } from "../lib/catalog";
 import { PACKS_ENABLED } from "../lib/config";
+
+interface Props {
+  scene: SceneId;
+}
+const { scene: id } = Astro.props;
+const scene = scenes[id];
+const runtime = sceneRuntimes[id];
+const stateCopy = scene.available
+  ? scene.copy.available
+  : runtime
+    ? scene.copy.preview
+    : scene.copy.unavailable;
 ---
 
-<farm-scene-shell
+<scene-shell
   class="block border border-rule bg-stage"
-  data-asset-base={farmScene.assetBase}
+  data-scene={id}
+  data-kind={runtime?.kind ?? "none"}
+  data-runtime-url={runtime?.url ?? ""}
+  data-asset-base={scene.assetBase}
+  data-error-text={scene.copy.errorText}
 >
   <div data-intro>
-    {PACKS_ENABLED && (
+    {PACKS_ENABLED && scene.posterImage && (
       <picture>
         <source
           type="image/avif"
-          srcset={farmScene.posterImage.srcsetAvif}
+          srcset={scene.posterImage.srcsetAvif}
           sizes={FULL_WIDTH_IMAGE_SIZES}
         />
         <img
-          src={farmScene.poster}
-          srcset={farmScene.posterImage.srcsetWebp}
+          src={scene.poster}
+          srcset={scene.posterImage.srcsetWebp}
           sizes={FULL_WIDTH_IMAGE_SIZES}
-          width={farmScene.posterWidth}
-          height={farmScene.posterHeight}
-          alt="The Farm scene with barn, farmhouse, fields, animals, woodland and stream"
+          width={scene.posterWidth}
+          height={scene.posterHeight}
+          alt={scene.posterAlt}
           class="max-h-scene w-full object-cover"
           fetchpriority="high"
         />
       </picture>
     )}
-    {PACKS_ENABLED && imageQualification(farmScene.posterImage) && (
-      <p class="bg-sheet px-6 pt-4 text-caption text-dim">{imageQualification(farmScene.posterImage)}</p>
+    {PACKS_ENABLED && scene.posterImage && imageQualification(scene.posterImage) && (
+      <p class="bg-sheet px-6 pt-4 text-caption text-dim">{imageQualification(scene.posterImage)}</p>
     )}
     <div class="flex flex-wrap items-center justify-between gap-6 bg-sheet p-6">
       <div class="max-w-prose">
-        <p>
-          {farmScene.available
-            ? "Explore the Farm in your browser."
-            : farmSceneIncluded
-              ? "Explore opens a preview of the rebuilt Farm. It is still being qualified; the scene download remains the current runnable version."
-              : "The browser scene is being rebuilt. Explore opens its current in-production status."}
-        </p>
-        <p class="mt-2 text-sm text-dim">
-          Desktop play · Mobile orbit viewing. Load only when you choose
-          Explore.
-        </p>
+        <p>{stateCopy}</p>
+        <p class="mt-2 text-sm text-dim">{scene.copy.devices}</p>
       </div>
       <button type="button" class="btn" data-explore hidden>
         Explore
@@ -60,11 +67,12 @@ import { PACKS_ENABLED } from "../lib/config";
       <button type="button" class="btn btn-secondary" data-exit>
         Exit scene
       </button>
-      {farmSceneIncluded && (
+      {runtime && (
         <p class="flex flex-1 flex-wrap items-center justify-center gap-x-4 gap-y-1 text-sm text-dim">
-          <span>Preview, still being qualified.</span>
-          <a href={`${farmScene.assetBase}THIRD-PARTY-NOTICES.txt`}>Software notices</a>
-          <a href={`${farmScene.assetBase}licenses/ASSET-LICENSE.txt`}>Asset licence</a>
+          {!scene.available && <span>Preview, still being qualified.</span>}
+          {scene.links.map((link) => (
+            <a href={`${scene.assetBase}${link.path}`}>{link.label}</a>
+          ))}
         </p>
       )}
       <button type="button" class="btn btn-secondary" data-fullscreen>
@@ -76,17 +84,52 @@ import { PACKS_ENABLED } from "../lib/config";
     </p>
     <div data-mount class="min-h-viewer flex-1"></div>
   </div>
+  <template data-unavailable>
+    <div class="flex min-h-viewer flex-col items-center justify-center gap-6 p-8 text-center">
+      <h2 class="font-semibold">{scene.copy.unavailableTitle}</h2>
+      <p class="max-w-prose text-lg">{scene.copy.unavailableBody}</p>
+      <a class="btn btn-secondary" href={scene.fallback.href}>
+        {scene.fallback.label}
+      </a>
+    </div>
+  </template>
   <p data-status role="status" class="sr-only"></p>
   <noscript>
     <p class="bg-sheet p-6">
-      JavaScript is required for interactive scenes. The scene download can be
-      run on your machine.
+      JavaScript is required for interactive scenes.
     </p>
   </noscript>
-</farm-scene-shell>
+</scene-shell>
 <script>
   import { createIslandSession } from "./island-session";
-  class FarmSceneShell extends HTMLElement {
+  import type { SceneMountProps, SceneRuntimeModule } from "../scenes/types";
+
+  /** A frame-kind runtime is a standalone page (scripts/scene-runtime.mjs) that reports through postMessage. */
+  function mountFrame(container: HTMLElement, url: string, title: string, props: SceneMountProps) {
+    const frame = document.createElement("iframe");
+    frame.title = title;
+    frame.className = "block h-full min-h-viewer w-full border-0";
+    frame.setAttribute("allow", "fullscreen");
+    const onMessage = (event: MessageEvent) => {
+      if (event.origin !== location.origin || event.source !== frame.contentWindow) return;
+      const data = event.data as { source?: string; state?: string; text?: string; message?: string } | null;
+      if (data?.source !== "kiln-scene") return;
+      if (data.state === "progress") props.onProgress?.({ phase: "assets", loaded: 0, total: 0, text: data.text ?? "" });
+      else if (data.state === "ready") {
+        props.onReady?.();
+        frame.contentWindow?.focus();
+      } else if (data.state === "error") props.onError?.(new Error(data.message ?? "The scene could not start."));
+    };
+    window.addEventListener("message", onMessage);
+    container.append(frame);
+    frame.src = url;
+    return () => {
+      window.removeEventListener("message", onMessage);
+      frame.remove();
+    };
+  }
+
+  class SceneShell extends HTMLElement {
     private dispose?: () => void;
     connectedCallback() {
       const intro = this.querySelector<HTMLElement>("[data-intro]")!;
@@ -98,9 +141,12 @@ import { PACKS_ENABLED } from "../lib/config";
         this.querySelector<HTMLButtonElement>("[data-fullscreen]")!;
       const status = this.querySelector<HTMLElement>("[data-status]")!;
       const loading = this.querySelector<HTMLElement>("[data-loading]")!;
+      const unavailable =
+        this.querySelector<HTMLTemplateElement>("[data-unavailable]")!;
       let contentReady = false;
       // data-scene-state is idle, loading, ready or error; data-scene-phase is the scene's
-      // latest progress phase. Both are read by the browser checks.
+      // latest progress phase; data-scene-backend and data-scene-tier are what the scene reports.
+      // All are read by the browser checks.
       const setState = (state: string) => {
         this.dataset.sceneState = state;
       };
@@ -146,7 +192,8 @@ import { PACKS_ENABLED } from "../lib/config";
         status.classList.remove("sr-only");
         status.classList.add("p-6");
         status.textContent =
-          "The scene could not load. Check your connection and try Explore again. The Farm downloads remain available.";
+          this.dataset.errorText ??
+          "The scene could not load. Check your connection and try Explore again.";
         this.dataset.sceneError =
           (error as { code?: string } | undefined)?.code ?? "runtime";
         setState("error");
@@ -154,16 +201,32 @@ import { PACKS_ENABLED } from "../lib/config";
       };
       const session = createIslandSession(
         async () => {
-          if (import.meta.env.DEV)
-            await import("@vitejs/plugin-react/preamble");
-          const { mountFarmScene } = await import("../scenes/farm/mount");
-          return mountFarmScene(mount, {
+          const props: SceneMountProps = {
             assetBase: this.dataset.assetBase!,
             onReady: ready,
             onProgress: progress,
+            onBackend: (backend) => {
+              this.dataset.sceneBackend = backend.backend;
+            },
+            onTier: (change) => {
+              const tier = change.tier ?? change.suggestedTier;
+              if (change.kind !== "advice" && tier) this.dataset.sceneTier = tier;
+            },
             // The scene may report a fatal error from inside React's commit; leave it first.
             onError: (error) => queueMicrotask(() => fail(error)),
-          });
+          };
+          const url = this.dataset.runtimeUrl;
+          if (this.dataset.kind === "module" && url) {
+            const runtime = (await import(/* @vite-ignore */ url)) as SceneRuntimeModule;
+            return runtime.mount(mount, props);
+          }
+          if (this.dataset.kind === "frame" && url) {
+            return mountFrame(mount, url, `${this.dataset.scene} scene`, props);
+          }
+          // No runtime in this build: state the status in place of the scene.
+          mount.append(unavailable.content.cloneNode(true));
+          queueMicrotask(() => props.onReady?.());
+          return () => mount.replaceChildren();
         },
         (state, error) => {
           const showing = state === "loading" || state === "ready";
@@ -172,6 +235,8 @@ import { PACKS_ENABLED } from "../lib/config";
             loading.textContent = "Loading the scene…";
             delete this.dataset.scenePhase;
             delete this.dataset.sceneError;
+            delete this.dataset.sceneBackend;
+            delete this.dataset.sceneTier;
             setState("loading");
           }
           if (state === "idle") setState("idle");
@@ -242,6 +307,6 @@ import { PACKS_ENABLED } from "../lib/config";
       this.dispose?.();
     }
   }
-  if (!customElements.get("farm-scene-shell"))
-    customElements.define("farm-scene-shell", FarmSceneShell);
+  if (!customElements.get("scene-shell"))
+    customElements.define("scene-shell", SceneShell);
 </script>

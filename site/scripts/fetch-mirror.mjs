@@ -2,7 +2,7 @@ import { copyFile, mkdir, readFile, rm, writeFile } from 'node:fs/promises';
 import { dirname, join, relative, resolve } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import sharp from 'sharp';
-import { fetchPinnedFile, hashBytes, verifyArchive, verifyBytes } from './mirror-core.mjs';
+import { archiveProfile, fetchPinnedFile, hashBytes, verifyArchive, verifyBytes } from './mirror-core.mjs';
 import { MEDIA_WIDTHS } from './media-variants.mjs';
 
 const SITE = resolve(dirname(fileURLToPath(import.meta.url)), '..');
@@ -13,7 +13,7 @@ export async function buildCommons({ mirror = process.env.KILN_ASSET_MIRROR, cac
   if (!enabled) {
     // These directories belong exclusively to this generator. Resolve and check
     // every target before recursive removal, including Windows absolute paths.
-    for (const directory of ['models', 'sources', 'media/farm', 'standalone/golden-gate-bridge']) {
+    for (const directory of ['models', 'sources', 'media/farm', 'media/rig', 'media/scenes', 'media/vehicles', 'standalone/golden-gate-bridge']) {
       const target = resolve(publicDir, directory);
       const rel = relative(resolve(publicDir), target);
       if (!rel || rel.startsWith('..') || resolve(publicDir) === target) throw new Error(`Unsafe generated directory: ${target}`);
@@ -33,7 +33,7 @@ export async function buildCommons({ mirror = process.env.KILN_ASSET_MIRROR, cac
   const archives = new Map();
   for (const path of plan.archives) {
     const file = await pinnedFile(path);
-    archives.set(path, verifyArchive(await readFile(file), path.startsWith('standalone/') ? 'editable' : 'delivery'));
+    archives.set(path, verifyArchive(await readFile(file), archiveProfile(path)));
   }
   for (const model of plan.models) {
     const bytes = model.archive ? archives.get(model.archive).files[model.member] : await readFile(await pinnedFile(model.path));

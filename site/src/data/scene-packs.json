@@ -1,0 +1,41 @@
+{
+  "farm": {
+    "schema": "kiln.scene-pack/1",
+    "id": "farm",
+    "release": "r34",
+    "three": "0.186.0",
+    "source": "packages/farm/dist/m4/standalone",
+    "base": "/scene-packs/farm/r34/",
+    "sealedFiles": 34,
+    "sealedBytes": 7326021,
+    "totalFiles": 37,
+    "totalBytes": 7360911,
+    "packJsonSha256": "e852bf1953a2737cc55f89077db45f5291c2e8218a6e9d03febfaf412fdc9045",
+    "sha256sumsSha256": "d1bff1b76a29e6ac012f846adc8ba499ecc2dcbd09f790444ec68b6ca0ecf405",
+    "noticesSha256": "4bf6f2bd1d803606c88eb540c8e207ddee4a76be4d12fe14d6110bb7505e4ebc"
+  },
+  "golden-gate": {
+    "schema": "kiln.scene-pack/1",
+    "id": "golden-gate",
+    "release": "g3",
+    "three": "0.186.0",
+    "source": "packages/golden-gate/dist/standalone",
+    "base": "/scene-packs/golden-gate/g3/",
+    "sealedFiles": 103,
+    "sealedBytes": 12430083,
+    "totalFiles": 106,
+    "totalBytes": 12484673,
+    "packJsonSha256": "5664e37e25e817961800709c6e734290b1711e375763644fa6e0e40c3a1461b2",
+    "sha256sumsSha256": "5b4bb6a42a4c0ab4e5a23cf2b414d57a7a27fe55c1fdba75880224e1a4076127",
+    "noticesSha256": "4bf6f2bd1d803606c88eb540c8e207ddee4a76be4d12fe14d6110bb7505e4ebc",
+    "runtime": {
+      "kind": "frame",
+      "file": "index-CpnNafWq.js",
+      "bytes": 1677316,
+      "gzipBytes": 500671,
+      "gzipMethod": "bun-zlib",
+      "sha256": "01920a6d8ac117032d43c72f21b0321b2ca2043dfd9f3bf5aa24fd43c971820e",
+      "modulesSha256": "2723707afb68414051f5e0c4b95bccfe09e9c7d2e583cc95b022de7810a9c31c"
+    }
+  }
+}

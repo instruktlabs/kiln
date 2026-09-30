@@ -18,8 +18,12 @@ export function imageSrcsets(inputPath, width) {
 /** Refresh only derived srcset strings; never import, replace or reinterpret delivery records. */
 export async function refreshMediaSrcsets({ dataDir = join(SITE, 'src/data') } = {}) {
   let filesChanged = 0, imageRecordsUpdated = 0;
-  for (const filename of ['packs/farm.json', 'standalone/golden-gate-bridge.json', 'commons-build.json']) {
-    const path = join(dataDir, filename), data = JSON.parse(await readFile(path, 'utf8'));
+  // The vehicles pack is optional: a data directory without it (an older checkout, a fixture) is refreshed as before.
+  for (const filename of ['packs/farm.json', 'packs/vehicles.json', 'standalone/golden-gate-bridge.json', 'commons-build.json']) {
+    const path = join(dataDir, filename);
+    const text = await readFile(path, 'utf8').catch((error) => { if (filename === 'packs/vehicles.json' && error?.code === 'ENOENT') return null; throw error; });
+    if (text === null) continue;
+    const data = JSON.parse(text);
     let changed = 0;
     const visit = (value) => {
       if (!value || typeof value !== 'object') return;

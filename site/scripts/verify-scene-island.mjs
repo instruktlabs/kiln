@@ -4,11 +4,26 @@ import { dirname, resolve } from 'node:path';
 import puppeteer from 'puppeteer-core';
 import { chromeExecutable } from './build-site-media.mjs';
 
-const [base, screenshot = '.tmp/farm-island.png'] = process.argv.slice(2);
-if (!base) throw new Error('Usage: node scripts/verify-farm-island.mjs <site-url> [screenshot.png]');
-const route = new URL('/scenes/farm/', base).href;
-const shell = 'farm-scene-shell';
-const report = { browser: '', route, console: [], pageErrors: [], failedRequests: [], badResponses: [], phases: [], checks: [] };
+const positional = process.argv.slice(2).filter((argument) => !argument.startsWith('--'));
+const [base, sceneId = 'farm', screenshot = `.tmp/${sceneId}-island.png`] = positional;
+if (!base) throw new Error('Usage: node scripts/verify-scene-island.mjs <site-url> [farm|golden-gate] [screenshot.png] [--strict]');
+/** Per scene: its page, its staged pack, and how its runtime is loaded (module in the page, or a frame). */
+const SCENES = {
+  farm: { name: 'Farm', route: '/scenes/farm/', pack: '/scene-packs/farm/', runtime: '/scene-runtime/farm/', frame: false },
+  'golden-gate': { name: 'Golden Gate', route: '/scenes/golden-gate/', pack: '/scene-packs/golden-gate/', runtime: '/scene-runtime/golden-gate/', frame: true },
+};
+const scene = SCENES[sceneId];
+if (!scene) throw new Error(`Unknown scene ${sceneId}; use one of ${Object.keys(SCENES).join(', ')}`);
+const route = new URL(scene.route, base).href;
+const shell = 'scene-shell';
+const report = { browser: '', scene: sceneId, route, console: [], pageErrors: [], failedRequests: [], badResponses: [], phases: [], checks: [] };
+/** The scene's own root inside the page, or inside its frame. */
+const sceneRoot = (page) => page.evaluate((frame) => {
+  const doc = frame ? document.querySelector('[data-mount] iframe')?.contentDocument : document;
+  const root = doc?.querySelector('.ks-root');
+  const canvas = root?.querySelector('canvas');
+  return { backend: root?.getAttribute('data-kiln-backend') ?? null, canvas: canvas ? [canvas.width, canvas.height] : null, region: root?.getAttribute('role') ?? null };
+}, scene.frame);
 const check = (message) => report.checks.push(message);
 // @react-three/fiber 9.8.1 constructs THREE.Clock, which three 0.186 marks deprecated. The
 // gallery viewers on this site log the same line, so it is expected here and still reported.
@@ -45,16 +60,18 @@ try {
   observe(page, 'explore');
   const requests = [];
   const scripts = [];
+  const served = [];
   page.on('request', (request) => requests.push(request.url()));
   page.on('response', (response) => {
     if (/\.js(?:$|\?)/.test(response.url())) scripts.push(Number(response.headers()['content-length'] ?? 0));
+    if (response.url().includes(scene.runtime)) served.push(response);
   });
   await page.goto(route, { waitUntil: 'networkidle0' });
   assert.equal(await page.$eval('meta[name="robots"]', (meta) => meta.content), 'noindex, nofollow');
   check('The page carries robots noindex, nofollow.');
-  assert.equal(requests.some((url) => url.includes('/scene-packs/')), false);
+  assert.equal(requests.some((url) => url.includes('/scene-packs/') || url.includes('/scene-runtime/')), false);
   assert.ok(scripts.length > 0 && Math.max(...scripts) < 100_000, 'No large script may load before Explore.');
-  check('Before Explore the page requests no pack file and no script over 100 kB (no React, Three or scene chunk).');
+  check('Before Explore the page requests no pack file, no scene runtime and no script over 100 kB (no React, Three or scene chunk).');
   for (let round = 1; round <= 2; round++) {
     await page.click('[data-explore]');
     await page.waitForFunction((tag) => ['loading', 'ready', 'error'].includes(document.querySelector(tag)?.dataset.sceneState), {}, shell);
@@ -63,15 +80,26 @@ try {
     await settled(page);
     const result = await state(page);
     report.phases.push({ round, ...result });
-    assert.equal(result.state, 'ready', `The Farm scene must reach its ready state; it ended in ${result.state} (${result.error ?? 'no error code'}).`);
+    assert.equal(result.state, 'ready', `The ${scene.name} scene must reach its ready state; it ended in ${result.state} (${result.error ?? 'no error code'}).`);
     assert.notEqual(result.phase, null, 'The scene must report progress to the shell.');
-    const scene = await page.evaluate(() => {
-      const root = document.querySelector('.ks-root');
-      const canvas = root?.querySelector('canvas');
-      return { backend: root?.getAttribute('data-kiln-backend') ?? null, canvas: canvas ? [canvas.width, canvas.height] : null, region: root?.getAttribute('role') ?? null };
-    });
-    Object.assign(report.phases.at(-1), scene);
-    assert.ok(scene.canvas && scene.canvas[0] > 0 && scene.canvas[1] > 0, 'The scene canvas must have a size.');
+    const inside = await sceneRoot(page);
+    Object.assign(report.phases.at(-1), inside, { tier: await page.$eval(shell, (element) => element.dataset.sceneTier ?? null), reportedBackend: await page.$eval(shell, (element) => element.dataset.sceneBackend ?? null) });
+    if (!scene.frame) assert.ok(inside.canvas && inside.canvas[0] > 0 && inside.canvas[1] > 0, 'The scene canvas must have a size.');
+    if (round === 1 && !scene.frame) {
+      // One three copy: the runtime's own REVISION is the revision three announced globally, and the
+      // module the shell imported is the one served (the served bytes are the measured, staged file).
+      const runtimeUrl = await page.$eval(shell, (element) => element.dataset.runtimeUrl);
+      const identity = await page.evaluate(async (url) => {
+        const runtime = await import(/* @vite-ignore */ url);
+        return { runtimeRevision: runtime.REVISION, announced: globalThis.__THREE__ };
+      }, runtimeUrl);
+      report.three = identity;
+      assert.equal(identity.runtimeRevision, identity.announced, 'The runtime and the page must share one three revision.');
+      const runtimeResponse = served.find((response) => response.url().endsWith('.js'));
+      assert.ok(runtimeResponse, 'The scene runtime must be served.');
+      report.runtimeServed = { url: new URL(runtimeResponse.url()).pathname, bytes: (await runtimeResponse.buffer()).length };
+      check(`One three copy: the runtime's REVISION (${identity.runtimeRevision}) is the revision three announced (${identity.announced}).`);
+    }
     if (round === 1) {
       await mkdir(dirname(resolve(screenshot)), { recursive: true });
       await page.screenshot({ path: resolve(screenshot) });
@@ -90,7 +118,8 @@ try {
     assert.equal((await state(page)).state, 'idle');
   }
   check('Explore reaches the scene ready state, Exit unmounts and restores focus, and a second Explore reaches it again.');
-  report.packRequests = requests.filter((url) => url.includes('/scene-packs/farm/r34/')).map((url) => new URL(url).pathname.replace('/scene-packs/farm/r34/', ''));
+  report.packRequests = requests.filter((url) => url.includes(scene.pack)).map((url) => new URL(url).pathname);
+  report.runtimeRequests = requests.filter((url) => url.includes(scene.runtime)).map((url) => new URL(url).pathname);
   await page.close();
 
   // A pack that cannot be fetched must end in the shell's error surface, and the error text's
@@ -146,7 +175,7 @@ try {
   await settled(webgl2);
   const fallbackBackend = await state(webgl2);
   assert.equal(fallbackBackend.state, 'ready', `Without WebGPU the scene must still run; it ended in ${fallbackBackend.state} (${fallbackBackend.error ?? 'no error code'}).`);
-  fallbackBackend.backend = await webgl2.$eval('.ks-root', (root) => root.getAttribute('data-kiln-backend'));
+  fallbackBackend.backend = (await sceneRoot(webgl2)).backend;
   assert.equal(fallbackBackend.backend, 'webgl2');
   report.webgl2Only = fallbackBackend;
   check('Without WebGPU the scene falls back to its WebGL2 backend and reaches the ready state.');
@@ -179,8 +208,10 @@ try {
 const flagged = report.console.filter((entry) => entry.scenario === 'explore' && ['error', 'warn', 'warning'].includes(entry.type));
 const isKnown = (entry) => KNOWN_WARNINGS.some((pattern) => pattern.test(entry.text));
 report.exploreConsole = { known: flagged.filter(isKnown), unexpected: flagged.filter((entry) => !isKnown(entry)) };
+report.multipleInstances = report.console.filter((entry) => /Multiple instances of Three\.js/i.test(entry.text));
 console.log(JSON.stringify(report, null, 2));
+assert.equal(report.multipleInstances.length, 0, 'three logged its Multiple instances warning: the page loaded two copies.');
 if (process.argv.includes('--strict')) {
   assert.equal(report.exploreConsole.unexpected.length + report.pageErrors.filter((entry) => entry.scenario === 'explore').length, 0, 'The Explore scenario logged unexpected console errors, warnings or page errors.');
 }
-await writeFile(resolve(dirname(resolve(screenshot)), 'farm-island-report.json'), `${JSON.stringify(report, null, 2)}\n`);
+await writeFile(resolve(dirname(resolve(screenshot)), `${sceneId}-island-report.json`), `${JSON.stringify(report, null, 2)}\n`);

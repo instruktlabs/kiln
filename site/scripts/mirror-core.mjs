@@ -47,6 +47,13 @@ export async function fetchPinnedFile(record, { mirror = process.env.KILN_ASSET_
   return target;
 }
 
+/**
+ * Which seal an archive carries, from where it sits in the mirror: a saved revision's editable archive (the
+ * bridge's under `standalone/`, each vehicle's in an `editable/` directory) is sealed by its own revision
+ * `manifest.json`; every pack archive is sealed by a `delivery.json` inventory.
+ */
+export const archiveProfile = (path) => (path.startsWith('standalone/') || path.split('/').includes('editable') ? 'editable' : 'delivery');
+
 /** Only data pinned by the outer manifest is accepted; every inner file is sealed too. */
 export function verifyArchive(bytes, profile = 'delivery') {
   const files = unzipSync(bytes);

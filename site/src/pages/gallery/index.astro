@@ -7,9 +7,9 @@ const categories = [...new Set(assets.map((asset) => asset.category))].sort();
 
 <BaseLayout
   title="Gallery — source, revisions and models | Kiln"
-  description="Inspect 23 Farm assets and the standalone Golden Gate Bridge, with exact source, revision histories, GLBs and review status."
+  description="Inspect 23 Farm assets, six generic road vehicles and the standalone Golden Gate Bridge, with exact source, revision histories, GLBs and review status."
   breadcrumbs={[{ label: "Gallery", href: "/gallery/" }]}
-  ogImage="/social/gallery.webp"
+  ogImage="/social/gallery.jpg"
 >
   <div class="container">
     <div class="grid gap-6 py-8 md:grid-cols-2">
@@ -40,6 +40,7 @@ const categories = [...new Set(assets.map((asset) => asset.category))].sort();
             >
               <option value="all">All assets</option>
               <option value="farm">Shapes &amp; Seasons Farm</option>
+              <option value="vehicles">Generic Road Vehicles</option>
               <option value="standalone">Standalone</option>
             </select>
           </label>

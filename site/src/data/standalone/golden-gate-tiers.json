@@ -1,0 +1,62 @@
+{
+  "schemaVersion": 1,
+  "delivery": "review-3",
+  "source": "The pins in the Golden Gate scene release script (BRIDGE_PINS, BRIDGE_FULL, BRIDGE_LICENCE), which restate the accepted review-3 exports in the coordinator's review record. The site verifies every file against them before it lists it.",
+  "assetId": "a_9fafaa6e7f4c4868a372e8f3b0b84738",
+  "licence": {
+    "file": "ASSET-LICENSE.txt",
+    "bytes": 2458,
+    "sha256": "90fdb5eb334ce031ee8eb81d34dfbd701110b869707e63f7844e83fe10d10206",
+    "section": "Fix-up 1"
+  },
+  "tiers": [
+    {
+      "tier": "full",
+      "revision": "r_0d1532b4a00b4663909f8edf2bd290aa",
+      "parent": "r_03e7981b4ff84159aa4533c587f033c7",
+      "glb": {
+        "file": "golden-gate.glb",
+        "bytes": 12244400,
+        "sha256": "9dbff3c7bda8bfddd39b12899f2857ca8afb02f74f6edc087e5ef8156195c1b1",
+        "triangles": 309576
+      },
+      "metadata": "golden-gate.kiln-metadata.json",
+      "licensed": {
+        "revision": "r_cba97c6c2fc448ee9ca24741d772fa39",
+        "parent": "r_8b79b09984b14e15b9426f6db2df0140"
+      }
+    },
+    {
+      "tier": "web",
+      "revision": "r_e5da8e08bd424a8796a033fbb9793104",
+      "parent": "r_8285ccc5ffab4519b049936f792c15ee",
+      "glb": {
+        "file": "golden-gate-web.glb",
+        "bytes": 3336720,
+        "sha256": "407f727a19898ba09e2143a729e4d353bcf92d90f2eae99f0407327ac37f151f",
+        "triangles": 83092
+      },
+      "metadata": "golden-gate-web.kiln-metadata.json",
+      "licensed": {
+        "revision": "r_28ac511af71d4db69a2d7cff8b243a24",
+        "parent": "r_ba838a2a86e04f2493b5d55b493a766a"
+      }
+    },
+    {
+      "tier": "far",
+      "revision": "r_fcddc546fa134910b2221561353d97e2",
+      "parent": "r_d3f2f39ee4964708a0301d7e7082d12b",
+      "glb": {
+        "file": "golden-gate-far.glb",
+        "bytes": 490460,
+        "sha256": "5881f49df60bf3c05e8043de73b3b0ba68335896983097950ab2af6ff28c98a4",
+        "triangles": 11480
+      },
+      "metadata": "golden-gate-far.kiln-metadata.json",
+      "licensed": {
+        "revision": "r_7fd11f06f23b4bfc93b9b47ab1b6ca04",
+        "parent": "r_0da2d1ae635c4f84a10e58e0e03936e7"
+      }
+    }
+  ]
+}

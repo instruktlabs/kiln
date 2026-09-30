@@ -7,8 +7,10 @@ import {
   INSTALL_COMMAND,
   WORKSPACE_COMMAND,
   RELEASE_TAG,
+  VERSION,
   VERSION_SHORT,
 } from "../../lib/config";
+import { installGuideNote } from "../../lib/install-note";
 export async function getStaticPaths() {
   const docs = await getCollection("docs");
   return docs.map((entry) => ({
@@ -54,12 +56,7 @@ const { Content, headings } = await render(entry);
         Then run <code>cd ../my-assets</code> and follow <code>START.md</code>{" "}
         for your harness.
       </p>
-      <p class="text-sm text-dim">
-        The repository instructions below still include 0.8 release guidance.
-        They are rendered directly from the configured documentation source.
-        Until the new tag exists, use the repository installation instructions
-        below.
-      </p>
+      <p class="text-sm text-dim">{installGuideNote(entry.body ?? "", VERSION)}</p>
     </aside>
   )}
   <Content />

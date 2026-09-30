@@ -20,7 +20,7 @@ const page = await browser.newPage();
 page.on('pageerror', (error) => results.errors.push(error.message));
 page.on('console', (message) => { if (message.type() === 'error') results.errors.push(message.text()); });
 try {
-  for (const [slug, route] of [['scenes', '/scenes/'], ['scene-farm', '/scenes/farm/'], ['scene-terafab', '/scenes/terafab/']]) {
+  for (const [slug, route] of [['scenes', '/scenes/'], ['scene-farm', '/scenes/farm/'], ['scene-foundry-floor', '/scenes/foundry-floor/']]) {
     await mkdir(join(review, 'screenshots', slug), { recursive: true });
     await page.goto(new URL(route, base).href, { waitUntil: 'networkidle0' });
     for (const width of widths) {
@@ -46,8 +46,8 @@ try {
   await page.click('[data-explore]');
   // The island is ready when the scene reports its first complete frame (or, in a build without
   // the scene package, when the stand-in mounts). Either way the shell says so in data-scene-state.
-  await page.waitForFunction(() => ['ready', 'error'].includes(document.querySelector('farm-scene-shell')?.dataset.sceneState), { timeout: 120000 });
-  assert.equal(await page.$eval('farm-scene-shell', (element) => element.dataset.sceneState), 'ready', 'The Farm island must reach its ready state.');
+  await page.waitForFunction(() => ['ready', 'error'].includes(document.querySelector('scene-shell')?.dataset.sceneState), { timeout: 120000 });
+  assert.equal(await page.$eval('scene-shell', (element) => element.dataset.sceneState), 'ready', 'The Farm island must reach its ready state.');
   assert.equal(await page.$eval('[data-exit]', (element) => element === document.activeElement), true);
   assert.equal(await page.$eval('body > header', (element) => element.inert), true);
   await mkdir(join(review, 'screenshots/scene-open'), { recursive: true });
@@ -76,7 +76,8 @@ try {
   await brokenScene.setRequestInterception(true);
   let failImport = true;
   brokenScene.on('request', (request) => {
-    if (failImport && /\/mount[.-]/.test(request.url())) void request.abort();
+    // The Farm's code is the staged runtime chunk (scripts/scene-runtime.mjs); interrupt that request.
+    if (failImport && /^\/scene-runtime\/farm\/.+\.js$/.test(new URL(request.url()).pathname)) void request.abort();
     else void request.continue();
   });
   await brokenScene.goto(new URL('/scenes/farm/', base).href, { waitUntil: 'networkidle0' });
@@ -90,9 +91,11 @@ try {
   await page.goto(new URL('/gallery/archive/robot-arm/', base).href, { waitUntil: 'networkidle0' });
   await page.click('[data-open]');
   await page.waitForSelector('[data-mount] canvas', { timeout: 20000 });
-  await page.waitForFunction(() => document.querySelector('[data-mount] select')?.options.length > 1, { timeout: 20000 });
-  assert.equal(await page.$eval('[data-mount] select', (select) => select.value), '-1');
-  await page.select('[data-mount] select', '0');
+  // The animation clip select; the tone mapping select is another control of the same view and is checked by verify-viewer-tone.mjs.
+  const clips = '[data-mount] select:not([data-tone-mapping])';
+  await page.waitForFunction((selector) => document.querySelector(selector)?.options.length > 1, { timeout: 20000 }, clips);
+  assert.equal(await page.$eval(clips, (select) => select.value), '-1');
+  await page.select(clips, '0');
   await mkdir(join(review, 'screenshots/viewer-open'), { recursive: true });
   for (const width of widths) {
     await page.setViewport({ width, height: 1000, deviceScaleFactor: 1 });

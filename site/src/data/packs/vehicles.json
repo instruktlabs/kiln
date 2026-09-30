@@ -1,0 +1,1934 @@
+{
+  "schemaVersion": 1,
+  "id": "vehicles",
+  "name": "Generic Road Vehicles",
+  "description": "Six generic road vehicles made with Kiln: hatchback, sedan, SUV, pickup truck, box truck and transit bus. Each has three detail tiers, separate wheels, a near-white paint a scene can tint, its source and its revision history.",
+  "release": "r1",
+  "assetCount": 6,
+  "license": "CC0-1.0",
+  "licenseScope": "CC0-1.0 covers authored asset content only, to the extent of the owner’s rights. Kiln and any software that opens these files retain their own licenses.",
+  "licenceNote": "The saved revision of each vehicle lists no dependencies, so no imported model or texture is in it; the site checked that. The licence texts were written by the Golden Gate scene’s pack staging, because the vehicle authors’ folders ship none, and are published here unchanged.",
+  "conventions": {
+    "frame": "Metres, +Y up, +X forward, the vehicle’s right side at +Z. The origin is on the ground, centred between the axles and left to right.",
+    "wheels": "Four nodes named Wheel_FL, Wheel_FR, Wheel_RL and Wheel_RR sit outside the detail groups. Each pivots at the wheel centre with the axle along local Z, so rolling is a rotation about Z and steering a rotation about Y. On the box truck and the bus each rear node holds the dual pair.",
+    "materials": "Materials use fixed names because a scene drives them: Paint (near-white, tinted per instance), Trim, Glass (opaque), Chrome, Tyre, Rim, Headlight, Taillight, BrakeLight and Plate (no text). The box truck adds CargoBox.",
+    "tiers": "Three detail groups named LOD0, LOD1 and LOD2 sit under the root. The delivered files link them with the glTF vendor extension MSFT_lod, so a loader that does not know the extension draws LOD0 and the wheels.",
+    "restrictions": "No interiors, brands, logos, badges, text or liveries."
+  },
+  "budgets": {
+    "car": [
+      12000,
+      3000,
+      600
+    ],
+    "heavy": [
+      20000,
+      5000,
+      1000
+    ]
+  },
+  "downloads": [
+    {
+      "profile": "runtime",
+      "archive": "generic-road-vehicles-runtime.zip",
+      "bytes": 1335772,
+      "sha256": "62dff817ce3182d94d96a686a330a44006dfbcde92eb7fc5a48b9556bd009ae6",
+      "files": 13,
+      "assets": 6,
+      "path": "packs/vehicles/r1/generic-road-vehicles-runtime.zip",
+      "url": "https://assets.kilnstudio.tools/packs/vehicles/r1/generic-road-vehicles-runtime.zip",
+      "contents": [
+        "Six runtime GLBs with their three detail tiers linked by MSFT_lod",
+        "One licence text per vehicle",
+        "A delivery.json inventory with member hashes"
+      ],
+      "compatibility": "Standard glTF 2.0. A loader that does not know the MSFT_lod extension draws LOD0 and the wheels; the viewer on this site (Three.js 0.186) does exactly that. Other engines are not qualified by this download."
+    }
+  ],
+  "documents": [
+    {
+      "role": "brief",
+      "path": "golden-gate-scene/vehicles/BRIEF.md",
+      "bytes": 5065,
+      "sha256": "b1b1e3352b48b4811a3c329a29e6b36f15423fb1e1e6c0ee97ff38c3e7a1e7be"
+    },
+    {
+      "role": "report",
+      "path": "showcase/authors/sonnet-vehicles-a/REPORT.md",
+      "bytes": 9992,
+      "sha256": "b87cdd43e4aa4e8076f9ab3cb12b96f5f314886b7eff798fe1001e0867f7ae06"
+    },
+    {
+      "role": "report",
+      "path": "showcase/authors/sonnet-vehicles-b/REPORT.md",
+      "bytes": 23533,
+      "sha256": "acd8d35fa172fbf3dba9a895b295ba8357988a72507816e678d9d322779c69c6"
+    },
+    {
+      "role": "lod-convention",
+      "path": "showcase/review/vehicles/LOD-CONVENTION.md",
+      "bytes": 5435,
+      "sha256": "6afe85d38a006ed4e1fad6a672fa24ebaa61af5241bd87bbdca0345a0d4b3c81"
+    },
+    {
+      "role": "lod-writer",
+      "path": "showcase/review/vehicles/msft-lod.mjs",
+      "bytes": 4825,
+      "sha256": "af5778b77dd45591e551d6b72e44f58615841e430369f66bfa51aee1e5da89cb"
+    }
+  ],
+  "ownerReview": {
+    "acceptedAssets": 5,
+    "total": 6,
+    "status": "awaiting-review-of-corrected-revision",
+    "date": "2026-09-29",
+    "statement": "All six vehicles approved at every tier; one GLB per vehicle with the tiers inside stays.",
+    "source": "Coordinator overnight log, 12:46 entry (owner answer through the question tool)",
+    "awaiting": [
+      "Generic transit bus"
+    ]
+  },
+  "scene": {
+    "id": "golden-gate",
+    "name": "Golden Gate scene",
+    "href": "/scenes/golden-gate/"
+  },
+  "assets": [
+    {
+      "id": "hatchback",
+      "slug": "hatchback",
+      "name": "Generic hatchback",
+      "pack": "vehicles",
+      "category": "Cars",
+      "description": "Generic five-door hatchback with a two-box roofline, a steep tailgate and taillight clusters at the rear corners. Its paint is a neutral near-white, so a scene can tint each instance.",
+      "assetId": "generic-hatchback",
+      "revisionId": "r_105b27d31fe44f2aa188a333e19e3977",
+      "parentRevision": null,
+      "metrics": {
+        "triangles": 3684,
+        "meshes": 20,
+        "materials": 10,
+        "bounds": [
+          4.250985,
+          1.467385,
+          1.81
+        ],
+        "boundsMin": [
+          -2.095785,
+          0,
+          -0.905
+        ],
+        "boundsMax": [
+          2.1552,
+          1.467385,
+          0.905
+        ],
+        "clips": [],
+        "partPaths": [
+          "Hatchback/LOD0/Mesh_Trim_L0",
+          "Hatchback/LOD0/Mesh_Paint_L0",
+          "Hatchback/LOD0/Mesh_Glass_L0",
+          "Hatchback/LOD0/Mesh_Chrome_L0",
+          "Hatchback/LOD0/Mesh_Headlight_L0",
+          "Hatchback/LOD0/Mesh_Taillight_L0",
+          "Hatchback/LOD0/Mesh_BrakeLight_L0",
+          "Hatchback/LOD0/Mesh_Plate_L0",
+          "Hatchback/Wheel_FL/Mesh_Tyre_FL",
+          "Hatchback/Wheel_FL/Mesh_Rim_FL",
+          "Hatchback/Wheel_FL/Mesh_RimSlots_FL",
+          "Hatchback/Wheel_FR/Mesh_Tyre_FR",
+          "Hatchback/Wheel_FR/Mesh_Rim_FR",
+          "Hatchback/Wheel_FR/Mesh_RimSlots_FR",
+          "Hatchback/Wheel_RL/Mesh_Tyre_RL",
+          "Hatchback/Wheel_RL/Mesh_Rim_RL",
+          "Hatchback/Wheel_RL/Mesh_RimSlots_RL",
+          "Hatchback/Wheel_RR/Mesh_Tyre_RR",
+          "Hatchback/Wheel_RR/Mesh_Rim_RR",
+          "Hatchback/Wheel_RR/Mesh_RimSlots_RR"
+        ]
+      },
+      "vehicle": {
+        "wheelbase": 2.62,
+        "frontTrack": 1.53,
+        "rearTrack": 1.53,
+        "wheelRadius": 0.315,
+        "frontWheelWidth": 0.2,
+        "rearWheelWidth": 0.2,
+        "dualRear": false,
+        "pivots": {
+          "Wheel_FL": [
+            1.31,
+            0.315,
+            -0.765
+          ],
+          "Wheel_FR": [
+            1.31,
+            0.315,
+            0.765
+          ],
+          "Wheel_RL": [
+            -1.31,
+            0.315,
+            -0.765
+          ],
+          "Wheel_RR": [
+            -1.31,
+            0.315,
+            0.765
+          ]
+        }
+      },
+      "tiers": [
+        {
+          "tier": "LOD0",
+          "bodyTriangles": 2116,
+          "wheelTriangles": 1568,
+          "triangles": 3684,
+          "budget": 12000,
+          "wheelsShown": true,
+          "bounds": [
+            4.250985,
+            1.467385,
+            1.81
+          ],
+          "coverageBelow": null,
+          "distanceMetres": null,
+          "parts": 8,
+          "materials": [
+            "BrakeLight",
+            "Chrome",
+            "Glass",
+            "Headlight",
+            "Paint",
+            "Plate",
+            "Taillight",
+            "Trim"
+          ]
+        },
+        {
+          "tier": "LOD1",
+          "bodyTriangles": 708,
+          "wheelTriangles": 1568,
+          "triangles": 2276,
+          "budget": 3000,
+          "wheelsShown": true,
+          "bounds": [
+            4.2608,
+            1.466401,
+            1.81
+          ],
+          "coverageBelow": 0.00325,
+          "distanceMetres": 60,
+          "parts": 7,
+          "materials": [
+            "BrakeLight",
+            "Glass",
+            "Headlight",
+            "Paint",
+            "Plate",
+            "Taillight",
+            "Trim"
+          ]
+        },
+        {
+          "tier": "LOD2",
+          "bodyTriangles": 190,
+          "wheelTriangles": 0,
+          "triangles": 190,
+          "budget": 600,
+          "wheelsShown": false,
+          "bounds": [
+            4.268251,
+            1.297048,
+            1.75
+          ],
+          "coverageBelow": 0.000187,
+          "distanceMetres": 250.3,
+          "parts": 6,
+          "materials": [
+            "BrakeLight",
+            "Glass",
+            "Headlight",
+            "Paint",
+            "Taillight",
+            "Trim"
+          ]
+        }
+      ],
+      "tierLinks": {
+        "form": "MSFT_lod",
+        "culledBelow": 0.0000052,
+        "culledDistanceMetres": 1500.7,
+        "wheelsHiddenAtLastTier": true,
+        "wheelsHiddenBeyondMetres": 249.9
+      },
+      "poster": {
+        "src": "/media/rig/review-neutral-v1/vehicles/r1/hatchback.webp",
+        "width": 1024,
+        "height": 1024,
+        "alt": "Generic five-door hatchback with a two-box roofline, a steep tailgate and taillight clusters at the rear corners. Its paint is a neutral near-white, so a scene can tint each instance.",
+        "srcsetWebp": "/media/rig/review-neutral-v1/vehicles/r1/hatchback-320.webp 320w, /media/rig/review-neutral-v1/vehicles/r1/hatchback-480.webp 480w, /media/rig/review-neutral-v1/vehicles/r1/hatchback-672.webp 672w, /media/rig/review-neutral-v1/vehicles/r1/hatchback-768.webp 768w, /media/rig/review-neutral-v1/vehicles/r1/hatchback-1024.webp 1024w",
+        "srcsetAvif": "/media/rig/review-neutral-v1/vehicles/r1/hatchback-320.avif 320w, /media/rig/review-neutral-v1/vehicles/r1/hatchback-480.avif 480w, /media/rig/review-neutral-v1/vehicles/r1/hatchback-672.avif 672w, /media/rig/review-neutral-v1/vehicles/r1/hatchback-768.avif 768w, /media/rig/review-neutral-v1/vehicles/r1/hatchback-1024.avif 1024w",
+        "inputPath": "media/rig/review-neutral-v1/vehicles/r1/hatchback.png",
+        "sourceRevisionId": "r_105b27d31fe44f2aa188a333e19e3977",
+        "exactRevision": true,
+        "rig": "review-neutral-v1"
+      },
+      "reviewImage": {
+        "src": "/media/vehicles/r1/review/hatchback.webp",
+        "width": 1168,
+        "height": 780,
+        "alt": "Six saved review views of Generic hatchback: front, right, back, left, top and three-quarter.",
+        "srcsetWebp": "/media/vehicles/r1/review/hatchback-320.webp 320w, /media/vehicles/r1/review/hatchback-480.webp 480w, /media/vehicles/r1/review/hatchback-672.webp 672w, /media/vehicles/r1/review/hatchback-768.webp 768w, /media/vehicles/r1/review/hatchback-1024.webp 1024w",
+        "srcsetAvif": "/media/vehicles/r1/review/hatchback-320.avif 320w, /media/vehicles/r1/review/hatchback-480.avif 480w, /media/vehicles/r1/review/hatchback-672.avif 672w, /media/vehicles/r1/review/hatchback-768.avif 768w, /media/vehicles/r1/review/hatchback-1024.avif 1024w",
+        "inputPath": "media/vehicles/r1/review/hatchback.png",
+        "sourceRevisionId": "r_105b27d31fe44f2aa188a333e19e3977",
+        "exactRevision": true,
+        "fidelity": {
+          "materialFaithful": true,
+          "exactArtifact": false,
+          "delivered": "full-material",
+          "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1074",
+          "backdrop": "neutral"
+        }
+      },
+      "sourcePath": "/sources/vehicles/hatchback.kiln.js",
+      "sourceSha256": "09e1fe958ae9d99364eb61eb761986560a4f9345da478c23582a8ebae0541df0",
+      "modelPath": "/models/vehicles/hatchback.glb",
+      "runtimeDownload": {
+        "path": "packs/vehicles/r1/models/hatchback.glb",
+        "bytes": 262464,
+        "sha256": "c2f941f89816b5d8a48bb2d9481a00411c2af45591d26ea46a99399d385a3bfa",
+        "url": "https://assets.kilnstudio.tools/packs/vehicles/r1/models/hatchback.glb",
+        "archive": "packs/vehicles/r1/generic-road-vehicles-runtime.zip",
+        "member": "models/hatchback.glb",
+        "form": "MSFT_lod"
+      },
+      "editableDownload": {
+        "path": "packs/vehicles/r1/editable/hatchback-editable.zip",
+        "bytes": 418733,
+        "sha256": "dbe5d5ea3f8384695e8711462f37c6dc71c9ebffa4747ce85786c2d572e27bbc",
+        "url": "https://assets.kilnstudio.tools/packs/vehicles/r1/editable/hatchback-editable.zip",
+        "members": [
+          "manifest.json",
+          "asset.glb",
+          "source.kiln.js",
+          "preview.png"
+        ],
+        "glbForm": "named-groups"
+      },
+      "licence": {
+        "path": "packs/vehicles/r1/licenses/hatchback.ASSET-LICENSE.txt",
+        "bytes": 777,
+        "sha256": "02e8355880da33fc2422a7205cb0234fc4a6a338e37eec60ab2898c647a2ffdf",
+        "url": "https://assets.kilnstudio.tools/packs/vehicles/r1/licenses/hatchback.ASSET-LICENSE.txt",
+        "spdx": "CC0-1.0",
+        "statesDeliveredGlbSha256": "c2f941f89816b5d8a48bb2d9481a00411c2af45591d26ea46a99399d385a3bfa"
+      },
+      "provenance": {
+        "originalModel": "Claude Sonnet 5.5",
+        "refinementModels": [],
+        "history": [
+          {
+            "stage": "First saved revision",
+            "request": "first-retry1",
+            "revisionId": "r_105b27d31fe44f2aa188a333e19e3977",
+            "parentRevisionId": null,
+            "savedAt": "2026-09-29T15:17:19.222Z",
+            "brief": "Generic unbranded five-door hatchback for the Golden Gate Bridge scene. Metres, +Y up, forward +X, right side +Z, origin on the ground between axles. Separate Wheel_FL/FR/RL/RR nodes (pivot at wheel centre, axle along Z); LOD0/LOD1/LOD2 groups; neutral near-white Paint for scene tinting.",
+            "model": "Claude Sonnet 5.5",
+            "modelId": "claude-sonnet-5-5",
+            "requestedEffort": "max",
+            "confirmedEffort": null,
+            "harness": "claude",
+            "harnessVersion": "2.1.280",
+            "confirmation": "Requested in receipt and invocation; effective reasoning effort not independently confirmed.",
+            "run": {
+              "stage": "first-retry1",
+              "label": "first run, retry 1",
+              "status": "completed",
+              "stop": "success",
+              "startedAt": "2026-09-29T14:26:18.351Z",
+              "endedAt": "2026-09-29T15:24:18.613Z",
+              "receiptSha256": "c04cf62d47048db887b5bc649c95cdd923afbe85b642c6bd7ef4b0258986be46",
+              "invocationSha256": "25f9583d27003fce8b2fb706fd0f0fa98ca69f1c100a81d28ab2b301befe2645"
+            }
+          }
+        ]
+      },
+      "revisions": [
+        {
+          "stage": "First saved revision",
+          "request": "first-retry1",
+          "revisionId": "r_105b27d31fe44f2aa188a333e19e3977",
+          "parentRevisionId": null,
+          "savedAt": "2026-09-29T15:17:19.222Z",
+          "brief": "Generic unbranded five-door hatchback for the Golden Gate Bridge scene. Metres, +Y up, forward +X, right side +Z, origin on the ground between axles. Separate Wheel_FL/FR/RL/RR nodes (pivot at wheel centre, axle along Z); LOD0/LOD1/LOD2 groups; neutral near-white Paint for scene tinting.",
+          "model": "Claude Sonnet 5.5",
+          "modelId": "claude-sonnet-5-5",
+          "requestedEffort": "max",
+          "confirmedEffort": null,
+          "harness": "claude",
+          "harnessVersion": "2.1.280",
+          "confirmation": "Requested in receipt and invocation; effective reasoning effort not independently confirmed.",
+          "run": {
+            "stage": "first-retry1",
+            "label": "first run, retry 1",
+            "status": "completed",
+            "stop": "success",
+            "startedAt": "2026-09-29T14:26:18.351Z",
+            "endedAt": "2026-09-29T15:24:18.613Z",
+            "receiptSha256": "c04cf62d47048db887b5bc649c95cdd923afbe85b642c6bd7ef4b0258986be46",
+            "invocationSha256": "25f9583d27003fce8b2fb706fd0f0fa98ca69f1c100a81d28ab2b301befe2645"
+          }
+        }
+      ],
+      "review": {
+        "status": "accepted",
+        "ownerAccepted": true,
+        "scope": "The owner approved all six vehicles at every tier on 29 September 2026. This is the revision that was approved.",
+        "recordedAt": "2026-09-29",
+        "source": "Coordinator overnight log, 12:46 entry (owner answer through the question tool)"
+      },
+      "license": "CC0-1.0",
+      "sceneDeepLink": null
+    },
+    {
+      "id": "sedan",
+      "slug": "sedan",
+      "name": "Generic sedan",
+      "pack": "vehicles",
+      "category": "Cars",
+      "description": "Generic four-door sedan with a low beltline, a notch-back deck and a full-width rear light bar. Authored as the drivable car of the Golden Gate scene, so its rear stays clean for a chase camera; the paint is a neutral near-white for scene tinting.",
+      "assetId": "generic-sedan",
+      "revisionId": "r_1cb27a0c14d44e48afff84db23013dad",
+      "parentRevision": null,
+      "metrics": {
+        "triangles": 3664,
+        "meshes": 20,
+        "materials": 10,
+        "bounds": [
+          4.8604,
+          1.450263,
+          1.87
+        ],
+        "boundsMin": [
+          -2.4802,
+          0,
+          -0.935
+        ],
+        "boundsMax": [
+          2.3802,
+          1.450263,
+          0.935
+        ],
+        "clips": [],
+        "partPaths": [
+          "Sedan/LOD0/Mesh_Trim_L0",
+          "Sedan/LOD0/Mesh_Paint_L0",
+          "Sedan/LOD0/Mesh_Glass_L0",
+          "Sedan/LOD0/Mesh_Chrome_L0",
+          "Sedan/LOD0/Mesh_Headlight_L0",
+          "Sedan/LOD0/Mesh_Taillight_L0",
+          "Sedan/LOD0/Mesh_BrakeLight_L0",
+          "Sedan/LOD0/Mesh_Plate_L0",
+          "Sedan/Wheel_FL/Mesh_Tyre_FL",
+          "Sedan/Wheel_FL/Mesh_Rim_FL",
+          "Sedan/Wheel_FL/Mesh_RimSlots_FL",
+          "Sedan/Wheel_FR/Mesh_Tyre_FR",
+          "Sedan/Wheel_FR/Mesh_Rim_FR",
+          "Sedan/Wheel_FR/Mesh_RimSlots_FR",
+          "Sedan/Wheel_RL/Mesh_Tyre_RL",
+          "Sedan/Wheel_RL/Mesh_Rim_RL",
+          "Sedan/Wheel_RL/Mesh_RimSlots_RL",
+          "Sedan/Wheel_RR/Mesh_Tyre_RR",
+          "Sedan/Wheel_RR/Mesh_Rim_RR",
+          "Sedan/Wheel_RR/Mesh_RimSlots_RR"
+        ]
+      },
+      "vehicle": {
+        "wheelbase": 2.85,
+        "frontTrack": 1.58,
+        "rearTrack": 1.58,
+        "wheelRadius": 0.33,
+        "frontWheelWidth": 0.215,
+        "rearWheelWidth": 0.215,
+        "dualRear": false,
+        "pivots": {
+          "Wheel_FL": [
+            1.425,
+            0.33,
+            -0.79
+          ],
+          "Wheel_FR": [
+            1.425,
+            0.33,
+            0.79
+          ],
+          "Wheel_RL": [
+            -1.425,
+            0.33,
+            -0.79
+          ],
+          "Wheel_RR": [
+            -1.425,
+            0.33,
+            0.79
+          ]
+        }
+      },
+      "tiers": [
+        {
+          "tier": "LOD0",
+          "bodyTriangles": 2096,
+          "wheelTriangles": 1568,
+          "triangles": 3664,
+          "budget": 12000,
+          "wheelsShown": true,
+          "bounds": [
+            4.8604,
+            1.450263,
+            1.87
+          ],
+          "coverageBelow": null,
+          "distanceMetres": null,
+          "parts": 8,
+          "materials": [
+            "BrakeLight",
+            "Chrome",
+            "Glass",
+            "Headlight",
+            "Paint",
+            "Plate",
+            "Taillight",
+            "Trim"
+          ]
+        },
+        {
+          "tier": "LOD1",
+          "bodyTriangles": 688,
+          "wheelTriangles": 1568,
+          "triangles": 2256,
+          "budget": 3000,
+          "wheelsShown": true,
+          "bounds": [
+            4.8708,
+            1.450263,
+            1.87
+          ],
+          "coverageBelow": 0.00406,
+          "distanceMetres": 60,
+          "parts": 7,
+          "materials": [
+            "BrakeLight",
+            "Glass",
+            "Headlight",
+            "Paint",
+            "Plate",
+            "Taillight",
+            "Trim"
+          ]
+        },
+        {
+          "tier": "LOD2",
+          "bodyTriangles": 190,
+          "wheelTriangles": 0,
+          "triangles": 190,
+          "budget": 600,
+          "wheelsShown": false,
+          "bounds": [
+            4.8776,
+            1.285263,
+            1.81
+          ],
+          "coverageBelow": 0.000234,
+          "distanceMetres": 250,
+          "parts": 6,
+          "materials": [
+            "BrakeLight",
+            "Glass",
+            "Headlight",
+            "Paint",
+            "Taillight",
+            "Trim"
+          ]
+        }
+      ],
+      "tierLinks": {
+        "form": "MSFT_lod",
+        "culledBelow": 0.0000065,
+        "culledDistanceMetres": 1499.8,
+        "wheelsHiddenAtLastTier": true,
+        "wheelsHiddenBeyondMetres": 249.9
+      },
+      "poster": {
+        "src": "/media/rig/review-neutral-v1/vehicles/r1/sedan.webp",
+        "width": 1024,
+        "height": 1024,
+        "alt": "Generic four-door sedan with a low beltline, a notch-back deck and a full-width rear light bar. Authored as the drivable car of the Golden Gate scene, so its rear stays clean for a chase camera; the paint is a neutral near-white for scene tinting.",
+        "srcsetWebp": "/media/rig/review-neutral-v1/vehicles/r1/sedan-320.webp 320w, /media/rig/review-neutral-v1/vehicles/r1/sedan-480.webp 480w, /media/rig/review-neutral-v1/vehicles/r1/sedan-672.webp 672w, /media/rig/review-neutral-v1/vehicles/r1/sedan-768.webp 768w, /media/rig/review-neutral-v1/vehicles/r1/sedan-1024.webp 1024w",
+        "srcsetAvif": "/media/rig/review-neutral-v1/vehicles/r1/sedan-320.avif 320w, /media/rig/review-neutral-v1/vehicles/r1/sedan-480.avif 480w, /media/rig/review-neutral-v1/vehicles/r1/sedan-672.avif 672w, /media/rig/review-neutral-v1/vehicles/r1/sedan-768.avif 768w, /media/rig/review-neutral-v1/vehicles/r1/sedan-1024.avif 1024w",
+        "inputPath": "media/rig/review-neutral-v1/vehicles/r1/sedan.png",
+        "sourceRevisionId": "r_1cb27a0c14d44e48afff84db23013dad",
+        "exactRevision": true,
+        "rig": "review-neutral-v1"
+      },
+      "reviewImage": {
+        "src": "/media/vehicles/r1/review/sedan.webp",
+        "width": 1168,
+        "height": 780,
+        "alt": "Six saved review views of Generic sedan: front, right, back, left, top and three-quarter.",
+        "srcsetWebp": "/media/vehicles/r1/review/sedan-320.webp 320w, /media/vehicles/r1/review/sedan-480.webp 480w, /media/vehicles/r1/review/sedan-672.webp 672w, /media/vehicles/r1/review/sedan-768.webp 768w, /media/vehicles/r1/review/sedan-1024.webp 1024w",
+        "srcsetAvif": "/media/vehicles/r1/review/sedan-320.avif 320w, /media/vehicles/r1/review/sedan-480.avif 480w, /media/vehicles/r1/review/sedan-672.avif 672w, /media/vehicles/r1/review/sedan-768.avif 768w, /media/vehicles/r1/review/sedan-1024.avif 1024w",
+        "inputPath": "media/vehicles/r1/review/sedan.png",
+        "sourceRevisionId": "r_1cb27a0c14d44e48afff84db23013dad",
+        "exactRevision": true,
+        "fidelity": {
+          "materialFaithful": true,
+          "exactArtifact": false,
+          "delivered": "full-material",
+          "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1074",
+          "backdrop": "neutral"
+        }
+      },
+      "sourcePath": "/sources/vehicles/sedan.kiln.js",
+      "sourceSha256": "2ac438f25341b6c13cfa4e86f6058c0bdc73daec8129b12e9e1767eb211787a5",
+      "modelPath": "/models/vehicles/sedan.glb",
+      "runtimeDownload": {
+        "path": "packs/vehicles/r1/models/sedan.glb",
+        "bytes": 259596,
+        "sha256": "e05943cd76110e6ed7e3210b9bc33ede40d48371def8439ca1bc9c8dcabf8e96",
+        "url": "https://assets.kilnstudio.tools/packs/vehicles/r1/models/sedan.glb",
+        "archive": "packs/vehicles/r1/generic-road-vehicles-runtime.zip",
+        "member": "models/sedan.glb",
+        "form": "MSFT_lod"
+      },
+      "editableDownload": {
+        "path": "packs/vehicles/r1/editable/sedan-editable.zip",
+        "bytes": 410336,
+        "sha256": "587f448d9385678f243a6bde7b0d64989e88cae5faf6a2f3954c2819ac2d71bf",
+        "url": "https://assets.kilnstudio.tools/packs/vehicles/r1/editable/sedan-editable.zip",
+        "members": [
+          "manifest.json",
+          "asset.glb",
+          "source.kiln.js",
+          "preview.png"
+        ],
+        "glbForm": "named-groups"
+      },
+      "licence": {
+        "path": "packs/vehicles/r1/licenses/sedan.ASSET-LICENSE.txt",
+        "bytes": 765,
+        "sha256": "9011f4c35291edf6dafab7a5589aefa60a96cd6cf302a80e42cc6f2480499553",
+        "url": "https://assets.kilnstudio.tools/packs/vehicles/r1/licenses/sedan.ASSET-LICENSE.txt",
+        "spdx": "CC0-1.0",
+        "statesDeliveredGlbSha256": "e05943cd76110e6ed7e3210b9bc33ede40d48371def8439ca1bc9c8dcabf8e96"
+      },
+      "provenance": {
+        "originalModel": "Claude Sonnet 5.5",
+        "refinementModels": [],
+        "history": [
+          {
+            "stage": "First saved revision",
+            "request": "first-retry1",
+            "revisionId": "r_1cb27a0c14d44e48afff84db23013dad",
+            "parentRevisionId": null,
+            "savedAt": "2026-09-29T15:13:28.192Z",
+            "brief": "Generic unbranded four-door sedan for the Golden Gate Bridge scene: metres, +Y up, forward +X, right side +Z, origin on the ground between axles. Wheels are separate nodes Wheel_FL/FR/RL/RR pivoting at the wheel centre (axle along Z). LOD0/LOD1/LOD2 groups under the root. Paint is neutral near-white so the scene can tint it.",
+            "model": "Claude Sonnet 5.5",
+            "modelId": "claude-sonnet-5-5",
+            "requestedEffort": "max",
+            "confirmedEffort": null,
+            "harness": "claude",
+            "harnessVersion": "2.1.280",
+            "confirmation": "Requested in receipt and invocation; effective reasoning effort not independently confirmed.",
+            "run": {
+              "stage": "first-retry1",
+              "label": "first run, retry 1",
+              "status": "completed",
+              "stop": "success",
+              "startedAt": "2026-09-29T14:26:18.351Z",
+              "endedAt": "2026-09-29T15:24:18.613Z",
+              "receiptSha256": "c04cf62d47048db887b5bc649c95cdd923afbe85b642c6bd7ef4b0258986be46",
+              "invocationSha256": "25f9583d27003fce8b2fb706fd0f0fa98ca69f1c100a81d28ab2b301befe2645"
+            }
+          }
+        ]
+      },
+      "revisions": [
+        {
+          "stage": "First saved revision",
+          "request": "first-retry1",
+          "revisionId": "r_1cb27a0c14d44e48afff84db23013dad",
+          "parentRevisionId": null,
+          "savedAt": "2026-09-29T15:13:28.192Z",
+          "brief": "Generic unbranded four-door sedan for the Golden Gate Bridge scene: metres, +Y up, forward +X, right side +Z, origin on the ground between axles. Wheels are separate nodes Wheel_FL/FR/RL/RR pivoting at the wheel centre (axle along Z). LOD0/LOD1/LOD2 groups under the root. Paint is neutral near-white so the scene can tint it.",
+          "model": "Claude Sonnet 5.5",
+          "modelId": "claude-sonnet-5-5",
+          "requestedEffort": "max",
+          "confirmedEffort": null,
+          "harness": "claude",
+          "harnessVersion": "2.1.280",
+          "confirmation": "Requested in receipt and invocation; effective reasoning effort not independently confirmed.",
+          "run": {
+            "stage": "first-retry1",
+            "label": "first run, retry 1",
+            "status": "completed",
+            "stop": "success",
+            "startedAt": "2026-09-29T14:26:18.351Z",
+            "endedAt": "2026-09-29T15:24:18.613Z",
+            "receiptSha256": "c04cf62d47048db887b5bc649c95cdd923afbe85b642c6bd7ef4b0258986be46",
+            "invocationSha256": "25f9583d27003fce8b2fb706fd0f0fa98ca69f1c100a81d28ab2b301befe2645"
+          }
+        }
+      ],
+      "review": {
+        "status": "accepted",
+        "ownerAccepted": true,
+        "scope": "The owner approved all six vehicles at every tier on 29 September 2026. This is the revision that was approved.",
+        "recordedAt": "2026-09-29",
+        "source": "Coordinator overnight log, 12:46 entry (owner answer through the question tool)"
+      },
+      "license": "CC0-1.0",
+      "sceneDeepLink": null
+    },
+    {
+      "id": "suv",
+      "slug": "suv",
+      "name": "Generic SUV",
+      "pack": "vehicles",
+      "category": "Cars",
+      "description": "Generic five-door SUV with a tall, square greenhouse, raised ground clearance, larger wheel arches and a steep liftgate. Its paint is a neutral near-white for scene tinting.",
+      "assetId": "generic-suv",
+      "revisionId": "r_8261935e39684470b65549b1c39142fd",
+      "parentRevision": null,
+      "metrics": {
+        "triangles": 3736,
+        "meshes": 20,
+        "materials": 10,
+        "bounds": [
+          4.9004,
+          1.762085,
+          1.94
+        ],
+        "boundsMin": [
+          -2.4952,
+          0,
+          -0.97
+        ],
+        "boundsMax": [
+          2.4052,
+          1.762085,
+          0.97
+        ],
+        "clips": [],
+        "partPaths": [
+          "SUV/LOD0/Mesh_Trim_L0",
+          "SUV/LOD0/Mesh_Paint_L0",
+          "SUV/LOD0/Mesh_Glass_L0",
+          "SUV/LOD0/Mesh_Chrome_L0",
+          "SUV/LOD0/Mesh_Headlight_L0",
+          "SUV/LOD0/Mesh_Taillight_L0",
+          "SUV/LOD0/Mesh_BrakeLight_L0",
+          "SUV/LOD0/Mesh_Plate_L0",
+          "SUV/Wheel_FL/Mesh_Tyre_FL",
+          "SUV/Wheel_FL/Mesh_Rim_FL",
+          "SUV/Wheel_FL/Mesh_RimSlots_FL",
+          "SUV/Wheel_FR/Mesh_Tyre_FR",
+          "SUV/Wheel_FR/Mesh_Rim_FR",
+          "SUV/Wheel_FR/Mesh_RimSlots_FR",
+          "SUV/Wheel_RL/Mesh_Tyre_RL",
+          "SUV/Wheel_RL/Mesh_Rim_RL",
+          "SUV/Wheel_RL/Mesh_RimSlots_RL",
+          "SUV/Wheel_RR/Mesh_Tyre_RR",
+          "SUV/Wheel_RR/Mesh_Rim_RR",
+          "SUV/Wheel_RR/Mesh_RimSlots_RR"
+        ]
+      },
+      "vehicle": {
+        "wheelbase": 2.9,
+        "frontTrack": 1.64,
+        "rearTrack": 1.64,
+        "wheelRadius": 0.365,
+        "frontWheelWidth": 0.235,
+        "rearWheelWidth": 0.235,
+        "dualRear": false,
+        "pivots": {
+          "Wheel_FL": [
+            1.45,
+            0.365,
+            -0.82
+          ],
+          "Wheel_FR": [
+            1.45,
+            0.365,
+            0.82
+          ],
+          "Wheel_RL": [
+            -1.45,
+            0.365,
+            -0.82
+          ],
+          "Wheel_RR": [
+            -1.45,
+            0.365,
+            0.82
+          ]
+        }
+      },
+      "tiers": [
+        {
+          "tier": "LOD0",
+          "bodyTriangles": 2168,
+          "wheelTriangles": 1568,
+          "triangles": 3736,
+          "budget": 12000,
+          "wheelsShown": true,
+          "bounds": [
+            4.9004,
+            1.762085,
+            1.94
+          ],
+          "coverageBelow": null,
+          "distanceMetres": null,
+          "parts": 8,
+          "materials": [
+            "BrakeLight",
+            "Chrome",
+            "Glass",
+            "Headlight",
+            "Paint",
+            "Plate",
+            "Taillight",
+            "Trim"
+          ]
+        },
+        {
+          "tier": "LOD1",
+          "bodyTriangles": 718,
+          "wheelTriangles": 1568,
+          "triangles": 2286,
+          "budget": 3000,
+          "wheelsShown": true,
+          "bounds": [
+            4.9108,
+            1.76125,
+            1.94
+          ],
+          "coverageBelow": 0.00425,
+          "distanceMetres": 60,
+          "parts": 7,
+          "materials": [
+            "BrakeLight",
+            "Glass",
+            "Headlight",
+            "Paint",
+            "Plate",
+            "Taillight",
+            "Trim"
+          ]
+        },
+        {
+          "tier": "LOD2",
+          "bodyTriangles": 190,
+          "wheelTriangles": 0,
+          "triangles": 190,
+          "budget": 600,
+          "wheelsShown": false,
+          "bounds": [
+            4.9176,
+            1.523472,
+            1.88
+          ],
+          "coverageBelow": 0.000245,
+          "distanceMetres": 249.9,
+          "parts": 6,
+          "materials": [
+            "BrakeLight",
+            "Glass",
+            "Headlight",
+            "Paint",
+            "Taillight",
+            "Trim"
+          ]
+        }
+      ],
+      "tierLinks": {
+        "form": "MSFT_lod",
+        "culledBelow": 0.0000068,
+        "culledDistanceMetres": 1500.1,
+        "wheelsHiddenAtLastTier": true,
+        "wheelsHiddenBeyondMetres": 250
+      },
+      "poster": {
+        "src": "/media/rig/review-neutral-v1/vehicles/r1/suv.webp",
+        "width": 1024,
+        "height": 1024,
+        "alt": "Generic five-door SUV with a tall, square greenhouse, raised ground clearance, larger wheel arches and a steep liftgate. Its paint is a neutral near-white for scene tinting.",
+        "srcsetWebp": "/media/rig/review-neutral-v1/vehicles/r1/suv-320.webp 320w, /media/rig/review-neutral-v1/vehicles/r1/suv-480.webp 480w, /media/rig/review-neutral-v1/vehicles/r1/suv-672.webp 672w, /media/rig/review-neutral-v1/vehicles/r1/suv-768.webp 768w, /media/rig/review-neutral-v1/vehicles/r1/suv-1024.webp 1024w",
+        "srcsetAvif": "/media/rig/review-neutral-v1/vehicles/r1/suv-320.avif 320w, /media/rig/review-neutral-v1/vehicles/r1/suv-480.avif 480w, /media/rig/review-neutral-v1/vehicles/r1/suv-672.avif 672w, /media/rig/review-neutral-v1/vehicles/r1/suv-768.avif 768w, /media/rig/review-neutral-v1/vehicles/r1/suv-1024.avif 1024w",
+        "inputPath": "media/rig/review-neutral-v1/vehicles/r1/suv.png",
+        "sourceRevisionId": "r_8261935e39684470b65549b1c39142fd",
+        "exactRevision": true,
+        "rig": "review-neutral-v1"
+      },
+      "reviewImage": {
+        "src": "/media/vehicles/r1/review/suv.webp",
+        "width": 1168,
+        "height": 780,
+        "alt": "Six saved review views of Generic SUV: front, right, back, left, top and three-quarter.",
+        "srcsetWebp": "/media/vehicles/r1/review/suv-320.webp 320w, /media/vehicles/r1/review/suv-480.webp 480w, /media/vehicles/r1/review/suv-672.webp 672w, /media/vehicles/r1/review/suv-768.webp 768w, /media/vehicles/r1/review/suv-1024.webp 1024w",
+        "srcsetAvif": "/media/vehicles/r1/review/suv-320.avif 320w, /media/vehicles/r1/review/suv-480.avif 480w, /media/vehicles/r1/review/suv-672.avif 672w, /media/vehicles/r1/review/suv-768.avif 768w, /media/vehicles/r1/review/suv-1024.avif 1024w",
+        "inputPath": "media/vehicles/r1/review/suv.png",
+        "sourceRevisionId": "r_8261935e39684470b65549b1c39142fd",
+        "exactRevision": true,
+        "fidelity": {
+          "materialFaithful": true,
+          "exactArtifact": false,
+          "delivered": "full-material",
+          "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1074",
+          "backdrop": "neutral"
+        }
+      },
+      "sourcePath": "/sources/vehicles/suv.kiln.js",
+      "sourceSha256": "c283fe3e30b84206b58a19533bd12f8f1f2ab5ec284990b1eaafa1ad2880368d",
+      "modelPath": "/models/vehicles/suv.glb",
+      "runtimeDownload": {
+        "path": "packs/vehicles/r1/models/suv.glb",
+        "bytes": 266964,
+        "sha256": "f46d4535adf8a2730ff832fba59476db2cc63b0dece497aebc1651ae53a6d28d",
+        "url": "https://assets.kilnstudio.tools/packs/vehicles/r1/models/suv.glb",
+        "archive": "packs/vehicles/r1/generic-road-vehicles-runtime.zip",
+        "member": "models/suv.glb",
+        "form": "MSFT_lod"
+      },
+      "editableDownload": {
+        "path": "packs/vehicles/r1/editable/suv-editable.zip",
+        "bytes": 422218,
+        "sha256": "248dfad959d0da2ede5e5145936e0b9616ced771731d9d8d7c7a59b18e9f70e1",
+        "url": "https://assets.kilnstudio.tools/packs/vehicles/r1/editable/suv-editable.zip",
+        "members": [
+          "manifest.json",
+          "asset.glb",
+          "source.kiln.js",
+          "preview.png"
+        ],
+        "glbForm": "named-groups"
+      },
+      "licence": {
+        "path": "packs/vehicles/r1/licenses/suv.ASSET-LICENSE.txt",
+        "bytes": 759,
+        "sha256": "abeda698b88cb5f115e25397f989bca22c4f38d46a6816847cdb2da4239c7b19",
+        "url": "https://assets.kilnstudio.tools/packs/vehicles/r1/licenses/suv.ASSET-LICENSE.txt",
+        "spdx": "CC0-1.0",
+        "statesDeliveredGlbSha256": "f46d4535adf8a2730ff832fba59476db2cc63b0dece497aebc1651ae53a6d28d"
+      },
+      "provenance": {
+        "originalModel": "Claude Sonnet 5.5",
+        "refinementModels": [],
+        "history": [
+          {
+            "stage": "First saved revision",
+            "request": "first-retry1",
+            "revisionId": "r_8261935e39684470b65549b1c39142fd",
+            "parentRevisionId": null,
+            "savedAt": "2026-09-29T15:18:31.641Z",
+            "brief": "Generic unbranded five-door SUV for the Golden Gate Bridge scene. Metres, +Y up, forward +X, right side +Z, origin on the ground between axles. Separate Wheel_FL/FR/RL/RR nodes (pivot at wheel centre, axle along Z); LOD0/LOD1/LOD2 groups; neutral near-white Paint for scene tinting.",
+            "model": "Claude Sonnet 5.5",
+            "modelId": "claude-sonnet-5-5",
+            "requestedEffort": "max",
+            "confirmedEffort": null,
+            "harness": "claude",
+            "harnessVersion": "2.1.280",
+            "confirmation": "Requested in receipt and invocation; effective reasoning effort not independently confirmed.",
+            "run": {
+              "stage": "first-retry1",
+              "label": "first run, retry 1",
+              "status": "completed",
+              "stop": "success",
+              "startedAt": "2026-09-29T14:26:18.351Z",
+              "endedAt": "2026-09-29T15:24:18.613Z",
+              "receiptSha256": "c04cf62d47048db887b5bc649c95cdd923afbe85b642c6bd7ef4b0258986be46",
+              "invocationSha256": "25f9583d27003fce8b2fb706fd0f0fa98ca69f1c100a81d28ab2b301befe2645"
+            }
+          }
+        ]
+      },
+      "revisions": [
+        {
+          "stage": "First saved revision",
+          "request": "first-retry1",
+          "revisionId": "r_8261935e39684470b65549b1c39142fd",
+          "parentRevisionId": null,
+          "savedAt": "2026-09-29T15:18:31.641Z",
+          "brief": "Generic unbranded five-door SUV for the Golden Gate Bridge scene. Metres, +Y up, forward +X, right side +Z, origin on the ground between axles. Separate Wheel_FL/FR/RL/RR nodes (pivot at wheel centre, axle along Z); LOD0/LOD1/LOD2 groups; neutral near-white Paint for scene tinting.",
+          "model": "Claude Sonnet 5.5",
+          "modelId": "claude-sonnet-5-5",
+          "requestedEffort": "max",
+          "confirmedEffort": null,
+          "harness": "claude",
+          "harnessVersion": "2.1.280",
+          "confirmation": "Requested in receipt and invocation; effective reasoning effort not independently confirmed.",
+          "run": {
+            "stage": "first-retry1",
+            "label": "first run, retry 1",
+            "status": "completed",
+            "stop": "success",
+            "startedAt": "2026-09-29T14:26:18.351Z",
+            "endedAt": "2026-09-29T15:24:18.613Z",
+            "receiptSha256": "c04cf62d47048db887b5bc649c95cdd923afbe85b642c6bd7ef4b0258986be46",
+            "invocationSha256": "25f9583d27003fce8b2fb706fd0f0fa98ca69f1c100a81d28ab2b301befe2645"
+          }
+        }
+      ],
+      "review": {
+        "status": "accepted",
+        "ownerAccepted": true,
+        "scope": "The owner approved all six vehicles at every tier on 29 September 2026. This is the revision that was approved.",
+        "recordedAt": "2026-09-29",
+        "source": "Coordinator overnight log, 12:46 entry (owner answer through the question tool)"
+      },
+      "license": "CC0-1.0",
+      "sceneDeepLink": null
+    },
+    {
+      "id": "pickup",
+      "slug": "pickup",
+      "name": "Generic pickup truck",
+      "pack": "vehicles",
+      "category": "Trucks",
+      "description": "Generic crew-cab pickup truck with a short bed. Made for traffic seen from about 3 m to 1 km, it steps from a detailed cab down to a boxy silhouette across three tiers.",
+      "assetId": "a_557b9bd6c2c34340804e802081a9b983",
+      "revisionId": "r_b74ac56a93a44c7484890f712df9c64c",
+      "parentRevision": null,
+      "metrics": {
+        "triangles": 2992,
+        "meshes": 16,
+        "materials": 10,
+        "bounds": [
+          5.905,
+          1.95,
+          2.05
+        ],
+        "boundsMin": [
+          -2.955,
+          0,
+          -1.025
+        ],
+        "boundsMax": [
+          2.95,
+          1.95,
+          1.025
+        ],
+        "clips": [],
+        "partPaths": [
+          "Pickup/LOD0/Mesh_Paint_LOD0",
+          "Pickup/LOD0/Mesh_Trim_LOD0",
+          "Pickup/LOD0/Mesh_Chrome_LOD0",
+          "Pickup/LOD0/Mesh_Glass_LOD0",
+          "Pickup/LOD0/Mesh_Headlight_LOD0",
+          "Pickup/LOD0/Mesh_Taillight_LOD0",
+          "Pickup/LOD0/Mesh_BrakeLight_LOD0",
+          "Pickup/LOD0/Mesh_Plate_LOD0",
+          "Pickup/Wheel_FL/Mesh_Tyre_FL",
+          "Pickup/Wheel_FL/Mesh_Rim_FL",
+          "Pickup/Wheel_FR/Mesh_Tyre_FR",
+          "Pickup/Wheel_FR/Mesh_Rim_FR",
+          "Pickup/Wheel_RL/Mesh_Tyre_RL",
+          "Pickup/Wheel_RL/Mesh_Rim_RL",
+          "Pickup/Wheel_RR/Mesh_Tyre_RR",
+          "Pickup/Wheel_RR/Mesh_Rim_RR"
+        ]
+      },
+      "vehicle": {
+        "wheelbase": 3.7,
+        "frontTrack": 1.72,
+        "rearTrack": 1.72,
+        "wheelRadius": 0.4,
+        "frontWheelWidth": 0.275,
+        "rearWheelWidth": 0.275,
+        "dualRear": false,
+        "pivots": {
+          "Wheel_FL": [
+            1.85,
+            0.4,
+            -0.86
+          ],
+          "Wheel_FR": [
+            1.85,
+            0.4,
+            0.86
+          ],
+          "Wheel_RL": [
+            -1.85,
+            0.4,
+            -0.86
+          ],
+          "Wheel_RR": [
+            -1.85,
+            0.4,
+            0.86
+          ]
+        }
+      },
+      "tiers": [
+        {
+          "tier": "LOD0",
+          "bodyTriangles": 1168,
+          "wheelTriangles": 1824,
+          "triangles": 2992,
+          "budget": 12000,
+          "wheelsShown": true,
+          "bounds": [
+            5.905,
+            1.95,
+            2.05
+          ],
+          "coverageBelow": null,
+          "distanceMetres": null,
+          "parts": 8,
+          "materials": [
+            "BrakeLight",
+            "Chrome",
+            "Glass",
+            "Headlight",
+            "Paint",
+            "Plate",
+            "Taillight",
+            "Trim"
+          ]
+        },
+        {
+          "tier": "LOD1",
+          "bodyTriangles": 672,
+          "wheelTriangles": 1824,
+          "triangles": 2496,
+          "budget": 3000,
+          "wheelsShown": true,
+          "bounds": [
+            5.905,
+            1.95,
+            2.05
+          ],
+          "coverageBelow": 0.0059,
+          "distanceMetres": 60,
+          "parts": 8,
+          "materials": [
+            "BrakeLight",
+            "Chrome",
+            "Glass",
+            "Headlight",
+            "Paint",
+            "Plate",
+            "Taillight",
+            "Trim"
+          ]
+        },
+        {
+          "tier": "LOD2",
+          "bodyTriangles": 152,
+          "wheelTriangles": 0,
+          "triangles": 152,
+          "budget": 600,
+          "wheelsShown": false,
+          "bounds": [
+            5.825,
+            1.75,
+            1.95
+          ],
+          "coverageBelow": 0.00034,
+          "distanceMetres": 249.9,
+          "parts": 2,
+          "materials": [
+            "Glass",
+            "Paint"
+          ]
+        }
+      ],
+      "tierLinks": {
+        "form": "MSFT_lod",
+        "culledBelow": 0.00000943,
+        "culledDistanceMetres": 1500.4,
+        "wheelsHiddenAtLastTier": true,
+        "wheelsHiddenBeyondMetres": 250.2
+      },
+      "poster": {
+        "src": "/media/rig/review-neutral-v1/vehicles/r1/pickup.webp",
+        "width": 1024,
+        "height": 1024,
+        "alt": "Generic crew-cab pickup truck with a short bed. Made for traffic seen from about 3 m to 1 km, it steps from a detailed cab down to a boxy silhouette across three tiers.",
+        "srcsetWebp": "/media/rig/review-neutral-v1/vehicles/r1/pickup-320.webp 320w, /media/rig/review-neutral-v1/vehicles/r1/pickup-480.webp 480w, /media/rig/review-neutral-v1/vehicles/r1/pickup-672.webp 672w, /media/rig/review-neutral-v1/vehicles/r1/pickup-768.webp 768w, /media/rig/review-neutral-v1/vehicles/r1/pickup-1024.webp 1024w",
+        "srcsetAvif": "/media/rig/review-neutral-v1/vehicles/r1/pickup-320.avif 320w, /media/rig/review-neutral-v1/vehicles/r1/pickup-480.avif 480w, /media/rig/review-neutral-v1/vehicles/r1/pickup-672.avif 672w, /media/rig/review-neutral-v1/vehicles/r1/pickup-768.avif 768w, /media/rig/review-neutral-v1/vehicles/r1/pickup-1024.avif 1024w",
+        "inputPath": "media/rig/review-neutral-v1/vehicles/r1/pickup.png",
+        "sourceRevisionId": "r_b74ac56a93a44c7484890f712df9c64c",
+        "exactRevision": true,
+        "rig": "review-neutral-v1"
+      },
+      "reviewImage": {
+        "src": "/media/vehicles/r1/review/pickup.webp",
+        "width": 1168,
+        "height": 780,
+        "alt": "Six saved review views of Generic pickup truck: front, right, back, left, top and three-quarter.",
+        "srcsetWebp": "/media/vehicles/r1/review/pickup-320.webp 320w, /media/vehicles/r1/review/pickup-480.webp 480w, /media/vehicles/r1/review/pickup-672.webp 672w, /media/vehicles/r1/review/pickup-768.webp 768w, /media/vehicles/r1/review/pickup-1024.webp 1024w",
+        "srcsetAvif": "/media/vehicles/r1/review/pickup-320.avif 320w, /media/vehicles/r1/review/pickup-480.avif 480w, /media/vehicles/r1/review/pickup-672.avif 672w, /media/vehicles/r1/review/pickup-768.avif 768w, /media/vehicles/r1/review/pickup-1024.avif 1024w",
+        "inputPath": "media/vehicles/r1/review/pickup.png",
+        "sourceRevisionId": "r_b74ac56a93a44c7484890f712df9c64c",
+        "exactRevision": true,
+        "fidelity": {
+          "materialFaithful": true,
+          "exactArtifact": false,
+          "delivered": "full-material",
+          "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1074",
+          "backdrop": "neutral"
+        }
+      },
+      "sourcePath": "/sources/vehicles/pickup.kiln.js",
+      "sourceSha256": "1641c5071a5d34749c71e8459ac53d7c71f8736f6480ca400d22035ef06a45db",
+      "modelPath": "/models/vehicles/pickup.glb",
+      "runtimeDownload": {
+        "path": "packs/vehicles/r1/models/pickup.glb",
+        "bytes": 170228,
+        "sha256": "3adba5410c857ae9e4ec9e2a6eb65428b928783746a7a34fd18679a4d29d83a4",
+        "url": "https://assets.kilnstudio.tools/packs/vehicles/r1/models/pickup.glb",
+        "archive": "packs/vehicles/r1/generic-road-vehicles-runtime.zip",
+        "member": "models/pickup.glb",
+        "form": "MSFT_lod"
+      },
+      "editableDownload": {
+        "path": "packs/vehicles/r1/editable/pickup-editable.zip",
+        "bytes": 261330,
+        "sha256": "78d1071e89746bbba68f2509274e946f176c47799c3b31dfd474b04bdcd911cb",
+        "url": "https://assets.kilnstudio.tools/packs/vehicles/r1/editable/pickup-editable.zip",
+        "members": [
+          "manifest.json",
+          "asset.glb",
+          "source.kiln.js",
+          "preview.png"
+        ],
+        "glbForm": "named-groups"
+      },
+      "licence": {
+        "path": "packs/vehicles/r1/licenses/pickup.ASSET-LICENSE.txt",
+        "bytes": 794,
+        "sha256": "2586337f44954739f199319bbb286f07b3ff183ce0d6264de494e47344b101ec",
+        "url": "https://assets.kilnstudio.tools/packs/vehicles/r1/licenses/pickup.ASSET-LICENSE.txt",
+        "spdx": "CC0-1.0",
+        "statesDeliveredGlbSha256": "3adba5410c857ae9e4ec9e2a6eb65428b928783746a7a34fd18679a4d29d83a4"
+      },
+      "provenance": {
+        "originalModel": "Claude Sonnet 5.5",
+        "refinementModels": [],
+        "history": [
+          {
+            "stage": "First saved revision",
+            "request": "first-retry1",
+            "revisionId": "r_b74ac56a93a44c7484890f712df9c64c",
+            "parentRevisionId": null,
+            "savedAt": "2026-09-29T14:45:59.197Z",
+            "brief": "Generic unbranded crew-cab short-bed pickup truck for Golden Gate web-scene traffic, viewed from about 3 m to 1 km. About 5.90 x 2.03 x 1.95 m, wheelbase about 3.70 m. Frame: metres, +Y up, +X forward, right side at +Z, origin at ground level centred between axles. Wheel groups Wheel_FL/FR/RL/RR pivot at the wheel centre with the axle along Z; LOD0/LOD1/LOD2 child groups (12k/3k/600 triangle budgets). Paint is untinted near-white so the scene can tint it.",
+            "model": "Claude Sonnet 5.5",
+            "modelId": "claude-sonnet-5-5",
+            "requestedEffort": "max",
+            "confirmedEffort": null,
+            "harness": "claude",
+            "harnessVersion": "2.1.280",
+            "confirmation": "Requested in receipt and invocation; effective reasoning effort not independently confirmed.",
+            "run": {
+              "stage": "first-retry1",
+              "label": "first run, retry 1",
+              "status": "failed",
+              "stop": "error_max_budget_usd",
+              "startedAt": "2026-09-29T14:26:18.351Z",
+              "endedAt": "2026-09-29T15:16:07.782Z",
+              "receiptSha256": "a305707c2b87e6e0ea07cbdd925ff45b58875c196e75a926a51529c9de7bfe06",
+              "invocationSha256": "4e875215e6e845fb8813d1a1e015827445e0f00938a887c72d79557dce8d0de0"
+            }
+          }
+        ]
+      },
+      "revisions": [
+        {
+          "stage": "First saved revision",
+          "request": "first-retry1",
+          "revisionId": "r_b74ac56a93a44c7484890f712df9c64c",
+          "parentRevisionId": null,
+          "savedAt": "2026-09-29T14:45:59.197Z",
+          "brief": "Generic unbranded crew-cab short-bed pickup truck for Golden Gate web-scene traffic, viewed from about 3 m to 1 km. About 5.90 x 2.03 x 1.95 m, wheelbase about 3.70 m. Frame: metres, +Y up, +X forward, right side at +Z, origin at ground level centred between axles. Wheel groups Wheel_FL/FR/RL/RR pivot at the wheel centre with the axle along Z; LOD0/LOD1/LOD2 child groups (12k/3k/600 triangle budgets). Paint is untinted near-white so the scene can tint it.",
+          "model": "Claude Sonnet 5.5",
+          "modelId": "claude-sonnet-5-5",
+          "requestedEffort": "max",
+          "confirmedEffort": null,
+          "harness": "claude",
+          "harnessVersion": "2.1.280",
+          "confirmation": "Requested in receipt and invocation; effective reasoning effort not independently confirmed.",
+          "run": {
+            "stage": "first-retry1",
+            "label": "first run, retry 1",
+            "status": "failed",
+            "stop": "error_max_budget_usd",
+            "startedAt": "2026-09-29T14:26:18.351Z",
+            "endedAt": "2026-09-29T15:16:07.782Z",
+            "receiptSha256": "a305707c2b87e6e0ea07cbdd925ff45b58875c196e75a926a51529c9de7bfe06",
+            "invocationSha256": "4e875215e6e845fb8813d1a1e015827445e0f00938a887c72d79557dce8d0de0"
+          }
+        }
+      ],
+      "review": {
+        "status": "accepted",
+        "ownerAccepted": true,
+        "scope": "The owner approved all six vehicles at every tier on 29 September 2026. This is the revision that was approved.",
+        "recordedAt": "2026-09-29",
+        "source": "Coordinator overnight log, 12:46 entry (owner answer through the question tool)"
+      },
+      "license": "CC0-1.0",
+      "sceneDeepLink": null
+    },
+    {
+      "id": "box-truck",
+      "slug": "box-truck",
+      "name": "Generic box truck",
+      "pack": "vehicles",
+      "category": "Trucks",
+      "description": "Generic class 6 cab-over box truck with dual rear wheels. The cab takes the paint tint; the cargo box has its own untinted near-white material.",
+      "assetId": "a_2092ca0610c749b386c14c07dbaf4236",
+      "revisionId": "r_d5e37b6d4e7347ac863220cdbd8e49a4",
+      "parentRevision": null,
+      "metrics": {
+        "triangles": 3546,
+        "meshes": 19,
+        "materials": 11,
+        "bounds": [
+          7.6,
+          3.4,
+          2.504
+        ],
+        "boundsMin": [
+          -4.15,
+          0,
+          -1.252
+        ],
+        "boundsMax": [
+          3.45,
+          3.4,
+          1.252
+        ],
+        "clips": [],
+        "partPaths": [
+          "BoxTruck/LOD0/Mesh_Paint_LOD0",
+          "BoxTruck/LOD0/Mesh_Trim_LOD0",
+          "BoxTruck/LOD0/Mesh_Chrome_LOD0",
+          "BoxTruck/LOD0/Mesh_Glass_LOD0",
+          "BoxTruck/LOD0/Mesh_Headlight_LOD0",
+          "BoxTruck/LOD0/Mesh_CargoBox_LOD0",
+          "BoxTruck/LOD0/Mesh_Plate_LOD0",
+          "BoxTruck/LOD0/Mesh_BrakeLight_LOD0",
+          "BoxTruck/LOD0/Mesh_Taillight_LOD0",
+          "BoxTruck/Wheel_FL/Mesh_Tyre_FL",
+          "BoxTruck/Wheel_FL/Mesh_Rim_FL",
+          "BoxTruck/Wheel_FR/Mesh_Tyre_FR",
+          "BoxTruck/Wheel_FR/Mesh_Rim_FR",
+          "BoxTruck/Wheel_RL/Mesh_Tyre_RL_outer",
+          "BoxTruck/Wheel_RL/Mesh_Rim_RL_outer",
+          "BoxTruck/Wheel_RL/Mesh_Tyre_RL_inner",
+          "BoxTruck/Wheel_RR/Mesh_Tyre_RR_inner",
+          "BoxTruck/Wheel_RR/Mesh_Tyre_RR_outer",
+          "BoxTruck/Wheel_RR/Mesh_Rim_RR_outer"
+        ]
+      },
+      "vehicle": {
+        "wheelbase": 4.5,
+        "frontTrack": 1.86,
+        "rearTrack": 1.72,
+        "wheelRadius": 0.42,
+        "frontWheelWidth": 0.245,
+        "rearWheelWidth": 0.535,
+        "dualRear": true,
+        "pivots": {
+          "Wheel_FL": [
+            2.25,
+            0.42,
+            -0.93
+          ],
+          "Wheel_FR": [
+            2.25,
+            0.42,
+            0.93
+          ],
+          "Wheel_RL": [
+            -2.25,
+            0.42,
+            -0.86
+          ],
+          "Wheel_RR": [
+            -2.25,
+            0.42,
+            0.86
+          ]
+        }
+      },
+      "tiers": [
+        {
+          "tier": "LOD0",
+          "bodyTriangles": 1050,
+          "wheelTriangles": 2496,
+          "triangles": 3546,
+          "budget": 20000,
+          "wheelsShown": true,
+          "bounds": [
+            7.6,
+            3.4,
+            2.504
+          ],
+          "coverageBelow": null,
+          "distanceMetres": null,
+          "parts": 9,
+          "materials": [
+            "BrakeLight",
+            "CargoBox",
+            "Chrome",
+            "Glass",
+            "Headlight",
+            "Paint",
+            "Plate",
+            "Taillight",
+            "Trim"
+          ]
+        },
+        {
+          "tier": "LOD1",
+          "bodyTriangles": 598,
+          "wheelTriangles": 2496,
+          "triangles": 3094,
+          "budget": 5000,
+          "wheelsShown": true,
+          "bounds": [
+            7.6,
+            3.4,
+            2.502
+          ],
+          "coverageBelow": 0.0105,
+          "distanceMetres": 60.1,
+          "parts": 9,
+          "materials": [
+            "BrakeLight",
+            "CargoBox",
+            "Chrome",
+            "Glass",
+            "Headlight",
+            "Paint",
+            "Plate",
+            "Taillight",
+            "Trim"
+          ]
+        },
+        {
+          "tier": "LOD2",
+          "bodyTriangles": 90,
+          "wheelTriangles": 0,
+          "triangles": 90,
+          "budget": 1000,
+          "wheelsShown": false,
+          "bounds": [
+            7.454,
+            3.15,
+            2.48
+          ],
+          "coverageBelow": 0.000606,
+          "distanceMetres": 250,
+          "parts": 4,
+          "materials": [
+            "CargoBox",
+            "Glass",
+            "Paint",
+            "Trim"
+          ]
+        }
+      ],
+      "tierLinks": {
+        "form": "MSFT_lod",
+        "culledBelow": 0.0000168,
+        "culledDistanceMetres": 1501.7,
+        "wheelsHiddenAtLastTier": true,
+        "wheelsHiddenBeyondMetres": 249.5
+      },
+      "poster": {
+        "src": "/media/rig/review-neutral-v1/vehicles/r1/box-truck.webp",
+        "width": 1024,
+        "height": 1024,
+        "alt": "Generic class 6 cab-over box truck with dual rear wheels. The cab takes the paint tint; the cargo box has its own untinted near-white material.",
+        "srcsetWebp": "/media/rig/review-neutral-v1/vehicles/r1/box-truck-320.webp 320w, /media/rig/review-neutral-v1/vehicles/r1/box-truck-480.webp 480w, /media/rig/review-neutral-v1/vehicles/r1/box-truck-672.webp 672w, /media/rig/review-neutral-v1/vehicles/r1/box-truck-768.webp 768w, /media/rig/review-neutral-v1/vehicles/r1/box-truck-1024.webp 1024w",
+        "srcsetAvif": "/media/rig/review-neutral-v1/vehicles/r1/box-truck-320.avif 320w, /media/rig/review-neutral-v1/vehicles/r1/box-truck-480.avif 480w, /media/rig/review-neutral-v1/vehicles/r1/box-truck-672.avif 672w, /media/rig/review-neutral-v1/vehicles/r1/box-truck-768.avif 768w, /media/rig/review-neutral-v1/vehicles/r1/box-truck-1024.avif 1024w",
+        "inputPath": "media/rig/review-neutral-v1/vehicles/r1/box-truck.png",
+        "sourceRevisionId": "r_d5e37b6d4e7347ac863220cdbd8e49a4",
+        "exactRevision": true,
+        "rig": "review-neutral-v1"
+      },
+      "reviewImage": {
+        "src": "/media/vehicles/r1/review/box-truck.webp",
+        "width": 1168,
+        "height": 780,
+        "alt": "Six saved review views of Generic box truck: front, right, back, left, top and three-quarter.",
+        "srcsetWebp": "/media/vehicles/r1/review/box-truck-320.webp 320w, /media/vehicles/r1/review/box-truck-480.webp 480w, /media/vehicles/r1/review/box-truck-672.webp 672w, /media/vehicles/r1/review/box-truck-768.webp 768w, /media/vehicles/r1/review/box-truck-1024.webp 1024w",
+        "srcsetAvif": "/media/vehicles/r1/review/box-truck-320.avif 320w, /media/vehicles/r1/review/box-truck-480.avif 480w, /media/vehicles/r1/review/box-truck-672.avif 672w, /media/vehicles/r1/review/box-truck-768.avif 768w, /media/vehicles/r1/review/box-truck-1024.avif 1024w",
+        "inputPath": "media/vehicles/r1/review/box-truck.png",
+        "sourceRevisionId": "r_d5e37b6d4e7347ac863220cdbd8e49a4",
+        "exactRevision": true,
+        "fidelity": {
+          "materialFaithful": true,
+          "exactArtifact": false,
+          "delivered": "full-material",
+          "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1074",
+          "backdrop": "neutral"
+        }
+      },
+      "sourcePath": "/sources/vehicles/box-truck.kiln.js",
+      "sourceSha256": "cb8d522dde0198cd84b9a59134e7fd2ebcb8c353f8ec36d111ae01f82c684678",
+      "modelPath": "/models/vehicles/box-truck.glb",
+      "runtimeDownload": {
+        "path": "packs/vehicles/r1/models/box-truck.glb",
+        "bytes": 169772,
+        "sha256": "bea417d293d5e2a32f99795bc2841ef845bd1a94ccc6f9d9e4691c050c5a0e94",
+        "url": "https://assets.kilnstudio.tools/packs/vehicles/r1/models/box-truck.glb",
+        "archive": "packs/vehicles/r1/generic-road-vehicles-runtime.zip",
+        "member": "models/box-truck.glb",
+        "form": "MSFT_lod"
+      },
+      "editableDownload": {
+        "path": "packs/vehicles/r1/editable/box-truck-editable.zip",
+        "bytes": 242952,
+        "sha256": "4250f94271161b6a14fee4a9239c81ba4da9f88094c10ff9e18ed337d4b0db40",
+        "url": "https://assets.kilnstudio.tools/packs/vehicles/r1/editable/box-truck-editable.zip",
+        "members": [
+          "manifest.json",
+          "asset.glb",
+          "source.kiln.js",
+          "preview.png"
+        ],
+        "glbForm": "named-groups"
+      },
+      "licence": {
+        "path": "packs/vehicles/r1/licenses/box-truck.ASSET-LICENSE.txt",
+        "bytes": 794,
+        "sha256": "024bf2497a9dfa0873bf91491e3076c8ba515890455a83f2151bf5736acb906d",
+        "url": "https://assets.kilnstudio.tools/packs/vehicles/r1/licenses/box-truck.ASSET-LICENSE.txt",
+        "spdx": "CC0-1.0",
+        "statesDeliveredGlbSha256": "bea417d293d5e2a32f99795bc2841ef845bd1a94ccc6f9d9e4691c050c5a0e94"
+      },
+      "provenance": {
+        "originalModel": "Claude Sonnet 5.5",
+        "refinementModels": [],
+        "history": [
+          {
+            "stage": "First saved revision",
+            "request": "first-retry1",
+            "revisionId": "r_d5e37b6d4e7347ac863220cdbd8e49a4",
+            "parentRevisionId": null,
+            "savedAt": "2026-09-29T14:54:20.578Z",
+            "brief": null,
+            "model": "Claude Sonnet 5.5",
+            "modelId": "claude-sonnet-5-5",
+            "requestedEffort": "max",
+            "confirmedEffort": null,
+            "harness": "claude",
+            "harnessVersion": "2.1.280",
+            "confirmation": "Requested in receipt and invocation; effective reasoning effort not independently confirmed.",
+            "run": {
+              "stage": "first-retry1",
+              "label": "first run, retry 1",
+              "status": "failed",
+              "stop": "error_max_budget_usd",
+              "startedAt": "2026-09-29T14:26:18.351Z",
+              "endedAt": "2026-09-29T15:16:07.782Z",
+              "receiptSha256": "a305707c2b87e6e0ea07cbdd925ff45b58875c196e75a926a51529c9de7bfe06",
+              "invocationSha256": "4e875215e6e845fb8813d1a1e015827445e0f00938a887c72d79557dce8d0de0"
+            }
+          }
+        ]
+      },
+      "revisions": [
+        {
+          "stage": "First saved revision",
+          "request": "first-retry1",
+          "revisionId": "r_d5e37b6d4e7347ac863220cdbd8e49a4",
+          "parentRevisionId": null,
+          "savedAt": "2026-09-29T14:54:20.578Z",
+          "brief": null,
+          "model": "Claude Sonnet 5.5",
+          "modelId": "claude-sonnet-5-5",
+          "requestedEffort": "max",
+          "confirmedEffort": null,
+          "harness": "claude",
+          "harnessVersion": "2.1.280",
+          "confirmation": "Requested in receipt and invocation; effective reasoning effort not independently confirmed.",
+          "run": {
+            "stage": "first-retry1",
+            "label": "first run, retry 1",
+            "status": "failed",
+            "stop": "error_max_budget_usd",
+            "startedAt": "2026-09-29T14:26:18.351Z",
+            "endedAt": "2026-09-29T15:16:07.782Z",
+            "receiptSha256": "a305707c2b87e6e0ea07cbdd925ff45b58875c196e75a926a51529c9de7bfe06",
+            "invocationSha256": "4e875215e6e845fb8813d1a1e015827445e0f00938a887c72d79557dce8d0de0"
+          }
+        }
+      ],
+      "review": {
+        "status": "accepted",
+        "ownerAccepted": true,
+        "scope": "The owner approved all six vehicles at every tier on 29 September 2026. This is the revision that was approved.",
+        "recordedAt": "2026-09-29",
+        "source": "Coordinator overnight log, 12:46 entry (owner answer through the question tool)"
+      },
+      "license": "CC0-1.0",
+      "sceneDeepLink": null
+    },
+    {
+      "id": "transit-bus",
+      "slug": "transit-bus",
+      "name": "Generic transit bus",
+      "pack": "vehicles",
+      "category": "Buses",
+      "description": "Generic 40 ft low-floor transit bus with two doors on the right, a two-tone body (paint above, trim below), dual rear wheels and a roof equipment pod. No operator livery, text or numbers.",
+      "assetId": "a_a8c030b2570f4ae5aa54eefbd3767f4c",
+      "revisionId": "r_6ab2ee53817449c59972502fcf008f1a",
+      "parentRevision": "r_4dc2fb11b58b4dcd9f89197a8f7e28ff",
+      "metrics": {
+        "triangles": 3684,
+        "meshes": 18,
+        "materials": 10,
+        "bounds": [
+          12.208,
+          3.1,
+          2.67
+        ],
+        "boundsMin": [
+          -6.404,
+          0,
+          -1.335
+        ],
+        "boundsMax": [
+          5.804,
+          3.1,
+          1.335
+        ],
+        "clips": [],
+        "partPaths": [
+          "TransitBus/LOD0/Mesh_Paint_LOD0",
+          "TransitBus/LOD0/Mesh_Trim_LOD0",
+          "TransitBus/LOD0/Mesh_Chrome_LOD0",
+          "TransitBus/LOD0/Mesh_Glass_LOD0",
+          "TransitBus/LOD0/Mesh_Plate_LOD0",
+          "TransitBus/LOD0/Mesh_Headlight_LOD0",
+          "TransitBus/LOD0/Mesh_BrakeLight_LOD0",
+          "TransitBus/LOD0/Mesh_Taillight_LOD0",
+          "TransitBus/Wheel_FL/Mesh_Tyre_FL",
+          "TransitBus/Wheel_FL/Mesh_Rim_FL",
+          "TransitBus/Wheel_FR/Mesh_Tyre_FR",
+          "TransitBus/Wheel_FR/Mesh_Rim_FR",
+          "TransitBus/Wheel_RL/Mesh_Tyre_RL_outer",
+          "TransitBus/Wheel_RL/Mesh_Rim_RL_outer",
+          "TransitBus/Wheel_RL/Mesh_Tyre_RL_inner",
+          "TransitBus/Wheel_RR/Mesh_Tyre_RR_inner",
+          "TransitBus/Wheel_RR/Mesh_Tyre_RR_outer",
+          "TransitBus/Wheel_RR/Mesh_Rim_RR_outer"
+        ]
+      },
+      "vehicle": {
+        "wheelbase": 7.2,
+        "frontTrack": 2.06,
+        "rearTrack": 1.86,
+        "wheelRadius": 0.5,
+        "frontWheelWidth": 0.3,
+        "rearWheelWidth": 0.63,
+        "dualRear": true,
+        "pivots": {
+          "Wheel_FL": [
+            3.6,
+            0.5,
+            -1.03
+          ],
+          "Wheel_FR": [
+            3.6,
+            0.5,
+            1.03
+          ],
+          "Wheel_RL": [
+            -3.6,
+            0.5,
+            -0.93
+          ],
+          "Wheel_RR": [
+            -3.6,
+            0.5,
+            0.93
+          ]
+        }
+      },
+      "tiers": [
+        {
+          "tier": "LOD0",
+          "bodyTriangles": 1188,
+          "wheelTriangles": 2496,
+          "triangles": 3684,
+          "budget": 20000,
+          "wheelsShown": true,
+          "bounds": [
+            12.208,
+            3.1,
+            2.67
+          ],
+          "coverageBelow": null,
+          "distanceMetres": null,
+          "parts": 8,
+          "materials": [
+            "BrakeLight",
+            "Chrome",
+            "Glass",
+            "Headlight",
+            "Paint",
+            "Plate",
+            "Taillight",
+            "Trim"
+          ]
+        },
+        {
+          "tier": "LOD1",
+          "bodyTriangles": 924,
+          "wheelTriangles": 2496,
+          "triangles": 3420,
+          "budget": 5000,
+          "wheelsShown": true,
+          "bounds": [
+            12.208,
+            3.1,
+            2.67
+          ],
+          "coverageBelow": 0.0231,
+          "distanceMetres": 60.1,
+          "parts": 8,
+          "materials": [
+            "BrakeLight",
+            "Chrome",
+            "Glass",
+            "Headlight",
+            "Paint",
+            "Plate",
+            "Taillight",
+            "Trim"
+          ]
+        },
+        {
+          "tier": "LOD2",
+          "bodyTriangles": 154,
+          "wheelTriangles": 0,
+          "triangles": 154,
+          "budget": 1000,
+          "wheelsShown": false,
+          "bounds": [
+            12.086,
+            2.85,
+            2.598
+          ],
+          "coverageBelow": 0.00133,
+          "distanceMetres": 250.3,
+          "parts": 3,
+          "materials": [
+            "Glass",
+            "Paint",
+            "Trim"
+          ]
+        }
+      ],
+      "tierLinks": {
+        "form": "MSFT_lod",
+        "culledBelow": 0.000037,
+        "culledDistanceMetres": 1500.5,
+        "wheelsHiddenAtLastTier": true,
+        "wheelsHiddenBeyondMetres": 249.9
+      },
+      "poster": {
+        "src": "/media/rig/review-neutral-v1/vehicles/r1/transit-bus.webp",
+        "width": 1024,
+        "height": 1024,
+        "alt": "Generic 40 ft low-floor transit bus with two doors on the right, a two-tone body (paint above, trim below), dual rear wheels and a roof equipment pod. No operator livery, text or numbers.",
+        "srcsetWebp": "/media/rig/review-neutral-v1/vehicles/r1/transit-bus-320.webp 320w, /media/rig/review-neutral-v1/vehicles/r1/transit-bus-480.webp 480w, /media/rig/review-neutral-v1/vehicles/r1/transit-bus-672.webp 672w, /media/rig/review-neutral-v1/vehicles/r1/transit-bus-768.webp 768w, /media/rig/review-neutral-v1/vehicles/r1/transit-bus-1024.webp 1024w",
+        "srcsetAvif": "/media/rig/review-neutral-v1/vehicles/r1/transit-bus-320.avif 320w, /media/rig/review-neutral-v1/vehicles/r1/transit-bus-480.avif 480w, /media/rig/review-neutral-v1/vehicles/r1/transit-bus-672.avif 672w, /media/rig/review-neutral-v1/vehicles/r1/transit-bus-768.avif 768w, /media/rig/review-neutral-v1/vehicles/r1/transit-bus-1024.avif 1024w",
+        "inputPath": "media/rig/review-neutral-v1/vehicles/r1/transit-bus.png",
+        "sourceRevisionId": "r_6ab2ee53817449c59972502fcf008f1a",
+        "exactRevision": true,
+        "rig": "review-neutral-v1"
+      },
+      "reviewImage": {
+        "src": "/media/vehicles/r1/review/transit-bus.webp",
+        "width": 1168,
+        "height": 780,
+        "alt": "Six saved review views of Generic transit bus: front, right, back, left, top and three-quarter.",
+        "srcsetWebp": "/media/vehicles/r1/review/transit-bus-320.webp 320w, /media/vehicles/r1/review/transit-bus-480.webp 480w, /media/vehicles/r1/review/transit-bus-672.webp 672w, /media/vehicles/r1/review/transit-bus-768.webp 768w, /media/vehicles/r1/review/transit-bus-1024.webp 1024w",
+        "srcsetAvif": "/media/vehicles/r1/review/transit-bus-320.avif 320w, /media/vehicles/r1/review/transit-bus-480.avif 480w, /media/vehicles/r1/review/transit-bus-672.avif 672w, /media/vehicles/r1/review/transit-bus-768.avif 768w, /media/vehicles/r1/review/transit-bus-1024.avif 1024w",
+        "inputPath": "media/vehicles/r1/review/transit-bus.png",
+        "sourceRevisionId": "r_6ab2ee53817449c59972502fcf008f1a",
+        "exactRevision": true,
+        "fidelity": {
+          "materialFaithful": true,
+          "exactArtifact": false,
+          "delivered": "full-material",
+          "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1074",
+          "backdrop": "neutral"
+        }
+      },
+      "sourcePath": "/sources/vehicles/transit-bus.kiln.js",
+      "sourceSha256": "b253949bf9d9a39db635b44119cc50158baaecd84c9d46322f1454b31e177ee6",
+      "modelPath": "/models/vehicles/transit-bus.glb",
+      "runtimeDownload": {
+        "path": "packs/vehicles/r1/models/transit-bus.glb",
+        "bytes": 194196,
+        "sha256": "c55fbf069668774e0d3dc98db76c3efd05ff630f0ffd2b2cf475579336875617",
+        "url": "https://assets.kilnstudio.tools/packs/vehicles/r1/models/transit-bus.glb",
+        "archive": "packs/vehicles/r1/generic-road-vehicles-runtime.zip",
+        "member": "models/transit-bus.glb",
+        "form": "MSFT_lod"
+      },
+      "editableDownload": {
+        "path": "packs/vehicles/r1/editable/transit-bus-editable.zip",
+        "bytes": 264771,
+        "sha256": "a6ab52c86df3abb02de42439e3ee73853adb21d740d095eb5df9dd288c530546",
+        "url": "https://assets.kilnstudio.tools/packs/vehicles/r1/editable/transit-bus-editable.zip",
+        "members": [
+          "manifest.json",
+          "asset.glb",
+          "source.kiln.js",
+          "preview.png"
+        ],
+        "glbForm": "named-groups"
+      },
+      "licence": {
+        "path": "packs/vehicles/r1/licenses/transit-bus.ASSET-LICENSE.txt",
+        "bytes": 798,
+        "sha256": "c141b6823a31569cdcf7096a075c5995eea3ad7e4c522b5790dc56d4597e1ab5",
+        "url": "https://assets.kilnstudio.tools/packs/vehicles/r1/licenses/transit-bus.ASSET-LICENSE.txt",
+        "spdx": "CC0-1.0",
+        "statesDeliveredGlbSha256": "c55fbf069668774e0d3dc98db76c3efd05ff630f0ffd2b2cf475579336875617"
+      },
+      "provenance": {
+        "originalModel": "Claude Sonnet 5.5",
+        "refinementModels": [
+          "Claude Sonnet 5.5"
+        ],
+        "history": [
+          {
+            "stage": "First saved revision",
+            "request": "first-retry1",
+            "revisionId": "r_4dc2fb11b58b4dcd9f89197a8f7e28ff",
+            "parentRevisionId": null,
+            "savedAt": "2026-09-29T15:07:45.552Z",
+            "brief": null,
+            "model": "Claude Sonnet 5.5",
+            "modelId": "claude-sonnet-5-5",
+            "requestedEffort": "max",
+            "confirmedEffort": null,
+            "harness": "claude",
+            "harnessVersion": "2.1.280",
+            "confirmation": "Requested in receipt and invocation; effective reasoning effort not independently confirmed.",
+            "run": {
+              "stage": "first-retry1",
+              "label": "first run, retry 1",
+              "status": "failed",
+              "stop": "error_max_budget_usd",
+              "startedAt": "2026-09-29T14:26:18.351Z",
+              "endedAt": "2026-09-29T15:16:07.782Z",
+              "receiptSha256": "a305707c2b87e6e0ea07cbdd925ff45b58875c196e75a926a51529c9de7bfe06",
+              "invocationSha256": "4e875215e6e845fb8813d1a1e015827445e0f00938a887c72d79557dce8d0de0"
+            }
+          },
+          {
+            "stage": "Review 2 · saved revision",
+            "request": "review-2",
+            "revisionId": "r_6ab2ee53817449c59972502fcf008f1a",
+            "parentRevisionId": "r_4dc2fb11b58b4dcd9f89197a8f7e28ff",
+            "savedAt": "2026-09-29T17:32:44.098Z",
+            "brief": "Review 2 fix: the transit bus was see-through from behind at every LOD. Close the rear body face with body Paint, keep the taillights, plate panel and bounds, and leave other vehicles, materials, dimensions and LOD structure unchanged.",
+            "model": "Claude Sonnet 5.5",
+            "modelId": "claude-sonnet-5-5",
+            "requestedEffort": "max",
+            "confirmedEffort": null,
+            "harness": "claude",
+            "harnessVersion": "2.1.280",
+            "confirmation": "Requested in receipt and invocation; effective reasoning effort not independently confirmed.",
+            "run": {
+              "stage": "review-2",
+              "label": "review 2",
+              "status": "completed",
+              "stop": "success",
+              "startedAt": "2026-09-29T17:21:22.123Z",
+              "endedAt": "2026-09-29T17:44:21.899Z",
+              "receiptSha256": "ee02f927d4bdf60d60e94855c702d3da35aee301c5e9d3622ec78f48175af57e",
+              "invocationSha256": "734c1176a95b90b8f3cc77fd094aa28d60fb1c2b7c9d75fd9f5e6e7ba7d9ee31"
+            }
+          }
+        ]
+      },
+      "revisions": [
+        {
+          "stage": "First saved revision",
+          "request": "first-retry1",
+          "revisionId": "r_4dc2fb11b58b4dcd9f89197a8f7e28ff",
+          "parentRevisionId": null,
+          "savedAt": "2026-09-29T15:07:45.552Z",
+          "brief": null,
+          "model": "Claude Sonnet 5.5",
+          "modelId": "claude-sonnet-5-5",
+          "requestedEffort": "max",
+          "confirmedEffort": null,
+          "harness": "claude",
+          "harnessVersion": "2.1.280",
+          "confirmation": "Requested in receipt and invocation; effective reasoning effort not independently confirmed.",
+          "run": {
+            "stage": "first-retry1",
+            "label": "first run, retry 1",
+            "status": "failed",
+            "stop": "error_max_budget_usd",
+            "startedAt": "2026-09-29T14:26:18.351Z",
+            "endedAt": "2026-09-29T15:16:07.782Z",
+            "receiptSha256": "a305707c2b87e6e0ea07cbdd925ff45b58875c196e75a926a51529c9de7bfe06",
+            "invocationSha256": "4e875215e6e845fb8813d1a1e015827445e0f00938a887c72d79557dce8d0de0"
+          }
+        },
+        {
+          "stage": "Review 2 · saved revision",
+          "request": "review-2",
+          "revisionId": "r_6ab2ee53817449c59972502fcf008f1a",
+          "parentRevisionId": "r_4dc2fb11b58b4dcd9f89197a8f7e28ff",
+          "savedAt": "2026-09-29T17:32:44.098Z",
+          "brief": "Review 2 fix: the transit bus was see-through from behind at every LOD. Close the rear body face with body Paint, keep the taillights, plate panel and bounds, and leave other vehicles, materials, dimensions and LOD structure unchanged.",
+          "model": "Claude Sonnet 5.5",
+          "modelId": "claude-sonnet-5-5",
+          "requestedEffort": "max",
+          "confirmedEffort": null,
+          "harness": "claude",
+          "harnessVersion": "2.1.280",
+          "confirmation": "Requested in receipt and invocation; effective reasoning effort not independently confirmed.",
+          "run": {
+            "stage": "review-2",
+            "label": "review 2",
+            "status": "completed",
+            "stop": "success",
+            "startedAt": "2026-09-29T17:21:22.123Z",
+            "endedAt": "2026-09-29T17:44:21.899Z",
+            "receiptSha256": "ee02f927d4bdf60d60e94855c702d3da35aee301c5e9d3622ec78f48175af57e",
+            "invocationSha256": "734c1176a95b90b8f3cc77fd094aa28d60fb1c2b7c9d75fd9f5e6e7ba7d9ee31"
+          }
+        }
+      ],
+      "review": {
+        "status": "awaiting-owner-review",
+        "ownerAccepted": false,
+        "scope": "The owner approved all six vehicles at every tier on 29 September 2026. The transit bus was then found to be see-through from behind, and this revision (review 2) corrects that. Its triangle counts, body bounds and wheels equal the first revision’s at every tier. Approval of the corrected revision is not recorded.",
+        "correction": "The transit bus was then found to be see-through from behind, and this revision (review 2) corrects that. Its triangle counts, body bounds and wheels equal the first revision’s at every tier. Approval of the corrected revision is not recorded.",
+        "recordedAt": "2026-09-29",
+        "source": "Coordinator overnight log, 12:46 entry (owner answer through the question tool)"
+      },
+      "license": "CC0-1.0",
+      "sceneDeepLink": null
+    }
+  ]
+}

@@ -18,11 +18,11 @@ const executablePath = typeof args.executable === 'string' ? args.executable : c
 const suffix = typeof args.suffix === 'string' ? `-${args.suffix}` : '';
 const routeSelection = typeof args.routes === 'string' ? args.routes.split(',') : null;
 const routes = [
-  ['home', '/'], ['packs', '/packs/'], ['pack-farm', '/packs/farm/'], ['pack-terafab', '/packs/terafab/'],
-  ['gallery', '/gallery/'], ['asset-farmhouse', '/gallery/farmhouse/'], ['asset-bridge', '/gallery/golden-gate-bridge/'],
+  ['home', '/'], ['packs', '/packs/'], ['pack-farm', '/packs/farm/'], ['pack-vehicles', '/packs/vehicles/'], ['pack-foundry-floor', '/packs/foundry-floor/'],
+  ['gallery', '/gallery/'], ['asset-farmhouse', '/gallery/farmhouse/'], ['asset-sedan', '/gallery/sedan/'], ['asset-bridge', '/gallery/golden-gate-bridge/'],
   ['archive', '/gallery/archive/'], ['archive-asset', '/gallery/archive/robot-arm/'],
   ['docs', '/docs/'], ['docs-page', '/docs/install/'], ['docs-projects', '/docs/projects-and-live-review/'],
-  ['scenes', '/scenes/'], ['scene-farm', '/scenes/farm/'], ['scene-terafab', '/scenes/terafab/'], ['404', '/404.html'],
+  ['scenes', '/scenes/'], ['scene-farm', '/scenes/farm/'], ['scene-golden-gate', '/scenes/golden-gate/'], ['scene-foundry-floor', '/scenes/foundry-floor/'], ['404', '/404.html'],
 ].filter(([slug]) => !routeSelection || routeSelection.includes(slug));
 const widths = [390, 768, 1280, 1440, 1920];
 const axeSource = await readFile(new URL('../node_modules/axe-core/axe.min.js', import.meta.url), 'utf8');
@@ -143,6 +143,10 @@ async function browserChecks() {
       const visible = await page.$$eval('[data-asset]', (elements) => elements.filter((element) => !element.hidden).map((element) => element.querySelector('a')?.getAttribute('href')));
       result.interactions.push({ name: 'Standalone filter', pass: visible.length === 1 && visible[0] === '/gallery/golden-gate-bridge/', visible });
       await screenshots(page, 'gallery-filtered');
+      await page.select('#pack-filter', 'vehicles');
+      const vehicleLinks = await page.$$eval('[data-asset]', (elements) => elements.filter((element) => !element.hidden).map((element) => element.querySelector('a')?.getAttribute('href')));
+      result.interactions.push({ name: 'Vehicles filter', pass: vehicleLinks.length === 6 && ['hatchback', 'sedan', 'suv', 'pickup', 'box-truck', 'transit-bus'].every((slug) => vehicleLinks.includes(`/gallery/${slug}/`)), visible: vehicleLinks });
+      await page.select('#pack-filter', 'standalone');
       await page.select('#category-filter', 'Nature');
       result.interactions.push({ name: 'Empty-filter state', pass: await page.$eval('#gallery-empty', (element) => !element.hidden) });
       await page.click('button[type="reset"]');
@@ -153,7 +157,7 @@ async function browserChecks() {
       await noJs.setJavaScriptEnabled(false);
       await noJs.goto(new URL('/gallery/', base).href, { waitUntil: 'networkidle0' });
       const count = await noJs.$$eval('[data-asset]', (elements) => elements.filter((element) => !element.hidden).length);
-      result.interactions.push({ name: 'Gallery without JavaScript', pass: count === 24, visibleCount: count });
+      result.interactions.push({ name: 'Gallery without JavaScript', pass: count === 30, visibleCount: count });
       await noJs.close();
     }
     if (!routeSelection || routeSelection.includes('home')) {
@@ -198,7 +202,9 @@ async function browserChecks() {
 async function lighthouseChecks() {
   const reports = [];
   await mkdir(join(out, 'lighthouse'), { recursive: true });
-  for (const [slug, route] of routes.filter(([slug]) => ['home', 'pack-farm', 'gallery', 'asset-farmhouse', 'docs-page', 'scene-farm'].includes(slug))) {
+  // Round 1's six pages, plus the round 2 pages a visitor can reach that carry new weight: the Vehicles pack, a vehicle, the second scene.
+  const measured = ['home', 'pack-farm', 'pack-vehicles', 'gallery', 'asset-farmhouse', 'asset-sedan', 'asset-bridge', 'docs-page', 'scene-farm', 'scene-golden-gate'];
+  for (const [slug, route] of routes.filter(([slug]) => measured.includes(slug))) {
     for (const device of ['mobile', 'desktop']) {
       const browser = await puppeteer.launch({ executablePath, headless: true, args: ['--no-sandbox', '--disable-dev-shm-usage', '--remote-debugging-port=0'] });
       try {

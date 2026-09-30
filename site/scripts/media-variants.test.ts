@@ -17,12 +17,26 @@ test('derived-only refresh preserves revisions, seals, source and image qualific
     const farm = { revision: 'r34', fullPackAccepted: true, sourceSha256: 'source-pin', downloads: [{ sha256: 'archive-pin' }], scene: { poster: image }, floorRevision: { before: { ...image, width: 508 } } };
     const bridge = { revisionId: 'r_verified', metrics: { clips: [] }, runtimeDownload: { sha256: 'model-pin' }, poster: image };
     const plan = { images: [image], sources: [{ sha256: 'source-pin', archive: 'sealed.zip' }], models: [{ sha256: 'model-pin' }] };
-    const files = ['packs/farm.json', 'standalone/golden-gate-bridge.json', 'commons-build.json'];
-    for (const [i, value] of [farm, bridge, plan].entries()) await json(join(temp, files[i]!), value);
-    const result = await refreshMediaSrcsets({ dataDir: temp }); expect(result.filesChanged).toBe(3);
-    for (const [i, prior] of [farm, bridge, plan].entries()) expect(withoutSrcsets(JSON.parse(await readFile(join(temp, files[i]!), 'utf8')))).toEqual(withoutSrcsets(prior));
+    const vehicles = { revision: 'r1', assets: [{ id: 'sedan', poster: { ...image, rig: 'review-neutral-v1' } }] };
+    const files = ['packs/farm.json', 'standalone/golden-gate-bridge.json', 'commons-build.json', 'packs/vehicles.json'];
+    for (const [i, value] of [farm, bridge, plan, vehicles].entries()) await json(join(temp, files[i]!), value);
+    const result = await refreshMediaSrcsets({ dataDir: temp }); expect(result.filesChanged).toBe(4);
+    for (const [i, prior] of [farm, bridge, plan, vehicles].entries()) expect(withoutSrcsets(JSON.parse(await readFile(join(temp, files[i]!), 'utf8')))).toEqual(withoutSrcsets(prior));
+    expect(JSON.parse(await readFile(join(temp, 'packs/vehicles.json'), 'utf8')).assets[0].poster.srcsetWebp).toContain('scene-1440.webp 1440w');
     const after = JSON.parse(await readFile(join(temp, files[0]!), 'utf8')); expect(after.scene.poster.srcsetAvif).toContain('scene-672.avif 672w'); expect(after.floorRevision.before.srcsetAvif).not.toContain('672w');
     expect((await refreshMediaSrcsets({ dataDir: temp })).filesChanged).toBe(0);
+  } finally { const target = resolve(temp); if (!target.startsWith(resolve(tmpdir())) || !target.includes('kiln-site-variants-')) throw new Error('Unsafe cleanup path'); await rm(target, { recursive: true, force: true }); }
+});
+
+test('a data directory without the vehicles pack still refreshes the others', async () => {
+  const temp = await mkdtemp(join(tmpdir(), 'kiln-site-variants-'));
+  try {
+    const image = { inputPath: 'media/farm/r33/scene/scene.webp', src: '/media/farm/r33/scene/scene.webp', width: 768, height: 400, alt: 'Scene', srcsetWebp: 'old', srcsetAvif: 'old' };
+    for (const [file, value] of [['packs/farm.json', { scene: { poster: image } }], ['standalone/golden-gate-bridge.json', { poster: image }], ['commons-build.json', { images: [image] }]] as const) await json(join(temp, file), value);
+    expect((await refreshMediaSrcsets({ dataDir: temp })).filesChanged).toBe(3);
+    // A required file that is missing is still an error; only the optional pack is skipped.
+    await rm(join(temp, 'packs/farm.json'));
+    await expect(refreshMediaSrcsets({ dataDir: temp })).rejects.toThrow();
   } finally { const target = resolve(temp); if (!target.startsWith(resolve(tmpdir())) || !target.includes('kiln-site-variants-')) throw new Error('Unsafe cleanup path'); await rm(target, { recursive: true, force: true }); }
 });
 

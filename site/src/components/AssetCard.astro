@@ -43,6 +43,8 @@ const Heading = headingLevel;
       ? "Owner approved"
       : asset.review.status === "changes-requested"
         ? "Earlier delivery · accepted child recorded"
-        : "Review in progress"}
+        : asset.review.status === "awaiting-owner-review"
+          ? "Awaiting owner review"
+          : "Review in progress"}
   </p>
 </article>

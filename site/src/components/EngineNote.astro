@@ -1,0 +1,21 @@
+---
+import { REVIEW_RIG } from "../lib/review-rig";
+
+interface Props {
+  /** The vehicle files also declare the optional MSFT_lod extension for their detail tiers. */
+  vehicle?: boolean;
+}
+const { vehicle = false } = Astro.props;
+const { exposure, toneMapping } = REVIEW_RIG;
+---
+
+<p class="mt-3 max-w-reading text-caption text-dim" data-engine-note>
+  <strong class="font-semibold text-ink">For your engine.</strong>{" "}
+  The download is a standard glTF 2.0 binary (GLB) with PBR metallic-roughness
+  materials{vehicle ? ", and the vehicle files also declare the optional MSFT_lod extension for their detail tiers" : ""}.
+  {" "}glTF stores materials, not lighting or tone mapping, so your engine decides
+  how they read. This 3D view tone-maps with Review Neutral, the Khronos PBR
+  Neutral construction with a smaller glare offset ({toneMapping.offset} instead
+  of 0.04), at exposure {exposure}. Its Tone mapping control also shows ACES and
+  Linear, for comparison.
+</p>

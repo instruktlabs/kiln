@@ -3,15 +3,19 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
 import ResponsiveImage from "../../components/ResponsiveImage.astro";
 import AssetCard from "../../components/AssetCard.astro";
 import CodeBlock from "../../components/CodeBlock.astro";
-import { farm, bytes, imageQualification, FULL_WIDTH_IMAGE_SIZES } from "../../lib/catalog";
+import VehiclesPack from "../../components/VehiclesPack.astro";
+import { farm, vehicles, bytes, imageQualification, FULL_WIDTH_IMAGE_SIZES } from "../../lib/catalog";
 import { PACKS_ENABLED, REPO } from "../../lib/config";
+import foundryFloor from "../../data/foundry-floor.json";
 export function getStaticPaths() {
-  return (PACKS_ENABLED ? ["farm", "terafab"] : ["terafab"]).map((slug) => ({
+  return (PACKS_ENABLED ? ["farm", "vehicles", "foundry-floor"] : ["foundry-floor"]).map((slug) => ({
     params: { slug },
   }));
 }
 const isFarm = Astro.params.slug === "farm";
-const title = isFarm ? farm.name : "Terafab (working title)";
+const isVehicles = Astro.params.slug === "vehicles";
+const title = isFarm ? farm.name : isVehicles ? vehicles.name : foundryFloor.name;
+const pageTitle = isFarm || isVehicles ? title : `${title}, in production`;
 const qualificationNote =
   "qualification" in farm &&
   farm.qualification &&
@@ -23,18 +27,20 @@ const qualificationNote =
 ---
 
 <BaseLayout
-  title={`${title} — Kiln Commons`}
+  title={`${pageTitle} — Kiln Commons`}
   description={
     isFarm
       ? "23 farm assets with runtime GLBs, editable source and a runnable scene. Exact delivery downloads, provenance and owner review status."
-      : "Terafab is in production: an operating chip fab pack with process tools, wafer transport and a scene where the factory runs."
+      : isVehicles
+        ? "Six generic road vehicles with three detail tiers, separate wheels, editable source and revision history. Exact downloads, provenance and owner review status."
+        : `${foundryFloor.name} is in production: ${foundryFloor.summary}.`
   }
-  noindex={!isFarm}
+  noindex={!isFarm && !isVehicles}
   breadcrumbs={[
     { label: "Packs", href: "/packs/" },
     { label: title, href: `/packs/${Astro.params.slug}/` },
   ]}
-  ogImage={isFarm ? "/social/farm.webp" : "/social/terafab.webp"}
+  ogImage={isFarm ? "/social/farm.jpg" : isVehicles ? "/social/vehicles.jpg" : "/social/foundry-floor.jpg"}
   preloadImage={
     isFarm
       ? {
@@ -53,7 +59,15 @@ const qualificationNote =
           description: farm.description,
           url: "https://kilnstudio.tools/packs/farm/",
         }
-      : undefined
+      : isVehicles
+        ? {
+            "@context": "https://schema.org",
+            "@type": "CollectionPage",
+            name: vehicles.name,
+            description: vehicles.description,
+            url: "https://kilnstudio.tools/packs/vehicles/",
+          }
+        : undefined
   }
 >
   <div class="container">
@@ -156,13 +170,16 @@ const qualificationNote =
               <h2 id="scene">The scene is a place to try the pack.</h2>
               <p class="mt-5 max-w-reading">
                 On desktop, walk in third person as Rowan, open doors and gates,
-                cross the bridge and drive the tractor. On mobile, orbit viewing
-                is available.
+                cross the bridge and drive the tractor. The browser preview on
+                the{" "}
+                <a class="text-link" href="/scenes/farm/">Farm scene page</a>{" "}
+                has touch controls and says which devices were measured; the
+                scene download offers orbit viewing on mobile.
               </p>
               <p class="mt-4 max-w-reading text-dim">
                 Trailer towing, general vehicle physics and mobile walking or
-                driving are not included. The download uses Three.js 0.186.1
-                with WebGPU and a WebGL2 fallback.
+                driving are not included in the download. It uses Three.js
+                0.186.1 with WebGPU and a WebGL2 fallback.
               </p>
             </div>
             <div class="min-w-0">
@@ -271,18 +288,21 @@ const qualificationNote =
           </a>
         </section>
       </>
+    ) : isVehicles ? (
+      <VehiclesPack />
     ) : (
       <div class="max-w-reading py-12 md:py-20">
-        <h1>Terafab (working title)</h1>
+        <h1>{foundryFloor.name}</h1>
         <p class="lead mt-8">In production.</p>
         <p class="mt-6">
-          An operating chip fab as a Kiln pack: process tools, wafer transport
-          and a scene where the factory runs. Research and production are under
-          way.
+          A fictional 2 nm-class chip fab as a Kiln pack: process tools, wafer
+          transport and a scene where the factory runs. Research and production
+          are under way.
         </p>
         <p class="mt-4 text-dim">
           There are no assets or downloads to review yet.
         </p>
+        <p class="mt-4">{foundryFloor.notice}</p>
         <a href={REPO} class="text-link mt-6">
           Follow the repository ↗
         </a>

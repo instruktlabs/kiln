@@ -6,8 +6,8 @@
   "scripts": {
     "assets": "bun scripts/build-assets.mjs",
     "dev": "astro dev",
-    "build": "node scripts/fetch-mirror.mjs && node scripts/build-site-media.mjs && node scripts/scene-pack.mjs && astro build && node scripts/finalize-site.mjs && node scripts/subset-site-fonts.mjs",
-    "stage:scene": "node scripts/scene-pack.mjs",
+    "build": "node scripts/fetch-mirror.mjs && node scripts/build-site-media.mjs && node scripts/scene-pack.mjs && node scripts/scene-runtime.mjs && astro build && node scripts/finalize-site.mjs && node scripts/subset-site-fonts.mjs",
+    "stage:scene": "node scripts/scene-pack.mjs && node scripts/scene-runtime.mjs",
     "preview": "astro preview",
     "check": "astro check",
     "test": "bun test scripts --timeout 20000"

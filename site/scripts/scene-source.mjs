@@ -3,18 +3,21 @@ import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const SITE = resolve(dirname(fileURLToPath(import.meta.url)), '..');
-const posix = (path) => path.replaceAll('\\', '/');
+export const posix = (path) => path.replaceAll('\\', '/');
 
 /** Sibling checkouts: <workspace>/kiln-site-workbench/site beside <workspace>/kiln-commons/scenes. */
 export const DEFAULT_SCENES_DIR = '../../kiln-commons/scenes';
-/** The scene and the site share one physical copy of each of these packages. */
+/** A scene runtime and the site share one physical copy of each of these packages. */
 export const SCENE_DEDUPE = ['three', 'react', 'react-dom', '@react-three/fiber'];
-/** Workspace packages consumed as source; `farm` depends on `scene-kit`. */
+/** Workspace packages the site builds into the Farm runtime as source; `farm` depends on `scene-kit`. */
 export const SCENE_PACKAGES = ['farm', 'scene-kit'];
-/** Stands in for `@kiln-scenes/farm` in builds that cannot see the scene source. */
-export const SCENE_FALLBACK = 'src/scenes/farm/unavailable.tsx';
-/** Build-time flag module read by the Farm page and shell. */
-export const SCENE_FLAG_MODULE = 'virtual:kiln-farm-scene';
+/** The scene kit's runtime facade: what bare `three` resolves to in a scene (`export * from 'three/webgpu'`). */
+export const THREE_FACADE = 'packages/scene-kit/src/renderer/three-runtime.ts';
+/** Build-time module read by the scene pages and the shell: which scene runtimes are staged. */
+export const SCENE_FLAG_MODULE = 'virtual:kiln-scenes';
+/** Directories under public/ that scripts/scene-pack.mjs and scripts/scene-runtime.mjs own. */
+export const PACK_DIRECTORY = 'scene-packs';
+export const RUNTIME_DIRECTORY = 'scene-runtime';
 
 /**
  * Locate the scenes workspace. `KILN_SITE_SCENES_DIR` is absolute or relative to `site/`; `off`
@@ -34,10 +37,13 @@ export function resolveScenesDir({ env = process.env, site = SITE } = {}) {
   return null;
 }
 
+/** Absolute path of the kit's three facade in a scenes workspace. */
+export const threeFacade = (scenesDir) => posix(resolve(scenesDir, THREE_FACADE));
+
 const escapeRegExp = (text) => text.replace(/[.*+?^${}()|[\]\\/]/g, '\\$&');
 
 /**
- * One exact alias per entry of a package's `exports` map, so the site consumes the workspace
+ * One exact alias per entry of a package's `exports` map, so a runtime build consumes the workspace
  * source without a link: dependency. The `browser` condition wins, as it does for the client build.
  */
 export function exportAliases(packageDir, name) {
@@ -57,84 +63,85 @@ export function exportAliases(packageDir, name) {
 
 const PACKAGE_ROOT = /^(.*[\\/]node_modules[\\/](?:@[^\\/]+[\\/])?[^\\/]+)[\\/]/;
 
-/** Module ids of a bundle that come from more than one copy of a guarded package. */
-export function duplicatePackages(moduleIds, names = SCENE_DEDUPE) {
-  const roots = new Map();
+/** The package roots a bundle's module ids come from, per guarded package (empty when absent). */
+export function packageRoots(moduleIds, names = SCENE_DEDUPE) {
+  const roots = new Map(names.map((name) => [name, new Set()]));
   for (const id of moduleIds) {
     const root = PACKAGE_ROOT.exec(id.split('?')[0])?.[1];
     if (!root) continue;
-    const name = posix(root).replace(/^.*\/node_modules\//, '');
-    if (!names.includes(name)) continue;
-    roots.set(name, new Set([...(roots.get(name) ?? []), root]));
+    roots.get(posix(root).replace(/^.*\/node_modules\//, ''))?.add(root);
   }
-  return [...roots].filter(([, copies]) => copies.size > 1).map(([name, copies]) => ({ name, copies: [...copies].sort() }));
+  return roots;
 }
 
-/** Fails the build if the scene pulled a second three, React, React DOM or R3F into the graph. */
-function singleCopyGuard() {
-  return {
-    name: 'kiln-scene-single-copy',
-    generateBundle(_options, bundle) {
-      const ids = Object.values(bundle).flatMap((chunk) => (chunk.type === 'chunk' ? Object.keys(chunk.modules) : []));
-      const duplicates = duplicatePackages(ids);
-      if (duplicates.length) {
-        const detail = duplicates.map(({ name, copies }) => `${name}: ${copies.join(', ')}`).join('; ');
-        this.error(`The Farm scene must share one copy of ${SCENE_DEDUPE.join(', ')}. Duplicates: ${detail}`);
-      }
-    },
-  };
+/** Module ids of a bundle that come from more than one copy of a guarded package. */
+export function duplicatePackages(moduleIds, names = SCENE_DEDUPE) {
+  return [...packageRoots(moduleIds, names)]
+    .filter(([, copies]) => copies.size > 1)
+    .map(([name, copies]) => ({ name, copies: [...copies].sort() }));
 }
 
-/** Where the staged scene pack lands, from the pack record in the Farm catalog. */
-export function stagedPackFile(site = SITE) {
-  const farm = JSON.parse(readFileSync(resolve(site, 'src/data/packs/farm.json'), 'utf8'));
-  const base = farm.scene?.pack?.base;
-  return base ? resolve(site, 'public', base.replace(/^\/+/, ''), 'pack.json') : null;
+/** The manifest a staged runtime carries; null when the scene has none staged. */
+export function stagedRuntime(id, site = SITE) {
+  const file = resolve(site, 'public', RUNTIME_DIRECTORY, id, 'runtime.json');
+  return existsSync(file) ? JSON.parse(readFileSync(file, 'utf8')) : null;
+}
+
+/** The scene pack record the catalog holds for a scene (src/data/scene-packs.json). */
+export function scenePackRecord(id, site = SITE) {
+  const file = resolve(site, 'src/data/scene-packs.json');
+  return existsSync(file) ? (JSON.parse(readFileSync(file, 'utf8'))[id] ?? null) : null;
+}
+
+/**
+ * A scene is included when both halves are staged: its runtime (the code) and its verified pack
+ * (the data). One without the other cannot run, so the page keeps its status panel.
+ */
+export function stagedScenes(site = SITE) {
+  const scenes = {};
+  for (const id of ['farm', 'golden-gate']) {
+    const runtime = stagedRuntime(id, site);
+    const pack = scenePackRecord(id, site);
+    const packFile = pack?.base ? resolve(site, 'public', pack.base.replace(/^\/+/, ''), 'pack.json') : null;
+    scenes[id] = runtime && packFile && existsSync(packFile)
+      ? { kind: runtime.kind, url: runtime.url, file: runtime.file, bytes: runtime.bytes, gzipBytes: runtime.gzipBytes, sha256: runtime.sha256 }
+      : null;
+  }
+  return scenes;
 }
 
 let announced = false;
-function announce(plugin) {
+function announce(message) {
   return {
     name: 'kiln-scene-source',
     configResolved() {
       if (announced) return;
       announced = true;
-      console.info(plugin);
+      console.info(message);
     },
   };
 }
 
 /**
- * Vite settings that let the site consume `@kiln-scenes/farm` and `@kiln-scenes/scene-kit` as
- * source from a scenes workspace: exact-entry aliases, one copy of the shared packages, the
- * public-build constants the scene expects, and dev-server read access. Without a workspace, or
- * without a staged pack to serve, `@kiln-scenes/farm` resolves to the site's own fallback.
+ * Site (Astro) build settings for scenes. The scene code is not part of the site's module graph:
+ * scripts/scene-runtime.mjs builds it separately (bare `three` resolved to the scene kit's facade, as
+ * in the kit's own build) and scripts/scene-pack.mjs stages the data, so the gallery viewer keeps the
+ * classic three build. This exposes which runtimes are staged as `virtual:kiln-scenes`.
  */
-export function sceneSourceConfig({ site = SITE, env = process.env } = {}) {
-  const scenesDir = resolveScenesDir({ env, site });
-  const packFile = stagedPackFile(site);
-  const included = Boolean(scenesDir && packFile && existsSync(packFile));
-  const alias = included
-    ? SCENE_PACKAGES.flatMap((name) => exportAliases(resolve(scenesDir, 'packages', name), `@kiln-scenes/${name}`))
-    : [{ find: /^@kiln-scenes\/farm$/, replacement: posix(resolve(site, SCENE_FALLBACK)) }];
+export function sceneSiteConfig({ site = SITE } = {}) {
+  const scenes = stagedScenes(site);
+  const included = Object.entries(scenes).filter(([, scene]) => scene).map(([id]) => id);
   const flagId = `\0${SCENE_FLAG_MODULE}`;
-  const note = included
-    ? `Farm scene: source ${posix(scenesDir)}, staged pack ${posix(dirname(packFile))}`
-    : `Farm scene: not included (${scenesDir ? 'no staged pack, run node scripts/scene-pack.mjs' : 'no scenes workspace, set KILN_SITE_SCENES_DIR'}); Explore keeps its fallback.`;
   return {
+    scenes,
     included,
-    scenesDir,
     plugins: [
-      announce(note),
+      announce(`Scenes: ${included.length ? `${included.join(', ')} staged` : 'none staged (run node scripts/scene-pack.mjs and node scripts/scene-runtime.mjs); Explore keeps its status panel'}.`),
       {
         name: 'kiln-scene-flag',
         resolveId: (id) => (id === SCENE_FLAG_MODULE ? flagId : undefined),
-        load: (id) => (id === flagId ? `export const farmSceneIncluded = ${included};` : undefined),
+        load: (id) => (id === flagId ? `export const sceneRuntimes = ${JSON.stringify(scenes)};` : undefined),
       },
-      ...(included ? [singleCopyGuard()] : []),
     ],
-    define: { 'import.meta.env.KILN_DEV': false, 'import.meta.env.KILN_TEST': false },
-    resolve: { alias, dedupe: [...SCENE_DEDUPE] },
-    server: { fs: { allow: [site, ...(scenesDir ? [scenesDir] : [])] } },
   };
 }

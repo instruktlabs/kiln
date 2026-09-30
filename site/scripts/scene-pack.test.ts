@@ -4,10 +4,11 @@ import { mkdir, mkdtemp, readFile, readdir, rm, writeFile } from 'node:fs/promis
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 import pkg from '../package.json';
-import farm from '../src/data/packs/farm.json';
-import { farmScene } from '../src/data/scenes';
+import scenePacks from '../src/data/scene-packs.json';
+import { farmScene, goldenGateScene } from '../src/data/scenes';
 import { hashBytes } from './mirror-core.mjs';
-import { comparePackRecord, main, packRecord, parseSums, stagePack, stagedPackDirectory, verifyPack } from './scene-pack.mjs';
+import { comparePackRecord, compareRuntimeRecord, main, packRecord, parseSums, stagePack, stagedPackDirectory, verifyPack } from './scene-pack.mjs';
+import { CEILINGS, checkCeiling, measureFrameRuntime } from './scene-runtime.mjs';
 
 const directories: string[] = [];
 afterEach(async () => {
@@ -22,8 +23,10 @@ const files: Record<string, string> = {
   'licenses/ASSET-LICENSE.txt': 'licence text',
 };
 
+const MODULES = ['C:/scenes/packages/scene-kit/src/renderer/three-runtime.ts', 'C:/scenes/node_modules/three/build/three.core.js', 'C:/scenes/node_modules/react/index.js'];
+
 /** A small pack in the standalone layout: assets/{pack.json,SHA256SUMS,...} beside the notices. */
-async function fixture() {
+async function fixture(id = 'farm') {
   const root = await mkdtemp(join(tmpdir(), 'kiln-scene-pack-'));
   directories.push(root);
   const assets = join(root, 'assets');
@@ -37,7 +40,7 @@ async function fixture() {
     join(assets, 'pack.json'),
     JSON.stringify({
       schema: 'kiln.scene-pack/1',
-      id: 'farm',
+      id,
       release: 'r9',
       three: '0.186.0',
       models: [{ id: 'a', path: 'models/a.glb' }, { id: 'b', path: 'models/b.glb' }],
@@ -46,6 +49,7 @@ async function fixture() {
     }),
   );
   await writeFile(join(assets, 'index-abc.js'), 'not part of the pack');
+  await writeFile(join(root, 'bundle-modules.json'), JSON.stringify({ modules: MODULES }));
   await writeFile(join(root, 'THIRD-PARTY-NOTICES.txt'), 'notices');
   return { root, assets, notices: join(root, 'THIRD-PARTY-NOTICES.txt') };
 }
@@ -93,6 +97,13 @@ describe('scene pack staging', () => {
     await expect(verifyPack(resized.assets, resized.notices)).rejects.toThrow('Size');
   });
 
+  test('every directory of the pack must be sealed, not only the ones a scene names', async () => {
+    const { assets, notices } = await fixture();
+    await mkdir(join(assets, 'vehicles'), { recursive: true });
+    await writeFile(join(assets, 'vehicles/loose.glb'), 'not sealed');
+    await expect(verifyPack(assets, notices)).rejects.toThrow('Unsealed file in the scene pack: vehicles/loose.glb');
+  });
+
   test('rejects malformed, duplicate and escaping SHA256SUMS entries', () => {
     const digest = 'a'.repeat(64);
     expect(parseSums(`${digest}  models/a.glb\n`).get('models/a.glb')).toBe(digest);
@@ -115,43 +126,47 @@ describe('scene pack staging', () => {
 });
 
 describe('scene pack command', () => {
-  /** A site directory whose catalog holds `record`, beside the pack fixture's root. */
-  async function site(root: string, record: unknown) {
+  /** A site directory whose scene pack catalog holds `records`, beside the pack fixture's root. */
+  async function site(root: string, records: Record<string, unknown>) {
     const directory = join(root, 'site');
-    await mkdir(join(directory, 'src/data/packs'), { recursive: true });
-    await writeFile(join(directory, 'src/data/packs/farm.json'), JSON.stringify({ scene: { available: false, pack: record } }));
+    await mkdir(join(directory, 'src/data'), { recursive: true });
+    await writeFile(join(directory, 'src/data/scene-packs.json'), JSON.stringify(records));
     return directory;
   }
-  const catalogOf = async (directory: string) => JSON.parse(await readFile(join(directory, 'src/data/packs/farm.json'), 'utf8'));
+  const catalogOf = async (directory: string) => JSON.parse(await readFile(join(directory, 'src/data/scene-packs.json'), 'utf8'));
   const quiet = () => spyOn(console, 'log').mockImplementation(() => {});
+  const off = { KILN_SITE_SCENES_DIR: 'off' };
 
   test('without a workspace or pack it skips and clears every pack staged earlier', async () => {
     quiet();
     const { root } = await fixture();
-    const directory = await site(root, { base: '/scene-packs/farm/r9/', source: 'packages/farm/dist/r9/standalone' });
+    const directory = await site(root, { farm: { base: '/scene-packs/farm/r9/', source: 'packages/farm/dist/r9/standalone' } });
     for (const release of ['r8', 'r9']) {
       await mkdir(join(directory, 'public/scene-packs/farm', release), { recursive: true });
       await writeFile(join(directory, 'public/scene-packs/farm', release, 'pack.json'), '{}');
     }
-    expect(await main([], { KILN_SITE_SCENES_DIR: 'off' }, directory)).toBeNull();
+    await mkdir(join(directory, 'public/scene-runtime/golden-gate'), { recursive: true });
+    await writeFile(join(directory, 'public/scene-runtime/golden-gate/runtime.json'), '{}');
+    expect(await main([], off, directory)).toEqual([]);
     expect(existsSync(join(directory, 'public/scene-packs'))).toBe(false);
-    expect(await main([], { KILN_SITE_SCENES_DIR: 'off' }, directory)).toBeNull();
+    expect(existsSync(join(directory, 'public/scene-runtime/golden-gate'))).toBe(false);
+    expect(await main([], off, directory)).toEqual([]);
   });
 
   test('stages the pack its record agrees with and refuses one that has drifted', async () => {
     quiet();
     const { root, assets, notices } = await fixture();
     const inventory = await verifyPack(assets, notices);
-    const directory = await site(root, packRecord(inventory));
-    const env = { KILN_SITE_SCENES_DIR: 'off', KILN_SITE_SCENE_PACK_DIR: root };
+    const directory = await site(root, { farm: packRecord(inventory) });
+    const env = { ...off, KILN_SITE_SCENE_PACK_DIR: root };
     await mkdir(join(directory, 'public/scene-packs/farm/r8'), { recursive: true });
     await writeFile(join(directory, 'public/scene-packs/farm/r8/pack.json'), '{}');
     const staged = await main([], env, directory);
-    expect(staged?.totalBytes).toBe(inventory.totalBytes);
+    expect(staged.map((entry: { totalBytes: number }) => entry.totalBytes)).toEqual([inventory.totalBytes]);
     expect(await readFile(join(directory, 'public/scene-packs/farm/r9/models/a.glb'), 'utf8')).toBe('model a');
     expect(existsSync(join(directory, 'public/scene-packs/farm/r8'))).toBe(false);
 
-    await writeFile(join(directory, 'src/data/packs/farm.json'), JSON.stringify({ scene: { pack: { ...packRecord(inventory), totalBytes: inventory.totalBytes + 1 } } }));
+    await writeFile(join(directory, 'src/data/scene-packs.json'), JSON.stringify({ farm: { ...packRecord(inventory), totalBytes: inventory.totalBytes + 1 } }));
     await expect(main([], env, directory)).rejects.toThrow('disagrees');
   });
 
@@ -159,12 +174,46 @@ describe('scene pack command', () => {
     quiet();
     const { root, assets, notices } = await fixture();
     const inventory = await verifyPack(assets, notices);
-    const directory = await site(root, { ...packRecord(inventory), release: 'r8', base: '/scene-packs/farm/r8/', totalBytes: 1 });
-    await main(['--record'], { KILN_SITE_SCENES_DIR: 'off', KILN_SITE_SCENE_PACK_DIR: root }, directory);
+    const directory = await site(root, { farm: { ...packRecord(inventory), release: 'r8', base: '/scene-packs/farm/r8/', totalBytes: 1 }, other: { kept: true } });
+    await main(['--record'], { ...off, KILN_SITE_SCENE_PACK_DIR: root }, directory);
     const written = await catalogOf(directory);
-    expect(written.scene.pack).toEqual(packRecord(inventory));
-    expect(written.scene.available).toBe(false);
+    expect(written.farm).toEqual(packRecord(inventory));
+    expect(written.other).toEqual({ kept: true });
     expect(existsSync(join(directory, 'public/scene-packs/farm/r9/pack.json'))).toBe(true);
+  });
+
+  test('--scene stages one scene and leaves another one staged', async () => {
+    quiet();
+    const { root, assets, notices } = await fixture();
+    const inventory = await verifyPack(assets, notices);
+    const directory = await site(root, { farm: packRecord(inventory) });
+    await mkdir(join(directory, 'public/scene-packs/golden-gate/g3'), { recursive: true });
+    await writeFile(join(directory, 'public/scene-packs/golden-gate/g3/pack.json'), '{}');
+    await main(['--scene', 'farm'], { ...off, KILN_SITE_SCENE_PACK_DIR: root }, directory);
+    expect(existsSync(join(directory, 'public/scene-packs/farm/r9/pack.json'))).toBe(true);
+    expect(existsSync(join(directory, 'public/scene-packs/golden-gate/g3/pack.json'))).toBe(true);
+    await expect(main(['--scene', 'nowhere'], off, directory)).rejects.toThrow('Unknown scene');
+    await expect(main(['--source', root], off, directory)).rejects.toThrow('--source needs --scene');
+  });
+
+  test('a standalone-built scene also stages its chunk as built, and drift in it is named', async () => {
+    quiet();
+    const { root, assets, notices } = await fixture('golden-gate');
+    const inventory = await verifyPack(assets, notices);
+    const { record } = await measureFrameRuntime({ id: 'golden-gate', source: root });
+    const directory = await site(root, { 'golden-gate': { ...packRecord(inventory), runtime: record } });
+    const env = { ...off, KILN_SITE_SCENE_PACK_DIR_GOLDEN_GATE: root };
+    await main(['--scene', 'golden-gate'], env, directory);
+    const staged = join(directory, 'public/scene-runtime/golden-gate');
+    expect((await readdir(staged)).sort()).toEqual(['frame.html', 'index-abc.js', 'runtime.json']);
+    expect(await readFile(join(staged, 'index-abc.js'), 'utf8')).toBe('not part of the pack');
+    expect(await readFile(join(directory, 'public/scene-packs/golden-gate/r9/models/a.glb'), 'utf8')).toBe('model a');
+    // The chunk beside the pack is the scene's code, not pack data: it is not served under the pack.
+    expect(existsSync(join(directory, 'public/scene-packs/golden-gate/r9/index-abc.js'))).toBe(false);
+
+    await writeFile(join(root, 'assets/index-abc.js'), 'a different chunk');
+    await expect(main(['--scene', 'golden-gate'], env, directory)).rejects.toThrow('runtime.sha256');
+    expect(existsSync(staged)).toBe(false);
   });
 });
 
@@ -173,30 +222,52 @@ describe('scene pack catalog record', () => {
     const { assets, notices } = await fixture();
     const inventory = await verifyPack(assets, notices);
     const record = packRecord(inventory);
-    expect(record).toMatchObject({ release: 'r9', base: '/scene-packs/farm/r9/', source: 'packages/farm/dist/r9/standalone' });
+    expect(record).toMatchObject({ release: 'r9', base: '/scene-packs/farm/r9/', source: 'packages/farm/dist/m4/standalone' });
     expect(comparePackRecord(record, inventory)).toEqual([]);
     expect(comparePackRecord({ ...record, totalBytes: record.totalBytes + 1 }, inventory)[0]).toContain('totalBytes');
     expect(comparePackRecord({ ...record, release: 'r10' }, inventory)[0]).toContain('release');
-    expect(comparePackRecord(undefined, inventory)).toEqual(['farm.json has no scene.pack record']);
+    expect(comparePackRecord(undefined, inventory)).toEqual(['scene-packs.json has no record for farm']);
   });
 
-  test('the Farm catalog records the pack the site serves', () => {
-    const record = farm.scene.pack;
+  test('a recorded runtime that differs from its build names the field', () => {
+    const recorded = { kind: 'frame', file: 'index-a.js', bytes: 10, gzipBytes: 5, gzipMethod: 'bun-zlib', sha256: 'a'.repeat(64), modulesSha256: 'b'.repeat(64) };
+    expect(compareRuntimeRecord(recorded, { ...recorded })).toEqual([]);
+    expect(compareRuntimeRecord(recorded, { ...recorded, bytes: 11 })).toEqual(['runtime.bytes: catalog 10, build 11']);
+    expect(compareRuntimeRecord(undefined, recorded)).toEqual(['the record has no runtime for this standalone build']);
+  });
+
+  test('the Farm record is the pack the site serves: the m4 build, byte-identical to r34', () => {
+    const record = scenePacks.farm;
     expect(record.release).toBe('r34');
     expect(record.base).toBe(`/scene-packs/farm/${record.release}/`);
-    expect(record.source).toBe(`packages/farm/dist/${record.release}/standalone`);
+    expect(record.source).toBe('packages/farm/dist/m4/standalone');
     expect(record.three).toBe(pkg.dependencies.three);
     expect(record.totalFiles).toBe(record.sealedFiles + 3);
     expect(record.totalBytes).toBeGreaterThan(record.sealedBytes);
     for (const digest of [record.packJsonSha256, record.sha256sumsSha256, record.noticesSha256]) expect(digest).toMatch(/^[0-9a-f]{64}$/);
     expect(farmScene.assetBase).toBe(record.base);
-    expect(farm.scene.assetBase).toStartWith('https://assets.kilnstudio.tools/packs/farm/');
+    expect(farmScene.pack).toBe(record);
     expect(stagedPackDirectory(record, '/site')).toBe(resolve('/site', 'public', 'scene-packs', 'farm', 'r34'));
     expect(() => stagedPackDirectory({ base: '/../escape/' }, '/site')).toThrow('Unexpected');
   });
 
-  test('the scene stays out of search results whatever its availability says', async () => {
-    const page = await readFile(new URL('../src/pages/scenes/farm.astro', import.meta.url), 'utf8');
+  test('the Golden Gate record is the g3 pack and its public chunk, inside its ceiling', () => {
+    const record = scenePacks['golden-gate'];
+    expect(record.release).toBe('g3');
+    expect(record.base).toBe('/scene-packs/golden-gate/g3/');
+    expect(record.source).toBe('packages/golden-gate/dist/standalone');
+    expect(record.three).toBe(pkg.dependencies.three);
+    expect(record.totalFiles).toBe(record.sealedFiles + 3);
+    for (const digest of [record.packJsonSha256, record.sha256sumsSha256, record.noticesSha256, record.runtime.sha256, record.runtime.modulesSha256]) expect(digest).toMatch(/^[0-9a-f]{64}$/);
+    expect(record.runtime).toMatchObject({ kind: 'frame', file: 'index-CpnNafWq.js', bytes: 1_677_316 });
+    expect(checkCeiling('golden-gate', record.runtime).within).toBe(true);
+    expect(record.runtime.bytes).toBeLessThanOrEqual(CEILINGS['golden-gate'].bytes);
+    expect(goldenGateScene.assetBase).toBe(record.base);
+    expect(stagedPackDirectory(record, '/site')).toBe(resolve('/site', 'public', 'scene-packs', 'golden-gate', 'g3'));
+  });
+
+  test.each(['farm', 'golden-gate'])('the %s scene page stays out of search results whatever its availability says', async (id) => {
+    const page = await readFile(new URL(`../src/pages/scenes/${id}.astro`, import.meta.url), 'utf8');
     expect(page).toMatch(/^\s*noindex\s*$/m);
     expect(page).toMatch(/^\s*nofollow\s*$/m);
     expect(page).not.toContain('noindex={');

@@ -2,18 +2,6 @@
   "schemaVersion": 1,
   "images": [
     {
-      "src": "/media/farm/r33/cutout/farmhouse.webp",
-      "width": 1024,
-      "height": 1024,
-      "alt": "Cream masonry house with a charcoal gabled roof, olive shutters and a timber porch.",
-      "srcsetWebp": "/media/farm/r33/cutout/farmhouse-320.webp 320w, /media/farm/r33/cutout/farmhouse-480.webp 480w, /media/farm/r33/cutout/farmhouse-672.webp 672w, /media/farm/r33/cutout/farmhouse-768.webp 768w, /media/farm/r33/cutout/farmhouse-1024.webp 1024w",
-      "srcsetAvif": "/media/farm/r33/cutout/farmhouse-320.avif 320w, /media/farm/r33/cutout/farmhouse-480.avif 480w, /media/farm/r33/cutout/farmhouse-672.avif 672w, /media/farm/r33/cutout/farmhouse-768.avif 768w, /media/farm/r33/cutout/farmhouse-1024.avif 1024w",
-      "inputPath": "media/farm/r33/cutout/farmhouse.webp",
-      "sourceRevisionId": "r_37f835d35a1040fc9f64d6f3b271eac5",
-      "exactRevision": false,
-      "revisionQualification": "Exterior view from r33, revision r_37f835d35a1040fc9f64d6f3b271eac5. Exterior geometry and bounds are unchanged; this view was not re-rendered for r34, so window tint may differ."
-    },
-    {
       "src": "/media/farm/r34/poster/farmhouse.webp",
       "width": 1168,
       "height": 780,
@@ -25,15 +13,6 @@
       "exactRevision": true
     },
     {
-      "src": "/media/farm/r33/cutout/barn.webp",
-      "width": 1024,
-      "height": 1024,
-      "alt": "Red timber barn with white door bracing, a grey roof and an open side shelter.",
-      "srcsetWebp": "/media/farm/r33/cutout/barn-320.webp 320w, /media/farm/r33/cutout/barn-480.webp 480w, /media/farm/r33/cutout/barn-672.webp 672w, /media/farm/r33/cutout/barn-768.webp 768w, /media/farm/r33/cutout/barn-1024.webp 1024w",
-      "srcsetAvif": "/media/farm/r33/cutout/barn-320.avif 320w, /media/farm/r33/cutout/barn-480.avif 480w, /media/farm/r33/cutout/barn-672.avif 672w, /media/farm/r33/cutout/barn-768.avif 768w, /media/farm/r33/cutout/barn-1024.avif 1024w",
-      "inputPath": "media/farm/r33/cutout/barn.webp"
-    },
-    {
       "src": "/media/farm/r33/poster/barn.webp",
       "width": 1168,
       "height": 780,
@@ -41,15 +20,6 @@
       "srcsetWebp": "/media/farm/r33/poster/barn-320.webp 320w, /media/farm/r33/poster/barn-480.webp 480w, /media/farm/r33/poster/barn-672.webp 672w, /media/farm/r33/poster/barn-768.webp 768w, /media/farm/r33/poster/barn-1024.webp 1024w",
       "srcsetAvif": "/media/farm/r33/poster/barn-320.avif 320w, /media/farm/r33/poster/barn-480.avif 480w, /media/farm/r33/poster/barn-672.avif 672w, /media/farm/r33/poster/barn-768.avif 768w, /media/farm/r33/poster/barn-1024.avif 1024w",
       "inputPath": "media/farm/r33/poster/barn.webp"
-    },
-    {
-      "src": "/media/farm/r33/cutout/windmill.webp",
-      "width": 1024,
-      "height": 1024,
-      "alt": "Open timber wind pump with a metal rotor, tail vane and four braced legs.",
-      "srcsetWebp": "/media/farm/r33/cutout/windmill-320.webp 320w, /media/farm/r33/cutout/windmill-480.webp 480w, /media/farm/r33/cutout/windmill-672.webp 672w, /media/farm/r33/cutout/windmill-768.webp 768w, /media/farm/r33/cutout/windmill-1024.webp 1024w",
-      "srcsetAvif": "/media/farm/r33/cutout/windmill-320.avif 320w, /media/farm/r33/cutout/windmill-480.avif 480w, /media/farm/r33/cutout/windmill-672.avif 672w, /media/farm/r33/cutout/windmill-768.avif 768w, /media/farm/r33/cutout/windmill-1024.avif 1024w",
-      "inputPath": "media/farm/r33/cutout/windmill.webp"
     },
     {
       "src": "/media/farm/r33/poster/windmill.webp",
@@ -61,15 +31,6 @@
       "inputPath": "media/farm/r33/poster/windmill.webp"
     },
     {
-      "src": "/media/farm/r33/cutout/watermill.webp",
-      "width": 1024,
-      "height": 1024,
-      "alt": "Pale masonry mill house with a gabled roof and an exposed timber waterwheel.",
-      "srcsetWebp": "/media/farm/r33/cutout/watermill-320.webp 320w, /media/farm/r33/cutout/watermill-480.webp 480w, /media/farm/r33/cutout/watermill-672.webp 672w, /media/farm/r33/cutout/watermill-768.webp 768w, /media/farm/r33/cutout/watermill-1024.webp 1024w",
-      "srcsetAvif": "/media/farm/r33/cutout/watermill-320.avif 320w, /media/farm/r33/cutout/watermill-480.avif 480w, /media/farm/r33/cutout/watermill-672.avif 672w, /media/farm/r33/cutout/watermill-768.avif 768w, /media/farm/r33/cutout/watermill-1024.avif 1024w",
-      "inputPath": "media/farm/r33/cutout/watermill.webp"
-    },
-    {
       "src": "/media/farm/r33/poster/watermill.webp",
       "width": 1168,
       "height": 780,
@@ -77,15 +38,6 @@
       "srcsetWebp": "/media/farm/r33/poster/watermill-320.webp 320w, /media/farm/r33/poster/watermill-480.webp 480w, /media/farm/r33/poster/watermill-672.webp 672w, /media/farm/r33/poster/watermill-768.webp 768w, /media/farm/r33/poster/watermill-1024.webp 1024w",
       "srcsetAvif": "/media/farm/r33/poster/watermill-320.avif 320w, /media/farm/r33/poster/watermill-480.avif 480w, /media/farm/r33/poster/watermill-672.avif 672w, /media/farm/r33/poster/watermill-768.avif 768w, /media/farm/r33/poster/watermill-1024.avif 1024w",
       "inputPath": "media/farm/r33/poster/watermill.webp"
-    },
-    {
-      "src": "/media/farm/r33/cutout/fence-straight.webp",
-      "width": 1024,
-      "height": 1024,
-      "alt": "Two timber rails between pointed posts, with a two-metre post-centre span.",
-      "srcsetWebp": "/media/farm/r33/cutout/fence-straight-320.webp 320w, /media/farm/r33/cutout/fence-straight-480.webp 480w, /media/farm/r33/cutout/fence-straight-672.webp 672w, /media/farm/r33/cutout/fence-straight-768.webp 768w, /media/farm/r33/cutout/fence-straight-1024.webp 1024w",
-      "srcsetAvif": "/media/farm/r33/cutout/fence-straight-320.avif 320w, /media/farm/r33/cutout/fence-straight-480.avif 480w, /media/farm/r33/cutout/fence-straight-672.avif 672w, /media/farm/r33/cutout/fence-straight-768.avif 768w, /media/farm/r33/cutout/fence-straight-1024.avif 1024w",
-      "inputPath": "media/farm/r33/cutout/fence-straight.webp"
     },
     {
       "src": "/media/farm/r33/poster/fence-straight.webp",
@@ -97,15 +49,6 @@
       "inputPath": "media/farm/r33/poster/fence-straight.webp"
     },
     {
-      "src": "/media/farm/r33/cutout/fence-corner.webp",
-      "width": 1024,
-      "height": 1024,
-      "alt": "Two matching timber fence runs joined at a right-angle corner post.",
-      "srcsetWebp": "/media/farm/r33/cutout/fence-corner-320.webp 320w, /media/farm/r33/cutout/fence-corner-480.webp 480w, /media/farm/r33/cutout/fence-corner-672.webp 672w, /media/farm/r33/cutout/fence-corner-768.webp 768w, /media/farm/r33/cutout/fence-corner-1024.webp 1024w",
-      "srcsetAvif": "/media/farm/r33/cutout/fence-corner-320.avif 320w, /media/farm/r33/cutout/fence-corner-480.avif 480w, /media/farm/r33/cutout/fence-corner-672.avif 672w, /media/farm/r33/cutout/fence-corner-768.avif 768w, /media/farm/r33/cutout/fence-corner-1024.avif 1024w",
-      "inputPath": "media/farm/r33/cutout/fence-corner.webp"
-    },
-    {
       "src": "/media/farm/r33/poster/fence-corner.webp",
       "width": 1168,
       "height": 780,
@@ -113,15 +56,6 @@
       "srcsetWebp": "/media/farm/r33/poster/fence-corner-320.webp 320w, /media/farm/r33/poster/fence-corner-480.webp 480w, /media/farm/r33/poster/fence-corner-672.webp 672w, /media/farm/r33/poster/fence-corner-768.webp 768w, /media/farm/r33/poster/fence-corner-1024.webp 1024w",
       "srcsetAvif": "/media/farm/r33/poster/fence-corner-320.avif 320w, /media/farm/r33/poster/fence-corner-480.avif 480w, /media/farm/r33/poster/fence-corner-672.avif 672w, /media/farm/r33/poster/fence-corner-768.avif 768w, /media/farm/r33/poster/fence-corner-1024.avif 1024w",
       "inputPath": "media/farm/r33/poster/fence-corner.webp"
-    },
-    {
-      "src": "/media/farm/r33/cutout/fence-gate.webp",
-      "width": 1024,
-      "height": 1024,
-      "alt": "Braced timber gate with visible hinges and a three-metre usable opening.",
-      "srcsetWebp": "/media/farm/r33/cutout/fence-gate-320.webp 320w, /media/farm/r33/cutout/fence-gate-480.webp 480w, /media/farm/r33/cutout/fence-gate-672.webp 672w, /media/farm/r33/cutout/fence-gate-768.webp 768w, /media/farm/r33/cutout/fence-gate-1024.webp 1024w",
-      "srcsetAvif": "/media/farm/r33/cutout/fence-gate-320.avif 320w, /media/farm/r33/cutout/fence-gate-480.avif 480w, /media/farm/r33/cutout/fence-gate-672.avif 672w, /media/farm/r33/cutout/fence-gate-768.avif 768w, /media/farm/r33/cutout/fence-gate-1024.avif 1024w",
-      "inputPath": "media/farm/r33/cutout/fence-gate.webp"
     },
     {
       "src": "/media/farm/r33/poster/fence-gate.webp",
@@ -133,15 +67,6 @@
       "inputPath": "media/farm/r33/poster/fence-gate.webp"
     },
     {
-      "src": "/media/farm/r33/cutout/tractor.webp",
-      "width": 1024,
-      "height": 1024,
-      "alt": "Orange open-seat tractor with rear wheel guards, treaded tyres and a front grille.",
-      "srcsetWebp": "/media/farm/r33/cutout/tractor-320.webp 320w, /media/farm/r33/cutout/tractor-480.webp 480w, /media/farm/r33/cutout/tractor-672.webp 672w, /media/farm/r33/cutout/tractor-768.webp 768w, /media/farm/r33/cutout/tractor-1024.webp 1024w",
-      "srcsetAvif": "/media/farm/r33/cutout/tractor-320.avif 320w, /media/farm/r33/cutout/tractor-480.avif 480w, /media/farm/r33/cutout/tractor-672.avif 672w, /media/farm/r33/cutout/tractor-768.avif 768w, /media/farm/r33/cutout/tractor-1024.avif 1024w",
-      "inputPath": "media/farm/r33/cutout/tractor.webp"
-    },
-    {
       "src": "/media/farm/r33/poster/tractor.webp",
       "width": 1168,
       "height": 780,
@@ -149,15 +74,6 @@
       "srcsetWebp": "/media/farm/r33/poster/tractor-320.webp 320w, /media/farm/r33/poster/tractor-480.webp 480w, /media/farm/r33/poster/tractor-672.webp 672w, /media/farm/r33/poster/tractor-768.webp 768w, /media/farm/r33/poster/tractor-1024.webp 1024w",
       "srcsetAvif": "/media/farm/r33/poster/tractor-320.avif 320w, /media/farm/r33/poster/tractor-480.avif 480w, /media/farm/r33/poster/tractor-672.avif 672w, /media/farm/r33/poster/tractor-768.avif 768w, /media/farm/r33/poster/tractor-1024.avif 1024w",
       "inputPath": "media/farm/r33/poster/tractor.webp"
-    },
-    {
-      "src": "/media/farm/r33/cutout/trailer.webp",
-      "width": 1024,
-      "height": 1024,
-      "alt": "Four-wheel timber farm trailer with low side boards and a drawbar.",
-      "srcsetWebp": "/media/farm/r33/cutout/trailer-320.webp 320w, /media/farm/r33/cutout/trailer-480.webp 480w, /media/farm/r33/cutout/trailer-672.webp 672w, /media/farm/r33/cutout/trailer-768.webp 768w, /media/farm/r33/cutout/trailer-1024.webp 1024w",
-      "srcsetAvif": "/media/farm/r33/cutout/trailer-320.avif 320w, /media/farm/r33/cutout/trailer-480.avif 480w, /media/farm/r33/cutout/trailer-672.avif 672w, /media/farm/r33/cutout/trailer-768.avif 768w, /media/farm/r33/cutout/trailer-1024.avif 1024w",
-      "inputPath": "media/farm/r33/cutout/trailer.webp"
     },
     {
       "src": "/media/farm/r33/poster/trailer.webp",
@@ -169,15 +85,6 @@
       "inputPath": "media/farm/r33/poster/trailer.webp"
     },
     {
-      "src": "/media/farm/r33/cutout/barrel.webp",
-      "width": 1024,
-      "height": 1024,
-      "alt": "Upright wooden barrel with a closed stave lid and three dark metal hoops.",
-      "srcsetWebp": "/media/farm/r33/cutout/barrel-320.webp 320w, /media/farm/r33/cutout/barrel-480.webp 480w, /media/farm/r33/cutout/barrel-672.webp 672w, /media/farm/r33/cutout/barrel-768.webp 768w, /media/farm/r33/cutout/barrel-1024.webp 1024w",
-      "srcsetAvif": "/media/farm/r33/cutout/barrel-320.avif 320w, /media/farm/r33/cutout/barrel-480.avif 480w, /media/farm/r33/cutout/barrel-672.avif 672w, /media/farm/r33/cutout/barrel-768.avif 768w, /media/farm/r33/cutout/barrel-1024.avif 1024w",
-      "inputPath": "media/farm/r33/cutout/barrel.webp"
-    },
-    {
       "src": "/media/farm/r33/poster/barrel.webp",
       "width": 1168,
       "height": 780,
@@ -185,15 +92,6 @@
       "srcsetWebp": "/media/farm/r33/poster/barrel-320.webp 320w, /media/farm/r33/poster/barrel-480.webp 480w, /media/farm/r33/poster/barrel-672.webp 672w, /media/farm/r33/poster/barrel-768.webp 768w, /media/farm/r33/poster/barrel-1024.webp 1024w",
       "srcsetAvif": "/media/farm/r33/poster/barrel-320.avif 320w, /media/farm/r33/poster/barrel-480.avif 480w, /media/farm/r33/poster/barrel-672.avif 672w, /media/farm/r33/poster/barrel-768.avif 768w, /media/farm/r33/poster/barrel-1024.avif 1024w",
       "inputPath": "media/farm/r33/poster/barrel.webp"
-    },
-    {
-      "src": "/media/farm/r33/cutout/hay-bale.webp",
-      "width": 1024,
-      "height": 1024,
-      "alt": "Rectangular golden hay bale held by two parallel twine bands.",
-      "srcsetWebp": "/media/farm/r33/cutout/hay-bale-320.webp 320w, /media/farm/r33/cutout/hay-bale-480.webp 480w, /media/farm/r33/cutout/hay-bale-672.webp 672w, /media/farm/r33/cutout/hay-bale-768.webp 768w, /media/farm/r33/cutout/hay-bale-1024.webp 1024w",
-      "srcsetAvif": "/media/farm/r33/cutout/hay-bale-320.avif 320w, /media/farm/r33/cutout/hay-bale-480.avif 480w, /media/farm/r33/cutout/hay-bale-672.avif 672w, /media/farm/r33/cutout/hay-bale-768.avif 768w, /media/farm/r33/cutout/hay-bale-1024.avif 1024w",
-      "inputPath": "media/farm/r33/cutout/hay-bale.webp"
     },
     {
       "src": "/media/farm/r33/poster/hay-bale.webp",
@@ -205,15 +103,6 @@
       "inputPath": "media/farm/r33/poster/hay-bale.webp"
     },
     {
-      "src": "/media/farm/r33/cutout/farmer.webp",
-      "width": 1024,
-      "height": 1024,
-      "alt": "Farmer in blue overalls and a brimmed hat, carrying a three-prong pitchfork.",
-      "srcsetWebp": "/media/farm/r33/cutout/farmer-320.webp 320w, /media/farm/r33/cutout/farmer-480.webp 480w, /media/farm/r33/cutout/farmer-672.webp 672w, /media/farm/r33/cutout/farmer-768.webp 768w, /media/farm/r33/cutout/farmer-1024.webp 1024w",
-      "srcsetAvif": "/media/farm/r33/cutout/farmer-320.avif 320w, /media/farm/r33/cutout/farmer-480.avif 480w, /media/farm/r33/cutout/farmer-672.avif 672w, /media/farm/r33/cutout/farmer-768.avif 768w, /media/farm/r33/cutout/farmer-1024.avif 1024w",
-      "inputPath": "media/farm/r33/cutout/farmer.webp"
-    },
-    {
       "src": "/media/farm/r33/poster/farmer.webp",
       "width": 1168,
       "height": 780,
@@ -221,15 +110,6 @@
       "srcsetWebp": "/media/farm/r33/poster/farmer-320.webp 320w, /media/farm/r33/poster/farmer-480.webp 480w, /media/farm/r33/poster/farmer-672.webp 672w, /media/farm/r33/poster/farmer-768.webp 768w, /media/farm/r33/poster/farmer-1024.webp 1024w",
       "srcsetAvif": "/media/farm/r33/poster/farmer-320.avif 320w, /media/farm/r33/poster/farmer-480.avif 480w, /media/farm/r33/poster/farmer-672.avif 672w, /media/farm/r33/poster/farmer-768.avif 768w, /media/farm/r33/poster/farmer-1024.avif 1024w",
       "inputPath": "media/farm/r33/poster/farmer.webp"
-    },
-    {
-      "src": "/media/farm/r33/cutout/cow.webp",
-      "width": 1024,
-      "height": 1024,
-      "alt": "Brown-and-cream cow with small horns, a pink muzzle and dark hooves.",
-      "srcsetWebp": "/media/farm/r33/cutout/cow-320.webp 320w, /media/farm/r33/cutout/cow-480.webp 480w, /media/farm/r33/cutout/cow-672.webp 672w, /media/farm/r33/cutout/cow-768.webp 768w, /media/farm/r33/cutout/cow-1024.webp 1024w",
-      "srcsetAvif": "/media/farm/r33/cutout/cow-320.avif 320w, /media/farm/r33/cutout/cow-480.avif 480w, /media/farm/r33/cutout/cow-672.avif 672w, /media/farm/r33/cutout/cow-768.avif 768w, /media/farm/r33/cutout/cow-1024.avif 1024w",
-      "inputPath": "media/farm/r33/cutout/cow.webp"
     },
     {
       "src": "/media/farm/r33/poster/cow.webp",
@@ -241,15 +121,6 @@
       "inputPath": "media/farm/r33/poster/cow.webp"
     },
     {
-      "src": "/media/farm/r33/cutout/sheep.webp",
-      "width": 1024,
-      "height": 1024,
-      "alt": "Sheep with a faceted white fleece, dark face and four dark legs.",
-      "srcsetWebp": "/media/farm/r33/cutout/sheep-320.webp 320w, /media/farm/r33/cutout/sheep-480.webp 480w, /media/farm/r33/cutout/sheep-672.webp 672w, /media/farm/r33/cutout/sheep-768.webp 768w, /media/farm/r33/cutout/sheep-1024.webp 1024w",
-      "srcsetAvif": "/media/farm/r33/cutout/sheep-320.avif 320w, /media/farm/r33/cutout/sheep-480.avif 480w, /media/farm/r33/cutout/sheep-672.avif 672w, /media/farm/r33/cutout/sheep-768.avif 768w, /media/farm/r33/cutout/sheep-1024.avif 1024w",
-      "inputPath": "media/farm/r33/cutout/sheep.webp"
-    },
-    {
       "src": "/media/farm/r33/poster/sheep.webp",
       "width": 1168,
       "height": 780,
@@ -257,15 +128,6 @@
       "srcsetWebp": "/media/farm/r33/poster/sheep-320.webp 320w, /media/farm/r33/poster/sheep-480.webp 480w, /media/farm/r33/poster/sheep-672.webp 672w, /media/farm/r33/poster/sheep-768.webp 768w, /media/farm/r33/poster/sheep-1024.webp 1024w",
       "srcsetAvif": "/media/farm/r33/poster/sheep-320.avif 320w, /media/farm/r33/poster/sheep-480.avif 480w, /media/farm/r33/poster/sheep-672.avif 672w, /media/farm/r33/poster/sheep-768.avif 768w, /media/farm/r33/poster/sheep-1024.avif 1024w",
       "inputPath": "media/farm/r33/poster/sheep.webp"
-    },
-    {
-      "src": "/media/farm/r33/cutout/chicken.webp",
-      "width": 1024,
-      "height": 1024,
-      "alt": "White hen with a red comb, yellow legs and raised tail feathers.",
-      "srcsetWebp": "/media/farm/r33/cutout/chicken-320.webp 320w, /media/farm/r33/cutout/chicken-480.webp 480w, /media/farm/r33/cutout/chicken-672.webp 672w, /media/farm/r33/cutout/chicken-768.webp 768w, /media/farm/r33/cutout/chicken-1024.webp 1024w",
-      "srcsetAvif": "/media/farm/r33/cutout/chicken-320.avif 320w, /media/farm/r33/cutout/chicken-480.avif 480w, /media/farm/r33/cutout/chicken-672.avif 672w, /media/farm/r33/cutout/chicken-768.avif 768w, /media/farm/r33/cutout/chicken-1024.avif 1024w",
-      "inputPath": "media/farm/r33/cutout/chicken.webp"
     },
     {
       "src": "/media/farm/r33/poster/chicken.webp",
@@ -277,15 +139,6 @@
       "inputPath": "media/farm/r33/poster/chicken.webp"
     },
     {
-      "src": "/media/farm/r33/cutout/cabbage-stage-1.webp",
-      "width": 1024,
-      "height": 1024,
-      "alt": "Small cabbage seedling emerging from a low, faceted soil patch.",
-      "srcsetWebp": "/media/farm/r33/cutout/cabbage-stage-1-320.webp 320w, /media/farm/r33/cutout/cabbage-stage-1-480.webp 480w, /media/farm/r33/cutout/cabbage-stage-1-672.webp 672w, /media/farm/r33/cutout/cabbage-stage-1-768.webp 768w, /media/farm/r33/cutout/cabbage-stage-1-1024.webp 1024w",
-      "srcsetAvif": "/media/farm/r33/cutout/cabbage-stage-1-320.avif 320w, /media/farm/r33/cutout/cabbage-stage-1-480.avif 480w, /media/farm/r33/cutout/cabbage-stage-1-672.avif 672w, /media/farm/r33/cutout/cabbage-stage-1-768.avif 768w, /media/farm/r33/cutout/cabbage-stage-1-1024.avif 1024w",
-      "inputPath": "media/farm/r33/cutout/cabbage-stage-1.webp"
-    },
-    {
       "src": "/media/farm/r33/poster/cabbage-stage-1.webp",
       "width": 1168,
       "height": 780,
@@ -293,15 +146,6 @@
       "srcsetWebp": "/media/farm/r33/poster/cabbage-stage-1-320.webp 320w, /media/farm/r33/poster/cabbage-stage-1-480.webp 480w, /media/farm/r33/poster/cabbage-stage-1-672.webp 672w, /media/farm/r33/poster/cabbage-stage-1-768.webp 768w, /media/farm/r33/poster/cabbage-stage-1-1024.webp 1024w",
       "srcsetAvif": "/media/farm/r33/poster/cabbage-stage-1-320.avif 320w, /media/farm/r33/poster/cabbage-stage-1-480.avif 480w, /media/farm/r33/poster/cabbage-stage-1-672.avif 672w, /media/farm/r33/poster/cabbage-stage-1-768.avif 768w, /media/farm/r33/poster/cabbage-stage-1-1024.avif 1024w",
       "inputPath": "media/farm/r33/poster/cabbage-stage-1.webp"
-    },
-    {
-      "src": "/media/farm/r33/cutout/cabbage-stage-2.webp",
-      "width": 1024,
-      "height": 1024,
-      "alt": "Young cabbage with spreading pale-green leaves on a soil patch.",
-      "srcsetWebp": "/media/farm/r33/cutout/cabbage-stage-2-320.webp 320w, /media/farm/r33/cutout/cabbage-stage-2-480.webp 480w, /media/farm/r33/cutout/cabbage-stage-2-672.webp 672w, /media/farm/r33/cutout/cabbage-stage-2-768.webp 768w, /media/farm/r33/cutout/cabbage-stage-2-1024.webp 1024w",
-      "srcsetAvif": "/media/farm/r33/cutout/cabbage-stage-2-320.avif 320w, /media/farm/r33/cutout/cabbage-stage-2-480.avif 480w, /media/farm/r33/cutout/cabbage-stage-2-672.avif 672w, /media/farm/r33/cutout/cabbage-stage-2-768.avif 768w, /media/farm/r33/cutout/cabbage-stage-2-1024.avif 1024w",
-      "inputPath": "media/farm/r33/cutout/cabbage-stage-2.webp"
     },
     {
       "src": "/media/farm/r33/poster/cabbage-stage-2.webp",
@@ -313,15 +157,6 @@
       "inputPath": "media/farm/r33/poster/cabbage-stage-2.webp"
     },
     {
-      "src": "/media/farm/r33/cutout/cabbage-stage-3.webp",
-      "width": 1024,
-      "height": 1024,
-      "alt": "Open cabbage rosette with layered green leaves and an upright centre.",
-      "srcsetWebp": "/media/farm/r33/cutout/cabbage-stage-3-320.webp 320w, /media/farm/r33/cutout/cabbage-stage-3-480.webp 480w, /media/farm/r33/cutout/cabbage-stage-3-672.webp 672w, /media/farm/r33/cutout/cabbage-stage-3-768.webp 768w, /media/farm/r33/cutout/cabbage-stage-3-1024.webp 1024w",
-      "srcsetAvif": "/media/farm/r33/cutout/cabbage-stage-3-320.avif 320w, /media/farm/r33/cutout/cabbage-stage-3-480.avif 480w, /media/farm/r33/cutout/cabbage-stage-3-672.avif 672w, /media/farm/r33/cutout/cabbage-stage-3-768.avif 768w, /media/farm/r33/cutout/cabbage-stage-3-1024.avif 1024w",
-      "inputPath": "media/farm/r33/cutout/cabbage-stage-3.webp"
-    },
-    {
       "src": "/media/farm/r33/poster/cabbage-stage-3.webp",
       "width": 1168,
       "height": 780,
@@ -329,15 +164,6 @@
       "srcsetWebp": "/media/farm/r33/poster/cabbage-stage-3-320.webp 320w, /media/farm/r33/poster/cabbage-stage-3-480.webp 480w, /media/farm/r33/poster/cabbage-stage-3-672.webp 672w, /media/farm/r33/poster/cabbage-stage-3-768.webp 768w, /media/farm/r33/poster/cabbage-stage-3-1024.webp 1024w",
       "srcsetAvif": "/media/farm/r33/poster/cabbage-stage-3-320.avif 320w, /media/farm/r33/poster/cabbage-stage-3-480.avif 480w, /media/farm/r33/poster/cabbage-stage-3-672.avif 672w, /media/farm/r33/poster/cabbage-stage-3-768.avif 768w, /media/farm/r33/poster/cabbage-stage-3-1024.avif 1024w",
       "inputPath": "media/farm/r33/poster/cabbage-stage-3.webp"
-    },
-    {
-      "src": "/media/farm/r33/cutout/cabbage-stage-4.webp",
-      "width": 1024,
-      "height": 1024,
-      "alt": "Mature pale-green cabbage head held by broad outer leaves.",
-      "srcsetWebp": "/media/farm/r33/cutout/cabbage-stage-4-320.webp 320w, /media/farm/r33/cutout/cabbage-stage-4-480.webp 480w, /media/farm/r33/cutout/cabbage-stage-4-672.webp 672w, /media/farm/r33/cutout/cabbage-stage-4-768.webp 768w, /media/farm/r33/cutout/cabbage-stage-4-1024.webp 1024w",
-      "srcsetAvif": "/media/farm/r33/cutout/cabbage-stage-4-320.avif 320w, /media/farm/r33/cutout/cabbage-stage-4-480.avif 480w, /media/farm/r33/cutout/cabbage-stage-4-672.avif 672w, /media/farm/r33/cutout/cabbage-stage-4-768.avif 768w, /media/farm/r33/cutout/cabbage-stage-4-1024.avif 1024w",
-      "inputPath": "media/farm/r33/cutout/cabbage-stage-4.webp"
     },
     {
       "src": "/media/farm/r33/poster/cabbage-stage-4.webp",
@@ -349,15 +175,6 @@
       "inputPath": "media/farm/r33/poster/cabbage-stage-4.webp"
     },
     {
-      "src": "/media/farm/r33/cutout/wheat.webp",
-      "width": 1024,
-      "height": 1024,
-      "alt": "Cluster of golden wheat stems with narrow leaves and upright seed heads.",
-      "srcsetWebp": "/media/farm/r33/cutout/wheat-320.webp 320w, /media/farm/r33/cutout/wheat-480.webp 480w, /media/farm/r33/cutout/wheat-672.webp 672w, /media/farm/r33/cutout/wheat-768.webp 768w, /media/farm/r33/cutout/wheat-1024.webp 1024w",
-      "srcsetAvif": "/media/farm/r33/cutout/wheat-320.avif 320w, /media/farm/r33/cutout/wheat-480.avif 480w, /media/farm/r33/cutout/wheat-672.avif 672w, /media/farm/r33/cutout/wheat-768.avif 768w, /media/farm/r33/cutout/wheat-1024.avif 1024w",
-      "inputPath": "media/farm/r33/cutout/wheat.webp"
-    },
-    {
       "src": "/media/farm/r33/poster/wheat.webp",
       "width": 1168,
       "height": 780,
@@ -365,15 +182,6 @@
       "srcsetWebp": "/media/farm/r33/poster/wheat-320.webp 320w, /media/farm/r33/poster/wheat-480.webp 480w, /media/farm/r33/poster/wheat-672.webp 672w, /media/farm/r33/poster/wheat-768.webp 768w, /media/farm/r33/poster/wheat-1024.webp 1024w",
       "srcsetAvif": "/media/farm/r33/poster/wheat-320.avif 320w, /media/farm/r33/poster/wheat-480.avif 480w, /media/farm/r33/poster/wheat-672.avif 672w, /media/farm/r33/poster/wheat-768.avif 768w, /media/farm/r33/poster/wheat-1024.avif 1024w",
       "inputPath": "media/farm/r33/poster/wheat.webp"
-    },
-    {
-      "src": "/media/farm/r33/cutout/pumpkin-plant.webp",
-      "width": 1024,
-      "height": 1024,
-      "alt": "Low pumpkin vine with green leaves and two faceted orange fruits.",
-      "srcsetWebp": "/media/farm/r33/cutout/pumpkin-plant-320.webp 320w, /media/farm/r33/cutout/pumpkin-plant-480.webp 480w, /media/farm/r33/cutout/pumpkin-plant-672.webp 672w, /media/farm/r33/cutout/pumpkin-plant-768.webp 768w, /media/farm/r33/cutout/pumpkin-plant-1024.webp 1024w",
-      "srcsetAvif": "/media/farm/r33/cutout/pumpkin-plant-320.avif 320w, /media/farm/r33/cutout/pumpkin-plant-480.avif 480w, /media/farm/r33/cutout/pumpkin-plant-672.avif 672w, /media/farm/r33/cutout/pumpkin-plant-768.avif 768w, /media/farm/r33/cutout/pumpkin-plant-1024.avif 1024w",
-      "inputPath": "media/farm/r33/cutout/pumpkin-plant.webp"
     },
     {
       "src": "/media/farm/r33/poster/pumpkin-plant.webp",
@@ -385,15 +193,6 @@
       "inputPath": "media/farm/r33/poster/pumpkin-plant.webp"
     },
     {
-      "src": "/media/farm/r33/cutout/faceted-tree.webp",
-      "width": 1024,
-      "height": 1024,
-      "alt": "Small deciduous tree with a branching brown trunk and a faceted green crown.",
-      "srcsetWebp": "/media/farm/r33/cutout/faceted-tree-320.webp 320w, /media/farm/r33/cutout/faceted-tree-480.webp 480w, /media/farm/r33/cutout/faceted-tree-672.webp 672w, /media/farm/r33/cutout/faceted-tree-768.webp 768w, /media/farm/r33/cutout/faceted-tree-1024.webp 1024w",
-      "srcsetAvif": "/media/farm/r33/cutout/faceted-tree-320.avif 320w, /media/farm/r33/cutout/faceted-tree-480.avif 480w, /media/farm/r33/cutout/faceted-tree-672.avif 672w, /media/farm/r33/cutout/faceted-tree-768.avif 768w, /media/farm/r33/cutout/faceted-tree-1024.avif 1024w",
-      "inputPath": "media/farm/r33/cutout/faceted-tree.webp"
-    },
-    {
       "src": "/media/farm/r33/poster/faceted-tree.webp",
       "width": 1168,
       "height": 780,
@@ -401,15 +200,6 @@
       "srcsetWebp": "/media/farm/r33/poster/faceted-tree-320.webp 320w, /media/farm/r33/poster/faceted-tree-480.webp 480w, /media/farm/r33/poster/faceted-tree-672.webp 672w, /media/farm/r33/poster/faceted-tree-768.webp 768w, /media/farm/r33/poster/faceted-tree-1024.webp 1024w",
       "srcsetAvif": "/media/farm/r33/poster/faceted-tree-320.avif 320w, /media/farm/r33/poster/faceted-tree-480.avif 480w, /media/farm/r33/poster/faceted-tree-672.avif 672w, /media/farm/r33/poster/faceted-tree-768.avif 768w, /media/farm/r33/poster/faceted-tree-1024.avif 1024w",
       "inputPath": "media/farm/r33/poster/faceted-tree.webp"
-    },
-    {
-      "src": "/media/farm/r33/cutout/rock-cluster.webp",
-      "width": 1024,
-      "height": 1024,
-      "alt": "Group of low, pale faceted rocks with a larger central stone.",
-      "srcsetWebp": "/media/farm/r33/cutout/rock-cluster-320.webp 320w, /media/farm/r33/cutout/rock-cluster-480.webp 480w, /media/farm/r33/cutout/rock-cluster-672.webp 672w, /media/farm/r33/cutout/rock-cluster-768.webp 768w, /media/farm/r33/cutout/rock-cluster-1024.webp 1024w",
-      "srcsetAvif": "/media/farm/r33/cutout/rock-cluster-320.avif 320w, /media/farm/r33/cutout/rock-cluster-480.avif 480w, /media/farm/r33/cutout/rock-cluster-672.avif 672w, /media/farm/r33/cutout/rock-cluster-768.avif 768w, /media/farm/r33/cutout/rock-cluster-1024.avif 1024w",
-      "inputPath": "media/farm/r33/cutout/rock-cluster.webp"
     },
     {
       "src": "/media/farm/r33/poster/rock-cluster.webp",
@@ -451,65 +241,510 @@
       "inputPath": "media/farm/revisions/farmhouse-floor-after.webp"
     },
     {
-      "src": "/standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/classic-neutral.webp",
-      "width": 1032,
-      "height": 1032,
-      "alt": "Golden Gate Bridge seen obliquely from above, showing both towers and the suspended roadway.",
-      "srcsetWebp": "/standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/classic-neutral-320.webp 320w, /standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/classic-neutral-480.webp 480w, /standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/classic-neutral-672.webp 672w, /standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/classic-neutral-768.webp 768w, /standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/classic-neutral-1024.webp 1024w",
-      "srcsetAvif": "/standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/classic-neutral-320.avif 320w, /standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/classic-neutral-480.avif 480w, /standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/classic-neutral-672.avif 672w, /standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/classic-neutral-768.avif 768w, /standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/classic-neutral-1024.avif 1024w",
-      "inputPath": "standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/classic-neutral.png"
+      "src": "/media/scenes/golden-gate/g3/golden-gate-scene-drive.webp",
+      "width": 1440,
+      "height": 925,
+      "alt": "A blue sedan driving across the deck of the Golden Gate Bridge scene, with traffic ahead and a tower in the distance.",
+      "srcsetWebp": "/media/scenes/golden-gate/g3/golden-gate-scene-drive-320.webp 320w, /media/scenes/golden-gate/g3/golden-gate-scene-drive-480.webp 480w, /media/scenes/golden-gate/g3/golden-gate-scene-drive-672.webp 672w, /media/scenes/golden-gate/g3/golden-gate-scene-drive-768.webp 768w, /media/scenes/golden-gate/g3/golden-gate-scene-drive-1024.webp 1024w, /media/scenes/golden-gate/g3/golden-gate-scene-drive-1440.webp 1440w",
+      "srcsetAvif": "/media/scenes/golden-gate/g3/golden-gate-scene-drive-320.avif 320w, /media/scenes/golden-gate/g3/golden-gate-scene-drive-480.avif 480w, /media/scenes/golden-gate/g3/golden-gate-scene-drive-672.avif 672w, /media/scenes/golden-gate/g3/golden-gate-scene-drive-768.avif 768w, /media/scenes/golden-gate/g3/golden-gate-scene-drive-1024.avif 1024w, /media/scenes/golden-gate/g3/golden-gate-scene-drive-1440.avif 1440w",
+      "inputPath": "media/scenes/golden-gate/g3/golden-gate-scene-drive.png"
     },
     {
-      "src": "/standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/review-sheet-neutral.webp",
+      "src": "/media/rig/review-neutral-v1/farm/r34/farmhouse.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "Cream masonry house with a charcoal gabled roof, olive shutters and a timber porch.",
+      "srcsetWebp": "/media/rig/review-neutral-v1/farm/r34/farmhouse-320.webp 320w, /media/rig/review-neutral-v1/farm/r34/farmhouse-480.webp 480w, /media/rig/review-neutral-v1/farm/r34/farmhouse-672.webp 672w, /media/rig/review-neutral-v1/farm/r34/farmhouse-768.webp 768w, /media/rig/review-neutral-v1/farm/r34/farmhouse-1024.webp 1024w",
+      "srcsetAvif": "/media/rig/review-neutral-v1/farm/r34/farmhouse-320.avif 320w, /media/rig/review-neutral-v1/farm/r34/farmhouse-480.avif 480w, /media/rig/review-neutral-v1/farm/r34/farmhouse-672.avif 672w, /media/rig/review-neutral-v1/farm/r34/farmhouse-768.avif 768w, /media/rig/review-neutral-v1/farm/r34/farmhouse-1024.avif 1024w",
+      "inputPath": "media/rig/review-neutral-v1/farm/r34/farmhouse.png",
+      "sourceRevisionId": "r_01f97f5e943e4c2693b6db8596f3e353",
+      "exactRevision": true,
+      "rig": "review-neutral-v1"
+    },
+    {
+      "src": "/media/rig/review-neutral-v1/farm/r34/barn.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "Red timber barn with white door bracing, a grey roof and an open side shelter.",
+      "srcsetWebp": "/media/rig/review-neutral-v1/farm/r34/barn-320.webp 320w, /media/rig/review-neutral-v1/farm/r34/barn-480.webp 480w, /media/rig/review-neutral-v1/farm/r34/barn-672.webp 672w, /media/rig/review-neutral-v1/farm/r34/barn-768.webp 768w, /media/rig/review-neutral-v1/farm/r34/barn-1024.webp 1024w",
+      "srcsetAvif": "/media/rig/review-neutral-v1/farm/r34/barn-320.avif 320w, /media/rig/review-neutral-v1/farm/r34/barn-480.avif 480w, /media/rig/review-neutral-v1/farm/r34/barn-672.avif 672w, /media/rig/review-neutral-v1/farm/r34/barn-768.avif 768w, /media/rig/review-neutral-v1/farm/r34/barn-1024.avif 1024w",
+      "inputPath": "media/rig/review-neutral-v1/farm/r34/barn.png",
+      "sourceRevisionId": "r_c0234dc50e0443f4a8819cdf754b22da",
+      "exactRevision": true,
+      "rig": "review-neutral-v1"
+    },
+    {
+      "src": "/media/rig/review-neutral-v1/farm/r34/windmill.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "Open timber wind pump with a metal rotor, tail vane and four braced legs.",
+      "srcsetWebp": "/media/rig/review-neutral-v1/farm/r34/windmill-320.webp 320w, /media/rig/review-neutral-v1/farm/r34/windmill-480.webp 480w, /media/rig/review-neutral-v1/farm/r34/windmill-672.webp 672w, /media/rig/review-neutral-v1/farm/r34/windmill-768.webp 768w, /media/rig/review-neutral-v1/farm/r34/windmill-1024.webp 1024w",
+      "srcsetAvif": "/media/rig/review-neutral-v1/farm/r34/windmill-320.avif 320w, /media/rig/review-neutral-v1/farm/r34/windmill-480.avif 480w, /media/rig/review-neutral-v1/farm/r34/windmill-672.avif 672w, /media/rig/review-neutral-v1/farm/r34/windmill-768.avif 768w, /media/rig/review-neutral-v1/farm/r34/windmill-1024.avif 1024w",
+      "inputPath": "media/rig/review-neutral-v1/farm/r34/windmill.png",
+      "sourceRevisionId": "r_ef9045311dd040258e0143345c171d6f",
+      "exactRevision": true,
+      "rig": "review-neutral-v1"
+    },
+    {
+      "src": "/media/rig/review-neutral-v1/farm/r34/watermill.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "Pale masonry mill house with a gabled roof and an exposed timber waterwheel.",
+      "srcsetWebp": "/media/rig/review-neutral-v1/farm/r34/watermill-320.webp 320w, /media/rig/review-neutral-v1/farm/r34/watermill-480.webp 480w, /media/rig/review-neutral-v1/farm/r34/watermill-672.webp 672w, /media/rig/review-neutral-v1/farm/r34/watermill-768.webp 768w, /media/rig/review-neutral-v1/farm/r34/watermill-1024.webp 1024w",
+      "srcsetAvif": "/media/rig/review-neutral-v1/farm/r34/watermill-320.avif 320w, /media/rig/review-neutral-v1/farm/r34/watermill-480.avif 480w, /media/rig/review-neutral-v1/farm/r34/watermill-672.avif 672w, /media/rig/review-neutral-v1/farm/r34/watermill-768.avif 768w, /media/rig/review-neutral-v1/farm/r34/watermill-1024.avif 1024w",
+      "inputPath": "media/rig/review-neutral-v1/farm/r34/watermill.png",
+      "sourceRevisionId": "r_f8ab38b03b5a4fb691b860d9fb076200",
+      "exactRevision": true,
+      "rig": "review-neutral-v1"
+    },
+    {
+      "src": "/media/rig/review-neutral-v1/farm/r34/fence-straight.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "Two timber rails between pointed posts, with a two-metre post-centre span.",
+      "srcsetWebp": "/media/rig/review-neutral-v1/farm/r34/fence-straight-320.webp 320w, /media/rig/review-neutral-v1/farm/r34/fence-straight-480.webp 480w, /media/rig/review-neutral-v1/farm/r34/fence-straight-672.webp 672w, /media/rig/review-neutral-v1/farm/r34/fence-straight-768.webp 768w, /media/rig/review-neutral-v1/farm/r34/fence-straight-1024.webp 1024w",
+      "srcsetAvif": "/media/rig/review-neutral-v1/farm/r34/fence-straight-320.avif 320w, /media/rig/review-neutral-v1/farm/r34/fence-straight-480.avif 480w, /media/rig/review-neutral-v1/farm/r34/fence-straight-672.avif 672w, /media/rig/review-neutral-v1/farm/r34/fence-straight-768.avif 768w, /media/rig/review-neutral-v1/farm/r34/fence-straight-1024.avif 1024w",
+      "inputPath": "media/rig/review-neutral-v1/farm/r34/fence-straight.png",
+      "sourceRevisionId": "r_05420c8a915d45e69257f61914d02ec3",
+      "exactRevision": true,
+      "rig": "review-neutral-v1"
+    },
+    {
+      "src": "/media/rig/review-neutral-v1/farm/r34/fence-corner.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "Two matching timber fence runs joined at a right-angle corner post.",
+      "srcsetWebp": "/media/rig/review-neutral-v1/farm/r34/fence-corner-320.webp 320w, /media/rig/review-neutral-v1/farm/r34/fence-corner-480.webp 480w, /media/rig/review-neutral-v1/farm/r34/fence-corner-672.webp 672w, /media/rig/review-neutral-v1/farm/r34/fence-corner-768.webp 768w, /media/rig/review-neutral-v1/farm/r34/fence-corner-1024.webp 1024w",
+      "srcsetAvif": "/media/rig/review-neutral-v1/farm/r34/fence-corner-320.avif 320w, /media/rig/review-neutral-v1/farm/r34/fence-corner-480.avif 480w, /media/rig/review-neutral-v1/farm/r34/fence-corner-672.avif 672w, /media/rig/review-neutral-v1/farm/r34/fence-corner-768.avif 768w, /media/rig/review-neutral-v1/farm/r34/fence-corner-1024.avif 1024w",
+      "inputPath": "media/rig/review-neutral-v1/farm/r34/fence-corner.png",
+      "sourceRevisionId": "r_071590a217854c5cbefb90275d3a6887",
+      "exactRevision": true,
+      "rig": "review-neutral-v1"
+    },
+    {
+      "src": "/media/rig/review-neutral-v1/farm/r34/fence-gate.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "Braced timber gate with visible hinges and a three-metre usable opening.",
+      "srcsetWebp": "/media/rig/review-neutral-v1/farm/r34/fence-gate-320.webp 320w, /media/rig/review-neutral-v1/farm/r34/fence-gate-480.webp 480w, /media/rig/review-neutral-v1/farm/r34/fence-gate-672.webp 672w, /media/rig/review-neutral-v1/farm/r34/fence-gate-768.webp 768w, /media/rig/review-neutral-v1/farm/r34/fence-gate-1024.webp 1024w",
+      "srcsetAvif": "/media/rig/review-neutral-v1/farm/r34/fence-gate-320.avif 320w, /media/rig/review-neutral-v1/farm/r34/fence-gate-480.avif 480w, /media/rig/review-neutral-v1/farm/r34/fence-gate-672.avif 672w, /media/rig/review-neutral-v1/farm/r34/fence-gate-768.avif 768w, /media/rig/review-neutral-v1/farm/r34/fence-gate-1024.avif 1024w",
+      "inputPath": "media/rig/review-neutral-v1/farm/r34/fence-gate.png",
+      "sourceRevisionId": "r_af2ceeafc87f44759b2af1448beb76b3",
+      "exactRevision": true,
+      "rig": "review-neutral-v1"
+    },
+    {
+      "src": "/media/rig/review-neutral-v1/farm/r34/tractor.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "Orange open-seat tractor with rear wheel guards, treaded tyres and a front grille.",
+      "srcsetWebp": "/media/rig/review-neutral-v1/farm/r34/tractor-320.webp 320w, /media/rig/review-neutral-v1/farm/r34/tractor-480.webp 480w, /media/rig/review-neutral-v1/farm/r34/tractor-672.webp 672w, /media/rig/review-neutral-v1/farm/r34/tractor-768.webp 768w, /media/rig/review-neutral-v1/farm/r34/tractor-1024.webp 1024w",
+      "srcsetAvif": "/media/rig/review-neutral-v1/farm/r34/tractor-320.avif 320w, /media/rig/review-neutral-v1/farm/r34/tractor-480.avif 480w, /media/rig/review-neutral-v1/farm/r34/tractor-672.avif 672w, /media/rig/review-neutral-v1/farm/r34/tractor-768.avif 768w, /media/rig/review-neutral-v1/farm/r34/tractor-1024.avif 1024w",
+      "inputPath": "media/rig/review-neutral-v1/farm/r34/tractor.png",
+      "sourceRevisionId": "r_ebeeb57adda343dd98d575e97ca24f92",
+      "exactRevision": true,
+      "rig": "review-neutral-v1"
+    },
+    {
+      "src": "/media/rig/review-neutral-v1/farm/r34/trailer.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "Four-wheel timber farm trailer with low side boards and a drawbar.",
+      "srcsetWebp": "/media/rig/review-neutral-v1/farm/r34/trailer-320.webp 320w, /media/rig/review-neutral-v1/farm/r34/trailer-480.webp 480w, /media/rig/review-neutral-v1/farm/r34/trailer-672.webp 672w, /media/rig/review-neutral-v1/farm/r34/trailer-768.webp 768w, /media/rig/review-neutral-v1/farm/r34/trailer-1024.webp 1024w",
+      "srcsetAvif": "/media/rig/review-neutral-v1/farm/r34/trailer-320.avif 320w, /media/rig/review-neutral-v1/farm/r34/trailer-480.avif 480w, /media/rig/review-neutral-v1/farm/r34/trailer-672.avif 672w, /media/rig/review-neutral-v1/farm/r34/trailer-768.avif 768w, /media/rig/review-neutral-v1/farm/r34/trailer-1024.avif 1024w",
+      "inputPath": "media/rig/review-neutral-v1/farm/r34/trailer.png",
+      "sourceRevisionId": "r_c72e516ce16949cfbddedbc9155efa06",
+      "exactRevision": true,
+      "rig": "review-neutral-v1"
+    },
+    {
+      "src": "/media/rig/review-neutral-v1/farm/r34/barrel.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "Upright wooden barrel with a closed stave lid and three dark metal hoops.",
+      "srcsetWebp": "/media/rig/review-neutral-v1/farm/r34/barrel-320.webp 320w, /media/rig/review-neutral-v1/farm/r34/barrel-480.webp 480w, /media/rig/review-neutral-v1/farm/r34/barrel-672.webp 672w, /media/rig/review-neutral-v1/farm/r34/barrel-768.webp 768w, /media/rig/review-neutral-v1/farm/r34/barrel-1024.webp 1024w",
+      "srcsetAvif": "/media/rig/review-neutral-v1/farm/r34/barrel-320.avif 320w, /media/rig/review-neutral-v1/farm/r34/barrel-480.avif 480w, /media/rig/review-neutral-v1/farm/r34/barrel-672.avif 672w, /media/rig/review-neutral-v1/farm/r34/barrel-768.avif 768w, /media/rig/review-neutral-v1/farm/r34/barrel-1024.avif 1024w",
+      "inputPath": "media/rig/review-neutral-v1/farm/r34/barrel.png",
+      "sourceRevisionId": "r_5cc08ab44fe3401cb1c4184a4d362bca",
+      "exactRevision": true,
+      "rig": "review-neutral-v1"
+    },
+    {
+      "src": "/media/rig/review-neutral-v1/farm/r34/hay-bale.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "Rectangular golden hay bale held by two parallel twine bands.",
+      "srcsetWebp": "/media/rig/review-neutral-v1/farm/r34/hay-bale-320.webp 320w, /media/rig/review-neutral-v1/farm/r34/hay-bale-480.webp 480w, /media/rig/review-neutral-v1/farm/r34/hay-bale-672.webp 672w, /media/rig/review-neutral-v1/farm/r34/hay-bale-768.webp 768w, /media/rig/review-neutral-v1/farm/r34/hay-bale-1024.webp 1024w",
+      "srcsetAvif": "/media/rig/review-neutral-v1/farm/r34/hay-bale-320.avif 320w, /media/rig/review-neutral-v1/farm/r34/hay-bale-480.avif 480w, /media/rig/review-neutral-v1/farm/r34/hay-bale-672.avif 672w, /media/rig/review-neutral-v1/farm/r34/hay-bale-768.avif 768w, /media/rig/review-neutral-v1/farm/r34/hay-bale-1024.avif 1024w",
+      "inputPath": "media/rig/review-neutral-v1/farm/r34/hay-bale.png",
+      "sourceRevisionId": "r_aed1744fc5a34d32bb98f9f9bcfd5d0a",
+      "exactRevision": true,
+      "rig": "review-neutral-v1"
+    },
+    {
+      "src": "/media/rig/review-neutral-v1/farm/r34/farmer.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "Farmer in blue overalls and a brimmed hat, carrying a three-prong pitchfork.",
+      "srcsetWebp": "/media/rig/review-neutral-v1/farm/r34/farmer-320.webp 320w, /media/rig/review-neutral-v1/farm/r34/farmer-480.webp 480w, /media/rig/review-neutral-v1/farm/r34/farmer-672.webp 672w, /media/rig/review-neutral-v1/farm/r34/farmer-768.webp 768w, /media/rig/review-neutral-v1/farm/r34/farmer-1024.webp 1024w",
+      "srcsetAvif": "/media/rig/review-neutral-v1/farm/r34/farmer-320.avif 320w, /media/rig/review-neutral-v1/farm/r34/farmer-480.avif 480w, /media/rig/review-neutral-v1/farm/r34/farmer-672.avif 672w, /media/rig/review-neutral-v1/farm/r34/farmer-768.avif 768w, /media/rig/review-neutral-v1/farm/r34/farmer-1024.avif 1024w",
+      "inputPath": "media/rig/review-neutral-v1/farm/r34/farmer.png",
+      "sourceRevisionId": "r_d0e65e4d47aa4449a07ed288a78d461b",
+      "exactRevision": true,
+      "rig": "review-neutral-v1"
+    },
+    {
+      "src": "/media/rig/review-neutral-v1/farm/r34/cow.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "Brown-and-cream cow with small horns, a pink muzzle and dark hooves.",
+      "srcsetWebp": "/media/rig/review-neutral-v1/farm/r34/cow-320.webp 320w, /media/rig/review-neutral-v1/farm/r34/cow-480.webp 480w, /media/rig/review-neutral-v1/farm/r34/cow-672.webp 672w, /media/rig/review-neutral-v1/farm/r34/cow-768.webp 768w, /media/rig/review-neutral-v1/farm/r34/cow-1024.webp 1024w",
+      "srcsetAvif": "/media/rig/review-neutral-v1/farm/r34/cow-320.avif 320w, /media/rig/review-neutral-v1/farm/r34/cow-480.avif 480w, /media/rig/review-neutral-v1/farm/r34/cow-672.avif 672w, /media/rig/review-neutral-v1/farm/r34/cow-768.avif 768w, /media/rig/review-neutral-v1/farm/r34/cow-1024.avif 1024w",
+      "inputPath": "media/rig/review-neutral-v1/farm/r34/cow.png",
+      "sourceRevisionId": "r_712f18b9a9d9450ab77bddd59bd1c515",
+      "exactRevision": true,
+      "rig": "review-neutral-v1"
+    },
+    {
+      "src": "/media/rig/review-neutral-v1/farm/r34/sheep.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "Sheep with a faceted white fleece, dark face and four dark legs.",
+      "srcsetWebp": "/media/rig/review-neutral-v1/farm/r34/sheep-320.webp 320w, /media/rig/review-neutral-v1/farm/r34/sheep-480.webp 480w, /media/rig/review-neutral-v1/farm/r34/sheep-672.webp 672w, /media/rig/review-neutral-v1/farm/r34/sheep-768.webp 768w, /media/rig/review-neutral-v1/farm/r34/sheep-1024.webp 1024w",
+      "srcsetAvif": "/media/rig/review-neutral-v1/farm/r34/sheep-320.avif 320w, /media/rig/review-neutral-v1/farm/r34/sheep-480.avif 480w, /media/rig/review-neutral-v1/farm/r34/sheep-672.avif 672w, /media/rig/review-neutral-v1/farm/r34/sheep-768.avif 768w, /media/rig/review-neutral-v1/farm/r34/sheep-1024.avif 1024w",
+      "inputPath": "media/rig/review-neutral-v1/farm/r34/sheep.png",
+      "sourceRevisionId": "r_85d1e3a7c375412c9ba181f788753148",
+      "exactRevision": true,
+      "rig": "review-neutral-v1"
+    },
+    {
+      "src": "/media/rig/review-neutral-v1/farm/r34/chicken.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "White hen with a red comb, yellow legs and raised tail feathers.",
+      "srcsetWebp": "/media/rig/review-neutral-v1/farm/r34/chicken-320.webp 320w, /media/rig/review-neutral-v1/farm/r34/chicken-480.webp 480w, /media/rig/review-neutral-v1/farm/r34/chicken-672.webp 672w, /media/rig/review-neutral-v1/farm/r34/chicken-768.webp 768w, /media/rig/review-neutral-v1/farm/r34/chicken-1024.webp 1024w",
+      "srcsetAvif": "/media/rig/review-neutral-v1/farm/r34/chicken-320.avif 320w, /media/rig/review-neutral-v1/farm/r34/chicken-480.avif 480w, /media/rig/review-neutral-v1/farm/r34/chicken-672.avif 672w, /media/rig/review-neutral-v1/farm/r34/chicken-768.avif 768w, /media/rig/review-neutral-v1/farm/r34/chicken-1024.avif 1024w",
+      "inputPath": "media/rig/review-neutral-v1/farm/r34/chicken.png",
+      "sourceRevisionId": "r_b0b9b724b40e4d09a17c8dd8408fba62",
+      "exactRevision": true,
+      "rig": "review-neutral-v1"
+    },
+    {
+      "src": "/media/rig/review-neutral-v1/farm/r34/cabbage-stage-1.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "Small cabbage seedling emerging from a low, faceted soil patch.",
+      "srcsetWebp": "/media/rig/review-neutral-v1/farm/r34/cabbage-stage-1-320.webp 320w, /media/rig/review-neutral-v1/farm/r34/cabbage-stage-1-480.webp 480w, /media/rig/review-neutral-v1/farm/r34/cabbage-stage-1-672.webp 672w, /media/rig/review-neutral-v1/farm/r34/cabbage-stage-1-768.webp 768w, /media/rig/review-neutral-v1/farm/r34/cabbage-stage-1-1024.webp 1024w",
+      "srcsetAvif": "/media/rig/review-neutral-v1/farm/r34/cabbage-stage-1-320.avif 320w, /media/rig/review-neutral-v1/farm/r34/cabbage-stage-1-480.avif 480w, /media/rig/review-neutral-v1/farm/r34/cabbage-stage-1-672.avif 672w, /media/rig/review-neutral-v1/farm/r34/cabbage-stage-1-768.avif 768w, /media/rig/review-neutral-v1/farm/r34/cabbage-stage-1-1024.avif 1024w",
+      "inputPath": "media/rig/review-neutral-v1/farm/r34/cabbage-stage-1.png",
+      "sourceRevisionId": "r_b2a06d73eefb4ca7b0617685bc560ef2",
+      "exactRevision": true,
+      "rig": "review-neutral-v1"
+    },
+    {
+      "src": "/media/rig/review-neutral-v1/farm/r34/cabbage-stage-2.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "Young cabbage with spreading pale-green leaves on a soil patch.",
+      "srcsetWebp": "/media/rig/review-neutral-v1/farm/r34/cabbage-stage-2-320.webp 320w, /media/rig/review-neutral-v1/farm/r34/cabbage-stage-2-480.webp 480w, /media/rig/review-neutral-v1/farm/r34/cabbage-stage-2-672.webp 672w, /media/rig/review-neutral-v1/farm/r34/cabbage-stage-2-768.webp 768w, /media/rig/review-neutral-v1/farm/r34/cabbage-stage-2-1024.webp 1024w",
+      "srcsetAvif": "/media/rig/review-neutral-v1/farm/r34/cabbage-stage-2-320.avif 320w, /media/rig/review-neutral-v1/farm/r34/cabbage-stage-2-480.avif 480w, /media/rig/review-neutral-v1/farm/r34/cabbage-stage-2-672.avif 672w, /media/rig/review-neutral-v1/farm/r34/cabbage-stage-2-768.avif 768w, /media/rig/review-neutral-v1/farm/r34/cabbage-stage-2-1024.avif 1024w",
+      "inputPath": "media/rig/review-neutral-v1/farm/r34/cabbage-stage-2.png",
+      "sourceRevisionId": "r_d2cb82ca31fd4fe8883da87ece0e9a1d",
+      "exactRevision": true,
+      "rig": "review-neutral-v1"
+    },
+    {
+      "src": "/media/rig/review-neutral-v1/farm/r34/cabbage-stage-3.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "Open cabbage rosette with layered green leaves and an upright centre.",
+      "srcsetWebp": "/media/rig/review-neutral-v1/farm/r34/cabbage-stage-3-320.webp 320w, /media/rig/review-neutral-v1/farm/r34/cabbage-stage-3-480.webp 480w, /media/rig/review-neutral-v1/farm/r34/cabbage-stage-3-672.webp 672w, /media/rig/review-neutral-v1/farm/r34/cabbage-stage-3-768.webp 768w, /media/rig/review-neutral-v1/farm/r34/cabbage-stage-3-1024.webp 1024w",
+      "srcsetAvif": "/media/rig/review-neutral-v1/farm/r34/cabbage-stage-3-320.avif 320w, /media/rig/review-neutral-v1/farm/r34/cabbage-stage-3-480.avif 480w, /media/rig/review-neutral-v1/farm/r34/cabbage-stage-3-672.avif 672w, /media/rig/review-neutral-v1/farm/r34/cabbage-stage-3-768.avif 768w, /media/rig/review-neutral-v1/farm/r34/cabbage-stage-3-1024.avif 1024w",
+      "inputPath": "media/rig/review-neutral-v1/farm/r34/cabbage-stage-3.png",
+      "sourceRevisionId": "r_8a446c3c2f514e358f8f897c420ecd0a",
+      "exactRevision": true,
+      "rig": "review-neutral-v1"
+    },
+    {
+      "src": "/media/rig/review-neutral-v1/farm/r34/cabbage-stage-4.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "Mature pale-green cabbage head held by broad outer leaves.",
+      "srcsetWebp": "/media/rig/review-neutral-v1/farm/r34/cabbage-stage-4-320.webp 320w, /media/rig/review-neutral-v1/farm/r34/cabbage-stage-4-480.webp 480w, /media/rig/review-neutral-v1/farm/r34/cabbage-stage-4-672.webp 672w, /media/rig/review-neutral-v1/farm/r34/cabbage-stage-4-768.webp 768w, /media/rig/review-neutral-v1/farm/r34/cabbage-stage-4-1024.webp 1024w",
+      "srcsetAvif": "/media/rig/review-neutral-v1/farm/r34/cabbage-stage-4-320.avif 320w, /media/rig/review-neutral-v1/farm/r34/cabbage-stage-4-480.avif 480w, /media/rig/review-neutral-v1/farm/r34/cabbage-stage-4-672.avif 672w, /media/rig/review-neutral-v1/farm/r34/cabbage-stage-4-768.avif 768w, /media/rig/review-neutral-v1/farm/r34/cabbage-stage-4-1024.avif 1024w",
+      "inputPath": "media/rig/review-neutral-v1/farm/r34/cabbage-stage-4.png",
+      "sourceRevisionId": "r_9bf8450fc5294c9d9dca1960625be36a",
+      "exactRevision": true,
+      "rig": "review-neutral-v1"
+    },
+    {
+      "src": "/media/rig/review-neutral-v1/farm/r34/wheat.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "Cluster of golden wheat stems with narrow leaves and upright seed heads.",
+      "srcsetWebp": "/media/rig/review-neutral-v1/farm/r34/wheat-320.webp 320w, /media/rig/review-neutral-v1/farm/r34/wheat-480.webp 480w, /media/rig/review-neutral-v1/farm/r34/wheat-672.webp 672w, /media/rig/review-neutral-v1/farm/r34/wheat-768.webp 768w, /media/rig/review-neutral-v1/farm/r34/wheat-1024.webp 1024w",
+      "srcsetAvif": "/media/rig/review-neutral-v1/farm/r34/wheat-320.avif 320w, /media/rig/review-neutral-v1/farm/r34/wheat-480.avif 480w, /media/rig/review-neutral-v1/farm/r34/wheat-672.avif 672w, /media/rig/review-neutral-v1/farm/r34/wheat-768.avif 768w, /media/rig/review-neutral-v1/farm/r34/wheat-1024.avif 1024w",
+      "inputPath": "media/rig/review-neutral-v1/farm/r34/wheat.png",
+      "sourceRevisionId": "r_254f9bdf4d004a7796033d5fe348a3e3",
+      "exactRevision": true,
+      "rig": "review-neutral-v1"
+    },
+    {
+      "src": "/media/rig/review-neutral-v1/farm/r34/pumpkin-plant.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "Low pumpkin vine with green leaves and two faceted orange fruits.",
+      "srcsetWebp": "/media/rig/review-neutral-v1/farm/r34/pumpkin-plant-320.webp 320w, /media/rig/review-neutral-v1/farm/r34/pumpkin-plant-480.webp 480w, /media/rig/review-neutral-v1/farm/r34/pumpkin-plant-672.webp 672w, /media/rig/review-neutral-v1/farm/r34/pumpkin-plant-768.webp 768w, /media/rig/review-neutral-v1/farm/r34/pumpkin-plant-1024.webp 1024w",
+      "srcsetAvif": "/media/rig/review-neutral-v1/farm/r34/pumpkin-plant-320.avif 320w, /media/rig/review-neutral-v1/farm/r34/pumpkin-plant-480.avif 480w, /media/rig/review-neutral-v1/farm/r34/pumpkin-plant-672.avif 672w, /media/rig/review-neutral-v1/farm/r34/pumpkin-plant-768.avif 768w, /media/rig/review-neutral-v1/farm/r34/pumpkin-plant-1024.avif 1024w",
+      "inputPath": "media/rig/review-neutral-v1/farm/r34/pumpkin-plant.png",
+      "sourceRevisionId": "r_38897e8a2b944c38a4f4428ab39f4a2b",
+      "exactRevision": true,
+      "rig": "review-neutral-v1"
+    },
+    {
+      "src": "/media/rig/review-neutral-v1/farm/r34/faceted-tree.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "Small deciduous tree with a branching brown trunk and a faceted green crown.",
+      "srcsetWebp": "/media/rig/review-neutral-v1/farm/r34/faceted-tree-320.webp 320w, /media/rig/review-neutral-v1/farm/r34/faceted-tree-480.webp 480w, /media/rig/review-neutral-v1/farm/r34/faceted-tree-672.webp 672w, /media/rig/review-neutral-v1/farm/r34/faceted-tree-768.webp 768w, /media/rig/review-neutral-v1/farm/r34/faceted-tree-1024.webp 1024w",
+      "srcsetAvif": "/media/rig/review-neutral-v1/farm/r34/faceted-tree-320.avif 320w, /media/rig/review-neutral-v1/farm/r34/faceted-tree-480.avif 480w, /media/rig/review-neutral-v1/farm/r34/faceted-tree-672.avif 672w, /media/rig/review-neutral-v1/farm/r34/faceted-tree-768.avif 768w, /media/rig/review-neutral-v1/farm/r34/faceted-tree-1024.avif 1024w",
+      "inputPath": "media/rig/review-neutral-v1/farm/r34/faceted-tree.png",
+      "sourceRevisionId": "r_6d5dd832c32b4d8682942980d02cde1b",
+      "exactRevision": true,
+      "rig": "review-neutral-v1"
+    },
+    {
+      "src": "/media/rig/review-neutral-v1/farm/r34/rock-cluster.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "Group of low, pale faceted rocks with a larger central stone.",
+      "srcsetWebp": "/media/rig/review-neutral-v1/farm/r34/rock-cluster-320.webp 320w, /media/rig/review-neutral-v1/farm/r34/rock-cluster-480.webp 480w, /media/rig/review-neutral-v1/farm/r34/rock-cluster-672.webp 672w, /media/rig/review-neutral-v1/farm/r34/rock-cluster-768.webp 768w, /media/rig/review-neutral-v1/farm/r34/rock-cluster-1024.webp 1024w",
+      "srcsetAvif": "/media/rig/review-neutral-v1/farm/r34/rock-cluster-320.avif 320w, /media/rig/review-neutral-v1/farm/r34/rock-cluster-480.avif 480w, /media/rig/review-neutral-v1/farm/r34/rock-cluster-672.avif 672w, /media/rig/review-neutral-v1/farm/r34/rock-cluster-768.avif 768w, /media/rig/review-neutral-v1/farm/r34/rock-cluster-1024.avif 1024w",
+      "inputPath": "media/rig/review-neutral-v1/farm/r34/rock-cluster.png",
+      "sourceRevisionId": "r_37cde8b1f8d344aa8f6142aeab61a62e",
+      "exactRevision": true,
+      "rig": "review-neutral-v1"
+    },
+    {
+      "src": "/standalone/golden-gate-bridge/r_0d1532b4a00b4663909f8edf2bd290aa/captures/classic-neutral.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "Golden Gate Bridge seen obliquely from above: both towers, the main cables and the suspended roadway on a neutral grey backdrop.",
+      "srcsetWebp": "/standalone/golden-gate-bridge/r_0d1532b4a00b4663909f8edf2bd290aa/captures/classic-neutral-320.webp 320w, /standalone/golden-gate-bridge/r_0d1532b4a00b4663909f8edf2bd290aa/captures/classic-neutral-480.webp 480w, /standalone/golden-gate-bridge/r_0d1532b4a00b4663909f8edf2bd290aa/captures/classic-neutral-672.webp 672w, /standalone/golden-gate-bridge/r_0d1532b4a00b4663909f8edf2bd290aa/captures/classic-neutral-768.webp 768w, /standalone/golden-gate-bridge/r_0d1532b4a00b4663909f8edf2bd290aa/captures/classic-neutral-1024.webp 1024w",
+      "srcsetAvif": "/standalone/golden-gate-bridge/r_0d1532b4a00b4663909f8edf2bd290aa/captures/classic-neutral-320.avif 320w, /standalone/golden-gate-bridge/r_0d1532b4a00b4663909f8edf2bd290aa/captures/classic-neutral-480.avif 480w, /standalone/golden-gate-bridge/r_0d1532b4a00b4663909f8edf2bd290aa/captures/classic-neutral-672.avif 672w, /standalone/golden-gate-bridge/r_0d1532b4a00b4663909f8edf2bd290aa/captures/classic-neutral-768.avif 768w, /standalone/golden-gate-bridge/r_0d1532b4a00b4663909f8edf2bd290aa/captures/classic-neutral-1024.avif 1024w",
+      "inputPath": "standalone/golden-gate-bridge/r_0d1532b4a00b4663909f8edf2bd290aa/captures/classic-neutral.png",
+      "sourceRevisionId": "r_0d1532b4a00b4663909f8edf2bd290aa",
+      "exactRevision": true,
+      "rig": "review-neutral-v1"
+    },
+    {
+      "src": "/standalone/golden-gate-bridge/r_0d1532b4a00b4663909f8edf2bd290aa/captures/review-sheet-neutral.webp",
       "width": 1168,
       "height": 780,
-      "alt": "Six GPU review views of the Golden Gate Bridge.",
-      "srcsetWebp": "/standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/review-sheet-neutral-320.webp 320w, /standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/review-sheet-neutral-480.webp 480w, /standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/review-sheet-neutral-672.webp 672w, /standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/review-sheet-neutral-768.webp 768w, /standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/review-sheet-neutral-1024.webp 1024w",
-      "srcsetAvif": "/standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/review-sheet-neutral-320.avif 320w, /standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/review-sheet-neutral-480.avif 480w, /standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/review-sheet-neutral-672.avif 672w, /standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/review-sheet-neutral-768.avif 768w, /standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/review-sheet-neutral-1024.avif 1024w",
-      "inputPath": "standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/review-sheet-neutral.png"
+      "alt": "Six saved review views of the Golden Gate Bridge: front, right, back, left, top and three-quarter.",
+      "srcsetWebp": "/standalone/golden-gate-bridge/r_0d1532b4a00b4663909f8edf2bd290aa/captures/review-sheet-neutral-320.webp 320w, /standalone/golden-gate-bridge/r_0d1532b4a00b4663909f8edf2bd290aa/captures/review-sheet-neutral-480.webp 480w, /standalone/golden-gate-bridge/r_0d1532b4a00b4663909f8edf2bd290aa/captures/review-sheet-neutral-672.webp 672w, /standalone/golden-gate-bridge/r_0d1532b4a00b4663909f8edf2bd290aa/captures/review-sheet-neutral-768.webp 768w, /standalone/golden-gate-bridge/r_0d1532b4a00b4663909f8edf2bd290aa/captures/review-sheet-neutral-1024.webp 1024w",
+      "srcsetAvif": "/standalone/golden-gate-bridge/r_0d1532b4a00b4663909f8edf2bd290aa/captures/review-sheet-neutral-320.avif 320w, /standalone/golden-gate-bridge/r_0d1532b4a00b4663909f8edf2bd290aa/captures/review-sheet-neutral-480.avif 480w, /standalone/golden-gate-bridge/r_0d1532b4a00b4663909f8edf2bd290aa/captures/review-sheet-neutral-672.avif 672w, /standalone/golden-gate-bridge/r_0d1532b4a00b4663909f8edf2bd290aa/captures/review-sheet-neutral-768.avif 768w, /standalone/golden-gate-bridge/r_0d1532b4a00b4663909f8edf2bd290aa/captures/review-sheet-neutral-1024.avif 1024w",
+      "inputPath": "standalone/golden-gate-bridge/r_0d1532b4a00b4663909f8edf2bd290aa/captures/review-sheet-neutral.png"
     },
     {
-      "src": "/standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/water-level-neutral.webp",
-      "width": 1032,
-      "height": 1032,
-      "alt": "Golden Gate Bridge GPU capture: water level.",
-      "srcsetWebp": "/standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/water-level-neutral-320.webp 320w, /standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/water-level-neutral-480.webp 480w, /standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/water-level-neutral-672.webp 672w, /standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/water-level-neutral-768.webp 768w, /standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/water-level-neutral-1024.webp 1024w",
-      "srcsetAvif": "/standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/water-level-neutral-320.avif 320w, /standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/water-level-neutral-480.avif 480w, /standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/water-level-neutral-672.avif 672w, /standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/water-level-neutral-768.avif 768w, /standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/water-level-neutral-1024.avif 1024w",
-      "inputPath": "standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/water-level-neutral.png"
+      "src": "/standalone/golden-gate-bridge/r_0d1532b4a00b4663909f8edf2bd290aa/captures/water-level-neutral.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "Golden Gate Bridge from near water level, looking up at the south tower and the roadway.",
+      "srcsetWebp": "/standalone/golden-gate-bridge/r_0d1532b4a00b4663909f8edf2bd290aa/captures/water-level-neutral-320.webp 320w, /standalone/golden-gate-bridge/r_0d1532b4a00b4663909f8edf2bd290aa/captures/water-level-neutral-480.webp 480w, /standalone/golden-gate-bridge/r_0d1532b4a00b4663909f8edf2bd290aa/captures/water-level-neutral-672.webp 672w, /standalone/golden-gate-bridge/r_0d1532b4a00b4663909f8edf2bd290aa/captures/water-level-neutral-768.webp 768w, /standalone/golden-gate-bridge/r_0d1532b4a00b4663909f8edf2bd290aa/captures/water-level-neutral-1024.webp 1024w",
+      "srcsetAvif": "/standalone/golden-gate-bridge/r_0d1532b4a00b4663909f8edf2bd290aa/captures/water-level-neutral-320.avif 320w, /standalone/golden-gate-bridge/r_0d1532b4a00b4663909f8edf2bd290aa/captures/water-level-neutral-480.avif 480w, /standalone/golden-gate-bridge/r_0d1532b4a00b4663909f8edf2bd290aa/captures/water-level-neutral-672.avif 672w, /standalone/golden-gate-bridge/r_0d1532b4a00b4663909f8edf2bd290aa/captures/water-level-neutral-768.avif 768w, /standalone/golden-gate-bridge/r_0d1532b4a00b4663909f8edf2bd290aa/captures/water-level-neutral-1024.avif 1024w",
+      "inputPath": "standalone/golden-gate-bridge/r_0d1532b4a00b4663909f8edf2bd290aa/captures/water-level-neutral.png",
+      "sourceRevisionId": "r_0d1532b4a00b4663909f8edf2bd290aa",
+      "exactRevision": true,
+      "rig": "review-neutral-v1"
     },
     {
-      "src": "/standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/deck-neutral.webp",
-      "width": 1032,
-      "height": 1032,
-      "alt": "Golden Gate Bridge GPU capture: deck.",
-      "srcsetWebp": "/standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/deck-neutral-320.webp 320w, /standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/deck-neutral-480.webp 480w, /standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/deck-neutral-672.webp 672w, /standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/deck-neutral-768.webp 768w, /standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/deck-neutral-1024.webp 1024w",
-      "srcsetAvif": "/standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/deck-neutral-320.avif 320w, /standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/deck-neutral-480.avif 480w, /standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/deck-neutral-672.avif 672w, /standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/deck-neutral-768.avif 768w, /standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/deck-neutral-1024.avif 1024w",
-      "inputPath": "standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/deck-neutral.png"
+      "src": "/standalone/golden-gate-bridge/r_0d1532b4a00b4663909f8edf2bd290aa/captures/deck-neutral.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "Golden Gate Bridge from the roadway, looking along the lanes toward the towers ahead.",
+      "srcsetWebp": "/standalone/golden-gate-bridge/r_0d1532b4a00b4663909f8edf2bd290aa/captures/deck-neutral-320.webp 320w, /standalone/golden-gate-bridge/r_0d1532b4a00b4663909f8edf2bd290aa/captures/deck-neutral-480.webp 480w, /standalone/golden-gate-bridge/r_0d1532b4a00b4663909f8edf2bd290aa/captures/deck-neutral-672.webp 672w, /standalone/golden-gate-bridge/r_0d1532b4a00b4663909f8edf2bd290aa/captures/deck-neutral-768.webp 768w, /standalone/golden-gate-bridge/r_0d1532b4a00b4663909f8edf2bd290aa/captures/deck-neutral-1024.webp 1024w",
+      "srcsetAvif": "/standalone/golden-gate-bridge/r_0d1532b4a00b4663909f8edf2bd290aa/captures/deck-neutral-320.avif 320w, /standalone/golden-gate-bridge/r_0d1532b4a00b4663909f8edf2bd290aa/captures/deck-neutral-480.avif 480w, /standalone/golden-gate-bridge/r_0d1532b4a00b4663909f8edf2bd290aa/captures/deck-neutral-672.avif 672w, /standalone/golden-gate-bridge/r_0d1532b4a00b4663909f8edf2bd290aa/captures/deck-neutral-768.avif 768w, /standalone/golden-gate-bridge/r_0d1532b4a00b4663909f8edf2bd290aa/captures/deck-neutral-1024.avif 1024w",
+      "inputPath": "standalone/golden-gate-bridge/r_0d1532b4a00b4663909f8edf2bd290aa/captures/deck-neutral.png",
+      "sourceRevisionId": "r_0d1532b4a00b4663909f8edf2bd290aa",
+      "exactRevision": true,
+      "rig": "review-neutral-v1"
     },
     {
-      "src": "/standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/tower-top-neutral.webp",
-      "width": 1032,
-      "height": 1032,
-      "alt": "Golden Gate Bridge GPU capture: tower top.",
-      "srcsetWebp": "/standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/tower-top-neutral-320.webp 320w, /standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/tower-top-neutral-480.webp 480w, /standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/tower-top-neutral-672.webp 672w, /standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/tower-top-neutral-768.webp 768w, /standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/tower-top-neutral-1024.webp 1024w",
-      "srcsetAvif": "/standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/tower-top-neutral-320.avif 320w, /standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/tower-top-neutral-480.avif 480w, /standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/tower-top-neutral-672.avif 672w, /standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/tower-top-neutral-768.avif 768w, /standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/tower-top-neutral-1024.avif 1024w",
-      "inputPath": "standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/tower-top-neutral.png"
+      "src": "/standalone/golden-gate-bridge/r_0d1532b4a00b4663909f8edf2bd290aa/captures/tower-top-neutral.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "Golden Gate Bridge from beside the top of the south tower, with the main cables and the roadway below.",
+      "srcsetWebp": "/standalone/golden-gate-bridge/r_0d1532b4a00b4663909f8edf2bd290aa/captures/tower-top-neutral-320.webp 320w, /standalone/golden-gate-bridge/r_0d1532b4a00b4663909f8edf2bd290aa/captures/tower-top-neutral-480.webp 480w, /standalone/golden-gate-bridge/r_0d1532b4a00b4663909f8edf2bd290aa/captures/tower-top-neutral-672.webp 672w, /standalone/golden-gate-bridge/r_0d1532b4a00b4663909f8edf2bd290aa/captures/tower-top-neutral-768.webp 768w, /standalone/golden-gate-bridge/r_0d1532b4a00b4663909f8edf2bd290aa/captures/tower-top-neutral-1024.webp 1024w",
+      "srcsetAvif": "/standalone/golden-gate-bridge/r_0d1532b4a00b4663909f8edf2bd290aa/captures/tower-top-neutral-320.avif 320w, /standalone/golden-gate-bridge/r_0d1532b4a00b4663909f8edf2bd290aa/captures/tower-top-neutral-480.avif 480w, /standalone/golden-gate-bridge/r_0d1532b4a00b4663909f8edf2bd290aa/captures/tower-top-neutral-672.avif 672w, /standalone/golden-gate-bridge/r_0d1532b4a00b4663909f8edf2bd290aa/captures/tower-top-neutral-768.avif 768w, /standalone/golden-gate-bridge/r_0d1532b4a00b4663909f8edf2bd290aa/captures/tower-top-neutral-1024.avif 1024w",
+      "inputPath": "standalone/golden-gate-bridge/r_0d1532b4a00b4663909f8edf2bd290aa/captures/tower-top-neutral.png",
+      "sourceRevisionId": "r_0d1532b4a00b4663909f8edf2bd290aa",
+      "exactRevision": true,
+      "rig": "review-neutral-v1"
     },
     {
-      "src": "/standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/elevation-neutral.webp",
-      "width": 1032,
-      "height": 1032,
-      "alt": "Golden Gate Bridge GPU capture: elevation.",
-      "srcsetWebp": "/standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/elevation-neutral-320.webp 320w, /standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/elevation-neutral-480.webp 480w, /standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/elevation-neutral-672.webp 672w, /standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/elevation-neutral-768.webp 768w, /standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/elevation-neutral-1024.webp 1024w",
-      "srcsetAvif": "/standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/elevation-neutral-320.avif 320w, /standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/elevation-neutral-480.avif 480w, /standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/elevation-neutral-672.avif 672w, /standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/elevation-neutral-768.avif 768w, /standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/elevation-neutral-1024.avif 1024w",
-      "inputPath": "standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/elevation-neutral.png"
+      "src": "/standalone/golden-gate-bridge/r_0d1532b4a00b4663909f8edf2bd290aa/captures/elevation-neutral.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "Golden Gate Bridge in side elevation, the full span between both anchorages.",
+      "srcsetWebp": "/standalone/golden-gate-bridge/r_0d1532b4a00b4663909f8edf2bd290aa/captures/elevation-neutral-320.webp 320w, /standalone/golden-gate-bridge/r_0d1532b4a00b4663909f8edf2bd290aa/captures/elevation-neutral-480.webp 480w, /standalone/golden-gate-bridge/r_0d1532b4a00b4663909f8edf2bd290aa/captures/elevation-neutral-672.webp 672w, /standalone/golden-gate-bridge/r_0d1532b4a00b4663909f8edf2bd290aa/captures/elevation-neutral-768.webp 768w, /standalone/golden-gate-bridge/r_0d1532b4a00b4663909f8edf2bd290aa/captures/elevation-neutral-1024.webp 1024w",
+      "srcsetAvif": "/standalone/golden-gate-bridge/r_0d1532b4a00b4663909f8edf2bd290aa/captures/elevation-neutral-320.avif 320w, /standalone/golden-gate-bridge/r_0d1532b4a00b4663909f8edf2bd290aa/captures/elevation-neutral-480.avif 480w, /standalone/golden-gate-bridge/r_0d1532b4a00b4663909f8edf2bd290aa/captures/elevation-neutral-672.avif 672w, /standalone/golden-gate-bridge/r_0d1532b4a00b4663909f8edf2bd290aa/captures/elevation-neutral-768.avif 768w, /standalone/golden-gate-bridge/r_0d1532b4a00b4663909f8edf2bd290aa/captures/elevation-neutral-1024.avif 1024w",
+      "inputPath": "standalone/golden-gate-bridge/r_0d1532b4a00b4663909f8edf2bd290aa/captures/elevation-neutral.png",
+      "sourceRevisionId": "r_0d1532b4a00b4663909f8edf2bd290aa",
+      "exactRevision": true,
+      "rig": "review-neutral-v1"
+    },
+    {
+      "src": "/media/rig/review-neutral-v1/vehicles/r1/hatchback.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "Generic five-door hatchback with a two-box roofline, a steep tailgate and taillight clusters at the rear corners. Its paint is a neutral near-white, so a scene can tint each instance.",
+      "srcsetWebp": "/media/rig/review-neutral-v1/vehicles/r1/hatchback-320.webp 320w, /media/rig/review-neutral-v1/vehicles/r1/hatchback-480.webp 480w, /media/rig/review-neutral-v1/vehicles/r1/hatchback-672.webp 672w, /media/rig/review-neutral-v1/vehicles/r1/hatchback-768.webp 768w, /media/rig/review-neutral-v1/vehicles/r1/hatchback-1024.webp 1024w",
+      "srcsetAvif": "/media/rig/review-neutral-v1/vehicles/r1/hatchback-320.avif 320w, /media/rig/review-neutral-v1/vehicles/r1/hatchback-480.avif 480w, /media/rig/review-neutral-v1/vehicles/r1/hatchback-672.avif 672w, /media/rig/review-neutral-v1/vehicles/r1/hatchback-768.avif 768w, /media/rig/review-neutral-v1/vehicles/r1/hatchback-1024.avif 1024w",
+      "inputPath": "media/rig/review-neutral-v1/vehicles/r1/hatchback.png",
+      "sourceRevisionId": "r_105b27d31fe44f2aa188a333e19e3977",
+      "exactRevision": true,
+      "rig": "review-neutral-v1"
+    },
+    {
+      "src": "/media/rig/review-neutral-v1/vehicles/r1/sedan.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "Generic four-door sedan with a low beltline, a notch-back deck and a full-width rear light bar. Authored as the drivable car of the Golden Gate scene, so its rear stays clean for a chase camera; the paint is a neutral near-white for scene tinting.",
+      "srcsetWebp": "/media/rig/review-neutral-v1/vehicles/r1/sedan-320.webp 320w, /media/rig/review-neutral-v1/vehicles/r1/sedan-480.webp 480w, /media/rig/review-neutral-v1/vehicles/r1/sedan-672.webp 672w, /media/rig/review-neutral-v1/vehicles/r1/sedan-768.webp 768w, /media/rig/review-neutral-v1/vehicles/r1/sedan-1024.webp 1024w",
+      "srcsetAvif": "/media/rig/review-neutral-v1/vehicles/r1/sedan-320.avif 320w, /media/rig/review-neutral-v1/vehicles/r1/sedan-480.avif 480w, /media/rig/review-neutral-v1/vehicles/r1/sedan-672.avif 672w, /media/rig/review-neutral-v1/vehicles/r1/sedan-768.avif 768w, /media/rig/review-neutral-v1/vehicles/r1/sedan-1024.avif 1024w",
+      "inputPath": "media/rig/review-neutral-v1/vehicles/r1/sedan.png",
+      "sourceRevisionId": "r_1cb27a0c14d44e48afff84db23013dad",
+      "exactRevision": true,
+      "rig": "review-neutral-v1"
+    },
+    {
+      "src": "/media/rig/review-neutral-v1/vehicles/r1/suv.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "Generic five-door SUV with a tall, square greenhouse, raised ground clearance, larger wheel arches and a steep liftgate. Its paint is a neutral near-white for scene tinting.",
+      "srcsetWebp": "/media/rig/review-neutral-v1/vehicles/r1/suv-320.webp 320w, /media/rig/review-neutral-v1/vehicles/r1/suv-480.webp 480w, /media/rig/review-neutral-v1/vehicles/r1/suv-672.webp 672w, /media/rig/review-neutral-v1/vehicles/r1/suv-768.webp 768w, /media/rig/review-neutral-v1/vehicles/r1/suv-1024.webp 1024w",
+      "srcsetAvif": "/media/rig/review-neutral-v1/vehicles/r1/suv-320.avif 320w, /media/rig/review-neutral-v1/vehicles/r1/suv-480.avif 480w, /media/rig/review-neutral-v1/vehicles/r1/suv-672.avif 672w, /media/rig/review-neutral-v1/vehicles/r1/suv-768.avif 768w, /media/rig/review-neutral-v1/vehicles/r1/suv-1024.avif 1024w",
+      "inputPath": "media/rig/review-neutral-v1/vehicles/r1/suv.png",
+      "sourceRevisionId": "r_8261935e39684470b65549b1c39142fd",
+      "exactRevision": true,
+      "rig": "review-neutral-v1"
+    },
+    {
+      "src": "/media/rig/review-neutral-v1/vehicles/r1/pickup.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "Generic crew-cab pickup truck with a short bed. Made for traffic seen from about 3 m to 1 km, it steps from a detailed cab down to a boxy silhouette across three tiers.",
+      "srcsetWebp": "/media/rig/review-neutral-v1/vehicles/r1/pickup-320.webp 320w, /media/rig/review-neutral-v1/vehicles/r1/pickup-480.webp 480w, /media/rig/review-neutral-v1/vehicles/r1/pickup-672.webp 672w, /media/rig/review-neutral-v1/vehicles/r1/pickup-768.webp 768w, /media/rig/review-neutral-v1/vehicles/r1/pickup-1024.webp 1024w",
+      "srcsetAvif": "/media/rig/review-neutral-v1/vehicles/r1/pickup-320.avif 320w, /media/rig/review-neutral-v1/vehicles/r1/pickup-480.avif 480w, /media/rig/review-neutral-v1/vehicles/r1/pickup-672.avif 672w, /media/rig/review-neutral-v1/vehicles/r1/pickup-768.avif 768w, /media/rig/review-neutral-v1/vehicles/r1/pickup-1024.avif 1024w",
+      "inputPath": "media/rig/review-neutral-v1/vehicles/r1/pickup.png",
+      "sourceRevisionId": "r_b74ac56a93a44c7484890f712df9c64c",
+      "exactRevision": true,
+      "rig": "review-neutral-v1"
+    },
+    {
+      "src": "/media/rig/review-neutral-v1/vehicles/r1/box-truck.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "Generic class 6 cab-over box truck with dual rear wheels. The cab takes the paint tint; the cargo box has its own untinted near-white material.",
+      "srcsetWebp": "/media/rig/review-neutral-v1/vehicles/r1/box-truck-320.webp 320w, /media/rig/review-neutral-v1/vehicles/r1/box-truck-480.webp 480w, /media/rig/review-neutral-v1/vehicles/r1/box-truck-672.webp 672w, /media/rig/review-neutral-v1/vehicles/r1/box-truck-768.webp 768w, /media/rig/review-neutral-v1/vehicles/r1/box-truck-1024.webp 1024w",
+      "srcsetAvif": "/media/rig/review-neutral-v1/vehicles/r1/box-truck-320.avif 320w, /media/rig/review-neutral-v1/vehicles/r1/box-truck-480.avif 480w, /media/rig/review-neutral-v1/vehicles/r1/box-truck-672.avif 672w, /media/rig/review-neutral-v1/vehicles/r1/box-truck-768.avif 768w, /media/rig/review-neutral-v1/vehicles/r1/box-truck-1024.avif 1024w",
+      "inputPath": "media/rig/review-neutral-v1/vehicles/r1/box-truck.png",
+      "sourceRevisionId": "r_d5e37b6d4e7347ac863220cdbd8e49a4",
+      "exactRevision": true,
+      "rig": "review-neutral-v1"
+    },
+    {
+      "src": "/media/rig/review-neutral-v1/vehicles/r1/transit-bus.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "Generic 40 ft low-floor transit bus with two doors on the right, a two-tone body (paint above, trim below), dual rear wheels and a roof equipment pod. No operator livery, text or numbers.",
+      "srcsetWebp": "/media/rig/review-neutral-v1/vehicles/r1/transit-bus-320.webp 320w, /media/rig/review-neutral-v1/vehicles/r1/transit-bus-480.webp 480w, /media/rig/review-neutral-v1/vehicles/r1/transit-bus-672.webp 672w, /media/rig/review-neutral-v1/vehicles/r1/transit-bus-768.webp 768w, /media/rig/review-neutral-v1/vehicles/r1/transit-bus-1024.webp 1024w",
+      "srcsetAvif": "/media/rig/review-neutral-v1/vehicles/r1/transit-bus-320.avif 320w, /media/rig/review-neutral-v1/vehicles/r1/transit-bus-480.avif 480w, /media/rig/review-neutral-v1/vehicles/r1/transit-bus-672.avif 672w, /media/rig/review-neutral-v1/vehicles/r1/transit-bus-768.avif 768w, /media/rig/review-neutral-v1/vehicles/r1/transit-bus-1024.avif 1024w",
+      "inputPath": "media/rig/review-neutral-v1/vehicles/r1/transit-bus.png",
+      "sourceRevisionId": "r_6ab2ee53817449c59972502fcf008f1a",
+      "exactRevision": true,
+      "rig": "review-neutral-v1"
+    },
+    {
+      "src": "/media/vehicles/r1/review/hatchback.webp",
+      "width": 1168,
+      "height": 780,
+      "alt": "Six saved review views of Generic hatchback: front, right, back, left, top and three-quarter.",
+      "srcsetWebp": "/media/vehicles/r1/review/hatchback-320.webp 320w, /media/vehicles/r1/review/hatchback-480.webp 480w, /media/vehicles/r1/review/hatchback-672.webp 672w, /media/vehicles/r1/review/hatchback-768.webp 768w, /media/vehicles/r1/review/hatchback-1024.webp 1024w",
+      "srcsetAvif": "/media/vehicles/r1/review/hatchback-320.avif 320w, /media/vehicles/r1/review/hatchback-480.avif 480w, /media/vehicles/r1/review/hatchback-672.avif 672w, /media/vehicles/r1/review/hatchback-768.avif 768w, /media/vehicles/r1/review/hatchback-1024.avif 1024w",
+      "inputPath": "media/vehicles/r1/review/hatchback.png",
+      "sourceRevisionId": "r_105b27d31fe44f2aa188a333e19e3977",
+      "exactRevision": true
+    },
+    {
+      "src": "/media/vehicles/r1/review/sedan.webp",
+      "width": 1168,
+      "height": 780,
+      "alt": "Six saved review views of Generic sedan: front, right, back, left, top and three-quarter.",
+      "srcsetWebp": "/media/vehicles/r1/review/sedan-320.webp 320w, /media/vehicles/r1/review/sedan-480.webp 480w, /media/vehicles/r1/review/sedan-672.webp 672w, /media/vehicles/r1/review/sedan-768.webp 768w, /media/vehicles/r1/review/sedan-1024.webp 1024w",
+      "srcsetAvif": "/media/vehicles/r1/review/sedan-320.avif 320w, /media/vehicles/r1/review/sedan-480.avif 480w, /media/vehicles/r1/review/sedan-672.avif 672w, /media/vehicles/r1/review/sedan-768.avif 768w, /media/vehicles/r1/review/sedan-1024.avif 1024w",
+      "inputPath": "media/vehicles/r1/review/sedan.png",
+      "sourceRevisionId": "r_1cb27a0c14d44e48afff84db23013dad",
+      "exactRevision": true
+    },
+    {
+      "src": "/media/vehicles/r1/review/suv.webp",
+      "width": 1168,
+      "height": 780,
+      "alt": "Six saved review views of Generic SUV: front, right, back, left, top and three-quarter.",
+      "srcsetWebp": "/media/vehicles/r1/review/suv-320.webp 320w, /media/vehicles/r1/review/suv-480.webp 480w, /media/vehicles/r1/review/suv-672.webp 672w, /media/vehicles/r1/review/suv-768.webp 768w, /media/vehicles/r1/review/suv-1024.webp 1024w",
+      "srcsetAvif": "/media/vehicles/r1/review/suv-320.avif 320w, /media/vehicles/r1/review/suv-480.avif 480w, /media/vehicles/r1/review/suv-672.avif 672w, /media/vehicles/r1/review/suv-768.avif 768w, /media/vehicles/r1/review/suv-1024.avif 1024w",
+      "inputPath": "media/vehicles/r1/review/suv.png",
+      "sourceRevisionId": "r_8261935e39684470b65549b1c39142fd",
+      "exactRevision": true
+    },
+    {
+      "src": "/media/vehicles/r1/review/pickup.webp",
+      "width": 1168,
+      "height": 780,
+      "alt": "Six saved review views of Generic pickup truck: front, right, back, left, top and three-quarter.",
+      "srcsetWebp": "/media/vehicles/r1/review/pickup-320.webp 320w, /media/vehicles/r1/review/pickup-480.webp 480w, /media/vehicles/r1/review/pickup-672.webp 672w, /media/vehicles/r1/review/pickup-768.webp 768w, /media/vehicles/r1/review/pickup-1024.webp 1024w",
+      "srcsetAvif": "/media/vehicles/r1/review/pickup-320.avif 320w, /media/vehicles/r1/review/pickup-480.avif 480w, /media/vehicles/r1/review/pickup-672.avif 672w, /media/vehicles/r1/review/pickup-768.avif 768w, /media/vehicles/r1/review/pickup-1024.avif 1024w",
+      "inputPath": "media/vehicles/r1/review/pickup.png",
+      "sourceRevisionId": "r_b74ac56a93a44c7484890f712df9c64c",
+      "exactRevision": true
+    },
+    {
+      "src": "/media/vehicles/r1/review/box-truck.webp",
+      "width": 1168,
+      "height": 780,
+      "alt": "Six saved review views of Generic box truck: front, right, back, left, top and three-quarter.",
+      "srcsetWebp": "/media/vehicles/r1/review/box-truck-320.webp 320w, /media/vehicles/r1/review/box-truck-480.webp 480w, /media/vehicles/r1/review/box-truck-672.webp 672w, /media/vehicles/r1/review/box-truck-768.webp 768w, /media/vehicles/r1/review/box-truck-1024.webp 1024w",
+      "srcsetAvif": "/media/vehicles/r1/review/box-truck-320.avif 320w, /media/vehicles/r1/review/box-truck-480.avif 480w, /media/vehicles/r1/review/box-truck-672.avif 672w, /media/vehicles/r1/review/box-truck-768.avif 768w, /media/vehicles/r1/review/box-truck-1024.avif 1024w",
+      "inputPath": "media/vehicles/r1/review/box-truck.png",
+      "sourceRevisionId": "r_d5e37b6d4e7347ac863220cdbd8e49a4",
+      "exactRevision": true
+    },
+    {
+      "src": "/media/vehicles/r1/review/transit-bus.webp",
+      "width": 1168,
+      "height": 780,
+      "alt": "Six saved review views of Generic transit bus: front, right, back, left, top and three-quarter.",
+      "srcsetWebp": "/media/vehicles/r1/review/transit-bus-320.webp 320w, /media/vehicles/r1/review/transit-bus-480.webp 480w, /media/vehicles/r1/review/transit-bus-672.webp 672w, /media/vehicles/r1/review/transit-bus-768.webp 768w, /media/vehicles/r1/review/transit-bus-1024.webp 1024w",
+      "srcsetAvif": "/media/vehicles/r1/review/transit-bus-320.avif 320w, /media/vehicles/r1/review/transit-bus-480.avif 480w, /media/vehicles/r1/review/transit-bus-672.avif 672w, /media/vehicles/r1/review/transit-bus-768.avif 768w, /media/vehicles/r1/review/transit-bus-1024.avif 1024w",
+      "inputPath": "media/vehicles/r1/review/transit-bus.png",
+      "sourceRevisionId": "r_6ab2ee53817449c59972502fcf008f1a",
+      "exactRevision": true
     }
   ],
   "archives": [
     "packs/farm/r34/shapes-and-seasons-farm-runtime.zip",
     "packs/farm/r34/shapes-and-seasons-farm-editable.zip",
     "packs/farm/r34/shapes-and-seasons-farm-scene.zip",
-    "standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/golden-gate-editable.zip"
+    "standalone/golden-gate-bridge/r_0d1532b4a00b4663909f8edf2bd290aa/golden-gate-editable.zip",
+    "packs/vehicles/r1/generic-road-vehicles-runtime.zip",
+    "packs/vehicles/r1/editable/hatchback-editable.zip",
+    "packs/vehicles/r1/editable/sedan-editable.zip",
+    "packs/vehicles/r1/editable/suv-editable.zip",
+    "packs/vehicles/r1/editable/pickup-editable.zip",
+    "packs/vehicles/r1/editable/box-truck-editable.zip",
+    "packs/vehicles/r1/editable/transit-bus-editable.zip"
   ],
   "sources": [
     {
@@ -674,12 +909,54 @@
       "sha256": "2ee4fed4c668f28260911affd4a9ee9c58cf1b416fcbd4a3fe1d657e97191868"
     },
     {
-      "archive": "standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/golden-gate-editable.zip",
+      "archive": "standalone/golden-gate-bridge/r_0d1532b4a00b4663909f8edf2bd290aa/golden-gate-editable.zip",
       "profile": "editable",
-      "member": "a_9fafaa6e7f4c4868a372e8f3b0b84738/r_9f4b0e76ea634be083de8a5e38c4e838/source.kiln.js",
+      "member": "a_9fafaa6e7f4c4868a372e8f3b0b84738/r_0d1532b4a00b4663909f8edf2bd290aa/source.kiln.js",
       "output": "sources/golden-gate-bridge.kiln.js",
-      "bytes": 22531,
-      "sha256": "5bfd30103aaf6aa620da252562e5e9de135eba69b5c36823f0e12a7e99c87f81"
+      "bytes": 40445,
+      "sha256": "f4583690d781493f96f331a1392f52d0869bce1a58b26a3fcc81df17a0efc2e3"
+    },
+    {
+      "archive": "packs/vehicles/r1/editable/hatchback-editable.zip",
+      "member": "generic-hatchback/r_105b27d31fe44f2aa188a333e19e3977/source.kiln.js",
+      "output": "sources/vehicles/hatchback.kiln.js",
+      "bytes": 18884,
+      "sha256": "09e1fe958ae9d99364eb61eb761986560a4f9345da478c23582a8ebae0541df0"
+    },
+    {
+      "archive": "packs/vehicles/r1/editable/sedan-editable.zip",
+      "member": "generic-sedan/r_1cb27a0c14d44e48afff84db23013dad/source.kiln.js",
+      "output": "sources/vehicles/sedan.kiln.js",
+      "bytes": 18838,
+      "sha256": "2ac438f25341b6c13cfa4e86f6058c0bdc73daec8129b12e9e1767eb211787a5"
+    },
+    {
+      "archive": "packs/vehicles/r1/editable/suv-editable.zip",
+      "member": "generic-suv/r_8261935e39684470b65549b1c39142fd/source.kiln.js",
+      "output": "sources/vehicles/suv.kiln.js",
+      "bytes": 18875,
+      "sha256": "c283fe3e30b84206b58a19533bd12f8f1f2ab5ec284990b1eaafa1ad2880368d"
+    },
+    {
+      "archive": "packs/vehicles/r1/editable/pickup-editable.zip",
+      "member": "a_557b9bd6c2c34340804e802081a9b983/r_b74ac56a93a44c7484890f712df9c64c/source.kiln.js",
+      "output": "sources/vehicles/pickup.kiln.js",
+      "bytes": 11446,
+      "sha256": "1641c5071a5d34749c71e8459ac53d7c71f8736f6480ca400d22035ef06a45db"
+    },
+    {
+      "archive": "packs/vehicles/r1/editable/box-truck-editable.zip",
+      "member": "a_2092ca0610c749b386c14c07dbaf4236/r_d5e37b6d4e7347ac863220cdbd8e49a4/source.kiln.js",
+      "output": "sources/vehicles/box-truck.kiln.js",
+      "bytes": 12000,
+      "sha256": "cb8d522dde0198cd84b9a59134e7fd2ebcb8c353f8ec36d111ae01f82c684678"
+    },
+    {
+      "archive": "packs/vehicles/r1/editable/transit-bus-editable.zip",
+      "member": "a_a8c030b2570f4ae5aa54eefbd3767f4c/r_6ab2ee53817449c59972502fcf008f1a/source.kiln.js",
+      "output": "sources/vehicles/transit-bus.kiln.js",
+      "bytes": 13301,
+      "sha256": "b253949bf9d9a39db635b44119cc50158baaecd84c9d46322f1454b31e177ee6"
     }
   ],
   "models": [
@@ -845,10 +1122,46 @@
       "sha256": "6b6e767ed170aa1631a54e5d6df3d3335146a94cdedb5c49bf17b3659a93252d"
     },
     {
-      "path": "standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/golden-gate-runtime.glb",
+      "path": "standalone/golden-gate-bridge/r_0d1532b4a00b4663909f8edf2bd290aa/golden-gate-runtime.glb",
       "output": "models/standalone/golden-gate-bridge.glb",
-      "bytes": 13484976,
-      "sha256": "1e987a994d5a0a8183782aa19d4e225b9715fb0bd503402a5b3a14df8190a7f9"
+      "bytes": 12244400,
+      "sha256": "9dbff3c7bda8bfddd39b12899f2857ca8afb02f74f6edc087e5ef8156195c1b1"
+    },
+    {
+      "path": "packs/vehicles/r1/models/hatchback.glb",
+      "output": "models/vehicles/hatchback.glb",
+      "bytes": 262464,
+      "sha256": "c2f941f89816b5d8a48bb2d9481a00411c2af45591d26ea46a99399d385a3bfa"
+    },
+    {
+      "path": "packs/vehicles/r1/models/sedan.glb",
+      "output": "models/vehicles/sedan.glb",
+      "bytes": 259596,
+      "sha256": "e05943cd76110e6ed7e3210b9bc33ede40d48371def8439ca1bc9c8dcabf8e96"
+    },
+    {
+      "path": "packs/vehicles/r1/models/suv.glb",
+      "output": "models/vehicles/suv.glb",
+      "bytes": 266964,
+      "sha256": "f46d4535adf8a2730ff832fba59476db2cc63b0dece497aebc1651ae53a6d28d"
+    },
+    {
+      "path": "packs/vehicles/r1/models/pickup.glb",
+      "output": "models/vehicles/pickup.glb",
+      "bytes": 170228,
+      "sha256": "3adba5410c857ae9e4ec9e2a6eb65428b928783746a7a34fd18679a4d29d83a4"
+    },
+    {
+      "path": "packs/vehicles/r1/models/box-truck.glb",
+      "output": "models/vehicles/box-truck.glb",
+      "bytes": 169772,
+      "sha256": "bea417d293d5e2a32f99795bc2841ef845bd1a94ccc6f9d9e4691c050c5a0e94"
+    },
+    {
+      "path": "packs/vehicles/r1/models/transit-bus.glb",
+      "output": "models/vehicles/transit-bus.glb",
+      "bytes": 194196,
+      "sha256": "c55fbf069668774e0d3dc98db76c3efd05ff630f0ffd2b2cf475579336875617"
     }
   ]
 }

@@ -3,14 +3,21 @@ import { copyFile, mkdir, readFile, readdir, rm, writeFile } from 'node:fs/promi
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { assetPath, hashBytes } from './mirror-core.mjs';
-import { resolveScenesDir } from './scene-source.mjs';
+import { measureFrameRuntime, stageFrameRuntime, stagedRuntimeDirectory } from './scene-runtime.mjs';
+import { PACK_DIRECTORY, resolveScenesDir } from './scene-source.mjs';
 
 const SITE = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 export const NOTICES = 'THIRD-PARTY-NOTICES.txt';
 export const PACK_SCHEMA = 'kiln.scene-pack/1';
-/** Directories whose every file must be sealed by SHA256SUMS. */
-const SEALED_DIRECTORIES = ['models', 'data', 'licenses'];
+/** Scenes whose packs the site can serve, and where their standalone builds sit in a scenes workspace. */
+export const SCENE_SOURCES = {
+  farm: 'packages/farm/dist/m4/standalone',
+  'golden-gate': 'packages/golden-gate/dist/standalone',
+};
+/** Scenes staged as a standalone build (its public chunk served as built) rather than built by the site. */
+export const FRAME_SCENES = ['golden-gate'];
 const RECORDED = ['id', 'release', 'three', 'sealedFiles', 'sealedBytes', 'totalFiles', 'totalBytes', 'packJsonSha256', 'sha256sumsSha256', 'noticesSha256'];
+const RUNTIME_RECORDED = ['kind', 'file', 'bytes', 'gzipBytes', 'gzipMethod', 'sha256', 'modulesSha256'];
 
 /** Parse `sha256sum` output: one `<64 hex digits>  <relative path>` per line. */
 export function parseSums(text) {
@@ -41,8 +48,9 @@ async function filesBelow(directory, prefix) {
 
 /**
  * Verify a scene pack in place: SHA256SUMS and pack.json describe the same files, every file
- * matches its digest and size, and nothing unsealed sits in the sealed directories. `assets` holds
- * pack.json, SHA256SUMS, models/, data/ and licenses/; the notices file sits beside them.
+ * matches its digest and size, and nothing unsealed sits in any directory of the pack. `assets` holds
+ * pack.json, SHA256SUMS and the sealed directories (a build may also leave its own chunk beside
+ * them, which is not part of the pack); the notices file sits beside `assets`.
  */
 export async function verifyPack(assets, notices) {
   const sumsBytes = await readFile(join(assets, 'SHA256SUMS'));
@@ -77,8 +85,9 @@ export async function verifyPack(assets, notices) {
     }
     sealedBytes += bytes.length;
   }
-  for (const directory of SEALED_DIRECTORIES) {
-    for (const path of await filesBelow(join(assets, directory), directory)) {
+  for (const entry of await readdir(assets, { withFileTypes: true })) {
+    if (!entry.isDirectory()) continue;
+    for (const path of await filesBelow(join(assets, entry.name), entry.name)) {
       if (!sums.has(path)) throw new Error(`Unsealed file in the scene pack: ${path}`);
     }
   }
@@ -124,8 +133,8 @@ export function packRecord(inventory, previous = {}) {
     id: inventory.id,
     release: inventory.release,
     three: inventory.three,
-    source: `packages/${inventory.id}/dist/${inventory.release}/standalone`,
-    base: `/scene-packs/${inventory.id}/${inventory.release}/`,
+    source: previous.source ?? SCENE_SOURCES[inventory.id] ?? `packages/${inventory.id}/dist/standalone`,
+    base: `/${PACK_DIRECTORY}/${inventory.id}/${inventory.release}/`,
     sealedFiles: inventory.sealedFiles,
     sealedBytes: inventory.sealedBytes,
     totalFiles: inventory.totalFiles,
@@ -137,58 +146,81 @@ export function packRecord(inventory, previous = {}) {
 }
 
 /** Differences between the catalog record and a verified pack; empty when they agree. */
-export function comparePackRecord(record, inventory) {
-  if (!record) return ['farm.json has no scene.pack record'];
+export function comparePackRecord(record, inventory, id = inventory?.id) {
+  if (!record) return [`scene-packs.json has no record for ${id}`];
   return RECORDED.filter((key) => record[key] !== inventory[key]).map(
     (key) => `${key}: catalog ${JSON.stringify(record[key])}, pack ${JSON.stringify(inventory[key])}`,
   );
 }
 
+/** Differences between a recorded standalone runtime and its measurement; empty when they agree. */
+export function compareRuntimeRecord(record, measured) {
+  if (!record) return ['the record has no runtime for this standalone build'];
+  return RUNTIME_RECORDED.filter((key) => record[key] !== measured[key]).map(
+    (key) => `runtime.${key}: catalog ${JSON.stringify(record[key])}, build ${JSON.stringify(measured[key])}`,
+  );
+}
+
 /** The directory under public/ that the record's `base` maps to. */
 export function stagedPackDirectory(record, site = SITE) {
-  if (!/^\/scene-packs\/[a-z0-9-]+\/r\d+\/$/.test(record?.base ?? '')) throw new Error(`Unexpected scene pack base: ${record?.base}`);
+  if (!new RegExp(`^/${PACK_DIRECTORY}/[a-z0-9-]+/[a-z0-9]+/$`).test(record?.base ?? '')) throw new Error(`Unexpected scene pack base: ${record?.base}`);
   return resolve(site, 'public', record.base.replace(/^\/+/, ''));
 }
 
+const catalogFile = (site) => join(site, 'src/data/scene-packs.json');
+const environmentSource = (id, env) => env[`KILN_SITE_SCENE_PACK_DIR_${id.toUpperCase().replaceAll('-', '_')}`] ?? (id === 'farm' ? env.KILN_SITE_SCENE_PACK_DIR : undefined);
+
 /**
- * Stage the Farm scene pack from the scenes workspace into ignored public/ so the site serves
- * it. A missing workspace or pack is a skip (the island keeps its fallback, and packs staged by
- * an earlier run are removed so the output never carries a pack its page does not use); a pack
- * that is present but wrong is an error. `--record` rewrites the catalog record; otherwise the
- * record must match the pack. Only the pack the record names stays staged.
+ * Stage the scene packs from the scenes workspace into ignored public/ so the site serves them. A
+ * missing workspace or pack is a skip (the scene keeps its status panel, and anything staged by an
+ * earlier run is removed so the output never carries a pack its page does not use); a pack that is
+ * present but wrong is an error. `--record` rewrites the catalog record; otherwise the record must
+ * match the pack. A standalone-built scene (Golden Gate) also stages its public chunk, byte for byte,
+ * after the single-copy and hash checks (scripts/scene-runtime.mjs). Only the packs the catalog names
+ * stay staged. `--scene <id>` limits the run to one scene; `--source <dir>` needs `--scene`.
  */
 export async function main(argv = process.argv.slice(2), env = process.env, site = SITE) {
   const option = (flag) => (argv.includes(flag) ? argv[argv.indexOf(flag) + 1] : undefined);
-  const catalog = join(site, 'src/data/packs/farm.json');
-  const farm = JSON.parse(await readFile(catalog, 'utf8'));
-  const record = farm.scene.pack;
+  const only = option('--scene');
+  if (only && !(only in SCENE_SOURCES)) throw new Error(`Unknown scene: ${only}`);
+  if (option('--source') && !only) throw new Error('--source needs --scene');
+  const record = argv.includes('--record');
+  const catalog = existsSync(catalogFile(site)) ? JSON.parse(await readFile(catalogFile(site), 'utf8')) : {};
   const scenes = resolveScenesDir({ env, site });
-  const explicit = option('--source') ?? env.KILN_SITE_SCENE_PACK_DIR;
-  const source = explicit ? resolve(site, explicit) : scenes && record ? resolve(scenes, record.source) : null;
-  // This script owns ignored public/scene-packs: it holds the one pack the catalog records, or nothing.
-  const served = join(site, 'public', 'scene-packs');
-  if (!source || !existsSync(join(source, 'assets/pack.json'))) {
-    const removed = existsSync(served);
-    if (removed) await rm(served, { recursive: true, force: true });
-    console.log(`Farm scene pack not staged: ${source ? `no pack at ${source}` : 'no scenes workspace (KILN_SITE_SCENES_DIR) or --source'}. The Farm island keeps its fallback.${removed ? ' A copy staged earlier was removed.' : ''}`);
-    return null;
-  }
-  const inventory = await verifyPack(join(source, 'assets'), join(source, NOTICES));
-  if (argv.includes('--record')) {
-    farm.scene.pack = packRecord(inventory, record);
-    await writeFile(catalog, `${JSON.stringify(farm, null, 2)}\n`);
-    console.log(`Recorded scene pack ${inventory.release}: ${inventory.totalBytes} bytes in ${inventory.totalFiles} files.`);
-  } else {
-    const differences = comparePackRecord(record, inventory);
-    if (differences.length) {
-      throw new Error(`The scene pack at ${source} disagrees with src/data/packs/farm.json (${differences.join('; ')}). Review it, then run node scripts/scene-pack.mjs --record.`);
+  const served = join(site, 'public', PACK_DIRECTORY);
+  if (!only) await rm(served, { recursive: true, force: true });
+  const staged = [];
+  for (const id of only ? [only] : Object.keys(SCENE_SOURCES)) {
+    const current = catalog[id];
+    const explicit = option('--source') ?? environmentSource(id, env);
+    const source = explicit ? resolve(site, explicit) : scenes ? resolve(scenes, current?.source ?? SCENE_SOURCES[id]) : null;
+    const frame = FRAME_SCENES.includes(id);
+    if (only) await rm(join(served, id), { recursive: true, force: true });
+    if (frame) await rm(stagedRuntimeDirectory(id, site), { recursive: true, force: true });
+    if (!source || !existsSync(join(source, 'assets/pack.json'))) {
+      console.log(`Scene pack ${id} not staged: ${source ? `no pack at ${source}` : 'no scenes workspace (KILN_SITE_SCENES_DIR) or --source'}. The scene keeps its status panel.`);
+      continue;
     }
+    const inventory = await verifyPack(join(source, 'assets'), join(source, NOTICES));
+    const runtime = frame ? await measureFrameRuntime({ id, source }) : null;
+    if (record) {
+      catalog[id] = { ...packRecord(inventory, current), ...(runtime ? { runtime: runtime.record } : {}) };
+      console.log(`Recorded scene pack ${id} ${inventory.release}: ${inventory.totalBytes} bytes in ${inventory.totalFiles} files${runtime ? `; runtime ${runtime.record.file}, ${runtime.record.bytes} bytes` : ''}.`);
+    } else {
+      const differences = [...comparePackRecord(current, inventory, id), ...(runtime ? compareRuntimeRecord(current?.runtime, runtime.record) : [])];
+      if (differences.length) {
+        throw new Error(`The ${id} scene pack at ${source} disagrees with src/data/scene-packs.json (${differences.join('; ')}). Review it, then run node scripts/scene-pack.mjs --scene ${id} --record.`);
+      }
+    }
+    const target = stagedPackDirectory(catalog[id] ?? current, site);
+    await rm(target, { recursive: true, force: true });
+    await stagePack({ source, target });
+    if (runtime) await stageFrameRuntime({ id, source, measurement: runtime, packBase: (catalog[id] ?? current).base, site });
+    console.log(`Staged scene pack ${id} ${inventory.release} (${inventory.totalFiles} files, ${inventory.totalBytes} bytes, ${inventory.sealedFiles} verified against SHA256SUMS) into ${target}.`);
+    staged.push(inventory);
   }
-  const target = stagedPackDirectory(record && !argv.includes('--record') ? record : packRecord(inventory), site);
-  await rm(served, { recursive: true, force: true });
-  await stagePack({ source, target });
-  console.log(`Staged scene pack ${inventory.release} (${inventory.totalFiles} files, ${inventory.totalBytes} bytes, ${inventory.sealedFiles} verified against SHA256SUMS) into ${target}.`);
-  return inventory;
+  if (record) await writeFile(catalogFile(site), `${JSON.stringify(catalog, null, 2)}\n`);
+  return staged;
 }
 
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {

@@ -9,4 +9,5 @@ public/apple-touch-icon.png
 public/favicon-*.png
 public/standalone/
 public/scene-packs/
+public/scene-runtime/
 .tmp/

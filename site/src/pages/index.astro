@@ -6,7 +6,7 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 import HeroDrawing from "../components/HeroDrawing.astro";
 import ResponsiveImage from "../components/ResponsiveImage.astro";
 import CodeBlock from "../components/CodeBlock.astro";
-import { farm, bridge, number, bounds } from "../lib/catalog";
+import { farm, vehicles, bridge, number, bounds } from "../lib/catalog";
 import { hero } from "../lib/hero";
 import {
   HARNESSES,
@@ -18,6 +18,7 @@ import {
   VERSION_SHORT,
 } from "../lib/config";
 import exchange from "../data/home-exchange.json";
+import foundryFloor from "../data/foundry-floor.json";
 import { PUBLIC_EXAMPLES } from "../../scripts/collection.mjs";
 const house = farm.assets[0]!;
 const docs = new Set((await getCollection("docs")).map((doc) => doc.id));
@@ -26,7 +27,6 @@ const docHref = (slug: string) =>
 const source = PACKS_ENABLED
   ? await readFile(resolve("public", house.sourcePath.slice(1)), "utf8")
   : "";
-const excerpt = source.split("\n").slice(0, 11).join("\n");
 const floor = farm.floorRevision;
 const ship = [
   [
@@ -180,10 +180,7 @@ const floorIncluded = house.revisionId === floor.asset.revisionId;
         </div>
         <div class="mt-8 grid items-start gap-6 lg:grid-cols-2">
           <div class="min-w-0">
-            <CodeBlock
-              code={excerpt}
-              label="Farmhouse · source.kiln.js (excerpt)"
-            />
+            <CodeBlock code={source} label="Farmhouse · source.kiln.js" />
             <p class="mt-3 break-all font-mono text-code text-dim">
               Source from the sealed {farm.revision} farmhouse,{" "}
               {house.revisionId}.
@@ -403,6 +400,7 @@ const floorIncluded = house.revisionId === floor.asset.revisionId;
       assets can be used without installing Kiln.
     </p>
     {PACKS_ENABLED ? (
+      <>
       <div class="mt-8 grid gap-8 md:grid-cols-3">
         <article class="md:col-span-2">
           <a href="/packs/farm/" class="no-underline">
@@ -434,10 +432,41 @@ const floorIncluded = house.revisionId === floor.asset.revisionId;
             source and GPU captures.{" "}
             {bridge.review.ownerAccepted
               ? "Owner accepted."
-              : "Review is in progress."}
+              : bridge.review.status === "awaiting-owner-review"
+                ? "Awaiting owner review."
+                : "Review is in progress."}
           </p>
         </article>
       </div>
+      <article class="mt-10 grid items-center gap-6 border-t border-rule pt-8 md:grid-cols-3 md:gap-8">
+        <ul class="grid grid-cols-3 gap-2 md:col-span-2 md:grid-cols-6">
+          {vehicles.assets.map((asset) => (
+            <li class="bg-stage">
+              <a href={`/gallery/${asset.slug}/`} class="block">
+                <ResponsiveImage
+                  image={{ ...asset.poster, alt: asset.name }}
+                  sizes="(max-width: 767px) 33vw, 11vw"
+                  class="aspect-square w-full object-contain"
+                />
+              </a>
+            </li>
+          ))}
+        </ul>
+        <div>
+          <h3 class="text-title">
+            <a href="/packs/vehicles/" class="text-ink no-underline">{vehicles.name}</a>
+          </h3>
+          <p class="mt-2 text-dim">
+            Six road vehicles with no brand or livery, each with three detail
+            tiers, separate wheels and its source. They are the traffic of the
+            Golden Gate scene.
+          </p>
+          <a class="text-link mt-2" href="/packs/vehicles/">
+            Browse the vehicles pack →
+          </a>
+        </div>
+      </article>
+      </>
     ) : (
       <p class="mt-8 border-y border-rule py-6">
         The Commons catalog is being prepared for publication. The archive
@@ -446,12 +475,12 @@ const floorIncluded = house.revisionId === floor.asset.revisionId;
     )}
     <div class="mt-10 grid gap-8 border-y border-rule py-6 md:grid-cols-2">
       <div>
-        <h3 class="text-title">Terafab (working title)</h3>
+        <h3 class="text-title">{foundryFloor.name}</h3>
         <p class="mt-2 max-w-reading text-dim">
-          In production: a chip fab pack with process tools, wafer transport and
-          a scene where the factory runs.
+          In production: a fictional 2 nm-class chip fab pack with process
+          tools, wafer transport and a scene where the factory runs.
         </p>
-        <a href="/packs/terafab/" class="text-link">
+        <a href={foundryFloor.packRoute} class="text-link">
           Production note →
         </a>
       </div>

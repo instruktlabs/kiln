@@ -1,0 +1,175 @@
+{
+  "schemaVersion": 1,
+  "assetId": "a_9fafaa6e7f4c4868a372e8f3b0b84738",
+  "note": "Saved revisions of the Golden Gate Bridge, oldest first. `full` is the chain of the displayed full tier from the first blockout; the web and far tiers branch from its Full final revision and are listed from there. Every revision names the run (see bridge-requests.json) that saved it; scripts/stage-bridge-revision.mjs checks the parent links and the run windows against the author library.",
+  "full": [
+    {
+      "stage": "True-scale blockout",
+      "revisionId": "r_003e29ccca7d4149952dbeb38d260e57",
+      "parentRevisionId": null,
+      "request": "first"
+    },
+    {
+      "stage": "Structure",
+      "revisionId": "r_864fdb9b078c447fb61e6db945342eb1",
+      "parentRevisionId": "r_003e29ccca7d4149952dbeb38d260e57",
+      "request": "first"
+    },
+    {
+      "stage": "Deck and end structures",
+      "revisionId": "r_e6fc425ac972452a927d2e9e768dc3c5",
+      "parentRevisionId": "r_864fdb9b078c447fb61e6db945342eb1",
+      "request": "first"
+    },
+    {
+      "stage": "Materials",
+      "revisionId": "r_891f756291cf4b4c9865bc30c5627908",
+      "parentRevisionId": "r_e6fc425ac972452a927d2e9e768dc3c5",
+      "request": "first"
+    },
+    {
+      "stage": "Geometry repairs and optimization",
+      "revisionId": "r_62e15876bd6d4e6b8fb72be910eafb42",
+      "parentRevisionId": "r_891f756291cf4b4c9865bc30c5627908",
+      "request": "first"
+    },
+    {
+      "stage": "Final paint/concrete correction",
+      "revisionId": "r_9f4b0e76ea634be083de8a5e38c4e838",
+      "parentRevisionId": "r_62e15876bd6d4e6b8fb72be910eafb42",
+      "request": "first"
+    },
+    {
+      "stage": "Rough paint and steel bypass",
+      "revisionId": "r_99009f9869b34133b24aae698ae52096",
+      "parentRevisionId": "r_9f4b0e76ea634be083de8a5e38c4e838",
+      "request": "review-1"
+    },
+    {
+      "stage": "Plate courses, rail repair and optimization",
+      "revisionId": "r_ee0f97666f264c88b21d28d1ddf9ccfe",
+      "parentRevisionId": "r_99009f9869b34133b24aae698ae52096",
+      "request": "review-1"
+    },
+    {
+      "stage": "Rounded crowns",
+      "revisionId": "r_64633d24733040e59977e69e880b721e",
+      "parentRevisionId": "r_ee0f97666f264c88b21d28d1ddf9ccfe",
+      "request": "review-1"
+    },
+    {
+      "stage": "Floor framing and graded median",
+      "revisionId": "r_4e2faa2ac4b24b7b91a92e735c9ac1bb",
+      "parentRevisionId": "r_64633d24733040e59977e69e880b721e",
+      "request": "review-1"
+    },
+    {
+      "stage": "Crown contact QA",
+      "revisionId": "r_947dd72d3b74420e8b48bc9987049d60",
+      "parentRevisionId": "r_4e2faa2ac4b24b7b91a92e735c9ac1bb",
+      "request": "review-1"
+    },
+    {
+      "stage": "Final bypass-root repair",
+      "revisionId": "r_18e4fb0aff0345669fc86efe33c85f7c",
+      "parentRevisionId": "r_947dd72d3b74420e8b48bc9987049d60",
+      "request": "review-1"
+    },
+    {
+      "stage": "Calibrated paint",
+      "revisionId": "r_6ef01791e9cf45fa9b1f4dd7b5d0aed6",
+      "parentRevisionId": "r_18e4fb0aff0345669fc86efe33c85f7c",
+      "request": "review-2"
+    },
+    {
+      "stage": "Full final",
+      "revisionId": "r_8b79b09984b14e15b9426f6db2df0140",
+      "parentRevisionId": "r_6ef01791e9cf45fa9b1f4dd7b5d0aed6",
+      "request": "review-2"
+    },
+    {
+      "stage": "Fix-up 1: piers to the seabed, lighter concrete and asphalt, thicker ropes",
+      "revisionId": "r_cba97c6c2fc448ee9ca24741d772fa39",
+      "parentRevisionId": "r_8b79b09984b14e15b9426f6db2df0140",
+      "request": "fix-up-1"
+    },
+    {
+      "stage": "Review 1: fender ring and truss members",
+      "revisionId": "r_e5cf0cd4a99d49088e7fb0c848587b03",
+      "parentRevisionId": "r_cba97c6c2fc448ee9ca24741d772fa39",
+      "request": "fix-review-1"
+    },
+    {
+      "stage": "Review 2: roadway profile",
+      "revisionId": "r_03e7981b4ff84159aa4533c587f033c7",
+      "parentRevisionId": "r_e5cf0cd4a99d49088e7fb0c848587b03",
+      "request": "fix-review-2"
+    },
+    {
+      "stage": "Review 3: expansion joints",
+      "revisionId": "r_0d1532b4a00b4663909f8edf2bd290aa",
+      "parentRevisionId": "r_03e7981b4ff84159aa4533c587f033c7",
+      "request": "fix-review-3"
+    }
+  ],
+  "tiers": {
+    "web": [
+      {
+        "stage": "Web final",
+        "revisionId": "r_ba838a2a86e04f2493b5d55b493a766a",
+        "parentRevisionId": "r_8b79b09984b14e15b9426f6db2df0140",
+        "request": "review-2"
+      },
+      {
+        "stage": "Fix-up 1: piers to the seabed, lighter concrete and asphalt, thicker ropes",
+        "revisionId": "r_28ac511af71d4db69a2d7cff8b243a24",
+        "parentRevisionId": "r_ba838a2a86e04f2493b5d55b493a766a",
+        "request": "fix-up-1"
+      },
+      {
+        "stage": "Review 1: fender ring and truss members",
+        "revisionId": "r_560ce144cfad491db7729a3750da884e",
+        "parentRevisionId": "r_28ac511af71d4db69a2d7cff8b243a24",
+        "request": "fix-review-1"
+      },
+      {
+        "stage": "Review 2: roadway profile",
+        "revisionId": "r_8285ccc5ffab4519b049936f792c15ee",
+        "parentRevisionId": "r_560ce144cfad491db7729a3750da884e",
+        "request": "fix-review-2"
+      },
+      {
+        "stage": "Review 3: expansion joints",
+        "revisionId": "r_e5da8e08bd424a8796a033fbb9793104",
+        "parentRevisionId": "r_8285ccc5ffab4519b049936f792c15ee",
+        "request": "fix-review-3"
+      }
+    ],
+    "far": [
+      {
+        "stage": "Far final",
+        "revisionId": "r_0da2d1ae635c4f84a10e58e0e03936e7",
+        "parentRevisionId": "r_8b79b09984b14e15b9426f6db2df0140",
+        "request": "review-2"
+      },
+      {
+        "stage": "Fix-up 1: piers to the seabed, lighter concrete and asphalt, thicker ropes",
+        "revisionId": "r_7fd11f06f23b4bfc93b9b47ab1b6ca04",
+        "parentRevisionId": "r_0da2d1ae635c4f84a10e58e0e03936e7",
+        "request": "fix-up-1"
+      },
+      {
+        "stage": "Review 1: fender ring and truss members",
+        "revisionId": "r_d3f2f39ee4964708a0301d7e7082d12b",
+        "parentRevisionId": "r_7fd11f06f23b4bfc93b9b47ab1b6ca04",
+        "request": "fix-review-1"
+      },
+      {
+        "stage": "Review 2: roadway profile (the far tier has no expansion joints, so review 3 left it unchanged)",
+        "revisionId": "r_fcddc546fa134910b2221561353d97e2",
+        "parentRevisionId": "r_d3f2f39ee4964708a0301d7e7082d12b",
+        "request": "fix-review-2"
+      }
+    ]
+  }
+}

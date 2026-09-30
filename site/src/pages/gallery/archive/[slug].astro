@@ -3,6 +3,7 @@ import { readFile } from "node:fs/promises";
 import { resolve } from "node:path";
 import BaseLayout from "../../../layouts/BaseLayout.astro";
 import AssetViewer from "../../../components/AssetViewer.astro";
+import EngineNote from "../../../components/EngineNote.astro";
 import CodeBlock from "../../../components/CodeBlock.astro";
 import type { Specimen } from "../../../types";
 import { REPO, SITE } from "../../../lib/config";
@@ -48,7 +49,8 @@ const formatBytes = (bytes: number) => `${bytes.toLocaleString("en-US")} bytes`;
 <BaseLayout
   title={`${name} · Kiln archive`}
   description={description}
-  ogImage={`/social/archive-${specimen.name}.webp`}
+  noindex
+  ogImage={`/social/archive-${specimen.name}.jpg`}
   breadcrumbs={[
     { label: "Gallery", href: "/gallery/" },
     { label: "Archive", href: "/gallery/archive/" },
@@ -85,6 +87,7 @@ const formatBytes = (bytes: number) => `${bytes.toLocaleString("en-US")} bytes`;
           poster={`/${specimen.poster ?? specimen.thumb}`}
           posterAlt={`Historical gallery render of ${name}; see the poster provenance below.`}
         />
+        <EngineNote />
       </div>
       <div class="min-w-0 border-y border-ink py-5">
         <h2 class="text-subheading">Build measurements</h2>
@@ -225,10 +228,9 @@ const formatBytes = (bytes: number) => `${bytes.toLocaleString("en-US")} bytes`;
     <section class="mt-16 min-w-0" aria-labelledby="source">
       <h2 id="source">The source behind this build</h2>
       {source ? (
-        <details class="mt-6 border border-rule">
-          <summary class="font-semibold">Read {specimen.name}.kiln.js</summary>
+        <div class="mt-6">
           <CodeBlock code={source} label={`${specimen.name}.kiln.js`} />
-        </details>
+        </div>
       ) : (
         <p class="mt-5">A source file is not recorded for this example.</p>
       )}

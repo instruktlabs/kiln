@@ -1,0 +1,92 @@
+---
+import { number, bounds, vehicles, type VehicleAsset } from "../lib/catalog";
+import { tierRange, approxMetres } from "../lib/vehicles";
+interface Props {
+  asset: VehicleAsset;
+}
+const { asset } = Astro.props;
+const { tiers, tierLinks, vehicle } = asset;
+const metres = (value: number) => `${value.toFixed(2)} m`;
+---
+
+<section class="pt-12" aria-labelledby="tiers">
+  <h2 id="tiers">Three detail tiers in one file.</h2>
+  <p class="mt-4 max-w-reading">
+    The runtime GLB holds LOD0, LOD1 and LOD2, linked with the glTF vendor
+    extension <code>MSFT_lod</code>. A scene that reads the extension swaps the
+    tiers by distance. A loader that does not know it, such as the 3D view
+    above, draws LOD0 and the four wheels, and the triangle, mesh and size
+    figures on this page count exactly that.
+  </p>
+  <div class="mt-6 grid gap-6 lg:grid-cols-3">
+    {tiers.map((tier, index) => (
+      <article class={`border-y py-5 ${index === 0 ? "border-ink" : "border-rule"}`}>
+        <h3 class="text-title">{tier.tier}</h3>
+        <p class="mt-2 text-dim">
+          {tierRange(tiers, index, tierLinks.culledDistanceMetres)}
+        </p>
+        <dl class="mt-4 grid grid-cols-2 gap-3 font-mono text-code">
+          <div>
+            <dt class="text-dim">Body triangles</dt>
+            <dd>{number(tier.bodyTriangles)} (budget {number(tier.budget)})</dd>
+          </div>
+          <div>
+            <dt class="text-dim">Wheels</dt>
+            <dd>
+              {tier.wheelsShown
+                ? `${number(tier.wheelTriangles)} triangles`
+                : "Not drawn"}
+            </dd>
+          </div>
+          <div>
+            <dt class="text-dim">Total drawn</dt>
+            <dd>{number(tier.triangles)}</dd>
+          </div>
+          <div>
+            <dt class="text-dim">Parts / materials</dt>
+            <dd>{tier.parts} / {tier.materials.length}</dd>
+          </div>
+          <div class="col-span-2">
+            <dt class="text-dim">Length × height × width</dt>
+            <dd>{bounds(tier.bounds)} m</dd>
+          </div>
+        </dl>
+      </article>
+    ))}
+  </div>
+  <p class="mt-4 max-w-reading text-caption text-dim">
+    The distances are worked out from the screen-coverage thresholds stored in
+    the file, for a 50° vertical field of view at 16:9, so another camera moves
+    them.
+    {tierLinks.culledDistanceMetres !== null &&
+      ` The file's last threshold stops drawing the vehicle beyond about ${approxMetres(tierLinks.culledDistanceMetres)}.`}
+    {tierLinks.wheelsHiddenAtLastTier &&
+      ` The wheels stop being drawn at about ${approxMetres(tierLinks.wheelsHiddenBeyondMetres)}, where ${tiers.at(-1)?.tier} starts.`}
+  </p>
+  <h3 class="mt-10 text-title">Wheels and frame</h3>
+  <dl class="mt-4 grid grid-cols-2 gap-x-5 gap-y-4 border-y border-rule py-5 md:grid-cols-4">
+    <div>
+      <dt class="font-mono text-code text-dim">Wheelbase</dt>
+      <dd class="mt-1 font-mono text-code">{metres(vehicle.wheelbase)}</dd>
+    </div>
+    <div>
+      <dt class="font-mono text-code text-dim">Track · front / rear</dt>
+      <dd class="mt-1 font-mono text-code">
+        {metres(vehicle.frontTrack)} / {metres(vehicle.rearTrack)}
+      </dd>
+    </div>
+    <div>
+      <dt class="font-mono text-code text-dim">Wheel radius</dt>
+      <dd class="mt-1 font-mono text-code">{metres(vehicle.wheelRadius)}</dd>
+    </div>
+    <div>
+      <dt class="font-mono text-code text-dim">Wheel width · front / rear</dt>
+      <dd class="mt-1 font-mono text-code">
+        {metres(vehicle.frontWheelWidth)} / {metres(vehicle.rearWheelWidth)}
+      </dd>
+    </div>
+  </dl>
+  <p class="mt-4 max-w-reading text-caption text-dim">
+    {vehicles.conventions.wheels}
+  </p>
+</section>

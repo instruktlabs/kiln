@@ -1,0 +1,7 @@
+{
+  "name": "Foundry Floor",
+  "packRoute": "/packs/foundry-floor/",
+  "sceneRoute": "/scenes/foundry-floor/",
+  "summary": "a fictional 2 nm-class chip fab with process tools, wafer transport and a scene where the factory runs",
+  "notice": "Not affiliated with or endorsed by Tesla, SpaceX, xAI, Intel, ASML or any equipment maker."
+}

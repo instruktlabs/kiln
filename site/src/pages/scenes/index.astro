@@ -1,14 +1,15 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
-import { farmScene } from "../../data/scenes";
+import { farmScene, goldenGateScene } from "../../data/scenes";
 import { PACKS_ENABLED } from "../../lib/config";
+import foundryFloor from "../../data/foundry-floor.json";
 ---
 
 <BaseLayout
   title="Scenes made with Kiln"
-  description="Explore scenes built from Kiln assets. The Farm browser scene is being rebuilt; its runnable scene is available in the pack download."
+  description="Explore scenes built from Kiln assets: the Farm browser scene is being rebuilt, and a Golden Gate Bridge preview shows a Kiln-authored bridge in a driving and traffic demonstration."
   breadcrumbs={[{ label: "Scenes", href: "/scenes/" }]}
-  ogImage="/social/scenes.webp"
+  ogImage="/social/scenes.jpg"
 >
   <div class="container py-12 md:py-20">
     <h1 class="max-w-prose font-semibold">See the assets together.</h1>
@@ -50,12 +51,49 @@ import { PACKS_ENABLED } from "../../lib/config";
         </a>
       </div>
     </article>
+    <article class="mt-12 grid gap-8 border-t border-ink pt-8 md:grid-cols-2">
+      {PACKS_ENABLED && goldenGateScene.posterImage && (
+        <a href={goldenGateScene.href} aria-label="View the Golden Gate Bridge scene">
+          <picture>
+            <source
+              type="image/avif"
+              srcset={goldenGateScene.posterImage.srcsetAvif}
+              sizes="(max-width: 768px) 100vw, 50vw"
+            />
+            <img
+              src={goldenGateScene.poster}
+              srcset={goldenGateScene.posterImage.srcsetWebp}
+              sizes="(max-width: 768px) 100vw, 50vw"
+              width={goldenGateScene.posterWidth}
+              height={goldenGateScene.posterHeight}
+              alt={goldenGateScene.posterAlt}
+              class="w-full border border-rule"
+              loading="lazy"
+            />
+          </picture>
+        </a>
+      )}
+      <div>
+        <h2 class="font-semibold">{goldenGateScene.name}</h2>
+        <p class="mt-4 max-w-prose">{goldenGateScene.description}</p>
+        <p class="mt-4 max-w-prose">
+          This scene is a preview and is still being qualified. It loads only
+          when you choose Explore.
+        </p>
+        <a href={goldenGateScene.href} class="btn btn-secondary mt-6">
+          Open the scene preview
+        </a>
+      </div>
+    </article>
     <div class="mt-12 border-t border-rule pt-8">
-      <h2 class="font-semibold">Terafab is in production.</h2>
+      <h2 class="font-semibold">{foundryFloor.name} is in production.</h2>
       <p class="mt-4 max-w-prose">
-        Terafab is a working title for the next pack and scene. There is no
-        browser scene to explore yet.
+        {foundryFloor.name} is a fictional 2 nm-class chip fab, the next pack
+        and scene. There is no browser scene to explore yet.
       </p>
+      <a href={foundryFloor.sceneRoute} class="text-link mt-4">
+        Read the production note →
+      </a>
     </div>
   </div>
 </BaseLayout>

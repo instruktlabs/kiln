@@ -5,22 +5,22 @@
   "name": "Golden Gate Bridge",
   "pack": null,
   "category": "Architecture",
-  "description": "A metre-scale procedural suspension bridge with Art Deco towers, main cables, suspenders and a six-lane roadway.",
+  "description": "A metre-scale procedural suspension bridge with Art Deco towers, main cables, suspenders and a six-lane roadway, saved as full, web and far tiers from one Kiln source.",
   "assetId": "a_9fafaa6e7f4c4868a372e8f3b0b84738",
-  "revisionId": "r_9f4b0e76ea634be083de8a5e38c4e838",
-  "parentRevision": "r_62e15876bd6d4e6b8fb72be910eafb42",
+  "revisionId": "r_0d1532b4a00b4663909f8edf2bd290aa",
+  "parentRevision": "r_03e7981b4ff84159aa4533c587f033c7",
   "metrics": {
-    "triangles": 299788,
-    "meshes": 167,
-    "materials": 8,
+    "triangles": 309576,
+    "meshes": 175,
+    "materials": 10,
     "bounds": [
       91.44000244140625,
-      231.36464002250074,
+      262.7646415245378,
       2067.96
     ],
     "boundsMin": [
       -45.720001220703125,
-      -0.6000000238418579,
+      -32.00000152587891,
       -1033.98
     ],
     "boundsMax": [
@@ -41,11 +41,11 @@
       "GoldenGateBridge/SouthTower/SouthTower_LegWest/SouthTower_LegWest_Mesh_PlateSeams",
       "GoldenGateBridge/SouthTower/SouthTower_LegWest/SouthTower_LegWest_Mesh_RivetRows",
       "GoldenGateBridge/SouthTower/SouthTower_CrownWest/SouthTower_CrownWest_Mesh_SaddleBed",
-      "GoldenGateBridge/SouthTower/SouthTower_CrownWest/SouthTower_CrownWest_Mesh_CurvedSaddle",
-      "GoldenGateBridge/SouthTower/SouthTower_CrownWest/SouthTower_CrownWest_Mesh_SaddleGussets",
-      "GoldenGateBridge/SouthTower/SouthTower_CrownWest/SouthTower_CrownWest_Mesh_TaperedSaddleCover",
+      "GoldenGateBridge/SouthTower/SouthTower_CrownWest/SouthTower_CrownWest_Mesh_RoundedSaddleHousing",
+      "GoldenGateBridge/SouthTower/SouthTower_CrownWest/SouthTower_CrownWest_Mesh_SteppedBeaconPlinth",
+      "GoldenGateBridge/SouthTower/SouthTower_CrownWest/SouthTower_CrownWest_Mesh_CrownInsetPanels",
       "GoldenGateBridge/SouthTower/SouthTower_CrownWest/SouthTower_CrownWest_Mesh_BeaconFoot",
-      "GoldenGateBridge/SouthTower/SouthTower_CrownWest/SouthTower_CrownWest_Mesh_AircraftWarningLens",
+      "GoldenGateBridge/SouthTower/SouthTower_CrownWest/Beacon_South_West",
       "GoldenGateBridge/SouthTower/SouthTower_CrownWest/SouthTower_CrownWest_Mesh_BeaconCap",
       "GoldenGateBridge/SouthTower/SouthTower_LegEast/SouthTower_LegEast_Mesh_Tier1",
       "GoldenGateBridge/SouthTower/SouthTower_LegEast/SouthTower_LegEast_Mesh_Tier2",
@@ -56,11 +56,11 @@
       "GoldenGateBridge/SouthTower/SouthTower_LegEast/SouthTower_LegEast_Mesh_PlateSeams",
       "GoldenGateBridge/SouthTower/SouthTower_LegEast/SouthTower_LegEast_Mesh_RivetRows",
       "GoldenGateBridge/SouthTower/SouthTower_CrownEast/SouthTower_CrownEast_Mesh_SaddleBed",
-      "GoldenGateBridge/SouthTower/SouthTower_CrownEast/SouthTower_CrownEast_Mesh_CurvedSaddle",
-      "GoldenGateBridge/SouthTower/SouthTower_CrownEast/SouthTower_CrownEast_Mesh_SaddleGussets",
-      "GoldenGateBridge/SouthTower/SouthTower_CrownEast/SouthTower_CrownEast_Mesh_TaperedSaddleCover",
+      "GoldenGateBridge/SouthTower/SouthTower_CrownEast/SouthTower_CrownEast_Mesh_RoundedSaddleHousing",
+      "GoldenGateBridge/SouthTower/SouthTower_CrownEast/SouthTower_CrownEast_Mesh_SteppedBeaconPlinth",
+      "GoldenGateBridge/SouthTower/SouthTower_CrownEast/SouthTower_CrownEast_Mesh_CrownInsetPanels",
       "GoldenGateBridge/SouthTower/SouthTower_CrownEast/SouthTower_CrownEast_Mesh_BeaconFoot",
-      "GoldenGateBridge/SouthTower/SouthTower_CrownEast/SouthTower_CrownEast_Mesh_AircraftWarningLens",
+      "GoldenGateBridge/SouthTower/SouthTower_CrownEast/Beacon_South_East",
       "GoldenGateBridge/SouthTower/SouthTower_CrownEast/SouthTower_CrownEast_Mesh_BeaconCap",
       "GoldenGateBridge/SouthTower/SouthTower_Portal1/SouthTower_Portal1_Mesh_Core",
       "GoldenGateBridge/SouthTower/SouthTower_Portal1/SouthTower_Portal1_Mesh_RecessedDecoPanels",
@@ -91,11 +91,11 @@
       "GoldenGateBridge/NorthTower/NorthTower_LegWest/NorthTower_LegWest_Mesh_PlateSeams",
       "GoldenGateBridge/NorthTower/NorthTower_LegWest/NorthTower_LegWest_Mesh_RivetRows",
       "GoldenGateBridge/NorthTower/NorthTower_CrownWest/NorthTower_CrownWest_Mesh_SaddleBed",
-      "GoldenGateBridge/NorthTower/NorthTower_CrownWest/NorthTower_CrownWest_Mesh_CurvedSaddle",
-      "GoldenGateBridge/NorthTower/NorthTower_CrownWest/NorthTower_CrownWest_Mesh_SaddleGussets",
-      "GoldenGateBridge/NorthTower/NorthTower_CrownWest/NorthTower_CrownWest_Mesh_TaperedSaddleCover",
+      "GoldenGateBridge/NorthTower/NorthTower_CrownWest/NorthTower_CrownWest_Mesh_RoundedSaddleHousing",
+      "GoldenGateBridge/NorthTower/NorthTower_CrownWest/NorthTower_CrownWest_Mesh_SteppedBeaconPlinth",
+      "GoldenGateBridge/NorthTower/NorthTower_CrownWest/NorthTower_CrownWest_Mesh_CrownInsetPanels",
       "GoldenGateBridge/NorthTower/NorthTower_CrownWest/NorthTower_CrownWest_Mesh_BeaconFoot",
-      "GoldenGateBridge/NorthTower/NorthTower_CrownWest/NorthTower_CrownWest_Mesh_AircraftWarningLens",
+      "GoldenGateBridge/NorthTower/NorthTower_CrownWest/Beacon_North_West",
       "GoldenGateBridge/NorthTower/NorthTower_CrownWest/NorthTower_CrownWest_Mesh_BeaconCap",
       "GoldenGateBridge/NorthTower/NorthTower_LegEast/NorthTower_LegEast_Mesh_Tier1",
       "GoldenGateBridge/NorthTower/NorthTower_LegEast/NorthTower_LegEast_Mesh_Tier2",
@@ -106,11 +106,11 @@
       "GoldenGateBridge/NorthTower/NorthTower_LegEast/NorthTower_LegEast_Mesh_PlateSeams",
       "GoldenGateBridge/NorthTower/NorthTower_LegEast/NorthTower_LegEast_Mesh_RivetRows",
       "GoldenGateBridge/NorthTower/NorthTower_CrownEast/NorthTower_CrownEast_Mesh_SaddleBed",
-      "GoldenGateBridge/NorthTower/NorthTower_CrownEast/NorthTower_CrownEast_Mesh_CurvedSaddle",
-      "GoldenGateBridge/NorthTower/NorthTower_CrownEast/NorthTower_CrownEast_Mesh_SaddleGussets",
-      "GoldenGateBridge/NorthTower/NorthTower_CrownEast/NorthTower_CrownEast_Mesh_TaperedSaddleCover",
+      "GoldenGateBridge/NorthTower/NorthTower_CrownEast/NorthTower_CrownEast_Mesh_RoundedSaddleHousing",
+      "GoldenGateBridge/NorthTower/NorthTower_CrownEast/NorthTower_CrownEast_Mesh_SteppedBeaconPlinth",
+      "GoldenGateBridge/NorthTower/NorthTower_CrownEast/NorthTower_CrownEast_Mesh_CrownInsetPanels",
       "GoldenGateBridge/NorthTower/NorthTower_CrownEast/NorthTower_CrownEast_Mesh_BeaconFoot",
-      "GoldenGateBridge/NorthTower/NorthTower_CrownEast/NorthTower_CrownEast_Mesh_AircraftWarningLens",
+      "GoldenGateBridge/NorthTower/NorthTower_CrownEast/Beacon_North_East",
       "GoldenGateBridge/NorthTower/NorthTower_CrownEast/NorthTower_CrownEast_Mesh_BeaconCap",
       "GoldenGateBridge/NorthTower/NorthTower_Portal1/NorthTower_Portal1_Mesh_Core",
       "GoldenGateBridge/NorthTower/NorthTower_Portal1/NorthTower_Portal1_Mesh_RecessedDecoPanels",
@@ -133,15 +133,20 @@
       "GoldenGateBridge/SouthFender/SouthFender_Mesh_EllipticalWall",
       "GoldenGateBridge/MainCableWest/MainCableWest_Mesh_ContinuousCable",
       "GoldenGateBridge/MainCableEast/MainCableEast_Mesh_ContinuousCable",
-      "GoldenGateBridge/Deck/Deck_Mesh_Roadway",
+      "GoldenGateBridge/Deck/Roadway",
+      "GoldenGateBridge/Deck/Deck_Mesh_Roadbed",
       "GoldenGateBridge/Deck/Deck_Mesh_Underdeck",
       "GoldenGateBridge/Deck/Deck_Mesh_EastWalk",
+      "GoldenGateBridge/Deck/Deck_Mesh_EastSteelBypass",
+      "GoldenGateBridge/Deck/Deck_Mesh_EastBypassFascia",
       "GoldenGateBridge/Deck/Deck_Mesh_WestWalk",
+      "GoldenGateBridge/Deck/Deck_Mesh_WestSteelBypass",
+      "GoldenGateBridge/Deck/Deck_Mesh_WestBypassFascia",
       "GoldenGateBridge/Deck/Deck_SidewalkRailings/Deck_SidewalkRailings_Mesh_OuterOpenRailings",
       "GoldenGateBridge/Deck/Deck_SidewalkRailings/Deck_SidewalkRailings_Mesh_RoadSafetyRailings",
-      "GoldenGateBridge/Deck/Deck_Mesh_EastCurb",
-      "GoldenGateBridge/Deck/Deck_Mesh_WestCurb",
-      "GoldenGateBridge/Deck/Deck_MovableMedian/Deck_MovableMedian_Mesh_LinkedConcreteUnits",
+      "GoldenGateBridge/Deck/CurbsEast",
+      "GoldenGateBridge/Deck/CurbsWest",
+      "GoldenGateBridge/Deck/Deck_MovableMedian/Median",
       "GoldenGateBridge/Deck/Deck_LaneMarkings/Deck_LaneMarkings_Mesh_BrokenLaneLines",
       "GoldenGateBridge/Deck/Deck_LaneMarkings/Deck_LaneMarkings_Mesh_EastEdgeLine",
       "GoldenGateBridge/Deck/Deck_LaneMarkings/Deck_LaneMarkings_Mesh_WestEdgeLine",
@@ -161,6 +166,9 @@
       "GoldenGateBridge/SuspendersEast/SuspendersEast_Mesh_ClampFlangesBolts",
       "GoldenGateBridge/SuspendersEast/SuspendersEast_Mesh_DeckClevises",
       "GoldenGateBridge/DeckLateralBracing/DeckLateralBracing_Mesh_CrossFramesAndLateralX",
+      "GoldenGateBridge/DeckLateralBracing/DeckLateralBracing_Mesh_FloorbeamISections",
+      "GoldenGateBridge/DeckLateralBracing/DeckLateralBracing_Mesh_SidewalkBearingStools",
+      "GoldenGateBridge/DeckLateralBracing/DeckLateralBracing_Mesh_LongitudinalTStringers",
       "GoldenGateBridge/DeckTrussWest/DeckTrussWest_Mesh_RolledChords",
       "GoldenGateBridge/DeckTrussWest/DeckTrussWest_Mesh_ChordsPostsDiagonals",
       "GoldenGateBridge/DeckTrussWest/DeckTrussWest_Mesh_GussetPlates",
@@ -200,83 +208,277 @@
     ]
   },
   "poster": {
-    "src": "/standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/classic-neutral.webp",
-    "width": 1032,
-    "height": 1032,
-    "alt": "Golden Gate Bridge seen obliquely from above, showing both towers and the suspended roadway.",
-    "srcsetWebp": "/standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/classic-neutral-320.webp 320w, /standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/classic-neutral-480.webp 480w, /standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/classic-neutral-672.webp 672w, /standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/classic-neutral-768.webp 768w, /standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/classic-neutral-1024.webp 1024w",
-    "srcsetAvif": "/standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/classic-neutral-320.avif 320w, /standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/classic-neutral-480.avif 480w, /standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/classic-neutral-672.avif 672w, /standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/classic-neutral-768.avif 768w, /standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/classic-neutral-1024.avif 1024w",
-    "inputPath": "standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/classic-neutral.png"
+    "src": "/standalone/golden-gate-bridge/r_0d1532b4a00b4663909f8edf2bd290aa/captures/classic-neutral.webp",
+    "width": 1024,
+    "height": 1024,
+    "alt": "Golden Gate Bridge seen obliquely from above: both towers, the main cables and the suspended roadway on a neutral grey backdrop.",
+    "srcsetWebp": "/standalone/golden-gate-bridge/r_0d1532b4a00b4663909f8edf2bd290aa/captures/classic-neutral-320.webp 320w, /standalone/golden-gate-bridge/r_0d1532b4a00b4663909f8edf2bd290aa/captures/classic-neutral-480.webp 480w, /standalone/golden-gate-bridge/r_0d1532b4a00b4663909f8edf2bd290aa/captures/classic-neutral-672.webp 672w, /standalone/golden-gate-bridge/r_0d1532b4a00b4663909f8edf2bd290aa/captures/classic-neutral-768.webp 768w, /standalone/golden-gate-bridge/r_0d1532b4a00b4663909f8edf2bd290aa/captures/classic-neutral-1024.webp 1024w",
+    "srcsetAvif": "/standalone/golden-gate-bridge/r_0d1532b4a00b4663909f8edf2bd290aa/captures/classic-neutral-320.avif 320w, /standalone/golden-gate-bridge/r_0d1532b4a00b4663909f8edf2bd290aa/captures/classic-neutral-480.avif 480w, /standalone/golden-gate-bridge/r_0d1532b4a00b4663909f8edf2bd290aa/captures/classic-neutral-672.avif 672w, /standalone/golden-gate-bridge/r_0d1532b4a00b4663909f8edf2bd290aa/captures/classic-neutral-768.avif 768w, /standalone/golden-gate-bridge/r_0d1532b4a00b4663909f8edf2bd290aa/captures/classic-neutral-1024.avif 1024w",
+    "inputPath": "standalone/golden-gate-bridge/r_0d1532b4a00b4663909f8edf2bd290aa/captures/classic-neutral.png",
+    "sourceRevisionId": "r_0d1532b4a00b4663909f8edf2bd290aa",
+    "exactRevision": true,
+    "rig": "review-neutral-v1"
   },
   "reviewImage": {
-    "src": "/standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/review-sheet-neutral.webp",
+    "src": "/standalone/golden-gate-bridge/r_0d1532b4a00b4663909f8edf2bd290aa/captures/review-sheet-neutral.webp",
     "width": 1168,
     "height": 780,
-    "alt": "Six GPU review views of the Golden Gate Bridge.",
-    "srcsetWebp": "/standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/review-sheet-neutral-320.webp 320w, /standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/review-sheet-neutral-480.webp 480w, /standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/review-sheet-neutral-672.webp 672w, /standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/review-sheet-neutral-768.webp 768w, /standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/review-sheet-neutral-1024.webp 1024w",
-    "srcsetAvif": "/standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/review-sheet-neutral-320.avif 320w, /standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/review-sheet-neutral-480.avif 480w, /standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/review-sheet-neutral-672.avif 672w, /standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/review-sheet-neutral-768.avif 768w, /standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/review-sheet-neutral-1024.avif 1024w",
-    "inputPath": "standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/review-sheet-neutral.png"
+    "alt": "Six saved review views of the Golden Gate Bridge: front, right, back, left, top and three-quarter.",
+    "srcsetWebp": "/standalone/golden-gate-bridge/r_0d1532b4a00b4663909f8edf2bd290aa/captures/review-sheet-neutral-320.webp 320w, /standalone/golden-gate-bridge/r_0d1532b4a00b4663909f8edf2bd290aa/captures/review-sheet-neutral-480.webp 480w, /standalone/golden-gate-bridge/r_0d1532b4a00b4663909f8edf2bd290aa/captures/review-sheet-neutral-672.webp 672w, /standalone/golden-gate-bridge/r_0d1532b4a00b4663909f8edf2bd290aa/captures/review-sheet-neutral-768.webp 768w, /standalone/golden-gate-bridge/r_0d1532b4a00b4663909f8edf2bd290aa/captures/review-sheet-neutral-1024.webp 1024w",
+    "srcsetAvif": "/standalone/golden-gate-bridge/r_0d1532b4a00b4663909f8edf2bd290aa/captures/review-sheet-neutral-320.avif 320w, /standalone/golden-gate-bridge/r_0d1532b4a00b4663909f8edf2bd290aa/captures/review-sheet-neutral-480.avif 480w, /standalone/golden-gate-bridge/r_0d1532b4a00b4663909f8edf2bd290aa/captures/review-sheet-neutral-672.avif 672w, /standalone/golden-gate-bridge/r_0d1532b4a00b4663909f8edf2bd290aa/captures/review-sheet-neutral-768.avif 768w, /standalone/golden-gate-bridge/r_0d1532b4a00b4663909f8edf2bd290aa/captures/review-sheet-neutral-1024.avif 1024w",
+    "inputPath": "standalone/golden-gate-bridge/r_0d1532b4a00b4663909f8edf2bd290aa/captures/review-sheet-neutral.png"
   },
   "captures": [
     {
-      "src": "/standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/water-level-neutral.webp",
-      "width": 1032,
-      "height": 1032,
-      "alt": "Golden Gate Bridge GPU capture: water level.",
-      "srcsetWebp": "/standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/water-level-neutral-320.webp 320w, /standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/water-level-neutral-480.webp 480w, /standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/water-level-neutral-672.webp 672w, /standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/water-level-neutral-768.webp 768w, /standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/water-level-neutral-1024.webp 1024w",
-      "srcsetAvif": "/standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/water-level-neutral-320.avif 320w, /standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/water-level-neutral-480.avif 480w, /standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/water-level-neutral-672.avif 672w, /standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/water-level-neutral-768.avif 768w, /standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/water-level-neutral-1024.avif 1024w",
-      "inputPath": "standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/water-level-neutral.png"
+      "src": "/standalone/golden-gate-bridge/r_0d1532b4a00b4663909f8edf2bd290aa/captures/water-level-neutral.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "Golden Gate Bridge from near water level, looking up at the south tower and the roadway.",
+      "srcsetWebp": "/standalone/golden-gate-bridge/r_0d1532b4a00b4663909f8edf2bd290aa/captures/water-level-neutral-320.webp 320w, /standalone/golden-gate-bridge/r_0d1532b4a00b4663909f8edf2bd290aa/captures/water-level-neutral-480.webp 480w, /standalone/golden-gate-bridge/r_0d1532b4a00b4663909f8edf2bd290aa/captures/water-level-neutral-672.webp 672w, /standalone/golden-gate-bridge/r_0d1532b4a00b4663909f8edf2bd290aa/captures/water-level-neutral-768.webp 768w, /standalone/golden-gate-bridge/r_0d1532b4a00b4663909f8edf2bd290aa/captures/water-level-neutral-1024.webp 1024w",
+      "srcsetAvif": "/standalone/golden-gate-bridge/r_0d1532b4a00b4663909f8edf2bd290aa/captures/water-level-neutral-320.avif 320w, /standalone/golden-gate-bridge/r_0d1532b4a00b4663909f8edf2bd290aa/captures/water-level-neutral-480.avif 480w, /standalone/golden-gate-bridge/r_0d1532b4a00b4663909f8edf2bd290aa/captures/water-level-neutral-672.avif 672w, /standalone/golden-gate-bridge/r_0d1532b4a00b4663909f8edf2bd290aa/captures/water-level-neutral-768.avif 768w, /standalone/golden-gate-bridge/r_0d1532b4a00b4663909f8edf2bd290aa/captures/water-level-neutral-1024.avif 1024w",
+      "inputPath": "standalone/golden-gate-bridge/r_0d1532b4a00b4663909f8edf2bd290aa/captures/water-level-neutral.png",
+      "sourceRevisionId": "r_0d1532b4a00b4663909f8edf2bd290aa",
+      "exactRevision": true,
+      "rig": "review-neutral-v1"
     },
     {
-      "src": "/standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/deck-neutral.webp",
-      "width": 1032,
-      "height": 1032,
-      "alt": "Golden Gate Bridge GPU capture: deck.",
-      "srcsetWebp": "/standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/deck-neutral-320.webp 320w, /standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/deck-neutral-480.webp 480w, /standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/deck-neutral-672.webp 672w, /standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/deck-neutral-768.webp 768w, /standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/deck-neutral-1024.webp 1024w",
-      "srcsetAvif": "/standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/deck-neutral-320.avif 320w, /standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/deck-neutral-480.avif 480w, /standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/deck-neutral-672.avif 672w, /standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/deck-neutral-768.avif 768w, /standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/deck-neutral-1024.avif 1024w",
-      "inputPath": "standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/deck-neutral.png"
+      "src": "/standalone/golden-gate-bridge/r_0d1532b4a00b4663909f8edf2bd290aa/captures/deck-neutral.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "Golden Gate Bridge from the roadway, looking along the lanes toward the towers ahead.",
+      "srcsetWebp": "/standalone/golden-gate-bridge/r_0d1532b4a00b4663909f8edf2bd290aa/captures/deck-neutral-320.webp 320w, /standalone/golden-gate-bridge/r_0d1532b4a00b4663909f8edf2bd290aa/captures/deck-neutral-480.webp 480w, /standalone/golden-gate-bridge/r_0d1532b4a00b4663909f8edf2bd290aa/captures/deck-neutral-672.webp 672w, /standalone/golden-gate-bridge/r_0d1532b4a00b4663909f8edf2bd290aa/captures/deck-neutral-768.webp 768w, /standalone/golden-gate-bridge/r_0d1532b4a00b4663909f8edf2bd290aa/captures/deck-neutral-1024.webp 1024w",
+      "srcsetAvif": "/standalone/golden-gate-bridge/r_0d1532b4a00b4663909f8edf2bd290aa/captures/deck-neutral-320.avif 320w, /standalone/golden-gate-bridge/r_0d1532b4a00b4663909f8edf2bd290aa/captures/deck-neutral-480.avif 480w, /standalone/golden-gate-bridge/r_0d1532b4a00b4663909f8edf2bd290aa/captures/deck-neutral-672.avif 672w, /standalone/golden-gate-bridge/r_0d1532b4a00b4663909f8edf2bd290aa/captures/deck-neutral-768.avif 768w, /standalone/golden-gate-bridge/r_0d1532b4a00b4663909f8edf2bd290aa/captures/deck-neutral-1024.avif 1024w",
+      "inputPath": "standalone/golden-gate-bridge/r_0d1532b4a00b4663909f8edf2bd290aa/captures/deck-neutral.png",
+      "sourceRevisionId": "r_0d1532b4a00b4663909f8edf2bd290aa",
+      "exactRevision": true,
+      "rig": "review-neutral-v1"
     },
     {
-      "src": "/standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/tower-top-neutral.webp",
-      "width": 1032,
-      "height": 1032,
-      "alt": "Golden Gate Bridge GPU capture: tower top.",
-      "srcsetWebp": "/standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/tower-top-neutral-320.webp 320w, /standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/tower-top-neutral-480.webp 480w, /standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/tower-top-neutral-672.webp 672w, /standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/tower-top-neutral-768.webp 768w, /standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/tower-top-neutral-1024.webp 1024w",
-      "srcsetAvif": "/standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/tower-top-neutral-320.avif 320w, /standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/tower-top-neutral-480.avif 480w, /standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/tower-top-neutral-672.avif 672w, /standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/tower-top-neutral-768.avif 768w, /standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/tower-top-neutral-1024.avif 1024w",
-      "inputPath": "standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/tower-top-neutral.png"
+      "src": "/standalone/golden-gate-bridge/r_0d1532b4a00b4663909f8edf2bd290aa/captures/tower-top-neutral.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "Golden Gate Bridge from beside the top of the south tower, with the main cables and the roadway below.",
+      "srcsetWebp": "/standalone/golden-gate-bridge/r_0d1532b4a00b4663909f8edf2bd290aa/captures/tower-top-neutral-320.webp 320w, /standalone/golden-gate-bridge/r_0d1532b4a00b4663909f8edf2bd290aa/captures/tower-top-neutral-480.webp 480w, /standalone/golden-gate-bridge/r_0d1532b4a00b4663909f8edf2bd290aa/captures/tower-top-neutral-672.webp 672w, /standalone/golden-gate-bridge/r_0d1532b4a00b4663909f8edf2bd290aa/captures/tower-top-neutral-768.webp 768w, /standalone/golden-gate-bridge/r_0d1532b4a00b4663909f8edf2bd290aa/captures/tower-top-neutral-1024.webp 1024w",
+      "srcsetAvif": "/standalone/golden-gate-bridge/r_0d1532b4a00b4663909f8edf2bd290aa/captures/tower-top-neutral-320.avif 320w, /standalone/golden-gate-bridge/r_0d1532b4a00b4663909f8edf2bd290aa/captures/tower-top-neutral-480.avif 480w, /standalone/golden-gate-bridge/r_0d1532b4a00b4663909f8edf2bd290aa/captures/tower-top-neutral-672.avif 672w, /standalone/golden-gate-bridge/r_0d1532b4a00b4663909f8edf2bd290aa/captures/tower-top-neutral-768.avif 768w, /standalone/golden-gate-bridge/r_0d1532b4a00b4663909f8edf2bd290aa/captures/tower-top-neutral-1024.avif 1024w",
+      "inputPath": "standalone/golden-gate-bridge/r_0d1532b4a00b4663909f8edf2bd290aa/captures/tower-top-neutral.png",
+      "sourceRevisionId": "r_0d1532b4a00b4663909f8edf2bd290aa",
+      "exactRevision": true,
+      "rig": "review-neutral-v1"
     },
     {
-      "src": "/standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/elevation-neutral.webp",
-      "width": 1032,
-      "height": 1032,
-      "alt": "Golden Gate Bridge GPU capture: elevation.",
-      "srcsetWebp": "/standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/elevation-neutral-320.webp 320w, /standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/elevation-neutral-480.webp 480w, /standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/elevation-neutral-672.webp 672w, /standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/elevation-neutral-768.webp 768w, /standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/elevation-neutral-1024.webp 1024w",
-      "srcsetAvif": "/standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/elevation-neutral-320.avif 320w, /standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/elevation-neutral-480.avif 480w, /standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/elevation-neutral-672.avif 672w, /standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/elevation-neutral-768.avif 768w, /standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/elevation-neutral-1024.avif 1024w",
-      "inputPath": "standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/elevation-neutral.png"
+      "src": "/standalone/golden-gate-bridge/r_0d1532b4a00b4663909f8edf2bd290aa/captures/elevation-neutral.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "Golden Gate Bridge in side elevation, the full span between both anchorages.",
+      "srcsetWebp": "/standalone/golden-gate-bridge/r_0d1532b4a00b4663909f8edf2bd290aa/captures/elevation-neutral-320.webp 320w, /standalone/golden-gate-bridge/r_0d1532b4a00b4663909f8edf2bd290aa/captures/elevation-neutral-480.webp 480w, /standalone/golden-gate-bridge/r_0d1532b4a00b4663909f8edf2bd290aa/captures/elevation-neutral-672.webp 672w, /standalone/golden-gate-bridge/r_0d1532b4a00b4663909f8edf2bd290aa/captures/elevation-neutral-768.webp 768w, /standalone/golden-gate-bridge/r_0d1532b4a00b4663909f8edf2bd290aa/captures/elevation-neutral-1024.webp 1024w",
+      "srcsetAvif": "/standalone/golden-gate-bridge/r_0d1532b4a00b4663909f8edf2bd290aa/captures/elevation-neutral-320.avif 320w, /standalone/golden-gate-bridge/r_0d1532b4a00b4663909f8edf2bd290aa/captures/elevation-neutral-480.avif 480w, /standalone/golden-gate-bridge/r_0d1532b4a00b4663909f8edf2bd290aa/captures/elevation-neutral-672.avif 672w, /standalone/golden-gate-bridge/r_0d1532b4a00b4663909f8edf2bd290aa/captures/elevation-neutral-768.avif 768w, /standalone/golden-gate-bridge/r_0d1532b4a00b4663909f8edf2bd290aa/captures/elevation-neutral-1024.avif 1024w",
+      "inputPath": "standalone/golden-gate-bridge/r_0d1532b4a00b4663909f8edf2bd290aa/captures/elevation-neutral.png",
+      "sourceRevisionId": "r_0d1532b4a00b4663909f8edf2bd290aa",
+      "exactRevision": true,
+      "rig": "review-neutral-v1"
     }
   ],
   "sourcePath": "/sources/golden-gate-bridge.kiln.js",
-  "sourceSha256": "5bfd30103aaf6aa620da252562e5e9de135eba69b5c36823f0e12a7e99c87f81",
+  "sourceSha256": "f4583690d781493f96f331a1392f52d0869bce1a58b26a3fcc81df17a0efc2e3",
   "modelPath": "/models/standalone/golden-gate-bridge.glb",
   "runtimeDownload": {
-    "path": "standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/golden-gate-runtime.glb",
-    "bytes": 13484976,
-    "sha256": "1e987a994d5a0a8183782aa19d4e225b9715fb0bd503402a5b3a14df8190a7f9",
-    "url": "https://assets.kilnstudio.tools/standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/golden-gate-runtime.glb"
+    "path": "standalone/golden-gate-bridge/r_0d1532b4a00b4663909f8edf2bd290aa/golden-gate-runtime.glb",
+    "bytes": 12244400,
+    "sha256": "9dbff3c7bda8bfddd39b12899f2857ca8afb02f74f6edc087e5ef8156195c1b1",
+    "url": "https://assets.kilnstudio.tools/standalone/golden-gate-bridge/r_0d1532b4a00b4663909f8edf2bd290aa/golden-gate-runtime.glb"
   },
   "editableDownload": {
-    "path": "standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/golden-gate-editable.zip",
-    "bytes": 13586620,
-    "sha256": "8456ce298158edb5233dc40573aaa970bf5432271762fe66d281effd6652077c",
-    "url": "https://assets.kilnstudio.tools/standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/golden-gate-editable.zip"
+    "path": "standalone/golden-gate-bridge/r_0d1532b4a00b4663909f8edf2bd290aa/golden-gate-editable.zip",
+    "bytes": 12339064,
+    "sha256": "c61d62c73146e70165ea67c74d9e5a362980645130144e4bf67898c9fab6dbd8",
+    "url": "https://assets.kilnstudio.tools/standalone/golden-gate-bridge/r_0d1532b4a00b4663909f8edf2bd290aa/golden-gate-editable.zip"
+  },
+  "delivery": "review-3",
+  "tiers": [
+    {
+      "tier": "full",
+      "revisionId": "r_0d1532b4a00b4663909f8edf2bd290aa",
+      "parentRevision": "r_03e7981b4ff84159aa4533c587f033c7",
+      "licensed": {
+        "revisionId": "r_cba97c6c2fc448ee9ca24741d772fa39",
+        "parentRevision": "r_8b79b09984b14e15b9426f6db2df0140"
+      },
+      "metrics": {
+        "triangles": 309576,
+        "meshes": 175,
+        "materials": 10,
+        "bounds": [
+          91.44000244140625,
+          262.7646415245378,
+          2067.96
+        ],
+        "boundsMin": [
+          -45.720001220703125,
+          -32.00000152587891,
+          -1033.98
+        ],
+        "boundsMax": [
+          45.720001220703125,
+          230.76463999865888,
+          1033.98
+        ]
+      },
+      "runtime": {
+        "path": "standalone/golden-gate-bridge/r_0d1532b4a00b4663909f8edf2bd290aa/golden-gate-runtime.glb",
+        "bytes": 12244400,
+        "sha256": "9dbff3c7bda8bfddd39b12899f2857ca8afb02f74f6edc087e5ef8156195c1b1",
+        "url": "https://assets.kilnstudio.tools/standalone/golden-gate-bridge/r_0d1532b4a00b4663909f8edf2bd290aa/golden-gate-runtime.glb"
+      },
+      "metadata": {
+        "path": "standalone/golden-gate-bridge/r_0d1532b4a00b4663909f8edf2bd290aa/golden-gate-runtime.kiln-metadata.json",
+        "bytes": 333,
+        "sha256": "08fe5a258562b09e06360b48647ac58510cd74b43d2bda5c0bd1a6861c74323b",
+        "url": "https://assets.kilnstudio.tools/standalone/golden-gate-bridge/r_0d1532b4a00b4663909f8edf2bd290aa/golden-gate-runtime.kiln-metadata.json"
+      },
+      "editable": {
+        "path": "standalone/golden-gate-bridge/r_0d1532b4a00b4663909f8edf2bd290aa/golden-gate-editable.zip",
+        "bytes": 12339064,
+        "sha256": "c61d62c73146e70165ea67c74d9e5a362980645130144e4bf67898c9fab6dbd8",
+        "url": "https://assets.kilnstudio.tools/standalone/golden-gate-bridge/r_0d1532b4a00b4663909f8edf2bd290aa/golden-gate-editable.zip",
+        "sourceBytes": 40445,
+        "sourceSha256": "f4583690d781493f96f331a1392f52d0869bce1a58b26a3fcc81df17a0efc2e3"
+      }
+    },
+    {
+      "tier": "web",
+      "revisionId": "r_e5da8e08bd424a8796a033fbb9793104",
+      "parentRevision": "r_8285ccc5ffab4519b049936f792c15ee",
+      "licensed": {
+        "revisionId": "r_28ac511af71d4db69a2d7cff8b243a24",
+        "parentRevision": "r_ba838a2a86e04f2493b5d55b493a766a"
+      },
+      "metrics": {
+        "triangles": 83092,
+        "meshes": 148,
+        "materials": 10,
+        "bounds": [
+          91.44000244140625,
+          262.7646415245378,
+          2067.96
+        ],
+        "boundsMin": [
+          -45.720001220703125,
+          -32.00000152587891,
+          -1033.98
+        ],
+        "boundsMax": [
+          45.720001220703125,
+          230.76463999865888,
+          1033.98
+        ]
+      },
+      "runtime": {
+        "path": "standalone/golden-gate-bridge/r_0d1532b4a00b4663909f8edf2bd290aa/golden-gate-web-runtime.glb",
+        "bytes": 3336720,
+        "sha256": "407f727a19898ba09e2143a729e4d353bcf92d90f2eae99f0407327ac37f151f",
+        "url": "https://assets.kilnstudio.tools/standalone/golden-gate-bridge/r_0d1532b4a00b4663909f8edf2bd290aa/golden-gate-web-runtime.glb"
+      },
+      "metadata": {
+        "path": "standalone/golden-gate-bridge/r_0d1532b4a00b4663909f8edf2bd290aa/golden-gate-web-runtime.kiln-metadata.json",
+        "bytes": 333,
+        "sha256": "5af60b0b8af8ae1ee508d3ff34b2d362811c54b3728032adb0fd066970f44cf8",
+        "url": "https://assets.kilnstudio.tools/standalone/golden-gate-bridge/r_0d1532b4a00b4663909f8edf2bd290aa/golden-gate-web-runtime.kiln-metadata.json"
+      },
+      "editable": {
+        "path": "standalone/golden-gate-bridge/r_0d1532b4a00b4663909f8edf2bd290aa/golden-gate-web-editable.zip",
+        "bytes": 3447584,
+        "sha256": "a77fa5fea15cfeb203879642646e467790729054e0d984fc49f41e6c7ffea350",
+        "url": "https://assets.kilnstudio.tools/standalone/golden-gate-bridge/r_0d1532b4a00b4663909f8edf2bd290aa/golden-gate-web-editable.zip",
+        "sourceBytes": 40444,
+        "sourceSha256": "1b5e64d6ed322311c51c83c9394d1dd8446bcba0606805b817740be356871ac0"
+      }
+    },
+    {
+      "tier": "far",
+      "revisionId": "r_fcddc546fa134910b2221561353d97e2",
+      "parentRevision": "r_d3f2f39ee4964708a0301d7e7082d12b",
+      "licensed": {
+        "revisionId": "r_7fd11f06f23b4bfc93b9b47ab1b6ca04",
+        "parentRevision": "r_0da2d1ae635c4f84a10e58e0e03936e7"
+      },
+      "metrics": {
+        "triangles": 11480,
+        "meshes": 99,
+        "materials": 9,
+        "bounds": [
+          91.44000244140625,
+          262.7646415245378,
+          2067.96
+        ],
+        "boundsMin": [
+          -45.720001220703125,
+          -32.00000152587891,
+          -1033.98
+        ],
+        "boundsMax": [
+          45.720001220703125,
+          230.76463999865888,
+          1033.98
+        ]
+      },
+      "runtime": {
+        "path": "standalone/golden-gate-bridge/r_0d1532b4a00b4663909f8edf2bd290aa/golden-gate-far-runtime.glb",
+        "bytes": 490460,
+        "sha256": "5881f49df60bf3c05e8043de73b3b0ba68335896983097950ab2af6ff28c98a4",
+        "url": "https://assets.kilnstudio.tools/standalone/golden-gate-bridge/r_0d1532b4a00b4663909f8edf2bd290aa/golden-gate-far-runtime.glb"
+      },
+      "metadata": {
+        "path": "standalone/golden-gate-bridge/r_0d1532b4a00b4663909f8edf2bd290aa/golden-gate-far-runtime.kiln-metadata.json",
+        "bytes": 333,
+        "sha256": "a1b76bbc5bc079eeaf3213cb54d6c9ec288f2e5b3a62b6b934217ebb11250d58",
+        "url": "https://assets.kilnstudio.tools/standalone/golden-gate-bridge/r_0d1532b4a00b4663909f8edf2bd290aa/golden-gate-far-runtime.kiln-metadata.json"
+      },
+      "editable": {
+        "path": "standalone/golden-gate-bridge/r_0d1532b4a00b4663909f8edf2bd290aa/golden-gate-far-editable.zip",
+        "bytes": 598873,
+        "sha256": "96f17e8247f6049ee2f11ece04986c9a6452736a312a1c2c9d05e750a94266bd",
+        "url": "https://assets.kilnstudio.tools/standalone/golden-gate-bridge/r_0d1532b4a00b4663909f8edf2bd290aa/golden-gate-far-editable.zip",
+        "sourceBytes": 40203,
+        "sourceSha256": "eee949861eebaa34af95b2398dc7b440915f81f676da72abc53dbf75b4482091"
+      }
+    }
+  ],
+  "licence": {
+    "file": "ASSET-LICENSE.txt",
+    "path": "standalone/golden-gate-bridge/r_0d1532b4a00b4663909f8edf2bd290aa/ASSET-LICENSE.txt",
+    "bytes": 2458,
+    "sha256": "90fdb5eb334ce031ee8eb81d34dfbd701110b869707e63f7844e83fe10d10206",
+    "url": "https://assets.kilnstudio.tools/standalone/golden-gate-bridge/r_0d1532b4a00b4663909f8edf2bd290aa/ASSET-LICENSE.txt",
+    "section": "Fix-up 1",
+    "licensedRevisions": [
+      {
+        "tier": "full",
+        "revisionId": "r_cba97c6c2fc448ee9ca24741d772fa39",
+        "parentRevision": "r_8b79b09984b14e15b9426f6db2df0140"
+      },
+      {
+        "tier": "web",
+        "revisionId": "r_28ac511af71d4db69a2d7cff8b243a24",
+        "parentRevision": "r_ba838a2a86e04f2493b5d55b493a766a"
+      },
+      {
+        "tier": "far",
+        "revisionId": "r_7fd11f06f23b4bfc93b9b47ab1b6ca04",
+        "parentRevision": "r_0da2d1ae635c4f84a10e58e0e03936e7"
+      }
+    ]
   },
   "provenance": {
     "originalModel": "GPT-6 Astra",
-    "refinementModels": [],
+    "refinementModels": [
+      "Claude Sonnet 5.5"
+    ],
     "history": [
       {
         "stage": "True-scale blockout",
         "revisionId": "r_003e29ccca7d4149952dbeb38d260e57",
+        "parentRevisionId": null,
+        "request": "first",
         "model": "GPT-6 Astra",
         "modelId": "gpt-6-astra",
         "requestedEffort": "ultra",
@@ -287,6 +489,8 @@
       {
         "stage": "Structure",
         "revisionId": "r_864fdb9b078c447fb61e6db945342eb1",
+        "parentRevisionId": "r_003e29ccca7d4149952dbeb38d260e57",
+        "request": "first",
         "model": "GPT-6 Astra",
         "modelId": "gpt-6-astra",
         "requestedEffort": "ultra",
@@ -297,6 +501,8 @@
       {
         "stage": "Deck and end structures",
         "revisionId": "r_e6fc425ac972452a927d2e9e768dc3c5",
+        "parentRevisionId": "r_864fdb9b078c447fb61e6db945342eb1",
+        "request": "first",
         "model": "GPT-6 Astra",
         "modelId": "gpt-6-astra",
         "requestedEffort": "ultra",
@@ -307,6 +513,8 @@
       {
         "stage": "Materials",
         "revisionId": "r_891f756291cf4b4c9865bc30c5627908",
+        "parentRevisionId": "r_e6fc425ac972452a927d2e9e768dc3c5",
+        "request": "first",
         "model": "GPT-6 Astra",
         "modelId": "gpt-6-astra",
         "requestedEffort": "ultra",
@@ -317,6 +525,8 @@
       {
         "stage": "Geometry repairs and optimization",
         "revisionId": "r_62e15876bd6d4e6b8fb72be910eafb42",
+        "parentRevisionId": "r_891f756291cf4b4c9865bc30c5627908",
+        "request": "first",
         "model": "GPT-6 Astra",
         "modelId": "gpt-6-astra",
         "requestedEffort": "ultra",
@@ -327,23 +537,287 @@
       {
         "stage": "Final paint/concrete correction",
         "revisionId": "r_9f4b0e76ea634be083de8a5e38c4e838",
+        "parentRevisionId": "r_62e15876bd6d4e6b8fb72be910eafb42",
+        "request": "first",
         "model": "GPT-6 Astra",
         "modelId": "gpt-6-astra",
         "requestedEffort": "ultra",
         "confirmedEffort": null,
         "harness": "codex",
         "harnessVersion": "0.157.1"
+      },
+      {
+        "stage": "Rough paint and steel bypass",
+        "revisionId": "r_99009f9869b34133b24aae698ae52096",
+        "parentRevisionId": "r_9f4b0e76ea634be083de8a5e38c4e838",
+        "request": "review-1",
+        "model": "GPT-6 Astra",
+        "modelId": "gpt-6-astra",
+        "requestedEffort": "ultra",
+        "confirmedEffort": null,
+        "harness": "codex",
+        "harnessVersion": "0.157.1"
+      },
+      {
+        "stage": "Plate courses, rail repair and optimization",
+        "revisionId": "r_ee0f97666f264c88b21d28d1ddf9ccfe",
+        "parentRevisionId": "r_99009f9869b34133b24aae698ae52096",
+        "request": "review-1",
+        "model": "GPT-6 Astra",
+        "modelId": "gpt-6-astra",
+        "requestedEffort": "ultra",
+        "confirmedEffort": null,
+        "harness": "codex",
+        "harnessVersion": "0.157.1"
+      },
+      {
+        "stage": "Rounded crowns",
+        "revisionId": "r_64633d24733040e59977e69e880b721e",
+        "parentRevisionId": "r_ee0f97666f264c88b21d28d1ddf9ccfe",
+        "request": "review-1",
+        "model": "GPT-6 Astra",
+        "modelId": "gpt-6-astra",
+        "requestedEffort": "ultra",
+        "confirmedEffort": null,
+        "harness": "codex",
+        "harnessVersion": "0.157.1"
+      },
+      {
+        "stage": "Floor framing and graded median",
+        "revisionId": "r_4e2faa2ac4b24b7b91a92e735c9ac1bb",
+        "parentRevisionId": "r_64633d24733040e59977e69e880b721e",
+        "request": "review-1",
+        "model": "GPT-6 Astra",
+        "modelId": "gpt-6-astra",
+        "requestedEffort": "ultra",
+        "confirmedEffort": null,
+        "harness": "codex",
+        "harnessVersion": "0.157.1"
+      },
+      {
+        "stage": "Crown contact QA",
+        "revisionId": "r_947dd72d3b74420e8b48bc9987049d60",
+        "parentRevisionId": "r_4e2faa2ac4b24b7b91a92e735c9ac1bb",
+        "request": "review-1",
+        "model": "GPT-6 Astra",
+        "modelId": "gpt-6-astra",
+        "requestedEffort": "ultra",
+        "confirmedEffort": null,
+        "harness": "codex",
+        "harnessVersion": "0.157.1"
+      },
+      {
+        "stage": "Final bypass-root repair",
+        "revisionId": "r_18e4fb0aff0345669fc86efe33c85f7c",
+        "parentRevisionId": "r_947dd72d3b74420e8b48bc9987049d60",
+        "request": "review-1",
+        "model": "GPT-6 Astra",
+        "modelId": "gpt-6-astra",
+        "requestedEffort": "ultra",
+        "confirmedEffort": null,
+        "harness": "codex",
+        "harnessVersion": "0.157.1"
+      },
+      {
+        "stage": "Calibrated paint",
+        "revisionId": "r_6ef01791e9cf45fa9b1f4dd7b5d0aed6",
+        "parentRevisionId": "r_18e4fb0aff0345669fc86efe33c85f7c",
+        "request": "review-2",
+        "model": "GPT-6 Astra",
+        "modelId": "gpt-6-astra",
+        "requestedEffort": "ultra",
+        "confirmedEffort": null,
+        "harness": "codex",
+        "harnessVersion": "0.157.1"
+      },
+      {
+        "stage": "Full final",
+        "revisionId": "r_8b79b09984b14e15b9426f6db2df0140",
+        "parentRevisionId": "r_6ef01791e9cf45fa9b1f4dd7b5d0aed6",
+        "request": "review-2",
+        "model": "GPT-6 Astra",
+        "modelId": "gpt-6-astra",
+        "requestedEffort": "ultra",
+        "confirmedEffort": null,
+        "harness": "codex",
+        "harnessVersion": "0.157.1"
+      },
+      {
+        "stage": "Fix-up 1: piers to the seabed, lighter concrete and asphalt, thicker ropes",
+        "revisionId": "r_cba97c6c2fc448ee9ca24741d772fa39",
+        "parentRevisionId": "r_8b79b09984b14e15b9426f6db2df0140",
+        "request": "fix-up-1",
+        "model": "Claude Sonnet 5.5",
+        "modelId": "claude-sonnet-5-5",
+        "requestedEffort": "max",
+        "confirmedEffort": null,
+        "harness": "claude",
+        "harnessVersion": "2.1.280"
+      },
+      {
+        "stage": "Review 1: fender ring and truss members",
+        "revisionId": "r_e5cf0cd4a99d49088e7fb0c848587b03",
+        "parentRevisionId": "r_cba97c6c2fc448ee9ca24741d772fa39",
+        "request": "fix-review-1",
+        "model": "Claude Sonnet 5.5",
+        "modelId": "claude-sonnet-5-5",
+        "requestedEffort": "max",
+        "confirmedEffort": null,
+        "harness": "claude",
+        "harnessVersion": "2.1.280"
+      },
+      {
+        "stage": "Review 2: roadway profile",
+        "revisionId": "r_03e7981b4ff84159aa4533c587f033c7",
+        "parentRevisionId": "r_e5cf0cd4a99d49088e7fb0c848587b03",
+        "request": "fix-review-2",
+        "model": "Claude Sonnet 5.5",
+        "modelId": "claude-sonnet-5-5",
+        "requestedEffort": "max",
+        "confirmedEffort": null,
+        "harness": "claude",
+        "harnessVersion": "2.1.280"
+      },
+      {
+        "stage": "Review 3: expansion joints",
+        "revisionId": "r_0d1532b4a00b4663909f8edf2bd290aa",
+        "parentRevisionId": "r_03e7981b4ff84159aa4533c587f033c7",
+        "request": "fix-review-3",
+        "model": "Claude Sonnet 5.5",
+        "modelId": "claude-sonnet-5-5",
+        "requestedEffort": "max",
+        "confirmedEffort": null,
+        "harness": "claude",
+        "harnessVersion": "2.1.280"
       }
     ],
+    "tierHistory": {
+      "web": [
+        {
+          "stage": "Web final",
+          "revisionId": "r_ba838a2a86e04f2493b5d55b493a766a",
+          "parentRevisionId": "r_8b79b09984b14e15b9426f6db2df0140",
+          "request": "review-2",
+          "model": "GPT-6 Astra",
+          "modelId": "gpt-6-astra",
+          "requestedEffort": "ultra",
+          "confirmedEffort": null,
+          "harness": "codex",
+          "harnessVersion": "0.157.1"
+        },
+        {
+          "stage": "Fix-up 1: piers to the seabed, lighter concrete and asphalt, thicker ropes",
+          "revisionId": "r_28ac511af71d4db69a2d7cff8b243a24",
+          "parentRevisionId": "r_ba838a2a86e04f2493b5d55b493a766a",
+          "request": "fix-up-1",
+          "model": "Claude Sonnet 5.5",
+          "modelId": "claude-sonnet-5-5",
+          "requestedEffort": "max",
+          "confirmedEffort": null,
+          "harness": "claude",
+          "harnessVersion": "2.1.280"
+        },
+        {
+          "stage": "Review 1: fender ring and truss members",
+          "revisionId": "r_560ce144cfad491db7729a3750da884e",
+          "parentRevisionId": "r_28ac511af71d4db69a2d7cff8b243a24",
+          "request": "fix-review-1",
+          "model": "Claude Sonnet 5.5",
+          "modelId": "claude-sonnet-5-5",
+          "requestedEffort": "max",
+          "confirmedEffort": null,
+          "harness": "claude",
+          "harnessVersion": "2.1.280"
+        },
+        {
+          "stage": "Review 2: roadway profile",
+          "revisionId": "r_8285ccc5ffab4519b049936f792c15ee",
+          "parentRevisionId": "r_560ce144cfad491db7729a3750da884e",
+          "request": "fix-review-2",
+          "model": "Claude Sonnet 5.5",
+          "modelId": "claude-sonnet-5-5",
+          "requestedEffort": "max",
+          "confirmedEffort": null,
+          "harness": "claude",
+          "harnessVersion": "2.1.280"
+        },
+        {
+          "stage": "Review 3: expansion joints",
+          "revisionId": "r_e5da8e08bd424a8796a033fbb9793104",
+          "parentRevisionId": "r_8285ccc5ffab4519b049936f792c15ee",
+          "request": "fix-review-3",
+          "model": "Claude Sonnet 5.5",
+          "modelId": "claude-sonnet-5-5",
+          "requestedEffort": "max",
+          "confirmedEffort": null,
+          "harness": "claude",
+          "harnessVersion": "2.1.280"
+        }
+      ],
+      "far": [
+        {
+          "stage": "Far final",
+          "revisionId": "r_0da2d1ae635c4f84a10e58e0e03936e7",
+          "parentRevisionId": "r_8b79b09984b14e15b9426f6db2df0140",
+          "request": "review-2",
+          "model": "GPT-6 Astra",
+          "modelId": "gpt-6-astra",
+          "requestedEffort": "ultra",
+          "confirmedEffort": null,
+          "harness": "codex",
+          "harnessVersion": "0.157.1"
+        },
+        {
+          "stage": "Fix-up 1: piers to the seabed, lighter concrete and asphalt, thicker ropes",
+          "revisionId": "r_7fd11f06f23b4bfc93b9b47ab1b6ca04",
+          "parentRevisionId": "r_0da2d1ae635c4f84a10e58e0e03936e7",
+          "request": "fix-up-1",
+          "model": "Claude Sonnet 5.5",
+          "modelId": "claude-sonnet-5-5",
+          "requestedEffort": "max",
+          "confirmedEffort": null,
+          "harness": "claude",
+          "harnessVersion": "2.1.280"
+        },
+        {
+          "stage": "Review 1: fender ring and truss members",
+          "revisionId": "r_d3f2f39ee4964708a0301d7e7082d12b",
+          "parentRevisionId": "r_7fd11f06f23b4bfc93b9b47ab1b6ca04",
+          "request": "fix-review-1",
+          "model": "Claude Sonnet 5.5",
+          "modelId": "claude-sonnet-5-5",
+          "requestedEffort": "max",
+          "confirmedEffort": null,
+          "harness": "claude",
+          "harnessVersion": "2.1.280"
+        },
+        {
+          "stage": "Review 2: roadway profile (the far tier has no expansion joints, so review 3 left it unchanged)",
+          "revisionId": "r_fcddc546fa134910b2221561353d97e2",
+          "parentRevisionId": "r_d3f2f39ee4964708a0301d7e7082d12b",
+          "request": "fix-review-2",
+          "model": "Claude Sonnet 5.5",
+          "modelId": "claude-sonnet-5-5",
+          "requestedEffort": "max",
+          "confirmedEffort": null,
+          "harness": "claude",
+          "harnessVersion": "2.1.280"
+        }
+      ]
+    },
     "requests": [
       {
         "stage": "first",
+        "author": "astra-golden-gate",
         "requestedModel": "gpt-6-astra",
         "requestedEffort": "ultra",
         "harness": "codex",
         "harnessVersion": "0.157.1",
         "confirmedEffort": null,
         "confirmation": "Requested in receipt and invocation; effective reasoning effort not independently confirmed.",
+        "modelReported": null,
+        "startedAt": "2026-09-29T03:50:28.801Z",
+        "endedAt": "2026-09-29T04:38:49.507Z",
         "source": {
           "receipt": "showcase/runs/astra-golden-gate/first/receipt.json",
           "receiptSha256": "793c4e1a402d5062241224e2da54350d071fe076a053793fec6bb19efdea8c8a",
@@ -353,17 +827,124 @@
       },
       {
         "stage": "review-1",
+        "author": "astra-golden-gate",
         "requestedModel": "gpt-6-astra",
         "requestedEffort": "ultra",
         "harness": "codex",
         "harnessVersion": "0.157.1",
         "confirmedEffort": null,
         "confirmation": "Requested in receipt and invocation; effective reasoning effort not independently confirmed.",
+        "modelReported": null,
+        "startedAt": "2026-09-29T04:45:04.790Z",
+        "endedAt": "2026-09-29T05:21:53.869Z",
         "source": {
           "receipt": "showcase/runs/astra-golden-gate/review-1/receipt.json",
           "receiptSha256": "ae8c01c6d98ea0b87eda8bfe414c1c18b5fa9d1c65fcdaa4eefd4218fa34edb7",
           "invocation": "showcase/runs/astra-golden-gate/review-1/invocation.json",
           "invocationSha256": "058cde99ffdbf569f6b275e4341fd39a7cd077174b337cd7441bc93b7f58f74f"
+        }
+      },
+      {
+        "stage": "review-2",
+        "author": "astra-golden-gate",
+        "requestedModel": "gpt-6-astra",
+        "requestedEffort": "ultra",
+        "harness": "codex",
+        "harnessVersion": "0.157.1",
+        "confirmedEffort": null,
+        "confirmation": "Requested in receipt and invocation; effective reasoning effort not independently confirmed.",
+        "modelReported": null,
+        "startedAt": "2026-09-29T07:28:00.371Z",
+        "endedAt": "2026-09-29T08:04:05.466Z",
+        "source": {
+          "receipt": "showcase/runs/astra-golden-gate/review-2/receipt.json",
+          "receiptSha256": "f1652f066017156011c4dbe4b750062d8dc09ed22ab0ad0767653506f3d0f7c0",
+          "invocation": "showcase/runs/astra-golden-gate/review-2/invocation.json",
+          "invocationSha256": "7f51d2a121a20a2147db4b3eb13cd008e027ae838c993785f4e8dd8e3af0563b"
+        }
+      },
+      {
+        "stage": "fix-up-1",
+        "author": "sonnet-gg-bridge-fix",
+        "requestedModel": "claude-sonnet-5-5",
+        "requestedEffort": "max",
+        "harness": "claude",
+        "harnessVersion": "2.1.280",
+        "confirmedEffort": null,
+        "confirmation": "Requested in receipt and invocation; effective reasoning effort not independently confirmed.",
+        "modelReported": [
+          "claude-sonnet-5-5"
+        ],
+        "startedAt": "2026-09-29T20:31:59.792Z",
+        "endedAt": "2026-09-29T21:33:37.433Z",
+        "source": {
+          "receipt": "showcase/runs/sonnet-gg-bridge-fix/first/receipt.json",
+          "receiptSha256": "2991db6468162d7ed6fbe6c6ef897bb4f2a478e2cc49502bc7ae6074a6ea56e1",
+          "invocation": "showcase/runs/sonnet-gg-bridge-fix/first/invocation.json",
+          "invocationSha256": "fa7d5e4ef985c214837acbd2f641f900580b1f4403deac0f650efae760e423f2"
+        }
+      },
+      {
+        "stage": "fix-review-1",
+        "author": "sonnet-gg-bridge-fix",
+        "requestedModel": "claude-sonnet-5-5",
+        "requestedEffort": "max",
+        "harness": "claude",
+        "harnessVersion": "2.1.280",
+        "confirmedEffort": null,
+        "confirmation": "Requested in receipt and invocation; effective reasoning effort not independently confirmed.",
+        "modelReported": [
+          "claude-sonnet-5-5"
+        ],
+        "startedAt": "2026-09-30T00:41:33.038Z",
+        "endedAt": "2026-09-30T01:26:32.738Z",
+        "source": {
+          "receipt": "showcase/runs/sonnet-gg-bridge-fix/review-1/receipt.json",
+          "receiptSha256": "35f031bd23e2a941d6658c4560ea6e41450c73d4d9f5b32fefcfcb5f361ff853",
+          "invocation": "showcase/runs/sonnet-gg-bridge-fix/review-1/invocation.json",
+          "invocationSha256": "c61c523b605c0162c4c71bb079d15efe32597ea685636f67ac841585bfffa0a6"
+        }
+      },
+      {
+        "stage": "fix-review-2",
+        "author": "sonnet-gg-bridge-fix",
+        "requestedModel": "claude-sonnet-5-5",
+        "requestedEffort": "max",
+        "harness": "claude",
+        "harnessVersion": "2.1.280",
+        "confirmedEffort": null,
+        "confirmation": "Requested in receipt and invocation; effective reasoning effort not independently confirmed.",
+        "modelReported": [
+          "claude-sonnet-5-5"
+        ],
+        "startedAt": "2026-09-30T01:33:36.647Z",
+        "endedAt": "2026-09-30T02:25:39.161Z",
+        "source": {
+          "receipt": "showcase/runs/sonnet-gg-bridge-fix/review-2/receipt.json",
+          "receiptSha256": "7aee2e96aee6188018ac4ce730b59443fdc4dcad14959d1c71a9b14fe637c912",
+          "invocation": "showcase/runs/sonnet-gg-bridge-fix/review-2/invocation.json",
+          "invocationSha256": "578a75d8d257e62f4a0aa1a4ce29dddc431322ee85fb13eb5f59ff2b410b080e"
+        }
+      },
+      {
+        "stage": "fix-review-3",
+        "author": "sonnet-gg-bridge-fix",
+        "requestedModel": "claude-sonnet-5-5",
+        "requestedEffort": "max",
+        "harness": "claude",
+        "harnessVersion": "2.1.280",
+        "confirmedEffort": null,
+        "confirmation": "Requested in receipt and invocation; effective reasoning effort not independently confirmed.",
+        "modelReported": [
+          "claude-sonnet-5-5"
+        ],
+        "startedAt": "2026-09-30T02:49:27.521Z",
+        "endedAt": "2026-09-30T03:07:22.699Z",
+        "source": {
+          "receipt": "showcase/runs/sonnet-gg-bridge-fix/review-3/receipt.json",
+          "receiptSha256": "f1dfb487f30f8eb11026da8f88c03cfd060d8f21b0b62f1ea4c315e772cfd04c",
+          "invocation": "showcase/runs/sonnet-gg-bridge-fix/review-3/invocation.json",
+          "invocationSha256": "b6fe48c27dc49e871ce27ad2f89a6cf02d442affba1e829acb75783ebe6eb038"
         }
       }
     ]
@@ -372,6 +953,8 @@
     {
       "stage": "True-scale blockout",
       "revisionId": "r_003e29ccca7d4149952dbeb38d260e57",
+      "parentRevisionId": null,
+      "request": "first",
       "model": "GPT-6 Astra",
       "modelId": "gpt-6-astra",
       "requestedEffort": "ultra",
@@ -382,6 +965,8 @@
     {
       "stage": "Structure",
       "revisionId": "r_864fdb9b078c447fb61e6db945342eb1",
+      "parentRevisionId": "r_003e29ccca7d4149952dbeb38d260e57",
+      "request": "first",
       "model": "GPT-6 Astra",
       "modelId": "gpt-6-astra",
       "requestedEffort": "ultra",
@@ -392,6 +977,8 @@
     {
       "stage": "Deck and end structures",
       "revisionId": "r_e6fc425ac972452a927d2e9e768dc3c5",
+      "parentRevisionId": "r_864fdb9b078c447fb61e6db945342eb1",
+      "request": "first",
       "model": "GPT-6 Astra",
       "modelId": "gpt-6-astra",
       "requestedEffort": "ultra",
@@ -402,6 +989,8 @@
     {
       "stage": "Materials",
       "revisionId": "r_891f756291cf4b4c9865bc30c5627908",
+      "parentRevisionId": "r_e6fc425ac972452a927d2e9e768dc3c5",
+      "request": "first",
       "model": "GPT-6 Astra",
       "modelId": "gpt-6-astra",
       "requestedEffort": "ultra",
@@ -412,6 +1001,8 @@
     {
       "stage": "Geometry repairs and optimization",
       "revisionId": "r_62e15876bd6d4e6b8fb72be910eafb42",
+      "parentRevisionId": "r_891f756291cf4b4c9865bc30c5627908",
+      "request": "first",
       "model": "GPT-6 Astra",
       "modelId": "gpt-6-astra",
       "requestedEffort": "ultra",
@@ -422,18 +1013,164 @@
     {
       "stage": "Final paint/concrete correction",
       "revisionId": "r_9f4b0e76ea634be083de8a5e38c4e838",
+      "parentRevisionId": "r_62e15876bd6d4e6b8fb72be910eafb42",
+      "request": "first",
       "model": "GPT-6 Astra",
       "modelId": "gpt-6-astra",
       "requestedEffort": "ultra",
       "confirmedEffort": null,
       "harness": "codex",
       "harnessVersion": "0.157.1"
+    },
+    {
+      "stage": "Rough paint and steel bypass",
+      "revisionId": "r_99009f9869b34133b24aae698ae52096",
+      "parentRevisionId": "r_9f4b0e76ea634be083de8a5e38c4e838",
+      "request": "review-1",
+      "model": "GPT-6 Astra",
+      "modelId": "gpt-6-astra",
+      "requestedEffort": "ultra",
+      "confirmedEffort": null,
+      "harness": "codex",
+      "harnessVersion": "0.157.1"
+    },
+    {
+      "stage": "Plate courses, rail repair and optimization",
+      "revisionId": "r_ee0f97666f264c88b21d28d1ddf9ccfe",
+      "parentRevisionId": "r_99009f9869b34133b24aae698ae52096",
+      "request": "review-1",
+      "model": "GPT-6 Astra",
+      "modelId": "gpt-6-astra",
+      "requestedEffort": "ultra",
+      "confirmedEffort": null,
+      "harness": "codex",
+      "harnessVersion": "0.157.1"
+    },
+    {
+      "stage": "Rounded crowns",
+      "revisionId": "r_64633d24733040e59977e69e880b721e",
+      "parentRevisionId": "r_ee0f97666f264c88b21d28d1ddf9ccfe",
+      "request": "review-1",
+      "model": "GPT-6 Astra",
+      "modelId": "gpt-6-astra",
+      "requestedEffort": "ultra",
+      "confirmedEffort": null,
+      "harness": "codex",
+      "harnessVersion": "0.157.1"
+    },
+    {
+      "stage": "Floor framing and graded median",
+      "revisionId": "r_4e2faa2ac4b24b7b91a92e735c9ac1bb",
+      "parentRevisionId": "r_64633d24733040e59977e69e880b721e",
+      "request": "review-1",
+      "model": "GPT-6 Astra",
+      "modelId": "gpt-6-astra",
+      "requestedEffort": "ultra",
+      "confirmedEffort": null,
+      "harness": "codex",
+      "harnessVersion": "0.157.1"
+    },
+    {
+      "stage": "Crown contact QA",
+      "revisionId": "r_947dd72d3b74420e8b48bc9987049d60",
+      "parentRevisionId": "r_4e2faa2ac4b24b7b91a92e735c9ac1bb",
+      "request": "review-1",
+      "model": "GPT-6 Astra",
+      "modelId": "gpt-6-astra",
+      "requestedEffort": "ultra",
+      "confirmedEffort": null,
+      "harness": "codex",
+      "harnessVersion": "0.157.1"
+    },
+    {
+      "stage": "Final bypass-root repair",
+      "revisionId": "r_18e4fb0aff0345669fc86efe33c85f7c",
+      "parentRevisionId": "r_947dd72d3b74420e8b48bc9987049d60",
+      "request": "review-1",
+      "model": "GPT-6 Astra",
+      "modelId": "gpt-6-astra",
+      "requestedEffort": "ultra",
+      "confirmedEffort": null,
+      "harness": "codex",
+      "harnessVersion": "0.157.1"
+    },
+    {
+      "stage": "Calibrated paint",
+      "revisionId": "r_6ef01791e9cf45fa9b1f4dd7b5d0aed6",
+      "parentRevisionId": "r_18e4fb0aff0345669fc86efe33c85f7c",
+      "request": "review-2",
+      "model": "GPT-6 Astra",
+      "modelId": "gpt-6-astra",
+      "requestedEffort": "ultra",
+      "confirmedEffort": null,
+      "harness": "codex",
+      "harnessVersion": "0.157.1"
+    },
+    {
+      "stage": "Full final",
+      "revisionId": "r_8b79b09984b14e15b9426f6db2df0140",
+      "parentRevisionId": "r_6ef01791e9cf45fa9b1f4dd7b5d0aed6",
+      "request": "review-2",
+      "model": "GPT-6 Astra",
+      "modelId": "gpt-6-astra",
+      "requestedEffort": "ultra",
+      "confirmedEffort": null,
+      "harness": "codex",
+      "harnessVersion": "0.157.1"
+    },
+    {
+      "stage": "Fix-up 1: piers to the seabed, lighter concrete and asphalt, thicker ropes",
+      "revisionId": "r_cba97c6c2fc448ee9ca24741d772fa39",
+      "parentRevisionId": "r_8b79b09984b14e15b9426f6db2df0140",
+      "request": "fix-up-1",
+      "model": "Claude Sonnet 5.5",
+      "modelId": "claude-sonnet-5-5",
+      "requestedEffort": "max",
+      "confirmedEffort": null,
+      "harness": "claude",
+      "harnessVersion": "2.1.280"
+    },
+    {
+      "stage": "Review 1: fender ring and truss members",
+      "revisionId": "r_e5cf0cd4a99d49088e7fb0c848587b03",
+      "parentRevisionId": "r_cba97c6c2fc448ee9ca24741d772fa39",
+      "request": "fix-review-1",
+      "model": "Claude Sonnet 5.5",
+      "modelId": "claude-sonnet-5-5",
+      "requestedEffort": "max",
+      "confirmedEffort": null,
+      "harness": "claude",
+      "harnessVersion": "2.1.280"
+    },
+    {
+      "stage": "Review 2: roadway profile",
+      "revisionId": "r_03e7981b4ff84159aa4533c587f033c7",
+      "parentRevisionId": "r_e5cf0cd4a99d49088e7fb0c848587b03",
+      "request": "fix-review-2",
+      "model": "Claude Sonnet 5.5",
+      "modelId": "claude-sonnet-5-5",
+      "requestedEffort": "max",
+      "confirmedEffort": null,
+      "harness": "claude",
+      "harnessVersion": "2.1.280"
+    },
+    {
+      "stage": "Review 3: expansion joints",
+      "revisionId": "r_0d1532b4a00b4663909f8edf2bd290aa",
+      "parentRevisionId": "r_03e7981b4ff84159aa4533c587f033c7",
+      "request": "fix-review-3",
+      "model": "Claude Sonnet 5.5",
+      "modelId": "claude-sonnet-5-5",
+      "requestedEffort": "max",
+      "confirmedEffort": null,
+      "harness": "claude",
+      "harnessVersion": "2.1.280"
     }
   ],
   "review": {
-    "status": "review-in-progress",
+    "status": "awaiting-owner-review",
     "ownerAccepted": false,
-    "scope": "Export integrity passed for this revision. A further review round is in progress; this candidate will be replaced. Artistic acceptance and destination performance are not established."
+    "scope": "Review 3 is the delivered revision of each tier. The export sizes and hashes, the node changes since review 2 and the roadway profile were checked with tools other than the author’s, and these revisions were accepted as delivered on 29 September 2026. The owner has not signed off the bridge as a gallery asset, and performance in a destination project is not qualified."
   },
   "license": "CC0-1.0",
   "licenseScope": "Original procedural geometry and embedded maps are CC0. Reference photographs are excluded; software retains its own licenses.",
@@ -600,6 +1337,7 @@
     "Visual reconstruction, not an engineering survey.",
     "1937 suspension composition with requested modern median, lighting and later lateral bracing.",
     "Secondary details include declared estimates.",
-    "No terrain, water, traffic, people or approach viaducts."
+    "No terrain, water, traffic, people or approach viaducts. The piers, fender and anchorage bases reach below the waterline (the south tower footing to Y −32 m); no seabed or water surface is modelled.",
+    "The far tier is a distance version: it omits the under-deck framing and the expansion joints."
   ]
 }

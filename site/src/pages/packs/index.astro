@@ -1,15 +1,16 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import ResponsiveImage from "../../components/ResponsiveImage.astro";
-import { farm } from "../../lib/catalog";
+import { farm, vehicles } from "../../lib/catalog";
 import { PACKS_ENABLED } from "../../lib/config";
+import foundryFloor from "../../data/foundry-floor.json";
 ---
 
 <BaseLayout
   title="Kiln Commons — editable 3D asset packs"
-  description="Kiln Commons packs include runtime GLBs, editable source and provenance. Browse Shapes & Seasons Farm and the in-production Terafab pack."
+  description="Kiln Commons packs include runtime GLBs, editable source and provenance. Browse Shapes & Seasons Farm, Generic Road Vehicles and the in-production Foundry Floor pack."
   breadcrumbs={[{ label: "Packs", href: "/packs/" }]}
-  ogImage="/social/packs.webp"
+  ogImage="/social/packs.jpg"
 >
   <div class="container">
     <h1 class="max-w-reading py-8">Kiln Commons</h1>
@@ -42,14 +43,50 @@ import { PACKS_ENABLED } from "../../lib/config";
         </div>
       </article>
     )}
+    {PACKS_ENABLED && (
+      <article class="mt-12 grid items-center gap-8 border-b border-rule pb-8 lg:grid-cols-3">
+        <a
+          href="/packs/vehicles/"
+          class="grid grid-cols-3 gap-2 lg:col-span-2"
+          aria-label="Generic Road Vehicles pack"
+        >
+          {vehicles.assets.map((asset) => (
+            <div class="bg-stage">
+              <ResponsiveImage
+                image={{ ...asset.poster, alt: "" }}
+                sizes="(max-width: 1024px) 33vw, 22vw"
+                class="aspect-square w-full object-contain"
+              />
+            </div>
+          ))}
+        </a>
+        <div>
+          <h2>{vehicles.name}</h2>
+          <p class="mt-5">
+            Six vehicles: a hatchback, a sedan, an SUV, a pickup, a box truck
+            and a transit bus, each with three detail tiers.
+          </p>
+          <p class="mt-4 text-dim">
+            Runtime GLBs, editable source and licence texts.{" "}
+            {vehicles.ownerReview.acceptedAssets} of {vehicles.ownerReview.total}{" "}
+            assets approved by the owner
+            {vehicles.ownerReview.awaiting.length > 0 &&
+              `; the corrected revision of the ${vehicles.ownerReview.awaiting.map((name) => name.replace(/^Generic /, "")).join(" and the ")} awaits review`}.
+          </p>
+          <a href="/packs/vehicles/" class="text-link mt-4">
+            Inspect the pack and downloads →
+          </a>
+        </div>
+      </article>
+    )}
     <div class="mt-12 grid gap-8 md:grid-cols-2">
       <div>
-        <h2 class="text-subheading">Terafab (working title)</h2>
+        <h2 class="text-subheading">{foundryFloor.name}</h2>
         <p class="mt-4 max-w-reading">
-          In production: process tools, wafer transport and a scene where the
-          chip factory runs.
+          In production: a fictional 2 nm-class chip fab with process tools,
+          wafer transport and a scene where the factory runs.
         </p>
-        <a href="/packs/terafab/" class="text-link mt-2">
+        <a href={foundryFloor.packRoute} class="text-link mt-2">
           Read the production note →
         </a>
       </div>

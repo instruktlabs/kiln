@@ -3,18 +3,23 @@ import { readFile } from "node:fs/promises";
 import { resolve } from "node:path";
 import { createMarkdownProcessor } from "@astrojs/markdown-remark";
 import { workbenchContrast } from "../../lib/shiki-contrast";
+import { REVIEW_RIG } from "../../lib/review-rig";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import AssetViewer from "../../components/AssetViewer.astro";
+import EngineNote from "../../components/EngineNote.astro";
 import ResponsiveImage from "../../components/ResponsiveImage.astro";
 import CodeBlock from "../../components/CodeBlock.astro";
+import VehicleTiers from "../../components/VehicleTiers.astro";
 import {
   assets,
   farm,
   bridge,
+  vehicles,
   number,
   bounds,
   bytes,
   imageQualification,
+  isVehicle,
   type CatalogAsset,
 } from "../../lib/catalog";
 export function getStaticPaths() {
@@ -28,6 +33,8 @@ interface Props {
 }
 const { asset } = Astro.props;
 const isBridge = asset.id === "golden-gate-bridge";
+const vehicle = isVehicle(asset) ? asset : undefined;
+const savedAt = (iso: string) => `${iso.slice(0, 10)} ${iso.slice(11, 16)} UTC`;
 const source = await readFile(
   resolve("public", asset.sourcePath.slice(1)),
   "utf8",
@@ -50,7 +57,35 @@ const reference = isBridge
     )
   : "";
 const cleanReference = reference.replace(/ align="(?:left|right|center)"/g, "");
-const description = `${asset.description} ${number(asset.metrics.triangles)} triangles, exact source and GLB, with revision history and review status.`;
+const runNames: Record<string, string> = {
+  first: "first run",
+  "review-1": "review 1",
+  "review-2": "review 2",
+  "fix-up-1": "fix-up 1",
+  "fix-review-1": "review 1",
+  "fix-review-2": "review 2",
+  "fix-review-3": "review 3",
+};
+// The bridge's saved revisions grouped by the run that saved them; each run keeps its own requested effort.
+const bridgeRuns = isBridge
+  ? bridge.provenance.requests
+      .map((request) => ({
+        request,
+        revisions: bridge.revisions.filter((revision) => revision.request === request.stage),
+      }))
+      .filter((run) => run.revisions.length)
+  : [];
+const tierChains = isBridge
+  ? (["web", "far"] as const).map((tier) => ({ tier, revisions: bridge.provenance.tierHistory[tier] }))
+  : [];
+const tierNotes: Record<string, string> = {
+  full: "Every modelled part. The 3D preview on this page loads this tier.",
+  web: "A lighter version of the same bridge with reduced segment counts and paired thin suspender ropes.",
+  far: "A distance version with single suspender ropes; it has no under-deck framing and no expansion joints.",
+};
+const description = vehicle
+  ? `${asset.description} ${number(asset.metrics.triangles)} triangles at its top detail tier (three tiers in one GLB), exact source, revision history and review status.`
+  : `${asset.description} ${number(asset.metrics.triangles)} triangles, exact source and GLB, with revision history and review status.`;
 const schema = {
   "@context": "https://schema.org",
   "@type": "3DModel",
@@ -75,7 +110,7 @@ const schema = {
     { label: "Gallery", href: "/gallery/" },
     { label: asset.name, href: `/gallery/${asset.slug}/` },
   ]}
-  ogImage={`/social/${asset.slug}.webp`}
+  ogImage={`/social/${asset.slug}.jpg`}
   jsonLd={schema}
   preloadImage={{
     src: asset.poster.src,
@@ -90,7 +125,11 @@ const schema = {
         <p class="mt-4 max-w-reading">{asset.description}</p>
       </div>
       <p class="font-mono text-code">
-        {asset.pack ? (
+        {vehicle ? (
+          <a href="/packs/vehicles/" class="text-ember underline">
+            {vehicles.name}
+          </a>
+        ) : asset.pack ? (
           <a href="/packs/farm/" class="text-ember underline">
             Shapes &amp; Seasons Farm
           </a>
@@ -123,21 +162,33 @@ const schema = {
     {imageQualification(asset.poster) && (
       <p class="mt-3 max-w-reading text-caption text-dim">{imageQualification(asset.poster)}</p>
     )}
+    <p class="mt-3 max-w-reading text-caption text-dim">
+      {"rig" in asset.poster && asset.poster.rig && (
+        <>
+          The poster is this revision’s {isBridge ? "exported" : vehicle ? "delivered" : "sealed"} GLB{vehicle ? " (its top detail tier and wheels)" : ""}{" "}
+          rendered under the Kiln review lighting rig ({asset.poster.rig}) on
+          the neutral backdrop, with nothing retouched.{" "}
+        </>
+      )}
+      The 3D view applies the same rig ({REVIEW_RIG.id}): its light directions
+      and strengths, exposure, tone mapping and backdrop.
+    </p>
+    <EngineNote vehicle={Boolean(vehicle)} />
     <dl class="mt-6 grid grid-cols-2 gap-5 border-y border-ink py-6 md:grid-cols-4">
       <div>
-        <dt class="font-mono text-code text-dim">Triangles</dt>
+        <dt class="font-mono text-code text-dim">{vehicle ? "Triangles · LOD0 + wheels" : "Triangles"}</dt>
         <dd class="mt-1 text-2xl font-semibold">
           {number(asset.metrics.triangles)}
         </dd>
       </div>
       <div>
-        <dt class="font-mono text-code text-dim">Meshes / materials</dt>
+        <dt class="font-mono text-code text-dim">{vehicle ? "Meshes drawn / materials" : "Meshes / materials"}</dt>
         <dd class="mt-1 text-2xl font-semibold">
           {asset.metrics.meshes} / {asset.metrics.materials}
         </dd>
       </div>
       <div>
-        <dt class="font-mono text-code text-dim">Bounds · X × Y × Z</dt>
+        <dt class="font-mono text-code text-dim">{vehicle ? "Length × height × width" : "Bounds · X × Y × Z"}</dt>
         <dd class="mt-2 font-mono text-code">
           {bounds(asset.metrics.bounds)} m
         </dd>
@@ -149,6 +200,7 @@ const schema = {
         </dd>
       </div>
     </dl>
+    {vehicle && <VehicleTiers asset={vehicle} />}
     <section class="grid gap-8 pt-12 lg:grid-cols-12" aria-labelledby="review">
       <div class="lg:col-span-4">
         <h2 id="review" class="text-subheading">
@@ -156,7 +208,9 @@ const schema = {
             ? "Owner approved"
             : asset.review.status === "changes-requested"
               ? "Accepted child recorded"
-              : "Review in progress"}
+              : asset.review.status === "awaiting-owner-review"
+                ? "Awaiting owner review"
+                : "Review in progress"}
         </h2>
         <p class="mt-4 max-w-reading text-dim">{asset.review.scope}</p>
         {asset.id === "farmhouse" && (
@@ -177,6 +231,8 @@ const schema = {
           Structural QA and owner acceptance are separate.{" "}
           {isBridge &&
             "These views come from a source evaluation (exactArtifact: false), not a capture of the exported runtime GLB."}
+          {vehicle &&
+            "These views come from a source evaluation (exactArtifact: false), not a capture of the delivered GLB; the poster above is."}
         </figcaption>
       </figure>
     </section>
@@ -191,10 +247,9 @@ const schema = {
         This is the source extracted from the sealed editable archive for the
         displayed revision.
       </p>
-      <details class="mt-6 border border-ink">
-        <summary class="font-semibold">Open {asset.name} source</summary>
+      <div class="mt-6">
         <CodeBlock code={source} label={`${asset.slug}.kiln.js`} />
-      </details>
+      </div>
       <p class="mt-3 break-all font-mono text-code text-dim">
         Source SHA-256: {asset.sourceSha256}
       </p>
@@ -219,38 +274,140 @@ const schema = {
       </p>
       {isBridge && (
         <p class="mt-4 max-w-reading text-dim">
-          The first and review-1 runs requested GPT-6 Astra with ultra effort
-          through Codex 0.157.1. Requested effort is not independently
-          confirmed. A newer review revision is being independently verified;
-          the displayed download remains this recorded revision.
+          Each run asked its harness for a model and a reasoning effort; that
+          request is recorded from the run’s own receipt and invocation. No
+          run’s effort was independently confirmed. Review 3 is the delivered
+          revision of each tier that changed in it.
         </p>
       )}
-      <ol class="mt-6 border-t border-ink">
-        {asset.revisions.map((revision) => (
-          <li class="grid gap-4 border-b border-rule py-5 md:grid-cols-2">
-            <div>
-              <p class="font-semibold">{revision.stage}</p>
+      {isBridge ? (
+        <div class="mt-6 border-t border-ink">
+          {bridgeRuns.map(({ request, revisions }) => (
+            <div class="border-b border-rule py-5">
+              <h3 class="text-title">
+                {revisions.at(0)?.model} · {runNames[request.stage]}
+              </h3>
               <p class="mt-1">
-                {revision.model} · <code>{revision.harness}</code> · harness{" "}
-                {revision.harnessVersion ?? "version not recorded"}
+                <code>{request.harness}</code> · harness {request.harnessVersion}
               </p>
               <p class="mt-2 text-caption text-dim">
-                Requested effort: {revision.requestedEffort ?? "not recorded"}.
-                Independently confirmed:{" "}
-                {revision.confirmedEffort ?? "not recorded"}.
+                Requested effort: {request.requestedEffort}. Independently
+                confirmed: {request.confirmedEffort ?? "not recorded"}.
               </p>
+              <ol class="mt-4 grid gap-3 md:grid-cols-2">
+                {revisions.map((revision) => (
+                  <li>
+                    <p class="font-semibold">{revision.stage}</p>
+                    <p class="break-all font-mono text-code">{revision.revisionId}</p>
+                    {revision.parentRevisionId && (
+                      <p class="break-all font-mono text-code text-dim">
+                        Parent: {revision.parentRevisionId}
+                      </p>
+                    )}
+                  </li>
+                ))}
+              </ol>
             </div>
-            <div>
-              <p class="break-all font-mono text-code">{revision.revisionId}</p>
-              {"parentRevisionId" in revision && revision.parentRevisionId && (
-                <p class="mt-2 break-all font-mono text-code text-dim">
-                  Parent: {revision.parentRevisionId}
+          ))}
+          <details class="border-b border-rule py-4">
+            <summary class="font-mono text-code">
+              Web and far tier revisions (each branches from Full final)
+            </summary>
+            {tierChains.map(({ tier, revisions }) => (
+              <div class="mt-4">
+                <h3 class="text-title capitalize">{tier} tier</h3>
+                <ol class="mt-3 grid gap-3 md:grid-cols-2">
+                  {revisions.map((revision) => (
+                    <li>
+                      <p class="font-semibold">{revision.stage}</p>
+                      <p class="break-all font-mono text-code">{revision.revisionId}</p>
+                      <p class="text-caption text-dim">
+                        {revision.model} · {runNames[revision.request]}
+                      </p>
+                    </li>
+                  ))}
+                </ol>
+              </div>
+            ))}
+          </details>
+        </div>
+      ) : vehicle ? (
+        <>
+          <p class="mt-4 max-w-reading text-dim">
+            Each run asked its harness for a model and a reasoning effort; that
+            request is recorded from the run’s own receipt and invocation. No
+            run’s effort was independently confirmed.
+          </p>
+          <ol class="mt-6 border-t border-ink">
+            {vehicle.revisions.map((revision) => (
+              <li class="grid gap-4 border-b border-rule py-5 md:grid-cols-2">
+                <div>
+                  <p class="font-semibold">{revision.stage}</p>
+                  <p class="mt-1">
+                    {revision.model} · <code>{revision.harness}</code> · harness{" "}
+                    {revision.harnessVersion}
+                  </p>
+                  <p class="mt-2 text-caption text-dim">
+                    Requested effort: {revision.requestedEffort}. Independently
+                    confirmed: {revision.confirmedEffort ?? "not recorded"}.
+                  </p>
+                  <p class="mt-2 text-caption text-dim">
+                    Saved {savedAt(revision.savedAt)} in the {revision.run.label}:{" "}
+                    {revision.run.status}
+                    {revision.run.stop && revision.run.stop !== "success"
+                      ? ` (${revision.run.stop})`
+                      : ""}.
+                    {revision.run.status !== "completed" &&
+                      Date.parse(revision.savedAt) < Date.parse(revision.run.endedAt) &&
+                      ` The run stopped at ${savedAt(revision.run.endedAt)}, after this revision was saved.`}
+                  </p>
+                </div>
+                <div>
+                  <p class="break-all font-mono text-code">{revision.revisionId}</p>
+                  {revision.parentRevisionId && (
+                    <p class="mt-2 break-all font-mono text-code text-dim">
+                      Parent: {revision.parentRevisionId}
+                    </p>
+                  )}
+                  {revision.brief && (
+                    <details class="mt-3 border border-rule">
+                      <summary class="font-mono text-code">Saved brief</summary>
+                      <p class="max-w-reading px-4 pb-4">{revision.brief}</p>
+                    </details>
+                  )}
+                </div>
+              </li>
+            ))}
+          </ol>
+        </>
+      ) : (
+        <ol class="mt-6 border-t border-ink">
+          {asset.revisions.map((revision) => (
+            <li class="grid gap-4 border-b border-rule py-5 md:grid-cols-2">
+              <div>
+                <p class="font-semibold">{revision.stage}</p>
+                <p class="mt-1">
+                  {revision.model} · <code>{revision.harness}</code> · harness{" "}
+                  {revision.harnessVersion ?? "version not recorded"}
                 </p>
-              )}
-            </div>
-          </li>
-        ))}
-      </ol>
+                <p class="mt-2 text-caption text-dim">
+                  Requested effort: {revision.requestedEffort ?? "not recorded"}.
+                  Independently confirmed:{" "}
+                  {revision.confirmedEffort ?? "not recorded"}.
+                </p>
+              </div>
+              <div>
+                <p class="break-all font-mono text-code">{revision.revisionId}</p>
+                {"parentRevisionId" in revision && revision.parentRevisionId && (
+                  <p class="mt-2 break-all font-mono text-code text-dim">
+                    Parent: {revision.parentRevisionId}
+                  </p>
+                )}
+              </div>
+            </li>
+          ))}
+        </ol>
+      )}
       {asset.parentRevision && (
         <p class="mt-4 break-all font-mono text-code text-dim">
           Displayed revision’s parent: {asset.parentRevision}
@@ -270,7 +427,12 @@ const schema = {
             <li>{limit}</li>
           ))}
         </ul>
-        <div class="mt-8 grid gap-6 md:grid-cols-2">
+        <p class="mt-8 max-w-reading text-dim">
+          These views are the full tier’s exported GLB rendered under the Kiln
+          review lighting rig with the author’s own capture cameras, so they
+          show the file you can download.
+        </p>
+        <div class="mt-4 grid gap-6 md:grid-cols-2">
           {bridge.captures.map((capture) => (
             <figure>
               <ResponsiveImage image={capture} />
@@ -298,6 +460,79 @@ const schema = {
     )}
     <section class="pt-16" aria-labelledby="downloads">
       <h2 id="downloads">Use the model or revise its source.</h2>
+      {isBridge ? (
+        <div class="mt-6 grid gap-6 lg:grid-cols-3">
+          {bridge.tiers.map((tier) => (
+            <article class={`border-y py-5 ${tier.tier === "full" ? "border-ink" : "border-rule"}`}>
+              <h3 class="text-title capitalize">{tier.tier} tier</h3>
+              <p class="mt-2 text-dim">{tierNotes[tier.tier]}</p>
+              <dl class="mt-4 grid grid-cols-2 gap-3 font-mono text-code">
+                <div>
+                  <dt class="text-dim">Triangles</dt>
+                  <dd>{number(tier.metrics.triangles)}</dd>
+                </div>
+                <div>
+                  <dt class="text-dim">Meshes / materials</dt>
+                  <dd>{tier.metrics.meshes} / {tier.metrics.materials}</dd>
+                </div>
+              </dl>
+              <p class="mt-3 break-all font-mono text-code text-dim">
+                Revision {tier.revisionId}
+              </p>
+              <h4 class="mt-5 font-semibold">Runtime GLB</h4>
+              <p class="mt-1">{bytes(tier.runtime.bytes)} · glTF 2.0</p>
+              <p class="mt-2 break-all font-mono text-code text-dim">
+                SHA-256: {tier.runtime.sha256}
+              </p>
+              <a class="btn btn-secondary mt-4" href={tier.runtime.url}>
+                Download {tier.tier} GLB ↓
+              </a>
+              <h4 class="mt-6 font-semibold">Editable archive</h4>
+              <p class="mt-1">{bytes(tier.editable.bytes)} · source, geometry and embedded material maps</p>
+              <p class="mt-2 break-all font-mono text-code text-dim">
+                SHA-256: {tier.editable.sha256}
+              </p>
+              <a class="btn btn-secondary mt-4" href={tier.editable.url}>
+                Download {tier.tier} editable ZIP ↓
+              </a>
+            </article>
+          ))}
+        </div>
+      ) : vehicle ? (
+      <div class="mt-6 grid gap-6 lg:grid-cols-2">
+        <article class="border-y border-ink py-5">
+          <h3 class="text-title">Runtime GLB</h3>
+          <p class="mt-3">
+            {bytes(vehicle.runtimeDownload.bytes)} · glTF 2.0 with three{" "}
+            <code>MSFT_lod</code> tiers
+          </p>
+          <p class="mt-3 break-all font-mono text-code text-dim">
+            SHA-256: {vehicle.runtimeDownload.sha256}
+          </p>
+          <a class="btn btn-secondary mt-5" href={vehicle.runtimeDownload.url}>
+            Download runtime GLB ↓
+          </a>
+        </article>
+        <article class="border-y border-rule py-5">
+          <h3 class="text-title">Editable archive</h3>
+          <p class="mt-3">
+            {bytes(vehicle.editableDownload.bytes)} · source, the saved GLB with
+            its tiers as named groups, and the review views
+          </p>
+          <p class="mt-3 break-all font-mono text-code text-dim">
+            SHA-256: {vehicle.editableDownload.sha256}
+          </p>
+          <a class="btn btn-secondary mt-5" href={vehicle.editableDownload.url}>
+            Download editable ZIP ↓
+          </a>
+          <p class="mt-5">
+            <a href="/packs/vehicles/" class="text-link">
+              All six vehicles as one runtime ZIP →
+            </a>
+          </p>
+        </article>
+      </div>
+      ) : (
       <div class="mt-6 grid gap-6 lg:grid-cols-2">
         <article class="border-y border-ink py-5">
           <h3 class="text-title">Runtime GLB</h3>
@@ -351,8 +586,9 @@ const schema = {
           )}
         </article>
       </div>
+      )}
       <p class="mt-6 max-w-reading text-dim">
-        {isBridge ? bridge.licenseScope : farm.licenseScope}
+        {isBridge ? bridge.licenseScope : vehicle ? vehicles.licenseScope : farm.licenseScope}
       </p>
       <a
         class="text-link"
@@ -365,6 +601,33 @@ const schema = {
           The Golden Gate Bridge name and likeness are trademarks of the Golden
           Gate Bridge, Highway and Transportation District. The CC0 dedication
           covers copyright in this model only and grants no trademark rights.
+        </p>
+      )}
+      {vehicle && (
+        <p class="mt-4 max-w-reading text-caption text-dim">
+          Licence text for this vehicle:{" "}
+          <a class="text-link" href={vehicle.licence.url}>
+            {vehicle.licence.path.split("/").at(-1)} ↗
+          </a>{" "}
+          ({bytes(vehicle.licence.bytes)}, SHA-256{" "}
+          <code class="break-all">{vehicle.licence.sha256}</code>). It
+          names asset <code class="break-all">{vehicle.assetId}</code>, saved
+          revision <code class="break-all">{vehicle.revisionId}</code> and the
+          SHA-256 of the delivered GLB, and the site checked all three before
+          publishing it. {vehicles.licenceNote}
+        </p>
+      )}
+      {isBridge && (
+        <p class="mt-4 max-w-reading text-caption text-dim">
+          One licence text covers the three tiers:{" "}
+          <a class="text-link" href={bridge.licence.url}>{bridge.licence.file} ↗</a>{" "}
+          ({bytes(bridge.licence.bytes)}, SHA-256{" "}
+          <code class="break-all">{bridge.licence.sha256}</code>). It
+          was written for the {bridge.licence.section} revisions of each tier
+          and states that the CC0 designation, the trademark notice and the
+          exclusions apply to them unchanged. The revisions on this page are
+          later children of those, and the text is delivered with them
+          unchanged.
         </p>
       )}
     </section>

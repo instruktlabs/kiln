@@ -1,12 +1,16 @@
 [
   {
     "stage": "first",
+    "author": "astra-golden-gate",
     "requestedModel": "gpt-6-astra",
     "requestedEffort": "ultra",
     "harness": "codex",
     "harnessVersion": "0.157.1",
     "confirmedEffort": null,
     "confirmation": "Requested in receipt and invocation; effective reasoning effort not independently confirmed.",
+    "modelReported": null,
+    "startedAt": "2026-09-29T03:50:28.801Z",
+    "endedAt": "2026-09-29T04:38:49.507Z",
     "source": {
       "receipt": "showcase/runs/astra-golden-gate/first/receipt.json",
       "receiptSha256": "793c4e1a402d5062241224e2da54350d071fe076a053793fec6bb19efdea8c8a",
@@ -16,17 +20,124 @@
   },
   {
     "stage": "review-1",
+    "author": "astra-golden-gate",
     "requestedModel": "gpt-6-astra",
     "requestedEffort": "ultra",
     "harness": "codex",
     "harnessVersion": "0.157.1",
     "confirmedEffort": null,
     "confirmation": "Requested in receipt and invocation; effective reasoning effort not independently confirmed.",
+    "modelReported": null,
+    "startedAt": "2026-09-29T04:45:04.790Z",
+    "endedAt": "2026-09-29T05:21:53.869Z",
     "source": {
       "receipt": "showcase/runs/astra-golden-gate/review-1/receipt.json",
       "receiptSha256": "ae8c01c6d98ea0b87eda8bfe414c1c18b5fa9d1c65fcdaa4eefd4218fa34edb7",
       "invocation": "showcase/runs/astra-golden-gate/review-1/invocation.json",
       "invocationSha256": "058cde99ffdbf569f6b275e4341fd39a7cd077174b337cd7441bc93b7f58f74f"
+    }
+  },
+  {
+    "stage": "review-2",
+    "author": "astra-golden-gate",
+    "requestedModel": "gpt-6-astra",
+    "requestedEffort": "ultra",
+    "harness": "codex",
+    "harnessVersion": "0.157.1",
+    "confirmedEffort": null,
+    "confirmation": "Requested in receipt and invocation; effective reasoning effort not independently confirmed.",
+    "modelReported": null,
+    "startedAt": "2026-09-29T07:28:00.371Z",
+    "endedAt": "2026-09-29T08:04:05.466Z",
+    "source": {
+      "receipt": "showcase/runs/astra-golden-gate/review-2/receipt.json",
+      "receiptSha256": "f1652f066017156011c4dbe4b750062d8dc09ed22ab0ad0767653506f3d0f7c0",
+      "invocation": "showcase/runs/astra-golden-gate/review-2/invocation.json",
+      "invocationSha256": "7f51d2a121a20a2147db4b3eb13cd008e027ae838c993785f4e8dd8e3af0563b"
+    }
+  },
+  {
+    "stage": "fix-up-1",
+    "author": "sonnet-gg-bridge-fix",
+    "requestedModel": "claude-sonnet-5-5",
+    "requestedEffort": "max",
+    "harness": "claude",
+    "harnessVersion": "2.1.280",
+    "confirmedEffort": null,
+    "confirmation": "Requested in receipt and invocation; effective reasoning effort not independently confirmed.",
+    "modelReported": [
+      "claude-sonnet-5-5"
+    ],
+    "startedAt": "2026-09-29T20:31:59.792Z",
+    "endedAt": "2026-09-29T21:33:37.433Z",
+    "source": {
+      "receipt": "showcase/runs/sonnet-gg-bridge-fix/first/receipt.json",
+      "receiptSha256": "2991db6468162d7ed6fbe6c6ef897bb4f2a478e2cc49502bc7ae6074a6ea56e1",
+      "invocation": "showcase/runs/sonnet-gg-bridge-fix/first/invocation.json",
+      "invocationSha256": "fa7d5e4ef985c214837acbd2f641f900580b1f4403deac0f650efae760e423f2"
+    }
+  },
+  {
+    "stage": "fix-review-1",
+    "author": "sonnet-gg-bridge-fix",
+    "requestedModel": "claude-sonnet-5-5",
+    "requestedEffort": "max",
+    "harness": "claude",
+    "harnessVersion": "2.1.280",
+    "confirmedEffort": null,
+    "confirmation": "Requested in receipt and invocation; effective reasoning effort not independently confirmed.",
+    "modelReported": [
+      "claude-sonnet-5-5"
+    ],
+    "startedAt": "2026-09-30T00:41:33.038Z",
+    "endedAt": "2026-09-30T01:26:32.738Z",
+    "source": {
+      "receipt": "showcase/runs/sonnet-gg-bridge-fix/review-1/receipt.json",
+      "receiptSha256": "35f031bd23e2a941d6658c4560ea6e41450c73d4d9f5b32fefcfcb5f361ff853",
+      "invocation": "showcase/runs/sonnet-gg-bridge-fix/review-1/invocation.json",
+      "invocationSha256": "c61c523b605c0162c4c71bb079d15efe32597ea685636f67ac841585bfffa0a6"
+    }
+  },
+  {
+    "stage": "fix-review-2",
+    "author": "sonnet-gg-bridge-fix",
+    "requestedModel": "claude-sonnet-5-5",
+    "requestedEffort": "max",
+    "harness": "claude",
+    "harnessVersion": "2.1.280",
+    "confirmedEffort": null,
+    "confirmation": "Requested in receipt and invocation; effective reasoning effort not independently confirmed.",
+    "modelReported": [
+      "claude-sonnet-5-5"
+    ],
+    "startedAt": "2026-09-30T01:33:36.647Z",
+    "endedAt": "2026-09-30T02:25:39.161Z",
+    "source": {
+      "receipt": "showcase/runs/sonnet-gg-bridge-fix/review-2/receipt.json",
+      "receiptSha256": "7aee2e96aee6188018ac4ce730b59443fdc4dcad14959d1c71a9b14fe637c912",
+      "invocation": "showcase/runs/sonnet-gg-bridge-fix/review-2/invocation.json",
+      "invocationSha256": "578a75d8d257e62f4a0aa1a4ce29dddc431322ee85fb13eb5f59ff2b410b080e"
+    }
+  },
+  {
+    "stage": "fix-review-3",
+    "author": "sonnet-gg-bridge-fix",
+    "requestedModel": "claude-sonnet-5-5",
+    "requestedEffort": "max",
+    "harness": "claude",
+    "harnessVersion": "2.1.280",
+    "confirmedEffort": null,
+    "confirmation": "Requested in receipt and invocation; effective reasoning effort not independently confirmed.",
+    "modelReported": [
+      "claude-sonnet-5-5"
+    ],
+    "startedAt": "2026-09-30T02:49:27.521Z",
+    "endedAt": "2026-09-30T03:07:22.699Z",
+    "source": {
+      "receipt": "showcase/runs/sonnet-gg-bridge-fix/review-3/receipt.json",
+      "receiptSha256": "f1dfb487f30f8eb11026da8f88c03cfd060d8f21b0b62f1ea4c315e772cfd04c",
+      "invocation": "showcase/runs/sonnet-gg-bridge-fix/review-3/invocation.json",
+      "invocationSha256": "b6fe48c27dc49e871ce27ad2f89a6cf02d442affba1e829acb75783ebe6eb038"
     }
   }
 ]

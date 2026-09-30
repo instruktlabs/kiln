@@ -282,126 +282,6 @@
       "sha256": "d7b8c0c55c1278573773fec51ddd93b205b3497b260ddb4c77a27f462d67760c"
     },
     {
-      "path": "standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/ASSET-LICENSE.txt",
-      "bytes": 666,
-      "sha256": "4e67514323d7ce285182999736df6a9eed1510959998494c7adafe7d17bb0506"
-    },
-    {
-      "path": "standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/classic-dark.png",
-      "bytes": 81655,
-      "sha256": "25145d346dc473cf1f4373eae65248d47c6fa5cc3343b04959fe4a3fb0cf7be2"
-    },
-    {
-      "path": "standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/classic-light.png",
-      "bytes": 75477,
-      "sha256": "144bea661346a48eaaa6207c559a3f0266a65a6cdda79135849b6ff54ea82f0e"
-    },
-    {
-      "path": "standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/classic-neutral.png",
-      "bytes": 78324,
-      "sha256": "6da6a32d46a6605fc95351dc4ef33b07662089221ad4383e78722bc55dc7bcb0"
-    },
-    {
-      "path": "standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/deck-dark.png",
-      "bytes": 460407,
-      "sha256": "43e8dc9ef936914437d3c5342eb3e85d09929501510c6386a841c4e910b95e9d"
-    },
-    {
-      "path": "standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/deck-light.png",
-      "bytes": 437136,
-      "sha256": "d3e6841d6ffa4861c615da86022e39d9209dcd712deb1b6279d23d530990da78"
-    },
-    {
-      "path": "standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/deck-neutral.png",
-      "bytes": 445920,
-      "sha256": "a92514dc9404e9134ffbd02f69f80fa5d03a5925f7d246045e71a286c782dd8b"
-    },
-    {
-      "path": "standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/elevation-dark.png",
-      "bytes": 18120,
-      "sha256": "7dc6b36831b8b606bc086f41bccb674321f6423f2b7968a63c8626025b922c60"
-    },
-    {
-      "path": "standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/elevation-light.png",
-      "bytes": 14758,
-      "sha256": "13e71288a96d24d455cfaaabd89fe6e9724d2a6487facb7a802da99fe7cf1b73"
-    },
-    {
-      "path": "standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/elevation-neutral.png",
-      "bytes": 16418,
-      "sha256": "83be2ded6f8b67613c7817ccc09151701ba6f00d4cd4d9ea16cfad86e6bc7fc3"
-    },
-    {
-      "path": "standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/review-sheet-dark.png",
-      "bytes": 41723,
-      "sha256": "a1cf2c10da3dae1fa8dcd794a9b0a3a5cb355c22d447f2c2a93155784f2c2a35"
-    },
-    {
-      "path": "standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/review-sheet-light.png",
-      "bytes": 38112,
-      "sha256": "bdb9d630fb5990aebbf0f0128ce7fe259a776d3376059b6dacbbfe700b16f4cb"
-    },
-    {
-      "path": "standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/review-sheet-neutral.png",
-      "bytes": 39648,
-      "sha256": "f23ce47ac97a1f73678d70fbd3d285697898c2572445a45fc73ea309d50e9746"
-    },
-    {
-      "path": "standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/tower-top-dark.png",
-      "bytes": 453594,
-      "sha256": "dd9fb3d7f2663db7715968cf2220908942ea61b41b7e756e851fcddf09e52538"
-    },
-    {
-      "path": "standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/tower-top-light.png",
-      "bytes": 419500,
-      "sha256": "e762e1f2552eef4f33933c4589af3cdab83cfa4224b73ec2e7e8538a9685aa6a"
-    },
-    {
-      "path": "standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/tower-top-neutral.png",
-      "bytes": 436382,
-      "sha256": "b32dbf4322c87b00ef90753afcd102b1d9c258eb418326c07ba47553ba55af5a"
-    },
-    {
-      "path": "standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/water-level-dark.png",
-      "bytes": 429710,
-      "sha256": "62aedd3f9886c1fe3d6db722dbc41521b9a8ed2511a4af3a0fb6907098b916ca"
-    },
-    {
-      "path": "standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/water-level-light.png",
-      "bytes": 406083,
-      "sha256": "2a7d8c96a3e2d2f80e68ba2c85780a375c670db7b28dc510868d4f717ac3e9fa"
-    },
-    {
-      "path": "standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/captures/water-level-neutral.png",
-      "bytes": 416493,
-      "sha256": "60fa1ced87d529419306a5f01f35b975027b9d0a4a30b4e5709db1decd315be9"
-    },
-    {
-      "path": "standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/golden-gate-editable.zip",
-      "bytes": 13586620,
-      "sha256": "8456ce298158edb5233dc40573aaa970bf5432271762fe66d281effd6652077c"
-    },
-    {
-      "path": "standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/golden-gate-runtime.glb",
-      "bytes": 13484976,
-      "sha256": "1e987a994d5a0a8183782aa19d4e225b9715fb0bd503402a5b3a14df8190a7f9"
-    },
-    {
-      "path": "standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/golden-gate-runtime.kiln-metadata.json",
-      "bytes": 333,
-      "sha256": "04f197193356dd3f233e99c82fae9f0c182f1492d4606b36dcd0744ea5426605"
-    },
-    {
-      "path": "standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/golden-gate.glb",
-      "bytes": 13484752,
-      "sha256": "3327f53cf4bf2a31fae50bd4eab52197a5d12a189d71bfb915bdcf4007c82e4d"
-    },
-    {
-      "path": "standalone/golden-gate-bridge/r_9f4b0e76ea634be083de8a5e38c4e838/golden-gate.kiln.js",
-      "bytes": 22531,
-      "sha256": "5bfd30103aaf6aa620da252562e5e9de135eba69b5c36823f0e12a7e99c87f81"
-    },
-    {
       "path": "packs/farm/r34/downloads.json",
       "bytes": 1456,
       "sha256": "cce732de28f812371146ed9fd5eaaa00649ec77fe9fd3b5d6c94d437c5f5d8d5"
@@ -425,6 +305,361 @@
       "path": "media/farm/r34/poster/farmhouse.png",
       "bytes": 371927,
       "sha256": "574cb8b30c8f12209c7a2cec212d1511757ab7b4417d073bdb13b2255bf19f38"
+    },
+    {
+      "path": "media/scenes/golden-gate/g3/golden-gate-scene-drive.png",
+      "bytes": 740592,
+      "sha256": "3857c191600273a505ab82dae23d45043a312485f49e2e89381b061a5b5f1e7e"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/farm/r34/farmhouse.png",
+      "bytes": 1855207,
+      "sha256": "217a1bd9b87a3a3889c072fe841e83bb81c9e6ef901ed0408cad1b2b759c5bd4"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/farm/r34/barn.png",
+      "bytes": 1826123,
+      "sha256": "02a8eab01051c380d035d686394717f5368df7180bba3c3150c9807f37ebd6e9"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/farm/r34/windmill.png",
+      "bytes": 1473204,
+      "sha256": "fcf7e2b3325dc922a67337d51a924b7e5c451ab7d41f049eb5d76f412aaba938"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/farm/r34/watermill.png",
+      "bytes": 2052363,
+      "sha256": "01b800ced4e105aa4c38cdb6ea32f8591da980cd2d7f0065fedada563324aee2"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/farm/r34/fence-straight.png",
+      "bytes": 1604982,
+      "sha256": "92b7d92a87ad166ccd2dd8ec1648c2052847ebead243d8d771d998f3efb555ea"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/farm/r34/fence-corner.png",
+      "bytes": 1442416,
+      "sha256": "c6f61a88179a8154e0529e75c7b30333c1d9b7eb5e6ef0212df4caacdbde1c9c"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/farm/r34/fence-gate.png",
+      "bytes": 1527282,
+      "sha256": "81ad742b9d13a9096e7014994a0ee3194216c9ad8b3034d11ed485db0d2bd9be"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/farm/r34/tractor.png",
+      "bytes": 1686000,
+      "sha256": "8d281ccb0487996f2df2cf6586facffd34f3e2e25de28cffadc597b97a9a86f2"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/farm/r34/trailer.png",
+      "bytes": 1557866,
+      "sha256": "bf1db5fb40169e7a0e7f96241845231e833c38565fbba735a3effafb46de8990"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/farm/r34/barrel.png",
+      "bytes": 1893569,
+      "sha256": "ccdc8b24ef0876e81d611f694a56b26aa6c7a904da82e99803c8c84b1542d928"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/farm/r34/hay-bale.png",
+      "bytes": 2065864,
+      "sha256": "ade1c9fa965d79e30da6c0f02bef307412dc137cbcb0781a06e6301031d69fb0"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/farm/r34/farmer.png",
+      "bytes": 1510935,
+      "sha256": "5878b1ff21f93f504ce9def177c20f216b62e0ab775302c7fb4548db27678de4"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/farm/r34/cow.png",
+      "bytes": 1585307,
+      "sha256": "8c4fa3a29fe9f5442a15a3022aed30340b5311c0255e18554079e0439f30f56c"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/farm/r34/sheep.png",
+      "bytes": 1539560,
+      "sha256": "8f329b3af95a293ef6117c050053cdf80111312bbdbc8800e19393491cbe2e10"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/farm/r34/chicken.png",
+      "bytes": 1507102,
+      "sha256": "e5b2a11e6e4612a64919995c9b6357a7ab3f541709343dcd4ef28ebaa08c25cc"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/farm/r34/cabbage-stage-1.png",
+      "bytes": 1490949,
+      "sha256": "890817cd6cef5215de89502f7a9362fc5872d8d7572a6105d644346b28d8fd6d"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/farm/r34/cabbage-stage-2.png",
+      "bytes": 1725405,
+      "sha256": "fda5aff27fd3692817ce8cd2510a6c042de3bb467c9299dd8a02b4bff8688c54"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/farm/r34/cabbage-stage-3.png",
+      "bytes": 1641288,
+      "sha256": "ecca19057c0e39afb6abb2f98fc437f5a7a587fd8f62039b0648bc5073e82852"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/farm/r34/cabbage-stage-4.png",
+      "bytes": 1636136,
+      "sha256": "1ad1e4ba0871ca242ada8139684cd6a315c5bd1cc11873026dcf555a7aabbbcd"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/farm/r34/wheat.png",
+      "bytes": 1466501,
+      "sha256": "0cf3655cc6623108857c0a70c56968e8fe98dd409df968f693d48f97da8159ad"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/farm/r34/pumpkin-plant.png",
+      "bytes": 1465624,
+      "sha256": "7810bc2bcbe69c575ec4502ad79097fad2dd9499efc6ad81034dab94c3bdf054"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/farm/r34/faceted-tree.png",
+      "bytes": 1467997,
+      "sha256": "88ae354a615f9fd09d0940bbe4a2bf28162ba2e686198848a5e880f55742ab1a"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/farm/r34/rock-cluster.png",
+      "bytes": 1497712,
+      "sha256": "082fdb635fabf6963264d5032ed8c35155bddb61bdb8df020302e002e410eb24"
+    },
+    {
+      "path": "standalone/golden-gate-bridge/r_0d1532b4a00b4663909f8edf2bd290aa/ASSET-LICENSE.txt",
+      "bytes": 2458,
+      "sha256": "90fdb5eb334ce031ee8eb81d34dfbd701110b869707e63f7844e83fe10d10206"
+    },
+    {
+      "path": "standalone/golden-gate-bridge/r_0d1532b4a00b4663909f8edf2bd290aa/captures/classic-neutral.png",
+      "bytes": 1316710,
+      "sha256": "ebe6ceca50e6da78cc1b44fe1a06bed7984be8170dcd622b84b58fc3a6f2a41f"
+    },
+    {
+      "path": "standalone/golden-gate-bridge/r_0d1532b4a00b4663909f8edf2bd290aa/captures/deck-neutral.png",
+      "bytes": 1567544,
+      "sha256": "8ebd63050a71932813da044eb91e0e19033906e5380bff9a40ce9f60bf9446f9"
+    },
+    {
+      "path": "standalone/golden-gate-bridge/r_0d1532b4a00b4663909f8edf2bd290aa/captures/elevation-neutral.png",
+      "bytes": 1200745,
+      "sha256": "029f6289631d21746308a07469ba22c016392930f59f545668d8d7971f6cea2f"
+    },
+    {
+      "path": "standalone/golden-gate-bridge/r_0d1532b4a00b4663909f8edf2bd290aa/captures/review-sheet-neutral.png",
+      "bytes": 38742,
+      "sha256": "b1a34f7c84f18b706764222f715981a3c76fc0d18e9d45e314fe3ec66779563b"
+    },
+    {
+      "path": "standalone/golden-gate-bridge/r_0d1532b4a00b4663909f8edf2bd290aa/captures/tower-top-neutral.png",
+      "bytes": 1887282,
+      "sha256": "cbdee3837e92cc0fdfab10f37bf0d332e10b8c65a8f67ca0d38b443a71cb09f1"
+    },
+    {
+      "path": "standalone/golden-gate-bridge/r_0d1532b4a00b4663909f8edf2bd290aa/captures/water-level-neutral.png",
+      "bytes": 1868944,
+      "sha256": "f49124c8d591e8ca5a85317b73d4d75421e02ac4d05e7a864ca83a92d7cab477"
+    },
+    {
+      "path": "standalone/golden-gate-bridge/r_0d1532b4a00b4663909f8edf2bd290aa/golden-gate-editable.zip",
+      "bytes": 12339064,
+      "sha256": "c61d62c73146e70165ea67c74d9e5a362980645130144e4bf67898c9fab6dbd8"
+    },
+    {
+      "path": "standalone/golden-gate-bridge/r_0d1532b4a00b4663909f8edf2bd290aa/golden-gate-far-editable.zip",
+      "bytes": 598873,
+      "sha256": "96f17e8247f6049ee2f11ece04986c9a6452736a312a1c2c9d05e750a94266bd"
+    },
+    {
+      "path": "standalone/golden-gate-bridge/r_0d1532b4a00b4663909f8edf2bd290aa/golden-gate-far-runtime.glb",
+      "bytes": 490460,
+      "sha256": "5881f49df60bf3c05e8043de73b3b0ba68335896983097950ab2af6ff28c98a4"
+    },
+    {
+      "path": "standalone/golden-gate-bridge/r_0d1532b4a00b4663909f8edf2bd290aa/golden-gate-far-runtime.kiln-metadata.json",
+      "bytes": 333,
+      "sha256": "a1b76bbc5bc079eeaf3213cb54d6c9ec288f2e5b3a62b6b934217ebb11250d58"
+    },
+    {
+      "path": "standalone/golden-gate-bridge/r_0d1532b4a00b4663909f8edf2bd290aa/golden-gate-runtime.glb",
+      "bytes": 12244400,
+      "sha256": "9dbff3c7bda8bfddd39b12899f2857ca8afb02f74f6edc087e5ef8156195c1b1"
+    },
+    {
+      "path": "standalone/golden-gate-bridge/r_0d1532b4a00b4663909f8edf2bd290aa/golden-gate-runtime.kiln-metadata.json",
+      "bytes": 333,
+      "sha256": "08fe5a258562b09e06360b48647ac58510cd74b43d2bda5c0bd1a6861c74323b"
+    },
+    {
+      "path": "standalone/golden-gate-bridge/r_0d1532b4a00b4663909f8edf2bd290aa/golden-gate-web-editable.zip",
+      "bytes": 3447584,
+      "sha256": "a77fa5fea15cfeb203879642646e467790729054e0d984fc49f41e6c7ffea350"
+    },
+    {
+      "path": "standalone/golden-gate-bridge/r_0d1532b4a00b4663909f8edf2bd290aa/golden-gate-web-runtime.glb",
+      "bytes": 3336720,
+      "sha256": "407f727a19898ba09e2143a729e4d353bcf92d90f2eae99f0407327ac37f151f"
+    },
+    {
+      "path": "standalone/golden-gate-bridge/r_0d1532b4a00b4663909f8edf2bd290aa/golden-gate-web-runtime.kiln-metadata.json",
+      "bytes": 333,
+      "sha256": "5af60b0b8af8ae1ee508d3ff34b2d362811c54b3728032adb0fd066970f44cf8"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/vehicles/r1/hatchback.png",
+      "bytes": 1616782,
+      "sha256": "bca82c64ed5920dc7ad17bfc68043626ff845e34fa3ca01c0dea6ec9ad8997b5"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/vehicles/r1/sedan.png",
+      "bytes": 1554941,
+      "sha256": "886271f0a6c39dd745372287d07e8ff4403dc0d9b0ff8b90ca8a9a34854a7259"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/vehicles/r1/suv.png",
+      "bytes": 1630806,
+      "sha256": "7364d2650f8b6413c6e83fb10fb6fd82468d2c9b9d726107ae1e4eb7aa855103"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/vehicles/r1/pickup.png",
+      "bytes": 1436279,
+      "sha256": "92573abe8bd75ed18a4a9f55efedc6670d4f7fd009336d9188c9772eb3232884"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/vehicles/r1/box-truck.png",
+      "bytes": 1555264,
+      "sha256": "83662d6b537924cad8ffefb9b45d050d2f2ffe4b4c615547881c5eacc537e9b7"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/vehicles/r1/transit-bus.png",
+      "bytes": 1417978,
+      "sha256": "9c066499fca58bd3c5c18ac27c035dc0892ce1808157416af1ea3fe34479f723"
+    },
+    {
+      "path": "packs/vehicles/r1/models/hatchback.glb",
+      "bytes": 262464,
+      "sha256": "c2f941f89816b5d8a48bb2d9481a00411c2af45591d26ea46a99399d385a3bfa"
+    },
+    {
+      "path": "packs/vehicles/r1/licenses/hatchback.ASSET-LICENSE.txt",
+      "bytes": 777,
+      "sha256": "02e8355880da33fc2422a7205cb0234fc4a6a338e37eec60ab2898c647a2ffdf"
+    },
+    {
+      "path": "packs/vehicles/r1/editable/hatchback-editable.zip",
+      "bytes": 418733,
+      "sha256": "dbe5d5ea3f8384695e8711462f37c6dc71c9ebffa4747ce85786c2d572e27bbc"
+    },
+    {
+      "path": "media/vehicles/r1/review/hatchback.png",
+      "bytes": 123386,
+      "sha256": "ac258e34926e0390efbf40c561bd1287ea398a213146ab56a19850e1b0307b3b"
+    },
+    {
+      "path": "packs/vehicles/r1/models/sedan.glb",
+      "bytes": 259596,
+      "sha256": "e05943cd76110e6ed7e3210b9bc33ede40d48371def8439ca1bc9c8dcabf8e96"
+    },
+    {
+      "path": "packs/vehicles/r1/licenses/sedan.ASSET-LICENSE.txt",
+      "bytes": 765,
+      "sha256": "9011f4c35291edf6dafab7a5589aefa60a96cd6cf302a80e42cc6f2480499553"
+    },
+    {
+      "path": "packs/vehicles/r1/editable/sedan-editable.zip",
+      "bytes": 410336,
+      "sha256": "587f448d9385678f243a6bde7b0d64989e88cae5faf6a2f3954c2819ac2d71bf"
+    },
+    {
+      "path": "media/vehicles/r1/review/sedan.png",
+      "bytes": 117823,
+      "sha256": "c802af6511d169a6df2318b7f5ecac8152cf047d0f508da4b6bd5ea23b636568"
+    },
+    {
+      "path": "packs/vehicles/r1/models/suv.glb",
+      "bytes": 266964,
+      "sha256": "f46d4535adf8a2730ff832fba59476db2cc63b0dece497aebc1651ae53a6d28d"
+    },
+    {
+      "path": "packs/vehicles/r1/licenses/suv.ASSET-LICENSE.txt",
+      "bytes": 759,
+      "sha256": "abeda698b88cb5f115e25397f989bca22c4f38d46a6816847cdb2da4239c7b19"
+    },
+    {
+      "path": "packs/vehicles/r1/editable/suv-editable.zip",
+      "bytes": 422218,
+      "sha256": "248dfad959d0da2ede5e5145936e0b9616ced771731d9d8d7c7a59b18e9f70e1"
+    },
+    {
+      "path": "media/vehicles/r1/review/suv.png",
+      "bytes": 122440,
+      "sha256": "d0b5da2f4d78669d01afac05d588fc6f407078b41d8e54111287e3e0a78a2da0"
+    },
+    {
+      "path": "packs/vehicles/r1/models/pickup.glb",
+      "bytes": 170228,
+      "sha256": "3adba5410c857ae9e4ec9e2a6eb65428b928783746a7a34fd18679a4d29d83a4"
+    },
+    {
+      "path": "packs/vehicles/r1/licenses/pickup.ASSET-LICENSE.txt",
+      "bytes": 794,
+      "sha256": "2586337f44954739f199319bbb286f07b3ff183ce0d6264de494e47344b101ec"
+    },
+    {
+      "path": "packs/vehicles/r1/editable/pickup-editable.zip",
+      "bytes": 261330,
+      "sha256": "78d1071e89746bbba68f2509274e946f176c47799c3b31dfd474b04bdcd911cb"
+    },
+    {
+      "path": "media/vehicles/r1/review/pickup.png",
+      "bytes": 46155,
+      "sha256": "3bf3c0aa180e2b56d8b25f51542dd1819655dec8164e8515868eea4665d3c9a0"
+    },
+    {
+      "path": "packs/vehicles/r1/models/box-truck.glb",
+      "bytes": 169772,
+      "sha256": "bea417d293d5e2a32f99795bc2841ef845bd1a94ccc6f9d9e4691c050c5a0e94"
+    },
+    {
+      "path": "packs/vehicles/r1/licenses/box-truck.ASSET-LICENSE.txt",
+      "bytes": 794,
+      "sha256": "024bf2497a9dfa0873bf91491e3076c8ba515890455a83f2151bf5736acb906d"
+    },
+    {
+      "path": "packs/vehicles/r1/editable/box-truck-editable.zip",
+      "bytes": 242952,
+      "sha256": "4250f94271161b6a14fee4a9239c81ba4da9f88094c10ff9e18ed337d4b0db40"
+    },
+    {
+      "path": "media/vehicles/r1/review/box-truck.png",
+      "bytes": 36543,
+      "sha256": "d6e361cd2d663333621a130e92434e5977f66150660809ddd712e505a44ce423"
+    },
+    {
+      "path": "packs/vehicles/r1/models/transit-bus.glb",
+      "bytes": 194196,
+      "sha256": "c55fbf069668774e0d3dc98db76c3efd05ff630f0ffd2b2cf475579336875617"
+    },
+    {
+      "path": "packs/vehicles/r1/licenses/transit-bus.ASSET-LICENSE.txt",
+      "bytes": 798,
+      "sha256": "c141b6823a31569cdcf7096a075c5995eea3ad7e4c522b5790dc56d4597e1ab5"
+    },
+    {
+      "path": "packs/vehicles/r1/editable/transit-bus-editable.zip",
+      "bytes": 264771,
+      "sha256": "a6ab52c86df3abb02de42439e3ee73853adb21d740d095eb5df9dd288c530546"
+    },
+    {
+      "path": "media/vehicles/r1/review/transit-bus.png",
+      "bytes": 29180,
+      "sha256": "82312e20de545e4b18c8d9cc2c2202927a5f67a4a722b00f76529a2dcee1d77b"
+    },
+    {
+      "path": "packs/vehicles/r1/generic-road-vehicles-runtime.zip",
+      "bytes": 1335772,
+      "sha256": "62dff817ce3182d94d96a686a330a44006dfbcde92eb7fc5a48b9556bd009ae6"
     }
   ]
 }
