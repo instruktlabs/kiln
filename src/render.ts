@@ -30,6 +30,7 @@ import { collectLodSets } from './lod';
 import { applyLodChains, summarizeLodChains } from './lod-export';
 import { communitySceneDocument, resolveGltfExporter } from './community-exporter';
 import { rigExtrasForExport } from './rig-export';
+import { type AuthorExtras, collectAuthorExtras } from './user-data-extras';
 import {
   geometryAttributeValues,
   inspectGeometryExport,
@@ -444,11 +445,14 @@ function bridgeMaterial(
   threeMat: THREE.Material,
   cache: Map<THREE.Material, GtMaterial>,
   textureCache: Map<THREE.Texture, GtTexture>,
+  authorExtras?: AuthorExtras,
 ): GtMaterial {
   const cached = cache.get(threeMat);
   if (cached) return cached;
 
   const mat = doc.createMaterial(threeMat.name || undefined);
+  const author = authorExtras?.material(threeMat);
+  if (author) mat.setExtras(author);
 
   // Duck-typed material checks — see executeKilnCode for the rationale.
   // Sandbox-created materials are different class instances of the same
@@ -701,16 +705,16 @@ function bridgeNode(
   nodeMap: Map<string, GtNode>,
   meshCache: Map<string, GtMesh>,
   texCache: Map<THREE.Texture, GtTexture>,
+  authorExtras?: AuthorExtras,
 ): GtNode {
   const gtNode = doc.createNode(threeObj.name || undefined);
 
-  // Only validated versioned Kiln semantic and rig payloads are promoted from Three.js
-  // userData into glTF extras. Arbitrary userData can contain encoded textures
-  // and other non-JSON values, so exporting it wholesale is intentionally
-  // forbidden. A malformed reserved payload is an authoring error rather than
+  // Author userData reaches extras only through `collectAuthorExtras` (plain JSON, no
+  // `kiln*` key, bounded); the engine's own reserved payloads are promoted here only
+  // after validation. A malformed reserved payload is an authoring error rather than
   // something the bridge may silently drop.
   const semanticValue = threeObj.userData[KILN_SEMANTIC_EXTRAS_KEY];
-  const extras = rigExtrasForExport(threeObj);
+  const extras = { ...authorExtras?.node(threeObj), ...rigExtrasForExport(threeObj) };
   let semanticForExport = semanticValue;
   if ((threeObj as THREE.Object3D & { isSprite?: boolean }).isSprite) {
     // glTF has no native Sprite primitive. The bridge emits a quad below and
@@ -765,7 +769,9 @@ function bridgeNode(
   if ((threeObj as { isMesh?: boolean }).isMesh) {
     const threeMesh = threeObj as THREE.Mesh;
     const threeMats = Array.isArray(threeMesh.material) ? threeMesh.material : [threeMesh.material];
-    const gtMats = threeMats.map((material) => bridgeMaterial(doc, material, matCache, texCache));
+    const gtMats = threeMats.map((material) =>
+      bridgeMaterial(doc, material, matCache, texCache, authorExtras),
+    );
     const gtMat = Array.isArray(threeMesh.material) ? gtMats : gtMats[0]!;
 
     // Key the mesh cache by (geometry ref, material ref) so createInstance
@@ -782,7 +788,7 @@ function bridgeNode(
   } else if ((threeObj as THREE.Object3D & { isSprite?: boolean }).isSprite) {
     const sprite = threeObj as THREE.Sprite;
     const threeMat = sprite.material;
-    const gtMat = bridgeMaterial(doc, threeMat, matCache, texCache);
+    const gtMat = bridgeMaterial(doc, threeMat, matCache, texCache, authorExtras);
     // Unit XY quad matches Three.js Sprite scale semantics. Non-default center
     // and material rotation are baked into the quad; camera-facing remains an
     // explicit semantic runtime behavior on the exported node.
@@ -808,7 +814,16 @@ function bridgeNode(
   }
 
   for (const child of threeObj.children) {
-    const childNode = bridgeNode(doc, buf, child, matCache, nodeMap, meshCache, texCache);
+    const childNode = bridgeNode(
+      doc,
+      buf,
+      child,
+      matCache,
+      nodeMap,
+      meshCache,
+      texCache,
+      authorExtras,
+    );
     gtNode.addChild(childNode);
   }
 
@@ -1475,12 +1490,16 @@ export async function renderSceneToGLB(
   }
 
   const nativeClips = clipsWithDurationSamples(clips);
+  // Author userData decided once, so both exporters write the same extras.
+  const authorExtras = collectAuthorExtras(root);
+  warnings.push(...authorExtras.warnings);
   const doc =
     exporter === 'three'
       ? await communitySceneDocument(
           root,
           nativeClips,
           (await import('./exporter-node')).nodeExportPlatform,
+          authorExtras,
         )
       : new Document();
   // `asset.generator` defaults to the serializer's own version string, which put
@@ -1500,7 +1519,16 @@ export async function renderSceneToGLB(
     const texCache = new Map<THREE.Texture, GtTexture>();
     const nodeMap = new Map<string, GtNode>();
 
-    const rootNode = bridgeNode(doc, buf, root, matCache, nodeMap, meshCache, texCache);
+    const rootNode = bridgeNode(
+      doc,
+      buf,
+      root,
+      matCache,
+      nodeMap,
+      meshCache,
+      texCache,
+      authorExtras,
+    );
     const gltfScene = doc.createScene(opts.sceneName ?? 'Scene').addChild(rootNode);
     doc.getRoot().setDefaultScene(gltfScene);
 

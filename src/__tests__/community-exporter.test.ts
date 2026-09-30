@@ -38,12 +38,15 @@ function fixture() {
   );
   mesh.name = 'Mesh_Pennant';
   mesh.userData['privatePayload'] = 'do not export';
+  // Plain JSON exports as extras (R48); an engine key and a non-JSON value never do.
+  mesh.userData['kilnPrivate'] = 'engine only';
+  mesh.userData['handle'] = new THREE.Vector3(1, 2, 3);
   pivot.add(mesh);
   return root;
 }
 const io = () => new WebIO().registerExtensions(ALL_EXTENSIONS);
 
-test('experimental exporter preserves attributes and physical extensions without arbitrary metadata', async () => {
+test('experimental exporter preserves attributes and physical extensions and only plain author metadata', async () => {
   process.env['KILN_GLTF_EXPORTER'] = 'three';
   const result = await renderSceneToGLB(fixture(), { optimize: 'off', derivative: true });
   expect(result.gltfValidation.issues.numErrors).toBe(0);
@@ -63,7 +66,8 @@ test('experimental exporter preserves attributes and physical extensions without
       .listNodes()
       .find((node) => node.getName() === 'Mesh_Pennant')!
       .getExtras(),
-  ).toEqual({});
+  ).toEqual({ privatePayload: 'do not export' });
+  expect(result.warnings.join(' ')).toContain('Mesh_Pennant userData.handle (a Vector3)');
   expect(result.warnings.some((warning) => warning.includes('color is not preserved'))).toBe(false);
 });
 

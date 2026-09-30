@@ -589,6 +589,7 @@ export async function loadGlbReviewScene(bytes: Uint8Array): Promise<LoadedGlbRe
         threeMaterial.emissive.fromArray(flat.emissive);
         threeMaterial.emissiveIntensity = flat.emissiveIntensity;
         if (material) {
+          threeMaterial.userData = { ...material.getExtras() };
           threeMaterial.map = preserveTexture(
             material.getBaseColorTexture(),
             'color',

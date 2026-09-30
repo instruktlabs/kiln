@@ -31,6 +31,7 @@ import { REMOVED_AUTHORING_HELPERS } from './geometry-catalog';
 import { sourceBindings } from './source-bindings';
 import { AuthoringDiagnosticError } from './evaluator/authoring-diagnostic';
 import { analyzeBuildTimeThrows } from './source-runtime-checks';
+import { analyzeUserData } from './user-data-validation';
 
 // =============================================================================
 // Types
@@ -351,6 +352,9 @@ export function validate(code: string, _opts: { category?: string } = {}): Valid
     if (issue.code === 'REMOVED_HELPER') issues.push(issue);
     else warnings.push(issue);
   }
+
+  // userData exports as glTF extras; name what the source already shows will not export.
+  warnings.push(...analyzeUserData(ast));
 
   return toResult(issues, warnings, analysis.estimatedTris);
 }
