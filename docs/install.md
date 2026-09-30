@@ -1,65 +1,43 @@
 # Install Kiln for your coding agent
 
-Version **0.8.0** is being distributed as a source update first. No 0.8.0 package
-has been published. GitHub Releases still supplies the earlier packaged version;
-it does not acquire Discovery or the migration changes by using newer docs.
-The [qualification report](reviews/2026-09-23-v08-candidate.md) distinguishes current
-local checks, CI and remaining GPU/provider limits.
+This guide installs Kiln **0.9.0**: standalone authoring with optional projects, a
+material library and Live Review in the local dashboard. [CHANGELOG.md](../CHANGELOG.md)
+lists what changed. Existing users should read the [migration notes](migration.md)
+before upgrading a workspace.
 
-## Use the 0.8 source release
+## Install the package
 
-The `v0.8.0` tag identifies the verified main commit. Its GitHub archive includes
-the built CLI/MCP runtimes, renderer code, plugins and skills. Install it with
-supported Node and npm; this route requires neither Bun nor a build step:
+Kiln is distributed as an npm package tarball, `kiln-engine-VERSION.tgz`, that you
+install with Node.js and npm. Download it with `SHA256SUMS.txt` from the
+[latest release](https://github.com/matthew-kissinger/kiln/releases/latest), or build it
+from a checkout as described in [Install a local package](#install-a-local-package).
+The package includes the built CLI/MCP runtimes, renderer code, plugins and skills.
+You do not need Bun, a source checkout, a build step or a separate model API key to
+use the CLI/MCP tools. Use the real tarball path and filename:
 
 ```sh
 mkdir kiln-install
 cd kiln-install
 npm init -y
-npm install "https://github.com/matthew-kissinger/kiln/archive/refs/tags/v0.8.0.tar.gz" --omit=dev --include=optional
+npm install /absolute/path/to/kiln-engine-VERSION.tgz --omit=dev --include=optional
 npm exec --offline -- kiln-init ../my-assets --harness opencode
 cd ../my-assets
 # Follow START.md for your harness
 ```
 
-You can also download that archive and give its local path to `npm install`.
-This is GitHub's source archive, with more repository files than a curated
-`npm pack` tarball. It does not create an npm registry publication or a GitHub
-Release with separately uploaded packages. The candidate archive passed the same
-17 installed CLI/MCP/export checks on Windows; CI separately tests the curated
-tarball across supported platforms.
-
-To modify Kiln itself, clone the tag and build with Bun 1.4.2 instead:
-
-```sh
-git clone --branch v0.8.0 --single-branch https://github.com/matthew-kissinger/kiln.git
-cd kiln
-bun install --frozen-lockfile
-bun run build:runtime
-node scripts/create-workspace.mjs ../my-assets --harness opencode
-cd ../my-assets
-# Follow START.md for your harness
-```
+Kiln is not published to the npm registry; do not run a registry install command.
+To modify Kiln itself, [install from the repository](#install-from-the-repository)
+and build with Bun 1.4.2 instead.
 
 Choose your harness from the setup guide. Existing users should read
 [migration notes](migration.md), then run the newer installation's `kiln-init --check`
 and `--upgrade` as described below to refresh managed workspace skills and launchers.
 Do not point an old package at new documentation and assume its tools have changed.
 
-## Use an earlier published package
-
-Use a built Kiln package with Node.js and your existing coding agent. You do not
-need Bun, a source checkout, or a separate model API key to use the CLI/MCP tools.
-Bun is needed only when building Kiln itself.
-
-Download the `.tgz` package from [GitHub Releases](https://github.com/matthew-kissinger/kiln/releases),
-or build one using the contributor steps below. npm registry publication is separate;
-do not run an unpublished registry command.
-Earlier released-package checks cover Windows, Linux, and hosted Apple
-Silicon/Intel Mac; see the [dated platform receipts](evaluation/platform-matrix.md).
-Those results do not qualify this unification checkout. Community reports on local
-Mac installations are still welcome. CPU package setup and optional GPU support
-are separate checks.
+Released-package checks cover Windows, Linux, and hosted Apple Silicon/Intel Mac;
+see the [dated platform receipts](evaluation/platform-matrix.md). A receipt qualifies
+the tarball it names, not a later build. Community reports on local Mac installations
+are welcome. CPU package setup and optional GPU support are separate checks.
 
 ## Choose the simplest connection
 
@@ -80,12 +58,11 @@ For agent-assisted installation, give your agent the repository URL and ask:
 ## Release compatibility
 
 Install the [latest release](https://github.com/matthew-kissinger/kiln/releases/latest).
-It carries the full tool set, including `kiln_save`, `kiln_assets`, `kiln_export`,
-`kiln_present` and `kiln_import` -- the five that the earlier `oss-2026-09-05` package
-predated, which is why that one needed a checkout instead. The
-[generated tool reference](tools.md) describes this checkout. When installing an
-older release, use the documentation and receipt attached to that release;
-0.8 Discovery and migration changes are not retroactively available there.
+Its connected MCP server lists the fourteen tools in the
+[generated tool reference](tools.md), plus `kiln_project`, `kiln_material` and
+`kiln_review` from the packaged local host: seventeen in all. When installing an
+older release, use the documentation and receipt attached to that release; newer
+tools and migration changes are not retroactively available there.
 
 Every release attaches a per-platform package receipt (Linux, Windows, macOS arm64,
 macOS x64) and `SHA256SUMS.txt`. Each receipt records the sha256 of the tarball beside
@@ -225,7 +202,7 @@ Use the actual tarball path and filename returned by `npm pack`:
 mkdir kiln-install
 cd kiln-install
 npm init -y
-npm install /absolute/path/to/kiln-engine-VERSION.tgz --omit=dev
+npm install /absolute/path/to/kiln-engine-VERSION.tgz --omit=dev --include=optional
 npm exec --offline -- kiln-init ../my-assets --harness opencode
 ```
 
@@ -405,14 +382,13 @@ checks. These versioned runner labels follow [GitHub's runner catalog](https://d
 GitHub maintains the underlying images, so the labels are not immutable OS images.
 Both architectures passed all 16 package checks in [CI run 33996715717](https://github.com/matthew-kissinger/kiln/actions/runs/33996715717). The retained receipts are linked in the platform matrix.
 
-The v0.8 candidate adds Linux package jobs at Node 20.15.0, 22.2.0 and
-24.20.0 using each distribution's npm. The release build retains its pinned
-maintainer toolchain. A separate Ubuntu 24.04 job selects Mesa software Vulkan
-and exercises textured renderer readback from the installed tarball, recording
-the adapter class and PNGs. This probe explicitly permits a software adapter;
-normal Kiln GPU rendering continues to require hardware. These new jobs are
-prepared but have not run for this unpushed candidate. They cannot qualify
-physical AMD, Intel or Apple GPU behavior.
+CI also runs Linux package jobs at Node 20.15.0, 22.2.0 and 24.20.0 using each
+distribution's npm. The release build retains its pinned maintainer toolchain.
+A separate Ubuntu 24.04 job selects Mesa software Vulkan and exercises textured
+renderer readback from the installed tarball, recording the adapter class and PNGs.
+This probe explicitly permits a software adapter; normal Kiln GPU rendering
+continues to require hardware. A job qualifies only the tarball it ran against,
+and none of these jobs qualifies physical AMD, Intel or Apple GPU behavior.
 
 ## Embed the tools
 

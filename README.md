@@ -55,31 +55,35 @@ https://github.com/user-attachments/assets/375327bc-58bc-4344-bbb4-985d92c6f63a
 [Browse the interactive gallery](https://kilnstudio.tools/#/gallery)
 · [All examples and model credits](docs/examples.md)
 
-The working tree also includes a [local dashboard, optional projects and Live Review foundation](docs/projects-and-live-review.md). Standalone assets remain a complete workflow; projects add shared briefs, inventories, art direction and material pins when useful. Its [qualification checkpoint](docs/plans/2026-09-26-project-foundation.md) is separate from the released archive below.
+Kiln's local dashboard adds [optional projects, a material library and Live Review](docs/projects-and-live-review.md). Standalone assets remain a complete workflow; projects add shared briefs, inventories, art direction and material pins when useful.
 
 These are saved examples from different authoring runs, not a model ranking.
 They are historical showcases from earlier Kiln versions, with unvetted modeling
 issues; they are not golden outputs or reference solutions.
 [Credits, review conditions and build records](docs/example-provenance.md).
 
-Version **0.8.0** unifies authoring around Discovery and optional requirements,
-with updated geometry helpers, edit evidence and separate native-agent context.
-The tagged GitHub archive includes the built runtimes and is installable with npm.
-An official 0.8.0 package release has not been published. The [qualification report](docs/reviews/2026-09-23-v08-candidate.md)
-records checks and support limits; the [progress checkpoint](docs/plans/2026-09-22-progress-checkpoint.md)
-retains the detailed work history.
-
+Version **0.9.0** adds optional projects, a curated and procedural material library
+and Live Review of CLI/MCP work to standalone authoring. Review views use the calibrated
+`review-neutral-v1` lighting rig, so a lit surface reads back close to its authored
+colour. Results are compact by default, and the release fixes the defects authors
+reported against 0.8. [CHANGELOG.md](CHANGELOG.md) lists the changes and the
+[migration notes](docs/migration.md#changes-in-090) list what an existing author will
+notice. The [foundation checkpoint](docs/plans/2026-09-26-project-foundation.md) records
+how projects, materials and Live Review were qualified.
 
 ## Install and start an asset workspace
 
 Use Node.js **20.15.0+ on the 20.x line**, or **22.2.0 and later**, with npm.
-Bun and a separate model API key are not required for this installation:
+Download the package tarball, `kiln-engine-VERSION.tgz`, from the
+[latest release](https://github.com/matthew-kissinger/kiln/releases/latest), or build it
+from a checkout with `npm pack`. Bun and a separate model API key are not required
+for this installation:
 
 ```sh
 mkdir kiln-install
 cd kiln-install
 npm init -y
-npm install "https://github.com/matthew-kissinger/kiln/archive/refs/tags/v0.8.0.tar.gz" --omit=dev --include=optional
+npm install /absolute/path/to/kiln-engine-VERSION.tgz --omit=dev --include=optional
 npm exec --offline -- kiln-init ../my-assets --harness opencode
 cd ../my-assets
 # Follow START.md for your harness
@@ -87,8 +91,8 @@ cd ../my-assets
 
 The installation stays separate from your asset workspace. Choose `claude`, `codex`,
 `opencode`, `hermes`, `agy`, `copilot`, or `cursor-agent` for `--harness`.
-The [installation guide](docs/install.md#use-the-08-source-release) covers local
-archive files, existing-workspace upgrades and platform qualification. For a new
+The [installation guide](docs/install.md#install-the-package) covers checksums,
+local package builds, existing-workspace upgrades and platform qualification. For a new
 installation, a maintained Node 22 or 24 LTS release is recommended; Node 20
 compatibility accommodates existing distribution-managed installations.
 

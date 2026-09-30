@@ -55,8 +55,8 @@ adapters have offline contract evidence; their model access, quotas, tool schema
 image delivery and cache behavior need qualification on the chosen route. Model
 call counts are observations, not recommended universal limits. The native skill
 and image-history policy do not replace geometry inspection or guarantee that
-every edit preserves the brief. The v0.8 reference-separation change has scripted SDK coverage; the live trial
-above predates that change. Cold native-provider installation remains separate.
+every edit preserves the brief. The separate native reference context described below has scripted SDK
+coverage; the live trial above predates it. Cold native-provider installation remains separate.
 
 Native authoring receives the brief, current tool definitions and explicitly
 supplied native skills or selected technical references. The tested clean workspace exposed no repository/gallery

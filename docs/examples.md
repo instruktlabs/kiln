@@ -9,8 +9,8 @@ These are historical showcases generated with earlier Kiln versions. They have
 not been fully vetted and may contain intersections, disconnected parts or other
 modeling errors. They are not golden outputs or reference solutions. Replaying
 one can reveal a change in engine behavior; a passing replay does not establish
-asset quality. Gallery repair, regeneration and replacement are outside the
-current V1 unification work.
+asset quality. Gallery repair, regeneration and replacement are separate
+from engine releases.
 
 Listed triangle counts describe those historical builds. They are not fixed
 targets for the upgraded engine's tessellation or geometry cleanup.

@@ -49,19 +49,18 @@ draft using the same bounded layer recipes as the existing procedural compiler. 
 height pixels through the existing wrapped normal derivation. `import` accepts a complete
 normalized payload. None of these operations acquires source images from a provider.
 
-The optional [local curated-material index](C:/Users/Mattm/.codex/visualizations/2026/09/26/01a0dfa7-ea0e-73a3-8bc4-743fb44d3d1b/kiln-commons-research/material-foundation/README.md)
-lists the 16 qualified records, source/license evidence, visual limitations and five complete
-theme payloads. These are local research-workspace links, not public downloads or npm package
-contents. For example, the [wood resource pack](C:/Users/Mattm/.codex/visualizations/2026/09/26/01a0dfa7-ea0e-73a3-8bc4-743fb44d3d1b/kiln-commons-research/material-foundation/payloads/wood-pack.json)
-contains normalized maps, recipes and provenance ready for explicit import:
+Curated resource packs are complete normalized payloads: maps, recipes and source/license
+provenance, ready for explicit import. They are not npm package contents or public downloads;
+use a pack whose source and license you can verify, such as one exported from another
+workspace with `material export`:
 
 ```sh
 node kiln.mjs material import --file /path/to/wood-pack.json
 ```
 
 Use the selected payload's actual local path. Importing it does not create a project or fetch
-its original source URLs. The five shipped procedural presets remain available independently
-of this local corpus.
+its original source URLs. The five shipped procedural presets remain available without any
+resource pack.
 
 Pin the returned material ID and revision hash before using its resource IDs. A project is
 optional: pass a pin array as MCP `materialDependencies` or CLI `--materials pins.json` for

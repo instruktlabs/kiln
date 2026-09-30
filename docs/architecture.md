@@ -30,7 +30,8 @@ See [package.json](../package.json) for all exports.
 ## Tool surfaces
 
 [src/tools/registry.ts](../src/tools/registry.ts) owns the current tool definitions.
-`createKilnProgramToolRegistry` supplies fourteen MCP tools.
+`createKilnProgramToolRegistry` supplies fourteen MCP tools; the packaged local host
+adds `kiln_project`, `kiln_material` and `kiln_review`, for seventeen over stdio.
 `createKilnNativeToolRegistry` reuses those definitions, removes unavailable delivery
 services and adds exact-reference completion. The retired mutable-buffer factories
 and separate `kiln_screenshot` are not the supported native workflow.
@@ -38,7 +39,7 @@ and separate `kiln_screenshot` are not the supported native workflow.
 | Interface | Execution and feedback | Completion and host services |
 | --- | --- | --- |
 | CLI | Node commands call shared engine operations; render/inspection receipts accompany image files that the host agent must read. | The invoking agent controls delivery. CLI/MCP can share the same workspace, stores and requirements binding. |
-| MCP | Fourteen registry tools over stdio; unified `kiln_render` returns metrics, QA, part paths and typed images with fidelity. Numeric-only inspection can omit images. | The host owns the agent loop; no terminal submit tool. Host media handling still needs qualification. |
+| MCP | Seventeen registry tools over stdio (fourteen program tools plus project, material and review); unified `kiln_render` returns metrics, QA, part paths and typed images with fidelity. Numeric-only inspection can omit images. | The host owns the agent loop; no terminal submit tool. Host media handling still needs qualification. |
 | Native Strands | Direct in-process registry adapters with injected stores, requirements and rendering; no CLI/MCP hop. Same source/reference/edit/inspection semantics. | Ten default tools including `kiln_finish`; five delivery tools when an asset library is injected. A configured skill-resource reader adds one tool. Finish selects a retained reviewed revision; it does not certify QA success. |
 
 Discovery needs no inference service. Recipes are optional guidance; requirements

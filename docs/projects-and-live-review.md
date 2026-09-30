@@ -1,6 +1,6 @@
 # Projects and Live Review
 
-This working-tree foundation adds shared project configuration, a material library and observation history to the packaged local dashboard. It is not part of the published 0.8 source archive. See the [qualification checkpoint](plans/2026-09-26-project-foundation.md) for remaining acceptance work.
+The packaged local dashboard adds shared project configuration, a material library and observation history to standalone authoring. The CLI, the stdio MCP tools `kiln_project`, `kiln_material` and `kiln_review`, and the dashboard read and write the same records. The [foundation checkpoint](plans/2026-09-26-project-foundation.md) records how this was qualified and what production acceptance remains.
 
 ## One workspace across interfaces
 
@@ -83,7 +83,7 @@ The MCP `kiln_project` export action returns an exact revision resource URI for 
 
 ## GPU connection and performance qualification
 
-Local development uses the shared renderer on this machine. Remote rendering is an explicit endpoint selection through `--render-port` where supported, or `KILN_RENDER_PORT_URL`; an explicit endpoint never triggers local service replacement. CLI/MCP use the host connection resolver. Embedded callers inject a render port. Do not construct an unauthenticated raw transport after merely discovering a local service. See the [GPU integration review](plans/2026-09-26-gpu-service-integration.md) for the reproduced authentication failure, remaining credential-policy ambiguity and proposed unified connection contract.
+Local development uses the shared renderer on this machine. Remote rendering is an explicit endpoint selection through `--render-port` where supported, or `KILN_RENDER_PORT_URL`; an explicit endpoint never triggers local service replacement. A URL whose origin is exactly the shared local socket (`http://127.0.0.1:8000` by default) is the local service and takes the local route. CLI/MCP use the host connection resolver. Embedded callers inject a render port. Do not construct an unauthenticated raw transport after merely discovering a local service. See the [GPU integration review](plans/2026-09-26-gpu-service-integration.md) for the reproduced authentication failure, remaining credential-policy ambiguity and proposed unified connection contract.
 
 Use `--render gpu` for required GPU image qualification. `auto` can use the CPU for untextured nonmetallic scenes or degrade when a GPU view is unavailable, with explicit fidelity metadata; `cpu` is an offline diagnostic mode. The interactive viewport and recorded image are different render paths. GPU output is appearance evidence, not structural QA authority.
 

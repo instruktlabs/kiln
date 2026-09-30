@@ -4,6 +4,87 @@ Existing inline-code transport and the legacy capture format remain supported. T
 Discovery and authoring-helper changes below require explicit migration; retired
 names have no callable compatibility aliases.
 
+## Changes in 0.9.0
+
+Upgrade the installation and each workspace together: run the new installation's
+`kiln-init --check`, then `--upgrade`, and restart the harness/MCP session. The
+connected server then lists seventeen tools: the fourteen program tools plus the
+optional `kiln_project`, `kiln_material` and `kiln_review`. Projects stay opt-in;
+standalone work needs no change. See [projects and Live Review](projects-and-live-review.md).
+
+Changes that alter output an author already has:
+
+- **Review lighting.** GPU views default to the calibrated `review-neutral-v1` rig, so a
+  lit matte surface reads back close to its authored colour. Assets whose albedo was
+  darkened to suit the old rig look too dark and need individual review; there is no
+  automatic conversion. Authoring tools use the default rig; render-port callers and
+  composer documents can still select `neutral-studio-v1` through `lightingPresetId`.
+  See [rendering](rendering.md).
+- **`extrudeProfile`** adds no side rings by default: `divisions` defaults to 0, or 16
+  when the extrusion twists, and must be a whole number of at least 0. Untwisted
+  extrusions have fewer triangles, so their bytes change.
+- **`sweepProfile`** keeps hard corners: `creaseAngle` defaults to 60 degrees, so
+  triangles, squares and pentagons show hard edges. Pass `creaseAngle: 180` for the
+  old smooth shading. `cap` also accepts `'start'` or `'end'`.
+- **Emissive export.** The GLB `emissiveFactor` is now the colour Three.js renders,
+  colour times intensity; above 1 it is normalised and carries
+  `KHR_materials_emissive_strength`. Emissive assets export different bytes.
+- **Animated GLBs** drop the `kilnReviewClipsV1` scene extra unless a track could not
+  become a native channel, so their bytes change once. `createClip(name, duration,
+  tracks, { loop })` records loop intent as the animation extra `kilnLoopIntent`;
+  a declared loop whose end differs from its start warns `LOOP_NOT_CLOSED`.
+- **Perspective cameras** given without `near` set it to half the distance to the
+  nearest geometry (at least 0.001), so large assets lose false z-fighting and their
+  images change.
+- **CPU views** draw translucent surfaces after opaque ones, farthest first, so glass
+  shows what is behind it.
+- **Isolated capture shots** send the GPU only the subject; hidden meshes no longer
+  appear in the GPU image.
+- **Workspace CLI** (`node kiln.mjs`) re-executes under the Node recorded in
+  `.kiln/workspace.json`, so a CLI export equals `kiln_save` bytes for the same
+  reference. A workspace whose recorded Node is missing needs `--repair`.
+
+Changes to results and messages:
+
+- **Compact results.** MCP `kiln_render` and `kiln_screenshot_animation` return compact
+  results by default: every acceptance field, warn and block finding, the first finding
+  of each observed code, counts of repeated findings and 24 part paths. Pass
+  `detail: "full"` for the complete report. `kiln_view_interior`, `kiln_inspect` and
+  `kiln_edit` also return compact results. The CLI, retained artifacts and Live Review
+  keep complete reports.
+- **Sizes.** `kiln_screenshot_animation` and CLI `animation` accept a frame `size` of 128
+  to 1024 px (default 256). Versioned capture shots accept up to 2048 px.
+- **Identities.** `.kiln/workspace.json` records the bundle as `buildIdentity`; discovery
+  reports `execution.buildIdentity` beside the installed `runtimeIdentity`. Existing
+  manifests that still say `runtimeIdentity` are read without reporting drift.
+- **Rejections.** A build that throws names a closed cause (for example a
+  temporal-dead-zone read or a recipe override the recipe does not list) with advice
+  and a `Source check:` line. `kiln_validate` reports `TEMPORAL_DEAD_ZONE`,
+  `MATERIAL_RECIPE_OVERRIDE` and `MATERIAL_RECIPE_ID`.
+- **QA.** Overlap checks skip parts tagged at different `LOD<n>` levels and test the
+  likeliest pairs first; `TRUNCATED` separates unmeasurable pairs from pairs not reached,
+  and open shells are grouped by reason. Connectivity leaves out LOD1+ parts. Repeated
+  helper notes are reported once with a mesh count. The instanceability grade says it is
+  informational, and the blend-area budget names its largest materials.
+- **Inspection** evaluates with optimisation off, so it reports the materials the program
+  authored. Saved previews drawn from the persisted GLB record `exactArtifact: true`.
+- **Errors.** Ambiguous or missing subjects list the candidate paths; unknown camera keys
+  name the accepted keys (`fovDeg`, not `fov`); a bare `surfacePairs` path fails on its
+  own pair with candidates.
+- **Paths and hosts.** On Windows, collection roots in Git Bash form (`/c/...`) are
+  refused with the setting named; use `C:/...`. The asset viewer accepts `127.0.0.1`,
+  `localhost` and `[::1]` on its own port.
+- **CLI.** `kiln edit` and `kiln source` accept `--json`; `--capture` with
+  `output: "separate"` writes `<stem>.shot-01.png` and onward. `kiln service start`
+  joins or starts the shared renderer. A `KILN_RENDER_PORT_URL` naming the shared local
+  socket takes the local route. The CLI honours `KILN_RENDER` whenever `--render` is
+  omitted.
+- **Levels of detail.** `MSFT_lod` chains survive import, save, optimisation and export.
+  GPU instancing skips such files and full optimisation falls back to palette;
+  revision comparison still refuses them.
+
+## Geometry helper and diagnostic contracts
+
 `curveToMesh` and `pipeAlongPath` now reject missing, zero, negative, nonfinite or
 Float32-unrepresentable radii. Both signatures already required a radius; missing
 JavaScript values previously reached Three.js and silently selected its unit-radius
@@ -447,7 +528,7 @@ Changing cameras can reuse an evaluated asset; source references and cached buil
 have separate lifetimes. Keep exported source before removing `.kiln/programs`.
 [Execution, limits and cache controls](runtime.md).
 
-For a new task, generate a fresh external workspace from the candidate. Use
+For a new task, generate a fresh external workspace from the new installation. Use
 `--repair` for moved installations; it preserves authored files and copied skills
 and refuses to overwrite edited configuration. Use `--check` to diagnose stale
 runtime/skill copies and `--upgrade` to refresh unchanged managed files together.
@@ -461,7 +542,7 @@ project's `kiln_workspace` server to avoid selecting an older global plugin.
 ## Keep experimental operations explicit
 
 `implicitSurface` is experimental and bounded. General bevel, shell and remeshing
-are not stable helpers in this candidate. Their trials and adoption decisions are
+are not stable helpers in this release. Their trials and adoption decisions are
 documented in [geometry experiments](experiments/geometry-frontier.md) and the
 [additional acceptance cases](experiments/geometry-acceptance.md). Ordinary
 JavaScript functions remain the supported way to reuse parameterized parts.
