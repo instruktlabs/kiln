@@ -227,6 +227,24 @@ describe('review tool detail', () => {
     expect(json(compact).length).toBeLessThan(json(full).length / 2);
   }, 60_000); // Two CPU renders of a 40-part program: ~8 s cold on the Windows gate host.
 
+  it('leads with the refs and compacts the render embedded in kiln_edit', async () => {
+    const defs = createKilnProgramToolRegistry({ programStore: new MemoryProgramStore() });
+    const edit = defs.find((d) => d.name === 'kiln_edit')!;
+    const edited = (await edit.run({
+      code: stack,
+      edits: [{ oldString: 'i * 0.5', newString: 'i * 0.6' }],
+    })) as Record<string, unknown> & { render: ReviewView & { partsTruncated?: boolean } };
+    expect(edited.ok).toBe(true);
+    expect(Object.keys(edited).slice(0, 2)).toEqual(['programRef', 'parentRef']);
+    expect(edited.render.qaReport.detail).toBe('compact');
+    expect(edited.render.parts.length).toBeLessThanOrEqual(COMPACT_PART_PREVIEW);
+    expect(edited.render.partsTruncated).toBe(true);
+
+    const render = defs.find((d) => d.name === 'kiln_render')!;
+    const rendered = (await render.run({ programRef: edited.programRef })) as object;
+    expect(Object.keys(rendered)[0]).toBe('programRef');
+  }, 60_000); // Two CPU renders of a 40-part program plus the edit's static comparison.
+
   it('compacts animation review results and accepts a frame size', async () => {
     const animated =
       stack.replace("name: 'Stack'", "name: 'Spin'") +

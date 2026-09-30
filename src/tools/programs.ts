@@ -55,17 +55,21 @@ export function withProgramReferences(def: KilnToolDef, store: ProgramStore): Ki
         typeof args.code === 'string' ? args.code : await store.get(args.programRef as string);
       // Keep malformed drafts too, so a failed build can be repaired by reference.
       const parentRef = await retainProgram(store, code);
-      const output = (await def.run({ ...args, code })) as Record<string, unknown>;
+      const { programRef: _inner, ...output } = (await def.run({ ...args, code })) as Record<
+        string,
+        unknown
+      >;
+      // Refs lead the result, so a reader finds them before a long render report.
       if (def.name !== 'kiln_edit' || output.ok !== true || typeof output.code !== 'string')
-        return { ...output, programRef: parentRef };
+        return { programRef: parentRef, ...output };
       const programRef = await retainProgram(store, output.code);
       const { code: updatedCode, ...rest } = output;
       const includeCode = args.includeCode ?? args.code !== undefined;
       const diff = typeof rest.diff === 'string' ? rest.diff : '';
       return {
-        ...rest,
         programRef,
         parentRef,
+        ...rest,
         ...(includeCode
           ? { code: updatedCode }
           : {

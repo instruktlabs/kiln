@@ -99,3 +99,9 @@ export function compactReviewResult<T>(result: T, detail: ReviewDetail = 'compac
   }
   return out as T;
 }
+
+/** kiln_edit nests the render of the patched program; it takes the compact default too. */
+export function compactEditResult<T>(result: T): T {
+  if (!isRecord(result) || !isRecord(result.render)) return result;
+  return { ...result, render: compactReviewResult(result.render) } as T;
+}

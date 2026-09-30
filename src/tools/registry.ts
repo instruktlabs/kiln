@@ -24,6 +24,7 @@ import { createKilnMaterialDef } from './materials';
 import { createKilnReviewDef, type ReviewStore } from './review';
 import { withWorkspaceContext } from './workspace';
 import {
+  compactEditResult,
   compactReviewResult,
   partsHint,
   reviewDetailInput,
@@ -2332,7 +2333,7 @@ export function createKilnEditDef(context: KilnToolContext = {}): KilnToolDef {
     description: KILN_EDIT_DESCRIPTION,
     inputSchema: editInput,
     run: async (input) =>
-      compactReviewResult(
+      compactEditResult(
         await guardCaptureBudget('kiln_edit', input, statefulContext, () =>
           runEdit(editInput.parse(input), statefulContext),
         ),
