@@ -12,6 +12,8 @@ it('creates an isolated workspace whose Node CLI imports and exports exactly onc
     const setup = node([join(repo, 'scripts/create-workspace.mjs'), root, '--harness', 'claude']);
     expect(setup.status).toBe(0);
     expect(await readdir(root)).not.toContain('src');
+    // The store workspace.json and the harness configuration name exists from the start.
+    expect(await readdir(join(root, '.kiln', 'programs'))).toEqual([]);
     const source = '\uFEFF// café\r\nconst meta = {};\r\n';
     await writeFile(join(root, 'asset.kiln.js'), source);
     const imported = node(['kiln.mjs', 'source', 'asset.kiln.js']);

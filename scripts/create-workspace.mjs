@@ -698,7 +698,9 @@ export async function createWorkspace(directory, harness = 'claude', options = {
       await mkdir(dirname(join(stage, name)), { recursive: true });
       await writeFile(join(stage, name), body);
     }
-    await mkdir(join(stage, '.kiln'), { recursive: true });
+    // The program store workspace.json and the harness configuration name, present from
+    // the start so an empty expected directory never reads as a failed install.
+    await mkdir(join(stage, '.kiln', 'programs'), { recursive: true });
     await writeFile(join(stage, '.kiln/workspace.json'), quote(manifest));
     await writeFile(join(stage, '.gitignore'), '.kiln/programs/\n.hermes/\n*.glb\n*.png\n');
     for (const name of ['AGENTS.md', 'CLAUDE.md']) await writeFile(join(stage, name), guide);
