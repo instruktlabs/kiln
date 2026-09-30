@@ -2721,9 +2721,941 @@ var init_capture_cache = __esm(() => {
   init_capture_limits();
 });
 
-// src/assets.ts
+// src/texture-contract.ts
+var TEXTURE_USAGES;
+var init_texture_contract = __esm(() => {
+  TEXTURE_USAGES = [
+    "albedo",
+    "emissive",
+    "normal",
+    "roughness",
+    "metalness",
+    "metallicRoughness",
+    "occlusion"
+  ];
+});
+
+// src/evaluator/authoring-diagnostic.ts
+function authoringDiagnosticAdvice(diagnostic) {
+  if (diagnostic === "MESH_DATA_NONFINITE")
+    return "meshGeo positions, normals, UVs and tangents must contain finite numbers representable in Float32. Check missing XYZ components, undefined values, division by zero and overflowing calculations before constructing the arrays. Do not replace invalid values blindly with zero; correct the source calculation. Call kiln_discover for the exact meshGeo data contract.";
+  if (diagnostic === "PORTABLE_COLOR_ARGUMENT")
+    return "compilePortableMaterialSpecV2 baseColor and emissive must be numeric color integers from 0x000000 to 0xffffff, for example baseColor: 0x8a867c. CSS strings and materialRecipe hex-string overrides use different contracts. Omit these fields for their defaults, or call kiln_discover for the exact helper contract.";
+  if (diagnostic === "MATERIAL_RECIPE_TEXTURE_BINDING")
+    return "materialRecipe textureResources maps portable slots to approved resource ID strings. Slots are baseColor, normal, metallicRoughness, emissive and occlusion. albedo is a pbrMaterial field, not a recipe slot. Use kiln_discover to check each resource allowedSlots and recipeIds before binding it; no slot or resource substitution is applied.";
+  if (diagnostic === "PORTABLE_TEXTURE_REFERENCE")
+    return 'compilePortableMaterialSpecV2 textures require typed references: { kind: "resource", resourceId: "kiln.texture..." } for an approved resource, or { kind: "procedural", spec: { schemaVersion: 2, ... } } for a procedural texture. Bare resource ID strings are invalid here. Use portable slots such as baseColor and check the exact helper/resource contracts with kiln_discover.';
+  if (diagnostic === "TAPER_CONE_AXIS")
+    return 'taperConeGeo(radiusBottom, radiusTop, height, axis, segments): the fourth argument is axis, "x", "y" or "z" (default "y"). Segment count is the fifth argument, for example taperConeGeo(0.03, 0.02, 0.01, "x", 12). Call kiln_discover for the full contract.';
+  if (diagnostic === "PROCEDURAL_TEXTURE_BLEND")
+    return 'proceduralTexture layer blend must be normal, multiply, screen, or overlay. Omit blend for normal compositing. Call kiln_discover with ids ["proceduralTexture"] for the supported layer fields.';
+  if (diagnostic === "PART_NAME_ARGUMENT")
+    return "createPart(name, geometry, material, options?): the first argument is a string name. Put the parent Object3D in the fourth argument as { parent: root }.";
+  if (diagnostic === "PART_GEOMETRY_ARGUMENT")
+    return "createPart(name, geometry, material, options?): the second argument must be a BufferGeometry. Call geometry helpers, for example boxGeo(1, 1, 1), instead of passing the function. For async helpers such as roundedBoxGeo, extrudeProfile and revolveProfile, await the result inside async build() before passing it to createPart. Call kiln_discover for the exact return contract.";
+  if (diagnostic === "PART_MATERIAL_ARGUMENT")
+    return "createPart(name, geometry, material, options?): the third argument must be a Three.js material. Wrap a color with gameMaterial(0x808080); a number or settings object alone is not a material. Call kiln_discover for the chosen material helper contract.";
+  if (diagnostic === "SOLID_FLOAT32_COLLAPSE")
+    return "Solid output cannot retain valid faces at Float32 precision. Simplify subprecision features or recenter local geometry; review coincident cut boundaries. Smoothing or replacing normals does not repair collapsed triangles. Kiln did not export a partially repaired solid.";
+  if (diagnostic === "PROFILE_BEVEL_COLLAPSE")
+    return "extrudeProfile or revolveProfile: bevel is too large for this profile; erosion leaves nothing. Reduce bevel below half the narrowest section width, set bevel to 0, or widen the profile. Dimensions and bevel use the same asset units.";
+  if (diagnostic === "TUBE_RADIUS")
+    return "curveToMesh and pipeAlongPath require an explicit positive finite radius representable in Float32, in asset units. A missing or undefined radius is invalid; check the referenced dimension. Radius is half the tube diameter.";
+  if (diagnostic === "MATERIAL_ALPHA_MODE")
+    return 'pbrMaterial and portable material specs require lowercase alphaMode: "opaque", "mask", or "blend". Omit it for opaque. Exported glTF uses uppercase mode names; those are not authoring input values.';
+  if (diagnostic === "MATERIAL_COLOR_ARGUMENT")
+    return "gameMaterial, basicMaterial, glassMaterial and lambertMaterial take a color first: a hex number or CSS string. Settings belong in the second argument, for example gameMaterial(0x9a9a96, { roughness: 0.4, metalness: 0.8 }). pbrMaterial uses a different object-form contract; call kiln_discover for its texture and material fields.";
+  if (diagnostic === "MATERIAL_PACKED_CHANNELS")
+    return 'pbrMaterial requires one packed texture with G=roughness and B=metalness. Generate or load it for usage "metallicRoughness" and pass metallicRoughness, or pass the same packed texture in both roughness and metalness. Do not combine those forms or pass a texture in only one scalar slot. Plain roughness and metalness values are 0..1 numbers. Call kiln_discover for the exact texture contract.';
+  if (diagnostic === "REMOVED_HELPER")
+    return "Generated source references a retired Kiln global. Call kiln_validate for name-specific migration guidance, then kiln_discover for the replacement contract. No compatibility aliases are provided.";
+  if (diagnostic === "UNBOUND_VARIABLE")
+    return UNBOUND_VARIABLE_ADVICE;
+  if (diagnostic === "ROUNDED_BOX_RADIUS")
+    return ROUNDED_BOX_RADIUS_ADVICE;
+  if (diagnostic === "GEAR_RADII_ORDER")
+    return GEAR_RADII_ORDER_ADVICE;
+  if (diagnostic === "PROCEDURAL_TEXTURE_UNKNOWN_KEY")
+    return PROCEDURAL_TEXTURE_UNKNOWN_KEY_ADVICE;
+  if (diagnostic === "MATERIAL_FRACTION_RANGE")
+    return MATERIAL_FRACTION_RANGE_ADVICE;
+  if (diagnostic === "PROFILE_HOLES_UNSUPPORTED")
+    return PROFILE_HOLES_UNSUPPORTED_ADVICE;
+  if (diagnostic === "PROFILE_CORRESPONDENCE_COLLAPSE")
+    return PROFILE_CORRESPONDENCE_COLLAPSE_ADVICE;
+  return diagnostic === "PARAMETRIC_PERIODIC_ENDPOINT" ? PARAMETRIC_PERIODIC_ENDPOINT_ADVICE : "";
+}
+function rethrowAuthoringError(error) {
+  if (error instanceof ReferenceError && /(?: is not defined$|^Can't find variable: )/.test(error.message) && !/\b(?:loadTexture|process|fetch|globalThis|require|Bun|Deno)\b/.test(error.message)) {
+    throw new AuthoringDiagnosticError("UNBOUND_VARIABLE");
+  }
+  throw error;
+}
+var UNBOUND_VARIABLE_ADVICE = "Check variable spelling and scope: generated code used an undeclared variable. Read the current source and check declarations before retrying. If it was meant to be a Kiln helper, call kiln_discover to confirm the exact name and signature; the sandbox exposes only those globals.", GEAR_RADII_ORDER_ADVICE = "gearGeo requires boreRadius < rootRadius < tipRadius; specify rootRadius when changing tipRadius. Omitted radii keep their absolute defaults.", ROUNDED_BOX_RADIUS_ADVICE = "roundedBoxGeo: radius must be less than half the smallest dimension. Reduce radius or increase the smallest dimension; equality is invalid.", PROCEDURAL_TEXTURE_UNKNOWN_KEY_ADVICE = 'Remove unsupported proceduralTexture fields. Call kiln_discover with ids ["proceduralTexture"] and use only the documented fields for the selected layer op.', MATERIAL_FRACTION_RANGE_ADVICE = "Material fractions must be finite numbers between 0 and 1, inclusive. In proceduralTexture, mortarWidth and stagger are fractions, not pixels; opacity uses the same range. materialRecipe roughness, metalness, opacity, alphaCutoff and emissiveIntensity use 0..1. portableMaterial roughness, metalness and alphaCutoff also use 0..1; its emissiveIntensity has a separate 0..64 range. Call kiln_discover for the exact field contracts.", PARAMETRIC_PERIODIC_ENDPOINT_ADVICE = "Periodic parametricSurface endpoints must return matching positions. For periodicU, sample(uMin, v) and sample(uMax, v) must match; for periodicV, sample(u, vMin) and sample(u, vMax) must match.", PROFILE_HOLES_UNSUPPORTED_ADVICE = "loftProfiles and sweepProfile: holes are unsupported in options or sections. Use extrudeProfile for a holed cross-section with optional twist/taper; independently varying contours need explicit geometry or solid subtraction. cap:false does not create inner walls or thickness.", PROFILE_CORRESPONDENCE_COLLAPSE_ADVICE = "loftProfiles or sweepProfile: corresponding profile edges collapse between stations. Check matching start vertices and vertex order; for an intended twist, add intermediate sections or path stations. No automatic correspondence repair is applied. Other self-intersections remain unchecked.", AuthoringDiagnosticError;
+var init_authoring_diagnostic = __esm(() => {
+  AuthoringDiagnosticError = class AuthoringDiagnosticError extends Error {
+    diagnostic;
+    constructor(diagnostic, message = authoringDiagnosticAdvice(diagnostic)) {
+      super(message);
+      this.diagnostic = diagnostic;
+      this.name = "AuthoringDiagnosticError";
+    }
+  };
+});
+
+// src/procedural-material-v2.ts
+function strictRecord(value, path) {
+  if (!value || typeof value !== "object" || Array.isArray(value)) {
+    throw new ProceduralTextureError(`${path} must be a plain JSON object.`);
+  }
+  const prototype = Object.getPrototypeOf(value);
+  if (prototype !== Object.prototype && prototype !== null) {
+    throw new ProceduralTextureError(`${path} must be a plain JSON object with no custom prototype.`);
+  }
+  for (const key of Reflect.ownKeys(value)) {
+    if (typeof key !== "string") {
+      throw new ProceduralTextureError(`${path} must not contain symbol keys.`);
+    }
+    if (FORBIDDEN_KEYS.has(key)) {
+      throw new ProceduralTextureError(`${path} contains forbidden key ${JSON.stringify(key)}.`);
+    }
+    if (!Object.prototype.propertyIsEnumerable.call(value, key)) {
+      throw new ProceduralTextureError(`${path}.${key} must be an enumerable JSON field.`);
+    }
+    const descriptor = Object.getOwnPropertyDescriptor(value, key);
+    if (!descriptor || !("value" in descriptor)) {
+      throw new ProceduralTextureError(`${path}.${key} must be a plain JSON data field.`);
+    }
+  }
+  return value;
+}
+function strictArray(value, path) {
+  if (!Array.isArray(value) || Object.getPrototypeOf(value) !== Array.prototype) {
+    throw new ProceduralTextureError(`${path} must be a plain JSON array.`);
+  }
+  for (const key of Reflect.ownKeys(value)) {
+    if (typeof key !== "string") {
+      throw new ProceduralTextureError(`${path} must not contain symbol keys.`);
+    }
+    if (key === "length")
+      continue;
+    if (!/^(0|[1-9][0-9]*)$/.test(key) || Number(key) >= value.length) {
+      throw new ProceduralTextureError(`${path} has non-index JSON array key ${JSON.stringify(key)}.`);
+    }
+  }
+  for (let index = 0;index < value.length; index++) {
+    if (!Object.hasOwn(value, index)) {
+      throw new ProceduralTextureError(`${path} must be a dense JSON array (missing index ${index}).`);
+    }
+  }
+  return value;
+}
+function assertKeys(record, allowed, path) {
+  const allow = new Set(allowed);
+  for (const key of Object.keys(record)) {
+    if (!allow.has(key)) {
+      throw new ProceduralTextureError(`${path} has unknown key ${JSON.stringify(key)}.`, "PROCEDURAL_TEXTURE_UNKNOWN_KEY");
+    }
+  }
+}
+function color(value, path, diagnostic) {
+  if (typeof value !== "number" || !Number.isInteger(value) || value < 0 || value > 16777215) {
+    throw new ProceduralTextureError(`${path} must be a color integer between 0x000000 and 0xffffff, got ${JSON.stringify(value)}.`, diagnostic);
+  }
+  return value;
+}
+function integer(value, path, fallback, min, max) {
+  if (value === undefined)
+    return fallback;
+  if (typeof value !== "number" || !Number.isInteger(value) || value < min || value > max) {
+    throw new ProceduralTextureError(`${path} must be a whole number between ${min} and ${max}, got ${JSON.stringify(value)}.`);
+  }
+  return value;
+}
+function finite2(value, path, fallback, min, max, diagnostic) {
+  if (value === undefined)
+    return fallback;
+  if (typeof value !== "number" || !Number.isFinite(value) || value < min || value > max) {
+    throw new ProceduralTextureError(`${path} must be a finite number between ${min} and ${max}, got ${JSON.stringify(value)}.`, diagnostic);
+  }
+  return value;
+}
+function unit(value, path, fallback) {
+  return finite2(value, path, fallback, 0, 1, "MATERIAL_FRACTION_RANGE");
+}
+function optionalName(value, path) {
+  if (value === undefined)
+    return;
+  const hasControlCharacter = typeof value === "string" && [...value].some((character) => {
+    const code = character.charCodeAt(0);
+    return code < 32 || code === 127;
+  });
+  if (typeof value !== "string" || value.length === 0 || value.length > MAX_PROCEDURAL_NAME_LENGTH || hasControlCharacter) {
+    throw new ProceduralTextureError(`${path} must be 1..${MAX_PROCEDURAL_NAME_LENGTH} visible characters.`);
+  }
+  return value;
+}
+function usage(value, path, fallback) {
+  if (value === undefined)
+    return fallback;
+  if (!TEXTURE_USAGES.includes(value)) {
+    throw new ProceduralTextureError(`${path} must be one of ${TEXTURE_USAGES.join(", ")}, got ${JSON.stringify(value)}.`);
+  }
+  return value;
+}
+function angle(value, path) {
+  const bounded = finite2(value, path, 0, -36000, 36000);
+  const normalized = (bounded % 360 + 360) % 360;
+  return Object.is(normalized, -0) ? 0 : normalized;
+}
+function blend(record, path) {
+  const value = record["blend"] ?? "normal";
+  if (!BLENDS.includes(value)) {
+    throw new ProceduralTextureError(`${path}.blend ${JSON.stringify(value)} is not one of ${BLENDS.join(", ")}.`, "PROCEDURAL_TEXTURE_BLEND");
+  }
+  return value;
+}
+function canonicalLayer(value, index) {
+  const path = `proceduralTexture.layers[${index}]`;
+  const record = strictRecord(value, path);
+  const op = record["op"];
+  if (!OPS.includes(op)) {
+    throw new ProceduralTextureError(`${path}.op ${JSON.stringify(op)} is not one of ${OPS.join(", ")}.`);
+  }
+  const validatedBlend = blend(record, path);
+  const validatedOpacity = unit(record["opacity"], `${path}.opacity`, 1);
+  const common = {
+    blend: index === 0 ? "normal" : validatedBlend,
+    opacity: index === 0 ? 1 : validatedOpacity
+  };
+  switch (op) {
+    case "solid":
+      assertKeys(record, ["op", "color", "blend", "opacity"], path);
+      return { op, color: color(record["color"], `${path}.color`), ...common };
+    case "checker":
+      assertKeys(record, ["op", "colorA", "colorB", "squares", "blend", "opacity"], path);
+      return {
+        op,
+        colorA: color(record["colorA"], `${path}.colorA`),
+        colorB: color(record["colorB"], `${path}.colorB`),
+        squares: integer(record["squares"], `${path}.squares`, 8, 1, MAX_PROCEDURAL_PATTERN_COUNT),
+        ...common
+      };
+    case "stripes":
+      assertKeys(record, ["op", "colorA", "colorB", "count", "angleDeg", "blend", "opacity"], path);
+      return {
+        op,
+        colorA: color(record["colorA"], `${path}.colorA`),
+        colorB: color(record["colorB"], `${path}.colorB`),
+        count: integer(record["count"], `${path}.count`, 8, 1, MAX_PROCEDURAL_PATTERN_COUNT),
+        angleDeg: angle(record["angleDeg"], `${path}.angleDeg`),
+        ...common
+      };
+    case "gradient":
+      assertKeys(record, ["op", "from", "to", "angleDeg", "blend", "opacity"], path);
+      return {
+        op,
+        from: color(record["from"], `${path}.from`),
+        to: color(record["to"], `${path}.to`),
+        angleDeg: angle(record["angleDeg"], `${path}.angleDeg`),
+        ...common
+      };
+    case "bricks":
+      assertKeys(record, ["op", "brick", "mortar", "rows", "cols", "mortarWidth", "stagger", "blend", "opacity"], path);
+      return {
+        op,
+        brick: color(record["brick"], `${path}.brick`),
+        mortar: color(record["mortar"], `${path}.mortar`),
+        rows: integer(record["rows"], `${path}.rows`, 8, 1, MAX_PROCEDURAL_PATTERN_COUNT),
+        cols: integer(record["cols"], `${path}.cols`, 4, 1, MAX_PROCEDURAL_PATTERN_COUNT),
+        mortarWidth: unit(record["mortarWidth"], `${path}.mortarWidth`, 0.06),
+        stagger: unit(record["stagger"], `${path}.stagger`, 0.5),
+        ...common
+      };
+    case "noise":
+      assertKeys(record, ["op", "colorA", "colorB", "scale", "octaves", "seed", "blend", "opacity"], path);
+      return {
+        op,
+        colorA: color(record["colorA"], `${path}.colorA`),
+        colorB: color(record["colorB"], `${path}.colorB`),
+        scale: integer(record["scale"], `${path}.scale`, 8, 1, MAX_PROCEDURAL_PATTERN_COUNT),
+        octaves: integer(record["octaves"], `${path}.octaves`, 3, 1, MAX_NOISE_OCTAVES),
+        seed: integer(record["seed"], `${path}.seed`, 0, -2147483648, 2147483647),
+        ...common
+      };
+    default:
+      throw new ProceduralTextureError(`${path}.op is unsupported.`);
+  }
+}
+function migrateProceduralTextureSpecV1(input) {
+  const record = strictRecord(input, "proceduralTexture");
+  assertKeys(record, ["schemaVersion", "size", "usage", "name", "layers"], "proceduralTexture");
+  if (record["schemaVersion"] !== undefined && record["schemaVersion"] !== 1) {
+    throw new ProceduralTextureError(`proceduralTexture.schemaVersion must be 1 or absent for V1 migration, got ${JSON.stringify(record["schemaVersion"])}.`);
+  }
+  return {
+    schemaVersion: 2,
+    ...record["size"] !== undefined ? { size: record["size"] } : {},
+    ...record["usage"] !== undefined ? { usage: record["usage"] } : {},
+    ...record["name"] !== undefined ? { name: record["name"] } : {},
+    layers: record["layers"]
+  };
+}
+function canonicalizeProceduralTextureSpecV2(input) {
+  const initial = strictRecord(input, "proceduralTexture");
+  const source = initial["schemaVersion"] === undefined || initial["schemaVersion"] === 1 ? strictRecord(migrateProceduralTextureSpecV1(initial), "proceduralTexture") : initial;
+  assertKeys(source, ["schemaVersion", "size", "usage", "name", "layers"], "proceduralTexture");
+  if (source["schemaVersion"] !== 2) {
+    throw new ProceduralTextureError(`proceduralTexture.schemaVersion must be 2, got ${JSON.stringify(source["schemaVersion"])}.`);
+  }
+  const size = source["size"] ?? 256;
+  if (typeof size !== "number" || !Number.isInteger(size) || size < MIN_PROCEDURAL_SIZE || size > MAX_PROCEDURAL_SIZE || (size & size - 1) !== 0) {
+    throw new ProceduralTextureError(`proceduralTexture.size must be a power of two between ${MIN_PROCEDURAL_SIZE} and ${MAX_PROCEDURAL_SIZE}, got ${JSON.stringify(source["size"])}.`);
+  }
+  const rawLayers = source["layers"];
+  if (!Array.isArray(rawLayers) || rawLayers.length === 0) {
+    throw new ProceduralTextureError("proceduralTexture.layers must be a non-empty array — the bottom layer is the base pattern.");
+  }
+  const layers = strictArray(rawLayers, "proceduralTexture.layers");
+  if (layers.length > MAX_PROCEDURAL_LAYERS) {
+    throw new ProceduralTextureError(`proceduralTexture: ${layers.length} layers exceeds the maximum of ${MAX_PROCEDURAL_LAYERS}.`);
+  }
+  const name = optionalName(source["name"], "proceduralTexture.name");
+  return {
+    schemaVersion: 2,
+    size,
+    usage: usage(source["usage"], "proceduralTexture.usage", "albedo"),
+    ...name !== undefined ? { name } : {},
+    layers: layers.map(canonicalLayer)
+  };
+}
+function canonicalJson(value) {
+  if (value === null || typeof value !== "object")
+    return JSON.stringify(value);
+  if (Array.isArray(value))
+    return `[${value.map(canonicalJson).join(",")}]`;
+  const record = value;
+  return `{${Object.keys(record).sort().map((key) => `${JSON.stringify(key)}:${canonicalJson(record[key])}`).join(",")}}`;
+}
+function canonicalProceduralTextureJsonV2(input) {
+  return canonicalJson(canonicalizeProceduralTextureSpecV2(input));
+}
+function sha256Hex(text) {
+  const source = new TextEncoder().encode(text);
+  const bitLength = source.length * 8;
+  const paddedLength = Math.ceil((source.length + 9) / 64) * 64;
+  const bytes = new Uint8Array(paddedLength);
+  bytes.set(source);
+  bytes[source.length] = 128;
+  const view = new DataView(bytes.buffer);
+  view.setUint32(paddedLength - 8, Math.floor(bitLength / 4294967296), false);
+  view.setUint32(paddedLength - 4, bitLength >>> 0, false);
+  const h = new Uint32Array([
+    1779033703,
+    3144134277,
+    1013904242,
+    2773480762,
+    1359893119,
+    2600822924,
+    528734635,
+    1541459225
+  ]);
+  const w = new Uint32Array(64);
+  for (let offset = 0;offset < bytes.length; offset += 64) {
+    for (let i = 0;i < 16; i++)
+      w[i] = view.getUint32(offset + i * 4, false);
+    for (let i = 16;i < 64; i++) {
+      const a = w[i - 15];
+      const b = w[i - 2];
+      const s0 = rotateRight(a, 7) ^ rotateRight(a, 18) ^ a >>> 3;
+      const s1 = rotateRight(b, 17) ^ rotateRight(b, 19) ^ b >>> 10;
+      w[i] = w[i - 16] + s0 + w[i - 7] + s1 >>> 0;
+    }
+    let [a, b, c, d, e, f, g, hh] = h;
+    for (let i = 0;i < 64; i++) {
+      const s1 = rotateRight(e, 6) ^ rotateRight(e, 11) ^ rotateRight(e, 25);
+      const choice = e & f ^ ~e & g;
+      const temp1 = hh + s1 + choice + SHA256_K[i] + w[i] >>> 0;
+      const s0 = rotateRight(a, 2) ^ rotateRight(a, 13) ^ rotateRight(a, 22);
+      const majority = a & b ^ a & c ^ b & c;
+      const temp2 = s0 + majority >>> 0;
+      hh = g;
+      g = f;
+      f = e;
+      e = d + temp1 >>> 0;
+      d = c;
+      c = b;
+      b = a;
+      a = temp1 + temp2 >>> 0;
+    }
+    const next = [a, b, c, d, e, f, g, hh];
+    for (let i = 0;i < 8; i++)
+      h[i] = h[i] + next[i] >>> 0;
+  }
+  return [...h].map((value) => value.toString(16).padStart(8, "0")).join("");
+}
+function hashProceduralTextureSpecV2(input) {
+  return `sha256:${sha256Hex(canonicalProceduralTextureJsonV2(input))}`;
+}
+function canonicalTextureRef(value, slot) {
+  const path = `portableMaterial.textures.${slot}`;
+  if (value === null || typeof value !== "object" || Array.isArray(value))
+    throw new ProceduralTextureError(`${path} must be a typed resource or procedural reference.`, "PORTABLE_TEXTURE_REFERENCE");
+  const record = strictRecord(value, path);
+  if (record["kind"] === "procedural") {
+    assertKeys(record, ["kind", "spec"], path);
+    const spec = canonicalizeProceduralTextureSpecV2(record["spec"]);
+    const expected = MATERIAL_TEXTURE_USAGE[slot];
+    if (spec.usage !== expected) {
+      throw new ProceduralTextureError(`${path} requires procedural usage ${JSON.stringify(expected)}, got ${JSON.stringify(spec.usage)}.`);
+    }
+    return { kind: "procedural", spec };
+  }
+  if (record["kind"] === "resource") {
+    assertKeys(record, ["kind", "resourceId"], path);
+    const resourceId = record["resourceId"];
+    if (typeof resourceId !== "string" || resourceId.length > 128 || !/^kiln\.[a-z0-9][a-z0-9._-]+$/.test(resourceId)) {
+      throw new ProceduralTextureError(`${path}.resourceId must be a bounded kiln.* resource ID.`);
+    }
+    return { kind: "resource", resourceId };
+  }
+  throw new ProceduralTextureError(`${path}.kind must be "procedural" or "resource".`, "PORTABLE_TEXTURE_REFERENCE");
+}
+function canonicalizePortableMaterialSpecV2(input) {
+  const record = strictRecord(input, "portableMaterial");
+  assertKeys(record, [
+    "schemaVersion",
+    "model",
+    "name",
+    "baseColor",
+    "roughness",
+    "metalness",
+    "emissive",
+    "emissiveIntensity",
+    "alphaMode",
+    "alphaCutoff",
+    "doubleSided",
+    "textures"
+  ], "portableMaterial");
+  if (record["schemaVersion"] !== 2) {
+    throw new ProceduralTextureError("portableMaterial.schemaVersion must be 2.");
+  }
+  if (record["model"] !== "pbrMetallicRoughness") {
+    throw new ProceduralTextureError('portableMaterial.model must be "pbrMetallicRoughness"; executable shader models are not portable.');
+  }
+  const textureInput = record["textures"] ?? {};
+  const textureRecord = strictRecord(textureInput, "portableMaterial.textures");
+  const slots = Object.keys(MATERIAL_TEXTURE_USAGE);
+  assertKeys(textureRecord, slots, "portableMaterial.textures");
+  if (Object.keys(textureRecord).length > MAX_PORTABLE_MATERIAL_TEXTURES) {
+    throw new ProceduralTextureError(`portableMaterial has more than ${MAX_PORTABLE_MATERIAL_TEXTURES} texture slots.`);
+  }
+  const textures = {};
+  let proceduralTexels = 0;
+  for (const slot of slots) {
+    if (textureRecord[slot] === undefined)
+      continue;
+    const ref = canonicalTextureRef(textureRecord[slot], slot);
+    textures[slot] = ref;
+    if (ref.kind === "procedural")
+      proceduralTexels += ref.spec.size * ref.spec.size;
+  }
+  if (proceduralTexels > MAX_PORTABLE_MATERIAL_TEXELS) {
+    throw new ProceduralTextureError(`portableMaterial procedural texture budget is ${proceduralTexels} texels, above ${MAX_PORTABLE_MATERIAL_TEXELS}.`);
+  }
+  const alphaMode = record["alphaMode"] ?? "opaque";
+  if (alphaMode !== "opaque" && alphaMode !== "mask" && alphaMode !== "blend") {
+    throw new ProceduralTextureError("portableMaterial.alphaMode must be opaque, mask, or blend.", "MATERIAL_ALPHA_MODE");
+  }
+  if (record["doubleSided"] !== undefined && typeof record["doubleSided"] !== "boolean") {
+    throw new ProceduralTextureError("portableMaterial.doubleSided must be boolean.");
+  }
+  const name = optionalName(record["name"], "portableMaterial.name");
+  return {
+    schemaVersion: 2,
+    model: "pbrMetallicRoughness",
+    ...name !== undefined ? { name } : {},
+    ...record["baseColor"] !== undefined ? {
+      baseColor: color(record["baseColor"], "portableMaterial.baseColor", "PORTABLE_COLOR_ARGUMENT")
+    } : {},
+    roughness: unit(record["roughness"], "portableMaterial.roughness", 1),
+    metalness: unit(record["metalness"], "portableMaterial.metalness", 0),
+    ...record["emissive"] !== undefined ? {
+      emissive: color(record["emissive"], "portableMaterial.emissive", "PORTABLE_COLOR_ARGUMENT")
+    } : {},
+    emissiveIntensity: finite2(record["emissiveIntensity"], "portableMaterial.emissiveIntensity", 1, 0, 64),
+    alphaMode,
+    alphaCutoff: unit(record["alphaCutoff"], "portableMaterial.alphaCutoff", 0.5),
+    doubleSided: record["doubleSided"] === true,
+    textures
+  };
+}
+var MAX_PROCEDURAL_SIZE = 1024, MIN_PROCEDURAL_SIZE = 4, MAX_PROCEDURAL_LAYERS = 8, MAX_NOISE_OCTAVES = 6, MAX_PROCEDURAL_NAME_LENGTH = 80, MAX_PROCEDURAL_PATTERN_COUNT = 256, MAX_PORTABLE_MATERIAL_TEXTURES = 5, MAX_PORTABLE_MATERIAL_TEXELS, ProceduralTextureError, OPS, BLENDS, FORBIDDEN_KEYS, SHA256_K, rotateRight = (value, bits) => value >>> bits | value << 32 - bits, MATERIAL_TEXTURE_USAGE;
+var init_procedural_material_v2 = __esm(() => {
+  init_texture_contract();
+  init_authoring_diagnostic();
+  MAX_PORTABLE_MATERIAL_TEXELS = 4 * 1024 * 1024;
+  ProceduralTextureError = class ProceduralTextureError extends AuthoringDiagnosticError {
+    constructor(message, diagnostic) {
+      super(diagnostic, message);
+      this.name = "ProceduralTextureError";
+    }
+  };
+  OPS = ["solid", "checker", "stripes", "gradient", "bricks", "noise"];
+  BLENDS = ["normal", "multiply", "screen", "overlay"];
+  FORBIDDEN_KEYS = new Set(["__proto__", "prototype", "constructor"]);
+  SHA256_K = new Uint32Array([
+    1116352408,
+    1899447441,
+    3049323471,
+    3921009573,
+    961987163,
+    1508970993,
+    2453635748,
+    2870763221,
+    3624381080,
+    310598401,
+    607225278,
+    1426881987,
+    1925078388,
+    2162078206,
+    2614888103,
+    3248222580,
+    3835390401,
+    4022224774,
+    264347078,
+    604807628,
+    770255983,
+    1249150122,
+    1555081692,
+    1996064986,
+    2554220882,
+    2821834349,
+    2952996808,
+    3210313671,
+    3336571891,
+    3584528711,
+    113926993,
+    338241895,
+    666307205,
+    773529912,
+    1294757372,
+    1396182291,
+    1695183700,
+    1986661051,
+    2177026350,
+    2456956037,
+    2730485921,
+    2820302411,
+    3259730800,
+    3345764771,
+    3516065817,
+    3600352804,
+    4094571909,
+    275423344,
+    430227734,
+    506948616,
+    659060556,
+    883997877,
+    958139571,
+    1322822218,
+    1537002063,
+    1747873779,
+    1955562222,
+    2024104815,
+    2227730452,
+    2361852424,
+    2428436474,
+    2756734187,
+    3204031479,
+    3329325298
+  ]);
+  MATERIAL_TEXTURE_USAGE = {
+    baseColor: "albedo",
+    normal: "normal",
+    metallicRoughness: "metallicRoughness",
+    emissive: "emissive",
+    occlusion: "occlusion"
+  };
+});
+
+// src/material-library.ts
 import { z as z3 } from "zod";
+function assertMaterialJson(value, allowBytes = false, depth = 0) {
+  if (depth > 30)
+    throw new Error("Material JSON exceeds nesting limit");
+  if (value === null || typeof value === "string" || typeof value === "boolean")
+    return;
+  if (typeof value === "number" && Number.isFinite(value))
+    return;
+  if (allowBytes && value instanceof Uint8Array)
+    return;
+  if (!value || typeof value !== "object")
+    throw new Error("Material values must be plain JSON data");
+  const array = Array.isArray(value);
+  const prototype = Object.getPrototypeOf(value);
+  if (array ? prototype !== Array.prototype : prototype !== Object.prototype && prototype !== null)
+    throw new Error("Material values must have plain JSON prototypes");
+  if (array && value.length > 1e4)
+    throw new Error("Material JSON array exceeds limit");
+  for (const key of Reflect.ownKeys(value)) {
+    if (array && key === "length")
+      continue;
+    if (typeof key !== "string" || ["__proto__", "prototype", "constructor"].includes(key))
+      throw new Error("Material JSON contains a forbidden key");
+    if (array && (!/^(0|[1-9][0-9]*)$/.test(key) || Number(key) >= value.length))
+      throw new Error("Material arrays must contain only indexed data");
+    const descriptor = Object.getOwnPropertyDescriptor(value, key);
+    if (!("value" in descriptor) || !descriptor.enumerable)
+      throw new Error("Material JSON accessors or hidden fields are not allowed");
+    assertMaterialJson(descriptor.value, allowBytes, depth + 1);
+  }
+  if (array && Object.keys(value).length !== value.length)
+    throw new Error("Material JSON arrays must be dense");
+}
+function canonicalMaterialJson(value) {
+  assertMaterialJson(value);
+  const canonical = (entry) => Array.isArray(entry) ? entry.map(canonical) : entry !== null && typeof entry === "object" ? Object.fromEntries(Object.entries(entry).sort(([a], [b]) => a < b ? -1 : a > b ? 1 : 0).map(([key, child]) => [key, canonical(child)])) : entry;
+  return JSON.stringify(canonical(value));
+}
+function validateMaterialManifest(value) {
+  assertMaterialJson(value);
+  if (new TextEncoder().encode(JSON.stringify(value)).length > MATERIAL_LIBRARY_LIMITS.maxManifestBytes)
+    throw new Error("Material manifest exceeds size limit");
+  const manifest = materialManifestSchema.parse(value);
+  if (new Set(manifest.sources.map((source) => source.id)).size !== manifest.sources.length)
+    throw new Error("Duplicate material source identity");
+  if (new Set(manifest.maps.map((map) => map.slot)).size !== manifest.maps.length)
+    throw new Error("Duplicate material map slot");
+  let bytes = 0;
+  let pixels = 0;
+  for (const map of manifest.maps) {
+    const srgb = map.slot === "baseColor" || map.slot === "emissive";
+    if (map.file !== `${map.slot}.png` || map.usage !== MATERIAL_LIBRARY_USAGE[map.slot] || map.colorSpace !== (srgb ? "srgb" : "linear"))
+      throw new Error("Material map filename, usage or color convention mismatch");
+    if (map.slot === "normal" !== (map.normalConvention === "opengl") || map.slot === "metallicRoughness" !== (map.channelPacking === "r-occlusion-g-roughness-b-metallic"))
+      throw new Error("Material map convention is missing or invalid");
+    const source = manifest.sources.find((item) => item.id === map.sourceId);
+    if (!source)
+      throw new Error("Material map source is missing");
+    if (map.procedural) {
+      if (map.procedural.derive && map.slot !== "normal")
+        throw new Error("Height derivation requires a normal map slot");
+      if (canonicalMaterialJson(map.procedural.spec) !== canonicalMaterialJson(canonicalizeProceduralTextureSpecV2(map.procedural.spec)))
+        throw new Error("Stored procedural material recipe must be canonical");
+      if (source.kind !== "procedural" || map.originalFile || map.procedural.spec.usage !== map.usage || map.procedural.spec.size !== map.width || map.width !== map.height)
+        throw new Error("Procedural material source or map convention mismatch");
+    } else if (source.kind !== "external" || !source.originalFiles.some((file) => file.name === map.originalFile)) {
+      throw new Error("Material map must reference an original source file");
+    }
+    bytes += map.bytes;
+    pixels += map.width * map.height;
+  }
+  if (bytes > MATERIAL_LIBRARY_LIMITS.maxRecordBytes || pixels > MATERIAL_LIBRARY_LIMITS.maxRecordPixels)
+    throw new Error("Material record exceeds byte or pixel budget");
+  return manifest;
+}
+function materialPngDimensions(bytes) {
+  if (bytes.length < 24 || ![137, 80, 78, 71, 13, 10, 26, 10].every((n, i) => bytes[i] === n) || String.fromCharCode(...bytes.subarray(12, 16)) !== "IHDR")
+    throw new Error("Material map must be a PNG");
+  const view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
+  return { width: view.getUint32(16), height: view.getUint32(20) };
+}
+function validateMaterialRecordShape(record) {
+  assertMaterialJson(record, true);
+  if (Object.keys(record).some((key) => key !== "manifest" && key !== "files"))
+    throw new Error("Invalid material record");
+  const manifest = validateMaterialManifest(record.manifest);
+  if (!record.files || Object.keys(record.files).length !== manifest.maps.length)
+    throw new Error("Material file inventory mismatch");
+  for (const map of manifest.maps) {
+    const bytes = record.files[map.file];
+    if (!(bytes instanceof Uint8Array) || bytes.length !== map.bytes)
+      throw new Error("Material file inventory mismatch");
+    const size = materialPngDimensions(bytes);
+    if (size.width !== map.width || size.height !== map.height)
+      throw new Error("Material map dimensions mismatch");
+  }
+  return manifest;
+}
+function materialLibraryResourceId(manifest, slot) {
+  materialLibraryHashSchema.parse(manifest.revisionId);
+  if (!MATERIAL_LIBRARY_SLOTS.includes(slot))
+    throw new Error("Unknown material slot");
+  return `kiln.library.${manifest.revisionId.slice(7)}.${slotNames[slot]}`;
+}
+function materialLibraryPortableSpec(manifest) {
+  manifest = validateMaterialManifest(manifest);
+  return {
+    schemaVersion: 2,
+    model: "pbrMetallicRoughness",
+    name: manifest.name,
+    ...manifest.parameters,
+    textures: Object.fromEntries(manifest.maps.map((map) => [
+      map.slot,
+      { kind: "resource", resourceId: materialLibraryResourceId(manifest, map.slot) }
+    ]))
+  };
+}
+var MATERIAL_LIBRARY_LIMITS, MATERIAL_LIBRARY_SLOTS, MATERIAL_LIBRARY_USAGE, slotNames, materialLibraryIdSchema, materialLibraryHashSchema, text4, url, materialSourceSchema, materialTransformSchema, color2, count2, layerCommon, materialProceduralSpecSchema, materialNormalDerivationSchema, proceduralSchema, parametersSchema, materialManifestSchema, proceduralMaterialDraftSchema, materialLibraryPayloadSchema;
+var init_material_library = __esm(() => {
+  init_procedural_material_v2();
+  MATERIAL_LIBRARY_LIMITS = Object.freeze({
+    maxMapBytes: 8 * 1024 * 1024,
+    maxRecordBytes: 32 * 1024 * 1024,
+    maxManifestBytes: 256 * 1024,
+    maxMapEdge: 4096,
+    maxRecordPixels: 8 * 1024 * 1024,
+    maxPayloadBytes: 16 * 1024 * 1024,
+    maxPayloadPixels: 16 * 1024 * 1024,
+    maxPayloadRecords: 16
+  });
+  MATERIAL_LIBRARY_SLOTS = [
+    "baseColor",
+    "normal",
+    "metallicRoughness",
+    "emissive",
+    "occlusion"
+  ];
+  MATERIAL_LIBRARY_USAGE = {
+    baseColor: "albedo",
+    normal: "normal",
+    metallicRoughness: "metallicRoughness",
+    emissive: "emissive",
+    occlusion: "occlusion"
+  };
+  slotNames = {
+    baseColor: "base-color",
+    normal: "normal",
+    metallicRoughness: "metallic-roughness",
+    emissive: "emissive",
+    occlusion: "occlusion"
+  };
+  materialLibraryIdSchema = z3.string().regex(/^[a-z][a-z0-9_-]{0,79}$/);
+  materialLibraryHashSchema = z3.string().regex(/^sha256:[a-f0-9]{64}$/);
+  text4 = z3.string().min(1).max(1000);
+  url = z3.string().max(2000).url().refine((value) => /^https?:\/\//.test(value), "Provenance URL must be HTTP(S)");
+  materialSourceSchema = z3.object({
+    id: materialLibraryIdSchema,
+    kind: z3.enum(["external", "procedural"]),
+    provider: text4,
+    creator: text4,
+    assetId: text4.optional(),
+    assetUrl: url.optional(),
+    accessedAt: z3.string().datetime().optional(),
+    license: z3.object({ spdx: text4, url, attribution: z3.string().max(4000) }).strict(),
+    originalFiles: z3.array(z3.object({
+      name: z3.string().min(1).max(200),
+      sha256: materialLibraryHashSchema,
+      bytes: z3.number().int().positive().max(1024 * 1024 * 1024)
+    }).strict()).max(20)
+  }).strict().superRefine((source, context) => {
+    if (source.kind === "external" && (!source.assetUrl || !source.originalFiles.length))
+      context.addIssue({
+        code: "custom",
+        message: "External materials require a source URL and original file hashes"
+      });
+    if (new Set(source.originalFiles.map((file) => file.name)).size !== source.originalFiles.length)
+      context.addIssue({ code: "custom", message: "Duplicate original filename" });
+  });
+  materialTransformSchema = z3.object({
+    operation: text4,
+    tool: text4,
+    version: text4,
+    parameters: z3.record(z3.string().max(100), z3.union([z3.string().max(2000), z3.number().finite(), z3.boolean()])).optional()
+  }).strict();
+  color2 = z3.number().int().min(0).max(16777215);
+  count2 = z3.number().int().min(1).max(256);
+  layerCommon = {
+    blend: z3.enum(["normal", "multiply", "screen", "overlay"]).default("normal"),
+    opacity: z3.number().min(0).max(1).default(1)
+  };
+  materialProceduralSpecSchema = z3.object({
+    schemaVersion: z3.literal(2),
+    size: z3.number().int().min(4).max(1024).default(256),
+    usage: z3.enum([
+      "albedo",
+      "normal",
+      "roughness",
+      "metalness",
+      "metallicRoughness",
+      "emissive",
+      "occlusion"
+    ]).default("albedo"),
+    name: z3.string().min(1).max(80).optional(),
+    layers: z3.array(z3.discriminatedUnion("op", [
+      z3.object({ op: z3.literal("solid"), color: color2, ...layerCommon }).strict(),
+      z3.object({
+        op: z3.literal("checker"),
+        colorA: color2,
+        colorB: color2,
+        squares: count2.default(8),
+        ...layerCommon
+      }).strict(),
+      z3.object({
+        op: z3.literal("stripes"),
+        colorA: color2,
+        colorB: color2,
+        count: count2.default(8),
+        angleDeg: z3.number().min(-36000).max(36000).default(0),
+        ...layerCommon
+      }).strict(),
+      z3.object({
+        op: z3.literal("gradient"),
+        from: color2,
+        to: color2,
+        angleDeg: z3.number().min(-36000).max(36000).default(0),
+        ...layerCommon
+      }).strict(),
+      z3.object({
+        op: z3.literal("bricks"),
+        brick: color2,
+        mortar: color2,
+        rows: count2.default(8),
+        cols: count2.default(4),
+        mortarWidth: z3.number().min(0).max(1).default(0.06),
+        stagger: z3.number().min(0).max(1).default(0.5),
+        ...layerCommon
+      }).strict(),
+      z3.object({
+        op: z3.literal("noise"),
+        colorA: color2,
+        colorB: color2,
+        scale: count2.default(8),
+        octaves: z3.number().int().min(1).max(6).default(3),
+        seed: z3.number().int().min(-2147483648).max(2147483647).default(0),
+        ...layerCommon
+      }).strict()
+    ])).min(1).max(8)
+  }).strict();
+  materialNormalDerivationSchema = z3.object({
+    kind: z3.literal("normal-from-height"),
+    strength: z3.number().finite().positive().max(64)
+  }).strict();
+  proceduralSchema = z3.object({
+    compiler: z3.literal("kiln.procedural-texture.v2"),
+    spec: materialProceduralSpecSchema,
+    derive: materialNormalDerivationSchema.optional(),
+    recipeHash: materialLibraryHashSchema,
+    pixelHash: materialLibraryHashSchema,
+    encoder: z3.object({ name: z3.literal("sharp"), version: text4 }).strict()
+  }).strict();
+  parametersSchema = z3.object({
+    baseColor: z3.number().int().min(0).max(16777215).optional(),
+    roughness: z3.number().min(0).max(1).default(1),
+    metalness: z3.number().min(0).max(1).default(0),
+    emissive: z3.number().int().min(0).max(16777215).optional(),
+    emissiveIntensity: z3.number().min(0).max(64).default(1),
+    alphaMode: z3.enum(["opaque", "mask", "blend"]).default("opaque"),
+    alphaCutoff: z3.number().min(0).max(1).default(0.5),
+    doubleSided: z3.boolean().default(false)
+  }).strict();
+  materialManifestSchema = z3.object({
+    schemaVersion: z3.literal(1),
+    materialId: materialLibraryIdSchema,
+    revisionId: materialLibraryHashSchema,
+    name: z3.string().min(1).max(200),
+    tags: z3.array(z3.string().min(1).max(80)).max(30),
+    tileable: z3.boolean(),
+    physicalSizeMeters: z3.object({
+      width: z3.number().finite().positive().max(1e5),
+      height: z3.number().finite().positive().max(1e5)
+    }).strict().optional(),
+    parameters: parametersSchema,
+    sources: z3.array(materialSourceSchema).min(1).max(20),
+    maps: z3.array(z3.object({
+      slot: z3.enum(MATERIAL_LIBRARY_SLOTS),
+      file: z3.enum([
+        "baseColor.png",
+        "normal.png",
+        "metallicRoughness.png",
+        "emissive.png",
+        "occlusion.png"
+      ]),
+      sha256: materialLibraryHashSchema,
+      bytes: z3.number().int().positive().max(MATERIAL_LIBRARY_LIMITS.maxMapBytes),
+      width: z3.number().int().positive().max(MATERIAL_LIBRARY_LIMITS.maxMapEdge),
+      height: z3.number().int().positive().max(MATERIAL_LIBRARY_LIMITS.maxMapEdge),
+      usage: z3.enum(["albedo", "normal", "metallicRoughness", "emissive", "occlusion"]),
+      colorSpace: z3.enum(["srgb", "linear"]),
+      normalConvention: z3.literal("opengl").optional(),
+      channelPacking: z3.literal("r-occlusion-g-roughness-b-metallic").optional(),
+      sourceId: materialLibraryIdSchema,
+      originalFile: z3.string().min(1).max(200).optional(),
+      transforms: z3.array(materialTransformSchema).max(30),
+      procedural: proceduralSchema.optional()
+    }).strict()).min(1).max(5)
+  }).strict();
+  proceduralMaterialDraftSchema = z3.object({
+    materialId: materialLibraryIdSchema,
+    name: z3.string().min(1).max(200),
+    tags: z3.array(z3.string().min(1).max(80)).max(30).optional(),
+    tileable: z3.boolean(),
+    physicalSizeMeters: z3.object({
+      width: z3.number().finite().positive().max(1e5),
+      height: z3.number().finite().positive().max(1e5)
+    }).strict().optional(),
+    parameters: parametersSchema.partial().optional(),
+    sources: z3.array(materialSourceSchema).min(1).max(20),
+    maps: z3.array(z3.object({
+      slot: z3.enum(MATERIAL_LIBRARY_SLOTS),
+      sourceId: materialLibraryIdSchema,
+      transforms: z3.array(materialTransformSchema).max(30),
+      normalConvention: z3.literal("opengl").optional(),
+      channelPacking: z3.literal("r-occlusion-g-roughness-b-metallic").optional(),
+      procedural: materialProceduralSpecSchema,
+      derive: materialNormalDerivationSchema.optional()
+    }).strict()).min(1).max(5)
+  }).strict();
+  materialLibraryPayloadSchema = z3.object({
+    schemaVersion: z3.literal(1),
+    records: z3.array(z3.object({
+      manifest: materialManifestSchema,
+      files: z3.record(z3.string().regex(/^(baseColor|normal|metallicRoughness|emissive|occlusion)\.png$/), z3.string().max(Math.ceil(MATERIAL_LIBRARY_LIMITS.maxMapBytes / 3) * 4))
+    }).strict()).max(MATERIAL_LIBRARY_LIMITS.maxPayloadRecords)
+  }).strict();
+});
+
+// src/assets.ts
+import { z as z4 } from "zod";
 import { zipSync, unzipSync } from "three/addons/libs/fflate.module.js";
+function validateAssetMaterialClosure(record, required = false) {
+  const dependencies = (record.manifest.build?.dependencies ?? []).filter((raw) => raw && typeof raw === "object" && raw.kind === "kiln.material.v1");
+  const expected = new Map(dependencies.map((dependency) => {
+    if (dependency.delivery !== "runtime")
+      throw new Error("Invalid saved material dependency");
+    const manifest = validateMaterialManifest(dependency.manifest);
+    return [`${manifest.materialId}/${manifest.revisionId}`, canonicalMaterialJson(manifest)];
+  }));
+  if (!record.materialResources) {
+    if (required && expected.size)
+      throw new Error("Editable asset material closure unavailable");
+    return;
+  }
+  assertMaterialJson(record.materialResources);
+  const payload = materialLibraryPayloadSchema.parse(record.materialResources);
+  let bytes = 0;
+  let pixels = 0;
+  const seen = new Set;
+  for (const wire of payload.records) {
+    const key = `${wire.manifest.materialId}/${wire.manifest.revisionId}`;
+    if (seen.has(key) || expected.get(key) !== canonicalMaterialJson(wire.manifest))
+      throw new Error("Asset material closure mismatch");
+    seen.add(key);
+    if (Object.keys(wire.files).length !== wire.manifest.maps.length)
+      throw new Error("Asset material map inventory mismatch");
+    for (const map of wire.manifest.maps) {
+      if (wire.files[map.file]?.length !== Math.ceil(map.bytes / 3) * 4)
+        throw new Error("Asset material map size mismatch");
+      bytes += map.bytes;
+      pixels += map.width * map.height;
+    }
+  }
+  if (seen.size !== expected.size)
+    throw new Error("Asset material closure incomplete");
+  if (bytes > MATERIAL_LIBRARY_LIMITS.maxPayloadBytes || pixels > MATERIAL_LIBRARY_LIMITS.maxPayloadPixels)
+    throw new Error("Asset material closure exceeds allocation limits");
+}
 function validateRecordShape(record) {
   const manifest = assetManifestSchema.parse(record.manifest);
   const names = Object.keys(record.files);
@@ -2740,6 +3672,7 @@ function validateRecordShape(record) {
   if ((record.files["source.kiln.js"]?.length ?? 0) > 1024 * 1024)
     throw new Error("Source exceeds 1 MiB");
   validateAssetGlb(record.files["asset.glb"]);
+  validateAssetMaterialClosure(record);
 }
 function validateAssetGlb(bytes) {
   if (bytes.length < 20 || bytes.length > ASSET_LIMIT)
@@ -2756,44 +3689,46 @@ function validateAssetGlb(bytes) {
       throw new Error("GLB must embed its resources");
   }
 }
-var ASSET_LIMIT, assetIdSchema, hash2, assetManifestSchema, allowedFiles;
+var ASSET_LIMIT, assetIdSchema, hash2, assetManifestSchema, ASSET_MATERIAL_BYTES, allowedFiles;
 var init_assets = __esm(() => {
   init_background();
+  init_material_library();
   ASSET_LIMIT = 64 * 1024 * 1024;
-  assetIdSchema = z3.string().regex(/^[a-z][a-z0-9_-]{0,79}$/);
-  hash2 = z3.string().regex(/^sha256:[a-f0-9]{64}$/);
-  assetManifestSchema = z3.object({
-    version: z3.literal("kiln.asset.v1"),
+  assetIdSchema = z4.string().regex(/^[a-z][a-z0-9_-]{0,79}$/);
+  hash2 = z4.string().regex(/^sha256:[a-f0-9]{64}$/);
+  assetManifestSchema = z4.object({
+    version: z4.literal("kiln.asset.v1"),
     assetId: assetIdSchema,
     revisionId: assetIdSchema,
     parentRevision: assetIdSchema.optional(),
-    name: z3.string().min(1).max(200),
-    tags: z3.array(z3.string().max(80)).max(30),
-    createdAt: z3.string().datetime(),
-    description: z3.string().max(4000).optional(),
-    brief: z3.string().max(8000).optional(),
-    attribution: z3.object({
-      model: z3.string().max(200).optional(),
-      harness: z3.string().max(200).optional(),
-      author: z3.string().max(200).optional()
+    name: z4.string().min(1).max(200),
+    tags: z4.array(z4.string().max(80)).max(30),
+    createdAt: z4.string().datetime(),
+    description: z4.string().max(4000).optional(),
+    brief: z4.string().max(8000).optional(),
+    attribution: z4.object({
+      model: z4.string().max(200).optional(),
+      harness: z4.string().max(200).optional(),
+      author: z4.string().max(200).optional()
     }).optional(),
-    editable: z3.boolean(),
-    files: z3.record(z3.string(), z3.object({ sha256: hash2, bytes: z3.number().int().nonnegative().max(ASSET_LIMIT) })),
-    build: z3.object({
-      engine: z3.string(),
-      options: z3.record(z3.string(), z3.unknown()),
-      warnings: z3.array(z3.string()),
-      integration: z3.unknown().optional(),
-      qa: z3.unknown().optional(),
-      dependencies: z3.array(z3.unknown()).optional(),
-      rebuild: z3.enum(["engine-required", "external-dependencies-required"])
+    editable: z4.boolean(),
+    files: z4.record(z4.string(), z4.object({ sha256: hash2, bytes: z4.number().int().nonnegative().max(ASSET_LIMIT) })),
+    build: z4.object({
+      engine: z4.string(),
+      options: z4.record(z4.string(), z4.unknown()),
+      warnings: z4.array(z4.string()),
+      integration: z4.unknown().optional(),
+      qa: z4.unknown().optional(),
+      dependencies: z4.array(z4.unknown()).optional(),
+      rebuild: z4.enum(["engine-required", "external-dependencies-required"])
     }).optional(),
-    preview: z3.object({
-      fidelity: z3.unknown().optional(),
-      error: z3.string().optional(),
-      backdrop: z3.enum(BACKDROP_IDS).optional()
+    preview: z4.object({
+      fidelity: z4.unknown().optional(),
+      error: z4.string().optional(),
+      backdrop: z4.enum(BACKDROP_IDS).optional()
     }).optional()
   });
+  ASSET_MATERIAL_BYTES = 24 * 1024 * 1024;
   allowedFiles = new Set(["asset.glb", "source.kiln.js", "preview.png"]);
 });
 
@@ -5953,74 +6888,6 @@ var init_material_texture_library_generated = __esm(() => {
   });
 });
 
-// src/evaluator/authoring-diagnostic.ts
-function authoringDiagnosticAdvice(diagnostic) {
-  if (diagnostic === "MESH_DATA_NONFINITE")
-    return "meshGeo positions, normals, UVs and tangents must contain finite numbers representable in Float32. Check missing XYZ components, undefined values, division by zero and overflowing calculations before constructing the arrays. Do not replace invalid values blindly with zero; correct the source calculation. Call kiln_discover for the exact meshGeo data contract.";
-  if (diagnostic === "PORTABLE_COLOR_ARGUMENT")
-    return "compilePortableMaterialSpecV2 baseColor and emissive must be numeric color integers from 0x000000 to 0xffffff, for example baseColor: 0x8a867c. CSS strings and materialRecipe hex-string overrides use different contracts. Omit these fields for their defaults, or call kiln_discover for the exact helper contract.";
-  if (diagnostic === "MATERIAL_RECIPE_TEXTURE_BINDING")
-    return "materialRecipe textureResources maps portable slots to approved resource ID strings. Slots are baseColor, normal, metallicRoughness, emissive and occlusion. albedo is a pbrMaterial field, not a recipe slot. Use kiln_discover to check each resource allowedSlots and recipeIds before binding it; no slot or resource substitution is applied.";
-  if (diagnostic === "PORTABLE_TEXTURE_REFERENCE")
-    return 'compilePortableMaterialSpecV2 textures require typed references: { kind: "resource", resourceId: "kiln.texture..." } for an approved resource, or { kind: "procedural", spec: { schemaVersion: 2, ... } } for a procedural texture. Bare resource ID strings are invalid here. Use portable slots such as baseColor and check the exact helper/resource contracts with kiln_discover.';
-  if (diagnostic === "TAPER_CONE_AXIS")
-    return 'taperConeGeo(radiusBottom, radiusTop, height, axis, segments): the fourth argument is axis, "x", "y" or "z" (default "y"). Segment count is the fifth argument, for example taperConeGeo(0.03, 0.02, 0.01, "x", 12). Call kiln_discover for the full contract.';
-  if (diagnostic === "PROCEDURAL_TEXTURE_BLEND")
-    return 'proceduralTexture layer blend must be normal, multiply, screen, or overlay. Omit blend for normal compositing. Call kiln_discover with ids ["proceduralTexture"] for the supported layer fields.';
-  if (diagnostic === "PART_NAME_ARGUMENT")
-    return "createPart(name, geometry, material, options?): the first argument is a string name. Put the parent Object3D in the fourth argument as { parent: root }.";
-  if (diagnostic === "PART_GEOMETRY_ARGUMENT")
-    return "createPart(name, geometry, material, options?): the second argument must be a BufferGeometry. Call geometry helpers, for example boxGeo(1, 1, 1), instead of passing the function. For async helpers such as roundedBoxGeo, extrudeProfile and revolveProfile, await the result inside async build() before passing it to createPart. Call kiln_discover for the exact return contract.";
-  if (diagnostic === "PART_MATERIAL_ARGUMENT")
-    return "createPart(name, geometry, material, options?): the third argument must be a Three.js material. Wrap a color with gameMaterial(0x808080); a number or settings object alone is not a material. Call kiln_discover for the chosen material helper contract.";
-  if (diagnostic === "SOLID_FLOAT32_COLLAPSE")
-    return "Solid output cannot retain valid faces at Float32 precision. Simplify subprecision features or recenter local geometry; review coincident cut boundaries. Smoothing or replacing normals does not repair collapsed triangles. Kiln did not export a partially repaired solid.";
-  if (diagnostic === "PROFILE_BEVEL_COLLAPSE")
-    return "extrudeProfile or revolveProfile: bevel is too large for this profile; erosion leaves nothing. Reduce bevel below half the narrowest section width, set bevel to 0, or widen the profile. Dimensions and bevel use the same asset units.";
-  if (diagnostic === "TUBE_RADIUS")
-    return "curveToMesh and pipeAlongPath require an explicit positive finite radius representable in Float32, in asset units. A missing or undefined radius is invalid; check the referenced dimension. Radius is half the tube diameter.";
-  if (diagnostic === "MATERIAL_ALPHA_MODE")
-    return 'pbrMaterial and portable material specs require lowercase alphaMode: "opaque", "mask", or "blend". Omit it for opaque. Exported glTF uses uppercase mode names; those are not authoring input values.';
-  if (diagnostic === "MATERIAL_COLOR_ARGUMENT")
-    return "gameMaterial, basicMaterial, glassMaterial and lambertMaterial take a color first: a hex number or CSS string. Settings belong in the second argument, for example gameMaterial(0x9a9a96, { roughness: 0.4, metalness: 0.8 }). pbrMaterial uses a different object-form contract; call kiln_discover for its texture and material fields.";
-  if (diagnostic === "MATERIAL_PACKED_CHANNELS")
-    return 'pbrMaterial requires one packed texture with G=roughness and B=metalness. Generate or load it for usage "metallicRoughness" and pass metallicRoughness, or pass the same packed texture in both roughness and metalness. Do not combine those forms or pass a texture in only one scalar slot. Plain roughness and metalness values are 0..1 numbers. Call kiln_discover for the exact texture contract.';
-  if (diagnostic === "REMOVED_HELPER")
-    return "Generated source references a retired Kiln global. Call kiln_validate for name-specific migration guidance, then kiln_discover for the replacement contract. No compatibility aliases are provided.";
-  if (diagnostic === "UNBOUND_VARIABLE")
-    return UNBOUND_VARIABLE_ADVICE;
-  if (diagnostic === "ROUNDED_BOX_RADIUS")
-    return ROUNDED_BOX_RADIUS_ADVICE;
-  if (diagnostic === "GEAR_RADII_ORDER")
-    return GEAR_RADII_ORDER_ADVICE;
-  if (diagnostic === "PROCEDURAL_TEXTURE_UNKNOWN_KEY")
-    return PROCEDURAL_TEXTURE_UNKNOWN_KEY_ADVICE;
-  if (diagnostic === "MATERIAL_FRACTION_RANGE")
-    return MATERIAL_FRACTION_RANGE_ADVICE;
-  if (diagnostic === "PROFILE_HOLES_UNSUPPORTED")
-    return PROFILE_HOLES_UNSUPPORTED_ADVICE;
-  if (diagnostic === "PROFILE_CORRESPONDENCE_COLLAPSE")
-    return PROFILE_CORRESPONDENCE_COLLAPSE_ADVICE;
-  return diagnostic === "PARAMETRIC_PERIODIC_ENDPOINT" ? PARAMETRIC_PERIODIC_ENDPOINT_ADVICE : "";
-}
-function rethrowAuthoringError(error) {
-  if (error instanceof ReferenceError && /(?: is not defined$|^Can't find variable: )/.test(error.message) && !/\b(?:loadTexture|process|fetch|globalThis|require|Bun|Deno)\b/.test(error.message)) {
-    throw new AuthoringDiagnosticError("UNBOUND_VARIABLE");
-  }
-  throw error;
-}
-var UNBOUND_VARIABLE_ADVICE = "Check variable spelling and scope: generated code used an undeclared variable. Read the current source and check declarations before retrying. If it was meant to be a Kiln helper, call kiln_discover to confirm the exact name and signature; the sandbox exposes only those globals.", GEAR_RADII_ORDER_ADVICE = "gearGeo requires boreRadius < rootRadius < tipRadius; specify rootRadius when changing tipRadius. Omitted radii keep their absolute defaults.", ROUNDED_BOX_RADIUS_ADVICE = "roundedBoxGeo: radius must be less than half the smallest dimension. Reduce radius or increase the smallest dimension; equality is invalid.", PROCEDURAL_TEXTURE_UNKNOWN_KEY_ADVICE = 'Remove unsupported proceduralTexture fields. Call kiln_discover with ids ["proceduralTexture"] and use only the documented fields for the selected layer op.', MATERIAL_FRACTION_RANGE_ADVICE = "Material fractions must be finite numbers between 0 and 1, inclusive. In proceduralTexture, mortarWidth and stagger are fractions, not pixels; opacity uses the same range. materialRecipe roughness, metalness, opacity, alphaCutoff and emissiveIntensity use 0..1. portableMaterial roughness, metalness and alphaCutoff also use 0..1; its emissiveIntensity has a separate 0..64 range. Call kiln_discover for the exact field contracts.", PARAMETRIC_PERIODIC_ENDPOINT_ADVICE = "Periodic parametricSurface endpoints must return matching positions. For periodicU, sample(uMin, v) and sample(uMax, v) must match; for periodicV, sample(u, vMin) and sample(u, vMax) must match.", PROFILE_HOLES_UNSUPPORTED_ADVICE = "loftProfiles and sweepProfile: holes are unsupported in options or sections. Use extrudeProfile for a holed cross-section with optional twist/taper; independently varying contours need explicit geometry or solid subtraction. cap:false does not create inner walls or thickness.", PROFILE_CORRESPONDENCE_COLLAPSE_ADVICE = "loftProfiles or sweepProfile: corresponding profile edges collapse between stations. Check matching start vertices and vertex order; for an intended twist, add intermediate sections or path stations. No automatic correspondence repair is applied. Other self-intersections remain unchecked.", AuthoringDiagnosticError;
-var init_authoring_diagnostic = __esm(() => {
-  AuthoringDiagnosticError = class AuthoringDiagnosticError extends Error {
-    diagnostic;
-    constructor(diagnostic, message = authoringDiagnosticAdvice(diagnostic)) {
-      super(message);
-      this.diagnostic = diagnostic;
-      this.name = "AuthoringDiagnosticError";
-    }
-  };
-});
-
 // src/material-recipes.ts
 function validateMaterialRecipeRequestV1(value) {
   const issues = [];
@@ -6831,8 +7698,1097 @@ var init_requirements_report = __esm(() => {
   ];
 });
 
-// src/qa/breadth-evidence.ts
+// src/procedural-texture.ts
 import * as THREE2 from "three";
+function hash22(x, y, seed) {
+  let h = Math.imul(x, 374761393) + Math.imul(y, 668265263) + Math.imul(seed, 1274126177) | 0;
+  h = h ^ h >>> 13;
+  h = Math.imul(h, 1274126177) | 0;
+  h = h ^ h >>> 16;
+  return (h >>> 0) / 4294967296;
+}
+function valueNoise(u, v, period, seed) {
+  const x = u * period;
+  const y = v * period;
+  const xi = Math.floor(x);
+  const yi = Math.floor(y);
+  const xf = x - xi;
+  const yf = y - yi;
+  const wrap = (n) => (n % period + period) % period;
+  const x0 = wrap(xi);
+  const y0 = wrap(yi);
+  const x1 = wrap(xi + 1);
+  const y1 = wrap(yi + 1);
+  const sx = smoothstep(xf);
+  const sy = smoothstep(yf);
+  const n00 = hash22(x0, y0, seed);
+  const n10 = hash22(x1, y0, seed);
+  const n01 = hash22(x0, y1, seed);
+  const n11 = hash22(x1, y1, seed);
+  const top = n00 + sx * (n10 - n00);
+  const bottom = n01 + sx * (n11 - n01);
+  return top + sy * (bottom - top);
+}
+function fbm(u, v, period, octaves, seed) {
+  let sum = 0;
+  let amplitude = 1;
+  let total = 0;
+  let p = period;
+  for (let o = 0;o < octaves; o++) {
+    sum += valueNoise(u, v, p, seed + o * 101) * amplitude;
+    total += amplitude;
+    amplitude *= 0.5;
+    p *= 2;
+  }
+  return total > 0 ? sum / total : 0;
+}
+function project(u, v, angleDeg) {
+  const a = angleDeg * Math.PI / 180;
+  return (u - 0.5) * Math.cos(a) + (v - 0.5) * Math.sin(a) + 0.5;
+}
+function evalLayer(layer, u, v) {
+  switch (layer.op) {
+    case "solid":
+      return rgbOf(layer.color);
+    case "checker": {
+      const cx = Math.floor(u * layer.squares);
+      const cy = Math.floor(v * layer.squares);
+      return rgbOf((cx + cy) % 2 === 0 ? layer.colorA : layer.colorB);
+    }
+    case "stripes": {
+      const t = project(u, v, layer.angleDeg);
+      return rgbOf(Math.floor(t * layer.count) % 2 === 0 ? layer.colorA : layer.colorB);
+    }
+    case "gradient": {
+      const t = Math.min(1, Math.max(0, project(u, v, layer.angleDeg)));
+      const from = rgbOf(layer.from);
+      const to = rgbOf(layer.to);
+      return [lerp(from[0], to[0], t), lerp(from[1], to[1], t), lerp(from[2], to[2], t)];
+    }
+    case "bricks": {
+      const row = Math.floor(v * layer.rows);
+      const shifted = (u + (row % 2 === 0 ? 0 : layer.stagger / layer.cols) + 1) % 1;
+      const inCol = shifted * layer.cols % 1;
+      const inRow = v * layer.rows % 1;
+      const isMortar = inCol < layer.mortarWidth || inCol > 1 - layer.mortarWidth || inRow < layer.mortarWidth || inRow > 1 - layer.mortarWidth;
+      return rgbOf(isMortar ? layer.mortar : layer.brick);
+    }
+    case "noise": {
+      const n = fbm(u, v, layer.scale, layer.octaves, layer.seed);
+      const a = rgbOf(layer.colorA);
+      const b = rgbOf(layer.colorB);
+      return [lerp(a[0], b[0], n), lerp(a[1], b[1], n), lerp(a[2], b[2], n)];
+    }
+  }
+}
+function blendChannel(mode, base, top) {
+  const b = base / 255;
+  const t = top / 255;
+  let out;
+  switch (mode) {
+    case "multiply":
+      out = b * t;
+      break;
+    case "screen":
+      out = 1 - (1 - b) * (1 - t);
+      break;
+    case "overlay":
+      out = b < 0.5 ? 2 * b * t : 1 - 2 * (1 - b) * (1 - t);
+      break;
+    default:
+      out = t;
+  }
+  return out * 255;
+}
+function compileProceduralTextureSpecV2(input) {
+  const spec = canonicalizeProceduralTextureSpecV2(input);
+  const { size, layers } = spec;
+  const data = new Uint8Array(size * size * 4);
+  for (let y = 0;y < size; y++) {
+    const v = (y + 0.5) / size;
+    for (let x = 0;x < size; x++) {
+      const u = (x + 0.5) / size;
+      let r = 0;
+      let g = 0;
+      let b = 0;
+      for (const [i, layer] of layers.entries()) {
+        const [lr, lg, lb] = evalLayer(layer, u, v);
+        if (i === 0) {
+          r = lr;
+          g = lg;
+          b = lb;
+          continue;
+        }
+        r = lerp(r, blendChannel(layer.blend, r, lr), layer.opacity);
+        g = lerp(g, blendChannel(layer.blend, g, lg), layer.opacity);
+        b = lerp(b, blendChannel(layer.blend, b, lb), layer.opacity);
+      }
+      const o = (y * size + x) * 4;
+      data[o] = Math.max(0, Math.min(255, Math.round(r)));
+      data[o + 1] = Math.max(0, Math.min(255, Math.round(g)));
+      data[o + 2] = Math.max(0, Math.min(255, Math.round(b)));
+      data[o + 3] = 255;
+    }
+  }
+  return {
+    spec,
+    pixels: data,
+    canonicalJson: canonicalProceduralTextureJsonV2(spec),
+    recipeHash: hashProceduralTextureSpecV2(spec)
+  };
+}
+function proceduralTexture(spec) {
+  const compiled = compileProceduralTextureSpecV2(spec);
+  const { size, usage, name, layers } = compiled.spec;
+  const tex = new THREE2.DataTexture(compiled.pixels, size, size, THREE2.RGBAFormat, THREE2.UnsignedByteType);
+  if (name)
+    tex.name = name;
+  tex.colorSpace = usage === "albedo" || usage === "emissive" ? THREE2.SRGBColorSpace : THREE2.NoColorSpace;
+  tex.wrapS = THREE2.RepeatWrapping;
+  tex.wrapT = THREE2.RepeatWrapping;
+  tex.minFilter = THREE2.LinearMipmapLinearFilter;
+  tex.magFilter = THREE2.LinearFilter;
+  tex.generateMipmaps = true;
+  tex.needsUpdate = true;
+  tex.userData["kilnProcedural"] = {
+    schemaVersion: 2,
+    size,
+    usage,
+    ...name ? { name } : {},
+    layers,
+    canonicalJson: compiled.canonicalJson,
+    recipeHash: compiled.recipeHash
+  };
+  return tex;
+}
+function normalMapFromHeight(source, opts = {}) {
+  const image = source.image;
+  const data = image?.data;
+  const width = image?.width ?? 0;
+  const height = image?.height ?? 0;
+  if (!data || !width || !height) {
+    throw new ProceduralTextureError("normalMapFromHeight: the source texture has no readable pixels. Pass a proceduralTexture() result or a loadApprovedTexture() result, not a texture built from an image element.");
+  }
+  const channels = data.length / (width * height);
+  if (channels !== 3 && channels !== 4) {
+    throw new ProceduralTextureError(`normalMapFromHeight: the source has ${data.length} bytes for ${width}x${height}, which is neither RGB nor RGBA.`);
+  }
+  const strength = opts.strength ?? 2;
+  if (!Number.isFinite(strength) || strength <= 0) {
+    throw new ProceduralTextureError(`normalMapFromHeight: strength must be a positive number, got ${JSON.stringify(opts.strength)}.`);
+  }
+  const lum = (x, y) => {
+    const xw = (x % width + width) % width;
+    const yw = (y % height + height) % height;
+    const o = (yw * width + xw) * channels;
+    return (0.299 * (data[o] ?? 0) + 0.587 * (data[o + 1] ?? 0) + 0.114 * (data[o + 2] ?? 0)) / 255;
+  };
+  const out = new Uint8Array(width * height * 4);
+  for (let y = 0;y < height; y++) {
+    for (let x = 0;x < width; x++) {
+      const dx = (lum(x + 1, y) - lum(x - 1, y)) * strength;
+      const dy = (lum(x, y + 1) - lum(x, y - 1)) * strength;
+      let nx = -dx;
+      let ny = -dy;
+      const nz = 1;
+      const len = Math.hypot(nx, ny, nz) || 1;
+      nx /= len;
+      ny /= len;
+      const o = (y * width + x) * 4;
+      out[o] = Math.round((nx * 0.5 + 0.5) * 255);
+      out[o + 1] = Math.round((ny * 0.5 + 0.5) * 255);
+      out[o + 2] = Math.round(nz / len * 0.5 * 255 + 127.5);
+      out[o + 3] = 255;
+    }
+  }
+  const tex = new THREE2.DataTexture(out, width, height, THREE2.RGBAFormat, THREE2.UnsignedByteType);
+  tex.name = opts.name ?? (source.name ? `${source.name}_Normal` : "");
+  tex.colorSpace = THREE2.NoColorSpace;
+  tex.wrapS = THREE2.RepeatWrapping;
+  tex.wrapT = THREE2.RepeatWrapping;
+  tex.minFilter = THREE2.LinearMipmapLinearFilter;
+  tex.magFilter = THREE2.LinearFilter;
+  tex.generateMipmaps = true;
+  tex.needsUpdate = true;
+  return tex;
+}
+var smoothstep = (t) => t * t * (3 - 2 * t), rgbOf = (color) => [
+  color >> 16 & 255,
+  color >> 8 & 255,
+  color & 255
+], lerp = (a, b, t) => a + (b - a) * t;
+var init_procedural_texture = __esm(() => {
+  init_procedural_material_v2();
+  init_procedural_material_v2();
+});
+
+// src/textures.ts
+import * as THREE3 from "three";
+async function loadTexture(source, opts = {}) {
+  let bytes;
+  if (typeof source === "string") {
+    const fs = await import("node:fs");
+    const path = await import("node:path");
+    const abs = path.isAbsolute(source) ? source : path.resolve(source);
+    bytes = new Uint8Array(fs.readFileSync(abs));
+  } else if (typeof Buffer !== "undefined" && Buffer.isBuffer(source)) {
+    bytes = new Uint8Array(source);
+  } else {
+    bytes = source;
+  }
+  const mime = sniffMime(bytes);
+  const sharp = (await import("sharp")).default;
+  const img = sharp(bytes);
+  const meta = await img.metadata();
+  const { data } = await img.ensureAlpha().raw({ depth: "uchar" }).toBuffer({ resolveWithObject: true });
+  if (!meta.width || !meta.height) {
+    throw new Error("loadTexture: could not read image dimensions");
+  }
+  const tex = new THREE3.DataTexture(new Uint8Array(data), meta.width, meta.height, THREE3.RGBAFormat, THREE3.UnsignedByteType);
+  const usage = opts.usage ?? "albedo";
+  const colorSpace = usage === "albedo" || usage === "emissive" ? "srgb" : "linear";
+  let hasAlpha = false;
+  for (let offset = 3;offset < data.length; offset += 4) {
+    if ((data[offset] ?? 255) < 255) {
+      hasAlpha = true;
+      break;
+    }
+  }
+  tex.colorSpace = colorSpace === "srgb" ? THREE3.SRGBColorSpace : THREE3.NoColorSpace;
+  if (opts.name)
+    tex.name = opts.name;
+  tex.needsUpdate = true;
+  tex.wrapS = THREE3.RepeatWrapping;
+  tex.wrapT = THREE3.RepeatWrapping;
+  tex.minFilter = THREE3.LinearMipmapLinearFilter;
+  tex.magFilter = THREE3.LinearFilter;
+  tex.generateMipmaps = true;
+  tex.userData["encoded"] = {
+    mime,
+    bytes
+  };
+  tex.userData["kilnTexture"] = {
+    usage,
+    colorSpace,
+    width: meta.width,
+    height: meta.height,
+    hasAlpha
+  };
+  return tex;
+}
+function sniffMime(bytes) {
+  if (bytes[0] === 137 && bytes[1] === 80 && bytes[2] === 78 && bytes[3] === 71) {
+    return "image/png";
+  }
+  if (bytes[0] === 255 && bytes[1] === 216 && bytes[2] === 255) {
+    return "image/jpeg";
+  }
+  if (bytes[0] === 82 && bytes[1] === 73 && bytes[2] === 70 && bytes[3] === 70 && bytes[8] === 87 && bytes[9] === 69 && bytes[10] === 66 && bytes[11] === 80) {
+    return "image/webp";
+  }
+  return "image/png";
+}
+function textureMetadata(texture) {
+  return texture.userData["kilnTexture"];
+}
+function requireTextureUsage(texture, usage) {
+  const meta = textureMetadata(texture);
+  if (meta && meta.usage !== usage) {
+    throw new TypeError(`Texture ${JSON.stringify(texture.name || "(unnamed)")} was loaded for ${meta.usage}, not ${usage}.`);
+  }
+  texture.colorSpace = usage === "albedo" || usage === "emissive" ? THREE3.SRGBColorSpace : THREE3.NoColorSpace;
+}
+function pbrMaterial(opts = {}) {
+  const mat = new THREE3.MeshStandardMaterial;
+  const isTex = (v) => !!v?.isTexture;
+  if (isTex(opts.albedo)) {
+    requireTextureUsage(opts.albedo, "albedo");
+    mat.map = opts.albedo;
+    mat.color = new THREE3.Color(16777215);
+  } else if (opts.albedo !== undefined) {
+    mat.color = new THREE3.Color(opts.albedo);
+  }
+  if (opts.normal) {
+    requireTextureUsage(opts.normal, "normal");
+    mat.normalMap = opts.normal;
+  }
+  const roughnessTexture = isTex(opts.roughness) ? opts.roughness : undefined;
+  const metalnessTexture = isTex(opts.metalness) ? opts.metalness : undefined;
+  if (opts.metallicRoughness && (roughnessTexture || metalnessTexture)) {
+    throw new AuthoringDiagnosticError("MATERIAL_PACKED_CHANNELS", "Use metallicRoughness for the packed G/B map; do not also pass texture-valued roughness/metalness.");
+  }
+  if (roughnessTexture && metalnessTexture && roughnessTexture !== metalnessTexture) {
+    throw new AuthoringDiagnosticError("MATERIAL_PACKED_CHANNELS", "Separate roughness and metalness textures are ambiguous in glTF. Pack G=roughness/B=metalness and pass metallicRoughness.");
+  }
+  if (roughnessTexture && !metalnessTexture || !roughnessTexture && metalnessTexture) {
+    throw new AuthoringDiagnosticError("MATERIAL_PACKED_CHANNELS", "A texture-valued roughness or metalness must be the same packed G/B texture in both slots, or use metallicRoughness.");
+  }
+  const packedMr = opts.metallicRoughness ?? roughnessTexture;
+  if (packedMr) {
+    requireTextureUsage(packedMr, "metallicRoughness");
+    mat.roughnessMap = packedMr;
+    mat.metalnessMap = packedMr;
+  }
+  if (typeof opts.roughness === "number") {
+    mat.roughness = opts.roughness;
+  } else if (packedMr) {
+    mat.roughness = 1;
+  } else {
+    mat.roughness = 0.8;
+  }
+  if (typeof opts.metalness === "number") {
+    mat.metalness = opts.metalness;
+  } else if (packedMr) {
+    mat.metalness = 1;
+  }
+  if (isTex(opts.emissive)) {
+    requireTextureUsage(opts.emissive, "emissive");
+    mat.emissiveMap = opts.emissive;
+    mat.emissive = new THREE3.Color(16777215);
+  } else if (opts.emissive !== undefined) {
+    mat.emissive = new THREE3.Color(opts.emissive);
+  }
+  if (opts.emissiveIntensity !== undefined) {
+    mat.emissiveIntensity = opts.emissiveIntensity;
+  }
+  if (opts.aoMap) {
+    requireTextureUsage(opts.aoMap, "occlusion");
+    mat.aoMap = opts.aoMap;
+  }
+  if (opts.aoMapIntensity !== undefined)
+    mat.aoMapIntensity = opts.aoMapIntensity;
+  const alphaMode = opts.alphaMode ?? "opaque";
+  if (alphaMode !== "opaque" && alphaMode !== "mask" && alphaMode !== "blend") {
+    throw new AuthoringDiagnosticError("MATERIAL_ALPHA_MODE", 'alphaMode must be one of "opaque", "mask", or "blend".');
+  }
+  if (opts.doubleSided !== undefined && typeof opts.doubleSided !== "boolean") {
+    throw new TypeError("doubleSided must be a boolean when provided.");
+  }
+  if (opts.alphaCutoff !== undefined && alphaMode !== "mask") {
+    throw new TypeError('alphaCutoff is valid only when alphaMode is "mask".');
+  }
+  if (opts.alphaCutoff !== undefined && (!Number.isFinite(opts.alphaCutoff) || opts.alphaCutoff < 0 || opts.alphaCutoff > 1)) {
+    throw new RangeError("alphaCutoff must be a finite number in [0,1].");
+  }
+  if (alphaMode === "mask") {
+    mat.alphaTest = opts.alphaCutoff ?? 0.5;
+    mat.transparent = false;
+  } else if (alphaMode === "blend") {
+    mat.alphaTest = 0;
+    mat.transparent = true;
+  }
+  if (opts.doubleSided)
+    mat.side = THREE3.DoubleSide;
+  mat.userData["kilnMaterial"] = {
+    alphaMode,
+    ...alphaMode === "mask" ? { alphaCutoff: mat.alphaTest } : {},
+    doubleSided: opts.doubleSided === true
+  };
+  return mat;
+}
+function foliageMaterial(albedo, opts = {}) {
+  return pbrMaterial({
+    albedo,
+    roughness: opts.roughness ?? 0.9,
+    metalness: 0,
+    alphaMode: "mask",
+    alphaCutoff: opts.alphaCutoff ?? 0.5,
+    doubleSided: opts.doubleSided ?? true
+  });
+}
+var init_textures = __esm(() => {
+  init_authoring_diagnostic();
+  init_texture_contract();
+});
+
+// src/material-resources.ts
+import { createHash as createHash5 } from "node:crypto";
+function provenance(descriptor, hash) {
+  return {
+    schemaVersion: 1,
+    resourceId: descriptor.id,
+    contentHash: hash,
+    hashAlgorithm: "sha256",
+    usage: descriptor.usage,
+    colorSpace: descriptor.colorSpace,
+    resourceVersion: descriptor.version,
+    recipeVersion: 1,
+    delivery: descriptor.delivery
+  };
+}
+function readPngDimensions(descriptor, bytes) {
+  const signature = [137, 80, 78, 71, 13, 10, 26, 10];
+  if (bytes.byteLength < 24 || !signature.every((value, index) => bytes[index] === value) || String.fromCharCode(...bytes.subarray(12, 16)) !== "IHDR") {
+    throw new ApprovedTextureResourceUnavailableError(descriptor.id, "declared image/png bytes do not have a valid PNG signature and IHDR format");
+  }
+  const view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
+  return { width: view.getUint32(16, false), height: view.getUint32(20, false) };
+}
+function verifyResourcePayload(descriptor, payload) {
+  if (!payload || typeof payload !== "object" || Array.isArray(payload)) {
+    throw new ApprovedTextureResourceUnavailableError(descriptor.id, "host payload must be { bytes, mime }");
+  }
+  const keys = Object.keys(payload).sort();
+  if (keys.length !== 2 || keys[0] !== "bytes" || keys[1] !== "mime") {
+    throw new ApprovedTextureResourceUnavailableError(descriptor.id, "host payload must contain only bytes and MIME");
+  }
+  if (!(payload.bytes instanceof Uint8Array)) {
+    throw new ApprovedTextureResourceUnavailableError(descriptor.id, "host bytes must be Uint8Array");
+  }
+  if (payload.mime !== descriptor.mime) {
+    throw new ApprovedTextureResourceUnavailableError(descriptor.id, `host MIME ${String(payload.mime)} does not match approved ${descriptor.mime}`);
+  }
+  const bytes = payload.bytes;
+  if (bytes.byteLength > TEXTURE_RESOLVER_LIMITS_V1.maxEncodedBytes) {
+    throw new ApprovedTextureResourceUnavailableError(descriptor.id, `encoded-byte limit is ${TEXTURE_RESOLVER_LIMITS_V1.maxEncodedBytes}; received ${bytes.byteLength}`);
+  }
+  if (bytes.byteLength !== descriptor.byteLength) {
+    throw new ApprovedTextureResourceUnavailableError(descriptor.id, `expected ${descriptor.byteLength} bytes, received ${bytes.byteLength}`);
+  }
+  const { width, height } = readPngDimensions(descriptor, bytes);
+  if (width < 1 || height < 1 || width > TEXTURE_RESOLVER_LIMITS_V1.maxWidth || height > TEXTURE_RESOLVER_LIMITS_V1.maxHeight) {
+    throw new ApprovedTextureResourceUnavailableError(descriptor.id, `dimension limit is ${TEXTURE_RESOLVER_LIMITS_V1.maxWidth}x${TEXTURE_RESOLVER_LIMITS_V1.maxHeight}; received ${width}x${height}`);
+  }
+  const pixels = width * height;
+  if (!Number.isSafeInteger(pixels) || pixels > TEXTURE_RESOLVER_LIMITS_V1.maxPixels) {
+    throw new ApprovedTextureResourceUnavailableError(descriptor.id, `pixel limit is ${TEXTURE_RESOLVER_LIMITS_V1.maxPixels}; received ${pixels}`);
+  }
+  const hash = sha256(bytes);
+  if (hash !== descriptor.contentHash) {
+    throw new ApprovedTextureResourceUnavailableError(descriptor.id, `content hash ${hash} does not match the pinned ${descriptor.contentHash}`);
+  }
+  return hash;
+}
+
+class ApprovedTextureResourceCache {
+  #bytesByHash = new Map;
+  #hashById = new Map;
+  #textureByVariant = new Map;
+  #pendingById = new Map;
+  #registry;
+  #resolver;
+  #resolverDeadlineMs;
+  constructor(options = {}) {
+    this.#resolver = options.resolver;
+    this.#registry = options.registry ?? APPROVED_TEXTURE_RESOURCES_V1;
+    const deadline = options.resolverDeadlineMs ?? TEXTURE_RESOLVER_LIMITS_V1.defaultDeadlineMs;
+    if (!Number.isFinite(deadline) || deadline < 1 || deadline > TEXTURE_RESOLVER_LIMITS_V1.maxDeadlineMs) {
+      throw new RangeError(`resolverDeadlineMs must be in [1,${TEXTURE_RESOLVER_LIMITS_V1.maxDeadlineMs}]`);
+    }
+    this.#resolverDeadlineMs = deadline;
+  }
+  setResolver(resolver) {
+    const previous = this.#resolver;
+    this.#resolver = resolver;
+    return previous;
+  }
+  descriptor(id) {
+    if (!isApprovedId(id))
+      throw new RangeError(`Unsupported approved texture resource ID ${id}.`);
+    return this.#registry[id];
+  }
+  available(id) {
+    if (!isApprovedId(id))
+      return false;
+    return this.#registry[id].delivery === "embedded" || this.#resolver !== undefined;
+  }
+  #cacheBytes(id, hash, bytes) {
+    let canonical = this.#bytesByHash.get(hash);
+    if (!canonical) {
+      canonical = bytes;
+      this.#bytesByHash.set(hash, canonical);
+    }
+    this.#hashById.set(id, hash);
+    return canonical;
+  }
+  #resolution(id, hash) {
+    const canonical = this.#bytesByHash.get(hash);
+    if (!canonical)
+      throw new Error(`Approved resource cache lost content ${hash}.`);
+    return {
+      descriptor: this.#registry[id],
+      bytes: canonical.slice(),
+      provenance: provenance(this.#registry[id], hash)
+    };
+  }
+  resolve(id) {
+    if (!isApprovedId(id))
+      throw new RangeError(`Unsupported approved texture resource ID ${id}.`);
+    const hash = this.#hashById.get(id);
+    if (hash)
+      return this.#resolution(id, hash);
+    const descriptor = this.#registry[id];
+    if (descriptor.delivery !== "embedded") {
+      throw new ApprovedTextureResourceUnavailableError(id, "it is delivered at runtime; use resolveAsync() or load()");
+    }
+    const decoded = bytesFromBase64(EMBEDDED_RESOURCE_BASE64[id]);
+    this.#cacheBytes(id, verifyResourcePayload(descriptor, { bytes: decoded, mime: descriptor.mime }), decoded);
+    return this.#resolution(id, this.#hashById.get(id));
+  }
+  async resolveAsync(id) {
+    if (!isApprovedId(id))
+      throw new RangeError(`Unsupported approved texture resource ID ${id}.`);
+    const hash = this.#hashById.get(id);
+    if (hash)
+      return this.#resolution(id, hash);
+    if (this.#registry[id].delivery === "embedded")
+      return this.resolve(id);
+    let pending = this.#pendingById.get(id);
+    if (!pending) {
+      const descriptor = this.#registry[id];
+      const resolver = this.#resolver;
+      pending = (async () => {
+        if (!resolver) {
+          throw new ApprovedTextureResourceUnavailableError(id, "no runtime texture resolver is registered in this environment");
+        }
+        const controller = new AbortController;
+        let timer;
+        const timeout = new Promise((_resolve, reject) => {
+          timer = setTimeout(() => {
+            controller.abort();
+            reject(new ApprovedTextureResourceUnavailableError(id, `host resolver deadline exceeded after ${this.#resolverDeadlineMs}ms`));
+          }, this.#resolverDeadlineMs);
+        });
+        let payload;
+        try {
+          payload = await Promise.race([
+            Promise.resolve().then(() => resolver(descriptor, Object.freeze({
+              signal: controller.signal,
+              deadlineMs: this.#resolverDeadlineMs
+            }))),
+            timeout
+          ]);
+        } finally {
+          if (timer !== undefined)
+            clearTimeout(timer);
+        }
+        this.#cacheBytes(id, verifyResourcePayload(descriptor, payload), payload.bytes);
+        return this.#resolution(id, this.#hashById.get(id));
+      })().finally(() => {
+        this.#pendingById.delete(id);
+      });
+      this.#pendingById.set(id, pending);
+    }
+    return pending;
+  }
+  async load(id) {
+    const resolved = await this.resolveAsync(id);
+    const variantKey = [
+      resolved.provenance.contentHash,
+      resolved.provenance.usage,
+      resolved.provenance.colorSpace
+    ].join(":");
+    let pending = this.#textureByVariant.get(variantKey);
+    if (!pending) {
+      pending = loadTexture(resolved.bytes, {
+        usage: resolved.provenance.usage,
+        name: id
+      }).then((texture) => {
+        const metadata = texture.userData["kilnTexture"];
+        texture.userData["kilnTexture"] = {
+          ...metadata,
+          approvedResource: resolved.provenance
+        };
+        return texture;
+      });
+      this.#textureByVariant.set(variantKey, pending);
+    }
+    return { ...resolved, texture: await pending };
+  }
+  stats() {
+    return {
+      approvedIdsResolved: this.#hashById.size,
+      uniqueContentHashes: this.#bytesByHash.size,
+      decodedTextureVariants: this.#textureByVariant.size,
+      encodedBytes: [...this.#bytesByHash.values()].reduce((sum, bytes) => sum + bytes.byteLength, 0)
+    };
+  }
+}
+function approvedTextureCatalogV1(options = {}) {
+  const cache = options.cache ?? DEFAULT_APPROVED_TEXTURE_CACHE;
+  return APPROVED_TEXTURE_RESOURCE_IDS.filter((id) => {
+    const descriptor = cache.descriptor(id);
+    if (descriptor.quality === "placeholder" && options.includePlaceholders !== true)
+      return false;
+    return cache.available(id);
+  }).map((id) => {
+    const descriptor = cache.descriptor(id);
+    return {
+      id,
+      label: descriptor.label,
+      usage: descriptor.usage,
+      delivery: descriptor.delivery,
+      allowedSlots: descriptor.allowedSlots,
+      recipeIds: descriptor.recipeIds
+    };
+  });
+}
+function readMaterialResourceProvenance(texture) {
+  const metadata = texture.userData["kilnTexture"];
+  return metadata?.approvedResource;
+}
+function sceneNeedsPbrShading(root) {
+  let needs = false;
+  root.traverse((node) => {
+    if (needs)
+      return;
+    const material = node.material;
+    const materials = Array.isArray(material) ? material : material ? [material] : [];
+    for (const item of materials) {
+      if (materialTextures(item).length > 0) {
+        needs = true;
+        return;
+      }
+      const metalness = item.metalness;
+      if (typeof metalness === "number" && metalness > 0) {
+        needs = true;
+        return;
+      }
+    }
+  });
+  return needs;
+}
+function collectMaterialResourceProvenance(root) {
+  const records = new Map;
+  root.traverse((node) => {
+    const material = node.material;
+    const materials = Array.isArray(material) ? material : material ? [material] : [];
+    for (const item of materials) {
+      for (const texture of materialTextures(item)) {
+        const record = readMaterialResourceProvenance(texture);
+        if (record)
+          records.set(`${record.resourceId}:${record.contentHash}:${record.usage}`, record);
+      }
+    }
+  });
+  return [...records.values()].sort((a, b) => `${a.resourceId}:${a.usage}`.localeCompare(`${b.resourceId}:${b.usage}`));
+}
+var TEXTURE_RESOLVER_LIMITS_V1, ApprovedTextureResourceUnavailableError, EMBEDDED_RESOURCE_BASE64, isApprovedId = (value) => APPROVED_TEXTURE_RESOURCE_IDS.includes(value), bytesFromBase64 = (value) => new Uint8Array(Buffer.from(value, "base64")), sha256 = (bytes) => createHash5("sha256").update(bytes).digest("hex"), DEFAULT_APPROVED_TEXTURE_CACHE, materialTextures = (material) => {
+  const standard = material;
+  const candidates = [
+    standard.map,
+    standard.normalMap,
+    standard.roughnessMap,
+    standard.metalnessMap,
+    standard.emissiveMap,
+    standard.aoMap
+  ];
+  return [
+    ...new Set(candidates.filter((value) => value?.isTexture === true))
+  ];
+};
+var init_material_resources = __esm(() => {
+  init_material_recipes();
+  init_material_texture_library_generated();
+  init_textures();
+  TEXTURE_RESOLVER_LIMITS_V1 = Object.freeze({
+    maxEncodedBytes: 8 * 1024 * 1024,
+    maxWidth: 4096,
+    maxHeight: 4096,
+    maxPixels: 8 * 1024 * 1024,
+    defaultDeadlineMs: 5000,
+    maxDeadlineMs: 30000
+  });
+  ApprovedTextureResourceUnavailableError = class ApprovedTextureResourceUnavailableError extends Error {
+    resourceId;
+    constructor(id, reason) {
+      super(`Approved texture resource ${id} is unavailable: ${reason}`);
+      this.name = "ApprovedTextureResourceUnavailableError";
+      this.resourceId = id;
+    }
+  };
+  EMBEDDED_RESOURCE_BASE64 = Object.freeze({
+    "kiln.texture.bark-albedo.v1": "iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAACXBIWXMAAAPoAAAD6AG1e1JrAAAAFklEQVQImWMIMpT6X+Ch9h9GM5AuAACfBRvJB4zLLQAAAABJRU5ErkJggg==",
+    "kiln.texture.leaf-mask-albedo.v1": "iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAACXBIWXMAAAPoAAAD6AG1e1JrAAAAKUlEQVQImWMwaLFiMGixSjBosdoCYsM4/6E4ASQAkoEJbAEJwARBKhkACRMXLR+u+yUAAAAASUVORK5CYII=",
+    "kiln.texture.neutral-normal.v1": "iVBORw0KGgoAAAANSUhEUgAAAAIAAAACCAYAAABytg0kAAAACXBIWXMAAAPoAAAD6AG1e1JrAAAAEUlEQVQImWNoaPj/H4QZYAwAZ9IL+W19YCAAAAAASUVORK5CYII=",
+    "kiln.texture.neutral-metallic-roughness.v1": "iVBORw0KGgoAAAANSUhEUgAAAAIAAAACCAYAAABytg0kAAAACXBIWXMAAAPoAAAD6AG1e1JrAAAAEElEQVQImWNguCT0H4xhDAA/hAeNGSjqWAAAAABJRU5ErkJggg==",
+    "kiln.texture.emissive-grid.v1": "iVBORw0KGgoAAAANSUhEUgAAAAIAAAACCAYAAABytg0kAAAACXBIWXMAAAPoAAAD6AG1e1JrAAAAFklEQVQImWP4P0Hhv4MEy38GEAHiAABG+wgTqOP6IAAAAABJRU5ErkJggg==",
+    ...PRODUCTION_TEXTURE_RESOURCE_BASE64
+  });
+  DEFAULT_APPROVED_TEXTURE_CACHE = new ApprovedTextureResourceCache;
+});
+
+// src/material-recipe-runtime.ts
+import * as THREE4 from "three";
+async function applyMaterialRecipeV1(request, options = {}) {
+  const resolved = resolveMaterialRecipeV1(request);
+  const cache = options.cache ?? DEFAULT_APPROVED_TEXTURE_CACHE;
+  const loaded = new Map;
+  for (const [slot, id] of Object.entries(resolved.textureResources)) {
+    if (id)
+      loaded.set(slot, await cache.load(id));
+  }
+  const materialOptions = {
+    roughness: resolved.roughnessFactor,
+    metalness: resolved.metallicFactor,
+    alphaMode: lowerAlphaMode(resolved.alphaMode),
+    ...resolved.alphaMode === "MASK" ? { alphaCutoff: resolved.alphaCutoff ?? 0.5 } : {},
+    doubleSided: resolved.doubleSided,
+    ...loaded.get("baseColor") ? { albedo: loaded.get("baseColor").texture } : {},
+    ...loaded.get("normal") ? { normal: loaded.get("normal").texture } : {},
+    ...loaded.get("metallicRoughness") ? { metallicRoughness: loaded.get("metallicRoughness").texture } : {},
+    ...loaded.get("emissive") ? { emissive: loaded.get("emissive").texture } : {},
+    ...loaded.get("occlusion") ? { aoMap: loaded.get("occlusion").texture } : {}
+  };
+  const material = pbrMaterial(materialOptions);
+  material.name = options.name ?? request.id;
+  material.color.setRGB(resolved.baseColorFactor[0], resolved.baseColorFactor[1], resolved.baseColorFactor[2], THREE4.LinearSRGBColorSpace);
+  material.opacity = resolved.baseColorFactor[3];
+  material.emissive.setRGB(resolved.emissiveFactor[0], resolved.emissiveFactor[1], resolved.emissiveFactor[2], THREE4.LinearSRGBColorSpace);
+  const resources = [...loaded.values()].map((entry) => entry.provenance).sort((a, b) => `${a.resourceId}:${a.usage}`.localeCompare(`${b.resourceId}:${b.usage}`));
+  const provenance = {
+    schemaVersion: 1,
+    recipeId: request.id,
+    recipeVersion: 1,
+    request: {
+      schemaVersion: 1,
+      id: request.id,
+      ...request.overrides ? {
+        overrides: {
+          ...request.overrides,
+          ...request.overrides.textureResources ? { textureResources: { ...request.overrides.textureResources } } : {}
+        }
+      } : {}
+    },
+    portableModel: "pbrMetallicRoughness",
+    resources
+  };
+  material.userData["kilnMaterialRecipe"] = provenance;
+  return { material, resolved, provenance };
+}
+async function materialRecipe(id, overrides, options = {}) {
+  return (await applyMaterialRecipeV1(createMaterialRecipeRequestV1(id, overrides), options)).material;
+}
+function readMaterialRecipeApplication(material) {
+  return material.userData["kilnMaterialRecipe"];
+}
+function collectMaterialRecipeApplications(root) {
+  const applications = new Map;
+  root.traverse((node) => {
+    const value = node.material;
+    const materials = Array.isArray(value) ? value : value ? [value] : [];
+    for (const material of materials) {
+      const application = readMaterialRecipeApplication(material);
+      if (!application)
+        continue;
+      const resourceKey = application.resources.map((resource) => `${resource.resourceId}:${resource.contentHash}`).sort().join(",");
+      applications.set(`${application.recipeId}:${JSON.stringify(application.request)}:${resourceKey}`, application);
+    }
+  });
+  return [...applications.values()].sort((a, b) => a.recipeId.localeCompare(b.recipeId));
+}
+var lowerAlphaMode = (value) => value === "MASK" ? "mask" : value === "BLEND" ? "blend" : "opaque";
+var init_material_recipe_runtime = __esm(() => {
+  init_material_recipes();
+  init_material_resources();
+  init_textures();
+});
+
+// src/texture-resolver.ts
+function createTextureResolver(cache = DEFAULT_APPROVED_TEXTURE_CACHE) {
+  return Object.freeze({
+    describeApprovedTexture(resourceId) {
+      if (typeof resourceId !== "string")
+        return;
+      try {
+        return cache.descriptor(resourceId);
+      } catch {
+        return;
+      }
+    },
+    async loadApprovedTexture(resourceId) {
+      if (typeof resourceId !== "string") {
+        throw new RangeError("Unsupported approved texture resource ID.");
+      }
+      return (await cache.load(resourceId)).texture;
+    },
+    async materialRecipe(id, overrides) {
+      if (typeof id !== "string")
+        throw new TypeError("materialRecipe id must be a string");
+      return materialRecipe(id, overrides, { cache });
+    }
+  });
+}
+var DEFAULT_TEXTURE_RESOLVER;
+var init_texture_resolver = __esm(() => {
+  init_material_resources();
+  init_material_recipe_runtime();
+  DEFAULT_TEXTURE_RESOLVER = createTextureResolver();
+});
+
+// src/material-library-node.ts
+import { createHash as createHash6, randomUUID } from "node:crypto";
+import sharp from "sharp";
+import { DataTexture as DataTexture3 } from "three";
+function revisionHash(manifest) {
+  const { revisionId: _, ...content } = manifest;
+  return digest2(canonicalMaterialJson(content));
+}
+function snapshot2(record) {
+  validateMaterialRecordShape(record);
+  return {
+    manifest: structuredClone(record.manifest),
+    files: Object.fromEntries(Object.entries(record.files).map(([name, bytes]) => [name, Uint8Array.from(bytes)]))
+  };
+}
+function exactKeys(value, keys) {
+  if (Object.keys(value).some((key) => !keys.includes(key)))
+    throw new Error("Unknown material draft field");
+}
+function materialPixels(spec, derive) {
+  const compiled = compileProceduralTextureSpecV2(spec);
+  if (!derive)
+    return compiled;
+  materialNormalDerivationSchema.parse(derive);
+  if (compiled.spec.usage !== "normal")
+    throw new Error("Height derivation requires a normal map slot");
+  const height = new DataTexture3(compiled.pixels, compiled.spec.size, compiled.spec.size);
+  const normal = normalMapFromHeight(height, { strength: derive.strength });
+  if (!(normal.image.data instanceof Uint8Array))
+    throw new Error("Normal derivation must produce RGBA8 pixels");
+  const pixels = Uint8Array.from(normal.image.data);
+  height.dispose();
+  normal.dispose();
+  return { ...compiled, pixels };
+}
+async function createMaterialRecordV1(draft) {
+  assertMaterialJson(draft, true);
+  exactKeys(draft, [
+    "materialId",
+    "name",
+    "tags",
+    "tileable",
+    "physicalSizeMeters",
+    "parameters",
+    "sources",
+    "maps"
+  ]);
+  if (!Array.isArray(draft.maps) || !draft.maps.length || draft.maps.length > 5)
+    throw new Error("Material requires 1..5 maps");
+  const files = {};
+  const maps = [];
+  let totalPixels = 0;
+  for (const input of draft.maps) {
+    exactKeys(input, [
+      "slot",
+      "sourceId",
+      "transforms",
+      "normalConvention",
+      "channelPacking",
+      "bytes",
+      "originalFile",
+      "procedural",
+      "derive"
+    ]);
+    if (!MATERIAL_LIBRARY_SLOTS.includes(input.slot))
+      throw new Error("Unsupported material map slot");
+    if (input.bytes !== undefined === (input.procedural !== undefined))
+      throw new Error("Supply exactly one map byte source or procedural recipe");
+    let bytes;
+    let procedural;
+    if (input.procedural) {
+      const compiled = materialPixels(input.procedural, input.derive);
+      if (compiled.spec.usage !== MATERIAL_LIBRARY_USAGE[input.slot])
+        throw new Error("Procedural map usage mismatch");
+      bytes = new Uint8Array(await sharp(compiled.pixels, {
+        raw: { width: compiled.spec.size, height: compiled.spec.size, channels: 4 }
+      }).png({ compressionLevel: 9, adaptiveFiltering: false }).toBuffer());
+      procedural = {
+        compiler: "kiln.procedural-texture.v2",
+        spec: compiled.spec,
+        ...input.derive ? { derive: structuredClone(input.derive) } : {},
+        recipeHash: compiled.recipeHash,
+        pixelHash: digest2(compiled.pixels),
+        encoder
+      };
+    } else {
+      if ("derive" in input)
+        throw new Error("External maps cannot declare a procedural derivation");
+      if (!(input.bytes instanceof Uint8Array))
+        throw new Error("Material map bytes must be Uint8Array");
+      bytes = Uint8Array.from(input.bytes);
+    }
+    if (bytes.length > MATERIAL_LIBRARY_LIMITS.maxMapBytes)
+      throw new Error("Material map exceeds encoded byte limit");
+    const dimensions = materialPngDimensions(bytes);
+    totalPixels += dimensions.width * dimensions.height;
+    if (dimensions.width < 1 || dimensions.height < 1 || dimensions.width > MATERIAL_LIBRARY_LIMITS.maxMapEdge || dimensions.height > MATERIAL_LIBRARY_LIMITS.maxMapEdge || totalPixels > MATERIAL_LIBRARY_LIMITS.maxRecordPixels)
+      throw new Error("Material maps exceed pixel budget");
+    const file = `${input.slot}.png`;
+    if (files[file])
+      throw new Error("Duplicate material map slot");
+    files[file] = bytes;
+    maps.push({
+      slot: input.slot,
+      file,
+      ...dimensions,
+      sha256: digest2(bytes),
+      bytes: bytes.length,
+      usage: MATERIAL_LIBRARY_USAGE[input.slot],
+      colorSpace: input.slot === "baseColor" || input.slot === "emissive" ? "srgb" : "linear",
+      ...input.slot === "normal" ? { normalConvention: input.normalConvention ?? (procedural ? "opengl" : undefined) } : {},
+      ...input.slot === "metallicRoughness" ? {
+        channelPacking: input.channelPacking ?? (procedural ? "r-occlusion-g-roughness-b-metallic" : undefined)
+      } : {},
+      sourceId: input.sourceId,
+      ...input.originalFile ? { originalFile: input.originalFile } : {},
+      transforms: structuredClone(input.transforms),
+      ...procedural ? { procedural } : {}
+    });
+  }
+  const manifest = materialManifestSchema.parse({
+    schemaVersion: 1,
+    materialId: draft.materialId,
+    revisionId: `sha256:${"0".repeat(64)}`,
+    name: draft.name,
+    tags: draft.tags ?? [],
+    tileable: draft.tileable,
+    ...draft.physicalSizeMeters ? { physicalSizeMeters: draft.physicalSizeMeters } : {},
+    parameters: draft.parameters ?? {},
+    sources: draft.sources,
+    maps
+  });
+  manifest.revisionId = revisionHash(manifest);
+  const record = { manifest, files };
+  await verifyMaterialRecordV1(record);
+  return record;
+}
+async function verifyMaterialRecordV1(record) {
+  const manifest = validateMaterialRecordShape(record);
+  if (revisionHash(manifest) !== manifest.revisionId)
+    throw new Error("Material identity hash mismatch");
+  for (const map of manifest.maps) {
+    const bytes = record.files[map.file];
+    if (digest2(bytes) !== map.sha256)
+      throw new Error(`Material integrity hash mismatch: ${map.file}`);
+    const { data, info } = await sharp(bytes, {
+      limitInputPixels: MATERIAL_LIBRARY_LIMITS.maxRecordPixels,
+      failOn: "warning"
+    }).ensureAlpha().raw().toBuffer({ resolveWithObject: true });
+    if (info.width !== map.width || info.height !== map.height || info.channels !== 4)
+      throw new Error("Material decoded image mismatch");
+    if (map.procedural) {
+      const compiled = materialPixels(map.procedural.spec, map.procedural.derive);
+      if (compiled.recipeHash !== map.procedural.recipeHash || digest2(compiled.pixels) !== map.procedural.pixelHash || digest2(data) !== map.procedural.pixelHash)
+        throw new Error("Procedural material recipe or pixel hash mismatch");
+    }
+  }
+}
+function validateMaterialLibraryPayload(value) {
+  assertMaterialJson(value);
+  if (!value || typeof value !== "object" || Array.isArray(value))
+    throw new Error("Invalid material resource payload");
+  const payload = value;
+  if (Object.keys(payload).some((key) => !["schemaVersion", "records"].includes(key)) || payload.schemaVersion !== 1 || !Array.isArray(payload.records) || payload.records.length > MATERIAL_LIBRARY_LIMITS.maxPayloadRecords)
+    throw new Error("Invalid material resource payload");
+  let total = 0;
+  let pixels = 0;
+  const identities = new Set;
+  for (const wire of payload.records) {
+    if (!wire || typeof wire !== "object" || Object.keys(wire).some((key) => !["manifest", "files"].includes(key)))
+      throw new Error("Invalid material resource record");
+    const manifest = materialManifestSchema.parse(wire.manifest);
+    if (identities.has(manifest.revisionId))
+      throw new Error("Duplicate material resource revision");
+    identities.add(manifest.revisionId);
+    if (!wire.files || typeof wire.files !== "object" || Array.isArray(wire.files) || Object.keys(wire.files).length !== manifest.maps.length)
+      throw new Error("Material payload inventory mismatch");
+    for (const map of manifest.maps) {
+      const encoded = wire.files[map.file];
+      if (typeof encoded !== "string" || encoded.length !== Math.ceil(map.bytes / 3) * 4 || !/^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$/.test(encoded))
+        throw new Error("Invalid material map base64");
+      total += map.bytes;
+      pixels += map.width * map.height;
+    }
+  }
+  if (total > MATERIAL_LIBRARY_LIMITS.maxPayloadBytes || pixels > MATERIAL_LIBRARY_LIMITS.maxPayloadPixels)
+    throw new Error("Material resource payload exceeds byte or pixel budget");
+  return payload;
+}
+async function createMaterialLibraryPayload(records) {
+  const snapshots = records.map(snapshot2);
+  for (const record of snapshots)
+    await verifyMaterialRecordV1(record);
+  return validateMaterialLibraryPayload({
+    schemaVersion: 1,
+    records: snapshots.map((record) => ({
+      manifest: record.manifest,
+      files: Object.fromEntries(Object.entries(record.files).map(([name, bytes]) => [
+        name,
+        Buffer.from(bytes).toString("base64")
+      ]))
+    }))
+  });
+}
+async function decodeMaterialLibraryPayload(value) {
+  const payload = validateMaterialLibraryPayload(value);
+  const records = payload.records.map((wire) => ({
+    manifest: structuredClone(wire.manifest),
+    files: Object.fromEntries(Object.entries(wire.files).map(([name, encoded]) => [
+      name,
+      new Uint8Array(Buffer.from(encoded, "base64"))
+    ]))
+  }));
+  for (const record of records)
+    await verifyMaterialRecordV1(record);
+  return records;
+}
+async function createMaterialLibraryTextureResolver(records, fallback = DEFAULT_TEXTURE_RESOLVER) {
+  const snapshots = await decodeMaterialLibraryPayload(await createMaterialLibraryPayload(records));
+  const maps = new Map;
+  for (const record of snapshots)
+    for (const map of record.manifest.maps)
+      maps.set(materialLibraryResourceId(record.manifest, map.slot), { record, map });
+  return Object.freeze({
+    describeApprovedTexture(id) {
+      const entry = typeof id === "string" ? maps.get(id) : undefined;
+      return entry ? { usage: entry.map.usage, allowedSlots: [entry.map.slot] } : fallback.describeApprovedTexture?.(id);
+    },
+    async loadApprovedTexture(id) {
+      const entry = typeof id === "string" ? maps.get(id) : undefined;
+      if (!entry)
+        return fallback.loadApprovedTexture(id);
+      const texture = await loadTexture(entry.record.files[entry.map.file].slice(), {
+        usage: entry.map.usage,
+        name: id
+      });
+      texture.userData["kilnMaterialResource"] = {
+        schemaVersion: 1,
+        materialId: entry.record.manifest.materialId,
+        revisionId: entry.record.manifest.revisionId,
+        resourceId: id,
+        map: structuredClone(entry.map),
+        sources: structuredClone(entry.record.manifest.sources),
+        ...entry.record.manifest.physicalSizeMeters ? { physicalSizeMeters: { ...entry.record.manifest.physicalSizeMeters } } : {}
+      };
+      return texture;
+    },
+    materialRecipe: (id, overrides) => fallback.materialRecipe(id, overrides)
+  });
+}
+var digest2 = (bytes) => `sha256:${createHash6("sha256").update(bytes).digest("hex")}`, encoder;
+var init_material_library_node = __esm(() => {
+  init_material_library();
+  init_procedural_texture();
+  init_textures();
+  init_texture_resolver();
+  encoder = { name: "sharp", version: sharp.versions.sharp };
+});
+
+// src/rebuild-options.ts
+import { z as z8 } from "zod";
+var rebuildOptionsSchema;
+var init_rebuild_options = __esm(() => {
+  rebuildOptionsSchema = z8.object({
+    gltfExporter: z8.enum(["legacy", "three"]),
+    geometryPolicy: z8.enum(["warn", "strict"]),
+    optimize: z8.enum(["off", "auto", "palette", "full"]),
+    instance: z8.enum(["off", "auto", "on"])
+  });
+});
+
+// src/qa/breadth-evidence.ts
+import * as THREE5 from "three";
 function record3(value) {
   return typeof value === "object" && value !== null && !Array.isArray(value);
 }
@@ -6851,7 +8807,7 @@ function isAnimationClip(value) {
 function localRenderableBox(rootInverse, node) {
   if (isSpriteNode(node)) {
     const transform = rootInverse.clone().multiply(node.matrixWorld);
-    return new THREE2.Box3(new THREE2.Vector3(-0.5, -0.5, -0.0005), new THREE2.Vector3(0.5, 0.5, 0.0005)).applyMatrix4(transform);
+    return new THREE5.Box3(new THREE5.Vector3(-0.5, -0.5, -0.0005), new THREE5.Vector3(0.5, 0.5, 0.0005)).applyMatrix4(transform);
   }
   if (!isMeshNode(node) || !node.geometry?.isBufferGeometry)
     return;
@@ -6860,11 +8816,11 @@ function localRenderableBox(rootInverse, node) {
   if (!source || source.isEmpty())
     return;
   const transform = rootInverse.clone().multiply(node.matrixWorld);
-  const result = new THREE2.Box3;
+  const result = new THREE5.Box3;
   for (const x of [source.min.x, source.max.x]) {
     for (const y of [source.min.y, source.max.y]) {
       for (const z of [source.min.z, source.max.z]) {
-        result.expandByPoint(new THREE2.Vector3(x, y, z).applyMatrix4(transform));
+        result.expandByPoint(new THREE5.Vector3(x, y, z).applyMatrix4(transform));
       }
     }
   }
@@ -6889,7 +8845,7 @@ function textureHasAlpha(texture) {
   }
   return false;
 }
-function materialTextures(material) {
+function materialTextures2(material) {
   const candidate = material;
   const textures = new Set;
   for (const key of [
@@ -6908,7 +8864,7 @@ function materialTextures(material) {
   return [...textures];
 }
 function materialTextureBytes(material) {
-  return materialTextures(material).reduce((sum, texture) => {
+  return materialTextures2(material).reduce((sum, texture) => {
     const dimensions = textureDimensions(texture);
     return sum + (dimensions ? Math.ceil(dimensions[0] * dimensions[1] * 4 * (4 / 3)) : 0);
   }, 0);
@@ -6952,10 +8908,10 @@ function isEffectSurface(nodes) {
 function coverageRatio(boxes, overall) {
   if (boxes.length === 0 || overall.isEmpty())
     return 0;
-  const overallSize = overall.getSize(new THREE2.Vector3);
+  const overallSize = overall.getSize(new THREE5.Vector3);
   const denominator = Math.max(0.000000001, overallSize.x * overallSize.y, overallSize.z * overallSize.y, overallSize.x * overallSize.z);
   const area = boxes.reduce((sum, box) => {
-    const size = box.getSize(new THREE2.Vector3);
+    const size = box.getSize(new THREE5.Vector3);
     return sum + Math.max(size.x * size.y, size.z * size.y, size.x * size.z);
   }, 0);
   return stable2(Math.min(1, area / denominator));
@@ -6964,7 +8920,7 @@ function collectMaterialEvidence(root, intent) {
   root.updateWorldMatrix(true, true);
   const inverse = root.matrixWorld.clone().invert();
   const byMaterial = new Map;
-  const overall = new THREE2.Box3;
+  const overall = new THREE5.Box3;
   root.traverse((node) => {
     const box = localRenderableBox(inverse, node);
     if (!box || !isMeshNode(node) && !isSpriteNode(node))
@@ -6989,7 +8945,7 @@ function collectMaterialEvidence(root, intent) {
       effectSurface: isEffectSurface(value.nodes),
       alphaMode: mode,
       alphaData: alphaData(material),
-      doubleSided: material.side === THREE2.DoubleSide,
+      doubleSided: material.side === THREE5.DoubleSide,
       ...mode === "mask" ? { alphaCutoff: standard.alphaTest ?? 0 } : {},
       screenAreaRatio: coverageRatio(value.boxes, overall),
       transparentLayers: mode === "blend" ? value.nodes.length : 0,
@@ -7017,23 +8973,23 @@ function dominantGeometryAxis(root, mode) {
     const bounds = node.geometry.boundingBox;
     if (!bounds || bounds.isEmpty())
       return;
-    const size = bounds.getSize(new THREE2.Vector3);
+    const size = bounds.getSize(new THREE5.Vector3);
     const axes = [
-      { score: size.x, direction: new THREE2.Vector3(1, 0, 0) },
-      { score: size.y, direction: new THREE2.Vector3(0, 1, 0) },
-      { score: size.z, direction: new THREE2.Vector3(0, 0, 1) }
+      { score: size.x, direction: new THREE5.Vector3(1, 0, 0) },
+      { score: size.y, direction: new THREE5.Vector3(0, 1, 0) },
+      { score: size.z, direction: new THREE5.Vector3(0, 0, 1) }
     ];
     const selected = axes.reduce((candidate, value) => mode === "length" ? value.score > candidate.score ? value : candidate : value.score < candidate.score ? value : candidate);
     const relative = inverse.clone().multiply(node.matrixWorld);
     const direction = selected.direction.transformDirection(relative);
-    const score = selected.score * node.getWorldScale(new THREE2.Vector3).length();
+    const score = selected.score * node.getWorldScale(new THREE5.Vector3).length();
     if (!best || (mode === "length" ? score > best.score : score < best.score)) {
       best = { score, direction };
     }
   });
   if (best)
     return signedAxis(best.direction);
-  const overall = new THREE2.Box3;
+  const overall = new THREE5.Box3;
   root.traverse((node) => {
     const box = localRenderableBox(inverse, node);
     if (box)
@@ -7041,8 +8997,8 @@ function dominantGeometryAxis(root, mode) {
   });
   if (overall.isEmpty())
     return "+X";
-  const size = overall.getSize(new THREE2.Vector3);
-  const vector = mode === "length" ? size.x >= size.y && size.x >= size.z ? new THREE2.Vector3(1, 0, 0) : size.y >= size.z ? new THREE2.Vector3(0, 1, 0) : new THREE2.Vector3(0, 0, 1) : size.x <= size.y && size.x <= size.z ? new THREE2.Vector3(1, 0, 0) : size.y <= size.z ? new THREE2.Vector3(0, 1, 0) : new THREE2.Vector3(0, 0, 1);
+  const size = overall.getSize(new THREE5.Vector3);
+  const vector = mode === "length" ? size.x >= size.y && size.x >= size.z ? new THREE5.Vector3(1, 0, 0) : size.y >= size.z ? new THREE5.Vector3(0, 1, 0) : new THREE5.Vector3(0, 0, 1) : size.x <= size.y && size.x <= size.z ? new THREE5.Vector3(1, 0, 0) : size.y <= size.z ? new THREE5.Vector3(0, 1, 0) : new THREE5.Vector3(0, 0, 1);
   return signedAxis(vector);
 }
 function analyzedFacing(root, intent) {
@@ -7166,7 +9122,7 @@ var init_breadth_evidence = __esm(() => {
 });
 
 // src/qa/registry.ts
-import { createHash as createHash5 } from "node:crypto";
+import { createHash as createHash7 } from "node:crypto";
 function canonicalCalibrationReportEvidence(report) {
   return JSON.stringify({
     schemaVersion: report.schemaVersion,
@@ -7199,7 +9155,7 @@ function canonicalCalibrationReportEvidence(report) {
   });
 }
 function calibrationReportEvidenceSha256(report) {
-  return createHash5("sha256").update(canonicalCalibrationReportEvidence(report)).digest("hex");
+  return createHash7("sha256").update(canonicalCalibrationReportEvidence(report)).digest("hex");
 }
 function conformancePromotionAuthorization(fixtureSetId, fixturePath, evidenceSha256, owner = KILN_ENGINE_QA_OWNER, frozenAt = "2026-07-09T00:00:00.000Z", authorizedMode = "enforce", rendererId = LEGACY_CPU_RASTER_RENDERER_ID) {
   return {
@@ -8005,7 +9961,7 @@ function createGltfIO() {
 var init_gltf_io = () => {};
 
 // src/qa/breadth-final.ts
-import * as THREE3 from "three";
+import * as THREE6 from "three";
 function bytesContainAscii(bytes, value) {
   const needle = new TextEncoder().encode(value);
   outer:
@@ -8064,7 +10020,7 @@ function finalEffectAxis(nodes, mode) {
     if (!(semantic?.roles ?? []).some((role) => /^vfx\.effect\.surface(?:\.|$)/.test(role))) {
       continue;
     }
-    const matrix = new THREE3.Matrix4().fromArray(node.getWorldMatrix());
+    const matrix = new THREE6.Matrix4().fromArray(node.getWorldMatrix());
     const scale = node.getWorldScale();
     const scaleMagnitude = Math.hypot(scale[0], scale[1], scale[2]);
     for (const primitive of node.getMesh()?.listPrimitives() ?? []) {
@@ -8074,9 +10030,9 @@ function finalEffectAxis(nodes, mode) {
       const min = position.getMin([]);
       const max = position.getMax([]);
       const axes = [
-        { score: (max[0] ?? 0) - (min[0] ?? 0), direction: new THREE3.Vector3(1, 0, 0) },
-        { score: (max[1] ?? 0) - (min[1] ?? 0), direction: new THREE3.Vector3(0, 1, 0) },
-        { score: (max[2] ?? 0) - (min[2] ?? 0), direction: new THREE3.Vector3(0, 0, 1) }
+        { score: (max[0] ?? 0) - (min[0] ?? 0), direction: new THREE6.Vector3(1, 0, 0) },
+        { score: (max[1] ?? 0) - (min[1] ?? 0), direction: new THREE6.Vector3(0, 1, 0) },
+        { score: (max[2] ?? 0) - (min[2] ?? 0), direction: new THREE6.Vector3(0, 0, 1) }
       ];
       const selected = axes.reduce((candidate, value) => mode === "length" ? value.score > candidate.score ? value : candidate : value.score < candidate.score ? value : candidate);
       const candidate = {
@@ -8700,7 +10656,7 @@ var init_universal = __esm(() => {
 });
 
 // src/qa/material.ts
-import * as THREE4 from "three";
+import * as THREE7 from "three";
 function textureMeta(texture) {
   return texture.userData["kilnTexture"];
 }
@@ -8748,7 +10704,7 @@ function validateTextureSlot(findings, mesh, material, texture, slot, expected) 
   if (!texture)
     return;
   const meta = textureMeta(texture);
-  const actual = texture.colorSpace === THREE4.SRGBColorSpace ? "srgb" : texture.colorSpace === THREE4.NoColorSpace ? "linear" : meta?.colorSpace ?? "linear";
+  const actual = texture.colorSpace === THREE7.SRGBColorSpace ? "srgb" : texture.colorSpace === THREE7.NoColorSpace ? "linear" : meta?.colorSpace ?? "linear";
   if (!meta || !encodedTextureIsExportable(texture)) {
     findings.push({
       code: "MAT_TEXTURE_DECODE_FAILED",
@@ -8849,7 +10805,7 @@ function validateMaterial(mesh, material, requiresPrecomputedTangents) {
   }
   if (mesh.geometry.userData["kilnGeometryRole"] === "foliageCard") {
     const validMask = standard.alphaTest > 0 && !standard.transparent;
-    if (!standard.map || !textureHasAlpha2(standard.map) || !validMask || standard.side !== THREE4.DoubleSide || !mesh.geometry.getAttribute("uv")) {
+    if (!standard.map || !textureHasAlpha2(standard.map) || !validMask || standard.side !== THREE7.DoubleSide || !mesh.geometry.getAttribute("uv")) {
       findings.push({
         code: "MAT_FOLIAGE_CARD_CONTRACT",
         disposition: "block",
@@ -8900,7 +10856,7 @@ var init_material = __esm(() => {
 });
 
 // src/qa/prop.ts
-import * as THREE5 from "three";
+import * as THREE8 from "three";
 function finding2(context, value) {
   return {
     ...value,
@@ -8922,11 +10878,11 @@ function nodePath2(root, node) {
   return names.reverse().join("/");
 }
 function transformedBox(source, transform) {
-  const result = new THREE5.Box3;
+  const result = new THREE8.Box3;
   for (const x of [source.min.x, source.max.x]) {
     for (const y of [source.min.y, source.max.y]) {
       for (const z of [source.min.z, source.max.z]) {
-        result.expandByPoint(new THREE5.Vector3(x, y, z).applyMatrix4(transform));
+        result.expandByPoint(new THREE8.Vector3(x, y, z).applyMatrix4(transform));
       }
     }
   }
@@ -8938,9 +10894,9 @@ function collectParts(root, measureVertices = false) {
   const result = [];
   root.traverse((node) => {
     const roles = rolesOf(node);
-    const renderable = node instanceof THREE5.Mesh;
+    const renderable = node instanceof THREE8.Mesh;
     let box;
-    if (renderable && node.geometry instanceof THREE5.BufferGeometry) {
+    if (renderable && node.geometry instanceof THREE8.BufferGeometry) {
       const position = node.geometry.getAttribute("position");
       node.geometry.computeBoundingBox();
       if (node.geometry.boundingBox) {
@@ -8948,17 +10904,17 @@ function collectParts(root, measureVertices = false) {
         const measure = (matrix) => {
           if (!measureVertices || !position)
             return transformedBox(node.geometry.boundingBox, matrix);
-          const result = new THREE5.Box3;
-          const point = new THREE5.Vector3;
+          const result = new THREE8.Box3;
+          const point = new THREE8.Vector3;
           for (let i = 0;i < position.count; i++) {
             point.fromBufferAttribute(position, i).applyMatrix4(matrix);
             result.expandByPoint(point);
           }
           return result;
         };
-        if (node instanceof THREE5.InstancedMesh) {
-          box = new THREE5.Box3;
-          const instance = new THREE5.Matrix4;
+        if (node instanceof THREE8.InstancedMesh) {
+          box = new THREE8.Box3;
+          const instance = new THREE8.Matrix4;
           for (let i = 0;i < node.count; i++) {
             node.getMatrixAt(i, instance);
             box.union(measure(transform.clone().multiply(instance)));
@@ -8968,7 +10924,7 @@ function collectParts(root, measureVertices = false) {
         }
       }
     } else if (roles.length > 0) {
-      box = transformedBox(new THREE5.Box3(new THREE5.Vector3(-0.5, -0.5, -0.5), new THREE5.Vector3(0.5, 0.5, 0.5)), rootInverse.clone().multiply(node.matrixWorld));
+      box = transformedBox(new THREE8.Box3(new THREE8.Vector3(-0.5, -0.5, -0.5), new THREE8.Vector3(0.5, 0.5, 0.5)), rootInverse.clone().multiply(node.matrixWorld));
     }
     if (box?.isEmpty())
       box = undefined;
@@ -9052,14 +11008,14 @@ function legacyArticulationEvidence(context, root) {
   });
   if (joints.length === 0)
     return false;
-  const clips = (context.clips ?? []).filter((clip) => clip instanceof THREE5.AnimationClip);
+  const clips = (context.clips ?? []).filter((clip) => clip instanceof THREE8.AnimationClip);
   if ((context.intent.animation?.clips.length ?? 0) === 0 && clips.length === 0)
     return true;
   const targets = new Set(clips.flatMap((clip) => clip.tracks.map((track) => track.name.split(".")[0] ?? "")));
   return joints.some((joint) => targets.has(joint));
 }
 function evaluatePropArticulationQa(context) {
-  if (context.intent.category !== "prop" || !context.intent.capabilities.includes("articulated") || !(context.scene instanceof THREE5.Object3D)) {
+  if (context.intent.category !== "prop" || !context.intent.capabilities.includes("articulated") || !(context.scene instanceof THREE8.Object3D)) {
     return [];
   }
   if (usesExplicitLegacyProfile(context) && motionAssemblies(collectParts(context.scene)).length === 0 && legacyArticulationEvidence(context, context.scene))
@@ -9071,7 +11027,7 @@ function evaluatePropArticulationQa(context) {
   });
 }
 function inspectArticulation(input) {
-  if (!(input.scene instanceof THREE5.Object3D))
+  if (!(input.scene instanceof THREE8.Object3D))
     return [];
   const root = input.scene;
   const context = { profile: input.profile ?? "asset.requirements.v1" };
@@ -9185,11 +11141,11 @@ function rolePart(parts, expression) {
   return parts.find((part) => part.roles.some((role) => expression.test(role)));
 }
 function interiorUsable(box, minimumExtent) {
-  const size = box.getSize(new THREE5.Vector3);
+  const size = box.getSize(new THREE8.Vector3);
   return [size.x, size.y, size.z].every((value) => value > 0 && value >= minimumExtent);
 }
 function evaluatePropContainerQa(context) {
-  if (context.intent.category !== "prop" || !(context.scene instanceof THREE5.Object3D))
+  if (context.intent.category !== "prop" || !(context.scene instanceof THREE8.Object3D))
     return [];
   const explicitlyOpen = context.intent.capabilities.includes("openable");
   const explicitContainment = /^(?:open-)?(?:container|chest|case|box)$/i.test(context.intent.subtype ?? "");
@@ -9211,7 +11167,7 @@ function evaluatePropContainerQa(context) {
   });
 }
 function inspectContainerOpening(input) {
-  if (!(input.scene instanceof THREE5.Object3D))
+  if (!(input.scene instanceof THREE8.Object3D))
     return [];
   const root = input.scene;
   const context = { profile: input.profile ?? "asset.requirements.v1" };
@@ -9253,7 +11209,7 @@ function inspectContainerOpening(input) {
       repairText: "Add a non-rendered scaled prop.container.interior.main marker inside the shell."
     }));
   } else if (!interiorUsable(interior.box, minimumExtent)) {
-    const size = interior.box.getSize(new THREE5.Vector3);
+    const size = interior.box.getSize(new THREE8.Vector3);
     findings.push(finding2(context, {
       code: "PROP_CONTAINER_INTERIOR_UNUSABLE",
       disposition: "block",
@@ -9311,21 +11267,21 @@ function inspectContainerOpening(input) {
   return findings;
 }
 function horizontalDirection(part, root) {
-  if (!(part.node instanceof THREE5.Mesh) || !(part.node.geometry instanceof THREE5.BufferGeometry)) {
+  if (!(part.node instanceof THREE8.Mesh) || !(part.node.geometry instanceof THREE8.BufferGeometry)) {
     return;
   }
   part.node.geometry.computeBoundingBox();
   const box = part.node.geometry.boundingBox;
   if (!box)
     return;
-  const size = box.getSize(new THREE5.Vector3);
-  const axis = size.x >= size.z ? new THREE5.Vector3(1, 0, 0) : new THREE5.Vector3(0, 0, 1);
+  const size = box.getSize(new THREE8.Vector3);
+  const axis = size.x >= size.z ? new THREE8.Vector3(1, 0, 0) : new THREE8.Vector3(0, 0, 1);
   root.updateWorldMatrix(true, true);
-  const rootQuaternion = root.getWorldQuaternion(new THREE5.Quaternion).invert();
-  return axis.applyQuaternion(part.node.getWorldQuaternion(new THREE5.Quaternion)).applyQuaternion(rootQuaternion).setY(0).normalize();
+  const rootQuaternion = root.getWorldQuaternion(new THREE8.Quaternion).invert();
+  return axis.applyQuaternion(part.node.getWorldQuaternion(new THREE8.Quaternion)).applyQuaternion(rootQuaternion).setY(0).normalize();
 }
 function evaluatePropCircularAssemblyQa(context) {
-  if (context.intent.category !== "prop" || !(context.scene instanceof THREE5.Object3D))
+  if (context.intent.category !== "prop" || !(context.scene instanceof THREE8.Object3D))
     return [];
   const root = context.scene;
   const parts = collectParts(root);
@@ -9336,8 +11292,8 @@ function evaluatePropCircularAssemblyQa(context) {
   const memberParts = parts.filter((part) => part.box && (part.roles.some((role) => role.startsWith("prop.circular.member.")) || namedProfile && /(?:stave|ring[_.-]?segment)/i.test(part.node.name)));
   if (memberParts.length < 3)
     return [];
-  const centers = memberParts.map((part) => part.box.getCenter(new THREE5.Vector3));
-  const ringCenter = centers.reduce((sum, center) => sum.add(center), new THREE5.Vector3).multiplyScalar(1 / centers.length);
+  const centers = memberParts.map((part) => part.box.getCenter(new THREE8.Vector3));
+  const ringCenter = centers.reduce((sum, center) => sum.add(center), new THREE8.Vector3).multiplyScalar(1 / centers.length);
   const members = memberParts.map((part, index) => {
     const center = centers[index];
     return {
@@ -9376,7 +11332,7 @@ function evaluatePropCircularAssemblyQa(context) {
     if (!member.horizontalDirection)
       return false;
     const radial = member.center.clone().sub(ringCenter).setY(0).normalize();
-    const tangent = new THREE5.Vector3(-radial.z, 0, radial.x);
+    const tangent = new THREE8.Vector3(-radial.z, 0, radial.x);
     const radialScore = Math.abs(member.horizontalDirection.dot(radial));
     const tangentScore = Math.abs(member.horizontalDirection.dot(tangent));
     return expectedOrientation === "tangent" ? tangentScore + 0.1 < radialScore : radialScore + 0.1 < tangentScore;
@@ -9403,7 +11359,7 @@ function evaluatePropCircularAssemblyQa(context) {
   return findings;
 }
 function inspectPlacement(input) {
-  if (!(input.scene instanceof THREE5.Object3D))
+  if (!(input.scene instanceof THREE8.Object3D))
     return [];
   const placementFinding = (value) => ({
     ...value,
@@ -9414,8 +11370,8 @@ function inspectPlacement(input) {
   const renderable = parts.filter((part) => part.renderable && part.box);
   if (renderable.length === 0)
     return [];
-  const bounds = renderable.reduce((box, part) => box.union(part.box), new THREE5.Box3);
-  const size = bounds.getSize(new THREE5.Vector3);
+  const bounds = renderable.reduce((box, part) => box.union(part.box), new THREE8.Box3);
+  const size = bounds.getSize(new THREE8.Vector3);
   const findings = [];
   for (const axis of ["x", "y", "z"]) {
     const expected = input.bounds?.[axis];
@@ -9462,7 +11418,7 @@ function inspectPlacement(input) {
   }
   const placement = parts.find((part) => part.roles.includes("prop.pivot.placement"));
   if (placement) {
-    const point = placement.node.getWorldPosition(new THREE5.Vector3);
+    const point = placement.node.getWorldPosition(new THREE8.Vector3);
     point.applyMatrix4(root.matrixWorld.clone().invert());
     const horizontalOutside = point.x < bounds.min.x - GROUND_TOLERANCE_METERS || point.x > bounds.max.x + GROUND_TOLERANCE_METERS || point.z < bounds.min.z - GROUND_TOLERANCE_METERS || point.z > bounds.max.z + GROUND_TOLERANCE_METERS;
     const verticalDelta = Math.abs(point.y - bounds.min.y);
@@ -9535,7 +11491,7 @@ var init_prop = __esm(() => {
 });
 
 // src/qa/part-connectivity.ts
-import * as THREE6 from "three";
+import * as THREE9 from "three";
 function collectParts2(root, exempt) {
   const parts = [];
   root.updateWorldMatrix(true, true);
@@ -9548,7 +11504,7 @@ function collectParts2(root, exempt) {
       exempt.push(name);
       return;
     }
-    const box = new THREE6.Box3().setFromObject(mesh);
+    const box = new THREE9.Box3().setFromObject(mesh);
     if (box.isEmpty())
       return;
     parts.push({ name, box });
@@ -9632,7 +11588,7 @@ function analyzePartConnectivity(root) {
   return report;
 }
 function inspectPartConnectivity(scene) {
-  if (!(scene instanceof THREE6.Object3D))
+  if (!(scene instanceof THREE9.Object3D))
     return [];
   const report = analyzePartConnectivity(scene);
   return report.groups.map((group) => {
@@ -9672,7 +11628,7 @@ var init_part_connectivity = __esm(() => {
 });
 
 // src/qa/self-intersection.ts
-import * as THREE7 from "three";
+import * as THREE10 from "three";
 function triangleCount(geometry) {
   const index = geometry.getIndex();
   const position = geometry.getAttribute("position");
@@ -9718,8 +11674,8 @@ function collectParts3(root, skipped) {
     const box = mesh.geometry.boundingBox.clone().applyMatrix4(mesh.matrixWorld);
     if (box.isEmpty())
       return;
-    const center = box.getCenter(new THREE7.Vector3);
-    const size = box.getSize(new THREE7.Vector3);
+    const center = box.getCenter(new THREE10.Vector3);
+    const size = box.getSize(new THREE10.Vector3);
     const scale = Math.max(size.x, size.y, size.z);
     if (![...box.min, ...box.max, scale].every(Number.isFinite) || !(scale > 0) || !Number.isFinite(mesh.matrixWorld.determinant()) || mesh.matrixWorld.determinant() === 0) {
       skipped.push({
@@ -9742,7 +11698,7 @@ function meshToArrays(part) {
   matrix.elements[12] -= center.x;
   matrix.elements[13] -= center.y;
   matrix.elements[14] -= center.z;
-  const v = new THREE7.Vector3;
+  const v = new THREE10.Vector3;
   const verts = new Float32Array(position.count * 3);
   for (let i = 0;i < position.count; i++) {
     v.set(position.getX(i), position.getY(i), position.getZ(i)).applyMatrix4(matrix).divideScalar(scale);
@@ -9982,7 +11938,7 @@ var init_geometry_budget = __esm(() => {
 });
 
 // src/vehicle.ts
-import * as THREE8 from "three";
+import * as THREE11 from "three";
 function assertId(value, name) {
   if (!ID_PATTERN.test(value))
     throw new TypeError(`${name} must be a stable identifier`);
@@ -10017,7 +11973,7 @@ function createTypedSocket(kind, input, parent) {
   if (!input.position.every(Number.isFinite))
     throw new TypeError(`${kind}.${id} position must be finite`);
   const rotation = normalizedQuaternion(input.rotation);
-  const node = new THREE8.Object3D;
+  const node = new THREE11.Object3D;
   node.name = `Socket_${kind}_${id}`;
   node.position.set(...input.position);
   node.quaternion.set(...rotation);
@@ -10038,7 +11994,7 @@ function createTypedSocket(kind, input, parent) {
   return node;
 }
 function createVehicleFrame(name, options = {}) {
-  const root = new THREE8.Object3D;
+  const root = new THREE11.Object3D;
   root.name = name;
   stampSemanticMetadataV1(root, semantic2([KILN_SEMANTIC_ROLES.vehicleFrame, KILN_SEMANTIC_ROLES.vehicleForward], {
     frames: [
@@ -10063,7 +12019,7 @@ function createVehicleFrame(name, options = {}) {
   };
 }
 function cylinderZ(radius, width, segments = 16) {
-  const geometry = new THREE8.CylinderGeometry(radius, radius, width, segments);
+  const geometry = new THREE11.CylinderGeometry(radius, radius, width, segments);
   geometry.rotateX(Math.PI / 2);
   return geometry;
 }
@@ -10080,14 +12036,14 @@ function defaultTireGeometry(radius, width) {
   if (width >= radius * 2)
     throw new RangeError("default wheel tire width must be less than its diameter");
   const tube = width / 2;
-  return new THREE8.TorusGeometry(radius - tube, tube, 8, 20);
+  return new THREE11.TorusGeometry(radius - tube, tube, 8, 20);
 }
 function checkWheelGeometry(part, geometry, radius, width) {
   const positions = geometry.getAttribute("position");
   if (positions?.itemSize !== 3 || positions.count < 1 || positions.count > 2000000)
     throw new RangeError(`wheel ${part} position must have 1..2000000 three-component samples.`);
-  const bounds = new THREE8.Box3;
-  const point = new THREE8.Vector3;
+  const bounds = new THREE11.Box3;
+  const point = new THREE11.Vector3;
   let actualRadius = 0;
   for (let i = 0;i < positions.count; i++) {
     point.fromBufferAttribute(positions, i);
@@ -10097,7 +12053,7 @@ function checkWheelGeometry(part, geometry, radius, width) {
     actualRadius = Math.max(actualRadius, Math.hypot(point.x, point.y));
   }
   const actualWidth = bounds.max.z - bounds.min.z;
-  const center = bounds.getCenter(new THREE8.Vector3);
+  const center = bounds.getCenter(new THREE11.Vector3);
   const tolerance = 0.00001 * Math.max(radius, width, actualRadius, actualWidth);
   const differences = [];
   if (Math.abs(actualRadius - radius) > tolerance)
@@ -10142,11 +12098,11 @@ function createWheelAssembly(name, materials, options) {
   const index = assertId(String(options.index), "wheel index");
   const key = `${options.side}.${index}`;
   const parent = options.parent;
-  const root = new THREE8.Object3D;
+  const root = new THREE11.Object3D;
   root.name = `${name}_Assembly_${options.side}_${index}`;
   let steeringPivot;
   if (options.steering) {
-    steeringPivot = new THREE8.Object3D;
+    steeringPivot = new THREE11.Object3D;
     steeringPivot.name = `SteeringPivot_${options.side}_${index}`;
     steeringPivot.position.set(...options.position ?? [0, 0, 0]);
     stampSemanticMetadataV1(steeringPivot, semantic2([semanticRole(ROLE.steeringPivot, key)], {
@@ -10157,7 +12113,7 @@ function createWheelAssembly(name, materials, options) {
     }));
     root.add(steeringPivot);
   }
-  const spinPivot = new THREE8.Object3D;
+  const spinPivot = new THREE11.Object3D;
   spinPivot.name = `WheelPivot_${options.side}_${index}`;
   if (!steeringPivot)
     spinPivot.position.set(...options.position ?? [0, 0, 0]);
@@ -10178,9 +12134,9 @@ function createWheelAssembly(name, materials, options) {
     ]
   }));
   (steeringPivot ?? root).add(spinPivot);
-  const tire = new THREE8.Mesh(options.geometries?.tire ?? defaultTireGeometry(radius, width), materials.tire);
-  const rim = new THREE8.Mesh(options.geometries?.rim ?? cylinderZ(rimRadius, rimWidth), materials.rim);
-  const hub = new THREE8.Mesh(options.geometries?.hub ?? cylinderZ(hubRadius, hubWidth), materials.hub ?? materials.rim);
+  const tire = new THREE11.Mesh(options.geometries?.tire ?? defaultTireGeometry(radius, width), materials.tire);
+  const rim = new THREE11.Mesh(options.geometries?.rim ?? cylinderZ(rimRadius, rimWidth), materials.rim);
+  const hub = new THREE11.Mesh(options.geometries?.hub ?? cylinderZ(hubRadius, hubWidth), materials.hub ?? materials.rim);
   tire.name = `Tire_${options.side}_${index}`;
   rim.name = `Rim_${options.side}_${index}`;
   hub.name = `Hub_${options.side}_${index}`;
@@ -10200,7 +12156,7 @@ function createWheelAssembly(name, materials, options) {
     ]
   }));
   spinPivot.add(tire, rim, hub);
-  const contact = new THREE8.Object3D;
+  const contact = new THREE11.Object3D;
   contact.name = `Contact_${options.side}_${index}`;
   contact.position.y = -radius;
   stampSemanticMetadataV1(contact, semantic2([semanticRole(ROLE.wheelContact, key), semanticRole(ROLE.contact, key)], {
@@ -10258,10 +12214,10 @@ function objectBoundsInFrame(object, frame) {
   object.updateWorldMatrix(true, true);
   frame.updateWorldMatrix(true, false);
   const worldToFrame = frame.matrixWorld.clone().invert();
-  const bounds = new THREE8.Box3;
+  const bounds = new THREE11.Box3;
   let found = false;
   object.traverse((node) => {
-    if (!(node instanceof THREE8.Mesh) || !(node.geometry instanceof THREE8.BufferGeometry))
+    if (!(node instanceof THREE11.Mesh) || !(node.geometry instanceof THREE11.BufferGeometry))
       return;
     node.geometry.computeBoundingBox();
     const local = node.geometry.boundingBox;
@@ -10271,7 +12227,7 @@ function objectBoundsInFrame(object, frame) {
     for (const x of [local.min.x, local.max.x])
       for (const y of [local.min.y, local.max.y])
         for (const z of [local.min.z, local.max.z]) {
-          bounds.expandByPoint(new THREE8.Vector3(x, y, z).applyMatrix4(matrix));
+          bounds.expandByPoint(new THREE11.Vector3(x, y, z).applyMatrix4(matrix));
           found = true;
         }
   });
@@ -10283,9 +12239,9 @@ function dimensions(object, frame) {
   const bounds = objectBoundsInFrame(object, frame);
   if (!bounds)
     return;
-  const size = bounds.getSize(new THREE8.Vector3);
+  const size = bounds.getSize(new THREE11.Vector3);
   return {
-    center: bounds.getCenter(new THREE8.Vector3),
+    center: bounds.getCenter(new THREE11.Vector3),
     radius: Math.max(size.x, size.y) / 2,
     width: size.z
   };
@@ -10295,7 +12251,7 @@ function resolved(source, id, root, pivot, parts) {
   const tire = dimensions(parts.tire, pivot);
   const rim = dimensions(parts.rim, pivot);
   const hub = dimensions(parts.hub, pivot);
-  const centerLocal = tire?.center ?? rim?.center ?? hub?.center ?? new THREE8.Vector3;
+  const centerLocal = tire?.center ?? rim?.center ?? hub?.center ?? new THREE11.Vector3;
   const toWorld = (value) => value.clone().applyMatrix4(pivot.matrixWorld);
   return {
     id,
@@ -10310,11 +12266,11 @@ function resolved(source, id, root, pivot, parts) {
     ...parts.hub ? { hub: parts.hub } : {},
     ...parts.contact ? { contact: parts.contact } : {},
     centerWorld: toWorld(centerLocal),
-    pivotCenterWorld: new THREE8.Vector3().setFromMatrixPosition(pivot.matrixWorld),
+    pivotCenterWorld: new THREE11.Vector3().setFromMatrixPosition(pivot.matrixWorld),
     ...tire ? { tireCenterWorld: toWorld(tire.center) } : {},
     ...rim ? { rimCenterWorld: toWorld(rim.center) } : {},
     ...hub ? { hubCenterWorld: toWorld(hub.center) } : {},
-    spinAxisWorld: new THREE8.Vector3(0, 0, 1).transformDirection(pivot.matrixWorld),
+    spinAxisWorld: new THREE11.Vector3(0, 0, 1).transformDirection(pivot.matrixWorld),
     ...tire ? { radius: tire.radius, width: tire.width } : {},
     ...rim ? { rimRadius: rim.radius, rimWidth: rim.width } : {},
     ...hub ? { hubRadius: hub.radius, hubWidth: hub.width } : {},
@@ -10651,7 +12607,7 @@ var EPSILON = 0.0000000001, DEFAULT_TOLERANCE = 0.000001, finiteVector = (value)
 ];
 
 // src/qa/vehicle-advisory.ts
-import * as THREE9 from "three";
+import * as THREE12 from "three";
 function advisory(context, value) {
   return {
     ...value,
@@ -10725,7 +12681,7 @@ function isFender(node) {
   return semanticRoles(node).some((role) => /(?:^|\.)(?:fender|wheel-arch)(?:\.|$)/i.test(role)) || /fender|wheel[ _.-]?arch/i.test(node.name);
 }
 function isChassisMesh(node) {
-  if (!(node instanceof THREE9.Mesh) || isFender(node))
+  if (!(node instanceof THREE12.Mesh) || isFender(node))
     return false;
   return semanticRoles(node).some((role) => /^(?:vehicle\.)?(?:chassis|body|hull)(?:\.|$)/i.test(role)) || /chassis|vehicle[ _.-]?body|fuselage|hull/i.test(node.name);
 }
@@ -10733,10 +12689,10 @@ function objectBoundsInFrame2(object, frame) {
   object.updateWorldMatrix(true, true);
   frame.updateWorldMatrix(true, false);
   const worldToFrame = frame.matrixWorld.clone().invert();
-  const bounds = new THREE9.Box3;
+  const bounds = new THREE12.Box3;
   let found = false;
   object.traverse((part) => {
-    if (!(part instanceof THREE9.Mesh) || !(part.geometry instanceof THREE9.BufferGeometry))
+    if (!(part instanceof THREE12.Mesh) || !(part.geometry instanceof THREE12.BufferGeometry))
       return;
     part.geometry.computeBoundingBox();
     const box = part.geometry.boundingBox;
@@ -10746,7 +12702,7 @@ function objectBoundsInFrame2(object, frame) {
     for (const x of [box.min.x, box.max.x])
       for (const y of [box.min.y, box.max.y])
         for (const z of [box.min.z, box.max.z]) {
-          bounds.expandByPoint(new THREE9.Vector3(x, y, z).applyMatrix4(matrix));
+          bounds.expandByPoint(new THREE12.Vector3(x, y, z).applyMatrix4(matrix));
           found = true;
         }
   });
@@ -10757,15 +12713,15 @@ function tuple2(value) {
 }
 function probeBox(id, root, bounds) {
   root.updateWorldMatrix(true, false);
-  const center = bounds.getCenter(new THREE9.Vector3).applyMatrix4(root.matrixWorld);
-  const size = bounds.getSize(new THREE9.Vector3);
-  const position = new THREE9.Vector3;
-  const quaternion = new THREE9.Quaternion;
-  const scale = new THREE9.Vector3;
+  const center = bounds.getCenter(new THREE12.Vector3).applyMatrix4(root.matrixWorld);
+  const size = bounds.getSize(new THREE12.Vector3);
+  const position = new THREE12.Vector3;
+  const quaternion = new THREE12.Quaternion;
+  const scale = new THREE12.Vector3;
   root.matrixWorld.decompose(position, quaternion, scale);
-  const xAxis = new THREE9.Vector3(1, 0, 0).applyQuaternion(quaternion).normalize();
-  const yAxis = new THREE9.Vector3(0, 1, 0).applyQuaternion(quaternion).normalize();
-  const zAxis = new THREE9.Vector3(0, 0, 1).applyQuaternion(quaternion).normalize();
+  const xAxis = new THREE12.Vector3(1, 0, 0).applyQuaternion(quaternion).normalize();
+  const yAxis = new THREE12.Vector3(0, 1, 0).applyQuaternion(quaternion).normalize();
+  const zAxis = new THREE12.Vector3(0, 0, 1).applyQuaternion(quaternion).normalize();
   return createOrientedProbeBox3({
     id,
     frame: createProbeLocalFrame3({
@@ -10834,7 +12790,7 @@ function orientationFindings(context, root, intent) {
   const bounds = wholeAssetBounds(root);
   if (!bounds)
     return [];
-  const size = bounds.getSize(new THREE9.Vector3);
+  const size = bounds.getSize(new THREE12.Vector3);
   const ratio = size.z / Math.max(size.x, 0.000000001);
   if (ratio <= ORIENTATION_RATIO)
     return [];
@@ -10878,13 +12834,13 @@ function weldedBoundaryEdges(root, loop) {
   let triangleCount = 0;
   const vertexKey = (point) => [point.x, point.y, point.z].map((value) => Math.round(value * 1e6)).join(",");
   loop.traverse((node) => {
-    if (!(node instanceof THREE9.Mesh) || !(node.geometry instanceof THREE9.BufferGeometry))
+    if (!(node instanceof THREE12.Mesh) || !(node.geometry instanceof THREE12.BufferGeometry))
       return;
     const positions = node.geometry.getAttribute("position");
     if (!positions)
       return;
     const matrix = inverse.clone().multiply(node.matrixWorld);
-    const keys = Array.from({ length: positions.count }, (_, index) => vertexKey(new THREE9.Vector3().fromBufferAttribute(positions, index).applyMatrix4(matrix)));
+    const keys = Array.from({ length: positions.count }, (_, index) => vertexKey(new THREE12.Vector3().fromBufferAttribute(positions, index).applyMatrix4(matrix)));
     const index = node.geometry.getIndex();
     const indices = index ? Array.from(index.array, Number) : Array.from({ length: positions.count }, (_, value) => value);
     for (let offset = 0;offset + 2 < indices.length; offset += 3) {
@@ -10954,7 +12910,7 @@ function trackProfileFindings(context, root, intent) {
       const wheelBounds = objectBoundsInFrame2(roadWheel, root);
       if (!wheelBounds)
         continue;
-      const center = wheelBounds.getCenter(new THREE9.Vector3);
+      const center = wheelBounds.getCenter(new THREE12.Vector3);
       if (expanded.containsPoint(center))
         continue;
       const clamped = center.clone().clamp(expanded.min, expanded.max);
@@ -10980,7 +12936,7 @@ function trackProfileFindings(context, root, intent) {
   return findings;
 }
 function inspectMobilityAdvisory(context) {
-  if (!(context.scene instanceof THREE9.Object3D)) {
+  if (!(context.scene instanceof THREE12.Object3D)) {
     return [];
   }
   const intent = context.mobility;
@@ -11027,7 +12983,7 @@ var init_vehicle_advisory = __esm(() => {
 });
 
 // src/qa/vehicle.ts
-import * as THREE10 from "three";
+import * as THREE13 from "three";
 function finding3(context, value) {
   return {
     ...value,
@@ -11044,7 +13000,7 @@ function rootAxis(root, axis) {
   return axis.clone().transformDirection(root.matrixWorld);
 }
 function angleDegrees(a, b) {
-  return THREE10.MathUtils.radToDeg(Math.acos(THREE10.MathUtils.clamp(a.clone().normalize().dot(b.clone().normalize()), -1, 1)));
+  return THREE13.MathUtils.radToDeg(Math.acos(THREE13.MathUtils.clamp(a.clone().normalize().dot(b.clone().normalize()), -1, 1)));
 }
 function isDescendant(node, ancestor) {
   let current = node;
@@ -11092,7 +13048,7 @@ function wheelCountFindings(context, intent, wheels) {
 }
 function wheelGeometryFindings(context, root, wheels) {
   const findings = [];
-  const expectedAxle = rootAxis(root, new THREE10.Vector3(0, 0, 1));
+  const expectedAxle = rootAxis(root, new THREE13.Vector3(0, 0, 1));
   for (const wheel of wheels) {
     const disposition = componentDisposition(wheel);
     const centerTolerance = Math.max(CENTER_MINIMUM, (wheel.radius ?? 0) * CENTER_RATIO);
@@ -11281,7 +13237,7 @@ function contactFindings(context, root, intent, wheels) {
 function renderableMinYInRoot(rootInverse, node) {
   let minimum = Infinity;
   node.traverse((part) => {
-    if (!(part instanceof THREE10.Mesh) || !(part.geometry instanceof THREE10.BufferGeometry))
+    if (!(part instanceof THREE13.Mesh) || !(part.geometry instanceof THREE13.BufferGeometry))
       return;
     part.geometry.computeBoundingBox();
     const bounds = part.geometry.boundingBox;
@@ -11291,7 +13247,7 @@ function renderableMinYInRoot(rootInverse, node) {
     for (const x of [bounds.min.x, bounds.max.x]) {
       for (const y of [bounds.min.y, bounds.max.y]) {
         for (const z of [bounds.min.z, bounds.max.z]) {
-          minimum = Math.min(minimum, new THREE10.Vector3(x, y, z).applyMatrix4(matrix).y);
+          minimum = Math.min(minimum, new THREE13.Vector3(x, y, z).applyMatrix4(matrix).y);
         }
       }
     }
@@ -11309,7 +13265,7 @@ function supportContactFindings(context, root, intent) {
     if (!isWheelContact && roles.some((role) => role.startsWith("contact."))) {
       explicitContacts.push({
         node,
-        contactY: localPoint2(inverse, new THREE10.Vector3().setFromMatrixPosition(node.matrixWorld)).y,
+        contactY: localPoint2(inverse, new THREE13.Vector3().setFromMatrixPosition(node.matrixWorld)).y,
         source: "contact"
       });
     }
@@ -11389,7 +13345,7 @@ function steeringFindings(context, root, intent, wheels) {
     return [];
   root.updateWorldMatrix(true, false);
   const inverse = root.matrixWorld.clone().invert();
-  const expectedAxis = rootAxis(root, new THREE10.Vector3(0, 1, 0));
+  const expectedAxis = rootAxis(root, new THREE13.Vector3(0, 1, 0));
   const localCenters = wheels.map((wheel) => ({
     wheel,
     center: localPoint2(inverse, wheel.centerWorld)
@@ -11399,8 +13355,8 @@ function steeringFindings(context, root, intent, wheels) {
   const findings = [];
   for (const { wheel } of targets) {
     const steering = wheel.steeringPivot;
-    const centerDelta = steering ? localPoint2(inverse, new THREE10.Vector3().setFromMatrixPosition(steering.matrixWorld)).distanceTo(localPoint2(inverse, wheel.centerWorld)) : Infinity;
-    const axisAngle = steering ? angleDegrees(new THREE10.Vector3(0, 1, 0).transformDirection(steering.matrixWorld), expectedAxis) : Infinity;
+    const centerDelta = steering ? localPoint2(inverse, new THREE13.Vector3().setFromMatrixPosition(steering.matrixWorld)).distanceTo(localPoint2(inverse, wheel.centerWorld)) : Infinity;
+    const axisAngle = steering ? angleDegrees(new THREE13.Vector3(0, 1, 0).transformDirection(steering.matrixWorld), expectedAxis) : Infinity;
     if (!steering || !isDescendant(wheel.pivot, steering) || centerDelta > CENTER_MINIMUM || axisAngle > AXIS_TOLERANCE_DEGREES) {
       const axisInvalid = axisAngle > AXIS_TOLERANCE_DEGREES;
       findings.push(finding3(context, {
@@ -11455,14 +13411,14 @@ function propulsionFindings(context, root, intent) {
     }
     for (const component of candidates) {
       const pivot = pivots.get(component.id);
-      const box = new THREE10.Box3().setFromObject(component.node);
-      const center = box.isEmpty() ? undefined : box.getCenter(new THREE10.Vector3);
-      const pivotCenter = pivot ? new THREE10.Vector3().setFromMatrixPosition(pivot.matrixWorld) : undefined;
+      const box = new THREE13.Box3().setFromObject(component.node);
+      const center = box.isEmpty() ? undefined : box.getCenter(new THREE13.Vector3);
+      const pivotCenter = pivot ? new THREE13.Vector3().setFromMatrixPosition(pivot.matrixWorld) : undefined;
       const delta = center && pivotCenter ? localPoint2(rootInverse, center).distanceTo(localPoint2(rootInverse, pivotCenter)) : Infinity;
       const frameId = kind === "rotor" ? "propulsion-axis.+y" : "propulsion-axis.+x";
       const axisFrame = readSemanticMetadataV1(pivot ?? component.node)?.frames.find((frame) => frame.id === frameId);
-      const canonicalAxis = kind === "rotor" ? new THREE10.Vector3(0, 1, 0) : new THREE10.Vector3(1, 0, 0);
-      const axisAngle = pivot && axisFrame ? angleDegrees(canonicalAxis.clone().applyQuaternion(new THREE10.Quaternion(...axisFrame.rotation)).transformDirection(pivot.matrixWorld), rootAxis(root, canonicalAxis)) : Infinity;
+      const canonicalAxis = kind === "rotor" ? new THREE13.Vector3(0, 1, 0) : new THREE13.Vector3(1, 0, 0);
+      const axisAngle = pivot && axisFrame ? angleDegrees(canonicalAxis.clone().applyQuaternion(new THREE13.Quaternion(...axisFrame.rotation)).transformDirection(pivot.matrixWorld), rootAxis(root, canonicalAxis)) : Infinity;
       if (!pivot || !isDescendant(component.node, pivot) || delta > CENTER_MINIMUM || !axisFrame || axisAngle > AXIS_TOLERANCE_DEGREES) {
         findings.push(finding3(context, {
           code: "VEH_ROTOR_PIVOT",
@@ -11484,7 +13440,7 @@ function propulsionFindings(context, root, intent) {
   return findings;
 }
 function inspectMobility(context) {
-  if (!(context.scene instanceof THREE10.Object3D))
+  if (!(context.scene instanceof THREE13.Object3D))
     return [];
   const intent = context.mobility;
   if (!intent)
@@ -11557,7 +13513,7 @@ var init_vehicle2 = __esm(() => {
 });
 
 // src/qa/vegetation.ts
-import * as THREE11 from "three";
+import * as THREE14 from "three";
 function rolesOf2(node) {
   return readSemanticMetadataV1(node)?.roles ?? [];
 }
@@ -11573,22 +13529,22 @@ function pathOf(node, root) {
   return names.reverse().join("/");
 }
 function localPoint3(rootInverse, node) {
-  return node.getWorldPosition(new THREE11.Vector3).applyMatrix4(rootInverse);
+  return node.getWorldPosition(new THREE14.Vector3).applyMatrix4(rootInverse);
 }
 function meshLocalBox(mesh, rootInverse) {
-  if (!(mesh.geometry instanceof THREE11.BufferGeometry))
+  if (!(mesh.geometry instanceof THREE14.BufferGeometry))
     return;
   mesh.geometry.computeBoundingBox();
   const source = mesh.geometry.boundingBox;
   if (!source || source.isEmpty())
     return;
   const base = rootInverse.clone().multiply(mesh.matrixWorld);
-  const result = new THREE11.Box3;
-  const count = mesh instanceof THREE11.InstancedMesh ? mesh.count : 1;
+  const result = new THREE14.Box3;
+  const count = mesh instanceof THREE14.InstancedMesh ? mesh.count : 1;
   for (let index = 0;index < count; index++) {
     const transform = base.clone();
-    if (mesh instanceof THREE11.InstancedMesh) {
-      const instance = new THREE11.Matrix4;
+    if (mesh instanceof THREE14.InstancedMesh) {
+      const instance = new THREE14.Matrix4;
       mesh.getMatrixAt(index, instance);
       transform.multiply(instance);
     }
@@ -11601,7 +13557,7 @@ function collectRenderableBounds(root) {
   const inverse = root.matrixWorld.clone().invert();
   const values = [];
   root.traverse((node) => {
-    if (!(node instanceof THREE11.Mesh))
+    if (!(node instanceof THREE14.Mesh))
       return;
     const box = meshLocalBox(node, inverse);
     if (!box)
@@ -11619,7 +13575,7 @@ function vegetationIntent(intent) {
 }
 function inspectFoliageContact(context) {
   const trusted = context.foliage;
-  if (!trusted?.grounded || !(context.scene instanceof THREE11.Object3D))
+  if (!trusted?.grounded || !(context.scene instanceof THREE14.Object3D))
     return [];
   const planeY = context.groundPlaneY ?? 0;
   const root = context.scene;
@@ -11657,7 +13613,7 @@ function inspectFoliageContact(context) {
   }
   const findings = [];
   for (const contact of contacts) {
-    const contactPoint = contact.frameTranslation ? new THREE11.Vector3(...contact.frameTranslation).applyMatrix4(contact.node.matrixWorld).applyMatrix4(inverse) : localPoint3(inverse, contact.node);
+    const contactPoint = contact.frameTranslation ? new THREE14.Vector3(...contact.frameTranslation).applyMatrix4(contact.node.matrixWorld).applyMatrix4(inverse) : localPoint3(inverse, contact.node);
     const y = contactPoint.y;
     const offset = y - planeY;
     if (Math.abs(offset) <= VEGETATION_CONTACT_TOLERANCE_METERS)
@@ -11686,7 +13642,7 @@ function inspectFoliageContact(context) {
   for (const support of semanticSupports) {
     let minimumY = Infinity;
     support.traverse((node) => {
-      if (!(node instanceof THREE11.Mesh))
+      if (!(node instanceof THREE14.Mesh))
         return;
       const box = meshLocalBox(node, inverse);
       if (box)
@@ -11714,25 +13670,25 @@ function inspectFoliageContact(context) {
   return findings;
 }
 function materialNames(node) {
-  if (!(node instanceof THREE11.Mesh))
+  if (!(node instanceof THREE14.Mesh))
     return [];
   const materials = Array.isArray(node.material) ? node.material : [node.material];
   return materials.filter(Boolean).map((material) => material.name ?? "");
 }
 function inspectFoliageScope(context) {
   const trusted = context.foliage;
-  if (!trusted?.standalone || !(context.scene instanceof THREE11.Object3D))
+  if (!trusted?.standalone || !(context.scene instanceof THREE14.Object3D))
     return [];
   const root = context.scene;
   const renderables = collectRenderableBounds(root);
   if (renderables.length === 0)
     return [];
-  const overall = renderables.reduce((box, value) => box.union(value.box), new THREE11.Box3);
-  const overallSize = overall.getSize(new THREE11.Vector3);
+  const overall = renderables.reduce((box, value) => box.union(value.box), new THREE14.Box3);
+  const overallSize = overall.getSize(new THREE14.Vector3);
   const findings = [];
   for (const value of renderables) {
-    const size = value.box.getSize(new THREE11.Vector3);
-    const center = value.box.getCenter(new THREE11.Vector3);
+    const size = value.box.getSize(new THREE14.Vector3);
+    const center = value.box.getCenter(new THREE14.Vector3);
     const names = [value.node.name, ...value.roles];
     const nameEvidence = names.some((name) => CLUTTER_NAME.test(name));
     const roleEvidence = value.roles.some((role) => /(?:terrain|soil|rock|pot|planter|base)/i.test(role));
@@ -11769,8 +13725,8 @@ function inspectFoliageScope(context) {
 function unionVolume(boxes) {
   if (boxes.length === 0)
     return 0;
-  const union = boxes.reduce((result, box) => result.union(box), new THREE11.Box3);
-  const size = union.getSize(new THREE11.Vector3);
+  const union = boxes.reduce((result, box) => result.union(box), new THREE14.Box3);
+  const size = union.getSize(new THREE14.Vector3);
   return size.x * size.y * size.z;
 }
 function projectedOccupancy(boxes, axes) {
@@ -11840,7 +13796,7 @@ function boxDistanceToPoint(box, point) {
 function endpointRadius(position, axis, axisValue, tolerance, scale) {
   const radialAxes = [0, 1, 2].filter((value) => value !== axis);
   const points = [];
-  const point = new THREE11.Vector3;
+  const point = new THREE14.Vector3;
   for (let index = 0;index < position.count; index++) {
     point.fromBufferAttribute(position, index);
     if (Math.abs(point.getComponent(axis) - axisValue) <= tolerance)
@@ -11848,7 +13804,7 @@ function endpointRadius(position, axis, axisValue, tolerance, scale) {
   }
   if (points.length === 0)
     return;
-  const center = new THREE11.Vector3;
+  const center = new THREE14.Vector3;
   center.setComponent(axis, axisValue);
   for (const radialAxis of radialAxes) {
     center.setComponent(radialAxis, points.reduce((sum, value) => sum + value.getComponent(radialAxis), 0) / points.length);
@@ -11862,7 +13818,7 @@ function endpointRadius(position, axis, axisValue, tolerance, scale) {
   return { center, radius };
 }
 function growthNodeMeasurement(root, candidate, allCandidates, band) {
-  if (!(candidate.node instanceof THREE11.Mesh))
+  if (!(candidate.node instanceof THREE14.Mesh))
     return;
   const geometry = candidate.node.geometry;
   const position = geometry.getAttribute("position");
@@ -11874,9 +13830,9 @@ function growthNodeMeasurement(root, candidate, allCandidates, band) {
     return;
   root.updateWorldMatrix(true, true);
   const relative = root.matrixWorld.clone().invert().multiply(candidate.node.matrixWorld);
-  const relativeScale = new THREE11.Vector3;
-  relative.decompose(new THREE11.Vector3, new THREE11.Quaternion, relativeScale);
-  const size = geometryBox.getSize(new THREE11.Vector3);
+  const relativeScale = new THREE14.Vector3;
+  relative.decompose(new THREE14.Vector3, new THREE14.Quaternion, relativeScale);
+  const size = geometryBox.getSize(new THREE14.Vector3);
   const scaledSizes = [
     Math.abs(size.x * relativeScale.x),
     Math.abs(size.y * relativeScale.y),
@@ -11943,7 +13899,7 @@ function measureFoliageGrowth(foliage, root) {
   };
 }
 function inspectFoliageGrowth(context) {
-  if (!context.foliage || !(context.scene instanceof THREE11.Object3D))
+  if (!context.foliage || !(context.scene instanceof THREE14.Object3D))
     return [];
   const measured = measureFoliageGrowth(context.foliage, context.scene);
   const findings = [];
@@ -11994,7 +13950,7 @@ function measureVegetationFoliageAttachment(root) {
   const support = renderables.filter((value) => roleOrNameSource(value, TRUNK_PATTERNS) || roleOrNameSource(value, BRANCH_PATTERNS));
   const foliage = renderables.filter((value) => roleOrNameSource(value, CANOPY_PATTERNS));
   const clusters = foliage.map((value) => {
-    const size = value.box.getSize(new THREE11.Vector3);
+    const size = value.box.getSize(new THREE14.Vector3);
     const threshold = stable7(Math.max(0.03, Math.min(0.18, size.length() * 0.12)));
     const nearest = support.map((candidate) => ({ candidate, gap: distanceBetweenBoxes(value.box, candidate.box) })).sort((a, b) => a.gap - b.gap || (a.candidate.node.name || "").localeCompare(b.candidate.node.name || ""))[0];
     const source = roleOrNameSource(value, CANOPY_PATTERNS) ?? "fallback";
@@ -12017,7 +13973,7 @@ function measureVegetationFoliageAttachment(root) {
   };
 }
 function inspectFoliageAttachment(context) {
-  if (!context.foliage || !(context.scene instanceof THREE11.Object3D))
+  if (!context.foliage || !(context.scene instanceof THREE14.Object3D))
     return [];
   return measureVegetationFoliageAttachment(context.scene).clusters.filter((cluster) => cluster.detached).map((cluster) => finding4(context, {
     code: "VEG_FOLIAGE_DETACHED",
@@ -12037,9 +13993,9 @@ function inspectFoliageAttachment(context) {
 }
 function relativeTransformSignature(root, node) {
   const matrix = root.matrixWorld.clone().invert().multiply(node.matrixWorld);
-  const scale = new THREE11.Vector3;
-  const quaternion = new THREE11.Quaternion;
-  matrix.decompose(new THREE11.Vector3, quaternion, scale);
+  const scale = new THREE14.Vector3;
+  const quaternion = new THREE14.Quaternion;
+  matrix.decompose(new THREE14.Vector3, quaternion, scale);
   if (quaternion.w < 0)
     quaternion.set(-quaternion.x, -quaternion.y, -quaternion.z, -quaternion.w);
   const values = [...scale.toArray(), ...quaternion.toArray()].map((value) => stable7(value));
@@ -12060,9 +14016,9 @@ function measureFoliageRepetition(requirements, root) {
     nodes: values.map((value) => value.node.name || "foliage-cluster").sort()
   })).sort((a, b) => a.signature.localeCompare(b.signature));
   const supports = collectRenderableBounds(root).filter((value) => roleOrNameSource(value, TRUNK_PATTERNS));
-  const centerBox = supports.reduce((box, value) => box.union(value.box), new THREE11.Box3);
-  const centers = foliage.map((value) => value.box.getCenter(new THREE11.Vector3));
-  const center = centerBox.isEmpty() ? centers.reduce((result, value) => result.add(value), new THREE11.Vector3).multiplyScalar(centers.length > 0 ? 1 / centers.length : 0) : centerBox.getCenter(new THREE11.Vector3);
+  const centerBox = supports.reduce((box, value) => box.union(value.box), new THREE14.Box3);
+  const centers = foliage.map((value) => value.box.getCenter(new THREE14.Vector3));
+  const center = centerBox.isEmpty() ? centers.reduce((result, value) => result.add(value), new THREE14.Vector3).multiplyScalar(centers.length > 0 ? 1 / centers.length : 0) : centerBox.getCenter(new THREE14.Vector3);
   const radial = centers.map((value) => ({
     angle: Math.atan2(value.z - center.z, value.x - center.x),
     radius: Math.hypot(value.x - center.x, value.z - center.z)
@@ -12097,7 +14053,7 @@ function measureFoliageRepetition(requirements, root) {
   };
 }
 function inspectFoliageRepetition(context) {
-  if (!context.foliage || !(context.scene instanceof THREE11.Object3D))
+  if (!context.foliage || !(context.scene instanceof THREE14.Object3D))
     return [];
   const measured = measureFoliageRepetition(context.foliage, context.scene);
   if (measured.suppressedForTopiary)
@@ -12155,7 +14111,7 @@ function measureFoliageCanopy(profile, root) {
 }
 function inspectFoliageCanopy(context) {
   const trusted = context.foliage;
-  if (!trusted?.canopyProfile || !(context.scene instanceof THREE11.Object3D))
+  if (!trusted?.canopyProfile || !(context.scene instanceof THREE14.Object3D))
     return [];
   const measurements = measureFoliageCanopy(trusted.canopyProfile, context.scene);
   const bands = PROFILE_BANDS[measurements.profile];
@@ -12216,7 +14172,7 @@ function inspectFoliageCanopy(context) {
   return findings;
 }
 function materialValue(material) {
-  if (!(material instanceof THREE11.MeshStandardMaterial) && !(material instanceof THREE11.MeshBasicMaterial)) {
+  if (!(material instanceof THREE14.MeshStandardMaterial) && !(material instanceof THREE14.MeshBasicMaterial)) {
     return;
   }
   const color = material.color;
@@ -12226,11 +14182,11 @@ function measureFoliageMaterials(mode, root) {
   const values = [];
   let foliageNodeCount = 0;
   root.traverse((node) => {
-    if (!(node instanceof THREE11.Mesh))
+    if (!(node instanceof THREE14.Mesh))
       return;
     const bounds = {
       node,
-      box: new THREE11.Box3,
+      box: new THREE14.Box3,
       roles: rolesOf2(node),
       source: rolesOf2(node).length > 0 ? "semantic" : "fallback"
     };
@@ -12257,7 +14213,7 @@ function measureFoliageMaterials(mode, root) {
   };
 }
 function inspectFoliageMaterial(context) {
-  if (!context.foliage || !(context.scene instanceof THREE11.Object3D))
+  if (!context.foliage || !(context.scene instanceof THREE14.Object3D))
     return [];
   if (!context.materialMode)
     return [];
@@ -12455,7 +14411,7 @@ var init_character_repairs = __esm(() => {
 });
 
 // src/qa/character.ts
-import * as THREE12 from "three";
+import * as THREE15 from "three";
 function isClipLike(value) {
   if (typeof value !== "object" || value === null)
     return false;
@@ -12691,7 +14647,7 @@ function contactFindings2(input, root) {
   const planeY = input.groundPlaneY ?? 0;
   const findings = [];
   for (const contact of contacts) {
-    const point = contact.node.getWorldPosition(new THREE12.Vector3).applyMatrix4(rootInverse);
+    const point = contact.node.getWorldPosition(new THREE15.Vector3).applyMatrix4(rootInverse);
     const offset = point.y - planeY;
     if (offset > tolerance) {
       findings.push(block(input, "CHAR_CONTACT_FLOATING", `Ground contact ${contact.descriptor.role} is ${offset.toFixed(6)} m above asset-local ground.`, {
@@ -12953,13 +14909,13 @@ function declaredHeldItem(nodes) {
 function characterJointScale(root) {
   root.updateMatrixWorld(true);
   const inverse = root.matrixWorld.clone().invert();
-  const bounds = new THREE12.Box3;
+  const bounds = new THREE15.Box3;
   for (const joint of collectCharacterJointNodes(root)) {
-    bounds.expandByPoint(joint.node.getWorldPosition(new THREE12.Vector3).applyMatrix4(inverse));
+    bounds.expandByPoint(joint.node.getWorldPosition(new THREE15.Vector3).applyMatrix4(inverse));
   }
   if (bounds.isEmpty())
     return 1;
-  const size = bounds.getSize(new THREE12.Vector3);
+  const size = bounds.getSize(new THREE15.Vector3);
   return Math.max(size.x, size.y, size.z, 1);
 }
 function heldItemMotionFindings(input, root, clips) {
@@ -12995,8 +14951,8 @@ function heldItemMotionFindings(input, root, clips) {
       if (!cloneItem || !cloneAttachment)
         continue;
       const inverse = clone.matrixWorld.clone().invert();
-      const itemPoint = cloneItem.getWorldPosition(new THREE12.Vector3).applyMatrix4(inverse);
-      const gripPoint = cloneAttachment.getWorldPosition(new THREE12.Vector3).applyMatrix4(inverse);
+      const itemPoint = cloneItem.getWorldPosition(new THREE15.Vector3).applyMatrix4(inverse);
+      const gripPoint = cloneAttachment.getWorldPosition(new THREE15.Vector3).applyMatrix4(inverse);
       const distance = itemPoint.distanceTo(gripPoint);
       baseline ??= distance;
       const drift = Math.abs(distance - baseline);
@@ -13029,7 +14985,7 @@ function heldItemMotionFindings(input, root, clips) {
 function inspectRig(context) {
   if (!context.rig)
     return [];
-  const root = context.scene instanceof THREE12.Object3D ? context.scene : undefined;
+  const root = context.scene instanceof THREE15.Object3D ? context.scene : undefined;
   const clips = (context.clips ?? []).filter(isClipLike);
   const findings = [];
   if (root) {
@@ -13078,7 +15034,7 @@ var init_character2 = __esm(() => {
 });
 
 // src/qa/character-advisory.ts
-import * as THREE13 from "three";
+import * as THREE16 from "three";
 function isClipLike2(value) {
   if (typeof value !== "object" || value === null)
     return false;
@@ -13101,16 +15057,16 @@ function jointPoints(root) {
   const inverse = rootInverse(root);
   return collectCharacterJointNodes(root).map((evidence) => ({
     evidence,
-    local: evidence.node.getWorldPosition(new THREE13.Vector3).applyMatrix4(inverse)
+    local: evidence.node.getWorldPosition(new THREE16.Vector3).applyMatrix4(inverse)
   }));
 }
 function characterScale(points) {
   if (points.length === 0)
     return 1;
-  const bounds = new THREE13.Box3;
+  const bounds = new THREE16.Box3;
   for (const point of points)
     bounds.expandByPoint(point.local);
-  const size = bounds.getSize(new THREE13.Vector3);
+  const size = bounds.getSize(new THREE16.Vector3);
   return Math.max(size.x, size.y, size.z, 1);
 }
 function pairKey(descriptor) {
@@ -13209,12 +15165,12 @@ function restChainFindings(context, root) {
 }
 function forwardMarkerFindings(context, root) {
   root.updateMatrixWorld(true);
-  const expected = new THREE13.Vector3(1, 0, 0).transformDirection(root.matrixWorld);
+  const expected = new THREE16.Vector3(1, 0, 0).transformDirection(root.matrixWorld);
   const markers = collectCharacterJointNodes(root).filter((joint) => /(?:^|[._-])(?:toe|muzzle|head)(?:$|[._-])/i.test(joint.descriptor.role));
   return markers.flatMap((marker) => {
-    const quaternion = marker.node.getWorldQuaternion(new THREE13.Quaternion);
-    const actual = new THREE13.Vector3(...marker.descriptor.localForwardAxis).applyQuaternion(quaternion).normalize();
-    const angle = THREE13.MathUtils.radToDeg(Math.acos(THREE13.MathUtils.clamp(actual.dot(expected), -1, 1)));
+    const quaternion = marker.node.getWorldQuaternion(new THREE16.Quaternion);
+    const actual = new THREE16.Vector3(...marker.descriptor.localForwardAxis).applyQuaternion(quaternion).normalize();
+    const angle = THREE16.MathUtils.radToDeg(Math.acos(THREE16.MathUtils.clamp(actual.dot(expected), -1, 1)));
     if (angle <= FORWARD_ANGLE_DEGREES)
       return [];
     return [
@@ -13268,7 +15224,7 @@ function sampleClip(root, clip) {
       byRole: new Map(collectCharacterJointNodes(clone).map((evidence) => [
         evidence.descriptor.role,
         {
-          point: evidence.node.getWorldPosition(new THREE13.Vector3).applyMatrix4(inverse),
+          point: evidence.node.getWorldPosition(new THREE16.Vector3).applyMatrix4(inverse),
           evidence
         }
       ]))
@@ -13380,12 +15336,12 @@ function phaseOppositionFindings(context, root, clips) {
   return findings;
 }
 function signedBendDegrees(descriptor, quaternion) {
-  const rest = new THREE13.Quaternion(...descriptor.rest.rotation);
+  const rest = new THREE16.Quaternion(...descriptor.rest.rotation);
   const delta = rest.invert().multiply(quaternion).normalize();
-  const axis = new THREE13.Vector3(delta.x, delta.y, delta.z);
-  const signedMagnitude = axis.dot(new THREE13.Vector3(...descriptor.localBendAxis));
+  const axis = new THREE16.Vector3(delta.x, delta.y, delta.z);
+  const signedMagnitude = axis.dot(new THREE16.Vector3(...descriptor.localBendAxis));
   const angle = 2 * Math.atan2(signedMagnitude, delta.w);
-  return THREE13.MathUtils.radToDeg(THREE13.MathUtils.euclideanModulo(angle + Math.PI, Math.PI * 2) - Math.PI);
+  return THREE16.MathUtils.radToDeg(THREE16.MathUtils.euclideanModulo(angle + Math.PI, Math.PI * 2) - Math.PI);
 }
 function bendDirectionFindings(context, root, clips) {
   const joints = collectCharacterJointNodes(root).filter((joint) => /(?:^|[._-])(?:knee|elbow)(?:$|[._-])/i.test(joint.descriptor.role));
@@ -13399,7 +15355,7 @@ function bendDirectionFindings(context, root, clips) {
       let maximumFraction = 0;
       for (const fraction of SAMPLE_FRACTIONS) {
         const value = track.createInterpolant().evaluate(fraction * clip.duration);
-        const bend = signedBendDegrees(joint.descriptor, new THREE13.Quaternion().fromArray(value).normalize());
+        const bend = signedBendDegrees(joint.descriptor, new THREE16.Quaternion().fromArray(value).normalize());
         if (Math.abs(bend) > Math.abs(maximum)) {
           maximum = bend;
           maximumFraction = fraction;
@@ -13482,7 +15438,7 @@ function footSlideFindings(context, root, clips) {
   return findings;
 }
 function inspectRigAdvisory(context) {
-  if (!context.rig || !(context.scene instanceof THREE13.Object3D)) {
+  if (!context.rig || !(context.scene instanceof THREE16.Object3D)) {
     return [];
   }
   const root = context.scene;
@@ -13601,7 +15557,7 @@ var init_architecture_repairs = __esm(() => {
 });
 
 // src/qa/architecture.ts
-import * as THREE14 from "three";
+import * as THREE17 from "three";
 function hasRoofDimensions(value) {
   return value.footprint !== undefined && value.roof?.ridgeAxis !== undefined && value.roof.rise !== undefined && value.roof.overhang !== undefined;
 }
@@ -13611,7 +15567,7 @@ function semanticMetadata(node) {
 function markerBounds(matrix) {
   const bounds = emptyBounds();
   for (let corner = 0;corner < 8; corner++) {
-    expandBounds(bounds, new THREE14.Vector3(corner & 1 ? 0.5 : -0.5, corner & 2 ? 0.5 : -0.5, corner & 4 ? 0.5 : -0.5).applyMatrix4(matrix));
+    expandBounds(bounds, new THREE17.Vector3(corner & 1 ? 0.5 : -0.5, corner & 2 ? 0.5 : -0.5, corner & 4 ? 0.5 : -0.5).applyMatrix4(matrix));
   }
   return bounds;
 }
@@ -13620,7 +15576,7 @@ function geometryPlaneNormal(geometry, relativeMatrix) {
   const local = geometry.boundingBox;
   if (!local)
     return;
-  const size = local.getSize(new THREE14.Vector3);
+  const size = local.getSize(new THREE17.Vector3);
   const dimensions = [
     ["x", size.x],
     ["y", size.y],
@@ -13630,7 +15586,7 @@ function geometryPlaneNormal(geometry, relativeMatrix) {
   const axis = dimensions[0]?.[0];
   if (!axis)
     return;
-  const normal = new THREE14.Vector3(axis === "x" ? 1 : 0, axis === "y" ? 1 : 0, axis === "z" ? 1 : 0).transformDirection(relativeMatrix);
+  const normal = new THREE17.Vector3(axis === "x" ? 1 : 0, axis === "y" ? 1 : 0, axis === "z" ? 1 : 0).transformDirection(relativeMatrix);
   if (normal.y < 0)
     normal.multiplyScalar(-1);
   return normal.normalize();
@@ -13642,7 +15598,7 @@ function geometryEvidence(geometry, relativeMatrix) {
   if (position?.itemSize !== 3)
     return { bounds, vertices, triangles: [] };
   for (let index = 0;index < position.count; index++) {
-    const point = new THREE14.Vector3(position.getX(index), position.getY(index), position.getZ(index));
+    const point = new THREE17.Vector3(position.getX(index), position.getY(index), position.getZ(index));
     point.applyMatrix4(relativeMatrix);
     vertices.push(point);
     expandBounds(bounds, point);
@@ -13669,7 +15625,7 @@ function geometryEvidence(geometry, relativeMatrix) {
   return { bounds, vertices, triangles, ...planeNormal ? { planeNormal } : {} };
 }
 function collectArchitectureEvidence(scene) {
-  if (!(scene instanceof THREE14.Object3D))
+  if (!(scene instanceof THREE17.Object3D))
     return;
   scene.updateMatrixWorld(true);
   const rootInverse = scene.matrixWorld.clone().invert();
@@ -13687,7 +15643,7 @@ function collectArchitectureEvidence(scene) {
     const nodePath = parentPath ? `${parentPath}/${segment}` : segment;
     const relativeMatrix = rootInverse.clone().multiply(node.matrixWorld);
     const mesh = node;
-    const isMesh = mesh.isMesh === true && mesh.geometry instanceof THREE14.BufferGeometry;
+    const isMesh = mesh.isMesh === true && mesh.geometry instanceof THREE17.BufferGeometry;
     const evidence = isMesh ? geometryEvidence(mesh.geometry, relativeMatrix) : {
       bounds: markerBounds(relativeMatrix),
       vertices: [],
@@ -13746,7 +15702,7 @@ function architectureFinding(context, value) {
 function averageNormal(normals) {
   if (normals.length === 0)
     return;
-  const result = normals.reduce((sum, normal) => sum.add(normal), new THREE14.Vector3);
+  const result = normals.reduce((sum, normal) => sum.add(normal), new THREE17.Vector3);
   return result.lengthSq() > EPSILON2 ? result.normalize() : undefined;
 }
 function intervalCoverage(min, max, expectedMin, expectedMax) {
@@ -14457,8 +16413,8 @@ function evaluateArchitectureQa(context) {
   });
 }
 var PROFILE_RULE_ID2 = "ARCHITECTURE_PROFILE", EPSILON2 = 0.000001, ARCHITECTURE_REALISTIC_SCALE_BANDS, emptyBounds = () => ({
-  min: new THREE14.Vector3(Infinity, Infinity, Infinity),
-  max: new THREE14.Vector3(-Infinity, -Infinity, -Infinity)
+  min: new THREE17.Vector3(Infinity, Infinity, Infinity),
+  max: new THREE17.Vector3(-Infinity, -Infinity, -Infinity)
 }), expandBounds = (bounds, point) => {
   bounds.min.min(point);
   bounds.max.max(point);
@@ -14502,7 +16458,7 @@ var init_architecture = __esm(() => {
 });
 
 // src/qa/environment.ts
-import * as THREE15 from "three";
+import * as THREE18 from "three";
 function finding5(context, value) {
   return { ...value, profile: context.profile ?? "asset.requirements.v1" };
 }
@@ -14521,11 +16477,11 @@ function nodePath4(root, node) {
   return names.reverse().join("/");
 }
 function transformedBox2(source, transform) {
-  const result = new THREE15.Box3;
+  const result = new THREE18.Box3;
   for (const x of [source.min.x, source.max.x]) {
     for (const y of [source.min.y, source.max.y]) {
       for (const z of [source.min.z, source.max.z]) {
-        result.expandByPoint(new THREE15.Vector3(x, y, z).applyMatrix4(transform));
+        result.expandByPoint(new THREE18.Vector3(x, y, z).applyMatrix4(transform));
       }
     }
   }
@@ -14534,16 +16490,16 @@ function transformedBox2(source, transform) {
 function orientedBoxFromLocalBounds(root, node, source, relative = root.matrixWorld.clone().invert().multiply(node.matrixWorld)) {
   if (!relative.elements.every(Number.isFinite))
     return;
-  const position = new THREE15.Vector3;
-  const rotation = new THREE15.Quaternion;
-  const scale = new THREE15.Vector3;
+  const position = new THREE18.Vector3;
+  const rotation = new THREE18.Quaternion;
+  const scale = new THREE18.Vector3;
   relative.decompose(position, rotation, scale);
-  const recomposed = new THREE15.Matrix4().compose(position, rotation, scale);
+  const recomposed = new THREE18.Matrix4().compose(position, rotation, scale);
   const residual = Math.max(...relative.elements.map((component, index) => Math.abs(component - (recomposed.elements[index] ?? component))));
   if (residual > 0.00001)
     return;
-  const center = source.getCenter(new THREE15.Vector3).applyMatrix4(relative);
-  const sourceHalf = source.getSize(new THREE15.Vector3).multiplyScalar(0.5);
+  const center = source.getCenter(new THREE18.Vector3).applyMatrix4(relative);
+  const sourceHalf = source.getSize(new THREE18.Vector3).multiplyScalar(0.5);
   const halfExtents = [
     Math.abs(sourceHalf.x * scale.x),
     Math.abs(sourceHalf.y * scale.y),
@@ -14564,24 +16520,24 @@ function collectParts4(root) {
   const result = [];
   root.traverse((node) => {
     const roles = rolesOf3(node);
-    const renderable = node instanceof THREE15.Mesh;
+    const renderable = node instanceof THREE18.Mesh;
     let box;
     let orientedBox;
     let source;
-    if (renderable && node.geometry instanceof THREE15.BufferGeometry) {
+    if (renderable && node.geometry instanceof THREE18.BufferGeometry) {
       node.geometry.computeBoundingBox();
       if (node.geometry.boundingBox) {
         source = node.geometry.boundingBox;
       }
     } else if (roles.length > 0) {
-      source = new THREE15.Box3(new THREE15.Vector3(-0.5, -0.5, -0.5), new THREE15.Vector3(0.5, 0.5, 0.5));
+      source = new THREE18.Box3(new THREE18.Vector3(-0.5, -0.5, -0.5), new THREE18.Vector3(0.5, 0.5, 0.5));
     }
     const relative = rootInverse.clone().multiply(node.matrixWorld);
-    const count = node instanceof THREE15.InstancedMesh ? node.count : 1;
+    const count = node instanceof THREE18.InstancedMesh ? node.count : 1;
     for (let index = 0;index < count; index++) {
       const transform = relative.clone();
-      if (node instanceof THREE15.InstancedMesh) {
-        const instance = new THREE15.Matrix4;
+      if (node instanceof THREE18.InstancedMesh) {
+        const instance = new THREE18.Matrix4;
         node.getMatrixAt(index, instance);
         transform.multiply(instance);
       }
@@ -14612,9 +16568,9 @@ function resolveSocket(root, node, socket) {
     return;
   root.updateWorldMatrix(true, true);
   const rootInverse = root.matrixWorld.clone().invert();
-  const point = new THREE15.Vector3(...frame.translation).applyMatrix4(node.matrixWorld).applyMatrix4(rootInverse);
-  const rootInverseQuaternion = root.getWorldQuaternion(new THREE15.Quaternion).invert();
-  const rotation = node.getWorldQuaternion(new THREE15.Quaternion).multiply(new THREE15.Quaternion(...frame.rotation)).premultiply(rootInverseQuaternion).normalize();
+  const point = new THREE18.Vector3(...frame.translation).applyMatrix4(node.matrixWorld).applyMatrix4(rootInverse);
+  const rootInverseQuaternion = root.getWorldQuaternion(new THREE18.Quaternion).invert();
+  const rotation = node.getWorldQuaternion(new THREE18.Quaternion).multiply(new THREE18.Quaternion(...frame.rotation)).premultiply(rootInverseQuaternion).normalize();
   return {
     id: socket.id,
     type: socket.type,
@@ -14643,7 +16599,7 @@ function socketByType(sockets, type) {
   return sockets.find((socket) => socket.type === type);
 }
 function inspectPlacementSockets(context) {
-  if (!(context.scene instanceof THREE15.Object3D)) {
+  if (!(context.scene instanceof THREE18.Object3D)) {
     return [];
   }
   const root = context.scene;
@@ -14707,7 +16663,7 @@ function materialSignature(material) {
 function boundarySamples(root, axis, side, bins = 12) {
   root.updateWorldMatrix(true, true);
   const inverse = root.matrixWorld.clone().invert();
-  const localBounds = new THREE15.Box3;
+  const localBounds = new THREE18.Box3;
   for (const part of collectParts4(root))
     if (part.renderable && part.box)
       localBounds.union(part.box);
@@ -14721,30 +16677,30 @@ function boundarySamples(root, axis, side, bins = 12) {
   const crossExtent = Math.max(0.000000001, localBounds.max[crossAxis] - crossMin);
   const byBin = new Map;
   root.traverse((node) => {
-    if (!(node instanceof THREE15.Mesh) || !(node.geometry instanceof THREE15.BufferGeometry))
+    if (!(node instanceof THREE18.Mesh) || !(node.geometry instanceof THREE18.BufferGeometry))
       return;
     const positions = node.geometry.getAttribute("position");
     if (positions?.itemSize !== 3)
       return;
     const normals = node.geometry.getAttribute("normal");
     const relative = inverse.clone().multiply(node.matrixWorld);
-    const count = node instanceof THREE15.InstancedMesh ? node.count : 1;
+    const count = node instanceof THREE18.InstancedMesh ? node.count : 1;
     for (let instanceIndex = 0;instanceIndex < count; instanceIndex++) {
       const transform = relative.clone();
-      if (node instanceof THREE15.InstancedMesh) {
-        const instance = new THREE15.Matrix4;
+      if (node instanceof THREE18.InstancedMesh) {
+        const instance = new THREE18.Matrix4;
         node.getMatrixAt(instanceIndex, instance);
         transform.multiply(instance);
       }
-      const normalMatrix = new THREE15.Matrix3().getNormalMatrix(transform);
+      const normalMatrix = new THREE18.Matrix3().getNormalMatrix(transform);
       const material = materialSignature(node.material);
       for (let index = 0;index < positions.count; index++) {
-        const point = new THREE15.Vector3(positions.getX(index), positions.getY(index), positions.getZ(index)).applyMatrix4(transform);
+        const point = new THREE18.Vector3(positions.getX(index), positions.getY(index), positions.getZ(index)).applyMatrix4(transform);
         if (Math.abs(point[axis] - edge) > band)
           continue;
-        const t = THREE15.MathUtils.clamp((point[crossAxis] - crossMin) / crossExtent, 0, 1);
+        const t = THREE18.MathUtils.clamp((point[crossAxis] - crossMin) / crossExtent, 0, 1);
         const bin = Math.min(bins - 1, Math.floor(t * bins));
-        const normal = normals ? new THREE15.Vector3(normals.getX(index), normals.getY(index), normals.getZ(index)).applyMatrix3(normalMatrix).normalize() : new THREE15.Vector3(0, 1, 0);
+        const normal = normals ? new THREE18.Vector3(normals.getX(index), normals.getY(index), normals.getZ(index)).applyMatrix3(normalMatrix).normalize() : new THREE18.Vector3(0, 1, 0);
         const current = byBin.get(bin);
         if (!current || point.y > current.height || point.y === current.height && normal.y > current.normal.y) {
           byBin.set(bin, { bin, height: point.y, normal, material });
@@ -14767,7 +16723,7 @@ function edgePairMeasurements(root, axis, sockets) {
     ...positive.map((sample) => sample.bin)
   ]);
   const maximumHeightDelta = pairs.length ? Math.max(...pairs.map(([a, b]) => Math.abs(a.height - b.height))) : Number.POSITIVE_INFINITY;
-  const maximumNormalDeltaDegrees = pairs.length ? Math.max(...pairs.map(([a, b]) => THREE15.MathUtils.radToDeg(Math.acos(THREE15.MathUtils.clamp(a.normal.dot(b.normal), -1, 1))))) : 180;
+  const maximumNormalDeltaDegrees = pairs.length ? Math.max(...pairs.map(([a, b]) => THREE18.MathUtils.radToDeg(Math.acos(THREE18.MathUtils.clamp(a.normal.dot(b.normal), -1, 1))))) : 180;
   const materialMismatch = pairs.some(([a, b]) => a.material !== b.material);
   const negativeSocket = socketByType(sockets, `environment.tile.${axis}-negative`);
   const positiveSocket = socketByType(sockets, `environment.tile.${axis}-positive`);
@@ -14784,7 +16740,7 @@ function edgePairMeasurements(root, axis, sockets) {
   };
 }
 function inspectTileEdges(context) {
-  if (context.tileable !== true || !(context.scene instanceof THREE15.Object3D)) {
+  if (context.tileable !== true || !(context.scene instanceof THREE18.Object3D)) {
     return [];
   }
   const root = context.scene;
@@ -14867,7 +16823,7 @@ function isCorridor(part) {
   return part.roles.some((role) => /^environment\.(?:navigation\.)?corridor(?:\.|$)/.test(role));
 }
 function inspectNavigationClearance(context) {
-  if (context.navigable !== true || !(context.scene instanceof THREE15.Object3D)) {
+  if (context.navigable !== true || !(context.scene instanceof THREE18.Object3D)) {
     return [];
   }
   const root = context.scene;
@@ -14997,7 +16953,7 @@ function functionalLayer(part) {
   return part.roles.some((role) => role.startsWith("environment.functional") || role.startsWith("environment.layer") || role.startsWith("environment.path") || role.startsWith("environment.road") || role.startsWith("environment.bridge") || role.startsWith("environment.gate"));
 }
 function inspectSpatialSupport(context) {
-  if (context.groundPlaneY === undefined || !(context.scene instanceof THREE15.Object3D)) {
+  if (context.groundPlaneY === undefined || !(context.scene instanceof THREE18.Object3D)) {
     return [];
   }
   const root = context.scene;
@@ -15044,7 +17000,7 @@ function inspectSpatialSupport(context) {
         }));
       }
     }
-    const size = box.getSize(new THREE15.Vector3);
+    const size = box.getSize(new THREE18.Vector3);
     if (box.min.y < context.groundPlaneY - 0.05 && size.y <= Math.max(0.05, Math.min(size.x, size.z) * 0.03) && Math.max(size.x, size.z) >= 1) {
       findings.push(finding5(context, {
         code: "ENV_GROUND_UNDECLARED_SKIRT",
@@ -15620,7 +17576,7 @@ var init_rig_export = __esm(() => {
 });
 
 // src/community-exporter.ts
-import * as THREE16 from "three";
+import * as THREE19 from "three";
 import { GLTFExporter } from "three/addons/exporters/GLTFExporter.js";
 function resolveGltfExporter(value = typeof process !== "undefined" ? process.env["KILN_GLTF_EXPORTER"] : undefined) {
   if (value === undefined || value === "legacy")
@@ -15645,15 +17601,15 @@ async function communitySceneDocument(root, clips, platform = browserPlatform) {
       return found;
     const copy = cleanClone(source);
     normalizeTextureTransform(copy);
-    copy.source = new THREE16.TextureSource(source.image);
+    copy.source = new THREE19.TextureSource(source.image);
     textures.set(source, copy);
     const bytes = source.userData["encoded"];
     if (bytes?.bytes) {
       encoded.push((async () => {
         copy.image = await platform.decode(bytes.bytes);
         Object.defineProperty(copy, "isDataTexture", { value: true });
-        copy.format = THREE16.RGBAFormat;
-        copy.type = THREE16.UnsignedByteType;
+        copy.format = THREE19.RGBAFormat;
+        copy.type = THREE19.UnsignedByteType;
       })());
     }
     return copy;
@@ -15669,7 +17625,7 @@ async function communitySceneDocument(root, clips, platform = browserPlatform) {
       physical.sheen = 1;
     }
     for (const [key, value] of Object.entries(copy)) {
-      if (value instanceof THREE16.Texture)
+      if (value instanceof THREE19.Texture)
         copy[key] = texture(value);
     }
     materials.set(source, copy);
@@ -15682,15 +17638,15 @@ async function communitySceneDocument(root, clips, platform = browserPlatform) {
     shadow.userData = {};
     let copy = shadow.clone(false);
     if (source.isScene) {
-      copy = new THREE16.Group;
+      copy = new THREE19.Group;
       copy.copy(shadow, false);
     }
     if (source.isSprite) {
       const sprite = source;
-      const geometry = new THREE16.PlaneGeometry(1, 1);
+      const geometry = new THREE19.PlaneGeometry(1, 1);
       geometry.translate(0.5 - sprite.center.x, 0.5 - sprite.center.y, 0);
       geometry.rotateZ(sprite.material.rotation);
-      const spriteMaterial = new THREE16.MeshBasicMaterial({
+      const spriteMaterial = new THREE19.MeshBasicMaterial({
         name: sprite.material.name,
         color: sprite.material.color,
         opacity: sprite.material.opacity,
@@ -15699,8 +17655,8 @@ async function communitySceneDocument(root, clips, platform = browserPlatform) {
         side: sprite.material.side,
         map: sprite.material.map ? texture(sprite.material.map) : null
       });
-      copy = new THREE16.Mesh(geometry, spriteMaterial);
-      THREE16.Object3D.prototype.copy.call(copy, shadow, false);
+      copy = new THREE19.Mesh(geometry, spriteMaterial);
+      THREE19.Object3D.prototype.copy.call(copy, shadow, false);
     }
     Object.assign(copy.userData, rigExtrasForExport(source));
     const semantic = source.userData[KILN_SEMANTIC_EXTRAS_KEY];
@@ -15759,8 +17715,8 @@ async function communitySceneDocument(root, clips, platform = browserPlatform) {
     }
     cloned.tracks = cloned.tracks.filter((track) => {
       try {
-        const binding = THREE16.PropertyBinding.parseTrackName(track.name);
-        return ["position", "quaternion", "scale", "morphTargetInfluences"].includes(binding.propertyName) && THREE16.PropertyBinding.findNode(copy, binding.nodeName) !== null;
+        const binding = THREE19.PropertyBinding.parseTrackName(track.name);
+        return ["position", "quaternion", "scale", "morphTargetInfluences"].includes(binding.propertyName) && THREE19.PropertyBinding.findNode(copy, binding.nodeName) !== null;
       } catch {
         return false;
       }
@@ -16139,16 +18095,16 @@ function buildWallPanels(length, height, thickness, apertures) {
 }
 
 // src/assembly-transform.ts
-import * as THREE17 from "three";
+import * as THREE20 from "three";
 function checkedTrs(matrix, label) {
   const e = matrix.elements;
   if (!e.every(Number.isFinite) || e[3] !== 0 || e[7] !== 0 || e[11] !== 0 || Math.abs(e[15] - 1) > 16 * Number.EPSILON)
     throw new Error(`${label}: finite affine TRS is required.`);
   if (!Number.isFinite(matrix.determinant()) || matrix.determinant() === 0)
     throw new Error(`${label}: singular/zero-scale transforms are unsupported.`);
-  const position = new THREE17.Vector3, quaternion = new THREE17.Quaternion, scale = new THREE17.Vector3;
+  const position = new THREE20.Vector3, quaternion = new THREE20.Quaternion, scale = new THREE20.Vector3;
   matrix.decompose(position, quaternion, scale);
-  const rebuilt = new THREE17.Matrix4().compose(position, quaternion, scale);
+  const rebuilt = new THREE20.Matrix4().compose(position, quaternion, scale);
   if (rebuilt.elements.some((value, i) => !Number.isFinite(value) || Math.abs(value - e[i]) > 0.00000001 * Math.max(1, Math.abs(e[i]))))
     throw new Error(`${label}: local shear cannot be represented losslessly as TRS.`);
   return { position, quaternion, scale };
@@ -16156,7 +18112,7 @@ function checkedTrs(matrix, label) {
 var init_assembly_transform = () => {};
 
 // src/assembly.ts
-import * as THREE18 from "three";
+import * as THREE21 from "three";
 function jsonData(value, label, ancestors = new Set) {
   if (value === null || typeof value === "string" || typeof value === "boolean")
     return;
@@ -16188,7 +18144,7 @@ function jsonData(value, label, ancestors = new Set) {
   }
   ancestors.delete(value);
 }
-function canonicalJson(value) {
+function canonicalJson2(value) {
   const sort = (entry) => {
     if (Array.isArray(entry))
       return entry.map(sort);
@@ -16199,11 +18155,11 @@ function canonicalJson(value) {
   return JSON.stringify(sort(value));
 }
 function knownMetadata(source, parsed, label) {
-  if (canonicalJson(source) !== canonicalJson(parsed))
+  if (canonicalJson2(source) !== canonicalJson2(parsed))
     throw new Error(`${label}: unsupported fields in known metadata would be lost during remapping.`);
 }
 function localMatrix(node) {
-  return node.matrixAutoUpdate ? new THREE18.Matrix4().compose(node.position, node.quaternion, node.scale) : node.matrix.clone();
+  return node.matrixAutoUpdate ? new THREE21.Matrix4().compose(node.position, node.quaternion, node.scale) : node.matrix.clone();
 }
 function worldMatrix(node) {
   const chain = [], seen = new Set;
@@ -16213,7 +18169,7 @@ function worldMatrix(node) {
     seen.add(cursor);
     chain.push(cursor);
   }
-  const result = new THREE18.Matrix4;
+  const result = new THREE21.Matrix4;
   for (const entry of chain.reverse())
     result.multiply(localMatrix(entry));
   return result;
@@ -16229,7 +18185,7 @@ function census(root) {
   const stack = [root];
   while (stack.length) {
     const node = stack.pop();
-    if (!(node instanceof THREE18.Object3D) || ![THREE18.Object3D, THREE18.Group, THREE18.Mesh].includes(node.constructor))
+    if (!(node instanceof THREE21.Object3D) || ![THREE21.Object3D, THREE21.Group, THREE21.Mesh].includes(node.constructor))
       throw new Error("Unsupported assembly node: only ordinary Object3D, Group and Mesh hierarchies are qualified; no skins, instances or custom node classes.");
     if (matrices.has(node))
       throw new Error("Assembly must be a tree; duplicate/cyclic children are unsupported.");
@@ -16245,21 +18201,21 @@ function census(root) {
     checkedTrs(matrix, node.name || "unnamed node");
     nodes.push(node);
     matrices.set(node, matrix);
-    if (node.onBeforeRender !== THREE18.Object3D.prototype.onBeforeRender || node.onAfterRender !== THREE18.Object3D.prototype.onAfterRender || node.onBeforeShadow !== THREE18.Object3D.prototype.onBeforeShadow || node.onAfterShadow !== THREE18.Object3D.prototype.onAfterShadow)
+    if (node.onBeforeRender !== THREE21.Object3D.prototype.onBeforeRender || node.onAfterRender !== THREE21.Object3D.prototype.onAfterRender || node.onBeforeShadow !== THREE21.Object3D.prototype.onBeforeShadow || node.onAfterShadow !== THREE21.Object3D.prototype.onAfterShadow)
       throw new Error("Custom node render callbacks are unsupported in assembly replication.");
-    if (node instanceof THREE18.Mesh) {
-      if (!(node.geometry instanceof THREE18.BufferGeometry) || node.geometry instanceof THREE18.InstancedBufferGeometry)
+    if (node instanceof THREE21.Mesh) {
+      if (!(node.geometry instanceof THREE21.BufferGeometry) || node.geometry instanceof THREE21.InstancedBufferGeometry)
         throw new Error("Unsupported assembly geometry type.");
       if (Object.values(node.geometry.morphAttributes).some((attributes) => attributes?.length) || node.morphTargetInfluences?.length)
         throw new Error("Assembly morph target replication is unsupported.");
       const materials = Array.isArray(node.material) ? node.material : [node.material];
-      if (materials.length === 0 || materials.some((material) => !(material instanceof THREE18.Material)))
+      if (materials.length === 0 || materials.some((material) => !(material instanceof THREE21.Material)))
         throw new Error("Assembly mesh materials must be Material instances.");
     }
     if (!object(node.userData))
       throw new Error("Assembly node metadata must be an object.");
     jsonData(node.userData, node.name);
-    if (!Array.isArray(node.animations) || node.animations.some((clip) => !(clip instanceof THREE18.AnimationClip)))
+    if (!Array.isArray(node.animations) || node.animations.some((clip) => !(clip instanceof THREE21.AnimationClip)))
       throw new Error("Assembly node animations must contain AnimationClip instances.");
     if (node.userData[KILN_SEMANTIC_EXTRAS_KEY] !== undefined) {
       const metadata = readSemanticMetadataV1(node);
@@ -16300,11 +18256,11 @@ function describeAssembly(root, options = {}) {
   const state = census(root), roles = new Map;
   const frames = [], sockets = [], joints = [], materials = [];
   const relative = new Map;
-  const bounds = new THREE18.Box3, point = new THREE18.Vector3;
+  const bounds = new THREE21.Box3, point = new THREE21.Vector3;
   let positionSamples = 0;
   for (const [index, node] of state.nodes.entries()) {
     const nodeId = `n${index}`;
-    const matrix = node === root ? new THREE18.Matrix4 : relative.get(node.parent).clone().multiply(state.matrices.get(node));
+    const matrix = node === root ? new THREE21.Matrix4 : relative.get(node.parent).clone().multiply(state.matrices.get(node));
     relative.set(node, matrix);
     const metadata = state.semantics.get(node);
     const descriptor = state.joints.get(node);
@@ -16326,7 +18282,7 @@ function describeAssembly(root, options = {}) {
     for (const role of metadata?.roles ?? [])
       addIndex(roles, role, node);
     for (const frame of metadata?.frames ?? []) {
-      const local = new THREE18.Matrix4().compose(new THREE18.Vector3(...frame.translation), new THREE18.Quaternion(...frame.rotation), new THREE18.Vector3(1, 1, 1));
+      const local = new THREE21.Matrix4().compose(new THREE21.Vector3(...frame.translation), new THREE21.Quaternion(...frame.rotation), new THREE21.Vector3(1, 1, 1));
       frames.push({
         node,
         nodeId,
@@ -16336,7 +18292,7 @@ function describeAssembly(root, options = {}) {
     }
     for (const socket of metadata?.sockets ?? [])
       sockets.push({ node, nodeId, socket: structuredClone(socket) });
-    if (!(node instanceof THREE18.Mesh))
+    if (!(node instanceof THREE21.Mesh))
       continue;
     for (const [materialIndex, material] of (Array.isArray(node.material) ? node.material : [node.material]).entries())
       materials.push({ node, nodeId, index: materialIndex, material });
@@ -16371,7 +18327,7 @@ function describeAssembly(root, options = {}) {
       space: "root-local",
       min: bounds.min.toArray(),
       max: bounds.max.toArray(),
-      size: bounds.getSize(new THREE18.Vector3).toArray()
+      size: bounds.getSize(new THREE21.Vector3).toArray()
     },
     clips,
     ownership: {
@@ -16410,7 +18366,7 @@ function replicateAssembly(source, options) {
     if (value !== undefined && !choices.includes(value))
       throw new Error(`Unsupported assembly ${key} policy.`);
   }
-  if (options.parent !== undefined && !(options.parent instanceof THREE18.Object3D))
+  if (options.parent !== undefined && !(options.parent instanceof THREE21.Object3D))
     throw new Error("Assembly parent must be an Object3D.");
   const fresh = describeAssembly(source.root, { clips: source.clips }), state = census(source.root);
   if (options.parent && state.nodes.includes(options.parent))
@@ -16443,16 +18399,16 @@ function replicateAssembly(source, options) {
         throw new Error(`Unsupported custom metadata ${key} on ${node.name}; use copy-json only for inert data whose references you own.`);
     }
     jsonData(node.userData, node.name);
-    if (node instanceof THREE18.Mesh) {
+    if (node instanceof THREE21.Mesh) {
       if (options.geometry === "copy") {
         jsonData(node.geometry.userData, `${node.name} geometry`);
-        if (node.geometry.clone !== THREE18.BufferGeometry.prototype.clone || !threeConstructors.has(node.geometry.constructor))
+        if (node.geometry.clone !== THREE21.BufferGeometry.prototype.clone || !threeConstructors.has(node.geometry.constructor))
           throw new Error("Copying custom geometry classes/clone implementations is unsupported; explicitly share the resource.");
       }
       if (options.materials === "copy")
         for (const material of Array.isArray(node.material) ? node.material : [node.material]) {
           jsonData(material.userData, `${node.name} material`);
-          if (material.onBeforeCompile !== THREE18.Material.prototype.onBeforeCompile || material.onBeforeRender !== THREE18.Material.prototype.onBeforeRender || material.clone !== THREE18.Material.prototype.clone || !threeConstructors.has(material.constructor) || material.customProgramCacheKey !== THREE18.Material.prototype.customProgramCacheKey || material instanceof THREE18.ShaderMaterial)
+          if (material.onBeforeCompile !== THREE21.Material.prototype.onBeforeCompile || material.onBeforeRender !== THREE21.Material.prototype.onBeforeRender || material.clone !== THREE21.Material.prototype.clone || !threeConstructors.has(material.constructor) || material.customProgramCacheKey !== THREE21.Material.prototype.customProgramCacheKey || material instanceof THREE21.ShaderMaterial)
             throw new Error("Copying custom/shader materials is unsupported; explicit sharing preserves their existing implementation.");
         }
     }
@@ -16540,9 +18496,9 @@ function replicateAssembly(source, options) {
   const trackTargets = new Map;
   const animatedNodes = new Set;
   for (const clip of fresh.clips) {
-    if (!(clip instanceof THREE18.AnimationClip))
+    if (!(clip instanceof THREE21.AnimationClip))
       throw new Error("Assembly clips must be AnimationClip instances.");
-    if (clip.blendMode !== THREE18.NormalAnimationBlendMode)
+    if (clip.blendMode !== THREE21.NormalAnimationBlendMode)
       throw new Error("Additive/other animation blend modes are unsupported in assembly replication.");
     jsonData(clip.userData, `Clip ${clip.name}`);
     if (Object.keys(clip.userData).length && options.unknownMetadata !== "copy-json")
@@ -16569,7 +18525,7 @@ function replicateAssembly(source, options) {
   if (options.space === "world") {
     if (state.joints.has(source.root))
       throw new Error("World placement of a declared joint root requires rest-transform rebasing; wrap it in an assembly root or use local placement.");
-    const parentWorld = options.parent ? worldMatrix(options.parent) : new THREE18.Matrix4;
+    const parentWorld = options.parent ? worldMatrix(options.parent) : new THREE21.Matrix4;
     if (!Number.isFinite(parentWorld.determinant()) || parentWorld.determinant() === 0)
       throw new Error("World placement requires an invertible, nonsingular parent transform.");
     rootMatrix = parentWorld.invert().multiply(worldMatrix(source.root));
@@ -16610,7 +18566,7 @@ function replicateAssembly(source, options) {
     return materials.get(material);
   };
   for (const node of state.nodes) {
-    const copy = node instanceof THREE18.Mesh ? new THREE18.Mesh(node.geometry, node.material) : node instanceof THREE18.Group ? new THREE18.Group : new THREE18.Object3D;
+    const copy = node instanceof THREE21.Mesh ? new THREE21.Mesh(node.geometry, node.material) : node instanceof THREE21.Group ? new THREE21.Group : new THREE21.Object3D;
     copy.copy(node, false);
     copy.name = names.get(node);
     copy.animations = [];
@@ -16623,7 +18579,7 @@ function replicateAssembly(source, options) {
     }
     copy.matrix.copy(matrix);
     copy.matrixWorldNeedsUpdate = true;
-    if (node instanceof THREE18.Mesh && copy instanceof THREE18.Mesh) {
+    if (node instanceof THREE21.Mesh && copy instanceof THREE21.Mesh) {
       if (options.geometry === "copy") {
         if (!geometries.has(node.geometry))
           geometries.set(node.geometry, node.geometry.clone());
@@ -16688,11 +18644,11 @@ var init_assembly = __esm(() => {
     KILN_CHARACTER_JOINT_EXTRAS_KEY,
     KILN_CHARACTER_RIG_EXTRAS_KEY
   ]);
-  threeConstructors = new Set(Object.values(THREE18));
+  threeConstructors = new Set(Object.values(THREE21));
 });
 
 // src/architecture.ts
-import * as THREE19 from "three";
+import * as THREE22 from "three";
 function positive4(value, name) {
   if (!Number.isFinite(value) || value <= 0)
     throw new RangeError(`${name} must be finite and > 0`);
@@ -16757,17 +18713,17 @@ function buildFace(roofRoot, profile, sideSign) {
   const verticalRun = profile.ridgeY - profile.eaveY;
   const downhillLength = Math.hypot(horizontalRun, verticalRun);
   const alongRidge = (profile.ridgeAxis === "x" ? profile.spanX : profile.spanZ) + profile.overhang * 2;
-  const downhill = profile.ridgeAxis === "x" ? new THREE19.Vector3(0, -verticalRun, sideSign * horizontalRun).normalize() : new THREE19.Vector3(sideSign * horizontalRun, -verticalRun, 0).normalize();
-  const tangent = profile.ridgeAxis === "x" ? new THREE19.Vector3(sideSign, 0, 0) : new THREE19.Vector3(0, 0, -sideSign);
+  const downhill = profile.ridgeAxis === "x" ? new THREE22.Vector3(0, -verticalRun, sideSign * horizontalRun).normalize() : new THREE22.Vector3(sideSign * horizontalRun, -verticalRun, 0).normalize();
+  const tangent = profile.ridgeAxis === "x" ? new THREE22.Vector3(sideSign, 0, 0) : new THREE22.Vector3(0, 0, -sideSign);
   const normal = downhill.clone().cross(tangent).normalize();
-  const localToRoof = new THREE19.Matrix4().makeBasis(tangent, normal, downhill);
+  const localToRoof = new THREE22.Matrix4().makeBasis(tangent, normal, downhill);
   localToRoof.setPosition(0, profile.ridgeY, 0);
   const world = () => {
     roofRoot.updateWorldMatrix(true, false);
     return roofRoot.matrixWorld.clone().multiply(localToRoof);
   };
   const direction = (axis) => axis.clone().transformDirection(world());
-  const point = (x, z) => new THREE19.Vector3(x, 0, z).applyMatrix4(world());
+  const point = (x, z) => new THREE22.Vector3(x, 0, z).applyMatrix4(world());
   return {
     side,
     ridgeAxis: profile.ridgeAxis,
@@ -16777,13 +18733,13 @@ function buildFace(roofRoot, profile, sideSign) {
       return world();
     },
     get ridgeTangent() {
-      return direction(new THREE19.Vector3(1, 0, 0));
+      return direction(new THREE22.Vector3(1, 0, 0));
     },
     get downhillDirection() {
-      return direction(new THREE19.Vector3(0, 0, 1));
+      return direction(new THREE22.Vector3(0, 0, 1));
     },
     get outwardNormal() {
-      return direction(new THREE19.Vector3(0, 1, 0));
+      return direction(new THREE22.Vector3(0, 1, 0));
     },
     get ridgeStart() {
       return point(-alongRidge / 2, 0);
@@ -16801,17 +18757,17 @@ function buildFace(roofRoot, profile, sideSign) {
   };
 }
 function buildRoof(name, material, profile, parent) {
-  const root = new THREE19.Object3D;
+  const root = new THREE22.Object3D;
   root.name = name;
   if (parent)
     parent.add(root);
   stampSemanticMetadataV1(root, roleMetadata([semanticRole(KILN_SEMANTIC_ROLES.roof, "assembly")], [relationship("separable-from", "architecture.shell.gable")]));
   const faces = [buildFace(root, profile, 1), buildFace(root, profile, -1)];
   const buildSlope = (face) => {
-    const geometry = new THREE19.BoxGeometry(face.dimensions.alongRidge, profile.thickness, face.dimensions.downhill);
-    const mesh = new THREE19.Mesh(geometry, material);
+    const geometry = new THREE22.BoxGeometry(face.dimensions.alongRidge, profile.thickness, face.dimensions.downhill);
+    const mesh = new THREE22.Mesh(geometry, material);
     mesh.name = `Mesh_${name}_${face.side}`;
-    const center = new THREE19.Matrix4().makeTranslation(0, -profile.thickness / 2, face.dimensions.downhill / 2);
+    const center = new THREE22.Matrix4().makeTranslation(0, -profile.thickness / 2, face.dimensions.downhill / 2);
     setTransform(mesh, face.localToRoof.clone().multiply(center));
     const coveredWall = profile.ridgeAxis === "x" ? face.side === "positive" ? "wall.right" : "wall.left" : face.side === "positive" ? "wall.front" : "wall.back";
     stampSemanticMetadataV1(mesh, roleMetadata([semanticRole(KILN_SEMANTIC_ROLES.roof, "slope", face.side)], [
@@ -16881,7 +18837,7 @@ function createGableEndPanel(name, material, options) {
   const ridgeAxis = options.ridgeAxis ?? "x";
   const side = options.side ?? "positive";
   const half = span / 2;
-  const shape = new THREE19.Shape;
+  const shape = new THREE22.Shape;
   shape.moveTo(-half, 0);
   shape.lineTo(half, 0);
   shape.lineTo(0, rise);
@@ -16900,7 +18856,7 @@ function createGableEndPanel(name, material, options) {
     const right = opening.offset + opening.width / 2;
     const bottom = opening.bottom;
     const top = bottom + opening.height;
-    const hole = new THREE19.Path;
+    const hole = new THREE22.Path;
     hole.moveTo(left, bottom);
     hole.lineTo(left, top);
     hole.lineTo(right, top);
@@ -16908,7 +18864,7 @@ function createGableEndPanel(name, material, options) {
     hole.closePath();
     shape.holes.push(hole);
   }
-  const geometry = new THREE19.ExtrudeGeometry(shape, {
+  const geometry = new THREE22.ExtrudeGeometry(shape, {
     depth: thickness,
     bevelEnabled: false,
     steps: 1
@@ -16917,7 +18873,7 @@ function createGableEndPanel(name, material, options) {
   if (ridgeAxis === "x")
     geometry.rotateY(-Math.PI / 2);
   geometry.computeVertexNormals();
-  const root = new THREE19.Mesh(geometry, material);
+  const root = new THREE22.Mesh(geometry, material);
   root.name = `Mesh_${name}`;
   stampSemanticMetadataV1(root, roleMetadata([`roof.gable.${side}`], [
     relationship("adjacent-to", "roof.slope.positive"),
@@ -16933,7 +18889,7 @@ function createGableEndPanel(name, material, options) {
     }
   ]));
   const markers = normalized.map((opening, index) => {
-    const marker = new THREE19.Object3D;
+    const marker = new THREE22.Object3D;
     marker.name = `Opening_${name}_${opening.id ?? index + 1}`;
     marker.position.set(ridgeAxis === "z" ? opening.offset : 0, opening.bottom + opening.height / 2, ridgeAxis === "x" ? opening.offset : 0);
     marker.scale.set(ridgeAxis === "x" ? thickness : opening.width, opening.height, ridgeAxis === "x" ? opening.width : thickness);
@@ -16953,7 +18909,7 @@ function wallNeighbors(wall) {
 }
 function createShellWall(name, wall, material, length, height, thickness, openings) {
   const axis = wallRunAxis(wall);
-  const root = new THREE19.Object3D;
+  const root = new THREE22.Object3D;
   root.name = `${name}_Wall_${wall}`;
   const neighbors = wallNeighbors(wall);
   stampSemanticMetadataV1(root, roleMetadata([`wall.${wall}`], [
@@ -16965,8 +18921,8 @@ function createShellWall(name, wall, material, length, height, thickness, openin
   const panel = (suffix, lo, hi, y0, y1) => {
     if (hi <= lo || y1 <= y0)
       return;
-    const geometry = axis === "x" ? new THREE19.BoxGeometry(hi - lo, y1 - y0, thickness) : new THREE19.BoxGeometry(thickness, y1 - y0, hi - lo);
-    const mesh = new THREE19.Mesh(geometry, material);
+    const geometry = axis === "x" ? new THREE22.BoxGeometry(hi - lo, y1 - y0, thickness) : new THREE22.BoxGeometry(thickness, y1 - y0, hi - lo);
+    const mesh = new THREE22.Mesh(geometry, material);
     mesh.name = `Mesh_${name}_${wall}_${suffix}`;
     mesh.position.set(axis === "x" ? (lo + hi) / 2 : 0, (y0 + y1) / 2, axis === "z" ? (lo + hi) / 2 : 0);
     root.add(mesh);
@@ -16983,7 +18939,7 @@ function createShellWall(name, wall, material, length, height, thickness, openin
     panel(singleNames[segment.suffix] ?? segment.suffix.slice(1), segment.left, segment.right, segment.bottom, segment.top);
   }
   for (const opening of built.openings) {
-    const marker = new THREE19.Object3D;
+    const marker = new THREE22.Object3D;
     marker.name = `Opening_${wall}_${opening.id}`;
     marker.position.set(axis === "x" ? opening.offset : 0, opening.sill + opening.height / 2, axis === "z" ? opening.offset : 0);
     marker.scale.set(axis === "x" ? opening.width : opening.depth, opening.height, axis === "z" ? opening.width : opening.depth);
@@ -17006,7 +18962,7 @@ function createGableShell(name, materials, options) {
   const closedEnds = options.closedEnds ?? true;
   const enterable = options.enterable ?? true;
   const shellOpenings = options.openings ?? (enterable ? [{ wall: "front", kind: "door" }] : []);
-  const root = new THREE19.Object3D;
+  const root = new THREE22.Object3D;
   root.name = name;
   stampSemanticMetadataV1(root, roleMetadata(["architecture.shell.gable"], [relationship("contains", "floor"), relationship("contains", "roof.assembly")]));
   const wallSpecs = {
@@ -17024,7 +18980,7 @@ function createGableShell(name, materials, options) {
     walls[wall] = built.root;
     openingMarkers.push(...built.openings);
   }
-  const floor = new THREE19.Mesh(new THREE19.BoxGeometry(spanX, floorThickness, spanZ), materials.floor ?? materials.wall);
+  const floor = new THREE22.Mesh(new THREE22.BoxGeometry(spanX, floorThickness, spanZ), materials.floor ?? materials.wall);
   floor.name = `Mesh_${name}_Floor`;
   floor.position.y = -floorThickness / 2;
   stampSemanticMetadataV1(floor, roleMetadata(["floor"], ["front", "back", "left", "right"].map((wall) => relationship("adjacent-to", `wall.${wall}`))));
@@ -17139,13 +19095,13 @@ function createRoofSurfaceLayout(name, material, options) {
     assertDimension("createRoofSurfaceLayout generated width", spec.width);
     assertDimension("createRoofSurfaceLayout generated length", spec.length);
   }
-  const root = new THREE19.Object3D;
+  const root = new THREE22.Object3D;
   root.name = name;
   stampSemanticMetadataV1(root, roleMetadata([`roof.surface.${options.kind}`], [relationship("coverage-of", `roof.slope.${options.face.side}`)]));
   const items = specs.map((spec, index) => {
-    const mesh = new THREE19.Mesh(new THREE19.BoxGeometry(spec.width, thickness, spec.length), material);
+    const mesh = new THREE22.Mesh(new THREE22.BoxGeometry(spec.width, thickness, spec.length), material);
     mesh.name = `Mesh_${name}_${index + 1}`;
-    const local = new THREE19.Matrix4().makeTranslation(spec.x, thickness / 2 + 0.002, spec.z);
+    const local = new THREE22.Matrix4().makeTranslation(spec.x, thickness / 2 + 0.002, spec.z);
     setTransform(mesh, faceToRoot.clone().multiply(local));
     root.add(mesh);
     return mesh;
@@ -17162,7 +19118,7 @@ var init_architecture2 = __esm(() => {
 });
 
 // src/gears.ts
-import * as THREE20 from "three";
+import * as THREE23 from "three";
 function gearGeo(opts = {}) {
   const {
     teeth = 12,
@@ -17261,8 +19217,8 @@ function gearGeo(opts = {}) {
     indices.push(tA, bA, bB);
     indices.push(tA, bB, tB);
   }
-  const geo = new THREE20.BufferGeometry;
-  geo.setAttribute("position", new THREE20.Float32BufferAttribute(positions, 3));
+  const geo = new THREE23.BufferGeometry;
+  geo.setAttribute("position", new THREE23.Float32BufferAttribute(positions, 3));
   geo.setIndex(indices);
   const nonIndexed = geo.toNonIndexed();
   nonIndexed.computeVertexNormals();
@@ -17347,8 +19303,8 @@ function bladeGeo(opts = {}) {
       indices.push(count + i, tip, count + j);
     }
   }
-  const geo = new THREE20.BufferGeometry;
-  geo.setAttribute("position", new THREE20.Float32BufferAttribute(positions, 3));
+  const geo = new THREE23.BufferGeometry;
+  geo.setAttribute("position", new THREE23.Float32BufferAttribute(positions, 3));
   geo.setIndex(indices);
   const nonIndexed = geo.toNonIndexed();
   nonIndexed.computeVertexNormals();
@@ -17360,7 +19316,7 @@ var init_gears = __esm(() => {
 });
 
 // src/ops.ts
-import * as THREE21 from "three";
+import * as THREE24 from "three";
 import { LoopSubdivision } from "three-subdivide/build/index.module.js";
 import { mergeVertices as threeMergeVertices } from "three/examples/jsm/utils/BufferGeometryUtils.js";
 function assertFiniteSourceFrame(name, source) {
@@ -17394,9 +19350,9 @@ function arrayLinear(namePrefix, source, count, offset, parent) {
 }
 function degreesOf(euler) {
   return [
-    THREE21.MathUtils.radToDeg(euler.x),
-    THREE21.MathUtils.radToDeg(euler.y),
-    THREE21.MathUtils.radToDeg(euler.z)
+    THREE24.MathUtils.radToDeg(euler.x),
+    THREE24.MathUtils.radToDeg(euler.y),
+    THREE24.MathUtils.radToDeg(euler.z)
   ];
 }
 function arrayRadial(namePrefix, source, count, axis = "y", parent, center, options = {}) {
@@ -17409,12 +19365,12 @@ function arrayRadial(namePrefix, source, count, axis = "y", parent, center, opti
   if (center)
     assertFiniteTriple("arrayRadial center", center);
   const out = [];
-  const pivot = center ? new THREE21.Vector3(...center) : new THREE21.Vector3;
+  const pivot = center ? new THREE24.Vector3(...center) : new THREE24.Vector3;
   const basePos = source.position.clone().sub(pivot);
-  const axisVec = axis === "x" ? new THREE21.Vector3(1, 0, 0) : axis === "z" ? new THREE21.Vector3(0, 0, 1) : new THREE21.Vector3(0, 1, 0);
+  const axisVec = axis === "x" ? new THREE24.Vector3(1, 0, 0) : axis === "z" ? new THREE24.Vector3(0, 0, 1) : new THREE24.Vector3(0, 1, 0);
   const positions = [];
   for (let i = 1;i < count; i++) {
-    const position = basePos.clone().applyMatrix4(new THREE21.Matrix4().makeRotationAxis(axisVec, i / count * Math.PI * 2)).add(pivot);
+    const position = basePos.clone().applyMatrix4(new THREE24.Matrix4().makeRotationAxis(axisVec, i / count * Math.PI * 2)).add(pivot);
     assertFiniteTriple("arrayRadial resulting position", position.toArray());
     positions.push(position);
   }
@@ -17438,15 +19394,15 @@ function arrayRadial(namePrefix, source, count, axis = "y", parent, center, opti
 function mirror(name, source, axis, parent) {
   if (source.matrixAutoUpdate)
     source.updateMatrix();
-  const reflected = new THREE21.Matrix4().makeScale(axis === "x" ? -1 : 1, axis === "y" ? -1 : 1, axis === "z" ? -1 : 1).multiply(source.matrix);
+  const reflected = new THREE24.Matrix4().makeScale(axis === "x" ? -1 : 1, axis === "y" ? -1 : 1, axis === "z" ? -1 : 1).multiply(source.matrix);
   if (!reflected.elements.every(Number.isFinite) || reflected.determinant() === 0) {
     throw new RangeError(`mirror("${name}"): source requires a finite, nonsingular local transform.`);
   }
-  const position = new THREE21.Vector3;
-  const quaternion = new THREE21.Quaternion;
-  const scale = new THREE21.Vector3;
+  const position = new THREE24.Vector3;
+  const quaternion = new THREE24.Quaternion;
+  const scale = new THREE24.Vector3;
   reflected.decompose(position, quaternion, scale);
-  const recomposed = new THREE21.Matrix4().compose(position, quaternion, scale);
+  const recomposed = new THREE24.Matrix4().compose(position, quaternion, scale);
   if (reflected.elements.some((value, i) => Math.abs(value - recomposed.elements[i]) > 0.00000001 * Math.max(1, Math.abs(value)))) {
     throw new RangeError(`mirror("${name}"): local shear cannot be represented by a reflected TRS.`);
   }
@@ -17462,13 +19418,13 @@ function mergeVertices(geometry, opts = {}) {
   const { tolerance = 0.0001, positionOnly = false } = typeof opts === "number" ? { tolerance: opts } : opts;
   if (!positionOnly)
     return threeMergeVertices(geometry, tolerance);
-  const stripped = new THREE21.BufferGeometry;
+  const stripped = new THREE24.BufferGeometry;
   const pos = geometry.getAttribute("position");
   if (!pos)
     return geometry;
-  stripped.setAttribute("position", new THREE21.BufferAttribute(new Float32Array(pos.array), pos.itemSize, pos.normalized));
+  stripped.setAttribute("position", new THREE24.BufferAttribute(new Float32Array(pos.array), pos.itemSize, pos.normalized));
   if (geometry.index) {
-    stripped.setIndex(new THREE21.BufferAttribute(new Uint32Array(geometry.index.array), 1));
+    stripped.setIndex(new THREE24.BufferAttribute(new Uint32Array(geometry.index.array), 1));
   }
   return threeMergeVertices(stripped, tolerance);
 }
@@ -17503,8 +19459,8 @@ function subdivide(geometry, iterations = 1, opts = {}) {
   const { weld = true, preserveUV = false, ...subOpts } = opts;
   const prepared = geometry.clone();
   prepared.computeBoundingBox();
-  const center = prepared.boundingBox.getCenter(new THREE21.Vector3);
-  const extent = prepared.boundingBox.getSize(new THREE21.Vector3);
+  const center = prepared.boundingBox.getCenter(new THREE24.Vector3);
+  const extent = prepared.boundingBox.getSize(new THREE24.Vector3);
   const size = Math.max(extent.x, extent.y, extent.z);
   const normalizationScale = size > 0 ? 1e4 / size : 1;
   if (!Number.isFinite(normalizationScale) || !center.toArray().every(Number.isFinite))
@@ -17534,13 +19490,13 @@ function subdivide(geometry, iterations = 1, opts = {}) {
         const values = new Float32Array(attribute.count);
         for (let i = 0;i < attribute.count; i++)
           values[i] = decoded[i * 4 + component];
-        input.setAttribute(lane, new THREE21.BufferAttribute(values, 1));
+        input.setAttribute(lane, new THREE24.BufferAttribute(values, 1));
         lanes.push(lane);
       }
       input.deleteAttribute(name);
       fourthComponents.push({ name, lanes });
     } else
-      input.setAttribute(name, new THREE21.BufferAttribute(decoded, components));
+      input.setAttribute(name, new THREE24.BufferAttribute(decoded, components));
   }
   for (const targets of Object.values(input.morphAttributes))
     for (let target = 0;target < targets.length; target++) {
@@ -17549,7 +19505,7 @@ function subdivide(geometry, iterations = 1, opts = {}) {
       for (let i = 0;i < attribute.count; i++)
         for (let component = 0;component < 3; component++)
           decoded[i * 3 + component] = attribute.getComponent(i, component);
-      targets[target] = new THREE21.BufferAttribute(decoded, 3);
+      targets[target] = new THREE24.BufferAttribute(decoded, 3);
     }
   if (preserveUV)
     subOpts.uvSmooth = false;
@@ -17563,7 +19519,7 @@ function subdivide(geometry, iterations = 1, opts = {}) {
         values[i * 4 + component] = lane.getX(i);
       output.deleteAttribute(lanes[component]);
     }
-    output.setAttribute(name, new THREE21.BufferAttribute(values, 4));
+    output.setAttribute(name, new THREE24.BufferAttribute(values, 4));
   }
   output.scale(1 / normalizationScale, 1 / normalizationScale, 1 / normalizationScale).translate(center.x, center.y, center.z);
   output.userData = structuredClone(geometry.userData);
@@ -17628,9 +19584,9 @@ function assertTubeRadius(radius) {
 }
 function curveToMesh(points, radius, tubularSegments = 32, radialSegments = 8, closed = false) {
   assertTubeRadius(radius);
-  const vectors = points.map((p) => new THREE21.Vector3(p[0], p[1], p[2]));
-  const curve = new THREE21.CatmullRomCurve3(vectors, closed);
-  return new THREE21.TubeGeometry(curve, tubularSegments, radius, radialSegments, closed);
+  const vectors = points.map((p) => new THREE24.Vector3(p[0], p[1], p[2]));
+  const curve = new THREE24.CatmullRomCurve3(vectors, closed);
+  return new THREE24.TubeGeometry(curve, tubularSegments, radius, radialSegments, closed);
 }
 function normalizeSurfaceNormals(geo) {
   const normal = geo.getAttribute("normal");
@@ -17661,15 +19617,15 @@ function lathe(profile, segments = 12) {
 }
 function revolveGeo(profile, options = {}) {
   const { angle = Math.PI * 2, axis = [0, 1, 0], segments = 12 } = options;
-  const points2d = profile.map((p) => new THREE21.Vector2(p[0], p[1]));
-  const geo = normalizeSurfaceNormals(new THREE21.LatheGeometry(points2d, segments, 0, angle));
-  const n = new THREE21.Vector3(axis[0], axis[1], axis[2]);
+  const points2d = profile.map((p) => new THREE24.Vector2(p[0], p[1]));
+  const geo = normalizeSurfaceNormals(new THREE24.LatheGeometry(points2d, segments, 0, angle));
+  const n = new THREE24.Vector3(axis[0], axis[1], axis[2]);
   if (n.lengthSq() < 0.000000000001) {
     throw new Error(`revolveGeo: axis must be a non-zero vector (got [${axis.join(",")}]).`);
   }
   n.normalize();
   if (n.x !== 0 || n.y !== 1 || n.z !== 0) {
-    const q = new THREE21.Quaternion().setFromUnitVectors(new THREE21.Vector3(0, 1, 0), n);
+    const q = new THREE24.Quaternion().setFromUnitVectors(new THREE24.Vector3(0, 1, 0), n);
     geo.applyQuaternion(q);
   }
   return geo;
@@ -17685,9 +19641,9 @@ function pipeAlongPath(points, radius, options = {}) {
     const smoothed = [];
     smoothed.push(points[0]);
     for (let i = 1;i < points.length - 1; i++) {
-      const prev = new THREE21.Vector3(...points[i - 1]);
-      const cur = new THREE21.Vector3(...points[i]);
-      const next = new THREE21.Vector3(...points[i + 1]);
+      const prev = new THREE24.Vector3(...points[i - 1]);
+      const cur = new THREE24.Vector3(...points[i]);
+      const next = new THREE24.Vector3(...points[i + 1]);
       const inDir = cur.clone().sub(prev);
       const outDir = next.clone().sub(cur);
       const inLen = inDir.length();
@@ -17705,12 +19661,12 @@ function pipeAlongPath(points, radius, options = {}) {
   return curveToMesh(pathPoints, radius, tubularSegments, radialSegments, closed);
 }
 function bezierCurve(controlPoints, samples = 32) {
-  const vecs = controlPoints.map((p) => new THREE21.Vector3(p[0], p[1], p[2]));
+  const vecs = controlPoints.map((p) => new THREE24.Vector3(p[0], p[1], p[2]));
   let curve;
   if (vecs.length === 3) {
-    curve = new THREE21.QuadraticBezierCurve3(vecs[0], vecs[1], vecs[2]);
+    curve = new THREE24.QuadraticBezierCurve3(vecs[0], vecs[1], vecs[2]);
   } else if (vecs.length === 4) {
-    curve = new THREE21.CubicBezierCurve3(vecs[0], vecs[1], vecs[2], vecs[3]);
+    curve = new THREE24.CubicBezierCurve3(vecs[0], vecs[1], vecs[2], vecs[3]);
   } else {
     throw new Error(`bezierCurve: need 3 or 4 control points, got ${vecs.length}`);
   }
@@ -17723,7 +19679,7 @@ var init_ops = __esm(() => {
 });
 
 // src/geometry.ts
-import * as THREE22 from "three";
+import * as THREE25 from "three";
 function finiteArray(values, label, length) {
   const result = Array.from(values);
   if (length !== undefined && result.length !== length)
@@ -17737,8 +19693,8 @@ function meshGeo(data) {
   if (positions.length < 9 || positions.length % 3)
     throw new Error("meshGeo positions: need at least three xyz vertices");
   const count = positions.length / 3;
-  const geometry = new THREE22.BufferGeometry;
-  geometry.setAttribute("position", new THREE22.Float32BufferAttribute(positions, 3));
+  const geometry = new THREE25.BufferGeometry;
+  geometry.setAttribute("position", new THREE25.Float32BufferAttribute(positions, 3));
   if (data.indices) {
     const indices = Array.from(data.indices);
     if (!indices.length || indices.length % 3)
@@ -17750,7 +19706,7 @@ function meshGeo(data) {
     throw new Error("meshGeo: non-indexed positions must form complete triangles");
   if (data.normals) {
     const normals = finiteArray(data.normals, "meshGeo normals", count * 3);
-    geometry.setAttribute("normal", new THREE22.Float32BufferAttribute(normals, 3));
+    geometry.setAttribute("normal", new THREE25.Float32BufferAttribute(normals, 3));
     for (let i = 0;i < count; i++)
       if (Math.hypot(normals[i * 3], normals[i * 3 + 1], normals[i * 3 + 2]) === 0)
         throw new Error("meshGeo normals: zero-length normal");
@@ -17758,36 +19714,36 @@ function meshGeo(data) {
   } else
     geometry.computeVertexNormals();
   if (data.uvs)
-    geometry.setAttribute("uv", new THREE22.Float32BufferAttribute(finiteArray(data.uvs, "meshGeo uvs", count * 2), 2));
+    geometry.setAttribute("uv", new THREE25.Float32BufferAttribute(finiteArray(data.uvs, "meshGeo uvs", count * 2), 2));
   if (data.tangents) {
     const tangents = finiteArray(data.tangents, "meshGeo tangents", count * 4);
     for (let i = 0;i < count; i++) {
       if (Math.abs(Math.hypot(tangents[i * 4], tangents[i * 4 + 1], tangents[i * 4 + 2]) - 1) > 0.0001 || Math.abs(tangents[i * 4 + 3]) !== 1)
         throw new Error("meshGeo tangents: expected unit xyz and handedness +1 or -1");
     }
-    geometry.setAttribute("tangent", new THREE22.Float32BufferAttribute(tangents, 4));
+    geometry.setAttribute("tangent", new THREE25.Float32BufferAttribute(tangents, 4));
   }
   geometry.computeBoundingBox();
   geometry.computeBoundingSphere();
   return geometry;
 }
 function boundsScale(bounds) {
-  const size = bounds.getSize(new THREE22.Vector3);
+  const size = bounds.getSize(new THREE25.Vector3);
   const scale = Math.hypot(size.x, size.y, size.z);
   if (!Number.isFinite(scale))
     throw new Error("Geometry position extent must be finite");
   return scale;
 }
 function positionFrame(position) {
-  const bounds = new THREE22.Box3;
-  const point = new THREE22.Vector3;
+  const bounds = new THREE25.Box3;
+  const point = new THREE25.Vector3;
   for (let i = 0;i < position.count; i++) {
     point.fromBufferAttribute(position, i);
     if ([point.x, point.y, point.z].every(Number.isFinite))
       bounds.expandByPoint(point);
   }
   return {
-    origin: bounds.isEmpty() ? new THREE22.Vector3 : bounds.min,
+    origin: bounds.isEmpty() ? new THREE25.Vector3 : bounds.min,
     scale: boundsScale(bounds)
   };
 }
@@ -17828,7 +19784,7 @@ function geometryDiagnostics(geometry, tolerance) {
   const ids = [];
   const points = new Map;
   const finite = [];
-  const point = new THREE22.Vector3;
+  const point = new THREE25.Vector3;
   for (let i = 0;i < p.count; i++) {
     point.fromBufferAttribute(p, i);
     finite[i] = [point.x, point.y, point.z].every(Number.isFinite);
@@ -17841,7 +19797,7 @@ function geometryDiagnostics(geometry, tolerance) {
   }
   const indices = geometry.index ? Array.from(geometry.index.array) : Array.from({ length: p.count }, (_, i) => i);
   const edges = new Map;
-  const a = new THREE22.Vector3, b = new THREE22.Vector3, c = new THREE22.Vector3;
+  const a = new THREE25.Vector3, b = new THREE25.Vector3, c = new THREE25.Vector3;
   for (let i = 0;i < indices.length; i += 3) {
     result.triangles++;
     const triangle = indices.slice(i, i + 3);
@@ -17915,8 +19871,8 @@ function parametricSurface(sample, options = {}) {
   if (orientation !== "uv" && orientation !== "vu")
     throw new Error("parametricSurface orientation must be uv or vu");
   const positions = [], uvs = [], indices = [];
-  const sampledBounds = new THREE22.Box3;
-  const sampledPoint = new THREE22.Vector3;
+  const sampledBounds = new THREE25.Box3;
+  const sampledPoint = new THREE25.Vector3;
   for (let j = 0;j <= nv; j++)
     for (let i = 0;i <= nu; i++) {
       const point = sample(u[0] + (u[1] - u[0]) * i / nu, v[0] + (v[1] - v[0]) * j / nv);
@@ -17958,8 +19914,8 @@ function parametricSurface(sample, options = {}) {
     const sums = new Map;
     for (let i = 0;i < normal.count; i++) {
       const id = find(i);
-      const sum = sums.get(id) ?? new THREE22.Vector3;
-      sum.add(new THREE22.Vector3().fromBufferAttribute(normal, i));
+      const sum = sums.get(id) ?? new THREE25.Vector3;
+      sum.add(new THREE25.Vector3().fromBufferAttribute(normal, i));
       sums.set(id, sum);
     }
     for (let i = 0;i < normal.count; i++) {
@@ -17984,13 +19940,13 @@ function creaseNormals(geometry, options = {}) {
   const keys = [];
   const faces = [];
   for (let i = 0;i < position.count; i += 3) {
-    const a = new THREE22.Vector3().fromBufferAttribute(position, i);
-    const b = new THREE22.Vector3().fromBufferAttribute(position, i + 1);
-    const c = new THREE22.Vector3().fromBufferAttribute(position, i + 2);
+    const a = new THREE25.Vector3().fromBufferAttribute(position, i);
+    const b = new THREE25.Vector3().fromBufferAttribute(position, i + 1);
+    const c = new THREE25.Vector3().fromBufferAttribute(position, i + 2);
     const face = b.sub(a).divideScalar(scale).cross(c.sub(a).divideScalar(scale)).normalize();
     faces.push(face);
     for (let j = i;j < i + 3; j++) {
-      const point = new THREE22.Vector3().fromBufferAttribute(position, j);
+      const point = new THREE25.Vector3().fromBufferAttribute(position, j);
       if (![point.x, point.y, point.z].every(Number.isFinite))
         throw new Error("creaseNormals positions must be finite");
       const key = positionKey(point, frame.origin, tolerance);
@@ -18001,15 +19957,15 @@ function creaseNormals(geometry, options = {}) {
     }
   }
   const normals = new Float32Array(position.count * 3);
-  const threshold = Math.cos(THREE22.MathUtils.degToRad(angle));
+  const threshold = Math.cos(THREE25.MathUtils.degToRad(angle));
   for (let i = 0;i < position.count; i++) {
-    const face = faces[Math.floor(i / 3)], sum = new THREE22.Vector3;
+    const face = faces[Math.floor(i / 3)], sum = new THREE25.Vector3;
     for (const other of adjacent.get(keys[i]))
       if (face.dot(faces[other]) >= threshold - 0.000000000001)
         sum.add(faces[other]);
     sum.normalize().toArray(normals, i * 3);
   }
-  out.setAttribute("normal", new THREE22.BufferAttribute(normals, 3));
+  out.setAttribute("normal", new THREE25.BufferAttribute(normals, 3));
   out.deleteAttribute("tangent");
   out.computeBoundingBox();
   out.computeBoundingSphere();
@@ -18021,20 +19977,20 @@ var init_geometry = __esm(() => {
 });
 
 // src/deformation-normals.ts
-import * as THREE23 from "three";
+import * as THREE26 from "three";
 function recomputeDeformedNormals(source, output) {
   const original = source.getAttribute("position");
   const authored = source.getAttribute("normal");
   const position = output.getAttribute("position");
   const bounds = (attribute) => {
-    const box = new THREE23.Box3().setFromBufferAttribute(attribute);
+    const box = new THREE26.Box3().setFromBufferAttribute(attribute);
     return {
-      center: box.getCenter(new THREE23.Vector3),
-      size: box.getSize(new THREE23.Vector3).length() || 1
+      center: box.getCenter(new THREE26.Vector3),
+      size: box.getSize(new THREE26.Vector3).length() || 1
     };
   };
   const before = bounds(original), after = bounds(position);
-  const point = new THREE23.Vector3, normal = new THREE23.Vector3;
+  const point = new THREE26.Vector3, normal = new THREE26.Vector3;
   const quantized = (attribute, index, frame) => {
     point.fromBufferAttribute(attribute, index).sub(frame.center).divideScalar(frame.size);
     return point.toArray().map((value) => Math.round(value * 1e7)).join(",");
@@ -18057,7 +20013,7 @@ function recomputeDeformedNormals(source, output) {
   const sums = new Float64Array(classes.size * 3);
   const index = output.index;
   const corners = index?.count ?? position.count;
-  const a = new THREE23.Vector3, b = new THREE23.Vector3, c = new THREE23.Vector3;
+  const a = new THREE26.Vector3, b = new THREE26.Vector3, c = new THREE26.Vector3;
   for (let t = 0;t < corners; t += 3) {
     const ia = index ? index.getX(t) : t;
     const ib = index ? index.getX(t + 1) : t + 1;
@@ -18078,17 +20034,17 @@ function recomputeDeformedNormals(source, output) {
     const offset = ids[i] * 3;
     normal.set(sums[offset], sums[offset + 1], sums[offset + 2]).normalize().toArray(normals, i * 3);
   }
-  output.setAttribute("normal", new THREE23.BufferAttribute(normals, 3));
+  output.setAttribute("normal", new THREE26.BufferAttribute(normals, 3));
 }
 var init_deformation_normals = () => {};
 
 // src/deform.ts
-import * as THREE24 from "three";
+import * as THREE27 from "three";
 function geometryFrameMatrix(frame = {}) {
   const origin = frame.origin ?? [0, 0, 0], rotation = frame.rotation ?? [0, 0, 0];
   if (origin.length !== 3 || rotation.length !== 3 || ![...origin, ...rotation].every(Number.isFinite))
     throw new Error("geometry frame requires finite xyz origin and rotation");
-  return new THREE24.Matrix4().compose(new THREE24.Vector3(...origin), new THREE24.Quaternion().setFromEuler(new THREE24.Euler(...rotation.map(THREE24.MathUtils.degToRad), "XYZ")), new THREE24.Vector3(1, 1, 1));
+  return new THREE27.Matrix4().compose(new THREE27.Vector3(...origin), new THREE27.Quaternion().setFromEuler(new THREE27.Euler(...rotation.map(THREE27.MathUtils.degToRad), "XYZ")), new THREE27.Vector3(1, 1, 1));
 }
 function deform(geometry, options, map) {
   const source = geometry.getAttribute("position");
@@ -18115,7 +20071,7 @@ function deform(geometry, options, map) {
         throw new Error("deformation normals must be finite");
   }
   const matrix = geometryFrameMatrix(options.frame), inverse = matrix.clone().invert();
-  const points = Array.from({ length: source.count }, (_, i) => new THREE24.Vector3().fromBufferAttribute(source, i).applyMatrix4(inverse));
+  const points = Array.from({ length: source.count }, (_, i) => new THREE27.Vector3().fromBufferAttribute(source, i).applyMatrix4(inverse));
   if (points.some((p) => ![p.x, p.y, p.z].every(Number.isFinite)))
     throw new Error("deformation positions must be finite");
   let low = Infinity, high = -Infinity;
@@ -18138,7 +20094,7 @@ function deform(geometry, options, map) {
     const point = points[i];
     if (point.y < low - epsilon || point.y > high + epsilon)
       continue;
-    const t = length > 0 ? THREE24.MathUtils.clamp((point.y - low) / length, 0, 1) : 0;
+    const t = length > 0 ? THREE27.MathUtils.clamp((point.y - low) / length, 0, 1) : 0;
     const weight = options.falloff?.(t) ?? 1;
     if (!Number.isFinite(weight) || weight < 0 || weight > 1)
       throw new Error("deformation falloff must return a finite weight between 0 and 1");
@@ -18172,31 +20128,31 @@ function deform(geometry, options, map) {
 function twist(geometry, options) {
   if (!Number.isFinite(options.angle))
     throw new Error("twist angle must be finite degrees");
-  return deform(geometry, options, (p, t) => p.applyAxisAngle(new THREE24.Vector3(0, 1, 0), THREE24.MathUtils.degToRad(options.angle) * t));
+  return deform(geometry, options, (p, t) => p.applyAxisAngle(new THREE27.Vector3(0, 1, 0), THREE27.MathUtils.degToRad(options.angle) * t));
 }
 function bend(geometry, options) {
   if (!Number.isFinite(options.angle))
     throw new Error("bend angle must be finite degrees");
-  const angle = THREE24.MathUtils.degToRad(options.angle);
+  const angle = THREE27.MathUtils.degToRad(options.angle);
   return deform(geometry, options, (p, t, low, length) => {
     if (Math.abs(angle) < 0.0000000001 || length === 0)
       return p;
     const radius = length / angle, theta = angle * t;
-    return new THREE24.Vector3(radius - (radius - p.x) * Math.cos(theta), low + (radius - p.x) * Math.sin(theta), p.z);
+    return new THREE27.Vector3(radius - (radius - p.x) * Math.cos(theta), low + (radius - p.x) * Math.sin(theta), p.z);
   });
 }
 function taper(geometry, options) {
   const start = options.startScale ?? [1, 1], end = options.endScale;
   if (start.length !== 2 || end.length !== 2 || ![...start, ...end].every((n) => Number.isFinite(n) && n > 0))
     throw new Error("taper scales must be two finite positive values");
-  return deform(geometry, options, (p, t) => p.set(p.x * THREE24.MathUtils.lerp(start[0], end[0], t), p.y, p.z * THREE24.MathUtils.lerp(start[1], end[1], t)));
+  return deform(geometry, options, (p, t) => p.set(p.x * THREE27.MathUtils.lerp(start[0], end[0], t), p.y, p.z * THREE27.MathUtils.lerp(start[1], end[1], t)));
 }
 function displace(geometry, offset, options = {}) {
   return deform(geometry, options, (p, t) => {
     const delta = offset([p.x, p.y, p.z], t);
     if (delta.length !== 3 || !delta.every(Number.isFinite))
       throw new Error("displace callback must return three finite offsets");
-    return p.add(new THREE24.Vector3(...delta));
+    return p.add(new THREE27.Vector3(...delta));
   });
 }
 var init_deform = __esm(() => {
@@ -18204,7 +20160,7 @@ var init_deform = __esm(() => {
 });
 
 // src/sweep.ts
-import * as THREE25 from "three";
+import * as THREE28 from "three";
 function rejectHoles(value, label) {
   if ("holes" in value && value.holes !== undefined)
     throw new AuthoringDiagnosticError("PROFILE_HOLES_UNSUPPORTED", `${label}: holes are unsupported. Use extrudeProfile for a holed cross-section with optional twist/taper; independently varying contours need explicit geometry or solid subtraction.`);
@@ -18212,9 +20168,9 @@ function rejectHoles(value, label) {
 function profilePoints(profile) {
   if (profile.length < 3 || profile.some((p) => p.length !== 2 || !p.every(Number.isFinite)))
     throw new Error("profile requires at least three finite xy points");
-  const points = profile.map((p) => new THREE25.Vector2(...p));
-  const bounds = new THREE25.Box2().setFromPoints(points);
-  const extent = bounds.getSize(new THREE25.Vector2).length();
+  const points = profile.map((p) => new THREE28.Vector2(...p));
+  const bounds = new THREE28.Box2().setFromPoints(points);
+  const extent = bounds.getSize(new THREE28.Vector2).length();
   if (!(extent > 0) || !Number.isFinite(extent))
     throw new Error("profile requires a finite nonzero extent");
   const normalized = points.map((p) => p.clone().sub(bounds.min).divideScalar(extent));
@@ -18237,7 +20193,7 @@ function profilePoints(profile) {
         throw new Error("profile self-intersects or touches itself");
     }
   }
-  const area = THREE25.ShapeUtils.area(normalized);
+  const area = THREE28.ShapeUtils.area(normalized);
   if (Math.abs(area) < 0.000000000001)
     throw new Error("profile area must be nonzero");
   if (area < 0)
@@ -18246,7 +20202,7 @@ function profilePoints(profile) {
 }
 function buildLoft(rings, profiles, closed, cap, firstFrameForward) {
   const n = rings[0].length, positions = [], uvs = [], indices = [];
-  const centers = rings.map((r) => r.reduce((sum, p) => sum.add(p), new THREE25.Vector3).multiplyScalar(1 / n));
+  const centers = rings.map((r) => r.reduce((sum, p) => sum.add(p), new THREE28.Vector3).multiplyScalar(1 / n));
   const lengths = [0];
   for (let i = 1;i < centers.length; i++)
     lengths.push(lengths[i - 1] + centers[i].distanceTo(centers[i - 1]));
@@ -18286,13 +20242,13 @@ function buildLoft(rings, profiles, closed, cap, firstFrameForward) {
     for (const station of [0, rings.length - 1]) {
       const ring = rings[station], profile = profiles[station];
       const start = positions.length / 3;
-      const bounds = new THREE25.Box2().setFromPoints(profile);
-      const size = bounds.getSize(new THREE25.Vector2);
+      const bounds = new THREE28.Box2().setFromPoints(profile);
+      const size = bounds.getSize(new THREE28.Vector2);
       for (let j = 0;j < n; j++) {
         positions.push(...ring[j].toArray());
         uvs.push((profile[j].x - bounds.min.x) / (size.x || 1), (profile[j].y - bounds.min.y) / (size.y || 1));
       }
-      for (const tri of THREE25.ShapeUtils.triangulateShape(profile, [])) {
+      for (const tri of THREE28.ShapeUtils.triangulateShape(profile, [])) {
         if (station === 0)
           indices.push(...tri.map((j) => start + j));
         else
@@ -18306,14 +20262,14 @@ function buildLoft(rings, profiles, closed, cap, firstFrameForward) {
   const normal = out.getAttribute("normal");
   for (let i = 0;i < rings.length; i++) {
     const a = i * (n + 1), b = a + n;
-    const sum = new THREE25.Vector3().fromBufferAttribute(normal, a).add(new THREE25.Vector3().fromBufferAttribute(normal, b)).normalize();
+    const sum = new THREE28.Vector3().fromBufferAttribute(normal, a).add(new THREE28.Vector3().fromBufferAttribute(normal, b)).normalize();
     normal.setXYZ(a, sum.x, sum.y, sum.z);
     normal.setXYZ(b, sum.x, sum.y, sum.z);
   }
   if (closed)
     for (let j = 0;j <= n; j++) {
       const a = j, b = (rings.length - 1) * (n + 1) + j;
-      const sum = new THREE25.Vector3().fromBufferAttribute(normal, a).add(new THREE25.Vector3().fromBufferAttribute(normal, b)).normalize();
+      const sum = new THREE28.Vector3().fromBufferAttribute(normal, a).add(new THREE28.Vector3().fromBufferAttribute(normal, b)).normalize();
       normal.setXYZ(a, sum.x, sum.y, sum.z);
       normal.setXYZ(b, sum.x, sum.y, sum.z);
     }
@@ -18330,8 +20286,8 @@ function loftProfiles(sections, options = {}) {
   if (profiles.some((p) => p.length !== profiles[0].length))
     throw new Error("loftProfiles sections must have the same point count and correspondence");
   const frames = sections.map((section) => geometryFrameMatrix(section.frame));
-  const rings = profiles.map((profile, i) => profile.map((p) => new THREE25.Vector3(p.x, 0, p.y).applyMatrix4(frames[i])));
-  const out = buildLoft(rings, profiles, false, options.cap ?? true, new THREE25.Vector3(0, 1, 0).transformDirection(frames[0]));
+  const rings = profiles.map((profile, i) => profile.map((p) => new THREE28.Vector3(p.x, 0, p.y).applyMatrix4(frames[i])));
+  const out = buildLoft(rings, profiles, false, options.cap ?? true, new THREE28.Vector3(0, 1, 0).transformDirection(frames[0]));
   out.userData.kilnGeometryWarnings = [
     {
       code: "LOFT_SELF_INTERSECTION_UNCHECKED",
@@ -18349,8 +20305,8 @@ function sweepProfile(profile, path, options = {}) {
     throw new Error("closed sweep twist must be a multiple of 360 degrees");
   if (path.length < (closed ? 3 : 2) || path.some((p) => p.length !== 3 || !p.every(Number.isFinite)))
     throw new Error("sweepProfile requires finite path points (two open or three closed)");
-  const stations = path.map((p) => new THREE25.Vector3(...p));
-  const pathExtent = new THREE25.Box3().setFromPoints(stations).getSize(new THREE25.Vector3).length();
+  const stations = path.map((p) => new THREE28.Vector3(...p));
+  const pathExtent = new THREE28.Box3().setFromPoints(stations).getSize(new THREE28.Vector3).length();
   if (!(pathExtent > 0) || !Number.isFinite(pathExtent))
     throw new Error("sweepProfile path stations must be distinct with finite extent");
   const pathTolerance = pathExtent * 0.0000000001;
@@ -18391,7 +20347,7 @@ function sweepProfile(profile, path, options = {}) {
       });
     return incoming.clone().add(outgoing).normalize();
   });
-  const up = options.up ? new THREE25.Vector3(...options.up) : Math.abs(tangents[0].z) < 0.9 ? new THREE25.Vector3(0, 0, 1) : new THREE25.Vector3(1, 0, 0);
+  const up = options.up ? new THREE28.Vector3(...options.up) : Math.abs(tangents[0].z) < 0.9 ? new THREE28.Vector3(0, 0, 1) : new THREE28.Vector3(1, 0, 0);
   const upLength = Math.hypot(up.x, up.y, up.z);
   if (!(upLength > 0) || !Number.isFinite(upLength))
     throw new Error("sweepProfile up must be a finite nonzero vector");
@@ -18408,7 +20364,7 @@ function sweepProfile(profile, path, options = {}) {
   }
   const distances = [0];
   for (let i = 1;i < stations.length; i++) {
-    z = z.clone().applyQuaternion(new THREE25.Quaternion().setFromUnitVectors(tangents[i - 1], tangents[i]));
+    z = z.clone().applyQuaternion(new THREE28.Quaternion().setFromUnitVectors(tangents[i - 1], tangents[i]));
     normals.push(z);
     distances.push(distances[i - 1] + stations[i].distanceTo(stations[i - 1]));
   }
@@ -18418,7 +20374,7 @@ function sweepProfile(profile, path, options = {}) {
     correction = Math.atan2(tangents[0].dot(normals[normals.length - 1].clone().cross(normals[0])), normals[normals.length - 1].dot(normals[0]));
   const rings = stations.map((station, i) => {
     const tangent = tangents[i], t = distances[i] / total;
-    const axisZ = normals[i].clone().applyAxisAngle(tangent, (correction + THREE25.MathUtils.degToRad(twist)) * t);
+    const axisZ = normals[i].clone().applyAxisAngle(tangent, (correction + THREE28.MathUtils.degToRad(twist)) * t);
     const axisX = tangent.clone().cross(axisZ).normalize(), scale = scales[i];
     return points.map((p) => station.clone().addScaledVector(axisX, p.x * scale[0]).addScaledVector(axisZ, p.y * scale[1]));
   });
@@ -18439,7 +20395,7 @@ var init_sweep = __esm(() => {
 });
 
 // src/solids.ts
-import * as THREE26 from "three";
+import * as THREE29 from "three";
 async function getManifoldModule() {
   if (_module)
     return _module;
@@ -18469,10 +20425,10 @@ function computationFrame(parts) {
         meshes.push(mesh);
     });
   }
-  const origin = meshes.length ? new THREE26.Vector3().setFromMatrixPosition(meshes[0].matrixWorld) : new THREE26.Vector3;
+  const origin = meshes.length ? new THREE29.Vector3().setFromMatrixPosition(meshes[0].matrixWorld) : new THREE29.Vector3;
   const matrices = new Map;
-  const bounds = new THREE26.Box3;
-  const point = new THREE26.Vector3;
+  const bounds = new THREE29.Box3;
+  const point = new THREE29.Vector3;
   for (const mesh of meshes) {
     const matrix = mesh.matrixWorld.clone();
     matrix.elements[12] -= origin.x;
@@ -18489,11 +20445,11 @@ function computationFrame(parts) {
       bounds.expandByPoint(point);
     }
   }
-  const size = bounds.getSize(new THREE26.Vector3);
+  const size = bounds.getSize(new THREE29.Vector3);
   const scale = Math.hypot(size.x, size.y, size.z);
   if (!Number.isFinite(scale))
     throw new Error("CSG: combined operand extent must be finite");
-  return { origin, center: bounds.getCenter(new THREE26.Vector3), scale: scale || 1, matrices };
+  return { origin, center: bounds.getCenter(new THREE29.Vector3), scale: scale || 1, matrices };
 }
 function retainNotes(target, notes) {
   if (!Array.isArray(notes))
@@ -18573,7 +20529,7 @@ function threeToManifold(src, mod, label, context) {
       else
         context.missingUV.add(mesh.name || label);
     }
-    const point = new THREE26.Vector3;
+    const point = new THREE29.Vector3;
     for (let i = 0;i < position.count; i++) {
       point.fromBufferAttribute(position, i).applyMatrix4(context.frame.matrices.get(mesh)).sub(context.frame.center).divideScalar(context.frame.scale);
       if (![point.x, point.y, point.z].every((n) => Number.isFinite(Math.fround(n))))
@@ -18716,11 +20672,11 @@ function solidMeshToGeometry({ mesh, collapsed }, opts = {}) {
     if (uvs)
       uvs.set(mesh.vertProperties.subarray(i + 3, i + 5), v * 2);
   }
-  const geometry = new THREE26.BufferGeometry;
-  geometry.setAttribute("position", new THREE26.BufferAttribute(positions, 3));
-  geometry.setIndex(new THREE26.BufferAttribute(new Uint32Array(mesh.triVerts), 1));
+  const geometry = new THREE29.BufferGeometry;
+  geometry.setAttribute("position", new THREE29.BufferAttribute(positions, 3));
+  geometry.setIndex(new THREE29.BufferAttribute(new Uint32Array(mesh.triVerts), 1));
   if (uvs)
-    geometry.setAttribute("uv", new THREE26.BufferAttribute(uvs, 2));
+    geometry.setAttribute("uv", new THREE29.BufferAttribute(uvs, 2));
   const out = opts.smooth ? geometry : geometry.toNonIndexed();
   out.computeVertexNormals();
   if (opts.smooth && uvs) {
@@ -18751,7 +20707,7 @@ function firstMaterial(src) {
     if (!material && mesh.isMesh)
       material = Array.isArray(mesh.material) ? mesh.material[0] : mesh.material;
   });
-  return material ?? new THREE26.MeshStandardMaterial;
+  return material ?? new THREE29.MeshStandardMaterial;
 }
 function outputMesh(result, name, parts, opts, context, isHull) {
   const materialized = materializeSolid(result);
@@ -18810,7 +20766,7 @@ function outputMesh(result, name, parts, opts, context, isHull) {
   retainNotes(context.geometryWarnings, geometry.userData.kilnGeometryWarnings);
   if (context.geometryWarnings.size)
     geometry.userData.kilnGeometryWarnings = [...context.geometryWarnings.values()];
-  const output = new THREE26.Mesh(geometry, context.preserve && !isHull && materials.length ? materials : firstMaterial(parts[0]));
+  const output = new THREE29.Mesh(geometry, context.preserve && !isHull && materials.length ? materials : firstMaterial(parts[0]));
   output.name = `Mesh_${name}`;
   output.position.copy(context.frame.origin);
   return output;
@@ -19165,1213 +21121,18 @@ var init_profile = __esm(() => {
   };
 });
 
-// src/textures.ts
-import * as THREE27 from "three";
-async function loadTexture(source, opts = {}) {
-  let bytes;
-  if (typeof source === "string") {
-    const fs = await import("node:fs");
-    const path = await import("node:path");
-    const abs = path.isAbsolute(source) ? source : path.resolve(source);
-    bytes = new Uint8Array(fs.readFileSync(abs));
-  } else if (typeof Buffer !== "undefined" && Buffer.isBuffer(source)) {
-    bytes = new Uint8Array(source);
-  } else {
-    bytes = source;
-  }
-  const mime = sniffMime(bytes);
-  const sharp = (await import("sharp")).default;
-  const img = sharp(bytes);
-  const meta = await img.metadata();
-  const { data } = await img.ensureAlpha().raw({ depth: "uchar" }).toBuffer({ resolveWithObject: true });
-  if (!meta.width || !meta.height) {
-    throw new Error("loadTexture: could not read image dimensions");
-  }
-  const tex = new THREE27.DataTexture(new Uint8Array(data), meta.width, meta.height, THREE27.RGBAFormat, THREE27.UnsignedByteType);
-  const usage = opts.usage ?? "albedo";
-  const colorSpace = usage === "albedo" || usage === "emissive" ? "srgb" : "linear";
-  let hasAlpha = false;
-  for (let offset = 3;offset < data.length; offset += 4) {
-    if ((data[offset] ?? 255) < 255) {
-      hasAlpha = true;
-      break;
-    }
-  }
-  tex.colorSpace = colorSpace === "srgb" ? THREE27.SRGBColorSpace : THREE27.NoColorSpace;
-  if (opts.name)
-    tex.name = opts.name;
-  tex.needsUpdate = true;
-  tex.wrapS = THREE27.RepeatWrapping;
-  tex.wrapT = THREE27.RepeatWrapping;
-  tex.minFilter = THREE27.LinearMipmapLinearFilter;
-  tex.magFilter = THREE27.LinearFilter;
-  tex.generateMipmaps = true;
-  tex.userData["encoded"] = {
-    mime,
-    bytes
-  };
-  tex.userData["kilnTexture"] = {
-    usage,
-    colorSpace,
-    width: meta.width,
-    height: meta.height,
-    hasAlpha
-  };
-  return tex;
-}
-function sniffMime(bytes) {
-  if (bytes[0] === 137 && bytes[1] === 80 && bytes[2] === 78 && bytes[3] === 71) {
-    return "image/png";
-  }
-  if (bytes[0] === 255 && bytes[1] === 216 && bytes[2] === 255) {
-    return "image/jpeg";
-  }
-  if (bytes[0] === 82 && bytes[1] === 73 && bytes[2] === 70 && bytes[3] === 70 && bytes[8] === 87 && bytes[9] === 69 && bytes[10] === 66 && bytes[11] === 80) {
-    return "image/webp";
-  }
-  return "image/png";
-}
-function textureMetadata(texture) {
-  return texture.userData["kilnTexture"];
-}
-function requireTextureUsage(texture, usage) {
-  const meta = textureMetadata(texture);
-  if (meta && meta.usage !== usage) {
-    throw new TypeError(`Texture ${JSON.stringify(texture.name || "(unnamed)")} was loaded for ${meta.usage}, not ${usage}.`);
-  }
-  texture.colorSpace = usage === "albedo" || usage === "emissive" ? THREE27.SRGBColorSpace : THREE27.NoColorSpace;
-}
-function pbrMaterial(opts = {}) {
-  const mat = new THREE27.MeshStandardMaterial;
-  const isTex = (v) => !!v?.isTexture;
-  if (isTex(opts.albedo)) {
-    requireTextureUsage(opts.albedo, "albedo");
-    mat.map = opts.albedo;
-    mat.color = new THREE27.Color(16777215);
-  } else if (opts.albedo !== undefined) {
-    mat.color = new THREE27.Color(opts.albedo);
-  }
-  if (opts.normal) {
-    requireTextureUsage(opts.normal, "normal");
-    mat.normalMap = opts.normal;
-  }
-  const roughnessTexture = isTex(opts.roughness) ? opts.roughness : undefined;
-  const metalnessTexture = isTex(opts.metalness) ? opts.metalness : undefined;
-  if (opts.metallicRoughness && (roughnessTexture || metalnessTexture)) {
-    throw new AuthoringDiagnosticError("MATERIAL_PACKED_CHANNELS", "Use metallicRoughness for the packed G/B map; do not also pass texture-valued roughness/metalness.");
-  }
-  if (roughnessTexture && metalnessTexture && roughnessTexture !== metalnessTexture) {
-    throw new AuthoringDiagnosticError("MATERIAL_PACKED_CHANNELS", "Separate roughness and metalness textures are ambiguous in glTF. Pack G=roughness/B=metalness and pass metallicRoughness.");
-  }
-  if (roughnessTexture && !metalnessTexture || !roughnessTexture && metalnessTexture) {
-    throw new AuthoringDiagnosticError("MATERIAL_PACKED_CHANNELS", "A texture-valued roughness or metalness must be the same packed G/B texture in both slots, or use metallicRoughness.");
-  }
-  const packedMr = opts.metallicRoughness ?? roughnessTexture;
-  if (packedMr) {
-    requireTextureUsage(packedMr, "metallicRoughness");
-    mat.roughnessMap = packedMr;
-    mat.metalnessMap = packedMr;
-  }
-  if (typeof opts.roughness === "number") {
-    mat.roughness = opts.roughness;
-  } else if (packedMr) {
-    mat.roughness = 1;
-  } else {
-    mat.roughness = 0.8;
-  }
-  if (typeof opts.metalness === "number") {
-    mat.metalness = opts.metalness;
-  } else if (packedMr) {
-    mat.metalness = 1;
-  }
-  if (isTex(opts.emissive)) {
-    requireTextureUsage(opts.emissive, "emissive");
-    mat.emissiveMap = opts.emissive;
-    mat.emissive = new THREE27.Color(16777215);
-  } else if (opts.emissive !== undefined) {
-    mat.emissive = new THREE27.Color(opts.emissive);
-  }
-  if (opts.emissiveIntensity !== undefined) {
-    mat.emissiveIntensity = opts.emissiveIntensity;
-  }
-  if (opts.aoMap) {
-    requireTextureUsage(opts.aoMap, "occlusion");
-    mat.aoMap = opts.aoMap;
-  }
-  if (opts.aoMapIntensity !== undefined)
-    mat.aoMapIntensity = opts.aoMapIntensity;
-  const alphaMode = opts.alphaMode ?? "opaque";
-  if (alphaMode !== "opaque" && alphaMode !== "mask" && alphaMode !== "blend") {
-    throw new AuthoringDiagnosticError("MATERIAL_ALPHA_MODE", 'alphaMode must be one of "opaque", "mask", or "blend".');
-  }
-  if (opts.doubleSided !== undefined && typeof opts.doubleSided !== "boolean") {
-    throw new TypeError("doubleSided must be a boolean when provided.");
-  }
-  if (opts.alphaCutoff !== undefined && alphaMode !== "mask") {
-    throw new TypeError('alphaCutoff is valid only when alphaMode is "mask".');
-  }
-  if (opts.alphaCutoff !== undefined && (!Number.isFinite(opts.alphaCutoff) || opts.alphaCutoff < 0 || opts.alphaCutoff > 1)) {
-    throw new RangeError("alphaCutoff must be a finite number in [0,1].");
-  }
-  if (alphaMode === "mask") {
-    mat.alphaTest = opts.alphaCutoff ?? 0.5;
-    mat.transparent = false;
-  } else if (alphaMode === "blend") {
-    mat.alphaTest = 0;
-    mat.transparent = true;
-  }
-  if (opts.doubleSided)
-    mat.side = THREE27.DoubleSide;
-  mat.userData["kilnMaterial"] = {
-    alphaMode,
-    ...alphaMode === "mask" ? { alphaCutoff: mat.alphaTest } : {},
-    doubleSided: opts.doubleSided === true
-  };
-  return mat;
-}
-function foliageMaterial(albedo, opts = {}) {
-  return pbrMaterial({
-    albedo,
-    roughness: opts.roughness ?? 0.9,
-    metalness: 0,
-    alphaMode: "mask",
-    alphaCutoff: opts.alphaCutoff ?? 0.5,
-    doubleSided: opts.doubleSided ?? true
-  });
-}
-var TEXTURE_USAGES;
-var init_textures = __esm(() => {
-  init_authoring_diagnostic();
-  TEXTURE_USAGES = [
-    "albedo",
-    "emissive",
-    "normal",
-    "roughness",
-    "metalness",
-    "metallicRoughness",
-    "occlusion"
-  ];
-});
-
-// src/procedural-material-v2.ts
-function strictRecord(value, path) {
-  if (!value || typeof value !== "object" || Array.isArray(value)) {
-    throw new ProceduralTextureError(`${path} must be a plain JSON object.`);
-  }
-  const prototype = Object.getPrototypeOf(value);
-  if (prototype !== Object.prototype && prototype !== null) {
-    throw new ProceduralTextureError(`${path} must be a plain JSON object with no custom prototype.`);
-  }
-  for (const key of Reflect.ownKeys(value)) {
-    if (typeof key !== "string") {
-      throw new ProceduralTextureError(`${path} must not contain symbol keys.`);
-    }
-    if (FORBIDDEN_KEYS.has(key)) {
-      throw new ProceduralTextureError(`${path} contains forbidden key ${JSON.stringify(key)}.`);
-    }
-    if (!Object.prototype.propertyIsEnumerable.call(value, key)) {
-      throw new ProceduralTextureError(`${path}.${key} must be an enumerable JSON field.`);
-    }
-    const descriptor = Object.getOwnPropertyDescriptor(value, key);
-    if (!descriptor || !("value" in descriptor)) {
-      throw new ProceduralTextureError(`${path}.${key} must be a plain JSON data field.`);
-    }
-  }
-  return value;
-}
-function strictArray(value, path) {
-  if (!Array.isArray(value) || Object.getPrototypeOf(value) !== Array.prototype) {
-    throw new ProceduralTextureError(`${path} must be a plain JSON array.`);
-  }
-  for (const key of Reflect.ownKeys(value)) {
-    if (typeof key !== "string") {
-      throw new ProceduralTextureError(`${path} must not contain symbol keys.`);
-    }
-    if (key === "length")
-      continue;
-    if (!/^(0|[1-9][0-9]*)$/.test(key) || Number(key) >= value.length) {
-      throw new ProceduralTextureError(`${path} has non-index JSON array key ${JSON.stringify(key)}.`);
-    }
-  }
-  for (let index = 0;index < value.length; index++) {
-    if (!Object.hasOwn(value, index)) {
-      throw new ProceduralTextureError(`${path} must be a dense JSON array (missing index ${index}).`);
-    }
-  }
-  return value;
-}
-function assertKeys(record, allowed, path) {
-  const allow = new Set(allowed);
-  for (const key of Object.keys(record)) {
-    if (!allow.has(key)) {
-      throw new ProceduralTextureError(`${path} has unknown key ${JSON.stringify(key)}.`, "PROCEDURAL_TEXTURE_UNKNOWN_KEY");
-    }
-  }
-}
-function color(value, path, diagnostic) {
-  if (typeof value !== "number" || !Number.isInteger(value) || value < 0 || value > 16777215) {
-    throw new ProceduralTextureError(`${path} must be a color integer between 0x000000 and 0xffffff, got ${JSON.stringify(value)}.`, diagnostic);
-  }
-  return value;
-}
-function integer(value, path, fallback, min, max) {
-  if (value === undefined)
-    return fallback;
-  if (typeof value !== "number" || !Number.isInteger(value) || value < min || value > max) {
-    throw new ProceduralTextureError(`${path} must be a whole number between ${min} and ${max}, got ${JSON.stringify(value)}.`);
-  }
-  return value;
-}
-function finite2(value, path, fallback, min, max, diagnostic) {
-  if (value === undefined)
-    return fallback;
-  if (typeof value !== "number" || !Number.isFinite(value) || value < min || value > max) {
-    throw new ProceduralTextureError(`${path} must be a finite number between ${min} and ${max}, got ${JSON.stringify(value)}.`, diagnostic);
-  }
-  return value;
-}
-function unit(value, path, fallback) {
-  return finite2(value, path, fallback, 0, 1, "MATERIAL_FRACTION_RANGE");
-}
-function optionalName(value, path) {
-  if (value === undefined)
-    return;
-  const hasControlCharacter = typeof value === "string" && [...value].some((character) => {
-    const code = character.charCodeAt(0);
-    return code < 32 || code === 127;
-  });
-  if (typeof value !== "string" || value.length === 0 || value.length > MAX_PROCEDURAL_NAME_LENGTH || hasControlCharacter) {
-    throw new ProceduralTextureError(`${path} must be 1..${MAX_PROCEDURAL_NAME_LENGTH} visible characters.`);
-  }
-  return value;
-}
-function usage(value, path, fallback) {
-  if (value === undefined)
-    return fallback;
-  if (!TEXTURE_USAGES.includes(value)) {
-    throw new ProceduralTextureError(`${path} must be one of ${TEXTURE_USAGES.join(", ")}, got ${JSON.stringify(value)}.`);
-  }
-  return value;
-}
-function angle(value, path) {
-  const bounded = finite2(value, path, 0, -36000, 36000);
-  const normalized = (bounded % 360 + 360) % 360;
-  return Object.is(normalized, -0) ? 0 : normalized;
-}
-function blend(record, path) {
-  const value = record["blend"] ?? "normal";
-  if (!BLENDS.includes(value)) {
-    throw new ProceduralTextureError(`${path}.blend ${JSON.stringify(value)} is not one of ${BLENDS.join(", ")}.`, "PROCEDURAL_TEXTURE_BLEND");
-  }
-  return value;
-}
-function canonicalLayer(value, index) {
-  const path = `proceduralTexture.layers[${index}]`;
-  const record = strictRecord(value, path);
-  const op = record["op"];
-  if (!OPS.includes(op)) {
-    throw new ProceduralTextureError(`${path}.op ${JSON.stringify(op)} is not one of ${OPS.join(", ")}.`);
-  }
-  const validatedBlend = blend(record, path);
-  const validatedOpacity = unit(record["opacity"], `${path}.opacity`, 1);
-  const common = {
-    blend: index === 0 ? "normal" : validatedBlend,
-    opacity: index === 0 ? 1 : validatedOpacity
-  };
-  switch (op) {
-    case "solid":
-      assertKeys(record, ["op", "color", "blend", "opacity"], path);
-      return { op, color: color(record["color"], `${path}.color`), ...common };
-    case "checker":
-      assertKeys(record, ["op", "colorA", "colorB", "squares", "blend", "opacity"], path);
-      return {
-        op,
-        colorA: color(record["colorA"], `${path}.colorA`),
-        colorB: color(record["colorB"], `${path}.colorB`),
-        squares: integer(record["squares"], `${path}.squares`, 8, 1, MAX_PROCEDURAL_PATTERN_COUNT),
-        ...common
-      };
-    case "stripes":
-      assertKeys(record, ["op", "colorA", "colorB", "count", "angleDeg", "blend", "opacity"], path);
-      return {
-        op,
-        colorA: color(record["colorA"], `${path}.colorA`),
-        colorB: color(record["colorB"], `${path}.colorB`),
-        count: integer(record["count"], `${path}.count`, 8, 1, MAX_PROCEDURAL_PATTERN_COUNT),
-        angleDeg: angle(record["angleDeg"], `${path}.angleDeg`),
-        ...common
-      };
-    case "gradient":
-      assertKeys(record, ["op", "from", "to", "angleDeg", "blend", "opacity"], path);
-      return {
-        op,
-        from: color(record["from"], `${path}.from`),
-        to: color(record["to"], `${path}.to`),
-        angleDeg: angle(record["angleDeg"], `${path}.angleDeg`),
-        ...common
-      };
-    case "bricks":
-      assertKeys(record, ["op", "brick", "mortar", "rows", "cols", "mortarWidth", "stagger", "blend", "opacity"], path);
-      return {
-        op,
-        brick: color(record["brick"], `${path}.brick`),
-        mortar: color(record["mortar"], `${path}.mortar`),
-        rows: integer(record["rows"], `${path}.rows`, 8, 1, MAX_PROCEDURAL_PATTERN_COUNT),
-        cols: integer(record["cols"], `${path}.cols`, 4, 1, MAX_PROCEDURAL_PATTERN_COUNT),
-        mortarWidth: unit(record["mortarWidth"], `${path}.mortarWidth`, 0.06),
-        stagger: unit(record["stagger"], `${path}.stagger`, 0.5),
-        ...common
-      };
-    case "noise":
-      assertKeys(record, ["op", "colorA", "colorB", "scale", "octaves", "seed", "blend", "opacity"], path);
-      return {
-        op,
-        colorA: color(record["colorA"], `${path}.colorA`),
-        colorB: color(record["colorB"], `${path}.colorB`),
-        scale: integer(record["scale"], `${path}.scale`, 8, 1, MAX_PROCEDURAL_PATTERN_COUNT),
-        octaves: integer(record["octaves"], `${path}.octaves`, 3, 1, MAX_NOISE_OCTAVES),
-        seed: integer(record["seed"], `${path}.seed`, 0, -2147483648, 2147483647),
-        ...common
-      };
-    default:
-      throw new ProceduralTextureError(`${path}.op is unsupported.`);
-  }
-}
-function migrateProceduralTextureSpecV1(input) {
-  const record = strictRecord(input, "proceduralTexture");
-  assertKeys(record, ["schemaVersion", "size", "usage", "name", "layers"], "proceduralTexture");
-  if (record["schemaVersion"] !== undefined && record["schemaVersion"] !== 1) {
-    throw new ProceduralTextureError(`proceduralTexture.schemaVersion must be 1 or absent for V1 migration, got ${JSON.stringify(record["schemaVersion"])}.`);
-  }
-  return {
-    schemaVersion: 2,
-    ...record["size"] !== undefined ? { size: record["size"] } : {},
-    ...record["usage"] !== undefined ? { usage: record["usage"] } : {},
-    ...record["name"] !== undefined ? { name: record["name"] } : {},
-    layers: record["layers"]
-  };
-}
-function canonicalizeProceduralTextureSpecV2(input) {
-  const initial = strictRecord(input, "proceduralTexture");
-  const source = initial["schemaVersion"] === undefined || initial["schemaVersion"] === 1 ? strictRecord(migrateProceduralTextureSpecV1(initial), "proceduralTexture") : initial;
-  assertKeys(source, ["schemaVersion", "size", "usage", "name", "layers"], "proceduralTexture");
-  if (source["schemaVersion"] !== 2) {
-    throw new ProceduralTextureError(`proceduralTexture.schemaVersion must be 2, got ${JSON.stringify(source["schemaVersion"])}.`);
-  }
-  const size = source["size"] ?? 256;
-  if (typeof size !== "number" || !Number.isInteger(size) || size < MIN_PROCEDURAL_SIZE || size > MAX_PROCEDURAL_SIZE || (size & size - 1) !== 0) {
-    throw new ProceduralTextureError(`proceduralTexture.size must be a power of two between ${MIN_PROCEDURAL_SIZE} and ${MAX_PROCEDURAL_SIZE}, got ${JSON.stringify(source["size"])}.`);
-  }
-  const rawLayers = source["layers"];
-  if (!Array.isArray(rawLayers) || rawLayers.length === 0) {
-    throw new ProceduralTextureError("proceduralTexture.layers must be a non-empty array — the bottom layer is the base pattern.");
-  }
-  const layers = strictArray(rawLayers, "proceduralTexture.layers");
-  if (layers.length > MAX_PROCEDURAL_LAYERS) {
-    throw new ProceduralTextureError(`proceduralTexture: ${layers.length} layers exceeds the maximum of ${MAX_PROCEDURAL_LAYERS}.`);
-  }
-  const name = optionalName(source["name"], "proceduralTexture.name");
-  return {
-    schemaVersion: 2,
-    size,
-    usage: usage(source["usage"], "proceduralTexture.usage", "albedo"),
-    ...name !== undefined ? { name } : {},
-    layers: layers.map(canonicalLayer)
-  };
-}
-function canonicalJson2(value) {
-  if (value === null || typeof value !== "object")
-    return JSON.stringify(value);
-  if (Array.isArray(value))
-    return `[${value.map(canonicalJson2).join(",")}]`;
-  const record = value;
-  return `{${Object.keys(record).sort().map((key) => `${JSON.stringify(key)}:${canonicalJson2(record[key])}`).join(",")}}`;
-}
-function canonicalProceduralTextureJsonV2(input) {
-  return canonicalJson2(canonicalizeProceduralTextureSpecV2(input));
-}
-function sha256Hex(text) {
-  const source = new TextEncoder().encode(text);
-  const bitLength = source.length * 8;
-  const paddedLength = Math.ceil((source.length + 9) / 64) * 64;
-  const bytes = new Uint8Array(paddedLength);
-  bytes.set(source);
-  bytes[source.length] = 128;
-  const view = new DataView(bytes.buffer);
-  view.setUint32(paddedLength - 8, Math.floor(bitLength / 4294967296), false);
-  view.setUint32(paddedLength - 4, bitLength >>> 0, false);
-  const h = new Uint32Array([
-    1779033703,
-    3144134277,
-    1013904242,
-    2773480762,
-    1359893119,
-    2600822924,
-    528734635,
-    1541459225
-  ]);
-  const w = new Uint32Array(64);
-  for (let offset = 0;offset < bytes.length; offset += 64) {
-    for (let i = 0;i < 16; i++)
-      w[i] = view.getUint32(offset + i * 4, false);
-    for (let i = 16;i < 64; i++) {
-      const a = w[i - 15];
-      const b = w[i - 2];
-      const s0 = rotateRight(a, 7) ^ rotateRight(a, 18) ^ a >>> 3;
-      const s1 = rotateRight(b, 17) ^ rotateRight(b, 19) ^ b >>> 10;
-      w[i] = w[i - 16] + s0 + w[i - 7] + s1 >>> 0;
-    }
-    let [a, b, c, d, e, f, g, hh] = h;
-    for (let i = 0;i < 64; i++) {
-      const s1 = rotateRight(e, 6) ^ rotateRight(e, 11) ^ rotateRight(e, 25);
-      const choice = e & f ^ ~e & g;
-      const temp1 = hh + s1 + choice + SHA256_K[i] + w[i] >>> 0;
-      const s0 = rotateRight(a, 2) ^ rotateRight(a, 13) ^ rotateRight(a, 22);
-      const majority = a & b ^ a & c ^ b & c;
-      const temp2 = s0 + majority >>> 0;
-      hh = g;
-      g = f;
-      f = e;
-      e = d + temp1 >>> 0;
-      d = c;
-      c = b;
-      b = a;
-      a = temp1 + temp2 >>> 0;
-    }
-    const next = [a, b, c, d, e, f, g, hh];
-    for (let i = 0;i < 8; i++)
-      h[i] = h[i] + next[i] >>> 0;
-  }
-  return [...h].map((value) => value.toString(16).padStart(8, "0")).join("");
-}
-function hashProceduralTextureSpecV2(input) {
-  return `sha256:${sha256Hex(canonicalProceduralTextureJsonV2(input))}`;
-}
-function canonicalTextureRef(value, slot) {
-  const path = `portableMaterial.textures.${slot}`;
-  if (value === null || typeof value !== "object" || Array.isArray(value))
-    throw new ProceduralTextureError(`${path} must be a typed resource or procedural reference.`, "PORTABLE_TEXTURE_REFERENCE");
-  const record = strictRecord(value, path);
-  if (record["kind"] === "procedural") {
-    assertKeys(record, ["kind", "spec"], path);
-    const spec = canonicalizeProceduralTextureSpecV2(record["spec"]);
-    const expected = MATERIAL_TEXTURE_USAGE[slot];
-    if (spec.usage !== expected) {
-      throw new ProceduralTextureError(`${path} requires procedural usage ${JSON.stringify(expected)}, got ${JSON.stringify(spec.usage)}.`);
-    }
-    return { kind: "procedural", spec };
-  }
-  if (record["kind"] === "resource") {
-    assertKeys(record, ["kind", "resourceId"], path);
-    const resourceId = record["resourceId"];
-    if (typeof resourceId !== "string" || resourceId.length > 128 || !/^kiln\.[a-z0-9][a-z0-9._-]+$/.test(resourceId)) {
-      throw new ProceduralTextureError(`${path}.resourceId must be a bounded kiln.* resource ID.`);
-    }
-    return { kind: "resource", resourceId };
-  }
-  throw new ProceduralTextureError(`${path}.kind must be "procedural" or "resource".`, "PORTABLE_TEXTURE_REFERENCE");
-}
-function canonicalizePortableMaterialSpecV2(input) {
-  const record = strictRecord(input, "portableMaterial");
-  assertKeys(record, [
-    "schemaVersion",
-    "model",
-    "name",
-    "baseColor",
-    "roughness",
-    "metalness",
-    "emissive",
-    "emissiveIntensity",
-    "alphaMode",
-    "alphaCutoff",
-    "doubleSided",
-    "textures"
-  ], "portableMaterial");
-  if (record["schemaVersion"] !== 2) {
-    throw new ProceduralTextureError("portableMaterial.schemaVersion must be 2.");
-  }
-  if (record["model"] !== "pbrMetallicRoughness") {
-    throw new ProceduralTextureError('portableMaterial.model must be "pbrMetallicRoughness"; executable shader models are not portable.');
-  }
-  const textureInput = record["textures"] ?? {};
-  const textureRecord = strictRecord(textureInput, "portableMaterial.textures");
-  const slots = Object.keys(MATERIAL_TEXTURE_USAGE);
-  assertKeys(textureRecord, slots, "portableMaterial.textures");
-  if (Object.keys(textureRecord).length > MAX_PORTABLE_MATERIAL_TEXTURES) {
-    throw new ProceduralTextureError(`portableMaterial has more than ${MAX_PORTABLE_MATERIAL_TEXTURES} texture slots.`);
-  }
-  const textures = {};
-  let proceduralTexels = 0;
-  for (const slot of slots) {
-    if (textureRecord[slot] === undefined)
-      continue;
-    const ref = canonicalTextureRef(textureRecord[slot], slot);
-    textures[slot] = ref;
-    if (ref.kind === "procedural")
-      proceduralTexels += ref.spec.size * ref.spec.size;
-  }
-  if (proceduralTexels > MAX_PORTABLE_MATERIAL_TEXELS) {
-    throw new ProceduralTextureError(`portableMaterial procedural texture budget is ${proceduralTexels} texels, above ${MAX_PORTABLE_MATERIAL_TEXELS}.`);
-  }
-  const alphaMode = record["alphaMode"] ?? "opaque";
-  if (alphaMode !== "opaque" && alphaMode !== "mask" && alphaMode !== "blend") {
-    throw new ProceduralTextureError("portableMaterial.alphaMode must be opaque, mask, or blend.", "MATERIAL_ALPHA_MODE");
-  }
-  if (record["doubleSided"] !== undefined && typeof record["doubleSided"] !== "boolean") {
-    throw new ProceduralTextureError("portableMaterial.doubleSided must be boolean.");
-  }
-  const name = optionalName(record["name"], "portableMaterial.name");
-  return {
-    schemaVersion: 2,
-    model: "pbrMetallicRoughness",
-    ...name !== undefined ? { name } : {},
-    ...record["baseColor"] !== undefined ? {
-      baseColor: color(record["baseColor"], "portableMaterial.baseColor", "PORTABLE_COLOR_ARGUMENT")
-    } : {},
-    roughness: unit(record["roughness"], "portableMaterial.roughness", 1),
-    metalness: unit(record["metalness"], "portableMaterial.metalness", 0),
-    ...record["emissive"] !== undefined ? {
-      emissive: color(record["emissive"], "portableMaterial.emissive", "PORTABLE_COLOR_ARGUMENT")
-    } : {},
-    emissiveIntensity: finite2(record["emissiveIntensity"], "portableMaterial.emissiveIntensity", 1, 0, 64),
-    alphaMode,
-    alphaCutoff: unit(record["alphaCutoff"], "portableMaterial.alphaCutoff", 0.5),
-    doubleSided: record["doubleSided"] === true,
-    textures
-  };
-}
-var MAX_PROCEDURAL_SIZE = 1024, MIN_PROCEDURAL_SIZE = 4, MAX_PROCEDURAL_LAYERS = 8, MAX_NOISE_OCTAVES = 6, MAX_PROCEDURAL_NAME_LENGTH = 80, MAX_PROCEDURAL_PATTERN_COUNT = 256, MAX_PORTABLE_MATERIAL_TEXTURES = 5, MAX_PORTABLE_MATERIAL_TEXELS, ProceduralTextureError, OPS, BLENDS, FORBIDDEN_KEYS, SHA256_K, rotateRight = (value, bits) => value >>> bits | value << 32 - bits, MATERIAL_TEXTURE_USAGE;
-var init_procedural_material_v2 = __esm(() => {
-  init_textures();
-  init_authoring_diagnostic();
-  MAX_PORTABLE_MATERIAL_TEXELS = 4 * 1024 * 1024;
-  ProceduralTextureError = class ProceduralTextureError extends AuthoringDiagnosticError {
-    constructor(message, diagnostic) {
-      super(diagnostic, message);
-      this.name = "ProceduralTextureError";
-    }
-  };
-  OPS = ["solid", "checker", "stripes", "gradient", "bricks", "noise"];
-  BLENDS = ["normal", "multiply", "screen", "overlay"];
-  FORBIDDEN_KEYS = new Set(["__proto__", "prototype", "constructor"]);
-  SHA256_K = new Uint32Array([
-    1116352408,
-    1899447441,
-    3049323471,
-    3921009573,
-    961987163,
-    1508970993,
-    2453635748,
-    2870763221,
-    3624381080,
-    310598401,
-    607225278,
-    1426881987,
-    1925078388,
-    2162078206,
-    2614888103,
-    3248222580,
-    3835390401,
-    4022224774,
-    264347078,
-    604807628,
-    770255983,
-    1249150122,
-    1555081692,
-    1996064986,
-    2554220882,
-    2821834349,
-    2952996808,
-    3210313671,
-    3336571891,
-    3584528711,
-    113926993,
-    338241895,
-    666307205,
-    773529912,
-    1294757372,
-    1396182291,
-    1695183700,
-    1986661051,
-    2177026350,
-    2456956037,
-    2730485921,
-    2820302411,
-    3259730800,
-    3345764771,
-    3516065817,
-    3600352804,
-    4094571909,
-    275423344,
-    430227734,
-    506948616,
-    659060556,
-    883997877,
-    958139571,
-    1322822218,
-    1537002063,
-    1747873779,
-    1955562222,
-    2024104815,
-    2227730452,
-    2361852424,
-    2428436474,
-    2756734187,
-    3204031479,
-    3329325298
-  ]);
-  MATERIAL_TEXTURE_USAGE = {
-    baseColor: "albedo",
-    normal: "normal",
-    metallicRoughness: "metallicRoughness",
-    emissive: "emissive",
-    occlusion: "occlusion"
-  };
-});
-
-// src/procedural-texture.ts
-import * as THREE28 from "three";
-function hash22(x, y, seed) {
-  let h = Math.imul(x, 374761393) + Math.imul(y, 668265263) + Math.imul(seed, 1274126177) | 0;
-  h = h ^ h >>> 13;
-  h = Math.imul(h, 1274126177) | 0;
-  h = h ^ h >>> 16;
-  return (h >>> 0) / 4294967296;
-}
-function valueNoise(u, v, period, seed) {
-  const x = u * period;
-  const y = v * period;
-  const xi = Math.floor(x);
-  const yi = Math.floor(y);
-  const xf = x - xi;
-  const yf = y - yi;
-  const wrap = (n) => (n % period + period) % period;
-  const x0 = wrap(xi);
-  const y0 = wrap(yi);
-  const x1 = wrap(xi + 1);
-  const y1 = wrap(yi + 1);
-  const sx = smoothstep(xf);
-  const sy = smoothstep(yf);
-  const n00 = hash22(x0, y0, seed);
-  const n10 = hash22(x1, y0, seed);
-  const n01 = hash22(x0, y1, seed);
-  const n11 = hash22(x1, y1, seed);
-  const top = n00 + sx * (n10 - n00);
-  const bottom = n01 + sx * (n11 - n01);
-  return top + sy * (bottom - top);
-}
-function fbm(u, v, period, octaves, seed) {
-  let sum = 0;
-  let amplitude = 1;
-  let total = 0;
-  let p = period;
-  for (let o = 0;o < octaves; o++) {
-    sum += valueNoise(u, v, p, seed + o * 101) * amplitude;
-    total += amplitude;
-    amplitude *= 0.5;
-    p *= 2;
-  }
-  return total > 0 ? sum / total : 0;
-}
-function project(u, v, angleDeg) {
-  const a = angleDeg * Math.PI / 180;
-  return (u - 0.5) * Math.cos(a) + (v - 0.5) * Math.sin(a) + 0.5;
-}
-function evalLayer(layer, u, v) {
-  switch (layer.op) {
-    case "solid":
-      return rgbOf(layer.color);
-    case "checker": {
-      const cx = Math.floor(u * layer.squares);
-      const cy = Math.floor(v * layer.squares);
-      return rgbOf((cx + cy) % 2 === 0 ? layer.colorA : layer.colorB);
-    }
-    case "stripes": {
-      const t = project(u, v, layer.angleDeg);
-      return rgbOf(Math.floor(t * layer.count) % 2 === 0 ? layer.colorA : layer.colorB);
-    }
-    case "gradient": {
-      const t = Math.min(1, Math.max(0, project(u, v, layer.angleDeg)));
-      const from = rgbOf(layer.from);
-      const to = rgbOf(layer.to);
-      return [lerp(from[0], to[0], t), lerp(from[1], to[1], t), lerp(from[2], to[2], t)];
-    }
-    case "bricks": {
-      const row = Math.floor(v * layer.rows);
-      const shifted = (u + (row % 2 === 0 ? 0 : layer.stagger / layer.cols) + 1) % 1;
-      const inCol = shifted * layer.cols % 1;
-      const inRow = v * layer.rows % 1;
-      const isMortar = inCol < layer.mortarWidth || inCol > 1 - layer.mortarWidth || inRow < layer.mortarWidth || inRow > 1 - layer.mortarWidth;
-      return rgbOf(isMortar ? layer.mortar : layer.brick);
-    }
-    case "noise": {
-      const n = fbm(u, v, layer.scale, layer.octaves, layer.seed);
-      const a = rgbOf(layer.colorA);
-      const b = rgbOf(layer.colorB);
-      return [lerp(a[0], b[0], n), lerp(a[1], b[1], n), lerp(a[2], b[2], n)];
-    }
-  }
-}
-function blendChannel(mode, base, top) {
-  const b = base / 255;
-  const t = top / 255;
-  let out;
-  switch (mode) {
-    case "multiply":
-      out = b * t;
-      break;
-    case "screen":
-      out = 1 - (1 - b) * (1 - t);
-      break;
-    case "overlay":
-      out = b < 0.5 ? 2 * b * t : 1 - 2 * (1 - b) * (1 - t);
-      break;
-    default:
-      out = t;
-  }
-  return out * 255;
-}
-function compileProceduralTextureSpecV2(input) {
-  const spec = canonicalizeProceduralTextureSpecV2(input);
-  const { size, layers } = spec;
-  const data = new Uint8Array(size * size * 4);
-  for (let y = 0;y < size; y++) {
-    const v = (y + 0.5) / size;
-    for (let x = 0;x < size; x++) {
-      const u = (x + 0.5) / size;
-      let r = 0;
-      let g = 0;
-      let b = 0;
-      for (const [i, layer] of layers.entries()) {
-        const [lr, lg, lb] = evalLayer(layer, u, v);
-        if (i === 0) {
-          r = lr;
-          g = lg;
-          b = lb;
-          continue;
-        }
-        r = lerp(r, blendChannel(layer.blend, r, lr), layer.opacity);
-        g = lerp(g, blendChannel(layer.blend, g, lg), layer.opacity);
-        b = lerp(b, blendChannel(layer.blend, b, lb), layer.opacity);
-      }
-      const o = (y * size + x) * 4;
-      data[o] = Math.max(0, Math.min(255, Math.round(r)));
-      data[o + 1] = Math.max(0, Math.min(255, Math.round(g)));
-      data[o + 2] = Math.max(0, Math.min(255, Math.round(b)));
-      data[o + 3] = 255;
-    }
-  }
-  return {
-    spec,
-    pixels: data,
-    canonicalJson: canonicalProceduralTextureJsonV2(spec),
-    recipeHash: hashProceduralTextureSpecV2(spec)
-  };
-}
-function proceduralTexture(spec) {
-  const compiled = compileProceduralTextureSpecV2(spec);
-  const { size, usage, name, layers } = compiled.spec;
-  const tex = new THREE28.DataTexture(compiled.pixels, size, size, THREE28.RGBAFormat, THREE28.UnsignedByteType);
-  if (name)
-    tex.name = name;
-  tex.colorSpace = usage === "albedo" || usage === "emissive" ? THREE28.SRGBColorSpace : THREE28.NoColorSpace;
-  tex.wrapS = THREE28.RepeatWrapping;
-  tex.wrapT = THREE28.RepeatWrapping;
-  tex.minFilter = THREE28.LinearMipmapLinearFilter;
-  tex.magFilter = THREE28.LinearFilter;
-  tex.generateMipmaps = true;
-  tex.needsUpdate = true;
-  tex.userData["kilnProcedural"] = {
-    schemaVersion: 2,
-    size,
-    usage,
-    ...name ? { name } : {},
-    layers,
-    canonicalJson: compiled.canonicalJson,
-    recipeHash: compiled.recipeHash
-  };
-  return tex;
-}
-function normalMapFromHeight(source, opts = {}) {
-  const image = source.image;
-  const data = image?.data;
-  const width = image?.width ?? 0;
-  const height = image?.height ?? 0;
-  if (!data || !width || !height) {
-    throw new ProceduralTextureError("normalMapFromHeight: the source texture has no readable pixels. Pass a proceduralTexture() result or a loadApprovedTexture() result, not a texture built from an image element.");
-  }
-  const channels = data.length / (width * height);
-  if (channels !== 3 && channels !== 4) {
-    throw new ProceduralTextureError(`normalMapFromHeight: the source has ${data.length} bytes for ${width}x${height}, which is neither RGB nor RGBA.`);
-  }
-  const strength = opts.strength ?? 2;
-  if (!Number.isFinite(strength) || strength <= 0) {
-    throw new ProceduralTextureError(`normalMapFromHeight: strength must be a positive number, got ${JSON.stringify(opts.strength)}.`);
-  }
-  const lum = (x, y) => {
-    const xw = (x % width + width) % width;
-    const yw = (y % height + height) % height;
-    const o = (yw * width + xw) * channels;
-    return (0.299 * (data[o] ?? 0) + 0.587 * (data[o + 1] ?? 0) + 0.114 * (data[o + 2] ?? 0)) / 255;
-  };
-  const out = new Uint8Array(width * height * 4);
-  for (let y = 0;y < height; y++) {
-    for (let x = 0;x < width; x++) {
-      const dx = (lum(x + 1, y) - lum(x - 1, y)) * strength;
-      const dy = (lum(x, y + 1) - lum(x, y - 1)) * strength;
-      let nx = -dx;
-      let ny = -dy;
-      const nz = 1;
-      const len = Math.hypot(nx, ny, nz) || 1;
-      nx /= len;
-      ny /= len;
-      const o = (y * width + x) * 4;
-      out[o] = Math.round((nx * 0.5 + 0.5) * 255);
-      out[o + 1] = Math.round((ny * 0.5 + 0.5) * 255);
-      out[o + 2] = Math.round(nz / len * 0.5 * 255 + 127.5);
-      out[o + 3] = 255;
-    }
-  }
-  const tex = new THREE28.DataTexture(out, width, height, THREE28.RGBAFormat, THREE28.UnsignedByteType);
-  tex.name = opts.name ?? (source.name ? `${source.name}_Normal` : "");
-  tex.colorSpace = THREE28.NoColorSpace;
-  tex.wrapS = THREE28.RepeatWrapping;
-  tex.wrapT = THREE28.RepeatWrapping;
-  tex.minFilter = THREE28.LinearMipmapLinearFilter;
-  tex.magFilter = THREE28.LinearFilter;
-  tex.generateMipmaps = true;
-  tex.needsUpdate = true;
-  return tex;
-}
-var smoothstep = (t) => t * t * (3 - 2 * t), rgbOf = (color) => [
-  color >> 16 & 255,
-  color >> 8 & 255,
-  color & 255
-], lerp = (a, b, t) => a + (b - a) * t;
-var init_procedural_texture = __esm(() => {
-  init_procedural_material_v2();
-  init_procedural_material_v2();
-});
-
-// src/material-resources.ts
-import { createHash as createHash6 } from "node:crypto";
-function provenance(descriptor, hash) {
-  return {
-    schemaVersion: 1,
-    resourceId: descriptor.id,
-    contentHash: hash,
-    hashAlgorithm: "sha256",
-    usage: descriptor.usage,
-    colorSpace: descriptor.colorSpace,
-    resourceVersion: descriptor.version,
-    recipeVersion: 1,
-    delivery: descriptor.delivery
-  };
-}
-function readPngDimensions(descriptor, bytes) {
-  const signature = [137, 80, 78, 71, 13, 10, 26, 10];
-  if (bytes.byteLength < 24 || !signature.every((value, index) => bytes[index] === value) || String.fromCharCode(...bytes.subarray(12, 16)) !== "IHDR") {
-    throw new ApprovedTextureResourceUnavailableError(descriptor.id, "declared image/png bytes do not have a valid PNG signature and IHDR format");
-  }
-  const view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
-  return { width: view.getUint32(16, false), height: view.getUint32(20, false) };
-}
-function verifyResourcePayload(descriptor, payload) {
-  if (!payload || typeof payload !== "object" || Array.isArray(payload)) {
-    throw new ApprovedTextureResourceUnavailableError(descriptor.id, "host payload must be { bytes, mime }");
-  }
-  const keys = Object.keys(payload).sort();
-  if (keys.length !== 2 || keys[0] !== "bytes" || keys[1] !== "mime") {
-    throw new ApprovedTextureResourceUnavailableError(descriptor.id, "host payload must contain only bytes and MIME");
-  }
-  if (!(payload.bytes instanceof Uint8Array)) {
-    throw new ApprovedTextureResourceUnavailableError(descriptor.id, "host bytes must be Uint8Array");
-  }
-  if (payload.mime !== descriptor.mime) {
-    throw new ApprovedTextureResourceUnavailableError(descriptor.id, `host MIME ${String(payload.mime)} does not match approved ${descriptor.mime}`);
-  }
-  const bytes = payload.bytes;
-  if (bytes.byteLength > TEXTURE_RESOLVER_LIMITS_V1.maxEncodedBytes) {
-    throw new ApprovedTextureResourceUnavailableError(descriptor.id, `encoded-byte limit is ${TEXTURE_RESOLVER_LIMITS_V1.maxEncodedBytes}; received ${bytes.byteLength}`);
-  }
-  if (bytes.byteLength !== descriptor.byteLength) {
-    throw new ApprovedTextureResourceUnavailableError(descriptor.id, `expected ${descriptor.byteLength} bytes, received ${bytes.byteLength}`);
-  }
-  const { width, height } = readPngDimensions(descriptor, bytes);
-  if (width < 1 || height < 1 || width > TEXTURE_RESOLVER_LIMITS_V1.maxWidth || height > TEXTURE_RESOLVER_LIMITS_V1.maxHeight) {
-    throw new ApprovedTextureResourceUnavailableError(descriptor.id, `dimension limit is ${TEXTURE_RESOLVER_LIMITS_V1.maxWidth}x${TEXTURE_RESOLVER_LIMITS_V1.maxHeight}; received ${width}x${height}`);
-  }
-  const pixels = width * height;
-  if (!Number.isSafeInteger(pixels) || pixels > TEXTURE_RESOLVER_LIMITS_V1.maxPixels) {
-    throw new ApprovedTextureResourceUnavailableError(descriptor.id, `pixel limit is ${TEXTURE_RESOLVER_LIMITS_V1.maxPixels}; received ${pixels}`);
-  }
-  const hash = sha256(bytes);
-  if (hash !== descriptor.contentHash) {
-    throw new ApprovedTextureResourceUnavailableError(descriptor.id, `content hash ${hash} does not match the pinned ${descriptor.contentHash}`);
-  }
-  return hash;
-}
-
-class ApprovedTextureResourceCache {
-  #bytesByHash = new Map;
-  #hashById = new Map;
-  #textureByVariant = new Map;
-  #pendingById = new Map;
-  #registry;
-  #resolver;
-  #resolverDeadlineMs;
-  constructor(options = {}) {
-    this.#resolver = options.resolver;
-    this.#registry = options.registry ?? APPROVED_TEXTURE_RESOURCES_V1;
-    const deadline = options.resolverDeadlineMs ?? TEXTURE_RESOLVER_LIMITS_V1.defaultDeadlineMs;
-    if (!Number.isFinite(deadline) || deadline < 1 || deadline > TEXTURE_RESOLVER_LIMITS_V1.maxDeadlineMs) {
-      throw new RangeError(`resolverDeadlineMs must be in [1,${TEXTURE_RESOLVER_LIMITS_V1.maxDeadlineMs}]`);
-    }
-    this.#resolverDeadlineMs = deadline;
-  }
-  setResolver(resolver) {
-    const previous = this.#resolver;
-    this.#resolver = resolver;
-    return previous;
-  }
-  descriptor(id) {
-    if (!isApprovedId(id))
-      throw new RangeError(`Unsupported approved texture resource ID ${id}.`);
-    return this.#registry[id];
-  }
-  available(id) {
-    if (!isApprovedId(id))
-      return false;
-    return this.#registry[id].delivery === "embedded" || this.#resolver !== undefined;
-  }
-  #cacheBytes(id, hash, bytes) {
-    let canonical = this.#bytesByHash.get(hash);
-    if (!canonical) {
-      canonical = bytes;
-      this.#bytesByHash.set(hash, canonical);
-    }
-    this.#hashById.set(id, hash);
-    return canonical;
-  }
-  #resolution(id, hash) {
-    const canonical = this.#bytesByHash.get(hash);
-    if (!canonical)
-      throw new Error(`Approved resource cache lost content ${hash}.`);
-    return {
-      descriptor: this.#registry[id],
-      bytes: canonical.slice(),
-      provenance: provenance(this.#registry[id], hash)
-    };
-  }
-  resolve(id) {
-    if (!isApprovedId(id))
-      throw new RangeError(`Unsupported approved texture resource ID ${id}.`);
-    const hash = this.#hashById.get(id);
-    if (hash)
-      return this.#resolution(id, hash);
-    const descriptor = this.#registry[id];
-    if (descriptor.delivery !== "embedded") {
-      throw new ApprovedTextureResourceUnavailableError(id, "it is delivered at runtime; use resolveAsync() or load()");
-    }
-    const decoded = bytesFromBase64(EMBEDDED_RESOURCE_BASE64[id]);
-    this.#cacheBytes(id, verifyResourcePayload(descriptor, { bytes: decoded, mime: descriptor.mime }), decoded);
-    return this.#resolution(id, this.#hashById.get(id));
-  }
-  async resolveAsync(id) {
-    if (!isApprovedId(id))
-      throw new RangeError(`Unsupported approved texture resource ID ${id}.`);
-    const hash = this.#hashById.get(id);
-    if (hash)
-      return this.#resolution(id, hash);
-    if (this.#registry[id].delivery === "embedded")
-      return this.resolve(id);
-    let pending = this.#pendingById.get(id);
-    if (!pending) {
-      const descriptor = this.#registry[id];
-      const resolver = this.#resolver;
-      pending = (async () => {
-        if (!resolver) {
-          throw new ApprovedTextureResourceUnavailableError(id, "no runtime texture resolver is registered in this environment");
-        }
-        const controller = new AbortController;
-        let timer;
-        const timeout = new Promise((_resolve, reject) => {
-          timer = setTimeout(() => {
-            controller.abort();
-            reject(new ApprovedTextureResourceUnavailableError(id, `host resolver deadline exceeded after ${this.#resolverDeadlineMs}ms`));
-          }, this.#resolverDeadlineMs);
-        });
-        let payload;
-        try {
-          payload = await Promise.race([
-            Promise.resolve().then(() => resolver(descriptor, Object.freeze({
-              signal: controller.signal,
-              deadlineMs: this.#resolverDeadlineMs
-            }))),
-            timeout
-          ]);
-        } finally {
-          if (timer !== undefined)
-            clearTimeout(timer);
-        }
-        this.#cacheBytes(id, verifyResourcePayload(descriptor, payload), payload.bytes);
-        return this.#resolution(id, this.#hashById.get(id));
-      })().finally(() => {
-        this.#pendingById.delete(id);
-      });
-      this.#pendingById.set(id, pending);
-    }
-    return pending;
-  }
-  async load(id) {
-    const resolved = await this.resolveAsync(id);
-    const variantKey = [
-      resolved.provenance.contentHash,
-      resolved.provenance.usage,
-      resolved.provenance.colorSpace
-    ].join(":");
-    let pending = this.#textureByVariant.get(variantKey);
-    if (!pending) {
-      pending = loadTexture(resolved.bytes, {
-        usage: resolved.provenance.usage,
-        name: id
-      }).then((texture) => {
-        const metadata = texture.userData["kilnTexture"];
-        texture.userData["kilnTexture"] = {
-          ...metadata,
-          approvedResource: resolved.provenance
-        };
-        return texture;
-      });
-      this.#textureByVariant.set(variantKey, pending);
-    }
-    return { ...resolved, texture: await pending };
-  }
-  stats() {
-    return {
-      approvedIdsResolved: this.#hashById.size,
-      uniqueContentHashes: this.#bytesByHash.size,
-      decodedTextureVariants: this.#textureByVariant.size,
-      encodedBytes: [...this.#bytesByHash.values()].reduce((sum, bytes) => sum + bytes.byteLength, 0)
-    };
-  }
-}
-function approvedTextureCatalogV1(options = {}) {
-  const cache = options.cache ?? DEFAULT_APPROVED_TEXTURE_CACHE;
-  return APPROVED_TEXTURE_RESOURCE_IDS.filter((id) => {
-    const descriptor = cache.descriptor(id);
-    if (descriptor.quality === "placeholder" && options.includePlaceholders !== true)
-      return false;
-    return cache.available(id);
-  }).map((id) => {
-    const descriptor = cache.descriptor(id);
-    return {
-      id,
-      label: descriptor.label,
-      usage: descriptor.usage,
-      delivery: descriptor.delivery,
-      allowedSlots: descriptor.allowedSlots,
-      recipeIds: descriptor.recipeIds
-    };
-  });
-}
-function readMaterialResourceProvenance(texture) {
-  const metadata = texture.userData["kilnTexture"];
-  return metadata?.approvedResource;
-}
-function sceneNeedsPbrShading(root) {
-  let needs = false;
-  root.traverse((node) => {
-    if (needs)
-      return;
-    const material = node.material;
-    const materials = Array.isArray(material) ? material : material ? [material] : [];
-    for (const item of materials) {
-      if (materialTextures2(item).length > 0) {
-        needs = true;
-        return;
-      }
-      const metalness = item.metalness;
-      if (typeof metalness === "number" && metalness > 0) {
-        needs = true;
-        return;
-      }
-    }
-  });
-  return needs;
-}
-function collectMaterialResourceProvenance(root) {
-  const records = new Map;
-  root.traverse((node) => {
-    const material = node.material;
-    const materials = Array.isArray(material) ? material : material ? [material] : [];
-    for (const item of materials) {
-      for (const texture of materialTextures2(item)) {
-        const record = readMaterialResourceProvenance(texture);
-        if (record)
-          records.set(`${record.resourceId}:${record.contentHash}:${record.usage}`, record);
-      }
-    }
-  });
-  return [...records.values()].sort((a, b) => `${a.resourceId}:${a.usage}`.localeCompare(`${b.resourceId}:${b.usage}`));
-}
-var TEXTURE_RESOLVER_LIMITS_V1, ApprovedTextureResourceUnavailableError, EMBEDDED_RESOURCE_BASE64, isApprovedId = (value) => APPROVED_TEXTURE_RESOURCE_IDS.includes(value), bytesFromBase64 = (value) => new Uint8Array(Buffer.from(value, "base64")), sha256 = (bytes) => createHash6("sha256").update(bytes).digest("hex"), DEFAULT_APPROVED_TEXTURE_CACHE, materialTextures2 = (material) => {
-  const standard = material;
-  const candidates = [
-    standard.map,
-    standard.normalMap,
-    standard.roughnessMap,
-    standard.metalnessMap,
-    standard.emissiveMap,
-    standard.aoMap
-  ];
-  return [
-    ...new Set(candidates.filter((value) => value?.isTexture === true))
-  ];
-};
-var init_material_resources = __esm(() => {
-  init_material_recipes();
-  init_material_texture_library_generated();
-  init_textures();
-  TEXTURE_RESOLVER_LIMITS_V1 = Object.freeze({
-    maxEncodedBytes: 8 * 1024 * 1024,
-    maxWidth: 4096,
-    maxHeight: 4096,
-    maxPixels: 8 * 1024 * 1024,
-    defaultDeadlineMs: 5000,
-    maxDeadlineMs: 30000
-  });
-  ApprovedTextureResourceUnavailableError = class ApprovedTextureResourceUnavailableError extends Error {
-    resourceId;
-    constructor(id, reason) {
-      super(`Approved texture resource ${id} is unavailable: ${reason}`);
-      this.name = "ApprovedTextureResourceUnavailableError";
-      this.resourceId = id;
-    }
-  };
-  EMBEDDED_RESOURCE_BASE64 = Object.freeze({
-    "kiln.texture.bark-albedo.v1": "iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAACXBIWXMAAAPoAAAD6AG1e1JrAAAAFklEQVQImWMIMpT6X+Ch9h9GM5AuAACfBRvJB4zLLQAAAABJRU5ErkJggg==",
-    "kiln.texture.leaf-mask-albedo.v1": "iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAACXBIWXMAAAPoAAAD6AG1e1JrAAAAKUlEQVQImWMwaLFiMGixSjBosdoCYsM4/6E4ASQAkoEJbAEJwARBKhkACRMXLR+u+yUAAAAASUVORK5CYII=",
-    "kiln.texture.neutral-normal.v1": "iVBORw0KGgoAAAANSUhEUgAAAAIAAAACCAYAAABytg0kAAAACXBIWXMAAAPoAAAD6AG1e1JrAAAAEUlEQVQImWNoaPj/H4QZYAwAZ9IL+W19YCAAAAAASUVORK5CYII=",
-    "kiln.texture.neutral-metallic-roughness.v1": "iVBORw0KGgoAAAANSUhEUgAAAAIAAAACCAYAAABytg0kAAAACXBIWXMAAAPoAAAD6AG1e1JrAAAAEElEQVQImWNguCT0H4xhDAA/hAeNGSjqWAAAAABJRU5ErkJggg==",
-    "kiln.texture.emissive-grid.v1": "iVBORw0KGgoAAAANSUhEUgAAAAIAAAACCAYAAABytg0kAAAACXBIWXMAAAPoAAAD6AG1e1JrAAAAFklEQVQImWP4P0Hhv4MEy38GEAHiAABG+wgTqOP6IAAAAABJRU5ErkJggg==",
-    ...PRODUCTION_TEXTURE_RESOURCE_BASE64
-  });
-  DEFAULT_APPROVED_TEXTURE_CACHE = new ApprovedTextureResourceCache;
-});
-
 // src/portable-material-runtime.ts
-async function compilePortableMaterialSpecV2(input) {
+async function compilePortableMaterialSpecV2(input, options = {}) {
   const spec = canonicalizePortableMaterialSpecV2(input);
-  const cache = DEFAULT_APPROVED_TEXTURE_CACHE;
+  const resolver = options.resolver ?? DEFAULT_TEXTURE_RESOLVER;
   const entries = Object.entries(spec.textures);
   for (const [slot, ref] of entries) {
     if (ref.kind !== "resource")
       continue;
-    if (!isApprovedResourceId(ref.resourceId)) {
+    const descriptor = resolver.describeApprovedTexture?.(ref.resourceId);
+    if (!descriptor) {
       throw new ProceduralTextureError(`portableMaterial.textures.${slot} resource ${JSON.stringify(ref.resourceId)} is not an approved texture resource ID.`);
     }
-    const descriptor = cache.descriptor(ref.resourceId);
     if (!descriptor.allowedSlots.includes(slot)) {
       throw new ProceduralTextureError(`portableMaterial.textures.${slot} resource ${JSON.stringify(ref.resourceId)} is not approved for that slot.`);
     }
@@ -20381,7 +21142,7 @@ async function compilePortableMaterialSpecV2(input) {
   }
   const loaded = new Map;
   await Promise.all(entries.map(async ([slot, ref]) => {
-    const texture = ref.kind === "procedural" ? proceduralTexture(ref.spec) : (await cache.load(ref.resourceId)).texture;
+    const texture = ref.kind === "procedural" ? proceduralTexture(ref.spec) : await resolver.loadApprovedTexture(ref.resourceId);
     loaded.set(slot, texture);
   }));
   const materialOptions = {
@@ -20407,10 +21168,9 @@ async function compilePortableMaterialSpecV2(input) {
   material.userData["kilnPortableMaterial"] = spec;
   return material;
 }
-var SLOT_USAGE, isApprovedResourceId = (value) => APPROVED_TEXTURE_RESOURCE_IDS.includes(value);
+var SLOT_USAGE;
 var init_portable_material_runtime = __esm(() => {
-  init_material_recipes();
-  init_material_resources();
+  init_texture_resolver();
   init_procedural_material_v2();
   init_procedural_texture();
   init_textures();
@@ -20424,7 +21184,7 @@ var init_portable_material_runtime = __esm(() => {
 });
 
 // src/uv.ts
-import * as THREE29 from "three";
+import * as THREE30 from "three";
 async function getXatlas() {
   if (!_xatlasReady) {
     _xatlasReady = (async () => {
@@ -20470,16 +21230,16 @@ async function autoUnwrap(geometry, opts = {}) {
     xa.destroyAtlas();
     throw new Error("autoUnwrap: xatlas returned no meshes");
   }
-  const out = new THREE29.BufferGeometry;
-  out.setAttribute("position", new THREE29.BufferAttribute(new Float32Array(mesh.vertex.vertices), 3));
+  const out = new THREE30.BufferGeometry;
+  out.setAttribute("position", new THREE30.BufferAttribute(new Float32Array(mesh.vertex.vertices), 3));
   if (mesh.vertex.normals) {
-    out.setAttribute("normal", new THREE29.BufferAttribute(new Float32Array(mesh.vertex.normals), 3));
+    out.setAttribute("normal", new THREE30.BufferAttribute(new Float32Array(mesh.vertex.normals), 3));
   }
   if (mesh.vertex.coords1) {
-    out.setAttribute("uv", new THREE29.BufferAttribute(new Float32Array(mesh.vertex.coords1), 2));
+    out.setAttribute("uv", new THREE30.BufferAttribute(new Float32Array(mesh.vertex.coords1), 2));
   }
   if (mesh.index) {
-    out.setIndex(new THREE29.BufferAttribute(new Uint32Array(mesh.index), 1));
+    out.setIndex(new THREE30.BufferAttribute(new Uint32Array(mesh.index), 1));
   }
   out.userData["atlas"] = {
     width: result.width,
@@ -20502,7 +21262,7 @@ function toIndexed(geo) {
   for (let i = 0;i < posAttr.count; i++)
     indices[i] = i;
   const out = geo.clone();
-  out.setIndex(new THREE29.BufferAttribute(indices, 1));
+  out.setIndex(new THREE30.BufferAttribute(indices, 1));
   return out;
 }
 function repairZeroNormals(geo) {
@@ -20522,11 +21282,11 @@ function repairZeroNormals(geo) {
   if (broken.size === 0)
     return;
   const acc = new Float32Array(normal.count * 3);
-  const a = new THREE29.Vector3;
-  const b = new THREE29.Vector3;
-  const c = new THREE29.Vector3;
-  const face = new THREE29.Vector3;
-  const edge = new THREE29.Vector3;
+  const a = new THREE30.Vector3;
+  const b = new THREE30.Vector3;
+  const c = new THREE30.Vector3;
+  const face = new THREE30.Vector3;
+  const edge = new THREE30.Vector3;
   for (let t = 0;t + 2 < index.count; t += 3) {
     const tri = [index.getX(t), index.getX(t + 1), index.getX(t + 2)];
     if (!tri.some((i) => broken.has(i)))
@@ -20560,7 +21320,7 @@ var _xatlasReady = null;
 var init_uv = () => {};
 
 // src/uv-shapes.ts
-import * as THREE30 from "three";
+import * as THREE31 from "three";
 function remapUV(geo, options = {}) {
   if (!options || typeof options !== "object" || Array.isArray(options) || Object.keys(options).some((key) => !["scale", "offset"].includes(key))) {
     throw new Error("remapUV: options may contain only scale and offset.");
@@ -20588,7 +21348,7 @@ function remapUV(geo, options = {}) {
     values[i * 2 + 1] = nextV;
   }
   const cloned = geo.clone();
-  cloned.setAttribute("uv", new THREE30.Float32BufferAttribute(values, 2));
+  cloned.setAttribute("uv", new THREE31.Float32BufferAttribute(values, 2));
   if ((scale[0] !== 1 || scale[1] !== 1) && cloned.hasAttribute("tangent")) {
     cloned.deleteAttribute("tangent");
     const previous = cloned.userData.kilnAttributeWarnings;
@@ -20605,7 +21365,7 @@ function remapUV(geo, options = {}) {
 var init_uv_shapes = () => {};
 
 // src/uv-project.ts
-import * as THREE31 from "three";
+import * as THREE32 from "three";
 function projectUV(geometry, options) {
   if (!options || typeof options !== "object" || Array.isArray(options) || !["planar", "box", "cylindrical"].includes(options.projection) || Object.keys(options).some((key) => !["projection", "frame", "seamDegrees", "angularRange", "caps"].includes(key)))
     throw new Error("projectUV: select an explicit planar, box or cylindrical projection with documented options.");
@@ -20643,15 +21403,15 @@ function projectUV(geometry, options) {
         throw new Error("projectUV: index contains an invalid vertex reference.");
     }
   const points = [];
-  const bounds = new THREE31.Box3;
+  const bounds = new THREE32.Box3;
   for (let i = 0;i < positions.count; i++) {
-    const point = new THREE31.Vector3().fromBufferAttribute(positions, i).applyMatrix4(inverse);
+    const point = new THREE32.Vector3().fromBufferAttribute(positions, i).applyMatrix4(inverse);
     if (![point.x, point.y, point.z].every(Number.isFinite))
       throw new Error("projectUV: frame-local positions must be finite.");
     points.push(point);
     bounds.expandByPoint(point);
   }
-  const extent = bounds.getSize(new THREE31.Vector3);
+  const extent = bounds.getSize(new THREE32.Vector3);
   const fit = (point, axis) => extent[axis] > 0 ? (point[axis] - bounds.min[axis]) / extent[axis] : 0.5;
   const outputUVs = new Float32Array(corners * 2);
   const startDegrees = options.angularRange?.[0] ?? options.seamDegrees ?? 180;
@@ -20659,8 +21419,8 @@ function projectUV(geometry, options) {
   const sweep = (options.angularRange?.[1] ?? 360) * Math.PI / 180;
   const fullWrap = options.angularRange === undefined || options.angularRange[1] === 360;
   const wrap = (angle) => (angle % (2 * Math.PI) + 2 * Math.PI) % (2 * Math.PI);
-  const normal = new THREE31.Vector3;
-  const edge = new THREE31.Vector3;
+  const normal = new THREE32.Vector3;
+  const edge = new THREE32.Vector3;
   for (let i = 0;i < corners; i += 3) {
     const triangle = [0, 1, 2].map((offset) => points[index ? index.getX(i + offset) : i + offset]);
     normal.subVectors(triangle[1], triangle[0]).cross(edge.subVectors(triangle[2], triangle[0])).normalize();
@@ -20707,7 +21467,7 @@ function projectUV(geometry, options) {
   const out = geometry.index ? geometry.toNonIndexed() : geometry.clone();
   out.userData = structuredClone(geometry.userData);
   out.setDrawRange(geometry.drawRange.start, geometry.drawRange.count);
-  out.setAttribute("uv", new THREE31.Float32BufferAttribute(outputUVs, 2));
+  out.setAttribute("uv", new THREE32.Float32BufferAttribute(outputUVs, 2));
   if (out.hasAttribute("tangent")) {
     out.deleteAttribute("tangent");
     const previous = out.userData.kilnAttributeWarnings;
@@ -20725,82 +21485,6 @@ var MAX_CORNERS = 2000000, MAX_ATTRIBUTE_BYTES;
 var init_uv_project = __esm(() => {
   init_deform();
   MAX_ATTRIBUTE_BYTES = 128 * 1024 * 1024;
-});
-
-// src/material-recipe-runtime.ts
-import * as THREE32 from "three";
-async function applyMaterialRecipeV1(request, options = {}) {
-  const resolved = resolveMaterialRecipeV1(request);
-  const cache = options.cache ?? DEFAULT_APPROVED_TEXTURE_CACHE;
-  const loaded = new Map;
-  for (const [slot, id] of Object.entries(resolved.textureResources)) {
-    if (id)
-      loaded.set(slot, await cache.load(id));
-  }
-  const materialOptions = {
-    roughness: resolved.roughnessFactor,
-    metalness: resolved.metallicFactor,
-    alphaMode: lowerAlphaMode(resolved.alphaMode),
-    ...resolved.alphaMode === "MASK" ? { alphaCutoff: resolved.alphaCutoff ?? 0.5 } : {},
-    doubleSided: resolved.doubleSided,
-    ...loaded.get("baseColor") ? { albedo: loaded.get("baseColor").texture } : {},
-    ...loaded.get("normal") ? { normal: loaded.get("normal").texture } : {},
-    ...loaded.get("metallicRoughness") ? { metallicRoughness: loaded.get("metallicRoughness").texture } : {},
-    ...loaded.get("emissive") ? { emissive: loaded.get("emissive").texture } : {},
-    ...loaded.get("occlusion") ? { aoMap: loaded.get("occlusion").texture } : {}
-  };
-  const material = pbrMaterial(materialOptions);
-  material.name = options.name ?? request.id;
-  material.color.setRGB(resolved.baseColorFactor[0], resolved.baseColorFactor[1], resolved.baseColorFactor[2], THREE32.LinearSRGBColorSpace);
-  material.opacity = resolved.baseColorFactor[3];
-  material.emissive.setRGB(resolved.emissiveFactor[0], resolved.emissiveFactor[1], resolved.emissiveFactor[2], THREE32.LinearSRGBColorSpace);
-  const resources = [...loaded.values()].map((entry) => entry.provenance).sort((a, b) => `${a.resourceId}:${a.usage}`.localeCompare(`${b.resourceId}:${b.usage}`));
-  const provenance = {
-    schemaVersion: 1,
-    recipeId: request.id,
-    recipeVersion: 1,
-    request: {
-      schemaVersion: 1,
-      id: request.id,
-      ...request.overrides ? {
-        overrides: {
-          ...request.overrides,
-          ...request.overrides.textureResources ? { textureResources: { ...request.overrides.textureResources } } : {}
-        }
-      } : {}
-    },
-    portableModel: "pbrMetallicRoughness",
-    resources
-  };
-  material.userData["kilnMaterialRecipe"] = provenance;
-  return { material, resolved, provenance };
-}
-async function materialRecipe(id, overrides, options = {}) {
-  return (await applyMaterialRecipeV1(createMaterialRecipeRequestV1(id, overrides), options)).material;
-}
-function readMaterialRecipeApplication(material) {
-  return material.userData["kilnMaterialRecipe"];
-}
-function collectMaterialRecipeApplications(root) {
-  const applications = new Map;
-  root.traverse((node) => {
-    const value = node.material;
-    const materials = Array.isArray(value) ? value : value ? [value] : [];
-    for (const material of materials) {
-      const application = readMaterialRecipeApplication(material);
-      if (!application)
-        continue;
-      const resourceKey = application.resources.map((resource) => `${resource.resourceId}:${resource.contentHash}`).sort().join(",");
-      applications.set(`${application.recipeId}:${JSON.stringify(application.request)}:${resourceKey}`, application);
-    }
-  });
-  return [...applications.values()].sort((a, b) => a.recipeId.localeCompare(b.recipeId));
-}
-var lowerAlphaMode = (value) => value === "MASK" ? "mask" : value === "BLEND" ? "blend" : "opaque";
-var init_material_recipe_runtime = __esm(() => {
-  init_material_recipes();
-  init_material_resources();
-  init_textures();
 });
 
 // src/primitives.ts
@@ -21875,7 +22559,11 @@ function buildSandboxGlobals(usage, options = {}) {
     createStairs: wrap("createStairs", createStairs),
     gameMaterial: wrap("gameMaterial", gameMaterial),
     materialRecipe: wrap("materialRecipe", sandboxMaterialRecipe),
-    compilePortableMaterialSpecV2: wrap("compilePortableMaterialSpecV2", compilePortableMaterialSpecV2),
+    compilePortableMaterialSpecV2: wrap("compilePortableMaterialSpecV2", (...args) => {
+      if (args.length !== 1)
+        return Promise.reject(new TypeError("compilePortableMaterialSpecV2 accepts exactly one material spec"));
+      return compilePortableMaterialSpecV2(args[0], { resolver: options.textureResolver });
+    }),
     basicMaterial: wrap("basicMaterial", basicMaterial),
     glassMaterial: wrap("glassMaterial", glassMaterial),
     lambertMaterial: wrap("lambertMaterial", lambertMaterial),
@@ -22356,29 +23044,6 @@ var init_material_metrics = __esm(() => {
       })
     })
   });
-});
-
-// src/texture-resolver.ts
-function createTextureResolver(cache = DEFAULT_APPROVED_TEXTURE_CACHE) {
-  return Object.freeze({
-    async loadApprovedTexture(resourceId) {
-      if (typeof resourceId !== "string") {
-        throw new RangeError("Unsupported approved texture resource ID.");
-      }
-      return (await cache.load(resourceId)).texture;
-    },
-    async materialRecipe(id, overrides) {
-      if (typeof id !== "string")
-        throw new TypeError("materialRecipe id must be a string");
-      return materialRecipe(id, overrides, { cache });
-    }
-  });
-}
-var DEFAULT_TEXTURE_RESOLVER;
-var init_texture_resolver = __esm(() => {
-  init_material_resources();
-  init_material_recipe_runtime();
-  DEFAULT_TEXTURE_RESOLVER = createTextureResolver();
 });
 
 // src/source-bindings.ts
@@ -23332,7 +23997,7 @@ var init_kit = __esm(() => {
 });
 
 // src/texture-bake.ts
-import { createHash as createHash7 } from "node:crypto";
+import { createHash as createHash8 } from "node:crypto";
 import * as THREE34 from "three";
 function readPixels(texture) {
   const image = texture.image;
@@ -23435,8 +24100,8 @@ async function bakeSceneTextures(root, warnings) {
       height: raw.height,
       hasAlpha: hasTranslucentPixel(raw)
     };
-    const sha1 = createHash7("sha1").update(bytes).digest("hex");
-    const imageSha256 = `sha256:${createHash7("sha256").update(bytes).digest("hex")}`;
+    const sha1 = createHash8("sha1").update(bytes).digest("hex");
+    const imageSha256 = `sha256:${createHash8("sha256").update(bytes).digest("hex")}`;
     baked.push({
       schemaVersion: 1,
       texture: name,
@@ -25026,6 +25691,7 @@ var init_subprocess = __esm(() => {
   init_authoring_diagnostic();
   init_run();
   init_requirements_context();
+  init_material_library_node();
   init_protocol();
   DEFAULT_MAX_GLB_BYTES = 16 * 1024 * 1024;
   DEFAULT_MAX_RESPONSE_BYTES = 32 * 1024 * 1024;
@@ -26662,19 +27328,30 @@ async function renderGLBInProcess(code, opts = {}) {
   const requirements = resolveRequirementsContext(opts.requirements);
   if (opts.geometryPolicy !== undefined && !["warn", "strict"].includes(opts.geometryPolicy))
     throw new Error("geometryPolicy must be warn or strict");
+  let textureResolver = opts.textureResolver ?? DEFAULT_TEXTURE_RESOLVER;
+  const rebuildOptions = {
+    gltfExporter: resolveGltfExporter(opts.gltfExporter),
+    geometryPolicy: opts.geometryPolicy ?? "warn",
+    optimize: resolveOptimize(opts.optimize),
+    instance: resolveInstance(opts.instance)
+  };
+  let materialLibraryDependencies;
+  if (opts.materialResources) {
+    await Promise.resolve().then(() => init_material_library_node());
+    const materialRecords = await decodeMaterialLibraryPayload(opts.materialResources);
+    materialLibraryDependencies = materialRecords.map((record) => structuredClone(record.manifest));
+    textureResolver = await createMaterialLibraryTextureResolver(materialRecords, textureResolver);
+  }
   const { meta, root, clips, primitiveUsage } = await executeKilnCode(code, {
-    textureResolver: opts.textureResolver ?? DEFAULT_TEXTURE_RESOLVER,
+    textureResolver,
     console: opts.diagnosticConsole
   });
   const scene = await renderSceneToGLB(root, {
-    gltfExporter: opts.gltfExporter,
+    ...rebuildOptions,
     sceneName: meta.name || "Scene",
-    geometryPolicy: opts.geometryPolicy,
     clips,
     requirements: requirements.binding,
-    role: meta.role,
-    ...opts.optimize ? { optimize: opts.optimize } : {},
-    ...opts.instance ? { instance: opts.instance } : {}
+    role: meta.role
   });
   const {
     category: modelCategory,
@@ -26687,6 +27364,8 @@ async function renderGLBInProcess(code, opts = {}) {
   } = meta;
   return {
     glb: Buffer.from(scene.bytes),
+    rebuildOptions,
+    ...materialLibraryDependencies ? { materialLibraryDependencies } : {},
     requirements: scene.requirements,
     artifactGlbSha256: scene.artifactGlbSha256,
     tris: scene.tris,
@@ -26899,8 +27578,10 @@ var init_protocol = __esm(() => {
   init_authoring_diagnostic();
   init_requirements_context();
   init_requirements_report();
+  init_material_library_node();
+  init_rebuild_options();
   MAX_EVALUATOR_CODE_BYTES = 512 * 1024;
-  MAX_EVALUATOR_REQUEST_BYTES = 1024 * 1024;
+  MAX_EVALUATOR_REQUEST_BYTES = 24 * 1024 * 1024;
   DEFAULT_EVALUATOR_MAX_GLB_BYTES = 16 * 1024 * 1024;
   DEFAULT_EVALUATOR_MAX_RESPONSE_BYTES = 32 * 1024 * 1024;
   EVALUATOR_OUTCOME_MESSAGES = {
@@ -26935,6 +27616,282 @@ var init_protocol = __esm(() => {
       return result;
     }
   };
+});
+
+// src/projects.ts
+import { z as z9 } from "zod";
+function checkContent(data, ctx) {
+  const unique = (items, path) => {
+    if (new Set(items).size !== items.length)
+      ctx.addIssue({ code: z9.ZodIssueCode.custom, path: [path], message: "Duplicate identity" });
+  };
+  unique(data.inventory.map((v) => v.id), "inventory");
+  unique(data.references.map((v) => v.id), "references");
+  unique(data.deliveryProfiles.map((v) => v.id), "deliveryProfiles");
+  unique(data.materialDependencies.map((v) => v.resourceId), "materialDependencies");
+  unique(data.reviews.map((v) => v.id), "reviews");
+  unique(data.design.palette.map((v) => v.role), "design.palette");
+  unique(data.design.materialRoles.map((v) => v.role), "design.materialRoles");
+  const references = new Set(data.references.map((v) => v.id));
+  const inventory = new Set(data.inventory.map((v) => v.id));
+  const resources = new Set(data.materialDependencies.map((v) => v.resourceId));
+  for (const item of data.inventory) {
+    unique(item.references, `inventory.${item.id}.references`);
+    if (item.references.some((id) => !references.has(id)))
+      ctx.addIssue({
+        code: z9.ZodIssueCode.custom,
+        path: ["inventory"],
+        message: "Unknown reference"
+      });
+  }
+  if (data.reviews.some((review) => !inventory.has(review.inventoryId)))
+    ctx.addIssue({
+      code: z9.ZodIssueCode.custom,
+      path: ["reviews"],
+      message: "Unknown inventory item"
+    });
+  if (data.design.materialRoles.some((role) => role.resourceId && !resources.has(role.resourceId)))
+    ctx.addIssue({
+      code: z9.ZodIssueCode.custom,
+      path: ["design"],
+      message: "Material role requires a locked resource"
+    });
+}
+var MAX_PROJECT_BYTES, projectIdSchema, projectRevisionIdSchema, hash3, text6, resourceId2, assetReference, projectDesignSchema, projectMaterialDependencySchema, materialDependenciesSchema, content, projectDraftSchema, projectPatchSchema, projectRevisionSchema;
+var init_projects = __esm(() => {
+  MAX_PROJECT_BYTES = 1024 * 1024;
+  projectIdSchema = z9.string().regex(/^[a-z][a-z0-9_-]{0,79}$/).refine((value) => !/^(con|prn|aux|nul|com[1-9]|lpt[1-9])$/.test(value), "Reserved filesystem name");
+  projectRevisionIdSchema = z9.string().regex(/^r_[0-9]{10}_[a-f0-9]{64}$/);
+  hash3 = z9.string().regex(/^sha256:[a-f0-9]{64}$/);
+  text6 = z9.string().max(4000);
+  resourceId2 = z9.string().regex(/^[a-zA-Z0-9][a-zA-Z0-9_.:/-]{0,199}$/);
+  assetReference = z9.object({
+    collectionId: projectIdSchema,
+    assetId: projectIdSchema,
+    revisionId: projectIdSchema
+  }).strict();
+  projectDesignSchema = z9.object({
+    style: text6.default(""),
+    scale: z9.string().max(1000).default(""),
+    palette: z9.array(z9.object({
+      role: z9.string().min(1).max(100),
+      color: z9.string().regex(/^#[a-fA-F0-9]{6}$/)
+    }).strict()).max(64).default([]),
+    materialRoles: z9.array(z9.object({
+      role: z9.string().min(1).max(100),
+      description: text6.default(""),
+      resourceId: resourceId2.optional()
+    }).strict()).max(128).default([]),
+    conventions: z9.array(z9.string().max(1000)).max(100).default([]),
+    exceptions: z9.array(z9.string().max(1000)).max(100).default([])
+  }).strict();
+  projectMaterialDependencySchema = z9.object({
+    resourceId: resourceId2,
+    revisionId: z9.string().min(1).max(200),
+    sha256: hash3,
+    role: z9.string().max(100).optional()
+  }).strict();
+  materialDependenciesSchema = z9.array(projectMaterialDependencySchema).max(512);
+  content = {
+    name: z9.string().trim().min(1).max(200),
+    brief: z9.string().max(16000).default(""),
+    design: projectDesignSchema.default(() => projectDesignSchema.parse({})),
+    inventory: z9.array(z9.object({
+      id: projectIdSchema,
+      name: z9.string().trim().min(1).max(200),
+      kind: z9.enum(["asset", "environment"]).default("asset"),
+      brief: text6.default(""),
+      references: z9.array(projectIdSchema).max(64).default([]),
+      asset: assetReference.optional()
+    }).strict()).max(1000).default([]),
+    deliveryProfiles: z9.array(z9.object({
+      id: projectIdSchema,
+      target: z9.enum(["three", "godot", "unity", "unreal", "roblox", "sbox", "usdz", "custom"]),
+      description: text6.default(""),
+      performanceIntent: z9.string().max(1000).default(""),
+      constraints: z9.array(z9.string().max(1000)).max(100).default([])
+    }).strict()).max(32).default([]),
+    materialDependencies: materialDependenciesSchema.default([]),
+    references: z9.array(z9.object({
+      id: projectIdSchema,
+      title: z9.string().min(1).max(200),
+      uri: z9.string().min(1).max(2048),
+      description: text6.default(""),
+      sha256: hash3.optional()
+    }).strict()).max(256).default([]),
+    reviews: z9.array(z9.object({
+      id: projectIdSchema,
+      inventoryId: projectIdSchema,
+      projectRevisionId: projectRevisionIdSchema,
+      asset: assetReference,
+      reviewer: z9.string().trim().min(1).max(200),
+      verdict: z9.enum(["comment", "changes-requested", "accepted"]),
+      notes: text6
+    }).strict()).max(2000).default([])
+  };
+  projectDraftSchema = z9.object({
+    projectId: projectIdSchema.optional(),
+    ...content
+  }).strict().superRefine(checkContent);
+  projectPatchSchema = z9.object({
+    name: content.name.optional(),
+    brief: content.brief.removeDefault().optional(),
+    design: content.design.removeDefault().optional(),
+    inventory: content.inventory.removeDefault().optional(),
+    deliveryProfiles: content.deliveryProfiles.removeDefault().optional(),
+    materialDependencies: content.materialDependencies.removeDefault().optional(),
+    references: content.references.removeDefault().optional(),
+    reviews: content.reviews.removeDefault().optional()
+  }).strict();
+  projectRevisionSchema = z9.object({
+    version: z9.literal("kiln.project.v1"),
+    projectId: projectIdSchema,
+    revisionId: projectRevisionIdSchema,
+    parentRevision: projectRevisionIdSchema.optional(),
+    createdAt: z9.string().datetime(),
+    ...content
+  }).strict().superRefine(checkContent);
+});
+
+// src/asset-export.ts
+async function sha2562(bytes) {
+  const digest = await crypto.subtle.digest("SHA-256", Uint8Array.from(bytes));
+  return `sha256:${Array.from(new Uint8Array(digest), (byte) => byte.toString(16).padStart(2, "0")).join("")}`;
+}
+function validateMetadataFileName(name) {
+  if (name.length > 200 || !/^[a-z0-9][a-z0-9._-]*\.kiln-metadata\.json$/i.test(name) || /^(con|prn|aux|nul|com[0-9]|lpt[0-9])\./i.test(name))
+    throw new Error("Runtime metadata filename must be a portable sibling *.kiln-metadata.json filename");
+}
+async function exportAssetGlb(record, options = {}) {
+  const profile = options.profile ?? "editable";
+  if (profile !== "editable" && profile !== "runtime")
+    throw new Error("Unknown export profile");
+  validateRecordShape(record);
+  const bytes = record.files["asset.glb"];
+  if (profile === "editable")
+    return { profile, glb: bytes };
+  const name = options.metadataFileName ?? "runtime.kiln-metadata.json";
+  validateMetadataFileName(name);
+  for (const [file, data] of Object.entries(record.files)) {
+    if (await sha2562(data) !== record.manifest.files[file].sha256)
+      throw new Error(`Asset integrity mismatch: ${file}`);
+  }
+  const view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
+  let end = 12;
+  while (end < bytes.length) {
+    if (end + 8 > bytes.length)
+      throw new Error("Invalid GLB chunk header");
+    const length = view.getUint32(end, true);
+    if (length % 4 || end + 8 + length > bytes.length)
+      throw new Error("Invalid GLB chunk length");
+    end += 8 + length;
+  }
+  const jsonEnd = 20 + view.getUint32(12, true);
+  const json = JSON.parse(decoder.decode(bytes.subarray(20, jsonEnd)));
+  if (!object2(json) || !object2(json.asset) || json.asset.version !== "2.0")
+    throw new Error("Invalid glTF asset");
+  const asset = json.asset;
+  if (owns(asset, "extras") && !object2(asset.extras))
+    throw new Error("Cannot add provenance to non-object asset extras");
+  const extras = asset.extras ?? {};
+  if (owns(extras, "kilnProvenanceV1"))
+    throw new Error("Asset extras already contain kilnProvenanceV1; export from the canonical revision");
+  const scenes = [];
+  if (json.scenes !== undefined && !Array.isArray(json.scenes))
+    throw new Error("Invalid glTF scenes");
+  for (const [index, scene] of (json.scenes ?? []).entries()) {
+    if (!object2(scene) || !object2(scene.extras) || !owns(scene.extras, "kilnReviewClipsV1"))
+      continue;
+    const review = scene.extras.kilnReviewClipsV1;
+    if (!object2(review) || review.version !== 1 || !Array.isArray(review.clips))
+      throw new Error("Unsupported scenes[].extras.kilnReviewClipsV1");
+    scenes.push({ index, kilnReviewClipsV1: review });
+    delete scene.extras.kilnReviewClipsV1;
+  }
+  const metadata = {
+    version: "kiln.runtime-metadata.v1",
+    source: {
+      assetId: record.manifest.assetId,
+      revisionId: record.manifest.revisionId,
+      glbSha256: record.manifest.files["asset.glb"].sha256,
+      ...record.manifest.files["source.kiln.js"] ? { sourceSha256: record.manifest.files["source.kiln.js"].sha256 } : {}
+    },
+    scenes
+  };
+  const metadataBytes = encoder2.encode(JSON.stringify(metadata));
+  asset.extras = {
+    ...extras,
+    kilnProvenanceV1: {
+      version: "kiln.provenance.v1",
+      profile: "runtime",
+      metadata: { uri: name, sha256: await sha2562(metadataBytes) }
+    }
+  };
+  const jsonBytes = encoder2.encode(JSON.stringify(json));
+  const length = Math.ceil(jsonBytes.length / 4) * 4;
+  const result = new Uint8Array(20 + length + bytes.length - jsonEnd);
+  if (result.length > ASSET_LIMIT || metadataBytes.length > ASSET_LIMIT)
+    throw new Error("Runtime export exceeds 64 MiB");
+  result.set(bytes.subarray(0, 20));
+  const header = new DataView(result.buffer);
+  header.setUint32(8, result.length, true);
+  header.setUint32(12, length, true);
+  result.fill(32, 20, 20 + length);
+  result.set(jsonBytes, 20);
+  result.set(bytes.subarray(jsonEnd), 20 + length);
+  return { profile, glb: result, metadata: { name, bytes: metadataBytes } };
+}
+var encoder2, decoder, object2 = (value) => value !== null && typeof value === "object" && !Array.isArray(value), owns = (value, key) => Object.hasOwn(value, key);
+var init_asset_export = __esm(() => {
+  init_assets();
+  encoder2 = new TextEncoder;
+  decoder = new TextDecoder;
+});
+
+// src/project-bundle.ts
+import { z as z10 } from "zod";
+import { zipSync as zipSync2, unzipSync as unzipSync2 } from "three/addons/libs/fflate.module.js";
+async function projectBundleHash(bytes) {
+  const result = new Uint8Array(await crypto.subtle.digest("SHA-256", Uint8Array.from(bytes)));
+  return `sha256:${Array.from(result, (byte) => byte.toString(16).padStart(2, "0")).join("")}`;
+}
+var PROJECT_BUNDLE_LIMITS, hashSchema, id2 = "[a-z][a-z0-9_-]{0,79}", pathSchema, identitySchema, projectBundleManifestSchema, encoder3, decoder2;
+var init_project_bundle = __esm(() => {
+  init_assets();
+  init_asset_export();
+  init_projects();
+  init_material_library();
+  PROJECT_BUNDLE_LIMITS = Object.freeze({
+    maxBytes: 256 * 1024 * 1024,
+    maxArchiveBytes: 264 * 1024 * 1024,
+    maxEntries: 8192,
+    maxManifestBytes: 2 * 1024 * 1024
+  });
+  hashSchema = z10.string().regex(/^sha256:[a-f0-9]{64}$/);
+  pathSchema = z10.string().regex(new RegExp(`^(project\\.json|materials/${id2}/[a-f0-9]{64}/(manifest\\.json|baseColor\\.png|normal\\.png|metallicRoughness\\.png|emissive\\.png|occlusion\\.png)|assets/${id2}/${id2}/${id2}/(manifest\\.json|asset\\.glb|source\\.kiln\\.js|preview\\.png|runtime\\.glb|runtime\\.kiln-metadata\\.json))$`));
+  identitySchema = z10.object({
+    inventoryId: assetIdSchema,
+    collectionId: assetIdSchema,
+    assetId: assetIdSchema,
+    revisionId: assetIdSchema,
+    canonicalGlbSha256: hashSchema
+  }).strict();
+  projectBundleManifestSchema = z10.object({
+    version: z10.literal("kiln.project-bundle.v1"),
+    profile: z10.enum(["editable", "runtime"]),
+    editable: z10.boolean(),
+    resourceClosure: z10.enum(["normalized-maps-and-procedural-recipes", "embedded-runtime-only"]),
+    referenceMediaIncluded: z10.literal(false),
+    originalAcquisitionFilesIncluded: z10.literal(false),
+    assets: z10.array(identitySchema).max(1000),
+    materials: z10.array(z10.object({ materialId: assetIdSchema, revisionId: hashSchema }).strict()).max(1024),
+    files: z10.record(pathSchema, z10.object({
+      sha256: hashSchema,
+      bytes: z10.number().int().nonnegative().max(64 * 1024 * 1024)
+    }).strict())
+  }).strict();
+  encoder3 = new TextEncoder;
+  decoder2 = new TextDecoder("utf-8", { fatal: true });
 });
 
 // src/views/port.ts
@@ -27344,7 +28301,7 @@ async function accessorFingerprint(accessor) {
     accessor.getType(),
     accessor.getComponentType(),
     accessor.getNormalized(),
-    await digest2(new Uint8Array(array.buffer, array.byteOffset, array.byteLength))
+    await digest3(new Uint8Array(array.buffer, array.byteOffset, array.byteLength))
   ];
 }
 function bounds(box) {
@@ -27354,11 +28311,11 @@ function bounds(box) {
     size: box.getSize(new Vector334).toArray()
   };
 }
-async function digest2(bytes) {
+async function digest3(bytes) {
   const hash = new Uint8Array(await crypto.subtle.digest("SHA-256", Uint8Array.from(bytes)));
   return `sha256:${[...hash].map((b) => b.toString(16).padStart(2, "0")).join("")}`;
 }
-async function snapshot2(bytes) {
+async function snapshot3(bytes) {
   if (bytes.byteLength > MAX_GLB_BYTES)
     throw new Error("Revision comparison GLB exceeds 64 MiB.");
   const io = createGltfIO();
@@ -27466,7 +28423,7 @@ async function snapshot2(bytes) {
       });
     }
   }
-  return { parts, animation, scenePath, bounds: bounds(box), glbSha256: await digest2(bytes) };
+  return { parts, animation, scenePath, bounds: bounds(box), glbSha256: await digest3(bytes) };
 }
 function accessorEqual(a, b) {
   return a === b || Boolean(a && b && a.equals(b, ACCESSOR_IGNORED));
@@ -27482,8 +28439,8 @@ async function compareRevisionGlbs(before, after, page = {}) {
     throw new Error("Revision comparison page requires offset >= 0 and limit 1..100.");
   if (page.paths !== undefined && (page.paths.length < 1 || page.paths.length > 12 || new Set(page.paths).size !== page.paths.length || page.paths.some((path) => typeof path !== "string" || !path.startsWith("/") || path.length > 4096)))
     throw new Error("Revision comparison paths require 1..12 distinct exact exported-node paths.");
-  const previous = await snapshot2(before);
-  const current = await snapshot2(after);
+  const previous = await snapshot3(before);
+  const current = await snapshot3(after);
   const subtrees = page.paths?.map((path) => {
     const key = path.startsWith(`${previous.scenePath}/`) ? path.slice(previous.scenePath.length) : "";
     const part = previous.parts.get(key);
@@ -27873,101 +28830,6 @@ var init_surface_distance = __esm(() => {
   init_camera();
 });
 
-// src/asset-export.ts
-async function sha2562(bytes) {
-  const digest = await crypto.subtle.digest("SHA-256", Uint8Array.from(bytes));
-  return `sha256:${Array.from(new Uint8Array(digest), (byte) => byte.toString(16).padStart(2, "0")).join("")}`;
-}
-function validateMetadataFileName(name) {
-  if (name.length > 200 || !/^[a-z0-9][a-z0-9._-]*\.kiln-metadata\.json$/i.test(name) || /^(con|prn|aux|nul|com[0-9]|lpt[0-9])\./i.test(name))
-    throw new Error("Runtime metadata filename must be a portable sibling *.kiln-metadata.json filename");
-}
-async function exportAssetGlb(record, options = {}) {
-  const profile = options.profile ?? "editable";
-  if (profile !== "editable" && profile !== "runtime")
-    throw new Error("Unknown export profile");
-  validateRecordShape(record);
-  const bytes = record.files["asset.glb"];
-  if (profile === "editable")
-    return { profile, glb: bytes };
-  const name = options.metadataFileName ?? "runtime.kiln-metadata.json";
-  validateMetadataFileName(name);
-  for (const [file, data] of Object.entries(record.files)) {
-    if (await sha2562(data) !== record.manifest.files[file].sha256)
-      throw new Error(`Asset integrity mismatch: ${file}`);
-  }
-  const view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
-  let end = 12;
-  while (end < bytes.length) {
-    if (end + 8 > bytes.length)
-      throw new Error("Invalid GLB chunk header");
-    const length = view.getUint32(end, true);
-    if (length % 4 || end + 8 + length > bytes.length)
-      throw new Error("Invalid GLB chunk length");
-    end += 8 + length;
-  }
-  const jsonEnd = 20 + view.getUint32(12, true);
-  const json = JSON.parse(decoder.decode(bytes.subarray(20, jsonEnd)));
-  if (!object2(json) || !object2(json.asset) || json.asset.version !== "2.0")
-    throw new Error("Invalid glTF asset");
-  const asset = json.asset;
-  if (owns(asset, "extras") && !object2(asset.extras))
-    throw new Error("Cannot add provenance to non-object asset extras");
-  const extras = asset.extras ?? {};
-  if (owns(extras, "kilnProvenanceV1"))
-    throw new Error("Asset extras already contain kilnProvenanceV1; export from the canonical revision");
-  const scenes = [];
-  if (json.scenes !== undefined && !Array.isArray(json.scenes))
-    throw new Error("Invalid glTF scenes");
-  for (const [index, scene] of (json.scenes ?? []).entries()) {
-    if (!object2(scene) || !object2(scene.extras) || !owns(scene.extras, "kilnReviewClipsV1"))
-      continue;
-    const review = scene.extras.kilnReviewClipsV1;
-    if (!object2(review) || review.version !== 1 || !Array.isArray(review.clips))
-      throw new Error("Unsupported scenes[].extras.kilnReviewClipsV1");
-    scenes.push({ index, kilnReviewClipsV1: review });
-    delete scene.extras.kilnReviewClipsV1;
-  }
-  const metadata = {
-    version: "kiln.runtime-metadata.v1",
-    source: {
-      assetId: record.manifest.assetId,
-      revisionId: record.manifest.revisionId,
-      glbSha256: record.manifest.files["asset.glb"].sha256,
-      ...record.manifest.files["source.kiln.js"] ? { sourceSha256: record.manifest.files["source.kiln.js"].sha256 } : {}
-    },
-    scenes
-  };
-  const metadataBytes = encoder.encode(JSON.stringify(metadata));
-  asset.extras = {
-    ...extras,
-    kilnProvenanceV1: {
-      version: "kiln.provenance.v1",
-      profile: "runtime",
-      metadata: { uri: name, sha256: await sha2562(metadataBytes) }
-    }
-  };
-  const jsonBytes = encoder.encode(JSON.stringify(json));
-  const length = Math.ceil(jsonBytes.length / 4) * 4;
-  const result = new Uint8Array(20 + length + bytes.length - jsonEnd);
-  if (result.length > ASSET_LIMIT || metadataBytes.length > ASSET_LIMIT)
-    throw new Error("Runtime export exceeds 64 MiB");
-  result.set(bytes.subarray(0, 20));
-  const header = new DataView(result.buffer);
-  header.setUint32(8, result.length, true);
-  header.setUint32(12, length, true);
-  result.fill(32, 20, 20 + length);
-  result.set(jsonBytes, 20);
-  result.set(bytes.subarray(jsonEnd), 20 + length);
-  return { profile, glb: result, metadata: { name, bytes: metadataBytes } };
-}
-var encoder, decoder, object2 = (value) => value !== null && typeof value === "object" && !Array.isArray(value), owns = (value, key) => Object.hasOwn(value, key);
-var init_asset_export = __esm(() => {
-  init_assets();
-  encoder = new TextEncoder;
-  decoder = new TextDecoder;
-});
-
 // src/assets-resources.ts
 var exports_assets_resources = {};
 __export(exports_assets_resources, {
@@ -28258,7 +29120,7 @@ import {
 // src/tools/registry.ts
 init_capture_cache();
 init_assets();
-import { z as z7 } from "zod";
+import { z as z17 } from "zod";
 
 // src/requirements-assets.ts
 init_requirements_context();
@@ -28289,16 +29151,16 @@ function assertSavedRequirementsAuthorized(manifest, current) {
 }
 
 // src/tools/programs.ts
-import { z as z4 } from "zod";
-var refInput = z4.string().regex(programRefPattern).describe("Returned p_ handle or full sha256 ref.");
+import { z as z5 } from "zod";
+var refInput = z5.string().regex(programRefPattern).describe("Returned p_ handle or full sha256 ref.");
 function withProgramReferences(def, store) {
-  if (!(def.inputSchema instanceof z4.ZodObject))
+  if (!(def.inputSchema instanceof z5.ZodObject))
     throw new Error(`${def.name} must have an object input schema.`);
   const inputSchema = def.inputSchema.extend({
-    code: z4.string().optional().describe("New source. Supply code OR programRef."),
+    code: z5.string().optional().describe("New source. Supply code OR programRef."),
     programRef: refInput.optional(),
     ...def.name === "kiln_edit" ? {
-      includeCode: z4.boolean().optional().describe("Return the full updated source. Defaults to false with programRef, true with code.")
+      includeCode: z5.boolean().optional().describe("Return the full updated source. Defaults to false with programRef, true with code.")
     } : {}
   }).refine((input) => input.code !== undefined !== (input.programRef !== undefined), {
     message: "Supply exactly one of code or programRef."
@@ -28339,11 +29201,11 @@ function withProgramReferences(def, store) {
   };
 }
 function createKilnSourceDef(store) {
-  const inputSchema = z4.object({
+  const inputSchema = z5.object({
     programRef: refInput,
-    offset: z4.number().int().min(0).default(0).describe("UTF-16 character offset; use nextOffset to continue."),
-    limit: z4.number().int().min(1).max(16000).default(8000).describe("Maximum characters returned."),
-    query: z4.string().min(1).max(1000).optional().describe("Find literal text at or after offset; return bounded surrounding source.")
+    offset: z5.number().int().min(0).default(0).describe("UTF-16 character offset; use nextOffset to continue."),
+    limit: z5.number().int().min(1).max(16000).default(8000).describe("Maximum characters returned."),
+    query: z5.string().min(1).max(1000).optional().describe("Find literal text at or after offset; return bounded surrounding source.")
   });
   return {
     name: "kiln_source",
@@ -28380,53 +29242,53 @@ function engineIdentity() {
 init_helper_specs();
 
 // src/discovery/catalog-schema.ts
-import { z as z5 } from "zod";
-var text4 = z5.string().trim().min(1);
-var texts = z5.array(text4);
-var id = z5.string().regex(/^(operation|assembly|recipe):[A-Za-z][A-Za-z0-9-]*$/);
+import { z as z6 } from "zod";
+var text5 = z6.string().trim().min(1);
+var texts = z6.array(text5);
+var id = z6.string().regex(/^(operation|assembly|recipe):[A-Za-z][A-Za-z0-9-]*$/);
 var common = {
-  version: z5.literal("kiln.catalog-entry.v1"),
+  version: z6.literal("kiln.catalog-entry.v1"),
   id,
-  name: text4,
-  summary: text4.max(500),
-  family: text4.max(80),
+  name: text5,
+  summary: text5.max(500),
+  family: text5.max(80),
   tags: texts,
   aliases: texts,
   intents: texts,
-  stability: z5.enum(["stable", "experimental", "deprecated"]),
-  related: z5.array(z5.object({
+  stability: z6.enum(["stable", "experimental", "deprecated"]),
+  related: z6.array(z6.object({
     id,
-    relation: z5.enum(["alternative", "prerequisite", "companion"])
+    relation: z6.enum(["alternative", "prerequisite", "companion"])
   }).strict()),
   references: texts,
   limitations: texts
 };
-var operationContractSchema = z5.object({
-  signature: text4,
-  returns: text4,
-  units: text4,
-  axes: text4,
-  origin: text4,
-  execution: z5.enum(["sync", "async"]),
-  ownership: text4,
-  coordinates: text4,
+var operationContractSchema = z6.object({
+  signature: text5,
+  returns: text5,
+  units: text5,
+  axes: text5,
+  origin: text5,
+  execution: z6.enum(["sync", "async"]),
+  ownership: text5,
+  coordinates: text5,
   parameters: texts,
   topology: texts,
   preservation: texts,
   semantics: texts,
-  cost: text4,
-  example: text4
+  cost: text5,
+  example: text5
 }).strict();
-var discoveryEntrySchema = z5.discriminatedUnion("kind", [
-  z5.object({ ...common, kind: z5.literal("operation"), contract: operationContractSchema }).strict(),
-  z5.object({ ...common, kind: z5.literal("assembly"), contract: operationContractSchema }).strict(),
-  z5.object({
+var discoveryEntrySchema = z6.discriminatedUnion("kind", [
+  z6.object({ ...common, kind: z6.literal("operation"), contract: operationContractSchema }).strict(),
+  z6.object({ ...common, kind: z6.literal("assembly"), contract: operationContractSchema }).strict(),
+  z6.object({
     ...common,
-    kind: z5.literal("recipe"),
-    recipe: z5.object({
-      prerequisites: z5.array(id),
+    kind: z6.literal("recipe"),
+    recipe: z6.object({
+      prerequisites: z6.array(id),
       steps: texts.min(1),
-      example: text4,
+      example: text5,
       adaptations: texts,
       checks: texts
     }).strict()
@@ -28448,7 +29310,7 @@ var discoveryEntrySchema = z5.discriminatedUnion("kind", [
   }
 });
 function parseCatalog(value) {
-  const entries = z5.array(discoveryEntrySchema).parse(value);
+  const entries = z6.array(discoveryEntrySchema).parse(value);
   const ids = new Set;
   const names = new Set;
   for (const entry of entries) {
@@ -29540,6 +30402,7 @@ define2("compilePortableMaterialSpecV2", {
   execution: "async",
   parameters: [
     "Strict schemaVersion 2 pbrMetallicRoughness specification.",
+    "For workspace library materials, use the exact portableSpec returned by kiln_material and pin its material revision through per-call materialDependencies (CLI --materials) or an optional project lock. The host supplies verified map bytes; generated source cannot read library paths or fetch missing resources.",
     "baseColor and emissive are numeric color integers from 0x000000 to 0xffffff, for example baseColor: 0x8a867c. CSS strings and materialRecipe hex-string overrides are not accepted here.",
     "Texture references use typed procedural specs or approved resource IDs; arbitrary URLs, paths, callbacks and shaders are rejected.",
     'Each texture value is { kind: "resource", resourceId: "kiln.texture..." } or { kind: "procedural", spec: { schemaVersion: 2, ... } }. Bare ID strings are invalid; unlike materialRecipe.textureResources, this API requires the tagged object.'
@@ -29549,8 +30412,12 @@ define2("compilePortableMaterialSpecV2", {
   ]
 }, {
   ...materialMetadata,
-  references: ["src/portable-material-runtime.ts"],
-  aliases: ["portable material specification"],
+  references: [
+    "src/portable-material-runtime.ts",
+    "docs/material-library.md",
+    "docs/projects-and-live-review.md"
+  ],
+  aliases: ["portable material specification", "project material library"],
   intents: ["compile a strict portable material definition"]
 });
 var animationFacts = {
@@ -31490,25 +32357,25 @@ function createLexicalDiscoveryIndex(entries) {
 }
 
 // src/discovery/query-schema.ts
-import { z as z6 } from "zod";
-var selector = z6.string().trim().min(1).max(120);
+import { z as z7 } from "zod";
+var selector = z7.string().trim().min(1).max(120);
 function discoverySelectorMigration(keys) {
   if (!keys.some((key) => ["category", "name", "names"].includes(key)))
     return;
   return "Legacy Discovery selectors category/name/names were removed. Use query for search, ids (CLI --id) for exact contracts, and family (CLI --family), kind or tags for filtering. See docs/migration.md.";
 }
-var discoveryInputSchema = z6.object({
-  query: z6.string().trim().min(1).max(500).optional(),
-  ids: z6.array(selector).min(1).max(6).refine((ids) => new Set(ids).size === ids.length, {
+var discoveryInputSchema = z7.object({
+  query: z7.string().trim().min(1).max(500).optional(),
+  ids: z7.array(selector).min(1).max(6).refine((ids) => new Set(ids).size === ids.length, {
     message: "Exact IDs must be unique."
   }).optional(),
-  overview: z6.literal(true).optional(),
-  capabilities: z6.literal(true).optional(),
+  overview: z7.literal(true).optional(),
+  capabilities: z7.literal(true).optional(),
   family: selector.optional(),
-  kind: z6.enum(["operation", "assembly", "recipe"]).optional(),
-  tags: z6.array(selector).min(1).max(8).optional(),
-  offset: z6.number().int().min(0).max(1e4).optional(),
-  limit: z6.number().int().min(1).max(12).optional()
+  kind: z7.enum(["operation", "assembly", "recipe"]).optional(),
+  tags: z7.array(selector).min(1).max(8).optional(),
+  offset: z7.number().int().min(0).max(1e4).optional(),
+  limit: z7.number().int().min(1).max(12).optional()
 }, {
   error: (issue) => issue.code === "unrecognized_keys" ? discoverySelectorMigration(issue.keys) : undefined
 }).strict().superRefine((input, context) => {
@@ -31857,11 +32724,544 @@ async function currentCapabilities(context) {
   };
 }
 
+// src/tools/projects.ts
+init_projects();
+import { z as z11 } from "zod";
+var projectToolInput = z11.discriminatedUnion("action", [
+  z11.strictObject({ action: z11.literal("list") }),
+  z11.strictObject({
+    action: z11.literal("get"),
+    projectId: projectIdSchema,
+    revisionId: projectRevisionIdSchema.optional()
+  }),
+  z11.strictObject({ action: z11.literal("create"), draft: projectDraftSchema }),
+  z11.strictObject({
+    action: z11.literal("update"),
+    projectId: projectIdSchema,
+    expectedRevision: projectRevisionIdSchema,
+    patch: projectPatchSchema
+  })
+]);
+function createKilnProjectDef(store, bundleReader) {
+  const schema = bundleReader ? z11.discriminatedUnion("action", [
+    ...projectToolInput.options,
+    z11.strictObject({
+      action: z11.literal("export"),
+      projectId: projectIdSchema,
+      revisionId: projectRevisionIdSchema.optional(),
+      profile: z11.enum(["editable", "runtime"]).default("editable")
+    })
+  ]) : projectToolInput;
+  return {
+    name: "kiln_project",
+    description: "Manage optional shared workspace projects. Assets and materials can be authored, saved and exported without a project; creating one never binds unrelated authoring automatically. list discovers IDs; get reads current or exact historical configuration; create adds a project; update requires the exact expectedRevision and replaces supplied top-level fields. Design preferences, inventory, references, delivery profiles and pinned material dependencies are versioned. Review annotations do not change trusted QA or authorize a release. CLI and the local dashboard use these same records." + (bundleReader ? " export returns an MCP resource URI for an exact editable project ZIP with normalized material maps and recipes, or a runtime GLB/metadata ZIP. Only inventory entries linked to saved revisions contribute assets; referenced concept images and original acquisition archives are not embedded." : ""),
+    inputSchema: schema,
+    annotations: {
+      readOnlyHint: false,
+      destructiveHint: false,
+      idempotentHint: false,
+      openWorldHint: false
+    },
+    run: async (raw) => {
+      const input = schema.parse(raw);
+      if (input.action === "export") {
+        const project = await store.read(input.projectId, input.revisionId);
+        const bytes = await bundleReader(project.projectId, project.revisionId, input.profile);
+        await Promise.resolve().then(() => init_project_bundle());
+        return {
+          ok: true,
+          projectId: project.projectId,
+          revisionId: project.revisionId,
+          profile: input.profile,
+          resource: {
+            uri: `kiln://projects/${project.projectId}/${project.revisionId}/${input.profile}.zip`,
+            mimeType: "application/zip",
+            bytes: bytes.length,
+            sha256: await projectBundleHash(bytes)
+          }
+        };
+      }
+      if (input.action === "list")
+        return { ok: true, projects: await store.list() };
+      const project = input.action === "create" ? await store.create(input.draft) : input.action === "update" ? await store.update(input.projectId, input.expectedRevision, input.patch) : await store.read(input.projectId, input.revisionId);
+      return { ok: true, project };
+    }
+  };
+}
+
+// src/asset-catalog.ts
+async function listAssetCatalog(library) {
+  const entries = [];
+  const errors = [];
+  for (const collection of library.collections()) {
+    try {
+      for (const manifest of await library.list(collection.id))
+        entries.push({ collectionId: collection.id, manifest });
+    } catch (error) {
+      errors.push({
+        collectionId: collection.id,
+        message: error instanceof Error ? error.message : "Collection unavailable"
+      });
+    }
+  }
+  entries.sort((a, b) => b.manifest.createdAt.localeCompare(a.manifest.createdAt) || a.collectionId.localeCompare(b.collectionId) || a.manifest.assetId.localeCompare(b.manifest.assetId) || a.manifest.revisionId.localeCompare(b.manifest.revisionId));
+  return { entries, errors };
+}
+
+// src/tools/materials.ts
+init_material_library();
+init_material_library_node();
+import { z as z13 } from "zod";
+
+// src/material-presets.ts
+init_material_library();
+import { z as z12 } from "zod";
+var catalog2 = [
+  {
+    id: "warm-brick",
+    name: "Warm brick and mortar",
+    family: "architecture",
+    physicalSizeMeters: { width: 2, height: 2 },
+    description: "Staggered masonry with warm clay variation and shallow mortar relief."
+  },
+  {
+    id: "wood-grain",
+    name: "Warm straight wood grain",
+    family: "wood",
+    physicalSizeMeters: { width: 1, height: 1 },
+    description: "Directional grain for props and interior timber; no scanned knots or end grain."
+  },
+  {
+    id: "brushed-metal",
+    name: "Brushed neutral metal",
+    family: "metal",
+    physicalSizeMeters: { width: 1, height: 1 },
+    description: "Fine directional relief and varied roughness, with a fully metallic packed channel."
+  },
+  {
+    id: "woven-fabric",
+    name: "Neutral woven fabric",
+    family: "fabric",
+    physicalSizeMeters: { width: 0.5, height: 0.5 },
+    description: "Crossed threads with a matte dielectric response; no cloth simulation or anisotropy."
+  },
+  {
+    id: "coarse-soil",
+    name: "Coarse brown soil",
+    family: "ground",
+    physicalSizeMeters: { width: 2, height: 2 },
+    description: "Layered granular soil variation and subtle relief for terrain and planting beds."
+  }
+];
+var materialPresetOptionsSchema = z12.object({
+  seed: z12.number().int().min(-2147483648).max(2147483647),
+  size: z12.union([z12.literal(64), z12.literal(128), z12.literal(256), z12.literal(512)]).default(256),
+  creator: z12.string().min(1).max(1000),
+  license: materialSourceSchema.shape.license,
+  materialId: materialLibraryIdSchema.optional()
+}).strict();
+function listMaterialPresets() {
+  return catalog2.map((item) => ({
+    ...item,
+    physicalSizeMeters: { ...item.physicalSizeMeters },
+    tags: [item.family, "procedural"],
+    recipeVersion: 1
+  }));
+}
+function createMaterialPresetDraft(presetId, raw) {
+  assertMaterialJson(raw);
+  const options = materialPresetOptionsSchema.parse(raw);
+  const preset = catalog2.find((item) => item.id === presetId);
+  if (!preset)
+    throw new Error("Unknown material preset");
+  const noise = (colorA, colorB, scale = 8, opacity = 1) => ({
+    op: "noise",
+    colorA,
+    colorB,
+    scale,
+    octaves: 3,
+    seed: options.seed,
+    opacity
+  });
+  const stripes = (colorA, colorB, count, angleDeg = 0, opacity = 1) => ({
+    op: "stripes",
+    colorA,
+    colorB,
+    count: Math.min(count, options.size / 4),
+    angleDeg,
+    opacity
+  });
+  let color;
+  let height;
+  let roughnessLow = 180;
+  let roughnessHigh = 235;
+  let strength = 2;
+  if (presetId === "warm-brick") {
+    const brick = (brick, mortar) => ({
+      op: "bricks",
+      brick,
+      mortar,
+      rows: 12,
+      cols: 4,
+      mortarWidth: 0.07,
+      stagger: 0.5
+    });
+    color = [brick(10968130, 11840150), noise(5257516, 15384730, 16, 0.2)];
+    height = [brick(11579568, 4210752), noise(3158064, 13684944, 16, 0.12)];
+    strength = 3;
+  } else if (presetId === "wood-grain") {
+    color = [noise(7688503, 12358752, 4), stripes(6833455, 13280630, 40, 0, 0.3)];
+    height = [noise(6710886, 10066329, 4), stripes(6710886, 11184810, 40, 0, 0.25)];
+    roughnessLow = 130;
+    roughnessHigh = 190;
+    strength = 1.5;
+  } else if (presetId === "brushed-metal") {
+    color = [noise(10988461, 12370114, 4), stripes(10067102, 12896201, 64, 0, 0.1)];
+    height = [noise(7368816, 9474192, 8), stripes(6710886, 10066329, 64, 0, 0.3)];
+    roughnessLow = 80;
+    roughnessHigh = 130;
+    strength = 1;
+  } else if (presetId === "woven-fabric") {
+    color = [
+      noise(10787463, 12498079, 8),
+      stripes(9866361, 13682609, 32, 0, 0.3),
+      stripes(9866361, 13682609, 32, 90, 0.3)
+    ];
+    height = [
+      noise(6316128, 10066329, 8),
+      stripes(3355443, 13421772, 32, 0, 0.4),
+      stripes(3355443, 13421772, 32, 90, 0.4)
+    ];
+    strength = 1;
+  } else {
+    color = [noise(5061676, 8942420, 4), noise(3418656, 10850155, 32, 0.25)];
+    height = [noise(5592405, 11184810, 8), noise(2236962, 14540253, 32, 0.3)];
+    strength = 1.5;
+  }
+  const spec = (usage, layers) => ({ schemaVersion: 2, size: options.size, usage, layers });
+  const metallic = preset.family === "metal" ? 255 : 0;
+  const packed = (roughness) => 255 << 16 | roughness << 8 | metallic;
+  const common = {
+    sourceId: "preset",
+    transforms: [
+      {
+        operation: "preset",
+        tool: "kiln.material-presets",
+        version: "1",
+        parameters: { presetId, seed: options.seed }
+      }
+    ]
+  };
+  return {
+    materialId: options.materialId ?? preset.id,
+    name: preset.name,
+    tags: [preset.family, "procedural"],
+    tileable: true,
+    physicalSizeMeters: { ...preset.physicalSizeMeters },
+    parameters: { metalness: 1, roughness: 1 },
+    sources: [
+      {
+        id: "preset",
+        kind: "procedural",
+        provider: "Kiln material presets v1",
+        creator: options.creator,
+        assetId: preset.id,
+        license: options.license,
+        originalFiles: []
+      }
+    ],
+    maps: [
+      { ...common, slot: "baseColor", procedural: spec("albedo", color) },
+      {
+        ...common,
+        slot: "normal",
+        procedural: spec("normal", height),
+        derive: { kind: "normal-from-height", strength }
+      },
+      {
+        ...common,
+        slot: "metallicRoughness",
+        procedural: spec("metallicRoughness", [
+          noise(packed(roughnessLow), packed(roughnessHigh), 8)
+        ])
+      }
+    ]
+  };
+}
+
+// src/tools/materials.ts
+var materialToolInput = z13.discriminatedUnion("action", [
+  z13.object({ action: z13.literal("presets"), tag: z13.string().min(1).max(80).optional() }).strict(),
+  materialPresetOptionsSchema.extend({ action: z13.literal("create-preset"), presetId: z13.string().min(1).max(80) }).strict(),
+  z13.object({ action: z13.literal("list"), tag: z13.string().min(1).max(80).optional() }).strict(),
+  z13.object({
+    action: z13.literal("get"),
+    materialId: materialLibraryIdSchema,
+    revisionId: materialLibraryHashSchema
+  }).strict(),
+  z13.object({ action: z13.literal("create-procedural"), draft: proceduralMaterialDraftSchema }).strict(),
+  z13.object({ action: z13.literal("import"), payload: materialLibraryPayloadSchema }).strict()
+]);
+var materialResult = (material) => ({
+  ok: true,
+  material,
+  portableSpec: materialLibraryPortableSpec(material)
+});
+function createKilnMaterialDef(library) {
+  return {
+    name: "kiln_material",
+    description: "Manage optional immutable material resources in this workspace. presets discovers shipped architecture, wood, metal, fabric and ground recipes; create-preset bakes one with an explicit seed, creator and license. list returns compact material/revision summaries; get returns full provenance, hashes, map conventions, physical repeat scale and a code-ready portable material spec. create-procedural bakes bounded editable layer recipes including optional height-derived normals. import accepts complete normalized records with embedded PNG bytes. No operation downloads URLs or executes source. Pin returned materialId/revisionId through per-invocation materialDependencies or project dependencies before authored evaluation resolves the resources; no project is required.",
+    inputSchema: materialToolInput,
+    annotations: {
+      readOnlyHint: false,
+      destructiveHint: false,
+      idempotentHint: true,
+      openWorldHint: false
+    },
+    async run(raw) {
+      assertMaterialJson(raw);
+      const input = materialToolInput.parse(raw);
+      if (input.action === "presets")
+        return {
+          ok: true,
+          presets: listMaterialPresets().filter((item) => !input.tag || item.tags.includes(input.tag))
+        };
+      if (input.action === "create-preset") {
+        const { action: _, presetId, ...options } = input;
+        const record = await createMaterialRecordV1(createMaterialPresetDraft(presetId, options));
+        const [material] = await library.import([record]);
+        return materialResult(material);
+      }
+      if (input.action === "list") {
+        const records = await library.list();
+        return {
+          ok: true,
+          materials: records.filter((item) => !input.tag || item.tags.includes(input.tag)).map((item) => ({
+            materialId: item.materialId,
+            revisionId: item.revisionId,
+            name: item.name,
+            tags: item.tags,
+            tileable: item.tileable,
+            ...item.physicalSizeMeters ? { physicalSizeMeters: item.physicalSizeMeters } : {},
+            slots: item.maps.map((map) => map.slot),
+            licenses: [...new Set(item.sources.map((source) => source.license.spdx))]
+          }))
+        };
+      }
+      if (input.action === "get")
+        return materialResult((await library.read(input.materialId, input.revisionId)).manifest);
+      if (input.action === "create-procedural") {
+        const record = await createMaterialRecordV1(input.draft);
+        const [material] = await library.import([record]);
+        return materialResult(material);
+      }
+      const records = await decodeMaterialLibraryPayload(input.payload);
+      const materials = await library.import(records);
+      return {
+        ok: true,
+        materials: materials.map((material) => ({
+          material,
+          portableSpec: materialLibraryPortableSpec(material)
+        }))
+      };
+    }
+  };
+}
+
+// src/tools/review.ts
+init_assets();
+init_requirements_context();
+import { z as z14 } from "zod";
+init_background();
+var operationId = z14.string().regex(/^op_[a-f0-9-]{36}$/);
+var assetId = z14.string().regex(/^[a-z][a-z0-9_-]{0,79}$/);
+var reviewToolInput = z14.discriminatedUnion("action", [
+  z14.strictObject({ action: z14.literal("list"), projectId: assetId.optional() }),
+  z14.strictObject({ action: z14.literal("get"), operationId }),
+  z14.strictObject({ action: z14.literal("pin"), operationId, pinned: z14.boolean() }),
+  z14.strictObject({
+    action: z14.literal("save"),
+    operationId,
+    expectedRevision: z14.number().int().nonnegative(),
+    collection: assetId.default("project"),
+    name: z14.string().min(1).max(200),
+    assetId: assetId.optional(),
+    parentRevision: assetId.optional(),
+    description: z14.string().max(4000).optional(),
+    tags: z14.array(z14.string().max(80)).max(30).optional()
+  })
+]);
+function createKilnReviewDef(context) {
+  const store = context.reviewStore;
+  return {
+    name: "kiln_review",
+    description: "Read persisted Kiln observation history, pin an operation against normal retention, or save an exact completed reviewed operation into a collection without re-execution. Pinning does not pause an agent. save requires the displayed expectedRevision and matching trusted host requirements, preserves exact source/GLB/capture, and does not assert QA acceptance. Missing or evicted evidence is an error.",
+    inputSchema: reviewToolInput,
+    annotations: {
+      readOnlyHint: false,
+      destructiveHint: false,
+      idempotentHint: false,
+      openWorldHint: false
+    },
+    async run(raw) {
+      const input = reviewToolInput.parse(raw);
+      if (input.action === "list")
+        return { ok: true, ...await store.snapshot({ projectId: input.projectId }) };
+      if (input.action === "pin") {
+        await store.pin(input.operationId, input.pinned);
+        return { ok: true, operation: await store.get(input.operationId) };
+      }
+      const operation = await store.get(input.operationId);
+      if (input.action === "get")
+        return { ok: true, operation };
+      if (!context.assetLibrary)
+        throw new Error("No asset library configured for reviewed save");
+      if (operation.revision !== input.expectedRevision)
+        throw new Error("Review revision changed; refresh before saving");
+      if (operation.status !== "complete" || !operation.artifact)
+        throw new Error("A completed operation with a retained artifact is required");
+      const [glb, source, metadata] = await Promise.all(["asset.glb", "source.kiln.js", "evaluation.json"].map((name) => store.readFile(operation.operationId, name)));
+      validateAssetGlb(glb);
+      const digest = await crypto.subtle.digest("SHA-256", Uint8Array.from(glb));
+      const sha256 = `sha256:${Array.from(new Uint8Array(digest), (byte) => byte.toString(16).padStart(2, "0")).join("")}`;
+      const evaluation = JSON.parse(new TextDecoder().decode(metadata));
+      if (sha256 !== operation.artifact.sha256 || sha256 !== evaluation.artifactGlbSha256)
+        throw new Error("Reviewed artifact identity mismatch");
+      const active = resolveRequirementsContext(context.requirements);
+      if (!requirementsContextsEqual(validateRequirementsContext(evaluation.requirements), active))
+        throw new Error("Reviewed requirements do not match the current trusted host binding");
+      if (input.assetId && input.parentRevision)
+        assertSavedRequirementsAuthorized((await context.assetLibrary.read(input.collection, input.assetId, input.parentRevision)).manifest, active);
+      const code = new TextDecoder().decode(source);
+      const checkpoint = evaluation.requirements.binding ? createRequirementsCheckpoint(await programReference(code), evaluation.requirements.binding) : undefined;
+      const dependencies = [
+        ...evaluation.materialResourceProvenance ?? [],
+        ...(evaluation.materialLibraryDependencies ?? []).map((manifest) => ({
+          kind: "kiln.material.v1",
+          delivery: "runtime",
+          manifest
+        }))
+      ];
+      const preview = operation.captures[0] ? await store.readFile(operation.operationId, operation.captures[0].name) : undefined;
+      const capture = z14.object({ backdrop: z14.enum(BACKDROP_IDS).optional() }).safeParse(operation.result?.capture);
+      const asset = await context.assetLibrary.save(input.collection, {
+        name: input.name,
+        assetId: input.assetId,
+        parentRevision: input.parentRevision,
+        description: input.description,
+        tags: input.tags,
+        code,
+        glb,
+        preview,
+        previewInfo: {
+          fidelity: operation.viewFidelity,
+          ...preview && capture.success && capture.data.backdrop ? { backdrop: capture.data.backdrop } : {}
+        },
+        build: {
+          engine: operation.runtimeIdentity ?? "recorded-build:identity-unavailable",
+          options: {
+            ...evaluation.rebuildOptions,
+            reviewOperationId: operation.operationId,
+            reviewRevision: operation.revision,
+            requirements: evaluation.requirements,
+            ...checkpoint ? { requirementsCheckpoint: checkpoint } : {},
+            ...operation.projectId ? { projectId: operation.projectId, projectRevision: operation.projectRevision } : {}
+          },
+          warnings: evaluation.warnings,
+          integration: evaluation.integrationManifest,
+          qa: evaluation.meta.qaReport,
+          dependencies,
+          rebuild: dependencies.some((item) => item.delivery === "runtime") ? "external-dependencies-required" : "engine-required"
+        }
+      });
+      return { ok: true, collection: input.collection, asset };
+    }
+  };
+}
+
+// src/tools/workspace.ts
+import { z as z16 } from "zod";
+
+// src/workspace.ts
+init_projects();
+import { z as z15 } from "zod";
+var workspaceSelectionSchema = z15.object({
+  projectId: projectIdSchema.nullable().optional().describe("Optional project. Omission is standalone unless the host explicitly configures a default; null always selects standalone authoring."),
+  projectRevision: projectRevisionIdSchema.optional().describe("Exact project revision; requires a selected or configured project."),
+  materialDependencies: materialDependenciesSchema.optional().describe("Exact immutable material pins for this invocation, usable with or without a project. Project locks cannot be replaced.")
+}).strict().superRefine((selection, ctx) => {
+  if (selection.projectId === null && selection.projectRevision !== undefined)
+    ctx.addIssue({
+      code: "custom",
+      path: ["projectRevision"],
+      message: "projectRevision cannot be combined with standalone projectId: null."
+    });
+});
+
+// src/tools/workspace.ts
+async function observeLiveReview(observer, tool, input, run) {
+  let authoring;
+  const invokeOnce = () => authoring ??= Promise.resolve().then(run);
+  try {
+    if (observer)
+      Promise.resolve(observer.observe(tool, input, invokeOnce)).catch(() => {});
+  } catch {}
+  return invokeOnce();
+}
+var observed = new Set([
+  "kiln_render",
+  "kiln_edit",
+  "kiln_screenshot_animation",
+  "kiln_view_interior",
+  "kiln_inspect",
+  "kiln_save"
+]);
+async function observeWorkspaceOperation(context, tool, input, run) {
+  let began = false;
+  const execute = () => {
+    began = true;
+    const project = context.workspace?.current()?.project;
+    return observeLiveReview(context.liveReview, tool, {
+      ...input,
+      ...project ? { projectId: project.projectId, projectRevision: project.revisionId } : {},
+      runtimeIdentity: context.localExecution?.runtimeIdentity
+    }, run);
+  };
+  try {
+    return await (context.workspace ? context.workspace.run({
+      ...typeof input.projectId === "string" || input.projectId === null ? { projectId: input.projectId } : {},
+      ...typeof input.projectRevision === "string" ? { projectRevision: input.projectRevision } : {},
+      ...input.materialDependencies !== undefined ? {
+        materialDependencies: workspaceSelectionSchema.shape.materialDependencies.parse(input.materialDependencies)
+      } : {}
+    }, execute) : execute());
+  } catch (error) {
+    if (began)
+      throw error;
+    return observeLiveReview(context.liveReview, tool, { ...input, runtimeIdentity: context.localExecution?.runtimeIdentity }, async () => {
+      throw error;
+    });
+  }
+}
+function withWorkspaceContext(def, context) {
+  if (!observed.has(def.name))
+    return def;
+  const schema = context.workspace && def.inputSchema instanceof z16.ZodObject ? def.inputSchema.safeExtend(workspaceSelectionSchema.shape) : def.inputSchema;
+  return {
+    ...def,
+    inputSchema: schema,
+    run: async (raw) => {
+      const input = schema.parse(raw);
+      return observeWorkspaceOperation(context, def.name, input, () => def.run(input));
+    }
+  };
+}
+
 // src/build-cache.ts
 init_protocol();
 init_requirements_context();
 init_requirements_report();
-import { createHash as createHash8 } from "node:crypto";
+import { createHash as createHash9 } from "node:crypto";
 import * as acorn2 from "acorn";
 import * as walk3 from "acorn-walk";
 function sourceHasAmbientInputs(code) {
@@ -32007,7 +33407,7 @@ function createCachedEvaluatorPort(evaluator, options) {
       } catch {
         return evaluator.render(code, renderOptions, controls);
       }
-      const key = `sha256:${createHash8("sha256").update(serialized).digest("hex")}`;
+      const key = `sha256:${createHash9("sha256").update(serialized).digest("hex")}`;
       const cached = await options.cache.get(key).catch(() => {
         return;
       });
@@ -32330,6 +33730,7 @@ async function evaluateGeneratedSource(code, context, optimize = "off") {
   const requirements = toolRequirements(context);
   return resolveEvaluatorPortV2(context.evaluatorPort, context.evaluatorProfile ?? "trusted-local").render(code, {
     optimize,
+    ...context.workspace?.current()?.materialResources.records.length ? { materialResources: context.workspace.current().materialResources } : {},
     ...context.geometryPolicy ? { geometryPolicy: context.geometryPolicy } : {},
     ...requirements.binding ? { requirements: requirements.binding } : {}
   }, context.evaluationControls?.());
@@ -32342,6 +33743,9 @@ function evaluationEvidence(rendered) {
 }
 async function loadEvaluatedReviewScene(code, context) {
   const rendered = await evaluateGeneratedSource(code, context);
+  try {
+    context.liveReview?.artifact(code, rendered);
+  } catch {}
   await Promise.resolve().then(() => init_views());
   const scene = await loadGlbReviewScene(rendered.glb);
   return { rendered, ...scene };
@@ -32528,24 +33932,24 @@ function derivativeReviewFidelity(receipts) {
     ...reasonCodes.length ? { reasonCodes } : {}
   };
 }
-var validateInput = z7.object({
-  code: z7.string().describe("Kiln source code (defines `meta` + `build()`, optional `animate()`).")
+var validateInput = z17.object({
+  code: z17.string().describe("Kiln source code (defines `meta` + `build()`, optional `animate()`).")
 });
-var renderInput = z7.object({
-  code: z7.string().describe("Kiln source code to execute and render to an in-memory GLB.")
+var renderInput = z17.object({
+  code: z17.string().describe("Kiln source code to execute and render to an in-memory GLB.")
 });
-var backdropInput = z7.enum(BACKDROP_IDS).optional().describe("Neutral grey unless a sheet shows merging: light if the part is darker, dark if lighter.");
-var legacyCaptureInput = z7.object({
-  preset: z7.enum(["1x1", "1x2", "2x1", "3x1", "2x2", "3x2", "3x3"]).optional().describe("Grid shape as COLSxROWS. Default 3x2. Choose fewer views for simple shapes, up to 3x3 for more angles."),
-  cells: z7.array(z7.object({
-    azimuthDeg: z7.number().describe("0 = front, 90 = right, 180 = back, 270 = left. Wraps."),
-    elevationDeg: z7.number().describe("0 = eye level, positive looks down, negative from below. Clamped to -89..89."),
-    zoom: z7.number().optional().describe("Padding multiplier around the asset bounds for this cell only. Omit for the default framing; below 1 crops in, above 1 pulls back."),
-    name: z7.string().optional().describe("Cell label. Auto-derived from the angles if omitted.")
+var backdropInput = z17.enum(BACKDROP_IDS).optional().describe("Neutral grey unless a sheet shows merging: light if the part is darker, dark if lighter.");
+var legacyCaptureInput = z17.object({
+  preset: z17.enum(["1x1", "1x2", "2x1", "3x1", "2x2", "3x2", "3x3"]).optional().describe("Grid shape as COLSxROWS. Default 3x2. Choose fewer views for simple shapes, up to 3x3 for more angles."),
+  cells: z17.array(z17.object({
+    azimuthDeg: z17.number().describe("0 = front, 90 = right, 180 = back, 270 = left. Wraps."),
+    elevationDeg: z17.number().describe("0 = eye level, positive looks down, negative from below. Clamped to -89..89."),
+    zoom: z17.number().optional().describe("Padding multiplier around the asset bounds for this cell only. Omit for the default framing; below 1 crops in, above 1 pulls back."),
+    name: z17.string().optional().describe("Cell label. Auto-derived from the angles if omitted.")
   })).optional().describe("One camera per cell, in row-major order. Omit to use the preset default cameras. Must not exceed the preset capacity (max 9 overall)."),
   backdrop: backdropInput
 }).optional().describe("Optional. Choose the contact-sheet shape and cameras. Omit it entirely for the standard six-view 3x2 grid, which is the right default for most assets.");
-var cameraVec3Input = z7.array(z7.number()).length(3);
+var cameraVec3Input = z17.array(z17.number()).length(3);
 var orbitCameraError = (issue) => {
   if (issue.code === "unrecognized_keys" && issue.keys?.some((key) => key === "target" || key === "distance")) {
     return "Orbit cameras derive target and distance from the selected subject bounds; choose subject and padding, or use an explicit camera with position and target.";
@@ -32558,47 +33962,47 @@ var advancedCaptureError = (issue) => {
   }
   return;
 };
-var cameraShotInput = z7.object({
-  name: z7.string().optional(),
-  subject: z7.object({ path: z7.string().optional(), name: z7.string().optional() }).strict().refine((v) => v.path === undefined !== (v.name === undefined), {
+var cameraShotInput = z17.object({
+  name: z17.string().optional(),
+  subject: z17.object({ path: z17.string().optional(), name: z17.string().optional() }).strict().refine((v) => v.path === undefined !== (v.name === undefined), {
     message: "Choose subject path OR exact name."
   }).optional(),
-  visibility: z7.enum(["context", "isolate"]).optional(),
-  camera: z7.discriminatedUnion("type", [
-    z7.strictObject({
-      type: z7.literal("orbit"),
-      azimuthDeg: z7.number().optional(),
-      elevationDeg: z7.number().optional(),
-      relativeTo: z7.enum(["world", "asset", "part"]).optional(),
-      padding: z7.number().positive().max(100).optional()
+  visibility: z17.enum(["context", "isolate"]).optional(),
+  camera: z17.discriminatedUnion("type", [
+    z17.strictObject({
+      type: z17.literal("orbit"),
+      azimuthDeg: z17.number().optional(),
+      elevationDeg: z17.number().optional(),
+      relativeTo: z17.enum(["world", "asset", "part"]).optional(),
+      padding: z17.number().positive().max(100).optional()
     }, { error: orbitCameraError }),
-    z7.object({
-      type: z7.literal("explicit"),
-      projection: z7.enum(["orthographic", "perspective"]),
+    z17.object({
+      type: z17.literal("explicit"),
+      projection: z17.enum(["orthographic", "perspective"]),
       position: cameraVec3Input,
       target: cameraVec3Input.optional(),
-      relativeTo: z7.enum(["world", "asset", "part", "local"]).optional(),
-      frame: z7.object({
+      relativeTo: z17.enum(["world", "asset", "part", "local"]).optional(),
+      frame: z17.object({
         origin: cameraVec3Input.optional(),
         rotation: cameraVec3Input.optional()
       }).strict().optional(),
-      framing: z7.enum(["explicit", "bounds"]).optional(),
-      padding: z7.number().positive().max(100).optional(),
+      framing: z17.enum(["explicit", "bounds"]).optional(),
+      padding: z17.number().positive().max(100).optional(),
       targetOffset: cameraVec3Input.optional(),
       up: cameraVec3Input.optional(),
-      halfHeight: z7.number().positive().optional(),
-      fovDeg: z7.number().positive().lt(180).optional(),
-      near: z7.number().positive().optional(),
-      far: z7.number().positive().optional()
+      halfHeight: z17.number().positive().optional(),
+      fovDeg: z17.number().positive().lt(180).optional(),
+      near: z17.number().positive().optional(),
+      far: z17.number().positive().optional()
     }).strict()
   ]).optional()
 }).strict();
-var advancedCaptureInput = z7.strictObject({
-  version: z7.literal("kiln.capture.v1"),
-  shots: z7.array(cameraShotInput).min(1).max(9),
-  cols: z7.number().int().min(1).max(3).optional(),
-  size: z7.number().int().min(128).max(1024).optional(),
-  output: z7.enum(["grid", "separate"]).optional(),
+var advancedCaptureInput = z17.strictObject({
+  version: z17.literal("kiln.capture.v1"),
+  shots: z17.array(cameraShotInput).min(1).max(9),
+  cols: z17.number().int().min(1).max(3).optional(),
+  size: z17.number().int().min(128).max(1024).optional(),
+  output: z17.enum(["grid", "separate"]).optional(),
   backdrop: backdropInput
 }, { error: advancedCaptureError });
 function taggedCaptureError(issue) {
@@ -32612,29 +34016,29 @@ function taggedCaptureError(issue) {
   const details = issues.slice(0, 6).map((problem) => `${problem.path.join(".") || "capture"}: ${problem.message.slice(0, 240)}`);
   return `Invalid kiln.capture.v1: ${details.join("; ")}${issues.length > 6 ? "; additional issues omitted" : ""}`;
 }
-var captureInput = z7.union([
+var captureInput = z17.union([
   advancedCaptureInput,
-  z7.strictObject(legacyCaptureInput.unwrap().shape, {
+  z17.strictObject(legacyCaptureInput.unwrap().shape, {
     error: taggedCaptureError
   })
 ], { error: taggedCaptureError }).optional().describe("Use legacy preset/cells for an orbit sheet, or version kiln.capture.v1 with 1..9 shots for exact part framing, local axes, perspective and separate images. Omit for six default views.");
 var renderViewsInput = renderInput.extend({ capture: captureInput });
 var renderViewsBufferInput = renderViewsInput.omit({ code: true });
-var screenshotAnimationInput = z7.object({
+var screenshotAnimationInput = z17.object({
   shot: cameraShotInput.optional(),
-  measureParts: z7.array(cameraShotInput.shape.subject.unwrap()).min(1).max(16).optional().describe("Exact names or paths of subtrees measured together at each phase, independent of camera selection."),
-  frames: z7.number().int().min(2).max(6).optional(),
-  frameTimes: z7.array(z7.number().min(0).max(1)).min(1).max(9).optional().describe("Ordered phase fractions 0..1; mutually exclusive with frames."),
-  framing: z7.enum(["locked", "follow"]).optional(),
-  code: z7.string().describe("Kiln source code to execute; must define animate() returning the named clip."),
-  clip: z7.string().describe('The animation clip to view, by name (e.g. "walk", "attack"). Must be one your animate() returns.'),
-  camera: z7.string().optional().describe("Camera angle: right (default — side profile, best for leg swing + knee bend direction), front " + "(reveals sideways/lateral motion), back, left, top, or three-quarter."),
-  perFrame: z7.boolean().optional().describe("Return the frames as separate high-res images instead of one composite grid. Default false.")
+  measureParts: z17.array(cameraShotInput.shape.subject.unwrap()).min(1).max(16).optional().describe("Exact names or paths of subtrees measured together at each phase, independent of camera selection."),
+  frames: z17.number().int().min(2).max(6).optional(),
+  frameTimes: z17.array(z17.number().min(0).max(1)).min(1).max(9).optional().describe("Ordered phase fractions 0..1; mutually exclusive with frames."),
+  framing: z17.enum(["locked", "follow"]).optional(),
+  code: z17.string().describe("Kiln source code to execute; must define animate() returning the named clip."),
+  clip: z17.string().describe('The animation clip to view, by name (e.g. "walk", "attack"). Must be one your animate() returns.'),
+  camera: z17.string().optional().describe("Camera angle: right (default — side profile, best for leg swing + knee bend direction), front " + "(reveals sideways/lateral motion), back, left, top, or three-quarter."),
+  perFrame: z17.boolean().optional().describe("Return the frames as separate high-res images instead of one composite grid. Default false.")
 });
-var viewInteriorInput = z7.object({
+var viewInteriorInput = z17.object({
   capture: advancedCaptureInput.optional(),
-  code: z7.string().describe("Kiln source code to execute and render with the roof hidden."),
-  nodeName: z7.string().optional().describe("Override: lift the roof by exact node name instead of by role. Matches that node and its " + "children. Normally OMIT it — Kiln finds the roof from its semantic role (anything built " + 'with createRoofPlanes/createGableRoof), falling back to historical "Roof" naming.')
+  code: z17.string().describe("Kiln source code to execute and render with the roof hidden."),
+  nodeName: z17.string().optional().describe("Override: lift the roof by exact node name instead of by role. Matches that node and its " + "children. Normally OMIT it — Kiln finds the roof from its semantic role (anything built " + 'with createRoofPlanes/createGableRoof), falling back to historical "Roof" naming.')
 });
 function runValidate(input, context) {
   const requirements = toolRequirements(context);
@@ -32648,10 +34052,10 @@ function runValidate(input, context) {
     warnings: result.warnings.map((w) => w.fixHint ? `${w.message} (${w.fixHint})` : w.message)
   };
 }
-var partListInput = z7.object({
-  query: z7.string().max(4096).optional().describe("Case-insensitive substring of name or exact encoded path; not a regex."),
-  offset: z7.number().int().min(0).optional(),
-  limit: z7.number().int().min(1).max(100).optional()
+var partListInput = z17.object({
+  query: z17.string().max(4096).optional().describe("Case-insensitive substring of name or exact encoded path; not a regex."),
+  offset: z17.number().int().min(0).optional(),
+  limit: z17.number().int().min(1).max(100).optional()
 }).strict();
 async function listPartPage(root, options = {}) {
   await Promise.resolve().then(() => init_camera());
@@ -33084,34 +34488,34 @@ function createKilnViewInteriorDef(context = {}) {
   };
 }
 var kilnViewInteriorDef = createKilnViewInteriorDef();
-var attachmentEndpointInput = z7.object({
-  subject: z7.object({ path: z7.string().optional(), name: z7.string().optional() }).strict(),
+var attachmentEndpointInput = z17.object({
+  subject: z17.object({ path: z17.string().optional(), name: z17.string().optional() }).strict(),
   point: cameraVec3Input.optional()
 }).strict();
-var surfacePairInput = z7.array(z7.string().max(4096)).length(2);
-var inspectInput = z7.object({
-  image: z7.boolean().optional().describe("False: requires listParts/measure/surfacePairs/compare; no image or camera controls. Default true."),
+var surfacePairInput = z17.array(z17.string().max(4096)).length(2);
+var inspectInput = z17.object({
+  image: z17.boolean().optional().describe("False: requires listParts/measure/surfacePairs/compare; no image or camera controls. Default true."),
   listParts: partListInput.optional().describe("List exported-scene paths, including nested parts. Default 80, max 100 per page. Follow partListing.nextOffset with the same programRef/query. image:false avoids rendering."),
-  surfacePairs: z7.array(surfacePairInput).min(1).max(12).optional().describe("[fromPath,toPath] pairs; check surfaceMeasurements.status and each result."),
-  compare: z7.object({
-    programRef: z7.string().regex(programRefPattern),
-    offset: z7.number().int().min(0).optional(),
-    limit: z7.number().int().min(1).max(100).optional(),
-    paths: z7.array(z7.string().max(4096)).min(1).max(12).optional().describe("Exact baseline node paths, scene-prefixed without primitive children. Complete subtree summaries.")
+  surfacePairs: z17.array(surfacePairInput).min(1).max(12).optional().describe("[fromPath,toPath] pairs; check surfaceMeasurements.status and each result."),
+  compare: z17.object({
+    programRef: z17.string().regex(programRefPattern),
+    offset: z17.number().int().min(0).optional(),
+    limit: z17.number().int().min(1).max(100).optional(),
+    paths: z17.array(z17.string().max(4096)).min(1).max(12).optional().describe("Exact baseline node paths, scene-prefixed without primitive children. Complete subtree summaries.")
   }).strict().optional().describe("Static geometry/material/transform/bounds under current host settings. Follow nextOffset; paths adds complete subtrees."),
-  measure: z7.object({
-    mode: z7.enum(["anchors", "surface"]).optional(),
+  measure: z17.object({
+    mode: z17.enum(["anchors", "surface"]).optional(),
     from: attachmentEndpointInput,
     to: attachmentEndpointInput
   }).strict().optional().describe("Default anchors: origin/local-point distance. Surface: disjoint mesh triangles, omit points. Rest pose, asset units. Check status/bounds; no solid clearance/attachment proof."),
   shot: cameraShotInput.optional().describe("Exact shot; omit part/view/orbit controls."),
-  code: z7.string().describe("Kiln source code to execute and inspect."),
-  part: z7.string().optional().describe("Frame named part and descendants (case-insensitive, substring fallback). Omit for whole asset."),
-  view: z7.string().optional().describe("front/right/back/left/top/three-quarter (default). Orbit angles override."),
-  azimuthDeg: z7.number().optional().describe("Orbit degrees: 0 front, 90 right, 180 back, 270 left. Wraps."),
-  elevationDeg: z7.number().optional().describe("Elevation degrees: 0 eye level, positive above. Clamped -89..89."),
-  zoom: z7.number().optional().describe("Bounds padding 1..4; default 1.2. Larger = more context."),
-  isolate: z7.boolean().optional().describe("Hide surrounding geometry. Requires part; default false.")
+  code: z17.string().describe("Kiln source code to execute and inspect."),
+  part: z17.string().optional().describe("Frame named part and descendants (case-insensitive, substring fallback). Omit for whole asset."),
+  view: z17.string().optional().describe("front/right/back/left/top/three-quarter (default). Orbit angles override."),
+  azimuthDeg: z17.number().optional().describe("Orbit degrees: 0 front, 90 right, 180 back, 270 left. Wraps."),
+  elevationDeg: z17.number().optional().describe("Elevation degrees: 0 eye level, positive above. Clamped -89..89."),
+  zoom: z17.number().optional().describe("Bounds padding 1..4; default 1.2. Larger = more context."),
+  isolate: z17.boolean().optional().describe("Hide surrounding geometry. Requires part; default false.")
 });
 var inspectBufferInput = inspectInput.omit({ code: true });
 async function runInspect(input, context) {
@@ -33252,15 +34656,15 @@ function createKilnInspectDef(context = {}) {
   };
 }
 var kilnInspectDef = createKilnInspectDef();
-var editOperationInput = z7.object({
-  oldString: z7.string().describe("The exact text to replace, copied verbatim from the program (including whitespace and indentation, and with no line-number prefixes). Must be unique unless replaceAll is true."),
-  newString: z7.string().describe("The replacement text. Use an empty string to delete."),
-  replaceAll: z7.boolean().optional().describe("Replace every occurrence instead of failing when oldString matches more than once.")
+var editOperationInput = z17.object({
+  oldString: z17.string().describe("The exact text to replace, copied verbatim from the program (including whitespace and indentation, and with no line-number prefixes). Must be unique unless replaceAll is true."),
+  newString: z17.string().describe("The replacement text. Use an empty string to delete."),
+  replaceAll: z17.boolean().optional().describe("Replace every occurrence instead of failing when oldString matches more than once.")
 });
-var editInput = z7.object({
-  code: z7.string().describe("The Kiln program to patch. The full current source."),
-  edits: z7.array(editOperationInput).min(1).max(20).describe("Edits applied in order against the program. If any one fails to match, none are applied and the reply says which. Batch related changes into a single call."),
-  render: z7.boolean().optional().describe("Render the patched program and return the views (default true). false = patch only."),
+var editInput = z17.object({
+  code: z17.string().describe("The Kiln program to patch. The full current source."),
+  edits: z17.array(editOperationInput).min(1).max(20).describe("Edits applied in order against the program. If any one fails to match, none are applied and the reply says which. Batch related changes into a single call."),
+  render: z17.boolean().optional().describe("Render the patched program and return the views (default true). false = patch only."),
   capture: captureInput
 });
 async function runEdit(input, context) {
@@ -33477,8 +34881,8 @@ function withCaptureCache(context) {
     } : {}
   };
 }
-var rendererInput = z7.strictObject({
-  action: z7.enum(["status", "reprobe"]).default("status")
+var rendererInput = z17.strictObject({
+  action: z17.enum(["status", "reprobe"]).default("status")
 });
 function createKilnProgramToolRegistry(suppliedContext = {}) {
   toolRequirements(suppliedContext);
@@ -33524,14 +34928,24 @@ function createKilnProgramToolRegistry(suppliedContext = {}) {
       createKilnEditDef(context)
     ].map((def) => withProgramReferences(def, store)),
     createKilnSourceDef(store),
+    ...context.projectStore ? [createKilnProjectDef(context.projectStore, context.projectBundleReader)] : [],
+    ...context.materialLibrary ? [createKilnMaterialDef(context.materialLibrary)] : [],
+    ...context.reviewStore && context.assetLibrary ? [
+      createKilnReviewDef({
+        reviewStore: context.reviewStore,
+        assetLibrary: context.assetLibrary,
+        requirements: context.requirements
+      })
+    ] : [],
     ...createKilnAssetDefs({ ...context, programStore: store })
-  ].map((def) => ({
+  ].map((def) => withWorkspaceContext(def, context)).map((def) => ({
     ...def,
     annotations: {
       readOnlyHint: ["kiln_source", "kiln_discover", "kiln_export", "kiln_present"].includes(def.name),
       destructiveHint: false,
       idempotentHint: def.name !== "kiln_save",
-      openWorldHint: false
+      openWorldHint: false,
+      ...def.annotations
     }
   }));
 }
@@ -33543,14 +34957,14 @@ function createKilnNativeToolRegistry(suppliedContext, completion) {
     programStore: suppliedContext.programStore ?? new MemoryProgramStore,
     programArtifacts: suppliedContext.programArtifacts ?? new ProgramArtifactStore
   };
-  const inputSchema = z7.strictObject({
-    programRef: z7.string().regex(programRefPattern)
+  const inputSchema = z17.strictObject({
+    programRef: z17.string().regex(programRefPattern)
   });
-  const skillResourceInput = z7.strictObject({
-    skill: z7.string().min(1).max(64),
-    path: z7.string().min(1).max(240).optional(),
-    offset: z7.number().int().min(0).max(262144).default(0),
-    limit: z7.number().int().min(1).max(16000).default(12000)
+  const skillResourceInput = z17.strictObject({
+    skill: z17.string().min(1).max(64),
+    path: z17.string().min(1).max(240).optional(),
+    offset: z17.number().int().min(0).max(262144).default(0),
+    limit: z17.number().int().min(1).max(16000).default(12000)
   });
   const delivery = new Set([
     "kiln_save",
@@ -33601,9 +35015,9 @@ function createKilnNativeToolRegistry(suppliedContext, completion) {
   ];
 }
 var assetSelector = {
-  collection: z7.string().regex(/^[a-z][a-z0-9_-]{0,79}$/).describe("Destination collection ID. Discover available IDs with kiln_assets action=collections. Follow an explicit user destination; otherwise use project.").default("project"),
-  assetId: z7.string().regex(/^[a-z][a-z0-9_-]{0,79}$/),
-  revisionId: z7.string().regex(/^[a-z][a-z0-9_-]{0,79}$/)
+  collection: z17.string().regex(/^[a-z][a-z0-9_-]{0,79}$/).describe("Destination collection ID. Discover available IDs with kiln_assets action=collections. Follow an explicit user destination; otherwise use project.").default("project"),
+  assetId: z17.string().regex(/^[a-z][a-z0-9_-]{0,79}$/),
+  revisionId: z17.string().regex(/^[a-z][a-z0-9_-]{0,79}$/)
 };
 async function buildProgramAssetDraft(code, context, backdrop) {
   const callContext = {
@@ -33630,7 +35044,15 @@ async function buildProgramAssetDraft(code, context, backdrop) {
       error: error instanceof Error ? error.message : String(error)
     };
   }
-  const dependencies = rendered.materialResourceProvenance ?? [];
+  const dependencies = [
+    ...rendered.materialResourceProvenance ?? [],
+    ...(rendered.materialLibraryDependencies ?? []).map((manifest) => ({
+      kind: "kiln.material.v1",
+      delivery: "runtime",
+      manifest
+    }))
+  ];
+  const project = context.workspace?.current()?.project;
   return {
     code,
     glb: rendered.glb,
@@ -33640,9 +35062,8 @@ async function buildProgramAssetDraft(code, context, backdrop) {
       engine: context.localExecution?.runtimeIdentity ?? "source-development:unverified",
       options: {
         ...context.assetBuildOptions,
-        optimize: "off",
-        instance: context.assetBuildOptions?.instance ?? "unspecified-by-host",
-        geometryPolicy: context.geometryPolicy ?? "warn",
+        ...project ? { projectId: project.projectId, projectRevision: project.revisionId } : {},
+        ...rendered.rebuildOptions,
         requirements: rendered.requirements,
         ...rendered.requirements.binding ? {
           requirementsCheckpoint: createRequirementsCheckpoint(await programReference(code), rendered.requirements.binding)
@@ -33684,36 +35105,36 @@ function createKilnAssetDefs(context) {
     resources: (await Promise.resolve().then(() => (init_assets_resources(), exports_assets_resources))).assetLinks(collection, asset),
     downloadUrls: await context.assetDownloadUrls?.(collection, asset.assetId, asset.revisionId)
   });
-  const saveInput = z7.object({
+  const saveInput = z17.object({
     collection: assetSelector.collection,
-    programRef: z7.string(),
-    name: z7.string().min(1).max(200),
+    programRef: z17.string(),
+    name: z17.string().min(1).max(200),
     assetId: assetSelector.assetId.optional(),
     parentRevision: assetSelector.revisionId.optional(),
-    tags: z7.array(z7.string().max(80)).max(30).optional(),
-    brief: z7.string().max(8000).optional(),
-    description: z7.string().max(4000).optional(),
-    attribution: z7.object({
-      model: z7.string().max(200).optional(),
-      harness: z7.string().max(200).optional(),
-      author: z7.string().max(200).optional()
+    tags: z17.array(z17.string().max(80)).max(30).optional(),
+    brief: z17.string().max(8000).optional(),
+    description: z17.string().max(4000).optional(),
+    attribution: z17.object({
+      model: z17.string().max(200).optional(),
+      harness: z17.string().max(200).optional(),
+      author: z17.string().max(200).optional()
     }).optional(),
-    backdrop: z7.enum(BACKDROP_IDS).optional().describe("Preview backdrop: the one the reviewed sheet used.")
+    backdrop: z17.enum(BACKDROP_IDS).optional().describe("Preview backdrop: the one the reviewed sheet used.")
   });
-  const assetsInput = z7.object({
-    action: z7.enum(["collections", "list", "get", "restore"]).default("list"),
+  const assetsInput = z17.object({
+    action: z17.enum(["collections", "catalog", "list", "get", "restore"]).default("list"),
     collection: assetSelector.collection,
     assetId: assetSelector.assetId.optional(),
     revisionId: assetSelector.revisionId.optional(),
-    query: z7.string().max(200).optional(),
-    offset: z7.number().int().min(0).default(0),
-    limit: z7.number().int().min(1).max(50).default(20)
+    query: z17.string().max(200).optional(),
+    offset: z17.number().int().min(0).default(0),
+    limit: z17.number().int().min(1).max(50).default(20)
   });
-  const exportInput = z7.object(assetSelector);
+  const exportInput = z17.object(assetSelector);
   const profileExportInput = exportInput.extend({
-    profile: z7.enum(["editable", "runtime"]).default("editable").describe("editable preserves canonical source/GLB/build resources. runtime returns a standalone GLB and versioned review-metadata sidecar; no source bundle or geometry optimization.")
+    profile: z17.enum(["editable", "runtime"]).default("editable").describe("editable preserves canonical source/GLB/build resources. runtime returns a standalone GLB and versioned review-metadata sidecar; no source bundle or geometry optimization.")
   });
-  const importInput = z7.object({
+  const importInput = z17.object({
     ...assetSelector,
     sourceCollection: assetSelector.collection
   });
@@ -33744,7 +35165,7 @@ function createKilnAssetDefs(context) {
     },
     {
       name: "kiln_assets",
-      description: "Discover collections; list/search saved asset revisions; get a build record and downloads; or restore exact editable source into the current program store for kiln_source/kiln_edit. List is paginated. Binary-only imports cannot restore source.",
+      description: "collections discovers storage; catalog searches all configured collections; list searches one. Both searches paginate. get returns a build record/downloads; restore loads exact source for kiln_source/kiln_edit. Collection is not project membership. Binary-only assets cannot restore source.",
       inputSchema: assetsInput,
       run: async (raw) => {
         const input = assetsInput.parse(raw);
@@ -33752,6 +35173,26 @@ function createKilnAssetDefs(context) {
         const target = library();
         if (input.action === "collections")
           return { collections: target.collections() };
+        if (input.action === "catalog") {
+          const catalog = await listAssetCatalog(target);
+          const query = input.query?.toLowerCase();
+          const all = catalog.entries.filter(({ manifest: a }) => (!input.assetId || a.assetId === input.assetId) && (!query || `${a.name} ${a.tags.join(" ")}`.toLowerCase().includes(query)));
+          return {
+            errors: catalog.errors,
+            total: all.length,
+            nextOffset: input.offset + input.limit < all.length ? input.offset + input.limit : null,
+            assets: all.slice(input.offset, input.offset + input.limit).map(({ collectionId, manifest: a }) => ({
+              collection: collectionId,
+              assetId: a.assetId,
+              revisionId: a.revisionId,
+              parentRevision: a.parentRevision,
+              name: a.name,
+              tags: a.tags,
+              editable: a.editable,
+              createdAt: a.createdAt
+            }))
+          };
+        }
         if (input.action === "list") {
           const query = input.query?.toLowerCase();
           const all = (await target.list(input.collection)).filter((a) => (!input.assetId || a.assetId === input.assetId) && (!query || `${a.name} ${a.tags.join(" ")}`.toLowerCase().includes(query)));
@@ -33792,9 +35233,9 @@ function createKilnAssetDefs(context) {
       name: "kiln_present",
       description: "Present one exact saved revision. Supporting MCP App clients show an interactive 3D card with GLB, editable ZIP, and source downloads. Every host receives exact artifact descriptors with resource URIs in the JSON result; verified hosts may also receive core MCP resource-link blocks. This tool does not launch a local browser in coding harnesses. Call after saving or when the user wants to see or download an asset.",
       inputSchema: exportInput,
-      outputSchema: z7.object({
-        ok: z7.literal(true),
-        collection: z7.string(),
+      outputSchema: z17.object({
+        ok: z17.literal(true),
+        collection: z17.string(),
         asset: assetManifestSchema.pick({
           assetId: true,
           revisionId: true,
@@ -33805,25 +35246,25 @@ function createKilnAssetDefs(context) {
           editable: true,
           files: true
         }).extend({
-          build: z7.object({
-            engine: z7.string(),
-            rebuild: z7.enum(["engine-required", "external-dependencies-required"]),
-            warningCount: z7.number().int(),
-            warnings: z7.array(z7.string())
+          build: z17.object({
+            engine: z17.string(),
+            rebuild: z17.enum(["engine-required", "external-dependencies-required"]),
+            warningCount: z17.number().int(),
+            warnings: z17.array(z17.string())
           }).optional()
         }),
-        resources: z7.array(z7.object({
-          type: z7.literal("resource_link"),
-          name: z7.string(),
-          uri: z7.string(),
-          mimeType: z7.string(),
-          size: z7.number().int().nonnegative(),
-          annotations: z7.object({
-            audience: z7.array(z7.enum(["user", "assistant"])),
-            priority: z7.number()
+        resources: z17.array(z17.object({
+          type: z17.literal("resource_link"),
+          name: z17.string(),
+          uri: z17.string(),
+          mimeType: z17.string(),
+          size: z17.number().int().nonnegative(),
+          annotations: z17.object({
+            audience: z17.array(z17.enum(["user", "assistant"])),
+            priority: z17.number()
           })
         })),
-        downloadUrls: z7.record(z7.string(), z7.string()).optional()
+        downloadUrls: z17.record(z17.string(), z17.string()).optional()
       }),
       ui: {
         resourceUri: KILN_ASSET_WIDGET_URI,
@@ -34316,7 +35757,7 @@ ${JSON.stringify(options.requirements)}`);
 // src/agent/skill-resources.ts
 import { lstat, open, readdir, realpath, stat } from "node:fs/promises";
 import { basename, dirname, extname, join as join2, relative, resolve, sep } from "node:path";
-import { createHash as createHash9 } from "node:crypto";
+import { createHash as createHash10 } from "node:crypto";
 import { Skill } from "@strands-agents/sdk/vended-plugins/skills";
 var MAX_FILE_BYTES = 256 * 1024;
 var MAX_TOTAL_BYTES = 1024 * 1024;
@@ -34399,7 +35840,7 @@ async function loadNativeSkills(selected) {
         const text = await textFile(canonical);
         references.set(resourcePath, {
           text,
-          sha256: `sha256:${createHash9("sha256").update(text).digest("hex")}`,
+          sha256: `sha256:${createHash10("sha256").update(text).digest("hex")}`,
           bytes: Buffer.byteLength(text)
         });
       }

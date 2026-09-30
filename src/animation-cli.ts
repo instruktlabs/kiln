@@ -7,6 +7,7 @@ import { buildRenderPort, resolveRenderMode } from './cli-render-mode';
 import { programRefPattern } from './program-store';
 import { readHostRequirementsFile } from './requirements-file';
 import { writeDestinationAtomic } from './cli-output';
+import { cliWorkspaceSelection, readMaterialDependencies } from './workspace-cli';
 
 export const ANIMATION_USAGE = `
 ANIMATION REVIEW
@@ -21,6 +22,10 @@ ANIMATION REVIEW
   --render <mode>          auto | cpu | gpu; gpu requires material-faithful frames
   --render-port <url>      select a remote renderer
   --requirements <json>    optional host requirement binding
+  --project <id>           explicit workspace project (otherwise KILN_PROJECT or standalone)
+  --project-revision <id>  exact historical design/resource context
+  --no-project            standalone authoring, overriding KILN_PROJECT
+  --materials <json>      exact material dependency pins
   --json                  phases, posed bounds, image paths and fidelity receipts
 
 Reviews the actual exported clip through the shared animation tool. Keeps source
@@ -56,7 +61,7 @@ function parse(argv: readonly string[]) {
     }
     const key = arg === '-h' ? '--help' : arg;
     if (flags.has(key)) throw new Error(`Repeated animation option: ${key}.`);
-    if (['--help', '--per-frame', '--json'].includes(key)) {
+    if (['--help', '--per-frame', '--json', '--no-project'].includes(key)) {
       flags.set(key, true);
       continue;
     }
@@ -73,6 +78,9 @@ function parse(argv: readonly string[]) {
         '--render',
         '--render-port',
         '--requirements',
+        '--project',
+        '--project-revision',
+        '--materials',
       ].includes(key)
     )
       throw new Error(`Unknown animation option: ${key}. Use kiln animation --help.`);
@@ -95,6 +103,11 @@ function parse(argv: readonly string[]) {
     });
   if (phases && flags.has('--frames'))
     throw new Error('--phases and --frames are mutually exclusive.');
+  const selection = cliWorkspaceSelection(
+    value('--project'),
+    value('--project-revision'),
+    flags.has('--no-project'),
+  );
   return {
     help: false as const,
     source: positional[0]!,
@@ -103,9 +116,11 @@ function parse(argv: readonly string[]) {
     shot: value('--shot'),
     measureParts: value('--measure-parts'),
     requirements: value('--requirements'),
+    materials: value('--materials'),
     render: resolveRenderMode(value('--render') ?? 'auto'),
     renderPort: value('--render-port'),
     input: {
+      ...selection,
       clip: value('--clip'),
       ...(phases ? { frameTimes: phases } : {}),
       ...(flags.has('--frames') ? { frames: Number(value('--frames')) } : {}),
@@ -127,6 +142,9 @@ export async function animationMain(argv: readonly string[]): Promise<number> {
     }
     input = {
       ...args.input,
+      ...(args.materials
+        ? { materialDependencies: await readMaterialDependencies(args.materials) }
+        : {}),
       ...(args.shot ? { shot: await readReviewJson(args.shot, '--shot') } : {}),
       ...(args.measureParts
         ? { measureParts: await readReviewJson(args.measureParts, '--measure-parts') }
@@ -154,9 +172,14 @@ export async function animationMain(argv: readonly string[]): Promise<number> {
     const tool = createKilnProgramToolRegistry(context).find(
       (t) => t.name === 'kiln_screenshot_animation',
     )!;
-    const output = (await tool.run({ ...source, ...input })) as KilnScreenshotAnimationResult & {
+    let output: KilnScreenshotAnimationResult & {
       programRef?: string;
     };
+    try {
+      output = (await tool.run({ ...source, ...input })) as typeof output;
+    } finally {
+      await context.liveReview?.flush?.();
+    }
     if (!output.ok) {
       if (args.json) console.log(JSON.stringify(output));
       else {
@@ -176,7 +199,13 @@ export async function animationMain(argv: readonly string[]): Promise<number> {
       path: resolve(separate ? `${stem}.frame-${String(i + 1).padStart(2, '0')}.png` : args.views),
       ...(separate ? { phase: output.frameTimes?.[i] } : {}),
     }));
-    const inputPaths = [args.source, args.shot, args.measureParts, args.requirements]
+    const inputPaths = [
+      args.source,
+      args.shot,
+      args.measureParts,
+      args.requirements,
+      args.materials,
+    ]
       .filter((p): p is string => p !== undefined)
       .map((p) => resolve(p));
     const samePath = (a: string, b: string) =>

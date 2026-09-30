@@ -4,9 +4,11 @@ import { fileURLToPath } from 'node:url';
 import type { RenderGlbOptions, RenderResult } from '../render';
 import { AssetQaBlockedError } from '../qa/run';
 import { assertNoLegacyRuntimePolicy, resolveRequirementsContext } from '../requirements-context';
+import { validateMaterialLibraryPayload } from '../material-library-node';
 import {
   decodeEvaluatorResultV2,
   assertEvaluatorResultRequirements,
+  assertEvaluatorResultMaterialResources,
   evaluatorOutcomeMessage,
   EVALUATOR_REQUEST_VERSION,
   type EvaluatorOutcomeCode,
@@ -102,6 +104,8 @@ export async function renderGLBViaProcessLaunch(
     DEFAULT_MAX_RESPONSE_BYTES,
     96 * 1024 * 1024,
   );
+  if (options.materialResources !== undefined)
+    validateMaterialLibraryPayload(options.materialResources);
   const request: EvaluatorRequestV2 = {
     version: EVALUATOR_REQUEST_VERSION,
     requestId: 'render-1',
@@ -238,6 +242,7 @@ export async function renderGLBViaProcessLaunch(
           request.requestId,
         );
         assertEvaluatorResultRequirements(result, requirements);
+        assertEvaluatorResultMaterialResources(result, request.options.materialResources);
         if (!result.ok) {
           if (result.error.code === 'QA_BLOCKED' && result.error.qa) {
             finish(

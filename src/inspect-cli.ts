@@ -10,6 +10,7 @@ import { buildRenderPort, resolveRenderMode } from './cli-render-mode';
 import { programRefPattern } from './program-store';
 import { readHostRequirementsFile } from './requirements-file';
 import { writeDestinationAtomic } from './cli-output';
+import { cliWorkspaceSelection, readMaterialDependencies } from './workspace-cli';
 
 export const INSPECT_USAGE = `
 PART INSPECTION
@@ -20,6 +21,10 @@ PART INSPECTION
   --render <mode>         auto | cpu | gpu
   --render-port <url>     optional remote renderer
   --requirements <json>   optional host requirement binding
+  --project <id>          explicit workspace project (otherwise KILN_PROJECT or standalone)
+  --project-revision <id> exact historical design/resource context
+  --no-project           standalone authoring, overriding KILN_PROJECT
+  --materials <json>     exact material dependency pins
   --json                 structured receipt without embedded image bytes
 
 measure.mode=surface compares exported rest-pose triangle surfaces; omit points.
@@ -65,11 +70,22 @@ function parse(argv: readonly string[]) {
     }
     const key = arg === '-h' ? '--help' : arg;
     if (flags.has(key)) throw new Error(`Repeated inspection option: ${key}.`);
-    if (key === '--help' || key === '--json') {
+    if (key === '--help' || key === '--json' || key === '--no-project') {
       flags.set(key, true);
       continue;
     }
-    if (!['--request', '--views', '--render', '--render-port', '--requirements'].includes(key))
+    if (
+      ![
+        '--request',
+        '--views',
+        '--render',
+        '--render-port',
+        '--requirements',
+        '--project',
+        '--project-revision',
+        '--materials',
+      ].includes(key)
+    )
       throw new Error(`Unknown inspection option: ${key}. Use kiln inspect --help.`);
     const value = argv[++i];
     if (value === undefined || value.startsWith('--')) throw new Error(`${key} requires a value.`);
@@ -87,12 +103,19 @@ function parse(argv: readonly string[]) {
     render: resolveRenderMode(value('--render') ?? 'auto'),
     renderPort: value('--render-port'),
     requirements: value('--requirements'),
+    selection: cliWorkspaceSelection(
+      value('--project'),
+      value('--project-revision'),
+      flags.has('--no-project'),
+    ),
+    materials: value('--materials'),
   };
 }
 
 export async function inspectMain(argv: readonly string[]): Promise<number> {
   let args: ReturnType<typeof parse>;
   let controls: ReturnType<typeof inspectBufferInput.parse>;
+  let materialDependencies: Awaited<ReturnType<typeof readMaterialDependencies>> | undefined;
   try {
     args = parse(argv);
     if (args.help) {
@@ -102,6 +125,9 @@ export async function inspectMain(argv: readonly string[]): Promise<number> {
     controls = inspectBufferInput
       .strict()
       .parse(args.request ? await readControls(args.request) : {});
+    materialDependencies = args.materials
+      ? await readMaterialDependencies(args.materials)
+      : undefined;
   } catch (error) {
     console.error(error instanceof Error ? error.message : String(error));
     return 2;
@@ -113,7 +139,7 @@ export async function inspectMain(argv: readonly string[]): Promise<number> {
       const normalize = (path: string) =>
         process.platform === 'win32' ? resolve(path).toLowerCase() : resolve(path);
       if (
-        [args.source, args.request, args.requirements].some(
+        [args.source, args.request, args.requirements, args.materials].some(
           (path) => path && normalize(path) === normalize(args.views!),
         )
       )
@@ -130,9 +156,19 @@ export async function inspectMain(argv: readonly string[]): Promise<number> {
       ? { programRef: args.source }
       : { code: await readFile(resolve(args.source), 'utf8') };
     const tool = createKilnProgramToolRegistry(context).find((t) => t.name === 'kiln_inspect')!;
-    const output = (await tool.run({ ...source, ...controls })) as KilnInspectResult & {
+    let output: KilnInspectResult & {
       programRef?: string;
     };
+    try {
+      output = (await tool.run({
+        ...source,
+        ...controls,
+        ...args.selection,
+        ...(materialDependencies ? { materialDependencies } : {}),
+      })) as typeof output;
+    } finally {
+      await context.liveReview?.flush?.();
+    }
     if (!output.ok) {
       if (args.json) console.log(JSON.stringify(output));
       else console.error(output.error ?? 'Inspection failed.');

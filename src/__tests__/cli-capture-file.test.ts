@@ -1,6 +1,7 @@
 import { expect, it } from 'bun:test';
 import { mkdtemp, mkdir, writeFile, readFile, readdir, rm } from 'node:fs/promises';
 import { join, resolve } from 'node:path';
+import { localWorkspaceRoot } from '../workspace-location';
 
 it('renders retained source with a capture file and rejects invalid recipes before writing artifacts', async () => {
   const base = resolve(import.meta.dir, '../../tmp');
@@ -19,9 +20,11 @@ it('renders retained source with a capture file and rejects invalid recipes befo
       ...process.env,
       KILN_EVALUATOR_MODE: 'in-process',
       KILN_BUILD_CACHE: 'off',
+      KILN_WORKSPACE: directory,
       KILN_PROGRAM_STORE: join(directory, 'programs'),
       KILN_RENDER: 'cpu',
     };
+    expect(localWorkspaceRoot(env)).toBe(directory);
     const run = (args: string[]) =>
       Bun.spawnSync(['node', join(directory, 'cli.mjs'), ...args], {
         cwd: directory,
@@ -71,6 +74,9 @@ it('renders retained source with a capture file and rejects invalid recipes befo
     ]);
     expect(first.stderr.toString()).toBe('');
     expect(first.exitCode).toBe(0);
+    expect(
+      (await readdir(join(directory, '.kiln', 'review'))).filter((name) => name.startsWith('op_')),
+    ).toHaveLength(1);
     const png = await readFile(join(directory, 'chosen.png'));
     expect([png.readUInt32BE(16), png.readUInt32BE(20)]).toEqual([332, 168]);
     recipe.shots[0]!.camera.azimuthDeg = 180;

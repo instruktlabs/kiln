@@ -1,21 +1,47 @@
 /** Local durable collections; immutable revisions become visible by directory rename. */
 import { createHash, randomUUID } from 'node:crypto';
 import { readFileSync, type Dirent } from 'node:fs';
-import { lstat, mkdir, readFile, readdir, realpath, rename, rm, writeFile } from 'node:fs/promises';
+import {
+  link,
+  lstat,
+  mkdir,
+  readFile,
+  readdir,
+  realpath,
+  rename,
+  rm,
+  writeFile,
+} from 'node:fs/promises';
 import { homedir, platform } from 'node:os';
 import { dirname, join, relative, resolve, sep } from 'node:path';
+import { localWorkspaceRoot } from './workspace-location';
 import {
   assetIdSchema,
   assetManifestSchema,
   ASSET_LIMIT,
+  ASSET_MATERIAL_BYTES,
+  ASSET_MATERIAL_FILE,
+  encodeAssetBundle,
   validateRecordShape,
   type AssetDraft,
   type AssetLibrary,
   type AssetManifest,
   type AssetRecord,
 } from './assets';
+import type { MaterialLibrary, MaterialRecordV1 } from './material-library';
+import { FileMaterialLibrary, createMaterialLibraryPayload } from './material-library-node';
+import { dependencyManifests, resolveSavedAssetMaterials } from './asset-materials-node';
 
 const digest = (bytes: Uint8Array) => `sha256:${createHash('sha256').update(bytes).digest('hex')}`;
+function assertMaterialAllocation(records: AssetRecord[]): void {
+  let bytes = 0;
+  for (const record of records)
+    for (const manifest of dependencyManifests(record))
+      for (const map of manifest.maps) {
+        bytes += map.bytes;
+        if (bytes > ASSET_LIMIT) throw new Error('Asset material batch exceeds allocation limit');
+      }
+}
 export async function verifyAssetRecord(record: AssetRecord): Promise<void> {
   for (const [name, info] of Object.entries(record.manifest.files)) {
     const bytes = record.files[name];
@@ -23,10 +49,14 @@ export async function verifyAssetRecord(record: AssetRecord): Promise<void> {
       throw new Error(`Asset integrity failure: ${name}`);
   }
   validateRecordShape(record);
+  if (record.materialResources) await resolveSavedAssetMaterials(record);
 }
 export class FileAssetLibrary implements AssetLibrary {
   private readonly roots: Record<string, string>;
-  constructor(roots: Record<string, string>) {
+  constructor(
+    roots: Record<string, string>,
+    private readonly materials?: MaterialLibrary,
+  ) {
     if (!Object.keys(roots).length) throw new Error('Configure at least one collection');
     this.roots = Object.fromEntries(
       Object.entries(roots).map(([id, path]) => [assetIdSchema.parse(id), resolve(path)]),
@@ -35,7 +65,8 @@ export class FileAssetLibrary implements AssetLibrary {
   collections() {
     return Object.keys(this.roots).map((id) => ({
       id,
-      label: id === 'project' ? 'This project' : id === 'library' ? 'Your library' : id,
+      label:
+        id === 'project' ? 'Workspace storage' : id === 'library' ? 'User library storage' : id,
     }));
   }
   directory(collection: string): string {
@@ -117,9 +148,35 @@ export class FileAssetLibrary implements AssetLibrary {
         throw new Error('Invalid collection filename');
       files[name] = await this.file(dir, name);
     }
-    const record = { manifest, files };
+    const record: AssetRecord = { manifest, files };
+    try {
+      record.materialResources = JSON.parse(
+        new TextDecoder('utf-8', { fatal: true }).decode(
+          await this.file(dir, ASSET_MATERIAL_FILE, ASSET_MATERIAL_BYTES),
+        ),
+      );
+    } catch (error) {
+      if ((error as NodeJS.ErrnoException).code !== 'ENOENT') throw error;
+    }
     await verifyAssetRecord(record);
     return record;
+  }
+  async exportBundle(records: AssetRecord[]): Promise<Uint8Array> {
+    if (!records.length || records.length > 100)
+      throw new Error('Bundle requires 1..100 revisions');
+    assertMaterialAllocation(records);
+    const portable: AssetRecord[] = [];
+    for (const record of records) {
+      await verifyAssetRecord(record);
+      const materials = await resolveSavedAssetMaterials(record, this.materials);
+      portable.push({
+        ...record,
+        ...(materials.length
+          ? { materialResources: await createMaterialLibraryPayload(materials) }
+          : {}),
+      });
+    }
+    return encodeAssetBundle(portable);
   }
   async save(collection: string, draft: AssetDraft): Promise<AssetManifest> {
     const assetId = draft.assetId ?? `a_${randomUUID().replaceAll('-', '')}`;
@@ -162,13 +219,54 @@ export class FileAssetLibrary implements AssetLibrary {
   async import(collection: string, records: AssetRecord[]): Promise<AssetManifest[]> {
     if (!records.length || records.length > 100)
       throw new Error('Import requires 1..100 revisions');
+    this.directory(collection);
+    assertMaterialAllocation(
+      records.filter(
+        (record) =>
+          record.materialResources ||
+          record.manifest.build?.dependencies?.some(
+            (raw) =>
+              raw &&
+              typeof raw === 'object' &&
+              (raw as Record<string, unknown>).kind === 'kiln.material.v1',
+          ),
+      ),
+    );
+    let resourceBytes = 0;
+    for (const record of records) {
+      validateRecordShape(record);
+      for (const wire of record.materialResources?.records ?? [])
+        for (const map of wire.manifest.maps) resourceBytes += map.bytes;
+    }
+    if (resourceBytes > ASSET_LIMIT)
+      throw new Error('Asset material import exceeds allocation limit');
+    const prepared: AssetRecord[] = [];
+    const resources = new Map<string, MaterialRecordV1>();
     // Validate the whole input before writing anything; per-revision commits are atomic.
     for (const record of records) {
       await verifyAssetRecord(record);
       if (Buffer.byteLength(`${JSON.stringify(record.manifest, null, 2)}\n`, 'utf8') > 1024 * 1024)
         throw new Error('Manifest exceeds 1 MiB; no revision was written.');
+      if (
+        record.materialResources ||
+        (this.materials &&
+          record.manifest.build?.dependencies?.some(
+            (raw) =>
+              raw &&
+              typeof raw === 'object' &&
+              (raw as Record<string, unknown>).kind === 'kiln.material.v1',
+          ))
+      ) {
+        const materials = await resolveSavedAssetMaterials(record, this.materials);
+        for (const material of materials) resources.set(material.manifest.revisionId, material);
+        prepared.push({
+          ...record,
+          materialResources: await createMaterialLibraryPayload(materials),
+        });
+      } else prepared.push(record);
     }
-    for (const record of records) {
+    if (this.materials && resources.size) await this.materials.import([...resources.values()]);
+    for (const record of prepared) {
       const { manifest, files } = record;
       const dest = await this.path(collection, manifest.assetId, 'revisions', manifest.revisionId);
       const parent = dirname(dest);
@@ -178,6 +276,12 @@ export class FileAssetLibrary implements AssetLibrary {
       try {
         for (const [name, bytes] of Object.entries(files))
           await writeFile(join(stage, name), bytes, { flag: 'wx' });
+        if (record.materialResources)
+          await writeFile(
+            join(stage, ASSET_MATERIAL_FILE),
+            JSON.stringify(record.materialResources),
+            { flag: 'wx' },
+          );
         await writeFile(join(stage, 'manifest.json'), `${JSON.stringify(manifest, null, 2)}\n`, {
           flag: 'wx',
         });
@@ -189,6 +293,19 @@ export class FileAssetLibrary implements AssetLibrary {
           );
           if (!existing || JSON.stringify(existing.manifest) !== JSON.stringify(manifest))
             throw error;
+          // Supplemental closure can enrich a legacy revision without changing its
+          // canonical manifest. A hard link publishes the complete file exclusively.
+          if (record.materialResources && !existing.materialResources) {
+            try {
+              await link(join(stage, ASSET_MATERIAL_FILE), join(dest, ASSET_MATERIAL_FILE));
+            } catch (enrichmentError) {
+              if ((enrichmentError as NodeJS.ErrnoException).code !== 'EEXIST')
+                throw enrichmentError;
+              const enriched = await this.read(collection, manifest.assetId, manifest.revisionId);
+              if (!enriched.materialResources)
+                throw new Error('Asset material enrichment was not published');
+            }
+          }
         }
       } finally {
         await rm(stage, { recursive: true, force: true });
@@ -200,10 +317,7 @@ export class FileAssetLibrary implements AssetLibrary {
 export function collectionConfigPath(
   env: Record<string, string | undefined> = process.env,
 ): string {
-  const workspace = env.KILN_PROGRAM_STORE
-    ? dirname(dirname(resolve(env.KILN_PROGRAM_STORE)))
-    : process.cwd();
-  return join(workspace, '.kiln', 'collections.json');
+  return join(localWorkspaceRoot(env), '.kiln', 'collections.json');
 }
 
 export function defaultUserLibraryRoot(
@@ -232,7 +346,10 @@ export function localAssetLibrary(
       Object.values(value).some((v) => typeof v !== 'string' || !v)
     )
       throw new Error('KILN_COLLECTIONS must map collection names to directories');
-    return new FileAssetLibrary(value);
+    return new FileAssetLibrary(
+      value,
+      new FileMaterialLibrary(join(localWorkspaceRoot(env), '.kiln', 'materials')),
+    );
   }
   const config = collectionConfigPath(env);
   try {
@@ -243,8 +360,11 @@ export function localAssetLibrary(
     if ((error as NodeJS.ErrnoException).code !== 'ENOENT') throw error;
   }
   const workspace = dirname(dirname(config));
-  return new FileAssetLibrary({
-    project: join(workspace, 'assets', 'kiln'),
-    library: defaultUserLibraryRoot(env),
-  });
+  return new FileAssetLibrary(
+    {
+      project: join(workspace, 'assets', 'kiln'),
+      library: defaultUserLibraryRoot(env),
+    },
+    new FileMaterialLibrary(join(workspace, '.kiln', 'materials')),
+  );
 }

@@ -28,6 +28,7 @@ test('actual CLI saves and restores a host-bound source without dropping require
         ...process.env,
         KILN_RENDER: 'cpu',
         KILN_COLLECTIONS: JSON.stringify({ project: join(directory, 'assets') }),
+        KILN_WORKSPACE: directory,
         KILN_PROGRAM_STORE: join(directory, 'programs'),
         KILN_BUILD_CACHE_DIR: join(directory, 'cache'),
       },

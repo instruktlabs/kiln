@@ -1,11 +1,12 @@
 import { afterAll, beforeAll, expect, test } from 'bun:test';
 import { createHash } from 'node:crypto';
-import { mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
+import { mkdir, mkdtemp, readFile, readdir, rm, writeFile } from 'node:fs/promises';
 import { join, resolve } from 'node:path';
 import { createKilnProgramToolRegistry } from '../tools/registry';
 import { createLocalToolContext } from '../local-runtime';
 import { MemoryProgramStore } from '../program-store';
 import { decodePng } from '../views/png';
+import { localWorkspaceRoot } from '../workspace-location';
 
 const source = `const meta={name:'ReceiptBox'};function build(){const r=createRoot('Root');
 createPart('Box',boxGeo(1,2,3),gameMaterial('#809080'),{parent:r,position:[0,1,0]});return r;}`;
@@ -28,15 +29,18 @@ afterAll(async () => {
   if (directory) await rm(directory, { recursive: true, force: true });
 });
 function run(args: string[]) {
+  const env = {
+    ...process.env,
+    KILN_EVALUATOR_MODE: 'in-process',
+    KILN_BUILD_CACHE: 'off',
+    KILN_WORKSPACE: directory,
+    KILN_PROGRAM_STORE: join(directory, 'programs'),
+    KILN_RENDER: 'cpu',
+  };
+  expect(localWorkspaceRoot(env)).toBe(directory);
   return Bun.spawnSync(['node', join(directory, 'cli.mjs'), ...args], {
     cwd: directory,
-    env: {
-      ...process.env,
-      KILN_EVALUATOR_MODE: 'in-process',
-      KILN_BUILD_CACHE: 'off',
-      KILN_PROGRAM_STORE: join(directory, 'programs'),
-      KILN_RENDER: 'cpu',
-    },
+    env,
     stdout: 'pipe',
     stderr: 'pipe',
     timeout: 20000,
@@ -82,13 +86,16 @@ test('render JSON describes exact files and preserves shared image/requirements 
   expect(reviewed.viewFidelity.materialFaithful).toBe(false);
   expect(reviewed.pngBase64).toBeUndefined();
   expect(reviewed.framesBase64).toBeUndefined();
-  const tool = createKilnProgramToolRegistry(
-    createLocalToolContext(
-      { programStore: new MemoryProgramStore() },
-      { KILN_EVALUATOR_MODE: 'in-process' },
-    ),
-  ).find((t) => t.name === 'kiln_render')!;
+  const context = createLocalToolContext(
+    { programStore: new MemoryProgramStore() },
+    { KILN_EVALUATOR_MODE: 'in-process', KILN_WORKSPACE: directory },
+  );
+  const tool = createKilnProgramToolRegistry(context).find((t) => t.name === 'kiln_render')!;
   const expected = await tool.run({ code: source, capture: { preset: '1x1' } });
+  await context.liveReview?.flush?.();
+  expect(
+    (await readdir(join(directory, '.kiln', 'review'))).filter((name) => name.startsWith('op_')),
+  ).toHaveLength(3);
   const media = tool.media!(expected)!;
   const fields = media.json as typeof reviewed;
   expect(reviewed.parts).toEqual(fields.parts);

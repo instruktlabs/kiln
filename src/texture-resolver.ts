@@ -7,6 +7,7 @@
  * URLs, bytes, hashes, deadlines, resolvers, or filesystem handles.
  */
 import type * as THREE from 'three';
+import type { TextureUsage } from './textures';
 
 import {
   type ApprovedTextureResourceCache,
@@ -20,6 +21,10 @@ import type {
 } from './material-recipes';
 
 export interface TextureResolver {
+  /** Host-only metadata used to reject invalid portable slot bindings before loading. */
+  describeApprovedTexture?(
+    resourceId: unknown,
+  ): { usage: TextureUsage; allowedSlots: readonly string[] } | undefined;
   loadApprovedTexture(resourceId: unknown): Promise<THREE.DataTexture>;
   materialRecipe(id: unknown, overrides?: unknown): Promise<THREE.MeshStandardMaterial>;
 }
@@ -28,6 +33,14 @@ export function createTextureResolver(
   cache: ApprovedTextureResourceCache = DEFAULT_APPROVED_TEXTURE_CACHE,
 ): TextureResolver {
   return Object.freeze({
+    describeApprovedTexture(resourceId: unknown) {
+      if (typeof resourceId !== 'string') return undefined;
+      try {
+        return cache.descriptor(resourceId as ApprovedTextureResourceId);
+      } catch {
+        return undefined;
+      }
+    },
     async loadApprovedTexture(resourceId: unknown): Promise<THREE.DataTexture> {
       if (typeof resourceId !== 'string') {
         throw new RangeError('Unsupported approved texture resource ID.');

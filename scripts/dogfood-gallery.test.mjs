@@ -270,8 +270,8 @@ describe('dogfood asset collection', () => {
     };
     const library = localAssetLibrary(env);
     expect(library.collections()).toEqual([
-      { id: 'project', label: 'This project' },
-      { id: 'library', label: 'Your library' },
+      { id: 'project', label: 'Workspace storage' },
+      { id: 'library', label: 'User library storage' },
     ]);
     const manifests = await library.list('library');
     expect(manifests).toHaveLength(1);
@@ -293,8 +293,8 @@ describe('dogfood asset collection', () => {
     try {
       expect(await (await fetch(`${viewer.url}api/collections`)).json()).toEqual({
         collections: [
-          { id: 'project', label: 'This project' },
-          { id: 'library', label: 'Your library' },
+          { id: 'project', label: 'Workspace storage' },
+          { id: 'library', label: 'User library storage' },
         ],
       });
       const response = await fetch(

@@ -73,6 +73,7 @@ export const FAKE_RENDERER_ID = 'fake-renderer';
 export const FAKE_SERVER = `
 import { createServer } from 'node:http';
 import { crc32, deflateSync } from 'node:zlib';
+import { appendFileSync, existsSync } from 'node:fs';
 import { compatibilityFingerprint, RENDER_SERVICE_DEPENDENCIES, RENDER_SERVICE_PROTOCOL, REQUIRED_RENDER_CAPABILITIES } from ${JSON.stringify(pathToFileURL(join(import.meta.dir, '../../../render-service/src/build-identity.mjs')).href)};
 import { fingerprintSourceDir } from ${JSON.stringify(pathToFileURL(join(import.meta.dir, '../../../render-service/src/instance.mjs')).href)};
 import { join } from 'node:path';
@@ -112,6 +113,17 @@ const instance = {
 };
 const compatibility = { version: 'kiln.render-service-build.v1', sourceFingerprint: instance.sourceFingerprint, dependencies: RENDER_SERVICE_DEPENDENCIES,
   fingerprint: compatibilityFingerprint({ sourceFingerprint: instance.sourceFingerprint, dependencies: RENDER_SERVICE_DEPENDENCIES }) };
+// A test-owned gate lets concurrent launchers all become observable before any
+// health reply can satisfy both hosts. It is never a production service registry.
+if (process.env.FAKE_STARTUP_JOURNAL) appendFileSync(process.env.FAKE_STARTUP_JOURNAL,
+  JSON.stringify({pid:process.pid,startedAt:instance.startedAt})+'\\n');
+if (process.env.FAKE_STARTUP_BARRIER) {
+  const deadline=Date.now()+10000;
+  while (!existsSync(process.env.FAKE_STARTUP_BARRIER)) {
+    if (Date.now()>=deadline) process.exit(91);
+    await new Promise(done=>setTimeout(done,10));
+  }
+}
 createServer((req, res) => {
   let body = '';
   req.on('data', (piece) => {

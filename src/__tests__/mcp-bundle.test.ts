@@ -31,6 +31,8 @@ import { pathToFileURL } from 'node:url';
 import { describe, expect, it } from 'bun:test';
 
 import { kilnMcpToolDefs } from '../mcp-server';
+import { createLocalToolContext } from '../local-runtime';
+import { localAssetLibrary } from '../assets-node';
 
 const REPO = resolve(import.meta.dir, '..', '..');
 const BUNDLE = join(REPO, 'dist', 'mcp-server.mjs');
@@ -75,7 +77,7 @@ describe('mcp server bundle', () => {
     // `kiln_render` carries the image. `src/mcp-parity.test.ts` owns that
     // distinction; this test only has to prove the bundle publishes whatever
     // the server says it does.
-    const expected = kilnMcpToolDefs()
+    const expected = kilnMcpToolDefs(createLocalToolContext({ assetLibrary: localAssetLibrary() }))
       .map((t) => t.name)
       .sort();
 

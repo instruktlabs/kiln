@@ -6,6 +6,8 @@ Use these tools through your connected agent. Supply `code` once, then pass the 
 
 Call `kiln_discover({capabilities:true})` for the current host limits and export/camera support. The schema below describes inputs; actual image replies include fidelity and capture metadata. Source reads return exact text, edits return a new revision, and failed builds return their errors.
 
+The packaged local host additionally injects kiln_project, kiln_material and kiln_review. Projects are optional. Authoring tools there accept projectId, projectRevision and independent materialDependencies; projectId:null explicitly selects standalone work. These optional schemas come from the same registry and are advertised only when their host stores are available; connected tools/list is authoritative. See [projects and live review](projects-and-live-review.md) for CLI equivalents, project packages and exact reviewed saves. The base schemas below remain available to embeddings without workspace services.
+
 Renderer capabilities distinguish configured routing, dependency readiness, endpoint health and unverified authentication. Use kiln_renderer with action=reprobe after renderer setup or repair to refresh the current session. Material capabilities list approved texture IDs by allowed slot for the selected evaluator. Capability inspection never starts a renderer, requests an image or fetches texture bytes; ordinary catalog search is offline. See [renderer readiness and resources](rendering.md).
 
 ## kiln_discover
@@ -1857,7 +1859,7 @@ Save a completed source revision into the user-requested collection, or project 
 
 ## kiln_assets
 
-Discover collections; list/search saved asset revisions; get a build record and downloads; or restore exact editable source into the current program store for kiln_source/kiln_edit. List is paginated. Binary-only imports cannot restore source.
+collections discovers storage; catalog searches all configured collections; list searches one. Both searches paginate. get returns a build record/downloads; restore loads exact source for kiln_source/kiln_edit. Collection is not project membership. Binary-only assets cannot restore source.
 
 <details>
 <summary>Input JSON Schema</summary>
@@ -1873,6 +1875,7 @@ Discover collections; list/search saved asset revisions; get a build record and 
       "type": "string",
       "enum": [
         "collections",
+        "catalog",
         "list",
         "get",
         "restore"

@@ -34,6 +34,7 @@ test('CLI samples real clips with the same frames as the shared tool and preserv
       ...process.env,
       KILN_EVALUATOR_MODE: 'in-process',
       KILN_BUILD_CACHE: 'off',
+      KILN_WORKSPACE: directory,
       KILN_PROGRAM_STORE: join(directory, 'programs'),
       KILN_RENDER: 'cpu',
     };
@@ -78,12 +79,13 @@ test('CLI samples real clips with the same frames as the shared tool and preserv
     expect(result.images.map((im: { phase: number }) => im.phase)).toEqual([0, 0.5, 1]);
     expect(result.pngBase64).toBeUndefined();
     expect(result.framesBase64).toBeUndefined();
-    const tool = createKilnProgramToolRegistry(
-      createLocalToolContext(
-        { programStore: new MemoryProgramStore() },
-        { KILN_EVALUATOR_MODE: 'in-process' },
-      ),
-    ).find((t) => t.name === 'kiln_screenshot_animation')!;
+    const context = createLocalToolContext(
+      { programStore: new MemoryProgramStore() },
+      { KILN_EVALUATOR_MODE: 'in-process', KILN_WORKSPACE: directory },
+    );
+    const tool = createKilnProgramToolRegistry(context).find(
+      (t) => t.name === 'kiln_screenshot_animation',
+    )!;
     const output = await tool.run({
       code: SOURCE,
       clip: 'Swing',
@@ -92,6 +94,7 @@ test('CLI samples real clips with the same frames as the shared tool and preserv
       perFrame: true,
       measureParts: [{ name: 'Joint_Arm' }, { name: 'Mesh_Base' }],
     });
+    await context.liveReview?.flush?.();
     const expected = tool.mediaMulti!(output)!.pngs;
     expect(result.poseBounds).toEqual((output as { poseBounds: unknown }).poseBounds);
     expect(result.poseBounds[1].parts[0].bounds.max[1]).toBeCloseTo(2.5, 6);

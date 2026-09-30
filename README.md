@@ -55,6 +55,8 @@ https://github.com/user-attachments/assets/375327bc-58bc-4344-bbb4-985d92c6f63a
 [Browse the interactive gallery](https://kilnstudio.tools/#/gallery)
 · [All examples and model credits](docs/examples.md)
 
+The working tree also includes a [local dashboard, optional projects and Live Review foundation](docs/projects-and-live-review.md). Standalone assets remain a complete workflow; projects add shared briefs, inventories, art direction and material pins when useful. Its [qualification checkpoint](docs/plans/2026-09-26-project-foundation.md) is separate from the released archive below.
+
 These are saved examples from different authoring runs, not a model ranking.
 They are historical showcases from earlier Kiln versions, with unvetted modeling
 issues; they are not golden outputs or reference solutions.

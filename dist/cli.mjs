@@ -11164,4667 +11164,9 @@ var init_requirements_context = __esm(() => {
   });
 });
 
-// src/qa/requirements-applicability.ts
-function sceneMeasurementGaps(requirements, findings) {
-  const codes = new Set(findings.map((finding) => finding.code));
-  const gaps = [];
-  const needs = requirements.requirements;
-  for (const [code, marker, field] of [
-    ["ENV_NAV_CLEARANCE_UNASSESSED", "navigation", "navigable"],
-    ["ENV_TILE_EDGE_EVIDENCE_SPARSE", "tiling", "tileable"]
-  ]) {
-    if (!codes.has(code))
-      continue;
-    const reason = `${code}: required scene measurements could not be established.`;
-    if (needs[marker]?.state === "requested")
-      gaps.push({ key: marker, fields: ["*"], reason });
-    if (needs.spatialLayout?.state === "requested" && needs.spatialLayout.value[field] === true)
-      gaps.push({ key: "spatialLayout", fields: [field], reason });
-  }
-  return gaps;
-}
-function resolveRequirementsApplicability(requirements) {
-  const requested = (key) => (key === "scope" ? requirements.scope : requirements.requirements[key])?.state === "requested";
-  const rules = REQUIREMENTS_RULE_MAP.map((rule) => ({
-    id: rule.id,
-    mode: rule.mode,
-    keys: rule.keys,
-    status: rule.kernel && (rule.kernel === "universal" || rule.kernel === "material" || rule.observation || rule.keys.some(requested)) ? "evaluate" : rule.observation || rule.keys.some(requested) ? "notEvaluated" : "notRequested",
-    ...!rule.kernel && (rule.observation || rule.keys.some(requested)) ? {
-      reason: "Neutral measurement adapter remains to be qualified; no category fallback is used."
-    } : {}
-  }));
-  const unevaluatedRequirements = [];
-  const supportedFields = {
-    rig: ["bodyPlan", "grounded", "clips", "heldItem"],
-    foliage: ["grounded", "standalone", "canopyProfile"],
-    effects: [
-      "schemaVersion",
-      "subtype",
-      "portability",
-      "transparency",
-      "doubleSided",
-      "facing",
-      "animation",
-      "sidecar"
-    ],
-    spatialLayout: ["tileable", "navigable"],
-    structure: ["storeyCount", "interiorMode", "roofMode", "enterable", "portal", "scaleMode"],
-    mobility: [
-      "wheelCount",
-      "axleCount",
-      "steering",
-      "supportPolicy",
-      "supportAssemblies",
-      "frontFrame"
-    ],
-    grounding: ["planeY"],
-    bounds: ["units", "x", "y", "z"],
-    animation: ["clips"],
-    representation: ["precomputedTangents"]
-  };
-  for (const [key, statement] of Object.entries(requirements.requirements)) {
-    if (statement?.state !== "requested")
-      continue;
-    if (key === "navigation" || key === "tiling")
-      continue;
-    if (key === "articulation" || key === "opening") {
-      unevaluatedRequirements.push({
-        key,
-        fields: ["*"],
-        reason: key === "articulation" ? "Declared rigid pivots, subtrees and clearance prisms are checked. They do not establish the requested motion range, animated collisions or other articulation types; acceptance remains incomplete." : "Declared container opening markers are checked without an inferred minimum size. They do not establish usable access, interior occupancy, moving closures or other opening types; acceptance remains incomplete."
-      });
-      continue;
-    }
-    const supported = [...supportedFields[key] ?? []];
-    if (key === "foliage" && requirements.requirements.foliage?.state === "requested" && requirements.requirements.foliage.value.canopyProfile !== undefined)
-      supported.push("growthState");
-    if (key === "mobility") {
-      const mobility = requirements.requirements.mobility;
-      if (mobility?.state === "requested") {
-        if (mobility.value.propulsionAssemblies?.every((kind) => kind === "rotor" || kind === "propeller"))
-          supported.push("propulsionAssemblies");
-        if (mobility.value.animationAssemblies?.length === 0)
-          supported.push("animationAssemblies");
-      }
-    }
-    const fields = Object.keys(statement.value).filter((field) => !supported.includes(field));
-    if (supported.length === 0 || fields.length > 0)
-      unevaluatedRequirements.push({
-        key,
-        fields: fields.length ? fields : ["*"],
-        reason: "Requested measurement is not yet evaluated by the neutral checker; acceptance remains incomplete."
-      });
-  }
-  if (requirements.scope?.state === "requested")
-    unevaluatedRequirements.push({
-      key: "scope",
-      fields: ["*"],
-      reason: "Scope has advisory member/dressing measurements only; they do not certify semantic scope, modular reusability, or pack membership. Acceptance remains incomplete."
-    });
-  return { rules, unevaluatedRequirements };
-}
-var REQUIREMENTS_RULE_MAP;
-var init_requirements_applicability = __esm(() => {
-  REQUIREMENTS_RULE_MAP = [
-    ...[
-      "UNIVERSAL_SCENE_CONTENT_RULE",
-      "UNIVERSAL_FINITE_DATA_RULE",
-      "UNIVERSAL_INDEX_RULE",
-      "UNIVERSAL_ZERO_SCALE_RULE",
-      "UNIVERSAL_NODE_NAME_RULE",
-      "UNIVERSAL_ANIMATION_TARGET_RULE"
-    ].map((id) => ({ id, mode: "enforce", keys: [], kernel: "universal" })),
-    {
-      id: "MATERIAL_PORTABLE_PBR_RULE",
-      mode: "enforce",
-      keys: ["material", "representation"],
-      kernel: "material"
-    },
-    { id: "ARCHITECTURE_PROFILE", mode: "enforce", keys: ["structure"], kernel: "structure" },
-    {
-      id: "ARCHITECTURE_ADVISORY_PROFILE",
-      mode: "observe",
-      keys: ["structure"],
-      kernel: "structure"
-    },
-    { id: "CHARACTER_PROFILE", mode: "enforce", keys: ["rig"], kernel: "rig" },
-    { id: "CHARACTER_ADVISORY_PROFILE", mode: "observe", keys: ["rig"], kernel: "rig" },
-    { id: "VEHICLE_PROFILE", mode: "enforce", keys: ["mobility"], kernel: "mobility" },
-    { id: "VEHICLE_ADVISORY_PROFILE", mode: "observe", keys: ["mobility"], kernel: "mobility" },
-    { id: "VEHICLE_W6_ADVISORY_PROFILE", mode: "observe", keys: ["mobility"], kernel: "mobility" },
-    { id: "VEGETATION_CONTACT_PROFILE", mode: "enforce", keys: ["foliage"], kernel: "foliage" },
-    { id: "VEGETATION_ADVISORY_PROFILE", mode: "observe", keys: ["foliage"], kernel: "foliage" },
-    {
-      id: "PROP_CAPABILITY_EXACT_PROFILE",
-      mode: "enforce",
-      keys: ["articulation", "opening"],
-      kernel: "mechanism"
-    },
-    {
-      id: "PROP_ADVISORY_PROFILE",
-      mode: "observe",
-      keys: ["grounding", "bounds"],
-      kernel: "placement"
-    },
-    {
-      id: "ENVIRONMENT_EXACT_PROFILE",
-      mode: "enforce",
-      keys: ["spatialLayout", "navigation", "tiling", "modular"],
-      kernel: "spatial"
-    },
-    {
-      id: "ENVIRONMENT_ADVISORY_PROFILE",
-      mode: "observe",
-      keys: ["spatialLayout", "navigation", "tiling"],
-      kernel: "spatial"
-    },
-    { id: "VFX_EXACT_PROFILE", mode: "enforce", keys: ["effects"], kernel: "effects" },
-    { id: "VFX_ADVISORY_PROFILE", mode: "observe", keys: ["effects"], kernel: "effects" },
-    { id: "MODULAR_JOIN_PROFILE", mode: "enforce", keys: ["modular"] },
-    { id: "ASSET_SCOPE_PROFILE", mode: "observe", keys: ["scope"], kernel: "scope" },
-    {
-      id: "GEO_PART_SELF_INTERSECTION",
-      mode: "observe",
-      keys: [],
-      observation: true,
-      kernel: "partVolume"
-    },
-    {
-      id: "GEO_PART_CONNECTIVITY",
-      mode: "observe",
-      keys: [],
-      observation: true,
-      kernel: "connectivity"
-    },
-    { id: "REF_COMPARISON", mode: "observe", keys: [], observation: true }
-  ];
-});
-
-// src/qa/requirements-report.ts
-function createRequirementsQaReport(context, options) {
-  const applicability = resolveRequirementsApplicability(context.requirements);
-  const unevaluatedRequirements = [
-    ...applicability.unevaluatedRequirements,
-    ...sceneMeasurementGaps(context.requirements, options.findings ?? [])
-  ];
-  const executed = new Set(options.executedRules);
-  const rules = applicability.rules.map((rule) => ({
-    id: rule.id,
-    mode: options.modes?.[rule.id] ?? rule.mode,
-    status: rule.status === "evaluate" ? executed.has(rule.id) ? "evaluated" : "notEvaluated" : rule.status,
-    ...rule.reason ? { reason: rule.reason } : {}
-  }));
-  const incomplete = unevaluatedRequirements.length > 0 || applicability.rules.some((rule) => rule.status === "evaluate" && !(rule.mode === "observe" && rule.keys.length === 0) && (!executed.has(rule.id) || (options.modes?.[rule.id] ?? rule.mode) === "off" || rule.mode === "enforce" && (options.modes?.[rule.id] ?? rule.mode) !== "enforce"));
-  const findings = (options.findings ?? []).map((finding) => ({
-    ...finding,
-    dimension: finding.dimension === "categoryReadiness" ? "requirementReadiness" : finding.dimension
-  }));
-  const evaluated = new Set(options.evaluatedDimensions ?? ["exportIntegrity", "requirementReadiness"]);
-  for (const finding of findings)
-    evaluated.add(finding.dimension);
-  const dimensions = Object.fromEntries(REQUIREMENTS_QA_DIMENSIONS.map((dimension) => {
-    const selected = findings.filter((finding) => finding.dimension === dimension);
-    const partialObservation = selected.some((finding) => finding.code === "GEO_PART_SELF_INTERSECTION_UNMEASURED" || finding.code === "GEO_PART_SELF_INTERSECTION_TRUNCATED");
-    const status = selected.some((f) => f.disposition === "block") ? "block" : partialObservation || !evaluated.has(dimension) || dimension === "requirementReadiness" && incomplete ? "notEvaluated" : selected.some((f) => f.disposition === "warn") ? "warn" : "pass";
-    return [
-      dimension,
-      {
-        status,
-        findings: selected,
-        ...options.metrics?.[dimension] ? { metrics: options.metrics[dimension] } : {}
-      }
-    ];
-  }));
-  const blocked = findings.some((f) => f.disposition === "block");
-  const warned = findings.some((f) => f.disposition === "warn");
-  return {
-    kind: "kiln.asset-qa-report",
-    schemaVersion: 2,
-    qaProfile: "asset.requirements.v1",
-    policyHash: context.policyHash,
-    adviceHash: context.adviceHash,
-    acceptance: blocked ? "blocked" : incomplete ? "incomplete" : "accepted",
-    disposition: blocked ? "block" : incomplete ? "notEvaluated" : warned ? "warn" : "pass",
-    dimensions,
-    rules,
-    unevaluatedRequirements
-  };
-}
-function validateRequirementsQaReport(input, context) {
-  const fail = () => {
-    throw new TypeError("Invalid neutral requirements QA report.");
-  };
-  if (!record4(input) || input.kind !== "kiln.asset-qa-report" || input.schemaVersion !== 2 || input.qaProfile !== "asset.requirements.v1" || !/^sha256:[a-f0-9]{64}$/.test(String(input.policyHash)) || !/^sha256:[a-f0-9]{64}$/.test(String(input.adviceHash)) || !["accepted", "incomplete", "blocked"].includes(String(input.acceptance)) || !["pass", "warn", "block", "notEvaluated"].includes(String(input.disposition)) || !record4(input.dimensions) || !Array.isArray(input.rules) || !Array.isArray(input.unevaluatedRequirements))
-    return fail();
-  if (Object.keys(input).sort().join(",") !== [
-    "kind",
-    "schemaVersion",
-    "qaProfile",
-    "policyHash",
-    "adviceHash",
-    "acceptance",
-    "disposition",
-    "dimensions",
-    "rules",
-    "unevaluatedRequirements"
-  ].sort().join(","))
-    return fail();
-  if (Object.keys(input.dimensions).sort().join(",") !== [...REQUIREMENTS_QA_DIMENSIONS].sort().join(","))
-    return fail();
-  const findings = [];
-  const metrics = {};
-  const evaluated = [];
-  for (const dimension of REQUIREMENTS_QA_DIMENSIONS) {
-    const value = input.dimensions[dimension];
-    if (!record4(value) || !["pass", "warn", "block", "notEvaluated"].includes(String(value.status)) || !Array.isArray(value.findings) || value.findings.length > 1000 || Object.keys(value).some((key) => !["status", "findings", "metrics"].includes(key)))
-      return fail();
-    if (value.status !== "notEvaluated")
-      evaluated.push(dimension);
-    for (const finding of value.findings) {
-      if (!record4(finding) || finding.dimension !== dimension || !isQaFinding({
-        ...finding,
-        dimension: dimension === "requirementReadiness" ? "categoryReadiness" : dimension
-      }))
-        return fail();
-      findings.push(finding);
-    }
-    if (value.metrics !== undefined) {
-      if (!record4(value.metrics) || !Object.values(value.metrics).every((metric) => metric === null || typeof metric === "string" || typeof metric === "boolean" || typeof metric === "number" && Number.isFinite(metric)))
-        return fail();
-      metrics[dimension] = value.metrics;
-    }
-  }
-  const known = new Set(REQUIREMENTS_RULE_MAP.map((rule) => rule.id));
-  const ids = new Set;
-  for (const rule of input.rules) {
-    if (!record4(rule) || typeof rule.id !== "string" || !known.has(rule.id) || ids.has(rule.id) || !["off", "observe", "warn", "enforce"].includes(String(rule.mode)) || !["evaluated", "notEvaluated", "notRequested"].includes(String(rule.status)))
-      return fail();
-    ids.add(rule.id);
-  }
-  if (ids.size !== known.size)
-    return fail();
-  for (const unmet of input.unevaluatedRequirements)
-    if (!record4(unmet) || typeof unmet.key !== "string" || !Array.isArray(unmet.fields) || !unmet.fields.every((x) => typeof x === "string") || typeof unmet.reason !== "string")
-      return fail();
-  const result = input;
-  if (context) {
-    const expected = createRequirementsQaReport(context, {
-      findings,
-      executedRules: result.rules.filter((rule) => rule.status === "evaluated").map((rule) => rule.id),
-      modes: Object.fromEntries(result.rules.map((rule) => [rule.id, rule.mode])),
-      evaluatedDimensions: evaluated,
-      metrics
-    });
-    if (canonical3(expected) !== canonical3(result))
-      return fail();
-  } else {
-    const blocked = findings.some((finding) => finding.disposition === "block");
-    if (result.acceptance === "blocked" !== blocked || result.disposition === "block" !== blocked || result.unevaluatedRequirements.length > 0 && result.acceptance === "accepted")
-      return fail();
-  }
-  return result;
-}
-var REQUIREMENTS_QA_DIMENSIONS, record4 = (value) => value !== null && typeof value === "object" && !Array.isArray(value), canonical3 = (value) => Array.isArray(value) ? `[${value.map(canonical3).join(",")}]` : record4(value) ? `{${Object.keys(value).sort().map((key) => `${JSON.stringify(key)}:${canonical3(value[key])}`).join(",")}}` : JSON.stringify(value);
-var init_requirements_report = __esm(() => {
-  init_requirements_applicability();
-  init_types();
-  REQUIREMENTS_QA_DIMENSIONS = [
-    "exportIntegrity",
-    "requirementReadiness",
-    "promptAlignment",
-    "visualQuality",
-    "runtimeCost"
-  ];
-});
-
-// src/gltf-io.ts
-import { WebIO } from "@gltf-transform/core";
-import { ALL_EXTENSIONS } from "@gltf-transform/extensions";
-function createGltfIO() {
-  return new WebIO().registerExtensions(ALL_EXTENSIONS);
-}
-var init_gltf_io = () => {};
-
-// src/qa/breadth-final.ts
-import * as THREE15 from "three";
-function bytesContainAscii(bytes, value) {
-  const needle = new TextEncoder().encode(value);
-  outer:
-    for (let index = 0;index <= bytes.length - needle.length; index++) {
-      for (let offset = 0;offset < needle.length; offset++) {
-        if (bytes[index + offset] !== needle[offset])
-          continue outer;
-      }
-      return true;
-    }
-  return false;
-}
-function encodedTextureHasAlpha(mimeType, bytes) {
-  if (mimeType === "image/png") {
-    const colorType = bytes[25];
-    return colorType === 4 || colorType === 6 || bytesContainAscii(bytes, "tRNS");
-  }
-  if (mimeType === "image/webp") {
-    if (bytesContainAscii(bytes, "ALPH"))
-      return true;
-    const vp8xIndex = (() => {
-      const marker = new TextEncoder().encode("VP8X");
-      for (let index = 0;index <= bytes.length - marker.length; index++) {
-        if (marker.every((value, offset) => bytes[index + offset] === value))
-          return index;
-      }
-      return -1;
-    })();
-    return vp8xIndex >= 0 && ((bytes[vp8xIndex + 8] ?? 0) & 16) !== 0;
-  }
-  return false;
-}
-function animationDuration(animation) {
-  let duration = 0;
-  for (const sampler of animation.listSamplers()) {
-    const max = sampler.getInput()?.getMax([]);
-    if (max && typeof max[0] === "number" && Number.isFinite(max[0])) {
-      duration = Math.max(duration, max[0]);
-    }
-  }
-  return stable8(duration);
-}
-function signedAxis2(vector) {
-  const values = [
-    { axis: "X", value: vector.x },
-    { axis: "Y", value: vector.y },
-    { axis: "Z", value: vector.z }
-  ];
-  const dominant = [...values].sort((a, b) => Math.abs(b.value) - Math.abs(a.value))[0];
-  return `${dominant.value < 0 ? "-" : "+"}${dominant.axis}`;
-}
-function finalEffectAxis(nodes, mode) {
-  let best;
-  for (const node of nodes) {
-    const semantic = readSemanticMetadataV1FromExtras(node.getExtras());
-    if (!(semantic?.roles ?? []).some((role) => /^vfx\.effect\.surface(?:\.|$)/.test(role))) {
-      continue;
-    }
-    const matrix = new THREE15.Matrix4().fromArray(node.getWorldMatrix());
-    const scale = node.getWorldScale();
-    const scaleMagnitude = Math.hypot(scale[0], scale[1], scale[2]);
-    for (const primitive of node.getMesh()?.listPrimitives() ?? []) {
-      const position = primitive.getAttribute("POSITION");
-      if (!position)
-        continue;
-      const min = position.getMin([]);
-      const max = position.getMax([]);
-      const axes = [
-        { score: (max[0] ?? 0) - (min[0] ?? 0), direction: new THREE15.Vector3(1, 0, 0) },
-        { score: (max[1] ?? 0) - (min[1] ?? 0), direction: new THREE15.Vector3(0, 1, 0) },
-        { score: (max[2] ?? 0) - (min[2] ?? 0), direction: new THREE15.Vector3(0, 0, 1) }
-      ];
-      const selected = axes.reduce((candidate, value) => mode === "length" ? value.score > candidate.score ? value : candidate : value.score < candidate.score ? value : candidate);
-      const candidate = {
-        score: selected.score * scaleMagnitude,
-        direction: selected.direction.transformDirection(matrix)
-      };
-      if (!best || (mode === "length" ? candidate.score > best.score : candidate.score < best.score)) {
-        best = candidate;
-      }
-    }
-  }
-  return best ? signedAxis2(best.direction) : undefined;
-}
-async function analyzeFinalVfxGlbBytesV1(bytes) {
-  const io = createGltfIO();
-  const document = await io.readBinary(bytes);
-  const root = document.getRoot();
-  const renderableNodes = root.listNodes().filter((node) => node.getMesh() !== null);
-  const meshes = [...new Set(renderableNodes.map((node) => node.getMesh()).filter(Boolean))];
-  const primitives = meshes.flatMap((mesh) => mesh?.listPrimitives() ?? []);
-  let triangleCount = 0;
-  for (const primitive of primitives) {
-    const indices = primitive.getIndices();
-    const position = primitive.getAttribute("POSITION");
-    triangleCount += indices ? indices.getCount() / 3 : (position?.getCount() ?? 0) / 3;
-  }
-  const effectSurfaceMaterials = new Set;
-  for (const node of renderableNodes) {
-    const semantic = readSemanticMetadataV1FromExtras(node.getExtras());
-    if (!(semantic?.roles ?? []).some((role) => /^vfx\.effect\.surface(?:\.|$)/.test(role))) {
-      continue;
-    }
-    for (const primitive of node.getMesh()?.listPrimitives() ?? []) {
-      const material = primitive.getMaterial();
-      if (material)
-        effectSurfaceMaterials.add(material);
-    }
-  }
-  const materials = [
-    ...new Set(primitives.map((primitive) => primitive.getMaterial()).filter(Boolean))
-  ].map((material, index) => {
-    const baseColor = material.getBaseColorFactor();
-    const texture = material.getBaseColorTexture();
-    const image = texture?.getImage();
-    const mimeType = texture?.getMimeType() ?? "";
-    const mode = material.getAlphaMode().toLowerCase();
-    return {
-      id: material.getName() || `material.${index}`,
-      effectSurface: effectSurfaceMaterials.has(material),
-      alphaMode: mode,
-      alphaData: (baseColor[3] ?? 1) < 1 || image !== null && image !== undefined && encodedTextureHasAlpha(mimeType, image),
-      doubleSided: material.getDoubleSided(),
-      ...mode === "mask" ? { alphaCutoff: material.getAlphaCutoff() } : {}
-    };
-  });
-  const facingSemantics = new Set;
-  for (const node of renderableNodes) {
-    const semantic = readSemanticMetadataV1FromExtras(node.getExtras());
-    for (const role of semantic?.roles ?? []) {
-      const match = /^vfx\.facing\.(fixed|camera-spherical|camera-y-axis)$/.exec(role);
-      if (match)
-        facingSemantics.add(match[1]);
-    }
-  }
-  const normalAxis = finalEffectAxis(renderableNodes, "normal");
-  const directionAxis = finalEffectAxis(renderableNodes, "length");
-  return {
-    schemaVersion: 1,
-    meshCount: meshes.length,
-    primitiveCount: primitives.length,
-    triangleCount: Math.floor(triangleCount),
-    materials,
-    facingSemantics: [...facingSemantics].sort(),
-    ...normalAxis ? { normalAxis } : {},
-    ...directionAxis ? { directionAxis } : {},
-    clips: root.listAnimations().map((animation) => ({
-      name: animation.getName(),
-      durationSeconds: animationDuration(animation)
-    }))
-  };
-}
-function finalFinding(profile, value) {
-  return { ...value, profile };
-}
-function inspectFinalEffects(contract, evidence, profile = "asset.requirements.v1") {
-  const findings = [];
-  if (evidence.meshCount === 0 || evidence.primitiveCount === 0 || evidence.triangleCount === 0) {
-    findings.push(finalFinding(profile, {
-      code: "VFX_GLTF_RENDERABLE_MISSING",
-      disposition: "block",
-      dimension: "exportIntegrity",
-      message: "Final GLB contains no renderable VFX geometry.",
-      measurement: {
-        name: "finalVfxTriangles",
-        actual: evidence.triangleCount,
-        expected: ">=1"
-      },
-      repairText: "Export the effect surface as portable geometry before final-byte approval."
-    }));
-  }
-  const effectMaterials = evidence.materials.filter((material) => material.effectSurface);
-  if (effectMaterials.length === 0) {
-    findings.push(finalFinding(profile, {
-      code: "VFX_GLTF_EFFECT_SURFACE_MISSING",
-      disposition: "block",
-      dimension: "exportIntegrity",
-      message: "Final GLB contains no material attached to a vfx.effect.surface.* node.",
-      repairText: "Preserve an explicit vfx.effect.surface.* semantic on each renderable effect node; use vfx.support.* for opaque support geometry."
-    }));
-  }
-  for (const material of effectMaterials) {
-    if (material.alphaMode !== contract.transparency) {
-      findings.push(finalFinding(profile, {
-        code: "VFX_GLTF_TRANSPARENCY_MODE_MISMATCH",
-        disposition: "block",
-        dimension: "exportIntegrity",
-        message: `${material.id} final GLB alpha mode is ${material.alphaMode}; expected ${contract.transparency}.`,
-        affected: { material: material.id },
-        measurement: {
-          name: "finalAlphaMode",
-          actual: material.alphaMode,
-          expected: contract.transparency
-        }
-      }));
-    }
-    if (contract.transparency !== "opaque" && !material.alphaData) {
-      findings.push(finalFinding(profile, {
-        code: "VFX_GLTF_ALPHA_DATA_MISSING",
-        disposition: "block",
-        dimension: "exportIntegrity",
-        message: `${material.id} final GLB has no alpha-bearing factor or embedded texture.`,
-        affected: { material: material.id },
-        measurement: { name: "finalAlphaData", actual: false, expected: true },
-        repairText: "Pack a standalone alphaMap into the exported base-color texture alpha channel, or use an alpha-bearing base-color factor."
-      }));
-    }
-    if (material.doubleSided !== contract.doubleSided) {
-      findings.push(finalFinding(profile, {
-        code: "VFX_GLTF_SIDEDNESS_MISMATCH",
-        disposition: "block",
-        dimension: "exportIntegrity",
-        message: `${material.id} final GLB sidedness differs from trusted VFX intent.`,
-        affected: { material: material.id },
-        measurement: {
-          name: "finalDoubleSided",
-          actual: material.doubleSided,
-          expected: contract.doubleSided
-        }
-      }));
-    }
-    if (contract.transparency === "mask" && (material.alphaCutoff === undefined || material.alphaCutoff <= 0 || material.alphaCutoff > 1)) {
-      findings.push(finalFinding(profile, {
-        code: "VFX_GLTF_ALPHA_CUTOFF_INVALID",
-        disposition: "block",
-        dimension: "exportIntegrity",
-        message: `${material.id} final GLB MASK cutoff is outside (0, 1].`,
-        affected: { material: material.id }
-      }));
-    }
-  }
-  if (contract.facing.mode !== "fixed" && !evidence.facingSemantics.includes(contract.facing.mode)) {
-    findings.push(finalFinding(profile, {
-      code: "VFX_GLTF_FACING_SEMANTIC_MISSING",
-      disposition: "block",
-      dimension: "exportIntegrity",
-      message: `Final GLB does not carry the ${contract.facing.mode} runtime-facing semantic.`,
-      measurement: {
-        name: "finalFacingSemantics",
-        actual: evidence.facingSemantics.join(",") || null,
-        expected: contract.facing.mode
-      },
-      repairText: "Preserve the exporter-derived billboard semantic on the renderable quad node."
-    }));
-  }
-  if (contract.facing.source === "explicit" && contract.facing.mode === "fixed" && contract.facing.normalAxis !== evidence.normalAxis) {
-    findings.push(finalFinding(profile, {
-      code: "VFX_GLTF_NORMAL_AXIS_MISMATCH",
-      disposition: "block",
-      dimension: "exportIntegrity",
-      message: "Final GLB effect-surface normal axis differs from explicit VFX intent.",
-      measurement: {
-        name: "finalNormalAxis",
-        actual: evidence.normalAxis ?? null,
-        expected: contract.facing.normalAxis ?? null
-      }
-    }));
-  }
-  if (contract.facing.source === "explicit" && contract.facing.directionAxis !== undefined && contract.facing.directionAxis !== evidence.directionAxis) {
-    findings.push(finalFinding(profile, {
-      code: "VFX_GLTF_DIRECTION_AXIS_MISMATCH",
-      disposition: "block",
-      dimension: "exportIntegrity",
-      message: "Final GLB effect-surface direction axis differs from explicit VFX intent.",
-      measurement: {
-        name: "finalDirectionAxis",
-        actual: evidence.directionAxis ?? null,
-        expected: contract.facing.directionAxis
-      }
-    }));
-  }
-  if (contract.animation.driver === "clip") {
-    const clip = evidence.clips.find((candidate) => candidate.name === contract.animation.clipName);
-    if (!clip || Math.abs(clip.durationSeconds - contract.animation.durationSeconds) > 0.000001) {
-      findings.push(finalFinding(profile, {
-        code: "VFX_GLTF_REQUIRED_CLIP_MISSING",
-        disposition: "block",
-        dimension: "exportIntegrity",
-        message: "Final GLB dropped or changed the declared VFX animation clip.",
-        affected: { clip: contract.animation.clipName ?? "<missing>" },
-        measurement: {
-          name: "finalClipDurationSeconds",
-          actual: clip?.durationSeconds ?? null,
-          expected: contract.animation.durationSeconds,
-          threshold: 0.000001,
-          unit: "s"
-        }
-      }));
-    }
-  }
-  return findings;
-}
-function finalEffectsMetrics(evidence) {
-  return {
-    finalVfxMeshCount: evidence.meshCount,
-    finalVfxPrimitiveCount: evidence.primitiveCount,
-    finalVfxTriangles: evidence.triangleCount,
-    finalVfxMaterialCount: evidence.materials.length,
-    finalVfxEffectMaterialCount: evidence.materials.filter((material) => material.effectSurface).length,
-    finalVfxFacingSemantics: evidence.facingSemantics.join(","),
-    finalVfxNormalAxis: evidence.normalAxis ?? null,
-    finalVfxDirectionAxis: evidence.directionAxis ?? null,
-    finalVfxClipCount: evidence.clips.length
-  };
-}
-var stable8 = (value) => Math.round(value * 1e6) / 1e6;
-var init_breadth_final = __esm(() => {
-  init_gltf_io();
-  init_contracts();
-  init_types();
-});
-
-// src/qa/requirements-run.ts
-import { Object3D as Object3D12 } from "three";
-function sceneDecisions(context, policy) {
-  const applicable = new Set(resolveRequirementsApplicability(context.requirements).rules.filter((rule) => rule.status === "evaluate").map((rule) => rule.id));
-  return new QaRegistry(registry.list().filter((rule) => applicable.has(rule.id))).describePolicy(policy);
-}
-async function collectRequirementsSceneEvidence(context, scene, policy = {}) {
-  if (!(scene instanceof Object3D12) || !sceneDecisions(context, policy).some((d) => d.ruleId === SELF_INTERSECTION_QA_RULE.id && d.mode !== "off"))
-    return {};
-  try {
-    return { partPenetration: await analyzePartPenetration(scene) };
-  } catch {
-    return { partPenetrationFailed: true };
-  }
-}
-function runRequirementsSceneQa(context, scene, clips, policy = {}, evidence = {}) {
-  const needs = context.requirements.requirements;
-  const parts = needs.parts?.state === "requested" ? needs.parts.value.required : [];
-  const animation = needs.animation?.state === "requested" ? needs.animation.value : undefined;
-  const rig = needs.rig?.state === "requested" ? needs.rig.value : undefined;
-  const requiredClips = [
-    ...new Set([...animation?.clips ?? [], ...rig?.clips?.map((clip) => clip.name) ?? []])
-  ];
-  const tangents = needs.representation?.state === "requested" && needs.representation.value.precomputedTangents === true;
-  const findings = [];
-  const decisions = sceneDecisions(context, policy);
-  const geometryMetrics = {};
-  const mobilityInput = {
-    scene,
-    mobility: needs.mobility?.state === "requested" ? needs.mobility.value : undefined,
-    groundPlaneY: needs.grounding?.state === "requested" ? needs.grounding.value.planeY : undefined
-  };
-  const mobilityFindings = mobilityInput.mobility && decisions.some((d) => (d.ruleId === "VEHICLE_PROFILE" || d.ruleId === "VEHICLE_ADVISORY_PROFILE") && d.mode !== "off") ? inspectMobility(mobilityInput) : [];
-  const executedRules = [];
-  const rigInput = {
-    scene,
-    clips,
-    rig,
-    groundPlaneY: needs.grounding?.state === "requested" ? needs.grounding.value.planeY : undefined
-  };
-  const foliageInput = {
-    scene,
-    foliage: needs.foliage?.state === "requested" ? needs.foliage.value : undefined,
-    materialMode: needs.material?.state === "requested" ? needs.material.value.mode : undefined,
-    groundPlaneY: needs.grounding?.state === "requested" ? needs.grounding.value.planeY : undefined
-  };
-  const effects = needs.effects?.state === "requested" ? needs.effects.value : undefined;
-  const scope = context.requirements.scope;
-  const scopeObservation = scope?.state === "requested" && scene instanceof Object3D12 && decisions.some((d) => d.ruleId === ASSET_SCOPE_QA_RULE.id && d.mode !== "off") ? analyzeAssetScopeObservationV1(scene) : undefined;
-  const effectsInput = {
-    effects,
-    derivedEvidence: {
-      source: "engine-scene-analysis",
-      ...effects && scene instanceof Object3D12 && decisions.some((d) => d.ruleId.startsWith("VFX_") && d.mode !== "off") ? { vfxArtifact: analyzeVfxArtifactEvidenceV1(effects, scene, clips) } : {}
-    }
-  };
-  const spatialInput = {
-    scene,
-    tileable: needs.tiling?.state === "requested" || needs.spatialLayout?.state === "requested" && needs.spatialLayout.value.tileable === true,
-    navigable: needs.navigation?.state === "requested" || needs.spatialLayout?.state === "requested" && needs.spatialLayout.value.navigable === true,
-    navigation: needs.navigation?.state === "requested" ? needs.navigation.value : undefined,
-    groundPlaneY: needs.grounding?.state === "requested" ? needs.grounding.value.planeY ?? 0 : undefined
-  };
-  const spatialFindings = decisions.some((d) => d.ruleId.startsWith("ENVIRONMENT_") && d.mode !== "off") ? [
-    ...inspectPlacementSockets(spatialInput),
-    ...inspectTileEdges(spatialInput),
-    ...inspectNavigationClearance(spatialInput),
-    ...inspectSpatialSupport(spatialInput)
-  ] : [];
-  const structureFindings = needs.structure?.state === "requested" && decisions.some((d) => d.ruleId.startsWith("ARCHITECTURE_") && d.mode !== "off") ? inspectStructure({
-    scene,
-    structure: needs.structure.value,
-    opening: needs.opening?.state === "requested"
-  }) : [];
-  for (const decision of decisions) {
-    if (decision.mode === "off")
-      continue;
-    if (decision.ruleId === SELF_INTERSECTION_QA_RULE.id) {
-      const volume = evidence.partPenetration;
-      if (volume) {
-        const partial = volume.truncated || volume.skipped.length > 0;
-        if (!partial)
-          executedRules.push(decision.ruleId);
-        findings.push(...inspectPartPenetration(volume));
-        Object.assign(geometryMetrics, {
-          partVolumeCoverage: partial ? "partial" : "complete-static-pairs",
-          partVolumeScope: "Visible static closed mesh pairs; excludes intra-mesh intersections, motion, open surfaces and usable passage space. Positive overlap may be intentional.",
-          partVolumeEligibleParts: volume.partsAnalyzed,
-          partVolumeCandidatePairs: volume.candidatePairs,
-          partVolumeCandidatesLowerBound: volume.broadPhaseTruncated === true,
-          partVolumePairsTested: volume.pairsTested,
-          partVolumeSkipped: volume.skipped.length
-        });
-      } else if (evidence.partPenetrationFailed) {
-        findings.push({
-          code: "GEO_PART_SELF_INTERSECTION_UNMEASURED",
-          disposition: "observe",
-          dimension: "visualQuality",
-          profile: "geometry.selfIntersection",
-          message: "Part-volume analysis could not complete. Overlap and clearance remain unmeasured."
-        });
-        geometryMetrics.partVolumeCoverage = "unavailable";
-      }
-      continue;
-    }
-    if (decision.ruleId === ASSET_SCOPE_QA_RULE.id && !scopeObservation)
-      continue;
-    if (decision.ruleId === PART_CONNECTIVITY_QA_RULE.id && !(scene instanceof Object3D12))
-      continue;
-    executedRules.push(decision.ruleId);
-    if (decision.ruleId === PROP_EXACT_QA_RULE.id) {
-      const measured = [
-        ...needs.articulation?.state === "requested" ? inspectArticulation({ scene }) : [],
-        ...needs.opening?.state === "requested" ? inspectContainerOpening({ scene }) : []
-      ];
-      for (const finding of measured)
-        findings.push(decision.mode === "observe" || decision.mode === "warn" ? { ...finding, disposition: decision.mode } : finding);
-      continue;
-    }
-    const measured = decision.ruleId === PART_CONNECTIVITY_QA_RULE.id ? inspectPartConnectivity(scene) : decision.ruleId === ASSET_SCOPE_QA_RULE.id && scope?.state === "requested" ? inspectAssetScope({
-      profile: "asset.requirements.v1",
-      scope: { schemaVersion: 1, scope: scope.value, explicit: true },
-      derivedEvidence: { source: "engine-scene-analysis", assetScope: scopeObservation }
-    }) : decision.ruleId === "CHARACTER_PROFILE" ? inspectRig(rigInput) : decision.ruleId === "CHARACTER_ADVISORY_PROFILE" ? inspectRigAdvisory(rigInput) : decision.ruleId === "VEGETATION_CONTACT_PROFILE" ? inspectFoliageContact(foliageInput) : decision.ruleId === "VEGETATION_ADVISORY_PROFILE" ? inspectFoliageAdvisory(foliageInput) : decision.ruleId === MATERIAL_QA_RULE.id ? inspectPortableSceneMaterials(scene, tangents) : decision.ruleId === "VFX_EXACT_PROFILE" ? inspectEffectsExact(effectsInput) : decision.ruleId === "VFX_ADVISORY_PROFILE" ? inspectEffectsAdvisory(effectsInput) : decision.ruleId === "ARCHITECTURE_PROFILE" ? structureFindings.filter((f) => f.disposition === "block") : decision.ruleId === "ARCHITECTURE_ADVISORY_PROFILE" ? structureFindings.filter((f) => f.disposition !== "block") : decision.ruleId === "ENVIRONMENT_EXACT_PROFILE" ? spatialFindings.filter((f) => f.disposition === "block") : decision.ruleId === "ENVIRONMENT_ADVISORY_PROFILE" ? spatialFindings.filter((f) => f.disposition !== "block") : decision.ruleId === "VEHICLE_PROFILE" ? mobilityFindings.filter((f) => f.disposition === "block") : decision.ruleId === "VEHICLE_ADVISORY_PROFILE" ? mobilityFindings.filter((f) => f.disposition !== "block") : decision.ruleId === "VEHICLE_W6_ADVISORY_PROFILE" ? inspectMobilityAdvisory(mobilityInput) : decision.ruleId === PROP_ADVISORY_QA_RULE.id ? inspectPlacement({
-      scene,
-      bounds: needs.bounds?.state === "requested" ? needs.bounds.value : undefined,
-      groundPlaneY: needs.grounding?.state === "requested" ? needs.grounding.value.planeY ?? 0 : undefined
-    }) : UNIVERSAL_QA_KERNELS[decision.ruleId]({
-      scene,
-      clips,
-      requiredParts: parts,
-      animation: { clips: requiredClips }
-    });
-    for (const finding of measured)
-      findings.push(decision.mode === "observe" || decision.mode === "warn" ? { ...finding, disposition: decision.mode } : finding);
-  }
-  return createRequirementsQaReport(context, {
-    findings,
-    executedRules,
-    modes: Object.fromEntries(decisions.map((x) => [x.ruleId, x.mode])),
-    metrics: {
-      ...Object.keys(geometryMetrics).length ? { visualQuality: geometryMetrics } : {},
-      ...scopeObservation ? {
-        promptAlignment: {
-          scopeTopLevelAssetRoots: scopeObservation.topLevelAssetRoots,
-          scopeReusableMemberCount: scopeObservation.reusableMemberCount,
-          scopeDressingSignalCount: scopeObservation.sceneDressingRoles.length
-        }
-      } : {}
-    },
-    ...scopeObservation ? {
-      evaluatedDimensions: ["exportIntegrity", "requirementReadiness", "promptAlignment"]
-    } : {}
-  });
-}
-function appendRequirementsQa(context, report, findings, metrics = {}) {
-  const priorMetrics = Object.fromEntries(Object.entries(report.dimensions).flatMap(([dimension, value]) => value.metrics ? [[dimension, value.metrics]] : []));
-  const merged = { ...priorMetrics };
-  for (const [dimension, value] of Object.entries(metrics ?? {}))
-    merged[dimension] = { ...priorMetrics[dimension], ...value };
-  return createRequirementsQaReport(context, {
-    findings: [...Object.values(report.dimensions).flatMap((x) => x.findings), ...findings],
-    executedRules: report.rules.filter((x) => x.status === "evaluated").map((x) => x.id),
-    modes: Object.fromEntries(report.rules.map((x) => [x.id, x.mode])),
-    evaluatedDimensions: [
-      ...new Set([
-        ...Object.entries(report.dimensions).filter(([, value]) => value.status !== "notEvaluated").map(([key]) => key),
-        ...Object.keys(metrics ?? {})
-      ])
-    ],
-    metrics: merged
-  });
-}
-async function appendRequirementsFinalQa(context, report, gltf, bytes, instanceability, metricsError, material, warnings = []) {
-  const gltfFindings = gltfReportFindings(gltf, report.qaProfile);
-  const findings = [
-    ...gltfFindings,
-    ...warnings.map((w) => ({
-      code: w.code,
-      disposition: "warn",
-      dimension: "runtimeCost",
-      profile: `${w.profile}.${w.tier}`,
-      message: `${w.message} ${w.advice}`,
-      measurement: w.measurement
-    }))
-  ];
-  if (metricsError)
-    findings.push({
-      code: "RUNTIME_COST_METRICS_FAILED",
-      disposition: "warn",
-      dimension: "runtimeCost",
-      profile: report.qaProfile,
-      message: `Runtime-cost metrics could not be computed: ${metricsError}`
-    });
-  const cost = {};
-  if (instanceability)
-    Object.assign(cost, {
-      instanceabilityGrade: instanceability.grade,
-      instanceabilitySummary: instanceability.summary,
-      ...instanceability.metrics
-    });
-  if (material)
-    Object.assign(cost, {
-      materialCount: material.materialCount,
-      opaqueMaterials: material.opaqueMaterials,
-      maskedMaterials: material.maskedMaterials,
-      blendedMaterials: material.blendedMaterials,
-      singleSidedMaterials: material.singleSidedMaterials,
-      doubleSidedMaterials: material.doubleSidedMaterials,
-      texturedMaterials: material.texturedMaterials,
-      materialExtensionCount: material.materialExtensionCount,
-      materialExtensionsUsed: material.materialExtensionsUsed.join(","),
-      imageCount: material.imageCount,
-      maxImageDimension: material.maxImageDimension,
-      decodedImageBytesRgba8: material.decodedImageBytesRgba8,
-      estimatedGpuBytesWithMipmaps: material.estimatedGpuBytesWithMipmaps,
-      blendedSurfaceAreaRatio: material.blendedSurfaceAreaRatio
-    });
-  let result = appendRequirementsQa(context, report, findings, {
-    exportIntegrity: {
-      gltfErrors: gltf.issues.numErrors,
-      gltfWarnings: gltfFindings.filter((x) => x.disposition === "warn").length
-    },
-    runtimeCost: cost
-  });
-  const effects = context.requirements.requirements.effects;
-  const rule = report.rules.find((r) => r.id === "VFX_EXACT_PROFILE");
-  if (effects?.state === "requested" && rule?.status === "evaluated" && rule.mode !== "off") {
-    const evidence = await analyzeFinalVfxGlbBytesV1(bytes);
-    const measured = inspectFinalEffects(effects.value, evidence);
-    const findings = rule.mode === "enforce" ? measured : measured.map((f) => ({
-      ...f,
-      disposition: rule.mode
-    }));
-    result = appendRequirementsQa(context, result, findings, {
-      exportIntegrity: finalEffectsMetrics(evidence)
-    });
-  }
-  return result;
-}
-var registry;
-var init_requirements_run = __esm(() => {
-  init_breadth_evidence();
-  init_breadth2();
-  init_breadth_final();
-  init_registry();
-  init_universal();
-  init_material();
-  init_prop();
-  init_part_connectivity();
-  init_self_intersection();
-  init_vehicle2();
-  init_vehicle_advisory();
-  init_vegetation();
-  init_character2();
-  init_character_advisory();
-  init_architecture();
-  init_environment2();
-  init_requirements_applicability();
-  init_requirements_report();
-  init_run();
-  registry = new QaRegistry([
-    ...UNIVERSAL_QA_RULES,
-    MATERIAL_QA_RULE,
-    PROP_EXACT_QA_RULE,
-    PROP_ADVISORY_QA_RULE,
-    PART_CONNECTIVITY_QA_RULE,
-    SELF_INTERSECTION_QA_RULE,
-    ...VEHICLE_QA_RULES,
-    ...ARCHITECTURE_QA_RULES,
-    ...ENVIRONMENT_QA_RULES,
-    ...VEGETATION_QA_RULES,
-    CHARACTER_QA_RULE,
-    CHARACTER_ADVISORY_QA_RULE,
-    VFX_EXACT_QA_RULE,
-    VFX_ADVISORY_QA_RULE,
-    ASSET_SCOPE_QA_RULE
-  ]);
-});
-
-// src/rig-export.ts
-function rigExtrasForExport(node) {
-  const extras = {};
-  for (const [key, validate] of [
-    [KILN_CHARACTER_JOINT_EXTRAS_KEY, validateCharacterJointDescriptorV1],
-    [KILN_CHARACTER_RIG_EXTRAS_KEY, validateCharacterRigGraphV1]
-  ]) {
-    const value = node.userData[key];
-    if (value === undefined)
-      continue;
-    const result = validate(value);
-    if (!result.valid || !result.value) {
-      throw new TypeError(`Invalid ${key} on node ${node.name || "<unnamed>"}: ${result.issues.map((issue) => `${issue.path || "<root>"}: ${issue.message}`).join("; ")}`);
-    }
-    extras[key] = result.value;
-  }
-  return extras;
-}
-var init_rig_export = __esm(() => {
-  init_character();
-});
-
-// src/community-exporter.ts
-import * as THREE16 from "three";
-import { GLTFExporter } from "three/addons/exporters/GLTFExporter.js";
-function resolveGltfExporter(value = typeof process !== "undefined" ? process.env["KILN_GLTF_EXPORTER"] : undefined) {
-  if (value === undefined || value === "legacy")
-    return "legacy";
-  if (value === "three")
-    return "three";
-  throw new Error(`Invalid KILN_GLTF_EXPORTER ${JSON.stringify(value)}; use legacy or three.`);
-}
-function cleanClone(source) {
-  const shadow = Object.create(source);
-  shadow.userData = {};
-  return shadow.clone();
-}
-async function communitySceneDocument(root, clips, platform = browserPlatform) {
-  const materials = new Map;
-  const textures = new Map;
-  const nodes = new Map;
-  const encoded = [];
-  function texture(source) {
-    const found = textures.get(source);
-    if (found)
-      return found;
-    const copy = cleanClone(source);
-    normalizeTextureTransform(copy);
-    copy.source = new THREE16.TextureSource(source.image);
-    textures.set(source, copy);
-    const bytes = source.userData["encoded"];
-    if (bytes?.bytes) {
-      encoded.push((async () => {
-        copy.image = await platform.decode(bytes.bytes);
-        Object.defineProperty(copy, "isDataTexture", { value: true });
-        copy.format = THREE16.RGBAFormat;
-        copy.type = THREE16.UnsignedByteType;
-      })());
-    }
-    return copy;
-  }
-  function material(source) {
-    const found = materials.get(source);
-    if (found)
-      return found;
-    const copy = cleanClone(source);
-    const physical = copy;
-    if (physical.isMeshPhysicalMaterial && physical.sheen > 0) {
-      physical.sheenColor.multiplyScalar(physical.sheen);
-      physical.sheen = 1;
-    }
-    for (const [key, value] of Object.entries(copy)) {
-      if (value instanceof THREE16.Texture)
-        copy[key] = texture(value);
-    }
-    materials.set(source, copy);
-    return copy;
-  }
-  function node(source) {
-    if (source.isLine || source.isPoints)
-      throw new Error("Experimental glTF exporter supports triangle meshes and sprites, not lines or points.");
-    const shadow = Object.create(source);
-    shadow.userData = {};
-    let copy = shadow.clone(false);
-    if (source.isScene) {
-      copy = new THREE16.Group;
-      copy.copy(shadow, false);
-    }
-    if (source.isSprite) {
-      const sprite = source;
-      const geometry = new THREE16.PlaneGeometry(1, 1);
-      geometry.translate(0.5 - sprite.center.x, 0.5 - sprite.center.y, 0);
-      geometry.rotateZ(sprite.material.rotation);
-      const spriteMaterial = new THREE16.MeshBasicMaterial({
-        name: sprite.material.name,
-        color: sprite.material.color,
-        opacity: sprite.material.opacity,
-        transparent: sprite.material.transparent,
-        alphaTest: sprite.material.alphaTest,
-        side: sprite.material.side,
-        map: sprite.material.map ? texture(sprite.material.map) : null
-      });
-      copy = new THREE16.Mesh(geometry, spriteMaterial);
-      THREE16.Object3D.prototype.copy.call(copy, shadow, false);
-    }
-    Object.assign(copy.userData, rigExtrasForExport(source));
-    const semantic = source.userData[KILN_SEMANTIC_EXTRAS_KEY];
-    if (semantic !== undefined) {
-      const checked = validateSemanticMetadataV1(semantic);
-      if (!checked.valid || !checked.value)
-        throw new TypeError(`Invalid ${KILN_SEMANTIC_EXTRAS_KEY} on ${source.name}`);
-      copy.userData[KILN_SEMANTIC_EXTRAS_KEY] = cloneSemanticMetadataV1(checked.value);
-    }
-    if (source.isSprite) {
-      const metadata = copy.userData[KILN_SEMANTIC_EXTRAS_KEY];
-      copy.userData[KILN_SEMANTIC_EXTRAS_KEY] = createSemanticMetadataV1({
-        ...metadata,
-        roles: [
-          ...(metadata?.roles ?? []).filter((role) => !role.startsWith("vfx.facing.")),
-          "vfx.facing.camera-spherical",
-          ...metadata?.roles.some((role) => role.startsWith("vfx.effect.surface")) ? [] : ["vfx.effect.surface.card"]
-        ]
-      });
-    }
-    if (source.isMesh) {
-      const original = source;
-      const mesh = copy;
-      mesh.geometry = cleanClone(original.geometry);
-      mesh.material = Array.isArray(original.material) ? original.material.map(material) : material(original.material);
-    }
-    nodes.set(source, copy);
-    for (const child of source.children)
-      copy.add(node(child));
-    return copy;
-  }
-  const copy = node(root);
-  for (const [source, target] of nodes) {
-    if (!source.isSkinnedMesh)
-      continue;
-    const original = source;
-    const mesh = target;
-    mesh.skeleton = original.skeleton.clone();
-    mesh.skeleton.bones = original.skeleton.bones.map((bone) => {
-      const mapped = nodes.get(bone);
-      if (!mapped)
-        throw new Error(`Skin bone ${bone.name} is outside the exported hierarchy.`);
-      return mapped;
-    });
-    mesh.bind(mesh.skeleton, original.bindMatrix);
-  }
-  await Promise.all(encoded);
-  await platform.prepare(textures.size > 0);
-  const exportClips = clips.map((clip) => {
-    const cloned = cleanClone(clip);
-    for (const track of cloned.tracks) {
-      for (const [source, target] of nodes) {
-        if (track.name.startsWith(`${source.uuid}.`))
-          track.name = target.uuid + track.name.slice(source.uuid.length);
-      }
-    }
-    cloned.tracks = cloned.tracks.filter((track) => {
-      try {
-        const binding = THREE16.PropertyBinding.parseTrackName(track.name);
-        return ["position", "quaternion", "scale", "morphTargetInfluences"].includes(binding.propertyName) && THREE16.PropertyBinding.findNode(copy, binding.nodeName) !== null;
-      } catch {
-        return false;
-      }
-    });
-    return cloned;
-  });
-  const bytes = await new GLTFExporter().parseAsync(copy, {
-    binary: true,
-    trs: true,
-    onlyVisible: false,
-    animations: exportClips.filter((clip) => clip.tracks.length > 0)
-  });
-  const io = createGltfIO();
-  const json = await io.binaryToJSON(new Uint8Array(bytes));
-  for (const binding of json.json.textures ?? []) {
-    if (binding.source === undefined || !binding.name)
-      continue;
-    const image = json.json.images?.[binding.source];
-    if (image && !image.name)
-      image.name = binding.name;
-  }
-  return io.readJSON(json);
-}
-function normalizeTextureTransform(texture) {
-  if (texture.matrixAutoUpdate)
-    texture.updateMatrix();
-  const e = texture.matrix.elements;
-  const sx = Math.hypot(e[0], e[1]);
-  const rotation = sx > 0 ? Math.atan2(-e[1], e[0]) : Math.atan2(e[3], e[4]);
-  const c = Math.cos(rotation);
-  const s = Math.sin(rotation);
-  const sy = e[3] * s + e[4] * c;
-  const reconstructed = [sx * c, -sx * s, 0, sy * s, sy * c, 0, e[6], e[7], 1];
-  const tolerance = 0.0000001 * Math.max(1, ...e.map(Math.abs));
-  if (e.some((value, i) => !Number.isFinite(value) || Math.abs(value - reconstructed[i]) > tolerance)) {
-    throw new Error(`Texture ${texture.name || "<unnamed>"}: UV matrix contains shear or perspective that KHR_texture_transform cannot represent; lossless UV baking is not yet qualified.`);
-  }
-  texture.offset.set(e[6], e[7]);
-  texture.repeat.set(sx, sy);
-  texture.rotation = rotation;
-  texture.center.set(0, 0);
-  texture.matrixAutoUpdate = false;
-}
-var browserPlatform;
-var init_community_exporter = __esm(() => {
-  init_gltf_io();
-  init_rig_export();
-  init_contracts();
-  browserPlatform = {
-    async prepare() {},
-    async decode(bytes) {
-      const bitmap = await createImageBitmap(new Blob([new Uint8Array(bytes)]), {
-        colorSpaceConversion: "none"
-      });
-      try {
-        const canvas = new OffscreenCanvas(bitmap.width, bitmap.height);
-        const context = canvas.getContext("2d");
-        if (!context)
-          throw new Error("A 2D canvas is required to decode export textures.");
-        context.drawImage(bitmap, 0, 0);
-        const image = context.getImageData(0, 0, bitmap.width, bitmap.height);
-        return { data: new Uint8Array(image.data), width: bitmap.width, height: bitmap.height };
-      } finally {
-        bitmap.close();
-      }
-    }
-  };
-});
-
-// src/geometry-export.ts
-function geometryExportAttributes(exporter) {
-  return exporter === "three" ? THREE_GEOMETRY_ATTRIBUTES : EXPORTED_GEOMETRY_ATTRIBUTES;
-}
-function validateMaterialGroups(geometry, materialCount, name) {
-  const length = geometry.getIndex()?.count ?? geometry.getAttribute("position").count;
-  const groups = [...geometry.groups].sort((a, b) => a.start - b.start);
-  let covered = 0;
-  for (const group of groups) {
-    const materialIndex = group.materialIndex ?? 0;
-    if (group.start !== covered || !Number.isInteger(group.start) || !Number.isInteger(group.count) || group.count <= 0 || group.start % 3 || group.count % 3 || group.start + group.count > length || !Number.isInteger(materialIndex) || materialIndex < 0 || materialIndex >= materialCount)
-      throw new TypeError(`${name}: material groups must cover every triangle exactly once with valid material indices.`);
-    covered = group.start + group.count;
-  }
-  if (covered !== length)
-    throw new TypeError(`${name}: material groups do not cover every triangle.`);
-  return groups;
-}
-function geometryAttributeValues(attribute) {
-  const values = new Float32Array(attribute.count * attribute.itemSize);
-  for (let vertex = 0;vertex < attribute.count; vertex++) {
-    for (let component = 0;component < attribute.itemSize; component++) {
-      values[vertex * attribute.itemSize + component] = attribute.getComponent(vertex, component);
-    }
-  }
-  return values;
-}
-function inspectGeometryExport(root, policy = "warn", exporter = "legacy") {
-  const warnings = [];
-  const attributes = geometryExportAttributes(exporter);
-  root.traverse((node) => {
-    const mesh = node;
-    if (!mesh.isMesh)
-      return;
-    const geometry = mesh.geometry;
-    const name = mesh.name || "<unnamed mesh>";
-    const unsupported = (feature) => {
-      const message = `EXPORT_ATTRIBUTE_UNSUPPORTED ${name}: ${feature} is not preserved by the GLB bridge.`;
-      if (policy === "strict")
-        throw new TypeError(message);
-      warnings.push(message);
-    };
-    const position = geometry.getAttribute("position");
-    if (position?.itemSize !== 3)
-      throw new TypeError(`${name}: position requires xyz vertices.`);
-    for (const [key, attribute] of Object.entries(geometry.attributes)) {
-      const expected = attributes[key];
-      if (expected === undefined) {
-        unsupported(key);
-        continue;
-      }
-      const sizes = typeof expected === "number" ? [expected] : expected;
-      if (!sizes.includes(attribute.itemSize) || attribute.count !== position.count) {
-        throw new TypeError(`${name}: ${key} requires ${position.count} vertices with ${sizes.join(" or ")} components each.`);
-      }
-      for (let vertex = 0;vertex < attribute.count; vertex++) {
-        for (let component = 0;component < attribute.itemSize; component++) {
-          if (!Number.isFinite(attribute.getComponent(vertex, component))) {
-            throw new TypeError(`${name}: ${key} contains a non-finite value at vertex ${vertex}.`);
-          }
-        }
-      }
-    }
-    const index = geometry.getIndex();
-    if ((index?.count ?? position.count) % 3 !== 0)
-      throw new TypeError(`${name}: triangle indices/vertices must be a multiple of three.`);
-    if (index) {
-      for (let i = 0;i < index.count; i++) {
-        const value = index.getX(i);
-        if (!Number.isInteger(value) || value < 0 || value >= position.count)
-          throw new TypeError(`${name}: index ${i} is outside the position attribute.`);
-      }
-    }
-    if (exporter === "three" && Array.isArray(mesh.material))
-      validateMaterialGroups(geometry, mesh.material.length, name);
-    if (exporter === "legacy") {
-      for (const key of Object.keys(geometry.morphAttributes))
-        unsupported(`morph ${key}`);
-      if (mesh.isSkinnedMesh)
-        unsupported("skinning");
-    }
-    for (const key of ["kilnAttributeWarnings", "kilnGeometryWarnings"]) {
-      const notes = geometry.userData[key];
-      if (!Array.isArray(notes))
-        continue;
-      for (const note of notes) {
-        if (typeof note === "string")
-          warnings.push(`${name}: ${note}`);
-        else if (note && typeof note === "object" && "code" in note)
-          warnings.push(`${name}: ${String(note.code)}${"message" in note ? ` ${String(note.message)}` : ""}`);
-      }
-    }
-  });
-  return warnings;
-}
-var EXPORTED_GEOMETRY_ATTRIBUTES, THREE_GEOMETRY_ATTRIBUTES;
-var init_geometry_export = __esm(() => {
-  EXPORTED_GEOMETRY_ATTRIBUTES = {
-    position: 3,
-    normal: 3,
-    uv: 2,
-    tangent: 4
-  };
-  THREE_GEOMETRY_ATTRIBUTES = {
-    ...EXPORTED_GEOMETRY_ATTRIBUTES,
-    color: [3, 4],
-    uv1: 2,
-    uv2: 2,
-    uv3: 2,
-    skinIndex: 4,
-    skinWeight: 4
-  };
-});
-
-// src/palette-snap.ts
-function srgbChannelToLinear(c) {
-  return c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4;
-}
-function hexToLinearRgb(hex) {
-  const h = hex.trim().replace(/^#/, "");
-  const full = h.length === 3 ? h[0] + h[0] + h[1] + h[1] + h[2] + h[2] : h;
-  const n = Number.parseInt(full.slice(0, 6).padEnd(6, "0"), 16);
-  const r = (n >> 16 & 255) / 255;
-  const g = (n >> 8 & 255) / 255;
-  const b = (n & 255) / 255;
-  return [srgbChannelToLinear(r), srgbChannelToLinear(g), srgbChannelToLinear(b)];
-}
-function linToOklab(r, g, b) {
-  const l = 0.4122214708 * r + 0.5363325363 * g + 0.0514459929 * b;
-  const m = 0.2119034982 * r + 0.6806995451 * g + 0.1073969566 * b;
-  const s = 0.0883024619 * r + 0.2817188376 * g + 0.6299787005 * b;
-  const l_ = Math.cbrt(l), m_ = Math.cbrt(m), s_ = Math.cbrt(s);
-  return [
-    0.2104542553 * l_ + 0.793617785 * m_ - 0.0040720468 * s_,
-    1.9779984951 * l_ - 2.428592205 * m_ + 0.4505937099 * s_,
-    0.0259040371 * l_ + 0.7827717662 * m_ - 0.808675766 * s_
-  ];
-}
-function buildSlotIndex(slots) {
-  const opaque = [];
-  const neutral = [];
-  const chromatic = [];
-  const glass = [];
-  const glow = [];
-  slots.forEach((s, i) => {
-    const kind = s.kind ?? "opaque";
-    const [r, g, b] = hexToLinearRgb(s.color);
-    const lab = linToOklab(r, g, b);
-    if (kind === "glass") {
-      glass.push(i);
-      return;
-    }
-    if (kind === "glow") {
-      glow.push({ i, lab });
-      return;
-    }
-    opaque.push({ i, lab });
-    if (relChroma(lab) >= REL_CHROMA_GATE)
-      chromatic.push({ i, lab });
-    else
-      neutral.push({ i, lab });
-  });
-  return { slots, opaque, neutral, chromatic, glass, glow };
-}
-function nearestIn(cands, lab, dist) {
-  let best = cands[0].i, bd = Infinity;
-  for (const c of cands) {
-    const d = dist(c.lab, lab);
-    if (d < bd) {
-      bd = d;
-      best = c.i;
-    }
-  }
-  return best;
-}
-function nearestOpaqueSlot(idx, lin) {
-  if (idx.opaque.length === 0)
-    return;
-  const lab = linToOklab(lin[0], lin[1], lin[2]);
-  if (relChroma(lab) >= REL_CHROMA_GATE) {
-    return idx.chromatic.length ? nearestIn(idx.chromatic, lab, dE2Chroma) : nearestIn(idx.opaque, lab, dE2);
-  }
-  return idx.neutral.length ? nearestIn(idx.neutral, lab, dE2) : nearestIn(idx.opaque, lab, dE2);
-}
-function nearestGlowSlot(idx, emissiveLin) {
-  if (idx.glow.length === 0)
-    return;
-  return nearestIn(idx.glow, linToOklab(emissiveLin[0], emissiveLin[1], emissiveLin[2]), dE2);
-}
-function chooseSlot(idx, m) {
-  const emi = m.emissiveLinear;
-  const isEmissive = !!emi && (emi[0] > 0.0025 || emi[1] > 0.0025 || emi[2] > 0.0025);
-  if (isEmissive) {
-    const g = nearestGlowSlot(idx, emi);
-    if (g !== undefined)
-      return g;
-  }
-  if (m.transparent && idx.glass.length > 0) {
-    if (idx.glass.length === 1)
-      return idx.glass[0];
-    const lab = linToOklab(m.baseLinear[0], m.baseLinear[1], m.baseLinear[2]);
-    let best = idx.glass[0], bd = Infinity;
-    for (const gi of idx.glass) {
-      const [r, g, b] = hexToLinearRgb(idx.slots[gi].color);
-      const d = dE2(linToOklab(r, g, b), lab);
-      if (d < bd) {
-        bd = d;
-        best = gi;
-      }
-    }
-    return best;
-  }
-  return nearestOpaqueSlot(idx, m.baseLinear);
-}
-var dE2 = (a, b) => {
-  const dl = a[0] - b[0], da = a[1] - b[1], db = a[2] - b[2];
-  return dl * dl + da * da + db * db;
-}, L_WEIGHT_CHROMA = 0.3, dE2Chroma = (a, b) => {
-  const dl = a[0] - b[0], da = a[1] - b[1], db = a[2] - b[2];
-  return L_WEIGHT_CHROMA * dl * dl + da * da + db * db;
-}, chroma = (lab) => Math.hypot(lab[1], lab[2]), REL_CHROMA_GATE = 0.04, relChroma = (lab) => chroma(lab) / Math.max(lab[0], 0.25);
-
-// src/wall-panels.ts
-function positive3(value, field) {
-  if (!Number.isFinite(value) || value <= 0) {
-    throw new RangeError(`wall: ${field} must be finite and positive.`);
-  }
-  return value;
-}
-function buildWallPanels(length, height, thickness, apertures) {
-  positive3(length, "length");
-  positive3(height, "height");
-  positive3(thickness, "thickness");
-  const openings = apertures.map((opening, index) => {
-    const kind = opening.kind ?? "door";
-    if (kind !== "door" && kind !== "window")
-      throw new RangeError("wall: unsupported opening kind.");
-    const offset = opening.offset ?? 0;
-    if (!Number.isFinite(offset))
-      throw new RangeError("wall: opening.offset must be finite.");
-    const width = positive3(opening.width ?? (kind === "window" ? 1 : 1.1), "opening.width");
-    const openingHeight = positive3(opening.height ?? (kind === "window" ? 1 : 2.1), "opening.height");
-    const sill = kind === "window" ? opening.sill ?? 1 : 0;
-    if (!Number.isFinite(sill) || sill < 0)
-      throw new RangeError("wall: opening.sill must be finite and nonnegative.");
-    const depth = positive3(opening.depth ?? thickness, "opening.depth");
-    const left = offset - width / 2;
-    const right = offset + width / 2;
-    const top = sill + openingHeight;
-    if (left <= -length / 2 || right >= length / 2 || top >= height) {
-      throw new RangeError("wall: opening must fit strictly inside the wall boundary (except the base).");
-    }
-    return {
-      id: opening.id ?? `${kind}-${index + 1}`,
-      kind,
-      offset,
-      width,
-      height: openingHeight,
-      sill,
-      depth,
-      left,
-      right,
-      top
-    };
-  });
-  for (let i = 0;i < openings.length; i++) {
-    const a = openings[i];
-    for (let j = i + 1;j < openings.length; j++) {
-      const b = openings[j];
-      if (a.left < b.right && b.left < a.right && a.sill < b.top && b.sill < a.top) {
-        throw new RangeError(`wall: openings ${a.id} and ${b.id} overlap.`);
-      }
-    }
-  }
-  const cuts = [
-    ...new Set([
-      -length / 2,
-      length / 2,
-      ...openings.flatMap((opening) => [opening.left, opening.right])
-    ])
-  ].sort((a, b) => a - b);
-  const panels = [];
-  const add = (left, right, bottom, top) => {
-    if (right <= left || top <= bottom)
-      return;
-    let suffix = `_Panel${panels.length + 1}`;
-    if (openings.length === 0)
-      suffix = "";
-    else if (openings.length === 1) {
-      const opening = openings[0];
-      suffix = right <= opening.left ? "_L" : left >= opening.right ? "_R" : top <= opening.sill ? "_Sill" : "_Lintel";
-    }
-    panels.push({ suffix, left, right, bottom, top });
-  };
-  for (let i = 1;i < cuts.length; i++) {
-    const left = cuts[i - 1];
-    const right = cuts[i];
-    const active = openings.filter((opening) => opening.left < right && opening.right > left).sort((a, b) => a.sill - b.sill);
-    let bottom = 0;
-    for (const opening of active) {
-      add(left, right, bottom, opening.sill);
-      bottom = opening.top;
-    }
-    add(left, right, bottom, height);
-  }
-  return { openings, panels };
-}
-
-// src/assembly-transform.ts
-import * as THREE17 from "three";
-function checkedTrs(matrix, label) {
-  const e = matrix.elements;
-  if (!e.every(Number.isFinite) || e[3] !== 0 || e[7] !== 0 || e[11] !== 0 || Math.abs(e[15] - 1) > 16 * Number.EPSILON)
-    throw new Error(`${label}: finite affine TRS is required.`);
-  if (!Number.isFinite(matrix.determinant()) || matrix.determinant() === 0)
-    throw new Error(`${label}: singular/zero-scale transforms are unsupported.`);
-  const position = new THREE17.Vector3, quaternion = new THREE17.Quaternion, scale = new THREE17.Vector3;
-  matrix.decompose(position, quaternion, scale);
-  const rebuilt = new THREE17.Matrix4().compose(position, quaternion, scale);
-  if (rebuilt.elements.some((value, i) => !Number.isFinite(value) || Math.abs(value - e[i]) > 0.00000001 * Math.max(1, Math.abs(e[i]))))
-    throw new Error(`${label}: local shear cannot be represented losslessly as TRS.`);
-  return { position, quaternion, scale };
-}
-var init_assembly_transform = () => {};
-
-// src/assembly.ts
-import * as THREE18 from "three";
-function jsonData(value, label, ancestors = new Set) {
-  if (value === null || typeof value === "string" || typeof value === "boolean")
-    return;
-  if (typeof value === "number" && Number.isFinite(value))
-    return;
-  if (typeof value !== "object" || value === null)
-    throw new Error(`${label}: metadata must be inert finite JSON data.`);
-  if (ancestors.has(value))
-    throw new Error(`${label}: cyclic metadata is unsupported.`);
-  if (!Array.isArray(value) && Object.getPrototypeOf(value) !== Object.prototype && Object.getPrototypeOf(value) !== null)
-    throw new Error(`${label}: non-JSON metadata object is unsupported.`);
-  if (Object.getOwnPropertySymbols(value).length)
-    throw new Error(`${label}: symbol metadata is unsupported.`);
-  ancestors.add(value);
-  for (const key of Object.getOwnPropertyNames(value)) {
-    if (Array.isArray(value) && key === "length")
-      continue;
-    const property = Object.getOwnPropertyDescriptor(value, key);
-    if (!("value" in property))
-      throw new Error(`${label}: metadata getters are unsupported.`);
-    if (!property.enumerable)
-      throw new Error(`${label}: non-enumerable metadata is unsupported.`);
-    jsonData(property.value, label, ancestors);
-  }
-  if (Array.isArray(value)) {
-    const keys = Object.keys(value);
-    if (keys.length !== value.length || keys.some((key, index) => key !== String(index)))
-      throw new Error(`${label}: sparse or extended metadata arrays are unsupported.`);
-  }
-  ancestors.delete(value);
-}
-function canonicalJson(value) {
-  const sort = (entry) => {
-    if (Array.isArray(entry))
-      return entry.map(sort);
-    if (object(entry))
-      return Object.fromEntries(Object.keys(entry).sort().map((key) => [key, sort(entry[key])]));
-    return entry;
-  };
-  return JSON.stringify(sort(value));
-}
-function knownMetadata(source, parsed, label) {
-  if (canonicalJson(source) !== canonicalJson(parsed))
-    throw new Error(`${label}: unsupported fields in known metadata would be lost during remapping.`);
-}
-function localMatrix(node) {
-  return node.matrixAutoUpdate ? new THREE18.Matrix4().compose(node.position, node.quaternion, node.scale) : node.matrix.clone();
-}
-function worldMatrix(node) {
-  const chain = [], seen = new Set;
-  for (let cursor = node;cursor; cursor = cursor.parent) {
-    if (seen.has(cursor))
-      throw new Error("Assembly ancestor hierarchy contains a cycle.");
-    seen.add(cursor);
-    chain.push(cursor);
-  }
-  const result = new THREE18.Matrix4;
-  for (const entry of chain.reverse())
-    result.multiply(localMatrix(entry));
-  return result;
-}
-function addIndex(map, key, value) {
-  map.set(key, [...map.get(key) ?? [], value]);
-}
-function census(root) {
-  const nodes = [], matrices = new Map;
-  const semantics = new Map;
-  const joints = new Map;
-  const rigs = new Map;
-  const stack = [root];
-  while (stack.length) {
-    const node = stack.pop();
-    if (!(node instanceof THREE18.Object3D) || ![THREE18.Object3D, THREE18.Group, THREE18.Mesh].includes(node.constructor))
-      throw new Error("Unsupported assembly node: only ordinary Object3D, Group and Mesh hierarchies are qualified; no skins, instances or custom node classes.");
-    if (matrices.has(node))
-      throw new Error("Assembly must be a tree; duplicate/cyclic children are unsupported.");
-    if (nodes.length >= ASSEMBLY_LIMITS.nodes)
-      throw new Error(`Assembly node limit exceeded (${ASSEMBLY_LIMITS.nodes}).`);
-    if (typeof node.name !== "string")
-      throw new Error("Assembly node names must be strings.");
-    if (!node.matrixWorldAutoUpdate)
-      throw new Error("Assembly nodes with externally managed matrixWorldAutoUpdate=false world matrices are unsupported.");
-    if (node.matrixAutoUpdate && Math.abs(node.quaternion.lengthSq() - 1) > 0.000001)
-      throw new Error("Assembly source quaternion must be unit length.");
-    const matrix = localMatrix(node);
-    checkedTrs(matrix, node.name || "unnamed node");
-    nodes.push(node);
-    matrices.set(node, matrix);
-    if (node.onBeforeRender !== THREE18.Object3D.prototype.onBeforeRender || node.onAfterRender !== THREE18.Object3D.prototype.onAfterRender || node.onBeforeShadow !== THREE18.Object3D.prototype.onBeforeShadow || node.onAfterShadow !== THREE18.Object3D.prototype.onAfterShadow)
-      throw new Error("Custom node render callbacks are unsupported in assembly replication.");
-    if (node instanceof THREE18.Mesh) {
-      if (!(node.geometry instanceof THREE18.BufferGeometry) || node.geometry instanceof THREE18.InstancedBufferGeometry)
-        throw new Error("Unsupported assembly geometry type.");
-      if (Object.values(node.geometry.morphAttributes).some((attributes) => attributes?.length) || node.morphTargetInfluences?.length)
-        throw new Error("Assembly morph target replication is unsupported.");
-      const materials = Array.isArray(node.material) ? node.material : [node.material];
-      if (materials.length === 0 || materials.some((material) => !(material instanceof THREE18.Material)))
-        throw new Error("Assembly mesh materials must be Material instances.");
-    }
-    if (!object(node.userData))
-      throw new Error("Assembly node metadata must be an object.");
-    jsonData(node.userData, node.name);
-    if (!Array.isArray(node.animations) || node.animations.some((clip) => !(clip instanceof THREE18.AnimationClip)))
-      throw new Error("Assembly node animations must contain AnimationClip instances.");
-    if (node.userData[KILN_SEMANTIC_EXTRAS_KEY] !== undefined) {
-      const metadata = readSemanticMetadataV1(node);
-      if (!metadata)
-        throw new Error(`Invalid semantic metadata on ${node.name}.`);
-      knownMetadata(node.userData[KILN_SEMANTIC_EXTRAS_KEY], metadata, node.name);
-      semantics.set(node, metadata);
-    }
-    if (node.userData[KILN_CHARACTER_JOINT_EXTRAS_KEY] !== undefined) {
-      const descriptor = readCharacterJointDescriptorV1(node);
-      if (!descriptor)
-        throw new Error(`Invalid character joint metadata on ${node.name}.`);
-      knownMetadata(node.userData[KILN_CHARACTER_JOINT_EXTRAS_KEY], descriptor, node.name);
-      joints.set(node, descriptor);
-    }
-    if (node.userData[KILN_CHARACTER_RIG_EXTRAS_KEY] !== undefined) {
-      const graph = readCharacterRigGraphV1(node);
-      if (!graph)
-        throw new Error(`Invalid character rig metadata on ${node.name}.`);
-      knownMetadata(node.userData[KILN_CHARACTER_RIG_EXTRAS_KEY], graph, node.name);
-      rigs.set(node, graph);
-    }
-    for (const child of [...node.children].reverse()) {
-      if (child.parent !== node)
-        throw new Error("Assembly child/parent links disagree.");
-      stack.push(child);
-    }
-  }
-  return { nodes, matrices, semantics, joints, rigs };
-}
-function describeAssembly(root, options = {}) {
-  if (!object(options))
-    throw new Error("Assembly description options must be an object.");
-  if (Object.keys(options).some((key) => key !== "clips"))
-    throw new Error("Unknown describeAssembly option.");
-  if (options.clips !== undefined && !Array.isArray(options.clips))
-    throw new Error("Assembly clips must be an array.");
-  const state = census(root), roles = new Map;
-  const frames = [], sockets = [], joints = [], materials = [];
-  const relative = new Map;
-  const bounds = new THREE18.Box3, point = new THREE18.Vector3;
-  let positionSamples = 0;
-  for (const [index, node] of state.nodes.entries()) {
-    const nodeId = `n${index}`;
-    const matrix = node === root ? new THREE18.Matrix4 : relative.get(node.parent).clone().multiply(state.matrices.get(node));
-    relative.set(node, matrix);
-    const metadata = state.semantics.get(node);
-    const descriptor = state.joints.get(node);
-    const kinds = [];
-    if (descriptor)
-      kinds.push("articulated");
-    if (hasSemanticRole(metadata?.roles ?? [], KILN_SEMANTIC_ROLES.wheelPivot))
-      kinds.push("wheel-spin");
-    if (hasSemanticRole(metadata?.roles ?? [], KILN_SEMANTIC_ROLES.steeringPivot))
-      kinds.push("steering");
-    if (kinds.length)
-      joints.push({
-        node,
-        nodeId,
-        kinds,
-        roles: [...metadata?.roles ?? []],
-        ...descriptor ? { descriptor: structuredClone(descriptor) } : {}
-      });
-    for (const role of metadata?.roles ?? [])
-      addIndex(roles, role, node);
-    for (const frame of metadata?.frames ?? []) {
-      const local = new THREE18.Matrix4().compose(new THREE18.Vector3(...frame.translation), new THREE18.Quaternion(...frame.rotation), new THREE18.Vector3(1, 1, 1));
-      frames.push({
-        node,
-        nodeId,
-        frame: structuredClone(frame),
-        matrix: matrix.clone().multiply(local).toArray()
-      });
-    }
-    for (const socket of metadata?.sockets ?? [])
-      sockets.push({ node, nodeId, socket: structuredClone(socket) });
-    if (!(node instanceof THREE18.Mesh))
-      continue;
-    for (const [materialIndex, material] of (Array.isArray(node.material) ? node.material : [node.material]).entries())
-      materials.push({ node, nodeId, index: materialIndex, material });
-    const positions = node.geometry.getAttribute("position");
-    if (!positions)
-      continue;
-    if (positions.itemSize !== 3)
-      throw new Error("Assembly position attributes must contain triples.");
-    positionSamples += positions.count;
-    if (positionSamples > ASSEMBLY_LIMITS.positionSamples)
-      throw new Error(`Assembly position-sample limit exceeded (${ASSEMBLY_LIMITS.positionSamples}).`);
-    for (let i = 0;i < positions.count; i++) {
-      point.fromBufferAttribute(positions, i).applyMatrix4(matrix);
-      if (![point.x, point.y, point.z].every(Number.isFinite))
-        throw new Error("Assembly bounds require finite transformed positions.");
-      bounds.expandByPoint(point);
-    }
-  }
-  const clips = [
-    ...new Set([...state.nodes.flatMap((node) => node.animations), ...options.clips ?? []])
-  ];
-  return {
-    version: "kiln.assembly.v1",
-    root,
-    nodes: state.nodes,
-    roles,
-    frames,
-    sockets,
-    joints,
-    materials,
-    bounds: bounds.isEmpty() ? null : {
-      space: "root-local",
-      min: bounds.min.toArray(),
-      max: bounds.max.toArray(),
-      size: bounds.getSize(new THREE18.Vector3).toArray()
-    },
-    clips,
-    ownership: {
-      hierarchy: "borrowed",
-      geometry: "borrowed",
-      materials: "borrowed",
-      textures: "borrowed",
-      clips: "borrowed"
-    }
-  };
-}
-function replicateAssembly(source, options) {
-  if (source?.version !== "kiln.assembly.v1")
-    throw new Error("replicateAssembly requires a describeAssembly result.");
-  if (!object(options) || typeof options.namespace !== "string" || options.namespace.length > 64 || !/^[a-z][a-z0-9]*(?:[_-][a-z0-9]+)*$/.test(options.namespace))
-    throw new Error("Assembly namespace must be 1-64 lowercase letters/digits with single internal underscores or hyphens, starting with a letter.");
-  const allowedOptions = new Set([
-    "namespace",
-    "parent",
-    "space",
-    "geometry",
-    "materials",
-    "externalReferences",
-    "unknownMetadata"
-  ]);
-  if (Object.keys(options).some((key) => !allowedOptions.has(key)))
-    throw new Error("Unknown replicateAssembly option/policy.");
-  for (const [key, choices] of Object.entries({
-    space: ["local", "world"],
-    geometry: ["share", "copy"],
-    materials: ["share", "copy"],
-    externalReferences: ["reject", "preserve"],
-    unknownMetadata: ["reject", "copy-json"]
-  })) {
-    const value = options[key];
-    if (value !== undefined && !choices.includes(value))
-      throw new Error(`Unsupported assembly ${key} policy.`);
-  }
-  if (options.parent !== undefined && !(options.parent instanceof THREE18.Object3D))
-    throw new Error("Assembly parent must be an Object3D.");
-  const fresh = describeAssembly(source.root, { clips: source.clips }), state = census(source.root);
-  if (options.parent && state.nodes.includes(options.parent))
-    throw new Error("A replica parent cannot be inside its source subtree.");
-  const { namespace } = options;
-  const byName = new Map, byRole = new Map, byUuid = new Map;
-  const bySocket = new Map;
-  const names = new Map, ids = new Map;
-  const jointRoles = new Map, jointRoleMap = new Map;
-  for (const [index, node] of state.nodes.entries()) {
-    ids.set(node, `n${index}`);
-    names.set(node, `${namespace}__${(node.name || "Node").replace(/[^A-Za-z0-9_-]/g, "_")}__n${index}`);
-    if (node.name)
-      addIndex(byName, node.name, node);
-    addIndex(byUuid, node.uuid, node);
-    const metadata = state.semantics.get(node);
-    for (const role of metadata?.roles ?? [])
-      addIndex(byRole, role, node);
-    for (const socket of metadata?.sockets ?? [])
-      addIndex(bySocket, socket.id, { node, socket });
-    const joint = state.joints.get(node);
-    if (joint) {
-      if (jointRoles.has(joint.role))
-        throw new Error(`Ambiguous character joint role: ${joint.role}.`);
-      jointRoles.set(joint.role, node);
-      jointRoleMap.set(joint.role, `${namespace}.${joint.role}`);
-    }
-    for (const key of Object.keys(node.userData)) {
-      if (!metadataKeys.has(key) && options.unknownMetadata !== "copy-json")
-        throw new Error(`Unsupported custom metadata ${key} on ${node.name}; use copy-json only for inert data whose references you own.`);
-    }
-    jsonData(node.userData, node.name);
-    if (node instanceof THREE18.Mesh) {
-      if (options.geometry === "copy") {
-        jsonData(node.geometry.userData, `${node.name} geometry`);
-        if (node.geometry.clone !== THREE18.BufferGeometry.prototype.clone || !threeConstructors.has(node.geometry.constructor))
-          throw new Error("Copying custom geometry classes/clone implementations is unsupported; explicitly share the resource.");
-      }
-      if (options.materials === "copy")
-        for (const material of Array.isArray(node.material) ? node.material : [node.material]) {
-          jsonData(material.userData, `${node.name} material`);
-          if (material.onBeforeCompile !== THREE18.Material.prototype.onBeforeCompile || material.onBeforeRender !== THREE18.Material.prototype.onBeforeRender || material.clone !== THREE18.Material.prototype.clone || !threeConstructors.has(material.constructor) || material.customProgramCacheKey !== THREE18.Material.prototype.customProgramCacheKey || material instanceof THREE18.ShaderMaterial)
-            throw new Error("Copying custom/shader materials is unsupported; explicit sharing preserves their existing implementation.");
-        }
-    }
-  }
-  const externalReferences = [];
-  const external = (reference) => {
-    if (options.externalReferences !== "preserve")
-      throw new Error(`Unresolved external ${reference.kind} reference ${reference.target}; explicitly preserve it only when the caller owns that binding.`);
-    externalReferences.push(reference);
-  };
-  const unique = (matches, label) => {
-    if (matches && matches.length > 1)
-      throw new Error(`Ambiguous assembly reference: ${label}.`);
-    return matches?.[0];
-  };
-  const resolveNode = (target) => unique([...new Set([...byName.get(target) ?? [], ...byUuid.get(target) ?? []])], `node name/UUID ${target}`);
-  const socketName = (node, id) => `${namespace}.${ids.get(node)}.${id}`;
-  const mappedSemantic = new Map;
-  const mappedJoints = new Map;
-  const mappedRigs = new Map;
-  for (const node of state.nodes) {
-    const metadata = state.semantics.get(node), joint = state.joints.get(node);
-    if (metadata) {
-      const mapped = structuredClone(metadata);
-      if (joint)
-        mapped.roles = mapped.roles.map((role) => role === `joint.${joint.role}` ? `joint.${jointRoleMap.get(joint.role)}` : joint.aliases.some((alias) => role === `joint.alias.${alias}`) ? `joint.alias.${namespace}.${role.slice("joint.alias.".length)}` : role);
-      mapped.sockets = mapped.sockets.map((socket) => ({
-        ...socket,
-        id: socketName(node, socket.id)
-      }));
-      mapped.relationships = mapped.relationships.map((relationship) => {
-        const { target, targetType } = relationship;
-        if (targetType === "socket") {
-          const match = unique(bySocket.get(target), `socket ${target}`);
-          if (match)
-            return { ...relationship, target: socketName(match.node, match.socket.id) };
-        } else {
-          const match = targetType === "node" ? resolveNode(target) : unique(byRole.get(target), `role ${target}`);
-          if (match)
-            return { ...relationship, targetType: "node", target: names.get(match) };
-        }
-        external({ kind: "semantic", source: node.name, target, targetType });
-        return relationship;
-      });
-      mappedSemantic.set(node, mapped);
-    }
-    const mapJoint = (descriptor) => {
-      const role = jointRoleMap.get(descriptor.role);
-      if (!role)
-        throw new Error(`Rig graph joint ${descriptor.role} is not backed by a subtree joint node.`);
-      let parentRole = descriptor.parentRole;
-      if (parentRole) {
-        if (jointRoleMap.has(parentRole))
-          parentRole = jointRoleMap.get(parentRole);
-        else
-          external({
-            kind: "character-parent",
-            source: node.name,
-            target: parentRole,
-            targetType: "joint-role"
-          });
-      }
-      return {
-        ...structuredClone(descriptor),
-        role,
-        aliases: descriptor.aliases.map((alias) => `${namespace}.${alias}`),
-        ...parentRole ? { parentRole } : {}
-      };
-    };
-    if (joint) {
-      const mapped = mapJoint(joint);
-      if (!validateCharacterJointDescriptorV1(mapped).valid)
-        throw new Error("Replicated joint descriptor is invalid.");
-      mappedJoints.set(node, mapped);
-    }
-    const rig = state.rigs.get(node);
-    if (rig) {
-      const mapped = { ...structuredClone(rig), joints: rig.joints.map(mapJoint) };
-      if (!validateCharacterRigGraphV1(mapped).valid)
-        throw new Error("Replicated rig graph is invalid.");
-      mappedRigs.set(node, mapped);
-    }
-  }
-  const clipNames = new Set;
-  const trackTargets = new Map;
-  const animatedNodes = new Set;
-  for (const clip of fresh.clips) {
-    if (!(clip instanceof THREE18.AnimationClip))
-      throw new Error("Assembly clips must be AnimationClip instances.");
-    if (clip.blendMode !== THREE18.NormalAnimationBlendMode)
-      throw new Error("Additive/other animation blend modes are unsupported in assembly replication.");
-    jsonData(clip.userData, `Clip ${clip.name}`);
-    if (Object.keys(clip.userData).length && options.unknownMetadata !== "copy-json")
-      throw new Error(`Clip ${clip.name} contains custom metadata; explicitly select copy-json to preserve opaque data.`);
-    createClip(clip.name, clip.duration, clip.tracks);
-    if (clipNames.has(clip.name))
-      throw new Error(`Ambiguous assembly clip name: ${clip.name}.`);
-    clipNames.add(clip.name);
-    for (const track of clip.tracks) {
-      const dot = track.name.lastIndexOf("."), target = track.name.slice(0, dot);
-      const match = resolveNode(target);
-      if (match) {
-        if (!match.matrixAutoUpdate)
-          throw new Error("Animation of manual matrixAutoUpdate=false nodes is unsupported in assembly replication.");
-        trackTargets.set(track, `${names.get(match)}${track.name.slice(dot)}`);
-        animatedNodes.add(match);
-      } else {
-        external({ kind: "animation", source: clip.name, target, targetType: "node" });
-        trackTargets.set(track, track.name);
-      }
-    }
-  }
-  let rootMatrix = state.matrices.get(source.root).clone();
-  if (options.space === "world") {
-    if (state.joints.has(source.root))
-      throw new Error("World placement of a declared joint root requires rest-transform rebasing; wrap it in an assembly root or use local placement.");
-    const parentWorld = options.parent ? worldMatrix(options.parent) : new THREE18.Matrix4;
-    if (!Number.isFinite(parentWorld.determinant()) || parentWorld.determinant() === 0)
-      throw new Error("World placement requires an invertible, nonsingular parent transform.");
-    rootMatrix = parentWorld.invert().multiply(worldMatrix(source.root));
-    checkedTrs(rootMatrix, "Replica world placement");
-    if (animatedNodes.has(source.root))
-      throw new Error("World placement of an animated assembly root requires explicit track rebasing, which is unsupported; animate a child pivot or use local placement.");
-  }
-  if (options.parent) {
-    let scene = options.parent;
-    const ancestors = new Set;
-    while (scene.parent) {
-      if (ancestors.has(scene))
-        throw new Error("Parent hierarchy cycle.");
-      ancestors.add(scene);
-      scene = scene.parent;
-    }
-    const stack = [scene], seen = new Set;
-    while (stack.length) {
-      const node = stack.pop();
-      if (seen.has(node))
-        throw new Error("Destination hierarchy is not a tree.");
-      seen.add(node);
-      if (node.name.startsWith(`${namespace}__`))
-        throw new Error(`Replica namespace collision at ${node.name}. Choose another namespace.`);
-      const joint = readCharacterJointDescriptorV1(node);
-      if (joint && [...jointRoleMap.values()].includes(joint.role))
-        throw new Error(`Replica joint-role collision: ${joint.role}. Choose another namespace.`);
-      stack.push(...node.children);
-    }
-  }
-  const nodeMap = new Map, nameMap = new Map;
-  const geometries = new Map, materials = new Map;
-  const copyMaterial = (material) => {
-    if (options.materials !== "copy")
-      return material;
-    if (!materials.has(material))
-      materials.set(material, material.clone());
-    return materials.get(material);
-  };
-  for (const node of state.nodes) {
-    const copy = node instanceof THREE18.Mesh ? new THREE18.Mesh(node.geometry, node.material) : node instanceof THREE18.Group ? new THREE18.Group : new THREE18.Object3D;
-    copy.copy(node, false);
-    copy.name = names.get(node);
-    copy.animations = [];
-    const matrix = node === source.root ? rootMatrix : state.matrices.get(node);
-    if (!node.matrixAutoUpdate || node === source.root && options.space === "world") {
-      const trs = checkedTrs(matrix, node.name);
-      copy.position.copy(trs.position);
-      copy.quaternion.copy(trs.quaternion);
-      copy.scale.copy(trs.scale);
-    }
-    copy.matrix.copy(matrix);
-    copy.matrixWorldNeedsUpdate = true;
-    if (node instanceof THREE18.Mesh && copy instanceof THREE18.Mesh) {
-      if (options.geometry === "copy") {
-        if (!geometries.has(node.geometry))
-          geometries.set(node.geometry, node.geometry.clone());
-        copy.geometry = geometries.get(node.geometry);
-      } else
-        copy.geometry = node.geometry;
-      copy.material = Array.isArray(node.material) ? node.material.map(copyMaterial) : copyMaterial(node.material);
-    }
-    if (mappedSemantic.has(node))
-      stampSemanticMetadataV1(copy, mappedSemantic.get(node));
-    if (mappedJoints.has(node))
-      copy.userData[KILN_CHARACTER_JOINT_EXTRAS_KEY] = structuredClone(mappedJoints.get(node));
-    if (mappedRigs.has(node))
-      copy.userData[KILN_CHARACTER_RIG_EXTRAS_KEY] = structuredClone(mappedRigs.get(node));
-    nodeMap.set(node, copy);
-    addIndex(nameMap, node.name, copy.name);
-    if (node !== source.root)
-      nodeMap.get(node.parent).add(copy);
-  }
-  const clipMap = new Map;
-  for (const clip of fresh.clips) {
-    const tracks = clip.tracks.map((track) => {
-      const copied = track.clone();
-      copied.name = trackTargets.get(track);
-      return copied;
-    });
-    const copied = createClip(`${namespace}__${clip.name}`, clip.duration, tracks);
-    copied.userData = structuredClone(clip.userData);
-    clipMap.set(clip, copied);
-  }
-  for (const node of state.nodes)
-    nodeMap.get(node).animations = node.animations.map((clip) => clipMap.get(clip));
-  const root = nodeMap.get(source.root);
-  const result = describeAssembly(root, { clips: [...clipMap.values()] });
-  if (options.parent)
-    options.parent.add(root);
-  return {
-    ...result,
-    nodeMap,
-    nameMap,
-    jointRoleMap,
-    clipMap,
-    externalReferences,
-    ownership: {
-      hierarchy: "owned",
-      geometry: options.geometry === "copy" ? "owned" : "shared",
-      materials: options.materials === "copy" ? "owned" : "shared",
-      textures: "shared",
-      clips: "owned"
-    }
-  };
-}
-var ASSEMBLY_LIMITS, metadataKeys, threeConstructors, object = (value) => value !== null && typeof value === "object" && !Array.isArray(value);
-var init_assembly = __esm(() => {
-  init_assembly_transform();
-  init_semantic();
-  init_character();
-  init_primitives();
-  ASSEMBLY_LIMITS = Object.freeze({ nodes: 1e4, positionSamples: 2000000 });
-  metadataKeys = new Set([
-    KILN_SEMANTIC_EXTRAS_KEY,
-    KILN_CHARACTER_JOINT_EXTRAS_KEY,
-    KILN_CHARACTER_RIG_EXTRAS_KEY
-  ]);
-  threeConstructors = new Set(Object.values(THREE18));
-});
-
-// src/architecture.ts
-import * as THREE19 from "three";
-function positive4(value, name) {
-  if (!Number.isFinite(value) || value <= 0)
-    throw new RangeError(`${name} must be finite and > 0`);
-  return value;
-}
-function nonNegative(value, name) {
-  if (!Number.isFinite(value) || value < 0)
-    throw new RangeError(`${name} must be finite and >= 0`);
-  return value;
-}
-function roleMetadata(roles, relationships = [], frames = []) {
-  return { roles, relationships, frames, sockets: [] };
-}
-function relationship(kind, target) {
-  return { kind, target, targetType: "role" };
-}
-function setTransform(object, matrix) {
-  matrix.decompose(object.position, object.quaternion, object.scale);
-}
-function resolvePitch(halfRun, rise, pitchDegrees) {
-  positive4(halfRun, "roof half-run");
-  if (rise === undefined && pitchDegrees === undefined)
-    pitchDegrees = 30;
-  if (pitchDegrees !== undefined) {
-    if (!Number.isFinite(pitchDegrees) || pitchDegrees <= 0 || pitchDegrees >= 89) {
-      throw new RangeError("pitchDegrees must be finite, > 0, and < 89");
-    }
-  }
-  if (rise !== undefined)
-    positive4(rise, "rise");
-  const resolvedPitch = pitchDegrees ?? Math.atan2(rise, halfRun) / DEG;
-  const resolvedRise = rise ?? Math.tan(resolvedPitch * DEG) * halfRun;
-  const expected = Math.tan(resolvedPitch * DEG) * halfRun;
-  if (Math.abs(resolvedRise - expected) > Math.max(EPSILON3, expected * 0.000001)) {
-    throw new RangeError("rise and pitchDegrees disagree for the requested footprint");
-  }
-  return { rise: resolvedRise, pitchDegrees: resolvedPitch };
-}
-function resolveRoofProfile(options) {
-  const spanX = positive4(options.spanX, "spanX");
-  const spanZ = positive4(options.spanZ, "spanZ");
-  const ridgeAxis = options.ridgeAxis ?? "x";
-  const overhang = nonNegative(options.overhang ?? 0.3, "overhang");
-  const thickness = positive4(options.thickness ?? 0.08, "thickness");
-  const halfRun = (ridgeAxis === "x" ? spanZ : spanX) / 2;
-  const pitch = resolvePitch(halfRun, options.rise, options.pitchDegrees);
-  return {
-    spanX,
-    spanZ,
-    ridgeAxis,
-    overhang,
-    thickness,
-    ...pitch,
-    ridgeY: pitch.rise,
-    eaveY: -Math.tan(pitch.pitchDegrees * DEG) * overhang
-  };
-}
-function buildFace(roofRoot, profile, sideSign) {
-  const side = sideSign > 0 ? "positive" : "negative";
-  const halfFoot = (profile.ridgeAxis === "x" ? profile.spanZ : profile.spanX) / 2;
-  const horizontalRun = halfFoot + profile.overhang;
-  const verticalRun = profile.ridgeY - profile.eaveY;
-  const downhillLength = Math.hypot(horizontalRun, verticalRun);
-  const alongRidge = (profile.ridgeAxis === "x" ? profile.spanX : profile.spanZ) + profile.overhang * 2;
-  const downhill = profile.ridgeAxis === "x" ? new THREE19.Vector3(0, -verticalRun, sideSign * horizontalRun).normalize() : new THREE19.Vector3(sideSign * horizontalRun, -verticalRun, 0).normalize();
-  const tangent = profile.ridgeAxis === "x" ? new THREE19.Vector3(sideSign, 0, 0) : new THREE19.Vector3(0, 0, -sideSign);
-  const normal = downhill.clone().cross(tangent).normalize();
-  const localToRoof = new THREE19.Matrix4().makeBasis(tangent, normal, downhill);
-  localToRoof.setPosition(0, profile.ridgeY, 0);
-  const world = () => {
-    roofRoot.updateWorldMatrix(true, false);
-    return roofRoot.matrixWorld.clone().multiply(localToRoof);
-  };
-  const direction = (axis) => axis.clone().transformDirection(world());
-  const point = (x, z) => new THREE19.Vector3(x, 0, z).applyMatrix4(world());
-  return {
-    side,
-    ridgeAxis: profile.ridgeAxis,
-    roofRoot,
-    localToRoof,
-    get localToWorld() {
-      return world();
-    },
-    get ridgeTangent() {
-      return direction(new THREE19.Vector3(1, 0, 0));
-    },
-    get downhillDirection() {
-      return direction(new THREE19.Vector3(0, 0, 1));
-    },
-    get outwardNormal() {
-      return direction(new THREE19.Vector3(0, 1, 0));
-    },
-    get ridgeStart() {
-      return point(-alongRidge / 2, 0);
-    },
-    get ridgeEnd() {
-      return point(alongRidge / 2, 0);
-    },
-    get eaveStart() {
-      return point(-alongRidge / 2, downhillLength);
-    },
-    get eaveEnd() {
-      return point(alongRidge / 2, downhillLength);
-    },
-    dimensions: { alongRidge, downhill: downhillLength, thickness: profile.thickness }
-  };
-}
-function buildRoof(name, material, profile, parent) {
-  const root = new THREE19.Object3D;
-  root.name = name;
-  if (parent)
-    parent.add(root);
-  stampSemanticMetadataV1(root, roleMetadata([semanticRole(KILN_SEMANTIC_ROLES.roof, "assembly")], [relationship("separable-from", "architecture.shell.gable")]));
-  const faces = [buildFace(root, profile, 1), buildFace(root, profile, -1)];
-  const buildSlope = (face) => {
-    const geometry = new THREE19.BoxGeometry(face.dimensions.alongRidge, profile.thickness, face.dimensions.downhill);
-    const mesh = new THREE19.Mesh(geometry, material);
-    mesh.name = `Mesh_${name}_${face.side}`;
-    const center = new THREE19.Matrix4().makeTranslation(0, -profile.thickness / 2, face.dimensions.downhill / 2);
-    setTransform(mesh, face.localToRoof.clone().multiply(center));
-    const coveredWall = profile.ridgeAxis === "x" ? face.side === "positive" ? "wall.right" : "wall.left" : face.side === "positive" ? "wall.front" : "wall.back";
-    stampSemanticMetadataV1(mesh, roleMetadata([semanticRole(KILN_SEMANTIC_ROLES.roof, "slope", face.side)], [
-      relationship("adjacent-to", semanticRole(KILN_SEMANTIC_ROLES.roof, "slope", face.side === "positive" ? "negative" : "positive")),
-      relationship("coverage-of", coveredWall),
-      relationship("separable-from", "architecture.shell.gable")
-    ], [
-      { id: "surface", translation: [0, profile.thickness / 2, 0], rotation: [0, 0, 0, 1] },
-      {
-        id: "ridge",
-        translation: [0, profile.thickness / 2, -face.dimensions.downhill / 2],
-        rotation: [0, 0, 0, 1]
-      },
-      {
-        id: "eave",
-        translation: [0, profile.thickness / 2, face.dimensions.downhill / 2],
-        rotation: [0, 0, 0, 1]
-      }
-    ]));
-    root.add(mesh);
-    return mesh;
-  };
-  const slopes = [buildSlope(faces[0]), buildSlope(faces[1])];
-  return {
-    root,
-    slopes,
-    faces: [faces[0], faces[1]],
-    rise: profile.rise,
-    pitchDegrees: profile.pitchDegrees
-  };
-}
-function createGableRoof(name, material, options) {
-  return buildRoof(name, material, resolveRoofProfile(options), options.parent);
-}
-function createRoofPlanes(name, material, options) {
-  const ridgeAxis = options.ridgeAxis ?? "x";
-  const overhang = nonNegative(options.overhang ?? 0.3, "overhang");
-  const halfFoot = (ridgeAxis === "x" ? positive4(options.width, "width") : positive4(options.depth, "depth")) / 2;
-  const totalRun = halfFoot + overhang;
-  const height = positive4(options.height, "height");
-  const pitchDegrees = Math.atan2(height, totalRun) / DEG;
-  const profile = resolveRoofProfile({
-    spanX: options.depth,
-    spanZ: options.width,
-    ridgeAxis,
-    overhang,
-    thickness: options.thickness,
-    rise: Math.tan(pitchDegrees * DEG) * halfFoot
-  });
-  profile.ridgeY = height;
-  profile.eaveY = 0;
-  profile.pitchDegrees = pitchDegrees;
-  return buildRoof(name, material, profile, options.parent);
-}
-function openingFitsTriangle(opening, span, rise) {
-  const half = span / 2;
-  const left = opening.offset - opening.width / 2;
-  const right = opening.offset + opening.width / 2;
-  const top = opening.bottom + opening.height;
-  const maxAt = (u) => rise * (1 - Math.abs(u) / half);
-  return left > -half && right < half && opening.bottom >= 0 && top < Math.min(maxAt(left), maxAt(right));
-}
-function createGableEndPanel(name, material, options) {
-  const span = positive4(options.span, "span");
-  const rise = positive4(options.rise, "rise");
-  const thickness = positive4(options.thickness ?? 0.15, "thickness");
-  const ridgeAxis = options.ridgeAxis ?? "x";
-  const side = options.side ?? "positive";
-  const half = span / 2;
-  const shape = new THREE19.Shape;
-  shape.moveTo(-half, 0);
-  shape.lineTo(half, 0);
-  shape.lineTo(0, rise);
-  shape.closePath();
-  const normalized = (options.openings ?? []).map((opening) => ({
-    id: opening.id,
-    offset: opening.offset ?? 0,
-    bottom: opening.bottom ?? 0.25,
-    width: positive4(opening.width, "opening.width"),
-    height: positive4(opening.height, "opening.height")
-  }));
-  for (const opening of normalized) {
-    if (!openingFitsTriangle(opening, span, rise))
-      throw new RangeError("gable opening must fit strictly inside the triangular boundary");
-    const left = opening.offset - opening.width / 2;
-    const right = opening.offset + opening.width / 2;
-    const bottom = opening.bottom;
-    const top = bottom + opening.height;
-    const hole = new THREE19.Path;
-    hole.moveTo(left, bottom);
-    hole.lineTo(left, top);
-    hole.lineTo(right, top);
-    hole.lineTo(right, bottom);
-    hole.closePath();
-    shape.holes.push(hole);
-  }
-  const geometry = new THREE19.ExtrudeGeometry(shape, {
-    depth: thickness,
-    bevelEnabled: false,
-    steps: 1
-  });
-  geometry.translate(0, 0, -thickness / 2);
-  if (ridgeAxis === "x")
-    geometry.rotateY(-Math.PI / 2);
-  geometry.computeVertexNormals();
-  const root = new THREE19.Mesh(geometry, material);
-  root.name = `Mesh_${name}`;
-  stampSemanticMetadataV1(root, roleMetadata([`roof.gable.${side}`], [
-    relationship("adjacent-to", "roof.slope.positive"),
-    relationship("adjacent-to", "roof.slope.negative"),
-    relationship("coverage-of", ridgeAxis === "x" ? side === "positive" ? "wall.front" : "wall.back" : side === "positive" ? "wall.right" : "wall.left"),
-    relationship("separable-from", "architecture.shell.gable")
-  ], [
-    { id: "base", translation: [0, 0, 0], rotation: [0, 0, 0, 1] },
-    {
-      id: "apex",
-      translation: ridgeAxis === "x" ? [0, rise, 0] : [0, rise, 0],
-      rotation: [0, 0, 0, 1]
-    }
-  ]));
-  const markers = normalized.map((opening, index) => {
-    const marker = new THREE19.Object3D;
-    marker.name = `Opening_${name}_${opening.id ?? index + 1}`;
-    marker.position.set(ridgeAxis === "z" ? opening.offset : 0, opening.bottom + opening.height / 2, ridgeAxis === "x" ? opening.offset : 0);
-    marker.scale.set(ridgeAxis === "x" ? thickness : opening.width, opening.height, ridgeAxis === "x" ? opening.width : thickness);
-    stampSemanticMetadataV1(marker, roleMetadata([`opening.gable.${side}.${opening.id ?? index + 1}`], [relationship("cutout-of", `roof.gable.${side}`)]));
-    root.add(marker);
-    return marker;
-  });
-  if (options.parent)
-    options.parent.add(root);
-  return { root, geometry, openings: markers };
-}
-function wallRunAxis(wall) {
-  return wall === "front" || wall === "back" ? "z" : "x";
-}
-function wallNeighbors(wall) {
-  return wall === "front" || wall === "back" ? ["left", "right"] : ["front", "back"];
-}
-function createShellWall(name, wall, material, length, height, thickness, openings) {
-  const axis = wallRunAxis(wall);
-  const root = new THREE19.Object3D;
-  root.name = `${name}_Wall_${wall}`;
-  const neighbors = wallNeighbors(wall);
-  stampSemanticMetadataV1(root, roleMetadata([`wall.${wall}`], [
-    relationship("adjacent-to", `wall.${neighbors[0]}`),
-    relationship("adjacent-to", `wall.${neighbors[1]}`),
-    relationship("adjacent-to", "floor")
-  ]));
-  const built = buildWallPanels(length, height, thickness, openings);
-  const panel = (suffix, lo, hi, y0, y1) => {
-    if (hi <= lo || y1 <= y0)
-      return;
-    const geometry = axis === "x" ? new THREE19.BoxGeometry(hi - lo, y1 - y0, thickness) : new THREE19.BoxGeometry(thickness, y1 - y0, hi - lo);
-    const mesh = new THREE19.Mesh(geometry, material);
-    mesh.name = `Mesh_${name}_${wall}_${suffix}`;
-    mesh.position.set(axis === "x" ? (lo + hi) / 2 : 0, (y0 + y1) / 2, axis === "z" ? (lo + hi) / 2 : 0);
-    root.add(mesh);
-  };
-  const markers = [];
-  const singleNames = {
-    "": "solid",
-    _L: "left",
-    _R: "right",
-    _Lintel: "lintel",
-    _Sill: "sill"
-  };
-  for (const segment of built.panels) {
-    panel(singleNames[segment.suffix] ?? segment.suffix.slice(1), segment.left, segment.right, segment.bottom, segment.top);
-  }
-  for (const opening of built.openings) {
-    const marker = new THREE19.Object3D;
-    marker.name = `Opening_${wall}_${opening.id}`;
-    marker.position.set(axis === "x" ? opening.offset : 0, opening.sill + opening.height / 2, axis === "z" ? opening.offset : 0);
-    marker.scale.set(axis === "x" ? opening.width : opening.depth, opening.height, axis === "z" ? opening.width : opening.depth);
-    stampSemanticMetadataV1(marker, roleMetadata([`opening.${wall}.${opening.kind}`], [
-      relationship("cutout-of", `wall.${wall}`),
-      relationship(opening.kind === "door" ? "portal-through" : "aperture-through", `wall.${wall}`)
-    ], [{ id: "clearance", translation: [0, 0, 0], rotation: [0, 0, 0, 1] }]));
-    root.add(marker);
-    markers.push(marker);
-  }
-  return { root, openings: markers };
-}
-function createGableShell(name, materials, options) {
-  const spanX = positive4(options.spanX, "spanX");
-  const spanZ = positive4(options.spanZ, "spanZ");
-  const wallHeight = positive4(options.wallHeight ?? 2.8, "wallHeight");
-  const wallThickness = positive4(options.wallThickness ?? 0.15, "wallThickness");
-  const floorThickness = positive4(options.floorThickness ?? 0.1, "floorThickness");
-  const ridgeAxis = options.ridgeAxis ?? "x";
-  const closedEnds = options.closedEnds ?? true;
-  const enterable = options.enterable ?? true;
-  const shellOpenings = options.openings ?? (enterable ? [{ wall: "front", kind: "door" }] : []);
-  const root = new THREE19.Object3D;
-  root.name = name;
-  stampSemanticMetadataV1(root, roleMetadata(["architecture.shell.gable"], [relationship("contains", "floor"), relationship("contains", "roof.assembly")]));
-  const wallSpecs = {
-    front: { length: spanZ, position: [spanX / 2, 0, 0] },
-    back: { length: spanZ, position: [-spanX / 2, 0, 0] },
-    left: { length: spanX, position: [0, 0, -spanZ / 2] },
-    right: { length: spanX, position: [0, 0, spanZ / 2] }
-  };
-  const walls = {};
-  const openingMarkers = [];
-  for (const wall of ["front", "back", "left", "right"]) {
-    const built = createShellWall(name, wall, materials.wall, wallSpecs[wall].length, wallHeight, wallThickness, shellOpenings.filter((opening) => opening.wall === wall));
-    built.root.position.set(...wallSpecs[wall].position);
-    root.add(built.root);
-    walls[wall] = built.root;
-    openingMarkers.push(...built.openings);
-  }
-  const floor = new THREE19.Mesh(new THREE19.BoxGeometry(spanX, floorThickness, spanZ), materials.floor ?? materials.wall);
-  floor.name = `Mesh_${name}_Floor`;
-  floor.position.y = -floorThickness / 2;
-  stampSemanticMetadataV1(floor, roleMetadata(["floor"], ["front", "back", "left", "right"].map((wall) => relationship("adjacent-to", `wall.${wall}`))));
-  root.add(floor);
-  const roof = createGableRoof("Roof", materials.roof, {
-    ...options,
-    spanX,
-    spanZ,
-    ridgeAxis,
-    parent: root
-  });
-  roof.root.position.y = wallHeight;
-  let gables = [];
-  if (closedEnds) {
-    const gableMaterial = materials.gable ?? materials.wall;
-    const span = ridgeAxis === "x" ? spanZ : spanX;
-    const ridgeSpan = ridgeAxis === "x" ? spanX : spanZ;
-    const positiveEnd = createGableEndPanel(`${name}_Gable_positive`, gableMaterial, {
-      span,
-      rise: roof.rise,
-      thickness: wallThickness,
-      ridgeAxis,
-      side: "positive",
-      openings: options.gableOpenings?.positive,
-      parent: roof.root
-    });
-    const negativeEnd = createGableEndPanel(`${name}_Gable_negative`, gableMaterial, {
-      span,
-      rise: roof.rise,
-      thickness: wallThickness,
-      ridgeAxis,
-      side: "negative",
-      openings: options.gableOpenings?.negative,
-      parent: roof.root
-    });
-    const coordinate = ridgeSpan / 2;
-    positiveEnd.root.position.set(ridgeAxis === "x" ? coordinate : 0, 0, ridgeAxis === "z" ? coordinate : 0);
-    negativeEnd.root.position.set(ridgeAxis === "x" ? -coordinate : 0, 0, ridgeAxis === "z" ? -coordinate : 0);
-    gables = [positiveEnd.root, negativeEnd.root];
-    openingMarkers.push(...positiveEnd.openings, ...negativeEnd.openings);
-  }
-  if (options.parent)
-    options.parent.add(root);
-  return { root, walls, floor, roof, gables, openings: openingMarkers };
-}
-function createRoofSurfaceLayout(name, material, options) {
-  if (!["panels", "shingles", "seams", "corrugations"].includes(options.kind))
-    throw new RangeError("createRoofSurfaceLayout: unknown kind.");
-  const thickness = options.thickness ?? 0.025;
-  const along = options.face.dimensions.alongRidge;
-  const downhill = options.face.dimensions.downhill;
-  for (const [key, value] of Object.entries({ thickness, alongRidge: along, downhill }))
-    assertDimension(`createRoofSurfaceLayout ${key}`, value);
-  const parent = options.parent ?? options.face.roofRoot;
-  parent.updateWorldMatrix(true, false);
-  if (!Number.isFinite(parent.matrixWorld.determinant()) || parent.matrixWorld.determinant() === 0)
-    throw new Error("createRoofSurfaceLayout: parent transform is singular or nonfinite.");
-  const faceToRoot = parent.matrixWorld.clone().invert().multiply(options.face.localToWorld);
-  checkedTrs(faceToRoot, "createRoofSurfaceLayout (use face.roofRoot for inherited shear)");
-  const specs = [];
-  if (options.kind === "panels") {
-    const panelWidth = positive4(options.panelWidth ?? 0.9, "panelWidth");
-    const count = Math.max(1, Math.ceil(along / panelWidth));
-    assertRepetitionCount("createRoofSurfaceLayout panels", count);
-    const width = along / count;
-    for (let i = 0;i < count; i++)
-      specs.push({
-        width: width * 0.98,
-        length: downhill,
-        x: -along / 2 + width * (i + 0.5),
-        z: downhill / 2
-      });
-  } else if (options.kind === "shingles") {
-    const rowHeight = positive4(options.rowHeight ?? 0.32, "rowHeight");
-    const tileWidth = positive4(options.panelWidth ?? 0.42, "panelWidth");
-    const rows = Math.max(1, Math.ceil(downhill / rowHeight));
-    const evenColumns = Math.ceil(along / tileWidth);
-    const oddColumns = Math.ceil(along / tileWidth + 0.5);
-    assertRepetitionCount("createRoofSurfaceLayout shingles", Math.ceil(rows / 2) * evenColumns + Math.floor(rows / 2) * oddColumns);
-    for (let row = 0;row < rows; row++) {
-      const zMin = row * rowHeight;
-      const length = Math.min(rowHeight * 1.08, downhill - zMin);
-      const columns = row % 2 === 0 ? evenColumns : oddColumns;
-      const offset = row % 2 === 0 ? 0 : -tileWidth / 2;
-      for (let column = 0;column < columns; column++) {
-        const start = offset + column * tileWidth;
-        const left = Math.max(0, start);
-        const right = Math.min(along, start + tileWidth);
-        if (right <= left)
-          continue;
-        specs.push({
-          width: (right - left) * 0.96,
-          length,
-          x: -along / 2 + (left + right) / 2,
-          z: zMin + length / 2
-        });
-      }
-    }
-  } else {
-    const spacing = positive4(options.spacing ?? (options.kind === "seams" ? 0.6 : 0.18), "spacing");
-    const width = options.kind === "seams" ? 0.025 : 0.018;
-    const count = along <= width ? 1 : Math.max(2, Math.floor(along / spacing) + 1);
-    assertRepetitionCount("createRoofSurfaceLayout strips", count);
-    for (let i = 0;i < count; i++) {
-      const center = count === 1 ? 0 : -along / 2 + along * i / (count - 1);
-      const left = Math.max(-along / 2, center - width / 2);
-      const right = Math.min(along / 2, center + width / 2);
-      specs.push({ width: right - left, length: downhill, x: (left + right) / 2, z: downhill / 2 });
-    }
-  }
-  for (const spec of specs) {
-    assertDimension("createRoofSurfaceLayout generated width", spec.width);
-    assertDimension("createRoofSurfaceLayout generated length", spec.length);
-  }
-  const root = new THREE19.Object3D;
-  root.name = name;
-  stampSemanticMetadataV1(root, roleMetadata([`roof.surface.${options.kind}`], [relationship("coverage-of", `roof.slope.${options.face.side}`)]));
-  const items = specs.map((spec, index) => {
-    const mesh = new THREE19.Mesh(new THREE19.BoxGeometry(spec.width, thickness, spec.length), material);
-    mesh.name = `Mesh_${name}_${index + 1}`;
-    const local = new THREE19.Matrix4().makeTranslation(spec.x, thickness / 2 + 0.002, spec.z);
-    setTransform(mesh, faceToRoot.clone().multiply(local));
-    root.add(mesh);
-    return mesh;
-  });
-  parent.add(root);
-  return { root, items, cost: { meshes: items.length, triangles: items.length * 12 } };
-}
-var DEG, EPSILON3 = 0.0000001;
-var init_architecture2 = __esm(() => {
-  init_geometry_budget();
-  init_assembly_transform();
-  init_contracts();
-  DEG = Math.PI / 180;
-});
-
-// src/gears.ts
-import * as THREE20 from "three";
-function gearGeo(opts = {}) {
-  const {
-    teeth = 12,
-    rootRadius = 0.8,
-    tipRadius = 1,
-    boreRadius = 0.2,
-    height = 0.3,
-    toothWidthFrac = 0.5
-  } = opts;
-  assertPrimitiveSegments("gearGeo teeth", teeth, 3);
-  assertDimension("gearGeo rootRadius", rootRadius);
-  assertDimension("gearGeo tipRadius", tipRadius);
-  assertDimension("gearGeo boreRadius", boreRadius, true);
-  assertDimension("gearGeo height", height);
-  if (!Number.isFinite(toothWidthFrac) || toothWidthFrac <= 0 || toothWidthFrac >= 1)
-    throw new RangeError("gearGeo toothWidthFrac must be strictly between 0 and 1.");
-  if (tipRadius <= rootRadius || boreRadius >= rootRadius) {
-    throw new AuthoringDiagnosticError("GEAR_RADII_ORDER");
-  }
-  const sector = Math.PI * 2 / teeth;
-  const alpha = (1 - toothWidthFrac) * (sector / 2);
-  const crown = [];
-  for (let i = 0;i < teeth; i++) {
-    const base = i * sector;
-    const a0 = base;
-    const a1 = base + alpha;
-    const a2 = base + sector - alpha;
-    crown.push([rootRadius * Math.cos(a0), rootRadius * Math.sin(a0)]);
-    crown.push([tipRadius * Math.cos(a1), tipRadius * Math.sin(a1)]);
-    crown.push([tipRadius * Math.cos(a2), tipRadius * Math.sin(a2)]);
-  }
-  const N = crown.length;
-  const bore = [];
-  for (let i = 0;i < N; i++) {
-    const t = Math.atan2(crown[i][1], crown[i][0]);
-    bore.push([boreRadius * Math.cos(t), boreRadius * Math.sin(t)]);
-  }
-  const halfH = height / 2;
-  const positions = [];
-  const indices = [];
-  for (let i = 0;i < N; i++) {
-    const p = crown[i];
-    positions.push(p[0], halfH, p[1]);
-  }
-  for (let i = 0;i < N; i++) {
-    const p = crown[i];
-    positions.push(p[0], -halfH, p[1]);
-  }
-  for (let i = 0;i < N; i++) {
-    const p = bore[i];
-    positions.push(p[0], halfH, p[1]);
-  }
-  for (let i = 0;i < N; i++) {
-    const p = bore[i];
-    positions.push(p[0], -halfH, p[1]);
-  }
-  const crownTop = 0;
-  const crownBot = N;
-  const boreTop = 2 * N;
-  const boreBot = 3 * N;
-  for (let i = 0;i < N; i++) {
-    const j = (i + 1) % N;
-    const cA = crownTop + i;
-    const cB = crownTop + j;
-    const bA = boreTop + i;
-    const bB = boreTop + j;
-    indices.push(bA, cB, cA);
-    if (boreRadius > 0)
-      indices.push(bA, bB, cB);
-  }
-  for (let i = 0;i < N; i++) {
-    const j = (i + 1) % N;
-    const cA = crownBot + i;
-    const cB = crownBot + j;
-    const bA = boreBot + i;
-    const bB = boreBot + j;
-    indices.push(bA, cA, cB);
-    if (boreRadius > 0)
-      indices.push(bA, cB, bB);
-  }
-  for (let i = 0;i < N; i++) {
-    const j = (i + 1) % N;
-    const tA = crownTop + i;
-    const tB = crownTop + j;
-    const bA = crownBot + i;
-    const bB = crownBot + j;
-    indices.push(tA, tB, bB);
-    indices.push(tA, bB, bA);
-  }
-  for (let i = 0;boreRadius > 0 && i < N; i++) {
-    const j = (i + 1) % N;
-    const tA = boreTop + i;
-    const tB = boreTop + j;
-    const bA = boreBot + i;
-    const bB = boreBot + j;
-    indices.push(tA, bA, bB);
-    indices.push(tA, bB, tB);
-  }
-  const geo = new THREE20.BufferGeometry;
-  geo.setAttribute("position", new THREE20.Float32BufferAttribute(positions, 3));
-  geo.setIndex(indices);
-  const nonIndexed = geo.toNonIndexed();
-  nonIndexed.computeVertexNormals();
-  return nonIndexed;
-}
-function bladeGeo(opts = {}) {
-  const {
-    length = 1.5,
-    baseWidth = 0.1,
-    thickness = 0.015,
-    tipLength = 0.25,
-    edgeBevel = 0
-  } = opts;
-  for (const [name, value] of Object.entries({ length, baseWidth, thickness }))
-    assertDimension(`bladeGeo ${name}`, value);
-  assertDimension("bladeGeo tipLength", tipLength, true);
-  if (!Number.isFinite(edgeBevel) || edgeBevel < 0 || edgeBevel > 1)
-    throw new RangeError("bladeGeo edgeBevel must be between 0 and 1.");
-  if (tipLength >= length) {
-    throw new Error("bladeGeo: tipLength must be less than length");
-  }
-  const hw = baseWidth / 2;
-  const ht = thickness / 2;
-  const shoulderY = length - tipLength;
-  const outline = [
-    [-hw, 0],
-    [hw, 0],
-    [hw, shoulderY],
-    [0, length],
-    [-hw, shoulderY]
-  ];
-  const n = outline.length;
-  const positions = [];
-  const indices = [];
-  if (edgeBevel <= 0) {
-    for (const [x, y] of outline)
-      positions.push(x, y, ht);
-    for (const [x, y] of outline)
-      positions.push(x, y, -ht);
-    for (let i = 1;i < n - 1; i++) {
-      indices.push(0, i, i + 1);
-    }
-    for (let i = 1;i < n - 1; i++) {
-      indices.push(n, n + i + 1, n + i);
-    }
-    for (let i = 0;i < n; i++) {
-      const j = (i + 1) % n;
-      const tA = i;
-      const tB = j;
-      const bA = n + i;
-      const bB = n + j;
-      indices.push(tA, bA, bB);
-      indices.push(tA, bB, tB);
-    }
-  } else {
-    const edge = ht * (1 - edgeBevel);
-    const section = edgeBevel === 1 ? [
-      [-hw, 0],
-      [0, -ht],
-      [hw, 0],
-      [0, ht]
-    ] : [
-      [-hw, -edge],
-      [0, -ht],
-      [hw, -edge],
-      [hw, edge],
-      [0, ht],
-      [-hw, edge]
-    ];
-    const count = section.length;
-    for (const y of [0, shoulderY])
-      for (const [x, z] of section)
-        positions.push(x, y, z);
-    const baseCenter = positions.length / 3;
-    positions.push(0, 0, 0);
-    const tip = positions.length / 3;
-    positions.push(0, length, 0);
-    for (let i = 0;i < count; i++) {
-      const j = (i + 1) % count;
-      indices.push(baseCenter, i, j);
-      indices.push(i, count + j, j, i, count + i, count + j);
-      indices.push(count + i, tip, count + j);
-    }
-  }
-  const geo = new THREE20.BufferGeometry;
-  geo.setAttribute("position", new THREE20.Float32BufferAttribute(positions, 3));
-  geo.setIndex(indices);
-  const nonIndexed = geo.toNonIndexed();
-  nonIndexed.computeVertexNormals();
-  return nonIndexed;
-}
-var init_gears = __esm(() => {
-  init_authoring_diagnostic();
-  init_geometry_budget();
-});
-
-// src/ops.ts
-import * as THREE21 from "three";
-import { LoopSubdivision } from "three-subdivide/build/index.module.js";
-import { mergeVertices as threeMergeVertices } from "three/examples/jsm/utils/BufferGeometryUtils.js";
-function assertFiniteSourceFrame(name, source) {
-  assertFiniteTriple(`${name} source position`, source.position.toArray());
-  assertFiniteTriple(`${name} source scale`, source.scale.toArray());
-  assertFiniteTriple(`${name} source rotation`, [
-    source.rotation.x,
-    source.rotation.y,
-    source.rotation.z
-  ]);
-}
-function arrayLinear(namePrefix, source, count, offset, parent) {
-  assertRepetitionCount("arrayLinear", count);
-  assertFiniteSourceFrame("arrayLinear", source);
-  assertFiniteTriple("arrayLinear offset", offset);
-  const last = source.position.toArray().map((value, axis) => value + offset[axis] * (count - 1));
-  assertFiniteTriple("arrayLinear resulting position", last);
-  const out = [];
-  const base = source.position.toArray();
-  const rotation = degreesOf(source.rotation);
-  const scale = source.scale.toArray();
-  for (let i = 1;i < count; i++) {
-    const pos = [
-      base[0] + offset[0] * i,
-      base[1] + offset[1] * i,
-      base[2] + offset[2] * i
-    ];
-    out.push(createInstance(`${namePrefix}${i}`, source, { position: pos, rotation, scale, parent }));
-  }
-  return out;
-}
-function degreesOf(euler) {
-  return [
-    THREE21.MathUtils.radToDeg(euler.x),
-    THREE21.MathUtils.radToDeg(euler.y),
-    THREE21.MathUtils.radToDeg(euler.z)
-  ];
-}
-function arrayRadial(namePrefix, source, count, axis = "y", parent, center, options = {}) {
-  assertRepetitionCount("arrayRadial", count);
-  assertFiniteSourceFrame("arrayRadial", source);
-  if (!["x", "y", "z"].includes(axis))
-    throw new RangeError("arrayRadial axis must be x, y or z.");
-  if (options.orientation !== undefined && !["outward", "relative"].includes(options.orientation))
-    throw new RangeError("arrayRadial orientation must be outward or relative.");
-  if (center)
-    assertFiniteTriple("arrayRadial center", center);
-  const out = [];
-  const pivot = center ? new THREE21.Vector3(...center) : new THREE21.Vector3;
-  const basePos = source.position.clone().sub(pivot);
-  const axisVec = axis === "x" ? new THREE21.Vector3(1, 0, 0) : axis === "z" ? new THREE21.Vector3(0, 0, 1) : new THREE21.Vector3(0, 1, 0);
-  const positions = [];
-  for (let i = 1;i < count; i++) {
-    const position = basePos.clone().applyMatrix4(new THREE21.Matrix4().makeRotationAxis(axisVec, i / count * Math.PI * 2)).add(pivot);
-    assertFiniteTriple("arrayRadial resulting position", position.toArray());
-    positions.push(position);
-  }
-  for (let i = 1;i < count; i++) {
-    const angle = i / count * Math.PI * 2;
-    const rotated = positions[i - 1];
-    const eulerDeg = axis === "y" ? [0, angle * 180 / Math.PI, 0] : axis === "x" ? [angle * 180 / Math.PI, 0, 0] : [0, 0, angle * 180 / Math.PI];
-    const copy = createInstance(`${namePrefix}${i}`, source, {
-      position: [rotated.x, rotated.y, rotated.z],
-      rotation: eulerDeg,
-      scale: source.scale.toArray(),
-      parent
-    });
-    if (options.orientation === "relative") {
-      copy.quaternion.setFromAxisAngle(axisVec, angle).multiply(source.quaternion);
-    }
-    out.push(copy);
-  }
-  return out;
-}
-function mirror(name, source, axis, parent) {
-  if (source.matrixAutoUpdate)
-    source.updateMatrix();
-  const reflected = new THREE21.Matrix4().makeScale(axis === "x" ? -1 : 1, axis === "y" ? -1 : 1, axis === "z" ? -1 : 1).multiply(source.matrix);
-  if (!reflected.elements.every(Number.isFinite) || reflected.determinant() === 0) {
-    throw new RangeError(`mirror("${name}"): source requires a finite, nonsingular local transform.`);
-  }
-  const position = new THREE21.Vector3;
-  const quaternion = new THREE21.Quaternion;
-  const scale = new THREE21.Vector3;
-  reflected.decompose(position, quaternion, scale);
-  const recomposed = new THREE21.Matrix4().compose(position, quaternion, scale);
-  if (reflected.elements.some((value, i) => Math.abs(value - recomposed.elements[i]) > 0.00000001 * Math.max(1, Math.abs(value)))) {
-    throw new RangeError(`mirror("${name}"): local shear cannot be represented by a reflected TRS.`);
-  }
-  const copy = createInstance(name, source);
-  copy.position.copy(position);
-  copy.quaternion.copy(quaternion);
-  copy.scale.copy(scale);
-  if (parent)
-    parent.add(copy);
-  return copy;
-}
-function mergeVertices(geometry, opts = {}) {
-  const { tolerance = 0.0001, positionOnly = false } = typeof opts === "number" ? { tolerance: opts } : opts;
-  if (!positionOnly)
-    return threeMergeVertices(geometry, tolerance);
-  const stripped = new THREE21.BufferGeometry;
-  const pos = geometry.getAttribute("position");
-  if (!pos)
-    return geometry;
-  stripped.setAttribute("position", new THREE21.BufferAttribute(new Float32Array(pos.array), pos.itemSize, pos.normalized));
-  if (geometry.index) {
-    stripped.setIndex(new THREE21.BufferAttribute(new Uint32Array(geometry.index.array), 1));
-  }
-  return threeMergeVertices(stripped, tolerance);
-}
-function subdivide(geometry, iterations = 1, opts = {}) {
-  if (geometry.hasAttribute("skinIndex") || geometry.hasAttribute("skinWeight"))
-    throw new Error("subdivide cannot interpolate skin joint indices safely; subdivide before skin binding.");
-  if (!Number.isSafeInteger(iterations) || iterations < 0 || iterations > GEOMETRY_ALLOCATION_LIMITS.subdivisionIterations)
-    throw new RangeError(`subdivide iterations must be an integer from 0 to ${GEOMETRY_ALLOCATION_LIMITS.subdivisionIterations}.`);
-  const position = geometry.getAttribute("position");
-  if (position?.itemSize !== 3)
-    throw new TypeError("subdivide requires xyz positions.");
-  const corners = geometry.index?.count ?? position.count;
-  if (!Number.isSafeInteger(corners) || corners % 3 !== 0)
-    throw new TypeError("subdivide requires complete triangles.");
-  const upperTriangles = corners / 3 * (opts.split === false ? 1 : 4) * 4 ** iterations;
-  if (!Number.isSafeInteger(upperTriangles) || upperTriangles > GEOMETRY_ALLOCATION_LIMITS.subdivisionTriangles)
-    throw new RangeError(`subdivide triangle budget exceeded: worst-case ${upperTriangles}, limit ${GEOMETRY_ALLOCATION_LIMITS.subdivisionTriangles}. Reduce iterations or subdivide a smaller mesh.`);
-  const attributes = [
-    ...Object.values(geometry.attributes),
-    ...Object.values(geometry.morphAttributes).flat()
-  ];
-  for (const [name, attribute] of Object.entries(geometry.attributes))
-    if (attribute.count !== position.count || !Number.isInteger(attribute.itemSize) || attribute.itemSize < 1 || attribute.itemSize > 4)
-      throw new Error(`subdivide ${name} must be a matching continuous per-vertex attribute with 1..4 components.`);
-  for (const targets of Object.values(geometry.morphAttributes))
-    if (targets.some((attribute) => attribute.count !== position.count || attribute.itemSize !== 3))
-      throw new Error("subdivide morph targets currently require matching three-component attributes.");
-  const bytesPerCorner = attributes.reduce((sum, attribute) => sum + attribute.itemSize * Math.max(4, attribute.array.BYTES_PER_ELEMENT), 0);
-  const upperAttributeBytes = upperTriangles * 3 * (bytesPerCorner + (geometry.hasAttribute("normal") ? 0 : 12));
-  if (!Number.isSafeInteger(upperAttributeBytes) || upperAttributeBytes > GEOMETRY_ALLOCATION_LIMITS.subdivisionAttributeBytes)
-    throw new RangeError(`subdivide attribute budget exceeded: worst-case ${upperAttributeBytes} bytes, limit ${GEOMETRY_ALLOCATION_LIMITS.subdivisionAttributeBytes}.`);
-  const { weld = true, preserveUV = false, ...subOpts } = opts;
-  const prepared = geometry.clone();
-  prepared.computeBoundingBox();
-  const center = prepared.boundingBox.getCenter(new THREE21.Vector3);
-  const extent = prepared.boundingBox.getSize(new THREE21.Vector3);
-  const size = Math.max(extent.x, extent.y, extent.z);
-  const normalizationScale = size > 0 ? 1e4 / size : 1;
-  if (!Number.isFinite(normalizationScale) || !center.toArray().every(Number.isFinite))
-    throw new Error("subdivide requires finite representable positions.");
-  prepared.translate(-center.x, -center.y, -center.z).scale(normalizationScale, normalizationScale, normalizationScale);
-  const input = weld && !preserveUV ? mergeVertices(prepared, { positionOnly: true }) : prepared;
-  const fourthComponents = [];
-  const reservedNames = new Set(Object.keys(input.attributes));
-  let laneIndex = 0;
-  for (const [name, attribute] of Object.entries(input.attributes)) {
-    if (name === "tangent") {
-      input.deleteAttribute(name);
-      continue;
-    }
-    const components = attribute.itemSize;
-    const decoded = new Float32Array(attribute.count * components);
-    for (let i = 0;i < attribute.count; i++)
-      for (let component = 0;component < components; component++)
-        decoded[i * components + component] = attribute.getComponent(i, component);
-    if (components === 4) {
-      const lanes = [];
-      for (let component = 0;component < 4; component++) {
-        let lane;
-        do {
-          lane = `__kiln_subdivision_lane_${laneIndex++}`;
-        } while (reservedNames.has(lane) || input.hasAttribute(lane));
-        const values = new Float32Array(attribute.count);
-        for (let i = 0;i < attribute.count; i++)
-          values[i] = decoded[i * 4 + component];
-        input.setAttribute(lane, new THREE21.BufferAttribute(values, 1));
-        lanes.push(lane);
-      }
-      input.deleteAttribute(name);
-      fourthComponents.push({ name, lanes });
-    } else
-      input.setAttribute(name, new THREE21.BufferAttribute(decoded, components));
-  }
-  for (const targets of Object.values(input.morphAttributes))
-    for (let target = 0;target < targets.length; target++) {
-      const attribute = targets[target];
-      const decoded = new Float32Array(attribute.count * 3);
-      for (let i = 0;i < attribute.count; i++)
-        for (let component = 0;component < 3; component++)
-          decoded[i * 3 + component] = attribute.getComponent(i, component);
-      targets[target] = new THREE21.BufferAttribute(decoded, 3);
-    }
-  if (preserveUV)
-    subOpts.uvSmooth = false;
-  const output = normalizeSurfaceNormals(LoopSubdivision.modify(input, iterations, subOpts));
-  for (const { name, lanes } of fourthComponents) {
-    const count = output.getAttribute("position").count;
-    const values = new Float32Array(count * 4);
-    for (let component = 0;component < 4; component++) {
-      const lane = output.getAttribute(lanes[component]);
-      for (let i = 0;i < count; i++)
-        values[i * 4 + component] = lane.getX(i);
-      output.deleteAttribute(lanes[component]);
-    }
-    output.setAttribute(name, new THREE21.BufferAttribute(values, 4));
-  }
-  output.scale(1 / normalizationScale, 1 / normalizationScale, 1 / normalizationScale).translate(center.x, center.y, center.z);
-  output.userData = structuredClone(geometry.userData);
-  output.deleteAttribute("tangent");
-  output.computeBoundingBox();
-  output.computeBoundingSphere();
-  if (geometry.getAttribute("uv") && !output.getAttribute("uv")) {
-    output.userData.kilnAttributeWarnings = [
-      ...Array.isArray(output.userData.kilnAttributeWarnings) ? output.userData.kilnAttributeWarnings : [],
-      {
-        code: "SUBDIVIDE_UV_DROPPED",
-        message: "Position-only subdivision discarded UVs. Use preserveUV: true or unwrap the output."
-      }
-    ];
-  }
-  const dropped = Object.keys(geometry.attributes).filter((name) => name !== "uv" && !output.hasAttribute(name));
-  if (dropped.length)
-    output.userData.kilnAttributeWarnings = [
-      ...Array.isArray(output.userData.kilnAttributeWarnings) ? output.userData.kilnAttributeWarnings : [],
-      {
-        code: "SUBDIVIDE_ATTRIBUTES_DROPPED",
-        message: `Subdivision removed attributes: ${dropped.join(", ")}. Rebuild required shading attributes after subdivision.`
-      }
-    ];
-  if (geometry.groups.length && !output.groups.length)
-    output.userData.kilnAttributeWarnings = [
-      ...Array.isArray(output.userData.kilnAttributeWarnings) ? output.userData.kilnAttributeWarnings : [],
-      {
-        code: "SUBDIVIDE_GROUPS_DROPPED",
-        message: "Position-only subdivision removed material groups. Use preserveUV: true to retain corner attributes and material boundaries."
-      }
-    ];
-  const retainedMorphs = new Set(Object.entries(output.morphAttributes).filter(([, targets]) => targets.length > 0).map(([name]) => name));
-  const droppedMorphs = Object.keys(geometry.morphAttributes).filter((name) => !retainedMorphs.has(name));
-  if (droppedMorphs.length)
-    output.userData.kilnAttributeWarnings = [
-      ...Array.isArray(output.userData.kilnAttributeWarnings) ? output.userData.kilnAttributeWarnings : [],
-      {
-        code: "SUBDIVIDE_MORPHS_DROPPED",
-        message: `Position-only subdivision removed morph attributes: ${droppedMorphs.join(", ")}. Use preserveUV: true to retain supported corner and morph attributes.`
-      }
-    ];
-  if (geometry.userData.kilnCsgProvenance || geometry.userData.kilnRanges) {
-    delete output.userData.kilnCsgProvenance;
-    delete output.userData.kilnRanges;
-    output.userData.kilnAttributeWarnings = [
-      ...output.userData.kilnAttributeWarnings ?? [],
-      {
-        code: "SUBDIVIDE_PROVENANCE_DROPPED",
-        message: "Subdivision changed triangle topology. Source face/range provenance was discarded rather than guessed."
-      }
-    ];
-  }
-  return output;
-}
-function assertTubeRadius(radius) {
-  try {
-    assertDimension("Tube radius", radius);
-  } catch {
-    throw new AuthoringDiagnosticError("TUBE_RADIUS");
-  }
-}
-function curveToMesh(points, radius, tubularSegments = 32, radialSegments = 8, closed = false) {
-  assertTubeRadius(radius);
-  const vectors = points.map((p) => new THREE21.Vector3(p[0], p[1], p[2]));
-  const curve = new THREE21.CatmullRomCurve3(vectors, closed);
-  return new THREE21.TubeGeometry(curve, tubularSegments, radius, radialSegments, closed);
-}
-function normalizeSurfaceNormals(geo) {
-  const normal = geo.getAttribute("normal");
-  if (!normal)
-    return geo;
-  let repaired = false;
-  for (let i = 0;i < normal.count; i++) {
-    const x = normal.getX(i);
-    const y = normal.getY(i);
-    const z = normal.getZ(i);
-    const len = Math.hypot(x, y, z);
-    if (!Number.isFinite(len) || len < 0.000000000001) {
-      normal.setXYZ(i, 0, 1, 0);
-      repaired = true;
-      continue;
-    }
-    if (Math.abs(len - 1) <= 0.000001)
-      continue;
-    normal.setXYZ(i, x / len, y / len, z / len);
-    repaired = true;
-  }
-  if (repaired)
-    normal.needsUpdate = true;
-  return geo;
-}
-function lathe(profile, segments = 12) {
-  return revolveGeo(profile, { segments });
-}
-function revolveGeo(profile, options = {}) {
-  const { angle = Math.PI * 2, axis = [0, 1, 0], segments = 12 } = options;
-  const points2d = profile.map((p) => new THREE21.Vector2(p[0], p[1]));
-  const geo = normalizeSurfaceNormals(new THREE21.LatheGeometry(points2d, segments, 0, angle));
-  const n = new THREE21.Vector3(axis[0], axis[1], axis[2]);
-  if (n.lengthSq() < 0.000000000001) {
-    throw new Error(`revolveGeo: axis must be a non-zero vector (got [${axis.join(",")}]).`);
-  }
-  n.normalize();
-  if (n.x !== 0 || n.y !== 1 || n.z !== 0) {
-    const q = new THREE21.Quaternion().setFromUnitVectors(new THREE21.Vector3(0, 1, 0), n);
-    geo.applyQuaternion(q);
-  }
-  return geo;
-}
-function pipeAlongPath(points, radius, options = {}) {
-  const { bendRadius = 0, closed = false, tubularSegments = 32, radialSegments = 8 } = options;
-  assertTubeRadius(radius);
-  if (points.length < 2) {
-    throw new Error(`pipeAlongPath: need at least 2 points (got ${points.length}).`);
-  }
-  let pathPoints = points;
-  if (bendRadius > 0 && points.length >= 3) {
-    const smoothed = [];
-    smoothed.push(points[0]);
-    for (let i = 1;i < points.length - 1; i++) {
-      const prev = new THREE21.Vector3(...points[i - 1]);
-      const cur = new THREE21.Vector3(...points[i]);
-      const next = new THREE21.Vector3(...points[i + 1]);
-      const inDir = cur.clone().sub(prev);
-      const outDir = next.clone().sub(cur);
-      const inLen = inDir.length();
-      const outLen = outDir.length();
-      const inOffset = Math.min(bendRadius, inLen / 2);
-      const outOffset = Math.min(bendRadius, outLen / 2);
-      const before = cur.clone().sub(inDir.clone().normalize().multiplyScalar(inOffset));
-      const after = cur.clone().add(outDir.clone().normalize().multiplyScalar(outOffset));
-      smoothed.push([before.x, before.y, before.z]);
-      smoothed.push([after.x, after.y, after.z]);
-    }
-    smoothed.push(points[points.length - 1]);
-    pathPoints = smoothed;
-  }
-  return curveToMesh(pathPoints, radius, tubularSegments, radialSegments, closed);
-}
-function bezierCurve(controlPoints, samples = 32) {
-  const vecs = controlPoints.map((p) => new THREE21.Vector3(p[0], p[1], p[2]));
-  let curve;
-  if (vecs.length === 3) {
-    curve = new THREE21.QuadraticBezierCurve3(vecs[0], vecs[1], vecs[2]);
-  } else if (vecs.length === 4) {
-    curve = new THREE21.CubicBezierCurve3(vecs[0], vecs[1], vecs[2], vecs[3]);
-  } else {
-    throw new Error(`bezierCurve: need 3 or 4 control points, got ${vecs.length}`);
-  }
-  return curve.getPoints(samples).map((v) => [v.x, v.y, v.z]);
-}
-var init_ops = __esm(() => {
-  init_primitives();
-  init_geometry_budget();
-  init_authoring_diagnostic();
-});
-
-// src/geometry.ts
-import * as THREE22 from "three";
-function finiteArray(values, label, length) {
-  const result = Array.from(values);
-  if (length !== undefined && result.length !== length)
-    throw new Error(`${label}: expected ${length} values, got ${result.length}`);
-  if (!result.every((n) => Number.isFinite(Math.fround(n))))
-    throw new AuthoringDiagnosticError("MESH_DATA_NONFINITE", `${label}: all values must be finite Float32 values`);
-  return result;
-}
-function meshGeo(data) {
-  const positions = finiteArray(data.positions, "meshGeo positions");
-  if (positions.length < 9 || positions.length % 3)
-    throw new Error("meshGeo positions: need at least three xyz vertices");
-  const count = positions.length / 3;
-  const geometry = new THREE22.BufferGeometry;
-  geometry.setAttribute("position", new THREE22.Float32BufferAttribute(positions, 3));
-  if (data.indices) {
-    const indices = Array.from(data.indices);
-    if (!indices.length || indices.length % 3)
-      throw new Error("meshGeo indices: need complete triangles");
-    if (!indices.every((i) => Number.isInteger(i) && i >= 0 && i < count))
-      throw new Error("meshGeo index out of bounds or not an integer");
-    geometry.setIndex(indices);
-  } else if (count % 3)
-    throw new Error("meshGeo: non-indexed positions must form complete triangles");
-  if (data.normals) {
-    const normals = finiteArray(data.normals, "meshGeo normals", count * 3);
-    geometry.setAttribute("normal", new THREE22.Float32BufferAttribute(normals, 3));
-    for (let i = 0;i < count; i++)
-      if (Math.hypot(normals[i * 3], normals[i * 3 + 1], normals[i * 3 + 2]) === 0)
-        throw new Error("meshGeo normals: zero-length normal");
-    geometry.normalizeNormals();
-  } else
-    geometry.computeVertexNormals();
-  if (data.uvs)
-    geometry.setAttribute("uv", new THREE22.Float32BufferAttribute(finiteArray(data.uvs, "meshGeo uvs", count * 2), 2));
-  if (data.tangents) {
-    const tangents = finiteArray(data.tangents, "meshGeo tangents", count * 4);
-    for (let i = 0;i < count; i++) {
-      if (Math.abs(Math.hypot(tangents[i * 4], tangents[i * 4 + 1], tangents[i * 4 + 2]) - 1) > 0.0001 || Math.abs(tangents[i * 4 + 3]) !== 1)
-        throw new Error("meshGeo tangents: expected unit xyz and handedness +1 or -1");
-    }
-    geometry.setAttribute("tangent", new THREE22.Float32BufferAttribute(tangents, 4));
-  }
-  geometry.computeBoundingBox();
-  geometry.computeBoundingSphere();
-  return geometry;
-}
-function boundsScale(bounds) {
-  const size = bounds.getSize(new THREE22.Vector3);
-  const scale = Math.hypot(size.x, size.y, size.z);
-  if (!Number.isFinite(scale))
-    throw new Error("Geometry position extent must be finite");
-  return scale;
-}
-function positionFrame(position) {
-  const bounds = new THREE22.Box3;
-  const point = new THREE22.Vector3;
-  for (let i = 0;i < position.count; i++) {
-    point.fromBufferAttribute(position, i);
-    if ([point.x, point.y, point.z].every(Number.isFinite))
-      bounds.expandByPoint(point);
-  }
-  return {
-    origin: bounds.isEmpty() ? new THREE22.Vector3 : bounds.min,
-    scale: boundsScale(bounds)
-  };
-}
-function positionTolerance(scale, supplied, relative) {
-  if (supplied === undefined)
-    return scale * relative;
-  if (!Number.isFinite(supplied) || supplied <= 0)
-    throw new Error("Geometry tolerance must be positive and finite");
-  if (scale / supplied > Number.MAX_SAFE_INTEGER)
-    throw new Error("Geometry tolerance is too small to resolve the position extent safely");
-  return supplied;
-}
-function positionKey(point, origin, tolerance) {
-  if (tolerance === 0)
-    return point.toArray().join(",");
-  return point.clone().sub(origin).toArray().map((x) => Math.round(x / tolerance)).join(",");
-}
-function geometryDiagnostics(geometry, tolerance) {
-  const p = geometry.getAttribute("position");
-  if (p?.itemSize !== 3)
-    throw new Error("geometryDiagnostics requires xyz positions");
-  const frame = positionFrame(p);
-  const distance = positionTolerance(frame.scale, tolerance, 0.000001);
-  const result = {
-    tolerance: distance,
-    toleranceMode: tolerance === undefined ? "relative" : "absolute",
-    positionScale: frame.scale,
-    vertices: p.count,
-    triangles: 0,
-    boundaryEdges: 0,
-    nonManifoldEdges: 0,
-    orientationConflicts: 0,
-    degenerateTriangles: 0,
-    collapsedByToleranceTriangles: 0,
-    invalidIndices: 0,
-    nonFiniteVertices: 0
-  };
-  const ids = [];
-  const points = new Map;
-  const finite = [];
-  const point = new THREE22.Vector3;
-  for (let i = 0;i < p.count; i++) {
-    point.fromBufferAttribute(p, i);
-    finite[i] = [point.x, point.y, point.z].every(Number.isFinite);
-    if (!finite[i])
-      result.nonFiniteVertices++;
-    const key = finite[i] ? positionKey(point, frame.origin, distance) : `invalid:${i}`;
-    if (!points.has(key))
-      points.set(key, points.size);
-    ids.push(points.get(key));
-  }
-  const indices = geometry.index ? Array.from(geometry.index.array) : Array.from({ length: p.count }, (_, i) => i);
-  const edges = new Map;
-  const a = new THREE22.Vector3, b = new THREE22.Vector3, c = new THREE22.Vector3;
-  for (let i = 0;i < indices.length; i += 3) {
-    result.triangles++;
-    const triangle = indices.slice(i, i + 3);
-    if (triangle.length !== 3 || triangle.some((n) => !Number.isInteger(n) || n < 0 || n >= p.count)) {
-      result.invalidIndices++;
-      continue;
-    }
-    const [ia, ib, ic] = triangle;
-    if (!finite[ia] || !finite[ib] || !finite[ic])
-      continue;
-    a.fromBufferAttribute(p, ia);
-    b.fromBufferAttribute(p, ib);
-    c.fromBufferAttribute(p, ic);
-    const scale = frame.scale || 1;
-    b.sub(a).divideScalar(scale);
-    c.sub(a).divideScalar(scale);
-    if (b.cross(c).length() <= (distance / scale) ** 2)
-      result.degenerateTriangles++;
-    if (ids[ia] === ids[ib] || ids[ib] === ids[ic] || ids[ic] === ids[ia]) {
-      result.collapsedByToleranceTriangles++;
-      continue;
-    }
-    for (const [start, end] of [
-      [ia, ib],
-      [ib, ic],
-      [ic, ia]
-    ]) {
-      const u = ids[start], v = ids[end];
-      const key = u < v ? `${u}:${v}` : `${v}:${u}`;
-      const edge = edges.get(key) ?? { count: 0, direction: 0 };
-      edge.count++;
-      edge.direction += u < v ? 1 : -1;
-      edges.set(key, edge);
-    }
-  }
-  for (const edge of edges.values()) {
-    if (edge.count === 1)
-      result.boundaryEdges++;
-    else if (edge.count > 2)
-      result.nonManifoldEdges++;
-    else if (edge.direction !== 0)
-      result.orientationConflicts++;
-  }
-  return result;
-}
-function parametricSurface(sample, options = {}) {
-  const {
-    u = [0, 1],
-    v = [0, 1],
-    uSegments: nu = 24,
-    vSegments: nv = 24,
-    periodicU = false,
-    periodicV = false,
-    orientation = "uv"
-  } = options;
-  for (const [name, n] of [
-    ["uSegments", nu],
-    ["vSegments", nv]
-  ])
-    if (!Number.isSafeInteger(n) || n < 1)
-      throw new Error(`parametricSurface ${name} must be a positive integer`);
-  const sampleCount = (nu + 1) * (nv + 1);
-  if (!Number.isSafeInteger(sampleCount) || sampleCount > GEOMETRY_ALLOCATION_LIMITS.parametricSamples)
-    throw new RangeError(`parametricSurface sample budget exceeded: requested ${sampleCount}, limit ${GEOMETRY_ALLOCATION_LIMITS.parametricSamples}. Reduce uSegments/vSegments or split the surface.`);
-  for (const [name, range] of [
-    ["u", u],
-    ["v", v]
-  ])
-    if (range.length !== 2 || !range.every(Number.isFinite) || range[0] === range[1] || !Number.isFinite(range[1] - range[0]))
-      throw new Error(`parametricSurface ${name} must be a finite nonzero domain`);
-  if (orientation !== "uv" && orientation !== "vu")
-    throw new Error("parametricSurface orientation must be uv or vu");
-  const positions = [], uvs = [], indices = [];
-  const sampledBounds = new THREE22.Box3;
-  const sampledPoint = new THREE22.Vector3;
-  for (let j = 0;j <= nv; j++)
-    for (let i = 0;i <= nu; i++) {
-      const point = sample(u[0] + (u[1] - u[0]) * i / nu, v[0] + (v[1] - v[0]) * j / nv);
-      if (point.length !== 3 || !point.every(Number.isFinite))
-        throw new Error(`parametricSurface: sample (${i},${j}) must return three finite coordinates`);
-      positions.push(...point);
-      sampledBounds.expandByPoint(sampledPoint.set(...point));
-      uvs.push(i / nu, j / nv);
-    }
-  const groups = Array.from({ length: (nu + 1) * (nv + 1) }, (_, i) => i);
-  const seamScale = boundsScale(sampledBounds);
-  const find = (i) => {
-    while (groups[i] !== i)
-      i = groups[i];
-    return i;
-  };
-  const join = (a, b, _label) => {
-    const pa = positions.slice(a * 3, a * 3 + 3), pb = positions.slice(b * 3, b * 3 + 3);
-    if (Math.hypot(...pa.map((x, k) => x - pb[k])) > seamScale * 0.000001)
-      throw new AuthoringDiagnosticError("PARAMETRIC_PERIODIC_ENDPOINT");
-    groups[find(b)] = find(a);
-    for (let k = 0;k < 3; k++)
-      positions[b * 3 + k] = positions[a * 3 + k];
-  };
-  if (periodicU)
-    for (let j = 0;j <= nv; j++)
-      join(j * (nu + 1), j * (nu + 1) + nu, "periodicU");
-  if (periodicV)
-    for (let i = 0;i <= nu; i++)
-      join(i, nv * (nu + 1) + i, "periodicV");
-  for (let j = 0;j < nv; j++)
-    for (let i = 0;i < nu; i++) {
-      const a = j * (nu + 1) + i, b = a + 1, c = a + nu + 1, d = c + 1;
-      indices.push(...orientation === "uv" ? [a, b, c, b, d, c] : [a, c, b, b, c, d]);
-    }
-  const out = meshGeo({ positions, indices, uvs });
-  if (periodicU || periodicV) {
-    const normal = out.getAttribute("normal");
-    const sums = new Map;
-    for (let i = 0;i < normal.count; i++) {
-      const id = find(i);
-      const sum = sums.get(id) ?? new THREE22.Vector3;
-      sum.add(new THREE22.Vector3().fromBufferAttribute(normal, i));
-      sums.set(id, sum);
-    }
-    for (let i = 0;i < normal.count; i++) {
-      const n = sums.get(find(i)).clone().normalize();
-      normal.setXYZ(i, n.x, n.y, n.z);
-    }
-  }
-  return out;
-}
-function creaseNormals(geometry, options = {}) {
-  const angle = options.angle ?? 60;
-  if (!Number.isFinite(angle) || angle < 0 || angle > 180)
-    throw new Error("creaseNormals angle must be between 0 and 180 degrees");
-  const out = geometry.index ? geometry.toNonIndexed() : geometry.clone();
-  const position = out.getAttribute("position");
-  if (position?.itemSize !== 3 || position.count % 3 !== 0)
-    throw new Error("creaseNormals requires complete xyz triangles");
-  const frame = positionFrame(position);
-  const tolerance = positionTolerance(frame.scale, options.tolerance, 0.00000001);
-  const scale = frame.scale || 1;
-  const adjacent = new Map;
-  const keys = [];
-  const faces = [];
-  for (let i = 0;i < position.count; i += 3) {
-    const a = new THREE22.Vector3().fromBufferAttribute(position, i);
-    const b = new THREE22.Vector3().fromBufferAttribute(position, i + 1);
-    const c = new THREE22.Vector3().fromBufferAttribute(position, i + 2);
-    const face = b.sub(a).divideScalar(scale).cross(c.sub(a).divideScalar(scale)).normalize();
-    faces.push(face);
-    for (let j = i;j < i + 3; j++) {
-      const point = new THREE22.Vector3().fromBufferAttribute(position, j);
-      if (![point.x, point.y, point.z].every(Number.isFinite))
-        throw new Error("creaseNormals positions must be finite");
-      const key = positionKey(point, frame.origin, tolerance);
-      keys.push(key);
-      const neighbors = adjacent.get(key) ?? new Set;
-      neighbors.add(i / 3);
-      adjacent.set(key, neighbors);
-    }
-  }
-  const normals = new Float32Array(position.count * 3);
-  const threshold = Math.cos(THREE22.MathUtils.degToRad(angle));
-  for (let i = 0;i < position.count; i++) {
-    const face = faces[Math.floor(i / 3)], sum = new THREE22.Vector3;
-    for (const other of adjacent.get(keys[i]))
-      if (face.dot(faces[other]) >= threshold - 0.000000000001)
-        sum.add(faces[other]);
-    sum.normalize().toArray(normals, i * 3);
-  }
-  out.setAttribute("normal", new THREE22.BufferAttribute(normals, 3));
-  out.deleteAttribute("tangent");
-  out.computeBoundingBox();
-  out.computeBoundingSphere();
-  return out;
-}
-var init_geometry = __esm(() => {
-  init_geometry_budget();
-  init_authoring_diagnostic();
-});
-
-// src/deformation-normals.ts
-import * as THREE23 from "three";
-function recomputeDeformedNormals(source, output) {
-  const original = source.getAttribute("position");
-  const authored = source.getAttribute("normal");
-  const position = output.getAttribute("position");
-  const bounds = (attribute) => {
-    const box = new THREE23.Box3().setFromBufferAttribute(attribute);
-    return {
-      center: box.getCenter(new THREE23.Vector3),
-      size: box.getSize(new THREE23.Vector3).length() || 1
-    };
-  };
-  const before = bounds(original), after = bounds(position);
-  const point = new THREE23.Vector3, normal = new THREE23.Vector3;
-  const quantized = (attribute, index, frame) => {
-    point.fromBufferAttribute(attribute, index).sub(frame.center).divideScalar(frame.size);
-    return point.toArray().map((value) => Math.round(value * 1e7)).join(",");
-  };
-  const classes = new Map;
-  const ids = new Uint32Array(position.count);
-  for (let i = 0;i < position.count; i++) {
-    let key = String(i);
-    if (authored) {
-      normal.fromBufferAttribute(authored, i).normalize();
-      key = `${quantized(original, i, before)}:${normal.toArray().map((value) => Math.round(value * 1e6)).join(",")}:${quantized(position, i, after)}`;
-    }
-    let id = classes.get(key);
-    if (id === undefined) {
-      id = classes.size;
-      classes.set(key, id);
-    }
-    ids[i] = id;
-  }
-  const sums = new Float64Array(classes.size * 3);
-  const index = output.index;
-  const corners = index?.count ?? position.count;
-  const a = new THREE23.Vector3, b = new THREE23.Vector3, c = new THREE23.Vector3;
-  for (let t = 0;t < corners; t += 3) {
-    const ia = index ? index.getX(t) : t;
-    const ib = index ? index.getX(t + 1) : t + 1;
-    const ic = index ? index.getX(t + 2) : t + 2;
-    a.fromBufferAttribute(position, ia);
-    b.fromBufferAttribute(position, ib).sub(a).divideScalar(after.size);
-    c.fromBufferAttribute(position, ic).sub(a).divideScalar(after.size);
-    normal.crossVectors(b, c);
-    for (const vertex of [ia, ib, ic]) {
-      const offset = ids[vertex] * 3;
-      sums[offset] += normal.x;
-      sums[offset + 1] += normal.y;
-      sums[offset + 2] += normal.z;
-    }
-  }
-  const normals = new Float32Array(position.count * 3);
-  for (let i = 0;i < position.count; i++) {
-    const offset = ids[i] * 3;
-    normal.set(sums[offset], sums[offset + 1], sums[offset + 2]).normalize().toArray(normals, i * 3);
-  }
-  output.setAttribute("normal", new THREE23.BufferAttribute(normals, 3));
-}
-var init_deformation_normals = () => {};
-
-// src/deform.ts
-import * as THREE24 from "three";
-function geometryFrameMatrix(frame = {}) {
-  const origin = frame.origin ?? [0, 0, 0], rotation = frame.rotation ?? [0, 0, 0];
-  if (origin.length !== 3 || rotation.length !== 3 || ![...origin, ...rotation].every(Number.isFinite))
-    throw new Error("geometry frame requires finite xyz origin and rotation");
-  return new THREE24.Matrix4().compose(new THREE24.Vector3(...origin), new THREE24.Quaternion().setFromEuler(new THREE24.Euler(...rotation.map(THREE24.MathUtils.degToRad), "XYZ")), new THREE24.Vector3(1, 1, 1));
-}
-function deform(geometry, options, map) {
-  const source = geometry.getAttribute("position");
-  if (source?.itemSize !== 3 || !Number.isSafeInteger(source.count) || source.count < 1 || source.count > 2000000)
-    throw new Error("deformation requires 1..2000000 xyz positions");
-  if (Object.keys(geometry.morphAttributes).length)
-    throw new Error("deformation of morph targets needs a separate mapping contract; deform before creating morph targets.");
-  const index = geometry.index;
-  const corners = index?.count ?? source.count;
-  if (!Number.isSafeInteger(corners) || corners < 3 || corners % 3 || corners > 3000000)
-    throw new Error("deformation requires complete triangles and at most 3000000 corners");
-  if (index)
-    for (let i = 0;i < corners; i++) {
-      const vertex = index.getX(i);
-      if (!Number.isSafeInteger(vertex) || vertex < 0 || vertex >= source.count)
-        throw new Error("deformation index is invalid");
-    }
-  const authoredNormals = geometry.getAttribute("normal");
-  if (authoredNormals) {
-    if (authoredNormals.itemSize !== 3 || authoredNormals.count !== source.count)
-      throw new Error("deformation normals must match xyz positions");
-    for (let i = 0;i < source.count; i++)
-      if (![authoredNormals.getX(i), authoredNormals.getY(i), authoredNormals.getZ(i)].every(Number.isFinite))
-        throw new Error("deformation normals must be finite");
-  }
-  const matrix = geometryFrameMatrix(options.frame), inverse = matrix.clone().invert();
-  const points = Array.from({ length: source.count }, (_, i) => new THREE24.Vector3().fromBufferAttribute(source, i).applyMatrix4(inverse));
-  if (points.some((p) => ![p.x, p.y, p.z].every(Number.isFinite)))
-    throw new Error("deformation positions must be finite");
-  let low = Infinity, high = -Infinity;
-  for (const point of points) {
-    low = Math.min(low, point.y);
-    high = Math.max(high, point.y);
-  }
-  if (options.interval) {
-    if (options.interval.length !== 2 || !options.interval.every(Number.isFinite) || options.interval[1] <= options.interval[0])
-      throw new Error("deformation interval must be finite and increasing");
-    [low, high] = options.interval;
-  }
-  const length = high - low;
-  const out = geometry.clone();
-  out.userData = structuredClone(geometry.userData);
-  const position = out.getAttribute("position");
-  let changed = false;
-  const epsilon = length > 0 ? Math.min(Math.max(Math.abs(low), Math.abs(high), length) * 0.0000001, length * 0.000001) : 0;
-  for (let i = 0;i < points.length; i++) {
-    const point = points[i];
-    if (point.y < low - epsilon || point.y > high + epsilon)
-      continue;
-    const t = length > 0 ? THREE24.MathUtils.clamp((point.y - low) / length, 0, 1) : 0;
-    const weight = options.falloff?.(t) ?? 1;
-    if (!Number.isFinite(weight) || weight < 0 || weight > 1)
-      throw new Error("deformation falloff must return a finite weight between 0 and 1");
-    const mapped = map(point.clone(), t, low, length);
-    if (![mapped.x, mapped.y, mapped.z].every(Number.isFinite))
-      throw new Error("deformation callback must return finite coordinates");
-    point.lerp(mapped, weight).applyMatrix4(matrix);
-    if (![point.x, point.y, point.z].every((n) => Number.isFinite(Math.fround(n))))
-      throw new Error("deformation output must fit finite Float32 coordinates");
-    position.setXYZ(i, point.x, point.y, point.z);
-    changed ||= position.getX(i) !== source.getX(i) || position.getY(i) !== source.getY(i) || position.getZ(i) !== source.getZ(i);
-  }
-  position.needsUpdate = true;
-  if (out.hasAttribute("tangent")) {
-    out.deleteAttribute("tangent");
-    const previous = out.userData.kilnAttributeWarnings;
-    out.userData.kilnAttributeWarnings = [
-      ...Array.isArray(previous) ? previous : [],
-      {
-        code: "DEFORM_TANGENTS_DROPPED",
-        message: "Deformation invalidated tangents; regenerate for normal mapping."
-      }
-    ];
-  }
-  if (changed || !authoredNormals)
-    recomputeDeformedNormals(geometry, out);
-  out.computeBoundingBox();
-  out.computeBoundingSphere();
-  return out;
-}
-function twist(geometry, options) {
-  if (!Number.isFinite(options.angle))
-    throw new Error("twist angle must be finite degrees");
-  return deform(geometry, options, (p, t) => p.applyAxisAngle(new THREE24.Vector3(0, 1, 0), THREE24.MathUtils.degToRad(options.angle) * t));
-}
-function bend(geometry, options) {
-  if (!Number.isFinite(options.angle))
-    throw new Error("bend angle must be finite degrees");
-  const angle = THREE24.MathUtils.degToRad(options.angle);
-  return deform(geometry, options, (p, t, low, length) => {
-    if (Math.abs(angle) < 0.0000000001 || length === 0)
-      return p;
-    const radius = length / angle, theta = angle * t;
-    return new THREE24.Vector3(radius - (radius - p.x) * Math.cos(theta), low + (radius - p.x) * Math.sin(theta), p.z);
-  });
-}
-function taper(geometry, options) {
-  const start = options.startScale ?? [1, 1], end = options.endScale;
-  if (start.length !== 2 || end.length !== 2 || ![...start, ...end].every((n) => Number.isFinite(n) && n > 0))
-    throw new Error("taper scales must be two finite positive values");
-  return deform(geometry, options, (p, t) => p.set(p.x * THREE24.MathUtils.lerp(start[0], end[0], t), p.y, p.z * THREE24.MathUtils.lerp(start[1], end[1], t)));
-}
-function displace(geometry, offset, options = {}) {
-  return deform(geometry, options, (p, t) => {
-    const delta = offset([p.x, p.y, p.z], t);
-    if (delta.length !== 3 || !delta.every(Number.isFinite))
-      throw new Error("displace callback must return three finite offsets");
-    return p.add(new THREE24.Vector3(...delta));
-  });
-}
-var init_deform = __esm(() => {
-  init_deformation_normals();
-});
-
-// src/sweep.ts
-import * as THREE25 from "three";
-function rejectHoles(value, label) {
-  if ("holes" in value && value.holes !== undefined)
-    throw new AuthoringDiagnosticError("PROFILE_HOLES_UNSUPPORTED", `${label}: holes are unsupported. Use extrudeProfile for a holed cross-section with optional twist/taper; independently varying contours need explicit geometry or solid subtraction.`);
-}
-function profilePoints(profile) {
-  if (profile.length < 3 || profile.some((p) => p.length !== 2 || !p.every(Number.isFinite)))
-    throw new Error("profile requires at least three finite xy points");
-  const points = profile.map((p) => new THREE25.Vector2(...p));
-  const bounds = new THREE25.Box2().setFromPoints(points);
-  const extent = bounds.getSize(new THREE25.Vector2).length();
-  if (!(extent > 0) || !Number.isFinite(extent))
-    throw new Error("profile requires a finite nonzero extent");
-  const normalized = points.map((p) => p.clone().sub(bounds.min).divideScalar(extent));
-  if (normalized[0].distanceTo(normalized[normalized.length - 1]) < 0.0000000001) {
-    points.pop();
-    normalized.pop();
-  }
-  if (points.length < 3)
-    throw new Error("profile requires three distinct points");
-  const cross = (a, b, c) => (b.x - a.x) * (c.y - a.y) - (b.y - a.y) * (c.x - a.x);
-  for (let i = 0;i < points.length; i++) {
-    const a = normalized[i], b = normalized[(i + 1) % points.length];
-    if (a.distanceToSquared(b) < 0.00000000000000000001)
-      throw new Error("profile has duplicate adjacent points");
-    for (let j = i + 1;j < points.length; j++) {
-      if (j === i + 1 || i === 0 && j === points.length - 1)
-        continue;
-      const c = normalized[j], d = normalized[(j + 1) % points.length];
-      if (cross(a, b, c) * cross(a, b, d) <= 0 && cross(c, d, a) * cross(c, d, b) <= 0 && Math.max(Math.min(a.x, b.x), Math.min(c.x, d.x)) <= Math.min(Math.max(a.x, b.x), Math.max(c.x, d.x)) + 0.0000000001 && Math.max(Math.min(a.y, b.y), Math.min(c.y, d.y)) <= Math.min(Math.max(a.y, b.y), Math.max(c.y, d.y)) + 0.0000000001)
-        throw new Error("profile self-intersects or touches itself");
-    }
-  }
-  const area = THREE25.ShapeUtils.area(normalized);
-  if (Math.abs(area) < 0.000000000001)
-    throw new Error("profile area must be nonzero");
-  if (area < 0)
-    points.splice(1, points.length - 1, ...points.slice(1).reverse());
-  return points;
-}
-function buildLoft(rings, profiles, closed, cap, firstFrameForward) {
-  const n = rings[0].length, positions = [], uvs = [], indices = [];
-  const centers = rings.map((r) => r.reduce((sum, p) => sum.add(p), new THREE25.Vector3).multiplyScalar(1 / n));
-  const lengths = [0];
-  for (let i = 1;i < centers.length; i++)
-    lengths.push(lengths[i - 1] + centers[i].distanceTo(centers[i - 1]));
-  const total = lengths[lengths.length - 1];
-  if (!(total > 0) || !Number.isFinite(total))
-    throw new Error("loft section centers must progress along a finite nonzero path");
-  for (let i = 0;i < rings.length; i++) {
-    const ring = rings[i], distance = [0];
-    for (let j = 1;j <= n; j++)
-      distance.push(distance[j - 1] + ring[j % n].distanceTo(ring[j - 1]));
-    for (let j = 0;j <= n; j++) {
-      positions.push(...ring[j % n].toArray());
-      uvs.push(distance[j] / distance[n], lengths[i] / total);
-    }
-  }
-  for (let i = 0;i < rings.length - 1; i++)
-    for (let j = 0;j < n; j++) {
-      const a = i * (n + 1) + j, b = a + 1, c = a + n + 1, d = c + 1;
-      const origin = rings[i][j], ab = rings[i][(j + 1) % n].clone().sub(origin), ac = rings[i + 1][j].clone().sub(origin), ad = rings[i + 1][(j + 1) % n].clone().sub(origin);
-      const endEdge = ad.clone().sub(ac), edgeScale = Math.max(ab.length(), endEdge.length());
-      if (edgeScale > 0) {
-        const startEdge = ab.clone().divideScalar(edgeScale), delta = endEdge.divideScalar(edgeScale).sub(startEdge), denominator = delta.lengthSq(), t = denominator > 0 ? -startEdge.dot(delta) / denominator : 0;
-        if (t > 0 && t < 1 && startEdge.addScaledVector(delta, t).lengthSq() <= 0.00000000000000000001)
-          throw new AuthoringDiagnosticError("PROFILE_CORRESPONDENCE_COLLAPSE");
-      }
-      const scale = Math.max(ab.length(), ac.length(), ad.length());
-      const warp = scale > 0 ? Math.abs(ab.clone().divideScalar(scale).dot(ac.clone().divideScalar(scale).cross(ad.clone().divideScalar(scale)))) : 0;
-      if (warp > 0.0000000001) {
-        const middle = positions.length / 3;
-        positions.push(...origin.clone().addScaledVector(ab, 0.25).addScaledVector(ac, 0.25).addScaledVector(ad, 0.25).toArray());
-        uvs.push((uvs[a * 2] + uvs[b * 2] + uvs[c * 2] + uvs[d * 2]) / 4, (uvs[a * 2 + 1] + uvs[b * 2 + 1] + uvs[c * 2 + 1] + uvs[d * 2 + 1]) / 4);
-        indices.push(a, c, middle, c, d, middle, d, b, middle, b, a, middle);
-      } else
-        indices.push(a, c, b, b, c, d);
-    }
-  if (cap && !closed)
-    for (const station of [0, rings.length - 1]) {
-      const ring = rings[station], profile = profiles[station];
-      const start = positions.length / 3;
-      const bounds = new THREE25.Box2().setFromPoints(profile);
-      const size = bounds.getSize(new THREE25.Vector2);
-      for (let j = 0;j < n; j++) {
-        positions.push(...ring[j].toArray());
-        uvs.push((profile[j].x - bounds.min.x) / (size.x || 1), (profile[j].y - bounds.min.y) / (size.y || 1));
-      }
-      for (const tri of THREE25.ShapeUtils.triangulateShape(profile, [])) {
-        if (station === 0)
-          indices.push(...tri.map((j) => start + j));
-        else
-          indices.push(...tri.toReversed().map((j) => start + j));
-      }
-    }
-  if (firstFrameForward && firstFrameForward.dot(centers[1].clone().sub(centers[0])) < 0)
-    for (let i = 0;i < indices.length; i += 3)
-      [indices[i + 1], indices[i + 2]] = [indices[i + 2], indices[i + 1]];
-  const out = meshGeo({ positions, indices, uvs });
-  const normal = out.getAttribute("normal");
-  for (let i = 0;i < rings.length; i++) {
-    const a = i * (n + 1), b = a + n;
-    const sum = new THREE25.Vector3().fromBufferAttribute(normal, a).add(new THREE25.Vector3().fromBufferAttribute(normal, b)).normalize();
-    normal.setXYZ(a, sum.x, sum.y, sum.z);
-    normal.setXYZ(b, sum.x, sum.y, sum.z);
-  }
-  if (closed)
-    for (let j = 0;j <= n; j++) {
-      const a = j, b = (rings.length - 1) * (n + 1) + j;
-      const sum = new THREE25.Vector3().fromBufferAttribute(normal, a).add(new THREE25.Vector3().fromBufferAttribute(normal, b)).normalize();
-      normal.setXYZ(a, sum.x, sum.y, sum.z);
-      normal.setXYZ(b, sum.x, sum.y, sum.z);
-    }
-  return out;
-}
-function loftProfiles(sections, options = {}) {
-  rejectHoles(options, "loftProfiles");
-  if (sections.length < 2)
-    throw new Error("loftProfiles needs at least two sections");
-  const profiles = sections.map((section, i) => {
-    rejectHoles(section, `loftProfiles section ${i}`);
-    return profilePoints(section.profile);
-  });
-  if (profiles.some((p) => p.length !== profiles[0].length))
-    throw new Error("loftProfiles sections must have the same point count and correspondence");
-  const frames = sections.map((section) => geometryFrameMatrix(section.frame));
-  const rings = profiles.map((profile, i) => profile.map((p) => new THREE25.Vector3(p.x, 0, p.y).applyMatrix4(frames[i])));
-  const out = buildLoft(rings, profiles, false, options.cap ?? true, new THREE25.Vector3(0, 1, 0).transformDirection(frames[0]));
-  out.userData.kilnGeometryWarnings = [
-    {
-      code: "LOFT_SELF_INTERSECTION_UNCHECKED",
-      message: "Corresponding profiles are connected directly. Caps and closed boundaries do not prove the loft is free of self-intersections."
-    }
-  ];
-  return out;
-}
-function sweepProfile(profile, path, options = {}) {
-  rejectHoles(options, "sweepProfile");
-  const points = profilePoints(profile), closed = options.closed ?? false, twist = options.twist ?? 0;
-  if (!Number.isFinite(twist))
-    throw new Error("sweepProfile twist must be finite degrees");
-  if (closed && Math.abs(twist / 360 - Math.round(twist / 360)) > 0.00000001)
-    throw new Error("closed sweep twist must be a multiple of 360 degrees");
-  if (path.length < (closed ? 3 : 2) || path.some((p) => p.length !== 3 || !p.every(Number.isFinite)))
-    throw new Error("sweepProfile requires finite path points (two open or three closed)");
-  const stations = path.map((p) => new THREE25.Vector3(...p));
-  const pathExtent = new THREE25.Box3().setFromPoints(stations).getSize(new THREE25.Vector3).length();
-  if (!(pathExtent > 0) || !Number.isFinite(pathExtent))
-    throw new Error("sweepProfile path stations must be distinct with finite extent");
-  const pathTolerance = pathExtent * 0.0000000001;
-  if (closed && stations[0].distanceTo(stations[stations.length - 1]) < pathTolerance)
-    throw new Error("closed sweep path should omit its repeated endpoint");
-  const segments = [];
-  for (let i = 0;i < stations.length - (closed ? 0 : 1); i++) {
-    const direction = stations[(i + 1) % stations.length].clone().sub(stations[i]);
-    if (direction.length() < pathTolerance)
-      throw new Error("sweepProfile path stations must be distinct");
-    segments.push(direction.normalize());
-  }
-  const warnings = [];
-  const scales = stations.map((_, i) => {
-    const scale = typeof options.scale === "number" ? [options.scale, options.scale] : options.scale?.[i] ?? [1, 1];
-    if (scale.length !== 2 || !scale.every((n) => Number.isFinite(n) && n > 0))
-      throw new Error("sweepProfile scale requires positive finite pairs");
-    return scale;
-  });
-  if (Array.isArray(options.scale) && options.scale.length !== stations.length)
-    throw new Error("sweepProfile scale needs one pair per path station");
-  const tangents = stations.map((_, i) => {
-    if (!closed && i === 0)
-      return segments[0].clone();
-    if (!closed && i === stations.length - 1)
-      return segments[segments.length - 1].clone();
-    const incoming = segments[(i - 1 + segments.length) % segments.length], outgoing = segments[i];
-    if (incoming.dot(outgoing) < -0.9999)
-      throw new Error("sweepProfile path has a reversal; split it into separate sweeps");
-    const angle = incoming.angleTo(outgoing);
-    const distance = Math.min(stations[i].distanceTo(stations[(i - 1 + stations.length) % stations.length]), stations[i].distanceTo(stations[(i + 1) % stations.length]));
-    const scale = scales[i];
-    const radius = points.reduce((maximum, point) => Math.max(maximum, Math.hypot(point.x * scale[0], point.y * scale[1])), 0);
-    if (radius * Math.tan(angle / 2) >= distance * 0.5)
-      warnings.push({
-        code: "SWEEP_TIGHT_TURN",
-        message: `Path station ${i} turns tightly relative to the profile; reduce its size or widen the turn. Self-intersection is possible.`
-      });
-    return incoming.clone().add(outgoing).normalize();
-  });
-  const up = options.up ? new THREE25.Vector3(...options.up) : Math.abs(tangents[0].z) < 0.9 ? new THREE25.Vector3(0, 0, 1) : new THREE25.Vector3(1, 0, 0);
-  const upLength = Math.hypot(up.x, up.y, up.z);
-  if (!(upLength > 0) || !Number.isFinite(upLength))
-    throw new Error("sweepProfile up must be a finite nonzero vector");
-  up.divideScalar(upLength);
-  let z = up.clone().addScaledVector(tangents[0], -up.dot(tangents[0]));
-  if (z.lengthSq() < 0.000000000001)
-    throw new Error("sweepProfile up must not be parallel to the first path tangent");
-  z.normalize();
-  const normals = [z.clone()];
-  if (closed) {
-    stations.push(stations[0].clone());
-    tangents.push(tangents[0].clone());
-    scales.push(scales[0]);
-  }
-  const distances = [0];
-  for (let i = 1;i < stations.length; i++) {
-    z = z.clone().applyQuaternion(new THREE25.Quaternion().setFromUnitVectors(tangents[i - 1], tangents[i]));
-    normals.push(z);
-    distances.push(distances[i - 1] + stations[i].distanceTo(stations[i - 1]));
-  }
-  const total = distances[distances.length - 1];
-  let correction = 0;
-  if (closed)
-    correction = Math.atan2(tangents[0].dot(normals[normals.length - 1].clone().cross(normals[0])), normals[normals.length - 1].dot(normals[0]));
-  const rings = stations.map((station, i) => {
-    const tangent = tangents[i], t = distances[i] / total;
-    const axisZ = normals[i].clone().applyAxisAngle(tangent, (correction + THREE25.MathUtils.degToRad(twist)) * t);
-    const axisX = tangent.clone().cross(axisZ).normalize(), scale = scales[i];
-    return points.map((p) => station.clone().addScaledVector(axisX, p.x * scale[0]).addScaledVector(axisZ, p.y * scale[1]));
-  });
-  if (closed)
-    rings[rings.length - 1] = rings[0].map((p) => p.clone());
-  const out = buildLoft(rings, rings.map(() => points), closed, options.cap ?? true);
-  warnings.push({
-    code: "SWEEP_SELF_INTERSECTION_UNCHECKED",
-    message: "Transported frames and caps do not prove a sweep is free of self-intersections. Review tight turns and nearby path segments."
-  });
-  out.userData.kilnGeometryWarnings = warnings;
-  return out;
-}
-var init_sweep = __esm(() => {
-  init_geometry();
-  init_deform();
-  init_authoring_diagnostic();
-});
-
-// src/solids.ts
-import * as THREE26 from "three";
-async function getManifoldModule() {
-  if (_module)
-    return _module;
-  if (_initPromise)
-    return _initPromise;
-  _initPromise = (async () => {
-    const mod = await import("manifold-3d");
-    const m = await mod.default();
-    m.setup();
-    _module = m;
-    return m;
-  })();
-  return _initPromise;
-}
-function computationFrame(parts) {
-  const meshes = [];
-  for (const part of parts) {
-    part.updateWorldMatrix(true, true);
-    part.traverse((child) => {
-      const mesh = child;
-      if (!mesh.isMesh)
-        return;
-      const unsupported = mesh.isInstancedMesh ? "an instanced mesh" : mesh.isSkinnedMesh ? "a skinned mesh" : mesh.morphTargetInfluences?.some((weight) => weight !== 0) ? "a mesh with active morph influences" : undefined;
-      if (unsupported)
-        throw new Error(`CSG: "${mesh.name || "(unnamed)"}" is ${unsupported}; bake the intended instances or pose into static triangle meshes before the Boolean. Base geometry alone does not represent this operand.`);
-      if (mesh.geometry.getAttribute("position")?.count)
-        meshes.push(mesh);
-    });
-  }
-  const origin = meshes.length ? new THREE26.Vector3().setFromMatrixPosition(meshes[0].matrixWorld) : new THREE26.Vector3;
-  const matrices = new Map;
-  const bounds = new THREE26.Box3;
-  const point = new THREE26.Vector3;
-  for (const mesh of meshes) {
-    const matrix = mesh.matrixWorld.clone();
-    matrix.elements[12] -= origin.x;
-    matrix.elements[13] -= origin.y;
-    matrix.elements[14] -= origin.z;
-    matrices.set(mesh, matrix);
-    const position = mesh.geometry.getAttribute("position");
-    if (position.itemSize !== 3)
-      continue;
-    for (let i = 0;i < position.count; i++) {
-      point.fromBufferAttribute(position, i).applyMatrix4(matrix);
-      if (![point.x, point.y, point.z].every(Number.isFinite))
-        throw new Error("CSG: operand positions and transforms must be finite");
-      bounds.expandByPoint(point);
-    }
-  }
-  const size = bounds.getSize(new THREE26.Vector3);
-  const scale = Math.hypot(size.x, size.y, size.z);
-  if (!Number.isFinite(scale))
-    throw new Error("CSG: combined operand extent must be finite");
-  return { origin, center: bounds.getCenter(new THREE26.Vector3), scale: scale || 1, matrices };
-}
-function retainNotes(target, notes) {
-  if (!Array.isArray(notes))
-    return;
-  for (const note of notes) {
-    if (typeof note === "string")
-      target.set(JSON.stringify(note), note);
-    else if (note && typeof note === "object" && "code" in note) {
-      const copy = {
-        code: String(note.code),
-        ..."message" in note ? { message: String(note.message) } : {}
-      };
-      target.set(JSON.stringify(copy), copy);
-    }
-  }
-}
-function sourceSpans(mesh, count) {
-  const prior = mesh.geometry.userData.kilnCsgProvenance;
-  if (prior?.runs?.length)
-    return prior.runs.map((r) => ({
-      start: r.start * 3,
-      count: r.count * 3,
-      materialIndex: r.materialIndex,
-      name: r.sourceName
-    }));
-  const ranges = mesh.geometry.userData.kilnRanges;
-  const name = mesh.name || ranges?.[0]?.name || "unnamed";
-  return Array.isArray(mesh.material) ? mesh.geometry.groups.map((g) => ({
-    start: g.start,
-    count: g.count,
-    materialIndex: g.materialIndex ?? 0,
-    name
-  })) : [{ start: 0, count, materialIndex: 0, name }];
-}
-function threeToManifold(src, mod, label, context) {
-  src.updateWorldMatrix(true, true);
-  const properties = [], indices = [], runs = [], originals = [], faceIds = [];
-  let vertexOffset = 0, meshCount = 0;
-  const stride = context.preserve ? 5 : 3;
-  src.traverse((child) => {
-    const mesh = child;
-    if (!mesh.isMesh)
-      return;
-    const geometry = mesh.geometry, position = geometry.getAttribute("position");
-    if (!position)
-      return;
-    retainNotes(context.attributeWarnings, geometry.userData.kilnAttributeWarnings);
-    retainNotes(context.geometryWarnings, geometry.userData.kilnGeometryWarnings);
-    const dropped = Object.keys(geometry.attributes).filter((key) => !["position", "normal", "uv"].includes(key)).sort();
-    if (dropped.length)
-      retainNotes(context.attributeWarnings, [
-        {
-          code: "CSG_ATTRIBUTES_DROPPED",
-          message: `CSG removed attributes from "${mesh.name || label}": ${dropped.join(", ")}. Only UV0 and material groups can be preserved; rebuild required attributes after the Boolean.`
-        }
-      ]);
-    const morphs = Object.entries(geometry.morphAttributes).filter(([, targets]) => targets.length > 0).map(([key]) => key).sort();
-    if (morphs.length)
-      retainNotes(context.attributeWarnings, [
-        {
-          code: "CSG_MORPHS_DROPPED",
-          message: `CSG used the base shape of "${mesh.name || label}" and removed inactive morph targets: ${morphs.join(", ")}. Boolean topology does not retain morph correspondences.`
-        }
-      ]);
-    meshCount++;
-    const index = geometry.index, count = index?.count ?? position.count;
-    if (count % 3 !== 0)
-      throw new Error(`CSG ${label}: mesh "${mesh.name || "(unnamed)"}" has ${count} ${index ? "indices" : "vertices"}, which is not a whole number of triangles. Every CSG input must be a triangle mesh.`);
-    if (position.itemSize !== 3)
-      throw new Error(`CSG ${label}: positions must have three components`);
-    const uv = geometry.getAttribute("uv");
-    if (context.preserve && uv && (uv.itemSize !== 2 || uv.count !== position.count))
-      throw new Error(`CSG ${label}: uv must have two components per vertex`);
-    if (context.preserve) {
-      if (uv)
-        context.anyUV = true;
-      else
-        context.missingUV.add(mesh.name || label);
-    }
-    const point = new THREE26.Vector3;
-    for (let i = 0;i < position.count; i++) {
-      point.fromBufferAttribute(position, i).applyMatrix4(context.frame.matrices.get(mesh)).sub(context.frame.center).divideScalar(context.frame.scale);
-      if (![point.x, point.y, point.z].every((n) => Number.isFinite(Math.fround(n))))
-        throw new Error(`CSG ${label}: transformed positions must be finite Float32 coordinates`);
-      properties.push(point.x, point.y, point.z);
-      if (context.preserve) {
-        const u = uv?.getX(i) ?? 0, v = uv?.getY(i) ?? 0;
-        if (!Number.isFinite(u) || !Number.isFinite(v))
-          throw new Error(`CSG ${label}: UVs must be finite`);
-        properties.push(u, v);
-      }
-    }
-    const materials = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
-    const spans = sourceSpans(mesh, count).sort((a, b) => a.start - b.start);
-    let covered = 0;
-    for (const span of spans) {
-      if (!Number.isInteger(span.start) || !Number.isInteger(span.count) || span.start !== covered || span.count <= 0 || span.count % 3 || span.start % 3 || span.start + span.count > count || !materials[span.materialIndex])
-        throw new Error(`CSG ${label}: material/source groups must cover triangles exactly once with valid materials`);
-      const id = mod.Manifold.reserveIDs(1);
-      context.sources.set(id, { name: span.name, material: materials[span.materialIndex] });
-      runs.push(indices.length);
-      originals.push(id);
-      for (let i = span.start;i < span.start + span.count; i += 3) {
-        const triangle = [
-          index?.getX(i) ?? i,
-          index?.getX(i + 1) ?? i + 1,
-          index?.getX(i + 2) ?? i + 2
-        ];
-        if (triangle.some((j) => !Number.isInteger(j) || j < 0 || j >= position.count))
-          throw new Error(`CSG ${label}: index outside positions`);
-        if (mesh.matrixWorld.determinant() < 0)
-          [triangle[1], triangle[2]] = [triangle[2], triangle[1]];
-        indices.push(...triangle.map((j) => j + vertexOffset));
-        const prior = geometry.userData.kilnCsgProvenance;
-        faceIds.push(prior?.faceIds?.[i / 3] ?? i / 3);
-      }
-      covered += span.count;
-    }
-    if (covered !== count)
-      throw new Error(`CSG ${label}: material/source groups do not cover every triangle`);
-    vertexOffset += position.count;
-  });
-  if (!indices.length)
-    throw new Error(`CSG ${label}: contributes no triangles${meshCount === 0 ? " (nothing in it is a mesh — an empty Group, or a part that was never added to it)" : " (its meshes have no geometry)"}. Every CSG operand must be a solid with triangles.`);
-  runs.push(indices.length);
-  const mesh = new mod.Mesh({
-    numProp: stride,
-    vertProperties: new Float32Array(properties),
-    triVerts: new Uint32Array(indices),
-    runIndex: new Uint32Array(runs),
-    runOriginalID: new Uint32Array(originals),
-    ...context.preserve ? { faceID: new Uint32Array(faceIds) } : {}
-  });
-  mesh.merge();
-  return mod.Manifold.ofMesh(mesh);
-}
-function assertNonEmptyResult(m, op, hint) {
-  if (m.numTri() === 0)
-    throw new Error(`${op}: the result is empty (zero triangles). ${hint}`);
-}
-function collapsedFaces(mesh) {
-  const { vertProperties: p, numProp: stride, triVerts: indices } = mesh;
-  const faces = [];
-  for (let i = 0;i < p.length; i += stride)
-    if (![p[i], p[i + 1], p[i + 2]].every(Number.isFinite))
-      throw new AuthoringDiagnosticError("SOLID_FLOAT32_COLLAPSE");
-  for (let i = 0;i < indices.length; i += 3) {
-    const a = indices[i] * stride, b = indices[i + 1] * stride, c = indices[i + 2] * stride;
-    const bx = p[b] - p[a], by = p[b + 1] - p[a + 1], bz = p[b + 2] - p[a + 2];
-    const cx = p[c] - p[a], cy = p[c + 1] - p[a + 1], cz = p[c + 2] - p[a + 2];
-    if (by * cz - bz * cy === 0 && bz * cx - bx * cz === 0 && bx * cy - by * cx === 0)
-      faces.push(i / 3);
-  }
-  return faces;
-}
-function removeCollapsedFaces(mesh, faces) {
-  const removed = new Set(faces), count = mesh.triVerts.length / 3;
-  const prefix = new Uint32Array(count + 1);
-  const triangles = new Uint32Array(mesh.triVerts.length - faces.length * 3);
-  const faceIds = mesh.faceID.length ? new Uint32Array(count - faces.length) : undefined;
-  const tangents = mesh.halfedgeTangent.length ? new Float32Array((count - faces.length) * 12) : undefined;
-  let kept = 0;
-  for (let i = 0;i < count; i++) {
-    if (!removed.has(i)) {
-      triangles.set(mesh.triVerts.subarray(i * 3, i * 3 + 3), kept * 3);
-      if (faceIds)
-        faceIds[kept] = mesh.faceID[i];
-      if (tangents)
-        tangents.set(mesh.halfedgeTangent.subarray(i * 12, i * 12 + 12), kept * 12);
-      kept++;
-    }
-    prefix[i + 1] = kept * 3;
-  }
-  mesh.triVerts = triangles;
-  if (faceIds)
-    mesh.faceID = faceIds;
-  if (tangents)
-    mesh.halfedgeTangent = tangents;
-  mesh.runIndex = Uint32Array.from(mesh.runIndex, (offset) => prefix[offset / 3]);
-}
-function materializeSolid(m) {
-  const mesh = m.getMesh(), faces = collapsedFaces(mesh), collapsed = faces.length;
-  if (!collapsed)
-    return { mesh, collapsed };
-  let magnitude = 0;
-  for (let i = 0;i < mesh.vertProperties.length; i += mesh.numProp)
-    for (let axis = 0;axis < 3; axis++)
-      magnitude = Math.max(magnitude, Math.abs(mesh.vertProperties[i + axis]));
-  mesh.tolerance = Math.min(mesh.tolerance, magnitude * 0.00000011920928955078125);
-  const rounded = _module.Manifold.ofMesh(mesh);
-  try {
-    if (rounded.status() !== "NoError" || rounded.numTri() === 0)
-      throw new AuthoringDiagnosticError("SOLID_FLOAT32_COLLAPSE");
-    const result = rounded.getMesh();
-    const remaining = collapsedFaces(result);
-    if (!remaining.length)
-      return { mesh: result, collapsed };
-    removeCollapsedFaces(result, remaining);
-    result.merge();
-    const cleaned = _module.Manifold.ofMesh(result);
-    try {
-      if (cleaned.status() !== "NoError" || cleaned.numTri() === 0)
-        throw new AuthoringDiagnosticError("SOLID_FLOAT32_COLLAPSE");
-      const finalMesh = cleaned.getMesh();
-      if (collapsedFaces(finalMesh).length)
-        throw new AuthoringDiagnosticError("SOLID_FLOAT32_COLLAPSE");
-      return { mesh: finalMesh, collapsed };
-    } finally {
-      cleaned.delete();
-    }
-  } finally {
-    rounded.delete();
-  }
-}
-function solidMeshToGeometry({ mesh, collapsed }, opts = {}) {
-  const positions = new Float32Array(mesh.vertProperties.length / mesh.numProp * 3);
-  const uvs = opts.preserveUV && mesh.numProp >= 5 ? new Float32Array(positions.length / 3 * 2) : undefined;
-  for (let i = 0, v = 0;i < mesh.vertProperties.length; i += mesh.numProp, v++) {
-    positions.set(mesh.vertProperties.subarray(i, i + 3), v * 3);
-    if (uvs)
-      uvs.set(mesh.vertProperties.subarray(i + 3, i + 5), v * 2);
-  }
-  const geometry = new THREE26.BufferGeometry;
-  geometry.setAttribute("position", new THREE26.BufferAttribute(positions, 3));
-  geometry.setIndex(new THREE26.BufferAttribute(new Uint32Array(mesh.triVerts), 1));
-  if (uvs)
-    geometry.setAttribute("uv", new THREE26.BufferAttribute(uvs, 2));
-  const out = opts.smooth ? geometry : geometry.toNonIndexed();
-  out.computeVertexNormals();
-  if (opts.smooth && uvs) {
-    const cornerNormals = creaseNormals(out, { angle: 180 }).getAttribute("normal");
-    const normal = out.getAttribute("normal");
-    for (let corner = 0;corner < out.index.count; corner++) {
-      normal.setXYZ(out.index.getX(corner), cornerNormals.getX(corner), cornerNormals.getY(corner), cornerNormals.getZ(corner));
-    }
-  }
-  out.computeBoundingBox();
-  out.computeBoundingSphere();
-  if (collapsed)
-    out.userData.kilnGeometryWarnings = [
-      {
-        code: "SOLID_FLOAT32_CANONICALIZED",
-        message: `Removed ${collapsed} zero-area Float32 faces and rebuilt their topology with Manifold. Source runs and properties were retained; this is precision cleanup, not general mesh repair.`
-      }
-    ];
-  return out;
-}
-function manifoldToGeometry(m, opts = {}) {
-  return solidMeshToGeometry(materializeSolid(m), opts);
-}
-function firstMaterial(src) {
-  let material;
-  src.traverse((child) => {
-    const mesh = child;
-    if (!material && mesh.isMesh)
-      material = Array.isArray(mesh.material) ? mesh.material[0] : mesh.material;
-  });
-  return material ?? new THREE26.MeshStandardMaterial;
-}
-function outputMesh(result, name, parts, opts, context, isHull) {
-  const materialized = materializeSolid(result);
-  const geometry = solidMeshToGeometry(materialized, {
-    smooth: opts.smooth,
-    preserveUV: context.preserve && context.anyUV && !isHull
-  });
-  const native = materialized.mesh, materials = [], sourceRuns = [];
-  if (!isHull)
-    for (let i = 0;i < native.runOriginalID.length; i++) {
-      const source = context.sources.get(native.runOriginalID[i]);
-      const start = native.runIndex[i] / 3, count = (native.runIndex[i + 1] - native.runIndex[i]) / 3;
-      if (!count)
-        continue;
-      const material = source?.material ?? firstMaterial(parts[0]);
-      let materialIndex = context.preserve ? materials.indexOf(material) : 0;
-      if (context.preserve && materialIndex < 0) {
-        materialIndex = materials.length;
-        materials.push(material);
-      }
-      sourceRuns.push({
-        sourceName: source?.name ?? "unknown",
-        start,
-        count,
-        materialIndex,
-        backside: !!((native.runFlags?.[i] ?? 0) & 1)
-      });
-      if (context.preserve)
-        geometry.addGroup(start * 3, count * 3, materialIndex);
-    }
-  const total = (geometry.index?.count ?? geometry.getAttribute("position").count) / 3;
-  geometry.userData.kilnCsgProvenance = {
-    schemaVersion: 1,
-    runs: sourceRuns,
-    faceIds: isHull ? [] : Array.from(native.faceID),
-    unknownTriangles: isHull ? total : sourceRuns.filter((r) => r.sourceName === "unknown").reduce((sum, r) => sum + r.count, 0)
-  };
-  geometry.userData.kilnRanges = sourceRuns.length ? sourceRuns.map((r) => ({
-    name: r.sourceName,
-    start: r.start,
-    count: r.count,
-    certainty: r.sourceName === "unknown" ? "unknown" : "source-run"
-  })) : [{ name: "generated hull", start: 0, count: total, certainty: "unknown" }];
-  const warnings = [];
-  if (context.preserve && context.anyUV && context.missingUV.size)
-    warnings.push({
-      code: "CSG_UV_MISSING",
-      message: `UVs were absent on ${[...context.missingUV].join(", ")}; those surfaces use zero UVs. Unwrap the result if they need a texture.`
-    });
-  if (isHull && context.preserve)
-    warnings.push({
-      code: "HULL_ATTRIBUTES_GENERATED",
-      message: "A convex hull creates new faces. Source UVs and material boundaries cannot be assigned faithfully; output uses the first material and no UVs."
-    });
-  geometry.userData.kilnAttributeWarnings = [...context.attributeWarnings.values(), ...warnings];
-  retainNotes(context.geometryWarnings, geometry.userData.kilnGeometryWarnings);
-  if (context.geometryWarnings.size)
-    geometry.userData.kilnGeometryWarnings = [...context.geometryWarnings.values()];
-  const output = new THREE26.Mesh(geometry, context.preserve && !isHull && materials.length ? materials : firstMaterial(parts[0]));
-  output.name = `Mesh_${name}`;
-  output.position.copy(context.frame.origin);
-  return output;
-}
-function splitPartsAndOpts(items) {
-  const last = items[items.length - 1];
-  if (last && !last.isObject3D)
-    return { parts: items.slice(0, -1), opts: last };
-  return { parts: items, opts: {} };
-}
-async function runBoolean(op, name, parts, opts) {
-  const mod = await getManifoldModule(), context = {
-    preserve: opts.preserveAttributes ?? false,
-    sources: new Map,
-    anyUV: false,
-    missingUV: new Set,
-    frame: computationFrame(parts),
-    attributeWarnings: new Map,
-    geometryWarnings: new Map
-  };
-  const owned = new Set;
-  const track = (m) => {
-    owned.add(m);
-    return m;
-  };
-  try {
-    const operands = parts.map((p, i) => track(threeToManifold(p, mod, op === "boolDiff" ? i === 0 ? "boolDiff body" : `boolDiff cutter ${i}` : op === "boolIntersect" ? `boolIntersect operand ${i === 0 ? "a" : "b"}` : `${op} operand ${i + 1}`, context)));
-    let result;
-    if (op === "boolUnion")
-      result = track(mod.Manifold.union(operands));
-    else if (op === "boolDiff") {
-      const cutters = operands.length === 2 ? operands[1] : track(mod.Manifold.union(operands.slice(1)));
-      result = track(operands[0].subtract(cutters));
-    } else if (op === "boolIntersect")
-      result = track(operands[0].intersect(operands[1]));
-    else
-      result = track(operands.length === 1 ? operands[0].hull() : mod.Manifold.hull(operands));
-    const hint = op === "boolDiff" ? "The cutters removed the entire body — check their size and position, or subtract fewer of them." : op === "boolIntersect" ? "The two operands do not overlap — position them so their volumes actually intersect." : op === "hull" ? "The inputs are coplanar or collinear, so they enclose no volume." : "Every operand was empty after merging.";
-    assertNonEmptyResult(result, op, hint);
-    const scaled = track(result.scale(context.frame.scale));
-    const restored = track(scaled.translate(context.frame.center.toArray()));
-    return outputMesh(restored, name, parts, { ...opts, smooth: opts.smooth ?? op === "hull" }, context, op === "hull");
-  } finally {
-    for (const ownedManifold of owned)
-      ownedManifold.delete();
-  }
-}
-async function boolUnion(name, ...items) {
-  const { parts, opts } = splitPartsAndOpts(items);
-  if (parts.length < 2)
-    throw new Error("boolUnion requires at least two parts");
-  return runBoolean("boolUnion", name, parts, opts);
-}
-async function boolDiff(name, body, ...items) {
-  const { parts, opts } = splitPartsAndOpts(items);
-  if (parts.length < 1)
-    throw new Error("boolDiff requires at least one cutter");
-  return runBoolean("boolDiff", name, [body, ...parts], opts);
-}
-async function boolIntersect(name, a, b, opts = {}) {
-  return runBoolean("boolIntersect", name, [a, b], opts);
-}
-async function hull(name, ...items) {
-  const { parts, opts } = splitPartsAndOpts(items);
-  if (parts.length < 1)
-    throw new Error("hull requires at least one part");
-  return runBoolean("hull", name, parts, opts);
-}
-var _module = null, _initPromise = null;
-var init_solids = __esm(() => {
-  init_geometry();
-  init_authoring_diagnostic();
-});
-
-// src/implicit.ts
-async function implicitSurface(sample, options) {
-  const {
-    bounds,
-    edgeLength,
-    maxCells = 1e6,
-    maxEvaluations = 8000000,
-    level = 0,
-    tolerance = -1,
-    smooth = true
-  } = options;
-  if (bounds?.min.length !== 3 || bounds.max.length !== 3 || ![...bounds.min, ...bounds.max].every(Number.isFinite) || bounds.min.some((v, i) => v >= bounds.max[i]))
-    throw new Error("implicitSurface bounds must be finite and increasing on every axis");
-  if (!Number.isFinite(edgeLength) || edgeLength <= 0)
-    throw new Error("implicitSurface edgeLength must be positive and finite");
-  if (!Number.isSafeInteger(maxCells) || maxCells < 1 || !Number.isSafeInteger(maxEvaluations) || maxEvaluations < 1)
-    throw new Error("implicitSurface maxCells and maxEvaluations must be positive safe integers");
-  if (!Number.isFinite(level) || !Number.isFinite(tolerance) || tolerance !== -1 && tolerance <= 0)
-    throw new Error("implicitSurface level must be finite; tolerance must be -1 or positive");
-  const estimatedGridCells = bounds.min.reduce((product, min, i) => product * Math.ceil((bounds.max[i] - min) / edgeLength), 1);
-  if (!Number.isSafeInteger(estimatedGridCells) || estimatedGridCells > maxCells)
-    throw new Error(`implicitSurface estimated grid ${estimatedGridCells} exceeds maxCells ${maxCells}; increase edgeLength or narrow bounds`);
-  const mod = await getManifoldModule();
-  let evaluations = 0;
-  const solid = mod.Manifold.levelSet((point) => {
-    evaluations++;
-    if (evaluations > maxEvaluations)
-      throw new Error(`implicitSurface exceeded maxEvaluations ${maxEvaluations}`);
-    const value = sample([point[0], point[1], point[2]]);
-    if (!Number.isFinite(value))
-      throw new Error("implicitSurface callback must return a finite number");
-    return value;
-  }, { min: [...bounds.min], max: [...bounds.max] }, edgeLength, level, tolerance);
-  try {
-    if (solid.numTri() === 0)
-      throw new Error("implicitSurface result is empty; the field does not enclose a positive-inside region in these bounds");
-    const out = manifoldToGeometry(solid, { smooth });
-    out.userData.kilnImplicit = {
-      schemaVersion: 1,
-      experimental: true,
-      edgeLength,
-      estimatedGridCells,
-      evaluations,
-      maxCells,
-      maxEvaluations
-    };
-    out.userData.kilnGeometryWarnings = [
-      {
-        code: "EXPERIMENTAL_IMPLICIT_SURFACE",
-        message: "Implicit sampling is resolution-dependent and produces geometry without UVs. Review thin features and bounds; closed topology is not a claim of CAD accuracy."
-      }
-    ];
-    return out;
-  } finally {
-    solid.delete();
-  }
-}
-var init_implicit = __esm(() => {
-  init_solids();
-});
-
-// src/profile.ts
-function assertFiniteProfile(profile, label) {
-  if (!Array.isArray(profile) || profile.length < 3) {
-    throw new Error(`${label}: need at least 3 points to form a closed outline.`);
-  }
-  for (let i = 0;i < profile.length; i++) {
-    const p = profile[i];
-    if (!Array.isArray(p) || p.length < 2 || !Number.isFinite(p[0]) || !Number.isFinite(p[1])) {
-      throw new Error(`${label}: point ${i} is not a finite [x, y] pair (got ${JSON.stringify(p)}).`);
-    }
-  }
-}
-function assertPositive(value, label) {
-  if (!Number.isFinite(value) || value <= 0) {
-    throw new Error(`${label} must be a positive number (got ${value}).`);
-  }
-}
-function orientSweep(geo, axis) {
-  if (axis === "y")
-    geo.rotateX(-Math.PI / 2);
-  else if (axis === "x")
-    geo.rotateY(Math.PI / 2);
-  else if (axis !== "z")
-    throw new Error(`axis must be 'x', 'y', or 'z' (got ${String(axis)}).`);
-  return geo;
-}
-function bevelCrossSection(cs, bevel, style, segments, label) {
-  const join = JOIN_FOR_STYLE[style];
-  if (!join) {
-    throw new Error(`${label}: bevelStyle must be 'round' or 'chamfer' (got ${String(style)}).`);
-  }
-  const eroded = cs.offset(-bevel, join, 2, segments);
-  if (eroded.isEmpty()) {
-    eroded.delete();
-    throw new AuthoringDiagnosticError("PROFILE_BEVEL_COLLAPSE");
-  }
-  const dilated = eroded.offset(2 * bevel, join, 2, segments);
-  const out = dilated.offset(-bevel, join, 2, segments);
-  eroded.delete();
-  dilated.delete();
-  return out;
-}
-function normalizeTaper(taper) {
-  if (taper === undefined)
-    return [1, 1];
-  if (typeof taper === "number") {
-    if (!Number.isFinite(taper) || taper < 0) {
-      throw new Error(`taper must be a finite number >= 0 (got ${taper}).`);
-    }
-    return [taper, taper];
-  }
-  if (!Array.isArray(taper) || taper.length !== 2 || !taper.every((v) => Number.isFinite(v) && v >= 0)) {
-    throw new Error(`taper must be a number or [x, y] pair of numbers >= 0 (got ${JSON.stringify(taper)}).`);
-  }
-  return [taper[0], taper[1]];
-}
-async function extrudeProfile(profile, options = {}) {
-  assertFiniteProfile(profile, "extrudeProfile");
-  const {
-    depth = 1,
-    holes = [],
-    bevel = 0,
-    bevelStyle = "round",
-    segments = 12,
-    twist = 0,
-    taper,
-    divisions,
-    axis = "y",
-    center = true,
-    smooth = false
-  } = options;
-  assertPositive(depth, "extrudeProfile: depth");
-  if (bevel < 0)
-    throw new Error(`extrudeProfile: bevel must be >= 0 (got ${bevel}).`);
-  for (let i = 0;i < holes.length; i++) {
-    assertFiniteProfile(holes[i], `extrudeProfile: holes[${i}]`);
-  }
-  const mod = await getManifoldModule();
-  const { CrossSection: CS } = mod;
-  const disposable = [];
-  const track = (cs) => {
-    disposable.push(cs);
-    return cs;
-  };
-  try {
-    let section = track(new CS([profile], "NonZero"));
-    if (holes.length > 0) {
-      const holeSections = holes.map((h) => track(new CS([h], "NonZero")));
-      section = track(CS.difference(section, CS.union(holeSections)));
-      if (section.isEmpty()) {
-        throw new Error("extrudeProfile: the holes consume the whole profile — nothing left to extrude.");
-      }
-    }
-    if (bevel > 0) {
-      section = track(bevelCrossSection(section, bevel, bevelStyle, segments, "extrudeProfile"));
-    }
-    const nDivisions = divisions ?? (twist !== 0 ? 16 : 1);
-    const solid = section.extrude(depth, nDivisions, twist, normalizeTaper(taper), center);
-    try {
-      return orientSweep(manifoldToGeometry(solid, { smooth }), axis);
-    } finally {
-      solid.delete();
-    }
-  } finally {
-    for (const cs of disposable)
-      cs.delete();
-  }
-}
-async function revolveProfile(profile, options = {}) {
-  assertFiniteProfile(profile, "revolveProfile");
-  const {
-    segments = 24,
-    angle = 360,
-    bevel = 0,
-    bevelStyle = "round",
-    bevelSegments = 12,
-    axis = "y",
-    smooth = true
-  } = options;
-  if (bevel < 0)
-    throw new Error(`revolveProfile: bevel must be >= 0 (got ${bevel}).`);
-  if (!Number.isFinite(angle) || angle <= 0 || angle > 360) {
-    throw new Error(`revolveProfile: angle must be in (0, 360] degrees (got ${angle}).`);
-  }
-  const mod = await getManifoldModule();
-  const { CrossSection: CS } = mod;
-  const disposable = [];
-  try {
-    let section = new CS([profile], "NonZero");
-    disposable.push(section);
-    if (bevel > 0) {
-      section = bevelCrossSection(section, bevel, bevelStyle, bevelSegments, "revolveProfile");
-      disposable.push(section);
-    }
-    const solid = section.revolve(segments, angle);
-    try {
-      return orientSweep(manifoldToGeometry(solid, { smooth }), axis);
-    } finally {
-      solid.delete();
-    }
-  } finally {
-    for (const cs of disposable)
-      cs.delete();
-  }
-}
-async function roundedBoxGeo(width, height, depth, radius, options = {}) {
-  assertPositive(width, "roundedBoxGeo: width");
-  assertPositive(height, "roundedBoxGeo: height");
-  assertPositive(depth, "roundedBoxGeo: depth");
-  assertPositive(radius, "roundedBoxGeo: radius");
-  const { style = "round", segments = 12, smooth } = options;
-  const smallest = Math.min(width, height, depth);
-  if (radius >= smallest / 2) {
-    throw new AuthoringDiagnosticError("ROUNDED_BOX_RADIUS");
-  }
-  const mod = await getManifoldModule();
-  const ManifoldCls = mod.Manifold;
-  const parts = [];
-  try {
-    let solid;
-    if (style === "round") {
-      const corners = [];
-      for (const sx of [-1, 1]) {
-        for (const sy of [-1, 1]) {
-          for (const sz of [-1, 1]) {
-            const s = ManifoldCls.sphere(radius, segments).translate([
-              sx * (width - 2 * radius) / 2,
-              sy * (height - 2 * radius) / 2,
-              sz * (depth - 2 * radius) / 2
-            ]);
-            parts.push(s);
-            corners.push(s);
-          }
-        }
-      }
-      solid = ManifoldCls.hull(corners);
-    } else if (style === "chamfer") {
-      const boxes = [
-        ManifoldCls.cube([width, height - 2 * radius, depth - 2 * radius], true),
-        ManifoldCls.cube([width - 2 * radius, height, depth - 2 * radius], true),
-        ManifoldCls.cube([width - 2 * radius, height - 2 * radius, depth], true)
-      ];
-      parts.push(...boxes);
-      solid = ManifoldCls.hull(boxes);
-    } else {
-      throw new Error(`roundedBoxGeo: style must be 'round' or 'chamfer' (got ${String(style)}).`);
-    }
-    try {
-      return manifoldToGeometry(solid, { smooth: smooth ?? style === "round" });
-    } finally {
-      solid.delete();
-    }
-  } finally {
-    for (const p of parts)
-      p.delete();
-  }
-}
-function circleProfile(radius, segments = 24, center = [0, 0]) {
-  assertPositive(radius, "circleProfile: radius");
-  if (!Number.isInteger(segments) || segments < 3) {
-    throw new Error(`circleProfile: segments must be an integer >= 3 (got ${segments}).`);
-  }
-  const out = [];
-  for (let i = 0;i < segments; i++) {
-    const t = i / segments * Math.PI * 2;
-    out.push([center[0] + Math.cos(t) * radius, center[1] + Math.sin(t) * radius]);
-  }
-  return out;
-}
-var JOIN_FOR_STYLE;
-var init_profile = __esm(() => {
-  init_solids();
-  init_authoring_diagnostic();
-  JOIN_FOR_STYLE = {
-    round: "Round",
-    chamfer: "Square"
-  };
-});
-
-// src/textures.ts
-import * as THREE27 from "three";
-async function loadTexture(source, opts = {}) {
-  let bytes;
-  if (typeof source === "string") {
-    const fs = await import("node:fs");
-    const path = await import("node:path");
-    const abs = path.isAbsolute(source) ? source : path.resolve(source);
-    bytes = new Uint8Array(fs.readFileSync(abs));
-  } else if (typeof Buffer !== "undefined" && Buffer.isBuffer(source)) {
-    bytes = new Uint8Array(source);
-  } else {
-    bytes = source;
-  }
-  const mime = sniffMime(bytes);
-  const sharp = (await import("sharp")).default;
-  const img = sharp(bytes);
-  const meta = await img.metadata();
-  const { data } = await img.ensureAlpha().raw({ depth: "uchar" }).toBuffer({ resolveWithObject: true });
-  if (!meta.width || !meta.height) {
-    throw new Error("loadTexture: could not read image dimensions");
-  }
-  const tex = new THREE27.DataTexture(new Uint8Array(data), meta.width, meta.height, THREE27.RGBAFormat, THREE27.UnsignedByteType);
-  const usage = opts.usage ?? "albedo";
-  const colorSpace = usage === "albedo" || usage === "emissive" ? "srgb" : "linear";
-  let hasAlpha = false;
-  for (let offset = 3;offset < data.length; offset += 4) {
-    if ((data[offset] ?? 255) < 255) {
-      hasAlpha = true;
-      break;
-    }
-  }
-  tex.colorSpace = colorSpace === "srgb" ? THREE27.SRGBColorSpace : THREE27.NoColorSpace;
-  if (opts.name)
-    tex.name = opts.name;
-  tex.needsUpdate = true;
-  tex.wrapS = THREE27.RepeatWrapping;
-  tex.wrapT = THREE27.RepeatWrapping;
-  tex.minFilter = THREE27.LinearMipmapLinearFilter;
-  tex.magFilter = THREE27.LinearFilter;
-  tex.generateMipmaps = true;
-  tex.userData["encoded"] = {
-    mime,
-    bytes
-  };
-  tex.userData["kilnTexture"] = {
-    usage,
-    colorSpace,
-    width: meta.width,
-    height: meta.height,
-    hasAlpha
-  };
-  return tex;
-}
-function sniffMime(bytes) {
-  if (bytes[0] === 137 && bytes[1] === 80 && bytes[2] === 78 && bytes[3] === 71) {
-    return "image/png";
-  }
-  if (bytes[0] === 255 && bytes[1] === 216 && bytes[2] === 255) {
-    return "image/jpeg";
-  }
-  if (bytes[0] === 82 && bytes[1] === 73 && bytes[2] === 70 && bytes[3] === 70 && bytes[8] === 87 && bytes[9] === 69 && bytes[10] === 66 && bytes[11] === 80) {
-    return "image/webp";
-  }
-  return "image/png";
-}
-function textureMetadata(texture) {
-  return texture.userData["kilnTexture"];
-}
-function requireTextureUsage(texture, usage) {
-  const meta = textureMetadata(texture);
-  if (meta && meta.usage !== usage) {
-    throw new TypeError(`Texture ${JSON.stringify(texture.name || "(unnamed)")} was loaded for ${meta.usage}, not ${usage}.`);
-  }
-  texture.colorSpace = usage === "albedo" || usage === "emissive" ? THREE27.SRGBColorSpace : THREE27.NoColorSpace;
-}
-function pbrMaterial(opts = {}) {
-  const mat = new THREE27.MeshStandardMaterial;
-  const isTex = (v) => !!v?.isTexture;
-  if (isTex(opts.albedo)) {
-    requireTextureUsage(opts.albedo, "albedo");
-    mat.map = opts.albedo;
-    mat.color = new THREE27.Color(16777215);
-  } else if (opts.albedo !== undefined) {
-    mat.color = new THREE27.Color(opts.albedo);
-  }
-  if (opts.normal) {
-    requireTextureUsage(opts.normal, "normal");
-    mat.normalMap = opts.normal;
-  }
-  const roughnessTexture = isTex(opts.roughness) ? opts.roughness : undefined;
-  const metalnessTexture = isTex(opts.metalness) ? opts.metalness : undefined;
-  if (opts.metallicRoughness && (roughnessTexture || metalnessTexture)) {
-    throw new AuthoringDiagnosticError("MATERIAL_PACKED_CHANNELS", "Use metallicRoughness for the packed G/B map; do not also pass texture-valued roughness/metalness.");
-  }
-  if (roughnessTexture && metalnessTexture && roughnessTexture !== metalnessTexture) {
-    throw new AuthoringDiagnosticError("MATERIAL_PACKED_CHANNELS", "Separate roughness and metalness textures are ambiguous in glTF. Pack G=roughness/B=metalness and pass metallicRoughness.");
-  }
-  if (roughnessTexture && !metalnessTexture || !roughnessTexture && metalnessTexture) {
-    throw new AuthoringDiagnosticError("MATERIAL_PACKED_CHANNELS", "A texture-valued roughness or metalness must be the same packed G/B texture in both slots, or use metallicRoughness.");
-  }
-  const packedMr = opts.metallicRoughness ?? roughnessTexture;
-  if (packedMr) {
-    requireTextureUsage(packedMr, "metallicRoughness");
-    mat.roughnessMap = packedMr;
-    mat.metalnessMap = packedMr;
-  }
-  if (typeof opts.roughness === "number") {
-    mat.roughness = opts.roughness;
-  } else if (packedMr) {
-    mat.roughness = 1;
-  } else {
-    mat.roughness = 0.8;
-  }
-  if (typeof opts.metalness === "number") {
-    mat.metalness = opts.metalness;
-  } else if (packedMr) {
-    mat.metalness = 1;
-  }
-  if (isTex(opts.emissive)) {
-    requireTextureUsage(opts.emissive, "emissive");
-    mat.emissiveMap = opts.emissive;
-    mat.emissive = new THREE27.Color(16777215);
-  } else if (opts.emissive !== undefined) {
-    mat.emissive = new THREE27.Color(opts.emissive);
-  }
-  if (opts.emissiveIntensity !== undefined) {
-    mat.emissiveIntensity = opts.emissiveIntensity;
-  }
-  if (opts.aoMap) {
-    requireTextureUsage(opts.aoMap, "occlusion");
-    mat.aoMap = opts.aoMap;
-  }
-  if (opts.aoMapIntensity !== undefined)
-    mat.aoMapIntensity = opts.aoMapIntensity;
-  const alphaMode = opts.alphaMode ?? "opaque";
-  if (alphaMode !== "opaque" && alphaMode !== "mask" && alphaMode !== "blend") {
-    throw new AuthoringDiagnosticError("MATERIAL_ALPHA_MODE", 'alphaMode must be one of "opaque", "mask", or "blend".');
-  }
-  if (opts.doubleSided !== undefined && typeof opts.doubleSided !== "boolean") {
-    throw new TypeError("doubleSided must be a boolean when provided.");
-  }
-  if (opts.alphaCutoff !== undefined && alphaMode !== "mask") {
-    throw new TypeError('alphaCutoff is valid only when alphaMode is "mask".');
-  }
-  if (opts.alphaCutoff !== undefined && (!Number.isFinite(opts.alphaCutoff) || opts.alphaCutoff < 0 || opts.alphaCutoff > 1)) {
-    throw new RangeError("alphaCutoff must be a finite number in [0,1].");
-  }
-  if (alphaMode === "mask") {
-    mat.alphaTest = opts.alphaCutoff ?? 0.5;
-    mat.transparent = false;
-  } else if (alphaMode === "blend") {
-    mat.alphaTest = 0;
-    mat.transparent = true;
-  }
-  if (opts.doubleSided)
-    mat.side = THREE27.DoubleSide;
-  mat.userData["kilnMaterial"] = {
-    alphaMode,
-    ...alphaMode === "mask" ? { alphaCutoff: mat.alphaTest } : {},
-    doubleSided: opts.doubleSided === true
-  };
-  return mat;
-}
-function foliageMaterial(albedo, opts = {}) {
-  return pbrMaterial({
-    albedo,
-    roughness: opts.roughness ?? 0.9,
-    metalness: 0,
-    alphaMode: "mask",
-    alphaCutoff: opts.alphaCutoff ?? 0.5,
-    doubleSided: opts.doubleSided ?? true
-  });
-}
+// src/texture-contract.ts
 var TEXTURE_USAGES;
-var init_textures = __esm(() => {
-  init_authoring_diagnostic();
+var init_texture_contract = __esm(() => {
   TEXTURE_USAGES = [
     "albedo",
     "emissive",
@@ -16062,16 +11404,16 @@ function canonicalizeProceduralTextureSpecV2(input) {
     layers: layers.map(canonicalLayer)
   };
 }
-function canonicalJson2(value) {
+function canonicalJson(value) {
   if (value === null || typeof value !== "object")
     return JSON.stringify(value);
   if (Array.isArray(value))
-    return `[${value.map(canonicalJson2).join(",")}]`;
+    return `[${value.map(canonicalJson).join(",")}]`;
   const record = value;
-  return `{${Object.keys(record).sort().map((key) => `${JSON.stringify(key)}:${canonicalJson2(record[key])}`).join(",")}}`;
+  return `{${Object.keys(record).sort().map((key) => `${JSON.stringify(key)}:${canonicalJson(record[key])}`).join(",")}}`;
 }
 function canonicalProceduralTextureJsonV2(input) {
-  return canonicalJson2(canonicalizeProceduralTextureSpecV2(input));
+  return canonicalJson(canonicalizeProceduralTextureSpecV2(input));
 }
 function sha256Hex(text) {
   const source = new TextEncoder().encode(text);
@@ -16225,7 +11567,7 @@ function canonicalizePortableMaterialSpecV2(input) {
 }
 var MAX_PROCEDURAL_SIZE = 1024, MIN_PROCEDURAL_SIZE = 4, MAX_PROCEDURAL_LAYERS = 8, MAX_NOISE_OCTAVES = 6, MAX_PROCEDURAL_NAME_LENGTH = 80, MAX_PROCEDURAL_PATTERN_COUNT = 256, MAX_PORTABLE_MATERIAL_TEXTURES = 5, MAX_PORTABLE_MATERIAL_TEXELS, ProceduralTextureError, OPS, BLENDS, FORBIDDEN_KEYS, SHA256_K, rotateRight = (value, bits) => value >>> bits | value << 32 - bits, MATERIAL_TEXTURE_USAGE;
 var init_procedural_material_v2 = __esm(() => {
-  init_textures();
+  init_texture_contract();
   init_authoring_diagnostic();
   MAX_PORTABLE_MATERIAL_TEXELS = 4 * 1024 * 1024;
   ProceduralTextureError = class ProceduralTextureError extends AuthoringDiagnosticError {
@@ -16312,8 +11654,345 @@ var init_procedural_material_v2 = __esm(() => {
   };
 });
 
+// src/material-library.ts
+import { z as z3 } from "zod";
+function assertMaterialJson(value, allowBytes = false, depth = 0) {
+  if (depth > 30)
+    throw new Error("Material JSON exceeds nesting limit");
+  if (value === null || typeof value === "string" || typeof value === "boolean")
+    return;
+  if (typeof value === "number" && Number.isFinite(value))
+    return;
+  if (allowBytes && value instanceof Uint8Array)
+    return;
+  if (!value || typeof value !== "object")
+    throw new Error("Material values must be plain JSON data");
+  const array = Array.isArray(value);
+  const prototype = Object.getPrototypeOf(value);
+  if (array ? prototype !== Array.prototype : prototype !== Object.prototype && prototype !== null)
+    throw new Error("Material values must have plain JSON prototypes");
+  if (array && value.length > 1e4)
+    throw new Error("Material JSON array exceeds limit");
+  for (const key of Reflect.ownKeys(value)) {
+    if (array && key === "length")
+      continue;
+    if (typeof key !== "string" || ["__proto__", "prototype", "constructor"].includes(key))
+      throw new Error("Material JSON contains a forbidden key");
+    if (array && (!/^(0|[1-9][0-9]*)$/.test(key) || Number(key) >= value.length))
+      throw new Error("Material arrays must contain only indexed data");
+    const descriptor = Object.getOwnPropertyDescriptor(value, key);
+    if (!("value" in descriptor) || !descriptor.enumerable)
+      throw new Error("Material JSON accessors or hidden fields are not allowed");
+    assertMaterialJson(descriptor.value, allowBytes, depth + 1);
+  }
+  if (array && Object.keys(value).length !== value.length)
+    throw new Error("Material JSON arrays must be dense");
+}
+function canonicalMaterialJson(value) {
+  assertMaterialJson(value);
+  const canonical = (entry) => Array.isArray(entry) ? entry.map(canonical) : entry !== null && typeof entry === "object" ? Object.fromEntries(Object.entries(entry).sort(([a], [b]) => a < b ? -1 : a > b ? 1 : 0).map(([key, child]) => [key, canonical(child)])) : entry;
+  return JSON.stringify(canonical(value));
+}
+function validateMaterialManifest(value) {
+  assertMaterialJson(value);
+  if (new TextEncoder().encode(JSON.stringify(value)).length > MATERIAL_LIBRARY_LIMITS.maxManifestBytes)
+    throw new Error("Material manifest exceeds size limit");
+  const manifest = materialManifestSchema.parse(value);
+  if (new Set(manifest.sources.map((source) => source.id)).size !== manifest.sources.length)
+    throw new Error("Duplicate material source identity");
+  if (new Set(manifest.maps.map((map) => map.slot)).size !== manifest.maps.length)
+    throw new Error("Duplicate material map slot");
+  let bytes = 0;
+  let pixels = 0;
+  for (const map of manifest.maps) {
+    const srgb = map.slot === "baseColor" || map.slot === "emissive";
+    if (map.file !== `${map.slot}.png` || map.usage !== MATERIAL_LIBRARY_USAGE[map.slot] || map.colorSpace !== (srgb ? "srgb" : "linear"))
+      throw new Error("Material map filename, usage or color convention mismatch");
+    if (map.slot === "normal" !== (map.normalConvention === "opengl") || map.slot === "metallicRoughness" !== (map.channelPacking === "r-occlusion-g-roughness-b-metallic"))
+      throw new Error("Material map convention is missing or invalid");
+    const source = manifest.sources.find((item) => item.id === map.sourceId);
+    if (!source)
+      throw new Error("Material map source is missing");
+    if (map.procedural) {
+      if (map.procedural.derive && map.slot !== "normal")
+        throw new Error("Height derivation requires a normal map slot");
+      if (canonicalMaterialJson(map.procedural.spec) !== canonicalMaterialJson(canonicalizeProceduralTextureSpecV2(map.procedural.spec)))
+        throw new Error("Stored procedural material recipe must be canonical");
+      if (source.kind !== "procedural" || map.originalFile || map.procedural.spec.usage !== map.usage || map.procedural.spec.size !== map.width || map.width !== map.height)
+        throw new Error("Procedural material source or map convention mismatch");
+    } else if (source.kind !== "external" || !source.originalFiles.some((file) => file.name === map.originalFile)) {
+      throw new Error("Material map must reference an original source file");
+    }
+    bytes += map.bytes;
+    pixels += map.width * map.height;
+  }
+  if (bytes > MATERIAL_LIBRARY_LIMITS.maxRecordBytes || pixels > MATERIAL_LIBRARY_LIMITS.maxRecordPixels)
+    throw new Error("Material record exceeds byte or pixel budget");
+  return manifest;
+}
+function materialPngDimensions(bytes) {
+  if (bytes.length < 24 || ![137, 80, 78, 71, 13, 10, 26, 10].every((n, i) => bytes[i] === n) || String.fromCharCode(...bytes.subarray(12, 16)) !== "IHDR")
+    throw new Error("Material map must be a PNG");
+  const view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
+  return { width: view.getUint32(16), height: view.getUint32(20) };
+}
+function validateMaterialRecordShape(record) {
+  assertMaterialJson(record, true);
+  if (Object.keys(record).some((key) => key !== "manifest" && key !== "files"))
+    throw new Error("Invalid material record");
+  const manifest = validateMaterialManifest(record.manifest);
+  if (!record.files || Object.keys(record.files).length !== manifest.maps.length)
+    throw new Error("Material file inventory mismatch");
+  for (const map of manifest.maps) {
+    const bytes = record.files[map.file];
+    if (!(bytes instanceof Uint8Array) || bytes.length !== map.bytes)
+      throw new Error("Material file inventory mismatch");
+    const size = materialPngDimensions(bytes);
+    if (size.width !== map.width || size.height !== map.height)
+      throw new Error("Material map dimensions mismatch");
+  }
+  return manifest;
+}
+function materialLibraryResourceId(manifest, slot) {
+  materialLibraryHashSchema.parse(manifest.revisionId);
+  if (!MATERIAL_LIBRARY_SLOTS.includes(slot))
+    throw new Error("Unknown material slot");
+  return `kiln.library.${manifest.revisionId.slice(7)}.${slotNames[slot]}`;
+}
+function materialLibraryPortableSpec(manifest) {
+  manifest = validateMaterialManifest(manifest);
+  return {
+    schemaVersion: 2,
+    model: "pbrMetallicRoughness",
+    name: manifest.name,
+    ...manifest.parameters,
+    textures: Object.fromEntries(manifest.maps.map((map) => [
+      map.slot,
+      { kind: "resource", resourceId: materialLibraryResourceId(manifest, map.slot) }
+    ]))
+  };
+}
+var MATERIAL_LIBRARY_LIMITS, MATERIAL_LIBRARY_SLOTS, MATERIAL_LIBRARY_USAGE, slotNames, materialLibraryIdSchema, materialLibraryHashSchema, text3, url, materialSourceSchema, materialTransformSchema, color2, count2, layerCommon, materialProceduralSpecSchema, materialNormalDerivationSchema, proceduralSchema, parametersSchema, materialManifestSchema, proceduralMaterialDraftSchema, materialLibraryPayloadSchema;
+var init_material_library = __esm(() => {
+  init_procedural_material_v2();
+  MATERIAL_LIBRARY_LIMITS = Object.freeze({
+    maxMapBytes: 8 * 1024 * 1024,
+    maxRecordBytes: 32 * 1024 * 1024,
+    maxManifestBytes: 256 * 1024,
+    maxMapEdge: 4096,
+    maxRecordPixels: 8 * 1024 * 1024,
+    maxPayloadBytes: 16 * 1024 * 1024,
+    maxPayloadPixels: 16 * 1024 * 1024,
+    maxPayloadRecords: 16
+  });
+  MATERIAL_LIBRARY_SLOTS = [
+    "baseColor",
+    "normal",
+    "metallicRoughness",
+    "emissive",
+    "occlusion"
+  ];
+  MATERIAL_LIBRARY_USAGE = {
+    baseColor: "albedo",
+    normal: "normal",
+    metallicRoughness: "metallicRoughness",
+    emissive: "emissive",
+    occlusion: "occlusion"
+  };
+  slotNames = {
+    baseColor: "base-color",
+    normal: "normal",
+    metallicRoughness: "metallic-roughness",
+    emissive: "emissive",
+    occlusion: "occlusion"
+  };
+  materialLibraryIdSchema = z3.string().regex(/^[a-z][a-z0-9_-]{0,79}$/);
+  materialLibraryHashSchema = z3.string().regex(/^sha256:[a-f0-9]{64}$/);
+  text3 = z3.string().min(1).max(1000);
+  url = z3.string().max(2000).url().refine((value) => /^https?:\/\//.test(value), "Provenance URL must be HTTP(S)");
+  materialSourceSchema = z3.object({
+    id: materialLibraryIdSchema,
+    kind: z3.enum(["external", "procedural"]),
+    provider: text3,
+    creator: text3,
+    assetId: text3.optional(),
+    assetUrl: url.optional(),
+    accessedAt: z3.string().datetime().optional(),
+    license: z3.object({ spdx: text3, url, attribution: z3.string().max(4000) }).strict(),
+    originalFiles: z3.array(z3.object({
+      name: z3.string().min(1).max(200),
+      sha256: materialLibraryHashSchema,
+      bytes: z3.number().int().positive().max(1024 * 1024 * 1024)
+    }).strict()).max(20)
+  }).strict().superRefine((source, context) => {
+    if (source.kind === "external" && (!source.assetUrl || !source.originalFiles.length))
+      context.addIssue({
+        code: "custom",
+        message: "External materials require a source URL and original file hashes"
+      });
+    if (new Set(source.originalFiles.map((file) => file.name)).size !== source.originalFiles.length)
+      context.addIssue({ code: "custom", message: "Duplicate original filename" });
+  });
+  materialTransformSchema = z3.object({
+    operation: text3,
+    tool: text3,
+    version: text3,
+    parameters: z3.record(z3.string().max(100), z3.union([z3.string().max(2000), z3.number().finite(), z3.boolean()])).optional()
+  }).strict();
+  color2 = z3.number().int().min(0).max(16777215);
+  count2 = z3.number().int().min(1).max(256);
+  layerCommon = {
+    blend: z3.enum(["normal", "multiply", "screen", "overlay"]).default("normal"),
+    opacity: z3.number().min(0).max(1).default(1)
+  };
+  materialProceduralSpecSchema = z3.object({
+    schemaVersion: z3.literal(2),
+    size: z3.number().int().min(4).max(1024).default(256),
+    usage: z3.enum([
+      "albedo",
+      "normal",
+      "roughness",
+      "metalness",
+      "metallicRoughness",
+      "emissive",
+      "occlusion"
+    ]).default("albedo"),
+    name: z3.string().min(1).max(80).optional(),
+    layers: z3.array(z3.discriminatedUnion("op", [
+      z3.object({ op: z3.literal("solid"), color: color2, ...layerCommon }).strict(),
+      z3.object({
+        op: z3.literal("checker"),
+        colorA: color2,
+        colorB: color2,
+        squares: count2.default(8),
+        ...layerCommon
+      }).strict(),
+      z3.object({
+        op: z3.literal("stripes"),
+        colorA: color2,
+        colorB: color2,
+        count: count2.default(8),
+        angleDeg: z3.number().min(-36000).max(36000).default(0),
+        ...layerCommon
+      }).strict(),
+      z3.object({
+        op: z3.literal("gradient"),
+        from: color2,
+        to: color2,
+        angleDeg: z3.number().min(-36000).max(36000).default(0),
+        ...layerCommon
+      }).strict(),
+      z3.object({
+        op: z3.literal("bricks"),
+        brick: color2,
+        mortar: color2,
+        rows: count2.default(8),
+        cols: count2.default(4),
+        mortarWidth: z3.number().min(0).max(1).default(0.06),
+        stagger: z3.number().min(0).max(1).default(0.5),
+        ...layerCommon
+      }).strict(),
+      z3.object({
+        op: z3.literal("noise"),
+        colorA: color2,
+        colorB: color2,
+        scale: count2.default(8),
+        octaves: z3.number().int().min(1).max(6).default(3),
+        seed: z3.number().int().min(-2147483648).max(2147483647).default(0),
+        ...layerCommon
+      }).strict()
+    ])).min(1).max(8)
+  }).strict();
+  materialNormalDerivationSchema = z3.object({
+    kind: z3.literal("normal-from-height"),
+    strength: z3.number().finite().positive().max(64)
+  }).strict();
+  proceduralSchema = z3.object({
+    compiler: z3.literal("kiln.procedural-texture.v2"),
+    spec: materialProceduralSpecSchema,
+    derive: materialNormalDerivationSchema.optional(),
+    recipeHash: materialLibraryHashSchema,
+    pixelHash: materialLibraryHashSchema,
+    encoder: z3.object({ name: z3.literal("sharp"), version: text3 }).strict()
+  }).strict();
+  parametersSchema = z3.object({
+    baseColor: z3.number().int().min(0).max(16777215).optional(),
+    roughness: z3.number().min(0).max(1).default(1),
+    metalness: z3.number().min(0).max(1).default(0),
+    emissive: z3.number().int().min(0).max(16777215).optional(),
+    emissiveIntensity: z3.number().min(0).max(64).default(1),
+    alphaMode: z3.enum(["opaque", "mask", "blend"]).default("opaque"),
+    alphaCutoff: z3.number().min(0).max(1).default(0.5),
+    doubleSided: z3.boolean().default(false)
+  }).strict();
+  materialManifestSchema = z3.object({
+    schemaVersion: z3.literal(1),
+    materialId: materialLibraryIdSchema,
+    revisionId: materialLibraryHashSchema,
+    name: z3.string().min(1).max(200),
+    tags: z3.array(z3.string().min(1).max(80)).max(30),
+    tileable: z3.boolean(),
+    physicalSizeMeters: z3.object({
+      width: z3.number().finite().positive().max(1e5),
+      height: z3.number().finite().positive().max(1e5)
+    }).strict().optional(),
+    parameters: parametersSchema,
+    sources: z3.array(materialSourceSchema).min(1).max(20),
+    maps: z3.array(z3.object({
+      slot: z3.enum(MATERIAL_LIBRARY_SLOTS),
+      file: z3.enum([
+        "baseColor.png",
+        "normal.png",
+        "metallicRoughness.png",
+        "emissive.png",
+        "occlusion.png"
+      ]),
+      sha256: materialLibraryHashSchema,
+      bytes: z3.number().int().positive().max(MATERIAL_LIBRARY_LIMITS.maxMapBytes),
+      width: z3.number().int().positive().max(MATERIAL_LIBRARY_LIMITS.maxMapEdge),
+      height: z3.number().int().positive().max(MATERIAL_LIBRARY_LIMITS.maxMapEdge),
+      usage: z3.enum(["albedo", "normal", "metallicRoughness", "emissive", "occlusion"]),
+      colorSpace: z3.enum(["srgb", "linear"]),
+      normalConvention: z3.literal("opengl").optional(),
+      channelPacking: z3.literal("r-occlusion-g-roughness-b-metallic").optional(),
+      sourceId: materialLibraryIdSchema,
+      originalFile: z3.string().min(1).max(200).optional(),
+      transforms: z3.array(materialTransformSchema).max(30),
+      procedural: proceduralSchema.optional()
+    }).strict()).min(1).max(5)
+  }).strict();
+  proceduralMaterialDraftSchema = z3.object({
+    materialId: materialLibraryIdSchema,
+    name: z3.string().min(1).max(200),
+    tags: z3.array(z3.string().min(1).max(80)).max(30).optional(),
+    tileable: z3.boolean(),
+    physicalSizeMeters: z3.object({
+      width: z3.number().finite().positive().max(1e5),
+      height: z3.number().finite().positive().max(1e5)
+    }).strict().optional(),
+    parameters: parametersSchema.partial().optional(),
+    sources: z3.array(materialSourceSchema).min(1).max(20),
+    maps: z3.array(z3.object({
+      slot: z3.enum(MATERIAL_LIBRARY_SLOTS),
+      sourceId: materialLibraryIdSchema,
+      transforms: z3.array(materialTransformSchema).max(30),
+      normalConvention: z3.literal("opengl").optional(),
+      channelPacking: z3.literal("r-occlusion-g-roughness-b-metallic").optional(),
+      procedural: materialProceduralSpecSchema,
+      derive: materialNormalDerivationSchema.optional()
+    }).strict()).min(1).max(5)
+  }).strict();
+  materialLibraryPayloadSchema = z3.object({
+    schemaVersion: z3.literal(1),
+    records: z3.array(z3.object({
+      manifest: materialManifestSchema,
+      files: z3.record(z3.string().regex(/^(baseColor|normal|metallicRoughness|emissive|occlusion)\.png$/), z3.string().max(Math.ceil(MATERIAL_LIBRARY_LIMITS.maxMapBytes / 3) * 4))
+    }).strict()).max(MATERIAL_LIBRARY_LIMITS.maxPayloadRecords)
+  }).strict();
+});
+
 // src/procedural-texture.ts
-import * as THREE28 from "three";
+import * as THREE15 from "three";
 function hash2(x, y, seed) {
   let h = Math.imul(x, 374761393) + Math.imul(y, 668265263) + Math.imul(seed, 1274126177) | 0;
   h = h ^ h >>> 13;
@@ -16454,14 +12133,14 @@ function compileProceduralTextureSpecV2(input) {
 function proceduralTexture(spec) {
   const compiled = compileProceduralTextureSpecV2(spec);
   const { size, usage, name, layers } = compiled.spec;
-  const tex = new THREE28.DataTexture(compiled.pixels, size, size, THREE28.RGBAFormat, THREE28.UnsignedByteType);
+  const tex = new THREE15.DataTexture(compiled.pixels, size, size, THREE15.RGBAFormat, THREE15.UnsignedByteType);
   if (name)
     tex.name = name;
-  tex.colorSpace = usage === "albedo" || usage === "emissive" ? THREE28.SRGBColorSpace : THREE28.NoColorSpace;
-  tex.wrapS = THREE28.RepeatWrapping;
-  tex.wrapT = THREE28.RepeatWrapping;
-  tex.minFilter = THREE28.LinearMipmapLinearFilter;
-  tex.magFilter = THREE28.LinearFilter;
+  tex.colorSpace = usage === "albedo" || usage === "emissive" ? THREE15.SRGBColorSpace : THREE15.NoColorSpace;
+  tex.wrapS = THREE15.RepeatWrapping;
+  tex.wrapT = THREE15.RepeatWrapping;
+  tex.minFilter = THREE15.LinearMipmapLinearFilter;
+  tex.magFilter = THREE15.LinearFilter;
   tex.generateMipmaps = true;
   tex.needsUpdate = true;
   tex.userData["kilnProcedural"] = {
@@ -16515,13 +12194,13 @@ function normalMapFromHeight(source, opts = {}) {
       out[o + 3] = 255;
     }
   }
-  const tex = new THREE28.DataTexture(out, width, height, THREE28.RGBAFormat, THREE28.UnsignedByteType);
+  const tex = new THREE15.DataTexture(out, width, height, THREE15.RGBAFormat, THREE15.UnsignedByteType);
   tex.name = opts.name ?? (source.name ? `${source.name}_Normal` : "");
-  tex.colorSpace = THREE28.NoColorSpace;
-  tex.wrapS = THREE28.RepeatWrapping;
-  tex.wrapT = THREE28.RepeatWrapping;
-  tex.minFilter = THREE28.LinearMipmapLinearFilter;
-  tex.magFilter = THREE28.LinearFilter;
+  tex.colorSpace = THREE15.NoColorSpace;
+  tex.wrapS = THREE15.RepeatWrapping;
+  tex.wrapT = THREE15.RepeatWrapping;
+  tex.minFilter = THREE15.LinearMipmapLinearFilter;
+  tex.magFilter = THREE15.LinearFilter;
   tex.generateMipmaps = true;
   tex.needsUpdate = true;
   return tex;
@@ -16534,6 +12213,185 @@ var smoothstep = (t) => t * t * (3 - 2 * t), rgbOf = (color) => [
 var init_procedural_texture = __esm(() => {
   init_procedural_material_v2();
   init_procedural_material_v2();
+});
+
+// src/textures.ts
+import * as THREE16 from "three";
+async function loadTexture(source, opts = {}) {
+  let bytes;
+  if (typeof source === "string") {
+    const fs = await import("node:fs");
+    const path = await import("node:path");
+    const abs = path.isAbsolute(source) ? source : path.resolve(source);
+    bytes = new Uint8Array(fs.readFileSync(abs));
+  } else if (typeof Buffer !== "undefined" && Buffer.isBuffer(source)) {
+    bytes = new Uint8Array(source);
+  } else {
+    bytes = source;
+  }
+  const mime = sniffMime(bytes);
+  const sharp = (await import("sharp")).default;
+  const img = sharp(bytes);
+  const meta = await img.metadata();
+  const { data } = await img.ensureAlpha().raw({ depth: "uchar" }).toBuffer({ resolveWithObject: true });
+  if (!meta.width || !meta.height) {
+    throw new Error("loadTexture: could not read image dimensions");
+  }
+  const tex = new THREE16.DataTexture(new Uint8Array(data), meta.width, meta.height, THREE16.RGBAFormat, THREE16.UnsignedByteType);
+  const usage = opts.usage ?? "albedo";
+  const colorSpace = usage === "albedo" || usage === "emissive" ? "srgb" : "linear";
+  let hasAlpha = false;
+  for (let offset = 3;offset < data.length; offset += 4) {
+    if ((data[offset] ?? 255) < 255) {
+      hasAlpha = true;
+      break;
+    }
+  }
+  tex.colorSpace = colorSpace === "srgb" ? THREE16.SRGBColorSpace : THREE16.NoColorSpace;
+  if (opts.name)
+    tex.name = opts.name;
+  tex.needsUpdate = true;
+  tex.wrapS = THREE16.RepeatWrapping;
+  tex.wrapT = THREE16.RepeatWrapping;
+  tex.minFilter = THREE16.LinearMipmapLinearFilter;
+  tex.magFilter = THREE16.LinearFilter;
+  tex.generateMipmaps = true;
+  tex.userData["encoded"] = {
+    mime,
+    bytes
+  };
+  tex.userData["kilnTexture"] = {
+    usage,
+    colorSpace,
+    width: meta.width,
+    height: meta.height,
+    hasAlpha
+  };
+  return tex;
+}
+function sniffMime(bytes) {
+  if (bytes[0] === 137 && bytes[1] === 80 && bytes[2] === 78 && bytes[3] === 71) {
+    return "image/png";
+  }
+  if (bytes[0] === 255 && bytes[1] === 216 && bytes[2] === 255) {
+    return "image/jpeg";
+  }
+  if (bytes[0] === 82 && bytes[1] === 73 && bytes[2] === 70 && bytes[3] === 70 && bytes[8] === 87 && bytes[9] === 69 && bytes[10] === 66 && bytes[11] === 80) {
+    return "image/webp";
+  }
+  return "image/png";
+}
+function textureMetadata(texture) {
+  return texture.userData["kilnTexture"];
+}
+function requireTextureUsage(texture, usage) {
+  const meta = textureMetadata(texture);
+  if (meta && meta.usage !== usage) {
+    throw new TypeError(`Texture ${JSON.stringify(texture.name || "(unnamed)")} was loaded for ${meta.usage}, not ${usage}.`);
+  }
+  texture.colorSpace = usage === "albedo" || usage === "emissive" ? THREE16.SRGBColorSpace : THREE16.NoColorSpace;
+}
+function pbrMaterial(opts = {}) {
+  const mat = new THREE16.MeshStandardMaterial;
+  const isTex = (v) => !!v?.isTexture;
+  if (isTex(opts.albedo)) {
+    requireTextureUsage(opts.albedo, "albedo");
+    mat.map = opts.albedo;
+    mat.color = new THREE16.Color(16777215);
+  } else if (opts.albedo !== undefined) {
+    mat.color = new THREE16.Color(opts.albedo);
+  }
+  if (opts.normal) {
+    requireTextureUsage(opts.normal, "normal");
+    mat.normalMap = opts.normal;
+  }
+  const roughnessTexture = isTex(opts.roughness) ? opts.roughness : undefined;
+  const metalnessTexture = isTex(opts.metalness) ? opts.metalness : undefined;
+  if (opts.metallicRoughness && (roughnessTexture || metalnessTexture)) {
+    throw new AuthoringDiagnosticError("MATERIAL_PACKED_CHANNELS", "Use metallicRoughness for the packed G/B map; do not also pass texture-valued roughness/metalness.");
+  }
+  if (roughnessTexture && metalnessTexture && roughnessTexture !== metalnessTexture) {
+    throw new AuthoringDiagnosticError("MATERIAL_PACKED_CHANNELS", "Separate roughness and metalness textures are ambiguous in glTF. Pack G=roughness/B=metalness and pass metallicRoughness.");
+  }
+  if (roughnessTexture && !metalnessTexture || !roughnessTexture && metalnessTexture) {
+    throw new AuthoringDiagnosticError("MATERIAL_PACKED_CHANNELS", "A texture-valued roughness or metalness must be the same packed G/B texture in both slots, or use metallicRoughness.");
+  }
+  const packedMr = opts.metallicRoughness ?? roughnessTexture;
+  if (packedMr) {
+    requireTextureUsage(packedMr, "metallicRoughness");
+    mat.roughnessMap = packedMr;
+    mat.metalnessMap = packedMr;
+  }
+  if (typeof opts.roughness === "number") {
+    mat.roughness = opts.roughness;
+  } else if (packedMr) {
+    mat.roughness = 1;
+  } else {
+    mat.roughness = 0.8;
+  }
+  if (typeof opts.metalness === "number") {
+    mat.metalness = opts.metalness;
+  } else if (packedMr) {
+    mat.metalness = 1;
+  }
+  if (isTex(opts.emissive)) {
+    requireTextureUsage(opts.emissive, "emissive");
+    mat.emissiveMap = opts.emissive;
+    mat.emissive = new THREE16.Color(16777215);
+  } else if (opts.emissive !== undefined) {
+    mat.emissive = new THREE16.Color(opts.emissive);
+  }
+  if (opts.emissiveIntensity !== undefined) {
+    mat.emissiveIntensity = opts.emissiveIntensity;
+  }
+  if (opts.aoMap) {
+    requireTextureUsage(opts.aoMap, "occlusion");
+    mat.aoMap = opts.aoMap;
+  }
+  if (opts.aoMapIntensity !== undefined)
+    mat.aoMapIntensity = opts.aoMapIntensity;
+  const alphaMode = opts.alphaMode ?? "opaque";
+  if (alphaMode !== "opaque" && alphaMode !== "mask" && alphaMode !== "blend") {
+    throw new AuthoringDiagnosticError("MATERIAL_ALPHA_MODE", 'alphaMode must be one of "opaque", "mask", or "blend".');
+  }
+  if (opts.doubleSided !== undefined && typeof opts.doubleSided !== "boolean") {
+    throw new TypeError("doubleSided must be a boolean when provided.");
+  }
+  if (opts.alphaCutoff !== undefined && alphaMode !== "mask") {
+    throw new TypeError('alphaCutoff is valid only when alphaMode is "mask".');
+  }
+  if (opts.alphaCutoff !== undefined && (!Number.isFinite(opts.alphaCutoff) || opts.alphaCutoff < 0 || opts.alphaCutoff > 1)) {
+    throw new RangeError("alphaCutoff must be a finite number in [0,1].");
+  }
+  if (alphaMode === "mask") {
+    mat.alphaTest = opts.alphaCutoff ?? 0.5;
+    mat.transparent = false;
+  } else if (alphaMode === "blend") {
+    mat.alphaTest = 0;
+    mat.transparent = true;
+  }
+  if (opts.doubleSided)
+    mat.side = THREE16.DoubleSide;
+  mat.userData["kilnMaterial"] = {
+    alphaMode,
+    ...alphaMode === "mask" ? { alphaCutoff: mat.alphaTest } : {},
+    doubleSided: opts.doubleSided === true
+  };
+  return mat;
+}
+function foliageMaterial(albedo, opts = {}) {
+  return pbrMaterial({
+    albedo,
+    roughness: opts.roughness ?? 0.9,
+    metalness: 0,
+    alphaMode: "mask",
+    alphaCutoff: opts.alphaCutoff ?? 0.5,
+    doubleSided: opts.doubleSided ?? true
+  });
+}
+var init_textures = __esm(() => {
+  init_authoring_diagnostic();
+  init_texture_contract();
 });
 
 // src/material-texture-library.generated.ts
@@ -18083,12 +13941,12 @@ function resolveMaterialRecipeV1(value) {
     })
   });
 }
-var MATERIAL_RECIPE_IDS, MATERIAL_RECIPE_OVERRIDE_KEYS, APPROVED_TEXTURE_RESOURCE_IDS, MATERIAL_TEXTURE_SLOTS, srgbChannelToLinear2 = (value) => value <= 0.04045 ? value / 12.92 : ((value + 0.055) / 1.055) ** 2.4, rgba = (hex, alpha = 1) => {
+var MATERIAL_RECIPE_IDS, MATERIAL_RECIPE_OVERRIDE_KEYS, APPROVED_TEXTURE_RESOURCE_IDS, MATERIAL_TEXTURE_SLOTS, srgbChannelToLinear = (value) => value <= 0.04045 ? value / 12.92 : ((value + 0.055) / 1.055) ** 2.4, rgba = (hex, alpha = 1) => {
   const normalized = hex.replace(/^#/, "");
   return Object.freeze([
-    srgbChannelToLinear2(Number.parseInt(normalized.slice(0, 2), 16) / 255),
-    srgbChannelToLinear2(Number.parseInt(normalized.slice(2, 4), 16) / 255),
-    srgbChannelToLinear2(Number.parseInt(normalized.slice(4, 6), 16) / 255),
+    srgbChannelToLinear(Number.parseInt(normalized.slice(0, 2), 16) / 255),
+    srgbChannelToLinear(Number.parseInt(normalized.slice(2, 4), 16) / 255),
+    srgbChannelToLinear(Number.parseInt(normalized.slice(4, 6), 16) / 255),
     alpha
   ]);
 }, rgb = (hex, intensity = 1) => {
@@ -18679,375 +14537,8 @@ var init_material_resources = __esm(() => {
   DEFAULT_APPROVED_TEXTURE_CACHE = new ApprovedTextureResourceCache;
 });
 
-// src/portable-material-runtime.ts
-async function compilePortableMaterialSpecV2(input) {
-  const spec = canonicalizePortableMaterialSpecV2(input);
-  const cache = DEFAULT_APPROVED_TEXTURE_CACHE;
-  const entries = Object.entries(spec.textures);
-  for (const [slot, ref] of entries) {
-    if (ref.kind !== "resource")
-      continue;
-    if (!isApprovedResourceId(ref.resourceId)) {
-      throw new ProceduralTextureError(`portableMaterial.textures.${slot} resource ${JSON.stringify(ref.resourceId)} is not an approved texture resource ID.`);
-    }
-    const descriptor = cache.descriptor(ref.resourceId);
-    if (!descriptor.allowedSlots.includes(slot)) {
-      throw new ProceduralTextureError(`portableMaterial.textures.${slot} resource ${JSON.stringify(ref.resourceId)} is not approved for that slot.`);
-    }
-    if (descriptor.usage !== SLOT_USAGE[slot]) {
-      throw new ProceduralTextureError(`portableMaterial.textures.${slot} requires ${SLOT_USAGE[slot]} data, but ${JSON.stringify(ref.resourceId)} provides ${descriptor.usage}.`);
-    }
-  }
-  const loaded = new Map;
-  await Promise.all(entries.map(async ([slot, ref]) => {
-    const texture = ref.kind === "procedural" ? proceduralTexture(ref.spec) : (await cache.load(ref.resourceId)).texture;
-    loaded.set(slot, texture);
-  }));
-  const materialOptions = {
-    roughness: spec.roughness,
-    metalness: spec.metalness,
-    emissiveIntensity: spec.emissiveIntensity,
-    alphaMode: spec.alphaMode,
-    ...spec.alphaMode === "mask" ? { alphaCutoff: spec.alphaCutoff } : {},
-    doubleSided: spec.doubleSided,
-    ...loaded.get("baseColor") ? { albedo: loaded.get("baseColor") } : spec.baseColor !== undefined ? { albedo: spec.baseColor } : {},
-    ...loaded.get("normal") ? { normal: loaded.get("normal") } : {},
-    ...loaded.get("metallicRoughness") ? { metallicRoughness: loaded.get("metallicRoughness") } : {},
-    ...loaded.get("emissive") ? { emissive: loaded.get("emissive") } : spec.emissive !== undefined ? { emissive: spec.emissive } : {},
-    ...loaded.get("occlusion") ? { aoMap: loaded.get("occlusion") } : {}
-  };
-  const material = pbrMaterial(materialOptions);
-  if (spec.name)
-    material.name = spec.name;
-  if (loaded.has("baseColor") && spec.baseColor !== undefined)
-    material.color.setHex(spec.baseColor);
-  if (loaded.has("emissive") && spec.emissive !== undefined)
-    material.emissive.setHex(spec.emissive);
-  material.userData["kilnPortableMaterial"] = spec;
-  return material;
-}
-var SLOT_USAGE, isApprovedResourceId = (value) => APPROVED_TEXTURE_RESOURCE_IDS.includes(value);
-var init_portable_material_runtime = __esm(() => {
-  init_material_recipes();
-  init_material_resources();
-  init_procedural_material_v2();
-  init_procedural_texture();
-  init_textures();
-  SLOT_USAGE = {
-    baseColor: "albedo",
-    normal: "normal",
-    metallicRoughness: "metallicRoughness",
-    emissive: "emissive",
-    occlusion: "occlusion"
-  };
-});
-
-// src/uv.ts
-import * as THREE29 from "three";
-async function getXatlas() {
-  if (!_xatlasReady) {
-    _xatlasReady = (async () => {
-      const apiSpecifier = "xatlasjs/dist/node/api.mjs";
-      const xatlasSpecifier = "xatlasjs/dist/node/xatlas.js";
-      const apiMod = await import(apiSpecifier);
-      const xatlasMod = await import(xatlasSpecifier);
-      const create = xatlasMod.default ?? xatlasMod;
-      const ApiCtor = apiMod.Api(create);
-      return new Promise((resolve) => {
-        const xa = new ApiCtor(() => resolve(xa), null, null);
-      });
-    })();
-  }
-  return _xatlasReady;
-}
-async function autoUnwrap(geometry, opts = {}) {
-  const xa = await getXatlas();
-  const src = geometry.index ? geometry : toIndexed(geometry);
-  const posAttr = src.getAttribute("position");
-  const normAttr = src.getAttribute("normal");
-  const idxAttr = src.getIndex();
-  if (!posAttr || !idxAttr) {
-    throw new Error("autoUnwrap: geometry requires position attribute and an index");
-  }
-  if (idxAttr.count === 0 || posAttr.count === 0) {
-    throw new Error("autoUnwrap: geometry has no triangles. Nothing can be unwrapped — check the operation that produced it (an empty CSG result is the usual cause).");
-  }
-  if (idxAttr.count % 3 !== 0) {
-    throw new Error(`autoUnwrap: geometry has ${idxAttr.count} indices, which is not a whole number of triangles.`);
-  }
-  xa.createAtlas();
-  const useNormals = Boolean(opts.useNormals && normAttr);
-  const indexArray = idxAttr.array instanceof Uint32Array ? idxAttr.array : new Uint32Array(idxAttr.array);
-  const addRes = xa.addMesh(indexArray, new Float32Array(posAttr.array), useNormals && normAttr ? new Float32Array(normAttr.array) : null, null, "kiln-mesh", useNormals, false, 1);
-  if (!addRes) {
-    xa.destroyAtlas();
-    throw new Error("autoUnwrap: xatlas.addMesh failed (non-manifold or degenerate geometry?)");
-  }
-  const result = xa.generateAtlas({}, { resolution: opts.resolution ?? 1024, padding: opts.padding ?? 2 }, true);
-  const mesh = result.meshes[0];
-  if (!mesh) {
-    xa.destroyAtlas();
-    throw new Error("autoUnwrap: xatlas returned no meshes");
-  }
-  const out = new THREE29.BufferGeometry;
-  out.setAttribute("position", new THREE29.BufferAttribute(new Float32Array(mesh.vertex.vertices), 3));
-  if (mesh.vertex.normals) {
-    out.setAttribute("normal", new THREE29.BufferAttribute(new Float32Array(mesh.vertex.normals), 3));
-  }
-  if (mesh.vertex.coords1) {
-    out.setAttribute("uv", new THREE29.BufferAttribute(new Float32Array(mesh.vertex.coords1), 2));
-  }
-  if (mesh.index) {
-    out.setIndex(new THREE29.BufferAttribute(new Uint32Array(mesh.index), 1));
-  }
-  out.userData["atlas"] = {
-    width: result.width,
-    height: result.height,
-    atlasCount: result.atlasCount
-  };
-  if (!out.getAttribute("normal"))
-    out.computeVertexNormals();
-  repairZeroNormals(out);
-  if (!out.getAttribute("uv")) {
-    xa.destroyAtlas();
-    throw new Error("autoUnwrap: xatlas produced no UV coordinates for this geometry (degenerate or zero-area triangles?).");
-  }
-  xa.destroyAtlas();
-  return out;
-}
-function toIndexed(geo) {
-  const posAttr = geo.getAttribute("position");
-  const indices = new Uint32Array(posAttr.count);
-  for (let i = 0;i < posAttr.count; i++)
-    indices[i] = i;
-  const out = geo.clone();
-  out.setIndex(new THREE29.BufferAttribute(indices, 1));
-  return out;
-}
-function repairZeroNormals(geo) {
-  const normal = geo.getAttribute("normal");
-  const position = geo.getAttribute("position");
-  const index = geo.getIndex();
-  if (!normal || !position || !index)
-    return;
-  const broken = new Set;
-  for (let i = 0;i < normal.count; i++) {
-    const x = normal.getX(i);
-    const y = normal.getY(i);
-    const z = normal.getZ(i);
-    if (!Number.isFinite(x + y + z) || Math.hypot(x, y, z) < 0.000001)
-      broken.add(i);
-  }
-  if (broken.size === 0)
-    return;
-  const acc = new Float32Array(normal.count * 3);
-  const a = new THREE29.Vector3;
-  const b = new THREE29.Vector3;
-  const c = new THREE29.Vector3;
-  const face = new THREE29.Vector3;
-  const edge = new THREE29.Vector3;
-  for (let t = 0;t + 2 < index.count; t += 3) {
-    const tri = [index.getX(t), index.getX(t + 1), index.getX(t + 2)];
-    if (!tri.some((i) => broken.has(i)))
-      continue;
-    a.fromBufferAttribute(position, tri[0]);
-    b.fromBufferAttribute(position, tri[1]);
-    c.fromBufferAttribute(position, tri[2]);
-    face.subVectors(c, a);
-    edge.subVectors(b, a);
-    face.crossVectors(edge, face);
-    for (const i of tri) {
-      if (!broken.has(i))
-        continue;
-      const o = i * 3;
-      acc[o] = acc[o] + face.x;
-      acc[o + 1] = acc[o + 1] + face.y;
-      acc[o + 2] = acc[o + 2] + face.z;
-    }
-  }
-  for (const i of broken) {
-    face.set(acc[i * 3], acc[i * 3 + 1], acc[i * 3 + 2]);
-    if (face.lengthSq() < 0.00000000000000000001)
-      face.set(0, 1, 0);
-    else
-      face.normalize();
-    normal.setXYZ(i, face.x, face.y, face.z);
-  }
-  normal.needsUpdate = true;
-}
-var _xatlasReady = null;
-var init_uv = () => {};
-
-// src/uv-shapes.ts
-import * as THREE30 from "three";
-function remapUV(geo, options = {}) {
-  if (!options || typeof options !== "object" || Array.isArray(options) || Object.keys(options).some((key) => !["scale", "offset"].includes(key))) {
-    throw new Error("remapUV: options may contain only scale and offset.");
-  }
-  const scale = options.scale === undefined ? [1, 1] : options.scale;
-  const offset = options.offset === undefined ? [0, 0] : options.offset;
-  for (const [label, value] of Object.entries({ scale, offset })) {
-    if (!Array.isArray(value) || value.length !== 2 || !value.every(Number.isFinite))
-      throw new Error(`remapUV: ${label} must contain two finite numbers.`);
-  }
-  const source = geo.getAttribute("uv");
-  const positions = geo.getAttribute("position");
-  if (source?.itemSize !== 2 || !positions || source.count !== positions.count) {
-    throw new Error("remapUV: existing UV0 with two components per vertex is required; project or unwrap first.");
-  }
-  const values = new Float32Array(source.count * 2);
-  for (let i = 0;i < source.count; i++) {
-    const u = source.getX(i);
-    const v = source.getY(i);
-    const nextU = Math.fround(u * scale[0] + offset[0]);
-    const nextV = Math.fround(v * scale[1] + offset[1]);
-    if (![u, v, nextU, nextV].every(Number.isFinite))
-      throw new Error("remapUV: UV values and mapped Float32 results must be finite.");
-    values[i * 2] = nextU;
-    values[i * 2 + 1] = nextV;
-  }
-  const cloned = geo.clone();
-  cloned.setAttribute("uv", new THREE30.Float32BufferAttribute(values, 2));
-  if ((scale[0] !== 1 || scale[1] !== 1) && cloned.hasAttribute("tangent")) {
-    cloned.deleteAttribute("tangent");
-    const previous = cloned.userData.kilnAttributeWarnings;
-    cloned.userData.kilnAttributeWarnings = [
-      ...Array.isArray(previous) ? previous : [],
-      {
-        code: "UV_REMAP_TANGENTS_DROPPED",
-        message: "UV scaling invalidated tangents; regenerate them when needed for normal mapping."
-      }
-    ];
-  }
-  return cloned;
-}
-var init_uv_shapes = () => {};
-
-// src/uv-project.ts
-import * as THREE31 from "three";
-function projectUV(geometry, options) {
-  if (!options || typeof options !== "object" || Array.isArray(options) || !["planar", "box", "cylindrical"].includes(options.projection) || Object.keys(options).some((key) => !["projection", "frame", "seamDegrees", "angularRange", "caps"].includes(key)))
-    throw new Error("projectUV: select an explicit planar, box or cylindrical projection with documented options.");
-  const cylinder = options.projection === "cylindrical";
-  if (!cylinder && [options.seamDegrees, options.angularRange, options.caps].some((value) => value !== undefined))
-    throw new Error("projectUV: seamDegrees, angularRange and caps apply only to cylindrical projection.");
-  if (options.seamDegrees !== undefined && (!Number.isFinite(options.seamDegrees) || options.angularRange !== undefined))
-    throw new Error("projectUV: seamDegrees must be finite and cannot accompany angularRange.");
-  if (options.angularRange !== undefined && (!Array.isArray(options.angularRange) || options.angularRange.length !== 2 || !options.angularRange.every(Number.isFinite) || options.angularRange[1] <= 0 || options.angularRange[1] > 360))
-    throw new Error("projectUV: angularRange must be [finite start degrees, positive sweep <=360].");
-  if (options.caps !== undefined && options.caps !== "planar" && options.caps !== "side")
-    throw new Error("projectUV: caps must be planar or side.");
-  const inverse = geometryFrameMatrix(options.frame).invert();
-  const positions = geometry.getAttribute("position");
-  if (positions?.itemSize !== 3 || positions.count < 1 || positions.count > MAX_CORNERS)
-    throw new Error(`projectUV: position requires 1..${MAX_CORNERS} xyz samples.`);
-  if (Object.keys(geometry.morphAttributes).length)
-    throw new Error("projectUV: morph targets need a separate mapping contract.");
-  const index = geometry.index;
-  const corners = index?.count ?? positions.count;
-  if (!Number.isSafeInteger(corners) || corners < 3 || corners % 3 !== 0 || corners > MAX_CORNERS)
-    throw new Error(`projectUV: triangle corner count must be divisible by three and <=${MAX_CORNERS}.`);
-  let bytes = corners * 8;
-  for (const [name, attribute] of Object.entries(geometry.attributes)) {
-    if (attribute.count !== positions.count || !Number.isInteger(attribute.itemSize) || attribute.itemSize < 1 || attribute.itemSize > 16 || attribute.isInstancedBufferAttribute)
-      throw new Error(`projectUV: ${name} must be a matching per-vertex attribute of 1..16 components.`);
-    bytes += corners * attribute.itemSize * attribute.array.BYTES_PER_ELEMENT;
-  }
-  if (bytes > MAX_ATTRIBUTE_BYTES)
-    throw new Error("projectUV: expanded attributes exceed 128 MiB.");
-  if (index)
-    for (let i = 0;i < corners; i++) {
-      const value = index.getX(i);
-      if (!Number.isSafeInteger(value) || value < 0 || value >= positions.count)
-        throw new Error("projectUV: index contains an invalid vertex reference.");
-    }
-  const points = [];
-  const bounds = new THREE31.Box3;
-  for (let i = 0;i < positions.count; i++) {
-    const point = new THREE31.Vector3().fromBufferAttribute(positions, i).applyMatrix4(inverse);
-    if (![point.x, point.y, point.z].every(Number.isFinite))
-      throw new Error("projectUV: frame-local positions must be finite.");
-    points.push(point);
-    bounds.expandByPoint(point);
-  }
-  const extent = bounds.getSize(new THREE31.Vector3);
-  const fit = (point, axis) => extent[axis] > 0 ? (point[axis] - bounds.min[axis]) / extent[axis] : 0.5;
-  const outputUVs = new Float32Array(corners * 2);
-  const startDegrees = options.angularRange?.[0] ?? options.seamDegrees ?? 180;
-  const start = startDegrees % 360 * Math.PI / 180;
-  const sweep = (options.angularRange?.[1] ?? 360) * Math.PI / 180;
-  const fullWrap = options.angularRange === undefined || options.angularRange[1] === 360;
-  const wrap = (angle) => (angle % (2 * Math.PI) + 2 * Math.PI) % (2 * Math.PI);
-  const normal = new THREE31.Vector3;
-  const edge = new THREE31.Vector3;
-  for (let i = 0;i < corners; i += 3) {
-    const triangle = [0, 1, 2].map((offset) => points[index ? index.getX(i + offset) : i + offset]);
-    normal.subVectors(triangle[1], triangle[0]).cross(edge.subVectors(triangle[2], triangle[0])).normalize();
-    const cap = cylinder && options.caps !== "side" && Math.abs(normal.y) >= 1 - 0.000001;
-    let pairs;
-    if (cylinder && !cap) {
-      const angles = triangle.map((point) => {
-        let angle = wrap(Math.atan2(point.z, point.x) - start);
-        if (angle > 2 * Math.PI - 0.000001)
-          angle = 0;
-        if (!fullWrap && angle > sweep + 0.000001)
-          throw new Error("projectUV: side vertex lies outside angularRange; choose a range covering the profile.");
-        return (fullWrap ? angle : Math.min(angle, sweep)) / sweep;
-      });
-      if (fullWrap && Math.max(...angles) - Math.min(...angles) > 0.5) {
-        for (let j = 0;j < 3; j++)
-          if (angles[j] < 0.5)
-            angles[j] += 1;
-      }
-      if (fullWrap && Math.max(...angles) - Math.min(...angles) > 0.5 + 0.000001)
-        throw new Error("projectUV: side triangle spans more than half a revolution; add profile segments to resolve the mapping.");
-      pairs = triangle.map((point, j) => [angles[j], fit(point, "y")]);
-    } else if (cap) {
-      pairs = triangle.map((point) => [fit(point, "x"), fit(point, "z")]);
-    } else if (options.projection === "box") {
-      const axis = Math.abs(normal.x) >= Math.abs(normal.y) && Math.abs(normal.x) >= Math.abs(normal.z) ? "x" : Math.abs(normal.y) >= Math.abs(normal.z) ? "y" : "z";
-      pairs = triangle.map((point) => {
-        if (axis === "x")
-          return [normal.x > 0 ? 1 - fit(point, "z") : fit(point, "z"), fit(point, "y")];
-        if (axis === "y")
-          return [fit(point, "x"), normal.y > 0 ? 1 - fit(point, "z") : fit(point, "z")];
-        return [normal.z < 0 ? 1 - fit(point, "x") : fit(point, "x"), fit(point, "y")];
-      });
-    } else
-      pairs = triangle.map((point) => [fit(point, "x"), fit(point, "y")]);
-    for (let j = 0;j < 3; j++) {
-      const pair = pairs[j];
-      if (!pair.every((value) => Number.isFinite(Math.fround(value))))
-        throw new Error("projectUV: projected UVs must fit finite Float32.");
-      outputUVs[(i + j) * 2] = pair[0];
-      outputUVs[(i + j) * 2 + 1] = pair[1];
-    }
-  }
-  const out = geometry.index ? geometry.toNonIndexed() : geometry.clone();
-  out.userData = structuredClone(geometry.userData);
-  out.setDrawRange(geometry.drawRange.start, geometry.drawRange.count);
-  out.setAttribute("uv", new THREE31.Float32BufferAttribute(outputUVs, 2));
-  if (out.hasAttribute("tangent")) {
-    out.deleteAttribute("tangent");
-    const previous = out.userData.kilnAttributeWarnings;
-    out.userData.kilnAttributeWarnings = [
-      ...Array.isArray(previous) ? previous : [],
-      {
-        code: "UV_PROJECTION_TANGENTS_DROPPED",
-        message: "UV projection invalidated tangents; regenerate them when needed for normal mapping."
-      }
-    ];
-  }
-  return out;
-}
-var MAX_CORNERS = 2000000, MAX_ATTRIBUTE_BYTES;
-var init_uv_project = __esm(() => {
-  init_deform();
-  MAX_ATTRIBUTE_BYTES = 128 * 1024 * 1024;
-});
-
 // src/material-recipe-runtime.ts
-import * as THREE32 from "three";
+import * as THREE17 from "three";
 async function applyMaterialRecipeV1(request, options = {}) {
   const resolved = resolveMaterialRecipeV1(request);
   const cache = options.cache ?? DEFAULT_APPROVED_TEXTURE_CACHE;
@@ -19070,9 +14561,9 @@ async function applyMaterialRecipeV1(request, options = {}) {
   };
   const material = pbrMaterial(materialOptions);
   material.name = options.name ?? request.id;
-  material.color.setRGB(resolved.baseColorFactor[0], resolved.baseColorFactor[1], resolved.baseColorFactor[2], THREE32.LinearSRGBColorSpace);
+  material.color.setRGB(resolved.baseColorFactor[0], resolved.baseColorFactor[1], resolved.baseColorFactor[2], THREE17.LinearSRGBColorSpace);
   material.opacity = resolved.baseColorFactor[3];
-  material.emissive.setRGB(resolved.emissiveFactor[0], resolved.emissiveFactor[1], resolved.emissiveFactor[2], THREE32.LinearSRGBColorSpace);
+  material.emissive.setRGB(resolved.emissiveFactor[0], resolved.emissiveFactor[1], resolved.emissiveFactor[2], THREE17.LinearSRGBColorSpace);
   const resources = [...loaded.values()].map((entry) => entry.provenance).sort((a, b) => `${a.resourceId}:${a.usage}`.localeCompare(`${b.resourceId}:${b.usage}`));
   const provenance = {
     schemaVersion: 1,
@@ -19120,6 +14611,5268 @@ var init_material_recipe_runtime = __esm(() => {
   init_material_recipes();
   init_material_resources();
   init_textures();
+});
+
+// src/texture-resolver.ts
+function createTextureResolver(cache = DEFAULT_APPROVED_TEXTURE_CACHE) {
+  return Object.freeze({
+    describeApprovedTexture(resourceId) {
+      if (typeof resourceId !== "string")
+        return;
+      try {
+        return cache.descriptor(resourceId);
+      } catch {
+        return;
+      }
+    },
+    async loadApprovedTexture(resourceId) {
+      if (typeof resourceId !== "string") {
+        throw new RangeError("Unsupported approved texture resource ID.");
+      }
+      return (await cache.load(resourceId)).texture;
+    },
+    async materialRecipe(id, overrides) {
+      if (typeof id !== "string")
+        throw new TypeError("materialRecipe id must be a string");
+      return materialRecipe(id, overrides, { cache });
+    }
+  });
+}
+var DEFAULT_TEXTURE_RESOLVER;
+var init_texture_resolver = __esm(() => {
+  init_material_resources();
+  init_material_recipe_runtime();
+  DEFAULT_TEXTURE_RESOLVER = createTextureResolver();
+});
+
+// src/material-library-node.ts
+import { createHash as createHash5, randomUUID as randomUUID2 } from "node:crypto";
+import { lstat as lstat2, mkdir as mkdir2, readFile, readdir, realpath as realpath2, rename as rename2, rm, writeFile as writeFile2 } from "node:fs/promises";
+import { dirname as dirname2, join as join2, relative, resolve as resolve3, sep } from "node:path";
+import sharp from "sharp";
+import { DataTexture as DataTexture3 } from "three";
+function revisionHash(manifest) {
+  const { revisionId: _, ...content } = manifest;
+  return digest(canonicalMaterialJson(content));
+}
+function validateMaterialManifestIdentity(value) {
+  const manifest = validateMaterialManifest(value);
+  if (revisionHash(manifest) !== manifest.revisionId)
+    throw new Error("Material identity hash mismatch");
+  return manifest;
+}
+function snapshot(record) {
+  validateMaterialRecordShape(record);
+  return {
+    manifest: structuredClone(record.manifest),
+    files: Object.fromEntries(Object.entries(record.files).map(([name, bytes]) => [name, Uint8Array.from(bytes)]))
+  };
+}
+function exactKeys(value, keys) {
+  if (Object.keys(value).some((key) => !keys.includes(key)))
+    throw new Error("Unknown material draft field");
+}
+function materialPixels(spec, derive) {
+  const compiled = compileProceduralTextureSpecV2(spec);
+  if (!derive)
+    return compiled;
+  materialNormalDerivationSchema.parse(derive);
+  if (compiled.spec.usage !== "normal")
+    throw new Error("Height derivation requires a normal map slot");
+  const height = new DataTexture3(compiled.pixels, compiled.spec.size, compiled.spec.size);
+  const normal = normalMapFromHeight(height, { strength: derive.strength });
+  if (!(normal.image.data instanceof Uint8Array))
+    throw new Error("Normal derivation must produce RGBA8 pixels");
+  const pixels = Uint8Array.from(normal.image.data);
+  height.dispose();
+  normal.dispose();
+  return { ...compiled, pixels };
+}
+async function createMaterialRecordV1(draft) {
+  assertMaterialJson(draft, true);
+  exactKeys(draft, [
+    "materialId",
+    "name",
+    "tags",
+    "tileable",
+    "physicalSizeMeters",
+    "parameters",
+    "sources",
+    "maps"
+  ]);
+  if (!Array.isArray(draft.maps) || !draft.maps.length || draft.maps.length > 5)
+    throw new Error("Material requires 1..5 maps");
+  const files = {};
+  const maps = [];
+  let totalPixels = 0;
+  for (const input of draft.maps) {
+    exactKeys(input, [
+      "slot",
+      "sourceId",
+      "transforms",
+      "normalConvention",
+      "channelPacking",
+      "bytes",
+      "originalFile",
+      "procedural",
+      "derive"
+    ]);
+    if (!MATERIAL_LIBRARY_SLOTS.includes(input.slot))
+      throw new Error("Unsupported material map slot");
+    if (input.bytes !== undefined === (input.procedural !== undefined))
+      throw new Error("Supply exactly one map byte source or procedural recipe");
+    let bytes;
+    let procedural;
+    if (input.procedural) {
+      const compiled = materialPixels(input.procedural, input.derive);
+      if (compiled.spec.usage !== MATERIAL_LIBRARY_USAGE[input.slot])
+        throw new Error("Procedural map usage mismatch");
+      bytes = new Uint8Array(await sharp(compiled.pixels, {
+        raw: { width: compiled.spec.size, height: compiled.spec.size, channels: 4 }
+      }).png({ compressionLevel: 9, adaptiveFiltering: false }).toBuffer());
+      procedural = {
+        compiler: "kiln.procedural-texture.v2",
+        spec: compiled.spec,
+        ...input.derive ? { derive: structuredClone(input.derive) } : {},
+        recipeHash: compiled.recipeHash,
+        pixelHash: digest(compiled.pixels),
+        encoder
+      };
+    } else {
+      if ("derive" in input)
+        throw new Error("External maps cannot declare a procedural derivation");
+      if (!(input.bytes instanceof Uint8Array))
+        throw new Error("Material map bytes must be Uint8Array");
+      bytes = Uint8Array.from(input.bytes);
+    }
+    if (bytes.length > MATERIAL_LIBRARY_LIMITS.maxMapBytes)
+      throw new Error("Material map exceeds encoded byte limit");
+    const dimensions = materialPngDimensions(bytes);
+    totalPixels += dimensions.width * dimensions.height;
+    if (dimensions.width < 1 || dimensions.height < 1 || dimensions.width > MATERIAL_LIBRARY_LIMITS.maxMapEdge || dimensions.height > MATERIAL_LIBRARY_LIMITS.maxMapEdge || totalPixels > MATERIAL_LIBRARY_LIMITS.maxRecordPixels)
+      throw new Error("Material maps exceed pixel budget");
+    const file = `${input.slot}.png`;
+    if (files[file])
+      throw new Error("Duplicate material map slot");
+    files[file] = bytes;
+    maps.push({
+      slot: input.slot,
+      file,
+      ...dimensions,
+      sha256: digest(bytes),
+      bytes: bytes.length,
+      usage: MATERIAL_LIBRARY_USAGE[input.slot],
+      colorSpace: input.slot === "baseColor" || input.slot === "emissive" ? "srgb" : "linear",
+      ...input.slot === "normal" ? { normalConvention: input.normalConvention ?? (procedural ? "opengl" : undefined) } : {},
+      ...input.slot === "metallicRoughness" ? {
+        channelPacking: input.channelPacking ?? (procedural ? "r-occlusion-g-roughness-b-metallic" : undefined)
+      } : {},
+      sourceId: input.sourceId,
+      ...input.originalFile ? { originalFile: input.originalFile } : {},
+      transforms: structuredClone(input.transforms),
+      ...procedural ? { procedural } : {}
+    });
+  }
+  const manifest = materialManifestSchema.parse({
+    schemaVersion: 1,
+    materialId: draft.materialId,
+    revisionId: `sha256:${"0".repeat(64)}`,
+    name: draft.name,
+    tags: draft.tags ?? [],
+    tileable: draft.tileable,
+    ...draft.physicalSizeMeters ? { physicalSizeMeters: draft.physicalSizeMeters } : {},
+    parameters: draft.parameters ?? {},
+    sources: draft.sources,
+    maps
+  });
+  manifest.revisionId = revisionHash(manifest);
+  const record = { manifest, files };
+  await verifyMaterialRecordV1(record);
+  return record;
+}
+async function verifyMaterialRecordV1(record) {
+  const manifest = validateMaterialRecordShape(record);
+  if (revisionHash(manifest) !== manifest.revisionId)
+    throw new Error("Material identity hash mismatch");
+  for (const map of manifest.maps) {
+    const bytes = record.files[map.file];
+    if (digest(bytes) !== map.sha256)
+      throw new Error(`Material integrity hash mismatch: ${map.file}`);
+    const { data, info } = await sharp(bytes, {
+      limitInputPixels: MATERIAL_LIBRARY_LIMITS.maxRecordPixels,
+      failOn: "warning"
+    }).ensureAlpha().raw().toBuffer({ resolveWithObject: true });
+    if (info.width !== map.width || info.height !== map.height || info.channels !== 4)
+      throw new Error("Material decoded image mismatch");
+    if (map.procedural) {
+      const compiled = materialPixels(map.procedural.spec, map.procedural.derive);
+      if (compiled.recipeHash !== map.procedural.recipeHash || digest(compiled.pixels) !== map.procedural.pixelHash || digest(data) !== map.procedural.pixelHash)
+        throw new Error("Procedural material recipe or pixel hash mismatch");
+    }
+  }
+}
+function validateMaterialLibraryPayload(value) {
+  assertMaterialJson(value);
+  if (!value || typeof value !== "object" || Array.isArray(value))
+    throw new Error("Invalid material resource payload");
+  const payload = value;
+  if (Object.keys(payload).some((key) => !["schemaVersion", "records"].includes(key)) || payload.schemaVersion !== 1 || !Array.isArray(payload.records) || payload.records.length > MATERIAL_LIBRARY_LIMITS.maxPayloadRecords)
+    throw new Error("Invalid material resource payload");
+  let total = 0;
+  let pixels = 0;
+  const identities = new Set;
+  for (const wire of payload.records) {
+    if (!wire || typeof wire !== "object" || Object.keys(wire).some((key) => !["manifest", "files"].includes(key)))
+      throw new Error("Invalid material resource record");
+    const manifest = materialManifestSchema.parse(wire.manifest);
+    if (identities.has(manifest.revisionId))
+      throw new Error("Duplicate material resource revision");
+    identities.add(manifest.revisionId);
+    if (!wire.files || typeof wire.files !== "object" || Array.isArray(wire.files) || Object.keys(wire.files).length !== manifest.maps.length)
+      throw new Error("Material payload inventory mismatch");
+    for (const map of manifest.maps) {
+      const encoded = wire.files[map.file];
+      if (typeof encoded !== "string" || encoded.length !== Math.ceil(map.bytes / 3) * 4 || !/^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$/.test(encoded))
+        throw new Error("Invalid material map base64");
+      total += map.bytes;
+      pixels += map.width * map.height;
+    }
+  }
+  if (total > MATERIAL_LIBRARY_LIMITS.maxPayloadBytes || pixels > MATERIAL_LIBRARY_LIMITS.maxPayloadPixels)
+    throw new Error("Material resource payload exceeds byte or pixel budget");
+  return payload;
+}
+async function createMaterialLibraryPayload(records) {
+  const snapshots = records.map(snapshot);
+  for (const record of snapshots)
+    await verifyMaterialRecordV1(record);
+  return validateMaterialLibraryPayload({
+    schemaVersion: 1,
+    records: snapshots.map((record) => ({
+      manifest: record.manifest,
+      files: Object.fromEntries(Object.entries(record.files).map(([name, bytes]) => [
+        name,
+        Buffer.from(bytes).toString("base64")
+      ]))
+    }))
+  });
+}
+async function decodeMaterialLibraryPayload(value) {
+  const payload = validateMaterialLibraryPayload(value);
+  const records = payload.records.map((wire) => ({
+    manifest: structuredClone(wire.manifest),
+    files: Object.fromEntries(Object.entries(wire.files).map(([name, encoded]) => [
+      name,
+      new Uint8Array(Buffer.from(encoded, "base64"))
+    ]))
+  }));
+  for (const record of records)
+    await verifyMaterialRecordV1(record);
+  return records;
+}
+async function createMaterialLibraryTextureResolver(records, fallback = DEFAULT_TEXTURE_RESOLVER) {
+  const snapshots = await decodeMaterialLibraryPayload(await createMaterialLibraryPayload(records));
+  const maps = new Map;
+  for (const record of snapshots)
+    for (const map of record.manifest.maps)
+      maps.set(materialLibraryResourceId(record.manifest, map.slot), { record, map });
+  return Object.freeze({
+    describeApprovedTexture(id) {
+      const entry = typeof id === "string" ? maps.get(id) : undefined;
+      return entry ? { usage: entry.map.usage, allowedSlots: [entry.map.slot] } : fallback.describeApprovedTexture?.(id);
+    },
+    async loadApprovedTexture(id) {
+      const entry = typeof id === "string" ? maps.get(id) : undefined;
+      if (!entry)
+        return fallback.loadApprovedTexture(id);
+      const texture = await loadTexture(entry.record.files[entry.map.file].slice(), {
+        usage: entry.map.usage,
+        name: id
+      });
+      texture.userData["kilnMaterialResource"] = {
+        schemaVersion: 1,
+        materialId: entry.record.manifest.materialId,
+        revisionId: entry.record.manifest.revisionId,
+        resourceId: id,
+        map: structuredClone(entry.map),
+        sources: structuredClone(entry.record.manifest.sources),
+        ...entry.record.manifest.physicalSizeMeters ? { physicalSizeMeters: { ...entry.record.manifest.physicalSizeMeters } } : {}
+      };
+      return texture;
+    },
+    materialRecipe: (id, overrides) => fallback.materialRecipe(id, overrides)
+  });
+}
+
+class FileMaterialLibrary {
+  root;
+  constructor(root) {
+    this.root = resolve3(root);
+  }
+  async path(...parts) {
+    await mkdir2(this.root, { recursive: true });
+    const canonical = await realpath2(this.root);
+    let current = canonical;
+    for (const part of parts) {
+      if (!/^[a-z0-9][a-z0-9_-]{0,79}$/.test(part))
+        throw new Error("Invalid material path identity");
+      current = join2(current, part);
+      try {
+        const stat = await lstat2(current);
+        if (stat.isSymbolicLink() || !stat.isDirectory())
+          throw new Error("Material library requires real directories");
+        const rel = relative(canonical, await realpath2(current));
+        if (rel === ".." || rel.startsWith(`..${sep}`))
+          throw new Error("Material path escapes library");
+      } catch (error) {
+        if (error.code !== "ENOENT")
+          throw error;
+      }
+    }
+    return current;
+  }
+  async file(dir, name, limit) {
+    const path = join2(dir, name);
+    const stat = await lstat2(path);
+    if (!stat.isFile() || stat.isSymbolicLink() || stat.size > limit)
+      throw new Error("Invalid material library file");
+    return new Uint8Array(await readFile(path));
+  }
+  async read(materialId, revisionId) {
+    materialLibraryIdSchema.parse(materialId);
+    materialLibraryHashSchema.parse(revisionId);
+    const dir = await this.path(materialId, revisionId.slice(7));
+    const manifest = materialManifestSchema.parse(JSON.parse(new TextDecoder("utf-8", { fatal: true }).decode(await this.file(dir, "manifest.json", MATERIAL_LIBRARY_LIMITS.maxManifestBytes))));
+    if (manifest.materialId !== materialId || manifest.revisionId !== revisionId)
+      throw new Error("Material identity mismatch");
+    const files = {};
+    for (const map of manifest.maps)
+      files[map.file] = await this.file(dir, map.file, MATERIAL_LIBRARY_LIMITS.maxMapBytes);
+    const record = { manifest, files };
+    await verifyMaterialRecordV1(record);
+    return record;
+  }
+  async list() {
+    const manifests = [];
+    for (const material of await readdir(await this.path(), { withFileTypes: true })) {
+      if (!material.isDirectory() || !materialLibraryIdSchema.safeParse(material.name).success)
+        continue;
+      for (const revision of await readdir(await this.path(material.name), {
+        withFileTypes: true
+      })) {
+        if (!revision.isDirectory() || !/^[a-f0-9]{64}$/.test(revision.name))
+          continue;
+        manifests.push((await this.read(material.name, `sha256:${revision.name}`)).manifest);
+      }
+    }
+    return manifests.sort((a, b) => a.materialId.localeCompare(b.materialId) || a.revisionId.localeCompare(b.revisionId));
+  }
+  async import(records) {
+    if (!Array.isArray(records) || !records.length || records.length > 100)
+      throw new Error("Material import requires 1..100 records");
+    const snapshots = records.map(snapshot);
+    for (const record of snapshots)
+      await verifyMaterialRecordV1(record);
+    for (const record of snapshots) {
+      const { manifest, files } = record;
+      const dest = await this.path(manifest.materialId, manifest.revisionId.slice(7));
+      const parent = dirname2(dest);
+      await mkdir2(parent, { recursive: true });
+      const stage = join2(parent, `.stage-${randomUUID2()}`);
+      await mkdir2(stage);
+      try {
+        for (const [name, bytes] of Object.entries(files))
+          await writeFile2(join2(stage, name), bytes, { flag: "wx" });
+        await writeFile2(join2(stage, "manifest.json"), canonicalMaterialJson(manifest), {
+          flag: "wx"
+        });
+        try {
+          await rename2(stage, dest);
+        } catch (error) {
+          const existing = await this.read(manifest.materialId, manifest.revisionId).catch(() => {
+            return;
+          });
+          if (!existing || canonicalMaterialJson(existing.manifest) !== canonicalMaterialJson(manifest))
+            throw error;
+        }
+      } finally {
+        const rel = relative(parent, resolve3(stage));
+        if (rel.startsWith(".stage-") && !rel.includes(sep))
+          await rm(stage, { recursive: true, force: true });
+      }
+    }
+    return snapshots.map((record) => record.manifest);
+  }
+}
+var digest = (bytes) => `sha256:${createHash5("sha256").update(bytes).digest("hex")}`, encoder;
+var init_material_library_node = __esm(() => {
+  init_material_library();
+  init_procedural_texture();
+  init_textures();
+  init_texture_resolver();
+  encoder = { name: "sharp", version: sharp.versions.sharp };
+});
+
+// src/qa/requirements-applicability.ts
+function sceneMeasurementGaps(requirements, findings) {
+  const codes = new Set(findings.map((finding) => finding.code));
+  const gaps = [];
+  const needs = requirements.requirements;
+  for (const [code, marker, field] of [
+    ["ENV_NAV_CLEARANCE_UNASSESSED", "navigation", "navigable"],
+    ["ENV_TILE_EDGE_EVIDENCE_SPARSE", "tiling", "tileable"]
+  ]) {
+    if (!codes.has(code))
+      continue;
+    const reason = `${code}: required scene measurements could not be established.`;
+    if (needs[marker]?.state === "requested")
+      gaps.push({ key: marker, fields: ["*"], reason });
+    if (needs.spatialLayout?.state === "requested" && needs.spatialLayout.value[field] === true)
+      gaps.push({ key: "spatialLayout", fields: [field], reason });
+  }
+  return gaps;
+}
+function resolveRequirementsApplicability(requirements) {
+  const requested = (key) => (key === "scope" ? requirements.scope : requirements.requirements[key])?.state === "requested";
+  const rules = REQUIREMENTS_RULE_MAP.map((rule) => ({
+    id: rule.id,
+    mode: rule.mode,
+    keys: rule.keys,
+    status: rule.kernel && (rule.kernel === "universal" || rule.kernel === "material" || rule.observation || rule.keys.some(requested)) ? "evaluate" : rule.observation || rule.keys.some(requested) ? "notEvaluated" : "notRequested",
+    ...!rule.kernel && (rule.observation || rule.keys.some(requested)) ? {
+      reason: "Neutral measurement adapter remains to be qualified; no category fallback is used."
+    } : {}
+  }));
+  const unevaluatedRequirements = [];
+  const supportedFields = {
+    rig: ["bodyPlan", "grounded", "clips", "heldItem"],
+    foliage: ["grounded", "standalone", "canopyProfile"],
+    effects: [
+      "schemaVersion",
+      "subtype",
+      "portability",
+      "transparency",
+      "doubleSided",
+      "facing",
+      "animation",
+      "sidecar"
+    ],
+    spatialLayout: ["tileable", "navigable"],
+    structure: ["storeyCount", "interiorMode", "roofMode", "enterable", "portal", "scaleMode"],
+    mobility: [
+      "wheelCount",
+      "axleCount",
+      "steering",
+      "supportPolicy",
+      "supportAssemblies",
+      "frontFrame"
+    ],
+    grounding: ["planeY"],
+    bounds: ["units", "x", "y", "z"],
+    animation: ["clips"],
+    representation: ["precomputedTangents"]
+  };
+  for (const [key, statement] of Object.entries(requirements.requirements)) {
+    if (statement?.state !== "requested")
+      continue;
+    if (key === "navigation" || key === "tiling")
+      continue;
+    if (key === "articulation" || key === "opening") {
+      unevaluatedRequirements.push({
+        key,
+        fields: ["*"],
+        reason: key === "articulation" ? "Declared rigid pivots, subtrees and clearance prisms are checked. They do not establish the requested motion range, animated collisions or other articulation types; acceptance remains incomplete." : "Declared container opening markers are checked without an inferred minimum size. They do not establish usable access, interior occupancy, moving closures or other opening types; acceptance remains incomplete."
+      });
+      continue;
+    }
+    const supported = [...supportedFields[key] ?? []];
+    if (key === "foliage" && requirements.requirements.foliage?.state === "requested" && requirements.requirements.foliage.value.canopyProfile !== undefined)
+      supported.push("growthState");
+    if (key === "mobility") {
+      const mobility = requirements.requirements.mobility;
+      if (mobility?.state === "requested") {
+        if (mobility.value.propulsionAssemblies?.every((kind) => kind === "rotor" || kind === "propeller"))
+          supported.push("propulsionAssemblies");
+        if (mobility.value.animationAssemblies?.length === 0)
+          supported.push("animationAssemblies");
+      }
+    }
+    const fields = Object.keys(statement.value).filter((field) => !supported.includes(field));
+    if (supported.length === 0 || fields.length > 0)
+      unevaluatedRequirements.push({
+        key,
+        fields: fields.length ? fields : ["*"],
+        reason: "Requested measurement is not yet evaluated by the neutral checker; acceptance remains incomplete."
+      });
+  }
+  if (requirements.scope?.state === "requested")
+    unevaluatedRequirements.push({
+      key: "scope",
+      fields: ["*"],
+      reason: "Scope has advisory member/dressing measurements only; they do not certify semantic scope, modular reusability, or pack membership. Acceptance remains incomplete."
+    });
+  return { rules, unevaluatedRequirements };
+}
+var REQUIREMENTS_RULE_MAP;
+var init_requirements_applicability = __esm(() => {
+  REQUIREMENTS_RULE_MAP = [
+    ...[
+      "UNIVERSAL_SCENE_CONTENT_RULE",
+      "UNIVERSAL_FINITE_DATA_RULE",
+      "UNIVERSAL_INDEX_RULE",
+      "UNIVERSAL_ZERO_SCALE_RULE",
+      "UNIVERSAL_NODE_NAME_RULE",
+      "UNIVERSAL_ANIMATION_TARGET_RULE"
+    ].map((id) => ({ id, mode: "enforce", keys: [], kernel: "universal" })),
+    {
+      id: "MATERIAL_PORTABLE_PBR_RULE",
+      mode: "enforce",
+      keys: ["material", "representation"],
+      kernel: "material"
+    },
+    { id: "ARCHITECTURE_PROFILE", mode: "enforce", keys: ["structure"], kernel: "structure" },
+    {
+      id: "ARCHITECTURE_ADVISORY_PROFILE",
+      mode: "observe",
+      keys: ["structure"],
+      kernel: "structure"
+    },
+    { id: "CHARACTER_PROFILE", mode: "enforce", keys: ["rig"], kernel: "rig" },
+    { id: "CHARACTER_ADVISORY_PROFILE", mode: "observe", keys: ["rig"], kernel: "rig" },
+    { id: "VEHICLE_PROFILE", mode: "enforce", keys: ["mobility"], kernel: "mobility" },
+    { id: "VEHICLE_ADVISORY_PROFILE", mode: "observe", keys: ["mobility"], kernel: "mobility" },
+    { id: "VEHICLE_W6_ADVISORY_PROFILE", mode: "observe", keys: ["mobility"], kernel: "mobility" },
+    { id: "VEGETATION_CONTACT_PROFILE", mode: "enforce", keys: ["foliage"], kernel: "foliage" },
+    { id: "VEGETATION_ADVISORY_PROFILE", mode: "observe", keys: ["foliage"], kernel: "foliage" },
+    {
+      id: "PROP_CAPABILITY_EXACT_PROFILE",
+      mode: "enforce",
+      keys: ["articulation", "opening"],
+      kernel: "mechanism"
+    },
+    {
+      id: "PROP_ADVISORY_PROFILE",
+      mode: "observe",
+      keys: ["grounding", "bounds"],
+      kernel: "placement"
+    },
+    {
+      id: "ENVIRONMENT_EXACT_PROFILE",
+      mode: "enforce",
+      keys: ["spatialLayout", "navigation", "tiling", "modular"],
+      kernel: "spatial"
+    },
+    {
+      id: "ENVIRONMENT_ADVISORY_PROFILE",
+      mode: "observe",
+      keys: ["spatialLayout", "navigation", "tiling"],
+      kernel: "spatial"
+    },
+    { id: "VFX_EXACT_PROFILE", mode: "enforce", keys: ["effects"], kernel: "effects" },
+    { id: "VFX_ADVISORY_PROFILE", mode: "observe", keys: ["effects"], kernel: "effects" },
+    { id: "MODULAR_JOIN_PROFILE", mode: "enforce", keys: ["modular"] },
+    { id: "ASSET_SCOPE_PROFILE", mode: "observe", keys: ["scope"], kernel: "scope" },
+    {
+      id: "GEO_PART_SELF_INTERSECTION",
+      mode: "observe",
+      keys: [],
+      observation: true,
+      kernel: "partVolume"
+    },
+    {
+      id: "GEO_PART_CONNECTIVITY",
+      mode: "observe",
+      keys: [],
+      observation: true,
+      kernel: "connectivity"
+    },
+    { id: "REF_COMPARISON", mode: "observe", keys: [], observation: true }
+  ];
+});
+
+// src/qa/requirements-report.ts
+function createRequirementsQaReport(context, options) {
+  const applicability = resolveRequirementsApplicability(context.requirements);
+  const unevaluatedRequirements = [
+    ...applicability.unevaluatedRequirements,
+    ...sceneMeasurementGaps(context.requirements, options.findings ?? [])
+  ];
+  const executed = new Set(options.executedRules);
+  const rules = applicability.rules.map((rule) => ({
+    id: rule.id,
+    mode: options.modes?.[rule.id] ?? rule.mode,
+    status: rule.status === "evaluate" ? executed.has(rule.id) ? "evaluated" : "notEvaluated" : rule.status,
+    ...rule.reason ? { reason: rule.reason } : {}
+  }));
+  const incomplete = unevaluatedRequirements.length > 0 || applicability.rules.some((rule) => rule.status === "evaluate" && !(rule.mode === "observe" && rule.keys.length === 0) && (!executed.has(rule.id) || (options.modes?.[rule.id] ?? rule.mode) === "off" || rule.mode === "enforce" && (options.modes?.[rule.id] ?? rule.mode) !== "enforce"));
+  const findings = (options.findings ?? []).map((finding) => ({
+    ...finding,
+    dimension: finding.dimension === "categoryReadiness" ? "requirementReadiness" : finding.dimension
+  }));
+  const evaluated = new Set(options.evaluatedDimensions ?? ["exportIntegrity", "requirementReadiness"]);
+  for (const finding of findings)
+    evaluated.add(finding.dimension);
+  const dimensions = Object.fromEntries(REQUIREMENTS_QA_DIMENSIONS.map((dimension) => {
+    const selected = findings.filter((finding) => finding.dimension === dimension);
+    const partialObservation = selected.some((finding) => finding.code === "GEO_PART_SELF_INTERSECTION_UNMEASURED" || finding.code === "GEO_PART_SELF_INTERSECTION_TRUNCATED");
+    const status = selected.some((f) => f.disposition === "block") ? "block" : partialObservation || !evaluated.has(dimension) || dimension === "requirementReadiness" && incomplete ? "notEvaluated" : selected.some((f) => f.disposition === "warn") ? "warn" : "pass";
+    return [
+      dimension,
+      {
+        status,
+        findings: selected,
+        ...options.metrics?.[dimension] ? { metrics: options.metrics[dimension] } : {}
+      }
+    ];
+  }));
+  const blocked = findings.some((f) => f.disposition === "block");
+  const warned = findings.some((f) => f.disposition === "warn");
+  return {
+    kind: "kiln.asset-qa-report",
+    schemaVersion: 2,
+    qaProfile: "asset.requirements.v1",
+    policyHash: context.policyHash,
+    adviceHash: context.adviceHash,
+    acceptance: blocked ? "blocked" : incomplete ? "incomplete" : "accepted",
+    disposition: blocked ? "block" : incomplete ? "notEvaluated" : warned ? "warn" : "pass",
+    dimensions,
+    rules,
+    unevaluatedRequirements
+  };
+}
+function validateRequirementsQaReport(input, context) {
+  const fail = () => {
+    throw new TypeError("Invalid neutral requirements QA report.");
+  };
+  if (!record4(input) || input.kind !== "kiln.asset-qa-report" || input.schemaVersion !== 2 || input.qaProfile !== "asset.requirements.v1" || !/^sha256:[a-f0-9]{64}$/.test(String(input.policyHash)) || !/^sha256:[a-f0-9]{64}$/.test(String(input.adviceHash)) || !["accepted", "incomplete", "blocked"].includes(String(input.acceptance)) || !["pass", "warn", "block", "notEvaluated"].includes(String(input.disposition)) || !record4(input.dimensions) || !Array.isArray(input.rules) || !Array.isArray(input.unevaluatedRequirements))
+    return fail();
+  if (Object.keys(input).sort().join(",") !== [
+    "kind",
+    "schemaVersion",
+    "qaProfile",
+    "policyHash",
+    "adviceHash",
+    "acceptance",
+    "disposition",
+    "dimensions",
+    "rules",
+    "unevaluatedRequirements"
+  ].sort().join(","))
+    return fail();
+  if (Object.keys(input.dimensions).sort().join(",") !== [...REQUIREMENTS_QA_DIMENSIONS].sort().join(","))
+    return fail();
+  const findings = [];
+  const metrics = {};
+  const evaluated = [];
+  for (const dimension of REQUIREMENTS_QA_DIMENSIONS) {
+    const value = input.dimensions[dimension];
+    if (!record4(value) || !["pass", "warn", "block", "notEvaluated"].includes(String(value.status)) || !Array.isArray(value.findings) || value.findings.length > 1000 || Object.keys(value).some((key) => !["status", "findings", "metrics"].includes(key)))
+      return fail();
+    if (value.status !== "notEvaluated")
+      evaluated.push(dimension);
+    for (const finding of value.findings) {
+      if (!record4(finding) || finding.dimension !== dimension || !isQaFinding({
+        ...finding,
+        dimension: dimension === "requirementReadiness" ? "categoryReadiness" : dimension
+      }))
+        return fail();
+      findings.push(finding);
+    }
+    if (value.metrics !== undefined) {
+      if (!record4(value.metrics) || !Object.values(value.metrics).every((metric) => metric === null || typeof metric === "string" || typeof metric === "boolean" || typeof metric === "number" && Number.isFinite(metric)))
+        return fail();
+      metrics[dimension] = value.metrics;
+    }
+  }
+  const known = new Set(REQUIREMENTS_RULE_MAP.map((rule) => rule.id));
+  const ids = new Set;
+  for (const rule of input.rules) {
+    if (!record4(rule) || typeof rule.id !== "string" || !known.has(rule.id) || ids.has(rule.id) || !["off", "observe", "warn", "enforce"].includes(String(rule.mode)) || !["evaluated", "notEvaluated", "notRequested"].includes(String(rule.status)))
+      return fail();
+    ids.add(rule.id);
+  }
+  if (ids.size !== known.size)
+    return fail();
+  for (const unmet of input.unevaluatedRequirements)
+    if (!record4(unmet) || typeof unmet.key !== "string" || !Array.isArray(unmet.fields) || !unmet.fields.every((x) => typeof x === "string") || typeof unmet.reason !== "string")
+      return fail();
+  const result = input;
+  if (context) {
+    const expected = createRequirementsQaReport(context, {
+      findings,
+      executedRules: result.rules.filter((rule) => rule.status === "evaluated").map((rule) => rule.id),
+      modes: Object.fromEntries(result.rules.map((rule) => [rule.id, rule.mode])),
+      evaluatedDimensions: evaluated,
+      metrics
+    });
+    if (canonical3(expected) !== canonical3(result))
+      return fail();
+  } else {
+    const blocked = findings.some((finding) => finding.disposition === "block");
+    if (result.acceptance === "blocked" !== blocked || result.disposition === "block" !== blocked || result.unevaluatedRequirements.length > 0 && result.acceptance === "accepted")
+      return fail();
+  }
+  return result;
+}
+var REQUIREMENTS_QA_DIMENSIONS, record4 = (value) => value !== null && typeof value === "object" && !Array.isArray(value), canonical3 = (value) => Array.isArray(value) ? `[${value.map(canonical3).join(",")}]` : record4(value) ? `{${Object.keys(value).sort().map((key) => `${JSON.stringify(key)}:${canonical3(value[key])}`).join(",")}}` : JSON.stringify(value);
+var init_requirements_report = __esm(() => {
+  init_requirements_applicability();
+  init_types();
+  REQUIREMENTS_QA_DIMENSIONS = [
+    "exportIntegrity",
+    "requirementReadiness",
+    "promptAlignment",
+    "visualQuality",
+    "runtimeCost"
+  ];
+});
+
+// src/rebuild-options.ts
+import { z as z4 } from "zod";
+var rebuildOptionsSchema;
+var init_rebuild_options = __esm(() => {
+  rebuildOptionsSchema = z4.object({
+    gltfExporter: z4.enum(["legacy", "three"]),
+    geometryPolicy: z4.enum(["warn", "strict"]),
+    optimize: z4.enum(["off", "auto", "palette", "full"]),
+    instance: z4.enum(["off", "auto", "on"])
+  });
+});
+
+// src/gltf-io.ts
+import { WebIO } from "@gltf-transform/core";
+import { ALL_EXTENSIONS } from "@gltf-transform/extensions";
+function createGltfIO() {
+  return new WebIO().registerExtensions(ALL_EXTENSIONS);
+}
+var init_gltf_io = () => {};
+
+// src/qa/breadth-final.ts
+import * as THREE18 from "three";
+function bytesContainAscii(bytes, value) {
+  const needle = new TextEncoder().encode(value);
+  outer:
+    for (let index = 0;index <= bytes.length - needle.length; index++) {
+      for (let offset = 0;offset < needle.length; offset++) {
+        if (bytes[index + offset] !== needle[offset])
+          continue outer;
+      }
+      return true;
+    }
+  return false;
+}
+function encodedTextureHasAlpha(mimeType, bytes) {
+  if (mimeType === "image/png") {
+    const colorType = bytes[25];
+    return colorType === 4 || colorType === 6 || bytesContainAscii(bytes, "tRNS");
+  }
+  if (mimeType === "image/webp") {
+    if (bytesContainAscii(bytes, "ALPH"))
+      return true;
+    const vp8xIndex = (() => {
+      const marker = new TextEncoder().encode("VP8X");
+      for (let index = 0;index <= bytes.length - marker.length; index++) {
+        if (marker.every((value, offset) => bytes[index + offset] === value))
+          return index;
+      }
+      return -1;
+    })();
+    return vp8xIndex >= 0 && ((bytes[vp8xIndex + 8] ?? 0) & 16) !== 0;
+  }
+  return false;
+}
+function animationDuration(animation) {
+  let duration = 0;
+  for (const sampler of animation.listSamplers()) {
+    const max = sampler.getInput()?.getMax([]);
+    if (max && typeof max[0] === "number" && Number.isFinite(max[0])) {
+      duration = Math.max(duration, max[0]);
+    }
+  }
+  return stable8(duration);
+}
+function signedAxis2(vector) {
+  const values = [
+    { axis: "X", value: vector.x },
+    { axis: "Y", value: vector.y },
+    { axis: "Z", value: vector.z }
+  ];
+  const dominant = [...values].sort((a, b) => Math.abs(b.value) - Math.abs(a.value))[0];
+  return `${dominant.value < 0 ? "-" : "+"}${dominant.axis}`;
+}
+function finalEffectAxis(nodes, mode) {
+  let best;
+  for (const node of nodes) {
+    const semantic = readSemanticMetadataV1FromExtras(node.getExtras());
+    if (!(semantic?.roles ?? []).some((role) => /^vfx\.effect\.surface(?:\.|$)/.test(role))) {
+      continue;
+    }
+    const matrix = new THREE18.Matrix4().fromArray(node.getWorldMatrix());
+    const scale = node.getWorldScale();
+    const scaleMagnitude = Math.hypot(scale[0], scale[1], scale[2]);
+    for (const primitive of node.getMesh()?.listPrimitives() ?? []) {
+      const position = primitive.getAttribute("POSITION");
+      if (!position)
+        continue;
+      const min = position.getMin([]);
+      const max = position.getMax([]);
+      const axes = [
+        { score: (max[0] ?? 0) - (min[0] ?? 0), direction: new THREE18.Vector3(1, 0, 0) },
+        { score: (max[1] ?? 0) - (min[1] ?? 0), direction: new THREE18.Vector3(0, 1, 0) },
+        { score: (max[2] ?? 0) - (min[2] ?? 0), direction: new THREE18.Vector3(0, 0, 1) }
+      ];
+      const selected = axes.reduce((candidate, value) => mode === "length" ? value.score > candidate.score ? value : candidate : value.score < candidate.score ? value : candidate);
+      const candidate = {
+        score: selected.score * scaleMagnitude,
+        direction: selected.direction.transformDirection(matrix)
+      };
+      if (!best || (mode === "length" ? candidate.score > best.score : candidate.score < best.score)) {
+        best = candidate;
+      }
+    }
+  }
+  return best ? signedAxis2(best.direction) : undefined;
+}
+async function analyzeFinalVfxGlbBytesV1(bytes) {
+  const io = createGltfIO();
+  const document = await io.readBinary(bytes);
+  const root = document.getRoot();
+  const renderableNodes = root.listNodes().filter((node) => node.getMesh() !== null);
+  const meshes = [...new Set(renderableNodes.map((node) => node.getMesh()).filter(Boolean))];
+  const primitives = meshes.flatMap((mesh) => mesh?.listPrimitives() ?? []);
+  let triangleCount = 0;
+  for (const primitive of primitives) {
+    const indices = primitive.getIndices();
+    const position = primitive.getAttribute("POSITION");
+    triangleCount += indices ? indices.getCount() / 3 : (position?.getCount() ?? 0) / 3;
+  }
+  const effectSurfaceMaterials = new Set;
+  for (const node of renderableNodes) {
+    const semantic = readSemanticMetadataV1FromExtras(node.getExtras());
+    if (!(semantic?.roles ?? []).some((role) => /^vfx\.effect\.surface(?:\.|$)/.test(role))) {
+      continue;
+    }
+    for (const primitive of node.getMesh()?.listPrimitives() ?? []) {
+      const material = primitive.getMaterial();
+      if (material)
+        effectSurfaceMaterials.add(material);
+    }
+  }
+  const materials = [
+    ...new Set(primitives.map((primitive) => primitive.getMaterial()).filter(Boolean))
+  ].map((material, index) => {
+    const baseColor = material.getBaseColorFactor();
+    const texture = material.getBaseColorTexture();
+    const image = texture?.getImage();
+    const mimeType = texture?.getMimeType() ?? "";
+    const mode = material.getAlphaMode().toLowerCase();
+    return {
+      id: material.getName() || `material.${index}`,
+      effectSurface: effectSurfaceMaterials.has(material),
+      alphaMode: mode,
+      alphaData: (baseColor[3] ?? 1) < 1 || image !== null && image !== undefined && encodedTextureHasAlpha(mimeType, image),
+      doubleSided: material.getDoubleSided(),
+      ...mode === "mask" ? { alphaCutoff: material.getAlphaCutoff() } : {}
+    };
+  });
+  const facingSemantics = new Set;
+  for (const node of renderableNodes) {
+    const semantic = readSemanticMetadataV1FromExtras(node.getExtras());
+    for (const role of semantic?.roles ?? []) {
+      const match = /^vfx\.facing\.(fixed|camera-spherical|camera-y-axis)$/.exec(role);
+      if (match)
+        facingSemantics.add(match[1]);
+    }
+  }
+  const normalAxis = finalEffectAxis(renderableNodes, "normal");
+  const directionAxis = finalEffectAxis(renderableNodes, "length");
+  return {
+    schemaVersion: 1,
+    meshCount: meshes.length,
+    primitiveCount: primitives.length,
+    triangleCount: Math.floor(triangleCount),
+    materials,
+    facingSemantics: [...facingSemantics].sort(),
+    ...normalAxis ? { normalAxis } : {},
+    ...directionAxis ? { directionAxis } : {},
+    clips: root.listAnimations().map((animation) => ({
+      name: animation.getName(),
+      durationSeconds: animationDuration(animation)
+    }))
+  };
+}
+function finalFinding(profile, value) {
+  return { ...value, profile };
+}
+function inspectFinalEffects(contract, evidence, profile = "asset.requirements.v1") {
+  const findings = [];
+  if (evidence.meshCount === 0 || evidence.primitiveCount === 0 || evidence.triangleCount === 0) {
+    findings.push(finalFinding(profile, {
+      code: "VFX_GLTF_RENDERABLE_MISSING",
+      disposition: "block",
+      dimension: "exportIntegrity",
+      message: "Final GLB contains no renderable VFX geometry.",
+      measurement: {
+        name: "finalVfxTriangles",
+        actual: evidence.triangleCount,
+        expected: ">=1"
+      },
+      repairText: "Export the effect surface as portable geometry before final-byte approval."
+    }));
+  }
+  const effectMaterials = evidence.materials.filter((material) => material.effectSurface);
+  if (effectMaterials.length === 0) {
+    findings.push(finalFinding(profile, {
+      code: "VFX_GLTF_EFFECT_SURFACE_MISSING",
+      disposition: "block",
+      dimension: "exportIntegrity",
+      message: "Final GLB contains no material attached to a vfx.effect.surface.* node.",
+      repairText: "Preserve an explicit vfx.effect.surface.* semantic on each renderable effect node; use vfx.support.* for opaque support geometry."
+    }));
+  }
+  for (const material of effectMaterials) {
+    if (material.alphaMode !== contract.transparency) {
+      findings.push(finalFinding(profile, {
+        code: "VFX_GLTF_TRANSPARENCY_MODE_MISMATCH",
+        disposition: "block",
+        dimension: "exportIntegrity",
+        message: `${material.id} final GLB alpha mode is ${material.alphaMode}; expected ${contract.transparency}.`,
+        affected: { material: material.id },
+        measurement: {
+          name: "finalAlphaMode",
+          actual: material.alphaMode,
+          expected: contract.transparency
+        }
+      }));
+    }
+    if (contract.transparency !== "opaque" && !material.alphaData) {
+      findings.push(finalFinding(profile, {
+        code: "VFX_GLTF_ALPHA_DATA_MISSING",
+        disposition: "block",
+        dimension: "exportIntegrity",
+        message: `${material.id} final GLB has no alpha-bearing factor or embedded texture.`,
+        affected: { material: material.id },
+        measurement: { name: "finalAlphaData", actual: false, expected: true },
+        repairText: "Pack a standalone alphaMap into the exported base-color texture alpha channel, or use an alpha-bearing base-color factor."
+      }));
+    }
+    if (material.doubleSided !== contract.doubleSided) {
+      findings.push(finalFinding(profile, {
+        code: "VFX_GLTF_SIDEDNESS_MISMATCH",
+        disposition: "block",
+        dimension: "exportIntegrity",
+        message: `${material.id} final GLB sidedness differs from trusted VFX intent.`,
+        affected: { material: material.id },
+        measurement: {
+          name: "finalDoubleSided",
+          actual: material.doubleSided,
+          expected: contract.doubleSided
+        }
+      }));
+    }
+    if (contract.transparency === "mask" && (material.alphaCutoff === undefined || material.alphaCutoff <= 0 || material.alphaCutoff > 1)) {
+      findings.push(finalFinding(profile, {
+        code: "VFX_GLTF_ALPHA_CUTOFF_INVALID",
+        disposition: "block",
+        dimension: "exportIntegrity",
+        message: `${material.id} final GLB MASK cutoff is outside (0, 1].`,
+        affected: { material: material.id }
+      }));
+    }
+  }
+  if (contract.facing.mode !== "fixed" && !evidence.facingSemantics.includes(contract.facing.mode)) {
+    findings.push(finalFinding(profile, {
+      code: "VFX_GLTF_FACING_SEMANTIC_MISSING",
+      disposition: "block",
+      dimension: "exportIntegrity",
+      message: `Final GLB does not carry the ${contract.facing.mode} runtime-facing semantic.`,
+      measurement: {
+        name: "finalFacingSemantics",
+        actual: evidence.facingSemantics.join(",") || null,
+        expected: contract.facing.mode
+      },
+      repairText: "Preserve the exporter-derived billboard semantic on the renderable quad node."
+    }));
+  }
+  if (contract.facing.source === "explicit" && contract.facing.mode === "fixed" && contract.facing.normalAxis !== evidence.normalAxis) {
+    findings.push(finalFinding(profile, {
+      code: "VFX_GLTF_NORMAL_AXIS_MISMATCH",
+      disposition: "block",
+      dimension: "exportIntegrity",
+      message: "Final GLB effect-surface normal axis differs from explicit VFX intent.",
+      measurement: {
+        name: "finalNormalAxis",
+        actual: evidence.normalAxis ?? null,
+        expected: contract.facing.normalAxis ?? null
+      }
+    }));
+  }
+  if (contract.facing.source === "explicit" && contract.facing.directionAxis !== undefined && contract.facing.directionAxis !== evidence.directionAxis) {
+    findings.push(finalFinding(profile, {
+      code: "VFX_GLTF_DIRECTION_AXIS_MISMATCH",
+      disposition: "block",
+      dimension: "exportIntegrity",
+      message: "Final GLB effect-surface direction axis differs from explicit VFX intent.",
+      measurement: {
+        name: "finalDirectionAxis",
+        actual: evidence.directionAxis ?? null,
+        expected: contract.facing.directionAxis
+      }
+    }));
+  }
+  if (contract.animation.driver === "clip") {
+    const clip = evidence.clips.find((candidate) => candidate.name === contract.animation.clipName);
+    if (!clip || Math.abs(clip.durationSeconds - contract.animation.durationSeconds) > 0.000001) {
+      findings.push(finalFinding(profile, {
+        code: "VFX_GLTF_REQUIRED_CLIP_MISSING",
+        disposition: "block",
+        dimension: "exportIntegrity",
+        message: "Final GLB dropped or changed the declared VFX animation clip.",
+        affected: { clip: contract.animation.clipName ?? "<missing>" },
+        measurement: {
+          name: "finalClipDurationSeconds",
+          actual: clip?.durationSeconds ?? null,
+          expected: contract.animation.durationSeconds,
+          threshold: 0.000001,
+          unit: "s"
+        }
+      }));
+    }
+  }
+  return findings;
+}
+function finalEffectsMetrics(evidence) {
+  return {
+    finalVfxMeshCount: evidence.meshCount,
+    finalVfxPrimitiveCount: evidence.primitiveCount,
+    finalVfxTriangles: evidence.triangleCount,
+    finalVfxMaterialCount: evidence.materials.length,
+    finalVfxEffectMaterialCount: evidence.materials.filter((material) => material.effectSurface).length,
+    finalVfxFacingSemantics: evidence.facingSemantics.join(","),
+    finalVfxNormalAxis: evidence.normalAxis ?? null,
+    finalVfxDirectionAxis: evidence.directionAxis ?? null,
+    finalVfxClipCount: evidence.clips.length
+  };
+}
+var stable8 = (value) => Math.round(value * 1e6) / 1e6;
+var init_breadth_final = __esm(() => {
+  init_gltf_io();
+  init_contracts();
+  init_types();
+});
+
+// src/qa/requirements-run.ts
+import { Object3D as Object3D12 } from "three";
+function sceneDecisions(context, policy) {
+  const applicable = new Set(resolveRequirementsApplicability(context.requirements).rules.filter((rule) => rule.status === "evaluate").map((rule) => rule.id));
+  return new QaRegistry(registry.list().filter((rule) => applicable.has(rule.id))).describePolicy(policy);
+}
+async function collectRequirementsSceneEvidence(context, scene, policy = {}) {
+  if (!(scene instanceof Object3D12) || !sceneDecisions(context, policy).some((d) => d.ruleId === SELF_INTERSECTION_QA_RULE.id && d.mode !== "off"))
+    return {};
+  try {
+    return { partPenetration: await analyzePartPenetration(scene) };
+  } catch {
+    return { partPenetrationFailed: true };
+  }
+}
+function runRequirementsSceneQa(context, scene, clips, policy = {}, evidence = {}) {
+  const needs = context.requirements.requirements;
+  const parts = needs.parts?.state === "requested" ? needs.parts.value.required : [];
+  const animation = needs.animation?.state === "requested" ? needs.animation.value : undefined;
+  const rig = needs.rig?.state === "requested" ? needs.rig.value : undefined;
+  const requiredClips = [
+    ...new Set([...animation?.clips ?? [], ...rig?.clips?.map((clip) => clip.name) ?? []])
+  ];
+  const tangents = needs.representation?.state === "requested" && needs.representation.value.precomputedTangents === true;
+  const findings = [];
+  const decisions = sceneDecisions(context, policy);
+  const geometryMetrics = {};
+  const mobilityInput = {
+    scene,
+    mobility: needs.mobility?.state === "requested" ? needs.mobility.value : undefined,
+    groundPlaneY: needs.grounding?.state === "requested" ? needs.grounding.value.planeY : undefined
+  };
+  const mobilityFindings = mobilityInput.mobility && decisions.some((d) => (d.ruleId === "VEHICLE_PROFILE" || d.ruleId === "VEHICLE_ADVISORY_PROFILE") && d.mode !== "off") ? inspectMobility(mobilityInput) : [];
+  const executedRules = [];
+  const rigInput = {
+    scene,
+    clips,
+    rig,
+    groundPlaneY: needs.grounding?.state === "requested" ? needs.grounding.value.planeY : undefined
+  };
+  const foliageInput = {
+    scene,
+    foliage: needs.foliage?.state === "requested" ? needs.foliage.value : undefined,
+    materialMode: needs.material?.state === "requested" ? needs.material.value.mode : undefined,
+    groundPlaneY: needs.grounding?.state === "requested" ? needs.grounding.value.planeY : undefined
+  };
+  const effects = needs.effects?.state === "requested" ? needs.effects.value : undefined;
+  const scope = context.requirements.scope;
+  const scopeObservation = scope?.state === "requested" && scene instanceof Object3D12 && decisions.some((d) => d.ruleId === ASSET_SCOPE_QA_RULE.id && d.mode !== "off") ? analyzeAssetScopeObservationV1(scene) : undefined;
+  const effectsInput = {
+    effects,
+    derivedEvidence: {
+      source: "engine-scene-analysis",
+      ...effects && scene instanceof Object3D12 && decisions.some((d) => d.ruleId.startsWith("VFX_") && d.mode !== "off") ? { vfxArtifact: analyzeVfxArtifactEvidenceV1(effects, scene, clips) } : {}
+    }
+  };
+  const spatialInput = {
+    scene,
+    tileable: needs.tiling?.state === "requested" || needs.spatialLayout?.state === "requested" && needs.spatialLayout.value.tileable === true,
+    navigable: needs.navigation?.state === "requested" || needs.spatialLayout?.state === "requested" && needs.spatialLayout.value.navigable === true,
+    navigation: needs.navigation?.state === "requested" ? needs.navigation.value : undefined,
+    groundPlaneY: needs.grounding?.state === "requested" ? needs.grounding.value.planeY ?? 0 : undefined
+  };
+  const spatialFindings = decisions.some((d) => d.ruleId.startsWith("ENVIRONMENT_") && d.mode !== "off") ? [
+    ...inspectPlacementSockets(spatialInput),
+    ...inspectTileEdges(spatialInput),
+    ...inspectNavigationClearance(spatialInput),
+    ...inspectSpatialSupport(spatialInput)
+  ] : [];
+  const structureFindings = needs.structure?.state === "requested" && decisions.some((d) => d.ruleId.startsWith("ARCHITECTURE_") && d.mode !== "off") ? inspectStructure({
+    scene,
+    structure: needs.structure.value,
+    opening: needs.opening?.state === "requested"
+  }) : [];
+  for (const decision of decisions) {
+    if (decision.mode === "off")
+      continue;
+    if (decision.ruleId === SELF_INTERSECTION_QA_RULE.id) {
+      const volume = evidence.partPenetration;
+      if (volume) {
+        const partial = volume.truncated || volume.skipped.length > 0;
+        if (!partial)
+          executedRules.push(decision.ruleId);
+        findings.push(...inspectPartPenetration(volume));
+        Object.assign(geometryMetrics, {
+          partVolumeCoverage: partial ? "partial" : "complete-static-pairs",
+          partVolumeScope: "Visible static closed mesh pairs; excludes intra-mesh intersections, motion, open surfaces and usable passage space. Positive overlap may be intentional.",
+          partVolumeEligibleParts: volume.partsAnalyzed,
+          partVolumeCandidatePairs: volume.candidatePairs,
+          partVolumeCandidatesLowerBound: volume.broadPhaseTruncated === true,
+          partVolumePairsTested: volume.pairsTested,
+          partVolumeSkipped: volume.skipped.length
+        });
+      } else if (evidence.partPenetrationFailed) {
+        findings.push({
+          code: "GEO_PART_SELF_INTERSECTION_UNMEASURED",
+          disposition: "observe",
+          dimension: "visualQuality",
+          profile: "geometry.selfIntersection",
+          message: "Part-volume analysis could not complete. Overlap and clearance remain unmeasured."
+        });
+        geometryMetrics.partVolumeCoverage = "unavailable";
+      }
+      continue;
+    }
+    if (decision.ruleId === ASSET_SCOPE_QA_RULE.id && !scopeObservation)
+      continue;
+    if (decision.ruleId === PART_CONNECTIVITY_QA_RULE.id && !(scene instanceof Object3D12))
+      continue;
+    executedRules.push(decision.ruleId);
+    if (decision.ruleId === PROP_EXACT_QA_RULE.id) {
+      const measured = [
+        ...needs.articulation?.state === "requested" ? inspectArticulation({ scene }) : [],
+        ...needs.opening?.state === "requested" ? inspectContainerOpening({ scene }) : []
+      ];
+      for (const finding of measured)
+        findings.push(decision.mode === "observe" || decision.mode === "warn" ? { ...finding, disposition: decision.mode } : finding);
+      continue;
+    }
+    const measured = decision.ruleId === PART_CONNECTIVITY_QA_RULE.id ? inspectPartConnectivity(scene) : decision.ruleId === ASSET_SCOPE_QA_RULE.id && scope?.state === "requested" ? inspectAssetScope({
+      profile: "asset.requirements.v1",
+      scope: { schemaVersion: 1, scope: scope.value, explicit: true },
+      derivedEvidence: { source: "engine-scene-analysis", assetScope: scopeObservation }
+    }) : decision.ruleId === "CHARACTER_PROFILE" ? inspectRig(rigInput) : decision.ruleId === "CHARACTER_ADVISORY_PROFILE" ? inspectRigAdvisory(rigInput) : decision.ruleId === "VEGETATION_CONTACT_PROFILE" ? inspectFoliageContact(foliageInput) : decision.ruleId === "VEGETATION_ADVISORY_PROFILE" ? inspectFoliageAdvisory(foliageInput) : decision.ruleId === MATERIAL_QA_RULE.id ? inspectPortableSceneMaterials(scene, tangents) : decision.ruleId === "VFX_EXACT_PROFILE" ? inspectEffectsExact(effectsInput) : decision.ruleId === "VFX_ADVISORY_PROFILE" ? inspectEffectsAdvisory(effectsInput) : decision.ruleId === "ARCHITECTURE_PROFILE" ? structureFindings.filter((f) => f.disposition === "block") : decision.ruleId === "ARCHITECTURE_ADVISORY_PROFILE" ? structureFindings.filter((f) => f.disposition !== "block") : decision.ruleId === "ENVIRONMENT_EXACT_PROFILE" ? spatialFindings.filter((f) => f.disposition === "block") : decision.ruleId === "ENVIRONMENT_ADVISORY_PROFILE" ? spatialFindings.filter((f) => f.disposition !== "block") : decision.ruleId === "VEHICLE_PROFILE" ? mobilityFindings.filter((f) => f.disposition === "block") : decision.ruleId === "VEHICLE_ADVISORY_PROFILE" ? mobilityFindings.filter((f) => f.disposition !== "block") : decision.ruleId === "VEHICLE_W6_ADVISORY_PROFILE" ? inspectMobilityAdvisory(mobilityInput) : decision.ruleId === PROP_ADVISORY_QA_RULE.id ? inspectPlacement({
+      scene,
+      bounds: needs.bounds?.state === "requested" ? needs.bounds.value : undefined,
+      groundPlaneY: needs.grounding?.state === "requested" ? needs.grounding.value.planeY ?? 0 : undefined
+    }) : UNIVERSAL_QA_KERNELS[decision.ruleId]({
+      scene,
+      clips,
+      requiredParts: parts,
+      animation: { clips: requiredClips }
+    });
+    for (const finding of measured)
+      findings.push(decision.mode === "observe" || decision.mode === "warn" ? { ...finding, disposition: decision.mode } : finding);
+  }
+  return createRequirementsQaReport(context, {
+    findings,
+    executedRules,
+    modes: Object.fromEntries(decisions.map((x) => [x.ruleId, x.mode])),
+    metrics: {
+      ...Object.keys(geometryMetrics).length ? { visualQuality: geometryMetrics } : {},
+      ...scopeObservation ? {
+        promptAlignment: {
+          scopeTopLevelAssetRoots: scopeObservation.topLevelAssetRoots,
+          scopeReusableMemberCount: scopeObservation.reusableMemberCount,
+          scopeDressingSignalCount: scopeObservation.sceneDressingRoles.length
+        }
+      } : {}
+    },
+    ...scopeObservation ? {
+      evaluatedDimensions: ["exportIntegrity", "requirementReadiness", "promptAlignment"]
+    } : {}
+  });
+}
+function appendRequirementsQa(context, report, findings, metrics = {}) {
+  const priorMetrics = Object.fromEntries(Object.entries(report.dimensions).flatMap(([dimension, value]) => value.metrics ? [[dimension, value.metrics]] : []));
+  const merged = { ...priorMetrics };
+  for (const [dimension, value] of Object.entries(metrics ?? {}))
+    merged[dimension] = { ...priorMetrics[dimension], ...value };
+  return createRequirementsQaReport(context, {
+    findings: [...Object.values(report.dimensions).flatMap((x) => x.findings), ...findings],
+    executedRules: report.rules.filter((x) => x.status === "evaluated").map((x) => x.id),
+    modes: Object.fromEntries(report.rules.map((x) => [x.id, x.mode])),
+    evaluatedDimensions: [
+      ...new Set([
+        ...Object.entries(report.dimensions).filter(([, value]) => value.status !== "notEvaluated").map(([key]) => key),
+        ...Object.keys(metrics ?? {})
+      ])
+    ],
+    metrics: merged
+  });
+}
+async function appendRequirementsFinalQa(context, report, gltf, bytes, instanceability, metricsError, material, warnings = []) {
+  const gltfFindings = gltfReportFindings(gltf, report.qaProfile);
+  const findings = [
+    ...gltfFindings,
+    ...warnings.map((w) => ({
+      code: w.code,
+      disposition: "warn",
+      dimension: "runtimeCost",
+      profile: `${w.profile}.${w.tier}`,
+      message: `${w.message} ${w.advice}`,
+      measurement: w.measurement
+    }))
+  ];
+  if (metricsError)
+    findings.push({
+      code: "RUNTIME_COST_METRICS_FAILED",
+      disposition: "warn",
+      dimension: "runtimeCost",
+      profile: report.qaProfile,
+      message: `Runtime-cost metrics could not be computed: ${metricsError}`
+    });
+  const cost = {};
+  if (instanceability)
+    Object.assign(cost, {
+      instanceabilityGrade: instanceability.grade,
+      instanceabilitySummary: instanceability.summary,
+      ...instanceability.metrics
+    });
+  if (material)
+    Object.assign(cost, {
+      materialCount: material.materialCount,
+      opaqueMaterials: material.opaqueMaterials,
+      maskedMaterials: material.maskedMaterials,
+      blendedMaterials: material.blendedMaterials,
+      singleSidedMaterials: material.singleSidedMaterials,
+      doubleSidedMaterials: material.doubleSidedMaterials,
+      texturedMaterials: material.texturedMaterials,
+      materialExtensionCount: material.materialExtensionCount,
+      materialExtensionsUsed: material.materialExtensionsUsed.join(","),
+      imageCount: material.imageCount,
+      maxImageDimension: material.maxImageDimension,
+      decodedImageBytesRgba8: material.decodedImageBytesRgba8,
+      estimatedGpuBytesWithMipmaps: material.estimatedGpuBytesWithMipmaps,
+      blendedSurfaceAreaRatio: material.blendedSurfaceAreaRatio
+    });
+  let result = appendRequirementsQa(context, report, findings, {
+    exportIntegrity: {
+      gltfErrors: gltf.issues.numErrors,
+      gltfWarnings: gltfFindings.filter((x) => x.disposition === "warn").length
+    },
+    runtimeCost: cost
+  });
+  const effects = context.requirements.requirements.effects;
+  const rule = report.rules.find((r) => r.id === "VFX_EXACT_PROFILE");
+  if (effects?.state === "requested" && rule?.status === "evaluated" && rule.mode !== "off") {
+    const evidence = await analyzeFinalVfxGlbBytesV1(bytes);
+    const measured = inspectFinalEffects(effects.value, evidence);
+    const findings = rule.mode === "enforce" ? measured : measured.map((f) => ({
+      ...f,
+      disposition: rule.mode
+    }));
+    result = appendRequirementsQa(context, result, findings, {
+      exportIntegrity: finalEffectsMetrics(evidence)
+    });
+  }
+  return result;
+}
+var registry;
+var init_requirements_run = __esm(() => {
+  init_breadth_evidence();
+  init_breadth2();
+  init_breadth_final();
+  init_registry();
+  init_universal();
+  init_material();
+  init_prop();
+  init_part_connectivity();
+  init_self_intersection();
+  init_vehicle2();
+  init_vehicle_advisory();
+  init_vegetation();
+  init_character2();
+  init_character_advisory();
+  init_architecture();
+  init_environment2();
+  init_requirements_applicability();
+  init_requirements_report();
+  init_run();
+  registry = new QaRegistry([
+    ...UNIVERSAL_QA_RULES,
+    MATERIAL_QA_RULE,
+    PROP_EXACT_QA_RULE,
+    PROP_ADVISORY_QA_RULE,
+    PART_CONNECTIVITY_QA_RULE,
+    SELF_INTERSECTION_QA_RULE,
+    ...VEHICLE_QA_RULES,
+    ...ARCHITECTURE_QA_RULES,
+    ...ENVIRONMENT_QA_RULES,
+    ...VEGETATION_QA_RULES,
+    CHARACTER_QA_RULE,
+    CHARACTER_ADVISORY_QA_RULE,
+    VFX_EXACT_QA_RULE,
+    VFX_ADVISORY_QA_RULE,
+    ASSET_SCOPE_QA_RULE
+  ]);
+});
+
+// src/rig-export.ts
+function rigExtrasForExport(node) {
+  const extras = {};
+  for (const [key, validate] of [
+    [KILN_CHARACTER_JOINT_EXTRAS_KEY, validateCharacterJointDescriptorV1],
+    [KILN_CHARACTER_RIG_EXTRAS_KEY, validateCharacterRigGraphV1]
+  ]) {
+    const value = node.userData[key];
+    if (value === undefined)
+      continue;
+    const result = validate(value);
+    if (!result.valid || !result.value) {
+      throw new TypeError(`Invalid ${key} on node ${node.name || "<unnamed>"}: ${result.issues.map((issue) => `${issue.path || "<root>"}: ${issue.message}`).join("; ")}`);
+    }
+    extras[key] = result.value;
+  }
+  return extras;
+}
+var init_rig_export = __esm(() => {
+  init_character();
+});
+
+// src/community-exporter.ts
+import * as THREE19 from "three";
+import { GLTFExporter } from "three/addons/exporters/GLTFExporter.js";
+function resolveGltfExporter(value = typeof process !== "undefined" ? process.env["KILN_GLTF_EXPORTER"] : undefined) {
+  if (value === undefined || value === "legacy")
+    return "legacy";
+  if (value === "three")
+    return "three";
+  throw new Error(`Invalid KILN_GLTF_EXPORTER ${JSON.stringify(value)}; use legacy or three.`);
+}
+function cleanClone(source) {
+  const shadow = Object.create(source);
+  shadow.userData = {};
+  return shadow.clone();
+}
+async function communitySceneDocument(root, clips, platform = browserPlatform) {
+  const materials = new Map;
+  const textures = new Map;
+  const nodes = new Map;
+  const encoded = [];
+  function texture(source) {
+    const found = textures.get(source);
+    if (found)
+      return found;
+    const copy = cleanClone(source);
+    normalizeTextureTransform(copy);
+    copy.source = new THREE19.TextureSource(source.image);
+    textures.set(source, copy);
+    const bytes = source.userData["encoded"];
+    if (bytes?.bytes) {
+      encoded.push((async () => {
+        copy.image = await platform.decode(bytes.bytes);
+        Object.defineProperty(copy, "isDataTexture", { value: true });
+        copy.format = THREE19.RGBAFormat;
+        copy.type = THREE19.UnsignedByteType;
+      })());
+    }
+    return copy;
+  }
+  function material(source) {
+    const found = materials.get(source);
+    if (found)
+      return found;
+    const copy = cleanClone(source);
+    const physical = copy;
+    if (physical.isMeshPhysicalMaterial && physical.sheen > 0) {
+      physical.sheenColor.multiplyScalar(physical.sheen);
+      physical.sheen = 1;
+    }
+    for (const [key, value] of Object.entries(copy)) {
+      if (value instanceof THREE19.Texture)
+        copy[key] = texture(value);
+    }
+    materials.set(source, copy);
+    return copy;
+  }
+  function node(source) {
+    if (source.isLine || source.isPoints)
+      throw new Error("Experimental glTF exporter supports triangle meshes and sprites, not lines or points.");
+    const shadow = Object.create(source);
+    shadow.userData = {};
+    let copy = shadow.clone(false);
+    if (source.isScene) {
+      copy = new THREE19.Group;
+      copy.copy(shadow, false);
+    }
+    if (source.isSprite) {
+      const sprite = source;
+      const geometry = new THREE19.PlaneGeometry(1, 1);
+      geometry.translate(0.5 - sprite.center.x, 0.5 - sprite.center.y, 0);
+      geometry.rotateZ(sprite.material.rotation);
+      const spriteMaterial = new THREE19.MeshBasicMaterial({
+        name: sprite.material.name,
+        color: sprite.material.color,
+        opacity: sprite.material.opacity,
+        transparent: sprite.material.transparent,
+        alphaTest: sprite.material.alphaTest,
+        side: sprite.material.side,
+        map: sprite.material.map ? texture(sprite.material.map) : null
+      });
+      copy = new THREE19.Mesh(geometry, spriteMaterial);
+      THREE19.Object3D.prototype.copy.call(copy, shadow, false);
+    }
+    Object.assign(copy.userData, rigExtrasForExport(source));
+    const semantic = source.userData[KILN_SEMANTIC_EXTRAS_KEY];
+    if (semantic !== undefined) {
+      const checked = validateSemanticMetadataV1(semantic);
+      if (!checked.valid || !checked.value)
+        throw new TypeError(`Invalid ${KILN_SEMANTIC_EXTRAS_KEY} on ${source.name}`);
+      copy.userData[KILN_SEMANTIC_EXTRAS_KEY] = cloneSemanticMetadataV1(checked.value);
+    }
+    if (source.isSprite) {
+      const metadata = copy.userData[KILN_SEMANTIC_EXTRAS_KEY];
+      copy.userData[KILN_SEMANTIC_EXTRAS_KEY] = createSemanticMetadataV1({
+        ...metadata,
+        roles: [
+          ...(metadata?.roles ?? []).filter((role) => !role.startsWith("vfx.facing.")),
+          "vfx.facing.camera-spherical",
+          ...metadata?.roles.some((role) => role.startsWith("vfx.effect.surface")) ? [] : ["vfx.effect.surface.card"]
+        ]
+      });
+    }
+    if (source.isMesh) {
+      const original = source;
+      const mesh = copy;
+      mesh.geometry = cleanClone(original.geometry);
+      mesh.material = Array.isArray(original.material) ? original.material.map(material) : material(original.material);
+    }
+    nodes.set(source, copy);
+    for (const child of source.children)
+      copy.add(node(child));
+    return copy;
+  }
+  const copy = node(root);
+  for (const [source, target] of nodes) {
+    if (!source.isSkinnedMesh)
+      continue;
+    const original = source;
+    const mesh = target;
+    mesh.skeleton = original.skeleton.clone();
+    mesh.skeleton.bones = original.skeleton.bones.map((bone) => {
+      const mapped = nodes.get(bone);
+      if (!mapped)
+        throw new Error(`Skin bone ${bone.name} is outside the exported hierarchy.`);
+      return mapped;
+    });
+    mesh.bind(mesh.skeleton, original.bindMatrix);
+  }
+  await Promise.all(encoded);
+  await platform.prepare(textures.size > 0);
+  const exportClips = clips.map((clip) => {
+    const cloned = cleanClone(clip);
+    for (const track of cloned.tracks) {
+      for (const [source, target] of nodes) {
+        if (track.name.startsWith(`${source.uuid}.`))
+          track.name = target.uuid + track.name.slice(source.uuid.length);
+      }
+    }
+    cloned.tracks = cloned.tracks.filter((track) => {
+      try {
+        const binding = THREE19.PropertyBinding.parseTrackName(track.name);
+        return ["position", "quaternion", "scale", "morphTargetInfluences"].includes(binding.propertyName) && THREE19.PropertyBinding.findNode(copy, binding.nodeName) !== null;
+      } catch {
+        return false;
+      }
+    });
+    return cloned;
+  });
+  const bytes = await new GLTFExporter().parseAsync(copy, {
+    binary: true,
+    trs: true,
+    onlyVisible: false,
+    animations: exportClips.filter((clip) => clip.tracks.length > 0)
+  });
+  const io = createGltfIO();
+  const json = await io.binaryToJSON(new Uint8Array(bytes));
+  for (const binding of json.json.textures ?? []) {
+    if (binding.source === undefined || !binding.name)
+      continue;
+    const image = json.json.images?.[binding.source];
+    if (image && !image.name)
+      image.name = binding.name;
+  }
+  return io.readJSON(json);
+}
+function normalizeTextureTransform(texture) {
+  if (texture.matrixAutoUpdate)
+    texture.updateMatrix();
+  const e = texture.matrix.elements;
+  const sx = Math.hypot(e[0], e[1]);
+  const rotation = sx > 0 ? Math.atan2(-e[1], e[0]) : Math.atan2(e[3], e[4]);
+  const c = Math.cos(rotation);
+  const s = Math.sin(rotation);
+  const sy = e[3] * s + e[4] * c;
+  const reconstructed = [sx * c, -sx * s, 0, sy * s, sy * c, 0, e[6], e[7], 1];
+  const tolerance = 0.0000001 * Math.max(1, ...e.map(Math.abs));
+  if (e.some((value, i) => !Number.isFinite(value) || Math.abs(value - reconstructed[i]) > tolerance)) {
+    throw new Error(`Texture ${texture.name || "<unnamed>"}: UV matrix contains shear or perspective that KHR_texture_transform cannot represent; lossless UV baking is not yet qualified.`);
+  }
+  texture.offset.set(e[6], e[7]);
+  texture.repeat.set(sx, sy);
+  texture.rotation = rotation;
+  texture.center.set(0, 0);
+  texture.matrixAutoUpdate = false;
+}
+var browserPlatform;
+var init_community_exporter = __esm(() => {
+  init_gltf_io();
+  init_rig_export();
+  init_contracts();
+  browserPlatform = {
+    async prepare() {},
+    async decode(bytes) {
+      const bitmap = await createImageBitmap(new Blob([new Uint8Array(bytes)]), {
+        colorSpaceConversion: "none"
+      });
+      try {
+        const canvas = new OffscreenCanvas(bitmap.width, bitmap.height);
+        const context = canvas.getContext("2d");
+        if (!context)
+          throw new Error("A 2D canvas is required to decode export textures.");
+        context.drawImage(bitmap, 0, 0);
+        const image = context.getImageData(0, 0, bitmap.width, bitmap.height);
+        return { data: new Uint8Array(image.data), width: bitmap.width, height: bitmap.height };
+      } finally {
+        bitmap.close();
+      }
+    }
+  };
+});
+
+// src/geometry-export.ts
+function geometryExportAttributes(exporter) {
+  return exporter === "three" ? THREE_GEOMETRY_ATTRIBUTES : EXPORTED_GEOMETRY_ATTRIBUTES;
+}
+function validateMaterialGroups(geometry, materialCount, name) {
+  const length = geometry.getIndex()?.count ?? geometry.getAttribute("position").count;
+  const groups = [...geometry.groups].sort((a, b) => a.start - b.start);
+  let covered = 0;
+  for (const group of groups) {
+    const materialIndex = group.materialIndex ?? 0;
+    if (group.start !== covered || !Number.isInteger(group.start) || !Number.isInteger(group.count) || group.count <= 0 || group.start % 3 || group.count % 3 || group.start + group.count > length || !Number.isInteger(materialIndex) || materialIndex < 0 || materialIndex >= materialCount)
+      throw new TypeError(`${name}: material groups must cover every triangle exactly once with valid material indices.`);
+    covered = group.start + group.count;
+  }
+  if (covered !== length)
+    throw new TypeError(`${name}: material groups do not cover every triangle.`);
+  return groups;
+}
+function geometryAttributeValues(attribute) {
+  const values = new Float32Array(attribute.count * attribute.itemSize);
+  for (let vertex = 0;vertex < attribute.count; vertex++) {
+    for (let component = 0;component < attribute.itemSize; component++) {
+      values[vertex * attribute.itemSize + component] = attribute.getComponent(vertex, component);
+    }
+  }
+  return values;
+}
+function inspectGeometryExport(root, policy = "warn", exporter = "legacy") {
+  const warnings = [];
+  const attributes = geometryExportAttributes(exporter);
+  root.traverse((node) => {
+    const mesh = node;
+    if (!mesh.isMesh)
+      return;
+    const geometry = mesh.geometry;
+    const name = mesh.name || "<unnamed mesh>";
+    const unsupported = (feature) => {
+      const message = `EXPORT_ATTRIBUTE_UNSUPPORTED ${name}: ${feature} is not preserved by the GLB bridge.`;
+      if (policy === "strict")
+        throw new TypeError(message);
+      warnings.push(message);
+    };
+    const position = geometry.getAttribute("position");
+    if (position?.itemSize !== 3)
+      throw new TypeError(`${name}: position requires xyz vertices.`);
+    for (const [key, attribute] of Object.entries(geometry.attributes)) {
+      const expected = attributes[key];
+      if (expected === undefined) {
+        unsupported(key);
+        continue;
+      }
+      const sizes = typeof expected === "number" ? [expected] : expected;
+      if (!sizes.includes(attribute.itemSize) || attribute.count !== position.count) {
+        throw new TypeError(`${name}: ${key} requires ${position.count} vertices with ${sizes.join(" or ")} components each.`);
+      }
+      for (let vertex = 0;vertex < attribute.count; vertex++) {
+        for (let component = 0;component < attribute.itemSize; component++) {
+          if (!Number.isFinite(attribute.getComponent(vertex, component))) {
+            throw new TypeError(`${name}: ${key} contains a non-finite value at vertex ${vertex}.`);
+          }
+        }
+      }
+    }
+    const index = geometry.getIndex();
+    if ((index?.count ?? position.count) % 3 !== 0)
+      throw new TypeError(`${name}: triangle indices/vertices must be a multiple of three.`);
+    if (index) {
+      for (let i = 0;i < index.count; i++) {
+        const value = index.getX(i);
+        if (!Number.isInteger(value) || value < 0 || value >= position.count)
+          throw new TypeError(`${name}: index ${i} is outside the position attribute.`);
+      }
+    }
+    if (exporter === "three" && Array.isArray(mesh.material))
+      validateMaterialGroups(geometry, mesh.material.length, name);
+    if (exporter === "legacy") {
+      for (const key of Object.keys(geometry.morphAttributes))
+        unsupported(`morph ${key}`);
+      if (mesh.isSkinnedMesh)
+        unsupported("skinning");
+    }
+    for (const key of ["kilnAttributeWarnings", "kilnGeometryWarnings"]) {
+      const notes = geometry.userData[key];
+      if (!Array.isArray(notes))
+        continue;
+      for (const note of notes) {
+        if (typeof note === "string")
+          warnings.push(`${name}: ${note}`);
+        else if (note && typeof note === "object" && "code" in note)
+          warnings.push(`${name}: ${String(note.code)}${"message" in note ? ` ${String(note.message)}` : ""}`);
+      }
+    }
+  });
+  return warnings;
+}
+var EXPORTED_GEOMETRY_ATTRIBUTES, THREE_GEOMETRY_ATTRIBUTES;
+var init_geometry_export = __esm(() => {
+  EXPORTED_GEOMETRY_ATTRIBUTES = {
+    position: 3,
+    normal: 3,
+    uv: 2,
+    tangent: 4
+  };
+  THREE_GEOMETRY_ATTRIBUTES = {
+    ...EXPORTED_GEOMETRY_ATTRIBUTES,
+    color: [3, 4],
+    uv1: 2,
+    uv2: 2,
+    uv3: 2,
+    skinIndex: 4,
+    skinWeight: 4
+  };
+});
+
+// src/palette-snap.ts
+function srgbChannelToLinear2(c) {
+  return c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4;
+}
+function hexToLinearRgb(hex) {
+  const h = hex.trim().replace(/^#/, "");
+  const full = h.length === 3 ? h[0] + h[0] + h[1] + h[1] + h[2] + h[2] : h;
+  const n = Number.parseInt(full.slice(0, 6).padEnd(6, "0"), 16);
+  const r = (n >> 16 & 255) / 255;
+  const g = (n >> 8 & 255) / 255;
+  const b = (n & 255) / 255;
+  return [srgbChannelToLinear2(r), srgbChannelToLinear2(g), srgbChannelToLinear2(b)];
+}
+function linToOklab(r, g, b) {
+  const l = 0.4122214708 * r + 0.5363325363 * g + 0.0514459929 * b;
+  const m = 0.2119034982 * r + 0.6806995451 * g + 0.1073969566 * b;
+  const s = 0.0883024619 * r + 0.2817188376 * g + 0.6299787005 * b;
+  const l_ = Math.cbrt(l), m_ = Math.cbrt(m), s_ = Math.cbrt(s);
+  return [
+    0.2104542553 * l_ + 0.793617785 * m_ - 0.0040720468 * s_,
+    1.9779984951 * l_ - 2.428592205 * m_ + 0.4505937099 * s_,
+    0.0259040371 * l_ + 0.7827717662 * m_ - 0.808675766 * s_
+  ];
+}
+function buildSlotIndex(slots) {
+  const opaque = [];
+  const neutral = [];
+  const chromatic = [];
+  const glass = [];
+  const glow = [];
+  slots.forEach((s, i) => {
+    const kind = s.kind ?? "opaque";
+    const [r, g, b] = hexToLinearRgb(s.color);
+    const lab = linToOklab(r, g, b);
+    if (kind === "glass") {
+      glass.push(i);
+      return;
+    }
+    if (kind === "glow") {
+      glow.push({ i, lab });
+      return;
+    }
+    opaque.push({ i, lab });
+    if (relChroma(lab) >= REL_CHROMA_GATE)
+      chromatic.push({ i, lab });
+    else
+      neutral.push({ i, lab });
+  });
+  return { slots, opaque, neutral, chromatic, glass, glow };
+}
+function nearestIn(cands, lab, dist) {
+  let best = cands[0].i, bd = Infinity;
+  for (const c of cands) {
+    const d = dist(c.lab, lab);
+    if (d < bd) {
+      bd = d;
+      best = c.i;
+    }
+  }
+  return best;
+}
+function nearestOpaqueSlot(idx, lin) {
+  if (idx.opaque.length === 0)
+    return;
+  const lab = linToOklab(lin[0], lin[1], lin[2]);
+  if (relChroma(lab) >= REL_CHROMA_GATE) {
+    return idx.chromatic.length ? nearestIn(idx.chromatic, lab, dE2Chroma) : nearestIn(idx.opaque, lab, dE2);
+  }
+  return idx.neutral.length ? nearestIn(idx.neutral, lab, dE2) : nearestIn(idx.opaque, lab, dE2);
+}
+function nearestGlowSlot(idx, emissiveLin) {
+  if (idx.glow.length === 0)
+    return;
+  return nearestIn(idx.glow, linToOklab(emissiveLin[0], emissiveLin[1], emissiveLin[2]), dE2);
+}
+function chooseSlot(idx, m) {
+  const emi = m.emissiveLinear;
+  const isEmissive = !!emi && (emi[0] > 0.0025 || emi[1] > 0.0025 || emi[2] > 0.0025);
+  if (isEmissive) {
+    const g = nearestGlowSlot(idx, emi);
+    if (g !== undefined)
+      return g;
+  }
+  if (m.transparent && idx.glass.length > 0) {
+    if (idx.glass.length === 1)
+      return idx.glass[0];
+    const lab = linToOklab(m.baseLinear[0], m.baseLinear[1], m.baseLinear[2]);
+    let best = idx.glass[0], bd = Infinity;
+    for (const gi of idx.glass) {
+      const [r, g, b] = hexToLinearRgb(idx.slots[gi].color);
+      const d = dE2(linToOklab(r, g, b), lab);
+      if (d < bd) {
+        bd = d;
+        best = gi;
+      }
+    }
+    return best;
+  }
+  return nearestOpaqueSlot(idx, m.baseLinear);
+}
+var dE2 = (a, b) => {
+  const dl = a[0] - b[0], da = a[1] - b[1], db = a[2] - b[2];
+  return dl * dl + da * da + db * db;
+}, L_WEIGHT_CHROMA = 0.3, dE2Chroma = (a, b) => {
+  const dl = a[0] - b[0], da = a[1] - b[1], db = a[2] - b[2];
+  return L_WEIGHT_CHROMA * dl * dl + da * da + db * db;
+}, chroma = (lab) => Math.hypot(lab[1], lab[2]), REL_CHROMA_GATE = 0.04, relChroma = (lab) => chroma(lab) / Math.max(lab[0], 0.25);
+
+// src/wall-panels.ts
+function positive3(value, field) {
+  if (!Number.isFinite(value) || value <= 0) {
+    throw new RangeError(`wall: ${field} must be finite and positive.`);
+  }
+  return value;
+}
+function buildWallPanels(length, height, thickness, apertures) {
+  positive3(length, "length");
+  positive3(height, "height");
+  positive3(thickness, "thickness");
+  const openings = apertures.map((opening, index) => {
+    const kind = opening.kind ?? "door";
+    if (kind !== "door" && kind !== "window")
+      throw new RangeError("wall: unsupported opening kind.");
+    const offset = opening.offset ?? 0;
+    if (!Number.isFinite(offset))
+      throw new RangeError("wall: opening.offset must be finite.");
+    const width = positive3(opening.width ?? (kind === "window" ? 1 : 1.1), "opening.width");
+    const openingHeight = positive3(opening.height ?? (kind === "window" ? 1 : 2.1), "opening.height");
+    const sill = kind === "window" ? opening.sill ?? 1 : 0;
+    if (!Number.isFinite(sill) || sill < 0)
+      throw new RangeError("wall: opening.sill must be finite and nonnegative.");
+    const depth = positive3(opening.depth ?? thickness, "opening.depth");
+    const left = offset - width / 2;
+    const right = offset + width / 2;
+    const top = sill + openingHeight;
+    if (left <= -length / 2 || right >= length / 2 || top >= height) {
+      throw new RangeError("wall: opening must fit strictly inside the wall boundary (except the base).");
+    }
+    return {
+      id: opening.id ?? `${kind}-${index + 1}`,
+      kind,
+      offset,
+      width,
+      height: openingHeight,
+      sill,
+      depth,
+      left,
+      right,
+      top
+    };
+  });
+  for (let i = 0;i < openings.length; i++) {
+    const a = openings[i];
+    for (let j = i + 1;j < openings.length; j++) {
+      const b = openings[j];
+      if (a.left < b.right && b.left < a.right && a.sill < b.top && b.sill < a.top) {
+        throw new RangeError(`wall: openings ${a.id} and ${b.id} overlap.`);
+      }
+    }
+  }
+  const cuts = [
+    ...new Set([
+      -length / 2,
+      length / 2,
+      ...openings.flatMap((opening) => [opening.left, opening.right])
+    ])
+  ].sort((a, b) => a - b);
+  const panels = [];
+  const add = (left, right, bottom, top) => {
+    if (right <= left || top <= bottom)
+      return;
+    let suffix = `_Panel${panels.length + 1}`;
+    if (openings.length === 0)
+      suffix = "";
+    else if (openings.length === 1) {
+      const opening = openings[0];
+      suffix = right <= opening.left ? "_L" : left >= opening.right ? "_R" : top <= opening.sill ? "_Sill" : "_Lintel";
+    }
+    panels.push({ suffix, left, right, bottom, top });
+  };
+  for (let i = 1;i < cuts.length; i++) {
+    const left = cuts[i - 1];
+    const right = cuts[i];
+    const active = openings.filter((opening) => opening.left < right && opening.right > left).sort((a, b) => a.sill - b.sill);
+    let bottom = 0;
+    for (const opening of active) {
+      add(left, right, bottom, opening.sill);
+      bottom = opening.top;
+    }
+    add(left, right, bottom, height);
+  }
+  return { openings, panels };
+}
+
+// src/assembly-transform.ts
+import * as THREE20 from "three";
+function checkedTrs(matrix, label) {
+  const e = matrix.elements;
+  if (!e.every(Number.isFinite) || e[3] !== 0 || e[7] !== 0 || e[11] !== 0 || Math.abs(e[15] - 1) > 16 * Number.EPSILON)
+    throw new Error(`${label}: finite affine TRS is required.`);
+  if (!Number.isFinite(matrix.determinant()) || matrix.determinant() === 0)
+    throw new Error(`${label}: singular/zero-scale transforms are unsupported.`);
+  const position = new THREE20.Vector3, quaternion = new THREE20.Quaternion, scale = new THREE20.Vector3;
+  matrix.decompose(position, quaternion, scale);
+  const rebuilt = new THREE20.Matrix4().compose(position, quaternion, scale);
+  if (rebuilt.elements.some((value, i) => !Number.isFinite(value) || Math.abs(value - e[i]) > 0.00000001 * Math.max(1, Math.abs(e[i]))))
+    throw new Error(`${label}: local shear cannot be represented losslessly as TRS.`);
+  return { position, quaternion, scale };
+}
+var init_assembly_transform = () => {};
+
+// src/assembly.ts
+import * as THREE21 from "three";
+function jsonData(value, label, ancestors = new Set) {
+  if (value === null || typeof value === "string" || typeof value === "boolean")
+    return;
+  if (typeof value === "number" && Number.isFinite(value))
+    return;
+  if (typeof value !== "object" || value === null)
+    throw new Error(`${label}: metadata must be inert finite JSON data.`);
+  if (ancestors.has(value))
+    throw new Error(`${label}: cyclic metadata is unsupported.`);
+  if (!Array.isArray(value) && Object.getPrototypeOf(value) !== Object.prototype && Object.getPrototypeOf(value) !== null)
+    throw new Error(`${label}: non-JSON metadata object is unsupported.`);
+  if (Object.getOwnPropertySymbols(value).length)
+    throw new Error(`${label}: symbol metadata is unsupported.`);
+  ancestors.add(value);
+  for (const key of Object.getOwnPropertyNames(value)) {
+    if (Array.isArray(value) && key === "length")
+      continue;
+    const property = Object.getOwnPropertyDescriptor(value, key);
+    if (!("value" in property))
+      throw new Error(`${label}: metadata getters are unsupported.`);
+    if (!property.enumerable)
+      throw new Error(`${label}: non-enumerable metadata is unsupported.`);
+    jsonData(property.value, label, ancestors);
+  }
+  if (Array.isArray(value)) {
+    const keys = Object.keys(value);
+    if (keys.length !== value.length || keys.some((key, index) => key !== String(index)))
+      throw new Error(`${label}: sparse or extended metadata arrays are unsupported.`);
+  }
+  ancestors.delete(value);
+}
+function canonicalJson2(value) {
+  const sort = (entry) => {
+    if (Array.isArray(entry))
+      return entry.map(sort);
+    if (object(entry))
+      return Object.fromEntries(Object.keys(entry).sort().map((key) => [key, sort(entry[key])]));
+    return entry;
+  };
+  return JSON.stringify(sort(value));
+}
+function knownMetadata(source, parsed, label) {
+  if (canonicalJson2(source) !== canonicalJson2(parsed))
+    throw new Error(`${label}: unsupported fields in known metadata would be lost during remapping.`);
+}
+function localMatrix(node) {
+  return node.matrixAutoUpdate ? new THREE21.Matrix4().compose(node.position, node.quaternion, node.scale) : node.matrix.clone();
+}
+function worldMatrix(node) {
+  const chain = [], seen = new Set;
+  for (let cursor = node;cursor; cursor = cursor.parent) {
+    if (seen.has(cursor))
+      throw new Error("Assembly ancestor hierarchy contains a cycle.");
+    seen.add(cursor);
+    chain.push(cursor);
+  }
+  const result = new THREE21.Matrix4;
+  for (const entry of chain.reverse())
+    result.multiply(localMatrix(entry));
+  return result;
+}
+function addIndex(map, key, value) {
+  map.set(key, [...map.get(key) ?? [], value]);
+}
+function census(root) {
+  const nodes = [], matrices = new Map;
+  const semantics = new Map;
+  const joints = new Map;
+  const rigs = new Map;
+  const stack = [root];
+  while (stack.length) {
+    const node = stack.pop();
+    if (!(node instanceof THREE21.Object3D) || ![THREE21.Object3D, THREE21.Group, THREE21.Mesh].includes(node.constructor))
+      throw new Error("Unsupported assembly node: only ordinary Object3D, Group and Mesh hierarchies are qualified; no skins, instances or custom node classes.");
+    if (matrices.has(node))
+      throw new Error("Assembly must be a tree; duplicate/cyclic children are unsupported.");
+    if (nodes.length >= ASSEMBLY_LIMITS.nodes)
+      throw new Error(`Assembly node limit exceeded (${ASSEMBLY_LIMITS.nodes}).`);
+    if (typeof node.name !== "string")
+      throw new Error("Assembly node names must be strings.");
+    if (!node.matrixWorldAutoUpdate)
+      throw new Error("Assembly nodes with externally managed matrixWorldAutoUpdate=false world matrices are unsupported.");
+    if (node.matrixAutoUpdate && Math.abs(node.quaternion.lengthSq() - 1) > 0.000001)
+      throw new Error("Assembly source quaternion must be unit length.");
+    const matrix = localMatrix(node);
+    checkedTrs(matrix, node.name || "unnamed node");
+    nodes.push(node);
+    matrices.set(node, matrix);
+    if (node.onBeforeRender !== THREE21.Object3D.prototype.onBeforeRender || node.onAfterRender !== THREE21.Object3D.prototype.onAfterRender || node.onBeforeShadow !== THREE21.Object3D.prototype.onBeforeShadow || node.onAfterShadow !== THREE21.Object3D.prototype.onAfterShadow)
+      throw new Error("Custom node render callbacks are unsupported in assembly replication.");
+    if (node instanceof THREE21.Mesh) {
+      if (!(node.geometry instanceof THREE21.BufferGeometry) || node.geometry instanceof THREE21.InstancedBufferGeometry)
+        throw new Error("Unsupported assembly geometry type.");
+      if (Object.values(node.geometry.morphAttributes).some((attributes) => attributes?.length) || node.morphTargetInfluences?.length)
+        throw new Error("Assembly morph target replication is unsupported.");
+      const materials = Array.isArray(node.material) ? node.material : [node.material];
+      if (materials.length === 0 || materials.some((material) => !(material instanceof THREE21.Material)))
+        throw new Error("Assembly mesh materials must be Material instances.");
+    }
+    if (!object(node.userData))
+      throw new Error("Assembly node metadata must be an object.");
+    jsonData(node.userData, node.name);
+    if (!Array.isArray(node.animations) || node.animations.some((clip) => !(clip instanceof THREE21.AnimationClip)))
+      throw new Error("Assembly node animations must contain AnimationClip instances.");
+    if (node.userData[KILN_SEMANTIC_EXTRAS_KEY] !== undefined) {
+      const metadata = readSemanticMetadataV1(node);
+      if (!metadata)
+        throw new Error(`Invalid semantic metadata on ${node.name}.`);
+      knownMetadata(node.userData[KILN_SEMANTIC_EXTRAS_KEY], metadata, node.name);
+      semantics.set(node, metadata);
+    }
+    if (node.userData[KILN_CHARACTER_JOINT_EXTRAS_KEY] !== undefined) {
+      const descriptor = readCharacterJointDescriptorV1(node);
+      if (!descriptor)
+        throw new Error(`Invalid character joint metadata on ${node.name}.`);
+      knownMetadata(node.userData[KILN_CHARACTER_JOINT_EXTRAS_KEY], descriptor, node.name);
+      joints.set(node, descriptor);
+    }
+    if (node.userData[KILN_CHARACTER_RIG_EXTRAS_KEY] !== undefined) {
+      const graph = readCharacterRigGraphV1(node);
+      if (!graph)
+        throw new Error(`Invalid character rig metadata on ${node.name}.`);
+      knownMetadata(node.userData[KILN_CHARACTER_RIG_EXTRAS_KEY], graph, node.name);
+      rigs.set(node, graph);
+    }
+    for (const child of [...node.children].reverse()) {
+      if (child.parent !== node)
+        throw new Error("Assembly child/parent links disagree.");
+      stack.push(child);
+    }
+  }
+  return { nodes, matrices, semantics, joints, rigs };
+}
+function describeAssembly(root, options = {}) {
+  if (!object(options))
+    throw new Error("Assembly description options must be an object.");
+  if (Object.keys(options).some((key) => key !== "clips"))
+    throw new Error("Unknown describeAssembly option.");
+  if (options.clips !== undefined && !Array.isArray(options.clips))
+    throw new Error("Assembly clips must be an array.");
+  const state = census(root), roles = new Map;
+  const frames = [], sockets = [], joints = [], materials = [];
+  const relative = new Map;
+  const bounds = new THREE21.Box3, point = new THREE21.Vector3;
+  let positionSamples = 0;
+  for (const [index, node] of state.nodes.entries()) {
+    const nodeId = `n${index}`;
+    const matrix = node === root ? new THREE21.Matrix4 : relative.get(node.parent).clone().multiply(state.matrices.get(node));
+    relative.set(node, matrix);
+    const metadata = state.semantics.get(node);
+    const descriptor = state.joints.get(node);
+    const kinds = [];
+    if (descriptor)
+      kinds.push("articulated");
+    if (hasSemanticRole(metadata?.roles ?? [], KILN_SEMANTIC_ROLES.wheelPivot))
+      kinds.push("wheel-spin");
+    if (hasSemanticRole(metadata?.roles ?? [], KILN_SEMANTIC_ROLES.steeringPivot))
+      kinds.push("steering");
+    if (kinds.length)
+      joints.push({
+        node,
+        nodeId,
+        kinds,
+        roles: [...metadata?.roles ?? []],
+        ...descriptor ? { descriptor: structuredClone(descriptor) } : {}
+      });
+    for (const role of metadata?.roles ?? [])
+      addIndex(roles, role, node);
+    for (const frame of metadata?.frames ?? []) {
+      const local = new THREE21.Matrix4().compose(new THREE21.Vector3(...frame.translation), new THREE21.Quaternion(...frame.rotation), new THREE21.Vector3(1, 1, 1));
+      frames.push({
+        node,
+        nodeId,
+        frame: structuredClone(frame),
+        matrix: matrix.clone().multiply(local).toArray()
+      });
+    }
+    for (const socket of metadata?.sockets ?? [])
+      sockets.push({ node, nodeId, socket: structuredClone(socket) });
+    if (!(node instanceof THREE21.Mesh))
+      continue;
+    for (const [materialIndex, material] of (Array.isArray(node.material) ? node.material : [node.material]).entries())
+      materials.push({ node, nodeId, index: materialIndex, material });
+    const positions = node.geometry.getAttribute("position");
+    if (!positions)
+      continue;
+    if (positions.itemSize !== 3)
+      throw new Error("Assembly position attributes must contain triples.");
+    positionSamples += positions.count;
+    if (positionSamples > ASSEMBLY_LIMITS.positionSamples)
+      throw new Error(`Assembly position-sample limit exceeded (${ASSEMBLY_LIMITS.positionSamples}).`);
+    for (let i = 0;i < positions.count; i++) {
+      point.fromBufferAttribute(positions, i).applyMatrix4(matrix);
+      if (![point.x, point.y, point.z].every(Number.isFinite))
+        throw new Error("Assembly bounds require finite transformed positions.");
+      bounds.expandByPoint(point);
+    }
+  }
+  const clips = [
+    ...new Set([...state.nodes.flatMap((node) => node.animations), ...options.clips ?? []])
+  ];
+  return {
+    version: "kiln.assembly.v1",
+    root,
+    nodes: state.nodes,
+    roles,
+    frames,
+    sockets,
+    joints,
+    materials,
+    bounds: bounds.isEmpty() ? null : {
+      space: "root-local",
+      min: bounds.min.toArray(),
+      max: bounds.max.toArray(),
+      size: bounds.getSize(new THREE21.Vector3).toArray()
+    },
+    clips,
+    ownership: {
+      hierarchy: "borrowed",
+      geometry: "borrowed",
+      materials: "borrowed",
+      textures: "borrowed",
+      clips: "borrowed"
+    }
+  };
+}
+function replicateAssembly(source, options) {
+  if (source?.version !== "kiln.assembly.v1")
+    throw new Error("replicateAssembly requires a describeAssembly result.");
+  if (!object(options) || typeof options.namespace !== "string" || options.namespace.length > 64 || !/^[a-z][a-z0-9]*(?:[_-][a-z0-9]+)*$/.test(options.namespace))
+    throw new Error("Assembly namespace must be 1-64 lowercase letters/digits with single internal underscores or hyphens, starting with a letter.");
+  const allowedOptions = new Set([
+    "namespace",
+    "parent",
+    "space",
+    "geometry",
+    "materials",
+    "externalReferences",
+    "unknownMetadata"
+  ]);
+  if (Object.keys(options).some((key) => !allowedOptions.has(key)))
+    throw new Error("Unknown replicateAssembly option/policy.");
+  for (const [key, choices] of Object.entries({
+    space: ["local", "world"],
+    geometry: ["share", "copy"],
+    materials: ["share", "copy"],
+    externalReferences: ["reject", "preserve"],
+    unknownMetadata: ["reject", "copy-json"]
+  })) {
+    const value = options[key];
+    if (value !== undefined && !choices.includes(value))
+      throw new Error(`Unsupported assembly ${key} policy.`);
+  }
+  if (options.parent !== undefined && !(options.parent instanceof THREE21.Object3D))
+    throw new Error("Assembly parent must be an Object3D.");
+  const fresh = describeAssembly(source.root, { clips: source.clips }), state = census(source.root);
+  if (options.parent && state.nodes.includes(options.parent))
+    throw new Error("A replica parent cannot be inside its source subtree.");
+  const { namespace } = options;
+  const byName = new Map, byRole = new Map, byUuid = new Map;
+  const bySocket = new Map;
+  const names = new Map, ids = new Map;
+  const jointRoles = new Map, jointRoleMap = new Map;
+  for (const [index, node] of state.nodes.entries()) {
+    ids.set(node, `n${index}`);
+    names.set(node, `${namespace}__${(node.name || "Node").replace(/[^A-Za-z0-9_-]/g, "_")}__n${index}`);
+    if (node.name)
+      addIndex(byName, node.name, node);
+    addIndex(byUuid, node.uuid, node);
+    const metadata = state.semantics.get(node);
+    for (const role of metadata?.roles ?? [])
+      addIndex(byRole, role, node);
+    for (const socket of metadata?.sockets ?? [])
+      addIndex(bySocket, socket.id, { node, socket });
+    const joint = state.joints.get(node);
+    if (joint) {
+      if (jointRoles.has(joint.role))
+        throw new Error(`Ambiguous character joint role: ${joint.role}.`);
+      jointRoles.set(joint.role, node);
+      jointRoleMap.set(joint.role, `${namespace}.${joint.role}`);
+    }
+    for (const key of Object.keys(node.userData)) {
+      if (!metadataKeys.has(key) && options.unknownMetadata !== "copy-json")
+        throw new Error(`Unsupported custom metadata ${key} on ${node.name}; use copy-json only for inert data whose references you own.`);
+    }
+    jsonData(node.userData, node.name);
+    if (node instanceof THREE21.Mesh) {
+      if (options.geometry === "copy") {
+        jsonData(node.geometry.userData, `${node.name} geometry`);
+        if (node.geometry.clone !== THREE21.BufferGeometry.prototype.clone || !threeConstructors.has(node.geometry.constructor))
+          throw new Error("Copying custom geometry classes/clone implementations is unsupported; explicitly share the resource.");
+      }
+      if (options.materials === "copy")
+        for (const material of Array.isArray(node.material) ? node.material : [node.material]) {
+          jsonData(material.userData, `${node.name} material`);
+          if (material.onBeforeCompile !== THREE21.Material.prototype.onBeforeCompile || material.onBeforeRender !== THREE21.Material.prototype.onBeforeRender || material.clone !== THREE21.Material.prototype.clone || !threeConstructors.has(material.constructor) || material.customProgramCacheKey !== THREE21.Material.prototype.customProgramCacheKey || material instanceof THREE21.ShaderMaterial)
+            throw new Error("Copying custom/shader materials is unsupported; explicit sharing preserves their existing implementation.");
+        }
+    }
+  }
+  const externalReferences = [];
+  const external = (reference) => {
+    if (options.externalReferences !== "preserve")
+      throw new Error(`Unresolved external ${reference.kind} reference ${reference.target}; explicitly preserve it only when the caller owns that binding.`);
+    externalReferences.push(reference);
+  };
+  const unique = (matches, label) => {
+    if (matches && matches.length > 1)
+      throw new Error(`Ambiguous assembly reference: ${label}.`);
+    return matches?.[0];
+  };
+  const resolveNode = (target) => unique([...new Set([...byName.get(target) ?? [], ...byUuid.get(target) ?? []])], `node name/UUID ${target}`);
+  const socketName = (node, id) => `${namespace}.${ids.get(node)}.${id}`;
+  const mappedSemantic = new Map;
+  const mappedJoints = new Map;
+  const mappedRigs = new Map;
+  for (const node of state.nodes) {
+    const metadata = state.semantics.get(node), joint = state.joints.get(node);
+    if (metadata) {
+      const mapped = structuredClone(metadata);
+      if (joint)
+        mapped.roles = mapped.roles.map((role) => role === `joint.${joint.role}` ? `joint.${jointRoleMap.get(joint.role)}` : joint.aliases.some((alias) => role === `joint.alias.${alias}`) ? `joint.alias.${namespace}.${role.slice("joint.alias.".length)}` : role);
+      mapped.sockets = mapped.sockets.map((socket) => ({
+        ...socket,
+        id: socketName(node, socket.id)
+      }));
+      mapped.relationships = mapped.relationships.map((relationship) => {
+        const { target, targetType } = relationship;
+        if (targetType === "socket") {
+          const match = unique(bySocket.get(target), `socket ${target}`);
+          if (match)
+            return { ...relationship, target: socketName(match.node, match.socket.id) };
+        } else {
+          const match = targetType === "node" ? resolveNode(target) : unique(byRole.get(target), `role ${target}`);
+          if (match)
+            return { ...relationship, targetType: "node", target: names.get(match) };
+        }
+        external({ kind: "semantic", source: node.name, target, targetType });
+        return relationship;
+      });
+      mappedSemantic.set(node, mapped);
+    }
+    const mapJoint = (descriptor) => {
+      const role = jointRoleMap.get(descriptor.role);
+      if (!role)
+        throw new Error(`Rig graph joint ${descriptor.role} is not backed by a subtree joint node.`);
+      let parentRole = descriptor.parentRole;
+      if (parentRole) {
+        if (jointRoleMap.has(parentRole))
+          parentRole = jointRoleMap.get(parentRole);
+        else
+          external({
+            kind: "character-parent",
+            source: node.name,
+            target: parentRole,
+            targetType: "joint-role"
+          });
+      }
+      return {
+        ...structuredClone(descriptor),
+        role,
+        aliases: descriptor.aliases.map((alias) => `${namespace}.${alias}`),
+        ...parentRole ? { parentRole } : {}
+      };
+    };
+    if (joint) {
+      const mapped = mapJoint(joint);
+      if (!validateCharacterJointDescriptorV1(mapped).valid)
+        throw new Error("Replicated joint descriptor is invalid.");
+      mappedJoints.set(node, mapped);
+    }
+    const rig = state.rigs.get(node);
+    if (rig) {
+      const mapped = { ...structuredClone(rig), joints: rig.joints.map(mapJoint) };
+      if (!validateCharacterRigGraphV1(mapped).valid)
+        throw new Error("Replicated rig graph is invalid.");
+      mappedRigs.set(node, mapped);
+    }
+  }
+  const clipNames = new Set;
+  const trackTargets = new Map;
+  const animatedNodes = new Set;
+  for (const clip of fresh.clips) {
+    if (!(clip instanceof THREE21.AnimationClip))
+      throw new Error("Assembly clips must be AnimationClip instances.");
+    if (clip.blendMode !== THREE21.NormalAnimationBlendMode)
+      throw new Error("Additive/other animation blend modes are unsupported in assembly replication.");
+    jsonData(clip.userData, `Clip ${clip.name}`);
+    if (Object.keys(clip.userData).length && options.unknownMetadata !== "copy-json")
+      throw new Error(`Clip ${clip.name} contains custom metadata; explicitly select copy-json to preserve opaque data.`);
+    createClip(clip.name, clip.duration, clip.tracks);
+    if (clipNames.has(clip.name))
+      throw new Error(`Ambiguous assembly clip name: ${clip.name}.`);
+    clipNames.add(clip.name);
+    for (const track of clip.tracks) {
+      const dot = track.name.lastIndexOf("."), target = track.name.slice(0, dot);
+      const match = resolveNode(target);
+      if (match) {
+        if (!match.matrixAutoUpdate)
+          throw new Error("Animation of manual matrixAutoUpdate=false nodes is unsupported in assembly replication.");
+        trackTargets.set(track, `${names.get(match)}${track.name.slice(dot)}`);
+        animatedNodes.add(match);
+      } else {
+        external({ kind: "animation", source: clip.name, target, targetType: "node" });
+        trackTargets.set(track, track.name);
+      }
+    }
+  }
+  let rootMatrix = state.matrices.get(source.root).clone();
+  if (options.space === "world") {
+    if (state.joints.has(source.root))
+      throw new Error("World placement of a declared joint root requires rest-transform rebasing; wrap it in an assembly root or use local placement.");
+    const parentWorld = options.parent ? worldMatrix(options.parent) : new THREE21.Matrix4;
+    if (!Number.isFinite(parentWorld.determinant()) || parentWorld.determinant() === 0)
+      throw new Error("World placement requires an invertible, nonsingular parent transform.");
+    rootMatrix = parentWorld.invert().multiply(worldMatrix(source.root));
+    checkedTrs(rootMatrix, "Replica world placement");
+    if (animatedNodes.has(source.root))
+      throw new Error("World placement of an animated assembly root requires explicit track rebasing, which is unsupported; animate a child pivot or use local placement.");
+  }
+  if (options.parent) {
+    let scene = options.parent;
+    const ancestors = new Set;
+    while (scene.parent) {
+      if (ancestors.has(scene))
+        throw new Error("Parent hierarchy cycle.");
+      ancestors.add(scene);
+      scene = scene.parent;
+    }
+    const stack = [scene], seen = new Set;
+    while (stack.length) {
+      const node = stack.pop();
+      if (seen.has(node))
+        throw new Error("Destination hierarchy is not a tree.");
+      seen.add(node);
+      if (node.name.startsWith(`${namespace}__`))
+        throw new Error(`Replica namespace collision at ${node.name}. Choose another namespace.`);
+      const joint = readCharacterJointDescriptorV1(node);
+      if (joint && [...jointRoleMap.values()].includes(joint.role))
+        throw new Error(`Replica joint-role collision: ${joint.role}. Choose another namespace.`);
+      stack.push(...node.children);
+    }
+  }
+  const nodeMap = new Map, nameMap = new Map;
+  const geometries = new Map, materials = new Map;
+  const copyMaterial = (material) => {
+    if (options.materials !== "copy")
+      return material;
+    if (!materials.has(material))
+      materials.set(material, material.clone());
+    return materials.get(material);
+  };
+  for (const node of state.nodes) {
+    const copy = node instanceof THREE21.Mesh ? new THREE21.Mesh(node.geometry, node.material) : node instanceof THREE21.Group ? new THREE21.Group : new THREE21.Object3D;
+    copy.copy(node, false);
+    copy.name = names.get(node);
+    copy.animations = [];
+    const matrix = node === source.root ? rootMatrix : state.matrices.get(node);
+    if (!node.matrixAutoUpdate || node === source.root && options.space === "world") {
+      const trs = checkedTrs(matrix, node.name);
+      copy.position.copy(trs.position);
+      copy.quaternion.copy(trs.quaternion);
+      copy.scale.copy(trs.scale);
+    }
+    copy.matrix.copy(matrix);
+    copy.matrixWorldNeedsUpdate = true;
+    if (node instanceof THREE21.Mesh && copy instanceof THREE21.Mesh) {
+      if (options.geometry === "copy") {
+        if (!geometries.has(node.geometry))
+          geometries.set(node.geometry, node.geometry.clone());
+        copy.geometry = geometries.get(node.geometry);
+      } else
+        copy.geometry = node.geometry;
+      copy.material = Array.isArray(node.material) ? node.material.map(copyMaterial) : copyMaterial(node.material);
+    }
+    if (mappedSemantic.has(node))
+      stampSemanticMetadataV1(copy, mappedSemantic.get(node));
+    if (mappedJoints.has(node))
+      copy.userData[KILN_CHARACTER_JOINT_EXTRAS_KEY] = structuredClone(mappedJoints.get(node));
+    if (mappedRigs.has(node))
+      copy.userData[KILN_CHARACTER_RIG_EXTRAS_KEY] = structuredClone(mappedRigs.get(node));
+    nodeMap.set(node, copy);
+    addIndex(nameMap, node.name, copy.name);
+    if (node !== source.root)
+      nodeMap.get(node.parent).add(copy);
+  }
+  const clipMap = new Map;
+  for (const clip of fresh.clips) {
+    const tracks = clip.tracks.map((track) => {
+      const copied = track.clone();
+      copied.name = trackTargets.get(track);
+      return copied;
+    });
+    const copied = createClip(`${namespace}__${clip.name}`, clip.duration, tracks);
+    copied.userData = structuredClone(clip.userData);
+    clipMap.set(clip, copied);
+  }
+  for (const node of state.nodes)
+    nodeMap.get(node).animations = node.animations.map((clip) => clipMap.get(clip));
+  const root = nodeMap.get(source.root);
+  const result = describeAssembly(root, { clips: [...clipMap.values()] });
+  if (options.parent)
+    options.parent.add(root);
+  return {
+    ...result,
+    nodeMap,
+    nameMap,
+    jointRoleMap,
+    clipMap,
+    externalReferences,
+    ownership: {
+      hierarchy: "owned",
+      geometry: options.geometry === "copy" ? "owned" : "shared",
+      materials: options.materials === "copy" ? "owned" : "shared",
+      textures: "shared",
+      clips: "owned"
+    }
+  };
+}
+var ASSEMBLY_LIMITS, metadataKeys, threeConstructors, object = (value) => value !== null && typeof value === "object" && !Array.isArray(value);
+var init_assembly = __esm(() => {
+  init_assembly_transform();
+  init_semantic();
+  init_character();
+  init_primitives();
+  ASSEMBLY_LIMITS = Object.freeze({ nodes: 1e4, positionSamples: 2000000 });
+  metadataKeys = new Set([
+    KILN_SEMANTIC_EXTRAS_KEY,
+    KILN_CHARACTER_JOINT_EXTRAS_KEY,
+    KILN_CHARACTER_RIG_EXTRAS_KEY
+  ]);
+  threeConstructors = new Set(Object.values(THREE21));
+});
+
+// src/architecture.ts
+import * as THREE22 from "three";
+function positive4(value, name) {
+  if (!Number.isFinite(value) || value <= 0)
+    throw new RangeError(`${name} must be finite and > 0`);
+  return value;
+}
+function nonNegative(value, name) {
+  if (!Number.isFinite(value) || value < 0)
+    throw new RangeError(`${name} must be finite and >= 0`);
+  return value;
+}
+function roleMetadata(roles, relationships = [], frames = []) {
+  return { roles, relationships, frames, sockets: [] };
+}
+function relationship(kind, target) {
+  return { kind, target, targetType: "role" };
+}
+function setTransform(object, matrix) {
+  matrix.decompose(object.position, object.quaternion, object.scale);
+}
+function resolvePitch(halfRun, rise, pitchDegrees) {
+  positive4(halfRun, "roof half-run");
+  if (rise === undefined && pitchDegrees === undefined)
+    pitchDegrees = 30;
+  if (pitchDegrees !== undefined) {
+    if (!Number.isFinite(pitchDegrees) || pitchDegrees <= 0 || pitchDegrees >= 89) {
+      throw new RangeError("pitchDegrees must be finite, > 0, and < 89");
+    }
+  }
+  if (rise !== undefined)
+    positive4(rise, "rise");
+  const resolvedPitch = pitchDegrees ?? Math.atan2(rise, halfRun) / DEG;
+  const resolvedRise = rise ?? Math.tan(resolvedPitch * DEG) * halfRun;
+  const expected = Math.tan(resolvedPitch * DEG) * halfRun;
+  if (Math.abs(resolvedRise - expected) > Math.max(EPSILON3, expected * 0.000001)) {
+    throw new RangeError("rise and pitchDegrees disagree for the requested footprint");
+  }
+  return { rise: resolvedRise, pitchDegrees: resolvedPitch };
+}
+function resolveRoofProfile(options) {
+  const spanX = positive4(options.spanX, "spanX");
+  const spanZ = positive4(options.spanZ, "spanZ");
+  const ridgeAxis = options.ridgeAxis ?? "x";
+  const overhang = nonNegative(options.overhang ?? 0.3, "overhang");
+  const thickness = positive4(options.thickness ?? 0.08, "thickness");
+  const halfRun = (ridgeAxis === "x" ? spanZ : spanX) / 2;
+  const pitch = resolvePitch(halfRun, options.rise, options.pitchDegrees);
+  return {
+    spanX,
+    spanZ,
+    ridgeAxis,
+    overhang,
+    thickness,
+    ...pitch,
+    ridgeY: pitch.rise,
+    eaveY: -Math.tan(pitch.pitchDegrees * DEG) * overhang
+  };
+}
+function buildFace(roofRoot, profile, sideSign) {
+  const side = sideSign > 0 ? "positive" : "negative";
+  const halfFoot = (profile.ridgeAxis === "x" ? profile.spanZ : profile.spanX) / 2;
+  const horizontalRun = halfFoot + profile.overhang;
+  const verticalRun = profile.ridgeY - profile.eaveY;
+  const downhillLength = Math.hypot(horizontalRun, verticalRun);
+  const alongRidge = (profile.ridgeAxis === "x" ? profile.spanX : profile.spanZ) + profile.overhang * 2;
+  const downhill = profile.ridgeAxis === "x" ? new THREE22.Vector3(0, -verticalRun, sideSign * horizontalRun).normalize() : new THREE22.Vector3(sideSign * horizontalRun, -verticalRun, 0).normalize();
+  const tangent = profile.ridgeAxis === "x" ? new THREE22.Vector3(sideSign, 0, 0) : new THREE22.Vector3(0, 0, -sideSign);
+  const normal = downhill.clone().cross(tangent).normalize();
+  const localToRoof = new THREE22.Matrix4().makeBasis(tangent, normal, downhill);
+  localToRoof.setPosition(0, profile.ridgeY, 0);
+  const world = () => {
+    roofRoot.updateWorldMatrix(true, false);
+    return roofRoot.matrixWorld.clone().multiply(localToRoof);
+  };
+  const direction = (axis) => axis.clone().transformDirection(world());
+  const point = (x, z) => new THREE22.Vector3(x, 0, z).applyMatrix4(world());
+  return {
+    side,
+    ridgeAxis: profile.ridgeAxis,
+    roofRoot,
+    localToRoof,
+    get localToWorld() {
+      return world();
+    },
+    get ridgeTangent() {
+      return direction(new THREE22.Vector3(1, 0, 0));
+    },
+    get downhillDirection() {
+      return direction(new THREE22.Vector3(0, 0, 1));
+    },
+    get outwardNormal() {
+      return direction(new THREE22.Vector3(0, 1, 0));
+    },
+    get ridgeStart() {
+      return point(-alongRidge / 2, 0);
+    },
+    get ridgeEnd() {
+      return point(alongRidge / 2, 0);
+    },
+    get eaveStart() {
+      return point(-alongRidge / 2, downhillLength);
+    },
+    get eaveEnd() {
+      return point(alongRidge / 2, downhillLength);
+    },
+    dimensions: { alongRidge, downhill: downhillLength, thickness: profile.thickness }
+  };
+}
+function buildRoof(name, material, profile, parent) {
+  const root = new THREE22.Object3D;
+  root.name = name;
+  if (parent)
+    parent.add(root);
+  stampSemanticMetadataV1(root, roleMetadata([semanticRole(KILN_SEMANTIC_ROLES.roof, "assembly")], [relationship("separable-from", "architecture.shell.gable")]));
+  const faces = [buildFace(root, profile, 1), buildFace(root, profile, -1)];
+  const buildSlope = (face) => {
+    const geometry = new THREE22.BoxGeometry(face.dimensions.alongRidge, profile.thickness, face.dimensions.downhill);
+    const mesh = new THREE22.Mesh(geometry, material);
+    mesh.name = `Mesh_${name}_${face.side}`;
+    const center = new THREE22.Matrix4().makeTranslation(0, -profile.thickness / 2, face.dimensions.downhill / 2);
+    setTransform(mesh, face.localToRoof.clone().multiply(center));
+    const coveredWall = profile.ridgeAxis === "x" ? face.side === "positive" ? "wall.right" : "wall.left" : face.side === "positive" ? "wall.front" : "wall.back";
+    stampSemanticMetadataV1(mesh, roleMetadata([semanticRole(KILN_SEMANTIC_ROLES.roof, "slope", face.side)], [
+      relationship("adjacent-to", semanticRole(KILN_SEMANTIC_ROLES.roof, "slope", face.side === "positive" ? "negative" : "positive")),
+      relationship("coverage-of", coveredWall),
+      relationship("separable-from", "architecture.shell.gable")
+    ], [
+      { id: "surface", translation: [0, profile.thickness / 2, 0], rotation: [0, 0, 0, 1] },
+      {
+        id: "ridge",
+        translation: [0, profile.thickness / 2, -face.dimensions.downhill / 2],
+        rotation: [0, 0, 0, 1]
+      },
+      {
+        id: "eave",
+        translation: [0, profile.thickness / 2, face.dimensions.downhill / 2],
+        rotation: [0, 0, 0, 1]
+      }
+    ]));
+    root.add(mesh);
+    return mesh;
+  };
+  const slopes = [buildSlope(faces[0]), buildSlope(faces[1])];
+  return {
+    root,
+    slopes,
+    faces: [faces[0], faces[1]],
+    rise: profile.rise,
+    pitchDegrees: profile.pitchDegrees
+  };
+}
+function createGableRoof(name, material, options) {
+  return buildRoof(name, material, resolveRoofProfile(options), options.parent);
+}
+function createRoofPlanes(name, material, options) {
+  const ridgeAxis = options.ridgeAxis ?? "x";
+  const overhang = nonNegative(options.overhang ?? 0.3, "overhang");
+  const halfFoot = (ridgeAxis === "x" ? positive4(options.width, "width") : positive4(options.depth, "depth")) / 2;
+  const totalRun = halfFoot + overhang;
+  const height = positive4(options.height, "height");
+  const pitchDegrees = Math.atan2(height, totalRun) / DEG;
+  const profile = resolveRoofProfile({
+    spanX: options.depth,
+    spanZ: options.width,
+    ridgeAxis,
+    overhang,
+    thickness: options.thickness,
+    rise: Math.tan(pitchDegrees * DEG) * halfFoot
+  });
+  profile.ridgeY = height;
+  profile.eaveY = 0;
+  profile.pitchDegrees = pitchDegrees;
+  return buildRoof(name, material, profile, options.parent);
+}
+function openingFitsTriangle(opening, span, rise) {
+  const half = span / 2;
+  const left = opening.offset - opening.width / 2;
+  const right = opening.offset + opening.width / 2;
+  const top = opening.bottom + opening.height;
+  const maxAt = (u) => rise * (1 - Math.abs(u) / half);
+  return left > -half && right < half && opening.bottom >= 0 && top < Math.min(maxAt(left), maxAt(right));
+}
+function createGableEndPanel(name, material, options) {
+  const span = positive4(options.span, "span");
+  const rise = positive4(options.rise, "rise");
+  const thickness = positive4(options.thickness ?? 0.15, "thickness");
+  const ridgeAxis = options.ridgeAxis ?? "x";
+  const side = options.side ?? "positive";
+  const half = span / 2;
+  const shape = new THREE22.Shape;
+  shape.moveTo(-half, 0);
+  shape.lineTo(half, 0);
+  shape.lineTo(0, rise);
+  shape.closePath();
+  const normalized = (options.openings ?? []).map((opening) => ({
+    id: opening.id,
+    offset: opening.offset ?? 0,
+    bottom: opening.bottom ?? 0.25,
+    width: positive4(opening.width, "opening.width"),
+    height: positive4(opening.height, "opening.height")
+  }));
+  for (const opening of normalized) {
+    if (!openingFitsTriangle(opening, span, rise))
+      throw new RangeError("gable opening must fit strictly inside the triangular boundary");
+    const left = opening.offset - opening.width / 2;
+    const right = opening.offset + opening.width / 2;
+    const bottom = opening.bottom;
+    const top = bottom + opening.height;
+    const hole = new THREE22.Path;
+    hole.moveTo(left, bottom);
+    hole.lineTo(left, top);
+    hole.lineTo(right, top);
+    hole.lineTo(right, bottom);
+    hole.closePath();
+    shape.holes.push(hole);
+  }
+  const geometry = new THREE22.ExtrudeGeometry(shape, {
+    depth: thickness,
+    bevelEnabled: false,
+    steps: 1
+  });
+  geometry.translate(0, 0, -thickness / 2);
+  if (ridgeAxis === "x")
+    geometry.rotateY(-Math.PI / 2);
+  geometry.computeVertexNormals();
+  const root = new THREE22.Mesh(geometry, material);
+  root.name = `Mesh_${name}`;
+  stampSemanticMetadataV1(root, roleMetadata([`roof.gable.${side}`], [
+    relationship("adjacent-to", "roof.slope.positive"),
+    relationship("adjacent-to", "roof.slope.negative"),
+    relationship("coverage-of", ridgeAxis === "x" ? side === "positive" ? "wall.front" : "wall.back" : side === "positive" ? "wall.right" : "wall.left"),
+    relationship("separable-from", "architecture.shell.gable")
+  ], [
+    { id: "base", translation: [0, 0, 0], rotation: [0, 0, 0, 1] },
+    {
+      id: "apex",
+      translation: ridgeAxis === "x" ? [0, rise, 0] : [0, rise, 0],
+      rotation: [0, 0, 0, 1]
+    }
+  ]));
+  const markers = normalized.map((opening, index) => {
+    const marker = new THREE22.Object3D;
+    marker.name = `Opening_${name}_${opening.id ?? index + 1}`;
+    marker.position.set(ridgeAxis === "z" ? opening.offset : 0, opening.bottom + opening.height / 2, ridgeAxis === "x" ? opening.offset : 0);
+    marker.scale.set(ridgeAxis === "x" ? thickness : opening.width, opening.height, ridgeAxis === "x" ? opening.width : thickness);
+    stampSemanticMetadataV1(marker, roleMetadata([`opening.gable.${side}.${opening.id ?? index + 1}`], [relationship("cutout-of", `roof.gable.${side}`)]));
+    root.add(marker);
+    return marker;
+  });
+  if (options.parent)
+    options.parent.add(root);
+  return { root, geometry, openings: markers };
+}
+function wallRunAxis(wall) {
+  return wall === "front" || wall === "back" ? "z" : "x";
+}
+function wallNeighbors(wall) {
+  return wall === "front" || wall === "back" ? ["left", "right"] : ["front", "back"];
+}
+function createShellWall(name, wall, material, length, height, thickness, openings) {
+  const axis = wallRunAxis(wall);
+  const root = new THREE22.Object3D;
+  root.name = `${name}_Wall_${wall}`;
+  const neighbors = wallNeighbors(wall);
+  stampSemanticMetadataV1(root, roleMetadata([`wall.${wall}`], [
+    relationship("adjacent-to", `wall.${neighbors[0]}`),
+    relationship("adjacent-to", `wall.${neighbors[1]}`),
+    relationship("adjacent-to", "floor")
+  ]));
+  const built = buildWallPanels(length, height, thickness, openings);
+  const panel = (suffix, lo, hi, y0, y1) => {
+    if (hi <= lo || y1 <= y0)
+      return;
+    const geometry = axis === "x" ? new THREE22.BoxGeometry(hi - lo, y1 - y0, thickness) : new THREE22.BoxGeometry(thickness, y1 - y0, hi - lo);
+    const mesh = new THREE22.Mesh(geometry, material);
+    mesh.name = `Mesh_${name}_${wall}_${suffix}`;
+    mesh.position.set(axis === "x" ? (lo + hi) / 2 : 0, (y0 + y1) / 2, axis === "z" ? (lo + hi) / 2 : 0);
+    root.add(mesh);
+  };
+  const markers = [];
+  const singleNames = {
+    "": "solid",
+    _L: "left",
+    _R: "right",
+    _Lintel: "lintel",
+    _Sill: "sill"
+  };
+  for (const segment of built.panels) {
+    panel(singleNames[segment.suffix] ?? segment.suffix.slice(1), segment.left, segment.right, segment.bottom, segment.top);
+  }
+  for (const opening of built.openings) {
+    const marker = new THREE22.Object3D;
+    marker.name = `Opening_${wall}_${opening.id}`;
+    marker.position.set(axis === "x" ? opening.offset : 0, opening.sill + opening.height / 2, axis === "z" ? opening.offset : 0);
+    marker.scale.set(axis === "x" ? opening.width : opening.depth, opening.height, axis === "z" ? opening.width : opening.depth);
+    stampSemanticMetadataV1(marker, roleMetadata([`opening.${wall}.${opening.kind}`], [
+      relationship("cutout-of", `wall.${wall}`),
+      relationship(opening.kind === "door" ? "portal-through" : "aperture-through", `wall.${wall}`)
+    ], [{ id: "clearance", translation: [0, 0, 0], rotation: [0, 0, 0, 1] }]));
+    root.add(marker);
+    markers.push(marker);
+  }
+  return { root, openings: markers };
+}
+function createGableShell(name, materials, options) {
+  const spanX = positive4(options.spanX, "spanX");
+  const spanZ = positive4(options.spanZ, "spanZ");
+  const wallHeight = positive4(options.wallHeight ?? 2.8, "wallHeight");
+  const wallThickness = positive4(options.wallThickness ?? 0.15, "wallThickness");
+  const floorThickness = positive4(options.floorThickness ?? 0.1, "floorThickness");
+  const ridgeAxis = options.ridgeAxis ?? "x";
+  const closedEnds = options.closedEnds ?? true;
+  const enterable = options.enterable ?? true;
+  const shellOpenings = options.openings ?? (enterable ? [{ wall: "front", kind: "door" }] : []);
+  const root = new THREE22.Object3D;
+  root.name = name;
+  stampSemanticMetadataV1(root, roleMetadata(["architecture.shell.gable"], [relationship("contains", "floor"), relationship("contains", "roof.assembly")]));
+  const wallSpecs = {
+    front: { length: spanZ, position: [spanX / 2, 0, 0] },
+    back: { length: spanZ, position: [-spanX / 2, 0, 0] },
+    left: { length: spanX, position: [0, 0, -spanZ / 2] },
+    right: { length: spanX, position: [0, 0, spanZ / 2] }
+  };
+  const walls = {};
+  const openingMarkers = [];
+  for (const wall of ["front", "back", "left", "right"]) {
+    const built = createShellWall(name, wall, materials.wall, wallSpecs[wall].length, wallHeight, wallThickness, shellOpenings.filter((opening) => opening.wall === wall));
+    built.root.position.set(...wallSpecs[wall].position);
+    root.add(built.root);
+    walls[wall] = built.root;
+    openingMarkers.push(...built.openings);
+  }
+  const floor = new THREE22.Mesh(new THREE22.BoxGeometry(spanX, floorThickness, spanZ), materials.floor ?? materials.wall);
+  floor.name = `Mesh_${name}_Floor`;
+  floor.position.y = -floorThickness / 2;
+  stampSemanticMetadataV1(floor, roleMetadata(["floor"], ["front", "back", "left", "right"].map((wall) => relationship("adjacent-to", `wall.${wall}`))));
+  root.add(floor);
+  const roof = createGableRoof("Roof", materials.roof, {
+    ...options,
+    spanX,
+    spanZ,
+    ridgeAxis,
+    parent: root
+  });
+  roof.root.position.y = wallHeight;
+  let gables = [];
+  if (closedEnds) {
+    const gableMaterial = materials.gable ?? materials.wall;
+    const span = ridgeAxis === "x" ? spanZ : spanX;
+    const ridgeSpan = ridgeAxis === "x" ? spanX : spanZ;
+    const positiveEnd = createGableEndPanel(`${name}_Gable_positive`, gableMaterial, {
+      span,
+      rise: roof.rise,
+      thickness: wallThickness,
+      ridgeAxis,
+      side: "positive",
+      openings: options.gableOpenings?.positive,
+      parent: roof.root
+    });
+    const negativeEnd = createGableEndPanel(`${name}_Gable_negative`, gableMaterial, {
+      span,
+      rise: roof.rise,
+      thickness: wallThickness,
+      ridgeAxis,
+      side: "negative",
+      openings: options.gableOpenings?.negative,
+      parent: roof.root
+    });
+    const coordinate = ridgeSpan / 2;
+    positiveEnd.root.position.set(ridgeAxis === "x" ? coordinate : 0, 0, ridgeAxis === "z" ? coordinate : 0);
+    negativeEnd.root.position.set(ridgeAxis === "x" ? -coordinate : 0, 0, ridgeAxis === "z" ? -coordinate : 0);
+    gables = [positiveEnd.root, negativeEnd.root];
+    openingMarkers.push(...positiveEnd.openings, ...negativeEnd.openings);
+  }
+  if (options.parent)
+    options.parent.add(root);
+  return { root, walls, floor, roof, gables, openings: openingMarkers };
+}
+function createRoofSurfaceLayout(name, material, options) {
+  if (!["panels", "shingles", "seams", "corrugations"].includes(options.kind))
+    throw new RangeError("createRoofSurfaceLayout: unknown kind.");
+  const thickness = options.thickness ?? 0.025;
+  const along = options.face.dimensions.alongRidge;
+  const downhill = options.face.dimensions.downhill;
+  for (const [key, value] of Object.entries({ thickness, alongRidge: along, downhill }))
+    assertDimension(`createRoofSurfaceLayout ${key}`, value);
+  const parent = options.parent ?? options.face.roofRoot;
+  parent.updateWorldMatrix(true, false);
+  if (!Number.isFinite(parent.matrixWorld.determinant()) || parent.matrixWorld.determinant() === 0)
+    throw new Error("createRoofSurfaceLayout: parent transform is singular or nonfinite.");
+  const faceToRoot = parent.matrixWorld.clone().invert().multiply(options.face.localToWorld);
+  checkedTrs(faceToRoot, "createRoofSurfaceLayout (use face.roofRoot for inherited shear)");
+  const specs = [];
+  if (options.kind === "panels") {
+    const panelWidth = positive4(options.panelWidth ?? 0.9, "panelWidth");
+    const count = Math.max(1, Math.ceil(along / panelWidth));
+    assertRepetitionCount("createRoofSurfaceLayout panels", count);
+    const width = along / count;
+    for (let i = 0;i < count; i++)
+      specs.push({
+        width: width * 0.98,
+        length: downhill,
+        x: -along / 2 + width * (i + 0.5),
+        z: downhill / 2
+      });
+  } else if (options.kind === "shingles") {
+    const rowHeight = positive4(options.rowHeight ?? 0.32, "rowHeight");
+    const tileWidth = positive4(options.panelWidth ?? 0.42, "panelWidth");
+    const rows = Math.max(1, Math.ceil(downhill / rowHeight));
+    const evenColumns = Math.ceil(along / tileWidth);
+    const oddColumns = Math.ceil(along / tileWidth + 0.5);
+    assertRepetitionCount("createRoofSurfaceLayout shingles", Math.ceil(rows / 2) * evenColumns + Math.floor(rows / 2) * oddColumns);
+    for (let row = 0;row < rows; row++) {
+      const zMin = row * rowHeight;
+      const length = Math.min(rowHeight * 1.08, downhill - zMin);
+      const columns = row % 2 === 0 ? evenColumns : oddColumns;
+      const offset = row % 2 === 0 ? 0 : -tileWidth / 2;
+      for (let column = 0;column < columns; column++) {
+        const start = offset + column * tileWidth;
+        const left = Math.max(0, start);
+        const right = Math.min(along, start + tileWidth);
+        if (right <= left)
+          continue;
+        specs.push({
+          width: (right - left) * 0.96,
+          length,
+          x: -along / 2 + (left + right) / 2,
+          z: zMin + length / 2
+        });
+      }
+    }
+  } else {
+    const spacing = positive4(options.spacing ?? (options.kind === "seams" ? 0.6 : 0.18), "spacing");
+    const width = options.kind === "seams" ? 0.025 : 0.018;
+    const count = along <= width ? 1 : Math.max(2, Math.floor(along / spacing) + 1);
+    assertRepetitionCount("createRoofSurfaceLayout strips", count);
+    for (let i = 0;i < count; i++) {
+      const center = count === 1 ? 0 : -along / 2 + along * i / (count - 1);
+      const left = Math.max(-along / 2, center - width / 2);
+      const right = Math.min(along / 2, center + width / 2);
+      specs.push({ width: right - left, length: downhill, x: (left + right) / 2, z: downhill / 2 });
+    }
+  }
+  for (const spec of specs) {
+    assertDimension("createRoofSurfaceLayout generated width", spec.width);
+    assertDimension("createRoofSurfaceLayout generated length", spec.length);
+  }
+  const root = new THREE22.Object3D;
+  root.name = name;
+  stampSemanticMetadataV1(root, roleMetadata([`roof.surface.${options.kind}`], [relationship("coverage-of", `roof.slope.${options.face.side}`)]));
+  const items = specs.map((spec, index) => {
+    const mesh = new THREE22.Mesh(new THREE22.BoxGeometry(spec.width, thickness, spec.length), material);
+    mesh.name = `Mesh_${name}_${index + 1}`;
+    const local = new THREE22.Matrix4().makeTranslation(spec.x, thickness / 2 + 0.002, spec.z);
+    setTransform(mesh, faceToRoot.clone().multiply(local));
+    root.add(mesh);
+    return mesh;
+  });
+  parent.add(root);
+  return { root, items, cost: { meshes: items.length, triangles: items.length * 12 } };
+}
+var DEG, EPSILON3 = 0.0000001;
+var init_architecture2 = __esm(() => {
+  init_geometry_budget();
+  init_assembly_transform();
+  init_contracts();
+  DEG = Math.PI / 180;
+});
+
+// src/gears.ts
+import * as THREE23 from "three";
+function gearGeo(opts = {}) {
+  const {
+    teeth = 12,
+    rootRadius = 0.8,
+    tipRadius = 1,
+    boreRadius = 0.2,
+    height = 0.3,
+    toothWidthFrac = 0.5
+  } = opts;
+  assertPrimitiveSegments("gearGeo teeth", teeth, 3);
+  assertDimension("gearGeo rootRadius", rootRadius);
+  assertDimension("gearGeo tipRadius", tipRadius);
+  assertDimension("gearGeo boreRadius", boreRadius, true);
+  assertDimension("gearGeo height", height);
+  if (!Number.isFinite(toothWidthFrac) || toothWidthFrac <= 0 || toothWidthFrac >= 1)
+    throw new RangeError("gearGeo toothWidthFrac must be strictly between 0 and 1.");
+  if (tipRadius <= rootRadius || boreRadius >= rootRadius) {
+    throw new AuthoringDiagnosticError("GEAR_RADII_ORDER");
+  }
+  const sector = Math.PI * 2 / teeth;
+  const alpha = (1 - toothWidthFrac) * (sector / 2);
+  const crown = [];
+  for (let i = 0;i < teeth; i++) {
+    const base = i * sector;
+    const a0 = base;
+    const a1 = base + alpha;
+    const a2 = base + sector - alpha;
+    crown.push([rootRadius * Math.cos(a0), rootRadius * Math.sin(a0)]);
+    crown.push([tipRadius * Math.cos(a1), tipRadius * Math.sin(a1)]);
+    crown.push([tipRadius * Math.cos(a2), tipRadius * Math.sin(a2)]);
+  }
+  const N = crown.length;
+  const bore = [];
+  for (let i = 0;i < N; i++) {
+    const t = Math.atan2(crown[i][1], crown[i][0]);
+    bore.push([boreRadius * Math.cos(t), boreRadius * Math.sin(t)]);
+  }
+  const halfH = height / 2;
+  const positions = [];
+  const indices = [];
+  for (let i = 0;i < N; i++) {
+    const p = crown[i];
+    positions.push(p[0], halfH, p[1]);
+  }
+  for (let i = 0;i < N; i++) {
+    const p = crown[i];
+    positions.push(p[0], -halfH, p[1]);
+  }
+  for (let i = 0;i < N; i++) {
+    const p = bore[i];
+    positions.push(p[0], halfH, p[1]);
+  }
+  for (let i = 0;i < N; i++) {
+    const p = bore[i];
+    positions.push(p[0], -halfH, p[1]);
+  }
+  const crownTop = 0;
+  const crownBot = N;
+  const boreTop = 2 * N;
+  const boreBot = 3 * N;
+  for (let i = 0;i < N; i++) {
+    const j = (i + 1) % N;
+    const cA = crownTop + i;
+    const cB = crownTop + j;
+    const bA = boreTop + i;
+    const bB = boreTop + j;
+    indices.push(bA, cB, cA);
+    if (boreRadius > 0)
+      indices.push(bA, bB, cB);
+  }
+  for (let i = 0;i < N; i++) {
+    const j = (i + 1) % N;
+    const cA = crownBot + i;
+    const cB = crownBot + j;
+    const bA = boreBot + i;
+    const bB = boreBot + j;
+    indices.push(bA, cA, cB);
+    if (boreRadius > 0)
+      indices.push(bA, cB, bB);
+  }
+  for (let i = 0;i < N; i++) {
+    const j = (i + 1) % N;
+    const tA = crownTop + i;
+    const tB = crownTop + j;
+    const bA = crownBot + i;
+    const bB = crownBot + j;
+    indices.push(tA, tB, bB);
+    indices.push(tA, bB, bA);
+  }
+  for (let i = 0;boreRadius > 0 && i < N; i++) {
+    const j = (i + 1) % N;
+    const tA = boreTop + i;
+    const tB = boreTop + j;
+    const bA = boreBot + i;
+    const bB = boreBot + j;
+    indices.push(tA, bA, bB);
+    indices.push(tA, bB, tB);
+  }
+  const geo = new THREE23.BufferGeometry;
+  geo.setAttribute("position", new THREE23.Float32BufferAttribute(positions, 3));
+  geo.setIndex(indices);
+  const nonIndexed = geo.toNonIndexed();
+  nonIndexed.computeVertexNormals();
+  return nonIndexed;
+}
+function bladeGeo(opts = {}) {
+  const {
+    length = 1.5,
+    baseWidth = 0.1,
+    thickness = 0.015,
+    tipLength = 0.25,
+    edgeBevel = 0
+  } = opts;
+  for (const [name, value] of Object.entries({ length, baseWidth, thickness }))
+    assertDimension(`bladeGeo ${name}`, value);
+  assertDimension("bladeGeo tipLength", tipLength, true);
+  if (!Number.isFinite(edgeBevel) || edgeBevel < 0 || edgeBevel > 1)
+    throw new RangeError("bladeGeo edgeBevel must be between 0 and 1.");
+  if (tipLength >= length) {
+    throw new Error("bladeGeo: tipLength must be less than length");
+  }
+  const hw = baseWidth / 2;
+  const ht = thickness / 2;
+  const shoulderY = length - tipLength;
+  const outline = [
+    [-hw, 0],
+    [hw, 0],
+    [hw, shoulderY],
+    [0, length],
+    [-hw, shoulderY]
+  ];
+  const n = outline.length;
+  const positions = [];
+  const indices = [];
+  if (edgeBevel <= 0) {
+    for (const [x, y] of outline)
+      positions.push(x, y, ht);
+    for (const [x, y] of outline)
+      positions.push(x, y, -ht);
+    for (let i = 1;i < n - 1; i++) {
+      indices.push(0, i, i + 1);
+    }
+    for (let i = 1;i < n - 1; i++) {
+      indices.push(n, n + i + 1, n + i);
+    }
+    for (let i = 0;i < n; i++) {
+      const j = (i + 1) % n;
+      const tA = i;
+      const tB = j;
+      const bA = n + i;
+      const bB = n + j;
+      indices.push(tA, bA, bB);
+      indices.push(tA, bB, tB);
+    }
+  } else {
+    const edge = ht * (1 - edgeBevel);
+    const section = edgeBevel === 1 ? [
+      [-hw, 0],
+      [0, -ht],
+      [hw, 0],
+      [0, ht]
+    ] : [
+      [-hw, -edge],
+      [0, -ht],
+      [hw, -edge],
+      [hw, edge],
+      [0, ht],
+      [-hw, edge]
+    ];
+    const count = section.length;
+    for (const y of [0, shoulderY])
+      for (const [x, z] of section)
+        positions.push(x, y, z);
+    const baseCenter = positions.length / 3;
+    positions.push(0, 0, 0);
+    const tip = positions.length / 3;
+    positions.push(0, length, 0);
+    for (let i = 0;i < count; i++) {
+      const j = (i + 1) % count;
+      indices.push(baseCenter, i, j);
+      indices.push(i, count + j, j, i, count + i, count + j);
+      indices.push(count + i, tip, count + j);
+    }
+  }
+  const geo = new THREE23.BufferGeometry;
+  geo.setAttribute("position", new THREE23.Float32BufferAttribute(positions, 3));
+  geo.setIndex(indices);
+  const nonIndexed = geo.toNonIndexed();
+  nonIndexed.computeVertexNormals();
+  return nonIndexed;
+}
+var init_gears = __esm(() => {
+  init_authoring_diagnostic();
+  init_geometry_budget();
+});
+
+// src/ops.ts
+import * as THREE24 from "three";
+import { LoopSubdivision } from "three-subdivide/build/index.module.js";
+import { mergeVertices as threeMergeVertices } from "three/examples/jsm/utils/BufferGeometryUtils.js";
+function assertFiniteSourceFrame(name, source) {
+  assertFiniteTriple(`${name} source position`, source.position.toArray());
+  assertFiniteTriple(`${name} source scale`, source.scale.toArray());
+  assertFiniteTriple(`${name} source rotation`, [
+    source.rotation.x,
+    source.rotation.y,
+    source.rotation.z
+  ]);
+}
+function arrayLinear(namePrefix, source, count, offset, parent) {
+  assertRepetitionCount("arrayLinear", count);
+  assertFiniteSourceFrame("arrayLinear", source);
+  assertFiniteTriple("arrayLinear offset", offset);
+  const last = source.position.toArray().map((value, axis) => value + offset[axis] * (count - 1));
+  assertFiniteTriple("arrayLinear resulting position", last);
+  const out = [];
+  const base = source.position.toArray();
+  const rotation = degreesOf(source.rotation);
+  const scale = source.scale.toArray();
+  for (let i = 1;i < count; i++) {
+    const pos = [
+      base[0] + offset[0] * i,
+      base[1] + offset[1] * i,
+      base[2] + offset[2] * i
+    ];
+    out.push(createInstance(`${namePrefix}${i}`, source, { position: pos, rotation, scale, parent }));
+  }
+  return out;
+}
+function degreesOf(euler) {
+  return [
+    THREE24.MathUtils.radToDeg(euler.x),
+    THREE24.MathUtils.radToDeg(euler.y),
+    THREE24.MathUtils.radToDeg(euler.z)
+  ];
+}
+function arrayRadial(namePrefix, source, count, axis = "y", parent, center, options = {}) {
+  assertRepetitionCount("arrayRadial", count);
+  assertFiniteSourceFrame("arrayRadial", source);
+  if (!["x", "y", "z"].includes(axis))
+    throw new RangeError("arrayRadial axis must be x, y or z.");
+  if (options.orientation !== undefined && !["outward", "relative"].includes(options.orientation))
+    throw new RangeError("arrayRadial orientation must be outward or relative.");
+  if (center)
+    assertFiniteTriple("arrayRadial center", center);
+  const out = [];
+  const pivot = center ? new THREE24.Vector3(...center) : new THREE24.Vector3;
+  const basePos = source.position.clone().sub(pivot);
+  const axisVec = axis === "x" ? new THREE24.Vector3(1, 0, 0) : axis === "z" ? new THREE24.Vector3(0, 0, 1) : new THREE24.Vector3(0, 1, 0);
+  const positions = [];
+  for (let i = 1;i < count; i++) {
+    const position = basePos.clone().applyMatrix4(new THREE24.Matrix4().makeRotationAxis(axisVec, i / count * Math.PI * 2)).add(pivot);
+    assertFiniteTriple("arrayRadial resulting position", position.toArray());
+    positions.push(position);
+  }
+  for (let i = 1;i < count; i++) {
+    const angle = i / count * Math.PI * 2;
+    const rotated = positions[i - 1];
+    const eulerDeg = axis === "y" ? [0, angle * 180 / Math.PI, 0] : axis === "x" ? [angle * 180 / Math.PI, 0, 0] : [0, 0, angle * 180 / Math.PI];
+    const copy = createInstance(`${namePrefix}${i}`, source, {
+      position: [rotated.x, rotated.y, rotated.z],
+      rotation: eulerDeg,
+      scale: source.scale.toArray(),
+      parent
+    });
+    if (options.orientation === "relative") {
+      copy.quaternion.setFromAxisAngle(axisVec, angle).multiply(source.quaternion);
+    }
+    out.push(copy);
+  }
+  return out;
+}
+function mirror(name, source, axis, parent) {
+  if (source.matrixAutoUpdate)
+    source.updateMatrix();
+  const reflected = new THREE24.Matrix4().makeScale(axis === "x" ? -1 : 1, axis === "y" ? -1 : 1, axis === "z" ? -1 : 1).multiply(source.matrix);
+  if (!reflected.elements.every(Number.isFinite) || reflected.determinant() === 0) {
+    throw new RangeError(`mirror("${name}"): source requires a finite, nonsingular local transform.`);
+  }
+  const position = new THREE24.Vector3;
+  const quaternion = new THREE24.Quaternion;
+  const scale = new THREE24.Vector3;
+  reflected.decompose(position, quaternion, scale);
+  const recomposed = new THREE24.Matrix4().compose(position, quaternion, scale);
+  if (reflected.elements.some((value, i) => Math.abs(value - recomposed.elements[i]) > 0.00000001 * Math.max(1, Math.abs(value)))) {
+    throw new RangeError(`mirror("${name}"): local shear cannot be represented by a reflected TRS.`);
+  }
+  const copy = createInstance(name, source);
+  copy.position.copy(position);
+  copy.quaternion.copy(quaternion);
+  copy.scale.copy(scale);
+  if (parent)
+    parent.add(copy);
+  return copy;
+}
+function mergeVertices(geometry, opts = {}) {
+  const { tolerance = 0.0001, positionOnly = false } = typeof opts === "number" ? { tolerance: opts } : opts;
+  if (!positionOnly)
+    return threeMergeVertices(geometry, tolerance);
+  const stripped = new THREE24.BufferGeometry;
+  const pos = geometry.getAttribute("position");
+  if (!pos)
+    return geometry;
+  stripped.setAttribute("position", new THREE24.BufferAttribute(new Float32Array(pos.array), pos.itemSize, pos.normalized));
+  if (geometry.index) {
+    stripped.setIndex(new THREE24.BufferAttribute(new Uint32Array(geometry.index.array), 1));
+  }
+  return threeMergeVertices(stripped, tolerance);
+}
+function subdivide(geometry, iterations = 1, opts = {}) {
+  if (geometry.hasAttribute("skinIndex") || geometry.hasAttribute("skinWeight"))
+    throw new Error("subdivide cannot interpolate skin joint indices safely; subdivide before skin binding.");
+  if (!Number.isSafeInteger(iterations) || iterations < 0 || iterations > GEOMETRY_ALLOCATION_LIMITS.subdivisionIterations)
+    throw new RangeError(`subdivide iterations must be an integer from 0 to ${GEOMETRY_ALLOCATION_LIMITS.subdivisionIterations}.`);
+  const position = geometry.getAttribute("position");
+  if (position?.itemSize !== 3)
+    throw new TypeError("subdivide requires xyz positions.");
+  const corners = geometry.index?.count ?? position.count;
+  if (!Number.isSafeInteger(corners) || corners % 3 !== 0)
+    throw new TypeError("subdivide requires complete triangles.");
+  const upperTriangles = corners / 3 * (opts.split === false ? 1 : 4) * 4 ** iterations;
+  if (!Number.isSafeInteger(upperTriangles) || upperTriangles > GEOMETRY_ALLOCATION_LIMITS.subdivisionTriangles)
+    throw new RangeError(`subdivide triangle budget exceeded: worst-case ${upperTriangles}, limit ${GEOMETRY_ALLOCATION_LIMITS.subdivisionTriangles}. Reduce iterations or subdivide a smaller mesh.`);
+  const attributes = [
+    ...Object.values(geometry.attributes),
+    ...Object.values(geometry.morphAttributes).flat()
+  ];
+  for (const [name, attribute] of Object.entries(geometry.attributes))
+    if (attribute.count !== position.count || !Number.isInteger(attribute.itemSize) || attribute.itemSize < 1 || attribute.itemSize > 4)
+      throw new Error(`subdivide ${name} must be a matching continuous per-vertex attribute with 1..4 components.`);
+  for (const targets of Object.values(geometry.morphAttributes))
+    if (targets.some((attribute) => attribute.count !== position.count || attribute.itemSize !== 3))
+      throw new Error("subdivide morph targets currently require matching three-component attributes.");
+  const bytesPerCorner = attributes.reduce((sum, attribute) => sum + attribute.itemSize * Math.max(4, attribute.array.BYTES_PER_ELEMENT), 0);
+  const upperAttributeBytes = upperTriangles * 3 * (bytesPerCorner + (geometry.hasAttribute("normal") ? 0 : 12));
+  if (!Number.isSafeInteger(upperAttributeBytes) || upperAttributeBytes > GEOMETRY_ALLOCATION_LIMITS.subdivisionAttributeBytes)
+    throw new RangeError(`subdivide attribute budget exceeded: worst-case ${upperAttributeBytes} bytes, limit ${GEOMETRY_ALLOCATION_LIMITS.subdivisionAttributeBytes}.`);
+  const { weld = true, preserveUV = false, ...subOpts } = opts;
+  const prepared = geometry.clone();
+  prepared.computeBoundingBox();
+  const center = prepared.boundingBox.getCenter(new THREE24.Vector3);
+  const extent = prepared.boundingBox.getSize(new THREE24.Vector3);
+  const size = Math.max(extent.x, extent.y, extent.z);
+  const normalizationScale = size > 0 ? 1e4 / size : 1;
+  if (!Number.isFinite(normalizationScale) || !center.toArray().every(Number.isFinite))
+    throw new Error("subdivide requires finite representable positions.");
+  prepared.translate(-center.x, -center.y, -center.z).scale(normalizationScale, normalizationScale, normalizationScale);
+  const input = weld && !preserveUV ? mergeVertices(prepared, { positionOnly: true }) : prepared;
+  const fourthComponents = [];
+  const reservedNames = new Set(Object.keys(input.attributes));
+  let laneIndex = 0;
+  for (const [name, attribute] of Object.entries(input.attributes)) {
+    if (name === "tangent") {
+      input.deleteAttribute(name);
+      continue;
+    }
+    const components = attribute.itemSize;
+    const decoded = new Float32Array(attribute.count * components);
+    for (let i = 0;i < attribute.count; i++)
+      for (let component = 0;component < components; component++)
+        decoded[i * components + component] = attribute.getComponent(i, component);
+    if (components === 4) {
+      const lanes = [];
+      for (let component = 0;component < 4; component++) {
+        let lane;
+        do {
+          lane = `__kiln_subdivision_lane_${laneIndex++}`;
+        } while (reservedNames.has(lane) || input.hasAttribute(lane));
+        const values = new Float32Array(attribute.count);
+        for (let i = 0;i < attribute.count; i++)
+          values[i] = decoded[i * 4 + component];
+        input.setAttribute(lane, new THREE24.BufferAttribute(values, 1));
+        lanes.push(lane);
+      }
+      input.deleteAttribute(name);
+      fourthComponents.push({ name, lanes });
+    } else
+      input.setAttribute(name, new THREE24.BufferAttribute(decoded, components));
+  }
+  for (const targets of Object.values(input.morphAttributes))
+    for (let target = 0;target < targets.length; target++) {
+      const attribute = targets[target];
+      const decoded = new Float32Array(attribute.count * 3);
+      for (let i = 0;i < attribute.count; i++)
+        for (let component = 0;component < 3; component++)
+          decoded[i * 3 + component] = attribute.getComponent(i, component);
+      targets[target] = new THREE24.BufferAttribute(decoded, 3);
+    }
+  if (preserveUV)
+    subOpts.uvSmooth = false;
+  const output = normalizeSurfaceNormals(LoopSubdivision.modify(input, iterations, subOpts));
+  for (const { name, lanes } of fourthComponents) {
+    const count = output.getAttribute("position").count;
+    const values = new Float32Array(count * 4);
+    for (let component = 0;component < 4; component++) {
+      const lane = output.getAttribute(lanes[component]);
+      for (let i = 0;i < count; i++)
+        values[i * 4 + component] = lane.getX(i);
+      output.deleteAttribute(lanes[component]);
+    }
+    output.setAttribute(name, new THREE24.BufferAttribute(values, 4));
+  }
+  output.scale(1 / normalizationScale, 1 / normalizationScale, 1 / normalizationScale).translate(center.x, center.y, center.z);
+  output.userData = structuredClone(geometry.userData);
+  output.deleteAttribute("tangent");
+  output.computeBoundingBox();
+  output.computeBoundingSphere();
+  if (geometry.getAttribute("uv") && !output.getAttribute("uv")) {
+    output.userData.kilnAttributeWarnings = [
+      ...Array.isArray(output.userData.kilnAttributeWarnings) ? output.userData.kilnAttributeWarnings : [],
+      {
+        code: "SUBDIVIDE_UV_DROPPED",
+        message: "Position-only subdivision discarded UVs. Use preserveUV: true or unwrap the output."
+      }
+    ];
+  }
+  const dropped = Object.keys(geometry.attributes).filter((name) => name !== "uv" && !output.hasAttribute(name));
+  if (dropped.length)
+    output.userData.kilnAttributeWarnings = [
+      ...Array.isArray(output.userData.kilnAttributeWarnings) ? output.userData.kilnAttributeWarnings : [],
+      {
+        code: "SUBDIVIDE_ATTRIBUTES_DROPPED",
+        message: `Subdivision removed attributes: ${dropped.join(", ")}. Rebuild required shading attributes after subdivision.`
+      }
+    ];
+  if (geometry.groups.length && !output.groups.length)
+    output.userData.kilnAttributeWarnings = [
+      ...Array.isArray(output.userData.kilnAttributeWarnings) ? output.userData.kilnAttributeWarnings : [],
+      {
+        code: "SUBDIVIDE_GROUPS_DROPPED",
+        message: "Position-only subdivision removed material groups. Use preserveUV: true to retain corner attributes and material boundaries."
+      }
+    ];
+  const retainedMorphs = new Set(Object.entries(output.morphAttributes).filter(([, targets]) => targets.length > 0).map(([name]) => name));
+  const droppedMorphs = Object.keys(geometry.morphAttributes).filter((name) => !retainedMorphs.has(name));
+  if (droppedMorphs.length)
+    output.userData.kilnAttributeWarnings = [
+      ...Array.isArray(output.userData.kilnAttributeWarnings) ? output.userData.kilnAttributeWarnings : [],
+      {
+        code: "SUBDIVIDE_MORPHS_DROPPED",
+        message: `Position-only subdivision removed morph attributes: ${droppedMorphs.join(", ")}. Use preserveUV: true to retain supported corner and morph attributes.`
+      }
+    ];
+  if (geometry.userData.kilnCsgProvenance || geometry.userData.kilnRanges) {
+    delete output.userData.kilnCsgProvenance;
+    delete output.userData.kilnRanges;
+    output.userData.kilnAttributeWarnings = [
+      ...output.userData.kilnAttributeWarnings ?? [],
+      {
+        code: "SUBDIVIDE_PROVENANCE_DROPPED",
+        message: "Subdivision changed triangle topology. Source face/range provenance was discarded rather than guessed."
+      }
+    ];
+  }
+  return output;
+}
+function assertTubeRadius(radius) {
+  try {
+    assertDimension("Tube radius", radius);
+  } catch {
+    throw new AuthoringDiagnosticError("TUBE_RADIUS");
+  }
+}
+function curveToMesh(points, radius, tubularSegments = 32, radialSegments = 8, closed = false) {
+  assertTubeRadius(radius);
+  const vectors = points.map((p) => new THREE24.Vector3(p[0], p[1], p[2]));
+  const curve = new THREE24.CatmullRomCurve3(vectors, closed);
+  return new THREE24.TubeGeometry(curve, tubularSegments, radius, radialSegments, closed);
+}
+function normalizeSurfaceNormals(geo) {
+  const normal = geo.getAttribute("normal");
+  if (!normal)
+    return geo;
+  let repaired = false;
+  for (let i = 0;i < normal.count; i++) {
+    const x = normal.getX(i);
+    const y = normal.getY(i);
+    const z = normal.getZ(i);
+    const len = Math.hypot(x, y, z);
+    if (!Number.isFinite(len) || len < 0.000000000001) {
+      normal.setXYZ(i, 0, 1, 0);
+      repaired = true;
+      continue;
+    }
+    if (Math.abs(len - 1) <= 0.000001)
+      continue;
+    normal.setXYZ(i, x / len, y / len, z / len);
+    repaired = true;
+  }
+  if (repaired)
+    normal.needsUpdate = true;
+  return geo;
+}
+function lathe(profile, segments = 12) {
+  return revolveGeo(profile, { segments });
+}
+function revolveGeo(profile, options = {}) {
+  const { angle = Math.PI * 2, axis = [0, 1, 0], segments = 12 } = options;
+  const points2d = profile.map((p) => new THREE24.Vector2(p[0], p[1]));
+  const geo = normalizeSurfaceNormals(new THREE24.LatheGeometry(points2d, segments, 0, angle));
+  const n = new THREE24.Vector3(axis[0], axis[1], axis[2]);
+  if (n.lengthSq() < 0.000000000001) {
+    throw new Error(`revolveGeo: axis must be a non-zero vector (got [${axis.join(",")}]).`);
+  }
+  n.normalize();
+  if (n.x !== 0 || n.y !== 1 || n.z !== 0) {
+    const q = new THREE24.Quaternion().setFromUnitVectors(new THREE24.Vector3(0, 1, 0), n);
+    geo.applyQuaternion(q);
+  }
+  return geo;
+}
+function pipeAlongPath(points, radius, options = {}) {
+  const { bendRadius = 0, closed = false, tubularSegments = 32, radialSegments = 8 } = options;
+  assertTubeRadius(radius);
+  if (points.length < 2) {
+    throw new Error(`pipeAlongPath: need at least 2 points (got ${points.length}).`);
+  }
+  let pathPoints = points;
+  if (bendRadius > 0 && points.length >= 3) {
+    const smoothed = [];
+    smoothed.push(points[0]);
+    for (let i = 1;i < points.length - 1; i++) {
+      const prev = new THREE24.Vector3(...points[i - 1]);
+      const cur = new THREE24.Vector3(...points[i]);
+      const next = new THREE24.Vector3(...points[i + 1]);
+      const inDir = cur.clone().sub(prev);
+      const outDir = next.clone().sub(cur);
+      const inLen = inDir.length();
+      const outLen = outDir.length();
+      const inOffset = Math.min(bendRadius, inLen / 2);
+      const outOffset = Math.min(bendRadius, outLen / 2);
+      const before = cur.clone().sub(inDir.clone().normalize().multiplyScalar(inOffset));
+      const after = cur.clone().add(outDir.clone().normalize().multiplyScalar(outOffset));
+      smoothed.push([before.x, before.y, before.z]);
+      smoothed.push([after.x, after.y, after.z]);
+    }
+    smoothed.push(points[points.length - 1]);
+    pathPoints = smoothed;
+  }
+  return curveToMesh(pathPoints, radius, tubularSegments, radialSegments, closed);
+}
+function bezierCurve(controlPoints, samples = 32) {
+  const vecs = controlPoints.map((p) => new THREE24.Vector3(p[0], p[1], p[2]));
+  let curve;
+  if (vecs.length === 3) {
+    curve = new THREE24.QuadraticBezierCurve3(vecs[0], vecs[1], vecs[2]);
+  } else if (vecs.length === 4) {
+    curve = new THREE24.CubicBezierCurve3(vecs[0], vecs[1], vecs[2], vecs[3]);
+  } else {
+    throw new Error(`bezierCurve: need 3 or 4 control points, got ${vecs.length}`);
+  }
+  return curve.getPoints(samples).map((v) => [v.x, v.y, v.z]);
+}
+var init_ops = __esm(() => {
+  init_primitives();
+  init_geometry_budget();
+  init_authoring_diagnostic();
+});
+
+// src/geometry.ts
+import * as THREE25 from "three";
+function finiteArray(values, label, length) {
+  const result = Array.from(values);
+  if (length !== undefined && result.length !== length)
+    throw new Error(`${label}: expected ${length} values, got ${result.length}`);
+  if (!result.every((n) => Number.isFinite(Math.fround(n))))
+    throw new AuthoringDiagnosticError("MESH_DATA_NONFINITE", `${label}: all values must be finite Float32 values`);
+  return result;
+}
+function meshGeo(data) {
+  const positions = finiteArray(data.positions, "meshGeo positions");
+  if (positions.length < 9 || positions.length % 3)
+    throw new Error("meshGeo positions: need at least three xyz vertices");
+  const count = positions.length / 3;
+  const geometry = new THREE25.BufferGeometry;
+  geometry.setAttribute("position", new THREE25.Float32BufferAttribute(positions, 3));
+  if (data.indices) {
+    const indices = Array.from(data.indices);
+    if (!indices.length || indices.length % 3)
+      throw new Error("meshGeo indices: need complete triangles");
+    if (!indices.every((i) => Number.isInteger(i) && i >= 0 && i < count))
+      throw new Error("meshGeo index out of bounds or not an integer");
+    geometry.setIndex(indices);
+  } else if (count % 3)
+    throw new Error("meshGeo: non-indexed positions must form complete triangles");
+  if (data.normals) {
+    const normals = finiteArray(data.normals, "meshGeo normals", count * 3);
+    geometry.setAttribute("normal", new THREE25.Float32BufferAttribute(normals, 3));
+    for (let i = 0;i < count; i++)
+      if (Math.hypot(normals[i * 3], normals[i * 3 + 1], normals[i * 3 + 2]) === 0)
+        throw new Error("meshGeo normals: zero-length normal");
+    geometry.normalizeNormals();
+  } else
+    geometry.computeVertexNormals();
+  if (data.uvs)
+    geometry.setAttribute("uv", new THREE25.Float32BufferAttribute(finiteArray(data.uvs, "meshGeo uvs", count * 2), 2));
+  if (data.tangents) {
+    const tangents = finiteArray(data.tangents, "meshGeo tangents", count * 4);
+    for (let i = 0;i < count; i++) {
+      if (Math.abs(Math.hypot(tangents[i * 4], tangents[i * 4 + 1], tangents[i * 4 + 2]) - 1) > 0.0001 || Math.abs(tangents[i * 4 + 3]) !== 1)
+        throw new Error("meshGeo tangents: expected unit xyz and handedness +1 or -1");
+    }
+    geometry.setAttribute("tangent", new THREE25.Float32BufferAttribute(tangents, 4));
+  }
+  geometry.computeBoundingBox();
+  geometry.computeBoundingSphere();
+  return geometry;
+}
+function boundsScale(bounds) {
+  const size = bounds.getSize(new THREE25.Vector3);
+  const scale = Math.hypot(size.x, size.y, size.z);
+  if (!Number.isFinite(scale))
+    throw new Error("Geometry position extent must be finite");
+  return scale;
+}
+function positionFrame(position) {
+  const bounds = new THREE25.Box3;
+  const point = new THREE25.Vector3;
+  for (let i = 0;i < position.count; i++) {
+    point.fromBufferAttribute(position, i);
+    if ([point.x, point.y, point.z].every(Number.isFinite))
+      bounds.expandByPoint(point);
+  }
+  return {
+    origin: bounds.isEmpty() ? new THREE25.Vector3 : bounds.min,
+    scale: boundsScale(bounds)
+  };
+}
+function positionTolerance(scale, supplied, relative) {
+  if (supplied === undefined)
+    return scale * relative;
+  if (!Number.isFinite(supplied) || supplied <= 0)
+    throw new Error("Geometry tolerance must be positive and finite");
+  if (scale / supplied > Number.MAX_SAFE_INTEGER)
+    throw new Error("Geometry tolerance is too small to resolve the position extent safely");
+  return supplied;
+}
+function positionKey(point, origin, tolerance) {
+  if (tolerance === 0)
+    return point.toArray().join(",");
+  return point.clone().sub(origin).toArray().map((x) => Math.round(x / tolerance)).join(",");
+}
+function geometryDiagnostics(geometry, tolerance) {
+  const p = geometry.getAttribute("position");
+  if (p?.itemSize !== 3)
+    throw new Error("geometryDiagnostics requires xyz positions");
+  const frame = positionFrame(p);
+  const distance = positionTolerance(frame.scale, tolerance, 0.000001);
+  const result = {
+    tolerance: distance,
+    toleranceMode: tolerance === undefined ? "relative" : "absolute",
+    positionScale: frame.scale,
+    vertices: p.count,
+    triangles: 0,
+    boundaryEdges: 0,
+    nonManifoldEdges: 0,
+    orientationConflicts: 0,
+    degenerateTriangles: 0,
+    collapsedByToleranceTriangles: 0,
+    invalidIndices: 0,
+    nonFiniteVertices: 0
+  };
+  const ids = [];
+  const points = new Map;
+  const finite = [];
+  const point = new THREE25.Vector3;
+  for (let i = 0;i < p.count; i++) {
+    point.fromBufferAttribute(p, i);
+    finite[i] = [point.x, point.y, point.z].every(Number.isFinite);
+    if (!finite[i])
+      result.nonFiniteVertices++;
+    const key = finite[i] ? positionKey(point, frame.origin, distance) : `invalid:${i}`;
+    if (!points.has(key))
+      points.set(key, points.size);
+    ids.push(points.get(key));
+  }
+  const indices = geometry.index ? Array.from(geometry.index.array) : Array.from({ length: p.count }, (_, i) => i);
+  const edges = new Map;
+  const a = new THREE25.Vector3, b = new THREE25.Vector3, c = new THREE25.Vector3;
+  for (let i = 0;i < indices.length; i += 3) {
+    result.triangles++;
+    const triangle = indices.slice(i, i + 3);
+    if (triangle.length !== 3 || triangle.some((n) => !Number.isInteger(n) || n < 0 || n >= p.count)) {
+      result.invalidIndices++;
+      continue;
+    }
+    const [ia, ib, ic] = triangle;
+    if (!finite[ia] || !finite[ib] || !finite[ic])
+      continue;
+    a.fromBufferAttribute(p, ia);
+    b.fromBufferAttribute(p, ib);
+    c.fromBufferAttribute(p, ic);
+    const scale = frame.scale || 1;
+    b.sub(a).divideScalar(scale);
+    c.sub(a).divideScalar(scale);
+    if (b.cross(c).length() <= (distance / scale) ** 2)
+      result.degenerateTriangles++;
+    if (ids[ia] === ids[ib] || ids[ib] === ids[ic] || ids[ic] === ids[ia]) {
+      result.collapsedByToleranceTriangles++;
+      continue;
+    }
+    for (const [start, end] of [
+      [ia, ib],
+      [ib, ic],
+      [ic, ia]
+    ]) {
+      const u = ids[start], v = ids[end];
+      const key = u < v ? `${u}:${v}` : `${v}:${u}`;
+      const edge = edges.get(key) ?? { count: 0, direction: 0 };
+      edge.count++;
+      edge.direction += u < v ? 1 : -1;
+      edges.set(key, edge);
+    }
+  }
+  for (const edge of edges.values()) {
+    if (edge.count === 1)
+      result.boundaryEdges++;
+    else if (edge.count > 2)
+      result.nonManifoldEdges++;
+    else if (edge.direction !== 0)
+      result.orientationConflicts++;
+  }
+  return result;
+}
+function parametricSurface(sample, options = {}) {
+  const {
+    u = [0, 1],
+    v = [0, 1],
+    uSegments: nu = 24,
+    vSegments: nv = 24,
+    periodicU = false,
+    periodicV = false,
+    orientation = "uv"
+  } = options;
+  for (const [name, n] of [
+    ["uSegments", nu],
+    ["vSegments", nv]
+  ])
+    if (!Number.isSafeInteger(n) || n < 1)
+      throw new Error(`parametricSurface ${name} must be a positive integer`);
+  const sampleCount = (nu + 1) * (nv + 1);
+  if (!Number.isSafeInteger(sampleCount) || sampleCount > GEOMETRY_ALLOCATION_LIMITS.parametricSamples)
+    throw new RangeError(`parametricSurface sample budget exceeded: requested ${sampleCount}, limit ${GEOMETRY_ALLOCATION_LIMITS.parametricSamples}. Reduce uSegments/vSegments or split the surface.`);
+  for (const [name, range] of [
+    ["u", u],
+    ["v", v]
+  ])
+    if (range.length !== 2 || !range.every(Number.isFinite) || range[0] === range[1] || !Number.isFinite(range[1] - range[0]))
+      throw new Error(`parametricSurface ${name} must be a finite nonzero domain`);
+  if (orientation !== "uv" && orientation !== "vu")
+    throw new Error("parametricSurface orientation must be uv or vu");
+  const positions = [], uvs = [], indices = [];
+  const sampledBounds = new THREE25.Box3;
+  const sampledPoint = new THREE25.Vector3;
+  for (let j = 0;j <= nv; j++)
+    for (let i = 0;i <= nu; i++) {
+      const point = sample(u[0] + (u[1] - u[0]) * i / nu, v[0] + (v[1] - v[0]) * j / nv);
+      if (point.length !== 3 || !point.every(Number.isFinite))
+        throw new Error(`parametricSurface: sample (${i},${j}) must return three finite coordinates`);
+      positions.push(...point);
+      sampledBounds.expandByPoint(sampledPoint.set(...point));
+      uvs.push(i / nu, j / nv);
+    }
+  const groups = Array.from({ length: (nu + 1) * (nv + 1) }, (_, i) => i);
+  const seamScale = boundsScale(sampledBounds);
+  const find = (i) => {
+    while (groups[i] !== i)
+      i = groups[i];
+    return i;
+  };
+  const join = (a, b, _label) => {
+    const pa = positions.slice(a * 3, a * 3 + 3), pb = positions.slice(b * 3, b * 3 + 3);
+    if (Math.hypot(...pa.map((x, k) => x - pb[k])) > seamScale * 0.000001)
+      throw new AuthoringDiagnosticError("PARAMETRIC_PERIODIC_ENDPOINT");
+    groups[find(b)] = find(a);
+    for (let k = 0;k < 3; k++)
+      positions[b * 3 + k] = positions[a * 3 + k];
+  };
+  if (periodicU)
+    for (let j = 0;j <= nv; j++)
+      join(j * (nu + 1), j * (nu + 1) + nu, "periodicU");
+  if (periodicV)
+    for (let i = 0;i <= nu; i++)
+      join(i, nv * (nu + 1) + i, "periodicV");
+  for (let j = 0;j < nv; j++)
+    for (let i = 0;i < nu; i++) {
+      const a = j * (nu + 1) + i, b = a + 1, c = a + nu + 1, d = c + 1;
+      indices.push(...orientation === "uv" ? [a, b, c, b, d, c] : [a, c, b, b, c, d]);
+    }
+  const out = meshGeo({ positions, indices, uvs });
+  if (periodicU || periodicV) {
+    const normal = out.getAttribute("normal");
+    const sums = new Map;
+    for (let i = 0;i < normal.count; i++) {
+      const id = find(i);
+      const sum = sums.get(id) ?? new THREE25.Vector3;
+      sum.add(new THREE25.Vector3().fromBufferAttribute(normal, i));
+      sums.set(id, sum);
+    }
+    for (let i = 0;i < normal.count; i++) {
+      const n = sums.get(find(i)).clone().normalize();
+      normal.setXYZ(i, n.x, n.y, n.z);
+    }
+  }
+  return out;
+}
+function creaseNormals(geometry, options = {}) {
+  const angle = options.angle ?? 60;
+  if (!Number.isFinite(angle) || angle < 0 || angle > 180)
+    throw new Error("creaseNormals angle must be between 0 and 180 degrees");
+  const out = geometry.index ? geometry.toNonIndexed() : geometry.clone();
+  const position = out.getAttribute("position");
+  if (position?.itemSize !== 3 || position.count % 3 !== 0)
+    throw new Error("creaseNormals requires complete xyz triangles");
+  const frame = positionFrame(position);
+  const tolerance = positionTolerance(frame.scale, options.tolerance, 0.00000001);
+  const scale = frame.scale || 1;
+  const adjacent = new Map;
+  const keys = [];
+  const faces = [];
+  for (let i = 0;i < position.count; i += 3) {
+    const a = new THREE25.Vector3().fromBufferAttribute(position, i);
+    const b = new THREE25.Vector3().fromBufferAttribute(position, i + 1);
+    const c = new THREE25.Vector3().fromBufferAttribute(position, i + 2);
+    const face = b.sub(a).divideScalar(scale).cross(c.sub(a).divideScalar(scale)).normalize();
+    faces.push(face);
+    for (let j = i;j < i + 3; j++) {
+      const point = new THREE25.Vector3().fromBufferAttribute(position, j);
+      if (![point.x, point.y, point.z].every(Number.isFinite))
+        throw new Error("creaseNormals positions must be finite");
+      const key = positionKey(point, frame.origin, tolerance);
+      keys.push(key);
+      const neighbors = adjacent.get(key) ?? new Set;
+      neighbors.add(i / 3);
+      adjacent.set(key, neighbors);
+    }
+  }
+  const normals = new Float32Array(position.count * 3);
+  const threshold = Math.cos(THREE25.MathUtils.degToRad(angle));
+  for (let i = 0;i < position.count; i++) {
+    const face = faces[Math.floor(i / 3)], sum = new THREE25.Vector3;
+    for (const other of adjacent.get(keys[i]))
+      if (face.dot(faces[other]) >= threshold - 0.000000000001)
+        sum.add(faces[other]);
+    sum.normalize().toArray(normals, i * 3);
+  }
+  out.setAttribute("normal", new THREE25.BufferAttribute(normals, 3));
+  out.deleteAttribute("tangent");
+  out.computeBoundingBox();
+  out.computeBoundingSphere();
+  return out;
+}
+var init_geometry = __esm(() => {
+  init_geometry_budget();
+  init_authoring_diagnostic();
+});
+
+// src/deformation-normals.ts
+import * as THREE26 from "three";
+function recomputeDeformedNormals(source, output) {
+  const original = source.getAttribute("position");
+  const authored = source.getAttribute("normal");
+  const position = output.getAttribute("position");
+  const bounds = (attribute) => {
+    const box = new THREE26.Box3().setFromBufferAttribute(attribute);
+    return {
+      center: box.getCenter(new THREE26.Vector3),
+      size: box.getSize(new THREE26.Vector3).length() || 1
+    };
+  };
+  const before = bounds(original), after = bounds(position);
+  const point = new THREE26.Vector3, normal = new THREE26.Vector3;
+  const quantized = (attribute, index, frame) => {
+    point.fromBufferAttribute(attribute, index).sub(frame.center).divideScalar(frame.size);
+    return point.toArray().map((value) => Math.round(value * 1e7)).join(",");
+  };
+  const classes = new Map;
+  const ids = new Uint32Array(position.count);
+  for (let i = 0;i < position.count; i++) {
+    let key = String(i);
+    if (authored) {
+      normal.fromBufferAttribute(authored, i).normalize();
+      key = `${quantized(original, i, before)}:${normal.toArray().map((value) => Math.round(value * 1e6)).join(",")}:${quantized(position, i, after)}`;
+    }
+    let id = classes.get(key);
+    if (id === undefined) {
+      id = classes.size;
+      classes.set(key, id);
+    }
+    ids[i] = id;
+  }
+  const sums = new Float64Array(classes.size * 3);
+  const index = output.index;
+  const corners = index?.count ?? position.count;
+  const a = new THREE26.Vector3, b = new THREE26.Vector3, c = new THREE26.Vector3;
+  for (let t = 0;t < corners; t += 3) {
+    const ia = index ? index.getX(t) : t;
+    const ib = index ? index.getX(t + 1) : t + 1;
+    const ic = index ? index.getX(t + 2) : t + 2;
+    a.fromBufferAttribute(position, ia);
+    b.fromBufferAttribute(position, ib).sub(a).divideScalar(after.size);
+    c.fromBufferAttribute(position, ic).sub(a).divideScalar(after.size);
+    normal.crossVectors(b, c);
+    for (const vertex of [ia, ib, ic]) {
+      const offset = ids[vertex] * 3;
+      sums[offset] += normal.x;
+      sums[offset + 1] += normal.y;
+      sums[offset + 2] += normal.z;
+    }
+  }
+  const normals = new Float32Array(position.count * 3);
+  for (let i = 0;i < position.count; i++) {
+    const offset = ids[i] * 3;
+    normal.set(sums[offset], sums[offset + 1], sums[offset + 2]).normalize().toArray(normals, i * 3);
+  }
+  output.setAttribute("normal", new THREE26.BufferAttribute(normals, 3));
+}
+var init_deformation_normals = () => {};
+
+// src/deform.ts
+import * as THREE27 from "three";
+function geometryFrameMatrix(frame = {}) {
+  const origin = frame.origin ?? [0, 0, 0], rotation = frame.rotation ?? [0, 0, 0];
+  if (origin.length !== 3 || rotation.length !== 3 || ![...origin, ...rotation].every(Number.isFinite))
+    throw new Error("geometry frame requires finite xyz origin and rotation");
+  return new THREE27.Matrix4().compose(new THREE27.Vector3(...origin), new THREE27.Quaternion().setFromEuler(new THREE27.Euler(...rotation.map(THREE27.MathUtils.degToRad), "XYZ")), new THREE27.Vector3(1, 1, 1));
+}
+function deform(geometry, options, map) {
+  const source = geometry.getAttribute("position");
+  if (source?.itemSize !== 3 || !Number.isSafeInteger(source.count) || source.count < 1 || source.count > 2000000)
+    throw new Error("deformation requires 1..2000000 xyz positions");
+  if (Object.keys(geometry.morphAttributes).length)
+    throw new Error("deformation of morph targets needs a separate mapping contract; deform before creating morph targets.");
+  const index = geometry.index;
+  const corners = index?.count ?? source.count;
+  if (!Number.isSafeInteger(corners) || corners < 3 || corners % 3 || corners > 3000000)
+    throw new Error("deformation requires complete triangles and at most 3000000 corners");
+  if (index)
+    for (let i = 0;i < corners; i++) {
+      const vertex = index.getX(i);
+      if (!Number.isSafeInteger(vertex) || vertex < 0 || vertex >= source.count)
+        throw new Error("deformation index is invalid");
+    }
+  const authoredNormals = geometry.getAttribute("normal");
+  if (authoredNormals) {
+    if (authoredNormals.itemSize !== 3 || authoredNormals.count !== source.count)
+      throw new Error("deformation normals must match xyz positions");
+    for (let i = 0;i < source.count; i++)
+      if (![authoredNormals.getX(i), authoredNormals.getY(i), authoredNormals.getZ(i)].every(Number.isFinite))
+        throw new Error("deformation normals must be finite");
+  }
+  const matrix = geometryFrameMatrix(options.frame), inverse = matrix.clone().invert();
+  const points = Array.from({ length: source.count }, (_, i) => new THREE27.Vector3().fromBufferAttribute(source, i).applyMatrix4(inverse));
+  if (points.some((p) => ![p.x, p.y, p.z].every(Number.isFinite)))
+    throw new Error("deformation positions must be finite");
+  let low = Infinity, high = -Infinity;
+  for (const point of points) {
+    low = Math.min(low, point.y);
+    high = Math.max(high, point.y);
+  }
+  if (options.interval) {
+    if (options.interval.length !== 2 || !options.interval.every(Number.isFinite) || options.interval[1] <= options.interval[0])
+      throw new Error("deformation interval must be finite and increasing");
+    [low, high] = options.interval;
+  }
+  const length = high - low;
+  const out = geometry.clone();
+  out.userData = structuredClone(geometry.userData);
+  const position = out.getAttribute("position");
+  let changed = false;
+  const epsilon = length > 0 ? Math.min(Math.max(Math.abs(low), Math.abs(high), length) * 0.0000001, length * 0.000001) : 0;
+  for (let i = 0;i < points.length; i++) {
+    const point = points[i];
+    if (point.y < low - epsilon || point.y > high + epsilon)
+      continue;
+    const t = length > 0 ? THREE27.MathUtils.clamp((point.y - low) / length, 0, 1) : 0;
+    const weight = options.falloff?.(t) ?? 1;
+    if (!Number.isFinite(weight) || weight < 0 || weight > 1)
+      throw new Error("deformation falloff must return a finite weight between 0 and 1");
+    const mapped = map(point.clone(), t, low, length);
+    if (![mapped.x, mapped.y, mapped.z].every(Number.isFinite))
+      throw new Error("deformation callback must return finite coordinates");
+    point.lerp(mapped, weight).applyMatrix4(matrix);
+    if (![point.x, point.y, point.z].every((n) => Number.isFinite(Math.fround(n))))
+      throw new Error("deformation output must fit finite Float32 coordinates");
+    position.setXYZ(i, point.x, point.y, point.z);
+    changed ||= position.getX(i) !== source.getX(i) || position.getY(i) !== source.getY(i) || position.getZ(i) !== source.getZ(i);
+  }
+  position.needsUpdate = true;
+  if (out.hasAttribute("tangent")) {
+    out.deleteAttribute("tangent");
+    const previous = out.userData.kilnAttributeWarnings;
+    out.userData.kilnAttributeWarnings = [
+      ...Array.isArray(previous) ? previous : [],
+      {
+        code: "DEFORM_TANGENTS_DROPPED",
+        message: "Deformation invalidated tangents; regenerate for normal mapping."
+      }
+    ];
+  }
+  if (changed || !authoredNormals)
+    recomputeDeformedNormals(geometry, out);
+  out.computeBoundingBox();
+  out.computeBoundingSphere();
+  return out;
+}
+function twist(geometry, options) {
+  if (!Number.isFinite(options.angle))
+    throw new Error("twist angle must be finite degrees");
+  return deform(geometry, options, (p, t) => p.applyAxisAngle(new THREE27.Vector3(0, 1, 0), THREE27.MathUtils.degToRad(options.angle) * t));
+}
+function bend(geometry, options) {
+  if (!Number.isFinite(options.angle))
+    throw new Error("bend angle must be finite degrees");
+  const angle = THREE27.MathUtils.degToRad(options.angle);
+  return deform(geometry, options, (p, t, low, length) => {
+    if (Math.abs(angle) < 0.0000000001 || length === 0)
+      return p;
+    const radius = length / angle, theta = angle * t;
+    return new THREE27.Vector3(radius - (radius - p.x) * Math.cos(theta), low + (radius - p.x) * Math.sin(theta), p.z);
+  });
+}
+function taper(geometry, options) {
+  const start = options.startScale ?? [1, 1], end = options.endScale;
+  if (start.length !== 2 || end.length !== 2 || ![...start, ...end].every((n) => Number.isFinite(n) && n > 0))
+    throw new Error("taper scales must be two finite positive values");
+  return deform(geometry, options, (p, t) => p.set(p.x * THREE27.MathUtils.lerp(start[0], end[0], t), p.y, p.z * THREE27.MathUtils.lerp(start[1], end[1], t)));
+}
+function displace(geometry, offset, options = {}) {
+  return deform(geometry, options, (p, t) => {
+    const delta = offset([p.x, p.y, p.z], t);
+    if (delta.length !== 3 || !delta.every(Number.isFinite))
+      throw new Error("displace callback must return three finite offsets");
+    return p.add(new THREE27.Vector3(...delta));
+  });
+}
+var init_deform = __esm(() => {
+  init_deformation_normals();
+});
+
+// src/sweep.ts
+import * as THREE28 from "three";
+function rejectHoles(value, label) {
+  if ("holes" in value && value.holes !== undefined)
+    throw new AuthoringDiagnosticError("PROFILE_HOLES_UNSUPPORTED", `${label}: holes are unsupported. Use extrudeProfile for a holed cross-section with optional twist/taper; independently varying contours need explicit geometry or solid subtraction.`);
+}
+function profilePoints(profile) {
+  if (profile.length < 3 || profile.some((p) => p.length !== 2 || !p.every(Number.isFinite)))
+    throw new Error("profile requires at least three finite xy points");
+  const points = profile.map((p) => new THREE28.Vector2(...p));
+  const bounds = new THREE28.Box2().setFromPoints(points);
+  const extent = bounds.getSize(new THREE28.Vector2).length();
+  if (!(extent > 0) || !Number.isFinite(extent))
+    throw new Error("profile requires a finite nonzero extent");
+  const normalized = points.map((p) => p.clone().sub(bounds.min).divideScalar(extent));
+  if (normalized[0].distanceTo(normalized[normalized.length - 1]) < 0.0000000001) {
+    points.pop();
+    normalized.pop();
+  }
+  if (points.length < 3)
+    throw new Error("profile requires three distinct points");
+  const cross = (a, b, c) => (b.x - a.x) * (c.y - a.y) - (b.y - a.y) * (c.x - a.x);
+  for (let i = 0;i < points.length; i++) {
+    const a = normalized[i], b = normalized[(i + 1) % points.length];
+    if (a.distanceToSquared(b) < 0.00000000000000000001)
+      throw new Error("profile has duplicate adjacent points");
+    for (let j = i + 1;j < points.length; j++) {
+      if (j === i + 1 || i === 0 && j === points.length - 1)
+        continue;
+      const c = normalized[j], d = normalized[(j + 1) % points.length];
+      if (cross(a, b, c) * cross(a, b, d) <= 0 && cross(c, d, a) * cross(c, d, b) <= 0 && Math.max(Math.min(a.x, b.x), Math.min(c.x, d.x)) <= Math.min(Math.max(a.x, b.x), Math.max(c.x, d.x)) + 0.0000000001 && Math.max(Math.min(a.y, b.y), Math.min(c.y, d.y)) <= Math.min(Math.max(a.y, b.y), Math.max(c.y, d.y)) + 0.0000000001)
+        throw new Error("profile self-intersects or touches itself");
+    }
+  }
+  const area = THREE28.ShapeUtils.area(normalized);
+  if (Math.abs(area) < 0.000000000001)
+    throw new Error("profile area must be nonzero");
+  if (area < 0)
+    points.splice(1, points.length - 1, ...points.slice(1).reverse());
+  return points;
+}
+function buildLoft(rings, profiles, closed, cap, firstFrameForward) {
+  const n = rings[0].length, positions = [], uvs = [], indices = [];
+  const centers = rings.map((r) => r.reduce((sum, p) => sum.add(p), new THREE28.Vector3).multiplyScalar(1 / n));
+  const lengths = [0];
+  for (let i = 1;i < centers.length; i++)
+    lengths.push(lengths[i - 1] + centers[i].distanceTo(centers[i - 1]));
+  const total = lengths[lengths.length - 1];
+  if (!(total > 0) || !Number.isFinite(total))
+    throw new Error("loft section centers must progress along a finite nonzero path");
+  for (let i = 0;i < rings.length; i++) {
+    const ring = rings[i], distance = [0];
+    for (let j = 1;j <= n; j++)
+      distance.push(distance[j - 1] + ring[j % n].distanceTo(ring[j - 1]));
+    for (let j = 0;j <= n; j++) {
+      positions.push(...ring[j % n].toArray());
+      uvs.push(distance[j] / distance[n], lengths[i] / total);
+    }
+  }
+  for (let i = 0;i < rings.length - 1; i++)
+    for (let j = 0;j < n; j++) {
+      const a = i * (n + 1) + j, b = a + 1, c = a + n + 1, d = c + 1;
+      const origin = rings[i][j], ab = rings[i][(j + 1) % n].clone().sub(origin), ac = rings[i + 1][j].clone().sub(origin), ad = rings[i + 1][(j + 1) % n].clone().sub(origin);
+      const endEdge = ad.clone().sub(ac), edgeScale = Math.max(ab.length(), endEdge.length());
+      if (edgeScale > 0) {
+        const startEdge = ab.clone().divideScalar(edgeScale), delta = endEdge.divideScalar(edgeScale).sub(startEdge), denominator = delta.lengthSq(), t = denominator > 0 ? -startEdge.dot(delta) / denominator : 0;
+        if (t > 0 && t < 1 && startEdge.addScaledVector(delta, t).lengthSq() <= 0.00000000000000000001)
+          throw new AuthoringDiagnosticError("PROFILE_CORRESPONDENCE_COLLAPSE");
+      }
+      const scale = Math.max(ab.length(), ac.length(), ad.length());
+      const warp = scale > 0 ? Math.abs(ab.clone().divideScalar(scale).dot(ac.clone().divideScalar(scale).cross(ad.clone().divideScalar(scale)))) : 0;
+      if (warp > 0.0000000001) {
+        const middle = positions.length / 3;
+        positions.push(...origin.clone().addScaledVector(ab, 0.25).addScaledVector(ac, 0.25).addScaledVector(ad, 0.25).toArray());
+        uvs.push((uvs[a * 2] + uvs[b * 2] + uvs[c * 2] + uvs[d * 2]) / 4, (uvs[a * 2 + 1] + uvs[b * 2 + 1] + uvs[c * 2 + 1] + uvs[d * 2 + 1]) / 4);
+        indices.push(a, c, middle, c, d, middle, d, b, middle, b, a, middle);
+      } else
+        indices.push(a, c, b, b, c, d);
+    }
+  if (cap && !closed)
+    for (const station of [0, rings.length - 1]) {
+      const ring = rings[station], profile = profiles[station];
+      const start = positions.length / 3;
+      const bounds = new THREE28.Box2().setFromPoints(profile);
+      const size = bounds.getSize(new THREE28.Vector2);
+      for (let j = 0;j < n; j++) {
+        positions.push(...ring[j].toArray());
+        uvs.push((profile[j].x - bounds.min.x) / (size.x || 1), (profile[j].y - bounds.min.y) / (size.y || 1));
+      }
+      for (const tri of THREE28.ShapeUtils.triangulateShape(profile, [])) {
+        if (station === 0)
+          indices.push(...tri.map((j) => start + j));
+        else
+          indices.push(...tri.toReversed().map((j) => start + j));
+      }
+    }
+  if (firstFrameForward && firstFrameForward.dot(centers[1].clone().sub(centers[0])) < 0)
+    for (let i = 0;i < indices.length; i += 3)
+      [indices[i + 1], indices[i + 2]] = [indices[i + 2], indices[i + 1]];
+  const out = meshGeo({ positions, indices, uvs });
+  const normal = out.getAttribute("normal");
+  for (let i = 0;i < rings.length; i++) {
+    const a = i * (n + 1), b = a + n;
+    const sum = new THREE28.Vector3().fromBufferAttribute(normal, a).add(new THREE28.Vector3().fromBufferAttribute(normal, b)).normalize();
+    normal.setXYZ(a, sum.x, sum.y, sum.z);
+    normal.setXYZ(b, sum.x, sum.y, sum.z);
+  }
+  if (closed)
+    for (let j = 0;j <= n; j++) {
+      const a = j, b = (rings.length - 1) * (n + 1) + j;
+      const sum = new THREE28.Vector3().fromBufferAttribute(normal, a).add(new THREE28.Vector3().fromBufferAttribute(normal, b)).normalize();
+      normal.setXYZ(a, sum.x, sum.y, sum.z);
+      normal.setXYZ(b, sum.x, sum.y, sum.z);
+    }
+  return out;
+}
+function loftProfiles(sections, options = {}) {
+  rejectHoles(options, "loftProfiles");
+  if (sections.length < 2)
+    throw new Error("loftProfiles needs at least two sections");
+  const profiles = sections.map((section, i) => {
+    rejectHoles(section, `loftProfiles section ${i}`);
+    return profilePoints(section.profile);
+  });
+  if (profiles.some((p) => p.length !== profiles[0].length))
+    throw new Error("loftProfiles sections must have the same point count and correspondence");
+  const frames = sections.map((section) => geometryFrameMatrix(section.frame));
+  const rings = profiles.map((profile, i) => profile.map((p) => new THREE28.Vector3(p.x, 0, p.y).applyMatrix4(frames[i])));
+  const out = buildLoft(rings, profiles, false, options.cap ?? true, new THREE28.Vector3(0, 1, 0).transformDirection(frames[0]));
+  out.userData.kilnGeometryWarnings = [
+    {
+      code: "LOFT_SELF_INTERSECTION_UNCHECKED",
+      message: "Corresponding profiles are connected directly. Caps and closed boundaries do not prove the loft is free of self-intersections."
+    }
+  ];
+  return out;
+}
+function sweepProfile(profile, path, options = {}) {
+  rejectHoles(options, "sweepProfile");
+  const points = profilePoints(profile), closed = options.closed ?? false, twist = options.twist ?? 0;
+  if (!Number.isFinite(twist))
+    throw new Error("sweepProfile twist must be finite degrees");
+  if (closed && Math.abs(twist / 360 - Math.round(twist / 360)) > 0.00000001)
+    throw new Error("closed sweep twist must be a multiple of 360 degrees");
+  if (path.length < (closed ? 3 : 2) || path.some((p) => p.length !== 3 || !p.every(Number.isFinite)))
+    throw new Error("sweepProfile requires finite path points (two open or three closed)");
+  const stations = path.map((p) => new THREE28.Vector3(...p));
+  const pathExtent = new THREE28.Box3().setFromPoints(stations).getSize(new THREE28.Vector3).length();
+  if (!(pathExtent > 0) || !Number.isFinite(pathExtent))
+    throw new Error("sweepProfile path stations must be distinct with finite extent");
+  const pathTolerance = pathExtent * 0.0000000001;
+  if (closed && stations[0].distanceTo(stations[stations.length - 1]) < pathTolerance)
+    throw new Error("closed sweep path should omit its repeated endpoint");
+  const segments = [];
+  for (let i = 0;i < stations.length - (closed ? 0 : 1); i++) {
+    const direction = stations[(i + 1) % stations.length].clone().sub(stations[i]);
+    if (direction.length() < pathTolerance)
+      throw new Error("sweepProfile path stations must be distinct");
+    segments.push(direction.normalize());
+  }
+  const warnings = [];
+  const scales = stations.map((_, i) => {
+    const scale = typeof options.scale === "number" ? [options.scale, options.scale] : options.scale?.[i] ?? [1, 1];
+    if (scale.length !== 2 || !scale.every((n) => Number.isFinite(n) && n > 0))
+      throw new Error("sweepProfile scale requires positive finite pairs");
+    return scale;
+  });
+  if (Array.isArray(options.scale) && options.scale.length !== stations.length)
+    throw new Error("sweepProfile scale needs one pair per path station");
+  const tangents = stations.map((_, i) => {
+    if (!closed && i === 0)
+      return segments[0].clone();
+    if (!closed && i === stations.length - 1)
+      return segments[segments.length - 1].clone();
+    const incoming = segments[(i - 1 + segments.length) % segments.length], outgoing = segments[i];
+    if (incoming.dot(outgoing) < -0.9999)
+      throw new Error("sweepProfile path has a reversal; split it into separate sweeps");
+    const angle = incoming.angleTo(outgoing);
+    const distance = Math.min(stations[i].distanceTo(stations[(i - 1 + stations.length) % stations.length]), stations[i].distanceTo(stations[(i + 1) % stations.length]));
+    const scale = scales[i];
+    const radius = points.reduce((maximum, point) => Math.max(maximum, Math.hypot(point.x * scale[0], point.y * scale[1])), 0);
+    if (radius * Math.tan(angle / 2) >= distance * 0.5)
+      warnings.push({
+        code: "SWEEP_TIGHT_TURN",
+        message: `Path station ${i} turns tightly relative to the profile; reduce its size or widen the turn. Self-intersection is possible.`
+      });
+    return incoming.clone().add(outgoing).normalize();
+  });
+  const up = options.up ? new THREE28.Vector3(...options.up) : Math.abs(tangents[0].z) < 0.9 ? new THREE28.Vector3(0, 0, 1) : new THREE28.Vector3(1, 0, 0);
+  const upLength = Math.hypot(up.x, up.y, up.z);
+  if (!(upLength > 0) || !Number.isFinite(upLength))
+    throw new Error("sweepProfile up must be a finite nonzero vector");
+  up.divideScalar(upLength);
+  let z = up.clone().addScaledVector(tangents[0], -up.dot(tangents[0]));
+  if (z.lengthSq() < 0.000000000001)
+    throw new Error("sweepProfile up must not be parallel to the first path tangent");
+  z.normalize();
+  const normals = [z.clone()];
+  if (closed) {
+    stations.push(stations[0].clone());
+    tangents.push(tangents[0].clone());
+    scales.push(scales[0]);
+  }
+  const distances = [0];
+  for (let i = 1;i < stations.length; i++) {
+    z = z.clone().applyQuaternion(new THREE28.Quaternion().setFromUnitVectors(tangents[i - 1], tangents[i]));
+    normals.push(z);
+    distances.push(distances[i - 1] + stations[i].distanceTo(stations[i - 1]));
+  }
+  const total = distances[distances.length - 1];
+  let correction = 0;
+  if (closed)
+    correction = Math.atan2(tangents[0].dot(normals[normals.length - 1].clone().cross(normals[0])), normals[normals.length - 1].dot(normals[0]));
+  const rings = stations.map((station, i) => {
+    const tangent = tangents[i], t = distances[i] / total;
+    const axisZ = normals[i].clone().applyAxisAngle(tangent, (correction + THREE28.MathUtils.degToRad(twist)) * t);
+    const axisX = tangent.clone().cross(axisZ).normalize(), scale = scales[i];
+    return points.map((p) => station.clone().addScaledVector(axisX, p.x * scale[0]).addScaledVector(axisZ, p.y * scale[1]));
+  });
+  if (closed)
+    rings[rings.length - 1] = rings[0].map((p) => p.clone());
+  const out = buildLoft(rings, rings.map(() => points), closed, options.cap ?? true);
+  warnings.push({
+    code: "SWEEP_SELF_INTERSECTION_UNCHECKED",
+    message: "Transported frames and caps do not prove a sweep is free of self-intersections. Review tight turns and nearby path segments."
+  });
+  out.userData.kilnGeometryWarnings = warnings;
+  return out;
+}
+var init_sweep = __esm(() => {
+  init_geometry();
+  init_deform();
+  init_authoring_diagnostic();
+});
+
+// src/solids.ts
+import * as THREE29 from "three";
+async function getManifoldModule() {
+  if (_module)
+    return _module;
+  if (_initPromise)
+    return _initPromise;
+  _initPromise = (async () => {
+    const mod = await import("manifold-3d");
+    const m = await mod.default();
+    m.setup();
+    _module = m;
+    return m;
+  })();
+  return _initPromise;
+}
+function computationFrame(parts) {
+  const meshes = [];
+  for (const part of parts) {
+    part.updateWorldMatrix(true, true);
+    part.traverse((child) => {
+      const mesh = child;
+      if (!mesh.isMesh)
+        return;
+      const unsupported = mesh.isInstancedMesh ? "an instanced mesh" : mesh.isSkinnedMesh ? "a skinned mesh" : mesh.morphTargetInfluences?.some((weight) => weight !== 0) ? "a mesh with active morph influences" : undefined;
+      if (unsupported)
+        throw new Error(`CSG: "${mesh.name || "(unnamed)"}" is ${unsupported}; bake the intended instances or pose into static triangle meshes before the Boolean. Base geometry alone does not represent this operand.`);
+      if (mesh.geometry.getAttribute("position")?.count)
+        meshes.push(mesh);
+    });
+  }
+  const origin = meshes.length ? new THREE29.Vector3().setFromMatrixPosition(meshes[0].matrixWorld) : new THREE29.Vector3;
+  const matrices = new Map;
+  const bounds = new THREE29.Box3;
+  const point = new THREE29.Vector3;
+  for (const mesh of meshes) {
+    const matrix = mesh.matrixWorld.clone();
+    matrix.elements[12] -= origin.x;
+    matrix.elements[13] -= origin.y;
+    matrix.elements[14] -= origin.z;
+    matrices.set(mesh, matrix);
+    const position = mesh.geometry.getAttribute("position");
+    if (position.itemSize !== 3)
+      continue;
+    for (let i = 0;i < position.count; i++) {
+      point.fromBufferAttribute(position, i).applyMatrix4(matrix);
+      if (![point.x, point.y, point.z].every(Number.isFinite))
+        throw new Error("CSG: operand positions and transforms must be finite");
+      bounds.expandByPoint(point);
+    }
+  }
+  const size = bounds.getSize(new THREE29.Vector3);
+  const scale = Math.hypot(size.x, size.y, size.z);
+  if (!Number.isFinite(scale))
+    throw new Error("CSG: combined operand extent must be finite");
+  return { origin, center: bounds.getCenter(new THREE29.Vector3), scale: scale || 1, matrices };
+}
+function retainNotes(target, notes) {
+  if (!Array.isArray(notes))
+    return;
+  for (const note of notes) {
+    if (typeof note === "string")
+      target.set(JSON.stringify(note), note);
+    else if (note && typeof note === "object" && "code" in note) {
+      const copy = {
+        code: String(note.code),
+        ..."message" in note ? { message: String(note.message) } : {}
+      };
+      target.set(JSON.stringify(copy), copy);
+    }
+  }
+}
+function sourceSpans(mesh, count) {
+  const prior = mesh.geometry.userData.kilnCsgProvenance;
+  if (prior?.runs?.length)
+    return prior.runs.map((r) => ({
+      start: r.start * 3,
+      count: r.count * 3,
+      materialIndex: r.materialIndex,
+      name: r.sourceName
+    }));
+  const ranges = mesh.geometry.userData.kilnRanges;
+  const name = mesh.name || ranges?.[0]?.name || "unnamed";
+  return Array.isArray(mesh.material) ? mesh.geometry.groups.map((g) => ({
+    start: g.start,
+    count: g.count,
+    materialIndex: g.materialIndex ?? 0,
+    name
+  })) : [{ start: 0, count, materialIndex: 0, name }];
+}
+function threeToManifold(src, mod, label, context) {
+  src.updateWorldMatrix(true, true);
+  const properties = [], indices = [], runs = [], originals = [], faceIds = [];
+  let vertexOffset = 0, meshCount = 0;
+  const stride = context.preserve ? 5 : 3;
+  src.traverse((child) => {
+    const mesh = child;
+    if (!mesh.isMesh)
+      return;
+    const geometry = mesh.geometry, position = geometry.getAttribute("position");
+    if (!position)
+      return;
+    retainNotes(context.attributeWarnings, geometry.userData.kilnAttributeWarnings);
+    retainNotes(context.geometryWarnings, geometry.userData.kilnGeometryWarnings);
+    const dropped = Object.keys(geometry.attributes).filter((key) => !["position", "normal", "uv"].includes(key)).sort();
+    if (dropped.length)
+      retainNotes(context.attributeWarnings, [
+        {
+          code: "CSG_ATTRIBUTES_DROPPED",
+          message: `CSG removed attributes from "${mesh.name || label}": ${dropped.join(", ")}. Only UV0 and material groups can be preserved; rebuild required attributes after the Boolean.`
+        }
+      ]);
+    const morphs = Object.entries(geometry.morphAttributes).filter(([, targets]) => targets.length > 0).map(([key]) => key).sort();
+    if (morphs.length)
+      retainNotes(context.attributeWarnings, [
+        {
+          code: "CSG_MORPHS_DROPPED",
+          message: `CSG used the base shape of "${mesh.name || label}" and removed inactive morph targets: ${morphs.join(", ")}. Boolean topology does not retain morph correspondences.`
+        }
+      ]);
+    meshCount++;
+    const index = geometry.index, count = index?.count ?? position.count;
+    if (count % 3 !== 0)
+      throw new Error(`CSG ${label}: mesh "${mesh.name || "(unnamed)"}" has ${count} ${index ? "indices" : "vertices"}, which is not a whole number of triangles. Every CSG input must be a triangle mesh.`);
+    if (position.itemSize !== 3)
+      throw new Error(`CSG ${label}: positions must have three components`);
+    const uv = geometry.getAttribute("uv");
+    if (context.preserve && uv && (uv.itemSize !== 2 || uv.count !== position.count))
+      throw new Error(`CSG ${label}: uv must have two components per vertex`);
+    if (context.preserve) {
+      if (uv)
+        context.anyUV = true;
+      else
+        context.missingUV.add(mesh.name || label);
+    }
+    const point = new THREE29.Vector3;
+    for (let i = 0;i < position.count; i++) {
+      point.fromBufferAttribute(position, i).applyMatrix4(context.frame.matrices.get(mesh)).sub(context.frame.center).divideScalar(context.frame.scale);
+      if (![point.x, point.y, point.z].every((n) => Number.isFinite(Math.fround(n))))
+        throw new Error(`CSG ${label}: transformed positions must be finite Float32 coordinates`);
+      properties.push(point.x, point.y, point.z);
+      if (context.preserve) {
+        const u = uv?.getX(i) ?? 0, v = uv?.getY(i) ?? 0;
+        if (!Number.isFinite(u) || !Number.isFinite(v))
+          throw new Error(`CSG ${label}: UVs must be finite`);
+        properties.push(u, v);
+      }
+    }
+    const materials = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
+    const spans = sourceSpans(mesh, count).sort((a, b) => a.start - b.start);
+    let covered = 0;
+    for (const span of spans) {
+      if (!Number.isInteger(span.start) || !Number.isInteger(span.count) || span.start !== covered || span.count <= 0 || span.count % 3 || span.start % 3 || span.start + span.count > count || !materials[span.materialIndex])
+        throw new Error(`CSG ${label}: material/source groups must cover triangles exactly once with valid materials`);
+      const id = mod.Manifold.reserveIDs(1);
+      context.sources.set(id, { name: span.name, material: materials[span.materialIndex] });
+      runs.push(indices.length);
+      originals.push(id);
+      for (let i = span.start;i < span.start + span.count; i += 3) {
+        const triangle = [
+          index?.getX(i) ?? i,
+          index?.getX(i + 1) ?? i + 1,
+          index?.getX(i + 2) ?? i + 2
+        ];
+        if (triangle.some((j) => !Number.isInteger(j) || j < 0 || j >= position.count))
+          throw new Error(`CSG ${label}: index outside positions`);
+        if (mesh.matrixWorld.determinant() < 0)
+          [triangle[1], triangle[2]] = [triangle[2], triangle[1]];
+        indices.push(...triangle.map((j) => j + vertexOffset));
+        const prior = geometry.userData.kilnCsgProvenance;
+        faceIds.push(prior?.faceIds?.[i / 3] ?? i / 3);
+      }
+      covered += span.count;
+    }
+    if (covered !== count)
+      throw new Error(`CSG ${label}: material/source groups do not cover every triangle`);
+    vertexOffset += position.count;
+  });
+  if (!indices.length)
+    throw new Error(`CSG ${label}: contributes no triangles${meshCount === 0 ? " (nothing in it is a mesh — an empty Group, or a part that was never added to it)" : " (its meshes have no geometry)"}. Every CSG operand must be a solid with triangles.`);
+  runs.push(indices.length);
+  const mesh = new mod.Mesh({
+    numProp: stride,
+    vertProperties: new Float32Array(properties),
+    triVerts: new Uint32Array(indices),
+    runIndex: new Uint32Array(runs),
+    runOriginalID: new Uint32Array(originals),
+    ...context.preserve ? { faceID: new Uint32Array(faceIds) } : {}
+  });
+  mesh.merge();
+  return mod.Manifold.ofMesh(mesh);
+}
+function assertNonEmptyResult(m, op, hint) {
+  if (m.numTri() === 0)
+    throw new Error(`${op}: the result is empty (zero triangles). ${hint}`);
+}
+function collapsedFaces(mesh) {
+  const { vertProperties: p, numProp: stride, triVerts: indices } = mesh;
+  const faces = [];
+  for (let i = 0;i < p.length; i += stride)
+    if (![p[i], p[i + 1], p[i + 2]].every(Number.isFinite))
+      throw new AuthoringDiagnosticError("SOLID_FLOAT32_COLLAPSE");
+  for (let i = 0;i < indices.length; i += 3) {
+    const a = indices[i] * stride, b = indices[i + 1] * stride, c = indices[i + 2] * stride;
+    const bx = p[b] - p[a], by = p[b + 1] - p[a + 1], bz = p[b + 2] - p[a + 2];
+    const cx = p[c] - p[a], cy = p[c + 1] - p[a + 1], cz = p[c + 2] - p[a + 2];
+    if (by * cz - bz * cy === 0 && bz * cx - bx * cz === 0 && bx * cy - by * cx === 0)
+      faces.push(i / 3);
+  }
+  return faces;
+}
+function removeCollapsedFaces(mesh, faces) {
+  const removed = new Set(faces), count = mesh.triVerts.length / 3;
+  const prefix = new Uint32Array(count + 1);
+  const triangles = new Uint32Array(mesh.triVerts.length - faces.length * 3);
+  const faceIds = mesh.faceID.length ? new Uint32Array(count - faces.length) : undefined;
+  const tangents = mesh.halfedgeTangent.length ? new Float32Array((count - faces.length) * 12) : undefined;
+  let kept = 0;
+  for (let i = 0;i < count; i++) {
+    if (!removed.has(i)) {
+      triangles.set(mesh.triVerts.subarray(i * 3, i * 3 + 3), kept * 3);
+      if (faceIds)
+        faceIds[kept] = mesh.faceID[i];
+      if (tangents)
+        tangents.set(mesh.halfedgeTangent.subarray(i * 12, i * 12 + 12), kept * 12);
+      kept++;
+    }
+    prefix[i + 1] = kept * 3;
+  }
+  mesh.triVerts = triangles;
+  if (faceIds)
+    mesh.faceID = faceIds;
+  if (tangents)
+    mesh.halfedgeTangent = tangents;
+  mesh.runIndex = Uint32Array.from(mesh.runIndex, (offset) => prefix[offset / 3]);
+}
+function materializeSolid(m) {
+  const mesh = m.getMesh(), faces = collapsedFaces(mesh), collapsed = faces.length;
+  if (!collapsed)
+    return { mesh, collapsed };
+  let magnitude = 0;
+  for (let i = 0;i < mesh.vertProperties.length; i += mesh.numProp)
+    for (let axis = 0;axis < 3; axis++)
+      magnitude = Math.max(magnitude, Math.abs(mesh.vertProperties[i + axis]));
+  mesh.tolerance = Math.min(mesh.tolerance, magnitude * 0.00000011920928955078125);
+  const rounded = _module.Manifold.ofMesh(mesh);
+  try {
+    if (rounded.status() !== "NoError" || rounded.numTri() === 0)
+      throw new AuthoringDiagnosticError("SOLID_FLOAT32_COLLAPSE");
+    const result = rounded.getMesh();
+    const remaining = collapsedFaces(result);
+    if (!remaining.length)
+      return { mesh: result, collapsed };
+    removeCollapsedFaces(result, remaining);
+    result.merge();
+    const cleaned = _module.Manifold.ofMesh(result);
+    try {
+      if (cleaned.status() !== "NoError" || cleaned.numTri() === 0)
+        throw new AuthoringDiagnosticError("SOLID_FLOAT32_COLLAPSE");
+      const finalMesh = cleaned.getMesh();
+      if (collapsedFaces(finalMesh).length)
+        throw new AuthoringDiagnosticError("SOLID_FLOAT32_COLLAPSE");
+      return { mesh: finalMesh, collapsed };
+    } finally {
+      cleaned.delete();
+    }
+  } finally {
+    rounded.delete();
+  }
+}
+function solidMeshToGeometry({ mesh, collapsed }, opts = {}) {
+  const positions = new Float32Array(mesh.vertProperties.length / mesh.numProp * 3);
+  const uvs = opts.preserveUV && mesh.numProp >= 5 ? new Float32Array(positions.length / 3 * 2) : undefined;
+  for (let i = 0, v = 0;i < mesh.vertProperties.length; i += mesh.numProp, v++) {
+    positions.set(mesh.vertProperties.subarray(i, i + 3), v * 3);
+    if (uvs)
+      uvs.set(mesh.vertProperties.subarray(i + 3, i + 5), v * 2);
+  }
+  const geometry = new THREE29.BufferGeometry;
+  geometry.setAttribute("position", new THREE29.BufferAttribute(positions, 3));
+  geometry.setIndex(new THREE29.BufferAttribute(new Uint32Array(mesh.triVerts), 1));
+  if (uvs)
+    geometry.setAttribute("uv", new THREE29.BufferAttribute(uvs, 2));
+  const out = opts.smooth ? geometry : geometry.toNonIndexed();
+  out.computeVertexNormals();
+  if (opts.smooth && uvs) {
+    const cornerNormals = creaseNormals(out, { angle: 180 }).getAttribute("normal");
+    const normal = out.getAttribute("normal");
+    for (let corner = 0;corner < out.index.count; corner++) {
+      normal.setXYZ(out.index.getX(corner), cornerNormals.getX(corner), cornerNormals.getY(corner), cornerNormals.getZ(corner));
+    }
+  }
+  out.computeBoundingBox();
+  out.computeBoundingSphere();
+  if (collapsed)
+    out.userData.kilnGeometryWarnings = [
+      {
+        code: "SOLID_FLOAT32_CANONICALIZED",
+        message: `Removed ${collapsed} zero-area Float32 faces and rebuilt their topology with Manifold. Source runs and properties were retained; this is precision cleanup, not general mesh repair.`
+      }
+    ];
+  return out;
+}
+function manifoldToGeometry(m, opts = {}) {
+  return solidMeshToGeometry(materializeSolid(m), opts);
+}
+function firstMaterial(src) {
+  let material;
+  src.traverse((child) => {
+    const mesh = child;
+    if (!material && mesh.isMesh)
+      material = Array.isArray(mesh.material) ? mesh.material[0] : mesh.material;
+  });
+  return material ?? new THREE29.MeshStandardMaterial;
+}
+function outputMesh(result, name, parts, opts, context, isHull) {
+  const materialized = materializeSolid(result);
+  const geometry = solidMeshToGeometry(materialized, {
+    smooth: opts.smooth,
+    preserveUV: context.preserve && context.anyUV && !isHull
+  });
+  const native = materialized.mesh, materials = [], sourceRuns = [];
+  if (!isHull)
+    for (let i = 0;i < native.runOriginalID.length; i++) {
+      const source = context.sources.get(native.runOriginalID[i]);
+      const start = native.runIndex[i] / 3, count = (native.runIndex[i + 1] - native.runIndex[i]) / 3;
+      if (!count)
+        continue;
+      const material = source?.material ?? firstMaterial(parts[0]);
+      let materialIndex = context.preserve ? materials.indexOf(material) : 0;
+      if (context.preserve && materialIndex < 0) {
+        materialIndex = materials.length;
+        materials.push(material);
+      }
+      sourceRuns.push({
+        sourceName: source?.name ?? "unknown",
+        start,
+        count,
+        materialIndex,
+        backside: !!((native.runFlags?.[i] ?? 0) & 1)
+      });
+      if (context.preserve)
+        geometry.addGroup(start * 3, count * 3, materialIndex);
+    }
+  const total = (geometry.index?.count ?? geometry.getAttribute("position").count) / 3;
+  geometry.userData.kilnCsgProvenance = {
+    schemaVersion: 1,
+    runs: sourceRuns,
+    faceIds: isHull ? [] : Array.from(native.faceID),
+    unknownTriangles: isHull ? total : sourceRuns.filter((r) => r.sourceName === "unknown").reduce((sum, r) => sum + r.count, 0)
+  };
+  geometry.userData.kilnRanges = sourceRuns.length ? sourceRuns.map((r) => ({
+    name: r.sourceName,
+    start: r.start,
+    count: r.count,
+    certainty: r.sourceName === "unknown" ? "unknown" : "source-run"
+  })) : [{ name: "generated hull", start: 0, count: total, certainty: "unknown" }];
+  const warnings = [];
+  if (context.preserve && context.anyUV && context.missingUV.size)
+    warnings.push({
+      code: "CSG_UV_MISSING",
+      message: `UVs were absent on ${[...context.missingUV].join(", ")}; those surfaces use zero UVs. Unwrap the result if they need a texture.`
+    });
+  if (isHull && context.preserve)
+    warnings.push({
+      code: "HULL_ATTRIBUTES_GENERATED",
+      message: "A convex hull creates new faces. Source UVs and material boundaries cannot be assigned faithfully; output uses the first material and no UVs."
+    });
+  geometry.userData.kilnAttributeWarnings = [...context.attributeWarnings.values(), ...warnings];
+  retainNotes(context.geometryWarnings, geometry.userData.kilnGeometryWarnings);
+  if (context.geometryWarnings.size)
+    geometry.userData.kilnGeometryWarnings = [...context.geometryWarnings.values()];
+  const output = new THREE29.Mesh(geometry, context.preserve && !isHull && materials.length ? materials : firstMaterial(parts[0]));
+  output.name = `Mesh_${name}`;
+  output.position.copy(context.frame.origin);
+  return output;
+}
+function splitPartsAndOpts(items) {
+  const last = items[items.length - 1];
+  if (last && !last.isObject3D)
+    return { parts: items.slice(0, -1), opts: last };
+  return { parts: items, opts: {} };
+}
+async function runBoolean(op, name, parts, opts) {
+  const mod = await getManifoldModule(), context = {
+    preserve: opts.preserveAttributes ?? false,
+    sources: new Map,
+    anyUV: false,
+    missingUV: new Set,
+    frame: computationFrame(parts),
+    attributeWarnings: new Map,
+    geometryWarnings: new Map
+  };
+  const owned = new Set;
+  const track = (m) => {
+    owned.add(m);
+    return m;
+  };
+  try {
+    const operands = parts.map((p, i) => track(threeToManifold(p, mod, op === "boolDiff" ? i === 0 ? "boolDiff body" : `boolDiff cutter ${i}` : op === "boolIntersect" ? `boolIntersect operand ${i === 0 ? "a" : "b"}` : `${op} operand ${i + 1}`, context)));
+    let result;
+    if (op === "boolUnion")
+      result = track(mod.Manifold.union(operands));
+    else if (op === "boolDiff") {
+      const cutters = operands.length === 2 ? operands[1] : track(mod.Manifold.union(operands.slice(1)));
+      result = track(operands[0].subtract(cutters));
+    } else if (op === "boolIntersect")
+      result = track(operands[0].intersect(operands[1]));
+    else
+      result = track(operands.length === 1 ? operands[0].hull() : mod.Manifold.hull(operands));
+    const hint = op === "boolDiff" ? "The cutters removed the entire body — check their size and position, or subtract fewer of them." : op === "boolIntersect" ? "The two operands do not overlap — position them so their volumes actually intersect." : op === "hull" ? "The inputs are coplanar or collinear, so they enclose no volume." : "Every operand was empty after merging.";
+    assertNonEmptyResult(result, op, hint);
+    const scaled = track(result.scale(context.frame.scale));
+    const restored = track(scaled.translate(context.frame.center.toArray()));
+    return outputMesh(restored, name, parts, { ...opts, smooth: opts.smooth ?? op === "hull" }, context, op === "hull");
+  } finally {
+    for (const ownedManifold of owned)
+      ownedManifold.delete();
+  }
+}
+async function boolUnion(name, ...items) {
+  const { parts, opts } = splitPartsAndOpts(items);
+  if (parts.length < 2)
+    throw new Error("boolUnion requires at least two parts");
+  return runBoolean("boolUnion", name, parts, opts);
+}
+async function boolDiff(name, body, ...items) {
+  const { parts, opts } = splitPartsAndOpts(items);
+  if (parts.length < 1)
+    throw new Error("boolDiff requires at least one cutter");
+  return runBoolean("boolDiff", name, [body, ...parts], opts);
+}
+async function boolIntersect(name, a, b, opts = {}) {
+  return runBoolean("boolIntersect", name, [a, b], opts);
+}
+async function hull(name, ...items) {
+  const { parts, opts } = splitPartsAndOpts(items);
+  if (parts.length < 1)
+    throw new Error("hull requires at least one part");
+  return runBoolean("hull", name, parts, opts);
+}
+var _module = null, _initPromise = null;
+var init_solids = __esm(() => {
+  init_geometry();
+  init_authoring_diagnostic();
+});
+
+// src/implicit.ts
+async function implicitSurface(sample, options) {
+  const {
+    bounds,
+    edgeLength,
+    maxCells = 1e6,
+    maxEvaluations = 8000000,
+    level = 0,
+    tolerance = -1,
+    smooth = true
+  } = options;
+  if (bounds?.min.length !== 3 || bounds.max.length !== 3 || ![...bounds.min, ...bounds.max].every(Number.isFinite) || bounds.min.some((v, i) => v >= bounds.max[i]))
+    throw new Error("implicitSurface bounds must be finite and increasing on every axis");
+  if (!Number.isFinite(edgeLength) || edgeLength <= 0)
+    throw new Error("implicitSurface edgeLength must be positive and finite");
+  if (!Number.isSafeInteger(maxCells) || maxCells < 1 || !Number.isSafeInteger(maxEvaluations) || maxEvaluations < 1)
+    throw new Error("implicitSurface maxCells and maxEvaluations must be positive safe integers");
+  if (!Number.isFinite(level) || !Number.isFinite(tolerance) || tolerance !== -1 && tolerance <= 0)
+    throw new Error("implicitSurface level must be finite; tolerance must be -1 or positive");
+  const estimatedGridCells = bounds.min.reduce((product, min, i) => product * Math.ceil((bounds.max[i] - min) / edgeLength), 1);
+  if (!Number.isSafeInteger(estimatedGridCells) || estimatedGridCells > maxCells)
+    throw new Error(`implicitSurface estimated grid ${estimatedGridCells} exceeds maxCells ${maxCells}; increase edgeLength or narrow bounds`);
+  const mod = await getManifoldModule();
+  let evaluations = 0;
+  const solid = mod.Manifold.levelSet((point) => {
+    evaluations++;
+    if (evaluations > maxEvaluations)
+      throw new Error(`implicitSurface exceeded maxEvaluations ${maxEvaluations}`);
+    const value = sample([point[0], point[1], point[2]]);
+    if (!Number.isFinite(value))
+      throw new Error("implicitSurface callback must return a finite number");
+    return value;
+  }, { min: [...bounds.min], max: [...bounds.max] }, edgeLength, level, tolerance);
+  try {
+    if (solid.numTri() === 0)
+      throw new Error("implicitSurface result is empty; the field does not enclose a positive-inside region in these bounds");
+    const out = manifoldToGeometry(solid, { smooth });
+    out.userData.kilnImplicit = {
+      schemaVersion: 1,
+      experimental: true,
+      edgeLength,
+      estimatedGridCells,
+      evaluations,
+      maxCells,
+      maxEvaluations
+    };
+    out.userData.kilnGeometryWarnings = [
+      {
+        code: "EXPERIMENTAL_IMPLICIT_SURFACE",
+        message: "Implicit sampling is resolution-dependent and produces geometry without UVs. Review thin features and bounds; closed topology is not a claim of CAD accuracy."
+      }
+    ];
+    return out;
+  } finally {
+    solid.delete();
+  }
+}
+var init_implicit = __esm(() => {
+  init_solids();
+});
+
+// src/profile.ts
+function assertFiniteProfile(profile, label) {
+  if (!Array.isArray(profile) || profile.length < 3) {
+    throw new Error(`${label}: need at least 3 points to form a closed outline.`);
+  }
+  for (let i = 0;i < profile.length; i++) {
+    const p = profile[i];
+    if (!Array.isArray(p) || p.length < 2 || !Number.isFinite(p[0]) || !Number.isFinite(p[1])) {
+      throw new Error(`${label}: point ${i} is not a finite [x, y] pair (got ${JSON.stringify(p)}).`);
+    }
+  }
+}
+function assertPositive(value, label) {
+  if (!Number.isFinite(value) || value <= 0) {
+    throw new Error(`${label} must be a positive number (got ${value}).`);
+  }
+}
+function orientSweep(geo, axis) {
+  if (axis === "y")
+    geo.rotateX(-Math.PI / 2);
+  else if (axis === "x")
+    geo.rotateY(Math.PI / 2);
+  else if (axis !== "z")
+    throw new Error(`axis must be 'x', 'y', or 'z' (got ${String(axis)}).`);
+  return geo;
+}
+function bevelCrossSection(cs, bevel, style, segments, label) {
+  const join = JOIN_FOR_STYLE[style];
+  if (!join) {
+    throw new Error(`${label}: bevelStyle must be 'round' or 'chamfer' (got ${String(style)}).`);
+  }
+  const eroded = cs.offset(-bevel, join, 2, segments);
+  if (eroded.isEmpty()) {
+    eroded.delete();
+    throw new AuthoringDiagnosticError("PROFILE_BEVEL_COLLAPSE");
+  }
+  const dilated = eroded.offset(2 * bevel, join, 2, segments);
+  const out = dilated.offset(-bevel, join, 2, segments);
+  eroded.delete();
+  dilated.delete();
+  return out;
+}
+function normalizeTaper(taper) {
+  if (taper === undefined)
+    return [1, 1];
+  if (typeof taper === "number") {
+    if (!Number.isFinite(taper) || taper < 0) {
+      throw new Error(`taper must be a finite number >= 0 (got ${taper}).`);
+    }
+    return [taper, taper];
+  }
+  if (!Array.isArray(taper) || taper.length !== 2 || !taper.every((v) => Number.isFinite(v) && v >= 0)) {
+    throw new Error(`taper must be a number or [x, y] pair of numbers >= 0 (got ${JSON.stringify(taper)}).`);
+  }
+  return [taper[0], taper[1]];
+}
+async function extrudeProfile(profile, options = {}) {
+  assertFiniteProfile(profile, "extrudeProfile");
+  const {
+    depth = 1,
+    holes = [],
+    bevel = 0,
+    bevelStyle = "round",
+    segments = 12,
+    twist = 0,
+    taper,
+    divisions,
+    axis = "y",
+    center = true,
+    smooth = false
+  } = options;
+  assertPositive(depth, "extrudeProfile: depth");
+  if (bevel < 0)
+    throw new Error(`extrudeProfile: bevel must be >= 0 (got ${bevel}).`);
+  for (let i = 0;i < holes.length; i++) {
+    assertFiniteProfile(holes[i], `extrudeProfile: holes[${i}]`);
+  }
+  const mod = await getManifoldModule();
+  const { CrossSection: CS } = mod;
+  const disposable = [];
+  const track = (cs) => {
+    disposable.push(cs);
+    return cs;
+  };
+  try {
+    let section = track(new CS([profile], "NonZero"));
+    if (holes.length > 0) {
+      const holeSections = holes.map((h) => track(new CS([h], "NonZero")));
+      section = track(CS.difference(section, CS.union(holeSections)));
+      if (section.isEmpty()) {
+        throw new Error("extrudeProfile: the holes consume the whole profile — nothing left to extrude.");
+      }
+    }
+    if (bevel > 0) {
+      section = track(bevelCrossSection(section, bevel, bevelStyle, segments, "extrudeProfile"));
+    }
+    const nDivisions = divisions ?? (twist !== 0 ? 16 : 1);
+    const solid = section.extrude(depth, nDivisions, twist, normalizeTaper(taper), center);
+    try {
+      return orientSweep(manifoldToGeometry(solid, { smooth }), axis);
+    } finally {
+      solid.delete();
+    }
+  } finally {
+    for (const cs of disposable)
+      cs.delete();
+  }
+}
+async function revolveProfile(profile, options = {}) {
+  assertFiniteProfile(profile, "revolveProfile");
+  const {
+    segments = 24,
+    angle = 360,
+    bevel = 0,
+    bevelStyle = "round",
+    bevelSegments = 12,
+    axis = "y",
+    smooth = true
+  } = options;
+  if (bevel < 0)
+    throw new Error(`revolveProfile: bevel must be >= 0 (got ${bevel}).`);
+  if (!Number.isFinite(angle) || angle <= 0 || angle > 360) {
+    throw new Error(`revolveProfile: angle must be in (0, 360] degrees (got ${angle}).`);
+  }
+  const mod = await getManifoldModule();
+  const { CrossSection: CS } = mod;
+  const disposable = [];
+  try {
+    let section = new CS([profile], "NonZero");
+    disposable.push(section);
+    if (bevel > 0) {
+      section = bevelCrossSection(section, bevel, bevelStyle, bevelSegments, "revolveProfile");
+      disposable.push(section);
+    }
+    const solid = section.revolve(segments, angle);
+    try {
+      return orientSweep(manifoldToGeometry(solid, { smooth }), axis);
+    } finally {
+      solid.delete();
+    }
+  } finally {
+    for (const cs of disposable)
+      cs.delete();
+  }
+}
+async function roundedBoxGeo(width, height, depth, radius, options = {}) {
+  assertPositive(width, "roundedBoxGeo: width");
+  assertPositive(height, "roundedBoxGeo: height");
+  assertPositive(depth, "roundedBoxGeo: depth");
+  assertPositive(radius, "roundedBoxGeo: radius");
+  const { style = "round", segments = 12, smooth } = options;
+  const smallest = Math.min(width, height, depth);
+  if (radius >= smallest / 2) {
+    throw new AuthoringDiagnosticError("ROUNDED_BOX_RADIUS");
+  }
+  const mod = await getManifoldModule();
+  const ManifoldCls = mod.Manifold;
+  const parts = [];
+  try {
+    let solid;
+    if (style === "round") {
+      const corners = [];
+      for (const sx of [-1, 1]) {
+        for (const sy of [-1, 1]) {
+          for (const sz of [-1, 1]) {
+            const s = ManifoldCls.sphere(radius, segments).translate([
+              sx * (width - 2 * radius) / 2,
+              sy * (height - 2 * radius) / 2,
+              sz * (depth - 2 * radius) / 2
+            ]);
+            parts.push(s);
+            corners.push(s);
+          }
+        }
+      }
+      solid = ManifoldCls.hull(corners);
+    } else if (style === "chamfer") {
+      const boxes = [
+        ManifoldCls.cube([width, height - 2 * radius, depth - 2 * radius], true),
+        ManifoldCls.cube([width - 2 * radius, height, depth - 2 * radius], true),
+        ManifoldCls.cube([width - 2 * radius, height - 2 * radius, depth], true)
+      ];
+      parts.push(...boxes);
+      solid = ManifoldCls.hull(boxes);
+    } else {
+      throw new Error(`roundedBoxGeo: style must be 'round' or 'chamfer' (got ${String(style)}).`);
+    }
+    try {
+      return manifoldToGeometry(solid, { smooth: smooth ?? style === "round" });
+    } finally {
+      solid.delete();
+    }
+  } finally {
+    for (const p of parts)
+      p.delete();
+  }
+}
+function circleProfile(radius, segments = 24, center = [0, 0]) {
+  assertPositive(radius, "circleProfile: radius");
+  if (!Number.isInteger(segments) || segments < 3) {
+    throw new Error(`circleProfile: segments must be an integer >= 3 (got ${segments}).`);
+  }
+  const out = [];
+  for (let i = 0;i < segments; i++) {
+    const t = i / segments * Math.PI * 2;
+    out.push([center[0] + Math.cos(t) * radius, center[1] + Math.sin(t) * radius]);
+  }
+  return out;
+}
+var JOIN_FOR_STYLE;
+var init_profile = __esm(() => {
+  init_solids();
+  init_authoring_diagnostic();
+  JOIN_FOR_STYLE = {
+    round: "Round",
+    chamfer: "Square"
+  };
+});
+
+// src/portable-material-runtime.ts
+async function compilePortableMaterialSpecV2(input, options = {}) {
+  const spec = canonicalizePortableMaterialSpecV2(input);
+  const resolver = options.resolver ?? DEFAULT_TEXTURE_RESOLVER;
+  const entries = Object.entries(spec.textures);
+  for (const [slot, ref] of entries) {
+    if (ref.kind !== "resource")
+      continue;
+    const descriptor = resolver.describeApprovedTexture?.(ref.resourceId);
+    if (!descriptor) {
+      throw new ProceduralTextureError(`portableMaterial.textures.${slot} resource ${JSON.stringify(ref.resourceId)} is not an approved texture resource ID.`);
+    }
+    if (!descriptor.allowedSlots.includes(slot)) {
+      throw new ProceduralTextureError(`portableMaterial.textures.${slot} resource ${JSON.stringify(ref.resourceId)} is not approved for that slot.`);
+    }
+    if (descriptor.usage !== SLOT_USAGE[slot]) {
+      throw new ProceduralTextureError(`portableMaterial.textures.${slot} requires ${SLOT_USAGE[slot]} data, but ${JSON.stringify(ref.resourceId)} provides ${descriptor.usage}.`);
+    }
+  }
+  const loaded = new Map;
+  await Promise.all(entries.map(async ([slot, ref]) => {
+    const texture = ref.kind === "procedural" ? proceduralTexture(ref.spec) : await resolver.loadApprovedTexture(ref.resourceId);
+    loaded.set(slot, texture);
+  }));
+  const materialOptions = {
+    roughness: spec.roughness,
+    metalness: spec.metalness,
+    emissiveIntensity: spec.emissiveIntensity,
+    alphaMode: spec.alphaMode,
+    ...spec.alphaMode === "mask" ? { alphaCutoff: spec.alphaCutoff } : {},
+    doubleSided: spec.doubleSided,
+    ...loaded.get("baseColor") ? { albedo: loaded.get("baseColor") } : spec.baseColor !== undefined ? { albedo: spec.baseColor } : {},
+    ...loaded.get("normal") ? { normal: loaded.get("normal") } : {},
+    ...loaded.get("metallicRoughness") ? { metallicRoughness: loaded.get("metallicRoughness") } : {},
+    ...loaded.get("emissive") ? { emissive: loaded.get("emissive") } : spec.emissive !== undefined ? { emissive: spec.emissive } : {},
+    ...loaded.get("occlusion") ? { aoMap: loaded.get("occlusion") } : {}
+  };
+  const material = pbrMaterial(materialOptions);
+  if (spec.name)
+    material.name = spec.name;
+  if (loaded.has("baseColor") && spec.baseColor !== undefined)
+    material.color.setHex(spec.baseColor);
+  if (loaded.has("emissive") && spec.emissive !== undefined)
+    material.emissive.setHex(spec.emissive);
+  material.userData["kilnPortableMaterial"] = spec;
+  return material;
+}
+var SLOT_USAGE;
+var init_portable_material_runtime = __esm(() => {
+  init_texture_resolver();
+  init_procedural_material_v2();
+  init_procedural_texture();
+  init_textures();
+  SLOT_USAGE = {
+    baseColor: "albedo",
+    normal: "normal",
+    metallicRoughness: "metallicRoughness",
+    emissive: "emissive",
+    occlusion: "occlusion"
+  };
+});
+
+// src/uv.ts
+import * as THREE30 from "three";
+async function getXatlas() {
+  if (!_xatlasReady) {
+    _xatlasReady = (async () => {
+      const apiSpecifier = "xatlasjs/dist/node/api.mjs";
+      const xatlasSpecifier = "xatlasjs/dist/node/xatlas.js";
+      const apiMod = await import(apiSpecifier);
+      const xatlasMod = await import(xatlasSpecifier);
+      const create = xatlasMod.default ?? xatlasMod;
+      const ApiCtor = apiMod.Api(create);
+      return new Promise((resolve) => {
+        const xa = new ApiCtor(() => resolve(xa), null, null);
+      });
+    })();
+  }
+  return _xatlasReady;
+}
+async function autoUnwrap(geometry, opts = {}) {
+  const xa = await getXatlas();
+  const src = geometry.index ? geometry : toIndexed(geometry);
+  const posAttr = src.getAttribute("position");
+  const normAttr = src.getAttribute("normal");
+  const idxAttr = src.getIndex();
+  if (!posAttr || !idxAttr) {
+    throw new Error("autoUnwrap: geometry requires position attribute and an index");
+  }
+  if (idxAttr.count === 0 || posAttr.count === 0) {
+    throw new Error("autoUnwrap: geometry has no triangles. Nothing can be unwrapped — check the operation that produced it (an empty CSG result is the usual cause).");
+  }
+  if (idxAttr.count % 3 !== 0) {
+    throw new Error(`autoUnwrap: geometry has ${idxAttr.count} indices, which is not a whole number of triangles.`);
+  }
+  xa.createAtlas();
+  const useNormals = Boolean(opts.useNormals && normAttr);
+  const indexArray = idxAttr.array instanceof Uint32Array ? idxAttr.array : new Uint32Array(idxAttr.array);
+  const addRes = xa.addMesh(indexArray, new Float32Array(posAttr.array), useNormals && normAttr ? new Float32Array(normAttr.array) : null, null, "kiln-mesh", useNormals, false, 1);
+  if (!addRes) {
+    xa.destroyAtlas();
+    throw new Error("autoUnwrap: xatlas.addMesh failed (non-manifold or degenerate geometry?)");
+  }
+  const result = xa.generateAtlas({}, { resolution: opts.resolution ?? 1024, padding: opts.padding ?? 2 }, true);
+  const mesh = result.meshes[0];
+  if (!mesh) {
+    xa.destroyAtlas();
+    throw new Error("autoUnwrap: xatlas returned no meshes");
+  }
+  const out = new THREE30.BufferGeometry;
+  out.setAttribute("position", new THREE30.BufferAttribute(new Float32Array(mesh.vertex.vertices), 3));
+  if (mesh.vertex.normals) {
+    out.setAttribute("normal", new THREE30.BufferAttribute(new Float32Array(mesh.vertex.normals), 3));
+  }
+  if (mesh.vertex.coords1) {
+    out.setAttribute("uv", new THREE30.BufferAttribute(new Float32Array(mesh.vertex.coords1), 2));
+  }
+  if (mesh.index) {
+    out.setIndex(new THREE30.BufferAttribute(new Uint32Array(mesh.index), 1));
+  }
+  out.userData["atlas"] = {
+    width: result.width,
+    height: result.height,
+    atlasCount: result.atlasCount
+  };
+  if (!out.getAttribute("normal"))
+    out.computeVertexNormals();
+  repairZeroNormals(out);
+  if (!out.getAttribute("uv")) {
+    xa.destroyAtlas();
+    throw new Error("autoUnwrap: xatlas produced no UV coordinates for this geometry (degenerate or zero-area triangles?).");
+  }
+  xa.destroyAtlas();
+  return out;
+}
+function toIndexed(geo) {
+  const posAttr = geo.getAttribute("position");
+  const indices = new Uint32Array(posAttr.count);
+  for (let i = 0;i < posAttr.count; i++)
+    indices[i] = i;
+  const out = geo.clone();
+  out.setIndex(new THREE30.BufferAttribute(indices, 1));
+  return out;
+}
+function repairZeroNormals(geo) {
+  const normal = geo.getAttribute("normal");
+  const position = geo.getAttribute("position");
+  const index = geo.getIndex();
+  if (!normal || !position || !index)
+    return;
+  const broken = new Set;
+  for (let i = 0;i < normal.count; i++) {
+    const x = normal.getX(i);
+    const y = normal.getY(i);
+    const z = normal.getZ(i);
+    if (!Number.isFinite(x + y + z) || Math.hypot(x, y, z) < 0.000001)
+      broken.add(i);
+  }
+  if (broken.size === 0)
+    return;
+  const acc = new Float32Array(normal.count * 3);
+  const a = new THREE30.Vector3;
+  const b = new THREE30.Vector3;
+  const c = new THREE30.Vector3;
+  const face = new THREE30.Vector3;
+  const edge = new THREE30.Vector3;
+  for (let t = 0;t + 2 < index.count; t += 3) {
+    const tri = [index.getX(t), index.getX(t + 1), index.getX(t + 2)];
+    if (!tri.some((i) => broken.has(i)))
+      continue;
+    a.fromBufferAttribute(position, tri[0]);
+    b.fromBufferAttribute(position, tri[1]);
+    c.fromBufferAttribute(position, tri[2]);
+    face.subVectors(c, a);
+    edge.subVectors(b, a);
+    face.crossVectors(edge, face);
+    for (const i of tri) {
+      if (!broken.has(i))
+        continue;
+      const o = i * 3;
+      acc[o] = acc[o] + face.x;
+      acc[o + 1] = acc[o + 1] + face.y;
+      acc[o + 2] = acc[o + 2] + face.z;
+    }
+  }
+  for (const i of broken) {
+    face.set(acc[i * 3], acc[i * 3 + 1], acc[i * 3 + 2]);
+    if (face.lengthSq() < 0.00000000000000000001)
+      face.set(0, 1, 0);
+    else
+      face.normalize();
+    normal.setXYZ(i, face.x, face.y, face.z);
+  }
+  normal.needsUpdate = true;
+}
+var _xatlasReady = null;
+var init_uv = () => {};
+
+// src/uv-shapes.ts
+import * as THREE31 from "three";
+function remapUV(geo, options = {}) {
+  if (!options || typeof options !== "object" || Array.isArray(options) || Object.keys(options).some((key) => !["scale", "offset"].includes(key))) {
+    throw new Error("remapUV: options may contain only scale and offset.");
+  }
+  const scale = options.scale === undefined ? [1, 1] : options.scale;
+  const offset = options.offset === undefined ? [0, 0] : options.offset;
+  for (const [label, value] of Object.entries({ scale, offset })) {
+    if (!Array.isArray(value) || value.length !== 2 || !value.every(Number.isFinite))
+      throw new Error(`remapUV: ${label} must contain two finite numbers.`);
+  }
+  const source = geo.getAttribute("uv");
+  const positions = geo.getAttribute("position");
+  if (source?.itemSize !== 2 || !positions || source.count !== positions.count) {
+    throw new Error("remapUV: existing UV0 with two components per vertex is required; project or unwrap first.");
+  }
+  const values = new Float32Array(source.count * 2);
+  for (let i = 0;i < source.count; i++) {
+    const u = source.getX(i);
+    const v = source.getY(i);
+    const nextU = Math.fround(u * scale[0] + offset[0]);
+    const nextV = Math.fround(v * scale[1] + offset[1]);
+    if (![u, v, nextU, nextV].every(Number.isFinite))
+      throw new Error("remapUV: UV values and mapped Float32 results must be finite.");
+    values[i * 2] = nextU;
+    values[i * 2 + 1] = nextV;
+  }
+  const cloned = geo.clone();
+  cloned.setAttribute("uv", new THREE31.Float32BufferAttribute(values, 2));
+  if ((scale[0] !== 1 || scale[1] !== 1) && cloned.hasAttribute("tangent")) {
+    cloned.deleteAttribute("tangent");
+    const previous = cloned.userData.kilnAttributeWarnings;
+    cloned.userData.kilnAttributeWarnings = [
+      ...Array.isArray(previous) ? previous : [],
+      {
+        code: "UV_REMAP_TANGENTS_DROPPED",
+        message: "UV scaling invalidated tangents; regenerate them when needed for normal mapping."
+      }
+    ];
+  }
+  return cloned;
+}
+var init_uv_shapes = () => {};
+
+// src/uv-project.ts
+import * as THREE32 from "three";
+function projectUV(geometry, options) {
+  if (!options || typeof options !== "object" || Array.isArray(options) || !["planar", "box", "cylindrical"].includes(options.projection) || Object.keys(options).some((key) => !["projection", "frame", "seamDegrees", "angularRange", "caps"].includes(key)))
+    throw new Error("projectUV: select an explicit planar, box or cylindrical projection with documented options.");
+  const cylinder = options.projection === "cylindrical";
+  if (!cylinder && [options.seamDegrees, options.angularRange, options.caps].some((value) => value !== undefined))
+    throw new Error("projectUV: seamDegrees, angularRange and caps apply only to cylindrical projection.");
+  if (options.seamDegrees !== undefined && (!Number.isFinite(options.seamDegrees) || options.angularRange !== undefined))
+    throw new Error("projectUV: seamDegrees must be finite and cannot accompany angularRange.");
+  if (options.angularRange !== undefined && (!Array.isArray(options.angularRange) || options.angularRange.length !== 2 || !options.angularRange.every(Number.isFinite) || options.angularRange[1] <= 0 || options.angularRange[1] > 360))
+    throw new Error("projectUV: angularRange must be [finite start degrees, positive sweep <=360].");
+  if (options.caps !== undefined && options.caps !== "planar" && options.caps !== "side")
+    throw new Error("projectUV: caps must be planar or side.");
+  const inverse = geometryFrameMatrix(options.frame).invert();
+  const positions = geometry.getAttribute("position");
+  if (positions?.itemSize !== 3 || positions.count < 1 || positions.count > MAX_CORNERS)
+    throw new Error(`projectUV: position requires 1..${MAX_CORNERS} xyz samples.`);
+  if (Object.keys(geometry.morphAttributes).length)
+    throw new Error("projectUV: morph targets need a separate mapping contract.");
+  const index = geometry.index;
+  const corners = index?.count ?? positions.count;
+  if (!Number.isSafeInteger(corners) || corners < 3 || corners % 3 !== 0 || corners > MAX_CORNERS)
+    throw new Error(`projectUV: triangle corner count must be divisible by three and <=${MAX_CORNERS}.`);
+  let bytes = corners * 8;
+  for (const [name, attribute] of Object.entries(geometry.attributes)) {
+    if (attribute.count !== positions.count || !Number.isInteger(attribute.itemSize) || attribute.itemSize < 1 || attribute.itemSize > 16 || attribute.isInstancedBufferAttribute)
+      throw new Error(`projectUV: ${name} must be a matching per-vertex attribute of 1..16 components.`);
+    bytes += corners * attribute.itemSize * attribute.array.BYTES_PER_ELEMENT;
+  }
+  if (bytes > MAX_ATTRIBUTE_BYTES)
+    throw new Error("projectUV: expanded attributes exceed 128 MiB.");
+  if (index)
+    for (let i = 0;i < corners; i++) {
+      const value = index.getX(i);
+      if (!Number.isSafeInteger(value) || value < 0 || value >= positions.count)
+        throw new Error("projectUV: index contains an invalid vertex reference.");
+    }
+  const points = [];
+  const bounds = new THREE32.Box3;
+  for (let i = 0;i < positions.count; i++) {
+    const point = new THREE32.Vector3().fromBufferAttribute(positions, i).applyMatrix4(inverse);
+    if (![point.x, point.y, point.z].every(Number.isFinite))
+      throw new Error("projectUV: frame-local positions must be finite.");
+    points.push(point);
+    bounds.expandByPoint(point);
+  }
+  const extent = bounds.getSize(new THREE32.Vector3);
+  const fit = (point, axis) => extent[axis] > 0 ? (point[axis] - bounds.min[axis]) / extent[axis] : 0.5;
+  const outputUVs = new Float32Array(corners * 2);
+  const startDegrees = options.angularRange?.[0] ?? options.seamDegrees ?? 180;
+  const start = startDegrees % 360 * Math.PI / 180;
+  const sweep = (options.angularRange?.[1] ?? 360) * Math.PI / 180;
+  const fullWrap = options.angularRange === undefined || options.angularRange[1] === 360;
+  const wrap = (angle) => (angle % (2 * Math.PI) + 2 * Math.PI) % (2 * Math.PI);
+  const normal = new THREE32.Vector3;
+  const edge = new THREE32.Vector3;
+  for (let i = 0;i < corners; i += 3) {
+    const triangle = [0, 1, 2].map((offset) => points[index ? index.getX(i + offset) : i + offset]);
+    normal.subVectors(triangle[1], triangle[0]).cross(edge.subVectors(triangle[2], triangle[0])).normalize();
+    const cap = cylinder && options.caps !== "side" && Math.abs(normal.y) >= 1 - 0.000001;
+    let pairs;
+    if (cylinder && !cap) {
+      const angles = triangle.map((point) => {
+        let angle = wrap(Math.atan2(point.z, point.x) - start);
+        if (angle > 2 * Math.PI - 0.000001)
+          angle = 0;
+        if (!fullWrap && angle > sweep + 0.000001)
+          throw new Error("projectUV: side vertex lies outside angularRange; choose a range covering the profile.");
+        return (fullWrap ? angle : Math.min(angle, sweep)) / sweep;
+      });
+      if (fullWrap && Math.max(...angles) - Math.min(...angles) > 0.5) {
+        for (let j = 0;j < 3; j++)
+          if (angles[j] < 0.5)
+            angles[j] += 1;
+      }
+      if (fullWrap && Math.max(...angles) - Math.min(...angles) > 0.5 + 0.000001)
+        throw new Error("projectUV: side triangle spans more than half a revolution; add profile segments to resolve the mapping.");
+      pairs = triangle.map((point, j) => [angles[j], fit(point, "y")]);
+    } else if (cap) {
+      pairs = triangle.map((point) => [fit(point, "x"), fit(point, "z")]);
+    } else if (options.projection === "box") {
+      const axis = Math.abs(normal.x) >= Math.abs(normal.y) && Math.abs(normal.x) >= Math.abs(normal.z) ? "x" : Math.abs(normal.y) >= Math.abs(normal.z) ? "y" : "z";
+      pairs = triangle.map((point) => {
+        if (axis === "x")
+          return [normal.x > 0 ? 1 - fit(point, "z") : fit(point, "z"), fit(point, "y")];
+        if (axis === "y")
+          return [fit(point, "x"), normal.y > 0 ? 1 - fit(point, "z") : fit(point, "z")];
+        return [normal.z < 0 ? 1 - fit(point, "x") : fit(point, "x"), fit(point, "y")];
+      });
+    } else
+      pairs = triangle.map((point) => [fit(point, "x"), fit(point, "y")]);
+    for (let j = 0;j < 3; j++) {
+      const pair = pairs[j];
+      if (!pair.every((value) => Number.isFinite(Math.fround(value))))
+        throw new Error("projectUV: projected UVs must fit finite Float32.");
+      outputUVs[(i + j) * 2] = pair[0];
+      outputUVs[(i + j) * 2 + 1] = pair[1];
+    }
+  }
+  const out = geometry.index ? geometry.toNonIndexed() : geometry.clone();
+  out.userData = structuredClone(geometry.userData);
+  out.setDrawRange(geometry.drawRange.start, geometry.drawRange.count);
+  out.setAttribute("uv", new THREE32.Float32BufferAttribute(outputUVs, 2));
+  if (out.hasAttribute("tangent")) {
+    out.deleteAttribute("tangent");
+    const previous = out.userData.kilnAttributeWarnings;
+    out.userData.kilnAttributeWarnings = [
+      ...Array.isArray(previous) ? previous : [],
+      {
+        code: "UV_PROJECTION_TANGENTS_DROPPED",
+        message: "UV projection invalidated tangents; regenerate them when needed for normal mapping."
+      }
+    ];
+  }
+  return out;
+}
+var MAX_CORNERS = 2000000, MAX_ATTRIBUTE_BYTES;
+var init_uv_project = __esm(() => {
+  init_deform();
+  MAX_ATTRIBUTE_BYTES = 128 * 1024 * 1024;
 });
 
 // src/primitives.ts
@@ -20194,7 +20947,11 @@ function buildSandboxGlobals(usage, options = {}) {
     createStairs: wrap("createStairs", createStairs),
     gameMaterial: wrap("gameMaterial", gameMaterial),
     materialRecipe: wrap("materialRecipe", sandboxMaterialRecipe),
-    compilePortableMaterialSpecV2: wrap("compilePortableMaterialSpecV2", compilePortableMaterialSpecV2),
+    compilePortableMaterialSpecV2: wrap("compilePortableMaterialSpecV2", (...args) => {
+      if (args.length !== 1)
+        return Promise.reject(new TypeError("compilePortableMaterialSpecV2 accepts exactly one material spec"));
+      return compilePortableMaterialSpecV2(args[0], { resolver: options.textureResolver });
+    }),
     basicMaterial: wrap("basicMaterial", basicMaterial),
     glassMaterial: wrap("glassMaterial", glassMaterial),
     lambertMaterial: wrap("lambertMaterial", lambertMaterial),
@@ -20675,29 +21432,6 @@ var init_material_metrics = __esm(() => {
       })
     })
   });
-});
-
-// src/texture-resolver.ts
-function createTextureResolver(cache = DEFAULT_APPROVED_TEXTURE_CACHE) {
-  return Object.freeze({
-    async loadApprovedTexture(resourceId) {
-      if (typeof resourceId !== "string") {
-        throw new RangeError("Unsupported approved texture resource ID.");
-      }
-      return (await cache.load(resourceId)).texture;
-    },
-    async materialRecipe(id, overrides) {
-      if (typeof id !== "string")
-        throw new TypeError("materialRecipe id must be a string");
-      return materialRecipe(id, overrides, { cache });
-    }
-  });
-}
-var DEFAULT_TEXTURE_RESOLVER;
-var init_texture_resolver = __esm(() => {
-  init_material_resources();
-  init_material_recipe_runtime();
-  DEFAULT_TEXTURE_RESOLVER = createTextureResolver();
 });
 
 // src/geometry-catalog.ts
@@ -22566,7 +23300,7 @@ var init_kit = __esm(() => {
 });
 
 // src/texture-bake.ts
-import { createHash as createHash5 } from "node:crypto";
+import { createHash as createHash6 } from "node:crypto";
 import * as THREE34 from "three";
 function readPixels(texture) {
   const image = texture.image;
@@ -22669,8 +23403,8 @@ async function bakeSceneTextures(root, warnings) {
       height: raw.height,
       hasAlpha: hasTranslucentPixel(raw)
     };
-    const sha1 = createHash5("sha1").update(bytes).digest("hex");
-    const imageSha256 = `sha256:${createHash5("sha256").update(bytes).digest("hex")}`;
+    const sha1 = createHash6("sha1").update(bytes).digest("hex");
+    const imageSha256 = `sha256:${createHash6("sha256").update(bytes).digest("hex")}`;
     baked.push({
       schemaVersion: 1,
       texture: name,
@@ -24991,7 +25725,7 @@ __export(exports_capture_cache, {
   captureCpuCell: () => captureCpuCell,
   createCachedRenderPort: () => createCachedRenderPort
 });
-import { createHash as createHash6 } from "node:crypto";
+import { createHash as createHash7 } from "node:crypto";
 function clone(entry) {
   const result = structuredClone(entry);
   if (result.kind === "cpu")
@@ -25065,7 +25799,7 @@ function usable(result, request, hash) {
     const count = (request.cameras ?? request.viewDirs).length;
     if (result.viewsPng?.length !== count)
       return false;
-    if (request.cameras && (result.width !== request.width || result.height !== request.height || text3(result.cameras) !== text3(request.cameras)))
+    if (request.cameras && (result.width !== request.width || result.height !== request.height || text4(result.cameras) !== text4(request.cameras)))
       return false;
     enforcePngCaptureBudget(result.viewsPng);
     for (const png of result.viewsPng) {
@@ -25089,9 +25823,9 @@ function createCachedRenderPort(port, options) {
       return port(input, execution);
     const validated = validatePbrRenderRequest(input);
     const request = { ...validated, glb: Uint8Array.from(validated.glb) };
-    const hash = digest(request.glb);
+    const hash = digest2(request.glb);
     const selectors = request.cameras ?? request.viewDirs;
-    const keys = selectors.map((selector) => digest(text3({
+    const keys = selectors.map((selector) => digest2(text4({
       version: "kiln.capture-cache.v1",
       kind: "gpu",
       identity,
@@ -25175,7 +25909,7 @@ function createCachedRenderPort(port, options) {
 }
 async function captureCpuCell(cache, identity, produce) {
   const snapshot = structuredClone(identity);
-  const key = digest(text3({ version: "kiln.capture-cache.v1", kind: "cpu", ...snapshot }));
+  const key = digest2(text4({ version: "kiln.capture-cache.v1", kind: "cpu", ...snapshot }));
   const valid = (result) => {
     try {
       enforcePngCaptureBudget([result.png]);
@@ -25196,7 +25930,7 @@ async function captureCpuCell(cache, identity, produce) {
   await cache.put(key, { kind: "cpu", result }).catch(() => {});
   return { ...result, png: Buffer.from(result.png), captureCache: { hit: false } };
 }
-var text3 = (value) => JSON.stringify(canonical4(value)), digest = (value) => `sha256:${createHash6("sha256").update(value).digest("hex")}`;
+var text4 = (value) => JSON.stringify(canonical4(value)), digest2 = (value) => `sha256:${createHash7("sha256").update(value).digest("hex")}`;
 var init_capture_cache = __esm(() => {
   init_render_port();
   init_png();
@@ -27126,7 +27860,7 @@ import {
   instance,
   palette,
   flatten,
-  join as join2,
+  join as join3,
   weld,
   prune,
   mergeDocuments
@@ -27613,7 +28347,7 @@ async function consolidateMaterials(doc, mode) {
   const effective = mode === "full" && (animatedOrSkinned || semanticGraph) ? "palette" : mode;
   const steps = [palette({ min: PALETTE_MIN })];
   if (effective === "full") {
-    steps.push(flatten(), join2({ keepNamed: true }));
+    steps.push(flatten(), join3({ keepNamed: true }));
   }
   steps.push(weld(), prune({ keepLeaves: true, keepExtras: true, keepSolidTextures: true }));
   await doc.transform(...steps);
@@ -27785,19 +28519,30 @@ async function renderGLBInProcess(code, opts = {}) {
   const requirements = resolveRequirementsContext(opts.requirements);
   if (opts.geometryPolicy !== undefined && !["warn", "strict"].includes(opts.geometryPolicy))
     throw new Error("geometryPolicy must be warn or strict");
+  let textureResolver = opts.textureResolver ?? DEFAULT_TEXTURE_RESOLVER;
+  const rebuildOptions = {
+    gltfExporter: resolveGltfExporter(opts.gltfExporter),
+    geometryPolicy: opts.geometryPolicy ?? "warn",
+    optimize: resolveOptimize(opts.optimize),
+    instance: resolveInstance(opts.instance)
+  };
+  let materialLibraryDependencies;
+  if (opts.materialResources) {
+    await Promise.resolve().then(() => init_material_library_node());
+    const materialRecords = await decodeMaterialLibraryPayload(opts.materialResources);
+    materialLibraryDependencies = materialRecords.map((record) => structuredClone(record.manifest));
+    textureResolver = await createMaterialLibraryTextureResolver(materialRecords, textureResolver);
+  }
   const { meta, root, clips, primitiveUsage } = await executeKilnCode(code, {
-    textureResolver: opts.textureResolver ?? DEFAULT_TEXTURE_RESOLVER,
+    textureResolver,
     console: opts.diagnosticConsole
   });
   const scene = await renderSceneToGLB(root, {
-    gltfExporter: opts.gltfExporter,
+    ...rebuildOptions,
     sceneName: meta.name || "Scene",
-    geometryPolicy: opts.geometryPolicy,
     clips,
     requirements: requirements.binding,
-    role: meta.role,
-    ...opts.optimize ? { optimize: opts.optimize } : {},
-    ...opts.instance ? { instance: opts.instance } : {}
+    role: meta.role
   });
   const {
     category: modelCategory,
@@ -27810,6 +28555,8 @@ async function renderGLBInProcess(code, opts = {}) {
   } = meta;
   return {
     glb: Buffer.from(scene.bytes),
+    rebuildOptions,
+    ...materialLibraryDependencies ? { materialLibraryDependencies } : {},
     requirements: scene.requirements,
     artifactGlbSha256: scene.artifactGlbSha256,
     tris: scene.tris,
@@ -28016,7 +28763,7 @@ var init_render = __esm(() => {
 });
 
 // src/evaluator/protocol.ts
-import { createHash as createHash7 } from "node:crypto";
+import { createHash as createHash8 } from "node:crypto";
 function evaluatorOutcomeMessage(code) {
   return EVALUATOR_OUTCOME_MESSAGES[code];
 }
@@ -28134,14 +28881,28 @@ function decodeEvaluatorResultV2(json, maxGlbBytes, expectedRequestId) {
     "materialMetrics",
     "materialRecipeApplications",
     "materialResourceProvenance",
+    "materialLibraryDependencies",
     "bakedTextures",
     "integrationManifest",
-    "requirements"
+    "requirements",
+    "rebuildOptions"
   ];
   if (!hasExactKeys(value.render, renderKeys) || typeof value.render.glbBase64 !== "string" || !validInteger(value.render.tris, 0, Number.MAX_SAFE_INTEGER) || !isRecord6(value.render.meta) || !Array.isArray(value.render.warnings) || !value.render.warnings.every((warning) => typeof warning === "string") || !isRecord6(value.render.integrationManifest)) {
     fail("result");
   }
   let requirements;
+  if (value.render.rebuildOptions !== undefined && !rebuildOptionsSchema.strict().safeParse(value.render.rebuildOptions).success)
+    fail("result");
+  if (value.render.materialLibraryDependencies !== undefined) {
+    if (!Array.isArray(value.render.materialLibraryDependencies) || value.render.materialLibraryDependencies.length > 16)
+      fail("result");
+    try {
+      for (const manifest of value.render.materialLibraryDependencies)
+        validateMaterialManifestIdentity(manifest);
+    } catch {
+      return fail("result");
+    }
+  }
   try {
     requirements = validateRequirementsContext(value.render.requirements);
     validateRequirementsQaReport(value.render.meta.qaReport, requirements);
@@ -28153,7 +28914,7 @@ function decodeEvaluatorResultV2(json, maxGlbBytes, expectedRequestId) {
     fail("result");
   if (!isSha256(value.render.artifactGlbSha256))
     fail("result");
-  const actualHash = `sha256:${createHash7("sha256").update(glb).digest("hex")}`;
+  const actualHash = `sha256:${createHash8("sha256").update(glb).digest("hex")}`;
   if (actualHash !== value.render.artifactGlbSha256)
     fail("result");
   const diagnosticViews = value.render.diagnosticViews;
@@ -28180,6 +28941,14 @@ function decodeEvaluatorResultV2(json, maxGlbBytes, expectedRequestId) {
     }
   };
 }
+function assertEvaluatorResultMaterialResources(result, expected) {
+  if (!result.ok)
+    return;
+  const actual = result.render.materialLibraryDependencies ?? [];
+  const wanted = expected?.records.map((record) => record.manifest.revisionId).sort() ?? [];
+  if (JSON.stringify(actual.map((manifest) => manifest.revisionId).sort()) !== JSON.stringify(wanted))
+    throw new EvaluatorPortError("PROTOCOL_ERROR");
+}
 function assertEvaluatorResultRequirements(result, expected) {
   try {
     if (result.ok) {
@@ -28197,8 +28966,10 @@ var init_protocol = __esm(() => {
   init_authoring_diagnostic();
   init_requirements_context();
   init_requirements_report();
+  init_material_library_node();
+  init_rebuild_options();
   MAX_EVALUATOR_CODE_BYTES = 512 * 1024;
-  MAX_EVALUATOR_REQUEST_BYTES = 1024 * 1024;
+  MAX_EVALUATOR_REQUEST_BYTES = 24 * 1024 * 1024;
   DEFAULT_EVALUATOR_MAX_GLB_BYTES = 16 * 1024 * 1024;
   DEFAULT_EVALUATOR_MAX_RESPONSE_BYTES = 32 * 1024 * 1024;
   EVALUATOR_OUTCOME_MESSAGES = {
@@ -28278,6 +29049,8 @@ async function renderGLBViaProcessLaunch(code, options = {}, controls = {}, laun
   const deadlineMs = boundedInteger(controls.deadlineMs, DEFAULT_DEADLINE_MS, 120000);
   const maxGlbBytes = boundedInteger(controls.maxGlbBytes, DEFAULT_MAX_GLB_BYTES, 64 * 1024 * 1024);
   const maxResponseBytes = boundedInteger(controls.maxResponseBytes, DEFAULT_MAX_RESPONSE_BYTES, 96 * 1024 * 1024);
+  if (options.materialResources !== undefined)
+    validateMaterialLibraryPayload(options.materialResources);
   const request = {
     version: EVALUATOR_REQUEST_VERSION,
     requestId: "render-1",
@@ -28383,6 +29156,7 @@ async function renderGLBViaProcessLaunch(code, options = {}, controls = {}, laun
       try {
         const result = decodeEvaluatorResultV2(Buffer.concat(chunks).toString("utf8"), maxGlbBytes, request.requestId);
         assertEvaluatorResultRequirements(result, requirements);
+        assertEvaluatorResultMaterialResources(result, request.options.materialResources);
         if (!result.ok) {
           if (result.error.code === "QA_BLOCKED" && result.error.qa) {
             finish(new AssetQaBlockedError(result.error.qa.report, result.error.qa.stage, result.error.qa.gltfValidation));
@@ -28408,6 +29182,7 @@ var init_subprocess = __esm(() => {
   init_authoring_diagnostic();
   init_run();
   init_requirements_context();
+  init_material_library_node();
   init_protocol();
   DEFAULT_MAX_GLB_BYTES = 16 * 1024 * 1024;
   DEFAULT_MAX_RESPONSE_BYTES = 32 * 1024 * 1024;
@@ -28423,6 +29198,16 @@ var init_subprocess = __esm(() => {
     }
   };
 });
+
+// src/workspace-location.ts
+import { dirname as dirname3, join as join4, resolve as resolve4 } from "node:path";
+function localWorkspaceRoot(env = process.env) {
+  return env.KILN_WORKSPACE ? resolve4(env.KILN_WORKSPACE) : env.KILN_PROGRAM_STORE ? dirname3(dirname3(resolve4(env.KILN_PROGRAM_STORE))) : process.cwd();
+}
+function localProgramStoreDirectory(env = process.env) {
+  return env.KILN_PROGRAM_STORE ? resolve4(env.KILN_PROGRAM_STORE) : join4(localWorkspaceRoot(env), ".kiln", "programs");
+}
+var init_workspace_location = () => {};
 
 // src/program-store.ts
 function assertProgramRef(ref) {
@@ -28509,9 +29294,9 @@ var init_program_store = __esm(() => {
 });
 
 // src/program-store-node.ts
-import { link as link2, lstat as lstat2, mkdir as mkdir2, readFile, readdir, stat as stat2, unlink as unlink2, writeFile as writeFile2 } from "node:fs/promises";
-import { randomUUID as randomUUID2 } from "node:crypto";
-import { join as join3, resolve as resolve3 } from "node:path";
+import { link as link2, lstat as lstat3, mkdir as mkdir3, readFile as readFile2, readdir as readdir2, stat as stat2, unlink as unlink2, writeFile as writeFile3 } from "node:fs/promises";
+import { randomUUID as randomUUID3 } from "node:crypto";
+import { join as join5 } from "node:path";
 
 class FileProgramStore {
   directory;
@@ -28522,11 +29307,11 @@ class FileProgramStore {
     let entries = 0;
     let bytes = 0;
     try {
-      for (const entry of await readdir(this.directory, { withFileTypes: true })) {
+      for (const entry of await readdir2(this.directory, { withFileTypes: true })) {
         if (!entry.isFile() || !/^[a-f0-9]{64}\.js$/.test(entry.name))
           continue;
         try {
-          bytes += (await stat2(join3(this.directory, entry.name))).size;
+          bytes += (await stat2(join5(this.directory, entry.name))).size;
           entries++;
         } catch (error) {
           if (error.code !== "ENOENT")
@@ -28544,12 +29329,12 @@ class FileProgramStore {
     const canonical = ref.startsWith("p_") ? await this.readHandle(ref) : ref;
     if (canonical === undefined)
       throw this.notFound(ref);
-    const path = join3(this.directory, `${canonical.slice(7)}.js`);
+    const path = join5(this.directory, `${canonical.slice(7)}.js`);
     let code;
     try {
       if ((await stat2(path)).size > MAX_PROGRAM_BYTES)
         throw new Error("Stored program exceeds the 1 MiB source limit.");
-      code = await readFile(path, "utf8");
+      code = await readFile2(path, "utf8");
     } catch (error) {
       if (error.code === "ENOENT")
         throw this.notFound(ref);
@@ -28563,12 +29348,12 @@ class FileProgramStore {
     return new Error(`Program not found: ${ref}. Use the same KILN_PROGRAM_STORE or import the source again.`);
   }
   async readHandle(handle) {
-    const path = join3(this.directory, "refs", `${handle}.ref`);
+    const path = join5(this.directory, "refs", `${handle}.ref`);
     try {
-      const info = await lstat2(path);
+      const info = await lstat3(path);
       if (!info.isFile() || info.size !== 71)
         throw new Error(`Program handle integrity check failed: ${handle}`);
-      const canonical = await readFile(path, "utf8");
+      const canonical = await readFile2(path, "utf8");
       if (!canonicalProgramRefPattern.test(canonical) || !canonical.slice(7).startsWith(handle.slice(2)))
         throw new Error(`Program handle integrity check failed: ${handle}`);
       return canonical;
@@ -28582,19 +29367,19 @@ class FileProgramStore {
     await this.get(ref);
     if (ref.startsWith("p_"))
       return ref;
-    const directory = join3(this.directory, "refs");
-    await mkdir2(directory, { recursive: true });
+    const directory = join5(this.directory, "refs");
+    await mkdir3(directory, { recursive: true });
     for (const handle of shortProgramRefCandidates(ref)) {
       const owner = await this.readHandle(handle);
       if (owner === ref)
         return handle;
       if (owner !== undefined)
         continue;
-      const temporary = join3(directory, `.write-${randomUUID2()}`);
-      await writeFile2(temporary, ref, { encoding: "utf8", flag: "wx", mode: 384 });
+      const temporary = join5(directory, `.write-${randomUUID3()}`);
+      await writeFile3(temporary, ref, { encoding: "utf8", flag: "wx", mode: 384 });
       try {
         try {
-          await link2(temporary, join3(directory, `${handle}.ref`));
+          await link2(temporary, join5(directory, `${handle}.ref`));
           return handle;
         } catch (error) {
           if (error.code !== "EEXIST")
@@ -28610,10 +29395,10 @@ class FileProgramStore {
   }
   async put(code) {
     const ref = await programReference(code);
-    await mkdir2(this.directory, { recursive: true });
-    const target = join3(this.directory, `${ref.slice(7)}.js`);
-    const temporary = join3(this.directory, `.write-${randomUUID2()}`);
-    await writeFile2(temporary, code, { encoding: "utf8", flag: "wx", mode: 384 });
+    await mkdir3(this.directory, { recursive: true });
+    const target = join5(this.directory, `${ref.slice(7)}.js`);
+    const temporary = join5(this.directory, `.write-${randomUUID3()}`);
+    await writeFile3(temporary, code, { encoding: "utf8", flag: "wx", mode: 384 });
     try {
       try {
         await link2(temporary, target);
@@ -28628,15 +29413,16 @@ class FileProgramStore {
     return ref;
   }
 }
-function localProgramStore() {
-  return new FileProgramStore(resolve3(process.env["KILN_PROGRAM_STORE"] ?? ".kiln/programs"));
+function localProgramStore(env = process.env) {
+  return new FileProgramStore(localProgramStoreDirectory(env));
 }
 var init_program_store_node = __esm(() => {
+  init_workspace_location();
   init_program_store();
 });
 
 // src/build-cache.ts
-import { createHash as createHash8 } from "node:crypto";
+import { createHash as createHash9 } from "node:crypto";
 import * as acorn2 from "acorn";
 import * as walk3 from "acorn-walk";
 function sourceHasAmbientInputs(code) {
@@ -28782,7 +29568,7 @@ function createCachedEvaluatorPort(evaluator, options) {
       } catch {
         return evaluator.render(code, renderOptions, controls);
       }
-      const key = `sha256:${createHash8("sha256").update(serialized).digest("hex")}`;
+      const key = `sha256:${createHash9("sha256").update(serialized).digest("hex")}`;
       const cached = await options.cache.get(key).catch(() => {
         return;
       });
@@ -28833,32 +29619,32 @@ var init_build_cache = __esm(() => {
 });
 
 // src/build-cache-node.ts
-import { createHash as createHash9, randomUUID as randomUUID3 } from "node:crypto";
+import { createHash as createHash10, randomUUID as randomUUID4 } from "node:crypto";
 import {
-  mkdir as mkdir3,
-  readFile as readFile2,
-  readdir as readdir2,
-  rename as rename2,
+  mkdir as mkdir4,
+  readFile as readFile3,
+  readdir as readdir3,
+  rename as rename3,
   stat as stat3,
   unlink as unlink3,
   utimes,
-  writeFile as writeFile3
+  writeFile as writeFile4
 } from "node:fs/promises";
-import { join as join4, resolve as resolve4 } from "node:path";
+import { join as join6, resolve as resolve5 } from "node:path";
 
 class FileBuildCache {
   maxBytes;
   directory;
   constructor(directory, maxBytes = 128 * 1024 * 1024) {
     this.maxBytes = maxBytes;
-    this.directory = resolve4(directory);
+    this.directory = resolve5(directory);
     if (!Number.isSafeInteger(maxBytes) || maxBytes < 0 || maxBytes > 1024 * 1024 * 1024)
       throw new Error("File build cache size must be 0..1 GiB.");
   }
   path(key) {
     if (!keyPattern.test(key))
       throw new Error("Invalid build cache key.");
-    return join4(this.directory, `${key.slice(7)}.json`);
+    return join6(this.directory, `${key.slice(7)}.json`);
   }
   async get(key) {
     const path = this.path(key);
@@ -28866,8 +29652,8 @@ class FileBuildCache {
       const entry = await stat3(path);
       if (entry.size > this.maxBytes || entry.size > 96 * 1024 * 1024)
         return;
-      const envelope = JSON.parse(await readFile2(path, "utf8"));
-      if (envelope.version !== 1 || envelope.key !== key || typeof envelope.payload !== "string" || envelope.checksum !== digest2(envelope.payload))
+      const envelope = JSON.parse(await readFile3(path, "utf8"));
+      if (envelope.version !== 1 || envelope.key !== key || typeof envelope.payload !== "string" || envelope.checksum !== digest3(envelope.payload))
         return;
       const decoded = decodeEvaluatorResultV2(envelope.payload, 64 * 1024 * 1024);
       if (!decoded.ok)
@@ -28882,14 +29668,14 @@ class FileBuildCache {
   async put(key, result) {
     const path = this.path(key);
     const payload = JSON.stringify(encodeRenderResultV2("cached-build", result));
-    const bytes = JSON.stringify({ version: 1, key, payload, checksum: digest2(payload) });
+    const bytes = JSON.stringify({ version: 1, key, payload, checksum: digest3(payload) });
     if (Buffer.byteLength(bytes) > Math.min(this.maxBytes, 96 * 1024 * 1024))
       return;
-    await mkdir3(this.directory, { recursive: true });
-    const temporary = join4(this.directory, `.write-${randomUUID3()}`);
-    await writeFile3(temporary, bytes, { encoding: "utf8", flag: "wx", mode: 384 });
+    await mkdir4(this.directory, { recursive: true });
+    const temporary = join6(this.directory, `.write-${randomUUID4()}`);
+    await writeFile4(temporary, bytes, { encoding: "utf8", flag: "wx", mode: 384 });
     try {
-      await rename2(temporary, path);
+      await rename3(temporary, path);
     } finally {
       await unlink3(temporary).catch(() => {});
     }
@@ -28897,10 +29683,10 @@ class FileBuildCache {
   }
   async trim() {
     const entries = [];
-    for (const name of await readdir2(this.directory)) {
+    for (const name of await readdir3(this.directory)) {
       if (!filePattern.test(name))
         continue;
-      const path = join4(this.directory, name);
+      const path = join6(this.directory, name);
       try {
         const item = await stat3(path);
         entries.push({ path, size: item.size, used: item.mtimeMs });
@@ -28916,7 +29702,7 @@ class FileBuildCache {
     }
   }
 }
-var keyPattern, filePattern, digest2 = (text) => createHash9("sha256").update(text).digest("hex");
+var keyPattern, filePattern, digest3 = (text) => createHash10("sha256").update(text).digest("hex");
 var init_build_cache_node = __esm(() => {
   init_protocol();
   keyPattern = /^sha256:[a-f0-9]{64}$/;
@@ -28924,16 +29710,16 @@ var init_build_cache_node = __esm(() => {
 });
 
 // src/runtime-identity.ts
-import { createHash as createHash10 } from "node:crypto";
-import { readFile as readFile3, readdir as readdir3, realpath as realpath2, stat as stat4 } from "node:fs/promises";
+import { createHash as createHash11 } from "node:crypto";
+import { readFile as readFile4, readdir as readdir4, realpath as realpath3, stat as stat4 } from "node:fs/promises";
 import { createRequire } from "node:module";
-import { dirname as dirname2, join as join5, relative } from "node:path";
+import { dirname as dirname4, join as join7, relative as relative2 } from "node:path";
 async function installedRuntimeIdentity(root, limits = {}) {
   let bytes = 0;
   let files = 0;
   const maxBytes = limits.maxBytes ?? 512 * 1024 * 1024;
   const maxFiles = limits.maxFiles ?? 40000;
-  const manifest = async (directory) => JSON.parse(await readFile3(join5(directory, "package.json"), "utf8"));
+  const manifest = async (directory) => JSON.parse(await readFile4(join7(directory, "package.json"), "utf8"));
   let readers = 0;
   const waiting = [];
   const read = async (path) => {
@@ -28946,7 +29732,7 @@ async function installedRuntimeIdentity(root, limits = {}) {
       if (++files > maxFiles || bytes + info.size > maxBytes)
         throw new Error("Installed runtime fingerprint exceeds its scan budget.");
       bytes += info.size;
-      return await readFile3(path);
+      return await readFile4(path);
     } finally {
       const next = waiting.shift();
       if (next)
@@ -28959,17 +29745,17 @@ async function installedRuntimeIdentity(root, limits = {}) {
     const pkg = await manifest(root);
     if (pkg.name !== "@kiln/engine")
       throw new Error("Not a Kiln installation.");
-    const build = JSON.parse(await readFile3(join5(root, "dist", "build.json"), "utf8"));
+    const build = JSON.parse(await readFile4(join7(root, "dist", "build.json"), "utf8"));
     const worker = build.entries?.worker;
     if (build.schemaVersion !== 1 || worker?.file !== "evaluator-worker.mjs" || !/^sha256:[a-f0-9]{64}$/.test(worker.identity))
       throw new Error("No valid packaged worker identity.");
-    const workerHash = `sha256:${digest3(await read(join5(root, "dist", worker.file)))}`;
+    const workerHash = `sha256:${digest4(await read(join7(root, "dist", worker.file)))}`;
     if (worker.bundleHash !== workerHash)
       throw new Error("Packaged worker differs from its build manifest.");
     const records = [];
     const visited = new Map;
     async function resolvePackage(parent, name) {
-      const require2 = createRequire(join5(parent, "package.json"));
+      const require2 = createRequire(join7(parent, "package.json"));
       let found;
       try {
         found = require2.resolve(`${name}/package.json`);
@@ -28978,44 +29764,44 @@ async function installedRuntimeIdentity(root, limits = {}) {
           found = require2.resolve(name);
         } catch {
           for (const modules of require2.resolve.paths(name) ?? []) {
-            const candidate = join5(modules, name);
+            const candidate = join7(modules, name);
             try {
               if ((await manifest(candidate)).name === name)
-                return await realpath2(candidate);
+                return await realpath3(candidate);
             } catch {}
           }
           throw new Error(`Cannot resolve installed dependency ${name}.`);
         }
       }
-      let directory = dirname2(found);
+      let directory = dirname4(found);
       for (;; ) {
         try {
           if ((await manifest(directory)).name === name)
-            return await realpath2(directory);
+            return await realpath3(directory);
         } catch {}
-        const next = dirname2(directory);
+        const next = dirname4(directory);
         if (next === directory)
           throw new Error(`Cannot identify installed dependency ${name}.`);
         directory = next;
       }
     }
     async function tree(directory, base) {
-      const entries = (await readdir3(directory, { withFileTypes: true })).sort((a, b) => compare(a.name, b.name));
+      const entries = (await readdir4(directory, { withFileTypes: true })).sort((a, b) => compare(a.name, b.name));
       return (await Promise.all(entries.map(async (entry) => {
         if (entry.name === "node_modules" || entry.name === ".git")
           return [];
-        const path = join5(directory, entry.name);
+        const path = join7(directory, entry.name);
         if (entry.isSymbolicLink())
           throw new Error("Dependency contains an untracked internal symlink.");
         if (entry.isDirectory())
           return tree(path, base);
         if (entry.isFile())
-          return [[relative(base, path).replaceAll("\\", "/"), digest3(await read(path))]];
+          return [[relative2(base, path).replaceAll("\\", "/"), digest4(await read(path))]];
         throw new Error("Dependency contains a non-file runtime input.");
       }))).flat();
     }
     async function visit(directory, path) {
-      const canonical = await realpath2(directory);
+      const canonical = await realpath3(directory);
       const previous = visited.get(canonical);
       if (previous) {
         records.push([path, `same-package:${previous}`]);
@@ -29023,7 +29809,7 @@ async function installedRuntimeIdentity(root, limits = {}) {
       }
       visited.set(canonical, path);
       const metadata = await manifest(canonical);
-      records.push([path, digest3(JSON.stringify(await tree(canonical, canonical)))]);
+      records.push([path, digest4(JSON.stringify(await tree(canonical, canonical)))]);
       await dependencies(canonical, metadata, path);
     }
     async function dependencies(directory, metadata, prefix) {
@@ -29063,16 +29849,2416 @@ async function installedRuntimeIdentity(root, limits = {}) {
       },
       dependencies: records
     };
-    return { identity: `sha256:${digest3(JSON.stringify(inputs))}`, files, bytes };
+    return { identity: `sha256:${digest4(JSON.stringify(inputs))}`, files, bytes };
   } catch (error) {
     return { reason: error instanceof Error ? error.message : String(error), files, bytes };
   }
 }
-var digest3 = (bytes) => createHash10("sha256").update(bytes).digest("hex"), compare = (a, b) => a < b ? -1 : a > b ? 1 : 0;
+var digest4 = (bytes) => createHash11("sha256").update(bytes).digest("hex"), compare = (a, b) => a < b ? -1 : a > b ? 1 : 0;
 var init_runtime_identity = () => {};
 
+// src/projects.ts
+import { z as z5 } from "zod";
+function checkContent(data, ctx) {
+  const unique = (items, path) => {
+    if (new Set(items).size !== items.length)
+      ctx.addIssue({ code: z5.ZodIssueCode.custom, path: [path], message: "Duplicate identity" });
+  };
+  unique(data.inventory.map((v) => v.id), "inventory");
+  unique(data.references.map((v) => v.id), "references");
+  unique(data.deliveryProfiles.map((v) => v.id), "deliveryProfiles");
+  unique(data.materialDependencies.map((v) => v.resourceId), "materialDependencies");
+  unique(data.reviews.map((v) => v.id), "reviews");
+  unique(data.design.palette.map((v) => v.role), "design.palette");
+  unique(data.design.materialRoles.map((v) => v.role), "design.materialRoles");
+  const references = new Set(data.references.map((v) => v.id));
+  const inventory = new Set(data.inventory.map((v) => v.id));
+  const resources = new Set(data.materialDependencies.map((v) => v.resourceId));
+  for (const item of data.inventory) {
+    unique(item.references, `inventory.${item.id}.references`);
+    if (item.references.some((id) => !references.has(id)))
+      ctx.addIssue({
+        code: z5.ZodIssueCode.custom,
+        path: ["inventory"],
+        message: "Unknown reference"
+      });
+  }
+  if (data.reviews.some((review) => !inventory.has(review.inventoryId)))
+    ctx.addIssue({
+      code: z5.ZodIssueCode.custom,
+      path: ["reviews"],
+      message: "Unknown inventory item"
+    });
+  if (data.design.materialRoles.some((role) => role.resourceId && !resources.has(role.resourceId)))
+    ctx.addIssue({
+      code: z5.ZodIssueCode.custom,
+      path: ["design"],
+      message: "Material role requires a locked resource"
+    });
+}
+var MAX_PROJECT_BYTES, MAX_PROJECT_REVISIONS = 1e4, projectIdSchema, projectRevisionIdSchema, hash3, text5, resourceId2, assetReference, projectDesignSchema, projectMaterialDependencySchema, materialDependenciesSchema, content, projectDraftSchema, projectPatchSchema, projectRevisionSchema, ProjectConflictError, ProjectNotFoundError, ProjectExistsError;
+var init_projects = __esm(() => {
+  MAX_PROJECT_BYTES = 1024 * 1024;
+  projectIdSchema = z5.string().regex(/^[a-z][a-z0-9_-]{0,79}$/).refine((value) => !/^(con|prn|aux|nul|com[1-9]|lpt[1-9])$/.test(value), "Reserved filesystem name");
+  projectRevisionIdSchema = z5.string().regex(/^r_[0-9]{10}_[a-f0-9]{64}$/);
+  hash3 = z5.string().regex(/^sha256:[a-f0-9]{64}$/);
+  text5 = z5.string().max(4000);
+  resourceId2 = z5.string().regex(/^[a-zA-Z0-9][a-zA-Z0-9_.:/-]{0,199}$/);
+  assetReference = z5.object({
+    collectionId: projectIdSchema,
+    assetId: projectIdSchema,
+    revisionId: projectIdSchema
+  }).strict();
+  projectDesignSchema = z5.object({
+    style: text5.default(""),
+    scale: z5.string().max(1000).default(""),
+    palette: z5.array(z5.object({
+      role: z5.string().min(1).max(100),
+      color: z5.string().regex(/^#[a-fA-F0-9]{6}$/)
+    }).strict()).max(64).default([]),
+    materialRoles: z5.array(z5.object({
+      role: z5.string().min(1).max(100),
+      description: text5.default(""),
+      resourceId: resourceId2.optional()
+    }).strict()).max(128).default([]),
+    conventions: z5.array(z5.string().max(1000)).max(100).default([]),
+    exceptions: z5.array(z5.string().max(1000)).max(100).default([])
+  }).strict();
+  projectMaterialDependencySchema = z5.object({
+    resourceId: resourceId2,
+    revisionId: z5.string().min(1).max(200),
+    sha256: hash3,
+    role: z5.string().max(100).optional()
+  }).strict();
+  materialDependenciesSchema = z5.array(projectMaterialDependencySchema).max(512);
+  content = {
+    name: z5.string().trim().min(1).max(200),
+    brief: z5.string().max(16000).default(""),
+    design: projectDesignSchema.default(() => projectDesignSchema.parse({})),
+    inventory: z5.array(z5.object({
+      id: projectIdSchema,
+      name: z5.string().trim().min(1).max(200),
+      kind: z5.enum(["asset", "environment"]).default("asset"),
+      brief: text5.default(""),
+      references: z5.array(projectIdSchema).max(64).default([]),
+      asset: assetReference.optional()
+    }).strict()).max(1000).default([]),
+    deliveryProfiles: z5.array(z5.object({
+      id: projectIdSchema,
+      target: z5.enum(["three", "godot", "unity", "unreal", "roblox", "sbox", "usdz", "custom"]),
+      description: text5.default(""),
+      performanceIntent: z5.string().max(1000).default(""),
+      constraints: z5.array(z5.string().max(1000)).max(100).default([])
+    }).strict()).max(32).default([]),
+    materialDependencies: materialDependenciesSchema.default([]),
+    references: z5.array(z5.object({
+      id: projectIdSchema,
+      title: z5.string().min(1).max(200),
+      uri: z5.string().min(1).max(2048),
+      description: text5.default(""),
+      sha256: hash3.optional()
+    }).strict()).max(256).default([]),
+    reviews: z5.array(z5.object({
+      id: projectIdSchema,
+      inventoryId: projectIdSchema,
+      projectRevisionId: projectRevisionIdSchema,
+      asset: assetReference,
+      reviewer: z5.string().trim().min(1).max(200),
+      verdict: z5.enum(["comment", "changes-requested", "accepted"]),
+      notes: text5
+    }).strict()).max(2000).default([])
+  };
+  projectDraftSchema = z5.object({
+    projectId: projectIdSchema.optional(),
+    ...content
+  }).strict().superRefine(checkContent);
+  projectPatchSchema = z5.object({
+    name: content.name.optional(),
+    brief: content.brief.removeDefault().optional(),
+    design: content.design.removeDefault().optional(),
+    inventory: content.inventory.removeDefault().optional(),
+    deliveryProfiles: content.deliveryProfiles.removeDefault().optional(),
+    materialDependencies: content.materialDependencies.removeDefault().optional(),
+    references: content.references.removeDefault().optional(),
+    reviews: content.reviews.removeDefault().optional()
+  }).strict();
+  projectRevisionSchema = z5.object({
+    version: z5.literal("kiln.project.v1"),
+    projectId: projectIdSchema,
+    revisionId: projectRevisionIdSchema,
+    parentRevision: projectRevisionIdSchema.optional(),
+    createdAt: z5.string().datetime(),
+    ...content
+  }).strict().superRefine(checkContent);
+  ProjectConflictError = class ProjectConflictError extends Error {
+    projectId;
+    expectedRevision;
+    actualRevision;
+    code = "PROJECT_CONFLICT";
+    constructor(projectId, expectedRevision, actualRevision) {
+      super(`Project revision conflict: expected ${expectedRevision}, current ${actualRevision}.`);
+      this.projectId = projectId;
+      this.expectedRevision = expectedRevision;
+      this.actualRevision = actualRevision;
+      this.name = "ProjectConflictError";
+    }
+  };
+  ProjectNotFoundError = class ProjectNotFoundError extends Error {
+    projectId;
+    revisionId;
+    code = "PROJECT_NOT_FOUND";
+    constructor(projectId, revisionId) {
+      super(`Project not found: ${projectId}${revisionId ? ` at ${revisionId}` : ""}.`);
+      this.projectId = projectId;
+      this.revisionId = revisionId;
+      this.name = "ProjectNotFoundError";
+    }
+  };
+  ProjectExistsError = class ProjectExistsError extends Error {
+    projectId;
+    code = "PROJECT_EXISTS";
+    constructor(projectId) {
+      super(`Project already exists: ${projectId}.`);
+      this.projectId = projectId;
+      this.name = "ProjectExistsError";
+    }
+  };
+});
+
+// src/projects-node.ts
+import { createHash as createHash12, randomUUID as randomUUID5 } from "node:crypto";
+import { link as link3, lstat as lstat4, mkdir as mkdir5, open as open2, readdir as readdir5, realpath as realpath4, unlink as unlink4 } from "node:fs/promises";
+import { join as join8, relative as relative3, resolve as resolve6, sep as sep2 } from "node:path";
+function sequenceOf(revisionId) {
+  projectRevisionIdSchema.parse(revisionId);
+  const sequence = Number(revisionId.slice(2, 12));
+  if (sequence < 1 || sequence > MAX_PROJECT_REVISIONS)
+    throw new Error("Invalid project revision sequence");
+  return sequence;
+}
+function digest5(record) {
+  const { revisionId: _, ...payload } = record;
+  return createHash12("sha256").update(JSON.stringify(payload)).digest("hex");
+}
+
+class FileProjectStore {
+  workspace;
+  directory;
+  constructor(workspace) {
+    if (!workspace.trim())
+      throw new Error("A workspace directory is required");
+    this.workspace = resolve6(workspace);
+    this.directory = join8(this.workspace, ".kiln", "projects");
+  }
+  async path(projectId, create = false) {
+    if (projectId !== undefined)
+      projectIdSchema.parse(projectId);
+    if (create)
+      await mkdir5(this.workspace, { recursive: true });
+    const canonical = await realpath4(this.workspace);
+    let path = this.workspace;
+    for (const part of [".kiln", "projects", ...projectId ? [projectId, "revisions"] : []]) {
+      path = join8(path, part);
+      if (create)
+        await mkdir5(path).catch((error) => {
+          if (!exists(error))
+            throw error;
+        });
+      const info = await lstat4(path);
+      if (info.isSymbolicLink())
+        throw new Error("Project symlinks are not supported");
+      if (!info.isDirectory())
+        throw new Error("Invalid project directory");
+      const rel = relative3(canonical, await realpath4(path));
+      if (rel === ".." || rel.startsWith(`..${sep2}`))
+        throw new Error("Project path escapes workspace");
+    }
+    return path;
+  }
+  async latestSequence(directory) {
+    let latest = 0;
+    for (const item of await readdir5(directory, { withFileTypes: true })) {
+      if (!/^[0-9]{10}\.json$/.test(item.name))
+        continue;
+      if (!item.isFile())
+        throw new Error("Invalid project revision file");
+      const sequence = Number(item.name.slice(0, 10));
+      if (sequence < 1 || sequence > MAX_PROJECT_REVISIONS)
+        throw new Error("Invalid project revision sequence");
+      latest = Math.max(latest, sequence);
+    }
+    return latest;
+  }
+  async load(projectId, directory, sequence) {
+    const path = join8(directory, filename(sequence));
+    const info = await lstat4(path);
+    if (!info.isFile() || info.isSymbolicLink() || info.size > MAX_PROJECT_BYTES)
+      throw new Error("Invalid or oversized project revision file");
+    const handle = await open2(path, "r");
+    let bytes;
+    try {
+      const opened = await handle.stat();
+      if (!opened.isFile() || opened.size > MAX_PROJECT_BYTES || opened.ino !== info.ino || opened.dev !== info.dev)
+        throw new Error("Project revision changed while opening");
+      bytes = new Uint8Array(opened.size);
+      let read = 0;
+      while (read < bytes.length) {
+        const result = await handle.read(bytes, read, bytes.length - read, read);
+        if (!result.bytesRead)
+          throw new Error("Incomplete project revision file");
+        read += result.bytesRead;
+      }
+      if ((await handle.stat()).size !== bytes.length)
+        throw new Error("Project revision changed while reading");
+    } finally {
+      await handle.close();
+    }
+    const record = projectRevisionSchema.parse(JSON.parse(new TextDecoder("utf-8", { fatal: true }).decode(bytes)));
+    if (record.projectId !== projectId || sequenceOf(record.revisionId) !== sequence || record.revisionId.slice(13) !== digest5(record))
+      throw new Error("Project revision integrity failure");
+    if (sequence === 1 && record.parentRevision !== undefined || sequence > 1 && (!record.parentRevision || sequenceOf(record.parentRevision) !== sequence - 1))
+      throw new Error("Project revision parent integrity failure");
+    return record;
+  }
+  async list() {
+    let directory;
+    try {
+      directory = await this.path();
+    } catch (error) {
+      if (missing(error))
+        return [];
+      throw error;
+    }
+    const records = [];
+    for (const entry of await readdir5(directory, { withFileTypes: true })) {
+      if (!projectIdSchema.safeParse(entry.name).success)
+        continue;
+      if (entry.isSymbolicLink())
+        throw new Error("Project symlinks are not supported");
+      if (!entry.isDirectory())
+        continue;
+      try {
+        records.push(await this.read(entry.name));
+      } catch (error) {
+        if (!(error instanceof ProjectNotFoundError))
+          throw error;
+      }
+    }
+    return records.sort((a, b) => a.projectId.localeCompare(b.projectId));
+  }
+  async read(projectId, revisionId) {
+    projectIdSchema.parse(projectId);
+    if (revisionId !== undefined)
+      sequenceOf(revisionId);
+    try {
+      const directory = await this.path(projectId);
+      const sequence = revisionId ? sequenceOf(revisionId) : await this.latestSequence(directory);
+      if (!sequence)
+        throw new ProjectNotFoundError(projectId, revisionId);
+      const record = await this.load(projectId, directory, sequence);
+      if (revisionId && record.revisionId !== revisionId)
+        throw new ProjectNotFoundError(projectId, revisionId);
+      return record;
+    } catch (error) {
+      if (missing(error))
+        throw new ProjectNotFoundError(projectId, revisionId);
+      throw error;
+    }
+  }
+  async publish(record, expectedRevision) {
+    const bytes = new TextEncoder().encode(`${JSON.stringify(record, null, 2)}
+`);
+    if (bytes.length > MAX_PROJECT_BYTES)
+      throw new Error("Project revision exceeds 1 MiB");
+    for (const revision of new Set(record.reviews.map((review) => review.projectRevisionId)))
+      await this.read(record.projectId, revision);
+    const directory = await this.path(record.projectId, true);
+    const temporary = join8(directory, `.write-${randomUUID5()}`);
+    const handle = await open2(temporary, "wx", 384);
+    try {
+      try {
+        await handle.writeFile(bytes);
+        await handle.sync();
+      } finally {
+        await handle.close();
+      }
+      try {
+        await link3(temporary, join8(directory, filename(sequenceOf(record.revisionId))));
+      } catch (error) {
+        if (!exists(error))
+          throw error;
+        if (!expectedRevision)
+          throw new ProjectExistsError(record.projectId);
+        const current = await this.read(record.projectId);
+        throw new ProjectConflictError(record.projectId, expectedRevision, current.revisionId);
+      }
+    } finally {
+      await unlink4(temporary);
+    }
+    return record;
+  }
+  record(projectId, sequence, data, parentRevision) {
+    if (sequence > MAX_PROJECT_REVISIONS)
+      throw new Error("Project revision limit reached");
+    const prefix = `r_${String(sequence).padStart(10, "0")}_`;
+    const record = projectRevisionSchema.parse({
+      ...data,
+      version: "kiln.project.v1",
+      projectId,
+      revisionId: `${prefix}${"0".repeat(64)}`,
+      parentRevision,
+      createdAt: new Date().toISOString()
+    });
+    record.revisionId = `${prefix}${digest5(record)}`;
+    return record;
+  }
+  async create(draft) {
+    const { projectId = `p_${randomUUID5().replaceAll("-", "")}`, ...data } = projectDraftSchema.parse(draft);
+    return this.publish(this.record(projectId, 1, data));
+  }
+  async update(projectId, expectedRevision, patch) {
+    projectIdSchema.parse(projectId);
+    sequenceOf(expectedRevision);
+    const parsed = Object.fromEntries(Object.entries(projectPatchSchema.parse(patch)).filter(([, value]) => value !== undefined));
+    const previous = await this.read(projectId);
+    if (previous.revisionId !== expectedRevision)
+      throw new ProjectConflictError(projectId, expectedRevision, previous.revisionId);
+    const {
+      version: _,
+      projectId: __,
+      revisionId: ___,
+      parentRevision: ____,
+      createdAt: _____,
+      ...data
+    } = previous;
+    return this.publish(this.record(projectId, sequenceOf(expectedRevision) + 1, { ...data, ...parsed }, expectedRevision), expectedRevision);
+  }
+}
+var missing = (error) => error.code === "ENOENT", exists = (error) => error.code === "EEXIST", filename = (sequence) => `${String(sequence).padStart(10, "0")}.json`;
+var init_projects_node = __esm(() => {
+  init_workspace_location();
+  init_projects();
+});
+
+// src/workspace.ts
+import { z as z6 } from "zod";
+var workspaceSelectionSchema;
+var init_workspace = __esm(() => {
+  init_projects();
+  workspaceSelectionSchema = z6.object({
+    projectId: projectIdSchema.nullable().optional().describe("Optional project. Omission is standalone unless the host explicitly configures a default; null always selects standalone authoring."),
+    projectRevision: projectRevisionIdSchema.optional().describe("Exact project revision; requires a selected or configured project."),
+    materialDependencies: materialDependenciesSchema.optional().describe("Exact immutable material pins for this invocation, usable with or without a project. Project locks cannot be replaced.")
+  }).strict().superRefine((selection, ctx) => {
+    if (selection.projectId === null && selection.projectRevision !== undefined)
+      ctx.addIssue({
+        code: "custom",
+        path: ["projectRevision"],
+        message: "projectRevision cannot be combined with standalone projectId: null."
+      });
+  });
+});
+
+// src/workspace-node.ts
+import { AsyncLocalStorage } from "node:async_hooks";
+import { join as join9 } from "node:path";
+
+class FileWorkspace {
+  root;
+  defaultProjectId;
+  projects;
+  materials;
+  active = new AsyncLocalStorage;
+  constructor(root, defaultProjectId) {
+    this.root = root;
+    this.defaultProjectId = defaultProjectId;
+    this.projects = new FileProjectStore(root);
+    this.materials = new FileMaterialLibrary(join9(root, ".kiln", "materials"));
+  }
+  current() {
+    return this.active.getStore();
+  }
+  async run(requested, execute) {
+    const selection = workspaceSelectionSchema.parse(requested);
+    const existing = this.current();
+    const inherit = existing && selection.projectId !== null && (selection.projectId === undefined || selection.projectId === existing.project?.projectId) && selection.projectRevision === undefined;
+    if (inherit && selection.materialDependencies === undefined)
+      return execute();
+    const projectId = selection.projectId === null ? undefined : selection.projectId ?? existing?.project?.projectId ?? this.defaultProjectId;
+    if (!projectId && selection.projectRevision)
+      throw new Error("projectRevision requires a project");
+    const project = inherit ? existing.project : projectId ? await this.projects.read(projectId, selection.projectRevision) : undefined;
+    const pins = new Map;
+    for (const dependency of [
+      ...inherit ? existing.materialDependencies : project?.materialDependencies ?? [],
+      ...selection.materialDependencies ?? []
+    ]) {
+      const previous = pins.get(dependency.resourceId);
+      if (previous && (previous.revisionId !== dependency.revisionId || previous.sha256 !== dependency.sha256))
+        throw new Error(`Conflicting material revisions for ${dependency.resourceId}; project or inherited resource locks cannot be replaced.`);
+      pins.set(dependency.resourceId, previous ?? dependency);
+    }
+    const materialDependencies = materialDependenciesSchema.parse([...pins.values()].sort((a, b) => a.resourceId.localeCompare(b.resourceId)));
+    if (materialDependencies.length > MATERIAL_LIBRARY_LIMITS.maxPayloadRecords)
+      throw new Error(`An evaluation may resolve at most ${MATERIAL_LIBRARY_LIMITS.maxPayloadRecords} material resources; select a smaller dependency closure.`);
+    const materials = await Promise.all(materialDependencies.map(async (dependency) => {
+      if (dependency.sha256 !== dependency.revisionId)
+        throw new Error(`Material lock hash mismatch: ${dependency.resourceId}`);
+      try {
+        return await this.materials.read(dependency.resourceId, dependency.revisionId);
+      } catch (error) {
+        throw new Error(`Locked material unavailable: ${dependency.resourceId} at ${dependency.revisionId}`, { cause: error });
+      }
+    }));
+    const materialResources = await createMaterialLibraryPayload(materials);
+    return this.active.run({ ...project ? { project } : {}, materialDependencies, materialResources }, execute);
+  }
+}
+var init_workspace_node = __esm(() => {
+  init_projects_node();
+  init_material_library_node();
+  init_workspace();
+  init_projects();
+  init_material_library();
+  init_workspace_location();
+});
+
+// src/assets.ts
+import { z as z7 } from "zod";
+import { zipSync, unzipSync } from "three/addons/libs/fflate.module.js";
+function validateAssetMaterialClosure(record, required = false) {
+  const dependencies = (record.manifest.build?.dependencies ?? []).filter((raw) => raw && typeof raw === "object" && raw.kind === "kiln.material.v1");
+  const expected = new Map(dependencies.map((dependency) => {
+    if (dependency.delivery !== "runtime")
+      throw new Error("Invalid saved material dependency");
+    const manifest = validateMaterialManifest(dependency.manifest);
+    return [`${manifest.materialId}/${manifest.revisionId}`, canonicalMaterialJson(manifest)];
+  }));
+  if (!record.materialResources) {
+    if (required && expected.size)
+      throw new Error("Editable asset material closure unavailable");
+    return;
+  }
+  assertMaterialJson(record.materialResources);
+  const payload = materialLibraryPayloadSchema.parse(record.materialResources);
+  let bytes = 0;
+  let pixels = 0;
+  const seen = new Set;
+  for (const wire of payload.records) {
+    const key = `${wire.manifest.materialId}/${wire.manifest.revisionId}`;
+    if (seen.has(key) || expected.get(key) !== canonicalMaterialJson(wire.manifest))
+      throw new Error("Asset material closure mismatch");
+    seen.add(key);
+    if (Object.keys(wire.files).length !== wire.manifest.maps.length)
+      throw new Error("Asset material map inventory mismatch");
+    for (const map of wire.manifest.maps) {
+      if (wire.files[map.file]?.length !== Math.ceil(map.bytes / 3) * 4)
+        throw new Error("Asset material map size mismatch");
+      bytes += map.bytes;
+      pixels += map.width * map.height;
+    }
+  }
+  if (seen.size !== expected.size)
+    throw new Error("Asset material closure incomplete");
+  if (bytes > MATERIAL_LIBRARY_LIMITS.maxPayloadBytes || pixels > MATERIAL_LIBRARY_LIMITS.maxPayloadPixels)
+    throw new Error("Asset material closure exceeds allocation limits");
+}
+function validateRecordShape(record) {
+  const manifest = assetManifestSchema.parse(record.manifest);
+  const names = Object.keys(record.files);
+  if (names.length !== Object.keys(manifest.files).length || !names.includes("asset.glb"))
+    throw new Error("Asset file inventory mismatch");
+  let total = 0;
+  for (const name of names) {
+    if (!allowedFiles.has(name) || !manifest.files[name] || manifest.files[name].bytes !== record.files[name].length)
+      throw new Error("Invalid asset file inventory");
+    total += record.files[name].length;
+  }
+  if (total > ASSET_LIMIT || manifest.editable !== names.includes("source.kiln.js"))
+    throw new Error("Invalid asset size or source inventory");
+  if ((record.files["source.kiln.js"]?.length ?? 0) > 1024 * 1024)
+    throw new Error("Source exceeds 1 MiB");
+  validateAssetGlb(record.files["asset.glb"]);
+  validateAssetMaterialClosure(record);
+}
+function validateAssetGlb(bytes) {
+  if (bytes.length < 20 || bytes.length > ASSET_LIMIT)
+    throw new Error("Invalid GLB size");
+  const view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
+  if (view.getUint32(0, true) !== 1179937895 || view.getUint32(4, true) !== 2 || view.getUint32(8, true) !== bytes.length || view.getUint32(16, true) !== 1313821514)
+    throw new Error("Invalid GLB header");
+  const end = 20 + view.getUint32(12, true);
+  if (end > bytes.length)
+    throw new Error("Invalid GLB JSON length");
+  const json = JSON.parse(new TextDecoder().decode(bytes.subarray(20, end)));
+  for (const resource of [...json.buffers ?? [], ...json.images ?? []]) {
+    if (resource.uri && !String(resource.uri).startsWith("data:"))
+      throw new Error("GLB must embed its resources");
+  }
+}
+function encodeAssetBundle(records) {
+  if (!records.length || records.length > 100)
+    throw new Error("Bundle requires 1..100 revisions");
+  const files = {};
+  let total = 0;
+  for (const record of records) {
+    validateRecordShape(record);
+    validateAssetMaterialClosure(record, true);
+    const prefix = `${record.manifest.assetId}/${record.manifest.revisionId}/`;
+    if (files[`${prefix}manifest.json`])
+      throw new Error("Duplicate bundle revision");
+    files[`${prefix}manifest.json`] = new TextEncoder().encode(JSON.stringify(record.manifest, null, 2));
+    for (const [name, bytes] of Object.entries(record.files))
+      files[prefix + name] = bytes;
+    if (record.materialResources) {
+      const bytes = new TextEncoder().encode(JSON.stringify(record.materialResources));
+      if (bytes.length > ASSET_MATERIAL_BYTES)
+        throw new Error("Asset material payload exceeds byte limit");
+      files[prefix + ASSET_MATERIAL_FILE] = bytes;
+    }
+  }
+  for (const bytes of Object.values(files))
+    total += bytes.length;
+  if (total > ASSET_LIMIT)
+    throw new Error("Bundle exceeds 64 MiB");
+  return zipSync(files, { level: 0 });
+}
+function decodeAssetBundle(bytes) {
+  if (bytes.length > ASSET_LIMIT + 1024 * 1024)
+    throw new Error("Bundle exceeds 64 MiB");
+  let total = 0;
+  let count = 0;
+  const files = unzipSync(bytes, {
+    filter: (entry) => {
+      total += entry.originalSize;
+      count++;
+      if (total > ASSET_LIMIT || count > 500 || entry.name.endsWith(`/${ASSET_MATERIAL_FILE}`) && entry.originalSize > ASSET_MATERIAL_BYTES || !/^[a-z][a-z0-9_-]{0,79}\/[a-z][a-z0-9_-]{0,79}\/(manifest\.json|asset\.glb|source\.kiln\.js|preview\.png|materials\.kiln\.json)$/.test(entry.name))
+        throw new Error("Unsafe or oversized asset bundle");
+      return true;
+    }
+  });
+  const records = [];
+  const used = new Set;
+  for (const [path, data] of Object.entries(files)) {
+    if (!path.endsWith("/manifest.json"))
+      continue;
+    if (data.length > 1024 * 1024)
+      throw new Error("Manifest exceeds 1 MiB");
+    const manifest = assetManifestSchema.parse(JSON.parse(new TextDecoder().decode(data)));
+    const prefix = `${manifest.assetId}/${manifest.revisionId}/`;
+    if (path !== `${prefix}manifest.json`)
+      throw new Error("Bundle identity mismatch");
+    const record = { manifest, files: {} };
+    used.add(path);
+    for (const name of Object.keys(manifest.files)) {
+      if (!files[prefix + name])
+        throw new Error("Bundle file missing");
+      record.files[name] = files[prefix + name];
+      used.add(prefix + name);
+    }
+    if (files[prefix + ASSET_MATERIAL_FILE]) {
+      record.materialResources = JSON.parse(new TextDecoder("utf-8", { fatal: true }).decode(files[prefix + ASSET_MATERIAL_FILE]));
+      used.add(prefix + ASSET_MATERIAL_FILE);
+    }
+    validateRecordShape(record);
+    records.push(record);
+  }
+  if (!records.length || used.size !== Object.keys(files).length)
+    throw new Error("Incomplete asset bundle");
+  return records;
+}
+var ASSET_LIMIT, assetIdSchema, hash4, assetManifestSchema, ASSET_MATERIAL_FILE = "materials.kiln.json", ASSET_MATERIAL_BYTES, allowedFiles;
+var init_assets = __esm(() => {
+  init_background();
+  init_material_library();
+  ASSET_LIMIT = 64 * 1024 * 1024;
+  assetIdSchema = z7.string().regex(/^[a-z][a-z0-9_-]{0,79}$/);
+  hash4 = z7.string().regex(/^sha256:[a-f0-9]{64}$/);
+  assetManifestSchema = z7.object({
+    version: z7.literal("kiln.asset.v1"),
+    assetId: assetIdSchema,
+    revisionId: assetIdSchema,
+    parentRevision: assetIdSchema.optional(),
+    name: z7.string().min(1).max(200),
+    tags: z7.array(z7.string().max(80)).max(30),
+    createdAt: z7.string().datetime(),
+    description: z7.string().max(4000).optional(),
+    brief: z7.string().max(8000).optional(),
+    attribution: z7.object({
+      model: z7.string().max(200).optional(),
+      harness: z7.string().max(200).optional(),
+      author: z7.string().max(200).optional()
+    }).optional(),
+    editable: z7.boolean(),
+    files: z7.record(z7.string(), z7.object({ sha256: hash4, bytes: z7.number().int().nonnegative().max(ASSET_LIMIT) })),
+    build: z7.object({
+      engine: z7.string(),
+      options: z7.record(z7.string(), z7.unknown()),
+      warnings: z7.array(z7.string()),
+      integration: z7.unknown().optional(),
+      qa: z7.unknown().optional(),
+      dependencies: z7.array(z7.unknown()).optional(),
+      rebuild: z7.enum(["engine-required", "external-dependencies-required"])
+    }).optional(),
+    preview: z7.object({
+      fidelity: z7.unknown().optional(),
+      error: z7.string().optional(),
+      backdrop: z7.enum(BACKDROP_IDS).optional()
+    }).optional()
+  });
+  ASSET_MATERIAL_BYTES = 24 * 1024 * 1024;
+  allowedFiles = new Set(["asset.glb", "source.kiln.js", "preview.png"]);
+});
+
+// src/live-review-node.ts
+import { AsyncLocalStorage as AsyncLocalStorage2 } from "node:async_hooks";
+import { createHash as createHash13, randomUUID as randomUUID6 } from "node:crypto";
+import {
+  link as link4,
+  mkdir as mkdir6,
+  lstat as lstat5,
+  readdir as readdir6,
+  readFile as readFile5,
+  rename as rename4,
+  rm as rm2,
+  unlink as unlink5,
+  writeFile as writeFile5,
+  realpath as realpath5
+} from "node:fs/promises";
+import { join as join10, resolve as resolve7, relative as relative4, sep as sep3 } from "node:path";
+import { z as z8 } from "zod";
+function notify(run) {
+  try {
+    Promise.resolve(run()).catch(() => {});
+  } catch {}
+}
+async function observeTool(observer, tool, input, run) {
+  notify(() => observer.begin?.(tool, input));
+  try {
+    const result = await run();
+    notify(() => observer.finish?.(result));
+    return result;
+  } catch (error) {
+    notify(() => observer.finish?.(undefined, error));
+    throw error;
+  }
+}
+function issue(state, message) {
+  state.operation.observationIssues ??= [];
+  const issues = state.operation.observationIssues;
+  const bounded = message.slice(0, 500);
+  if (!issues.includes(bounded) && issues.length < 20)
+    issues.push(bounded);
+}
+function jsonValue(value, maxBytes) {
+  let count = 0;
+  const inspect = (item, depth) => {
+    if (++count > 20000 || depth > 24)
+      throw new Error("Observation JSON exceeds structural bounds");
+    if (item && typeof item === "object") {
+      for (const child of Object.values(item))
+        inspect(child, depth + 1);
+    } else if (typeof item === "number" && !Number.isFinite(item))
+      throw new Error("Non-finite observation value");
+  };
+  inspect(value, 0);
+  const text = JSON.stringify(value);
+  if (!text || Buffer.byteLength(text) > maxBytes)
+    throw new Error("Observation JSON exceeds byte bounds");
+  return JSON.parse(text);
+}
+function resultSummary(state, result) {
+  const summary = {};
+  const add = (key, value, limit = 4096) => {
+    if (value === undefined)
+      return;
+    try {
+      const bounded = jsonValue(value, limit);
+      if (Buffer.byteLength(JSON.stringify({ ...summary, [key]: bounded })) > 32768)
+        throw new Error("Summary is full");
+      summary[key] = bounded;
+    } catch {
+      issue(state, `Result summary ${key} details were omitted: invalid or oversized metadata.`);
+    }
+  };
+  for (const key of ["ok", "tris", "meshes", "materials", "bounds", "artifactGlbSha256"])
+    add(key, result[key]);
+  if (result.qaReport !== undefined) {
+    try {
+      add("qaReport", jsonValue(result.qaReport, 8192), 8192);
+    } catch {
+      const full = result.qaReport;
+      if (full && typeof full === "object" && !Array.isArray(full)) {
+        const report = full;
+        const compact = { detailsOmitted: true };
+        for (const key of [
+          "kind",
+          "schemaVersion",
+          "category",
+          "qaProfile",
+          "policyHash",
+          "adviceHash",
+          "acceptance",
+          "disposition"
+        ]) {
+          try {
+            if (report[key] !== undefined)
+              compact[key] = jsonValue(report[key], 512);
+          } catch {}
+        }
+        const dimensions = report.dimensions;
+        if (dimensions && typeof dimensions === "object" && !Array.isArray(dimensions)) {
+          const compactDimensions = {};
+          for (const key of [
+            "exportIntegrity",
+            "categoryReadiness",
+            "requirementReadiness",
+            "promptAlignment",
+            "visualQuality",
+            "runtimeCost"
+          ]) {
+            const dimension = dimensions[key];
+            if (!dimension || typeof dimension !== "object")
+              continue;
+            const detail = dimension;
+            try {
+              compactDimensions[key] = {
+                status: jsonValue(detail.status, 128),
+                ...Array.isArray(detail.findings) ? { findingsOmitted: detail.findings.length } : {}
+              };
+            } catch {}
+          }
+          compact.dimensions = compactDimensions;
+        }
+        for (const key of ["rules", "unevaluatedRequirements"])
+          if (Array.isArray(report[key]))
+            compact[`${key}Omitted`] = report[key].length;
+        add("qaReport", compact, 8192);
+      }
+      issue(state, "QA summary details were omitted; recorded acceptance is unchanged.");
+    }
+  }
+  for (const key of ["requirements", "capture", "buildCache"])
+    add(key, result[key]);
+  if (Array.isArray(result.warnings)) {
+    try {
+      add("warnings", jsonValue(result.warnings, 8192), 8192);
+      return summary;
+    } catch {}
+    const warnings = [];
+    let truncated = false;
+    for (const warning of result.warnings.slice(0, 32)) {
+      try {
+        const value = typeof warning === "string" ? warning.slice(0, 512) : jsonValue(warning, 512);
+        if (value !== warning && typeof warning === "string")
+          truncated = true;
+        if (Buffer.byteLength(JSON.stringify([...warnings, value])) > 8192)
+          break;
+        warnings.push(value);
+      } catch {
+        truncated = true;
+      }
+    }
+    const omitted = result.warnings.length - warnings.length;
+    add("warnings", warnings, 8192);
+    if (omitted)
+      add("warningsOmitted", omitted);
+    if (omitted || truncated)
+      issue(state, "Result warning details were truncated; evaluation.json, when retained, contains full build details.");
+  } else
+    add("warnings", result.warnings, 8192);
+  return summary;
+}
+function dead(pid) {
+  if (!pid)
+    return false;
+  try {
+    process.kill(pid, 0);
+    return false;
+  } catch (error) {
+    return error.code === "ESRCH";
+  }
+}
+
+class FileLiveReview {
+  directory;
+  sessionId = randomUUID6();
+  workspace;
+  current = new AsyncLocalStorage2;
+  queue = new Map;
+  pending;
+  queuedBytes = 0;
+  maxOperations;
+  maxBytes;
+  maxQueuedBytes;
+  transport;
+  workId;
+  issues = [];
+  storedSizes = new WeakMap;
+  unreportedIssues = [];
+  constructor(workspace, options = {}) {
+    this.workspace = resolve7(workspace);
+    this.directory = join10(this.workspace, ".kiln", "review");
+    this.maxOperations = options.maxOperations ?? 200;
+    this.maxBytes = options.maxBytes ?? 256 * 1024 * 1024;
+    this.maxQueuedBytes = options.maxQueuedBytes ?? 128 * 1024 * 1024;
+    this.transport = options.transport ?? "api";
+    this.workId = options.workId;
+    if (this.workId !== undefined && !/^[a-z][a-z0-9_-]{0,79}$/.test(this.workId))
+      throw new Error("Invalid work item ID");
+    if (!Number.isSafeInteger(this.maxOperations) || this.maxOperations < 2 || this.maxOperations > 2000 || !Number.isSafeInteger(this.maxBytes) || this.maxBytes < 1024 || this.maxBytes > 1024 ** 3 || !Number.isSafeInteger(this.maxQueuedBytes) || this.maxQueuedBytes < 1024 || this.maxQueuedBytes > 512 * 1024 * 1024 || !["cli", "mcp", "native", "api"].includes(this.transport))
+      throw new Error("Invalid live retention limits");
+  }
+  report(message) {
+    const text = message.slice(0, 500);
+    if (!this.issues.includes(text))
+      this.issues.push(text);
+    if (!this.unreportedIssues.includes(text))
+      this.unreportedIssues.push(text);
+    this.issues.splice(0, Math.max(0, this.issues.length - 20));
+    this.unreportedIssues.splice(0, Math.max(0, this.unreportedIssues.length - 20));
+  }
+  path(operationId, file) {
+    if (!operationPattern.test(operationId))
+      throw new Error("Invalid operation ID");
+    return join10(this.directory, operationId, ...file ? [file] : []);
+  }
+  async root(create = false) {
+    if (create)
+      await mkdir6(this.workspace, { recursive: true });
+    const canonical = await realpath5(this.workspace);
+    let path = this.workspace;
+    for (const part of [".kiln", "review"]) {
+      path = join10(path, part);
+      if (create)
+        await mkdir6(path).catch((error) => {
+          if (!collision(error))
+            throw error;
+        });
+      const info = await lstat5(path);
+      if (!info.isDirectory() || info.isSymbolicLink())
+        throw new Error("Unsafe live directory");
+      const rel = relative4(canonical, await realpath5(path));
+      if (rel === ".." || rel.startsWith(`..${sep3}`))
+        throw new Error("Live directory escapes workspace");
+    }
+  }
+  async boundedFile(path, limit) {
+    const info = await lstat5(path);
+    if (!info.isFile() || info.isSymbolicLink() || info.size > limit)
+      throw new Error("Invalid live file");
+    const data = new Uint8Array(await readFile5(path));
+    if (data.length !== info.size || data.length > limit)
+      throw new Error("Live file changed while reading");
+    return data;
+  }
+  async atomic(path, bytes) {
+    const temporary = `${path}.${randomUUID6()}.tmp`;
+    try {
+      await writeFile5(temporary, bytes, { flag: "wx", mode: 384 });
+      await rename4(temporary, path);
+    } finally {
+      await unlink5(temporary).catch((error) => {
+        if (!missing2(error))
+          throw error;
+      });
+    }
+  }
+  async locked(run) {
+    await this.root(true);
+    const token = randomUUID6();
+    const directory = join10(this.directory, ".locks");
+    await mkdir6(directory).catch((error) => {
+      if (!collision(error))
+        throw error;
+    });
+    const info = await lstat5(directory);
+    if (!info.isDirectory() || info.isSymbolicLink())
+      throw new Error("Unsafe live lock directory");
+    const candidate = join10(directory, `.candidate-${process.pid}-${token}.tmp`);
+    const owner = JSON.stringify({ pid: process.pid, token });
+    await writeFile5(candidate, owner, { flag: "wx", mode: 384 });
+    const generations = async () => (await readdir6(directory)).filter((name) => /^[0-9]{16}\.lock$/.test(name)).sort();
+    const deadline = Date.now() + 3000;
+    let acquired;
+    try {
+      while (!acquired) {
+        if (Date.now() >= deadline)
+          throw new Error("Live review storage is busy; observation was not persisted");
+        const names = await generations();
+        const latest = names.at(-1);
+        const sequence = latest ? Number(latest.slice(0, 16)) + 1 : 1;
+        if (!Number.isSafeInteger(sequence))
+          throw new Error("Live lock generation exhausted");
+        if (latest) {
+          try {
+            const prior = z8.object({ pid: z8.number().int().positive(), token: z8.string().uuid() }).strict().parse(JSON.parse(new TextDecoder().decode(await this.boundedFile(join10(directory, latest), 1024))));
+            const released = await lstat5(join10(directory, `${latest}.released`)).then((entry) => {
+              if (!entry.isFile() || entry.isSymbolicLink() || entry.size !== 0)
+                throw new Error("Invalid lock release");
+              return true;
+            }).catch((error) => {
+              if (missing2(error))
+                return false;
+              throw error;
+            });
+            if (!released && !dead(prior.pid)) {
+              await new Promise((resolve) => setTimeout(resolve, 10));
+              continue;
+            }
+          } catch (error) {
+            if (missing2(error))
+              continue;
+            throw error;
+          }
+        }
+        const name = `${String(sequence).padStart(16, "0")}.lock`;
+        try {
+          await link4(candidate, join10(directory, name));
+          if ((await generations()).at(-1) !== name) {
+            await unlink5(join10(directory, name));
+            continue;
+          }
+          acquired = name;
+        } catch (error) {
+          if (!collision(error))
+            throw error;
+        }
+      }
+      for (const name of (await generations()).slice(0, -3)) {
+        await unlink5(join10(directory, name));
+        await unlink5(join10(directory, `${name}.released`)).catch((error) => {
+          if (!missing2(error))
+            throw error;
+        });
+      }
+      for (const name of await readdir6(directory)) {
+        const match = /^\.candidate-([0-9]+)-[a-f0-9-]+\.tmp$/.exec(name);
+        if (match && dead(Number(match[1])))
+          await unlink5(join10(directory, name)).catch(() => {});
+      }
+      await this.limits(true);
+      return await run();
+    } finally {
+      if (acquired)
+        await writeFile5(join10(directory, `${acquired}.released`), "", { flag: "wx", mode: 384 });
+      await unlink5(candidate).catch(() => {});
+    }
+  }
+  async limits(create = false) {
+    const path = join10(this.directory, "limits.json");
+    try {
+      const value = JSON.parse(new TextDecoder().decode(await this.boundedFile(path, 1024)));
+      const parsed = z8.object({
+        maxOperations: z8.number().int().min(2).max(2000),
+        maxBytes: z8.number().int().min(1024).max(1024 ** 3)
+      }).strict().parse(value);
+      this.maxOperations = parsed.maxOperations;
+      this.maxBytes = parsed.maxBytes;
+    } catch (error) {
+      if (!missing2(error))
+        throw error;
+      if (create)
+        await this.atomic(path, JSON.stringify({ maxOperations: this.maxOperations, maxBytes: this.maxBytes }));
+    }
+  }
+  strip(state, names, reason) {
+    for (const name of names)
+      delete state.files[name];
+    if (state.operation.artifact && names.includes(state.operation.artifact.name))
+      delete state.operation.artifact;
+    state.operation.captures = state.operation.captures.filter((file) => !names.includes(file.name));
+    issue(state, reason);
+  }
+  schedule(state, blobs = {}) {
+    const id = state.operation.operationId;
+    let previous = this.queue.get(id);
+    if (!previous && this.queue.size >= 2000) {
+      this.report(`Live observation queue is full; operation ${id} could not be retained.`);
+      return;
+    }
+    const bytes = Object.values(blobs).reduce((sum, value) => sum + value.length, 0);
+    if (this.queuedBytes + bytes > this.maxQueuedBytes) {
+      this.strip(state, Object.keys(blobs), "Live payload exceeded the queue byte budget; source/artifact/capture evidence was not retained.");
+      blobs = {};
+    }
+    const copied = Object.fromEntries(Object.entries(blobs).map(([name, data]) => [name, Uint8Array.from(data)]));
+    const added = Object.values(copied).reduce((sum, value) => sum + value.length, 0);
+    const snapshot = stateSchema.parse(jsonValue(state, metadataLimit));
+    if (previous) {
+      previous.state = snapshot;
+      for (const [name, data] of Object.entries(copied)) {
+        const replaced = previous.blobs[name]?.length ?? 0;
+        previous.bytes -= replaced;
+        this.queuedBytes -= replaced;
+        previous.blobs[name] = data;
+      }
+      previous.bytes += added;
+    } else {
+      previous = { state: snapshot, blobs: copied, bytes: added };
+      this.queue.set(id, previous);
+    }
+    this.queuedBytes += added;
+    if (!this.pending)
+      this.pending = Promise.resolve().then(() => this.drain());
+  }
+  async drain() {
+    try {
+      while (this.queue.size) {
+        const [id, job] = this.queue.entries().next().value;
+        this.queue.delete(id);
+        try {
+          await this.locked(() => this.persist(job));
+        } catch (error) {
+          this.report(`Live observation ${id} unavailable: ${error instanceof Error ? error.message : String(error)}`);
+        } finally {
+          this.queuedBytes -= job.bytes;
+        }
+      }
+      if (this.unreportedIssues.length) {
+        const issues = [...this.unreportedIssues];
+        try {
+          await this.locked(async () => {
+            const previous = await this.health();
+            await this.atomic(join10(this.directory, "health.json"), JSON.stringify([...new Set([...previous, ...issues])].slice(-20)));
+          });
+          this.unreportedIssues = this.unreportedIssues.filter((value) => !issues.includes(value));
+        } catch {}
+      }
+    } finally {
+      this.pending = undefined;
+      if (this.queue.size)
+        this.pending = this.drain();
+    }
+  }
+  phase(state, status) {
+    state.operation.revision++;
+    state.operation.status = status;
+    state.operation.updatedAt = new Date().toISOString();
+    state.heartbeatAt = state.operation.updatedAt;
+    state.operation.phases.push({ phase: status, at: state.operation.updatedAt });
+    state.operation.phases = state.operation.phases.slice(-32);
+  }
+  file(state, name, bytes) {
+    const record = {
+      name,
+      bytes: bytes.length,
+      sha256: hash5(bytes),
+      url: `/api/live/${state.operation.operationId}/${name}`
+    };
+    state.files[name] = record;
+    return record;
+  }
+  async observe(tool, input, run) {
+    if (this.current.getStore())
+      return run();
+    const now = new Date().toISOString();
+    const state = {
+      files: {},
+      ownerPid: process.pid,
+      heartbeatAt: now,
+      operation: {
+        version: "kiln.live.v1",
+        operationId: `op_${randomUUID6()}`,
+        revision: 0,
+        tool: String(tool).slice(0, 120) || "unknown",
+        transport: this.transport,
+        sessionId: this.sessionId,
+        ...this.workId ? { workId: this.workId } : {},
+        startedAt: now,
+        updatedAt: now,
+        status: "running",
+        captures: [],
+        pinned: false,
+        phases: [{ phase: "running", at: now }]
+      }
+    };
+    try {
+      const args = input && typeof input === "object" ? input : {};
+      if (typeof args.projectId === "string" && /^[a-z][a-z0-9_-]{0,79}$/.test(args.projectId))
+        state.operation.projectId = args.projectId;
+      for (const key of ["projectRevision", "programRef", "runtimeIdentity"])
+        if (typeof args[key] === "string" && args[key].length <= 200)
+          state.operation[key] = args[key];
+    } catch {
+      issue(state, "Invocation metadata was unavailable.");
+    }
+    return this.current.run(state, async () => {
+      const timer = setInterval(() => notify(() => {
+        state.heartbeatAt = new Date().toISOString();
+        this.schedule(state);
+      }), 1e4);
+      timer.unref();
+      try {
+        return await observeTool({
+          begin: () => this.schedule(state),
+          finish: (output, error) => this.finish(state, output, error)
+        }, tool, input, run);
+      } finally {
+        clearInterval(timer);
+      }
+    });
+  }
+  finish(state, output, error) {
+    const result = output && typeof output === "object" ? output : {};
+    this.phase(state, error || result.ok === false ? "failed" : "complete");
+    if (error || result.error)
+      state.operation.error = String(error instanceof Error ? error.message : error ?? result.error).slice(0, 4000);
+    if (typeof result.programRef === "string")
+      state.operation.programRef = result.programRef.slice(0, 200);
+    if (result.viewFidelity !== undefined) {
+      try {
+        state.operation.viewFidelity = jsonValue(result.viewFidelity, 16384);
+      } catch {
+        issue(state, "viewFidelity was not retained: invalid or oversized metadata.");
+      }
+    }
+    const blobs = {};
+    const frames = Array.isArray(result.framesBase64) ? result.framesBase64 : typeof result.pngBase64 === "string" ? [result.pngBase64] : [];
+    let captureBytes = 0;
+    if (frames.length > 100)
+      issue(state, "Some captures were not retained: frame count exceeds 100.");
+    for (const [index, encoded] of frames.slice(0, 100).entries()) {
+      if (typeof encoded === "string" && encoded.length <= 22 * 1024 * 1024) {
+        const name = `capture-${index}.png`;
+        const decodedBytes = Buffer.byteLength(encoded, "base64");
+        if (decodedBytes > fileLimit(name) || decodedBytes > 32 * 1024 * 1024 - captureBytes) {
+          issue(state, "Capture was not retained: decoded size exceeds the remaining capture byte budget.");
+          continue;
+        }
+        const bytes = Buffer.from(encoded, "base64");
+        if (bytes.length >= 8 && bytes.length <= fileLimit(name) && captureBytes + bytes.length <= 32 * 1024 * 1024 && bytes.subarray(0, 8).toString("hex") === "89504e470d0a1a0a") {
+          captureBytes += bytes.length;
+          blobs[name] = bytes;
+          state.operation.captures.push(this.file(state, name, bytes));
+        } else
+          issue(state, "Capture was not retained: invalid PNG or size.");
+      } else
+        issue(state, "Capture was not retained: encoded size exceeds the limit.");
+    }
+    state.operation.result = resultSummary(state, result);
+    this.schedule(state, blobs);
+  }
+  artifact(code, rendered) {
+    const state = this.current.getStore();
+    if (!state || state.operation.artifact)
+      return;
+    try {
+      if (Buffer.byteLength(code) > 1024 * 1024)
+        throw new Error("Source exceeds 1 MiB");
+      validateAssetGlb(rendered.glb);
+      if (hash5(rendered.glb) !== rendered.artifactGlbSha256)
+        throw new Error("Artifact hash mismatch");
+      const { glb, diagnosticViews: _, ...evaluation } = rendered;
+      const metadata = Buffer.from(JSON.stringify(jsonValue(evaluation, evaluationLimit)));
+      const source = Buffer.from(code);
+      state.operation.programRef = hash5(source);
+      state.operation.artifact = this.file(state, "asset.glb", glb);
+      this.file(state, "source.kiln.js", source);
+      this.file(state, "evaluation.json", metadata);
+      this.phase(state, "evaluated");
+      this.schedule(state, {
+        "asset.glb": glb,
+        "source.kiln.js": source,
+        "evaluation.json": metadata
+      });
+    } catch (error) {
+      issue(state, `Artifact was not retained: ${error instanceof Error ? error.message : String(error)}`);
+      notify(() => this.schedule(state));
+    }
+  }
+  async flush() {
+    while (this.pending)
+      await this.pending;
+  }
+  async record(operationId) {
+    await this.root();
+    const directory = this.path(operationId);
+    const info = await lstat5(directory);
+    if (!info.isDirectory() || info.isSymbolicLink())
+      throw new Error("Unsafe live directory");
+    const raw = JSON.parse(new TextDecoder().decode(await this.boundedFile(join10(directory, "record.json"), metadataLimit)));
+    const state = stateSchema.parse(jsonValue(raw, metadataLimit));
+    if (state.operation.operationId !== operationId)
+      throw new Error("Invalid live identity");
+    if (Object.keys(state.files).length > 103)
+      throw new Error("Invalid live file inventory");
+    for (const [name, file] of Object.entries(state.files))
+      if (!filePattern2.test(name) || file.name !== name || file.bytes > fileLimit(name) || file.url !== `/api/live/${operationId}/${name}`)
+        throw new Error("Invalid live file descriptor");
+    for (const file of [
+      ...state.operation.captures,
+      ...state.operation.artifact ? [state.operation.artifact] : []
+    ])
+      if (JSON.stringify(state.files[file.name]) !== JSON.stringify(file))
+        throw new Error("Live record file inventory mismatch");
+    if (state.operation.artifact?.name !== undefined && state.operation.artifact.name !== "asset.glb")
+      throw new Error("Invalid artifact descriptor");
+    if (state.operation.captures.some((file) => !/^capture-\d{1,2}\.png$/.test(file.name)))
+      throw new Error("Invalid capture descriptor");
+    state.operation.pinned = await lstat5(join10(directory, "pinned")).then((s) => {
+      if (!s.isFile() || s.isSymbolicLink())
+        throw new Error("Invalid live pin");
+      return true;
+    }).catch((error) => {
+      if (missing2(error))
+        return false;
+      throw error;
+    });
+    if (!terminal(state.operation)) {
+      if (dead(state.ownerPid)) {
+        state.operation.status = "interrupted";
+        issue(state, "The authoring host process exited before reporting completion.");
+      } else if (!state.ownerPid || !state.heartbeatAt || Date.now() - Date.parse(state.heartbeatAt) > staleMs) {
+        state.operation.status = "unknown";
+        issue(state, "Host liveness expired; execution state is unknown.");
+      }
+    }
+    let bytes = 0;
+    for (const entry of await readdir6(directory, { withFileTypes: true })) {
+      if (!entry.isFile() || entry.isSymbolicLink())
+        throw new Error("Invalid live directory entry");
+      bytes += (await lstat5(join10(directory, entry.name))).size;
+    }
+    this.storedSizes.set(state, bytes);
+    return state;
+  }
+  async get(operationId) {
+    return (await this.record(operationId)).operation;
+  }
+  async readRecords(operationIds) {
+    const results = [];
+    for (let offset = 0;offset < operationIds.length; offset += 8)
+      results.push(...await Promise.allSettled(operationIds.slice(offset, offset + 8).map((id) => this.record(id))));
+    return results;
+  }
+  async records(cleanup = false) {
+    try {
+      await this.root();
+    } catch (error) {
+      if (missing2(error))
+        return [];
+      throw error;
+    }
+    const entries = (await readdir6(this.directory, { withFileTypes: true })).filter((entry) => operationPattern.test(entry.name));
+    const reads = await this.readRecords(entries.filter((entry) => entry.isDirectory() && !entry.isSymbolicLink()).map((entry) => entry.name));
+    const records = [];
+    let index = 0;
+    for (const entry of entries) {
+      if (!entry.isDirectory() || entry.isSymbolicLink()) {
+        this.report(`Invalid live record directory: ${entry.name}`);
+        continue;
+      }
+      const result = reads[index++];
+      try {
+        if (result.status === "rejected")
+          throw result.reason;
+        records.push(cleanup ? await this.cleanupRecord(result.value) : result.value);
+      } catch (error) {
+        if (!missing2(error)) {
+          if (cleanup)
+            this.report(`Invalid live record ${entry.name} requires review.`);
+          this.report(`Invalid live record ${entry.name}: ${error instanceof Error ? error.message : String(error)}`);
+        } else if (cleanup) {
+          await this.remove(entry.name);
+          this.report("Removed unpublished live payloads left by an interrupted storage transaction.");
+        }
+      }
+    }
+    return records.sort((a, b) => a.operation.startedAt.localeCompare(b.operation.startedAt) || a.operation.operationId.localeCompare(b.operation.operationId));
+  }
+  async health() {
+    try {
+      return z8.array(z8.string().max(500)).max(20).parse(JSON.parse(new TextDecoder().decode(await this.boundedFile(join10(this.directory, "health.json"), 16384))));
+    } catch (error) {
+      if (missing2(error))
+        return [];
+      throw error;
+    }
+  }
+  size(state) {
+    return this.storedSizes.get(state) ?? Buffer.byteLength(JSON.stringify(state)) + Object.values(state.files).reduce((sum, file) => sum + file.bytes, 0) + (state.operation.pinned ? 6 : 0);
+  }
+  async cleanupRecord(record) {
+    const id = record.operation.operationId;
+    const allowed = new Set(["record.json", "pinned", ...Object.keys(record.files)]);
+    let changed = false;
+    for (const file of await readdir6(this.path(id), { withFileTypes: true })) {
+      if (allowed.has(file.name) || !file.isFile() || file.isSymbolicLink())
+        continue;
+      await unlink5(this.path(id, file.name));
+      changed = true;
+      this.report("Removed unpublished live payloads left by an interrupted storage transaction.");
+    }
+    return changed ? this.record(id) : record;
+  }
+  async cleanup() {
+    return this.records(true);
+  }
+  async persist(job) {
+    const { state, blobs } = job;
+    let records = await this.cleanup();
+    const existing = records.find((record) => record.operation.operationId === state.operation.operationId);
+    if (existing && existing.operation.revision > state.operation.revision)
+      return;
+    state.operation.pinned = existing?.operation.pinned ?? false;
+    for (const name of Object.keys(state.files))
+      if (!blobs[name] && !existing?.files[name])
+        this.strip(state, [name], "Earlier live payload was unavailable; its descriptor was removed.");
+    records = records.filter((record) => record.operation.operationId !== state.operation.operationId);
+    const protectedBytes = records.filter((record) => record.operation.pinned || !terminal(record.operation)).reduce((sum, record) => sum + this.size(record), 0);
+    if (protectedBytes + this.size(state) > this.maxBytes) {
+      const removable = Object.keys(blobs);
+      this.strip(state, removable, "Live payload exceeded the shared retention byte budget; metadata was retained.");
+      for (const name of removable)
+        delete blobs[name];
+    }
+    let total = records.reduce((sum, record) => sum + this.size(record), 0) + this.size(state);
+    let count = records.length + 1;
+    for (const record of records) {
+      if (count <= this.maxOperations && total <= this.maxBytes)
+        break;
+      if (record.operation.pinned || !terminal(record.operation))
+        continue;
+      await this.remove(record.operation.operationId);
+      count--;
+      total -= this.size(record);
+    }
+    if (count > this.maxOperations || total > this.maxBytes) {
+      this.report(`Live retention is occupied by pinned or active operations; ${state.operation.operationId} could not be retained.`);
+      return;
+    }
+    const directory = this.path(state.operation.operationId);
+    await mkdir6(directory).catch((error) => {
+      if (!collision(error))
+        throw error;
+    });
+    if ((await lstat5(directory)).isSymbolicLink())
+      throw new Error("Unsafe live directory");
+    for (const [name, data] of Object.entries(blobs))
+      await this.atomic(join10(directory, name), data);
+    await this.atomic(join10(directory, "record.json"), JSON.stringify(state));
+    await this.cleanupRecord(await this.record(state.operation.operationId));
+  }
+  async remove(operationId) {
+    const directory = this.path(operationId);
+    const info = await lstat5(directory);
+    if (!info.isDirectory() || info.isSymbolicLink())
+      throw new Error("Unsafe live directory");
+    await rm2(directory, { recursive: true, force: true });
+  }
+  async snapshot(options = {}) {
+    await this.limits();
+    const all = await this.records();
+    const operations = all.filter(({ operation }) => !options.projectId || operation.projectId === options.projectId).map((record) => record.operation);
+    const issues = [...new Set([...await this.health(), ...this.issues])].slice(-20);
+    const cursor = hash5(JSON.stringify({ operations, issues }));
+    return {
+      cursor,
+      unchanged: cursor === options.cursor,
+      operations: cursor === options.cursor ? [] : operations,
+      retention: {
+        maxOperations: this.maxOperations,
+        maxBytes: this.maxBytes,
+        pinned: all.filter((record) => record.operation.pinned).length,
+        bytes: all.reduce((sum, record) => sum + this.size(record), 0)
+      },
+      ...issues.length ? { observationIssues: issues } : {}
+    };
+  }
+  async readFile(operationId, name) {
+    if (!filePattern2.test(name))
+      throw new Error("Unknown live file");
+    const record = await this.record(operationId);
+    const descriptor = record.files[name];
+    if (!descriptor)
+      throw new Error("Live file unavailable");
+    const bytes = await this.boundedFile(this.path(operationId, name), fileLimit(name));
+    if (bytes.length !== descriptor.bytes || hash5(bytes) !== descriptor.sha256)
+      throw new Error("Live file integrity mismatch");
+    return bytes;
+  }
+  async pin(operationId, pinned) {
+    if (typeof pinned !== "boolean")
+      throw new Error("Invalid pin state");
+    await this.locked(async () => {
+      const record = await this.record(operationId);
+      if (record.operation.pinned === pinned)
+        return;
+      const path = this.path(operationId, "pinned");
+      if (pinned) {
+        for (const name of Object.keys(record.files))
+          await this.readFile(operationId, name);
+        const pins = (await this.records()).filter((item) => item.operation.pinned);
+        if (pins.length >= this.maxOperations - 1)
+          throw new Error("Unpin an earlier operation before pinning another");
+        if (pins.reduce((sum, item) => sum + this.size(item), 0) + this.size(record) + 6 > this.maxBytes - 512)
+          throw new Error("Pinned evidence exceeds the shared byte budget");
+        await this.atomic(path, "pinned");
+      } else
+        await unlink5(path);
+    });
+  }
+}
+var operationPattern, filePattern2, hash5 = (value) => `sha256:${createHash13("sha256").update(value).digest("hex")}`, metadataLimit, evaluationLimit, staleMs = 120000, terminal = (op) => !["running", "evaluated"].includes(op.status), missing2 = (error) => error.code === "ENOENT", collision = (error) => error.code === "EEXIST", fileLimit = (name) => name === "asset.glb" ? ASSET_LIMIT : name === "source.kiln.js" ? 1024 * 1024 : name === "evaluation.json" ? evaluationLimit : 16 * 1024 * 1024, descriptorSchema, operationSchema, stateSchema;
+var init_live_review_node = __esm(() => {
+  init_assets();
+  operationPattern = /^op_[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/;
+  filePattern2 = /^(asset\.glb|source\.kiln\.js|evaluation\.json|capture-\d{1,2}\.png)$/;
+  metadataLimit = 256 * 1024;
+  evaluationLimit = 2 * 1024 * 1024;
+  descriptorSchema = z8.object({
+    name: z8.string().regex(filePattern2),
+    bytes: z8.number().int().nonnegative().max(ASSET_LIMIT),
+    sha256: z8.string().regex(/^sha256:[a-f0-9]{64}$/),
+    url: z8.string().max(200)
+  }).strict();
+  operationSchema = z8.object({
+    version: z8.literal("kiln.live.v1"),
+    operationId: z8.string().regex(operationPattern),
+    revision: z8.number().int().nonnegative(),
+    tool: z8.string().min(1).max(120),
+    transport: z8.enum(["cli", "mcp", "native", "api"]),
+    sessionId: z8.string().uuid(),
+    workId: z8.string().regex(/^[a-z][a-z0-9_-]{0,79}$/).optional(),
+    startedAt: z8.string().datetime(),
+    updatedAt: z8.string().datetime(),
+    status: z8.enum(["running", "evaluated", "complete", "failed", "interrupted", "unknown"]),
+    projectId: z8.string().regex(/^[a-z][a-z0-9_-]{0,79}$/).optional(),
+    projectRevision: z8.string().min(1).max(200).optional(),
+    programRef: z8.string().min(1).max(200).optional(),
+    runtimeIdentity: z8.string().min(1).max(200).optional(),
+    artifact: descriptorSchema.optional(),
+    captures: z8.array(descriptorSchema).max(100),
+    viewFidelity: z8.unknown().optional(),
+    result: z8.record(z8.string(), z8.unknown()).optional(),
+    error: z8.string().max(4000).optional(),
+    pinned: z8.boolean(),
+    phases: z8.array(z8.object({ phase: z8.string().max(100), at: z8.string().datetime() }).strict()).max(32),
+    observationIssues: z8.array(z8.string().max(500)).max(20).optional()
+  }).strict();
+  stateSchema = z8.object({
+    operation: operationSchema,
+    files: z8.record(z8.string(), descriptorSchema),
+    ownerPid: z8.number().int().nonnegative().optional(),
+    heartbeatAt: z8.string().datetime().optional()
+  }).strict();
+});
+
+// src/asset-materials-node.ts
+function dependencyManifests(asset) {
+  const result = new Map;
+  for (const raw of asset.manifest.build?.dependencies ?? []) {
+    if (!raw || typeof raw !== "object" || Array.isArray(raw))
+      throw new Error("Invalid saved asset dependency");
+    const dependency = raw;
+    if (dependency.kind === "kiln.material.v1") {
+      if (dependency.delivery !== "runtime")
+        throw new Error("Invalid material dependency delivery");
+      const manifest = validateMaterialManifestIdentity(dependency.manifest);
+      result.set(`${manifest.materialId}/${manifest.revisionId}`, manifest);
+      if (result.size > MATERIAL_LIBRARY_LIMITS.maxPayloadRecords)
+        throw new Error("Saved asset material dependency count exceeds limit");
+    } else if (dependency.delivery === "runtime")
+      throw new Error(`Unsupported runtime dependency: ${String(dependency.resourceId ?? "unknown")}`);
+    else if (dependency.delivery !== "embedded")
+      throw new Error("Unsupported saved asset dependency");
+  }
+  if (asset.manifest.build?.rebuild === "external-dependencies-required" && !result.size)
+    throw new Error("Saved asset has unrecorded external dependencies");
+  let bytes = 0;
+  let pixels = 0;
+  for (const manifest of result.values())
+    for (const map of manifest.maps) {
+      bytes += map.bytes;
+      pixels += map.width * map.height;
+    }
+  if (bytes > MATERIAL_LIBRARY_LIMITS.maxPayloadBytes || pixels > MATERIAL_LIBRARY_LIMITS.maxPayloadPixels)
+    throw new Error("Saved asset material allocation exceeds limit");
+  return [...result.values()];
+}
+async function resolveSavedAssetMaterials(asset, library) {
+  const dependencies = dependencyManifests(asset);
+  if (asset.materialResources) {
+    validateAssetMaterialClosure(asset, true);
+    return decodeMaterialLibraryPayload(asset.materialResources);
+  }
+  return Promise.all(dependencies.map(async (manifest) => {
+    try {
+      if (!library)
+        throw new Error("No material library configured");
+      const record = await library.read(manifest.materialId, manifest.revisionId);
+      if (canonicalMaterialJson(record.manifest) !== canonicalMaterialJson(manifest))
+        throw new Error("Saved dependency manifest mismatch");
+      return record;
+    } catch (error) {
+      throw new Error(`Locked asset material unavailable: ${manifest.materialId} at ${manifest.revisionId}`, { cause: error });
+    }
+  }));
+}
+var init_asset_materials_node = __esm(() => {
+  init_assets();
+  init_material_library();
+  init_material_library_node();
+});
+
+// src/assets-node.ts
+import { createHash as createHash14, randomUUID as randomUUID7 } from "node:crypto";
+import { readFileSync as readFileSync2 } from "node:fs";
+import {
+  link as link5,
+  lstat as lstat6,
+  mkdir as mkdir7,
+  readFile as readFile6,
+  readdir as readdir7,
+  realpath as realpath6,
+  rename as rename5,
+  rm as rm3,
+  writeFile as writeFile6
+} from "node:fs/promises";
+import { homedir, platform } from "node:os";
+import { dirname as dirname5, join as join11, relative as relative5, resolve as resolve8, sep as sep4 } from "node:path";
+function assertMaterialAllocation(records) {
+  let bytes = 0;
+  for (const record of records)
+    for (const manifest of dependencyManifests(record))
+      for (const map of manifest.maps) {
+        bytes += map.bytes;
+        if (bytes > ASSET_LIMIT)
+          throw new Error("Asset material batch exceeds allocation limit");
+      }
+}
+async function verifyAssetRecord(record) {
+  for (const [name, info] of Object.entries(record.manifest.files)) {
+    const bytes = record.files[name];
+    if (!bytes || bytes.length !== info.bytes || digest6(bytes) !== info.sha256)
+      throw new Error(`Asset integrity failure: ${name}`);
+  }
+  validateRecordShape(record);
+  if (record.materialResources)
+    await resolveSavedAssetMaterials(record);
+}
+
+class FileAssetLibrary {
+  materials;
+  roots;
+  constructor(roots, materials) {
+    this.materials = materials;
+    if (!Object.keys(roots).length)
+      throw new Error("Configure at least one collection");
+    this.roots = Object.fromEntries(Object.entries(roots).map(([id, path]) => [assetIdSchema.parse(id), resolve8(path)]));
+  }
+  collections() {
+    return Object.keys(this.roots).map((id) => ({
+      id,
+      label: id === "project" ? "Workspace storage" : id === "library" ? "User library storage" : id
+    }));
+  }
+  directory(collection) {
+    const root = this.roots[collection];
+    if (!root || !Object.hasOwn(this.roots, collection))
+      throw new Error("Unknown collection");
+    return root;
+  }
+  async path(collection, ...parts) {
+    const root = this.directory(collection);
+    await mkdir7(root, { recursive: true });
+    const canonical = await realpath6(root);
+    let path = root;
+    for (const part of parts) {
+      assetIdSchema.parse(part);
+      path = join11(path, part);
+      try {
+        const entry = await lstat6(path);
+        if (entry.isSymbolicLink())
+          throw new Error("Collection symlinks are not supported");
+        const rel = relative5(canonical, await realpath6(path));
+        if (rel === ".." || rel.startsWith(`..${sep4}`))
+          throw new Error("Collection path escapes root");
+      } catch (error) {
+        if (error.code !== "ENOENT")
+          throw error;
+      }
+    }
+    return path;
+  }
+  async list(collection) {
+    const root = await this.path(collection);
+    const records = [];
+    for (const asset of await readdir7(root, { withFileTypes: true })) {
+      if (!asset.isDirectory() || !assetIdSchema.safeParse(asset.name).success)
+        continue;
+      const revisions = await this.path(collection, asset.name, "revisions");
+      let entries;
+      try {
+        entries = await readdir7(revisions, { withFileTypes: true });
+      } catch (error) {
+        if (error.code === "ENOENT")
+          continue;
+        throw error;
+      }
+      for (const revision of entries) {
+        if (!revision.isDirectory() || !revision.name.startsWith("r_"))
+          continue;
+        const dir = await this.path(collection, asset.name, "revisions", revision.name);
+        const manifest = assetManifestSchema.parse(JSON.parse(new TextDecoder().decode(await this.file(dir, "manifest.json", 1024 * 1024))));
+        if (manifest.assetId !== asset.name || manifest.revisionId !== revision.name)
+          throw new Error("Asset identity mismatch");
+        records.push(manifest);
+      }
+    }
+    return records.sort((a, b) => b.createdAt.localeCompare(a.createdAt) || a.revisionId.localeCompare(b.revisionId));
+  }
+  async file(dir, name, limit = ASSET_LIMIT) {
+    const path = join11(dir, name);
+    const info = await lstat6(path);
+    if (!info.isFile() || info.isSymbolicLink() || info.size > limit)
+      throw new Error("Invalid collection file");
+    return new Uint8Array(await readFile6(path));
+  }
+  async read(collection, assetId, revisionId) {
+    const dir = await this.path(collection, assetId, "revisions", revisionId);
+    const original = JSON.parse(new TextDecoder("utf-8", { fatal: true }).decode(await this.file(dir, "manifest.json", 1024 * 1024)));
+    assetManifestSchema.parse(original);
+    const manifest = original;
+    if (manifest.assetId !== assetId || manifest.revisionId !== revisionId)
+      throw new Error("Asset identity mismatch");
+    const files = {};
+    for (const name of Object.keys(manifest.files)) {
+      if (!["asset.glb", "source.kiln.js", "preview.png"].includes(name))
+        throw new Error("Invalid collection filename");
+      files[name] = await this.file(dir, name);
+    }
+    const record = { manifest, files };
+    try {
+      record.materialResources = JSON.parse(new TextDecoder("utf-8", { fatal: true }).decode(await this.file(dir, ASSET_MATERIAL_FILE, ASSET_MATERIAL_BYTES)));
+    } catch (error) {
+      if (error.code !== "ENOENT")
+        throw error;
+    }
+    await verifyAssetRecord(record);
+    return record;
+  }
+  async exportBundle(records) {
+    if (!records.length || records.length > 100)
+      throw new Error("Bundle requires 1..100 revisions");
+    assertMaterialAllocation(records);
+    const portable = [];
+    for (const record of records) {
+      await verifyAssetRecord(record);
+      const materials = await resolveSavedAssetMaterials(record, this.materials);
+      portable.push({
+        ...record,
+        ...materials.length ? { materialResources: await createMaterialLibraryPayload(materials) } : {}
+      });
+    }
+    return encodeAssetBundle(portable);
+  }
+  async save(collection, draft) {
+    const assetId = draft.assetId ?? `a_${randomUUID7().replaceAll("-", "")}`;
+    if (draft.parentRevision)
+      await this.read(collection, assetId, draft.parentRevision);
+    if (draft.assetId && !draft.parentRevision && (await this.list(collection)).some((m) => m.assetId === assetId))
+      throw new Error("An existing asset requires parentRevision");
+    const files = { "asset.glb": Uint8Array.from(draft.glb) };
+    if (draft.code !== undefined)
+      files["source.kiln.js"] = new TextEncoder().encode(draft.code);
+    if (draft.preview)
+      files["preview.png"] = Uint8Array.from(draft.preview);
+    const manifest = assetManifestSchema.parse({
+      version: "kiln.asset.v1",
+      assetId,
+      revisionId: `r_${randomUUID7().replaceAll("-", "")}`,
+      parentRevision: draft.parentRevision,
+      name: draft.name,
+      tags: draft.tags ?? [],
+      createdAt: new Date().toISOString(),
+      brief: draft.brief,
+      description: draft.description,
+      attribution: draft.attribution,
+      editable: draft.code !== undefined,
+      files: Object.fromEntries(Object.entries(files).map(([name, bytes]) => [
+        name,
+        { sha256: digest6(bytes), bytes: bytes.length }
+      ])),
+      build: draft.build ? { ...draft.build, rebuild: draft.build.rebuild ?? "engine-required" } : undefined,
+      preview: draft.previewInfo
+    });
+    await this.import(collection, [{ manifest, files }]);
+    return manifest;
+  }
+  async import(collection, records) {
+    if (!records.length || records.length > 100)
+      throw new Error("Import requires 1..100 revisions");
+    this.directory(collection);
+    assertMaterialAllocation(records.filter((record) => record.materialResources || record.manifest.build?.dependencies?.some((raw) => raw && typeof raw === "object" && raw.kind === "kiln.material.v1")));
+    let resourceBytes = 0;
+    for (const record of records) {
+      validateRecordShape(record);
+      for (const wire of record.materialResources?.records ?? [])
+        for (const map of wire.manifest.maps)
+          resourceBytes += map.bytes;
+    }
+    if (resourceBytes > ASSET_LIMIT)
+      throw new Error("Asset material import exceeds allocation limit");
+    const prepared = [];
+    const resources = new Map;
+    for (const record of records) {
+      await verifyAssetRecord(record);
+      if (Buffer.byteLength(`${JSON.stringify(record.manifest, null, 2)}
+`, "utf8") > 1024 * 1024)
+        throw new Error("Manifest exceeds 1 MiB; no revision was written.");
+      if (record.materialResources || this.materials && record.manifest.build?.dependencies?.some((raw) => raw && typeof raw === "object" && raw.kind === "kiln.material.v1")) {
+        const materials = await resolveSavedAssetMaterials(record, this.materials);
+        for (const material of materials)
+          resources.set(material.manifest.revisionId, material);
+        prepared.push({
+          ...record,
+          materialResources: await createMaterialLibraryPayload(materials)
+        });
+      } else
+        prepared.push(record);
+    }
+    if (this.materials && resources.size)
+      await this.materials.import([...resources.values()]);
+    for (const record of prepared) {
+      const { manifest, files } = record;
+      const dest = await this.path(collection, manifest.assetId, "revisions", manifest.revisionId);
+      const parent = dirname5(dest);
+      await mkdir7(parent, { recursive: true });
+      const stage = join11(parent, `.write-${randomUUID7()}`);
+      await mkdir7(stage);
+      try {
+        for (const [name, bytes] of Object.entries(files))
+          await writeFile6(join11(stage, name), bytes, { flag: "wx" });
+        if (record.materialResources)
+          await writeFile6(join11(stage, ASSET_MATERIAL_FILE), JSON.stringify(record.materialResources), { flag: "wx" });
+        await writeFile6(join11(stage, "manifest.json"), `${JSON.stringify(manifest, null, 2)}
+`, {
+          flag: "wx"
+        });
+        try {
+          await rename5(stage, dest);
+        } catch (error) {
+          const existing = await this.read(collection, manifest.assetId, manifest.revisionId).catch(() => {
+            return;
+          });
+          if (!existing || JSON.stringify(existing.manifest) !== JSON.stringify(manifest))
+            throw error;
+          if (record.materialResources && !existing.materialResources) {
+            try {
+              await link5(join11(stage, ASSET_MATERIAL_FILE), join11(dest, ASSET_MATERIAL_FILE));
+            } catch (enrichmentError) {
+              if (enrichmentError.code !== "EEXIST")
+                throw enrichmentError;
+              const enriched = await this.read(collection, manifest.assetId, manifest.revisionId);
+              if (!enriched.materialResources)
+                throw new Error("Asset material enrichment was not published");
+            }
+          }
+        }
+      } finally {
+        await rm3(stage, { recursive: true, force: true });
+      }
+    }
+    return records.map((r) => r.manifest);
+  }
+}
+function collectionConfigPath(env = process.env) {
+  return join11(localWorkspaceRoot(env), ".kiln", "collections.json");
+}
+function defaultUserLibraryRoot(env = process.env, home = homedir(), operatingSystem = platform()) {
+  const dataRoot = env.XDG_DATA_HOME?.trim();
+  if (dataRoot)
+    return join11(dataRoot, "kiln", "library");
+  if (operatingSystem === "darwin")
+    return join11(home, "Library", "Application Support", "Kiln", "library");
+  if (operatingSystem === "win32")
+    return join11(env.LOCALAPPDATA?.trim() || join11(home, "AppData", "Local"), "Kiln", "library");
+  return join11(home, ".local", "share", "kiln", "library");
+}
+function localAssetLibrary(env = process.env) {
+  if (env.KILN_COLLECTIONS) {
+    const value = JSON.parse(env.KILN_COLLECTIONS);
+    if (!value || typeof value !== "object" || Array.isArray(value) || Object.values(value).some((v) => typeof v !== "string" || !v))
+      throw new Error("KILN_COLLECTIONS must map collection names to directories");
+    return new FileAssetLibrary(value, new FileMaterialLibrary(join11(localWorkspaceRoot(env), ".kiln", "materials")));
+  }
+  const config = collectionConfigPath(env);
+  try {
+    const text = readFileSync2(config, "utf8");
+    if (!text.trim())
+      throw new Error("Collection configuration is empty");
+    return localAssetLibrary({ ...env, KILN_COLLECTIONS: text });
+  } catch (error) {
+    if (error.code !== "ENOENT")
+      throw error;
+  }
+  const workspace = dirname5(dirname5(config));
+  return new FileAssetLibrary({
+    project: join11(workspace, "assets", "kiln"),
+    library: defaultUserLibraryRoot(env)
+  }, new FileMaterialLibrary(join11(workspace, ".kiln", "materials")));
+}
+var digest6 = (bytes) => `sha256:${createHash14("sha256").update(bytes).digest("hex")}`;
+var init_assets_node = __esm(() => {
+  init_workspace_location();
+  init_assets();
+  init_material_library_node();
+  init_asset_materials_node();
+});
+
+// src/asset-export.ts
+async function sha2562(bytes) {
+  const digest = await crypto.subtle.digest("SHA-256", Uint8Array.from(bytes));
+  return `sha256:${Array.from(new Uint8Array(digest), (byte) => byte.toString(16).padStart(2, "0")).join("")}`;
+}
+function validateMetadataFileName(name) {
+  if (name.length > 200 || !/^[a-z0-9][a-z0-9._-]*\.kiln-metadata\.json$/i.test(name) || /^(con|prn|aux|nul|com[0-9]|lpt[0-9])\./i.test(name))
+    throw new Error("Runtime metadata filename must be a portable sibling *.kiln-metadata.json filename");
+}
+async function exportAssetGlb(record, options = {}) {
+  const profile = options.profile ?? "editable";
+  if (profile !== "editable" && profile !== "runtime")
+    throw new Error("Unknown export profile");
+  validateRecordShape(record);
+  const bytes = record.files["asset.glb"];
+  if (profile === "editable")
+    return { profile, glb: bytes };
+  const name = options.metadataFileName ?? "runtime.kiln-metadata.json";
+  validateMetadataFileName(name);
+  for (const [file, data] of Object.entries(record.files)) {
+    if (await sha2562(data) !== record.manifest.files[file].sha256)
+      throw new Error(`Asset integrity mismatch: ${file}`);
+  }
+  const view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
+  let end = 12;
+  while (end < bytes.length) {
+    if (end + 8 > bytes.length)
+      throw new Error("Invalid GLB chunk header");
+    const length = view.getUint32(end, true);
+    if (length % 4 || end + 8 + length > bytes.length)
+      throw new Error("Invalid GLB chunk length");
+    end += 8 + length;
+  }
+  const jsonEnd = 20 + view.getUint32(12, true);
+  const json = JSON.parse(decoder.decode(bytes.subarray(20, jsonEnd)));
+  if (!object2(json) || !object2(json.asset) || json.asset.version !== "2.0")
+    throw new Error("Invalid glTF asset");
+  const asset = json.asset;
+  if (owns(asset, "extras") && !object2(asset.extras))
+    throw new Error("Cannot add provenance to non-object asset extras");
+  const extras = asset.extras ?? {};
+  if (owns(extras, "kilnProvenanceV1"))
+    throw new Error("Asset extras already contain kilnProvenanceV1; export from the canonical revision");
+  const scenes = [];
+  if (json.scenes !== undefined && !Array.isArray(json.scenes))
+    throw new Error("Invalid glTF scenes");
+  for (const [index, scene] of (json.scenes ?? []).entries()) {
+    if (!object2(scene) || !object2(scene.extras) || !owns(scene.extras, "kilnReviewClipsV1"))
+      continue;
+    const review = scene.extras.kilnReviewClipsV1;
+    if (!object2(review) || review.version !== 1 || !Array.isArray(review.clips))
+      throw new Error("Unsupported scenes[].extras.kilnReviewClipsV1");
+    scenes.push({ index, kilnReviewClipsV1: review });
+    delete scene.extras.kilnReviewClipsV1;
+  }
+  const metadata = {
+    version: "kiln.runtime-metadata.v1",
+    source: {
+      assetId: record.manifest.assetId,
+      revisionId: record.manifest.revisionId,
+      glbSha256: record.manifest.files["asset.glb"].sha256,
+      ...record.manifest.files["source.kiln.js"] ? { sourceSha256: record.manifest.files["source.kiln.js"].sha256 } : {}
+    },
+    scenes
+  };
+  const metadataBytes = encoder2.encode(JSON.stringify(metadata));
+  asset.extras = {
+    ...extras,
+    kilnProvenanceV1: {
+      version: "kiln.provenance.v1",
+      profile: "runtime",
+      metadata: { uri: name, sha256: await sha2562(metadataBytes) }
+    }
+  };
+  const jsonBytes = encoder2.encode(JSON.stringify(json));
+  const length = Math.ceil(jsonBytes.length / 4) * 4;
+  const result = new Uint8Array(20 + length + bytes.length - jsonEnd);
+  if (result.length > ASSET_LIMIT || metadataBytes.length > ASSET_LIMIT)
+    throw new Error("Runtime export exceeds 64 MiB");
+  result.set(bytes.subarray(0, 20));
+  const header = new DataView(result.buffer);
+  header.setUint32(8, result.length, true);
+  header.setUint32(12, length, true);
+  result.fill(32, 20, 20 + length);
+  result.set(jsonBytes, 20);
+  result.set(bytes.subarray(jsonEnd), 20 + length);
+  return { profile, glb: result, metadata: { name, bytes: metadataBytes } };
+}
+var encoder2, decoder, object2 = (value) => value !== null && typeof value === "object" && !Array.isArray(value), owns = (value, key) => Object.hasOwn(value, key);
+var init_asset_export = __esm(() => {
+  init_assets();
+  encoder2 = new TextEncoder;
+  decoder = new TextDecoder;
+});
+
+// src/project-bundle.ts
+import { z as z9 } from "zod";
+import { zipSync as zipSync2, unzipSync as unzipSync2 } from "three/addons/libs/fflate.module.js";
+async function projectBundleHash(bytes) {
+  const result = new Uint8Array(await crypto.subtle.digest("SHA-256", Uint8Array.from(bytes)));
+  return `sha256:${Array.from(result, (byte) => byte.toString(16).padStart(2, "0")).join("")}`;
+}
+async function verifyProjectBundleSnapshot(value) {
+  const project = projectRevisionSchema.parse(value);
+  const { revisionId, ...payload } = project;
+  const sequence = Number(revisionId.slice(2, 12));
+  if (sequence < 1 || sequence > MAX_PROJECT_REVISIONS || sequence === 1 && project.parentRevision || sequence > 1 && (!project.parentRevision || Number(project.parentRevision.slice(2, 12)) !== sequence - 1))
+    throw new Error("Invalid project snapshot revision sequence");
+  if (`sha256:${revisionId.slice(13)}` !== await projectBundleHash(bytesOf(payload)))
+    throw new Error("Project snapshot hash mismatch");
+  return project;
+}
+async function verifyAsset(record) {
+  validateRecordShape(record);
+  for (const [name, file] of Object.entries(record.files))
+    if (await projectBundleHash(file) !== record.manifest.files[name].sha256)
+      throw new Error("Asset file hash mismatch");
+}
+async function verifyMaterial(record) {
+  const manifest = validateMaterialRecordShape(record);
+  const { revisionId, ...payload } = manifest;
+  if (await projectBundleHash(encoder3.encode(canonicalMaterialJson(payload))) !== revisionId)
+    throw new Error("Material revision hash mismatch");
+  for (const map of manifest.maps)
+    if (await projectBundleHash(record.files[map.file]) !== map.sha256)
+      throw new Error("Material file hash mismatch");
+}
+function assertAssetSelection(project, entries) {
+  if (new Set(entries.map((entry) => entry.inventoryId)).size !== entries.length)
+    throw new Error("Duplicate bundle inventory selection");
+  for (const entry of entries) {
+    const item = project.inventory.find((item) => item.id === entry.inventoryId);
+    if (!item?.asset || item.asset.collectionId !== entry.collectionId || item.asset.assetId !== entry.assetId || item.asset.revisionId !== entry.revisionId)
+      throw new Error("Bundle inventory asset binding mismatch");
+  }
+}
+function assertMaterialClosure(project, records) {
+  const identities = records.map((record) => `${record.manifest.materialId}/${record.manifest.revisionId}`);
+  if (new Set(identities).size !== identities.length)
+    throw new Error("Duplicate material revision");
+  for (const dependency of project.materialDependencies)
+    if (dependency.sha256 !== dependency.revisionId || !identities.includes(`${dependency.resourceId}/${dependency.revisionId}`))
+      throw new Error(`Missing locked material: ${dependency.resourceId}`);
+}
+async function encodeProjectBundle(input, profile = "editable") {
+  if (profile !== "editable" && profile !== "runtime")
+    throw new Error("Unknown project bundle profile");
+  const project = await verifyProjectBundleSnapshot(input.project);
+  if (input.assets.length > 1000 || input.materials.length > 1024)
+    throw new Error("Project bundle record limit exceeded");
+  const files = {};
+  let total = 0;
+  const add = (name, bytes) => {
+    pathSchema.parse(name);
+    if (files[name]) {
+      if (files[name].length !== bytes.length || !files[name].every((byte, index) => byte === bytes[index]))
+        throw new Error("Conflicting duplicate bundle path");
+      return;
+    }
+    total += bytes.length;
+    if (total > PROJECT_BUNDLE_LIMITS.maxBytes || Object.keys(files).length >= PROJECT_BUNDLE_LIMITS.maxEntries - 1)
+      throw new Error("Project bundle exceeds byte or entry limit");
+    files[name] = Uint8Array.from(bytes);
+  };
+  add("project.json", bytesOf(project));
+  const assets = [];
+  for (const entry of input.assets) {
+    await verifyAsset(entry.record);
+    const identity = identitySchema.parse({
+      inventoryId: entry.inventoryId,
+      collectionId: entry.collectionId,
+      assetId: entry.record.manifest.assetId,
+      revisionId: entry.record.manifest.revisionId,
+      canonicalGlbSha256: entry.record.manifest.files["asset.glb"].sha256
+    });
+    assets.push(identity);
+    const prefix = assetPrefix(identity);
+    if (profile === "editable") {
+      if (!entry.record.manifest.editable || !entry.record.files["source.kiln.js"])
+        throw new Error("Editable bundle requires source for every selected asset");
+      add(`${prefix}manifest.json`, bytesOf(entry.record.manifest));
+      for (const [name, bytes] of Object.entries(entry.record.files))
+        add(prefix + name, bytes);
+    } else {
+      const runtime = await exportAssetGlb(entry.record, { profile: "runtime" });
+      if (runtime.profile !== "runtime")
+        throw new Error("Runtime profile mismatch");
+      add(`${prefix}runtime.glb`, runtime.glb);
+      add(prefix + runtime.metadata.name, runtime.metadata.bytes);
+    }
+  }
+  assertAssetSelection(project, assets);
+  const materials = [];
+  if (profile === "editable") {
+    assertMaterialClosure(project, input.materials);
+    for (const record of input.materials) {
+      await verifyMaterial(record);
+      materials.push({
+        materialId: record.manifest.materialId,
+        revisionId: record.manifest.revisionId
+      });
+      const prefix = materialPrefix(record.manifest);
+      add(`${prefix}manifest.json`, bytesOf(record.manifest));
+      for (const [name, bytes] of Object.entries(record.files))
+        add(prefix + name, bytes);
+    }
+  }
+  const manifest = projectBundleManifestSchema.parse({
+    version: "kiln.project-bundle.v1",
+    profile,
+    editable: profile === "editable",
+    resourceClosure: profile === "editable" ? "normalized-maps-and-procedural-recipes" : "embedded-runtime-only",
+    referenceMediaIncluded: false,
+    originalAcquisitionFilesIncluded: false,
+    assets,
+    materials,
+    files: Object.fromEntries(await Promise.all(Object.entries(files).map(async ([name, bytes]) => [
+      name,
+      { sha256: await projectBundleHash(bytes), bytes: bytes.length }
+    ])))
+  });
+  const manifestBytes = bytesOf(manifest);
+  if (manifestBytes.length > PROJECT_BUNDLE_LIMITS.maxManifestBytes || total + manifestBytes.length > PROJECT_BUNDLE_LIMITS.maxBytes)
+    throw new Error("Project bundle manifest exceeds byte limit");
+  files["bundle.json"] = manifestBytes;
+  return zipSync2(files, { level: 0, mtime: new Date(1980, 0, 1) });
+}
+async function decodeProjectBundle(bytes) {
+  if (bytes.length > PROJECT_BUNDLE_LIMITS.maxArchiveBytes)
+    throw new Error("Project archive exceeds byte limit");
+  let total = 0;
+  const names = new Set;
+  const files = unzipSync2(bytes, {
+    filter: (entry) => {
+      if (entry.name !== "bundle.json" && !pathSchema.safeParse(entry.name).success || names.has(entry.name))
+        throw new Error("Unsafe or duplicate project ZIP path");
+      names.add(entry.name);
+      total += entry.originalSize;
+      if (names.size > PROJECT_BUNDLE_LIMITS.maxEntries || total > PROJECT_BUNDLE_LIMITS.maxBytes)
+        throw new Error("Project archive exceeds expanded byte or entry limit");
+      return true;
+    }
+  });
+  const json = (name, limit = 1024 * 1024) => {
+    const data = files[name];
+    if (!data || data.length > limit)
+      throw new Error(`Missing or oversized bundle JSON: ${name}`);
+    const value = JSON.parse(decoder2.decode(data));
+    const pending = [{ value, depth: 0 }];
+    let nodes = 0;
+    while (pending.length) {
+      const item = pending.pop();
+      if (++nodes > 1e5 || item.depth > 64)
+        throw new Error("Bundle JSON exceeds structural bounds");
+      if (item.value && typeof item.value === "object")
+        for (const child of Object.values(item.value))
+          pending.push({ value: child, depth: item.depth + 1 });
+    }
+    return value;
+  };
+  const manifest = projectBundleManifestSchema.parse(json("bundle.json", PROJECT_BUNDLE_LIMITS.maxManifestBytes));
+  if (manifest.editable !== (manifest.profile === "editable") || manifest.resourceClosure !== (manifest.editable ? "normalized-maps-and-procedural-recipes" : "embedded-runtime-only"))
+    throw new Error("Inconsistent bundle delivery profile");
+  if (Object.keys(manifest.files).length !== names.size - 1)
+    throw new Error("Bundle file inventory mismatch");
+  for (const [name, info] of Object.entries(manifest.files)) {
+    const data = files[name];
+    if (!data || data.length !== info.bytes || await projectBundleHash(data) !== info.sha256)
+      throw new Error(`Bundle file hash mismatch: ${name}`);
+  }
+  const project = await verifyProjectBundleSnapshot(json("project.json"));
+  assertAssetSelection(project, manifest.assets);
+  const used = new Set(["bundle.json", "project.json"]);
+  const assets = [];
+  const materials = [];
+  const runtimeAssets = [];
+  for (const identity of manifest.assets) {
+    const prefix = assetPrefix(identity);
+    if (manifest.editable) {
+      const original = json(`${prefix}manifest.json`);
+      assetManifestSchema.parse(original);
+      const assetManifest = original;
+      used.add(`${prefix}manifest.json`);
+      if (assetManifest.assetId !== identity.assetId || assetManifest.revisionId !== identity.revisionId || assetManifest.files["asset.glb"]?.sha256 !== identity.canonicalGlbSha256 || !assetManifest.editable)
+        throw new Error("Bundle asset identity mismatch");
+      const record = { manifest: assetManifest, files: {} };
+      for (const name of Object.keys(assetManifest.files)) {
+        const bytes = files[prefix + name];
+        if (!bytes)
+          throw new Error("Missing bundle asset file");
+        record.files[name] = bytes;
+        used.add(prefix + name);
+      }
+      await verifyAsset(record);
+      assets.push({
+        inventoryId: identity.inventoryId,
+        collectionId: identity.collectionId,
+        record
+      });
+    } else {
+      const glb = files[`${prefix}runtime.glb`];
+      if (!glb)
+        throw new Error("Missing runtime GLB");
+      validateAssetGlb(glb);
+      const metadata = json(`${prefix}runtime.kiln-metadata.json`);
+      used.add(`${prefix}runtime.glb`);
+      used.add(`${prefix}runtime.kiln-metadata.json`);
+      const source = metadata.source;
+      if (source?.assetId !== identity.assetId || source?.revisionId !== identity.revisionId || source?.glbSha256 !== identity.canonicalGlbSha256)
+        throw new Error("Runtime provenance mismatch");
+      runtimeAssets.push({ identity, glb, metadata });
+    }
+  }
+  if (!manifest.editable && manifest.materials.length)
+    throw new Error("Runtime profile contains editable material records");
+  for (const identity of manifest.materials) {
+    const prefix = materialPrefix(identity);
+    const materialManifest = materialManifestSchema.parse(json(`${prefix}manifest.json`, 256 * 1024));
+    used.add(`${prefix}manifest.json`);
+    if (materialManifest.materialId !== identity.materialId || materialManifest.revisionId !== identity.revisionId)
+      throw new Error("Bundle material identity mismatch");
+    const record = { manifest: materialManifest, files: {} };
+    for (const map of materialManifest.maps) {
+      const bytes = files[prefix + map.file];
+      if (!bytes)
+        throw new Error("Missing material map");
+      record.files[map.file] = bytes;
+      used.add(prefix + map.file);
+    }
+    await verifyMaterial(record);
+    materials.push(record);
+  }
+  if (manifest.editable)
+    assertMaterialClosure(project, materials);
+  if (used.size !== names.size)
+    throw new Error("Unreferenced files in project bundle");
+  return { manifest, project, materials, assets, runtimeAssets };
+}
+var PROJECT_BUNDLE_LIMITS, hashSchema, id = "[a-z][a-z0-9_-]{0,79}", pathSchema, identitySchema, projectBundleManifestSchema, encoder3, decoder2, bytesOf = (value) => encoder3.encode(JSON.stringify(value)), assetPrefix = (entry) => `assets/${entry.collectionId}/${entry.assetId}/${entry.revisionId}/`, materialPrefix = (entry) => `materials/${entry.materialId}/${entry.revisionId.slice(7)}/`;
+var init_project_bundle = __esm(() => {
+  init_assets();
+  init_asset_export();
+  init_projects();
+  init_material_library();
+  PROJECT_BUNDLE_LIMITS = Object.freeze({
+    maxBytes: 256 * 1024 * 1024,
+    maxArchiveBytes: 264 * 1024 * 1024,
+    maxEntries: 8192,
+    maxManifestBytes: 2 * 1024 * 1024
+  });
+  hashSchema = z9.string().regex(/^sha256:[a-f0-9]{64}$/);
+  pathSchema = z9.string().regex(new RegExp(`^(project\\.json|materials/${id}/[a-f0-9]{64}/(manifest\\.json|baseColor\\.png|normal\\.png|metallicRoughness\\.png|emissive\\.png|occlusion\\.png)|assets/${id}/${id}/${id}/(manifest\\.json|asset\\.glb|source\\.kiln\\.js|preview\\.png|runtime\\.glb|runtime\\.kiln-metadata\\.json))$`));
+  identitySchema = z9.object({
+    inventoryId: assetIdSchema,
+    collectionId: assetIdSchema,
+    assetId: assetIdSchema,
+    revisionId: assetIdSchema,
+    canonicalGlbSha256: hashSchema
+  }).strict();
+  projectBundleManifestSchema = z9.object({
+    version: z9.literal("kiln.project-bundle.v1"),
+    profile: z9.enum(["editable", "runtime"]),
+    editable: z9.boolean(),
+    resourceClosure: z9.enum(["normalized-maps-and-procedural-recipes", "embedded-runtime-only"]),
+    referenceMediaIncluded: z9.literal(false),
+    originalAcquisitionFilesIncluded: z9.literal(false),
+    assets: z9.array(identitySchema).max(1000),
+    materials: z9.array(z9.object({ materialId: assetIdSchema, revisionId: hashSchema }).strict()).max(1024),
+    files: z9.record(pathSchema, z9.object({
+      sha256: hashSchema,
+      bytes: z9.number().int().nonnegative().max(64 * 1024 * 1024)
+    }).strict())
+  }).strict();
+  encoder3 = new TextEncoder;
+  decoder2 = new TextDecoder("utf-8", { fatal: true });
+});
+
+// src/project-bundle-node.ts
+import { randomUUID as randomUUID8 } from "node:crypto";
+import { link as link6, lstat as lstat7, mkdir as mkdir8, readFile as readFile7, realpath as realpath7, unlink as unlink6, writeFile as writeFile7 } from "node:fs/promises";
+import { join as join12, relative as relative6, resolve as resolve9, sep as sep5 } from "node:path";
+async function assetMaterials(workspace, asset) {
+  return resolveSavedAssetMaterials(asset, workspace.materials);
+}
+async function resolveAssetMaterialPayload(workspace, asset) {
+  await verifyAssetRecord(asset);
+  return createMaterialLibraryPayload(await assetMaterials(workspace, asset));
+}
+async function exportWorkspaceProjectBundle(workspace, library, projectId, options = {}) {
+  const project = await workspace.projects.read(projectId, options.revisionId);
+  const profile = options.profile ?? "editable";
+  const selection = options.inventoryIds ?? project.inventory.filter((item) => item.asset).map((item) => item.id);
+  if (new Set(selection).size !== selection.length)
+    throw new Error("Duplicate inventory selection");
+  const assets = [];
+  for (const id of selection) {
+    const item = project.inventory.find((item) => item.id === id);
+    if (!item?.asset)
+      throw new Error(`Selected inventory item has no saved asset: ${id}`);
+    assets.push({
+      inventoryId: id,
+      collectionId: item.asset.collectionId,
+      record: await library.read(item.asset.collectionId, item.asset.assetId, item.asset.revisionId)
+    });
+  }
+  const materials = new Map;
+  if (profile === "editable") {
+    for (const dependency of project.materialDependencies) {
+      if (dependency.sha256 !== dependency.revisionId)
+        throw new Error(`Material lock hash mismatch: ${dependency.resourceId}`);
+      let record;
+      try {
+        record = await workspace.materials.read(dependency.resourceId, dependency.revisionId);
+      } catch (error) {
+        throw new Error(`Locked project material unavailable: ${dependency.resourceId} at ${dependency.revisionId}`, { cause: error });
+      }
+      materials.set(`${record.manifest.materialId}/${record.manifest.revisionId}`, record);
+    }
+    for (const asset of assets)
+      for (const record of await assetMaterials(workspace, asset.record))
+        materials.set(`${record.manifest.materialId}/${record.manifest.revisionId}`, record);
+  }
+  return encodeProjectBundle({ project, assets, materials: [...materials.values()] }, profile);
+}
+async function retainArchive(workspace, bytes, digest) {
+  const root = resolve9(workspace.root);
+  await mkdir8(root, { recursive: true });
+  const canonical = await realpath7(root);
+  let directory = root;
+  for (const part of [".kiln", "imports"]) {
+    directory = join12(directory, part);
+    await mkdir8(directory).catch((error) => {
+      if (error.code !== "EEXIST")
+        throw error;
+    });
+    const info = await lstat7(directory);
+    const rel = relative6(canonical, await realpath7(directory));
+    if (!info.isDirectory() || info.isSymbolicLink() || rel === ".." || rel.startsWith(`..${sep5}`))
+      throw new Error("Unsafe project import directory");
+  }
+  const file = join12(directory, `${digest.slice(7)}.zip`);
+  const temporary = join12(directory, `.import-${randomUUID8()}.tmp`);
+  await writeFile7(temporary, bytes, { flag: "wx", mode: 384 });
+  try {
+    try {
+      await link6(temporary, file);
+    } catch (error) {
+      if (error.code !== "EEXIST")
+        throw error;
+      const info = await lstat7(file);
+      if (!info.isFile() || info.isSymbolicLink() || info.size !== bytes.length || await projectBundleHash(new Uint8Array(await readFile7(file))) !== digest)
+        throw new Error("Imported archive integrity mismatch");
+    }
+  } finally {
+    await unlink6(temporary);
+  }
+}
+async function importWorkspaceProjectBundle(workspace, library, bytes, options) {
+  projectIdSchema.parse(options.projectId);
+  projectIdSchema.parse(options.collectionId);
+  if (!(bytes instanceof Uint8Array) || bytes.length > PROJECT_BUNDLE_LIMITS.maxArchiveBytes)
+    throw new Error("Project archive exceeds byte limit");
+  const snapshot = Uint8Array.from(bytes);
+  const decoded = await decodeProjectBundle(snapshot);
+  if (!decoded.manifest.editable)
+    throw new Error("Project import requires an editable bundle, not a runtime derivative");
+  if (options.projectId === decoded.project.projectId)
+    throw new Error("Import requires a new explicit project ID");
+  if (!library.collections().some((collection) => collection.id === options.collectionId))
+    throw new Error("Unknown import asset collection");
+  try {
+    await workspace.projects.read(options.projectId);
+    throw new ProjectExistsError(options.projectId);
+  } catch (error) {
+    if (!(error instanceof ProjectNotFoundError))
+      throw error;
+  }
+  const resources = new Map(decoded.materials.map((record) => [
+    `${record.manifest.materialId}/${record.manifest.revisionId}`,
+    record
+  ]));
+  for (const record of decoded.materials)
+    await verifyMaterialRecordV1(record);
+  for (const asset of decoded.assets) {
+    await verifyAssetRecord(asset.record);
+    for (const manifest of dependencyManifests(asset.record)) {
+      const included = resources.get(`${manifest.materialId}/${manifest.revisionId}`);
+      if (!included || canonicalMaterialJson(included.manifest) !== canonicalMaterialJson(manifest))
+        throw new Error(`Missing exact saved-asset material dependency: ${manifest.materialId}`);
+    }
+  }
+  const destinationRecords = new Map;
+  for (const { record } of decoded.assets) {
+    const identity = `${record.manifest.assetId}/${record.manifest.revisionId}`;
+    const previous = destinationRecords.get(identity);
+    if (previous && canonicalMaterialJson(previous.manifest) !== canonicalMaterialJson(record.manifest))
+      throw new Error("Asset identity collision across source collections");
+    destinationRecords.set(identity, record);
+  }
+  const digest = await projectBundleHash(snapshot);
+  const selected = new Set(decoded.assets.map((asset) => asset.inventoryId));
+  const {
+    version: _,
+    projectId: originalId,
+    revisionId: originalRevision,
+    parentRevision: __,
+    createdAt: ___,
+    ...content
+  } = decoded.project;
+  const draft = projectDraftSchema.parse({
+    ...content,
+    projectId: options.projectId,
+    name: options.name ?? content.name,
+    reviews: [],
+    inventory: content.inventory.map((item) => {
+      const { asset, ...rest } = item;
+      return {
+        ...rest,
+        ...asset && selected.has(item.id) ? { asset: { ...asset, collectionId: options.collectionId } } : {}
+      };
+    }),
+    references: [
+      ...content.references,
+      {
+        id: `import-${digest.slice(7)}`,
+        title: "Original imported project and review provenance",
+        uri: `kiln-import:${digest}#project.json`,
+        sha256: digest,
+        description: `Exact original ${originalId} at ${originalRevision}, including its review annotations, retained in .kiln/imports/${digest.slice(7)}.zip. Working-project review acceptance is not transferred. Reference media and original acquisition archives are not embedded; normalized maps and procedural recipes are included.`
+      }
+    ]
+  });
+  await retainArchive(workspace, snapshot, digest);
+  for (let i = 0;i < decoded.materials.length; i += 100)
+    await workspace.materials.import(decoded.materials.slice(i, i + 100));
+  const records = [...destinationRecords.values()];
+  for (let i = 0;i < records.length; i += 100)
+    await library.import(options.collectionId, records.slice(i, i + 100));
+  return workspace.projects.create(draft);
+}
+var init_project_bundle_node = __esm(() => {
+  init_assets_node();
+  init_projects();
+  init_material_library();
+  init_asset_materials_node();
+  init_material_library_node();
+  init_project_bundle();
+});
+
 // src/local-runtime.ts
-import { dirname as dirname3, join as join6, resolve as resolve5 } from "node:path";
+import { dirname as dirname6, join as join13, resolve as resolve10 } from "node:path";
 import { fileURLToPath as fileURLToPath4 } from "node:url";
 import { Console } from "node:console";
 function integer2(env, name, fallback, min, max) {
@@ -29082,6 +32268,13 @@ function integer2(env, name, fallback, min, max) {
   return value;
 }
 function createLocalToolContext(base = {}, env = process.env) {
+  const workspaceRoot = env.KILN_WORKSPACE ? resolve10(env.KILN_WORKSPACE) : base.programStore instanceof FileProgramStore ? dirname6(dirname6(base.programStore.directory)) : localWorkspaceRoot(env);
+  const workspace = base.workspace ?? new FileWorkspace(workspaceRoot, env.KILN_PROJECT);
+  const projectStore = base.projectStore ?? (workspace instanceof FileWorkspace ? workspace.projects : undefined);
+  const liveReview = base.liveReview ?? (env.KILN_LIVE_REVIEW === "off" ? undefined : new FileLiveReview(workspaceRoot, {
+    transport: "cli",
+    workId: env.KILN_WORK_ITEM
+  }));
   const geometryPolicy = base.geometryPolicy ?? env.KILN_GEOMETRY_POLICY ?? "warn";
   if (!["warn", "strict"].includes(geometryPolicy))
     throw new Error("KILN_GEOMETRY_POLICY must be warn or strict.");
@@ -29116,6 +32309,7 @@ function createLocalToolContext(base = {}, env = process.env) {
         optimize,
         instance,
         ...options,
+        ...workspace.current()?.materialResources.records.length ? { materialResources: workspace.current().materialResources } : {},
         geometryPolicy: geometryPolicy === "strict" ? "strict" : options.geometryPolicy ?? "warn"
       };
       if (mode === "in-process") {
@@ -29146,9 +32340,18 @@ function createLocalToolContext(base = {}, env = process.env) {
   };
   return {
     ...base,
+    workspace,
+    projectStore,
+    projectBundleReader: base.projectBundleReader ?? (workspace instanceof FileWorkspace && base.assetLibrary ? (projectId, revisionId, profile) => exportWorkspaceProjectBundle(workspace, base.assetLibrary, projectId, {
+      revisionId,
+      profile
+    }) : undefined),
+    materialLibrary: base.materialLibrary ?? (workspace instanceof FileWorkspace ? workspace.materials : undefined),
+    liveReview,
+    reviewStore: base.reviewStore ?? (liveReview instanceof FileLiveReview ? liveReview : undefined),
     approvedTextureResources: () => approvedTextureCatalogV1({ cache: workerTextures }),
     geometryPolicy,
-    programStore: base.programStore ?? new FileProgramStore(resolve5(env.KILN_PROGRAM_STORE ?? ".kiln/programs")),
+    programStore: base.programStore ?? new FileProgramStore(localProgramStoreDirectory(env)),
     evaluatorPort,
     assetBuildOptions: {
       gltfExporter,
@@ -29174,6 +32377,7 @@ async function createPackagedLocalToolContext(base = {}, env = process.env, inst
     context.evaluatorPort = {
       render: (code, options, controls) => cached.render(code, {
         ...options,
+        ...context.workspace?.current()?.materialResources.records.length ? { materialResources: context.workspace.current().materialResources } : {},
         geometryPolicy: context.geometryPolicy === "strict" ? "strict" : options?.geometryPolicy ?? context.geometryPolicy
       }, controls)
     };
@@ -29201,7 +32405,7 @@ async function createPackagedLocalToolContext(base = {}, env = process.env, inst
   }
   const cacheBytes = integer2(env, "KILN_BUILD_CACHE_MB", 128, 0, 1024) * 1024 * 1024;
   const store = context.programStore;
-  const directory = resolve5(env.KILN_BUILD_CACHE_DIR ?? join6(store instanceof FileProgramStore ? dirname3(store.directory) : ".kiln", "cache", "builds"));
+  const directory = resolve10(env.KILN_BUILD_CACHE_DIR ?? join13(store instanceof FileProgramStore ? dirname6(store.directory) : ".kiln", "cache", "builds"));
   context.buildCache = new FileBuildCache(directory, cacheBytes);
   context.evaluatorCacheIdentity = `${identity.identity}:${JSON.stringify({
     execution: context.localExecution,
@@ -29231,142 +32435,10 @@ var init_local_runtime = __esm(() => {
   init_build_cache_node();
   init_runtime_identity();
   init_material_resources();
-});
-
-// src/assets.ts
-import { z as z3 } from "zod";
-import { zipSync, unzipSync } from "three/addons/libs/fflate.module.js";
-function validateRecordShape(record) {
-  const manifest = assetManifestSchema.parse(record.manifest);
-  const names = Object.keys(record.files);
-  if (names.length !== Object.keys(manifest.files).length || !names.includes("asset.glb"))
-    throw new Error("Asset file inventory mismatch");
-  let total = 0;
-  for (const name of names) {
-    if (!allowedFiles.has(name) || !manifest.files[name] || manifest.files[name].bytes !== record.files[name].length)
-      throw new Error("Invalid asset file inventory");
-    total += record.files[name].length;
-  }
-  if (total > ASSET_LIMIT || manifest.editable !== names.includes("source.kiln.js"))
-    throw new Error("Invalid asset size or source inventory");
-  if ((record.files["source.kiln.js"]?.length ?? 0) > 1024 * 1024)
-    throw new Error("Source exceeds 1 MiB");
-  validateAssetGlb(record.files["asset.glb"]);
-}
-function validateAssetGlb(bytes) {
-  if (bytes.length < 20 || bytes.length > ASSET_LIMIT)
-    throw new Error("Invalid GLB size");
-  const view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
-  if (view.getUint32(0, true) !== 1179937895 || view.getUint32(4, true) !== 2 || view.getUint32(8, true) !== bytes.length || view.getUint32(16, true) !== 1313821514)
-    throw new Error("Invalid GLB header");
-  const end = 20 + view.getUint32(12, true);
-  if (end > bytes.length)
-    throw new Error("Invalid GLB JSON length");
-  const json = JSON.parse(new TextDecoder().decode(bytes.subarray(20, end)));
-  for (const resource of [...json.buffers ?? [], ...json.images ?? []]) {
-    if (resource.uri && !String(resource.uri).startsWith("data:"))
-      throw new Error("GLB must embed its resources");
-  }
-}
-function encodeAssetBundle(records) {
-  if (!records.length || records.length > 100)
-    throw new Error("Bundle requires 1..100 revisions");
-  const files = {};
-  let total = 0;
-  for (const record of records) {
-    validateRecordShape(record);
-    const prefix = `${record.manifest.assetId}/${record.manifest.revisionId}/`;
-    if (files[`${prefix}manifest.json`])
-      throw new Error("Duplicate bundle revision");
-    files[`${prefix}manifest.json`] = new TextEncoder().encode(JSON.stringify(record.manifest, null, 2));
-    for (const [name, bytes] of Object.entries(record.files))
-      files[prefix + name] = bytes;
-  }
-  for (const bytes of Object.values(files))
-    total += bytes.length;
-  if (total > ASSET_LIMIT)
-    throw new Error("Bundle exceeds 64 MiB");
-  return zipSync(files, { level: 0 });
-}
-function decodeAssetBundle(bytes) {
-  if (bytes.length > ASSET_LIMIT + 1024 * 1024)
-    throw new Error("Bundle exceeds 64 MiB");
-  let total = 0;
-  let count = 0;
-  const files = unzipSync(bytes, {
-    filter: (entry) => {
-      total += entry.originalSize;
-      count++;
-      if (total > ASSET_LIMIT || count > 400 || !/^[a-z][a-z0-9_-]{0,79}\/[a-z][a-z0-9_-]{0,79}\/(manifest\.json|asset\.glb|source\.kiln\.js|preview\.png)$/.test(entry.name))
-        throw new Error("Unsafe or oversized asset bundle");
-      return true;
-    }
-  });
-  const records = [];
-  const used = new Set;
-  for (const [path, data] of Object.entries(files)) {
-    if (!path.endsWith("/manifest.json"))
-      continue;
-    if (data.length > 1024 * 1024)
-      throw new Error("Manifest exceeds 1 MiB");
-    const manifest = assetManifestSchema.parse(JSON.parse(new TextDecoder().decode(data)));
-    const prefix = `${manifest.assetId}/${manifest.revisionId}/`;
-    if (path !== `${prefix}manifest.json`)
-      throw new Error("Bundle identity mismatch");
-    const record = { manifest, files: {} };
-    used.add(path);
-    for (const name of Object.keys(manifest.files)) {
-      if (!files[prefix + name])
-        throw new Error("Bundle file missing");
-      record.files[name] = files[prefix + name];
-      used.add(prefix + name);
-    }
-    validateRecordShape(record);
-    records.push(record);
-  }
-  if (!records.length || used.size !== Object.keys(files).length)
-    throw new Error("Incomplete asset bundle");
-  return records;
-}
-var ASSET_LIMIT, assetIdSchema, hash3, assetManifestSchema, allowedFiles;
-var init_assets = __esm(() => {
-  init_background();
-  ASSET_LIMIT = 64 * 1024 * 1024;
-  assetIdSchema = z3.string().regex(/^[a-z][a-z0-9_-]{0,79}$/);
-  hash3 = z3.string().regex(/^sha256:[a-f0-9]{64}$/);
-  assetManifestSchema = z3.object({
-    version: z3.literal("kiln.asset.v1"),
-    assetId: assetIdSchema,
-    revisionId: assetIdSchema,
-    parentRevision: assetIdSchema.optional(),
-    name: z3.string().min(1).max(200),
-    tags: z3.array(z3.string().max(80)).max(30),
-    createdAt: z3.string().datetime(),
-    description: z3.string().max(4000).optional(),
-    brief: z3.string().max(8000).optional(),
-    attribution: z3.object({
-      model: z3.string().max(200).optional(),
-      harness: z3.string().max(200).optional(),
-      author: z3.string().max(200).optional()
-    }).optional(),
-    editable: z3.boolean(),
-    files: z3.record(z3.string(), z3.object({ sha256: hash3, bytes: z3.number().int().nonnegative().max(ASSET_LIMIT) })),
-    build: z3.object({
-      engine: z3.string(),
-      options: z3.record(z3.string(), z3.unknown()),
-      warnings: z3.array(z3.string()),
-      integration: z3.unknown().optional(),
-      qa: z3.unknown().optional(),
-      dependencies: z3.array(z3.unknown()).optional(),
-      rebuild: z3.enum(["engine-required", "external-dependencies-required"])
-    }).optional(),
-    preview: z3.object({
-      fidelity: z3.unknown().optional(),
-      error: z3.string().optional(),
-      backdrop: z3.enum(BACKDROP_IDS).optional()
-    }).optional()
-  });
-  allowedFiles = new Set(["asset.glb", "source.kiln.js", "preview.png"]);
+  init_workspace_node();
+  init_live_review_node();
+  init_workspace_location();
+  init_project_bundle_node();
 });
 
 // src/requirements-assets.ts
@@ -29400,15 +32472,15 @@ var init_requirements_assets = __esm(() => {
 });
 
 // src/tools/programs.ts
-import { z as z4 } from "zod";
+import { z as z10 } from "zod";
 function withProgramReferences(def, store) {
-  if (!(def.inputSchema instanceof z4.ZodObject))
+  if (!(def.inputSchema instanceof z10.ZodObject))
     throw new Error(`${def.name} must have an object input schema.`);
   const inputSchema = def.inputSchema.extend({
-    code: z4.string().optional().describe("New source. Supply code OR programRef."),
+    code: z10.string().optional().describe("New source. Supply code OR programRef."),
     programRef: refInput.optional(),
     ...def.name === "kiln_edit" ? {
-      includeCode: z4.boolean().optional().describe("Return the full updated source. Defaults to false with programRef, true with code.")
+      includeCode: z10.boolean().optional().describe("Return the full updated source. Defaults to false with programRef, true with code.")
     } : {}
   }).refine((input) => input.code !== undefined !== (input.programRef !== undefined), {
     message: "Supply exactly one of code or programRef."
@@ -29449,11 +32521,11 @@ function withProgramReferences(def, store) {
   };
 }
 function createKilnSourceDef(store) {
-  const inputSchema = z4.object({
+  const inputSchema = z10.object({
     programRef: refInput,
-    offset: z4.number().int().min(0).default(0).describe("UTF-16 character offset; use nextOffset to continue."),
-    limit: z4.number().int().min(1).max(16000).default(8000).describe("Maximum characters returned."),
-    query: z4.string().min(1).max(1000).optional().describe("Find literal text at or after offset; return bounded surrounding source.")
+    offset: z10.number().int().min(0).default(0).describe("UTF-16 character offset; use nextOffset to continue."),
+    limit: z10.number().int().min(1).max(16000).default(8000).describe("Maximum characters returned."),
+    query: z10.string().min(1).max(1000).optional().describe("Find literal text at or after offset; return bounded surrounding source.")
   });
   return {
     name: "kiln_source",
@@ -29481,7 +32553,7 @@ function createKilnSourceDef(store) {
 var refInput;
 var init_programs = __esm(() => {
   init_program_store();
-  refInput = z4.string().regex(programRefPattern).describe("Returned p_ handle or full sha256 ref.");
+  refInput = z10.string().regex(programRefPattern).describe("Returned p_ handle or full sha256 ref.");
 });
 
 // src/tools/program-artifacts.ts
@@ -29500,9 +32572,9 @@ var init_engine_identity = __esm(() => {
 });
 
 // src/discovery/catalog-schema.ts
-import { z as z5 } from "zod";
+import { z as z11 } from "zod";
 function parseCatalog(value) {
-  const entries = z5.array(discoveryEntrySchema).parse(value);
+  const entries = z11.array(discoveryEntrySchema).parse(value);
   const ids = new Set;
   const names = new Set;
   for (const entry of entries) {
@@ -29527,54 +32599,54 @@ function parseCatalog(value) {
   }
   return entries;
 }
-var text4, texts, id, common, operationContractSchema, discoveryEntrySchema;
+var text6, texts, id2, common, operationContractSchema, discoveryEntrySchema;
 var init_catalog_schema = __esm(() => {
-  text4 = z5.string().trim().min(1);
-  texts = z5.array(text4);
-  id = z5.string().regex(/^(operation|assembly|recipe):[A-Za-z][A-Za-z0-9-]*$/);
+  text6 = z11.string().trim().min(1);
+  texts = z11.array(text6);
+  id2 = z11.string().regex(/^(operation|assembly|recipe):[A-Za-z][A-Za-z0-9-]*$/);
   common = {
-    version: z5.literal("kiln.catalog-entry.v1"),
-    id,
-    name: text4,
-    summary: text4.max(500),
-    family: text4.max(80),
+    version: z11.literal("kiln.catalog-entry.v1"),
+    id: id2,
+    name: text6,
+    summary: text6.max(500),
+    family: text6.max(80),
     tags: texts,
     aliases: texts,
     intents: texts,
-    stability: z5.enum(["stable", "experimental", "deprecated"]),
-    related: z5.array(z5.object({
-      id,
-      relation: z5.enum(["alternative", "prerequisite", "companion"])
+    stability: z11.enum(["stable", "experimental", "deprecated"]),
+    related: z11.array(z11.object({
+      id: id2,
+      relation: z11.enum(["alternative", "prerequisite", "companion"])
     }).strict()),
     references: texts,
     limitations: texts
   };
-  operationContractSchema = z5.object({
-    signature: text4,
-    returns: text4,
-    units: text4,
-    axes: text4,
-    origin: text4,
-    execution: z5.enum(["sync", "async"]),
-    ownership: text4,
-    coordinates: text4,
+  operationContractSchema = z11.object({
+    signature: text6,
+    returns: text6,
+    units: text6,
+    axes: text6,
+    origin: text6,
+    execution: z11.enum(["sync", "async"]),
+    ownership: text6,
+    coordinates: text6,
     parameters: texts,
     topology: texts,
     preservation: texts,
     semantics: texts,
-    cost: text4,
-    example: text4
+    cost: text6,
+    example: text6
   }).strict();
-  discoveryEntrySchema = z5.discriminatedUnion("kind", [
-    z5.object({ ...common, kind: z5.literal("operation"), contract: operationContractSchema }).strict(),
-    z5.object({ ...common, kind: z5.literal("assembly"), contract: operationContractSchema }).strict(),
-    z5.object({
+  discoveryEntrySchema = z11.discriminatedUnion("kind", [
+    z11.object({ ...common, kind: z11.literal("operation"), contract: operationContractSchema }).strict(),
+    z11.object({ ...common, kind: z11.literal("assembly"), contract: operationContractSchema }).strict(),
+    z11.object({
       ...common,
-      kind: z5.literal("recipe"),
-      recipe: z5.object({
-        prerequisites: z5.array(id),
+      kind: z11.literal("recipe"),
+      recipe: z11.object({
+        prerequisites: z11.array(id2),
         steps: texts.min(1),
-        example: text4,
+        example: text6,
         adaptations: texts,
         checks: texts
       }).strict()
@@ -30661,6 +33733,7 @@ var init_helper_contracts = __esm(() => {
     execution: "async",
     parameters: [
       "Strict schemaVersion 2 pbrMetallicRoughness specification.",
+      "For workspace library materials, use the exact portableSpec returned by kiln_material and pin its material revision through per-call materialDependencies (CLI --materials) or an optional project lock. The host supplies verified map bytes; generated source cannot read library paths or fetch missing resources.",
       "baseColor and emissive are numeric color integers from 0x000000 to 0xffffff, for example baseColor: 0x8a867c. CSS strings and materialRecipe hex-string overrides are not accepted here.",
       "Texture references use typed procedural specs or approved resource IDs; arbitrary URLs, paths, callbacks and shaders are rejected.",
       'Each texture value is { kind: "resource", resourceId: "kiln.texture..." } or { kind: "procedural", spec: { schemaVersion: 2, ... } }. Bare ID strings are invalid; unlike materialRecipe.textureResources, this API requires the tagged object.'
@@ -30670,8 +33743,12 @@ var init_helper_contracts = __esm(() => {
     ]
   }, {
     ...materialMetadata,
-    references: ["src/portable-material-runtime.ts"],
-    aliases: ["portable material specification"],
+    references: [
+      "src/portable-material-runtime.ts",
+      "docs/material-library.md",
+      "docs/projects-and-live-review.md"
+    ],
+    aliases: ["portable material specification", "project material library"],
     intents: ["compile a strict portable material definition"]
   });
   animationFacts = {
@@ -32640,7 +35717,7 @@ var init_lexical_index = __esm(() => {
 });
 
 // src/discovery/query-schema.ts
-import { z as z6 } from "zod";
+import { z as z12 } from "zod";
 function discoverySelectorMigration(keys) {
   if (!keys.some((key) => ["category", "name", "names"].includes(key)))
     return;
@@ -32662,19 +35739,19 @@ function parseDiscoveryRequest(value) {
 }
 var selector, discoveryInputSchema;
 var init_query_schema = __esm(() => {
-  selector = z6.string().trim().min(1).max(120);
-  discoveryInputSchema = z6.object({
-    query: z6.string().trim().min(1).max(500).optional(),
-    ids: z6.array(selector).min(1).max(6).refine((ids) => new Set(ids).size === ids.length, {
+  selector = z12.string().trim().min(1).max(120);
+  discoveryInputSchema = z12.object({
+    query: z12.string().trim().min(1).max(500).optional(),
+    ids: z12.array(selector).min(1).max(6).refine((ids) => new Set(ids).size === ids.length, {
       message: "Exact IDs must be unique."
     }).optional(),
-    overview: z6.literal(true).optional(),
-    capabilities: z6.literal(true).optional(),
+    overview: z12.literal(true).optional(),
+    capabilities: z12.literal(true).optional(),
     family: selector.optional(),
-    kind: z6.enum(["operation", "assembly", "recipe"]).optional(),
-    tags: z6.array(selector).min(1).max(8).optional(),
-    offset: z6.number().int().min(0).max(1e4).optional(),
-    limit: z6.number().int().min(1).max(12).optional()
+    kind: z12.enum(["operation", "assembly", "recipe"]).optional(),
+    tags: z12.array(selector).min(1).max(8).optional(),
+    offset: z12.number().int().min(0).max(1e4).optional(),
+    limit: z12.number().int().min(1).max(12).optional()
   }, {
     error: (issue) => issue.code === "unrecognized_keys" ? discoverySelectorMigration(issue.keys) : undefined
   }).strict().superRefine((input, context) => {
@@ -32896,13 +35973,13 @@ function createDiscovery(capabilities = async () => ({
   host: "No host capability provider was supplied.",
   discovery: { mode: "lexical", offline: true, requiresModel: false }
 })) {
-  snapshot ??= (() => {
+  snapshot2 ??= (() => {
     const entries = listDiscoveryEntries();
     return { entries, index: createLexicalDiscoveryIndex(entries) };
   })();
-  return createDiscoveryService(snapshot.entries, snapshot.index, capabilities, REMOVED_AUTHORING_HELPERS);
+  return createDiscoveryService(snapshot2.entries, snapshot2.index, capabilities, REMOVED_AUTHORING_HELPERS);
 }
-var snapshot;
+var snapshot2;
 var init_discovery = __esm(() => {
   init_catalog();
   init_lexical_index();
@@ -33027,6 +36104,537 @@ var init_discovery2 = __esm(() => {
   init_geometry_export();
   init_community_exporter();
   init_material_resources();
+});
+
+// src/tools/projects.ts
+import { z as z13 } from "zod";
+function createKilnProjectDef(store, bundleReader) {
+  const schema = bundleReader ? z13.discriminatedUnion("action", [
+    ...projectToolInput.options,
+    z13.strictObject({
+      action: z13.literal("export"),
+      projectId: projectIdSchema,
+      revisionId: projectRevisionIdSchema.optional(),
+      profile: z13.enum(["editable", "runtime"]).default("editable")
+    })
+  ]) : projectToolInput;
+  return {
+    name: "kiln_project",
+    description: "Manage optional shared workspace projects. Assets and materials can be authored, saved and exported without a project; creating one never binds unrelated authoring automatically. list discovers IDs; get reads current or exact historical configuration; create adds a project; update requires the exact expectedRevision and replaces supplied top-level fields. Design preferences, inventory, references, delivery profiles and pinned material dependencies are versioned. Review annotations do not change trusted QA or authorize a release. CLI and the local dashboard use these same records." + (bundleReader ? " export returns an MCP resource URI for an exact editable project ZIP with normalized material maps and recipes, or a runtime GLB/metadata ZIP. Only inventory entries linked to saved revisions contribute assets; referenced concept images and original acquisition archives are not embedded." : ""),
+    inputSchema: schema,
+    annotations: {
+      readOnlyHint: false,
+      destructiveHint: false,
+      idempotentHint: false,
+      openWorldHint: false
+    },
+    run: async (raw) => {
+      const input = schema.parse(raw);
+      if (input.action === "export") {
+        const project = await store.read(input.projectId, input.revisionId);
+        const bytes = await bundleReader(project.projectId, project.revisionId, input.profile);
+        await Promise.resolve().then(() => init_project_bundle());
+        return {
+          ok: true,
+          projectId: project.projectId,
+          revisionId: project.revisionId,
+          profile: input.profile,
+          resource: {
+            uri: `kiln://projects/${project.projectId}/${project.revisionId}/${input.profile}.zip`,
+            mimeType: "application/zip",
+            bytes: bytes.length,
+            sha256: await projectBundleHash(bytes)
+          }
+        };
+      }
+      if (input.action === "list")
+        return { ok: true, projects: await store.list() };
+      const project = input.action === "create" ? await store.create(input.draft) : input.action === "update" ? await store.update(input.projectId, input.expectedRevision, input.patch) : await store.read(input.projectId, input.revisionId);
+      return { ok: true, project };
+    }
+  };
+}
+var projectToolInput;
+var init_projects2 = __esm(() => {
+  init_projects();
+  projectToolInput = z13.discriminatedUnion("action", [
+    z13.strictObject({ action: z13.literal("list") }),
+    z13.strictObject({
+      action: z13.literal("get"),
+      projectId: projectIdSchema,
+      revisionId: projectRevisionIdSchema.optional()
+    }),
+    z13.strictObject({ action: z13.literal("create"), draft: projectDraftSchema }),
+    z13.strictObject({
+      action: z13.literal("update"),
+      projectId: projectIdSchema,
+      expectedRevision: projectRevisionIdSchema,
+      patch: projectPatchSchema
+    })
+  ]);
+});
+
+// src/asset-catalog.ts
+async function listAssetCatalog(library) {
+  const entries = [];
+  const errors = [];
+  for (const collection of library.collections()) {
+    try {
+      for (const manifest of await library.list(collection.id))
+        entries.push({ collectionId: collection.id, manifest });
+    } catch (error) {
+      errors.push({
+        collectionId: collection.id,
+        message: error instanceof Error ? error.message : "Collection unavailable"
+      });
+    }
+  }
+  entries.sort((a, b) => b.manifest.createdAt.localeCompare(a.manifest.createdAt) || a.collectionId.localeCompare(b.collectionId) || a.manifest.assetId.localeCompare(b.manifest.assetId) || a.manifest.revisionId.localeCompare(b.manifest.revisionId));
+  return { entries, errors };
+}
+
+// src/material-presets.ts
+import { z as z14 } from "zod";
+function listMaterialPresets() {
+  return catalog2.map((item) => ({
+    ...item,
+    physicalSizeMeters: { ...item.physicalSizeMeters },
+    tags: [item.family, "procedural"],
+    recipeVersion: 1
+  }));
+}
+function createMaterialPresetDraft(presetId, raw) {
+  assertMaterialJson(raw);
+  const options = materialPresetOptionsSchema.parse(raw);
+  const preset = catalog2.find((item) => item.id === presetId);
+  if (!preset)
+    throw new Error("Unknown material preset");
+  const noise = (colorA, colorB, scale = 8, opacity = 1) => ({
+    op: "noise",
+    colorA,
+    colorB,
+    scale,
+    octaves: 3,
+    seed: options.seed,
+    opacity
+  });
+  const stripes = (colorA, colorB, count, angleDeg = 0, opacity = 1) => ({
+    op: "stripes",
+    colorA,
+    colorB,
+    count: Math.min(count, options.size / 4),
+    angleDeg,
+    opacity
+  });
+  let color;
+  let height;
+  let roughnessLow = 180;
+  let roughnessHigh = 235;
+  let strength = 2;
+  if (presetId === "warm-brick") {
+    const brick = (brick, mortar) => ({
+      op: "bricks",
+      brick,
+      mortar,
+      rows: 12,
+      cols: 4,
+      mortarWidth: 0.07,
+      stagger: 0.5
+    });
+    color = [brick(10968130, 11840150), noise(5257516, 15384730, 16, 0.2)];
+    height = [brick(11579568, 4210752), noise(3158064, 13684944, 16, 0.12)];
+    strength = 3;
+  } else if (presetId === "wood-grain") {
+    color = [noise(7688503, 12358752, 4), stripes(6833455, 13280630, 40, 0, 0.3)];
+    height = [noise(6710886, 10066329, 4), stripes(6710886, 11184810, 40, 0, 0.25)];
+    roughnessLow = 130;
+    roughnessHigh = 190;
+    strength = 1.5;
+  } else if (presetId === "brushed-metal") {
+    color = [noise(10988461, 12370114, 4), stripes(10067102, 12896201, 64, 0, 0.1)];
+    height = [noise(7368816, 9474192, 8), stripes(6710886, 10066329, 64, 0, 0.3)];
+    roughnessLow = 80;
+    roughnessHigh = 130;
+    strength = 1;
+  } else if (presetId === "woven-fabric") {
+    color = [
+      noise(10787463, 12498079, 8),
+      stripes(9866361, 13682609, 32, 0, 0.3),
+      stripes(9866361, 13682609, 32, 90, 0.3)
+    ];
+    height = [
+      noise(6316128, 10066329, 8),
+      stripes(3355443, 13421772, 32, 0, 0.4),
+      stripes(3355443, 13421772, 32, 90, 0.4)
+    ];
+    strength = 1;
+  } else {
+    color = [noise(5061676, 8942420, 4), noise(3418656, 10850155, 32, 0.25)];
+    height = [noise(5592405, 11184810, 8), noise(2236962, 14540253, 32, 0.3)];
+    strength = 1.5;
+  }
+  const spec = (usage, layers) => ({ schemaVersion: 2, size: options.size, usage, layers });
+  const metallic = preset.family === "metal" ? 255 : 0;
+  const packed = (roughness) => 255 << 16 | roughness << 8 | metallic;
+  const common = {
+    sourceId: "preset",
+    transforms: [
+      {
+        operation: "preset",
+        tool: "kiln.material-presets",
+        version: "1",
+        parameters: { presetId, seed: options.seed }
+      }
+    ]
+  };
+  return {
+    materialId: options.materialId ?? preset.id,
+    name: preset.name,
+    tags: [preset.family, "procedural"],
+    tileable: true,
+    physicalSizeMeters: { ...preset.physicalSizeMeters },
+    parameters: { metalness: 1, roughness: 1 },
+    sources: [
+      {
+        id: "preset",
+        kind: "procedural",
+        provider: "Kiln material presets v1",
+        creator: options.creator,
+        assetId: preset.id,
+        license: options.license,
+        originalFiles: []
+      }
+    ],
+    maps: [
+      { ...common, slot: "baseColor", procedural: spec("albedo", color) },
+      {
+        ...common,
+        slot: "normal",
+        procedural: spec("normal", height),
+        derive: { kind: "normal-from-height", strength }
+      },
+      {
+        ...common,
+        slot: "metallicRoughness",
+        procedural: spec("metallicRoughness", [
+          noise(packed(roughnessLow), packed(roughnessHigh), 8)
+        ])
+      }
+    ]
+  };
+}
+var catalog2, materialPresetOptionsSchema;
+var init_material_presets = __esm(() => {
+  init_material_library();
+  catalog2 = [
+    {
+      id: "warm-brick",
+      name: "Warm brick and mortar",
+      family: "architecture",
+      physicalSizeMeters: { width: 2, height: 2 },
+      description: "Staggered masonry with warm clay variation and shallow mortar relief."
+    },
+    {
+      id: "wood-grain",
+      name: "Warm straight wood grain",
+      family: "wood",
+      physicalSizeMeters: { width: 1, height: 1 },
+      description: "Directional grain for props and interior timber; no scanned knots or end grain."
+    },
+    {
+      id: "brushed-metal",
+      name: "Brushed neutral metal",
+      family: "metal",
+      physicalSizeMeters: { width: 1, height: 1 },
+      description: "Fine directional relief and varied roughness, with a fully metallic packed channel."
+    },
+    {
+      id: "woven-fabric",
+      name: "Neutral woven fabric",
+      family: "fabric",
+      physicalSizeMeters: { width: 0.5, height: 0.5 },
+      description: "Crossed threads with a matte dielectric response; no cloth simulation or anisotropy."
+    },
+    {
+      id: "coarse-soil",
+      name: "Coarse brown soil",
+      family: "ground",
+      physicalSizeMeters: { width: 2, height: 2 },
+      description: "Layered granular soil variation and subtle relief for terrain and planting beds."
+    }
+  ];
+  materialPresetOptionsSchema = z14.object({
+    seed: z14.number().int().min(-2147483648).max(2147483647),
+    size: z14.union([z14.literal(64), z14.literal(128), z14.literal(256), z14.literal(512)]).default(256),
+    creator: z14.string().min(1).max(1000),
+    license: materialSourceSchema.shape.license,
+    materialId: materialLibraryIdSchema.optional()
+  }).strict();
+});
+
+// src/tools/materials.ts
+import { z as z15 } from "zod";
+function createKilnMaterialDef(library) {
+  return {
+    name: "kiln_material",
+    description: "Manage optional immutable material resources in this workspace. presets discovers shipped architecture, wood, metal, fabric and ground recipes; create-preset bakes one with an explicit seed, creator and license. list returns compact material/revision summaries; get returns full provenance, hashes, map conventions, physical repeat scale and a code-ready portable material spec. create-procedural bakes bounded editable layer recipes including optional height-derived normals. import accepts complete normalized records with embedded PNG bytes. No operation downloads URLs or executes source. Pin returned materialId/revisionId through per-invocation materialDependencies or project dependencies before authored evaluation resolves the resources; no project is required.",
+    inputSchema: materialToolInput,
+    annotations: {
+      readOnlyHint: false,
+      destructiveHint: false,
+      idempotentHint: true,
+      openWorldHint: false
+    },
+    async run(raw) {
+      assertMaterialJson(raw);
+      const input = materialToolInput.parse(raw);
+      if (input.action === "presets")
+        return {
+          ok: true,
+          presets: listMaterialPresets().filter((item) => !input.tag || item.tags.includes(input.tag))
+        };
+      if (input.action === "create-preset") {
+        const { action: _, presetId, ...options } = input;
+        const record = await createMaterialRecordV1(createMaterialPresetDraft(presetId, options));
+        const [material] = await library.import([record]);
+        return materialResult(material);
+      }
+      if (input.action === "list") {
+        const records = await library.list();
+        return {
+          ok: true,
+          materials: records.filter((item) => !input.tag || item.tags.includes(input.tag)).map((item) => ({
+            materialId: item.materialId,
+            revisionId: item.revisionId,
+            name: item.name,
+            tags: item.tags,
+            tileable: item.tileable,
+            ...item.physicalSizeMeters ? { physicalSizeMeters: item.physicalSizeMeters } : {},
+            slots: item.maps.map((map) => map.slot),
+            licenses: [...new Set(item.sources.map((source) => source.license.spdx))]
+          }))
+        };
+      }
+      if (input.action === "get")
+        return materialResult((await library.read(input.materialId, input.revisionId)).manifest);
+      if (input.action === "create-procedural") {
+        const record = await createMaterialRecordV1(input.draft);
+        const [material] = await library.import([record]);
+        return materialResult(material);
+      }
+      const records = await decodeMaterialLibraryPayload(input.payload);
+      const materials = await library.import(records);
+      return {
+        ok: true,
+        materials: materials.map((material) => ({
+          material,
+          portableSpec: materialLibraryPortableSpec(material)
+        }))
+      };
+    }
+  };
+}
+var materialToolInput, materialResult = (material) => ({
+  ok: true,
+  material,
+  portableSpec: materialLibraryPortableSpec(material)
+});
+var init_materials = __esm(() => {
+  init_material_library();
+  init_material_library_node();
+  init_material_presets();
+  materialToolInput = z15.discriminatedUnion("action", [
+    z15.object({ action: z15.literal("presets"), tag: z15.string().min(1).max(80).optional() }).strict(),
+    materialPresetOptionsSchema.extend({ action: z15.literal("create-preset"), presetId: z15.string().min(1).max(80) }).strict(),
+    z15.object({ action: z15.literal("list"), tag: z15.string().min(1).max(80).optional() }).strict(),
+    z15.object({
+      action: z15.literal("get"),
+      materialId: materialLibraryIdSchema,
+      revisionId: materialLibraryHashSchema
+    }).strict(),
+    z15.object({ action: z15.literal("create-procedural"), draft: proceduralMaterialDraftSchema }).strict(),
+    z15.object({ action: z15.literal("import"), payload: materialLibraryPayloadSchema }).strict()
+  ]);
+});
+
+// src/tools/review.ts
+import { z as z16 } from "zod";
+function createKilnReviewDef(context) {
+  const store = context.reviewStore;
+  return {
+    name: "kiln_review",
+    description: "Read persisted Kiln observation history, pin an operation against normal retention, or save an exact completed reviewed operation into a collection without re-execution. Pinning does not pause an agent. save requires the displayed expectedRevision and matching trusted host requirements, preserves exact source/GLB/capture, and does not assert QA acceptance. Missing or evicted evidence is an error.",
+    inputSchema: reviewToolInput,
+    annotations: {
+      readOnlyHint: false,
+      destructiveHint: false,
+      idempotentHint: false,
+      openWorldHint: false
+    },
+    async run(raw) {
+      const input = reviewToolInput.parse(raw);
+      if (input.action === "list")
+        return { ok: true, ...await store.snapshot({ projectId: input.projectId }) };
+      if (input.action === "pin") {
+        await store.pin(input.operationId, input.pinned);
+        return { ok: true, operation: await store.get(input.operationId) };
+      }
+      const operation = await store.get(input.operationId);
+      if (input.action === "get")
+        return { ok: true, operation };
+      if (!context.assetLibrary)
+        throw new Error("No asset library configured for reviewed save");
+      if (operation.revision !== input.expectedRevision)
+        throw new Error("Review revision changed; refresh before saving");
+      if (operation.status !== "complete" || !operation.artifact)
+        throw new Error("A completed operation with a retained artifact is required");
+      const [glb, source, metadata] = await Promise.all(["asset.glb", "source.kiln.js", "evaluation.json"].map((name) => store.readFile(operation.operationId, name)));
+      validateAssetGlb(glb);
+      const digest = await crypto.subtle.digest("SHA-256", Uint8Array.from(glb));
+      const sha256 = `sha256:${Array.from(new Uint8Array(digest), (byte) => byte.toString(16).padStart(2, "0")).join("")}`;
+      const evaluation = JSON.parse(new TextDecoder().decode(metadata));
+      if (sha256 !== operation.artifact.sha256 || sha256 !== evaluation.artifactGlbSha256)
+        throw new Error("Reviewed artifact identity mismatch");
+      const active = resolveRequirementsContext(context.requirements);
+      if (!requirementsContextsEqual(validateRequirementsContext(evaluation.requirements), active))
+        throw new Error("Reviewed requirements do not match the current trusted host binding");
+      if (input.assetId && input.parentRevision)
+        assertSavedRequirementsAuthorized((await context.assetLibrary.read(input.collection, input.assetId, input.parentRevision)).manifest, active);
+      const code = new TextDecoder().decode(source);
+      const checkpoint = evaluation.requirements.binding ? createRequirementsCheckpoint(await programReference(code), evaluation.requirements.binding) : undefined;
+      const dependencies = [
+        ...evaluation.materialResourceProvenance ?? [],
+        ...(evaluation.materialLibraryDependencies ?? []).map((manifest) => ({
+          kind: "kiln.material.v1",
+          delivery: "runtime",
+          manifest
+        }))
+      ];
+      const preview = operation.captures[0] ? await store.readFile(operation.operationId, operation.captures[0].name) : undefined;
+      const capture = z16.object({ backdrop: z16.enum(BACKDROP_IDS).optional() }).safeParse(operation.result?.capture);
+      const asset = await context.assetLibrary.save(input.collection, {
+        name: input.name,
+        assetId: input.assetId,
+        parentRevision: input.parentRevision,
+        description: input.description,
+        tags: input.tags,
+        code,
+        glb,
+        preview,
+        previewInfo: {
+          fidelity: operation.viewFidelity,
+          ...preview && capture.success && capture.data.backdrop ? { backdrop: capture.data.backdrop } : {}
+        },
+        build: {
+          engine: operation.runtimeIdentity ?? "recorded-build:identity-unavailable",
+          options: {
+            ...evaluation.rebuildOptions,
+            reviewOperationId: operation.operationId,
+            reviewRevision: operation.revision,
+            requirements: evaluation.requirements,
+            ...checkpoint ? { requirementsCheckpoint: checkpoint } : {},
+            ...operation.projectId ? { projectId: operation.projectId, projectRevision: operation.projectRevision } : {}
+          },
+          warnings: evaluation.warnings,
+          integration: evaluation.integrationManifest,
+          qa: evaluation.meta.qaReport,
+          dependencies,
+          rebuild: dependencies.some((item) => item.delivery === "runtime") ? "external-dependencies-required" : "engine-required"
+        }
+      });
+      return { ok: true, collection: input.collection, asset };
+    }
+  };
+}
+var operationId, assetId, reviewToolInput;
+var init_review = __esm(() => {
+  init_assets();
+  init_requirements_context();
+  init_requirements_assets();
+  init_program_store();
+  init_background();
+  operationId = z16.string().regex(/^op_[a-f0-9-]{36}$/);
+  assetId = z16.string().regex(/^[a-z][a-z0-9_-]{0,79}$/);
+  reviewToolInput = z16.discriminatedUnion("action", [
+    z16.strictObject({ action: z16.literal("list"), projectId: assetId.optional() }),
+    z16.strictObject({ action: z16.literal("get"), operationId }),
+    z16.strictObject({ action: z16.literal("pin"), operationId, pinned: z16.boolean() }),
+    z16.strictObject({
+      action: z16.literal("save"),
+      operationId,
+      expectedRevision: z16.number().int().nonnegative(),
+      collection: assetId.default("project"),
+      name: z16.string().min(1).max(200),
+      assetId: assetId.optional(),
+      parentRevision: assetId.optional(),
+      description: z16.string().max(4000).optional(),
+      tags: z16.array(z16.string().max(80)).max(30).optional()
+    })
+  ]);
+});
+
+// src/tools/workspace.ts
+import { z as z17 } from "zod";
+async function observeLiveReview(observer, tool, input, run) {
+  let authoring;
+  const invokeOnce = () => authoring ??= Promise.resolve().then(run);
+  try {
+    if (observer)
+      Promise.resolve(observer.observe(tool, input, invokeOnce)).catch(() => {});
+  } catch {}
+  return invokeOnce();
+}
+async function observeWorkspaceOperation(context, tool, input, run) {
+  let began = false;
+  const execute = () => {
+    began = true;
+    const project = context.workspace?.current()?.project;
+    return observeLiveReview(context.liveReview, tool, {
+      ...input,
+      ...project ? { projectId: project.projectId, projectRevision: project.revisionId } : {},
+      runtimeIdentity: context.localExecution?.runtimeIdentity
+    }, run);
+  };
+  try {
+    return await (context.workspace ? context.workspace.run({
+      ...typeof input.projectId === "string" || input.projectId === null ? { projectId: input.projectId } : {},
+      ...typeof input.projectRevision === "string" ? { projectRevision: input.projectRevision } : {},
+      ...input.materialDependencies !== undefined ? {
+        materialDependencies: workspaceSelectionSchema.shape.materialDependencies.parse(input.materialDependencies)
+      } : {}
+    }, execute) : execute());
+  } catch (error) {
+    if (began)
+      throw error;
+    return observeLiveReview(context.liveReview, tool, { ...input, runtimeIdentity: context.localExecution?.runtimeIdentity }, async () => {
+      throw error;
+    });
+  }
+}
+function withWorkspaceContext(def, context) {
+  if (!observed.has(def.name))
+    return def;
+  const schema = context.workspace && def.inputSchema instanceof z17.ZodObject ? def.inputSchema.safeExtend(workspaceSelectionSchema.shape) : def.inputSchema;
+  return {
+    ...def,
+    inputSchema: schema,
+    run: async (raw) => {
+      const input = schema.parse(raw);
+      return observeWorkspaceOperation(context, def.name, input, () => def.run(input));
+    }
+  };
+}
+var observed;
+var init_workspace2 = __esm(() => {
+  init_workspace();
+  observed = new Set([
+    "kiln_render",
+    "kiln_edit",
+    "kiln_screenshot_animation",
+    "kiln_view_interior",
+    "kiln_inspect",
+    "kiln_save"
+  ]);
 });
 
 // src/edit-buffer.ts
@@ -33662,7 +37270,7 @@ async function accessorFingerprint(accessor) {
     accessor.getType(),
     accessor.getComponentType(),
     accessor.getNormalized(),
-    await digest4(new Uint8Array(array.buffer, array.byteOffset, array.byteLength))
+    await digest7(new Uint8Array(array.buffer, array.byteOffset, array.byteLength))
   ];
 }
 function bounds(box) {
@@ -33672,11 +37280,11 @@ function bounds(box) {
     size: box.getSize(new Vector334).toArray()
   };
 }
-async function digest4(bytes) {
+async function digest7(bytes) {
   const hash = new Uint8Array(await crypto.subtle.digest("SHA-256", Uint8Array.from(bytes)));
   return `sha256:${[...hash].map((b) => b.toString(16).padStart(2, "0")).join("")}`;
 }
-async function snapshot2(bytes) {
+async function snapshot3(bytes) {
   if (bytes.byteLength > MAX_GLB_BYTES)
     throw new Error("Revision comparison GLB exceeds 64 MiB.");
   const io = createGltfIO();
@@ -33784,7 +37392,7 @@ async function snapshot2(bytes) {
       });
     }
   }
-  return { parts, animation, scenePath, bounds: bounds(box), glbSha256: await digest4(bytes) };
+  return { parts, animation, scenePath, bounds: bounds(box), glbSha256: await digest7(bytes) };
 }
 function accessorEqual(a, b) {
   return a === b || Boolean(a && b && a.equals(b, ACCESSOR_IGNORED));
@@ -33800,8 +37408,8 @@ async function compareRevisionGlbs(before, after, page = {}) {
     throw new Error("Revision comparison page requires offset >= 0 and limit 1..100.");
   if (page.paths !== undefined && (page.paths.length < 1 || page.paths.length > 12 || new Set(page.paths).size !== page.paths.length || page.paths.some((path) => typeof path !== "string" || !path.startsWith("/") || path.length > 4096)))
     throw new Error("Revision comparison paths require 1..12 distinct exact exported-node paths.");
-  const previous = await snapshot2(before);
-  const current = await snapshot2(after);
+  const previous = await snapshot3(before);
+  const current = await snapshot3(after);
   const subtrees = page.paths?.map((path) => {
     const key = path.startsWith(`${previous.scenePath}/`) ? path.slice(previous.scenePath.length) : "";
     const part = previous.parts.get(key);
@@ -34191,105 +37799,11 @@ var init_surface_distance = __esm(() => {
   init_camera();
 });
 
-// src/asset-export.ts
-async function sha2562(bytes) {
-  const digest = await crypto.subtle.digest("SHA-256", Uint8Array.from(bytes));
-  return `sha256:${Array.from(new Uint8Array(digest), (byte) => byte.toString(16).padStart(2, "0")).join("")}`;
-}
-function validateMetadataFileName(name) {
-  if (name.length > 200 || !/^[a-z0-9][a-z0-9._-]*\.kiln-metadata\.json$/i.test(name) || /^(con|prn|aux|nul|com[0-9]|lpt[0-9])\./i.test(name))
-    throw new Error("Runtime metadata filename must be a portable sibling *.kiln-metadata.json filename");
-}
-async function exportAssetGlb(record, options = {}) {
-  const profile = options.profile ?? "editable";
-  if (profile !== "editable" && profile !== "runtime")
-    throw new Error("Unknown export profile");
-  validateRecordShape(record);
-  const bytes = record.files["asset.glb"];
-  if (profile === "editable")
-    return { profile, glb: bytes };
-  const name = options.metadataFileName ?? "runtime.kiln-metadata.json";
-  validateMetadataFileName(name);
-  for (const [file, data] of Object.entries(record.files)) {
-    if (await sha2562(data) !== record.manifest.files[file].sha256)
-      throw new Error(`Asset integrity mismatch: ${file}`);
-  }
-  const view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
-  let end = 12;
-  while (end < bytes.length) {
-    if (end + 8 > bytes.length)
-      throw new Error("Invalid GLB chunk header");
-    const length = view.getUint32(end, true);
-    if (length % 4 || end + 8 + length > bytes.length)
-      throw new Error("Invalid GLB chunk length");
-    end += 8 + length;
-  }
-  const jsonEnd = 20 + view.getUint32(12, true);
-  const json = JSON.parse(decoder.decode(bytes.subarray(20, jsonEnd)));
-  if (!object2(json) || !object2(json.asset) || json.asset.version !== "2.0")
-    throw new Error("Invalid glTF asset");
-  const asset = json.asset;
-  if (owns(asset, "extras") && !object2(asset.extras))
-    throw new Error("Cannot add provenance to non-object asset extras");
-  const extras = asset.extras ?? {};
-  if (owns(extras, "kilnProvenanceV1"))
-    throw new Error("Asset extras already contain kilnProvenanceV1; export from the canonical revision");
-  const scenes = [];
-  if (json.scenes !== undefined && !Array.isArray(json.scenes))
-    throw new Error("Invalid glTF scenes");
-  for (const [index, scene] of (json.scenes ?? []).entries()) {
-    if (!object2(scene) || !object2(scene.extras) || !owns(scene.extras, "kilnReviewClipsV1"))
-      continue;
-    const review = scene.extras.kilnReviewClipsV1;
-    if (!object2(review) || review.version !== 1 || !Array.isArray(review.clips))
-      throw new Error("Unsupported scenes[].extras.kilnReviewClipsV1");
-    scenes.push({ index, kilnReviewClipsV1: review });
-    delete scene.extras.kilnReviewClipsV1;
-  }
-  const metadata = {
-    version: "kiln.runtime-metadata.v1",
-    source: {
-      assetId: record.manifest.assetId,
-      revisionId: record.manifest.revisionId,
-      glbSha256: record.manifest.files["asset.glb"].sha256,
-      ...record.manifest.files["source.kiln.js"] ? { sourceSha256: record.manifest.files["source.kiln.js"].sha256 } : {}
-    },
-    scenes
-  };
-  const metadataBytes = encoder.encode(JSON.stringify(metadata));
-  asset.extras = {
-    ...extras,
-    kilnProvenanceV1: {
-      version: "kiln.provenance.v1",
-      profile: "runtime",
-      metadata: { uri: name, sha256: await sha2562(metadataBytes) }
-    }
-  };
-  const jsonBytes = encoder.encode(JSON.stringify(json));
-  const length = Math.ceil(jsonBytes.length / 4) * 4;
-  const result = new Uint8Array(20 + length + bytes.length - jsonEnd);
-  if (result.length > ASSET_LIMIT || metadataBytes.length > ASSET_LIMIT)
-    throw new Error("Runtime export exceeds 64 MiB");
-  result.set(bytes.subarray(0, 20));
-  const header = new DataView(result.buffer);
-  header.setUint32(8, result.length, true);
-  header.setUint32(12, length, true);
-  result.fill(32, 20, 20 + length);
-  result.set(jsonBytes, 20);
-  result.set(bytes.subarray(jsonEnd), 20 + length);
-  return { profile, glb: result, metadata: { name, bytes: metadataBytes } };
-}
-var encoder, decoder, object2 = (value) => value !== null && typeof value === "object" && !Array.isArray(value), owns = (value, key) => Object.hasOwn(value, key);
-var init_asset_export = __esm(() => {
-  init_assets();
-  encoder = new TextEncoder;
-  decoder = new TextDecoder;
-});
-
 // src/assets-resources.ts
 var exports_assets_resources = {};
 __export(exports_assets_resources, {
   assetLinks: () => assetLinks,
+  exportLibraryAssetBundle: () => exportLibraryAssetBundle,
   readAssetResource: () => readAssetResource,
   runtimeAssetLinks: () => runtimeAssetLinks
 });
@@ -34345,10 +37859,13 @@ async function readAssetResource(library, uri) {
       name
     };
   }
-  const bytes = name === "editable.zip" ? encodeAssetBundle([record]) : name === "manifest.json" ? new TextEncoder().encode(JSON.stringify(record.manifest, null, 2)) : record.files[name];
+  const bytes = name === "editable.zip" ? await exportLibraryAssetBundle(library, [record]) : name === "manifest.json" ? new TextEncoder().encode(JSON.stringify(record.manifest, null, 2)) : record.files[name];
   if (!bytes)
     throw new Error("Asset file unavailable");
   return { bytes, mimeType: assetMime(name), name };
+}
+async function exportLibraryAssetBundle(library, records) {
+  return library.exportBundle ? library.exportBundle(records) : encodeAssetBundle(records);
 }
 var audiences, priorities;
 var init_assets_resources = __esm(() => {
@@ -34423,7 +37940,7 @@ var init_asset_widget = __esm(() => {
 });
 
 // src/tools/registry.ts
-import { z as z7 } from "zod";
+import { z as z18 } from "zod";
 import * as THREE40 from "three";
 function proceduralTextureMaterialContract(rendered, context) {
   const required = [...new Set(context.requiredProceduralTextureUsages ?? [])];
@@ -34465,6 +37982,7 @@ async function evaluateGeneratedSource(code, context, optimize = "off") {
   const requirements = toolRequirements(context);
   return resolveEvaluatorPortV2(context.evaluatorPort, context.evaluatorProfile ?? "trusted-local").render(code, {
     optimize,
+    ...context.workspace?.current()?.materialResources.records.length ? { materialResources: context.workspace.current().materialResources } : {},
     ...context.geometryPolicy ? { geometryPolicy: context.geometryPolicy } : {},
     ...requirements.binding ? { requirements: requirements.binding } : {}
   }, context.evaluationControls?.());
@@ -34477,6 +37995,9 @@ function evaluationEvidence(rendered) {
 }
 async function loadEvaluatedReviewScene(code, context) {
   const rendered = await evaluateGeneratedSource(code, context);
+  try {
+    context.liveReview?.artifact(code, rendered);
+  } catch {}
   await Promise.resolve().then(() => init_views());
   const scene = await loadGlbReviewScene(rendered.glb);
   return { rendered, ...scene };
@@ -35500,14 +39021,24 @@ function createKilnProgramToolRegistry(suppliedContext = {}) {
       createKilnEditDef(context)
     ].map((def) => withProgramReferences(def, store)),
     createKilnSourceDef(store),
+    ...context.projectStore ? [createKilnProjectDef(context.projectStore, context.projectBundleReader)] : [],
+    ...context.materialLibrary ? [createKilnMaterialDef(context.materialLibrary)] : [],
+    ...context.reviewStore && context.assetLibrary ? [
+      createKilnReviewDef({
+        reviewStore: context.reviewStore,
+        assetLibrary: context.assetLibrary,
+        requirements: context.requirements
+      })
+    ] : [],
     ...createKilnAssetDefs({ ...context, programStore: store })
-  ].map((def) => ({
+  ].map((def) => withWorkspaceContext(def, context)).map((def) => ({
     ...def,
     annotations: {
       readOnlyHint: ["kiln_source", "kiln_discover", "kiln_export", "kiln_present"].includes(def.name),
       destructiveHint: false,
       idempotentHint: def.name !== "kiln_save",
-      openWorldHint: false
+      openWorldHint: false,
+      ...def.annotations
     }
   }));
 }
@@ -35536,7 +39067,15 @@ async function buildProgramAssetDraft(code, context, backdrop) {
       error: error instanceof Error ? error.message : String(error)
     };
   }
-  const dependencies = rendered.materialResourceProvenance ?? [];
+  const dependencies = [
+    ...rendered.materialResourceProvenance ?? [],
+    ...(rendered.materialLibraryDependencies ?? []).map((manifest) => ({
+      kind: "kiln.material.v1",
+      delivery: "runtime",
+      manifest
+    }))
+  ];
+  const project = context.workspace?.current()?.project;
   return {
     code,
     glb: rendered.glb,
@@ -35546,9 +39085,8 @@ async function buildProgramAssetDraft(code, context, backdrop) {
       engine: context.localExecution?.runtimeIdentity ?? "source-development:unverified",
       options: {
         ...context.assetBuildOptions,
-        optimize: "off",
-        instance: context.assetBuildOptions?.instance ?? "unspecified-by-host",
-        geometryPolicy: context.geometryPolicy ?? "warn",
+        ...project ? { projectId: project.projectId, projectRevision: project.revisionId } : {},
+        ...rendered.rebuildOptions,
         requirements: rendered.requirements,
         ...rendered.requirements.binding ? {
           requirementsCheckpoint: createRequirementsCheckpoint(await programReference(code), rendered.requirements.binding)
@@ -35590,36 +39128,36 @@ function createKilnAssetDefs(context) {
     resources: (await Promise.resolve().then(() => (init_assets_resources(), exports_assets_resources))).assetLinks(collection, asset),
     downloadUrls: await context.assetDownloadUrls?.(collection, asset.assetId, asset.revisionId)
   });
-  const saveInput = z7.object({
+  const saveInput = z18.object({
     collection: assetSelector.collection,
-    programRef: z7.string(),
-    name: z7.string().min(1).max(200),
+    programRef: z18.string(),
+    name: z18.string().min(1).max(200),
     assetId: assetSelector.assetId.optional(),
     parentRevision: assetSelector.revisionId.optional(),
-    tags: z7.array(z7.string().max(80)).max(30).optional(),
-    brief: z7.string().max(8000).optional(),
-    description: z7.string().max(4000).optional(),
-    attribution: z7.object({
-      model: z7.string().max(200).optional(),
-      harness: z7.string().max(200).optional(),
-      author: z7.string().max(200).optional()
+    tags: z18.array(z18.string().max(80)).max(30).optional(),
+    brief: z18.string().max(8000).optional(),
+    description: z18.string().max(4000).optional(),
+    attribution: z18.object({
+      model: z18.string().max(200).optional(),
+      harness: z18.string().max(200).optional(),
+      author: z18.string().max(200).optional()
     }).optional(),
-    backdrop: z7.enum(BACKDROP_IDS).optional().describe("Preview backdrop: the one the reviewed sheet used.")
+    backdrop: z18.enum(BACKDROP_IDS).optional().describe("Preview backdrop: the one the reviewed sheet used.")
   });
-  const assetsInput = z7.object({
-    action: z7.enum(["collections", "list", "get", "restore"]).default("list"),
+  const assetsInput = z18.object({
+    action: z18.enum(["collections", "catalog", "list", "get", "restore"]).default("list"),
     collection: assetSelector.collection,
     assetId: assetSelector.assetId.optional(),
     revisionId: assetSelector.revisionId.optional(),
-    query: z7.string().max(200).optional(),
-    offset: z7.number().int().min(0).default(0),
-    limit: z7.number().int().min(1).max(50).default(20)
+    query: z18.string().max(200).optional(),
+    offset: z18.number().int().min(0).default(0),
+    limit: z18.number().int().min(1).max(50).default(20)
   });
-  const exportInput = z7.object(assetSelector);
+  const exportInput = z18.object(assetSelector);
   const profileExportInput = exportInput.extend({
-    profile: z7.enum(["editable", "runtime"]).default("editable").describe("editable preserves canonical source/GLB/build resources. runtime returns a standalone GLB and versioned review-metadata sidecar; no source bundle or geometry optimization.")
+    profile: z18.enum(["editable", "runtime"]).default("editable").describe("editable preserves canonical source/GLB/build resources. runtime returns a standalone GLB and versioned review-metadata sidecar; no source bundle or geometry optimization.")
   });
-  const importInput = z7.object({
+  const importInput = z18.object({
     ...assetSelector,
     sourceCollection: assetSelector.collection
   });
@@ -35650,7 +39188,7 @@ function createKilnAssetDefs(context) {
     },
     {
       name: "kiln_assets",
-      description: "Discover collections; list/search saved asset revisions; get a build record and downloads; or restore exact editable source into the current program store for kiln_source/kiln_edit. List is paginated. Binary-only imports cannot restore source.",
+      description: "collections discovers storage; catalog searches all configured collections; list searches one. Both searches paginate. get returns a build record/downloads; restore loads exact source for kiln_source/kiln_edit. Collection is not project membership. Binary-only assets cannot restore source.",
       inputSchema: assetsInput,
       run: async (raw) => {
         const input = assetsInput.parse(raw);
@@ -35658,6 +39196,26 @@ function createKilnAssetDefs(context) {
         const target = library();
         if (input.action === "collections")
           return { collections: target.collections() };
+        if (input.action === "catalog") {
+          const catalog = await listAssetCatalog(target);
+          const query = input.query?.toLowerCase();
+          const all = catalog.entries.filter(({ manifest: a }) => (!input.assetId || a.assetId === input.assetId) && (!query || `${a.name} ${a.tags.join(" ")}`.toLowerCase().includes(query)));
+          return {
+            errors: catalog.errors,
+            total: all.length,
+            nextOffset: input.offset + input.limit < all.length ? input.offset + input.limit : null,
+            assets: all.slice(input.offset, input.offset + input.limit).map(({ collectionId, manifest: a }) => ({
+              collection: collectionId,
+              assetId: a.assetId,
+              revisionId: a.revisionId,
+              parentRevision: a.parentRevision,
+              name: a.name,
+              tags: a.tags,
+              editable: a.editable,
+              createdAt: a.createdAt
+            }))
+          };
+        }
         if (input.action === "list") {
           const query = input.query?.toLowerCase();
           const all = (await target.list(input.collection)).filter((a) => (!input.assetId || a.assetId === input.assetId) && (!query || `${a.name} ${a.tags.join(" ")}`.toLowerCase().includes(query)));
@@ -35698,9 +39256,9 @@ function createKilnAssetDefs(context) {
       name: "kiln_present",
       description: "Present one exact saved revision. Supporting MCP App clients show an interactive 3D card with GLB, editable ZIP, and source downloads. Every host receives exact artifact descriptors with resource URIs in the JSON result; verified hosts may also receive core MCP resource-link blocks. This tool does not launch a local browser in coding harnesses. Call after saving or when the user wants to see or download an asset.",
       inputSchema: exportInput,
-      outputSchema: z7.object({
-        ok: z7.literal(true),
-        collection: z7.string(),
+      outputSchema: z18.object({
+        ok: z18.literal(true),
+        collection: z18.string(),
         asset: assetManifestSchema.pick({
           assetId: true,
           revisionId: true,
@@ -35711,25 +39269,25 @@ function createKilnAssetDefs(context) {
           editable: true,
           files: true
         }).extend({
-          build: z7.object({
-            engine: z7.string(),
-            rebuild: z7.enum(["engine-required", "external-dependencies-required"]),
-            warningCount: z7.number().int(),
-            warnings: z7.array(z7.string())
+          build: z18.object({
+            engine: z18.string(),
+            rebuild: z18.enum(["engine-required", "external-dependencies-required"]),
+            warningCount: z18.number().int(),
+            warnings: z18.array(z18.string())
           }).optional()
         }),
-        resources: z7.array(z7.object({
-          type: z7.literal("resource_link"),
-          name: z7.string(),
-          uri: z7.string(),
-          mimeType: z7.string(),
-          size: z7.number().int().nonnegative(),
-          annotations: z7.object({
-            audience: z7.array(z7.enum(["user", "assistant"])),
-            priority: z7.number()
+        resources: z18.array(z18.object({
+          type: z18.literal("resource_link"),
+          name: z18.string(),
+          uri: z18.string(),
+          mimeType: z18.string(),
+          size: z18.number().int().nonnegative(),
+          annotations: z18.object({
+            audience: z18.array(z18.enum(["user", "assistant"])),
+            priority: z18.number()
           })
         })),
-        downloadUrls: z7.record(z7.string(), z7.string()).optional()
+        downloadUrls: z18.record(z18.string(), z18.string()).optional()
       }),
       ui: {
         resourceUri: KILN_ASSET_WIDGET_URI,
@@ -35796,6 +39354,10 @@ var init_registry2 = __esm(() => {
   init_programs();
   init_program_artifacts();
   init_discovery2();
+  init_projects2();
+  init_materials();
+  init_review();
+  init_workspace2();
   init_build_cache();
   init_validation();
   init_protocol();
@@ -35808,95 +39370,95 @@ var init_registry2 = __esm(() => {
   init_evidence_history();
   init_background();
   viewEvidenceHistoryByContext = new WeakMap;
-  validateInput = z7.object({
-    code: z7.string().describe("Kiln source code (defines `meta` + `build()`, optional `animate()`).")
+  validateInput = z18.object({
+    code: z18.string().describe("Kiln source code (defines `meta` + `build()`, optional `animate()`).")
   });
-  renderInput = z7.object({
-    code: z7.string().describe("Kiln source code to execute and render to an in-memory GLB.")
+  renderInput = z18.object({
+    code: z18.string().describe("Kiln source code to execute and render to an in-memory GLB.")
   });
-  backdropInput = z7.enum(BACKDROP_IDS).optional().describe("Neutral grey unless a sheet shows merging: light if the part is darker, dark if lighter.");
-  legacyCaptureInput = z7.object({
-    preset: z7.enum(["1x1", "1x2", "2x1", "3x1", "2x2", "3x2", "3x3"]).optional().describe("Grid shape as COLSxROWS. Default 3x2. Choose fewer views for simple shapes, up to 3x3 for more angles."),
-    cells: z7.array(z7.object({
-      azimuthDeg: z7.number().describe("0 = front, 90 = right, 180 = back, 270 = left. Wraps."),
-      elevationDeg: z7.number().describe("0 = eye level, positive looks down, negative from below. Clamped to -89..89."),
-      zoom: z7.number().optional().describe("Padding multiplier around the asset bounds for this cell only. Omit for the default framing; below 1 crops in, above 1 pulls back."),
-      name: z7.string().optional().describe("Cell label. Auto-derived from the angles if omitted.")
+  backdropInput = z18.enum(BACKDROP_IDS).optional().describe("Neutral grey unless a sheet shows merging: light if the part is darker, dark if lighter.");
+  legacyCaptureInput = z18.object({
+    preset: z18.enum(["1x1", "1x2", "2x1", "3x1", "2x2", "3x2", "3x3"]).optional().describe("Grid shape as COLSxROWS. Default 3x2. Choose fewer views for simple shapes, up to 3x3 for more angles."),
+    cells: z18.array(z18.object({
+      azimuthDeg: z18.number().describe("0 = front, 90 = right, 180 = back, 270 = left. Wraps."),
+      elevationDeg: z18.number().describe("0 = eye level, positive looks down, negative from below. Clamped to -89..89."),
+      zoom: z18.number().optional().describe("Padding multiplier around the asset bounds for this cell only. Omit for the default framing; below 1 crops in, above 1 pulls back."),
+      name: z18.string().optional().describe("Cell label. Auto-derived from the angles if omitted.")
     })).optional().describe("One camera per cell, in row-major order. Omit to use the preset default cameras. Must not exceed the preset capacity (max 9 overall)."),
     backdrop: backdropInput
   }).optional().describe("Optional. Choose the contact-sheet shape and cameras. Omit it entirely for the standard six-view 3x2 grid, which is the right default for most assets.");
-  cameraVec3Input = z7.array(z7.number()).length(3);
-  cameraShotInput = z7.object({
-    name: z7.string().optional(),
-    subject: z7.object({ path: z7.string().optional(), name: z7.string().optional() }).strict().refine((v) => v.path === undefined !== (v.name === undefined), {
+  cameraVec3Input = z18.array(z18.number()).length(3);
+  cameraShotInput = z18.object({
+    name: z18.string().optional(),
+    subject: z18.object({ path: z18.string().optional(), name: z18.string().optional() }).strict().refine((v) => v.path === undefined !== (v.name === undefined), {
       message: "Choose subject path OR exact name."
     }).optional(),
-    visibility: z7.enum(["context", "isolate"]).optional(),
-    camera: z7.discriminatedUnion("type", [
-      z7.strictObject({
-        type: z7.literal("orbit"),
-        azimuthDeg: z7.number().optional(),
-        elevationDeg: z7.number().optional(),
-        relativeTo: z7.enum(["world", "asset", "part"]).optional(),
-        padding: z7.number().positive().max(100).optional()
+    visibility: z18.enum(["context", "isolate"]).optional(),
+    camera: z18.discriminatedUnion("type", [
+      z18.strictObject({
+        type: z18.literal("orbit"),
+        azimuthDeg: z18.number().optional(),
+        elevationDeg: z18.number().optional(),
+        relativeTo: z18.enum(["world", "asset", "part"]).optional(),
+        padding: z18.number().positive().max(100).optional()
       }, { error: orbitCameraError }),
-      z7.object({
-        type: z7.literal("explicit"),
-        projection: z7.enum(["orthographic", "perspective"]),
+      z18.object({
+        type: z18.literal("explicit"),
+        projection: z18.enum(["orthographic", "perspective"]),
         position: cameraVec3Input,
         target: cameraVec3Input.optional(),
-        relativeTo: z7.enum(["world", "asset", "part", "local"]).optional(),
-        frame: z7.object({
+        relativeTo: z18.enum(["world", "asset", "part", "local"]).optional(),
+        frame: z18.object({
           origin: cameraVec3Input.optional(),
           rotation: cameraVec3Input.optional()
         }).strict().optional(),
-        framing: z7.enum(["explicit", "bounds"]).optional(),
-        padding: z7.number().positive().max(100).optional(),
+        framing: z18.enum(["explicit", "bounds"]).optional(),
+        padding: z18.number().positive().max(100).optional(),
         targetOffset: cameraVec3Input.optional(),
         up: cameraVec3Input.optional(),
-        halfHeight: z7.number().positive().optional(),
-        fovDeg: z7.number().positive().lt(180).optional(),
-        near: z7.number().positive().optional(),
-        far: z7.number().positive().optional()
+        halfHeight: z18.number().positive().optional(),
+        fovDeg: z18.number().positive().lt(180).optional(),
+        near: z18.number().positive().optional(),
+        far: z18.number().positive().optional()
       }).strict()
     ]).optional()
   }).strict();
-  advancedCaptureInput = z7.strictObject({
-    version: z7.literal("kiln.capture.v1"),
-    shots: z7.array(cameraShotInput).min(1).max(9),
-    cols: z7.number().int().min(1).max(3).optional(),
-    size: z7.number().int().min(128).max(1024).optional(),
-    output: z7.enum(["grid", "separate"]).optional(),
+  advancedCaptureInput = z18.strictObject({
+    version: z18.literal("kiln.capture.v1"),
+    shots: z18.array(cameraShotInput).min(1).max(9),
+    cols: z18.number().int().min(1).max(3).optional(),
+    size: z18.number().int().min(128).max(1024).optional(),
+    output: z18.enum(["grid", "separate"]).optional(),
     backdrop: backdropInput
   }, { error: advancedCaptureError });
-  captureInput = z7.union([
+  captureInput = z18.union([
     advancedCaptureInput,
-    z7.strictObject(legacyCaptureInput.unwrap().shape, {
+    z18.strictObject(legacyCaptureInput.unwrap().shape, {
       error: taggedCaptureError
     })
   ], { error: taggedCaptureError }).optional().describe("Use legacy preset/cells for an orbit sheet, or version kiln.capture.v1 with 1..9 shots for exact part framing, local axes, perspective and separate images. Omit for six default views.");
   renderViewsInput = renderInput.extend({ capture: captureInput });
   renderViewsBufferInput = renderViewsInput.omit({ code: true });
-  screenshotAnimationInput = z7.object({
+  screenshotAnimationInput = z18.object({
     shot: cameraShotInput.optional(),
-    measureParts: z7.array(cameraShotInput.shape.subject.unwrap()).min(1).max(16).optional().describe("Exact names or paths of subtrees measured together at each phase, independent of camera selection."),
-    frames: z7.number().int().min(2).max(6).optional(),
-    frameTimes: z7.array(z7.number().min(0).max(1)).min(1).max(9).optional().describe("Ordered phase fractions 0..1; mutually exclusive with frames."),
-    framing: z7.enum(["locked", "follow"]).optional(),
-    code: z7.string().describe("Kiln source code to execute; must define animate() returning the named clip."),
-    clip: z7.string().describe('The animation clip to view, by name (e.g. "walk", "attack"). Must be one your animate() returns.'),
-    camera: z7.string().optional().describe("Camera angle: right (default — side profile, best for leg swing + knee bend direction), front " + "(reveals sideways/lateral motion), back, left, top, or three-quarter."),
-    perFrame: z7.boolean().optional().describe("Return the frames as separate high-res images instead of one composite grid. Default false.")
+    measureParts: z18.array(cameraShotInput.shape.subject.unwrap()).min(1).max(16).optional().describe("Exact names or paths of subtrees measured together at each phase, independent of camera selection."),
+    frames: z18.number().int().min(2).max(6).optional(),
+    frameTimes: z18.array(z18.number().min(0).max(1)).min(1).max(9).optional().describe("Ordered phase fractions 0..1; mutually exclusive with frames."),
+    framing: z18.enum(["locked", "follow"]).optional(),
+    code: z18.string().describe("Kiln source code to execute; must define animate() returning the named clip."),
+    clip: z18.string().describe('The animation clip to view, by name (e.g. "walk", "attack"). Must be one your animate() returns.'),
+    camera: z18.string().optional().describe("Camera angle: right (default — side profile, best for leg swing + knee bend direction), front " + "(reveals sideways/lateral motion), back, left, top, or three-quarter."),
+    perFrame: z18.boolean().optional().describe("Return the frames as separate high-res images instead of one composite grid. Default false.")
   });
-  viewInteriorInput = z7.object({
+  viewInteriorInput = z18.object({
     capture: advancedCaptureInput.optional(),
-    code: z7.string().describe("Kiln source code to execute and render with the roof hidden."),
-    nodeName: z7.string().optional().describe("Override: lift the roof by exact node name instead of by role. Matches that node and its " + "children. Normally OMIT it — Kiln finds the roof from its semantic role (anything built " + 'with createRoofPlanes/createGableRoof), falling back to historical "Roof" naming.')
+    code: z18.string().describe("Kiln source code to execute and render with the roof hidden."),
+    nodeName: z18.string().optional().describe("Override: lift the roof by exact node name instead of by role. Matches that node and its " + "children. Normally OMIT it — Kiln finds the roof from its semantic role (anything built " + 'with createRoofPlanes/createGableRoof), falling back to historical "Roof" naming.')
   });
-  partListInput = z7.object({
-    query: z7.string().max(4096).optional().describe("Case-insensitive substring of name or exact encoded path; not a regex."),
-    offset: z7.number().int().min(0).optional(),
-    limit: z7.number().int().min(1).max(100).optional()
+  partListInput = z18.object({
+    query: z18.string().max(4096).optional().describe("Case-insensitive substring of name or exact encoded path; not a regex."),
+    offset: z18.number().int().min(0).optional(),
+    limit: z18.number().int().min(1).max(100).optional()
   }).strict();
   KILN_RENDER_VIEWS_DESCRIPTION = "Build the current asset and return geometry metrics, exact part paths and images. Omit capture for six orthographic views. Choose preset/cells for a smaller orbit sheet, or version kiln.capture.v1 with shots for per-part framing, local axes, perspective and separate images. +X is forward, +Y up, +Z right. Review silhouette, attachments, proportion and ground contact. GPU PBR shading supports textured or metallic materials; a flat-shaded CPU render supports geometry review. Read viewFidelity; do not judge material fidelity from CPU views. Failed builds return errors without images." + VIEW_EVIDENCE_GUIDANCE;
   kilnRenderViewsDef = createKilnRenderViewsDef();
@@ -35904,78 +39466,78 @@ var init_registry2 = __esm(() => {
   kilnScreenshotAnimationDef = createKilnScreenshotAnimationDef();
   KILN_VIEW_INTERIOR_DESCRIPTION = "SEE INSIDE an enterable building: renders it with the roof lifted off, as a " + "three-view grid. (1) Floor plan: top-down — check the interior is open and walkable and the footprint " + "is right. (2) Dollhouse: a 3/4 cutaway — check built-in fixtures (hearth, counter, shelves) rest ON the " + "floor, not floating or sunk, and the walls enclose a real volume with headroom. (3) Eye-level: a low " + "angle looking in through the doorway with the near walls also removed — confirm the doorway is a REAL " + "gap you could walk through (not a panel) and no wall or glass is buried inside a solid mass. Call this before finalizing any building. Take no argument: the roof is found from its semantic role, so any roof built with createRoofPlanes/createGableRoof lifts whatever it is named. If " + "roofsHidden comes back 0 no roof was resolvable and the interior stays hidden — build the roof " + 'with a roof primitive (or name the group "Roof"). Each cell is rendered from deterministic cutaway GLB bytes: GPU PBR when available, otherwise a GLB-native geometry-flat fallback. Read viewFidelity before judging materials; writes no files.' + VIEW_EVIDENCE_GUIDANCE;
   kilnViewInteriorDef = createKilnViewInteriorDef();
-  attachmentEndpointInput = z7.object({
-    subject: z7.object({ path: z7.string().optional(), name: z7.string().optional() }).strict(),
+  attachmentEndpointInput = z18.object({
+    subject: z18.object({ path: z18.string().optional(), name: z18.string().optional() }).strict(),
     point: cameraVec3Input.optional()
   }).strict();
-  surfacePairInput = z7.array(z7.string().max(4096)).length(2);
-  inspectInput = z7.object({
-    image: z7.boolean().optional().describe("False: requires listParts/measure/surfacePairs/compare; no image or camera controls. Default true."),
+  surfacePairInput = z18.array(z18.string().max(4096)).length(2);
+  inspectInput = z18.object({
+    image: z18.boolean().optional().describe("False: requires listParts/measure/surfacePairs/compare; no image or camera controls. Default true."),
     listParts: partListInput.optional().describe("List exported-scene paths, including nested parts. Default 80, max 100 per page. Follow partListing.nextOffset with the same programRef/query. image:false avoids rendering."),
-    surfacePairs: z7.array(surfacePairInput).min(1).max(12).optional().describe("[fromPath,toPath] pairs; check surfaceMeasurements.status and each result."),
-    compare: z7.object({
-      programRef: z7.string().regex(programRefPattern),
-      offset: z7.number().int().min(0).optional(),
-      limit: z7.number().int().min(1).max(100).optional(),
-      paths: z7.array(z7.string().max(4096)).min(1).max(12).optional().describe("Exact baseline node paths, scene-prefixed without primitive children. Complete subtree summaries.")
+    surfacePairs: z18.array(surfacePairInput).min(1).max(12).optional().describe("[fromPath,toPath] pairs; check surfaceMeasurements.status and each result."),
+    compare: z18.object({
+      programRef: z18.string().regex(programRefPattern),
+      offset: z18.number().int().min(0).optional(),
+      limit: z18.number().int().min(1).max(100).optional(),
+      paths: z18.array(z18.string().max(4096)).min(1).max(12).optional().describe("Exact baseline node paths, scene-prefixed without primitive children. Complete subtree summaries.")
     }).strict().optional().describe("Static geometry/material/transform/bounds under current host settings. Follow nextOffset; paths adds complete subtrees."),
-    measure: z7.object({
-      mode: z7.enum(["anchors", "surface"]).optional(),
+    measure: z18.object({
+      mode: z18.enum(["anchors", "surface"]).optional(),
       from: attachmentEndpointInput,
       to: attachmentEndpointInput
     }).strict().optional().describe("Default anchors: origin/local-point distance. Surface: disjoint mesh triangles, omit points. Rest pose, asset units. Check status/bounds; no solid clearance/attachment proof."),
     shot: cameraShotInput.optional().describe("Exact shot; omit part/view/orbit controls."),
-    code: z7.string().describe("Kiln source code to execute and inspect."),
-    part: z7.string().optional().describe("Frame named part and descendants (case-insensitive, substring fallback). Omit for whole asset."),
-    view: z7.string().optional().describe("front/right/back/left/top/three-quarter (default). Orbit angles override."),
-    azimuthDeg: z7.number().optional().describe("Orbit degrees: 0 front, 90 right, 180 back, 270 left. Wraps."),
-    elevationDeg: z7.number().optional().describe("Elevation degrees: 0 eye level, positive above. Clamped -89..89."),
-    zoom: z7.number().optional().describe("Bounds padding 1..4; default 1.2. Larger = more context."),
-    isolate: z7.boolean().optional().describe("Hide surrounding geometry. Requires part; default false.")
+    code: z18.string().describe("Kiln source code to execute and inspect."),
+    part: z18.string().optional().describe("Frame named part and descendants (case-insensitive, substring fallback). Omit for whole asset."),
+    view: z18.string().optional().describe("front/right/back/left/top/three-quarter (default). Orbit angles override."),
+    azimuthDeg: z18.number().optional().describe("Orbit degrees: 0 front, 90 right, 180 back, 270 left. Wraps."),
+    elevationDeg: z18.number().optional().describe("Elevation degrees: 0 eye level, positive above. Clamped -89..89."),
+    zoom: z18.number().optional().describe("Bounds padding 1..4; default 1.2. Larger = more context."),
+    isolate: z18.boolean().optional().describe("Hide surrounding geometry. Requires part; default false.")
   });
   inspectBufferInput = inspectInput.omit({ code: true });
   KILN_INSPECT_DESCRIPTION = "List complete part paths with listParts and image:false; query filters names/paths, offset/limit paginate. Follow partListing.nextOffset. ZOOM IN on one part: renders a single 512x512 close-up framed to the named part (the node name you gave createPart, matched case-insensitively with a substring fallback) and its descendants, " + "from one camera. Use it after kiln_render reveals a suspect region — a floating part, a bad " + "joint, a wrong proportion — to see fine detail one grid cell cannot show. args: part (omit to " + "frame the whole asset in one large view), view (front/right/back/left/top/three-quarter, default three-quarter), azimuthDeg + elevationDeg (orbit to ANY angle instead of a named view: azimuth 0 = front, 90 = right, 180 = back, 270 = left; elevation 0 = eye level, positive looks down, clamped to -89..89), zoom (padding multiplier around the part bounds, 1 = tight crop up to 4 = wide context, default 1.2), isolate (hide everything except that part, default false). Reach for the orbit angles when a named view puts the thing you need to judge edge-on or " + "behind something — the reply always tells you the azimuth/elevation it used, so you can step " + "from there. " + "If the part name does not resolve you get the list of available part names back — pick one and " + "retry. By default surrounding geometry stays visible for context and can occlude the part: either pick a different view, or set isolate:true to hide everything else and see the part unobstructed (use it for anything buried inside or behind other geometry). The view is rendered from deterministic derivative GLB bytes; GPU PBR is used only when it can preserve the requested framing, otherwise the GLB-native geometry-flat fallback reports why in viewFidelity. Writes no files." + VIEW_EVIDENCE_GUIDANCE;
   kilnInspectDef = createKilnInspectDef();
-  editOperationInput = z7.object({
-    oldString: z7.string().describe("The exact text to replace, copied verbatim from the program (including whitespace and indentation, and with no line-number prefixes). Must be unique unless replaceAll is true."),
-    newString: z7.string().describe("The replacement text. Use an empty string to delete."),
-    replaceAll: z7.boolean().optional().describe("Replace every occurrence instead of failing when oldString matches more than once.")
+  editOperationInput = z18.object({
+    oldString: z18.string().describe("The exact text to replace, copied verbatim from the program (including whitespace and indentation, and with no line-number prefixes). Must be unique unless replaceAll is true."),
+    newString: z18.string().describe("The replacement text. Use an empty string to delete."),
+    replaceAll: z18.boolean().optional().describe("Replace every occurrence instead of failing when oldString matches more than once.")
   });
-  editInput = z7.object({
-    code: z7.string().describe("The Kiln program to patch. The full current source."),
-    edits: z7.array(editOperationInput).min(1).max(20).describe("Edits applied in order against the program. If any one fails to match, none are applied and the reply says which. Batch related changes into a single call."),
-    render: z7.boolean().optional().describe("Render the patched program and return the views (default true). false = patch only."),
+  editInput = z18.object({
+    code: z18.string().describe("The Kiln program to patch. The full current source."),
+    edits: z18.array(editOperationInput).min(1).max(20).describe("Edits applied in order against the program. If any one fails to match, none are applied and the reply says which. Batch related changes into a single call."),
+    render: z18.boolean().optional().describe("Render the patched program and return the views (default true). false = patch only."),
     capture: captureInput
   });
   kilnEditDef = createKilnEditDef();
-  rendererInput = z7.strictObject({
-    action: z7.enum(["status", "reprobe"]).default("status")
+  rendererInput = z18.strictObject({
+    action: z18.enum(["status", "reprobe"]).default("status")
   });
   assetSelector = {
-    collection: z7.string().regex(/^[a-z][a-z0-9_-]{0,79}$/).describe("Destination collection ID. Discover available IDs with kiln_assets action=collections. Follow an explicit user destination; otherwise use project.").default("project"),
-    assetId: z7.string().regex(/^[a-z][a-z0-9_-]{0,79}$/),
-    revisionId: z7.string().regex(/^[a-z][a-z0-9_-]{0,79}$/)
+    collection: z18.string().regex(/^[a-z][a-z0-9_-]{0,79}$/).describe("Destination collection ID. Discover available IDs with kiln_assets action=collections. Follow an explicit user destination; otherwise use project.").default("project"),
+    assetId: z18.string().regex(/^[a-z][a-z0-9_-]{0,79}$/),
+    revisionId: z18.string().regex(/^[a-z][a-z0-9_-]{0,79}$/)
   };
 });
 
 // render-service/src/instance.mjs
-import { createHash as createHash11 } from "node:crypto";
-import { readFileSync as readFileSync2, readdirSync, statSync } from "node:fs";
-import { join as join7, relative as relative2 } from "node:path";
+import { createHash as createHash15 } from "node:crypto";
+import { readFileSync as readFileSync3, readdirSync, statSync } from "node:fs";
+import { join as join14, relative as relative7 } from "node:path";
 function fingerprintSourceDir(dir) {
-  const hash = createHash11("sha256");
+  const hash = createHash15("sha256");
   hash.update("kiln.render-service-source.v1");
   const visit = (path) => {
     if (statSync(path).isDirectory()) {
       for (const name of readdirSync(path).sort()) {
         if (name === "node_modules")
           continue;
-        visit(join7(path, name));
+        visit(join14(path, name));
       }
       return;
     }
-    const bytes = readFileSync2(path);
-    hash.update(JSON.stringify([relative2(dir, path).replaceAll("\\", "/"), bytes.length]));
+    const bytes = readFileSync3(path);
+    hash.update(JSON.stringify([relative7(dir, path).replaceAll("\\", "/"), bytes.length]));
     hash.update(bytes);
   };
   visit(dir);
@@ -35984,9 +39546,9 @@ function fingerprintSourceDir(dir) {
 var init_instance = () => {};
 
 // render-service/src/build-identity.mjs
-import { createHash as createHash12 } from "node:crypto";
-import { readFileSync as readFileSync3 } from "node:fs";
-import { dirname as dirname4, join as join8 } from "node:path";
+import { createHash as createHash16 } from "node:crypto";
+import { readFileSync as readFileSync4 } from "node:fs";
+import { dirname as dirname7, join as join15 } from "node:path";
 import { createRequire as createRequire2 } from "node:module";
 function compatibilityFingerprint({ sourceFingerprint, dependencies }) {
   if (typeof sourceFingerprint !== "string" || !/^sha256:[a-f0-9]{64}$/.test(sourceFingerprint))
@@ -35996,7 +39558,7 @@ function compatibilityFingerprint({ sourceFingerprint, dependencies }) {
       throw new Error(`Missing renderer dependency identity: ${name}`);
     return [name, dependencies[name]];
   }));
-  return `sha256:${createHash12("sha256").update(JSON.stringify({
+  return `sha256:${createHash16("sha256").update(JSON.stringify({
     version: "kiln.render-service-build.v1",
     sourceFingerprint,
     dependencies: pins
@@ -36007,20 +39569,20 @@ function resolvedRendererDependencies(anchorUrl = import.meta.url) {
   return Object.fromEntries(Object.entries(RENDER_SERVICE_DEPENDENCIES).map(([name, expected]) => {
     let dir;
     try {
-      dir = dirname4(require2.resolve(name));
+      dir = dirname7(require2.resolve(name));
     } catch {
       throw new Error(`Renderer dependency ${name}@${expected} is not installed`);
     }
     let found;
     for (;; ) {
       try {
-        const pkg = JSON.parse(readFileSync3(join8(dir, "package.json"), "utf8"));
+        const pkg = JSON.parse(readFileSync4(join15(dir, "package.json"), "utf8"));
         if (pkg.name === name) {
           found = pkg.version;
           break;
         }
       } catch {}
-      const parent = dirname4(dir);
+      const parent = dirname7(dir);
       if (parent === dir)
         break;
       dir = parent;
@@ -36046,7 +39608,7 @@ var init_build_identity = __esm(() => {
 });
 
 // src/render-service-client.ts
-import { createHash as createHash13 } from "node:crypto";
+import { createHash as createHash17 } from "node:crypto";
 import { existsSync as existsSync2 } from "node:fs";
 import { fileURLToPath as fileURLToPath5 } from "node:url";
 function packagedRendererSourceFingerprint() {
@@ -36065,12 +39627,12 @@ function validateRenderServiceHealth(value) {
   if (typeof raw.authRequired !== "boolean")
     return bad("renderer authentication policy is missing or invalid");
   const instance = raw.instance;
-  if (instance?.version !== "kiln.render-service-instance.v2" || !pid(instance.pid) || !(instance.ownerPid === null || pid(instance.ownerPid)) || !nonempty(instance.startedAt) || !Number.isFinite(Date.parse(instance.startedAt)) || !nonempty(instance.sourceDir) || !digest5(instance.sourceFingerprint) || !(instance.mode === "manual" && instance.idleTimeoutMs === null || instance.mode === "managed" && typeof instance.idleTimeoutMs === "number" && Number.isSafeInteger(instance.idleTimeoutMs) && instance.idleTimeoutMs > 0))
+  if (instance?.version !== "kiln.render-service-instance.v2" || !pid(instance.pid) || !(instance.ownerPid === null || pid(instance.ownerPid)) || !nonempty(instance.startedAt) || !Number.isFinite(Date.parse(instance.startedAt)) || !nonempty(instance.sourceDir) || !digest8(instance.sourceFingerprint) || !(instance.mode === "manual" && instance.idleTimeoutMs === null || instance.mode === "managed" && typeof instance.idleTimeoutMs === "number" && Number.isSafeInteger(instance.idleTimeoutMs) && instance.idleTimeoutMs > 0))
     return bad("renderer instance identity is missing or invalid");
   if (!Array.isArray(raw.capabilities) || !REQUIRED_RENDER_CAPABILITIES.every((name) => raw.capabilities.includes(name)))
     return bad("renderer required capabilities are missing");
   const build = raw.compatibility;
-  if (build?.version !== "kiln.render-service-build.v1" || !digest5(build.sourceFingerprint) || !digest5(build.fingerprint) || build.sourceFingerprint !== instance.sourceFingerprint)
+  if (build?.version !== "kiln.render-service-build.v1" || !digest8(build.sourceFingerprint) || !digest8(build.fingerprint) || build.sourceFingerprint !== instance.sourceFingerprint)
     return bad("renderer build identity is missing or inconsistent");
   for (const [name, expected] of Object.entries(RENDER_SERVICE_DEPENDENCIES))
     if (build.dependencies?.[name] !== expected)
@@ -36078,7 +39640,7 @@ function validateRenderServiceHealth(value) {
   if (build.fingerprint !== compatibilityFingerprint(build))
     return bad("renderer build fingerprint is invalid");
   const capture = raw.captureIdentity;
-  if (capture?.version !== "kiln.capture-producer.v1" || !digest5(capture.fingerprint) || !nonempty(capture.instanceId))
+  if (capture?.version !== "kiln.capture-producer.v1" || !digest8(capture.fingerprint) || !nonempty(capture.instanceId))
     return bad("renderer capture identity is missing or invalid");
   return { kind: "service", health: raw };
 }
@@ -36135,7 +39697,7 @@ function makeRemoteRenderPort(url, token, sourceFingerprint) {
   return async (req, execution) => {
     const health = await verifiedHealth(url, token, sourceFingerprint, execution?.signal);
     execution?.signal?.throwIfAborted();
-    const inputGlbSha256 = `sha256:${createHash13("sha256").update(req.glb).digest("hex")}`;
+    const inputGlbSha256 = `sha256:${createHash17("sha256").update(req.glb).digest("hex")}`;
     const body = {
       glb_base64: Buffer.from(req.glb).toString("base64"),
       input_glb_sha256: inputGlbSha256,
@@ -36179,7 +39741,7 @@ function makeRemoteRenderPort(url, token, sourceFingerprint) {
     };
   };
 }
-var digest5 = (value) => typeof value === "string" && /^sha256:[a-f0-9]{64}$/.test(value), nonempty = (value) => typeof value === "string" && value.trim().length > 0, pid = (value) => typeof value === "number" && Number.isSafeInteger(value) && value > 0;
+var digest8 = (value) => typeof value === "string" && /^sha256:[a-f0-9]{64}$/.test(value), nonempty = (value) => typeof value === "string" && value.trim().length > 0, pid = (value) => typeof value === "number" && Number.isSafeInteger(value) && value > 0;
 var init_render_service_client = __esm(() => {
   init_build_identity();
   init_instance();
@@ -36188,7 +39750,7 @@ var init_render_service_client = __esm(() => {
 
 // src/render-service-windows.ts
 import { spawn as spawn2 } from "node:child_process";
-import { join as join9 } from "node:path";
+import { join as join16 } from "node:path";
 function powerShellLiteral(value) {
   return `'${value.replaceAll("'", "''")}'`;
 }
@@ -36203,7 +39765,7 @@ function launchWindowsRenderService(executable, args, directory, env) {
   ].join(`
 `);
   const systemRoot = env.SystemRoot ?? env.SYSTEMROOT;
-  const powerShell = systemRoot ? join9(systemRoot, "System32", "WindowsPowerShell", "v1.0", "powershell.exe") : "powershell.exe";
+  const powerShell = systemRoot ? join16(systemRoot, "System32", "WindowsPowerShell", "v1.0", "powershell.exe") : "powershell.exe";
   const child = spawn2(powerShell, [
     "-NoProfile",
     "-NonInteractive",
@@ -36254,7 +39816,7 @@ var init_render_service_windows = () => {};
 import { spawn as spawn3, spawnSync } from "node:child_process";
 import { existsSync as existsSync3 } from "node:fs";
 import { fileURLToPath as fileURLToPath6, pathToFileURL } from "node:url";
-import { join as join10 } from "node:path";
+import { join as join17 } from "node:path";
 function localRenderServicePort(env = process.env) {
   const raw = Number(env["KILN_RENDER_SERVICE_PORT"]);
   return Number.isInteger(raw) && raw > 0 && raw < 65536 ? raw : DEFAULT_LOCAL_RENDER_SERVICE_PORT;
@@ -36265,18 +39827,18 @@ function localRenderServiceUrl(env = process.env) {
 function renderServiceNodeArguments(dir) {
   return [
     "--import",
-    pathToFileURL(join10(dir, "src/register-hooks.mjs")).href,
-    join10(dir, "src/server.mjs")
+    pathToFileURL(join17(dir, "src/register-hooks.mjs")).href,
+    join17(dir, "src/server.mjs")
   ];
 }
 function renderServiceDir() {
   return process.env["KILN_RENDER_SERVICE_DIR"] || fileURLToPath6(new URL("../render-service", import.meta.url));
 }
 function localRenderServiceState(dir = renderServiceDir()) {
-  if (!existsSync3(join10(dir, "src/server.mjs")) || !existsSync3(join10(dir, "package.json")))
+  if (!existsSync3(join17(dir, "src/server.mjs")) || !existsSync3(join17(dir, "package.json")))
     return "not-packaged";
   try {
-    const anchor = pathToFileURL(join10(dir, "src/server.mjs")).href;
+    const anchor = pathToFileURL(join17(dir, "src/server.mjs")).href;
     if (process.versions.bun) {
       const moduleUrl = new URL("../render-service/src/build-identity.mjs", import.meta.url).href;
       const result = spawnSync(nodeBinary(), [
@@ -36307,7 +39869,7 @@ function explainRenderServiceState(state, dir) {
   return "renderer dependencies are missing; reinstall the official Kiln package with optional dependencies enabled";
 }
 function renderServiceSourceFingerprint(dir) {
-  const source = join10(dir, "src");
+  const source = join17(dir, "src");
   return existsSync3(source) ? fingerprintSourceDir(source) : undefined;
 }
 async function inspectLocalRenderService(url, dir = renderServiceDir(), timeoutMs = 1500) {
@@ -36687,234 +40249,229 @@ var init_cli_render_mode = __esm(() => {
   selected = new WeakMap;
 });
 
-// src/assets-node.ts
-import { createHash as createHash14, randomUUID as randomUUID4 } from "node:crypto";
-import { readFileSync as readFileSync4 } from "node:fs";
-import { lstat as lstat3, mkdir as mkdir4, readFile as readFile4, readdir as readdir4, realpath as realpath3, rename as rename3, rm, writeFile as writeFile4 } from "node:fs/promises";
-import { homedir, platform } from "node:os";
-import { dirname as dirname5, join as join11, relative as relative3, resolve as resolve6, sep } from "node:path";
-async function verifyAssetRecord(record) {
-  for (const [name, info] of Object.entries(record.manifest.files)) {
-    const bytes = record.files[name];
-    if (!bytes || bytes.length !== info.bytes || digest6(bytes) !== info.sha256)
-      throw new Error(`Asset integrity failure: ${name}`);
-  }
-  validateRecordShape(record);
-}
-
-class FileAssetLibrary {
-  roots;
-  constructor(roots) {
-    if (!Object.keys(roots).length)
-      throw new Error("Configure at least one collection");
-    this.roots = Object.fromEntries(Object.entries(roots).map(([id, path]) => [assetIdSchema.parse(id), resolve6(path)]));
-  }
-  collections() {
-    return Object.keys(this.roots).map((id) => ({
-      id,
-      label: id === "project" ? "This project" : id === "library" ? "Your library" : id
-    }));
-  }
-  directory(collection) {
-    const root = this.roots[collection];
-    if (!root || !Object.hasOwn(this.roots, collection))
-      throw new Error("Unknown collection");
-    return root;
-  }
-  async path(collection, ...parts) {
-    const root = this.directory(collection);
-    await mkdir4(root, { recursive: true });
-    const canonical = await realpath3(root);
-    let path = root;
-    for (const part of parts) {
-      assetIdSchema.parse(part);
-      path = join11(path, part);
-      try {
-        const entry = await lstat3(path);
-        if (entry.isSymbolicLink())
-          throw new Error("Collection symlinks are not supported");
-        const rel = relative3(canonical, await realpath3(path));
-        if (rel === ".." || rel.startsWith(`..${sep}`))
-          throw new Error("Collection path escapes root");
-      } catch (error) {
-        if (error.code !== "ENOENT")
-          throw error;
-      }
-    }
-    return path;
-  }
-  async list(collection) {
-    const root = await this.path(collection);
-    const records = [];
-    for (const asset of await readdir4(root, { withFileTypes: true })) {
-      if (!asset.isDirectory() || !assetIdSchema.safeParse(asset.name).success)
-        continue;
-      const revisions = await this.path(collection, asset.name, "revisions");
-      let entries;
-      try {
-        entries = await readdir4(revisions, { withFileTypes: true });
-      } catch (error) {
-        if (error.code === "ENOENT")
-          continue;
-        throw error;
-      }
-      for (const revision of entries) {
-        if (!revision.isDirectory() || !revision.name.startsWith("r_"))
-          continue;
-        const dir = await this.path(collection, asset.name, "revisions", revision.name);
-        const manifest = assetManifestSchema.parse(JSON.parse(new TextDecoder().decode(await this.file(dir, "manifest.json", 1024 * 1024))));
-        if (manifest.assetId !== asset.name || manifest.revisionId !== revision.name)
-          throw new Error("Asset identity mismatch");
-        records.push(manifest);
-      }
-    }
-    return records.sort((a, b) => b.createdAt.localeCompare(a.createdAt) || a.revisionId.localeCompare(b.revisionId));
-  }
-  async file(dir, name, limit = ASSET_LIMIT) {
-    const path = join11(dir, name);
-    const info = await lstat3(path);
-    if (!info.isFile() || info.isSymbolicLink() || info.size > limit)
-      throw new Error("Invalid collection file");
-    return new Uint8Array(await readFile4(path));
-  }
-  async read(collection, assetId, revisionId) {
-    const dir = await this.path(collection, assetId, "revisions", revisionId);
-    const original = JSON.parse(new TextDecoder("utf-8", { fatal: true }).decode(await this.file(dir, "manifest.json", 1024 * 1024)));
-    assetManifestSchema.parse(original);
-    const manifest = original;
-    if (manifest.assetId !== assetId || manifest.revisionId !== revisionId)
-      throw new Error("Asset identity mismatch");
-    const files = {};
-    for (const name of Object.keys(manifest.files)) {
-      if (!["asset.glb", "source.kiln.js", "preview.png"].includes(name))
-        throw new Error("Invalid collection filename");
-      files[name] = await this.file(dir, name);
-    }
-    const record = { manifest, files };
-    await verifyAssetRecord(record);
-    return record;
-  }
-  async save(collection, draft) {
-    const assetId = draft.assetId ?? `a_${randomUUID4().replaceAll("-", "")}`;
-    if (draft.parentRevision)
-      await this.read(collection, assetId, draft.parentRevision);
-    if (draft.assetId && !draft.parentRevision && (await this.list(collection)).some((m) => m.assetId === assetId))
-      throw new Error("An existing asset requires parentRevision");
-    const files = { "asset.glb": Uint8Array.from(draft.glb) };
-    if (draft.code !== undefined)
-      files["source.kiln.js"] = new TextEncoder().encode(draft.code);
-    if (draft.preview)
-      files["preview.png"] = Uint8Array.from(draft.preview);
-    const manifest = assetManifestSchema.parse({
-      version: "kiln.asset.v1",
-      assetId,
-      revisionId: `r_${randomUUID4().replaceAll("-", "")}`,
-      parentRevision: draft.parentRevision,
-      name: draft.name,
-      tags: draft.tags ?? [],
-      createdAt: new Date().toISOString(),
-      brief: draft.brief,
-      description: draft.description,
-      attribution: draft.attribution,
-      editable: draft.code !== undefined,
-      files: Object.fromEntries(Object.entries(files).map(([name, bytes]) => [
-        name,
-        { sha256: digest6(bytes), bytes: bytes.length }
-      ])),
-      build: draft.build ? { ...draft.build, rebuild: draft.build.rebuild ?? "engine-required" } : undefined,
-      preview: draft.previewInfo
-    });
-    await this.import(collection, [{ manifest, files }]);
-    return manifest;
-  }
-  async import(collection, records) {
-    if (!records.length || records.length > 100)
-      throw new Error("Import requires 1..100 revisions");
-    for (const record of records) {
-      await verifyAssetRecord(record);
-      if (Buffer.byteLength(`${JSON.stringify(record.manifest, null, 2)}
-`, "utf8") > 1024 * 1024)
-        throw new Error("Manifest exceeds 1 MiB; no revision was written.");
-    }
-    for (const record of records) {
-      const { manifest, files } = record;
-      const dest = await this.path(collection, manifest.assetId, "revisions", manifest.revisionId);
-      const parent = dirname5(dest);
-      await mkdir4(parent, { recursive: true });
-      const stage = join11(parent, `.write-${randomUUID4()}`);
-      await mkdir4(stage);
-      try {
-        for (const [name, bytes] of Object.entries(files))
-          await writeFile4(join11(stage, name), bytes, { flag: "wx" });
-        await writeFile4(join11(stage, "manifest.json"), `${JSON.stringify(manifest, null, 2)}
-`, {
-          flag: "wx"
-        });
-        try {
-          await rename3(stage, dest);
-        } catch (error) {
-          const existing = await this.read(collection, manifest.assetId, manifest.revisionId).catch(() => {
-            return;
-          });
-          if (!existing || JSON.stringify(existing.manifest) !== JSON.stringify(manifest))
-            throw error;
-        }
-      } finally {
-        await rm(stage, { recursive: true, force: true });
-      }
-    }
-    return records.map((r) => r.manifest);
-  }
-}
-function collectionConfigPath(env = process.env) {
-  const workspace = env.KILN_PROGRAM_STORE ? dirname5(dirname5(resolve6(env.KILN_PROGRAM_STORE))) : process.cwd();
-  return join11(workspace, ".kiln", "collections.json");
-}
-function defaultUserLibraryRoot(env = process.env, home = homedir(), operatingSystem = platform()) {
-  const dataRoot = env.XDG_DATA_HOME?.trim();
-  if (dataRoot)
-    return join11(dataRoot, "kiln", "library");
-  if (operatingSystem === "darwin")
-    return join11(home, "Library", "Application Support", "Kiln", "library");
-  if (operatingSystem === "win32")
-    return join11(env.LOCALAPPDATA?.trim() || join11(home, "AppData", "Local"), "Kiln", "library");
-  return join11(home, ".local", "share", "kiln", "library");
-}
-function localAssetLibrary(env = process.env) {
-  if (env.KILN_COLLECTIONS) {
-    const value = JSON.parse(env.KILN_COLLECTIONS);
-    if (!value || typeof value !== "object" || Array.isArray(value) || Object.values(value).some((v) => typeof v !== "string" || !v))
-      throw new Error("KILN_COLLECTIONS must map collection names to directories");
-    return new FileAssetLibrary(value);
-  }
-  const config = collectionConfigPath(env);
-  try {
-    const text = readFileSync4(config, "utf8");
-    if (!text.trim())
-      throw new Error("Collection configuration is empty");
-    return localAssetLibrary({ ...env, KILN_COLLECTIONS: text });
-  } catch (error) {
-    if (error.code !== "ENOENT")
-      throw error;
-  }
-  const workspace = dirname5(dirname5(config));
-  return new FileAssetLibrary({
-    project: join11(workspace, "assets", "kiln"),
-    library: defaultUserLibraryRoot(env)
+// src/workspace-cli.ts
+import { open as open3 } from "node:fs/promises";
+import { resolve as resolve11 } from "node:path";
+function cliWorkspaceSelection(projectId, projectRevision, noProject = false) {
+  if (noProject && (projectId !== undefined || projectRevision !== undefined))
+    throw new Error("--no-project cannot be combined with --project or --project-revision.");
+  return workspaceSelectionSchema.parse({
+    projectId: noProject ? null : projectId,
+    projectRevision
   });
 }
-var digest6 = (bytes) => `sha256:${createHash14("sha256").update(bytes).digest("hex")}`;
-var init_assets_node = __esm(() => {
-  init_assets();
+async function readMaterialDependencies(path) {
+  const file = await open3(resolve11(path), "r");
+  try {
+    const limit = 1024 * 1024;
+    const info = await file.stat();
+    if (!info.isFile() || info.size > limit)
+      throw new Error("--materials requires a JSON file no larger than 1 MiB.");
+    const bytes = Buffer.alloc(limit + 1);
+    let total = 0;
+    while (total < bytes.length) {
+      const read = await file.read(bytes, total, bytes.length - total, null);
+      if (!read.bytesRead)
+        break;
+      total += read.bytesRead;
+    }
+    if (total > limit)
+      throw new Error("--materials JSON exceeds 1 MiB.");
+    return materialDependenciesSchema.parse(JSON.parse(new TextDecoder("utf-8", { fatal: true }).decode(bytes.subarray(0, total))));
+  } finally {
+    await file.close();
+  }
+}
+var init_workspace_cli = __esm(() => {
+  init_projects();
+  init_workspace();
+});
+
+// src/workspace-http.ts
+import { z as z19 } from "zod";
+async function readJson(req, origin) {
+  if (req.headers.origin !== origin)
+    throw new WorkspaceHttpError(403, "Same-origin writes only");
+  if (req.headers["content-type"]?.split(";")[0]?.trim() !== "application/json")
+    throw new WorkspaceHttpError(415, "JSON body required");
+  const limit = 1024 * 1024;
+  if (Number(req.headers["content-length"]) > limit)
+    throw new WorkspaceHttpError(413, "Request body exceeds 1 MiB");
+  const bytes = await new Promise((resolve, reject) => {
+    let size = 0;
+    const chunks = [];
+    req.on("data", (chunk) => {
+      size += chunk.length;
+      if (size > limit) {
+        chunks.length = 0;
+        reject(new WorkspaceHttpError(413, "Request body exceeds 1 MiB"));
+      } else
+        chunks.push(chunk);
+    });
+    req.on("end", () => resolve(Buffer.concat(chunks)));
+    req.on("error", reject);
+    req.on("aborted", () => reject(new WorkspaceHttpError(400, "Request aborted")));
+  });
+  try {
+    return JSON.parse(bytes.toString("utf8"));
+  } catch {
+    throw new WorkspaceHttpError(400, "Invalid JSON body");
+  }
+}
+async function serveWorkspaceRequest(req, res, url, services) {
+  const { workspace } = services;
+  const sourceId = url.searchParams.get("source") ?? "";
+  const liveReview = sourceId ? Object.hasOwn(services.reviewSources ?? {}, sourceId) ? services.reviewSources?.[sourceId]?.review : undefined : services.liveReview;
+  const qualify = (operation) => sourceId ? {
+    ...operation,
+    ...operation.artifact ? {
+      artifact: {
+        ...operation.artifact,
+        url: `${operation.artifact.url}?source=${encodeURIComponent(sourceId)}`
+      }
+    } : {},
+    captures: operation.captures.map((file) => ({
+      ...file,
+      url: `${file.url}?source=${encodeURIComponent(sourceId)}`
+    }))
+  } : operation;
+  const method = req.method;
+  const read = method === "GET" || method === "HEAD";
+  const json = (value, status = 200) => {
+    res.statusCode = status;
+    res.setHeader("Content-Type", "application/json");
+    res.end(method === "HEAD" ? undefined : JSON.stringify(value));
+    return true;
+  };
+  const bytes = (value, mime) => {
+    res.setHeader("Content-Type", mime);
+    res.end(method === "HEAD" ? undefined : value);
+    return true;
+  };
+  const parts = url.pathname.split("/").slice(1).map(decodeURIComponent);
+  if (parts[0] !== "api")
+    return false;
+  if (parts[1] === "live-sources" && parts.length === 2 && read)
+    return json({
+      sources: [
+        { id: "", label: "Current workspace" },
+        ...Object.entries(services.reviewSources ?? {}).map(([id, source]) => ({
+          id,
+          label: source.label
+        }))
+      ]
+    });
+  if (parts[1] === "live" && sourceId && !liveReview)
+    throw new WorkspaceHttpError(404, "Unknown review source");
+  if (parts[1] === "material-presets" && parts.length === 2 && workspace && read)
+    return json(await createKilnMaterialDef(workspace.materials).run({ action: "presets" }));
+  if (parts[1] === "materials" && parts[2] === "preset" && parts.length === 3 && workspace && method === "POST") {
+    const raw = await readJson(req, url.origin);
+    if (!raw || typeof raw !== "object" || Array.isArray(raw))
+      throw new WorkspaceHttpError(400, "Expected preset options");
+    return json(await createKilnMaterialDef(workspace.materials).run({ ...raw, action: "create-preset" }), 201);
+  }
+  if (parts[1] === "projects" && workspace) {
+    if (parts.length === 4 && parts[3] === "bundle" && read && services.assetLibrary) {
+      const profile = url.searchParams.get("profile") ?? "editable";
+      if (profile !== "editable" && profile !== "runtime")
+        throw new WorkspaceHttpError(400, "Unknown project profile");
+      const data = await exportWorkspaceProjectBundle(workspace, services.assetLibrary, parts[2], {
+        revisionId: url.searchParams.get("revision") ?? undefined,
+        profile
+      });
+      res.setHeader("Content-Disposition", `attachment; filename="${parts[2]}-${profile}.zip"`);
+      return bytes(data, "application/zip");
+    }
+    if (parts.length === 2 && read)
+      return json({ projects: await workspace.projects.list() });
+    if (parts.length === 2 && method === "POST")
+      return json(await workspace.projects.create(projectDraftSchema.parse(await readJson(req, url.origin))), 201);
+    if (parts.length === 3 && read)
+      return json(await workspace.projects.read(parts[2], url.searchParams.get("revision") ?? undefined));
+    if (parts.length === 3 && method === "PATCH") {
+      const input = updateSchema.parse(await readJson(req, url.origin));
+      return json(await workspace.projects.update(parts[2], input.expectedRevision, input.patch));
+    }
+  }
+  if (parts[1] === "materials" && workspace && read) {
+    if (parts.length === 2)
+      return json({ materials: await workspace.materials.list() });
+    if (parts.length === 4 || parts.length === 5) {
+      const record = await workspace.materials.read(parts[2], parts[3]);
+      if (parts.length === 4)
+        return json({
+          manifest: record.manifest,
+          portableSpec: materialLibraryPortableSpec(record.manifest)
+        });
+      const file = record.files[parts[4]];
+      if (!file)
+        throw new WorkspaceHttpError(404, "Unknown material file");
+      return bytes(file, "image/png");
+    }
+  }
+  if (parts[1] === "live" && liveReview) {
+    if (parts.length === 2 && read) {
+      const snapshot = await liveReview.snapshot({
+        cursor: url.searchParams.get("cursor") ?? undefined,
+        projectId: url.searchParams.get("project") ?? undefined
+      });
+      return json({ ...snapshot, operations: snapshot.operations.map(qualify) });
+    }
+    if (parts.length === 3 && read)
+      return json(qualify(await liveReview.get(parts[2])));
+    if (parts.length === 4 && parts[3] === "pin" && method === "POST") {
+      const { pinned } = pinSchema.parse(await readJson(req, url.origin));
+      await liveReview.pin(parts[2], pinned);
+      return json(qualify(await liveReview.get(parts[2])));
+    }
+    if (parts.length === 4 && parts[3] === "save" && method === "POST" && services.assetLibrary) {
+      const raw = await readJson(req, url.origin);
+      if (!raw || typeof raw !== "object" || Array.isArray(raw))
+        throw new WorkspaceHttpError(400, "Expected save options");
+      return json(await createKilnReviewDef({
+        reviewStore: liveReview,
+        assetLibrary: services.assetLibrary
+      }).run({ ...raw, action: "save", operationId: parts[2] }), 201);
+    }
+    if (parts.length === 4 && read) {
+      const file = parts[3];
+      if (!filePattern3.test(file))
+        throw new WorkspaceHttpError(404, "Unknown live file");
+      return bytes(await liveReview.readFile(parts[2], file), file.endsWith(".glb") ? "model/gltf-binary" : file.endsWith(".png") ? "image/png" : file.endsWith(".js") ? "text/javascript" : "application/json");
+    }
+  }
+  return false;
+}
+var WorkspaceHttpError, updateSchema, pinSchema, filePattern3;
+var init_workspace_http = __esm(() => {
+  init_projects();
+  init_material_library();
+  init_review();
+  init_materials();
+  init_project_bundle_node();
+  WorkspaceHttpError = class WorkspaceHttpError extends Error {
+    status;
+    constructor(status, message) {
+      super(message);
+      this.status = status;
+    }
+  };
+  updateSchema = z19.strictObject({
+    expectedRevision: projectRevisionIdSchema,
+    patch: projectPatchSchema
+  });
+  pinSchema = z19.strictObject({ pinned: z19.boolean() });
+  filePattern3 = /^(asset\.glb|source\.kiln\.js|evaluation\.json|capture-\d{1,2}\.png)$/;
 });
 
 // src/asset-viewer.ts
 import { createServer } from "node:http";
-import { readFile as readFile5 } from "node:fs/promises";
-import { dirname as dirname6, join as join12 } from "node:path";
+import { readFile as readFile8 } from "node:fs/promises";
+import { dirname as dirname8, join as join18 } from "node:path";
 import { fileURLToPath as fileURLToPath7 } from "node:url";
 async function startAssetViewer(library, options = {}) {
-  const staticDirectory = options.staticDirectory ?? (import.meta.url.endsWith(".ts") ? join12(dirname6(fileURLToPath7(import.meta.url)), "..", "dist", "viewer") : join12(dirname6(fileURLToPath7(import.meta.url)), "viewer"));
+  const staticDirectory = options.staticDirectory ?? (import.meta.url.endsWith(".ts") ? join18(dirname8(fileURLToPath7(import.meta.url)), "..", "dist", "viewer") : join18(dirname8(fileURLToPath7(import.meta.url)), "viewer"));
   const server = createServer(async (req, res) => {
     res.setHeader("X-Content-Type-Options", "nosniff");
     res.setHeader("Referrer-Policy", "no-referrer");
@@ -36926,11 +40483,6 @@ async function startAssetViewer(library, options = {}) {
       res.end("Forbidden origin");
       return;
     }
-    if (req.method !== "GET" && req.method !== "HEAD") {
-      res.writeHead(405);
-      res.end("Read-only viewer");
-      return;
-    }
     const send = (bytes, mime = "application/json", name) => {
       res.setHeader("Content-Type", mime);
       if (name)
@@ -36939,8 +40491,17 @@ async function startAssetViewer(library, options = {}) {
     };
     try {
       const url = new URL(req.url ?? "/", origin);
+      if (await serveWorkspaceRequest(req, res, url, { ...options, assetLibrary: library }))
+        return;
+      if (req.method !== "GET" && req.method !== "HEAD") {
+        res.writeHead(405);
+        res.end("Method not available");
+        return;
+      }
       if (url.pathname === "/api/collections")
         return send(JSON.stringify({ collections: library.collections() }));
+      if (url.pathname === "/api/library")
+        return send(JSON.stringify(await listAssetCatalog(library)));
       if (url.pathname === "/api/assets")
         return send(JSON.stringify({
           assets: await library.list(url.searchParams.get("collection") ?? "project")
@@ -36957,7 +40518,7 @@ async function startAssetViewer(library, options = {}) {
             throw new Error("Invalid revision");
           return library.read(collection, asset, revision);
         }));
-        return send(encodeAssetBundle(records), "application/zip", "kiln-assets.zip");
+        return send(await exportLibraryAssetBundle(library, records), "application/zip", "kiln-assets.zip");
       }
       if (url.pathname.startsWith("/files/")) {
         const file = await readAssetResource(library, `kiln://assets/${url.pathname.slice(7)}`);
@@ -36975,12 +40536,13 @@ async function startAssetViewer(library, options = {}) {
         return;
       }
       res.setHeader("Content-Security-Policy", "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' blob: data:; connect-src 'self' blob: data:; worker-src 'self' blob:; object-src 'none'; base-uri 'none'; frame-ancestors 'none'");
-      return send(await readFile5(join12(staticDirectory, file[0])), file[1]);
+      return send(await readFile8(join18(staticDirectory, file[0])), file[1]);
     } catch (error) {
-      res.statusCode = 400;
+      res.statusCode = error instanceof WorkspaceHttpError ? error.status : error && typeof error === "object" && ("code" in error) && error.code === "PROJECT_CONFLICT" ? 409 : 400;
       send(JSON.stringify({ error: error instanceof Error ? error.message : "Asset unavailable" }));
     }
   });
+  server.requestTimeout = 15000;
   await new Promise((resolve, reject) => {
     server.once("error", reject);
     server.listen(options.port ?? 4318, "127.0.0.1", resolve);
@@ -36997,8 +40559,8 @@ async function startAssetViewer(library, options = {}) {
   };
 }
 var init_asset_viewer = __esm(() => {
-  init_assets();
   init_assets_resources();
+  init_workspace_http();
 });
 
 // src/viewer/deep-link.ts
@@ -37027,11 +40589,11 @@ var init_deep_link = __esm(() => {
 });
 
 // src/requirements-file.ts
-import { open as open2 } from "node:fs/promises";
-import { resolve as resolve7 } from "node:path";
+import { open as open4 } from "node:fs/promises";
+import { resolve as resolve12 } from "node:path";
 async function readHostRequirementsFile(path) {
   const limit = 1024 * 1024;
-  const file = await open2(resolve7(path), "r");
+  const file = await open4(resolve12(path), "r");
   let input;
   try {
     const info = await file.stat();
@@ -37070,14 +40632,16 @@ __export(exports_asset_cli, {
   ASSET_USAGE: () => ASSET_USAGE,
   assetMain: () => assetMain
 });
-import { readFile as readFile6, writeFile as writeFile5, stat as stat5, mkdir as mkdir5, rename as rename4 } from "node:fs/promises";
-import { basename, resolve as resolve8, dirname as dirname7 } from "node:path";
-import { randomUUID as randomUUID5 } from "node:crypto";
+import { readFile as readFile9, writeFile as writeFile8, stat as stat5, mkdir as mkdir9, rename as rename6 } from "node:fs/promises";
+import { basename, resolve as resolve13, dirname as dirname9 } from "node:path";
+import { randomUUID as randomUUID9 } from "node:crypto";
+import { createHash as createHash18 } from "node:crypto";
 async function assetMain(argv) {
   const command = argv[0];
   const positional = [];
   const flags = {};
   const tags = [];
+  const observeWorkspaces = [];
   const allowed = new Set([
     "collection",
     "name",
@@ -37086,6 +40650,9 @@ async function assetMain(argv) {
     "revision",
     "description",
     "brief",
+    "model",
+    "harness",
+    "author",
     "tag",
     "out",
     "format",
@@ -37093,18 +40660,34 @@ async function assetMain(argv) {
     "port",
     "render",
     "backdrop",
-    "requirements"
+    "requirements",
+    "project",
+    "project-revision",
+    "materials"
   ]);
   for (let i = 1;i < argv.length; i++) {
     const arg = argv[i];
+    if (arg === "--observe-workspace") {
+      const path = argv[++i];
+      if (command !== "view" || !path || path.startsWith("--") || observeWorkspaces.length >= 32)
+        throw new Error("view accepts up to 32 --observe-workspace directories");
+      observeWorkspaces.push(resolve13(path));
+      continue;
+    }
+    if (arg === "--all") {
+      if (command !== "assets" || flags.all)
+        throw new Error("--all is supported once by assets only");
+      flags.all = "true";
+      continue;
+    }
     if (arg === "--help" || arg === "-h") {
       console.log(ASSET_USAGE);
       return 0;
     }
     if (arg === "--category" || arg.startsWith("--category="))
       throw new Error(CATEGORY_MIGRATION_MESSAGE);
-    if (arg === "--restore") {
-      flags.restore = "true";
+    if (arg === "--restore" || arg === "--rebuild" || arg === "--no-project") {
+      flags[arg.slice(2)] = "true";
       continue;
     }
     if (arg.startsWith("--")) {
@@ -37119,15 +40702,21 @@ async function assetMain(argv) {
     } else
       positional.push(arg);
   }
-  if (flags.requirements && command !== "save" && !(command === "asset" && flags.restore))
-    throw new Error("--requirements is supported by save and asset --restore only.");
+  if (command !== "save" && ["model", "harness", "author"].some((key) => flags[key] !== undefined))
+    throw new Error("--model, --harness and --author are supported by save only.");
+  if (flags.rebuild && (command !== "asset" || flags.restore || !flags.out || flags.project || flags["project-revision"] || flags["no-project"] || flags.materials))
+    throw new Error("--rebuild requires asset and --out; it uses saved dependencies and cannot combine with --restore or project overrides.");
+  if (command !== "save" && ["project", "project-revision", "no-project", "materials"].some((key) => Object.hasOwn(flags, key)))
+    throw new Error("--project, --project-revision, --no-project and --materials are supported by save only.");
+  if (flags.requirements && command !== "save" && !(command === "asset" && (flags.restore || flags.rebuild)))
+    throw new Error("--requirements is supported by save, asset --restore and asset --rebuild only.");
   const requirements = flags.requirements ? await readHostRequirementsFile(flags.requirements) : undefined;
   const library = localAssetLibrary();
   const collection = flags.collection ?? "project";
   const fileBytes = async (path) => {
     if ((await stat5(path)).size > ASSET_LIMIT)
       throw new Error("File exceeds 64 MiB");
-    return new Uint8Array(await readFile6(path));
+    return new Uint8Array(await readFile9(path));
   };
   if (command === "collections") {
     if (positional[0] === "add") {
@@ -37138,20 +40727,24 @@ async function assetMain(argv) {
         throw new Error("collections add requires name and directory");
       assetIdSchema.parse(name);
       const roots = Object.fromEntries(library.collections().map((c) => [c.id, library.directory(c.id)]));
-      if (roots[name] && roots[name] !== resolve8(directory))
+      if (roots[name] && roots[name] !== resolve13(directory))
         throw new Error("Collection name already points to another directory");
-      roots[name] = resolve8(directory);
+      roots[name] = resolve13(directory);
       const path = collectionConfigPath();
-      await mkdir5(dirname7(path), { recursive: true });
-      const temporary = `${path}.${randomUUID5()}.tmp`;
-      await writeFile5(temporary, JSON.stringify(roots, null, 2), { flag: "wx" });
-      await rename4(temporary, path);
+      await mkdir9(dirname9(path), { recursive: true });
+      const temporary = `${path}.${randomUUID9()}.tmp`;
+      await writeFile8(temporary, JSON.stringify(roots, null, 2), { flag: "wx" });
+      await rename6(temporary, path);
       console.log(`Collection ${name}: ${roots[name]}. Restart running MCP/viewer processes to load it.`);
     } else
       console.log(JSON.stringify({ collections: library.collections() }, null, 2));
-  } else if (command === "assets")
-    console.log(JSON.stringify({ assets: await library.list(collection) }, null, 2));
-  else if (command === "save") {
+  } else if (command === "assets") {
+    if (flags.all && flags.collection)
+      throw new Error("Use --all or --collection, not both");
+    console.log(JSON.stringify(flags.all ? await listAssetCatalog(library) : { assets: await library.list(collection) }, null, 2));
+  } else if (command === "save") {
+    const selection = cliWorkspaceSelection(flags.project, flags["project-revision"], flags["no-project"] === "true");
+    const materialDependencies = flags.materials ? await readMaterialDependencies(flags.materials) : undefined;
     const input = positional[0];
     if (!input || !flags.name)
       throw new Error("save requires source/ref and --name");
@@ -37164,24 +40757,73 @@ async function assetMain(argv) {
       assetLibrary: library,
       programStore: store
     }).find((d) => d.name === "kiln_save");
-    console.log(JSON.stringify(await def.run({
-      collection,
-      programRef,
-      name: flags.name,
-      assetId: flags.asset,
-      parentRevision: flags.parent,
-      description: flags.description,
-      brief: flags.brief,
-      tags,
-      backdrop: flags.backdrop
-    }), null, 2));
+    try {
+      console.log(JSON.stringify(await def.run({
+        collection,
+        programRef,
+        name: flags.name,
+        assetId: flags.asset,
+        parentRevision: flags.parent,
+        description: flags.description,
+        brief: flags.brief,
+        attribution: flags.model !== undefined || flags.harness !== undefined || flags.author !== undefined ? { model: flags.model, harness: flags.harness, author: flags.author } : undefined,
+        tags,
+        backdrop: flags.backdrop,
+        ...selection,
+        ...materialDependencies ? { materialDependencies } : {}
+      }), null, 2));
+    } finally {
+      try {
+        await context.liveReview?.flush?.();
+      } catch {}
+    }
   } else if (command === "asset" || command === "export") {
     const [assetId, revisionId] = positional;
     if (!assetId || !revisionId)
       throw new Error(`${command} requires asset ID and revision ID`);
     const record = await library.read(collection, assetId, revisionId);
     if (command === "asset") {
-      if (flags.restore) {
+      if (flags.rebuild) {
+        const context = await createPackagedLocalToolContext({ requirements });
+        const execute = async () => {
+          const source = record.files["source.kiln.js"];
+          if (!source)
+            throw new Error("Editable source unavailable");
+          assertSavedRequirementsAuthorized(record.manifest, resolveRequirementsContext(requirements));
+          const parsed = rebuildOptionsSchema.safeParse(record.manifest.build?.options);
+          if (!parsed.success)
+            throw new Error("Saved exporter settings are incomplete; use an explicit new authoring run instead of an exact rebuild.");
+          const materialResources = await resolveAssetMaterialPayload(new FileWorkspace(localWorkspaceRoot()), record);
+          const code = new TextDecoder().decode(source);
+          const rendered = await context.evaluatorPort.render(code, {
+            ...parsed.data,
+            materialResources,
+            requirements
+          });
+          try {
+            context.liveReview?.artifact(code, rendered);
+          } catch {}
+          await writeNewDestinationsAtomic([{ path: resolve13(flags.out), data: rendered.glb }]);
+          return {
+            ok: true,
+            file: resolve13(flags.out),
+            artifactGlbSha256: rendered.artifactGlbSha256,
+            savedArtifactGlbSha256: record.manifest.files["asset.glb"].sha256,
+            matchesSavedArtifact: rendered.artifactGlbSha256 === record.manifest.files["asset.glb"].sha256,
+            rebuildOptions: rendered.rebuildOptions,
+            tris: rendered.tris,
+            warnings: rendered.warnings
+          };
+        };
+        try {
+          const result = await observeLiveReview(context.liveReview, "kiln_asset_rebuild", { runtimeIdentity: context.localExecution.runtimeIdentity }, execute);
+          console.log(JSON.stringify(result, null, 2));
+        } finally {
+          try {
+            await context.liveReview?.flush?.();
+          } catch {}
+        }
+      } else if (flags.restore) {
         const restore = createKilnProgramToolRegistry({
           assetLibrary: library,
           programStore: localProgramStore(),
@@ -37207,14 +40849,14 @@ async function assetMain(argv) {
       if (profile === "runtime") {
         if (format !== "glb")
           throw new Error("Runtime profile requires GLB format; use editable for source or bundle");
-        const destination = resolve8(flags.out);
+        const destination = resolve13(flags.out);
         if (!destination.toLowerCase().endsWith(".glb"))
           throw new Error("Runtime output must end in .glb");
         const metadataFileName = `${basename(destination).slice(0, -4)}.kiln-metadata.json`;
         const output = await exportAssetGlb(record, { profile, metadataFileName });
         if (output.profile !== "runtime")
           throw new Error("Expected runtime export");
-        const metadataPath = resolve8(dirname7(destination), output.metadata.name);
+        const metadataPath = resolve13(dirname9(destination), output.metadata.name);
         await writeNewDestinationsAtomic([
           { path: metadataPath, data: output.metadata.bytes },
           { path: destination, data: output.glb }
@@ -37223,11 +40865,11 @@ async function assetMain(argv) {
 Saved ${metadataPath}`);
         return 0;
       }
-      const bytes = format === "bundle" ? encodeAssetBundle([record]) : record.files[format === "glb" ? "asset.glb" : "source.kiln.js"];
+      const bytes = format === "bundle" ? await library.exportBundle([record]) : record.files[format === "glb" ? "asset.glb" : "source.kiln.js"];
       if (!bytes)
         throw new Error("Source unavailable");
-      await writeFile5(await prepareDestination(resolve8(flags.out)), bytes, { flag: "wx" });
-      console.log(`Saved ${resolve8(flags.out)}`);
+      await writeFile8(await prepareDestination(resolve13(flags.out)), bytes, { flag: "wx" });
+      console.log(`Saved ${resolve13(flags.out)}`);
     }
   } else if (command === "import") {
     const file = positional[0];
@@ -37243,7 +40885,7 @@ Saved ${metadataPath}`);
     if (file) {
       if ((await stat5(file)).isDirectory()) {
         await Promise.resolve().then(() => init_assets_node());
-        target = new FileAssetLibrary({ project: resolve8(file) });
+        target = new FileAssetLibrary({ project: resolve13(file) });
       } else
         standalone = { name: basename(file), bytes: await fileBytes(file) };
     }
@@ -37252,7 +40894,26 @@ Saved ${metadataPath}`);
       throw new Error("Invalid port");
     if (flags.asset && !flags.revision || !flags.asset && flags.revision)
       throw new Error("view requires --asset and --revision together");
-    const viewer = await startAssetViewer(target, { port, standalone });
+    const root = localWorkspaceRoot();
+    const reviewSources = {};
+    const { realpath } = await import("node:fs/promises");
+    const currentRoot = await realpath(root);
+    for (const path of observeWorkspaces) {
+      if (!(await stat5(path)).isDirectory())
+        throw new Error("Observation source must be a directory");
+      const canonical = await realpath(path);
+      if (canonical === currentRoot)
+        continue;
+      const id = `w_${createHash18("sha256").update(canonical).digest("hex").slice(0, 16)}`;
+      reviewSources[id] = { label: basename(canonical), review: new FileLiveReview(canonical) };
+    }
+    const viewer = await startAssetViewer(target, {
+      port,
+      standalone,
+      workspace: new FileWorkspace(root),
+      liveReview: new FileLiveReview(root),
+      reviewSources
+    });
     const viewerUrl = standalone ? `${viewer.url}?open=standalone` : flags.asset && flags.revision ? assetViewerHref(viewer.url, {
       collection,
       assetId: flags.asset,
@@ -37267,17 +40928,22 @@ var ASSET_USAGE = `
 ASSETS & VIEWER
   kiln save <source.js|programRef> --name <name> [--collection project]
        [--asset <id> --parent <revision>] [--description <text>] [--tag <tag>]
+       [--model <model>] [--harness <harness>] [--author <author>]  declared attribution
        [--backdrop neutral|dark|light]   preview backdrop; the one the reviewed sheet used
+       [--project <id> | --no-project] [--project-revision <r>] [--materials <json>]
   kiln collections                        list configured collection names
   kiln collections add <name> <directory>  remember another collection root
   --requirements <host-binding.json>      optional host policy for save or asset --restore
   kiln assets [--collection project]      list saved revisions (JSON)
+  kiln assets --all                       Library across all registered collections
   kiln asset <id> <revision> [--collection project] [--restore]
+  kiln asset <id> <revision> --rebuild --out rebuilt.glb [--requirements file]
   kiln export <id> <revision> --out asset.zip [--format bundle|glb|source]
        [--profile editable|runtime]   runtime writes GLB + sibling metadata JSON
   kiln import <asset.zip|asset.glb> [--collection project] [--name <name>]
   kiln view [collection-directory|asset.glb|asset.zip] [--port 4318]
        [--collection project --asset <id> --revision <revision>]
+       [--observe-workspace <directory>]   repeat to review other explicit workspaces
 
 KILN_COLLECTIONS is an optional JSON map of collection names to absolute folders.
 Defaults: project -> <workspace>/assets/kiln; library -> your OS user-data directory.
@@ -37295,7 +40961,315 @@ var init_asset_cli = __esm(() => {
   init_local_runtime();
   init_cli_render_mode();
   init_asset_viewer();
+  init_workspace_node();
+  init_live_review_node();
+  init_project_bundle_node();
+  init_rebuild_options();
+  init_requirements_assets();
+  init_requirements_context();
   init_deep_link();
+  init_requirements_file();
+  init_workspace2();
+  init_workspace_cli();
+});
+
+// src/project-cli.ts
+var exports_project_cli = {};
+__export(exports_project_cli, {
+  PROJECT_USAGE: () => PROJECT_USAGE,
+  projectMain: () => projectMain
+});
+import { open as open5 } from "node:fs/promises";
+import { resolve as resolve14 } from "node:path";
+async function inputFile(path, limit) {
+  const file = await open5(resolve14(path), "r");
+  try {
+    const stat = await file.stat();
+    if (!stat.isFile())
+      throw new Error("Expected a regular file");
+    if (stat.size > limit)
+      throw new Error(`File exceeds ${limit} bytes`);
+    const buffer = Buffer.alloc(Math.min(stat.size + 1, limit + 1));
+    let offset = 0;
+    while (offset < buffer.length) {
+      const { bytesRead } = await file.read(buffer, offset, buffer.length - offset, offset);
+      if (!bytesRead)
+        break;
+      offset += bytesRead;
+    }
+    if (offset > stat.size || offset > limit)
+      throw new Error("File changed while reading");
+    return buffer.subarray(0, offset);
+  } finally {
+    await file.close();
+  }
+}
+async function jsonFile(path, limit) {
+  return JSON.parse((await inputFile(path, limit)).toString("utf8").replace(/^\uFEFF/, ""));
+}
+async function projectMain(argv) {
+  const [family, action] = argv;
+  if (argv.some((value) => value === "--help" || value === "-h")) {
+    console.log(PROJECT_USAGE);
+    return 0;
+  }
+  if (family !== "project" && family !== "material")
+    throw new Error("Expected project or material command");
+  const supported = family === "project" ? ["list", "get", "create", "update", "export", "import"] : ["list", "get", "procedural", "import", "export", "presets", "create-preset"];
+  if (!action || !supported.includes(action))
+    throw new Error(`Unknown ${family} action. Run kiln ${family} --help.`);
+  const allowed = {
+    "project:list": [],
+    "project:get": ["revision"],
+    "project:create": ["file", "name", "id"],
+    "project:update": ["file", "expected"],
+    "project:export": ["out", "revision", "profile"],
+    "project:import": ["id", "collection", "name"],
+    "material:list": [],
+    "material:presets": ["tag"],
+    "material:create-preset": ["file"],
+    "material:get": [],
+    "material:procedural": ["file"],
+    "material:import": ["file"],
+    "material:export": ["out"]
+  };
+  const flags = {};
+  const positional = [];
+  for (let index = 2;index < argv.length; index++) {
+    const value = argv[index];
+    if (!value.startsWith("--")) {
+      positional.push(value);
+      continue;
+    }
+    const key = value.slice(2);
+    if (!allowed[`${family}:${action}`].includes(key))
+      throw new Error(`Unsupported option ${value} for ${family} ${action}`);
+    if (Object.hasOwn(flags, key))
+      throw new Error(`Duplicate option ${value}`);
+    const next = argv[++index];
+    if (!next || next.startsWith("--"))
+      throw new Error(`Missing value for ${value}`);
+    flags[key] = next;
+  }
+  const expectedArgs = action === "get" || action === "export" ? family === "project" ? 1 : 2 : action === "update" || action === "import" && family === "project" ? 1 : 0;
+  if (positional.length !== expectedArgs)
+    throw new Error(`${family} ${action} requires ${expectedArgs} positional argument${expectedArgs === 1 ? "" : "s"}`);
+  const workspace = new FileWorkspace(localWorkspaceRoot());
+  const store = workspace.projects;
+  if (family === "project") {
+    if (action === "export") {
+      if (!flags.out)
+        throw new Error("project export requires --out");
+      const profile = flags.profile ?? "editable";
+      if (profile !== "editable" && profile !== "runtime")
+        throw new Error("Project profile must be editable or runtime");
+      const bytes = await exportWorkspaceProjectBundle(workspace, localAssetLibrary(), positional[0], { revisionId: flags.revision, profile });
+      const path = resolve14(flags.out);
+      await writeNewDestinationsAtomic([{ path, data: bytes }]);
+      console.log(JSON.stringify({ ok: true, profile, path, bytes: bytes.length }));
+      return 0;
+    }
+    if (action === "import") {
+      if (!flags.id || !flags.collection)
+        throw new Error("project import requires a new --id and explicit --collection");
+      const project = await importWorkspaceProjectBundle(workspace, localAssetLibrary(), await inputFile(positional[0], PROJECT_BUNDLE_LIMITS.maxArchiveBytes), { projectId: flags.id, collectionId: flags.collection, name: flags.name });
+      console.log(JSON.stringify({ ok: true, project }, null, 2));
+      return 0;
+    }
+    const tool = createKilnProjectDef(store);
+    let input;
+    if (action === "list")
+      input = { action: "list" };
+    else if (action === "get")
+      input = {
+        action: "get",
+        projectId: positional[0],
+        ...flags.revision ? { revisionId: flags.revision } : {}
+      };
+    else if (action === "create") {
+      if (flags.file && (flags.name || flags.id))
+        throw new Error("Use --file or --name with optional --id, not both");
+      if (!flags.file && !flags.name)
+        throw new Error("project create requires --file or --name");
+      input = {
+        action: "create",
+        draft: flags.file ? await jsonFile(flags.file, MAX_PROJECT_BYTES) : { name: flags.name, ...flags.id ? { projectId: flags.id } : {} }
+      };
+    } else {
+      if (!flags.file || !flags.expected)
+        throw new Error("project update requires --expected and --file");
+      input = {
+        action: "update",
+        projectId: positional[0],
+        expectedRevision: flags.expected,
+        patch: await jsonFile(flags.file, MAX_PROJECT_BYTES)
+      };
+    }
+    console.log(JSON.stringify(await tool.run(input), null, 2));
+    return 0;
+  }
+  const materials = workspace.materials;
+  let output;
+  if (action === "presets")
+    output = await createKilnMaterialDef(materials).run({
+      action: "presets",
+      ...flags.tag ? { tag: flags.tag } : {}
+    });
+  else if (action === "create-preset") {
+    if (!flags.file)
+      throw new Error("material create-preset requires --file");
+    const input = await jsonFile(flags.file, MATERIAL_LIBRARY_LIMITS.maxManifestBytes);
+    if (!input || typeof input !== "object" || Array.isArray(input))
+      throw new Error("Preset options must be a JSON object");
+    output = await createKilnMaterialDef(materials).run({ ...input, action: "create-preset" });
+  } else if (action === "list")
+    output = { materials: await materials.list() };
+  else if (action === "get" || action === "export") {
+    const record = await materials.read(positional[0], positional[1]);
+    if (action === "get")
+      output = {
+        manifest: record.manifest,
+        portableSpec: materialLibraryPortableSpec(record.manifest)
+      };
+    else {
+      if (!flags.out)
+        throw new Error("material export requires --out");
+      const payload = await createMaterialLibraryPayload([record]);
+      const path = resolve14(flags.out);
+      await writeNewDestinationsAtomic([{ path, data: JSON.stringify(payload, null, 2) }]);
+      output = {
+        file: path,
+        materialId: record.manifest.materialId,
+        revisionId: record.manifest.revisionId
+      };
+    }
+  } else {
+    if (!flags.file)
+      throw new Error(`material ${action} requires --file`);
+    const input = await jsonFile(flags.file, action === "procedural" ? MATERIAL_LIBRARY_LIMITS.maxManifestBytes : 24 * 1024 * 1024);
+    const records = action === "procedural" ? [await createMaterialRecordV1(proceduralMaterialDraftSchema.parse(input))] : await decodeMaterialLibraryPayload(input);
+    output = { materials: await materials.import(records) };
+  }
+  console.log(JSON.stringify(output, null, 2));
+  return 0;
+}
+var PROJECT_USAGE = `
+PROJECTS
+  kiln project list
+  kiln project get <id> [--revision <revision>]
+  kiln project create --name <name> [--id <id>]
+  kiln project create --file <project-draft.json>
+  kiln project update <id> --expected <revision> --file <project-patch.json>
+  kiln project export <id> --out <project.zip> [--revision <revision>] [--profile editable|runtime]
+  kiln project import <project.zip> --id <new-project-id> --collection <collection> [--name <name>]
+
+MATERIALS
+  kiln material presets [--tag <tag>]
+  kiln material create-preset --file <preset-options.json>
+  kiln material list
+  kiln material get <id> <sha256:revision>
+  kiln material procedural --file <procedural-material-draft.json>
+  kiln material import --file <portable-material-payload.json>
+  kiln material export <id> <sha256:revision> --out <portable-material-payload.json>
+
+Project changes create immutable revisions. Updates require the current expected
+revision; supplied top-level fields replace their previous values.
+Material imports verify embedded map bytes and provenance. Procedural creation
+uses a JSON recipe with explicit creator/license records. These commands do not
+fetch source URLs or read paths from imported JSON.
+Project and material storage is under <workspace>/.kiln. KILN_WORKSPACE selects the
+workspace. KILN_PROGRAM_STORE overrides only the source store when both are set.
+Without KILN_WORKSPACE, its grandparent remains the workspace root for compatibility.
+Projects are optional. Authoring stays standalone unless --project or KILN_PROJECT
+selects a project; --no-project overrides that configured default. Use --materials
+with an array of exact resourceId/revisionId/sha256 pins for standalone materials.
+All commands return JSON; export refuses to overwrite an existing destination.
+`;
+var init_project_cli = __esm(() => {
+  init_workspace_node();
+  init_projects();
+  init_projects2();
+  init_materials();
+  init_material_library();
+  init_material_library_node();
+  init_cli_output();
+  init_assets_node();
+  init_project_bundle_node();
+  init_project_bundle();
+});
+
+// src/review-cli.ts
+var exports_review_cli = {};
+__export(exports_review_cli, {
+  REVIEW_USAGE: () => REVIEW_USAGE,
+  reviewMain: () => reviewMain
+});
+async function reviewMain(argv) {
+  if (argv.includes("--help") || argv.includes("-h")) {
+    console.log(REVIEW_USAGE);
+    return 0;
+  }
+  const action = argv[0];
+  const allowed = {
+    list: ["project"],
+    get: [],
+    pin: ["pinned"],
+    save: ["expected", "name", "collection", "asset", "parent", "requirements"]
+  };
+  if (!action || !allowed[action])
+    throw new Error("Unknown review action. Run kiln review --help.");
+  const flags = {};
+  const positional = [];
+  for (let index = 1;index < argv.length; index++) {
+    const arg = argv[index];
+    if (!arg.startsWith("--")) {
+      positional.push(arg);
+      continue;
+    }
+    const key = arg.slice(2);
+    const value = argv[++index];
+    if (!allowed[action].includes(key) || !value || value.startsWith("--") || Object.hasOwn(flags, key))
+      throw new Error(`Invalid review option ${arg}`);
+    flags[key] = value;
+  }
+  if (positional.length !== (action === "list" ? 0 : 1))
+    throw new Error("Expected one operation ID for get, pin or save");
+  if (action === "pin" && !["true", "false"].includes(flags.pinned ?? ""))
+    throw new Error("--pinned requires true or false");
+  const input = action === "list" ? { action, projectId: flags.project } : action === "get" ? { action, operationId: positional[0] } : action === "pin" ? { action, operationId: positional[0], pinned: flags.pinned === "true" } : {
+    action,
+    operationId: positional[0],
+    expectedRevision: Number(flags.expected),
+    name: flags.name,
+    collection: flags.collection,
+    assetId: flags.asset,
+    parentRevision: flags.parent
+  };
+  const def = createKilnReviewDef({
+    reviewStore: new FileLiveReview(localWorkspaceRoot()),
+    assetLibrary: localAssetLibrary(),
+    requirements: flags.requirements ? await readHostRequirementsFile(flags.requirements) : undefined
+  });
+  console.log(JSON.stringify(await def.run(input), null, 2));
+  return 0;
+}
+var REVIEW_USAGE = `
+LIVE REVIEW
+  kiln review list [--project <id>]
+  kiln review get <operation-id>
+  kiln review pin <operation-id> --pinned true|false
+  kiln review save <operation-id> --expected <revision> --name <name>
+       [--collection project] [--asset <id> --parent <revision>]
+       [--requirements <host-binding.json>]
+
+Save preserves the recorded source, GLB and capture without evaluating again.
+Pinning retains evidence; it does not pause an agent. View opens the local dashboard.
+`;
+var init_review_cli = __esm(() => {
+  init_live_review_node();
+  init_workspace_node();
+  init_assets_node();
+  init_review();
   init_requirements_file();
 });
 
@@ -37476,10 +41450,10 @@ __export(exports_animation_cli, {
   ANIMATION_USAGE: () => ANIMATION_USAGE,
   animationMain: () => animationMain
 });
-import { open as open3, readFile as readFile7 } from "node:fs/promises";
-import { extname, resolve as resolve9 } from "node:path";
+import { open as open6, readFile as readFile10 } from "node:fs/promises";
+import { extname, resolve as resolve15 } from "node:path";
 async function readReviewJson(path, option) {
-  const file = await open3(resolve9(path), "r");
+  const file = await open6(resolve15(path), "r");
   try {
     const limit = 1024 * 1024;
     const info = await file.stat();
@@ -37506,7 +41480,7 @@ function parse4(argv) {
     const key = arg === "-h" ? "--help" : arg;
     if (flags.has(key))
       throw new Error(`Repeated animation option: ${key}.`);
-    if (["--help", "--per-frame", "--json"].includes(key)) {
+    if (["--help", "--per-frame", "--json", "--no-project"].includes(key)) {
       flags.set(key, true);
       continue;
     }
@@ -37521,7 +41495,10 @@ function parse4(argv) {
       "--framing",
       "--render",
       "--render-port",
-      "--requirements"
+      "--requirements",
+      "--project",
+      "--project-revision",
+      "--materials"
     ].includes(key))
       throw new Error(`Unknown animation option: ${key}. Use kiln animation --help.`);
     const value = argv[++i];
@@ -37541,6 +41518,7 @@ function parse4(argv) {
   });
   if (phases && flags.has("--frames"))
     throw new Error("--phases and --frames are mutually exclusive.");
+  const selection = cliWorkspaceSelection(value("--project"), value("--project-revision"), flags.has("--no-project"));
   return {
     help: false,
     source: positional[0],
@@ -37549,9 +41527,11 @@ function parse4(argv) {
     shot: value("--shot"),
     measureParts: value("--measure-parts"),
     requirements: value("--requirements"),
+    materials: value("--materials"),
     render: resolveRenderMode(value("--render") ?? "auto"),
     renderPort: value("--render-port"),
     input: {
+      ...selection,
       clip: value("--clip"),
       ...phases ? { frameTimes: phases } : {},
       ...flags.has("--frames") ? { frames: Number(value("--frames")) } : {},
@@ -37572,6 +41552,7 @@ async function animationMain(argv) {
     }
     input = {
       ...args.input,
+      ...args.materials ? { materialDependencies: await readMaterialDependencies(args.materials) } : {},
       ...args.shot ? { shot: await readReviewJson(args.shot, "--shot") } : {},
       ...args.measureParts ? { measureParts: await readReviewJson(args.measureParts, "--measure-parts") } : {}
     };
@@ -37586,9 +41567,14 @@ async function animationMain(argv) {
       ...await buildRenderPort(args.render, args.renderPort),
       requirements
     });
-    const source = programRefPattern.test(args.source) ? { programRef: args.source } : { code: await readFile7(resolve9(args.source), "utf8") };
+    const source = programRefPattern.test(args.source) ? { programRef: args.source } : { code: await readFile10(resolve15(args.source), "utf8") };
     const tool = createKilnProgramToolRegistry(context).find((t) => t.name === "kiln_screenshot_animation");
-    const output = await tool.run({ ...source, ...input });
+    let output;
+    try {
+      output = await tool.run({ ...source, ...input });
+    } finally {
+      await context.liveReview?.flush?.();
+    }
     if (!output.ok) {
       if (args.json)
         console.log(JSON.stringify(output));
@@ -37607,10 +41593,16 @@ async function animationMain(argv) {
     const suffix = extname(args.views);
     const stem = suffix ? args.views.slice(0, -suffix.length) : args.views;
     const images = pngs.map((_, i) => ({
-      path: resolve9(separate ? `${stem}.frame-${String(i + 1).padStart(2, "0")}.png` : args.views),
+      path: resolve15(separate ? `${stem}.frame-${String(i + 1).padStart(2, "0")}.png` : args.views),
       ...separate ? { phase: output.frameTimes?.[i] } : {}
     }));
-    const inputPaths = [args.source, args.shot, args.measureParts, args.requirements].filter((p) => p !== undefined).map((p) => resolve9(p));
+    const inputPaths = [
+      args.source,
+      args.shot,
+      args.measureParts,
+      args.requirements,
+      args.materials
+    ].filter((p) => p !== undefined).map((p) => resolve15(p));
     const samePath = (a, b) => process.platform === "win32" ? a.toLowerCase() === b.toLowerCase() : a === b;
     if (images.some((image) => inputPaths.some((path) => samePath(path, image.path))))
       throw new Error("Animation image destinations must differ from the input files.");
@@ -37652,6 +41644,10 @@ ANIMATION REVIEW
   --render <mode>          auto | cpu | gpu; gpu requires material-faithful frames
   --render-port <url>      select a remote renderer
   --requirements <json>    optional host requirement binding
+  --project <id>           explicit workspace project (otherwise KILN_PROJECT or standalone)
+  --project-revision <id>  exact historical design/resource context
+  --no-project            standalone authoring, overriding KILN_PROJECT
+  --materials <json>      exact material dependency pins
   --json                  phases, posed bounds, image paths and fidelity receipts
 
 Reviews the actual exported clip through the shared animation tool. Keeps source
@@ -37666,6 +41662,7 @@ var init_animation_cli = __esm(() => {
   init_program_store();
   init_requirements_file();
   init_cli_output();
+  init_workspace_cli();
 });
 
 // src/edit-cli.ts
@@ -37674,10 +41671,10 @@ __export(exports_edit_cli, {
   EDIT_USAGE: () => EDIT_USAGE,
   editMain: () => editMain
 });
-import { open as open4 } from "node:fs/promises";
-import { resolve as resolve10 } from "node:path";
+import { open as open7 } from "node:fs/promises";
+import { resolve as resolve16 } from "node:path";
 async function readEdits(path) {
-  const file = await open4(resolve10(path), "r");
+  const file = await open7(resolve16(path), "r");
   try {
     const limit = 1024 * 1024;
     const info = await file.stat();
@@ -37703,16 +41700,52 @@ async function editMain(argv) {
     console.log(EDIT_USAGE);
     return 0;
   }
-  const [programRef, flag, path] = argv;
-  if (argv.length !== 3 || !programRef || !programRefPattern.test(programRef) || flag !== "--edits" || !path || path.startsWith("--")) {
+  const programRef = argv[0];
+  const flags = {};
+  let valid = true;
+  for (let index = 1;index < argv.length; index++) {
+    const flag = argv[index];
+    if (flag === "--no-project" && !Object.hasOwn(flags, flag)) {
+      flags[flag] = "true";
+      continue;
+    }
+    const value = argv[++index];
+    if (!["--edits", "--project", "--project-revision", "--materials"].includes(flag) || Object.hasOwn(flags, flag) || !value || value.startsWith("--")) {
+      valid = false;
+      break;
+    }
+    flags[flag] = value;
+  }
+  const path = flags["--edits"];
+  if (!valid || !programRef || !programRefPattern.test(programRef) || !path) {
     console.error(EDIT_USAGE);
     return 2;
   }
   try {
+    const selection = cliWorkspaceSelection(flags["--project"], flags["--project-revision"], flags["--no-project"] === "true");
+    const materialDependencies = flags["--materials"] ? await readMaterialDependencies(flags["--materials"]) : undefined;
     const edits = await readEdits(path);
-    const tool = createKilnProgramToolRegistry({ programStore: localProgramStore() }).find((definition) => definition.name === "kiln_edit");
-    const input = tool.inputSchema.parse({ programRef, edits, render: false });
-    const output = await tool.run(input);
+    const workspaceRoot = localWorkspaceRoot();
+    const workspace = new FileWorkspace(workspaceRoot, process.env.KILN_PROJECT);
+    const liveReview = process.env.KILN_LIVE_REVIEW === "off" ? undefined : new FileLiveReview(workspaceRoot, { transport: "cli" });
+    const tool = createKilnProgramToolRegistry({
+      programStore: localProgramStore(),
+      workspace,
+      liveReview
+    }).find((definition) => definition.name === "kiln_edit");
+    const input = tool.inputSchema.parse({
+      programRef,
+      edits,
+      render: false,
+      ...selection,
+      ...materialDependencies ? { materialDependencies } : {}
+    });
+    let output;
+    try {
+      output = await tool.run(input);
+    } finally {
+      await liveReview?.flush();
+    }
     console.log(JSON.stringify(output));
     return output.ok ? 0 : 1;
   } catch (error) {
@@ -37723,6 +41756,7 @@ async function editMain(argv) {
 var EDIT_USAGE = `
 SOURCE EDITS
   kiln edit <programRef> --edits <edits.json>
+       [--project <id> | --no-project] [--project-revision <revision>] [--materials <json>]
 
 The JSON file contains an array of 1–20 { oldString, newString, replaceAll? }
 replacements, applied in order by the shared kiln_edit tool. Anchors must match
@@ -37740,6 +41774,9 @@ var init_edit_cli = __esm(() => {
   init_program_store();
   init_program_store_node();
   init_registry2();
+  init_workspace_node();
+  init_live_review_node();
+  init_workspace_cli();
 });
 
 // src/inspect-cli.ts
@@ -37748,10 +41785,10 @@ __export(exports_inspect_cli, {
   INSPECT_USAGE: () => INSPECT_USAGE,
   inspectMain: () => inspectMain
 });
-import { open as open5, readFile as readFile8 } from "node:fs/promises";
-import { resolve as resolve11 } from "node:path";
+import { open as open8, readFile as readFile11 } from "node:fs/promises";
+import { resolve as resolve17 } from "node:path";
 async function readControls(path) {
-  const file = await open5(resolve11(path), "r");
+  const file = await open8(resolve17(path), "r");
   try {
     const limit = 1024 * 1024;
     const info = await file.stat();
@@ -37778,11 +41815,20 @@ function parse5(argv) {
     const key = arg === "-h" ? "--help" : arg;
     if (flags.has(key))
       throw new Error(`Repeated inspection option: ${key}.`);
-    if (key === "--help" || key === "--json") {
+    if (key === "--help" || key === "--json" || key === "--no-project") {
       flags.set(key, true);
       continue;
     }
-    if (!["--request", "--views", "--render", "--render-port", "--requirements"].includes(key))
+    if (![
+      "--request",
+      "--views",
+      "--render",
+      "--render-port",
+      "--requirements",
+      "--project",
+      "--project-revision",
+      "--materials"
+    ].includes(key))
       throw new Error(`Unknown inspection option: ${key}. Use kiln inspect --help.`);
     const value = argv[++i];
     if (value === undefined || value.startsWith("--"))
@@ -37802,12 +41848,15 @@ function parse5(argv) {
     json: flags.has("--json"),
     render: resolveRenderMode(value("--render") ?? "auto"),
     renderPort: value("--render-port"),
-    requirements: value("--requirements")
+    requirements: value("--requirements"),
+    selection: cliWorkspaceSelection(value("--project"), value("--project-revision"), flags.has("--no-project")),
+    materials: value("--materials")
   };
 }
 async function inspectMain(argv) {
   let args;
   let controls;
+  let materialDependencies;
   try {
     args = parse5(argv);
     if (args.help) {
@@ -37815,6 +41864,7 @@ async function inspectMain(argv) {
       return 0;
     }
     controls = inspectBufferInput.strict().parse(args.request ? await readControls(args.request) : {});
+    materialDependencies = args.materials ? await readMaterialDependencies(args.materials) : undefined;
   } catch (error) {
     console.error(error instanceof Error ? error.message : String(error));
     return 2;
@@ -37823,8 +41873,8 @@ async function inspectMain(argv) {
     if (controls.image === false && args.views)
       throw new Error("--views cannot be combined with image:false.");
     if (args.views) {
-      const normalize = (path) => process.platform === "win32" ? resolve11(path).toLowerCase() : resolve11(path);
-      if ([args.source, args.request, args.requirements].some((path) => path && normalize(path) === normalize(args.views)))
+      const normalize = (path) => process.platform === "win32" ? resolve17(path).toLowerCase() : resolve17(path);
+      if ([args.source, args.request, args.requirements, args.materials].some((path) => path && normalize(path) === normalize(args.views)))
         throw new Error("Inspection image destination must differ from the input files.");
     }
     const requirements = args.requirements ? await readHostRequirementsFile(args.requirements) : undefined;
@@ -37832,9 +41882,19 @@ async function inspectMain(argv) {
       ...controls.image === false ? {} : await buildRenderPort(args.render, args.renderPort),
       requirements
     });
-    const source = programRefPattern.test(args.source) ? { programRef: args.source } : { code: await readFile8(resolve11(args.source), "utf8") };
+    const source = programRefPattern.test(args.source) ? { programRef: args.source } : { code: await readFile11(resolve17(args.source), "utf8") };
     const tool = createKilnProgramToolRegistry(context).find((t) => t.name === "kiln_inspect");
-    const output = await tool.run({ ...source, ...controls });
+    let output;
+    try {
+      output = await tool.run({
+        ...source,
+        ...controls,
+        ...args.selection,
+        ...materialDependencies ? { materialDependencies } : {}
+      });
+    } finally {
+      await context.liveReview?.flush?.();
+    }
     if (!output.ok) {
       if (args.json)
         console.log(JSON.stringify(output));
@@ -37845,7 +41905,7 @@ async function inspectMain(argv) {
     const media = tool.media?.(output);
     if (!media && controls.image !== false)
       throw new Error("Inspection returned no image.");
-    const images = args.views ? [{ path: resolve11(args.views) }] : [];
+    const images = args.views ? [{ path: resolve17(args.views) }] : [];
     if (args.views)
       await writeDestinationAtomic(args.views, media.png);
     if (args.json)
@@ -37884,6 +41944,10 @@ PART INSPECTION
   --render <mode>         auto | cpu | gpu
   --render-port <url>     optional remote renderer
   --requirements <json>   optional host requirement binding
+  --project <id>          explicit workspace project (otherwise KILN_PROJECT or standalone)
+  --project-revision <id> exact historical design/resource context
+  --no-project           standalone authoring, overriding KILN_PROJECT
+  --materials <json>     exact material dependency pins
   --json                 structured receipt without embedded image bytes
 
 measure.mode=surface compares exported rest-pose triangle surfaces; omit points.
@@ -37906,6 +41970,7 @@ var init_inspect_cli = __esm(() => {
   init_program_store();
   init_requirements_file();
   init_cli_output();
+  init_workspace_cli();
 });
 
 // src/contracts/requirements-migration.ts
@@ -38300,9 +42365,9 @@ var exports_migration_rebuild = {};
 __export(exports_migration_rebuild, {
   migrationRebuildMain: () => migrationRebuildMain
 });
-import { open as open6 } from "node:fs/promises";
-import { createHash as createHash15 } from "node:crypto";
-import { resolve as resolve12 } from "node:path";
+import { open as open9 } from "node:fs/promises";
+import { createHash as createHash19 } from "node:crypto";
+import { resolve as resolve18 } from "node:path";
 function parse6(argv) {
   if (argv.length === 1 && ["--help", "-h"].includes(argv[0]))
     return { help: true };
@@ -38391,7 +42456,7 @@ async function rebuildLegacyAsset(context, input) {
     authority,
     original: structuredClone(record.manifest),
     ...conversion.recoveredIntent ? { recoveredIntent: conversion.recoveredIntent } : {},
-    originalManifestCanonicalSha256: `sha256:${createHash15("sha256").update(canonical6(record.manifest)).digest("hex")}`,
+    originalManifestCanonicalSha256: `sha256:${createHash19("sha256").update(canonical6(record.manifest)).digest("hex")}`,
     proposedRequirements: conversion.proposal.requirements,
     policyChanges: changes,
     ruleDispositions: resolved.filter((issue) => issue.code === "RULE_MIGRATION_UNQUALIFIED").map((issue) => ({
@@ -38401,7 +42466,7 @@ async function rebuildLegacyAsset(context, input) {
     })),
     retainedBuildOptions: conversion.proposal.retainedBuildOptions,
     sourceChanged: code !== originalCode,
-    rebuiltSourceSha256: `sha256:${createHash15("sha256").update(code, "utf8").digest("hex")}`
+    rebuiltSourceSha256: `sha256:${createHash19("sha256").update(code, "utf8").digest("hex")}`
   };
   const draft = await buildProgramAssetDraft(code, currentContext, record.manifest.preview?.backdrop);
   const asset = await library.save(input.collection, {
@@ -38427,7 +42492,7 @@ async function rebuildLegacyAsset(context, input) {
   };
 }
 async function readMigrationText(path, option) {
-  const file = await open6(resolve12(path), "r");
+  const file = await open9(resolve18(path), "r");
   try {
     const info = await file.stat();
     if (!info.isFile() || info.size > 1024 * 1024)
@@ -38512,9 +42577,9 @@ var exports_migration_cli = {};
 __export(exports_migration_cli, {
   migrationMain: () => migrationMain
 });
-import { open as open7 } from "node:fs/promises";
-import { resolve as resolve13 } from "node:path";
-import { createHash as createHash16 } from "node:crypto";
+import { open as open10 } from "node:fs/promises";
+import { resolve as resolve19 } from "node:path";
+import { createHash as createHash20 } from "node:crypto";
 function parse7(argv) {
   if (argv.length === 1 && ["--help", "-h"].includes(argv[0]))
     return { help: true };
@@ -38549,8 +42614,8 @@ async function migrationMain(argv) {
   }
   try {
     const limit = 1048576;
-    const path = resolve13(args.input);
-    const file = await open7(path, "r");
+    const path = resolve19(args.input);
+    const file = await open10(path, "r");
     let bytes;
     try {
       const info = await file.stat();
@@ -38583,14 +42648,14 @@ async function migrationMain(argv) {
       input: {
         path,
         bytes: bytes.length,
-        sha256: `sha256:${createHash16("sha256").update(bytes).digest("hex")}`
+        sha256: `sha256:${createHash20("sha256").update(bytes).digest("hex")}`
       },
       conversion
     };
     const json = `${JSON.stringify(receipt, null, 2)}
 `;
     if (args.out)
-      await writeNewDestinationsAtomic([{ path: resolve13(args.out), data: json }]);
+      await writeNewDestinationsAtomic([{ path: resolve19(args.out), data: json }]);
     console.log(json.trimEnd());
     console.error("Migration not activated. Review the proposed changes and every unresolved obligation in docs/migration.md.");
     return conversion.status === "invalid" ? 1 : 3;
@@ -38618,7 +42683,7 @@ var init_migration_cli = __esm(() => {
 
 // src/cli.ts
 init_cli_output();
-import { open as open8, readFile as readFile9, writeFile as writeFile6 } from "node:fs/promises";
+import { open as open11, readFile as readFile12, writeFile as writeFile9 } from "node:fs/promises";
 import { resolve as resolvePath, extname as extname2 } from "node:path";
 
 // src/direct-entry.ts
@@ -38642,7 +42707,11 @@ init_background();
 init_cli_render_mode();
 init_program_store_node();
 init_program_store();
+init_workspace2();
+init_workspace_cli();
 init_asset_cli();
+init_project_cli();
+init_review_cli();
 init_service_cli();
 init_discovery_cli();
 init_animation_cli();
@@ -38729,6 +42798,10 @@ OPTIONS
   --model <id>            model id for generate      (default: env KILN_MODEL)
   --max-steps <n>         agent step cap, 0 = off    (default: 0)
   --requirements <json>  explicit host binding (optional; default neutral)
+  --project <id>         project configuration and pinned material dependencies
+  --project-revision <r> exact project revision (default: current)
+  --no-project          standalone authoring, overriding KILN_PROJECT
+  --materials <json>    exact material dependency pins, with or without a project
   --json                 render: one JSON receipt, no embedded image or GLB bytes
   -h, --help              this message
 
@@ -38800,6 +42873,18 @@ function parseArgs(argv) {
       case "--requirements":
         args.requirementsFile = next();
         break;
+      case "--project":
+        args.projectId = next();
+        break;
+      case "--project-revision":
+        args.projectRevision = next();
+        break;
+      case "--no-project":
+        args.noProject = true;
+        break;
+      case "--materials":
+        args.materialsFile = next();
+        break;
       case "--max-steps": {
         const n = Number(next());
         if (!Number.isInteger(n) || n < 0)
@@ -38818,6 +42903,7 @@ function parseArgs(argv) {
           args.positional.push(a);
     }
   }
+  Object.assign(args, cliWorkspaceSelection(args.projectId, args.projectRevision, args.noProject));
   return args;
 }
 async function readCaptureRecipe(args) {
@@ -38826,7 +42912,7 @@ async function readCaptureRecipe(args) {
   if (args.command !== "render" && args.command !== "generate")
     throw new Error("--capture is supported by render and generate only.");
   const limit = 1024 * 1024;
-  const file = await open8(resolvePath(args.capture), "r");
+  const file = await open11(resolvePath(args.capture), "r");
   let capture;
   try {
     const info = await file.stat();
@@ -38870,6 +42956,7 @@ function jsonRenderFailure(error, receipt = { files: [] }) {
   }));
 }
 async function emit(code, args, context, reviewed, receipt = { files: [] }) {
+  let captured = {};
   const log = (message) => {
     if (!args.json)
       console.log(message);
@@ -38882,7 +42969,12 @@ async function emit(code, args, context, reviewed, receipt = { files: [] }) {
     optimize: "off",
     requirements: context.requirements
   });
+  try {
+    context.liveReview?.artifact(code, result);
+  } catch {}
+  const project = context.workspace?.current()?.project;
   Object.assign(receipt, {
+    ...project ? { projectId: project.projectId, projectRevision: project.revisionId } : {},
     requirements: result.requirements,
     ...result.buildCache ? { buildCache: result.buildCache } : {},
     tris: result.tris,
@@ -38926,6 +43018,7 @@ async function emit(code, args, context, reviewed, receipt = { files: [] }) {
       programRef,
       ...args.captureRecipe === undefined ? {} : { capture: args.captureRecipe }
     });
+    captured = output;
     const failure = output;
     if (failure?.ok === false && typeof failure.error === "string" && failure.error.trim()) {
       throw new Error(failure.error.slice(0, 2048));
@@ -38940,6 +43033,7 @@ async function emit(code, args, context, reviewed, receipt = { files: [] }) {
   }
   if (args.json)
     console.log(JSON.stringify({ ...receipt, ok: true }));
+  return { ...captured, ...receipt, ok: true };
 }
 async function cmdRender(args) {
   const file = args.positional[0] ?? undefined;
@@ -38954,21 +43048,32 @@ async function cmdRender(args) {
     return 2;
   }
   const receipt = { files: [] };
+  let context;
   try {
-    const code = file.startsWith("sha256:") || programRefPattern.test(file) ? await localProgramStore().get(file) : await readFile9(resolvePath(file), "utf8");
-    const context = await createPackagedLocalToolContext({
+    const code = file.startsWith("sha256:") || programRefPattern.test(file) ? await localProgramStore().get(file) : await readFile12(resolvePath(file), "utf8");
+    context = await createPackagedLocalToolContext({
       ...await buildRenderPort(args.render, args.renderPort),
       requirements: args.requirements
     });
     if (!args.json)
       console.log(`rendering ${file}`);
-    await emit(code, args, context, undefined, receipt);
+    const callContext = context;
+    await observeWorkspaceOperation(callContext, "kiln_render", {
+      code,
+      projectId: args.projectId,
+      projectRevision: args.projectRevision,
+      materialDependencies: args.materialDependencies
+    }, () => emit(code, args, callContext, undefined, receipt));
     return 0;
   } catch (error) {
     if (!args.json)
       throw error;
     jsonRenderFailure(error, receipt);
     return 1;
+  } finally {
+    try {
+      await context?.liveReview?.flush?.();
+    } catch {}
   }
 }
 async function cmdGenerate(args) {
@@ -38996,34 +43101,48 @@ async function cmdGenerate(args) {
     ...await buildRenderPort(args.render, args.renderPort),
     requirements: args.requirements
   });
-  const descriptor = resolveKilnAgentModel(args.model);
-  const model = await makeKilnModel(descriptor);
-  console.log(`generating "${prompt}"`);
-  console.log(`  model ${args.model}  max-steps ${args.maxSteps}  render ${args.render}`);
-  const run = await runKilnAgent({
-    model,
-    prompt,
-    ...context,
-    generationCallBudget: createGenerationCallBudget(args.maxSteps)
-  });
-  if (!run.code || !run.artifact) {
-    console.error(run.error ?? "the agent stopped without a reviewed artifact");
-    if (run.lastText)
-      console.error(`  last message: ${run.lastText.slice(0, 400)}`);
-    return 1;
+  const modelId = args.model;
+  const generate = async () => {
+    const descriptor = resolveKilnAgentModel(modelId);
+    const model = await makeKilnModel(descriptor);
+    console.log(`generating "${prompt}"`);
+    console.log(`  model ${args.model}  max-steps ${args.maxSteps}  render ${args.render}`);
+    const run = await runKilnAgent({
+      model,
+      prompt,
+      ...context,
+      generationCallBudget: createGenerationCallBudget(args.maxSteps)
+    });
+    if (!run.code || !run.artifact) {
+      console.error(run.error ?? "the agent stopped without a reviewed artifact");
+      if (run.lastText)
+        console.error(`  last message: ${run.lastText.slice(0, 400)}`);
+      return 1;
+    }
+    console.log(`  ${run.steps} steps, ${run.toolCalls.length} tool calls`);
+    const requestedPath = args.out ?? "out.glb";
+    const partial = run.completion !== "finished";
+    const outPath = partial ? requestedPath.replace(/(?:\.glb)?$/i, ".partial.glb") : requestedPath;
+    if (partial)
+      console.error(`partial result: ${run.error ?? "kiln_finish was not called"}`);
+    const views = partial && args.views ? args.views.slice(0, args.views.length - extname2(args.views).length) + ".partial" + (extname2(args.views) || ".png") : args.views;
+    await emit(run.code, { ...args, out: outPath, views }, context, run.artifact.rendered);
+    const source = /\.glb$/i.test(outPath) ? outPath.replace(/\.glb$/i, ".kiln.js") : `${outPath}.kiln.js`;
+    await writeDestinationAtomic(resolvePath(source), run.code);
+    console.log(`  ${source}  (the program — edit and re-render it)`);
+    return partial ? 2 : 0;
+  };
+  try {
+    return context.workspace ? await context.workspace.run({
+      projectId: args.projectId,
+      projectRevision: args.projectRevision,
+      materialDependencies: args.materialDependencies
+    }, generate) : await generate();
+  } finally {
+    try {
+      await context.liveReview?.flush?.();
+    } catch {}
   }
-  console.log(`  ${run.steps} steps, ${run.toolCalls.length} tool calls`);
-  const requestedPath = args.out ?? "out.glb";
-  const partial = run.completion !== "finished";
-  const outPath = partial ? requestedPath.replace(/(?:\.glb)?$/i, ".partial.glb") : requestedPath;
-  if (partial)
-    console.error(`partial result: ${run.error ?? "kiln_finish was not called"}`);
-  const views = partial && args.views ? args.views.slice(0, args.views.length - extname2(args.views).length) + ".partial" + (extname2(args.views) || ".png") : args.views;
-  await emit(run.code, { ...args, out: outPath, views }, context, run.artifact.rendered);
-  const source = /\.glb$/i.test(outPath) ? outPath.replace(/\.glb$/i, ".kiln.js") : `${outPath}.kiln.js`;
-  await writeDestinationAtomic(resolvePath(source), run.code);
-  console.log(`  ${source}  (the program — edit and re-render it)`);
-  return partial ? 2 : 0;
 }
 async function cmdSource(args) {
   const input = args.positional[0];
@@ -39033,7 +43152,7 @@ async function cmdSource(args) {
   if (input.startsWith("sha256:") || programRefPattern.test(input)) {
     const code = await store.get(input);
     if (args.out) {
-      await writeFile6(await prepareDestination(resolvePath(args.out)), code, {
+      await writeFile9(await prepareDestination(resolvePath(args.out)), code, {
         encoding: "utf8",
         flag: "wx"
       });
@@ -39043,7 +43162,7 @@ async function cmdSource(args) {
   } else {
     if (args.out)
       throw new Error("Use source <programRef> --out <new-file.js> to export a saved revision.");
-    console.log(await retainProgram(store, await readFile9(resolvePath(input), "utf8")));
+    console.log(await retainProgram(store, await readFile12(resolvePath(input), "utf8")));
   }
   return 0;
 }
@@ -39079,6 +43198,22 @@ async function runMain(argv) {
     return (await Promise.resolve().then(() => (init_discovery_cli(), exports_discovery_cli))).discoveryMain(argv.slice(1));
   if (argv[0] === "service")
     return (await Promise.resolve().then(() => (init_service_cli(), exports_service_cli))).serviceMain(argv.slice(1));
+  if (argv[0] === "review") {
+    try {
+      return await (await Promise.resolve().then(() => (init_review_cli(), exports_review_cli))).reviewMain(argv.slice(1));
+    } catch (error) {
+      console.error(error instanceof Error ? error.message : String(error));
+      return 1;
+    }
+  }
+  if (argv[0] === "project" || argv[0] === "material") {
+    try {
+      return await (await Promise.resolve().then(() => (init_project_cli(), exports_project_cli))).projectMain(argv);
+    } catch (error) {
+      console.error(error instanceof Error ? error.message : String(error));
+      return 1;
+    }
+  }
   if (["save", "collections", "assets", "asset", "export", "import", "view"].includes(argv[0] ?? "")) {
     try {
       return await (await Promise.resolve().then(() => (init_asset_cli(), exports_asset_cli))).assetMain(argv);
@@ -39098,10 +43233,12 @@ async function runMain(argv) {
     return 2;
   }
   if (args.help || !args.command) {
-    console.log(USAGE3 + DISCOVERY_USAGE + EDIT_USAGE + ANIMATION_USAGE + INSPECT_USAGE + ASSET_USAGE + SERVICE_USAGE);
+    console.log(USAGE3 + DISCOVERY_USAGE + EDIT_USAGE + ANIMATION_USAGE + INSPECT_USAGE + ASSET_USAGE + PROJECT_USAGE + REVIEW_USAGE + SERVICE_USAGE);
     return args.help ? 0 : 2;
   }
   try {
+    if ((args.projectId !== undefined || args.projectRevision !== undefined || args.noProject || args.materialsFile !== undefined) && args.command !== "render" && args.command !== "generate")
+      throw new Error("--project, --project-revision, --no-project and --materials are supported by render and generate only.");
     if (args.json && args.command !== "render")
       throw new Error("--json is supported by render here; use each other command's documented output options.");
     if (args.requirementsFile !== undefined) {
@@ -39111,6 +43248,11 @@ async function runMain(argv) {
     }
     if (args.capture !== undefined)
       args.captureRecipe = await readCaptureRecipe(args);
+    if (args.materialsFile !== undefined) {
+      if (args.command !== "render" && args.command !== "generate")
+        throw new Error("--materials is supported by render and generate only.");
+      args.materialDependencies = await readMaterialDependencies(args.materialsFile);
+    }
     args.captureRecipe = applyBackdrop(args);
     switch (args.command) {
       case "source":

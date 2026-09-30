@@ -3,10 +3,14 @@ import { resolve } from 'node:path';
 import { programRefPattern } from './program-store';
 import { localProgramStore } from './program-store-node';
 import { createKilnProgramToolRegistry } from './tools/registry';
+import { FileWorkspace, localWorkspaceRoot } from './workspace-node';
+import { FileLiveReview } from './live-review-node';
+import { cliWorkspaceSelection, readMaterialDependencies } from './workspace-cli';
 
 export const EDIT_USAGE = `
 SOURCE EDITS
   kiln edit <programRef> --edits <edits.json>
+       [--project <id> | --no-project] [--project-revision <revision>] [--materials <json>]
 
 The JSON file contains an array of 1–20 { oldString, newString, replaceAll? }
 replacements, applied in order by the shared kiln_edit tool. Anchors must match
@@ -47,26 +51,67 @@ export async function editMain(argv: readonly string[]): Promise<number> {
     console.log(EDIT_USAGE);
     return 0;
   }
-  const [programRef, flag, path] = argv;
-  if (
-    argv.length !== 3 ||
-    !programRef ||
-    !programRefPattern.test(programRef) ||
-    flag !== '--edits' ||
-    !path ||
-    path.startsWith('--')
-  ) {
+  const programRef = argv[0];
+  const flags: Record<string, string> = {};
+  let valid = true;
+  for (let index = 1; index < argv.length; index++) {
+    const flag = argv[index]!;
+    if (flag === '--no-project' && !Object.hasOwn(flags, flag)) {
+      flags[flag] = 'true';
+      continue;
+    }
+    const value = argv[++index];
+    if (
+      !['--edits', '--project', '--project-revision', '--materials'].includes(flag) ||
+      Object.hasOwn(flags, flag) ||
+      !value ||
+      value.startsWith('--')
+    ) {
+      valid = false;
+      break;
+    }
+    flags[flag] = value;
+  }
+  const path = flags['--edits'];
+  if (!valid || !programRef || !programRefPattern.test(programRef) || !path) {
     console.error(EDIT_USAGE);
     return 2;
   }
   try {
+    const selection = cliWorkspaceSelection(
+      flags['--project'],
+      flags['--project-revision'],
+      flags['--no-project'] === 'true',
+    );
+    const materialDependencies = flags['--materials']
+      ? await readMaterialDependencies(flags['--materials'])
+      : undefined;
     const edits = await readEdits(path);
     // Patch-only use needs a store, not a renderer, evaluator or model provider.
-    const tool = createKilnProgramToolRegistry({ programStore: localProgramStore() }).find(
-      (definition) => definition.name === 'kiln_edit',
-    )!;
-    const input = tool.inputSchema.parse({ programRef, edits, render: false });
-    const output = (await tool.run(input)) as { ok: boolean };
+    const workspaceRoot = localWorkspaceRoot();
+    const workspace = new FileWorkspace(workspaceRoot, process.env.KILN_PROJECT);
+    const liveReview =
+      process.env.KILN_LIVE_REVIEW === 'off'
+        ? undefined
+        : new FileLiveReview(workspaceRoot, { transport: 'cli' });
+    const tool = createKilnProgramToolRegistry({
+      programStore: localProgramStore(),
+      workspace,
+      liveReview,
+    }).find((definition) => definition.name === 'kiln_edit')!;
+    const input = tool.inputSchema.parse({
+      programRef,
+      edits,
+      render: false,
+      ...selection,
+      ...(materialDependencies ? { materialDependencies } : {}),
+    });
+    let output: { ok: boolean };
+    try {
+      output = (await tool.run(input)) as { ok: boolean };
+    } finally {
+      await liveReview?.flush();
+    }
     console.log(JSON.stringify(output));
     return output.ok ? 0 : 1;
   } catch (error) {

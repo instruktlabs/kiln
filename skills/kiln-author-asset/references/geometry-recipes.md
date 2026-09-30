@@ -32,12 +32,50 @@ or other end boundaries. Inspect those joins from both sides after resizing; a
 correct bounding box and accepted structural QA do not prove closure. Leave
 surfaces open where the brief calls for them rather than capping every boundary.
 
+For a solid wall, gable or roof, review the outside and intended inside separately.
+Matching edge coordinates do not establish a visible join: reversed triangle winding
+can cull the connecting surface even when vertex normals point outward. Repair the
+winding or missing geometry rather than hiding the defect with double-sided shading;
+deliberate thin sheets may need it. Check ceiling and trim extents against the actual sloping roof, including
+the eaves, rather than its bounding box.
+
 For attached veins, ribs or seams, discover `recipe:surface-detail-v1`. Its strip
 shares the carrier mesh's sampled boundary vertices and rises along local normals.
 A shared equation followed by a separately interpolated curve does not establish
 contact with the actual mesh. Check both attachment and final dimensions after a
 shape edit; a normal offset can change height as well as depth. This recipe is an
 optional open-surface construction, not a requirement to turn every detail into a strip.
+
+## Interfaces that must fit or move
+
+Derive mating surfaces from shared dimensions and local frames. Surface contact at
+one point does not establish a flush joint along an edge. For a continuous-looking
+body, align profiles and transitions at the intended seam; unrelated interpenetrating
+primitives may hide a gap in one view while exposing a ledge in another. Separate
+rigid pieces, welded surfaces and deforming joints are all valid when they match the
+requested style and motion.
+
+For usable doors or passages, establish the actor envelope, finished floor,
+threshold, clear width and headroom. Split plinths, caps, trim and braces around the
+opening when they would obstruct it. Check the closed position, the hinge sweep and
+the open passage against exported geometry. A wide visible door leaf is not evidence
+of a traversable opening.
+
+For a seated operator, fit the posed body as well as the seat marker: pelvis/seat,
+knees/controls, feet/deck and hands/reach. Check relevant steering or pedal travel
+and access for mounting. Keep application-specific poses separate from promised
+asset clips, and report which one was tested.
+
+For articulated limbs, place roots and joint transitions within the intended body
+silhouette and inspect the moving seam from several sides. Identify the anatomical
+joint each pivot represents before reversing its bend direction. Correct exposed
+attachment caps, gaps and snapping through the motion, without assuming every
+stylized creature needs one rigging or deformation technique.
+
+When reducing draw calls, consolidate compatible geometry within the same rigid
+motion parent. Preserve independently moving nodes, attachment markers and names
+that the consumer uses. Recheck clip targets and intermediate poses after export;
+fewer meshes alone does not establish a successful optimization.
 
 ## Materials and directional UVs
 

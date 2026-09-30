@@ -2,6 +2,8 @@
 
 Kiln stores source revisions separately from evaluated builds and rendered images. A reference saves the model from repeating source. A compatible build cache saves the engine from evaluating it again.
 
+The packaged local host also supplies optional project, material-library and review capabilities through the shared registry. These add `kiln_project`, `kiln_material` and `kiln_review` to the fourteen base MCP tools; custom embeddings only advertise capabilities they inject. Projects are optional: standalone calls can pin material dependencies directly, and omission does not infer project membership from nearby records. [Projects and Live Review](projects-and-live-review.md) describes explicit selection, shared CLI/MCP/dashboard records, exact-save delivery and portable resource closure. These host facilities do not change the native completion protocol.
+
 Compiled CLI/MCP commands share one Node compatibility check with workspace setup:
 20.x from 20.15.0, or 22.2.0 and later. Optional Strands generation requires 22.2.0+;
 the CLI checks this before loading its SDK or provider. These floors are separate

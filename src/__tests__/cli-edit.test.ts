@@ -19,7 +19,12 @@ function cli(directory: string, args: string[]) {
     cwd: directory,
     stdout: 'pipe',
     stderr: 'pipe',
-    env: { ...process.env, KILN_RENDER: 'cpu', KILN_PROGRAM_STORE: join(directory, 'programs') },
+    env: {
+      ...process.env,
+      KILN_RENDER: 'cpu',
+      KILN_WORKSPACE: directory,
+      KILN_PROGRAM_STORE: join(directory, 'programs'),
+    },
   });
 }
 const original =

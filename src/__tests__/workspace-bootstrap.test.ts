@@ -304,7 +304,7 @@ it('gives every user-global harness a launcher that configures without relocatin
     // A workspace is deliberately not a git checkout.
     expect(codex).toContain('--skip-git-repo-check');
     expect(codex).toContain("'--cd'");
-    expect(codex).toContain("process.platform === 'win32' ? 'codex.cmd' : 'codex'");
+    expect(codex).not.toContain('shell: true');
     // The launcher must never move the home that holds credentials.
     expect(codex).not.toContain('CODEX_HOME');
 
@@ -330,6 +330,186 @@ it('gives every user-global harness a launcher that configures without relocatin
     for (const path of [join(codexDir, 'codex.mjs'), join(hermesDir, 'hermes.mjs')]) {
       const check = spawnSync('node', ['--check', path], { encoding: 'utf8' });
       expect(check.status, `${path}: ${check.stderr}`).toBe(0);
+    }
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+}, 30000);
+
+it('runs the Windows npm Codex shim through Node and preserves initial and resume arguments', async () => {
+  const root = await mkdtemp(join(tmpdir(), 'kiln codex launcher '));
+  try {
+    const task = join(root, 'assets');
+    expect(run([task, '--harness', 'codex'], root).status).toBe(0);
+    const bin = join(root, 'npm prefix');
+    const entry = join(bin, 'node_modules', '@openai', 'codex', 'bin', 'codex.js');
+    await mkdir(dirname(entry), { recursive: true });
+    await writeFile(join(bin, 'codex.cmd'), '@echo off\r\n');
+    await writeFile(
+      entry,
+      'console.log(JSON.stringify({args:process.argv.slice(2),cwd:process.cwd(),home:process.env.CODEX_HOME}));',
+    );
+    const preload = join(root, 'platform.mjs');
+    await writeFile(preload, "Object.defineProperty(process,'platform',{value:'win32'});");
+    const node = spawnSync('node', ['-p', 'process.execPath'], { encoding: 'utf8' }).stdout.trim();
+    const env = { ...process.env };
+    for (const key of Object.keys(env)) if (key.toLowerCase() === 'path') delete env[key];
+    env.PATH = bin;
+    env.CODEX_HOME = join(root, 'unchanged home');
+    const prompt = 'Keep spaces, "quotes", & pipes | %PATH% and $(literal) intact';
+    for (const input of [
+      [prompt],
+      ['exec', '--json', prompt],
+      ['resume', 'session-id', prompt],
+      ['exec', 'resume', 'session-id', prompt],
+    ]) {
+      const launched = spawnSync(
+        node,
+        ['--import', pathToFileURL(preload).href, join(task, 'codex.mjs'), ...input],
+        { cwd: root, env, encoding: 'utf8' },
+      );
+      expect(launched.status, launched.stderr).toBe(0);
+      const actual = JSON.parse(launched.stdout);
+      expect(actual.cwd).toBe(task);
+      expect(actual.home).toBe(env.CODEX_HOME);
+      expect(actual.args[0]).toBe('exec');
+      expect(actual.args.at(-1)).toBe(prompt);
+      expect(actual.args.filter((arg: string) => arg === '--cd')).toHaveLength(1);
+      expect(actual.args[actual.args.indexOf('--cd') + 1]).toBe(task);
+      expect(actual.args.filter((arg: string) => arg === '--skip-git-repo-check')).toHaveLength(1);
+      expect(actual.args).toContain(
+        `mcp_servers.kiln_workspace.env.KILN_WORKSPACE=${JSON.stringify(task)}`,
+      );
+      if (input.includes('resume')) {
+        const resume = actual.args.indexOf('resume');
+        expect(actual.args.indexOf('--cd')).toBeLessThan(resume);
+        expect(actual.args.indexOf('--skip-git-repo-check')).toBeGreaterThan(resume);
+        expect(actual.args.indexOf('-c')).toBeGreaterThan(resume);
+        expect(actual.args.slice(-2)).toEqual(['session-id', prompt]);
+      }
+    }
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+}, 30000);
+
+it('launches a native Windows Codex executable and preserves POSIX PATH execution without a shell', async () => {
+  const root = await mkdtemp(join(tmpdir(), 'kiln-codex-native-'));
+  try {
+    const task = join(root, 'assets');
+    expect(run([task, '--harness', 'codex'], root).status).toBe(0);
+    const bin = join(root, 'native bin');
+    await mkdir(bin);
+    await writeFile(join(bin, 'codex.exe'), 'native fixture, never executed');
+    const preload = join(root, 'capture.mjs');
+    await writeFile(
+      preload,
+      `import cp from 'node:child_process';import {syncBuiltinESMExports} from 'node:module';import {EventEmitter} from 'node:events';Object.defineProperty(process,'platform',{value:process.env.TEST_PLATFORM});cp.spawn=(command,args,options)=>{console.log(JSON.stringify({command,args,options}));const child=new EventEmitter();queueMicrotask(()=>child.emit('exit',0));return child;};syncBuiltinESMExports();`,
+    );
+    const node = spawnSync('node', ['-p', 'process.execPath'], { encoding: 'utf8' }).stdout.trim();
+    const env = { ...process.env };
+    for (const key of Object.keys(env)) if (key.toLowerCase() === 'path') delete env[key];
+    env.PATH = bin;
+    for (const platform of ['win32', 'linux']) {
+      const launched = spawnSync(
+        node,
+        ['--import', pathToFileURL(preload).href, join(task, 'codex.mjs'), '--help'],
+        { cwd: root, env: { ...env, TEST_PLATFORM: platform }, encoding: 'utf8' },
+      );
+      expect(launched.status, launched.stderr).toBe(0);
+      const actual = JSON.parse(launched.stdout);
+      expect(actual.command).toBe(platform === 'win32' ? join(bin, 'codex.exe') : 'codex');
+      expect(actual.options.shell).not.toBe(true);
+      expect(actual.options.windowsHide).toBe(true);
+      expect(actual.args.at(-1)).toBe('--help');
+    }
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+}, 30000);
+
+it('emits names-only Codex renderer forwarding for initial and resume launches without changing inherited values', async () => {
+  const root = await mkdtemp(join(tmpdir(), 'kiln-codex-render-env-'));
+  const names = [
+    'KILN_RENDER_TOKEN',
+    'RENDER_SERVICE_TOKEN',
+    'KILN_RENDER_PORT_URL',
+    'KILN_RENDER_SERVICE_PORT',
+    'KILN_WORK_ITEM',
+  ];
+  const fixture = {
+    KILN_RENDER_TOKEN: 'synthetic-client-token-not-a-real-credential',
+    RENDER_SERVICE_TOKEN: 'synthetic-local-token-not-a-real-credential',
+    KILN_RENDER_PORT_URL: 'https://renderer.invalid/fixture',
+    KILN_RENDER_SERVICE_PORT: '43123',
+    KILN_WORK_ITEM: 'cow',
+  };
+  try {
+    const task = join(root, 'assets');
+    const node = spawnSync('node', ['-p', 'process.execPath'], { encoding: 'utf8' }).stdout.trim();
+    const created = spawnSync(node, [setup, task, '--harness', 'codex'], {
+      cwd: root,
+      env: { ...process.env, ...fixture },
+      encoding: 'utf8',
+    });
+    expect(created.status, created.stderr).toBe(0);
+    const config = await readFile(join(task, '.codex/config.toml'), 'utf8');
+    expect(config).toMatch(/^env_vars = /m);
+    expect(JSON.parse(config.match(/^env_vars = (.+)$/m)![1]!)).toEqual(names);
+    for (const name of [
+      'codex.mjs',
+      '.codex/config.toml',
+      'AGENTS.md',
+      'CLAUDE.md',
+      'START.md',
+      '.kiln/workspace.json',
+    ]) {
+      const generated = await readFile(join(task, name), 'utf8');
+      for (const value of Object.values(fixture)) expect(generated).not.toContain(value);
+    }
+    const bin = join(root, 'bin');
+    await mkdir(bin);
+    await writeFile(join(bin, 'codex.exe'), 'fixture, never executed');
+    const preload = join(root, 'capture.mjs');
+    await writeFile(
+      preload,
+      `import cp from 'node:child_process';import {syncBuiltinESMExports} from 'node:module';import {EventEmitter} from 'node:events';Object.defineProperty(process,'platform',{value:'win32'});const names=${JSON.stringify(names)};cp.spawn=(command,args,options)=>{const env=options.env??process.env;console.log(JSON.stringify({args,inherited:Object.fromEntries(names.filter(name=>Object.hasOwn(env,name)).map(name=>[name,env[name]]))}));const child=new EventEmitter();queueMicrotask(()=>child.emit('exit',0));return child;};syncBuiltinESMExports();`,
+    );
+    const cases: Record<string, string>[] = [
+      {},
+      { RENDER_SERVICE_TOKEN: fixture.RENDER_SERVICE_TOKEN },
+      {
+        KILN_RENDER_TOKEN: fixture.KILN_RENDER_TOKEN,
+        KILN_RENDER_PORT_URL: fixture.KILN_RENDER_PORT_URL,
+      },
+      fixture,
+      { KILN_RENDER_TOKEN: '', RENDER_SERVICE_TOKEN: fixture.RENDER_SERVICE_TOKEN },
+    ];
+    for (const values of cases) {
+      const env = { ...process.env };
+      for (const key of Object.keys(env))
+        if (names.includes(key.toUpperCase()) || key.toLowerCase() === 'path') delete env[key];
+      Object.assign(env, values, { PATH: bin });
+      for (const input of [
+        ['exec', '--help'],
+        ['exec', 'resume', '--help'],
+      ]) {
+        const launched = spawnSync(
+          node,
+          ['--import', pathToFileURL(preload).href, join(task, 'codex.mjs'), ...input],
+          { cwd: root, env, encoding: 'utf8' },
+        );
+        expect(launched.status, launched.stderr).toBe(0);
+        const actual = JSON.parse(launched.stdout);
+        const expected = `mcp_servers.kiln_workspace.env_vars=${JSON.stringify(names)}`;
+        expect(actual.args.filter((arg: string) => arg === expected)).toHaveLength(1);
+        expect(actual.args[actual.args.indexOf(expected) - 1]).toBe('-c');
+        if (input.includes('resume'))
+          expect(actual.args.indexOf(expected)).toBeGreaterThan(actual.args.indexOf('resume'));
+        expect(actual.inherited).toEqual(values);
+        for (const value of Object.values(fixture))
+          expect(JSON.stringify(actual.args)).not.toContain(value);
+      }
     }
   } finally {
     await rm(root, { recursive: true, force: true });

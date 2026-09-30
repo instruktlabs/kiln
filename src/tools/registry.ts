@@ -18,6 +18,11 @@ import { assertSavedRequirementsAuthorized } from '../requirements-assets';
 import { createKilnSourceDef, withProgramReferences } from './programs';
 import { ProgramArtifactStore, type NativeCompletion } from './program-artifacts';
 import { createKilnDiscoveryDef } from './discovery';
+import { createKilnProjectDef } from './projects';
+import { listAssetCatalog } from '../asset-catalog';
+import { createKilnMaterialDef } from './materials';
+import { createKilnReviewDef, type ReviewStore } from './review';
+import { withWorkspaceContext } from './workspace';
 import { createCachedEvaluatorPort, MemoryBuildCache, type BuildCache } from '../build-cache';
 import * as THREE from 'three';
 
@@ -129,6 +134,15 @@ export interface KilnToolDef {
  * cannot replace the host binding or turn descriptive labels into QA policy.
  */
 export interface KilnToolContext {
+  projectBundleReader?: import('./projects').ProjectBundleReader;
+  materialLibrary?: import('../material-library').MaterialLibrary;
+  reviewStore?: ReviewStore;
+  /** Shared workspace projects, supplied only by hosts that support persistent project operations. */
+  projectStore?: import('../projects').ProjectStore;
+  /** Host-owned immutable project/material binding for each concurrent invocation. */
+  workspace?: import('../workspace').WorkspacePort;
+  /** Passive host observation. Never required for evaluation or structural QA. */
+  liveReview?: import('../live-review').LiveReviewPort;
   /** Snapshot a host-owned render connection at the start of a view operation.
    * The callback survives context copies; one operation keeps one connection. */
   viewRenderState?: () => Pick<KilnToolContext, 'viewRenderPort' | 'captureCacheIdentity'>;
@@ -379,6 +393,9 @@ async function evaluateGeneratedSource(
     code,
     {
       optimize,
+      ...(context.workspace?.current()?.materialResources.records.length
+        ? { materialResources: context.workspace.current()!.materialResources }
+        : {}),
       ...(context.geometryPolicy ? { geometryPolicy: context.geometryPolicy } : {}),
       ...(requirements.binding ? { requirements: requirements.binding } : {}),
     },
@@ -399,6 +416,11 @@ function evaluationEvidence(rendered: RenderResult): EvaluationEvidence {
 
 async function loadEvaluatedReviewScene(code: string, context: KilnToolContext) {
   const rendered = await evaluateGeneratedSource(code, context);
+  try {
+    context.liveReview?.artifact(code, rendered);
+  } catch {
+    /* Optional observation. */
+  }
   const { loadGlbReviewScene } = await import('../views');
   const scene = await loadGlbReviewScene(rendered.glb);
   return { rendered, ...scene };
@@ -2543,18 +2565,34 @@ export function createKilnProgramToolRegistry(
       createKilnEditDef(context),
     ].map((def) => withProgramReferences(def, store)),
     createKilnSourceDef(store),
+    ...(context.projectStore
+      ? [createKilnProjectDef(context.projectStore, context.projectBundleReader)]
+      : []),
+    ...(context.materialLibrary ? [createKilnMaterialDef(context.materialLibrary)] : []),
+    ...(context.reviewStore && context.assetLibrary
+      ? [
+          createKilnReviewDef({
+            reviewStore: context.reviewStore,
+            assetLibrary: context.assetLibrary,
+            requirements: context.requirements,
+          }),
+        ]
+      : []),
     ...createKilnAssetDefs({ ...context, programStore: store }),
-  ].map((def) => ({
-    ...def,
-    annotations: {
-      readOnlyHint: ['kiln_source', 'kiln_discover', 'kiln_export', 'kiln_present'].includes(
-        def.name,
-      ),
-      destructiveHint: false,
-      idempotentHint: def.name !== 'kiln_save',
-      openWorldHint: false,
-    },
-  }));
+  ]
+    .map((def) => withWorkspaceContext(def, context))
+    .map((def) => ({
+      ...def,
+      annotations: {
+        readOnlyHint: ['kiln_source', 'kiln_discover', 'kiln_export', 'kiln_present'].includes(
+          def.name,
+        ),
+        destructiveHint: false,
+        idempotentHint: def.name !== 'kiln_save',
+        openWorldHint: false,
+        ...def.annotations,
+      },
+    }));
 }
 
 /** Canonical native workflow: shared definitions plus one host-owned terminal. */
@@ -2689,7 +2727,15 @@ export async function buildProgramAssetDraft(
       error: error instanceof Error ? error.message : String(error),
     };
   }
-  const dependencies = rendered.materialResourceProvenance ?? [];
+  const dependencies = [
+    ...(rendered.materialResourceProvenance ?? []),
+    ...(rendered.materialLibraryDependencies ?? []).map((manifest) => ({
+      kind: 'kiln.material.v1',
+      delivery: 'runtime',
+      manifest,
+    })),
+  ];
+  const project = context.workspace?.current()?.project;
   return {
     code,
     glb: rendered.glb,
@@ -2699,9 +2745,8 @@ export async function buildProgramAssetDraft(
       engine: context.localExecution?.runtimeIdentity ?? 'source-development:unverified',
       options: {
         ...context.assetBuildOptions,
-        optimize: 'off',
-        instance: context.assetBuildOptions?.instance ?? 'unspecified-by-host',
-        geometryPolicy: context.geometryPolicy ?? 'warn',
+        ...(project ? { projectId: project.projectId, projectRevision: project.revisionId } : {}),
+        ...rendered.rebuildOptions,
         requirements: rendered.requirements,
         ...(rendered.requirements.binding
           ? {
@@ -2776,7 +2821,7 @@ export function createKilnAssetDefs(context: KilnToolContext): KilnToolDef[] {
       .describe('Preview backdrop: the one the reviewed sheet used.'),
   });
   const assetsInput = z.object({
-    action: z.enum(['collections', 'list', 'get', 'restore']).default('list'),
+    action: z.enum(['collections', 'catalog', 'list', 'get', 'restore']).default('list'),
     collection: assetSelector.collection,
     assetId: assetSelector.assetId.optional(),
     revisionId: assetSelector.revisionId.optional(),
@@ -2826,13 +2871,39 @@ export function createKilnAssetDefs(context: KilnToolContext): KilnToolDef[] {
     {
       name: 'kiln_assets',
       description:
-        'Discover collections; list/search saved asset revisions; get a build record and downloads; or restore exact editable source into the current program store for kiln_source/kiln_edit. List is paginated. Binary-only imports cannot restore source.',
+        'collections discovers storage; catalog searches all configured collections; list searches one. Both searches paginate. get returns a build record/downloads; restore loads exact source for kiln_source/kiln_edit. Collection is not project membership. Binary-only assets cannot restore source.',
       inputSchema: assetsInput,
       run: async (raw) => {
         const input = assetsInput.parse(raw);
         const activeRequirements = toolRequirements(context);
         const target = library();
         if (input.action === 'collections') return { collections: target.collections() };
+        if (input.action === 'catalog') {
+          const catalog = await listAssetCatalog(target);
+          const query = input.query?.toLowerCase();
+          const all = catalog.entries.filter(
+            ({ manifest: a }) =>
+              (!input.assetId || a.assetId === input.assetId) &&
+              (!query || `${a.name} ${a.tags.join(' ')}`.toLowerCase().includes(query)),
+          );
+          return {
+            errors: catalog.errors,
+            total: all.length,
+            nextOffset: input.offset + input.limit < all.length ? input.offset + input.limit : null,
+            assets: all
+              .slice(input.offset, input.offset + input.limit)
+              .map(({ collectionId, manifest: a }) => ({
+                collection: collectionId,
+                assetId: a.assetId,
+                revisionId: a.revisionId,
+                parentRevision: a.parentRevision,
+                name: a.name,
+                tags: a.tags,
+                editable: a.editable,
+                createdAt: a.createdAt,
+              })),
+          };
+        }
         if (input.action === 'list') {
           const query = input.query?.toLowerCase();
           const all = (await target.list(input.collection)).filter(

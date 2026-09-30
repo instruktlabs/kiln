@@ -10,20 +10,10 @@
 
 import * as THREE from 'three';
 import { AuthoringDiagnosticError } from './evaluator/authoring-diagnostic';
+import type { TextureUsage } from './texture-contract';
+export { TEXTURE_USAGES, type TextureUsage } from './texture-contract';
 
 export type TextureSource = string | Buffer | Uint8Array;
-
-export const TEXTURE_USAGES = [
-  'albedo',
-  'emissive',
-  'normal',
-  'roughness',
-  'metalness',
-  'metallicRoughness',
-  'occlusion',
-] as const;
-
-export type TextureUsage = (typeof TEXTURE_USAGES)[number];
 
 export interface TextureLoadOptions {
   /** glTF material slot this image will occupy. Defaults to albedo for compatibility. */

@@ -10,6 +10,10 @@ metadata:
 
 Match the checks to the requested delivery. A source build, an image review, a GLB export, and a working asset in a game are different pieces of evidence.
 
+Standalone assets need no project to be reviewed, saved or exported. Do not create a project or impose pack-wide budgets for QA alone. Preserve the intended project selection and exact material dependencies; use `projectId: null` / CLI `--no-project` when a configured default would attach unrelated work. Verify editable standalone deliveries in an independent workspace too, with all declared material resources available.
+
+For project deliveries, verify both editable and runtime packages. Import the editable ZIP into an independent workspace, rebuild saved revisions using their recorded settings and exact material dependencies, and compare artifact hashes. The runtime ZIP is delivery-only and cannot substitute for source/resources. Referenced concept images and original acquisition archives are not embedded in the project ZIP. Test the intended consumer independently. Browser Measure samples under concurrent CPU/GPU workload are exploratory; record the workload and reserve an isolated session before accepting a performance budget. GPU-required image review must show actual GPU fidelity, not a CPU fallback or the interactive viewport alone.
+
 ## Before integration
 
 Read the [export profile guide](references/export-profiles.md) when reviewing delivery files. Verify the selected converter separately from the editable/runtime profile. Runtime GLBs must preserve native playback without the sidecar; provenance checks use the sidecar filename and exact byte hash. Keep the canonical editable asset for source and full Kiln review data, and measure actual loading and rendering performance separately.

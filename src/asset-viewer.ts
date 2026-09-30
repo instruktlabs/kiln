@@ -1,14 +1,20 @@
-/** Read-only loopback host. Only configured collection resources are routable. */
+/** Loopback host. Only explicitly configured library/workspace resources are routable. */
 import { createServer } from 'node:http';
 import { readFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { encodeAssetBundle, type AssetLibrary } from './assets';
-import { readAssetResource } from './assets-resources';
+import type { AssetLibrary } from './assets';
+import { listAssetCatalog } from './asset-catalog';
+import { exportLibraryAssetBundle, readAssetResource } from './assets-resources';
+import {
+  serveWorkspaceRequest,
+  WorkspaceHttpError,
+  type WorkspaceHttpServices,
+} from './workspace-http';
 
 export async function startAssetViewer(
   library: AssetLibrary,
-  options: {
+  options: WorkspaceHttpServices & {
     port?: number;
     staticDirectory?: string;
     standalone?: { name: string; bytes: Uint8Array };
@@ -33,11 +39,6 @@ export async function startAssetViewer(
       res.end('Forbidden origin');
       return;
     }
-    if (req.method !== 'GET' && req.method !== 'HEAD') {
-      res.writeHead(405);
-      res.end('Read-only viewer');
-      return;
-    }
     const send = (bytes: Uint8Array | string, mime = 'application/json', name?: string) => {
       res.setHeader('Content-Type', mime);
       if (name) res.setHeader('Content-Disposition', `attachment; filename="${name}"`);
@@ -45,8 +46,16 @@ export async function startAssetViewer(
     };
     try {
       const url = new URL(req.url ?? '/', origin);
+      if (await serveWorkspaceRequest(req, res, url, { ...options, assetLibrary: library })) return;
+      if (req.method !== 'GET' && req.method !== 'HEAD') {
+        res.writeHead(405);
+        res.end('Method not available');
+        return;
+      }
       if (url.pathname === '/api/collections')
         return send(JSON.stringify({ collections: library.collections() }));
+      if (url.pathname === '/api/library')
+        return send(JSON.stringify(await listAssetCatalog(library)));
       if (url.pathname === '/api/assets')
         return send(
           JSON.stringify({
@@ -68,7 +77,11 @@ export async function startAssetViewer(
             return library.read(collection, asset, revision);
           }),
         );
-        return send(encodeAssetBundle(records), 'application/zip', 'kiln-assets.zip');
+        return send(
+          await exportLibraryAssetBundle(library, records),
+          'application/zip',
+          'kiln-assets.zip',
+        );
       }
       if (url.pathname.startsWith('/files/')) {
         const file = await readAssetResource(library, `kiln://assets/${url.pathname.slice(7)}`);
@@ -95,10 +108,19 @@ export async function startAssetViewer(
       );
       return send(await readFile(join(staticDirectory, file[0])), file[1]);
     } catch (error) {
-      res.statusCode = 400;
+      res.statusCode =
+        error instanceof WorkspaceHttpError
+          ? error.status
+          : error &&
+              typeof error === 'object' &&
+              'code' in error &&
+              error.code === 'PROJECT_CONFLICT'
+            ? 409
+            : 400;
       send(JSON.stringify({ error: error instanceof Error ? error.message : 'Asset unavailable' }));
     }
   });
+  server.requestTimeout = 15000;
   await new Promise<void>((resolve, reject) => {
     server.once('error', reject);
     server.listen(options.port ?? 4318, '127.0.0.1', resolve);

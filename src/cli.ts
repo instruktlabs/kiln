@@ -16,7 +16,12 @@ import { resolveRenderMode, buildRenderPort, describeDrawnBy } from './cli-rende
 import type { RenderMode } from './cli-render-mode';
 import { localProgramStore } from './program-store-node';
 import { retainProgram, programRefPattern } from './program-store';
+import { observeWorkspaceOperation } from './tools/workspace';
+import { cliWorkspaceSelection, readMaterialDependencies } from './workspace-cli';
+import type { WorkspaceSelection } from './workspace';
 import { ASSET_USAGE } from './asset-cli';
+import { PROJECT_USAGE } from './project-cli';
+import { REVIEW_USAGE } from './review-cli';
 import { SERVICE_USAGE } from './service-cli';
 import { DISCOVERY_USAGE } from './discovery-cli';
 import { ANIMATION_USAGE } from './animation-cli';
@@ -52,6 +57,10 @@ OPTIONS
   --model <id>            model id for generate      (default: env KILN_MODEL)
   --max-steps <n>         agent step cap, 0 = off    (default: 0)
   --requirements <json>  explicit host binding (optional; default neutral)
+  --project <id>         project configuration and pinned material dependencies
+  --project-revision <r> exact project revision (default: current)
+  --no-project          standalone authoring, overriding KILN_PROJECT
+  --materials <json>    exact material dependency pins, with or without a project
   --json                 render: one JSON receipt, no embedded image or GLB bytes
   -h, --help              this message
 
@@ -63,7 +72,7 @@ EXAMPLES
   kiln render examples/crate.kiln.js --views sheet.png --backdrop light
 `;
 
-interface Args {
+interface Args extends WorkspaceSelection {
   command: string | undefined;
   positional: string[];
   out: string | undefined;
@@ -77,6 +86,8 @@ interface Args {
   maxSteps: number;
   requirementsFile?: string;
   requirements?: RequirementsBinding;
+  noProject?: boolean;
+  materialsFile?: string;
   help: boolean;
   json: boolean;
 }
@@ -141,6 +152,18 @@ export function parseArgs(argv: readonly string[]): Args {
       case '--requirements':
         args.requirementsFile = next();
         break;
+      case '--project':
+        args.projectId = next();
+        break;
+      case '--project-revision':
+        args.projectRevision = next();
+        break;
+      case '--no-project':
+        args.noProject = true;
+        break;
+      case '--materials':
+        args.materialsFile = next();
+        break;
       case '--max-steps': {
         const n = Number(next());
         // Zero is the documented "no cap" value, so it has to be accepted here
@@ -158,6 +181,7 @@ export function parseArgs(argv: readonly string[]): Args {
         else args.positional.push(a);
     }
   }
+  Object.assign(args, cliWorkspaceSelection(args.projectId, args.projectRevision, args.noProject));
   return args;
 }
 
@@ -234,7 +258,8 @@ async function emit(
   context: KilnToolContext,
   reviewed?: RenderResult,
   receipt: RenderCliReceipt = { files: [] },
-): Promise<void> {
+): Promise<Record<string, unknown>> {
+  let captured: Record<string, unknown> = {};
   const log = (message: string) => {
     if (!args.json) console.log(message);
   };
@@ -248,7 +273,14 @@ async function emit(
       optimize: 'off',
       requirements: context.requirements,
     }));
+  try {
+    context.liveReview?.artifact(code, result);
+  } catch {
+    /* Optional observation. */
+  }
+  const project = context.workspace?.current()?.project;
   Object.assign(receipt, {
+    ...(project ? { projectId: project.projectId, projectRevision: project.revisionId } : {}),
     requirements: result.requirements,
     ...(result.buildCache ? { buildCache: result.buildCache } : {}),
     tris: result.tris,
@@ -298,6 +330,7 @@ async function emit(
       programRef,
       ...(args.captureRecipe === undefined ? {} : { capture: args.captureRecipe }),
     });
+    captured = output as Record<string, unknown>;
     const failure = output as { ok?: unknown; error?: unknown } | null;
     if (failure?.ok === false && typeof failure.error === 'string' && failure.error.trim()) {
       throw new Error(failure.error.slice(0, 2048));
@@ -313,6 +346,7 @@ async function emit(
     log(`  ${args.views}  (${describeDrawnBy(output, context)})`);
   }
   if (args.json) console.log(JSON.stringify({ ...receipt, ok: true }));
+  return { ...captured, ...receipt, ok: true };
 }
 
 async function cmdRender(args: Args): Promise<number> {
@@ -326,22 +360,40 @@ async function cmdRender(args: Args): Promise<number> {
     return 2;
   }
   const receipt: RenderCliReceipt = { files: [] };
+  let context: KilnToolContext | undefined;
   try {
     const code =
       file.startsWith('sha256:') || programRefPattern.test(file)
         ? await localProgramStore().get(file)
         : await readFile(resolvePath(file), 'utf8');
-    const context = await createPackagedLocalToolContext({
+    context = await createPackagedLocalToolContext({
       ...(await buildRenderPort(args.render, args.renderPort)),
       requirements: args.requirements,
     });
     if (!args.json) console.log(`rendering ${file}`);
-    await emit(code, args, context, undefined, receipt);
+    const callContext = context;
+    await observeWorkspaceOperation(
+      callContext,
+      'kiln_render',
+      {
+        code,
+        projectId: args.projectId,
+        projectRevision: args.projectRevision,
+        materialDependencies: args.materialDependencies,
+      },
+      () => emit(code, args, callContext, undefined, receipt),
+    );
     return 0;
   } catch (error) {
     if (!args.json) throw error;
     jsonRenderFailure(error, receipt);
     return 1;
+  } finally {
+    try {
+      await context?.liveReview?.flush?.();
+    } catch {
+      /* Observation cannot fail a build. */
+    }
   }
 }
 
@@ -380,45 +432,66 @@ async function cmdGenerate(args: Args): Promise<number> {
     ...(await buildRenderPort(args.render, args.renderPort)),
     requirements: args.requirements,
   });
-  const descriptor = resolveKilnAgentModel(args.model);
-  const model = await makeKilnModel(descriptor);
+  const modelId = args.model;
+  const generate = async () => {
+    const descriptor = resolveKilnAgentModel(modelId);
+    const model = await makeKilnModel(descriptor);
 
-  console.log(`generating "${prompt}"`);
-  console.log(`  model ${args.model}  max-steps ${args.maxSteps}  render ${args.render}`);
+    console.log(`generating "${prompt}"`);
+    console.log(`  model ${args.model}  max-steps ${args.maxSteps}  render ${args.render}`);
 
-  const run = await runKilnAgent({
-    model,
-    prompt,
-    ...context,
-    generationCallBudget: createGenerationCallBudget(args.maxSteps),
-  });
+    const run = await runKilnAgent({
+      model,
+      prompt,
+      ...context,
+      generationCallBudget: createGenerationCallBudget(args.maxSteps),
+    });
 
-  if (!run.code || !run.artifact) {
-    console.error(run.error ?? 'the agent stopped without a reviewed artifact');
-    if (run.lastText) console.error(`  last message: ${run.lastText.slice(0, 400)}`);
-    return 1;
+    if (!run.code || !run.artifact) {
+      console.error(run.error ?? 'the agent stopped without a reviewed artifact');
+      if (run.lastText) console.error(`  last message: ${run.lastText.slice(0, 400)}`);
+      return 1;
+    }
+    console.log(`  ${run.steps} steps, ${run.toolCalls.length} tool calls`);
+    // `generate` always writes the GLB: producing an asset is the point of the
+    // command, unlike `render`, where `--views` alone is a legitimate request.
+    const requestedPath = args.out ?? 'out.glb';
+    const partial = run.completion !== 'finished';
+    const outPath = partial ? requestedPath.replace(/(?:\.glb)?$/i, '.partial.glb') : requestedPath;
+    if (partial) console.error(`partial result: ${run.error ?? 'kiln_finish was not called'}`);
+    const views =
+      partial && args.views
+        ? args.views.slice(0, args.views.length - extname(args.views).length) +
+          '.partial' +
+          (extname(args.views) || '.png')
+        : args.views;
+    await emit(run.code, { ...args, out: outPath, views }, context, run.artifact.rendered);
+
+    const source = /\.glb$/i.test(outPath)
+      ? outPath.replace(/\.glb$/i, '.kiln.js')
+      : `${outPath}.kiln.js`;
+    await writeDestinationAtomic(resolvePath(source), run.code);
+    console.log(`  ${source}  (the program — edit and re-render it)`);
+    return partial ? 2 : 0;
+  };
+  try {
+    return context.workspace
+      ? await context.workspace.run(
+          {
+            projectId: args.projectId,
+            projectRevision: args.projectRevision,
+            materialDependencies: args.materialDependencies,
+          },
+          generate,
+        )
+      : await generate();
+  } finally {
+    try {
+      await context.liveReview?.flush?.();
+    } catch {
+      /* Optional observation. */
+    }
   }
-  console.log(`  ${run.steps} steps, ${run.toolCalls.length} tool calls`);
-  // `generate` always writes the GLB: producing an asset is the point of the
-  // command, unlike `render`, where `--views` alone is a legitimate request.
-  const requestedPath = args.out ?? 'out.glb';
-  const partial = run.completion !== 'finished';
-  const outPath = partial ? requestedPath.replace(/(?:\.glb)?$/i, '.partial.glb') : requestedPath;
-  if (partial) console.error(`partial result: ${run.error ?? 'kiln_finish was not called'}`);
-  const views =
-    partial && args.views
-      ? args.views.slice(0, args.views.length - extname(args.views).length) +
-        '.partial' +
-        (extname(args.views) || '.png')
-      : args.views;
-  await emit(run.code, { ...args, out: outPath, views }, context, run.artifact.rendered);
-
-  const source = /\.glb$/i.test(outPath)
-    ? outPath.replace(/\.glb$/i, '.kiln.js')
-    : `${outPath}.kiln.js`;
-  await writeDestinationAtomic(resolvePath(source), run.code);
-  console.log(`  ${source}  (the program — edit and re-render it)`);
-  return partial ? 2 : 0;
 }
 
 async function cmdSource(args: Args): Promise<number> {
@@ -484,6 +557,22 @@ async function runMain(argv: readonly string[]): Promise<number> {
   if (argv[0] === 'inspect') return (await import('./inspect-cli')).inspectMain(argv.slice(1));
   if (argv[0] === 'discover') return (await import('./discovery-cli')).discoveryMain(argv.slice(1));
   if (argv[0] === 'service') return (await import('./service-cli')).serviceMain(argv.slice(1));
+  if (argv[0] === 'review') {
+    try {
+      return await (await import('./review-cli')).reviewMain(argv.slice(1));
+    } catch (error) {
+      console.error(error instanceof Error ? error.message : String(error));
+      return 1;
+    }
+  }
+  if (argv[0] === 'project' || argv[0] === 'material') {
+    try {
+      return await (await import('./project-cli')).projectMain(argv);
+    } catch (error) {
+      console.error(error instanceof Error ? error.message : String(error));
+      return 1;
+    }
+  }
   if (
     ['save', 'collections', 'assets', 'asset', 'export', 'import', 'view'].includes(argv[0] ?? '')
   ) {
@@ -510,11 +599,24 @@ async function runMain(argv: readonly string[]): Promise<number> {
         ANIMATION_USAGE +
         INSPECT_USAGE +
         ASSET_USAGE +
+        PROJECT_USAGE +
+        REVIEW_USAGE +
         SERVICE_USAGE,
     );
     return args.help ? 0 : 2;
   }
   try {
+    if (
+      (args.projectId !== undefined ||
+        args.projectRevision !== undefined ||
+        args.noProject ||
+        args.materialsFile !== undefined) &&
+      args.command !== 'render' &&
+      args.command !== 'generate'
+    )
+      throw new Error(
+        '--project, --project-revision, --no-project and --materials are supported by render and generate only.',
+      );
     if (args.json && args.command !== 'render')
       throw new Error(
         "--json is supported by render here; use each other command's documented output options.",
@@ -525,6 +627,11 @@ async function runMain(argv: readonly string[]): Promise<number> {
       args.requirements = await readHostRequirementsFile(args.requirementsFile);
     }
     if (args.capture !== undefined) args.captureRecipe = await readCaptureRecipe(args);
+    if (args.materialsFile !== undefined) {
+      if (args.command !== 'render' && args.command !== 'generate')
+        throw new Error('--materials is supported by render and generate only.');
+      args.materialDependencies = await readMaterialDependencies(args.materialsFile);
+    }
     args.captureRecipe = applyBackdrop(args);
     switch (args.command) {
       case 'source':

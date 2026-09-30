@@ -8,7 +8,7 @@
  * the pixel compiler allocates an output buffer.
  */
 
-import { TEXTURE_USAGES, type TextureUsage } from './textures';
+import { TEXTURE_USAGES, type TextureUsage } from './texture-contract';
 import {
   AuthoringDiagnosticError,
   type AuthoringDiagnostic,

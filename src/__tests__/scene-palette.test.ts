@@ -216,6 +216,87 @@ describe('composeSceneGLB', () => {
     expect(metrics.uniqueGeometries).toBe(1); // two placements, one shared geometry
     expect(metrics.triangles).toBe(24); // both boxes still drawn (12 each)
   });
+
+  it('optionally names retained clips by instance while preserving their distinct targets', async () => {
+    const io = new WebIO();
+    const src = await io.readBinary(await glbOf(manyColorScene(1)));
+    const target = src
+      .getRoot()
+      .listNodes()
+      .find((node) => node.getMesh())!;
+    const buffer = src.getRoot().listBuffers()[0]!;
+    const times = src
+      .createAccessor()
+      .setType('SCALAR')
+      .setArray(new Float32Array([0, 1]))
+      .setBuffer(buffer);
+    const values = src
+      .createAccessor()
+      .setType('VEC3')
+      .setArray(new Float32Array([0, 0, 0, 0, 1, 0]))
+      .setBuffer(buffer);
+    for (const name of ['Walk', 'Walk', '']) {
+      const sampler = src
+        .createAnimationSampler()
+        .setInput(times)
+        .setOutput(values)
+        .setInterpolation('LINEAR');
+      const channel = src
+        .createAnimationChannel()
+        .setSampler(sampler)
+        .setTargetNode(target)
+        .setTargetPath('translation');
+      src.createAnimation(name).addSampler(sampler).addChannel(channel);
+    }
+    const bytes = await io.writeBinary(src);
+    const transform: {
+      pos: [number, number, number];
+      rotDeg: [number, number, number];
+      scale: [number, number, number];
+    } = { pos: [0, 0, 0], rotDeg: [0, 0, 0], scale: [1, 1, 1] };
+    const parts = [
+      { bytes, name: 'Animal', transform },
+      { bytes, name: 'Animal', transform },
+    ];
+    const composed = await composeSceneGLB(parts, {
+      optimize: 'off',
+      keepAnimations: true,
+      animationNaming: 'instance',
+    });
+    const result = await io.readBinary(composed.bytes);
+    const clips = result.getRoot().listAnimations();
+    expect(clips.map((clip) => clip.getName())).toEqual([
+      '0:Animal/0:Walk',
+      '0:Animal/1:Walk',
+      '0:Animal/2:clip',
+      '1:Animal/0:Walk',
+      '1:Animal/1:Walk',
+      '1:Animal/2:clip',
+    ]);
+    const targets = clips.map((clip) => clip.listChannels()[0]!.getTargetNode());
+    expect(targets[0]).not.toBe(targets[3]);
+    expect(targets[0]).toBe(targets[1]);
+    for (const clip of clips) {
+      expect(clip.listChannels()[0]!.getTargetPath()).toBe('translation');
+      expect(Array.from(clip.listSamplers()[0]!.getOutput()!.getArray()!)).toEqual([
+        0, 0, 0, 0, 1, 0,
+      ]);
+    }
+    const preserved = await io.readBinary(
+      (await composeSceneGLB(parts, { optimize: 'off', keepAnimations: true })).bytes,
+    );
+    expect(
+      preserved
+        .getRoot()
+        .listAnimations()
+        .map((clip) => clip.getName()),
+    ).toEqual(['Walk', 'Walk', '', 'Walk', 'Walk', '']);
+    const staticScene = await io.readBinary(
+      (await composeSceneGLB(parts, { animationNaming: 'instance' })).bytes,
+    );
+    expect(staticScene.getRoot().listAnimations()).toHaveLength(0);
+    expect((await io.readBinary(bytes)).getRoot().listAnimations()[0]!.getName()).toBe('Walk');
+  });
 });
 
 describe('renderPaletteDirective(slots)', () => {

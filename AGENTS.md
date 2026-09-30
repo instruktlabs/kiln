@@ -2,33 +2,60 @@
 
 ## Scope
 
-This repository turns model-authored source into GLB assets. It includes deterministic rendering,
-validation/QA, primitives, the agent tool surface, arena ranking, scene composition, a CLI, and an
-Agent Plugin (MCP server + skills).
+This repository turns model-authored source into GLBs: deterministic rendering, QA,
+primitives, agent tools, arena ranking, scene composition, CLI and MCP + skills.
 
-Read [README.md](./README.md) before changing exports or package contents. Runtime code is under
-`src/`; tests are colocated as `*.test.ts` or under `__tests__/`. Repository-only checks live under
-`scripts/`. The package intentionally ships TypeScript source through the explicit `files` and
-`exports` lists in `package.json`.
+Read [README.md](./README.md) before changing exports or package contents. Runtime and tests
+live under `src/`; repository checks under `scripts/`. `package.json` explicitly lists shipped
+TypeScript through `files` and `exports`.
 
-The active V1 initiative's current goal, exact validation state and resume action
-are in [the progress checkpoint](docs/plans/2026-09-22-progress-checkpoint.md).
-Use it with the linked task ledger; dated audit/run reports retain historical
-facts and must not override the current checkpoint or imply release acceptance.
+The active project/material/Live Review initiative's current goal, exact validation
+state and resume action are in [the foundation checkpoint](docs/plans/2026-09-26-project-foundation.md).
+The [V1 progress checkpoint](docs/plans/2026-09-22-progress-checkpoint.md) retains
+the earlier release history. Dated audit/run reports retain historical facts and
+must not override the current checkpoint or imply release acceptance.
 
 ## Authoring an asset is a different task from changing the engine
 
-This guide covers changing the engine. Authoring an asset does not happen here: it happens in a
-separate workspace, because the authoring skills assume a live `kiln_workspace` server, and giving a
-model this implementation and the example collection alongside an asset brief changes what it
-produces.
+This guide covers engine changes. Author assets in a separate workspace with a live
+`kiln_workspace` server: exposing engine source and examples changes model outputs.
 
-If the request is to make or refine an asset, read the `kiln-setup-workspace` skill and create a
-workspace first. It is registered for a bare clone at `.claude/skills/` and `.agents/skills/`, and
-the maintained copy is `skills/kiln-setup-workspace/`. Everything else in this file assumes you are
-working on the engine itself.
+Before asset authoring, read `kiln-setup-workspace` and create a workspace. Its maintained copy
+is `skills/kiln-setup-workspace/`, registered at `.claude/skills/` and `.agents/skills/`.
+
+Feed demonstrated authoring defects back into the maintained skills at the relevant
+boundary. Shared shape and fit guidance belongs in
+`skills/kiln-author-asset/references/geometry-recipes.md`; destination traversal,
+interaction and performance evidence belongs in the QA integration reference.
+Keep scene-specific controllers and asset dimensions in authored workspaces.
+For interactive proving environments, use the optional
+`skills/kiln-compose-scene/` workflow and its runtime-scenes reference. Scene
+terrain, controllers and optional optimization derivatives do not become
+requirements for standalone asset authoring.
+Changes to guidance do not retroactively qualify an existing asset or replace its
+owner review. Generated workspaces copy these skills; verify the copies and package
+contents without silently rewriting existing authors' installed instructions.
+
+## Optional projects
+
+Standalone assets, materials and review must work without projects. Do not infer
+membership from nearby projects or impose Farm-specific defaults. Read the
+[selection and delivery contracts](docs/projects-and-live-review.md): configured
+`KILN_PROJECT` is opt-in; `--no-project` / `projectId: null` overrides it. The
+collection named `project` is only a destination. Keep `skills/`, registered setup
+copies and generated `AGENTS.md`/`CLAUDE.md` in `scripts/create-workspace.mjs` aligned;
+qualify fresh setup and managed upgrade without overwriting user customizations.
 
 ## Historical gallery assets
+
+The Workshop Library aggregates configured asset collections; collection `project`
+is workspace storage, not named project membership. Keep collection-qualified IDs
+through browsing, revision selection and project links. Projects pin exact saved
+revisions and remain optional. Live Review's optional host `KILN_WORK_ITEM` groups one
+authoring item across CLI/MCP sessions; never infer this identity from project, model
+name or source equality. Explicit observation workspaces remain separate sources.
+Viewer changes must be built and checked through the installed package and actual
+Library/Projects/Live Review flow, not only a separate comparison page.
 
 Gallery assets are unvetted historical showcases, not golden outputs. Regression
 comparisons do not establish their quality. Repairing or replacing them is outside
@@ -36,12 +63,13 @@ the V1 goal; qualify the upgrade through fresh dogfooding and shared defect fixe
 
 ## The tool registry is the single source of truth
 
-`src/tools/registry.ts` owns tool names, descriptions, and schemas. Two skins consume it: the
-in-process Strands tools (`src/agent/tools.ts`) and the stdio MCP server. **Both must iterate the
-registry** -- never hand-write a tool definition in a skin, or the transports drift apart and the
-repo's central claim stops being true. There is a test that asserts name parity; keep it passing.
+`src/tools/registry.ts` owns tool names, descriptions and schemas. **Both Strands
+(`src/agent/tools.ts`) and stdio MCP must iterate it.** Never hand-write definitions
+in a skin. Keep the name-parity test passing.
 
-`createKilnProgramToolRegistry` supplies the fourteen MCP tools.
+`createKilnProgramToolRegistry` supplies the fourteen base MCP tools. The packaged
+local host additionally injects `kiln_project`, `kiln_material` and `kiln_review`;
+embeddings advertise these only when the corresponding host services are supplied.
 `createKilnNativeToolRegistry` uses those same definitions and adds `kiln_finish`.
 The native default is ten tools: nine authoring/reference tools and completion.
 Injecting an `assetLibrary` enables the five delivery tools as well, for fifteen.
@@ -81,18 +109,14 @@ owner** of the deadline, renderer/PNG validation, grid composition, and never-th
 not duplicate that degrade policy in a host or introduce network/service knowledge into the
 deterministic engine paths.
 
-The port is injected twice, for different jobs, and their deadlines must stay separate. A host calls
-it once after the loop for the artifact sheet, where nothing is blocked and a long deadline is
-correct. `KilnToolContext.viewRenderPort` injects it into `kiln_render` for the IN-LOOP grid, where a
-slow render blocks the agent mid-thought -- that deadline is its own per-call argument and belongs far
-lower. Never collapse the two onto one value.
+Keep the two injection deadlines separate: the post-loop artifact sheet can wait;
+`KilnToolContext.viewRenderPort` serves the blocking IN-LOOP `kiln_render` grid and
+needs a much lower per-call deadline. Never collapse them onto one value.
 
-Routing is conditional on `sceneNeedsPbrShading(root)`: bound texture or `metalness > 0`, never
-material type, because `gameMaterial` and `pbrMaterial` both construct a `MeshStandardMaterial` and
-are indistinguishable after construction. Host telemetry rides `onViewsRendered`, while every unified
-`kiln_render` result also carries model-visible `ViewFidelityV1`; a geometry-flat CPU image must never
-be treated as material evidence. Keep the input schema stable unless the active change explicitly
-versions it -- the tool definition is cached, and changing it invalidates that cache.
+Route by `sceneNeedsPbrShading(root)`: bound texture or `metalness > 0`, never material type
+(`gameMaterial` and `pbrMaterial` both make `MeshStandardMaterial`). Host telemetry uses
+`onViewsRendered`; every `kiln_render` returns model-visible `ViewFidelityV1`. CPU geometry
+images are not material evidence. Keep cached input schemas stable unless explicitly versioned.
 
 `src/views/background.ts` owns the named backdrops; `render-service/src/backdrops.mjs`
 mirrors them, guarded by `backdrop.test.ts`. Neutral studio grey is the default.
@@ -126,10 +150,9 @@ capture caches, while keeping deadline and CPU degradation ownership in `capture
 **The GPU is a view producer only, never gate evidence.** `QaContext` is deliberately image-free so a
 QA rule structurally cannot read a render buffer. Do not add pixels to it.
 
-`src/views/renderer-id.ts` runs `readFileSync` at MODULE LOAD. Reach `CPU_RASTER_RENDERER_ID` through
-the lazy `await import('../views')` that render paths already use; a static import puts a `node:fs`
-edge, evaluated at import time, into a graph deliberately kept free of node-only dependencies. No test
-catches this.
+`src/views/renderer-id.ts` calls `readFileSync` at MODULE LOAD. Reach
+`CPU_RASTER_RENDERER_ID` through existing lazy `await import('../views')` paths;
+static imports add a Node-only filesystem edge. No test catches this.
 
 Prompt-cache transports are deliberately different. Native Anthropic and Bedrock adapters consume a
 system `[TextBlock, CachePointBlock]`; OpenRouter-hosted Anthropic keeps plain system text and receives
@@ -170,11 +193,8 @@ lifecycle fixtures need no GPU or loaded Dawn library; native work is simulated 
 Runtime dependencies can resolve from the root installation. Run it whenever you change
 `render-service/`; CI requires it. Real GPU and installed-package checks remain separate gates.
 
-The test scripts set `--timeout 20000`. Bun's 5 s default is below what a cold process spawn or a
-first native-library call costs on a loaded CI runner: tests that take under a second locally have
-timed out at 5 s on the Windows runner while passing on re-run. A test that legitimately needs more
-than 20 s names its own budget as the third argument to `test()`, with the measured duration in a
-comment; a real hang still fails, it just takes 20 s to.
+Tests use `--timeout 20000` for cold Windows startup. Larger budgets require an explicit
+third `test()` argument with a measured-duration comment.
 
 Tests and CI pin `KILN_RENDER=cpu`. The coverage ratchet must not vary by whether the runner has a
 GPU. It is measured over `src/` alone -- the shipped engine -- so nothing you change under

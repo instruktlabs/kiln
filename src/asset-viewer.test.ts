@@ -11,7 +11,7 @@ test('viewer serves only configured collections and rejects cross-origin writes 
   try {
     const response = await fetch(`${viewer.url}api/collections`);
     expect(await response.json()).toEqual({
-      collections: [{ id: 'project', label: 'This project' }],
+      collections: [{ id: 'project', label: 'Workspace storage' }],
     });
     expect((await fetch(`${viewer.url}api/assets?collection=project`)).status).toBe(200);
     expect((await fetch(`${viewer.url}api/assets?collection=unknown`)).status).toBe(400);

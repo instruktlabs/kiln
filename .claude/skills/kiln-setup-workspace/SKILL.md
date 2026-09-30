@@ -12,6 +12,8 @@ This repository is the engine. Asset authoring happens in a separate workspace, 
 
 Authoring an asset needs a workspace. Changing the engine's own behaviour does not; read `AGENTS.md` at the repository root instead and stay in the checkout.
 
+A workspace does not require a Kiln project. It supplies the tools and local stores for standalone assets, experiments, scenes or projects. Do not turn setup into project planning unless the user's task calls for related assets with a shared brief, inventory, art direction or material lock.
+
 Do not author assets inside the engine checkout. The authoring skills assume a workspace, and giving a model the engine implementation and the example collection alongside its task changes what it produces.
 
 ## Create the workspace
@@ -60,11 +62,19 @@ For modeling, `kiln_discover({})` supplies a compact orientation and starting si
 
 Confirm the installed skills are readable at `skills/` in the workspace, and read the relevant one from there rather than a global copy. Whether the harness also registers them natively depends on the harness.
 
+## Choose standalone or project work
+
+Standalone authoring is the default even when the workspace contains projects. An explicitly configured `KILN_PROJECT` opts into a default project; CLI `--no-project` or MCP `projectId: null` selects standalone work despite that setting. Materials, Live Review, saving and export do not require a project. The save collection named `project` is just a destination, not project membership.
+
+For a pack or other related work, create a project with `node kiln.mjs project create --id my-pack --name "My pack"`, or `kiln_project({action:"create", draft:{projectId:"my-pack", name:"My pack"}})`. Read the returned revision, then update its brief, design, inventory and material dependencies using `project update --expected` or the MCP `expectedRevision` field. Each supplied top-level field replaces its value, including the whole design object; read and merge preferences before updating. Authoring uses explicit `--project my-pack` / `projectId: "my-pack"`; add `--project-revision` / `projectRevision` when reproducing an exact configuration. Creating or viewing a project does not activate it for other calls.
+
+Read `skills/kiln-author-asset/references/projects-and-materials.md` in the generated workspace when configuring project records or pinned materials. Run `node kiln.mjs view` for the local library, materials, projects and Live Review. The dashboard observes authoring; feedback still goes to the agent's conversation. Verify the connected tool schemas before assuming optional host capabilities.
+
 Report the rest of the session's loadout at the same time. Skills and MCP servers from user-level configuration load here too, and an authoring session carrying a dozen unrelated skills spends context and invites the wrong tool. List whatever is registered that has nothing to do with this task and let the user decide whether to narrow it. Do not change their global configuration.
 
 ## Wiring a workspace by hand
 
-`--harness` covers claude, codex, opencode, hermes, agy, copilot and cursor-agent. For any other harness, or an engine installed as a package elsewhere, assemble the same loadout in an empty directory: register the installation's `dist/mcp-server.mjs` as a stdio MCP server named `kiln_workspace`, give it `KILN_PROGRAM_STORE` pointing at `.kiln/programs` inside that directory plus `KILN_RENDER=auto`, and copy the skills you need from `skills/` into both `.claude/skills/` and `.agents/skills/` there.
+`--harness` covers claude, codex, opencode, hermes, agy, copilot and cursor-agent. For any other harness, or an engine installed as a package elsewhere, assemble the same loadout in an empty directory: register the installation's `dist/mcp-server.mjs` as a stdio MCP server named `kiln_workspace`, give it `KILN_WORKSPACE` pointing at that directory, `KILN_PROGRAM_STORE` pointing at its `.kiln/programs`, plus `KILN_RENDER=auto`, and copy the skills you need from `skills/` into both `.claude/skills/` and `.agents/skills/` there.
 
 A hand-wired directory carries no manifest, so it gets no runtime preflight and `--repair` cannot correct its paths later. Prefer the generated workspace wherever the harness is supported, and tell the user which of the two they have.
 

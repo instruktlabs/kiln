@@ -64,8 +64,8 @@ test('an unconfigured workspace exposes a project and a durable user library wit
   };
   const store = localAssetLibrary(env);
   expect(store.collections()).toEqual([
-    { id: 'project', label: 'This project' },
-    { id: 'library', label: 'Your library' },
+    { id: 'project', label: 'Workspace storage' },
+    { id: 'library', label: 'User library storage' },
   ]);
   expect(store.directory('project')).toBe(join(workspace, 'assets', 'kiln'));
   expect(store.directory('library')).toBe(join(dataRoot, 'kiln', 'library'));

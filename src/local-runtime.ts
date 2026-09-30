@@ -12,6 +12,10 @@ import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { Console } from 'node:console';
 import { ApprovedTextureResourceCache, approvedTextureCatalogV1 } from './material-resources';
+import { FileWorkspace, localWorkspaceRoot } from './workspace-node';
+import { FileLiveReview } from './live-review-node';
+import { localProgramStoreDirectory } from './workspace-location';
+import { exportWorkspaceProjectBundle } from './project-bundle-node';
 
 export interface LocalExecution {
   mode: 'in-process' | 'subprocess' | 'isolated';
@@ -46,6 +50,22 @@ export function createLocalToolContext(
   base: KilnToolContext = {},
   env: Record<string, string | undefined> = process.env,
 ): KilnToolContext & { localExecution: LocalExecution } {
+  const workspaceRoot = env.KILN_WORKSPACE
+    ? resolve(env.KILN_WORKSPACE)
+    : base.programStore instanceof FileProgramStore
+      ? dirname(dirname(base.programStore.directory))
+      : localWorkspaceRoot(env);
+  const workspace = base.workspace ?? new FileWorkspace(workspaceRoot, env.KILN_PROJECT);
+  const projectStore =
+    base.projectStore ?? (workspace instanceof FileWorkspace ? workspace.projects : undefined);
+  const liveReview =
+    base.liveReview ??
+    (env.KILN_LIVE_REVIEW === 'off'
+      ? undefined
+      : new FileLiveReview(workspaceRoot, {
+          transport: 'cli',
+          workId: env.KILN_WORK_ITEM,
+        }));
   const geometryPolicy = base.geometryPolicy ?? env.KILN_GEOMETRY_POLICY ?? 'warn';
   if (!['warn', 'strict'].includes(geometryPolicy))
     throw new Error('KILN_GEOMETRY_POLICY must be warn or strict.');
@@ -93,6 +113,9 @@ export function createLocalToolContext(
         optimize,
         instance,
         ...options,
+        ...(workspace.current()?.materialResources.records.length
+          ? { materialResources: workspace.current()!.materialResources }
+          : {}),
         geometryPolicy: geometryPolicy === 'strict' ? 'strict' : (options.geometryPolicy ?? 'warn'),
       };
       if (mode === 'in-process') {
@@ -122,11 +145,26 @@ export function createLocalToolContext(
   };
   return {
     ...base,
+    workspace,
+    projectStore,
+    projectBundleReader:
+      base.projectBundleReader ??
+      (workspace instanceof FileWorkspace && base.assetLibrary
+        ? (projectId, revisionId, profile) =>
+            exportWorkspaceProjectBundle(workspace, base.assetLibrary!, projectId, {
+              revisionId,
+              profile,
+            })
+        : undefined),
+    materialLibrary:
+      base.materialLibrary ??
+      (workspace instanceof FileWorkspace ? workspace.materials : undefined),
+    liveReview,
+    reviewStore:
+      base.reviewStore ?? (liveReview instanceof FileLiveReview ? liveReview : undefined),
     approvedTextureResources: () => approvedTextureCatalogV1({ cache: workerTextures }),
     geometryPolicy: geometryPolicy as 'warn' | 'strict',
-    programStore:
-      base.programStore ??
-      new FileProgramStore(resolve(env.KILN_PROGRAM_STORE ?? '.kiln/programs')),
+    programStore: base.programStore ?? new FileProgramStore(localProgramStoreDirectory(env)),
     evaluatorPort,
     assetBuildOptions: {
       gltfExporter,
@@ -162,6 +200,9 @@ export async function createPackagedLocalToolContext(
           code,
           {
             ...options,
+            ...(context.workspace?.current()?.materialResources.records.length
+              ? { materialResources: context.workspace.current()!.materialResources }
+              : {}),
             geometryPolicy:
               context.geometryPolicy === 'strict'
                 ? 'strict'

@@ -20,6 +20,7 @@ test('compiled CLI inspection measures surfaces, reuses references and preserves
       ...process.env,
       KILN_EVALUATOR_MODE: 'in-process',
       KILN_BUILD_CACHE: 'off',
+      KILN_WORKSPACE: directory,
       KILN_PROGRAM_STORE: join(directory, 'programs'),
       KILN_RENDER: 'cpu',
     };
@@ -37,6 +38,7 @@ test('compiled CLI inspection measures surfaces, reuses references and preserves
       const keys = [
         'KILN_EVALUATOR_MODE',
         'KILN_BUILD_CACHE',
+        'KILN_WORKSPACE',
         'KILN_PROGRAM_STORE',
         'KILN_RENDER',
       ] as const;

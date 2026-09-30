@@ -26,10 +26,11 @@ it('reuses a packaged Node build across fresh CLI host instances and invalidates
       "const meta={name:'CachedBox'};function build(){const r=createRoot('Box');createPart('Body',boxGeo(1,1,1),gameMaterial('#aaaaaa'),{parent:r});return r;}";
     const probe = `import {createPackagedLocalToolContext} from ${JSON.stringify(join(repo, 'src/local-runtime.ts'))};
 import {createKilnProgramToolRegistry} from ${JSON.stringify(join(repo, 'src/tools/registry.ts'))};
-const context=await createPackagedLocalToolContext({}, {KILN_PROGRAM_STORE:${JSON.stringify(join(root, 'programs'))},KILN_GLTF_EXPORTER:process.env.KILN_GLTF_EXPORTER}, ${JSON.stringify(root)});
+const context=await createPackagedLocalToolContext({}, {KILN_WORKSPACE:${JSON.stringify(root)},KILN_PROGRAM_STORE:${JSON.stringify(join(root, 'programs'))},KILN_GLTF_EXPORTER:process.env.KILN_GLTF_EXPORTER}, ${JSON.stringify(root)});
 if(context.localExecution.cacheScope!=='disk') throw new Error(JSON.stringify(context.localExecution));
 const tool=createKilnProgramToolRegistry(context).find(t=>t.name==='kiln_render');
 const result=await tool.run({code:process.argv[2]==='changed'?${JSON.stringify(code.replace('boxGeo(1,1,1)', 'boxGeo(1,2,1)'))}:${JSON.stringify(code)},capture:{preset:'1x1'}});
+await context.liveReview?.flush?.();
 if(!result.ok) throw new Error(JSON.stringify(result));
 console.log(JSON.stringify({cache:result.buildCache,hash:result.viewFidelity?.inputGlbSha256,scope:context.localExecution.cacheScope}));`;
     await writeFile(join(root, 'probe.ts'), probe);
@@ -102,7 +103,11 @@ console.log(JSON.stringify({cache:result.buildCache,hash:result.viewFidelity?.in
         encoding: 'utf8',
         timeout: 30000,
         windowsHide: true,
-        env: { ...process.env, KILN_PROGRAM_STORE: join(root, 'programs') },
+        env: {
+          ...process.env,
+          KILN_WORKSPACE: root,
+          KILN_PROGRAM_STORE: join(root, 'programs'),
+        },
       },
     );
     expect(cli.status, cli.stderr).toBe(0);

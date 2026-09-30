@@ -62,6 +62,7 @@ mock.module(${JSON.stringify(resolve(import.meta.dir, '../agent/run.ts'))},()=>(
             ...process.env,
             TEST_PARTIAL: partial ? '1' : '0',
             KILN_RENDER: 'cpu',
+            KILN_WORKSPACE: directory,
             KILN_PROGRAM_STORE: join(directory, 'programs'),
             KILN_BUILD_CACHE_DIR: join(directory, 'cache'),
           },

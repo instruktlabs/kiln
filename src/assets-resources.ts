@@ -119,10 +119,18 @@ export async function readAssetResource(
   }
   const bytes =
     name === 'editable.zip'
-      ? encodeAssetBundle([record])
+      ? await exportLibraryAssetBundle(library, [record])
       : name === 'manifest.json'
         ? new TextEncoder().encode(JSON.stringify(record.manifest, null, 2))
         : record.files[name];
   if (!bytes) throw new Error('Asset file unavailable');
   return { bytes, mimeType: assetMime(name), name };
+}
+
+/** One host hook owns exact dependency closure for CLI, MCP and gallery downloads. */
+export async function exportLibraryAssetBundle(
+  library: AssetLibrary,
+  records: AssetRecord[],
+): Promise<Uint8Array> {
+  return library.exportBundle ? library.exportBundle(records) : encodeAssetBundle(records);
 }

@@ -14320,183 +14320,9 @@ var init_profile = __esm(() => {
   };
 });
 
-// src/textures.ts
-import * as THREE27 from "three";
-async function loadTexture(source, opts = {}) {
-  let bytes;
-  if (typeof source === "string") {
-    const fs = await import("node:fs");
-    const path = await import("node:path");
-    const abs = path.isAbsolute(source) ? source : path.resolve(source);
-    bytes = new Uint8Array(fs.readFileSync(abs));
-  } else if (typeof Buffer !== "undefined" && Buffer.isBuffer(source)) {
-    bytes = new Uint8Array(source);
-  } else {
-    bytes = source;
-  }
-  const mime = sniffMime(bytes);
-  const sharp = (await import("sharp")).default;
-  const img = sharp(bytes);
-  const meta = await img.metadata();
-  const { data } = await img.ensureAlpha().raw({ depth: "uchar" }).toBuffer({ resolveWithObject: true });
-  if (!meta.width || !meta.height) {
-    throw new Error("loadTexture: could not read image dimensions");
-  }
-  const tex = new THREE27.DataTexture(new Uint8Array(data), meta.width, meta.height, THREE27.RGBAFormat, THREE27.UnsignedByteType);
-  const usage = opts.usage ?? "albedo";
-  const colorSpace = usage === "albedo" || usage === "emissive" ? "srgb" : "linear";
-  let hasAlpha = false;
-  for (let offset = 3;offset < data.length; offset += 4) {
-    if ((data[offset] ?? 255) < 255) {
-      hasAlpha = true;
-      break;
-    }
-  }
-  tex.colorSpace = colorSpace === "srgb" ? THREE27.SRGBColorSpace : THREE27.NoColorSpace;
-  if (opts.name)
-    tex.name = opts.name;
-  tex.needsUpdate = true;
-  tex.wrapS = THREE27.RepeatWrapping;
-  tex.wrapT = THREE27.RepeatWrapping;
-  tex.minFilter = THREE27.LinearMipmapLinearFilter;
-  tex.magFilter = THREE27.LinearFilter;
-  tex.generateMipmaps = true;
-  tex.userData["encoded"] = {
-    mime,
-    bytes
-  };
-  tex.userData["kilnTexture"] = {
-    usage,
-    colorSpace,
-    width: meta.width,
-    height: meta.height,
-    hasAlpha
-  };
-  return tex;
-}
-function sniffMime(bytes) {
-  if (bytes[0] === 137 && bytes[1] === 80 && bytes[2] === 78 && bytes[3] === 71) {
-    return "image/png";
-  }
-  if (bytes[0] === 255 && bytes[1] === 216 && bytes[2] === 255) {
-    return "image/jpeg";
-  }
-  if (bytes[0] === 82 && bytes[1] === 73 && bytes[2] === 70 && bytes[3] === 70 && bytes[8] === 87 && bytes[9] === 69 && bytes[10] === 66 && bytes[11] === 80) {
-    return "image/webp";
-  }
-  return "image/png";
-}
-function textureMetadata(texture) {
-  return texture.userData["kilnTexture"];
-}
-function requireTextureUsage(texture, usage) {
-  const meta = textureMetadata(texture);
-  if (meta && meta.usage !== usage) {
-    throw new TypeError(`Texture ${JSON.stringify(texture.name || "(unnamed)")} was loaded for ${meta.usage}, not ${usage}.`);
-  }
-  texture.colorSpace = usage === "albedo" || usage === "emissive" ? THREE27.SRGBColorSpace : THREE27.NoColorSpace;
-}
-function pbrMaterial(opts = {}) {
-  const mat = new THREE27.MeshStandardMaterial;
-  const isTex = (v) => !!v?.isTexture;
-  if (isTex(opts.albedo)) {
-    requireTextureUsage(opts.albedo, "albedo");
-    mat.map = opts.albedo;
-    mat.color = new THREE27.Color(16777215);
-  } else if (opts.albedo !== undefined) {
-    mat.color = new THREE27.Color(opts.albedo);
-  }
-  if (opts.normal) {
-    requireTextureUsage(opts.normal, "normal");
-    mat.normalMap = opts.normal;
-  }
-  const roughnessTexture = isTex(opts.roughness) ? opts.roughness : undefined;
-  const metalnessTexture = isTex(opts.metalness) ? opts.metalness : undefined;
-  if (opts.metallicRoughness && (roughnessTexture || metalnessTexture)) {
-    throw new AuthoringDiagnosticError("MATERIAL_PACKED_CHANNELS", "Use metallicRoughness for the packed G/B map; do not also pass texture-valued roughness/metalness.");
-  }
-  if (roughnessTexture && metalnessTexture && roughnessTexture !== metalnessTexture) {
-    throw new AuthoringDiagnosticError("MATERIAL_PACKED_CHANNELS", "Separate roughness and metalness textures are ambiguous in glTF. Pack G=roughness/B=metalness and pass metallicRoughness.");
-  }
-  if (roughnessTexture && !metalnessTexture || !roughnessTexture && metalnessTexture) {
-    throw new AuthoringDiagnosticError("MATERIAL_PACKED_CHANNELS", "A texture-valued roughness or metalness must be the same packed G/B texture in both slots, or use metallicRoughness.");
-  }
-  const packedMr = opts.metallicRoughness ?? roughnessTexture;
-  if (packedMr) {
-    requireTextureUsage(packedMr, "metallicRoughness");
-    mat.roughnessMap = packedMr;
-    mat.metalnessMap = packedMr;
-  }
-  if (typeof opts.roughness === "number") {
-    mat.roughness = opts.roughness;
-  } else if (packedMr) {
-    mat.roughness = 1;
-  } else {
-    mat.roughness = 0.8;
-  }
-  if (typeof opts.metalness === "number") {
-    mat.metalness = opts.metalness;
-  } else if (packedMr) {
-    mat.metalness = 1;
-  }
-  if (isTex(opts.emissive)) {
-    requireTextureUsage(opts.emissive, "emissive");
-    mat.emissiveMap = opts.emissive;
-    mat.emissive = new THREE27.Color(16777215);
-  } else if (opts.emissive !== undefined) {
-    mat.emissive = new THREE27.Color(opts.emissive);
-  }
-  if (opts.emissiveIntensity !== undefined) {
-    mat.emissiveIntensity = opts.emissiveIntensity;
-  }
-  if (opts.aoMap) {
-    requireTextureUsage(opts.aoMap, "occlusion");
-    mat.aoMap = opts.aoMap;
-  }
-  if (opts.aoMapIntensity !== undefined)
-    mat.aoMapIntensity = opts.aoMapIntensity;
-  const alphaMode = opts.alphaMode ?? "opaque";
-  if (alphaMode !== "opaque" && alphaMode !== "mask" && alphaMode !== "blend") {
-    throw new AuthoringDiagnosticError("MATERIAL_ALPHA_MODE", 'alphaMode must be one of "opaque", "mask", or "blend".');
-  }
-  if (opts.doubleSided !== undefined && typeof opts.doubleSided !== "boolean") {
-    throw new TypeError("doubleSided must be a boolean when provided.");
-  }
-  if (opts.alphaCutoff !== undefined && alphaMode !== "mask") {
-    throw new TypeError('alphaCutoff is valid only when alphaMode is "mask".');
-  }
-  if (opts.alphaCutoff !== undefined && (!Number.isFinite(opts.alphaCutoff) || opts.alphaCutoff < 0 || opts.alphaCutoff > 1)) {
-    throw new RangeError("alphaCutoff must be a finite number in [0,1].");
-  }
-  if (alphaMode === "mask") {
-    mat.alphaTest = opts.alphaCutoff ?? 0.5;
-    mat.transparent = false;
-  } else if (alphaMode === "blend") {
-    mat.alphaTest = 0;
-    mat.transparent = true;
-  }
-  if (opts.doubleSided)
-    mat.side = THREE27.DoubleSide;
-  mat.userData["kilnMaterial"] = {
-    alphaMode,
-    ...alphaMode === "mask" ? { alphaCutoff: mat.alphaTest } : {},
-    doubleSided: opts.doubleSided === true
-  };
-  return mat;
-}
-function foliageMaterial(albedo, opts = {}) {
-  return pbrMaterial({
-    albedo,
-    roughness: opts.roughness ?? 0.9,
-    metalness: 0,
-    alphaMode: "mask",
-    alphaCutoff: opts.alphaCutoff ?? 0.5,
-    doubleSided: opts.doubleSided ?? true
-  });
-}
+// src/texture-contract.ts
 var TEXTURE_USAGES;
-var init_textures = __esm(() => {
-  init_authoring_diagnostic();
+var init_texture_contract = __esm(() => {
   TEXTURE_USAGES = [
     "albedo",
     "emissive",
@@ -14897,7 +14723,7 @@ function canonicalizePortableMaterialSpecV2(input) {
 }
 var MAX_PROCEDURAL_SIZE = 1024, MIN_PROCEDURAL_SIZE = 4, MAX_PROCEDURAL_LAYERS = 8, MAX_NOISE_OCTAVES = 6, MAX_PROCEDURAL_NAME_LENGTH = 80, MAX_PROCEDURAL_PATTERN_COUNT = 256, MAX_PORTABLE_MATERIAL_TEXTURES = 5, MAX_PORTABLE_MATERIAL_TEXELS, ProceduralTextureError, OPS, BLENDS, FORBIDDEN_KEYS, SHA256_K, rotateRight = (value, bits) => value >>> bits | value << 32 - bits, MATERIAL_TEXTURE_USAGE;
 var init_procedural_material_v2 = __esm(() => {
-  init_textures();
+  init_texture_contract();
   init_authoring_diagnostic();
   MAX_PORTABLE_MATERIAL_TEXELS = 4 * 1024 * 1024;
   ProceduralTextureError = class ProceduralTextureError extends AuthoringDiagnosticError {
@@ -14985,7 +14811,7 @@ var init_procedural_material_v2 = __esm(() => {
 });
 
 // src/procedural-texture.ts
-import * as THREE28 from "three";
+import * as THREE27 from "three";
 function hash2(x, y, seed) {
   let h = Math.imul(x, 374761393) + Math.imul(y, 668265263) + Math.imul(seed, 1274126177) | 0;
   h = h ^ h >>> 13;
@@ -15126,14 +14952,14 @@ function compileProceduralTextureSpecV2(input) {
 function proceduralTexture(spec) {
   const compiled = compileProceduralTextureSpecV2(spec);
   const { size, usage, name, layers } = compiled.spec;
-  const tex = new THREE28.DataTexture(compiled.pixels, size, size, THREE28.RGBAFormat, THREE28.UnsignedByteType);
+  const tex = new THREE27.DataTexture(compiled.pixels, size, size, THREE27.RGBAFormat, THREE27.UnsignedByteType);
   if (name)
     tex.name = name;
-  tex.colorSpace = usage === "albedo" || usage === "emissive" ? THREE28.SRGBColorSpace : THREE28.NoColorSpace;
-  tex.wrapS = THREE28.RepeatWrapping;
-  tex.wrapT = THREE28.RepeatWrapping;
-  tex.minFilter = THREE28.LinearMipmapLinearFilter;
-  tex.magFilter = THREE28.LinearFilter;
+  tex.colorSpace = usage === "albedo" || usage === "emissive" ? THREE27.SRGBColorSpace : THREE27.NoColorSpace;
+  tex.wrapS = THREE27.RepeatWrapping;
+  tex.wrapT = THREE27.RepeatWrapping;
+  tex.minFilter = THREE27.LinearMipmapLinearFilter;
+  tex.magFilter = THREE27.LinearFilter;
   tex.generateMipmaps = true;
   tex.needsUpdate = true;
   tex.userData["kilnProcedural"] = {
@@ -15187,13 +15013,13 @@ function normalMapFromHeight(source, opts = {}) {
       out[o + 3] = 255;
     }
   }
-  const tex = new THREE28.DataTexture(out, width, height, THREE28.RGBAFormat, THREE28.UnsignedByteType);
+  const tex = new THREE27.DataTexture(out, width, height, THREE27.RGBAFormat, THREE27.UnsignedByteType);
   tex.name = opts.name ?? (source.name ? `${source.name}_Normal` : "");
-  tex.colorSpace = THREE28.NoColorSpace;
-  tex.wrapS = THREE28.RepeatWrapping;
-  tex.wrapT = THREE28.RepeatWrapping;
-  tex.minFilter = THREE28.LinearMipmapLinearFilter;
-  tex.magFilter = THREE28.LinearFilter;
+  tex.colorSpace = THREE27.NoColorSpace;
+  tex.wrapS = THREE27.RepeatWrapping;
+  tex.wrapT = THREE27.RepeatWrapping;
+  tex.minFilter = THREE27.LinearMipmapLinearFilter;
+  tex.magFilter = THREE27.LinearFilter;
   tex.generateMipmaps = true;
   tex.needsUpdate = true;
   return tex;
@@ -15206,6 +15032,185 @@ var smoothstep = (t) => t * t * (3 - 2 * t), rgbOf = (color) => [
 var init_procedural_texture = __esm(() => {
   init_procedural_material_v2();
   init_procedural_material_v2();
+});
+
+// src/textures.ts
+import * as THREE28 from "three";
+async function loadTexture(source, opts = {}) {
+  let bytes;
+  if (typeof source === "string") {
+    const fs = await import("node:fs");
+    const path = await import("node:path");
+    const abs = path.isAbsolute(source) ? source : path.resolve(source);
+    bytes = new Uint8Array(fs.readFileSync(abs));
+  } else if (typeof Buffer !== "undefined" && Buffer.isBuffer(source)) {
+    bytes = new Uint8Array(source);
+  } else {
+    bytes = source;
+  }
+  const mime = sniffMime(bytes);
+  const sharp = (await import("sharp")).default;
+  const img = sharp(bytes);
+  const meta = await img.metadata();
+  const { data } = await img.ensureAlpha().raw({ depth: "uchar" }).toBuffer({ resolveWithObject: true });
+  if (!meta.width || !meta.height) {
+    throw new Error("loadTexture: could not read image dimensions");
+  }
+  const tex = new THREE28.DataTexture(new Uint8Array(data), meta.width, meta.height, THREE28.RGBAFormat, THREE28.UnsignedByteType);
+  const usage = opts.usage ?? "albedo";
+  const colorSpace = usage === "albedo" || usage === "emissive" ? "srgb" : "linear";
+  let hasAlpha = false;
+  for (let offset = 3;offset < data.length; offset += 4) {
+    if ((data[offset] ?? 255) < 255) {
+      hasAlpha = true;
+      break;
+    }
+  }
+  tex.colorSpace = colorSpace === "srgb" ? THREE28.SRGBColorSpace : THREE28.NoColorSpace;
+  if (opts.name)
+    tex.name = opts.name;
+  tex.needsUpdate = true;
+  tex.wrapS = THREE28.RepeatWrapping;
+  tex.wrapT = THREE28.RepeatWrapping;
+  tex.minFilter = THREE28.LinearMipmapLinearFilter;
+  tex.magFilter = THREE28.LinearFilter;
+  tex.generateMipmaps = true;
+  tex.userData["encoded"] = {
+    mime,
+    bytes
+  };
+  tex.userData["kilnTexture"] = {
+    usage,
+    colorSpace,
+    width: meta.width,
+    height: meta.height,
+    hasAlpha
+  };
+  return tex;
+}
+function sniffMime(bytes) {
+  if (bytes[0] === 137 && bytes[1] === 80 && bytes[2] === 78 && bytes[3] === 71) {
+    return "image/png";
+  }
+  if (bytes[0] === 255 && bytes[1] === 216 && bytes[2] === 255) {
+    return "image/jpeg";
+  }
+  if (bytes[0] === 82 && bytes[1] === 73 && bytes[2] === 70 && bytes[3] === 70 && bytes[8] === 87 && bytes[9] === 69 && bytes[10] === 66 && bytes[11] === 80) {
+    return "image/webp";
+  }
+  return "image/png";
+}
+function textureMetadata(texture) {
+  return texture.userData["kilnTexture"];
+}
+function requireTextureUsage(texture, usage) {
+  const meta = textureMetadata(texture);
+  if (meta && meta.usage !== usage) {
+    throw new TypeError(`Texture ${JSON.stringify(texture.name || "(unnamed)")} was loaded for ${meta.usage}, not ${usage}.`);
+  }
+  texture.colorSpace = usage === "albedo" || usage === "emissive" ? THREE28.SRGBColorSpace : THREE28.NoColorSpace;
+}
+function pbrMaterial(opts = {}) {
+  const mat = new THREE28.MeshStandardMaterial;
+  const isTex = (v) => !!v?.isTexture;
+  if (isTex(opts.albedo)) {
+    requireTextureUsage(opts.albedo, "albedo");
+    mat.map = opts.albedo;
+    mat.color = new THREE28.Color(16777215);
+  } else if (opts.albedo !== undefined) {
+    mat.color = new THREE28.Color(opts.albedo);
+  }
+  if (opts.normal) {
+    requireTextureUsage(opts.normal, "normal");
+    mat.normalMap = opts.normal;
+  }
+  const roughnessTexture = isTex(opts.roughness) ? opts.roughness : undefined;
+  const metalnessTexture = isTex(opts.metalness) ? opts.metalness : undefined;
+  if (opts.metallicRoughness && (roughnessTexture || metalnessTexture)) {
+    throw new AuthoringDiagnosticError("MATERIAL_PACKED_CHANNELS", "Use metallicRoughness for the packed G/B map; do not also pass texture-valued roughness/metalness.");
+  }
+  if (roughnessTexture && metalnessTexture && roughnessTexture !== metalnessTexture) {
+    throw new AuthoringDiagnosticError("MATERIAL_PACKED_CHANNELS", "Separate roughness and metalness textures are ambiguous in glTF. Pack G=roughness/B=metalness and pass metallicRoughness.");
+  }
+  if (roughnessTexture && !metalnessTexture || !roughnessTexture && metalnessTexture) {
+    throw new AuthoringDiagnosticError("MATERIAL_PACKED_CHANNELS", "A texture-valued roughness or metalness must be the same packed G/B texture in both slots, or use metallicRoughness.");
+  }
+  const packedMr = opts.metallicRoughness ?? roughnessTexture;
+  if (packedMr) {
+    requireTextureUsage(packedMr, "metallicRoughness");
+    mat.roughnessMap = packedMr;
+    mat.metalnessMap = packedMr;
+  }
+  if (typeof opts.roughness === "number") {
+    mat.roughness = opts.roughness;
+  } else if (packedMr) {
+    mat.roughness = 1;
+  } else {
+    mat.roughness = 0.8;
+  }
+  if (typeof opts.metalness === "number") {
+    mat.metalness = opts.metalness;
+  } else if (packedMr) {
+    mat.metalness = 1;
+  }
+  if (isTex(opts.emissive)) {
+    requireTextureUsage(opts.emissive, "emissive");
+    mat.emissiveMap = opts.emissive;
+    mat.emissive = new THREE28.Color(16777215);
+  } else if (opts.emissive !== undefined) {
+    mat.emissive = new THREE28.Color(opts.emissive);
+  }
+  if (opts.emissiveIntensity !== undefined) {
+    mat.emissiveIntensity = opts.emissiveIntensity;
+  }
+  if (opts.aoMap) {
+    requireTextureUsage(opts.aoMap, "occlusion");
+    mat.aoMap = opts.aoMap;
+  }
+  if (opts.aoMapIntensity !== undefined)
+    mat.aoMapIntensity = opts.aoMapIntensity;
+  const alphaMode = opts.alphaMode ?? "opaque";
+  if (alphaMode !== "opaque" && alphaMode !== "mask" && alphaMode !== "blend") {
+    throw new AuthoringDiagnosticError("MATERIAL_ALPHA_MODE", 'alphaMode must be one of "opaque", "mask", or "blend".');
+  }
+  if (opts.doubleSided !== undefined && typeof opts.doubleSided !== "boolean") {
+    throw new TypeError("doubleSided must be a boolean when provided.");
+  }
+  if (opts.alphaCutoff !== undefined && alphaMode !== "mask") {
+    throw new TypeError('alphaCutoff is valid only when alphaMode is "mask".');
+  }
+  if (opts.alphaCutoff !== undefined && (!Number.isFinite(opts.alphaCutoff) || opts.alphaCutoff < 0 || opts.alphaCutoff > 1)) {
+    throw new RangeError("alphaCutoff must be a finite number in [0,1].");
+  }
+  if (alphaMode === "mask") {
+    mat.alphaTest = opts.alphaCutoff ?? 0.5;
+    mat.transparent = false;
+  } else if (alphaMode === "blend") {
+    mat.alphaTest = 0;
+    mat.transparent = true;
+  }
+  if (opts.doubleSided)
+    mat.side = THREE28.DoubleSide;
+  mat.userData["kilnMaterial"] = {
+    alphaMode,
+    ...alphaMode === "mask" ? { alphaCutoff: mat.alphaTest } : {},
+    doubleSided: opts.doubleSided === true
+  };
+  return mat;
+}
+function foliageMaterial(albedo, opts = {}) {
+  return pbrMaterial({
+    albedo,
+    roughness: opts.roughness ?? 0.9,
+    metalness: 0,
+    alphaMode: "mask",
+    alphaCutoff: opts.alphaCutoff ?? 0.5,
+    doubleSided: opts.doubleSided ?? true
+  });
+}
+var init_textures = __esm(() => {
+  init_authoring_diagnostic();
+  init_texture_contract();
 });
 
 // src/material-texture-library.generated.ts
@@ -17311,375 +17316,8 @@ var init_material_resources = __esm(() => {
   DEFAULT_APPROVED_TEXTURE_CACHE = new ApprovedTextureResourceCache;
 });
 
-// src/portable-material-runtime.ts
-async function compilePortableMaterialSpecV2(input) {
-  const spec = canonicalizePortableMaterialSpecV2(input);
-  const cache = DEFAULT_APPROVED_TEXTURE_CACHE;
-  const entries = Object.entries(spec.textures);
-  for (const [slot, ref] of entries) {
-    if (ref.kind !== "resource")
-      continue;
-    if (!isApprovedResourceId(ref.resourceId)) {
-      throw new ProceduralTextureError(`portableMaterial.textures.${slot} resource ${JSON.stringify(ref.resourceId)} is not an approved texture resource ID.`);
-    }
-    const descriptor = cache.descriptor(ref.resourceId);
-    if (!descriptor.allowedSlots.includes(slot)) {
-      throw new ProceduralTextureError(`portableMaterial.textures.${slot} resource ${JSON.stringify(ref.resourceId)} is not approved for that slot.`);
-    }
-    if (descriptor.usage !== SLOT_USAGE[slot]) {
-      throw new ProceduralTextureError(`portableMaterial.textures.${slot} requires ${SLOT_USAGE[slot]} data, but ${JSON.stringify(ref.resourceId)} provides ${descriptor.usage}.`);
-    }
-  }
-  const loaded = new Map;
-  await Promise.all(entries.map(async ([slot, ref]) => {
-    const texture = ref.kind === "procedural" ? proceduralTexture(ref.spec) : (await cache.load(ref.resourceId)).texture;
-    loaded.set(slot, texture);
-  }));
-  const materialOptions = {
-    roughness: spec.roughness,
-    metalness: spec.metalness,
-    emissiveIntensity: spec.emissiveIntensity,
-    alphaMode: spec.alphaMode,
-    ...spec.alphaMode === "mask" ? { alphaCutoff: spec.alphaCutoff } : {},
-    doubleSided: spec.doubleSided,
-    ...loaded.get("baseColor") ? { albedo: loaded.get("baseColor") } : spec.baseColor !== undefined ? { albedo: spec.baseColor } : {},
-    ...loaded.get("normal") ? { normal: loaded.get("normal") } : {},
-    ...loaded.get("metallicRoughness") ? { metallicRoughness: loaded.get("metallicRoughness") } : {},
-    ...loaded.get("emissive") ? { emissive: loaded.get("emissive") } : spec.emissive !== undefined ? { emissive: spec.emissive } : {},
-    ...loaded.get("occlusion") ? { aoMap: loaded.get("occlusion") } : {}
-  };
-  const material = pbrMaterial(materialOptions);
-  if (spec.name)
-    material.name = spec.name;
-  if (loaded.has("baseColor") && spec.baseColor !== undefined)
-    material.color.setHex(spec.baseColor);
-  if (loaded.has("emissive") && spec.emissive !== undefined)
-    material.emissive.setHex(spec.emissive);
-  material.userData["kilnPortableMaterial"] = spec;
-  return material;
-}
-var SLOT_USAGE, isApprovedResourceId = (value) => APPROVED_TEXTURE_RESOURCE_IDS.includes(value);
-var init_portable_material_runtime = __esm(() => {
-  init_material_recipes();
-  init_material_resources();
-  init_procedural_material_v2();
-  init_procedural_texture();
-  init_textures();
-  SLOT_USAGE = {
-    baseColor: "albedo",
-    normal: "normal",
-    metallicRoughness: "metallicRoughness",
-    emissive: "emissive",
-    occlusion: "occlusion"
-  };
-});
-
-// src/uv.ts
-import * as THREE29 from "three";
-async function getXatlas() {
-  if (!_xatlasReady) {
-    _xatlasReady = (async () => {
-      const apiSpecifier = "xatlasjs/dist/node/api.mjs";
-      const xatlasSpecifier = "xatlasjs/dist/node/xatlas.js";
-      const apiMod = await import(apiSpecifier);
-      const xatlasMod = await import(xatlasSpecifier);
-      const create = xatlasMod.default ?? xatlasMod;
-      const ApiCtor = apiMod.Api(create);
-      return new Promise((resolve) => {
-        const xa = new ApiCtor(() => resolve(xa), null, null);
-      });
-    })();
-  }
-  return _xatlasReady;
-}
-async function autoUnwrap(geometry, opts = {}) {
-  const xa = await getXatlas();
-  const src = geometry.index ? geometry : toIndexed(geometry);
-  const posAttr = src.getAttribute("position");
-  const normAttr = src.getAttribute("normal");
-  const idxAttr = src.getIndex();
-  if (!posAttr || !idxAttr) {
-    throw new Error("autoUnwrap: geometry requires position attribute and an index");
-  }
-  if (idxAttr.count === 0 || posAttr.count === 0) {
-    throw new Error("autoUnwrap: geometry has no triangles. Nothing can be unwrapped — check the operation that produced it (an empty CSG result is the usual cause).");
-  }
-  if (idxAttr.count % 3 !== 0) {
-    throw new Error(`autoUnwrap: geometry has ${idxAttr.count} indices, which is not a whole number of triangles.`);
-  }
-  xa.createAtlas();
-  const useNormals = Boolean(opts.useNormals && normAttr);
-  const indexArray = idxAttr.array instanceof Uint32Array ? idxAttr.array : new Uint32Array(idxAttr.array);
-  const addRes = xa.addMesh(indexArray, new Float32Array(posAttr.array), useNormals && normAttr ? new Float32Array(normAttr.array) : null, null, "kiln-mesh", useNormals, false, 1);
-  if (!addRes) {
-    xa.destroyAtlas();
-    throw new Error("autoUnwrap: xatlas.addMesh failed (non-manifold or degenerate geometry?)");
-  }
-  const result = xa.generateAtlas({}, { resolution: opts.resolution ?? 1024, padding: opts.padding ?? 2 }, true);
-  const mesh = result.meshes[0];
-  if (!mesh) {
-    xa.destroyAtlas();
-    throw new Error("autoUnwrap: xatlas returned no meshes");
-  }
-  const out = new THREE29.BufferGeometry;
-  out.setAttribute("position", new THREE29.BufferAttribute(new Float32Array(mesh.vertex.vertices), 3));
-  if (mesh.vertex.normals) {
-    out.setAttribute("normal", new THREE29.BufferAttribute(new Float32Array(mesh.vertex.normals), 3));
-  }
-  if (mesh.vertex.coords1) {
-    out.setAttribute("uv", new THREE29.BufferAttribute(new Float32Array(mesh.vertex.coords1), 2));
-  }
-  if (mesh.index) {
-    out.setIndex(new THREE29.BufferAttribute(new Uint32Array(mesh.index), 1));
-  }
-  out.userData["atlas"] = {
-    width: result.width,
-    height: result.height,
-    atlasCount: result.atlasCount
-  };
-  if (!out.getAttribute("normal"))
-    out.computeVertexNormals();
-  repairZeroNormals(out);
-  if (!out.getAttribute("uv")) {
-    xa.destroyAtlas();
-    throw new Error("autoUnwrap: xatlas produced no UV coordinates for this geometry (degenerate or zero-area triangles?).");
-  }
-  xa.destroyAtlas();
-  return out;
-}
-function toIndexed(geo) {
-  const posAttr = geo.getAttribute("position");
-  const indices = new Uint32Array(posAttr.count);
-  for (let i = 0;i < posAttr.count; i++)
-    indices[i] = i;
-  const out = geo.clone();
-  out.setIndex(new THREE29.BufferAttribute(indices, 1));
-  return out;
-}
-function repairZeroNormals(geo) {
-  const normal = geo.getAttribute("normal");
-  const position = geo.getAttribute("position");
-  const index = geo.getIndex();
-  if (!normal || !position || !index)
-    return;
-  const broken = new Set;
-  for (let i = 0;i < normal.count; i++) {
-    const x = normal.getX(i);
-    const y = normal.getY(i);
-    const z = normal.getZ(i);
-    if (!Number.isFinite(x + y + z) || Math.hypot(x, y, z) < 0.000001)
-      broken.add(i);
-  }
-  if (broken.size === 0)
-    return;
-  const acc = new Float32Array(normal.count * 3);
-  const a = new THREE29.Vector3;
-  const b = new THREE29.Vector3;
-  const c = new THREE29.Vector3;
-  const face = new THREE29.Vector3;
-  const edge = new THREE29.Vector3;
-  for (let t = 0;t + 2 < index.count; t += 3) {
-    const tri = [index.getX(t), index.getX(t + 1), index.getX(t + 2)];
-    if (!tri.some((i) => broken.has(i)))
-      continue;
-    a.fromBufferAttribute(position, tri[0]);
-    b.fromBufferAttribute(position, tri[1]);
-    c.fromBufferAttribute(position, tri[2]);
-    face.subVectors(c, a);
-    edge.subVectors(b, a);
-    face.crossVectors(edge, face);
-    for (const i of tri) {
-      if (!broken.has(i))
-        continue;
-      const o = i * 3;
-      acc[o] = acc[o] + face.x;
-      acc[o + 1] = acc[o + 1] + face.y;
-      acc[o + 2] = acc[o + 2] + face.z;
-    }
-  }
-  for (const i of broken) {
-    face.set(acc[i * 3], acc[i * 3 + 1], acc[i * 3 + 2]);
-    if (face.lengthSq() < 0.00000000000000000001)
-      face.set(0, 1, 0);
-    else
-      face.normalize();
-    normal.setXYZ(i, face.x, face.y, face.z);
-  }
-  normal.needsUpdate = true;
-}
-var _xatlasReady = null;
-var init_uv = () => {};
-
-// src/uv-shapes.ts
-import * as THREE30 from "three";
-function remapUV(geo, options = {}) {
-  if (!options || typeof options !== "object" || Array.isArray(options) || Object.keys(options).some((key) => !["scale", "offset"].includes(key))) {
-    throw new Error("remapUV: options may contain only scale and offset.");
-  }
-  const scale = options.scale === undefined ? [1, 1] : options.scale;
-  const offset = options.offset === undefined ? [0, 0] : options.offset;
-  for (const [label, value] of Object.entries({ scale, offset })) {
-    if (!Array.isArray(value) || value.length !== 2 || !value.every(Number.isFinite))
-      throw new Error(`remapUV: ${label} must contain two finite numbers.`);
-  }
-  const source = geo.getAttribute("uv");
-  const positions = geo.getAttribute("position");
-  if (source?.itemSize !== 2 || !positions || source.count !== positions.count) {
-    throw new Error("remapUV: existing UV0 with two components per vertex is required; project or unwrap first.");
-  }
-  const values = new Float32Array(source.count * 2);
-  for (let i = 0;i < source.count; i++) {
-    const u = source.getX(i);
-    const v = source.getY(i);
-    const nextU = Math.fround(u * scale[0] + offset[0]);
-    const nextV = Math.fround(v * scale[1] + offset[1]);
-    if (![u, v, nextU, nextV].every(Number.isFinite))
-      throw new Error("remapUV: UV values and mapped Float32 results must be finite.");
-    values[i * 2] = nextU;
-    values[i * 2 + 1] = nextV;
-  }
-  const cloned = geo.clone();
-  cloned.setAttribute("uv", new THREE30.Float32BufferAttribute(values, 2));
-  if ((scale[0] !== 1 || scale[1] !== 1) && cloned.hasAttribute("tangent")) {
-    cloned.deleteAttribute("tangent");
-    const previous = cloned.userData.kilnAttributeWarnings;
-    cloned.userData.kilnAttributeWarnings = [
-      ...Array.isArray(previous) ? previous : [],
-      {
-        code: "UV_REMAP_TANGENTS_DROPPED",
-        message: "UV scaling invalidated tangents; regenerate them when needed for normal mapping."
-      }
-    ];
-  }
-  return cloned;
-}
-var init_uv_shapes = () => {};
-
-// src/uv-project.ts
-import * as THREE31 from "three";
-function projectUV(geometry, options) {
-  if (!options || typeof options !== "object" || Array.isArray(options) || !["planar", "box", "cylindrical"].includes(options.projection) || Object.keys(options).some((key) => !["projection", "frame", "seamDegrees", "angularRange", "caps"].includes(key)))
-    throw new Error("projectUV: select an explicit planar, box or cylindrical projection with documented options.");
-  const cylinder = options.projection === "cylindrical";
-  if (!cylinder && [options.seamDegrees, options.angularRange, options.caps].some((value) => value !== undefined))
-    throw new Error("projectUV: seamDegrees, angularRange and caps apply only to cylindrical projection.");
-  if (options.seamDegrees !== undefined && (!Number.isFinite(options.seamDegrees) || options.angularRange !== undefined))
-    throw new Error("projectUV: seamDegrees must be finite and cannot accompany angularRange.");
-  if (options.angularRange !== undefined && (!Array.isArray(options.angularRange) || options.angularRange.length !== 2 || !options.angularRange.every(Number.isFinite) || options.angularRange[1] <= 0 || options.angularRange[1] > 360))
-    throw new Error("projectUV: angularRange must be [finite start degrees, positive sweep <=360].");
-  if (options.caps !== undefined && options.caps !== "planar" && options.caps !== "side")
-    throw new Error("projectUV: caps must be planar or side.");
-  const inverse = geometryFrameMatrix(options.frame).invert();
-  const positions = geometry.getAttribute("position");
-  if (positions?.itemSize !== 3 || positions.count < 1 || positions.count > MAX_CORNERS)
-    throw new Error(`projectUV: position requires 1..${MAX_CORNERS} xyz samples.`);
-  if (Object.keys(geometry.morphAttributes).length)
-    throw new Error("projectUV: morph targets need a separate mapping contract.");
-  const index = geometry.index;
-  const corners = index?.count ?? positions.count;
-  if (!Number.isSafeInteger(corners) || corners < 3 || corners % 3 !== 0 || corners > MAX_CORNERS)
-    throw new Error(`projectUV: triangle corner count must be divisible by three and <=${MAX_CORNERS}.`);
-  let bytes = corners * 8;
-  for (const [name, attribute] of Object.entries(geometry.attributes)) {
-    if (attribute.count !== positions.count || !Number.isInteger(attribute.itemSize) || attribute.itemSize < 1 || attribute.itemSize > 16 || attribute.isInstancedBufferAttribute)
-      throw new Error(`projectUV: ${name} must be a matching per-vertex attribute of 1..16 components.`);
-    bytes += corners * attribute.itemSize * attribute.array.BYTES_PER_ELEMENT;
-  }
-  if (bytes > MAX_ATTRIBUTE_BYTES)
-    throw new Error("projectUV: expanded attributes exceed 128 MiB.");
-  if (index)
-    for (let i = 0;i < corners; i++) {
-      const value = index.getX(i);
-      if (!Number.isSafeInteger(value) || value < 0 || value >= positions.count)
-        throw new Error("projectUV: index contains an invalid vertex reference.");
-    }
-  const points = [];
-  const bounds = new THREE31.Box3;
-  for (let i = 0;i < positions.count; i++) {
-    const point = new THREE31.Vector3().fromBufferAttribute(positions, i).applyMatrix4(inverse);
-    if (![point.x, point.y, point.z].every(Number.isFinite))
-      throw new Error("projectUV: frame-local positions must be finite.");
-    points.push(point);
-    bounds.expandByPoint(point);
-  }
-  const extent = bounds.getSize(new THREE31.Vector3);
-  const fit = (point, axis) => extent[axis] > 0 ? (point[axis] - bounds.min[axis]) / extent[axis] : 0.5;
-  const outputUVs = new Float32Array(corners * 2);
-  const startDegrees = options.angularRange?.[0] ?? options.seamDegrees ?? 180;
-  const start = startDegrees % 360 * Math.PI / 180;
-  const sweep = (options.angularRange?.[1] ?? 360) * Math.PI / 180;
-  const fullWrap = options.angularRange === undefined || options.angularRange[1] === 360;
-  const wrap = (angle) => (angle % (2 * Math.PI) + 2 * Math.PI) % (2 * Math.PI);
-  const normal = new THREE31.Vector3;
-  const edge = new THREE31.Vector3;
-  for (let i = 0;i < corners; i += 3) {
-    const triangle = [0, 1, 2].map((offset) => points[index ? index.getX(i + offset) : i + offset]);
-    normal.subVectors(triangle[1], triangle[0]).cross(edge.subVectors(triangle[2], triangle[0])).normalize();
-    const cap = cylinder && options.caps !== "side" && Math.abs(normal.y) >= 1 - 0.000001;
-    let pairs;
-    if (cylinder && !cap) {
-      const angles = triangle.map((point) => {
-        let angle = wrap(Math.atan2(point.z, point.x) - start);
-        if (angle > 2 * Math.PI - 0.000001)
-          angle = 0;
-        if (!fullWrap && angle > sweep + 0.000001)
-          throw new Error("projectUV: side vertex lies outside angularRange; choose a range covering the profile.");
-        return (fullWrap ? angle : Math.min(angle, sweep)) / sweep;
-      });
-      if (fullWrap && Math.max(...angles) - Math.min(...angles) > 0.5) {
-        for (let j = 0;j < 3; j++)
-          if (angles[j] < 0.5)
-            angles[j] += 1;
-      }
-      if (fullWrap && Math.max(...angles) - Math.min(...angles) > 0.5 + 0.000001)
-        throw new Error("projectUV: side triangle spans more than half a revolution; add profile segments to resolve the mapping.");
-      pairs = triangle.map((point, j) => [angles[j], fit(point, "y")]);
-    } else if (cap) {
-      pairs = triangle.map((point) => [fit(point, "x"), fit(point, "z")]);
-    } else if (options.projection === "box") {
-      const axis = Math.abs(normal.x) >= Math.abs(normal.y) && Math.abs(normal.x) >= Math.abs(normal.z) ? "x" : Math.abs(normal.y) >= Math.abs(normal.z) ? "y" : "z";
-      pairs = triangle.map((point) => {
-        if (axis === "x")
-          return [normal.x > 0 ? 1 - fit(point, "z") : fit(point, "z"), fit(point, "y")];
-        if (axis === "y")
-          return [fit(point, "x"), normal.y > 0 ? 1 - fit(point, "z") : fit(point, "z")];
-        return [normal.z < 0 ? 1 - fit(point, "x") : fit(point, "x"), fit(point, "y")];
-      });
-    } else
-      pairs = triangle.map((point) => [fit(point, "x"), fit(point, "y")]);
-    for (let j = 0;j < 3; j++) {
-      const pair = pairs[j];
-      if (!pair.every((value) => Number.isFinite(Math.fround(value))))
-        throw new Error("projectUV: projected UVs must fit finite Float32.");
-      outputUVs[(i + j) * 2] = pair[0];
-      outputUVs[(i + j) * 2 + 1] = pair[1];
-    }
-  }
-  const out = geometry.index ? geometry.toNonIndexed() : geometry.clone();
-  out.userData = structuredClone(geometry.userData);
-  out.setDrawRange(geometry.drawRange.start, geometry.drawRange.count);
-  out.setAttribute("uv", new THREE31.Float32BufferAttribute(outputUVs, 2));
-  if (out.hasAttribute("tangent")) {
-    out.deleteAttribute("tangent");
-    const previous = out.userData.kilnAttributeWarnings;
-    out.userData.kilnAttributeWarnings = [
-      ...Array.isArray(previous) ? previous : [],
-      {
-        code: "UV_PROJECTION_TANGENTS_DROPPED",
-        message: "UV projection invalidated tangents; regenerate them when needed for normal mapping."
-      }
-    ];
-  }
-  return out;
-}
-var MAX_CORNERS = 2000000, MAX_ATTRIBUTE_BYTES;
-var init_uv_project = __esm(() => {
-  init_deform();
-  MAX_ATTRIBUTE_BYTES = 128 * 1024 * 1024;
-});
-
 // src/material-recipe-runtime.ts
-import * as THREE32 from "three";
+import * as THREE29 from "three";
 async function applyMaterialRecipeV1(request, options = {}) {
   const resolved = resolveMaterialRecipeV1(request);
   const cache = options.cache ?? DEFAULT_APPROVED_TEXTURE_CACHE;
@@ -17702,9 +17340,9 @@ async function applyMaterialRecipeV1(request, options = {}) {
   };
   const material = pbrMaterial(materialOptions);
   material.name = options.name ?? request.id;
-  material.color.setRGB(resolved.baseColorFactor[0], resolved.baseColorFactor[1], resolved.baseColorFactor[2], THREE32.LinearSRGBColorSpace);
+  material.color.setRGB(resolved.baseColorFactor[0], resolved.baseColorFactor[1], resolved.baseColorFactor[2], THREE29.LinearSRGBColorSpace);
   material.opacity = resolved.baseColorFactor[3];
-  material.emissive.setRGB(resolved.emissiveFactor[0], resolved.emissiveFactor[1], resolved.emissiveFactor[2], THREE32.LinearSRGBColorSpace);
+  material.emissive.setRGB(resolved.emissiveFactor[0], resolved.emissiveFactor[1], resolved.emissiveFactor[2], THREE29.LinearSRGBColorSpace);
   const resources = [...loaded.values()].map((entry) => entry.provenance).sort((a, b) => `${a.resourceId}:${a.usage}`.localeCompare(`${b.resourceId}:${b.usage}`));
   const provenance = {
     schemaVersion: 1,
@@ -17752,6 +17390,404 @@ var init_material_recipe_runtime = __esm(() => {
   init_material_recipes();
   init_material_resources();
   init_textures();
+});
+
+// src/texture-resolver.ts
+function createTextureResolver(cache = DEFAULT_APPROVED_TEXTURE_CACHE) {
+  return Object.freeze({
+    describeApprovedTexture(resourceId) {
+      if (typeof resourceId !== "string")
+        return;
+      try {
+        return cache.descriptor(resourceId);
+      } catch {
+        return;
+      }
+    },
+    async loadApprovedTexture(resourceId) {
+      if (typeof resourceId !== "string") {
+        throw new RangeError("Unsupported approved texture resource ID.");
+      }
+      return (await cache.load(resourceId)).texture;
+    },
+    async materialRecipe(id, overrides) {
+      if (typeof id !== "string")
+        throw new TypeError("materialRecipe id must be a string");
+      return materialRecipe(id, overrides, { cache });
+    }
+  });
+}
+var DEFAULT_TEXTURE_RESOLVER;
+var init_texture_resolver = __esm(() => {
+  init_material_resources();
+  init_material_recipe_runtime();
+  DEFAULT_TEXTURE_RESOLVER = createTextureResolver();
+});
+
+// src/portable-material-runtime.ts
+async function compilePortableMaterialSpecV2(input, options = {}) {
+  const spec = canonicalizePortableMaterialSpecV2(input);
+  const resolver = options.resolver ?? DEFAULT_TEXTURE_RESOLVER;
+  const entries = Object.entries(spec.textures);
+  for (const [slot, ref] of entries) {
+    if (ref.kind !== "resource")
+      continue;
+    const descriptor = resolver.describeApprovedTexture?.(ref.resourceId);
+    if (!descriptor) {
+      throw new ProceduralTextureError(`portableMaterial.textures.${slot} resource ${JSON.stringify(ref.resourceId)} is not an approved texture resource ID.`);
+    }
+    if (!descriptor.allowedSlots.includes(slot)) {
+      throw new ProceduralTextureError(`portableMaterial.textures.${slot} resource ${JSON.stringify(ref.resourceId)} is not approved for that slot.`);
+    }
+    if (descriptor.usage !== SLOT_USAGE[slot]) {
+      throw new ProceduralTextureError(`portableMaterial.textures.${slot} requires ${SLOT_USAGE[slot]} data, but ${JSON.stringify(ref.resourceId)} provides ${descriptor.usage}.`);
+    }
+  }
+  const loaded = new Map;
+  await Promise.all(entries.map(async ([slot, ref]) => {
+    const texture = ref.kind === "procedural" ? proceduralTexture(ref.spec) : await resolver.loadApprovedTexture(ref.resourceId);
+    loaded.set(slot, texture);
+  }));
+  const materialOptions = {
+    roughness: spec.roughness,
+    metalness: spec.metalness,
+    emissiveIntensity: spec.emissiveIntensity,
+    alphaMode: spec.alphaMode,
+    ...spec.alphaMode === "mask" ? { alphaCutoff: spec.alphaCutoff } : {},
+    doubleSided: spec.doubleSided,
+    ...loaded.get("baseColor") ? { albedo: loaded.get("baseColor") } : spec.baseColor !== undefined ? { albedo: spec.baseColor } : {},
+    ...loaded.get("normal") ? { normal: loaded.get("normal") } : {},
+    ...loaded.get("metallicRoughness") ? { metallicRoughness: loaded.get("metallicRoughness") } : {},
+    ...loaded.get("emissive") ? { emissive: loaded.get("emissive") } : spec.emissive !== undefined ? { emissive: spec.emissive } : {},
+    ...loaded.get("occlusion") ? { aoMap: loaded.get("occlusion") } : {}
+  };
+  const material = pbrMaterial(materialOptions);
+  if (spec.name)
+    material.name = spec.name;
+  if (loaded.has("baseColor") && spec.baseColor !== undefined)
+    material.color.setHex(spec.baseColor);
+  if (loaded.has("emissive") && spec.emissive !== undefined)
+    material.emissive.setHex(spec.emissive);
+  material.userData["kilnPortableMaterial"] = spec;
+  return material;
+}
+var SLOT_USAGE;
+var init_portable_material_runtime = __esm(() => {
+  init_texture_resolver();
+  init_procedural_material_v2();
+  init_procedural_texture();
+  init_textures();
+  SLOT_USAGE = {
+    baseColor: "albedo",
+    normal: "normal",
+    metallicRoughness: "metallicRoughness",
+    emissive: "emissive",
+    occlusion: "occlusion"
+  };
+});
+
+// src/uv.ts
+import * as THREE30 from "three";
+async function getXatlas() {
+  if (!_xatlasReady) {
+    _xatlasReady = (async () => {
+      const apiSpecifier = "xatlasjs/dist/node/api.mjs";
+      const xatlasSpecifier = "xatlasjs/dist/node/xatlas.js";
+      const apiMod = await import(apiSpecifier);
+      const xatlasMod = await import(xatlasSpecifier);
+      const create = xatlasMod.default ?? xatlasMod;
+      const ApiCtor = apiMod.Api(create);
+      return new Promise((resolve) => {
+        const xa = new ApiCtor(() => resolve(xa), null, null);
+      });
+    })();
+  }
+  return _xatlasReady;
+}
+async function autoUnwrap(geometry, opts = {}) {
+  const xa = await getXatlas();
+  const src = geometry.index ? geometry : toIndexed(geometry);
+  const posAttr = src.getAttribute("position");
+  const normAttr = src.getAttribute("normal");
+  const idxAttr = src.getIndex();
+  if (!posAttr || !idxAttr) {
+    throw new Error("autoUnwrap: geometry requires position attribute and an index");
+  }
+  if (idxAttr.count === 0 || posAttr.count === 0) {
+    throw new Error("autoUnwrap: geometry has no triangles. Nothing can be unwrapped — check the operation that produced it (an empty CSG result is the usual cause).");
+  }
+  if (idxAttr.count % 3 !== 0) {
+    throw new Error(`autoUnwrap: geometry has ${idxAttr.count} indices, which is not a whole number of triangles.`);
+  }
+  xa.createAtlas();
+  const useNormals = Boolean(opts.useNormals && normAttr);
+  const indexArray = idxAttr.array instanceof Uint32Array ? idxAttr.array : new Uint32Array(idxAttr.array);
+  const addRes = xa.addMesh(indexArray, new Float32Array(posAttr.array), useNormals && normAttr ? new Float32Array(normAttr.array) : null, null, "kiln-mesh", useNormals, false, 1);
+  if (!addRes) {
+    xa.destroyAtlas();
+    throw new Error("autoUnwrap: xatlas.addMesh failed (non-manifold or degenerate geometry?)");
+  }
+  const result = xa.generateAtlas({}, { resolution: opts.resolution ?? 1024, padding: opts.padding ?? 2 }, true);
+  const mesh = result.meshes[0];
+  if (!mesh) {
+    xa.destroyAtlas();
+    throw new Error("autoUnwrap: xatlas returned no meshes");
+  }
+  const out = new THREE30.BufferGeometry;
+  out.setAttribute("position", new THREE30.BufferAttribute(new Float32Array(mesh.vertex.vertices), 3));
+  if (mesh.vertex.normals) {
+    out.setAttribute("normal", new THREE30.BufferAttribute(new Float32Array(mesh.vertex.normals), 3));
+  }
+  if (mesh.vertex.coords1) {
+    out.setAttribute("uv", new THREE30.BufferAttribute(new Float32Array(mesh.vertex.coords1), 2));
+  }
+  if (mesh.index) {
+    out.setIndex(new THREE30.BufferAttribute(new Uint32Array(mesh.index), 1));
+  }
+  out.userData["atlas"] = {
+    width: result.width,
+    height: result.height,
+    atlasCount: result.atlasCount
+  };
+  if (!out.getAttribute("normal"))
+    out.computeVertexNormals();
+  repairZeroNormals(out);
+  if (!out.getAttribute("uv")) {
+    xa.destroyAtlas();
+    throw new Error("autoUnwrap: xatlas produced no UV coordinates for this geometry (degenerate or zero-area triangles?).");
+  }
+  xa.destroyAtlas();
+  return out;
+}
+function toIndexed(geo) {
+  const posAttr = geo.getAttribute("position");
+  const indices = new Uint32Array(posAttr.count);
+  for (let i = 0;i < posAttr.count; i++)
+    indices[i] = i;
+  const out = geo.clone();
+  out.setIndex(new THREE30.BufferAttribute(indices, 1));
+  return out;
+}
+function repairZeroNormals(geo) {
+  const normal = geo.getAttribute("normal");
+  const position = geo.getAttribute("position");
+  const index = geo.getIndex();
+  if (!normal || !position || !index)
+    return;
+  const broken = new Set;
+  for (let i = 0;i < normal.count; i++) {
+    const x = normal.getX(i);
+    const y = normal.getY(i);
+    const z = normal.getZ(i);
+    if (!Number.isFinite(x + y + z) || Math.hypot(x, y, z) < 0.000001)
+      broken.add(i);
+  }
+  if (broken.size === 0)
+    return;
+  const acc = new Float32Array(normal.count * 3);
+  const a = new THREE30.Vector3;
+  const b = new THREE30.Vector3;
+  const c = new THREE30.Vector3;
+  const face = new THREE30.Vector3;
+  const edge = new THREE30.Vector3;
+  for (let t = 0;t + 2 < index.count; t += 3) {
+    const tri = [index.getX(t), index.getX(t + 1), index.getX(t + 2)];
+    if (!tri.some((i) => broken.has(i)))
+      continue;
+    a.fromBufferAttribute(position, tri[0]);
+    b.fromBufferAttribute(position, tri[1]);
+    c.fromBufferAttribute(position, tri[2]);
+    face.subVectors(c, a);
+    edge.subVectors(b, a);
+    face.crossVectors(edge, face);
+    for (const i of tri) {
+      if (!broken.has(i))
+        continue;
+      const o = i * 3;
+      acc[o] = acc[o] + face.x;
+      acc[o + 1] = acc[o + 1] + face.y;
+      acc[o + 2] = acc[o + 2] + face.z;
+    }
+  }
+  for (const i of broken) {
+    face.set(acc[i * 3], acc[i * 3 + 1], acc[i * 3 + 2]);
+    if (face.lengthSq() < 0.00000000000000000001)
+      face.set(0, 1, 0);
+    else
+      face.normalize();
+    normal.setXYZ(i, face.x, face.y, face.z);
+  }
+  normal.needsUpdate = true;
+}
+var _xatlasReady = null;
+var init_uv = () => {};
+
+// src/uv-shapes.ts
+import * as THREE31 from "three";
+function remapUV(geo, options = {}) {
+  if (!options || typeof options !== "object" || Array.isArray(options) || Object.keys(options).some((key) => !["scale", "offset"].includes(key))) {
+    throw new Error("remapUV: options may contain only scale and offset.");
+  }
+  const scale = options.scale === undefined ? [1, 1] : options.scale;
+  const offset = options.offset === undefined ? [0, 0] : options.offset;
+  for (const [label, value] of Object.entries({ scale, offset })) {
+    if (!Array.isArray(value) || value.length !== 2 || !value.every(Number.isFinite))
+      throw new Error(`remapUV: ${label} must contain two finite numbers.`);
+  }
+  const source = geo.getAttribute("uv");
+  const positions = geo.getAttribute("position");
+  if (source?.itemSize !== 2 || !positions || source.count !== positions.count) {
+    throw new Error("remapUV: existing UV0 with two components per vertex is required; project or unwrap first.");
+  }
+  const values = new Float32Array(source.count * 2);
+  for (let i = 0;i < source.count; i++) {
+    const u = source.getX(i);
+    const v = source.getY(i);
+    const nextU = Math.fround(u * scale[0] + offset[0]);
+    const nextV = Math.fround(v * scale[1] + offset[1]);
+    if (![u, v, nextU, nextV].every(Number.isFinite))
+      throw new Error("remapUV: UV values and mapped Float32 results must be finite.");
+    values[i * 2] = nextU;
+    values[i * 2 + 1] = nextV;
+  }
+  const cloned = geo.clone();
+  cloned.setAttribute("uv", new THREE31.Float32BufferAttribute(values, 2));
+  if ((scale[0] !== 1 || scale[1] !== 1) && cloned.hasAttribute("tangent")) {
+    cloned.deleteAttribute("tangent");
+    const previous = cloned.userData.kilnAttributeWarnings;
+    cloned.userData.kilnAttributeWarnings = [
+      ...Array.isArray(previous) ? previous : [],
+      {
+        code: "UV_REMAP_TANGENTS_DROPPED",
+        message: "UV scaling invalidated tangents; regenerate them when needed for normal mapping."
+      }
+    ];
+  }
+  return cloned;
+}
+var init_uv_shapes = () => {};
+
+// src/uv-project.ts
+import * as THREE32 from "three";
+function projectUV(geometry, options) {
+  if (!options || typeof options !== "object" || Array.isArray(options) || !["planar", "box", "cylindrical"].includes(options.projection) || Object.keys(options).some((key) => !["projection", "frame", "seamDegrees", "angularRange", "caps"].includes(key)))
+    throw new Error("projectUV: select an explicit planar, box or cylindrical projection with documented options.");
+  const cylinder = options.projection === "cylindrical";
+  if (!cylinder && [options.seamDegrees, options.angularRange, options.caps].some((value) => value !== undefined))
+    throw new Error("projectUV: seamDegrees, angularRange and caps apply only to cylindrical projection.");
+  if (options.seamDegrees !== undefined && (!Number.isFinite(options.seamDegrees) || options.angularRange !== undefined))
+    throw new Error("projectUV: seamDegrees must be finite and cannot accompany angularRange.");
+  if (options.angularRange !== undefined && (!Array.isArray(options.angularRange) || options.angularRange.length !== 2 || !options.angularRange.every(Number.isFinite) || options.angularRange[1] <= 0 || options.angularRange[1] > 360))
+    throw new Error("projectUV: angularRange must be [finite start degrees, positive sweep <=360].");
+  if (options.caps !== undefined && options.caps !== "planar" && options.caps !== "side")
+    throw new Error("projectUV: caps must be planar or side.");
+  const inverse = geometryFrameMatrix(options.frame).invert();
+  const positions = geometry.getAttribute("position");
+  if (positions?.itemSize !== 3 || positions.count < 1 || positions.count > MAX_CORNERS)
+    throw new Error(`projectUV: position requires 1..${MAX_CORNERS} xyz samples.`);
+  if (Object.keys(geometry.morphAttributes).length)
+    throw new Error("projectUV: morph targets need a separate mapping contract.");
+  const index = geometry.index;
+  const corners = index?.count ?? positions.count;
+  if (!Number.isSafeInteger(corners) || corners < 3 || corners % 3 !== 0 || corners > MAX_CORNERS)
+    throw new Error(`projectUV: triangle corner count must be divisible by three and <=${MAX_CORNERS}.`);
+  let bytes = corners * 8;
+  for (const [name, attribute] of Object.entries(geometry.attributes)) {
+    if (attribute.count !== positions.count || !Number.isInteger(attribute.itemSize) || attribute.itemSize < 1 || attribute.itemSize > 16 || attribute.isInstancedBufferAttribute)
+      throw new Error(`projectUV: ${name} must be a matching per-vertex attribute of 1..16 components.`);
+    bytes += corners * attribute.itemSize * attribute.array.BYTES_PER_ELEMENT;
+  }
+  if (bytes > MAX_ATTRIBUTE_BYTES)
+    throw new Error("projectUV: expanded attributes exceed 128 MiB.");
+  if (index)
+    for (let i = 0;i < corners; i++) {
+      const value = index.getX(i);
+      if (!Number.isSafeInteger(value) || value < 0 || value >= positions.count)
+        throw new Error("projectUV: index contains an invalid vertex reference.");
+    }
+  const points = [];
+  const bounds = new THREE32.Box3;
+  for (let i = 0;i < positions.count; i++) {
+    const point = new THREE32.Vector3().fromBufferAttribute(positions, i).applyMatrix4(inverse);
+    if (![point.x, point.y, point.z].every(Number.isFinite))
+      throw new Error("projectUV: frame-local positions must be finite.");
+    points.push(point);
+    bounds.expandByPoint(point);
+  }
+  const extent = bounds.getSize(new THREE32.Vector3);
+  const fit = (point, axis) => extent[axis] > 0 ? (point[axis] - bounds.min[axis]) / extent[axis] : 0.5;
+  const outputUVs = new Float32Array(corners * 2);
+  const startDegrees = options.angularRange?.[0] ?? options.seamDegrees ?? 180;
+  const start = startDegrees % 360 * Math.PI / 180;
+  const sweep = (options.angularRange?.[1] ?? 360) * Math.PI / 180;
+  const fullWrap = options.angularRange === undefined || options.angularRange[1] === 360;
+  const wrap = (angle) => (angle % (2 * Math.PI) + 2 * Math.PI) % (2 * Math.PI);
+  const normal = new THREE32.Vector3;
+  const edge = new THREE32.Vector3;
+  for (let i = 0;i < corners; i += 3) {
+    const triangle = [0, 1, 2].map((offset) => points[index ? index.getX(i + offset) : i + offset]);
+    normal.subVectors(triangle[1], triangle[0]).cross(edge.subVectors(triangle[2], triangle[0])).normalize();
+    const cap = cylinder && options.caps !== "side" && Math.abs(normal.y) >= 1 - 0.000001;
+    let pairs;
+    if (cylinder && !cap) {
+      const angles = triangle.map((point) => {
+        let angle = wrap(Math.atan2(point.z, point.x) - start);
+        if (angle > 2 * Math.PI - 0.000001)
+          angle = 0;
+        if (!fullWrap && angle > sweep + 0.000001)
+          throw new Error("projectUV: side vertex lies outside angularRange; choose a range covering the profile.");
+        return (fullWrap ? angle : Math.min(angle, sweep)) / sweep;
+      });
+      if (fullWrap && Math.max(...angles) - Math.min(...angles) > 0.5) {
+        for (let j = 0;j < 3; j++)
+          if (angles[j] < 0.5)
+            angles[j] += 1;
+      }
+      if (fullWrap && Math.max(...angles) - Math.min(...angles) > 0.5 + 0.000001)
+        throw new Error("projectUV: side triangle spans more than half a revolution; add profile segments to resolve the mapping.");
+      pairs = triangle.map((point, j) => [angles[j], fit(point, "y")]);
+    } else if (cap) {
+      pairs = triangle.map((point) => [fit(point, "x"), fit(point, "z")]);
+    } else if (options.projection === "box") {
+      const axis = Math.abs(normal.x) >= Math.abs(normal.y) && Math.abs(normal.x) >= Math.abs(normal.z) ? "x" : Math.abs(normal.y) >= Math.abs(normal.z) ? "y" : "z";
+      pairs = triangle.map((point) => {
+        if (axis === "x")
+          return [normal.x > 0 ? 1 - fit(point, "z") : fit(point, "z"), fit(point, "y")];
+        if (axis === "y")
+          return [fit(point, "x"), normal.y > 0 ? 1 - fit(point, "z") : fit(point, "z")];
+        return [normal.z < 0 ? 1 - fit(point, "x") : fit(point, "x"), fit(point, "y")];
+      });
+    } else
+      pairs = triangle.map((point) => [fit(point, "x"), fit(point, "y")]);
+    for (let j = 0;j < 3; j++) {
+      const pair = pairs[j];
+      if (!pair.every((value) => Number.isFinite(Math.fround(value))))
+        throw new Error("projectUV: projected UVs must fit finite Float32.");
+      outputUVs[(i + j) * 2] = pair[0];
+      outputUVs[(i + j) * 2 + 1] = pair[1];
+    }
+  }
+  const out = geometry.index ? geometry.toNonIndexed() : geometry.clone();
+  out.userData = structuredClone(geometry.userData);
+  out.setDrawRange(geometry.drawRange.start, geometry.drawRange.count);
+  out.setAttribute("uv", new THREE32.Float32BufferAttribute(outputUVs, 2));
+  if (out.hasAttribute("tangent")) {
+    out.deleteAttribute("tangent");
+    const previous = out.userData.kilnAttributeWarnings;
+    out.userData.kilnAttributeWarnings = [
+      ...Array.isArray(previous) ? previous : [],
+      {
+        code: "UV_PROJECTION_TANGENTS_DROPPED",
+        message: "UV projection invalidated tangents; regenerate them when needed for normal mapping."
+      }
+    ];
+  }
+  return out;
+}
+var MAX_CORNERS = 2000000, MAX_ATTRIBUTE_BYTES;
+var init_uv_project = __esm(() => {
+  init_deform();
+  MAX_ATTRIBUTE_BYTES = 128 * 1024 * 1024;
 });
 
 // src/primitives.ts
@@ -18826,7 +18862,11 @@ function buildSandboxGlobals(usage, options = {}) {
     createStairs: wrap("createStairs", createStairs),
     gameMaterial: wrap("gameMaterial", gameMaterial),
     materialRecipe: wrap("materialRecipe", sandboxMaterialRecipe),
-    compilePortableMaterialSpecV2: wrap("compilePortableMaterialSpecV2", compilePortableMaterialSpecV2),
+    compilePortableMaterialSpecV2: wrap("compilePortableMaterialSpecV2", (...args) => {
+      if (args.length !== 1)
+        return Promise.reject(new TypeError("compilePortableMaterialSpecV2 accepts exactly one material spec"));
+      return compilePortableMaterialSpecV2(args[0], { resolver: options.textureResolver });
+    }),
     basicMaterial: wrap("basicMaterial", basicMaterial),
     glassMaterial: wrap("glassMaterial", glassMaterial),
     lambertMaterial: wrap("lambertMaterial", lambertMaterial),
@@ -19307,29 +19347,6 @@ var init_material_metrics = __esm(() => {
       })
     })
   });
-});
-
-// src/texture-resolver.ts
-function createTextureResolver(cache = DEFAULT_APPROVED_TEXTURE_CACHE) {
-  return Object.freeze({
-    async loadApprovedTexture(resourceId) {
-      if (typeof resourceId !== "string") {
-        throw new RangeError("Unsupported approved texture resource ID.");
-      }
-      return (await cache.load(resourceId)).texture;
-    },
-    async materialRecipe(id, overrides) {
-      if (typeof id !== "string")
-        throw new TypeError("materialRecipe id must be a string");
-      return materialRecipe(id, overrides, { cache });
-    }
-  });
-}
-var DEFAULT_TEXTURE_RESOLVER;
-var init_texture_resolver = __esm(() => {
-  init_material_resources();
-  init_material_recipe_runtime();
-  DEFAULT_TEXTURE_RESOLVER = createTextureResolver();
 });
 
 // src/geometry-catalog.ts
@@ -22928,6 +22945,495 @@ var init_glb = __esm(() => {
   ];
 });
 
+// src/material-library.ts
+import { z as z3 } from "zod";
+function assertMaterialJson(value, allowBytes = false, depth = 0) {
+  if (depth > 30)
+    throw new Error("Material JSON exceeds nesting limit");
+  if (value === null || typeof value === "string" || typeof value === "boolean")
+    return;
+  if (typeof value === "number" && Number.isFinite(value))
+    return;
+  if (allowBytes && value instanceof Uint8Array)
+    return;
+  if (!value || typeof value !== "object")
+    throw new Error("Material values must be plain JSON data");
+  const array = Array.isArray(value);
+  const prototype = Object.getPrototypeOf(value);
+  if (array ? prototype !== Array.prototype : prototype !== Object.prototype && prototype !== null)
+    throw new Error("Material values must have plain JSON prototypes");
+  if (array && value.length > 1e4)
+    throw new Error("Material JSON array exceeds limit");
+  for (const key of Reflect.ownKeys(value)) {
+    if (array && key === "length")
+      continue;
+    if (typeof key !== "string" || ["__proto__", "prototype", "constructor"].includes(key))
+      throw new Error("Material JSON contains a forbidden key");
+    if (array && (!/^(0|[1-9][0-9]*)$/.test(key) || Number(key) >= value.length))
+      throw new Error("Material arrays must contain only indexed data");
+    const descriptor = Object.getOwnPropertyDescriptor(value, key);
+    if (!("value" in descriptor) || !descriptor.enumerable)
+      throw new Error("Material JSON accessors or hidden fields are not allowed");
+    assertMaterialJson(descriptor.value, allowBytes, depth + 1);
+  }
+  if (array && Object.keys(value).length !== value.length)
+    throw new Error("Material JSON arrays must be dense");
+}
+function canonicalMaterialJson(value) {
+  assertMaterialJson(value);
+  const canonical = (entry) => Array.isArray(entry) ? entry.map(canonical) : entry !== null && typeof entry === "object" ? Object.fromEntries(Object.entries(entry).sort(([a], [b]) => a < b ? -1 : a > b ? 1 : 0).map(([key, child]) => [key, canonical(child)])) : entry;
+  return JSON.stringify(canonical(value));
+}
+function validateMaterialManifest(value) {
+  assertMaterialJson(value);
+  if (new TextEncoder().encode(JSON.stringify(value)).length > MATERIAL_LIBRARY_LIMITS.maxManifestBytes)
+    throw new Error("Material manifest exceeds size limit");
+  const manifest = materialManifestSchema.parse(value);
+  if (new Set(manifest.sources.map((source) => source.id)).size !== manifest.sources.length)
+    throw new Error("Duplicate material source identity");
+  if (new Set(manifest.maps.map((map) => map.slot)).size !== manifest.maps.length)
+    throw new Error("Duplicate material map slot");
+  let bytes = 0;
+  let pixels = 0;
+  for (const map of manifest.maps) {
+    const srgb = map.slot === "baseColor" || map.slot === "emissive";
+    if (map.file !== `${map.slot}.png` || map.usage !== MATERIAL_LIBRARY_USAGE[map.slot] || map.colorSpace !== (srgb ? "srgb" : "linear"))
+      throw new Error("Material map filename, usage or color convention mismatch");
+    if (map.slot === "normal" !== (map.normalConvention === "opengl") || map.slot === "metallicRoughness" !== (map.channelPacking === "r-occlusion-g-roughness-b-metallic"))
+      throw new Error("Material map convention is missing or invalid");
+    const source = manifest.sources.find((item) => item.id === map.sourceId);
+    if (!source)
+      throw new Error("Material map source is missing");
+    if (map.procedural) {
+      if (map.procedural.derive && map.slot !== "normal")
+        throw new Error("Height derivation requires a normal map slot");
+      if (canonicalMaterialJson(map.procedural.spec) !== canonicalMaterialJson(canonicalizeProceduralTextureSpecV2(map.procedural.spec)))
+        throw new Error("Stored procedural material recipe must be canonical");
+      if (source.kind !== "procedural" || map.originalFile || map.procedural.spec.usage !== map.usage || map.procedural.spec.size !== map.width || map.width !== map.height)
+        throw new Error("Procedural material source or map convention mismatch");
+    } else if (source.kind !== "external" || !source.originalFiles.some((file) => file.name === map.originalFile)) {
+      throw new Error("Material map must reference an original source file");
+    }
+    bytes += map.bytes;
+    pixels += map.width * map.height;
+  }
+  if (bytes > MATERIAL_LIBRARY_LIMITS.maxRecordBytes || pixels > MATERIAL_LIBRARY_LIMITS.maxRecordPixels)
+    throw new Error("Material record exceeds byte or pixel budget");
+  return manifest;
+}
+function materialPngDimensions(bytes) {
+  if (bytes.length < 24 || ![137, 80, 78, 71, 13, 10, 26, 10].every((n, i) => bytes[i] === n) || String.fromCharCode(...bytes.subarray(12, 16)) !== "IHDR")
+    throw new Error("Material map must be a PNG");
+  const view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
+  return { width: view.getUint32(16), height: view.getUint32(20) };
+}
+function validateMaterialRecordShape(record) {
+  assertMaterialJson(record, true);
+  if (Object.keys(record).some((key) => key !== "manifest" && key !== "files"))
+    throw new Error("Invalid material record");
+  const manifest = validateMaterialManifest(record.manifest);
+  if (!record.files || Object.keys(record.files).length !== manifest.maps.length)
+    throw new Error("Material file inventory mismatch");
+  for (const map of manifest.maps) {
+    const bytes = record.files[map.file];
+    if (!(bytes instanceof Uint8Array) || bytes.length !== map.bytes)
+      throw new Error("Material file inventory mismatch");
+    const size = materialPngDimensions(bytes);
+    if (size.width !== map.width || size.height !== map.height)
+      throw new Error("Material map dimensions mismatch");
+  }
+  return manifest;
+}
+function materialLibraryResourceId(manifest, slot) {
+  materialLibraryHashSchema.parse(manifest.revisionId);
+  if (!MATERIAL_LIBRARY_SLOTS.includes(slot))
+    throw new Error("Unknown material slot");
+  return `kiln.library.${manifest.revisionId.slice(7)}.${slotNames[slot]}`;
+}
+var MATERIAL_LIBRARY_LIMITS, MATERIAL_LIBRARY_SLOTS, MATERIAL_LIBRARY_USAGE, slotNames, materialLibraryIdSchema, materialLibraryHashSchema, text3, url, materialSourceSchema, materialTransformSchema, color2, count2, layerCommon, materialProceduralSpecSchema, materialNormalDerivationSchema, proceduralSchema, parametersSchema, materialManifestSchema, proceduralMaterialDraftSchema, materialLibraryPayloadSchema;
+var init_material_library = __esm(() => {
+  init_procedural_material_v2();
+  MATERIAL_LIBRARY_LIMITS = Object.freeze({
+    maxMapBytes: 8 * 1024 * 1024,
+    maxRecordBytes: 32 * 1024 * 1024,
+    maxManifestBytes: 256 * 1024,
+    maxMapEdge: 4096,
+    maxRecordPixels: 8 * 1024 * 1024,
+    maxPayloadBytes: 16 * 1024 * 1024,
+    maxPayloadPixels: 16 * 1024 * 1024,
+    maxPayloadRecords: 16
+  });
+  MATERIAL_LIBRARY_SLOTS = [
+    "baseColor",
+    "normal",
+    "metallicRoughness",
+    "emissive",
+    "occlusion"
+  ];
+  MATERIAL_LIBRARY_USAGE = {
+    baseColor: "albedo",
+    normal: "normal",
+    metallicRoughness: "metallicRoughness",
+    emissive: "emissive",
+    occlusion: "occlusion"
+  };
+  slotNames = {
+    baseColor: "base-color",
+    normal: "normal",
+    metallicRoughness: "metallic-roughness",
+    emissive: "emissive",
+    occlusion: "occlusion"
+  };
+  materialLibraryIdSchema = z3.string().regex(/^[a-z][a-z0-9_-]{0,79}$/);
+  materialLibraryHashSchema = z3.string().regex(/^sha256:[a-f0-9]{64}$/);
+  text3 = z3.string().min(1).max(1000);
+  url = z3.string().max(2000).url().refine((value) => /^https?:\/\//.test(value), "Provenance URL must be HTTP(S)");
+  materialSourceSchema = z3.object({
+    id: materialLibraryIdSchema,
+    kind: z3.enum(["external", "procedural"]),
+    provider: text3,
+    creator: text3,
+    assetId: text3.optional(),
+    assetUrl: url.optional(),
+    accessedAt: z3.string().datetime().optional(),
+    license: z3.object({ spdx: text3, url, attribution: z3.string().max(4000) }).strict(),
+    originalFiles: z3.array(z3.object({
+      name: z3.string().min(1).max(200),
+      sha256: materialLibraryHashSchema,
+      bytes: z3.number().int().positive().max(1024 * 1024 * 1024)
+    }).strict()).max(20)
+  }).strict().superRefine((source, context) => {
+    if (source.kind === "external" && (!source.assetUrl || !source.originalFiles.length))
+      context.addIssue({
+        code: "custom",
+        message: "External materials require a source URL and original file hashes"
+      });
+    if (new Set(source.originalFiles.map((file) => file.name)).size !== source.originalFiles.length)
+      context.addIssue({ code: "custom", message: "Duplicate original filename" });
+  });
+  materialTransformSchema = z3.object({
+    operation: text3,
+    tool: text3,
+    version: text3,
+    parameters: z3.record(z3.string().max(100), z3.union([z3.string().max(2000), z3.number().finite(), z3.boolean()])).optional()
+  }).strict();
+  color2 = z3.number().int().min(0).max(16777215);
+  count2 = z3.number().int().min(1).max(256);
+  layerCommon = {
+    blend: z3.enum(["normal", "multiply", "screen", "overlay"]).default("normal"),
+    opacity: z3.number().min(0).max(1).default(1)
+  };
+  materialProceduralSpecSchema = z3.object({
+    schemaVersion: z3.literal(2),
+    size: z3.number().int().min(4).max(1024).default(256),
+    usage: z3.enum([
+      "albedo",
+      "normal",
+      "roughness",
+      "metalness",
+      "metallicRoughness",
+      "emissive",
+      "occlusion"
+    ]).default("albedo"),
+    name: z3.string().min(1).max(80).optional(),
+    layers: z3.array(z3.discriminatedUnion("op", [
+      z3.object({ op: z3.literal("solid"), color: color2, ...layerCommon }).strict(),
+      z3.object({
+        op: z3.literal("checker"),
+        colorA: color2,
+        colorB: color2,
+        squares: count2.default(8),
+        ...layerCommon
+      }).strict(),
+      z3.object({
+        op: z3.literal("stripes"),
+        colorA: color2,
+        colorB: color2,
+        count: count2.default(8),
+        angleDeg: z3.number().min(-36000).max(36000).default(0),
+        ...layerCommon
+      }).strict(),
+      z3.object({
+        op: z3.literal("gradient"),
+        from: color2,
+        to: color2,
+        angleDeg: z3.number().min(-36000).max(36000).default(0),
+        ...layerCommon
+      }).strict(),
+      z3.object({
+        op: z3.literal("bricks"),
+        brick: color2,
+        mortar: color2,
+        rows: count2.default(8),
+        cols: count2.default(4),
+        mortarWidth: z3.number().min(0).max(1).default(0.06),
+        stagger: z3.number().min(0).max(1).default(0.5),
+        ...layerCommon
+      }).strict(),
+      z3.object({
+        op: z3.literal("noise"),
+        colorA: color2,
+        colorB: color2,
+        scale: count2.default(8),
+        octaves: z3.number().int().min(1).max(6).default(3),
+        seed: z3.number().int().min(-2147483648).max(2147483647).default(0),
+        ...layerCommon
+      }).strict()
+    ])).min(1).max(8)
+  }).strict();
+  materialNormalDerivationSchema = z3.object({
+    kind: z3.literal("normal-from-height"),
+    strength: z3.number().finite().positive().max(64)
+  }).strict();
+  proceduralSchema = z3.object({
+    compiler: z3.literal("kiln.procedural-texture.v2"),
+    spec: materialProceduralSpecSchema,
+    derive: materialNormalDerivationSchema.optional(),
+    recipeHash: materialLibraryHashSchema,
+    pixelHash: materialLibraryHashSchema,
+    encoder: z3.object({ name: z3.literal("sharp"), version: text3 }).strict()
+  }).strict();
+  parametersSchema = z3.object({
+    baseColor: z3.number().int().min(0).max(16777215).optional(),
+    roughness: z3.number().min(0).max(1).default(1),
+    metalness: z3.number().min(0).max(1).default(0),
+    emissive: z3.number().int().min(0).max(16777215).optional(),
+    emissiveIntensity: z3.number().min(0).max(64).default(1),
+    alphaMode: z3.enum(["opaque", "mask", "blend"]).default("opaque"),
+    alphaCutoff: z3.number().min(0).max(1).default(0.5),
+    doubleSided: z3.boolean().default(false)
+  }).strict();
+  materialManifestSchema = z3.object({
+    schemaVersion: z3.literal(1),
+    materialId: materialLibraryIdSchema,
+    revisionId: materialLibraryHashSchema,
+    name: z3.string().min(1).max(200),
+    tags: z3.array(z3.string().min(1).max(80)).max(30),
+    tileable: z3.boolean(),
+    physicalSizeMeters: z3.object({
+      width: z3.number().finite().positive().max(1e5),
+      height: z3.number().finite().positive().max(1e5)
+    }).strict().optional(),
+    parameters: parametersSchema,
+    sources: z3.array(materialSourceSchema).min(1).max(20),
+    maps: z3.array(z3.object({
+      slot: z3.enum(MATERIAL_LIBRARY_SLOTS),
+      file: z3.enum([
+        "baseColor.png",
+        "normal.png",
+        "metallicRoughness.png",
+        "emissive.png",
+        "occlusion.png"
+      ]),
+      sha256: materialLibraryHashSchema,
+      bytes: z3.number().int().positive().max(MATERIAL_LIBRARY_LIMITS.maxMapBytes),
+      width: z3.number().int().positive().max(MATERIAL_LIBRARY_LIMITS.maxMapEdge),
+      height: z3.number().int().positive().max(MATERIAL_LIBRARY_LIMITS.maxMapEdge),
+      usage: z3.enum(["albedo", "normal", "metallicRoughness", "emissive", "occlusion"]),
+      colorSpace: z3.enum(["srgb", "linear"]),
+      normalConvention: z3.literal("opengl").optional(),
+      channelPacking: z3.literal("r-occlusion-g-roughness-b-metallic").optional(),
+      sourceId: materialLibraryIdSchema,
+      originalFile: z3.string().min(1).max(200).optional(),
+      transforms: z3.array(materialTransformSchema).max(30),
+      procedural: proceduralSchema.optional()
+    }).strict()).min(1).max(5)
+  }).strict();
+  proceduralMaterialDraftSchema = z3.object({
+    materialId: materialLibraryIdSchema,
+    name: z3.string().min(1).max(200),
+    tags: z3.array(z3.string().min(1).max(80)).max(30).optional(),
+    tileable: z3.boolean(),
+    physicalSizeMeters: z3.object({
+      width: z3.number().finite().positive().max(1e5),
+      height: z3.number().finite().positive().max(1e5)
+    }).strict().optional(),
+    parameters: parametersSchema.partial().optional(),
+    sources: z3.array(materialSourceSchema).min(1).max(20),
+    maps: z3.array(z3.object({
+      slot: z3.enum(MATERIAL_LIBRARY_SLOTS),
+      sourceId: materialLibraryIdSchema,
+      transforms: z3.array(materialTransformSchema).max(30),
+      normalConvention: z3.literal("opengl").optional(),
+      channelPacking: z3.literal("r-occlusion-g-roughness-b-metallic").optional(),
+      procedural: materialProceduralSpecSchema,
+      derive: materialNormalDerivationSchema.optional()
+    }).strict()).min(1).max(5)
+  }).strict();
+  materialLibraryPayloadSchema = z3.object({
+    schemaVersion: z3.literal(1),
+    records: z3.array(z3.object({
+      manifest: materialManifestSchema,
+      files: z3.record(z3.string().regex(/^(baseColor|normal|metallicRoughness|emissive|occlusion)\.png$/), z3.string().max(Math.ceil(MATERIAL_LIBRARY_LIMITS.maxMapBytes / 3) * 4))
+    }).strict()).max(MATERIAL_LIBRARY_LIMITS.maxPayloadRecords)
+  }).strict();
+});
+
+// src/material-library-node.ts
+import { createHash as createHash6, randomUUID } from "node:crypto";
+import sharp from "sharp";
+import { DataTexture as DataTexture3 } from "three";
+function revisionHash(manifest) {
+  const { revisionId: _, ...content } = manifest;
+  return digest(canonicalMaterialJson(content));
+}
+function snapshot(record) {
+  validateMaterialRecordShape(record);
+  return {
+    manifest: structuredClone(record.manifest),
+    files: Object.fromEntries(Object.entries(record.files).map(([name, bytes]) => [name, Uint8Array.from(bytes)]))
+  };
+}
+function materialPixels(spec, derive) {
+  const compiled = compileProceduralTextureSpecV2(spec);
+  if (!derive)
+    return compiled;
+  materialNormalDerivationSchema.parse(derive);
+  if (compiled.spec.usage !== "normal")
+    throw new Error("Height derivation requires a normal map slot");
+  const height = new DataTexture3(compiled.pixels, compiled.spec.size, compiled.spec.size);
+  const normal = normalMapFromHeight(height, { strength: derive.strength });
+  if (!(normal.image.data instanceof Uint8Array))
+    throw new Error("Normal derivation must produce RGBA8 pixels");
+  const pixels = Uint8Array.from(normal.image.data);
+  height.dispose();
+  normal.dispose();
+  return { ...compiled, pixels };
+}
+async function verifyMaterialRecordV1(record) {
+  const manifest = validateMaterialRecordShape(record);
+  if (revisionHash(manifest) !== manifest.revisionId)
+    throw new Error("Material identity hash mismatch");
+  for (const map of manifest.maps) {
+    const bytes = record.files[map.file];
+    if (digest(bytes) !== map.sha256)
+      throw new Error(`Material integrity hash mismatch: ${map.file}`);
+    const { data, info } = await sharp(bytes, {
+      limitInputPixels: MATERIAL_LIBRARY_LIMITS.maxRecordPixels,
+      failOn: "warning"
+    }).ensureAlpha().raw().toBuffer({ resolveWithObject: true });
+    if (info.width !== map.width || info.height !== map.height || info.channels !== 4)
+      throw new Error("Material decoded image mismatch");
+    if (map.procedural) {
+      const compiled = materialPixels(map.procedural.spec, map.procedural.derive);
+      if (compiled.recipeHash !== map.procedural.recipeHash || digest(compiled.pixels) !== map.procedural.pixelHash || digest(data) !== map.procedural.pixelHash)
+        throw new Error("Procedural material recipe or pixel hash mismatch");
+    }
+  }
+}
+function validateMaterialLibraryPayload(value) {
+  assertMaterialJson(value);
+  if (!value || typeof value !== "object" || Array.isArray(value))
+    throw new Error("Invalid material resource payload");
+  const payload = value;
+  if (Object.keys(payload).some((key) => !["schemaVersion", "records"].includes(key)) || payload.schemaVersion !== 1 || !Array.isArray(payload.records) || payload.records.length > MATERIAL_LIBRARY_LIMITS.maxPayloadRecords)
+    throw new Error("Invalid material resource payload");
+  let total = 0;
+  let pixels = 0;
+  const identities = new Set;
+  for (const wire of payload.records) {
+    if (!wire || typeof wire !== "object" || Object.keys(wire).some((key) => !["manifest", "files"].includes(key)))
+      throw new Error("Invalid material resource record");
+    const manifest = materialManifestSchema.parse(wire.manifest);
+    if (identities.has(manifest.revisionId))
+      throw new Error("Duplicate material resource revision");
+    identities.add(manifest.revisionId);
+    if (!wire.files || typeof wire.files !== "object" || Array.isArray(wire.files) || Object.keys(wire.files).length !== manifest.maps.length)
+      throw new Error("Material payload inventory mismatch");
+    for (const map of manifest.maps) {
+      const encoded = wire.files[map.file];
+      if (typeof encoded !== "string" || encoded.length !== Math.ceil(map.bytes / 3) * 4 || !/^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$/.test(encoded))
+        throw new Error("Invalid material map base64");
+      total += map.bytes;
+      pixels += map.width * map.height;
+    }
+  }
+  if (total > MATERIAL_LIBRARY_LIMITS.maxPayloadBytes || pixels > MATERIAL_LIBRARY_LIMITS.maxPayloadPixels)
+    throw new Error("Material resource payload exceeds byte or pixel budget");
+  return payload;
+}
+async function createMaterialLibraryPayload(records) {
+  const snapshots = records.map(snapshot);
+  for (const record of snapshots)
+    await verifyMaterialRecordV1(record);
+  return validateMaterialLibraryPayload({
+    schemaVersion: 1,
+    records: snapshots.map((record) => ({
+      manifest: record.manifest,
+      files: Object.fromEntries(Object.entries(record.files).map(([name, bytes]) => [
+        name,
+        Buffer.from(bytes).toString("base64")
+      ]))
+    }))
+  });
+}
+async function decodeMaterialLibraryPayload(value) {
+  const payload = validateMaterialLibraryPayload(value);
+  const records = payload.records.map((wire) => ({
+    manifest: structuredClone(wire.manifest),
+    files: Object.fromEntries(Object.entries(wire.files).map(([name, encoded]) => [
+      name,
+      new Uint8Array(Buffer.from(encoded, "base64"))
+    ]))
+  }));
+  for (const record of records)
+    await verifyMaterialRecordV1(record);
+  return records;
+}
+async function createMaterialLibraryTextureResolver(records, fallback = DEFAULT_TEXTURE_RESOLVER) {
+  const snapshots = await decodeMaterialLibraryPayload(await createMaterialLibraryPayload(records));
+  const maps = new Map;
+  for (const record of snapshots)
+    for (const map of record.manifest.maps)
+      maps.set(materialLibraryResourceId(record.manifest, map.slot), { record, map });
+  return Object.freeze({
+    describeApprovedTexture(id) {
+      const entry = typeof id === "string" ? maps.get(id) : undefined;
+      return entry ? { usage: entry.map.usage, allowedSlots: [entry.map.slot] } : fallback.describeApprovedTexture?.(id);
+    },
+    async loadApprovedTexture(id) {
+      const entry = typeof id === "string" ? maps.get(id) : undefined;
+      if (!entry)
+        return fallback.loadApprovedTexture(id);
+      const texture = await loadTexture(entry.record.files[entry.map.file].slice(), {
+        usage: entry.map.usage,
+        name: id
+      });
+      texture.userData["kilnMaterialResource"] = {
+        schemaVersion: 1,
+        materialId: entry.record.manifest.materialId,
+        revisionId: entry.record.manifest.revisionId,
+        resourceId: id,
+        map: structuredClone(entry.map),
+        sources: structuredClone(entry.record.manifest.sources),
+        ...entry.record.manifest.physicalSizeMeters ? { physicalSizeMeters: { ...entry.record.manifest.physicalSizeMeters } } : {}
+      };
+      return texture;
+    },
+    materialRecipe: (id, overrides) => fallback.materialRecipe(id, overrides)
+  });
+}
+var digest = (bytes) => `sha256:${createHash6("sha256").update(bytes).digest("hex")}`, encoder;
+var init_material_library_node = __esm(() => {
+  init_material_library();
+  init_procedural_texture();
+  init_textures();
+  init_texture_resolver();
+  encoder = { name: "sharp", version: sharp.versions.sharp };
+});
+
+// src/rebuild-options.ts
+import { z as z4 } from "zod";
+var rebuildOptionsSchema;
+var init_rebuild_options = __esm(() => {
+  rebuildOptionsSchema = z4.object({
+    gltfExporter: z4.enum(["legacy", "three"]),
+    geometryPolicy: z4.enum(["warn", "strict"]),
+    optimize: z4.enum(["off", "auto", "palette", "full"]),
+    instance: z4.enum(["off", "auto", "on"])
+  });
+});
+
 // src/evaluator/protocol.ts
 function evaluatorOutcomeMessage(code) {
   return EVALUATOR_OUTCOME_MESSAGES[code];
@@ -22955,11 +23461,14 @@ function parseOptions(value) {
     "category",
     "requirements",
     "geometryPolicy",
-    "gltfExporter"
+    "gltfExporter",
+    "materialResources"
   ])) {
     return fail("request");
   }
   const options = {};
+  if (value.materialResources !== undefined)
+    options.materialResources = validateMaterialLibraryPayload(value.materialResources);
   if (value.gltfExporter !== undefined) {
     if (value.gltfExporter !== "legacy" && value.gltfExporter !== "three")
       fail("request");
@@ -22993,6 +23502,11 @@ function decodeEvaluatorRequestV2(json) {
     value = JSON.parse(json);
   } catch {
     return fail("request");
+  }
+  if (isRecord4(value) && isRecord4(value.options)) {
+    const { materialResources: _, ...metadataOptions } = value.options;
+    if (Buffer.byteLength(JSON.stringify({ ...value, options: metadataOptions }), "utf8") > 1024 * 1024)
+      return fail("request");
   }
   if (!isRecord4(value) || !hasExactKeys(value, ["version", "requestId", "operation", "code", "options", "limits"]) || value.version !== EVALUATOR_REQUEST_VERSION || !validRequestId(value.requestId) || value.operation !== "execute-export-glb" || typeof value.code !== "string" || Buffer.byteLength(value.code, "utf8") > MAX_EVALUATOR_CODE_BYTES || !isRecord4(value.limits) || !hasExactKeys(value.limits, ["maxGlbBytes"]) || !validInteger(value.limits.maxGlbBytes, 1, 64 * 1024 * 1024)) {
     return fail("request");
@@ -23029,8 +23543,10 @@ var init_protocol = __esm(() => {
   init_authoring_diagnostic();
   init_requirements_context();
   init_requirements_report();
+  init_material_library_node();
+  init_rebuild_options();
   MAX_EVALUATOR_CODE_BYTES = 512 * 1024;
-  MAX_EVALUATOR_REQUEST_BYTES = 1024 * 1024;
+  MAX_EVALUATOR_REQUEST_BYTES = 24 * 1024 * 1024;
   DEFAULT_EVALUATOR_MAX_GLB_BYTES = 16 * 1024 * 1024;
   DEFAULT_EVALUATOR_MAX_RESPONSE_BYTES = 32 * 1024 * 1024;
   EVALUATOR_OUTCOME_MESSAGES = {
@@ -23062,6 +23578,7 @@ var init_subprocess = __esm(() => {
   init_authoring_diagnostic();
   init_run();
   init_requirements_context();
+  init_material_library_node();
   init_protocol();
   DEFAULT_MAX_GLB_BYTES = 16 * 1024 * 1024;
   DEFAULT_MAX_RESPONSE_BYTES = 32 * 1024 * 1024;
@@ -24432,19 +24949,30 @@ async function renderGLBInProcess(code, opts = {}) {
   const requirements = resolveRequirementsContext(opts.requirements);
   if (opts.geometryPolicy !== undefined && !["warn", "strict"].includes(opts.geometryPolicy))
     throw new Error("geometryPolicy must be warn or strict");
+  let textureResolver = opts.textureResolver ?? DEFAULT_TEXTURE_RESOLVER;
+  const rebuildOptions = {
+    gltfExporter: resolveGltfExporter(opts.gltfExporter),
+    geometryPolicy: opts.geometryPolicy ?? "warn",
+    optimize: resolveOptimize(opts.optimize),
+    instance: resolveInstance(opts.instance)
+  };
+  let materialLibraryDependencies;
+  if (opts.materialResources) {
+    await Promise.resolve().then(() => init_material_library_node());
+    const materialRecords = await decodeMaterialLibraryPayload(opts.materialResources);
+    materialLibraryDependencies = materialRecords.map((record) => structuredClone(record.manifest));
+    textureResolver = await createMaterialLibraryTextureResolver(materialRecords, textureResolver);
+  }
   const { meta, root, clips, primitiveUsage } = await executeKilnCode(code, {
-    textureResolver: opts.textureResolver ?? DEFAULT_TEXTURE_RESOLVER,
+    textureResolver,
     console: opts.diagnosticConsole
   });
   const scene = await renderSceneToGLB(root, {
-    gltfExporter: opts.gltfExporter,
+    ...rebuildOptions,
     sceneName: meta.name || "Scene",
-    geometryPolicy: opts.geometryPolicy,
     clips,
     requirements: requirements.binding,
-    role: meta.role,
-    ...opts.optimize ? { optimize: opts.optimize } : {},
-    ...opts.instance ? { instance: opts.instance } : {}
+    role: meta.role
   });
   const {
     category: modelCategory,
@@ -24457,6 +24985,8 @@ async function renderGLBInProcess(code, opts = {}) {
   } = meta;
   return {
     glb: Buffer.from(scene.bytes),
+    rebuildOptions,
+    ...materialLibraryDependencies ? { materialLibraryDependencies } : {},
     requirements: scene.requirements,
     artifactGlbSha256: scene.artifactGlbSha256,
     tris: scene.tris,

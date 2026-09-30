@@ -52,6 +52,7 @@ async function fixture() {
         ...process.env,
         KILN_RENDER: 'cpu',
         KILN_COLLECTIONS: JSON.stringify({ project: join(dir, 'assets') }),
+        KILN_WORKSPACE: dir,
         KILN_PROGRAM_STORE: join(dir, 'programs'),
         KILN_BUILD_CACHE_DIR: join(dir, 'cache'),
       },
@@ -269,7 +270,11 @@ test('embedded migration snapshots host policy and destination before asynchrono
           },
         },
       },
-      { KILN_EVALUATOR_MODE: 'in-process', KILN_PROGRAM_STORE: join(f.dir, 'programs') },
+      {
+        KILN_EVALUATOR_MODE: 'in-process',
+        KILN_WORKSPACE: f.dir,
+        KILN_PROGRAM_STORE: join(f.dir, 'programs'),
+      },
     );
     const result = await rebuildLegacyAsset(context, selection);
     expect(result.ok).toBe(true);

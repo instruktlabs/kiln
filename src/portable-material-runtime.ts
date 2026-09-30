@@ -2,12 +2,8 @@
 
 import type * as THREE from 'three';
 
-import {
-  APPROVED_TEXTURE_RESOURCE_IDS,
-  type ApprovedTextureResourceId,
-  type MaterialTextureSlot,
-} from './material-recipes';
-import { DEFAULT_APPROVED_TEXTURE_CACHE } from './material-resources';
+import type { MaterialTextureSlot } from './material-recipes';
+import { DEFAULT_TEXTURE_RESOLVER, type TextureResolver } from './texture-resolver';
 import {
   type CanonicalPortableMaterialSpecV2,
   type CanonicalPortableTextureRefV2,
@@ -27,9 +23,6 @@ const SLOT_USAGE = {
 
 type PortableSlot = keyof typeof SLOT_USAGE;
 
-const isApprovedResourceId = (value: string): value is ApprovedTextureResourceId =>
-  (APPROVED_TEXTURE_RESOURCE_IDS as readonly string[]).includes(value);
-
 /**
  * Compile a JSON-shaped V2 material without exposing loaders, paths, URLs,
  * DataTextures, shader source, or a host resolver to authored code.
@@ -40,24 +33,24 @@ const isApprovedResourceId = (value: string): value is ApprovedTextureResourceId
  */
 export async function compilePortableMaterialSpecV2(
   input: unknown,
+  options: { resolver?: TextureResolver } = {},
 ): Promise<THREE.MeshStandardMaterial> {
   const spec = canonicalizePortableMaterialSpecV2(input);
-  // Deliberately not injectable at this boundary. The host can register a
-  // resolver on the default closed-ID cache, but authored code cannot replace
-  // the cache with an object that returns arbitrary textures.
-  const cache = DEFAULT_APPROVED_TEXTURE_CACHE;
+  // The direct API is host-owned. The sandbox exposes a one-argument closure,
+  // so authored code cannot supply or replace this capability.
+  const resolver = options.resolver ?? DEFAULT_TEXTURE_RESOLVER;
   const entries = Object.entries(spec.textures) as Array<
     [PortableSlot, CanonicalPortableTextureRefV2]
   >;
 
   for (const [slot, ref] of entries) {
     if (ref.kind !== 'resource') continue;
-    if (!isApprovedResourceId(ref.resourceId)) {
+    const descriptor = resolver.describeApprovedTexture?.(ref.resourceId);
+    if (!descriptor) {
       throw new ProceduralTextureError(
         `portableMaterial.textures.${slot} resource ${JSON.stringify(ref.resourceId)} is not an approved texture resource ID.`,
       );
     }
-    const descriptor = cache.descriptor(ref.resourceId);
     if (!(descriptor.allowedSlots as readonly string[]).includes(slot)) {
       throw new ProceduralTextureError(
         `portableMaterial.textures.${slot} resource ${JSON.stringify(ref.resourceId)} is not approved for that slot.`,
@@ -76,7 +69,7 @@ export async function compilePortableMaterialSpecV2(
       const texture =
         ref.kind === 'procedural'
           ? proceduralTexture(ref.spec)
-          : (await cache.load(ref.resourceId as ApprovedTextureResourceId)).texture;
+          : await resolver.loadApprovedTexture(ref.resourceId);
       loaded.set(slot, texture);
     }),
   );

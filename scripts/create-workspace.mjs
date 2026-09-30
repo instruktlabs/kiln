@@ -93,10 +93,17 @@ function managedFiles(root, runtime, harness, nodeExecutable) {
     env: { KILN_PROGRAM_STORE: store, KILN_RENDER: 'auto', KILN_WORKSPACE: root },
   };
   const files = {
-    'kiln.mjs': `// Generated runtime launcher. Repair paths with kiln-init <workspace> --repair.\nimport { dirname, join } from 'node:path';\nimport { fileURLToPath } from 'node:url';\nprocess.env.KILN_PROGRAM_STORE = join(dirname(fileURLToPath(import.meta.url)), '.kiln', 'programs');\ntry {\n  const { assertWorkspaceCurrent } = await import(${quote(pathToFileURL(join(runtime, 'scripts/create-workspace.mjs')).href)});\n  await assertWorkspaceCurrent(dirname(fileURLToPath(import.meta.url)), ${quote(runtime)});\n  const { main } = await import(${quote(pathToFileURL(join(runtime, 'dist/cli.mjs')).href)});\n  process.exitCode = await main(process.argv.slice(2));\n} catch (error) {\n  console.error(error.message + '\\nIf the installation moved, run kiln-init <workspace> --repair from the current Kiln installation.');\n  process.exitCode = 1;\n}\n`,
+    'kiln.mjs': `// Generated runtime launcher. Repair paths with kiln-init <workspace> --repair.\nimport { dirname, join } from 'node:path';\nimport { fileURLToPath } from 'node:url';\nprocess.env.KILN_WORKSPACE = dirname(fileURLToPath(import.meta.url));\nprocess.env.KILN_PROGRAM_STORE = join(process.env.KILN_WORKSPACE, '.kiln', 'programs');\ntry {\n  const { assertWorkspaceCurrent } = await import(${quote(pathToFileURL(join(runtime, 'scripts/create-workspace.mjs')).href)});\n  await assertWorkspaceCurrent(dirname(fileURLToPath(import.meta.url)), ${quote(runtime)});\n  const { main } = await import(${quote(pathToFileURL(join(runtime, 'dist/cli.mjs')).href)});\n  process.exitCode = await main(process.argv.slice(2));\n} catch (error) {\n  console.error(error.message + '\\nIf the installation moved, run kiln-init <workspace> --repair from the current Kiln installation.');\n  process.exitCode = 1;\n}\n`,
   };
   if (harness === 'claude') files['.mcp.json'] = quote({ mcpServers: { kiln_workspace: mcp } });
   if (harness === 'codex') {
+    const rendererEnvironment = [
+      'KILN_RENDER_TOKEN',
+      'RENDER_SERVICE_TOKEN',
+      'KILN_RENDER_PORT_URL',
+      'KILN_RENDER_SERVICE_PORT',
+      'KILN_WORK_ITEM',
+    ];
     // Codex has NO project-local configuration. Every source it reads is
     // $CODEX_HOME-rooted: `-c` overrides ~/.codex/config.toml, `-p <name>` layers
     // $CODEX_HOME/<name>.config.toml, and `-C`/`--cd` changes only the working
@@ -105,7 +112,7 @@ function managedFiles(root, runtime, harness, nodeExecutable) {
     // server. It stays because a reader looking for the workspace's MCP wiring
     // looks here first, and finding nothing is worse than finding a pointer.
     files['.codex/config.toml'] =
-      `# Codex does not read a project-local config. This file records what the\n# workspace registers; \`node codex.mjs\` is what actually applies it, passing\n# these values as -c overrides per invocation.\n[mcp_servers.kiln_workspace]\ncommand = ${quote(mcp.command)}\nargs = [${quote(server)}]\n[mcp_servers.kiln_workspace.env]\nKILN_PROGRAM_STORE = ${quote(store)}\nKILN_RENDER = "auto"\nKILN_WORKSPACE = ${quote(root)}\n`;
+      `# Codex does not read a project-local config. This file records what the\n# workspace registers; \`node codex.mjs\` is what actually applies it, passing\n# these values as -c overrides per invocation.\n[mcp_servers.kiln_workspace]\ncommand = ${quote(mcp.command)}\nargs = [${quote(server)}]\nenv_vars = ${quote(rendererEnvironment)}\n[mcp_servers.kiln_workspace.env]\nKILN_PROGRAM_STORE = ${quote(store)}\nKILN_RENDER = "auto"\nKILN_WORKSPACE = ${quote(root)}\n`;
     // Per-invocation `-c` overrides are the whole fix. They add the server to
     // this one run and write nothing anywhere: $CODEX_HOME keeps its own config
     // and, critically, its authentication. That is the rule a workspace has to
@@ -115,8 +122,56 @@ function managedFiles(root, runtime, harness, nodeExecutable) {
     //
     // `--cd` sets the project directory; a workspace is deliberately not a git
     // checkout, so `--skip-git-repo-check` is required rather than optional.
-    files['codex.mjs'] =
-      `import { spawn } from 'node:child_process';\nimport { dirname } from 'node:path';\nimport { fileURLToPath } from 'node:url';\nconst root = dirname(fileURLToPath(import.meta.url));\nconst overrides = [\n  ['mcp_servers.kiln_workspace.command', ${quote(mcp.command)}],\n  ['mcp_servers.kiln_workspace.args', [${quote(server)}]],\n  ['mcp_servers.kiln_workspace.env.KILN_PROGRAM_STORE', ${quote(store)}],\n  ['mcp_servers.kiln_workspace.env.KILN_RENDER', 'auto'],\n  ['mcp_servers.kiln_workspace.env.KILN_WORKSPACE', root],\n].flatMap(([key, value]) => ['-c', key + '=' + JSON.stringify(value)]);\nconst args = process.argv.slice(2);\nconst sub = args.find(arg => !arg.startsWith('-'));\nconst rest = sub === 'exec' ? args : ['exec', ...args];\nconst executable = process.platform === 'win32' ? 'codex.cmd' : 'codex';\nconst child = spawn(executable, [...rest.slice(0, 1), ...overrides, '--cd', root, '--skip-git-repo-check', ...rest.slice(1)], { cwd: root, stdio: 'inherit', windowsHide: true });\nchild.on('error', error => { console.error(error.message); process.exitCode = 1; });\nchild.on('exit', code => { process.exitCode = code ?? 1; });\n`;
+    files['codex.mjs'] = `import { spawn } from 'node:child_process';
+import { statSync } from 'node:fs';
+import { dirname, join, resolve, delimiter } from 'node:path';
+import { fileURLToPath } from 'node:url';
+const root = dirname(fileURLToPath(import.meta.url));
+const overrides = [
+  ['mcp_servers.kiln_workspace.command', ${quote(mcp.command)}],
+  ['mcp_servers.kiln_workspace.args', [${quote(server)}]],
+  ['mcp_servers.kiln_workspace.env_vars', ${quote(rendererEnvironment)}],
+  ['mcp_servers.kiln_workspace.env.KILN_PROGRAM_STORE', ${quote(store)}],
+  ['mcp_servers.kiln_workspace.env.KILN_RENDER', 'auto'],
+  ['mcp_servers.kiln_workspace.env.KILN_WORKSPACE', root],
+].flatMap(([key, value]) => ['-c', key + '=' + JSON.stringify(value)]);
+const isFile = path => {
+  try { return statSync(path).isFile(); }
+  catch (error) {
+    if (error.code === 'ENOENT' || error.code === 'ENOTDIR') return false;
+    throw error;
+  }
+};
+function executable() {
+  if (process.platform !== 'win32') return { command: 'codex', prefix: [] };
+  for (const value of (process.env.PATH ?? '').split(delimiter).filter(Boolean)) {
+    const directory = resolve(value.replace(/^"(.*)"$/, '$1'));
+    const native = join(directory, 'codex.exe');
+    if (isFile(native)) return { command: native, prefix: [] };
+    if (!isFile(join(directory, 'codex.cmd'))) continue;
+    // Node cannot spawn a Windows batch shim without a shell. Run npm's JS entry directly.
+    const entry = join(directory, 'node_modules', '@openai', 'codex', 'bin', 'codex.js');
+    if (isFile(entry)) return { command: process.execPath, prefix: [entry] };
+    throw new Error('Cannot resolve the npm Codex entry beside ' + directory + '. Reinstall the Codex CLI or put a native codex.exe on PATH.');
+  }
+  throw new Error('Codex CLI was not found on PATH. Install Codex before running this launcher.');
+}
+const args = process.argv.slice(2);
+if (args[0] === 'exec') args.shift();
+const resume = args[0] === 'resume';
+if (resume) args.shift();
+// --cd belongs to exec; resume must receive its own config and non-git workspace flag.
+const invocation = ['exec', '--cd', root, ...(resume ? ['resume'] : []), ...overrides, '--skip-git-repo-check', ...args];
+try {
+  const { command, prefix } = executable();
+  const child = spawn(command, [...prefix, ...invocation], { cwd: root, stdio: 'inherit', windowsHide: true });
+  child.on('error', error => { console.error(error.message); process.exitCode = 1; });
+  child.on('exit', code => { process.exitCode = code ?? 1; });
+} catch (error) {
+  console.error(error.message);
+  process.exitCode = 1;
+}
+`;
   }
   if (harness === 'agy') {
     files['.agents/mcp_config.json'] = quote({ mcpServers: { kiln_workspace: mcp } });
@@ -212,9 +267,21 @@ Author and refine assets in this directory. The engine is installed separately. 
 
 Two surfaces drive the same engine and share .kiln/programs, so either is fine and you can mix them freely. The kiln_workspace MCP server returns each render as an image in your context. The node kiln.mjs CLI writes renders to disk, so read the PNG back before judging anything visual. A server named kiln may be a different installation; do not substitute it silently, and report the setup problem instead. To check, call kiln_discover with { capabilities: true } and compare capabilities.engine.installUrl against runtime in .kiln/workspace.json.
 
+If the shell cannot resolve node, read manifest.node (the node field in .kiln/workspace.json) and substitute that quoted absolute executable. In PowerShell: & "ABSOLUTE_NODE_PATH" kiln.mjs discover --json. Use the same substitution for a generated harness launcher such as codex.mjs; no global PATH change is needed.
+
 Read the skill for your task from skills/ in this directory, never a global plugin copy. The maintained copies are there, mirrored into .claude/skills/ and .agents/skills/ because harnesses scan different directories. Use kiln_discover with no arguments for a compact overview and starting createRoot/createPart signatures. Search in ordinary modeling language with { query: "curved hollow tube" }; fetch complete contracts with { ids: ["sweepProfile"] }. Search and overview return six summaries by default, with current family/kind/tags filters and offset/limit pagination. Exact ids accepts up to six distinct IDs or executable names. Recipes are optional guidance, and no asset-category selection or separate search model is required. CLI equivalents are node kiln.mjs discover --query "curved hollow tube" and node kiln.mjs discover --id sweepProfile --json.
 
 Managed CLI/MCP startup checks runtime and copied-skill versions. If they differ, stop this session and run kiln-init on this directory with --check and --upgrade from the desired installation. Conflicting local edits require an explicit merge; do not overwrite them to clear a diagnostic. Restart the session after upgrading.
+
+## Standalone assets and optional projects
+
+This workspace supports standalone assets, experiments, scenes and projects. A project is optional: it stores a shared brief, inventory, design profile and material lock for related work. Do not create one just to build, review, save or export an asset. The save collection named project is a destination and does not imply project membership.
+
+Omitted project selection stays standalone even when projects exist, unless KILN_PROJECT was explicitly configured. CLI --no-project or MCP projectId: null overrides that default. For a pack or other related work, create a project with node kiln.mjs project create --id my-pack --name "My pack", or kiln_project with {action:"create", draft:{projectId:"my-pack", name:"My pack"}}. Read the returned revision, then use project update --expected or MCP expectedRevision to update the brief, design, inventory and materialDependencies. Every supplied top-level field replaces its previous value, including the whole design object: read and merge preferences before updating. Creating or opening a project does not select it for subsequent authoring calls.
+
+Select a project per operation with --project / projectId and optionally --project-revision / projectRevision for an exact configuration. Library materials also work standalone through call-level materialDependencies or CLI --materials pins.json; pin returned immutable revisions before compiling a portableSpec. Read skills/kiln-author-asset/references/projects-and-materials.md when using these facilities. Project preferences do not establish trusted QA requirements. Check connected schemas before assuming optional host services.
+
+Run node kiln.mjs view to open the shared Library, Materials, Projects and Live Review dashboard. Live Review observes standalone and project work, including exact retained artifacts and render fidelity. kiln_review save uses the displayed expectedRevision to save the reviewed artifact without re-evaluation. Pinning retains evidence but does not pause the agent, and feedback remains in the agent conversation. Use individual asset delivery for standalone work and project export for saved inventory packs; editable delivery carries source/resources, while runtime delivery supplies GLB/metadata.
 
 ## The loop
 

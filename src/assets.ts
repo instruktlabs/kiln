@@ -2,6 +2,14 @@
 import { z } from 'zod';
 import { BACKDROP_IDS, type BackdropId } from './views/background';
 import { zipSync, unzipSync } from 'three/addons/libs/fflate.module.js';
+import {
+  assertMaterialJson,
+  canonicalMaterialJson,
+  materialLibraryPayloadSchema,
+  validateMaterialManifest,
+  MATERIAL_LIBRARY_LIMITS,
+  type MaterialLibraryPayloadV1,
+} from './material-library';
 
 export const ASSET_LIMIT = 64 * 1024 * 1024;
 export const assetIdSchema = z.string().regex(/^[a-z][a-z0-9_-]{0,79}$/);
@@ -52,6 +60,8 @@ export type AssetManifest = z.infer<typeof assetManifestSchema>;
 export interface AssetRecord {
   manifest: AssetManifest;
   files: Record<string, Uint8Array>;
+  /** Editable delivery closure; not part of the canonical asset manifest or revision identity. */
+  materialResources?: MaterialLibraryPayloadV1;
 }
 export interface AssetDraft {
   name: string;
@@ -75,6 +85,55 @@ export interface AssetLibrary {
   save(collection: string, draft: AssetDraft): Promise<AssetManifest>;
   read(collection: string, assetId: string, revisionId: string): Promise<AssetRecord>;
   import(collection: string, records: AssetRecord[]): Promise<AssetManifest[]>;
+  /** Hosts can resolve exact saved dependencies before making an editable ZIP. */
+  exportBundle?(records: AssetRecord[]): Promise<Uint8Array>;
+}
+export const ASSET_MATERIAL_FILE = 'materials.kiln.json';
+export const ASSET_MATERIAL_BYTES = 24 * 1024 * 1024;
+/** Shape and closure checks are portable; hosts verify hashes and PNG/recipe bytes before import. */
+export function validateAssetMaterialClosure(record: AssetRecord, required = false): void {
+  const dependencies = (record.manifest.build?.dependencies ?? []).filter(
+    (raw) =>
+      raw &&
+      typeof raw === 'object' &&
+      (raw as Record<string, unknown>).kind === 'kiln.material.v1',
+  ) as { manifest: unknown; delivery: unknown }[];
+  const expected = new Map(
+    dependencies.map((dependency) => {
+      if (dependency.delivery !== 'runtime') throw new Error('Invalid saved material dependency');
+      const manifest = validateMaterialManifest(dependency.manifest);
+      return [`${manifest.materialId}/${manifest.revisionId}`, canonicalMaterialJson(manifest)];
+    }),
+  );
+  if (!record.materialResources) {
+    if (required && expected.size) throw new Error('Editable asset material closure unavailable');
+    return;
+  }
+  assertMaterialJson(record.materialResources);
+  const payload = materialLibraryPayloadSchema.parse(record.materialResources);
+  let bytes = 0;
+  let pixels = 0;
+  const seen = new Set<string>();
+  for (const wire of payload.records) {
+    const key = `${wire.manifest.materialId}/${wire.manifest.revisionId}`;
+    if (seen.has(key) || expected.get(key) !== canonicalMaterialJson(wire.manifest))
+      throw new Error('Asset material closure mismatch');
+    seen.add(key);
+    if (Object.keys(wire.files).length !== wire.manifest.maps.length)
+      throw new Error('Asset material map inventory mismatch');
+    for (const map of wire.manifest.maps) {
+      if (wire.files[map.file]?.length !== Math.ceil(map.bytes / 3) * 4)
+        throw new Error('Asset material map size mismatch');
+      bytes += map.bytes;
+      pixels += map.width * map.height;
+    }
+  }
+  if (seen.size !== expected.size) throw new Error('Asset material closure incomplete');
+  if (
+    bytes > MATERIAL_LIBRARY_LIMITS.maxPayloadBytes ||
+    pixels > MATERIAL_LIBRARY_LIMITS.maxPayloadPixels
+  )
+    throw new Error('Asset material closure exceeds allocation limits');
 }
 const allowedFiles = new Set(['asset.glb', 'source.kiln.js', 'preview.png']);
 export function validateRecordShape(record: AssetRecord): void {
@@ -97,6 +156,7 @@ export function validateRecordShape(record: AssetRecord): void {
   if ((record.files['source.kiln.js']?.length ?? 0) > 1024 * 1024)
     throw new Error('Source exceeds 1 MiB');
   validateAssetGlb(record.files['asset.glb']!);
+  validateAssetMaterialClosure(record);
 }
 /** A viewer must not fetch external URLs embedded in a purported standalone GLB. */
 export function validateAssetGlb(bytes: Uint8Array): void {
@@ -123,12 +183,19 @@ export function encodeAssetBundle(records: AssetRecord[]): Uint8Array {
   let total = 0;
   for (const record of records) {
     validateRecordShape(record);
+    validateAssetMaterialClosure(record, true);
     const prefix = `${record.manifest.assetId}/${record.manifest.revisionId}/`;
     if (files[`${prefix}manifest.json`]) throw new Error('Duplicate bundle revision');
     files[`${prefix}manifest.json`] = new TextEncoder().encode(
       JSON.stringify(record.manifest, null, 2),
     );
     for (const [name, bytes] of Object.entries(record.files)) files[prefix + name] = bytes;
+    if (record.materialResources) {
+      const bytes = new TextEncoder().encode(JSON.stringify(record.materialResources));
+      if (bytes.length > ASSET_MATERIAL_BYTES)
+        throw new Error('Asset material payload exceeds byte limit');
+      files[prefix + ASSET_MATERIAL_FILE] = bytes;
+    }
   }
   for (const bytes of Object.values(files)) total += bytes.length;
   if (total > ASSET_LIMIT) throw new Error('Bundle exceeds 64 MiB');
@@ -144,8 +211,10 @@ export function decodeAssetBundle(bytes: Uint8Array): AssetRecord[] {
       count++;
       if (
         total > ASSET_LIMIT ||
-        count > 400 ||
-        !/^[a-z][a-z0-9_-]{0,79}\/[a-z][a-z0-9_-]{0,79}\/(manifest\.json|asset\.glb|source\.kiln\.js|preview\.png)$/.test(
+        count > 500 ||
+        (entry.name.endsWith(`/${ASSET_MATERIAL_FILE}`) &&
+          entry.originalSize > ASSET_MATERIAL_BYTES) ||
+        !/^[a-z][a-z0-9_-]{0,79}\/[a-z][a-z0-9_-]{0,79}\/(manifest\.json|asset\.glb|source\.kiln\.js|preview\.png|materials\.kiln\.json)$/.test(
           entry.name,
         )
       )
@@ -167,6 +236,12 @@ export function decodeAssetBundle(bytes: Uint8Array): AssetRecord[] {
       if (!files[prefix + name]) throw new Error('Bundle file missing');
       record.files[name] = files[prefix + name]!;
       used.add(prefix + name);
+    }
+    if (files[prefix + ASSET_MATERIAL_FILE]) {
+      record.materialResources = JSON.parse(
+        new TextDecoder('utf-8', { fatal: true }).decode(files[prefix + ASSET_MATERIAL_FILE]!),
+      );
+      used.add(prefix + ASSET_MATERIAL_FILE);
     }
     validateRecordShape(record);
     records.push(record);

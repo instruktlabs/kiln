@@ -1324,6 +1324,7 @@ define(
     execution: 'async',
     parameters: [
       'Strict schemaVersion 2 pbrMetallicRoughness specification.',
+      'For workspace library materials, use the exact portableSpec returned by kiln_material and pin its material revision through per-call materialDependencies (CLI --materials) or an optional project lock. The host supplies verified map bytes; generated source cannot read library paths or fetch missing resources.',
       'baseColor and emissive are numeric color integers from 0x000000 to 0xffffff, for example baseColor: 0x8a867c. CSS strings and materialRecipe hex-string overrides are not accepted here.',
       'Texture references use typed procedural specs or approved resource IDs; arbitrary URLs, paths, callbacks and shaders are rejected.',
       'Each texture value is { kind: "resource", resourceId: "kiln.texture..." } or { kind: "procedural", spec: { schemaVersion: 2, ... } }. Bare ID strings are invalid; unlike materialRecipe.textureResources, this API requires the tagged object.',
@@ -1334,8 +1335,12 @@ define(
   },
   {
     ...materialMetadata,
-    references: ['src/portable-material-runtime.ts'],
-    aliases: ['portable material specification'],
+    references: [
+      'src/portable-material-runtime.ts',
+      'docs/material-library.md',
+      'docs/projects-and-live-review.md',
+    ],
+    aliases: ['portable material specification', 'project material library'],
     intents: ['compile a strict portable material definition'],
   },
 );

@@ -22,6 +22,7 @@ it('paints the CLI contact sheet on the named backdrop, with or without a captur
       ...process.env,
       KILN_EVALUATOR_MODE: 'in-process',
       KILN_BUILD_CACHE: 'off',
+      KILN_WORKSPACE: directory,
       KILN_PROGRAM_STORE: join(directory, 'programs'),
       KILN_RENDER: 'cpu',
     };

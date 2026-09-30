@@ -29,6 +29,8 @@ import { isDirectEntry } from './direct-entry';
 import { assertNodeRuntime } from './runtime-support.mjs';
 import { ENGINE_VERSION } from './engine-identity';
 import { createPackagedLocalToolContext } from './local-runtime';
+import { FileLiveReview } from './live-review-node';
+import { localWorkspaceRoot } from './workspace-node';
 import { CATEGORY_MIGRATION_MESSAGE, readHostRequirementsFile } from './requirements-file';
 
 /** Server identity reported in the MCP handshake. */
@@ -267,6 +269,40 @@ export function createKilnMcpServer(
       },
     );
   }
+  if (context.projectBundleReader) {
+    server.registerResource(
+      'project-package',
+      new ResourceTemplate('kiln://projects/{project}/{revision}/{profile}', { list: undefined }),
+      { description: 'Exact editable project bundle or runtime derivative ZIP.' },
+      async (uri) => {
+        const [project, revision, file, ...extra] = uri.pathname
+          .split('/')
+          .filter(Boolean)
+          .map(decodeURIComponent);
+        if (
+          extra.length ||
+          !project ||
+          !revision ||
+          !['editable.zip', 'runtime.zip'].includes(file ?? '')
+        )
+          throw new Error('Invalid project package URI');
+        const bytes = await context.projectBundleReader!(
+          project,
+          revision,
+          file === 'editable.zip' ? 'editable' : 'runtime',
+        );
+        return {
+          contents: [
+            {
+              uri: uri.href,
+              mimeType: 'application/zip',
+              blob: Buffer.from(bytes).toString('base64'),
+            },
+          ],
+        };
+      },
+    );
+  }
   const requests = new AsyncLocalStorage<AbortSignal>();
   const requestContext: KilnToolContext = {
     ...context,
@@ -389,9 +425,17 @@ if (isDirectEntry(import.meta.url)) {
   const context = await createPackagedLocalToolContext({
     ...(await buildRenderPort(mode, process.env['KILN_RENDER_PORT_URL'], { autoSpawn: true })),
     requirements,
+    assetLibrary: localAssetLibrary(),
+    ...(process.env.KILN_LIVE_REVIEW !== 'off'
+      ? {
+          liveReview: new FileLiveReview(localWorkspaceRoot(), {
+            transport: 'mcp',
+            workId: process.env.KILN_WORK_ITEM,
+          }),
+        }
+      : {}),
   });
   context.programStore = localProgramStore();
-  context.assetLibrary = localAssetLibrary();
   const deliveryBase = process.env['KILN_ASSET_DOWNLOAD_BASE_URL'];
   if (deliveryBase) {
     const base = new URL(deliveryBase);

@@ -12,11 +12,18 @@ import type { AssetQaReport } from '../qa/types';
 import { validateRequirementsQaReport } from '../qa/requirements-report';
 import type { RenderGlbOptions, RenderResult } from '../render';
 import type { KhronosGltfValidationReport } from '../qa/gltf';
+import {
+  validateMaterialLibraryPayload,
+  validateMaterialManifestIdentity,
+} from '../material-library-node';
+import type { MaterialLibraryPayloadV1 } from '../material-library';
+import { rebuildOptionsSchema } from '../rebuild-options';
 
 export const EVALUATOR_REQUEST_VERSION = 'kiln.evaluator.request.v2' as const;
 export const EVALUATOR_RESULT_VERSION = 'kiln.evaluator.result.v2' as const;
 export const MAX_EVALUATOR_CODE_BYTES = 512 * 1024;
-export const MAX_EVALUATOR_REQUEST_BYTES = 1024 * 1024;
+/** Includes bounded, host-approved PNG payloads; non-resource request data stays at 1 MiB. */
+export const MAX_EVALUATOR_REQUEST_BYTES = 24 * 1024 * 1024;
 export const DEFAULT_EVALUATOR_DEADLINE_MS = 60_000;
 export const DEFAULT_EVALUATOR_MAX_GLB_BYTES = 16 * 1024 * 1024;
 export const DEFAULT_EVALUATOR_MAX_RESPONSE_BYTES = 32 * 1024 * 1024;
@@ -260,11 +267,14 @@ function parseOptions(
       'requirements',
       'geometryPolicy',
       'gltfExporter',
+      'materialResources',
     ])
   ) {
     return fail('request');
   }
   const options: Omit<RenderGlbOptions, 'textureResolver' | 'diagnosticConsole'> = {};
+  if (value.materialResources !== undefined)
+    options.materialResources = validateMaterialLibraryPayload(value.materialResources);
   if (value.gltfExporter !== undefined) {
     if (value.gltfExporter !== 'legacy' && value.gltfExporter !== 'three') fail('request');
     options.gltfExporter = value.gltfExporter;
@@ -294,6 +304,14 @@ export function decodeEvaluatorRequestV2(json: string): EvaluatorRequestV2 {
     value = JSON.parse(json);
   } catch {
     return fail('request');
+  }
+  if (isRecord(value) && isRecord(value.options)) {
+    const { materialResources: _, ...metadataOptions } = value.options;
+    if (
+      Buffer.byteLength(JSON.stringify({ ...value, options: metadataOptions }), 'utf8') >
+      1024 * 1024
+    )
+      return fail('request');
   }
   if (
     !isRecord(value) ||
@@ -451,9 +469,11 @@ export function decodeEvaluatorResultV2(
     'materialMetrics',
     'materialRecipeApplications',
     'materialResourceProvenance',
+    'materialLibraryDependencies',
     'bakedTextures',
     'integrationManifest',
     'requirements',
+    'rebuildOptions',
   ] as const;
   if (
     !hasExactKeys(value.render, renderKeys) ||
@@ -467,6 +487,24 @@ export function decodeEvaluatorResultV2(
     fail('result');
   }
   let requirements: RequirementsContext;
+  if (
+    value.render.rebuildOptions !== undefined &&
+    !rebuildOptionsSchema.strict().safeParse(value.render.rebuildOptions).success
+  )
+    fail('result');
+  if (value.render.materialLibraryDependencies !== undefined) {
+    if (
+      !Array.isArray(value.render.materialLibraryDependencies) ||
+      value.render.materialLibraryDependencies.length > 16
+    )
+      fail('result');
+    try {
+      for (const manifest of value.render.materialLibraryDependencies)
+        validateMaterialManifestIdentity(manifest);
+    } catch {
+      return fail('result');
+    }
+  }
   try {
     requirements = validateRequirementsContext(value.render.requirements);
     validateRequirementsQaReport(value.render.meta.qaReport, requirements);
@@ -575,6 +613,7 @@ export function createEvaluatorPortV2(
         result,
         resolveRequirementsContext(built.request.options.requirements),
       );
+      assertEvaluatorResultMaterialResources(result, built.request.options.materialResources);
       if (!result.ok) {
         if (result.error.code === 'QA_BLOCKED' && result.error.qa) {
           const { AssetQaBlockedError } = await import('../qa/run');
@@ -589,6 +628,20 @@ export function createEvaluatorPortV2(
       return result.render;
     },
   };
+}
+
+/** All transports bind decoded acceptance evidence to the same current-host snapshot. */
+export function assertEvaluatorResultMaterialResources(
+  result: EvaluatorResultV2,
+  expected?: MaterialLibraryPayloadV1,
+): void {
+  if (!result.ok) return;
+  const actual = result.render.materialLibraryDependencies ?? [];
+  const wanted = expected?.records.map((record) => record.manifest.revisionId).sort() ?? [];
+  if (
+    JSON.stringify(actual.map((manifest) => manifest.revisionId).sort()) !== JSON.stringify(wanted)
+  )
+    throw new EvaluatorPortError('PROTOCOL_ERROR');
 }
 
 /** All transports bind decoded acceptance evidence to the same current-host snapshot. */

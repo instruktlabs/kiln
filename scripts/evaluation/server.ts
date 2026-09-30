@@ -78,7 +78,15 @@ const context = createLocalToolContext({
     deadlineMs: Math.max(1, Math.min(60000, deadline - Date.now())),
   }),
 });
-const definitions = createConditionRegistry(config.condition, context);
+// This historical controlled comparison keeps its original authoring surface.
+// Workspace management would change the experimental conditions and tool budget.
+const definitions = createConditionRegistry(config.condition, {
+  ...context,
+  workspace: undefined,
+  projectStore: undefined,
+  materialLibrary: undefined,
+  reviewStore: undefined,
+});
 const sha = (bytes: string | Uint8Array) =>
   `sha256:${createHash('sha256').update(bytes).digest('hex')}`;
 if (!previous)

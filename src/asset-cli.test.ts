@@ -30,6 +30,12 @@ test('CLI saves, exports, imports, and restores a revision across independent st
       resolve('examples/crate.kiln.js'),
       '--name',
       'Crate',
+      '--model',
+      'example-model',
+      '--harness',
+      'example-harness',
+      '--author',
+      'Original author',
       '--render',
       'cpu',
     ]);
@@ -46,6 +52,13 @@ test('CLI saves, exports, imports, and restores a revision across independent st
     expect(decodeAssetBundle(new Uint8Array(await readFile(file)))[0]!.manifest.revisionId).toBe(
       asset.revisionId,
     );
+    expect(
+      decodeAssetBundle(new Uint8Array(await readFile(file)))[0]!.manifest.attribution,
+    ).toEqual({
+      model: 'example-model',
+      harness: 'example-harness',
+      author: 'Original author',
+    });
     expect(run('second', ['import', file]).status).toBe(0);
     const restored = run('second', ['asset', asset.assetId, asset.revisionId, '--restore']);
     expect(restored.status).toBe(0);

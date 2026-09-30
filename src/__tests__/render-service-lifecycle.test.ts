@@ -1,7 +1,7 @@
 import type { ChildProcess } from 'node:child_process';
 import { createServer, type Server } from 'node:http';
 import type { AddressInfo } from 'node:net';
-import { mkdir, mkdtemp, writeFile } from 'node:fs/promises';
+import { mkdir, mkdtemp, readFile, writeFile } from 'node:fs/promises';
 import { join, resolve } from 'node:path';
 import { afterEach, expect, test } from 'bun:test';
 import {
@@ -138,10 +138,41 @@ test('stale services survive owner exit and both auto and gpu explicitly report 
 });
 test('concurrent cold starts join one verified managed service on the shared socket', async () => {
   const { dir, url } = await installation();
-  const [one, two] = await Promise.all([
-    startLocalRenderService(dir),
-    startLocalRenderService(dir),
+  const journal = join(dir, 'startup.jsonl');
+  const barrier = join(dir, 'release-startup');
+  const environment = {
+    ...process.env,
+    FAKE_STARTUP_JOURNAL: journal,
+    FAKE_STARTUP_BARRIER: barrier,
+  };
+  const pending = Promise.allSettled([
+    startLocalRenderService(dir, environment),
+    startLocalRenderService(dir, environment),
   ]);
+  // Windows Start-Process may still be launching the second child when both
+  // host calls return from the first child's health. Own both children first,
+  // then release their listeners; teardown cannot leave a late launcher alive.
+  const deadline = Date.now() + 10000;
+  let starts: Array<{ pid: number }> = [];
+  while (starts.length < 2 && Date.now() < deadline) {
+    starts = await readFile(journal, 'utf8')
+      .then((text) =>
+        text
+          .trim()
+          .split('\n')
+          .map((line) => JSON.parse(line)),
+      )
+      .catch(() => []);
+    if (starts.length < 2) await new Promise((done) => setTimeout(done, 20));
+  }
+  ownedPids.push(...starts.map((start) => start.pid));
+  await writeFile(barrier, 'release');
+  const outcomes = await pending;
+  expect(starts).toHaveLength(2);
+  const [one, two] = outcomes.map((outcome) => {
+    if (outcome.status === 'rejected') throw outcome.reason;
+    return outcome.value;
+  });
   expect(one).toBe(url);
   expect(two).toBe(url);
   const probe = await inspectLocalRenderService(url, dir);
@@ -150,7 +181,6 @@ test('concurrent cold starts join one verified managed service on the shared soc
     stale: false,
     instance: { mode: 'managed', ownerPid: process.pid },
   });
-  if (probe.kind === 'service') ownedPids.push(probe.instance.pid);
 });
 
 test('a renderer that exits before health is reported as startup failure', async () => {

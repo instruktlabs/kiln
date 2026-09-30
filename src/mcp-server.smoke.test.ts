@@ -12,6 +12,8 @@ import { Client } from '@modelcontextprotocol/client';
 import { StdioClientTransport } from '@modelcontextprotocol/client/stdio';
 
 import { kilnMcpToolDefs } from './mcp-server';
+import { createLocalToolContext } from './local-runtime';
+import { localAssetLibrary } from './assets-node';
 
 const CUBE = `
 const meta = { name: 'SmokeCube', category: 'prop' };
@@ -40,11 +42,18 @@ describe('mcp server over real stdio', () => {
     const client = await connect();
     try {
       const { tools } = await client.listTools();
-      expect(tools.map((t) => t.name)).toEqual(kilnMcpToolDefs().map((d) => d.name));
+      expect(tools.map((t) => t.name)).toEqual(
+        kilnMcpToolDefs(createLocalToolContext({ assetLibrary: localAssetLibrary() })).map(
+          (d) => d.name,
+        ),
+      );
       for (const t of tools) {
         const schema = t.inputSchema as { type?: string; properties?: object };
         expect(schema.type).toBe('object');
-        expect(schema.properties).toBeDefined();
+        expect(
+          schema.properties ?? (schema as { oneOf?: unknown }).oneOf,
+          JSON.stringify({ name: t.name, schema }),
+        ).toBeDefined();
       }
     } finally {
       await client.close();

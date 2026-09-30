@@ -9,6 +9,12 @@ metadata:
 
 # Author a Kiln asset
 
+Match the user's scope. A standalone asset needs no project, inventory or design profile. Omitted project selection stays standalone unless `KILN_PROJECT` was explicitly configured; use CLI `--no-project` or MCP `projectId: null` to override that default. Projects organize related work through a versioned brief, inventory, design profile and material pins. Creating one is optional and does not select it for later calls.
+
+For project configuration or library materials, including standalone material use, read the [project and material workflow](references/projects-and-materials.md). It covers creation, revision-aware updates, explicit selection and material dependencies that also work for standalone assets. Project preferences do not establish trusted requirements. Use the same exact pins on later render, edit, inspect and save calls; a `programRef` alone does not select a project or reconstruct material context.
+
+Live Review observes standalone and project operations without controlling the agent. If `kiln_review` is available, its `save` action retains the exact completed operation using the displayed `expectedRevision`, without another evaluation. Pinning does not pause execution and review annotations do not constitute QA acceptance. Deliver editable source with its exact material resources when rebuilding is requested, and runtime GLB/metadata for runtime use. Project export packages the saved inventory when a project exists. Consult the tools' current schemas; optional host capabilities must not be assumed present.
+
 Read the [program contract](references/program-contract.md) when writing source. Use `kiln_discover({})` for a compact orientation: current families/tags, starting `createRoot`/`createPart` signatures, and six entry summaries by default. Search in ordinary modeling language, for example `{ query: "curved hollow tube" }`; you do not need to know a helper's name first. Search runs locally without a search model, GPU, or network call.
 
 Search and overview return summaries. Fetch complete contracts and examples with `{ ids: ["loftProfiles", "createPart", "createClip"] }`, up to six distinct exact IDs or executable names. Copy recipe IDs from results. Exact selectors are case-sensitive and never corrected into another helper. Use optional `family`, `kind: "operation" | "assembly" | "recipe"`, or `tags` from the overview to narrow search; follow `nextOffset` with `offset` when needed. Request `{ capabilities: true }` separately for the current runtime, source, export, and camera contract. Avoid fetching signatures already present in context. Recipes are optional construction guidance; neither a recipe nor an asset category is a prerequisite for using the modeling tools.
@@ -26,6 +32,12 @@ try the geometric operation or browse a family; custom geometry remains availabl
 ## Make the asset
 
 Establish the subject, scale, style, and destination constraints from the request. Build a recognizable silhouette and meaningful construction details. Name parts by their role. Use metres, +X forward, +Y up, +Z right; ground contact normally sits at Y=0.
+
+Unless exact reconstruction is requested, use reference images to align silhouette,
+materials and art direction alongside the written brief, not as a requirement to
+copy every detail. Resolve functional dimensions explicitly. For usable openings,
+seats and articulated joins, use the interface guidance in
+[geometry recipes](references/geometry-recipes.md#interfaces-that-must-fit-or-move).
 
 For Blender, Unity or an FBX handoff, read the [engine handoff guide](references/engine-handoff.md). Prefer direct GLB import. The established exporter remains the default; the guide explains when an explicitly identified experimental comparison is useful. Preserve the baseline output, report the selected backend and destination checks, and do not change global host settings silently.
 
@@ -71,6 +83,12 @@ describes only a body or centerline. Source parameters are not measured extents.
 `viewFidelity.materialFaithful: false` means geometry evidence, not verified PBR appearance. Check camera/fallback receipts too. A GPU connection alone is not evidence that the requested view was used. Animation needs intermediate-pose review; interiors may need cutaway views. Use `kiln_screenshot_animation` for clip sampling. In a CLI workspace, use `node kiln.mjs animation RETURNED_REF --clip CLIP_NAME --phases 0,0.017,0.31,0.68,1 --views motion.png --render gpu --json` and read the PNG. Phases are fractions of clip duration; use `--render cpu` for geometry-only review. This samples the exported animation without editing source into posed copies. Check `poseBounds` against requested ground clearance and dimensions at those poses. Include tread and other protrusions; a correct rest pose does not prove clearance during rotation. Choose phases inside a geometric repeat even when regular samples look identical; quarter turns of 16 repeated lugs all show the same alignment. Sampled bounds do not prove continuous contact or collision safety.
 
 ## Revise and deliver
+
+CLI saves accept `--model`, `--harness` and `--author` for the same declared
+attribution as MCP. Keep requested and confirmed thinking effort distinct in the
+description or production record, and identify any later model that refines the asset.
+Check the saved manifest's attribution and exact revision, not only the run log.
+If a correction requires a new saved child, retain the original record and history.
 
 Report QA `acceptance` separately from delivery, including incomplete checks and unverified material appearance. Never use an unrendered edit or a previous image as evidence for the selected revision.
 

@@ -15,6 +15,13 @@ const composed = await composeSceneGLB([
 
 The default optimizer is `palette`; `off` is useful when first checking authored material fidelity. `keepAnimations` defaults to false. Set it true only when the scene should retain asset clips and then verify their playback.
 
+Retained clips preserve their source names by default. If multiple assets use names
+such as `Walk`, choose `animationNaming: 'instance'` to get unique names in the form
+`0:MarketStall/0:Open` (placement index/name, then clip index/name). Missing names use
+`part` or `clip`; indices distinguish repeated placements and duplicate source names.
+This changes only names in the composed output, preserves channel targets and timing,
+and does not change the individual asset files. Select and test each intended clip.
+
 Call `inspectGlbIntegration(bytes)` for actual bounds and integration metadata. It may return `undefined`; do not invent a manifest for an empty/unusable input.
 
 `findOverlaps(boxes, options)` returns candidate AABB intersections; `isOverlapFree` returns a boolean, and `summarizeOverlaps(violations)` formats findings. Options select `mode: 'footprint'` (default, ignores Y) or `'volume'`, with optional tolerance. Use world-space boxes and stable instance IDs. Footprint checks are insufficient for stacked or overhead objects.

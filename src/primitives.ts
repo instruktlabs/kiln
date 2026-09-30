@@ -2126,10 +2126,13 @@ export function buildSandboxGlobals(
     createStairs: wrap('createStairs', createStairs),
     gameMaterial: wrap('gameMaterial', gameMaterial),
     materialRecipe: wrap('materialRecipe', sandboxMaterialRecipe),
-    compilePortableMaterialSpecV2: wrap(
-      'compilePortableMaterialSpecV2',
-      compilePortableMaterialSpecV2,
-    ),
+    compilePortableMaterialSpecV2: wrap('compilePortableMaterialSpecV2', (...args: unknown[]) => {
+      if (args.length !== 1)
+        return Promise.reject(
+          new TypeError('compilePortableMaterialSpecV2 accepts exactly one material spec'),
+        );
+      return compilePortableMaterialSpecV2(args[0], { resolver: options.textureResolver });
+    }),
     basicMaterial: wrap('basicMaterial', basicMaterial),
     glassMaterial: wrap('glassMaterial', glassMaterial),
     lambertMaterial: wrap('lambertMaterial', lambertMaterial),

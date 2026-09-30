@@ -1,6 +1,7 @@
 import { link, lstat, mkdir, readFile, readdir, stat, unlink, writeFile } from 'node:fs/promises';
 import { randomUUID } from 'node:crypto';
-import { join, resolve } from 'node:path';
+import { join } from 'node:path';
+import { localProgramStoreDirectory } from './workspace-location';
 import {
   assertProgramRef,
   canonicalProgramRefPattern,
@@ -127,6 +128,8 @@ export class FileProgramStore implements ProgramStore {
   }
 }
 
-export function localProgramStore(): FileProgramStore {
-  return new FileProgramStore(resolve(process.env['KILN_PROGRAM_STORE'] ?? '.kiln/programs'));
+export function localProgramStore(
+  env: Record<string, string | undefined> = process.env,
+): FileProgramStore {
+  return new FileProgramStore(localProgramStoreDirectory(env));
 }

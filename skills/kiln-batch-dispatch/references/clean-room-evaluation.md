@@ -6,7 +6,7 @@ Keep evaluation notes and output in the workspace. Do not give the model the eng
 
 ## What isolation means
 
-A clean project limits task context. It is not an operating-system sandbox. Record inherited global instructions, tools, memory, authentication, and filesystem permissions without copying secrets into receipts. Do not alter user-wide configuration to make a run appear isolated. Use a separate Hermes profile when required by its launcher; give headless harnesses absolute project and artifact paths.
+A clean workspace limits task context. It is not an operating-system sandbox or a requirement to create a Kiln project. Record inherited global instructions, tools, memory, authentication, and filesystem permissions without copying secrets into receipts. Do not alter user-wide configuration to make a run appear isolated. Use a separate Hermes profile when required by its launcher; give headless harnesses absolute workspace and artifact paths.
 
 Use a new workspace when testing changed skills. `--repair` repairs generated integration files while preserving existing copied skills; it is not a way to refresh a candidate silently.
 
@@ -21,6 +21,11 @@ Check the actual transcript for tool images received by the model. Metadata that
 Repository scripts such as `scripts/dispatch-asset.mjs`, `scripts/check-vision.mjs`, and harness smoke commands are optional developer tools in the engine checkout, not files promised in an installed authoring project. Provider-backed runs can incur usage. Use them only within the requested run and budget.
 
 Report completed, interrupted, and failed trials separately. Keep provider availability, image forwarding, tool correctness, source reuse, exported geometry, and visual quality as distinct findings. Do not turn a quota interruption into an engine failure or count an unreviewed partial image as a completed result.
+
+Read the final native terminal event and process result when classifying a run.
+A recovered stream error can precede successful completion; retain the error
+without overriding the later result. A live or unknown process is not terminal
+because a poll timed out. Inspect saved artifacts independently of either claim.
 
 For Antigravity, use the generated `node agy.mjs` launcher. Print mode disables
 automatic slash-command and skill expansion. In the brief, require the project skill

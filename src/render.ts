@@ -94,6 +94,8 @@ import {
   type MaterialResourceProvenanceV1,
 } from './material-resources';
 import { DEFAULT_TEXTURE_RESOLVER, type TextureResolver } from './texture-resolver';
+import type { MaterialLibraryPayloadV1, MaterialManifestV1 } from './material-library';
+import type { RebuildOptions } from './rebuild-options';
 import { assertGeneratedSourceSafe } from './validation';
 import { applyKitContract, type KitPackOptions, type KitPackSummary } from './kit';
 import {
@@ -921,6 +923,8 @@ function reviewClipExtras(clips: THREE.AnimationClip[]): Record<string, unknown>
 // =============================================================================
 
 export interface RenderResult {
+  /** Effective exporter inputs, retained with exact reviewed artifacts for explicit rebuilds. */
+  rebuildOptions?: RebuildOptions;
   /** Host requirements receipt; generated metadata cannot establish or replace it. */
   requirements: RequirementsContext;
   /** Optional host cache receipt. This identifies evaluation reuse, not image fidelity. */
@@ -936,6 +940,9 @@ export interface RenderResult {
   materialMetrics?: MaterialMetricsV1;
   materialRecipeApplications?: MaterialRecipeApplicationProvenanceV1[];
   materialResourceProvenance?: MaterialResourceProvenanceV1[];
+  /** Exact host-approved input dependencies, including licenses and procedural recipes.
+   * These are declared build inputs, not proof that every supplied map was used. */
+  materialLibraryDependencies?: MaterialManifestV1[];
   /** Textures baked into the returned GLB, including bounded procedural lineage. */
   bakedTextures?: BakedTextureProvenanceV1[];
   integrationManifest: IntegrationManifestV1;
@@ -1598,6 +1605,8 @@ export interface RenderGlbOptions {
   category?: AssetCategory;
   /** Trusted evaluator dependency; never derived from generated code. */
   textureResolver?: TextureResolver;
+  /** Host-approved portable material maps, transported as data to evaluator workers. */
+  materialResources?: MaterialLibraryPayloadV1;
   /** In-process host diagnostic sink; not serializable to evaluator workers. */
   diagnosticConsole?: DiagnosticConsole;
 }
@@ -1616,19 +1625,32 @@ export async function renderGLBInProcess(
   const requirements = resolveRequirementsContext(opts.requirements);
   if (opts.geometryPolicy !== undefined && !['warn', 'strict'].includes(opts.geometryPolicy))
     throw new Error('geometryPolicy must be warn or strict');
+  let textureResolver = opts.textureResolver ?? DEFAULT_TEXTURE_RESOLVER;
+  const rebuildOptions: RebuildOptions = {
+    gltfExporter: resolveGltfExporter(opts.gltfExporter),
+    geometryPolicy: opts.geometryPolicy ?? 'warn',
+    optimize: resolveOptimize(opts.optimize),
+    instance: resolveInstance(opts.instance),
+  };
+  let materialLibraryDependencies: MaterialManifestV1[] | undefined;
+  if (opts.materialResources) {
+    const { decodeMaterialLibraryPayload, createMaterialLibraryTextureResolver } = await import(
+      './material-library-node'
+    );
+    const materialRecords = await decodeMaterialLibraryPayload(opts.materialResources);
+    materialLibraryDependencies = materialRecords.map((record) => structuredClone(record.manifest));
+    textureResolver = await createMaterialLibraryTextureResolver(materialRecords, textureResolver);
+  }
   const { meta, root, clips, primitiveUsage } = await executeKilnCode(code, {
-    textureResolver: opts.textureResolver ?? DEFAULT_TEXTURE_RESOLVER,
+    textureResolver,
     console: opts.diagnosticConsole,
   });
   const scene = await renderSceneToGLB(root, {
-    gltfExporter: opts.gltfExporter,
+    ...rebuildOptions,
     sceneName: meta.name || 'Scene',
-    geometryPolicy: opts.geometryPolicy,
     clips,
     requirements: requirements.binding,
     role: meta.role,
-    ...(opts.optimize ? { optimize: opts.optimize } : {}),
-    ...(opts.instance ? { instance: opts.instance } : {}),
   });
 
   const {
@@ -1642,6 +1664,8 @@ export async function renderGLBInProcess(
   } = meta;
   return {
     glb: Buffer.from(scene.bytes),
+    rebuildOptions,
+    ...(materialLibraryDependencies ? { materialLibraryDependencies } : {}),
     requirements: scene.requirements,
     artifactGlbSha256: scene.artifactGlbSha256,
     tris: scene.tris,
@@ -1985,6 +2009,8 @@ export interface SceneComposeOptions {
   optimize?: OptimizeMode;
   /** Keep each asset's animation clips. Default false (static dressing). */
   keepAnimations?: boolean;
+  /** Retained clip names: preserve source names (default), or disambiguate by placement and clip index. */
+  animationNaming?: 'preserve' | 'instance';
 }
 
 export interface SceneComposeResult {
@@ -2045,6 +2071,13 @@ export async function composeSceneGLB(
     const part = parts[i]!;
     try {
       const src = await io.readBinary(part.bytes);
+      if (opts.keepAnimations && opts.animationNaming === 'instance') {
+        for (const [clipIndex, animation] of src.getRoot().listAnimations().entries()) {
+          animation.setName(
+            `${i}:${part.name ?? 'part'}/${clipIndex}:${animation.getName() || 'clip'}`,
+          );
+        }
+      }
       const srcScene = src.getRoot().listScenes()[0];
       const map = mergeDocuments(master, src);
       const wrap = master
