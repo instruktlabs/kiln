@@ -20,12 +20,16 @@ mkdir kiln-install
 cd kiln-install
 npm init -y
 npm install /absolute/path/to/kiln-engine-VERSION.tgz --omit=dev --include=optional
-npm exec --offline -- kiln-init ../my-assets --harness opencode
+npm exec --offline -- kiln-init ../my-assets --harness opencode  # or claude, codex, hermes, agy, copilot, cursor-agent
 cd ../my-assets
 # Follow START.md for your harness
 ```
 
 Kiln is not published to the npm registry; do not run a registry install command.
+npm 11 may warn that the optional `webgpu` package's install script is not covered by
+`allowScripts` (`npm warn install-scripts`). That script only clears the macOS download
+quarantine from the prebuilt Dawn binary the package ships; Windows and Linux need
+nothing, and the warning is not an install failure.
 To modify Kiln itself, [install from the repository](#install-from-the-repository)
 and build with Bun 1.4.2 instead.
 
@@ -203,7 +207,7 @@ mkdir kiln-install
 cd kiln-install
 npm init -y
 npm install /absolute/path/to/kiln-engine-VERSION.tgz --omit=dev --include=optional
-npm exec --offline -- kiln-init ../my-assets --harness opencode
+npm exec --offline -- kiln-init ../my-assets --harness opencode  # or claude, codex, hermes, agy, copilot, cursor-agent
 ```
 
 `kiln` renders programs and imports/exports source revisions. `kiln-init` creates a
@@ -233,9 +237,12 @@ absolute task-file paths. See [clean-room setup](clean-room.md) for evaluation c
 ## Verify the connection
 
 OpenCode workspaces register their local `skills/` directory using the supported
-`skills.paths` configuration. With OpenCode 2, run `opencode debug config` from
-the workspace to inspect configuration and `opencode mcp list` to check the server
-connection. These are optional OpenCode diagnostics, not Kiln requirements. Start
+`skills.paths` configuration. With OpenCode 2, `opencode debug config` from the
+workspace is the configuration check: it shows the resolved `kiln_workspace` entry.
+`opencode mcp list` reports what OpenCode's shared background service loaded, not this
+workspace's configuration, so it can print "No MCP servers configured" here. These are
+optional OpenCode diagnostics, not Kiln requirements; `node kiln.mjs discover
+--capabilities --json` from the workspace is the harness-independent proof. Start
 a fresh session in that directory and verify that it reads the workspace's author,
 refine and QA skills and calls `kiln_workspace`; configuration alone does not prove
 that the running session loaded them. The older `opencode debug skill` command is

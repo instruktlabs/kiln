@@ -100,6 +100,33 @@ records how projects, materials and Live Review were qualified.
   the shared renderer, and a render URL naming the shared local socket takes the local
   route.
 
+### Fixes from the 0.9 dogfood runs
+
+Three blind setup-and-author runs on the packaged build, two in OpenCode and one in Agy,
+found these before release.
+
+- **`kiln_edit` results** lead with `programRef` and `parentRef` and carry a compact
+  render; `kiln_render({ programRef, detail: "full" })` returns the complete report.
+- **Discovery.** `ids` take a recipe's bare slug (`material-wood-v1`) as well as
+  `recipe:material-wood-v1`, and a material recipe's summary names its
+  `materialRecipe("kiln.material.wood.v1")` call. Reviewed aliases let `bench`, `table`
+  and `cast iron` find the joined-frame recipe, `arrayLinear` and the painted-metal
+  material.
+- **One `--json` rule.** `render`, `source`, `export`, `discover`, `inspect`, `animation`
+  and `service status`/`reprobe` print a receipt; commands that print JSON already accept
+  the flag; `generate`, `view`, `collections add` and `service start`/`stop` refuse it
+  and name the commands that take it. `export --json` names each file with its `bytes`
+  and `sha256`.
+- **Exports never replace a file.** `export` and `source --out` fail and name the existing
+  file; `render --out` still replaces its own working output.
+- **Setup.** `kiln discover --capabilities` reports the collections and source storage the
+  MCP server has, and `kiln-init` creates the `.kiln/programs` store it configures.
+- **Guidance.** The OpenCode configuration check, npm 11's `install-scripts` warning for
+  `webgpu`, the part rotation convention and which way an object faces, searching with
+  `kiln_discover` rather than a harness's own search, observe findings on intended joins,
+  suffixed names for repeated sub-assemblies, a user-level `kiln` server beside
+  `kiln_workspace`, and where agy's `--print` prompt goes.
+
 ### Output that changes on upgrade
 
 Review colours under the new rig (assets darkened for the old rig look too dark);
@@ -107,7 +134,9 @@ untwisted `extrudeProfile` triangle counts; `sweepProfile` shading of triangular
 pentagonal profiles (pass `creaseAngle: 180` for the old smooth look); GLB bytes
 of emissive and animated assets; images from explicit perspective cameras without
 `near`; CPU images through glass; GPU isolated shots; MCP result size and shape
-(`detail: "full"` restores the complete report).
+(`detail: "full"` restores the complete report), including `kiln_edit`, which leads with
+its refs; the wording of refused exports; Discovery ranking for `bench`, `table` and
+`cast iron`.
 
 ## 0.8.0 (source update)
 

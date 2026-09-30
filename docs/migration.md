@@ -50,8 +50,10 @@ Changes to results and messages:
   results by default: every acceptance field, warn and block finding, the first finding
   of each observed code, counts of repeated findings and 24 part paths. Pass
   `detail: "full"` for the complete report. `kiln_view_interior`, `kiln_inspect` and
-  `kiln_edit` also return compact results. The CLI, retained artifacts and Live Review
-  keep complete reports.
+  `kiln_edit` also return compact results; `kiln_edit` leads with `programRef` and
+  `parentRef`, and `kiln_render({ programRef, detail: "full" })` returns the complete
+  report for its embedded render. The CLI, retained artifacts and Live Review keep
+  complete reports.
 - **Sizes.** `kiln_screenshot_animation` and CLI `animation` accept a frame `size` of 128
   to 1024 px (default 256). Versioned capture shots accept up to 2048 px.
 - **Identities.** `.kiln/workspace.json` records the bundle as `buildIdentity`; discovery
@@ -74,6 +76,14 @@ Changes to results and messages:
 - **Paths and hosts.** On Windows, collection roots in Git Bash form (`/c/...`) are
   refused with the setting named; use `C:/...`. The asset viewer accepts `127.0.0.1`,
   `localhost` and `[::1]` on its own port.
+- **Discovery.** `ids` take a recipe's bare slug (`material-wood-v1`) as well as the
+  `recipe:` form. Reviewed aliases change the ranking for `bench`, `table` and `cast iron`.
+- **CLI `--json`.** `render`, `source`, `export`, `discover`, `inspect`, `animation` and
+  `service status`/`reprobe` print a receipt; commands that print JSON already accept the
+  flag; `generate`, `view`, `collections add` and `service start`/`stop` refuse it.
+  `export` and `source --out` never replace a file and name the one that exists.
+  `discover --capabilities` reports the collections the MCP server has, and `kiln-init`
+  creates `.kiln/programs`.
 - **CLI.** `kiln edit` and `kiln source` accept `--json`; `--capture` with
   `output: "separate"` writes `<stem>.shot-01.png` and onward. `kiln service start`
   joins or starts the shared renderer. A `KILN_RENDER_PORT_URL` naming the shared local

@@ -84,7 +84,7 @@ mkdir kiln-install
 cd kiln-install
 npm init -y
 npm install /absolute/path/to/kiln-engine-VERSION.tgz --omit=dev --include=optional
-npm exec --offline -- kiln-init ../my-assets --harness opencode
+npm exec --offline -- kiln-init ../my-assets --harness opencode  # or claude, codex, hermes, agy, copilot, cursor-agent
 cd ../my-assets
 # Follow START.md for your harness
 ```
@@ -168,7 +168,10 @@ source revision workflow in plain text.
 
 The installation commands above create a separate asset workspace, register MCP
 and copy the Kiln skills. Follow its START.md to launch your harness. Setup writes
-project-local configuration and leaves your global settings unchanged.
+project-local configuration and leaves your global settings unchanged. A user-level server
+named `kiln` from another installation can still load beside the workspace's
+`kiln_workspace`; author with `kiln_workspace`, and disable the other server for these
+sessions when the harness lists both ([how to tell them apart](docs/harnesses.md)).
 
 If you are developing Kiln from a source checkout, create that workspace with:
 

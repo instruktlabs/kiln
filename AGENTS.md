@@ -10,7 +10,8 @@ live under `src/`; repository checks under `scripts/`. `package.json` explicitly
 TypeScript through `files` and `exports`. [CHANGELOG.md](./CHANGELOG.md) states what each
 release changed. Dated files under `docs/plans/` and `docs/reviews/` are records of their
 day: they never override current code, this guide or the changelog, and never imply release
-acceptance.
+acceptance. The 0.9.0 state is the changelog's 0.9.0 section; the 2026-09-26 foundation
+checkpoint is history.
 
 ## Authoring an asset is a different task from changing the engine
 

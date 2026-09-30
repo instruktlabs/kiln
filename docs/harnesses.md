@@ -113,8 +113,9 @@ Verified against the versions in the footer. The traps are not stylistic -- each
 
 The ones that cost real time:
 
-- **agy `--print` takes its prompt attached.** Passed with a space, Go's flag package reads
-  the next flag as the prompt and ignores what you typed.
+- **agy `--print` takes the next argument as its prompt.** Write `--print=TEXT`, or end the
+  command with `--print TEXT`; with a space and another flag after `--print`, Go's flag
+  package reads that flag as the prompt and ignores what you typed.
 - **cursor-agent needs three separate grants.** `--force` allows tool calls, `--approve-mcps`
   approves the server, `--trust` accepts the workspace. An unapproved MCP server is gated
   independently of tool permission, so `--force` alone leaves the Kiln tools unreachable.

@@ -4,7 +4,8 @@ Kiln **0.9.0** is the current release: standalone authoring with optional projec
 material library and Live Review in the packaged local dashboard, the calibrated
 `review-neutral-v1` review rig, compact tool results, and the fixes authors reported
 against 0.8. [CHANGELOG.md](CHANGELOG.md) lists the changes. The
-[foundation checkpoint](docs/plans/2026-09-26-project-foundation.md) is the plan of record.
+[foundation checkpoint](docs/plans/2026-09-26-project-foundation.md) is history: it records
+how projects, materials and Live Review were qualified, and the changelog describes 0.9.0.
 Dated plans and reviews under `docs/` record how earlier work was qualified; the September
 dogfooding and stabilisation work is in [dogfooding](docs/dogfooding.md),
 [headless harnesses](docs/harnesses.md) and Phase 17 of the
