@@ -73,7 +73,7 @@ An explicit camera uses world positions in the asset's units:
 
 Use `projection:"orthographic"` and `halfHeight` instead of `fovDeg` for a measured view. Both projections accept `up`, `near`, and `far`. Perspective is implemented in both CPU and GPU rendering; CPU images remain geometry-flat.
 
-The versioned format uses `shots`, not legacy `preset/cells`. Unknown or conflicting controls fail instead of being silently ignored. Cell size is an integer from 128 to 1024. Set `output:"separate"` to return one image per shot; omit it for a grid. Both deliveries preserve shot order and camera metadata.
+The versioned format uses `shots`, not legacy `preset/cells`. Unknown or conflicting controls fail instead of being silently ignored. Cell size is an integer from 128 to 2048; the capture pixel budget (24M pixels by default) bounds the whole sheet, so nine 2048 px shots are refused. Set `output:"separate"` to return one image per shot; omit it for a grid. Both deliveries preserve shot order and camera metadata.
 
 `size` is the square pixel size of each shot. There are no capture request fields named `width` or `height`; those names occur only in returned grid/image dimensions. Orbit cameras likewise have no `target` or `distance` fields: they derive both from the selected subject's bounds. Select the subject and use `padding` to pull back or crop in. When an exact position or look target matters, use an explicit camera with `position` and `target`.
 

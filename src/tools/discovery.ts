@@ -5,7 +5,7 @@ import { DISCOVERY_INDEX_VERSION } from '../discovery/lexical-index';
 import type { KilnToolContext, KilnToolDef } from './registry';
 import { MAX_PROGRAM_BYTES } from '../program-store';
 import { MAX_EVALUATOR_CODE_BYTES } from '../evaluator/protocol';
-import { resolveCaptureLimits } from '../views/capture-limits';
+import { MAX_CAPTURE_SHOT_SIZE, resolveCaptureLimits } from '../views/capture-limits';
 import { geometryExportAttributes } from '../geometry-export';
 import { resolveGltfExporter } from '../community-exporter';
 import { approvedTextureCatalogV1 } from '../material-resources';
@@ -132,7 +132,7 @@ async function currentCapabilities(context: KilnToolContext) {
     camera: {
       version: 'kiln.capture.v1',
       maxShots: 9,
-      cellSize: [128, 1024],
+      cellSize: [128, MAX_CAPTURE_SHOT_SIZE],
       output: ['grid', 'separate'],
       projection: ['orthographic', 'perspective'],
       subjects: ['asset', 'exact node path', 'unambiguous name'],

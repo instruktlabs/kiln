@@ -1,4 +1,9 @@
-import { enforceCapturePixels, enforceCaptureBytes, type CaptureLimits } from './capture-limits';
+import {
+  enforceCapturePixels,
+  enforceCaptureBytes,
+  MAX_CAPTURE_SHOT_SIZE,
+  type CaptureLimits,
+} from './capture-limits';
 import {
   resolveAssetCamera,
   rasterizeCamera,
@@ -31,9 +36,9 @@ export function validateAdvancedCapture(config: CaptureConfig): void {
     throw new Error('capture.cols must be 1..3');
   if (
     config.size !== undefined &&
-    (!Number.isInteger(config.size) || config.size < 128 || config.size > 1024)
+    (!Number.isInteger(config.size) || config.size < 128 || config.size > MAX_CAPTURE_SHOT_SIZE)
   )
-    throw new Error('capture.size must be 128..1024');
+    throw new Error(`capture.size must be 128..${MAX_CAPTURE_SHOT_SIZE}`);
   if (config.output !== undefined && !['grid', 'separate'].includes(config.output))
     throw new Error('capture.output must be grid or separate');
   resolveCaptureBackdrop(config.backdrop);

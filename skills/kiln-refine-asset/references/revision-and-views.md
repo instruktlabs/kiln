@@ -83,7 +83,7 @@ For multiple subjects in one call, use `kiln_render` or edit `capture`:
 ] }
 ```
 
-Versioned capture has 1–9 shots, columns 1–3, and a square per-shot `size` from 128–1024; output is `grid` or `separate`. It has no request fields named `width` or `height`; those are returned image dimensions. Legacy presets use `COLSxROWS`, and each optional cell has `azimuthDeg`, `elevationDeg`, `zoom`, and `name`. Do not combine the two capture shapes. Orbit shots derive target and distance from the selected subject bounds: use `subject` and `padding`, not `target` or `distance`.
+Versioned capture has 1–9 shots, columns 1–3, and a square per-shot `size` from 128–2048; output is `grid` or `separate`. It has no request fields named `width` or `height`; those are returned image dimensions. Legacy presets use `COLSxROWS`, and each optional cell has `azimuthDeg`, `elevationDeg`, `zoom`, and `name`. Do not combine the two capture shapes. Orbit shots derive target and distance from the selected subject bounds: use `subject` and `padding`, not `target` or `distance`.
 
 Explicit cameras use `{ type: 'explicit', projection: 'perspective', position, target, up?, fovDeg? }` or `projection: 'orthographic'` with optional `halfHeight`. Their vectors are world-space. Orbit `relativeTo` supports world/asset/part frames. Use returned camera records to verify how a request resolved.
 

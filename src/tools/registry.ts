@@ -68,6 +68,7 @@ import {
 } from '../agent/view-render-timeout';
 import { ViewEvidenceHistoryStore } from '../views/evidence-history';
 import { BACKDROP_IDS, DEFAULT_BACKDROP_ID, type BackdropId } from '../views/background';
+import { MAX_CAPTURE_SHOT_SIZE } from '../views/capture-limits';
 import type { TextureUsage } from '../textures';
 
 // =============================================================================
@@ -782,7 +783,7 @@ const advancedCaptureError = (issue: { code?: string; keys?: string[] }): string
     issue.code === 'unrecognized_keys' &&
     issue.keys?.some((key) => key === 'width' || key === 'height')
   ) {
-    return 'Advanced capture uses one square per-shot size from 128 to 1024; width and height are returned image dimensions, not request fields.';
+    return `Advanced capture uses one square per-shot size from 128 to ${MAX_CAPTURE_SHOT_SIZE}; width and height are returned image dimensions, not request fields.`;
   }
   return undefined;
 };
@@ -843,7 +844,7 @@ const advancedCaptureInput = z.strictObject(
     version: z.literal('kiln.capture.v1'),
     shots: z.array(cameraShotInput).min(1).max(9),
     cols: z.number().int().min(1).max(3).optional(),
-    size: z.number().int().min(128).max(1024).optional(),
+    size: z.number().int().min(128).max(MAX_CAPTURE_SHOT_SIZE).optional(),
     output: z.enum(['grid', 'separate']).optional(),
     backdrop: backdropInput,
   },

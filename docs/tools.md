@@ -364,7 +364,7 @@ Build a program and return geometry metrics, a bounded part-path preview and ima
             "size": {
               "type": "integer",
               "minimum": 128,
-              "maximum": 1024
+              "maximum": 2048
             },
             "output": {
               "type": "string",
@@ -957,7 +957,7 @@ Render roof-off floor-plan, dollhouse, and eye-level cutaway views. Optional ver
         "size": {
           "type": "integer",
           "minimum": 128,
-          "maximum": 1024
+          "maximum": 2048
         },
         "output": {
           "type": "string",
@@ -1635,7 +1635,7 @@ Atomically apply ordered exact-string replacements and render. Copy anchors from
             "size": {
               "type": "integer",
               "minimum": 128,
-              "maximum": 1024
+              "maximum": 2048
             },
             "output": {
               "type": "string",

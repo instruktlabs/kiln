@@ -1,6 +1,7 @@
 import { test, expect } from 'bun:test';
 import { Group, Mesh, BoxGeometry, MeshBasicMaterial } from 'three';
-import { renderCaptureGrid } from '../camera-capture';
+import { renderCaptureGrid, validateAdvancedCapture } from '../camera-capture';
+import { createKilnRenderViewsDef } from '../../tools/registry';
 test('mixed part sheet resolves exact identities and restores visibility', async () => {
   const root = new Group();
   root.name = 'Root';
@@ -24,4 +25,21 @@ test('mixed part sheet resolves exact identities and restores visibility', async
   await expect(
     renderCaptureGrid(root, { version: 'kiln.capture.v1', shots: [], size: 128 }),
   ).rejects.toThrow(/1..9/);
+});
+
+test('per-shot size reaches 2048 px and the pixel budget still bounds the sheet', async () => {
+  const shot = { version: 'kiln.capture.v1' as const, shots: [{}] };
+  expect(() => validateAdvancedCapture({ ...shot, size: 2048 })).not.toThrow();
+  expect(() => validateAdvancedCapture({ ...shot, size: 2049 })).toThrow(
+    'capture.size must be 128..2048',
+  );
+  const schema = createKilnRenderViewsDef().inputSchema;
+  expect(schema.safeParse({ code: 'x', capture: { ...shot, size: 2048 } }).success).toBe(true);
+  expect(schema.safeParse({ code: 'x', capture: { ...shot, size: 2049 } }).success).toBe(false);
+  // Nine 2048 px shots exceed the default 24M-pixel budget before anything renders.
+  const root = new Group();
+  root.add(new Mesh(new BoxGeometry(), new MeshBasicMaterial()));
+  await expect(
+    renderCaptureGrid(root, { version: 'kiln.capture.v1', shots: Array(9).fill({}), size: 2048 }),
+  ).rejects.toThrow(/pixel/i);
 });

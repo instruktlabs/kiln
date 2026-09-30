@@ -3,6 +3,12 @@ export interface CaptureLimits {
   maxTotalPixels?: number;
   maxOutputBytes?: number;
 }
+/**
+ * Largest square per-shot size for kiln.capture.v1. The render service accepts
+ * camera-mode images up to 4096 px a side and 16.7M pixels per request, and 2048
+ * is its top legacy rung; the capture pixel and byte budgets below bound the sheet.
+ */
+export const MAX_CAPTURE_SHOT_SIZE = 2048;
 export const DEFAULT_CAPTURE_LIMITS = Object.freeze({
   maxTotalPixels: 24_000_000,
   maxOutputBytes: 32 * 1024 * 1024,
