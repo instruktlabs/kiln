@@ -36,7 +36,7 @@ import * as THREE from 'three';
 import { validate, type ValidationIssue } from '../validation';
 import { appendSourceCheck } from '../evaluator/source-check';
 import { inspectSceneStructure, renderSceneToGLB, type RenderResult } from '../render';
-import type { AssetCategory, AssetIntentV1, LevelOfDetailChainV1 } from '../contracts';
+import type { AssetCategory, AssetIntentV1, ReviewedLevelOfDetailChainV1 } from '../contracts';
 import type { AssetQaReport } from '../qa';
 import type { RequirementsBinding } from '../requirements-store';
 import {
@@ -1195,9 +1195,9 @@ export interface KilnRenderViewsResult extends PartPreview {
   distinctMaterials?: number;
   bbox?: { min: number[]; max: number[]; size: number[] };
   lowestPart?: { name: string; y: number };
-  /** MSFT_lod chains: each level's name, shot path and triangles. `tris`, `bbox` and default
-   *  views cover LOD0 and the parts outside every chain. */
-  levelsOfDetail?: LevelOfDetailChainV1[];
+  /** MSFT_lod chains: each level's name, shot path and triangles, and the level each view
+   *  drew. `tris`, `bbox` and default views cover LOD0 and the parts outside every chain. */
+  levelsOfDetail?: ReviewedLevelOfDetailChainV1[];
   /** Post-dedup instanceability grade (informational): how cheap to render at scale. */
   instanceability?: { grade: string; summary: string };
   /** Structured deterministic report; five dimensions remain separate. */
@@ -1225,11 +1225,28 @@ export interface KilnRenderViewsResult extends PartPreview {
   error?: string;
 }
 
-/** The written GLB's MSFT_lod chains, when it has any. */
-function levelsOfDetailField(rendered: RenderResult): { levelsOfDetail?: LevelOfDetailChainV1[] } {
+/**
+ * The written GLB's MSFT_lod chains, when it has any, with the level each chain drew in each
+ * view. `viewLevels` holds one entry per view listing each chain's level in chain order; a
+ * default sheet draws the bytes' scene, so every chain drew LOD0 in every view.
+ */
+function levelsOfDetailField(
+  rendered: RenderResult,
+  viewLevels: readonly (readonly number[])[],
+): { levelsOfDetail?: ReviewedLevelOfDetailChainV1[] } {
   const chains = rendered.integrationManifest?.levelsOfDetail;
-  return chains?.length ? { levelsOfDetail: chains } : {};
+  return chains?.length
+    ? {
+        levelsOfDetail: chains.map((chain, index) => ({
+          ...chain,
+          drawn: viewLevels.map((levels) => levels[index] ?? 0),
+        })),
+      }
+    : {};
 }
+
+/** Every chain at LOD0 in each of `views` views. */
+const lod0Views = (views: number): number[][] => Array.from({ length: views }, () => []);
 
 /** Evaluate once, then return metrics, structural advisories and views. Failed builds are image-free. */
 async function retainReviewedArtifact(
@@ -1307,7 +1324,7 @@ async function runRenderViews(
           : {}),
         bbox: metrics.bbox,
         lowestPart: metrics.lowestPart,
-        ...levelsOfDetailField(rendered),
+        ...levelsOfDetailField(rendered, grid.viewLevels ?? lod0Views(grid.views.length)),
         views: grid.views,
         capture: grid.capture,
         ...(grid.captureCache ? { captureCache: grid.captureCache } : {}),
@@ -1467,7 +1484,7 @@ async function runRenderViews(
         : {}),
       bbox: metrics.bbox,
       lowestPart: metrics.lowestPart,
-      ...levelsOfDetailField(rendered),
+      ...levelsOfDetailField(rendered, lod0Views(grid.views.length)),
       ...(rendered.meta.instanceability
         ? {
             instanceability: {
@@ -1943,6 +1960,8 @@ export interface KilnInspectResult extends EvaluationEvidence {
   zoom?: number;
   /** True when everything outside the framed part was hidden (isolate honored). */
   isolated?: boolean;
+  /** MSFT_lod chains and the level each drew in this view; `drawn` is empty without an image. */
+  levelsOfDetail?: ReviewedLevelOfDetailChainV1[];
   /** One line stating what was framed and from which view. */
   framed?: string;
   width?: number;
@@ -2032,84 +2051,98 @@ async function runInspect(
       ...(comparison ? { comparison } : {}),
     };
     if (input.image === false)
-      return { ok: true, ...evaluationEvidence(evaluated), ...measurements };
-    if (input.shot) {
-      const { renderCaptureGrid } = await import('../views');
-      const grid = await renderCaptureGrid(
-        root,
-        { version: 'kiln.capture.v1', shots: [input.shot], size: 512 },
-        (cell) => renderDerivativeCell(cell, context),
-      );
       return {
         ok: true,
         ...evaluationEvidence(evaluated),
-        cameraShot: grid.cameraShots[0],
-        subjectFrame: describeSubjectFrame(root, input.shot.subject),
+        ...levelsOfDetailField(evaluated, []),
         ...measurements,
-        pngBase64: grid.perFramePngs[0]!.toString('base64'),
-        width: 512,
-        height: 512,
-        viewFidelity: derivativeReviewFidelity(grid.derivativeReceipts),
       };
+    // A subject or part that names a lower level of detail draws it in its LOD0's place.
+    const { withSubjectLevel } = await import('../views/lod');
+    if (input.shot) {
+      const shot = input.shot;
+      const { renderCaptureGrid } = await import('../views');
+      return await withSubjectLevel(root, shot.subject, async (levels) => {
+        const grid = await renderCaptureGrid(
+          root,
+          { version: 'kiln.capture.v1', shots: [shot], size: 512 },
+          (cell) => renderDerivativeCell(cell, context),
+        );
+        return {
+          ok: true,
+          ...evaluationEvidence(evaluated),
+          cameraShot: grid.cameraShots[0],
+          subjectFrame: describeSubjectFrame(root, shot.subject),
+          ...levelsOfDetailField(evaluated, [levels]),
+          ...measurements,
+          pngBase64: grid.perFramePngs[0]!.toString('base64'),
+          width: 512,
+          height: 512,
+          viewFidelity: derivativeReviewFidelity(grid.derivativeReceipts),
+        };
+      });
     }
-
-    const r = prepareInspectView(root, {
-      ...(input.part !== undefined ? { part: input.part } : {}),
-      ...(input.view !== undefined ? { view: input.view } : {}),
-      ...(input.azimuthDeg !== undefined ? { azimuthDeg: input.azimuthDeg } : {}),
-      ...(input.elevationDeg !== undefined ? { elevationDeg: input.elevationDeg } : {}),
-      ...(input.zoom !== undefined ? { zoom: input.zoom } : {}),
-      ...(input.isolate !== undefined ? { isolate: input.isolate } : {}),
-    });
-    if (!r.ok) {
+    const part = input.part?.trim();
+    return await withSubjectLevel(root, part ? { name: part } : undefined, async (levels) => {
+      const r = prepareInspectView(root, {
+        ...(input.part !== undefined ? { part: input.part } : {}),
+        ...(input.view !== undefined ? { view: input.view } : {}),
+        ...(input.azimuthDeg !== undefined ? { azimuthDeg: input.azimuthDeg } : {}),
+        ...(input.elevationDeg !== undefined ? { elevationDeg: input.elevationDeg } : {}),
+        ...(input.zoom !== undefined ? { zoom: input.zoom } : {}),
+        ...(input.isolate !== undefined ? { isolate: input.isolate } : {}),
+      });
+      if (!r.ok) {
+        return {
+          ok: false,
+          view: r.view,
+          zoom: r.zoom,
+          error: r.error,
+          availableParts: r.availableParts,
+        };
+      }
+      const rendered = await renderDerivativeCell(
+        {
+          root: r.root,
+          label: r.part ? `inspect:${r.part}` : 'inspect:whole-asset',
+          view: r.viewSpec,
+          size: r.size,
+          frameBounds: r.frameBounds,
+        },
+        context,
+      );
+      const viewFidelity = derivativeReviewFidelity([rendered.receipt]);
+      const viewEvidence = viewFidelity
+        ? context.viewEvidenceHistory?.record('kiln_inspect', viewFidelity)
+        : undefined;
+      // Always state the angles, named camera or not, so the model can step from
+      // where it actually is instead of guessing the next view by name.
+      const from = `the ${r.view} view (azimuth ${r.azimuthDeg}deg, elevation ${r.elevationDeg}deg)`;
+      const framed = r.part
+        ? `Framed part "${r.part}" (with its descendants) from ${from} at zoom ${r.zoom}.` +
+          (r.isolated
+            ? ' Everything else is hidden, so nothing in this image occludes it.'
+            : ' Surrounding geometry is still drawn and may occlude it.')
+        : `Framed the whole asset from ${from}.`;
       return {
-        ok: false,
+        ok: true,
+        ...evaluationEvidence(evaluated),
+        ...(r.part ? { part: r.part } : {}),
+        ...levelsOfDetailField(evaluated, [levels]),
+        ...measurements,
         view: r.view,
+        azimuthDeg: r.azimuthDeg,
+        elevationDeg: r.elevationDeg,
         zoom: r.zoom,
-        error: r.error,
-        availableParts: r.availableParts,
+        isolated: r.isolated,
+        framed,
+        width: r.size,
+        height: r.size,
+        pngBase64: rendered.png.toString('base64'),
+        ...(viewFidelity ? { viewFidelity } : {}),
+        ...(viewEvidence ? { viewEvidence } : {}),
       };
-    }
-    const rendered = await renderDerivativeCell(
-      {
-        root: r.root,
-        label: r.part ? `inspect:${r.part}` : 'inspect:whole-asset',
-        view: r.viewSpec,
-        size: r.size,
-        frameBounds: r.frameBounds,
-      },
-      context,
-    );
-    const viewFidelity = derivativeReviewFidelity([rendered.receipt]);
-    const viewEvidence = viewFidelity
-      ? context.viewEvidenceHistory?.record('kiln_inspect', viewFidelity)
-      : undefined;
-    // Always state the angles, named camera or not, so the model can step from
-    // where it actually is instead of guessing the next view by name.
-    const from = `the ${r.view} view (azimuth ${r.azimuthDeg}deg, elevation ${r.elevationDeg}deg)`;
-    const framed = r.part
-      ? `Framed part "${r.part}" (with its descendants) from ${from} at zoom ${r.zoom}.` +
-        (r.isolated
-          ? ' Everything else is hidden, so nothing in this image occludes it.'
-          : ' Surrounding geometry is still drawn and may occlude it.')
-      : `Framed the whole asset from ${from}.`;
-    return {
-      ok: true,
-      ...evaluationEvidence(evaluated),
-      ...(r.part ? { part: r.part } : {}),
-      ...measurements,
-      view: r.view,
-      azimuthDeg: r.azimuthDeg,
-      elevationDeg: r.elevationDeg,
-      zoom: r.zoom,
-      isolated: r.isolated,
-      framed,
-      width: r.size,
-      height: r.size,
-      pngBase64: rendered.png.toString('base64'),
-      ...(viewFidelity ? { viewFidelity } : {}),
-      ...(viewEvidence ? { viewEvidence } : {}),
-    };
+    });
   } catch (err) {
     return {
       ok: false,

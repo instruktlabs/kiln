@@ -201,7 +201,10 @@ overlapping or disconnected parts. Every GLB Kiln writes carries each set as one
 `extras.MSFT_screencoverage` holds your thresholds. A loader without the extension
 draws LOD0, so reported triangles and bounds are LOD0's and the parts outside every
 set; `levelsOfDetail` in the render result lists each level's triangles and path. A
-default sheet draws LOD0. An imported GLB's chains are kept through save and export.
+default sheet draws LOD0. To review a lower level, make that level's `path` a shot's
+subject, with `visibility: "isolate"` to see it alone; the shot draws the level in
+LOD0's place, and each chain's `drawn` says which level every view drew. An imported
+GLB's chains are kept through save and export.
 
 ## Implicit fields are experimental
 

@@ -40,6 +40,13 @@ export interface LevelOfDetailChainV1 {
   levels: LevelOfDetailLevelV1[];
 }
 
+/** A chain in a review result: the level it drew in each view. */
+export interface ReviewedLevelOfDetailChainV1 extends LevelOfDetailChainV1 {
+  /** One entry per view, in view order: 0 when the view drew LOD0, otherwise the lower level
+   *  a shot subject named. */
+  drawn: number[];
+}
+
 export interface IntegrationManifestV1 {
   schemaVersion: 'kiln.integration-manifest.v1';
   analyzerVersion: 1;

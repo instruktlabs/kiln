@@ -140,7 +140,10 @@ function build() { const root = createRoot('Plain'); createPart('Box', boxGeo(1,
     expect(result.ok).toBe(true);
     expect(result.tris).toBe(TIERED_CAR_TRIANGLES.headline);
     expect(result.bbox.max[1]).toBeCloseTo(1.5, 6);
-    expect(result.levelsOfDetail).toEqual(TIERED_CAR_CHAINS);
+    // The default sheet's six views all drew LOD0.
+    expect(result.levelsOfDetail).toEqual(
+      TIERED_CAR_CHAINS.map((chain) => ({ ...chain, drawn: [0, 0, 0, 0, 0, 0] })),
+    );
   });
 
   test('the saved revision and the runtime export profile keep the chains', async () => {

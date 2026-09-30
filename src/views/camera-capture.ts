@@ -8,6 +8,7 @@ import {
   resolveAssetCamera,
   rasterizeCamera,
   withCameraVisibility,
+  type CameraShotV1,
   type ResolvedCameraShotV1,
 } from './camera';
 import { resolveCaptureBackdrop, type CaptureConfig } from './capture';
@@ -16,10 +17,14 @@ import { encodePng, decodePng } from './png';
 import { compositeCellGrid } from './grid';
 import { annotateViewCell } from './annotate';
 import type { DerivativeViewReceiptV1 } from '../composer/render-port';
+import { reviewLodChains, withSubjectLevel } from './lod';
 export interface CameraCaptureGridResult extends ViewGridResult {
   cameraShots: ResolvedCameraShotV1[];
   perFramePngs: Buffer[];
   derivativeReceipts: DerivativeViewReceiptV1[];
+  /** Per shot, the level each MSFT_lod chain drew (0 for LOD0), in `levelsOfDetail` order.
+   *  Present when the scene has chains. */
+  viewLevels?: number[][];
 }
 export function validateAdvancedCapture(config: CaptureConfig): void {
   for (const key of Object.keys(config))
@@ -50,7 +55,22 @@ export async function renderCaptureGrid(
   limits?: CaptureLimits,
 ): Promise<CameraCaptureGridResult> {
   validateAdvancedCapture(config);
-  const shots = config.shots!.map((s) => resolveAssetCamera(root, s));
+  // A shot whose subject names a lower level of detail resolves and draws with that level in
+  // its LOD0's place; every shot resolves before any draws.
+  const plans: {
+    subject: CameraShotV1['subject'];
+    shot: ResolvedCameraShotV1;
+    levels: number[];
+  }[] = [];
+  for (const request of config.shots!)
+    plans.push(
+      await withSubjectLevel(root, request.subject, async (levels) => ({
+        subject: request.subject,
+        shot: resolveAssetCamera(root, request),
+        levels,
+      })),
+    );
+  const shots = plans.map((plan) => plan.shot);
   const size = config.size ?? 384;
   const cols = config.cols ?? Math.min(3, shots.length);
   const backdrop = resolveCaptureBackdrop(config.backdrop);
@@ -58,28 +78,30 @@ export async function renderCaptureGrid(
   const cells: Uint8Array[] = [];
   const perFramePngs: Buffer[] = [];
   const derivativeReceipts: DerivativeViewReceiptV1[] = [];
-  for (const shot of shots) {
+  for (const { subject, shot } of plans) {
     const dir = shot.camera.position.map((n, i) => n - shot.camera.target[i]!) as [
       number,
       number,
       number,
     ];
     const view = { name: shot.name, dir };
-    const png = await withCameraVisibility(root, shot, async () => {
-      if (render) {
-        const result = await render({
-          root,
-          label: shot.name,
-          view,
-          size,
-          camera: shot.camera,
-          backdrop,
-        });
-        derivativeReceipts.push(result.receipt);
-        return result.png;
-      }
-      return encodePng(rasterizeCamera(root, shot.camera, size, true, backdrop), size, size);
-    });
+    const png = await withSubjectLevel(root, subject, () =>
+      withCameraVisibility(root, shot, async () => {
+        if (render) {
+          const result = await render({
+            root,
+            label: shot.name,
+            view,
+            size,
+            camera: shot.camera,
+            backdrop,
+          });
+          derivativeReceipts.push(result.receipt);
+          return result.png;
+        }
+        return encodePng(rasterizeCamera(root, shot.camera, size, true, backdrop), size, size);
+      }),
+    );
     const decoded = decodePng(png);
     if (decoded.width !== size || decoded.height !== size)
       throw new Error('capture cell dimensions do not match request');
@@ -105,6 +127,7 @@ export async function renderCaptureGrid(
     cameraShots: shots,
     perFramePngs,
     derivativeReceipts,
+    ...(reviewLodChains(root).length ? { viewLevels: plans.map((plan) => plan.levels) } : {}),
     ...(derivativeReceipts.length
       ? {
           captureCache: {

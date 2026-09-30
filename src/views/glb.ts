@@ -1,5 +1,7 @@
 /** GLB-native input adapter for the deterministic CPU geometry-flat renderer. */
 import { createGltfIO } from '../gltf-io';
+import { listLodChainNodes } from '../lod-export';
+import { registerReviewLodChains } from './lod';
 
 import {
   Primitive,
@@ -642,6 +644,18 @@ export async function loadGlbReviewScene(bytes: Uint8Array): Promise<LoadedGlbRe
       'GLB_FLAT_NO_RENDERABLE_GEOMETRY',
       'Final GLB contains no renderable geometry.',
     );
+  // Lower levels of detail are built beside the scene, detached, for shots that name them.
+  // Counts and reason codes stay those of the scene a loader draws.
+  const sceneMeshCount = meshCount;
+  const sceneInstanceCount = instanceCount;
+  const sceneReasons = new Set(reasons);
+  registerReviewLodChains(
+    root,
+    listLodChainNodes(document).map(({ levels: [base, ...lower] }) => ({
+      base: nodeMap.get(base!)!,
+      levels: lower.some((level) => nodeMap.has(level)) ? [] : lower.map(buildNode),
+    })),
+  );
 
   const nativeClips = document
     .getRoot()
@@ -685,8 +699,8 @@ export async function loadGlbReviewScene(bytes: Uint8Array): Promise<LoadedGlbRe
   return {
     root,
     clips,
-    reasonCodes: REASON_ORDER.filter((reason) => reasons.has(reason)),
-    meshCount,
-    instanceCount,
+    reasonCodes: REASON_ORDER.filter((reason) => sceneReasons.has(reason)),
+    meshCount: sceneMeshCount,
+    instanceCount: sceneInstanceCount,
   };
 }
