@@ -26,6 +26,16 @@ var __esm = (fn, res, err) => () => {
 
 // src/evaluator/authoring-diagnostic.ts
 function authoringDiagnosticAdvice(diagnostic) {
+  if (diagnostic === "UNINITIALIZED_BINDING")
+    return UNINITIALIZED_BINDING_ADVICE;
+  if (diagnostic === "BUILD_RESULT")
+    return BUILD_RESULT_ADVICE;
+  if (diagnostic === "MATERIAL_RECIPE_OVERRIDE")
+    return MATERIAL_RECIPE_OVERRIDE_ADVICE;
+  if (diagnostic === "PROGRAM_TYPE_ERROR")
+    return PROGRAM_TYPE_ERROR_ADVICE;
+  if (diagnostic === "PROGRAM_RANGE_ERROR")
+    return PROGRAM_RANGE_ERROR_ADVICE;
   if (diagnostic === "MESH_DATA_NONFINITE")
     return "meshGeo positions, normals, UVs and tangents must contain finite numbers representable in Float32. Check missing XYZ components, undefined values, division by zero and overflowing calculations before constructing the arrays. Do not replace invalid values blindly with zero; correct the source calculation. Call kiln_discover for the exact meshGeo data contract.";
   if (diagnostic === "PORTABLE_COLOR_ARGUMENT")
@@ -74,13 +84,24 @@ function authoringDiagnosticAdvice(diagnostic) {
     return PROFILE_CORRESPONDENCE_COLLAPSE_ADVICE;
   return diagnostic === "PARAMETRIC_PERIODIC_ENDPOINT" ? PARAMETRIC_PERIODIC_ENDPOINT_ADVICE : "";
 }
+function programErrorDiagnostic(error) {
+  if (error instanceof AuthoringDiagnosticError)
+    return error.diagnostic;
+  if (error instanceof ReferenceError && /^Cannot access (?:'[^']*' before initialization|uninitialized variable)\.?$/.test(error.message))
+    return "UNINITIALIZED_BINDING";
+  if (error instanceof TypeError)
+    return "PROGRAM_TYPE_ERROR";
+  if (error instanceof RangeError)
+    return "PROGRAM_RANGE_ERROR";
+  return;
+}
 function rethrowAuthoringError(error) {
   if (error instanceof ReferenceError && /(?: is not defined$|^Can't find variable: )/.test(error.message) && !/\b(?:loadTexture|process|fetch|globalThis|require|Bun|Deno)\b/.test(error.message)) {
     throw new AuthoringDiagnosticError("UNBOUND_VARIABLE");
   }
   throw error;
 }
-var UNBOUND_VARIABLE_ADVICE = "Check variable spelling and scope: generated code used an undeclared variable. Read the current source and check declarations before retrying. If it was meant to be a Kiln helper, call kiln_discover to confirm the exact name and signature; the sandbox exposes only those globals.", GEAR_RADII_ORDER_ADVICE = "gearGeo requires boreRadius < rootRadius < tipRadius; specify rootRadius when changing tipRadius. Omitted radii keep their absolute defaults.", ROUNDED_BOX_RADIUS_ADVICE = "roundedBoxGeo: radius must be less than half the smallest dimension. Reduce radius or increase the smallest dimension; equality is invalid.", PROCEDURAL_TEXTURE_UNKNOWN_KEY_ADVICE = 'Remove unsupported proceduralTexture fields. Call kiln_discover with ids ["proceduralTexture"] and use only the documented fields for the selected layer op.', MATERIAL_FRACTION_RANGE_ADVICE = "Material fractions must be finite numbers between 0 and 1, inclusive. In proceduralTexture, mortarWidth and stagger are fractions, not pixels; opacity uses the same range. materialRecipe roughness, metalness, opacity, alphaCutoff and emissiveIntensity use 0..1. portableMaterial roughness, metalness and alphaCutoff also use 0..1; its emissiveIntensity has a separate 0..64 range. Call kiln_discover for the exact field contracts.", PARAMETRIC_PERIODIC_ENDPOINT_ADVICE = "Periodic parametricSurface endpoints must return matching positions. For periodicU, sample(uMin, v) and sample(uMax, v) must match; for periodicV, sample(u, vMin) and sample(u, vMax) must match.", PROFILE_HOLES_UNSUPPORTED_ADVICE = "loftProfiles and sweepProfile: holes are unsupported in options or sections. Use extrudeProfile for a holed cross-section with optional twist/taper; independently varying contours need explicit geometry or solid subtraction. cap:false does not create inner walls or thickness.", PROFILE_CORRESPONDENCE_COLLAPSE_ADVICE = "loftProfiles or sweepProfile: corresponding profile edges collapse between stations. Check matching start vertices and vertex order; for an intended twist, add intermediate sections or path stations. No automatic correspondence repair is applied. Other self-intersections remain unchecked.", AuthoringDiagnosticError;
+var UNBOUND_VARIABLE_ADVICE = "Check variable spelling and scope: generated code used an undeclared variable. Read the current source and check declarations before retrying. If it was meant to be a Kiln helper, call kiln_discover to confirm the exact name and signature; the sandbox exposes only those globals.", GEAR_RADII_ORDER_ADVICE = "gearGeo requires boreRadius < rootRadius < tipRadius; specify rootRadius when changing tipRadius. Omitted radii keep their absolute defaults.", ROUNDED_BOX_RADIUS_ADVICE = "roundedBoxGeo: radius must be less than half the smallest dimension. Reduce radius or increase the smallest dimension; equality is invalid.", PROCEDURAL_TEXTURE_UNKNOWN_KEY_ADVICE = 'Remove unsupported proceduralTexture fields. Call kiln_discover with ids ["proceduralTexture"] and use only the documented fields for the selected layer op.', MATERIAL_FRACTION_RANGE_ADVICE = "Material fractions must be finite numbers between 0 and 1, inclusive. In proceduralTexture, mortarWidth and stagger are fractions, not pixels; opacity uses the same range. materialRecipe roughness, metalness, opacity, alphaCutoff and emissiveIntensity use 0..1. portableMaterial roughness, metalness and alphaCutoff also use 0..1; its emissiveIntensity has a separate 0..64 range. Call kiln_discover for the exact field contracts.", PARAMETRIC_PERIODIC_ENDPOINT_ADVICE = "Periodic parametricSurface endpoints must return matching positions. For periodicU, sample(uMin, v) and sample(uMax, v) must match; for periodicV, sample(u, vMin) and sample(u, vMax) must match.", PROFILE_HOLES_UNSUPPORTED_ADVICE = "loftProfiles and sweepProfile: holes are unsupported in options or sections. Use extrudeProfile for a holed cross-section with optional twist/taper; independently varying contours need explicit geometry or solid subtraction. cap:false does not create inner walls or thickness.", PROFILE_CORRESPONDENCE_COLLAPSE_ADVICE = "loftProfiles or sweepProfile: corresponding profile edges collapse between stations. Check matching start vertices and vertex order; for an intended twist, add intermediate sections or path stations. No automatic correspondence repair is applied. Other self-intersections remain unchecked.", UNINITIALIZED_BINDING_ADVICE = "A const, let or class binding was read before its declaration ran (temporal dead zone). Move the declaration above the first code that reads it; top-level constants must be declared before other top-level code uses them. kiln_validate names the binding and line when the read runs immediately.", BUILD_RESULT_ADVICE = 'Define a top-level function build() (it may be async) that returns the root Object3D, for example const root = createRoot("Name"); ...; return root;. A build() that returns nothing, or returns a geometry or material, is rejected.', MATERIAL_RECIPE_OVERRIDE_ADVICE = 'materialRecipe takes a listed kiln.material.*.v1 ID and only the overrides that recipe allows; the allowed overrides differ by recipe (the emissive recipe has no metalness). Call kiln_discover with ids ["materialRecipe"] to see what each recipe allows; kiln_validate names the recipe and key when both are literals.', PROGRAM_TYPE_ERROR_ADVICE = "The program or a helper it called threw a TypeError: a value had the wrong type. Usually something is undefined (a function without a return, an un-awaited async helper such as roundedBoxGeo, extrudeProfile or materialRecipe, or a misspelt property) or a non-function was called. Run kiln_validate, then check the helper contract with kiln_discover.", PROGRAM_RANGE_ERROR_ADVICE = "The program or a helper it called threw a RangeError: a number was outside its allowed range, for example a non-positive size, an invalid array length or segment count, or unbounded recursion. Check the helper arguments against kiln_discover.", AuthoringDiagnosticError;
 var init_authoring_diagnostic = __esm(() => {
   AuthoringDiagnosticError = class AuthoringDiagnosticError extends Error {
     diagnostic;
@@ -2490,12 +2511,86 @@ var init_breadth2 = __esm(() => {
 });
 
 // src/gltf-io.ts
-import { WebIO } from "@gltf-transform/core";
+import {
+  Extension,
+  ExtensionProperty,
+  PropertyType,
+  RefList,
+  WebIO
+} from "@gltf-transform/core";
 import { ALL_EXTENSIONS } from "@gltf-transform/extensions";
 function createGltfIO() {
-  return new WebIO().registerExtensions(ALL_EXTENSIONS);
+  return new WebIO().registerExtensions([...ALL_EXTENSIONS, MSFTLod]);
 }
-var init_gltf_io = () => {};
+var MSFT_LOD = "MSFT_lod", Lod, MSFTLod;
+var init_gltf_io = __esm(() => {
+  Lod = class Lod extends ExtensionProperty {
+    static EXTENSION_NAME = MSFT_LOD;
+    init() {
+      this.extensionName = MSFT_LOD;
+      this.propertyType = "Lod";
+      this.parentTypes = [PropertyType.NODE, PropertyType.MATERIAL];
+    }
+    getDefaults() {
+      return Object.assign(super.getDefaults(), {
+        levels: new RefList
+      });
+    }
+    addLevel(level) {
+      return this.addRef("levels", level);
+    }
+    listLevels() {
+      return this.listRefs("levels");
+    }
+  };
+  MSFTLod = class MSFTLod extends Extension {
+    extensionName = MSFT_LOD;
+    static EXTENSION_NAME = MSFT_LOD;
+    createLod(name = "") {
+      return new Lod(this.document.getGraph(), name);
+    }
+    read(context) {
+      const json = context.jsonDoc.json;
+      this.readLevels(json.nodes, context.nodes);
+      this.readLevels(json.materials, context.materials);
+      return this;
+    }
+    readLevels(defs, targets) {
+      (defs ?? []).forEach((def, index) => {
+        const ids = def.extensions?.[MSFT_LOD]?.ids;
+        const target = targets[index];
+        if (!target || !Array.isArray(ids))
+          return;
+        const lod = this.createLod();
+        for (const id of ids) {
+          const level = typeof id === "number" ? targets[id] : undefined;
+          if (level && level !== target)
+            lod.addLevel(level);
+        }
+        target.setExtension(MSFT_LOD, lod);
+      });
+    }
+    write(context) {
+      const json = context.jsonDoc.json;
+      const root = this.document.getRoot();
+      for (const node of root.listNodes()) {
+        const index = context.nodeIndexMap.get(node);
+        const ids = node.getExtension(MSFT_LOD)?.listLevels().filter((level) => level.propertyType === PropertyType.NODE).map((level) => context.nodeIndexMap.get(level)).filter((id) => id !== undefined);
+        const def = index === undefined ? undefined : json.nodes?.[index];
+        if (def && ids?.length)
+          def.extensions = { ...def.extensions, [MSFT_LOD]: { ids } };
+      }
+      for (const material of root.listMaterials()) {
+        const index = context.materialIndexMap.get(material);
+        const ids = material.getExtension(MSFT_LOD)?.listLevels().filter((level) => level.propertyType === PropertyType.MATERIAL).map((level) => context.materialIndexMap.get(level)).filter((id) => id !== undefined);
+        const def = index === undefined ? undefined : json.materials?.[index];
+        if (def && ids?.length)
+          def.extensions = { ...def.extensions, [MSFT_LOD]: { ids } };
+      }
+      return this;
+    }
+  };
+});
 
 // src/qa/types.ts
 var init_types = () => {};
@@ -4030,16 +4125,35 @@ var init_prop = __esm(() => {
   ];
 });
 
+// src/qa/lod.ts
+function lodLevel(node) {
+  for (let current = node;current; current = current.parent) {
+    const match = LOD_TAG.exec(current.name);
+    if (match)
+      return Number(match[2]);
+  }
+  return;
+}
+var LOD_TAG;
+var init_lod = __esm(() => {
+  LOD_TAG = /(^|[^a-z0-9])lod(\d+)([^a-z0-9]|$)/i;
+});
+
 // src/qa/part-connectivity.ts
 import * as THREE5 from "three";
 function collectParts2(root, exempt) {
   const parts = [];
+  let lodExcluded = 0;
   root.updateWorldMatrix(true, true);
-  root.traverse((node) => {
+  root.traverseVisible((node) => {
     const mesh = node;
     if (!mesh.isMesh || !mesh.geometry)
       return;
     const name = mesh.name || "(unnamed mesh)";
+    if ((lodLevel(mesh) ?? 0) > 0) {
+      lodExcluded++;
+      return;
+    }
     if (EXEMPT_NAME.test(name)) {
       exempt.push(name);
       return;
@@ -4049,7 +4163,7 @@ function collectParts2(root, exempt) {
       return;
     parts.push({ name, box });
   });
-  return parts;
+  return { parts, lodExcluded };
 }
 function boxGap(a, b) {
   const dx = Math.max(0, Math.max(a.min.x - b.max.x, b.min.x - a.max.x));
@@ -4059,11 +4173,12 @@ function boxGap(a, b) {
 }
 function analyzePartConnectivity(root) {
   const exempt = [];
-  const parts = collectParts2(root, exempt);
+  const { parts, lodExcluded } = collectParts2(root, exempt);
   const report = {
     partsAnalyzed: parts.length,
     mainComponentSize: parts.length,
     exempt,
+    lodExcluded,
     groups: []
   };
   if (parts.length < 2)
@@ -4131,6 +4246,7 @@ function inspectPartConnectivity(scene) {
   if (!(scene instanceof THREE5.Object3D))
     return [];
   const report = analyzePartConnectivity(scene);
+  const lodNote = report.lodExcluded === 1 ? " 1 part on an LOD level above 0 was not analyzed." : report.lodExcluded > 1 ? ` ${report.lodExcluded} parts on LOD levels above 0 were not analyzed.` : "";
   return report.groups.map((group) => {
     const listed = group.parts.map((p) => JSON.stringify(p)).join(", ");
     const subject = group.parts.length === 1 ? `Part ${listed} is` : `A group of ${group.parts.length} parts (${listed}) is`;
@@ -4139,12 +4255,13 @@ function inspectPartConnectivity(scene) {
       disposition: "observe",
       dimension: "visualQuality",
       profile: "geometry.partConnectivity",
-      message: `${subject} separate from the largest component in the rest-pose bounding boxes; the nearest box gap is ${group.gap.toFixed(3)} m. This may be intentional. Box adjacency is not physical attachment evidence.`,
+      message: `${subject} separate from the largest component in the rest-pose bounding boxes of visible parts; the nearest box gap is ${group.gap.toFixed(3)} m. This may be intentional. Box adjacency is not physical attachment evidence.${lodNote}`,
       affected: { node: group.parts[0] },
       measurement: {
         name: "gapToMainComponent",
         actual: group.gap,
-        expected: CONNECTIVITY_TOLERANCE
+        expected: CONNECTIVITY_TOLERANCE,
+        ...report.lodExcluded ? { breakdown: { lodExcludedParts: report.lodExcluded } } : {}
       },
       repairText: "Check whether the separation is intentional. If the brief requires attachment, inspect the named group and its intended interface before moving it. snapTo aligns bounding boxes; verify actual surfaces and required clearances afterward."
     };
@@ -4152,6 +4269,7 @@ function inspectPartConnectivity(scene) {
 }
 var CONNECTIVITY_TOLERANCE = 0.02, EXEMPT_NAME, PART_CONNECTIVITY_QA_RULE;
 var init_part_connectivity = __esm(() => {
+  init_lod();
   init_registry();
   EXEMPT_NAME = /(?:^|_)(?:leaf|leaves|foliage|frond|card|decal|billboard|petal)/i;
   PART_CONNECTIVITY_QA_RULE = Object.freeze({
@@ -4169,6 +4287,11 @@ var init_part_connectivity = __esm(() => {
 
 // src/qa/self-intersection.ts
 import * as THREE6 from "three";
+function boxOverlapRatio(a, b) {
+  const shared = Math.max(0, Math.min(a.max.x, b.max.x) - Math.max(a.min.x, b.min.x)) * Math.max(0, Math.min(a.max.y, b.max.y) - Math.max(a.min.y, b.min.y)) * Math.max(0, Math.min(a.max.z, b.max.z) - Math.max(a.min.z, b.min.z));
+  const ratio = shared / Math.min(boxVolume(a), boxVolume(b));
+  return Number.isFinite(ratio) ? ratio : 0;
+}
 function triangleCount(geometry) {
   const index = geometry.getIndex();
   const position = geometry.getAttribute("position");
@@ -4224,7 +4347,7 @@ function collectParts3(root, skipped) {
       });
       return;
     }
-    parts.push({ name, mesh, box, triangles, center, scale });
+    parts.push({ name, mesh, box, triangles, center, scale, lod: lodLevel(mesh) });
   });
   return parts;
 }
@@ -4281,6 +4404,9 @@ async function analyzePartPenetration(root) {
     partsAnalyzed: parts.length,
     candidatePairs: 0,
     pairsTested: 0,
+    pairsUnmeasurable: 0,
+    pairsNotReached: 0,
+    pairsLodAlternates: 0,
     truncated: false,
     skipped,
     penetrations: []
@@ -4296,25 +4422,34 @@ async function analyzePartPenetration(root) {
           base.broadPhaseTruncated = true;
           break broadPhase;
         }
-        if (parts[i].box.intersectsBox(parts[j].box)) {
-          base.candidatePairs++;
-          if (candidates.length < MAX_NARROW_PHASE_PAIRS)
-            candidates.push([parts[i], parts[j]]);
+        const a = parts[i];
+        const b = parts[j];
+        if (!a.box.intersectsBox(b.box))
+          continue;
+        if (a.lod !== undefined && b.lod !== undefined && a.lod !== b.lod) {
+          base.pairsLodAlternates++;
+          continue;
         }
+        candidates.push({ a: i, b: j, overlap: boxOverlapRatio(a.box, b.box) });
       }
     }
-  base.truncated = !!base.broadPhaseTruncated || base.candidatePairs > candidates.length;
+  base.candidatePairs = candidates.length;
+  base.truncated = !!base.broadPhaseTruncated;
   if (candidates.length === 0)
     return base;
-  const tested = candidates;
+  candidates.sort((x, y) => y.overlap - x.overlap || x.a - y.a || x.b - y.b);
   const Module = await import("manifold-3d");
   const wasm = await Module.default();
   wasm.setup();
   const { Manifold, Mesh } = wasm;
-  const cache = new Map;
-  const build = (part) => {
-    if (cache.has(part.mesh))
-      return cache.get(part.mesh);
+  const solids = new Map;
+  const unbuildable = [];
+  const build = (index) => {
+    if (solids.has(index))
+      return solids.get(index);
+    if (solids.size === MAX_SOLID_BUILDS)
+      return;
+    const part = parts[index];
     let solid = null;
     try {
       const arrays = meshToArrays(part);
@@ -4323,26 +4458,39 @@ async function analyzePartPenetration(root) {
         mesh.merge();
         solid = new Manifold(mesh);
       } else {
-        skipped.push({ part: part.name, reason: "its triangle positions or indices are invalid" });
+        unbuildable.push({ index, reason: "its triangle positions or indices are invalid" });
       }
     } catch (err) {
-      skipped.push({
-        part: part.name,
+      unbuildable.push({
+        index,
         reason: `a valid closed solid could not be measured (${err instanceof Error ? err.message : String(err)})`
       });
       solid = null;
     }
-    cache.set(part.mesh, solid);
+    solids.set(index, solid);
     return solid;
   };
   const penetrations = [];
+  const rangeSkips = [];
   try {
-    for (const [a, b] of tested) {
-      const sa = build(a);
-      const sb = build(b);
-      if (!sa || !sb)
+    for (const pair of candidates) {
+      if (solids.get(pair.a) === null || solids.get(pair.b) === null) {
+        base.pairsUnmeasurable++;
         continue;
+      }
+      const sa = build(pair.a);
+      const sb = sa === null ? null : build(pair.b);
+      if (sa === null || sb === null) {
+        base.pairsUnmeasurable++;
+        continue;
+      }
+      if (!sa || !sb || base.pairsTested === MAX_NARROW_PHASE_PAIRS) {
+        base.pairsNotReached++;
+        continue;
+      }
       base.pairsTested++;
+      const a = parts[pair.a];
+      const b = parts[pair.b];
       let overlap = null;
       const scale = Math.max(a.scale, b.scale);
       const pa = sa.scale(a.scale / scale);
@@ -4357,7 +4505,7 @@ async function analyzePartPenetration(root) {
           if (fraction > CONTACT_VOLUME_FRACTION) {
             const assetVolume = volume * scale ** 3;
             if (!Number.isFinite(assetVolume) || !(assetVolume > 0)) {
-              skipped.push({
+              rangeSkips.push({
                 part: a.name,
                 reason: `intersection with ${JSON.stringify(b.name)} is outside representable volume range`
               });
@@ -4378,10 +4526,19 @@ async function analyzePartPenetration(root) {
         scaledB.delete();
       }
     }
+    for (const pair of candidates) {
+      if (solids.get(pair.a) === null)
+        build(pair.b);
+      else if (solids.get(pair.b) === null)
+        build(pair.a);
+    }
   } finally {
-    for (const solid of cache.values())
+    for (const solid of solids.values())
       solid?.delete();
   }
+  base.truncated = !!base.broadPhaseTruncated || base.pairsNotReached > 0;
+  unbuildable.sort((x, y) => x.index - y.index);
+  skipped.push(...unbuildable.map(({ index, reason }) => ({ part: parts[index].name, reason })), ...rangeSkips);
   penetrations.sort((x, y) => y.fraction - x.fraction || `${x.a}:${x.b}`.localeCompare(`${y.a}:${y.b}`));
   base.penetrations = penetrations;
   return base;
@@ -4407,29 +4564,55 @@ function inspectPartPenetration(evidence) {
     },
     repairText: "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
   }));
+  const pairsUnmeasurable = evidence.pairsUnmeasurable ?? 0;
   if (evidence.truncated) {
+    const pairsNotReached = evidence.pairsNotReached ?? 0;
     findings.push({
       code: "GEO_PART_SELF_INTERSECTION_TRUNCATED",
       disposition: "observe",
       dimension: "visualQuality",
       profile: "geometry.selfIntersection",
-      message: `Only ${evidence.pairsTested} of ${evidence.broadPhaseTruncated ? "at least " : ""}${evidence.candidatePairs} overlapping part pairs were checked (analysis budget). Parts beyond that were not examined.`
+      message: `Tested ${evidence.pairsTested} of ${evidence.broadPhaseTruncated ? "at least " : ""}${evidence.candidatePairs} overlapping part pairs: ${pairsUnmeasurable} involve parts that could not be measured, ${pairsNotReached} were beyond the analysis budget (${MAX_NARROW_PHASE_PAIRS} booleans, ${MAX_SOLID_BUILDS} solids).` + (evidence.broadPhaseTruncated ? ` Pair discovery stopped after ${MAX_BROAD_PHASE_PAIRS} box comparisons.` : "") + " Unreached pairs were not examined; the most overlapping bounding boxes were tested first.",
+      measurement: {
+        name: "overlappingPartPairsTested",
+        actual: evidence.pairsTested,
+        expected: evidence.candidatePairs,
+        breakdown: { pairsUnmeasurable, pairsNotReached }
+      }
     });
   }
   if (evidence.skipped.length) {
+    const byReason = new Map;
+    for (const { part, reason } of evidence.skipped) {
+      const parts = byReason.get(reason);
+      if (parts)
+        parts.push(part);
+      else
+        byReason.set(reason, [part]);
+    }
+    const reasons = [...byReason].map(([reason, parts]) => {
+      const named = parts.slice(0, UNMEASURED_NAMES_SHOWN).map((part) => JSON.stringify(part));
+      const more = parts.length > UNMEASURED_NAMES_SHOWN ? ` and ${parts.length - UNMEASURED_NAMES_SHOWN} more` : "";
+      return `${parts.length} because ${reason}: ${named.join(", ")}${more}.`;
+    });
+    const one = evidence.skipped.length === 1;
+    const includes = one ? "this part" : "one of these parts";
+    const pairs = pairsUnmeasurable === 1 ? ` 1 overlapping part pair includes ${includes} and was not measured.` : pairsUnmeasurable > 1 ? ` ${pairsUnmeasurable} overlapping part pairs include ${includes} and were not measured.` : "";
     findings.push({
       code: "GEO_PART_SELF_INTERSECTION_UNMEASURED",
       disposition: "observe",
       dimension: "visualQuality",
       profile: "geometry.selfIntersection",
-      message: `${evidence.skipped.length} part-volume measurements were unavailable: ${evidence.skipped.map((s) => `${JSON.stringify(s.part)}: ${s.reason}`).join("; ")}. These parts are not certified clear.`
+      message: `${evidence.skipped.length} part-volume ${one ? "measurement was" : "measurements were"} unavailable. ${reasons.join(" ")}${pairs} ${one ? "This part is" : "These parts are"} not certified clear.`
     });
   }
   return findings;
 }
-var MAX_PART_TRIANGLES = 20000, MAX_NARROW_PHASE_PAIRS = 64, MAX_BROAD_PHASE_PAIRS = 250000, CONTACT_VOLUME_FRACTION = 0.001, round = (n) => Math.round(n * 1e9) / 1e9, roundVolume = (n) => Number(n.toPrecision(9)), SELF_INTERSECTION_QA_RULE;
+var MAX_PART_TRIANGLES = 20000, MAX_NARROW_PHASE_PAIRS = 64, MAX_SOLID_BUILDS, MAX_BROAD_PHASE_PAIRS = 250000, CONTACT_VOLUME_FRACTION = 0.001, boxVolume = (box) => (box.max.x - box.min.x) * (box.max.y - box.min.y) * (box.max.z - box.min.z), round = (n) => Math.round(n * 1e9) / 1e9, roundVolume = (n) => Number(n.toPrecision(9)), SELF_INTERSECTION_QA_RULE, UNMEASURED_NAMES_SHOWN = 5;
 var init_self_intersection = __esm(() => {
+  init_lod();
   init_registry();
+  MAX_SOLID_BUILDS = 2 * MAX_NARROW_PHASE_PAIRS;
   SELF_INTERSECTION_QA_RULE = Object.freeze({
     id: "GEO_PART_SELF_INTERSECTION",
     profile: "geometry.selfIntersection",
@@ -10667,11 +10850,14 @@ function runRequirementsSceneQa(context, scene, clips, policy = {}, evidence = {
         findings.push(...inspectPartPenetration(volume));
         Object.assign(geometryMetrics, {
           partVolumeCoverage: partial ? "partial" : "complete-static-pairs",
-          partVolumeScope: "Visible static closed mesh pairs; excludes intra-mesh intersections, motion, open surfaces and usable passage space. Positive overlap may be intentional.",
+          partVolumeScope: "Visible static closed mesh pairs, except alternates on different LOD levels; excludes intra-mesh intersections, motion, open surfaces and usable passage space. Positive overlap may be intentional.",
           partVolumeEligibleParts: volume.partsAnalyzed,
           partVolumeCandidatePairs: volume.candidatePairs,
           partVolumeCandidatesLowerBound: volume.broadPhaseTruncated === true,
           partVolumePairsTested: volume.pairsTested,
+          partVolumeUnmeasurablePairs: volume.pairsUnmeasurable,
+          partVolumePairsNotReached: volume.pairsNotReached,
+          partVolumeLodAlternatePairs: volume.pairsLodAlternates,
           partVolumeSkipped: volume.skipped.length
         });
       } else if (evidence.partPenetrationFailed) {
@@ -11121,8 +11307,42 @@ function geometryAttributeValues(attribute) {
   }
   return values;
 }
+function noteMeshList(names) {
+  const counts = new Map;
+  for (const name of names)
+    counts.set(name, (counts.get(name) ?? 0) + 1);
+  const shown = [...counts].slice(0, NOTE_NAMES_SHOWN);
+  const covered = shown.reduce((sum, [, count]) => sum + count, 0);
+  const parts = shown.map(([name, count]) => count > 1 ? `${name} x${count}` : name);
+  if (names.length > covered)
+    parts.push(`+${names.length - covered} more`);
+  return parts.join(", ");
+}
+function formatNoteGroup({ code, text, names }) {
+  if (code === undefined) {
+    const who = names.length === 1 ? names[0] : `${names.length} meshes (${noteMeshList(names)})`;
+    return `${who}: ${text}`;
+  }
+  if (names.length === 1)
+    return `${names[0]}: ${code}${text === undefined ? "" : ` ${text}`}`;
+  return `${code} (${names.length} meshes: ${noteMeshList(names)})${text === undefined ? "" : `: ${text}`}`;
+}
 function inspectGeometryExport(root, policy = "warn", exporter = "legacy") {
   const warnings = [];
+  const noteGroups = new Map;
+  const addNote = (mesh, name, code, text) => {
+    const key = JSON.stringify([code ?? null, text ?? null]);
+    let group = noteGroups.get(key);
+    if (!group) {
+      group = { code, text, meshes: new Set, names: [] };
+      noteGroups.set(key, group);
+      warnings.push(group);
+    }
+    if (group.meshes.has(mesh))
+      return;
+    group.meshes.add(mesh);
+    group.names.push(name);
+  };
   const attributes = geometryExportAttributes(exporter);
   root.traverse((node) => {
     const mesh = node;
@@ -11181,15 +11401,15 @@ function inspectGeometryExport(root, policy = "warn", exporter = "legacy") {
         continue;
       for (const note of notes) {
         if (typeof note === "string")
-          warnings.push(`${name}: ${note}`);
+          addNote(mesh, name, undefined, note);
         else if (note && typeof note === "object" && "code" in note)
-          warnings.push(`${name}: ${String(note.code)}${"message" in note ? ` ${String(note.message)}` : ""}`);
+          addNote(mesh, name, String(note.code), "message" in note ? String(note.message) : undefined);
       }
     }
   });
-  return warnings;
+  return warnings.map((warning) => typeof warning === "string" ? warning : formatNoteGroup(warning));
 }
-var EXPORTED_GEOMETRY_ATTRIBUTES, THREE_GEOMETRY_ATTRIBUTES;
+var EXPORTED_GEOMETRY_ATTRIBUTES, THREE_GEOMETRY_ATTRIBUTES, NOTE_NAMES_SHOWN = 3;
 var init_geometry_export = __esm(() => {
   EXPORTED_GEOMETRY_ATTRIBUTES = {
     position: 3,
@@ -13399,7 +13619,16 @@ function profilePoints(profile) {
     points.splice(1, points.length - 1, ...points.slice(1).reverse());
   return points;
 }
-function buildLoft(rings, profiles, closed, cap, firstFrameForward) {
+function panelNormal(a, b, c, d) {
+  return d.clone().sub(a).cross(b.clone().sub(c));
+}
+function isCrease(first, second, creaseAngle) {
+  if (!(first.lengthSq() > 0 && second.lengthSq() > 0))
+    return false;
+  const angle = Math.atan2(first.clone().cross(second).length(), first.dot(second));
+  return THREE25.MathUtils.radToDeg(angle) > creaseAngle + CREASE_TOLERANCE_DEGREES;
+}
+function buildLoft(rings, profiles, closed, cap, firstFrameForward, creaseAngle) {
   const n = rings[0].length, positions = [], uvs = [], indices = [];
   const centers = rings.map((r) => r.reduce((sum, p) => sum.add(p), new THREE25.Vector3).multiplyScalar(1 / n));
   const lengths = [0];
@@ -13408,18 +13637,36 @@ function buildLoft(rings, profiles, closed, cap, firstFrameForward) {
   const total = lengths[lengths.length - 1];
   if (!(total > 0) || !Number.isFinite(total))
     throw new Error("loft section centers must progress along a finite nonzero path");
+  const panels = rings.slice(0, -1).map((ring, i) => ring.map((origin, j) => panelNormal(origin, ring[(j + 1) % n], rings[i + 1][j], rings[i + 1][(j + 1) % n])));
+  const hardColumn = Array.from({ length: n }, (_, j) => creaseAngle !== undefined && panels.some((row) => isCrease(row[(j - 1 + n) % n], row[j], creaseAngle)));
+  const hardRing = rings.map((_, i) => creaseAngle !== undefined && i > 0 && i < rings.length - 1 && panels[i - 1].some((panel, j) => isCrease(panel, panels[i][j], creaseAngle)));
+  const hardClosure = closed && creaseAngle !== undefined && panels[panels.length - 1].some((panel, j) => isCrease(panel, panels[0][j], creaseAngle));
+  const extraSlot = new Map;
+  for (let j = 1;j < n; j++)
+    if (hardColumn[j])
+      extraSlot.set(j, n + 1 + extraSlot.size);
+  const endSlot = (j) => j === n ? n : extraSlot.get(j) ?? j;
+  const blockSize = n + 1 + extraSlot.size, blockRing = [], nearBlock = [], farBlock = [];
   for (let i = 0;i < rings.length; i++) {
+    farBlock.push(blockRing.length);
+    blockRing.push(i);
+    if (hardRing[i])
+      blockRing.push(i);
+    nearBlock.push(blockRing.length - 1);
+  }
+  for (const i of blockRing) {
     const ring = rings[i], distance = [0];
     for (let j = 1;j <= n; j++)
       distance.push(distance[j - 1] + ring[j % n].distanceTo(ring[j - 1]));
-    for (let j = 0;j <= n; j++) {
+    for (const j of [...Array.from({ length: n + 1 }, (_, j) => j), ...extraSlot.keys()]) {
       positions.push(...ring[j % n].toArray());
       uvs.push(distance[j] / distance[n], lengths[i] / total);
     }
   }
   for (let i = 0;i < rings.length - 1; i++)
     for (let j = 0;j < n; j++) {
-      const a = i * (n + 1) + j, b = a + 1, c = a + n + 1, d = c + 1;
+      const near = nearBlock[i] * blockSize, far = farBlock[i + 1] * blockSize;
+      const a = near + j, b = near + endSlot(j + 1), c = far + j, d = far + endSlot(j + 1);
       const origin = rings[i][j], ab = rings[i][(j + 1) % n].clone().sub(origin), ac = rings[i + 1][j].clone().sub(origin), ad = rings[i + 1][(j + 1) % n].clone().sub(origin);
       const endEdge = ad.clone().sub(ac), edgeScale = Math.max(ab.length(), endEdge.length());
       if (edgeScale > 0) {
@@ -13437,8 +13684,10 @@ function buildLoft(rings, profiles, closed, cap, firstFrameForward) {
       } else
         indices.push(a, c, b, b, c, d);
     }
-  if (cap && !closed)
+  if (!closed)
     for (const station of [0, rings.length - 1]) {
+      if (!(station === 0 ? cap.start : cap.end))
+        continue;
       const ring = rings[station], profile = profiles[station];
       const start = positions.length / 3;
       const bounds = new THREE25.Box2().setFromPoints(profile);
@@ -13459,20 +13708,33 @@ function buildLoft(rings, profiles, closed, cap, firstFrameForward) {
       [indices[i + 1], indices[i + 2]] = [indices[i + 2], indices[i + 1]];
   const out = meshGeo({ positions, indices, uvs });
   const normal = out.getAttribute("normal");
-  for (let i = 0;i < rings.length; i++) {
-    const a = i * (n + 1), b = a + n;
+  const share = (a, b) => {
     const sum = new THREE25.Vector3().fromBufferAttribute(normal, a).add(new THREE25.Vector3().fromBufferAttribute(normal, b)).normalize();
     normal.setXYZ(a, sum.x, sum.y, sum.z);
     normal.setXYZ(b, sum.x, sum.y, sum.z);
-  }
-  if (closed)
-    for (let j = 0;j <= n; j++) {
-      const a = j, b = (rings.length - 1) * (n + 1) + j;
-      const sum = new THREE25.Vector3().fromBufferAttribute(normal, a).add(new THREE25.Vector3().fromBufferAttribute(normal, b)).normalize();
-      normal.setXYZ(a, sum.x, sum.y, sum.z);
-      normal.setXYZ(b, sum.x, sum.y, sum.z);
-    }
+  };
+  if (!hardColumn[0])
+    for (let block = 0;block < blockRing.length; block++)
+      share(block * blockSize, block * blockSize + n);
+  if (closed && !hardClosure)
+    for (let k = 0;k < blockSize; k++)
+      share(nearBlock[0] * blockSize + k, farBlock[rings.length - 1] * blockSize + k);
   return out;
+}
+function loftCapEnds(cap) {
+  const both = Boolean(cap ?? true);
+  return { start: both, end: both };
+}
+function sweepCapEnds(cap, closed) {
+  if (cap === undefined || cap === null || cap === true)
+    return { start: true, end: true };
+  if (cap === false)
+    return { start: false, end: false };
+  if (cap !== "start" && cap !== "end")
+    throw new Error("sweepProfile cap must be true, false, 'start' or 'end'");
+  if (closed)
+    throw new Error(`sweepProfile cap '${cap}' needs an open path; a closed sweep has no ends`);
+  return { start: cap === "start", end: cap === "end" };
 }
 function loftProfiles(sections, options = {}) {
   rejectHoles(options, "loftProfiles");
@@ -13486,7 +13748,7 @@ function loftProfiles(sections, options = {}) {
     throw new Error("loftProfiles sections must have the same point count and correspondence");
   const frames = sections.map((section) => geometryFrameMatrix(section.frame));
   const rings = profiles.map((profile, i) => profile.map((p) => new THREE25.Vector3(p.x, 0, p.y).applyMatrix4(frames[i])));
-  const out = buildLoft(rings, profiles, false, options.cap ?? true, new THREE25.Vector3(0, 1, 0).transformDirection(frames[0]));
+  const out = buildLoft(rings, profiles, false, loftCapEnds(options.cap), new THREE25.Vector3(0, 1, 0).transformDirection(frames[0]));
   out.userData.kilnGeometryWarnings = [
     {
       code: "LOFT_SELF_INTERSECTION_UNCHECKED",
@@ -13502,6 +13764,10 @@ function sweepProfile(profile, path, options = {}) {
     throw new Error("sweepProfile twist must be finite degrees");
   if (closed && Math.abs(twist / 360 - Math.round(twist / 360)) > 0.00000001)
     throw new Error("closed sweep twist must be a multiple of 360 degrees");
+  const creaseAngle = options.creaseAngle ?? 60;
+  if (!Number.isFinite(creaseAngle) || creaseAngle < 0 || creaseAngle > 180)
+    throw new Error("sweepProfile creaseAngle must be between 0 and 180 degrees");
+  const cap = sweepCapEnds(options.cap, closed);
   if (path.length < (closed ? 3 : 2) || path.some((p) => p.length !== 3 || !p.every(Number.isFinite)))
     throw new Error("sweepProfile requires finite path points (two open or three closed)");
   const stations = path.map((p) => new THREE25.Vector3(...p));
@@ -13579,7 +13845,7 @@ function sweepProfile(profile, path, options = {}) {
   });
   if (closed)
     rings[rings.length - 1] = rings[0].map((p) => p.clone());
-  const out = buildLoft(rings, rings.map(() => points), closed, options.cap ?? true);
+  const out = buildLoft(rings, rings.map(() => points), closed, cap, undefined, creaseAngle);
   warnings.push({
     code: "SWEEP_SELF_INTERSECTION_UNCHECKED",
     message: "Transported frames and caps do not prove a sweep is free of self-intersections. Review tight turns and nearby path segments."
@@ -13587,6 +13853,7 @@ function sweepProfile(profile, path, options = {}) {
   out.userData.kilnGeometryWarnings = warnings;
   return out;
 }
+var CREASE_TOLERANCE_DEGREES = 0.01;
 var init_sweep = __esm(() => {
   init_geometry();
   init_deform();
@@ -14175,6 +14442,9 @@ async function extrudeProfile(profile, options = {}) {
   assertPositive(depth, "extrudeProfile: depth");
   if (bevel < 0)
     throw new Error(`extrudeProfile: bevel must be >= 0 (got ${bevel}).`);
+  if (divisions !== undefined && !(Number.isInteger(divisions) && divisions >= 0)) {
+    throw new Error(`extrudeProfile: divisions must be a whole number >= 0 (got ${divisions}).`);
+  }
   for (let i = 0;i < holes.length; i++) {
     assertFiniteProfile(holes[i], `extrudeProfile: holes[${i}]`);
   }
@@ -14197,7 +14467,7 @@ async function extrudeProfile(profile, options = {}) {
     if (bevel > 0) {
       section = track(bevelCrossSection(section, bevel, bevelStyle, segments, "extrudeProfile"));
     }
-    const nDivisions = divisions ?? (twist !== 0 ? 16 : 1);
+    const nDivisions = divisions ?? (twist !== 0 ? 16 : 0);
     const solid = section.extrude(depth, nDivisions, twist, normalizeTaper(taper), center);
     try {
       return orientSweep(manifoldToGeometry(solid, { smooth }), axis);
@@ -16590,7 +16860,7 @@ function validateMaterialRecipeRequestV1(value) {
     issues.push({
       code: "UNSUPPORTED_RECIPE_ID",
       path: "id",
-      message: `Unsupported material recipe ID ${JSON.stringify(value.id)}.`
+      message: `Unsupported material recipe ID ${JSON.stringify(value.id)}. Listed IDs: ${MATERIAL_RECIPE_IDS.join(", ")}.`
     });
   }
   if (value.overrides !== undefined && !isRecord3(value.overrides)) {
@@ -16607,7 +16877,7 @@ function validateMaterialRecipeRequestV1(value) {
         issues.push({
           code: "UNSUPPORTED_OVERRIDE",
           path: `overrides.${key}`,
-          message: `Unknown material recipe override ${JSON.stringify(key)}.`
+          message: `Unknown material recipe override ${JSON.stringify(key)}; ${value.id} accepts ${[...allowed].join(", ")}.`
         });
         continue;
       }
@@ -16615,7 +16885,7 @@ function validateMaterialRecipeRequestV1(value) {
         issues.push({
           code: "UNSUPPORTED_OVERRIDE",
           path: `overrides.${key}`,
-          message: `${key} is not supported by ${value.id}.`
+          message: `${key} is not supported by ${value.id}; it accepts ${[...allowed].join(", ")}.`
         });
         continue;
       }
@@ -16720,6 +16990,13 @@ function recipeValidationError(issues) {
     "RESOURCE_RECIPE_MISMATCH"
   ].includes(issue.code) || issue.code === "INVALID_OVERRIDE_VALUE" && issue.path === "overrides.textureResources"))
     return new AuthoringDiagnosticError("MATERIAL_RECIPE_TEXTURE_BINDING", message);
+  if (issues.some((issue) => [
+    "UNSUPPORTED_RECIPE_ID",
+    "UNSUPPORTED_OVERRIDE",
+    "INVALID_OVERRIDES",
+    "UNSUPPORTED_SCHEMA_VERSION"
+  ].includes(issue.code)))
+    return new AuthoringDiagnosticError("MATERIAL_RECIPE_OVERRIDE", message);
   return new TypeError(message);
 }
 function createMaterialRecipeRequestV1(id, overrides) {
@@ -18561,7 +18838,7 @@ function scaleTrack(jointName, keyframes, interpolation) {
   }
   return new THREE33.VectorKeyframeTrack(`${jointName}.scale`, times, values, threeInterpolation(interpolation));
 }
-function createClip(name, duration, tracks) {
+function createClip(name, duration, tracks, options) {
   if (typeof name !== "string" || !name.trim())
     throw new Error("Animation clip name must be nonempty.");
   animationNumber(duration, "Animation clip duration");
@@ -18569,6 +18846,7 @@ function createClip(name, duration, tracks) {
     throw new Error("Animation clip duration must be nonnegative, or -1 for automatic duration.");
   if (!Array.isArray(tracks) || tracks.length === 0)
     throw new Error("Animation clip requires at least one track.");
+  const loop = clipLoopOption(options);
   const names = new Set;
   for (const track of tracks) {
     if (!(track instanceof THREE33.KeyframeTrack))
@@ -18609,7 +18887,23 @@ function createClip(name, duration, tracks) {
       throw new Error(`Animation clip duration ${duration} does not include every key of ${track.name}.`);
     }
   }
-  return new THREE33.AnimationClip(name, duration, tracks);
+  const clip = new THREE33.AnimationClip(name, duration, tracks);
+  if (loop !== undefined)
+    clip.userData.kilnLoopIntent = loop ? "loop" : "once";
+  return clip;
+}
+function clipLoopOption(options) {
+  if (options === undefined)
+    return;
+  if (typeof options !== "object" || options === null || Array.isArray(options))
+    throw new Error("Animation clip options must be an object such as { loop: true }.");
+  for (const key of Object.keys(options))
+    if (key !== "loop")
+      throw new Error(`Animation clip option ${key} is unknown; the only option is loop.`);
+  const loop = options.loop;
+  if (loop !== undefined && typeof loop !== "boolean")
+    throw new Error("Animation clip loop must be true (a cycle) or false (a one-shot).");
+  return loop;
 }
 function positionPresetBase(duration, amount, options) {
   animationNumber(duration, "Animation preset duration");
@@ -19033,43 +19327,57 @@ function collectGlbMetrics(doc, triangles) {
   };
 }
 function gradeInstanceability(metrics, opts = {}) {
-  const reasons = [];
   const m = metrics;
-  let grade;
-  if (m.uniqueMaterials <= 1)
-    grade = "A";
-  else if (m.uniqueMaterials <= 3)
-    grade = "B";
-  else if (m.uniqueMaterials <= 6)
+  const band = MATERIAL_GRADE_BANDS.find((b) => m.uniqueMaterials <= b.max);
+  let grade = band.grade;
+  const materials = `${counted(m.uniqueMaterials, "distinct material", "distinct materials")} (${band.grade} at ${band.range})`;
+  const transparency = m.transparentMaterials > 0 ? counted(m.transparentMaterials, "transparent material", "transparent materials") : undefined;
+  const textures = m.textureCount > 4 ? `${m.textureCount} textures` : undefined;
+  const drivers = [];
+  const also = [];
+  if ((grade === "A" || grade === "B") && (transparency || textures)) {
     grade = "C";
-  else if (m.uniqueMaterials <= 12)
-    grade = "D";
-  else
-    grade = "F";
-  const order = ["A", "B", "C", "D", "F"];
-  const demote = (to, why) => {
-    if (order.indexOf(to) > order.indexOf(grade)) {
-      grade = to;
-      reasons.push(why);
-    } else {
-      reasons.push(why);
-    }
-  };
-  reasons.push(`${m.uniqueMaterials} material${m.uniqueMaterials === 1 ? "" : "s"}, ` + `${m.uniqueGeometries} geometr${m.uniqueGeometries === 1 ? "y" : "ies"}, ` + `${m.drawCalls} draw call${m.drawCalls === 1 ? "" : "s"}`);
-  if (m.transparentMaterials > 0) {
-    demote("C", `${m.transparentMaterials} transparent material(s) force per-object sort`);
+    if (transparency)
+      drivers.push(`${transparency} (lowers A/B to C)`);
+    if (textures)
+      drivers.push(`${textures} (over 4 lowers A/B to C)`);
+    also.push(materials);
+  } else {
+    drivers.push(materials);
+    if (transparency)
+      also.push(`${transparency} (lowers only A/B to C)`);
+    if (textures)
+      also.push(`${textures} (over 4 lowers only A/B to C)`);
   }
-  if (m.textureCount > 4) {
-    demote("C", `${m.textureCount} textures (consider atlasing) `.trim());
-  }
-  if (m.skinned) {
+  also.push(counted(m.uniqueGeometries, "geometry", "geometries"), counted(m.drawCalls, "draw call", "draw calls"));
+  if (m.skinned)
+    also.push("skinned (clone-rendered, not penalized)");
+  const setBy = drivers.join(" and ");
+  const reasons = [
+    `grade ${grade} set by ${setBy}`,
+    `${m.uniqueMaterials} material${m.uniqueMaterials === 1 ? "" : "s"}, ` + `${m.uniqueGeometries} geometr${m.uniqueGeometries === 1 ? "y" : "ies"}, ` + `${m.drawCalls} draw call${m.drawCalls === 1 ? "" : "s"}`
+  ];
+  if (transparency)
+    reasons.push(`${m.transparentMaterials} transparent material(s) force per-object sort`);
+  if (textures)
+    reasons.push(`${m.textureCount} textures (consider atlasing)`);
+  if (m.skinned)
     reasons.push("skinned/animated — clone-rendered (not statically GPU-instanced); fine at low counts");
-  }
   if (opts.category)
     reasons.push(`category: ${opts.category}`);
-  const summary = `${grade} — ${m.uniqueMaterials} mat / ${m.uniqueGeometries} geo / ${m.drawCalls} draws` + (m.transparentMaterials > 0 ? ", transparent" : ", opaque") + (m.skinned ? ", skinned" : "");
+  const summary = `${grade} (informational, not a QA verdict), set by ${setBy}. Also: ${also.join("; ")}.`;
   return { grade, summary, reasons, metrics: m };
 }
+var MATERIAL_GRADE_BANDS, counted = (n, one, many) => `${n} ${n === 1 ? one : many}`;
+var init_metrics = __esm(() => {
+  MATERIAL_GRADE_BANDS = [
+    { grade: "A", max: 1, range: "0-1" },
+    { grade: "B", max: 3, range: "2-3" },
+    { grade: "C", max: 6, range: "4-6" },
+    { grade: "D", max: 12, range: "7-12" },
+    { grade: "F", max: Number.POSITIVE_INFINITY, range: "13+" }
+  ];
+});
 
 // src/qa/gltf.ts
 function finiteCount(value) {
@@ -19154,20 +19462,28 @@ function collectMaterialMetricsV1(document) {
   });
   let totalSurfaceArea = 0;
   let blendedSurfaceArea = 0;
+  const blendedAreaByMaterial = new Map;
   const visit = (node) => {
     const mesh = node.getMesh();
     if (mesh) {
       for (const primitive of mesh.listPrimitives()) {
         const area = primitiveSurfaceArea(primitive, node);
         totalSurfaceArea += area;
-        if (primitive.getMaterial()?.getAlphaMode() === "BLEND")
+        const material = primitive.getMaterial();
+        if (material?.getAlphaMode() === "BLEND") {
           blendedSurfaceArea += area;
+          blendedAreaByMaterial.set(material, (blendedAreaByMaterial.get(material) ?? 0) + area);
+        }
       }
     }
     node.listChildren().forEach(visit);
   };
   for (const scene of root.listScenes())
     scene.listChildren().forEach(visit);
+  const blendedMaterialAreas = materials.map((material, index) => ({
+    name: material.getName() || `material-${index + 1}`,
+    area: blendedAreaByMaterial.get(material) ?? 0
+  })).filter(({ area }) => area > 0).sort((a, b) => b.area - a.area).map(({ name, area }) => ({ name, area, ratio: area / totalSurfaceArea }));
   const extensionsUsed = root.listExtensionsUsed().map((extension) => extension.extensionName).sort();
   const materialExtensionsUsed = extensionsUsed.filter((name) => /^(?:KHR|EXT)_materials_/.test(name));
   const opaqueMaterials = materials.filter((material) => material.getAlphaMode() === "OPAQUE").length;
@@ -19197,7 +19513,8 @@ function collectMaterialMetricsV1(document) {
     estimatedGpuBytesWithMipmaps: images.reduce((sum, image) => sum + image.estimatedGpuBytesWithMipmaps, 0),
     totalSurfaceArea,
     blendedSurfaceArea,
-    blendedSurfaceAreaRatio: totalSurfaceArea > 0 ? blendedSurfaceArea / totalSurfaceArea : 0
+    blendedSurfaceAreaRatio: totalSurfaceArea > 0 ? blendedSurfaceArea / totalSurfaceArea : 0,
+    blendedMaterialAreas
   };
 }
 function evaluateMaterialBudgetV1(metrics, options) {
@@ -19254,12 +19571,16 @@ function evaluateMaterialBudgetV1(metrics, options) {
     });
   }
   if (metrics.blendedSurfaceAreaRatio > limits.maxBlendedSurfaceAreaRatio) {
+    const blended = metrics.blendedMaterialAreas ?? [];
+    const named = blended.slice(0, BLEND_MATERIALS_NAMED).map(({ name, ratio }) => `${JSON.stringify(name)} ${(ratio * 100).toFixed(1)}%`);
+    const more = blended.length > BLEND_MATERIALS_NAMED ? `, and ${blended.length - BLEND_MATERIALS_NAMED} more` : "";
+    const drivers = named.length ? ` Largest BLEND materials by share of surface area: ${named.join(", ")}${more}.` : "";
     warnings.push({
       code: "MATERIAL_BLEND_AREA_BUDGET",
       disposition: "warn",
       profile: options.profile,
       tier: options.tier,
-      message: `Blended primitive surface area is ${(metrics.blendedSurfaceAreaRatio * 100).toFixed(1)}% (${metrics.blendedSurfaceArea.toFixed(3)} of ${metrics.totalSurfaceArea.toFixed(3)} square asset units); the budget is ${(limits.maxBlendedSurfaceAreaRatio * 100).toFixed(1)}%.`,
+      message: `Blended primitive surface area is ${(metrics.blendedSurfaceAreaRatio * 100).toFixed(1)}% (${metrics.blendedSurfaceArea.toFixed(3)} of ${metrics.totalSurfaceArea.toFixed(3)} square asset units); the budget is ${(limits.maxBlendedSurfaceAreaRatio * 100).toFixed(1)}%.${drivers}`,
       measurement: {
         name: "blendedSurfaceAreaRatio",
         actual: metrics.blendedSurfaceAreaRatio,
@@ -19303,7 +19624,7 @@ var MATERIAL_BUDGET_PROFILES_V1, materialTextures3 = (material) => [
   const crossY = abz * acx - abx * acz;
   const crossZ = abx * acy - aby * acx;
   return Math.hypot(crossX, crossY, crossZ) / 2;
-}, mib = (bytes) => `${(bytes / (1024 * 1024)).toFixed(2)} MiB`;
+}, BLEND_MATERIALS_NAMED = 3, mib = (bytes) => `${(bytes / (1024 * 1024)).toFixed(2)} MiB`;
 var init_material_metrics = __esm(() => {
   MATERIAL_BUDGET_PROFILES_V1 = Object.freeze({
     "web.portable.v1": Object.freeze({
@@ -19485,11 +19806,11 @@ var init_geometry_catalog = __esm(() => {
     },
     {
       name: "sweepProfile",
-      signature: "sweepProfile(profile: [x,z][], path: [x,y,z][], opts?: { cap?: true, closed?: false, up?: [x,y,z], twist?: 0, scale?: number | [x,z][] })",
+      signature: "sweepProfile(profile: [x,z][], path: [x,y,z][], opts?: { cap?: true | false | 'start' | 'end', creaseAngle?: 60, closed?: false, up?: [x,y,z], twist?: 0, scale?: number | [x,z][] })",
       returns: "THREE.BufferGeometry",
       category: "curves",
       description: "Sweeps a simple noncircular profile along polyline stations using transported frames. Supports total twist in degrees and per-station scales. Generates UVs and optional caps.",
-      promptNotes: "First version supports one simple profile without holes. Closed paths omit the repeated endpoint and require twist to be a multiple of 360. up sets the initial profile +Z direction and cannot parallel the path. Tight-turn warnings do not replace visual inspection for self-intersections.",
+      promptNotes: "First version supports one simple profile without holes. Closed paths omit the repeated endpoint and require twist to be a multiple of 360. up sets the initial profile +Z direction and cannot parallel the path. cap caps both ends by default; 'start' or 'end' caps only that end of an open path. creaseAngle (degrees) keeps side faces meeting at more than it hard-edged, at profile corners and sharp path corners: at the default 60, squares, triangles and pentagons stay faceted while hexagons and finer profiles shade smooth; 180 smooths every edge. Tight-turn warnings do not replace visual inspection for self-intersections.",
       example: "const rail = sweepProfile([[-.1,-.2],[.1,-.2],[.1,.2],[-.1,.2]], [[0,0,0],[0,1,0],[1,2,0]]);"
     },
     {
@@ -19517,9 +19838,18 @@ var init_geometry_catalog = __esm(() => {
 function listHelperSpecs() {
   return PRIMITIVES.map((p) => ({ ...p }));
 }
-var PRIMITIVES;
+var RECIPE_OVERRIDES_NOTE, PRIMITIVES;
 var init_helper_specs = __esm(() => {
   init_geometry_catalog();
+  init_material_recipes();
+  RECIPE_OVERRIDES_NOTE = (() => {
+    const groups = new Map;
+    for (const id of MATERIAL_RECIPE_IDS) {
+      const allowed = MATERIAL_RECIPE_LIBRARY_V1[id].allowedOverrides.join(", ");
+      groups.set(allowed, [...groups.get(allowed) ?? [], id.split(".")[2]]);
+    }
+    return `Overrides differ by recipe; any other key is rejected: ${[...groups].map(([allowed, names]) => `${names.join(", ")}: ${allowed}`).join("; ")}.`;
+  })();
   PRIMITIVES = [
     ...geometryPrimitives,
     {
@@ -19910,7 +20240,7 @@ createPart('Blade', b, steel, { position: [0, 0, 0], parent: root });`
       category: "material",
       description: "Resolves a versioned portable bark/leaf/wood/stone/rubber/painted-metal/cloth/skin/glass/emissive recipe to standard glTF PBR.",
       example: "const bark = await materialRecipe('kiln.material.bark.v1', { baseColor: '#6b4328' });",
-      promptNotes: "Use only listed kiln.material.*.v1 IDs and approved kiln.texture.* resource IDs. textureResources uses portable slots baseColor, normal, metallicRoughness, emissive and occlusion with ID string values; albedo is a pbrMaterial field, not a recipe slot. Check resource allowedSlots and recipeIds. All numeric overrides (including emissiveIntensity) are finite 0..1. Recipe emission is baked into the core glTF emissive factor. Leaf is MASK, glass is BLEND, and host file paths are forbidden."
+      promptNotes: "Use only listed kiln.material.*.v1 IDs and approved kiln.texture.* resource IDs. textureResources uses portable slots baseColor, normal, metallicRoughness, emissive and occlusion with ID string values; albedo is a pbrMaterial field, not a recipe slot. Check resource allowedSlots and recipeIds. All numeric overrides (including emissiveIntensity) are finite 0..1. Recipe emission is baked into the core glTF emissive factor. Leaf is MASK, glass is BLEND, and host file paths are forbidden. " + RECIPE_OVERRIDES_NOTE
     },
     {
       name: "compilePortableMaterialSpecV2",
@@ -19971,11 +20301,11 @@ createPart('Blade', b, steel, { position: [0, 0, 0], parent: root });`
     },
     {
       name: "createClip",
-      signature: "createClip(name: string, duration: number, tracks: KeyframeTrack[])",
+      signature: "createClip(name: string, duration: number, tracks: KeyframeTrack[], options?: { loop?: boolean })",
       returns: "THREE.AnimationClip",
       category: "animation",
-      description: "Validates supported position/quaternion/scale tracks and collects them into a named clip. Duration is seconds (-1 derives from keys); explicit duration must include every key. Returned from animate().",
-      example: "return [createClip('Open', 1, [rotationTrack('Joint_Lid', [...])])];"
+      description: "Validates supported position/quaternion/scale tracks and collects them into a named clip. Duration is seconds (-1 derives from keys); explicit duration must include every key. loop: true declares a cycle, false a one-shot; exported as the glTF animation extra kilnLoopIntent and reported by animation review. Returned from animate().",
+      example: "return [createClip('Open', 1, [rotationTrack('Joint_Lid', [...])], { loop: false })];"
     },
     {
       name: "idleBreathing",
@@ -20045,11 +20375,11 @@ createPart('Console', geo, plastic, { position: [0, 0.3, 0], parent: root });`
     },
     {
       name: "extrudeProfile",
-      signature: "await extrudeProfile(profile: [number, number][], opts?: { depth?: 1, holes?: [number, number][][], bevel?: 0, bevelStyle?: 'round' | 'chamfer', segments?: 12, twist?: 0, taper?: number | [number, number], divisions?: number, axis?: 'x' | 'y' | 'z', center?: true, smooth?: false })",
+      signature: "await extrudeProfile(profile: [number, number][], opts?: { depth?: 1, holes?: [number, number][][], bevel?: 0, bevelStyle?: 'round' | 'chamfer', segments?: 12, twist?: 0, taper?: number | [number, number], divisions?: 0, axis?: 'x' | 'y' | 'z', center?: true, smooth?: false })",
       returns: "Promise<THREE.BufferGeometry>",
       category: "csg",
       description: "Sweeps a closed 2D outline into a watertight solid, with optional holes, corner rounding/chamfering, twist, and taper. The way to build any cross-section that is not a box or a cylinder: L-brackets, I-beams, gaskets, washers, star and gear plates, signage, extruded trim.",
-      promptNotes: "Profile (u,v) maps to XYZ as axis x: (d,v,-u), axis y: (u,d,-v), axis z: (u,v,d), where d is extrusion depth. For a desired XZ footprint on axis y, pass [X,-Z]; positive profile v projects toward -Z. The bevel rounds the edges PARALLEL to the sweep axis (the profile corners) — the two flat caps stay sharp. For a box rounded on all twelve edges use roundedBoxGeo instead. Holes are subtracted, so their winding order does not matter. A bevel larger than half the outline's narrowest feature throws rather than silently returning an empty solid. Output is manifold, so it feeds straight into boolUnion / boolDiff / boolIntersect. Async — await it inside an async build().",
+      promptNotes: "Profile (u,v) maps to XYZ as axis x: (d,v,-u), axis y: (u,d,-v), axis z: (u,v,d), where d is extrusion depth. For a desired XZ footprint on axis y, pass [X,-Z]; positive profile v projects toward -Z. The bevel rounds the edges PARALLEL to the sweep axis (the profile corners) — the two flat caps stay sharp. For a box rounded on all twelve edges use roundedBoxGeo instead. Holes are subtracted, so their winding order does not matter. divisions is the whole number (>= 0) of intermediate rings between the caps: default 0, or 16 when twisting; a straight or tapered sweep needs none. A bevel larger than half the outline's narrowest feature throws rather than silently returning an empty solid. Output is manifold, so it feeds straight into boolUnion / boolDiff / boolIntersect. Async — await it inside an async build().",
       example: `// L-bracket, inner AND outer corners filleted
 const outline = [[0, 0], [2, 0], [2, 0.4], [0.4, 0.4], [0.4, 2], [0, 2]];
 const geo = await extrudeProfile(outline, { depth: 0.5, bevel: 0.06 });
@@ -20369,9 +20699,21 @@ var init_source_bindings = __esm(() => {
   ]);
 });
 
+// src/source-runtime-checks.ts
+import * as walk2 from "acorn-walk";
+var FUNCTION_TYPES;
+var init_source_runtime_checks = __esm(() => {
+  init_material_recipes();
+  FUNCTION_TYPES = new Set([
+    "FunctionDeclaration",
+    "FunctionExpression",
+    "ArrowFunctionExpression"
+  ]);
+});
+
 // src/validation.ts
 import * as acorn from "acorn";
-import * as walk2 from "acorn-walk";
+import * as walk3 from "acorn-walk";
 function unknownHelperWarnings(ast) {
   const bindings = sourceBindings(ast);
   const declared = bindings.allNames;
@@ -20386,8 +20728,8 @@ function unknownHelperWarnings(ast) {
     Identifier: checkRemoved,
     VariablePattern: checkRemoved
   };
-  walk2.ancestor(ast, retiredVisitors);
-  walk2.simple(ast, {
+  walk3.ancestor(ast, retiredVisitors);
+  walk3.simple(ast, {
     CallExpression(node) {
       const callee = node.callee;
       if (callee?.type !== "Identifier" || !callee.name)
@@ -20471,7 +20813,7 @@ function analyzeGeneratedSourceSafety(ast) {
     fixHint: "Use a documented direct THREE constructor or a sandbox material/texture helper.",
     line
   });
-  walk2.ancestor(ast, {
+  walk3.ancestor(ast, {
     Identifier(node, _state, ancestors) {
       const parent = ancestors.at(-2);
       if (identifierIsNonReferenceKey(node, parent))
@@ -20625,7 +20967,7 @@ function staticExpressionString(node, staticStrings = new Map) {
 function collectStaticStringBindings(ast) {
   const candidates = new Map;
   const duplicateNames = new Set;
-  walk2.simple(ast, {
+  walk3.simple(ast, {
     VariableDeclaration(node) {
       if (node.kind !== "const")
         return;
@@ -20664,6 +21006,7 @@ var init_validation = __esm(() => {
   init_geometry_catalog();
   init_source_bindings();
   init_authoring_diagnostic();
+  init_source_runtime_checks();
   SANDBOX_CALLABLES = new Set([
     ...listHelperSpecs().map((primitive) => primitive.name).filter((name) => !Object.hasOwn(REMOVED_AUTHORING_HELPERS, name)),
     "Array",
@@ -21994,13 +22337,17 @@ function sampleTrack(track, t, out) {
       out[s] = values[o0 + s] + (values[o1 + s] - values[o0 + s]) * a;
   }
 }
+function declaredLoopIntent(clip) {
+  const intent = clip.userData?.kilnLoopIntent;
+  return intent === "loop" || intent === "once" ? intent : "unspecified";
+}
 function measureLoopClosure(root, clip) {
   const tolerances = { positionDistance: 0.000001, rotationDegrees: 0.001, scaleDistance: 0.000001 };
   const result = {
     version: "kiln.loop-closure.v1",
     status: "incomplete",
-    loopIntent: "unspecified",
-    scope: "Local transform values at time 0 and clip duration; endpoint continuity only. Loop intent, velocity continuity, contacts and collision are not assessed. An open one-shot clip is valid.",
+    loopIntent: declaredLoopIntent(clip),
+    scope: "Local transform values at time 0 and clip duration; endpoint continuity only. loopIntent comes from createClip({ loop }): a declared loop should close, a one-shot (once) may stay open, and unspecified intent cannot tell them apart. Velocity continuity, contacts and collision are not assessed.",
     tolerances,
     checkedTracks: 0,
     unassessedTracks: 0,
@@ -22285,6 +22632,21 @@ function cross3(a, b) {
 function dot4(a, b) {
   return a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
 }
+function compositingOrder(tris, distance) {
+  const opaque = [];
+  const translucent = [];
+  for (const [index, tri] of tris.entries()) {
+    if (tri.alpha >= 1) {
+      opaque.push(tri);
+      continue;
+    }
+    const v = tri.v;
+    const key = distance((v[0] + v[3] + v[6]) / 3, (v[1] + v[4] + v[7]) / 3, (v[2] + v[5] + v[8]) / 3);
+    translucent.push({ tri, key, index });
+  }
+  translucent.sort((a, b) => b.key - a.key || a.index - b.index);
+  return [...opaque, ...translucent.map((entry) => entry.tri)];
+}
 function collectTriangles(root) {
   root.updateMatrixWorld?.(true);
   const tris = [];
@@ -22422,7 +22784,8 @@ function rasterizeView(root, dir, opts = {}) {
   const sx = new Float64Array(3);
   const sy = new Float64Array(3);
   const sz = new Float64Array(3);
-  for (const tri of tris) {
+  const ordered = compositingOrder(tris, (px, py, pz) => -((px - center[0]) * z[0] + (py - center[1]) * z[1] + (pz - center[2]) * z[2]));
+  for (const tri of ordered) {
     const e1 = [tri.v[3] - tri.v[0], tri.v[4] - tri.v[1], tri.v[5] - tri.v[2]];
     const e2 = [tri.v[6] - tri.v[0], tri.v[7] - tri.v[1], tri.v[8] - tri.v[2]];
     const n = cross3(e1, e2);
@@ -22519,8 +22882,10 @@ var init_raster = __esm(() => {
 import { Vector3 as Vector328, Matrix4 as Matrix411, Euler as Euler4 } from "three";
 function strict(value, keys, label) {
   for (const key of Object.keys(value))
-    if (!keys.includes(key))
-      throw new Error(`${label}.${key} is unknown`);
+    if (!keys.includes(key)) {
+      const hint = Object.hasOwn(KEY_HINTS, key) && keys.includes(KEY_HINTS[key]);
+      throw new Error(`${label}.${key} is unknown${hint ? `; use ${KEY_HINTS[key]}` : ""}; accepted keys: ${keys.join(", ")}`);
+    }
 }
 function finite2(n, label) {
   if (!Number.isFinite(n))
@@ -22556,8 +22921,50 @@ function selectCameraSubject(root, subject) {
   const all = listCameraSubjects(root);
   const matches = !subject ? [all[0]] : all.filter((n) => subject.path !== undefined ? n.path === subject.path : n.name === subject.name);
   if (matches.length !== 1)
-    throw new Error(`${matches.length ? "ambiguous" : "missing"} camera subject; choose an exact path: ${all.slice(0, 40).map((n) => n.path).join(", ")}`);
+    throw new Error(subjectError(all, matches, subject));
   return matches[0];
+}
+function pathList(nodes, limit) {
+  const shown = nodes.slice(0, limit).map((n) => n.path);
+  return `${shown.join(", ")}${nodes.length > limit ? `, and ${nodes.length - limit} more` : ""}`;
+}
+function subjectError(all, matches, subject) {
+  const query = subject?.name ?? subject?.path ?? "";
+  if (matches.length > 1)
+    return `ambiguous camera subject: ${matches.length} nodes are named ${JSON.stringify(query)}; choose one path: ${pathList(matches, 20)}`;
+  const wanted = (subject?.name ?? decodeURIComponent(query.split("/").pop() ?? "").replace(/\[\d+\]$/, "")).toLowerCase();
+  const similar = wanted ? all.filter((n) => {
+    const name = n.name.toLowerCase();
+    return name.length > 0 && (name.includes(wanted) || wanted.includes(name));
+  }) : [];
+  const rootPath = all[0]?.path;
+  const misrooted = subject?.path !== undefined && rootPath !== undefined && query !== rootPath && !query.startsWith(`${rootPath}/`);
+  const missing = subject?.name !== undefined ? `no node is named ${JSON.stringify(query)}` : `no node has path ${JSON.stringify(query)}${misrooted ? `; paths start with ${rootPath}` : ""}`;
+  return `missing camera subject: ${missing}${similar.length ? `; similar: ${pathList(similar, 10)}` : `; choose an exact path: ${pathList(all, 40)}`}`;
+}
+function defaultPerspectiveNear(root, position, far) {
+  const FLOOR = 0.001;
+  let deforms = false;
+  root.traverse((node) => {
+    const mesh = node;
+    if (mesh.isSkinnedMesh || (mesh.geometry?.morphAttributes?.["position"]?.length ?? 0) > 0)
+      deforms = true;
+  });
+  if (deforms)
+    return FLOOR;
+  const [px, py, pz] = position;
+  let nearest = Number.POSITIVE_INFINITY;
+  for (const { v } of collectTriangles(root).tris) {
+    const dx = Math.max(Math.min(v[0], v[3], v[6]) - px, 0, px - Math.max(v[0], v[3], v[6]));
+    const dy = Math.max(Math.min(v[1], v[4], v[7]) - py, 0, py - Math.max(v[1], v[4], v[7]));
+    const dz = Math.max(Math.min(v[2], v[5], v[8]) - pz, 0, pz - Math.max(v[2], v[5], v[8]));
+    nearest = Math.min(nearest, Math.sqrt(dx * dx + dy * dy + dz * dz));
+    if (nearest === 0)
+      break;
+  }
+  if (!Number.isFinite(nearest))
+    return FLOOR;
+  return Math.max(FLOOR, Math.min(nearest / 2, far / 2));
 }
 function cameraFromBounds(bounds, dir, padding = 1, up, sceneBounds = bounds) {
   if (!Number.isFinite(padding) || padding <= 0 || padding > 100)
@@ -22735,6 +23142,8 @@ function resolveAssetCamera(root, shot = {}) {
       camera.position = tuple5(vec(camera.position).add(offset));
       camera.target = tuple5(vec(camera.target).add(offset));
     }
+    if (request.projection === "perspective" && request.near === undefined)
+      camera.near = defaultPerspectiveNear(rootNode, camera.position, camera.far);
   } else
     throw new Error("unknown camera type");
   if (shot.visibility !== undefined && !["context", "isolate"].includes(shot.visibility))
@@ -22789,7 +23198,8 @@ function rasterizeCamera(root, input, size = 384, backfaceCull = true, backdrop)
   };
   const key = new Vector328(1.5, 2, 1).normalize();
   const srgb = (n) => n <= 0.0031308 ? n * 12.92 : 1.055 * n ** (1 / 2.4) - 0.055;
-  for (const tri of collectTriangles(root).tris) {
+  const ordered = compositingOrder(collectTriangles(root).tris, (px, py, pz) => camera.projection === "perspective" ? Math.hypot(px - position.x, py - position.y, pz - position.z) : (position.x - px) * z.x + (position.y - py) * z.y + (position.z - pz) * z.z);
+  for (const tri of ordered) {
     const world = [0, 1, 2].map((i) => new Vector328(tri.v[i * 3], tri.v[i * 3 + 1], tri.v[i * 3 + 2]));
     const normal = world[1].clone().sub(world[0]).cross(world[2].clone().sub(world[0])).normalize();
     if (backfaceCull && !tri.doubleSided && normal.dot(camera.projection === "perspective" ? position.clone().sub(world[0]) : z) <= 0)
@@ -22833,10 +23243,18 @@ function rasterizeCamera(root, input, size = 384, backfaceCull = true, backdrop)
   }
   return out;
 }
-var vec = (a) => new Vector328(...a), tuple5 = (v) => [v.x || 0, v.y || 0, v.z || 0];
+var vec = (a) => new Vector328(...a), tuple5 = (v) => [v.x || 0, v.y || 0, v.z || 0], KEY_HINTS;
 var init_camera = __esm(() => {
   init_raster();
   init_background();
+  KEY_HINTS = {
+    fov: "fovDeg",
+    fovY: "fovDeg",
+    fieldOfView: "fovDeg",
+    lookAt: "target",
+    azimuth: "azimuthDeg",
+    elevation: "elevationDeg"
+  };
 });
 
 // src/composer/render-port.ts
@@ -23908,6 +24326,18 @@ function resolveCamera(name) {
   const key = (name ?? "right").trim().toLowerCase().replace(/[_\s]+/g, "-");
   return ANIM_CAMERAS[key] ?? ANIM_CAMERAS[ANIM_CAMERA_ALIASES[key] ?? ""] ?? ANIM_CAMERAS["right"];
 }
+function worldOrigin(node) {
+  const e = node.matrixWorld.elements;
+  return [e[12], e[13], e[14]];
+}
+function boxDistance(point, box) {
+  let sum = 0;
+  for (let a = 0;a < 3; a++) {
+    const d = Math.max(box.min[a] - point[a], 0, point[a] - box.max[a]);
+    sum += d * d;
+  }
+  return Math.sqrt(sum);
+}
 async function renderClipAnimation(root, clips, opts = {}) {
   const size = opts.size ?? 256;
   const frameCount = Math.max(2, Math.min(opts.frames ?? 6, 6));
@@ -23963,7 +24393,8 @@ async function renderClipAnimation(root, clips, opts = {}) {
         parts: measuredParts.map(({ path, name, node }) => ({
           path,
           name,
-          bounds: measurePartBounds(node)
+          bounds: measurePartBounds(node),
+          origin: worldOrigin(node)
         }))
       } : {}
     });
@@ -23984,6 +24415,19 @@ async function renderClipAnimation(root, clips, opts = {}) {
   if (initialShot && opts.shot?.camera?.type !== "explicit" && frameBounds) {
     const dir = initialShot.camera.position.map((v, i) => v - initialShot.camera.target[i]);
     lockedCamera = cameraFromBounds(frameBounds, dir, opts.shot?.camera?.type === "orbit" ? opts.shot.camera.padding ?? 1.2 : 1.2, initialShot.camera.up);
+  }
+  const lens = opts.shot?.camera;
+  if (lockedCamera && opts.framing !== "follow" && lens?.type === "explicit" && lens.projection === "perspective" && lens.near === undefined) {
+    const union = { min: [...poseBounds[0].scene.min], max: [...poseBounds[0].scene.max] };
+    for (const { scene } of poseBounds)
+      for (let a = 0;a < 3; a++) {
+        union.min[a] = Math.min(union.min[a], scene.min[a]);
+        union.max[a] = Math.max(union.max[a], scene.max[a]);
+      }
+    lockedCamera = {
+      ...lockedCamera,
+      near: Math.max(0.001, Math.min(lockedCamera.near, boxDistance(lockedCamera.position, union) / 2))
+    };
   }
   const cameraShots = [];
   const labelScale = Math.max(2, Math.round(size / 80));
@@ -24285,6 +24729,7 @@ var init_character_capture = __esm(() => {
 // src/render.ts
 import * as THREE39 from "three";
 import { Document, getBounds } from "@gltf-transform/core";
+import { KHRMaterialsEmissiveStrength } from "@gltf-transform/extensions";
 import {
   dedup,
   instance,
@@ -24387,17 +24832,32 @@ async function executeKilnCode(code, options = {}) {
 return { meta: typeof meta !== 'undefined' ? meta : {}, build, animate: typeof animate !== 'undefined' ? animate : null };`);
     const { meta, build, animate } = fn(...globalValues);
     if (typeof build !== "function") {
-      throw new Error("executeKilnCode: generated code did not define `build`");
+      throw new AuthoringDiagnosticError("BUILD_RESULT", "executeKilnCode: generated code did not define `build`");
     }
     const root = await build();
     if (!root?.isObject3D) {
-      throw new Error("executeKilnCode: build() did not return a THREE.Object3D");
+      throw new AuthoringDiagnosticError("BUILD_RESULT", "executeKilnCode: build() did not return a THREE.Object3D");
     }
     const clips = animate ? await animate(root) ?? [] : [];
     return { meta: meta ?? {}, root, clips, primitiveUsage };
   } catch (error) {
     rethrowAuthoringError(error);
   }
+}
+function bridgeEmissive(doc, target, source) {
+  const color = source.emissive;
+  if (!color)
+    return;
+  const intensity = source.emissiveIntensity ?? 1;
+  const scale = Number.isFinite(intensity) ? Math.max(0, intensity) : 1;
+  const emitted = [color.r * scale, color.g * scale, color.b * scale];
+  const peak = Math.max(...emitted);
+  if (!(peak > 1)) {
+    target.setEmissiveFactor(emitted);
+    return;
+  }
+  target.setEmissiveFactor([emitted[0] / peak, emitted[1] / peak, emitted[2] / peak]);
+  target.setExtension("KHR_materials_emissive_strength", doc.createExtension(KHRMaterialsEmissiveStrength).createEmissiveStrength().setEmissiveStrength(peak));
 }
 function bridgeMaterial(doc, threeMat, cache, textureCache) {
   const cached = cache.get(threeMat);
@@ -24410,9 +24870,7 @@ function bridgeMaterial(doc, threeMat, cache, textureCache) {
     mat.setBaseColorFactor([stdMat.color.r, stdMat.color.g, stdMat.color.b, stdMat.opacity]);
     mat.setRoughnessFactor(stdMat.roughness);
     mat.setMetallicFactor(stdMat.metalness);
-    if (stdMat.emissive) {
-      mat.setEmissiveFactor([stdMat.emissive.r, stdMat.emissive.g, stdMat.emissive.b]);
-    }
+    bridgeEmissive(doc, mat, stdMat);
     if (stdMat.alphaTest > 0) {
       mat.setAlphaMode("MASK");
       mat.setAlphaCutoff(stdMat.alphaTest);
@@ -24457,9 +24915,7 @@ function bridgeMaterial(doc, threeMat, cache, textureCache) {
     mat.setBaseColorFactor([lambMat.color.r, lambMat.color.g, lambMat.color.b, lambMat.opacity]);
     mat.setRoughnessFactor(1);
     mat.setMetallicFactor(0);
-    if (lambMat.emissive) {
-      mat.setEmissiveFactor([lambMat.emissive.r, lambMat.emissive.g, lambMat.emissive.b]);
-    }
+    bridgeEmissive(doc, mat, lambMat);
   } else if (matFlags.isMeshBasicMaterial) {
     const basicMat = threeMat;
     mat.setBaseColorFactor([
@@ -24700,6 +25156,24 @@ function bridgeAnimations(doc, buf, clips, nodeMap, warnings) {
       anim.dispose();
   }
 }
+function clipLoopIntent(clip) {
+  const intent = clip.userData?.kilnLoopIntent;
+  return intent === "loop" || intent === "once" ? intent : undefined;
+}
+function finishNativeAnimations(doc, clips) {
+  const animations = doc.getRoot().listAnimations();
+  let complete = true;
+  for (const clip of clips) {
+    const matches = animations.filter((animation) => animation.getName() === clip.name);
+    const animation = matches.length === 1 ? matches[0] : undefined;
+    if (!animation || animation.listChannels().length !== clip.tracks.length)
+      complete = false;
+    const intent = clipLoopIntent(clip);
+    if (animation && intent)
+      animation.setExtras({ ...animation.getExtras(), kilnLoopIntent: intent });
+  }
+  return complete && animations.length === clips.length;
+}
 function reviewClipExtras(clips) {
   if (clips.length > REVIEW_CLIP_LIMITS.clips) {
     throw new Error(`Animation review clip limit exceeded (${REVIEW_CLIP_LIMITS.clips}).`);
@@ -24710,6 +25184,7 @@ function reviewClipExtras(clips) {
     clips: clips.map((clip) => ({
       name: clip.name,
       duration: clip.duration,
+      ...clipLoopIntent(clip) ? { loopIntent: clipLoopIntent(clip) } : {},
       tracks: clip.tracks.map((track) => {
         trackCount++;
         if (trackCount > REVIEW_CLIP_LIMITS.tracks) {
@@ -24743,6 +25218,9 @@ function resolveInstance(opt) {
 function hasJointPivots(doc) {
   return doc.getRoot().listNodes().some((n) => /^joint[_-]/i.test(n.getName()));
 }
+function hasNodeLevelsOfDetail(doc) {
+  return doc.getRoot().listNodes().some((n) => n.getExtension(MSFT_LOD) !== null);
+}
 async function applyGpuInstancing(doc, mode, role) {
   if (mode === "off")
     return;
@@ -24751,7 +25229,7 @@ async function applyGpuInstancing(doc, mode, role) {
   const root = doc.getRoot();
   if (root.listAnimations().length > 0 || root.listSkins().length > 0)
     return;
-  if (hasJointPivots(doc))
+  if (hasJointPivots(doc) || hasNodeLevelsOfDetail(doc))
     return;
   const before = collectGlbMetrics(doc);
   await doc.transform(instance({ min: INSTANCE_MIN }));
@@ -24774,7 +25252,7 @@ async function consolidateMaterials(doc, mode) {
   const root = doc.getRoot();
   const animatedOrSkinned = root.listAnimations().length > 0 || root.listSkins().length > 0;
   const semanticGraph = root.listNodes().some((node) => node.getExtras()[KILN_SEMANTIC_EXTRAS_KEY] !== undefined);
-  const effective = mode === "full" && (animatedOrSkinned || semanticGraph) ? "palette" : mode;
+  const effective = mode === "full" && (animatedOrSkinned || semanticGraph || hasNodeLevelsOfDetail(doc)) ? "palette" : mode;
   const steps = [palette({ min: PALETTE_MIN })];
   if (effective === "full") {
     steps.push(flatten(), join({ keepNamed: true }));
@@ -24831,16 +25309,21 @@ async function renderSceneToGLB(root, opts = {}) {
     const gltfScene = doc.createScene(opts.sceneName ?? "Scene").addChild(rootNode);
     doc.getRoot().setDefaultScene(gltfScene);
     if (clips.length > 0) {
-      gltfScene.setExtras({ [REVIEW_CLIPS_EXTRAS_KEY]: reviewClipExtras(clips) });
+      const review = reviewClipExtras(clips);
       bridgeAnimations(doc, buf, nativeClips, nodeMap, warnings);
+      if (!finishNativeAnimations(doc, nativeClips))
+        gltfScene.setExtras({ [REVIEW_CLIPS_EXTRAS_KEY]: review });
     }
   } else {
     const scene = doc.getRoot().getDefaultScene() ?? doc.getRoot().listScenes()[0];
     if (!scene)
       throw new Error("Community exporter produced no scene.");
     scene.setName(opts.sceneName ?? "Scene");
-    if (clips.length > 0)
-      scene.setExtras({ [REVIEW_CLIPS_EXTRAS_KEY]: reviewClipExtras(clips) });
+    if (clips.length > 0) {
+      const review = reviewClipExtras(clips);
+      if (!finishNativeAnimations(doc, nativeClips))
+        scene.setExtras({ [REVIEW_CLIPS_EXTRAS_KEY]: review });
+    }
   }
   if (opts.dedup !== false) {
     try {
@@ -25163,6 +25646,7 @@ var init_render = __esm(() => {
   init_rig_export();
   init_geometry_export();
   init_primitives();
+  init_metrics();
   init_contracts();
   init_gltf();
   init_run();
@@ -25243,7 +25727,7 @@ async function evaluateEvaluatorRequestV2(requestJson, dependencies = {}, contro
     } else if (error instanceof EvaluatorPortError && error.code === "DEADLINE_EXCEEDED") {
       wire = failure(request.requestId, "DEADLINE_EXCEEDED");
     } else {
-      wire = failure(request.requestId, "EXECUTION_REJECTED", error instanceof AuthoringDiagnosticError ? error.diagnostic : undefined);
+      wire = failure(request.requestId, "EXECUTION_REJECTED", programErrorDiagnostic(error));
     }
   } finally {
     clearTimeout(timer);

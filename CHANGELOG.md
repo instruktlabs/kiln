@@ -3,7 +3,112 @@
 Changes to `@kiln/engine`. Source and installable packages are distributed through
 GitHub. The package is not published on the npm registry.
 
-## 0.8.0 (source update; official package pending)
+## 0.9.0
+
+Kiln 0.9.0 adds optional projects, a material library and Live Review to standalone
+authoring, makes the calibrated `review-neutral-v1` rig the default for review views,
+and fixes the defects authors reported while using 0.8. Standalone assets need no
+project. The [migration notes](docs/migration.md#changes-in-090) list every change an
+existing author will notice; the [foundation checkpoint](docs/plans/2026-09-26-project-foundation.md)
+records how projects, materials and Live Review were qualified.
+
+### Projects, materials and Live Review
+
+- **Optional projects.** `kiln_project` and `node kiln.mjs project` create, read and
+  update immutable, versioned project records: brief, inventory, design profile,
+  references, delivery intent and an exact material dependency lock. Updates name the
+  expected revision and report conflicts. Work stays standalone unless an operation
+  selects a project (`--project`, MCP `projectId`) or the host configures
+  `KILN_PROJECT`; `--no-project` and `projectId: null` override that default. The
+  collection named `project` remains only a save destination.
+- **Material library.** `kiln_material` and `node kiln.mjs material` keep immutable
+  material revisions with creator, license, recipe, seed and source provenance. Five
+  offline procedural presets (`warm-brick`, `wood-grain`, `brushed-metal`,
+  `woven-fabric`, `coarse-soil`) each produce base colour, normal and packed
+  metallic/roughness maps. Custom procedural drafts, normal-from-height derivation and
+  complete payload import and export are supported. Source compiles a returned
+  `portableSpec` with `compilePortableMaterialSpecV2`; the exact pins travel as
+  `materialDependencies` or `--materials`.
+- **Live Review.** `node kiln.mjs view` opens the local dashboard: Library, Materials,
+  Projects and Live Review. Live Review shows the exact retained artifacts, captures
+  and fidelity of CLI and MCP operations, with iterations, errors, pinning, comparison
+  and reconnection. `kiln_review` lists, gets and pins observed operations and saves an
+  exact reviewed operation. `KILN_WORK_ITEM` optionally groups one authoring item across
+  sessions. The Measure control records a bounded browser load and frame sample.
+- **Delivery.** `project export --profile editable|runtime` packages a project's linked
+  saved revisions; editable packages rebuild offline from source, settings and
+  complete material resources, and `asset ... --rebuild` reports artifact hash equality.
+  The Library aggregates configured collections with collection-qualified IDs.
+- **Seventeen MCP tools.** The packaged stdio server lists the fourteen program tools
+  plus `kiln_project`, `kiln_material` and `kiln_review`. Embeddings advertise those
+  three only when their host services are supplied.
+
+### Review lighting and provenance
+
+- **`review-neutral-v1` is the default review rig**: a calibrated white rig with
+  Review Neutral, a Khronos PBR Neutral variant. A key-facing matte `#C0362C` panel
+  reads `(193,51,40)` instead of `(255,177,147)`; mean CIEDE2000 over the ColorChecker
+  chart falls from 28.09 to 0.51. `neutral-studio-v1` and `gallery-studio-v1` stay
+  selectable by explicit lighting ID, captures without one re-render after the upgrade,
+  and composer's unsupported `neutral-studio-v2` default becomes `review-neutral-v1`.
+  Do not darken albedo for review lighting.
+- The CLI honours `KILN_RENDER` on every renderer-selecting path: an explicit
+  `--render` wins, then `KILN_RENDER`, then auto.
+- Saved builds record the installed engine under every build-cache policy, and an
+  absent optional peer is fingerprinted as peer-absent instead of erasing the runtime
+  identity.
+
+### Fixes from author reports
+
+- **Smaller results.** MCP `kiln_render` and `kiln_screenshot_animation` are compact by
+  default; `detail: "full"` returns every finding and rule. On the carousel example a
+  render result falls from 34,904 to 7,706 characters. `kiln_view_interior`,
+  `kiln_inspect` and `kiln_edit` are compact too; the CLI, retained artifacts and Live
+  Review keep complete reports.
+- **Sizes and files.** Animation composites take a frame `size` of 128 to 1024 px
+  (default 256). Versioned capture shots go up to 2048 px. `--capture` with
+  `output: "separate"` writes `<stem>.shot-01.png` and onward.
+- **Animation.** `createClip(name, duration, tracks, { loop })` records loop intent,
+  exported as the animation extra `kilnLoopIntent` and checked by review
+  (`LOOP_NOT_CLOSED`). GLBs no longer duplicate every clip as the `kilnReviewClipsV1`
+  scene extra.
+- **Views.** Saved previews drawn from the persisted GLB record `exactArtifact: true`.
+  Isolated capture shots send the GPU only the subject. CPU views draw translucent
+  surfaces after opaque ones, farthest first, so glass shows what is behind it. An
+  explicit perspective camera without `near` sets it from the nearest geometry.
+- **Geometry and export.** `extrudeProfile` adds no side rings unless `divisions` asks
+  (16 by default when twisted). `sweepProfile` keeps hard corners (`creaseAngle` 60)
+  and can cap one end. Emissive intensity survives export, above 1 through
+  `KHR_materials_emissive_strength`. `MSFT_lod` chains survive import, save,
+  optimisation and export.
+- **Diagnostics.** A build that throws names a closed cause with advice and a
+  `Source check:`; `kiln_validate` reports `TEMPORAL_DEAD_ZONE`,
+  `MATERIAL_RECIPE_OVERRIDE` and `MATERIAL_RECIPE_ID`. Overlap QA skips LOD
+  alternates, tests the likeliest pairs first and groups unmeasurable parts;
+  connectivity leaves out LOD1+ parts. Repeated helper notes appear once with a mesh
+  count. The instanceability grade says it is informational, the blend-area budget
+  names its largest materials, and `kiln_inspect` evaluates without optimisation.
+- **Errors that name candidates.** Ambiguous and missing subjects, unknown camera keys
+  (`fovDeg` for `fov`) and bare `surfacePairs` paths list what would have matched.
+  Animation `measureParts` entries carry each node's world origin.
+- **Setup and CLI.** A workspace's `kiln.mjs` re-executes under the Node recorded at
+  setup, so CLI exports equal `kiln_save` bytes. `.kiln/workspace.json` names the
+  bundle `buildIdentity`, apart from the installed `runtimeIdentity`. The viewer
+  accepts `localhost` and `[::1]`; Git Bash collection roots are refused on Windows.
+  `kiln edit` and `kiln source` accept `--json`, `kiln service start` joins or starts
+  the shared renderer, and a render URL naming the shared local socket takes the local
+  route.
+
+### Output that changes on upgrade
+
+Review colours under the new rig (assets darkened for the old rig look too dark);
+untwisted `extrudeProfile` triangle counts; `sweepProfile` shading of triangular, square and
+pentagonal profiles (pass `creaseAngle: 180` for the old smooth look); GLB bytes
+of emissive and animated assets; images from explicit perspective cameras without
+`near`; CPU images through glass; GPU isolated shots; MCP result size and shape
+(`detail: "full"` restores the complete report).
+
+## 0.8.0 (source update)
 
 The 0.8.0 source update exposes Original GLB and Runtime GLB downloads in the local
 viewer and public gallery, with companion runtime metadata and unchanged canonical
@@ -55,7 +160,7 @@ remaining limits are recorded in the [progress checkpoint](docs/plans/2026-09-22
 The development entries below retain earlier changes and may describe intermediate
 interfaces superseded by this version; use the current tool and migration guides.
 
-## Unreleased: Test suite holds under a loaded runner
+### Test suite holds under a loaded runner
 
 - The test scripts and CI set a 20 s per-test budget instead of Bun's 5 s default. Tests that take
   under a second locally (a cold CLI spawn, the first `sharp` decode in a file) had timed out at 5 s
@@ -67,7 +172,7 @@ interfaces superseded by this version; use the current tool and migration guides
   directories that a just-killed process tree still holds are removed with retries instead of
   failing the run with `EBUSY`.
 
-## Unreleased: Neutral view backdrop, and a named backdrop per capture
+### Neutral view backdrop, and a named backdrop per capture
 
 - **Every contact sheet is now painted on the neutral studio grey `#aab1bc` instead of near-black
   `#1a1a1a`.** The old value was pinned in PR #13 for CPU/GPU parity and never revisited; a dark
@@ -115,7 +220,7 @@ interfaces superseded by this version; use the current tool and migration guides
   preview used to be painted on the default whatever sheet had been accepted, so a grey asset
   reviewed on `dark` was stored merging with the grey it had just been moved off.
 
-## Unreleased: Experimental community exporter and engine handoff
+### Experimental community exporter and engine handoff
 
 - The established GLB exporter remains the default. Builds containing this integration also
   provide an experimental Three.js exporter for explicit comparison; no separate repository
@@ -127,7 +232,7 @@ interfaces superseded by this version; use the current tool and migration guides
   [qualification report](docs/evaluation/community-exporter.md). The candidate is not yet
   qualified to replace the default for all supported workflows.
 
-## Unreleased: Saved-asset export profiles
+### Saved-asset export profiles
 
 - Keep byte-preserving `editable` exports as the default. Opt-in `runtime` exports
   move Kiln's duplicated scene review clips to a versioned, hash-linked sidecar,

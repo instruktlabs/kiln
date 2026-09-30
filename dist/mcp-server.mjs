@@ -68,6 +68,16 @@ var init_texture_contract = __esm(() => {
 
 // src/evaluator/authoring-diagnostic.ts
 function authoringDiagnosticAdvice(diagnostic) {
+  if (diagnostic === "UNINITIALIZED_BINDING")
+    return UNINITIALIZED_BINDING_ADVICE;
+  if (diagnostic === "BUILD_RESULT")
+    return BUILD_RESULT_ADVICE;
+  if (diagnostic === "MATERIAL_RECIPE_OVERRIDE")
+    return MATERIAL_RECIPE_OVERRIDE_ADVICE;
+  if (diagnostic === "PROGRAM_TYPE_ERROR")
+    return PROGRAM_TYPE_ERROR_ADVICE;
+  if (diagnostic === "PROGRAM_RANGE_ERROR")
+    return PROGRAM_RANGE_ERROR_ADVICE;
   if (diagnostic === "MESH_DATA_NONFINITE")
     return "meshGeo positions, normals, UVs and tangents must contain finite numbers representable in Float32. Check missing XYZ components, undefined values, division by zero and overflowing calculations before constructing the arrays. Do not replace invalid values blindly with zero; correct the source calculation. Call kiln_discover for the exact meshGeo data contract.";
   if (diagnostic === "PORTABLE_COLOR_ARGUMENT")
@@ -122,7 +132,7 @@ function rethrowAuthoringError(error) {
   }
   throw error;
 }
-var UNBOUND_VARIABLE_ADVICE = "Check variable spelling and scope: generated code used an undeclared variable. Read the current source and check declarations before retrying. If it was meant to be a Kiln helper, call kiln_discover to confirm the exact name and signature; the sandbox exposes only those globals.", GEAR_RADII_ORDER_ADVICE = "gearGeo requires boreRadius < rootRadius < tipRadius; specify rootRadius when changing tipRadius. Omitted radii keep their absolute defaults.", ROUNDED_BOX_RADIUS_ADVICE = "roundedBoxGeo: radius must be less than half the smallest dimension. Reduce radius or increase the smallest dimension; equality is invalid.", PROCEDURAL_TEXTURE_UNKNOWN_KEY_ADVICE = 'Remove unsupported proceduralTexture fields. Call kiln_discover with ids ["proceduralTexture"] and use only the documented fields for the selected layer op.', MATERIAL_FRACTION_RANGE_ADVICE = "Material fractions must be finite numbers between 0 and 1, inclusive. In proceduralTexture, mortarWidth and stagger are fractions, not pixels; opacity uses the same range. materialRecipe roughness, metalness, opacity, alphaCutoff and emissiveIntensity use 0..1. portableMaterial roughness, metalness and alphaCutoff also use 0..1; its emissiveIntensity has a separate 0..64 range. Call kiln_discover for the exact field contracts.", PARAMETRIC_PERIODIC_ENDPOINT_ADVICE = "Periodic parametricSurface endpoints must return matching positions. For periodicU, sample(uMin, v) and sample(uMax, v) must match; for periodicV, sample(u, vMin) and sample(u, vMax) must match.", PROFILE_HOLES_UNSUPPORTED_ADVICE = "loftProfiles and sweepProfile: holes are unsupported in options or sections. Use extrudeProfile for a holed cross-section with optional twist/taper; independently varying contours need explicit geometry or solid subtraction. cap:false does not create inner walls or thickness.", PROFILE_CORRESPONDENCE_COLLAPSE_ADVICE = "loftProfiles or sweepProfile: corresponding profile edges collapse between stations. Check matching start vertices and vertex order; for an intended twist, add intermediate sections or path stations. No automatic correspondence repair is applied. Other self-intersections remain unchecked.", AuthoringDiagnosticError;
+var UNBOUND_VARIABLE_ADVICE = "Check variable spelling and scope: generated code used an undeclared variable. Read the current source and check declarations before retrying. If it was meant to be a Kiln helper, call kiln_discover to confirm the exact name and signature; the sandbox exposes only those globals.", GEAR_RADII_ORDER_ADVICE = "gearGeo requires boreRadius < rootRadius < tipRadius; specify rootRadius when changing tipRadius. Omitted radii keep their absolute defaults.", ROUNDED_BOX_RADIUS_ADVICE = "roundedBoxGeo: radius must be less than half the smallest dimension. Reduce radius or increase the smallest dimension; equality is invalid.", PROCEDURAL_TEXTURE_UNKNOWN_KEY_ADVICE = 'Remove unsupported proceduralTexture fields. Call kiln_discover with ids ["proceduralTexture"] and use only the documented fields for the selected layer op.', MATERIAL_FRACTION_RANGE_ADVICE = "Material fractions must be finite numbers between 0 and 1, inclusive. In proceduralTexture, mortarWidth and stagger are fractions, not pixels; opacity uses the same range. materialRecipe roughness, metalness, opacity, alphaCutoff and emissiveIntensity use 0..1. portableMaterial roughness, metalness and alphaCutoff also use 0..1; its emissiveIntensity has a separate 0..64 range. Call kiln_discover for the exact field contracts.", PARAMETRIC_PERIODIC_ENDPOINT_ADVICE = "Periodic parametricSurface endpoints must return matching positions. For periodicU, sample(uMin, v) and sample(uMax, v) must match; for periodicV, sample(u, vMin) and sample(u, vMax) must match.", PROFILE_HOLES_UNSUPPORTED_ADVICE = "loftProfiles and sweepProfile: holes are unsupported in options or sections. Use extrudeProfile for a holed cross-section with optional twist/taper; independently varying contours need explicit geometry or solid subtraction. cap:false does not create inner walls or thickness.", PROFILE_CORRESPONDENCE_COLLAPSE_ADVICE = "loftProfiles or sweepProfile: corresponding profile edges collapse between stations. Check matching start vertices and vertex order; for an intended twist, add intermediate sections or path stations. No automatic correspondence repair is applied. Other self-intersections remain unchecked.", UNINITIALIZED_BINDING_ADVICE = "A const, let or class binding was read before its declaration ran (temporal dead zone). Move the declaration above the first code that reads it; top-level constants must be declared before other top-level code uses them. kiln_validate names the binding and line when the read runs immediately.", BUILD_RESULT_ADVICE = 'Define a top-level function build() (it may be async) that returns the root Object3D, for example const root = createRoot("Name"); ...; return root;. A build() that returns nothing, or returns a geometry or material, is rejected.', MATERIAL_RECIPE_OVERRIDE_ADVICE = 'materialRecipe takes a listed kiln.material.*.v1 ID and only the overrides that recipe allows; the allowed overrides differ by recipe (the emissive recipe has no metalness). Call kiln_discover with ids ["materialRecipe"] to see what each recipe allows; kiln_validate names the recipe and key when both are literals.', PROGRAM_TYPE_ERROR_ADVICE = "The program or a helper it called threw a TypeError: a value had the wrong type. Usually something is undefined (a function without a return, an un-awaited async helper such as roundedBoxGeo, extrudeProfile or materialRecipe, or a misspelt property) or a non-function was called. Run kiln_validate, then check the helper contract with kiln_discover.", PROGRAM_RANGE_ERROR_ADVICE = "The program or a helper it called threw a RangeError: a number was outside its allowed range, for example a non-positive size, an invalid array length or segment count, or unbounded recursion. Check the helper arguments against kiln_discover.", AuthoringDiagnosticError;
 var init_authoring_diagnostic = __esm(() => {
   AuthoringDiagnosticError = class AuthoringDiagnosticError extends Error {
     diagnostic;
@@ -2870,7 +2880,7 @@ function validateMaterialRecipeRequestV1(value) {
     issues.push({
       code: "UNSUPPORTED_RECIPE_ID",
       path: "id",
-      message: `Unsupported material recipe ID ${JSON.stringify(value.id)}.`
+      message: `Unsupported material recipe ID ${JSON.stringify(value.id)}. Listed IDs: ${MATERIAL_RECIPE_IDS.join(", ")}.`
     });
   }
   if (value.overrides !== undefined && !isRecord(value.overrides)) {
@@ -2887,7 +2897,7 @@ function validateMaterialRecipeRequestV1(value) {
         issues.push({
           code: "UNSUPPORTED_OVERRIDE",
           path: `overrides.${key}`,
-          message: `Unknown material recipe override ${JSON.stringify(key)}.`
+          message: `Unknown material recipe override ${JSON.stringify(key)}; ${value.id} accepts ${[...allowed].join(", ")}.`
         });
         continue;
       }
@@ -2895,7 +2905,7 @@ function validateMaterialRecipeRequestV1(value) {
         issues.push({
           code: "UNSUPPORTED_OVERRIDE",
           path: `overrides.${key}`,
-          message: `${key} is not supported by ${value.id}.`
+          message: `${key} is not supported by ${value.id}; it accepts ${[...allowed].join(", ")}.`
         });
         continue;
       }
@@ -3000,6 +3010,13 @@ function recipeValidationError(issues) {
     "RESOURCE_RECIPE_MISMATCH"
   ].includes(issue.code) || issue.code === "INVALID_OVERRIDE_VALUE" && issue.path === "overrides.textureResources"))
     return new AuthoringDiagnosticError("MATERIAL_RECIPE_TEXTURE_BINDING", message);
+  if (issues.some((issue) => [
+    "UNSUPPORTED_RECIPE_ID",
+    "UNSUPPORTED_OVERRIDE",
+    "INVALID_OVERRIDES",
+    "UNSUPPORTED_SCHEMA_VERSION"
+  ].includes(issue.code)))
+    return new AuthoringDiagnosticError("MATERIAL_RECIPE_OVERRIDE", message);
   return new TypeError(message);
 }
 function createMaterialRecipeRequestV1(id, overrides) {
@@ -4320,6 +4337,21 @@ function cross(a, b) {
 function dot(a, b) {
   return a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
 }
+function compositingOrder(tris, distance) {
+  const opaque = [];
+  const translucent = [];
+  for (const [index, tri] of tris.entries()) {
+    if (tri.alpha >= 1) {
+      opaque.push(tri);
+      continue;
+    }
+    const v = tri.v;
+    const key = distance((v[0] + v[3] + v[6]) / 3, (v[1] + v[4] + v[7]) / 3, (v[2] + v[5] + v[8]) / 3);
+    translucent.push({ tri, key, index });
+  }
+  translucent.sort((a, b) => b.key - a.key || a.index - b.index);
+  return [...opaque, ...translucent.map((entry) => entry.tri)];
+}
 function collectTriangles(root) {
   root.updateMatrixWorld?.(true);
   const tris = [];
@@ -4457,7 +4489,8 @@ function rasterizeView(root, dir, opts = {}) {
   const sx = new Float64Array(3);
   const sy = new Float64Array(3);
   const sz = new Float64Array(3);
-  for (const tri of tris) {
+  const ordered = compositingOrder(tris, (px, py, pz) => -((px - center[0]) * z[0] + (py - center[1]) * z[1] + (pz - center[2]) * z[2]));
+  for (const tri of ordered) {
     const e1 = [tri.v[3] - tri.v[0], tri.v[4] - tri.v[1], tri.v[5] - tri.v[2]];
     const e2 = [tri.v[6] - tri.v[0], tri.v[7] - tri.v[1], tri.v[8] - tri.v[2]];
     const n = cross(e1, e2);
@@ -4573,8 +4606,10 @@ var init_raster = __esm(() => {
 import { Vector3, Matrix4, Euler } from "three";
 function strict(value, keys, label) {
   for (const key of Object.keys(value))
-    if (!keys.includes(key))
-      throw new Error(`${label}.${key} is unknown`);
+    if (!keys.includes(key)) {
+      const hint = Object.hasOwn(KEY_HINTS, key) && keys.includes(KEY_HINTS[key]);
+      throw new Error(`${label}.${key} is unknown${hint ? `; use ${KEY_HINTS[key]}` : ""}; accepted keys: ${keys.join(", ")}`);
+    }
 }
 function finite2(n, label) {
   if (!Number.isFinite(n))
@@ -4610,8 +4645,50 @@ function selectCameraSubject(root, subject) {
   const all = listCameraSubjects(root);
   const matches = !subject ? [all[0]] : all.filter((n) => subject.path !== undefined ? n.path === subject.path : n.name === subject.name);
   if (matches.length !== 1)
-    throw new Error(`${matches.length ? "ambiguous" : "missing"} camera subject; choose an exact path: ${all.slice(0, 40).map((n) => n.path).join(", ")}`);
+    throw new Error(subjectError(all, matches, subject));
   return matches[0];
+}
+function pathList(nodes, limit) {
+  const shown = nodes.slice(0, limit).map((n) => n.path);
+  return `${shown.join(", ")}${nodes.length > limit ? `, and ${nodes.length - limit} more` : ""}`;
+}
+function subjectError(all, matches, subject) {
+  const query = subject?.name ?? subject?.path ?? "";
+  if (matches.length > 1)
+    return `ambiguous camera subject: ${matches.length} nodes are named ${JSON.stringify(query)}; choose one path: ${pathList(matches, 20)}`;
+  const wanted = (subject?.name ?? decodeURIComponent(query.split("/").pop() ?? "").replace(/\[\d+\]$/, "")).toLowerCase();
+  const similar = wanted ? all.filter((n) => {
+    const name = n.name.toLowerCase();
+    return name.length > 0 && (name.includes(wanted) || wanted.includes(name));
+  }) : [];
+  const rootPath = all[0]?.path;
+  const misrooted = subject?.path !== undefined && rootPath !== undefined && query !== rootPath && !query.startsWith(`${rootPath}/`);
+  const missing = subject?.name !== undefined ? `no node is named ${JSON.stringify(query)}` : `no node has path ${JSON.stringify(query)}${misrooted ? `; paths start with ${rootPath}` : ""}`;
+  return `missing camera subject: ${missing}${similar.length ? `; similar: ${pathList(similar, 10)}` : `; choose an exact path: ${pathList(all, 40)}`}`;
+}
+function defaultPerspectiveNear(root, position, far) {
+  const FLOOR = 0.001;
+  let deforms = false;
+  root.traverse((node) => {
+    const mesh = node;
+    if (mesh.isSkinnedMesh || (mesh.geometry?.morphAttributes?.["position"]?.length ?? 0) > 0)
+      deforms = true;
+  });
+  if (deforms)
+    return FLOOR;
+  const [px, py, pz] = position;
+  let nearest = Number.POSITIVE_INFINITY;
+  for (const { v } of collectTriangles(root).tris) {
+    const dx = Math.max(Math.min(v[0], v[3], v[6]) - px, 0, px - Math.max(v[0], v[3], v[6]));
+    const dy = Math.max(Math.min(v[1], v[4], v[7]) - py, 0, py - Math.max(v[1], v[4], v[7]));
+    const dz = Math.max(Math.min(v[2], v[5], v[8]) - pz, 0, pz - Math.max(v[2], v[5], v[8]));
+    nearest = Math.min(nearest, Math.sqrt(dx * dx + dy * dy + dz * dz));
+    if (nearest === 0)
+      break;
+  }
+  if (!Number.isFinite(nearest))
+    return FLOOR;
+  return Math.max(FLOOR, Math.min(nearest / 2, far / 2));
 }
 function cameraFromBounds(bounds, dir, padding = 1, up, sceneBounds = bounds) {
   if (!Number.isFinite(padding) || padding <= 0 || padding > 100)
@@ -4789,6 +4866,8 @@ function resolveAssetCamera(root, shot = {}) {
       camera.position = tuple(vec(camera.position).add(offset));
       camera.target = tuple(vec(camera.target).add(offset));
     }
+    if (request.projection === "perspective" && request.near === undefined)
+      camera.near = defaultPerspectiveNear(rootNode, camera.position, camera.far);
   } else
     throw new Error("unknown camera type");
   if (shot.visibility !== undefined && !["context", "isolate"].includes(shot.visibility))
@@ -4819,6 +4898,25 @@ async function withCameraVisibility(root, shot, run) {
       node.visible = visible;
   }
 }
+function withoutHiddenMeshes(root) {
+  const hidden = (node) => node.isMesh === true && node.visible === false;
+  let any = false;
+  root.traverse((node) => {
+    if (hidden(node))
+      any = true;
+  });
+  if (!any)
+    return root;
+  const copy = root.clone(true);
+  const drop = [];
+  copy.traverse((node) => {
+    if (hidden(node))
+      drop.push(node);
+  });
+  for (const node of drop)
+    node.removeFromParent();
+  return copy;
+}
 function rasterizeCamera(root, input, size = 384, backfaceCull = true, backdrop) {
   const camera = validateResolvedAssetCamera(input);
   const bg = resolveBackdrop(backdrop).rgb;
@@ -4843,7 +4941,8 @@ function rasterizeCamera(root, input, size = 384, backfaceCull = true, backdrop)
   };
   const key = new Vector3(1.5, 2, 1).normalize();
   const srgb = (n) => n <= 0.0031308 ? n * 12.92 : 1.055 * n ** (1 / 2.4) - 0.055;
-  for (const tri of collectTriangles(root).tris) {
+  const ordered = compositingOrder(collectTriangles(root).tris, (px, py, pz) => camera.projection === "perspective" ? Math.hypot(px - position.x, py - position.y, pz - position.z) : (position.x - px) * z.x + (position.y - py) * z.y + (position.z - pz) * z.z);
+  for (const tri of ordered) {
     const world = [0, 1, 2].map((i) => new Vector3(tri.v[i * 3], tri.v[i * 3 + 1], tri.v[i * 3 + 2]));
     const normal = world[1].clone().sub(world[0]).cross(world[2].clone().sub(world[0])).normalize();
     if (backfaceCull && !tri.doubleSided && normal.dot(camera.projection === "perspective" ? position.clone().sub(world[0]) : z) <= 0)
@@ -4887,10 +4986,18 @@ function rasterizeCamera(root, input, size = 384, backfaceCull = true, backdrop)
   }
   return out;
 }
-var vec = (a) => new Vector3(...a), tuple = (v) => [v.x || 0, v.y || 0, v.z || 0];
+var vec = (a) => new Vector3(...a), tuple = (v) => [v.x || 0, v.y || 0, v.z || 0], KEY_HINTS;
 var init_camera = __esm(() => {
   init_raster();
   init_background();
+  KEY_HINTS = {
+    fov: "fovDeg",
+    fovY: "fovDeg",
+    fieldOfView: "fovDeg",
+    lookAt: "target",
+    azimuth: "azimuthDeg",
+    elevation: "elevationDeg"
+  };
 });
 
 // src/composer/render-port.ts
@@ -5335,13 +5442,24 @@ function sampleTrack(track, t, out) {
       out[s] = values[o0 + s] + (values[o1 + s] - values[o0 + s]) * a;
   }
 }
+function declaredLoopIntent(clip) {
+  const intent = clip.userData?.kilnLoopIntent;
+  return intent === "loop" || intent === "once" ? intent : "unspecified";
+}
+function loopIntentWarning(clipName, evidence) {
+  if (evidence.loopIntent !== "loop" || evidence.status !== "open")
+    return;
+  const worst = evidence.mismatches.reduce((max, entry) => !max || entry.delta > max.delta ? entry : max, undefined);
+  const gap = worst ? ` (${worst.track} differs by ${Number(worst.delta.toPrecision(4))} ${worst.unit})` : "";
+  return `LOOP_NOT_CLOSED: clip "${clipName}" is declared loop: true but its end pose differs from its start${gap}; close the loop or declare loop: false.`;
+}
 function measureLoopClosure(root, clip) {
   const tolerances = { positionDistance: 0.000001, rotationDegrees: 0.001, scaleDistance: 0.000001 };
   const result = {
     version: "kiln.loop-closure.v1",
     status: "incomplete",
-    loopIntent: "unspecified",
-    scope: "Local transform values at time 0 and clip duration; endpoint continuity only. Loop intent, velocity continuity, contacts and collision are not assessed. An open one-shot clip is valid.",
+    loopIntent: declaredLoopIntent(clip),
+    scope: "Local transform values at time 0 and clip duration; endpoint continuity only. loopIntent comes from createClip({ loop }): a declared loop should close, a one-shot (once) may stay open, and unspecified intent cannot tell them apart. Velocity continuity, contacts and collision are not assessed.",
     tolerances,
     checkedTracks: 0,
     unassessedTracks: 0,
@@ -5715,7 +5833,7 @@ function enforcePngCaptureBudget(images, limits) {
   if (pixels > resolveCaptureLimits(limits).maxTotalPixels)
     throw new Error(`capture pixel budget exceeded: ${pixels}`);
 }
-var DEFAULT_CAPTURE_LIMITS;
+var MAX_CAPTURE_SHOT_SIZE = 2048, DEFAULT_CAPTURE_LIMITS;
 var init_capture_limits = __esm(() => {
   init_grid();
   DEFAULT_CAPTURE_LIMITS = Object.freeze({
@@ -6980,11 +7098,11 @@ var init_geometry_catalog = __esm(() => {
     },
     {
       name: "sweepProfile",
-      signature: "sweepProfile(profile: [x,z][], path: [x,y,z][], opts?: { cap?: true, closed?: false, up?: [x,y,z], twist?: 0, scale?: number | [x,z][] })",
+      signature: "sweepProfile(profile: [x,z][], path: [x,y,z][], opts?: { cap?: true | false | 'start' | 'end', creaseAngle?: 60, closed?: false, up?: [x,y,z], twist?: 0, scale?: number | [x,z][] })",
       returns: "THREE.BufferGeometry",
       category: "curves",
       description: "Sweeps a simple noncircular profile along polyline stations using transported frames. Supports total twist in degrees and per-station scales. Generates UVs and optional caps.",
-      promptNotes: "First version supports one simple profile without holes. Closed paths omit the repeated endpoint and require twist to be a multiple of 360. up sets the initial profile +Z direction and cannot parallel the path. Tight-turn warnings do not replace visual inspection for self-intersections.",
+      promptNotes: "First version supports one simple profile without holes. Closed paths omit the repeated endpoint and require twist to be a multiple of 360. up sets the initial profile +Z direction and cannot parallel the path. cap caps both ends by default; 'start' or 'end' caps only that end of an open path. creaseAngle (degrees) keeps side faces meeting at more than it hard-edged, at profile corners and sharp path corners: at the default 60, squares, triangles and pentagons stay faceted while hexagons and finer profiles shade smooth; 180 smooths every edge. Tight-turn warnings do not replace visual inspection for self-intersections.",
       example: "const rail = sweepProfile([[-.1,-.2],[.1,-.2],[.1,.2],[-.1,.2]], [[0,0,0],[0,1,0],[1,2,0]]);"
     },
     {
@@ -7012,9 +7130,18 @@ var init_geometry_catalog = __esm(() => {
 function listHelperSpecs() {
   return PRIMITIVES.map((p) => ({ ...p }));
 }
-var PRIMITIVES;
+var RECIPE_OVERRIDES_NOTE, PRIMITIVES;
 var init_helper_specs = __esm(() => {
   init_geometry_catalog();
+  init_material_recipes();
+  RECIPE_OVERRIDES_NOTE = (() => {
+    const groups = new Map;
+    for (const id of MATERIAL_RECIPE_IDS) {
+      const allowed = MATERIAL_RECIPE_LIBRARY_V1[id].allowedOverrides.join(", ");
+      groups.set(allowed, [...groups.get(allowed) ?? [], id.split(".")[2]]);
+    }
+    return `Overrides differ by recipe; any other key is rejected: ${[...groups].map(([allowed, names]) => `${names.join(", ")}: ${allowed}`).join("; ")}.`;
+  })();
   PRIMITIVES = [
     ...geometryPrimitives,
     {
@@ -7405,7 +7532,7 @@ createPart('Blade', b, steel, { position: [0, 0, 0], parent: root });`
       category: "material",
       description: "Resolves a versioned portable bark/leaf/wood/stone/rubber/painted-metal/cloth/skin/glass/emissive recipe to standard glTF PBR.",
       example: "const bark = await materialRecipe('kiln.material.bark.v1', { baseColor: '#6b4328' });",
-      promptNotes: "Use only listed kiln.material.*.v1 IDs and approved kiln.texture.* resource IDs. textureResources uses portable slots baseColor, normal, metallicRoughness, emissive and occlusion with ID string values; albedo is a pbrMaterial field, not a recipe slot. Check resource allowedSlots and recipeIds. All numeric overrides (including emissiveIntensity) are finite 0..1. Recipe emission is baked into the core glTF emissive factor. Leaf is MASK, glass is BLEND, and host file paths are forbidden."
+      promptNotes: "Use only listed kiln.material.*.v1 IDs and approved kiln.texture.* resource IDs. textureResources uses portable slots baseColor, normal, metallicRoughness, emissive and occlusion with ID string values; albedo is a pbrMaterial field, not a recipe slot. Check resource allowedSlots and recipeIds. All numeric overrides (including emissiveIntensity) are finite 0..1. Recipe emission is baked into the core glTF emissive factor. Leaf is MASK, glass is BLEND, and host file paths are forbidden. " + RECIPE_OVERRIDES_NOTE
     },
     {
       name: "compilePortableMaterialSpecV2",
@@ -7466,11 +7593,11 @@ createPart('Blade', b, steel, { position: [0, 0, 0], parent: root });`
     },
     {
       name: "createClip",
-      signature: "createClip(name: string, duration: number, tracks: KeyframeTrack[])",
+      signature: "createClip(name: string, duration: number, tracks: KeyframeTrack[], options?: { loop?: boolean })",
       returns: "THREE.AnimationClip",
       category: "animation",
-      description: "Validates supported position/quaternion/scale tracks and collects them into a named clip. Duration is seconds (-1 derives from keys); explicit duration must include every key. Returned from animate().",
-      example: "return [createClip('Open', 1, [rotationTrack('Joint_Lid', [...])])];"
+      description: "Validates supported position/quaternion/scale tracks and collects them into a named clip. Duration is seconds (-1 derives from keys); explicit duration must include every key. loop: true declares a cycle, false a one-shot; exported as the glTF animation extra kilnLoopIntent and reported by animation review. Returned from animate().",
+      example: "return [createClip('Open', 1, [rotationTrack('Joint_Lid', [...])], { loop: false })];"
     },
     {
       name: "idleBreathing",
@@ -7540,11 +7667,11 @@ createPart('Console', geo, plastic, { position: [0, 0.3, 0], parent: root });`
     },
     {
       name: "extrudeProfile",
-      signature: "await extrudeProfile(profile: [number, number][], opts?: { depth?: 1, holes?: [number, number][][], bevel?: 0, bevelStyle?: 'round' | 'chamfer', segments?: 12, twist?: 0, taper?: number | [number, number], divisions?: number, axis?: 'x' | 'y' | 'z', center?: true, smooth?: false })",
+      signature: "await extrudeProfile(profile: [number, number][], opts?: { depth?: 1, holes?: [number, number][][], bevel?: 0, bevelStyle?: 'round' | 'chamfer', segments?: 12, twist?: 0, taper?: number | [number, number], divisions?: 0, axis?: 'x' | 'y' | 'z', center?: true, smooth?: false })",
       returns: "Promise<THREE.BufferGeometry>",
       category: "csg",
       description: "Sweeps a closed 2D outline into a watertight solid, with optional holes, corner rounding/chamfering, twist, and taper. The way to build any cross-section that is not a box or a cylinder: L-brackets, I-beams, gaskets, washers, star and gear plates, signage, extruded trim.",
-      promptNotes: "Profile (u,v) maps to XYZ as axis x: (d,v,-u), axis y: (u,d,-v), axis z: (u,v,d), where d is extrusion depth. For a desired XZ footprint on axis y, pass [X,-Z]; positive profile v projects toward -Z. The bevel rounds the edges PARALLEL to the sweep axis (the profile corners) — the two flat caps stay sharp. For a box rounded on all twelve edges use roundedBoxGeo instead. Holes are subtracted, so their winding order does not matter. A bevel larger than half the outline's narrowest feature throws rather than silently returning an empty solid. Output is manifold, so it feeds straight into boolUnion / boolDiff / boolIntersect. Async — await it inside an async build().",
+      promptNotes: "Profile (u,v) maps to XYZ as axis x: (d,v,-u), axis y: (u,d,-v), axis z: (u,v,d), where d is extrusion depth. For a desired XZ footprint on axis y, pass [X,-Z]; positive profile v projects toward -Z. The bevel rounds the edges PARALLEL to the sweep axis (the profile corners) — the two flat caps stay sharp. For a box rounded on all twelve edges use roundedBoxGeo instead. Holes are subtracted, so their winding order does not matter. divisions is the whole number (>= 0) of intermediate rings between the caps: default 0, or 16 when twisting; a straight or tapered sweep needs none. A bevel larger than half the outline's narrowest feature throws rather than silently returning an empty solid. Output is manifold, so it feeds straight into boolUnion / boolDiff / boolIntersect. Async — await it inside an async build().",
       example: `// L-bracket, inner AND outer corners filleted
 const outline = [[0, 0], [2, 0], [2, 0.4], [0.4, 0.4], [0.4, 2], [0, 2]];
 const geo = await extrudeProfile(outline, { depth: 0.5, bevel: 0.06 });
@@ -10152,12 +10279,86 @@ var init_breadth2 = __esm(() => {
 });
 
 // src/gltf-io.ts
-import { WebIO } from "@gltf-transform/core";
+import {
+  Extension,
+  ExtensionProperty,
+  PropertyType,
+  RefList,
+  WebIO
+} from "@gltf-transform/core";
 import { ALL_EXTENSIONS } from "@gltf-transform/extensions";
 function createGltfIO() {
-  return new WebIO().registerExtensions(ALL_EXTENSIONS);
+  return new WebIO().registerExtensions([...ALL_EXTENSIONS, MSFTLod]);
 }
-var init_gltf_io = () => {};
+var MSFT_LOD = "MSFT_lod", Lod, MSFTLod;
+var init_gltf_io = __esm(() => {
+  Lod = class Lod extends ExtensionProperty {
+    static EXTENSION_NAME = MSFT_LOD;
+    init() {
+      this.extensionName = MSFT_LOD;
+      this.propertyType = "Lod";
+      this.parentTypes = [PropertyType.NODE, PropertyType.MATERIAL];
+    }
+    getDefaults() {
+      return Object.assign(super.getDefaults(), {
+        levels: new RefList
+      });
+    }
+    addLevel(level) {
+      return this.addRef("levels", level);
+    }
+    listLevels() {
+      return this.listRefs("levels");
+    }
+  };
+  MSFTLod = class MSFTLod extends Extension {
+    extensionName = MSFT_LOD;
+    static EXTENSION_NAME = MSFT_LOD;
+    createLod(name = "") {
+      return new Lod(this.document.getGraph(), name);
+    }
+    read(context) {
+      const json = context.jsonDoc.json;
+      this.readLevels(json.nodes, context.nodes);
+      this.readLevels(json.materials, context.materials);
+      return this;
+    }
+    readLevels(defs, targets) {
+      (defs ?? []).forEach((def, index) => {
+        const ids = def.extensions?.[MSFT_LOD]?.ids;
+        const target = targets[index];
+        if (!target || !Array.isArray(ids))
+          return;
+        const lod = this.createLod();
+        for (const id of ids) {
+          const level = typeof id === "number" ? targets[id] : undefined;
+          if (level && level !== target)
+            lod.addLevel(level);
+        }
+        target.setExtension(MSFT_LOD, lod);
+      });
+    }
+    write(context) {
+      const json = context.jsonDoc.json;
+      const root = this.document.getRoot();
+      for (const node of root.listNodes()) {
+        const index = context.nodeIndexMap.get(node);
+        const ids = node.getExtension(MSFT_LOD)?.listLevels().filter((level) => level.propertyType === PropertyType.NODE).map((level) => context.nodeIndexMap.get(level)).filter((id) => id !== undefined);
+        const def = index === undefined ? undefined : json.nodes?.[index];
+        if (def && ids?.length)
+          def.extensions = { ...def.extensions, [MSFT_LOD]: { ids } };
+      }
+      for (const material of root.listMaterials()) {
+        const index = context.materialIndexMap.get(material);
+        const ids = material.getExtension(MSFT_LOD)?.listLevels().filter((level) => level.propertyType === PropertyType.MATERIAL).map((level) => context.materialIndexMap.get(level)).filter((id) => id !== undefined);
+        const def = index === undefined ? undefined : json.materials?.[index];
+        if (def && ids?.length)
+          def.extensions = { ...def.extensions, [MSFT_LOD]: { ids } };
+      }
+      return this;
+    }
+  };
+});
 
 // src/qa/breadth-final.ts
 import * as THREE6 from "three";
@@ -11689,16 +11890,35 @@ var init_prop = __esm(() => {
   ];
 });
 
+// src/qa/lod.ts
+function lodLevel(node) {
+  for (let current = node;current; current = current.parent) {
+    const match = LOD_TAG.exec(current.name);
+    if (match)
+      return Number(match[2]);
+  }
+  return;
+}
+var LOD_TAG;
+var init_lod = __esm(() => {
+  LOD_TAG = /(^|[^a-z0-9])lod(\d+)([^a-z0-9]|$)/i;
+});
+
 // src/qa/part-connectivity.ts
 import * as THREE9 from "three";
 function collectParts2(root, exempt) {
   const parts = [];
+  let lodExcluded = 0;
   root.updateWorldMatrix(true, true);
-  root.traverse((node) => {
+  root.traverseVisible((node) => {
     const mesh = node;
     if (!mesh.isMesh || !mesh.geometry)
       return;
     const name = mesh.name || "(unnamed mesh)";
+    if ((lodLevel(mesh) ?? 0) > 0) {
+      lodExcluded++;
+      return;
+    }
     if (EXEMPT_NAME.test(name)) {
       exempt.push(name);
       return;
@@ -11708,7 +11928,7 @@ function collectParts2(root, exempt) {
       return;
     parts.push({ name, box });
   });
-  return parts;
+  return { parts, lodExcluded };
 }
 function boxGap(a, b) {
   const dx = Math.max(0, Math.max(a.min.x - b.max.x, b.min.x - a.max.x));
@@ -11718,11 +11938,12 @@ function boxGap(a, b) {
 }
 function analyzePartConnectivity(root) {
   const exempt = [];
-  const parts = collectParts2(root, exempt);
+  const { parts, lodExcluded } = collectParts2(root, exempt);
   const report = {
     partsAnalyzed: parts.length,
     mainComponentSize: parts.length,
     exempt,
+    lodExcluded,
     groups: []
   };
   if (parts.length < 2)
@@ -11790,6 +12011,7 @@ function inspectPartConnectivity(scene) {
   if (!(scene instanceof THREE9.Object3D))
     return [];
   const report = analyzePartConnectivity(scene);
+  const lodNote = report.lodExcluded === 1 ? " 1 part on an LOD level above 0 was not analyzed." : report.lodExcluded > 1 ? ` ${report.lodExcluded} parts on LOD levels above 0 were not analyzed.` : "";
   return report.groups.map((group) => {
     const listed = group.parts.map((p) => JSON.stringify(p)).join(", ");
     const subject = group.parts.length === 1 ? `Part ${listed} is` : `A group of ${group.parts.length} parts (${listed}) is`;
@@ -11798,12 +12020,13 @@ function inspectPartConnectivity(scene) {
       disposition: "observe",
       dimension: "visualQuality",
       profile: "geometry.partConnectivity",
-      message: `${subject} separate from the largest component in the rest-pose bounding boxes; the nearest box gap is ${group.gap.toFixed(3)} m. This may be intentional. Box adjacency is not physical attachment evidence.`,
+      message: `${subject} separate from the largest component in the rest-pose bounding boxes of visible parts; the nearest box gap is ${group.gap.toFixed(3)} m. This may be intentional. Box adjacency is not physical attachment evidence.${lodNote}`,
       affected: { node: group.parts[0] },
       measurement: {
         name: "gapToMainComponent",
         actual: group.gap,
-        expected: CONNECTIVITY_TOLERANCE
+        expected: CONNECTIVITY_TOLERANCE,
+        ...report.lodExcluded ? { breakdown: { lodExcludedParts: report.lodExcluded } } : {}
       },
       repairText: "Check whether the separation is intentional. If the brief requires attachment, inspect the named group and its intended interface before moving it. snapTo aligns bounding boxes; verify actual surfaces and required clearances afterward."
     };
@@ -11811,6 +12034,7 @@ function inspectPartConnectivity(scene) {
 }
 var CONNECTIVITY_TOLERANCE = 0.02, EXEMPT_NAME, PART_CONNECTIVITY_QA_RULE;
 var init_part_connectivity = __esm(() => {
+  init_lod();
   init_registry();
   EXEMPT_NAME = /(?:^|_)(?:leaf|leaves|foliage|frond|card|decal|billboard|petal)/i;
   PART_CONNECTIVITY_QA_RULE = Object.freeze({
@@ -11828,6 +12052,11 @@ var init_part_connectivity = __esm(() => {
 
 // src/qa/self-intersection.ts
 import * as THREE10 from "three";
+function boxOverlapRatio(a, b) {
+  const shared = Math.max(0, Math.min(a.max.x, b.max.x) - Math.max(a.min.x, b.min.x)) * Math.max(0, Math.min(a.max.y, b.max.y) - Math.max(a.min.y, b.min.y)) * Math.max(0, Math.min(a.max.z, b.max.z) - Math.max(a.min.z, b.min.z));
+  const ratio = shared / Math.min(boxVolume(a), boxVolume(b));
+  return Number.isFinite(ratio) ? ratio : 0;
+}
 function triangleCount(geometry) {
   const index = geometry.getIndex();
   const position = geometry.getAttribute("position");
@@ -11883,7 +12112,7 @@ function collectParts3(root, skipped) {
       });
       return;
     }
-    parts.push({ name, mesh, box, triangles, center, scale });
+    parts.push({ name, mesh, box, triangles, center, scale, lod: lodLevel(mesh) });
   });
   return parts;
 }
@@ -11940,6 +12169,9 @@ async function analyzePartPenetration(root) {
     partsAnalyzed: parts.length,
     candidatePairs: 0,
     pairsTested: 0,
+    pairsUnmeasurable: 0,
+    pairsNotReached: 0,
+    pairsLodAlternates: 0,
     truncated: false,
     skipped,
     penetrations: []
@@ -11955,25 +12187,34 @@ async function analyzePartPenetration(root) {
           base.broadPhaseTruncated = true;
           break broadPhase;
         }
-        if (parts[i].box.intersectsBox(parts[j].box)) {
-          base.candidatePairs++;
-          if (candidates.length < MAX_NARROW_PHASE_PAIRS)
-            candidates.push([parts[i], parts[j]]);
+        const a = parts[i];
+        const b = parts[j];
+        if (!a.box.intersectsBox(b.box))
+          continue;
+        if (a.lod !== undefined && b.lod !== undefined && a.lod !== b.lod) {
+          base.pairsLodAlternates++;
+          continue;
         }
+        candidates.push({ a: i, b: j, overlap: boxOverlapRatio(a.box, b.box) });
       }
     }
-  base.truncated = !!base.broadPhaseTruncated || base.candidatePairs > candidates.length;
+  base.candidatePairs = candidates.length;
+  base.truncated = !!base.broadPhaseTruncated;
   if (candidates.length === 0)
     return base;
-  const tested = candidates;
+  candidates.sort((x, y) => y.overlap - x.overlap || x.a - y.a || x.b - y.b);
   const Module = await import("manifold-3d");
   const wasm = await Module.default();
   wasm.setup();
   const { Manifold, Mesh } = wasm;
-  const cache = new Map;
-  const build = (part) => {
-    if (cache.has(part.mesh))
-      return cache.get(part.mesh);
+  const solids = new Map;
+  const unbuildable = [];
+  const build = (index) => {
+    if (solids.has(index))
+      return solids.get(index);
+    if (solids.size === MAX_SOLID_BUILDS)
+      return;
+    const part = parts[index];
     let solid = null;
     try {
       const arrays = meshToArrays(part);
@@ -11982,26 +12223,39 @@ async function analyzePartPenetration(root) {
         mesh.merge();
         solid = new Manifold(mesh);
       } else {
-        skipped.push({ part: part.name, reason: "its triangle positions or indices are invalid" });
+        unbuildable.push({ index, reason: "its triangle positions or indices are invalid" });
       }
     } catch (err) {
-      skipped.push({
-        part: part.name,
+      unbuildable.push({
+        index,
         reason: `a valid closed solid could not be measured (${err instanceof Error ? err.message : String(err)})`
       });
       solid = null;
     }
-    cache.set(part.mesh, solid);
+    solids.set(index, solid);
     return solid;
   };
   const penetrations = [];
+  const rangeSkips = [];
   try {
-    for (const [a, b] of tested) {
-      const sa = build(a);
-      const sb = build(b);
-      if (!sa || !sb)
+    for (const pair of candidates) {
+      if (solids.get(pair.a) === null || solids.get(pair.b) === null) {
+        base.pairsUnmeasurable++;
         continue;
+      }
+      const sa = build(pair.a);
+      const sb = sa === null ? null : build(pair.b);
+      if (sa === null || sb === null) {
+        base.pairsUnmeasurable++;
+        continue;
+      }
+      if (!sa || !sb || base.pairsTested === MAX_NARROW_PHASE_PAIRS) {
+        base.pairsNotReached++;
+        continue;
+      }
       base.pairsTested++;
+      const a = parts[pair.a];
+      const b = parts[pair.b];
       let overlap = null;
       const scale = Math.max(a.scale, b.scale);
       const pa = sa.scale(a.scale / scale);
@@ -12016,7 +12270,7 @@ async function analyzePartPenetration(root) {
           if (fraction > CONTACT_VOLUME_FRACTION) {
             const assetVolume = volume * scale ** 3;
             if (!Number.isFinite(assetVolume) || !(assetVolume > 0)) {
-              skipped.push({
+              rangeSkips.push({
                 part: a.name,
                 reason: `intersection with ${JSON.stringify(b.name)} is outside representable volume range`
               });
@@ -12037,10 +12291,19 @@ async function analyzePartPenetration(root) {
         scaledB.delete();
       }
     }
+    for (const pair of candidates) {
+      if (solids.get(pair.a) === null)
+        build(pair.b);
+      else if (solids.get(pair.b) === null)
+        build(pair.a);
+    }
   } finally {
-    for (const solid of cache.values())
+    for (const solid of solids.values())
       solid?.delete();
   }
+  base.truncated = !!base.broadPhaseTruncated || base.pairsNotReached > 0;
+  unbuildable.sort((x, y) => x.index - y.index);
+  skipped.push(...unbuildable.map(({ index, reason }) => ({ part: parts[index].name, reason })), ...rangeSkips);
   penetrations.sort((x, y) => y.fraction - x.fraction || `${x.a}:${x.b}`.localeCompare(`${y.a}:${y.b}`));
   base.penetrations = penetrations;
   return base;
@@ -12066,29 +12329,55 @@ function inspectPartPenetration(evidence) {
     },
     repairText: "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
   }));
+  const pairsUnmeasurable = evidence.pairsUnmeasurable ?? 0;
   if (evidence.truncated) {
+    const pairsNotReached = evidence.pairsNotReached ?? 0;
     findings.push({
       code: "GEO_PART_SELF_INTERSECTION_TRUNCATED",
       disposition: "observe",
       dimension: "visualQuality",
       profile: "geometry.selfIntersection",
-      message: `Only ${evidence.pairsTested} of ${evidence.broadPhaseTruncated ? "at least " : ""}${evidence.candidatePairs} overlapping part pairs were checked (analysis budget). Parts beyond that were not examined.`
+      message: `Tested ${evidence.pairsTested} of ${evidence.broadPhaseTruncated ? "at least " : ""}${evidence.candidatePairs} overlapping part pairs: ${pairsUnmeasurable} involve parts that could not be measured, ${pairsNotReached} were beyond the analysis budget (${MAX_NARROW_PHASE_PAIRS} booleans, ${MAX_SOLID_BUILDS} solids).` + (evidence.broadPhaseTruncated ? ` Pair discovery stopped after ${MAX_BROAD_PHASE_PAIRS} box comparisons.` : "") + " Unreached pairs were not examined; the most overlapping bounding boxes were tested first.",
+      measurement: {
+        name: "overlappingPartPairsTested",
+        actual: evidence.pairsTested,
+        expected: evidence.candidatePairs,
+        breakdown: { pairsUnmeasurable, pairsNotReached }
+      }
     });
   }
   if (evidence.skipped.length) {
+    const byReason = new Map;
+    for (const { part, reason } of evidence.skipped) {
+      const parts = byReason.get(reason);
+      if (parts)
+        parts.push(part);
+      else
+        byReason.set(reason, [part]);
+    }
+    const reasons = [...byReason].map(([reason, parts]) => {
+      const named = parts.slice(0, UNMEASURED_NAMES_SHOWN).map((part) => JSON.stringify(part));
+      const more = parts.length > UNMEASURED_NAMES_SHOWN ? ` and ${parts.length - UNMEASURED_NAMES_SHOWN} more` : "";
+      return `${parts.length} because ${reason}: ${named.join(", ")}${more}.`;
+    });
+    const one = evidence.skipped.length === 1;
+    const includes = one ? "this part" : "one of these parts";
+    const pairs = pairsUnmeasurable === 1 ? ` 1 overlapping part pair includes ${includes} and was not measured.` : pairsUnmeasurable > 1 ? ` ${pairsUnmeasurable} overlapping part pairs include ${includes} and were not measured.` : "";
     findings.push({
       code: "GEO_PART_SELF_INTERSECTION_UNMEASURED",
       disposition: "observe",
       dimension: "visualQuality",
       profile: "geometry.selfIntersection",
-      message: `${evidence.skipped.length} part-volume measurements were unavailable: ${evidence.skipped.map((s) => `${JSON.stringify(s.part)}: ${s.reason}`).join("; ")}. These parts are not certified clear.`
+      message: `${evidence.skipped.length} part-volume ${one ? "measurement was" : "measurements were"} unavailable. ${reasons.join(" ")}${pairs} ${one ? "This part is" : "These parts are"} not certified clear.`
     });
   }
   return findings;
 }
-var MAX_PART_TRIANGLES = 20000, MAX_NARROW_PHASE_PAIRS = 64, MAX_BROAD_PHASE_PAIRS = 250000, CONTACT_VOLUME_FRACTION = 0.001, round = (n) => Math.round(n * 1e9) / 1e9, roundVolume = (n) => Number(n.toPrecision(9)), SELF_INTERSECTION_QA_RULE;
+var MAX_PART_TRIANGLES = 20000, MAX_NARROW_PHASE_PAIRS = 64, MAX_SOLID_BUILDS, MAX_BROAD_PHASE_PAIRS = 250000, CONTACT_VOLUME_FRACTION = 0.001, boxVolume = (box) => (box.max.x - box.min.x) * (box.max.y - box.min.y) * (box.max.z - box.min.z), round = (n) => Math.round(n * 1e9) / 1e9, roundVolume = (n) => Number(n.toPrecision(9)), SELF_INTERSECTION_QA_RULE, UNMEASURED_NAMES_SHOWN = 5;
 var init_self_intersection = __esm(() => {
+  init_lod();
   init_registry();
+  MAX_SOLID_BUILDS = 2 * MAX_NARROW_PHASE_PAIRS;
   SELF_INTERSECTION_QA_RULE = Object.freeze({
     id: "GEO_PART_SELF_INTERSECTION",
     profile: "geometry.selfIntersection",
@@ -17558,11 +17847,14 @@ function runRequirementsSceneQa(context, scene, clips, policy = {}, evidence = {
         findings.push(...inspectPartPenetration(volume));
         Object.assign(geometryMetrics, {
           partVolumeCoverage: partial ? "partial" : "complete-static-pairs",
-          partVolumeScope: "Visible static closed mesh pairs; excludes intra-mesh intersections, motion, open surfaces and usable passage space. Positive overlap may be intentional.",
+          partVolumeScope: "Visible static closed mesh pairs, except alternates on different LOD levels; excludes intra-mesh intersections, motion, open surfaces and usable passage space. Positive overlap may be intentional.",
           partVolumeEligibleParts: volume.partsAnalyzed,
           partVolumeCandidatePairs: volume.candidatePairs,
           partVolumeCandidatesLowerBound: volume.broadPhaseTruncated === true,
           partVolumePairsTested: volume.pairsTested,
+          partVolumeUnmeasurablePairs: volume.pairsUnmeasurable,
+          partVolumePairsNotReached: volume.pairsNotReached,
+          partVolumeLodAlternatePairs: volume.pairsLodAlternates,
           partVolumeSkipped: volume.skipped.length
         });
       } else if (evidence.partPenetrationFailed) {
@@ -18012,8 +18304,42 @@ function geometryAttributeValues(attribute) {
   }
   return values;
 }
+function noteMeshList(names) {
+  const counts = new Map;
+  for (const name of names)
+    counts.set(name, (counts.get(name) ?? 0) + 1);
+  const shown = [...counts].slice(0, NOTE_NAMES_SHOWN);
+  const covered = shown.reduce((sum, [, count]) => sum + count, 0);
+  const parts = shown.map(([name, count]) => count > 1 ? `${name} x${count}` : name);
+  if (names.length > covered)
+    parts.push(`+${names.length - covered} more`);
+  return parts.join(", ");
+}
+function formatNoteGroup({ code, text, names }) {
+  if (code === undefined) {
+    const who = names.length === 1 ? names[0] : `${names.length} meshes (${noteMeshList(names)})`;
+    return `${who}: ${text}`;
+  }
+  if (names.length === 1)
+    return `${names[0]}: ${code}${text === undefined ? "" : ` ${text}`}`;
+  return `${code} (${names.length} meshes: ${noteMeshList(names)})${text === undefined ? "" : `: ${text}`}`;
+}
 function inspectGeometryExport(root, policy = "warn", exporter = "legacy") {
   const warnings = [];
+  const noteGroups = new Map;
+  const addNote = (mesh, name, code, text) => {
+    const key = JSON.stringify([code ?? null, text ?? null]);
+    let group = noteGroups.get(key);
+    if (!group) {
+      group = { code, text, meshes: new Set, names: [] };
+      noteGroups.set(key, group);
+      warnings.push(group);
+    }
+    if (group.meshes.has(mesh))
+      return;
+    group.meshes.add(mesh);
+    group.names.push(name);
+  };
   const attributes = geometryExportAttributes(exporter);
   root.traverse((node) => {
     const mesh = node;
@@ -18072,15 +18398,15 @@ function inspectGeometryExport(root, policy = "warn", exporter = "legacy") {
         continue;
       for (const note of notes) {
         if (typeof note === "string")
-          warnings.push(`${name}: ${note}`);
+          addNote(mesh, name, undefined, note);
         else if (note && typeof note === "object" && "code" in note)
-          warnings.push(`${name}: ${String(note.code)}${"message" in note ? ` ${String(note.message)}` : ""}`);
+          addNote(mesh, name, String(note.code), "message" in note ? String(note.message) : undefined);
       }
     }
   });
-  return warnings;
+  return warnings.map((warning) => typeof warning === "string" ? warning : formatNoteGroup(warning));
 }
-var EXPORTED_GEOMETRY_ATTRIBUTES, THREE_GEOMETRY_ATTRIBUTES;
+var EXPORTED_GEOMETRY_ATTRIBUTES, THREE_GEOMETRY_ATTRIBUTES, NOTE_NAMES_SHOWN = 3;
 var init_geometry_export = __esm(() => {
   EXPORTED_GEOMETRY_ATTRIBUTES = {
     position: 3,
@@ -20399,7 +20725,16 @@ function profilePoints(profile) {
     points.splice(1, points.length - 1, ...points.slice(1).reverse());
   return points;
 }
-function buildLoft(rings, profiles, closed, cap, firstFrameForward) {
+function panelNormal(a, b, c, d) {
+  return d.clone().sub(a).cross(b.clone().sub(c));
+}
+function isCrease(first, second, creaseAngle) {
+  if (!(first.lengthSq() > 0 && second.lengthSq() > 0))
+    return false;
+  const angle = Math.atan2(first.clone().cross(second).length(), first.dot(second));
+  return THREE28.MathUtils.radToDeg(angle) > creaseAngle + CREASE_TOLERANCE_DEGREES;
+}
+function buildLoft(rings, profiles, closed, cap, firstFrameForward, creaseAngle) {
   const n = rings[0].length, positions = [], uvs = [], indices = [];
   const centers = rings.map((r) => r.reduce((sum, p) => sum.add(p), new THREE28.Vector3).multiplyScalar(1 / n));
   const lengths = [0];
@@ -20408,18 +20743,36 @@ function buildLoft(rings, profiles, closed, cap, firstFrameForward) {
   const total = lengths[lengths.length - 1];
   if (!(total > 0) || !Number.isFinite(total))
     throw new Error("loft section centers must progress along a finite nonzero path");
+  const panels = rings.slice(0, -1).map((ring, i) => ring.map((origin, j) => panelNormal(origin, ring[(j + 1) % n], rings[i + 1][j], rings[i + 1][(j + 1) % n])));
+  const hardColumn = Array.from({ length: n }, (_, j) => creaseAngle !== undefined && panels.some((row) => isCrease(row[(j - 1 + n) % n], row[j], creaseAngle)));
+  const hardRing = rings.map((_, i) => creaseAngle !== undefined && i > 0 && i < rings.length - 1 && panels[i - 1].some((panel, j) => isCrease(panel, panels[i][j], creaseAngle)));
+  const hardClosure = closed && creaseAngle !== undefined && panels[panels.length - 1].some((panel, j) => isCrease(panel, panels[0][j], creaseAngle));
+  const extraSlot = new Map;
+  for (let j = 1;j < n; j++)
+    if (hardColumn[j])
+      extraSlot.set(j, n + 1 + extraSlot.size);
+  const endSlot = (j) => j === n ? n : extraSlot.get(j) ?? j;
+  const blockSize = n + 1 + extraSlot.size, blockRing = [], nearBlock = [], farBlock = [];
   for (let i = 0;i < rings.length; i++) {
+    farBlock.push(blockRing.length);
+    blockRing.push(i);
+    if (hardRing[i])
+      blockRing.push(i);
+    nearBlock.push(blockRing.length - 1);
+  }
+  for (const i of blockRing) {
     const ring = rings[i], distance = [0];
     for (let j = 1;j <= n; j++)
       distance.push(distance[j - 1] + ring[j % n].distanceTo(ring[j - 1]));
-    for (let j = 0;j <= n; j++) {
+    for (const j of [...Array.from({ length: n + 1 }, (_, j) => j), ...extraSlot.keys()]) {
       positions.push(...ring[j % n].toArray());
       uvs.push(distance[j] / distance[n], lengths[i] / total);
     }
   }
   for (let i = 0;i < rings.length - 1; i++)
     for (let j = 0;j < n; j++) {
-      const a = i * (n + 1) + j, b = a + 1, c = a + n + 1, d = c + 1;
+      const near = nearBlock[i] * blockSize, far = farBlock[i + 1] * blockSize;
+      const a = near + j, b = near + endSlot(j + 1), c = far + j, d = far + endSlot(j + 1);
       const origin = rings[i][j], ab = rings[i][(j + 1) % n].clone().sub(origin), ac = rings[i + 1][j].clone().sub(origin), ad = rings[i + 1][(j + 1) % n].clone().sub(origin);
       const endEdge = ad.clone().sub(ac), edgeScale = Math.max(ab.length(), endEdge.length());
       if (edgeScale > 0) {
@@ -20437,8 +20790,10 @@ function buildLoft(rings, profiles, closed, cap, firstFrameForward) {
       } else
         indices.push(a, c, b, b, c, d);
     }
-  if (cap && !closed)
+  if (!closed)
     for (const station of [0, rings.length - 1]) {
+      if (!(station === 0 ? cap.start : cap.end))
+        continue;
       const ring = rings[station], profile = profiles[station];
       const start = positions.length / 3;
       const bounds = new THREE28.Box2().setFromPoints(profile);
@@ -20459,20 +20814,33 @@ function buildLoft(rings, profiles, closed, cap, firstFrameForward) {
       [indices[i + 1], indices[i + 2]] = [indices[i + 2], indices[i + 1]];
   const out = meshGeo({ positions, indices, uvs });
   const normal = out.getAttribute("normal");
-  for (let i = 0;i < rings.length; i++) {
-    const a = i * (n + 1), b = a + n;
+  const share = (a, b) => {
     const sum = new THREE28.Vector3().fromBufferAttribute(normal, a).add(new THREE28.Vector3().fromBufferAttribute(normal, b)).normalize();
     normal.setXYZ(a, sum.x, sum.y, sum.z);
     normal.setXYZ(b, sum.x, sum.y, sum.z);
-  }
-  if (closed)
-    for (let j = 0;j <= n; j++) {
-      const a = j, b = (rings.length - 1) * (n + 1) + j;
-      const sum = new THREE28.Vector3().fromBufferAttribute(normal, a).add(new THREE28.Vector3().fromBufferAttribute(normal, b)).normalize();
-      normal.setXYZ(a, sum.x, sum.y, sum.z);
-      normal.setXYZ(b, sum.x, sum.y, sum.z);
-    }
+  };
+  if (!hardColumn[0])
+    for (let block = 0;block < blockRing.length; block++)
+      share(block * blockSize, block * blockSize + n);
+  if (closed && !hardClosure)
+    for (let k = 0;k < blockSize; k++)
+      share(nearBlock[0] * blockSize + k, farBlock[rings.length - 1] * blockSize + k);
   return out;
+}
+function loftCapEnds(cap) {
+  const both = Boolean(cap ?? true);
+  return { start: both, end: both };
+}
+function sweepCapEnds(cap, closed) {
+  if (cap === undefined || cap === null || cap === true)
+    return { start: true, end: true };
+  if (cap === false)
+    return { start: false, end: false };
+  if (cap !== "start" && cap !== "end")
+    throw new Error("sweepProfile cap must be true, false, 'start' or 'end'");
+  if (closed)
+    throw new Error(`sweepProfile cap '${cap}' needs an open path; a closed sweep has no ends`);
+  return { start: cap === "start", end: cap === "end" };
 }
 function loftProfiles(sections, options = {}) {
   rejectHoles(options, "loftProfiles");
@@ -20486,7 +20854,7 @@ function loftProfiles(sections, options = {}) {
     throw new Error("loftProfiles sections must have the same point count and correspondence");
   const frames = sections.map((section) => geometryFrameMatrix(section.frame));
   const rings = profiles.map((profile, i) => profile.map((p) => new THREE28.Vector3(p.x, 0, p.y).applyMatrix4(frames[i])));
-  const out = buildLoft(rings, profiles, false, options.cap ?? true, new THREE28.Vector3(0, 1, 0).transformDirection(frames[0]));
+  const out = buildLoft(rings, profiles, false, loftCapEnds(options.cap), new THREE28.Vector3(0, 1, 0).transformDirection(frames[0]));
   out.userData.kilnGeometryWarnings = [
     {
       code: "LOFT_SELF_INTERSECTION_UNCHECKED",
@@ -20502,6 +20870,10 @@ function sweepProfile(profile, path, options = {}) {
     throw new Error("sweepProfile twist must be finite degrees");
   if (closed && Math.abs(twist / 360 - Math.round(twist / 360)) > 0.00000001)
     throw new Error("closed sweep twist must be a multiple of 360 degrees");
+  const creaseAngle = options.creaseAngle ?? 60;
+  if (!Number.isFinite(creaseAngle) || creaseAngle < 0 || creaseAngle > 180)
+    throw new Error("sweepProfile creaseAngle must be between 0 and 180 degrees");
+  const cap = sweepCapEnds(options.cap, closed);
   if (path.length < (closed ? 3 : 2) || path.some((p) => p.length !== 3 || !p.every(Number.isFinite)))
     throw new Error("sweepProfile requires finite path points (two open or three closed)");
   const stations = path.map((p) => new THREE28.Vector3(...p));
@@ -20579,7 +20951,7 @@ function sweepProfile(profile, path, options = {}) {
   });
   if (closed)
     rings[rings.length - 1] = rings[0].map((p) => p.clone());
-  const out = buildLoft(rings, rings.map(() => points), closed, options.cap ?? true);
+  const out = buildLoft(rings, rings.map(() => points), closed, cap, undefined, creaseAngle);
   warnings.push({
     code: "SWEEP_SELF_INTERSECTION_UNCHECKED",
     message: "Transported frames and caps do not prove a sweep is free of self-intersections. Review tight turns and nearby path segments."
@@ -20587,6 +20959,7 @@ function sweepProfile(profile, path, options = {}) {
   out.userData.kilnGeometryWarnings = warnings;
   return out;
 }
+var CREASE_TOLERANCE_DEGREES = 0.01;
 var init_sweep = __esm(() => {
   init_geometry();
   init_deform();
@@ -21175,6 +21548,9 @@ async function extrudeProfile(profile, options = {}) {
   assertPositive(depth, "extrudeProfile: depth");
   if (bevel < 0)
     throw new Error(`extrudeProfile: bevel must be >= 0 (got ${bevel}).`);
+  if (divisions !== undefined && !(Number.isInteger(divisions) && divisions >= 0)) {
+    throw new Error(`extrudeProfile: divisions must be a whole number >= 0 (got ${divisions}).`);
+  }
   for (let i = 0;i < holes.length; i++) {
     assertFiniteProfile(holes[i], `extrudeProfile: holes[${i}]`);
   }
@@ -21197,7 +21573,7 @@ async function extrudeProfile(profile, options = {}) {
     if (bevel > 0) {
       section = track(bevelCrossSection(section, bevel, bevelStyle, segments, "extrudeProfile"));
     }
-    const nDivisions = divisions ?? (twist !== 0 ? 16 : 1);
+    const nDivisions = divisions ?? (twist !== 0 ? 16 : 0);
     const solid = section.extrude(depth, nDivisions, twist, normalizeTaper(taper), center);
     try {
       return orientSweep(manifoldToGeometry(solid, { smooth }), axis);
@@ -22457,7 +22833,7 @@ function scaleTrack(jointName, keyframes, interpolation) {
   }
   return new THREE33.VectorKeyframeTrack(`${jointName}.scale`, times, values, threeInterpolation(interpolation));
 }
-function createClip(name, duration, tracks) {
+function createClip(name, duration, tracks, options) {
   if (typeof name !== "string" || !name.trim())
     throw new Error("Animation clip name must be nonempty.");
   animationNumber(duration, "Animation clip duration");
@@ -22465,6 +22841,7 @@ function createClip(name, duration, tracks) {
     throw new Error("Animation clip duration must be nonnegative, or -1 for automatic duration.");
   if (!Array.isArray(tracks) || tracks.length === 0)
     throw new Error("Animation clip requires at least one track.");
+  const loop = clipLoopOption(options);
   const names = new Set;
   for (const track of tracks) {
     if (!(track instanceof THREE33.KeyframeTrack))
@@ -22505,7 +22882,23 @@ function createClip(name, duration, tracks) {
       throw new Error(`Animation clip duration ${duration} does not include every key of ${track.name}.`);
     }
   }
-  return new THREE33.AnimationClip(name, duration, tracks);
+  const clip = new THREE33.AnimationClip(name, duration, tracks);
+  if (loop !== undefined)
+    clip.userData.kilnLoopIntent = loop ? "loop" : "once";
+  return clip;
+}
+function clipLoopOption(options) {
+  if (options === undefined)
+    return;
+  if (typeof options !== "object" || options === null || Array.isArray(options))
+    throw new Error("Animation clip options must be an object such as { loop: true }.");
+  for (const key of Object.keys(options))
+    if (key !== "loop")
+      throw new Error(`Animation clip option ${key} is unknown; the only option is loop.`);
+  const loop = options.loop;
+  if (loop !== undefined && typeof loop !== "boolean")
+    throw new Error("Animation clip loop must be true (a cycle) or false (a one-shot).");
+  return loop;
 }
 function positionPresetBase(duration, amount, options) {
   animationNumber(duration, "Animation preset duration");
@@ -22929,43 +23322,57 @@ function collectGlbMetrics(doc, triangles) {
   };
 }
 function gradeInstanceability(metrics, opts = {}) {
-  const reasons = [];
   const m = metrics;
-  let grade;
-  if (m.uniqueMaterials <= 1)
-    grade = "A";
-  else if (m.uniqueMaterials <= 3)
-    grade = "B";
-  else if (m.uniqueMaterials <= 6)
+  const band = MATERIAL_GRADE_BANDS.find((b) => m.uniqueMaterials <= b.max);
+  let grade = band.grade;
+  const materials = `${counted(m.uniqueMaterials, "distinct material", "distinct materials")} (${band.grade} at ${band.range})`;
+  const transparency = m.transparentMaterials > 0 ? counted(m.transparentMaterials, "transparent material", "transparent materials") : undefined;
+  const textures = m.textureCount > 4 ? `${m.textureCount} textures` : undefined;
+  const drivers = [];
+  const also = [];
+  if ((grade === "A" || grade === "B") && (transparency || textures)) {
     grade = "C";
-  else if (m.uniqueMaterials <= 12)
-    grade = "D";
-  else
-    grade = "F";
-  const order = ["A", "B", "C", "D", "F"];
-  const demote = (to, why) => {
-    if (order.indexOf(to) > order.indexOf(grade)) {
-      grade = to;
-      reasons.push(why);
-    } else {
-      reasons.push(why);
-    }
-  };
-  reasons.push(`${m.uniqueMaterials} material${m.uniqueMaterials === 1 ? "" : "s"}, ` + `${m.uniqueGeometries} geometr${m.uniqueGeometries === 1 ? "y" : "ies"}, ` + `${m.drawCalls} draw call${m.drawCalls === 1 ? "" : "s"}`);
-  if (m.transparentMaterials > 0) {
-    demote("C", `${m.transparentMaterials} transparent material(s) force per-object sort`);
+    if (transparency)
+      drivers.push(`${transparency} (lowers A/B to C)`);
+    if (textures)
+      drivers.push(`${textures} (over 4 lowers A/B to C)`);
+    also.push(materials);
+  } else {
+    drivers.push(materials);
+    if (transparency)
+      also.push(`${transparency} (lowers only A/B to C)`);
+    if (textures)
+      also.push(`${textures} (over 4 lowers only A/B to C)`);
   }
-  if (m.textureCount > 4) {
-    demote("C", `${m.textureCount} textures (consider atlasing) `.trim());
-  }
-  if (m.skinned) {
+  also.push(counted(m.uniqueGeometries, "geometry", "geometries"), counted(m.drawCalls, "draw call", "draw calls"));
+  if (m.skinned)
+    also.push("skinned (clone-rendered, not penalized)");
+  const setBy = drivers.join(" and ");
+  const reasons = [
+    `grade ${grade} set by ${setBy}`,
+    `${m.uniqueMaterials} material${m.uniqueMaterials === 1 ? "" : "s"}, ` + `${m.uniqueGeometries} geometr${m.uniqueGeometries === 1 ? "y" : "ies"}, ` + `${m.drawCalls} draw call${m.drawCalls === 1 ? "" : "s"}`
+  ];
+  if (transparency)
+    reasons.push(`${m.transparentMaterials} transparent material(s) force per-object sort`);
+  if (textures)
+    reasons.push(`${m.textureCount} textures (consider atlasing)`);
+  if (m.skinned)
     reasons.push("skinned/animated — clone-rendered (not statically GPU-instanced); fine at low counts");
-  }
   if (opts.category)
     reasons.push(`category: ${opts.category}`);
-  const summary = `${grade} — ${m.uniqueMaterials} mat / ${m.uniqueGeometries} geo / ${m.drawCalls} draws` + (m.transparentMaterials > 0 ? ", transparent" : ", opaque") + (m.skinned ? ", skinned" : "");
+  const summary = `${grade} (informational, not a QA verdict), set by ${setBy}. Also: ${also.join("; ")}.`;
   return { grade, summary, reasons, metrics: m };
 }
+var MATERIAL_GRADE_BANDS, counted = (n, one, many) => `${n} ${n === 1 ? one : many}`;
+var init_metrics = __esm(() => {
+  MATERIAL_GRADE_BANDS = [
+    { grade: "A", max: 1, range: "0-1" },
+    { grade: "B", max: 3, range: "2-3" },
+    { grade: "C", max: 6, range: "4-6" },
+    { grade: "D", max: 12, range: "7-12" },
+    { grade: "F", max: Number.POSITIVE_INFINITY, range: "13+" }
+  ];
+});
 
 // src/qa/gltf.ts
 function finiteCount(value) {
@@ -23050,20 +23457,28 @@ function collectMaterialMetricsV1(document) {
   });
   let totalSurfaceArea = 0;
   let blendedSurfaceArea = 0;
+  const blendedAreaByMaterial = new Map;
   const visit = (node) => {
     const mesh = node.getMesh();
     if (mesh) {
       for (const primitive of mesh.listPrimitives()) {
         const area = primitiveSurfaceArea(primitive, node);
         totalSurfaceArea += area;
-        if (primitive.getMaterial()?.getAlphaMode() === "BLEND")
+        const material = primitive.getMaterial();
+        if (material?.getAlphaMode() === "BLEND") {
           blendedSurfaceArea += area;
+          blendedAreaByMaterial.set(material, (blendedAreaByMaterial.get(material) ?? 0) + area);
+        }
       }
     }
     node.listChildren().forEach(visit);
   };
   for (const scene of root.listScenes())
     scene.listChildren().forEach(visit);
+  const blendedMaterialAreas = materials.map((material, index) => ({
+    name: material.getName() || `material-${index + 1}`,
+    area: blendedAreaByMaterial.get(material) ?? 0
+  })).filter(({ area }) => area > 0).sort((a, b) => b.area - a.area).map(({ name, area }) => ({ name, area, ratio: area / totalSurfaceArea }));
   const extensionsUsed = root.listExtensionsUsed().map((extension) => extension.extensionName).sort();
   const materialExtensionsUsed = extensionsUsed.filter((name) => /^(?:KHR|EXT)_materials_/.test(name));
   const opaqueMaterials = materials.filter((material) => material.getAlphaMode() === "OPAQUE").length;
@@ -23093,7 +23508,8 @@ function collectMaterialMetricsV1(document) {
     estimatedGpuBytesWithMipmaps: images.reduce((sum, image) => sum + image.estimatedGpuBytesWithMipmaps, 0),
     totalSurfaceArea,
     blendedSurfaceArea,
-    blendedSurfaceAreaRatio: totalSurfaceArea > 0 ? blendedSurfaceArea / totalSurfaceArea : 0
+    blendedSurfaceAreaRatio: totalSurfaceArea > 0 ? blendedSurfaceArea / totalSurfaceArea : 0,
+    blendedMaterialAreas
   };
 }
 function evaluateMaterialBudgetV1(metrics, options) {
@@ -23150,12 +23566,16 @@ function evaluateMaterialBudgetV1(metrics, options) {
     });
   }
   if (metrics.blendedSurfaceAreaRatio > limits.maxBlendedSurfaceAreaRatio) {
+    const blended = metrics.blendedMaterialAreas ?? [];
+    const named = blended.slice(0, BLEND_MATERIALS_NAMED).map(({ name, ratio }) => `${JSON.stringify(name)} ${(ratio * 100).toFixed(1)}%`);
+    const more = blended.length > BLEND_MATERIALS_NAMED ? `, and ${blended.length - BLEND_MATERIALS_NAMED} more` : "";
+    const drivers = named.length ? ` Largest BLEND materials by share of surface area: ${named.join(", ")}${more}.` : "";
     warnings.push({
       code: "MATERIAL_BLEND_AREA_BUDGET",
       disposition: "warn",
       profile: options.profile,
       tier: options.tier,
-      message: `Blended primitive surface area is ${(metrics.blendedSurfaceAreaRatio * 100).toFixed(1)}% (${metrics.blendedSurfaceArea.toFixed(3)} of ${metrics.totalSurfaceArea.toFixed(3)} square asset units); the budget is ${(limits.maxBlendedSurfaceAreaRatio * 100).toFixed(1)}%.`,
+      message: `Blended primitive surface area is ${(metrics.blendedSurfaceAreaRatio * 100).toFixed(1)}% (${metrics.blendedSurfaceArea.toFixed(3)} of ${metrics.totalSurfaceArea.toFixed(3)} square asset units); the budget is ${(limits.maxBlendedSurfaceAreaRatio * 100).toFixed(1)}%.${drivers}`,
       measurement: {
         name: "blendedSurfaceAreaRatio",
         actual: metrics.blendedSurfaceAreaRatio,
@@ -23199,7 +23619,7 @@ var MATERIAL_BUDGET_PROFILES_V1, materialTextures3 = (material) => [
   const crossY = abz * acx - abx * acz;
   const crossZ = abx * acy - aby * acx;
   return Math.hypot(crossX, crossY, crossZ) / 2;
-}, mib = (bytes) => `${(bytes / (1024 * 1024)).toFixed(2)} MiB`;
+}, BLEND_MATERIALS_NAMED = 3, mib = (bytes) => `${(bytes / (1024 * 1024)).toFixed(2)} MiB`;
 var init_material_metrics = __esm(() => {
   MATERIAL_BUDGET_PROFILES_V1 = Object.freeze({
     "web.portable.v1": Object.freeze({
@@ -23350,9 +23770,170 @@ var init_source_bindings = __esm(() => {
   ]);
 });
 
+// src/source-runtime-checks.ts
+import * as walk2 from "acorn-walk";
+function patternNames(pattern, names = []) {
+  const node = pattern;
+  if (!node)
+    return names;
+  if (node.type === "Identifier")
+    names.push(node["name"]);
+  else if (node.type === "ObjectPattern")
+    for (const property of node["properties"])
+      patternNames(property.type === "RestElement" ? property["argument"] : property["value"], names);
+  else if (node.type === "ArrayPattern")
+    for (const element of node["elements"])
+      patternNames(element, names);
+  else if (node.type === "AssignmentPattern")
+    patternNames(node["left"], names);
+  else if (node.type === "RestElement")
+    patternNames(node["argument"], names);
+  return names;
+}
+function lexicalDeclarations(statements, name) {
+  for (const statement of statements) {
+    if (statement.type === "VariableDeclaration" && statement["kind"] !== "var") {
+      for (const declarator of statement["declarations"])
+        if (patternNames(declarator["id"]).includes(name))
+          return { tdz: true, end: declarator.end, line: declarator.loc?.start.line };
+    } else if ((statement.type === "ClassDeclaration" || statement.type === "FunctionDeclaration") && statement["id"]?.["name"] === name) {
+      return statement.type === "ClassDeclaration" ? { tdz: true, end: statement.end, line: statement.loc?.start.line } : "shadow";
+    }
+  }
+  return;
+}
+function bindingIn(scope, child, name) {
+  switch (scope.type) {
+    case "Program":
+    case "BlockStatement":
+    case "StaticBlock":
+      return lexicalDeclarations(scope["body"], name);
+    case "SwitchStatement":
+      if (child === scope["discriminant"])
+        return;
+      return lexicalDeclarations(scope["cases"].flatMap((c) => c["consequent"]), name);
+    case "ForStatement":
+    case "ForInStatement":
+    case "ForOfStatement": {
+      const head = scope.type === "ForStatement" ? scope["init"] : scope["left"];
+      return head?.type === "VariableDeclaration" && head["kind"] !== "var" && head["declarations"].some((d) => patternNames(d["id"]).includes(name)) ? "shadow" : undefined;
+    }
+    case "CatchClause":
+      return patternNames(scope["param"]).includes(name) ? "shadow" : undefined;
+    case "ClassDeclaration":
+    case "ClassExpression":
+      return scope["id"]?.["name"] === name ? "shadow" : undefined;
+    default:
+      if (!FUNCTION_TYPES.has(scope.type))
+        return;
+      if (scope.type === "FunctionExpression" && scope["id"]?.["name"] === name)
+        return "shadow";
+      return scope["params"].some((p) => patternNames(p).includes(name)) ? "shadow" : undefined;
+  }
+}
+function temporalDeadZoneReads(ast) {
+  const issues = [];
+  const seen = new Set;
+  walk2.ancestor(ast, {
+    Identifier(node, _state, ancestors) {
+      const name = node.name;
+      let deferred = false;
+      for (let i = ancestors.length - 2;i >= 0; i--) {
+        const scope = ancestors[i];
+        const child = ancestors[i + 1];
+        const binding = bindingIn(scope, child, name);
+        if (binding === "shadow")
+          return;
+        if (binding) {
+          if (deferred || node.start >= binding.end)
+            return;
+          const line = node.loc?.start.line;
+          const key = `${name}:${line}`;
+          if (seen.has(key))
+            return;
+          seen.add(key);
+          issues.push({
+            code: "TEMPORAL_DEAD_ZONE",
+            message: `\`${name}\` is read before its declaration${binding.line ? ` at line ${binding.line}` : ""} has run, so the read throws.`,
+            fixHint: "Declare the binding above the first code that reads it, or read it inside a function that runs later.",
+            line
+          });
+          return;
+        }
+        if (FUNCTION_TYPES.has(scope.type))
+          deferred = true;
+        if (scope.type === "PropertyDefinition" && !scope["static"] && child === scope["value"])
+          deferred = true;
+      }
+    }
+  });
+  return issues;
+}
+function literalString(node) {
+  if (node?.type === "Literal" && typeof node["value"] === "string")
+    return node["value"];
+  if (node?.type === "TemplateLiteral" && node["expressions"].length === 0)
+    return node["quasis"][0]?.["value"]?.cooked;
+  return;
+}
+function recipeCalls(ast) {
+  const issues = [];
+  walk2.simple(ast, {
+    CallExpression(call) {
+      const node = call;
+      const callee = node["callee"];
+      if (callee.type !== "Identifier" || callee["name"] !== "materialRecipe")
+        return;
+      const [first, second] = node["arguments"];
+      const id = literalString(first);
+      if (id === undefined)
+        return;
+      if (!Object.hasOwn(MATERIAL_RECIPE_LIBRARY_V1, id)) {
+        issues.push({
+          code: "MATERIAL_RECIPE_ID",
+          message: `${JSON.stringify(id)} is not a listed material recipe. Listed IDs: ${MATERIAL_RECIPE_IDS.join(", ")}.`,
+          fixHint: 'Use a listed ID; kiln_discover with ids ["materialRecipe"] describes each.',
+          line: node.loc?.start.line
+        });
+        return;
+      }
+      if (second?.type !== "ObjectExpression")
+        return;
+      const allowed = MATERIAL_RECIPE_LIBRARY_V1[id].allowedOverrides;
+      for (const property of second["properties"]) {
+        if (property.type !== "Property" || property["computed"])
+          continue;
+        const key = property["key"];
+        const name = key.type === "Identifier" ? key["name"] : literalString(key);
+        if (name === undefined || allowed.includes(name))
+          continue;
+        issues.push({
+          code: "MATERIAL_RECIPE_OVERRIDE",
+          message: `${id} does not accept the ${name} override; it accepts ${allowed.join(", ")}.`,
+          fixHint: 'Remove the override, or use a recipe whose allowed overrides include it (kiln_discover ids ["materialRecipe"]).',
+          line: property.loc?.start.line
+        });
+      }
+    }
+  });
+  return issues;
+}
+function analyzeBuildTimeThrows(ast) {
+  return [...temporalDeadZoneReads(ast), ...recipeCalls(ast)];
+}
+var FUNCTION_TYPES;
+var init_source_runtime_checks = __esm(() => {
+  init_material_recipes();
+  FUNCTION_TYPES = new Set([
+    "FunctionDeclaration",
+    "FunctionExpression",
+    "ArrowFunctionExpression"
+  ]);
+});
+
 // src/validation.ts
 import * as acorn from "acorn";
-import * as walk2 from "acorn-walk";
+import * as walk3 from "acorn-walk";
 function estimateGeometryTris(name, args) {
   function asNum(node) {
     if (!node)
@@ -23489,6 +24070,7 @@ function validate(code, _opts = {}) {
     return toResult(issues, warnings);
   }
   issues.push(...analyzeGeneratedSourceSafety(ast));
+  issues.push(...analyzeBuildTimeThrows(ast));
   const structure = analyzeTopLevel(ast);
   if (!structure.hasMetaConst) {
     issues.push({
@@ -23559,8 +24141,8 @@ function unknownHelperWarnings(ast) {
     Identifier: checkRemoved,
     VariablePattern: checkRemoved
   };
-  walk2.ancestor(ast, retiredVisitors);
-  walk2.simple(ast, {
+  walk3.ancestor(ast, retiredVisitors);
+  walk3.simple(ast, {
     CallExpression(node) {
       const callee = node.callee;
       if (callee?.type !== "Identifier" || !callee.name)
@@ -23644,7 +24226,7 @@ function analyzeGeneratedSourceSafety(ast) {
     fixHint: "Use a documented direct THREE constructor or a sandbox material/texture helper.",
     line
   });
-  walk2.ancestor(ast, {
+  walk3.ancestor(ast, {
     Identifier(node, _state, ancestors) {
       const parent = ancestors.at(-2);
       if (identifierIsNonReferenceKey(node, parent))
@@ -23798,7 +24380,7 @@ function staticExpressionString(node, staticStrings = new Map) {
 function collectStaticStringBindings(ast) {
   const candidates = new Map;
   const duplicateNames = new Set;
-  walk2.simple(ast, {
+  walk3.simple(ast, {
     VariableDeclaration(node) {
       if (node.kind !== "const")
         return;
@@ -23855,7 +24437,7 @@ function lineOfIndex(code, idx) {
 }
 function analyzeRotationUnits(ast, source) {
   const smells = [];
-  walk2.simple(ast, {
+  walk3.simple(ast, {
     CallExpression(node) {
       if (node.callee.type !== "Identifier" || !ROTATION_OPTION_FNS.has(node.callee.name))
         return;
@@ -24001,7 +24583,7 @@ function analyzeBody(ast) {
   let recursiveBuild;
   let estimatedTris = 0;
   const stack = [];
-  walk2.ancestor(ast, {
+  walk3.ancestor(ast, {
     FunctionDeclaration(node, _state, ancestors) {
       if (node.id?.name)
         stack.push(node.id.name);
@@ -24086,7 +24668,7 @@ function isConstantTruthy(node) {
 }
 function hasBreak(body) {
   let found = false;
-  walk2.simple(body, {
+  walk3.simple(body, {
     BreakStatement() {
       found = true;
     },
@@ -24105,6 +24687,7 @@ var init_validation = __esm(() => {
   init_geometry_catalog();
   init_source_bindings();
   init_authoring_diagnostic();
+  init_source_runtime_checks();
   SANDBOX_CALLABLES = new Set([
     ...listHelperSpecs().map((primitive) => primitive.name).filter((name) => !Object.hasOwn(REMOVED_AUTHORING_HELPERS, name)),
     "Array",
@@ -25293,8 +25876,8 @@ function validateAdvancedCapture(config) {
     throw new Error("capture.shots must contain 1..9 shots");
   if (config.cols !== undefined && (!Number.isInteger(config.cols) || config.cols < 1 || config.cols > 3))
     throw new Error("capture.cols must be 1..3");
-  if (config.size !== undefined && (!Number.isInteger(config.size) || config.size < 128 || config.size > 1024))
-    throw new Error("capture.size must be 128..1024");
+  if (config.size !== undefined && (!Number.isInteger(config.size) || config.size < 128 || config.size > MAX_CAPTURE_SHOT_SIZE))
+    throw new Error(`capture.size must be 128..${MAX_CAPTURE_SHOT_SIZE}`);
   if (config.output !== undefined && !["grid", "separate"].includes(config.output))
     throw new Error("capture.output must be grid or separate");
   resolveCaptureBackdrop(config.backdrop);
@@ -25346,7 +25929,8 @@ async function renderCaptureGrid(root, config, render, limits) {
       preset: `${cols}x${Math.ceil(shots.length / cols)}`,
       cols,
       cells: shots.length,
-      backdrop
+      backdrop,
+      output: config.output ?? "grid"
     },
     cameraShots: shots,
     perFramePngs,
@@ -25446,6 +26030,11 @@ import {
 function record5(value) {
   return typeof value === "object" && value !== null && !Array.isArray(value);
 }
+function withLoopIntent(clip, intent) {
+  if (intent === "loop" || intent === "once")
+    clip.userData.kilnLoopIntent = intent;
+  return clip;
+}
 function reviewClipsFromExtras(extras) {
   if (!record5(extras))
     return;
@@ -25470,7 +26059,7 @@ function reviewClipsFromExtras(extras) {
       const Track = property === "quaternion" ? QuaternionKeyframeTrack2 : VectorKeyframeTrack2;
       return new Track(track.name, track.times, track.values, track.interpolation === "STEP" ? InterpolateDiscrete2 : InterpolateLinear2);
     });
-    return new AnimationClip4(candidate.name, candidate.duration, tracks);
+    return withLoopIntent(new AnimationClip4(candidate.name, candidate.duration, tracks), candidate.loopIntent);
   });
 }
 function geometryFlatTextureReasonCode(mimeType) {
@@ -25522,7 +26111,8 @@ function flatMaterial(material) {
       roughness: 1,
       alphaMode: "OPAQUE",
       alphaCutoff: 0.5,
-      emissive: [0, 0, 0]
+      emissive: [0, 0, 0],
+      emissiveIntensity: 1
     };
   }
   const [r, g, b, factorAlpha] = material.getBaseColorFactor();
@@ -25536,7 +26126,8 @@ function flatMaterial(material) {
     roughness: material.getRoughnessFactor(),
     alphaMode,
     alphaCutoff: material.getAlphaCutoff(),
-    emissive: material.getEmissiveFactor()
+    emissive: material.getEmissiveFactor(),
+    emissiveIntensity: material.getExtension("KHR_materials_emissive_strength")?.getEmissiveStrength() ?? 1
   };
 }
 function preserveTexture(source, usage, cache) {
@@ -25784,6 +26375,7 @@ async function loadGlbReviewScene(bytes) {
         });
         threeMaterial.color.setRGB(flat.color.r, flat.color.g, flat.color.b);
         threeMaterial.emissive.fromArray(flat.emissive);
+        threeMaterial.emissiveIntensity = flat.emissiveIntensity;
         if (material) {
           threeMaterial.map = preserveTexture(material.getBaseColorTexture(), "color", textureCache);
           threeMaterial.normalMap = preserveTexture(material.getNormalTexture(), "data", textureCache);
@@ -25815,7 +26407,7 @@ async function loadGlbReviewScene(bytes) {
   root.updateMatrixWorld(true);
   if (meshCount === 0)
     throw new GlbGeometryFlatError("GLB_FLAT_NO_RENDERABLE_GEOMETRY", "Final GLB contains no renderable geometry.");
-  const nativeClips = document.getRoot().listAnimations().map((animation) => new AnimationClip4(animation.getName(), -1, animation.listChannels().flatMap((channel) => {
+  const nativeClips = document.getRoot().listAnimations().map((animation) => withLoopIntent(new AnimationClip4(animation.getName(), -1, animation.listChannels().flatMap((channel) => {
     const node = channel.getTargetNode();
     const path = channel.getTargetPath();
     const sampler = channel.getSampler();
@@ -25832,7 +26424,7 @@ async function loadGlbReviewScene(bytes) {
     return [
       new Track(`${node.getName()}.${property}`, input, output, interpolation === "STEP" ? InterpolateDiscrete2 : InterpolateLinear2)
     ];
-  })));
+  })), animation.getExtras().kilnLoopIntent));
   const clips = reviewClipsFromExtras(sourceScene.getExtras()) ?? nativeClips;
   return {
     root,
@@ -26810,6 +27402,18 @@ function resolveCamera(name) {
   const key = (name ?? "right").trim().toLowerCase().replace(/[_\s]+/g, "-");
   return ANIM_CAMERAS[key] ?? ANIM_CAMERAS[ANIM_CAMERA_ALIASES[key] ?? ""] ?? ANIM_CAMERAS["right"];
 }
+function worldOrigin(node) {
+  const e = node.matrixWorld.elements;
+  return [e[12], e[13], e[14]];
+}
+function boxDistance(point, box) {
+  let sum = 0;
+  for (let a = 0;a < 3; a++) {
+    const d = Math.max(box.min[a] - point[a], 0, point[a] - box.max[a]);
+    sum += d * d;
+  }
+  return Math.sqrt(sum);
+}
 async function renderClipAnimation(root, clips, opts = {}) {
   const size = opts.size ?? 256;
   const frameCount = Math.max(2, Math.min(opts.frames ?? 6, 6));
@@ -26865,7 +27469,8 @@ async function renderClipAnimation(root, clips, opts = {}) {
         parts: measuredParts.map(({ path, name, node }) => ({
           path,
           name,
-          bounds: measurePartBounds(node)
+          bounds: measurePartBounds(node),
+          origin: worldOrigin(node)
         }))
       } : {}
     });
@@ -26886,6 +27491,19 @@ async function renderClipAnimation(root, clips, opts = {}) {
   if (initialShot && opts.shot?.camera?.type !== "explicit" && frameBounds) {
     const dir = initialShot.camera.position.map((v, i) => v - initialShot.camera.target[i]);
     lockedCamera = cameraFromBounds(frameBounds, dir, opts.shot?.camera?.type === "orbit" ? opts.shot.camera.padding ?? 1.2 : 1.2, initialShot.camera.up);
+  }
+  const lens = opts.shot?.camera;
+  if (lockedCamera && opts.framing !== "follow" && lens?.type === "explicit" && lens.projection === "perspective" && lens.near === undefined) {
+    const union = { min: [...poseBounds[0].scene.min], max: [...poseBounds[0].scene.max] };
+    for (const { scene } of poseBounds)
+      for (let a = 0;a < 3; a++) {
+        union.min[a] = Math.min(union.min[a], scene.min[a]);
+        union.max[a] = Math.max(union.max[a], scene.max[a]);
+      }
+    lockedCamera = {
+      ...lockedCamera,
+      near: Math.max(0.001, Math.min(lockedCamera.near, boxDistance(lockedCamera.position, union) / 2))
+    };
   }
   const cameraShots = [];
   const labelScale = Math.max(2, Math.round(size / 80));
@@ -27266,6 +27884,7 @@ var init_character_capture = __esm(() => {
 // src/render.ts
 import * as THREE39 from "three";
 import { Document, getBounds } from "@gltf-transform/core";
+import { KHRMaterialsEmissiveStrength } from "@gltf-transform/extensions";
 import {
   dedup,
   instance,
@@ -27368,17 +27987,32 @@ async function executeKilnCode(code, options = {}) {
 return { meta: typeof meta !== 'undefined' ? meta : {}, build, animate: typeof animate !== 'undefined' ? animate : null };`);
     const { meta, build, animate } = fn(...globalValues);
     if (typeof build !== "function") {
-      throw new Error("executeKilnCode: generated code did not define `build`");
+      throw new AuthoringDiagnosticError("BUILD_RESULT", "executeKilnCode: generated code did not define `build`");
     }
     const root = await build();
     if (!root?.isObject3D) {
-      throw new Error("executeKilnCode: build() did not return a THREE.Object3D");
+      throw new AuthoringDiagnosticError("BUILD_RESULT", "executeKilnCode: build() did not return a THREE.Object3D");
     }
     const clips = animate ? await animate(root) ?? [] : [];
     return { meta: meta ?? {}, root, clips, primitiveUsage };
   } catch (error) {
     rethrowAuthoringError(error);
   }
+}
+function bridgeEmissive(doc, target, source) {
+  const color = source.emissive;
+  if (!color)
+    return;
+  const intensity = source.emissiveIntensity ?? 1;
+  const scale = Number.isFinite(intensity) ? Math.max(0, intensity) : 1;
+  const emitted = [color.r * scale, color.g * scale, color.b * scale];
+  const peak = Math.max(...emitted);
+  if (!(peak > 1)) {
+    target.setEmissiveFactor(emitted);
+    return;
+  }
+  target.setEmissiveFactor([emitted[0] / peak, emitted[1] / peak, emitted[2] / peak]);
+  target.setExtension("KHR_materials_emissive_strength", doc.createExtension(KHRMaterialsEmissiveStrength).createEmissiveStrength().setEmissiveStrength(peak));
 }
 function bridgeMaterial(doc, threeMat, cache, textureCache) {
   const cached = cache.get(threeMat);
@@ -27391,9 +28025,7 @@ function bridgeMaterial(doc, threeMat, cache, textureCache) {
     mat.setBaseColorFactor([stdMat.color.r, stdMat.color.g, stdMat.color.b, stdMat.opacity]);
     mat.setRoughnessFactor(stdMat.roughness);
     mat.setMetallicFactor(stdMat.metalness);
-    if (stdMat.emissive) {
-      mat.setEmissiveFactor([stdMat.emissive.r, stdMat.emissive.g, stdMat.emissive.b]);
-    }
+    bridgeEmissive(doc, mat, stdMat);
     if (stdMat.alphaTest > 0) {
       mat.setAlphaMode("MASK");
       mat.setAlphaCutoff(stdMat.alphaTest);
@@ -27438,9 +28070,7 @@ function bridgeMaterial(doc, threeMat, cache, textureCache) {
     mat.setBaseColorFactor([lambMat.color.r, lambMat.color.g, lambMat.color.b, lambMat.opacity]);
     mat.setRoughnessFactor(1);
     mat.setMetallicFactor(0);
-    if (lambMat.emissive) {
-      mat.setEmissiveFactor([lambMat.emissive.r, lambMat.emissive.g, lambMat.emissive.b]);
-    }
+    bridgeEmissive(doc, mat, lambMat);
   } else if (matFlags.isMeshBasicMaterial) {
     const basicMat = threeMat;
     mat.setBaseColorFactor([
@@ -27681,6 +28311,24 @@ function bridgeAnimations(doc, buf, clips, nodeMap, warnings) {
       anim.dispose();
   }
 }
+function clipLoopIntent(clip) {
+  const intent = clip.userData?.kilnLoopIntent;
+  return intent === "loop" || intent === "once" ? intent : undefined;
+}
+function finishNativeAnimations(doc, clips) {
+  const animations = doc.getRoot().listAnimations();
+  let complete = true;
+  for (const clip of clips) {
+    const matches = animations.filter((animation) => animation.getName() === clip.name);
+    const animation = matches.length === 1 ? matches[0] : undefined;
+    if (!animation || animation.listChannels().length !== clip.tracks.length)
+      complete = false;
+    const intent = clipLoopIntent(clip);
+    if (animation && intent)
+      animation.setExtras({ ...animation.getExtras(), kilnLoopIntent: intent });
+  }
+  return complete && animations.length === clips.length;
+}
 function reviewClipExtras(clips) {
   if (clips.length > REVIEW_CLIP_LIMITS2.clips) {
     throw new Error(`Animation review clip limit exceeded (${REVIEW_CLIP_LIMITS2.clips}).`);
@@ -27691,6 +28339,7 @@ function reviewClipExtras(clips) {
     clips: clips.map((clip) => ({
       name: clip.name,
       duration: clip.duration,
+      ...clipLoopIntent(clip) ? { loopIntent: clipLoopIntent(clip) } : {},
       tracks: clip.tracks.map((track) => {
         trackCount++;
         if (trackCount > REVIEW_CLIP_LIMITS2.tracks) {
@@ -27724,6 +28373,9 @@ function resolveInstance(opt) {
 function hasJointPivots(doc) {
   return doc.getRoot().listNodes().some((n) => /^joint[_-]/i.test(n.getName()));
 }
+function hasNodeLevelsOfDetail(doc) {
+  return doc.getRoot().listNodes().some((n) => n.getExtension(MSFT_LOD) !== null);
+}
 async function applyGpuInstancing(doc, mode, role) {
   if (mode === "off")
     return;
@@ -27732,7 +28384,7 @@ async function applyGpuInstancing(doc, mode, role) {
   const root = doc.getRoot();
   if (root.listAnimations().length > 0 || root.listSkins().length > 0)
     return;
-  if (hasJointPivots(doc))
+  if (hasJointPivots(doc) || hasNodeLevelsOfDetail(doc))
     return;
   const before = collectGlbMetrics(doc);
   await doc.transform(instance({ min: INSTANCE_MIN }));
@@ -27755,7 +28407,7 @@ async function consolidateMaterials(doc, mode) {
   const root = doc.getRoot();
   const animatedOrSkinned = root.listAnimations().length > 0 || root.listSkins().length > 0;
   const semanticGraph = root.listNodes().some((node) => node.getExtras()[KILN_SEMANTIC_EXTRAS_KEY] !== undefined);
-  const effective = mode === "full" && (animatedOrSkinned || semanticGraph) ? "palette" : mode;
+  const effective = mode === "full" && (animatedOrSkinned || semanticGraph || hasNodeLevelsOfDetail(doc)) ? "palette" : mode;
   const steps = [palette({ min: PALETTE_MIN })];
   if (effective === "full") {
     steps.push(flatten(), join4({ keepNamed: true }));
@@ -27812,16 +28464,21 @@ async function renderSceneToGLB(root, opts = {}) {
     const gltfScene = doc.createScene(opts.sceneName ?? "Scene").addChild(rootNode);
     doc.getRoot().setDefaultScene(gltfScene);
     if (clips.length > 0) {
-      gltfScene.setExtras({ [REVIEW_CLIPS_EXTRAS_KEY2]: reviewClipExtras(clips) });
+      const review = reviewClipExtras(clips);
       bridgeAnimations(doc, buf, nativeClips, nodeMap, warnings);
+      if (!finishNativeAnimations(doc, nativeClips))
+        gltfScene.setExtras({ [REVIEW_CLIPS_EXTRAS_KEY2]: review });
     }
   } else {
     const scene = doc.getRoot().getDefaultScene() ?? doc.getRoot().listScenes()[0];
     if (!scene)
       throw new Error("Community exporter produced no scene.");
     scene.setName(opts.sceneName ?? "Scene");
-    if (clips.length > 0)
-      scene.setExtras({ [REVIEW_CLIPS_EXTRAS_KEY2]: reviewClipExtras(clips) });
+    if (clips.length > 0) {
+      const review = reviewClipExtras(clips);
+      if (!finishNativeAnimations(doc, nativeClips))
+        scene.setExtras({ [REVIEW_CLIPS_EXTRAS_KEY2]: review });
+    }
   }
   if (opts.dedup !== false) {
     try {
@@ -28154,6 +28811,7 @@ var init_render = __esm(() => {
   init_rig_export();
   init_geometry_export();
   init_primitives();
+  init_metrics();
   init_contracts();
   init_gltf();
   init_run();
@@ -28269,7 +28927,7 @@ function decodeEvaluatorResultV2(json, maxGlbBytes, expectedRequestId) {
     if (!codes.includes(value.error.code) || typeof value.error.message !== "string" || value.error.message !== evaluatorOutcomeMessage(value.error.code)) {
       return fail("result");
     }
-    if (value.error.diagnostic !== undefined && (value.error.code !== "EXECUTION_REJECTED" || value.error.diagnostic !== "UNBOUND_VARIABLE" && value.error.diagnostic !== "GEAR_RADII_ORDER" && value.error.diagnostic !== "ROUNDED_BOX_RADIUS" && value.error.diagnostic !== "PROCEDURAL_TEXTURE_UNKNOWN_KEY" && value.error.diagnostic !== "PROCEDURAL_TEXTURE_BLEND" && value.error.diagnostic !== "MATERIAL_FRACTION_RANGE" && value.error.diagnostic !== "MATERIAL_RECIPE_TEXTURE_BINDING" && value.error.diagnostic !== "PORTABLE_TEXTURE_REFERENCE" && value.error.diagnostic !== "PORTABLE_COLOR_ARGUMENT" && value.error.diagnostic !== "PARAMETRIC_PERIODIC_ENDPOINT" && value.error.diagnostic !== "PROFILE_HOLES_UNSUPPORTED" && value.error.diagnostic !== "PROFILE_BEVEL_COLLAPSE" && value.error.diagnostic !== "PROFILE_CORRESPONDENCE_COLLAPSE" && value.error.diagnostic !== "REMOVED_HELPER" && value.error.diagnostic !== "TUBE_RADIUS" && value.error.diagnostic !== "TAPER_CONE_AXIS" && value.error.diagnostic !== "SOLID_FLOAT32_COLLAPSE" && value.error.diagnostic !== "MESH_DATA_NONFINITE" && value.error.diagnostic !== "MATERIAL_ALPHA_MODE" && value.error.diagnostic !== "MATERIAL_COLOR_ARGUMENT" && value.error.diagnostic !== "PART_NAME_ARGUMENT" && value.error.diagnostic !== "PART_GEOMETRY_ARGUMENT" && value.error.diagnostic !== "PART_MATERIAL_ARGUMENT" && value.error.diagnostic !== "MATERIAL_PACKED_CHANNELS"))
+    if (value.error.diagnostic !== undefined && (value.error.code !== "EXECUTION_REJECTED" || value.error.diagnostic !== "UNBOUND_VARIABLE" && value.error.diagnostic !== "GEAR_RADII_ORDER" && value.error.diagnostic !== "ROUNDED_BOX_RADIUS" && value.error.diagnostic !== "PROCEDURAL_TEXTURE_UNKNOWN_KEY" && value.error.diagnostic !== "PROCEDURAL_TEXTURE_BLEND" && value.error.diagnostic !== "MATERIAL_FRACTION_RANGE" && value.error.diagnostic !== "MATERIAL_RECIPE_TEXTURE_BINDING" && value.error.diagnostic !== "PORTABLE_TEXTURE_REFERENCE" && value.error.diagnostic !== "PORTABLE_COLOR_ARGUMENT" && value.error.diagnostic !== "PARAMETRIC_PERIODIC_ENDPOINT" && value.error.diagnostic !== "PROFILE_HOLES_UNSUPPORTED" && value.error.diagnostic !== "PROFILE_BEVEL_COLLAPSE" && value.error.diagnostic !== "PROFILE_CORRESPONDENCE_COLLAPSE" && value.error.diagnostic !== "REMOVED_HELPER" && value.error.diagnostic !== "TUBE_RADIUS" && value.error.diagnostic !== "TAPER_CONE_AXIS" && value.error.diagnostic !== "SOLID_FLOAT32_COLLAPSE" && value.error.diagnostic !== "MESH_DATA_NONFINITE" && value.error.diagnostic !== "MATERIAL_ALPHA_MODE" && value.error.diagnostic !== "MATERIAL_COLOR_ARGUMENT" && value.error.diagnostic !== "PART_NAME_ARGUMENT" && value.error.diagnostic !== "PART_GEOMETRY_ARGUMENT" && value.error.diagnostic !== "PART_MATERIAL_ARGUMENT" && value.error.diagnostic !== "MATERIAL_PACKED_CHANNELS" && value.error.diagnostic !== "UNINITIALIZED_BINDING" && value.error.diagnostic !== "BUILD_RESULT" && value.error.diagnostic !== "MATERIAL_RECIPE_OVERRIDE" && value.error.diagnostic !== "PROGRAM_TYPE_ERROR" && value.error.diagnostic !== "PROGRAM_RANGE_ERROR"))
       return fail("result");
     if (value.error.qa !== undefined) {
       if (value.error.code !== "QA_BLOCKED" || !isRecord5(value.error.qa) || !hasExactKeys(value.error.qa, ["report", "stage", "gltfValidation"]) || !validRequirementsQaReport(value.error.qa.report) || !["scene", "final-glb"].includes(String(value.error.qa.stage)) || value.error.qa.gltfValidation !== undefined && !validGltfValidation(value.error.qa.gltfValidation)) {
@@ -28756,6 +29414,48 @@ var init_project_bundle = __esm(() => {
   decoder2 = new TextDecoder("utf-8", { fatal: true });
 });
 
+// src/evaluator/source-check.ts
+function causes(code) {
+  const result = validate(code);
+  return [
+    ...result.issues.filter((issue) => issue.code !== "MISSING_META"),
+    ...result.warnings.filter((issue) => issue.code === "UNKNOWN_HELPER")
+  ];
+}
+function sourceCheckDetail(code, limit = 3) {
+  let found;
+  try {
+    found = causes(code);
+  } catch {
+    return;
+  }
+  if (found.length === 0)
+    return;
+  const shown = found.slice(0, limit).map((issue) => {
+    const text = issue.message.replace(/^Syntax error: /, "").replace(/\.$/, "");
+    return `${issue.code}${issue.line ? ` at line ${issue.line}` : ""}: ${text}`;
+  });
+  const more = found.length - shown.length;
+  return `${shown.join("; ")}${more > 0 ? `; ${more} more in kiln_validate` : ""}.`;
+}
+function appendSourceCheck(message, code) {
+  if (typeof code !== "string" || code.length === 0 || !message.startsWith(evaluatorOutcomeMessage("EXECUTION_REJECTED")) || message.includes(SOURCE_CHECK_LABEL))
+    return message;
+  const detail = sourceCheckDetail(code);
+  return detail ? `${message} ${SOURCE_CHECK_LABEL} ${detail}` : message;
+}
+function withSourceCheck(error, code) {
+  if (error instanceof Error && error.code === "EXECUTION_REJECTED") {
+    error.message = appendSourceCheck(error.message, code);
+  }
+  return error;
+}
+var SOURCE_CHECK_LABEL = "Source check:";
+var init_source_check = __esm(() => {
+  init_validation();
+  init_protocol();
+});
+
 // src/views/port.ts
 async function sha256Bytes(bytes) {
   const input = new Uint8Array(bytes.byteLength);
@@ -28861,14 +29561,13 @@ async function captureViewsViaPort(port, glb, timeoutMs = DEFAULT_VIEW_RENDER_TI
       execution?.signal?.throwIfAborted();
       await Promise.resolve().then(() => init_views());
       await Promise.resolve().then(() => init_camera_capture());
+      await Promise.resolve().then(() => init_camera());
       await Promise.resolve().then(() => init_render());
       const loaded = await loadGlbReviewScene(Uint8Array.from(glb));
       let rendererId = "";
       const grid = await renderCaptureGrid(loaded.root, capture, async (input) => {
         execution?.signal?.throwIfAborted();
-        const derivative = await renderSceneToGLB(input.root, {
-          derivative: true
-        });
+        const derivative = await renderSceneToGLB(withoutHiddenMeshes(input.root), { derivative: true });
         const result = await captureViewPngsViaPort(port, derivative.bytes, timeoutMs, [input.view.dir], input.size, [input.camera], limits, input.backdrop, execution);
         if (!result.ok)
           throw new Error(result.reason);
@@ -29666,10 +30365,34 @@ function measureSurfaceDistance(root, input) {
   }
   return finish(true);
 }
+function surfacePathProblem(subjects, path) {
+  const list = (nodes) => `${nodes.slice(0, 5).map((n) => n.path).join(", ")}${nodes.length > 5 ? `, and ${nodes.length - 5} more` : ""}`;
+  if (!path.startsWith("/")) {
+    const named = subjects.filter((s) => s.name === path);
+    return `${JSON.stringify(path)} is not an exact path; paths start with / as partListing shows them.${named.length ? ` Nodes named ${JSON.stringify(path)}: ${list(named)}.` : ""}`;
+  }
+  const last = path.split("/").pop() ?? "";
+  let name = last.replace(/\[\d+\]$/, "");
+  try {
+    name = decodeURIComponent(name);
+  } catch {}
+  const similar = subjects.filter((s) => s.name === name);
+  const rootPath = subjects[0]?.path;
+  const misrooted = rootPath !== undefined && path !== rootPath && !path.startsWith(`${rootPath}/`);
+  return `No node has path ${JSON.stringify(path)}.${misrooted ? ` Paths start with ${rootPath}.` : ""}${similar.length ? ` Nodes named ${JSON.stringify(name)}: ${list(similar)}.` : ""}`;
+}
 function measureSurfacePairs(root, pairs) {
-  if (pairs.length < 1 || pairs.length > 12 || pairs.some((pair) => pair.length !== 2 || pair.some((path) => typeof path !== "string" || !path.startsWith("/") || path.length > 4096)))
+  if (pairs.length < 1 || pairs.length > 12 || pairs.some((pair) => pair.length !== 2 || pair.some((path) => typeof path !== "string" || path.length > 4096)))
     throw new Error("Surface pairs require 1..12 pairs of exact subject paths.");
+  const subjects = listCameraSubjects(root);
+  const known = new Set(subjects.map((subject) => subject.path));
   const results = pairs.map((paths) => {
+    const problems = paths.flatMap((path) => {
+      const problem = known.has(path) ? undefined : surfacePathProblem(subjects, path);
+      return problem ? [problem] : [];
+    });
+    if (problems.length)
+      return { paths, error: problems.join(" ") };
     try {
       return {
         paths,
@@ -29775,7 +30498,7 @@ import {
   writeFile as writeFile2
 } from "node:fs/promises";
 import { homedir, platform } from "node:os";
-import { dirname as dirname3, join as join3, relative as relative2, resolve as resolve3, sep as sep2 } from "node:path";
+import { dirname as dirname3, join as join3, relative as relative2, resolve as resolve3, sep as sep2, win32 } from "node:path";
 
 // src/workspace-location.ts
 import { dirname, join, resolve } from "node:path";
@@ -29888,6 +30611,9 @@ class FileAssetLibrary {
     if (!root || !Object.hasOwn(this.roots, collection))
       throw new Error("Unknown collection");
     return root;
+  }
+  revisionDirectory(collection, assetId, revisionId) {
+    return join3(this.directory(collection), assetIdSchema.parse(assetId), "revisions", assetIdSchema.parse(revisionId));
   }
   async path(collection, ...parts) {
     const root = this.directory(collection);
@@ -30106,28 +30832,45 @@ function defaultUserLibraryRoot(env = process.env, home = homedir(), operatingSy
     return join3(env.LOCALAPPDATA?.trim() || join3(home, "AppData", "Local"), "Kiln", "library");
   return join3(home, ".local", "share", "kiln", "library");
 }
-function localAssetLibrary(env = process.env) {
-  if (env.KILN_COLLECTIONS) {
-    const value = JSON.parse(env.KILN_COLLECTIONS);
-    if (!value || typeof value !== "object" || Array.isArray(value) || Object.values(value).some((v) => typeof v !== "string" || !v))
-      throw new Error("KILN_COLLECTIONS must map collection names to directories");
-    return new FileAssetLibrary(value, new FileMaterialLibrary(join3(localWorkspaceRoot(env), ".kiln", "materials")));
-  }
+var windowsDrivePath = /^[A-Za-z]:[\\/]/;
+var windowsSharePath = /^[\\/]{2}[^\\/]+[\\/][^\\/]+/;
+function assertCollectionRoot(id, path, operatingSystem = platform(), source) {
+  if (operatingSystem !== "win32" || windowsDrivePath.test(path) || windowsSharePath.test(path))
+    return;
+  const gitBash = /^\/([A-Za-z])(?:\/(.*))?$/.exec(path);
+  const suggestion = gitBash ? `${gitBash[1].toUpperCase()}:/${gitBash[2] ?? ""}` : "C:/Users/<you>/<folder>";
+  throw new Error(`Collection ${id} directory ${JSON.stringify(path)}${source ? ` in ${source}` : ""} is not a Windows drive or UNC path; it would resolve to ${win32.resolve(path)}. Write it as ${suggestion}.`);
+}
+function configuredRoots(text, source, operatingSystem) {
+  const value = JSON.parse(text);
+  if (!value || typeof value !== "object" || Array.isArray(value) || Object.values(value).some((v) => typeof v !== "string" || !v))
+    throw new Error("KILN_COLLECTIONS must map collection names to directories");
+  for (const [id, path] of Object.entries(value))
+    assertCollectionRoot(id, path, operatingSystem, source);
+  return value;
+}
+function localAssetLibrary(env = process.env, operatingSystem = platform()) {
+  if (env.KILN_COLLECTIONS)
+    return new FileAssetLibrary(configuredRoots(env.KILN_COLLECTIONS, "KILN_COLLECTIONS", operatingSystem), new FileMaterialLibrary(join3(localWorkspaceRoot(env), ".kiln", "materials")));
   const config = collectionConfigPath(env);
+  const workspace = dirname3(dirname3(config));
+  const materials = new FileMaterialLibrary(join3(workspace, ".kiln", "materials"));
+  let text;
   try {
-    const text = readFileSync(config, "utf8");
-    if (!text.trim())
-      throw new Error("Collection configuration is empty");
-    return localAssetLibrary({ ...env, KILN_COLLECTIONS: text });
+    text = readFileSync(config, "utf8");
   } catch (error) {
     if (error.code !== "ENOENT")
       throw error;
   }
-  const workspace = dirname3(dirname3(config));
+  if (text !== undefined) {
+    if (!text.trim())
+      throw new Error("Collection configuration is empty");
+    return new FileAssetLibrary(configuredRoots(text, config, operatingSystem), materials);
+  }
   return new FileAssetLibrary({
     project: join3(workspace, "assets", "kiln"),
-    library: defaultUserLibraryRoot(env)
-  }, new FileMaterialLibrary(join3(workspace, ".kiln", "materials")));
+    library: defaultUserLibraryRoot(env, homedir(), operatingSystem)
+  }, materials);
 }
 
 // src/mcp-server.ts
@@ -30139,7 +30882,7 @@ import { fileURLToPath as fileURLToPath7 } from "node:url";
 // src/tools/registry.ts
 init_capture_cache();
 init_assets();
-import { z as z17 } from "zod";
+import { z as z18 } from "zod";
 
 // src/program-store.ts
 var MAX_PROGRAM_BYTES = 1024 * 1024;
@@ -30268,7 +31011,7 @@ function withProgramReferences(def, store) {
   const summaries = {
     kiln_validate: "Check program syntax, sandbox rules and retired globals before building. Returns findings with codes, lines and repair hints where available; use kiln_render to evaluate geometry and see the asset.",
     kiln_render: "Build a program and return geometry metrics, a bounded part-path preview and images. If partsTruncated, use kiln_inspect listParts for remaining paths. Omit capture for six views; choose preset/cells for orbit grids or version kiln.capture.v1 plus shots for part-local framing, perspective and separate images. Check viewFidelity before judging materials. Failed builds return errors without an image.",
-    kiln_screenshot_animation: "Review animation images, poseBounds and loopClosure endpoint evidence. An open endpoint is valid for one-shot motion; closed endpoints do not prove smooth velocity. Check motion, attachments and requested clearance; sampled bounds do not certify continuous contact or collision safety. Use shot for camera/subject, frameTimes for phases, and framing locked (default) or follow. Add phases when symmetry hides motion. The program must define animate(). Check viewFidelity before judging materials.",
+    kiln_screenshot_animation: "Review animation images, poseBounds and loopClosure endpoint evidence. loopIntent is createClip({loop}); open is valid for one-shots; closed endpoints do not prove smooth velocity. Check motion, attachments and requested clearance; sampled bounds do not certify continuous contact or collision safety. Use shot for camera/subject, frameTimes for phases, and framing locked (default) or follow. Add phases when symmetry hides motion. The program must define animate(). Check viewFidelity before judging materials.",
     kiln_view_interior: "Render roof-off floor-plan, dollhouse, and eye-level cutaway views. Optional versioned capture selects custom roof-off shots. Select a roof by nodeName or let Kiln resolve its role/name. Review roofsHidden and warnings for unresolved occlusion.",
     kiln_inspect: "List part paths and inspect joints, clearances and edit preservation. listParts filters names/paths with query; follow partListing.nextOffset on the same programRef/query. measure/surfacePairs return distances, not fit certificates. compare reports static changes and separate animation channel changes; paths adds complete static subtree summaries. image:false skips rendering. Otherwise use part/orbit or exact shot; check viewFidelity for materials."
   };
@@ -30335,7 +31078,7 @@ function createKilnSourceDef(store) {
 init_requirements_context();
 
 // src/engine-identity.ts
-var ENGINE_VERSION = "0.8.0";
+var ENGINE_VERSION = "0.9.0";
 var ENGINE_INSTALL_URL = new URL("../", import.meta.url).href;
 function engineIdentity() {
   return { version: ENGINE_VERSION, installUrl: ENGINE_INSTALL_URL };
@@ -30945,7 +31688,9 @@ define2("sweepProfile", {
     "Finite simple profile and distinct path stations: at least 2 open or 3 closed.",
     "Profile and path checks use their respective extents, not fixed world-unit cutoffs; up specifies a direction regardless of its nonzero magnitude. Output positions remain Float32.",
     "Closed paths omit the repeated endpoint and require twist to be a multiple of 360 degrees.",
-    "Transported frames and per-station positive scales define the cross-section."
+    "Transported frames and per-station positive scales define the cross-section.",
+    "cap is true (both ends, default), false, 'start' or 'end'; a one-ended cap needs an open path.",
+    "creaseAngle is degrees in [0, 180], default 60. Side panels meeting at more than it, across a profile corner or a path station, get separate vertices and a hard shading edge; hexagons and finer profiles stay smooth at the default."
   ]
 }, {
   references: ["src/sweep.ts"],
@@ -31584,7 +32329,8 @@ define2("createClip", {
   parameters: [
     ...animationFacts.parameters,
     "Only position/scale vector and quaternion tracks, unique target/channel pairs, valid strides and unit quaternion samples (squared-length tolerance 1e-4). No silent repairs.",
-    "Duration -1 derives from keys; explicit nonnegative seconds must include every key. Zero-duration time-zero static clips are valid. Longer duration is preserved by a held final native sample."
+    "Duration -1 derives from keys; explicit nonnegative seconds must include every key. Zero-duration time-zero static clips are valid. Longer duration is preserved by a held final native sample.",
+    "options.loop: true declares a cycle and false a one-shot; omitted is unspecified. Exported as animations[].extras.kilnLoopIntent (loop | once); three.js GLTFLoader exposes it as clip.userData.kilnLoopIntent. Animation review reports it in loopClosure.loopIntent and warns when a declared loop does not close."
   ]
 }, {
   ...animationMetadata,
@@ -31790,7 +32536,7 @@ define2("extrudeProfile", {
   origin: "center defaults true; center false starts depth at the selected-axis origin.",
   parameters: [
     "Finite closed outline, optional finite hole outlines, positive depth.",
-    "Twist is degrees; taper is dimensionless; divisions controls longitudinal sampling.",
+    "Twist is degrees; taper is dimensionless; divisions is a whole number >= 0 of intermediate rings, default 0 (16 when twisting).",
     "Bevel uses profile units. If its inward offset empties the section, execution rejects with repair advice: reduce bevel below half the narrowest width, disable it, or widen the section."
   ]
 }, {
@@ -33802,7 +34548,7 @@ async function currentCapabilities(context) {
     camera: {
       version: "kiln.capture.v1",
       maxShots: 9,
-      cellSize: [128, 1024],
+      cellSize: [128, MAX_CAPTURE_SHOT_SIZE],
       output: ["grid", "separate"],
       projection: ["orthographic", "perspective"],
       subjects: ["asset", "exact node path", "unambiguous name"],
@@ -33810,6 +34556,11 @@ async function currentCapabilities(context) {
       orbitFrames: ["world", "asset", "part"],
       explicitFrames: ["world", "asset", "part", "local"],
       framing: ["explicit", "bounds"],
+      lens: {
+        perspective: "fovDeg: vertical field of view in degrees, default 50",
+        orthographic: "halfHeight: half the view height in world units"
+      },
+      clip: "near and far in world units. An explicit perspective near defaults to half the distance to the nearest geometry (at least 0.001); pass near to override it.",
       limits: resolveCaptureLimits(context.captureLimits),
       defaultViews: 6
     },
@@ -34176,6 +34927,24 @@ init_assets();
 init_requirements_context();
 import { z as z14 } from "zod";
 init_background();
+
+// src/tools/preview-fidelity.ts
+async function sha2563(bytes) {
+  const digest = await globalThis.crypto.subtle.digest("SHA-256", Uint8Array.from(bytes));
+  return `sha256:${Array.from(new Uint8Array(digest), (byte) => byte.toString(16).padStart(2, "0")).join("")}`;
+}
+async function persistedPreviewFidelity(fidelity, glb) {
+  const view = fidelity;
+  if (!view || typeof view !== "object" || view.version !== "kiln.view-fidelity.v1" || view.derivativeLabel !== undefined || view.inputGlbSha256 !== await sha2563(glb))
+    return fidelity;
+  return {
+    ...view,
+    exactArtifact: true,
+    reasonCodes: (view.reasonCodes ?? []).filter((code) => code !== "IN_LOOP_BUILD_NOT_PERSISTED")
+  };
+}
+
+// src/tools/review.ts
 var operationId = z14.string().regex(/^op_[a-f0-9-]{36}$/);
 var assetId = z14.string().regex(/^[a-z][a-z0-9_-]{0,79}$/);
 var reviewToolInput = z14.discriminatedUnion("action", [
@@ -34257,7 +35026,7 @@ function createKilnReviewDef(context) {
         glb,
         preview,
         previewInfo: {
-          fidelity: operation.viewFidelity,
+          fidelity: await persistedPreviewFidelity(operation.viewFidelity, glb),
           ...preview && capture.success && capture.data.backdrop ? { backdrop: capture.data.backdrop } : {}
         },
         build: {
@@ -34360,19 +35129,97 @@ function withWorkspaceContext(def, context) {
   };
 }
 
+// src/tools/review-detail.ts
+import { z as z17 } from "zod";
+var COMPACT_PART_PREVIEW = 24;
+var COMPACT_FINDINGS_PER_DIMENSION = 12;
+var reviewDetailInput = z17.enum(["compact", "full"]).optional().describe("compact (default) counts repeated findings; full returns every finding and rule");
+var partsHint = (offset) => `For remaining paths use kiln_inspect with image:false and listParts:{offset:${offset}}. listParts.query filters names/paths; follow partListing.nextOffset on the same programRef and query.`;
+var isRecord6 = (value) => typeof value === "object" && value !== null && !Array.isArray(value);
+function compactDimension(dimension) {
+  if (!isRecord6(dimension) || !Array.isArray(dimension.findings))
+    return dimension;
+  const findings = [];
+  const omittedByCode = {};
+  const observedCodes = new Set;
+  let actionable = 0;
+  let omitted = 0;
+  for (const finding of dimension.findings) {
+    const code = isRecord6(finding) && typeof finding.code === "string" ? finding.code : "UNKNOWN";
+    let keep;
+    if (isRecord6(finding) && finding.disposition === "observe") {
+      keep = !observedCodes.has(code) && observedCodes.size < COMPACT_FINDINGS_PER_DIMENSION;
+      if (keep)
+        observedCodes.add(code);
+    } else
+      keep = actionable++ < COMPACT_FINDINGS_PER_DIMENSION;
+    if (keep)
+      findings.push(finding);
+    else {
+      omitted++;
+      omittedByCode[code] = (omittedByCode[code] ?? 0) + 1;
+    }
+  }
+  if (omitted === 0)
+    return dimension;
+  return { ...dimension, findings, findingsOmitted: omitted, omittedByCode };
+}
+function compactQaReport(report) {
+  if (!isRecord6(report) || !isRecord6(report.dimensions))
+    return report;
+  const { dimensions, rules, ...rest } = report;
+  const compact = {
+    ...rest,
+    detail: "compact",
+    dimensions: Object.fromEntries(Object.entries(dimensions).map(([name, value]) => [name, compactDimension(value)]))
+  };
+  if (Array.isArray(rules)) {
+    let evaluated = 0;
+    let notRequested = 0;
+    const notEvaluated = [];
+    for (const rule of rules) {
+      if (!isRecord6(rule))
+        continue;
+      if (rule.status === "evaluated")
+        evaluated++;
+      else if (rule.status === "notRequested")
+        notRequested++;
+      else
+        notEvaluated.push({ id: rule.id, ...rule.reason ? { reason: rule.reason } : {} });
+    }
+    compact.ruleSummary = { evaluated, notEvaluated, notRequested };
+  }
+  compact.fullDetail = "Every finding and rule: kiln_render with detail: 'full'.";
+  return compact;
+}
+function compactReviewResult(result, detail = "compact") {
+  if (detail === "full" || !isRecord6(result))
+    return result;
+  const out = { ...result };
+  if (out.qaReport !== undefined)
+    out.qaReport = compactQaReport(out.qaReport);
+  if (Array.isArray(out.parts) && out.parts.length > COMPACT_PART_PREVIEW) {
+    out.parts = out.parts.slice(0, COMPACT_PART_PREVIEW);
+    out.partsTruncated = true;
+    out.partsNextOffset = COMPACT_PART_PREVIEW;
+    out.partsHint = partsHint(COMPACT_PART_PREVIEW);
+  }
+  return out;
+}
+
 // src/build-cache.ts
 init_protocol();
 init_requirements_context();
 init_requirements_report();
 import { createHash as createHash10 } from "node:crypto";
 import * as acorn2 from "acorn";
-import * as walk3 from "acorn-walk";
+import * as walk4 from "acorn-walk";
 function sourceHasAmbientInputs(code) {
   let ambient = false;
   const property = (node) => !node.computed && node.property.type === "Identifier" ? node.property.name : node.computed && node.property.type === "Literal" && typeof node.property.value === "string" ? node.property.value : undefined;
   try {
     const ast = acorn2.parse(code, { ecmaVersion: "latest", sourceType: "script" });
-    walk3.ancestor(ast, {
+    walk4.ancestor(ast, {
       Identifier(node, _state, ancestors) {
         const parent = ancestors.at(-2);
         if (["Date", "performance", "crypto"].includes(node.name))
@@ -34557,7 +35404,7 @@ function createCachedEvaluatorPort(evaluator, options) {
 
 // src/tools/registry.ts
 init_validation();
-init_protocol();
+init_source_check();
 init_render();
 init_requirements_context();
 init_evaluator();
@@ -34791,6 +35638,7 @@ function resolveViewRenderTimeoutMs(input) {
 // src/tools/registry.ts
 init_evidence_history();
 init_background();
+init_capture_limits();
 var KILN_ASSET_WIDGET_URI = "ui://kiln/asset-v5.html";
 function proceduralTextureMaterialContract(rendered, context) {
   const required = [...new Set(context.requiredProceduralTextureUsages ?? [])];
@@ -34885,24 +35733,8 @@ async function renderDerivativeCell(input, context) {
       mesh.material = Array.isArray(mesh.material) ? mesh.material.map(prepare) : prepare(mesh.material);
     });
   }
-  let hasHidden = false;
-  derivativeRoot.traverse((node) => {
-    const mesh = node;
-    if (mesh.isMesh && mesh.visible === false)
-      hasHidden = true;
-  });
-  if (hasHidden) {
-    if (derivativeRoot === input.root)
-      derivativeRoot = derivativeRoot.clone(true);
-    const drop = [];
-    derivativeRoot.traverse((node) => {
-      const mesh = node;
-      if (mesh.isMesh && mesh.visible === false)
-        drop.push(node);
-    });
-    for (const node of drop)
-      node.removeFromParent();
-  }
+  await Promise.resolve().then(() => init_camera());
+  derivativeRoot = withoutHiddenMeshes(derivativeRoot);
   const rendered = await renderSceneToGLB(derivativeRoot, {
     derivative: true,
     requirements: toolRequirements(context).binding
@@ -35035,77 +35867,84 @@ function derivativeReviewFidelity(receipts) {
     ...reasonCodes.length ? { reasonCodes } : {}
   };
 }
-var validateInput = z17.object({
-  code: z17.string().describe("Kiln source code (defines `meta` + `build()`, optional `animate()`).")
+var validateInput = z18.object({
+  code: z18.string().describe("Kiln source code (defines `meta` + `build()`, optional `animate()`).")
 });
-var renderInput = z17.object({
-  code: z17.string().describe("Kiln source code to execute and render to an in-memory GLB.")
+var renderInput = z18.object({
+  code: z18.string().describe("Kiln source code to execute and render to an in-memory GLB.")
 });
-var backdropInput = z17.enum(BACKDROP_IDS).optional().describe("Neutral grey unless a sheet shows merging: light if the part is darker, dark if lighter.");
-var legacyCaptureInput = z17.object({
-  preset: z17.enum(["1x1", "1x2", "2x1", "3x1", "2x2", "3x2", "3x3"]).optional().describe("Grid shape as COLSxROWS. Default 3x2. Choose fewer views for simple shapes, up to 3x3 for more angles."),
-  cells: z17.array(z17.object({
-    azimuthDeg: z17.number().describe("0 = front, 90 = right, 180 = back, 270 = left. Wraps."),
-    elevationDeg: z17.number().describe("0 = eye level, positive looks down, negative from below. Clamped to -89..89."),
-    zoom: z17.number().optional().describe("Padding multiplier around the asset bounds for this cell only. Omit for the default framing; below 1 crops in, above 1 pulls back."),
-    name: z17.string().optional().describe("Cell label. Auto-derived from the angles if omitted.")
+var backdropInput = z18.enum(BACKDROP_IDS).optional().describe("neutral (default); light for dark parts, dark for light parts.");
+var legacyCaptureInput = z18.object({
+  preset: z18.enum(["1x1", "1x2", "2x1", "3x1", "2x2", "3x2", "3x3"]).optional().describe("Grid shape as COLSxROWS. Default 3x2. Choose fewer views for simple shapes, up to 3x3 for more angles."),
+  cells: z18.array(z18.object({
+    azimuthDeg: z18.number().describe("0 = front, 90 = right, 180 = back, 270 = left. Wraps."),
+    elevationDeg: z18.number().describe("0 = eye level, positive looks down, negative from below. Clamped to -89..89."),
+    zoom: z18.number().optional().describe("Padding multiplier around the asset bounds for this cell only. Omit for the default framing; below 1 crops in, above 1 pulls back."),
+    name: z18.string().optional().describe("Cell label. Auto-derived from the angles if omitted.")
   })).optional().describe("One camera per cell, in row-major order. Omit to use the preset default cameras. Must not exceed the preset capacity (max 9 overall)."),
   backdrop: backdropInput
 }).optional().describe("Optional. Choose the contact-sheet shape and cameras. Omit it entirely for the standard six-view 3x2 grid, which is the right default for most assets.");
-var cameraVec3Input = z17.array(z17.number()).length(3);
+var cameraVec3Input = z18.array(z18.number()).length(3);
 var orbitCameraError = (issue) => {
   if (issue.code === "unrecognized_keys" && issue.keys?.some((key) => key === "target" || key === "distance")) {
     return "Orbit cameras derive target and distance from the selected subject bounds; choose subject and padding, or use an explicit camera with position and target.";
   }
   return;
 };
+var EXPLICIT_CAMERA_KEYS = "type, projection, position, target, relativeTo, frame, framing, padding, targetOffset, up, halfHeight (orthographic), fovDeg (perspective, degrees), near, far";
+var explicitCameraError = (issue) => {
+  if (issue.code !== "unrecognized_keys")
+    return;
+  const fov = issue.keys?.some((key) => key === "fov" || key === "fovY" || key === "fieldOfView");
+  return `Unknown explicit camera key${issue.keys && issue.keys.length > 1 ? "s" : ""} ${(issue.keys ?? []).join(", ")}${fov ? "; use fovDeg" : ""}. Explicit cameras accept ${EXPLICIT_CAMERA_KEYS}.`;
+};
 var advancedCaptureError = (issue) => {
   if (issue.code === "unrecognized_keys" && issue.keys?.some((key) => key === "width" || key === "height")) {
-    return "Advanced capture uses one square per-shot size from 128 to 1024; width and height are returned image dimensions, not request fields.";
+    return `Advanced capture uses one square per-shot size from 128 to ${MAX_CAPTURE_SHOT_SIZE}; width and height are returned image dimensions, not request fields.`;
   }
   return;
 };
-var cameraShotInput = z17.object({
-  name: z17.string().optional(),
-  subject: z17.object({ path: z17.string().optional(), name: z17.string().optional() }).strict().refine((v) => v.path === undefined !== (v.name === undefined), {
+var cameraShotInput = z18.object({
+  name: z18.string().optional(),
+  subject: z18.object({ path: z18.string().optional(), name: z18.string().optional() }).strict().refine((v) => v.path === undefined !== (v.name === undefined), {
     message: "Choose subject path OR exact name."
   }).optional(),
-  visibility: z17.enum(["context", "isolate"]).optional(),
-  camera: z17.discriminatedUnion("type", [
-    z17.strictObject({
-      type: z17.literal("orbit"),
-      azimuthDeg: z17.number().optional(),
-      elevationDeg: z17.number().optional(),
-      relativeTo: z17.enum(["world", "asset", "part"]).optional(),
-      padding: z17.number().positive().max(100).optional()
+  visibility: z18.enum(["context", "isolate"]).optional(),
+  camera: z18.discriminatedUnion("type", [
+    z18.strictObject({
+      type: z18.literal("orbit"),
+      azimuthDeg: z18.number().optional(),
+      elevationDeg: z18.number().optional(),
+      relativeTo: z18.enum(["world", "asset", "part"]).optional(),
+      padding: z18.number().positive().max(100).optional()
     }, { error: orbitCameraError }),
-    z17.object({
-      type: z17.literal("explicit"),
-      projection: z17.enum(["orthographic", "perspective"]),
+    z18.strictObject({
+      type: z18.literal("explicit"),
+      projection: z18.enum(["orthographic", "perspective"]),
       position: cameraVec3Input,
       target: cameraVec3Input.optional(),
-      relativeTo: z17.enum(["world", "asset", "part", "local"]).optional(),
-      frame: z17.object({
+      relativeTo: z18.enum(["world", "asset", "part", "local"]).optional(),
+      frame: z18.object({
         origin: cameraVec3Input.optional(),
         rotation: cameraVec3Input.optional()
       }).strict().optional(),
-      framing: z17.enum(["explicit", "bounds"]).optional(),
-      padding: z17.number().positive().max(100).optional(),
+      framing: z18.enum(["explicit", "bounds"]).optional(),
+      padding: z18.number().positive().max(100).optional(),
       targetOffset: cameraVec3Input.optional(),
       up: cameraVec3Input.optional(),
-      halfHeight: z17.number().positive().optional(),
-      fovDeg: z17.number().positive().lt(180).optional(),
-      near: z17.number().positive().optional(),
-      far: z17.number().positive().optional()
-    }).strict()
+      halfHeight: z18.number().positive().optional(),
+      fovDeg: z18.number().positive().lt(180).optional(),
+      near: z18.number().positive().optional(),
+      far: z18.number().positive().optional()
+    }, { error: explicitCameraError })
   ]).optional()
 }).strict();
-var advancedCaptureInput = z17.strictObject({
-  version: z17.literal("kiln.capture.v1"),
-  shots: z17.array(cameraShotInput).min(1).max(9),
-  cols: z17.number().int().min(1).max(3).optional(),
-  size: z17.number().int().min(128).max(1024).optional(),
-  output: z17.enum(["grid", "separate"]).optional(),
+var advancedCaptureInput = z18.strictObject({
+  version: z18.literal("kiln.capture.v1"),
+  shots: z18.array(cameraShotInput).min(1).max(9),
+  cols: z18.number().int().min(1).max(3).optional(),
+  size: z18.number().int().min(128).max(MAX_CAPTURE_SHOT_SIZE).optional(),
+  output: z18.enum(["grid", "separate"]).optional(),
   backdrop: backdropInput
 }, { error: advancedCaptureError });
 function taggedCaptureError(issue) {
@@ -35119,29 +35958,32 @@ function taggedCaptureError(issue) {
   const details = issues.slice(0, 6).map((problem) => `${problem.path.join(".") || "capture"}: ${problem.message.slice(0, 240)}`);
   return `Invalid kiln.capture.v1: ${details.join("; ")}${issues.length > 6 ? "; additional issues omitted" : ""}`;
 }
-var captureInput = z17.union([
+var captureInput = z18.union([
   advancedCaptureInput,
-  z17.strictObject(legacyCaptureInput.unwrap().shape, {
+  z18.strictObject(legacyCaptureInput.unwrap().shape, {
     error: taggedCaptureError
   })
 ], { error: taggedCaptureError }).optional().describe("Use legacy preset/cells for an orbit sheet, or version kiln.capture.v1 with 1..9 shots for exact part framing, local axes, perspective and separate images. Omit for six default views.");
-var renderViewsInput = renderInput.extend({ capture: captureInput });
+var renderViewsInput = renderInput.extend({ capture: captureInput, detail: reviewDetailInput });
+var requestedDetail = (input) => input?.detail === "full" ? "full" : "compact";
 var renderViewsBufferInput = renderViewsInput.omit({ code: true });
-var screenshotAnimationInput = z17.object({
+var screenshotAnimationInput = z18.object({
   shot: cameraShotInput.optional(),
-  measureParts: z17.array(cameraShotInput.shape.subject.unwrap()).min(1).max(16).optional().describe("Exact names or paths of subtrees measured together at each phase, independent of camera selection."),
-  frames: z17.number().int().min(2).max(6).optional(),
-  frameTimes: z17.array(z17.number().min(0).max(1)).min(1).max(9).optional().describe("Ordered phase fractions 0..1; mutually exclusive with frames."),
-  framing: z17.enum(["locked", "follow"]).optional(),
-  code: z17.string().describe("Kiln source code to execute; must define animate() returning the named clip."),
-  clip: z17.string().describe('The animation clip to view, by name (e.g. "walk", "attack"). Must be one your animate() returns.'),
-  camera: z17.string().optional().describe("Camera angle: right (default — side profile, best for leg swing + knee bend direction), front " + "(reveals sideways/lateral motion), back, left, top, or three-quarter."),
-  perFrame: z17.boolean().optional().describe("Return the frames as separate high-res images instead of one composite grid. Default false.")
+  measureParts: z18.array(cameraShotInput.shape.subject.unwrap()).min(1).max(16).optional().describe("Exact names or paths of subtrees measured together at each phase, independent of camera selection."),
+  frames: z18.number().int().min(2).max(6).optional(),
+  frameTimes: z18.array(z18.number().min(0).max(1)).min(1).max(9).optional().describe("Ordered phase fractions 0..1; mutually exclusive with frames."),
+  framing: z18.enum(["locked", "follow"]).optional(),
+  size: z18.number().int().min(128).max(1024).optional().describe("Frame size in px; default 256."),
+  detail: reviewDetailInput,
+  code: z18.string().describe("Kiln source code to execute; must define animate() returning the named clip."),
+  clip: z18.string().describe('The animation clip to view, by name (e.g. "walk", "attack"). Must be one your animate() returns.'),
+  camera: z18.string().optional().describe("Camera angle: right (default — side profile, best for leg swing + knee bend direction), front " + "(reveals sideways/lateral motion), back, left, top, or three-quarter."),
+  perFrame: z18.boolean().optional().describe("Return the frames as separate high-res images instead of one composite grid. Default false.")
 });
-var viewInteriorInput = z17.object({
+var viewInteriorInput = z18.object({
   capture: advancedCaptureInput.optional(),
-  code: z17.string().describe("Kiln source code to execute and render with the roof hidden."),
-  nodeName: z17.string().optional().describe("Override: lift the roof by exact node name instead of by role. Matches that node and its " + "children. Normally OMIT it — Kiln finds the roof from its semantic role (anything built " + 'with createRoofPlanes/createGableRoof), falling back to historical "Roof" naming.')
+  code: z18.string().describe("Kiln source code to execute and render with the roof hidden."),
+  nodeName: z18.string().optional().describe("Override: lift the roof by exact node name instead of by role. Matches that node and its " + "children. Normally OMIT it — Kiln finds the roof from its semantic role (anything built " + 'with createRoofPlanes/createGableRoof), falling back to historical "Roof" naming.')
 });
 function runValidate(input, context) {
   const requirements = toolRequirements(context);
@@ -35155,10 +35997,10 @@ function runValidate(input, context) {
     warnings: result.warnings.map((w) => w.fixHint ? `${w.message} (${w.fixHint})` : w.message)
   };
 }
-var partListInput = z17.object({
-  query: z17.string().max(4096).optional().describe("Case-insensitive substring of name or exact encoded path; not a regex."),
-  offset: z17.number().int().min(0).optional(),
-  limit: z17.number().int().min(1).max(100).optional()
+var partListInput = z18.object({
+  query: z18.string().max(4096).optional().describe("Case-insensitive substring of name or exact encoded path; not a regex."),
+  offset: z18.number().int().min(0).optional(),
+  limit: z18.number().int().min(1).max(100).optional()
 }).strict();
 async function listPartPage(root, options = {}) {
   await Promise.resolve().then(() => init_camera());
@@ -35184,7 +36026,7 @@ async function partPreview(root) {
     partsTruncated: page.nextOffset !== undefined,
     ...page.nextOffset === undefined ? {} : {
       partsNextOffset: page.nextOffset,
-      partsHint: "For remaining paths use kiln_inspect with image:false and listParts:{offset:80}. listParts.query filters names/paths; follow partListing.nextOffset on the same programRef and query."
+      partsHint: partsHint(page.nextOffset)
     }
   };
 }
@@ -35233,17 +36075,6 @@ function collectSceneMetrics(root) {
     };
   }
   return { meshes, materials: materialSet.size, bbox, lowestPart };
-}
-function withSyntaxDetail(message, code) {
-  if (!message.startsWith(evaluatorOutcomeMessage("EXECUTION_REJECTED")))
-    return message;
-  let syntax;
-  try {
-    syntax = validate(code).errors.find((error) => error.startsWith("Syntax error:"));
-  } catch {
-    return message;
-  }
-  return syntax ? `${message} ${syntax}` : message;
 }
 function screenshotMedia(output) {
   const o = output;
@@ -35428,7 +36259,7 @@ async function runRenderViews(input, context, onEvaluated) {
   } catch (err) {
     return {
       ok: false,
-      error: withSyntaxDetail(err instanceof Error ? err.message : String(err), input.code),
+      error: appendSourceCheck(err instanceof Error ? err.message : String(err), input.code),
       warnings: []
     };
   }
@@ -35441,7 +36272,7 @@ function createKilnRenderViewsDef(context = {}) {
     description: KILN_RENDER_VIEWS_DESCRIPTION,
     mediaMulti: screenshotAnimationMediaMulti,
     inputSchema: renderViewsInput,
-    run: async (input) => guardCaptureBudget("kiln_render", input, statefulContext, () => runRenderViews(renderViewsInput.parse(input), statefulContext)),
+    run: async (input) => compactReviewResult(await guardCaptureBudget("kiln_render", input, statefulContext, () => runRenderViews(renderViewsInput.parse(input), statefulContext)), requestedDetail(input)),
     media: screenshotMedia
   };
 }
@@ -35462,6 +36293,7 @@ async function runScreenshotAnimation(input, context) {
       ...input.framing ? { framing: input.framing } : {},
       ...input.camera ? { camera: input.camera } : {},
       ...input.perFrame ? { perFrame: true } : {},
+      ...input.size ? { size: input.size } : {},
       renderDerivativeCell: (cell) => renderDerivativeCell(cell, context)
     });
     if (!r.ok) {
@@ -35475,6 +36307,10 @@ async function runScreenshotAnimation(input, context) {
         ...r.availableClips ? { availableClips: r.availableClips } : {}
       };
     }
+    await Promise.resolve().then(() => init_pose());
+    const loopWarning = r.loopClosure && loopIntentWarning(r.clip ?? input.clip, r.loopClosure);
+    if (loopWarning)
+      warnings.push(loopWarning);
     const viewFidelity = derivativeReviewFidelity(r.derivativeReceipts);
     const viewEvidence = viewFidelity ? context.viewEvidenceHistory?.record("kiln_screenshot_animation", viewFidelity) : undefined;
     const base = {
@@ -35502,7 +36338,7 @@ async function runScreenshotAnimation(input, context) {
     return {
       ok: false,
       frames: 0,
-      error: err instanceof Error ? err.message : String(err),
+      error: appendSourceCheck(err instanceof Error ? err.message : String(err), input.code),
       warnings: []
     };
   }
@@ -35524,14 +36360,14 @@ function screenshotAnimationMediaMulti(output) {
     json
   };
 }
-var KILN_SCREENSHOT_ANIMATION_DESCRIPTION = "Review a named animation clip at sampled phases, with phase-labeled images and poseBounds in world metres. Use this to check motion against the brief: pivots, attachment, ground clearance, travel and which parts remain fixed. Choose a camera that reveals the movement and inspect intermediate phases; symmetric parts can look stationary at regularly spaced phases. poseBounds reports scene geometry and the selected shot subject before camera isolation. Optional measureParts selects 1..16 exact names/paths for simultaneous per-part bounds; empty subtrees return null. Sampled bounds do not certify continuous collision or physical contact. args: clip (required), frameTimes (ordered fractions 0..1) or frames (2..6, default 6), camera (default right; also front/back/left/top/three-quarter) or shot, and perFrame (separate images). Nonempty unresolvedTracks names targets that do not exist; correct the track names. Images use deterministic posed GLB bytes: GPU PBR when available, otherwise geometry-flat CPU fallback. Read viewFidelity before judging materials; writes no files." + VIEW_EVIDENCE_GUIDANCE;
+var KILN_SCREENSHOT_ANIMATION_DESCRIPTION = "Review a named animation clip at sampled phases, with phase-labeled images and poseBounds in world metres. Use this to check motion against the brief: pivots, attachment, ground clearance, travel and which parts remain fixed. Choose a camera that reveals the movement and inspect intermediate phases; symmetric parts can look stationary at regularly spaced phases. poseBounds reports scene geometry and the selected shot subject before camera isolation. Optional measureParts selects 1..16 exact names/paths for simultaneous per-part bounds and world origin; empty subtrees return null bounds, so locators are read from origin. Sampled bounds do not certify continuous collision or physical contact. args: clip (required), frameTimes (ordered fractions 0..1) or frames (2..6, default 6), camera (default right; also front/back/left/top/three-quarter) or shot, and perFrame (separate images). Nonempty unresolvedTracks names targets that do not exist; correct the track names. Images use deterministic posed GLB bytes: GPU PBR when available, otherwise geometry-flat CPU fallback. Read viewFidelity before judging materials; writes no files." + VIEW_EVIDENCE_GUIDANCE;
 function createKilnScreenshotAnimationDef(context = {}) {
   const statefulContext = withViewEvidenceHistory(context);
   return {
     name: "kiln_screenshot_animation",
     description: KILN_SCREENSHOT_ANIMATION_DESCRIPTION,
     inputSchema: screenshotAnimationInput,
-    run: async (input) => guardCaptureBudget("kiln_screenshot_animation", input, statefulContext, () => runScreenshotAnimation(screenshotAnimationInput.parse(input), statefulContext)),
+    run: async (input) => compactReviewResult(await guardCaptureBudget("kiln_screenshot_animation", input, statefulContext, () => runScreenshotAnimation(screenshotAnimationInput.parse(input), statefulContext)), requestedDetail(input)),
     media: screenshotAnimationMedia,
     mediaMulti: screenshotAnimationMediaMulti
   };
@@ -35573,7 +36409,7 @@ async function runViewInterior(input, context) {
   } catch (err) {
     return {
       ok: false,
-      error: err instanceof Error ? err.message : String(err),
+      error: appendSourceCheck(err instanceof Error ? err.message : String(err), input.code),
       warnings: []
     };
   }
@@ -35586,39 +36422,39 @@ function createKilnViewInteriorDef(context = {}) {
     mediaMulti: screenshotAnimationMediaMulti,
     description: KILN_VIEW_INTERIOR_DESCRIPTION,
     inputSchema: viewInteriorInput,
-    run: async (input) => guardCaptureBudget("kiln_view_interior", input, statefulContext, () => runViewInterior(viewInteriorInput.parse(input), statefulContext)),
+    run: async (input) => compactReviewResult(await guardCaptureBudget("kiln_view_interior", input, statefulContext, () => runViewInterior(viewInteriorInput.parse(input), statefulContext))),
     media: screenshotMedia
   };
 }
 var kilnViewInteriorDef = createKilnViewInteriorDef();
-var attachmentEndpointInput = z17.object({
-  subject: z17.object({ path: z17.string().optional(), name: z17.string().optional() }).strict(),
+var attachmentEndpointInput = z18.object({
+  subject: z18.object({ path: z18.string().optional(), name: z18.string().optional() }).strict(),
   point: cameraVec3Input.optional()
 }).strict();
-var surfacePairInput = z17.array(z17.string().max(4096)).length(2);
-var inspectInput = z17.object({
-  image: z17.boolean().optional().describe("False: requires listParts/measure/surfacePairs/compare; no image or camera controls. Default true."),
+var surfacePairInput = z18.array(z18.string().max(4096)).length(2);
+var inspectInput = z18.object({
+  image: z18.boolean().optional().describe("False: requires listParts/measure/surfacePairs/compare; no image or camera controls. Default true."),
   listParts: partListInput.optional().describe("List exported-scene paths, including nested parts. Default 80, max 100 per page. Follow partListing.nextOffset with the same programRef/query. image:false avoids rendering."),
-  surfacePairs: z17.array(surfacePairInput).min(1).max(12).optional().describe("[fromPath,toPath] pairs; check surfaceMeasurements.status and each result."),
-  compare: z17.object({
-    programRef: z17.string().regex(programRefPattern),
-    offset: z17.number().int().min(0).optional(),
-    limit: z17.number().int().min(1).max(100).optional(),
-    paths: z17.array(z17.string().max(4096)).min(1).max(12).optional().describe("Exact baseline node paths, scene-prefixed without primitive children. Complete subtree summaries.")
+  surfacePairs: z18.array(surfacePairInput).min(1).max(12).optional().describe("[fromPath,toPath] pairs; check surfaceMeasurements.status and each result."),
+  compare: z18.object({
+    programRef: z18.string().regex(programRefPattern),
+    offset: z18.number().int().min(0).optional(),
+    limit: z18.number().int().min(1).max(100).optional(),
+    paths: z18.array(z18.string().max(4096)).min(1).max(12).optional().describe("Exact baseline node paths, scene-prefixed without primitive children. Complete subtree summaries.")
   }).strict().optional().describe("Static geometry/material/transform/bounds under current host settings. Follow nextOffset; paths adds complete subtrees."),
-  measure: z17.object({
-    mode: z17.enum(["anchors", "surface"]).optional(),
+  measure: z18.object({
+    mode: z18.enum(["anchors", "surface"]).optional(),
     from: attachmentEndpointInput,
     to: attachmentEndpointInput
   }).strict().optional().describe("Default anchors: origin/local-point distance. Surface: disjoint mesh triangles, omit points. Rest pose, asset units. Check status/bounds; no solid clearance/attachment proof."),
   shot: cameraShotInput.optional().describe("Exact shot; omit part/view/orbit controls."),
-  code: z17.string().describe("Kiln source code to execute and inspect."),
-  part: z17.string().optional().describe("Frame named part and descendants (case-insensitive, substring fallback). Omit for whole asset."),
-  view: z17.string().optional().describe("front/right/back/left/top/three-quarter (default). Orbit angles override."),
-  azimuthDeg: z17.number().optional().describe("Orbit degrees: 0 front, 90 right, 180 back, 270 left. Wraps."),
-  elevationDeg: z17.number().optional().describe("Elevation degrees: 0 eye level, positive above. Clamped -89..89."),
-  zoom: z17.number().optional().describe("Bounds padding 1..4; default 1.2. Larger = more context."),
-  isolate: z17.boolean().optional().describe("Hide surrounding geometry. Requires part; default false.")
+  code: z18.string().describe("Kiln source code to execute and inspect."),
+  part: z18.string().optional().describe("Frame named part and descendants (case-insensitive, substring fallback). Omit for whole asset."),
+  view: z18.string().optional().describe("front/right/back/left/top/three-quarter (default). Orbit angles override."),
+  azimuthDeg: z18.number().optional().describe("Orbit degrees: 0 front, 90 right, 180 back, 270 left. Wraps."),
+  elevationDeg: z18.number().optional().describe("Elevation degrees: 0 eye level, positive above. Clamped -89..89."),
+  zoom: z18.number().optional().describe("Bounds padding 1..4; default 1.2. Larger = more context."),
+  isolate: z18.boolean().optional().describe("Hide surrounding geometry. Requires part; default false.")
 });
 var inspectBufferInput = inspectInput.omit({ code: true });
 async function runInspect(input, context) {
@@ -35743,7 +36579,7 @@ async function runInspect(input, context) {
   } catch (err) {
     return {
       ok: false,
-      error: err instanceof Error ? err.message : String(err)
+      error: appendSourceCheck(err instanceof Error ? err.message : String(err), input.code)
     };
   }
 }
@@ -35754,20 +36590,20 @@ function createKilnInspectDef(context = {}) {
     name: "kiln_inspect",
     description: KILN_INSPECT_DESCRIPTION,
     inputSchema: inspectInput,
-    run: async (input) => guardCaptureBudget("kiln_inspect", input, statefulContext, () => runInspect(inspectInput.parse(input), statefulContext)),
+    run: async (input) => compactReviewResult(await guardCaptureBudget("kiln_inspect", input, statefulContext, () => runInspect(inspectInput.parse(input), statefulContext))),
     media: screenshotMedia
   };
 }
 var kilnInspectDef = createKilnInspectDef();
-var editOperationInput = z17.object({
-  oldString: z17.string().describe("The exact text to replace, copied verbatim from the program (including whitespace and indentation, and with no line-number prefixes). Must be unique unless replaceAll is true."),
-  newString: z17.string().describe("The replacement text. Use an empty string to delete."),
-  replaceAll: z17.boolean().optional().describe("Replace every occurrence instead of failing when oldString matches more than once.")
+var editOperationInput = z18.object({
+  oldString: z18.string().describe("The exact text to replace, copied verbatim from the program (including whitespace and indentation, and with no line-number prefixes). Must be unique unless replaceAll is true."),
+  newString: z18.string().describe("The replacement text. Use an empty string to delete."),
+  replaceAll: z18.boolean().optional().describe("Replace every occurrence instead of failing when oldString matches more than once.")
 });
-var editInput = z17.object({
-  code: z17.string().describe("The Kiln program to patch. The full current source."),
-  edits: z17.array(editOperationInput).min(1).max(20).describe("Edits applied in order against the program. If any one fails to match, none are applied and the reply says which. Batch related changes into a single call."),
-  render: z17.boolean().optional().describe("Render the patched program and return the views (default true). false = patch only."),
+var editInput = z18.object({
+  code: z18.string().describe("The Kiln program to patch. The full current source."),
+  edits: z18.array(editOperationInput).min(1).max(20).describe("Edits applied in order against the program. If any one fails to match, none are applied and the reply says which. Batch related changes into a single call."),
+  render: z18.boolean().optional().describe("Render the patched program and return the views (default true). false = patch only."),
   capture: captureInput
 });
 async function runEdit(input, context) {
@@ -35847,7 +36683,7 @@ function createKilnEditDef(context = {}) {
     mediaMulti: screenshotAnimationMediaMulti,
     description: KILN_EDIT_DESCRIPTION,
     inputSchema: editInput,
-    run: async (input) => guardCaptureBudget("kiln_edit", input, statefulContext, () => runEdit(editInput.parse(input), statefulContext)),
+    run: async (input) => compactReviewResult(await guardCaptureBudget("kiln_edit", input, statefulContext, () => runEdit(editInput.parse(input), statefulContext))),
     media: (output) => {
       const o = output;
       if (!o || typeof o.pngBase64 !== "string" || o.pngBase64.length === 0)
@@ -35910,7 +36746,7 @@ async function guardCaptureBudget(name, input, context, run) {
       compose = Boolean(args.shot);
     } else if (name === "kiln_screenshot_animation") {
       cells = args.frameTimes?.length ?? args.frames ?? 6;
-      size = 256;
+      size = args.size ?? 256;
     } else if (name === "kiln_view_interior") {
       cells = 3;
       size = 256;
@@ -35984,8 +36820,8 @@ function withCaptureCache(context) {
     } : {}
   };
 }
-var rendererInput = z17.strictObject({
-  action: z17.enum(["status", "reprobe"]).default("status")
+var rendererInput = z18.strictObject({
+  action: z18.enum(["status", "reprobe"]).default("status")
 });
 function createKilnProgramToolRegistry(suppliedContext = {}) {
   toolRequirements(suppliedContext);
@@ -36053,9 +36889,9 @@ function createKilnProgramToolRegistry(suppliedContext = {}) {
   }));
 }
 var assetSelector = {
-  collection: z17.string().regex(/^[a-z][a-z0-9_-]{0,79}$/).describe("Destination collection ID. Discover available IDs with kiln_assets action=collections. Follow an explicit user destination; otherwise use project.").default("project"),
-  assetId: z17.string().regex(/^[a-z][a-z0-9_-]{0,79}$/),
-  revisionId: z17.string().regex(/^[a-z][a-z0-9_-]{0,79}$/)
+  collection: z18.string().regex(/^[a-z][a-z0-9_-]{0,79}$/).describe("Collection ID (list with kiln_assets action=collections): the user destination, else project.").default("project"),
+  assetId: z18.string().regex(/^[a-z][a-z0-9_-]{0,79}$/),
+  revisionId: z18.string().regex(/^[a-z][a-z0-9_-]{0,79}$/)
 };
 async function buildProgramAssetDraft(code, context, backdrop) {
   await context.prepareBuildProvenance?.();
@@ -36075,7 +36911,7 @@ async function buildProgramAssetDraft(code, context, backdrop) {
       throw new Error(result.error ?? "Preview unavailable");
     preview = Uint8Array.from(Buffer.from(result.pngBase64, "base64"));
     previewInfo = {
-      fidelity: result.viewFidelity,
+      fidelity: result.derivativeReceipts ? result.viewFidelity : await persistedPreviewFidelity(result.viewFidelity, rendered.glb),
       backdrop: result.capture?.backdrop ?? DEFAULT_BACKDROP_ID
     };
   } catch (error) {
@@ -36144,36 +36980,36 @@ function createKilnAssetDefs(context) {
     resources: (await Promise.resolve().then(() => (init_assets_resources(), exports_assets_resources))).assetLinks(collection, asset),
     downloadUrls: await context.assetDownloadUrls?.(collection, asset.assetId, asset.revisionId)
   });
-  const saveInput = z17.object({
+  const saveInput = z18.object({
     collection: assetSelector.collection,
-    programRef: z17.string(),
-    name: z17.string().min(1).max(200),
+    programRef: z18.string(),
+    name: z18.string().min(1).max(200),
     assetId: assetSelector.assetId.optional(),
     parentRevision: assetSelector.revisionId.optional(),
-    tags: z17.array(z17.string().max(80)).max(30).optional(),
-    brief: z17.string().max(8000).optional(),
-    description: z17.string().max(4000).optional(),
-    attribution: z17.object({
-      model: z17.string().max(200).optional(),
-      harness: z17.string().max(200).optional(),
-      author: z17.string().max(200).optional()
+    tags: z18.array(z18.string().max(80)).max(30).optional(),
+    brief: z18.string().max(8000).optional(),
+    description: z18.string().max(4000).optional(),
+    attribution: z18.object({
+      model: z18.string().max(200).optional(),
+      harness: z18.string().max(200).optional(),
+      author: z18.string().max(200).optional()
     }).optional(),
-    backdrop: z17.enum(BACKDROP_IDS).optional().describe("Preview backdrop: the one the reviewed sheet used.")
+    backdrop: z18.enum(BACKDROP_IDS).optional().describe("Preview backdrop: the one the reviewed sheet used.")
   });
-  const assetsInput = z17.object({
-    action: z17.enum(["collections", "catalog", "list", "get", "restore"]).default("list"),
+  const assetsInput = z18.object({
+    action: z18.enum(["collections", "catalog", "list", "get", "restore"]).default("list"),
     collection: assetSelector.collection,
     assetId: assetSelector.assetId.optional(),
     revisionId: assetSelector.revisionId.optional(),
-    query: z17.string().max(200).optional(),
-    offset: z17.number().int().min(0).default(0),
-    limit: z17.number().int().min(1).max(50).default(20)
+    query: z18.string().max(200).optional(),
+    offset: z18.number().int().min(0).default(0),
+    limit: z18.number().int().min(1).max(50).default(20)
   });
-  const exportInput = z17.object(assetSelector);
+  const exportInput = z18.object(assetSelector);
   const profileExportInput = exportInput.extend({
-    profile: z17.enum(["editable", "runtime"]).default("editable").describe("editable preserves canonical source/GLB/build resources. runtime returns a standalone GLB and versioned review-metadata sidecar; no source bundle or geometry optimization.")
+    profile: z18.enum(["editable", "runtime"]).default("editable").describe("editable preserves canonical source/GLB/build resources. runtime returns a standalone GLB and versioned review-metadata sidecar; no source bundle or geometry optimization.")
   });
-  const importInput = z17.object({
+  const importInput = z18.object({
     ...assetSelector,
     sourceCollection: assetSelector.collection
   });
@@ -36272,9 +37108,9 @@ function createKilnAssetDefs(context) {
       name: "kiln_present",
       description: "Present one exact saved revision. Supporting MCP App clients show an interactive 3D card with GLB, editable ZIP, and source downloads. Every host receives exact artifact descriptors with resource URIs in the JSON result; verified hosts may also receive core MCP resource-link blocks. This tool does not launch a local browser in coding harnesses. Call after saving or when the user wants to see or download an asset.",
       inputSchema: exportInput,
-      outputSchema: z17.object({
-        ok: z17.literal(true),
-        collection: z17.string(),
+      outputSchema: z18.object({
+        ok: z18.literal(true),
+        collection: z18.string(),
         asset: assetManifestSchema.pick({
           assetId: true,
           revisionId: true,
@@ -36285,25 +37121,25 @@ function createKilnAssetDefs(context) {
           editable: true,
           files: true
         }).extend({
-          build: z17.object({
-            engine: z17.string(),
-            rebuild: z17.enum(["engine-required", "external-dependencies-required"]),
-            warningCount: z17.number().int(),
-            warnings: z17.array(z17.string())
+          build: z18.object({
+            engine: z18.string(),
+            rebuild: z18.enum(["engine-required", "external-dependencies-required"]),
+            warningCount: z18.number().int(),
+            warnings: z18.array(z18.string())
           }).optional()
         }),
-        resources: z17.array(z17.object({
-          type: z17.literal("resource_link"),
-          name: z17.string(),
-          uri: z17.string(),
-          mimeType: z17.string(),
-          size: z17.number().int().nonnegative(),
-          annotations: z17.object({
-            audience: z17.array(z17.enum(["user", "assistant"])),
-            priority: z17.number()
+        resources: z18.array(z18.object({
+          type: z18.literal("resource_link"),
+          name: z18.string(),
+          uri: z18.string(),
+          mimeType: z18.string(),
+          size: z18.number().int().nonnegative(),
+          annotations: z18.object({
+            audience: z18.array(z18.enum(["user", "assistant"])),
+            priority: z18.number()
           })
         })),
-        downloadUrls: z17.record(z17.string(), z17.string()).optional()
+        downloadUrls: z18.record(z18.string(), z18.string()).optional()
       }),
       ui: {
         resourceUri: KILN_ASSET_WIDGET_URI,
@@ -36656,6 +37492,13 @@ function localRenderServicePort(env = process.env) {
 function localRenderServiceUrl(env = process.env) {
   return `http://127.0.0.1:${localRenderServicePort(env)}`;
 }
+function namesLocalRenderService(url, env = process.env) {
+  try {
+    return new URL(url).origin === new URL(localRenderServiceUrl(env)).origin;
+  } catch {
+    return false;
+  }
+}
 function renderServiceNodeArguments(dir) {
   return [
     "--import",
@@ -36805,7 +37648,8 @@ async function startLocalRenderService(dir = renderServiceDir(), environment = p
 
 // src/render-capabilities.ts
 function createRenderCapabilitiesReader(mode, portUrl, options = {}) {
-  const remote = portUrl || process.env.KILN_RENDER_PORT_URL;
+  const configured = portUrl || process.env.KILN_RENDER_PORT_URL;
+  const remote = configured && !namesLocalRenderService(configured) ? configured : undefined;
   const url = remote || localRenderServiceUrl();
   const token = process.env.KILN_RENDER_TOKEN ?? (!remote ? process.env.RENDER_SERVICE_TOKEN : undefined);
   const dir = options.serviceDir ?? renderServiceDir();
@@ -36935,7 +37779,8 @@ async function buildRenderPort(mode, portUrl, options) {
     ...options,
     injectedStart: Boolean(options?.start)
   });
-  const explicitUrl = portUrl || process.env["KILN_RENDER_PORT_URL"];
+  const configuredUrl = portUrl || process.env["KILN_RENDER_PORT_URL"];
+  const explicitUrl = configuredUrl && !namesLocalRenderService(configuredUrl) ? configuredUrl : undefined;
   const dir = options?.serviceDir ?? renderServiceDir();
   const url = localRenderServiceUrl();
   const source = mode === "cpu" ? undefined : renderServiceSourceFingerprint(dir);
@@ -37428,7 +38273,13 @@ async function installedRuntimeIdentity(root, limits = {}) {
       },
       dependencies: records
     };
-    return { identity: `sha256:${digest7(JSON.stringify(inputs))}`, files, bytes, absentPackages };
+    return {
+      identity: `sha256:${digest7(JSON.stringify(inputs))}`,
+      buildIdentity: worker.identity,
+      files,
+      bytes,
+      absentPackages
+    };
   } catch (error) {
     return {
       reason: error instanceof Error ? error.message : String(error),
@@ -37737,7 +38588,7 @@ import {
   realpath as realpath5
 } from "node:fs/promises";
 import { join as join14, resolve as resolve7, relative as relative6, sep as sep4 } from "node:path";
-import { z as z18 } from "zod";
+import { z as z19 } from "zod";
 var operationPattern = /^op_[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/;
 var filePattern2 = /^(asset\.glb|source\.kiln\.js|evaluation\.json|capture-\d{1,2}\.png)$/;
 var hash5 = (value) => `sha256:${createHash17("sha256").update(value).digest("hex")}`;
@@ -37748,41 +38599,41 @@ var terminal = (op) => !["running", "evaluated"].includes(op.status);
 var missing2 = (error) => error.code === "ENOENT";
 var collision = (error) => error.code === "EEXIST";
 var fileLimit = (name) => name === "asset.glb" ? ASSET_LIMIT : name === "source.kiln.js" ? 1024 * 1024 : name === "evaluation.json" ? evaluationLimit : 16 * 1024 * 1024;
-var descriptorSchema = z18.object({
-  name: z18.string().regex(filePattern2),
-  bytes: z18.number().int().nonnegative().max(ASSET_LIMIT),
-  sha256: z18.string().regex(/^sha256:[a-f0-9]{64}$/),
-  url: z18.string().max(200)
+var descriptorSchema = z19.object({
+  name: z19.string().regex(filePattern2),
+  bytes: z19.number().int().nonnegative().max(ASSET_LIMIT),
+  sha256: z19.string().regex(/^sha256:[a-f0-9]{64}$/),
+  url: z19.string().max(200)
 }).strict();
-var operationSchema = z18.object({
-  version: z18.literal("kiln.live.v1"),
-  operationId: z18.string().regex(operationPattern),
-  revision: z18.number().int().nonnegative(),
-  tool: z18.string().min(1).max(120),
-  transport: z18.enum(["cli", "mcp", "native", "api"]),
-  sessionId: z18.string().uuid(),
-  workId: z18.string().regex(/^[a-z][a-z0-9_-]{0,79}$/).optional(),
-  startedAt: z18.string().datetime(),
-  updatedAt: z18.string().datetime(),
-  status: z18.enum(["running", "evaluated", "complete", "failed", "interrupted", "unknown"]),
-  projectId: z18.string().regex(/^[a-z][a-z0-9_-]{0,79}$/).optional(),
-  projectRevision: z18.string().min(1).max(200).optional(),
-  programRef: z18.string().min(1).max(200).optional(),
-  runtimeIdentity: z18.string().min(1).max(200).optional(),
+var operationSchema = z19.object({
+  version: z19.literal("kiln.live.v1"),
+  operationId: z19.string().regex(operationPattern),
+  revision: z19.number().int().nonnegative(),
+  tool: z19.string().min(1).max(120),
+  transport: z19.enum(["cli", "mcp", "native", "api"]),
+  sessionId: z19.string().uuid(),
+  workId: z19.string().regex(/^[a-z][a-z0-9_-]{0,79}$/).optional(),
+  startedAt: z19.string().datetime(),
+  updatedAt: z19.string().datetime(),
+  status: z19.enum(["running", "evaluated", "complete", "failed", "interrupted", "unknown"]),
+  projectId: z19.string().regex(/^[a-z][a-z0-9_-]{0,79}$/).optional(),
+  projectRevision: z19.string().min(1).max(200).optional(),
+  programRef: z19.string().min(1).max(200).optional(),
+  runtimeIdentity: z19.string().min(1).max(200).optional(),
   artifact: descriptorSchema.optional(),
-  captures: z18.array(descriptorSchema).max(100),
-  viewFidelity: z18.unknown().optional(),
-  result: z18.record(z18.string(), z18.unknown()).optional(),
-  error: z18.string().max(4000).optional(),
-  pinned: z18.boolean(),
-  phases: z18.array(z18.object({ phase: z18.string().max(100), at: z18.string().datetime() }).strict()).max(32),
-  observationIssues: z18.array(z18.string().max(500)).max(20).optional()
+  captures: z19.array(descriptorSchema).max(100),
+  viewFidelity: z19.unknown().optional(),
+  result: z19.record(z19.string(), z19.unknown()).optional(),
+  error: z19.string().max(4000).optional(),
+  pinned: z19.boolean(),
+  phases: z19.array(z19.object({ phase: z19.string().max(100), at: z19.string().datetime() }).strict()).max(32),
+  observationIssues: z19.array(z19.string().max(500)).max(20).optional()
 }).strict();
-var stateSchema = z18.object({
+var stateSchema = z19.object({
   operation: operationSchema,
-  files: z18.record(z18.string(), descriptorSchema),
-  ownerPid: z18.number().int().nonnegative().optional(),
-  heartbeatAt: z18.string().datetime().optional()
+  files: z19.record(z19.string(), descriptorSchema),
+  ownerPid: z19.number().int().nonnegative().optional(),
+  heartbeatAt: z19.string().datetime().optional()
 }).strict();
 function notify(run) {
   try {
@@ -38049,7 +38900,7 @@ class FileLiveReview {
           throw new Error("Live lock generation exhausted");
         if (latest) {
           try {
-            const prior = z18.object({ pid: z18.number().int().positive(), token: z18.string().uuid() }).strict().parse(JSON.parse(new TextDecoder().decode(await this.boundedFile(join14(directory, latest), 1024))));
+            const prior = z19.object({ pid: z19.number().int().positive(), token: z19.string().uuid() }).strict().parse(JSON.parse(new TextDecoder().decode(await this.boundedFile(join14(directory, latest), 1024))));
             const released = await lstat6(join14(directory, `${latest}.released`)).then((entry) => {
               if (!entry.isFile() || entry.isSymbolicLink() || entry.size !== 0)
                 throw new Error("Invalid lock release");
@@ -38106,9 +38957,9 @@ class FileLiveReview {
     const path = join14(this.directory, "limits.json");
     try {
       const value = JSON.parse(new TextDecoder().decode(await this.boundedFile(path, 1024)));
-      const parsed = z18.object({
-        maxOperations: z18.number().int().min(2).max(2000),
-        maxBytes: z18.number().int().min(1024).max(1024 ** 3)
+      const parsed = z19.object({
+        maxOperations: z19.number().int().min(2).max(2000),
+        maxBytes: z19.number().int().min(1024).max(1024 ** 3)
       }).strict().parse(value);
       this.maxOperations = parsed.maxOperations;
       this.maxBytes = parsed.maxBytes;
@@ -38426,7 +39277,7 @@ class FileLiveReview {
   }
   async health() {
     try {
-      return z18.array(z18.string().max(500)).max(20).parse(JSON.parse(new TextDecoder().decode(await this.boundedFile(join14(this.directory, "health.json"), 16384))));
+      return z19.array(z19.string().max(500)).max(20).parse(JSON.parse(new TextDecoder().decode(await this.boundedFile(join14(this.directory, "health.json"), 16384))));
     } catch (error) {
       if (missing2(error))
         return [];
@@ -38665,12 +39516,17 @@ function createLocalToolContext(base = {}, env = process.env) {
         return result;
       }
       const limits = { deadlineMs, maxGlbBytes, maxResponseBytes, ...controls };
-      if (mode === "isolated")
-        return renderGLBViaIsolatedEvaluator(code, resolved, limits);
-      return renderGLBViaSubprocess(code, resolved, {
-        ...limits,
-        ...!process.versions.bun ? { maxHeapMb: heapMb } : {}
-      });
+      try {
+        if (mode === "isolated")
+          return await renderGLBViaIsolatedEvaluator(code, resolved, limits);
+        return await renderGLBViaSubprocess(code, resolved, {
+          ...limits,
+          ...!process.versions.bun ? { maxHeapMb: heapMb } : {}
+        });
+      } catch (error) {
+        await Promise.resolve().then(() => init_source_check());
+        throw withSourceCheck(error, code);
+      }
     }
   };
   const localExecution = {
@@ -38734,9 +39590,10 @@ async function createPackagedLocalToolContext(base = {}, env = process.env, inst
   const packagedNode = !process.versions.bun && !import.meta.url.endsWith(".ts") && context.localExecution.mode === "subprocess";
   let pendingIdentity;
   const identityForHost = () => pendingIdentity ??= installedRuntimeIdentity(installationRoot).then((identity) => {
-    if (identity.identity)
+    if (identity.identity) {
       context.localExecution.runtimeIdentity = identity.identity;
-    else
+      context.localExecution.buildIdentity = identity.buildIdentity;
+    } else
       context.localExecution.cacheReason = identity.reason;
     return identity;
   });
@@ -38778,7 +39635,8 @@ async function createPackagedLocalToolContext(base = {}, env = process.env, inst
     ...context.localExecution,
     cacheScope: "disk",
     cacheBytes,
-    runtimeIdentity: identity.identity
+    runtimeIdentity: identity.identity,
+    buildIdentity: identity.buildIdentity
   };
   return managed();
 }
@@ -38818,6 +39676,9 @@ async function readHostRequirementsFile(path) {
     assertNoLegacyRuntimePolicy(input);
   return validateRequirementsBinding(input);
 }
+
+// src/loopback.ts
+var LOOPBACK_HOSTNAMES = ["127.0.0.1", "localhost", "[::1]"];
 
 // src/mcp-server.ts
 var MCP_SERVER_NAME = "kiln";
@@ -39062,7 +39923,7 @@ if (isDirectEntry(import.meta.url)) {
   const deliveryBase = process.env["KILN_ASSET_DOWNLOAD_BASE_URL"];
   if (deliveryBase) {
     const base = new URL(deliveryBase);
-    if (base.protocol !== "https:" && !(base.protocol === "http:" && ["127.0.0.1", "localhost", "[::1]"].includes(base.hostname)))
+    if (base.protocol !== "https:" && !(base.protocol === "http:" && LOOPBACK_HOSTNAMES.includes(base.hostname)))
       throw new Error("Asset download base must use HTTPS or loopback HTTP");
     context.assetDownloadUrls = async (collection, assetId, revisionId) => Object.fromEntries(["asset.glb", "editable.zip", "source.kiln.js", "preview.png", "manifest.json"].map((file) => [
       file,
