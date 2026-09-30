@@ -7,7 +7,8 @@ assets. A collection stores saved asset revisions. The default collection is nam
 
 The dashboard's Library aggregates configured storage collections. Register another
 asset store explicitly with `node kiln.mjs collections add <alias> <absolute-directory>`
-and restart the host; `assets --all` / `kiln_assets` action `catalog` list them together.
+(on Windows a drive or share path such as `C:/Users/you/assets`; a Git Bash `/c/...`
+path is refused) and restart the host; `assets --all` / `kiln_assets` action `catalog` list them together.
 Keep collection IDs in exact asset references because IDs can collide across stores.
 Use named project inventory links for membership, independently of where bytes live.
 The viewer can link, replace or remove a membership; CLI/MCP use the same expected-

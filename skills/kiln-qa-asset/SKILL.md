@@ -22,6 +22,8 @@ Read validation/build findings and export warnings. `kiln_validate` only checks 
 
 Distinguish expected open sheets from invalid solid topology. `geometryDiagnostics` reports boundary edges, non-manifold edges, orientation conflicts and degenerates; it does not prove absence of self-intersection. A capped loft, shell-like surface, or sampled field is not automatically a manufacturing-grade solid.
 
+The part-overlap observer (`GEO_PART_SELF_INTERSECTION`) tests the most-overlapping pairs first. `_TRUNCATED` means pairs went untested for budget (`pairsNotReached`); `_UNMEASURED` groups parts it could not measure, such as open shells, by reason. Neither is a finding of overlap; check those pairs with `measure` or focused views when they matter. A name token such as `LOD1`, `lod2` or `Trim_LOD0` on a node or its nearest tagged ancestor marks LOD alternates: overlap skips pairs across levels, and connectivity leaves out visible parts on LOD1 and above.
+
 For an assembly, identify the required contact pairs and the required separation
 pairs. Review both ends of supports against their intended neighbors with focused
 views and `kiln_inspect` surface measurements, following intermediate fittings

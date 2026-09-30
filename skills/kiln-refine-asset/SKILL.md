@@ -65,9 +65,10 @@ pass; resolve unexpected changes or disclose them before claiming completion.
 
 An edit renders by default and accepts the same `capture` object as `kiln_render`, including `backdrop` once a sheet on the default neutral grey has shown a part merging with it: `light` when that part is darker than the grey, `dark` when it is lighter. Use `render: false` when no image is needed. A missing or ambiguous anchor changes nothing; expand the anchor or use `replaceAll: true` only when every match should change. Long diffs may set `diffTruncated`; read more source instead of requesting a full-program echo by habit.
 
-For a CLI workflow, read exact source with `node kiln.mjs source RETURNED_REF` and
+For a CLI workflow, read exact source with `node kiln.mjs source RETURNED_REF --json`
+(`--query`, `--offset` and `--limit` return the same anchored region as `kiln_source`) and
 write a JSON array of those replacement objects to `edits.json`. Run
-`node kiln.mjs edit RETURNED_REF --edits edits.json`. This uses the same atomic
+`node kiln.mjs edit RETURNED_REF --edits edits.json` (`--json` is accepted). This uses the same atomic
 editing operation and returns JSON with the new `programRef`, `parentRef`, counts
 and diff. CLI editing does not render; review the new reference with `node kiln.mjs
 render NEW_REF --out revised.glb --views revised.png --json` and read the image
@@ -124,6 +125,6 @@ CLI `render --json` returns a receipt with exact output paths and image fidelity
 without embedded image bytes. Check `ok` and `files` before treating the export as
 complete; an image failure can follow a completed GLB write.
 
-For matched before/after PNGs, save the `capture` object as `cameras.json`, then use `node kiln.mjs render RETURNED_REF --capture cameras.json --views revised-view.png` for each revision. The file contains only the capture object, uses the same MCP camera schema, and must request grid output. One shot produces a hero image. Export images directly; do not transcribe MCP image base64 into files.
+For matched before/after PNGs, save the `capture` object as `cameras.json`, then use `node kiln.mjs render RETURNED_REF --capture cameras.json --views revised-view.png` for each revision. The file contains only the capture object, uses the same MCP camera schema, and may request grid or separate output; separate writes `revised-view.shot-01.png` and so on. One shot produces a hero image. Export images directly; do not transcribe MCP image base64 into files.
 
 Source export refuses overwrite. References persist in the configured local store; if one is missing elsewhere, import the saved file there. Report the change, the saved artifacts, the views reviewed, and unresolved issues.

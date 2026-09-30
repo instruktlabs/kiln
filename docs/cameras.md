@@ -25,7 +25,7 @@ Kiln uses +X forward, +Y up and +Z right. Azimuth 0 looks from the front (+X), 9
 
 The versioned capture format supports up to nine `shots`. Use the exact `parts[].path` or a unique `parts[].name` from a render result. These identify evaluated scene nodes, whose names can include generated prefixes. Duplicate names require a path.
 
-Render results preview at most 80 paths and report `partsTotal`, `partsTruncated`
+Render results preview 24 paths (80 with `detail: "full"`) and report `partsTotal`, `partsTruncated`
 and, when needed, `partsNextOffset`. An absent preview entry is not evidence of a
 missing exported part. Retrieve the full inventory without generating an image:
 
@@ -61,7 +61,7 @@ needs a renderer for `image:false` listings. Paths belong to that evaluated revi
 }
 ```
 
-Replace the sample path with one returned for your asset. Paths encode node names and distinguish same-name siblings with occurrence indices. They are scoped to the evaluated revision; a topology-changing edit can change them.
+Replace the sample path with one returned for your asset. Paths encode node names and distinguish same-name siblings with occurrence indices. They are scoped to the evaluated revision; a topology-changing edit can change them. The first segment is the glTF scene, which usually repeats the root name (`/Hall[0]/Hall[0]/...`), and each mesh node lists one `<name>:primitive-N` child per material primitive. Those entries are valid selectors but are not exported nodes, so node counts in a listing exceed the GLB's. A versioned capture returns each resolved shot in `cameraShots`, whose `subject.bounds` is that part's world bounds; use it, animation `measureParts` and `measure` instead of parsing the GLB.
 
 `relativeTo` accepts `world`, `asset`, or `part`. Part-local directions follow the selected node's transformed axes. The camera frames its world bounds. `visibility:"context"` retains surrounding geometry; `"isolate"` hides other meshes for that shot. GPU and CPU views both draw only the subject subtree, so an isolated LOD group shows no sibling parts. Inspection does not alter the saved program or exported original asset.
 

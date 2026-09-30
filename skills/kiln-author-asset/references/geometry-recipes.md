@@ -123,7 +123,7 @@ const housing = loftProfiles([
 
 Profiles use local `[x,z]`; loft sections lie in local XZ planes. A sweep follows supplied polyline stations using transported frames. Sample a curve first if you need smooth curvature. `up` sets initial profile +Z and must not parallel the path.
 
-Caps default on. Closed sweeps omit the repeated path endpoint and require total twist to be a multiple of 360. Loft sections require matching point counts and deliberate index correspondence. These versions accept a simple outline without holes; use `extrudeProfile` for straight sections with holes. Review tight turns and nearby surfaces for self-intersections.
+Caps default on; `cap: 'start'` or `'end'` caps one end of an open path. `creaseAngle` (default 60 degrees) keeps a rectangular or triangular profile hard-edged; raise it to 180 to smooth everything. `extrudeProfile` adds side-wall rings only when `divisions` asks for them. Closed sweeps omit the repeated path endpoint and require total twist to be a multiple of 360. Loft sections require matching point counts and deliberate index correspondence. These versions accept a simple outline without holes; use `extrudeProfile` for straight sections with holes. Review tight turns and nearby surfaces for self-intersections.
 
 ## Preserve useful Boolean surfaces
 
@@ -159,6 +159,12 @@ bracket beneath its retained connection root. Use `replicateAssembly(...).nodeMa
 to find copied nodes; do not guess their generated names. Shared resources need
 copying before independent buffer/material edits. Flat hierarchies are still useful
 for independent components.
+
+For LOD tiers, give each tier's group a name token such as `LOD0`, `Body_LOD1` or
+`lod2`. QA then treats the tiers as alternates instead of overlapping or disconnected
+parts. All tiers render together in a default sheet; review one tier with a shot whose
+subject is its group and `visibility: "isolate"`. Kiln keeps an imported GLB's
+`MSFT_lod` chain through save and export but does not build one from named groups.
 
 ## Implicit fields are experimental
 

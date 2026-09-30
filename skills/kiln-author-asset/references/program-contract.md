@@ -28,6 +28,8 @@ To review that motion, `kiln_screenshot_animation` needs the clip **by name** --
 - Direct Three.js `object.rotation`: radians.
 - `createPart` prefixes mesh names with `Mesh_`. `createPart(..., { parent })` attaches the part; do not separately add its return value to another parent.
 - `createPivot(name, position?, parent?)` is positional and prefixes the node name with `Joint_`. Rotate the returned object directly if needed.
+- The prefixes are a naming convention, not a requirement. When a delivery contract needs an exact node name, assign `.name` after creation; exported node names, selectors and QA all use the final name.
+- `gameMaterial` and `lambertMaterial` default `flatShading` to true, but glTF has no flat-shading flag: the GLB, the local viewer and GPU views shade from the geometry's normals, and CPU views are flat-lit per face whatever the flag. For hard edges in the delivered asset, split vertices at the edge (for example `sweepProfile` `creaseAngle`, or separate faces).
 - Cached primitives may share geometry. Use `copyGeometry` or `.clone()` before direct vertex/geometry mutation. `copyMaterial` copies material properties while sharing referenced textures.
 - The former `cloneGeometry` and `cloneMaterial` aliases are removed. When migrating saved source, use the original value directly to preserve sharing, or `copyGeometry`/`copyMaterial` when an independent copy is intended.
 

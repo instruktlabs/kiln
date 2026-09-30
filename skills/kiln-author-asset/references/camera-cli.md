@@ -26,8 +26,8 @@ Replace `RETURNED_REF` with the reference returned by Kiln. Use the saved revisi
 reuse the file for matched before/after cameras. The CLI
 uses the same validated camera pipeline as MCP and can reuse the evaluated build.
 It writes PNG bytes directly; there is no need to copy image base64. `--capture`
-requires `--views`, accepts JSON up to 1 MiB, and supports grid output only. A single
-shot is one image; multiple shots share the grid. For separate files, export one
-single-shot recipe per requested file. MCP still supports `output: "separate"` for
-image blocks delivered to the agent. `--backdrop neutral|dark|light` sets the backdrop of
+requires `--views` and accepts JSON up to 1 MiB. A single shot is one image; multiple
+shots share the grid. With `"output": "separate"` the CLI writes one file per shot
+beside the `--views` path (`hero.shot-01.png`, `hero.shot-02.png`, ...) and lists each
+in `files` with its shot name. MCP delivers the same shots as separate image blocks. `--backdrop neutral|dark|light` sets the backdrop of
 any `--views` sheet, with or without `--capture`, and wins over the recipe's own `backdrop`.

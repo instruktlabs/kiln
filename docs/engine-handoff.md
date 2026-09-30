@@ -124,6 +124,11 @@ replace edited skills. Consult the updated runtime documentation when working in
   unavailable, fix the installation or report the limitation; textures are not silently dropped.
 - Lines/points are outside the candidate's qualified triangle/sprite pipeline.
 - Preserved emissive/unlit properties may look different from older exports that dropped them.
+- Emissive exports as colour times intensity. Within 0..1 that is `emissiveFactor`; brighter
+  emission adds `KHR_materials_emissive_strength`, which an importer without that extension
+  shows at the normalised colour.
+- An imported GLB's `MSFT_lod` chain survives save, optimisation and export. GPU instancing
+  skips such a file, full optimisation falls back to palette, and revision comparison refuses it.
 - More extensions in a valid GLB do not guarantee support in every importer or shader. GPU
   appearance, runtime-loaded shader inclusion, compression codecs and other render pipelines
   need their own checks. This option does not change KTX2 defaults or fix unsupported Node versions.

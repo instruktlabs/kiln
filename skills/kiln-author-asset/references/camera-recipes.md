@@ -18,7 +18,7 @@ Presets are `COLSxROWS`: `1x1`, `1x2`, `2x1`, `3x1`, `2x2`, `3x2`, `3x3`. `cells
 
 ## A whole asset and one local detail
 
-Read exact part paths from a render result. It previews at most 80 entries and reports `partsTotal` and `partsTruncated`. Retrieve later or nested paths with `kiln_inspect({ programRef: REF, image: false, listParts: { query: "hinge" } })`; omit `query` for all parts and follow `partListing.nextOffset` using the same reference/query. Listings include groups and exported primitive children. `subject.name` requires an exact unique name; `subject.path` resolves duplicate names unambiguously.
+Read exact part paths from a render result. It previews 24 entries (80 with `detail: "full"`) and reports `partsTotal` and `partsTruncated`. Retrieve later or nested paths with `kiln_inspect({ programRef: REF, image: false, listParts: { query: "hinge" } })`; omit `query` for all parts and follow `partListing.nextOffset` using the same reference/query. Listings include groups and exported primitive children. `subject.name` requires an exact unique name; `subject.path` resolves duplicate names unambiguously.
 
 ```js
 kiln_render({ programRef: REF, capture: {

@@ -221,7 +221,8 @@ Each loft section lies in its frame's local XZ plane. Initial section travel rel
 These helpers reject self-crossing 2D outlines, duplicate path stations, and near-reversals. Tight turns get a warning. **Closed boundaries do not prove the resulting 3D surface is free of self-intersections.** Review nearby path segments, large profiles, and crossed loft sections. Kiln does not claim a general CAD-solid guarantee for sweeps or lofts.
 
 Choose each loft's starting vertex deliberately: a cyclic shift can cross connecting
-edges while leaving all topology counts green. Holed `extrudeProfile` supports
+edges while leaving all topology counts green. `extrudeProfile` adds no side-wall
+rings unless `divisions` asks for them (default 0, or 16 when it twists). Holed `extrudeProfile` supports
 twist/taper, but twist accuracy depends on `divisions`, and its output needs UV
 projection or unwrapping before directional textures. See the
 [bounded construction comparison](reviews/2026-09-22-loft-alternatives.md) for
@@ -325,7 +326,10 @@ normals from older builds. It is not a general self-intersection or mesh-repair 
 its `bendRadius` is not an exact circular fillet. `closed` joins the path into a
 loop; it does not cap two open endpoints. For a selected profile along explicit
 polyline stations, use `sweepProfile`, whose end caps default to enabled and whose
-transported frames, scale and degree-based twist have a separate contract.
+transported frames, scale and degree-based twist have a separate contract. `cap` also
+takes `'start'` or `'end'` on an open path. `creaseAngle` (degrees, default 60) splits
+vertices where side panels meet more sharply, so triangle, square and pentagon profiles
+keep hard edges while hexagons and finer profiles stay smooth; 180 smooths everything.
 `bezierCurve` returns sampled points; feeding them into a tube interpolates them
 again rather than retaining an exact parametric Bézier curve.
 
@@ -403,7 +407,9 @@ single-pass estimate per referenced primitive, with GPU instancing counted as a 
 it is not a measured renderer frame and excludes shadow/depth passes, culling and
 destination batching. `uniqueGeometries` counts distinct referenced glTF primitives,
 not GPU buffer allocations. Final GLB metrics account for the exported representation,
-which may differ from the source after optimization.
+which may differ from the source after optimization. The `instanceability` grade is
+informational, not a QA verdict: its summary names the metric that set the grade, and
+a transparent material lowers only an A or B grade to C.
 
 Specialized factories also check finite dimensions and bounded counts. Cards accept
 pivots outside their panel when the resulting coordinates remain finite. Wings
