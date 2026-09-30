@@ -360,3 +360,44 @@ test('physical material factors survive export and palette rewrite', async () =>
     });
   }
 });
+
+test('emissive intensity survives both exporters and a palette rewrite', async () => {
+  // Four distinct materials so the palette pass actually merges them.
+  const root = new THREE.Group();
+  root.name = 'Asset';
+  const colours = [0x884422, 0x224488, 0x448822, 0x888888];
+  colours.forEach((color, index) => {
+    const material = new THREE.MeshStandardMaterial({ color, roughness: 0.6 });
+    if (index === 0) {
+      material.emissive.setHex(0xff8000);
+      material.emissiveIntensity = 8;
+    }
+    const mesh = new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.2, 0.2), material);
+    mesh.name = `Mesh_Block${index}`;
+    mesh.position.x = index * 0.3;
+    root.add(mesh);
+  });
+  const authored = new THREE.Color(0xff8000).multiplyScalar(8).toArray();
+
+  for (const gltfExporter of ['legacy', 'three'] as const) {
+    const original = await renderSceneToGLB(root, { gltfExporter, derivative: true });
+    const rewritten = await optimizeGlbBytes(original.bytes, { mode: 'palette' });
+    if (!rewritten?.summary) throw new Error('Expected palette rewrite result');
+    expect(rewritten.summary.materialsAfter).toBeLessThan(rewritten.summary.materialsBefore);
+    for (const bytes of [original.bytes, rewritten.bytes]) {
+      const json = (await io().writeJSON(await io().readBinary(bytes))).json;
+      const glowing = json.materials!.filter((material) =>
+        (material.emissiveFactor ?? [0, 0, 0]).some((channel) => channel > 0),
+      );
+      expect(glowing).toHaveLength(1);
+      const strength =
+        (
+          glowing[0]!.extensions?.['KHR_materials_emissive_strength'] as
+            | { emissiveStrength: number }
+            | undefined
+        )?.emissiveStrength ?? 1;
+      const emitted = glowing[0]!.emissiveFactor!.map((channel) => channel * strength);
+      for (let i = 0; i < 3; i++) expect(emitted[i]!).toBeCloseTo(authored[i]!, 5);
+    }
+  }
+});

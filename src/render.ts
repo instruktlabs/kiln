@@ -36,6 +36,7 @@ import {
 } from './geometry-export';
 import { createHash } from 'node:crypto';
 import { Document, getBounds } from '@gltf-transform/core';
+import { KHRMaterialsEmissiveStrength } from '@gltf-transform/extensions';
 import {
   dedup,
   instance,
@@ -401,6 +402,39 @@ export async function executeKilnCode(
 // Three.js -> gltf-transform Bridge
 // =============================================================================
 
+/**
+ * Write the emitted colour Three.js renders, `emissive * emissiveIntensity`.
+ * Core glTF clamps `emissiveFactor` to [0, 1], so a product within range is the
+ * factor alone; above 1 the factor is normalized by its largest channel and
+ * `KHR_materials_emissive_strength` carries that channel's value.
+ */
+function bridgeEmissive(
+  doc: Document,
+  target: GtMaterial,
+  source: { emissive?: THREE.Color; emissiveIntensity?: number },
+): void {
+  const color = source.emissive;
+  if (!color) return;
+  const intensity = source.emissiveIntensity ?? 1;
+  // Emission cannot be negative in glTF. A non-finite intensity is blocked by
+  // material QA; keep the authored colour rather than write a NaN factor.
+  const scale = Number.isFinite(intensity) ? Math.max(0, intensity) : 1;
+  const emitted: [number, number, number] = [color.r * scale, color.g * scale, color.b * scale];
+  const peak = Math.max(...emitted);
+  if (!(peak > 1)) {
+    target.setEmissiveFactor(emitted);
+    return;
+  }
+  target.setEmissiveFactor([emitted[0] / peak, emitted[1] / peak, emitted[2] / peak]);
+  target.setExtension(
+    'KHR_materials_emissive_strength',
+    doc
+      .createExtension(KHRMaterialsEmissiveStrength)
+      .createEmissiveStrength()
+      .setEmissiveStrength(peak),
+  );
+}
+
 function bridgeMaterial(
   doc: Document,
   threeMat: THREE.Material,
@@ -426,9 +460,7 @@ function bridgeMaterial(
     mat.setBaseColorFactor([stdMat.color.r, stdMat.color.g, stdMat.color.b, stdMat.opacity]);
     mat.setRoughnessFactor(stdMat.roughness);
     mat.setMetallicFactor(stdMat.metalness);
-    if (stdMat.emissive) {
-      mat.setEmissiveFactor([stdMat.emissive.r, stdMat.emissive.g, stdMat.emissive.b]);
-    }
+    bridgeEmissive(doc, mat, stdMat);
     if (stdMat.alphaTest > 0) {
       mat.setAlphaMode('MASK');
       mat.setAlphaCutoff(stdMat.alphaTest);
@@ -474,9 +506,7 @@ function bridgeMaterial(
     mat.setBaseColorFactor([lambMat.color.r, lambMat.color.g, lambMat.color.b, lambMat.opacity]);
     mat.setRoughnessFactor(1.0);
     mat.setMetallicFactor(0.0);
-    if (lambMat.emissive) {
-      mat.setEmissiveFactor([lambMat.emissive.r, lambMat.emissive.g, lambMat.emissive.b]);
-    }
+    bridgeEmissive(doc, mat, lambMat);
   } else if (matFlags.isMeshBasicMaterial) {
     const basicMat = threeMat as THREE.MeshBasicMaterial;
     mat.setBaseColorFactor([
@@ -1979,7 +2009,9 @@ export async function snapGlbToPalette(
       if (kind === 'glass') mat.setAlphaMode('BLEND');
       else if (mat.getAlphaMode() === 'BLEND') mat.setAlphaMode('OPAQUE');
       // Glow keeps a "lit" look by emitting its slot color; clear stray emissive otherwise.
+      // The slot color is the whole emission, so an authored strength must not scale it.
       mat.setEmissiveFactor(kind === 'glow' ? [lr, lg, lb] : [0, 0, 0]);
+      mat.setExtension('KHR_materials_emissive_strength', null);
       snapped++;
     }
     // Snapping made many materials value-identical — dedup merges those objects first

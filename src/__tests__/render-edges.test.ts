@@ -10,10 +10,13 @@
 
 import { describe, expect, test } from 'bun:test';
 import { Accessor, NodeIO } from '@gltf-transform/core';
+import type { EmissiveStrength } from '@gltf-transform/extensions';
 import * as THREE from 'three';
 
+import { createGltfIO } from '../gltf-io';
 import { boxGeo, createPart, createRoot, gameMaterial } from '../primitives';
 import { executeKilnCode, renderGLB, renderSceneToGLB, inspectGeneratedAnimation } from '../render';
+import { loadGlbGeometryFlatScene, loadGlbReviewScene } from '../views/glb';
 
 // =============================================================================
 // executeKilnCode guard clauses
@@ -121,6 +124,130 @@ function build() {
     const mat = doc.getRoot().listMaterials()[0];
     expect(mat?.getAlphaMode()).toBe('BLEND');
     expect(mat?.getDoubleSided()).toBe(true);
+  });
+});
+
+// =============================================================================
+// Emissive intensity (R16/R76)
+// =============================================================================
+
+describe('default exporter keeps emissive intensity', () => {
+  const STRENGTH = 'KHR_materials_emissive_strength';
+
+  function lampScene(material: THREE.Material): THREE.Group {
+    const root = new THREE.Group();
+    root.name = 'Lamp';
+    const mesh = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1), material);
+    mesh.name = 'Mesh_Lamp';
+    root.add(mesh);
+    return root;
+  }
+
+  async function exported(bytes: Uint8Array) {
+    const doc = await createGltfIO().readBinary(bytes);
+    const material = doc.getRoot().listMaterials()[0]!;
+    const strength = material.getExtension<EmissiveStrength>(STRENGTH)?.getEmissiveStrength();
+    const factor = material.getEmissiveFactor();
+    return {
+      factor,
+      strength,
+      effective: factor.map((component) => component * (strength ?? 1)),
+      extensionsUsed: doc
+        .getRoot()
+        .listExtensionsUsed()
+        .map((extension) => extension.extensionName),
+    };
+  }
+
+  function expectClose(actual: number[], expected: number[]): void {
+    expect(actual.length).toBe(expected.length);
+    for (const [i, value] of expected.entries()) expect(actual[i]!).toBeCloseTo(value, 5);
+  }
+
+  async function standardLamp(emissive: number, emissiveIntensity: number) {
+    const material = new THREE.MeshStandardMaterial({
+      color: 0x202020,
+      emissive,
+      emissiveIntensity,
+    });
+    const authored = [material.emissive.r, material.emissive.g, material.emissive.b].map(
+      (component) => component * emissiveIntensity,
+    );
+    const result = await renderSceneToGLB(lampScene(material), { optimize: 'off' });
+    return { authored, bytes: result.bytes, ...(await exported(result.bytes)) };
+  }
+
+  test('intensity below 1 dims the core emissive factor instead of being dropped', async () => {
+    const lamp = await standardLamp(0xff8000, 0.25);
+    expectClose(lamp.factor, lamp.authored);
+    expect(lamp.factor[0]).toBeCloseTo(0.25, 5);
+    expect(lamp.strength).toBeUndefined();
+    expect(lamp.extensionsUsed).not.toContain(STRENGTH);
+  });
+
+  test('intensity 1 writes the plain emissive colour without an extension', async () => {
+    const lamp = await standardLamp(0xff8000, 1);
+    expectClose(lamp.factor, lamp.authored);
+    expect(lamp.strength).toBeUndefined();
+    expect(lamp.extensionsUsed).not.toContain(STRENGTH);
+  });
+
+  test('intensity above 1 normalizes the factor and records KHR_materials_emissive_strength', async () => {
+    const lamp = await standardLamp(0xff8000, 8);
+    expect(lamp.strength).toBeCloseTo(8, 5);
+    expect(Math.max(...lamp.factor)).toBeCloseTo(1, 5);
+    expectClose(lamp.effective, lamp.authored);
+    expect(lamp.extensionsUsed).toContain(STRENGTH);
+  });
+
+  test('a dim colour whose product stays within 1 needs no extension', async () => {
+    const lamp = await standardLamp(0x404040, 8);
+    expect(lamp.strength).toBeUndefined();
+    expect(Math.max(...lamp.factor)).toBeLessThan(1);
+    expectClose(lamp.factor, lamp.authored);
+  });
+
+  test('Lambert materials use the same emissive product', async () => {
+    const material = new THREE.MeshLambertMaterial({ color: 0x202020, emissive: 0x00ff00 });
+    material.emissiveIntensity = 3;
+    const result = await renderSceneToGLB(lampScene(material), { optimize: 'off' });
+    const lamp = await exported(result.bytes);
+    expect(lamp.strength).toBeCloseTo(3, 5);
+    expectClose(lamp.effective, [0, 3, 0]);
+  });
+
+  test('the review loader and its re-export keep the emissive strength', async () => {
+    const lamp = await standardLamp(0xff8000, 8);
+    const review = await loadGlbReviewScene(lamp.bytes);
+    let loaded: THREE.MeshStandardMaterial | undefined;
+    review.root.traverse((object) => {
+      const mesh = object as THREE.Mesh;
+      if (mesh.isMesh) loaded = mesh.material as THREE.MeshStandardMaterial;
+    });
+    expect(loaded).toBeDefined();
+    expect(loaded!.emissiveIntensity).toBeCloseTo(8, 5);
+    expectClose(
+      [loaded!.emissive.r, loaded!.emissive.g, loaded!.emissive.b].map((c) => c * 8),
+      lamp.authored,
+    );
+    const reexported = await renderSceneToGLB(review.root, { optimize: 'off', derivative: true });
+    const again = await exported(reexported.bytes);
+    expect(again.strength).toBeCloseTo(8, 5);
+    expectClose(again.effective, lamp.authored);
+
+    const flat = await loadGlbGeometryFlatScene(lamp.bytes);
+    const flatMaterials: { emissive: number[]; emissiveIntensity: number }[] = [];
+    flat.root.traverse((value) => {
+      flatMaterials.push(
+        (value as { material: { emissive: number[]; emissiveIntensity: number } }).material,
+      );
+    });
+    expect(flatMaterials.length).toBeGreaterThan(0);
+    expect(flatMaterials[0]!.emissiveIntensity).toBeCloseTo(8, 5);
+    expectClose(
+      flatMaterials[0]!.emissive.map((c) => c * 8),
+      lamp.authored,
+    );
   });
 });
 

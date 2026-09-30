@@ -9,9 +9,14 @@
 import { describe, expect, test } from 'bun:test';
 
 import { WebIO } from '@gltf-transform/core';
-import { KHRMaterialsVariants, KHRTextureBasisu } from '@gltf-transform/extensions';
+import {
+  KHRMaterialsEmissiveStrength,
+  KHRMaterialsVariants,
+  KHRTextureBasisu,
+} from '@gltf-transform/extensions';
 
 import { findKtxEncoder, resetKtxEncoderProbe, type KitVariantSpec } from '../kit';
+import { hexToLinearRgb } from '../palette-snap';
 import { packKitGlb, renderGLB } from '../render';
 
 const io = (): WebIO => new WebIO().registerExtensions([KHRMaterialsVariants, KHRTextureBasisu]);
@@ -199,6 +204,56 @@ describe('palette colourways as KHR_materials_variants', () => {
     // makes the same exception.
     expect(packed?.summary.variantMaterialsCreated ?? 0).toBe(0);
     expect(packed?.summary.variantsAdded ?? []).toEqual([]);
+  });
+
+  test('a glow slot sets the variant emission without the authored strength', async () => {
+    const lamp = `
+const meta = { name: 'Lamp', category: 'prop' };
+
+async function build() {
+  const root = createRoot('Lamp');
+  root.add(createPart('Post', boxGeo(0.2, 1, 0.2), gameMaterial(0x333333), {}));
+  const bulb = gameMaterial(0x222222, { emissive: 0xffaa33, emissiveIntensity: 6 });
+  root.add(createPart('Bulb', boxGeo(0.3, 0.3, 0.3), bulb, { position: [0, 0.7, 0] }));
+  return root;
+}
+`;
+    const glow = '#ffd9a0';
+    const packed = await packKitGlb(await glbOf(lamp), {
+      variants: [{ name: 'Warm', slots: [{ color: '#444444' }, { color: glow, kind: 'glow' }] }],
+      ktx2: false,
+    });
+    const kitIO = new WebIO().registerExtensions([
+      KHRMaterialsVariants,
+      KHRMaterialsEmissiveStrength,
+    ]);
+    const json = (await kitIO.writeJSON(await kitIO.readBinary(packed!.bytes))).json;
+    const emitted = (index: number): number[] => {
+      const material = json.materials![index]!;
+      const strength =
+        (
+          material.extensions?.['KHR_materials_emissive_strength'] as
+            | { emissiveStrength: number }
+            | undefined
+        )?.emissiveStrength ?? 1;
+      return (material.emissiveFactor ?? [0, 0, 0]).map((channel) => channel * strength);
+    };
+    const bulb = json
+      .meshes!.flatMap((mesh) => mesh.primitives)
+      .find((primitive) => emitted(primitive.material!).some((channel) => channel > 0))!;
+    const mapping = bulb.extensions!['KHR_materials_variants'] as {
+      mappings: { material: number }[];
+    };
+
+    // The default look keeps the authored emission; the variant emits its slot colour.
+    const authored = hexToLinearRgb('#ffaa33').map((channel) => channel * 6);
+    for (const [i, channel] of emitted(bulb.material!).entries()) {
+      expect(channel).toBeCloseTo(authored[i]!, 4);
+    }
+    const slot = hexToLinearRgb(glow);
+    for (const [i, channel] of emitted(mapping.mappings[0]!.material).entries()) {
+      expect(channel).toBeCloseTo(slot[i]!, 5);
+    }
   });
 
   test('no variants requested means no extension is declared', async () => {

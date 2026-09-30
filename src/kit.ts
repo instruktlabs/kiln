@@ -238,7 +238,9 @@ function recolorForPalette(
   if (!chosen) return { material: clone, changed: false };
   const [r, g, b] = hexToLinearRgb(chosen.color);
   if (chosen.kind === 'glow') {
+    // The slot colour is the whole emission, as in snapGlbToPalette.
     clone.setEmissiveFactor([r, g, b]);
+    clone.setExtension('KHR_materials_emissive_strength', null);
   } else {
     clone.setBaseColorFactor([r, g, b, base[3]]);
     if (typeof chosen.roughness === 'number') clone.setRoughnessFactor(chosen.roughness);

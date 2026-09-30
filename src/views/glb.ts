@@ -7,6 +7,7 @@ import {
   type Material,
   type Texture as GltfTexture,
 } from '@gltf-transform/core';
+import type { EmissiveStrength } from '@gltf-transform/extensions';
 import {
   BufferAttribute,
   BufferGeometry,
@@ -84,6 +85,8 @@ interface FlatMaterial {
   alphaMode: 'OPAQUE' | 'MASK' | 'BLEND';
   alphaCutoff: number;
   emissive: [number, number, number];
+  /** KHR_materials_emissive_strength, as Three.js `emissiveIntensity`. */
+  emissiveIntensity: number;
 }
 
 interface FlatMesh {
@@ -250,6 +253,7 @@ function flatMaterial(material: Material | null): FlatMaterial {
       alphaMode: 'OPAQUE',
       alphaCutoff: 0.5,
       emissive: [0, 0, 0],
+      emissiveIntensity: 1,
     };
   }
   const [r, g, b, factorAlpha] = material.getBaseColorFactor();
@@ -269,6 +273,10 @@ function flatMaterial(material: Material | null): FlatMaterial {
     alphaMode,
     alphaCutoff: material.getAlphaCutoff(),
     emissive: material.getEmissiveFactor(),
+    emissiveIntensity:
+      material
+        .getExtension<EmissiveStrength>('KHR_materials_emissive_strength')
+        ?.getEmissiveStrength() ?? 1,
   };
 }
 
@@ -577,6 +585,7 @@ export async function loadGlbReviewScene(bytes: Uint8Array): Promise<LoadedGlbRe
         });
         threeMaterial.color.setRGB(flat.color.r, flat.color.g, flat.color.b);
         threeMaterial.emissive.fromArray(flat.emissive);
+        threeMaterial.emissiveIntensity = flat.emissiveIntensity;
         if (material) {
           threeMaterial.map = preserveTexture(
             material.getBaseColorTexture(),

@@ -20,6 +20,7 @@ import {
   composeSceneGLB,
   type SnapPaletteSlot,
 } from '../render';
+import { createGltfIO } from '../gltf-io';
 import { collectGlbMetrics } from '../metrics';
 import { hexToLinearRgb, buildSlotIndex, chooseSlot } from '../palette-snap';
 import {
@@ -145,6 +146,36 @@ describe('snapGlbToPalette', () => {
     ];
     const out = await snapGlbToPalette(baked.bytes, palWithGlass);
     expect(out!.report!.metrics.transparentMaterials).toBeGreaterThanOrEqual(1);
+  });
+
+  it('a glow slot sets the emitted colour and clears the old emissive strength', async () => {
+    const root = createRoot('Lamps');
+    for (let i = 0; i < 6; i++) {
+      createPart(`Wall${i}`, boxGeo(1, 1, 1), gameMaterial(hue(i, 6)), {
+        position: [i * 1.5, 0, 0],
+        parent: root,
+      });
+    }
+    const bulb = new THREE.MeshStandardMaterial({
+      color: 0x222222,
+      emissive: 0xffaa33,
+      emissiveIntensity: 6,
+    });
+    createPart('Bulb', boxGeo(0.3, 0.3, 0.3), bulb, { position: [0, 2, 0], parent: root });
+    const baked = await renderSceneToGLB(root);
+    const glow = '#ffd9a0';
+    const out = await snapGlbToPalette(baked.bytes, [...PAL, { color: glow, kind: 'glow' }]);
+    const io = createGltfIO();
+    const json = (await io.writeJSON(await io.readBinary(out!.bytes))).json;
+    const glowing = (json.materials ?? []).filter((material) =>
+      (material.emissiveFactor ?? [0, 0, 0]).some((channel) => channel > 0),
+    );
+    expect(glowing).toHaveLength(1);
+    expect(glowing[0]!.extensions?.['KHR_materials_emissive_strength']).toBeUndefined();
+    const expected = hexToLinearRgb(glow);
+    for (const [i, channel] of glowing[0]!.emissiveFactor!.entries()) {
+      expect(channel).toBeCloseTo(expected[i]!, 5);
+    }
   });
 
   it('returns undefined on junk bytes or an empty palette', async () => {
