@@ -45,8 +45,26 @@ test('real MCP creates project materials, renders their exact closure, and expos
       throw new Error(`MCP startup failed: ${errors}`, { cause: error });
     }
     const names = (await client.listTools()).tools.map((tool) => tool.name);
-    for (const name of ['kiln_project', 'kiln_material', 'kiln_review'])
-      expect(names).toContain(name);
+    // The fourteen program tools plus the three packaged host services (AGENTS.md).
+    expect([...names].sort()).toEqual([
+      'kiln_assets',
+      'kiln_discover',
+      'kiln_edit',
+      'kiln_export',
+      'kiln_import',
+      'kiln_inspect',
+      'kiln_material',
+      'kiln_present',
+      'kiln_project',
+      'kiln_render',
+      'kiln_renderer',
+      'kiln_review',
+      'kiln_save',
+      'kiln_screenshot_animation',
+      'kiln_source',
+      'kiln_validate',
+      'kiln_view_interior',
+    ]);
     const call = async (name: string, args: Record<string, unknown>) => {
       const response = await client.callTool({ name, arguments: args });
       expect(response.isError, JSON.stringify(response.content) + errors).not.toBe(true);
