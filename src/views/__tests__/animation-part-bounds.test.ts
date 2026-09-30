@@ -68,3 +68,51 @@ test('shared animation tool forwards batch measurement without requiring a shot 
   expect(output.poseBounds[1]!.parts[0]!.bounds.min[1]).toBeCloseTo(0.2, 6);
   expect(output.poseBounds[1]!.parts[1]!.name).toBe('Mesh_Ground');
 });
+
+const APPROACH = `
+const meta={name:'Approach'};
+function build(){const root=createRoot('Root');
+createPart('Ground',boxGeo(4,.2,4),gameMaterial('#777777'),{parent:root,position:[0,-.1,0]});
+const slider=createPivot('Slider',[0,.1,0],root);
+createPart('Pad',boxGeo(.2,.2,.2),gameMaterial('#ffaa00'),{parent:slider});
+createPivot('Seat',[0,.5,0],slider);
+return root;}
+function animate(){return [createClip('Approach',1,[positionTrack('Joint_Slider',[
+{time:0,position:[0,.1,0]},{time:1,position:[0,.1,2.5]}
+])])];}`;
+
+test('a locked perspective camera keeps its near plane short of every pose', async () => {
+  const { root, clips } = await executeKilnCode(APPROACH);
+  const output = await renderClipAnimation(root, clips, {
+    clip: 'Approach',
+    size: 32,
+    frameTimes: [0, 1],
+    shot: {
+      camera: {
+        type: 'explicit',
+        projection: 'perspective',
+        position: [0, 0.2, 3],
+        target: [0, 0, 0],
+      },
+    },
+  });
+  expect(output.ok).toBe(true);
+  // The pad ends 0.4 m from the camera; the first pose alone would put the plane at 0.51 m.
+  for (const shot of output.cameraShots!) expect(shot.camera.near).toBeLessThanOrEqual(0.2);
+});
+
+test('measured locators report their world origin even without geometry bounds', async () => {
+  const { root, clips } = await executeKilnCode(APPROACH);
+  const output = await renderClipAnimation(root, clips, {
+    clip: 'Approach',
+    size: 32,
+    frameTimes: [0, 1],
+    measureParts: [{ name: 'Joint_Seat' }],
+  });
+  expect(output.ok).toBe(true);
+  const [start, end] = output.poseBounds!.map((pose) => pose.parts![0]!);
+  expect(start).toMatchObject({ name: 'Joint_Seat', bounds: null });
+  expect(start!.origin![1]).toBeCloseTo(0.6, 6);
+  expect(start!.origin![2]).toBeCloseTo(0, 6);
+  expect(end!.origin![2]).toBeCloseTo(2.5, 6);
+});

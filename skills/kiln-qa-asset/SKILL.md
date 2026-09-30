@@ -66,7 +66,8 @@ whether a clip repeats. The GLB carries it as `animations[].extras.kilnLoopInten
 
 For several moving contacts or attachments, pass `measureParts` with up to 16
 exact `{name}` or `{path}` selectors. Each phase returns `poseBounds.parts` in
-that order, independently of the camera; empty subtrees have `bounds:null`.
+that order, independently of the camera, each with its world `origin`; empty
+subtrees such as locators have `bounds:null`, so check a locator by its `origin`.
 Check the intended contact parts together. A low scene minimum can come from a
 floor or one foot and says nothing about the others; lack of penetration does
 not establish support. Bounds still do not prove balance, friction or contact.

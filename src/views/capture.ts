@@ -153,6 +153,11 @@ export interface CaptureShape {
   cells: number;
   /** Echoed so the model never has to guess what colour it is looking at. */
   backdrop?: BackdropId;
+  /**
+   * Delivery of a versioned capture: one sheet (`grid`, laid out as `preset`)
+   * or one image per shot (`separate`). Absent for the default six-view sheet.
+   */
+  output?: 'grid' | 'separate';
 }
 
 export class CaptureConfigError extends Error {}

@@ -778,6 +778,14 @@ const orbitCameraError = (issue: { code?: string; keys?: string[] }): string | u
   return undefined;
 };
 
+const EXPLICIT_CAMERA_KEYS =
+  'type, projection, position, target, relativeTo, frame, framing, padding, targetOffset, up, halfHeight (orthographic), fovDeg (perspective, degrees), near, far';
+const explicitCameraError = (issue: { code?: string; keys?: string[] }): string | undefined => {
+  if (issue.code !== 'unrecognized_keys') return undefined;
+  const fov = issue.keys?.some((key) => key === 'fov' || key === 'fovY' || key === 'fieldOfView');
+  return `Unknown explicit camera key${issue.keys && issue.keys.length > 1 ? 's' : ''} ${(issue.keys ?? []).join(', ')}${fov ? '; use fovDeg' : ''}. Explicit cameras accept ${EXPLICIT_CAMERA_KEYS}.`;
+};
+
 const advancedCaptureError = (issue: { code?: string; keys?: string[] }): string | undefined => {
   if (
     issue.code === 'unrecognized_keys' &&
@@ -811,8 +819,8 @@ const cameraShotInput = z
           },
           { error: orbitCameraError },
         ),
-        z
-          .object({
+        z.strictObject(
+          {
             type: z.literal('explicit'),
             projection: z.enum(['orthographic', 'perspective']),
             position: cameraVec3Input,
@@ -833,8 +841,9 @@ const cameraShotInput = z
             fovDeg: z.number().positive().lt(180).optional(),
             near: z.number().positive().optional(),
             far: z.number().positive().optional(),
-          })
-          .strict(),
+          },
+          { error: explicitCameraError },
+        ),
       ])
       .optional(),
   })
@@ -1211,6 +1220,7 @@ export interface KilnRenderViewsResult extends PartPreview {
     cols: number;
     cells: number;
     backdrop?: BackdropId;
+    output?: 'grid' | 'separate';
   };
   gridWidth?: number;
   gridHeight?: number;
@@ -1649,7 +1659,7 @@ const KILN_SCREENSHOT_ANIMATION_DESCRIPTION =
   'Review a named animation clip at sampled phases, with phase-labeled images and poseBounds in world metres. ' +
   'Use this to check motion against the brief: pivots, attachment, ground clearance, travel and which parts remain fixed. ' +
   'Choose a camera that reveals the movement and inspect intermediate phases; symmetric parts can look stationary at regularly spaced phases. ' +
-  'poseBounds reports scene geometry and the selected shot subject before camera isolation. Optional measureParts selects 1..16 exact names/paths for simultaneous per-part bounds; empty subtrees return null. Sampled bounds do not certify continuous collision or physical contact. ' +
+  'poseBounds reports scene geometry and the selected shot subject before camera isolation. Optional measureParts selects 1..16 exact names/paths for simultaneous per-part bounds and world origin; empty subtrees return null bounds, so locators are read from origin. Sampled bounds do not certify continuous collision or physical contact. ' +
   'args: clip (required), frameTimes (ordered fractions 0..1) or frames (2..6, default 6), ' +
   'camera (default right; also front/back/left/top/three-quarter) or shot, and perFrame (separate images). ' +
   'Nonempty unresolvedTracks names targets that do not exist; correct the track names. ' +
@@ -1690,6 +1700,7 @@ export interface KilnViewInteriorResult extends EvaluationEvidence {
     cols: number;
     cells: number;
     backdrop?: BackdropId;
+    output?: 'grid' | 'separate';
   };
   cameraShots?: import('../views').ResolvedCameraShotV1[];
   framesBase64?: string[];

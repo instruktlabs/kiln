@@ -82,3 +82,27 @@ test('numeric batch inspection retains every requested pair and spends no image 
   const normal = (await inspect.run({ code, surfacePairs: [[a, b]] })) as KilnInspectResult;
   expect(normal.error).toContain('pixel budget');
 });
+
+test('a bare or misrooted surface path fails its own pair briefly and names the exact path', async () => {
+  const inspect = createKilnProgramToolRegistry().find((t) => t.name === 'kiln_inspect')!;
+  const a = '/Surface%20gap[0]/Root[0]/Mesh_A[0]',
+    b = '/Surface%20gap[0]/Root[0]/Mesh_B[0]';
+  const output = (await inspect.run({
+    code,
+    image: false,
+    surfacePairs: [
+      ['Mesh_A', b],
+      ['/Wrong[0]/Root[0]/Mesh_A[0]', b],
+      [a, b],
+    ],
+  })) as KilnInspectResult;
+  expect(output.ok).toBe(true);
+  const [bare, misrooted, good] = output.surfaceMeasurements!.results;
+  expect(bare!.error).toContain('"Mesh_A" is not an exact path');
+  expect(bare!.error).toContain(a);
+  expect(misrooted!.error).toContain('No node has path "/Wrong[0]/Root[0]/Mesh_A[0]"');
+  expect(misrooted!.error).toContain('Paths start with /Surface%20gap[0]');
+  expect(misrooted!.error).toContain(a);
+  for (const failed of [bare, misrooted]) expect(failed!.error!.length).toBeLessThan(400);
+  expect(good!.measurement?.distance).toBeCloseTo(0.001, 7);
+});

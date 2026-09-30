@@ -100,6 +100,7 @@ export async function renderCaptureGrid(
       cols,
       cells: shots.length,
       backdrop,
+      output: config.output ?? 'grid',
     },
     cameraShots: shots,
     perFramePngs,

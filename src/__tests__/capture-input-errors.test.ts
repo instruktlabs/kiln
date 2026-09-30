@@ -158,6 +158,23 @@ it('explains the supported equivalents for common orbit and image-size guesses',
     expect(orbit).toContain('Orbit cameras derive target and distance');
     expect(orbit).toContain('subject and padding');
 
+    const lens = await messageFor({
+      version: 'kiln.capture.v1',
+      shots: [
+        {
+          camera: {
+            type: 'explicit',
+            projection: 'perspective',
+            position: [3, 3, 3],
+            target: [0, 0, 0],
+            fov: 40,
+          },
+        },
+      ],
+    });
+    expect(lens).toContain('Unknown explicit camera key fov; use fovDeg');
+    expect(lens).toContain('fovDeg (perspective, degrees)');
+
     const dimensions = await messageFor({
       version: 'kiln.capture.v1',
       width: 800,

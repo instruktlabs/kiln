@@ -32,7 +32,8 @@ ANIMATION REVIEW
 Reviews the actual exported clip through the shared animation tool. Keeps source
 unchanged; writes PNGs, not posed source or replacement GLBs. Inspect intermediate
 phases and attachments. poseBounds reports world-space scene and selected-subject
-geometry before camera isolation. Samples do not establish continuous collision safety.
+geometry before camera isolation; --measure-parts adds each part's bounds and world
+origin, so locators are measured too. Samples do not establish continuous collision safety.
 `;
 
 async function readReviewJson(path: string, option: string): Promise<unknown> {

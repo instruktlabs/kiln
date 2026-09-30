@@ -43,3 +43,26 @@ test('per-shot size reaches 2048 px and the pixel budget still bounds the sheet'
     renderCaptureGrid(root, { version: 'kiln.capture.v1', shots: Array(9).fill({}), size: 2048 }),
   ).rejects.toThrow(/pixel/i);
 });
+
+test('the capture receipt echoes the delivered output mode', async () => {
+  const root = new Group();
+  root.name = 'Root';
+  const part = new Mesh(new BoxGeometry(1, 1, 1), new MeshBasicMaterial());
+  part.name = 'Part1';
+  root.add(part);
+  for (const output of ['separate', 'grid'] as const) {
+    const out = await renderCaptureGrid(root, {
+      version: 'kiln.capture.v1',
+      shots: [{}, {}],
+      size: 128,
+      output,
+    });
+    expect(out.capture?.output).toBe(output);
+  }
+  const unspecified = await renderCaptureGrid(root, {
+    version: 'kiln.capture.v1',
+    shots: [{}],
+    size: 128,
+  });
+  expect(unspecified.capture?.output).toBe('grid');
+});

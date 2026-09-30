@@ -140,6 +140,11 @@ async function currentCapabilities(context: KilnToolContext) {
       orbitFrames: ['world', 'asset', 'part'],
       explicitFrames: ['world', 'asset', 'part', 'local'],
       framing: ['explicit', 'bounds'],
+      lens: {
+        perspective: 'fovDeg: vertical field of view in degrees, default 50',
+        orthographic: 'halfHeight: half the view height in world units',
+      },
+      clip: 'near and far in world units. An explicit perspective near defaults to half the distance to the nearest geometry (at least 0.001); pass near to override it.',
       limits: resolveCaptureLimits(context.captureLimits),
       defaultViews: 6,
     },

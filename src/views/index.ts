@@ -634,8 +634,34 @@ export interface AnimationPoseBounds {
   scene: { min: [number, number, number]; max: [number, number, number] };
   /** Selected shot subject, if any, in the same world coordinate system. */
   subject?: { min: [number, number, number]; max: [number, number, number] };
-  /** Input order; null bounds mean no drawable triangles, never inferred contact. */
-  parts?: { path: string; name: string; bounds: ReturnType<typeof measurePartBounds> }[];
+  /**
+   * Input order; null bounds mean no drawable triangles, never inferred contact.
+   * origin is the node's world position, so a locator without geometry is still measured.
+   */
+  parts?: {
+    path: string;
+    name: string;
+    bounds: ReturnType<typeof measurePartBounds>;
+    origin: [number, number, number];
+  }[];
+}
+
+function worldOrigin(node: unknown): [number, number, number] {
+  const e = (node as { matrixWorld: { elements: ArrayLike<number> } }).matrixWorld.elements;
+  return [e[12]!, e[13]!, e[14]!];
+}
+
+/** Distance from a point to an axis-aligned box; zero inside it. */
+function boxDistance(
+  point: readonly number[],
+  box: { min: readonly number[]; max: readonly number[] },
+): number {
+  let sum = 0;
+  for (let a = 0; a < 3; a++) {
+    const d = Math.max(box.min[a]! - point[a]!, 0, point[a]! - box.max[a]!);
+    sum += d * d;
+  }
+  return Math.sqrt(sum);
 }
 
 export interface AnimationViewResult {
@@ -752,6 +778,7 @@ export async function renderClipAnimation(
               path,
               name,
               bounds: measurePartBounds(node),
+              origin: worldOrigin(node),
             })),
           }
         : {}),
@@ -780,6 +807,30 @@ export async function renderClipAnimation(
       opts.shot?.camera?.type === 'orbit' ? (opts.shot.camera.padding ?? 1.2) : 1.2,
       initialShot.camera.up,
     );
+  }
+  const lens = opts.shot?.camera;
+  if (
+    lockedCamera &&
+    opts.framing !== 'follow' &&
+    lens?.type === 'explicit' &&
+    lens.projection === 'perspective' &&
+    lens.near === undefined
+  ) {
+    // A locked camera was placed against the first pose; keep its default near plane
+    // short of the scene at every sampled pose, not only the first.
+    const union = { min: [...poseBounds[0]!.scene.min], max: [...poseBounds[0]!.scene.max] };
+    for (const { scene } of poseBounds)
+      for (let a = 0; a < 3; a++) {
+        union.min[a] = Math.min(union.min[a]!, scene.min[a]!);
+        union.max[a] = Math.max(union.max[a]!, scene.max[a]!);
+      }
+    lockedCamera = {
+      ...lockedCamera,
+      near: Math.max(
+        0.001,
+        Math.min(lockedCamera.near, boxDistance(lockedCamera.position, union) / 2),
+      ),
+    };
   }
   const cameraShots: ResolvedCameraShotV1[] = [];
 

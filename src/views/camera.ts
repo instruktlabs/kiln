@@ -58,9 +58,23 @@ export interface ResolvedCameraShotV1 {
 }
 const vec = (a: CameraVec3) => new Vector3(...a);
 const tuple = (v: Vector3): CameraVec3 => [v.x || 0, v.y || 0, v.z || 0];
+/** Common near-misses for camera keys, named in the unknown-key error. */
+const KEY_HINTS: Readonly<Record<string, string>> = {
+  fov: 'fovDeg',
+  fovY: 'fovDeg',
+  fieldOfView: 'fovDeg',
+  lookAt: 'target',
+  azimuth: 'azimuthDeg',
+  elevation: 'elevationDeg',
+};
 function strict(value: object, keys: string[], label: string) {
   for (const key of Object.keys(value))
-    if (!keys.includes(key)) throw new Error(`${label}.${key} is unknown`);
+    if (!keys.includes(key)) {
+      const hint = Object.hasOwn(KEY_HINTS, key) && keys.includes(KEY_HINTS[key]!);
+      throw new Error(
+        `${label}.${key} is unknown${hint ? `; use ${KEY_HINTS[key]}` : ''}; accepted keys: ${keys.join(', ')}`,
+      );
+    }
 }
 function finite(n: number, label: string) {
   if (!Number.isFinite(n)) throw new Error(`${label} must be finite`);
@@ -101,14 +115,75 @@ export function selectCameraSubject(root: unknown, subject?: CameraSubjectV1) {
     : all.filter((n) =>
         subject.path !== undefined ? n.path === subject.path : n.name === subject.name,
       );
-  if (matches.length !== 1)
-    throw new Error(
-      `${matches.length ? 'ambiguous' : 'missing'} camera subject; choose an exact path: ${all
-        .slice(0, 40)
-        .map((n) => n.path)
-        .join(', ')}`,
-    );
+  if (matches.length !== 1) throw new Error(subjectError(all, matches, subject));
   return matches[0]!;
+}
+function pathList(nodes: readonly { path: string }[], limit: number): string {
+  const shown = nodes.slice(0, limit).map((n) => n.path);
+  return `${shown.join(', ')}${nodes.length > limit ? `, and ${nodes.length - limit} more` : ''}`;
+}
+/** Name the candidates: every node sharing an ambiguous name, or similar names before the listing. */
+function subjectError(
+  all: readonly { path: string; name: string }[],
+  matches: readonly { path: string }[],
+  subject: CameraSubjectV1 | undefined,
+): string {
+  const query = subject?.name ?? subject?.path ?? '';
+  if (matches.length > 1)
+    return `ambiguous camera subject: ${matches.length} nodes are named ${JSON.stringify(query)}; choose one path: ${pathList(matches, 20)}`;
+  const wanted = (
+    subject?.name ?? decodeURIComponent(query.split('/').pop() ?? '').replace(/\[\d+\]$/, '')
+  ).toLowerCase();
+  const similar = wanted
+    ? all.filter((n) => {
+        const name = n.name.toLowerCase();
+        return name.length > 0 && (name.includes(wanted) || wanted.includes(name));
+      })
+    : [];
+  const rootPath = all[0]?.path;
+  const misrooted =
+    subject?.path !== undefined &&
+    rootPath !== undefined &&
+    query !== rootPath &&
+    !query.startsWith(`${rootPath}/`);
+  const missing =
+    subject?.name !== undefined
+      ? `no node is named ${JSON.stringify(query)}`
+      : `no node has path ${JSON.stringify(query)}${misrooted ? `; paths start with ${rootPath}` : ''}`;
+  // Similar names are the useful answer; the full listing only when there are none.
+  return `missing camera subject: ${missing}${similar.length ? `; similar: ${pathList(similar, 10)}` : `; choose an exact path: ${pathList(all, 40)}`}`;
+}
+/**
+ * Default near plane for an explicit perspective camera: half the distance from the
+ * camera to the nearest drawable triangle's box, which clips nothing, and never below
+ * 1 mm or above half the far plane. A 1 mm plane on a large asset wastes depth
+ * precision and shows false z-fighting between faces a few decimetres apart.
+ * Skinned or morphing geometry can move toward the camera after this measurement,
+ * so it keeps the 1 mm floor.
+ */
+export function defaultPerspectiveNear(root: unknown, position: CameraVec3, far: number): number {
+  const FLOOR = 0.001;
+  let deforms = false;
+  (root as Object3D).traverse((node) => {
+    const mesh = node as Object3D & {
+      isSkinnedMesh?: boolean;
+      geometry?: { morphAttributes?: Record<string, unknown[]> };
+    };
+    if (mesh.isSkinnedMesh || (mesh.geometry?.morphAttributes?.['position']?.length ?? 0) > 0)
+      deforms = true;
+  });
+  if (deforms) return FLOOR;
+  const [px, py, pz] = position;
+  let nearest = Number.POSITIVE_INFINITY;
+  for (const { v } of collectTriangles(root as Object3D).tris) {
+    const dx = Math.max(Math.min(v[0]!, v[3]!, v[6]!) - px, 0, px - Math.max(v[0]!, v[3]!, v[6]!));
+    const dy = Math.max(Math.min(v[1]!, v[4]!, v[7]!) - py, 0, py - Math.max(v[1]!, v[4]!, v[7]!));
+    const dz = Math.max(Math.min(v[2]!, v[5]!, v[8]!) - pz, 0, pz - Math.max(v[2]!, v[5]!, v[8]!));
+    nearest = Math.min(nearest, Math.sqrt(dx * dx + dy * dy + dz * dz));
+    if (nearest === 0) break;
+  }
+  if (!Number.isFinite(nearest)) return FLOOR;
+  return Math.max(FLOOR, Math.min(nearest / 2, far / 2));
 }
 /** Match the legacy CPU projected-bounds fit; no camera-dependent source execution. */
 export function cameraFromBounds(
@@ -333,6 +408,8 @@ export function resolveAssetCamera(root: unknown, shot: CameraShotV1 = {}): Reso
       camera.position = tuple(vec(camera.position).add(offset));
       camera.target = tuple(vec(camera.target).add(offset));
     }
+    if (request.projection === 'perspective' && request.near === undefined)
+      camera.near = defaultPerspectiveNear(rootNode, camera.position, camera.far);
   } else throw new Error('unknown camera type');
   if (shot.visibility !== undefined && !['context', 'isolate'].includes(shot.visibility))
     throw new Error('invalid visibility');

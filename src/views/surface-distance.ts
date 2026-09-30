@@ -307,6 +307,37 @@ export function measureSurfaceDistance(root: unknown, input: AttachmentMeasureme
   return finish(true);
 }
 
+/**
+ * A short, pair-local explanation for a path that names no node: a bare name, or an
+ * exact path under the wrong root. It suggests at most five exact paths instead of
+ * listing the scene, which made one wrong root cost thousands of tokens per pair.
+ */
+function surfacePathProblem(
+  subjects: readonly { path: string; name: string }[],
+  path: string,
+): string {
+  const list = (nodes: readonly { path: string }[]) =>
+    `${nodes
+      .slice(0, 5)
+      .map((n) => n.path)
+      .join(', ')}${nodes.length > 5 ? `, and ${nodes.length - 5} more` : ''}`;
+  if (!path.startsWith('/')) {
+    const named = subjects.filter((s) => s.name === path);
+    return `${JSON.stringify(path)} is not an exact path; paths start with / as partListing shows them.${named.length ? ` Nodes named ${JSON.stringify(path)}: ${list(named)}.` : ''}`;
+  }
+  const last = path.split('/').pop() ?? '';
+  let name = last.replace(/\[\d+\]$/, '');
+  try {
+    name = decodeURIComponent(name);
+  } catch {
+    // An undecodable segment simply matches nothing.
+  }
+  const similar = subjects.filter((s) => s.name === name);
+  const rootPath = subjects[0]?.path;
+  const misrooted = rootPath !== undefined && path !== rootPath && !path.startsWith(`${rootPath}/`);
+  return `No node has path ${JSON.stringify(path)}.${misrooted ? ` Paths start with ${rootPath}.` : ''}${similar.length ? ` Nodes named ${JSON.stringify(name)}: ${list(similar)}.` : ''}`;
+}
+
 /** Bounded independent queries. A failed or incomplete pair never disappears behind successful ones. */
 export function measureSurfacePairs(root: unknown, pairs: readonly (readonly [string, string])[]) {
   if (
@@ -314,13 +345,12 @@ export function measureSurfacePairs(root: unknown, pairs: readonly (readonly [st
     pairs.length > 12 ||
     pairs.some(
       (pair) =>
-        pair.length !== 2 ||
-        pair.some(
-          (path) => typeof path !== 'string' || !path.startsWith('/') || path.length > 4096,
-        ),
+        pair.length !== 2 || pair.some((path) => typeof path !== 'string' || path.length > 4096),
     )
   )
     throw new Error('Surface pairs require 1..12 pairs of exact subject paths.');
+  const subjects = listCameraSubjects(root);
+  const known = new Set(subjects.map((subject) => subject.path));
   const results = pairs.map(
     (
       paths,
@@ -329,6 +359,11 @@ export function measureSurfacePairs(root: unknown, pairs: readonly (readonly [st
       measurement?: ReturnType<typeof measureSurfaceDistance>;
       error?: string;
     } => {
+      const problems = paths.flatMap((path) => {
+        const problem = known.has(path) ? undefined : surfacePathProblem(subjects, path);
+        return problem ? [problem] : [];
+      });
+      if (problems.length) return { paths, error: problems.join(' ') };
       try {
         return {
           paths,

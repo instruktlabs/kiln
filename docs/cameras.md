@@ -73,6 +73,10 @@ An explicit camera uses world positions in the asset's units:
 
 Use `projection:"orthographic"` and `halfHeight` instead of `fovDeg` for a measured view. Both projections accept `up`, `near`, and `far`. Perspective is implemented in both CPU and GPU rendering; CPU images remain geometry-flat.
 
+Without `near`, an explicit perspective camera sets its near plane to half the distance to the nearest geometry, at least 0.001. That plane clips nothing, and it keeps depth precision on large assets: a 1 mm plane showed false z-fighting between faces 0.3 m apart at 100 m. A locked animation camera keeps the plane short of every sampled pose. Skinned or morphing geometry keeps 0.001. The resolved `near` is echoed with the camera; pass `near` to set it yourself.
+
+An unknown camera key fails with the accepted keys, for example `fov` names `fovDeg`. `kiln_discover` with `capabilities:true` lists the lens and clip fields under `camera`. A subject name that matches several nodes fails with every matching path. A name that matches none suggests similar names before listing paths.
+
 The versioned format uses `shots`, not legacy `preset/cells`. Unknown or conflicting controls fail instead of being silently ignored. Cell size is an integer from 128 to 2048; the capture pixel budget (24M pixels by default) bounds the whole sheet, so nine 2048 px shots are refused. Set `output:"separate"` to return one image per shot; omit it for a grid. Both deliveries preserve shot order and camera metadata.
 
 `size` is the square pixel size of each shot. There are no capture request fields named `width` or `height`; those names occur only in returned grid/image dimensions. Orbit cameras likewise have no `target` or `distance` fields: they derive both from the selected subject's bounds. Select the subject and use `padding` to pull back or crop in. When an exact position or look target matters, use an explicit camera with `position` and `target`.
@@ -87,7 +91,8 @@ The versioned format uses `shots`, not legacy `preset/cells`. Unknown or conflic
 Animation `measureParts` accepts 1–16 `{name}` or `{path}` selectors and returns
 world-space bounds for each selected subtree in every `poseBounds.parts` entry.
 Selections do not change camera framing; ambiguous names and duplicate selections
-fail explicitly. Empty geometry returns `bounds:null`. Use this to compare moving
+fail explicitly. Each entry also gives `origin`, the node's world position. Empty
+geometry returns `bounds:null`, so read a locator from `origin`. Use this to compare moving
 contacts or attachments together; scene bounds alone cannot establish support.
 CLI accepts the same array in `--measure-parts parts.json`. These are sampled
 geometry bounds, not continuous collision, balance or physical-contact evidence.
