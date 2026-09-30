@@ -14,42 +14,21 @@ import type * as THREE from 'three';
 import type { LevelOfDetailChainV1 } from './contracts/integration';
 import { type Lod, MSFT_LOD, MSFTLod } from './gltf-io';
 import type { LodSet } from './lod';
-import { nodeTriangles } from './metrics';
+import { drawnNodeTriangles } from './metrics';
+import { writtenNodeResolver } from './written-nodes';
 
 /** The node extras key other tools read a chain's switch thresholds from. */
 export const MSFT_SCREENCOVERAGE = 'MSFT_screencoverage';
 
-function exportedRoot(doc: Document): GltfNode {
-  const scene = doc.getRoot().getDefaultScene() ?? doc.getRoot().listScenes()[0];
-  const top = scene?.listChildren() ?? [];
-  if (top.length !== 1) throw new Error('LOD export expects the exporter to write one root node.');
-  return top[0]!;
-}
-
 /**
  * Turn each set into one `MSFT_lod` chain on the document an exporter just wrote from `root`.
  *
- * Both exporters write the source hierarchy one node per object in child order, so a tier
- * is found by its child-index path from the root and confirmed by name. Call before any pass
- * that merges, moves or prunes nodes; those passes then see the chain and keep it.
+ * A tier is found through {@link writtenNodeResolver}. Call before any pass that merges, moves
+ * or prunes nodes; those passes then see the chain and keep it.
  */
 export function applyLodChains(root: THREE.Object3D, sets: readonly LodSet[], doc: Document): void {
   if (sets.length === 0) return;
-  const top = exportedRoot(doc);
-  const exported = (node: THREE.Object3D): GltfNode => {
-    const path: number[] = [];
-    for (let current = node; current !== root; current = current.parent!) {
-      if (!current.parent) throw new Error(`LOD export: ${node.name} is outside the asset root.`);
-      path.unshift(current.parent.children.indexOf(current));
-    }
-    let target: GltfNode | undefined = top;
-    for (const index of path) target = target?.listChildren()[index];
-    if (!target || (target.getName() || '') !== (node.name || ''))
-      throw new Error(
-        `LOD export could not find the written node for ${JSON.stringify(node.name)}.`,
-      );
-    return target;
-  };
+  const exported = writtenNodeResolver(root, doc, 'LOD export');
   // Resolve every node before moving any: a level leaving the scene shifts its later siblings.
   const chains = sets.map((set) => ({
     set,
@@ -134,7 +113,7 @@ export function summarizeLodChains(doc: Document): LevelOfDetailChainV1[] {
         level: number,
         name: level.getName(),
         path: paths[number]!,
-        triangles: nodeTriangles(level),
+        triangles: drawnNodeTriangles(level),
       })),
     };
   });

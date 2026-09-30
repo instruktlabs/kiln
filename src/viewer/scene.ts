@@ -13,6 +13,7 @@ import {
 } from './camera-state';
 import { summarizeFrameTimes, type StagePerformanceReceipt } from './performance';
 import { acceptLoadedResource } from './load-guard';
+import { applyNodeVisibility, drawnBounds } from './visibility';
 import {
   countTriangles,
   detachedLevels,
@@ -171,9 +172,9 @@ export function createAssetStage(container: HTMLElement) {
   };
   const reset = () => {
     if (!root) return;
-    const box = new THREE.Box3().setFromObject(root, true);
+    const box = drawnBounds(root);
     const components: THREE.Box3[] = [];
-    root.traverse((object) => {
+    root.traverseVisible((object) => {
       if (
         object instanceof THREE.Mesh ||
         object instanceof THREE.Line ||
@@ -268,6 +269,8 @@ export function createAssetStage(container: HTMLElement) {
         return url;
       });
       const parsed = await new GLTFLoader(manager).parseAsync(Uint8Array.from(bytes).buffer, '');
+      // three's loader draws every node; hide what KHR_node_visibility hides before counting.
+      applyNodeVisibility(parsed, [parsed.scene]);
       const parsedLevels = await loadViewerLevels(parsed);
       const gltf = acceptLoadedResource(
         parsed,
@@ -301,17 +304,12 @@ export function createAssetStage(container: HTMLElement) {
       camera.aspect = width && height ? width / height : camera.aspect;
       reset();
       if (previousView) {
-        restoreCameraView(
-          camera,
-          controls.target,
-          previousView,
-          new THREE.Box3().setFromObject(root, true),
-        );
+        restoreCameraView(camera, controls.target, previousView, drawnBounds(root));
         controls.update();
       }
       let meshes = 0;
       const materials = new Set<THREE.Material>();
-      root.traverse((o) => {
+      root.traverseVisible((o) => {
         const mesh = o as THREE.Mesh;
         if (!mesh.isMesh) return;
         meshes++;
@@ -366,7 +364,7 @@ export function createAssetStage(container: HTMLElement) {
     },
     setView(view: CameraView) {
       if (!root) return;
-      restoreCameraView(camera, controls.target, view, new THREE.Box3().setFromObject(root, true));
+      restoreCameraView(camera, controls.target, view, drawnBounds(root));
       controls.update();
     },
     navigation(value: string) {

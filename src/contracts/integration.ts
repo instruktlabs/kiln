@@ -40,6 +40,15 @@ export interface LevelOfDetailChainV1 {
   levels: LevelOfDetailLevelV1[];
 }
 
+/** An outermost node that does not draw (`KHR_node_visibility` `visible: false`). */
+export interface HiddenNodeV1 {
+  /** Inspection path, as `kiln_inspect` `listParts` lists it. */
+  path: string;
+  name: string;
+  /** Placed triangles in the hidden subtree; not in the headline. */
+  triangles: number;
+}
+
 /** A chain in a review result: the level it drew in each view. */
 export interface ReviewedLevelOfDetailChainV1 extends LevelOfDetailChainV1 {
   /** One entry per view, in view order: 0 when the view drew LOD0, otherwise the lower level
@@ -77,6 +86,9 @@ export interface IntegrationManifestV1 {
   /** Node `MSFT_lod` chains in scene order, when the GLB has any. The bounds and render
    *  metrics above count LOD0 only, which is what a loader without the extension draws. */
   levelsOfDetail?: LevelOfDetailChainV1[];
+  /** Outermost hidden nodes in scene order, when the GLB has any. The bounds and render
+   *  metrics above count what draws; these triangles are not in them. */
+  hiddenNodes?: HiddenNodeV1[];
   structuralQa: {
     hasDefaultScene: boolean;
     finiteBounds: boolean;

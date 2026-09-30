@@ -10,6 +10,7 @@ import { FileProgramStore } from '../program-store-node';
 import { decodePng } from '../views/png';
 import { localWorkspaceRoot } from '../workspace-location';
 import { TIERED_CAR, TIERED_CAR_CHAINS, TIERED_CAR_TRIANGLES } from './helpers/lod-fixture';
+import { HIDEABLE } from './helpers/visibility-fixture';
 
 const source = `const meta={name:'ReceiptBox'};function build(){const r=createRoot('Root');
 createPart('Box',boxGeo(1,2,3),gameMaterial('#809080'),{parent:r,position:[0,1,0]});return r;}`;
@@ -256,5 +257,32 @@ test('render reports each LOD chain in the receipt and in plain output', async (
   expect(text.match(/^ {2}LOD /gm)).toHaveLength(TIERED_CAR_CHAINS.length);
   expect(run(['render', 'source.js', '--out', 'plain.glb']).stdout.toString()).not.toContain(
     '  LOD ',
+  );
+});
+
+test('render lists hidden nodes apart from the drawn headline, in the receipt and plain output', async () => {
+  await writeFile(join(directory, 'hideable.js'), HIDEABLE);
+  const json = run(['render', 'hideable.js', '--render', 'cpu', '--out', 'hideable.glb', '--json']);
+  expect(json.exitCode).toBe(0);
+  const receipt = JSON.parse(json.stdout.toString());
+  expect(receipt.tris).toBe(12);
+  expect(receipt.hiddenNodes).toEqual([
+    { path: '/Hideable[0]/Root[0]/Mesh_Cover[0]', name: 'Mesh_Cover', triangles: 12 },
+    { path: '/Hideable[0]/Root[0]/Joint_Panel[0]', name: 'Joint_Panel', triangles: 12 },
+  ]);
+  const text = run([
+    'render',
+    'hideable.js',
+    '--render',
+    'cpu',
+    '--out',
+    'hideable.glb',
+  ]).stdout.toString();
+  expect(text).toContain(
+    '  hidden /Hideable[0]/Root[0]/Mesh_Cover[0]  12 tris (not drawn, not in the headline)',
+  );
+  expect(text.match(/^ {2}hidden /gm)).toHaveLength(2);
+  expect(run(['render', 'source.js', '--out', 'plain.glb']).stdout.toString()).not.toContain(
+    '  hidden ',
   );
 });

@@ -1,6 +1,7 @@
 /** GLB-native input adapter for the deterministic CPU geometry-flat renderer. */
 import { createGltfIO } from '../gltf-io';
 import { listLodChainNodes } from '../lod-export';
+import { isHiddenGltfNode } from '../metrics';
 import { registerReviewLodChains } from './lod';
 
 import {
@@ -398,8 +399,9 @@ export async function loadGlbGeometryFlatScene(
   const meshes: FlatMesh[] = [];
   let instanceCount = 0;
   const sceneNodes = new Set<import('@gltf-transform/core').Node>();
+  // A subtree `KHR_node_visibility` hides does not draw, so the flat view leaves it out.
   const visit = (node: import('@gltf-transform/core').Node): void => {
-    if (sceneNodes.has(node)) return;
+    if (sceneNodes.has(node) || isHiddenGltfNode(node)) return;
     sceneNodes.add(node);
     for (const child of node.listChildren()) visit(child);
   };
@@ -530,6 +532,8 @@ export async function loadGlbReviewScene(bytes: Uint8Array): Promise<LoadedGlbRe
     target.quaternion.fromArray(source.getRotation());
     target.scale.fromArray(source.getScale());
     target.userData = { ...source.getExtras() };
+    // KHR_node_visibility: the flag stays on the node it was written on, as three draws it.
+    if (isHiddenGltfNode(source)) target.visible = false;
     nodeMap.set(source, target);
     const sourceMesh = source.getMesh();
     if (sourceMesh) {

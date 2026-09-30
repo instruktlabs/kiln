@@ -36,7 +36,12 @@ import * as THREE from 'three';
 import { validate, type ValidationIssue } from '../validation';
 import { appendSourceCheck } from '../evaluator/source-check';
 import { inspectSceneStructure, renderSceneToGLB, type RenderResult } from '../render';
-import type { AssetCategory, AssetIntentV1, ReviewedLevelOfDetailChainV1 } from '../contracts';
+import type {
+  AssetCategory,
+  AssetIntentV1,
+  HiddenNodeV1,
+  ReviewedLevelOfDetailChainV1,
+} from '../contracts';
 import type { AssetQaReport } from '../qa';
 import type { RequirementsBinding } from '../requirements-store';
 import {
@@ -998,8 +1003,13 @@ export interface PartListing {
   matched: number;
   offset: number;
   nextOffset?: number;
-  /** Every listed part carries its world placement and bounds. */
-  parts: ({ path: string; name: string } & import('../views/part-placement').PartPlacementV1)[];
+  /** Every listed part carries its world placement and bounds; `hidden` marks a part that
+   *  does not draw because it or an ancestor is hidden. */
+  parts: ({
+    path: string;
+    name: string;
+    hidden?: true;
+  } & import('../views/part-placement').PartPlacementV1)[];
 }
 
 interface PartPreview {
@@ -1044,7 +1054,12 @@ async function listPartPage(
   const placement = createPartPlacementReader(root);
   return {
     ...listing,
-    parts: page.map(({ path, name, node }) => ({ path, name, ...placement(node) })),
+    parts: page.map(({ path, name, node }) => {
+      let hidden = false;
+      for (let at: THREE.Object3D | null = node; at && !hidden; at = at.parent)
+        hidden = at.visible === false;
+      return { path, name, ...(hidden ? { hidden: true as const } : {}), ...placement(node) };
+    }),
   };
 }
 
@@ -1118,7 +1133,8 @@ function collectSceneMetrics(root: THREE.Object3D): SceneMetrics {
   const box = new THREE.Box3();
   const point = new THREE.Vector3();
   root.updateWorldMatrix(true, true);
-  root.traverse((node: THREE.Object3D) => {
+  // What draws: a hidden node (visible = false) takes its subtree out, as in three.
+  root.traverseVisible((node: THREE.Object3D) => {
     const n = node as { isMesh?: boolean; material?: unknown };
     if (n.isMesh) {
       meshes += 1;
@@ -1210,6 +1226,9 @@ export interface KilnRenderViewsResult extends PartPreview {
   /** MSFT_lod chains: each level's name, shot path and triangles, and the level each view
    *  drew. `tris`, `bbox` and default views cover LOD0 and the parts outside every chain. */
   levelsOfDetail?: ReviewedLevelOfDetailChainV1[];
+  /** Outermost hidden nodes (visible = false) with their triangles; `tris`, `bbox` and the
+   *  default views leave them out. */
+  hiddenNodes?: HiddenNodeV1[];
   /** Post-dedup instanceability grade (informational): how cheap to render at scale. */
   instanceability?: { grade: string; summary: string };
   /** Structured deterministic report; five dimensions remain separate. */
@@ -1255,6 +1274,12 @@ function levelsOfDetailField(
         })),
       }
     : {};
+}
+
+/** The hidden subtrees the headline leaves out, when the GLB has any. */
+function hiddenNodesField(rendered: RenderResult): { hiddenNodes?: HiddenNodeV1[] } {
+  const hidden = rendered.integrationManifest?.hiddenNodes;
+  return hidden?.length ? { hiddenNodes: hidden } : {};
 }
 
 /** Every chain at LOD0 in each of `views` views. */
@@ -1337,6 +1362,7 @@ async function runRenderViews(
         bbox: metrics.bbox,
         lowestPart: metrics.lowestPart,
         ...levelsOfDetailField(rendered, grid.viewLevels ?? lod0Views(grid.views.length)),
+        ...hiddenNodesField(rendered),
         views: grid.views,
         capture: grid.capture,
         ...(grid.captureCache ? { captureCache: grid.captureCache } : {}),
@@ -1497,6 +1523,7 @@ async function runRenderViews(
       bbox: metrics.bbox,
       lowestPart: metrics.lowestPart,
       ...levelsOfDetailField(rendered, lod0Views(grid.views.length)),
+      ...hiddenNodesField(rendered),
       ...(rendered.meta.instanceability
         ? {
             instanceability: {
@@ -1974,6 +2001,7 @@ export interface KilnInspectResult extends EvaluationEvidence {
   isolated?: boolean;
   /** MSFT_lod chains and the level each drew in this view; `drawn` is empty without an image. */
   levelsOfDetail?: ReviewedLevelOfDetailChainV1[];
+  hiddenNodes?: HiddenNodeV1[];
   /** One line stating what was framed and from which view. */
   framed?: string;
   width?: number;
@@ -2067,6 +2095,7 @@ async function runInspect(
         ok: true,
         ...evaluationEvidence(evaluated),
         ...levelsOfDetailField(evaluated, []),
+        ...hiddenNodesField(evaluated),
         ...measurements,
       };
     // A subject or part that names a lower level of detail draws it in its LOD0's place.
@@ -2086,6 +2115,7 @@ async function runInspect(
           cameraShot: grid.cameraShots[0],
           subjectFrame: describeSubjectFrame(root, shot.subject),
           ...levelsOfDetailField(evaluated, [levels]),
+          ...hiddenNodesField(evaluated),
           ...measurements,
           pngBase64: grid.perFramePngs[0]!.toString('base64'),
           width: 512,
@@ -2141,6 +2171,7 @@ async function runInspect(
         ...evaluationEvidence(evaluated),
         ...(r.part ? { part: r.part } : {}),
         ...levelsOfDetailField(evaluated, [levels]),
+        ...hiddenNodesField(evaluated),
         ...measurements,
         view: r.view,
         azimuthDeg: r.azimuthDeg,

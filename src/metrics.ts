@@ -89,16 +89,35 @@ function instanceCopies(node: import('@gltf-transform/core').Node): number {
   );
 }
 
+/** The node's own `KHR_node_visibility` flag says it and its subtree do not draw. */
+export function isHiddenGltfNode(node: import('@gltf-transform/core').Node): boolean {
+  const visibility = node.getExtension('KHR_node_visibility') as {
+    getVisible?: () => boolean;
+  } | null;
+  return visibility?.getVisible?.() === false;
+}
+
 /** Placed triangles in one node's subtree, instance copies included, whether or not a scene
- *  reaches it: the per-level count of an `MSFT_lod` chain. */
+ *  reaches it or `KHR_node_visibility` hides it: what a hidden subtree holds. */
 export function nodeTriangles(node: import('@gltf-transform/core').Node): number {
+  return subtreeTriangles(node, false);
+}
+
+/** `nodeTriangles` without the subtrees `KHR_node_visibility` hides: what the node draws when
+ *  placed, the per-level count of an `MSFT_lod` chain. */
+export function drawnNodeTriangles(node: import('@gltf-transform/core').Node): number {
+  return subtreeTriangles(node, true);
+}
+
+function subtreeTriangles(node: import('@gltf-transform/core').Node, drawn: boolean): number {
+  if (drawn && isHiddenGltfNode(node)) return 0;
   let triangles = 0;
   const mesh = node.getMesh();
   if (mesh) {
     const copies = instanceCopies(node);
     for (const prim of mesh.listPrimitives()) triangles += primTris(prim) * copies;
   }
-  for (const child of node.listChildren()) triangles += nodeTriangles(child);
+  for (const child of node.listChildren()) triangles += subtreeTriangles(child, drawn);
   return triangles;
 }
 
@@ -127,8 +146,10 @@ export function collectGlbMetrics(doc: Document, triangles?: number): Instanceab
   // (EXT_mesh_gpu_instancing) is ONE draw per primitive but renders N copies,
   // so its triangles multiply by the instance count while drawCalls stay 1 —
   // exactly what a supporting GPU does with it. Nodes outside every scene, such
-  // as the lower levels of an MSFT_lod chain, are not drawn and not counted.
+  // as the lower levels of an MSFT_lod chain, are not drawn and not counted, and
+  // neither is a subtree KHR_node_visibility hides.
   const visit = (node: import('@gltf-transform/core').Node): void => {
+    if (isHiddenGltfNode(node)) return;
     const mesh = node.getMesh();
     if (mesh) {
       const copies = instanceCopies(node);

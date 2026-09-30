@@ -25,6 +25,7 @@ import { reviewNeutralToneMapping } from './review-tone-mapping.mjs';
 
 export { MAX_VIEW_DIRS, validateViewDirs } from './contract.mjs';
 import { beautyCameraSpec, orthoDepth, orthoHalfExtent } from './framing.mjs';
+import { applyNodeVisibility, expandByDrawnObject } from './node-visibility.mjs';
 
 globalThis.self = globalThis;
 globalThis.requestAnimationFrame = (cb) => setTimeout(() => cb(performance.now()), 16);
@@ -357,6 +358,7 @@ export async function renderGlb(glbBytes, opts = {}) {
   let scene = null;
   const requestTargets = [];
   try {
+    const hiddenNodes = applyNodeVisibility(gltf);
     toDataTextures(gltf.scene);
     const tLoad = performance.now();
 
@@ -404,7 +406,10 @@ export async function renderGlb(glbBytes, opts = {}) {
       };
     }
 
-    const box = new THREE.Box3().setFromObject(gltf.scene);
+    // Frame what draws: a subtree KHR_node_visibility hides is not in the sheet.
+    const box = hiddenNodes
+      ? expandByDrawnObject(new THREE.Box3(), new THREE.Box3(), gltf.scene)
+      : new THREE.Box3().setFromObject(gltf.scene);
     const center = box.getCenter(new THREE.Vector3());
     const sizes = box.getSize(new THREE.Vector3());
     const boxMin = [box.min.x, box.min.y, box.min.z];

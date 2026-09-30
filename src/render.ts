@@ -28,6 +28,7 @@ import * as THREE from 'three';
 import { createGltfIO, MSFT_LOD } from './gltf-io';
 import { collectLodSets } from './lod';
 import { applyLodChains, summarizeLodChains } from './lod-export';
+import { applyNodeVisibility, drawnSceneBounds, summarizeHiddenNodes } from './node-visibility';
 import { communitySceneDocument, resolveGltfExporter } from './community-exporter';
 import { rigExtrasForExport } from './rig-export';
 import { type AuthorExtras, collectAuthorExtras } from './user-data-extras';
@@ -38,7 +39,7 @@ import {
   type GeometryExportPolicy,
 } from './geometry-export';
 import { createHash } from 'node:crypto';
-import { Document, getBounds } from '@gltf-transform/core';
+import { Document } from '@gltf-transform/core';
 import { KHRMaterialsEmissiveStrength } from '@gltf-transform/extensions';
 import {
   dedup,
@@ -147,12 +148,27 @@ export async function measureGlbBounds(
   const root = doc.getRoot();
   const scene = root.getDefaultScene() ?? root.listScenes()[0];
   if (!scene) return undefined;
-  const { min, max } = getBounds(scene);
+  const { min, max } = drawnSceneBounds(scene);
   if (!min.every(Number.isFinite) || !max.every(Number.isFinite)) return undefined;
   return {
     min: [min[0]!, min[1]!, min[2]!],
     max: [max[0]!, max[1]!, max[2]!],
   };
+}
+
+/** Triangles a loader does not draw: hidden subtrees outside the lower LOD levels. */
+function hiddenTriangles(root: THREE.Object3D, lowerLevels: ReadonlySet<THREE.Object3D>): number {
+  let hidden = 0;
+  const visit = (node: THREE.Object3D): void => {
+    if (lowerLevels.has(node)) return;
+    if (node.visible === false) {
+      hidden += countTriangles(node);
+      return;
+    }
+    for (const child of node.children) visit(child);
+  };
+  visit(root);
+  return hidden;
 }
 
 // Gltf-transform type aliases for local readability.
@@ -214,7 +230,8 @@ export async function inspectGlbIntegration(
   const scene = explicitDefault ?? root.listScenes()[0];
   if (!scene) return undefined;
 
-  const { min, max } = getBounds(scene);
+  // What a loader draws: hidden subtrees are listed apart below.
+  const { min, max } = drawnSceneBounds(scene);
   const finiteBounds = min.every(Number.isFinite) && max.every(Number.isFinite);
   if (!finiteBounds) return undefined;
   const metrics = collectGlbMetrics(doc);
@@ -224,6 +241,7 @@ export async function inspectGlbIntegration(
   const maxTuple: [number, number, number] = [max[0]!, max[1]!, max[2]!];
   const minY = minTuple[1];
   const levelsOfDetail = summarizeLodChains(doc);
+  const hiddenNodes = summarizeHiddenNodes(doc);
 
   return {
     schemaVersion: 'kiln.integration-manifest.v1',
@@ -262,6 +280,7 @@ export async function inspectGlbIntegration(
       skinned: metrics.skinned,
     },
     ...(levelsOfDetail.length ? { levelsOfDetail } : {}),
+    ...(hiddenNodes.length ? { hiddenNodes } : {}),
     structuralQa: {
       hasDefaultScene: explicitDefault !== null,
       finiteBounds,
@@ -1453,6 +1472,12 @@ export async function renderSceneToGLB(
   // The headline counts what a plain loader draws: LOD0 and the parts outside every set.
   let tris = countTriangles(root);
   for (const set of lodSets) for (const level of set.levels.slice(1)) tris -= countTriangles(level);
+  const hiddenTris = hiddenTriangles(root, new Set(lodSets.flatMap((set) => set.levels.slice(1))));
+  if (hiddenTris > 0 && hiddenTris === tris)
+    throw new Error(
+      'renderSceneToGLB: every triangle is hidden (visible = false on the root or on every part), so nothing draws. Hide parts inside the asset, not all of it.',
+    );
+  tris -= hiddenTris;
   const materialRecipeApplications = collectMaterialRecipeApplications(root);
   const materialResourceProvenance = collectMaterialResourceProvenance(root);
 
@@ -1548,8 +1573,9 @@ export async function renderSceneToGLB(
         scene.setExtras({ [REVIEW_CLIPS_EXTRAS_KEY]: review });
     }
   }
-  // Each declared set becomes one MSFT_lod chain before any pass merges or prunes nodes, so
-  // those passes see the chain and keep its levels.
+  // Visibility flags and LOD chains are written before any pass merges or prunes nodes, so
+  // those passes see them and keep them; flags first, while every node is still in place.
+  applyNodeVisibility(root, doc);
   applyLodChains(root, lodSets, doc);
 
   // Dedupe accessors/materials/meshes so instanced parts (4 wheels, 10 posts,

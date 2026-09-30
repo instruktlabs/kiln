@@ -246,3 +246,23 @@ test('an MSFT_lod chain compares every level at the path it takes in LOD0 place'
   expect(far.afterBounds!.min[0]! - far.beforeBounds!.min[0]!).toBeCloseTo(2, 6);
   expect(moved.after.bounds!.max[1]).toBeCloseTo(1.5, 6);
 });
+
+test('hiding a part is a visibility change, and bounds count what draws', async () => {
+  const program = (hide: boolean) => `function build(){
+    const r=createRoot('Root');const m=gameMaterial('#888888');
+    createPart('Body',boxGeo(1,1,1),m,{parent:r,position:[0,0.5,0]});
+    const cover=createPart('Cover',boxGeo(2,0.2,2),m,{parent:r,position:[0,3,0]});
+    ${hide ? 'cover.visible=false;' : ''}return r;}`;
+  const result = await compareRevisionGlbs(
+    (await render(program(false))).glb,
+    (await render(program(true))).glb,
+  );
+  const change = (name: string) => result.changes.find((c) => c.name === name);
+  expect(change('Mesh_Cover')!.fields).toEqual(['visibility']);
+  // A part's own bounds are where it draws when shown; its ancestors count only what draws.
+  expect(change('Mesh_Cover')!.afterBounds).toEqual(change('Mesh_Cover')!.beforeBounds);
+  expect(change('Root')!.fields).toEqual(['bounds']);
+  expect(change('Mesh_Body')).toBeUndefined();
+  expect(result.before.bounds!.max[1]).toBeCloseTo(3.1, 6);
+  expect(result.after.bounds!.max[1]).toBeCloseTo(1, 6);
+});

@@ -6,10 +6,12 @@
  * levels through the same parser, node by node, and keeps them detached until the level
  * control asks for one; the chosen level then stands at LOD0's place among its siblings. A
  * chain with fewer levels than the chosen one shows its last level. Chains Kiln wrote and
- * chains another tool wrote load the same way.
+ * chains another tool wrote load the same way. A lower level keeps its `KHR_node_visibility`
+ * flags, and every count is of what draws.
  */
 import type * as THREE from 'three';
 import type { GLTF } from 'three/addons/loaders/GLTFLoader.js';
+import { applyNodeVisibility } from './visibility';
 
 export interface ViewerLodChain {
   /** LOD0 first. LOD0 is in the scene as loaded; the lower levels start detached. */
@@ -22,10 +24,10 @@ export interface ViewerLevels {
   triangles: number[];
 }
 
-/** Triangles drawn by the meshes under `object`, instances counted. */
+/** Triangles drawn by the meshes under `object`, instances counted; hidden subtrees draw none. */
 export function countTriangles(object: THREE.Object3D): number {
   let triangles = 0;
-  object.traverse((node) => {
+  object.traverseVisible((node) => {
     const mesh = node as THREE.Mesh & Partial<THREE.InstancedMesh>;
     if (!mesh.isMesh) return;
     const vertices = mesh.geometry.index?.count ?? mesh.geometry.attributes.position?.count ?? 0;
@@ -65,6 +67,7 @@ export async function loadViewerLevels(gltf: GLTF): Promise<ViewerLevels | undef
     const levels: THREE.Object3D[] = [base];
     for (const id of ids as number[])
       levels.push((await gltf.parser.getDependency('node', id)) as THREE.Object3D);
+    applyNodeVisibility(gltf, levels.slice(1));
     bases.add(base);
     chains.push({ levels });
   }

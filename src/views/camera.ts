@@ -428,8 +428,17 @@ export async function withCameraVisibility<T>(
 ): Promise<T> {
   if (shot.visibility === 'context') return run();
   const keep = new Set<Object3D>();
-  selectCameraSubject(root, { path: shot.subject.path }).node.traverse((n) => keep.add(n));
+  const subject = selectCameraSubject(root, { path: shot.subject.path }).node;
+  subject.traverse((n) => keep.add(n));
   const restore: Array<[Object3D, boolean]> = [];
+  // An isolated subject draws even when it, or an ancestor, is hidden (visible = false);
+  // hidden parts inside it stay hidden.
+  for (let node: Object3D | null = subject; node; node = node.parent) {
+    if (node.visible === false) {
+      restore.push([node, false]);
+      node.visible = true;
+    }
+  }
   (root as Object3D).traverse((n) => {
     if ((n as Object3D & { isMesh?: boolean }).isMesh && !keep.has(n)) {
       restore.push([n, n.visible]);
@@ -439,18 +448,19 @@ export async function withCameraVisibility<T>(
   try {
     return await run();
   } finally {
-    for (const [node, visible] of restore) node.visible = visible;
+    for (const [node, visible] of restore.reverse()) node.visible = visible;
   }
 }
 /**
- * glTF carries no per-mesh visibility, so a derivative GLB serialized from a
- * scene isolated by {@link withCameraVisibility} would ship the hidden meshes to
- * the GPU. Returns the root itself when nothing is hidden, else a pruned clone;
- * the caller's scene is never mutated and restores `.visible` itself.
+ * The render service's loader does not read `KHR_node_visibility`, so a derivative GLB
+ * serialized from a scene with hidden nodes (authored, or isolated by
+ * {@link withCameraVisibility}) would ship them to the GPU. Every node with
+ * `visible = false` leaves with its subtree, which is what three draws. Returns the root
+ * itself when nothing is hidden, else a pruned clone; the caller's scene is never mutated and
+ * restores `.visible` itself.
  */
 export function withoutHiddenMeshes(root: Object3D): Object3D {
-  const hidden = (node: Object3D) =>
-    (node as Object3D & { isMesh?: boolean }).isMesh === true && node.visible === false;
+  const hidden = (node: Object3D) => node !== root && node.visible === false;
   let any = false;
   root.traverse((node) => {
     if (hidden(node)) any = true;

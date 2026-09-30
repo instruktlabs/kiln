@@ -39,6 +39,7 @@ interface DuckNamedNode {
   name?: string;
   isMesh?: boolean;
   visible?: boolean;
+  parent?: DuckNamedNode | null;
   updateMatrixWorld?(force?: boolean): void;
   traverse?(cb: (obj: unknown) => void): void;
 }
@@ -171,15 +172,16 @@ function isEmptyBounds(b: Bounds): boolean {
 
 /**
  * Hide every mesh that is NOT inside `keep`'s subtree, so the framed part cannot
- * be occluded from any angle. A FLAT mesh-level pass is exactly right here:
- * `collectTriangles` culls per-MESH on `.visible` and ignores ancestor-group
- * visibility (raster.ts), so flipping groups would be both insufficient (their
- * child meshes still draw) and unnecessary.
+ * be occluded from any angle, and show `keep` with its ancestors: an isolated part
+ * draws even when it is hidden (`visible = false`); hidden parts inside it stay
+ * hidden. Hiding meshes rather than groups keeps `keep`'s ancestors drawing.
  *
  * MUTATES `.visible` on the passed scene — safe because every caller renders a
  * freshly executed program, the same contract `renderInteriorGrid` relies on.
  */
 function isolateSubtree(root: unknown, keep: DuckNamedNode): void {
+  for (let node: DuckNamedNode | null | undefined = keep; node; node = node.parent)
+    if (node.visible === false) node.visible = true;
   const kept = new Set<unknown>();
   keep.traverse?.((obj) => kept.add(obj));
   (root as DuckNamedNode).traverse?.((obj) => {

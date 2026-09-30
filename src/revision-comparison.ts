@@ -8,16 +8,20 @@ import {
 import { ALL_EXTENSIONS } from '@gltf-transform/extensions';
 import { Box3, Matrix4, Vector3 } from 'three';
 import { createGltfIO, type Lod, MSFT_LOD } from './gltf-io';
+import { isHiddenGltfNode } from './metrics';
 
 type Bounds = { min: number[]; max: number[]; size: number[] } | null;
-type Field = 'geometry' | 'material' | 'transform' | 'bounds';
+type Field = 'geometry' | 'material' | 'transform' | 'bounds' | 'visibility';
 interface Part {
   name: string;
   node: Node;
   /** World matrix where the node is drawn; a chain's lower level takes LOD0's parent. */
   world: number[];
   primitives: Primitive[];
+  /** Where the node draws when shown; hidden descendants are left out. */
   bounds: Bounds;
+  /** `KHR_node_visibility` hides the node and its subtree. */
+  hidden: boolean;
 }
 interface Change {
   path: string;
@@ -127,7 +131,13 @@ async function snapshot(bytes: Uint8Array) {
         throw new Error('Revision comparison exceeds node/path budget.');
       const mesh = node.getMesh();
       if (
-        node.listExtensions().some((extension) => extension.extensionName !== MSFT_LOD) ||
+        node
+          .listExtensions()
+          .some(
+            (extension) =>
+              extension.extensionName !== MSFT_LOD &&
+              extension.extensionName !== 'KHR_node_visibility',
+          ) ||
         mesh?.listExtensions().length
       )
         throw new Error(
@@ -163,11 +173,12 @@ async function snapshot(bytes: Uint8Array) {
           own.expandByPoint(point);
         }
       }
-      const part: Part = { name, node, world: matrix.toArray(), primitives, bounds: null };
+      const hidden = isHiddenGltfNode(node);
+      const part: Part = { name, node, world: matrix.toArray(), primitives, bounds: null, hidden };
       parts.set(path, part);
       own.union(visit(node.listChildren(), path, depth + 1, matrix));
       part.bounds = bounds(own);
-      if (drawn) combined.union(own);
+      if (drawn && !hidden) combined.union(own);
     }
     return combined;
   };
@@ -356,6 +367,7 @@ export async function compareRevisionGlbs(
       )
         fields.push('transform');
       if (JSON.stringify(a.bounds) !== JSON.stringify(b.bounds)) fields.push('bounds');
+      if (a.hidden !== b.hidden) fields.push('visibility');
     }
     const status = !a ? 'added' : !b ? 'removed' : fields.length ? 'changed' : 'unchanged';
     summary[status]++;
@@ -377,7 +389,7 @@ export async function compareRevisionGlbs(
   return {
     version: 'kiln.revision-comparison.v1' as const,
     scope:
-      'Exact exported static mesh data and rest transforms; named hierarchy paths. MSFT_lod lower levels are compared at the path they take beside LOD0, and bounds are LOD0 only. Animation channels are reported separately. Metadata (including LOD switch thresholds), visual equivalence, intent and physical fit are not assessed.',
+      'Exact exported static mesh data and rest transforms; named hierarchy paths. MSFT_lod lower levels are compared at the path they take beside LOD0, and bounds are LOD0 only. A KHR_node_visibility flag is compared as visibility; the bounds of a part are where it draws when shown, and the bounds of its ancestors count only what draws. Animation channels are reported separately. Metadata (including LOD switch thresholds), visual equivalence, intent and physical fit are not assessed.',
     animation: {
       scope:
         'Exact exported channel target, interpolation, key times and values, matched by clip name and node path. Renames are add/remove. Equivalent motions may have different key data; metadata and playback behavior are not assessed.',

@@ -319,6 +319,9 @@ async function emit(
     ...(result.integrationManifest.levelsOfDetail
       ? { levelsOfDetail: result.integrationManifest.levelsOfDetail }
       : {}),
+    ...(result.integrationManifest.hiddenNodes
+      ? { hiddenNodes: result.integrationManifest.hiddenNodes }
+      : {}),
     artifactGlbSha256: result.artifactGlbSha256,
     glbBytes: result.glb.length,
     warnings: result.warnings,
@@ -357,6 +360,9 @@ async function emit(
       `  LOD ${chain.path}  ${chain.levels.map((level) => level.triangles).join(' / ')} tris${coverage}`,
     );
   }
+  // Tris and bounds count what draws; a subtree KHR_node_visibility hides is listed apart.
+  for (const node of result.integrationManifest.hiddenNodes ?? [])
+    log(`  hidden ${node.path}  ${node.triangles} tris (not drawn, not in the headline)`);
   for (const w of result.warnings) log(`  warning: ${w}`);
 
   if (args.views) {

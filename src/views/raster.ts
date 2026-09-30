@@ -170,6 +170,7 @@ interface DuckMesh {
 }
 interface DuckObject3D {
   visible?: boolean;
+  children?: DuckObject3D[];
   updateMatrixWorld?(force?: boolean): void;
   traverse?(cb: (obj: unknown) => void): void;
 }
@@ -212,6 +213,29 @@ export function compositingOrder<T extends { v: ArrayLike<number>; alpha: number
   return [...opaque, ...translucent.map((entry) => entry.tri)];
 }
 
+/**
+ * Visit every object under `root` that draws. Three's rule: a node with `visible = false`
+ * hides its subtree. The start node counts as shown, so a named part (an isolated subject, a
+ * measured part) keeps its geometry while the whole scene leaves hidden parts out. A duck root
+ * without `children` (the flat scene read from GLB bytes) is walked with `traverse`, each
+ * object by its own flag.
+ */
+function forEachDrawn(root: DuckObject3D, visit: (obj: DuckObject3D) => void): void {
+  if (!Array.isArray(root.children)) {
+    root.traverse?.((obj) => {
+      const node = obj as DuckObject3D;
+      if (node === root || node.visible !== false) visit(node);
+    });
+    return;
+  }
+  const walk = (obj: DuckObject3D, start: boolean) => {
+    if (!start && obj.visible === false) return;
+    visit(obj);
+    for (const child of obj.children ?? []) walk(child, false);
+  };
+  walk(root, true);
+}
+
 /** Collect world-space triangles + base colors from a (possibly cross-realm) scene. */
 export function collectTriangles(root: DuckObject3D): {
   tris: Tri[];
@@ -223,9 +247,9 @@ export function collectTriangles(root: DuckObject3D): {
   const min: Vec3 = [Infinity, Infinity, Infinity];
   const max: Vec3 = [-Infinity, -Infinity, -Infinity];
 
-  root.traverse?.((obj) => {
+  const drawMesh = (obj: unknown) => {
     const mesh = obj as DuckMesh;
-    if (!mesh.isMesh || mesh.visible === false) return;
+    if (!mesh.isMesh) return;
     const geo = mesh.geometry;
     const pos = geo?.getAttribute?.('position');
     if (!geo || !pos || pos.itemSize !== 3) return;
@@ -307,7 +331,8 @@ export function collectTriangles(root: DuckObject3D): {
         pushTri(i, i + 1, i + 2, materialAt(i));
       }
     }
-  });
+  };
+  forEachDrawn(root, drawMesh);
 
   if (!Number.isFinite(min[0])) {
     return { tris, bbox: { min: [0, 0, 0], max: [0, 0, 0] } };
@@ -493,9 +518,9 @@ export function measurePartBounds(root: unknown): ReturnType<typeof measureBound
 }
 
 /**
- * `measurePartBounds` for many nodes of one scene: the same meshes (per-mesh
- * `visible`, every position vertex, null without a triangle), but each mesh is
- * transformed once however many requested ancestors contain it.
+ * `measurePartBounds` for many nodes of one scene: the same meshes (each node as it
+ * draws when shown, hidden descendants left out, every position vertex, null without a
+ * triangle), but each mesh is transformed once however many requested ancestors contain it.
  */
 export function createPartBoundsReader(
   root: unknown,
@@ -505,8 +530,7 @@ export function createPartBoundsReader(
   const meshBounds = (obj: unknown) => {
     if (own.has(obj)) return own.get(obj)!;
     const mesh = obj as DuckMesh;
-    const pos =
-      mesh.isMesh && mesh.visible !== false ? mesh.geometry?.getAttribute?.('position') : undefined;
+    const pos = mesh.isMesh ? mesh.geometry?.getAttribute?.('position') : undefined;
     const m = mesh.matrixWorld?.elements;
     let result: { min: Vec3; max: Vec3; tris: number } | null = null;
     if (pos && pos.itemSize === 3 && m) {
@@ -537,7 +561,7 @@ export function createPartBoundsReader(
     const min: Vec3 = [Infinity, Infinity, Infinity];
     const max: Vec3 = [-Infinity, -Infinity, -Infinity];
     let tris = 0;
-    (node as DuckObject3D).traverse?.((obj) => {
+    forEachDrawn(node as DuckObject3D, (obj) => {
       const bounds = meshBounds(obj);
       if (!bounds) return;
       tris += bounds.tris;
@@ -566,11 +590,9 @@ export function coverage(rgb: Uint8Array, size: number, backdrop?: BackdropId): 
 
 /**
  * Hide a named subtree from the rasterizer so a view can see past it (lift a roof,
- * cut away a near wall). CRITICAL: `collectTriangles` culls per-MESH on `.visible`
- * and does NOT honor ancestor-group visibility — but kiln parts/walls/roofs are
- * nested GROUPS, so hiding only the matched group would leave its child meshes
- * drawn. This therefore sets `.visible = false` on each matched node AND every
- * descendant.
+ * cut away a near wall). `collectTriangles` hides a hidden node's subtree, but a flat
+ * duck scene (no `children`) culls per mesh, so this sets `.visible = false` on each
+ * matched node AND every descendant.
  *
  * `match` is either a string (case-insensitive exact match OR startsWith — so
  * "Roof" also lifts "Roof_Ridge") or a predicate over the node name. Returns the
