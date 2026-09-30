@@ -27,7 +27,7 @@ safety. See `kiln animation --help` for the complete options.
 
 CPU views show silhouette, orientation, proportion, and contact. They do not reproduce the asset's PBR materials. Translucent (opacity below 1) surfaces are composited after opaque geometry, farthest first, so parts behind glazing stay visible whatever order the scene lists them in. Use GPU views to review textures, roughness, metalness, and normal relief. GPU output can vary by device and driver.
 
-### Review lighting
+## Review lighting
 
 New GPU tool captures use **`review-neutral-v1`**. The rig uses the room PMREM
 environment at intensity 0.4352, white hemisphere light at 1.0879, and white
@@ -71,7 +71,7 @@ receipts retain their producer identity. Upgrade the host and renderer together.
 An incompatible service already on the shared socket is reported, never replaced
 automatically. Existing cached images remain historical evidence of their old rig.
 
-### Running the GPU renderer
+## Running the GPU renderer
 
 [`render-service/`](../render-service/) in this repository is the renderer: GLB bytes in, PBR PNG views
 out, headless three.js `WebGPURenderer` on Dawn. No browser and no X server.
