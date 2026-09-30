@@ -443,7 +443,8 @@ export function decodeEvaluatorResultV2(
           value.error.diagnostic !== 'BUILD_RESULT' &&
           value.error.diagnostic !== 'MATERIAL_RECIPE_OVERRIDE' &&
           value.error.diagnostic !== 'PROGRAM_TYPE_ERROR' &&
-          value.error.diagnostic !== 'PROGRAM_RANGE_ERROR'))
+          value.error.diagnostic !== 'PROGRAM_RANGE_ERROR' &&
+          value.error.diagnostic !== 'LOD_SET'))
     )
       return fail('result');
     if (value.error.qa !== undefined) {

@@ -26,6 +26,7 @@ import { AuthoringDiagnosticError, rethrowAuthoringError } from './evaluator/aut
 
 import * as THREE from 'three';
 import { createGltfIO, MSFT_LOD } from './gltf-io';
+import { collectLodSets } from './lod';
 import { communitySceneDocument, resolveGltfExporter } from './community-exporter';
 import { rigExtrasForExport } from './rig-export';
 import {
@@ -1427,6 +1428,9 @@ export async function renderSceneToGLB(
   if (opts.geometryPolicy !== undefined && !['warn', 'strict'].includes(opts.geometryPolicy))
     throw new Error('geometryPolicy must be warn or strict');
   const exporter = resolveGltfExporter(opts.gltfExporter);
+  // A set of LOD tiers needs its declared thresholds before anything is written. A
+  // derivative re-serializes a review scene that has no declarations, so it is not judged.
+  if (opts.derivative !== true) collectLodSets(root);
   const warnings = inspectGeometryExport(root, opts.geometryPolicy, exporter);
   const tris = countTriangles(root);
   const materialRecipeApplications = collectMaterialRecipeApplications(root);

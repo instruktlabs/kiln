@@ -21,6 +21,8 @@ import {
 import { buildWallPanels } from './wall-panels';
 import { createJointChain } from './character';
 import { describeAssembly, replicateAssembly } from './assembly';
+import { defineLod } from './lod';
+export { defineLod } from './lod';
 export * from './assembly';
 export { createRoofPlanes } from './architecture';
 export type { RoofPlanesOptions } from './architecture';
@@ -2109,6 +2111,7 @@ export function buildSandboxGlobals(
     createWheelGeometrySet: wrap('createWheelGeometrySet', createWheelGeometrySet),
     createWheelAssembly: wrap('createWheelAssembly', createWheelAssembly),
     createPart: wrap('createPart', createPart),
+    defineLod: wrap('defineLod', defineLod),
     capsuleGeo: wrapGeo('capsuleGeo', capsuleGeo),
     capsuleXGeo: wrapGeo('capsuleXGeo', capsuleXGeo),
     capsuleYGeo: wrapGeo('capsuleYGeo', capsuleYGeo),

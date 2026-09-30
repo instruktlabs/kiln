@@ -28,7 +28,8 @@ export type AuthoringDiagnostic =
   | 'BUILD_RESULT'
   | 'MATERIAL_RECIPE_OVERRIDE'
   | 'PROGRAM_TYPE_ERROR'
-  | 'PROGRAM_RANGE_ERROR';
+  | 'PROGRAM_RANGE_ERROR'
+  | 'LOD_SET';
 // Names no identifier on purpose. The identifier is only available from the
 // sandboxed exception message, and this module's contract is that no captured
 // identifier, path, message or stack crosses that boundary. Pointing at the
@@ -61,8 +62,11 @@ export const PROGRAM_TYPE_ERROR_ADVICE =
   'The program or a helper it called threw a TypeError: a value had the wrong type. Usually something is undefined (a function without a return, an un-awaited async helper such as roundedBoxGeo, extrudeProfile or materialRecipe, or a misspelt property) or a non-function was called. Run kiln_validate, then check the helper contract with kiln_discover.';
 export const PROGRAM_RANGE_ERROR_ADVICE =
   'The program or a helper it called threw a RangeError: a number was outside its allowed range, for example a non-positive size, an invalid array length or segment count, or unbounded recursion. Check the helper arguments against kiln_discover.';
+export const LOD_SET_ADVICE =
+  'Levels of detail: sibling nodes whose names share a stem and carry LOD0, LOD1, ... tokens (Body_LOD0, Body_LOD1) form one set. A set needs LOD0 and consecutive levels under one parent, outside any other tier, and one defineLod([lod0, lod1, ...], { screenCoverage: [...] }) call listing its tiers in level order with one value per level, each from 0 to 1 and strictly decreasing; the last may be 0, which never culls. Build one tier without LOD tokens unless the brief asks for levels. Call kiln_discover with ids ["defineLod"].';
 export function authoringDiagnosticAdvice(diagnostic: AuthoringDiagnostic | undefined): string {
   if (diagnostic === 'UNINITIALIZED_BINDING') return UNINITIALIZED_BINDING_ADVICE;
+  if (diagnostic === 'LOD_SET') return LOD_SET_ADVICE;
   if (diagnostic === 'BUILD_RESULT') return BUILD_RESULT_ADVICE;
   if (diagnostic === 'MATERIAL_RECIPE_OVERRIDE') return MATERIAL_RECIPE_OVERRIDE_ADVICE;
   if (diagnostic === 'PROGRAM_TYPE_ERROR') return PROGRAM_TYPE_ERROR_ADVICE;

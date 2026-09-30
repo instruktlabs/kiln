@@ -778,6 +778,39 @@ define(
   },
 );
 define(
+  'defineLod',
+  {
+    ...nodeFacts,
+    units: 'screenCoverage values are fractions of the screen area, 0..1; no lengths.',
+    origin: 'Each lower level keeps its own transform and replaces LOD0 under the same parent.',
+    ownership:
+      'Records the thresholds on the LOD0 node; creates no nodes and moves nothing until export.',
+    coordinates: 'Not a placement operation.',
+    parameters: [
+      'levels: two or more sibling tier nodes named with one stem and tokens LOD0, LOD1, ... in order.',
+      'screenCoverage: one value per level, each from 0 to 1, strictly decreasing, LOD0 first; the last may be 0, which never culls.',
+    ],
+    semantics: [
+      'Level i draws while the asset covers at least screenCoverage[i] of the screen; below the last value it is culled.',
+      'A set of two or more tiers without this declaration, with a gap, or without LOD0 is an LOD_SET build error.',
+    ],
+    cost: 'Metadata on one node; lower levels still cost file size.',
+  },
+  {
+    references: ['src/lod.ts'],
+    tags: ['hierarchy', 'lod', 'export'],
+    aliases: ['level of detail', 'LOD tiers', 'MSFT_lod', 'screen coverage'],
+    intents: ['export level-of-detail tiers as one chain'],
+    summary:
+      'Declares LOD tiers (sibling nodes named Body_LOD0, Body_LOD1, ...) and their screen-coverage thresholds. Use only when the brief asks for LOD tiers.',
+    limitations: [
+      'Tiers are authored, not generated: Kiln simplifies no geometry.',
+      'Sets cannot nest inside another tier; material LOD chains are not created.',
+    ],
+    related: [{ name: 'createPart', relation: 'companion' }],
+  },
+);
+define(
   'beamBetween',
   {
     ...nodeFacts,

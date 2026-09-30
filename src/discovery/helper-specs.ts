@@ -148,6 +148,18 @@ const PRIMITIVES: HelperSpec[] = [
       'AUTO-ADDS to opts.parent. NEVER call parent.add(createPart(...)) — pass { parent } instead. rotation is DEGREES — writing radians (e.g. 0.785 or Math.PI/4) silently produces ~zero rotation.',
   },
   {
+    name: 'defineLod',
+    signature: 'defineLod(levels: Object3D[], opts: { screenCoverage: number[] })',
+    returns: 'Object3D[] (levels, unchanged)',
+    category: 'structure',
+    description:
+      'Declares one set of level-of-detail tiers, LOD0 (full detail) first, and the minimum screen coverage (0..1) at which each level draws.',
+    example:
+      "const tiers = ['Body_LOD0', 'Body_LOD1', 'Body_LOD2'].map((name) => { const g = new THREE.Group(); g.name = name; root.add(g); return g; });\ndefineLod(tiers, { screenCoverage: [0.25, 0.06, 0.01] });",
+    promptNotes:
+      'Only when the brief asks for LOD tiers; otherwise build one tier. Tiers are sibling nodes named with one stem and consecutive LOD<n> tokens. screenCoverage has one value per level, strictly decreasing; below the last the asset is culled, and a last value of 0 never culls.',
+  },
+  {
     name: 'beamBetween',
     signature:
       'beamBetween(name, start: [x,y,z], end: [x,y,z], radius, material, opts?: { segments, parent })',
