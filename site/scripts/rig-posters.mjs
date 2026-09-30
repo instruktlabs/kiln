@@ -8,6 +8,7 @@ import { pinMirrorFile, readJson, upsertBy, writeJson } from './media-pins.mjs';
 import { verifyArchive, verifyBytes } from './mirror-core.mjs';
 import { RIG_ID, connectRig, fitCamera, orbitDirection, sha256Of } from './rig-render.mjs';
 import { applyRigPosters, rigPosterImage, rigPosterKey, rigPosterPath } from './rig-posters-core.mjs';
+import { FOUNDRY_FLOOR_ID, FOUNDRY_FLOOR_POSTER, FOUNDRY_FLOOR_SCENE_POSTER } from './foundry-floor-spec.mjs';
 
 /**
  * Re-render the poster of every asset of a pack under the review rig and record the result:
@@ -15,10 +16,12 @@ import { applyRigPosters, rigPosterImage, rigPosterKey, rigPosterPath } from './
  *   bun scripts/rig-posters.mjs farm   --service http://127.0.0.1:8123 --mirror C:/.../mirror [--only barn,cow] [--out DIR]
  *   bun scripts/rig-posters.mjs bridge --service ... --mirror ... --outputs DIR --cameras DIR [--out DIR]
  *   bun scripts/rig-posters.mjs vehicles --service ... --mirror C:/.../mirror [--only sedan,suv] [--out DIR]
+ *   bun scripts/rig-posters.mjs foundry-floor --service ... --mirror C:/.../mirror [--only foup,scene-poster] [--out DIR]
  *
  * Each GLB is read from its sealed source (a delivery archive in the mirror, or the bridge author's export) and
  * verified against the catalog's SHA-256 before it is sent to the renderer. An image is the engine's own view of
- * that exact GLB, nothing composited or retouched. Farm posters are pinned in the mirror and planned here; the
+ * that exact GLB, nothing composited or retouched. Farm, vehicle and Foundry Floor posters are pinned in the mirror and
+ * planned here (the Foundry Floor scene page's poster is one pack model in a wide frame, recorded in scene-media.json); the
  * bridge views are written into the revision's mirror directory and pinned by the bridge update
  * (`generate-commons.mjs --only-bridge`), which also picks up the record. Nothing is uploaded.
  */
@@ -68,6 +71,42 @@ export async function vehicleTargets({ mirror, data = DATA }) {
     targets.push({ pack: 'vehicles', release: vehicles.release, slug: asset.slug, name: asset.name, revisionId: asset.revisionId, assetId: asset.assetId, alt: asset.description, glb, glbPath: download.path, view: VEHICLE_POSTER });
   }
   return targets;
+}
+
+/**
+ * The Foundry Floor models' delivered GLBs from the mirror, each verified against the catalog record, and the scene
+ * page's poster: one of those GLBs in a wide frame (FOUNDRY_FLOOR_SCENE_POSTER).
+ */
+export async function foundryFloorTargets({ mirror, data = DATA }) {
+  const pack = await readJson(join(data, 'packs/foundry-floor.json'));
+  const targets = [];
+  for (const asset of pack.assets) {
+    const download = asset.runtimeDownload;
+    const glb = await readFile(join(mirror, download.path));
+    verifyBytes(glb, download, asset.slug);
+    targets.push({ pack: FOUNDRY_FLOOR_ID, release: pack.release, slug: asset.slug, name: asset.name, revisionId: asset.revisionId, alt: asset.description, glb, glbPath: download.path, view: FOUNDRY_FLOOR_POSTER });
+  }
+  const subject = targets.find((target) => target.slug === FOUNDRY_FLOOR_SCENE_POSTER.slug);
+  if (!subject) throw new Error(`The scene poster's model ${FOUNDRY_FLOOR_SCENE_POSTER.slug} is not in the pack`);
+  targets.push({ ...subject, slug: FOUNDRY_FLOOR_SCENE_POSTER.key, subject: subject.slug, alt: FOUNDRY_FLOOR_SCENE_POSTER.alt, view: FOUNDRY_FLOOR_SCENE_POSTER.view });
+  return targets;
+}
+
+/**
+ * Record the Foundry Floor scene page's poster in scene-media.json: the rig image of one pack model, with what it
+ * was rendered from, so the page can say exactly what it shows.
+ */
+export async function recordFoundryFloorScenePoster({ posters, data = DATA }) {
+  const record = posters[rigPosterKey(FOUNDRY_FLOOR_ID, FOUNDRY_FLOOR_SCENE_POSTER.key)];
+  if (!record) return null;
+  const file = join(data, 'scene-media.json');
+  const media = await readJson(file);
+  media[FOUNDRY_FLOOR_ID] = {
+    poster: rigPosterImage(record, FOUNDRY_FLOOR_SCENE_POSTER.alt),
+    rig: { subject: FOUNDRY_FLOOR_SCENE_POSTER.slug, revisionId: record.revisionId, glb: record.glb, view: record.view, rendererId: record.rendererId, pngBytes: record.bytes, pngSha256: record.sha256 },
+  };
+  await writeJson(file, media);
+  return media[FOUNDRY_FLOOR_ID];
 }
 
 /**
@@ -201,7 +240,7 @@ async function main(argv = process.argv.slice(2), env = process.env) {
   const option = (flag, fallback) => (argv.includes(flag) ? argv[argv.indexOf(flag) + 1] : fallback);
   const pack = argv[0];
   const mirror = option('--mirror', env.KILN_ASSET_MIRROR);
-  if (!['farm', 'bridge', 'vehicles'].includes(pack) || !mirror) throw new Error('Usage: bun scripts/rig-posters.mjs farm|bridge|vehicles --mirror DIR [--service URL] [--engine DIR] [--only a,b] [--out DIR] [--dry]  (bridge also needs --outputs DIR --cameras DIR)');
+  if (!['farm', 'bridge', 'vehicles', FOUNDRY_FLOOR_ID].includes(pack) || !mirror) throw new Error('Usage: bun scripts/rig-posters.mjs farm|bridge|vehicles|foundry-floor --mirror DIR [--service URL] [--engine DIR] [--only a,b] [--out DIR] [--dry]  (bridge also needs --outputs DIR --cameras DIR)');
   const only = option('--only')?.split(',');
   const rig = await connectRig({ url: option('--service', env.KILN_RENDER_SERVICE_URL), engineDir: option('--engine') });
   console.log(`Rig ${RIG_ID} on ${rig.service.rendererId}; engine ${rig.engine.provenance.commit.slice(0, 7)} (${rig.engine.provenance.subject})${rig.engine.provenance.dirty ? ' with local changes' : ''}`);
@@ -213,6 +252,8 @@ async function main(argv = process.argv.slice(2), env = process.env) {
     targets = (await bridgeTargets({ outputs: resolve(outputs), cameras: resolve(cameras), tiers: await readJson(join(DATA, 'standalone/golden-gate-tiers.json')) })).filter((target) => !only || only.includes(target.capture));
   } else if (pack === 'vehicles') {
     targets = (await vehicleTargets({ mirror })).filter((target) => !only || only.includes(target.slug));
+  } else if (pack === FOUNDRY_FLOOR_ID) {
+    targets = (await foundryFloorTargets({ mirror })).filter((target) => !only || only.includes(target.slug));
   } else {
     targets = (await farmTargets({ mirror })).filter((target) => !only || only.includes(target.slug));
   }
@@ -229,9 +270,10 @@ async function main(argv = process.argv.slice(2), env = process.env) {
     for (const { png, target } of rendered) await writeFile(join(resolve(out), `${target.capture ?? target.slug}.png`), png);
   }
   if (argv.includes('--dry')) return console.log(`Dry run: ${rendered.length} images rendered; nothing recorded.`);
-  await recordPosters({ rig, rendered, mirror, pin: pack !== 'bridge' });
+  const posters = await recordPosters({ rig, rendered, mirror, pin: pack !== 'bridge' });
   if (pack !== 'bridge') {
     await refreshCatalog({ file: join(DATA, `packs/${pack}.json`), pack });
+    if (pack === FOUNDRY_FLOOR_ID && (await recordFoundryFloorScenePoster({ posters }))) console.log('Recorded the scene page poster in scene-media.json.');
     const dropped = await pruneImagePlan();
     if (dropped.length) console.log(`Dropped ${dropped.length} replaced images from the build plan (their mirror pins stay).`);
   } else {

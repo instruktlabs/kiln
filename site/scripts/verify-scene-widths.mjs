@@ -17,8 +17,9 @@ import { chromeExecutable } from './build-site-media.mjs';
  * - unavailable: a build with no runtime for the scene (the shell's `data-kind` is "none", which is what such a build emits, set
  *   before Explore so the component's own code shows its own copy); the fallback the overlay shows is readable and its link reachable.
  * - open: the overlay's Exit and Fullscreen controls are inside the window at every width.
- * - a note page (Foundry Floor, which has no scene, poster or Explore control): its copy and its way back are readable and
- *   reachable at every width, with and without JavaScript, and it carries no picture.
+ * - a note page (a scene page with no scene, poster or Explore control; none at present, since Foundry Floor's in-production
+ *   preview has its shell): its copy and its way back are readable and reachable at every width, with and without
+ *   JavaScript, and it carries no picture.
  *
  * "Readable": at least 14 px, not clipped, inside the window, and axe's colour-contrast rule passing on the copy. Screenshots go to
  * the screenshot directory, one per scene, state and width.
@@ -30,7 +31,7 @@ const widths = [390, 768, 1280, 1440];
 const scenes = [
   { slug: 'farm', route: '/scenes/farm/', kind: 'shell' },
   { slug: 'golden-gate', route: '/scenes/golden-gate/', kind: 'shell' },
-  { slug: 'foundry-floor', route: '/scenes/foundry-floor/', kind: 'note' },
+  { slug: 'foundry-floor', route: '/scenes/foundry-floor/', kind: 'shell' },
 ];
 const MIN_TEXT_PX = 14;
 const MIN_TARGET_PX = 44;

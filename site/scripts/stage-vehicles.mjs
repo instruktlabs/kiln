@@ -45,6 +45,17 @@ const OWNER_APPROVAL = {
   statement: 'All six vehicles approved at every tier; one GLB per vehicle with the tiers inside stays.',
   source: 'Coordinator overnight log, 12:46 entry (owner answer through the question tool)',
 };
+/**
+ * Owner approvals of a corrected revision, given after OWNER_APPROVAL, keyed by the exact revision approved: a later
+ * correction of the same vehicle is not covered by them.
+ */
+export const CORRECTED_REVISION_APPROVALS = {
+  r_6ab2ee53817449c59972502fcf008f1a: {
+    recordedAt: '2026-09-30',
+    statement: 'The owner approved the corrected revision on 30 September 2026.',
+    source: 'Coordinator message to the site round 3 builder, 30 September 2026 (owner decision confirmed that morning)',
+  },
+};
 const round = (value, places = 3) => Number(value.toFixed(places));
 export const reviewAlt = (vehicle) => `Six saved review views of ${vehicle.name}: front, right, back, left, top and three-quarter.`;
 
@@ -301,8 +312,11 @@ function revisionRecord(revision) {
   };
 }
 
-/** What the owner has and has not approved, per vehicle. The bus was corrected after the approval was recorded. */
-export function vehicleReview(vehicle, { geometryUnchanged = null } = {}) {
+/**
+ * What the owner has and has not approved, per vehicle. The bus was corrected after the first approval was recorded;
+ * a corrected revision counts as approved only when CORRECTED_REVISION_APPROVALS names that exact revision.
+ */
+export function vehicleReview(vehicle, { geometryUnchanged = null, approvals = CORRECTED_REVISION_APPROVALS } = {}) {
   const corrected = vehicle.revisions.length > 1;
   if (!corrected) {
     return {
@@ -313,14 +327,15 @@ export function vehicleReview(vehicle, { geometryUnchanged = null } = {}) {
       source: OWNER_APPROVAL.source,
     };
   }
-  const correction = `${vehicle.correction}${geometryUnchanged ? ' Its triangle counts, body bounds and wheels equal the first revision’s at every tier.' : ''} Approval of the corrected revision is not recorded.`;
+  const approval = approvals[vehicle.revisions.at(-1).revisionId] ?? null;
+  const correction = `${vehicle.correction}${geometryUnchanged ? ' Its triangle counts, body bounds and wheels equal the first revision’s at every tier.' : ''} ${approval ? approval.statement : 'Approval of the corrected revision is not recorded.'}`;
   return {
-    status: 'awaiting-owner-review',
-    ownerAccepted: false,
+    status: approval ? 'accepted' : 'awaiting-owner-review',
+    ownerAccepted: Boolean(approval),
     scope: `The owner approved all six vehicles at every tier on 29 September 2026. ${correction}`,
     correction,
-    recordedAt: OWNER_APPROVAL.recordedAt,
-    source: OWNER_APPROVAL.source,
+    recordedAt: approval?.recordedAt ?? OWNER_APPROVAL.recordedAt,
+    source: approval?.source ?? OWNER_APPROVAL.source,
   };
 }
 
@@ -457,7 +472,9 @@ async function main(argv = process.argv.slice(2)) {
   const option = (flag, fallback) => (argv.includes(flag) ? argv[argv.indexOf(flag) + 1] : fallback);
   const commons = option('--commons', process.env.KILN_COMMONS_DIR);
   const mirror = option('--mirror', process.env.KILN_ASSET_MIRROR);
-  const scenePack = option('--scene-pack', join(SITE, 'public/scene-packs/golden-gate/g3'));
+  // By default, the Golden Gate pack the site records and stages (scripts/scene-pack.mjs), whatever its release.
+  const recorded = (await readJson(join(DATA, 'scene-packs.json')))['golden-gate'];
+  const scenePack = option('--scene-pack', join(SITE, 'public', String(recorded?.base ?? '').replace(/^\/+/, '')));
   if (!commons || !mirror) throw new Error('Usage: node scripts/stage-vehicles.mjs --commons DIR --mirror DIR [--scene-pack DIR]  (run scripts/vehicle-runs.mjs and scripts/scene-pack.mjs first)');
   await mkdir(resolve(mirror), { recursive: true });
   await stageVehicles({ commons: resolve(commons), scenePack: resolve(scenePack), mirror: resolve(mirror) });

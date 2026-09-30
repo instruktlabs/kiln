@@ -78,15 +78,13 @@
     }
   ],
   "ownerReview": {
-    "acceptedAssets": 5,
+    "acceptedAssets": 6,
     "total": 6,
-    "status": "awaiting-review-of-corrected-revision",
+    "status": "all-current-revisions-accepted",
     "date": "2026-09-29",
     "statement": "All six vehicles approved at every tier; one GLB per vehicle with the tiers inside stays.",
     "source": "Coordinator overnight log, 12:46 entry (owner answer through the question tool)",
-    "awaiting": [
-      "Generic transit bus"
-    ]
+    "awaiting": []
   },
   "scene": {
     "id": "golden-gate",
@@ -1920,12 +1918,12 @@
         }
       ],
       "review": {
-        "status": "awaiting-owner-review",
-        "ownerAccepted": false,
-        "scope": "The owner approved all six vehicles at every tier on 29 September 2026. The transit bus was then found to be see-through from behind, and this revision (review 2) corrects that. Its triangle counts, body bounds and wheels equal the first revision’s at every tier. Approval of the corrected revision is not recorded.",
-        "correction": "The transit bus was then found to be see-through from behind, and this revision (review 2) corrects that. Its triangle counts, body bounds and wheels equal the first revision’s at every tier. Approval of the corrected revision is not recorded.",
-        "recordedAt": "2026-09-29",
-        "source": "Coordinator overnight log, 12:46 entry (owner answer through the question tool)"
+        "status": "accepted",
+        "ownerAccepted": true,
+        "scope": "The owner approved all six vehicles at every tier on 29 September 2026. The transit bus was then found to be see-through from behind, and this revision (review 2) corrects that. Its triangle counts, body bounds and wheels equal the first revision’s at every tier. The owner approved the corrected revision on 30 September 2026.",
+        "correction": "The transit bus was then found to be see-through from behind, and this revision (review 2) corrects that. Its triangle counts, body bounds and wheels equal the first revision’s at every tier. The owner approved the corrected revision on 30 September 2026.",
+        "recordedAt": "2026-09-30",
+        "source": "Coordinator message to the site round 3 builder, 30 September 2026 (owner decision confirmed that morning)"
       },
       "license": "CC0-1.0",
       "sceneDeepLink": null

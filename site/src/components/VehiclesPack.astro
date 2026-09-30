@@ -4,7 +4,8 @@ import { vehicles, bytes, bounds, number, type VehicleAsset } from "../lib/catal
 import { wheelSummary } from "../lib/vehicles";
 
 const download = vehicles.downloads[0]!;
-const awaiting = vehicles.assets.filter((asset) => !asset.review.ownerAccepted);
+// A corrected revision says what it corrects and whether the owner has approved it (vehicleReview in stage-vehicles.mjs).
+const corrected = vehicles.assets.filter((asset) => "correction" in asset.review && asset.review.correction);
 type Revision = VehicleAsset["revisions"][number];
 const revisions: Revision[] = vehicles.assets.flatMap((asset) => [...asset.revisions]);
 // One line per distinct authoring setup, taken from the saved revisions themselves.
@@ -46,7 +47,7 @@ const conventions = [
       </strong>{" "}
       The owner approved all six vehicles at every tier on 29 September 2026.
     </p>
-    {awaiting.map((asset) => (
+    {corrected.map((asset) => (
       <p class="mt-3 max-w-reading text-dim">{asset.review.correction}</p>
     ))}
   </div>

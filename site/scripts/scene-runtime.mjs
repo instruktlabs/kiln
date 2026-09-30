@@ -19,6 +19,9 @@ export const RUNTIME_MANIFEST = 'runtime.json';
 export const CEILINGS = {
   farm: { bytes: 1_732_040, gzipBytes: 506_143 },
   'golden-gate': { bytes: 1_796_415, gzipBytes: 530_691 },
+  // Frozen by the coordinator from FF1's first passing public build (1,591,477 B / 446,118 B gzip) plus 10 percent
+  // (packages/foundry-floor/tests/tools/build.ts, CEILING).
+  'foundry-floor': { bytes: 1_750_625, gzipBytes: 490_730 },
 };
 
 /** Scene runtimes the site builds itself from scene source. Others are staged from a standalone build. */
@@ -191,7 +194,7 @@ export async function stageRuntime({ id = 'farm', scenesDir, site = SITE, alias 
 }
 
 export const FRAME_FILE = 'frame.html';
-const FRAME_TITLES = { 'golden-gate': 'Golden Gate Bridge scene' };
+const FRAME_TITLES = { 'golden-gate': 'Golden Gate Bridge scene', 'foundry-floor': 'Foundry Floor scene, in production' };
 
 /**
  * The page a frame-kind scene runs in: the elements the scene's standalone entry looks up (its

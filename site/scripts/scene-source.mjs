@@ -94,17 +94,34 @@ export function scenePackRecord(id, site = SITE) {
 }
 
 /**
+ * What a page may state about a staged pack, read from the served (verified) pack.json rather than typed: its
+ * release, each model's path, size and SHA-256, and the pack's own `source` block (for Golden Gate, the bridge
+ * revisions the scene loads).
+ */
+function servedPack(packFile) {
+  const manifest = JSON.parse(readFileSync(packFile, 'utf8'));
+  const files = new Map((manifest.files ?? []).map((file) => [file.path, file]));
+  const models = {};
+  for (const model of manifest.models ?? []) {
+    const file = files.get(model.path);
+    if (!file) throw new Error(`pack.json model ${model.id} is not a sealed file: ${model.path}`);
+    models[model.id] = { path: model.path, bytes: file.bytes, sha256: file.sha256 };
+  }
+  return { release: manifest.release ?? null, models, source: manifest.source ?? null };
+}
+
+/**
  * A scene is included when both halves are staged: its runtime (the code) and its verified pack
  * (the data). One without the other cannot run, so the page keeps its status panel.
  */
 export function stagedScenes(site = SITE) {
   const scenes = {};
-  for (const id of ['farm', 'golden-gate']) {
+  for (const id of ['farm', 'golden-gate', 'foundry-floor']) {
     const runtime = stagedRuntime(id, site);
     const pack = scenePackRecord(id, site);
     const packFile = pack?.base ? resolve(site, 'public', pack.base.replace(/^\/+/, ''), 'pack.json') : null;
     scenes[id] = runtime && packFile && existsSync(packFile)
-      ? { kind: runtime.kind, url: runtime.url, file: runtime.file, bytes: runtime.bytes, gzipBytes: runtime.gzipBytes, sha256: runtime.sha256 }
+      ? { kind: runtime.kind, url: runtime.url, file: runtime.file, bytes: runtime.bytes, gzipBytes: runtime.gzipBytes, sha256: runtime.sha256, pack: servedPack(packFile) }
       : null;
   }
   return scenes;

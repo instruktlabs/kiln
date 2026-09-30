@@ -64,6 +64,22 @@ describe('an accepted vehicle', () => {
       expect(vehicleReview(changed.vehicle, changed).correction).toContain('Approval of the corrected revision is not recorded.');
     });
   });
+
+  test('a corrected revision counts as approved only by an approval that names that revision', async () => {
+    await withFixture({ corrected: true }, async (fixture) => {
+      const result = await verify(fixture);
+      const approval = { recordedAt: '2026-09-30', statement: 'The owner approved the corrected revision on 30 September 2026.', source: 'fixture decision' };
+      const top = result.vehicle.revisions.at(-1)!.revisionId;
+      const approved = vehicleReview(result.vehicle, { ...result, approvals: { [top]: approval } });
+      expect(approved).toMatchObject({ status: 'accepted', ownerAccepted: true, recordedAt: '2026-09-30', source: 'fixture decision' });
+      expect(approved.scope.startsWith('The owner approved all six vehicles at every tier on 29 September 2026. ')).toBe(true);
+      expect(approved.correction.endsWith('equal the first revision’s at every tier. The owner approved the corrected revision on 30 September 2026.')).toBe(true);
+      expect(approved.correction).not.toContain('not recorded');
+      // An approval of the revision it corrects does not carry over to the correction.
+      const earlier = vehicleReview(result.vehicle, { ...result, approvals: { [result.vehicle.revisions[0]!.revisionId]: approval } });
+      expect(earlier).toMatchObject({ status: 'awaiting-owner-review', ownerAccepted: false });
+    });
+  });
 });
 
 describe('a vehicle is refused when its inputs disagree', () => {

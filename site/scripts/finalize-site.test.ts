@@ -7,6 +7,9 @@ const pages = [
   { route: '/packs/farm/', title: 'Farm', description: 'Farm asset pack.', noindex: false },
   { route: '/scenes/farm/', title: 'Farm scene', description: 'In production.', noindex: true },
   { route: '/packs/foundry-floor/', title: 'Foundry Floor', description: 'In production.', noindex: true },
+  { route: '/scenes/', title: 'Scenes made with Kiln', description: 'Three scenes.', noindex: false },
+  { route: '/scenes/golden-gate/', title: 'Golden Gate Bridge scene', description: 'A preview.', noindex: true },
+  { route: '/scenes/foundry-floor/', title: 'Foundry Floor scene — in production', description: 'In production.', noindex: true },
   { route: '/404.html', title: 'Not found', description: 'Missing page.', noindex: false },
 ];
 test('generated sitemap contains only published, indexable routes', () => {
@@ -15,6 +18,8 @@ test('generated sitemap contains only published, indexable routes', () => {
   expect(sitemap).toContain('<loc>https://kilnstudio.tools/packs/farm/</loc>');
   expect(sitemap).not.toContain('foundry-floor');
   expect(sitemap).not.toContain('/scenes/farm/');
+  expect(sitemap).not.toContain('/scenes/golden-gate/');
+  expect(sitemap).toContain('<loc>https://kilnstudio.tools/scenes/</loc>');
   expect(sitemap).not.toContain('404');
 });
 test('agent guide points to built site docs and omits absent or noindex pages', () => {
@@ -23,6 +28,8 @@ test('agent guide points to built site docs and omits absent or noindex pages', 
   expect(llms).not.toContain('github.com/matthew-kissinger/kiln/blob/main/docs/');
   expect(llms).not.toContain('/docs/material-library/');
   expect(llms).not.toContain('foundry-floor');
+  expect(llms).not.toContain('/scenes/golden-gate/');
+  expect(llms).not.toContain('/scenes/farm/');
   expect(robots).toContain('Sitemap: https://kilnstudio.tools/sitemap.xml');
 });
 test('index generation is deterministic across filesystem traversal order', () => {

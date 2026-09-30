@@ -40,12 +40,44 @@ export function retiredNameErrors({ pages, files = [], texts = {} }) {
   return errors;
 }
 
+/** What a visitor reads on a page: the text of `<main>` (or of `<body>` without one), leaving out scripts and styles. */
+export function visibleText(html) {
+  const document = parse(html);
+  const find = (node, tag) => {
+    if (node.tagName === tag) return node;
+    for (const child of node.childNodes ?? []) {
+      const found = find(child, tag);
+      if (found) return found;
+    }
+    return null;
+  };
+  const text = (node) => {
+    if (node.nodeName === '#text') return node.value;
+    if (['script', 'style', 'noscript', 'template'].includes(node.tagName)) return ' ';
+    return (node.childNodes ?? []).map(text).join(' ');
+  };
+  const root = find(document, 'main') ?? find(document, 'body') ?? document;
+  return text(root).replace(/\s+/g, ' ').trim();
+}
+
+/** The makers the no-affiliation line names: on a Foundry Floor page they appear in that line and nowhere else. */
+const NOTICE_MAKERS = /\b(Tesla|SpaceX|xAI|Intel|ASML)\b/;
+/** The scene page makes no device claims at all: its device test was not run (D-36). */
+const DEVICE_CLAIM = /\b(phones?|tablets?|mobile|touch(?:screen)?|desktops?|laptops?|galaxy|iphone|ipad|android)\b/i;
+/** Foundry Floor is an interior: nothing on its pages may imply an exterior, a campus or a landscape. */
+const EXTERIOR = /\b(campus|landscape|exterior|outdoors?|roads?|parking)\b/i;
+/** How many of the pack's models a Foundry Floor page says the scene places: "places 29 of the 31", "arranged from 29 of the pack’s 31". */
+const PLACEMENT = /\b(?:places|arranged from) (\d+) of the (?:pack’s )?(\d+)\b/g;
+
 /**
- * Foundry Floor is in production and has no content to review: its pack and scene pages are notes, both unindexed
- * (the scene page also unfollowed), out of the sitemap, saying so, and carrying the owner's no-affiliation line
- * word for word.
+ * Foundry Floor is in production (D-33): its pack and scene pages are unindexed (the scene page also unfollowed),
+ * out of the sitemap and say so, and carry the owner's no-affiliation line word for word. The makers that line names
+ * appear nowhere else on them; the scene page makes no device claims; neither implies an exterior. Given the pack
+ * record's `placement` ({ assetCount, placedInScene, packPage }), each page states how many models the scene places,
+ * with the record's numbers, and the scene page says how many of the rest are in the pack but not placed. `packPage:
+ * false` (a build without Commons packs, whose pack page carries no models) leaves the pack page out of that check.
  */
-export function foundryFloorErrors({ pages, sitemapUrls }) {
+export function foundryFloorErrors({ pages, sitemapUrls, placement = null }) {
   const errors = [];
   const inSitemap = new Set(sitemapUrls);
   for (const [route, scene] of [[foundryFloor.packRoute, false], [foundryFloor.sceneRoute, true]]) {
@@ -58,6 +90,26 @@ export function foundryFloorErrors({ pages, sitemapUrls }) {
     if (!page.html.includes(foundryFloor.notice)) add('The Foundry Floor page must carry the no-affiliation line word for word');
     if (!/in production/i.test(page.html)) add('The Foundry Floor page must say it is in production');
     if (inSitemap.has(new URL(route, ORIGIN).href)) add('The Foundry Floor page is in the sitemap');
+    const text = visibleText(page.html).split(foundryFloor.notice).join(' ');
+    const maker = NOTICE_MAKERS.exec(text);
+    if (maker) add(`A maker named in the no-affiliation line appears outside it: ${maker[1]}`);
+    const device = scene ? DEVICE_CLAIM.exec(text) : null;
+    if (device) add(`The Foundry Floor scene page makes a device claim: ${device[1]}`);
+    const exterior = EXTERIOR.exec(text);
+    if (exterior) add(`The Foundry Floor page implies an exterior: ${exterior[1]}`);
+    if (placement && (scene || placement.packPage !== false)) {
+      const statements = [...text.matchAll(PLACEMENT)];
+      if (!statements.length) add('The Foundry Floor page must say how many of the pack’s models the scene places');
+      for (const [, placed, total] of statements) {
+        if (Number(placed) !== placement.placedInScene || Number(total) !== placement.assetCount) {
+          add(`The Foundry Floor page says the scene places ${placed} of ${total}; the pack record says ${placement.placedInScene} of ${placement.assetCount}`);
+        }
+      }
+      const others = placement.assetCount - placement.placedInScene;
+      if (scene && others > 0 && !text.includes(`the other ${others} are in the pack but not placed`)) {
+        add(`The Foundry Floor scene page must say the other ${others} are in the pack but not placed`);
+      }
+    }
   }
   return errors;
 }

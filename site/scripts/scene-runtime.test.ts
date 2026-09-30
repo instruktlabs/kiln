@@ -39,6 +39,7 @@ describe('per-scene ceilings', () => {
   test('carry the D-15 figures the scenes froze', () => {
     expect(CEILINGS.farm).toEqual({ bytes: 1_732_040, gzipBytes: 506_143 });
     expect(CEILINGS['golden-gate']).toEqual({ bytes: 1_796_415, gzipBytes: 530_691 });
+    expect(CEILINGS['foundry-floor']).toEqual({ bytes: 1_750_625, gzipBytes: 490_730 });
   });
 
   test('a measurement is within a ceiling only when both figures are', () => {
@@ -49,9 +50,9 @@ describe('per-scene ceilings', () => {
     expect(checkCeiling('other', { bytes: 1, gzipBytes: 1 })).toEqual({ within: null, ceiling: null });
   });
 
-  test('the recorded standalone runtimes sit inside their ceilings', () => {
-    const runtime = scenePacks['golden-gate'].runtime;
-    expect(checkCeiling('golden-gate', runtime).within).toBe(true);
+  test.each(['golden-gate', 'foundry-floor'] as const)('the recorded %s standalone runtime sits inside its ceiling', (id) => {
+    const runtime = scenePacks[id].runtime;
+    expect(checkCeiling(id, runtime).within).toBe(true);
     expect(runtime.gzipMethod).toBe('bun-zlib');
     expect(runtime.file).toMatch(/^index-[A-Za-z0-9_-]+\.js$/);
   });
@@ -242,5 +243,13 @@ describe('agreement with the scene kit build', () => {
     const decisions = await readFile(join(scenes as string, 'DECISIONS.md'), 'utf8');
     expect(decisions).toContain(CEILINGS.farm.bytes.toLocaleString('en-US'));
     expect(decisions).toContain(CEILINGS.farm.gzipBytes.toLocaleString('en-US'));
+  });
+
+  // The Golden Gate and Foundry Floor ceilings are frozen in each scene's own build tool.
+  test.skipIf(!scenes).each(['golden-gate', 'foundry-floor'] as const)('the %s ceiling is the figure its build tool freezes', async (id) => {
+    const build = await readFile(join(scenes as string, 'packages', id, 'tests/tools/build.ts'), 'utf8');
+    const frozen = /bytes: (\d+), gzipBytes: (\d+),?\s*\}? as const;|bytes: (\d+), gzipBytes: (\d+),\s*\n\s*\} as const;/.exec(build);
+    const [bytes, gzipBytes] = (frozen?.slice(1).filter(Boolean) ?? []).map(Number);
+    expect({ bytes, gzipBytes }).toEqual(CEILINGS[id]);
   });
 });

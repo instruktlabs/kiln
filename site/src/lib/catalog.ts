@@ -20,6 +20,16 @@ export const bytes = (value: number) =>
   value < 10_000
     ? `${number(value)} bytes`
     : `${number(value)} bytes (${(value / 1_000_000).toFixed(2)} MB)`;
+/**
+ * Names as one sentence list: "A and B", "A, B and C". When a name has a comma in it ("OHT rail, straight") the list
+ * uses semicolons, "A; B, c; and D", so every name stays one item.
+ */
+export const listOf = (names: readonly string[]) => {
+  if (names.length < 3) return names.join(' and ');
+  return names.some((name) => name.includes(','))
+    ? `${names.slice(0, -1).join('; ')}; and ${names.at(-1)}`
+    : `${names.slice(0, -1).join(', ')} and ${names.at(-1)}`;
+};
 
 export const imageQualification = (image: object): string | undefined =>
   'revisionQualification' in image && typeof image.revisionQualification === 'string'

@@ -117,17 +117,31 @@ describe('staged scenes', () => {
   test('a scene is included only when both its runtime and its pack are staged', async () => {
     const root = await temp();
     const both = stagedScenes(await site(join(root, 'both'), { farmRuntime: true, farmPack: true }));
-    expect(both.farm).toEqual({ kind: 'module', url: runtime.url, file: runtime.file, bytes: 10, gzipBytes: 5, sha256: runtime.sha256 });
+    expect(both.farm).toEqual({ kind: 'module', url: runtime.url, file: runtime.file, bytes: 10, gzipBytes: 5, sha256: runtime.sha256, pack: { release: null, models: {}, source: null } });
     expect(both['golden-gate']).toBeNull();
     expect(stagedScenes(await site(join(root, 'runtime-only'), { farmRuntime: true, farmPack: false })).farm).toBeNull();
     expect(stagedScenes(await site(join(root, 'pack-only'), { farmRuntime: false, farmPack: true })).farm).toBeNull();
-    expect(stagedScenes(join(root, 'empty'))).toEqual({ farm: null, 'golden-gate': null });
+    expect(stagedScenes(join(root, 'empty'))).toEqual({ farm: null, 'golden-gate': null, 'foundry-floor': null });
   });
 
   test('a frame-kind scene is served through its frame page', async () => {
     const root = await temp();
     const scenes = stagedScenes(await site(root, { farmRuntime: true, farmPack: true, goldenGate: true }));
     expect(scenes['golden-gate']).toMatchObject({ kind: 'frame', url: '/scene-runtime/golden-gate/frame.html' });
+  });
+
+  test('a staged scene carries the release, model pins and source of its served pack.json', async () => {
+    const root = await temp();
+    const directory = await site(root, { farmRuntime: true, farmPack: true, goldenGate: true });
+    await json(join(directory, 'public/scene-packs/golden-gate/g3/pack.json'), {
+      release: 'g5',
+      models: [{ id: 'bridge-web', path: 'bridge/web.glb' }],
+      files: [{ path: 'bridge/web.glb', bytes: 3, sha256: 'b'.repeat(64) }, { path: 'data/scene.json', bytes: 2, sha256: 'c'.repeat(64) }],
+      source: { bridge: { web: 'r_1' } },
+    });
+    expect(stagedScenes(directory)['golden-gate']?.pack).toEqual({ release: 'g5', models: { 'bridge-web': { path: 'bridge/web.glb', bytes: 3, sha256: 'b'.repeat(64) } }, source: { bridge: { web: 'r_1' } } });
+    await json(join(directory, 'public/scene-packs/golden-gate/g3/pack.json'), { models: [{ id: 'bridge-web', path: 'bridge/web.glb' }], files: [] });
+    expect(() => stagedScenes(directory)).toThrow('not a sealed file');
   });
 
   test('the pages read what is staged through one virtual module', async () => {
@@ -140,7 +154,7 @@ describe('staged scenes', () => {
     expect(id).toBe(`\0${SCENE_FLAG_MODULE}`);
     expect(flag.resolveId('other')).toBeUndefined();
     const source = flag.load(id) as string;
-    expect(JSON.parse(source.replace('export const sceneRuntimes = ', '').replace(/;$/, ''))).toEqual({ farm: config.scenes.farm, 'golden-gate': null });
+    expect(JSON.parse(source.replace('export const sceneRuntimes = ', '').replace(/;$/, ''))).toEqual({ farm: config.scenes.farm, 'golden-gate': null, 'foundry-floor': null });
     expect(flag.load('other')).toBeUndefined();
   });
 

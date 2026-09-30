@@ -307,11 +307,6 @@
       "sha256": "574cb8b30c8f12209c7a2cec212d1511757ab7b4417d073bdb13b2255bf19f38"
     },
     {
-      "path": "media/scenes/golden-gate/g3/golden-gate-scene-drive.png",
-      "bytes": 740592,
-      "sha256": "3857c191600273a505ab82dae23d45043a312485f49e2e89381b061a5b5f1e7e"
-    },
-    {
       "path": "media/rig/review-neutral-v1/farm/r34/farmhouse.png",
       "bytes": 1855207,
       "sha256": "217a1bd9b87a3a3889c072fe841e83bb81c9e6ef901ed0408cad1b2b759c5bd4"
@@ -660,6 +655,336 @@
       "path": "packs/vehicles/r1/generic-road-vehicles-runtime.zip",
       "bytes": 1335772,
       "sha256": "62dff817ce3182d94d96a686a330a44006dfbcde92eb7fc5a48b9556bd009ae6"
+    },
+    {
+      "path": "packs/foundry-floor/ff2/models/foup.glb",
+      "bytes": 101204,
+      "sha256": "785434b2df7fadde0687710dbfd5957e61ea0e0fc47c44142446e709647f6554"
+    },
+    {
+      "path": "packs/foundry-floor/ff2/models/oht-vehicle.glb",
+      "bytes": 164764,
+      "sha256": "5baefd88c8b439871db1f0f49351e458cf8a9f78a76e11b19c3ec93dd63a3aec"
+    },
+    {
+      "path": "packs/foundry-floor/ff2/models/load-port.glb",
+      "bytes": 51776,
+      "sha256": "bb7b217fb12e15f6c92e9f2aaf48f0eb3f7e96615e60034bf9880aad7d616190"
+    },
+    {
+      "path": "packs/foundry-floor/ff2/models/stocker.glb",
+      "bytes": 299416,
+      "sha256": "4a3faff6f0ba4d9a2bd174aa005b5b8140420f47145eb62fea1219f44dbd7df7"
+    },
+    {
+      "path": "packs/foundry-floor/ff2/models/signal-tower.glb",
+      "bytes": 13844,
+      "sha256": "82f69eb2a5471bc0ea242ef79aa3686a7e8025d8172437813484c5f58fe881b9"
+    },
+    {
+      "path": "packs/foundry-floor/ff2/models/under-track-storage.glb",
+      "bytes": 32016,
+      "sha256": "eb4331792b0f7b9be56f9928f40834be309db7748b332c3e50bfbc5a5a8d5e57"
+    },
+    {
+      "path": "packs/foundry-floor/ff2/models/oht-rail-straight.glb",
+      "bytes": 15780,
+      "sha256": "2f22541674d9a6a1e9d6a5785d8c583d0e937598ee42a3564f3b990e0d6817d1"
+    },
+    {
+      "path": "packs/foundry-floor/ff2/models/oht-rail-curve.glb",
+      "bytes": 32888,
+      "sha256": "d861dfac2b94ac6c2242e48018ac975d8aea7b2daa3289887fcf86e6734e64e9"
+    },
+    {
+      "path": "packs/foundry-floor/ff2/models/oht-rail-switch.glb",
+      "bytes": 62032,
+      "sha256": "2e133a3571ac2eba66c526f5047d0e08a947e93e38c505e4dec5fe81f01e9749"
+    },
+    {
+      "path": "packs/foundry-floor/ff2/models/raised-floor-module.glb",
+      "bytes": 26152,
+      "sha256": "9fd7eae4e2ebdd3fdec6d38add569fb443ff835d4d37c0f8b0755f74a1829bd6"
+    },
+    {
+      "path": "packs/foundry-floor/ff2/models/ffu-ceiling-module.glb",
+      "bytes": 36928,
+      "sha256": "c015231559753309c1448223f4f34a84cc3aa2a638e069a8221c65d5cf41eab0"
+    },
+    {
+      "path": "packs/foundry-floor/ff2/models/cleanroom-wall-kit.glb",
+      "bytes": 31156,
+      "sha256": "d4d24890f74cffa60d6cf57b656b4ef6206cb829026aedf2ed34f7fbbd0cffde"
+    },
+    {
+      "path": "packs/foundry-floor/ff2/models/etch-cluster-tool.glb",
+      "bytes": 455944,
+      "sha256": "fa75f3a4bada2652eecba79d8c5eebf900ad5651f4befbc95a19f15b0de130e4"
+    },
+    {
+      "path": "packs/foundry-floor/ff2/models/cvd-ald-cluster-tool.glb",
+      "bytes": 464272,
+      "sha256": "e94b92992943df6de1a3e111faaa884c6f62236613ed237a6cedb8cc5cd5385c"
+    },
+    {
+      "path": "packs/foundry-floor/ff2/models/pvd-cluster-tool.glb",
+      "bytes": 420220,
+      "sha256": "8c17a95496e498a08b114fd166ed6fe7e6caf97c095f1bea9be1a64d3b025849"
+    },
+    {
+      "path": "packs/foundry-floor/ff2/models/single-wafer-clean-tool.glb",
+      "bytes": 64688,
+      "sha256": "aea4603362760b1828a6241471a4c60949d3bfa11822a3ed40c6812dcb46eeca"
+    },
+    {
+      "path": "packs/foundry-floor/ff2/models/cmp-polisher.glb",
+      "bytes": 134168,
+      "sha256": "921f124b0e32ae74df59c2dfb5eb38880788ecdfe9adf1cb6d1f69a6d80c165f"
+    },
+    {
+      "path": "packs/foundry-floor/ff2/models/vertical-furnace.glb",
+      "bytes": 100476,
+      "sha256": "ebe68d3dff40dd37fb45458e756147951bd7e6b4936639c8078920a7b1d35493"
+    },
+    {
+      "path": "packs/foundry-floor/ff2/models/ion-implanter.glb",
+      "bytes": 140092,
+      "sha256": "2edaa15d5fb023ec449a4ea08c41803085f6fe333507943b55e8ad1cb0197574"
+    },
+    {
+      "path": "packs/foundry-floor/ff2/models/metrology-inspection-tool.glb",
+      "bytes": 110880,
+      "sha256": "3f9b5d4e3a40164ed211bad741bf2f3aa742f4914d9a76c57fc55c5d411272c8"
+    },
+    {
+      "path": "packs/foundry-floor/ff2/models/wafer-prober-tester.glb",
+      "bytes": 129744,
+      "sha256": "06585aa565430fea67a171322e6e38c39065ef6cf88f9732eb485756bc70dad0"
+    },
+    {
+      "path": "packs/foundry-floor/ff2/models/coater-developer-track.glb",
+      "bytes": 363432,
+      "sha256": "8ef1194237daf8cdc874c44b3931eaf6c0458a32b660ef3f9360806ab7d6a029"
+    },
+    {
+      "path": "packs/foundry-floor/ff2/models/euv-scanner.glb",
+      "bytes": 595100,
+      "sha256": "6d351cbdd52e5f1f632e6f63faff2b56f6bbcb1d4daae5a8fbc78ce2560d383e"
+    },
+    {
+      "path": "packs/foundry-floor/ff2/models/duv-immersion-scanner.glb",
+      "bytes": 411368,
+      "sha256": "58b7682e6bece4b039c2ffb9605386fe42801aaf11c442926dcff1d9f89b2207"
+    },
+    {
+      "path": "packs/foundry-floor/ff2/models/subfab-pump-abatement-kit.glb",
+      "bytes": 64780,
+      "sha256": "14b884d16dc0e56217ca8c07a0a1979b53b972750e8499ffb8eacf2ccd1d844d"
+    },
+    {
+      "path": "packs/foundry-floor/ff2/models/visitor-gallery-segment.glb",
+      "bytes": 32104,
+      "sha256": "0b0e16c3b0b6a71392e47b40a58fd36c64f20c594edcf69ac83f9f0a38326830"
+    },
+    {
+      "path": "packs/foundry-floor/ff2/models/cleanroom-technician.glb",
+      "bytes": 103868,
+      "sha256": "d7eb534f128a6133e0c21feb0b371e0294e1b2aca551e596cba30e73590f9fbd"
+    },
+    {
+      "path": "packs/foundry-floor/ff2/models/humanoid-work-robot.glb",
+      "bytes": 200656,
+      "sha256": "cd118485e113219ce8de9bb6d3b873634fb7dadebf81028142d0f6a644f88aa2"
+    },
+    {
+      "path": "packs/foundry-floor/ff2/models/amr-floor-robot.glb",
+      "bytes": 143956,
+      "sha256": "b173b7d81d6ba1d924e37283bfe05a2774db83421790ad3551fa3916d22c2c78"
+    },
+    {
+      "path": "packs/foundry-floor/ff2/models/tool-front-robot-arm.glb",
+      "bytes": 311948,
+      "sha256": "c499bba543726ced9758f1d219882be10c6655616f84c769c2ca1a7c23917c86"
+    },
+    {
+      "path": "packs/foundry-floor/ff2/models/level-section-module.glb",
+      "bytes": 322096,
+      "sha256": "20d5f55ea0f97f29d5adccc45e090bcb605fad99e05733163a89c15a29d4cd2c"
+    },
+    {
+      "path": "packs/foundry-floor/ff2/licenses/ASSET-LICENSE.txt",
+      "bytes": 7105,
+      "sha256": "f9f095f8694b564de951e9977848b1e81e3599c083b14e9193021938add81992"
+    },
+    {
+      "path": "packs/foundry-floor/ff2/foundry-floor-ff2-models.zip",
+      "bytes": 5464111,
+      "sha256": "18d2fc67224f545e80ee4f5446c678a6079fb72c679c6f9fbe386388c9eb0c28"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/foundry-floor/ff2/foup.png",
+      "bytes": 1613987,
+      "sha256": "96eb51211ffd13a21b3ab98c345a3189a88346bcfc014c3bb7af44bcc2df67ab"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/foundry-floor/ff2/oht-vehicle.png",
+      "bytes": 1628181,
+      "sha256": "ec626c6cfe4cfffc26fc1a827e40d365d503044861bdf5b7e53e6ba6f1c23803"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/foundry-floor/ff2/load-port.png",
+      "bytes": 1532140,
+      "sha256": "d58a3fc930c0f68d9f7caf9c26141480ed9d9f1f063de1f44fb47ab809f985c6"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/foundry-floor/ff2/stocker.png",
+      "bytes": 1818683,
+      "sha256": "7d12f060a6d60868d0f09f0ac6cc5996a4d772f232673c607125e3eea57fc735"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/foundry-floor/ff2/signal-tower.png",
+      "bytes": 1371117,
+      "sha256": "0349ab4c26d94307591846d70220a147ab63884c07dc6b7c54c5d0176827d243"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/foundry-floor/ff2/under-track-storage.png",
+      "bytes": 1312945,
+      "sha256": "04bb05fa1ac4e76e21414d9ac3c079e68d39f176eeee73d548141f2def5494f2"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/foundry-floor/ff2/oht-rail-straight.png",
+      "bytes": 1362432,
+      "sha256": "ed2aa9233d2899fdd978cfa55bb46d7dad21d2721f6c82612a6d0a61f663a630"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/foundry-floor/ff2/oht-rail-curve.png",
+      "bytes": 1293453,
+      "sha256": "fb6b17ae7c1ddc25286469007b82107c734726b6511f005ed8b716c874b76f74"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/foundry-floor/ff2/oht-rail-switch.png",
+      "bytes": 1385916,
+      "sha256": "8a9d21c82c368619f59319a0cd3f378a79b6c0f68310c2456e5eaf75c0b3786f"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/foundry-floor/ff2/raised-floor-module.png",
+      "bytes": 1372771,
+      "sha256": "3a93e1407e9f570b5181f777d094d45d0e66a510ea3ee22f591ec145ec30501f"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/foundry-floor/ff2/ffu-ceiling-module.png",
+      "bytes": 1433113,
+      "sha256": "2269dce9617bf00a8e0cd9a1c681e5edc3cc710f751fc7b55226a61339490e94"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/foundry-floor/ff2/cleanroom-wall-kit.png",
+      "bytes": 1501159,
+      "sha256": "46a7f76348542221600350319adc2b9ab9424d92ee63e65f96cd24b8e4627fb3"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/foundry-floor/ff2/etch-cluster-tool.png",
+      "bytes": 1707828,
+      "sha256": "92803b1f8ced8c1867b001b41b8ccc2a0792fcd20910fecf01bd54f8ef215836"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/foundry-floor/ff2/cvd-ald-cluster-tool.png",
+      "bytes": 1744015,
+      "sha256": "23750b0ddbebceeeab4fe40be7f13298fba469ccb27b3801b2bd78c8ad6079d9"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/foundry-floor/ff2/pvd-cluster-tool.png",
+      "bytes": 1620164,
+      "sha256": "0731d6a80ea24d11ba7ecb9cb9fbf68dbd29ee7bd7fc7a2609386f93c2bbe0bb"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/foundry-floor/ff2/single-wafer-clean-tool.png",
+      "bytes": 1735119,
+      "sha256": "a423767220b72ea672416afbef874a7369be2137b90f64ebf627a51e984dc443"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/foundry-floor/ff2/cmp-polisher.png",
+      "bytes": 1608262,
+      "sha256": "11e77844882738e8a9e2cf02e8ee8eaab25236b683b3f13574aba95e240376c5"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/foundry-floor/ff2/vertical-furnace.png",
+      "bytes": 1659141,
+      "sha256": "247d7d2b633deb0a9298a84e582c0af4d39d4772cd8679007396453474219e87"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/foundry-floor/ff2/ion-implanter.png",
+      "bytes": 1589060,
+      "sha256": "729d6aafe1c4bab93f33dfd58a5ddea0e7e82094d5fc84abc10b067eb28bf8a3"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/foundry-floor/ff2/metrology-inspection-tool.png",
+      "bytes": 1842964,
+      "sha256": "59f3753710dab8210351a75cdae6ded75072643ba0f05a598a1f4635e91afa3d"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/foundry-floor/ff2/wafer-prober-tester.png",
+      "bytes": 1761560,
+      "sha256": "7e7f1143c4ef445add9d840dd0f4268ae17076bd03f9eb98954a5c36a95e4522"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/foundry-floor/ff2/coater-developer-track.png",
+      "bytes": 1580723,
+      "sha256": "6d545ae5396ca64616fe870670c9506a1817cbe4b4bac35a3c1e7ab107e22b6a"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/foundry-floor/ff2/euv-scanner.png",
+      "bytes": 1575664,
+      "sha256": "8b73333712d26e778859996040431a78fff414181cc556ebb251ccf026796ef4"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/foundry-floor/ff2/duv-immersion-scanner.png",
+      "bytes": 1686915,
+      "sha256": "0f491cda0bfc6b7cecc724eb1358ba3411928545b01149a6a80219d9de982938"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/foundry-floor/ff2/subfab-pump-abatement-kit.png",
+      "bytes": 1519951,
+      "sha256": "b815eca9512a6b0994a0e482b4857fcfb54ea6da3fe002a9b3e388d8d60dcae8"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/foundry-floor/ff2/visitor-gallery-segment.png",
+      "bytes": 1599462,
+      "sha256": "80bfb44719d5fa238359acc4f7a5c47a5b95eb4483976662361ec5f3a4b6a326"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/foundry-floor/ff2/cleanroom-technician.png",
+      "bytes": 1473745,
+      "sha256": "e49a7907949b2e83d6dd8299d3a4e0e7011e60cd7ea80b5439a3554574b08ca6"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/foundry-floor/ff2/humanoid-work-robot.png",
+      "bytes": 1479172,
+      "sha256": "121f6f5be03aa1f0ce3ed64b6c8f63f4fb3e49499767895130392b3f42421db9"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/foundry-floor/ff2/amr-floor-robot.png",
+      "bytes": 1655485,
+      "sha256": "825c942e07824cbe815c07a19914c76b7f5c0647e57626d3904866d5817216e4"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/foundry-floor/ff2/tool-front-robot-arm.png",
+      "bytes": 1445864,
+      "sha256": "1d8f02cf144e2d4f7bc44409aeb7ae5e241b68680937504379a7010c40f9b360"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/foundry-floor/ff2/level-section-module.png",
+      "bytes": 1517071,
+      "sha256": "251846dd0a0acd89f91e5e7e5dd6e2ac99704f4c5ac7ad8054a3b545d5233dcf"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/foundry-floor/ff2/scene-poster.png",
+      "bytes": 2060561,
+      "sha256": "9d8f8a48331b249af2b998acb3fccba913922cffde0ba74c09206372efc10a6c"
+    },
+    {
+      "path": "media/scenes/golden-gate/g5/golden-gate-scene-drive.png",
+      "bytes": 740271,
+      "sha256": "871dc9f068e8509ee477c9873b62978b90e2960f3ae358ce01f7b6b2d41c095b"
     }
   ]
 }

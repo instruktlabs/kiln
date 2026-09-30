@@ -18,5 +18,8 @@ export default defineConfig({
   vite: {
     plugins: [tailwindcss(), ...scene.plugins],
     build: { assetsInlineLimit: 0 },
+    // `astro preview --port N` serves on N or stops; it never moves to the next free port
+    // (site-build/ops/preview.ps1 prints its URLs before the server starts).
+    preview: { strictPort: true },
   },
 });

@@ -37,7 +37,7 @@ const VIEWS = {
 /** What each captured view shows, for the image's alternative text. */
 const POSTER_ALT = {
   'golden-gate': {
-    drive: 'A blue sedan driving across the deck of the Golden Gate Bridge scene, with traffic ahead and a tower in the distance.',
+    drive: 'A blue sedan driving across the deck of the Golden Gate Bridge scene, with traffic around it and both towers ahead.',
   },
 };
 

@@ -1,0 +1,2377 @@
+{
+  "schemaVersion": 1,
+  "id": "foundry-floor",
+  "name": "Foundry Floor",
+  "release": "ff2",
+  "status": "in-production",
+  "assetCount": 31,
+  "placedInScene": 29,
+  "acceptance": {
+    "statement": "The pack’s asset map marks all 31 models accepted: each was accepted by the scene coordinator’s review of its author’s delivery, and the scene’s intake checked its bytes and SHA-256. The owner has not reviewed this pack; it stays in production until then.",
+    "source": "data/assets.json (status accepted for every entity) and the Foundry Floor FF2 report, intake section"
+  },
+  "license": "CC0-1.0",
+  "licenseScope": "CC0-1.0 covers authored asset content only, to the extent of the owner’s rights. Kiln and any software that opens these files retain their own licenses.",
+  "licenceNote": "The licence text was written by the Foundry Floor scene’s staging, because the author folders ship none. It names every model, its saved revision, its author folder and the SHA-256 of its GLB, and is published here unchanged.",
+  "licence": {
+    "path": "packs/foundry-floor/ff2/licenses/ASSET-LICENSE.txt",
+    "bytes": 7105,
+    "sha256": "f9f095f8694b564de951e9977848b1e81e3599c083b14e9193021938add81992",
+    "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff2/licenses/ASSET-LICENSE.txt",
+    "spdx": "CC0-1.0",
+    "models": 31
+  },
+  "scenePack": {
+    "release": "ff2",
+    "base": "/scene-packs/foundry-floor/ff2/",
+    "packJsonSha256": "2a6840fbe3e541090753b5fdca23934442a4be2788b74765c16afcc4a63ff8fc",
+    "sha256sumsSha256": "dd53e8b9e531aeed521901f243727417175c70943ab8998e75911cd6c86a9c88",
+    "assetMapSha256": "fccfbd5b8475e55811f039a5f7e99cfc237dc3b4259d6a6a3f9059ad2cb8aba2"
+  },
+  "conventions": {
+    "frame": "Metres. +X is forward, +Y up and +Z right.",
+    "lod": "24 of the 31 models keep a simpler far form in the same file, as a node named lod1. The file has no visibility flags, so a plain glTF viewer draws the detailed parts and lod1 together; lod1 lies inside the detailed parts’ bounding box. The Foundry Floor scene shows the detailed parts near and lod1 far.",
+    "hidden": "Two models carry parts the scene hides when it loads them: the FOUP (waferStack) and the level section module (raisedFloor, ffuPlenum, cutFaceCaps_raisedFloor, cutFaceCaps_ffuWhite, cutFaceCaps_ffuHousing). They are part of the file, and a plain viewer draws them.",
+    "materials": "No model uses a texture; colours are material factors. The pack’s accent colours are invented for readability and are not any maker’s livery.",
+    "clips": "Animation clips carry no loop flags; the scene decides what loops.",
+    "source": "The conventions are the pack’s own (data/assets.json); every figure on this page was read from the GLBs."
+  },
+  "groups": [
+    {
+      "id": "tools",
+      "title": "Process tools"
+    },
+    {
+      "id": "transport",
+      "title": "Wafer transport and storage"
+    },
+    {
+      "id": "building",
+      "title": "Building"
+    },
+    {
+      "id": "people",
+      "title": "People and robots"
+    }
+  ],
+  "downloads": [
+    {
+      "profile": "models",
+      "archive": "foundry-floor-ff2-models.zip",
+      "bytes": 5464111,
+      "sha256": "18d2fc67224f545e80ee4f5446c678a6079fb72c679c6f9fbe386388c9eb0c28",
+      "files": 33,
+      "assets": 31,
+      "path": "packs/foundry-floor/ff2/foundry-floor-ff2-models.zip",
+      "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff2/foundry-floor-ff2-models.zip",
+      "contents": [
+        "The 31 model GLBs",
+        "The pack’s licence text, naming every model, its revision and its SHA-256",
+        "A delivery.json inventory with member hashes"
+      ],
+      "compatibility": "Standard glTF 2.0 with no extensions. A file with a far form keeps it beside its detailed parts as a node named lod1, and every part is visible, so a plain viewer draws both; the far form lies inside the detailed parts’ bounding box. Other engines are not qualified by this download."
+    }
+  ],
+  "scene": {
+    "id": "foundry-floor",
+    "name": "Foundry Floor scene",
+    "href": "/scenes/foundry-floor/"
+  },
+  "assets": [
+    {
+      "id": "foup",
+      "slug": "foup",
+      "name": "FOUP",
+      "pack": "foundry-floor",
+      "group": "transport",
+      "class": "mover",
+      "description": "The FOUP model from the Foundry Floor pack, seen from the front right.",
+      "revisionId": "r_2bab2591207a4eeb922f05cc2d52eaa7",
+      "author": "sonnet-ff-movers",
+      "placedInScene": true,
+      "metrics": {
+        "triangles": 1300,
+        "trianglesDetailed": 462,
+        "trianglesLod1": 38,
+        "trianglesHidden": 800,
+        "bounds": [
+          0.333,
+          0.335,
+          0.416
+        ],
+        "boundsMin": [
+          -0.1665,
+          0,
+          -0.208
+        ],
+        "boundsMax": [
+          0.1665,
+          0.335,
+          0.208
+        ],
+        "materials": 3,
+        "clips": [
+          "DoorRemove",
+          "DoorReplace"
+        ],
+        "nodes": 13,
+        "meshes": 10
+      },
+      "lod": {
+        "class": "mover",
+        "nearMetres": 22,
+        "farMetres": 25
+      },
+      "hideByDefault": [
+        "waferStack"
+      ],
+      "runtimeDownload": {
+        "path": "packs/foundry-floor/ff2/models/foup.glb",
+        "bytes": 101204,
+        "sha256": "785434b2df7fadde0687710dbfd5957e61ea0e0fc47c44142446e709647f6554",
+        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff2/models/foup.glb",
+        "archive": "packs/foundry-floor/ff2/foundry-floor-ff2-models.zip",
+        "member": "models/foup.glb"
+      },
+      "licence": {
+        "path": "packs/foundry-floor/ff2/licenses/ASSET-LICENSE.txt",
+        "bytes": 7105,
+        "sha256": "f9f095f8694b564de951e9977848b1e81e3599c083b14e9193021938add81992",
+        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff2/licenses/ASSET-LICENSE.txt",
+        "spdx": "CC0-1.0",
+        "statesGlbSha256": "785434b2df7fadde0687710dbfd5957e61ea0e0fc47c44142446e709647f6554"
+      },
+      "license": "CC0-1.0",
+      "poster": {
+        "src": "/media/rig/review-neutral-v1/foundry-floor/ff2/foup.webp",
+        "width": 1024,
+        "height": 1024,
+        "alt": "The FOUP model from the Foundry Floor pack, seen from the front right.",
+        "srcsetWebp": "/media/rig/review-neutral-v1/foundry-floor/ff2/foup-320.webp 320w, /media/rig/review-neutral-v1/foundry-floor/ff2/foup-480.webp 480w, /media/rig/review-neutral-v1/foundry-floor/ff2/foup-672.webp 672w, /media/rig/review-neutral-v1/foundry-floor/ff2/foup-768.webp 768w, /media/rig/review-neutral-v1/foundry-floor/ff2/foup-1024.webp 1024w",
+        "srcsetAvif": "/media/rig/review-neutral-v1/foundry-floor/ff2/foup-320.avif 320w, /media/rig/review-neutral-v1/foundry-floor/ff2/foup-480.avif 480w, /media/rig/review-neutral-v1/foundry-floor/ff2/foup-672.avif 672w, /media/rig/review-neutral-v1/foundry-floor/ff2/foup-768.avif 768w, /media/rig/review-neutral-v1/foundry-floor/ff2/foup-1024.avif 1024w",
+        "inputPath": "media/rig/review-neutral-v1/foundry-floor/ff2/foup.png",
+        "sourceRevisionId": "r_2bab2591207a4eeb922f05cc2d52eaa7",
+        "exactRevision": true,
+        "rig": "review-neutral-v1"
+      }
+    },
+    {
+      "id": "vehicle",
+      "slug": "oht-vehicle",
+      "name": "OHT vehicle",
+      "pack": "foundry-floor",
+      "group": "transport",
+      "class": "mover",
+      "description": "The OHT vehicle model from the Foundry Floor pack, seen from the front right.",
+      "revisionId": "r_bbf8c93343da4b7b96762d731872f67f",
+      "author": "sonnet-ff-movers",
+      "placedInScene": true,
+      "metrics": {
+        "triangles": 2076,
+        "trianglesDetailed": 1950,
+        "trianglesLod1": 126,
+        "trianglesHidden": 0,
+        "bounds": [
+          0.95,
+          1.18,
+          0.6
+        ],
+        "boundsMin": [
+          -0.475,
+          -1,
+          -0.3
+        ],
+        "boundsMax": [
+          0.475,
+          0.18,
+          0.3
+        ],
+        "materials": 6,
+        "clips": [
+          "HoistDown",
+          "HoistUp",
+          "GripClose",
+          "GripOpen"
+        ],
+        "nodes": 31,
+        "meshes": 23
+      },
+      "lod": {
+        "class": "mover",
+        "nearMetres": 22,
+        "farMetres": 25
+      },
+      "hideByDefault": [],
+      "runtimeDownload": {
+        "path": "packs/foundry-floor/ff2/models/oht-vehicle.glb",
+        "bytes": 164764,
+        "sha256": "5baefd88c8b439871db1f0f49351e458cf8a9f78a76e11b19c3ec93dd63a3aec",
+        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff2/models/oht-vehicle.glb",
+        "archive": "packs/foundry-floor/ff2/foundry-floor-ff2-models.zip",
+        "member": "models/oht-vehicle.glb"
+      },
+      "licence": {
+        "path": "packs/foundry-floor/ff2/licenses/ASSET-LICENSE.txt",
+        "bytes": 7105,
+        "sha256": "f9f095f8694b564de951e9977848b1e81e3599c083b14e9193021938add81992",
+        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff2/licenses/ASSET-LICENSE.txt",
+        "spdx": "CC0-1.0",
+        "statesGlbSha256": "5baefd88c8b439871db1f0f49351e458cf8a9f78a76e11b19c3ec93dd63a3aec"
+      },
+      "license": "CC0-1.0",
+      "poster": {
+        "src": "/media/rig/review-neutral-v1/foundry-floor/ff2/oht-vehicle.webp",
+        "width": 1024,
+        "height": 1024,
+        "alt": "The OHT vehicle model from the Foundry Floor pack, seen from the front right.",
+        "srcsetWebp": "/media/rig/review-neutral-v1/foundry-floor/ff2/oht-vehicle-320.webp 320w, /media/rig/review-neutral-v1/foundry-floor/ff2/oht-vehicle-480.webp 480w, /media/rig/review-neutral-v1/foundry-floor/ff2/oht-vehicle-672.webp 672w, /media/rig/review-neutral-v1/foundry-floor/ff2/oht-vehicle-768.webp 768w, /media/rig/review-neutral-v1/foundry-floor/ff2/oht-vehicle-1024.webp 1024w",
+        "srcsetAvif": "/media/rig/review-neutral-v1/foundry-floor/ff2/oht-vehicle-320.avif 320w, /media/rig/review-neutral-v1/foundry-floor/ff2/oht-vehicle-480.avif 480w, /media/rig/review-neutral-v1/foundry-floor/ff2/oht-vehicle-672.avif 672w, /media/rig/review-neutral-v1/foundry-floor/ff2/oht-vehicle-768.avif 768w, /media/rig/review-neutral-v1/foundry-floor/ff2/oht-vehicle-1024.avif 1024w",
+        "inputPath": "media/rig/review-neutral-v1/foundry-floor/ff2/oht-vehicle.png",
+        "sourceRevisionId": "r_bbf8c93343da4b7b96762d731872f67f",
+        "exactRevision": true,
+        "rig": "review-neutral-v1"
+      }
+    },
+    {
+      "id": "loadPort",
+      "slug": "load-port",
+      "name": "Load port",
+      "pack": "foundry-floor",
+      "group": "transport",
+      "class": "port",
+      "description": "The load port model from the Foundry Floor pack, seen from the front right.",
+      "revisionId": "r_ad0d81fde77d4fe08fbdcdd9911c4160",
+      "author": "sonnet-ff-movers",
+      "placedInScene": true,
+      "metrics": {
+        "triangles": 746,
+        "trianglesDetailed": 708,
+        "trianglesLod1": 38,
+        "trianglesHidden": 0,
+        "bounds": [
+          0.55,
+          1.4,
+          0.5
+        ],
+        "boundsMin": [
+          0,
+          0,
+          -0.25
+        ],
+        "boundsMax": [
+          0.55,
+          1.4,
+          0.25
+        ],
+        "materials": 5,
+        "clips": [
+          "Dock",
+          "Undock",
+          "DoorOpen",
+          "DoorClose"
+        ],
+        "nodes": 22,
+        "meshes": 14
+      },
+      "lod": {
+        "class": "port",
+        "nearMetres": 20,
+        "farMetres": 23
+      },
+      "hideByDefault": [],
+      "runtimeDownload": {
+        "path": "packs/foundry-floor/ff2/models/load-port.glb",
+        "bytes": 51776,
+        "sha256": "bb7b217fb12e15f6c92e9f2aaf48f0eb3f7e96615e60034bf9880aad7d616190",
+        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff2/models/load-port.glb",
+        "archive": "packs/foundry-floor/ff2/foundry-floor-ff2-models.zip",
+        "member": "models/load-port.glb"
+      },
+      "licence": {
+        "path": "packs/foundry-floor/ff2/licenses/ASSET-LICENSE.txt",
+        "bytes": 7105,
+        "sha256": "f9f095f8694b564de951e9977848b1e81e3599c083b14e9193021938add81992",
+        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff2/licenses/ASSET-LICENSE.txt",
+        "spdx": "CC0-1.0",
+        "statesGlbSha256": "bb7b217fb12e15f6c92e9f2aaf48f0eb3f7e96615e60034bf9880aad7d616190"
+      },
+      "license": "CC0-1.0",
+      "poster": {
+        "src": "/media/rig/review-neutral-v1/foundry-floor/ff2/load-port.webp",
+        "width": 1024,
+        "height": 1024,
+        "alt": "The load port model from the Foundry Floor pack, seen from the front right.",
+        "srcsetWebp": "/media/rig/review-neutral-v1/foundry-floor/ff2/load-port-320.webp 320w, /media/rig/review-neutral-v1/foundry-floor/ff2/load-port-480.webp 480w, /media/rig/review-neutral-v1/foundry-floor/ff2/load-port-672.webp 672w, /media/rig/review-neutral-v1/foundry-floor/ff2/load-port-768.webp 768w, /media/rig/review-neutral-v1/foundry-floor/ff2/load-port-1024.webp 1024w",
+        "srcsetAvif": "/media/rig/review-neutral-v1/foundry-floor/ff2/load-port-320.avif 320w, /media/rig/review-neutral-v1/foundry-floor/ff2/load-port-480.avif 480w, /media/rig/review-neutral-v1/foundry-floor/ff2/load-port-672.avif 672w, /media/rig/review-neutral-v1/foundry-floor/ff2/load-port-768.avif 768w, /media/rig/review-neutral-v1/foundry-floor/ff2/load-port-1024.avif 1024w",
+        "inputPath": "media/rig/review-neutral-v1/foundry-floor/ff2/load-port.png",
+        "sourceRevisionId": "r_ad0d81fde77d4fe08fbdcdd9911c4160",
+        "exactRevision": true,
+        "rig": "review-neutral-v1"
+      }
+    },
+    {
+      "id": "stocker",
+      "slug": "stocker",
+      "name": "Stocker",
+      "pack": "foundry-floor",
+      "group": "transport",
+      "class": "stocker",
+      "description": "The stocker model from the Foundry Floor pack, seen from the front right.",
+      "revisionId": "r_5098431bec1849eda5e160b664ab76f8",
+      "author": "sonnet-ff-stocker",
+      "placedInScene": true,
+      "metrics": {
+        "triangles": 5594,
+        "trianglesDetailed": 5354,
+        "trianglesLod1": 240,
+        "trianglesHidden": 0,
+        "bounds": [
+          3.75,
+          5.4,
+          12
+        ],
+        "boundsMin": [
+          -1.5,
+          0,
+          -6
+        ],
+        "boundsMax": [
+          2.25,
+          5.4,
+          6
+        ],
+        "materials": 7,
+        "clips": [
+          "CraneCycle"
+        ],
+        "nodes": 40,
+        "meshes": 22
+      },
+      "lod": {
+        "class": "stocker",
+        "nearMetres": 40,
+        "farMetres": 44
+      },
+      "hideByDefault": [],
+      "runtimeDownload": {
+        "path": "packs/foundry-floor/ff2/models/stocker.glb",
+        "bytes": 299416,
+        "sha256": "4a3faff6f0ba4d9a2bd174aa005b5b8140420f47145eb62fea1219f44dbd7df7",
+        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff2/models/stocker.glb",
+        "archive": "packs/foundry-floor/ff2/foundry-floor-ff2-models.zip",
+        "member": "models/stocker.glb"
+      },
+      "licence": {
+        "path": "packs/foundry-floor/ff2/licenses/ASSET-LICENSE.txt",
+        "bytes": 7105,
+        "sha256": "f9f095f8694b564de951e9977848b1e81e3599c083b14e9193021938add81992",
+        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff2/licenses/ASSET-LICENSE.txt",
+        "spdx": "CC0-1.0",
+        "statesGlbSha256": "4a3faff6f0ba4d9a2bd174aa005b5b8140420f47145eb62fea1219f44dbd7df7"
+      },
+      "license": "CC0-1.0",
+      "poster": {
+        "src": "/media/rig/review-neutral-v1/foundry-floor/ff2/stocker.webp",
+        "width": 1024,
+        "height": 1024,
+        "alt": "The stocker model from the Foundry Floor pack, seen from the front right.",
+        "srcsetWebp": "/media/rig/review-neutral-v1/foundry-floor/ff2/stocker-320.webp 320w, /media/rig/review-neutral-v1/foundry-floor/ff2/stocker-480.webp 480w, /media/rig/review-neutral-v1/foundry-floor/ff2/stocker-672.webp 672w, /media/rig/review-neutral-v1/foundry-floor/ff2/stocker-768.webp 768w, /media/rig/review-neutral-v1/foundry-floor/ff2/stocker-1024.webp 1024w",
+        "srcsetAvif": "/media/rig/review-neutral-v1/foundry-floor/ff2/stocker-320.avif 320w, /media/rig/review-neutral-v1/foundry-floor/ff2/stocker-480.avif 480w, /media/rig/review-neutral-v1/foundry-floor/ff2/stocker-672.avif 672w, /media/rig/review-neutral-v1/foundry-floor/ff2/stocker-768.avif 768w, /media/rig/review-neutral-v1/foundry-floor/ff2/stocker-1024.avif 1024w",
+        "inputPath": "media/rig/review-neutral-v1/foundry-floor/ff2/stocker.png",
+        "sourceRevisionId": "r_5098431bec1849eda5e160b664ab76f8",
+        "exactRevision": true,
+        "rig": "review-neutral-v1"
+      }
+    },
+    {
+      "id": "signalTower",
+      "slug": "signal-tower",
+      "name": "Signal tower",
+      "pack": "foundry-floor",
+      "group": "transport",
+      "class": "tower",
+      "description": "The signal tower model from the Foundry Floor pack, seen from the front right.",
+      "revisionId": "r_0af702f0a7364dffbac3255c04a909ff",
+      "author": "sonnet-ff-stocker",
+      "placedInScene": true,
+      "metrics": {
+        "triangles": 328,
+        "trianglesDetailed": 328,
+        "trianglesLod1": 0,
+        "trianglesHidden": 0,
+        "bounds": [
+          0.07,
+          0.45,
+          0.07
+        ],
+        "boundsMin": [
+          -0.035,
+          0,
+          -0.035
+        ],
+        "boundsMax": [
+          0.035,
+          0.45,
+          0.035
+        ],
+        "materials": 6,
+        "clips": [],
+        "nodes": 12,
+        "meshes": 11
+      },
+      "lod": null,
+      "hideByDefault": [],
+      "runtimeDownload": {
+        "path": "packs/foundry-floor/ff2/models/signal-tower.glb",
+        "bytes": 13844,
+        "sha256": "82f69eb2a5471bc0ea242ef79aa3686a7e8025d8172437813484c5f58fe881b9",
+        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff2/models/signal-tower.glb",
+        "archive": "packs/foundry-floor/ff2/foundry-floor-ff2-models.zip",
+        "member": "models/signal-tower.glb"
+      },
+      "licence": {
+        "path": "packs/foundry-floor/ff2/licenses/ASSET-LICENSE.txt",
+        "bytes": 7105,
+        "sha256": "f9f095f8694b564de951e9977848b1e81e3599c083b14e9193021938add81992",
+        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff2/licenses/ASSET-LICENSE.txt",
+        "spdx": "CC0-1.0",
+        "statesGlbSha256": "82f69eb2a5471bc0ea242ef79aa3686a7e8025d8172437813484c5f58fe881b9"
+      },
+      "license": "CC0-1.0",
+      "poster": {
+        "src": "/media/rig/review-neutral-v1/foundry-floor/ff2/signal-tower.webp",
+        "width": 1024,
+        "height": 1024,
+        "alt": "The signal tower model from the Foundry Floor pack, seen from the front right.",
+        "srcsetWebp": "/media/rig/review-neutral-v1/foundry-floor/ff2/signal-tower-320.webp 320w, /media/rig/review-neutral-v1/foundry-floor/ff2/signal-tower-480.webp 480w, /media/rig/review-neutral-v1/foundry-floor/ff2/signal-tower-672.webp 672w, /media/rig/review-neutral-v1/foundry-floor/ff2/signal-tower-768.webp 768w, /media/rig/review-neutral-v1/foundry-floor/ff2/signal-tower-1024.webp 1024w",
+        "srcsetAvif": "/media/rig/review-neutral-v1/foundry-floor/ff2/signal-tower-320.avif 320w, /media/rig/review-neutral-v1/foundry-floor/ff2/signal-tower-480.avif 480w, /media/rig/review-neutral-v1/foundry-floor/ff2/signal-tower-672.avif 672w, /media/rig/review-neutral-v1/foundry-floor/ff2/signal-tower-768.avif 768w, /media/rig/review-neutral-v1/foundry-floor/ff2/signal-tower-1024.avif 1024w",
+        "inputPath": "media/rig/review-neutral-v1/foundry-floor/ff2/signal-tower.png",
+        "sourceRevisionId": "r_0af702f0a7364dffbac3255c04a909ff",
+        "exactRevision": true,
+        "rig": "review-neutral-v1"
+      }
+    },
+    {
+      "id": "uts",
+      "slug": "under-track-storage",
+      "name": "Under-track storage",
+      "pack": "foundry-floor",
+      "group": "transport",
+      "class": "storage",
+      "description": "The under-track storage model from the Foundry Floor pack, seen from the front right.",
+      "revisionId": "r_7dabe4c644824eb4bdb014a45c276a56",
+      "author": "sonnet-ff-rail",
+      "placedInScene": true,
+      "metrics": {
+        "triangles": 476,
+        "trianglesDetailed": 400,
+        "trianglesLod1": 76,
+        "trianglesHidden": 0,
+        "bounds": [
+          1.2,
+          2.88,
+          0.95
+        ],
+        "boundsMin": [
+          -0.6,
+          -0.08,
+          -0.475
+        ],
+        "boundsMax": [
+          0.6,
+          2.8,
+          0.475
+        ],
+        "materials": 4,
+        "clips": [],
+        "nodes": 9,
+        "meshes": 6
+      },
+      "lod": {
+        "class": "storage",
+        "nearMetres": 22,
+        "farMetres": 25
+      },
+      "hideByDefault": [],
+      "runtimeDownload": {
+        "path": "packs/foundry-floor/ff2/models/under-track-storage.glb",
+        "bytes": 32016,
+        "sha256": "eb4331792b0f7b9be56f9928f40834be309db7748b332c3e50bfbc5a5a8d5e57",
+        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff2/models/under-track-storage.glb",
+        "archive": "packs/foundry-floor/ff2/foundry-floor-ff2-models.zip",
+        "member": "models/under-track-storage.glb"
+      },
+      "licence": {
+        "path": "packs/foundry-floor/ff2/licenses/ASSET-LICENSE.txt",
+        "bytes": 7105,
+        "sha256": "f9f095f8694b564de951e9977848b1e81e3599c083b14e9193021938add81992",
+        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff2/licenses/ASSET-LICENSE.txt",
+        "spdx": "CC0-1.0",
+        "statesGlbSha256": "eb4331792b0f7b9be56f9928f40834be309db7748b332c3e50bfbc5a5a8d5e57"
+      },
+      "license": "CC0-1.0",
+      "poster": {
+        "src": "/media/rig/review-neutral-v1/foundry-floor/ff2/under-track-storage.webp",
+        "width": 1024,
+        "height": 1024,
+        "alt": "The under-track storage model from the Foundry Floor pack, seen from the front right.",
+        "srcsetWebp": "/media/rig/review-neutral-v1/foundry-floor/ff2/under-track-storage-320.webp 320w, /media/rig/review-neutral-v1/foundry-floor/ff2/under-track-storage-480.webp 480w, /media/rig/review-neutral-v1/foundry-floor/ff2/under-track-storage-672.webp 672w, /media/rig/review-neutral-v1/foundry-floor/ff2/under-track-storage-768.webp 768w, /media/rig/review-neutral-v1/foundry-floor/ff2/under-track-storage-1024.webp 1024w",
+        "srcsetAvif": "/media/rig/review-neutral-v1/foundry-floor/ff2/under-track-storage-320.avif 320w, /media/rig/review-neutral-v1/foundry-floor/ff2/under-track-storage-480.avif 480w, /media/rig/review-neutral-v1/foundry-floor/ff2/under-track-storage-672.avif 672w, /media/rig/review-neutral-v1/foundry-floor/ff2/under-track-storage-768.avif 768w, /media/rig/review-neutral-v1/foundry-floor/ff2/under-track-storage-1024.avif 1024w",
+        "inputPath": "media/rig/review-neutral-v1/foundry-floor/ff2/under-track-storage.png",
+        "sourceRevisionId": "r_7dabe4c644824eb4bdb014a45c276a56",
+        "exactRevision": true,
+        "rig": "review-neutral-v1"
+      }
+    },
+    {
+      "id": "railStraight",
+      "slug": "oht-rail-straight",
+      "name": "OHT rail, straight",
+      "pack": "foundry-floor",
+      "group": "transport",
+      "class": "rail",
+      "description": "The OHT rail, straight model from the Foundry Floor pack, seen from the front right.",
+      "revisionId": "r_3a30a0b877a345f8bd562a372302f666",
+      "author": "sonnet-ff-rail",
+      "placedInScene": true,
+      "metrics": {
+        "triangles": 240,
+        "trianglesDetailed": 228,
+        "trianglesLod1": 12,
+        "trianglesHidden": 0,
+        "bounds": [
+          3.6,
+          1.1,
+          0.306
+        ],
+        "boundsMin": [
+          -1.8,
+          0,
+          -0.152
+        ],
+        "boundsMax": [
+          1.8,
+          1.1,
+          0.154
+        ],
+        "materials": 3,
+        "clips": [],
+        "nodes": 8,
+        "meshes": 5
+      },
+      "lod": {
+        "class": "rail",
+        "nearMetres": 22,
+        "farMetres": 25
+      },
+      "hideByDefault": [],
+      "runtimeDownload": {
+        "path": "packs/foundry-floor/ff2/models/oht-rail-straight.glb",
+        "bytes": 15780,
+        "sha256": "2f22541674d9a6a1e9d6a5785d8c583d0e937598ee42a3564f3b990e0d6817d1",
+        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff2/models/oht-rail-straight.glb",
+        "archive": "packs/foundry-floor/ff2/foundry-floor-ff2-models.zip",
+        "member": "models/oht-rail-straight.glb"
+      },
+      "licence": {
+        "path": "packs/foundry-floor/ff2/licenses/ASSET-LICENSE.txt",
+        "bytes": 7105,
+        "sha256": "f9f095f8694b564de951e9977848b1e81e3599c083b14e9193021938add81992",
+        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff2/licenses/ASSET-LICENSE.txt",
+        "spdx": "CC0-1.0",
+        "statesGlbSha256": "2f22541674d9a6a1e9d6a5785d8c583d0e937598ee42a3564f3b990e0d6817d1"
+      },
+      "license": "CC0-1.0",
+      "poster": {
+        "src": "/media/rig/review-neutral-v1/foundry-floor/ff2/oht-rail-straight.webp",
+        "width": 1024,
+        "height": 1024,
+        "alt": "The OHT rail, straight model from the Foundry Floor pack, seen from the front right.",
+        "srcsetWebp": "/media/rig/review-neutral-v1/foundry-floor/ff2/oht-rail-straight-320.webp 320w, /media/rig/review-neutral-v1/foundry-floor/ff2/oht-rail-straight-480.webp 480w, /media/rig/review-neutral-v1/foundry-floor/ff2/oht-rail-straight-672.webp 672w, /media/rig/review-neutral-v1/foundry-floor/ff2/oht-rail-straight-768.webp 768w, /media/rig/review-neutral-v1/foundry-floor/ff2/oht-rail-straight-1024.webp 1024w",
+        "srcsetAvif": "/media/rig/review-neutral-v1/foundry-floor/ff2/oht-rail-straight-320.avif 320w, /media/rig/review-neutral-v1/foundry-floor/ff2/oht-rail-straight-480.avif 480w, /media/rig/review-neutral-v1/foundry-floor/ff2/oht-rail-straight-672.avif 672w, /media/rig/review-neutral-v1/foundry-floor/ff2/oht-rail-straight-768.avif 768w, /media/rig/review-neutral-v1/foundry-floor/ff2/oht-rail-straight-1024.avif 1024w",
+        "inputPath": "media/rig/review-neutral-v1/foundry-floor/ff2/oht-rail-straight.png",
+        "sourceRevisionId": "r_3a30a0b877a345f8bd562a372302f666",
+        "exactRevision": true,
+        "rig": "review-neutral-v1"
+      }
+    },
+    {
+      "id": "railCurve",
+      "slug": "oht-rail-curve",
+      "name": "OHT rail, curve",
+      "pack": "foundry-floor",
+      "group": "transport",
+      "class": "rail",
+      "description": "The OHT rail, curve model from the Foundry Floor pack, seen from the front right.",
+      "revisionId": "r_cc370801a4df4604b629c26ff1d9264a",
+      "author": "sonnet-ff-rail",
+      "placedInScene": true,
+      "metrics": {
+        "triangles": 720,
+        "trianglesDetailed": 668,
+        "trianglesLod1": 52,
+        "trianglesHidden": 0,
+        "bounds": [
+          1.954,
+          1.1,
+          1.954
+        ],
+        "boundsMin": [
+          0,
+          0,
+          -0.154
+        ],
+        "boundsMax": [
+          1.954,
+          1.1,
+          1.8
+        ],
+        "materials": 3,
+        "clips": [],
+        "nodes": 8,
+        "meshes": 5
+      },
+      "lod": {
+        "class": "rail",
+        "nearMetres": 22,
+        "farMetres": 25
+      },
+      "hideByDefault": [],
+      "runtimeDownload": {
+        "path": "packs/foundry-floor/ff2/models/oht-rail-curve.glb",
+        "bytes": 32888,
+        "sha256": "d861dfac2b94ac6c2242e48018ac975d8aea7b2daa3289887fcf86e6734e64e9",
+        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff2/models/oht-rail-curve.glb",
+        "archive": "packs/foundry-floor/ff2/foundry-floor-ff2-models.zip",
+        "member": "models/oht-rail-curve.glb"
+      },
+      "licence": {
+        "path": "packs/foundry-floor/ff2/licenses/ASSET-LICENSE.txt",
+        "bytes": 7105,
+        "sha256": "f9f095f8694b564de951e9977848b1e81e3599c083b14e9193021938add81992",
+        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff2/licenses/ASSET-LICENSE.txt",
+        "spdx": "CC0-1.0",
+        "statesGlbSha256": "d861dfac2b94ac6c2242e48018ac975d8aea7b2daa3289887fcf86e6734e64e9"
+      },
+      "license": "CC0-1.0",
+      "poster": {
+        "src": "/media/rig/review-neutral-v1/foundry-floor/ff2/oht-rail-curve.webp",
+        "width": 1024,
+        "height": 1024,
+        "alt": "The OHT rail, curve model from the Foundry Floor pack, seen from the front right.",
+        "srcsetWebp": "/media/rig/review-neutral-v1/foundry-floor/ff2/oht-rail-curve-320.webp 320w, /media/rig/review-neutral-v1/foundry-floor/ff2/oht-rail-curve-480.webp 480w, /media/rig/review-neutral-v1/foundry-floor/ff2/oht-rail-curve-672.webp 672w, /media/rig/review-neutral-v1/foundry-floor/ff2/oht-rail-curve-768.webp 768w, /media/rig/review-neutral-v1/foundry-floor/ff2/oht-rail-curve-1024.webp 1024w",
+        "srcsetAvif": "/media/rig/review-neutral-v1/foundry-floor/ff2/oht-rail-curve-320.avif 320w, /media/rig/review-neutral-v1/foundry-floor/ff2/oht-rail-curve-480.avif 480w, /media/rig/review-neutral-v1/foundry-floor/ff2/oht-rail-curve-672.avif 672w, /media/rig/review-neutral-v1/foundry-floor/ff2/oht-rail-curve-768.avif 768w, /media/rig/review-neutral-v1/foundry-floor/ff2/oht-rail-curve-1024.avif 1024w",
+        "inputPath": "media/rig/review-neutral-v1/foundry-floor/ff2/oht-rail-curve.png",
+        "sourceRevisionId": "r_cc370801a4df4604b629c26ff1d9264a",
+        "exactRevision": true,
+        "rig": "review-neutral-v1"
+      }
+    },
+    {
+      "id": "railSwitch",
+      "slug": "oht-rail-switch",
+      "name": "OHT rail, switch",
+      "pack": "foundry-floor",
+      "group": "transport",
+      "class": "rail",
+      "description": "The OHT rail, switch model from the Foundry Floor pack, seen from the front right.",
+      "revisionId": "r_678517d2e36e4879b448f85f5f175266",
+      "author": "sonnet-ff-rail",
+      "placedInScene": true,
+      "metrics": {
+        "triangles": 1252,
+        "trianglesDetailed": 1168,
+        "trianglesLod1": 84,
+        "trianglesHidden": 0,
+        "bounds": [
+          2.104,
+          1.1,
+          1.952
+        ],
+        "boundsMin": [
+          -0.152,
+          0,
+          -0.152
+        ],
+        "boundsMax": [
+          1.952,
+          1.1,
+          1.8
+        ],
+        "materials": 4,
+        "clips": [
+          "Toggle"
+        ],
+        "nodes": 21,
+        "meshes": 13
+      },
+      "lod": {
+        "class": "rail",
+        "nearMetres": 22,
+        "farMetres": 25
+      },
+      "hideByDefault": [],
+      "runtimeDownload": {
+        "path": "packs/foundry-floor/ff2/models/oht-rail-switch.glb",
+        "bytes": 62032,
+        "sha256": "2e133a3571ac2eba66c526f5047d0e08a947e93e38c505e4dec5fe81f01e9749",
+        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff2/models/oht-rail-switch.glb",
+        "archive": "packs/foundry-floor/ff2/foundry-floor-ff2-models.zip",
+        "member": "models/oht-rail-switch.glb"
+      },
+      "licence": {
+        "path": "packs/foundry-floor/ff2/licenses/ASSET-LICENSE.txt",
+        "bytes": 7105,
+        "sha256": "f9f095f8694b564de951e9977848b1e81e3599c083b14e9193021938add81992",
+        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff2/licenses/ASSET-LICENSE.txt",
+        "spdx": "CC0-1.0",
+        "statesGlbSha256": "2e133a3571ac2eba66c526f5047d0e08a947e93e38c505e4dec5fe81f01e9749"
+      },
+      "license": "CC0-1.0",
+      "poster": {
+        "src": "/media/rig/review-neutral-v1/foundry-floor/ff2/oht-rail-switch.webp",
+        "width": 1024,
+        "height": 1024,
+        "alt": "The OHT rail, switch model from the Foundry Floor pack, seen from the front right.",
+        "srcsetWebp": "/media/rig/review-neutral-v1/foundry-floor/ff2/oht-rail-switch-320.webp 320w, /media/rig/review-neutral-v1/foundry-floor/ff2/oht-rail-switch-480.webp 480w, /media/rig/review-neutral-v1/foundry-floor/ff2/oht-rail-switch-672.webp 672w, /media/rig/review-neutral-v1/foundry-floor/ff2/oht-rail-switch-768.webp 768w, /media/rig/review-neutral-v1/foundry-floor/ff2/oht-rail-switch-1024.webp 1024w",
+        "srcsetAvif": "/media/rig/review-neutral-v1/foundry-floor/ff2/oht-rail-switch-320.avif 320w, /media/rig/review-neutral-v1/foundry-floor/ff2/oht-rail-switch-480.avif 480w, /media/rig/review-neutral-v1/foundry-floor/ff2/oht-rail-switch-672.avif 672w, /media/rig/review-neutral-v1/foundry-floor/ff2/oht-rail-switch-768.avif 768w, /media/rig/review-neutral-v1/foundry-floor/ff2/oht-rail-switch-1024.avif 1024w",
+        "inputPath": "media/rig/review-neutral-v1/foundry-floor/ff2/oht-rail-switch.png",
+        "sourceRevisionId": "r_678517d2e36e4879b448f85f5f175266",
+        "exactRevision": true,
+        "rig": "review-neutral-v1"
+      }
+    },
+    {
+      "id": "floorModule",
+      "slug": "raised-floor-module",
+      "name": "Raised-floor module",
+      "pack": "foundry-floor",
+      "group": "building",
+      "class": "building",
+      "description": "The raised-floor module model from the Foundry Floor pack, seen from the front right.",
+      "revisionId": "r_ca8f4b96cad641129e0f5c078f4465e5",
+      "author": "sonnet-ff-building",
+      "placedInScene": true,
+      "metrics": {
+        "triangles": 394,
+        "trianglesDetailed": 384,
+        "trianglesLod1": 10,
+        "trianglesHidden": 0,
+        "bounds": [
+          3.6,
+          0.6,
+          3.6
+        ],
+        "boundsMin": [
+          -1.8,
+          -0.6,
+          -1.8
+        ],
+        "boundsMax": [
+          1.8,
+          0,
+          1.8
+        ],
+        "materials": 3,
+        "clips": [],
+        "nodes": 8,
+        "meshes": 6
+      },
+      "lod": {
+        "class": "building",
+        "nearMetres": 13,
+        "farMetres": 15
+      },
+      "hideByDefault": [],
+      "runtimeDownload": {
+        "path": "packs/foundry-floor/ff2/models/raised-floor-module.glb",
+        "bytes": 26152,
+        "sha256": "9fd7eae4e2ebdd3fdec6d38add569fb443ff835d4d37c0f8b0755f74a1829bd6",
+        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff2/models/raised-floor-module.glb",
+        "archive": "packs/foundry-floor/ff2/foundry-floor-ff2-models.zip",
+        "member": "models/raised-floor-module.glb"
+      },
+      "licence": {
+        "path": "packs/foundry-floor/ff2/licenses/ASSET-LICENSE.txt",
+        "bytes": 7105,
+        "sha256": "f9f095f8694b564de951e9977848b1e81e3599c083b14e9193021938add81992",
+        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff2/licenses/ASSET-LICENSE.txt",
+        "spdx": "CC0-1.0",
+        "statesGlbSha256": "9fd7eae4e2ebdd3fdec6d38add569fb443ff835d4d37c0f8b0755f74a1829bd6"
+      },
+      "license": "CC0-1.0",
+      "poster": {
+        "src": "/media/rig/review-neutral-v1/foundry-floor/ff2/raised-floor-module.webp",
+        "width": 1024,
+        "height": 1024,
+        "alt": "The raised-floor module model from the Foundry Floor pack, seen from the front right.",
+        "srcsetWebp": "/media/rig/review-neutral-v1/foundry-floor/ff2/raised-floor-module-320.webp 320w, /media/rig/review-neutral-v1/foundry-floor/ff2/raised-floor-module-480.webp 480w, /media/rig/review-neutral-v1/foundry-floor/ff2/raised-floor-module-672.webp 672w, /media/rig/review-neutral-v1/foundry-floor/ff2/raised-floor-module-768.webp 768w, /media/rig/review-neutral-v1/foundry-floor/ff2/raised-floor-module-1024.webp 1024w",
+        "srcsetAvif": "/media/rig/review-neutral-v1/foundry-floor/ff2/raised-floor-module-320.avif 320w, /media/rig/review-neutral-v1/foundry-floor/ff2/raised-floor-module-480.avif 480w, /media/rig/review-neutral-v1/foundry-floor/ff2/raised-floor-module-672.avif 672w, /media/rig/review-neutral-v1/foundry-floor/ff2/raised-floor-module-768.avif 768w, /media/rig/review-neutral-v1/foundry-floor/ff2/raised-floor-module-1024.avif 1024w",
+        "inputPath": "media/rig/review-neutral-v1/foundry-floor/ff2/raised-floor-module.png",
+        "sourceRevisionId": "r_ca8f4b96cad641129e0f5c078f4465e5",
+        "exactRevision": true,
+        "rig": "review-neutral-v1"
+      }
+    },
+    {
+      "id": "ceilingModule",
+      "slug": "ffu-ceiling-module",
+      "name": "FFU ceiling module",
+      "pack": "foundry-floor",
+      "group": "building",
+      "class": "building",
+      "description": "The FFU ceiling module model from the Foundry Floor pack, seen from the front right.",
+      "revisionId": "r_d73b60677ff2417ea9a0d1add4114f10",
+      "author": "sonnet-ff-building",
+      "placedInScene": true,
+      "metrics": {
+        "triangles": 578,
+        "trianglesDetailed": 572,
+        "trianglesLod1": 6,
+        "trianglesHidden": 0,
+        "bounds": [
+          3.6,
+          0.41,
+          3.6
+        ],
+        "boundsMin": [
+          -1.8,
+          -0.01,
+          -1.8
+        ],
+        "boundsMax": [
+          1.8,
+          0.4,
+          1.8
+        ],
+        "materials": 4,
+        "clips": [],
+        "nodes": 9,
+        "meshes": 7
+      },
+      "lod": {
+        "class": "building",
+        "nearMetres": 13,
+        "farMetres": 15
+      },
+      "hideByDefault": [],
+      "runtimeDownload": {
+        "path": "packs/foundry-floor/ff2/models/ffu-ceiling-module.glb",
+        "bytes": 36928,
+        "sha256": "c015231559753309c1448223f4f34a84cc3aa2a638e069a8221c65d5cf41eab0",
+        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff2/models/ffu-ceiling-module.glb",
+        "archive": "packs/foundry-floor/ff2/foundry-floor-ff2-models.zip",
+        "member": "models/ffu-ceiling-module.glb"
+      },
+      "licence": {
+        "path": "packs/foundry-floor/ff2/licenses/ASSET-LICENSE.txt",
+        "bytes": 7105,
+        "sha256": "f9f095f8694b564de951e9977848b1e81e3599c083b14e9193021938add81992",
+        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff2/licenses/ASSET-LICENSE.txt",
+        "spdx": "CC0-1.0",
+        "statesGlbSha256": "c015231559753309c1448223f4f34a84cc3aa2a638e069a8221c65d5cf41eab0"
+      },
+      "license": "CC0-1.0",
+      "poster": {
+        "src": "/media/rig/review-neutral-v1/foundry-floor/ff2/ffu-ceiling-module.webp",
+        "width": 1024,
+        "height": 1024,
+        "alt": "The FFU ceiling module model from the Foundry Floor pack, seen from the front right.",
+        "srcsetWebp": "/media/rig/review-neutral-v1/foundry-floor/ff2/ffu-ceiling-module-320.webp 320w, /media/rig/review-neutral-v1/foundry-floor/ff2/ffu-ceiling-module-480.webp 480w, /media/rig/review-neutral-v1/foundry-floor/ff2/ffu-ceiling-module-672.webp 672w, /media/rig/review-neutral-v1/foundry-floor/ff2/ffu-ceiling-module-768.webp 768w, /media/rig/review-neutral-v1/foundry-floor/ff2/ffu-ceiling-module-1024.webp 1024w",
+        "srcsetAvif": "/media/rig/review-neutral-v1/foundry-floor/ff2/ffu-ceiling-module-320.avif 320w, /media/rig/review-neutral-v1/foundry-floor/ff2/ffu-ceiling-module-480.avif 480w, /media/rig/review-neutral-v1/foundry-floor/ff2/ffu-ceiling-module-672.avif 672w, /media/rig/review-neutral-v1/foundry-floor/ff2/ffu-ceiling-module-768.avif 768w, /media/rig/review-neutral-v1/foundry-floor/ff2/ffu-ceiling-module-1024.avif 1024w",
+        "inputPath": "media/rig/review-neutral-v1/foundry-floor/ff2/ffu-ceiling-module.png",
+        "sourceRevisionId": "r_d73b60677ff2417ea9a0d1add4114f10",
+        "exactRevision": true,
+        "rig": "review-neutral-v1"
+      }
+    },
+    {
+      "id": "wallKit",
+      "slug": "cleanroom-wall-kit",
+      "name": "Cleanroom wall kit",
+      "pack": "foundry-floor",
+      "group": "building",
+      "class": "wall",
+      "description": "The cleanroom wall kit model from the Foundry Floor pack, seen from the front right.",
+      "revisionId": "r_4e0249fdfb804779a0adb8c6cae9d2dd",
+      "author": "sonnet-ff-building",
+      "placedInScene": true,
+      "metrics": {
+        "triangles": 352,
+        "trianglesDetailed": 352,
+        "trianglesLod1": 0,
+        "trianglesHidden": 0,
+        "bounds": [
+          13.85,
+          6,
+          0.1
+        ],
+        "boundsMin": [
+          -7.8,
+          0,
+          -0.05
+        ],
+        "boundsMax": [
+          6.05,
+          6,
+          0.05
+        ],
+        "materials": 4,
+        "clips": [
+          "DoorOpen",
+          "DoorClose"
+        ],
+        "nodes": 25,
+        "meshes": 15
+      },
+      "lod": null,
+      "hideByDefault": [],
+      "runtimeDownload": {
+        "path": "packs/foundry-floor/ff2/models/cleanroom-wall-kit.glb",
+        "bytes": 31156,
+        "sha256": "d4d24890f74cffa60d6cf57b656b4ef6206cb829026aedf2ed34f7fbbd0cffde",
+        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff2/models/cleanroom-wall-kit.glb",
+        "archive": "packs/foundry-floor/ff2/foundry-floor-ff2-models.zip",
+        "member": "models/cleanroom-wall-kit.glb"
+      },
+      "licence": {
+        "path": "packs/foundry-floor/ff2/licenses/ASSET-LICENSE.txt",
+        "bytes": 7105,
+        "sha256": "f9f095f8694b564de951e9977848b1e81e3599c083b14e9193021938add81992",
+        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff2/licenses/ASSET-LICENSE.txt",
+        "spdx": "CC0-1.0",
+        "statesGlbSha256": "d4d24890f74cffa60d6cf57b656b4ef6206cb829026aedf2ed34f7fbbd0cffde"
+      },
+      "license": "CC0-1.0",
+      "poster": {
+        "src": "/media/rig/review-neutral-v1/foundry-floor/ff2/cleanroom-wall-kit.webp",
+        "width": 1024,
+        "height": 1024,
+        "alt": "The cleanroom wall kit model from the Foundry Floor pack, seen from the front right.",
+        "srcsetWebp": "/media/rig/review-neutral-v1/foundry-floor/ff2/cleanroom-wall-kit-320.webp 320w, /media/rig/review-neutral-v1/foundry-floor/ff2/cleanroom-wall-kit-480.webp 480w, /media/rig/review-neutral-v1/foundry-floor/ff2/cleanroom-wall-kit-672.webp 672w, /media/rig/review-neutral-v1/foundry-floor/ff2/cleanroom-wall-kit-768.webp 768w, /media/rig/review-neutral-v1/foundry-floor/ff2/cleanroom-wall-kit-1024.webp 1024w",
+        "srcsetAvif": "/media/rig/review-neutral-v1/foundry-floor/ff2/cleanroom-wall-kit-320.avif 320w, /media/rig/review-neutral-v1/foundry-floor/ff2/cleanroom-wall-kit-480.avif 480w, /media/rig/review-neutral-v1/foundry-floor/ff2/cleanroom-wall-kit-672.avif 672w, /media/rig/review-neutral-v1/foundry-floor/ff2/cleanroom-wall-kit-768.avif 768w, /media/rig/review-neutral-v1/foundry-floor/ff2/cleanroom-wall-kit-1024.avif 1024w",
+        "inputPath": "media/rig/review-neutral-v1/foundry-floor/ff2/cleanroom-wall-kit.png",
+        "sourceRevisionId": "r_4e0249fdfb804779a0adb8c6cae9d2dd",
+        "exactRevision": true,
+        "rig": "review-neutral-v1"
+      }
+    },
+    {
+      "id": "tool:etch",
+      "slug": "etch-cluster-tool",
+      "name": "Etch cluster tool",
+      "pack": "foundry-floor",
+      "group": "tools",
+      "class": "tool",
+      "description": "The etch cluster tool model from the Foundry Floor pack, seen from the front right.",
+      "revisionId": "r_c548f01cc98b4fb0adbee9b763ec1831",
+      "author": "sonnet-ff-cluster",
+      "placedInScene": true,
+      "metrics": {
+        "triangles": 5590,
+        "trianglesDetailed": 5274,
+        "trianglesLod1": 316,
+        "trianglesHidden": 0,
+        "bounds": [
+          4.6,
+          2.7,
+          3.6
+        ],
+        "boundsMin": [
+          -2.3,
+          0,
+          -1.8
+        ],
+        "boundsMax": [
+          2.3,
+          2.7,
+          1.8
+        ],
+        "materials": 7,
+        "clips": [
+          "RobotTransfer",
+          "LidOpen",
+          "LidClose"
+        ],
+        "nodes": 51,
+        "meshes": 34
+      },
+      "lod": {
+        "class": "tool",
+        "nearMetres": 34,
+        "farMetres": 38
+      },
+      "hideByDefault": [],
+      "runtimeDownload": {
+        "path": "packs/foundry-floor/ff2/models/etch-cluster-tool.glb",
+        "bytes": 455944,
+        "sha256": "fa75f3a4bada2652eecba79d8c5eebf900ad5651f4befbc95a19f15b0de130e4",
+        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff2/models/etch-cluster-tool.glb",
+        "archive": "packs/foundry-floor/ff2/foundry-floor-ff2-models.zip",
+        "member": "models/etch-cluster-tool.glb"
+      },
+      "licence": {
+        "path": "packs/foundry-floor/ff2/licenses/ASSET-LICENSE.txt",
+        "bytes": 7105,
+        "sha256": "f9f095f8694b564de951e9977848b1e81e3599c083b14e9193021938add81992",
+        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff2/licenses/ASSET-LICENSE.txt",
+        "spdx": "CC0-1.0",
+        "statesGlbSha256": "fa75f3a4bada2652eecba79d8c5eebf900ad5651f4befbc95a19f15b0de130e4"
+      },
+      "license": "CC0-1.0",
+      "poster": {
+        "src": "/media/rig/review-neutral-v1/foundry-floor/ff2/etch-cluster-tool.webp",
+        "width": 1024,
+        "height": 1024,
+        "alt": "The etch cluster tool model from the Foundry Floor pack, seen from the front right.",
+        "srcsetWebp": "/media/rig/review-neutral-v1/foundry-floor/ff2/etch-cluster-tool-320.webp 320w, /media/rig/review-neutral-v1/foundry-floor/ff2/etch-cluster-tool-480.webp 480w, /media/rig/review-neutral-v1/foundry-floor/ff2/etch-cluster-tool-672.webp 672w, /media/rig/review-neutral-v1/foundry-floor/ff2/etch-cluster-tool-768.webp 768w, /media/rig/review-neutral-v1/foundry-floor/ff2/etch-cluster-tool-1024.webp 1024w",
+        "srcsetAvif": "/media/rig/review-neutral-v1/foundry-floor/ff2/etch-cluster-tool-320.avif 320w, /media/rig/review-neutral-v1/foundry-floor/ff2/etch-cluster-tool-480.avif 480w, /media/rig/review-neutral-v1/foundry-floor/ff2/etch-cluster-tool-672.avif 672w, /media/rig/review-neutral-v1/foundry-floor/ff2/etch-cluster-tool-768.avif 768w, /media/rig/review-neutral-v1/foundry-floor/ff2/etch-cluster-tool-1024.avif 1024w",
+        "inputPath": "media/rig/review-neutral-v1/foundry-floor/ff2/etch-cluster-tool.png",
+        "sourceRevisionId": "r_c548f01cc98b4fb0adbee9b763ec1831",
+        "exactRevision": true,
+        "rig": "review-neutral-v1"
+      }
+    },
+    {
+      "id": "tool:cvd-ald",
+      "slug": "cvd-ald-cluster-tool",
+      "name": "CVD/ALD cluster tool",
+      "pack": "foundry-floor",
+      "group": "tools",
+      "class": "tool",
+      "description": "The CVD/ALD cluster tool model from the Foundry Floor pack, seen from the front right.",
+      "revisionId": "r_bcc14a9dbb4e41a997023b3712b05779",
+      "author": "sonnet-ff-cluster",
+      "placedInScene": true,
+      "metrics": {
+        "triangles": 5620,
+        "trianglesDetailed": 5298,
+        "trianglesLod1": 322,
+        "trianglesHidden": 0,
+        "bounds": [
+          4.8,
+          2.7,
+          3.6
+        ],
+        "boundsMin": [
+          -2.4,
+          0,
+          -1.8
+        ],
+        "boundsMax": [
+          2.4,
+          2.7,
+          1.8
+        ],
+        "materials": 7,
+        "clips": [
+          "RobotTransfer",
+          "LidOpen",
+          "LidClose"
+        ],
+        "nodes": 54,
+        "meshes": 36
+      },
+      "lod": {
+        "class": "tool",
+        "nearMetres": 34,
+        "farMetres": 38
+      },
+      "hideByDefault": [],
+      "runtimeDownload": {
+        "path": "packs/foundry-floor/ff2/models/cvd-ald-cluster-tool.glb",
+        "bytes": 464272,
+        "sha256": "e94b92992943df6de1a3e111faaa884c6f62236613ed237a6cedb8cc5cd5385c",
+        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff2/models/cvd-ald-cluster-tool.glb",
+        "archive": "packs/foundry-floor/ff2/foundry-floor-ff2-models.zip",
+        "member": "models/cvd-ald-cluster-tool.glb"
+      },
+      "licence": {
+        "path": "packs/foundry-floor/ff2/licenses/ASSET-LICENSE.txt",
+        "bytes": 7105,
+        "sha256": "f9f095f8694b564de951e9977848b1e81e3599c083b14e9193021938add81992",
+        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff2/licenses/ASSET-LICENSE.txt",
+        "spdx": "CC0-1.0",
+        "statesGlbSha256": "e94b92992943df6de1a3e111faaa884c6f62236613ed237a6cedb8cc5cd5385c"
+      },
+      "license": "CC0-1.0",
+      "poster": {
+        "src": "/media/rig/review-neutral-v1/foundry-floor/ff2/cvd-ald-cluster-tool.webp",
+        "width": 1024,
+        "height": 1024,
+        "alt": "The CVD/ALD cluster tool model from the Foundry Floor pack, seen from the front right.",
+        "srcsetWebp": "/media/rig/review-neutral-v1/foundry-floor/ff2/cvd-ald-cluster-tool-320.webp 320w, /media/rig/review-neutral-v1/foundry-floor/ff2/cvd-ald-cluster-tool-480.webp 480w, /media/rig/review-neutral-v1/foundry-floor/ff2/cvd-ald-cluster-tool-672.webp 672w, /media/rig/review-neutral-v1/foundry-floor/ff2/cvd-ald-cluster-tool-768.webp 768w, /media/rig/review-neutral-v1/foundry-floor/ff2/cvd-ald-cluster-tool-1024.webp 1024w",
+        "srcsetAvif": "/media/rig/review-neutral-v1/foundry-floor/ff2/cvd-ald-cluster-tool-320.avif 320w, /media/rig/review-neutral-v1/foundry-floor/ff2/cvd-ald-cluster-tool-480.avif 480w, /media/rig/review-neutral-v1/foundry-floor/ff2/cvd-ald-cluster-tool-672.avif 672w, /media/rig/review-neutral-v1/foundry-floor/ff2/cvd-ald-cluster-tool-768.avif 768w, /media/rig/review-neutral-v1/foundry-floor/ff2/cvd-ald-cluster-tool-1024.avif 1024w",
+        "inputPath": "media/rig/review-neutral-v1/foundry-floor/ff2/cvd-ald-cluster-tool.png",
+        "sourceRevisionId": "r_bcc14a9dbb4e41a997023b3712b05779",
+        "exactRevision": true,
+        "rig": "review-neutral-v1"
+      }
+    },
+    {
+      "id": "tool:pvd",
+      "slug": "pvd-cluster-tool",
+      "name": "PVD cluster tool",
+      "pack": "foundry-floor",
+      "group": "tools",
+      "class": "tool",
+      "description": "The PVD cluster tool model from the Foundry Floor pack, seen from the front right.",
+      "revisionId": "r_5da63ee0e94648c7b2981a0021e3e616",
+      "author": "sonnet-ff-cluster",
+      "placedInScene": true,
+      "metrics": {
+        "triangles": 5030,
+        "trianglesDetailed": 4552,
+        "trianglesLod1": 478,
+        "trianglesHidden": 0,
+        "bounds": [
+          5,
+          2.8,
+          4.2
+        ],
+        "boundsMin": [
+          -2.5,
+          0,
+          -2.1
+        ],
+        "boundsMax": [
+          2.5,
+          2.8,
+          2.1
+        ],
+        "materials": 8,
+        "clips": [
+          "RobotTransfer",
+          "LidOpen",
+          "LidClose"
+        ],
+        "nodes": 50,
+        "meshes": 33
+      },
+      "lod": {
+        "class": "tool",
+        "nearMetres": 34,
+        "farMetres": 38
+      },
+      "hideByDefault": [],
+      "runtimeDownload": {
+        "path": "packs/foundry-floor/ff2/models/pvd-cluster-tool.glb",
+        "bytes": 420220,
+        "sha256": "8c17a95496e498a08b114fd166ed6fe7e6caf97c095f1bea9be1a64d3b025849",
+        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff2/models/pvd-cluster-tool.glb",
+        "archive": "packs/foundry-floor/ff2/foundry-floor-ff2-models.zip",
+        "member": "models/pvd-cluster-tool.glb"
+      },
+      "licence": {
+        "path": "packs/foundry-floor/ff2/licenses/ASSET-LICENSE.txt",
+        "bytes": 7105,
+        "sha256": "f9f095f8694b564de951e9977848b1e81e3599c083b14e9193021938add81992",
+        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff2/licenses/ASSET-LICENSE.txt",
+        "spdx": "CC0-1.0",
+        "statesGlbSha256": "8c17a95496e498a08b114fd166ed6fe7e6caf97c095f1bea9be1a64d3b025849"
+      },
+      "license": "CC0-1.0",
+      "poster": {
+        "src": "/media/rig/review-neutral-v1/foundry-floor/ff2/pvd-cluster-tool.webp",
+        "width": 1024,
+        "height": 1024,
+        "alt": "The PVD cluster tool model from the Foundry Floor pack, seen from the front right.",
+        "srcsetWebp": "/media/rig/review-neutral-v1/foundry-floor/ff2/pvd-cluster-tool-320.webp 320w, /media/rig/review-neutral-v1/foundry-floor/ff2/pvd-cluster-tool-480.webp 480w, /media/rig/review-neutral-v1/foundry-floor/ff2/pvd-cluster-tool-672.webp 672w, /media/rig/review-neutral-v1/foundry-floor/ff2/pvd-cluster-tool-768.webp 768w, /media/rig/review-neutral-v1/foundry-floor/ff2/pvd-cluster-tool-1024.webp 1024w",
+        "srcsetAvif": "/media/rig/review-neutral-v1/foundry-floor/ff2/pvd-cluster-tool-320.avif 320w, /media/rig/review-neutral-v1/foundry-floor/ff2/pvd-cluster-tool-480.avif 480w, /media/rig/review-neutral-v1/foundry-floor/ff2/pvd-cluster-tool-672.avif 672w, /media/rig/review-neutral-v1/foundry-floor/ff2/pvd-cluster-tool-768.avif 768w, /media/rig/review-neutral-v1/foundry-floor/ff2/pvd-cluster-tool-1024.avif 1024w",
+        "inputPath": "media/rig/review-neutral-v1/foundry-floor/ff2/pvd-cluster-tool.png",
+        "sourceRevisionId": "r_5da63ee0e94648c7b2981a0021e3e616",
+        "exactRevision": true,
+        "rig": "review-neutral-v1"
+      }
+    },
+    {
+      "id": "tool:clean",
+      "slug": "single-wafer-clean-tool",
+      "name": "Single-wafer clean tool",
+      "pack": "foundry-floor",
+      "group": "tools",
+      "class": "tool",
+      "description": "The single-wafer clean tool model from the Foundry Floor pack, seen from the front right.",
+      "revisionId": "r_ef576d03ece64a33a331429020148625",
+      "author": "sonnet-ff-special-a",
+      "placedInScene": true,
+      "metrics": {
+        "triangles": 3200,
+        "trianglesDetailed": 3044,
+        "trianglesLod1": 156,
+        "trianglesHidden": 0,
+        "bounds": [
+          4.997,
+          3.2,
+          3.6
+        ],
+        "boundsMin": [
+          -2.497,
+          0,
+          -1.8
+        ],
+        "boundsMax": [
+          2.5,
+          3.2,
+          1.8
+        ],
+        "materials": 8,
+        "clips": [
+          "RobotTransfer"
+        ],
+        "nodes": 192,
+        "meshes": 44
+      },
+      "lod": {
+        "class": "tool",
+        "nearMetres": 34,
+        "farMetres": 38
+      },
+      "hideByDefault": [],
+      "runtimeDownload": {
+        "path": "packs/foundry-floor/ff2/models/single-wafer-clean-tool.glb",
+        "bytes": 64688,
+        "sha256": "aea4603362760b1828a6241471a4c60949d3bfa11822a3ed40c6812dcb46eeca",
+        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff2/models/single-wafer-clean-tool.glb",
+        "archive": "packs/foundry-floor/ff2/foundry-floor-ff2-models.zip",
+        "member": "models/single-wafer-clean-tool.glb"
+      },
+      "licence": {
+        "path": "packs/foundry-floor/ff2/licenses/ASSET-LICENSE.txt",
+        "bytes": 7105,
+        "sha256": "f9f095f8694b564de951e9977848b1e81e3599c083b14e9193021938add81992",
+        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff2/licenses/ASSET-LICENSE.txt",
+        "spdx": "CC0-1.0",
+        "statesGlbSha256": "aea4603362760b1828a6241471a4c60949d3bfa11822a3ed40c6812dcb46eeca"
+      },
+      "license": "CC0-1.0",
+      "poster": {
+        "src": "/media/rig/review-neutral-v1/foundry-floor/ff2/single-wafer-clean-tool.webp",
+        "width": 1024,
+        "height": 1024,
+        "alt": "The single-wafer clean tool model from the Foundry Floor pack, seen from the front right.",
+        "srcsetWebp": "/media/rig/review-neutral-v1/foundry-floor/ff2/single-wafer-clean-tool-320.webp 320w, /media/rig/review-neutral-v1/foundry-floor/ff2/single-wafer-clean-tool-480.webp 480w, /media/rig/review-neutral-v1/foundry-floor/ff2/single-wafer-clean-tool-672.webp 672w, /media/rig/review-neutral-v1/foundry-floor/ff2/single-wafer-clean-tool-768.webp 768w, /media/rig/review-neutral-v1/foundry-floor/ff2/single-wafer-clean-tool-1024.webp 1024w",
+        "srcsetAvif": "/media/rig/review-neutral-v1/foundry-floor/ff2/single-wafer-clean-tool-320.avif 320w, /media/rig/review-neutral-v1/foundry-floor/ff2/single-wafer-clean-tool-480.avif 480w, /media/rig/review-neutral-v1/foundry-floor/ff2/single-wafer-clean-tool-672.avif 672w, /media/rig/review-neutral-v1/foundry-floor/ff2/single-wafer-clean-tool-768.avif 768w, /media/rig/review-neutral-v1/foundry-floor/ff2/single-wafer-clean-tool-1024.avif 1024w",
+        "inputPath": "media/rig/review-neutral-v1/foundry-floor/ff2/single-wafer-clean-tool.png",
+        "sourceRevisionId": "r_ef576d03ece64a33a331429020148625",
+        "exactRevision": true,
+        "rig": "review-neutral-v1"
+      }
+    },
+    {
+      "id": "tool:cmp",
+      "slug": "cmp-polisher",
+      "name": "CMP polisher",
+      "pack": "foundry-floor",
+      "group": "tools",
+      "class": "tool",
+      "description": "The CMP polisher model from the Foundry Floor pack, seen from the front right.",
+      "revisionId": "r_bd4199a5d1c14b96935be86fc3316adb",
+      "author": "sonnet-ff-special-a",
+      "placedInScene": true,
+      "metrics": {
+        "triangles": 4476,
+        "trianglesDetailed": 4212,
+        "trianglesLod1": 264,
+        "trianglesHidden": 0,
+        "bounds": [
+          5,
+          2.4,
+          3.4
+        ],
+        "boundsMin": [
+          -2.5,
+          0,
+          -1.7
+        ],
+        "boundsMax": [
+          2.5,
+          2.4,
+          1.7
+        ],
+        "materials": 8,
+        "clips": [
+          "PlatenSpin",
+          "ArmSweep",
+          "CarouselIndex"
+        ],
+        "nodes": 159,
+        "meshes": 86
+      },
+      "lod": {
+        "class": "tool",
+        "nearMetres": 34,
+        "farMetres": 38
+      },
+      "hideByDefault": [],
+      "runtimeDownload": {
+        "path": "packs/foundry-floor/ff2/models/cmp-polisher.glb",
+        "bytes": 134168,
+        "sha256": "921f124b0e32ae74df59c2dfb5eb38880788ecdfe9adf1cb6d1f69a6d80c165f",
+        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff2/models/cmp-polisher.glb",
+        "archive": "packs/foundry-floor/ff2/foundry-floor-ff2-models.zip",
+        "member": "models/cmp-polisher.glb"
+      },
+      "licence": {
+        "path": "packs/foundry-floor/ff2/licenses/ASSET-LICENSE.txt",
+        "bytes": 7105,
+        "sha256": "f9f095f8694b564de951e9977848b1e81e3599c083b14e9193021938add81992",
+        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff2/licenses/ASSET-LICENSE.txt",
+        "spdx": "CC0-1.0",
+        "statesGlbSha256": "921f124b0e32ae74df59c2dfb5eb38880788ecdfe9adf1cb6d1f69a6d80c165f"
+      },
+      "license": "CC0-1.0",
+      "poster": {
+        "src": "/media/rig/review-neutral-v1/foundry-floor/ff2/cmp-polisher.webp",
+        "width": 1024,
+        "height": 1024,
+        "alt": "The CMP polisher model from the Foundry Floor pack, seen from the front right.",
+        "srcsetWebp": "/media/rig/review-neutral-v1/foundry-floor/ff2/cmp-polisher-320.webp 320w, /media/rig/review-neutral-v1/foundry-floor/ff2/cmp-polisher-480.webp 480w, /media/rig/review-neutral-v1/foundry-floor/ff2/cmp-polisher-672.webp 672w, /media/rig/review-neutral-v1/foundry-floor/ff2/cmp-polisher-768.webp 768w, /media/rig/review-neutral-v1/foundry-floor/ff2/cmp-polisher-1024.webp 1024w",
+        "srcsetAvif": "/media/rig/review-neutral-v1/foundry-floor/ff2/cmp-polisher-320.avif 320w, /media/rig/review-neutral-v1/foundry-floor/ff2/cmp-polisher-480.avif 480w, /media/rig/review-neutral-v1/foundry-floor/ff2/cmp-polisher-672.avif 672w, /media/rig/review-neutral-v1/foundry-floor/ff2/cmp-polisher-768.avif 768w, /media/rig/review-neutral-v1/foundry-floor/ff2/cmp-polisher-1024.avif 1024w",
+        "inputPath": "media/rig/review-neutral-v1/foundry-floor/ff2/cmp-polisher.png",
+        "sourceRevisionId": "r_bd4199a5d1c14b96935be86fc3316adb",
+        "exactRevision": true,
+        "rig": "review-neutral-v1"
+      }
+    },
+    {
+      "id": "tool:furnace",
+      "slug": "vertical-furnace",
+      "name": "Vertical furnace",
+      "pack": "foundry-floor",
+      "group": "tools",
+      "class": "tool",
+      "description": "The vertical furnace model from the Foundry Floor pack, seen from the front right.",
+      "revisionId": "r_11d06703f7c34eb2aeca0b7298a5784c",
+      "author": "sonnet-ff-special-b",
+      "placedInScene": true,
+      "metrics": {
+        "triangles": 2900,
+        "trianglesDetailed": 2828,
+        "trianglesLod1": 72,
+        "trianglesHidden": 0,
+        "bounds": [
+          4.523,
+          3.8,
+          2.008
+        ],
+        "boundsMin": [
+          -2.25,
+          0,
+          -1.004
+        ],
+        "boundsMax": [
+          2.273,
+          3.8,
+          1.004
+        ],
+        "materials": 8,
+        "clips": [
+          "BoatLoad",
+          "BoatUnload"
+        ],
+        "nodes": 156,
+        "meshes": 77
+      },
+      "lod": {
+        "class": "tool",
+        "nearMetres": 34,
+        "farMetres": 38
+      },
+      "hideByDefault": [],
+      "runtimeDownload": {
+        "path": "packs/foundry-floor/ff2/models/vertical-furnace.glb",
+        "bytes": 100476,
+        "sha256": "ebe68d3dff40dd37fb45458e756147951bd7e6b4936639c8078920a7b1d35493",
+        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff2/models/vertical-furnace.glb",
+        "archive": "packs/foundry-floor/ff2/foundry-floor-ff2-models.zip",
+        "member": "models/vertical-furnace.glb"
+      },
+      "licence": {
+        "path": "packs/foundry-floor/ff2/licenses/ASSET-LICENSE.txt",
+        "bytes": 7105,
+        "sha256": "f9f095f8694b564de951e9977848b1e81e3599c083b14e9193021938add81992",
+        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff2/licenses/ASSET-LICENSE.txt",
+        "spdx": "CC0-1.0",
+        "statesGlbSha256": "ebe68d3dff40dd37fb45458e756147951bd7e6b4936639c8078920a7b1d35493"
+      },
+      "license": "CC0-1.0",
+      "poster": {
+        "src": "/media/rig/review-neutral-v1/foundry-floor/ff2/vertical-furnace.webp",
+        "width": 1024,
+        "height": 1024,
+        "alt": "The vertical furnace model from the Foundry Floor pack, seen from the front right.",
+        "srcsetWebp": "/media/rig/review-neutral-v1/foundry-floor/ff2/vertical-furnace-320.webp 320w, /media/rig/review-neutral-v1/foundry-floor/ff2/vertical-furnace-480.webp 480w, /media/rig/review-neutral-v1/foundry-floor/ff2/vertical-furnace-672.webp 672w, /media/rig/review-neutral-v1/foundry-floor/ff2/vertical-furnace-768.webp 768w, /media/rig/review-neutral-v1/foundry-floor/ff2/vertical-furnace-1024.webp 1024w",
+        "srcsetAvif": "/media/rig/review-neutral-v1/foundry-floor/ff2/vertical-furnace-320.avif 320w, /media/rig/review-neutral-v1/foundry-floor/ff2/vertical-furnace-480.avif 480w, /media/rig/review-neutral-v1/foundry-floor/ff2/vertical-furnace-672.avif 672w, /media/rig/review-neutral-v1/foundry-floor/ff2/vertical-furnace-768.avif 768w, /media/rig/review-neutral-v1/foundry-floor/ff2/vertical-furnace-1024.avif 1024w",
+        "inputPath": "media/rig/review-neutral-v1/foundry-floor/ff2/vertical-furnace.png",
+        "sourceRevisionId": "r_11d06703f7c34eb2aeca0b7298a5784c",
+        "exactRevision": true,
+        "rig": "review-neutral-v1"
+      }
+    },
+    {
+      "id": "tool:implanter",
+      "slug": "ion-implanter",
+      "name": "Ion implanter",
+      "pack": "foundry-floor",
+      "group": "tools",
+      "class": "tool",
+      "description": "The ion implanter model from the Foundry Floor pack, seen from the front right.",
+      "revisionId": "r_f053ff760e7c46018c274ec2a12ee18b",
+      "author": "sonnet-ff-special-a",
+      "placedInScene": true,
+      "metrics": {
+        "triangles": 5808,
+        "trianglesDetailed": 5544,
+        "trianglesLod1": 264,
+        "trianglesHidden": 0,
+        "bounds": [
+          4.535,
+          2.8,
+          8.51
+        ],
+        "boundsMin": [
+          -2.255,
+          0,
+          -4.255
+        ],
+        "boundsMax": [
+          2.28,
+          2.8,
+          4.255
+        ],
+        "materials": 8,
+        "clips": [
+          "EndStationRobot",
+          "ServiceOpen",
+          "ServiceClose"
+        ],
+        "nodes": 181,
+        "meshes": 95
+      },
+      "lod": {
+        "class": "tool",
+        "nearMetres": 34,
+        "farMetres": 38
+      },
+      "hideByDefault": [],
+      "runtimeDownload": {
+        "path": "packs/foundry-floor/ff2/models/ion-implanter.glb",
+        "bytes": 140092,
+        "sha256": "2edaa15d5fb023ec449a4ea08c41803085f6fe333507943b55e8ad1cb0197574",
+        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff2/models/ion-implanter.glb",
+        "archive": "packs/foundry-floor/ff2/foundry-floor-ff2-models.zip",
+        "member": "models/ion-implanter.glb"
+      },
+      "licence": {
+        "path": "packs/foundry-floor/ff2/licenses/ASSET-LICENSE.txt",
+        "bytes": 7105,
+        "sha256": "f9f095f8694b564de951e9977848b1e81e3599c083b14e9193021938add81992",
+        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff2/licenses/ASSET-LICENSE.txt",
+        "spdx": "CC0-1.0",
+        "statesGlbSha256": "2edaa15d5fb023ec449a4ea08c41803085f6fe333507943b55e8ad1cb0197574"
+      },
+      "license": "CC0-1.0",
+      "poster": {
+        "src": "/media/rig/review-neutral-v1/foundry-floor/ff2/ion-implanter.webp",
+        "width": 1024,
+        "height": 1024,
+        "alt": "The ion implanter model from the Foundry Floor pack, seen from the front right.",
+        "srcsetWebp": "/media/rig/review-neutral-v1/foundry-floor/ff2/ion-implanter-320.webp 320w, /media/rig/review-neutral-v1/foundry-floor/ff2/ion-implanter-480.webp 480w, /media/rig/review-neutral-v1/foundry-floor/ff2/ion-implanter-672.webp 672w, /media/rig/review-neutral-v1/foundry-floor/ff2/ion-implanter-768.webp 768w, /media/rig/review-neutral-v1/foundry-floor/ff2/ion-implanter-1024.webp 1024w",
+        "srcsetAvif": "/media/rig/review-neutral-v1/foundry-floor/ff2/ion-implanter-320.avif 320w, /media/rig/review-neutral-v1/foundry-floor/ff2/ion-implanter-480.avif 480w, /media/rig/review-neutral-v1/foundry-floor/ff2/ion-implanter-672.avif 672w, /media/rig/review-neutral-v1/foundry-floor/ff2/ion-implanter-768.avif 768w, /media/rig/review-neutral-v1/foundry-floor/ff2/ion-implanter-1024.avif 1024w",
+        "inputPath": "media/rig/review-neutral-v1/foundry-floor/ff2/ion-implanter.png",
+        "sourceRevisionId": "r_f053ff760e7c46018c274ec2a12ee18b",
+        "exactRevision": true,
+        "rig": "review-neutral-v1"
+      }
+    },
+    {
+      "id": "tool:metrology",
+      "slug": "metrology-inspection-tool",
+      "name": "Metrology inspection tool",
+      "pack": "foundry-floor",
+      "group": "tools",
+      "class": "tool",
+      "description": "The metrology inspection tool model from the Foundry Floor pack, seen from the front right.",
+      "revisionId": "r_4ee6df55b165456abe7f9002bfd7b0d1",
+      "author": "sonnet-ff-special-b",
+      "placedInScene": true,
+      "metrics": {
+        "triangles": 2760,
+        "trianglesDetailed": 2652,
+        "trianglesLod1": 108,
+        "trianglesHidden": 0,
+        "bounds": [
+          3.022,
+          2.3,
+          2.421
+        ],
+        "boundsMin": [
+          -1.508,
+          0,
+          -1.209
+        ],
+        "boundsMax": [
+          1.514,
+          2.3,
+          1.212
+        ],
+        "materials": 7,
+        "clips": [
+          "StageScan"
+        ],
+        "nodes": 145,
+        "meshes": 73
+      },
+      "lod": {
+        "class": "tool",
+        "nearMetres": 34,
+        "farMetres": 38
+      },
+      "hideByDefault": [],
+      "runtimeDownload": {
+        "path": "packs/foundry-floor/ff2/models/metrology-inspection-tool.glb",
+        "bytes": 110880,
+        "sha256": "3f9b5d4e3a40164ed211bad741bf2f3aa742f4914d9a76c57fc55c5d411272c8",
+        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff2/models/metrology-inspection-tool.glb",
+        "archive": "packs/foundry-floor/ff2/foundry-floor-ff2-models.zip",
+        "member": "models/metrology-inspection-tool.glb"
+      },
+      "licence": {
+        "path": "packs/foundry-floor/ff2/licenses/ASSET-LICENSE.txt",
+        "bytes": 7105,
+        "sha256": "f9f095f8694b564de951e9977848b1e81e3599c083b14e9193021938add81992",
+        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff2/licenses/ASSET-LICENSE.txt",
+        "spdx": "CC0-1.0",
+        "statesGlbSha256": "3f9b5d4e3a40164ed211bad741bf2f3aa742f4914d9a76c57fc55c5d411272c8"
+      },
+      "license": "CC0-1.0",
+      "poster": {
+        "src": "/media/rig/review-neutral-v1/foundry-floor/ff2/metrology-inspection-tool.webp",
+        "width": 1024,
+        "height": 1024,
+        "alt": "The metrology inspection tool model from the Foundry Floor pack, seen from the front right.",
+        "srcsetWebp": "/media/rig/review-neutral-v1/foundry-floor/ff2/metrology-inspection-tool-320.webp 320w, /media/rig/review-neutral-v1/foundry-floor/ff2/metrology-inspection-tool-480.webp 480w, /media/rig/review-neutral-v1/foundry-floor/ff2/metrology-inspection-tool-672.webp 672w, /media/rig/review-neutral-v1/foundry-floor/ff2/metrology-inspection-tool-768.webp 768w, /media/rig/review-neutral-v1/foundry-floor/ff2/metrology-inspection-tool-1024.webp 1024w",
+        "srcsetAvif": "/media/rig/review-neutral-v1/foundry-floor/ff2/metrology-inspection-tool-320.avif 320w, /media/rig/review-neutral-v1/foundry-floor/ff2/metrology-inspection-tool-480.avif 480w, /media/rig/review-neutral-v1/foundry-floor/ff2/metrology-inspection-tool-672.avif 672w, /media/rig/review-neutral-v1/foundry-floor/ff2/metrology-inspection-tool-768.avif 768w, /media/rig/review-neutral-v1/foundry-floor/ff2/metrology-inspection-tool-1024.avif 1024w",
+        "inputPath": "media/rig/review-neutral-v1/foundry-floor/ff2/metrology-inspection-tool.png",
+        "sourceRevisionId": "r_4ee6df55b165456abe7f9002bfd7b0d1",
+        "exactRevision": true,
+        "rig": "review-neutral-v1"
+      }
+    },
+    {
+      "id": "tool:prober",
+      "slug": "wafer-prober-tester",
+      "name": "Wafer prober/tester",
+      "pack": "foundry-floor",
+      "group": "tools",
+      "class": "tool",
+      "description": "The wafer prober/tester model from the Foundry Floor pack, seen from the front right.",
+      "revisionId": "r_853a936fe0dd48d299ae55585d9d276a",
+      "author": "sonnet-ff-special-b",
+      "placedInScene": true,
+      "metrics": {
+        "triangles": 3484,
+        "trianglesDetailed": 3376,
+        "trianglesLod1": 108,
+        "trianglesHidden": 0,
+        "bounds": [
+          3.612,
+          2.004,
+          2.616
+        ],
+        "boundsMin": [
+          -1.803,
+          0,
+          -1.306
+        ],
+        "boundsMax": [
+          1.809,
+          2.004,
+          1.31
+        ],
+        "materials": 8,
+        "clips": [
+          "HeadOpen",
+          "HeadClose",
+          "ChuckIndex"
+        ],
+        "nodes": 145,
+        "meshes": 73
+      },
+      "lod": {
+        "class": "tool",
+        "nearMetres": 34,
+        "farMetres": 38
+      },
+      "hideByDefault": [],
+      "runtimeDownload": {
+        "path": "packs/foundry-floor/ff2/models/wafer-prober-tester.glb",
+        "bytes": 129744,
+        "sha256": "06585aa565430fea67a171322e6e38c39065ef6cf88f9732eb485756bc70dad0",
+        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff2/models/wafer-prober-tester.glb",
+        "archive": "packs/foundry-floor/ff2/foundry-floor-ff2-models.zip",
+        "member": "models/wafer-prober-tester.glb"
+      },
+      "licence": {
+        "path": "packs/foundry-floor/ff2/licenses/ASSET-LICENSE.txt",
+        "bytes": 7105,
+        "sha256": "f9f095f8694b564de951e9977848b1e81e3599c083b14e9193021938add81992",
+        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff2/licenses/ASSET-LICENSE.txt",
+        "spdx": "CC0-1.0",
+        "statesGlbSha256": "06585aa565430fea67a171322e6e38c39065ef6cf88f9732eb485756bc70dad0"
+      },
+      "license": "CC0-1.0",
+      "poster": {
+        "src": "/media/rig/review-neutral-v1/foundry-floor/ff2/wafer-prober-tester.webp",
+        "width": 1024,
+        "height": 1024,
+        "alt": "The wafer prober/tester model from the Foundry Floor pack, seen from the front right.",
+        "srcsetWebp": "/media/rig/review-neutral-v1/foundry-floor/ff2/wafer-prober-tester-320.webp 320w, /media/rig/review-neutral-v1/foundry-floor/ff2/wafer-prober-tester-480.webp 480w, /media/rig/review-neutral-v1/foundry-floor/ff2/wafer-prober-tester-672.webp 672w, /media/rig/review-neutral-v1/foundry-floor/ff2/wafer-prober-tester-768.webp 768w, /media/rig/review-neutral-v1/foundry-floor/ff2/wafer-prober-tester-1024.webp 1024w",
+        "srcsetAvif": "/media/rig/review-neutral-v1/foundry-floor/ff2/wafer-prober-tester-320.avif 320w, /media/rig/review-neutral-v1/foundry-floor/ff2/wafer-prober-tester-480.avif 480w, /media/rig/review-neutral-v1/foundry-floor/ff2/wafer-prober-tester-672.avif 672w, /media/rig/review-neutral-v1/foundry-floor/ff2/wafer-prober-tester-768.avif 768w, /media/rig/review-neutral-v1/foundry-floor/ff2/wafer-prober-tester-1024.avif 1024w",
+        "inputPath": "media/rig/review-neutral-v1/foundry-floor/ff2/wafer-prober-tester.png",
+        "sourceRevisionId": "r_853a936fe0dd48d299ae55585d9d276a",
+        "exactRevision": true,
+        "rig": "review-neutral-v1"
+      }
+    },
+    {
+      "id": "tool:track",
+      "slug": "coater-developer-track",
+      "name": "Coater/developer track",
+      "pack": "foundry-floor",
+      "group": "tools",
+      "class": "tool",
+      "description": "The coater/developer track model from the Foundry Floor pack, seen from the front right.",
+      "revisionId": "r_2bdd2517bf744bc580b1af4314fcef3a",
+      "author": "sonnet-ff-litho",
+      "placedInScene": true,
+      "metrics": {
+        "triangles": 4440,
+        "trianglesDetailed": 4294,
+        "trianglesLod1": 146,
+        "trianglesHidden": 0,
+        "bounds": [
+          8,
+          2.6,
+          3.2
+        ],
+        "boundsMin": [
+          -4,
+          0,
+          -1.6
+        ],
+        "boundsMax": [
+          4,
+          2.6,
+          1.6
+        ],
+        "materials": 7,
+        "clips": [
+          "RobotShuttle"
+        ],
+        "nodes": 44,
+        "meshes": 29
+      },
+      "lod": {
+        "class": "tool",
+        "nearMetres": 34,
+        "farMetres": 38
+      },
+      "hideByDefault": [],
+      "runtimeDownload": {
+        "path": "packs/foundry-floor/ff2/models/coater-developer-track.glb",
+        "bytes": 363432,
+        "sha256": "8ef1194237daf8cdc874c44b3931eaf6c0458a32b660ef3f9360806ab7d6a029",
+        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff2/models/coater-developer-track.glb",
+        "archive": "packs/foundry-floor/ff2/foundry-floor-ff2-models.zip",
+        "member": "models/coater-developer-track.glb"
+      },
+      "licence": {
+        "path": "packs/foundry-floor/ff2/licenses/ASSET-LICENSE.txt",
+        "bytes": 7105,
+        "sha256": "f9f095f8694b564de951e9977848b1e81e3599c083b14e9193021938add81992",
+        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff2/licenses/ASSET-LICENSE.txt",
+        "spdx": "CC0-1.0",
+        "statesGlbSha256": "8ef1194237daf8cdc874c44b3931eaf6c0458a32b660ef3f9360806ab7d6a029"
+      },
+      "license": "CC0-1.0",
+      "poster": {
+        "src": "/media/rig/review-neutral-v1/foundry-floor/ff2/coater-developer-track.webp",
+        "width": 1024,
+        "height": 1024,
+        "alt": "The coater/developer track model from the Foundry Floor pack, seen from the front right.",
+        "srcsetWebp": "/media/rig/review-neutral-v1/foundry-floor/ff2/coater-developer-track-320.webp 320w, /media/rig/review-neutral-v1/foundry-floor/ff2/coater-developer-track-480.webp 480w, /media/rig/review-neutral-v1/foundry-floor/ff2/coater-developer-track-672.webp 672w, /media/rig/review-neutral-v1/foundry-floor/ff2/coater-developer-track-768.webp 768w, /media/rig/review-neutral-v1/foundry-floor/ff2/coater-developer-track-1024.webp 1024w",
+        "srcsetAvif": "/media/rig/review-neutral-v1/foundry-floor/ff2/coater-developer-track-320.avif 320w, /media/rig/review-neutral-v1/foundry-floor/ff2/coater-developer-track-480.avif 480w, /media/rig/review-neutral-v1/foundry-floor/ff2/coater-developer-track-672.avif 672w, /media/rig/review-neutral-v1/foundry-floor/ff2/coater-developer-track-768.avif 768w, /media/rig/review-neutral-v1/foundry-floor/ff2/coater-developer-track-1024.avif 1024w",
+        "inputPath": "media/rig/review-neutral-v1/foundry-floor/ff2/coater-developer-track.png",
+        "sourceRevisionId": "r_2bdd2517bf744bc580b1af4314fcef3a",
+        "exactRevision": true,
+        "rig": "review-neutral-v1"
+      }
+    },
+    {
+      "id": "tool:euv-scanner",
+      "slug": "euv-scanner",
+      "name": "EUV scanner",
+      "pack": "foundry-floor",
+      "group": "tools",
+      "class": "tool",
+      "description": "The EUV scanner model from the Foundry Floor pack, seen from the front right.",
+      "revisionId": "r_f4a48de7bac1455da5a1f76be6702e4c",
+      "author": "sonnet-ff-litho",
+      "placedInScene": true,
+      "metrics": {
+        "triangles": 7728,
+        "trianglesDetailed": 7512,
+        "trianglesLod1": 216,
+        "trianglesHidden": 0,
+        "bounds": [
+          14,
+          4,
+          4
+        ],
+        "boundsMin": [
+          -7,
+          0,
+          -2
+        ],
+        "boundsMax": [
+          7,
+          4,
+          2
+        ],
+        "materials": 7,
+        "clips": [
+          "ServiceOpen",
+          "ServiceClose",
+          "Expose"
+        ],
+        "nodes": 49,
+        "meshes": 35
+      },
+      "lod": {
+        "class": "tool",
+        "nearMetres": 34,
+        "farMetres": 38
+      },
+      "hideByDefault": [],
+      "runtimeDownload": {
+        "path": "packs/foundry-floor/ff2/models/euv-scanner.glb",
+        "bytes": 595100,
+        "sha256": "6d351cbdd52e5f1f632e6f63faff2b56f6bbcb1d4daae5a8fbc78ce2560d383e",
+        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff2/models/euv-scanner.glb",
+        "archive": "packs/foundry-floor/ff2/foundry-floor-ff2-models.zip",
+        "member": "models/euv-scanner.glb"
+      },
+      "licence": {
+        "path": "packs/foundry-floor/ff2/licenses/ASSET-LICENSE.txt",
+        "bytes": 7105,
+        "sha256": "f9f095f8694b564de951e9977848b1e81e3599c083b14e9193021938add81992",
+        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff2/licenses/ASSET-LICENSE.txt",
+        "spdx": "CC0-1.0",
+        "statesGlbSha256": "6d351cbdd52e5f1f632e6f63faff2b56f6bbcb1d4daae5a8fbc78ce2560d383e"
+      },
+      "license": "CC0-1.0",
+      "poster": {
+        "src": "/media/rig/review-neutral-v1/foundry-floor/ff2/euv-scanner.webp",
+        "width": 1024,
+        "height": 1024,
+        "alt": "The EUV scanner model from the Foundry Floor pack, seen from the front right.",
+        "srcsetWebp": "/media/rig/review-neutral-v1/foundry-floor/ff2/euv-scanner-320.webp 320w, /media/rig/review-neutral-v1/foundry-floor/ff2/euv-scanner-480.webp 480w, /media/rig/review-neutral-v1/foundry-floor/ff2/euv-scanner-672.webp 672w, /media/rig/review-neutral-v1/foundry-floor/ff2/euv-scanner-768.webp 768w, /media/rig/review-neutral-v1/foundry-floor/ff2/euv-scanner-1024.webp 1024w",
+        "srcsetAvif": "/media/rig/review-neutral-v1/foundry-floor/ff2/euv-scanner-320.avif 320w, /media/rig/review-neutral-v1/foundry-floor/ff2/euv-scanner-480.avif 480w, /media/rig/review-neutral-v1/foundry-floor/ff2/euv-scanner-672.avif 672w, /media/rig/review-neutral-v1/foundry-floor/ff2/euv-scanner-768.avif 768w, /media/rig/review-neutral-v1/foundry-floor/ff2/euv-scanner-1024.avif 1024w",
+        "inputPath": "media/rig/review-neutral-v1/foundry-floor/ff2/euv-scanner.png",
+        "sourceRevisionId": "r_f4a48de7bac1455da5a1f76be6702e4c",
+        "exactRevision": true,
+        "rig": "review-neutral-v1"
+      }
+    },
+    {
+      "id": "tool:duv-scanner",
+      "slug": "duv-immersion-scanner",
+      "name": "DUV immersion scanner",
+      "pack": "foundry-floor",
+      "group": "tools",
+      "class": "tool",
+      "description": "The DUV immersion scanner model from the Foundry Floor pack, seen from the front right.",
+      "revisionId": "r_60b7dd62114248d8b39445eb7a485c0b",
+      "author": "sonnet-ff-litho",
+      "placedInScene": true,
+      "metrics": {
+        "triangles": 5458,
+        "trianglesDetailed": 5364,
+        "trianglesLod1": 94,
+        "trianglesHidden": 0,
+        "bounds": [
+          5.5,
+          3,
+          3.2
+        ],
+        "boundsMin": [
+          -2.75,
+          0,
+          -1.6
+        ],
+        "boundsMax": [
+          2.75,
+          3,
+          1.6
+        ],
+        "materials": 7,
+        "clips": [
+          "ServiceOpen",
+          "ServiceClose",
+          "Expose"
+        ],
+        "nodes": 36,
+        "meshes": 26
+      },
+      "lod": {
+        "class": "tool",
+        "nearMetres": 34,
+        "farMetres": 38
+      },
+      "hideByDefault": [],
+      "runtimeDownload": {
+        "path": "packs/foundry-floor/ff2/models/duv-immersion-scanner.glb",
+        "bytes": 411368,
+        "sha256": "58b7682e6bece4b039c2ffb9605386fe42801aaf11c442926dcff1d9f89b2207",
+        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff2/models/duv-immersion-scanner.glb",
+        "archive": "packs/foundry-floor/ff2/foundry-floor-ff2-models.zip",
+        "member": "models/duv-immersion-scanner.glb"
+      },
+      "licence": {
+        "path": "packs/foundry-floor/ff2/licenses/ASSET-LICENSE.txt",
+        "bytes": 7105,
+        "sha256": "f9f095f8694b564de951e9977848b1e81e3599c083b14e9193021938add81992",
+        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff2/licenses/ASSET-LICENSE.txt",
+        "spdx": "CC0-1.0",
+        "statesGlbSha256": "58b7682e6bece4b039c2ffb9605386fe42801aaf11c442926dcff1d9f89b2207"
+      },
+      "license": "CC0-1.0",
+      "poster": {
+        "src": "/media/rig/review-neutral-v1/foundry-floor/ff2/duv-immersion-scanner.webp",
+        "width": 1024,
+        "height": 1024,
+        "alt": "The DUV immersion scanner model from the Foundry Floor pack, seen from the front right.",
+        "srcsetWebp": "/media/rig/review-neutral-v1/foundry-floor/ff2/duv-immersion-scanner-320.webp 320w, /media/rig/review-neutral-v1/foundry-floor/ff2/duv-immersion-scanner-480.webp 480w, /media/rig/review-neutral-v1/foundry-floor/ff2/duv-immersion-scanner-672.webp 672w, /media/rig/review-neutral-v1/foundry-floor/ff2/duv-immersion-scanner-768.webp 768w, /media/rig/review-neutral-v1/foundry-floor/ff2/duv-immersion-scanner-1024.webp 1024w",
+        "srcsetAvif": "/media/rig/review-neutral-v1/foundry-floor/ff2/duv-immersion-scanner-320.avif 320w, /media/rig/review-neutral-v1/foundry-floor/ff2/duv-immersion-scanner-480.avif 480w, /media/rig/review-neutral-v1/foundry-floor/ff2/duv-immersion-scanner-672.avif 672w, /media/rig/review-neutral-v1/foundry-floor/ff2/duv-immersion-scanner-768.avif 768w, /media/rig/review-neutral-v1/foundry-floor/ff2/duv-immersion-scanner-1024.avif 1024w",
+        "inputPath": "media/rig/review-neutral-v1/foundry-floor/ff2/duv-immersion-scanner.png",
+        "sourceRevisionId": "r_60b7dd62114248d8b39445eb7a485c0b",
+        "exactRevision": true,
+        "rig": "review-neutral-v1"
+      }
+    },
+    {
+      "id": "subfabKit",
+      "slug": "subfab-pump-abatement-kit",
+      "name": "Subfab pump/abatement kit",
+      "pack": "foundry-floor",
+      "group": "building",
+      "class": "building",
+      "description": "The subfab pump/abatement kit model from the Foundry Floor pack, seen from the front right.",
+      "revisionId": "r_d0ff94d7e74c487b9b822f61a1ccd171",
+      "author": "sonnet-ff-utility",
+      "placedInScene": false,
+      "unplacedWhy": "accepted and staged as a pack file; no instance in FF2 (data/assets.json), so the scene does not fetch it",
+      "metrics": {
+        "triangles": 2464,
+        "trianglesDetailed": 2464,
+        "trianglesLod1": 0,
+        "trianglesHidden": 0,
+        "bounds": [
+          3.6,
+          6,
+          2.4
+        ],
+        "boundsMin": [
+          -1.8,
+          0,
+          -1.2
+        ],
+        "boundsMax": [
+          1.8,
+          6,
+          1.2
+        ],
+        "materials": 9,
+        "clips": [
+          "FanSpin"
+        ],
+        "nodes": 88,
+        "meshes": 32
+      },
+      "lod": null,
+      "hideByDefault": [],
+      "runtimeDownload": {
+        "path": "packs/foundry-floor/ff2/models/subfab-pump-abatement-kit.glb",
+        "bytes": 64780,
+        "sha256": "14b884d16dc0e56217ca8c07a0a1979b53b972750e8499ffb8eacf2ccd1d844d",
+        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff2/models/subfab-pump-abatement-kit.glb",
+        "archive": "packs/foundry-floor/ff2/foundry-floor-ff2-models.zip",
+        "member": "models/subfab-pump-abatement-kit.glb"
+      },
+      "licence": {
+        "path": "packs/foundry-floor/ff2/licenses/ASSET-LICENSE.txt",
+        "bytes": 7105,
+        "sha256": "f9f095f8694b564de951e9977848b1e81e3599c083b14e9193021938add81992",
+        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff2/licenses/ASSET-LICENSE.txt",
+        "spdx": "CC0-1.0",
+        "statesGlbSha256": "14b884d16dc0e56217ca8c07a0a1979b53b972750e8499ffb8eacf2ccd1d844d"
+      },
+      "license": "CC0-1.0",
+      "poster": {
+        "src": "/media/rig/review-neutral-v1/foundry-floor/ff2/subfab-pump-abatement-kit.webp",
+        "width": 1024,
+        "height": 1024,
+        "alt": "The subfab pump/abatement kit model from the Foundry Floor pack, seen from the front right.",
+        "srcsetWebp": "/media/rig/review-neutral-v1/foundry-floor/ff2/subfab-pump-abatement-kit-320.webp 320w, /media/rig/review-neutral-v1/foundry-floor/ff2/subfab-pump-abatement-kit-480.webp 480w, /media/rig/review-neutral-v1/foundry-floor/ff2/subfab-pump-abatement-kit-672.webp 672w, /media/rig/review-neutral-v1/foundry-floor/ff2/subfab-pump-abatement-kit-768.webp 768w, /media/rig/review-neutral-v1/foundry-floor/ff2/subfab-pump-abatement-kit-1024.webp 1024w",
+        "srcsetAvif": "/media/rig/review-neutral-v1/foundry-floor/ff2/subfab-pump-abatement-kit-320.avif 320w, /media/rig/review-neutral-v1/foundry-floor/ff2/subfab-pump-abatement-kit-480.avif 480w, /media/rig/review-neutral-v1/foundry-floor/ff2/subfab-pump-abatement-kit-672.avif 672w, /media/rig/review-neutral-v1/foundry-floor/ff2/subfab-pump-abatement-kit-768.avif 768w, /media/rig/review-neutral-v1/foundry-floor/ff2/subfab-pump-abatement-kit-1024.avif 1024w",
+        "inputPath": "media/rig/review-neutral-v1/foundry-floor/ff2/subfab-pump-abatement-kit.png",
+        "sourceRevisionId": "r_d0ff94d7e74c487b9b822f61a1ccd171",
+        "exactRevision": true,
+        "rig": "review-neutral-v1"
+      }
+    },
+    {
+      "id": "gallerySegment",
+      "slug": "visitor-gallery-segment",
+      "name": "Visitor gallery segment",
+      "pack": "foundry-floor",
+      "group": "building",
+      "class": "building",
+      "description": "The visitor gallery segment model from the Foundry Floor pack, seen from the front right.",
+      "revisionId": "r_cf68f8f819f34684ac183610c45596cc",
+      "author": "sonnet-ff-utility",
+      "placedInScene": true,
+      "metrics": {
+        "triangles": 1056,
+        "trianglesDetailed": 1056,
+        "trianglesLod1": 0,
+        "trianglesHidden": 0,
+        "bounds": [
+          7.2,
+          3,
+          3.6
+        ],
+        "boundsMin": [
+          -3.6,
+          0,
+          -1.8
+        ],
+        "boundsMax": [
+          3.6,
+          3,
+          1.8
+        ],
+        "materials": 6,
+        "clips": [],
+        "nodes": 50,
+        "meshes": 18
+      },
+      "lod": null,
+      "hideByDefault": [],
+      "runtimeDownload": {
+        "path": "packs/foundry-floor/ff2/models/visitor-gallery-segment.glb",
+        "bytes": 32104,
+        "sha256": "0b0e16c3b0b6a71392e47b40a58fd36c64f20c594edcf69ac83f9f0a38326830",
+        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff2/models/visitor-gallery-segment.glb",
+        "archive": "packs/foundry-floor/ff2/foundry-floor-ff2-models.zip",
+        "member": "models/visitor-gallery-segment.glb"
+      },
+      "licence": {
+        "path": "packs/foundry-floor/ff2/licenses/ASSET-LICENSE.txt",
+        "bytes": 7105,
+        "sha256": "f9f095f8694b564de951e9977848b1e81e3599c083b14e9193021938add81992",
+        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff2/licenses/ASSET-LICENSE.txt",
+        "spdx": "CC0-1.0",
+        "statesGlbSha256": "0b0e16c3b0b6a71392e47b40a58fd36c64f20c594edcf69ac83f9f0a38326830"
+      },
+      "license": "CC0-1.0",
+      "poster": {
+        "src": "/media/rig/review-neutral-v1/foundry-floor/ff2/visitor-gallery-segment.webp",
+        "width": 1024,
+        "height": 1024,
+        "alt": "The visitor gallery segment model from the Foundry Floor pack, seen from the front right.",
+        "srcsetWebp": "/media/rig/review-neutral-v1/foundry-floor/ff2/visitor-gallery-segment-320.webp 320w, /media/rig/review-neutral-v1/foundry-floor/ff2/visitor-gallery-segment-480.webp 480w, /media/rig/review-neutral-v1/foundry-floor/ff2/visitor-gallery-segment-672.webp 672w, /media/rig/review-neutral-v1/foundry-floor/ff2/visitor-gallery-segment-768.webp 768w, /media/rig/review-neutral-v1/foundry-floor/ff2/visitor-gallery-segment-1024.webp 1024w",
+        "srcsetAvif": "/media/rig/review-neutral-v1/foundry-floor/ff2/visitor-gallery-segment-320.avif 320w, /media/rig/review-neutral-v1/foundry-floor/ff2/visitor-gallery-segment-480.avif 480w, /media/rig/review-neutral-v1/foundry-floor/ff2/visitor-gallery-segment-672.avif 672w, /media/rig/review-neutral-v1/foundry-floor/ff2/visitor-gallery-segment-768.avif 768w, /media/rig/review-neutral-v1/foundry-floor/ff2/visitor-gallery-segment-1024.avif 1024w",
+        "inputPath": "media/rig/review-neutral-v1/foundry-floor/ff2/visitor-gallery-segment.png",
+        "sourceRevisionId": "r_cf68f8f819f34684ac183610c45596cc",
+        "exactRevision": true,
+        "rig": "review-neutral-v1"
+      }
+    },
+    {
+      "id": "technician",
+      "slug": "cleanroom-technician",
+      "name": "Cleanroom technician",
+      "pack": "foundry-floor",
+      "group": "people",
+      "class": "people",
+      "description": "The cleanroom technician model from the Foundry Floor pack, seen from the front right.",
+      "revisionId": "r_e1d7c6935493484d9586bcf0c21604de",
+      "author": "sonnet-ff-utility",
+      "placedInScene": true,
+      "metrics": {
+        "triangles": 4992,
+        "trianglesDetailed": 4992,
+        "trianglesLod1": 0,
+        "trianglesHidden": 0,
+        "bounds": [
+          0.35,
+          1.75,
+          0.55
+        ],
+        "boundsMin": [
+          -0.175,
+          0,
+          -0.275
+        ],
+        "boundsMax": [
+          0.175,
+          1.75,
+          0.275
+        ],
+        "materials": 4,
+        "clips": [
+          "Walk",
+          "Idle",
+          "Service"
+        ],
+        "nodes": 28,
+        "meshes": 15
+      },
+      "lod": null,
+      "hideByDefault": [],
+      "runtimeDownload": {
+        "path": "packs/foundry-floor/ff2/models/cleanroom-technician.glb",
+        "bytes": 103868,
+        "sha256": "d7eb534f128a6133e0c21feb0b371e0294e1b2aca551e596cba30e73590f9fbd",
+        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff2/models/cleanroom-technician.glb",
+        "archive": "packs/foundry-floor/ff2/foundry-floor-ff2-models.zip",
+        "member": "models/cleanroom-technician.glb"
+      },
+      "licence": {
+        "path": "packs/foundry-floor/ff2/licenses/ASSET-LICENSE.txt",
+        "bytes": 7105,
+        "sha256": "f9f095f8694b564de951e9977848b1e81e3599c083b14e9193021938add81992",
+        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff2/licenses/ASSET-LICENSE.txt",
+        "spdx": "CC0-1.0",
+        "statesGlbSha256": "d7eb534f128a6133e0c21feb0b371e0294e1b2aca551e596cba30e73590f9fbd"
+      },
+      "license": "CC0-1.0",
+      "poster": {
+        "src": "/media/rig/review-neutral-v1/foundry-floor/ff2/cleanroom-technician.webp",
+        "width": 1024,
+        "height": 1024,
+        "alt": "The cleanroom technician model from the Foundry Floor pack, seen from the front right.",
+        "srcsetWebp": "/media/rig/review-neutral-v1/foundry-floor/ff2/cleanroom-technician-320.webp 320w, /media/rig/review-neutral-v1/foundry-floor/ff2/cleanroom-technician-480.webp 480w, /media/rig/review-neutral-v1/foundry-floor/ff2/cleanroom-technician-672.webp 672w, /media/rig/review-neutral-v1/foundry-floor/ff2/cleanroom-technician-768.webp 768w, /media/rig/review-neutral-v1/foundry-floor/ff2/cleanroom-technician-1024.webp 1024w",
+        "srcsetAvif": "/media/rig/review-neutral-v1/foundry-floor/ff2/cleanroom-technician-320.avif 320w, /media/rig/review-neutral-v1/foundry-floor/ff2/cleanroom-technician-480.avif 480w, /media/rig/review-neutral-v1/foundry-floor/ff2/cleanroom-technician-672.avif 672w, /media/rig/review-neutral-v1/foundry-floor/ff2/cleanroom-technician-768.avif 768w, /media/rig/review-neutral-v1/foundry-floor/ff2/cleanroom-technician-1024.avif 1024w",
+        "inputPath": "media/rig/review-neutral-v1/foundry-floor/ff2/cleanroom-technician.png",
+        "sourceRevisionId": "r_e1d7c6935493484d9586bcf0c21604de",
+        "exactRevision": true,
+        "rig": "review-neutral-v1"
+      }
+    },
+    {
+      "id": "humanoidWorkRobot",
+      "slug": "humanoid-work-robot",
+      "name": "Humanoid work robot",
+      "pack": "foundry-floor",
+      "group": "people",
+      "class": "people",
+      "description": "The humanoid work robot model from the Foundry Floor pack, seen from the front right.",
+      "revisionId": "r_9f717d17eec74f2dbd4c338612207ed5",
+      "author": "sonnet-ff-humanoid",
+      "placedInScene": false,
+      "unplacedWhy": "accepted and staged as a pack file; no instance in FF2 (data/assets.json), so the scene does not fetch it",
+      "metrics": {
+        "triangles": 7468,
+        "trianglesDetailed": 7468,
+        "trianglesLod1": 0,
+        "trianglesHidden": 0,
+        "bounds": [
+          0.4,
+          1.73,
+          0.62
+        ],
+        "boundsMin": [
+          -0.2,
+          0,
+          -0.31
+        ],
+        "boundsMax": [
+          0.2,
+          1.73,
+          0.31
+        ],
+        "materials": 4,
+        "clips": [
+          "Walk",
+          "Idle",
+          "Carry",
+          "Handoff",
+          "Service"
+        ],
+        "nodes": 64,
+        "meshes": 33
+      },
+      "lod": null,
+      "hideByDefault": [],
+      "runtimeDownload": {
+        "path": "packs/foundry-floor/ff2/models/humanoid-work-robot.glb",
+        "bytes": 200656,
+        "sha256": "cd118485e113219ce8de9bb6d3b873634fb7dadebf81028142d0f6a644f88aa2",
+        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff2/models/humanoid-work-robot.glb",
+        "archive": "packs/foundry-floor/ff2/foundry-floor-ff2-models.zip",
+        "member": "models/humanoid-work-robot.glb"
+      },
+      "licence": {
+        "path": "packs/foundry-floor/ff2/licenses/ASSET-LICENSE.txt",
+        "bytes": 7105,
+        "sha256": "f9f095f8694b564de951e9977848b1e81e3599c083b14e9193021938add81992",
+        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff2/licenses/ASSET-LICENSE.txt",
+        "spdx": "CC0-1.0",
+        "statesGlbSha256": "cd118485e113219ce8de9bb6d3b873634fb7dadebf81028142d0f6a644f88aa2"
+      },
+      "license": "CC0-1.0",
+      "poster": {
+        "src": "/media/rig/review-neutral-v1/foundry-floor/ff2/humanoid-work-robot.webp",
+        "width": 1024,
+        "height": 1024,
+        "alt": "The humanoid work robot model from the Foundry Floor pack, seen from the front right.",
+        "srcsetWebp": "/media/rig/review-neutral-v1/foundry-floor/ff2/humanoid-work-robot-320.webp 320w, /media/rig/review-neutral-v1/foundry-floor/ff2/humanoid-work-robot-480.webp 480w, /media/rig/review-neutral-v1/foundry-floor/ff2/humanoid-work-robot-672.webp 672w, /media/rig/review-neutral-v1/foundry-floor/ff2/humanoid-work-robot-768.webp 768w, /media/rig/review-neutral-v1/foundry-floor/ff2/humanoid-work-robot-1024.webp 1024w",
+        "srcsetAvif": "/media/rig/review-neutral-v1/foundry-floor/ff2/humanoid-work-robot-320.avif 320w, /media/rig/review-neutral-v1/foundry-floor/ff2/humanoid-work-robot-480.avif 480w, /media/rig/review-neutral-v1/foundry-floor/ff2/humanoid-work-robot-672.avif 672w, /media/rig/review-neutral-v1/foundry-floor/ff2/humanoid-work-robot-768.avif 768w, /media/rig/review-neutral-v1/foundry-floor/ff2/humanoid-work-robot-1024.avif 1024w",
+        "inputPath": "media/rig/review-neutral-v1/foundry-floor/ff2/humanoid-work-robot.png",
+        "sourceRevisionId": "r_9f717d17eec74f2dbd4c338612207ed5",
+        "exactRevision": true,
+        "rig": "review-neutral-v1"
+      }
+    },
+    {
+      "id": "amrFloorRobot",
+      "slug": "amr-floor-robot",
+      "name": "AMR floor robot",
+      "pack": "foundry-floor",
+      "group": "people",
+      "class": "robot",
+      "description": "The AMR floor robot model from the Foundry Floor pack, seen from the front right.",
+      "revisionId": "r_4141b13a77bb45dd830fa66d35f799e7",
+      "author": "sonnet-ff-robots",
+      "placedInScene": true,
+      "metrics": {
+        "triangles": 2658,
+        "trianglesDetailed": 2384,
+        "trianglesLod1": 274,
+        "trianglesHidden": 0,
+        "bounds": [
+          1.008,
+          1.25,
+          0.709
+        ],
+        "boundsMin": [
+          -0.504,
+          0,
+          -0.354
+        ],
+        "boundsMax": [
+          0.504,
+          1.25,
+          0.355
+        ],
+        "materials": 7,
+        "clips": [
+          "DeckUp",
+          "DeckDown"
+        ],
+        "nodes": 53,
+        "meshes": 22
+      },
+      "lod": {
+        "class": "robot",
+        "nearMetres": 22,
+        "farMetres": 25
+      },
+      "hideByDefault": [],
+      "runtimeDownload": {
+        "path": "packs/foundry-floor/ff2/models/amr-floor-robot.glb",
+        "bytes": 143956,
+        "sha256": "b173b7d81d6ba1d924e37283bfe05a2774db83421790ad3551fa3916d22c2c78",
+        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff2/models/amr-floor-robot.glb",
+        "archive": "packs/foundry-floor/ff2/foundry-floor-ff2-models.zip",
+        "member": "models/amr-floor-robot.glb"
+      },
+      "licence": {
+        "path": "packs/foundry-floor/ff2/licenses/ASSET-LICENSE.txt",
+        "bytes": 7105,
+        "sha256": "f9f095f8694b564de951e9977848b1e81e3599c083b14e9193021938add81992",
+        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff2/licenses/ASSET-LICENSE.txt",
+        "spdx": "CC0-1.0",
+        "statesGlbSha256": "b173b7d81d6ba1d924e37283bfe05a2774db83421790ad3551fa3916d22c2c78"
+      },
+      "license": "CC0-1.0",
+      "poster": {
+        "src": "/media/rig/review-neutral-v1/foundry-floor/ff2/amr-floor-robot.webp",
+        "width": 1024,
+        "height": 1024,
+        "alt": "The AMR floor robot model from the Foundry Floor pack, seen from the front right.",
+        "srcsetWebp": "/media/rig/review-neutral-v1/foundry-floor/ff2/amr-floor-robot-320.webp 320w, /media/rig/review-neutral-v1/foundry-floor/ff2/amr-floor-robot-480.webp 480w, /media/rig/review-neutral-v1/foundry-floor/ff2/amr-floor-robot-672.webp 672w, /media/rig/review-neutral-v1/foundry-floor/ff2/amr-floor-robot-768.webp 768w, /media/rig/review-neutral-v1/foundry-floor/ff2/amr-floor-robot-1024.webp 1024w",
+        "srcsetAvif": "/media/rig/review-neutral-v1/foundry-floor/ff2/amr-floor-robot-320.avif 320w, /media/rig/review-neutral-v1/foundry-floor/ff2/amr-floor-robot-480.avif 480w, /media/rig/review-neutral-v1/foundry-floor/ff2/amr-floor-robot-672.avif 672w, /media/rig/review-neutral-v1/foundry-floor/ff2/amr-floor-robot-768.avif 768w, /media/rig/review-neutral-v1/foundry-floor/ff2/amr-floor-robot-1024.avif 1024w",
+        "inputPath": "media/rig/review-neutral-v1/foundry-floor/ff2/amr-floor-robot.png",
+        "sourceRevisionId": "r_4141b13a77bb45dd830fa66d35f799e7",
+        "exactRevision": true,
+        "rig": "review-neutral-v1"
+      }
+    },
+    {
+      "id": "toolFrontRobotArm",
+      "slug": "tool-front-robot-arm",
+      "name": "Tool-front robot arm",
+      "pack": "foundry-floor",
+      "group": "people",
+      "class": "robot",
+      "description": "The tool-front robot arm model from the Foundry Floor pack, seen from the front right.",
+      "revisionId": "r_309f3e9884384c3e9090f2b0b76dc333",
+      "author": "sonnet-ff-robots",
+      "placedInScene": true,
+      "metrics": {
+        "triangles": 2596,
+        "trianglesDetailed": 2536,
+        "trianglesLod1": 60,
+        "trianglesHidden": 0,
+        "bounds": [
+          0.7923,
+          1.5513,
+          0.41
+        ],
+        "boundsMin": [
+          -0.3623,
+          0,
+          -0.205
+        ],
+        "boundsMax": [
+          0.43,
+          1.5513,
+          0.205
+        ],
+        "materials": 8,
+        "clips": [
+          "DeckToSeat",
+          "SeatToDeck",
+          "SeatToHome",
+          "HomeToDeck"
+        ],
+        "nodes": 29,
+        "meshes": 23
+      },
+      "lod": {
+        "class": "robot",
+        "nearMetres": 22,
+        "farMetres": 25
+      },
+      "hideByDefault": [],
+      "runtimeDownload": {
+        "path": "packs/foundry-floor/ff2/models/tool-front-robot-arm.glb",
+        "bytes": 311948,
+        "sha256": "c499bba543726ced9758f1d219882be10c6655616f84c769c2ca1a7c23917c86",
+        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff2/models/tool-front-robot-arm.glb",
+        "archive": "packs/foundry-floor/ff2/foundry-floor-ff2-models.zip",
+        "member": "models/tool-front-robot-arm.glb"
+      },
+      "licence": {
+        "path": "packs/foundry-floor/ff2/licenses/ASSET-LICENSE.txt",
+        "bytes": 7105,
+        "sha256": "f9f095f8694b564de951e9977848b1e81e3599c083b14e9193021938add81992",
+        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff2/licenses/ASSET-LICENSE.txt",
+        "spdx": "CC0-1.0",
+        "statesGlbSha256": "c499bba543726ced9758f1d219882be10c6655616f84c769c2ca1a7c23917c86"
+      },
+      "license": "CC0-1.0",
+      "poster": {
+        "src": "/media/rig/review-neutral-v1/foundry-floor/ff2/tool-front-robot-arm.webp",
+        "width": 1024,
+        "height": 1024,
+        "alt": "The tool-front robot arm model from the Foundry Floor pack, seen from the front right.",
+        "srcsetWebp": "/media/rig/review-neutral-v1/foundry-floor/ff2/tool-front-robot-arm-320.webp 320w, /media/rig/review-neutral-v1/foundry-floor/ff2/tool-front-robot-arm-480.webp 480w, /media/rig/review-neutral-v1/foundry-floor/ff2/tool-front-robot-arm-672.webp 672w, /media/rig/review-neutral-v1/foundry-floor/ff2/tool-front-robot-arm-768.webp 768w, /media/rig/review-neutral-v1/foundry-floor/ff2/tool-front-robot-arm-1024.webp 1024w",
+        "srcsetAvif": "/media/rig/review-neutral-v1/foundry-floor/ff2/tool-front-robot-arm-320.avif 320w, /media/rig/review-neutral-v1/foundry-floor/ff2/tool-front-robot-arm-480.avif 480w, /media/rig/review-neutral-v1/foundry-floor/ff2/tool-front-robot-arm-672.avif 672w, /media/rig/review-neutral-v1/foundry-floor/ff2/tool-front-robot-arm-768.avif 768w, /media/rig/review-neutral-v1/foundry-floor/ff2/tool-front-robot-arm-1024.avif 1024w",
+        "inputPath": "media/rig/review-neutral-v1/foundry-floor/ff2/tool-front-robot-arm.png",
+        "sourceRevisionId": "r_309f3e9884384c3e9090f2b0b76dc333",
+        "exactRevision": true,
+        "rig": "review-neutral-v1"
+      }
+    },
+    {
+      "id": "sectionModule",
+      "slug": "level-section-module",
+      "name": "Level section module",
+      "pack": "foundry-floor",
+      "group": "building",
+      "class": "building",
+      "description": "The level section module model from the Foundry Floor pack, seen from the front right.",
+      "revisionId": "r_3b3d090fa0494380bdcaafaf6f3a22f2",
+      "author": "sonnet-ff-section",
+      "placedInScene": true,
+      "metrics": {
+        "triangles": 4800,
+        "trianglesDetailed": 2656,
+        "trianglesLod1": 0,
+        "trianglesHidden": 2144,
+        "bounds": [
+          2.4,
+          22,
+          7.2
+        ],
+        "boundsMin": [
+          -1.2,
+          -8,
+          -3.6
+        ],
+        "boundsMax": [
+          1.2,
+          14,
+          3.6
+        ],
+        "materials": 8,
+        "clips": [],
+        "nodes": 32,
+        "meshes": 23
+      },
+      "lod": null,
+      "hideByDefault": [
+        "raisedFloor",
+        "ffuPlenum",
+        "cutFaceCaps_raisedFloor",
+        "cutFaceCaps_ffuWhite",
+        "cutFaceCaps_ffuHousing"
+      ],
+      "runtimeDownload": {
+        "path": "packs/foundry-floor/ff2/models/level-section-module.glb",
+        "bytes": 322096,
+        "sha256": "20d5f55ea0f97f29d5adccc45e090bcb605fad99e05733163a89c15a29d4cd2c",
+        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff2/models/level-section-module.glb",
+        "archive": "packs/foundry-floor/ff2/foundry-floor-ff2-models.zip",
+        "member": "models/level-section-module.glb"
+      },
+      "licence": {
+        "path": "packs/foundry-floor/ff2/licenses/ASSET-LICENSE.txt",
+        "bytes": 7105,
+        "sha256": "f9f095f8694b564de951e9977848b1e81e3599c083b14e9193021938add81992",
+        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff2/licenses/ASSET-LICENSE.txt",
+        "spdx": "CC0-1.0",
+        "statesGlbSha256": "20d5f55ea0f97f29d5adccc45e090bcb605fad99e05733163a89c15a29d4cd2c"
+      },
+      "license": "CC0-1.0",
+      "poster": {
+        "src": "/media/rig/review-neutral-v1/foundry-floor/ff2/level-section-module.webp",
+        "width": 1024,
+        "height": 1024,
+        "alt": "The level section module model from the Foundry Floor pack, seen from the front right.",
+        "srcsetWebp": "/media/rig/review-neutral-v1/foundry-floor/ff2/level-section-module-320.webp 320w, /media/rig/review-neutral-v1/foundry-floor/ff2/level-section-module-480.webp 480w, /media/rig/review-neutral-v1/foundry-floor/ff2/level-section-module-672.webp 672w, /media/rig/review-neutral-v1/foundry-floor/ff2/level-section-module-768.webp 768w, /media/rig/review-neutral-v1/foundry-floor/ff2/level-section-module-1024.webp 1024w",
+        "srcsetAvif": "/media/rig/review-neutral-v1/foundry-floor/ff2/level-section-module-320.avif 320w, /media/rig/review-neutral-v1/foundry-floor/ff2/level-section-module-480.avif 480w, /media/rig/review-neutral-v1/foundry-floor/ff2/level-section-module-672.avif 672w, /media/rig/review-neutral-v1/foundry-floor/ff2/level-section-module-768.avif 768w, /media/rig/review-neutral-v1/foundry-floor/ff2/level-section-module-1024.avif 1024w",
+        "inputPath": "media/rig/review-neutral-v1/foundry-floor/ff2/level-section-module.png",
+        "sourceRevisionId": "r_3b3d090fa0494380bdcaafaf6f3a22f2",
+        "exactRevision": true,
+        "rig": "review-neutral-v1"
+      }
+    }
+  ]
+}

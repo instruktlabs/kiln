@@ -45,6 +45,12 @@ declare module 'virtual:kiln-scenes' {
       bytes: number;
       gzipBytes: number;
       sha256: string;
+      /** Read from the served, verified pack.json at build time. */
+      pack: {
+        release: string | null;
+        models: Record<string, { path: string; bytes: number; sha256: string }>;
+        source: Record<string, unknown> | null;
+      };
     } | null
   >;
 }

@@ -1,6 +1,8 @@
 import { describe, expect, test } from 'bun:test';
 import farm from '../src/data/packs/farm.json';
 import vehicles from '../src/data/packs/vehicles.json';
+import foundryFloor from '../src/data/packs/foundry-floor.json';
+import scenePacks from '../src/data/scene-packs.json';
 import vehicleRuns from '../src/data/vehicle-runs.json';
 import rigPosters from '../src/data/rig-posters.json';
 import bridge from '../src/data/standalone/golden-gate-bridge.json';
@@ -8,6 +10,8 @@ import tiers from '../src/data/standalone/golden-gate-tiers.json';
 import build from '../src/data/commons-build.json';
 import manifest from '../src/data/mirror-manifest.json';
 import { imageRecord, inspectGlb } from './generate-commons.mjs';
+import { CORRECTED_REVISION_APPROVALS, vehicleReview } from './stage-vehicles.mjs';
+import { VEHICLES } from './vehicles-spec.mjs';
 
 function glb(json: object) {
   const encoded = Buffer.from(JSON.stringify(json));
@@ -176,17 +180,24 @@ describe('Commons catalog bindings', () => {
       expect(asset.reviewImage.fidelity.exactArtifact).toBe(false);
     }
   });
-  test('Vehicles review status keeps the corrected bus separate from the five approved vehicles', () => {
-    expect(vehicles.ownerReview.acceptedAssets).toBe(5);
+  test('Vehicles review status: six approved, the corrected bus by its own later approval', () => {
+    expect(vehicles.ownerReview.acceptedAssets).toBe(6);
     expect(vehicles.ownerReview.total).toBe(6);
     const accepted = vehicles.assets.filter((asset) => asset.review.ownerAccepted).map((asset) => asset.slug);
-    expect(accepted).toEqual(['hatchback', 'sedan', 'suv', 'pickup', 'box-truck']);
+    expect(accepted).toEqual(['hatchback', 'sedan', 'suv', 'pickup', 'box-truck', 'transit-bus']);
+    // The pack record is what the assets say, never typed separately.
+    expect(vehicles.ownerReview.status).toBe(accepted.length === vehicles.assets.length ? 'all-current-revisions-accepted' : 'awaiting-review-of-corrected-revision');
+    expect(vehicles.ownerReview.awaiting).toEqual(vehicles.assets.filter((asset) => !asset.review.ownerAccepted).map((asset) => asset.name));
     const bus = vehicles.assets.find((asset) => asset.slug === 'transit-bus')!;
-    expect(bus.review.status).toBe('awaiting-owner-review');
+    expect(bus.review.status).toBe('accepted');
     expect(bus.review.correction).toContain('see-through');
     expect(bus.revisions).toHaveLength(2);
     expect(bus.parentRevision).toBe(bus.revisions[0]!.revisionId);
     expect(bus.revisionId).toBe(bus.revisions[1]!.revisionId);
+    // The later approval names exactly the revision the page offers, and the record is what the staging writes.
+    expect(Object.keys(CORRECTED_REVISION_APPROVALS)).toEqual([bus.revisionId]);
+    const spec = VEHICLES.find((vehicle) => vehicle.slug === 'transit-bus')!;
+    expect(bus.review).toEqual(vehicleReview(spec, { geometryUnchanged: true }));
   });
   test('Vehicles requested effort stays distinct from independent confirmation', () => {
     for (const run of vehicleRuns) {
@@ -211,6 +222,83 @@ describe('Commons catalog bindings', () => {
     const failed = vehicleRuns.filter((run) => run.status === 'failed');
     expect(failed.map((run) => run.stop)).toEqual(['error_max_budget_usd']);
     expect(vehicleRuns).toHaveLength(3);
+  });
+  test('Foundry Floor pack lists the 31 models of FF2, 29 placed, each pinned to its GLB and the licence text', () => {
+    expect(foundryFloor.assetCount).toBe(31);
+    expect(foundryFloor.assets).toHaveLength(31);
+    expect(foundryFloor.release).toBe('ff2');
+    expect(foundryFloor.status).toBe('in-production');
+    expect(foundryFloor.placedInScene).toBe(29);
+    expect(foundryFloor.assets.filter((asset) => asset.placedInScene)).toHaveLength(29);
+    // The two the FF2 scene does not place (its pack.json source.unplaced), each with the pack's own reason.
+    const unplaced = foundryFloor.assets.filter((asset) => !asset.placedInScene);
+    expect(unplaced.map((asset) => asset.slug)).toEqual(['subfab-pump-abatement-kit', 'humanoid-work-robot']);
+    for (const asset of unplaced) expect(asset.unplacedWhy).toContain('no instance in FF2');
+    // The pack the catalog was staged from is the one the site serves.
+    expect(foundryFloor.scenePack).toMatchObject({ release: scenePacks['foundry-floor'].release, packJsonSha256: scenePacks['foundry-floor'].packJsonSha256, sha256sumsSha256: scenePacks['foundry-floor'].sha256sumsSha256 });
+    const pinned = (path: string) => manifest.files.find((file) => file.path === path);
+    expect(pinned(foundryFloor.licence.path)).toMatchObject({ bytes: foundryFloor.licence.bytes, sha256: foundryFloor.licence.sha256 });
+    expect(foundryFloor.licence.models).toBe(31);
+    const slugs = new Set<string>();
+    for (const asset of foundryFloor.assets) {
+      slugs.add(asset.slug);
+      expect(asset.pack).toBe('foundry-floor');
+      expect(foundryFloor.groups.map((group) => group.id)).toContain(asset.group);
+      expect(asset.revisionId).toMatch(/^r_[0-9a-f]{32}$/);
+      expect(asset.author).toMatch(/^sonnet-ff-[a-z0-9-]+$/);
+      expect(pinned(asset.runtimeDownload.path)).toMatchObject({ bytes: asset.runtimeDownload.bytes, sha256: asset.runtimeDownload.sha256 });
+      expect(asset.runtimeDownload.path).toBe(`packs/foundry-floor/ff2/models/${asset.slug}.glb`);
+      expect(asset.licence).toMatchObject({ path: foundryFloor.licence.path, sha256: foundryFloor.licence.sha256, spdx: 'CC0-1.0', statesGlbSha256: asset.runtimeDownload.sha256 });
+      // Triangles: what a plain glTF viewer draws is every triangle in the file (detailed, lod1 and hidden parts).
+      const metrics = asset.metrics;
+      expect(metrics.triangles).toBe(metrics.trianglesDetailed + metrics.trianglesLod1 + metrics.trianglesHidden);
+      expect(metrics.bounds.every((size) => size > 0)).toBe(true);
+      expect(asset.lod === null).toBe(metrics.trianglesLod1 === 0);
+      // A rig render of the exact revision, pinned.
+      expect(asset.poster?.rig).toBe('review-neutral-v1');
+      expect(asset.poster?.sourceRevisionId).toBe(asset.revisionId);
+      expect(asset.poster?.inputPath).toBe(`media/rig/review-neutral-v1/foundry-floor/ff2/${asset.slug}.png`);
+      expect(manifest.files.some((file) => file.path === asset.poster?.inputPath)).toBe(true);
+    }
+    expect(slugs.size).toBe(31);
+    // 24 models carry a far form (lod1) in the same file; the page's conventions say so.
+    expect(foundryFloor.assets.filter((asset) => asset.metrics.trianglesLod1 > 0)).toHaveLength(24);
+    expect(foundryFloor.conventions.lod).toContain('24 of the 31 models');
+    // One models archive, pinned: the 31 GLBs, the licence text and the delivery inventory.
+    const [archive] = foundryFloor.downloads;
+    expect(foundryFloor.downloads).toHaveLength(1);
+    expect(archive).toMatchObject({ profile: 'models', assets: 31, files: 33 });
+    expect(pinned(archive!.path)).toMatchObject({ bytes: archive!.bytes, sha256: archive!.sha256 });
+    expect(build.archives).toContain(archive!.path);
+  });
+  test('Foundry Floor stays out of the gallery and names no brand outside the no-affiliation line', () => {
+    const inGallery = [...farm.assets, ...vehicles.assets].map((asset) => asset.slug);
+    for (const asset of foundryFloor.assets) expect(inGallery).not.toContain(asset.slug);
+    const text = JSON.stringify(foundryFloor);
+    expect(text).not.toMatch(/\b(Tesla|SpaceX|xAI|Intel|ASML|Terafab)\b/);
+  });
+  test('Every pack licence is CC0-1.0 with the Farm scope qualifier; the transit bus reads like the other five', () => {
+    // D-35: the Farm's qualifier is the reference; the vehicles and the Foundry Floor carry the same scope sentence.
+    const scope = 'authored asset content only, to the extent of the owner’s rights';
+    for (const pack of [farm, vehicles, foundryFloor]) {
+      expect(pack.license).toBe('CC0-1.0');
+      expect(pack.licenseScope).toContain(`CC0-1.0 covers ${scope}.`);
+    }
+    for (const asset of [...vehicles.assets, ...foundryFloor.assets]) {
+      expect(asset.license).toBe('CC0-1.0');
+      expect(asset.licence.spdx).toBe('CC0-1.0');
+    }
+    // Round 2's wording of the corrected bus, with the owner's approval of review 2 (30 September 2026) in place of
+    // "Approval of the corrected revision is not recorded."; its licence text and pins are the other five's form.
+    const bus = vehicles.assets.find((asset) => asset.slug === 'transit-bus')!;
+    expect(bus.review.scope).toBe('The owner approved all six vehicles at every tier on 29 September 2026. The transit bus was then found to be see-through from behind, and this revision (review 2) corrects that. Its triangle counts, body bounds and wheels equal the first revision’s at every tier. The owner approved the corrected revision on 30 September 2026.');
+    expect(vehicles.ownerReview.status).toBe('all-current-revisions-accepted');
+    expect(vehicles.ownerReview.awaiting).toEqual([]);
+    for (const asset of vehicles.assets) {
+      expect(Object.keys(asset.licence).sort()).toEqual(['bytes', 'path', 'sha256', 'spdx', 'statesDeliveredGlbSha256', 'url']);
+      expect(asset.licence.path).toBe(`packs/vehicles/r1/licenses/${asset.slug}.ASSET-LICENSE.txt`);
+      expect(asset.review).toMatchObject({ status: 'accepted', ownerAccepted: true });
+    }
   });
   test('generates only non-upscaled srcset entries', () => {
     const image = imageRecord('media/image.webp', 508, 384);

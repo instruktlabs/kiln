@@ -1,13 +1,42 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
-import { farmScene, goldenGateScene } from "../../data/scenes";
+import { sceneRuntimes } from "virtual:kiln-scenes";
+import { farmScene, foundryFloorScene, goldenGateScene } from "../../data/scenes";
 import { PACKS_ENABLED } from "../../lib/config";
-import foundryFloor from "../../data/foundry-floor.json";
+
+// Each card states the scene's true status in this build: a staged runtime makes it a preview (none of the three
+// is qualified), and without one the page shows the scene's status panel.
+const cards = [
+  {
+    scene: farmScene,
+    alt: "Barn, farmhouse and fields in the Farm scene",
+    staged:
+      "A preview of the rebuilt browser scene opens on its page. It is still being qualified; the Farm scene download remains the current runnable version.",
+    unstaged:
+      "The browser scene is being rebuilt. The current runnable scene is included in the Farm scene download.",
+  },
+  {
+    scene: goldenGateScene,
+    alt: goldenGateScene.posterAlt,
+    staged:
+      "This scene is a preview and is still being qualified. It loads only when you choose Explore.",
+    unstaged:
+      "The browser scene is not part of this build. The bridge asset has its own page and downloads.",
+  },
+  {
+    scene: foundryFloorScene,
+    alt: foundryFloorScene.posterAlt,
+    staged:
+      "In production: a preview of what the scene has delivered so far, staged for the owner’s local review and replaced when the scene is accepted. It loads only when you choose Explore.",
+    unstaged:
+      "In production. The browser scene is not part of this build.",
+  },
+] as const;
 ---
 
 <BaseLayout
   title="Scenes made with Kiln"
-  description="Explore scenes built from Kiln assets: the Farm browser scene is being rebuilt, and a Golden Gate Bridge preview shows a Kiln-authored bridge in a driving and traffic demonstration."
+  description="Scenes built from Kiln assets: the Farm, a Golden Gate Bridge driving and traffic demonstration and the in-production Foundry Floor. Each loads only when you choose Explore."
   breadcrumbs={[{ label: "Scenes", href: "/scenes/" }]}
   ogImage="/social/scenes.jpg"
 >
@@ -17,83 +46,41 @@ import foundryFloor from "../../data/foundry-floor.json";
       Scenes put individual assets into a place you can explore. They load only
       when you choose to open them.
     </p>
-    <article class="mt-12 grid gap-8 border-t border-ink pt-8 md:grid-cols-2">
-      {PACKS_ENABLED && (
-        <a href={farmScene.href} aria-label="View the Farm scene">
-          <picture>
-            <source
-              type="image/avif"
-              srcset={farmScene.posterImage.srcsetAvif}
-              sizes="(max-width: 768px) 100vw, 50vw"
-            />
-            <img
-              src={farmScene.poster}
-              srcset={farmScene.posterImage.srcsetWebp}
-              sizes="(max-width: 768px) 100vw, 50vw"
-              width={farmScene.posterWidth}
-              height={farmScene.posterHeight}
-              alt="Barn, farmhouse and fields in the Farm scene"
-              class="w-full border border-rule"
-              loading="lazy"
-            />
-          </picture>
-        </a>
-      )}
-      <div>
-        <h2 class="font-semibold">{farmScene.name}</h2>
-        <p class="mt-4 max-w-prose">{farmScene.description}</p>
-        <p class="mt-4 max-w-prose">
-          The browser scene is being rebuilt. The current runnable scene is
-          included in the Farm scene download.
-        </p>
-        <a href={farmScene.href} class="btn btn-secondary mt-6">
-          View the scene status
-        </a>
-      </div>
-    </article>
-    <article class="mt-12 grid gap-8 border-t border-ink pt-8 md:grid-cols-2">
-      {PACKS_ENABLED && goldenGateScene.posterImage && (
-        <a href={goldenGateScene.href} aria-label="View the Golden Gate Bridge scene">
-          <picture>
-            <source
-              type="image/avif"
-              srcset={goldenGateScene.posterImage.srcsetAvif}
-              sizes="(max-width: 768px) 100vw, 50vw"
-            />
-            <img
-              src={goldenGateScene.poster}
-              srcset={goldenGateScene.posterImage.srcsetWebp}
-              sizes="(max-width: 768px) 100vw, 50vw"
-              width={goldenGateScene.posterWidth}
-              height={goldenGateScene.posterHeight}
-              alt={goldenGateScene.posterAlt}
-              class="w-full border border-rule"
-              loading="lazy"
-            />
-          </picture>
-        </a>
-      )}
-      <div>
-        <h2 class="font-semibold">{goldenGateScene.name}</h2>
-        <p class="mt-4 max-w-prose">{goldenGateScene.description}</p>
-        <p class="mt-4 max-w-prose">
-          This scene is a preview and is still being qualified. It loads only
-          when you choose Explore.
-        </p>
-        <a href={goldenGateScene.href} class="btn btn-secondary mt-6">
-          Open the scene preview
-        </a>
-      </div>
-    </article>
-    <div class="mt-12 border-t border-rule pt-8">
-      <h2 class="font-semibold">{foundryFloor.name} is in production.</h2>
-      <p class="mt-4 max-w-prose">
-        {foundryFloor.name} is a fictional 2 nm-class chip fab, the next pack
-        and scene. There is no browser scene to explore yet.
-      </p>
-      <a href={foundryFloor.sceneRoute} class="text-link mt-4">
-        Read the production note →
-      </a>
-    </div>
+    {cards.map(({ scene, alt, staged, unstaged }) => {
+      const runtime = sceneRuntimes[scene.id];
+      return (
+        <article class="mt-12 grid gap-8 border-t border-ink pt-8 md:grid-cols-2">
+          {PACKS_ENABLED && scene.posterImage && (
+            <a href={scene.href} aria-label={`View the ${scene.name} scene`}>
+              <picture>
+                <source
+                  type="image/avif"
+                  srcset={scene.posterImage.srcsetAvif}
+                  sizes="(max-width: 768px) 100vw, 50vw"
+                />
+                <img
+                  src={scene.poster}
+                  srcset={scene.posterImage.srcsetWebp}
+                  sizes="(max-width: 768px) 100vw, 50vw"
+                  width={scene.posterWidth}
+                  height={scene.posterHeight}
+                  alt={alt}
+                  class="w-full border border-rule"
+                  loading="lazy"
+                />
+              </picture>
+            </a>
+          )}
+          <div>
+            <h2 class="font-semibold">{scene.name}</h2>
+            <p class="mt-4 max-w-prose">{scene.description}</p>
+            <p class="mt-4 max-w-prose">{runtime ? staged : unstaged}</p>
+            <a href={scene.href} class="btn btn-secondary mt-6">
+              {runtime ? "Open the scene preview" : "View the scene status"}
+            </a>
+          </div>
+        </article>
+      );
+    })}
   </div>
 </BaseLayout>

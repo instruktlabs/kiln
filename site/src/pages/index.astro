@@ -11,6 +11,7 @@ import { hero } from "../lib/hero";
 import {
   HARNESSES,
   INSTALL_COMMAND,
+  PACKAGE_TARBALL,
   WORKSPACE_COMMAND,
   PACKS_ENABLED,
   REPO,
@@ -19,6 +20,8 @@ import {
 } from "../lib/config";
 import exchange from "../data/home-exchange.json";
 import foundryFloor from "../data/foundry-floor.json";
+import foundryFloorPack from "../data/packs/foundry-floor.json";
+import { sceneRuntimes } from "virtual:kiln-scenes";
 import { PUBLIC_EXAMPLES } from "../../scripts/collection.mjs";
 const house = farm.assets[0]!;
 const docs = new Set((await getCollection("docs")).map((doc) => doc.id));
@@ -143,7 +146,7 @@ const floorIncluded = house.revisionId === floor.asset.revisionId;
           </div>
           <p class="mt-6 max-w-lead font-mono text-code text-dim">
             MIT · runs on your machine · MCP, CLI, TypeScript library and agent
-            skills · {VERSION_SHORT} source release
+            skills · {VERSION_SHORT} release package
           </p>
         </div>
         {PACKS_ENABLED && <HeroDrawing />}
@@ -357,11 +360,13 @@ const floorIncluded = house.revisionId === floor.asset.revisionId;
       <div class="min-w-0">
         <CodeBlock
           code={toolExample}
-          label="Recorded farmhouse tool exchange · abridged"
+          label={`Recorded farmhouse tool exchange · Kiln ${exchange.engineVersion} · abridged`}
         />
         <p class="mt-3 text-caption text-dim">
-          {exchange.description} Ellipses mark omitted payloads; local paths and
-          host identifiers are removed.{" "}
+          {exchange.description} The run used Kiln {exchange.engineVersion}, so
+          this is a record of that version, not a {VERSION_SHORT} transcript.
+          Ellipses mark omitted payloads; local paths and host identifiers are
+          removed.{" "}
           <a href="/docs/tools/" class="text-ember underline">
             Read the complete tool contracts.
           </a>
@@ -373,7 +378,7 @@ const floorIncluded = house.revisionId === floor.asset.revisionId;
     <div class="grid items-end gap-6 md:grid-cols-2">
       <h2 id="ships-heading">The local toolchain ships together.</h2>
       <p class="max-w-reading text-dim">
-        The {VERSION_SHORT} source release includes the tools, authoring
+        The {VERSION_SHORT} package includes the tools, authoring
         guidance and local review interface. Add the GPU service when material
         appearance matters.
       </p>
@@ -477,12 +482,18 @@ const floorIncluded = house.revisionId === floor.asset.revisionId;
       <div>
         <h3 class="text-title">{foundryFloor.name}</h3>
         <p class="mt-2 max-w-reading text-dim">
-          In production: a fictional 2 nm-class chip fab pack with process
-          tools, wafer transport and a scene where the factory runs.
+          {PACKS_ENABLED
+            ? `In production: ${foundryFloorPack.assetCount} models for a fictional 2 nm-class chip fab, and an interior scene where the factory runs. Both are staged for the owner’s review and are not yet accepted.`
+            : "In production: a fictional 2 nm-class chip fab pack with process tools, wafer transport and a scene where the factory runs."}
         </p>
-        <a href={foundryFloor.packRoute} class="text-link">
-          Production note →
-        </a>
+        <div class="flex flex-wrap gap-x-6">
+          <a href={foundryFloor.packRoute} class="text-link">
+            {PACKS_ENABLED ? "The pack in production →" : "Production note →"}
+          </a>
+          <a href={foundryFloor.sceneRoute} class="text-link">
+            {sceneRuntimes["foundry-floor"] ? "The scene preview →" : "The scene status →"}
+          </a>
+        </div>
       </div>
       <div>
         <h3 class="text-title">Earlier examples</h3>
@@ -499,14 +510,17 @@ const floorIncluded = house.revisionId === floor.asset.revisionId;
   <section class="container" aria-labelledby="start-heading">
     <div class="grid gap-8 border-t border-ink pt-8 lg:grid-cols-12 lg:gap-12">
       <div class="lg:col-span-4">
-        <h2 id="start-heading">Start with a source release.</h2>
+        <h2 id="start-heading">Start with the release package.</h2>
         <p class="mt-5 max-w-reading">
-          Use Node.js 20.15+ on the 20.x line, or 22.2 and later. The npm
-          package is still unpublished.
+          Use Node.js 20.15+ on the 20.x line, or 22.2 and later. Kiln is not
+          published to the npm registry: install the release’s package
+          tarball, <code>{PACKAGE_TARBALL}</code>, after checking it against
+          the release’s <code>SHA256SUMS.txt</code>.
         </p>
         <p class="mt-4 max-w-reading text-dim">
-          The v{VERSION} tag is pending publication. These are the{" "}
-          {VERSION_SHORT} installation commands for the release.
+          The v{VERSION} release is pending publication. These are the{" "}
+          {VERSION_SHORT} installation commands for it; give npm the
+          tarball’s real path.
         </p>
         <a href="/docs/install/" class="text-link mt-3">
           Read the installation guide →

@@ -2,7 +2,7 @@ import { readFile, mkdir, writeFile } from 'node:fs/promises';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { hashBytes } from './mirror-core.mjs';
-import { requestedAuthorship, selectToolPair, publicExcerpt } from './content-evidence.mjs';
+import { recordedEngineVersion, requestedAuthorship, selectToolPair, publicExcerpt } from './content-evidence.mjs';
 
 const args = Object.fromEntries(process.argv.slice(2).reduce((pairs, value, index, all) => { if (value.startsWith('--')) pairs.push([value.slice(2), all[index + 1]]); return pairs; }, []));
 if (!args['farm-events'] || !args['bridge-runs'] || !args.feedback) throw new Error('Usage: generate-content-evidence.mjs --farm-events FILE --bridge-runs DIR --feedback FILE [--out DIR]');
@@ -32,6 +32,7 @@ const exchange = {
   schemaVersion: 1,
   title: 'An excerpt from the first farmhouse authoring run',
   description: 'Recorded Claude Opus 5.5 calls through the claude harness on 27 September 2026. These excerpts precede the r33 delivery and the later wood-floor refinement.',
+  engineVersion: recordedEngineVersion(rows),
   assetId: save.result.asset.assetId,
   savedRevisionId: save.result.asset.revisionId,
   sourceSha256: hashBytes(rawEvents),

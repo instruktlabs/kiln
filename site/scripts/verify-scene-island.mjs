@@ -6,11 +6,12 @@ import { chromeExecutable } from './build-site-media.mjs';
 
 const positional = process.argv.slice(2).filter((argument) => !argument.startsWith('--'));
 const [base, sceneId = 'farm', screenshot = `.tmp/${sceneId}-island.png`] = positional;
-if (!base) throw new Error('Usage: node scripts/verify-scene-island.mjs <site-url> [farm|golden-gate] [screenshot.png] [--strict]');
+if (!base) throw new Error('Usage: node scripts/verify-scene-island.mjs <site-url> [farm|golden-gate|foundry-floor] [screenshot.png] [--strict]');
 /** Per scene: its page, its staged pack, and how its runtime is loaded (module in the page, or a frame). */
 const SCENES = {
   farm: { name: 'Farm', route: '/scenes/farm/', pack: '/scene-packs/farm/', runtime: '/scene-runtime/farm/', frame: false },
   'golden-gate': { name: 'Golden Gate', route: '/scenes/golden-gate/', pack: '/scene-packs/golden-gate/', runtime: '/scene-runtime/golden-gate/', frame: true },
+  'foundry-floor': { name: 'Foundry Floor', route: '/scenes/foundry-floor/', pack: '/scene-packs/foundry-floor/', runtime: '/scene-runtime/foundry-floor/', frame: true },
 };
 const scene = SCENES[sceneId];
 if (!scene) throw new Error(`Unknown scene ${sceneId}; use one of ${Object.keys(SCENES).join(', ')}`);

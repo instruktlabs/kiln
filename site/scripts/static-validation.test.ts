@@ -147,7 +147,8 @@ describe('the Foundry Floor pages', () => {
     expect(check(followed)).toEqual(['/scenes/foundry-floor/: The Foundry Floor scene page must be "noindex, nofollow", got "noindex, follow"']);
     const altered = good();
     altered.set('/packs/foundry-floor/', page('<p>In production.</p><p>Not affiliated with Tesla.</p>'));
-    expect(check(altered)).toEqual(['/packs/foundry-floor/: The Foundry Floor page must carry the no-affiliation line word for word']);
+    // An altered line also names a maker outside the exact line.
+    expect(check(altered)).toEqual(['/packs/foundry-floor/: The Foundry Floor page must carry the no-affiliation line word for word', '/packs/foundry-floor/: A maker named in the no-affiliation line appears outside it: Tesla']);
     const planned = good();
     planned.set('/packs/foundry-floor/', page(`<p>Coming soon.</p><p>${notice}</p>`));
     expect(check(planned)).toEqual(['/packs/foundry-floor/: The Foundry Floor page must say it is in production']);
@@ -155,6 +156,46 @@ describe('the Foundry Floor pages', () => {
 
   test('report a page that reached the sitemap', () => {
     expect(check(good(), ['https://kilnstudio.tools/scenes/foundry-floor/'])).toEqual(['/scenes/foundry-floor/: The Foundry Floor page is in the sitemap']);
+  });
+
+  test('report a brand name outside the no-affiliation line, a device claim on the scene page and an implied exterior', () => {
+    const branded = good();
+    branded.set('/packs/foundry-floor/', page(`<p>In production, with an ASML-style scanner.</p><p>${notice}</p>`));
+    expect(check(branded)).toEqual(['/packs/foundry-floor/: A maker named in the no-affiliation line appears outside it: ASML']);
+    const device = good();
+    device.set('/scenes/foundry-floor/', page(`<p>In production. It plays on a phone.</p><p>${notice}</p>`, 'noindex, nofollow'));
+    expect(check(device)).toEqual(['/scenes/foundry-floor/: The Foundry Floor scene page makes a device claim: phone']);
+    const outside = good();
+    outside.set('/scenes/foundry-floor/', page(`<p>In production. Walk the campus.</p><p>${notice}</p>`, 'noindex, nofollow'));
+    expect(check(outside)).toEqual(['/scenes/foundry-floor/: The Foundry Floor page implies an exterior: campus']);
+  });
+
+  test('with the pack record, both pages state its placement: how many models the scene places, and the rest', () => {
+    const placement = { assetCount: 31, placedInScene: 29 };
+    const placed = (scene: string, pack: string) => new Map([
+      ['/packs/foundry-floor/', page(`<p>In production.</p><p>${pack}</p><p>${notice}</p>`)],
+      ['/scenes/foundry-floor/', page(`<p>In production.</p><p>${scene}</p><p>${notice}</p>`, 'noindex, nofollow')],
+    ]);
+    const scene = 'The fab is arranged from 29 of the pack’s 31 Kiln-authored models; the other 2 are in the pack but not placed.';
+    const pack = 'The Foundry Floor scene places 29 of the 31 models. Far forms: 24 of the 31 models keep one.';
+    const checkPlaced = (pages: Map<string, unknown>) =>
+      foundryFloorErrors({ pages: pages as never, sitemapUrls: [], placement }).map((error: { page: string; message: string }) => `${error.page}: ${error.message}`);
+    expect(checkPlaced(placed(scene, pack))).toEqual([]);
+    // A count glued to the word before it is not the statement a visitor should read.
+    expect(checkPlaced(placed(scene.replace('other 2', 'other2'), pack))).toEqual(['/scenes/foundry-floor/: The Foundry Floor scene page must say the other 2 are in the pack but not placed']);
+    expect(checkPlaced(placed(scene, pack.replace('places 29', 'places 30')))).toEqual(['/packs/foundry-floor/: The Foundry Floor page says the scene places 30 of 31; the pack record says 29 of 31']);
+    expect(checkPlaced(placed(scene, 'The scene uses most of the models.'))).toEqual(['/packs/foundry-floor/: The Foundry Floor page must say how many of the pack’s models the scene places']);
+    // A build without Commons packs carries no models on the pack page; the scene page is still checked.
+    const withoutPacks = foundryFloorErrors({ pages: placed(scene.replace('other 2', 'other2'), 'This build does not carry the pack’s models.') as never, sitemapUrls: [], placement: { ...placement, packPage: false } });
+    expect(withoutPacks.map((error: { page: string; message: string }) => `${error.page}: ${error.message}`)).toEqual(['/scenes/foundry-floor/: The Foundry Floor scene page must say the other 2 are in the pack but not placed']);
+    // Without the record the placement is not checked (the fixtures above).
+    expect(check(good())).toEqual([]);
+  });
+
+  test('read only what a visitor reads: script text and markup do not count', () => {
+    const scripted = good();
+    scripted.set('/scenes/foundry-floor/', page(`<p>In production.</p><script>const touch = "Intel";</script><p data-mobile="1">${notice}</p>`, 'noindex, nofollow'));
+    expect(check(scripted)).toEqual([]);
   });
 });
 

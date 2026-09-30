@@ -2,6 +2,7 @@
   "schemaVersion": 1,
   "title": "An excerpt from the first farmhouse authoring run",
   "description": "Recorded Claude Opus 5.5 calls through the claude harness on 27 September 2026. These excerpts precede the r33 delivery and the later wood-floor refinement.",
+  "engineVersion": "0.8.0",
   "assetId": "a_793e1ebd4c32465ab937d93215ec2a50",
   "savedRevisionId": "r_8420afabf8fb4d58997ea50b7d13c4c9",
   "sourceSha256": "5c518feeec554f7704b6efb1ba7f698654a81430b5ecf1ac4ab257323f5b7f3f",

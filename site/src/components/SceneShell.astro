@@ -24,6 +24,7 @@ const stateCopy = scene.available
   data-runtime-url={runtime?.url ?? ""}
   data-asset-base={scene.assetBase}
   data-error-text={scene.copy.errorText}
+  data-frame-title={`${scene.name} scene`}
 >
   <div data-intro>
     {PACKS_ENABLED && scene.posterImage && (
@@ -69,7 +70,7 @@ const stateCopy = scene.available
       </button>
       {runtime && (
         <p class="flex flex-1 flex-wrap items-center justify-center gap-x-4 gap-y-1 text-sm text-dim">
-          {!scene.available && <span>Preview, still being qualified.</span>}
+          {!scene.available && <span>{scene.copy.previewLabel}</span>}
           {scene.links.map((link) => (
             <a href={`${scene.assetBase}${link.path}`}>{link.label}</a>
           ))}
@@ -221,7 +222,7 @@ const stateCopy = scene.available
             return runtime.mount(mount, props);
           }
           if (this.dataset.kind === "frame" && url) {
-            return mountFrame(mount, url, `${this.dataset.scene} scene`, props);
+            return mountFrame(mount, url, this.dataset.frameTitle ?? `${this.dataset.scene} scene`, props);
           }
           // No runtime in this build: state the status in place of the scene.
           mount.append(unavailable.content.cloneNode(true));

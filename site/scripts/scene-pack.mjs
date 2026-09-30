@@ -3,7 +3,7 @@ import { copyFile, mkdir, readFile, readdir, rm, writeFile } from 'node:fs/promi
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { assetPath, hashBytes } from './mirror-core.mjs';
-import { measureFrameRuntime, stageFrameRuntime, stagedRuntimeDirectory } from './scene-runtime.mjs';
+import { checkCeiling, measureFrameRuntime, stageFrameRuntime, stagedRuntimeDirectory } from './scene-runtime.mjs';
 import { PACK_DIRECTORY, resolveScenesDir } from './scene-source.mjs';
 
 const SITE = resolve(dirname(fileURLToPath(import.meta.url)), '..');
@@ -13,9 +13,10 @@ export const PACK_SCHEMA = 'kiln.scene-pack/1';
 export const SCENE_SOURCES = {
   farm: 'packages/farm/dist/m4/standalone',
   'golden-gate': 'packages/golden-gate/dist/standalone',
+  'foundry-floor': 'packages/foundry-floor/dist/standalone',
 };
 /** Scenes staged as a standalone build (its public chunk served as built) rather than built by the site. */
-export const FRAME_SCENES = ['golden-gate'];
+export const FRAME_SCENES = ['golden-gate', 'foundry-floor'];
 const RECORDED = ['id', 'release', 'three', 'sealedFiles', 'sealedBytes', 'totalFiles', 'totalBytes', 'packJsonSha256', 'sha256sumsSha256', 'noticesSha256'];
 const RUNTIME_RECORDED = ['kind', 'file', 'bytes', 'gzipBytes', 'gzipMethod', 'sha256', 'modulesSha256'];
 
@@ -72,6 +73,7 @@ export async function verifyPack(assets, notices) {
   for (const model of manifest.models ?? []) if (!declared.has(model.path)) throw new Error(`pack.json model ${model.id} is not a sealed file: ${model.path}`);
   for (const path of Object.values(manifest.data ?? {})) if (!declared.has(path)) throw new Error(`pack.json data reference is not a sealed file: ${path}`);
   let sealedBytes = 0;
+  const files = [];
   for (const [path, digest] of sums) {
     const bytes = await readFile(join(assets, path)).catch((error) => {
       throw new Error(`Sealed scene pack file is missing: ${path}`, { cause: error });
@@ -84,6 +86,7 @@ export async function verifyPack(assets, notices) {
       throw new Error(`Size verification failed for ${path}: pack.json says ${file.bytes}, found ${bytes.length}`);
     }
     sealedBytes += bytes.length;
+    files.push({ path, bytes: bytes.length, sha256: digest });
   }
   for (const entry of await readdir(assets, { withFileTypes: true })) {
     if (!entry.isDirectory()) continue;
@@ -96,6 +99,7 @@ export async function verifyPack(assets, notices) {
     release: manifest.release,
     three: manifest.three,
     paths: [...sums.keys()],
+    files,
     sealedFiles: sums.size,
     sealedBytes,
     totalFiles: sums.size + 3,
@@ -119,6 +123,7 @@ export async function stagePack({ source, target }) {
   await copyFile(notices, join(target, NOTICES));
   const { paths, ...copy } = await verifyPack(target, join(target, NOTICES));
   const { paths: sourcePaths, ...original } = inventory;
+  // `files` (every sealed path with its size and digest) is part of both inventories, so the copy is compared file by file.
   if (JSON.stringify(copy) !== JSON.stringify(original) || paths.join() !== sourcePaths.join()) {
     throw new Error('The staged scene pack differs from its source');
   }
@@ -177,7 +182,8 @@ const environmentSource = (id, env) => env[`KILN_SITE_SCENE_PACK_DIR_${id.toUppe
  * present but wrong is an error. `--record` rewrites the catalog record; otherwise the record must
  * match the pack. A standalone-built scene (Golden Gate) also stages its public chunk, byte for byte,
  * after the single-copy and hash checks (scripts/scene-runtime.mjs). Only the packs the catalog names
- * stay staged. `--scene <id>` limits the run to one scene; `--source <dir>` needs `--scene`.
+ * stay staged. `--scene <id>` limits the run to one scene; `--source <dir>` needs `--scene`. `--hashes`
+ * prints every sealed file's SHA-256 and size as verified, with the pack's own digests.
  */
 export async function main(argv = process.argv.slice(2), env = process.env, site = SITE) {
   const option = (flag) => (argv.includes(flag) ? argv[argv.indexOf(flag) + 1] : undefined);
@@ -185,6 +191,7 @@ export async function main(argv = process.argv.slice(2), env = process.env, site
   if (only && !(only in SCENE_SOURCES)) throw new Error(`Unknown scene: ${only}`);
   if (option('--source') && !only) throw new Error('--source needs --scene');
   const record = argv.includes('--record');
+  const hashes = argv.includes('--hashes');
   const catalog = existsSync(catalogFile(site)) ? JSON.parse(await readFile(catalogFile(site), 'utf8')) : {};
   const scenes = resolveScenesDir({ env, site });
   const served = join(site, 'public', PACK_DIRECTORY);
@@ -202,7 +209,16 @@ export async function main(argv = process.argv.slice(2), env = process.env, site
       continue;
     }
     const inventory = await verifyPack(join(source, 'assets'), join(source, NOTICES));
+    if (hashes) {
+      for (const file of inventory.files) console.log(`ok  ${file.sha256}  ${String(file.bytes).padStart(10)}  ${id}/${inventory.release}/${file.path}`);
+      console.log(`${id} ${inventory.release}: ${inventory.files.length} of ${inventory.sealedFiles} sealed files match SHA256SUMS and pack.json (digest and size), ${inventory.sealedBytes} bytes; pack.json sha256 ${inventory.packJsonSha256}; SHA256SUMS sha256 ${inventory.sha256sumsSha256}; ${NOTICES} sha256 ${inventory.noticesSha256}.`);
+    }
     const runtime = frame ? await measureFrameRuntime({ id, source }) : null;
+    if (runtime) {
+      const { measurement } = runtime;
+      const fit = checkCeiling(id, measurement);
+      console.log(`Runtime ${id}: ${measurement.file} ${measurement.bytes} bytes, ${measurement.gzipBytes} bytes gzip (${measurement.gzipMethod}), sha256 ${measurement.sha256}; ${fit.percent.bytes}% and ${fit.percent.gzipBytes}% of the D-15 ceiling ${fit.ceiling.bytes} / ${fit.ceiling.gzipBytes} bytes; ${Object.entries(measurement.copies).map(([name, copies]) => `${name} ${copies.length}`).join(', ')} (copies in bundle-modules.json, sha256 ${runtime.record.modulesSha256}); kit three facade ${measurement.facade ? 'present' : 'absent'}.`);
+    }
     if (record) {
       catalog[id] = { ...packRecord(inventory, current), ...(runtime ? { runtime: runtime.record } : {}) };
       console.log(`Recorded scene pack ${id} ${inventory.release}: ${inventory.totalBytes} bytes in ${inventory.totalFiles} files${runtime ? `; runtime ${runtime.record.file}, ${runtime.record.bytes} bytes` : ''}.`);

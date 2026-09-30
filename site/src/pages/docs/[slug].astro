@@ -5,6 +5,7 @@ import DocsLayout from "../../layouts/DocsLayout.astro";
 import CodeBlock from "../../components/CodeBlock.astro";
 import {
   INSTALL_COMMAND,
+  PACKAGE_TARBALL,
   WORKSPACE_COMMAND,
   RELEASE_TAG,
   VERSION,
@@ -37,20 +38,22 @@ const { Content, headings } = await render(entry);
   </h1>
   {entry.id === "install" && (
     <aside
-      aria-label={`${VERSION_SHORT} source release status`}
+      aria-label={`${VERSION_SHORT} release status`}
       class="not-prose my-8 space-y-4 border-l-2 border-ember bg-stage p-5"
     >
       <h2 class="text-xl font-semibold">
-        Install the {VERSION_SHORT} source release
+        Install the {VERSION_SHORT} release package
       </h2>
       <p>
-        The <code>{RELEASE_TAG}</code> tag is pending. These commands become
-        usable when that tag is published. The npm package is still unpublished.
+        The <code>{RELEASE_TAG}</code> release is pending. These commands
+        become usable when it is published with its package tarball,{" "}
+        <code>{PACKAGE_TARBALL}</code>, and <code>SHA256SUMS.txt</code>. Kiln
+        is not published to the npm registry.
       </p>
       <CodeBlock
         code={`${INSTALL_COMMAND}\n${WORKSPACE_COMMAND}`}
         lang="sh"
-        label={`${VERSION_SHORT} source install`}
+        label={`${VERSION_SHORT} package install`}
       />
       <p>
         Then run <code>cd ../my-assets</code> and follow <code>START.md</code>{" "}

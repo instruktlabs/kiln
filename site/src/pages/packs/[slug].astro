@@ -4,9 +4,11 @@ import ResponsiveImage from "../../components/ResponsiveImage.astro";
 import AssetCard from "../../components/AssetCard.astro";
 import CodeBlock from "../../components/CodeBlock.astro";
 import VehiclesPack from "../../components/VehiclesPack.astro";
+import FoundryFloorPack from "../../components/FoundryFloorPack.astro";
 import { farm, vehicles, bytes, imageQualification, FULL_WIDTH_IMAGE_SIZES } from "../../lib/catalog";
 import { PACKS_ENABLED, REPO } from "../../lib/config";
 import foundryFloor from "../../data/foundry-floor.json";
+import { sceneRuntimes } from "virtual:kiln-scenes";
 export function getStaticPaths() {
   return (PACKS_ENABLED ? ["farm", "vehicles", "foundry-floor"] : ["foundry-floor"]).map((slug) => ({
     params: { slug },
@@ -113,12 +115,16 @@ const qualificationNote =
             <p class="max-w-reading">
               {farm.scene.available
                 ? "Explore the Farm in your browser."
-                : "The interactive site scene is being rebuilt. The scene download below contains the current runnable scene."}
+                : sceneRuntimes.farm
+                  ? "A preview of the rebuilt browser scene is on the scene page, still being qualified. The scene download below contains the current runnable scene."
+                  : "The interactive site scene is being rebuilt. The scene download below contains the current runnable scene."}
             </p>
             <a class="text-link" href="/scenes/farm/">
               {farm.scene.available
                 ? "Explore the Farm →"
-                : "View the scene preview →"}
+                : sceneRuntimes.farm
+                  ? "View the scene preview →"
+                  : "View the scene status →"}
             </a>
           </div>
         </div>
@@ -290,17 +296,18 @@ const qualificationNote =
       </>
     ) : isVehicles ? (
       <VehiclesPack />
+    ) : PACKS_ENABLED ? (
+      <FoundryFloorPack />
     ) : (
       <div class="max-w-reading py-12 md:py-20">
         <h1>{foundryFloor.name}</h1>
         <p class="lead mt-8">In production.</p>
         <p class="mt-6">
           A fictional 2 nm-class chip fab as a Kiln pack: process tools, wafer
-          transport and a scene where the factory runs. Research and production
-          are under way.
+          transport and a scene where the factory runs.
         </p>
         <p class="mt-4 text-dim">
-          There are no assets or downloads to review yet.
+          This build does not carry the pack’s models or downloads.
         </p>
         <p class="mt-4">{foundryFloor.notice}</p>
         <a href={REPO} class="text-link mt-6">

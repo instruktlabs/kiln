@@ -1,4 +1,6 @@
 import farm from './packs/farm.json';
+import foundryFloor from './foundry-floor.json';
+import foundryFloorPack from './packs/foundry-floor.json';
 import sceneMedia from './scene-media.json';
 import scenePacks from './scene-packs.json';
 
@@ -20,6 +22,8 @@ interface SceneCopy {
   unavailableBody: string;
   /** What the error surface says; the last sentence names what remains available. */
   errorText: string;
+  /** Shown beside the notices while an unqualified preview runs. */
+  previewLabel: string;
 }
 
 /**
@@ -90,6 +94,7 @@ export const farmScene = {
       'This scene is in production. The Farm scene download contains the current runnable scene.',
     errorText:
       'The scene could not load. Check your connection and try Explore again. The Farm downloads remain available.',
+    previewLabel: 'Preview, still being qualified.',
   } satisfies SceneCopy,
   fallback: { href: '/packs/farm/', label: 'View the Farm downloads' },
 } as const;
@@ -128,9 +133,55 @@ export const goldenGateScene = {
     unavailableBody: 'The bridge itself is a Kiln-authored asset with its own page and downloads.',
     errorText:
       'The scene could not load. Check your connection and try Explore again. The bridge asset and its downloads remain available.',
+    previewLabel: 'Preview, still being qualified.',
   } satisfies SceneCopy,
   fallback: { href: '/gallery/golden-gate-bridge/', label: 'View the bridge asset' },
 } as const;
 
-export const scenes = { farm: farmScene, 'golden-gate': goldenGateScene } as const;
+const foundryFloorScenePack = scenePacks['foundry-floor'];
+const foundryFloorPoster = sceneMedia['foundry-floor'].poster;
+
+/**
+ * The Foundry Floor scene (D-33): an in-production preview of what FF2 has delivered, staged for the owner's local
+ * review and replaced when FF2 is accepted. It is an interior, a lot-level twin of a fictional fab's pilot line, with
+ * no exterior. The page makes no device claims: the scene's device test was not run (D-36). The poster is one pack
+ * model under the review rig; the scene has no single file to render, and the alt text says the scene is not pictured.
+ */
+export const foundryFloorScene = {
+  id: 'foundry-floor',
+  available: false,
+  name: foundryFloor.name,
+  href: foundryFloor.sceneRoute,
+  assetBase: foundryFloorScenePack.base,
+  pack: foundryFloorScenePack,
+  poster: foundryFloorPoster.src,
+  posterImage: foundryFloorPoster,
+  posterWidth: foundryFloorPoster.width,
+  posterHeight: foundryFloorPoster.height,
+  posterAlt: foundryFloorPoster.alt,
+  description: `An interior in production: a lot-level twin of a fictional chip fab’s pilot line, arranged from ${foundryFloorPack.placedInScene} of the pack’s ${foundryFloorPack.assetCount} models. Walk the fab floor, take a tour of seven views, open a tool’s panel or follow a wafer lot.`,
+  links: [
+    { label: 'Software notices', path: 'THIRD-PARTY-NOTICES.txt' },
+    { label: 'Asset licence', path: 'licenses/ASSET-LICENSE.txt' },
+  ] satisfies SceneLink[],
+  copy: {
+    available: 'Explore the Foundry Floor in your browser.',
+    preview:
+      'Explore opens the scene as it stands in production: a preview for the owner’s local review, replaced when the scene is accepted.',
+    unavailable: 'The browser scene is not part of this build. Explore opens its status.',
+    devices: 'Loads only when you choose Explore.',
+    unavailableTitle: 'The Foundry Floor scene is not part of this build.',
+    unavailableBody: 'The scene is in production. Its pack page says what the pack holds so far.',
+    errorText:
+      'The scene could not load. Check your connection and try Explore again. The Foundry Floor pack page remains available.',
+    previewLabel: 'In production: a preview for the owner’s review.',
+  } satisfies SceneCopy,
+  fallback: { href: foundryFloor.packRoute, label: 'View the Foundry Floor pack' },
+} as const;
+
+export const scenes = {
+  farm: farmScene,
+  'golden-gate': goldenGateScene,
+  'foundry-floor': foundryFloorScene,
+} as const;
 export type SceneId = keyof typeof scenes;

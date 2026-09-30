@@ -5,7 +5,7 @@ import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 import pkg from '../package.json';
 import scenePacks from '../src/data/scene-packs.json';
-import { farmScene, goldenGateScene } from '../src/data/scenes';
+import { farmScene, foundryFloorScene, goldenGateScene } from '../src/data/scenes';
 import { hashBytes } from './mirror-core.mjs';
 import { comparePackRecord, compareRuntimeRecord, main, packRecord, parseSums, stagePack, stagedPackDirectory, verifyPack } from './scene-pack.mjs';
 import { CEILINGS, checkCeiling, measureFrameRuntime } from './scene-runtime.mjs';
@@ -251,22 +251,40 @@ describe('scene pack catalog record', () => {
     expect(() => stagedPackDirectory({ base: '/../escape/' }, '/site')).toThrow('Unexpected');
   });
 
-  test('the Golden Gate record is the g3 pack and its public chunk, inside its ceiling', () => {
+  test('the Golden Gate record is the g5 pack and its public chunk, inside its ceiling', () => {
     const record = scenePacks['golden-gate'];
-    expect(record.release).toBe('g3');
-    expect(record.base).toBe('/scene-packs/golden-gate/g3/');
+    expect(record.release).toBe('g5');
+    expect(record.base).toBe('/scene-packs/golden-gate/g5/');
+    // Round 3's staging of g5 printed these (review/round-3/golden-gate/stage-g5.log); g5 is g4 with bridge-fix review 5's web tier.
+    expect(record).toMatchObject({ sealedFiles: 103, sealedBytes: 12_616_781, packJsonSha256: '45fd9e8ef1e7bdec173863ad520e42e8f996c943dfcf57c4842d432ea006335c', sha256sumsSha256: 'b86a5b11c007a1ef14a0fd4b2c3c0b324eba5e6fb55273585c416a8319126341' });
     expect(record.source).toBe('packages/golden-gate/dist/standalone');
     expect(record.three).toBe(pkg.dependencies.three);
     expect(record.totalFiles).toBe(record.sealedFiles + 3);
     for (const digest of [record.packJsonSha256, record.sha256sumsSha256, record.noticesSha256, record.runtime.sha256, record.runtime.modulesSha256]) expect(digest).toMatch(/^[0-9a-f]{64}$/);
-    expect(record.runtime).toMatchObject({ kind: 'frame', file: 'index-CpnNafWq.js', bytes: 1_677_316 });
+    expect(record.runtime).toMatchObject({ kind: 'frame', file: 'index-CA13LcNQ.js', bytes: 1_716_992 });
     expect(checkCeiling('golden-gate', record.runtime).within).toBe(true);
     expect(record.runtime.bytes).toBeLessThanOrEqual(CEILINGS['golden-gate'].bytes);
     expect(goldenGateScene.assetBase).toBe(record.base);
-    expect(stagedPackDirectory(record, '/site')).toBe(resolve('/site', 'public', 'scene-packs', 'golden-gate', 'g3'));
+    expect(stagedPackDirectory(record, '/site')).toBe(resolve('/site', 'public', 'scene-packs', 'golden-gate', 'g5'));
   });
 
-  test.each(['farm', 'golden-gate'])('the %s scene page stays out of search results whatever its availability says', async (id) => {
+  test('the Foundry Floor record is the ff2 pack and its public chunk, inside its ceiling', () => {
+    const record = scenePacks['foundry-floor'];
+    expect(record.release).toBe('ff2');
+    expect(record.base).toBe('/scene-packs/foundry-floor/ff2/');
+    expect(record.source).toBe('packages/foundry-floor/dist/standalone');
+    expect(record.three).toBe(pkg.dependencies.three);
+    expect(record.totalFiles).toBe(record.sealedFiles + 3);
+    // Round 3's staging of ff2 printed these (review/round-3/foundry-floor/stage-ff2.log).
+    expect(record).toMatchObject({ sealedFiles: 40, sealedBytes: 6_148_457, packJsonSha256: '2a6840fbe3e541090753b5fdca23934442a4be2788b74765c16afcc4a63ff8fc' });
+    for (const digest of [record.packJsonSha256, record.sha256sumsSha256, record.noticesSha256, record.runtime.sha256, record.runtime.modulesSha256]) expect(digest).toMatch(/^[0-9a-f]{64}$/);
+    expect(record.runtime).toMatchObject({ kind: 'frame', file: 'index-UyCWwb6D.js', bytes: 1_586_280, gzipBytes: 473_835 });
+    expect(checkCeiling('foundry-floor', record.runtime).within).toBe(true);
+    expect(foundryFloorScene.assetBase).toBe(record.base);
+    expect(stagedPackDirectory(record, '/site')).toBe(resolve('/site', 'public', 'scene-packs', 'foundry-floor', 'ff2'));
+  });
+
+  test.each(['farm', 'golden-gate', 'foundry-floor'])('the %s scene page stays out of search results whatever its availability says', async (id) => {
     const page = await readFile(new URL(`../src/pages/scenes/${id}.astro`, import.meta.url), 'utf8');
     expect(page).toMatch(/^\s*noindex\s*$/m);
     expect(page).toMatch(/^\s*nofollow\s*$/m);

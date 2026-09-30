@@ -1,11 +1,20 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
+import SceneShell from "../../components/SceneShell.astro";
 import foundryFloor from "../../data/foundry-floor.json";
+import foundryFloorPack from "../../data/packs/foundry-floor.json";
+import { foundryFloorScene } from "../../data/scenes";
+import { FULL_WIDTH_IMAGE_SIZES } from "../../lib/catalog";
+import { PACKS_ENABLED } from "../../lib/config";
+// D-33: an in-production preview of what FF2 has delivered, for the owner's local review, replaced when FF2 is
+// accepted. It stays out of search results and the sitemap whatever foundryFloorScene.available says.
+const scene = foundryFloorScene;
+const unplaced = foundryFloorPack.assetCount - foundryFloorPack.placedInScene;
 ---
 
 <BaseLayout
   title={`${foundryFloor.name} scene — in production`}
-  description={`${foundryFloor.name} is in production: ${foundryFloor.summary}. There is no browser scene to explore yet.`}
+  description={`${foundryFloor.name} is in production: an interior preview of a lot-level twin of a fictional chip fab’s pilot line, staged for the owner’s review.`}
   noindex
   nofollow
   breadcrumbs={[
@@ -13,18 +22,70 @@ import foundryFloor from "../../data/foundry-floor.json";
     { label: foundryFloor.name, href: foundryFloor.sceneRoute },
   ]}
   ogImage="/social/foundry-floor.jpg"
+  preloadImage={
+    PACKS_ENABLED && scene.posterImage
+      ? {
+          src: scene.poster,
+          srcset: scene.posterImage.srcsetAvif,
+          sizes: FULL_WIDTH_IMAGE_SIZES,
+        }
+      : undefined
+  }
 >
-  <div class="container py-20">
-    <h1 class="max-w-prose font-semibold">
-      The {foundryFloor.name} scene is in production.
-    </h1>
-    <p class="mt-6 max-w-prose text-lg">
-      {foundryFloor.name} is a fictional 2 nm-class chip fab. The pack and its
-      scene are being made; there is no browser scene to explore yet.
-    </p>
-    <p class="mt-4 max-w-prose">{foundryFloor.notice}</p>
-    <a href="/scenes/" class="btn btn-secondary mt-8">
-      Back to scenes
-    </a>
+  <div class="container pb-12 pt-8">
+    <div class="mb-8 flex flex-wrap items-end justify-between gap-6">
+      <div>
+        <h1 class="font-semibold">The {foundryFloor.name} scene</h1>
+        <p class="mt-4 max-w-prose text-lg">{scene.description}</p>
+      </div>
+      {PACKS_ENABLED && (
+        <a href={foundryFloor.packRoute} class="btn btn-secondary">
+          The pack and its downloads
+        </a>
+      )}
+    </div>
+    <div class="mb-8 max-w-prose border-l-4 border-rule pl-4">
+      <p class="font-semibold">In production.</p>
+      <p class="mt-2">
+        This page shows what the scene has delivered so far, staged for the
+        owner’s local review. It is not accepted or qualified, and it will be
+        replaced when the scene is accepted.
+      </p>
+    </div>
+    <SceneShell scene="foundry-floor" />
+    <div class="mt-8 grid gap-6 border-t border-rule pt-6 md:grid-cols-3">
+      <div>
+        <h2 class="text-subheading font-semibold">
+          The factory runs as it is modelled.
+        </h2>
+        <p class="mt-3">
+          The scene is an interior: a lot-level twin of a pilot line. Wafer
+          lots queue, ride the overhead transport, wait in stockers and run on
+          the tools, and every panel and status line is read from the twin’s
+          state. The figures come from the twin’s own model, not from any
+          real fab, and its calibration is still open.
+        </p>
+      </div>
+      <div>
+        <h2 class="text-subheading font-semibold">What you can do.</h2>
+        <p class="mt-3">
+          Walk the fab floor and the visitor gallery, take the tour of seven
+          views, open the panel of a tool or stocker, or follow a wafer lot
+          from tool to tool. The controls are listed inside the scene.
+        </p>
+      </div>
+      <div>
+        <h2 class="text-subheading font-semibold">
+          What is under the scene.
+        </h2>
+        <p class="mt-3">
+          The fab is arranged from {foundryFloorPack.placedInScene} of the
+          pack’s {foundryFloorPack.assetCount} Kiln-authored models; the
+          other {unplaced} are in the pack but not placed. The notices under
+          Explore name the software, and the asset licence names every model.
+        </p>
+      </div>
+    </div>
+    <p class="mt-8 max-w-prose text-sm text-dim">{foundryFloor.notice}</p>
   </div>
 </BaseLayout>

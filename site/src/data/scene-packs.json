@@ -17,25 +17,49 @@
   "golden-gate": {
     "schema": "kiln.scene-pack/1",
     "id": "golden-gate",
-    "release": "g3",
+    "release": "g5",
     "three": "0.186.0",
     "source": "packages/golden-gate/dist/standalone",
-    "base": "/scene-packs/golden-gate/g3/",
+    "base": "/scene-packs/golden-gate/g5/",
     "sealedFiles": 103,
-    "sealedBytes": 12430083,
+    "sealedBytes": 12616781,
     "totalFiles": 106,
-    "totalBytes": 12484673,
-    "packJsonSha256": "5664e37e25e817961800709c6e734290b1711e375763644fa6e0e40c3a1461b2",
-    "sha256sumsSha256": "5b4bb6a42a4c0ab4e5a23cf2b414d57a7a27fe55c1fdba75880224e1a4076127",
+    "totalBytes": 12671371,
+    "packJsonSha256": "45fd9e8ef1e7bdec173863ad520e42e8f996c943dfcf57c4842d432ea006335c",
+    "sha256sumsSha256": "b86a5b11c007a1ef14a0fd4b2c3c0b324eba5e6fb55273585c416a8319126341",
     "noticesSha256": "4bf6f2bd1d803606c88eb540c8e207ddee4a76be4d12fe14d6110bb7505e4ebc",
     "runtime": {
       "kind": "frame",
-      "file": "index-CpnNafWq.js",
-      "bytes": 1677316,
-      "gzipBytes": 500671,
+      "file": "index-CA13LcNQ.js",
+      "bytes": 1716992,
+      "gzipBytes": 516345,
       "gzipMethod": "bun-zlib",
-      "sha256": "01920a6d8ac117032d43c72f21b0321b2ca2043dfd9f3bf5aa24fd43c971820e",
-      "modulesSha256": "2723707afb68414051f5e0c4b95bccfe09e9c7d2e583cc95b022de7810a9c31c"
+      "sha256": "28aea5ca7efe35f4bdb6cdb19aefa080660cd55f302aadd3285862570d96ddc3",
+      "modulesSha256": "dcaabe53ef91aa13ce148982a37c1d3c4dcbfd17b68aab803bca99f087cb6775"
+    }
+  },
+  "foundry-floor": {
+    "schema": "kiln.scene-pack/1",
+    "id": "foundry-floor",
+    "release": "ff2",
+    "three": "0.186.0",
+    "source": "packages/foundry-floor/dist/standalone",
+    "base": "/scene-packs/foundry-floor/ff2/",
+    "sealedFiles": 40,
+    "sealedBytes": 6148457,
+    "totalFiles": 43,
+    "totalBytes": 6201820,
+    "packJsonSha256": "2a6840fbe3e541090753b5fdca23934442a4be2788b74765c16afcc4a63ff8fc",
+    "sha256sumsSha256": "dd53e8b9e531aeed521901f243727417175c70943ab8998e75911cd6c86a9c88",
+    "noticesSha256": "4bf6f2bd1d803606c88eb540c8e207ddee4a76be4d12fe14d6110bb7505e4ebc",
+    "runtime": {
+      "kind": "frame",
+      "file": "index-UyCWwb6D.js",
+      "bytes": 1586280,
+      "gzipBytes": 473835,
+      "gzipMethod": "bun-zlib",
+      "sha256": "b7345f919ecff62e53b6db8a890c9cd6e6a62342dfe8ff4ffd0d2b9072e5c0a9",
+      "modulesSha256": "8309dd58b1338bb4260573263e7ab635a406d929c6befbb6a1d088144fdee8f9"
     }
   }
 }

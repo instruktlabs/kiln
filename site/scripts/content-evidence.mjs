@@ -34,6 +34,30 @@ export function selectToolPair(rows, callLine) {
   throw new Error(`Recorded call on line ${callLine} has no matching result`);
 }
 
+/**
+ * The Kiln engine version a recorded run ran under, as its own `kiln_discover` capabilities result reports it
+ * (`kiln.capabilities.v1`, `engine.version`). A run that reports none, or more than one, is an error: the page labels
+ * the exchange with this version and never guesses it.
+ */
+export function recordedEngineVersion(rows) {
+  const versions = new Set();
+  for (const row of rows) {
+    const content = row?.message?.content;
+    if (!Array.isArray(content)) continue;
+    for (const block of content) {
+      if (block?.type !== 'tool_result') continue;
+      const parts = Array.isArray(block.content) ? block.content : [{ type: 'text', text: block.content }];
+      for (const part of parts) {
+        if (part?.type !== 'text' || typeof part.text !== 'string' || !part.text.includes('"kiln.capabilities.v1"')) continue;
+        const match = /"engine":\s*\{\s*"version":\s*"([^"]+)"/.exec(part.text);
+        if (match) versions.add(match[1]);
+      }
+    }
+  }
+  if (versions.size !== 1) throw new Error(`Expected one recorded engine version, found ${versions.size ? [...versions].join(', ') : 'none'}`);
+  return [...versions][0];
+}
+
 /** Review deliberately selected fields only. Never publish native run envelopes. */
 export function publicExcerpt(value) {
   const text = typeof value === 'string' ? value : JSON.stringify(value, null, 2);

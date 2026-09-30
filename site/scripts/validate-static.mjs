@@ -158,7 +158,11 @@ const discovery = discoveryErrors({ sitemapUrls, robots: discoveryTexts['robots.
 for (const error of discovery) add(error.page, 'discovery', error.message);
 const retired = retiredNameErrors({ pages, files: files.map((file) => relative(root, file).replaceAll('\\', '/')), texts: discoveryTexts });
 for (const error of retired) add(error.page, 'retired-name', error.message);
-const foundry = foundryFloorErrors({ pages, sitemapUrls });
+// The Foundry Floor pack record's placement; a build without Commons packs emits no Farm pack page and carries no
+// models on the Foundry Floor pack page.
+const foundryFloorPack = JSON.parse(await readFile(resolve(site, 'src/data/packs/foundry-floor.json'), 'utf8'));
+const placement = { assetCount: foundryFloorPack.assetCount, placedInScene: foundryFloorPack.placedInScene, packPage: pages.has('/packs/farm/') };
+const foundry = foundryFloorErrors({ pages, sitemapUrls, placement });
 for (const error of foundry) add(error.page, 'foundry-floor', error.message);
 // The engine note under each 3D view is present and true of the GLB that view loads.
 const glbFacts = new Map();

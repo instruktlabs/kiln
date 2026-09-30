@@ -70,7 +70,7 @@ async function buildMedia() {
   const foundryFloor = await json(join(site, 'src/data/foundry-floor.json'));
   const homePoster = packsEnabled ? (process.env.KILN_SITE_HERO === 'golden-gate-bridge' ? bridge : farm.assets.find((asset) => asset.id === 'farmhouse'))?.poster.src : undefined;
   const cards = [
-    { slug: 'home', title: 'Build and revise 3D assets with your coding agent.', note: `Kiln · ${version} source release`, poster: homePoster },
+    { slug: 'home', title: 'Build and revise 3D assets with your coding agent.', note: `Kiln · ${version} release package`, poster: homePoster },
     { slug: 'packs', title: 'Assets made with Kiln.', note: 'Kiln Commons', poster: homePoster },
     { slug: 'farm', title: 'Shapes & Seasons Farm', note: '23 assets · Kiln Commons', poster: packsEnabled ? farm.scene.poster.src : undefined },
     { slug: 'vehicles', title: 'Generic Road Vehicles', note: `${vehicles.assetCount} assets · Kiln Commons`, poster: packsEnabled ? vehicles.assets.find((asset) => asset.slug === 'sedan').poster.src : undefined },
