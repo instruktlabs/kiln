@@ -81,6 +81,18 @@ The versioned format uses `shots`, not legacy `preset/cells`. Unknown or conflic
 
 `size` is the square pixel size of each shot. There are no capture request fields named `width` or `height`; those names occur only in returned grid/image dimensions. Orbit cameras likewise have no `target` or `distance` fields: they derive both from the selected subject's bounds. Select the subject and use `padding` to pull back or crop in. When an exact position or look target matters, use an explicit camera with `position` and `target`.
 
+## Levels of detail
+
+An asset with declared tiers exports each set as one `MSFT_lod` chain: LOD0 stays in the scene, and the lower levels are off-scene nodes whose transforms are relative to LOD0's parent. Default sheets from `kiln_render`, `kiln_inspect` and the `kiln_save` preview draw LOD0, as a loader without the extension does, and the headline triangles and bounds are LOD0's. `levelsOfDetail` in the result lists every chain with each level's `path` and triangles. A lower level's path is the one it takes in LOD0's place.
+
+To view a lower level, make its `path`, a path inside it, or a name only one level carries a shot's subject. The shot draws that level in LOD0's place and frames it; `visibility:"isolate"` shows it alone:
+
+```json
+{"name":"Body LOD2","subject":{"path":"/Car[0]/Car[0]/Body_LOD2[0]"},"visibility":"isolate"}
+```
+
+Every chain in `levelsOfDetail` carries `drawn`, one entry per view in view order: 0 when the view drew LOD0, otherwise the level the shot's subject named. Only the chain that holds the subject changes level; every other chain draws LOD0. A name that several lower levels share fails with every matching path. The CPU view and the GPU derivative of a shot draw the same level. The legacy `kiln_inspect` `part` field reaches a level by its exact name. Part listings (a render's `parts`, `listParts`) and measurements (`measure`, `surfacePairs`) read the LOD0 scene: they neither list nor measure a lower level's nodes.
+
 ## Inspection, edits, interiors and motion
 
 - `kiln_edit` accepts the same `capture`, so an edit can return matched before/after views.

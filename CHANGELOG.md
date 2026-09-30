@@ -7,8 +7,8 @@ GitHub. The package is not published on the npm registry.
 
 Kiln 0.9.0 adds optional projects, a material library and Live Review to standalone
 authoring, makes the calibrated `review-neutral-v1` rig the default for review views,
-and fixes the defects authors reported while using 0.8. Standalone assets need no
-project. The [migration notes](docs/migration.md#changes-in-090) list every change an
+exports declared levels of detail as `MSFT_lod` chains, and fixes the defects authors
+reported while using 0.8. Standalone assets need no project. The [migration notes](docs/migration.md#changes-in-090) list every change an
 existing author will notice; the [foundation checkpoint](docs/plans/2026-09-26-project-foundation.md)
 records how projects, materials and Live Review were qualified.
 
@@ -58,6 +58,34 @@ records how projects, materials and Live Review were qualified.
   absent optional peer is fingerprinted as peer-absent instead of erasing the runtime
   identity.
 
+### Levels of detail
+
+- **One tier unless the brief asks.** The authoring skills say so. Tiers are sibling
+  groups named with one stem and a level token (`Body_LOD0`, `Body_LOD1`), LOD0 the
+  full-detail tier, and each set is declared once with
+  `defineLod(levels, { screenCoverage })`: one screen fraction per level, 0 to 1,
+  strictly decreasing, where a last value of 0 never culls. `createPart` is unchanged.
+  Two or more sibling tiers without a declaration, a gap, a missing LOD0 or a set
+  declared inside another tier fail the build with the closed diagnostic `LOD_SET`.
+- **Exported as `MSFT_lod`.** Every GLB Kiln writes from source (the saved `asset.glb`,
+  `kiln_export`, `kiln export`, `render --out`, both export profiles, both converters)
+  carries each set as one chain: LOD0 stays in the scene with `extensions.MSFT_lod.ids`
+  and `extras.MSFT_screencoverage`, the lower levels leave the scene with their subtrees
+  and transforms, and materials are untouched. A loader without the extension draws
+  LOD0.
+- **LOD0 is the headline.** Triangles and bounds count LOD0 and the parts outside every
+  set; `levelsOfDetail` in render results, the integration manifest and CLI receipts
+  lists each level's path and triangles.
+- **Review views.** Default sheets in `kiln_render`, `kiln_inspect` and the `kiln_save`
+  preview draw LOD0. A shot whose subject is a lower level's `path` draws that level in
+  LOD0's place (`visibility: "isolate"` shows it alone), the CPU and GPU views agree,
+  and each chain's `drawn` says which level every view drew. No tool input changed.
+- **Viewer.** Library and Live Review show a Level control (LOD0 to the last level,
+  LOD0 by default) and every level's triangles for a GLB with chains, imported or
+  authored.
+- **Revision comparison** reads chains: each lower level is compared at the path it
+  takes beside LOD0. Switch thresholds are not compared.
+
 ### Fixes from author reports
 
 - **Smaller results.** MCP `kiln_render` and `kiln_screenshot_animation` are compact by
@@ -79,8 +107,8 @@ records how projects, materials and Live Review were qualified.
 - **Geometry and export.** `extrudeProfile` adds no side rings unless `divisions` asks
   (16 by default when twisted). `sweepProfile` keeps hard corners (`creaseAngle` 60)
   and can cap one end. Emissive intensity survives export, above 1 through
-  `KHR_materials_emissive_strength`. `MSFT_lod` chains survive import, save,
-  optimisation and export.
+  `KHR_materials_emissive_strength`. An imported GLB's `MSFT_lod` chains survive
+  import, save, optimisation and export.
 - **Diagnostics.** A build that throws names a closed cause with advice and a
   `Source check:`; `kiln_validate` reports `TEMPORAL_DEAD_ZONE`,
   `MATERIAL_RECIPE_OVERRIDE` and `MATERIAL_RECIPE_ID`. Overlap QA skips LOD
@@ -136,7 +164,9 @@ of emissive and animated assets; images from explicit perspective cameras withou
 `near`; CPU images through glass; GPU isolated shots; MCP result size and shape
 (`detail: "full"` restores the complete report), including `kiln_edit`, which leads with
 its refs; the wording of refused exports; Discovery ranking for `bench`, `table` and
-`cast iron`.
+`cast iron`. A program with two or more sibling `LOD<n>` tiers fails with `LOD_SET`
+until it declares them with `defineLod` or keeps one tier; once declared, its GLB bytes,
+headline triangles and bounds, and default sheets (LOD0 only) change.
 
 ## 0.8.0 (source update)
 

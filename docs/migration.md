@@ -43,6 +43,16 @@ Changes that alter output an author already has:
 - **Workspace CLI** (`node kiln.mjs`) re-executes under the Node recorded in
   `.kiln/workspace.json`, so a CLI export equals `kiln_save` bytes for the same
   reference. A workspace whose recorded Node is missing needs `--repair`.
+- **Levels of detail.** Sibling groups named with one stem and a `LOD<n>` token
+  (`Body_LOD0`, `Body_LOD1`) are a set of tiers, and a set of two or more needs one
+  `defineLod(levels, { screenCoverage })` declaration. Without it, with a gap, without
+  LOD0, or declared inside another tier, the build fails with `LOD_SET`, which names the
+  fix; a lone token stays a label. A program that stacked tiers as plain groups must
+  declare them, or keep one tier, before it renders again; its saved revisions keep their
+  bytes. A declared set exports as one `MSFT_lod` chain whose lower levels leave the
+  scene, so GLB bytes change, headline triangles and bounds count LOD0 and the parts
+  outside every set, and default sheets draw LOD0 only. See
+  [levels of detail](../skills/kiln-author-asset/references/geometry-recipes.md#levels-of-detail-only-when-the-brief-asks).
 
 Changes to results and messages:
 
@@ -89,9 +99,15 @@ Changes to results and messages:
   joins or starts the shared renderer. A `KILN_RENDER_PORT_URL` naming the shared local
   socket takes the local route. The CLI honours `KILN_RENDER` whenever `--render` is
   omitted.
-- **Levels of detail.** `MSFT_lod` chains survive import, save, optimisation and export.
-  GPU instancing skips such files and full optimisation falls back to palette;
-  revision comparison still refuses them.
+- **Levels of detail.** Render results, the integration manifest and CLI receipts list
+  every chain in `levelsOfDetail` with each level's path and triangles; in `kiln_render`
+  and `kiln_inspect` results each chain also carries `drawn`, the level every view drew
+  (0 is LOD0). A shot whose subject is a lower level's path draws that level; see
+  [levels of detail in views](cameras.md#levels-of-detail). Chains, imported or authored,
+  survive save, optimisation and export; GPU instancing skips such files and full
+  optimisation falls back to palette. Revision comparison compares each lower level at
+  the path it takes beside LOD0 and does not compare switch thresholds. Library and Live
+  Review show a Level control for a GLB with chains.
 
 ## Geometry helper and diagnostic contracts
 

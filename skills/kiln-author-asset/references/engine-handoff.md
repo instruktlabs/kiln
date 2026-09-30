@@ -127,8 +127,14 @@ replace edited skills. Consult the updated runtime documentation when working in
 - Emissive exports as colour times intensity. Within 0..1 that is `emissiveFactor`; brighter
   emission adds `KHR_materials_emissive_strength`, which an importer without that extension
   shows at the normalised colour.
-- An imported GLB's `MSFT_lod` chain survives save, optimisation and export. GPU instancing
-  skips such a file, full optimisation falls back to palette, and revision comparison refuses it.
+- Declared LOD sets export as `MSFT_lod` chains: LOD0 stays in the scene carrying
+  `extensions.MSFT_lod.ids` and `extras.MSFT_screencoverage`, and the lower levels are
+  off-scene nodes whose transforms are relative to LOD0's parent. An importer without the
+  extension shows LOD0 only, as three.js `GLTFLoader` 0.186 does. Whether a given Blender or
+  glTFast version builds the lower levels and switches by the thresholds has not been
+  measured; check it in the destination. An imported GLB's chains survive save, optimisation
+  and export too. GPU instancing skips a file with chains, and full optimisation falls back
+  to palette.
 - More extensions in a valid GLB do not guarantee support in every importer or shader. GPU
   appearance, runtime-loaded shader inclusion, compression codecs and other render pipelines
   need their own checks. This option does not change KTX2 defaults or fix unsupported Node versions.

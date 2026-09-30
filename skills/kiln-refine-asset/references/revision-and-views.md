@@ -56,7 +56,9 @@ target path and property, with its own summary, changes and `nextOffset`. Exact
 keyframe and interpolation data are compared; equivalent motion encoded with
 different keys still counts as changed. Neither comparison proves visual
 equivalence, continuous clearance or physical fit. Ambiguous/unnamed siblings, skins, morph targets,
-instancing and unsupported structural extensions such as `MSFT_lod` fail explicitly. The bounded
+instancing and other structural extensions fail explicitly. An `MSFT_lod` chain's lower levels are
+compared at the path each takes beside LOD0; the headline bounds are LOD0's, and switch
+thresholds are not compared. The bounded
 comparison supports 64 MiB per GLB, 10,000 nodes, 128 hierarchy levels and two
 million placed vertex visits. No result silently omits unsupported geometry.
 
