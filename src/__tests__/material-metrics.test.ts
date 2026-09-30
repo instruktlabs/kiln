@@ -157,6 +157,50 @@ describe('MAT-018 advisory texture budgets', () => {
     );
   });
 
+  test('names the BLEND materials that drive the blend-area budget', () => {
+    const document = new Document();
+    const buffer = document.createBuffer();
+    const scene = document.createScene('Scene');
+    const square = (name: string, size: number, alphaMode: 'OPAQUE' | 'BLEND') => {
+      const material = document.createMaterial(name).setAlphaMode(alphaMode);
+      const s = size;
+      const position = document
+        .createAccessor()
+        .setType('VEC3')
+        .setBuffer(buffer)
+        .setArray(new Float32Array([0, 0, 0, s, 0, 0, s, s, 0, 0, 0, 0, s, s, 0, 0, s, 0]));
+      const primitive = document
+        .createPrimitive()
+        .setAttribute('POSITION', position)
+        .setMaterial(material);
+      const mesh = document.createMesh(name).addPrimitive(primitive);
+      scene.addChild(document.createNode(name).setMesh(mesh));
+    };
+    square('Body', 4, 'OPAQUE');
+    square('Glass', 3, 'BLEND');
+    square('Water', 2, 'BLEND');
+    square('Smoke', 1, 'BLEND');
+    square('', 1, 'BLEND');
+
+    const metrics = collectMaterialMetricsV1(document);
+    expect(metrics.blendedMaterialAreas).toEqual([
+      { name: 'Glass', area: 9, ratio: 9 / 31 },
+      { name: 'Water', area: 4, ratio: 4 / 31 },
+      { name: 'Smoke', area: 1, ratio: 1 / 31 },
+      { name: 'material-5', area: 1, ratio: 1 / 31 },
+    ]);
+    const warnings = evaluateMaterialBudgetV1(metrics, {
+      profile: 'web.portable.v1',
+      tier: 'standard',
+    });
+    expect(warnings.map((warning) => [warning.code, warning.disposition])).toEqual([
+      ['MATERIAL_BLEND_AREA_BUDGET', 'warn'],
+    ]);
+    expect(warnings[0]!.message).toBe(
+      'Blended primitive surface area is 48.4% (15.000 of 31.000 square asset units); the budget is 15.0%. Largest BLEND materials by share of surface area: "Glass" 29.0%, "Water" 12.9%, "Smoke" 3.2%, and 1 more.',
+    );
+  });
+
   test('stays advisory and quiet within the selected budget', async () => {
     const measured = await materialGalleryMetrics();
     const metrics = {

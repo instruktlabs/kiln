@@ -34,6 +34,14 @@ export interface MaterialMetricsV1 {
   totalSurfaceArea: number;
   blendedSurfaceArea: number;
   blendedSurfaceAreaRatio: number;
+  /** BLEND materials with surface area, largest first; `ratio` is of the total surface area. */
+  blendedMaterialAreas?: MaterialAreaMetricV1[];
+}
+
+export interface MaterialAreaMetricV1 {
+  name: string;
+  area: number;
+  ratio: number;
 }
 
 export type MaterialBudgetProfileId = 'web.portable.v1' | 'mobile.portable.v1';
@@ -207,18 +215,32 @@ export function collectMaterialMetricsV1(document: Document): MaterialMetricsV1 
   });
   let totalSurfaceArea = 0;
   let blendedSurfaceArea = 0;
+  const blendedAreaByMaterial = new Map<Material, number>();
   const visit = (node: Node): void => {
     const mesh = node.getMesh();
     if (mesh) {
       for (const primitive of mesh.listPrimitives()) {
         const area = primitiveSurfaceArea(primitive, node);
         totalSurfaceArea += area;
-        if (primitive.getMaterial()?.getAlphaMode() === 'BLEND') blendedSurfaceArea += area;
+        const material = primitive.getMaterial();
+        if (material?.getAlphaMode() === 'BLEND') {
+          blendedSurfaceArea += area;
+          blendedAreaByMaterial.set(material, (blendedAreaByMaterial.get(material) ?? 0) + area);
+        }
       }
     }
     node.listChildren().forEach(visit);
   };
   for (const scene of root.listScenes()) scene.listChildren().forEach(visit);
+  // Largest first; equal areas keep document material order.
+  const blendedMaterialAreas = materials
+    .map((material, index) => ({
+      name: material.getName() || `material-${index + 1}`,
+      area: blendedAreaByMaterial.get(material) ?? 0,
+    }))
+    .filter(({ area }) => area > 0)
+    .sort((a, b) => b.area - a.area)
+    .map(({ name, area }) => ({ name, area, ratio: area / totalSurfaceArea }));
   const extensionsUsed = root
     .listExtensionsUsed()
     .map((extension) => extension.extensionName)
@@ -261,8 +283,12 @@ export function collectMaterialMetricsV1(document: Document): MaterialMetricsV1 
     totalSurfaceArea,
     blendedSurfaceArea,
     blendedSurfaceAreaRatio: totalSurfaceArea > 0 ? blendedSurfaceArea / totalSurfaceArea : 0,
+    blendedMaterialAreas,
   };
 }
+
+/** BLEND materials named in the blend-area finding; the count covers the rest. */
+const BLEND_MATERIALS_NAMED = 3;
 
 const mib = (bytes: number): string => `${(bytes / (1024 * 1024)).toFixed(2)} MiB`;
 
@@ -334,12 +360,24 @@ export function evaluateMaterialBudgetV1(
     });
   }
   if (metrics.blendedSurfaceAreaRatio > limits.maxBlendedSurfaceAreaRatio) {
+    // Name the materials that drive the share so the author knows which parts to change.
+    const blended = metrics.blendedMaterialAreas ?? [];
+    const named = blended
+      .slice(0, BLEND_MATERIALS_NAMED)
+      .map(({ name, ratio }) => `${JSON.stringify(name)} ${(ratio * 100).toFixed(1)}%`);
+    const more =
+      blended.length > BLEND_MATERIALS_NAMED
+        ? `, and ${blended.length - BLEND_MATERIALS_NAMED} more`
+        : '';
+    const drivers = named.length
+      ? ` Largest BLEND materials by share of surface area: ${named.join(', ')}${more}.`
+      : '';
     warnings.push({
       code: 'MATERIAL_BLEND_AREA_BUDGET',
       disposition: 'warn',
       profile: options.profile,
       tier: options.tier,
-      message: `Blended primitive surface area is ${(metrics.blendedSurfaceAreaRatio * 100).toFixed(1)}% (${metrics.blendedSurfaceArea.toFixed(3)} of ${metrics.totalSurfaceArea.toFixed(3)} square asset units); the budget is ${(limits.maxBlendedSurfaceAreaRatio * 100).toFixed(1)}%.`,
+      message: `Blended primitive surface area is ${(metrics.blendedSurfaceAreaRatio * 100).toFixed(1)}% (${metrics.blendedSurfaceArea.toFixed(3)} of ${metrics.totalSurfaceArea.toFixed(3)} square asset units); the budget is ${(limits.maxBlendedSurfaceAreaRatio * 100).toFixed(1)}%.${drivers}`,
       measurement: {
         name: 'blendedSurfaceAreaRatio',
         actual: metrics.blendedSurfaceAreaRatio,
