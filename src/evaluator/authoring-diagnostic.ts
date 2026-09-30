@@ -129,7 +129,9 @@ export function programErrorDiagnostic(error: unknown): AuthoringDiagnostic | un
   if (error instanceof AuthoringDiagnosticError) return error.diagnostic;
   if (
     error instanceof ReferenceError &&
-    /^Cannot access (?:'[^']*' before initialization|uninitialized variable).?$/.test(error.message)
+    /^Cannot access (?:'[^']*' before initialization|uninitialized variable)\.?$/.test(
+      error.message,
+    )
   )
     return 'UNINITIALIZED_BINDING';
   if (error instanceof TypeError) return 'PROGRAM_TYPE_ERROR';
