@@ -25,7 +25,7 @@ import { AuthoringDiagnosticError, rethrowAuthoringError } from './evaluator/aut
  */
 
 import * as THREE from 'three';
-import { createGltfIO } from './gltf-io';
+import { createGltfIO, MSFT_LOD } from './gltf-io';
 import { communitySceneDocument, resolveGltfExporter } from './community-exporter';
 import { rigExtrasForExport } from './rig-export';
 import {
@@ -1278,6 +1278,17 @@ function hasJointPivots(doc: Document): boolean {
     .some((n) => /^joint[_-]/i.test(n.getName()));
 }
 
+/** True when any node carries an `MSFT_lod` chain. Its lower levels sit outside the
+ *  scene and stand in for that node under the same parent, so a pass that moves the node
+ *  (flatten), merges it into a sibling (join) or folds it into an instance batch would
+ *  leave the levels describing geometry that is no longer there. */
+function hasNodeLevelsOfDetail(doc: Document): boolean {
+  return doc
+    .getRoot()
+    .listNodes()
+    .some((n) => n.getExtension(MSFT_LOD) !== null);
+}
+
 /**
  * Run the opt-in GPU-instancing pass (M1c) on a baked Document, in place.
  *
@@ -1294,6 +1305,7 @@ function hasJointPivots(doc: Document): boolean {
  *   - the Document carries animations or skins (the library no-ops on
  *     animated docs; skinned nodes are excluded per-mesh — we skip whole);
  *   - any node is named `Joint*` (city behaviors target pivots by name);
+ *   - any node carries an `MSFT_lod` chain (a batch would strip the levels' base node);
  *   - no mesh crosses the threshold (nothing to batch).
  */
 async function applyGpuInstancing(
@@ -1305,7 +1317,7 @@ async function applyGpuInstancing(
   if (mode === 'auto' && role !== 'fill') return undefined;
   const root = doc.getRoot();
   if (root.listAnimations().length > 0 || root.listSkins().length > 0) return undefined;
-  if (hasJointPivots(doc)) return undefined;
+  if (hasJointPivots(doc) || hasNodeLevelsOfDetail(doc)) return undefined;
 
   const before = collectGlbMetrics(doc);
   await doc.transform(instance({ min: INSTANCE_MIN }));
@@ -1337,10 +1349,11 @@ async function applyGpuInstancing(
  * `palette` collapses distinct untextured flat-color materials into one palette
  * material + a small palette texture (textured materials pass through untouched);
  * `weld` + `prune` clean up. `full` adds `flatten → join` to also reduce draws,
- * but ONLY for static, semantics-free assets — animations, skins, or any reserved
- * semantic extras auto-degrade to `palette` so a rig, portal-clearance node,
- * socket, or separable role is never flattened away. `prune` keeps empty leaf
- * nodes + extras so named pivots that Kiln City behaviors target by name survive.
+ * but ONLY for static, semantics-free assets — animations, skins, `MSFT_lod`
+ * chains, or any reserved semantic extras auto-degrade to `palette` so a rig,
+ * LOD level, portal-clearance node, socket, or separable role is never flattened
+ * away. `prune` keeps empty leaf nodes + extras so named pivots that Kiln City
+ * behaviors target by name survive, and LOD levels that only a chain references.
  * palette groups by alpha mode, so opaque + the one glass slot stay distinct
  * materials (transparency is never flattened into opaque).
  *
@@ -1358,7 +1371,9 @@ async function consolidateMaterials(
     .listNodes()
     .some((node) => node.getExtras()[KILN_SEMANTIC_EXTRAS_KEY] !== undefined);
   const effective: 'palette' | 'full' =
-    mode === 'full' && (animatedOrSkinned || semanticGraph) ? 'palette' : mode;
+    mode === 'full' && (animatedOrSkinned || semanticGraph || hasNodeLevelsOfDetail(doc))
+      ? 'palette'
+      : mode;
 
   const steps = [palette({ min: PALETTE_MIN })];
   if (effective === 'full') {
