@@ -53,7 +53,7 @@ it('advertises one version everywhere a client or installer can read it', async 
   ]) {
     expect(await read(manifest)).toBe(engine);
   }
-  const { MCP_SERVER_VERSION } = await import('../mcp-server');
+  const { MCP_SERVER_VERSION } = await import('../mcp-core');
   expect(MCP_SERVER_VERSION).toBe(engine);
   // The literal that `engineIdentity()` reports to a model asking which
   // installation answered. It cannot read `package.json` -- this graph is kept

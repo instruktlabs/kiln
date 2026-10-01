@@ -12,14 +12,15 @@ test('real MCP creates project materials, renders their exact closure, and expos
   const root = await mkdtemp(resolve('tmp/workspace-mcp-'));
   const client = new Client({ name: 'workspace-proof', version: '1' });
   try {
+    // The entry loads the engine bundle beside itself, so both are built here.
     const built = await Bun.build({
-      entrypoints: [resolve('src/mcp-server.ts')],
+      entrypoints: [resolve('src/mcp-server.ts'), resolve('src/mcp-engine.ts')],
       outdir: root,
-      naming: 'mcp-server.mjs',
+      naming: '[name].mjs',
       target: 'node',
       packages: 'external',
     });
-    expect(built.success).toBe(true);
+    expect(built.success, built.logs.map(String).join('\n')).toBe(true);
     const transport = new StdioClientTransport({
       command: 'node',
       args: [join(root, 'mcp-server.mjs')],

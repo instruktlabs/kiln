@@ -122,6 +122,7 @@ it('refuses an otherwise loadable installation without the packaged worker befor
     await writeFile(join(runtime, 'package.json'), '{"name":"@kiln/engine","version":"1.0.0"}');
     await writeFile(join(runtime, 'dist/cli.mjs'), 'export function main() {}');
     await writeFile(join(runtime, 'dist/mcp-server.mjs'), '');
+    await writeFile(join(runtime, 'dist/mcp-engine.mjs'), '');
     for (const name of ['kiln-author-asset', 'kiln-refine-asset', 'kiln-qa-asset']) {
       await mkdir(join(runtime, 'skills', name), { recursive: true });
       await writeFile(join(runtime, 'skills', name, 'SKILL.md'), '# fixture');

@@ -7,6 +7,8 @@ dist/*
 # step, so the artifact the harness launches has to be in the tree. Kept honest
 # by src/__tests__/mcp-bundle.test.ts, which rebuilds it and compares bytes.
 !dist/mcp-server.mjs
+# ...and the engine it loads on the first call that needs it (same test).
+!dist/mcp-engine.mjs
 !dist/cli.mjs
 !dist/evaluator-worker.mjs
 !dist/build.json

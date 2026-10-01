@@ -6,6 +6,7 @@ import {
   assertProgramRef,
   canonicalProgramRefPattern,
   MAX_PROGRAM_BYTES,
+  programNotFound,
   programReference,
   shortProgramRefCandidates,
   type ProgramStore,
@@ -15,6 +16,7 @@ import {
 /** Project-local, append-only snapshots. No eviction: a returned reference stays valid. */
 export class FileProgramStore implements ProgramStore {
   constructor(readonly directory: string) {}
+  readonly retention = 'kept in the program store across sessions and processes, never evicted';
 
   async stats(): Promise<ProgramStoreStats> {
     let entries = 0;
@@ -55,8 +57,9 @@ export class FileProgramStore implements ProgramStore {
   }
 
   private notFound(ref: string): Error {
-    return new Error(
-      `Program not found: ${ref}. Use the same KILN_PROGRAM_STORE or import the source again.`,
+    return programNotFound(
+      ref,
+      'This program store has no such reference; it was issued by another store (KILN_PROGRAM_STORE selects which) or its store was removed.',
     );
   }
 

@@ -12,7 +12,7 @@ import { Client, InMemoryTransport } from '@modelcontextprotocol/client';
 
 import { createKilnNativeToolRegistry, createKilnProgramToolRegistry } from './tools/registry';
 import { makeKilnNativeTools } from './agent/tools';
-import { runTool, kilnMcpToolDefs, createKilnMcpServer } from './mcp-server';
+import { runTool, kilnMcpToolDefs, createKilnMcpServer } from './mcp-engine';
 
 /**
  * List the tool surface the way a client sees it, over a real linked transport.

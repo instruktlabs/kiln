@@ -10,7 +10,7 @@ import { serveStdio, StdioServerTransport } from '@modelcontextprotocol/server/s
 import { createConditionRegistry, disabledHelperNames, type Condition } from './conditions';
 import { createLocalToolContext } from '../../src/local-runtime';
 import { FileProgramStore } from '../../src/program-store-node';
-import { runTool } from '../../src/mcp-server';
+import { runTool } from '../../src/mcp-engine';
 
 const configPath = process.argv[2];
 if (!configPath) throw new Error('Usage: bun scripts/evaluation/server.ts RUN_CONFIG.json');

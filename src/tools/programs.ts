@@ -13,7 +13,7 @@ export function withProgramReferences(def: KilnToolDef, store: ProgramStore): Ki
     throw new Error(`${def.name} must have an object input schema.`);
   const inputSchema = def.inputSchema
     .extend({
-      code: z.string().optional().describe('New source. Supply code OR programRef.'),
+      code: z.string().optional().describe('New source.'),
       programRef: refInput.optional(),
       ...(def.name === 'kiln_edit'
         ? {
@@ -41,10 +41,12 @@ export function withProgramReferences(def: KilnToolDef, store: ProgramStore): Ki
     kiln_inspect:
       'List part paths and inspect joints, clearances and edit preservation. listParts filters names/paths with query; follow partListing.nextOffset on the same programRef/query. measure/surfacePairs return distances, not fit certificates. compare reports static changes and separate animation channel changes; paths adds complete static subtree summaries. image:false skips rendering. Otherwise use part/orbit or exact shot; check viewFidelity for materials.',
   };
+  // Every tool that returns a handle states how long the bound store keeps it.
+  const kept = store.retention ?? 'kept by the host program store';
   const description =
     def.name === 'kiln_edit'
-      ? 'Atomically apply ordered exact-string replacements and render. Copy anchors from kiln_source. Returns programRef, parentRef, diff and preservation comparing static data and animation channels. Review changes; use kiln_inspect compare for more pages or protected subtrees. Failed comparison preserves the repair; render:false leaves preservation not_assessed. capture selects cameras; includeCode returns full source.'
-      : `${summaries[def.name] ?? def.description} Supply code OR programRef. Invalid drafts retain a ref; read with kiln_source.`;
+      ? `Atomically apply ordered exact-string replacements and render. Copy anchors from kiln_source. Supply code OR programRef. Returns programRef (${kept}), parentRef, diff and preservation comparing static data and animation channels. Review changes; use kiln_inspect compare for more pages or protected subtrees. Failed comparison preserves the repair; render:false leaves preservation not_assessed. capture selects cameras; includeCode returns full source.`
+      : `${summaries[def.name] ?? def.description} Supply code OR programRef (${kept}). Invalid drafts keep a ref.`;
   return {
     ...def,
     inputSchema,

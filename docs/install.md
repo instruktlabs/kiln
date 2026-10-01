@@ -321,17 +321,21 @@ writing anything. Preserve those files separately, compare with a fresh temporar
 workspace from the desired installation, and resolve them before retrying. Reapply
 compatible customizations afterward; no automatic content merge is attempted.
 
-Restart the harness/MCP session after upgrading. Newly generated CLI launchers
-and MCP configurations reject stale managed workspaces before starting tools.
-Older launchers need an explicit `--check`/`--upgrade` first. Hand-wired MCP setups
-are outside this managed-workspace check. Customizations are reported by `--check`;
+Generated CLI launchers refuse a stale managed workspace before running. The MCP
+server still answers the handshake and the tool list; its first call that needs the
+engine returns the stale-workspace diagnostic with the `kiln-init` steps, and the next
+call succeeds once the workspace is upgraded, without restarting the session. Older
+launchers need an explicit `--check`/`--upgrade` first. Hand-wired MCP setups are
+outside this managed-workspace check. Customizations are reported by `--check`;
 their compatibility remains the owner's responsibility. Keep exported `.kiln.js`
 files as portable checkpoints even when retaining the source store. Use fresh
 workspaces for independent model evaluations.
 
 ## Manual MCP configuration
 
-Launch the installed `dist/mcp-server.mjs` over stdio using an absolute path. Choose
+Launch the installed `dist/mcp-server.mjs` over stdio using an absolute path. It loads
+`dist/mcp-engine.mjs` from the same directory on the first call that needs the engine,
+so launch the installed copy in place rather than copying one file elsewhere. Choose
 an explicit store shared with your CLI:
 
 ```json

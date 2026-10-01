@@ -11744,6 +11744,54 @@ var init_requirements_identity = __esm(() => {
   init_requirements();
 });
 
+// src/requirements-json.ts
+import { open as open2 } from "node:fs/promises";
+import { resolve as resolve3 } from "node:path";
+function assertNoLegacyRuntimePolicy(options) {
+  if (options.intent !== undefined || options.category !== undefined)
+    throw new RequirementsMigrationRequiredError;
+}
+async function readHostRequirementsJson(path) {
+  const limit = 1024 * 1024;
+  const file = await open2(resolve3(path), "r");
+  let input;
+  try {
+    const info = await file.stat();
+    if (!info.isFile() || info.size > limit)
+      throw new Error("--requirements requires a regular JSON file no larger than 1 MiB.");
+    const buffer = Buffer.alloc(limit + 1);
+    let total = 0;
+    while (total < buffer.length) {
+      const read = await file.read(buffer, total, buffer.length - total, null);
+      if (read.bytesRead === 0)
+        break;
+      total += read.bytesRead;
+    }
+    if (total > limit)
+      throw new Error("--requirements JSON exceeds 1 MiB.");
+    try {
+      input = JSON.parse(new TextDecoder("utf-8", { fatal: true }).decode(buffer.subarray(0, total)));
+    } catch {
+      throw new Error("--requirements must contain valid UTF-8 JSON.");
+    }
+  } finally {
+    await file.close();
+  }
+  if (input && typeof input === "object")
+    assertNoLegacyRuntimePolicy(input);
+  return input;
+}
+var CATEGORY_MIGRATION_MESSAGE = "--category was removed. Use descriptive labels in Discovery recipes; explicit execution requirements use --requirements <host-binding.json>. See docs/migration.md.", RequirementsMigrationRequiredError;
+var init_requirements_json = __esm(() => {
+  RequirementsMigrationRequiredError = class RequirementsMigrationRequiredError extends Error {
+    code = "REQUIREMENTS_MIGRATION_REQUIRED";
+    constructor() {
+      super("Legacy category/AssetIntent execution requires explicit migration to a host-bound AssetRequirementsV1 record. Use descriptive labels for discovery; do not silently select a prop policy.");
+      this.name = "RequirementsMigrationRequiredError";
+    }
+  };
+});
+
 // src/requirements-context.ts
 import { createHash as createHash3 } from "node:crypto";
 import { z as z2 } from "zod";
@@ -11766,10 +11814,6 @@ function contextHash(requirements, kind) {
     requirements: Object.fromEntries(Object.entries(requirements.requirements).filter(([, value]) => value && includes(value.state)).map(([key, value]) => [key, statement(value)]))
   };
   return `sha256:${createHash3("sha256").update(`kiln.requirements-${kind}.v1`).update(canonical2(semantic)).digest("hex")}`;
-}
-function assertNoLegacyRuntimePolicy(options) {
-  if (options.intent !== undefined || options.category !== undefined)
-    throw new RequirementsMigrationRequiredError;
 }
 function validateRequirementsBinding(input) {
   const parsed = RequirementsBindingSchema.safeParse(input);
@@ -11813,10 +11857,11 @@ function readRequirementsCheckpoint(input) {
     throw new TypeError(`Invalid requirements checkpoint binding: ${result.error.message}`);
   return { status: "host-binding-required", checkpoint: result.data };
 }
-var text2, hash, revision, change, RequirementsBindingSchema, RequirementsMigrationRequiredError, CheckpointSchema;
+var text2, hash, revision, change, RequirementsBindingSchema, CheckpointSchema;
 var init_requirements_context = __esm(() => {
   init_requirements();
   init_requirements_identity();
+  init_requirements_json();
   text2 = z2.string().refine((value) => value.trim().length > 0, "Must be non-empty.");
   hash = z2.string().regex(/^[a-f0-9]{64}$/);
   revision = z2.number().int().min(1).max(Number.MAX_SAFE_INTEGER);
@@ -11851,13 +11896,6 @@ var init_requirements_context = __esm(() => {
     if (binding.history.at(-1)?.policyHash !== binding.policyHash)
       issue("Requirements binding history does not end at its current policy.");
   });
-  RequirementsMigrationRequiredError = class RequirementsMigrationRequiredError extends Error {
-    code = "REQUIREMENTS_MIGRATION_REQUIRED";
-    constructor() {
-      super("Legacy category/AssetIntent execution requires explicit migration to a host-bound AssetRequirementsV1 record. Use descriptive labels for discovery; do not silently select a prop policy.");
-      this.name = "RequirementsMigrationRequiredError";
-    }
-  };
   CheckpointSchema = z2.strictObject({
     kind: z2.literal("kiln.requirements-checkpoint.v1"),
     programRef: z2.string().regex(/^sha256:[a-f0-9]{64}$/),
@@ -15356,7 +15394,7 @@ var init_texture_resolver = __esm(() => {
 // src/material-library-node.ts
 import { createHash as createHash5, randomUUID as randomUUID2 } from "node:crypto";
 import { lstat as lstat2, mkdir as mkdir2, readFile, readdir, realpath as realpath2, rename as rename2, rm, writeFile as writeFile2 } from "node:fs/promises";
-import { dirname as dirname2, join as join2, relative, resolve as resolve3, sep } from "node:path";
+import { dirname as dirname2, join as join2, relative, resolve as resolve4, sep } from "node:path";
 import sharp from "sharp";
 import { DataTexture as DataTexture3 } from "three";
 function revisionHash(manifest) {
@@ -15615,7 +15653,7 @@ async function createMaterialLibraryTextureResolver(records, fallback = DEFAULT_
 class FileMaterialLibrary {
   root;
   constructor(root) {
-    this.root = resolve3(root);
+    this.root = resolve4(root);
   }
   async path(...parts) {
     await mkdir2(this.root, { recursive: true });
@@ -15704,7 +15742,7 @@ class FileMaterialLibrary {
             throw error;
         }
       } finally {
-        const rel = relative(parent, resolve3(stage));
+        const rel = relative(parent, resolve4(stage));
         if (rel.startsWith(".stage-") && !rel.includes(sep))
           await rm(stage, { recursive: true, force: true });
       }
@@ -31445,12 +31483,12 @@ var init_subprocess = __esm(() => {
 });
 
 // src/workspace-location.ts
-import { dirname as dirname3, join as join4, resolve as resolve4 } from "node:path";
+import { dirname as dirname3, join as join4, resolve as resolve5 } from "node:path";
 function localWorkspaceRoot(env = process.env) {
-  return env.KILN_WORKSPACE ? resolve4(env.KILN_WORKSPACE) : env.KILN_PROGRAM_STORE ? dirname3(dirname3(resolve4(env.KILN_PROGRAM_STORE))) : process.cwd();
+  return env.KILN_WORKSPACE ? resolve5(env.KILN_WORKSPACE) : env.KILN_PROGRAM_STORE ? dirname3(dirname3(resolve5(env.KILN_PROGRAM_STORE))) : process.cwd();
 }
 function localProgramStoreDirectory(env = process.env) {
-  return env.KILN_PROGRAM_STORE ? resolve4(env.KILN_PROGRAM_STORE) : join4(localWorkspaceRoot(env), ".kiln", "programs");
+  return env.KILN_PROGRAM_STORE ? resolve5(env.KILN_PROGRAM_STORE) : join4(localWorkspaceRoot(env), ".kiln", "programs");
 }
 var init_workspace_location = () => {};
 
@@ -31458,6 +31496,9 @@ var init_workspace_location = () => {};
 function assertProgramRef(ref) {
   if (typeof ref !== "string" || !programRefPattern.test(ref))
     throw new Error("Invalid program reference; use a p_ handle or full sha256 reference returned by Kiln.");
+}
+function programNotFound(ref, where) {
+  return new Error(`Program not found: ${ref}. ${where} Send the source again with kiln_validate or kiln_render ({ code }) and continue with the programRef that result returns.`);
 }
 async function retainProgram(store, code) {
   const canonical = await store.put(code);
@@ -31487,6 +31528,7 @@ class MemoryProgramStore {
     this.maxBytes = maxBytes;
   }
   bytes = 0;
+  retention = "kept in this process until it ends";
   async put(code) {
     const ref = await programReference(code);
     if (!this.programs.has(ref)) {
@@ -31512,7 +31554,7 @@ class MemoryProgramStore {
     const canonical = ref.startsWith("p_") ? this.handles.get(ref) : ref;
     const code = canonical === undefined ? undefined : this.programs.get(canonical);
     if (code === undefined)
-      throw new Error(`Program not found: ${ref}. Import the source into this store again.`);
+      throw programNotFound(ref, "This in-memory store has no such reference.");
     return code;
   }
   async shortRef(ref) {
@@ -31553,6 +31595,7 @@ class FileProgramStore {
   constructor(directory) {
     this.directory = directory;
   }
+  retention = "kept in the program store across sessions and processes, never evicted";
   async stats() {
     let entries = 0;
     let bytes = 0;
@@ -31595,7 +31638,7 @@ class FileProgramStore {
     return code;
   }
   notFound(ref) {
-    return new Error(`Program not found: ${ref}. Use the same KILN_PROGRAM_STORE or import the source again.`);
+    return programNotFound(ref, "This program store has no such reference; it was issued by another store (KILN_PROGRAM_STORE selects which) or its store was removed.");
   }
   async readHandle(handle) {
     const path = join5(this.directory, "refs", `${handle}.ref`);
@@ -31880,14 +31923,14 @@ import {
   utimes,
   writeFile as writeFile4
 } from "node:fs/promises";
-import { join as join6, resolve as resolve5 } from "node:path";
+import { join as join6, resolve as resolve6 } from "node:path";
 
 class FileBuildCache {
   maxBytes;
   directory;
   constructor(directory, maxBytes = 128 * 1024 * 1024) {
     this.maxBytes = maxBytes;
-    this.directory = resolve5(directory);
+    this.directory = resolve6(directory);
     if (!Number.isSafeInteger(maxBytes) || maxBytes < 0 || maxBytes > 1024 * 1024 * 1024)
       throw new Error("File build cache size must be 0..1 GiB.");
   }
@@ -32295,8 +32338,8 @@ var init_projects = __esm(() => {
 
 // src/projects-node.ts
 import { createHash as createHash12, randomUUID as randomUUID5 } from "node:crypto";
-import { link as link3, lstat as lstat5, mkdir as mkdir5, open as open2, readdir as readdir5, realpath as realpath4, unlink as unlink4 } from "node:fs/promises";
-import { join as join8, relative as relative3, resolve as resolve6, sep as sep2 } from "node:path";
+import { link as link3, lstat as lstat5, mkdir as mkdir5, open as open3, readdir as readdir5, realpath as realpath4, unlink as unlink4 } from "node:fs/promises";
+import { join as join8, relative as relative3, resolve as resolve7, sep as sep2 } from "node:path";
 function sequenceOf(revisionId) {
   projectRevisionIdSchema.parse(revisionId);
   const sequence = Number(revisionId.slice(2, 12));
@@ -32315,7 +32358,7 @@ class FileProjectStore {
   constructor(workspace) {
     if (!workspace.trim())
       throw new Error("A workspace directory is required");
-    this.workspace = resolve6(workspace);
+    this.workspace = resolve7(workspace);
     this.directory = join8(this.workspace, ".kiln", "projects");
   }
   async path(projectId, create = false) {
@@ -32362,7 +32405,7 @@ class FileProjectStore {
     const info = await lstat5(path);
     if (!info.isFile() || info.isSymbolicLink() || info.size > MAX_PROJECT_BYTES)
       throw new Error("Invalid or oversized project revision file");
-    const handle = await open2(path, "r");
+    const handle = await open3(path, "r");
     let bytes;
     try {
       const opened = await handle.stat();
@@ -32442,7 +32485,7 @@ class FileProjectStore {
       await this.read(record.projectId, revision);
     const directory = await this.path(record.projectId, true);
     const temporary = join8(directory, `.write-${randomUUID5()}`);
-    const handle = await open2(temporary, "wx", 384);
+    const handle = await open3(temporary, "wx", 384);
     try {
       try {
         await handle.writeFile(bytes);
@@ -32793,7 +32836,7 @@ import {
   writeFile as writeFile5,
   realpath as realpath5
 } from "node:fs/promises";
-import { join as join10, resolve as resolve7, relative as relative4, sep as sep3 } from "node:path";
+import { join as join10, resolve as resolve8, relative as relative4, sep as sep3 } from "node:path";
 import { z as z8 } from "zod";
 function notify(run) {
   try {
@@ -32965,7 +33008,7 @@ class FileLiveReview {
   storedSizes = new WeakMap;
   unreportedIssues = [];
   constructor(workspace, options = {}) {
-    this.workspace = resolve7(workspace);
+    this.workspace = resolve8(workspace);
     this.directory = join10(this.workspace, ".kiln", "review");
     this.maxOperations = options.maxOperations ?? 200;
     this.maxBytes = options.maxBytes ?? 256 * 1024 * 1024;
@@ -33693,7 +33736,7 @@ import {
   writeFile as writeFile6
 } from "node:fs/promises";
 import { homedir, platform } from "node:os";
-import { dirname as dirname5, join as join11, relative as relative5, resolve as resolve8, sep as sep4, win32 } from "node:path";
+import { dirname as dirname5, join as join11, relative as relative5, resolve as resolve9, sep as sep4, win32 } from "node:path";
 function assertMaterialAllocation(records) {
   let bytes = 0;
   for (const record of records)
@@ -33722,7 +33765,7 @@ class FileAssetLibrary {
     this.materials = materials;
     if (!Object.keys(roots).length)
       throw new Error("Configure at least one collection");
-    this.roots = Object.fromEntries(Object.entries(roots).map(([id, path]) => [assetIdSchema.parse(id), resolve8(path)]));
+    this.roots = Object.fromEntries(Object.entries(roots).map(([id, path]) => [assetIdSchema.parse(id), resolve9(path)]));
   }
   collections() {
     return Object.keys(this.roots).map((id) => ({
@@ -34384,7 +34427,7 @@ var init_project_bundle = __esm(() => {
 // src/project-bundle-node.ts
 import { randomUUID as randomUUID8 } from "node:crypto";
 import { link as link6, lstat as lstat8, mkdir as mkdir8, readFile as readFile7, realpath as realpath7, unlink as unlink6, writeFile as writeFile7 } from "node:fs/promises";
-import { join as join12, relative as relative6, resolve as resolve9, sep as sep5 } from "node:path";
+import { join as join12, relative as relative6, resolve as resolve10, sep as sep5 } from "node:path";
 async function assetMaterials(workspace, asset) {
   return resolveSavedAssetMaterials(asset, workspace.materials);
 }
@@ -34429,7 +34472,7 @@ async function exportWorkspaceProjectBundle(workspace, library, projectId, optio
   return encodeProjectBundle({ project, assets, materials: [...materials.values()] }, profile);
 }
 async function retainArchive(workspace, bytes, digest) {
-  const root = resolve9(workspace.root);
+  const root = resolve10(workspace.root);
   await mkdir8(root, { recursive: true });
   const canonical = await realpath7(root);
   let directory = root;
@@ -34596,7 +34639,7 @@ var init_source_check = __esm(() => {
 });
 
 // src/local-runtime.ts
-import { dirname as dirname6, join as join13, resolve as resolve10 } from "node:path";
+import { dirname as dirname6, join as join13, resolve as resolve11 } from "node:path";
 import { fileURLToPath as fileURLToPath4 } from "node:url";
 import { Console } from "node:console";
 function integer2(env, name, fallback, min, max) {
@@ -34606,7 +34649,7 @@ function integer2(env, name, fallback, min, max) {
   return value;
 }
 function createLocalToolContext(base = {}, env = process.env) {
-  const workspaceRoot = env.KILN_WORKSPACE ? resolve10(env.KILN_WORKSPACE) : base.programStore instanceof FileProgramStore ? dirname6(dirname6(base.programStore.directory)) : localWorkspaceRoot(env);
+  const workspaceRoot = env.KILN_WORKSPACE ? resolve11(env.KILN_WORKSPACE) : base.programStore instanceof FileProgramStore ? dirname6(dirname6(base.programStore.directory)) : localWorkspaceRoot(env);
   const workspace = base.workspace ?? new FileWorkspace(workspaceRoot, env.KILN_PROJECT);
   const projectStore = base.projectStore ?? (workspace instanceof FileWorkspace ? workspace.projects : undefined);
   const liveReview = base.liveReview ?? (env.KILN_LIVE_REVIEW === "off" ? undefined : new FileLiveReview(workspaceRoot, {
@@ -34770,7 +34813,7 @@ async function createPackagedLocalToolContext(base = {}, env = process.env, inst
   }
   const cacheBytes = integer2(env, "KILN_BUILD_CACHE_MB", 128, 0, 1024) * 1024 * 1024;
   const store = context.programStore;
-  const directory = resolve10(env.KILN_BUILD_CACHE_DIR ?? join13(store instanceof FileProgramStore ? dirname6(store.directory) : ".kiln", "cache", "builds"));
+  const directory = resolve11(env.KILN_BUILD_CACHE_DIR ?? join13(store instanceof FileProgramStore ? dirname6(store.directory) : ".kiln", "cache", "builds"));
   context.buildCache = new FileBuildCache(directory, cacheBytes);
   context.evaluatorCacheIdentity = `${identity.identity}:${JSON.stringify({
     execution: context.localExecution,
@@ -34844,7 +34887,7 @@ function withProgramReferences(def, store) {
   if (!(def.inputSchema instanceof z10.ZodObject))
     throw new Error(`${def.name} must have an object input schema.`);
   const inputSchema = def.inputSchema.extend({
-    code: z10.string().optional().describe("New source. Supply code OR programRef."),
+    code: z10.string().optional().describe("New source."),
     programRef: refInput.optional(),
     ...def.name === "kiln_edit" ? {
       includeCode: z10.boolean().optional().describe("Return the full updated source. Defaults to false with programRef, true with code.")
@@ -34859,7 +34902,8 @@ function withProgramReferences(def, store) {
     kiln_view_interior: "Render roof-off floor-plan, dollhouse, and eye-level cutaway views. Optional versioned capture selects custom roof-off shots. Select a roof by nodeName or let Kiln resolve its role/name. Review roofsHidden and warnings for unresolved occlusion.",
     kiln_inspect: "List part paths and inspect joints, clearances and edit preservation. listParts filters names/paths with query; follow partListing.nextOffset on the same programRef/query. measure/surfacePairs return distances, not fit certificates. compare reports static changes and separate animation channel changes; paths adds complete static subtree summaries. image:false skips rendering. Otherwise use part/orbit or exact shot; check viewFidelity for materials."
   };
-  const description = def.name === "kiln_edit" ? "Atomically apply ordered exact-string replacements and render. Copy anchors from kiln_source. Returns programRef, parentRef, diff and preservation comparing static data and animation channels. Review changes; use kiln_inspect compare for more pages or protected subtrees. Failed comparison preserves the repair; render:false leaves preservation not_assessed. capture selects cameras; includeCode returns full source." : `${summaries[def.name] ?? def.description} Supply code OR programRef. Invalid drafts retain a ref; read with kiln_source.`;
+  const kept = store.retention ?? "kept by the host program store";
+  const description = def.name === "kiln_edit" ? `Atomically apply ordered exact-string replacements and render. Copy anchors from kiln_source. Supply code OR programRef. Returns programRef (${kept}), parentRef, diff and preservation comparing static data and animation channels. Review changes; use kiln_inspect compare for more pages or protected subtrees. Failed comparison preserves the repair; render:false leaves preservation not_assessed. capture selects cameras; includeCode returns full source.` : `${summaries[def.name] ?? def.description} Supply code OR programRef (${kept}). Invalid drafts keep a ref.`;
   return {
     ...def,
     inputSchema,
@@ -42963,8 +43007,8 @@ var init_cli_render_mode = __esm(() => {
 });
 
 // src/workspace-cli.ts
-import { open as open3 } from "node:fs/promises";
-import { resolve as resolve11 } from "node:path";
+import { open as open4 } from "node:fs/promises";
+import { resolve as resolve12 } from "node:path";
 function cliWorkspaceSelection(projectId, projectRevision, noProject = false) {
   if (noProject && (projectId !== undefined || projectRevision !== undefined))
     throw new Error("--no-project cannot be combined with --project or --project-revision.");
@@ -42974,7 +43018,7 @@ function cliWorkspaceSelection(projectId, projectRevision, noProject = false) {
   });
 }
 async function readMaterialDependencies(path) {
-  const file = await open3(resolve11(path), "r");
+  const file = await open4(resolve12(path), "r");
   try {
     const limit = 1024 * 1024;
     const info = await file.stat();
@@ -43324,41 +43368,13 @@ var init_deep_link = __esm(() => {
 });
 
 // src/requirements-file.ts
-import { open as open4 } from "node:fs/promises";
-import { resolve as resolve12 } from "node:path";
 async function readHostRequirementsFile(path) {
-  const limit = 1024 * 1024;
-  const file = await open4(resolve12(path), "r");
-  let input;
-  try {
-    const info = await file.stat();
-    if (!info.isFile() || info.size > limit)
-      throw new Error("--requirements requires a regular JSON file no larger than 1 MiB.");
-    const buffer = Buffer.alloc(limit + 1);
-    let total = 0;
-    while (total < buffer.length) {
-      const read = await file.read(buffer, total, buffer.length - total, null);
-      if (read.bytesRead === 0)
-        break;
-      total += read.bytesRead;
-    }
-    if (total > limit)
-      throw new Error("--requirements JSON exceeds 1 MiB.");
-    try {
-      input = JSON.parse(new TextDecoder("utf-8", { fatal: true }).decode(buffer.subarray(0, total)));
-    } catch {
-      throw new Error("--requirements must contain valid UTF-8 JSON.");
-    }
-  } finally {
-    await file.close();
-  }
-  if (input && typeof input === "object")
-    assertNoLegacyRuntimePolicy(input);
-  return validateRequirementsBinding(input);
+  return validateRequirementsBinding(await readHostRequirementsJson(path));
 }
-var CATEGORY_MIGRATION_MESSAGE = "--category was removed. Use descriptive labels in Discovery recipes; explicit execution requirements use --requirements <host-binding.json>. See docs/migration.md.";
 var init_requirements_file = __esm(() => {
   init_requirements_context();
+  init_requirements_json();
+  init_requirements_json();
 });
 
 // src/asset-cli.ts

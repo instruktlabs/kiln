@@ -202,6 +202,7 @@ try {
   for (const required of [
     'dist/cli.mjs',
     'dist/mcp-server.mjs',
+    'dist/mcp-engine.mjs',
     'dist/evaluator-worker.mjs',
     'scripts/create-workspace.mjs',
     'plugin.json',
@@ -233,6 +234,7 @@ try {
   receipt.bundleHashes = {
     cli: sha(await readFile(join(runtime, 'dist/cli.mjs'))),
     mcp: sha(await readFile(join(runtime, 'dist/mcp-server.mjs'))),
+    engine: sha(await readFile(join(runtime, 'dist/mcp-engine.mjs'))),
   };
   assert((await readFile(join(runtime, 'dist/cli.mjs'), 'utf8')).startsWith('#!/usr/bin/env node'));
   assert.match(

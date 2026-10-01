@@ -4,7 +4,7 @@ import { join } from 'node:path';
 import { tmpdir } from 'node:os';
 import { Client, InMemoryTransport } from '@modelcontextprotocol/client';
 import { EXTENSION_ID as MCP_APPS_EXTENSION_ID } from '@modelcontextprotocol/ext-apps/server';
-import { createKilnMcpServer } from './mcp-server';
+import { createKilnMcpServer } from './mcp-engine';
 import { FileAssetLibrary } from './assets-node';
 import { MemoryProgramStore, retainProgram } from './program-store';
 import { createKilnProgramToolRegistry } from './tools/registry';

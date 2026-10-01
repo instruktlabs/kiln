@@ -250,6 +250,39 @@ skill paths are `.agents/skills/` and `.cursor/skills/` with `.claude/skills/` s
 legacy. cursor-agent additionally applies a project-root `AGENTS.md` as a rule, alongside
 `.cursor/rules/`.
 
+## Protocol revisions and each harness's switch
+
+The stdio server serves three revisions of the protocol: **2026-07-28**, which has no
+handshake and carries the protocol version and client capabilities in every request's
+`_meta`, and the two handshake revisions **2025-11-25** and **2025-06-18**, opened with
+`initialize`. The library decides the era from the opening message; Kiln adds one rule of
+its own: a request that carries neither a protocol version nor a preceding `initialize` is
+answered `-32602` with both ways in, rather than being served as a 2025 session.
+`src/__tests__/mcp-conformance.test.ts` drives the built bundle with raw JSON-RPC under all
+three and is part of `bun run test`.
+
+Generated workspaces leave each harness on its default. Where a harness has a switch, the
+after-fix sessions of the v1 readiness cycle run it with the switch on:
+
+| harness | default | switch to 2026-07-28 |
+| --- | --- | --- |
+| Claude Code 2.1.287 | `initialize` at 2025-11-25 | `MCP_PROTOCOL_NEGOTIATION=auto` and `MCP_SDK_GENERATION=v2` in the environment |
+| Codex 0.159.3 | `initialize` at 2025-06-18 | `-c features.mcp_2026_07_28=true` and `CODEX_MCP_PROTOCOL_VERSION=2026-07-28` |
+| OpenCode 2.0.14 | `legacy` | per server, `protocol: "2026-07-28"` (or `auto`) in `opencode.json` |
+| Antigravity 1.2.14 | 2026-07-28 | none needed |
+
+Under 2026-07-28 the definition answers are cacheable: `server/discover`, `tools/list`,
+`resources/list`, `resources/templates/list` and the viewer page read are `public` with a
+one-day `ttlMs`, because they are fixed for a build and a new build restarts the process;
+asset and project reads are `private` with `ttlMs: 0`. No `listChanged` is advertised, so a
+`subscriptions/listen` acknowledges no list-changed notifications.
+
+The entry answers these before it loads the engine: `dist/mcp-server.mjs` carries the
+protocol library and a generated manifest of the definitions, and loads
+`dist/mcp-engine.mjs` on the first call that needs it. Codex gives an optional server one
+second before it goes on without its tools; 0.9.0 took 1.1 to 1.7 s to the first answer and
+lost the race, and the thin entry answers in about a quarter of a second after process start.
+
 ## Running the checks
 
 Three tools, cheapest first. None is part of `bun run test`: they spend provider quota and

@@ -69,8 +69,9 @@ a hash yourself.
 Local CLI and MCP processes default to `.kiln/programs` in their working directory. The setup
 command configures the same absolute store path for both; `KILN_PROGRAM_STORE` overrides it.
 Keep the whole store, including its reference mappings, to preserve short handles
-across CLI calls and server restarts. A handle from another store is not automatically
-available here; import the source and use the returned reference.
+across CLI calls and server restarts. A handle from another store is not available here;
+the error says so and names the next call: send the source again with `kiln_validate` or
+`kiln_render` and use the returned reference.
 
 Local storage is append-only, limited to 1 MiB per program. There is no automatic
 eviction or total disk quota. Export accepted work before deleting an old workspace's

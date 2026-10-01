@@ -40,6 +40,7 @@ export async function preflightRuntime(runtime, skills, probeDependencies = true
     for (const file of [
       'dist/cli.mjs',
       'dist/mcp-server.mjs',
+      'dist/mcp-engine.mjs',
       'dist/evaluator-worker.mjs',
       'dist/build.json',
       ...skills.map((name) => `skills/${name}/SKILL.md`),
@@ -50,6 +51,7 @@ export async function preflightRuntime(runtime, skills, probeDependencies = true
     for (const [name, file] of [
       ['cli', 'cli.mjs'],
       ['mcp', 'mcp-server.mjs'],
+      ['engine', 'mcp-engine.mjs'],
       ['worker', 'evaluator-worker.mjs'],
     ]) {
       const entry = build.entries?.[name];
@@ -640,6 +642,7 @@ export async function createWorkspace(directory, harness = 'claude', options = {
     runtimeHashes: {
       cli: hash(await readFile(join(runtime, 'dist/cli.mjs'))),
       mcp: hash(await readFile(join(runtime, 'dist/mcp-server.mjs'))),
+      engine: hash(await readFile(join(runtime, 'dist/mcp-engine.mjs'))),
       worker: hash(await readFile(join(runtime, 'dist/evaluator-worker.mjs'))),
     },
     node: nodeExecutable,

@@ -17,7 +17,7 @@ it('propagates a real MCP cancellation to the Node worker and accepts a later va
 import childProcess from 'node:child_process';
 import { syncBuiltinESMExports } from 'node:module';
 import { Client, InMemoryTransport } from '@modelcontextprotocol/client';
-import { createKilnMcpServer } from ${JSON.stringify(join(repo, 'src/mcp-server.ts'))};
+import { createKilnMcpServer } from ${JSON.stringify(join(repo, 'src/mcp-engine.ts'))};
 import { createLocalToolContext } from ${JSON.stringify(join(repo, 'src/local-runtime.ts'))};
 
 const originalSpawn = childProcess.spawn;

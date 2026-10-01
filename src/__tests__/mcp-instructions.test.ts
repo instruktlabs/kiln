@@ -12,7 +12,7 @@ import { describe, expect, it } from 'bun:test';
 import { stat } from 'node:fs/promises';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { MCP_SERVER_INSTRUCTIONS } from '../mcp-server';
+import { MCP_SERVER_INSTRUCTIONS } from '../mcp-core';
 
 const repo = fileURLToPath(new URL('../..', import.meta.url));
 

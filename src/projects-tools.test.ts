@@ -4,7 +4,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { FileProjectStore } from './projects-node';
 import { createKilnProgramToolRegistry, createKilnNativeToolRegistry } from './tools/registry';
-import { kilnMcpToolDefs, runTool } from './mcp-server';
+import { kilnMcpToolDefs, runTool } from './mcp-engine';
 
 const roots: string[] = [];
 afterEach(async () => {

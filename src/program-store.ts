@@ -4,6 +4,8 @@ export interface ProgramStore {
   get(programRef: string): Promise<string>;
   shortRef?(programRef: string): Promise<string>;
   stats?(): Promise<ProgramStoreStats>;
+  /** How long a returned reference stays resolvable, worded for the tool descriptions. */
+  retention?: string;
 }
 
 /** Point-in-time accounting; file counts do not imply an integrity scan. */
@@ -25,6 +27,16 @@ export function assertProgramRef(ref: string): void {
     throw new Error(
       'Invalid program reference; use a p_ handle or full sha256 reference returned by Kiln.',
     );
+}
+
+/**
+ * An unknown reference is answered with the next call and no local path (v1 contract rule
+ * 10). `where` says what this store knows, so a reader sees why the handle is unknown here.
+ */
+export function programNotFound(ref: string, where: string): Error {
+  return new Error(
+    `Program not found: ${ref}. ${where} Send the source again with kiln_validate or kiln_render ({ code }) and continue with the programRef that result returns.`,
+  );
 }
 
 /** Prefer the store's immutable handle without changing the canonical put contract. */
@@ -55,6 +67,7 @@ export class MemoryProgramStore implements ProgramStore {
   private readonly handles = new Map<string, string>();
   constructor(private readonly maxBytes = 64 * 1024 * 1024) {}
   private bytes = 0;
+  readonly retention = 'kept in this process until it ends';
 
   async put(code: string): Promise<string> {
     const ref = await programReference(code);
@@ -83,7 +96,7 @@ export class MemoryProgramStore implements ProgramStore {
     const canonical = ref.startsWith('p_') ? this.handles.get(ref) : ref;
     const code = canonical === undefined ? undefined : this.programs.get(canonical);
     if (code === undefined)
-      throw new Error(`Program not found: ${ref}. Import the source into this store again.`);
+      throw programNotFound(ref, 'This in-memory store has no such reference.');
     return code;
   }
 

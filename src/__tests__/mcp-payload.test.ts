@@ -9,7 +9,7 @@ import { join, resolve } from 'node:path';
 import { describe, expect, it } from 'bun:test';
 import { z } from 'zod';
 
-import { kilnMcpToolDefs, runTool } from '../mcp-server';
+import { kilnMcpToolDefs, runTool } from '../mcp-engine';
 
 const REPO = resolve(import.meta.dir, '..', '..');
 

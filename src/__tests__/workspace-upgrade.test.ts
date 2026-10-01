@@ -15,6 +15,14 @@ import { tmpdir } from 'node:os';
 import { dirname, join, resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 
+import {
+  CUBE_PROGRAM,
+  LEGACY_REVISIONS,
+  resultJson,
+  startStdioServer,
+  type StdioServer,
+} from './stdio-mcp';
+
 const repo = resolve(import.meta.dir, '../..');
 const setup = pathToFileURL(join(repo, 'scripts/create-workspace.mjs')).href;
 const sha = (value: string) => createHash('sha256').update(value).digest('hex');
@@ -45,6 +53,7 @@ async function fixture(runtime: string, revision: string) {
   for (const [key, file] of [
     ['cli', 'cli.mjs'],
     ['mcp', 'mcp-server.mjs'],
+    ['engine', 'mcp-engine.mjs'],
     ['worker', 'evaluator-worker.mjs'],
   ]) {
     const source = `export function main() {} // ${revision}\n`;
@@ -254,8 +263,9 @@ it('records the dist build identity under its own name and accepts the legacy fi
   }
 }, 30000);
 
-it('stops actual CLI and MCP startup on stale skill copies, then restores CLI discovery after upgrade', async () => {
+it('stops CLI startup on stale skill copies, reports them in the first MCP call, and recovers after upgrade without a restart', async () => {
   const temp = await mkdtemp(join(tmpdir(), 'kiln-upgrade-startup-'));
+  let mcp: StdioServer | undefined;
   try {
     expect(invoke(temp, repo).status).toBe(0);
     const manifestPath = join(temp, '.kiln/workspace.json');
@@ -273,25 +283,45 @@ it('stops actual CLI and MCP startup on stale skill copies, then restores CLI di
     });
     expect(cli.status).toBe(1);
     expect(cli.stderr).toContain('workspace is out of date');
+    // The MCP server answers the handshake regardless (contract rule 2) and
+    // reports the stale workspace on the first call that needs the engine, as a
+    // result the agent can act on: the next step, and no local path (rule 9).
     const config = JSON.parse(await readFile(join(temp, 'opencode.json'), 'utf8')).mcp
       .kiln_workspace;
-    const mcp = spawnSync(config.command[0], config.command.slice(1), {
+    mcp = await startStdioServer({
       cwd: temp,
-      encoding: 'utf8',
-      input: '',
-      timeout: 10000,
-      env: { ...process.env, ...config.environment, KILN_RENDER: 'cpu' },
+      env: { ...config.environment, KILN_RENDER: 'cpu' },
+      bundle: config.command.at(-1),
     });
-    expect(mcp.status).toBe(1);
-    expect(mcp.stderr).toContain('workspace is out of date');
-    expect(mcp.stdout).toBe('');
+    const init = await mcp.request('initialize', {
+      protocolVersion: LEGACY_REVISIONS[0],
+      capabilities: {},
+      clientInfo: { name: 'kiln-upgrade-test', version: '0' },
+    });
+    expect(init.error, mcp.stderr()).toBeUndefined();
+    mcp.notify('notifications/initialized');
+    const validate = () =>
+      mcp!.request('tools/call', { name: 'kiln_validate', arguments: { code: CUBE_PROGRAM } });
+    const stale = await validate();
+    expect(stale.result!['isError']).toBe(true);
+    const text = (stale.result!['content'] as { text?: string }[])
+      .map((b) => b.text ?? '')
+      .join('\n');
+    expect(text).toContain('workspace is out of date');
+    expect(text).toContain('kiln-init');
+    expect(text).not.toContain(temp);
     expect(invoke(temp, repo, { upgrade: true }).status).toBe(0);
     const restored = spawnSync('node', [join(temp, 'kiln.mjs'), 'discover', '--json'], {
       encoding: 'utf8',
     });
     expect(restored.status).toBe(0);
     expect(restored.stdout).toContain('createRoot');
+    // The same server process, once the workspace is current, serves the call.
+    const current = await validate();
+    expect(current.result!['isError'], JSON.stringify(current.result)).not.toBe(true);
+    expect(resultJson(current)['programRef']).toMatch(/^p_[0-9a-f]{12}$/u);
   } finally {
+    await mcp?.close();
     await rm(temp, { recursive: true, force: true });
   }
 }, 30000);

@@ -897,6 +897,22 @@ var init_requirements_identity = __esm(() => {
   init_requirements();
 });
 
+// src/requirements-json.ts
+function assertNoLegacyRuntimePolicy(options) {
+  if (options.intent !== undefined || options.category !== undefined)
+    throw new RequirementsMigrationRequiredError;
+}
+var RequirementsMigrationRequiredError;
+var init_requirements_json = __esm(() => {
+  RequirementsMigrationRequiredError = class RequirementsMigrationRequiredError extends Error {
+    code = "REQUIREMENTS_MIGRATION_REQUIRED";
+    constructor() {
+      super("Legacy category/AssetIntent execution requires explicit migration to a host-bound AssetRequirementsV1 record. Use descriptive labels for discovery; do not silently select a prop policy.");
+      this.name = "RequirementsMigrationRequiredError";
+    }
+  };
+});
+
 // src/requirements-context.ts
 import { createHash as createHash2 } from "node:crypto";
 import { z as z2 } from "zod";
@@ -920,10 +936,6 @@ function contextHash(requirements, kind) {
   };
   return `sha256:${createHash2("sha256").update(`kiln.requirements-${kind}.v1`).update(canonical2(semantic)).digest("hex")}`;
 }
-function assertNoLegacyRuntimePolicy(options) {
-  if (options.intent !== undefined || options.category !== undefined)
-    throw new RequirementsMigrationRequiredError;
-}
 function validateRequirementsBinding(input) {
   const parsed = RequirementsBindingSchema.safeParse(input);
   if (!parsed.success)
@@ -941,10 +953,11 @@ function resolveRequirementsContext(input) {
     adviceHash: contextHash(requirements, "advice")
   };
 }
-var text2, hash, revision, change, RequirementsBindingSchema, RequirementsMigrationRequiredError, CheckpointSchema;
+var text2, hash, revision, change, RequirementsBindingSchema, CheckpointSchema;
 var init_requirements_context = __esm(() => {
   init_requirements();
   init_requirements_identity();
+  init_requirements_json();
   text2 = z2.string().refine((value) => value.trim().length > 0, "Must be non-empty.");
   hash = z2.string().regex(/^[a-f0-9]{64}$/);
   revision = z2.number().int().min(1).max(Number.MAX_SAFE_INTEGER);
@@ -979,13 +992,6 @@ var init_requirements_context = __esm(() => {
     if (binding.history.at(-1)?.policyHash !== binding.policyHash)
       issue("Requirements binding history does not end at its current policy.");
   });
-  RequirementsMigrationRequiredError = class RequirementsMigrationRequiredError extends Error {
-    code = "REQUIREMENTS_MIGRATION_REQUIRED";
-    constructor() {
-      super("Legacy category/AssetIntent execution requires explicit migration to a host-bound AssetRequirementsV1 record. Use descriptive labels for discovery; do not silently select a prop policy.");
-      this.name = "RequirementsMigrationRequiredError";
-    }
-  };
   CheckpointSchema = z2.strictObject({
     kind: z2.literal("kiln.requirements-checkpoint.v1"),
     programRef: z2.string().regex(/^sha256:[a-f0-9]{64}$/),

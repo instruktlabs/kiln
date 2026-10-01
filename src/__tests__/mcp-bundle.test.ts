@@ -1,9 +1,10 @@
 /**
- * The committed MCP server bundle is the thing every harness actually launches,
- * and it is generated, so it can go stale without anybody noticing until an
- * install fails on someone else's machine. This file is what stops that.
+ * The committed MCP server bundles are the thing every harness actually
+ * launches, and they are generated, so they can go stale without anybody
+ * noticing until an install fails on someone else's machine. This file is what
+ * stops that.
  *
- * Why the bundle exists at all: the manifests used to say `"command": "bun"`,
+ * Why the bundles exist at all: the manifests used to say `"command": "bun"`,
  * which asks the harness to resolve a name against its own PATH. Bun's installer
  * appends to the Windows *User* PATH, and a process only ever sees the
  * environment it was born with, so anything started before that install looked
@@ -16,8 +17,11 @@
  * so bundling for Node removes Bun from the consumer's requirements entirely.
  * Bun stays the development toolchain; it is no longer a thing users must have.
  *
- * A plugin install is a git clone with no build step, which is why the artifact
- * is committed rather than built on demand.
+ * A plugin install is a git clone with no build step, which is why the
+ * artifacts are committed rather than built on demand. There are two: the thin
+ * entry `dist/mcp-server.mjs`, which answers the handshake from a generated
+ * manifest, and `dist/mcp-engine.mjs`, which it loads on the first call that
+ * needs the engine.
  */
 import { spawnSync } from 'node:child_process';
 import { Client } from '@modelcontextprotocol/client';
@@ -30,40 +34,43 @@ import { pathToFileURL } from 'node:url';
 
 import { describe, expect, it } from 'bun:test';
 
-import { kilnMcpToolDefs } from '../mcp-server';
+import { kilnMcpToolDefs } from '../mcp-engine';
 import { createLocalToolContext } from '../local-runtime';
 import { localAssetLibrary } from '../assets-node';
 
 const REPO = resolve(import.meta.dir, '..', '..');
 const BUNDLE = join(REPO, 'dist', 'mcp-server.mjs');
-
-const BUILD_ARGS = [
-  'build',
-  'src/mcp-server.ts',
-  '--target=node',
-  '--packages=external',
-  '--outfile=',
-];
+const BUNDLES = [
+  { entry: 'src/mcp-server.ts', file: 'mcp-server.mjs', minBytes: 20_000 },
+  { entry: 'src/mcp-engine.ts', file: 'mcp-engine.mjs', minBytes: 100_000 },
+] as const;
 
 const sha256 = (b: Buffer | Uint8Array) => createHash('sha256').update(b).digest('hex');
 
-describe('mcp server bundle', () => {
-  it('is committed', async () => {
-    const bytes = await readFile(BUNDLE);
-    expect(bytes.byteLength).toBeGreaterThan(100_000);
-  });
+describe('mcp server bundles', () => {
+  for (const { file, minBytes } of BUNDLES) {
+    it(`dist/${file} is committed`, async () => {
+      const bytes = await readFile(join(REPO, 'dist', file));
+      expect(bytes.byteLength).toBeGreaterThan(minBytes);
+    });
+  }
 
-  it('matches a fresh build, byte for byte', async () => {
-    // `bun build` is deterministic for a given input and toolchain version, so
-    // an exact comparison is the strongest available check and cannot pass on a
-    // bundle that merely happens to still run.
-    const out = join(tmpdir(), `kiln-mcp-freshness-${process.pid}.mjs`);
-    const args = [...BUILD_ARGS.slice(0, -1), `--outfile=${out}`];
-    const built = spawnSync(process.execPath, args, { cwd: REPO, encoding: 'utf8' });
-    expect(built.status).toBe(0);
-    const [fresh, committed] = await Promise.all([readFile(out), readFile(BUNDLE)]);
-    expect(`dist/mcp-server.mjs ${sha256(committed)}`).toBe(`dist/mcp-server.mjs ${sha256(fresh)}`);
-  });
+  for (const { entry, file } of BUNDLES) {
+    it(`dist/${file} matches a fresh build, byte for byte`, async () => {
+      // `bun build` is deterministic for a given input and toolchain version, so
+      // an exact comparison is the strongest available check and cannot pass on a
+      // bundle that merely happens to still run.
+      const out = join(tmpdir(), `kiln-mcp-freshness-${process.pid}-${file}`);
+      const args = ['build', entry, '--target=node', '--packages=external', `--outfile=${out}`];
+      const built = spawnSync(process.execPath, args, { cwd: REPO, encoding: 'utf8' });
+      expect(built.status, built.stderr).toBe(0);
+      const [fresh, committed] = await Promise.all([
+        readFile(out),
+        readFile(join(REPO, 'dist', file)),
+      ]);
+      expect(`dist/${file} ${sha256(committed)}`).toBe(`dist/${file} ${sha256(fresh)}`);
+    });
+  }
 
   /**
    * Freshness alone would pass on a bundle that is current and broken. This

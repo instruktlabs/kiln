@@ -2,7 +2,7 @@
 
 Generated from the public registry with `bun run docs:tools`. Change the registry to update names, descriptions or schemas; use `bun run docs:tools --check` to check for drift.
 
-Use these tools through your connected agent. Supply `code` once, then pass the returned `programRef` to later calls. References identify exact source revisions. [Source workflow](programs.md) · [Camera recipes](cameras.md) · [Geometry guide](geometry.md).
+Use these tools through your connected agent. Supply `code` once, then pass the returned `programRef` to later calls. References identify exact source revisions; the retention each description states is the packaged file store's, and an injected store states its own. [Source workflow](programs.md) · [Camera recipes](cameras.md) · [Geometry guide](geometry.md).
 
 Call `kiln_discover({capabilities:true})` for the current host limits and export/camera support. The schema below describes inputs; actual image replies include fidelity and capture metadata. Source reads return exact text, edits return a new revision, and failed builds return their errors.
 
@@ -119,7 +119,7 @@ Inspect status, or reprobe after renderer setup/repair to refresh this session a
 
 ## kiln_validate
 
-Check program syntax, sandbox rules and retired globals before building. Returns findings with codes, lines and repair hints where available; use kiln_render to evaluate geometry and see the asset. Supply code OR programRef. Invalid drafts retain a ref; read with kiln_source.
+Check program syntax, sandbox rules and retired globals before building. Returns findings with codes, lines and repair hints where available; use kiln_render to evaluate geometry and see the asset. Supply code OR programRef (kept in the program store across sessions and processes, never evicted). Invalid drafts keep a ref.
 
 <details>
 <summary>Input JSON Schema</summary>
@@ -131,7 +131,7 @@ Check program syntax, sandbox rules and retired globals before building. Returns
   "type": "object",
   "properties": {
     "code": {
-      "description": "New source. Supply code OR programRef.",
+      "description": "New source.",
       "type": "string"
     },
     "programRef": {
@@ -148,7 +148,7 @@ Check program syntax, sandbox rules and retired globals before building. Returns
 
 ## kiln_render
 
-Build and return metrics, part paths and images. If partsTruncated, use kiln_inspect listParts. Omit capture for six views, preset/cells for orbit grids, or kiln.capture.v1/v2 shots for exact orthographic/perspective cameras; v2 adds hide. Check viewFidelity before judging materials. Failed builds return errors without images. Supply code OR programRef. Invalid drafts retain a ref; read with kiln_source.
+Build and return metrics, part paths and images. If partsTruncated, use kiln_inspect listParts. Omit capture for six views, preset/cells for orbit grids, or kiln.capture.v1/v2 shots for exact orthographic/perspective cameras; v2 adds hide. Check viewFidelity before judging materials. Failed builds return errors without images. Supply code OR programRef (kept in the program store across sessions and processes, never evicted). Invalid drafts keep a ref.
 
 <details>
 <summary>Input JSON Schema</summary>
@@ -160,7 +160,7 @@ Build and return metrics, part paths and images. If partsTruncated, use kiln_ins
   "type": "object",
   "properties": {
     "code": {
-      "description": "New source. Supply code OR programRef.",
+      "description": "New source.",
       "type": "string"
     },
     "capture": {
@@ -483,7 +483,7 @@ Build and return metrics, part paths and images. If partsTruncated, use kiln_ins
 
 ## kiln_screenshot_animation
 
-Review animation images, poseBounds and loopClosure endpoint evidence. loopIntent is createClip({loop}); open is valid for one-shots; closed endpoints do not prove smooth velocity. Check motion, attachments and requested clearance; sampled bounds do not certify continuous contact or collision safety. Use shot for camera/subject, frameTimes for phases, and framing locked (default) or follow. Add phases when symmetry hides motion. The program must define animate(). Check viewFidelity before judging materials. Supply code OR programRef. Invalid drafts retain a ref; read with kiln_source.
+Review animation images, poseBounds and loopClosure endpoint evidence. loopIntent is createClip({loop}); open is valid for one-shots; closed endpoints do not prove smooth velocity. Check motion, attachments and requested clearance; sampled bounds do not certify continuous contact or collision safety. Use shot for camera/subject, frameTimes for phases, and framing locked (default) or follow. Add phases when symmetry hides motion. The program must define animate(). Check viewFidelity before judging materials. Supply code OR programRef (kept in the program store across sessions and processes, never evicted). Invalid drafts keep a ref.
 
 <details>
 <summary>Input JSON Schema</summary>
@@ -737,7 +737,7 @@ Review animation images, poseBounds and loopClosure endpoint evidence. loopInten
       ]
     },
     "code": {
-      "description": "New source. Supply code OR programRef.",
+      "description": "New source.",
       "type": "string"
     },
     "clip": {
@@ -769,7 +769,7 @@ Review animation images, poseBounds and loopClosure endpoint evidence. loopInten
 
 ## kiln_view_interior
 
-Render roof-off floor-plan, dollhouse, and eye-level cutaway views. Optional versioned capture selects custom roof-off shots. Select a roof by nodeName or let Kiln resolve its role/name. Review roofsHidden and warnings for unresolved occlusion. Supply code OR programRef. Invalid drafts retain a ref; read with kiln_source.
+Render roof-off floor-plan, dollhouse, and eye-level cutaway views. Optional versioned capture selects custom roof-off shots. Select a roof by nodeName or let Kiln resolve its role/name. Review roofsHidden and warnings for unresolved occlusion. Supply code OR programRef (kept in the program store across sessions and processes, never evicted). Invalid drafts keep a ref.
 
 <details>
 <summary>Input JSON Schema</summary>
@@ -1016,7 +1016,7 @@ Render roof-off floor-plan, dollhouse, and eye-level cutaway views. Optional ver
       "additionalProperties": false
     },
     "code": {
-      "description": "New source. Supply code OR programRef.",
+      "description": "New source.",
       "type": "string"
     },
     "nodeName": {
@@ -1037,7 +1037,7 @@ Render roof-off floor-plan, dollhouse, and eye-level cutaway views. Optional ver
 
 ## kiln_inspect
 
-List part paths and inspect joints, clearances and edit preservation. listParts filters names/paths with query; follow partListing.nextOffset on the same programRef/query. measure/surfacePairs return distances, not fit certificates. compare reports static changes and separate animation channel changes; paths adds complete static subtree summaries. image:false skips rendering. Otherwise use part/orbit or exact shot; check viewFidelity for materials. Supply code OR programRef. Invalid drafts retain a ref; read with kiln_source.
+List part paths and inspect joints, clearances and edit preservation. listParts filters names/paths with query; follow partListing.nextOffset on the same programRef/query. measure/surfacePairs return distances, not fit certificates. compare reports static changes and separate animation channel changes; paths adds complete static subtree summaries. image:false skips rendering. Otherwise use part/orbit or exact shot; check viewFidelity for materials. Supply code OR programRef (kept in the program store across sessions and processes, never evicted). Invalid drafts keep a ref.
 
 <details>
 <summary>Input JSON Schema</summary>
@@ -1388,7 +1388,7 @@ List part paths and inspect joints, clearances and edit preservation. listParts 
       "additionalProperties": false
     },
     "code": {
-      "description": "New source. Supply code OR programRef.",
+      "description": "New source.",
       "type": "string"
     },
     "part": {
@@ -1429,7 +1429,7 @@ List part paths and inspect joints, clearances and edit preservation. listParts 
 
 ## kiln_edit
 
-Atomically apply ordered exact-string replacements and render. Copy anchors from kiln_source. Returns programRef, parentRef, diff and preservation comparing static data and animation channels. Review changes; use kiln_inspect compare for more pages or protected subtrees. Failed comparison preserves the repair; render:false leaves preservation not_assessed. capture selects cameras; includeCode returns full source.
+Atomically apply ordered exact-string replacements and render. Copy anchors from kiln_source. Supply code OR programRef. Returns programRef (kept in the program store across sessions and processes, never evicted), parentRef, diff and preservation comparing static data and animation channels. Review changes; use kiln_inspect compare for more pages or protected subtrees. Failed comparison preserves the repair; render:false leaves preservation not_assessed. capture selects cameras; includeCode returns full source.
 
 <details>
 <summary>Input JSON Schema</summary>
@@ -1441,7 +1441,7 @@ Atomically apply ordered exact-string replacements and render. Copy anchors from
   "type": "object",
   "properties": {
     "code": {
-      "description": "New source. Supply code OR programRef.",
+      "description": "New source.",
       "type": "string"
     },
     "edits": {

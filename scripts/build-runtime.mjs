@@ -38,7 +38,7 @@ async function sources(directory, prefix = '') {
     if (item.name === '__tests__' || item.name.endsWith('.test.ts')) continue;
     const name = prefix ? `${prefix}/${item.name}` : item.name;
     if (item.isDirectory()) entries.push(...(await sources(join(directory, item.name), name)));
-    else if (/\.(?:ts|mjs|html|css)$/.test(item.name))
+    else if (/\.(?:ts|mjs|html|css|json)$/.test(item.name))
       entries.push([name, sha(await readFile(join(directory, item.name)))]);
   }
   return entries;
@@ -62,7 +62,10 @@ export async function runtimeBuildIdentity(root) {
 export async function buildRuntime(target, root = repo) {
   const entries = {
     cli: 'src/cli.ts',
+    // The stdio entry carries the protocol library and the generated manifest;
+    // it loads the engine bundle beside it on the first call that needs it.
     mcp: 'src/mcp-server.ts',
+    engine: 'src/mcp-engine.ts',
     worker: 'src/evaluator/worker.ts',
     'agent-run': 'src/agent/run.ts',
     'agent-providers': 'src/agent/providers.ts',
@@ -70,13 +73,25 @@ export async function buildRuntime(target, root = repo) {
   const outputs = {
     cli: 'cli.mjs',
     mcp: 'mcp-server.mjs',
+    engine: 'mcp-engine.mjs',
     worker: 'evaluator-worker.mjs',
     'agent-run': 'agent-run.mjs',
     'agent-providers': 'agent-providers.mjs',
   };
-  if (!entries[target]) throw new Error('Choose cli, mcp, or worker.');
-  const before = await runtimeBuildIdentity(root);
+  if (!entries[target])
+    throw new Error('Choose cli, mcp, engine, worker, agent-run or agent-providers.');
   const compiler = await pinnedBun(root);
+  if (target === 'mcp') {
+    // The entry bundles src/generated/mcp-manifest.json: regenerate it from the
+    // registry first, before the source identity below is taken.
+    const generated = spawnSync(
+      compiler.command,
+      [...compiler.prefix, 'scripts/generate-mcp-manifest.ts'],
+      { cwd: root, stdio: 'inherit', windowsHide: true },
+    );
+    if (generated.status !== 0) throw new Error('Generating the MCP manifest failed.');
+  }
+  const before = await runtimeBuildIdentity(root);
   const built = spawnSync(
     compiler.command,
     [
@@ -114,7 +129,7 @@ if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.ur
   try {
     const targets =
       process.argv[2] === 'all'
-        ? ['worker', 'agent-run', 'agent-providers', 'mcp', 'cli']
+        ? ['worker', 'agent-run', 'agent-providers', 'engine', 'mcp', 'cli']
         : [process.argv[2]];
     for (const target of targets) {
       const entry = await buildRuntime(target);

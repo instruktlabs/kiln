@@ -11,7 +11,7 @@ import { describe, expect, it } from 'bun:test';
 import { Client } from '@modelcontextprotocol/client';
 import { StdioClientTransport } from '@modelcontextprotocol/client/stdio';
 
-import { kilnMcpToolDefs } from './mcp-server';
+import { kilnMcpToolDefs } from './mcp-engine';
 import { createLocalToolContext } from './local-runtime';
 import { localAssetLibrary } from './assets-node';
 

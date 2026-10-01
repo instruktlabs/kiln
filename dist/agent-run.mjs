@@ -804,6 +804,22 @@ var init_requirements_identity = __esm(() => {
   init_requirements();
 });
 
+// src/requirements-json.ts
+function assertNoLegacyRuntimePolicy(options) {
+  if (options.intent !== undefined || options.category !== undefined)
+    throw new RequirementsMigrationRequiredError;
+}
+var RequirementsMigrationRequiredError;
+var init_requirements_json = __esm(() => {
+  RequirementsMigrationRequiredError = class RequirementsMigrationRequiredError extends Error {
+    code = "REQUIREMENTS_MIGRATION_REQUIRED";
+    constructor() {
+      super("Legacy category/AssetIntent execution requires explicit migration to a host-bound AssetRequirementsV1 record. Use descriptive labels for discovery; do not silently select a prop policy.");
+      this.name = "RequirementsMigrationRequiredError";
+    }
+  };
+});
+
 // src/requirements-context.ts
 import { createHash as createHash2 } from "node:crypto";
 import { z as z2 } from "zod";
@@ -826,10 +842,6 @@ function contextHash(requirements, kind) {
     requirements: Object.fromEntries(Object.entries(requirements.requirements).filter(([, value]) => value && includes(value.state)).map(([key, value]) => [key, statement(value)]))
   };
   return `sha256:${createHash2("sha256").update(`kiln.requirements-${kind}.v1`).update(canonical2(semantic)).digest("hex")}`;
-}
-function assertNoLegacyRuntimePolicy(options) {
-  if (options.intent !== undefined || options.category !== undefined)
-    throw new RequirementsMigrationRequiredError;
 }
 function validateRequirementsBinding(input) {
   const parsed = RequirementsBindingSchema.safeParse(input);
@@ -873,10 +885,11 @@ function readRequirementsCheckpoint(input) {
     throw new TypeError(`Invalid requirements checkpoint binding: ${result.error.message}`);
   return { status: "host-binding-required", checkpoint: result.data };
 }
-var text2, hash, revision, change, RequirementsBindingSchema, RequirementsMigrationRequiredError, CheckpointSchema;
+var text2, hash, revision, change, RequirementsBindingSchema, CheckpointSchema;
 var init_requirements_context = __esm(() => {
   init_requirements();
   init_requirements_identity();
+  init_requirements_json();
   text2 = z2.string().refine((value) => value.trim().length > 0, "Must be non-empty.");
   hash = z2.string().regex(/^[a-f0-9]{64}$/);
   revision = z2.number().int().min(1).max(Number.MAX_SAFE_INTEGER);
@@ -911,13 +924,6 @@ var init_requirements_context = __esm(() => {
     if (binding.history.at(-1)?.policyHash !== binding.policyHash)
       issue("Requirements binding history does not end at its current policy.");
   });
-  RequirementsMigrationRequiredError = class RequirementsMigrationRequiredError extends Error {
-    code = "REQUIREMENTS_MIGRATION_REQUIRED";
-    constructor() {
-      super("Legacy category/AssetIntent execution requires explicit migration to a host-bound AssetRequirementsV1 record. Use descriptive labels for discovery; do not silently select a prop policy.");
-      this.name = "RequirementsMigrationRequiredError";
-    }
-  };
   CheckpointSchema = z2.strictObject({
     kind: z2.literal("kiln.requirements-checkpoint.v1"),
     programRef: z2.string().regex(/^sha256:[a-f0-9]{64}$/),
@@ -31276,6 +31282,9 @@ function assertProgramRef(ref) {
   if (typeof ref !== "string" || !programRefPattern.test(ref))
     throw new Error("Invalid program reference; use a p_ handle or full sha256 reference returned by Kiln.");
 }
+function programNotFound(ref, where) {
+  return new Error(`Program not found: ${ref}. ${where} Send the source again with kiln_validate or kiln_render ({ code }) and continue with the programRef that result returns.`);
+}
 async function retainProgram(store, code) {
   const canonical = await store.put(code);
   return store.shortRef ? store.shortRef(canonical) : canonical;
@@ -31304,6 +31313,7 @@ class MemoryProgramStore {
     this.maxBytes = maxBytes;
   }
   bytes = 0;
+  retention = "kept in this process until it ends";
   async put(code) {
     const ref = await programReference(code);
     if (!this.programs.has(ref)) {
@@ -31329,7 +31339,7 @@ class MemoryProgramStore {
     const canonical = ref.startsWith("p_") ? this.handles.get(ref) : ref;
     const code = canonical === undefined ? undefined : this.programs.get(canonical);
     if (code === undefined)
-      throw new Error(`Program not found: ${ref}. Import the source into this store again.`);
+      throw programNotFound(ref, "This in-memory store has no such reference.");
     return code;
   }
   async shortRef(ref) {
@@ -31472,7 +31482,7 @@ function withProgramReferences(def, store) {
   if (!(def.inputSchema instanceof z5.ZodObject))
     throw new Error(`${def.name} must have an object input schema.`);
   const inputSchema = def.inputSchema.extend({
-    code: z5.string().optional().describe("New source. Supply code OR programRef."),
+    code: z5.string().optional().describe("New source."),
     programRef: refInput.optional(),
     ...def.name === "kiln_edit" ? {
       includeCode: z5.boolean().optional().describe("Return the full updated source. Defaults to false with programRef, true with code.")
@@ -31487,7 +31497,8 @@ function withProgramReferences(def, store) {
     kiln_view_interior: "Render roof-off floor-plan, dollhouse, and eye-level cutaway views. Optional versioned capture selects custom roof-off shots. Select a roof by nodeName or let Kiln resolve its role/name. Review roofsHidden and warnings for unresolved occlusion.",
     kiln_inspect: "List part paths and inspect joints, clearances and edit preservation. listParts filters names/paths with query; follow partListing.nextOffset on the same programRef/query. measure/surfacePairs return distances, not fit certificates. compare reports static changes and separate animation channel changes; paths adds complete static subtree summaries. image:false skips rendering. Otherwise use part/orbit or exact shot; check viewFidelity for materials."
   };
-  const description = def.name === "kiln_edit" ? "Atomically apply ordered exact-string replacements and render. Copy anchors from kiln_source. Returns programRef, parentRef, diff and preservation comparing static data and animation channels. Review changes; use kiln_inspect compare for more pages or protected subtrees. Failed comparison preserves the repair; render:false leaves preservation not_assessed. capture selects cameras; includeCode returns full source." : `${summaries[def.name] ?? def.description} Supply code OR programRef. Invalid drafts retain a ref; read with kiln_source.`;
+  const kept = store.retention ?? "kept by the host program store";
+  const description = def.name === "kiln_edit" ? `Atomically apply ordered exact-string replacements and render. Copy anchors from kiln_source. Supply code OR programRef. Returns programRef (${kept}), parentRef, diff and preservation comparing static data and animation channels. Review changes; use kiln_inspect compare for more pages or protected subtrees. Failed comparison preserves the repair; render:false leaves preservation not_assessed. capture selects cameras; includeCode returns full source.` : `${summaries[def.name] ?? def.description} Supply code OR programRef (${kept}). Invalid drafts keep a ref.`;
   return {
     ...def,
     inputSchema,

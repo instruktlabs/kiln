@@ -6,12 +6,11 @@ This repository turns model-authored source into GLBs: deterministic rendering, 
 primitives, agent tools, arena ranking, scene composition, CLI and MCP + skills.
 
 Read [README.md](./README.md) before changing exports or package contents. Runtime and tests
-live under `src/`; repository checks under `scripts/`. `package.json` explicitly lists shipped
-TypeScript through `files` and `exports`. [CHANGELOG.md](./CHANGELOG.md) states what each
+live under `src/`; repository checks under `scripts/`. `package.json` lists shipped files
+through `files` and `exports`. [CHANGELOG.md](./CHANGELOG.md) states what each
 release changed. Dated files under `docs/plans/` and `docs/reviews/` are records of their
 day: they never override current code, this guide or the changelog, and never imply release
-acceptance. The 0.9.0 state is the changelog's 0.9.0 section; the 2026-09-26 foundation
-checkpoint is history.
+acceptance.
 
 ## Authoring an asset is a different task from changing the engine
 
@@ -61,6 +60,13 @@ do not establish their quality.
 skin. Keep the name-parity test passing. `docs/tools.md` is generated from it by
 `scripts/generate-tool-reference.ts`.
 
+The stdio executable is a thin entry: `src/mcp-server.ts` bundles the protocol library and
+`src/generated/mcp-manifest.json` (regenerated from the registry by the `mcp` build or
+`bun run mcp:manifest`) and loads `dist/mcp-engine.mjs` (`src/mcp-engine.ts`) on the first call
+that needs the engine; handlers and cache hints are in `src/mcp-core.ts`. Never import the engine
+statically from the entry or the core. An engine-loading problem is a tool result naming the
+next step, never a dead server.
+
 `createKilnProgramToolRegistry` supplies the fourteen base MCP tools. The packaged local host
 also injects `kiln_project`, `kiln_material` and `kiln_review` (seventeen); embeddings
 advertise these only when the corresponding host services are supplied. Unavailable host
@@ -78,13 +84,11 @@ output boundary, after the retained artifact is recorded (`src/tools/review-deta
 Native completion uses `kiln_finish({programRef})`, defined in the registry. It selects an
 exact retained reviewed artifact without re-evaluation; completion and QA acceptance stay
 separate. A completion call runs alone; immutable edits and reads may run concurrently. The
-MCP surface has no terminal action because its host owns the outer loop and delivery. Do
-not restore the old submit/finalize factories or silently route old selectors.
+MCP surface has no terminal action because its host owns the outer loop and delivery.
 
 Strands harness guidance is registered by `src/agent/native-workflow.ts`, outside the shared
 `skills/` tree. Keep its completion/recovery protocol out of CLI/MCP setup, generated
-workspace instructions, Discovery and shared skills. Geometry, material and inspection
-contracts stay shared through explicitly selected technical references. See
+workspace instructions, Discovery and shared skills. See
 [the native workflow boundary](docs/runtime.md#optional-native-strands-workflow).
 
 ## Host-injected render and cache boundaries
@@ -138,7 +142,7 @@ image-free so a QA rule structurally cannot read a render buffer. Do not add pix
 
 `src/views/renderer-id.ts` calls `readFileSync` at MODULE LOAD. Reach
 `CPU_RASTER_RENDERER_ID` through existing lazy `await import('../views')` paths; static
-imports add a Node-only filesystem edge. No test catches this.
+imports add a Node-only filesystem edge that no test catches.
 
 Prompt-cache transports differ deliberately. Native Anthropic and Bedrock adapters consume a
 system `[TextBlock, CachePointBlock]`; OpenRouter-hosted Anthropic keeps plain system text
@@ -163,10 +167,9 @@ bun run test:render-service
 bun run test:coverage
 ```
 
-`bun run build` is a typecheck only. After runtime source changes, rebuild the Node bundles
-with `node scripts/build-runtime.mjs all` before CLI/MCP dogfood and full gates; use
-`bun run build:runtime` when viewer assets also changed. A typecheck does not refresh `dist/`
-or its build identity.
+`bun run build` is a typecheck only and refreshes neither `dist/` nor its build identity. After
+runtime source changes, rebuild the Node bundles with `node scripts/build-runtime.mjs all`
+(`bun run build:runtime` when viewer assets also changed) before CLI/MCP dogfood and full gates.
 
 Fast loop: nearest test file first, then `bun run typecheck && bun run lint && bun run test`.
 The full offline gate adds `bun run test:coverage`, which emits `coverage/lcov.info` and
@@ -178,10 +181,10 @@ and may spend money.
 `bun run test:render-service` whenever you change it (CI requires it). Its fixtures need no
 GPU; real GPU and installed-package checks are separate gates.
 
-Tests use `--timeout 20000` for cold Windows startup; larger budgets need an explicit third
-`test()` argument with a measured-duration comment. Tests and CI pin `KILN_RENDER=cpu`, so the
-coverage ratchet cannot vary with the runner's GPU. Coverage is measured over `src/` alone;
-tests under `scripts/` still run and answer for their own assertions.
+Tests use `--timeout 20000` for cold Windows startup; a larger budget needs an explicit third
+`test()` argument with a measured-duration comment. Tests and CI pin `KILN_RENDER=cpu` so the
+coverage ratchet cannot vary with the runner's GPU; coverage is measured over `src/` alone, and
+tests under `scripts/` still run.
 
 Use strict test-driven development for behavior changes: add a focused failing test, observe
 the expected failure, implement the smallest fix, and rerun both the focused and full gates.

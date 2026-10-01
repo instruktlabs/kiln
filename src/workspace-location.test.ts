@@ -9,7 +9,7 @@ import { createLocalToolContext } from './local-runtime';
 import { FileWorkspace, localWorkspaceRoot } from './workspace-node';
 import { FileMaterialLibrary } from './material-library-node';
 import type { FileLiveReview } from './live-review-node';
-import { kilnMcpToolDefs, runTool } from './mcp-server';
+import { kilnMcpToolDefs, runTool } from './mcp-engine';
 
 const roots: string[] = [];
 afterEach(async () => {

@@ -1,6 +1,6 @@
 import { expect, it } from 'bun:test';
 import { Client, InMemoryTransport } from '@modelcontextprotocol/client';
-import { createKilnMcpServer } from '../mcp-server';
+import { createKilnMcpServer } from '../mcp-engine';
 import { createKilnProgramToolRegistry } from '../tools/registry';
 
 it('reports numeric shot paths for a tagged capture instead of rejecting valid version fields', async () => {

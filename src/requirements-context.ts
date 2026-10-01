@@ -7,6 +7,10 @@ import {
   type AssetRequirementsV1,
 } from './contracts/requirements';
 import { assetRequirementsPolicyHash } from './requirements-identity';
+import {
+  RequirementsMigrationRequiredError,
+  assertNoLegacyRuntimePolicy,
+} from './requirements-json';
 import type { RequirementsBinding } from './requirements-store';
 
 const text = z.string().refine((value) => value.trim().length > 0, 'Must be non-empty.');
@@ -92,22 +96,9 @@ function contextHash(
   };
   return `sha256:${createHash('sha256').update(`kiln.requirements-${kind}.v1`).update(canonical(semantic)).digest('hex')}`;
 }
-export class RequirementsMigrationRequiredError extends Error {
-  readonly code = 'REQUIREMENTS_MIGRATION_REQUIRED';
-  constructor() {
-    super(
-      'Legacy category/AssetIntent execution requires explicit migration to a host-bound AssetRequirementsV1 record. Use descriptive labels for discovery; do not silently select a prop policy.',
-    );
-    this.name = 'RequirementsMigrationRequiredError';
-  }
-}
-export function assertNoLegacyRuntimePolicy(options: {
-  intent?: unknown;
-  category?: unknown;
-}): void {
-  if (options.intent !== undefined || options.category !== undefined)
-    throw new RequirementsMigrationRequiredError();
-}
+// The legacy-policy check lives in the zod-free module so the MCP entry can run
+// it before the engine loads; it stays importable from here.
+export { RequirementsMigrationRequiredError, assertNoLegacyRuntimePolicy };
 export function validateRequirementsBinding(input: unknown): RequirementsBinding {
   const parsed = RequirementsBindingSchema.safeParse(input);
   if (!parsed.success)
