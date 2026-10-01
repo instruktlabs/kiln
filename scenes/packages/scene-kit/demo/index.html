@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8"/>
+    <link rel="icon" href="data:,"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta name="robots" content="noindex, nofollow"/>
+    <meta name="kiln-asset-base" content="./assets/"/>
+    <title>scene-kit · Interactive demonstration</title>
+    <style>
+      *{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;font:15px/1.45 system-ui,sans-serif;background:#17242a;color:#fff}body{display:flex;flex-direction:column}header{display:flex;align-items:center;gap:1rem;padding:.65rem 1rem;min-height:54px}h1{font-size:1rem;margin:0;flex:1}button,a{font:inherit;color:inherit}header button{min-height:38px;background:#344852;border:1px solid #81929b;border-radius:6px;padding:.35rem .8rem}a{color:#b7dcff}:focus-visible{outline:3px solid #ffd470;outline-offset:3px}#scene-shell{position:relative;flex:1;min-height:0;width:100%;background:#20313b}#demo{width:100%;height:100%}#page-status{position:absolute;z-index:30;bottom:5rem;left:50%;transform:translateX(-50%);background:#17242a;padding:.45rem .8rem;border-radius:6px;pointer-events:none}#page-status:empty{display:none}footer{padding:.35rem 1rem;font-size:.8rem;display:flex;gap:1rem}#scene-shell:fullscreen{width:100%;height:100%}
+    </style>
+  </head>
+  <body>
+    <header><h1>scene-kit · Interactive demonstration</h1><button id="fullscreen-scene" type="button">Fullscreen</button><button id="exit-scene" type="button">Exit scene</button></header>
+    <main id="scene-shell"><div id="demo"></div><p id="page-status" role="status">Loading scene…</p></main>
+    <footer><a href="./THIRD-PARTY-NOTICES.txt">Software notices</a><a href="./assets/licenses/ASSET-LICENSE.txt">Asset licence</a></footer>
+    <script type="module" src="/main.tsx"></script>
+  </body>
+</html>

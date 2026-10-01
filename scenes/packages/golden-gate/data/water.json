@@ -1,0 +1,27 @@
+{
+  "schema": "golden-gate-water/1",
+  "conventions": {
+    "surface": "the water surface is the plane Y = 0 (mean sea level); depth, shoreline distance and the land mask come from the terrain pipeline's maps in scene.json terrain.water",
+    "waves": "Gerstner waves: wavelength (m), amplitude (m), direction in degrees from +X toward +Z (the propagation direction), steepness 0..1; deep-water dispersion omega = sqrt(9.81 k) with k = 2 pi / wavelength. A fetch-limited wind sea for a steady 8-10 m/s westerly through the Gate (peak near 23 m / 3.8 s) plus a refracted Pacific swell pair, all travelling downwind toward -X (into the bay), spread +-30 degrees. Tiers choose how many of the longest waves displace vertices and how many shade per pixel (tiers.json).",
+    "detailLayers": "tiling normal-map layers: tile size (m), rotation (degrees), RMS slope at wind 1 and drift speed downwind (m/s)",
+    "flow": "ebb-tide current field (m/s, +X seaward) built from the shoreline-distance map: size is the field's texel count per side, peakSpeed the speed at the Gate constriction, gateWidth the constriction width (m); normal detail advects along it in a two-phase cycle of flowPeriod seconds",
+    "other": "macroTiles are the two large-scale variation tile sizes (m); shoreBandPeriod is the time (s) between shore-foam bands; originSnap (m) is the grid to which the shading origin snaps to keep precision"
+  },
+  "waves": [
+    { "wavelength": 96, "amplitude": 0.3, "direction": 184, "steepness": 0.35 },
+    { "wavelength": 61, "amplitude": 0.2, "direction": 171, "steepness": 0.45 },
+    { "wavelength": 23, "amplitude": 0.11, "direction": 195, "steepness": 0.7 },
+    { "wavelength": 14.5, "amplitude": 0.07, "direction": 163, "steepness": 0.75 },
+    { "wavelength": 8.7, "amplitude": 0.042, "direction": 206, "steepness": 0.8 },
+    { "wavelength": 5.3, "amplitude": 0.025, "direction": 151, "steepness": 0.8 }
+  ],
+  "detailLayers": [
+    { "tile": 41.3, "rotation": 17, "slope": 0.1, "drift": 0.8 },
+    { "tile": 13.7, "rotation": -23, "slope": 0.085, "drift": 0.55 },
+    { "tile": 4.9, "rotation": 7, "slope": 0.07, "drift": 0.32 }
+  ],
+  "macroTiles": [1290, 470],
+  "flow": { "size": 256, "peakSpeed": 2.4, "gateWidth": 2600, "flowPeriod": 6 },
+  "shoreBandPeriod": 9,
+  "originSnap": 256
+}

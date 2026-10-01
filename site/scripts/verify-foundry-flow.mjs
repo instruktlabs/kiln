@@ -16,6 +16,8 @@ async function clickText(frame,text){const handles=await frame.$$('button');for(
 try{
  for(const backend of ['auto','webgl2']){
   const page=await browser.newPage(),received=new Map(),pending=[];const observed=[];
+  // Each backend qualification verifies response bytes, so it must fetch bodies rather than reuse 304s.
+  await page.setCacheEnabled(false);
   page.on('pageerror',error=>report.errors.push({backend,error:error.message}));
   page.on('response',response=>{
    const pathname=new URL(response.url()).pathname;

@@ -1,3 +1,15 @@
+# Kiln website
+
+## v0.9 Cloudflare rollout, 2026-10-01
+
+The owner authorized integration to main and site deployment. Current inputs are Farm
+r36-local-review, Golden Gate g9 and Foundry ff3-review2. The engine, site and maintained
+scene sources now share this repository. Follow [DEPLOYMENT.md](DEPLOYMENT.md) for a
+clean build, pinned assets, exact-commit deployment and live verification. Package
+publication remains deferred to v1.0. Foundry retains its in-production preview status.
+
+The records below are historical checkpoints. Their old no-deploy boundaries and
+revision numbers do not override the current release authorization or manifests.
 # Kiln Workbench website
 
 ## Local site candidate ready for owner review, 2026-09-30

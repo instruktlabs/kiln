@@ -5,6 +5,7 @@ import { resolve } from "node:path";
 import BaseLayout from "../../../layouts/BaseLayout.astro";
 import AssetViewer from "../../../components/AssetViewer.astro";
 import EngineNote from "../../../components/EngineNote.astro";
+import { readGlbFacts } from "../../../../scripts/engine-note.mjs";
 import CodeBlock from "../../../components/CodeBlock.astro";
 import type { Specimen } from "../../../types";
 import { REPO, SITE } from "../../../lib/config";
@@ -29,6 +30,7 @@ interface Props {
   next: Specimen;
 }
 const { specimen, previous, next } = Astro.props;
+const modelFacts = await readGlbFacts(resolve("public", specimen.file));
 const name = archiveName(specimen.name);
 const label = archiveLabel(specimen.name);
 const demo = isDemo(specimen.name);
@@ -100,7 +102,7 @@ const formatBytes = (bytes: number) => `${bytes.toLocaleString("en-US")} bytes`;
           frameClass="bg-[#767676]"
           posterAlt={`Historical gallery render of ${name}; see the poster provenance below.`}
         />
-        <EngineNote />
+        <EngineNote extensions={modelFacts.extensionsUsed} />
       </div>
       <div class="min-w-0 border-y border-ink py-5">
         <h2 class="text-subheading">Build measurements</h2>

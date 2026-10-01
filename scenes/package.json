@@ -1,0 +1,48 @@
+{
+  "name": "kiln-scenes",
+  "private": true,
+  "type": "module",
+  "workspaces": [
+    "packages/*"
+  ],
+  "packageManager": "bun@1.4.2",
+  "scripts": {
+    "check:toolchain": "bun scripts/check-toolchain.ts",
+    "check:pins": "bun scripts/check-pins.ts",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "lint": "bun scripts/lint.ts",
+    "test": "bun scripts/test-portable.ts",
+    "test:integration": "bun test",
+    "test:browser": "bun scripts/run-m1.ts",
+    "build": "bun packages/scene-kit/demo/stage-demo.ts && bun scripts/build-demo.ts --all",
+    "demo:build": "bun packages/scene-kit/demo/stage-demo.ts && bun scripts/build-demo.ts --all",
+    "demo:serve": "node packages/scene-kit/dist/standalone/serve.mjs --port 4400 --verify",
+    "check:hygiene": "bun scripts/check-bundle-hygiene.ts",
+    "check:licenses": "bun scripts/check-licenses.ts",
+    "check:site-compat": "bun scripts/check-site-compat.ts",
+    "stage:farm": "bun packages/farm/scripts/stage-assets.ts",
+    "perf:farm": "bun packages/farm/scripts/perf.ts",
+    "spike:build": "vite build --config packages/scene-kit/spike/vite.config.ts",
+    "spike:test": "bun scripts/run-m0.ts"
+  },
+  "devDependencies": {
+    "@react-three/fiber": "9.8.1",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@types/three": "0.186.0",
+    "@vitejs/plugin-react": "6.1.1",
+    "axe-core": "4.13.0",
+    "fflate": "0.8.3",
+    "npm": "12.0.2",
+    "pixelmatch": "7.2.0",
+    "pngjs": "7.0.0",
+    "puppeteer-core": "25.12.0",
+    "react": "19.3.0",
+    "react-dom": "19.3.0",
+    "three": "0.186.0",
+    "three-mesh-bvh": "0.9.15",
+    "typescript": "7.0.2",
+    "typescript-6": "npm:typescript@6.0.3",
+    "vite": "8.3.0"
+  }
+}

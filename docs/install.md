@@ -3,9 +3,8 @@
 This guide installs Kiln **0.9.0**: standalone authoring with optional projects, a
 material library and Live Review in the local dashboard. [CHANGELOG.md](../CHANGELOG.md)
 lists what changed. Existing users should read the [migration notes](migration.md)
-before upgrading a workspace. **0.9.0 is currently a local candidate:** build the exact
-checkout for local evaluation. Its final installed-package qualification is still open;
-package publication is deferred to v1.0.
+before upgrading a workspace. **0.9.0 is a source and site preview for dogfooding.** Build this checkout
+to evaluate the current engine. Package publication is deferred to v1.0.
 
 ## Install the package
 

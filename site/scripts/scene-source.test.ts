@@ -28,6 +28,12 @@ async function workspace(root: string) {
 }
 
 describe('scenes workspace location', () => {
+  test('prefers the scenes source in the same repository', async () => {
+    const root = await temp();
+    const scenes = await workspace(join(root, 'kiln/scenes'));
+    await workspace(join(root, 'kiln-commons/scenes'));
+    expect(resolveScenesDir({ env: {}, site: join(root, 'kiln/site') })).toBe(scenes);
+  });
   test('honours the environment, the sibling default and an explicit off', async () => {
     const root = await temp();
     const scenes = await workspace(join(root, 'kiln-commons/scenes'));

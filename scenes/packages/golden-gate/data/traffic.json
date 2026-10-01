@@ -1,0 +1,42 @@
+{
+  "schema": "golden-gate-traffic/1",
+  "conventions": {
+    "summary": "free-flowing lanes both ways (owner 2026-09-29 12:45 and 12:58): per-lane cruising speeds (layout.json lanes), car following with natural spacing and mild speed variation, entries and exits at the deck ends, braking only for the viewer's car; nothing collides physically. BEHAVIOUR.md specifies the model.",
+    "vehicles": "weight is the share of entries; which lanes a vehicle may use is layout.json lanes[].classes; model ids are pack models (vehicles/<type>.glb, LOD per MSFT_lod when present, else LOD0 with the wheels hidden past the LOD2 distance)",
+    "palette": "sRGB paint colours for the Paint material only, weights in percent; CargoBox and Trim stay untinted; no car repeats the colour of the car directly ahead, and colours of cars within avoidRadius in the same direction's other lanes are avoided (after attempts draws, the most common free colour is taken)",
+    "timing": "densityHeadway is the mean time (s) between entries per lane for each density; entry gaps are minHeadway plus a gamma(2) spread; the simulation advances in fixed steps of 1 / stepsPerSecond seconds",
+    "lanes": "each lane runs the whole route in route stations (layout.json lanes[].stations), from one approach road's end over the deck to the other's (fix round 2); vehicles enter and leave at the approach ends and fade over fade metres there, which must fit inside both approaches' ends.dissolve stretches (the road fading into the terrain), so no vehicle fades on the deck or the solid road"
+  },
+  "seed": 27262,
+  "random": "mulberry32",
+  "stepsPerSecond": 30,
+  "vehicles": {
+    "sedan": { "model": "vehicle-sedan", "weight": 0.30 },
+    "suv": { "model": "vehicle-suv", "weight": 0.24 },
+    "hatchback": { "model": "vehicle-hatchback", "weight": 0.17 },
+    "pickup": { "model": "vehicle-pickup", "weight": 0.14 },
+    "box-truck": { "model": "vehicle-box-truck", "weight": 0.08 },
+    "transit-bus": { "model": "vehicle-transit-bus", "weight": 0.07 }
+  },
+  "palette": [
+    { "name": "white", "weight": 24, "srgb": [233, 234, 231] },
+    { "name": "black", "weight": 20, "srgb": [24, 25, 27] },
+    { "name": "grey", "weight": 16, "srgb": [98, 101, 105] },
+    { "name": "silver", "weight": 14, "srgb": [170, 173, 176] },
+    { "name": "dark blue", "weight": 6, "srgb": [30, 48, 88] },
+    { "name": "blue", "weight": 4, "srgb": [58, 96, 150] },
+    { "name": "red", "weight": 8, "srgb": [146, 20, 24] },
+    { "name": "green", "weight": 3, "srgb": [34, 64, 46] },
+    { "name": "beige", "weight": 2, "srgb": [186, 170, 140] },
+    { "name": "brown", "weight": 1.5, "srgb": [92, 62, 44] },
+    { "name": "yellow", "weight": 0.75, "srgb": [214, 170, 36] },
+    { "name": "orange", "weight": 0.75, "srgb": [200, 92, 32] }
+  ],
+  "paint": { "material": "Paint", "untinted": ["CargoBox", "Trim"], "brightnessJitter": 0.08, "avoidRadius": 40, "attempts": 8 },
+  "densityHeadway": { "high": 4.5, "medium": 6.5, "low": 11 },
+  "minHeadway": 2.2,
+  "fade": 40,
+  "speed": { "personal": 0.03, "oscillation": 0.02, "oscillationPeriod": [40, 80] },
+  "idm": { "accel": 1.1, "brake": 2.2, "headway": 1.4, "gap": 3, "emergency": 8 },
+  "brakeLights": { "decel": 0.9, "rate": 8 }
+}

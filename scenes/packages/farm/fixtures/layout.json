@@ -1,0 +1,2645 @@
+{
+  "version": 2,
+  "name": "Shapes & Seasons Farm",
+  "sizeMeters": 72,
+  "note": "Connected farm showcase; three livestock paddocks, farmyard, grain and vegetable fields, tree boundaries and river mill. Composition and performance qualification pending.",
+  "placements": [
+    {
+      "id": "home",
+      "asset": "farmhouse",
+      "position": [
+        8,
+        0,
+        -14
+      ],
+      "yaw": 0
+    },
+    {
+      "id": "barn",
+      "asset": "barn",
+      "position": [
+        -8,
+        0,
+        -18
+      ],
+      "yaw": -90
+    },
+    {
+      "id": "windmill",
+      "asset": "windmill",
+      "position": [
+        -28,
+        0,
+        -21
+      ],
+      "yaw": 0
+    },
+    {
+      "id": "watermill",
+      "asset": "watermill",
+      "position": [
+        25,
+        -0.25,
+        -28.35
+      ],
+      "yaw": 0
+    },
+    {
+      "id": "tractor",
+      "asset": "tractor",
+      "position": [
+        -3,
+        0,
+        -7
+      ],
+      "yaw": 0
+    },
+    {
+      "id": "trailer",
+      "asset": "trailer",
+      "position": [
+        -8.4,
+        0,
+        -7
+      ],
+      "yaw": 0
+    },
+    {
+      "id": "farmer-yard",
+      "asset": "farmer",
+      "position": [
+        4.7,
+        0,
+        -7
+      ],
+      "yaw": 40
+    },
+    {
+      "id": "farmer-field",
+      "asset": "farmer",
+      "position": [
+        -14,
+        0,
+        24
+      ],
+      "yaw": -50
+    },
+    {
+      "id": "barrel-house",
+      "asset": "barrel",
+      "position": [
+        12,
+        0,
+        -8.5
+      ],
+      "yaw": 0
+    },
+    {
+      "id": "barrel-barn",
+      "asset": "barrel",
+      "position": [
+        -1,
+        0,
+        -18
+      ],
+      "yaw": 0
+    },
+    {
+      "id": "barrel-mill",
+      "asset": "barrel",
+      "position": [
+        29.3,
+        -0.2109374999999999,
+        -27.8
+      ],
+      "yaw": 20
+    },
+    {
+      "id": "bales-base-0",
+      "asset": "hay-bale",
+      "position": [
+        -14,
+        0,
+        -13
+      ],
+      "yaw": 0
+    },
+    {
+      "id": "bales-base-1",
+      "asset": "hay-bale",
+      "position": [
+        -12.92,
+        0,
+        -13
+      ],
+      "yaw": 0
+    },
+    {
+      "id": "bales-base-2",
+      "asset": "hay-bale",
+      "position": [
+        -11.84,
+        0,
+        -13
+      ],
+      "yaw": 0
+    },
+    {
+      "id": "bales-top-0",
+      "asset": "hay-bale",
+      "position": [
+        -13.46,
+        0.5,
+        -13
+      ],
+      "yaw": 0
+    },
+    {
+      "id": "bales-top-1",
+      "asset": "hay-bale",
+      "position": [
+        -12.38,
+        0.5,
+        -13
+      ],
+      "yaw": 0
+    },
+    {
+      "id": "cows-fence-corner",
+      "asset": "fence-corner",
+      "position": [
+        -27,
+        0,
+        4
+      ],
+      "yaw": 0,
+      "omittedPartPaths": []
+    },
+    {
+      "id": "cows-fence-straighta1",
+      "asset": "fence-straight",
+      "position": [
+        -25,
+        0,
+        3
+      ],
+      "yaw": 0,
+      "omittedPartPaths": [
+        "FenceStraight/Post_End_NegX",
+        "FenceStraight/Post_End_PosX"
+      ]
+    },
+    {
+      "id": "cows-fence-gate",
+      "asset": "fence-gate",
+      "position": [
+        -22.3,
+        0,
+        3
+      ],
+      "yaw": 0,
+      "omittedPartPaths": []
+    },
+    {
+      "id": "cows-fence-straighta2",
+      "asset": "fence-straight",
+      "position": [
+        -19.6,
+        0,
+        3
+      ],
+      "yaw": 0,
+      "omittedPartPaths": [
+        "FenceStraight/Post_End_NegX"
+      ]
+    },
+    {
+      "id": "cows-fence-top-right",
+      "asset": "fence-corner",
+      "position": [
+        -17.6,
+        0,
+        4
+      ],
+      "yaw": -90,
+      "omittedPartPaths": [
+        "FenceCorner/Post_End_B"
+      ]
+    },
+    {
+      "id": "cows-fence-left-0",
+      "asset": "fence-straight",
+      "position": [
+        -28,
+        0,
+        6
+      ],
+      "yaw": -90,
+      "omittedPartPaths": [
+        "FenceStraight/Post_End_NegX"
+      ]
+    },
+    {
+      "id": "cows-fence-left-1",
+      "asset": "fence-straight",
+      "position": [
+        -28,
+        0,
+        8
+      ],
+      "yaw": -90,
+      "omittedPartPaths": [
+        "FenceStraight/Post_End_NegX"
+      ]
+    },
+    {
+      "id": "cows-fence-left-2",
+      "asset": "fence-straight",
+      "position": [
+        -28,
+        0,
+        10
+      ],
+      "yaw": -90,
+      "omittedPartPaths": [
+        "FenceStraight/Post_End_NegX"
+      ]
+    },
+    {
+      "id": "cows-fence-left-3",
+      "asset": "fence-straight",
+      "position": [
+        -28,
+        0,
+        12
+      ],
+      "yaw": -90,
+      "omittedPartPaths": [
+        "FenceStraight/Post_End_NegX"
+      ]
+    },
+    {
+      "id": "cows-fence-left-4",
+      "asset": "fence-straight",
+      "position": [
+        -28,
+        0,
+        14
+      ],
+      "yaw": -90,
+      "omittedPartPaths": [
+        "FenceStraight/Post_End_NegX",
+        "FenceStraight/Post_End_PosX"
+      ]
+    },
+    {
+      "id": "cows-fence-right-0",
+      "asset": "fence-straight",
+      "position": [
+        -16.6,
+        0,
+        6
+      ],
+      "yaw": -90,
+      "omittedPartPaths": [
+        "FenceStraight/Post_End_NegX"
+      ]
+    },
+    {
+      "id": "cows-fence-right-1",
+      "asset": "fence-straight",
+      "position": [
+        -16.6,
+        0,
+        8
+      ],
+      "yaw": -90,
+      "omittedPartPaths": [
+        "FenceStraight/Post_End_NegX"
+      ]
+    },
+    {
+      "id": "cows-fence-right-2",
+      "asset": "fence-straight",
+      "position": [
+        -16.6,
+        0,
+        10
+      ],
+      "yaw": -90,
+      "omittedPartPaths": [
+        "FenceStraight/Post_End_NegX"
+      ]
+    },
+    {
+      "id": "cows-fence-right-3",
+      "asset": "fence-straight",
+      "position": [
+        -16.6,
+        0,
+        12
+      ],
+      "yaw": -90,
+      "omittedPartPaths": [
+        "FenceStraight/Post_End_NegX"
+      ]
+    },
+    {
+      "id": "cows-fence-right-4",
+      "asset": "fence-straight",
+      "position": [
+        -16.6,
+        0,
+        14
+      ],
+      "yaw": -90,
+      "omittedPartPaths": [
+        "FenceStraight/Post_End_NegX",
+        "FenceStraight/Post_End_PosX"
+      ]
+    },
+    {
+      "id": "cows-fence-bottom-left",
+      "asset": "fence-corner",
+      "position": [
+        -27,
+        0,
+        16
+      ],
+      "yaw": 90,
+      "omittedPartPaths": []
+    },
+    {
+      "id": "cows-fence-bottom-right",
+      "asset": "fence-corner",
+      "position": [
+        -17.6,
+        0,
+        16
+      ],
+      "yaw": 180,
+      "omittedPartPaths": []
+    },
+    {
+      "id": "cows-fence-bottom-a1",
+      "asset": "fence-straight",
+      "position": [
+        -25,
+        0,
+        17
+      ],
+      "yaw": 0,
+      "omittedPartPaths": [
+        "FenceStraight/Post_End_NegX",
+        "FenceStraight/Post_End_PosX"
+      ]
+    },
+    {
+      "id": "cows-fence-bottom-gate",
+      "asset": "fence-gate",
+      "position": [
+        -22.3,
+        0,
+        17
+      ],
+      "yaw": 180,
+      "omittedPartPaths": []
+    },
+    {
+      "id": "cows-fence-bottom-a2",
+      "asset": "fence-straight",
+      "position": [
+        -19.6,
+        0,
+        17
+      ],
+      "yaw": 0,
+      "omittedPartPaths": [
+        "FenceStraight/Post_End_NegX",
+        "FenceStraight/Post_End_PosX"
+      ]
+    },
+    {
+      "id": "sheep-fence-corner",
+      "asset": "fence-corner",
+      "position": [
+        -11,
+        0,
+        4
+      ],
+      "yaw": 0,
+      "omittedPartPaths": []
+    },
+    {
+      "id": "sheep-fence-straighta1",
+      "asset": "fence-straight",
+      "position": [
+        -9,
+        0,
+        3
+      ],
+      "yaw": 0,
+      "omittedPartPaths": [
+        "FenceStraight/Post_End_NegX",
+        "FenceStraight/Post_End_PosX"
+      ]
+    },
+    {
+      "id": "sheep-fence-gate",
+      "asset": "fence-gate",
+      "position": [
+        -6.300000000000001,
+        0,
+        3
+      ],
+      "yaw": 0,
+      "omittedPartPaths": []
+    },
+    {
+      "id": "sheep-fence-straighta2",
+      "asset": "fence-straight",
+      "position": [
+        -3.5999999999999996,
+        0,
+        3
+      ],
+      "yaw": 0,
+      "omittedPartPaths": [
+        "FenceStraight/Post_End_NegX"
+      ]
+    },
+    {
+      "id": "sheep-fence-top-right",
+      "asset": "fence-corner",
+      "position": [
+        -1.5999999999999996,
+        0,
+        4
+      ],
+      "yaw": -90,
+      "omittedPartPaths": [
+        "FenceCorner/Post_End_B"
+      ]
+    },
+    {
+      "id": "sheep-fence-left-0",
+      "asset": "fence-straight",
+      "position": [
+        -12,
+        0,
+        6
+      ],
+      "yaw": -90,
+      "omittedPartPaths": [
+        "FenceStraight/Post_End_NegX"
+      ]
+    },
+    {
+      "id": "sheep-fence-left-1",
+      "asset": "fence-straight",
+      "position": [
+        -12,
+        0,
+        8
+      ],
+      "yaw": -90,
+      "omittedPartPaths": [
+        "FenceStraight/Post_End_NegX"
+      ]
+    },
+    {
+      "id": "sheep-fence-left-2",
+      "asset": "fence-straight",
+      "position": [
+        -12,
+        0,
+        10
+      ],
+      "yaw": -90,
+      "omittedPartPaths": [
+        "FenceStraight/Post_End_NegX"
+      ]
+    },
+    {
+      "id": "sheep-fence-left-3",
+      "asset": "fence-straight",
+      "position": [
+        -12,
+        0,
+        12
+      ],
+      "yaw": -90,
+      "omittedPartPaths": [
+        "FenceStraight/Post_End_NegX"
+      ]
+    },
+    {
+      "id": "sheep-fence-left-4",
+      "asset": "fence-straight",
+      "position": [
+        -12,
+        0,
+        14
+      ],
+      "yaw": -90,
+      "omittedPartPaths": [
+        "FenceStraight/Post_End_NegX",
+        "FenceStraight/Post_End_PosX"
+      ]
+    },
+    {
+      "id": "sheep-fence-right-0",
+      "asset": "fence-straight",
+      "position": [
+        -0.5999999999999996,
+        0,
+        6
+      ],
+      "yaw": -90,
+      "omittedPartPaths": [
+        "FenceStraight/Post_End_NegX"
+      ]
+    },
+    {
+      "id": "sheep-fence-right-1",
+      "asset": "fence-straight",
+      "position": [
+        -0.5999999999999996,
+        0,
+        8
+      ],
+      "yaw": -90,
+      "omittedPartPaths": [
+        "FenceStraight/Post_End_NegX"
+      ]
+    },
+    {
+      "id": "sheep-fence-right-2",
+      "asset": "fence-straight",
+      "position": [
+        -0.5999999999999996,
+        0,
+        10
+      ],
+      "yaw": -90,
+      "omittedPartPaths": [
+        "FenceStraight/Post_End_NegX"
+      ]
+    },
+    {
+      "id": "sheep-fence-right-3",
+      "asset": "fence-straight",
+      "position": [
+        -0.5999999999999996,
+        0,
+        12
+      ],
+      "yaw": -90,
+      "omittedPartPaths": [
+        "FenceStraight/Post_End_NegX"
+      ]
+    },
+    {
+      "id": "sheep-fence-right-4",
+      "asset": "fence-straight",
+      "position": [
+        -0.5999999999999996,
+        0,
+        14
+      ],
+      "yaw": -90,
+      "omittedPartPaths": [
+        "FenceStraight/Post_End_NegX",
+        "FenceStraight/Post_End_PosX"
+      ]
+    },
+    {
+      "id": "sheep-fence-bottom-left",
+      "asset": "fence-corner",
+      "position": [
+        -11,
+        0,
+        16
+      ],
+      "yaw": 90,
+      "omittedPartPaths": []
+    },
+    {
+      "id": "sheep-fence-bottom-right",
+      "asset": "fence-corner",
+      "position": [
+        -1.5999999999999996,
+        0,
+        16
+      ],
+      "yaw": 180,
+      "omittedPartPaths": []
+    },
+    {
+      "id": "sheep-fence-bottom-a1",
+      "asset": "fence-straight",
+      "position": [
+        -9,
+        0,
+        17
+      ],
+      "yaw": 0,
+      "omittedPartPaths": [
+        "FenceStraight/Post_End_NegX",
+        "FenceStraight/Post_End_PosX"
+      ]
+    },
+    {
+      "id": "sheep-fence-bottom-gate",
+      "asset": "fence-gate",
+      "position": [
+        -6.300000000000001,
+        0,
+        17
+      ],
+      "yaw": 180,
+      "omittedPartPaths": []
+    },
+    {
+      "id": "sheep-fence-bottom-a2",
+      "asset": "fence-straight",
+      "position": [
+        -3.5999999999999996,
+        0,
+        17
+      ],
+      "yaw": 0,
+      "omittedPartPaths": [
+        "FenceStraight/Post_End_NegX",
+        "FenceStraight/Post_End_PosX"
+      ]
+    },
+    {
+      "id": "chickens-fence-corner",
+      "asset": "fence-corner",
+      "position": [
+        5,
+        0,
+        4
+      ],
+      "yaw": 0,
+      "omittedPartPaths": []
+    },
+    {
+      "id": "chickens-fence-straighta1",
+      "asset": "fence-straight",
+      "position": [
+        7,
+        0,
+        3
+      ],
+      "yaw": 0,
+      "omittedPartPaths": [
+        "FenceStraight/Post_End_NegX",
+        "FenceStraight/Post_End_PosX"
+      ]
+    },
+    {
+      "id": "chickens-fence-gate",
+      "asset": "fence-gate",
+      "position": [
+        9.7,
+        0,
+        3
+      ],
+      "yaw": 0,
+      "omittedPartPaths": []
+    },
+    {
+      "id": "chickens-fence-straighta2",
+      "asset": "fence-straight",
+      "position": [
+        12.4,
+        0,
+        3
+      ],
+      "yaw": 0,
+      "omittedPartPaths": [
+        "FenceStraight/Post_End_NegX"
+      ]
+    },
+    {
+      "id": "chickens-fence-top-right",
+      "asset": "fence-corner",
+      "position": [
+        14.4,
+        0,
+        4
+      ],
+      "yaw": -90,
+      "omittedPartPaths": [
+        "FenceCorner/Post_End_B"
+      ]
+    },
+    {
+      "id": "chickens-fence-left-0",
+      "asset": "fence-straight",
+      "position": [
+        4,
+        0,
+        6
+      ],
+      "yaw": -90,
+      "omittedPartPaths": [
+        "FenceStraight/Post_End_NegX"
+      ]
+    },
+    {
+      "id": "chickens-fence-left-1",
+      "asset": "fence-straight",
+      "position": [
+        4,
+        0,
+        8
+      ],
+      "yaw": -90,
+      "omittedPartPaths": [
+        "FenceStraight/Post_End_NegX"
+      ]
+    },
+    {
+      "id": "chickens-fence-left-2",
+      "asset": "fence-straight",
+      "position": [
+        4,
+        0,
+        10
+      ],
+      "yaw": -90,
+      "omittedPartPaths": [
+        "FenceStraight/Post_End_NegX"
+      ]
+    },
+    {
+      "id": "chickens-fence-left-3",
+      "asset": "fence-straight",
+      "position": [
+        4,
+        0,
+        12
+      ],
+      "yaw": -90,
+      "omittedPartPaths": [
+        "FenceStraight/Post_End_NegX"
+      ]
+    },
+    {
+      "id": "chickens-fence-left-4",
+      "asset": "fence-straight",
+      "position": [
+        4,
+        0,
+        14
+      ],
+      "yaw": -90,
+      "omittedPartPaths": [
+        "FenceStraight/Post_End_NegX",
+        "FenceStraight/Post_End_PosX"
+      ]
+    },
+    {
+      "id": "chickens-fence-right-0",
+      "asset": "fence-straight",
+      "position": [
+        15.4,
+        0,
+        6
+      ],
+      "yaw": -90,
+      "omittedPartPaths": [
+        "FenceStraight/Post_End_NegX"
+      ]
+    },
+    {
+      "id": "chickens-fence-right-1",
+      "asset": "fence-straight",
+      "position": [
+        15.4,
+        0,
+        8
+      ],
+      "yaw": -90,
+      "omittedPartPaths": [
+        "FenceStraight/Post_End_NegX"
+      ]
+    },
+    {
+      "id": "chickens-fence-right-2",
+      "asset": "fence-straight",
+      "position": [
+        15.4,
+        0,
+        10
+      ],
+      "yaw": -90,
+      "omittedPartPaths": [
+        "FenceStraight/Post_End_NegX"
+      ]
+    },
+    {
+      "id": "chickens-fence-right-3",
+      "asset": "fence-straight",
+      "position": [
+        15.4,
+        0,
+        12
+      ],
+      "yaw": -90,
+      "omittedPartPaths": [
+        "FenceStraight/Post_End_NegX"
+      ]
+    },
+    {
+      "id": "chickens-fence-right-4",
+      "asset": "fence-straight",
+      "position": [
+        15.4,
+        0,
+        14
+      ],
+      "yaw": -90,
+      "omittedPartPaths": [
+        "FenceStraight/Post_End_NegX",
+        "FenceStraight/Post_End_PosX"
+      ]
+    },
+    {
+      "id": "chickens-fence-bottom-left",
+      "asset": "fence-corner",
+      "position": [
+        5,
+        0,
+        16
+      ],
+      "yaw": 90,
+      "omittedPartPaths": []
+    },
+    {
+      "id": "chickens-fence-bottom-right",
+      "asset": "fence-corner",
+      "position": [
+        14.4,
+        0,
+        16
+      ],
+      "yaw": 180,
+      "omittedPartPaths": []
+    },
+    {
+      "id": "chickens-fence-bottom-a1",
+      "asset": "fence-straight",
+      "position": [
+        7,
+        0,
+        17
+      ],
+      "yaw": 0,
+      "omittedPartPaths": [
+        "FenceStraight/Post_End_NegX",
+        "FenceStraight/Post_End_PosX"
+      ]
+    },
+    {
+      "id": "chickens-fence-bottom-gate",
+      "asset": "fence-gate",
+      "position": [
+        9.7,
+        0,
+        17
+      ],
+      "yaw": 180,
+      "omittedPartPaths": []
+    },
+    {
+      "id": "chickens-fence-bottom-a2",
+      "asset": "fence-straight",
+      "position": [
+        12.4,
+        0,
+        17
+      ],
+      "yaw": 0,
+      "omittedPartPaths": [
+        "FenceStraight/Post_End_NegX",
+        "FenceStraight/Post_End_PosX"
+      ]
+    },
+    {
+      "id": "cow-0",
+      "asset": "cow",
+      "position": [
+        -25,
+        0,
+        7
+      ],
+      "yaw": 20
+    },
+    {
+      "id": "cow-1",
+      "asset": "cow",
+      "position": [
+        -20,
+        0,
+        7
+      ],
+      "yaw": -30
+    },
+    {
+      "id": "cow-2",
+      "asset": "cow",
+      "position": [
+        -25,
+        0,
+        13
+      ],
+      "yaw": 65
+    },
+    {
+      "id": "cow-3",
+      "asset": "cow",
+      "position": [
+        -20,
+        0,
+        13
+      ],
+      "yaw": -70
+    },
+    {
+      "id": "sheep-0",
+      "asset": "sheep",
+      "position": [
+        -9,
+        0,
+        7
+      ],
+      "yaw": 15
+    },
+    {
+      "id": "sheep-1",
+      "asset": "sheep",
+      "position": [
+        -5,
+        0,
+        6
+      ],
+      "yaw": -20
+    },
+    {
+      "id": "sheep-2",
+      "asset": "sheep",
+      "position": [
+        -3,
+        0,
+        9
+      ],
+      "yaw": 90
+    },
+    {
+      "id": "sheep-3",
+      "asset": "sheep",
+      "position": [
+        -8,
+        0,
+        12
+      ],
+      "yaw": -40
+    },
+    {
+      "id": "sheep-4",
+      "asset": "sheep",
+      "position": [
+        -4,
+        0,
+        14
+      ],
+      "yaw": 170
+    },
+    {
+      "id": "sheep-5",
+      "asset": "sheep",
+      "position": [
+        -9,
+        0,
+        15
+      ],
+      "yaw": 50
+    },
+    {
+      "id": "chicken-0",
+      "asset": "chicken",
+      "position": [
+        6,
+        0,
+        6
+      ],
+      "yaw": 0
+    },
+    {
+      "id": "chicken-1",
+      "asset": "chicken",
+      "position": [
+        8.4,
+        0,
+        6
+      ],
+      "yaw": 137
+    },
+    {
+      "id": "chicken-2",
+      "asset": "chicken",
+      "position": [
+        10.8,
+        0,
+        6
+      ],
+      "yaw": 274
+    },
+    {
+      "id": "chicken-3",
+      "asset": "chicken",
+      "position": [
+        6,
+        0,
+        8.5
+      ],
+      "yaw": 51
+    },
+    {
+      "id": "chicken-4",
+      "asset": "chicken",
+      "position": [
+        8.4,
+        0,
+        8.5
+      ],
+      "yaw": 188
+    },
+    {
+      "id": "chicken-5",
+      "asset": "chicken",
+      "position": [
+        10.8,
+        0,
+        8.5
+      ],
+      "yaw": 325
+    },
+    {
+      "id": "chicken-6",
+      "asset": "chicken",
+      "position": [
+        6,
+        0,
+        11
+      ],
+      "yaw": 102
+    },
+    {
+      "id": "chicken-7",
+      "asset": "chicken",
+      "position": [
+        8.4,
+        0,
+        11
+      ],
+      "yaw": 239
+    },
+    {
+      "id": "chicken-8",
+      "asset": "chicken",
+      "position": [
+        10.8,
+        0,
+        11
+      ],
+      "yaw": 16
+    },
+    {
+      "id": "chicken-9",
+      "asset": "chicken",
+      "position": [
+        6,
+        0,
+        13.5
+      ],
+      "yaw": 153
+    },
+    {
+      "id": "cabbage-row-0",
+      "asset": "cabbage-stage-1",
+      "position": [
+        5,
+        0,
+        23
+      ],
+      "yaw": 0,
+      "soilMode": "terrain",
+      "repeat": {
+        "count": 8,
+        "step": [
+          0,
+          0,
+          1
+        ]
+      }
+    },
+    {
+      "id": "cabbage-row-1",
+      "asset": "cabbage-stage-1",
+      "position": [
+        6,
+        0,
+        23
+      ],
+      "yaw": 0,
+      "soilMode": "terrain",
+      "repeat": {
+        "count": 8,
+        "step": [
+          0,
+          0,
+          1
+        ]
+      }
+    },
+    {
+      "id": "cabbage-row-2",
+      "asset": "cabbage-stage-1",
+      "position": [
+        7,
+        0,
+        23
+      ],
+      "yaw": 0,
+      "soilMode": "terrain",
+      "repeat": {
+        "count": 8,
+        "step": [
+          0,
+          0,
+          1
+        ]
+      }
+    },
+    {
+      "id": "cabbage-row-3",
+      "asset": "cabbage-stage-2",
+      "position": [
+        8,
+        0,
+        23
+      ],
+      "yaw": 0,
+      "soilMode": "terrain",
+      "repeat": {
+        "count": 8,
+        "step": [
+          0,
+          0,
+          1
+        ]
+      }
+    },
+    {
+      "id": "cabbage-row-4",
+      "asset": "cabbage-stage-2",
+      "position": [
+        9,
+        0,
+        23
+      ],
+      "yaw": 0,
+      "soilMode": "terrain",
+      "repeat": {
+        "count": 8,
+        "step": [
+          0,
+          0,
+          1
+        ]
+      }
+    },
+    {
+      "id": "cabbage-row-5",
+      "asset": "cabbage-stage-3",
+      "position": [
+        10,
+        0,
+        23
+      ],
+      "yaw": 0,
+      "soilMode": "terrain",
+      "repeat": {
+        "count": 8,
+        "step": [
+          0,
+          0,
+          1
+        ]
+      }
+    },
+    {
+      "id": "cabbage-row-6",
+      "asset": "cabbage-stage-3",
+      "position": [
+        11,
+        0,
+        23
+      ],
+      "yaw": 0,
+      "soilMode": "terrain",
+      "repeat": {
+        "count": 8,
+        "step": [
+          0,
+          0,
+          1
+        ]
+      }
+    },
+    {
+      "id": "cabbage-row-7",
+      "asset": "cabbage-stage-3",
+      "position": [
+        12,
+        0,
+        23
+      ],
+      "yaw": 0,
+      "soilMode": "terrain",
+      "repeat": {
+        "count": 8,
+        "step": [
+          0,
+          0,
+          1
+        ]
+      }
+    },
+    {
+      "id": "cabbage-row-8",
+      "asset": "cabbage-stage-4",
+      "position": [
+        13,
+        0,
+        23
+      ],
+      "yaw": 0,
+      "soilMode": "terrain",
+      "repeat": {
+        "count": 8,
+        "step": [
+          0,
+          0,
+          1
+        ]
+      }
+    },
+    {
+      "id": "cabbage-row-9",
+      "asset": "cabbage-stage-4",
+      "position": [
+        14,
+        0,
+        23
+      ],
+      "yaw": 0,
+      "soilMode": "terrain",
+      "repeat": {
+        "count": 8,
+        "step": [
+          0,
+          0,
+          1
+        ]
+      }
+    },
+    {
+      "id": "wheat-row-0",
+      "asset": "wheat",
+      "position": [
+        -10.4,
+        0,
+        22.1
+      ],
+      "yaw": 0,
+      "soilMode": "terrain",
+      "repeat": {
+        "count": 15,
+        "step": [
+          0,
+          0,
+          0.62
+        ]
+      }
+    },
+    {
+      "id": "wheat-row-1",
+      "asset": "wheat",
+      "position": [
+        -9.780000000000001,
+        0,
+        22.1
+      ],
+      "yaw": 0,
+      "soilMode": "terrain",
+      "repeat": {
+        "count": 15,
+        "step": [
+          0,
+          0,
+          0.62
+        ]
+      }
+    },
+    {
+      "id": "wheat-row-2",
+      "asset": "wheat",
+      "position": [
+        -9.16,
+        0,
+        22.1
+      ],
+      "yaw": 0,
+      "soilMode": "terrain",
+      "repeat": {
+        "count": 15,
+        "step": [
+          0,
+          0,
+          0.62
+        ]
+      }
+    },
+    {
+      "id": "wheat-row-3",
+      "asset": "wheat",
+      "position": [
+        -8.540000000000001,
+        0,
+        22.1
+      ],
+      "yaw": 0,
+      "soilMode": "terrain",
+      "repeat": {
+        "count": 15,
+        "step": [
+          0,
+          0,
+          0.62
+        ]
+      }
+    },
+    {
+      "id": "wheat-row-4",
+      "asset": "wheat",
+      "position": [
+        -7.92,
+        0,
+        22.1
+      ],
+      "yaw": 0,
+      "soilMode": "terrain",
+      "repeat": {
+        "count": 15,
+        "step": [
+          0,
+          0,
+          0.62
+        ]
+      }
+    },
+    {
+      "id": "wheat-row-5",
+      "asset": "wheat",
+      "position": [
+        -7.300000000000001,
+        0,
+        22.1
+      ],
+      "yaw": 0,
+      "soilMode": "terrain",
+      "repeat": {
+        "count": 15,
+        "step": [
+          0,
+          0,
+          0.62
+        ]
+      }
+    },
+    {
+      "id": "wheat-row-6",
+      "asset": "wheat",
+      "position": [
+        -6.680000000000001,
+        0,
+        22.1
+      ],
+      "yaw": 0,
+      "soilMode": "terrain",
+      "repeat": {
+        "count": 15,
+        "step": [
+          0,
+          0,
+          0.62
+        ]
+      }
+    },
+    {
+      "id": "wheat-row-7",
+      "asset": "wheat",
+      "position": [
+        -6.0600000000000005,
+        0,
+        22.1
+      ],
+      "yaw": 0,
+      "soilMode": "terrain",
+      "repeat": {
+        "count": 15,
+        "step": [
+          0,
+          0,
+          0.62
+        ]
+      }
+    },
+    {
+      "id": "wheat-row-8",
+      "asset": "wheat",
+      "position": [
+        -5.44,
+        0,
+        22.1
+      ],
+      "yaw": 0,
+      "soilMode": "terrain",
+      "repeat": {
+        "count": 15,
+        "step": [
+          0,
+          0,
+          0.62
+        ]
+      }
+    },
+    {
+      "id": "wheat-row-9",
+      "asset": "wheat",
+      "position": [
+        -4.82,
+        0,
+        22.1
+      ],
+      "yaw": 0,
+      "soilMode": "terrain",
+      "repeat": {
+        "count": 15,
+        "step": [
+          0,
+          0,
+          0.62
+        ]
+      }
+    },
+    {
+      "id": "wheat-row-10",
+      "asset": "wheat",
+      "position": [
+        -4.2,
+        0,
+        22.1
+      ],
+      "yaw": 0,
+      "soilMode": "terrain",
+      "repeat": {
+        "count": 15,
+        "step": [
+          0,
+          0,
+          0.62
+        ]
+      }
+    },
+    {
+      "id": "wheat-row-11",
+      "asset": "wheat",
+      "position": [
+        -3.58,
+        0,
+        22.1
+      ],
+      "yaw": 0,
+      "soilMode": "terrain",
+      "repeat": {
+        "count": 15,
+        "step": [
+          0,
+          0,
+          0.62
+        ]
+      }
+    },
+    {
+      "id": "wheat-row-12",
+      "asset": "wheat",
+      "position": [
+        -2.960000000000001,
+        0,
+        22.1
+      ],
+      "yaw": 0,
+      "soilMode": "terrain",
+      "repeat": {
+        "count": 15,
+        "step": [
+          0,
+          0,
+          0.62
+        ]
+      }
+    },
+    {
+      "id": "wheat-row-13",
+      "asset": "wheat",
+      "position": [
+        -2.34,
+        0,
+        22.1
+      ],
+      "yaw": 0,
+      "soilMode": "terrain",
+      "repeat": {
+        "count": 15,
+        "step": [
+          0,
+          0,
+          0.62
+        ]
+      }
+    },
+    {
+      "id": "wheat-row-14",
+      "asset": "wheat",
+      "position": [
+        -1.7200000000000006,
+        0,
+        22.1
+      ],
+      "yaw": 0,
+      "soilMode": "terrain",
+      "repeat": {
+        "count": 15,
+        "step": [
+          0,
+          0,
+          0.62
+        ]
+      }
+    },
+    {
+      "id": "pumpkin-row-0",
+      "asset": "pumpkin-plant",
+      "position": [
+        -28.5,
+        0,
+        23
+      ],
+      "yaw": 0,
+      "soilMode": "terrain",
+      "repeat": {
+        "count": 4,
+        "step": [
+          3,
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "id": "pumpkin-row-1",
+      "asset": "pumpkin-plant",
+      "position": [
+        -28.5,
+        0,
+        26.25
+      ],
+      "yaw": 0,
+      "soilMode": "terrain",
+      "repeat": {
+        "count": 4,
+        "step": [
+          3,
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "id": "pumpkin-row-2",
+      "asset": "pumpkin-plant",
+      "position": [
+        -28.5,
+        0,
+        29.5
+      ],
+      "yaw": 0,
+      "soilMode": "terrain",
+      "repeat": {
+        "count": 4,
+        "step": [
+          3,
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "id": "mill-wheat-0",
+      "asset": "wheat",
+      "position": [
+        -25.6,
+        0,
+        -17.6
+      ],
+      "yaw": 0,
+      "soilMode": "terrain",
+      "repeat": {
+        "count": 12,
+        "step": [
+          0,
+          0,
+          0.64
+        ]
+      }
+    },
+    {
+      "id": "mill-wheat-1",
+      "asset": "wheat",
+      "position": [
+        -24.96,
+        0,
+        -17.6
+      ],
+      "yaw": 0,
+      "soilMode": "terrain",
+      "repeat": {
+        "count": 12,
+        "step": [
+          0,
+          0,
+          0.64
+        ]
+      }
+    },
+    {
+      "id": "mill-wheat-2",
+      "asset": "wheat",
+      "position": [
+        -24.32,
+        0,
+        -17.6
+      ],
+      "yaw": 0,
+      "soilMode": "terrain",
+      "repeat": {
+        "count": 12,
+        "step": [
+          0,
+          0,
+          0.64
+        ]
+      }
+    },
+    {
+      "id": "mill-wheat-3",
+      "asset": "wheat",
+      "position": [
+        -23.68,
+        0,
+        -17.6
+      ],
+      "yaw": 0,
+      "soilMode": "terrain",
+      "repeat": {
+        "count": 12,
+        "step": [
+          0,
+          0,
+          0.64
+        ]
+      }
+    },
+    {
+      "id": "mill-wheat-4",
+      "asset": "wheat",
+      "position": [
+        -23.040000000000003,
+        0,
+        -17.6
+      ],
+      "yaw": 0,
+      "soilMode": "terrain",
+      "repeat": {
+        "count": 12,
+        "step": [
+          0,
+          0,
+          0.64
+        ]
+      }
+    },
+    {
+      "id": "mill-wheat-5",
+      "asset": "wheat",
+      "position": [
+        -22.400000000000002,
+        0,
+        -17.6
+      ],
+      "yaw": 0,
+      "soilMode": "terrain",
+      "repeat": {
+        "count": 12,
+        "step": [
+          0,
+          0,
+          0.64
+        ]
+      }
+    },
+    {
+      "id": "mill-wheat-6",
+      "asset": "wheat",
+      "position": [
+        -21.76,
+        0,
+        -17.6
+      ],
+      "yaw": 0,
+      "soilMode": "terrain",
+      "repeat": {
+        "count": 12,
+        "step": [
+          0,
+          0,
+          0.64
+        ]
+      }
+    },
+    {
+      "id": "mill-wheat-7",
+      "asset": "wheat",
+      "position": [
+        -21.12,
+        0,
+        -17.6
+      ],
+      "yaw": 0,
+      "soilMode": "terrain",
+      "repeat": {
+        "count": 12,
+        "step": [
+          0,
+          0,
+          0.64
+        ]
+      }
+    },
+    {
+      "id": "mill-wheat-8",
+      "asset": "wheat",
+      "position": [
+        -20.48,
+        0,
+        -17.6
+      ],
+      "yaw": 0,
+      "soilMode": "terrain",
+      "repeat": {
+        "count": 12,
+        "step": [
+          0,
+          0,
+          0.64
+        ]
+      }
+    },
+    {
+      "id": "mill-wheat-9",
+      "asset": "wheat",
+      "position": [
+        -19.840000000000003,
+        0,
+        -17.6
+      ],
+      "yaw": 0,
+      "soilMode": "terrain",
+      "repeat": {
+        "count": 12,
+        "step": [
+          0,
+          0,
+          0.64
+        ]
+      }
+    },
+    {
+      "id": "mill-wheat-10",
+      "asset": "wheat",
+      "position": [
+        -19.200000000000003,
+        0,
+        -17.6
+      ],
+      "yaw": 0,
+      "soilMode": "terrain",
+      "repeat": {
+        "count": 12,
+        "step": [
+          0,
+          0,
+          0.64
+        ]
+      }
+    },
+    {
+      "id": "mill-wheat-11",
+      "asset": "wheat",
+      "position": [
+        -18.560000000000002,
+        0,
+        -17.6
+      ],
+      "yaw": 0,
+      "soilMode": "terrain",
+      "repeat": {
+        "count": 12,
+        "step": [
+          0,
+          0,
+          0.64
+        ]
+      }
+    },
+    {
+      "id": "tree-0",
+      "asset": "faceted-tree",
+      "position": [
+        -33,
+        0,
+        -24
+      ],
+      "yaw": 73
+    },
+    {
+      "id": "tree-1",
+      "asset": "faceted-tree",
+      "position": [
+        -33,
+        0,
+        -11
+      ],
+      "yaw": 146
+    },
+    {
+      "id": "tree-2",
+      "asset": "faceted-tree",
+      "position": [
+        -33,
+        0,
+        1
+      ],
+      "yaw": 219
+    },
+    {
+      "id": "tree-3",
+      "asset": "faceted-tree",
+      "position": [
+        -33,
+        0,
+        14
+      ],
+      "yaw": 292
+    },
+    {
+      "id": "tree-4",
+      "asset": "faceted-tree",
+      "position": [
+        -32,
+        0,
+        31
+      ],
+      "yaw": 5
+    },
+    {
+      "id": "tree-5",
+      "asset": "faceted-tree",
+      "position": [
+        -16,
+        0,
+        33
+      ],
+      "yaw": 78
+    },
+    {
+      "id": "tree-6",
+      "asset": "faceted-tree",
+      "position": [
+        -1,
+        0,
+        34
+      ],
+      "yaw": 151
+    },
+    {
+      "id": "tree-7",
+      "asset": "faceted-tree",
+      "position": [
+        15,
+        0,
+        34
+      ],
+      "yaw": 224
+    },
+    {
+      "id": "tree-8",
+      "asset": "faceted-tree",
+      "position": [
+        29,
+        0,
+        30
+      ],
+      "yaw": 297
+    },
+    {
+      "id": "tree-9",
+      "asset": "faceted-tree",
+      "position": [
+        33,
+        0,
+        18
+      ],
+      "yaw": 10
+    },
+    {
+      "id": "tree-10",
+      "asset": "faceted-tree",
+      "position": [
+        32,
+        0,
+        5
+      ],
+      "yaw": 83
+    },
+    {
+      "id": "tree-11",
+      "asset": "faceted-tree",
+      "position": [
+        32,
+        0,
+        -6
+      ],
+      "yaw": 156
+    },
+    {
+      "id": "tree-12",
+      "asset": "faceted-tree",
+      "position": [
+        33,
+        0,
+        -20
+      ],
+      "yaw": 229
+    },
+    {
+      "id": "tree-13",
+      "asset": "faceted-tree",
+      "position": [
+        -30,
+        0,
+        -32
+      ],
+      "yaw": 302
+    },
+    {
+      "id": "tree-14",
+      "asset": "faceted-tree",
+      "position": [
+        -23,
+        0,
+        -32
+      ],
+      "yaw": 15
+    },
+    {
+      "id": "tree-15",
+      "asset": "faceted-tree",
+      "position": [
+        -15,
+        0,
+        -33
+      ],
+      "yaw": 88
+    },
+    {
+      "id": "tree-16",
+      "asset": "faceted-tree",
+      "position": [
+        -7,
+        0,
+        -31
+      ],
+      "yaw": 161
+    },
+    {
+      "id": "tree-17",
+      "asset": "faceted-tree",
+      "position": [
+        1,
+        0,
+        -32
+      ],
+      "yaw": 234
+    },
+    {
+      "id": "tree-18",
+      "asset": "faceted-tree",
+      "position": [
+        9,
+        0,
+        -31
+      ],
+      "yaw": 307
+    },
+    {
+      "id": "tree-19",
+      "asset": "faceted-tree",
+      "position": [
+        17,
+        0,
+        -32
+      ],
+      "yaw": 20
+    },
+    {
+      "id": "tree-20",
+      "asset": "faceted-tree",
+      "position": [
+        30,
+        0,
+        -33
+      ],
+      "yaw": 93
+    },
+    {
+      "id": "tree-21",
+      "asset": "faceted-tree",
+      "position": [
+        -15,
+        0,
+        2
+      ],
+      "yaw": 166
+    },
+    {
+      "id": "tree-22",
+      "asset": "faceted-tree",
+      "position": [
+        -15,
+        0,
+        17
+      ],
+      "yaw": 239
+    },
+    {
+      "id": "tree-23",
+      "asset": "faceted-tree",
+      "position": [
+        2,
+        0,
+        2
+      ],
+      "yaw": 312
+    },
+    {
+      "id": "tree-24",
+      "asset": "faceted-tree",
+      "position": [
+        2,
+        0,
+        17
+      ],
+      "yaw": 25
+    },
+    {
+      "id": "bank-rock-0",
+      "asset": "rock-cluster",
+      "position": [
+        -31,
+        -0.04,
+        -28.680334405197215
+      ],
+      "yaw": 20
+    },
+    {
+      "id": "bank-rock-1",
+      "asset": "rock-cluster",
+      "position": [
+        -18,
+        -0.04,
+        -22.033846754419994
+      ],
+      "yaw": -35
+    },
+    {
+      "id": "bank-rock-2",
+      "asset": "rock-cluster",
+      "position": [
+        -4,
+        -0.04,
+        -28.645023980280687
+      ],
+      "yaw": 50
+    },
+    {
+      "id": "bank-rock-3",
+      "asset": "rock-cluster",
+      "position": [
+        11,
+        -0.04,
+        -25.629790951049383
+      ],
+      "yaw": 0
+    },
+    {
+      "id": "bank-rock-4",
+      "asset": "rock-cluster",
+      "position": [
+        32,
+        -0.04,
+        -27.526943822935877
+      ],
+      "yaw": 100
+    },
+    {
+      "id": "boundary-rock-west",
+      "asset": "rock-cluster",
+      "position": [
+        -33,
+        0,
+        24
+      ],
+      "yaw": 170
+    },
+    {
+      "id": "boundary-rock-east",
+      "asset": "rock-cluster",
+      "position": [
+        32,
+        0,
+        24
+      ],
+      "yaw": 220
+    }
+  ],
+  "presentation": {
+    "paths": [
+      {
+        "width": 3.6,
+        "depth": 66,
+        "position": [
+          19,
+          0,
+          0
+        ]
+      },
+      {
+        "width": 53,
+        "depth": 3,
+        "position": [
+          -5,
+          0,
+          -5
+        ]
+      },
+      {
+        "width": 48,
+        "depth": 2.4,
+        "position": [
+          -5,
+          0,
+          20
+        ]
+      },
+      {
+        "width": 48,
+        "depth": 2.4,
+        "position": [
+          -5,
+          0,
+          0
+        ]
+      },
+      {
+        "width": 3,
+        "depth": 13,
+        "position": [
+          -8,
+          0,
+          -10
+        ]
+      },
+      {
+        "width": 3,
+        "depth": 10,
+        "position": [
+          8,
+          0,
+          -8
+        ]
+      },
+      {
+        "width": 4,
+        "depth": 15,
+        "position": [
+          -28,
+          0,
+          -12
+        ]
+      },
+      {
+        "width": 11,
+        "depth": 3,
+        "position": [
+          23,
+          0,
+          -23.5
+        ]
+      },
+      {
+        "width": 2.6,
+        "depth": 3,
+        "position": [
+          -22.3,
+          0,
+          1.5
+        ]
+      },
+      {
+        "width": 2.6,
+        "depth": 3,
+        "position": [
+          -22.3,
+          0,
+          18.5
+        ]
+      },
+      {
+        "width": 2.6,
+        "depth": 3,
+        "position": [
+          -6.3,
+          0,
+          1.5
+        ]
+      },
+      {
+        "width": 2.6,
+        "depth": 3,
+        "position": [
+          -6.3,
+          0,
+          18.5
+        ]
+      },
+      {
+        "width": 2.6,
+        "depth": 3,
+        "position": [
+          9.7,
+          0,
+          1.5
+        ]
+      },
+      {
+        "width": 2.6,
+        "depth": 3,
+        "position": [
+          9.7,
+          0,
+          18.5
+        ]
+      },
+      {
+        "width": 11,
+        "depth": 2.5,
+        "position": [
+          24,
+          0,
+          -31.5
+        ]
+      },
+      {
+        "width": 2.5,
+        "depth": 4.5,
+        "position": [
+          29,
+          0,
+          -30.5
+        ]
+      }
+    ],
+    "beds": [
+      {
+        "id": "cabbage",
+        "width": 11,
+        "depth": 9,
+        "position": [
+          9.5,
+          0,
+          26.5
+        ]
+      },
+      {
+        "id": "grain",
+        "width": 10,
+        "depth": 10,
+        "position": [
+          -6,
+          0,
+          26.5
+        ]
+      },
+      {
+        "id": "pumpkins",
+        "width": 13,
+        "depth": 10,
+        "position": [
+          -24,
+          0,
+          26.5
+        ]
+      },
+      {
+        "id": "mill-grain",
+        "width": 9,
+        "depth": 9,
+        "position": [
+          -22,
+          0,
+          -14
+        ]
+      }
+    ],
+    "river": {
+      "millX": 25,
+      "millZ": -26.31,
+      "waterY": -0.12
+    },
+    "grass": {
+      "tufts": 14000,
+      "seed": 271026,
+      "quality": [
+        7000,
+        14000
+      ]
+    }
+  },
+  "views": {
+    "hero": {
+      "position": [
+        54,
+        45,
+        62
+      ],
+      "target": [
+        0,
+        0,
+        -2
+      ],
+      "fov": 45
+    },
+    "opposite": {
+      "position": [
+        -54,
+        38,
+        -58
+      ],
+      "target": [
+        0,
+        0,
+        -2
+      ],
+      "fov": 45
+    },
+    "top": {
+      "position": [
+        0,
+        78,
+        0.1
+      ],
+      "target": [
+        0,
+        0,
+        0
+      ],
+      "fov": 54
+    },
+    "eye-height": {
+      "position": [
+        19,
+        1.7,
+        32
+      ],
+      "target": [
+        13,
+        2,
+        -15
+      ],
+      "fov": 65
+    },
+    "crops": {
+      "position": [
+        0,
+        10,
+        37
+      ],
+      "target": [
+        0,
+        0.5,
+        26
+      ],
+      "fov": 60
+    },
+    "fences": {
+      "position": [
+        -36,
+        13,
+        23
+      ],
+      "target": [
+        -13,
+        1,
+        10
+      ],
+      "fov": 56
+    },
+    "props": {
+      "position": [
+        2,
+        6,
+        1
+      ],
+      "target": [
+        -6,
+        1,
+        -9
+      ],
+      "fov": 52
+    },
+    "watermill-wheel": {
+      "position": [
+        30,
+        3,
+        -19
+      ],
+      "target": [
+        25,
+        1.4,
+        -26.31
+      ],
+      "fov": 45,
+      "asset": "watermill"
+    },
+    "watermill-interior": {
+      "position": [
+        24,
+        1.5,
+        -28.7
+      ],
+      "target": [
+        27.6,
+        1.6,
+        -27.6
+      ],
+      "fov": 70,
+      "interior": true,
+      "asset": "watermill"
+    },
+    "house-interior": {
+      "interior": true,
+      "target": [
+        10.6,
+        3.1,
+        -10.4
+      ],
+      "asset": "farmhouse",
+      "fov": 75,
+      "position": [
+        6.4,
+        1.9,
+        -16.4
+      ]
+    },
+    "house-porch": {
+      "interior": true,
+      "target": [
+        11.1,
+        3.1,
+        -13.4
+      ],
+      "asset": "farmhouse",
+      "fov": 72,
+      "position": [
+        12.4,
+        1.5,
+        -16.2
+      ]
+    },
+    "house-window-out": {
+      "target": [
+        11,
+        1.8,
+        -16
+      ],
+      "interior": true,
+      "fov": 60,
+      "position": [
+        8.6,
+        1.8,
+        -15.3
+      ],
+      "asset": "farmhouse"
+    }
+  },
+  "route": [
+    {
+      "position": [
+        19,
+        1.7,
+        32
+      ],
+      "target": [
+        -5,
+        1,
+        26
+      ]
+    },
+    {
+      "position": [
+        19,
+        1.7,
+        20
+      ],
+      "target": [
+        -7,
+        1,
+        10
+      ]
+    },
+    {
+      "position": [
+        19,
+        1.7,
+        0
+      ],
+      "target": [
+        -8,
+        2,
+        -18
+      ]
+    },
+    {
+      "position": [
+        19,
+        1.7,
+        -6
+      ],
+      "target": [
+        8,
+        2,
+        -14
+      ]
+    },
+    {
+      "position": [
+        19,
+        1.7,
+        -23.5
+      ],
+      "target": [
+        25,
+        2,
+        -28.2
+      ]
+    }
+  ]
+}

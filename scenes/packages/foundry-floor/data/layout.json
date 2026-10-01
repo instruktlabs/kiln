@@ -1,0 +1,11314 @@
+{
+ "schema": "foundry-floor.layout/2",
+ "generatedBy": "scripts/build-layout.ts (from the simulation spec sections 2-5 and 10 and the measured assets in data/assets.json)",
+ "basis": "E unless a value carries its own label",
+ "conventions": {
+  "units": "metres; yaw in degrees about +Y",
+  "frame": "right-handed, +Y up, +X east, +Z south; a north-up top view shows +X to the right and +Z downward; compass words are scene labels, not a site orientation",
+  "yaw": "0 points an asset's +X along world +X, 180 along -X, -90 along +Z (south), +90 along -Z (north)",
+  "assetFrame": "+X forward (the working face or travel direction), +Y up, +Z right",
+  "loadSide": "Every load port, stocker port and UTS seat lies directly under the rail; tools stand on the right of the direction of travel with their faces 0.3 m from the rail centreline; vehicles carry FOUPs with the door toward their right",
+  "measured": "tool bounds, locators and keep-outs come from data/assets.json (the accepted GLBs); footprint and keepOut are world boxes"
+ },
+ "scene": {
+  "x": [
+   -36,
+   39.6
+  ],
+  "z": [
+   -27,
+   27
+  ]
+ },
+ "cleanroom": {
+  "x": [
+   -36,
+   36
+  ],
+  "z": [
+   -27,
+   23.4
+  ],
+  "moduleSize": 3.6,
+  "grid": [
+   20,
+   14
+  ]
+ },
+ "gallery": {
+  "x": [
+   -36,
+   36
+  ],
+  "z": [
+   23.4,
+   27
+  ],
+  "segments": 10,
+  "segmentWidth": 7.2,
+  "yaw": 180,
+  "handrailY": 1.05,
+  "top": 2.95,
+  "drop": 0.05,
+  "note": "visitor-gallery-segment tiles: glazing line (local +Z) on the fab wall at Z 23.4 (yaw 180), capped ends west, the run's open end east onto the viewing landing, the west end closed by a wall-kit panel; lowered 0.05 m so the walking surface is flush with Y 0",
+  "segmentPlacements": [
+   {
+    "id": "gallery-01",
+    "position": [
+     -32.4,
+     -0.05,
+     25.2
+    ],
+    "yaw": 180
+   },
+   {
+    "id": "gallery-02",
+    "position": [
+     -25.2,
+     -0.05,
+     25.2
+    ],
+    "yaw": 180
+   },
+   {
+    "id": "gallery-03",
+    "position": [
+     -18,
+     -0.05,
+     25.2
+    ],
+    "yaw": 180
+   },
+   {
+    "id": "gallery-04",
+    "position": [
+     -10.8,
+     -0.05,
+     25.2
+    ],
+    "yaw": 180
+   },
+   {
+    "id": "gallery-05",
+    "position": [
+     -3.6,
+     -0.05,
+     25.2
+    ],
+    "yaw": 180
+   },
+   {
+    "id": "gallery-06",
+    "position": [
+     3.6,
+     -0.05,
+     25.2
+    ],
+    "yaw": 180
+   },
+   {
+    "id": "gallery-07",
+    "position": [
+     10.8,
+     -0.05,
+     25.2
+    ],
+    "yaw": 180
+   },
+   {
+    "id": "gallery-08",
+    "position": [
+     18,
+     -0.05,
+     25.2
+    ],
+    "yaw": 180
+   },
+   {
+    "id": "gallery-09",
+    "position": [
+     25.2,
+     -0.05,
+     25.2
+    ],
+    "yaw": 180
+   },
+   {
+    "id": "gallery-10",
+    "position": [
+     32.4,
+     -0.05,
+     25.2
+    ],
+    "yaw": 180
+   }
+  ],
+  "landing": {
+   "x": [
+    36,
+    39.6
+   ],
+   "z": [
+    19.8,
+    27
+   ],
+   "handrailY": 1.1,
+   "note": "a viewing landing east of the cut: the section reads from here"
+  }
+ },
+ "sectionCut": {
+  "x": 36,
+  "moduleOriginX": 34.8,
+  "modules": 7,
+  "moduleWidth": 7.2,
+  "centresZ": [
+   -23.4,
+   -16.2,
+   -9,
+   -1.8,
+   5.4,
+   12.6,
+   19.8
+  ],
+  "note": "east edge, no wall: subfab, waffle slab, cleanroom, FFU band and interstitial are visible; level-section-module tiles (measured), the row centred on the clean room",
+  "modulePlacements": [
+   {
+    "id": "section-1",
+    "position": [
+     34.8,
+     0,
+     -23.4
+    ],
+    "yaw": 0,
+    "variant": "withShaft"
+   },
+   {
+    "id": "section-2",
+    "position": [
+     34.8,
+     0,
+     -16.2
+    ],
+    "yaw": 0,
+    "variant": "withShaft"
+   },
+   {
+    "id": "section-3",
+    "position": [
+     34.8,
+     0,
+     -9
+    ],
+    "yaw": 0,
+    "variant": "withShaft"
+   },
+   {
+    "id": "section-4",
+    "position": [
+     34.8,
+     0,
+     -1.8
+    ],
+    "yaw": 0,
+    "variant": "withoutShaft",
+    "note": "the spine's east U-turn sweeps a vehicle (0.95 x 0.6 m) through this module's return-air shaft, so it draws without it (sim-spec 12 test 3)"
+   },
+   {
+    "id": "section-5",
+    "position": [
+     34.8,
+     0,
+     5.4
+    ],
+    "yaw": 0,
+    "variant": "withShaft"
+   },
+   {
+    "id": "section-6",
+    "position": [
+     34.8,
+     0,
+     12.6
+    ],
+    "yaw": 0,
+    "variant": "withShaft"
+   },
+   {
+    "id": "section-7",
+    "position": [
+     34.8,
+     0,
+     19.8
+    ],
+    "yaw": 0,
+    "variant": "withShaft"
+   }
+  ],
+  "obstacles": [
+   {
+    "id": "section-1.returnAirShaft",
+    "min": [
+     34,
+     -7.5,
+     -20.8
+    ],
+    "max": [
+     35.6,
+     11.4,
+     -20
+    ]
+   },
+   {
+    "id": "section-2.returnAirShaft",
+    "min": [
+     34,
+     -7.5,
+     -13.6
+    ],
+    "max": [
+     35.6,
+     11.4,
+     -12.8
+    ]
+   },
+   {
+    "id": "section-3.returnAirShaft",
+    "min": [
+     34,
+     -7.5,
+     -6.4
+    ],
+    "max": [
+     35.6,
+     11.4,
+     -5.6
+    ]
+   },
+   {
+    "id": "section-5.returnAirShaft",
+    "min": [
+     34,
+     -7.5,
+     8
+    ],
+    "max": [
+     35.6,
+     11.4,
+     8.8
+    ]
+   },
+   {
+    "id": "section-6.returnAirShaft",
+    "min": [
+     34,
+     -7.5,
+     15.2
+    ],
+    "max": [
+     35.6,
+     11.4,
+     16
+    ]
+   },
+   {
+    "id": "section-7.returnAirShaft",
+    "min": [
+     34,
+     -7.5,
+     22.4
+    ],
+    "max": [
+     35.6,
+     11.4,
+     23.2
+    ]
+   }
+  ],
+  "endWalls": [
+   {
+    "id": "section-end-n-low",
+    "min": [
+     33.6,
+     -8,
+     -27.1
+    ],
+    "max": [
+     36,
+     0,
+     -27
+    ]
+   },
+   {
+    "id": "section-end-n-high",
+    "min": [
+     33.6,
+     6,
+     -27.1
+    ],
+    "max": [
+     36,
+     14,
+     -27
+    ]
+   },
+   {
+    "id": "section-end-s-low",
+    "min": [
+     33.6,
+     -8,
+     23.4
+    ],
+    "max": [
+     36,
+     -0.05,
+     23.5
+    ]
+   },
+   {
+    "id": "section-end-s-high",
+    "min": [
+     33.6,
+     6,
+     23.4
+    ],
+    "max": [
+     36,
+     14,
+     23.5
+    ]
+   }
+  ],
+  "kitZone": {
+   "decision": "D-42 (owner, 2026-09-30): the zone is enlarged in the scene layout to take the accepted kit as built",
+   "zone": {
+    "min": [
+     -0.57,
+     -7.5,
+     -1.8
+    ],
+    "max": [
+     1.83,
+     -1.5,
+     1.8
+    ]
+   },
+   "moduleZone": {
+    "min": [
+     -0.5,
+     -7.5,
+     -1.8
+    ],
+    "max": [
+     1.2,
+     -5.5,
+     1.8
+    ],
+    "note": "coordinator 00:33: 3.6 m along Z by 1.6 m along X, up to 2.0 m tall, clear of every part (their vertex scan); the subfab kit goes only inside it"
+   },
+   "mount": [
+    0.35,
+    -7.5,
+    0
+   ],
+   "pose": {
+    "x": 0.63,
+    "z": 0,
+    "yaw": 90,
+    "frame": "the section module (its root: X 0 at the module centre, Y 0 the clean-room floor, Z 0 the module centre)"
+   },
+   "kitSize": [
+    3.6,
+    6,
+    2.4
+   ],
+   "kitBox": {
+    "min": [
+     -0.57,
+     -7.5,
+     -1.8
+    ],
+    "max": [
+     1.83,
+     -1.5,
+     1.8
+    ]
+   },
+   "fits": true,
+   "pastSectionPlaneM": 0.63,
+   "clearanceM": 0.1,
+   "note": "module frame. The module's own zone (1.7 x 2 x 3.6 m) takes the kit (2.4 m across the cut, 6 m tall at yaw 90) in no quarter turn, and the module's subfab is shallower than the kit, so the enlarged zone crosses the section plane by 0.63 m: the kit stands 0.63 m east of the module centre (0.28 m east of the mount), the least whole centimetre at which it clears every drawn module part by 0.10 m at micrometre resolution (the floor slab and the waffle slab excepted; tests/unit/clearance.test.ts)"
+  },
+  "subfabKits": [
+   {
+    "id": "subfab-kit-1",
+    "module": "section-1",
+    "position": [
+     35.43,
+     -7.5,
+     -23.4
+    ],
+    "yaw": 90,
+    "footprint": {
+     "min": [
+      34.23,
+      -7.5,
+      -25.2
+     ],
+     "max": [
+      36.63,
+      -1.5,
+      -21.6
+     ]
+    },
+    "toolAbove": {
+     "point": [
+      35.43,
+      -1.5,
+      -23.4
+     ],
+     "tool": null,
+     "distanceM": null
+    }
+   },
+   {
+    "id": "subfab-kit-2",
+    "module": "section-2",
+    "position": [
+     35.43,
+     -7.5,
+     -16.2
+    ],
+    "yaw": 90,
+    "footprint": {
+     "min": [
+      34.23,
+      -7.5,
+      -18
+     ],
+     "max": [
+      36.63,
+      -1.5,
+      -14.4
+     ]
+    },
+    "toolAbove": {
+     "point": [
+      35.43,
+      -1.5,
+      -16.2
+     ],
+     "tool": "clean-02",
+     "distanceM": 0
+    }
+   },
+   {
+    "id": "subfab-kit-3",
+    "module": "section-3",
+    "position": [
+     35.43,
+     -7.5,
+     -9
+    ],
+    "yaw": 90,
+    "footprint": {
+     "min": [
+      34.23,
+      -7.5,
+      -10.8
+     ],
+     "max": [
+      36.63,
+      -1.5,
+      -7.2
+     ]
+    },
+    "toolAbove": {
+     "point": [
+      35.43,
+      -1.5,
+      -9
+     ],
+     "tool": "clean-01",
+     "distanceM": 0
+    }
+   },
+   {
+    "id": "subfab-kit-4",
+    "module": "section-4",
+    "position": [
+     35.43,
+     -7.5,
+     -1.8
+    ],
+    "yaw": 90,
+    "footprint": {
+     "min": [
+      34.23,
+      -7.5,
+      -3.6
+     ],
+     "max": [
+      36.63,
+      -1.5,
+      0
+     ]
+    },
+    "toolAbove": {
+     "point": [
+      35.43,
+      -1.5,
+      -1.8
+     ],
+     "tool": null,
+     "distanceM": null
+    }
+   },
+   {
+    "id": "subfab-kit-5",
+    "module": "section-5",
+    "position": [
+     35.43,
+     -7.5,
+     5.4
+    ],
+    "yaw": 90,
+    "footprint": {
+     "min": [
+      34.23,
+      -7.5,
+      3.6
+     ],
+     "max": [
+      36.63,
+      -1.5,
+      7.2
+     ]
+    },
+    "toolAbove": {
+     "point": [
+      35.43,
+      -1.5,
+      5.4
+     ],
+     "tool": "probe-03",
+     "distanceM": 0.927
+    }
+   },
+   {
+    "id": "subfab-kit-6",
+    "module": "section-6",
+    "position": [
+     35.43,
+     -7.5,
+     12.6
+    ],
+    "yaw": 90,
+    "footprint": {
+     "min": [
+      34.23,
+      -7.5,
+      10.8
+     ],
+     "max": [
+      36.63,
+      -1.5,
+      14.4
+     ]
+    },
+    "toolAbove": {
+     "point": [
+      35.43,
+      -1.5,
+      12.6
+     ],
+     "tool": "probe-04",
+     "distanceM": 1.2809
+    }
+   },
+   {
+    "id": "subfab-kit-7",
+    "module": "section-7",
+    "position": [
+     35.43,
+     -7.5,
+     19.8
+    ],
+    "yaw": 90,
+    "footprint": {
+     "min": [
+      34.23,
+      -7.5,
+      18
+     ],
+     "max": [
+      36.63,
+      -1.5,
+      21.6
+     ]
+    },
+    "toolAbove": {
+     "point": [
+      35.43,
+      -1.5,
+      19.8
+     ],
+     "tool": null,
+     "distanceM": null
+    }
+   }
+  ]
+ },
+ "floorRobots": {
+  "basis": "arm measured from the pinned GLB; AMR measured from the pinned GLB",
+  "note": "arm stations at load ports with their AMRs parked at deckPark; at rest in FF2 (no floor moves in the twin)",
+  "stations": [
+   {
+    "id": "robot-station-1",
+    "port": "metro-01.lp1",
+    "tool": "metro-01",
+    "arm": {
+     "id": "arm-1",
+     "position": [
+      13.25,
+      0,
+      5.1565
+     ],
+     "yaw": 180,
+     "footprint": {
+      "min": [
+       12.82,
+       0,
+       4.9515
+      ],
+      "max": [
+       13.6123,
+       1.5513,
+       5.3615
+      ]
+     }
+    },
+    "amr": {
+     "id": "amr-1",
+     "position": [
+      13.48,
+      0,
+      5.8065
+     ],
+     "yaw": 180,
+     "footprint": {
+      "min": [
+       12.976,
+       0,
+       5.4515
+      ],
+      "max": [
+       13.984,
+       1.25,
+       6.1605
+      ]
+     }
+    },
+    "handoff": {
+     "seat": [
+      12.6,
+      0.9,
+      5.1565
+     ],
+     "deckPose": [
+      13.25,
+      1.635,
+      5.8065
+     ],
+     "foupFlangeAtDeckUp": [
+      13.25,
+      1.635,
+      5.8065
+     ],
+     "errorM": 0
+    }
+   },
+   {
+    "id": "robot-station-2",
+    "port": "metro-03.lp1",
+    "tool": "metro-03",
+    "arm": {
+     "id": "arm-2",
+     "position": [
+      15.55,
+      0,
+      5.6645
+     ],
+     "yaw": 0,
+     "footprint": {
+      "min": [
+       15.1877,
+       0,
+       5.4595
+      ],
+      "max": [
+       15.98,
+       1.5513,
+       5.8695
+      ]
+     }
+    },
+    "amr": {
+     "id": "amr-2",
+     "position": [
+      15.32,
+      0,
+      5.0145
+     ],
+     "yaw": 0,
+     "footprint": {
+      "min": [
+       14.816,
+       0,
+       4.6605
+      ],
+      "max": [
+       15.824,
+       1.25,
+       5.3695
+      ]
+     }
+    },
+    "handoff": {
+     "seat": [
+      16.2,
+      0.9,
+      5.6645
+     ],
+     "deckPose": [
+      15.55,
+      1.635,
+      5.0145
+     ],
+     "foupFlangeAtDeckUp": [
+      15.55,
+      1.635,
+      5.0145
+     ],
+     "errorM": 0
+    }
+   },
+   {
+    "id": "robot-station-3",
+    "port": "probe-01.lp1",
+    "tool": "probe-01",
+    "arm": {
+     "id": "arm-3",
+     "position": [
+      27.65,
+      0,
+      5.506
+     ],
+     "yaw": 180,
+     "footprint": {
+      "min": [
+       27.22,
+       0,
+       5.301
+      ],
+      "max": [
+       28.0123,
+       1.5513,
+       5.711
+      ]
+     }
+    },
+    "amr": {
+     "id": "amr-3",
+     "position": [
+      27.88,
+      0,
+      6.156
+     ],
+     "yaw": 180,
+     "footprint": {
+      "min": [
+       27.376,
+       0,
+       5.801
+      ],
+      "max": [
+       28.384,
+       1.25,
+       6.51
+      ]
+     }
+    },
+    "handoff": {
+     "seat": [
+      27,
+      0.9,
+      5.506
+     ],
+     "deckPose": [
+      27.65,
+      1.635,
+      6.156
+     ],
+     "foupFlangeAtDeckUp": [
+      27.65,
+      1.635,
+      6.156
+     ],
+     "errorM": 0
+    }
+   },
+   {
+    "id": "robot-station-4",
+    "port": "probe-03.lp1",
+    "tool": "probe-03",
+    "arm": {
+     "id": "arm-4",
+     "position": [
+      29.95,
+      0,
+      5.51
+     ],
+     "yaw": 0,
+     "footprint": {
+      "min": [
+       29.5877,
+       0,
+       5.305
+      ],
+      "max": [
+       30.38,
+       1.5513,
+       5.715
+      ]
+     }
+    },
+    "amr": {
+     "id": "amr-4",
+     "position": [
+      29.72,
+      0,
+      4.86
+     ],
+     "yaw": 0,
+     "footprint": {
+      "min": [
+       29.216,
+       0,
+       4.506
+      ],
+      "max": [
+       30.224,
+       1.25,
+       5.215
+      ]
+     }
+    },
+    "handoff": {
+     "seat": [
+      30.6,
+      0.9,
+      5.51
+     ],
+     "deckPose": [
+      29.95,
+      1.635,
+      4.86
+     ],
+     "foupFlangeAtDeckUp": [
+      29.95,
+      1.635,
+      4.86
+     ],
+     "errorM": 0
+    }
+   }
+  ],
+  "arms": [
+   {
+    "id": "arm-1",
+    "position": [
+     13.25,
+     0,
+     5.1565
+    ],
+    "yaw": 180,
+    "footprint": {
+     "min": [
+      12.82,
+      0,
+      4.9515
+     ],
+     "max": [
+      13.6123,
+      1.5513,
+      5.3615
+     ]
+    },
+    "station": "robot-station-1",
+    "port": "metro-01.lp1"
+   },
+   {
+    "id": "arm-2",
+    "position": [
+     15.55,
+     0,
+     5.6645
+    ],
+    "yaw": 0,
+    "footprint": {
+     "min": [
+      15.1877,
+      0,
+      5.4595
+     ],
+     "max": [
+      15.98,
+      1.5513,
+      5.8695
+     ]
+    },
+    "station": "robot-station-2",
+    "port": "metro-03.lp1"
+   },
+   {
+    "id": "arm-3",
+    "position": [
+     27.65,
+     0,
+     5.506
+    ],
+    "yaw": 180,
+    "footprint": {
+     "min": [
+      27.22,
+      0,
+      5.301
+     ],
+     "max": [
+      28.0123,
+      1.5513,
+      5.711
+     ]
+    },
+    "station": "robot-station-3",
+    "port": "probe-01.lp1"
+   },
+   {
+    "id": "arm-4",
+    "position": [
+     29.95,
+     0,
+     5.51
+    ],
+    "yaw": 0,
+    "footprint": {
+     "min": [
+      29.5877,
+      0,
+      5.305
+     ],
+     "max": [
+      30.38,
+      1.5513,
+      5.715
+     ]
+    },
+    "station": "robot-station-4",
+    "port": "probe-03.lp1"
+   }
+  ],
+  "amrs": [
+   {
+    "id": "amr-1",
+    "position": [
+     13.48,
+     0,
+     5.8065
+    ],
+    "yaw": 180,
+    "footprint": {
+     "min": [
+      12.976,
+      0,
+      5.4515
+     ],
+     "max": [
+      13.984,
+      1.25,
+      6.1605
+     ]
+    },
+    "station": "robot-station-1",
+    "port": "metro-01.lp1"
+   },
+   {
+    "id": "amr-2",
+    "position": [
+     15.32,
+     0,
+     5.0145
+    ],
+    "yaw": 0,
+    "footprint": {
+     "min": [
+      14.816,
+      0,
+      4.6605
+     ],
+     "max": [
+      15.824,
+      1.25,
+      5.3695
+     ]
+    },
+    "station": "robot-station-2",
+    "port": "metro-03.lp1"
+   },
+   {
+    "id": "amr-3",
+    "position": [
+     27.88,
+     0,
+     6.156
+    ],
+    "yaw": 180,
+    "footprint": {
+     "min": [
+      27.376,
+      0,
+      5.801
+     ],
+     "max": [
+      28.384,
+      1.25,
+      6.51
+     ]
+    },
+    "station": "robot-station-3",
+    "port": "probe-01.lp1"
+   },
+   {
+    "id": "amr-4",
+    "position": [
+     29.72,
+     0,
+     4.86
+    ],
+    "yaw": 0,
+    "footprint": {
+     "min": [
+      29.216,
+      0,
+      4.506
+     ],
+     "max": [
+      30.224,
+      1.25,
+      5.215
+     ]
+    },
+    "station": "robot-station-4",
+    "port": "probe-03.lp1"
+   }
+  ]
+ },
+ "people": {
+  "note": "service visits walk in through the fab door at the spine end, along the spine and the bay aisle to the service point, and out the same way; FF3's humanoid uses the same points and paths",
+  "door": {
+   "panel": "wall-w-08",
+   "position": [
+    -36,
+    0,
+    0
+   ],
+   "inside": [
+    -35.4,
+    0,
+    0
+   ]
+  },
+  "spineZ": 0,
+  "serviceOutM": 1,
+  "targets": {
+   "etch-01": {
+    "at": [
+     -29.9,
+     0,
+     -6
+    ],
+    "yaw": 180,
+    "path": [
+     [
+      -35.4,
+      0
+     ],
+     [
+      -28.8,
+      0
+     ],
+     [
+      -28.8,
+      -6
+     ],
+     [
+      -29.9,
+      -6
+     ]
+    ],
+    "lengthM": 13.7,
+    "via": "bay aisle N1"
+   },
+   "etch-02": {
+    "at": [
+     -29.9,
+     0,
+     -10.05
+    ],
+    "yaw": 180,
+    "path": [
+     [
+      -35.4,
+      0
+     ],
+     [
+      -28.8,
+      0
+     ],
+     [
+      -28.8,
+      -10.05
+     ],
+     [
+      -29.9,
+      -10.05
+     ]
+    ],
+    "lengthM": 17.75,
+    "via": "bay aisle N1"
+   },
+   "etch-03": {
+    "at": [
+     -29.9,
+     0,
+     -14.1
+    ],
+    "yaw": 180,
+    "path": [
+     [
+      -35.4,
+      0
+     ],
+     [
+      -28.8,
+      0
+     ],
+     [
+      -28.8,
+      -14.1
+     ],
+     [
+      -29.9,
+      -14.1
+     ]
+    ],
+    "lengthM": 21.8,
+    "via": "bay aisle N1"
+   },
+   "etch-04": {
+    "at": [
+     -27.7,
+     0,
+     -6
+    ],
+    "yaw": 0,
+    "path": [
+     [
+      -35.4,
+      0
+     ],
+     [
+      -28.8,
+      0
+     ],
+     [
+      -28.8,
+      -6
+     ],
+     [
+      -27.7,
+      -6
+     ]
+    ],
+    "lengthM": 13.7,
+    "via": "bay aisle N1"
+   },
+   "etch-05": {
+    "at": [
+     -27.7,
+     0,
+     -10.05
+    ],
+    "yaw": 0,
+    "path": [
+     [
+      -35.4,
+      0
+     ],
+     [
+      -28.8,
+      0
+     ],
+     [
+      -28.8,
+      -10.05
+     ],
+     [
+      -27.7,
+      -10.05
+     ]
+    ],
+    "lengthM": 17.75,
+    "via": "bay aisle N1"
+   },
+   "etch-06": {
+    "at": [
+     -27.7,
+     0,
+     -14.1
+    ],
+    "yaw": 0,
+    "path": [
+     [
+      -35.4,
+      0
+     ],
+     [
+      -28.8,
+      0
+     ],
+     [
+      -28.8,
+      -14.1
+     ],
+     [
+      -27.7,
+      -14.1
+     ]
+    ],
+    "lengthM": 21.8,
+    "via": "bay aisle N1"
+   },
+   "cvd-01": {
+    "at": [
+     13.3,
+     0,
+     -6
+    ],
+    "yaw": 180,
+    "path": [
+     [
+      -35.4,
+      0
+     ],
+     [
+      14.4,
+      0
+     ],
+     [
+      14.4,
+      -6
+     ],
+     [
+      13.3,
+      -6
+     ]
+    ],
+    "lengthM": 56.9,
+    "via": "bay aisle N4"
+   },
+   "cvd-02": {
+    "at": [
+     13.3,
+     0,
+     -10.05
+    ],
+    "yaw": 180,
+    "path": [
+     [
+      -35.4,
+      0
+     ],
+     [
+      14.4,
+      0
+     ],
+     [
+      14.4,
+      -10.05
+     ],
+     [
+      13.3,
+      -10.05
+     ]
+    ],
+    "lengthM": 60.95,
+    "via": "bay aisle N4"
+   },
+   "cvd-03": {
+    "at": [
+     13.3,
+     0,
+     -14.1
+    ],
+    "yaw": 180,
+    "path": [
+     [
+      -35.4,
+      0
+     ],
+     [
+      14.4,
+      0
+     ],
+     [
+      14.4,
+      -14.1
+     ],
+     [
+      13.3,
+      -14.1
+     ]
+    ],
+    "lengthM": 65,
+    "via": "bay aisle N4"
+   },
+   "cvd-04": {
+    "at": [
+     15.5,
+     0,
+     -6
+    ],
+    "yaw": 0,
+    "path": [
+     [
+      -35.4,
+      0
+     ],
+     [
+      14.4,
+      0
+     ],
+     [
+      14.4,
+      -6
+     ],
+     [
+      15.5,
+      -6
+     ]
+    ],
+    "lengthM": 56.9,
+    "via": "bay aisle N4"
+   },
+   "cvd-05": {
+    "at": [
+     15.5,
+     0,
+     -10.05
+    ],
+    "yaw": 0,
+    "path": [
+     [
+      -35.4,
+      0
+     ],
+     [
+      14.4,
+      0
+     ],
+     [
+      14.4,
+      -10.05
+     ],
+     [
+      15.5,
+      -10.05
+     ]
+    ],
+    "lengthM": 60.95,
+    "via": "bay aisle N4"
+   },
+   "cvd-06": {
+    "at": [
+     15.5,
+     0,
+     -14.1
+    ],
+    "yaw": 0,
+    "path": [
+     [
+      -35.4,
+      0
+     ],
+     [
+      14.4,
+      0
+     ],
+     [
+      14.4,
+      -14.1
+     ],
+     [
+      15.5,
+      -14.1
+     ]
+    ],
+    "lengthM": 65,
+    "via": "bay aisle N4"
+   },
+   "pvd-01": {
+    "at": [
+     27.7,
+     0,
+     -6.3
+    ],
+    "yaw": 180,
+    "path": [
+     [
+      -35.4,
+      0
+     ],
+     [
+      28.8,
+      0
+     ],
+     [
+      28.8,
+      -6.3
+     ],
+     [
+      27.7,
+      -6.3
+     ]
+    ],
+    "lengthM": 71.6,
+    "via": "bay aisle N5"
+   },
+   "pvd-02": {
+    "at": [
+     27.7,
+     0,
+     -10.8
+    ],
+    "yaw": 180,
+    "path": [
+     [
+      -35.4,
+      0
+     ],
+     [
+      28.8,
+      0
+     ],
+     [
+      28.8,
+      -10.8
+     ],
+     [
+      27.7,
+      -10.8
+     ]
+    ],
+    "lengthM": 76.1,
+    "via": "bay aisle N5"
+   },
+   "pvd-03": {
+    "at": [
+     27.7,
+     0,
+     -15.3
+    ],
+    "yaw": 180,
+    "path": [
+     [
+      -35.4,
+      0
+     ],
+     [
+      28.8,
+      0
+     ],
+     [
+      28.8,
+      -15.3
+     ],
+     [
+      27.7,
+      -15.3
+     ]
+    ],
+    "lengthM": 80.6,
+    "via": "bay aisle N5"
+   },
+   "clean-01": {
+    "at": [
+     29.9,
+     0,
+     -8.5
+    ],
+    "yaw": 0,
+    "path": [
+     [
+      -35.4,
+      0
+     ],
+     [
+      28.8,
+      0
+     ],
+     [
+      28.8,
+      -8.5
+     ],
+     [
+      29.9,
+      -8.5
+     ]
+    ],
+    "lengthM": 73.8,
+    "via": "bay aisle N5"
+   },
+   "clean-02": {
+    "at": [
+     29.9,
+     0,
+     -15.7
+    ],
+    "yaw": 0,
+    "path": [
+     [
+      -35.4,
+      0
+     ],
+     [
+      28.8,
+      0
+     ],
+     [
+      28.8,
+      -15.7
+     ],
+     [
+      29.9,
+      -15.7
+     ]
+    ],
+    "lengthM": 81,
+    "via": "bay aisle N5"
+   },
+   "cmp-01": {
+    "at": [
+     -29.9,
+     0,
+     5.9
+    ],
+    "yaw": 180,
+    "path": [
+     [
+      -35.4,
+      0
+     ],
+     [
+      -28.8,
+      0
+     ],
+     [
+      -28.8,
+      5.9
+     ],
+     [
+      -29.9,
+      5.9
+     ]
+    ],
+    "lengthM": 13.6,
+    "via": "bay aisle S1"
+   },
+   "cmp-02": {
+    "at": [
+     -29.9,
+     0,
+     9.6
+    ],
+    "yaw": 180,
+    "path": [
+     [
+      -35.4,
+      0
+     ],
+     [
+      -28.8,
+      0
+     ],
+     [
+      -28.8,
+      9.6
+     ],
+     [
+      -29.9,
+      9.6
+     ]
+    ],
+    "lengthM": 17.3,
+    "via": "bay aisle S1"
+   },
+   "cmp-03": {
+    "at": [
+     -27.7,
+     0,
+     5.9
+    ],
+    "yaw": 0,
+    "path": [
+     [
+      -35.4,
+      0
+     ],
+     [
+      -28.8,
+      0
+     ],
+     [
+      -28.8,
+      5.9
+     ],
+     [
+      -27.7,
+      5.9
+     ]
+    ],
+    "lengthM": 13.6,
+    "via": "bay aisle S1"
+   },
+   "cmp-04": {
+    "at": [
+     -27.7,
+     0,
+     9.6
+    ],
+    "yaw": 0,
+    "path": [
+     [
+      -35.4,
+      0
+     ],
+     [
+      -28.8,
+      0
+     ],
+     [
+      -28.8,
+      9.6
+     ],
+     [
+      -27.7,
+      9.6
+     ]
+    ],
+    "lengthM": 17.3,
+    "via": "bay aisle S1"
+   },
+   "furnace-01": {
+    "at": [
+     -15.5,
+     0,
+     5.204
+    ],
+    "yaw": 180,
+    "path": [
+     [
+      -35.4,
+      0
+     ],
+     [
+      -14.4,
+      0
+     ],
+     [
+      -14.4,
+      5.204
+     ],
+     [
+      -15.5,
+      5.204
+     ]
+    ],
+    "lengthM": 27.304,
+    "via": "bay aisle S2"
+   },
+   "furnace-02": {
+    "at": [
+     -15.5,
+     0,
+     7.512
+    ],
+    "yaw": 180,
+    "path": [
+     [
+      -35.4,
+      0
+     ],
+     [
+      -14.4,
+      0
+     ],
+     [
+      -14.4,
+      7.512
+     ],
+     [
+      -15.5,
+      7.512
+     ]
+    ],
+    "lengthM": 29.612,
+    "via": "bay aisle S2"
+   },
+   "furnace-03": {
+    "at": [
+     -15.5,
+     0,
+     9.82
+    ],
+    "yaw": 180,
+    "path": [
+     [
+      -35.4,
+      0
+     ],
+     [
+      -14.4,
+      0
+     ],
+     [
+      -14.4,
+      9.82
+     ],
+     [
+      -15.5,
+      9.82
+     ]
+    ],
+    "lengthM": 31.92,
+    "via": "bay aisle S2"
+   },
+   "implant-01": {
+    "at": [
+     -13.3,
+     0,
+     8.455
+    ],
+    "yaw": 0,
+    "path": [
+     [
+      -35.4,
+      0
+     ],
+     [
+      -14.4,
+      0
+     ],
+     [
+      -14.4,
+      8.455
+     ],
+     [
+      -13.3,
+      8.455
+     ]
+    ],
+    "lengthM": 30.555,
+    "via": "bay aisle S2"
+   },
+   "implant-02": {
+    "at": [
+     -13.3,
+     0,
+     17.265
+    ],
+    "yaw": 0,
+    "path": [
+     [
+      -35.4,
+      0
+     ],
+     [
+      -14.4,
+      0
+     ],
+     [
+      -14.4,
+      17.265
+     ],
+     [
+      -13.3,
+      17.265
+     ]
+    ],
+    "lengthM": 39.365,
+    "via": "bay aisle S2"
+   },
+   "metro-01": {
+    "at": [
+     13.3,
+     0,
+     4.409
+    ],
+    "yaw": 180,
+    "path": [
+     [
+      -35.4,
+      0
+     ],
+     [
+      14.4,
+      0
+     ],
+     [
+      14.4,
+      4.409
+     ],
+     [
+      13.3,
+      4.409
+     ]
+    ],
+    "lengthM": 55.309,
+    "via": "bay aisle S4"
+   },
+   "metro-02": {
+    "at": [
+     13.3,
+     0,
+     8.13
+    ],
+    "yaw": 180,
+    "path": [
+     [
+      -35.4,
+      0
+     ],
+     [
+      14.4,
+      0
+     ],
+     [
+      14.4,
+      8.13
+     ],
+     [
+      13.3,
+      8.13
+     ]
+    ],
+    "lengthM": 59.03,
+    "via": "bay aisle S4"
+   },
+   "metro-03": {
+    "at": [
+     15.5,
+     0,
+     6.412
+    ],
+    "yaw": 0,
+    "path": [
+     [
+      -35.4,
+      0
+     ],
+     [
+      14.4,
+      0
+     ],
+     [
+      14.4,
+      6.412
+     ],
+     [
+      15.5,
+      6.412
+     ]
+    ],
+    "lengthM": 57.312,
+    "via": "bay aisle S4"
+   },
+   "metro-04": {
+    "at": [
+     15.5,
+     0,
+     8.133
+    ],
+    "yaw": 0,
+    "path": [
+     [
+      -35.4,
+      0
+     ],
+     [
+      14.4,
+      0
+     ],
+     [
+      14.4,
+      8.133
+     ],
+     [
+      15.5,
+      8.133
+     ]
+    ],
+    "lengthM": 59.033,
+    "via": "bay aisle S4"
+   },
+   "probe-01": {
+    "at": [
+     27.7,
+     0,
+     4.756
+    ],
+    "yaw": 180,
+    "path": [
+     [
+      -35.4,
+      0
+     ],
+     [
+      28.8,
+      0
+     ],
+     [
+      28.8,
+      4.756
+     ],
+     [
+      27.7,
+      4.756
+     ]
+    ],
+    "lengthM": 70.056,
+    "via": "bay aisle S5"
+   },
+   "probe-02": {
+    "at": [
+     27.7,
+     0,
+     8.422
+    ],
+    "yaw": 180,
+    "path": [
+     [
+      -35.4,
+      0
+     ],
+     [
+      28.8,
+      0
+     ],
+     [
+      28.8,
+      8.422
+     ],
+     [
+      27.7,
+      8.422
+     ]
+    ],
+    "lengthM": 73.722,
+    "via": "bay aisle S5"
+   },
+   "probe-03": {
+    "at": [
+     29.9,
+     0,
+     6.26
+    ],
+    "yaw": 0,
+    "path": [
+     [
+      -35.4,
+      0
+     ],
+     [
+      28.8,
+      0
+     ],
+     [
+      28.8,
+      6.26
+     ],
+     [
+      29.9,
+      6.26
+     ]
+    ],
+    "lengthM": 71.56,
+    "via": "bay aisle S5"
+   },
+   "probe-04": {
+    "at": [
+     29.9,
+     0,
+     10.41
+    ],
+    "yaw": 0,
+    "path": [
+     [
+      -35.4,
+      0
+     ],
+     [
+      28.8,
+      0
+     ],
+     [
+      28.8,
+      10.41
+     ],
+     [
+      29.9,
+      10.41
+     ]
+    ],
+    "lengthM": 75.71,
+    "via": "bay aisle S5"
+   },
+   "cell-duv-1": {
+    "at": [
+     -18,
+     0,
+     -1.1
+    ],
+    "yaw": 90,
+    "path": [
+     [
+      -35.4,
+      0
+     ],
+     [
+      -18,
+      0
+     ],
+     [
+      -18,
+      -1.1
+     ]
+    ],
+    "lengthM": 18.5,
+    "via": "the spine (track front)"
+   },
+   "cell-duv-2": {
+    "at": [
+     -10.88,
+     0,
+     -1.1
+    ],
+    "yaw": 90,
+    "path": [
+     [
+      -35.4,
+      0
+     ],
+     [
+      -10.88,
+      0
+     ],
+     [
+      -10.88,
+      -1.1
+     ]
+    ],
+    "lengthM": 25.62,
+    "via": "the spine (track front)"
+   },
+   "cell-euv-1": {
+    "at": [
+     -3.87,
+     0,
+     -1.1
+    ],
+    "yaw": 90,
+    "path": [
+     [
+      -35.4,
+      0
+     ],
+     [
+      -3.87,
+      0
+     ],
+     [
+      -3.87,
+      -1.1
+     ]
+    ],
+    "lengthM": 32.63,
+    "via": "the spine (track front)"
+   },
+   "cell-euv-2": {
+    "at": [
+     3.44,
+     0,
+     -1.1
+    ],
+    "yaw": 90,
+    "path": [
+     [
+      -35.4,
+      0
+     ],
+     [
+      3.44,
+      0
+     ],
+     [
+      3.44,
+      -1.1
+     ]
+    ],
+    "lengthM": 39.94,
+    "via": "the spine (track front)"
+   }
+  }
+ },
+ "heights": {
+  "raisedFloor": 0,
+  "ohtRailDatum": 4.9,
+  "ffuFace": 6,
+  "subfabFloor": -7.5,
+  "roof": 14,
+  "loadPortSeat": 0.9,
+  "stockerPortSeat": 0.9,
+  "utsSeat": 3.2,
+  "vehicleFoupBase": 4
+ },
+ "levels": {
+  "roofSlab": [
+   13.4,
+   14
+  ],
+  "interstitial": [
+   6.4,
+   13.4
+  ],
+  "ffuBand": [
+   6,
+   6.4
+  ],
+  "cleanroom": [
+   0,
+   6
+  ],
+  "plenum": [
+   -0.6,
+   0
+  ],
+  "waffleSlab": [
+   -1.5,
+   -0.6
+  ],
+  "subfab": [
+   -7.5,
+   -1.5
+  ],
+  "floorSlab": [
+   -8,
+   -7.5
+  ]
+ },
+ "floorModules": {
+  "x": [
+   -36,
+   36
+  ],
+  "z": [
+   -27,
+   23.4
+  ],
+  "moduleSize": 3.6,
+  "grid": [
+   20,
+   14
+  ],
+  "count": 280
+ },
+ "ceilingModules": {
+  "x": [
+   -36,
+   36
+  ],
+  "z": [
+   -27,
+   23.4
+  ],
+  "moduleSize": 3.6,
+  "grid": [
+   20,
+   14
+  ],
+  "count": 280,
+  "ffuFaceY": 6
+ },
+ "lithoZone": {
+  "amberCeiling": {
+   "x": [
+    -21.6,
+    7.2
+   ],
+   "z": [
+    -27,
+    -1.8
+   ],
+   "modules": 56
+  },
+  "partitions": [
+   {
+    "x": -21.6,
+    "z": [
+     -27,
+     -5.4
+    ],
+    "panels": 6
+   },
+   {
+    "x": 7.2,
+    "z": [
+     -27,
+     -5.4
+    ],
+    "panels": 6
+   }
+  ],
+  "note": "open toward the spine where the track fronts face it",
+  "cells": [
+   {
+    "cell": "cell-duv-1",
+    "x": -18,
+    "specX": -18,
+    "doorReach": 3.301
+   },
+   {
+    "cell": "cell-duv-2",
+    "x": -10.88,
+    "specX": -10.8,
+    "doorReach": 3.301
+   },
+   {
+    "cell": "cell-euv-1",
+    "x": -3.87,
+    "specX": -3.6,
+    "doorReach": 3.6011
+   },
+   {
+    "cell": "cell-euv-2",
+    "x": 3.44,
+    "specX": 3.6,
+    "doorReach": 3.6011
+   }
+  ],
+  "doorMargin": 0.1
+ },
+ "walls": {
+  "north": {
+   "z": -27,
+   "x": [
+    -36,
+    36
+   ],
+   "solid": 20
+  },
+  "west": {
+   "x": -36,
+   "z": [
+    -27,
+    23.4
+   ],
+   "solid": 11,
+   "doors": 3
+  },
+  "galleryEnd": {
+   "x": -36,
+   "z": [
+    23.4,
+    27
+   ],
+   "panels": 1,
+   "scaleY": 0.4917
+  },
+  "south": {
+   "z": 23.4,
+   "x": [
+    -36,
+    36
+   ],
+   "glazed": 18,
+   "doors": 2
+  },
+  "east": "open (section cut)",
+  "panelWidth": 3.6,
+  "height": 6,
+  "thickness": 0.1,
+  "door": {
+   "openingWidth": 1.8,
+   "note": "the leaves slide from X +-0.45 to +-1.35 (DoorOpen): a 1.8 m opening at the panel centre"
+  },
+  "panels": [
+   {
+    "id": "wall-n-01",
+    "run": "wall-n",
+    "variant": "solid",
+    "position": [
+     -34.2,
+     0,
+     -27
+    ],
+    "yaw": 0
+   },
+   {
+    "id": "wall-n-02",
+    "run": "wall-n",
+    "variant": "solid",
+    "position": [
+     -30.6,
+     0,
+     -27
+    ],
+    "yaw": 0
+   },
+   {
+    "id": "wall-n-03",
+    "run": "wall-n",
+    "variant": "solid",
+    "position": [
+     -27,
+     0,
+     -27
+    ],
+    "yaw": 0
+   },
+   {
+    "id": "wall-n-04",
+    "run": "wall-n",
+    "variant": "solid",
+    "position": [
+     -23.4,
+     0,
+     -27
+    ],
+    "yaw": 0
+   },
+   {
+    "id": "wall-n-05",
+    "run": "wall-n",
+    "variant": "solid",
+    "position": [
+     -19.8,
+     0,
+     -27
+    ],
+    "yaw": 0
+   },
+   {
+    "id": "wall-n-06",
+    "run": "wall-n",
+    "variant": "solid",
+    "position": [
+     -16.2,
+     0,
+     -27
+    ],
+    "yaw": 0
+   },
+   {
+    "id": "wall-n-07",
+    "run": "wall-n",
+    "variant": "solid",
+    "position": [
+     -12.6,
+     0,
+     -27
+    ],
+    "yaw": 0
+   },
+   {
+    "id": "wall-n-08",
+    "run": "wall-n",
+    "variant": "solid",
+    "position": [
+     -9,
+     0,
+     -27
+    ],
+    "yaw": 0
+   },
+   {
+    "id": "wall-n-09",
+    "run": "wall-n",
+    "variant": "solid",
+    "position": [
+     -5.4,
+     0,
+     -27
+    ],
+    "yaw": 0
+   },
+   {
+    "id": "wall-n-10",
+    "run": "wall-n",
+    "variant": "solid",
+    "position": [
+     -1.8,
+     0,
+     -27
+    ],
+    "yaw": 0
+   },
+   {
+    "id": "wall-n-11",
+    "run": "wall-n",
+    "variant": "solid",
+    "position": [
+     1.8,
+     0,
+     -27
+    ],
+    "yaw": 0
+   },
+   {
+    "id": "wall-n-12",
+    "run": "wall-n",
+    "variant": "solid",
+    "position": [
+     5.4,
+     0,
+     -27
+    ],
+    "yaw": 0
+   },
+   {
+    "id": "wall-n-13",
+    "run": "wall-n",
+    "variant": "solid",
+    "position": [
+     9,
+     0,
+     -27
+    ],
+    "yaw": 0
+   },
+   {
+    "id": "wall-n-14",
+    "run": "wall-n",
+    "variant": "solid",
+    "position": [
+     12.6,
+     0,
+     -27
+    ],
+    "yaw": 0
+   },
+   {
+    "id": "wall-n-15",
+    "run": "wall-n",
+    "variant": "solid",
+    "position": [
+     16.2,
+     0,
+     -27
+    ],
+    "yaw": 0
+   },
+   {
+    "id": "wall-n-16",
+    "run": "wall-n",
+    "variant": "solid",
+    "position": [
+     19.8,
+     0,
+     -27
+    ],
+    "yaw": 0
+   },
+   {
+    "id": "wall-n-17",
+    "run": "wall-n",
+    "variant": "solid",
+    "position": [
+     23.4,
+     0,
+     -27
+    ],
+    "yaw": 0
+   },
+   {
+    "id": "wall-n-18",
+    "run": "wall-n",
+    "variant": "solid",
+    "position": [
+     27,
+     0,
+     -27
+    ],
+    "yaw": 0
+   },
+   {
+    "id": "wall-n-19",
+    "run": "wall-n",
+    "variant": "solid",
+    "position": [
+     30.6,
+     0,
+     -27
+    ],
+    "yaw": 0
+   },
+   {
+    "id": "wall-n-20",
+    "run": "wall-n",
+    "variant": "solid",
+    "position": [
+     34.2,
+     0,
+     -27
+    ],
+    "yaw": 0
+   },
+   {
+    "id": "wall-w-01",
+    "run": "wall-w",
+    "variant": "solid",
+    "position": [
+     -36,
+     0,
+     -25.2
+    ],
+    "yaw": 90
+   },
+   {
+    "id": "wall-w-02",
+    "run": "wall-w",
+    "variant": "solid",
+    "position": [
+     -36,
+     0,
+     -21.6
+    ],
+    "yaw": 90
+   },
+   {
+    "id": "wall-w-03",
+    "run": "wall-w",
+    "variant": "solid",
+    "position": [
+     -36,
+     0,
+     -18
+    ],
+    "yaw": 90
+   },
+   {
+    "id": "wall-w-04",
+    "run": "wall-w",
+    "variant": "door",
+    "position": [
+     -36,
+     0,
+     -14.4
+    ],
+    "yaw": 90
+   },
+   {
+    "id": "wall-w-05",
+    "run": "wall-w",
+    "variant": "solid",
+    "position": [
+     -36,
+     0,
+     -10.8
+    ],
+    "yaw": 90
+   },
+   {
+    "id": "wall-w-06",
+    "run": "wall-w",
+    "variant": "solid",
+    "position": [
+     -36,
+     0,
+     -7.2
+    ],
+    "yaw": 90
+   },
+   {
+    "id": "wall-w-07",
+    "run": "wall-w",
+    "variant": "solid",
+    "position": [
+     -36,
+     0,
+     -3.6
+    ],
+    "yaw": 90
+   },
+   {
+    "id": "wall-w-08",
+    "run": "wall-w",
+    "variant": "door",
+    "position": [
+     -36,
+     0,
+     0
+    ],
+    "yaw": 90
+   },
+   {
+    "id": "wall-w-09",
+    "run": "wall-w",
+    "variant": "solid",
+    "position": [
+     -36,
+     0,
+     3.6
+    ],
+    "yaw": 90
+   },
+   {
+    "id": "wall-w-10",
+    "run": "wall-w",
+    "variant": "solid",
+    "position": [
+     -36,
+     0,
+     7.2
+    ],
+    "yaw": 90
+   },
+   {
+    "id": "wall-w-11",
+    "run": "wall-w",
+    "variant": "door",
+    "position": [
+     -36,
+     0,
+     10.8
+    ],
+    "yaw": 90
+   },
+   {
+    "id": "wall-w-12",
+    "run": "wall-w",
+    "variant": "solid",
+    "position": [
+     -36,
+     0,
+     14.4
+    ],
+    "yaw": 90
+   },
+   {
+    "id": "wall-w-13",
+    "run": "wall-w",
+    "variant": "solid",
+    "position": [
+     -36,
+     0,
+     18
+    ],
+    "yaw": 90
+   },
+   {
+    "id": "wall-w-14",
+    "run": "wall-w",
+    "variant": "solid",
+    "position": [
+     -36,
+     0,
+     21.6
+    ],
+    "yaw": 90
+   },
+   {
+    "id": "wall-s-01",
+    "run": "wall-s",
+    "variant": "glazed",
+    "position": [
+     -34.2,
+     0,
+     23.4
+    ],
+    "yaw": 0
+   },
+   {
+    "id": "wall-s-02",
+    "run": "wall-s",
+    "variant": "glazed",
+    "position": [
+     -30.6,
+     0,
+     23.4
+    ],
+    "yaw": 0
+   },
+   {
+    "id": "wall-s-03",
+    "run": "wall-s",
+    "variant": "glazed",
+    "position": [
+     -27,
+     0,
+     23.4
+    ],
+    "yaw": 0
+   },
+   {
+    "id": "wall-s-04",
+    "run": "wall-s",
+    "variant": "glazed",
+    "position": [
+     -23.4,
+     0,
+     23.4
+    ],
+    "yaw": 0
+   },
+   {
+    "id": "wall-s-05",
+    "run": "wall-s",
+    "variant": "glazed",
+    "position": [
+     -19.8,
+     0,
+     23.4
+    ],
+    "yaw": 0
+   },
+   {
+    "id": "wall-s-06",
+    "run": "wall-s",
+    "variant": "glazed",
+    "position": [
+     -16.2,
+     0,
+     23.4
+    ],
+    "yaw": 0
+   },
+   {
+    "id": "wall-s-07",
+    "run": "wall-s",
+    "variant": "door",
+    "position": [
+     -12.6,
+     0,
+     23.4
+    ],
+    "yaw": 0
+   },
+   {
+    "id": "wall-s-08",
+    "run": "wall-s",
+    "variant": "glazed",
+    "position": [
+     -9,
+     0,
+     23.4
+    ],
+    "yaw": 0
+   },
+   {
+    "id": "wall-s-09",
+    "run": "wall-s",
+    "variant": "glazed",
+    "position": [
+     -5.4,
+     0,
+     23.4
+    ],
+    "yaw": 0
+   },
+   {
+    "id": "wall-s-10",
+    "run": "wall-s",
+    "variant": "glazed",
+    "position": [
+     -1.8,
+     0,
+     23.4
+    ],
+    "yaw": 0
+   },
+   {
+    "id": "wall-s-11",
+    "run": "wall-s",
+    "variant": "glazed",
+    "position": [
+     1.8,
+     0,
+     23.4
+    ],
+    "yaw": 0
+   },
+   {
+    "id": "wall-s-12",
+    "run": "wall-s",
+    "variant": "glazed",
+    "position": [
+     5.4,
+     0,
+     23.4
+    ],
+    "yaw": 0
+   },
+   {
+    "id": "wall-s-13",
+    "run": "wall-s",
+    "variant": "glazed",
+    "position": [
+     9,
+     0,
+     23.4
+    ],
+    "yaw": 0
+   },
+   {
+    "id": "wall-s-14",
+    "run": "wall-s",
+    "variant": "door",
+    "position": [
+     12.6,
+     0,
+     23.4
+    ],
+    "yaw": 0
+   },
+   {
+    "id": "wall-s-15",
+    "run": "wall-s",
+    "variant": "glazed",
+    "position": [
+     16.2,
+     0,
+     23.4
+    ],
+    "yaw": 0
+   },
+   {
+    "id": "wall-s-16",
+    "run": "wall-s",
+    "variant": "glazed",
+    "position": [
+     19.8,
+     0,
+     23.4
+    ],
+    "yaw": 0
+   },
+   {
+    "id": "wall-s-17",
+    "run": "wall-s",
+    "variant": "glazed",
+    "position": [
+     23.4,
+     0,
+     23.4
+    ],
+    "yaw": 0
+   },
+   {
+    "id": "wall-s-18",
+    "run": "wall-s",
+    "variant": "glazed",
+    "position": [
+     27,
+     0,
+     23.4
+    ],
+    "yaw": 0
+   },
+   {
+    "id": "wall-s-19",
+    "run": "wall-s",
+    "variant": "glazed",
+    "position": [
+     30.6,
+     0,
+     23.4
+    ],
+    "yaw": 0
+   },
+   {
+    "id": "wall-s-20",
+    "run": "wall-s",
+    "variant": "glazed",
+    "position": [
+     34.2,
+     0,
+     23.4
+    ],
+    "yaw": 0
+   },
+   {
+    "id": "partition-w-01",
+    "run": "partition-w",
+    "variant": "glazedAmber",
+    "position": [
+     -21.6,
+     0,
+     -25.2
+    ],
+    "yaw": 90
+   },
+   {
+    "id": "partition-w-02",
+    "run": "partition-w",
+    "variant": "glazedAmber",
+    "position": [
+     -21.6,
+     0,
+     -21.6
+    ],
+    "yaw": 90
+   },
+   {
+    "id": "partition-w-03",
+    "run": "partition-w",
+    "variant": "glazedAmber",
+    "position": [
+     -21.6,
+     0,
+     -18
+    ],
+    "yaw": 90
+   },
+   {
+    "id": "partition-w-04",
+    "run": "partition-w",
+    "variant": "glazedAmber",
+    "position": [
+     -21.6,
+     0,
+     -14.4
+    ],
+    "yaw": 90
+   },
+   {
+    "id": "partition-w-05",
+    "run": "partition-w",
+    "variant": "glazedAmber",
+    "position": [
+     -21.6,
+     0,
+     -10.8
+    ],
+    "yaw": 90
+   },
+   {
+    "id": "partition-w-06",
+    "run": "partition-w",
+    "variant": "glazedAmber",
+    "position": [
+     -21.6,
+     0,
+     -7.2
+    ],
+    "yaw": 90
+   },
+   {
+    "id": "partition-e-01",
+    "run": "partition-e",
+    "variant": "glazedAmber",
+    "position": [
+     7.2,
+     0,
+     -25.2
+    ],
+    "yaw": 90
+   },
+   {
+    "id": "partition-e-02",
+    "run": "partition-e",
+    "variant": "glazedAmber",
+    "position": [
+     7.2,
+     0,
+     -21.6
+    ],
+    "yaw": 90
+   },
+   {
+    "id": "partition-e-03",
+    "run": "partition-e",
+    "variant": "glazedAmber",
+    "position": [
+     7.2,
+     0,
+     -18
+    ],
+    "yaw": 90
+   },
+   {
+    "id": "partition-e-04",
+    "run": "partition-e",
+    "variant": "glazedAmber",
+    "position": [
+     7.2,
+     0,
+     -14.4
+    ],
+    "yaw": 90
+   },
+   {
+    "id": "partition-e-05",
+    "run": "partition-e",
+    "variant": "glazedAmber",
+    "position": [
+     7.2,
+     0,
+     -10.8
+    ],
+    "yaw": 90
+   },
+   {
+    "id": "partition-e-06",
+    "run": "partition-e",
+    "variant": "glazedAmber",
+    "position": [
+     7.2,
+     0,
+     -7.2
+    ],
+    "yaw": 90
+   },
+   {
+    "id": "gallery-end-w",
+    "run": "gallery-end",
+    "variant": "solid",
+    "position": [
+     -36,
+     0,
+     25.2
+    ],
+    "yaw": 90,
+    "scale": [
+     1,
+     0.4917,
+     1
+    ]
+   }
+  ],
+  "posts": [
+   {
+    "id": "post-1",
+    "position": [
+     -36,
+     0,
+     -27
+    ]
+   },
+   {
+    "id": "post-2",
+    "position": [
+     36,
+     0,
+     -27
+    ]
+   },
+   {
+    "id": "post-3",
+    "position": [
+     -36,
+     0,
+     23.4
+    ]
+   },
+   {
+    "id": "post-4",
+    "position": [
+     36,
+     0,
+     23.4
+    ]
+   },
+   {
+    "id": "post-5",
+    "position": [
+     -21.6,
+     0,
+     -27
+    ]
+   },
+   {
+    "id": "post-6",
+    "position": [
+     -21.6,
+     0,
+     -5.4
+    ]
+   },
+   {
+    "id": "post-7",
+    "position": [
+     7.2,
+     0,
+     -27
+    ]
+   },
+   {
+    "id": "post-8",
+    "position": [
+     7.2,
+     0,
+     -5.4
+    ]
+   }
+  ]
+ },
+ "installZone": {
+  "bay": "S5",
+  "x": [
+   21.6,
+   36
+  ],
+  "z": [
+   12,
+   23.4
+  ],
+  "note": "reserved floor for tool installation; no tools placed"
+ },
+ "spine": {
+  "aisleZ": [
+   -3,
+   3
+  ],
+  "northRail": {
+   "z": -1.8,
+   "heading": "-X (west)"
+  },
+  "southRail": {
+   "z": 1.8,
+   "heading": "+X (east)"
+  },
+  "uTurns": [
+   {
+    "center": [
+     -33.3,
+     0
+    ],
+    "radius": 1.8
+   },
+   {
+    "center": [
+     33.3,
+     0
+    ],
+    "radius": 1.8
+   }
+  ],
+  "circulation": "anticlockwise in a north-up top view"
+ },
+ "bayLoop": {
+  "railOffset": 1.8,
+  "toolFaceOffset": 2.1,
+  "railNearZ": 3.6,
+  "railFarZ": 18,
+  "firstToolZ": 4.2,
+  "toolGap": 0.3,
+  "uTurnRadius": 1.8
+ },
+ "bays": [
+  {
+   "id": "N1",
+   "x": [
+    -36,
+    -21.6
+   ],
+   "z": [
+    -27,
+    -3
+   ],
+   "xc": -28.8,
+   "loop": true,
+   "contents": "6 etch tools, 3 per side"
+  },
+  {
+   "id": "N2",
+   "x": [
+    -21.6,
+    -7.2
+   ],
+   "z": [
+    -27,
+    -3
+   ],
+   "xc": -14.4,
+   "loop": false,
+   "contents": "2 DUV litho cells (amber zone)"
+  },
+  {
+   "id": "N3",
+   "x": [
+    -7.2,
+    7.2
+   ],
+   "z": [
+    -27,
+    -3
+   ],
+   "xc": 0,
+   "loop": false,
+   "contents": "2 EUV litho cells (amber zone)"
+  },
+  {
+   "id": "N4",
+   "x": [
+    7.2,
+    21.6
+   ],
+   "z": [
+    -27,
+    -3
+   ],
+   "xc": 14.4,
+   "loop": true,
+   "contents": "6 CVD/ALD tools, 3 per side"
+  },
+  {
+   "id": "N5",
+   "x": [
+    21.6,
+    36
+   ],
+   "z": [
+    -27,
+    -3
+   ],
+   "xc": 28.8,
+   "loop": true,
+   "contents": "3 PVD tools (west side), 2 clean tools (east side)"
+  },
+  {
+   "id": "S1",
+   "x": [
+    -36,
+    -21.6
+   ],
+   "z": [
+    3,
+    23.4
+   ],
+   "xc": -28.8,
+   "loop": true,
+   "contents": "4 CMP polishers, 2 per side"
+  },
+  {
+   "id": "S2",
+   "x": [
+    -21.6,
+    -7.2
+   ],
+   "z": [
+    3,
+    23.4
+   ],
+   "xc": -14.4,
+   "loop": true,
+   "contents": "3 furnaces (west side), 2 implanters (east side, end stations toward the spine)"
+  },
+  {
+   "id": "S3",
+   "x": [
+    -7.2,
+    7.2
+   ],
+   "z": [
+    3,
+    23.4
+   ],
+   "xc": 0,
+   "loop": true,
+   "contents": "2 stockers facing each other across the aisle"
+  },
+  {
+   "id": "S4",
+   "x": [
+    7.2,
+    21.6
+   ],
+   "z": [
+    3,
+    23.4
+   ],
+   "xc": 14.4,
+   "loop": true,
+   "contents": "4 metrology tools, 2 per side"
+  },
+  {
+   "id": "S5",
+   "x": [
+    21.6,
+    36
+   ],
+   "z": [
+    3,
+    23.4
+   ],
+   "xc": 28.8,
+   "loop": true,
+   "contents": "4 probers, 2 per side; install zone at the gallery end"
+  }
+ ],
+ "rails": {
+  "datumY": 4.9,
+  "section": {
+   "width": 0.3,
+   "height": 0.2,
+   "shape": "C channel"
+  },
+  "kit": {
+   "straight": {
+    "length": 3.6,
+    "endA": [
+     -1.8,
+     0,
+     0
+    ],
+    "endB": [
+     1.8,
+     0,
+     0
+    ],
+    "fillerScale": [
+     0.25,
+     1
+    ]
+   },
+   "curve": {
+    "radius": 1.8,
+    "sweepDeg": 90,
+    "from": [
+     0,
+     0,
+     0
+    ],
+    "to": [
+     1.8,
+     0,
+     1.8
+    ],
+    "center": [
+     0,
+     0,
+     1.8
+    ],
+    "note": "origin heading +X to (1.8, 0, 1.8) heading +Z (a right turn); traversed in reverse it is a left turn"
+   },
+   "switch": {
+    "length": 1.8,
+    "main": {
+     "from": [
+      0,
+      0,
+      0
+     ],
+     "to": [
+      1.8,
+      0,
+      0
+     ]
+    },
+    "branchDiverge": {
+     "from": [
+      0,
+      0,
+      0
+     ],
+     "to": [
+      1.8,
+      0,
+      1.8
+     ],
+     "center": [
+      0,
+      0,
+      1.8
+     ]
+    },
+    "branchMerge": {
+     "from": [
+      0,
+      0,
+      1.8
+     ],
+     "to": [
+      1.8,
+      0,
+      0
+     ],
+     "center": [
+      1.8,
+      0,
+      1.8
+     ]
+    },
+    "toggleS": 0.6,
+    "note": "one branch is used per placement; the other is hidden by node name"
+   }
+  },
+  "speeds": {
+   "straight": {
+    "value": 5,
+    "basis": "C"
+   },
+   "curve": {
+    "value": 1,
+    "basis": "E"
+   },
+   "switch": {
+    "value": 2,
+    "basis": "E"
+   }
+  },
+  "runs": [
+   {
+    "id": "run-n1-out",
+    "from": [
+     -27,
+     4.9,
+     -3.6
+    ],
+    "to": [
+     -27,
+     4.9,
+     -18
+    ],
+    "spine": false
+   },
+   {
+    "id": "run-n1-back",
+    "from": [
+     -30.6,
+     4.9,
+     -18
+    ],
+    "to": [
+     -30.6,
+     4.9,
+     -3.6
+    ],
+    "spine": false
+   },
+   {
+    "id": "run-n4-out",
+    "from": [
+     16.2,
+     4.9,
+     -3.6
+    ],
+    "to": [
+     16.2,
+     4.9,
+     -18
+    ],
+    "spine": false
+   },
+   {
+    "id": "run-n4-back",
+    "from": [
+     12.6,
+     4.9,
+     -18
+    ],
+    "to": [
+     12.6,
+     4.9,
+     -3.6
+    ],
+    "spine": false
+   },
+   {
+    "id": "run-n5-out",
+    "from": [
+     30.6,
+     4.9,
+     -3.6
+    ],
+    "to": [
+     30.6,
+     4.9,
+     -18
+    ],
+    "spine": false
+   },
+   {
+    "id": "run-n5-back",
+    "from": [
+     27,
+     4.9,
+     -18
+    ],
+    "to": [
+     27,
+     4.9,
+     -3.6
+    ],
+    "spine": false
+   },
+   {
+    "id": "run-s1-out",
+    "from": [
+     -30.6,
+     4.9,
+     3.6
+    ],
+    "to": [
+     -30.6,
+     4.9,
+     18
+    ],
+    "spine": false
+   },
+   {
+    "id": "run-s1-back",
+    "from": [
+     -27,
+     4.9,
+     18
+    ],
+    "to": [
+     -27,
+     4.9,
+     3.6
+    ],
+    "spine": false
+   },
+   {
+    "id": "run-s2-out",
+    "from": [
+     -16.2,
+     4.9,
+     3.6
+    ],
+    "to": [
+     -16.2,
+     4.9,
+     18
+    ],
+    "spine": false
+   },
+   {
+    "id": "run-s2-back",
+    "from": [
+     -12.6,
+     4.9,
+     18
+    ],
+    "to": [
+     -12.6,
+     4.9,
+     3.6
+    ],
+    "spine": false
+   },
+   {
+    "id": "run-s3-out",
+    "from": [
+     -1.8,
+     4.9,
+     3.6
+    ],
+    "to": [
+     -1.8,
+     4.9,
+     18
+    ],
+    "spine": false
+   },
+   {
+    "id": "run-s3-back",
+    "from": [
+     1.8,
+     4.9,
+     18
+    ],
+    "to": [
+     1.8,
+     4.9,
+     3.6
+    ],
+    "spine": false
+   },
+   {
+    "id": "run-s4-out",
+    "from": [
+     12.6,
+     4.9,
+     3.6
+    ],
+    "to": [
+     12.6,
+     4.9,
+     18
+    ],
+    "spine": false
+   },
+   {
+    "id": "run-s4-back",
+    "from": [
+     16.2,
+     4.9,
+     18
+    ],
+    "to": [
+     16.2,
+     4.9,
+     3.6
+    ],
+    "spine": false
+   },
+   {
+    "id": "run-s5-out",
+    "from": [
+     27,
+     4.9,
+     3.6
+    ],
+    "to": [
+     27,
+     4.9,
+     18
+    ],
+    "spine": false
+   },
+   {
+    "id": "run-s5-back",
+    "from": [
+     30.6,
+     4.9,
+     18
+    ],
+    "to": [
+     30.6,
+     4.9,
+     3.6
+    ],
+    "spine": false
+   },
+   {
+    "id": "run-spine-n-1",
+    "from": [
+     33.3,
+     4.9,
+     -1.8
+    ],
+    "to": [
+     32.4,
+     4.9,
+     -1.8
+    ],
+    "spine": true
+   },
+   {
+    "id": "run-spine-n-2",
+    "from": [
+     30.6,
+     4.9,
+     -1.8
+    ],
+    "to": [
+     27,
+     4.9,
+     -1.8
+    ],
+    "spine": true
+   },
+   {
+    "id": "run-spine-n-3",
+    "from": [
+     25.2,
+     4.9,
+     -1.8
+    ],
+    "to": [
+     18,
+     4.9,
+     -1.8
+    ],
+    "spine": true
+   },
+   {
+    "id": "run-spine-n-4",
+    "from": [
+     16.2,
+     4.9,
+     -1.8
+    ],
+    "to": [
+     12.6,
+     4.9,
+     -1.8
+    ],
+    "spine": true
+   },
+   {
+    "id": "run-spine-n-5",
+    "from": [
+     10.8,
+     4.9,
+     -1.8
+    ],
+    "to": [
+     -25.2,
+     4.9,
+     -1.8
+    ],
+    "spine": true
+   },
+   {
+    "id": "run-spine-n-6",
+    "from": [
+     -27,
+     4.9,
+     -1.8
+    ],
+    "to": [
+     -30.6,
+     4.9,
+     -1.8
+    ],
+    "spine": true
+   },
+   {
+    "id": "run-spine-n-7",
+    "from": [
+     -32.4,
+     4.9,
+     -1.8
+    ],
+    "to": [
+     -33.3,
+     4.9,
+     -1.8
+    ],
+    "spine": true
+   },
+   {
+    "id": "run-spine-s-1",
+    "from": [
+     -33.3,
+     4.9,
+     1.8
+    ],
+    "to": [
+     -32.4,
+     4.9,
+     1.8
+    ],
+    "spine": true
+   },
+   {
+    "id": "run-spine-s-2",
+    "from": [
+     -30.6,
+     4.9,
+     1.8
+    ],
+    "to": [
+     -27,
+     4.9,
+     1.8
+    ],
+    "spine": true
+   },
+   {
+    "id": "run-spine-s-3",
+    "from": [
+     -25.2,
+     4.9,
+     1.8
+    ],
+    "to": [
+     -18,
+     4.9,
+     1.8
+    ],
+    "spine": true
+   },
+   {
+    "id": "run-spine-s-4",
+    "from": [
+     -16.2,
+     4.9,
+     1.8
+    ],
+    "to": [
+     -12.6,
+     4.9,
+     1.8
+    ],
+    "spine": true
+   },
+   {
+    "id": "run-spine-s-5",
+    "from": [
+     -10.8,
+     4.9,
+     1.8
+    ],
+    "to": [
+     -3.6,
+     4.9,
+     1.8
+    ],
+    "spine": true
+   },
+   {
+    "id": "run-spine-s-6",
+    "from": [
+     -1.8,
+     4.9,
+     1.8
+    ],
+    "to": [
+     1.8,
+     4.9,
+     1.8
+    ],
+    "spine": true
+   },
+   {
+    "id": "run-spine-s-7",
+    "from": [
+     3.6,
+     4.9,
+     1.8
+    ],
+    "to": [
+     10.8,
+     4.9,
+     1.8
+    ],
+    "spine": true
+   },
+   {
+    "id": "run-spine-s-8",
+    "from": [
+     12.6,
+     4.9,
+     1.8
+    ],
+    "to": [
+     16.2,
+     4.9,
+     1.8
+    ],
+    "spine": true
+   },
+   {
+    "id": "run-spine-s-9",
+    "from": [
+     18,
+     4.9,
+     1.8
+    ],
+    "to": [
+     25.2,
+     4.9,
+     1.8
+    ],
+    "spine": true
+   },
+   {
+    "id": "run-spine-s-10",
+    "from": [
+     27,
+     4.9,
+     1.8
+    ],
+    "to": [
+     30.6,
+     4.9,
+     1.8
+    ],
+    "spine": true
+   },
+   {
+    "id": "run-spine-s-11",
+    "from": [
+     32.4,
+     4.9,
+     1.8
+    ],
+    "to": [
+     33.3,
+     4.9,
+     1.8
+    ],
+    "spine": true
+   }
+  ],
+  "curves": [
+   {
+    "id": "cu-n1-1",
+    "center": [
+     -28.8,
+     4.9,
+     -18
+    ],
+    "radius": 1.8,
+    "from": [
+     -27,
+     4.9,
+     -18
+    ],
+    "to": [
+     -28.8,
+     4.9,
+     -19.8
+    ],
+    "turn": "left"
+   },
+   {
+    "id": "cu-n1-2",
+    "center": [
+     -28.8,
+     4.9,
+     -18
+    ],
+    "radius": 1.8,
+    "from": [
+     -28.8,
+     4.9,
+     -19.8
+    ],
+    "to": [
+     -30.6,
+     4.9,
+     -18
+    ],
+    "turn": "left"
+   },
+   {
+    "id": "cu-n4-1",
+    "center": [
+     14.4,
+     4.9,
+     -18
+    ],
+    "radius": 1.8,
+    "from": [
+     16.2,
+     4.9,
+     -18
+    ],
+    "to": [
+     14.4,
+     4.9,
+     -19.8
+    ],
+    "turn": "left"
+   },
+   {
+    "id": "cu-n4-2",
+    "center": [
+     14.4,
+     4.9,
+     -18
+    ],
+    "radius": 1.8,
+    "from": [
+     14.4,
+     4.9,
+     -19.8
+    ],
+    "to": [
+     12.6,
+     4.9,
+     -18
+    ],
+    "turn": "left"
+   },
+   {
+    "id": "cu-n5-1",
+    "center": [
+     28.8,
+     4.9,
+     -18
+    ],
+    "radius": 1.8,
+    "from": [
+     30.6,
+     4.9,
+     -18
+    ],
+    "to": [
+     28.8,
+     4.9,
+     -19.8
+    ],
+    "turn": "left"
+   },
+   {
+    "id": "cu-n5-2",
+    "center": [
+     28.8,
+     4.9,
+     -18
+    ],
+    "radius": 1.8,
+    "from": [
+     28.8,
+     4.9,
+     -19.8
+    ],
+    "to": [
+     27,
+     4.9,
+     -18
+    ],
+    "turn": "left"
+   },
+   {
+    "id": "cu-s1-1",
+    "center": [
+     -28.8,
+     4.9,
+     18
+    ],
+    "radius": 1.8,
+    "from": [
+     -30.6,
+     4.9,
+     18
+    ],
+    "to": [
+     -28.8,
+     4.9,
+     19.8
+    ],
+    "turn": "left"
+   },
+   {
+    "id": "cu-s1-2",
+    "center": [
+     -28.8,
+     4.9,
+     18
+    ],
+    "radius": 1.8,
+    "from": [
+     -28.8,
+     4.9,
+     19.8
+    ],
+    "to": [
+     -27,
+     4.9,
+     18
+    ],
+    "turn": "left"
+   },
+   {
+    "id": "cu-s2-1",
+    "center": [
+     -14.4,
+     4.9,
+     18
+    ],
+    "radius": 1.8,
+    "from": [
+     -16.2,
+     4.9,
+     18
+    ],
+    "to": [
+     -14.4,
+     4.9,
+     19.8
+    ],
+    "turn": "left"
+   },
+   {
+    "id": "cu-s2-2",
+    "center": [
+     -14.4,
+     4.9,
+     18
+    ],
+    "radius": 1.8,
+    "from": [
+     -14.4,
+     4.9,
+     19.8
+    ],
+    "to": [
+     -12.6,
+     4.9,
+     18
+    ],
+    "turn": "left"
+   },
+   {
+    "id": "cu-s3-1",
+    "center": [
+     0,
+     4.9,
+     18
+    ],
+    "radius": 1.8,
+    "from": [
+     -1.8,
+     4.9,
+     18
+    ],
+    "to": [
+     0,
+     4.9,
+     19.8
+    ],
+    "turn": "left"
+   },
+   {
+    "id": "cu-s3-2",
+    "center": [
+     0,
+     4.9,
+     18
+    ],
+    "radius": 1.8,
+    "from": [
+     0,
+     4.9,
+     19.8
+    ],
+    "to": [
+     1.8,
+     4.9,
+     18
+    ],
+    "turn": "left"
+   },
+   {
+    "id": "cu-s4-1",
+    "center": [
+     14.4,
+     4.9,
+     18
+    ],
+    "radius": 1.8,
+    "from": [
+     12.6,
+     4.9,
+     18
+    ],
+    "to": [
+     14.4,
+     4.9,
+     19.8
+    ],
+    "turn": "left"
+   },
+   {
+    "id": "cu-s4-2",
+    "center": [
+     14.4,
+     4.9,
+     18
+    ],
+    "radius": 1.8,
+    "from": [
+     14.4,
+     4.9,
+     19.8
+    ],
+    "to": [
+     16.2,
+     4.9,
+     18
+    ],
+    "turn": "left"
+   },
+   {
+    "id": "cu-s5-1",
+    "center": [
+     28.8,
+     4.9,
+     18
+    ],
+    "radius": 1.8,
+    "from": [
+     27,
+     4.9,
+     18
+    ],
+    "to": [
+     28.8,
+     4.9,
+     19.8
+    ],
+    "turn": "left"
+   },
+   {
+    "id": "cu-s5-2",
+    "center": [
+     28.8,
+     4.9,
+     18
+    ],
+    "radius": 1.8,
+    "from": [
+     28.8,
+     4.9,
+     19.8
+    ],
+    "to": [
+     30.6,
+     4.9,
+     18
+    ],
+    "turn": "left"
+   },
+   {
+    "id": "cu-spine-w1",
+    "center": [
+     -33.3,
+     4.9,
+     0
+    ],
+    "radius": 1.8,
+    "from": [
+     -33.3,
+     4.9,
+     -1.8
+    ],
+    "to": [
+     -35.1,
+     4.9,
+     0
+    ],
+    "turn": "left"
+   },
+   {
+    "id": "cu-spine-w2",
+    "center": [
+     -33.3,
+     4.9,
+     0
+    ],
+    "radius": 1.8,
+    "from": [
+     -35.1,
+     4.9,
+     0
+    ],
+    "to": [
+     -33.3,
+     4.9,
+     1.8
+    ],
+    "turn": "left"
+   },
+   {
+    "id": "cu-spine-e1",
+    "center": [
+     33.3,
+     4.9,
+     0
+    ],
+    "radius": 1.8,
+    "from": [
+     33.3,
+     4.9,
+     1.8
+    ],
+    "to": [
+     35.1,
+     4.9,
+     0
+    ],
+    "turn": "left"
+   },
+   {
+    "id": "cu-spine-e2",
+    "center": [
+     33.3,
+     4.9,
+     0
+    ],
+    "radius": 1.8,
+    "from": [
+     35.1,
+     4.9,
+     0
+    ],
+    "to": [
+     33.3,
+     4.9,
+     -1.8
+    ],
+    "turn": "left"
+   }
+  ],
+  "switches": [
+   {
+    "id": "sw-n1-div",
+    "bay": "N1",
+    "use": "diverge",
+    "origin": [
+     -25.2,
+     4.9,
+     -1.8
+    ],
+    "yaw": 180
+   },
+   {
+    "id": "sw-n1-mrg",
+    "bay": "N1",
+    "use": "merge",
+    "origin": [
+     -30.6,
+     4.9,
+     -1.8
+    ],
+    "yaw": 180
+   },
+   {
+    "id": "sw-n4-div",
+    "bay": "N4",
+    "use": "diverge",
+    "origin": [
+     18,
+     4.9,
+     -1.8
+    ],
+    "yaw": 180
+   },
+   {
+    "id": "sw-n4-mrg",
+    "bay": "N4",
+    "use": "merge",
+    "origin": [
+     12.6,
+     4.9,
+     -1.8
+    ],
+    "yaw": 180
+   },
+   {
+    "id": "sw-n5-div",
+    "bay": "N5",
+    "use": "diverge",
+    "origin": [
+     32.4,
+     4.9,
+     -1.8
+    ],
+    "yaw": 180
+   },
+   {
+    "id": "sw-n5-mrg",
+    "bay": "N5",
+    "use": "merge",
+    "origin": [
+     27,
+     4.9,
+     -1.8
+    ],
+    "yaw": 180
+   },
+   {
+    "id": "sw-s1-div",
+    "bay": "S1",
+    "use": "diverge",
+    "origin": [
+     -32.4,
+     4.9,
+     1.8
+    ],
+    "yaw": 0
+   },
+   {
+    "id": "sw-s1-mrg",
+    "bay": "S1",
+    "use": "merge",
+    "origin": [
+     -27,
+     4.9,
+     1.8
+    ],
+    "yaw": 0
+   },
+   {
+    "id": "sw-s2-div",
+    "bay": "S2",
+    "use": "diverge",
+    "origin": [
+     -18,
+     4.9,
+     1.8
+    ],
+    "yaw": 0
+   },
+   {
+    "id": "sw-s2-mrg",
+    "bay": "S2",
+    "use": "merge",
+    "origin": [
+     -12.6,
+     4.9,
+     1.8
+    ],
+    "yaw": 0
+   },
+   {
+    "id": "sw-s3-div",
+    "bay": "S3",
+    "use": "diverge",
+    "origin": [
+     -3.6,
+     4.9,
+     1.8
+    ],
+    "yaw": 0
+   },
+   {
+    "id": "sw-s3-mrg",
+    "bay": "S3",
+    "use": "merge",
+    "origin": [
+     1.8,
+     4.9,
+     1.8
+    ],
+    "yaw": 0
+   },
+   {
+    "id": "sw-s4-div",
+    "bay": "S4",
+    "use": "diverge",
+    "origin": [
+     10.8,
+     4.9,
+     1.8
+    ],
+    "yaw": 0
+   },
+   {
+    "id": "sw-s4-mrg",
+    "bay": "S4",
+    "use": "merge",
+    "origin": [
+     16.2,
+     4.9,
+     1.8
+    ],
+    "yaw": 0
+   },
+   {
+    "id": "sw-s5-div",
+    "bay": "S5",
+    "use": "diverge",
+    "origin": [
+     25.2,
+     4.9,
+     1.8
+    ],
+    "yaw": 0
+   },
+   {
+    "id": "sw-s5-mrg",
+    "bay": "S5",
+    "use": "merge",
+    "origin": [
+     30.6,
+     4.9,
+     1.8
+    ],
+    "yaw": 0
+   }
+  ]
+ },
+ "loadPort": {
+  "entity": "loadPort",
+  "bounds": {
+   "min": [
+    0,
+    0,
+    -0.25
+   ],
+   "max": [
+    0.55,
+    1.4,
+    0.25
+   ]
+  },
+  "seat": [
+   0.3,
+   0.9,
+   0
+  ]
+ },
+ "tools": [
+  {
+   "id": "etch-01",
+   "type": "etch-cluster-tool",
+   "entity": "tool:etch",
+   "group": "etch",
+   "bay": "N1",
+   "side": "west",
+   "position": [
+    -33.2,
+    0,
+    -6
+   ],
+   "yaw": 0,
+   "size": [
+    4.6,
+    2.7,
+    3.6
+   ],
+   "bounds": {
+    "min": [
+     -2.3,
+     0,
+     -1.8
+    ],
+    "max": [
+     2.3,
+     2.7,
+     1.8
+    ]
+   },
+   "footprint": {
+    "min": [
+     -35.5,
+     0,
+     -7.8
+    ],
+    "max": [
+     -30.9,
+     2.7,
+     -4.2
+    ]
+   },
+   "keepOut": [
+    {
+     "why": "LidOpen sweep",
+     "min": [
+      -33.24,
+      1.47,
+      -4.2
+     ],
+     "max": [
+      -32.36,
+      2.4466,
+      -3.787
+     ]
+    },
+    {
+     "why": "review: 0.45 m clear on the +Z side (lid)",
+     "min": [
+      -35.5,
+      0,
+      -4.2
+     ],
+     "max": [
+      -30.9,
+      2.7,
+      -3.75
+     ]
+    }
+   ],
+   "ports": [
+    {
+     "id": "etch-01.lp1",
+     "locator": "lp1",
+     "mount": [
+      -30.9,
+      0,
+      -6.505
+     ],
+     "seat": [
+      -30.6,
+      0.9,
+      -6.505
+     ],
+     "facing": [
+      1,
+      0,
+      0
+     ]
+    },
+    {
+     "id": "etch-01.lp2",
+     "locator": "lp2",
+     "mount": [
+      -30.9,
+      0,
+      -6
+     ],
+     "seat": [
+      -30.6,
+      0.9,
+      -6
+     ],
+     "facing": [
+      1,
+      0,
+      0
+     ]
+    },
+    {
+     "id": "etch-01.lp3",
+     "locator": "lp3",
+     "mount": [
+      -30.9,
+      0,
+      -5.495
+     ],
+     "seat": [
+      -30.6,
+      0.9,
+      -5.495
+     ],
+     "facing": [
+      1,
+      0,
+      0
+     ]
+    }
+   ],
+   "signalTowerMount": [
+    -31.05,
+    2.7,
+    -4.4
+   ],
+   "accent": "accent-etch",
+   "scheduled": true
+  },
+  {
+   "id": "etch-02",
+   "type": "etch-cluster-tool",
+   "entity": "tool:etch",
+   "group": "etch",
+   "bay": "N1",
+   "side": "west",
+   "position": [
+    -33.2,
+    0,
+    -10.05
+   ],
+   "yaw": 0,
+   "size": [
+    4.6,
+    2.7,
+    3.6
+   ],
+   "bounds": {
+    "min": [
+     -2.3,
+     0,
+     -1.8
+    ],
+    "max": [
+     2.3,
+     2.7,
+     1.8
+    ]
+   },
+   "footprint": {
+    "min": [
+     -35.5,
+     0,
+     -11.85
+    ],
+    "max": [
+     -30.9,
+     2.7,
+     -8.25
+    ]
+   },
+   "keepOut": [
+    {
+     "why": "LidOpen sweep",
+     "min": [
+      -33.24,
+      1.47,
+      -8.25
+     ],
+     "max": [
+      -32.36,
+      2.4466,
+      -7.837
+     ]
+    },
+    {
+     "why": "review: 0.45 m clear on the +Z side (lid)",
+     "min": [
+      -35.5,
+      0,
+      -8.25
+     ],
+     "max": [
+      -30.9,
+      2.7,
+      -7.8
+     ]
+    }
+   ],
+   "ports": [
+    {
+     "id": "etch-02.lp1",
+     "locator": "lp1",
+     "mount": [
+      -30.9,
+      0,
+      -10.555
+     ],
+     "seat": [
+      -30.6,
+      0.9,
+      -10.555
+     ],
+     "facing": [
+      1,
+      0,
+      0
+     ]
+    },
+    {
+     "id": "etch-02.lp2",
+     "locator": "lp2",
+     "mount": [
+      -30.9,
+      0,
+      -10.05
+     ],
+     "seat": [
+      -30.6,
+      0.9,
+      -10.05
+     ],
+     "facing": [
+      1,
+      0,
+      0
+     ]
+    },
+    {
+     "id": "etch-02.lp3",
+     "locator": "lp3",
+     "mount": [
+      -30.9,
+      0,
+      -9.545
+     ],
+     "seat": [
+      -30.6,
+      0.9,
+      -9.545
+     ],
+     "facing": [
+      1,
+      0,
+      0
+     ]
+    }
+   ],
+   "signalTowerMount": [
+    -31.05,
+    2.7,
+    -8.45
+   ],
+   "accent": "accent-etch",
+   "scheduled": true
+  },
+  {
+   "id": "etch-03",
+   "type": "etch-cluster-tool",
+   "entity": "tool:etch",
+   "group": "etch",
+   "bay": "N1",
+   "side": "west",
+   "position": [
+    -33.2,
+    0,
+    -14.1
+   ],
+   "yaw": 0,
+   "size": [
+    4.6,
+    2.7,
+    3.6
+   ],
+   "bounds": {
+    "min": [
+     -2.3,
+     0,
+     -1.8
+    ],
+    "max": [
+     2.3,
+     2.7,
+     1.8
+    ]
+   },
+   "footprint": {
+    "min": [
+     -35.5,
+     0,
+     -15.9
+    ],
+    "max": [
+     -30.9,
+     2.7,
+     -12.3
+    ]
+   },
+   "keepOut": [
+    {
+     "why": "LidOpen sweep",
+     "min": [
+      -33.24,
+      1.47,
+      -12.3
+     ],
+     "max": [
+      -32.36,
+      2.4466,
+      -11.887
+     ]
+    },
+    {
+     "why": "review: 0.45 m clear on the +Z side (lid)",
+     "min": [
+      -35.5,
+      0,
+      -12.3
+     ],
+     "max": [
+      -30.9,
+      2.7,
+      -11.85
+     ]
+    }
+   ],
+   "ports": [
+    {
+     "id": "etch-03.lp1",
+     "locator": "lp1",
+     "mount": [
+      -30.9,
+      0,
+      -14.605
+     ],
+     "seat": [
+      -30.6,
+      0.9,
+      -14.605
+     ],
+     "facing": [
+      1,
+      0,
+      0
+     ]
+    },
+    {
+     "id": "etch-03.lp2",
+     "locator": "lp2",
+     "mount": [
+      -30.9,
+      0,
+      -14.1
+     ],
+     "seat": [
+      -30.6,
+      0.9,
+      -14.1
+     ],
+     "facing": [
+      1,
+      0,
+      0
+     ]
+    },
+    {
+     "id": "etch-03.lp3",
+     "locator": "lp3",
+     "mount": [
+      -30.9,
+      0,
+      -13.595
+     ],
+     "seat": [
+      -30.6,
+      0.9,
+      -13.595
+     ],
+     "facing": [
+      1,
+      0,
+      0
+     ]
+    }
+   ],
+   "signalTowerMount": [
+    -31.05,
+    2.7,
+    -12.5
+   ],
+   "accent": "accent-etch",
+   "scheduled": true
+  },
+  {
+   "id": "etch-04",
+   "type": "etch-cluster-tool",
+   "entity": "tool:etch",
+   "group": "etch",
+   "bay": "N1",
+   "side": "east",
+   "position": [
+    -24.4,
+    0,
+    -6
+   ],
+   "yaw": 180,
+   "size": [
+    4.6,
+    2.7,
+    3.6
+   ],
+   "bounds": {
+    "min": [
+     -2.3,
+     0,
+     -1.8
+    ],
+    "max": [
+     2.3,
+     2.7,
+     1.8
+    ]
+   },
+   "footprint": {
+    "min": [
+     -26.7,
+     0,
+     -7.8
+    ],
+    "max": [
+     -22.1,
+     2.7,
+     -4.2
+    ]
+   },
+   "keepOut": [
+    {
+     "why": "LidOpen sweep",
+     "min": [
+      -25.24,
+      1.47,
+      -8.213
+     ],
+     "max": [
+      -24.36,
+      2.4466,
+      -7.8
+     ]
+    },
+    {
+     "why": "review: 0.45 m clear on the +Z side (lid)",
+     "min": [
+      -26.7,
+      0,
+      -8.25
+     ],
+     "max": [
+      -22.1,
+      2.7,
+      -7.8
+     ]
+    }
+   ],
+   "ports": [
+    {
+     "id": "etch-04.lp1",
+     "locator": "lp1",
+     "mount": [
+      -26.7,
+      0,
+      -5.495
+     ],
+     "seat": [
+      -27,
+      0.9,
+      -5.495
+     ],
+     "facing": [
+      -1,
+      0,
+      0
+     ]
+    },
+    {
+     "id": "etch-04.lp2",
+     "locator": "lp2",
+     "mount": [
+      -26.7,
+      0,
+      -6
+     ],
+     "seat": [
+      -27,
+      0.9,
+      -6
+     ],
+     "facing": [
+      -1,
+      0,
+      0
+     ]
+    },
+    {
+     "id": "etch-04.lp3",
+     "locator": "lp3",
+     "mount": [
+      -26.7,
+      0,
+      -6.505
+     ],
+     "seat": [
+      -27,
+      0.9,
+      -6.505
+     ],
+     "facing": [
+      -1,
+      0,
+      0
+     ]
+    }
+   ],
+   "signalTowerMount": [
+    -26.55,
+    2.7,
+    -7.6
+   ],
+   "accent": "accent-etch",
+   "scheduled": true
+  },
+  {
+   "id": "etch-05",
+   "type": "etch-cluster-tool",
+   "entity": "tool:etch",
+   "group": "etch",
+   "bay": "N1",
+   "side": "east",
+   "position": [
+    -24.4,
+    0,
+    -10.05
+   ],
+   "yaw": 180,
+   "size": [
+    4.6,
+    2.7,
+    3.6
+   ],
+   "bounds": {
+    "min": [
+     -2.3,
+     0,
+     -1.8
+    ],
+    "max": [
+     2.3,
+     2.7,
+     1.8
+    ]
+   },
+   "footprint": {
+    "min": [
+     -26.7,
+     0,
+     -11.85
+    ],
+    "max": [
+     -22.1,
+     2.7,
+     -8.25
+    ]
+   },
+   "keepOut": [
+    {
+     "why": "LidOpen sweep",
+     "min": [
+      -25.24,
+      1.47,
+      -12.263
+     ],
+     "max": [
+      -24.36,
+      2.4466,
+      -11.85
+     ]
+    },
+    {
+     "why": "review: 0.45 m clear on the +Z side (lid)",
+     "min": [
+      -26.7,
+      0,
+      -12.3
+     ],
+     "max": [
+      -22.1,
+      2.7,
+      -11.85
+     ]
+    }
+   ],
+   "ports": [
+    {
+     "id": "etch-05.lp1",
+     "locator": "lp1",
+     "mount": [
+      -26.7,
+      0,
+      -9.545
+     ],
+     "seat": [
+      -27,
+      0.9,
+      -9.545
+     ],
+     "facing": [
+      -1,
+      0,
+      0
+     ]
+    },
+    {
+     "id": "etch-05.lp2",
+     "locator": "lp2",
+     "mount": [
+      -26.7,
+      0,
+      -10.05
+     ],
+     "seat": [
+      -27,
+      0.9,
+      -10.05
+     ],
+     "facing": [
+      -1,
+      0,
+      0
+     ]
+    },
+    {
+     "id": "etch-05.lp3",
+     "locator": "lp3",
+     "mount": [
+      -26.7,
+      0,
+      -10.555
+     ],
+     "seat": [
+      -27,
+      0.9,
+      -10.555
+     ],
+     "facing": [
+      -1,
+      0,
+      0
+     ]
+    }
+   ],
+   "signalTowerMount": [
+    -26.55,
+    2.7,
+    -11.65
+   ],
+   "accent": "accent-etch",
+   "scheduled": true
+  },
+  {
+   "id": "etch-06",
+   "type": "etch-cluster-tool",
+   "entity": "tool:etch",
+   "group": "etch",
+   "bay": "N1",
+   "side": "east",
+   "position": [
+    -24.4,
+    0,
+    -14.1
+   ],
+   "yaw": 180,
+   "size": [
+    4.6,
+    2.7,
+    3.6
+   ],
+   "bounds": {
+    "min": [
+     -2.3,
+     0,
+     -1.8
+    ],
+    "max": [
+     2.3,
+     2.7,
+     1.8
+    ]
+   },
+   "footprint": {
+    "min": [
+     -26.7,
+     0,
+     -15.9
+    ],
+    "max": [
+     -22.1,
+     2.7,
+     -12.3
+    ]
+   },
+   "keepOut": [
+    {
+     "why": "LidOpen sweep",
+     "min": [
+      -25.24,
+      1.47,
+      -16.313
+     ],
+     "max": [
+      -24.36,
+      2.4466,
+      -15.9
+     ]
+    },
+    {
+     "why": "review: 0.45 m clear on the +Z side (lid)",
+     "min": [
+      -26.7,
+      0,
+      -16.35
+     ],
+     "max": [
+      -22.1,
+      2.7,
+      -15.9
+     ]
+    }
+   ],
+   "ports": [
+    {
+     "id": "etch-06.lp1",
+     "locator": "lp1",
+     "mount": [
+      -26.7,
+      0,
+      -13.595
+     ],
+     "seat": [
+      -27,
+      0.9,
+      -13.595
+     ],
+     "facing": [
+      -1,
+      0,
+      0
+     ]
+    },
+    {
+     "id": "etch-06.lp2",
+     "locator": "lp2",
+     "mount": [
+      -26.7,
+      0,
+      -14.1
+     ],
+     "seat": [
+      -27,
+      0.9,
+      -14.1
+     ],
+     "facing": [
+      -1,
+      0,
+      0
+     ]
+    },
+    {
+     "id": "etch-06.lp3",
+     "locator": "lp3",
+     "mount": [
+      -26.7,
+      0,
+      -14.605
+     ],
+     "seat": [
+      -27,
+      0.9,
+      -14.605
+     ],
+     "facing": [
+      -1,
+      0,
+      0
+     ]
+    }
+   ],
+   "signalTowerMount": [
+    -26.55,
+    2.7,
+    -15.7
+   ],
+   "accent": "accent-etch",
+   "scheduled": true
+  },
+  {
+   "id": "cvd-01",
+   "type": "cvd-ald-cluster-tool",
+   "entity": "tool:cvd-ald",
+   "group": "cvdald",
+   "bay": "N4",
+   "side": "west",
+   "position": [
+    9.9,
+    0,
+    -6
+   ],
+   "yaw": 0,
+   "size": [
+    4.8,
+    2.7,
+    3.6
+   ],
+   "bounds": {
+    "min": [
+     -2.4,
+     0,
+     -1.8
+    ],
+    "max": [
+     2.4,
+     2.7,
+     1.8
+    ]
+   },
+   "footprint": {
+    "min": [
+     7.5,
+     0,
+     -7.8
+    ],
+    "max": [
+     12.3,
+     2.7,
+     -4.2
+    ]
+   },
+   "keepOut": [
+    {
+     "why": "LidOpen sweep",
+     "min": [
+      9.61,
+      1.47,
+      -4.2
+     ],
+     "max": [
+      10.89,
+      2.4473,
+      -4.022
+     ]
+    },
+    {
+     "why": "review: 0.45 m clear on the +Z side (lid)",
+     "min": [
+      7.5,
+      0,
+      -4.2
+     ],
+     "max": [
+      12.3,
+      2.7,
+      -3.75
+     ]
+    }
+   ],
+   "ports": [
+    {
+     "id": "cvd-01.lp1",
+     "locator": "lp1",
+     "mount": [
+      12.3,
+      0,
+      -6.505
+     ],
+     "seat": [
+      12.6,
+      0.9,
+      -6.505
+     ],
+     "facing": [
+      1,
+      0,
+      0
+     ]
+    },
+    {
+     "id": "cvd-01.lp2",
+     "locator": "lp2",
+     "mount": [
+      12.3,
+      0,
+      -6
+     ],
+     "seat": [
+      12.6,
+      0.9,
+      -6
+     ],
+     "facing": [
+      1,
+      0,
+      0
+     ]
+    },
+    {
+     "id": "cvd-01.lp3",
+     "locator": "lp3",
+     "mount": [
+      12.3,
+      0,
+      -5.495
+     ],
+     "seat": [
+      12.6,
+      0.9,
+      -5.495
+     ],
+     "facing": [
+      1,
+      0,
+      0
+     ]
+    }
+   ],
+   "signalTowerMount": [
+    12.15,
+    2.7,
+    -4.4
+   ],
+   "accent": "accent-deposition",
+   "scheduled": true
+  },
+  {
+   "id": "cvd-02",
+   "type": "cvd-ald-cluster-tool",
+   "entity": "tool:cvd-ald",
+   "group": "cvdald",
+   "bay": "N4",
+   "side": "west",
+   "position": [
+    9.9,
+    0,
+    -10.05
+   ],
+   "yaw": 0,
+   "size": [
+    4.8,
+    2.7,
+    3.6
+   ],
+   "bounds": {
+    "min": [
+     -2.4,
+     0,
+     -1.8
+    ],
+    "max": [
+     2.4,
+     2.7,
+     1.8
+    ]
+   },
+   "footprint": {
+    "min": [
+     7.5,
+     0,
+     -11.85
+    ],
+    "max": [
+     12.3,
+     2.7,
+     -8.25
+    ]
+   },
+   "keepOut": [
+    {
+     "why": "LidOpen sweep",
+     "min": [
+      9.61,
+      1.47,
+      -8.25
+     ],
+     "max": [
+      10.89,
+      2.4473,
+      -8.072
+     ]
+    },
+    {
+     "why": "review: 0.45 m clear on the +Z side (lid)",
+     "min": [
+      7.5,
+      0,
+      -8.25
+     ],
+     "max": [
+      12.3,
+      2.7,
+      -7.8
+     ]
+    }
+   ],
+   "ports": [
+    {
+     "id": "cvd-02.lp1",
+     "locator": "lp1",
+     "mount": [
+      12.3,
+      0,
+      -10.555
+     ],
+     "seat": [
+      12.6,
+      0.9,
+      -10.555
+     ],
+     "facing": [
+      1,
+      0,
+      0
+     ]
+    },
+    {
+     "id": "cvd-02.lp2",
+     "locator": "lp2",
+     "mount": [
+      12.3,
+      0,
+      -10.05
+     ],
+     "seat": [
+      12.6,
+      0.9,
+      -10.05
+     ],
+     "facing": [
+      1,
+      0,
+      0
+     ]
+    },
+    {
+     "id": "cvd-02.lp3",
+     "locator": "lp3",
+     "mount": [
+      12.3,
+      0,
+      -9.545
+     ],
+     "seat": [
+      12.6,
+      0.9,
+      -9.545
+     ],
+     "facing": [
+      1,
+      0,
+      0
+     ]
+    }
+   ],
+   "signalTowerMount": [
+    12.15,
+    2.7,
+    -8.45
+   ],
+   "accent": "accent-deposition",
+   "scheduled": true
+  },
+  {
+   "id": "cvd-03",
+   "type": "cvd-ald-cluster-tool",
+   "entity": "tool:cvd-ald",
+   "group": "cvdald",
+   "bay": "N4",
+   "side": "west",
+   "position": [
+    9.9,
+    0,
+    -14.1
+   ],
+   "yaw": 0,
+   "size": [
+    4.8,
+    2.7,
+    3.6
+   ],
+   "bounds": {
+    "min": [
+     -2.4,
+     0,
+     -1.8
+    ],
+    "max": [
+     2.4,
+     2.7,
+     1.8
+    ]
+   },
+   "footprint": {
+    "min": [
+     7.5,
+     0,
+     -15.9
+    ],
+    "max": [
+     12.3,
+     2.7,
+     -12.3
+    ]
+   },
+   "keepOut": [
+    {
+     "why": "LidOpen sweep",
+     "min": [
+      9.61,
+      1.47,
+      -12.3
+     ],
+     "max": [
+      10.89,
+      2.4473,
+      -12.122
+     ]
+    },
+    {
+     "why": "review: 0.45 m clear on the +Z side (lid)",
+     "min": [
+      7.5,
+      0,
+      -12.3
+     ],
+     "max": [
+      12.3,
+      2.7,
+      -11.85
+     ]
+    }
+   ],
+   "ports": [
+    {
+     "id": "cvd-03.lp1",
+     "locator": "lp1",
+     "mount": [
+      12.3,
+      0,
+      -14.605
+     ],
+     "seat": [
+      12.6,
+      0.9,
+      -14.605
+     ],
+     "facing": [
+      1,
+      0,
+      0
+     ]
+    },
+    {
+     "id": "cvd-03.lp2",
+     "locator": "lp2",
+     "mount": [
+      12.3,
+      0,
+      -14.1
+     ],
+     "seat": [
+      12.6,
+      0.9,
+      -14.1
+     ],
+     "facing": [
+      1,
+      0,
+      0
+     ]
+    },
+    {
+     "id": "cvd-03.lp3",
+     "locator": "lp3",
+     "mount": [
+      12.3,
+      0,
+      -13.595
+     ],
+     "seat": [
+      12.6,
+      0.9,
+      -13.595
+     ],
+     "facing": [
+      1,
+      0,
+      0
+     ]
+    }
+   ],
+   "signalTowerMount": [
+    12.15,
+    2.7,
+    -12.5
+   ],
+   "accent": "accent-deposition",
+   "scheduled": true
+  },
+  {
+   "id": "cvd-04",
+   "type": "cvd-ald-cluster-tool",
+   "entity": "tool:cvd-ald",
+   "group": "cvdald",
+   "bay": "N4",
+   "side": "east",
+   "position": [
+    18.9,
+    0,
+    -6
+   ],
+   "yaw": 180,
+   "size": [
+    4.8,
+    2.7,
+    3.6
+   ],
+   "bounds": {
+    "min": [
+     -2.4,
+     0,
+     -1.8
+    ],
+    "max": [
+     2.4,
+     2.7,
+     1.8
+    ]
+   },
+   "footprint": {
+    "min": [
+     16.5,
+     0,
+     -7.8
+    ],
+    "max": [
+     21.3,
+     2.7,
+     -4.2
+    ]
+   },
+   "keepOut": [
+    {
+     "why": "LidOpen sweep",
+     "min": [
+      17.91,
+      1.47,
+      -7.978
+     ],
+     "max": [
+      19.19,
+      2.4473,
+      -7.8
+     ]
+    },
+    {
+     "why": "review: 0.45 m clear on the +Z side (lid)",
+     "min": [
+      16.5,
+      0,
+      -8.25
+     ],
+     "max": [
+      21.3,
+      2.7,
+      -7.8
+     ]
+    }
+   ],
+   "ports": [
+    {
+     "id": "cvd-04.lp1",
+     "locator": "lp1",
+     "mount": [
+      16.5,
+      0,
+      -5.495
+     ],
+     "seat": [
+      16.2,
+      0.9,
+      -5.495
+     ],
+     "facing": [
+      -1,
+      0,
+      0
+     ]
+    },
+    {
+     "id": "cvd-04.lp2",
+     "locator": "lp2",
+     "mount": [
+      16.5,
+      0,
+      -6
+     ],
+     "seat": [
+      16.2,
+      0.9,
+      -6
+     ],
+     "facing": [
+      -1,
+      0,
+      0
+     ]
+    },
+    {
+     "id": "cvd-04.lp3",
+     "locator": "lp3",
+     "mount": [
+      16.5,
+      0,
+      -6.505
+     ],
+     "seat": [
+      16.2,
+      0.9,
+      -6.505
+     ],
+     "facing": [
+      -1,
+      0,
+      0
+     ]
+    }
+   ],
+   "signalTowerMount": [
+    16.65,
+    2.7,
+    -7.6
+   ],
+   "accent": "accent-deposition",
+   "scheduled": true
+  },
+  {
+   "id": "cvd-05",
+   "type": "cvd-ald-cluster-tool",
+   "entity": "tool:cvd-ald",
+   "group": "cvdald",
+   "bay": "N4",
+   "side": "east",
+   "position": [
+    18.9,
+    0,
+    -10.05
+   ],
+   "yaw": 180,
+   "size": [
+    4.8,
+    2.7,
+    3.6
+   ],
+   "bounds": {
+    "min": [
+     -2.4,
+     0,
+     -1.8
+    ],
+    "max": [
+     2.4,
+     2.7,
+     1.8
+    ]
+   },
+   "footprint": {
+    "min": [
+     16.5,
+     0,
+     -11.85
+    ],
+    "max": [
+     21.3,
+     2.7,
+     -8.25
+    ]
+   },
+   "keepOut": [
+    {
+     "why": "LidOpen sweep",
+     "min": [
+      17.91,
+      1.47,
+      -12.028
+     ],
+     "max": [
+      19.19,
+      2.4473,
+      -11.85
+     ]
+    },
+    {
+     "why": "review: 0.45 m clear on the +Z side (lid)",
+     "min": [
+      16.5,
+      0,
+      -12.3
+     ],
+     "max": [
+      21.3,
+      2.7,
+      -11.85
+     ]
+    }
+   ],
+   "ports": [
+    {
+     "id": "cvd-05.lp1",
+     "locator": "lp1",
+     "mount": [
+      16.5,
+      0,
+      -9.545
+     ],
+     "seat": [
+      16.2,
+      0.9,
+      -9.545
+     ],
+     "facing": [
+      -1,
+      0,
+      0
+     ]
+    },
+    {
+     "id": "cvd-05.lp2",
+     "locator": "lp2",
+     "mount": [
+      16.5,
+      0,
+      -10.05
+     ],
+     "seat": [
+      16.2,
+      0.9,
+      -10.05
+     ],
+     "facing": [
+      -1,
+      0,
+      0
+     ]
+    },
+    {
+     "id": "cvd-05.lp3",
+     "locator": "lp3",
+     "mount": [
+      16.5,
+      0,
+      -10.555
+     ],
+     "seat": [
+      16.2,
+      0.9,
+      -10.555
+     ],
+     "facing": [
+      -1,
+      0,
+      0
+     ]
+    }
+   ],
+   "signalTowerMount": [
+    16.65,
+    2.7,
+    -11.65
+   ],
+   "accent": "accent-deposition",
+   "scheduled": true
+  },
+  {
+   "id": "cvd-06",
+   "type": "cvd-ald-cluster-tool",
+   "entity": "tool:cvd-ald",
+   "group": "cvdald",
+   "bay": "N4",
+   "side": "east",
+   "position": [
+    18.9,
+    0,
+    -14.1
+   ],
+   "yaw": 180,
+   "size": [
+    4.8,
+    2.7,
+    3.6
+   ],
+   "bounds": {
+    "min": [
+     -2.4,
+     0,
+     -1.8
+    ],
+    "max": [
+     2.4,
+     2.7,
+     1.8
+    ]
+   },
+   "footprint": {
+    "min": [
+     16.5,
+     0,
+     -15.9
+    ],
+    "max": [
+     21.3,
+     2.7,
+     -12.3
+    ]
+   },
+   "keepOut": [
+    {
+     "why": "LidOpen sweep",
+     "min": [
+      17.91,
+      1.47,
+      -16.078
+     ],
+     "max": [
+      19.19,
+      2.4473,
+      -15.9
+     ]
+    },
+    {
+     "why": "review: 0.45 m clear on the +Z side (lid)",
+     "min": [
+      16.5,
+      0,
+      -16.35
+     ],
+     "max": [
+      21.3,
+      2.7,
+      -15.9
+     ]
+    }
+   ],
+   "ports": [
+    {
+     "id": "cvd-06.lp1",
+     "locator": "lp1",
+     "mount": [
+      16.5,
+      0,
+      -13.595
+     ],
+     "seat": [
+      16.2,
+      0.9,
+      -13.595
+     ],
+     "facing": [
+      -1,
+      0,
+      0
+     ]
+    },
+    {
+     "id": "cvd-06.lp2",
+     "locator": "lp2",
+     "mount": [
+      16.5,
+      0,
+      -14.1
+     ],
+     "seat": [
+      16.2,
+      0.9,
+      -14.1
+     ],
+     "facing": [
+      -1,
+      0,
+      0
+     ]
+    },
+    {
+     "id": "cvd-06.lp3",
+     "locator": "lp3",
+     "mount": [
+      16.5,
+      0,
+      -14.605
+     ],
+     "seat": [
+      16.2,
+      0.9,
+      -14.605
+     ],
+     "facing": [
+      -1,
+      0,
+      0
+     ]
+    }
+   ],
+   "signalTowerMount": [
+    16.65,
+    2.7,
+    -15.7
+   ],
+   "accent": "accent-deposition",
+   "scheduled": true
+  },
+  {
+   "id": "pvd-01",
+   "type": "pvd-cluster-tool",
+   "entity": "tool:pvd",
+   "group": "pvd",
+   "bay": "N5",
+   "side": "west",
+   "position": [
+    24.2,
+    0,
+    -6.3
+   ],
+   "yaw": 0,
+   "size": [
+    5,
+    2.8,
+    4.2
+   ],
+   "bounds": {
+    "min": [
+     -2.5,
+     0,
+     -2.1
+    ],
+    "max": [
+     2.5,
+     2.8,
+     2.1
+    ]
+   },
+   "footprint": {
+    "min": [
+     21.7,
+     0,
+     -8.4
+    ],
+    "max": [
+     26.7,
+     2.8,
+     -4.2
+    ]
+   },
+   "keepOut": [],
+   "ports": [
+    {
+     "id": "pvd-01.lp1",
+     "locator": "lp1",
+     "mount": [
+      26.7,
+      0,
+      -6.805
+     ],
+     "seat": [
+      27,
+      0.9,
+      -6.805
+     ],
+     "facing": [
+      1,
+      0,
+      0
+     ]
+    },
+    {
+     "id": "pvd-01.lp2",
+     "locator": "lp2",
+     "mount": [
+      26.7,
+      0,
+      -6.3
+     ],
+     "seat": [
+      27,
+      0.9,
+      -6.3
+     ],
+     "facing": [
+      1,
+      0,
+      0
+     ]
+    },
+    {
+     "id": "pvd-01.lp3",
+     "locator": "lp3",
+     "mount": [
+      26.7,
+      0,
+      -5.795
+     ],
+     "seat": [
+      27,
+      0.9,
+      -5.795
+     ],
+     "facing": [
+      1,
+      0,
+      0
+     ]
+    }
+   ],
+   "signalTowerMount": [
+    26.55,
+    2.8,
+    -4.4
+   ],
+   "accent": "accent-deposition",
+   "scheduled": true
+  },
+  {
+   "id": "pvd-02",
+   "type": "pvd-cluster-tool",
+   "entity": "tool:pvd",
+   "group": "pvd",
+   "bay": "N5",
+   "side": "west",
+   "position": [
+    24.2,
+    0,
+    -10.8
+   ],
+   "yaw": 0,
+   "size": [
+    5,
+    2.8,
+    4.2
+   ],
+   "bounds": {
+    "min": [
+     -2.5,
+     0,
+     -2.1
+    ],
+    "max": [
+     2.5,
+     2.8,
+     2.1
+    ]
+   },
+   "footprint": {
+    "min": [
+     21.7,
+     0,
+     -12.9
+    ],
+    "max": [
+     26.7,
+     2.8,
+     -8.7
+    ]
+   },
+   "keepOut": [],
+   "ports": [
+    {
+     "id": "pvd-02.lp1",
+     "locator": "lp1",
+     "mount": [
+      26.7,
+      0,
+      -11.305
+     ],
+     "seat": [
+      27,
+      0.9,
+      -11.305
+     ],
+     "facing": [
+      1,
+      0,
+      0
+     ]
+    },
+    {
+     "id": "pvd-02.lp2",
+     "locator": "lp2",
+     "mount": [
+      26.7,
+      0,
+      -10.8
+     ],
+     "seat": [
+      27,
+      0.9,
+      -10.8
+     ],
+     "facing": [
+      1,
+      0,
+      0
+     ]
+    },
+    {
+     "id": "pvd-02.lp3",
+     "locator": "lp3",
+     "mount": [
+      26.7,
+      0,
+      -10.295
+     ],
+     "seat": [
+      27,
+      0.9,
+      -10.295
+     ],
+     "facing": [
+      1,
+      0,
+      0
+     ]
+    }
+   ],
+   "signalTowerMount": [
+    26.55,
+    2.8,
+    -8.9
+   ],
+   "accent": "accent-deposition",
+   "scheduled": true
+  },
+  {
+   "id": "pvd-03",
+   "type": "pvd-cluster-tool",
+   "entity": "tool:pvd",
+   "group": "pvd",
+   "bay": "N5",
+   "side": "west",
+   "position": [
+    24.2,
+    0,
+    -15.3
+   ],
+   "yaw": 0,
+   "size": [
+    5,
+    2.8,
+    4.2
+   ],
+   "bounds": {
+    "min": [
+     -2.5,
+     0,
+     -2.1
+    ],
+    "max": [
+     2.5,
+     2.8,
+     2.1
+    ]
+   },
+   "footprint": {
+    "min": [
+     21.7,
+     0,
+     -17.4
+    ],
+    "max": [
+     26.7,
+     2.8,
+     -13.2
+    ]
+   },
+   "keepOut": [],
+   "ports": [
+    {
+     "id": "pvd-03.lp1",
+     "locator": "lp1",
+     "mount": [
+      26.7,
+      0,
+      -15.805
+     ],
+     "seat": [
+      27,
+      0.9,
+      -15.805
+     ],
+     "facing": [
+      1,
+      0,
+      0
+     ]
+    },
+    {
+     "id": "pvd-03.lp2",
+     "locator": "lp2",
+     "mount": [
+      26.7,
+      0,
+      -15.3
+     ],
+     "seat": [
+      27,
+      0.9,
+      -15.3
+     ],
+     "facing": [
+      1,
+      0,
+      0
+     ]
+    },
+    {
+     "id": "pvd-03.lp3",
+     "locator": "lp3",
+     "mount": [
+      26.7,
+      0,
+      -14.795
+     ],
+     "seat": [
+      27,
+      0.9,
+      -14.795
+     ],
+     "facing": [
+      1,
+      0,
+      0
+     ]
+    }
+   ],
+   "signalTowerMount": [
+    26.55,
+    2.8,
+    -13.4
+   ],
+   "accent": "accent-deposition",
+   "scheduled": true
+  },
+  {
+   "id": "clean-01",
+   "type": "single-wafer-clean-tool",
+   "entity": "tool:clean",
+   "group": "clean",
+   "bay": "N5",
+   "side": "east",
+   "position": [
+    33.4,
+    0,
+    -8.5
+   ],
+   "yaw": 180,
+   "size": [
+    4.997,
+    3.2,
+    3.6
+   ],
+   "bounds": {
+    "min": [
+     -2.497,
+     0,
+     -1.8
+    ],
+    "max": [
+     2.5,
+     3.2,
+     1.8
+    ]
+   },
+   "footprint": {
+    "min": [
+     30.9,
+     0,
+     -10.3
+    ],
+    "max": [
+     35.897,
+     3.2,
+     -6.7
+    ]
+   },
+   "keepOut": [],
+   "ports": [
+    {
+     "id": "clean-01.lp1",
+     "locator": "lp1",
+     "mount": [
+      30.9,
+      0,
+      -7.7425
+     ],
+     "seat": [
+      30.6,
+      0.9,
+      -7.7425
+     ],
+     "facing": [
+      -1,
+      0,
+      0
+     ]
+    },
+    {
+     "id": "clean-01.lp2",
+     "locator": "lp2",
+     "mount": [
+      30.9,
+      0,
+      -8.2475
+     ],
+     "seat": [
+      30.6,
+      0.9,
+      -8.2475
+     ],
+     "facing": [
+      -1,
+      0,
+      0
+     ]
+    },
+    {
+     "id": "clean-01.lp3",
+     "locator": "lp3",
+     "mount": [
+      30.9,
+      0,
+      -8.7525
+     ],
+     "seat": [
+      30.6,
+      0.9,
+      -8.7525
+     ],
+     "facing": [
+      -1,
+      0,
+      0
+     ]
+    },
+    {
+     "id": "clean-01.lp4",
+     "locator": "lp4",
+     "mount": [
+      30.9,
+      0,
+      -9.2575
+     ],
+     "seat": [
+      30.6,
+      0.9,
+      -9.2575
+     ],
+     "facing": [
+      -1,
+      0,
+      0
+     ]
+    }
+   ],
+   "signalTowerMount": [
+    31.05,
+    2.8,
+    -10.1
+   ],
+   "accent": "accent-clean",
+   "scheduled": true
+  },
+  {
+   "id": "clean-02",
+   "type": "single-wafer-clean-tool",
+   "entity": "tool:clean",
+   "group": "clean",
+   "bay": "N5",
+   "side": "east",
+   "position": [
+    33.4,
+    0,
+    -15.7
+   ],
+   "yaw": 180,
+   "size": [
+    4.997,
+    3.2,
+    3.6
+   ],
+   "bounds": {
+    "min": [
+     -2.497,
+     0,
+     -1.8
+    ],
+    "max": [
+     2.5,
+     3.2,
+     1.8
+    ]
+   },
+   "footprint": {
+    "min": [
+     30.9,
+     0,
+     -17.5
+    ],
+    "max": [
+     35.897,
+     3.2,
+     -13.9
+    ]
+   },
+   "keepOut": [],
+   "ports": [
+    {
+     "id": "clean-02.lp1",
+     "locator": "lp1",
+     "mount": [
+      30.9,
+      0,
+      -14.9425
+     ],
+     "seat": [
+      30.6,
+      0.9,
+      -14.9425
+     ],
+     "facing": [
+      -1,
+      0,
+      0
+     ]
+    },
+    {
+     "id": "clean-02.lp2",
+     "locator": "lp2",
+     "mount": [
+      30.9,
+      0,
+      -15.4475
+     ],
+     "seat": [
+      30.6,
+      0.9,
+      -15.4475
+     ],
+     "facing": [
+      -1,
+      0,
+      0
+     ]
+    },
+    {
+     "id": "clean-02.lp3",
+     "locator": "lp3",
+     "mount": [
+      30.9,
+      0,
+      -15.9525
+     ],
+     "seat": [
+      30.6,
+      0.9,
+      -15.9525
+     ],
+     "facing": [
+      -1,
+      0,
+      0
+     ]
+    },
+    {
+     "id": "clean-02.lp4",
+     "locator": "lp4",
+     "mount": [
+      30.9,
+      0,
+      -16.4575
+     ],
+     "seat": [
+      30.6,
+      0.9,
+      -16.4575
+     ],
+     "facing": [
+      -1,
+      0,
+      0
+     ]
+    }
+   ],
+   "signalTowerMount": [
+    31.05,
+    2.8,
+    -17.3
+   ],
+   "accent": "accent-clean",
+   "scheduled": true
+  },
+  {
+   "id": "cmp-01",
+   "type": "cmp-polisher",
+   "entity": "tool:cmp",
+   "group": "cmp",
+   "bay": "S1",
+   "side": "west",
+   "position": [
+    -33.4,
+    0,
+    5.9
+   ],
+   "yaw": 0,
+   "size": [
+    5,
+    2.4,
+    3.4
+   ],
+   "bounds": {
+    "min": [
+     -2.5,
+     0,
+     -1.7
+    ],
+    "max": [
+     2.5,
+     2.4,
+     1.7
+    ]
+   },
+   "footprint": {
+    "min": [
+     -35.9,
+     0,
+     4.2
+    ],
+    "max": [
+     -30.9,
+     2.4,
+     7.6
+    ]
+   },
+   "keepOut": [],
+   "ports": [
+    {
+     "id": "cmp-01.lp1",
+     "locator": "lp1",
+     "mount": [
+      -30.9,
+      0,
+      5.395
+     ],
+     "seat": [
+      -30.6,
+      0.9,
+      5.395
+     ],
+     "facing": [
+      1,
+      0,
+      0
+     ]
+    },
+    {
+     "id": "cmp-01.lp2",
+     "locator": "lp2",
+     "mount": [
+      -30.9,
+      0,
+      5.9
+     ],
+     "seat": [
+      -30.6,
+      0.9,
+      5.9
+     ],
+     "facing": [
+      1,
+      0,
+      0
+     ]
+    },
+    {
+     "id": "cmp-01.lp3",
+     "locator": "lp3",
+     "mount": [
+      -30.9,
+      0,
+      6.405
+     ],
+     "seat": [
+      -30.6,
+      0.9,
+      6.405
+     ],
+     "facing": [
+      1,
+      0,
+      0
+     ]
+    }
+   ],
+   "signalTowerMount": [
+    -31.05,
+    2.4,
+    7.45
+   ],
+   "accent": "accent-cmp",
+   "scheduled": true
+  },
+  {
+   "id": "cmp-02",
+   "type": "cmp-polisher",
+   "entity": "tool:cmp",
+   "group": "cmp",
+   "bay": "S1",
+   "side": "west",
+   "position": [
+    -33.4,
+    0,
+    9.6
+   ],
+   "yaw": 0,
+   "size": [
+    5,
+    2.4,
+    3.4
+   ],
+   "bounds": {
+    "min": [
+     -2.5,
+     0,
+     -1.7
+    ],
+    "max": [
+     2.5,
+     2.4,
+     1.7
+    ]
+   },
+   "footprint": {
+    "min": [
+     -35.9,
+     0,
+     7.9
+    ],
+    "max": [
+     -30.9,
+     2.4,
+     11.3
+    ]
+   },
+   "keepOut": [],
+   "ports": [
+    {
+     "id": "cmp-02.lp1",
+     "locator": "lp1",
+     "mount": [
+      -30.9,
+      0,
+      9.095
+     ],
+     "seat": [
+      -30.6,
+      0.9,
+      9.095
+     ],
+     "facing": [
+      1,
+      0,
+      0
+     ]
+    },
+    {
+     "id": "cmp-02.lp2",
+     "locator": "lp2",
+     "mount": [
+      -30.9,
+      0,
+      9.6
+     ],
+     "seat": [
+      -30.6,
+      0.9,
+      9.6
+     ],
+     "facing": [
+      1,
+      0,
+      0
+     ]
+    },
+    {
+     "id": "cmp-02.lp3",
+     "locator": "lp3",
+     "mount": [
+      -30.9,
+      0,
+      10.105
+     ],
+     "seat": [
+      -30.6,
+      0.9,
+      10.105
+     ],
+     "facing": [
+      1,
+      0,
+      0
+     ]
+    }
+   ],
+   "signalTowerMount": [
+    -31.05,
+    2.4,
+    11.15
+   ],
+   "accent": "accent-cmp",
+   "scheduled": true
+  },
+  {
+   "id": "cmp-03",
+   "type": "cmp-polisher",
+   "entity": "tool:cmp",
+   "group": "cmp",
+   "bay": "S1",
+   "side": "east",
+   "position": [
+    -24.2,
+    0,
+    5.9
+   ],
+   "yaw": 180,
+   "size": [
+    5,
+    2.4,
+    3.4
+   ],
+   "bounds": {
+    "min": [
+     -2.5,
+     0,
+     -1.7
+    ],
+    "max": [
+     2.5,
+     2.4,
+     1.7
+    ]
+   },
+   "footprint": {
+    "min": [
+     -26.7,
+     0,
+     4.2
+    ],
+    "max": [
+     -21.7,
+     2.4,
+     7.6
+    ]
+   },
+   "keepOut": [],
+   "ports": [
+    {
+     "id": "cmp-03.lp1",
+     "locator": "lp1",
+     "mount": [
+      -26.7,
+      0,
+      6.405
+     ],
+     "seat": [
+      -27,
+      0.9,
+      6.405
+     ],
+     "facing": [
+      -1,
+      0,
+      0
+     ]
+    },
+    {
+     "id": "cmp-03.lp2",
+     "locator": "lp2",
+     "mount": [
+      -26.7,
+      0,
+      5.9
+     ],
+     "seat": [
+      -27,
+      0.9,
+      5.9
+     ],
+     "facing": [
+      -1,
+      0,
+      0
+     ]
+    },
+    {
+     "id": "cmp-03.lp3",
+     "locator": "lp3",
+     "mount": [
+      -26.7,
+      0,
+      5.395
+     ],
+     "seat": [
+      -27,
+      0.9,
+      5.395
+     ],
+     "facing": [
+      -1,
+      0,
+      0
+     ]
+    }
+   ],
+   "signalTowerMount": [
+    -26.55,
+    2.4,
+    4.35
+   ],
+   "accent": "accent-cmp",
+   "scheduled": true
+  },
+  {
+   "id": "cmp-04",
+   "type": "cmp-polisher",
+   "entity": "tool:cmp",
+   "group": "cmp",
+   "bay": "S1",
+   "side": "east",
+   "position": [
+    -24.2,
+    0,
+    9.6
+   ],
+   "yaw": 180,
+   "size": [
+    5,
+    2.4,
+    3.4
+   ],
+   "bounds": {
+    "min": [
+     -2.5,
+     0,
+     -1.7
+    ],
+    "max": [
+     2.5,
+     2.4,
+     1.7
+    ]
+   },
+   "footprint": {
+    "min": [
+     -26.7,
+     0,
+     7.9
+    ],
+    "max": [
+     -21.7,
+     2.4,
+     11.3
+    ]
+   },
+   "keepOut": [],
+   "ports": [
+    {
+     "id": "cmp-04.lp1",
+     "locator": "lp1",
+     "mount": [
+      -26.7,
+      0,
+      10.105
+     ],
+     "seat": [
+      -27,
+      0.9,
+      10.105
+     ],
+     "facing": [
+      -1,
+      0,
+      0
+     ]
+    },
+    {
+     "id": "cmp-04.lp2",
+     "locator": "lp2",
+     "mount": [
+      -26.7,
+      0,
+      9.6
+     ],
+     "seat": [
+      -27,
+      0.9,
+      9.6
+     ],
+     "facing": [
+      -1,
+      0,
+      0
+     ]
+    },
+    {
+     "id": "cmp-04.lp3",
+     "locator": "lp3",
+     "mount": [
+      -26.7,
+      0,
+      9.095
+     ],
+     "seat": [
+      -27,
+      0.9,
+      9.095
+     ],
+     "facing": [
+      -1,
+      0,
+      0
+     ]
+    }
+   ],
+   "signalTowerMount": [
+    -26.55,
+    2.4,
+    8.05
+   ],
+   "accent": "accent-cmp",
+   "scheduled": true
+  },
+  {
+   "id": "furnace-01",
+   "type": "vertical-furnace",
+   "entity": "tool:furnace",
+   "group": "furnace",
+   "bay": "S2",
+   "side": "west",
+   "position": [
+    -18.75,
+    0,
+    5.204
+   ],
+   "yaw": 0,
+   "size": [
+    4.523,
+    3.8,
+    2.008
+   ],
+   "bounds": {
+    "min": [
+     -2.25,
+     0,
+     -1.004
+    ],
+    "max": [
+     2.273,
+     3.8,
+     1.004
+    ]
+   },
+   "footprint": {
+    "min": [
+     -21,
+     0,
+     4.2
+    ],
+    "max": [
+     -16.477,
+     3.8,
+     6.208
+    ]
+   },
+   "keepOut": [],
+   "ports": [
+    {
+     "id": "furnace-01.lp1",
+     "locator": "lp1",
+     "mount": [
+      -16.5,
+      0,
+      4.9515
+     ],
+     "seat": [
+      -16.2,
+      0.9,
+      4.9515
+     ],
+     "facing": [
+      1,
+      0,
+      0
+     ]
+    },
+    {
+     "id": "furnace-01.lp2",
+     "locator": "lp2",
+     "mount": [
+      -16.5,
+      0,
+      5.4565
+     ],
+     "seat": [
+      -16.2,
+      0.9,
+      5.4565
+     ],
+     "facing": [
+      1,
+      0,
+      0
+     ]
+    }
+   ],
+   "signalTowerMount": [
+    -16.65,
+    2.4,
+    6.054
+   ],
+   "accent": "accent-thermal",
+   "scheduled": true
+  },
+  {
+   "id": "furnace-02",
+   "type": "vertical-furnace",
+   "entity": "tool:furnace",
+   "group": "furnace",
+   "bay": "S2",
+   "side": "west",
+   "position": [
+    -18.75,
+    0,
+    7.512
+   ],
+   "yaw": 0,
+   "size": [
+    4.523,
+    3.8,
+    2.008
+   ],
+   "bounds": {
+    "min": [
+     -2.25,
+     0,
+     -1.004
+    ],
+    "max": [
+     2.273,
+     3.8,
+     1.004
+    ]
+   },
+   "footprint": {
+    "min": [
+     -21,
+     0,
+     6.508
+    ],
+    "max": [
+     -16.477,
+     3.8,
+     8.516
+    ]
+   },
+   "keepOut": [],
+   "ports": [
+    {
+     "id": "furnace-02.lp1",
+     "locator": "lp1",
+     "mount": [
+      -16.5,
+      0,
+      7.2595
+     ],
+     "seat": [
+      -16.2,
+      0.9,
+      7.2595
+     ],
+     "facing": [
+      1,
+      0,
+      0
+     ]
+    },
+    {
+     "id": "furnace-02.lp2",
+     "locator": "lp2",
+     "mount": [
+      -16.5,
+      0,
+      7.7645
+     ],
+     "seat": [
+      -16.2,
+      0.9,
+      7.7645
+     ],
+     "facing": [
+      1,
+      0,
+      0
+     ]
+    }
+   ],
+   "signalTowerMount": [
+    -16.65,
+    2.4,
+    8.362
+   ],
+   "accent": "accent-thermal",
+   "scheduled": true
+  },
+  {
+   "id": "furnace-03",
+   "type": "vertical-furnace",
+   "entity": "tool:furnace",
+   "group": "furnace",
+   "bay": "S2",
+   "side": "west",
+   "position": [
+    -18.75,
+    0,
+    9.82
+   ],
+   "yaw": 0,
+   "size": [
+    4.523,
+    3.8,
+    2.008
+   ],
+   "bounds": {
+    "min": [
+     -2.25,
+     0,
+     -1.004
+    ],
+    "max": [
+     2.273,
+     3.8,
+     1.004
+    ]
+   },
+   "footprint": {
+    "min": [
+     -21,
+     0,
+     8.816
+    ],
+    "max": [
+     -16.477,
+     3.8,
+     10.824
+    ]
+   },
+   "keepOut": [],
+   "ports": [
+    {
+     "id": "furnace-03.lp1",
+     "locator": "lp1",
+     "mount": [
+      -16.5,
+      0,
+      9.5675
+     ],
+     "seat": [
+      -16.2,
+      0.9,
+      9.5675
+     ],
+     "facing": [
+      1,
+      0,
+      0
+     ]
+    },
+    {
+     "id": "furnace-03.lp2",
+     "locator": "lp2",
+     "mount": [
+      -16.5,
+      0,
+      10.0725
+     ],
+     "seat": [
+      -16.2,
+      0.9,
+      10.0725
+     ],
+     "facing": [
+      1,
+      0,
+      0
+     ]
+    }
+   ],
+   "signalTowerMount": [
+    -16.65,
+    2.4,
+    10.67
+   ],
+   "accent": "accent-thermal",
+   "scheduled": true
+  },
+  {
+   "id": "implant-01",
+   "type": "ion-implanter",
+   "entity": "tool:implanter",
+   "group": "implant",
+   "bay": "S2",
+   "side": "east",
+   "position": [
+    -10.05,
+    0,
+    8.455
+   ],
+   "yaw": 180,
+   "size": [
+    4.535,
+    2.8,
+    8.51
+   ],
+   "bounds": {
+    "min": [
+     -2.255,
+     0,
+     -4.255
+    ],
+    "max": [
+     2.28,
+     2.8,
+     4.255
+    ]
+   },
+   "footprint": {
+    "min": [
+     -12.33,
+     0,
+     4.2
+    ],
+    "max": [
+     -7.795,
+     2.8,
+     12.71
+    ]
+   },
+   "keepOut": [
+    {
+     "why": "ServiceOpen sweep",
+     "min": [
+      -13.1864,
+      0.125,
+      10.8187
+     ],
+     "max": [
+      -12.33,
+      2.195,
+      11.8761
+     ]
+    },
+    {
+     "why": "review: 1.2 m clear in front of the service door",
+     "min": [
+      -13.5,
+      0,
+      10.8187
+     ],
+     "max": [
+      -12.33,
+      2.195,
+      11.8761
+     ]
+    }
+   ],
+   "ports": [
+    {
+     "id": "implant-01.lp1",
+     "locator": "lp1",
+     "mount": [
+      -12.3,
+      0,
+      5.4575
+     ],
+     "seat": [
+      -12.6,
+      0.9,
+      5.4575
+     ],
+     "facing": [
+      -1,
+      0,
+      0
+     ]
+    },
+    {
+     "id": "implant-01.lp2",
+     "locator": "lp2",
+     "mount": [
+      -12.3,
+      0,
+      4.9525
+     ],
+     "seat": [
+      -12.6,
+      0.9,
+      4.9525
+     ],
+     "facing": [
+      -1,
+      0,
+      0
+     ]
+    }
+   ],
+   "signalTowerMount": [
+    -12.15,
+    2.4,
+    4.355
+   ],
+   "accent": "accent-implant",
+   "scheduled": true
+  },
+  {
+   "id": "implant-02",
+   "type": "ion-implanter",
+   "entity": "tool:implanter",
+   "group": "implant",
+   "bay": "S2",
+   "side": "east",
+   "position": [
+    -10.05,
+    0,
+    17.265
+   ],
+   "yaw": 180,
+   "size": [
+    4.535,
+    2.8,
+    8.51
+   ],
+   "bounds": {
+    "min": [
+     -2.255,
+     0,
+     -4.255
+    ],
+    "max": [
+     2.28,
+     2.8,
+     4.255
+    ]
+   },
+   "footprint": {
+    "min": [
+     -12.33,
+     0,
+     13.01
+    ],
+    "max": [
+     -7.795,
+     2.8,
+     21.52
+    ]
+   },
+   "keepOut": [
+    {
+     "why": "ServiceOpen sweep",
+     "min": [
+      -13.1864,
+      0.125,
+      19.6287
+     ],
+     "max": [
+      -12.33,
+      2.195,
+      20.6861
+     ]
+    },
+    {
+     "why": "review: 1.2 m clear in front of the service door",
+     "min": [
+      -13.5,
+      0,
+      19.6287
+     ],
+     "max": [
+      -12.33,
+      2.195,
+      20.6861
+     ]
+    }
+   ],
+   "ports": [
+    {
+     "id": "implant-02.lp1",
+     "locator": "lp1",
+     "mount": [
+      -12.3,
+      0,
+      14.2675
+     ],
+     "seat": [
+      -12.6,
+      0.9,
+      14.2675
+     ],
+     "facing": [
+      -1,
+      0,
+      0
+     ]
+    },
+    {
+     "id": "implant-02.lp2",
+     "locator": "lp2",
+     "mount": [
+      -12.3,
+      0,
+      13.7625
+     ],
+     "seat": [
+      -12.6,
+      0.9,
+      13.7625
+     ],
+     "facing": [
+      -1,
+      0,
+      0
+     ]
+    }
+   ],
+   "signalTowerMount": [
+    -12.15,
+    2.4,
+    13.165
+   ],
+   "accent": "accent-implant",
+   "scheduled": true
+  },
+  {
+   "id": "metro-01",
+   "type": "metrology-inspection-tool",
+   "entity": "tool:metrology",
+   "group": "metrology",
+   "bay": "S4",
+   "side": "west",
+   "position": [
+    10.8,
+    0,
+    5.409
+   ],
+   "yaw": 0,
+   "size": [
+    3.022,
+    2.3,
+    2.421
+   ],
+   "bounds": {
+    "min": [
+     -1.508,
+     0,
+     -1.209
+    ],
+    "max": [
+     1.514,
+     2.3,
+     1.212
+    ]
+   },
+   "footprint": {
+    "min": [
+     9.292,
+     0,
+     4.2
+    ],
+    "max": [
+     12.314,
+     2.3,
+     6.621
+    ]
+   },
+   "keepOut": [],
+   "ports": [
+    {
+     "id": "metro-01.lp1",
+     "locator": "lp1",
+     "mount": [
+      12.3,
+      0,
+      5.1565
+     ],
+     "seat": [
+      12.6,
+      0.9,
+      5.1565
+     ],
+     "facing": [
+      1,
+      0,
+      0
+     ]
+    },
+    {
+     "id": "metro-01.lp2",
+     "locator": "lp2",
+     "mount": [
+      12.3,
+      0,
+      5.6615
+     ],
+     "seat": [
+      12.6,
+      0.9,
+      5.6615
+     ],
+     "facing": [
+      1,
+      0,
+      0
+     ]
+    }
+   ],
+   "signalTowerMount": [
+    12.15,
+    2.3,
+    6.459
+   ],
+   "accent": "accent-metrology",
+   "scheduled": true,
+   "variant": "column"
+  },
+  {
+   "id": "metro-02",
+   "type": "metrology-inspection-tool",
+   "entity": "tool:metrology",
+   "group": "metrology",
+   "bay": "S4",
+   "side": "west",
+   "position": [
+    10.8,
+    0,
+    8.13
+   ],
+   "yaw": 0,
+   "size": [
+    3.022,
+    2.3,
+    2.421
+   ],
+   "bounds": {
+    "min": [
+     -1.508,
+     0,
+     -1.209
+    ],
+    "max": [
+     1.514,
+     2.3,
+     1.212
+    ]
+   },
+   "footprint": {
+    "min": [
+     9.292,
+     0,
+     6.921
+    ],
+    "max": [
+     12.314,
+     2.3,
+     9.342
+    ]
+   },
+   "keepOut": [],
+   "ports": [
+    {
+     "id": "metro-02.lp1",
+     "locator": "lp1",
+     "mount": [
+      12.3,
+      0,
+      7.8775
+     ],
+     "seat": [
+      12.6,
+      0.9,
+      7.8775
+     ],
+     "facing": [
+      1,
+      0,
+      0
+     ]
+    },
+    {
+     "id": "metro-02.lp2",
+     "locator": "lp2",
+     "mount": [
+      12.3,
+      0,
+      8.3825
+     ],
+     "seat": [
+      12.6,
+      0.9,
+      8.3825
+     ],
+     "facing": [
+      1,
+      0,
+      0
+     ]
+    }
+   ],
+   "signalTowerMount": [
+    12.15,
+    2.3,
+    9.18
+   ],
+   "accent": "accent-metrology",
+   "scheduled": true,
+   "variant": "opticalHead"
+  },
+  {
+   "id": "metro-03",
+   "type": "metrology-inspection-tool",
+   "entity": "tool:metrology",
+   "group": "metrology",
+   "bay": "S4",
+   "side": "east",
+   "position": [
+    18,
+    0,
+    5.412
+   ],
+   "yaw": 180,
+   "size": [
+    3.022,
+    2.3,
+    2.421
+   ],
+   "bounds": {
+    "min": [
+     -1.508,
+     0,
+     -1.209
+    ],
+    "max": [
+     1.514,
+     2.3,
+     1.212
+    ]
+   },
+   "footprint": {
+    "min": [
+     16.486,
+     0,
+     4.2
+    ],
+    "max": [
+     19.508,
+     2.3,
+     6.621
+    ]
+   },
+   "keepOut": [],
+   "ports": [
+    {
+     "id": "metro-03.lp1",
+     "locator": "lp1",
+     "mount": [
+      16.5,
+      0,
+      5.6645
+     ],
+     "seat": [
+      16.2,
+      0.9,
+      5.6645
+     ],
+     "facing": [
+      -1,
+      0,
+      0
+     ]
+    },
+    {
+     "id": "metro-03.lp2",
+     "locator": "lp2",
+     "mount": [
+      16.5,
+      0,
+      5.1595
+     ],
+     "seat": [
+      16.2,
+      0.9,
+      5.1595
+     ],
+     "facing": [
+      -1,
+      0,
+      0
+     ]
+    }
+   ],
+   "signalTowerMount": [
+    16.65,
+    2.3,
+    4.362
+   ],
+   "accent": "accent-metrology",
+   "scheduled": true,
+   "variant": "column"
+  },
+  {
+   "id": "metro-04",
+   "type": "metrology-inspection-tool",
+   "entity": "tool:metrology",
+   "group": "metrology",
+   "bay": "S4",
+   "side": "east",
+   "position": [
+    18,
+    0,
+    8.133
+   ],
+   "yaw": 180,
+   "size": [
+    3.022,
+    2.3,
+    2.421
+   ],
+   "bounds": {
+    "min": [
+     -1.508,
+     0,
+     -1.209
+    ],
+    "max": [
+     1.514,
+     2.3,
+     1.212
+    ]
+   },
+   "footprint": {
+    "min": [
+     16.486,
+     0,
+     6.921
+    ],
+    "max": [
+     19.508,
+     2.3,
+     9.342
+    ]
+   },
+   "keepOut": [],
+   "ports": [
+    {
+     "id": "metro-04.lp1",
+     "locator": "lp1",
+     "mount": [
+      16.5,
+      0,
+      8.3855
+     ],
+     "seat": [
+      16.2,
+      0.9,
+      8.3855
+     ],
+     "facing": [
+      -1,
+      0,
+      0
+     ]
+    },
+    {
+     "id": "metro-04.lp2",
+     "locator": "lp2",
+     "mount": [
+      16.5,
+      0,
+      7.8805
+     ],
+     "seat": [
+      16.2,
+      0.9,
+      7.8805
+     ],
+     "facing": [
+      -1,
+      0,
+      0
+     ]
+    }
+   ],
+   "signalTowerMount": [
+    16.65,
+    2.3,
+    7.083
+   ],
+   "accent": "accent-metrology",
+   "scheduled": true,
+   "variant": "opticalHead"
+  },
+  {
+   "id": "probe-01",
+   "type": "wafer-prober-tester",
+   "entity": "tool:prober",
+   "group": "probe",
+   "bay": "S5",
+   "side": "west",
+   "position": [
+    24.9,
+    0,
+    5.506
+   ],
+   "yaw": 0,
+   "size": [
+    3.612,
+    2.004,
+    2.616
+   ],
+   "bounds": {
+    "min": [
+     -1.803,
+     0,
+     -1.306
+    ],
+    "max": [
+     1.809,
+     2.004,
+     1.31
+    ]
+   },
+   "footprint": {
+    "min": [
+     23.097,
+     0,
+     4.2
+    ],
+    "max": [
+     26.709,
+     2.004,
+     6.816
+    ]
+   },
+   "keepOut": [
+    {
+     "why": "HeadOpen sweep",
+     "min": [
+      24.7985,
+      2.004,
+      4.9781
+     ],
+     "max": [
+      26.029,
+      3.358,
+      6.686
+     ]
+    },
+    {
+     "why": "review: 3.4 m headroom over the head",
+     "min": [
+      24.7985,
+      2.004,
+      4.9781
+     ],
+     "max": [
+      26.029,
+      3.4,
+      6.686
+     ]
+    }
+   ],
+   "ports": [
+    {
+     "id": "probe-01.lp1",
+     "locator": "lp1",
+     "mount": [
+      26.7,
+      0,
+      5.506
+     ],
+     "seat": [
+      27,
+      0.9,
+      5.506
+     ],
+     "facing": [
+      1,
+      0,
+      0
+     ]
+    }
+   ],
+   "signalTowerMount": [
+    26.5,
+    1.3,
+    6.606
+   ],
+   "accent": "accent-test",
+   "scheduled": true
+  },
+  {
+   "id": "probe-02",
+   "type": "wafer-prober-tester",
+   "entity": "tool:prober",
+   "group": "probe",
+   "bay": "S5",
+   "side": "west",
+   "position": [
+    24.9,
+    0,
+    8.422
+   ],
+   "yaw": 0,
+   "size": [
+    3.612,
+    2.004,
+    2.616
+   ],
+   "bounds": {
+    "min": [
+     -1.803,
+     0,
+     -1.306
+    ],
+    "max": [
+     1.809,
+     2.004,
+     1.31
+    ]
+   },
+   "footprint": {
+    "min": [
+     23.097,
+     0,
+     7.116
+    ],
+    "max": [
+     26.709,
+     2.004,
+     9.732
+    ]
+   },
+   "keepOut": [
+    {
+     "why": "HeadOpen sweep",
+     "min": [
+      24.7985,
+      2.004,
+      7.8941
+     ],
+     "max": [
+      26.029,
+      3.358,
+      9.602
+     ]
+    },
+    {
+     "why": "review: 3.4 m headroom over the head",
+     "min": [
+      24.7985,
+      2.004,
+      7.8941
+     ],
+     "max": [
+      26.029,
+      3.4,
+      9.602
+     ]
+    }
+   ],
+   "ports": [
+    {
+     "id": "probe-02.lp1",
+     "locator": "lp1",
+     "mount": [
+      26.7,
+      0,
+      8.422
+     ],
+     "seat": [
+      27,
+      0.9,
+      8.422
+     ],
+     "facing": [
+      1,
+      0,
+      0
+     ]
+    }
+   ],
+   "signalTowerMount": [
+    26.5,
+    1.3,
+    9.522
+   ],
+   "accent": "accent-test",
+   "scheduled": true
+  },
+  {
+   "id": "probe-03",
+   "type": "wafer-prober-tester",
+   "entity": "tool:prober",
+   "group": "probe",
+   "bay": "S5",
+   "side": "east",
+   "position": [
+    32.7,
+    0,
+    5.51
+   ],
+   "yaw": 180,
+   "size": [
+    3.612,
+    2.004,
+    2.616
+   ],
+   "bounds": {
+    "min": [
+     -1.803,
+     0,
+     -1.306
+    ],
+    "max": [
+     1.809,
+     2.004,
+     1.31
+    ]
+   },
+   "footprint": {
+    "min": [
+     30.891,
+     0,
+     4.2
+    ],
+    "max": [
+     34.503,
+     2.004,
+     6.816
+    ]
+   },
+   "keepOut": [
+    {
+     "why": "HeadOpen sweep",
+     "min": [
+      31.571,
+      2.004,
+      4.33
+     ],
+     "max": [
+      32.8015,
+      3.358,
+      6.0379
+     ]
+    },
+    {
+     "why": "review: 3.4 m headroom over the head",
+     "min": [
+      31.571,
+      2.004,
+      4.33
+     ],
+     "max": [
+      32.8015,
+      3.4,
+      6.0379
+     ]
+    }
+   ],
+   "ports": [
+    {
+     "id": "probe-03.lp1",
+     "locator": "lp1",
+     "mount": [
+      30.9,
+      0,
+      5.51
+     ],
+     "seat": [
+      30.6,
+      0.9,
+      5.51
+     ],
+     "facing": [
+      -1,
+      0,
+      0
+     ]
+    }
+   ],
+   "signalTowerMount": [
+    31.1,
+    1.3,
+    4.41
+   ],
+   "accent": "accent-test",
+   "scheduled": true
+  },
+  {
+   "id": "probe-04",
+   "type": "wafer-prober-tester",
+   "entity": "tool:prober",
+   "group": "probe",
+   "bay": "S5",
+   "side": "east",
+   "position": [
+    32.7,
+    0,
+    10.41
+   ],
+   "yaw": 180,
+   "size": [
+    3.612,
+    2.004,
+    2.616
+   ],
+   "bounds": {
+    "min": [
+     -1.803,
+     0,
+     -1.306
+    ],
+    "max": [
+     1.809,
+     2.004,
+     1.31
+    ]
+   },
+   "footprint": {
+    "min": [
+     30.891,
+     0,
+     9.1
+    ],
+    "max": [
+     34.503,
+     2.004,
+     11.716
+    ]
+   },
+   "keepOut": [
+    {
+     "why": "HeadOpen sweep",
+     "min": [
+      31.571,
+      2.004,
+      9.23
+     ],
+     "max": [
+      32.8015,
+      3.358,
+      10.9379
+     ]
+    },
+    {
+     "why": "review: 3.4 m headroom over the head",
+     "min": [
+      31.571,
+      2.004,
+      9.23
+     ],
+     "max": [
+      32.8015,
+      3.4,
+      10.9379
+     ]
+    }
+   ],
+   "ports": [
+    {
+     "id": "probe-04.lp1",
+     "locator": "lp1",
+     "mount": [
+      30.9,
+      0,
+      10.41
+     ],
+     "seat": [
+      30.6,
+      0.9,
+      10.41
+     ],
+     "facing": [
+      -1,
+      0,
+      0
+     ]
+    }
+   ],
+   "signalTowerMount": [
+    31.1,
+    1.3,
+    9.31
+   ],
+   "accent": "accent-test",
+   "scheduled": true
+  },
+  {
+   "id": "track-duv-1",
+   "type": "coater-developer-track",
+   "entity": "tool:track",
+   "group": "duv",
+   "bay": "N2",
+   "side": "north",
+   "position": [
+    -18,
+    0,
+    -6.1
+   ],
+   "yaw": -90,
+   "size": [
+    8,
+    2.6,
+    3.2
+   ],
+   "bounds": {
+    "min": [
+     -4,
+     0,
+     -1.6
+    ],
+    "max": [
+     4,
+     2.6,
+     1.6
+    ]
+   },
+   "footprint": {
+    "min": [
+     -19.6,
+     0,
+     -10.1
+    ],
+    "max": [
+     -16.4,
+     2.6,
+     -2.1
+    ]
+   },
+   "keepOut": [],
+   "ports": [
+    {
+     "id": "track-duv-1.lp1",
+     "locator": "lp1",
+     "mount": [
+      -17.2425,
+      0,
+      -2.1
+     ],
+     "seat": [
+      -17.2425,
+      0.9,
+      -1.8
+     ],
+     "facing": [
+      0,
+      0,
+      1
+     ]
+    },
+    {
+     "id": "track-duv-1.lp2",
+     "locator": "lp2",
+     "mount": [
+      -17.7475,
+      0,
+      -2.1
+     ],
+     "seat": [
+      -17.7475,
+      0.9,
+      -1.8
+     ],
+     "facing": [
+      0,
+      0,
+      1
+     ]
+    },
+    {
+     "id": "track-duv-1.lp3",
+     "locator": "lp3",
+     "mount": [
+      -18.2525,
+      0,
+      -2.1
+     ],
+     "seat": [
+      -18.2525,
+      0.9,
+      -1.8
+     ],
+     "facing": [
+      0,
+      0,
+      1
+     ]
+    },
+    {
+     "id": "track-duv-1.lp4",
+     "locator": "lp4",
+     "mount": [
+      -18.7575,
+      0,
+      -2.1
+     ],
+     "seat": [
+      -18.7575,
+      0.9,
+      -1.8
+     ],
+     "facing": [
+      0,
+      0,
+      1
+     ]
+    }
+   ],
+   "signalTowerMount": [
+    -19.45,
+    2.6,
+    -2.3
+   ],
+   "accent": "accent-litho",
+   "scheduled": true,
+   "cell": "cell-duv-1",
+   "interface": {
+    "name": "scannerInterface",
+    "position": [
+     -18,
+     0,
+     -10.1
+    ]
+   }
+  },
+  {
+   "id": "track-duv-2",
+   "type": "coater-developer-track",
+   "entity": "tool:track",
+   "group": "duv",
+   "bay": "N2",
+   "side": "north",
+   "position": [
+    -10.88,
+    0,
+    -6.1
+   ],
+   "yaw": -90,
+   "size": [
+    8,
+    2.6,
+    3.2
+   ],
+   "bounds": {
+    "min": [
+     -4,
+     0,
+     -1.6
+    ],
+    "max": [
+     4,
+     2.6,
+     1.6
+    ]
+   },
+   "footprint": {
+    "min": [
+     -12.48,
+     0,
+     -10.1
+    ],
+    "max": [
+     -9.28,
+     2.6,
+     -2.1
+    ]
+   },
+   "keepOut": [],
+   "ports": [
+    {
+     "id": "track-duv-2.lp1",
+     "locator": "lp1",
+     "mount": [
+      -10.1225,
+      0,
+      -2.1
+     ],
+     "seat": [
+      -10.1225,
+      0.9,
+      -1.8
+     ],
+     "facing": [
+      0,
+      0,
+      1
+     ]
+    },
+    {
+     "id": "track-duv-2.lp2",
+     "locator": "lp2",
+     "mount": [
+      -10.6275,
+      0,
+      -2.1
+     ],
+     "seat": [
+      -10.6275,
+      0.9,
+      -1.8
+     ],
+     "facing": [
+      0,
+      0,
+      1
+     ]
+    },
+    {
+     "id": "track-duv-2.lp3",
+     "locator": "lp3",
+     "mount": [
+      -11.1325,
+      0,
+      -2.1
+     ],
+     "seat": [
+      -11.1325,
+      0.9,
+      -1.8
+     ],
+     "facing": [
+      0,
+      0,
+      1
+     ]
+    },
+    {
+     "id": "track-duv-2.lp4",
+     "locator": "lp4",
+     "mount": [
+      -11.6375,
+      0,
+      -2.1
+     ],
+     "seat": [
+      -11.6375,
+      0.9,
+      -1.8
+     ],
+     "facing": [
+      0,
+      0,
+      1
+     ]
+    }
+   ],
+   "signalTowerMount": [
+    -12.33,
+    2.6,
+    -2.3
+   ],
+   "accent": "accent-litho",
+   "scheduled": true,
+   "cell": "cell-duv-2",
+   "interface": {
+    "name": "scannerInterface",
+    "position": [
+     -10.88,
+     0,
+     -10.1
+    ]
+   }
+  },
+  {
+   "id": "track-euv-1",
+   "type": "coater-developer-track",
+   "entity": "tool:track",
+   "group": "euv",
+   "bay": "N3",
+   "side": "north",
+   "position": [
+    -3.87,
+    0,
+    -6.1
+   ],
+   "yaw": -90,
+   "size": [
+    8,
+    2.6,
+    3.2
+   ],
+   "bounds": {
+    "min": [
+     -4,
+     0,
+     -1.6
+    ],
+    "max": [
+     4,
+     2.6,
+     1.6
+    ]
+   },
+   "footprint": {
+    "min": [
+     -5.47,
+     0,
+     -10.1
+    ],
+    "max": [
+     -2.27,
+     2.6,
+     -2.1
+    ]
+   },
+   "keepOut": [],
+   "ports": [
+    {
+     "id": "track-euv-1.lp1",
+     "locator": "lp1",
+     "mount": [
+      -3.1125,
+      0,
+      -2.1
+     ],
+     "seat": [
+      -3.1125,
+      0.9,
+      -1.8
+     ],
+     "facing": [
+      0,
+      0,
+      1
+     ]
+    },
+    {
+     "id": "track-euv-1.lp2",
+     "locator": "lp2",
+     "mount": [
+      -3.6175,
+      0,
+      -2.1
+     ],
+     "seat": [
+      -3.6175,
+      0.9,
+      -1.8
+     ],
+     "facing": [
+      0,
+      0,
+      1
+     ]
+    },
+    {
+     "id": "track-euv-1.lp3",
+     "locator": "lp3",
+     "mount": [
+      -4.1225,
+      0,
+      -2.1
+     ],
+     "seat": [
+      -4.1225,
+      0.9,
+      -1.8
+     ],
+     "facing": [
+      0,
+      0,
+      1
+     ]
+    },
+    {
+     "id": "track-euv-1.lp4",
+     "locator": "lp4",
+     "mount": [
+      -4.6275,
+      0,
+      -2.1
+     ],
+     "seat": [
+      -4.6275,
+      0.9,
+      -1.8
+     ],
+     "facing": [
+      0,
+      0,
+      1
+     ]
+    }
+   ],
+   "signalTowerMount": [
+    -5.32,
+    2.6,
+    -2.3
+   ],
+   "accent": "accent-litho",
+   "scheduled": true,
+   "cell": "cell-euv-1",
+   "interface": {
+    "name": "scannerInterface",
+    "position": [
+     -3.87,
+     0,
+     -10.1
+    ]
+   }
+  },
+  {
+   "id": "track-euv-2",
+   "type": "coater-developer-track",
+   "entity": "tool:track",
+   "group": "euv",
+   "bay": "N3",
+   "side": "north",
+   "position": [
+    3.44,
+    0,
+    -6.1
+   ],
+   "yaw": -90,
+   "size": [
+    8,
+    2.6,
+    3.2
+   ],
+   "bounds": {
+    "min": [
+     -4,
+     0,
+     -1.6
+    ],
+    "max": [
+     4,
+     2.6,
+     1.6
+    ]
+   },
+   "footprint": {
+    "min": [
+     1.84,
+     0,
+     -10.1
+    ],
+    "max": [
+     5.04,
+     2.6,
+     -2.1
+    ]
+   },
+   "keepOut": [],
+   "ports": [
+    {
+     "id": "track-euv-2.lp1",
+     "locator": "lp1",
+     "mount": [
+      4.1975,
+      0,
+      -2.1
+     ],
+     "seat": [
+      4.1975,
+      0.9,
+      -1.8
+     ],
+     "facing": [
+      0,
+      0,
+      1
+     ]
+    },
+    {
+     "id": "track-euv-2.lp2",
+     "locator": "lp2",
+     "mount": [
+      3.6925,
+      0,
+      -2.1
+     ],
+     "seat": [
+      3.6925,
+      0.9,
+      -1.8
+     ],
+     "facing": [
+      0,
+      0,
+      1
+     ]
+    },
+    {
+     "id": "track-euv-2.lp3",
+     "locator": "lp3",
+     "mount": [
+      3.1875,
+      0,
+      -2.1
+     ],
+     "seat": [
+      3.1875,
+      0.9,
+      -1.8
+     ],
+     "facing": [
+      0,
+      0,
+      1
+     ]
+    },
+    {
+     "id": "track-euv-2.lp4",
+     "locator": "lp4",
+     "mount": [
+      2.6825,
+      0,
+      -2.1
+     ],
+     "seat": [
+      2.6825,
+      0.9,
+      -1.8
+     ],
+     "facing": [
+      0,
+      0,
+      1
+     ]
+    }
+   ],
+   "signalTowerMount": [
+    1.99,
+    2.6,
+    -2.3
+   ],
+   "accent": "accent-litho",
+   "scheduled": true,
+   "cell": "cell-euv-2",
+   "interface": {
+    "name": "scannerInterface",
+    "position": [
+     3.44,
+     0,
+     -10.1
+    ]
+   }
+  },
+  {
+   "id": "scanner-duv-1",
+   "type": "duv-immersion-scanner",
+   "entity": "tool:duv-scanner",
+   "group": "duv",
+   "bay": "N2",
+   "side": "north",
+   "position": [
+    -18,
+    0,
+    -12.85
+   ],
+   "yaw": -90,
+   "size": [
+    5.5,
+    3,
+    3.2
+   ],
+   "bounds": {
+    "min": [
+     -2.75,
+     0,
+     -1.6
+    ],
+    "max": [
+     2.75,
+     3,
+     1.6
+    ]
+   },
+   "footprint": {
+    "min": [
+     -19.6,
+     0,
+     -15.6
+    ],
+    "max": [
+     -16.4,
+     3,
+     -10.1
+    ]
+   },
+   "keepOut": [
+    {
+     "why": "ServiceOpen sweep",
+     "min": [
+      -21.301,
+      0.3,
+      -13.9952
+     ],
+     "max": [
+      -19.6,
+      2.45,
+      -11.9989
+     ]
+    },
+    {
+     "why": "ServiceOpen sweep",
+     "min": [
+      -16.4,
+      0.3,
+      -13.9952
+     ],
+     "max": [
+      -14.699,
+      2.45,
+      -11.9989
+     ]
+    }
+   ],
+   "ports": [],
+   "signalTowerMount": [
+    -19.45,
+    2.4,
+    -10.25
+   ],
+   "accent": "accent-litho",
+   "scheduled": true,
+   "cell": "cell-duv-1",
+   "interface": {
+    "name": "trackInterface",
+    "position": [
+     -18,
+     0,
+     -10.1
+    ]
+   }
+  },
+  {
+   "id": "scanner-duv-2",
+   "type": "duv-immersion-scanner",
+   "entity": "tool:duv-scanner",
+   "group": "duv",
+   "bay": "N2",
+   "side": "north",
+   "position": [
+    -10.88,
+    0,
+    -12.85
+   ],
+   "yaw": -90,
+   "size": [
+    5.5,
+    3,
+    3.2
+   ],
+   "bounds": {
+    "min": [
+     -2.75,
+     0,
+     -1.6
+    ],
+    "max": [
+     2.75,
+     3,
+     1.6
+    ]
+   },
+   "footprint": {
+    "min": [
+     -12.48,
+     0,
+     -15.6
+    ],
+    "max": [
+     -9.28,
+     3,
+     -10.1
+    ]
+   },
+   "keepOut": [
+    {
+     "why": "ServiceOpen sweep",
+     "min": [
+      -14.181,
+      0.3,
+      -13.9952
+     ],
+     "max": [
+      -12.48,
+      2.45,
+      -11.9989
+     ]
+    },
+    {
+     "why": "ServiceOpen sweep",
+     "min": [
+      -9.28,
+      0.3,
+      -13.9952
+     ],
+     "max": [
+      -7.579,
+      2.45,
+      -11.9989
+     ]
+    }
+   ],
+   "ports": [],
+   "signalTowerMount": [
+    -12.33,
+    2.4,
+    -10.25
+   ],
+   "accent": "accent-litho",
+   "scheduled": true,
+   "cell": "cell-duv-2",
+   "interface": {
+    "name": "trackInterface",
+    "position": [
+     -10.88,
+     0,
+     -10.1
+    ]
+   }
+  },
+  {
+   "id": "scanner-euv-1",
+   "type": "euv-scanner",
+   "entity": "tool:euv-scanner",
+   "group": "euv",
+   "bay": "N3",
+   "side": "north",
+   "position": [
+    -3.87,
+    0,
+    -17.1
+   ],
+   "yaw": -90,
+   "size": [
+    14,
+    4,
+    4
+   ],
+   "bounds": {
+    "min": [
+     -7,
+     0,
+     -2
+    ],
+    "max": [
+     7,
+     4,
+     2
+    ]
+   },
+   "footprint": {
+    "min": [
+     -5.87,
+     0,
+     -24.1
+    ],
+    "max": [
+     -1.87,
+     4,
+     -10.1
+    ]
+   },
+   "keepOut": [
+    {
+     "why": "ServiceOpen sweep",
+     "min": [
+      -7.4711,
+      0.3,
+      -15.6778
+     ],
+     "max": [
+      -5.87,
+      2.7,
+      -13.7989
+     ]
+    },
+    {
+     "why": "ServiceOpen sweep",
+     "min": [
+      -1.87,
+      0.3,
+      -15.6778
+     ],
+     "max": [
+      -0.2689,
+      2.7,
+      -13.7989
+     ]
+    }
+   ],
+   "ports": [],
+   "signalTowerMount": [
+    -5.67,
+    2.4,
+    -10.3
+   ],
+   "accent": "accent-litho",
+   "scheduled": true,
+   "cell": "cell-euv-1",
+   "interface": {
+    "name": "trackInterface",
+    "position": [
+     -3.87,
+     0,
+     -10.1
+    ]
+   }
+  },
+  {
+   "id": "scanner-euv-2",
+   "type": "euv-scanner",
+   "entity": "tool:euv-scanner",
+   "group": "euv",
+   "bay": "N3",
+   "side": "north",
+   "position": [
+    3.44,
+    0,
+    -17.1
+   ],
+   "yaw": -90,
+   "size": [
+    14,
+    4,
+    4
+   ],
+   "bounds": {
+    "min": [
+     -7,
+     0,
+     -2
+    ],
+    "max": [
+     7,
+     4,
+     2
+    ]
+   },
+   "footprint": {
+    "min": [
+     1.44,
+     0,
+     -24.1
+    ],
+    "max": [
+     5.44,
+     4,
+     -10.1
+    ]
+   },
+   "keepOut": [
+    {
+     "why": "ServiceOpen sweep",
+     "min": [
+      -0.1611,
+      0.3,
+      -15.6778
+     ],
+     "max": [
+      1.44,
+      2.7,
+      -13.7989
+     ]
+    },
+    {
+     "why": "ServiceOpen sweep",
+     "min": [
+      5.44,
+      0.3,
+      -15.6778
+     ],
+     "max": [
+      7.0411,
+      2.7,
+      -13.7989
+     ]
+    }
+   ],
+   "ports": [],
+   "signalTowerMount": [
+    1.64,
+    2.4,
+    -10.3
+   ],
+   "accent": "accent-litho",
+   "scheduled": true,
+   "cell": "cell-euv-2",
+   "interface": {
+    "name": "trackInterface",
+    "position": [
+     3.44,
+     0,
+     -10.1
+    ]
+   }
+  }
+ ],
+ "stockers": [
+  {
+   "id": "stocker-w",
+   "position": [
+    -3.9,
+    0,
+    10.2
+   ],
+   "yaw": 0,
+   "entity": "stocker",
+   "size": [
+    3.75,
+    5.4,
+    12
+   ],
+   "footprint": {
+    "min": [
+     -5.4,
+     0,
+     4.2
+    ],
+    "max": [
+     -1.65,
+     5.4,
+     16.2
+    ]
+   },
+   "facing": [
+    1,
+    0,
+    0
+   ],
+   "ports": [
+    {
+     "id": "stocker-w.port1",
+     "locator": "port1",
+     "seat": [
+      -1.8,
+      0.9,
+      5.4
+     ],
+     "innerSeat": [
+      -2.95,
+      0.9,
+      5.4
+     ]
+    },
+    {
+     "id": "stocker-w.port2",
+     "locator": "port2",
+     "seat": [
+      -1.8,
+      0.9,
+      6.6
+     ],
+     "innerSeat": [
+      -2.95,
+      0.9,
+      6.6
+     ]
+    },
+    {
+     "id": "stocker-w.port3",
+     "locator": "port3",
+     "seat": [
+      -1.8,
+      0.9,
+      13.8
+     ],
+     "innerSeat": [
+      -2.95,
+      0.9,
+      13.8
+     ]
+    },
+    {
+     "id": "stocker-w.port4",
+     "locator": "port4",
+     "seat": [
+      -1.8,
+      0.9,
+      15
+     ],
+     "innerSeat": [
+      -2.95,
+      0.9,
+      15
+     ]
+    }
+   ],
+   "manualPort": {
+    "id": "stocker-w.manual",
+    "locator": "manualPortSeat",
+    "seat": [
+     -2.3,
+     0.9,
+     10.2
+    ],
+    "innerSeat": [
+     -2.95,
+     0.9,
+     10.2
+    ]
+   },
+   "signalTowerMount": [
+    -2.5,
+    5.4,
+    15.8
+   ]
+  },
+  {
+   "id": "stocker-e",
+   "position": [
+    3.9,
+    0,
+    10.2
+   ],
+   "yaw": 180,
+   "entity": "stocker",
+   "size": [
+    3.75,
+    5.4,
+    12
+   ],
+   "footprint": {
+    "min": [
+     1.65,
+     0,
+     4.2
+    ],
+    "max": [
+     5.4,
+     5.4,
+     16.2
+    ]
+   },
+   "facing": [
+    -1,
+    0,
+    0
+   ],
+   "ports": [
+    {
+     "id": "stocker-e.port1",
+     "locator": "port1",
+     "seat": [
+      1.8,
+      0.9,
+      15
+     ],
+     "innerSeat": [
+      2.95,
+      0.9,
+      15
+     ]
+    },
+    {
+     "id": "stocker-e.port2",
+     "locator": "port2",
+     "seat": [
+      1.8,
+      0.9,
+      13.8
+     ],
+     "innerSeat": [
+      2.95,
+      0.9,
+      13.8
+     ]
+    },
+    {
+     "id": "stocker-e.port3",
+     "locator": "port3",
+     "seat": [
+      1.8,
+      0.9,
+      6.6
+     ],
+     "innerSeat": [
+      2.95,
+      0.9,
+      6.6
+     ]
+    },
+    {
+     "id": "stocker-e.port4",
+     "locator": "port4",
+     "seat": [
+      1.8,
+      0.9,
+      5.4
+     ],
+     "innerSeat": [
+      2.95,
+      0.9,
+      5.4
+     ]
+    }
+   ],
+   "manualPort": {
+    "id": "stocker-e.manual",
+    "locator": "manualPortSeat",
+    "seat": [
+     2.3,
+     0.9,
+     10.2
+    ],
+    "innerSeat": [
+     2.95,
+     0.9,
+     10.2
+    ]
+   },
+   "signalTowerMount": [
+    2.5,
+    5.4,
+    4.6
+   ]
+  }
+ ],
+ "uts": [
+  {
+   "id": "uts-n01",
+   "rail": "north",
+   "position": [
+    9.9,
+    3.2,
+    -1.8
+   ],
+   "entity": "uts",
+   "yaw": 0,
+   "size": [
+    1.2,
+    2.88,
+    0.95
+   ],
+   "seats": [
+    {
+     "id": "uts-n01.a",
+     "locator": "seatA",
+     "seat": [
+      9.6,
+      3.2,
+      -1.8
+     ]
+    },
+    {
+     "id": "uts-n01.b",
+     "locator": "seatB",
+     "seat": [
+      10.2,
+      3.2,
+      -1.8
+     ]
+    }
+   ]
+  },
+  {
+   "id": "uts-n02",
+   "rail": "north",
+   "position": [
+    8.5,
+    3.2,
+    -1.8
+   ],
+   "entity": "uts",
+   "yaw": 0,
+   "size": [
+    1.2,
+    2.88,
+    0.95
+   ],
+   "seats": [
+    {
+     "id": "uts-n02.a",
+     "locator": "seatA",
+     "seat": [
+      8.2,
+      3.2,
+      -1.8
+     ]
+    },
+    {
+     "id": "uts-n02.b",
+     "locator": "seatB",
+     "seat": [
+      8.8,
+      3.2,
+      -1.8
+     ]
+    }
+   ]
+  },
+  {
+   "id": "uts-n03",
+   "rail": "north",
+   "position": [
+    7.1,
+    3.2,
+    -1.8
+   ],
+   "entity": "uts",
+   "yaw": 0,
+   "size": [
+    1.2,
+    2.88,
+    0.95
+   ],
+   "seats": [
+    {
+     "id": "uts-n03.a",
+     "locator": "seatA",
+     "seat": [
+      6.8,
+      3.2,
+      -1.8
+     ]
+    },
+    {
+     "id": "uts-n03.b",
+     "locator": "seatB",
+     "seat": [
+      7.4,
+      3.2,
+      -1.8
+     ]
+    }
+   ]
+  },
+  {
+   "id": "uts-n04",
+   "rail": "north",
+   "position": [
+    5.7,
+    3.2,
+    -1.8
+   ],
+   "entity": "uts",
+   "yaw": 0,
+   "size": [
+    1.2,
+    2.88,
+    0.95
+   ],
+   "seats": [
+    {
+     "id": "uts-n04.a",
+     "locator": "seatA",
+     "seat": [
+      5.4,
+      3.2,
+      -1.8
+     ]
+    },
+    {
+     "id": "uts-n04.b",
+     "locator": "seatB",
+     "seat": [
+      6,
+      3.2,
+      -1.8
+     ]
+    }
+   ]
+  },
+  {
+   "id": "uts-n05",
+   "rail": "north",
+   "position": [
+    0.75,
+    3.2,
+    -1.8
+   ],
+   "entity": "uts",
+   "yaw": 0,
+   "size": [
+    1.2,
+    2.88,
+    0.95
+   ],
+   "seats": [
+    {
+     "id": "uts-n05.a",
+     "locator": "seatA",
+     "seat": [
+      0.45,
+      3.2,
+      -1.8
+     ]
+    },
+    {
+     "id": "uts-n05.b",
+     "locator": "seatB",
+     "seat": [
+      1.05,
+      3.2,
+      -1.8
+     ]
+    }
+   ]
+  },
+  {
+   "id": "uts-n06",
+   "rail": "north",
+   "position": [
+    -0.75,
+    3.2,
+    -1.8
+   ],
+   "entity": "uts",
+   "yaw": 0,
+   "size": [
+    1.2,
+    2.88,
+    0.95
+   ],
+   "seats": [
+    {
+     "id": "uts-n06.a",
+     "locator": "seatA",
+     "seat": [
+      -1.05,
+      3.2,
+      -1.8
+     ]
+    },
+    {
+     "id": "uts-n06.b",
+     "locator": "seatB",
+     "seat": [
+      -0.45,
+      3.2,
+      -1.8
+     ]
+    }
+   ]
+  },
+  {
+   "id": "uts-n07",
+   "rail": "north",
+   "position": [
+    -6.45,
+    3.2,
+    -1.8
+   ],
+   "entity": "uts",
+   "yaw": 0,
+   "size": [
+    1.2,
+    2.88,
+    0.95
+   ],
+   "seats": [
+    {
+     "id": "uts-n07.a",
+     "locator": "seatA",
+     "seat": [
+      -6.75,
+      3.2,
+      -1.8
+     ]
+    },
+    {
+     "id": "uts-n07.b",
+     "locator": "seatB",
+     "seat": [
+      -6.15,
+      3.2,
+      -1.8
+     ]
+    }
+   ]
+  },
+  {
+   "id": "uts-n08",
+   "rail": "north",
+   "position": [
+    -7.95,
+    3.2,
+    -1.8
+   ],
+   "entity": "uts",
+   "yaw": 0,
+   "size": [
+    1.2,
+    2.88,
+    0.95
+   ],
+   "seats": [
+    {
+     "id": "uts-n08.a",
+     "locator": "seatA",
+     "seat": [
+      -8.25,
+      3.2,
+      -1.8
+     ]
+    },
+    {
+     "id": "uts-n08.b",
+     "locator": "seatB",
+     "seat": [
+      -7.65,
+      3.2,
+      -1.8
+     ]
+    }
+   ]
+  },
+  {
+   "id": "uts-n09",
+   "rail": "north",
+   "position": [
+    -20.1,
+    3.2,
+    -1.8
+   ],
+   "entity": "uts",
+   "yaw": 0,
+   "size": [
+    1.2,
+    2.88,
+    0.95
+   ],
+   "seats": [
+    {
+     "id": "uts-n09.a",
+     "locator": "seatA",
+     "seat": [
+      -20.4,
+      3.2,
+      -1.8
+     ]
+    },
+    {
+     "id": "uts-n09.b",
+     "locator": "seatB",
+     "seat": [
+      -19.8,
+      3.2,
+      -1.8
+     ]
+    }
+   ]
+  },
+  {
+   "id": "uts-n10",
+   "rail": "north",
+   "position": [
+    -21.5,
+    3.2,
+    -1.8
+   ],
+   "entity": "uts",
+   "yaw": 0,
+   "size": [
+    1.2,
+    2.88,
+    0.95
+   ],
+   "seats": [
+    {
+     "id": "uts-n10.a",
+     "locator": "seatA",
+     "seat": [
+      -21.8,
+      3.2,
+      -1.8
+     ]
+    },
+    {
+     "id": "uts-n10.b",
+     "locator": "seatB",
+     "seat": [
+      -21.2,
+      3.2,
+      -1.8
+     ]
+    }
+   ]
+  },
+  {
+   "id": "uts-n11",
+   "rail": "north",
+   "position": [
+    -22.9,
+    3.2,
+    -1.8
+   ],
+   "entity": "uts",
+   "yaw": 0,
+   "size": [
+    1.2,
+    2.88,
+    0.95
+   ],
+   "seats": [
+    {
+     "id": "uts-n11.a",
+     "locator": "seatA",
+     "seat": [
+      -23.2,
+      3.2,
+      -1.8
+     ]
+    },
+    {
+     "id": "uts-n11.b",
+     "locator": "seatB",
+     "seat": [
+      -22.6,
+      3.2,
+      -1.8
+     ]
+    }
+   ]
+  },
+  {
+   "id": "uts-n12",
+   "rail": "north",
+   "position": [
+    -24.3,
+    3.2,
+    -1.8
+   ],
+   "entity": "uts",
+   "yaw": 0,
+   "size": [
+    1.2,
+    2.88,
+    0.95
+   ],
+   "seats": [
+    {
+     "id": "uts-n12.a",
+     "locator": "seatA",
+     "seat": [
+      -24.6,
+      3.2,
+      -1.8
+     ]
+    },
+    {
+     "id": "uts-n12.b",
+     "locator": "seatB",
+     "seat": [
+      -24,
+      3.2,
+      -1.8
+     ]
+    }
+   ]
+  },
+  {
+   "id": "uts-s01",
+   "rail": "south",
+   "position": [
+    -28.8,
+    3.2,
+    1.8
+   ],
+   "entity": "uts",
+   "yaw": 0,
+   "size": [
+    1.2,
+    2.88,
+    0.95
+   ],
+   "seats": [
+    {
+     "id": "uts-s01.a",
+     "locator": "seatA",
+     "seat": [
+      -29.1,
+      3.2,
+      1.8
+     ]
+    },
+    {
+     "id": "uts-s01.b",
+     "locator": "seatB",
+     "seat": [
+      -28.5,
+      3.2,
+      1.8
+     ]
+    }
+   ]
+  },
+  {
+   "id": "uts-s02",
+   "rail": "south",
+   "position": [
+    -23.85,
+    3.2,
+    1.8
+   ],
+   "entity": "uts",
+   "yaw": 0,
+   "size": [
+    1.2,
+    2.88,
+    0.95
+   ],
+   "seats": [
+    {
+     "id": "uts-s02.a",
+     "locator": "seatA",
+     "seat": [
+      -24.15,
+      3.2,
+      1.8
+     ]
+    },
+    {
+     "id": "uts-s02.b",
+     "locator": "seatB",
+     "seat": [
+      -23.55,
+      3.2,
+      1.8
+     ]
+    }
+   ]
+  },
+  {
+   "id": "uts-s03",
+   "rail": "south",
+   "position": [
+    -22.35,
+    3.2,
+    1.8
+   ],
+   "entity": "uts",
+   "yaw": 0,
+   "size": [
+    1.2,
+    2.88,
+    0.95
+   ],
+   "seats": [
+    {
+     "id": "uts-s03.a",
+     "locator": "seatA",
+     "seat": [
+      -22.65,
+      3.2,
+      1.8
+     ]
+    },
+    {
+     "id": "uts-s03.b",
+     "locator": "seatB",
+     "seat": [
+      -22.05,
+      3.2,
+      1.8
+     ]
+    }
+   ]
+  },
+  {
+   "id": "uts-s04",
+   "rail": "south",
+   "position": [
+    -20.85,
+    3.2,
+    1.8
+   ],
+   "entity": "uts",
+   "yaw": 0,
+   "size": [
+    1.2,
+    2.88,
+    0.95
+   ],
+   "seats": [
+    {
+     "id": "uts-s04.a",
+     "locator": "seatA",
+     "seat": [
+      -21.15,
+      3.2,
+      1.8
+     ]
+    },
+    {
+     "id": "uts-s04.b",
+     "locator": "seatB",
+     "seat": [
+      -20.55,
+      3.2,
+      1.8
+     ]
+    }
+   ]
+  },
+  {
+   "id": "uts-s05",
+   "rail": "south",
+   "position": [
+    -19.35,
+    3.2,
+    1.8
+   ],
+   "entity": "uts",
+   "yaw": 0,
+   "size": [
+    1.2,
+    2.88,
+    0.95
+   ],
+   "seats": [
+    {
+     "id": "uts-s05.a",
+     "locator": "seatA",
+     "seat": [
+      -19.65,
+      3.2,
+      1.8
+     ]
+    },
+    {
+     "id": "uts-s05.b",
+     "locator": "seatB",
+     "seat": [
+      -19.05,
+      3.2,
+      1.8
+     ]
+    }
+   ]
+  },
+  {
+   "id": "uts-s06",
+   "rail": "south",
+   "position": [
+    -14.4,
+    3.2,
+    1.8
+   ],
+   "entity": "uts",
+   "yaw": 0,
+   "size": [
+    1.2,
+    2.88,
+    0.95
+   ],
+   "seats": [
+    {
+     "id": "uts-s06.a",
+     "locator": "seatA",
+     "seat": [
+      -14.7,
+      3.2,
+      1.8
+     ]
+    },
+    {
+     "id": "uts-s06.b",
+     "locator": "seatB",
+     "seat": [
+      -14.1,
+      3.2,
+      1.8
+     ]
+    }
+   ]
+  },
+  {
+   "id": "uts-s07",
+   "rail": "south",
+   "position": [
+    -9.45,
+    3.2,
+    1.8
+   ],
+   "entity": "uts",
+   "yaw": 0,
+   "size": [
+    1.2,
+    2.88,
+    0.95
+   ],
+   "seats": [
+    {
+     "id": "uts-s07.a",
+     "locator": "seatA",
+     "seat": [
+      -9.75,
+      3.2,
+      1.8
+     ]
+    },
+    {
+     "id": "uts-s07.b",
+     "locator": "seatB",
+     "seat": [
+      -9.15,
+      3.2,
+      1.8
+     ]
+    }
+   ]
+  },
+  {
+   "id": "uts-s08",
+   "rail": "south",
+   "position": [
+    -7.95,
+    3.2,
+    1.8
+   ],
+   "entity": "uts",
+   "yaw": 0,
+   "size": [
+    1.2,
+    2.88,
+    0.95
+   ],
+   "seats": [
+    {
+     "id": "uts-s08.a",
+     "locator": "seatA",
+     "seat": [
+      -8.25,
+      3.2,
+      1.8
+     ]
+    },
+    {
+     "id": "uts-s08.b",
+     "locator": "seatB",
+     "seat": [
+      -7.65,
+      3.2,
+      1.8
+     ]
+    }
+   ]
+  },
+  {
+   "id": "uts-s09",
+   "rail": "south",
+   "position": [
+    -6.45,
+    3.2,
+    1.8
+   ],
+   "entity": "uts",
+   "yaw": 0,
+   "size": [
+    1.2,
+    2.88,
+    0.95
+   ],
+   "seats": [
+    {
+     "id": "uts-s09.a",
+     "locator": "seatA",
+     "seat": [
+      -6.75,
+      3.2,
+      1.8
+     ]
+    },
+    {
+     "id": "uts-s09.b",
+     "locator": "seatB",
+     "seat": [
+      -6.15,
+      3.2,
+      1.8
+     ]
+    }
+   ]
+  },
+  {
+   "id": "uts-s10",
+   "rail": "south",
+   "position": [
+    -4.95,
+    3.2,
+    1.8
+   ],
+   "entity": "uts",
+   "yaw": 0,
+   "size": [
+    1.2,
+    2.88,
+    0.95
+   ],
+   "seats": [
+    {
+     "id": "uts-s10.a",
+     "locator": "seatA",
+     "seat": [
+      -5.25,
+      3.2,
+      1.8
+     ]
+    },
+    {
+     "id": "uts-s10.b",
+     "locator": "seatB",
+     "seat": [
+      -4.65,
+      3.2,
+      1.8
+     ]
+    }
+   ]
+  },
+  {
+   "id": "uts-s11",
+   "rail": "south",
+   "position": [
+    4.95,
+    3.2,
+    1.8
+   ],
+   "entity": "uts",
+   "yaw": 0,
+   "size": [
+    1.2,
+    2.88,
+    0.95
+   ],
+   "seats": [
+    {
+     "id": "uts-s11.a",
+     "locator": "seatA",
+     "seat": [
+      4.65,
+      3.2,
+      1.8
+     ]
+    },
+    {
+     "id": "uts-s11.b",
+     "locator": "seatB",
+     "seat": [
+      5.25,
+      3.2,
+      1.8
+     ]
+    }
+   ]
+  },
+  {
+   "id": "uts-s12",
+   "rail": "south",
+   "position": [
+    6.45,
+    3.2,
+    1.8
+   ],
+   "entity": "uts",
+   "yaw": 0,
+   "size": [
+    1.2,
+    2.88,
+    0.95
+   ],
+   "seats": [
+    {
+     "id": "uts-s12.a",
+     "locator": "seatA",
+     "seat": [
+      6.15,
+      3.2,
+      1.8
+     ]
+    },
+    {
+     "id": "uts-s12.b",
+     "locator": "seatB",
+     "seat": [
+      6.75,
+      3.2,
+      1.8
+     ]
+    }
+   ]
+  },
+  {
+   "id": "uts-s13",
+   "rail": "south",
+   "position": [
+    7.95,
+    3.2,
+    1.8
+   ],
+   "entity": "uts",
+   "yaw": 0,
+   "size": [
+    1.2,
+    2.88,
+    0.95
+   ],
+   "seats": [
+    {
+     "id": "uts-s13.a",
+     "locator": "seatA",
+     "seat": [
+      7.65,
+      3.2,
+      1.8
+     ]
+    },
+    {
+     "id": "uts-s13.b",
+     "locator": "seatB",
+     "seat": [
+      8.25,
+      3.2,
+      1.8
+     ]
+    }
+   ]
+  },
+  {
+   "id": "uts-s14",
+   "rail": "south",
+   "position": [
+    9.45,
+    3.2,
+    1.8
+   ],
+   "entity": "uts",
+   "yaw": 0,
+   "size": [
+    1.2,
+    2.88,
+    0.95
+   ],
+   "seats": [
+    {
+     "id": "uts-s14.a",
+     "locator": "seatA",
+     "seat": [
+      9.15,
+      3.2,
+      1.8
+     ]
+    },
+    {
+     "id": "uts-s14.b",
+     "locator": "seatB",
+     "seat": [
+      9.75,
+      3.2,
+      1.8
+     ]
+    }
+   ]
+  },
+  {
+   "id": "uts-s15",
+   "rail": "south",
+   "position": [
+    14.4,
+    3.2,
+    1.8
+   ],
+   "entity": "uts",
+   "yaw": 0,
+   "size": [
+    1.2,
+    2.88,
+    0.95
+   ],
+   "seats": [
+    {
+     "id": "uts-s15.a",
+     "locator": "seatA",
+     "seat": [
+      14.1,
+      3.2,
+      1.8
+     ]
+    },
+    {
+     "id": "uts-s15.b",
+     "locator": "seatB",
+     "seat": [
+      14.7,
+      3.2,
+      1.8
+     ]
+    }
+   ]
+  },
+  {
+   "id": "uts-s16",
+   "rail": "south",
+   "position": [
+    19.35,
+    3.2,
+    1.8
+   ],
+   "entity": "uts",
+   "yaw": 0,
+   "size": [
+    1.2,
+    2.88,
+    0.95
+   ],
+   "seats": [
+    {
+     "id": "uts-s16.a",
+     "locator": "seatA",
+     "seat": [
+      19.05,
+      3.2,
+      1.8
+     ]
+    },
+    {
+     "id": "uts-s16.b",
+     "locator": "seatB",
+     "seat": [
+      19.65,
+      3.2,
+      1.8
+     ]
+    }
+   ]
+  },
+  {
+   "id": "uts-s17",
+   "rail": "south",
+   "position": [
+    20.85,
+    3.2,
+    1.8
+   ],
+   "entity": "uts",
+   "yaw": 0,
+   "size": [
+    1.2,
+    2.88,
+    0.95
+   ],
+   "seats": [
+    {
+     "id": "uts-s17.a",
+     "locator": "seatA",
+     "seat": [
+      20.55,
+      3.2,
+      1.8
+     ]
+    },
+    {
+     "id": "uts-s17.b",
+     "locator": "seatB",
+     "seat": [
+      21.15,
+      3.2,
+      1.8
+     ]
+    }
+   ]
+  },
+  {
+   "id": "uts-s18",
+   "rail": "south",
+   "position": [
+    22.35,
+    3.2,
+    1.8
+   ],
+   "entity": "uts",
+   "yaw": 0,
+   "size": [
+    1.2,
+    2.88,
+    0.95
+   ],
+   "seats": [
+    {
+     "id": "uts-s18.a",
+     "locator": "seatA",
+     "seat": [
+      22.05,
+      3.2,
+      1.8
+     ]
+    },
+    {
+     "id": "uts-s18.b",
+     "locator": "seatB",
+     "seat": [
+      22.65,
+      3.2,
+      1.8
+     ]
+    }
+   ]
+  },
+  {
+   "id": "uts-s19",
+   "rail": "south",
+   "position": [
+    23.85,
+    3.2,
+    1.8
+   ],
+   "entity": "uts",
+   "yaw": 0,
+   "size": [
+    1.2,
+    2.88,
+    0.95
+   ],
+   "seats": [
+    {
+     "id": "uts-s19.a",
+     "locator": "seatA",
+     "seat": [
+      23.55,
+      3.2,
+      1.8
+     ]
+    },
+    {
+     "id": "uts-s19.b",
+     "locator": "seatB",
+     "seat": [
+      24.15,
+      3.2,
+      1.8
+     ]
+    }
+   ]
+  },
+  {
+   "id": "uts-s20",
+   "rail": "south",
+   "position": [
+    28.8,
+    3.2,
+    1.8
+   ],
+   "entity": "uts",
+   "yaw": 0,
+   "size": [
+    1.2,
+    2.88,
+    0.95
+   ],
+   "seats": [
+    {
+     "id": "uts-s20.a",
+     "locator": "seatA",
+     "seat": [
+      28.5,
+      3.2,
+      1.8
+     ]
+    },
+    {
+     "id": "uts-s20.b",
+     "locator": "seatB",
+     "seat": [
+      29.1,
+      3.2,
+      1.8
+     ]
+    }
+   ]
+  }
+ ],
+ "stockerSlots": {
+  "rackX": [
+   -0.95,
+   0.95
+  ],
+  "z0": -5,
+  "dz": 0.5,
+  "columns": 21,
+  "y0": 0.4,
+  "dy": 0.8,
+  "levels": 6,
+  "innerSeatX": 0.95,
+  "innerSeatY": 0.9,
+  "passThroughM": 1.15
+ },
+ "cameras": {
+  "landing": {
+   "position": [
+    1.8,
+    1.6,
+    25.4
+   ],
+   "target": [
+    0,
+    3,
+    10.2
+   ],
+   "fov": 55,
+   "label": "Gallery landing",
+   "note": "sim-spec 10: the gallery, looking north into the fab through glazed panel wall-s-11 from the walk start (a segment's own eye point falls on a wall mullion)"
+  },
+  "overview": {
+   "position": [
+    0,
+    64,
+    58
+   ],
+   "target": [
+    0,
+    0,
+    0
+   ],
+   "fov": 40,
+   "label": "Overview",
+   "note": "overview orbit; the ceiling hides while the camera is above the FFU face"
+  },
+  "spine": {
+   "position": [
+    -33.6,
+    2.6,
+    0.6
+   ],
+   "target": [
+    0,
+    1.9,
+    -0.4
+   ],
+   "fov": 55,
+   "label": "The spine",
+   "note": "along the central aisle under the two spine rails"
+  },
+  "litho": {
+   "position": [
+    -0.07,
+    2.8,
+    -5.2
+   ],
+   "target": [
+    -3.87,
+    1.6,
+    -15.5
+   ],
+   "fov": 55,
+   "label": "An EUV litho cell",
+   "note": "the track and the scanner behind it, from the gap between the EUV cells"
+  },
+  "cluster": {
+   "position": [
+    -28.8,
+    2.4,
+    -3.3
+   ],
+   "target": [
+    -28.8,
+    1.1,
+    -16
+   ],
+   "fov": 55,
+   "label": "The etch bay",
+   "note": "down the aisle between the etch clusters, load ports on both sides"
+  },
+  "stocker": {
+   "position": [
+    0,
+    1.8,
+    19.2
+   ],
+   "target": [
+    0,
+    2.8,
+    6
+   ],
+   "fov": 55,
+   "label": "The stocker canyon",
+   "note": "between the two stockers, looking toward the spine"
+  },
+  "gallery": {
+   "position": [
+    -33.8,
+    1.6,
+    25.6
+   ],
+   "target": [
+    -8,
+    1.5,
+    22.6
+   ],
+   "fov": 60,
+   "label": "The visitor gallery",
+   "note": "along the gallery, the fab through the glazing"
+  },
+  "section": {
+   "position": [
+    53,
+    0.6,
+    12.5
+   ],
+   "target": [
+    35,
+    -2.2,
+    1
+   ],
+   "fov": 50,
+   "label": "The section cut",
+   "note": "from the east: subfab, waffle slab, cleanroom, FFU band and interstitial"
+  },
+  "walk": {
+   "eyeY": 1.6,
+   "speed": 1.4,
+   "runSpeed": 2.8,
+   "radius": 0.3,
+   "areas": [
+    {
+     "id": "fab",
+     "x": [
+      -36,
+      36
+     ],
+     "z": [
+      -27,
+      23.4
+     ]
+    },
+    {
+     "id": "gallery",
+     "x": [
+      -36,
+      36
+     ],
+     "z": [
+      23.4,
+      27
+     ]
+    },
+    {
+     "id": "landing",
+     "x": [
+      36,
+      39.6
+     ],
+     "z": [
+      19.8,
+      27
+     ]
+    }
+   ],
+   "edges": [
+    {
+     "id": "section-cut-rail",
+     "from": [
+      36,
+      -27
+     ],
+     "to": [
+      36,
+      23.4
+     ],
+     "note": "a 1.1 m handrail along the cut: the raised floor ends here"
+    },
+    {
+     "id": "landing-rail-n",
+     "from": [
+      36,
+      19.8
+     ],
+     "to": [
+      39.6,
+      19.8
+     ],
+     "note": "viewing landing handrail"
+    },
+    {
+     "id": "landing-rail-e",
+     "from": [
+      39.6,
+      19.8
+     ],
+     "to": [
+      39.6,
+      27
+     ],
+     "note": "viewing landing handrail"
+    },
+    {
+     "id": "gallery-wall-s",
+     "from": [
+      -36,
+      27
+     ],
+     "to": [
+      39.6,
+      27
+     ],
+     "note": "the gallery's outer wall"
+    },
+    {
+     "id": "gallery-wall-w",
+     "from": [
+      -36,
+      23.4
+     ],
+     "to": [
+      -36,
+      27
+     ],
+     "note": "the gallery's west end"
+    },
+    {
+     "id": "gallery-handrail",
+     "from": [
+      -36,
+      23.55
+     ],
+     "to": [
+      36,
+      23.55
+     ],
+     "note": "the gallery segments' handrail, 1.10 m high, 0.15 m inside the glazing"
+    }
+   ],
+   "start": {
+    "position": [
+     1.8,
+     0,
+     25.4
+    ],
+    "yawDeg": 90,
+    "note": "in the gallery facing north, behind glazed panel wall-s-11 (the landing view's point)"
+   },
+   "walker": {
+    "widthM": 0.62,
+    "note": "the floor paths keep at least this clear width (FF3 humanoid work robot)"
+   },
+   "paths": [
+    {
+     "id": "spine",
+     "from": [
+      -35.2,
+      0
+     ],
+     "to": [
+      35.2,
+      0
+     ]
+    },
+    {
+     "id": "aisle-N1",
+     "from": [
+      -28.8,
+      -3
+     ],
+     "to": [
+      -28.8,
+      -26.2
+     ]
+    },
+    {
+     "id": "aisle-N4",
+     "from": [
+      14.4,
+      -3
+     ],
+     "to": [
+      14.4,
+      -26.2
+     ]
+    },
+    {
+     "id": "aisle-N5",
+     "from": [
+      28.8,
+      -3
+     ],
+     "to": [
+      28.8,
+      -26.2
+     ]
+    },
+    {
+     "id": "aisle-S1",
+     "from": [
+      -28.8,
+      3
+     ],
+     "to": [
+      -28.8,
+      22.6
+     ]
+    },
+    {
+     "id": "aisle-S2",
+     "from": [
+      -14.4,
+      3
+     ],
+     "to": [
+      -14.4,
+      22.6
+     ]
+    },
+    {
+     "id": "aisle-S3",
+     "from": [
+      0,
+      3
+     ],
+     "to": [
+      0,
+      22.6
+     ]
+    },
+    {
+     "id": "aisle-S4",
+     "from": [
+      14.4,
+      3
+     ],
+     "to": [
+      14.4,
+      22.6
+     ]
+    },
+    {
+     "id": "aisle-S5",
+     "from": [
+      28.8,
+      3
+     ],
+     "to": [
+      28.8,
+      22.6
+     ]
+    }
+   ]
+  },
+  "tour": {
+   "stops": [
+    "landing",
+    "spine",
+    "litho",
+    "cluster",
+    "stocker",
+    "gallery",
+    "section"
+   ],
+   "legSeconds": 7,
+   "holdSeconds": 4,
+   "cutSeconds": 2,
+   "flySpeedMps": 3.5,
+   "filletM": 2,
+   "minHorizontalFovDeg": 40,
+   "note": "the camera moves along the named views; everything it shows is live twin state",
+   "legs": [
+    {
+     "from": "landing",
+     "to": "spine",
+     "kind": "cut",
+     "note": "from the gallery onto the fab floor (glazing between)"
+    },
+    {
+     "from": "spine",
+     "to": "litho",
+     "kind": "fly",
+     "via": [
+      [
+       -30,
+       2.6,
+       0
+      ],
+      [
+       -0.07,
+       2.7,
+       0
+      ]
+     ],
+     "note": "east along the spine aisle, north into the gap between the EUV cells"
+    },
+    {
+     "from": "litho",
+     "to": "cluster",
+     "kind": "fly",
+     "via": [
+      [
+       -0.07,
+       2.6,
+       0
+      ],
+      [
+       -28.8,
+       2.5,
+       0
+      ]
+     ],
+     "note": "back to the spine, west, north into the etch bay aisle"
+    },
+    {
+     "from": "cluster",
+     "to": "stocker",
+     "kind": "fly",
+     "via": [
+      [
+       -28.8,
+       2.5,
+       0
+      ],
+      [
+       0,
+       2.4,
+       0
+      ]
+     ],
+     "note": "back to the spine, east, south into the stocker canyon"
+    },
+    {
+     "from": "stocker",
+     "to": "gallery",
+     "kind": "cut",
+     "note": "from the fab floor into the gallery"
+    },
+    {
+     "from": "gallery",
+     "to": "section",
+     "kind": "cut",
+     "note": "from the gallery to the view of the section cut"
+    }
+   ],
+   "features": {
+    "landing": {
+     "subject": "fab",
+     "lines": "fab",
+     "anchor": [
+      0,
+      3,
+      2
+     ],
+     "note": "the stocker canyon and the spine beyond, through the glazing"
+    },
+    "spine": {
+     "subject": "spine",
+     "lines": "fleet",
+     "anchor": [
+      -15,
+      4.6,
+      1.8
+     ],
+     "note": "the south spine rail and its vehicles"
+    },
+    "litho": {
+     "subject": "cell-euv-1",
+     "lines": "tool",
+     "anchor": [
+      -3.87,
+      2,
+      -17.1
+     ],
+     "note": "the scanner behind the track"
+    },
+    "cluster": {
+     "subject": "etch-03",
+     "lines": "tool",
+     "anchor": [
+      -30.9,
+      1.35,
+      -14.1
+     ],
+     "note": "the load-port face of the third west etch cluster"
+    },
+    "stocker": {
+     "subject": "stocker-e",
+     "lines": "stocker",
+     "anchor": [
+      1.65,
+      2.7,
+      10.2
+     ],
+     "note": "the east stocker's canyon face"
+    },
+    "gallery": {
+     "subject": "gallery-04",
+     "lines": "outputs",
+     "anchor": [
+      -10.8,
+      1.2,
+      25.2
+     ],
+     "note": "a gallery segment along the glazing"
+    },
+    "section": {
+     "subject": "section-5",
+     "lines": "tools",
+     "anchor": [
+      36,
+      -3.5,
+      5.4
+     ],
+     "note": "the subfab level of a section module at the cut"
+    }
+   }
+  }
+ }
+}

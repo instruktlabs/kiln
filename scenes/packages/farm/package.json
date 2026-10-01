@@ -1,0 +1,22 @@
+{
+  "name": "@kiln-scenes/farm",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "sideEffects": false,
+  "exports": { ".": "./src/index.ts" },
+  "dependencies": { "@kiln-scenes/scene-kit": "workspace:*" },
+  "peerDependencies": {
+    "react": "19.3.0",
+    "react-dom": "19.3.0",
+    "@react-three/fiber": "9.8.1",
+    "three": "0.186.0"
+  },
+  "devDependencies": {
+    "react": "19.3.0",
+    "react-dom": "19.3.0",
+    "@react-three/fiber": "9.8.1",
+    "three": "0.186.0",
+    "@types/three": "0.186.0"
+  }
+}

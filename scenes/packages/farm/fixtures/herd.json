@@ -1,0 +1,5813 @@
+{
+  "provenance": {
+    "revision": "r_0000000033_e782d188f2d265d553cb6881db5298a1b63cd7d7337ae2cce9250b4ad1623a90",
+    "runtimeArchiveSha256": "sha256:1a606659d83dc21ddad3d63f78e073bb97034d744ea28ffd465b6a1aa7c92a79",
+    "threeRevision": "186",
+    "sources": {
+      "scene.json": "dc3920994683055ecf54f0c4afab69121807a90f1595387351417d4cd7776c20",
+      "layout.json": "f77339fd601ede73cd2c12b3c622ed9a11f0f602457194854270b6504e247349",
+      "viewer.mjs": "ee9f6ba180a7aef7aef206110a4fc6a41440b5fd13a0b86baffaf00e7d75e365",
+      "planting.mjs": "e64722e2a502a8e88c5af4b17ff4a4f77d10b2fa911fef85b3d42fa9fa935250",
+      "scene-motion.mjs": "b7ac2d2fe9fc75e2bf785c29651f3950eb508962877115a44944cd2838cbe63f",
+      "herd-motion.mjs": "3123b50547d2086c5aa6bddfb28dfe076cfe945d41befa7ae88bbf51cf807bf0",
+      "assets/598d044a5213b87f4bc1aac7d5543c920a53e145ab0f004429e45222489842a9.glb": "598d044a5213b87f4bc1aac7d5543c920a53e145ab0f004429e45222489842a9",
+      "assets/eae958ffee9be52c2f61c86859f138a1e999be3d3056dab9cb76df6286ea0041.glb": "eae958ffee9be52c2f61c86859f138a1e999be3d3056dab9cb76df6286ea0041",
+      "assets/089e966217cbd05c81a123ab2419d9d9c172bb7567f30ef2f7020cc790c8148f.glb": "089e966217cbd05c81a123ab2419d9d9c172bb7567f30ef2f7020cc790c8148f",
+      "assets/b57f29056cf3b072058d65016b753551f146c4cace974458087bceaaab4d0ce0.glb": "b57f29056cf3b072058d65016b753551f146c4cace974458087bceaaab4d0ce0",
+      "assets/1468e8ca49f97a89b5a84e032960fc7b6b29e8b18adee0b1a86692aae6b2c496.glb": "1468e8ca49f97a89b5a84e032960fc7b6b29e8b18adee0b1a86692aae6b2c496",
+      "assets/9af793228f396dce42eafacdd98b0203a714648b4e716c389656114217dde6cd.glb": "9af793228f396dce42eafacdd98b0203a714648b4e716c389656114217dde6cd",
+      "assets/e3e01d01c48333f7af74b2c8907eb42a2b4cfe66816570c7e4d49203a63b0366.glb": "e3e01d01c48333f7af74b2c8907eb42a2b4cfe66816570c7e4d49203a63b0366",
+      "assets/8185aea55248ec02eb49de46eb04d85c2cdd9a9f9a1d485d649d79009c3f1117.glb": "8185aea55248ec02eb49de46eb04d85c2cdd9a9f9a1d485d649d79009c3f1117",
+      "assets/6394d8c51b0c368a25f21d644630370cd6d8267dbd999642587460cb7a2b90de.glb": "6394d8c51b0c368a25f21d644630370cd6d8267dbd999642587460cb7a2b90de",
+      "assets/1d9b5c726d770a2875c52aa9bfa079c7f180877e3da0337be1a815c42c62c534.glb": "1d9b5c726d770a2875c52aa9bfa079c7f180877e3da0337be1a815c42c62c534",
+      "assets/1388fb610ef8ee3240f472ce45d89eb80fd78c2bdda46c7889563b653bd3fbd4.glb": "1388fb610ef8ee3240f472ce45d89eb80fd78c2bdda46c7889563b653bd3fbd4",
+      "assets/5f57902dc80999aadbd9442150bd54778ad02ac8177ce1a7a8c897f675f7293a.glb": "5f57902dc80999aadbd9442150bd54778ad02ac8177ce1a7a8c897f675f7293a",
+      "assets/d79307b03c4003cee0748d15bdaf1a6593434a8ad72de9f383fc9616e7084ce6.glb": "d79307b03c4003cee0748d15bdaf1a6593434a8ad72de9f383fc9616e7084ce6",
+      "assets/41a9b3f464888e5e6f9c820d07181d64d6a544503d40401a753f8d628d76a20e.glb": "41a9b3f464888e5e6f9c820d07181d64d6a544503d40401a753f8d628d76a20e",
+      "assets/8ee9087d4e0c0b9dfed9f992e133ac67d9d21e6effc788c2fb89ce80cd884e4d.glb": "8ee9087d4e0c0b9dfed9f992e133ac67d9d21e6effc788c2fb89ce80cd884e4d",
+      "assets/e6b177606ffefd4d4c9437fb9150f37a717202133796cb52e469c22e2570fe0c.glb": "e6b177606ffefd4d4c9437fb9150f37a717202133796cb52e469c22e2570fe0c",
+      "assets/cbe951aa364a017889f03b5a60a31a6b9c5398064a5b20f7f1c5b6fb9332bec6.glb": "cbe951aa364a017889f03b5a60a31a6b9c5398064a5b20f7f1c5b6fb9332bec6",
+      "assets/ff9525150fe7f99142df59c36a316502d4830789e25efea70b5c9c38ecb1da9d.glb": "ff9525150fe7f99142df59c36a316502d4830789e25efea70b5c9c38ecb1da9d",
+      "assets/8e6b8ea974b75843d7671641f2c3fa2ebd3f10a19810b6759d15ec9c4662bacb.glb": "8e6b8ea974b75843d7671641f2c3fa2ebd3f10a19810b6759d15ec9c4662bacb",
+      "assets/d13360234d2092d0982f385aed401f4f926e3ccacc593cd0cb5a95dcdea79b25.glb": "d13360234d2092d0982f385aed401f4f926e3ccacc593cd0cb5a95dcdea79b25",
+      "assets/22b9c424461cbc904b21e7d17a4862e2a034545912839147b314ba6f813c8371.glb": "22b9c424461cbc904b21e7d17a4862e2a034545912839147b314ba6f813c8371",
+      "assets/0f6eceb07f207eb27071767a8d0c7fae7a618efd623942219da1f2d29497b0c4.glb": "0f6eceb07f207eb27071767a8d0c7fae7a618efd623942219da1f2d29497b0c4",
+      "assets/6b6e767ed170aa1631a54e5d6df3d3335146a94cdedb5c49bf17b3659a93252d.glb": "6b6e767ed170aa1631a54e5d6df3d3335146a94cdedb5c49bf17b3659a93252d"
+    },
+    "method": "Verified r33; GLTFLoader skips image decoding only. Executes sealed viewer placement/chooseClip/initial-clip source spans and sealed herd-motion module. No port implementation is imported."
+  },
+  "dt": 0.1,
+  "samples": [
+    {
+      "frame": 0,
+      "report": {
+        "animals": 20,
+        "elapsedSeconds": 0,
+        "distanceMeters": 0,
+        "walkFrames": 0,
+        "restFrames": 0,
+        "scope": "bounded deterministic sheep flock, cattle grazing and chicken walking/pecking with original clips; not a full navigation AI"
+      },
+      "actors": [
+        {
+          "id": "cow-0-0",
+          "position": [
+            -25,
+            0,
+            7
+          ],
+          "quaternion": [
+            0,
+            0.17364817766693033,
+            0,
+            0.984807753012208
+          ],
+          "yaw": 0.3490658503988659,
+          "clipIndex": "2",
+          "clip": "Graze",
+          "time": 4.120000000000001,
+          "timeScale": 1,
+          "paused": false
+        },
+        {
+          "id": "cow-1-0",
+          "position": [
+            -20,
+            0,
+            7
+          ],
+          "quaternion": [
+            0,
+            -0.25881904510252074,
+            0,
+            0.9659258262890683
+          ],
+          "yaw": -0.5235987755982988,
+          "clipIndex": "2",
+          "clip": "Graze",
+          "time": 4.489999999999998,
+          "timeScale": 1,
+          "paused": false
+        },
+        {
+          "id": "cow-2-0",
+          "position": [
+            -25,
+            0,
+            13
+          ],
+          "quaternion": [
+            0,
+            0.5372996083468238,
+            0,
+            0.8433914458128857
+          ],
+          "yaw": 1.1344640137963142,
+          "clipIndex": "2",
+          "clip": "Graze",
+          "time": 4.859999999999999,
+          "timeScale": 1,
+          "paused": false
+        },
+        {
+          "id": "cow-3-0",
+          "position": [
+            -20,
+            0,
+            13
+          ],
+          "quaternion": [
+            0,
+            -0.573576436351046,
+            0,
+            0.8191520442889918
+          ],
+          "yaw": -1.2217304763960306,
+          "clipIndex": "2",
+          "clip": "Graze",
+          "time": 5.23,
+          "timeScale": 1,
+          "paused": false
+        },
+        {
+          "id": "sheep-0-0",
+          "position": [
+            -9,
+            0,
+            7
+          ],
+          "quaternion": [
+            0,
+            0.13052619222005157,
+            0,
+            0.9914448613738104
+          ],
+          "yaw": 0.2617993877991494,
+          "clipIndex": "2",
+          "clip": "Graze",
+          "time": 5.600000000000001,
+          "timeScale": 1,
+          "paused": false
+        },
+        {
+          "id": "sheep-1-0",
+          "position": [
+            -5,
+            0,
+            6
+          ],
+          "quaternion": [
+            0,
+            -0.17364817766693033,
+            0,
+            0.984807753012208
+          ],
+          "yaw": -0.3490658503988659,
+          "clipIndex": "2",
+          "clip": "Graze",
+          "time": 5.969999999999999,
+          "timeScale": 1,
+          "paused": false
+        },
+        {
+          "id": "sheep-2-0",
+          "position": [
+            -3,
+            0,
+            9
+          ],
+          "quaternion": [
+            0,
+            0.7071067811865476,
+            0,
+            0.7071067811865476
+          ],
+          "yaw": 1.5707963267948966,
+          "clipIndex": "2",
+          "clip": "Graze",
+          "time": 0.33999999999999986,
+          "timeScale": 1,
+          "paused": false
+        },
+        {
+          "id": "sheep-3-0",
+          "position": [
+            -8,
+            0,
+            12
+          ],
+          "quaternion": [
+            0,
+            -0.3420201433256687,
+            0,
+            0.9396926207859084
+          ],
+          "yaw": -0.6981317007977318,
+          "clipIndex": "2",
+          "clip": "Graze",
+          "time": 0.7100000000000009,
+          "timeScale": 1,
+          "paused": false
+        },
+        {
+          "id": "sheep-4-0",
+          "position": [
+            -4,
+            0,
+            14
+          ],
+          "quaternion": [
+            0,
+            0.9961946980917455,
+            0,
+            0.08715574274765814
+          ],
+          "yaw": 2.9670597283903604,
+          "clipIndex": "2",
+          "clip": "Graze",
+          "time": 1.0799999999999983,
+          "timeScale": 1,
+          "paused": false
+        },
+        {
+          "id": "sheep-5-0",
+          "position": [
+            -9,
+            0,
+            15
+          ],
+          "quaternion": [
+            0,
+            0.42261826174069944,
+            0,
+            0.9063077870366499
+          ],
+          "yaw": 0.8726646259971648,
+          "clipIndex": "2",
+          "clip": "Graze",
+          "time": 1.4499999999999993,
+          "timeScale": 1,
+          "paused": false
+        },
+        {
+          "id": "chicken-0-0",
+          "position": [
+            6,
+            0,
+            6
+          ],
+          "quaternion": [
+            0,
+            0,
+            0,
+            1
+          ],
+          "yaw": 0,
+          "clipIndex": "0",
+          "clip": "Idle",
+          "time": 3.019999570846558,
+          "timeScale": 1,
+          "paused": false
+        },
+        {
+          "id": "chicken-1-0",
+          "position": [
+            8.4,
+            0,
+            6
+          ],
+          "quaternion": [
+            0,
+            0.9304175679820246,
+            0,
+            0.3665012267242973
+          ],
+          "yaw": 2.3911010752322315,
+          "clipIndex": "0",
+          "clip": "Idle",
+          "time": 0.18999952316283952,
+          "timeScale": 1,
+          "paused": false
+        },
+        {
+          "id": "chicken-2-0",
+          "position": [
+            10.8,
+            0,
+            6
+          ],
+          "quaternion": [
+            0,
+            0.6819983600624985,
+            0,
+            -0.7313537016191705
+          ],
+          "yaw": 4.782202150464463,
+          "clipIndex": "0",
+          "clip": "Idle",
+          "time": 0.5599995231628441,
+          "timeScale": 1,
+          "paused": false
+        },
+        {
+          "id": "chicken-3-0",
+          "position": [
+            6,
+            0,
+            8.5
+          ],
+          "quaternion": [
+            0,
+            0.43051109680829514,
+            0,
+            0.9025852843498606
+          ],
+          "yaw": 0.8901179185171081,
+          "clipIndex": "0",
+          "clip": "Idle",
+          "time": 0.9299995231628415,
+          "timeScale": 1,
+          "paused": false
+        },
+        {
+          "id": "chicken-4-0",
+          "position": [
+            8.4,
+            0,
+            8.5
+          ],
+          "quaternion": [
+            0,
+            0.9975640502598242,
+            0,
+            -0.06975647374412533
+          ],
+          "yaw": 3.2812189937493397,
+          "clipIndex": "0",
+          "clip": "Idle",
+          "time": 1.299999523162839,
+          "timeScale": 1,
+          "paused": false
+        },
+        {
+          "id": "chicken-5-0",
+          "position": [
+            10.8,
+            0,
+            8.5
+          ],
+          "quaternion": [
+            0,
+            0.30070579950427334,
+            0,
+            -0.9537169507482268
+          ],
+          "yaw": 5.672320068981571,
+          "clipIndex": "0",
+          "clip": "Idle",
+          "time": 1.6699995231628435,
+          "timeScale": 1,
+          "paused": false
+        },
+        {
+          "id": "chicken-6-0",
+          "position": [
+            6,
+            0,
+            11
+          ],
+          "quaternion": [
+            0,
+            0.7771459614569709,
+            0,
+            0.6293203910498375
+          ],
+          "yaw": 1.7802358370342162,
+          "clipIndex": "0",
+          "clip": "Idle",
+          "time": 2.039999523162841,
+          "timeScale": 1,
+          "paused": false
+        },
+        {
+          "id": "chicken-7-0",
+          "position": [
+            8.4,
+            0,
+            11
+          ],
+          "quaternion": [
+            0,
+            0.8703556959398997,
+            0,
+            -0.492423560103467
+          ],
+          "yaw": 4.171336912266447,
+          "clipIndex": "0",
+          "clip": "Idle",
+          "time": 2.4099995231628384,
+          "timeScale": 1,
+          "paused": false
+        },
+        {
+          "id": "chicken-8-0",
+          "position": [
+            10.8,
+            0,
+            11
+          ],
+          "quaternion": [
+            0,
+            0.13917310096006544,
+            0,
+            0.9902680687415704
+          ],
+          "yaw": 0.2792526803190927,
+          "clipIndex": "0",
+          "clip": "Idle",
+          "time": 2.779999523162843,
+          "timeScale": 1,
+          "paused": false
+        },
+        {
+          "id": "chicken-9-0",
+          "position": [
+            6,
+            0,
+            13.5
+          ],
+          "quaternion": [
+            0,
+            0.9723699203976766,
+            0,
+            0.23344536385590547
+          ],
+          "yaw": 2.670353755551324,
+          "clipIndex": "0",
+          "clip": "Idle",
+          "time": 3.1499995231628404,
+          "timeScale": 1,
+          "paused": false
+        }
+      ]
+    },
+    {
+      "frame": 1,
+      "report": {
+        "animals": 20,
+        "elapsedSeconds": 0.1,
+        "distanceMeters": 0.1188317105550733,
+        "walkFrames": 13,
+        "restFrames": 7,
+        "scope": "bounded deterministic sheep flock, cattle grazing and chicken walking/pecking with original clips; not a full navigation AI"
+      },
+      "actors": [
+        {
+          "id": "cow-0-0",
+          "position": [
+            -24.999060106407686,
+            0,
+            6.999658532695873
+          ],
+          "quaternion": [
+            0,
+            0.17306884897915964,
+            0,
+            0.984909728611221
+          ],
+          "yaw": 0.3478893798106306,
+          "clipIndex": "0",
+          "clip": "Walk",
+          "time": 0.005714285714285716,
+          "timeScale": 0.057142857142857155,
+          "paused": false
+        },
+        {
+          "id": "cow-1-0",
+          "position": [
+            -19.982798731712656,
+            0,
+            7.0102028385857444
+          ],
+          "quaternion": [
+            0,
+            -0.27016470506729917,
+            0,
+            0.962814121279855
+          ],
+          "yaw": -0.5471281873630047,
+          "clipIndex": "0",
+          "clip": "Walk",
+          "time": 0.057142857142857155,
+          "timeScale": 0.5714285714285715,
+          "paused": false
+        },
+        {
+          "id": "cow-2-0",
+          "position": [
+            -24.99133517560918,
+            0,
+            12.981974951756618
+          ],
+          "quaternion": [
+            0,
+            0.527340401993551,
+            0,
+            0.8496541063428577
+          ],
+          "yaw": 1.1109346020316084,
+          "clipIndex": "0",
+          "clip": "Walk",
+          "time": 0.057142857142857155,
+          "timeScale": 0.5714285714285715,
+          "paused": false
+        },
+        {
+          "id": "cow-3-0",
+          "position": [
+            -19.993381322240428,
+            0,
+            13.018872589928648
+          ],
+          "quaternion": [
+            0,
+            -0.5831736035046561,
+            0,
+            0.8123475538064937
+          ],
+          "yaw": -1.2452598881607364,
+          "clipIndex": "0",
+          "clip": "Walk",
+          "time": 0.057142857142857155,
+          "timeScale": 0.5714285714285715,
+          "paused": false
+        },
+        {
+          "id": "sheep-0-0",
+          "position": [
+            -8.999000000394478,
+            0,
+            7.000000769230618
+          ],
+          "quaternion": [
+            0,
+            0.11709846807134885,
+            0,
+            0.9931203093157159
+          ],
+          "yaw": 0.23473548595027077,
+          "clipIndex": "1",
+          "clip": "Walk",
+          "time": 0.005714285714285716,
+          "timeScale": 0.057142857142857155,
+          "paused": false
+        },
+        {
+          "id": "sheep-1-0",
+          "position": [
+            -4.999000000394477,
+            0,
+            6.000000769230618
+          ],
+          "quaternion": [
+            0,
+            -0.15762507167244094,
+            0,
+            0.9874990312806681
+          ],
+          "yaw": -0.31657039152343797,
+          "clipIndex": "1",
+          "clip": "Walk",
+          "time": 0.005714285714285716,
+          "timeScale": 0.057142857142857155,
+          "paused": false
+        },
+        {
+          "id": "sheep-2-0",
+          "position": [
+            -2.9990000003944774,
+            0,
+            9.000000769230617
+          ],
+          "quaternion": [
+            0,
+            0.6503557109270738,
+            0,
+            0.7596298106739496
+          ],
+          "yaw": 1.4161052233939326,
+          "clipIndex": "1",
+          "clip": "Walk",
+          "time": 0.005714285714285716,
+          "timeScale": 0.057142857142857155,
+          "paused": false
+        },
+        {
+          "id": "sheep-3-0",
+          "position": [
+            -7.999000000394477,
+            0,
+            12.000000769230617
+          ],
+          "quaternion": [
+            0,
+            -0.31057811246097194,
+            0,
+            0.9505478610044735
+          ],
+          "yaw": -0.6316023215084143,
+          "clipIndex": "1",
+          "clip": "Walk",
+          "time": 0.005714285714285716,
+          "timeScale": 0.057142857142857155,
+          "paused": false
+        },
+        {
+          "id": "sheep-4-0",
+          "position": [
+            -3.9990000003944774,
+            0,
+            14.000000769230617
+          ],
+          "quaternion": [
+            0,
+            0.9730519527504874,
+            0,
+            0.2305859866697526
+          ],
+          "yaw": 2.6762329433338383,
+          "clipIndex": "1",
+          "clip": "Walk",
+          "time": 0.005714285714285716,
+          "timeScale": 0.057142857142857155,
+          "paused": false
+        },
+        {
+          "id": "sheep-5-0",
+          "position": [
+            -8.999000000394478,
+            0,
+            15.000000769230617
+          ],
+          "quaternion": [
+            0,
+            0.3829805322400626,
+            0,
+            0.9237564137396386
+          ],
+          "yaw": 0.7860413634239796,
+          "clipIndex": "1",
+          "clip": "Walk",
+          "time": 0.005714285714285716,
+          "timeScale": 0.057142857142857155,
+          "paused": false
+        },
+        {
+          "id": "chicken-0-0",
+          "position": [
+            6,
+            0,
+            6
+          ],
+          "quaternion": [
+            0,
+            0,
+            0,
+            1
+          ],
+          "yaw": 0,
+          "clipIndex": "2",
+          "clip": "Peck",
+          "time": 0.1,
+          "timeScale": 1,
+          "paused": false
+        },
+        {
+          "id": "chicken-1-0",
+          "position": [
+            8.4,
+            0,
+            6
+          ],
+          "quaternion": [
+            0,
+            0.9304175679820246,
+            0,
+            0.3665012267242973
+          ],
+          "yaw": 2.3911010752322315,
+          "clipIndex": "2",
+          "clip": "Peck",
+          "time": 0.1,
+          "timeScale": 1,
+          "paused": false
+        },
+        {
+          "id": "chicken-2-0",
+          "position": [
+            10.8,
+            0,
+            6
+          ],
+          "quaternion": [
+            0,
+            0.6819983600624985,
+            0,
+            -0.7313537016191705
+          ],
+          "yaw": 4.782202150464463,
+          "clipIndex": "2",
+          "clip": "Peck",
+          "time": 0.1,
+          "timeScale": 1,
+          "paused": false
+        },
+        {
+          "id": "chicken-3-0",
+          "position": [
+            6,
+            0,
+            8.5
+          ],
+          "quaternion": [
+            0,
+            0.43051109680829514,
+            0,
+            0.9025852843498606
+          ],
+          "yaw": 0.8901179185171081,
+          "clipIndex": "2",
+          "clip": "Peck",
+          "time": 0.1,
+          "timeScale": 1,
+          "paused": false
+        },
+        {
+          "id": "chicken-4-0",
+          "position": [
+            8.389760741157602,
+            0,
+            8.501285403601173
+          ],
+          "quaternion": [
+            0,
+            0.9984840135072789,
+            0,
+            -0.055042481506525597
+          ],
+          "yaw": 3.251733279463625,
+          "clipIndex": "1",
+          "clip": "Walk",
+          "time": 0.03291428571428575,
+          "timeScale": 0.32914285714285746,
+          "paused": false
+        },
+        {
+          "id": "chicken-5-0",
+          "position": [
+            10.81917245937845,
+            0,
+            8.51442883012563
+          ],
+          "quaternion": [
+            0,
+            0.3332215363998696,
+            0,
+            -0.9428485603103557
+          ],
+          "yaw": 5.603748640410141,
+          "clipIndex": "1",
+          "clip": "Walk",
+          "time": 0.06857142857142857,
+          "timeScale": 0.6857142857142857,
+          "paused": false
+        },
+        {
+          "id": "chicken-6-0",
+          "position": [
+            5.996787736939781,
+            0,
+            10.982778859586695
+          ],
+          "quaternion": [
+            0,
+            0.761153214699259,
+            0,
+            0.648572111451752
+          ],
+          "yaw": 1.7301786941770725,
+          "clipIndex": "1",
+          "clip": "Walk",
+          "time": 0.04662857142857141,
+          "timeScale": 0.4662857142857141,
+          "paused": false
+        },
+        {
+          "id": "chicken-7-0",
+          "position": [
+            8.4,
+            0,
+            11
+          ],
+          "quaternion": [
+            0,
+            0.8703556959398997,
+            0,
+            -0.492423560103467
+          ],
+          "yaw": 4.171336912266447,
+          "clipIndex": "2",
+          "clip": "Peck",
+          "time": 0.1,
+          "timeScale": 1,
+          "paused": false
+        },
+        {
+          "id": "chicken-8-0",
+          "position": [
+            10.8,
+            0,
+            11
+          ],
+          "quaternion": [
+            0,
+            0.13917310096006544,
+            0,
+            0.9902680687415704
+          ],
+          "yaw": 0.2792526803190927,
+          "clipIndex": "2",
+          "clip": "Peck",
+          "time": 0.1,
+          "timeScale": 1,
+          "paused": false
+        },
+        {
+          "id": "chicken-9-0",
+          "position": [
+            6,
+            0,
+            13.5
+          ],
+          "quaternion": [
+            0,
+            0.9723699203976766,
+            0,
+            0.23344536385590547
+          ],
+          "yaw": 2.670353755551324,
+          "clipIndex": "2",
+          "clip": "Peck",
+          "time": 0.1,
+          "timeScale": 1,
+          "paused": false
+        }
+      ]
+    },
+    {
+      "frame": 5,
+      "report": {
+        "animals": 20,
+        "elapsedSeconds": 0.5,
+        "distanceMeters": 0.7341577605296238,
+        "walkFrames": 65,
+        "restFrames": 35,
+        "scope": "bounded deterministic sheep flock, cattle grazing and chicken walking/pecking with original clips; not a full navigation AI"
+      },
+      "actors": [
+        {
+          "id": "cow-0-0",
+          "position": [
+            -24.976385337710383,
+            0,
+            6.991796179459553
+          ],
+          "quaternion": [
+            0,
+            0.15914745621136245,
+            0,
+            0.9872548238329618
+          ],
+          "yaw": 0.31965408569298354,
+          "clipIndex": "0",
+          "clip": "Walk",
+          "time": 0.08571428571428574,
+          "timeScale": 0.28571428571428575,
+          "paused": false
+        },
+        {
+          "id": "cow-1-0",
+          "position": [
+            -19.916534882268937,
+            0,
+            7.054973133590872
+          ],
+          "quaternion": [
+            0,
+            -0.31515779462703414,
+            0,
+            0.9490392850065924
+          ],
+          "yaw": -0.6412458344218283,
+          "clipIndex": "0",
+          "clip": "Walk",
+          "time": 0.28571428571428575,
+          "timeScale": 0.5714285714285715,
+          "paused": false
+        },
+        {
+          "id": "cow-2-0",
+          "position": [
+            -24.952510520108657,
+            0,
+            12.912061267951435
+          ],
+          "quaternion": [
+            0,
+            0.4867876366740731,
+            0,
+            0.8735203470905933
+          ],
+          "yaw": 1.0168169549727848,
+          "clipIndex": "0",
+          "clip": "Walk",
+          "time": 0.28571428571428575,
+          "timeScale": 0.5714285714285715,
+          "paused": false
+        },
+        {
+          "id": "cow-3-0",
+          "position": [
+            -19.971398059505706,
+            0,
+            13.095762207026679
+          ],
+          "quaternion": [
+            0,
+            -0.6207420062738297,
+            0,
+            0.7840148988680896
+          ],
+          "yaw": -1.33937753521956,
+          "clipIndex": "0",
+          "clip": "Walk",
+          "time": 0.28571428571428575,
+          "timeScale": 0.5714285714285715,
+          "paused": false
+        },
+        {
+          "id": "sheep-0-0",
+          "position": [
+            -8.975006163252207,
+            0,
+            7.000480709967268
+          ],
+          "quaternion": [
+            0,
+            0.054373480570501974,
+            0,
+            0.9985206680938804
+          ],
+          "yaw": 0.10880061717548309,
+          "clipIndex": "1",
+          "clip": "Walk",
+          "time": 0.08571428571428574,
+          "timeScale": 0.28571428571428575,
+          "paused": false
+        },
+        {
+          "id": "sheep-1-0",
+          "position": [
+            -4.975006163252207,
+            0,
+            6.000480709967268
+          ],
+          "quaternion": [
+            0,
+            -0.11713600463854255,
+            0,
+            0.9931158826729736
+          ],
+          "yaw": -0.23481107931090053,
+          "clipIndex": "1",
+          "clip": "Walk",
+          "time": 0.08571428571428574,
+          "timeScale": 0.28571428571428575,
+          "paused": false
+        },
+        {
+          "id": "sheep-2-0",
+          "position": [
+            -2.9750061632522073,
+            0,
+            9.000480709967267
+          ],
+          "quaternion": [
+            0,
+            0.41009269814444677,
+            0,
+            0.9120438470427875
+          ],
+          "yaw": 0.8451113953605909,
+          "clipIndex": "1",
+          "clip": "Walk",
+          "time": 0.08571428571428574,
+          "timeScale": 0.28571428571428575,
+          "paused": false
+        },
+        {
+          "id": "sheep-3-0",
+          "position": [
+            -7.975006163252207,
+            0,
+            12.000480709967267
+          ],
+          "quaternion": [
+            0,
+            -0.21391434159515343,
+            0,
+            0.9768524220474206
+          ],
+          "yaw": -0.4311606201602626,
+          "clipIndex": "1",
+          "clip": "Walk",
+          "time": 0.08571428571428574,
+          "timeScale": 0.28571428571428575,
+          "paused": false
+        },
+        {
+          "id": "sheep-4-0",
+          "position": [
+            -3.9750061632522073,
+            0,
+            14.000480709967267
+          ],
+          "quaternion": [
+            0,
+            0.7279003201017786,
+            0,
+            0.6856829617219085
+          ],
+          "yaw": 1.6305095587580392,
+          "clipIndex": "1",
+          "clip": "Walk",
+          "time": 0.08571428571428574,
+          "timeScale": 0.28571428571428575,
+          "paused": false
+        },
+        {
+          "id": "sheep-5-0",
+          "position": [
+            -8.975006163252207,
+            0,
+            15.000480709967267
+          ],
+          "quaternion": [
+            0,
+            0.22428195412851273,
+            0,
+            0.9745242967993644
+          ],
+          "yaw": 0.45241231366186674,
+          "clipIndex": "1",
+          "clip": "Walk",
+          "time": 0.08571428571428574,
+          "timeScale": 0.28571428571428575,
+          "paused": false
+        },
+        {
+          "id": "chicken-0-0",
+          "position": [
+            6,
+            0,
+            6
+          ],
+          "quaternion": [
+            0,
+            0,
+            0,
+            1
+          ],
+          "yaw": 0,
+          "clipIndex": "2",
+          "clip": "Peck",
+          "time": 0.5,
+          "timeScale": 1,
+          "paused": false
+        },
+        {
+          "id": "chicken-1-0",
+          "position": [
+            8.4,
+            0,
+            6
+          ],
+          "quaternion": [
+            0,
+            0.9304175679820246,
+            0,
+            0.3665012267242973
+          ],
+          "yaw": 2.3911010752322315,
+          "clipIndex": "2",
+          "clip": "Peck",
+          "time": 0.5,
+          "timeScale": 1,
+          "paused": false
+        },
+        {
+          "id": "chicken-2-0",
+          "position": [
+            10.8,
+            0,
+            6
+          ],
+          "quaternion": [
+            0,
+            0.6819983600624985,
+            0,
+            -0.7313537016191705
+          ],
+          "yaw": 4.782202150464463,
+          "clipIndex": "2",
+          "clip": "Peck",
+          "time": 0.5,
+          "timeScale": 1,
+          "paused": false
+        },
+        {
+          "id": "chicken-3-0",
+          "position": [
+            6,
+            0,
+            8.5
+          ],
+          "quaternion": [
+            0,
+            0.43051109680829514,
+            0,
+            0.9025852843498606
+          ],
+          "yaw": 0.8901179185171081,
+          "clipIndex": "2",
+          "clip": "Peck",
+          "time": 0.5,
+          "timeScale": 1,
+          "paused": false
+        },
+        {
+          "id": "chicken-4-0",
+          "position": [
+            8.324584612630707,
+            0,
+            8.502385908229252
+          ],
+          "quaternion": [
+            0,
+            0.999270971607946,
+            0,
+            0.03817754970806294
+          ],
+          "yaw": 3.06521899374934,
+          "clipIndex": "1",
+          "clip": "Walk",
+          "time": 0.23314285714285685,
+          "timeScale": 0.6034285714285708,
+          "paused": false
+        },
+        {
+          "id": "chicken-5-0",
+          "position": [
+            10.884699535957797,
+            0,
+            8.58417528708003
+          ],
+          "quaternion": [
+            0,
+            0.45899279729624504,
+            0,
+            -0.8884399878608392
+          ],
+          "yaw": 5.329462926124428,
+          "clipIndex": "1",
+          "clip": "Walk",
+          "time": 0.34285714285714286,
+          "timeScale": 0.6857142857142857,
+          "paused": false
+        },
+        {
+          "id": "chicken-6-0",
+          "position": [
+            5.992486172053152,
+            0,
+            10.93693349364244
+          ],
+          "quaternion": [
+            0,
+            0.7168408723884631,
+            0,
+            0.6972368060231382
+          ],
+          "yaw": 1.59852155131993,
+          "clipIndex": "1",
+          "clip": "Walk",
+          "time": 0.16457142857142898,
+          "timeScale": 0.19200000000000078,
+          "paused": false
+        },
+        {
+          "id": "chicken-7-0",
+          "position": [
+            8.4,
+            0,
+            11
+          ],
+          "quaternion": [
+            0,
+            0.8703556959398997,
+            0,
+            -0.492423560103467
+          ],
+          "yaw": 4.171336912266447,
+          "clipIndex": "2",
+          "clip": "Peck",
+          "time": 0.5,
+          "timeScale": 1,
+          "paused": false
+        },
+        {
+          "id": "chicken-8-0",
+          "position": [
+            10.8,
+            0,
+            11
+          ],
+          "quaternion": [
+            0,
+            0.13917310096006544,
+            0,
+            0.9902680687415704
+          ],
+          "yaw": 0.2792526803190927,
+          "clipIndex": "2",
+          "clip": "Peck",
+          "time": 0.5,
+          "timeScale": 1,
+          "paused": false
+        },
+        {
+          "id": "chicken-9-0",
+          "position": [
+            6,
+            0,
+            13.5
+          ],
+          "quaternion": [
+            0,
+            0.9723699203976766,
+            0,
+            0.23344536385590547
+          ],
+          "yaw": 2.670353755551324,
+          "clipIndex": "2",
+          "clip": "Peck",
+          "time": 0.5,
+          "timeScale": 1,
+          "paused": false
+        }
+      ]
+    },
+    {
+      "frame": 10,
+      "report": {
+        "animals": 20,
+        "elapsedSeconds": 0.9999999999999999,
+        "distanceMeters": 1.8117647294642083,
+        "walkFrames": 130,
+        "restFrames": 70,
+        "scope": "bounded deterministic sheep flock, cattle grazing and chicken walking/pecking with original clips; not a full navigation AI"
+      },
+      "actors": [
+        {
+          "id": "cow-0-0",
+          "position": [
+            -24.90423779297332,
+            0,
+            6.971398059505704
+          ],
+          "quaternion": [
+            0,
+            0.115451369537344,
+            0,
+            0.9933131335444788
+          ],
+          "yaw": 0.2314187915753365,
+          "clipIndex": "0",
+          "clip": "Walk",
+          "time": 0.31428571428571433,
+          "timeScale": 0.5714285714285714,
+          "paused": false
+        },
+        {
+          "id": "cow-1-0",
+          "position": [
+            -19.840099230604025,
+            0,
+            7.119363058650775
+          ],
+          "quaternion": [
+            0,
+            -0.37040634716484155,
+            0,
+            0.9288698175632573
+          ],
+          "yaw": -0.7588928932453577,
+          "clipIndex": "0",
+          "clip": "Walk",
+          "time": 0.5714285714285715,
+          "timeScale": 0.5714285714285715,
+          "paused": false
+        },
+        {
+          "id": "cow-2-0",
+          "position": [
+            -24.89502742414671,
+            0,
+            12.830304525273599
+          ],
+          "quaternion": [
+            0,
+            0.4345917643530905,
+            0,
+            0.900627558070742
+          ],
+          "yaw": 0.8991698961492554,
+          "clipIndex": "0",
+          "clip": "Walk",
+          "time": 0.5714285714285715,
+          "timeScale": 0.5714285714285715,
+          "paused": false
+        },
+        {
+          "id": "cow-3-0",
+          "position": [
+            -19.95423399930877,
+            0,
+            13.194219641140187
+          ],
+          "quaternion": [
+            0,
+            -0.665760299256938,
+            0,
+            0.7461656812888893
+          ],
+          "yaw": -1.4570245940430895,
+          "clipIndex": "0",
+          "clip": "Walk",
+          "time": 0.5714285714285715,
+          "timeScale": 0.5714285714285715,
+          "paused": false
+        },
+        {
+          "id": "sheep-0-0",
+          "position": [
+            -8.900394010743486,
+            0,
+            7.00767714745291
+          ],
+          "quaternion": [
+            0,
+            -0.044183764842652185,
+            0,
+            0.9990234206085107
+          ],
+          "yaw": -0.08839630689636645,
+          "clipIndex": "1",
+          "clip": "Walk",
+          "time": 0.31428571428571433,
+          "timeScale": 0.5714285714285714,
+          "paused": false
+        },
+        {
+          "id": "sheep-1-0",
+          "position": [
+            -4.9003940107434865,
+            0,
+            6.00767714745291
+          ],
+          "quaternion": [
+            0,
+            -0.12026449634416099,
+            0,
+            0.9927418853453728
+          ],
+          "yaw": -0.2411126164458703,
+          "clipIndex": "1",
+          "clip": "Walk",
+          "time": 0.31428571428571433,
+          "timeScale": 0.5714285714285714,
+          "paused": false
+        },
+        {
+          "id": "sheep-2-0",
+          "position": [
+            -2.9003940107434865,
+            0,
+            9.00767714745291
+          ],
+          "quaternion": [
+            0,
+            0.1191427760638956,
+            0,
+            0.9928771318304136
+          ],
+          "yaw": 0.23885292785257034,
+          "clipIndex": "1",
+          "clip": "Walk",
+          "time": 0.31428571428571433,
+          "timeScale": 0.5714285714285714,
+          "paused": false
+        },
+        {
+          "id": "sheep-3-0",
+          "position": [
+            -7.9003940107434865,
+            0,
+            12.00767714745291
+          ],
+          "quaternion": [
+            0,
+            -0.16345282404274564,
+            0,
+            0.9865511513917823
+          ],
+          "yaw": -0.3283790790455867,
+          "clipIndex": "1",
+          "clip": "Walk",
+          "time": 0.31428571428571433,
+          "timeScale": 0.5714285714285714,
+          "paused": false
+        },
+        {
+          "id": "sheep-4-0",
+          "position": [
+            -3.9003940107434865,
+            0,
+            14.00767714745291
+          ],
+          "quaternion": [
+            0,
+            0.2897440341726416,
+            0,
+            0.9571041712694408
+          ],
+          "yaw": 0.5879187782514363,
+          "clipIndex": "1",
+          "clip": "Walk",
+          "time": 0.31428571428571433,
+          "timeScale": 0.5714285714285714,
+          "paused": false
+        },
+        {
+          "id": "sheep-5-0",
+          "position": [
+            -8.900394010743486,
+            0,
+            15.00767714745291
+          ],
+          "quaternion": [
+            0,
+            0.032154457948940715,
+            0,
+            0.9994829117268638
+          ],
+          "yaw": 0.06432000265313739,
+          "clipIndex": "1",
+          "clip": "Walk",
+          "time": 0.31428571428571433,
+          "timeScale": 0.5714285714285714,
+          "paused": false
+        },
+        {
+          "id": "chicken-0-0",
+          "position": [
+            6,
+            0,
+            6
+          ],
+          "quaternion": [
+            0,
+            0,
+            0,
+            1
+          ],
+          "yaw": 0,
+          "clipIndex": "2",
+          "clip": "Peck",
+          "time": 0.9999999999999999,
+          "timeScale": 1,
+          "paused": false
+        },
+        {
+          "id": "chicken-1-0",
+          "position": [
+            8.4,
+            0,
+            6
+          ],
+          "quaternion": [
+            0,
+            0.9304175679820246,
+            0,
+            0.3665012267242973
+          ],
+          "yaw": 2.3911010752322315,
+          "clipIndex": "2",
+          "clip": "Peck",
+          "time": 0.9999999999999999,
+          "timeScale": 1,
+          "paused": false
+        },
+        {
+          "id": "chicken-2-0",
+          "position": [
+            10.8,
+            0,
+            6
+          ],
+          "quaternion": [
+            0,
+            0.6819983600624985,
+            0,
+            -0.7313537016191705
+          ],
+          "yaw": 4.782202150464463,
+          "clipIndex": "2",
+          "clip": "Peck",
+          "time": 0.9999999999999999,
+          "timeScale": 1,
+          "paused": false
+        },
+        {
+          "id": "chicken-3-0",
+          "position": [
+            6.00336132770631,
+            0,
+            8.495912677340732
+          ],
+          "quaternion": [
+            0,
+            0.42367531448586615,
+            0,
+            0.9058141243628863
+          ],
+          "yaw": 0.8749979185171086,
+          "clipIndex": "1",
+          "clip": "Walk",
+          "time": 0.022628571428571068,
+          "timeScale": 0.14399999999999816,
+          "paused": false
+        },
+        {
+          "id": "chicken-4-0",
+          "position": [
+            8.210399208405596,
+            0,
+            8.473796484440053
+          ],
+          "quaternion": [
+            0,
+            0.978621704599749,
+            0,
+            0.20566856659752758
+          ],
+          "yaw": 2.72729899374934,
+          "clipIndex": "1",
+          "clip": "Walk",
+          "time": 0.5746285714285712,
+          "timeScale": 0.6857142857142857,
+          "paused": false
+        },
+        {
+          "id": "chicken-5-0",
+          "position": [
+            10.93609003761739,
+            0,
+            8.69163687929126
+          ],
+          "quaternion": [
+            0,
+            0.6034823512511267,
+            0,
+            -0.7973763551350214
+          ],
+          "yaw": 4.987462926124428,
+          "clipIndex": "1",
+          "clip": "Walk",
+          "time": 0.6822857142857146,
+          "timeScale": 0.6514285714285734,
+          "paused": false
+        },
+        {
+          "id": "chicken-6-0",
+          "position": [
+            5.992351785277612,
+            0,
+            10.927526736762323
+          ],
+          "quaternion": [
+            0,
+            0.7074055500292582,
+            0,
+            0.7068078860537725
+          ],
+          "yaw": 1.57164155131993,
+          "clipIndex": "2",
+          "clip": "Peck",
+          "time": 0.30000000000000004,
+          "timeScale": 1,
+          "paused": false
+        },
+        {
+          "id": "chicken-7-0",
+          "position": [
+            8.4,
+            0,
+            11
+          ],
+          "quaternion": [
+            0,
+            0.8703556959398997,
+            0,
+            -0.492423560103467
+          ],
+          "yaw": 4.171336912266447,
+          "clipIndex": "2",
+          "clip": "Peck",
+          "time": 0.9999999999999999,
+          "timeScale": 1,
+          "paused": false
+        },
+        {
+          "id": "chicken-8-0",
+          "position": [
+            10.8,
+            0,
+            11
+          ],
+          "quaternion": [
+            0,
+            0.13917310096006544,
+            0,
+            0.9902680687415704
+          ],
+          "yaw": 0.2792526803190927,
+          "clipIndex": "2",
+          "clip": "Peck",
+          "time": 0.9999999999999999,
+          "timeScale": 1,
+          "paused": false
+        },
+        {
+          "id": "chicken-9-0",
+          "position": [
+            6,
+            0,
+            13.5
+          ],
+          "quaternion": [
+            0,
+            0.9723699203976766,
+            0,
+            0.23344536385590547
+          ],
+          "yaw": 2.670353755551324,
+          "clipIndex": "2",
+          "clip": "Peck",
+          "time": 0.9999999999999999,
+          "timeScale": 1,
+          "paused": false
+        }
+      ]
+    },
+    {
+      "frame": 19,
+      "report": {
+        "animals": 20,
+        "elapsedSeconds": 1.9000000000000006,
+        "distanceMeters": 4.078772830984367,
+        "walkFrames": 249,
+        "restFrames": 131,
+        "scope": "bounded deterministic sheep flock, cattle grazing and chicken walking/pecking with original clips; not a full navigation AI"
+      },
+      "actors": [
+        {
+          "id": "cow-0-0",
+          "position": [
+            -24.72598777549387,
+            0,
+            6.948902892694287
+          ],
+          "quaternion": [
+            0,
+            0.009826884679737842,
+            0,
+            0.9999517150030252
+          ],
+          "yaw": 0.01965408569298338,
+          "clipIndex": "0",
+          "clip": "Walk",
+          "time": 0.8285714285714287,
+          "timeScale": 0.5714285714285715,
+          "paused": false
+        },
+        {
+          "id": "cow-1-0",
+          "position": [
+            -19.723531315880372,
+            0,
+            7.256078173097848
+          ],
+          "quaternion": [
+            0,
+            -0.46649921498015695,
+            0,
+            0.8845216121853084
+          ],
+          "yaw": -0.9706575991277107,
+          "clipIndex": "0",
+          "clip": "Walk",
+          "time": 1.0857142857142859,
+          "timeScale": 0.5714285714285715,
+          "paused": false
+        },
+        {
+          "id": "cow-2-0",
+          "position": [
+            -24.76899211517382,
+            0,
+            12.702264679313817
+          ],
+          "quaternion": [
+            0,
+            0.3369754370819948,
+            0,
+            0.9415134384613948
+          ],
+          "yaw": 0.6874051902669023,
+          "clipIndex": "0",
+          "clip": "Walk",
+          "time": 1.0857142857142859,
+          "timeScale": 0.5714285714285715,
+          "paused": false
+        },
+        {
+          "id": "cow-3-0",
+          "position": [
+            -19.952816577612204,
+            0,
+            13.373877906124106
+          ],
+          "quaternion": [
+            0,
+            -0.7408900784935434,
+            0,
+            0.6716263035273642
+          ],
+          "yaw": -1.6687892999254426,
+          "clipIndex": "0",
+          "clip": "Walk",
+          "time": 1.0857142857142859,
+          "timeScale": 0.5714285714285715,
+          "paused": false
+        },
+        {
+          "id": "sheep-0-0",
+          "position": [
+            -8.728579575758454,
+            0,
+            7.0593808728930805
+          ],
+          "quaternion": [
+            0,
+            -0.21340347332394782,
+            0,
+            0.9769641536787699
+          ],
+          "yaw": -0.43011473229973307,
+          "clipIndex": "1",
+          "clip": "Walk",
+          "time": 0.8285714285714287,
+          "timeScale": 0.5714285714285715,
+          "paused": false
+        },
+        {
+          "id": "sheep-1-0",
+          "position": [
+            -4.728579575758454,
+            0,
+            6.0593808728930805
+          ],
+          "quaternion": [
+            0,
+            -0.21414940283884712,
+            0,
+            0.9768009179273764
+          ],
+          "yaw": -0.4316418953952281,
+          "clipIndex": "1",
+          "clip": "Walk",
+          "time": 0.8285714285714287,
+          "timeScale": 0.5714285714285715,
+          "paused": false
+        },
+        {
+          "id": "sheep-2-0",
+          "position": [
+            -2.728579575758454,
+            0,
+            9.059380872893081
+          ],
+          "quaternion": [
+            0,
+            -0.21180463450624665,
+            0,
+            0.9773120263261244
+          ],
+          "yaw": -0.42684223995224374,
+          "clipIndex": "1",
+          "clip": "Walk",
+          "time": 0.8285714285714287,
+          "timeScale": 0.5714285714285715,
+          "paused": false
+        },
+        {
+          "id": "sheep-3-0",
+          "position": [
+            -7.728579575758454,
+            0,
+            12.059380872893081
+          ],
+          "quaternion": [
+            0,
+            -0.21457559224366973,
+            0,
+            0.9767073846415202
+          ],
+          "yaw": -0.4325145600212253,
+          "clipIndex": "1",
+          "clip": "Walk",
+          "time": 0.8285714285714287,
+          "timeScale": 0.5714285714285715,
+          "paused": false
+        },
+        {
+          "id": "sheep-4-0",
+          "position": [
+            -3.728579575758454,
+            0,
+            14.059380872893081
+          ],
+          "quaternion": [
+            0,
+            -0.2100985815075417,
+            0,
+            0.9776802064317958
+          ],
+          "yaw": -0.42335158144825513,
+          "clipIndex": "1",
+          "clip": "Walk",
+          "time": 0.8285714285714287,
+          "timeScale": 0.5714285714285715,
+          "paused": false
+        },
+        {
+          "id": "sheep-5-0",
+          "position": [
+            -8.728579575758454,
+            0,
+            15.059380872893081
+          ],
+          "quaternion": [
+            0,
+            -0.21265741938271257,
+            0,
+            0.9771268198046174
+          ],
+          "yaw": -0.4285875692042381,
+          "clipIndex": "1",
+          "clip": "Walk",
+          "time": 0.8285714285714287,
+          "timeScale": 0.5714285714285715,
+          "paused": false
+        },
+        {
+          "id": "chicken-0-0",
+          "position": [
+            6,
+            0,
+            6
+          ],
+          "quaternion": [
+            0,
+            0,
+            0,
+            1
+          ],
+          "yaw": 0,
+          "clipIndex": "2",
+          "clip": "Peck",
+          "time": 1.9000000000000006,
+          "timeScale": 1,
+          "paused": false
+        },
+        {
+          "id": "chicken-1-0",
+          "position": [
+            8.4,
+            0,
+            6
+          ],
+          "quaternion": [
+            0,
+            0.9304175679820246,
+            0,
+            0.3665012267242973
+          ],
+          "yaw": 2.3911010752322315,
+          "clipIndex": "2",
+          "clip": "Peck",
+          "time": 1.9000000000000006,
+          "timeScale": 1,
+          "paused": false
+        },
+        {
+          "id": "chicken-2-0",
+          "position": [
+            10.8,
+            0,
+            6
+          ],
+          "quaternion": [
+            0,
+            0.6819983600624985,
+            0,
+            -0.7313537016191705
+          ],
+          "yaw": 4.782202150464463,
+          "clipIndex": "2",
+          "clip": "Peck",
+          "time": 1.9000000000000006,
+          "timeScale": 1,
+          "paused": false
+        },
+        {
+          "id": "chicken-3-0",
+          "position": [
+            6.112919415687681,
+            0,
+            8.408504182665151
+          ],
+          "quaternion": [
+            0,
+            0.23373381012751454,
+            0,
+            0.9723006253228859
+          ],
+          "yaw": 0.47183220423139416,
+          "clipIndex": "1",
+          "clip": "Walk",
+          "time": 0.4525714285714279,
+          "timeScale": 0.6857142857142857,
+          "paused": false
+        },
+        {
+          "id": "chicken-4-0",
+          "position": [
+            8.050976237025532,
+            0,
+            8.33316155231818
+          ],
+          "quaternion": [
+            0,
+            0.8699387305007908,
+            0,
+            0.4931598170721865
+          ],
+          "yaw": 2.1101561366064816,
+          "clipIndex": "1",
+          "clip": "Walk",
+          "time": 1.1917714285714285,
+          "timeScale": 0.6857142857142857,
+          "paused": false
+        },
+        {
+          "id": "chicken-5-0",
+          "position": [
+            10.949051901400525,
+            0,
+            8.798425142046025
+          ],
+          "quaternion": [
+            0,
+            0.7188501995199181,
+            0,
+            -0.6951650096561061
+          ],
+          "yaw": 4.678891497552998,
+          "clipIndex": "1",
+          "clip": "Walk",
+          "time": 0.9600000000000019,
+          "timeScale": 0.03428571428571477,
+          "paused": false
+        },
+        {
+          "id": "chicken-6-0",
+          "position": [
+            5.992351785277612,
+            0,
+            10.927526736762323
+          ],
+          "quaternion": [
+            0,
+            0.7074055500292582,
+            0,
+            0.7068078860537725
+          ],
+          "yaw": 1.57164155131993,
+          "clipIndex": "2",
+          "clip": "Peck",
+          "time": 1.2,
+          "timeScale": 1,
+          "paused": false
+        },
+        {
+          "id": "chicken-7-0",
+          "position": [
+            8.4,
+            0,
+            11
+          ],
+          "quaternion": [
+            0,
+            0.8703556959398997,
+            0,
+            -0.492423560103467
+          ],
+          "yaw": 4.171336912266447,
+          "clipIndex": "2",
+          "clip": "Peck",
+          "time": 1.9000000000000006,
+          "timeScale": 1,
+          "paused": false
+        },
+        {
+          "id": "chicken-8-0",
+          "position": [
+            10.8,
+            0,
+            11
+          ],
+          "quaternion": [
+            0,
+            0.13917310096006544,
+            0,
+            0.9902680687415704
+          ],
+          "yaw": 0.2792526803190927,
+          "clipIndex": "2",
+          "clip": "Peck",
+          "time": 1.9000000000000006,
+          "timeScale": 1,
+          "paused": false
+        },
+        {
+          "id": "chicken-9-0",
+          "position": [
+            5.998195716250919,
+            0,
+            13.499074077408194
+          ],
+          "quaternion": [
+            0,
+            0.971689516015512,
+            0,
+            0.23626147478067583
+          ],
+          "yaw": 2.6645594698370387,
+          "clipIndex": "1",
+          "clip": "Walk",
+          "time": 0.010971428571428337,
+          "timeScale": 0.08914285714285645,
+          "paused": false
+        }
+      ]
+    },
+    {
+      "frame": 20,
+      "report": {
+        "animals": 20,
+        "elapsedSeconds": 2.0000000000000004,
+        "distanceMeters": 4.33156882091853,
+        "walkFrames": 263,
+        "restFrames": 137,
+        "scope": "bounded deterministic sheep flock, cattle grazing and chicken walking/pecking with original clips; not a full navigation AI"
+      },
+      "actors": [
+        {
+          "id": "cow-0-0",
+          "position": [
+            -24.705988859257246,
+            0,
+            6.948745110374703
+          ],
+          "quaternion": [
+            0,
+            -0.0019376618233565347,
+            0,
+            0.9999981227315671
+          ],
+          "yaw": -0.0038753260717224736,
+          "clipIndex": "0",
+          "clip": "Walk",
+          "time": 0.8857142857142859,
+          "timeScale": 0.5714285714285715,
+          "paused": false
+        },
+        {
+          "id": "cow-1-0",
+          "position": [
+            -19.712431388005985,
+            0,
+            7.272714673543658
+          ],
+          "quaternion": [
+            0,
+            -0.4768728282361371,
+            0,
+            0.8789723008662262
+          ],
+          "yaw": -0.9941870108924167,
+          "clipIndex": "0",
+          "clip": "Walk",
+          "time": 1.142857142857143,
+          "timeScale": 0.5714285714285715,
+          "paused": false
+        },
+        {
+          "id": "cow-2-0",
+          "position": [
+            -24.75338634409324,
+            0,
+            12.689757023463079
+          ],
+          "quaternion": [
+            0,
+            0.32587574407819947,
+            0,
+            0.9454126080296792
+          ],
+          "yaw": 0.6638757785021965,
+          "clipIndex": "0",
+          "clip": "Walk",
+          "time": 1.142857142857143,
+          "timeScale": 0.5714285714285715,
+          "paused": false
+        },
+        {
+          "id": "cow-3-0",
+          "position": [
+            -19.955007275900122,
+            0,
+            13.393757100949633
+          ],
+          "quaternion": [
+            0,
+            -0.7487401100683634,
+            0,
+            0.6628636719377635
+          ],
+          "yaw": -1.6923187116901484,
+          "clipIndex": "0",
+          "clip": "Walk",
+          "time": 1.142857142857143,
+          "timeScale": 0.5714285714285715,
+          "paused": false
+        },
+        {
+          "id": "sheep-0-0",
+          "position": [
+            -8.710538019826835,
+            0,
+            7.068010513811263
+          ],
+          "quaternion": [
+            0,
+            -0.22872643016236113,
+            0,
+            0.9734907396299066
+          ],
+          "yaw": -0.4615384615384617,
+          "clipIndex": "1",
+          "clip": "Walk",
+          "time": 0.8857142857142859,
+          "timeScale": 0.5714285714285715,
+          "paused": false
+        },
+        {
+          "id": "sheep-1-0",
+          "position": [
+            -4.710538019826835,
+            0,
+            6.068010513811263
+          ],
+          "quaternion": [
+            0,
+            -0.22872643016236113,
+            0,
+            0.9734907396299066
+          ],
+          "yaw": -0.4615384615384617,
+          "clipIndex": "1",
+          "clip": "Walk",
+          "time": 0.8857142857142859,
+          "timeScale": 0.5714285714285715,
+          "paused": false
+        },
+        {
+          "id": "sheep-2-0",
+          "position": [
+            -2.7105380198268354,
+            0,
+            9.068010513811263
+          ],
+          "quaternion": [
+            0,
+            -0.22872643016236113,
+            0,
+            0.9734907396299066
+          ],
+          "yaw": -0.4615384615384617,
+          "clipIndex": "1",
+          "clip": "Walk",
+          "time": 0.8857142857142859,
+          "timeScale": 0.5714285714285715,
+          "paused": false
+        },
+        {
+          "id": "sheep-3-0",
+          "position": [
+            -7.710538019826835,
+            0,
+            12.068010513811263
+          ],
+          "quaternion": [
+            0,
+            -0.22872643016236113,
+            0,
+            0.9734907396299066
+          ],
+          "yaw": -0.4615384615384617,
+          "clipIndex": "1",
+          "clip": "Walk",
+          "time": 0.8857142857142859,
+          "timeScale": 0.5714285714285715,
+          "paused": false
+        },
+        {
+          "id": "sheep-4-0",
+          "position": [
+            -3.7105380198268354,
+            0,
+            14.068010513811263
+          ],
+          "quaternion": [
+            0,
+            -0.22872643016236113,
+            0,
+            0.9734907396299066
+          ],
+          "yaw": -0.4615384615384617,
+          "clipIndex": "1",
+          "clip": "Walk",
+          "time": 0.8857142857142859,
+          "timeScale": 0.5714285714285715,
+          "paused": false
+        },
+        {
+          "id": "sheep-5-0",
+          "position": [
+            -8.710538019826835,
+            0,
+            15.068010513811263
+          ],
+          "quaternion": [
+            0,
+            -0.22872643016236113,
+            0,
+            0.9734907396299066
+          ],
+          "yaw": -0.4615384615384617,
+          "clipIndex": "1",
+          "clip": "Walk",
+          "time": 0.8857142857142859,
+          "timeScale": 0.5714285714285715,
+          "paused": false
+        },
+        {
+          "id": "chicken-0-0",
+          "position": [
+            6,
+            0,
+            6
+          ],
+          "quaternion": [
+            0,
+            0,
+            0,
+            1
+          ],
+          "yaw": 0,
+          "clipIndex": "2",
+          "clip": "Peck",
+          "time": 2.0000000000000004,
+          "timeScale": 1,
+          "paused": false
+        },
+        {
+          "id": "chicken-1-0",
+          "position": [
+            8.4,
+            0,
+            6
+          ],
+          "quaternion": [
+            0,
+            0.9304175679820246,
+            0,
+            0.3665012267242973
+          ],
+          "yaw": 2.3911010752322315,
+          "clipIndex": "2",
+          "clip": "Peck",
+          "time": 2.0000000000000004,
+          "timeScale": 1,
+          "paused": false
+        },
+        {
+          "id": "chicken-2-0",
+          "position": [
+            10.800013340707716,
+            0,
+            6.000191535961618
+          ],
+          "quaternion": [
+            0,
+            0.6821989342781545,
+            0,
+            -0.7311666117033451
+          ],
+          "yaw": 4.781653579035892,
+          "clipIndex": "1",
+          "clip": "Walk",
+          "time": 0.0027428571428570847,
+          "timeScale": 0.027428571428570844,
+          "paused": false
+        },
+        {
+          "id": "chicken-3-0",
+          "position": [
+            6.134654212515974,
+            0,
+            8.398336934057713
+          ],
+          "quaternion": [
+            0,
+            0.2002669546604173,
+            0,
+            0.9797413673368306
+          ],
+          "yaw": 0.40326077565996465,
+          "clipIndex": "1",
+          "clip": "Walk",
+          "time": 0.5211428571428565,
+          "timeScale": 0.6857142857142857,
+          "paused": false
+        },
+        {
+          "id": "chicken-4-0",
+          "position": [
+            8.039365577226837,
+            0,
+            8.312162340036489
+          ],
+          "quaternion": [
+            0,
+            0.8525224455327836,
+            0,
+            0.5226906158166627
+          ],
+          "yaw": 2.041584708035054,
+          "clipIndex": "1",
+          "clip": "Walk",
+          "time": 1.260342857142857,
+          "timeScale": 0.6857142857142857,
+          "paused": false
+        },
+        {
+          "id": "chicken-5-0",
+          "position": [
+            10.949041725536851,
+            0,
+            8.798724969406832
+          ],
+          "quaternion": [
+            0,
+            0.7191480613552252,
+            0,
+            -0.694856867166916
+          ],
+          "yaw": 4.678034354695854,
+          "clipIndex": "2",
+          "clip": "Peck",
+          "time": 0.1,
+          "timeScale": 1,
+          "paused": false
+        },
+        {
+          "id": "chicken-6-0",
+          "position": [
+            5.992351785277612,
+            0,
+            10.927526736762323
+          ],
+          "quaternion": [
+            0,
+            0.7074055500292582,
+            0,
+            0.7068078860537725
+          ],
+          "yaw": 1.57164155131993,
+          "clipIndex": "2",
+          "clip": "Peck",
+          "time": 1.3,
+          "timeScale": 1,
+          "paused": false
+        },
+        {
+          "id": "chicken-7-0",
+          "position": [
+            8.4,
+            0,
+            11
+          ],
+          "quaternion": [
+            0,
+            0.8703556959398997,
+            0,
+            -0.492423560103467
+          ],
+          "yaw": 4.171336912266447,
+          "clipIndex": "2",
+          "clip": "Peck",
+          "time": 2.0000000000000004,
+          "timeScale": 1,
+          "paused": false
+        },
+        {
+          "id": "chicken-8-0",
+          "position": [
+            10.8,
+            0,
+            11
+          ],
+          "quaternion": [
+            0,
+            0.13917310096006544,
+            0,
+            0.9902680687415704
+          ],
+          "yaw": 0.2792526803190927,
+          "clipIndex": "2",
+          "clip": "Peck",
+          "time": 2.0000000000000004,
+          "timeScale": 1,
+          "paused": false
+        },
+        {
+          "id": "chicken-9-0",
+          "position": [
+            5.994370334968134,
+            0,
+            13.49706693488365
+          ],
+          "quaternion": [
+            0,
+            0.9702129503726628,
+            0,
+            0.24225364998111595
+          ],
+          "yaw": 2.6522166126941817,
+          "clipIndex": "1",
+          "clip": "Walk",
+          "time": 0.026742857142856694,
+          "timeScale": 0.15771428571428356,
+          "paused": false
+        }
+      ]
+    },
+    {
+      "frame": 35,
+      "report": {
+        "animals": 20,
+        "elapsedSeconds": 3.5000000000000018,
+        "distanceMeters": 8.427128562371442,
+        "walkFrames": 479,
+        "restFrames": 221,
+        "scope": "bounded deterministic sheep flock, cattle grazing and chicken walking/pecking with original clips; not a full navigation AI"
+      },
+      "actors": [
+        {
+          "id": "cow-0-0",
+          "position": [
+            -24.41238380432113,
+            0,
+            7.00227721576315
+          ],
+          "quaternion": [
+            0,
+            -0.17746331533940066,
+            0,
+            0.9841274163992935
+          ],
+          "yaw": -0.35681650254231106,
+          "clipIndex": "0",
+          "clip": "Walk",
+          "time": 1.7428571428571433,
+          "timeScale": 0.5714285714285715,
+          "paused": false
+        },
+        {
+          "id": "cow-1-0",
+          "position": [
+            -19.596173169369617,
+            0,
+            7.547584899633818
+          ],
+          "quaternion": [
+            0,
+            -0.6237756508539442,
+            0,
+            0.7816034399884243
+          ],
+          "yaw": -1.3471281873630052,
+          "clipIndex": "0",
+          "clip": "Walk",
+          "time": 4.440892098500626e-16,
+          "timeScale": 0.5714285714285715,
+          "paused": false
+        },
+        {
+          "id": "cow-2-0",
+          "position": [
+            -24.489694653594714,
+            0,
+            12.54998468373383
+          ],
+          "quaternion": [
+            0,
+            0.15484178121028735,
+            0,
+            0.9879392809234915
+          ],
+          "yaw": 0.31093460203160783,
+          "clipIndex": "0",
+          "clip": "Walk",
+          "time": 4.440892098500626e-16,
+          "timeScale": 0.5714285714285715,
+          "paused": false
+        },
+        {
+          "id": "cow-3-0",
+          "position": [
+            -20.04263148914931,
+            0,
+            13.679049252688545
+          ],
+          "quaternion": [
+            0,
+            -0.8534814967020551,
+            0,
+            0.5211231474298756
+          ],
+          "yaw": -2.045259888160737,
+          "clipIndex": "0",
+          "clip": "Walk",
+          "time": 4.440892098500626e-16,
+          "timeScale": 0.5714285714285715,
+          "paused": false
+        },
+        {
+          "id": "sheep-0-0",
+          "position": [
+            -8.481649756577985,
+            0,
+            7.257809962971598
+          ],
+          "quaternion": [
+            0,
+            -0.4453261233433304,
+            0,
+            0.895368440290365
+          ],
+          "yaw": -0.9230769230769237,
+          "clipIndex": "1",
+          "clip": "Walk",
+          "time": 1.7428571428571433,
+          "timeScale": 0.5714285714285715,
+          "paused": false
+        },
+        {
+          "id": "sheep-1-0",
+          "position": [
+            -4.481649756577986,
+            0,
+            6.257809962971598
+          ],
+          "quaternion": [
+            0,
+            -0.4453261233433304,
+            0,
+            0.895368440290365
+          ],
+          "yaw": -0.9230769230769237,
+          "clipIndex": "1",
+          "clip": "Walk",
+          "time": 1.7428571428571433,
+          "timeScale": 0.5714285714285715,
+          "paused": false
+        },
+        {
+          "id": "sheep-2-0",
+          "position": [
+            -2.481649756577986,
+            0,
+            9.2578099629716
+          ],
+          "quaternion": [
+            0,
+            -0.4453261233433304,
+            0,
+            0.895368440290365
+          ],
+          "yaw": -0.9230769230769237,
+          "clipIndex": "1",
+          "clip": "Walk",
+          "time": 1.7428571428571433,
+          "timeScale": 0.5714285714285715,
+          "paused": false
+        },
+        {
+          "id": "sheep-3-0",
+          "position": [
+            -7.481649756577986,
+            0,
+            12.2578099629716
+          ],
+          "quaternion": [
+            0,
+            -0.4453261233433304,
+            0,
+            0.895368440290365
+          ],
+          "yaw": -0.9230769230769237,
+          "clipIndex": "1",
+          "clip": "Walk",
+          "time": 1.7428571428571433,
+          "timeScale": 0.5714285714285715,
+          "paused": false
+        },
+        {
+          "id": "sheep-4-0",
+          "position": [
+            -3.481649756577986,
+            0,
+            14.2578099629716
+          ],
+          "quaternion": [
+            0,
+            -0.4453261233433304,
+            0,
+            0.895368440290365
+          ],
+          "yaw": -0.9230769230769237,
+          "clipIndex": "1",
+          "clip": "Walk",
+          "time": 1.7428571428571433,
+          "timeScale": 0.5714285714285715,
+          "paused": false
+        },
+        {
+          "id": "sheep-5-0",
+          "position": [
+            -8.481649756577985,
+            0,
+            15.2578099629716
+          ],
+          "quaternion": [
+            0,
+            -0.4453261233433304,
+            0,
+            0.895368440290365
+          ],
+          "yaw": -0.9230769230769237,
+          "clipIndex": "1",
+          "clip": "Walk",
+          "time": 1.7428571428571433,
+          "timeScale": 0.5714285714285715,
+          "paused": false
+        },
+        {
+          "id": "chicken-0-0",
+          "position": [
+            6,
+            0,
+            6
+          ],
+          "quaternion": [
+            0,
+            0,
+            0,
+            1
+          ],
+          "yaw": 0,
+          "clipIndex": "2",
+          "clip": "Peck",
+          "time": 0.7000000476837169,
+          "timeScale": 1,
+          "paused": false
+        },
+        {
+          "id": "chicken-1-0",
+          "position": [
+            8.388252623015921,
+            0,
+            5.988518328772904
+          ],
+          "quaternion": [
+            0,
+            0.921560884229743,
+            0,
+            0.3882338685092972
+          ],
+          "yaw": 2.3441639323750882,
+          "clipIndex": "1",
+          "clip": "Walk",
+          "time": 0.06034285714285732,
+          "timeScale": 0.2537142857142864,
+          "paused": false
+        },
+        {
+          "id": "chicken-2-0",
+          "position": [
+            10.730888576858272,
+            0,
+            6.234366764640755
+          ],
+          "quaternion": [
+            0,
+            0.8943888566504191,
+            0,
+            -0.44729025598547967
+          ],
+          "yaw": 4.069059293321606,
+          "clipIndex": "1",
+          "clip": "Walk",
+          "time": 0.7474285714285718,
+          "timeScale": 0.6857142857142857,
+          "paused": false
+        },
+        {
+          "id": "chicken-3-0",
+          "position": [
+            6.472559387799113,
+            0,
+            8.433423562432273
+          ],
+          "quaternion": [
+            0,
+            -0.3003841006940208,
+            0,
+            0.9538183223498301
+          ],
+          "yaw": -0.6101906529114639,
+          "clipIndex": "1",
+          "clip": "Walk",
+          "time": 1.5270857142857133,
+          "timeScale": 0.5417142857142851,
+          "paused": false
+        },
+        {
+          "id": "chicken-4-0",
+          "position": [
+            8.001653966288956,
+            0,
+            8.169376562272594
+          ],
+          "quaternion": [
+            0,
+            0.723059359677577,
+            0,
+            0.6907859019860295
+          ],
+          "yaw": 1.6164418508921965,
+          "clipIndex": "2",
+          "clip": "Peck",
+          "time": 0.4,
+          "timeScale": 1,
+          "paused": false
+        },
+        {
+          "id": "chicken-5-0",
+          "position": [
+            10.949041725536851,
+            0,
+            8.798724969406832
+          ],
+          "quaternion": [
+            0,
+            0.7191480613552252,
+            0,
+            -0.694856867166916
+          ],
+          "yaw": 4.678034354695854,
+          "clipIndex": "2",
+          "clip": "Peck",
+          "time": 1.6000000000000003,
+          "timeScale": 1,
+          "paused": false
+        },
+        {
+          "id": "chicken-6-0",
+          "position": [
+            5.992351785277612,
+            0,
+            10.927526736762323
+          ],
+          "quaternion": [
+            0,
+            0.7074055500292582,
+            0,
+            0.7068078860537725
+          ],
+          "yaw": 1.57164155131993,
+          "clipIndex": "2",
+          "clip": "Peck",
+          "time": 4.7683716974944446e-8,
+          "timeScale": 1,
+          "paused": false
+        },
+        {
+          "id": "chicken-7-0",
+          "position": [
+            8.4,
+            0,
+            11
+          ],
+          "quaternion": [
+            0,
+            0.8703556959398997,
+            0,
+            -0.492423560103467
+          ],
+          "yaw": 4.171336912266447,
+          "clipIndex": "2",
+          "clip": "Peck",
+          "time": 0.7000000476837169,
+          "timeScale": 1,
+          "paused": false
+        },
+        {
+          "id": "chicken-8-0",
+          "position": [
+            10.836661645381906,
+            0,
+            10.991590041541087
+          ],
+          "quaternion": [
+            0,
+            0.085760863224239,
+            0,
+            0.9963157503216705
+          ],
+          "yaw": 0.17173268031909178,
+          "clipIndex": "1",
+          "clip": "Walk",
+          "time": 0.12754285714285735,
+          "timeScale": 0.38400000000000156,
+          "paused": false
+        },
+        {
+          "id": "chicken-9-0",
+          "position": [
+            5.820314399368463,
+            0,
+            13.276815877053503
+          ],
+          "quaternion": [
+            0,
+            0.7916241537131399,
+            0,
+            0.611008346307933
+          ],
+          "yaw": 1.826925184122755,
+          "clipIndex": "1",
+          "clip": "Walk",
+          "time": 0.8777142857142846,
+          "timeScale": 0.6857142857142857,
+          "paused": false
+        }
+      ]
+    },
+    {
+      "frame": 80,
+      "report": {
+        "animals": 20,
+        "elapsedSeconds": 7.999999999999988,
+        "distanceMeters": 20.194602437764605,
+        "walkFrames": 1109,
+        "restFrames": 491,
+        "scope": "bounded deterministic sheep flock, cattle grazing and chicken walking/pecking with original clips; not a full navigation AI"
+      },
+      "actors": [
+        {
+          "id": "cow-0-0",
+          "position": [
+            -23.86949359676355,
+            0,
+            7.667384386934653
+          ],
+          "quaternion": [
+            0,
+            -0.6501790066936008,
+            0,
+            0.759781060079101
+          ],
+          "yaw": -1.4156400319540725,
+          "clipIndex": "0",
+          "clip": "Walk",
+          "time": 0.31428571428571517,
+          "timeScale": 0.5714285714285715,
+          "paused": false
+        },
+        {
+          "id": "cow-1-0",
+          "position": [
+            -19.762733509734193,
+            0,
+            8.268947170559876
+          ],
+          "quaternion": [
+            0,
+            -0.9019017741427422,
+            0,
+            0.43194118789271996
+          ],
+          "yaw": -2.2483046579512402,
+          "clipIndex": "2",
+          "clip": "Graze",
+          "time": 0.2,
+          "timeScale": 1,
+          "paused": false
+        },
+        {
+          "id": "cow-2-0",
+          "position": [
+            -23.966336607343912,
+            0,
+            12.551034842021306
+          ],
+          "quaternion": [
+            0,
+            -0.15682384186556794,
+            0,
+            0.9876265906821886
+          ],
+          "yaw": -0.3149477509095684,
+          "clipIndex": "2",
+          "clip": "Graze",
+          "time": 1.4000000000000001,
+          "timeScale": 1,
+          "paused": false
+        },
+        {
+          "id": "cow-3-0",
+          "position": [
+            -20.2219976477149,
+            0,
+            13.915112610835592
+          ],
+          "quaternion": [
+            0,
+            -0.9312848458569527,
+            0,
+            0.36429182790338827
+          ],
+          "yaw": -2.3958481234548543,
+          "clipIndex": "2",
+          "clip": "Graze",
+          "time": 2.600000000000001,
+          "timeScale": 1,
+          "paused": false
+        },
+        {
+          "id": "sheep-0-0",
+          "position": [
+            -8.518637299751916,
+            0,
+            8.086795090185174
+          ],
+          "quaternion": [
+            0,
+            -0.9143282907245975,
+            0,
+            0.4049737976470031
+          ],
+          "yaw": -2.307692307692304,
+          "clipIndex": "1",
+          "clip": "Walk",
+          "time": 0.31428571428571517,
+          "timeScale": 0.5714285714285715,
+          "paused": false
+        },
+        {
+          "id": "sheep-1-0",
+          "position": [
+            -4.518637299751917,
+            0,
+            7.0867950901851735
+          ],
+          "quaternion": [
+            0,
+            -0.9143282907245975,
+            0,
+            0.4049737976470031
+          ],
+          "yaw": -2.307692307692304,
+          "clipIndex": "1",
+          "clip": "Walk",
+          "time": 0.31428571428571517,
+          "timeScale": 0.5714285714285715,
+          "paused": false
+        },
+        {
+          "id": "sheep-2-0",
+          "position": [
+            -2.5186372997519166,
+            0,
+            10.086795090185174
+          ],
+          "quaternion": [
+            0,
+            -0.9143282907245975,
+            0,
+            0.4049737976470031
+          ],
+          "yaw": -2.307692307692304,
+          "clipIndex": "1",
+          "clip": "Walk",
+          "time": 0.31428571428571517,
+          "timeScale": 0.5714285714285715,
+          "paused": false
+        },
+        {
+          "id": "sheep-3-0",
+          "position": [
+            -7.518637299751917,
+            0,
+            13.086795090185174
+          ],
+          "quaternion": [
+            0,
+            -0.9143282907245975,
+            0,
+            0.4049737976470031
+          ],
+          "yaw": -2.307692307692304,
+          "clipIndex": "1",
+          "clip": "Walk",
+          "time": 0.31428571428571517,
+          "timeScale": 0.5714285714285715,
+          "paused": false
+        },
+        {
+          "id": "sheep-4-0",
+          "position": [
+            -3.5186372997519166,
+            0,
+            15.086795090185174
+          ],
+          "quaternion": [
+            0,
+            -0.9143282907245975,
+            0,
+            0.4049737976470031
+          ],
+          "yaw": -2.307692307692304,
+          "clipIndex": "1",
+          "clip": "Walk",
+          "time": 0.31428571428571517,
+          "timeScale": 0.5714285714285715,
+          "paused": false
+        },
+        {
+          "id": "sheep-5-0",
+          "position": [
+            -8.518637299751916,
+            0,
+            16.086795090185174
+          ],
+          "quaternion": [
+            0,
+            -0.9143282907245975,
+            0,
+            0.4049737976470031
+          ],
+          "yaw": -2.307692307692304,
+          "clipIndex": "1",
+          "clip": "Walk",
+          "time": 0.31428571428571517,
+          "timeScale": 0.5714285714285715,
+          "paused": false
+        },
+        {
+          "id": "chicken-0-0",
+          "position": [
+            6.346403067100938,
+            0,
+            6.400049126896115
+          ],
+          "quaternion": [
+            0,
+            -0.7559753651467324,
+            0,
+            0.6546000666752675
+          ],
+          "yaw": -1.7142857142857144,
+          "clipIndex": "2",
+          "clip": "Peck",
+          "time": 0.2,
+          "timeScale": 1,
+          "paused": false
+        },
+        {
+          "id": "chicken-1-0",
+          "position": [
+            8.419489683111081,
+            0,
+            5.47117626653155
+          ],
+          "quaternion": [
+            0,
+            0.3319855033372474,
+            0,
+            0.943284488144438
+          ],
+          "yaw": 0.6768153609465171,
+          "clipIndex": "2",
+          "clip": "Peck",
+          "time": 1.4000000000000001,
+          "timeScale": 1,
+          "paused": false
+        },
+        {
+          "id": "chicken-2-0",
+          "position": [
+            10.425089229125717,
+            0,
+            6.3734652630563255
+          ],
+          "quaternion": [
+            0,
+            0.9993215536023013,
+            0,
+            0.036829777434607365
+          ],
+          "yaw": 3.0679164361787485,
+          "clipIndex": "2",
+          "clip": "Peck",
+          "time": 2.600000000000001,
+          "timeScale": 1,
+          "paused": false
+        },
+        {
+          "id": "chicken-3-0",
+          "position": [
+            6.528895077000528,
+            0,
+            8.482553328343608
+          ],
+          "quaternion": [
+            0,
+            -0.40051964723730066,
+            0,
+            0.9162881709249052
+          ],
+          "yaw": -0.8241677957686063,
+          "clipIndex": "2",
+          "clip": "Peck",
+          "time": 1.000000047683717,
+          "timeScale": 1,
+          "paused": false
+        },
+        {
+          "id": "chicken-4-0",
+          "position": [
+            8.001292026209299,
+            0,
+            8.15205411273735
+          ],
+          "quaternion": [
+            0,
+            0.7057396695229956,
+            0,
+            0.7084712547884867
+          ],
+          "yaw": 1.5669332794636286,
+          "clipIndex": "1",
+          "clip": "Walk",
+          "time": 0.06308571428571075,
+          "timeScale": 0.26057142857142057,
+          "paused": false
+        },
+        {
+          "id": "chicken-5-0",
+          "position": [
+            10.854298027993291,
+            0,
+            9.026389696881804
+          ],
+          "quaternion": [
+            0,
+            0.917828556493654,
+            0,
+            -0.39697700296714344
+          ],
+          "yaw": 3.958034354695866,
+          "clipIndex": "1",
+          "clip": "Walk",
+          "time": 0.7542857142857067,
+          "timeScale": 0.6857142857142857,
+          "paused": false
+        },
+        {
+          "id": "chicken-6-0",
+          "position": [
+            6.319285846263672,
+            0,
+            10.577991780645247
+          ],
+          "quaternion": [
+            0,
+            0.03296908576796668,
+            0,
+            0.9994563719260708
+          ],
+          "yaw": 0.06595012274850975,
+          "clipIndex": "1",
+          "clip": "Walk",
+          "time": 1.5318857142857132,
+          "timeScale": 0.5348571428571534,
+          "paused": false
+        },
+        {
+          "id": "chicken-7-0",
+          "position": [
+            7.878680200927616,
+            0,
+            11.09088484979582
+          ],
+          "quaternion": [
+            0,
+            0.9419949772495296,
+            0,
+            0.335626969769502
+          ],
+          "yaw": 2.457051197980733,
+          "clipIndex": "2",
+          "clip": "Peck",
+          "time": 0.4,
+          "timeScale": 1,
+          "paused": false
+        },
+        {
+          "id": "chicken-8-0",
+          "position": [
+            11.243252483294228,
+            0,
+            11.289070276716203
+          ],
+          "quaternion": [
+            0,
+            -0.6575155436921956,
+            0,
+            0.7534409796415088
+          ],
+          "yaw": -1.4350330339666217,
+          "clipIndex": "2",
+          "clip": "Peck",
+          "time": 1.6000000000000003,
+          "timeScale": 1,
+          "paused": false
+        },
+        {
+          "id": "chicken-9-0",
+          "position": [
+            5.872971110254141,
+            0,
+            12.986289916395235
+          ],
+          "quaternion": [
+            0,
+            0.4600344705425637,
+            0,
+            0.8879010563754405
+          ],
+          "yaw": 0.9560680412656097,
+          "clipIndex": "2",
+          "clip": "Peck",
+          "time": 4.7683716974944446e-8,
+          "timeScale": 1,
+          "paused": false
+        }
+      ]
+    },
+    {
+      "frame": 90,
+      "report": {
+        "animals": 20,
+        "elapsedSeconds": 8.999999999999984,
+        "distanceMeters": 22.006345446301324,
+        "walkFrames": 1209,
+        "restFrames": 591,
+        "scope": "bounded deterministic sheep flock, cattle grazing and chicken walking/pecking with original clips; not a full navigation AI"
+      },
+      "actors": [
+        {
+          "id": "cow-0-0",
+          "position": [
+            -23.859880758753906,
+            0,
+            7.766863352751859
+          ],
+          "quaternion": [
+            0,
+            -0.6937216873221425,
+            0,
+            0.7202431676447334
+          ],
+          "yaw": -1.5332870907776048,
+          "clipIndex": "0",
+          "clip": "Walk",
+          "time": 0.5714285714285806,
+          "timeScale": 9.135549459772717e-15,
+          "paused": false
+        },
+        {
+          "id": "cow-1-0",
+          "position": [
+            -19.762733509734193,
+            0,
+            8.268947170559876
+          ],
+          "quaternion": [
+            0,
+            -0.9019017741427422,
+            0,
+            0.43194118789271996
+          ],
+          "yaw": -2.2483046579512402,
+          "clipIndex": "2",
+          "clip": "Graze",
+          "time": 1.2,
+          "timeScale": 1,
+          "paused": false
+        },
+        {
+          "id": "cow-2-0",
+          "position": [
+            -23.966336607343912,
+            0,
+            12.551034842021306
+          ],
+          "quaternion": [
+            0,
+            -0.15682384186556794,
+            0,
+            0.9876265906821886
+          ],
+          "yaw": -0.3149477509095684,
+          "clipIndex": "2",
+          "clip": "Graze",
+          "time": 2.400000000000001,
+          "timeScale": 1,
+          "paused": false
+        },
+        {
+          "id": "cow-3-0",
+          "position": [
+            -20.2219976477149,
+            0,
+            13.915112610835592
+          ],
+          "quaternion": [
+            0,
+            -0.9312848458569527,
+            0,
+            0.36429182790338827
+          ],
+          "yaw": -2.3958481234548543,
+          "clipIndex": "2",
+          "clip": "Graze",
+          "time": 3.600000000000002,
+          "timeScale": 1,
+          "paused": false
+        },
+        {
+          "id": "sheep-0-0",
+          "position": [
+            -8.673532311000114,
+            0,
+            8.212066586837427
+          ],
+          "quaternion": [
+            0,
+            -0.965587340923578,
+            0,
+            0.2600790015517091
+          ],
+          "yaw": -2.6153846153846105,
+          "clipIndex": "1",
+          "clip": "Walk",
+          "time": 0.8857142857142868,
+          "timeScale": 0.5714285714285715,
+          "paused": false
+        },
+        {
+          "id": "sheep-1-0",
+          "position": [
+            -4.673532311000114,
+            0,
+            7.212066586837426
+          ],
+          "quaternion": [
+            0,
+            -0.965587340923578,
+            0,
+            0.2600790015517091
+          ],
+          "yaw": -2.6153846153846105,
+          "clipIndex": "1",
+          "clip": "Walk",
+          "time": 0.8857142857142868,
+          "timeScale": 0.5714285714285715,
+          "paused": false
+        },
+        {
+          "id": "sheep-2-0",
+          "position": [
+            -2.673532311000114,
+            0,
+            10.212066586837427
+          ],
+          "quaternion": [
+            0,
+            -0.965587340923578,
+            0,
+            0.2600790015517091
+          ],
+          "yaw": -2.6153846153846105,
+          "clipIndex": "1",
+          "clip": "Walk",
+          "time": 0.8857142857142868,
+          "timeScale": 0.5714285714285715,
+          "paused": false
+        },
+        {
+          "id": "sheep-3-0",
+          "position": [
+            -7.673532311000114,
+            0,
+            13.212066586837427
+          ],
+          "quaternion": [
+            0,
+            -0.965587340923578,
+            0,
+            0.2600790015517091
+          ],
+          "yaw": -2.6153846153846105,
+          "clipIndex": "1",
+          "clip": "Walk",
+          "time": 0.8857142857142868,
+          "timeScale": 0.5714285714285715,
+          "paused": false
+        },
+        {
+          "id": "sheep-4-0",
+          "position": [
+            -3.673532311000114,
+            0,
+            15.212066586837427
+          ],
+          "quaternion": [
+            0,
+            -0.965587340923578,
+            0,
+            0.2600790015517091
+          ],
+          "yaw": -2.6153846153846105,
+          "clipIndex": "1",
+          "clip": "Walk",
+          "time": 0.8857142857142868,
+          "timeScale": 0.5714285714285715,
+          "paused": false
+        },
+        {
+          "id": "sheep-5-0",
+          "position": [
+            -8.673532311000114,
+            0,
+            16.212066586837427
+          ],
+          "quaternion": [
+            0,
+            -0.965587340923578,
+            0,
+            0.2600790015517091
+          ],
+          "yaw": -2.6153846153846105,
+          "clipIndex": "1",
+          "clip": "Walk",
+          "time": 0.8857142857142868,
+          "timeScale": 0.5714285714285715,
+          "paused": false
+        },
+        {
+          "id": "chicken-0-0",
+          "position": [
+            6.346403067100938,
+            0,
+            6.400049126896115
+          ],
+          "quaternion": [
+            0,
+            -0.7559753651467324,
+            0,
+            0.6546000666752675
+          ],
+          "yaw": -1.7142857142857144,
+          "clipIndex": "2",
+          "clip": "Peck",
+          "time": 1.2,
+          "timeScale": 1,
+          "paused": false
+        },
+        {
+          "id": "chicken-1-0",
+          "position": [
+            8.419489683111081,
+            0,
+            5.47117626653155
+          ],
+          "quaternion": [
+            0,
+            0.3319855033372474,
+            0,
+            0.943284488144438
+          ],
+          "yaw": 0.6768153609465171,
+          "clipIndex": "2",
+          "clip": "Peck",
+          "time": 2.400000000000001,
+          "timeScale": 1,
+          "paused": false
+        },
+        {
+          "id": "chicken-2-0",
+          "position": [
+            10.425089229125717,
+            0,
+            6.3734652630563255
+          ],
+          "quaternion": [
+            0,
+            0.9993215536023013,
+            0,
+            0.036829777434607365
+          ],
+          "yaw": 3.0679164361787485,
+          "clipIndex": "2",
+          "clip": "Peck",
+          "time": 0.8000000476837169,
+          "timeScale": 1,
+          "paused": false
+        },
+        {
+          "id": "chicken-3-0",
+          "position": [
+            6.53245973296764,
+            0,
+            8.486464588793424
+          ],
+          "quaternion": [
+            0,
+            -0.4074352743091869,
+            0,
+            0.9132340867754541
+          ],
+          "yaw": -0.8392877957686039,
+          "clipIndex": "1",
+          "clip": "Walk",
+          "time": 0.022628571428568146,
+          "timeScale": 0.14399999999998842,
+          "paused": false
+        },
+        {
+          "id": "chicken-4-0",
+          "position": [
+            8.054338689743311,
+            0,
+            7.968148876572543
+          ],
+          "quaternion": [
+            0,
+            0.48512546334809403,
+            0,
+            0.8744445578830582
+          ],
+          "yaw": 1.013013279463638,
+          "clipIndex": "1",
+          "clip": "Walk",
+          "time": 0.6377142857142761,
+          "timeScale": 0.6857142857142857,
+          "paused": false
+        },
+        {
+          "id": "chicken-5-0",
+          "position": [
+            10.64517005565571,
+            0,
+            9.133677548147297
+          ],
+          "quaternion": [
+            0,
+            0.9978364685989027,
+            0,
+            -0.06574482438999218
+          ],
+          "yaw": 3.2731772118387226,
+          "clipIndex": "1",
+          "clip": "Walk",
+          "time": 1.436571428571422,
+          "timeScale": 0.6514285714285831,
+          "paused": false
+        },
+        {
+          "id": "chicken-6-0",
+          "position": [
+            6.3921079809422885,
+            0,
+            10.580785662104322
+          ],
+          "quaternion": [
+            0,
+            -0.07126162953248402,
+            0,
+            0.9974576583275979
+          ],
+          "yaw": -0.14264416296578442,
+          "clipIndex": "2",
+          "clip": "Peck",
+          "time": 0.30000000000000004,
+          "timeScale": 1,
+          "paused": false
+        },
+        {
+          "id": "chicken-7-0",
+          "position": [
+            7.878680200927616,
+            0,
+            11.09088484979582
+          ],
+          "quaternion": [
+            0,
+            0.9419949772495296,
+            0,
+            0.335626969769502
+          ],
+          "yaw": 2.457051197980733,
+          "clipIndex": "2",
+          "clip": "Peck",
+          "time": 1.4000000000000001,
+          "timeScale": 1,
+          "paused": false
+        },
+        {
+          "id": "chicken-8-0",
+          "position": [
+            11.243252483294228,
+            0,
+            11.289070276716203
+          ],
+          "quaternion": [
+            0,
+            -0.6575155436921956,
+            0,
+            0.7534409796415088
+          ],
+          "yaw": -1.4350330339666217,
+          "clipIndex": "2",
+          "clip": "Peck",
+          "time": 2.600000000000001,
+          "timeScale": 1,
+          "paused": false
+        },
+        {
+          "id": "chicken-9-0",
+          "position": [
+            5.872971110254141,
+            0,
+            12.986289916395235
+          ],
+          "quaternion": [
+            0,
+            0.4600344705425637,
+            0,
+            0.8879010563754405
+          ],
+          "yaw": 0.9560680412656097,
+          "clipIndex": "2",
+          "clip": "Peck",
+          "time": 1.000000047683717,
+          "timeScale": 1,
+          "paused": false
+        }
+      ]
+    },
+    {
+      "frame": 110,
+      "report": {
+        "animals": 20,
+        "elapsedSeconds": 10.999999999999977,
+        "distanceMeters": 25.01181980455945,
+        "walkFrames": 1403,
+        "restFrames": 797,
+        "scope": "bounded deterministic sheep flock, cattle grazing and chicken walking/pecking with original clips; not a full navigation AI"
+      },
+      "actors": [
+        {
+          "id": "cow-0-0",
+          "position": [
+            -23.859880758753906,
+            0,
+            7.766863352751859
+          ],
+          "quaternion": [
+            0,
+            -0.6937216873221425,
+            0,
+            0.7202431676447334
+          ],
+          "yaw": -1.5332870907776048,
+          "clipIndex": "2",
+          "clip": "Graze",
+          "time": 2.0000000000000004,
+          "timeScale": 1,
+          "paused": false
+        },
+        {
+          "id": "cow-1-0",
+          "position": [
+            -19.762733509734193,
+            0,
+            8.268947170559876
+          ],
+          "quaternion": [
+            0,
+            -0.9019017741427422,
+            0,
+            0.43194118789271996
+          ],
+          "yaw": -2.2483046579512402,
+          "clipIndex": "2",
+          "clip": "Graze",
+          "time": 3.2000000000000015,
+          "timeScale": 1,
+          "paused": false
+        },
+        {
+          "id": "cow-2-0",
+          "position": [
+            -23.966336607343912,
+            0,
+            12.551034842021306
+          ],
+          "quaternion": [
+            0,
+            -0.15682384186556794,
+            0,
+            0.9876265906821886
+          ],
+          "yaw": -0.3149477509095684,
+          "clipIndex": "2",
+          "clip": "Graze",
+          "time": 4.4,
+          "timeScale": 1,
+          "paused": false
+        },
+        {
+          "id": "cow-3-0",
+          "position": [
+            -20.2219976477149,
+            0,
+            13.915112610835592
+          ],
+          "quaternion": [
+            0,
+            -0.9312848458569527,
+            0,
+            0.36429182790338827
+          ],
+          "yaw": -2.3958481234548543,
+          "clipIndex": "2",
+          "clip": "Graze",
+          "time": 5.599999999999996,
+          "timeScale": 1,
+          "paused": false
+        },
+        {
+          "id": "sheep-0-0",
+          "position": [
+            -8.957994068672104,
+            0,
+            8.29864127353513
+          ],
+          "quaternion": [
+            0,
+            -0.9994772762780824,
+            0,
+            0.03232915408336195
+          ],
+          "yaw": -3.0769230769230766,
+          "clipIndex": "1",
+          "clip": "Walk",
+          "time": 1.714285714285728,
+          "timeScale": 1.3195793664116148e-14,
+          "paused": false
+        },
+        {
+          "id": "sheep-1-0",
+          "position": [
+            -4.957994068672103,
+            0,
+            7.2986412735351305
+          ],
+          "quaternion": [
+            0,
+            -0.9994772762780824,
+            0,
+            0.03232915408336195
+          ],
+          "yaw": -3.0769230769230766,
+          "clipIndex": "1",
+          "clip": "Walk",
+          "time": 1.714285714285728,
+          "timeScale": 1.3195793664116148e-14,
+          "paused": false
+        },
+        {
+          "id": "sheep-2-0",
+          "position": [
+            -2.957994068672103,
+            0,
+            10.29864127353513
+          ],
+          "quaternion": [
+            0,
+            -0.9994772762780824,
+            0,
+            0.03232915408336195
+          ],
+          "yaw": -3.0769230769230766,
+          "clipIndex": "1",
+          "clip": "Walk",
+          "time": 1.714285714285728,
+          "timeScale": 1.3195793664116148e-14,
+          "paused": false
+        },
+        {
+          "id": "sheep-3-0",
+          "position": [
+            -7.957994068672103,
+            0,
+            13.29864127353513
+          ],
+          "quaternion": [
+            0,
+            -0.9994772762780824,
+            0,
+            0.03232915408336195
+          ],
+          "yaw": -3.0769230769230766,
+          "clipIndex": "1",
+          "clip": "Walk",
+          "time": 1.714285714285728,
+          "timeScale": 1.3195793664116148e-14,
+          "paused": false
+        },
+        {
+          "id": "sheep-4-0",
+          "position": [
+            -3.957994068672103,
+            0,
+            15.29864127353513
+          ],
+          "quaternion": [
+            0,
+            -0.9994772762780824,
+            0,
+            0.03232915408336195
+          ],
+          "yaw": -3.0769230769230766,
+          "clipIndex": "1",
+          "clip": "Walk",
+          "time": 1.714285714285728,
+          "timeScale": 1.3195793664116148e-14,
+          "paused": false
+        },
+        {
+          "id": "sheep-5-0",
+          "position": [
+            -8.957994068672104,
+            0,
+            16.298641273535132
+          ],
+          "quaternion": [
+            0,
+            -0.9994772762780824,
+            0,
+            0.03232915408336195
+          ],
+          "yaw": -3.0769230769230766,
+          "clipIndex": "1",
+          "clip": "Walk",
+          "time": 1.714285714285728,
+          "timeScale": 1.3195793664116148e-14,
+          "paused": false
+        },
+        {
+          "id": "chicken-0-0",
+          "position": [
+            6.346403067100938,
+            0,
+            6.400049126896115
+          ],
+          "quaternion": [
+            0,
+            -0.7559753651467324,
+            0,
+            0.6546000666752675
+          ],
+          "yaw": -1.7142857142857144,
+          "clipIndex": "2",
+          "clip": "Peck",
+          "time": 0.400000047683717,
+          "timeScale": 1,
+          "paused": false
+        },
+        {
+          "id": "chicken-1-0",
+          "position": [
+            8.419489683111081,
+            0,
+            5.47117626653155
+          ],
+          "quaternion": [
+            0,
+            0.3319855033372474,
+            0,
+            0.943284488144438
+          ],
+          "yaw": 0.6768153609465171,
+          "clipIndex": "2",
+          "clip": "Peck",
+          "time": 1.6000000476837175,
+          "timeScale": 1,
+          "paused": false
+        },
+        {
+          "id": "chicken-2-0",
+          "position": [
+            10.300520345452192,
+            0,
+            6.34048472409744
+          ],
+          "quaternion": [
+            0,
+            0.9754632293626274,
+            0,
+            0.22016241314410157
+          ],
+          "yaw": 2.6976307218930495,
+          "clipIndex": "1",
+          "clip": "Walk",
+          "time": 0.4045714285714134,
+          "timeScale": 0.6857142857142857,
+          "paused": false
+        },
+        {
+          "id": "chicken-3-0",
+          "position": [
+            6.5907284296317625,
+            0,
+            8.86487500194695
+          ],
+          "quaternion": [
+            0,
+            -0.8405889645102649,
+            0,
+            0.5416735112072222
+          ],
+          "yaw": -1.9967392243400184,
+          "clipIndex": "1",
+          "clip": "Walk",
+          "time": 1.2068571428571309,
+          "timeScale": 0.6857142857142857,
+          "paused": false
+        },
+        {
+          "id": "chicken-4-0",
+          "position": [
+            8.383760007255816,
+            0,
+            7.804915629990155
+          ],
+          "quaternion": [
+            0,
+            -0.04643665500603693,
+            0,
+            0.9989212366707649
+          ],
+          "yaw": -0.09290672053637294,
+          "clipIndex": "1",
+          "clip": "Walk",
+          "time": 0.11291426187243236,
+          "timeScale": 0.08228571428573202,
+          "paused": false
+        },
+        {
+          "id": "chicken-5-0",
+          "position": [
+            10.537330445546518,
+            0,
+            9.13118280245638
+          ],
+          "quaternion": [
+            0,
+            0.9960490427937436,
+            0,
+            0.08880486670035027
+          ],
+          "yaw": 2.9637486404101403,
+          "clipIndex": "2",
+          "clip": "Peck",
+          "time": 1.0999999999999999,
+          "timeScale": 1,
+          "paused": false
+        },
+        {
+          "id": "chicken-6-0",
+          "position": [
+            6.3921079809422885,
+            0,
+            10.580785662104322
+          ],
+          "quaternion": [
+            0,
+            -0.07126162953248402,
+            0,
+            0.9974576583275979
+          ],
+          "yaw": -0.14264416296578442,
+          "clipIndex": "2",
+          "clip": "Peck",
+          "time": 2.3000000000000007,
+          "timeScale": 1,
+          "paused": false
+        },
+        {
+          "id": "chicken-7-0",
+          "position": [
+            7.878680200927616,
+            0,
+            11.09088484979582
+          ],
+          "quaternion": [
+            0,
+            0.9419949772495296,
+            0,
+            0.335626969769502
+          ],
+          "yaw": 2.457051197980733,
+          "clipIndex": "2",
+          "clip": "Peck",
+          "time": 0.600000047683717,
+          "timeScale": 1,
+          "paused": false
+        },
+        {
+          "id": "chicken-8-0",
+          "position": [
+            11.243310688866593,
+            0,
+            11.289498337561938
+          ],
+          "quaternion": [
+            0,
+            -0.6579803991691181,
+            0,
+            0.7530350551662572
+          ],
+          "yaw": -1.4362673196809057,
+          "clipIndex": "1",
+          "clip": "Walk",
+          "time": 0.004114285714283922,
+          "timeScale": 0.04114285714283921,
+          "paused": false
+        },
+        {
+          "id": "chicken-9-0",
+          "position": [
+            6.004928753309811,
+            0,
+            12.873832780333968
+          ],
+          "quaternion": [
+            0,
+            0.225784549009186,
+            0,
+            0.9741772618105591
+          ],
+          "yaw": 0.45549661269419817,
+          "clipIndex": "1",
+          "clip": "Walk",
+          "time": 0.534857142857127,
+          "timeScale": 0.6857142857142857,
+          "paused": false
+        }
+      ]
+    },
+    {
+      "frame": 220,
+      "report": {
+        "animals": 20,
+        "elapsedSeconds": 22.000000000000043,
+        "distanceMeters": 33.90946064480321,
+        "walkFrames": 1922,
+        "restFrames": 2478,
+        "scope": "bounded deterministic sheep flock, cattle grazing and chicken walking/pecking with original clips; not a full navigation AI"
+      },
+      "actors": [
+        {
+          "id": "cow-0-0",
+          "position": [
+            -23.859880758753906,
+            0,
+            7.766863352751859
+          ],
+          "quaternion": [
+            0,
+            -0.6937216873221425,
+            0,
+            0.7202431676447334
+          ],
+          "yaw": -1.5332870907776048,
+          "clipIndex": "2",
+          "clip": "Graze",
+          "time": 4.999999999999987,
+          "timeScale": 1,
+          "paused": false
+        },
+        {
+          "id": "cow-1-0",
+          "position": [
+            -19.762733509734193,
+            0,
+            8.268947170559876
+          ],
+          "quaternion": [
+            0,
+            -0.9019017741427422,
+            0,
+            0.43194118789271996
+          ],
+          "yaw": -2.2483046579512402,
+          "clipIndex": "2",
+          "clip": "Graze",
+          "time": 6.199999999999982,
+          "timeScale": 1,
+          "paused": false
+        },
+        {
+          "id": "cow-2-0",
+          "position": [
+            -23.966336607343912,
+            0,
+            12.551034842021306
+          ],
+          "quaternion": [
+            0,
+            -0.15682384186556794,
+            0,
+            0.9876265906821886
+          ],
+          "yaw": -0.3149477509095684,
+          "clipIndex": "2",
+          "clip": "Graze",
+          "time": 7.399999999999978,
+          "timeScale": 1,
+          "paused": false
+        },
+        {
+          "id": "cow-3-0",
+          "position": [
+            -20.2219976477149,
+            0,
+            13.915112610835592
+          ],
+          "quaternion": [
+            0,
+            -0.9312848458569527,
+            0,
+            0.36429182790338827
+          ],
+          "yaw": -2.3958481234548543,
+          "clipIndex": "2",
+          "clip": "Graze",
+          "time": 0.5999999999999766,
+          "timeScale": 1,
+          "paused": false
+        },
+        {
+          "id": "sheep-0-0",
+          "position": [
+            -8.957994068672104,
+            0,
+            8.29864127353513
+          ],
+          "quaternion": [
+            0,
+            -0.9994772762780824,
+            0,
+            0.03232915408336195
+          ],
+          "yaw": -3.0769230769230766,
+          "clipIndex": "1",
+          "clip": "Walk",
+          "time": 2.436146522606058e-15,
+          "timeScale": 2.436146522606058e-14,
+          "paused": false
+        },
+        {
+          "id": "sheep-1-0",
+          "position": [
+            -4.957994068672103,
+            0,
+            7.2986412735351305
+          ],
+          "quaternion": [
+            0,
+            -0.9994772762780824,
+            0,
+            0.03232915408336195
+          ],
+          "yaw": -3.0769230769230766,
+          "clipIndex": "1",
+          "clip": "Walk",
+          "time": 2.436146522606058e-15,
+          "timeScale": 2.436146522606058e-14,
+          "paused": false
+        },
+        {
+          "id": "sheep-2-0",
+          "position": [
+            -2.957994068672103,
+            0,
+            10.29864127353513
+          ],
+          "quaternion": [
+            0,
+            -0.9994772762780824,
+            0,
+            0.03232915408336195
+          ],
+          "yaw": -3.0769230769230766,
+          "clipIndex": "1",
+          "clip": "Walk",
+          "time": 2.436146522606058e-15,
+          "timeScale": 2.436146522606058e-14,
+          "paused": false
+        },
+        {
+          "id": "sheep-3-0",
+          "position": [
+            -7.957994068672103,
+            0,
+            13.29864127353513
+          ],
+          "quaternion": [
+            0,
+            -0.9994772762780824,
+            0,
+            0.03232915408336195
+          ],
+          "yaw": -3.0769230769230766,
+          "clipIndex": "1",
+          "clip": "Walk",
+          "time": 2.436146522606058e-15,
+          "timeScale": 2.436146522606058e-14,
+          "paused": false
+        },
+        {
+          "id": "sheep-4-0",
+          "position": [
+            -3.957994068672103,
+            0,
+            15.29864127353513
+          ],
+          "quaternion": [
+            0,
+            -0.9994772762780824,
+            0,
+            0.03232915408336195
+          ],
+          "yaw": -3.0769230769230766,
+          "clipIndex": "1",
+          "clip": "Walk",
+          "time": 2.436146522606058e-15,
+          "timeScale": 2.436146522606058e-14,
+          "paused": false
+        },
+        {
+          "id": "sheep-5-0",
+          "position": [
+            -8.957994068672104,
+            0,
+            16.298641273535132
+          ],
+          "quaternion": [
+            0,
+            -0.9994772762780824,
+            0,
+            0.03232915408336195
+          ],
+          "yaw": -3.0769230769230766,
+          "clipIndex": "1",
+          "clip": "Walk",
+          "time": 2.436146522606058e-15,
+          "timeScale": 2.436146522606058e-14,
+          "paused": false
+        },
+        {
+          "id": "chicken-0-0",
+          "position": [
+            5.686531000589901,
+            0,
+            6.505682967625979
+          ],
+          "quaternion": [
+            0,
+            -0.8499436684073151,
+            0,
+            -0.5268735716795027
+          ],
+          "yaw": -4.251428571428603,
+          "clipIndex": "1",
+          "clip": "Walk",
+          "time": 0.857142857142874,
+          "timeScale": 0.6857142857142857,
+          "paused": false
+        },
+        {
+          "id": "chicken-1-0",
+          "position": [
+            8.814401504252123,
+            0,
+            6.046728665119641
+          ],
+          "quaternion": [
+            0,
+            -0.9656252309746192,
+            0,
+            0.25993828749380743
+          ],
+          "yaw": -2.615676067624929,
+          "clipIndex": "1",
+          "clip": "Walk",
+          "time": 1.5990857142857084,
+          "timeScale": 0.4319999999999725,
+          "paused": false
+        },
+        {
+          "id": "chicken-2-0",
+          "position": [
+            10.574363089447033,
+            0,
+            5.696931705712332
+          ],
+          "quaternion": [
+            0,
+            -0.17935176888644824,
+            0,
+            0.9837850085243737
+          ],
+          "yaw": -0.3606549923926794,
+          "clipIndex": "2",
+          "clip": "Peck",
+          "time": 0.6,
+          "timeScale": 1,
+          "paused": false
+        },
+        {
+          "id": "chicken-3-0",
+          "position": [
+            5.958328310063698,
+            0,
+            8.875534121837386
+          ],
+          "quaternion": [
+            0,
+            -0.8495982117363671,
+            0,
+            -0.5274304490777596
+          ],
+          "yaw": -4.252739224340035,
+          "clipIndex": "2",
+          "clip": "Peck",
+          "time": 1.8000000000000005,
+          "timeScale": 1,
+          "paused": false
+        },
+        {
+          "id": "chicken-4-0",
+          "position": [
+            8.691146482705516,
+            0,
+            8.237055284137778
+          ],
+          "quaternion": [
+            0,
+            -0.787082413725642,
+            0,
+            0.6168478532051621
+          ],
+          "yaw": -1.812129577679232,
+          "clipIndex": "2",
+          "clip": "Peck",
+          "time": 0.10000004768371698,
+          "timeScale": 1,
+          "paused": false
+        },
+        {
+          "id": "chicken-5-0",
+          "position": [
+            10.26716295139424,
+            0,
+            8.676162018391784
+          ],
+          "quaternion": [
+            0,
+            0.5848794782940165,
+            0,
+            0.8111202104931913
+          ],
+          "yaw": 1.2494629261244254,
+          "clipIndex": "2",
+          "clip": "Peck",
+          "time": 1.3000000476837172,
+          "timeScale": 1,
+          "paused": false
+        },
+        {
+          "id": "chicken-6-0",
+          "position": [
+            6.655366251099191,
+            0,
+            11.083825499179726
+          ],
+          "quaternion": [
+            0,
+            -0.8507094442421416,
+            0,
+            0.5256362254232736
+          ],
+          "yaw": -2.034667020108662,
+          "clipIndex": "1",
+          "clip": "Walk",
+          "time": 0.20297142857144862,
+          "timeScale": 0.4937142857143142,
+          "paused": false
+        },
+        {
+          "id": "chicken-7-0",
+          "position": [
+            8.173081583516561,
+            0,
+            10.477453411532641
+          ],
+          "quaternion": [
+            0,
+            -0.10499481450570253,
+            0,
+            0.9944727693239837
+          ],
+          "yaw": -0.21037737344786756,
+          "clipIndex": "1",
+          "clip": "Walk",
+          "time": 0.9874285714285882,
+          "timeScale": 0.6857142857142857,
+          "paused": false
+        },
+        {
+          "id": "chicken-8-0",
+          "position": [
+            10.547731889400437,
+            0,
+            11.306783781955202
+          ],
+          "quaternion": [
+            0,
+            -0.6764848096455148,
+            0,
+            -0.7364565854949439
+          ],
+          "yaw": -4.79722731968092,
+          "clipIndex": "1",
+          "clip": "Walk",
+          "time": 0.062171404729558594,
+          "timeScale": 0.3017142857142549,
+          "paused": false
+        },
+        {
+          "id": "chicken-9-0",
+          "position": [
+            6.375991831782806,
+            0,
+            13.462683129298743
+          ],
+          "quaternion": [
+            0,
+            -0.9445599222953905,
+            0,
+            0.32833908264677514
+          ],
+          "yaw": -2.472503387305818,
+          "clipIndex": "2",
+          "clip": "Peck",
+          "time": 0.7999999999999999,
+          "timeScale": 1,
+          "paused": false
+        }
+      ]
+    },
+    {
+      "frame": 300,
+      "report": {
+        "animals": 20,
+        "elapsedSeconds": 30.000000000000156,
+        "distanceMeters": 50.01215631730317,
+        "walkFrames": 2825,
+        "restFrames": 3175,
+        "scope": "bounded deterministic sheep flock, cattle grazing and chicken walking/pecking with original clips; not a full navigation AI"
+      },
+      "actors": [
+        {
+          "id": "cow-0-0",
+          "position": [
+            -23.859880758753906,
+            0,
+            7.766863352751859
+          ],
+          "quaternion": [
+            0,
+            -0.6937216873221425,
+            0,
+            0.7202431676447334
+          ],
+          "yaw": -1.5332870907776048,
+          "clipIndex": "0",
+          "clip": "Walk",
+          "time": 8.932537249555547e-15,
+          "timeScale": 8.932537249555546e-14,
+          "paused": false
+        },
+        {
+          "id": "cow-1-0",
+          "position": [
+            -19.854596888168967,
+            0,
+            8.366312270721188
+          ],
+          "quaternion": [
+            0,
+            -0.9331132827969009,
+            0,
+            0.3595825377684391
+          ],
+          "yaw": -2.4059517167748066,
+          "clipIndex": "0",
+          "clip": "Walk",
+          "time": 0.4114285714286565,
+          "timeScale": 0.5714285714285715,
+          "paused": false
+        },
+        {
+          "id": "cow-2-0",
+          "position": [
+            -23.651559676179314,
+            0,
+            12.73606823012794
+          ],
+          "quaternion": [
+            0,
+            -0.36529014064434817,
+            0,
+            0.9308937174285968
+          ],
+          "yaw": -0.7478889273801941,
+          "clipIndex": "0",
+          "clip": "Walk",
+          "time": 1.0800000000000745,
+          "timeScale": 0.5714285714285715,
+          "paused": false
+        },
+        {
+          "id": "cow-3-0",
+          "position": [
+            -20.76686335275189,
+            0,
+            14.140119241246094
+          ],
+          "quaternion": [
+            0,
+            -0.9998241373065314,
+            0,
+            0.018753518583191586
+          ],
+          "yaw": -3.1040834175725376,
+          "clipIndex": "0",
+          "clip": "Walk",
+          "time": 1.7485714285714924,
+          "timeScale": 0.5714285714285715,
+          "paused": false
+        },
+        {
+          "id": "sheep-0-0",
+          "position": [
+            -9.508584153052144,
+            0,
+            7.245225792244326
+          ],
+          "quaternion": [
+            0,
+            -0.4343215684298068,
+            0,
+            -0.9007578893335726
+          ],
+          "yaw": -5.384615384615433,
+          "clipIndex": "1",
+          "clip": "Walk",
+          "time": 0.31428571428574315,
+          "timeScale": 0.5714285714285715,
+          "paused": false
+        },
+        {
+          "id": "sheep-1-0",
+          "position": [
+            -5.508584153052143,
+            0,
+            6.245225792244326
+          ],
+          "quaternion": [
+            0,
+            -0.4343215684298068,
+            0,
+            -0.9007578893335726
+          ],
+          "yaw": -5.384615384615433,
+          "clipIndex": "1",
+          "clip": "Walk",
+          "time": 0.31428571428574315,
+          "timeScale": 0.5714285714285715,
+          "paused": false
+        },
+        {
+          "id": "sheep-2-0",
+          "position": [
+            -3.5085841530521433,
+            0,
+            9.245225792244325
+          ],
+          "quaternion": [
+            0,
+            -0.4343215684298068,
+            0,
+            -0.9007578893335726
+          ],
+          "yaw": -5.384615384615433,
+          "clipIndex": "1",
+          "clip": "Walk",
+          "time": 0.31428571428574315,
+          "timeScale": 0.5714285714285715,
+          "paused": false
+        },
+        {
+          "id": "sheep-3-0",
+          "position": [
+            -8.508584153052144,
+            0,
+            12.245225792244325
+          ],
+          "quaternion": [
+            0,
+            -0.4343215684298068,
+            0,
+            -0.9007578893335726
+          ],
+          "yaw": -5.384615384615433,
+          "clipIndex": "1",
+          "clip": "Walk",
+          "time": 0.31428571428574315,
+          "timeScale": 0.5714285714285715,
+          "paused": false
+        },
+        {
+          "id": "sheep-4-0",
+          "position": [
+            -4.508584153052143,
+            0,
+            14.245225792244325
+          ],
+          "quaternion": [
+            0,
+            -0.4343215684298068,
+            0,
+            -0.9007578893335726
+          ],
+          "yaw": -5.384615384615433,
+          "clipIndex": "1",
+          "clip": "Walk",
+          "time": 0.31428571428574315,
+          "timeScale": 0.5714285714285715,
+          "paused": false
+        },
+        {
+          "id": "sheep-5-0",
+          "position": [
+            -9.508584153052144,
+            0,
+            15.245225792244325
+          ],
+          "quaternion": [
+            0,
+            -0.4343215684298068,
+            0,
+            -0.9007578893335726
+          ],
+          "yaw": -5.384615384615433,
+          "clipIndex": "1",
+          "clip": "Walk",
+          "time": 0.31428571428574315,
+          "timeScale": 0.5714285714285715,
+          "paused": false
+        },
+        {
+          "id": "chicken-0-0",
+          "position": [
+            5.890742263567052,
+            0,
+            6.017490230174287
+          ],
+          "quaternion": [
+            0,
+            -0.15806974127303622,
+            0,
+            -0.9874279502292181
+          ],
+          "yaw": -5.965714285714395,
+          "clipIndex": "1",
+          "clip": "Walk",
+          "time": 0.8571428571429519,
+          "timeScale": 0.6857142857142857,
+          "paused": false
+        },
+        {
+          "id": "chicken-1-0",
+          "position": [
+            8.313982864850413,
+            0,
+            5.874636904228445
+          ],
+          "quaternion": [
+            0,
+            -0.8286052823830401,
+            0,
+            -0.5598332662560545
+          ],
+          "yaw": -4.329961781910692,
+          "clipIndex": "1",
+          "clip": "Walk",
+          "time": 1.5990857142857553,
+          "timeScale": 0.4319999999998946,
+          "paused": false
+        },
+        {
+          "id": "chicken-2-0",
+          "position": [
+            10.757308420700031,
+            0,
+            6.193485222062797
+          ],
+          "quaternion": [
+            0,
+            -0.8611209109164911,
+            0,
+            0.5084002132005382
+          ],
+          "yaw": -2.0749407066783947,
+          "clipIndex": "2",
+          "clip": "Peck",
+          "time": 0.6,
+          "timeScale": 1,
+          "paused": false
+        },
+        {
+          "id": "chicken-3-0",
+          "position": [
+            6.163179248692156,
+            0,
+            8.387609453706823
+          ],
+          "quaternion": [
+            0,
+            -0.15742261971874907,
+            0,
+            -0.9875313254782787
+          ],
+          "yaw": -5.96702493862575,
+          "clipIndex": "2",
+          "clip": "Peck",
+          "time": 1.8000000000000005,
+          "timeScale": 1,
+          "paused": false
+        },
+        {
+          "id": "chicken-4-0",
+          "position": [
+            8.219901251336077,
+            0,
+            8.47780893569647
+          ],
+          "quaternion": [
+            0,
+            -0.9815459815704861,
+            0,
+            -0.1912262692802195
+          ],
+          "yaw": -3.5264152919649474,
+          "clipIndex": "2",
+          "clip": "Peck",
+          "time": 0.10000004768371698,
+          "timeScale": 1,
+          "paused": false
+        },
+        {
+          "id": "chicken-5-0",
+          "position": [
+            10.756140786801904,
+            0,
+            8.473837859410914
+          ],
+          "quaternion": [
+            0,
+            -0.23032475181722542,
+            0,
+            0.9731138210406497
+          ],
+          "yaw": -0.4648227881612881,
+          "clipIndex": "2",
+          "clip": "Peck",
+          "time": 1.3000000476837172,
+          "timeScale": 1,
+          "paused": false
+        },
+        {
+          "id": "chicken-6-0",
+          "position": [
+            6.14260607860132,
+            0,
+            11.214636027529883
+          ],
+          "quaternion": [
+            0,
+            -0.9542424963708869,
+            0,
+            -0.2990338745357422
+          ],
+          "yaw": -3.7489527343944316,
+          "clipIndex": "1",
+          "clip": "Walk",
+          "time": 0.20297142857151096,
+          "timeScale": 0.49371428571439213,
+          "paused": false
+        },
+        {
+          "id": "chicken-7-0",
+          "position": [
+            8.428305371127232,
+            0,
+            10.941021321406657
+          ],
+          "quaternion": [
+            0,
+            -0.8205265274941935,
+            0,
+            0.5716084478717233
+          ],
+          "yaw": -1.924663087733661,
+          "clipIndex": "1",
+          "clip": "Walk",
+          "time": 0.9874285714286661,
+          "timeScale": 0.6857142857142857,
+          "paused": false
+        },
+        {
+          "id": "chicken-8-0",
+          "position": [
+            10.975695213788907,
+            0,
+            10.995525397641368
+          ],
+          "quaternion": [
+            0,
+            0.1139160346355135,
+            0,
+            -0.993490380956414
+          ],
+          "yaw": -6.511513033966669,
+          "clipIndex": "1",
+          "clip": "Walk",
+          "time": 0.06217140472958988,
+          "timeScale": 0.30171428571417697,
+          "paused": false
+        },
+        {
+          "id": "chicken-9-0",
+          "position": [
+            5.856138583296209,
+            0,
+            13.363753917913968
+          ],
+          "quaternion": [
+            0,
+            -0.8665252460091868,
+            0,
+            -0.4991332467675522
+          ],
+          "yaw": -4.1867891015915335,
+          "clipIndex": "2",
+          "clip": "Peck",
+          "time": 0.7999999999999999,
+          "timeScale": 1,
+          "paused": false
+        }
+      ]
+    },
+    {
+      "frame": 600,
+      "report": {
+        "animals": 20,
+        "elapsedSeconds": 60.00000000000058,
+        "distanceMeters": 93.39501655777352,
+        "walkFrames": 5306,
+        "restFrames": 6694,
+        "scope": "bounded deterministic sheep flock, cattle grazing and chicken walking/pecking with original clips; not a full navigation AI"
+      },
+      "actors": [
+        {
+          "id": "cow-0-0",
+          "position": [
+            -24.939318366966763,
+            0,
+            8.617019653692513
+          ],
+          "quaternion": [
+            0,
+            -0.9906269334067577,
+            0,
+            -0.13659531034820796
+          ],
+          "yaw": -3.4156400319540756,
+          "clipIndex": "0",
+          "clip": "Walk",
+          "time": 3.3294002475616125e-14,
+          "timeScale": 3.3294002475616126e-13,
+          "paused": false
+        },
+        {
+          "id": "cow-1-0",
+          "position": [
+            -21.19970351827606,
+            0,
+            8.085885025797555
+          ],
+          "quaternion": [
+            0,
+            -0.8400852311734532,
+            0,
+            -0.5424544260712097
+          ],
+          "yaw": -4.288304657951377,
+          "clipIndex": "0",
+          "clip": "Walk",
+          "time": 0.41142857142890016,
+          "timeScale": 0.5714285714285715,
+          "paused": false
+        },
+        {
+          "id": "cow-2-0",
+          "position": [
+            -23.81368604335093,
+            0,
+            14.100497168226681
+          ],
+          "quaternion": [
+            0,
+            -0.9674927103379692,
+            0,
+            0.25289890360159817
+          ],
+          "yaw": -2.630241868556765,
+          "clipIndex": "0",
+          "clip": "Walk",
+          "time": 1.080000000000318,
+          "timeScale": 0.5714285714285715,
+          "paused": false
+        },
+        {
+          "id": "cow-3-0",
+          "position": [
+            -21.61701965369248,
+            0,
+            13.060681633033123
+          ],
+          "quaternion": [
+            0,
+            -0.6038915520123995,
+            0,
+            -0.7970664924634929
+          ],
+          "yaw": -4.986436358749109,
+          "clipIndex": "0",
+          "clip": "Walk",
+          "time": 1.748571428571736,
+          "timeScale": 0.5714285714285715,
+          "paused": false
+        },
+        {
+          "id": "sheep-0-0",
+          "position": [
+            -8.874683928080406,
+            0,
+            8.28780552060847
+          ],
+          "quaternion": [
+            0,
+            0.9952987648124987,
+            0,
+            -0.09685230385857843
+          ],
+          "yaw": -9.23076923076923,
+          "clipIndex": "2",
+          "clip": "Graze",
+          "time": 5.099999999999998,
+          "timeScale": 1,
+          "paused": false
+        },
+        {
+          "id": "sheep-1-0",
+          "position": [
+            -4.8746839280804055,
+            0,
+            7.2878055206084715
+          ],
+          "quaternion": [
+            0,
+            0.9952987648124987,
+            0,
+            -0.09685230385857843
+          ],
+          "yaw": -9.23076923076923,
+          "clipIndex": "2",
+          "clip": "Graze",
+          "time": 5.099999999999998,
+          "timeScale": 1,
+          "paused": false
+        },
+        {
+          "id": "sheep-2-0",
+          "position": [
+            -2.8746839280804055,
+            0,
+            10.28780552060847
+          ],
+          "quaternion": [
+            0,
+            0.9952987648124987,
+            0,
+            -0.09685230385857843
+          ],
+          "yaw": -9.23076923076923,
+          "clipIndex": "2",
+          "clip": "Graze",
+          "time": 5.099999999999998,
+          "timeScale": 1,
+          "paused": false
+        },
+        {
+          "id": "sheep-3-0",
+          "position": [
+            -7.8746839280804055,
+            0,
+            13.28780552060847
+          ],
+          "quaternion": [
+            0,
+            0.9952987648124987,
+            0,
+            -0.09685230385857843
+          ],
+          "yaw": -9.23076923076923,
+          "clipIndex": "2",
+          "clip": "Graze",
+          "time": 5.099999999999998,
+          "timeScale": 1,
+          "paused": false
+        },
+        {
+          "id": "sheep-4-0",
+          "position": [
+            -3.8746839280804055,
+            0,
+            15.28780552060847
+          ],
+          "quaternion": [
+            0,
+            0.9952987648124987,
+            0,
+            -0.09685230385857843
+          ],
+          "yaw": -9.23076923076923,
+          "clipIndex": "2",
+          "clip": "Graze",
+          "time": 5.099999999999998,
+          "timeScale": 1,
+          "paused": false
+        },
+        {
+          "id": "sheep-5-0",
+          "position": [
+            -8.874683928080406,
+            0,
+            16.287805520608472
+          ],
+          "quaternion": [
+            0,
+            0.9952987648124987,
+            0,
+            -0.09685230385857843
+          ],
+          "yaw": -9.23076923076923,
+          "clipIndex": "2",
+          "clip": "Graze",
+          "time": 5.099999999999998,
+          "timeScale": 1,
+          "paused": false
+        },
+        {
+          "id": "chicken-0-0",
+          "position": [
+            5.812199478699848,
+            0,
+            6.054651114443628
+          ],
+          "quaternion": [
+            0,
+            0.279415498198925,
+            0,
+            0.9601702866503663
+          ],
+          "yaw": -12.000000000000002,
+          "clipIndex": "2",
+          "clip": "Peck",
+          "time": 1.5000000476837174,
+          "timeScale": 1,
+          "paused": false
+        },
+        {
+          "id": "chicken-1-0",
+          "position": [
+            8.488472257842984,
+            0,
+            6.060146115133251
+          ],
+          "quaternion": [
+            0,
+            0.9754998064728232,
+            0,
+            0.22000028993500087
+          ],
+          "yaw": -9.868407496196692,
+          "clipIndex": "1",
+          "clip": "Walk",
+          "time": 0.29005714285749984,
+          "timeScale": 0.5965714285718312,
+          "paused": false
+        },
+        {
+          "id": "chicken-2-0",
+          "position": [
+            10.770459935130095,
+            0,
+            6.167072187933001
+          ],
+          "quaternion": [
+            0,
+            0.8389256923696747,
+            0,
+            -0.5442459762663036
+          ],
+          "yaw": -8.273797849535942,
+          "clipIndex": "1",
+          "clip": "Walk",
+          "time": 1.0902857142860989,
+          "timeScale": 0.6857142857142857,
+          "paused": false
+        },
+        {
+          "id": "chicken-3-0",
+          "position": [
+            6.3514397491356185,
+            0,
+            8.379396329136243
+          ],
+          "quaternion": [
+            0,
+            -0.11423154598571011,
+            0,
+            0.9934541528936877
+          ],
+          "yaw": -12.795333510054435,
+          "clipIndex": "1",
+          "clip": "Walk",
+          "time": 0.09508569044391205,
+          "timeScale": 0.19885714285674763,
+          "paused": false
+        },
+        {
+          "id": "chicken-4-0",
+          "position": [
+            8.064817434235339,
+            0,
+            8.354487762440293
+          ],
+          "quaternion": [
+            0,
+            0.8872763995990699,
+            0,
+            0.4612381063122514
+          ],
+          "yaw": -10.383558149107804,
+          "clipIndex": "2",
+          "clip": "Peck",
+          "time": 0.8999999999999999,
+          "timeScale": 1,
+          "paused": false
+        },
+        {
+          "id": "chicken-5-0",
+          "position": [
+            10.90087340621806,
+            0,
+            8.60915811279803
+          ],
+          "quaternion": [
+            0,
+            0.4963508224991138,
+            0,
+            -0.8681220311709946
+          ],
+          "yaw": -7.3219656453041475,
+          "clipIndex": "2",
+          "clip": "Peck",
+          "time": 2.1000000000000005,
+          "timeScale": 1,
+          "paused": false
+        },
+        {
+          "id": "chicken-6-0",
+          "position": [
+            6.047161613787257,
+            0,
+            11.115280998522962
+          ],
+          "quaternion": [
+            0,
+            0.8767228673622971,
+            0,
+            0.4809958563688797
+          ],
+          "yaw": -10.42835844868007,
+          "clipIndex": "2",
+          "clip": "Peck",
+          "time": 0.500000047683717,
+          "timeScale": 1,
+          "paused": false
+        },
+        {
+          "id": "chicken-7-0",
+          "position": [
+            8.449879270709529,
+            0,
+            10.810876129311964
+          ],
+          "quaternion": [
+            0,
+            0.6980989036871941,
+            0,
+            -0.716001341249259
+          ],
+          "yaw": -7.828663087733554,
+          "clipIndex": "2",
+          "clip": "Peck",
+          "time": 1.6000000476837175,
+          "timeScale": 1,
+          "paused": false
+        },
+        {
+          "id": "chicken-8-0",
+          "position": [
+            10.740582347006168,
+            0,
+            11.023075863048994
+          ],
+          "quaternion": [
+            0,
+            0.22876772209440235,
+            0,
+            0.9734810369636063
+          ],
+          "yaw": -12.104747319681307,
+          "clipIndex": "1",
+          "clip": "Walk",
+          "time": 0.41828571428610756,
+          "timeScale": 0.6857142857142857,
+          "paused": false
+        },
+        {
+          "id": "chicken-9-0",
+          "position": [
+            5.848390664010555,
+            0,
+            13.349659379258574
+          ],
+          "quaternion": [
+            0,
+            0.8548280217384598,
+            0,
+            0.5189114117561023
+          ],
+          "yaw": -10.515931958734793,
+          "clipIndex": "1",
+          "clip": "Walk",
+          "time": 1.2205714285718086,
+          "timeScale": 0.6857142857142857,
+          "paused": false
+        }
+      ]
+    }
+  ],
+  "stopped": [
+    {
+      "id": "cow-0-0",
+      "position": [
+        -25,
+        0,
+        7
+      ],
+      "quaternion": [
+        0,
+        0.17364817766693033,
+        0,
+        0.984807753012208
+      ],
+      "yaw": 0.34906585039886584,
+      "clipIndex": "2",
+      "clip": "Graze",
+      "time": 4.120000000000001,
+      "timeScale": 1,
+      "paused": false
+    },
+    {
+      "id": "cow-1-0",
+      "position": [
+        -20,
+        0,
+        7
+      ],
+      "quaternion": [
+        0,
+        -0.25881904510252074,
+        0,
+        0.9659258262890683
+      ],
+      "yaw": -0.5235987755982988,
+      "clipIndex": "2",
+      "clip": "Graze",
+      "time": 4.489999999999998,
+      "timeScale": 1,
+      "paused": false
+    },
+    {
+      "id": "cow-2-0",
+      "position": [
+        -25,
+        0,
+        13
+      ],
+      "quaternion": [
+        0,
+        0.5372996083468238,
+        0,
+        0.8433914458128857
+      ],
+      "yaw": 1.1344640137963142,
+      "clipIndex": "2",
+      "clip": "Graze",
+      "time": 4.859999999999999,
+      "timeScale": 1,
+      "paused": false
+    },
+    {
+      "id": "cow-3-0",
+      "position": [
+        -20,
+        0,
+        13
+      ],
+      "quaternion": [
+        0,
+        -0.573576436351046,
+        0,
+        0.8191520442889918
+      ],
+      "yaw": -1.2217304763960306,
+      "clipIndex": "2",
+      "clip": "Graze",
+      "time": 5.23,
+      "timeScale": 1,
+      "paused": false
+    },
+    {
+      "id": "sheep-0-0",
+      "position": [
+        -9,
+        0,
+        7
+      ],
+      "quaternion": [
+        0,
+        0.13052619222005157,
+        0,
+        0.9914448613738104
+      ],
+      "yaw": 0.2617993877991494,
+      "clipIndex": "2",
+      "clip": "Graze",
+      "time": 5.600000000000001,
+      "timeScale": 1,
+      "paused": false
+    },
+    {
+      "id": "sheep-1-0",
+      "position": [
+        -5,
+        0,
+        6
+      ],
+      "quaternion": [
+        0,
+        -0.17364817766693033,
+        0,
+        0.984807753012208
+      ],
+      "yaw": -0.34906585039886584,
+      "clipIndex": "2",
+      "clip": "Graze",
+      "time": 5.969999999999999,
+      "timeScale": 1,
+      "paused": false
+    },
+    {
+      "id": "sheep-2-0",
+      "position": [
+        -3,
+        0,
+        9
+      ],
+      "quaternion": [
+        0,
+        0.7071067811865476,
+        0,
+        0.7071067811865476
+      ],
+      "yaw": 1.5707963267948966,
+      "clipIndex": "2",
+      "clip": "Graze",
+      "time": 0.33999999999999986,
+      "timeScale": 1,
+      "paused": false
+    },
+    {
+      "id": "sheep-3-0",
+      "position": [
+        -8,
+        0,
+        12
+      ],
+      "quaternion": [
+        0,
+        -0.3420201433256687,
+        0,
+        0.9396926207859084
+      ],
+      "yaw": -0.6981317007977319,
+      "clipIndex": "2",
+      "clip": "Graze",
+      "time": 0.7100000000000009,
+      "timeScale": 1,
+      "paused": false
+    },
+    {
+      "id": "sheep-4-0",
+      "position": [
+        -4,
+        0,
+        14
+      ],
+      "quaternion": [
+        0,
+        0.9961946980917455,
+        0,
+        0.08715574274765814
+      ],
+      "yaw": 0.1745329251994329,
+      "clipIndex": "2",
+      "clip": "Graze",
+      "time": 1.0799999999999983,
+      "timeScale": 1,
+      "paused": false
+    },
+    {
+      "id": "sheep-5-0",
+      "position": [
+        -9,
+        0,
+        15
+      ],
+      "quaternion": [
+        0,
+        0.42261826174069944,
+        0,
+        0.9063077870366499
+      ],
+      "yaw": 0.8726646259971648,
+      "clipIndex": "2",
+      "clip": "Graze",
+      "time": 1.4499999999999993,
+      "timeScale": 1,
+      "paused": false
+    },
+    {
+      "id": "chicken-0-0",
+      "position": [
+        6,
+        0,
+        6
+      ],
+      "quaternion": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "yaw": 0,
+      "clipIndex": "0",
+      "clip": "Idle",
+      "time": 3.019999570846558,
+      "timeScale": 1,
+      "paused": false
+    },
+    {
+      "id": "chicken-1-0",
+      "position": [
+        8.4,
+        0,
+        6
+      ],
+      "quaternion": [
+        0,
+        0.9304175679820246,
+        0,
+        0.3665012267242973
+      ],
+      "yaw": 0.7504915783575619,
+      "clipIndex": "0",
+      "clip": "Idle",
+      "time": 0.18999952316283952,
+      "timeScale": 1,
+      "paused": false
+    },
+    {
+      "id": "chicken-2-0",
+      "position": [
+        10.8,
+        0,
+        6
+      ],
+      "quaternion": [
+        0,
+        0.6819983600624985,
+        0,
+        -0.7313537016191705
+      ],
+      "yaw": -1.5009831567151228,
+      "clipIndex": "0",
+      "clip": "Idle",
+      "time": 0.5599995231628441,
+      "timeScale": 1,
+      "paused": false
+    },
+    {
+      "id": "chicken-3-0",
+      "position": [
+        6,
+        0,
+        8.5
+      ],
+      "quaternion": [
+        0,
+        0.43051109680829514,
+        0,
+        0.9025852843498606
+      ],
+      "yaw": 0.8901179185171081,
+      "clipIndex": "0",
+      "clip": "Idle",
+      "time": 0.9299995231628415,
+      "timeScale": 1,
+      "paused": false
+    },
+    {
+      "id": "chicken-4-0",
+      "position": [
+        8.4,
+        0,
+        8.5
+      ],
+      "quaternion": [
+        0,
+        0.9975640502598242,
+        0,
+        -0.06975647374412533
+      ],
+      "yaw": -0.13962634015954642,
+      "clipIndex": "0",
+      "clip": "Idle",
+      "time": 1.299999523162839,
+      "timeScale": 1,
+      "paused": false
+    },
+    {
+      "id": "chicken-5-0",
+      "position": [
+        10.8,
+        0,
+        8.5
+      ],
+      "quaternion": [
+        0,
+        0.30070579950427334,
+        0,
+        -0.9537169507482268
+      ],
+      "yaw": -0.6108652381980159,
+      "clipIndex": "0",
+      "clip": "Idle",
+      "time": 1.6699995231628435,
+      "timeScale": 1,
+      "paused": false
+    },
+    {
+      "id": "chicken-6-0",
+      "position": [
+        6,
+        0,
+        11
+      ],
+      "quaternion": [
+        0,
+        0.7771459614569709,
+        0,
+        0.6293203910498375
+      ],
+      "yaw": 1.3613568165555772,
+      "clipIndex": "0",
+      "clip": "Idle",
+      "time": 2.039999523162841,
+      "timeScale": 1,
+      "paused": false
+    },
+    {
+      "id": "chicken-7-0",
+      "position": [
+        8.4,
+        0,
+        11
+      ],
+      "quaternion": [
+        0,
+        0.8703556959398997,
+        0,
+        -0.492423560103467
+      ],
+      "yaw": -1.029744258676654,
+      "clipIndex": "0",
+      "clip": "Idle",
+      "time": 2.4099995231628384,
+      "timeScale": 1,
+      "paused": false
+    },
+    {
+      "id": "chicken-8-0",
+      "position": [
+        10.8,
+        0,
+        11
+      ],
+      "quaternion": [
+        0,
+        0.13917310096006544,
+        0,
+        0.9902680687415704
+      ],
+      "yaw": 0.2792526803190927,
+      "clipIndex": "0",
+      "clip": "Idle",
+      "time": 2.779999523162843,
+      "timeScale": 1,
+      "paused": false
+    },
+    {
+      "id": "chicken-9-0",
+      "position": [
+        6,
+        0,
+        13.5
+      ],
+      "quaternion": [
+        0,
+        0.9723699203976766,
+        0,
+        0.23344536385590547
+      ],
+      "yaw": 0.47123889803846913,
+      "clipIndex": "0",
+      "clip": "Idle",
+      "time": 3.1499995231628404,
+      "timeScale": 1,
+      "paused": false
+    }
+  ]
+}

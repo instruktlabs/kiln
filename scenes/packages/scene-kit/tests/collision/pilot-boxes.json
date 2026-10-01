@@ -1,0 +1,111 @@
+{
+  "source": "collision.mjs; synthetic boxes; three 0.186.0, three-mesh-bvh 0.9.15",
+  "samples": [
+    {
+      "p": [
+        0,
+        0.01,
+        0
+      ],
+      "intersects": false,
+      "resolved": false,
+      "after": [
+        0,
+        0.010000000000000064,
+        0
+      ],
+      "floor": 0
+    },
+    {
+      "p": [
+        1.1,
+        0.01,
+        0
+      ],
+      "intersects": true,
+      "resolved": true,
+      "after": [
+        1.3000099999999999,
+        0.00999999999999962,
+        -4.441114143105545e-16
+      ],
+      "floor": 0
+    },
+    {
+      "p": [
+        0.8,
+        0.01,
+        0
+      ],
+      "intersects": true,
+      "resolved": true,
+      "after": [
+        0.6999900000000001,
+        0.009999999999999842,
+        -1.1103340469276195e-16
+      ],
+      "floor": 0
+    },
+    {
+      "p": [
+        0,
+        -0.05,
+        0
+      ],
+      "intersects": true,
+      "resolved": true,
+      "after": [
+        0,
+        0.000010000000000010001,
+        0
+      ],
+      "floor": 0
+    },
+    {
+      "p": [
+        -2,
+        0.01,
+        0
+      ],
+      "intersects": false,
+      "resolved": false,
+      "after": [
+        -2,
+        0.010000000000000064,
+        0
+      ],
+      "floor": 0
+    },
+    {
+      "p": [
+        3.1,
+        0.01,
+        0
+      ],
+      "intersects": true,
+      "resolved": true,
+      "after": [
+        3.3000100000000003,
+        0.00999999999999962,
+        4.441114143105545e-16
+      ],
+      "floor": 0
+    },
+    {
+      "p": [
+        0,
+        2,
+        0
+      ],
+      "intersects": false,
+      "resolved": false,
+      "after": [
+        0,
+        1.9999999999999998,
+        0
+      ],
+      "floor": null
+    }
+  ],
+  "ray": 1
+}

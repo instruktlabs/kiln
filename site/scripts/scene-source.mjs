@@ -5,8 +5,8 @@ import { fileURLToPath } from 'node:url';
 const SITE = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 export const posix = (path) => path.replaceAll('\\', '/');
 
-/** Sibling checkouts: <workspace>/kiln-site-workbench/site beside <workspace>/kiln-commons/scenes. */
-export const DEFAULT_SCENES_DIR = '../../kiln-commons/scenes';
+/** Maintained scene source in the same repository; older separate workspaces remain supported. */
+export const DEFAULT_SCENES_DIR = '../scenes';
 /** A scene runtime and the site share one physical copy of each of these packages. */
 export const SCENE_DEDUPE = ['three', 'react', 'react-dom', '@react-three/fiber'];
 /** Workspace packages the site builds into the Farm runtime as source; `farm` depends on `scene-kit`. */
@@ -21,17 +21,20 @@ export const RUNTIME_DIRECTORY = 'scene-runtime';
 
 /**
  * Locate the scenes workspace. `KILN_SITE_SCENES_DIR` is absolute or relative to `site/`; `off`
- * disables the scene explicitly. Unset, the sibling checkout is used when it exists. A path that
+ * disables the scene explicitly. Unset, repository source wins over the legacy sibling checkout. A path that
  * was asked for but is not a scenes workspace is an error, never a silent fallback.
  */
 export function resolveScenesDir({ env = process.env, site = SITE } = {}) {
   const requested = env.KILN_SITE_SCENES_DIR?.trim();
   if (requested && /^(?:off|none|false|0)$/i.test(requested)) return null;
-  const dir = resolve(site, requested || DEFAULT_SCENES_DIR);
-  if (existsSync(resolve(dir, 'packages/farm/package.json'))) return dir;
+  const candidates = requested ? [requested] : [DEFAULT_SCENES_DIR, '../../kiln-commons/scenes'];
+  for (const candidate of candidates) {
+    const dir = resolve(site, candidate);
+    if (existsSync(resolve(dir, 'packages/farm/package.json'))) return dir;
+  }
   if (requested) {
     throw new Error(
-      `KILN_SITE_SCENES_DIR is not a scenes workspace (no packages/farm/package.json): ${dir}`,
+      `KILN_SITE_SCENES_DIR is not a scenes workspace (no packages/farm/package.json): ${resolve(site, requested)}`,
     );
   }
   return null;

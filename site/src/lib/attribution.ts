@@ -23,7 +23,8 @@ const HARNESS_NAMES: Record<string, string> = {
 export const modelName = (value: string): string => MODEL_NAMES[value] ?? value;
 
 /** Display-only prose formatting; saved briefs and downloaded sources retain their exact bytes. */
-export const revisionBriefForDisplay = (value: string): string => value.replace(/\b(candidate)(\d+)\b/g, '$1 $2');
+export const revisionBriefForDisplay = (value: string): string =>
+  value.replace(/\b(candidate)(\d+)\b/g, '$1 $2');
 
 /** A harness as the site names it: "Claude Code", "Codex", "Antigravity CLI (agy)", "OpenCode". */
 export const harnessName = (value: string): string =>

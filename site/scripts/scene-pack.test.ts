@@ -270,7 +270,7 @@ describe('scene pack catalog record', () => {
     const record = scenePacks.farm;
     expect(record.release).toBe('r36-local-review');
     expect(record.base).toBe(`/scene-packs/farm/${record.release}/`);
-    expect(record.source).toBe('../engine-work/local-v09-review/revision3-farmer-back-20261001/farm-runtime-final/standalone');
+    expect(record.source).toBe('.cache/site-inputs/farm/standalone');
     expect(record).toMatchObject({ sealedFiles: 34, sealedBytes: 7_133_727, packJsonSha256: '5d046aa2c04637436d7e3918db690f4f25f6684a58ae7a78d333dec9df428f48' });
     expect(record.three).toBe(pkg.dependencies.three);
     expect(record.totalFiles).toBe(record.sealedFiles + 3);
@@ -288,7 +288,7 @@ describe('scene pack catalog record', () => {
     expect(record.base).toBe('/scene-packs/golden-gate/g9/');
     // Preserved g9 carries the new six-vehicle delivery with the qualified water opening and controls.
     expect(record).toMatchObject({ sealedFiles: 103, sealedBytes: 12_186_327, packJsonSha256: 'c2a1d83fce6caf07a7b3e87070ccb8a983dd68e0c7f98eee3f1ba5255ce059cb', sha256sumsSha256: '75ce79fc746eafd27d7b597396489294a821fef5d88a05981b6bb9572159a58a' });
-    expect(record.source).toBe('../engine-work/local-v09-review/revision2-20260930/golden-runtime-final/standalone');
+    expect(record.source).toBe('.cache/site-inputs/golden-gate/standalone');
     expect(record.three).toBe(pkg.dependencies.three);
     expect(record.totalFiles).toBe(record.sealedFiles + 3);
     for (const digest of [record.packJsonSha256, record.sha256sumsSha256, record.noticesSha256, record.runtime.sha256, record.runtime.modulesSha256]) expect(digest).toMatch(/^[0-9a-f]{64}$/);
@@ -303,7 +303,7 @@ describe('scene pack catalog record', () => {
     const record = scenePacks['foundry-floor'];
     expect(record.release).toBe('ff3-review2');
     expect(record.base).toBe('/scene-packs/foundry-floor/ff3-review2/');
-    expect(record.source).toBe('../engine-work/local-v09-review/revision2-20260930/foundry-runtime-final/standalone');
+    expect(record.source).toBe('.cache/site-inputs/foundry-floor/standalone');
     expect(record.three).toBe(pkg.dependencies.three);
     expect(record.totalFiles).toBe(record.sealedFiles + 3);
     // Final frozen FF3 intake verifies 85 sealed files and every initial/deferred chunk.

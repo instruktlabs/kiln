@@ -1,0 +1,8296 @@
+{
+ "schema": "foundry-floor.campus/1",
+ "generatedBy": "scripts/build-campus.ts (from the structures contract, the accepted blueprint v7 and the verified structure exports; lanes, markings, parking, satellites, lights, tiers, views and looks are estimates (E) within them)",
+ "frame": {
+  "axes": "x = u (north +), y up, z = v (east +); metres; right-handed",
+  "origin": "the roundabout centre at grade",
+  "units": "metres, seconds, degrees",
+  "yaw": "yawDeg about +Y (three.js rotation.y): a model point (x, z) lands at (x cos + z sin, -x sin + z cos) + position",
+  "contract": "pack2-research/terafab/briefs/structures-contract.md",
+  "blueprint": "pack2-research/terafab/campus-blueprint-v7.svg"
+ },
+ "models": {
+  "s1-head-W": {
+   "piece": "S1",
+   "kind": "head",
+   "tier": "full",
+   "far": "s1-head-W-far",
+   "glb": "models/structures/s1-head-W.glb",
+   "revision": "r_c2d99522b58344b69dca0ad1ce41928a",
+   "bytes": 794948,
+   "sha256": "12be5743a5e422416602ce42ad36b8143ad203e2672a2c00043e1410564e78cf",
+   "triangles": 18375,
+   "meshes": 26,
+   "materials": [
+    "roof-steel",
+    "glazing-dark",
+    "cladding-steel",
+    "trim-graphite",
+    "plinth-graphite",
+    "edge-lit",
+    "rooflight-warm",
+    "concrete",
+    "floor-tile-grey",
+    "ffu-filter-white"
+   ],
+   "bounds": {
+    "min": [
+     -945.6,
+     0,
+     -532.3
+    ],
+    "max": [
+     0,
+     74.821,
+     190.3
+    ]
+   }
+  },
+  "s1-head-W-far": {
+   "piece": "S1",
+   "kind": "head",
+   "tier": "far",
+   "far": null,
+   "glb": "models/structures/s1-head-W-far.glb",
+   "revision": "r_e8204a9885e14c2c9d09a22f755a80da",
+   "bytes": 32280,
+   "sha256": "0bcce2163fbbfaa787628efffc8362405ed3b42a7614d3161e6bb33e790f83ea",
+   "triangles": 1146,
+   "meshes": 6,
+   "materials": [
+    "roof-steel",
+    "glazing-dark",
+    "cladding-steel"
+   ],
+   "bounds": {
+    "min": [
+     -945,
+     0,
+     -532
+    ],
+    "max": [
+     0,
+     70,
+     190
+    ]
+   }
+  },
+  "s2-hall-W": {
+   "piece": "S2",
+   "kind": "hall",
+   "tier": "full",
+   "far": "s2-hall-W-far",
+   "glb": "models/structures/s2-hall-W.glb",
+   "revision": "r_360a18d9520a47ba8f74803411d880d7",
+   "bytes": 641092,
+   "sha256": "7b0346a7c31c8f76cdf5689089ba2c130ebf160b5df74c78b0f6a49514c0a41b",
+   "triangles": 11218,
+   "meshes": 164,
+   "materials": [
+    "cladding-steel",
+    "plinth-graphite",
+    "trim-graphite",
+    "roof-steel",
+    "edge-lit",
+    "rooflight-warm",
+    "port-lit",
+    "soffit-lit",
+    "concrete",
+    "floor-tile-grey",
+    "ffu-filter-white"
+   ],
+   "bounds": {
+    "min": [
+     0,
+     0,
+     -272
+    ],
+    "max": [
+     2772.3,
+     52,
+     252
+    ]
+   }
+  },
+  "s2-hall-W-far": {
+   "piece": "S2",
+   "kind": "hall",
+   "tier": "far",
+   "far": null,
+   "glb": "models/structures/s2-hall-W-far.glb",
+   "revision": "r_47f890f3d7314130ade16990037c4519",
+   "bytes": 57480,
+   "sha256": "7eef9f8b6ffbba459d96bd5f3e6c1efc05425ad4148d68717ab26c198cf2ad35",
+   "triangles": 644,
+   "meshes": 41,
+   "materials": [
+    "cladding-steel",
+    "roof-steel",
+    "rooflight-warm"
+   ],
+   "bounds": {
+    "min": [
+     0,
+     0,
+     -260
+    ],
+    "max": [
+     2772,
+     52,
+     240
+    ]
+   }
+  },
+  "s1-head-E": {
+   "piece": "S1",
+   "kind": "head",
+   "tier": "full",
+   "far": "s1-head-E-far",
+   "glb": "models/structures/s1-head-E.glb",
+   "revision": "r_df7dae73a55c46f1853280912ac1d593",
+   "bytes": 794948,
+   "sha256": "694ef50d50de5f4f28be10a0b087b9493e19ad3d7083bc95c717c37a292114c0",
+   "triangles": 18375,
+   "meshes": 26,
+   "materials": [
+    "roof-steel",
+    "glazing-dark",
+    "cladding-steel",
+    "trim-graphite",
+    "plinth-graphite",
+    "edge-lit",
+    "rooflight-warm",
+    "concrete",
+    "floor-tile-grey",
+    "ffu-filter-white"
+   ],
+   "bounds": {
+    "min": [
+     -945.6,
+     0,
+     -190.3
+    ],
+    "max": [
+     0,
+     74.821,
+     532.3
+    ]
+   }
+  },
+  "s1-head-E-far": {
+   "piece": "S1",
+   "kind": "head",
+   "tier": "far",
+   "far": null,
+   "glb": "models/structures/s1-head-E-far.glb",
+   "revision": "r_2e4899a609764cf6a993093253b75fd8",
+   "bytes": 32280,
+   "sha256": "6d5a620ef1a11c1964797663d0465ce48170049440e1b1df80b6eeb22374cdcb",
+   "triangles": 1146,
+   "meshes": 6,
+   "materials": [
+    "roof-steel",
+    "glazing-dark",
+    "cladding-steel"
+   ],
+   "bounds": {
+    "min": [
+     -945,
+     0,
+     -190
+    ],
+    "max": [
+     0,
+     70,
+     532
+    ]
+   }
+  },
+  "s2-hall-E": {
+   "piece": "S2",
+   "kind": "hall",
+   "tier": "full",
+   "far": "s2-hall-E-far",
+   "glb": "models/structures/s2-hall-E.glb",
+   "revision": "r_9240eafbf13942e4a6263b1012889b2d",
+   "bytes": 641092,
+   "sha256": "567561f70e74675a89185701468ef9ffa995cb3307b3661130ae2b6cd00b26c7",
+   "triangles": 11218,
+   "meshes": 164,
+   "materials": [
+    "cladding-steel",
+    "plinth-graphite",
+    "trim-graphite",
+    "roof-steel",
+    "edge-lit",
+    "rooflight-warm",
+    "port-lit",
+    "soffit-lit",
+    "concrete",
+    "floor-tile-grey",
+    "ffu-filter-white"
+   ],
+   "bounds": {
+    "min": [
+     0,
+     0,
+     -252
+    ],
+    "max": [
+     2772.3,
+     52,
+     272
+    ]
+   }
+  },
+  "s2-hall-E-far": {
+   "piece": "S2",
+   "kind": "hall",
+   "tier": "far",
+   "far": null,
+   "glb": "models/structures/s2-hall-E-far.glb",
+   "revision": "r_d946a31fc6c041a8b3d6ca0e6006fb36",
+   "bytes": 57476,
+   "sha256": "eeb5315c3d1806c3baf31fc7bb960dde0a0b3e13d8a17d123152ac73c5e8365f",
+   "triangles": 644,
+   "meshes": 41,
+   "materials": [
+    "cladding-steel",
+    "roof-steel",
+    "rooflight-warm"
+   ],
+   "bounds": {
+    "min": [
+     0,
+     0,
+     -240
+    ],
+    "max": [
+     2772,
+     52,
+     260
+    ]
+   }
+  },
+  "s3-link": {
+   "piece": "S3",
+   "kind": "link",
+   "tier": "full",
+   "far": null,
+   "glb": "models/structures/s3-link.glb",
+   "revision": "r_b2f1a7eab1cc48fb8d2561914e8888d3",
+   "bytes": 72040,
+   "sha256": "246bbf1956c794d55720ff0ba53bd817e6cac3962dad44a3c7973bd470382a3c",
+   "triangles": 1208,
+   "meshes": 9,
+   "materials": [
+    "cladding-steel",
+    "plinth-graphite",
+    "glazing-dark",
+    "trim-graphite",
+    "roof-steel",
+    "edge-lit"
+   ],
+   "bounds": {
+    "min": [
+     -294.685,
+     0,
+     -181.498
+    ],
+    "max": [
+     294.685,
+     31.3,
+     30.3
+    ]
+   }
+  },
+  "s4-canopy": {
+   "piece": "S4",
+   "kind": "canopy",
+   "tier": "full",
+   "far": null,
+   "glb": "models/structures/s4-canopy.glb",
+   "revision": "r_e6e9b7f634014bc6ab698dcbb0df91a5",
+   "bytes": 40252,
+   "sha256": "5a847c587b59fa62b4c6e4113a605eae1ec4a8f760d99d5817b8fd7c0b68f0c7",
+   "triangles": 1612,
+   "meshes": 13,
+   "materials": [
+    "roof-steel",
+    "soffit-lit",
+    "trim-graphite",
+    "edge-lit",
+    "plinth-graphite"
+   ],
+   "bounds": {
+    "min": [
+     -150,
+     0,
+     -150
+    ],
+    "max": [
+     0,
+     24.5,
+     150
+    ]
+   }
+  },
+  "s5-split-bridge": {
+   "piece": "S5",
+   "kind": "bridge",
+   "tier": "full",
+   "far": "s5-split-bridge-far",
+   "glb": "models/structures/s5-split-bridge.glb",
+   "revision": "r_8bbd9104498f4aad974d4f3cb29e810e",
+   "bytes": 356080,
+   "sha256": "1086e13f6306afe7b19fe1c520360cd37e80eda61894602060ff3a29b56a7083",
+   "triangles": 4500,
+   "meshes": 6,
+   "materials": [
+    "plinth-graphite",
+    "cladding-steel",
+    "roof-steel",
+    "glazing-dark",
+    "edge-lit"
+   ],
+   "bounds": {
+    "min": [
+     -80,
+     29.4,
+     -140
+    ],
+    "max": [
+     80,
+     42.1,
+     140
+    ]
+   }
+  },
+  "s5-split-bridge-far": {
+   "piece": "S5",
+   "kind": "bridge",
+   "tier": "far",
+   "far": null,
+   "glb": "models/structures/s5-split-bridge-far.glb",
+   "revision": "r_51b50c962e754a098db9b438367ed1b1",
+   "bytes": 61004,
+   "sha256": "380887f36e9cde62d202b24244162186f35f74f71e1f99be39e809191dc81e30",
+   "triangles": 736,
+   "meshes": 4,
+   "materials": [
+    "plinth-graphite",
+    "cladding-steel",
+    "roof-steel",
+    "glazing-dark"
+   ],
+   "bounds": {
+    "min": [
+     -80,
+     29.4,
+     -140
+    ],
+    "max": [
+     80,
+     42,
+     140
+    ]
+   }
+  }
+ },
+ "placements": [
+  {
+   "id": "SW-head",
+   "piece": "S1",
+   "model": "s1-head-W",
+   "far": "s1-head-W-far",
+   "building": "SW",
+   "position": [
+    -3015,
+    0,
+    -300
+   ],
+   "yawDeg": 0,
+   "rule": "contract campus paragraph: SW = W as built, seam at u = -3015, centreline v = -300",
+   "bounds": {
+    "min": [
+     -3960.6,
+     0,
+     -832.3
+    ],
+    "max": [
+     -3015,
+     74.821,
+     -109.7
+    ]
+   },
+   "farBounds": {
+    "min": [
+     -3960,
+     0,
+     -832
+    ],
+    "max": [
+     -3015,
+     70,
+     -110
+    ]
+   }
+  },
+  {
+   "id": "SW-hall",
+   "piece": "S2",
+   "model": "s2-hall-W",
+   "far": "s2-hall-W-far",
+   "building": "SW",
+   "position": [
+    -3015,
+    0,
+    -300
+   ],
+   "yawDeg": 0,
+   "rule": "contract campus paragraph: SW = W as built, seam at u = -3015, centreline v = -300",
+   "bounds": {
+    "min": [
+     -3015,
+     0,
+     -572
+    ],
+    "max": [
+     -242.7,
+     52,
+     -48
+    ]
+   },
+   "farBounds": {
+    "min": [
+     -3015,
+     0,
+     -560
+    ],
+    "max": [
+     -243,
+     52,
+     -60
+    ]
+   }
+  },
+  {
+   "id": "SE-head",
+   "piece": "S1",
+   "model": "s1-head-E",
+   "far": "s1-head-E-far",
+   "building": "SE",
+   "position": [
+    -3015,
+    0,
+    300
+   ],
+   "yawDeg": 0,
+   "rule": "contract campus paragraph: SE = E as built, seam at u = -3015, centreline v = 300",
+   "bounds": {
+    "min": [
+     -3960.6,
+     0,
+     109.7
+    ],
+    "max": [
+     -3015,
+     74.821,
+     832.3
+    ]
+   },
+   "farBounds": {
+    "min": [
+     -3960,
+     0,
+     110
+    ],
+    "max": [
+     -3015,
+     70,
+     832
+    ]
+   }
+  },
+  {
+   "id": "SE-hall",
+   "piece": "S2",
+   "model": "s2-hall-E",
+   "far": "s2-hall-E-far",
+   "building": "SE",
+   "position": [
+    -3015,
+    0,
+    300
+   ],
+   "yawDeg": 0,
+   "rule": "contract campus paragraph: SE = E as built, seam at u = -3015, centreline v = 300",
+   "bounds": {
+    "min": [
+     -3015,
+     0,
+     48
+    ],
+    "max": [
+     -242.7,
+     52,
+     572
+    ]
+   },
+   "farBounds": {
+    "min": [
+     -3015,
+     0,
+     60
+    ],
+    "max": [
+     -243,
+     52,
+     560
+    ]
+   }
+  },
+  {
+   "id": "NE-head",
+   "piece": "S1",
+   "model": "s1-head-W",
+   "far": "s1-head-W-far",
+   "building": "NE",
+   "position": [
+    3015,
+    0,
+    300
+   ],
+   "yawDeg": 180,
+   "rule": "contract campus paragraph: NE = W turned 180 degrees, seam at u = 3015, centreline v = 300",
+   "bounds": {
+    "min": [
+     3015,
+     0,
+     109.7
+    ],
+    "max": [
+     3960.6,
+     74.821,
+     832.3
+    ]
+   },
+   "farBounds": {
+    "min": [
+     3015,
+     0,
+     110
+    ],
+    "max": [
+     3960,
+     70,
+     832
+    ]
+   }
+  },
+  {
+   "id": "NE-hall",
+   "piece": "S2",
+   "model": "s2-hall-W",
+   "far": "s2-hall-W-far",
+   "building": "NE",
+   "position": [
+    3015,
+    0,
+    300
+   ],
+   "yawDeg": 180,
+   "rule": "contract campus paragraph: NE = W turned 180 degrees, seam at u = 3015, centreline v = 300",
+   "bounds": {
+    "min": [
+     242.7,
+     0,
+     48
+    ],
+    "max": [
+     3015,
+     52,
+     572
+    ]
+   },
+   "farBounds": {
+    "min": [
+     243,
+     0,
+     60
+    ],
+    "max": [
+     3015,
+     52,
+     560
+    ]
+   }
+  },
+  {
+   "id": "NW-head",
+   "piece": "S1",
+   "model": "s1-head-E",
+   "far": "s1-head-E-far",
+   "building": "NW",
+   "position": [
+    3015,
+    0,
+    -300
+   ],
+   "yawDeg": 180,
+   "rule": "contract campus paragraph: NW = E turned 180 degrees, seam at u = 3015, centreline v = -300",
+   "bounds": {
+    "min": [
+     3015,
+     0,
+     -832.3
+    ],
+    "max": [
+     3960.6,
+     74.821,
+     -109.7
+    ]
+   },
+   "farBounds": {
+    "min": [
+     3015,
+     0,
+     -832
+    ],
+    "max": [
+     3960,
+     70,
+     -110
+    ]
+   }
+  },
+  {
+   "id": "NW-hall",
+   "piece": "S2",
+   "model": "s2-hall-E",
+   "far": "s2-hall-E-far",
+   "building": "NW",
+   "position": [
+    3015,
+    0,
+    -300
+   ],
+   "yawDeg": 180,
+   "rule": "contract campus paragraph: NW = E turned 180 degrees, seam at u = 3015, centreline v = -300",
+   "bounds": {
+    "min": [
+     242.7,
+     0,
+     -572
+    ],
+    "max": [
+     3015,
+     52,
+     -48
+    ]
+   },
+   "farBounds": {
+    "min": [
+     243,
+     0,
+     -560
+    ],
+    "max": [
+     3015,
+     52,
+     -60
+    ]
+   }
+  },
+  {
+   "id": "link-W",
+   "piece": "S3",
+   "model": "s3-link",
+   "far": null,
+   "building": null,
+   "position": [
+    0,
+    0,
+    -270
+   ],
+   "yawDeg": 0,
+   "rule": "contract S3: one copy at campus (0, -270) as built",
+   "bounds": {
+    "min": [
+     -294.685,
+     0,
+     -451.498
+    ],
+    "max": [
+     294.685,
+     31.3,
+     -239.7
+    ]
+   },
+   "farBounds": null
+  },
+  {
+   "id": "link-E",
+   "piece": "S3",
+   "model": "s3-link",
+   "far": null,
+   "building": null,
+   "position": [
+    0,
+    0,
+    270
+   ],
+   "yawDeg": 180,
+   "rule": "contract S3: one at (0, +270) turned 180 degrees",
+   "bounds": {
+    "min": [
+     -294.685,
+     0,
+     239.7
+    ],
+    "max": [
+     294.685,
+     31.3,
+     451.498
+    ]
+   },
+   "farBounds": null
+  },
+  {
+   "id": "canopy-S",
+   "piece": "S4",
+   "model": "s4-canopy",
+   "far": null,
+   "building": null,
+   "position": [
+    -3960,
+    0,
+    0
+   ],
+   "yawDeg": 0,
+   "rule": "contract S4: one copy at campus (-3960, 0) as built (the south-west arrival canopy)",
+   "bounds": {
+    "min": [
+     -4110,
+     0,
+     -150
+    ],
+    "max": [
+     -3960,
+     24.5,
+     150
+    ]
+   },
+   "farBounds": null
+  },
+  {
+   "id": "canopy-N",
+   "piece": "S4",
+   "model": "s4-canopy",
+   "far": null,
+   "building": null,
+   "position": [
+    3960,
+    0,
+    0
+   ],
+   "yawDeg": 180,
+   "rule": "contract S4: one at (+3960, 0) turned 180 degrees",
+   "bounds": {
+    "min": [
+     3960,
+     0,
+     -150
+    ],
+    "max": [
+     4110,
+     24.5,
+     150
+    ]
+   },
+   "farBounds": null
+  },
+  {
+   "id": "bridge-S1",
+   "piece": "S5",
+   "model": "s5-split-bridge",
+   "far": "s5-split-bridge-far",
+   "building": null,
+   "position": [
+    -2547,
+    0,
+    0
+   ],
+   "yawDeg": 0,
+   "rule": "contract S5 (revision 3): south pair, building-frame X = 468",
+   "bounds": {
+    "min": [
+     -2627,
+     29.4,
+     -140
+    ],
+    "max": [
+     -2467,
+     42.1,
+     140
+    ]
+   },
+   "farBounds": {
+    "min": [
+     -2627,
+     29.4,
+     -140
+    ],
+    "max": [
+     -2467,
+     42,
+     140
+    ]
+   }
+  },
+  {
+   "id": "bridge-S2",
+   "piece": "S5",
+   "model": "s5-split-bridge",
+   "far": "s5-split-bridge-far",
+   "building": null,
+   "position": [
+    -1971,
+    0,
+    0
+   ],
+   "yawDeg": 0,
+   "rule": "contract S5 (revision 3): south pair, building-frame X = 1044",
+   "bounds": {
+    "min": [
+     -2051,
+     29.4,
+     -140
+    ],
+    "max": [
+     -1891,
+     42.1,
+     140
+    ]
+   },
+   "farBounds": {
+    "min": [
+     -2051,
+     29.4,
+     -140
+    ],
+    "max": [
+     -1891,
+     42,
+     140
+    ]
+   }
+  },
+  {
+   "id": "bridge-S3",
+   "piece": "S5",
+   "model": "s5-split-bridge",
+   "far": "s5-split-bridge-far",
+   "building": null,
+   "position": [
+    -1395,
+    0,
+    0
+   ],
+   "yawDeg": 0,
+   "rule": "contract S5 (revision 3): south pair, building-frame X = 1620",
+   "bounds": {
+    "min": [
+     -1475,
+     29.4,
+     -140
+    ],
+    "max": [
+     -1315,
+     42.1,
+     140
+    ]
+   },
+   "farBounds": {
+    "min": [
+     -1475,
+     29.4,
+     -140
+    ],
+    "max": [
+     -1315,
+     42,
+     140
+    ]
+   }
+  },
+  {
+   "id": "bridge-S4",
+   "piece": "S5",
+   "model": "s5-split-bridge",
+   "far": "s5-split-bridge-far",
+   "building": null,
+   "position": [
+    -819,
+    0,
+    0
+   ],
+   "yawDeg": 0,
+   "rule": "contract S5 (revision 3): south pair, building-frame X = 2196",
+   "bounds": {
+    "min": [
+     -899,
+     29.4,
+     -140
+    ],
+    "max": [
+     -739,
+     42.1,
+     140
+    ]
+   },
+   "farBounds": {
+    "min": [
+     -899,
+     29.4,
+     -140
+    ],
+    "max": [
+     -739,
+     42,
+     140
+    ]
+   }
+  },
+  {
+   "id": "bridge-N1",
+   "piece": "S5",
+   "model": "s5-split-bridge",
+   "far": "s5-split-bridge-far",
+   "building": null,
+   "position": [
+    2547,
+    0,
+    0
+   ],
+   "yawDeg": 0,
+   "rule": "contract S5 (revision 3): north pair, building-frame X = 468",
+   "bounds": {
+    "min": [
+     2467,
+     29.4,
+     -140
+    ],
+    "max": [
+     2627,
+     42.1,
+     140
+    ]
+   },
+   "farBounds": {
+    "min": [
+     2467,
+     29.4,
+     -140
+    ],
+    "max": [
+     2627,
+     42,
+     140
+    ]
+   }
+  },
+  {
+   "id": "bridge-N2",
+   "piece": "S5",
+   "model": "s5-split-bridge",
+   "far": "s5-split-bridge-far",
+   "building": null,
+   "position": [
+    1971,
+    0,
+    0
+   ],
+   "yawDeg": 0,
+   "rule": "contract S5 (revision 3): north pair, building-frame X = 1044",
+   "bounds": {
+    "min": [
+     1891,
+     29.4,
+     -140
+    ],
+    "max": [
+     2051,
+     42.1,
+     140
+    ]
+   },
+   "farBounds": {
+    "min": [
+     1891,
+     29.4,
+     -140
+    ],
+    "max": [
+     2051,
+     42,
+     140
+    ]
+   }
+  },
+  {
+   "id": "bridge-N3",
+   "piece": "S5",
+   "model": "s5-split-bridge",
+   "far": "s5-split-bridge-far",
+   "building": null,
+   "position": [
+    1395,
+    0,
+    0
+   ],
+   "yawDeg": 0,
+   "rule": "contract S5 (revision 3): north pair, building-frame X = 1620",
+   "bounds": {
+    "min": [
+     1315,
+     29.4,
+     -140
+    ],
+    "max": [
+     1475,
+     42.1,
+     140
+    ]
+   },
+   "farBounds": {
+    "min": [
+     1315,
+     29.4,
+     -140
+    ],
+    "max": [
+     1475,
+     42,
+     140
+    ]
+   }
+  },
+  {
+   "id": "bridge-N4",
+   "piece": "S5",
+   "model": "s5-split-bridge",
+   "far": "s5-split-bridge-far",
+   "building": null,
+   "position": [
+    819,
+    0,
+    0
+   ],
+   "yawDeg": 0,
+   "rule": "contract S5 (revision 3): north pair, building-frame X = 2196",
+   "bounds": {
+    "min": [
+     739,
+     29.4,
+     -140
+    ],
+    "max": [
+     899,
+     42.1,
+     140
+    ]
+   },
+   "farBounds": {
+    "min": [
+     739,
+     29.4,
+     -140
+    ],
+    "max": [
+     899,
+     42,
+     140
+    ]
+   }
+  }
+ ],
+ "solids": [
+  {
+   "placement": "SW-head",
+   "part": "roofBar",
+   "min": [
+    -3960,
+    45.4,
+    -832
+   ],
+   "max": [
+    -3495,
+    70,
+    -110
+   ]
+  },
+  {
+   "placement": "SW-head",
+   "part": "roofTaper",
+   "min": [
+    -3495.2,
+    45.4,
+    -832
+   ],
+   "max": [
+    -3015,
+    70,
+    -110
+   ]
+  },
+  {
+   "placement": "SW-head",
+   "part": "frontGlazing",
+   "min": [
+    -3960,
+    3,
+    -832
+   ],
+   "max": [
+    -3959.9,
+    70,
+    -110
+   ]
+  },
+  {
+   "placement": "SW-head",
+   "part": "tipWall",
+   "min": [
+    -3960,
+    0,
+    -832
+   ],
+   "max": [
+    -3495,
+    46,
+    -831.4
+   ]
+  },
+  {
+   "placement": "SW-head",
+   "part": "taperWall",
+   "min": [
+    -3495.2,
+    0,
+    -832
+   ],
+   "max": [
+    -3015,
+    51,
+    -489.4
+   ]
+  },
+  {
+   "placement": "SW-head",
+   "part": "splitWall",
+   "min": [
+    -3960,
+    0,
+    -110.6
+   ],
+   "max": [
+    -3015,
+    70,
+    -110
+   ]
+  },
+  {
+   "placement": "SW-head",
+   "part": "panelSeams",
+   "min": [
+    -3954,
+    3.1,
+    -832
+   ],
+   "max": [
+    -3015,
+    69.7,
+    -110
+   ]
+  },
+  {
+   "placement": "SW-head",
+   "part": "frontFins",
+   "min": [
+    -3960.6,
+    0,
+    -826.2
+   ],
+   "max": [
+    -3960,
+    70,
+    -117.8
+   ]
+  },
+  {
+   "placement": "SW-head",
+   "part": "plinth",
+   "min": [
+    -3960.2,
+    0,
+    -832.2
+   ],
+   "max": [
+    -3015,
+    3,
+    -109.8
+   ]
+  },
+  {
+   "placement": "SW-head",
+   "part": "levelReveals",
+   "min": [
+    -3960,
+    21.7,
+    -832.3
+   ],
+   "max": [
+    -3015,
+    44.3,
+    -109.7
+   ]
+  },
+  {
+   "placement": "SW-head",
+   "part": "roofEdge",
+   "min": [
+    -3960,
+    46,
+    -832
+   ],
+   "max": [
+    -3015,
+    71.2,
+    -110
+   ]
+  },
+  {
+   "placement": "SW-head",
+   "part": "edgeLights",
+   "min": [
+    -3960.2,
+    3,
+    -832.2
+   ],
+   "max": [
+    -3015,
+    71.2,
+    -109.8
+   ]
+  },
+  {
+   "placement": "SW-head",
+   "part": "roofMonitor",
+   "min": [
+    -3495,
+    45.7,
+    -330
+   ],
+   "max": [
+    -3015,
+    74.8,
+    -270
+   ]
+  },
+  {
+   "placement": "SW-head",
+   "part": "roofRibs",
+   "min": [
+    -3448,
+    47.7,
+    -797.8
+   ],
+   "max": [
+    -3086,
+    69.2,
+    -110.6
+   ]
+  },
+  {
+   "placement": "SW-head",
+   "part": "entrancePortal",
+   "min": [
+    -3960.6,
+    0,
+    -151.2
+   ],
+   "max": [
+    -3958.6,
+    13.2,
+    -109.8
+   ]
+  },
+  {
+   "placement": "SW-hall",
+   "part": "outerWall",
+   "min": [
+    -3015,
+    0,
+    -490
+   ],
+   "max": [
+    -423,
+    46,
+    -489.4
+   ]
+  },
+  {
+   "placement": "SW-hall",
+   "part": "sweptWall",
+   "min": [
+    -423,
+    0,
+    -490
+   ],
+   "max": [
+    -243,
+    46,
+    -300
+   ]
+  },
+  {
+   "placement": "SW-hall",
+   "part": "endWall",
+   "min": [
+    -243.6,
+    0,
+    -300
+   ],
+   "max": [
+    -243,
+    46,
+    -110
+   ]
+  },
+  {
+   "placement": "SW-hall",
+   "part": "splitWall",
+   "min": [
+    -3015,
+    0,
+    -110.6
+   ],
+   "max": [
+    -243,
+    46,
+    -110
+   ]
+  },
+  {
+   "placement": "SW-hall",
+   "part": "plinth",
+   "min": [
+    -3015,
+    0,
+    -490.2
+   ],
+   "max": [
+    -242.8,
+    3,
+    -109.8
+   ]
+  },
+  {
+   "placement": "SW-hall",
+   "part": "bayFins",
+   "min": [
+    -2943.6,
+    3,
+    -490.6
+   ],
+   "max": [
+    -422.4,
+    46,
+    -109.4
+   ]
+  },
+  {
+   "placement": "SW-hall",
+   "part": "levelReveals",
+   "min": [
+    -3015,
+    21.7,
+    -490.3
+   ],
+   "max": [
+    -242.7,
+    44.3,
+    -109.7
+   ]
+  },
+  {
+   "placement": "SW-hall",
+   "part": "roofDeck",
+   "min": [
+    -3015,
+    45.4,
+    -489.4
+   ],
+   "max": [
+    -243.6,
+    46,
+    -110.6
+   ]
+  },
+  {
+   "placement": "SW-hall",
+   "part": "roofEdge",
+   "min": [
+    -3015,
+    46,
+    -490
+   ],
+   "max": [
+    -243,
+    47.2,
+    -110
+   ]
+  },
+  {
+   "placement": "SW-hall",
+   "part": "edgeLights",
+   "min": [
+    -3015,
+    3,
+    -560.2
+   ],
+   "max": [
+    -242.8,
+    47.3,
+    -59.8
+   ]
+  },
+  {
+   "placement": "SW-hall",
+   "part": "panelSeams",
+   "min": [
+    -3015,
+    0,
+    -490
+   ],
+   "max": [
+    -243,
+    46,
+    -110
+   ]
+  },
+  {
+   "placement": "SW-hall",
+   "part": "roofMonitor",
+   "min": [
+    -3015,
+    46,
+    -330
+   ],
+   "max": [
+    -423,
+    52,
+    -270
+   ]
+  },
+  {
+   "placement": "SW-hall",
+   "part": "roofRibs",
+   "min": [
+    -2944,
+    46,
+    -489.7
+   ],
+   "max": [
+    -494,
+    47.5,
+    -110.3
+   ]
+  },
+  {
+   "placement": "SW-hall",
+   "part": "roofUnits",
+   "min": [
+    -2985,
+    46,
+    -464
+   ],
+   "max": [
+    -453,
+    50,
+    -136
+   ]
+  },
+  {
+   "placement": "SW-hall",
+   "part": "outerPods",
+   "min": [
+    -2990,
+    0,
+    -572
+   ],
+   "max": [
+    -500,
+    25.7,
+    -490
+   ]
+  },
+  {
+   "placement": "SW-hall",
+   "part": "splitPods",
+   "min": [
+    -2950,
+    0,
+    -110
+   ],
+   "max": [
+    -596,
+    21.7,
+    -48
+   ]
+  },
+  {
+   "placement": "SE-head",
+   "part": "roofBar",
+   "min": [
+    -3960,
+    45.4,
+    110
+   ],
+   "max": [
+    -3495,
+    70,
+    832
+   ]
+  },
+  {
+   "placement": "SE-head",
+   "part": "roofTaper",
+   "min": [
+    -3495.2,
+    45.4,
+    110
+   ],
+   "max": [
+    -3015,
+    70,
+    832
+   ]
+  },
+  {
+   "placement": "SE-head",
+   "part": "frontGlazing",
+   "min": [
+    -3960,
+    3,
+    110
+   ],
+   "max": [
+    -3959.9,
+    70,
+    832
+   ]
+  },
+  {
+   "placement": "SE-head",
+   "part": "tipWall",
+   "min": [
+    -3960,
+    0,
+    831.4
+   ],
+   "max": [
+    -3495,
+    46,
+    832
+   ]
+  },
+  {
+   "placement": "SE-head",
+   "part": "taperWall",
+   "min": [
+    -3495.2,
+    0,
+    489.4
+   ],
+   "max": [
+    -3015,
+    51,
+    832
+   ]
+  },
+  {
+   "placement": "SE-head",
+   "part": "splitWall",
+   "min": [
+    -3960,
+    0,
+    110
+   ],
+   "max": [
+    -3015,
+    70,
+    110.6
+   ]
+  },
+  {
+   "placement": "SE-head",
+   "part": "panelSeams",
+   "min": [
+    -3954,
+    3.1,
+    110
+   ],
+   "max": [
+    -3015,
+    69.7,
+    832
+   ]
+  },
+  {
+   "placement": "SE-head",
+   "part": "frontFins",
+   "min": [
+    -3960.6,
+    0,
+    117.8
+   ],
+   "max": [
+    -3960,
+    70,
+    826.2
+   ]
+  },
+  {
+   "placement": "SE-head",
+   "part": "plinth",
+   "min": [
+    -3960.2,
+    0,
+    109.8
+   ],
+   "max": [
+    -3015,
+    3,
+    832.2
+   ]
+  },
+  {
+   "placement": "SE-head",
+   "part": "levelReveals",
+   "min": [
+    -3960,
+    21.7,
+    109.7
+   ],
+   "max": [
+    -3015,
+    44.3,
+    832.3
+   ]
+  },
+  {
+   "placement": "SE-head",
+   "part": "roofEdge",
+   "min": [
+    -3960,
+    46,
+    110
+   ],
+   "max": [
+    -3015,
+    71.2,
+    832
+   ]
+  },
+  {
+   "placement": "SE-head",
+   "part": "edgeLights",
+   "min": [
+    -3960.2,
+    3,
+    109.8
+   ],
+   "max": [
+    -3015,
+    71.2,
+    832.2
+   ]
+  },
+  {
+   "placement": "SE-head",
+   "part": "roofMonitor",
+   "min": [
+    -3495,
+    45.7,
+    270
+   ],
+   "max": [
+    -3015,
+    74.8,
+    330
+   ]
+  },
+  {
+   "placement": "SE-head",
+   "part": "roofRibs",
+   "min": [
+    -3448,
+    47.7,
+    110.6
+   ],
+   "max": [
+    -3086,
+    69.2,
+    797.8
+   ]
+  },
+  {
+   "placement": "SE-head",
+   "part": "entrancePortal",
+   "min": [
+    -3960.6,
+    0,
+    109.8
+   ],
+   "max": [
+    -3958.6,
+    13.2,
+    151.2
+   ]
+  },
+  {
+   "placement": "SE-hall",
+   "part": "outerWall",
+   "min": [
+    -3015,
+    0,
+    489.4
+   ],
+   "max": [
+    -423,
+    46,
+    490
+   ]
+  },
+  {
+   "placement": "SE-hall",
+   "part": "sweptWall",
+   "min": [
+    -423,
+    0,
+    300
+   ],
+   "max": [
+    -243,
+    46,
+    490
+   ]
+  },
+  {
+   "placement": "SE-hall",
+   "part": "endWall",
+   "min": [
+    -243.6,
+    0,
+    110
+   ],
+   "max": [
+    -243,
+    46,
+    300
+   ]
+  },
+  {
+   "placement": "SE-hall",
+   "part": "splitWall",
+   "min": [
+    -3015,
+    0,
+    110
+   ],
+   "max": [
+    -243,
+    46,
+    110.6
+   ]
+  },
+  {
+   "placement": "SE-hall",
+   "part": "plinth",
+   "min": [
+    -3015,
+    0,
+    109.8
+   ],
+   "max": [
+    -242.8,
+    3,
+    490.2
+   ]
+  },
+  {
+   "placement": "SE-hall",
+   "part": "bayFins",
+   "min": [
+    -2943.6,
+    3,
+    109.4
+   ],
+   "max": [
+    -422.4,
+    46,
+    490.6
+   ]
+  },
+  {
+   "placement": "SE-hall",
+   "part": "levelReveals",
+   "min": [
+    -3015,
+    21.7,
+    109.7
+   ],
+   "max": [
+    -242.7,
+    44.3,
+    490.3
+   ]
+  },
+  {
+   "placement": "SE-hall",
+   "part": "roofDeck",
+   "min": [
+    -3015,
+    45.4,
+    110.6
+   ],
+   "max": [
+    -243.6,
+    46,
+    489.4
+   ]
+  },
+  {
+   "placement": "SE-hall",
+   "part": "roofEdge",
+   "min": [
+    -3015,
+    46,
+    110
+   ],
+   "max": [
+    -243,
+    47.2,
+    490
+   ]
+  },
+  {
+   "placement": "SE-hall",
+   "part": "edgeLights",
+   "min": [
+    -3015,
+    3,
+    59.8
+   ],
+   "max": [
+    -242.8,
+    47.3,
+    560.2
+   ]
+  },
+  {
+   "placement": "SE-hall",
+   "part": "panelSeams",
+   "min": [
+    -3015,
+    0,
+    110
+   ],
+   "max": [
+    -243,
+    46,
+    490
+   ]
+  },
+  {
+   "placement": "SE-hall",
+   "part": "roofMonitor",
+   "min": [
+    -3015,
+    46,
+    270
+   ],
+   "max": [
+    -423,
+    52,
+    330
+   ]
+  },
+  {
+   "placement": "SE-hall",
+   "part": "roofRibs",
+   "min": [
+    -2944,
+    46,
+    110.3
+   ],
+   "max": [
+    -494,
+    47.5,
+    489.7
+   ]
+  },
+  {
+   "placement": "SE-hall",
+   "part": "roofUnits",
+   "min": [
+    -2985,
+    46,
+    136
+   ],
+   "max": [
+    -453,
+    50,
+    464
+   ]
+  },
+  {
+   "placement": "SE-hall",
+   "part": "outerPods",
+   "min": [
+    -2990,
+    0,
+    490
+   ],
+   "max": [
+    -500,
+    25.7,
+    572
+   ]
+  },
+  {
+   "placement": "SE-hall",
+   "part": "splitPods",
+   "min": [
+    -2950,
+    0,
+    48
+   ],
+   "max": [
+    -596,
+    21.7,
+    110
+   ]
+  },
+  {
+   "placement": "NE-head",
+   "part": "roofBar",
+   "min": [
+    3495,
+    45.4,
+    110
+   ],
+   "max": [
+    3960,
+    70,
+    832
+   ]
+  },
+  {
+   "placement": "NE-head",
+   "part": "roofTaper",
+   "min": [
+    3015,
+    45.4,
+    110
+   ],
+   "max": [
+    3495.2,
+    70,
+    832
+   ]
+  },
+  {
+   "placement": "NE-head",
+   "part": "frontGlazing",
+   "min": [
+    3960,
+    3,
+    110
+   ],
+   "max": [
+    3960,
+    70,
+    832
+   ]
+  },
+  {
+   "placement": "NE-head",
+   "part": "tipWall",
+   "min": [
+    3495,
+    0,
+    831.4
+   ],
+   "max": [
+    3960,
+    46,
+    832
+   ]
+  },
+  {
+   "placement": "NE-head",
+   "part": "taperWall",
+   "min": [
+    3015,
+    0,
+    489.4
+   ],
+   "max": [
+    3495.2,
+    51,
+    832
+   ]
+  },
+  {
+   "placement": "NE-head",
+   "part": "splitWall",
+   "min": [
+    3015,
+    0,
+    110
+   ],
+   "max": [
+    3960,
+    70,
+    110.6
+   ]
+  },
+  {
+   "placement": "NE-head",
+   "part": "panelSeams",
+   "min": [
+    3015,
+    3.1,
+    110
+   ],
+   "max": [
+    3954.1,
+    69.7,
+    832
+   ]
+  },
+  {
+   "placement": "NE-head",
+   "part": "frontFins",
+   "min": [
+    3960,
+    0,
+    117.8
+   ],
+   "max": [
+    3960.6,
+    70,
+    826.2
+   ]
+  },
+  {
+   "placement": "NE-head",
+   "part": "plinth",
+   "min": [
+    3015,
+    0,
+    109.8
+   ],
+   "max": [
+    3960.2,
+    3,
+    832.2
+   ]
+  },
+  {
+   "placement": "NE-head",
+   "part": "levelReveals",
+   "min": [
+    3015,
+    21.7,
+    109.7
+   ],
+   "max": [
+    3960,
+    44.3,
+    832.3
+   ]
+  },
+  {
+   "placement": "NE-head",
+   "part": "roofEdge",
+   "min": [
+    3015,
+    46,
+    110
+   ],
+   "max": [
+    3960,
+    71.2,
+    832
+   ]
+  },
+  {
+   "placement": "NE-head",
+   "part": "edgeLights",
+   "min": [
+    3015,
+    3,
+    109.8
+   ],
+   "max": [
+    3960.2,
+    71.2,
+    832.2
+   ]
+  },
+  {
+   "placement": "NE-head",
+   "part": "roofMonitor",
+   "min": [
+    3015,
+    45.7,
+    270
+   ],
+   "max": [
+    3495,
+    74.8,
+    330
+   ]
+  },
+  {
+   "placement": "NE-head",
+   "part": "roofRibs",
+   "min": [
+    3086,
+    47.7,
+    110.6
+   ],
+   "max": [
+    3448,
+    69.2,
+    797.8
+   ]
+  },
+  {
+   "placement": "NE-head",
+   "part": "entrancePortal",
+   "min": [
+    3958.6,
+    0,
+    109.8
+   ],
+   "max": [
+    3960.6,
+    13.2,
+    151.2
+   ]
+  },
+  {
+   "placement": "NE-hall",
+   "part": "outerWall",
+   "min": [
+    423,
+    0,
+    489.4
+   ],
+   "max": [
+    3015,
+    46,
+    490
+   ]
+  },
+  {
+   "placement": "NE-hall",
+   "part": "sweptWall",
+   "min": [
+    243,
+    0,
+    300
+   ],
+   "max": [
+    423,
+    46,
+    490
+   ]
+  },
+  {
+   "placement": "NE-hall",
+   "part": "endWall",
+   "min": [
+    243,
+    0,
+    110
+   ],
+   "max": [
+    243.6,
+    46,
+    300
+   ]
+  },
+  {
+   "placement": "NE-hall",
+   "part": "splitWall",
+   "min": [
+    243,
+    0,
+    110
+   ],
+   "max": [
+    3015,
+    46,
+    110.6
+   ]
+  },
+  {
+   "placement": "NE-hall",
+   "part": "plinth",
+   "min": [
+    242.8,
+    0,
+    109.8
+   ],
+   "max": [
+    3015,
+    3,
+    490.2
+   ]
+  },
+  {
+   "placement": "NE-hall",
+   "part": "bayFins",
+   "min": [
+    422.4,
+    3,
+    109.4
+   ],
+   "max": [
+    2943.6,
+    46,
+    490.6
+   ]
+  },
+  {
+   "placement": "NE-hall",
+   "part": "levelReveals",
+   "min": [
+    242.7,
+    21.7,
+    109.7
+   ],
+   "max": [
+    3015,
+    44.3,
+    490.3
+   ]
+  },
+  {
+   "placement": "NE-hall",
+   "part": "roofDeck",
+   "min": [
+    243.6,
+    45.4,
+    110.6
+   ],
+   "max": [
+    3015,
+    46,
+    489.4
+   ]
+  },
+  {
+   "placement": "NE-hall",
+   "part": "roofEdge",
+   "min": [
+    243,
+    46,
+    110
+   ],
+   "max": [
+    3015,
+    47.2,
+    490
+   ]
+  },
+  {
+   "placement": "NE-hall",
+   "part": "edgeLights",
+   "min": [
+    242.8,
+    3,
+    59.8
+   ],
+   "max": [
+    3015,
+    47.3,
+    560.2
+   ]
+  },
+  {
+   "placement": "NE-hall",
+   "part": "panelSeams",
+   "min": [
+    243,
+    0,
+    110
+   ],
+   "max": [
+    3015,
+    46,
+    490
+   ]
+  },
+  {
+   "placement": "NE-hall",
+   "part": "roofMonitor",
+   "min": [
+    423,
+    46,
+    270
+   ],
+   "max": [
+    3015,
+    52,
+    330
+   ]
+  },
+  {
+   "placement": "NE-hall",
+   "part": "roofRibs",
+   "min": [
+    494,
+    46,
+    110.3
+   ],
+   "max": [
+    2944,
+    47.5,
+    489.7
+   ]
+  },
+  {
+   "placement": "NE-hall",
+   "part": "roofUnits",
+   "min": [
+    453,
+    46,
+    136
+   ],
+   "max": [
+    2985,
+    50,
+    464
+   ]
+  },
+  {
+   "placement": "NE-hall",
+   "part": "outerPods",
+   "min": [
+    500,
+    0,
+    490
+   ],
+   "max": [
+    2990,
+    25.7,
+    572
+   ]
+  },
+  {
+   "placement": "NE-hall",
+   "part": "splitPods",
+   "min": [
+    596,
+    0,
+    48
+   ],
+   "max": [
+    2950,
+    21.7,
+    110
+   ]
+  },
+  {
+   "placement": "NW-head",
+   "part": "roofBar",
+   "min": [
+    3495,
+    45.4,
+    -832
+   ],
+   "max": [
+    3960,
+    70,
+    -110
+   ]
+  },
+  {
+   "placement": "NW-head",
+   "part": "roofTaper",
+   "min": [
+    3015,
+    45.4,
+    -832
+   ],
+   "max": [
+    3495.2,
+    70,
+    -110
+   ]
+  },
+  {
+   "placement": "NW-head",
+   "part": "frontGlazing",
+   "min": [
+    3960,
+    3,
+    -832
+   ],
+   "max": [
+    3960,
+    70,
+    -110
+   ]
+  },
+  {
+   "placement": "NW-head",
+   "part": "tipWall",
+   "min": [
+    3495,
+    0,
+    -832
+   ],
+   "max": [
+    3960,
+    46,
+    -831.4
+   ]
+  },
+  {
+   "placement": "NW-head",
+   "part": "taperWall",
+   "min": [
+    3015,
+    0,
+    -832
+   ],
+   "max": [
+    3495.2,
+    51,
+    -489.4
+   ]
+  },
+  {
+   "placement": "NW-head",
+   "part": "splitWall",
+   "min": [
+    3015,
+    0,
+    -110.6
+   ],
+   "max": [
+    3960,
+    70,
+    -110
+   ]
+  },
+  {
+   "placement": "NW-head",
+   "part": "panelSeams",
+   "min": [
+    3015,
+    3.1,
+    -832
+   ],
+   "max": [
+    3954.1,
+    69.7,
+    -110
+   ]
+  },
+  {
+   "placement": "NW-head",
+   "part": "frontFins",
+   "min": [
+    3960,
+    0,
+    -826.2
+   ],
+   "max": [
+    3960.6,
+    70,
+    -117.8
+   ]
+  },
+  {
+   "placement": "NW-head",
+   "part": "plinth",
+   "min": [
+    3015,
+    0,
+    -832.2
+   ],
+   "max": [
+    3960.2,
+    3,
+    -109.8
+   ]
+  },
+  {
+   "placement": "NW-head",
+   "part": "levelReveals",
+   "min": [
+    3015,
+    21.7,
+    -832.3
+   ],
+   "max": [
+    3960,
+    44.3,
+    -109.7
+   ]
+  },
+  {
+   "placement": "NW-head",
+   "part": "roofEdge",
+   "min": [
+    3015,
+    46,
+    -832
+   ],
+   "max": [
+    3960,
+    71.2,
+    -110
+   ]
+  },
+  {
+   "placement": "NW-head",
+   "part": "edgeLights",
+   "min": [
+    3015,
+    3,
+    -832.2
+   ],
+   "max": [
+    3960.2,
+    71.2,
+    -109.8
+   ]
+  },
+  {
+   "placement": "NW-head",
+   "part": "roofMonitor",
+   "min": [
+    3015,
+    45.7,
+    -330
+   ],
+   "max": [
+    3495,
+    74.8,
+    -270
+   ]
+  },
+  {
+   "placement": "NW-head",
+   "part": "roofRibs",
+   "min": [
+    3086,
+    47.7,
+    -797.8
+   ],
+   "max": [
+    3448,
+    69.2,
+    -110.6
+   ]
+  },
+  {
+   "placement": "NW-head",
+   "part": "entrancePortal",
+   "min": [
+    3958.6,
+    0,
+    -151.2
+   ],
+   "max": [
+    3960.6,
+    13.2,
+    -109.8
+   ]
+  },
+  {
+   "placement": "NW-hall",
+   "part": "outerWall",
+   "min": [
+    423,
+    0,
+    -490
+   ],
+   "max": [
+    3015,
+    46,
+    -489.4
+   ]
+  },
+  {
+   "placement": "NW-hall",
+   "part": "sweptWall",
+   "min": [
+    243,
+    0,
+    -490
+   ],
+   "max": [
+    423,
+    46,
+    -300
+   ]
+  },
+  {
+   "placement": "NW-hall",
+   "part": "endWall",
+   "min": [
+    243,
+    0,
+    -300
+   ],
+   "max": [
+    243.6,
+    46,
+    -110
+   ]
+  },
+  {
+   "placement": "NW-hall",
+   "part": "splitWall",
+   "min": [
+    243,
+    0,
+    -110.6
+   ],
+   "max": [
+    3015,
+    46,
+    -110
+   ]
+  },
+  {
+   "placement": "NW-hall",
+   "part": "plinth",
+   "min": [
+    242.8,
+    0,
+    -490.2
+   ],
+   "max": [
+    3015,
+    3,
+    -109.8
+   ]
+  },
+  {
+   "placement": "NW-hall",
+   "part": "bayFins",
+   "min": [
+    422.4,
+    3,
+    -490.6
+   ],
+   "max": [
+    2943.6,
+    46,
+    -109.4
+   ]
+  },
+  {
+   "placement": "NW-hall",
+   "part": "levelReveals",
+   "min": [
+    242.7,
+    21.7,
+    -490.3
+   ],
+   "max": [
+    3015,
+    44.3,
+    -109.7
+   ]
+  },
+  {
+   "placement": "NW-hall",
+   "part": "roofDeck",
+   "min": [
+    243.6,
+    45.4,
+    -489.4
+   ],
+   "max": [
+    3015,
+    46,
+    -110.6
+   ]
+  },
+  {
+   "placement": "NW-hall",
+   "part": "roofEdge",
+   "min": [
+    243,
+    46,
+    -490
+   ],
+   "max": [
+    3015,
+    47.2,
+    -110
+   ]
+  },
+  {
+   "placement": "NW-hall",
+   "part": "edgeLights",
+   "min": [
+    242.8,
+    3,
+    -560.2
+   ],
+   "max": [
+    3015,
+    47.3,
+    -59.8
+   ]
+  },
+  {
+   "placement": "NW-hall",
+   "part": "panelSeams",
+   "min": [
+    243,
+    0,
+    -490
+   ],
+   "max": [
+    3015,
+    46,
+    -110
+   ]
+  },
+  {
+   "placement": "NW-hall",
+   "part": "roofMonitor",
+   "min": [
+    423,
+    46,
+    -330
+   ],
+   "max": [
+    3015,
+    52,
+    -270
+   ]
+  },
+  {
+   "placement": "NW-hall",
+   "part": "roofRibs",
+   "min": [
+    494,
+    46,
+    -489.7
+   ],
+   "max": [
+    2944,
+    47.5,
+    -110.3
+   ]
+  },
+  {
+   "placement": "NW-hall",
+   "part": "roofUnits",
+   "min": [
+    453,
+    46,
+    -464
+   ],
+   "max": [
+    2985,
+    50,
+    -136
+   ]
+  },
+  {
+   "placement": "NW-hall",
+   "part": "outerPods",
+   "min": [
+    500,
+    0,
+    -572
+   ],
+   "max": [
+    2990,
+    25.7,
+    -490
+   ]
+  },
+  {
+   "placement": "NW-hall",
+   "part": "splitPods",
+   "min": [
+    596,
+    0,
+    -110
+   ],
+   "max": [
+    2950,
+    21.7,
+    -48
+   ]
+  },
+  {
+   "placement": "link-W",
+   "part": "armA",
+   "min": [
+    -294.3,
+    0,
+    -451.1
+   ],
+   "max": [
+    -14.2,
+    30,
+    -243.8
+   ]
+  },
+  {
+   "placement": "link-W",
+   "part": "armB",
+   "min": [
+    14.2,
+    0,
+    -451.1
+   ],
+   "max": [
+    294.3,
+    30,
+    -243.8
+   ]
+  },
+  {
+   "placement": "link-W",
+   "part": "apexBlock",
+   "min": [
+    -14.8,
+    0,
+    -312.3
+   ],
+   "max": [
+    14.8,
+    30,
+    -240
+   ]
+  },
+  {
+   "placement": "link-W",
+   "part": "plinth",
+   "min": [
+    -294.5,
+    0,
+    -451.4
+   ],
+   "max": [
+    294.5,
+    3,
+    -239.8
+   ]
+  },
+  {
+   "placement": "link-W",
+   "part": "glazingBand",
+   "min": [
+    -290.6,
+    8,
+    -448.9
+   ],
+   "max": [
+    290.6,
+    14,
+    -240.3
+   ]
+  },
+  {
+   "placement": "link-W",
+   "part": "levelReveal",
+   "min": [
+    -294.7,
+    21.7,
+    -451.5
+   ],
+   "max": [
+    294.7,
+    22.3,
+    -239.7
+   ]
+  },
+  {
+   "placement": "link-W",
+   "part": "roof",
+   "min": [
+    -293.5,
+    29.4,
+    -450.3
+   ],
+   "max": [
+    293.5,
+    30,
+    -240.6
+   ]
+  },
+  {
+   "placement": "link-W",
+   "part": "roofEdge",
+   "min": [
+    -294.3,
+    30,
+    -451.1
+   ],
+   "max": [
+    294.3,
+    31.2,
+    -240
+   ]
+  },
+  {
+   "placement": "link-W",
+   "part": "edgeLights",
+   "min": [
+    -294.5,
+    3,
+    -451.4
+   ],
+   "max": [
+    294.5,
+    31.3,
+    -239.8
+   ]
+  },
+  {
+   "placement": "link-E",
+   "part": "armA",
+   "min": [
+    14.2,
+    0,
+    243.8
+   ],
+   "max": [
+    294.3,
+    30,
+    451.1
+   ]
+  },
+  {
+   "placement": "link-E",
+   "part": "armB",
+   "min": [
+    -294.3,
+    0,
+    243.8
+   ],
+   "max": [
+    -14.2,
+    30,
+    451.1
+   ]
+  },
+  {
+   "placement": "link-E",
+   "part": "apexBlock",
+   "min": [
+    -14.8,
+    0,
+    240
+   ],
+   "max": [
+    14.8,
+    30,
+    312.3
+   ]
+  },
+  {
+   "placement": "link-E",
+   "part": "plinth",
+   "min": [
+    -294.5,
+    0,
+    239.8
+   ],
+   "max": [
+    294.5,
+    3,
+    451.4
+   ]
+  },
+  {
+   "placement": "link-E",
+   "part": "glazingBand",
+   "min": [
+    -290.6,
+    8,
+    240.3
+   ],
+   "max": [
+    290.6,
+    14,
+    448.9
+   ]
+  },
+  {
+   "placement": "link-E",
+   "part": "levelReveal",
+   "min": [
+    -294.7,
+    21.7,
+    239.7
+   ],
+   "max": [
+    294.7,
+    22.3,
+    451.5
+   ]
+  },
+  {
+   "placement": "link-E",
+   "part": "roof",
+   "min": [
+    -293.5,
+    29.4,
+    240.6
+   ],
+   "max": [
+    293.5,
+    30,
+    450.3
+   ]
+  },
+  {
+   "placement": "link-E",
+   "part": "roofEdge",
+   "min": [
+    -294.3,
+    30,
+    240
+   ],
+   "max": [
+    294.3,
+    31.2,
+    451.1
+   ]
+  },
+  {
+   "placement": "link-E",
+   "part": "edgeLights",
+   "min": [
+    -294.5,
+    3,
+    239.8
+   ],
+   "max": [
+    294.5,
+    31.3,
+    451.4
+   ]
+  },
+  {
+   "placement": "canopy-S",
+   "part": "roofTop",
+   "min": [
+    -4110,
+    16.5,
+    -150
+   ],
+   "max": [
+    -3960,
+    24.5,
+    150
+   ]
+  },
+  {
+   "placement": "canopy-S",
+   "part": "soffit",
+   "min": [
+    -4110,
+    14,
+    -150
+   ],
+   "max": [
+    -3960,
+    22,
+    150
+   ]
+  },
+  {
+   "placement": "canopy-S",
+   "part": "fascia",
+   "min": [
+    -4110,
+    14.3,
+    -150
+   ],
+   "max": [
+    -3960,
+    24.5,
+    150
+   ]
+  },
+  {
+   "placement": "canopy-S",
+   "part": "edgeLights",
+   "min": [
+    -4110,
+    14,
+    -150
+   ],
+   "max": [
+    -3960,
+    22.3,
+    150
+   ]
+  },
+  {
+   "placement": "canopy-S",
+   "part": "columns",
+   "min": [
+    -4097,
+    0,
+    -143.9
+   ],
+   "max": [
+    -4013,
+    22.3,
+    143.9
+   ]
+  },
+  {
+   "placement": "canopy-S",
+   "part": "dropOffKerb",
+   "min": [
+    -4060,
+    0,
+    -60.5
+   ],
+   "max": [
+    -3960,
+    0.3,
+    60.5
+   ]
+  },
+  {
+   "placement": "canopy-N",
+   "part": "roofTop",
+   "min": [
+    3960,
+    16.5,
+    -150
+   ],
+   "max": [
+    4110,
+    24.5,
+    150
+   ]
+  },
+  {
+   "placement": "canopy-N",
+   "part": "soffit",
+   "min": [
+    3960,
+    14,
+    -150
+   ],
+   "max": [
+    4110,
+    22,
+    150
+   ]
+  },
+  {
+   "placement": "canopy-N",
+   "part": "fascia",
+   "min": [
+    3960,
+    14.3,
+    -150
+   ],
+   "max": [
+    4110,
+    24.5,
+    150
+   ]
+  },
+  {
+   "placement": "canopy-N",
+   "part": "edgeLights",
+   "min": [
+    3960,
+    14,
+    -150
+   ],
+   "max": [
+    4110,
+    22.3,
+    150
+   ]
+  },
+  {
+   "placement": "canopy-N",
+   "part": "columns",
+   "min": [
+    4013,
+    0,
+    -143.9
+   ],
+   "max": [
+    4097,
+    22.3,
+    143.9
+   ]
+  },
+  {
+   "placement": "canopy-N",
+   "part": "dropOffKerb",
+   "min": [
+    3960,
+    0,
+    -60.5
+   ],
+   "max": [
+    4060,
+    0.3,
+    60.5
+   ]
+  },
+  {
+   "placement": "bridge-S1",
+   "part": "walls",
+   "min": [
+    -2626.8,
+    30,
+    -140
+   ],
+   "max": [
+    -2467.2,
+    42,
+    140
+   ]
+  },
+  {
+   "placement": "bridge-S1",
+   "part": "roof",
+   "min": [
+    -2626.8,
+    42,
+    -140
+   ],
+   "max": [
+    -2467.2,
+    42,
+    140
+   ]
+  },
+  {
+   "placement": "bridge-S1",
+   "part": "glazingBand",
+   "min": [
+    -2626.6,
+    33,
+    -140
+   ],
+   "max": [
+    -2467.3,
+    39,
+    140
+   ]
+  },
+  {
+   "placement": "bridge-S1",
+   "part": "edgeLights",
+   "min": [
+    -2627,
+    30,
+    -140
+   ],
+   "max": [
+    -2467,
+    42.1,
+    140
+   ]
+  },
+  {
+   "placement": "bridge-S1",
+   "part": "panelSeams",
+   "min": [
+    -2624.4,
+    30.1,
+    -107.3
+   ],
+   "max": [
+    -2469.6,
+    42,
+    107.3
+   ]
+  },
+  {
+   "placement": "bridge-S2",
+   "part": "walls",
+   "min": [
+    -2050.8,
+    30,
+    -140
+   ],
+   "max": [
+    -1891.2,
+    42,
+    140
+   ]
+  },
+  {
+   "placement": "bridge-S2",
+   "part": "roof",
+   "min": [
+    -2050.8,
+    42,
+    -140
+   ],
+   "max": [
+    -1891.2,
+    42,
+    140
+   ]
+  },
+  {
+   "placement": "bridge-S2",
+   "part": "glazingBand",
+   "min": [
+    -2050.6,
+    33,
+    -140
+   ],
+   "max": [
+    -1891.3,
+    39,
+    140
+   ]
+  },
+  {
+   "placement": "bridge-S2",
+   "part": "edgeLights",
+   "min": [
+    -2051,
+    30,
+    -140
+   ],
+   "max": [
+    -1891,
+    42.1,
+    140
+   ]
+  },
+  {
+   "placement": "bridge-S2",
+   "part": "panelSeams",
+   "min": [
+    -2048.4,
+    30.1,
+    -107.3
+   ],
+   "max": [
+    -1893.6,
+    42,
+    107.3
+   ]
+  },
+  {
+   "placement": "bridge-S3",
+   "part": "walls",
+   "min": [
+    -1474.8,
+    30,
+    -140
+   ],
+   "max": [
+    -1315.2,
+    42,
+    140
+   ]
+  },
+  {
+   "placement": "bridge-S3",
+   "part": "roof",
+   "min": [
+    -1474.8,
+    42,
+    -140
+   ],
+   "max": [
+    -1315.2,
+    42,
+    140
+   ]
+  },
+  {
+   "placement": "bridge-S3",
+   "part": "glazingBand",
+   "min": [
+    -1474.6,
+    33,
+    -140
+   ],
+   "max": [
+    -1315.3,
+    39,
+    140
+   ]
+  },
+  {
+   "placement": "bridge-S3",
+   "part": "edgeLights",
+   "min": [
+    -1475,
+    30,
+    -140
+   ],
+   "max": [
+    -1315,
+    42.1,
+    140
+   ]
+  },
+  {
+   "placement": "bridge-S3",
+   "part": "panelSeams",
+   "min": [
+    -1472.4,
+    30.1,
+    -107.3
+   ],
+   "max": [
+    -1317.6,
+    42,
+    107.3
+   ]
+  },
+  {
+   "placement": "bridge-S4",
+   "part": "walls",
+   "min": [
+    -898.8,
+    30,
+    -140
+   ],
+   "max": [
+    -739.2,
+    42,
+    140
+   ]
+  },
+  {
+   "placement": "bridge-S4",
+   "part": "roof",
+   "min": [
+    -898.8,
+    42,
+    -140
+   ],
+   "max": [
+    -739.2,
+    42,
+    140
+   ]
+  },
+  {
+   "placement": "bridge-S4",
+   "part": "glazingBand",
+   "min": [
+    -898.6,
+    33,
+    -140
+   ],
+   "max": [
+    -739.3,
+    39,
+    140
+   ]
+  },
+  {
+   "placement": "bridge-S4",
+   "part": "edgeLights",
+   "min": [
+    -899,
+    30,
+    -140
+   ],
+   "max": [
+    -739,
+    42.1,
+    140
+   ]
+  },
+  {
+   "placement": "bridge-S4",
+   "part": "panelSeams",
+   "min": [
+    -896.4,
+    30.1,
+    -107.3
+   ],
+   "max": [
+    -741.6,
+    42,
+    107.3
+   ]
+  },
+  {
+   "placement": "bridge-N1",
+   "part": "walls",
+   "min": [
+    2467.2,
+    30,
+    -140
+   ],
+   "max": [
+    2626.8,
+    42,
+    140
+   ]
+  },
+  {
+   "placement": "bridge-N1",
+   "part": "roof",
+   "min": [
+    2467.2,
+    42,
+    -140
+   ],
+   "max": [
+    2626.8,
+    42,
+    140
+   ]
+  },
+  {
+   "placement": "bridge-N1",
+   "part": "glazingBand",
+   "min": [
+    2467.4,
+    33,
+    -140
+   ],
+   "max": [
+    2626.7,
+    39,
+    140
+   ]
+  },
+  {
+   "placement": "bridge-N1",
+   "part": "edgeLights",
+   "min": [
+    2467,
+    30,
+    -140
+   ],
+   "max": [
+    2627,
+    42.1,
+    140
+   ]
+  },
+  {
+   "placement": "bridge-N1",
+   "part": "panelSeams",
+   "min": [
+    2469.6,
+    30.1,
+    -107.3
+   ],
+   "max": [
+    2624.4,
+    42,
+    107.3
+   ]
+  },
+  {
+   "placement": "bridge-N2",
+   "part": "walls",
+   "min": [
+    1891.2,
+    30,
+    -140
+   ],
+   "max": [
+    2050.8,
+    42,
+    140
+   ]
+  },
+  {
+   "placement": "bridge-N2",
+   "part": "roof",
+   "min": [
+    1891.2,
+    42,
+    -140
+   ],
+   "max": [
+    2050.8,
+    42,
+    140
+   ]
+  },
+  {
+   "placement": "bridge-N2",
+   "part": "glazingBand",
+   "min": [
+    1891.4,
+    33,
+    -140
+   ],
+   "max": [
+    2050.7,
+    39,
+    140
+   ]
+  },
+  {
+   "placement": "bridge-N2",
+   "part": "edgeLights",
+   "min": [
+    1891,
+    30,
+    -140
+   ],
+   "max": [
+    2051,
+    42.1,
+    140
+   ]
+  },
+  {
+   "placement": "bridge-N2",
+   "part": "panelSeams",
+   "min": [
+    1893.6,
+    30.1,
+    -107.3
+   ],
+   "max": [
+    2048.4,
+    42,
+    107.3
+   ]
+  },
+  {
+   "placement": "bridge-N3",
+   "part": "walls",
+   "min": [
+    1315.2,
+    30,
+    -140
+   ],
+   "max": [
+    1474.8,
+    42,
+    140
+   ]
+  },
+  {
+   "placement": "bridge-N3",
+   "part": "roof",
+   "min": [
+    1315.2,
+    42,
+    -140
+   ],
+   "max": [
+    1474.8,
+    42,
+    140
+   ]
+  },
+  {
+   "placement": "bridge-N3",
+   "part": "glazingBand",
+   "min": [
+    1315.4,
+    33,
+    -140
+   ],
+   "max": [
+    1474.7,
+    39,
+    140
+   ]
+  },
+  {
+   "placement": "bridge-N3",
+   "part": "edgeLights",
+   "min": [
+    1315,
+    30,
+    -140
+   ],
+   "max": [
+    1475,
+    42.1,
+    140
+   ]
+  },
+  {
+   "placement": "bridge-N3",
+   "part": "panelSeams",
+   "min": [
+    1317.6,
+    30.1,
+    -107.3
+   ],
+   "max": [
+    1472.4,
+    42,
+    107.3
+   ]
+  },
+  {
+   "placement": "bridge-N4",
+   "part": "walls",
+   "min": [
+    739.2,
+    30,
+    -140
+   ],
+   "max": [
+    898.8,
+    42,
+    140
+   ]
+  },
+  {
+   "placement": "bridge-N4",
+   "part": "roof",
+   "min": [
+    739.2,
+    42,
+    -140
+   ],
+   "max": [
+    898.8,
+    42,
+    140
+   ]
+  },
+  {
+   "placement": "bridge-N4",
+   "part": "glazingBand",
+   "min": [
+    739.4,
+    33,
+    -140
+   ],
+   "max": [
+    898.7,
+    39,
+    140
+   ]
+  },
+  {
+   "placement": "bridge-N4",
+   "part": "edgeLights",
+   "min": [
+    739,
+    30,
+    -140
+   ],
+   "max": [
+    899,
+    42.1,
+    140
+   ]
+  },
+  {
+   "placement": "bridge-N4",
+   "part": "panelSeams",
+   "min": [
+    741.6,
+    30.1,
+    -107.3
+   ],
+   "max": [
+    896.4,
+    42,
+    107.3
+   ]
+  }
+ ],
+ "roads": {
+  "gradeY": 0,
+  "palette": {
+   "grade": "#7b8a6a",
+   "asphalt": "#3c3f42",
+   "apron": "#6c6d6a",
+   "marking": "#e6e4dc",
+   "centre": "#e6e4dc",
+   "kerb": "#9c9a94",
+   "island": "#65774f",
+   "parking": "#46494c",
+   "plaza": "#a3a19b"
+  },
+  "gradeRadius": 24000,
+  "split": {
+   "u": [
+    -4300,
+    4300
+   ],
+   "halfWidth": 40,
+   "lanes": {
+    "perDirection": 4,
+    "width": 4.5,
+    "firstCentre": 2.75
+   },
+   "lineWidth": 0.25,
+   "centreDash": {
+    "dash": 12,
+    "gap": 6
+   },
+   "laneDash": {
+    "dash": 6,
+    "gap": 9
+   },
+   "edgeLine": 18.5,
+   "outerEdgeLine": 39.5,
+   "markingsFrom": 136,
+   "dissolve": 150,
+   "carEnd": 4150
+  },
+  "cross": {
+   "halfWidth": 60,
+   "v": 1150,
+   "stubEnd": 224,
+   "outerFrom": 353,
+   "lanes": {
+    "perDirection": 4,
+    "width": 4.5,
+    "firstCentre": 2.75
+   },
+   "dissolve": 150
+  },
+  "roundabout": {
+   "radius": 110,
+   "island": 40,
+   "kerb": 2,
+   "apronTo": 85,
+   "lanes": {
+    "count": 4,
+    "width": 5,
+    "inner": 85
+   },
+   "fillet": 36
+  },
+  "dropOff": [
+   {
+    "u": [
+     -4056,
+     -3960
+    ],
+    "v": [
+     -59.4,
+     -40
+    ]
+   },
+   {
+    "u": [
+     -4056,
+     -3960
+    ],
+    "v": [
+     40,
+     59.4
+    ]
+   },
+   {
+    "u": [
+     3960,
+     4056
+    ],
+    "v": [
+     -59.4,
+     -40
+    ]
+   },
+   {
+    "u": [
+     3960,
+     4056
+    ],
+    "v": [
+     40,
+     59.4
+    ]
+   }
+  ],
+  "plazas": [
+   {
+    "u": [
+     -4110,
+     -3960
+    ],
+    "v": [
+     -150,
+     -40
+    ]
+   },
+   {
+    "u": [
+     -4110,
+     -3960
+    ],
+    "v": [
+     40,
+     150
+    ]
+   },
+   {
+    "u": [
+     3960,
+     4110
+    ],
+    "v": [
+     -150,
+     -40
+    ]
+   },
+   {
+    "u": [
+     3960,
+     4110
+    ],
+    "v": [
+     40,
+     150
+    ]
+   }
+  ]
+ },
+ "lanes": [
+  {
+   "id": "nb-0",
+   "direction": "north",
+   "index": 0,
+   "speed": 19,
+   "length": 8674.629,
+   "segments": [
+    {
+     "kind": "line",
+     "from": [
+      -4300,
+      2.75
+     ],
+     "to": [
+      -117.263,
+      2.75
+     ],
+     "length": 4182.737
+    },
+    {
+     "kind": "arc",
+     "centre": [
+      -117.263,
+      38.75
+     ],
+     "radius": 36,
+     "start": -1.570796327,
+     "sweep": 1.251640445,
+     "length": 45.059
+    },
+    {
+     "kind": "arc",
+     "centre": [
+      0,
+      0
+     ],
+     "radius": 87.5,
+     "start": 2.822436771,
+     "sweep": -2.503280889,
+     "length": 219.037
+    },
+    {
+     "kind": "arc",
+     "centre": [
+      117.263,
+      38.75
+     ],
+     "radius": 36,
+     "start": 3.460748536,
+     "sweep": 1.251640445,
+     "length": 45.059
+    },
+    {
+     "kind": "line",
+     "from": [
+      117.263,
+      2.75
+     ],
+     "to": [
+      4300,
+      2.75
+     ],
+     "length": 4182.737
+    }
+   ]
+  },
+  {
+   "id": "sb-0",
+   "direction": "south",
+   "index": 0,
+   "speed": 19,
+   "length": 8674.629,
+   "segments": [
+    {
+     "kind": "line",
+     "from": [
+      4300,
+      -2.75
+     ],
+     "to": [
+      117.263,
+      -2.75
+     ],
+     "length": 4182.737
+    },
+    {
+     "kind": "arc",
+     "centre": [
+      117.263,
+      -38.75
+     ],
+     "radius": 36,
+     "start": 1.570796327,
+     "sweep": 1.251640445,
+     "length": 45.059
+    },
+    {
+     "kind": "arc",
+     "centre": [
+      0,
+      0
+     ],
+     "radius": 87.5,
+     "start": 5.964029425,
+     "sweep": -2.503280889,
+     "length": 219.037
+    },
+    {
+     "kind": "arc",
+     "centre": [
+      -117.263,
+      -38.75
+     ],
+     "radius": 36,
+     "start": 6.602341189,
+     "sweep": 1.251640445,
+     "length": 45.059
+    },
+    {
+     "kind": "line",
+     "from": [
+      -117.263,
+      -2.75
+     ],
+     "to": [
+      -4300,
+      -2.75
+     ],
+     "length": 4182.737
+    }
+   ]
+  },
+  {
+   "id": "nb-1",
+   "direction": "north",
+   "index": 1,
+   "speed": 17,
+   "length": 8673.466,
+   "segments": [
+    {
+     "kind": "line",
+     "from": [
+      -4300,
+      7.25
+     ],
+     "to": [
+      -121.003,
+      7.25
+     ],
+     "length": 4178.997
+    },
+    {
+     "kind": "arc",
+     "centre": [
+      -121.003,
+      43.25
+     ],
+     "radius": 36,
+     "start": -1.570796327,
+     "sweep": 1.227518082,
+     "length": 44.191
+    },
+    {
+     "kind": "arc",
+     "centre": [
+      0,
+      0
+     ],
+     "radius": 92.5,
+     "start": 2.798314408,
+     "sweep": -2.455036163,
+     "length": 227.091
+    },
+    {
+     "kind": "arc",
+     "centre": [
+      121.003,
+      43.25
+     ],
+     "radius": 36,
+     "start": 3.484870899,
+     "sweep": 1.227518082,
+     "length": 44.191
+    },
+    {
+     "kind": "line",
+     "from": [
+      121.003,
+      7.25
+     ],
+     "to": [
+      4300,
+      7.25
+     ],
+     "length": 4178.997
+    }
+   ]
+  },
+  {
+   "id": "sb-1",
+   "direction": "south",
+   "index": 1,
+   "speed": 17,
+   "length": 8673.466,
+   "segments": [
+    {
+     "kind": "line",
+     "from": [
+      4300,
+      -7.25
+     ],
+     "to": [
+      121.003,
+      -7.25
+     ],
+     "length": 4178.997
+    },
+    {
+     "kind": "arc",
+     "centre": [
+      121.003,
+      -43.25
+     ],
+     "radius": 36,
+     "start": 1.570796327,
+     "sweep": 1.227518082,
+     "length": 44.191
+    },
+    {
+     "kind": "arc",
+     "centre": [
+      0,
+      0
+     ],
+     "radius": 92.5,
+     "start": 5.939907062,
+     "sweep": -2.455036163,
+     "length": 227.091
+    },
+    {
+     "kind": "arc",
+     "centre": [
+      -121.003,
+      -43.25
+     ],
+     "radius": 36,
+     "start": 6.626463552,
+     "sweep": 1.227518082,
+     "length": 44.191
+    },
+    {
+     "kind": "line",
+     "from": [
+      -121.003,
+      -7.25
+     ],
+     "to": [
+      -4300,
+      -7.25
+     ],
+     "length": 4178.997
+    }
+   ]
+  },
+  {
+   "id": "nb-2",
+   "direction": "north",
+   "index": 2,
+   "speed": 15,
+   "length": 8672.403,
+   "segments": [
+    {
+     "kind": "line",
+     "from": [
+      -4300,
+      11.75
+     ],
+     "to": [
+      -124.668,
+      11.75
+     ],
+     "length": 4175.332
+    },
+    {
+     "kind": "arc",
+     "centre": [
+      -124.668,
+      47.75
+     ],
+     "radius": 36,
+     "start": -1.570796327,
+     "sweep": 1.205016219,
+     "length": 43.381
+    },
+    {
+     "kind": "arc",
+     "centre": [
+      0,
+      0
+     ],
+     "radius": 97.5,
+     "start": 2.775812546,
+     "sweep": -2.410032439,
+     "length": 234.978
+    },
+    {
+     "kind": "arc",
+     "centre": [
+      124.668,
+      47.75
+     ],
+     "radius": 36,
+     "start": 3.507372761,
+     "sweep": 1.205016219,
+     "length": 43.381
+    },
+    {
+     "kind": "line",
+     "from": [
+      124.668,
+      11.75
+     ],
+     "to": [
+      4300,
+      11.75
+     ],
+     "length": 4175.332
+    }
+   ]
+  },
+  {
+   "id": "sb-2",
+   "direction": "south",
+   "index": 2,
+   "speed": 15,
+   "length": 8672.403,
+   "segments": [
+    {
+     "kind": "line",
+     "from": [
+      4300,
+      -11.75
+     ],
+     "to": [
+      124.668,
+      -11.75
+     ],
+     "length": 4175.332
+    },
+    {
+     "kind": "arc",
+     "centre": [
+      124.668,
+      -47.75
+     ],
+     "radius": 36,
+     "start": 1.570796327,
+     "sweep": 1.205016219,
+     "length": 43.381
+    },
+    {
+     "kind": "arc",
+     "centre": [
+      0,
+      0
+     ],
+     "radius": 97.5,
+     "start": 5.9174052,
+     "sweep": -2.410032439,
+     "length": 234.978
+    },
+    {
+     "kind": "arc",
+     "centre": [
+      -124.668,
+      -47.75
+     ],
+     "radius": 36,
+     "start": 6.648965415,
+     "sweep": 1.205016219,
+     "length": 43.381
+    },
+    {
+     "kind": "line",
+     "from": [
+      -124.668,
+      -11.75
+     ],
+     "to": [
+      -4300,
+      -11.75
+     ],
+     "length": 4175.332
+    }
+   ]
+  },
+  {
+   "id": "nb-3",
+   "direction": "north",
+   "index": 3,
+   "speed": 13,
+   "length": 8671.426,
+   "segments": [
+    {
+     "kind": "line",
+     "from": [
+      -4300,
+      16.25
+     ],
+     "to": [
+      -128.266,
+      16.25
+     ],
+     "length": 4171.734
+    },
+    {
+     "kind": "arc",
+     "centre": [
+      -128.266,
+      52.25
+     ],
+     "radius": 36,
+     "start": -1.570796327,
+     "sweep": 1.183964416,
+     "length": 42.623
+    },
+    {
+     "kind": "arc",
+     "centre": [
+      0,
+      0
+     ],
+     "radius": 102.5,
+     "start": 2.754760743,
+     "sweep": -2.367928832,
+     "length": 242.713
+    },
+    {
+     "kind": "arc",
+     "centre": [
+      128.266,
+      52.25
+     ],
+     "radius": 36,
+     "start": 3.528424564,
+     "sweep": 1.183964416,
+     "length": 42.623
+    },
+    {
+     "kind": "line",
+     "from": [
+      128.266,
+      16.25
+     ],
+     "to": [
+      4300,
+      16.25
+     ],
+     "length": 4171.734
+    }
+   ]
+  },
+  {
+   "id": "sb-3",
+   "direction": "south",
+   "index": 3,
+   "speed": 13,
+   "length": 8671.426,
+   "segments": [
+    {
+     "kind": "line",
+     "from": [
+      4300,
+      -16.25
+     ],
+     "to": [
+      128.266,
+      -16.25
+     ],
+     "length": 4171.734
+    },
+    {
+     "kind": "arc",
+     "centre": [
+      128.266,
+      -52.25
+     ],
+     "radius": 36,
+     "start": 1.570796327,
+     "sweep": 1.183964416,
+     "length": 42.623
+    },
+    {
+     "kind": "arc",
+     "centre": [
+      0,
+      0
+     ],
+     "radius": 102.5,
+     "start": 5.896353396,
+     "sweep": -2.367928832,
+     "length": 242.713
+    },
+    {
+     "kind": "arc",
+     "centre": [
+      -128.266,
+      -52.25
+     ],
+     "radius": 36,
+     "start": 6.670017218,
+     "sweep": 1.183964416,
+     "length": 42.623
+    },
+    {
+     "kind": "line",
+     "from": [
+      -128.266,
+      -16.25
+     ],
+     "to": [
+      -4300,
+      -16.25
+     ],
+     "length": 4171.734
+    }
+   ]
+  }
+ ],
+ "parking": {
+  "loops": [
+   {
+    "id": "parking-SW-1",
+    "corner": "SW",
+    "curve": [
+     [
+      -4230,
+      -260
+     ],
+     [
+      -4230,
+      -520
+     ],
+     [
+      -4000,
+      -640
+     ]
+    ],
+    "t": [
+     0,
+     1
+    ],
+    "aisle": 8,
+    "pitch": 2.6,
+    "depth": 5.5
+   },
+   {
+    "id": "parking-SW-2",
+    "corner": "SW",
+    "curve": [
+     [
+      -4150,
+      -260
+     ],
+     [
+      -4150,
+      -470
+     ],
+     [
+      -3960,
+      -560
+     ]
+    ],
+    "t": [
+     0,
+     0.977
+    ],
+    "aisle": 8,
+    "pitch": 2.6,
+    "depth": 5.5
+   },
+   {
+    "id": "parking-SW-3",
+    "corner": "SW",
+    "curve": [
+     [
+      -4070,
+      -260
+     ],
+     [
+      -4070,
+      -420
+     ],
+     [
+      -3920,
+      -480
+     ]
+    ],
+    "t": [
+     0,
+     0.819
+    ],
+    "aisle": 8,
+    "pitch": 2.6,
+    "depth": 5.5
+   },
+   {
+    "id": "parking-SE-1",
+    "corner": "SE",
+    "curve": [
+     [
+      -4230,
+      260
+     ],
+     [
+      -4230,
+      520
+     ],
+     [
+      -4000,
+      640
+     ]
+    ],
+    "t": [
+     0,
+     1
+    ],
+    "aisle": 8,
+    "pitch": 2.6,
+    "depth": 5.5
+   },
+   {
+    "id": "parking-SE-2",
+    "corner": "SE",
+    "curve": [
+     [
+      -4150,
+      260
+     ],
+     [
+      -4150,
+      470
+     ],
+     [
+      -3960,
+      560
+     ]
+    ],
+    "t": [
+     0,
+     0.977
+    ],
+    "aisle": 8,
+    "pitch": 2.6,
+    "depth": 5.5
+   },
+   {
+    "id": "parking-SE-3",
+    "corner": "SE",
+    "curve": [
+     [
+      -4070,
+      260
+     ],
+     [
+      -4070,
+      420
+     ],
+     [
+      -3920,
+      480
+     ]
+    ],
+    "t": [
+     0,
+     0.819
+    ],
+    "aisle": 8,
+    "pitch": 2.6,
+    "depth": 5.5
+   },
+   {
+    "id": "parking-NE-1",
+    "corner": "NE",
+    "curve": [
+     [
+      4230,
+      260
+     ],
+     [
+      4230,
+      520
+     ],
+     [
+      4000,
+      640
+     ]
+    ],
+    "t": [
+     0,
+     1
+    ],
+    "aisle": 8,
+    "pitch": 2.6,
+    "depth": 5.5
+   },
+   {
+    "id": "parking-NE-2",
+    "corner": "NE",
+    "curve": [
+     [
+      4150,
+      260
+     ],
+     [
+      4150,
+      470
+     ],
+     [
+      3960,
+      560
+     ]
+    ],
+    "t": [
+     0,
+     0.977
+    ],
+    "aisle": 8,
+    "pitch": 2.6,
+    "depth": 5.5
+   },
+   {
+    "id": "parking-NE-3",
+    "corner": "NE",
+    "curve": [
+     [
+      4070,
+      260
+     ],
+     [
+      4070,
+      420
+     ],
+     [
+      3920,
+      480
+     ]
+    ],
+    "t": [
+     0,
+     0.819
+    ],
+    "aisle": 8,
+    "pitch": 2.6,
+    "depth": 5.5
+   },
+   {
+    "id": "parking-NW-1",
+    "corner": "NW",
+    "curve": [
+     [
+      4230,
+      -260
+     ],
+     [
+      4230,
+      -520
+     ],
+     [
+      4000,
+      -640
+     ]
+    ],
+    "t": [
+     0,
+     1
+    ],
+    "aisle": 8,
+    "pitch": 2.6,
+    "depth": 5.5
+   },
+   {
+    "id": "parking-NW-2",
+    "corner": "NW",
+    "curve": [
+     [
+      4150,
+      -260
+     ],
+     [
+      4150,
+      -470
+     ],
+     [
+      3960,
+      -560
+     ]
+    ],
+    "t": [
+     0,
+     0.977
+    ],
+    "aisle": 8,
+    "pitch": 2.6,
+    "depth": 5.5
+   },
+   {
+    "id": "parking-NW-3",
+    "corner": "NW",
+    "curve": [
+     [
+      4070,
+      -260
+     ],
+     [
+      4070,
+      -420
+     ],
+     [
+      3920,
+      -480
+     ]
+    ],
+    "t": [
+     0,
+     0.819
+    ],
+    "aisle": 8,
+    "pitch": 2.6,
+    "depth": 5.5
+   }
+  ],
+  "car": {
+   "body": [
+    4.5,
+    1.8,
+    0.9
+   ],
+   "cabin": [
+    2.3,
+    1.55,
+    0.55
+   ],
+   "cabinBack": 0.2,
+   "lift": 0.25
+  },
+  "occupancy": 0.72,
+  "seed": 7,
+  "paints": [
+   "#e9e9e6",
+   "#b9bcbf",
+   "#6f7377",
+   "#23262a",
+   "#2f4f7a",
+   "#8a2f2c",
+   "#3e5a48",
+   "#c9b99a"
+  ]
+ },
+ "satellites": {
+  "size": [
+   160,
+   110,
+   16
+  ],
+  "roofUnit": [
+   40,
+   24,
+   5
+  ],
+  "centres": [
+   [
+    -2720,
+    -685
+   ],
+   [
+    -2360,
+    -685
+   ],
+   [
+    -2000,
+    -685
+   ],
+   [
+    -1640,
+    -685
+   ],
+   [
+    -1280,
+    -685
+   ],
+   [
+    -920,
+    -685
+   ],
+   [
+    -2720,
+    685
+   ],
+   [
+    -2360,
+    685
+   ],
+   [
+    -2000,
+    685
+   ],
+   [
+    -1640,
+    685
+   ],
+   [
+    -1280,
+    685
+   ],
+   [
+    -920,
+    685
+   ],
+   [
+    2720,
+    685
+   ],
+   [
+    2360,
+    685
+   ],
+   [
+    2000,
+    685
+   ],
+   [
+    1640,
+    685
+   ],
+   [
+    1280,
+    685
+   ],
+   [
+    920,
+    685
+   ],
+   [
+    2720,
+    -685
+   ],
+   [
+    2360,
+    -685
+   ],
+   [
+    2000,
+    -685
+   ],
+   [
+    1640,
+    -685
+   ],
+   [
+    1280,
+    -685
+   ],
+   [
+    920,
+    -685
+   ]
+  ],
+  "colour": "#b3b5b2",
+  "roofColour": "#3b4148"
+ },
+ "lights": {
+  "pole": {
+   "height": 12,
+   "radius": 0.14,
+   "arm": 2.5,
+   "head": [
+    0.9,
+    0.25,
+    0.35
+   ]
+  },
+  "poles": [
+   {
+    "at": [
+     -140,
+     -43
+    ],
+    "headingDeg": 90
+   },
+   {
+    "at": [
+     -140,
+     43
+    ],
+    "headingDeg": -90
+   },
+   {
+    "at": [
+     140,
+     -43
+    ],
+    "headingDeg": 90
+   },
+   {
+    "at": [
+     140,
+     43
+    ],
+    "headingDeg": -90
+   },
+   {
+    "at": [
+     -212,
+     -43
+    ],
+    "headingDeg": 90
+   },
+   {
+    "at": [
+     -212,
+     43
+    ],
+    "headingDeg": -90
+   },
+   {
+    "at": [
+     212,
+     -43
+    ],
+    "headingDeg": 90
+   },
+   {
+    "at": [
+     212,
+     43
+    ],
+    "headingDeg": -90
+   },
+   {
+    "at": [
+     -284,
+     -43
+    ],
+    "headingDeg": 90
+   },
+   {
+    "at": [
+     -284,
+     43
+    ],
+    "headingDeg": -90
+   },
+   {
+    "at": [
+     284,
+     -43
+    ],
+    "headingDeg": 90
+   },
+   {
+    "at": [
+     284,
+     43
+    ],
+    "headingDeg": -90
+   },
+   {
+    "at": [
+     -356,
+     -43
+    ],
+    "headingDeg": 90
+   },
+   {
+    "at": [
+     -356,
+     43
+    ],
+    "headingDeg": -90
+   },
+   {
+    "at": [
+     356,
+     -43
+    ],
+    "headingDeg": 90
+   },
+   {
+    "at": [
+     356,
+     43
+    ],
+    "headingDeg": -90
+   },
+   {
+    "at": [
+     -428,
+     -43
+    ],
+    "headingDeg": 90
+   },
+   {
+    "at": [
+     -428,
+     43
+    ],
+    "headingDeg": -90
+   },
+   {
+    "at": [
+     428,
+     -43
+    ],
+    "headingDeg": 90
+   },
+   {
+    "at": [
+     428,
+     43
+    ],
+    "headingDeg": -90
+   },
+   {
+    "at": [
+     -500,
+     -43
+    ],
+    "headingDeg": 90
+   },
+   {
+    "at": [
+     -500,
+     43
+    ],
+    "headingDeg": -90
+   },
+   {
+    "at": [
+     500,
+     -43
+    ],
+    "headingDeg": 90
+   },
+   {
+    "at": [
+     500,
+     43
+    ],
+    "headingDeg": -90
+   },
+   {
+    "at": [
+     -572,
+     -43
+    ],
+    "headingDeg": 90
+   },
+   {
+    "at": [
+     -572,
+     43
+    ],
+    "headingDeg": -90
+   },
+   {
+    "at": [
+     572,
+     -43
+    ],
+    "headingDeg": 90
+   },
+   {
+    "at": [
+     572,
+     43
+    ],
+    "headingDeg": -90
+   },
+   {
+    "at": [
+     -644,
+     -43
+    ],
+    "headingDeg": 90
+   },
+   {
+    "at": [
+     -644,
+     43
+    ],
+    "headingDeg": -90
+   },
+   {
+    "at": [
+     644,
+     -43
+    ],
+    "headingDeg": 90
+   },
+   {
+    "at": [
+     644,
+     43
+    ],
+    "headingDeg": -90
+   },
+   {
+    "at": [
+     -716,
+     -43
+    ],
+    "headingDeg": 90
+   },
+   {
+    "at": [
+     -716,
+     43
+    ],
+    "headingDeg": -90
+   },
+   {
+    "at": [
+     716,
+     -43
+    ],
+    "headingDeg": 90
+   },
+   {
+    "at": [
+     716,
+     43
+    ],
+    "headingDeg": -90
+   },
+   {
+    "at": [
+     -788,
+     -43
+    ],
+    "headingDeg": 90
+   },
+   {
+    "at": [
+     -788,
+     43
+    ],
+    "headingDeg": -90
+   },
+   {
+    "at": [
+     788,
+     -43
+    ],
+    "headingDeg": 90
+   },
+   {
+    "at": [
+     788,
+     43
+    ],
+    "headingDeg": -90
+   },
+   {
+    "at": [
+     -860,
+     -43
+    ],
+    "headingDeg": 90
+   },
+   {
+    "at": [
+     -860,
+     43
+    ],
+    "headingDeg": -90
+   },
+   {
+    "at": [
+     860,
+     -43
+    ],
+    "headingDeg": 90
+   },
+   {
+    "at": [
+     860,
+     43
+    ],
+    "headingDeg": -90
+   },
+   {
+    "at": [
+     -932,
+     -43
+    ],
+    "headingDeg": 90
+   },
+   {
+    "at": [
+     -932,
+     43
+    ],
+    "headingDeg": -90
+   },
+   {
+    "at": [
+     932,
+     -43
+    ],
+    "headingDeg": 90
+   },
+   {
+    "at": [
+     932,
+     43
+    ],
+    "headingDeg": -90
+   },
+   {
+    "at": [
+     -1004,
+     -43
+    ],
+    "headingDeg": 90
+   },
+   {
+    "at": [
+     -1004,
+     43
+    ],
+    "headingDeg": -90
+   },
+   {
+    "at": [
+     1004,
+     -43
+    ],
+    "headingDeg": 90
+   },
+   {
+    "at": [
+     1004,
+     43
+    ],
+    "headingDeg": -90
+   },
+   {
+    "at": [
+     -1076,
+     -43
+    ],
+    "headingDeg": 90
+   },
+   {
+    "at": [
+     -1076,
+     43
+    ],
+    "headingDeg": -90
+   },
+   {
+    "at": [
+     1076,
+     -43
+    ],
+    "headingDeg": 90
+   },
+   {
+    "at": [
+     1076,
+     43
+    ],
+    "headingDeg": -90
+   },
+   {
+    "at": [
+     -1148,
+     -43
+    ],
+    "headingDeg": 90
+   },
+   {
+    "at": [
+     -1148,
+     43
+    ],
+    "headingDeg": -90
+   },
+   {
+    "at": [
+     1148,
+     -43
+    ],
+    "headingDeg": 90
+   },
+   {
+    "at": [
+     1148,
+     43
+    ],
+    "headingDeg": -90
+   },
+   {
+    "at": [
+     -1220,
+     -43
+    ],
+    "headingDeg": 90
+   },
+   {
+    "at": [
+     -1220,
+     43
+    ],
+    "headingDeg": -90
+   },
+   {
+    "at": [
+     1220,
+     -43
+    ],
+    "headingDeg": 90
+   },
+   {
+    "at": [
+     1220,
+     43
+    ],
+    "headingDeg": -90
+   },
+   {
+    "at": [
+     -1292,
+     -43
+    ],
+    "headingDeg": 90
+   },
+   {
+    "at": [
+     -1292,
+     43
+    ],
+    "headingDeg": -90
+   },
+   {
+    "at": [
+     1292,
+     -43
+    ],
+    "headingDeg": 90
+   },
+   {
+    "at": [
+     1292,
+     43
+    ],
+    "headingDeg": -90
+   },
+   {
+    "at": [
+     -1364,
+     -43
+    ],
+    "headingDeg": 90
+   },
+   {
+    "at": [
+     -1364,
+     43
+    ],
+    "headingDeg": -90
+   },
+   {
+    "at": [
+     1364,
+     -43
+    ],
+    "headingDeg": 90
+   },
+   {
+    "at": [
+     1364,
+     43
+    ],
+    "headingDeg": -90
+   },
+   {
+    "at": [
+     -1436,
+     -43
+    ],
+    "headingDeg": 90
+   },
+   {
+    "at": [
+     -1436,
+     43
+    ],
+    "headingDeg": -90
+   },
+   {
+    "at": [
+     1436,
+     -43
+    ],
+    "headingDeg": 90
+   },
+   {
+    "at": [
+     1436,
+     43
+    ],
+    "headingDeg": -90
+   },
+   {
+    "at": [
+     -1508,
+     -43
+    ],
+    "headingDeg": 90
+   },
+   {
+    "at": [
+     -1508,
+     43
+    ],
+    "headingDeg": -90
+   },
+   {
+    "at": [
+     1508,
+     -43
+    ],
+    "headingDeg": 90
+   },
+   {
+    "at": [
+     1508,
+     43
+    ],
+    "headingDeg": -90
+   },
+   {
+    "at": [
+     -1580,
+     -43
+    ],
+    "headingDeg": 90
+   },
+   {
+    "at": [
+     -1580,
+     43
+    ],
+    "headingDeg": -90
+   },
+   {
+    "at": [
+     1580,
+     -43
+    ],
+    "headingDeg": 90
+   },
+   {
+    "at": [
+     1580,
+     43
+    ],
+    "headingDeg": -90
+   },
+   {
+    "at": [
+     -1652,
+     -43
+    ],
+    "headingDeg": 90
+   },
+   {
+    "at": [
+     -1652,
+     43
+    ],
+    "headingDeg": -90
+   },
+   {
+    "at": [
+     1652,
+     -43
+    ],
+    "headingDeg": 90
+   },
+   {
+    "at": [
+     1652,
+     43
+    ],
+    "headingDeg": -90
+   },
+   {
+    "at": [
+     -1724,
+     -43
+    ],
+    "headingDeg": 90
+   },
+   {
+    "at": [
+     -1724,
+     43
+    ],
+    "headingDeg": -90
+   },
+   {
+    "at": [
+     1724,
+     -43
+    ],
+    "headingDeg": 90
+   },
+   {
+    "at": [
+     1724,
+     43
+    ],
+    "headingDeg": -90
+   },
+   {
+    "at": [
+     -1796,
+     -43
+    ],
+    "headingDeg": 90
+   },
+   {
+    "at": [
+     -1796,
+     43
+    ],
+    "headingDeg": -90
+   },
+   {
+    "at": [
+     1796,
+     -43
+    ],
+    "headingDeg": 90
+   },
+   {
+    "at": [
+     1796,
+     43
+    ],
+    "headingDeg": -90
+   },
+   {
+    "at": [
+     -1868,
+     -43
+    ],
+    "headingDeg": 90
+   },
+   {
+    "at": [
+     -1868,
+     43
+    ],
+    "headingDeg": -90
+   },
+   {
+    "at": [
+     1868,
+     -43
+    ],
+    "headingDeg": 90
+   },
+   {
+    "at": [
+     1868,
+     43
+    ],
+    "headingDeg": -90
+   },
+   {
+    "at": [
+     -1940,
+     -43
+    ],
+    "headingDeg": 90
+   },
+   {
+    "at": [
+     -1940,
+     43
+    ],
+    "headingDeg": -90
+   },
+   {
+    "at": [
+     1940,
+     -43
+    ],
+    "headingDeg": 90
+   },
+   {
+    "at": [
+     1940,
+     43
+    ],
+    "headingDeg": -90
+   },
+   {
+    "at": [
+     -2012,
+     -43
+    ],
+    "headingDeg": 90
+   },
+   {
+    "at": [
+     -2012,
+     43
+    ],
+    "headingDeg": -90
+   },
+   {
+    "at": [
+     2012,
+     -43
+    ],
+    "headingDeg": 90
+   },
+   {
+    "at": [
+     2012,
+     43
+    ],
+    "headingDeg": -90
+   },
+   {
+    "at": [
+     -2084,
+     -43
+    ],
+    "headingDeg": 90
+   },
+   {
+    "at": [
+     -2084,
+     43
+    ],
+    "headingDeg": -90
+   },
+   {
+    "at": [
+     2084,
+     -43
+    ],
+    "headingDeg": 90
+   },
+   {
+    "at": [
+     2084,
+     43
+    ],
+    "headingDeg": -90
+   },
+   {
+    "at": [
+     -2156,
+     -43
+    ],
+    "headingDeg": 90
+   },
+   {
+    "at": [
+     -2156,
+     43
+    ],
+    "headingDeg": -90
+   },
+   {
+    "at": [
+     2156,
+     -43
+    ],
+    "headingDeg": 90
+   },
+   {
+    "at": [
+     2156,
+     43
+    ],
+    "headingDeg": -90
+   },
+   {
+    "at": [
+     -2228,
+     -43
+    ],
+    "headingDeg": 90
+   },
+   {
+    "at": [
+     -2228,
+     43
+    ],
+    "headingDeg": -90
+   },
+   {
+    "at": [
+     2228,
+     -43
+    ],
+    "headingDeg": 90
+   },
+   {
+    "at": [
+     2228,
+     43
+    ],
+    "headingDeg": -90
+   },
+   {
+    "at": [
+     -2300,
+     -43
+    ],
+    "headingDeg": 90
+   },
+   {
+    "at": [
+     -2300,
+     43
+    ],
+    "headingDeg": -90
+   },
+   {
+    "at": [
+     2300,
+     -43
+    ],
+    "headingDeg": 90
+   },
+   {
+    "at": [
+     2300,
+     43
+    ],
+    "headingDeg": -90
+   },
+   {
+    "at": [
+     -2372,
+     -43
+    ],
+    "headingDeg": 90
+   },
+   {
+    "at": [
+     -2372,
+     43
+    ],
+    "headingDeg": -90
+   },
+   {
+    "at": [
+     2372,
+     -43
+    ],
+    "headingDeg": 90
+   },
+   {
+    "at": [
+     2372,
+     43
+    ],
+    "headingDeg": -90
+   },
+   {
+    "at": [
+     -2444,
+     -43
+    ],
+    "headingDeg": 90
+   },
+   {
+    "at": [
+     -2444,
+     43
+    ],
+    "headingDeg": -90
+   },
+   {
+    "at": [
+     2444,
+     -43
+    ],
+    "headingDeg": 90
+   },
+   {
+    "at": [
+     2444,
+     43
+    ],
+    "headingDeg": -90
+   },
+   {
+    "at": [
+     -2516,
+     -43
+    ],
+    "headingDeg": 90
+   },
+   {
+    "at": [
+     -2516,
+     43
+    ],
+    "headingDeg": -90
+   },
+   {
+    "at": [
+     2516,
+     -43
+    ],
+    "headingDeg": 90
+   },
+   {
+    "at": [
+     2516,
+     43
+    ],
+    "headingDeg": -90
+   },
+   {
+    "at": [
+     -2588,
+     -43
+    ],
+    "headingDeg": 90
+   },
+   {
+    "at": [
+     -2588,
+     43
+    ],
+    "headingDeg": -90
+   },
+   {
+    "at": [
+     2588,
+     -43
+    ],
+    "headingDeg": 90
+   },
+   {
+    "at": [
+     2588,
+     43
+    ],
+    "headingDeg": -90
+   },
+   {
+    "at": [
+     -2660,
+     -43
+    ],
+    "headingDeg": 90
+   },
+   {
+    "at": [
+     -2660,
+     43
+    ],
+    "headingDeg": -90
+   },
+   {
+    "at": [
+     2660,
+     -43
+    ],
+    "headingDeg": 90
+   },
+   {
+    "at": [
+     2660,
+     43
+    ],
+    "headingDeg": -90
+   },
+   {
+    "at": [
+     -2732,
+     -43
+    ],
+    "headingDeg": 90
+   },
+   {
+    "at": [
+     -2732,
+     43
+    ],
+    "headingDeg": -90
+   },
+   {
+    "at": [
+     2732,
+     -43
+    ],
+    "headingDeg": 90
+   },
+   {
+    "at": [
+     2732,
+     43
+    ],
+    "headingDeg": -90
+   },
+   {
+    "at": [
+     -2804,
+     -43
+    ],
+    "headingDeg": 90
+   },
+   {
+    "at": [
+     -2804,
+     43
+    ],
+    "headingDeg": -90
+   },
+   {
+    "at": [
+     2804,
+     -43
+    ],
+    "headingDeg": 90
+   },
+   {
+    "at": [
+     2804,
+     43
+    ],
+    "headingDeg": -90
+   },
+   {
+    "at": [
+     -2876,
+     -43
+    ],
+    "headingDeg": 90
+   },
+   {
+    "at": [
+     -2876,
+     43
+    ],
+    "headingDeg": -90
+   },
+   {
+    "at": [
+     2876,
+     -43
+    ],
+    "headingDeg": 90
+   },
+   {
+    "at": [
+     2876,
+     43
+    ],
+    "headingDeg": -90
+   },
+   {
+    "at": [
+     -2948,
+     -43
+    ],
+    "headingDeg": 90
+   },
+   {
+    "at": [
+     -2948,
+     43
+    ],
+    "headingDeg": -90
+   },
+   {
+    "at": [
+     2948,
+     -43
+    ],
+    "headingDeg": 90
+   },
+   {
+    "at": [
+     2948,
+     43
+    ],
+    "headingDeg": -90
+   },
+   {
+    "at": [
+     -3020,
+     -43
+    ],
+    "headingDeg": 90
+   },
+   {
+    "at": [
+     -3020,
+     43
+    ],
+    "headingDeg": -90
+   },
+   {
+    "at": [
+     3020,
+     -43
+    ],
+    "headingDeg": 90
+   },
+   {
+    "at": [
+     3020,
+     43
+    ],
+    "headingDeg": -90
+   },
+   {
+    "at": [
+     -3092,
+     -43
+    ],
+    "headingDeg": 90
+   },
+   {
+    "at": [
+     -3092,
+     43
+    ],
+    "headingDeg": -90
+   },
+   {
+    "at": [
+     3092,
+     -43
+    ],
+    "headingDeg": 90
+   },
+   {
+    "at": [
+     3092,
+     43
+    ],
+    "headingDeg": -90
+   },
+   {
+    "at": [
+     -3164,
+     -43
+    ],
+    "headingDeg": 90
+   },
+   {
+    "at": [
+     -3164,
+     43
+    ],
+    "headingDeg": -90
+   },
+   {
+    "at": [
+     3164,
+     -43
+    ],
+    "headingDeg": 90
+   },
+   {
+    "at": [
+     3164,
+     43
+    ],
+    "headingDeg": -90
+   },
+   {
+    "at": [
+     -3236,
+     -43
+    ],
+    "headingDeg": 90
+   },
+   {
+    "at": [
+     -3236,
+     43
+    ],
+    "headingDeg": -90
+   },
+   {
+    "at": [
+     3236,
+     -43
+    ],
+    "headingDeg": 90
+   },
+   {
+    "at": [
+     3236,
+     43
+    ],
+    "headingDeg": -90
+   },
+   {
+    "at": [
+     -3308,
+     -43
+    ],
+    "headingDeg": 90
+   },
+   {
+    "at": [
+     -3308,
+     43
+    ],
+    "headingDeg": -90
+   },
+   {
+    "at": [
+     3308,
+     -43
+    ],
+    "headingDeg": 90
+   },
+   {
+    "at": [
+     3308,
+     43
+    ],
+    "headingDeg": -90
+   },
+   {
+    "at": [
+     -3380,
+     -43
+    ],
+    "headingDeg": 90
+   },
+   {
+    "at": [
+     -3380,
+     43
+    ],
+    "headingDeg": -90
+   },
+   {
+    "at": [
+     3380,
+     -43
+    ],
+    "headingDeg": 90
+   },
+   {
+    "at": [
+     3380,
+     43
+    ],
+    "headingDeg": -90
+   },
+   {
+    "at": [
+     -3452,
+     -43
+    ],
+    "headingDeg": 90
+   },
+   {
+    "at": [
+     -3452,
+     43
+    ],
+    "headingDeg": -90
+   },
+   {
+    "at": [
+     3452,
+     -43
+    ],
+    "headingDeg": 90
+   },
+   {
+    "at": [
+     3452,
+     43
+    ],
+    "headingDeg": -90
+   },
+   {
+    "at": [
+     -3524,
+     -43
+    ],
+    "headingDeg": 90
+   },
+   {
+    "at": [
+     -3524,
+     43
+    ],
+    "headingDeg": -90
+   },
+   {
+    "at": [
+     3524,
+     -43
+    ],
+    "headingDeg": 90
+   },
+   {
+    "at": [
+     3524,
+     43
+    ],
+    "headingDeg": -90
+   },
+   {
+    "at": [
+     -3596,
+     -43
+    ],
+    "headingDeg": 90
+   },
+   {
+    "at": [
+     -3596,
+     43
+    ],
+    "headingDeg": -90
+   },
+   {
+    "at": [
+     3596,
+     -43
+    ],
+    "headingDeg": 90
+   },
+   {
+    "at": [
+     3596,
+     43
+    ],
+    "headingDeg": -90
+   },
+   {
+    "at": [
+     -3668,
+     -43
+    ],
+    "headingDeg": 90
+   },
+   {
+    "at": [
+     -3668,
+     43
+    ],
+    "headingDeg": -90
+   },
+   {
+    "at": [
+     3668,
+     -43
+    ],
+    "headingDeg": 90
+   },
+   {
+    "at": [
+     3668,
+     43
+    ],
+    "headingDeg": -90
+   },
+   {
+    "at": [
+     -3740,
+     -43
+    ],
+    "headingDeg": 90
+   },
+   {
+    "at": [
+     -3740,
+     43
+    ],
+    "headingDeg": -90
+   },
+   {
+    "at": [
+     3740,
+     -43
+    ],
+    "headingDeg": 90
+   },
+   {
+    "at": [
+     3740,
+     43
+    ],
+    "headingDeg": -90
+   },
+   {
+    "at": [
+     -3812,
+     -43
+    ],
+    "headingDeg": 90
+   },
+   {
+    "at": [
+     -3812,
+     43
+    ],
+    "headingDeg": -90
+   },
+   {
+    "at": [
+     3812,
+     -43
+    ],
+    "headingDeg": 90
+   },
+   {
+    "at": [
+     3812,
+     43
+    ],
+    "headingDeg": -90
+   },
+   {
+    "at": [
+     -3884,
+     -43
+    ],
+    "headingDeg": 90
+   },
+   {
+    "at": [
+     -3884,
+     43
+    ],
+    "headingDeg": -90
+   },
+   {
+    "at": [
+     3884,
+     -43
+    ],
+    "headingDeg": 90
+   },
+   {
+    "at": [
+     3884,
+     43
+    ],
+    "headingDeg": -90
+   },
+   {
+    "at": [
+     98.727,
+     57
+    ],
+    "headingDeg": -150
+   },
+   {
+    "at": [
+     -98.727,
+     57
+    ],
+    "headingDeg": -30
+   },
+   {
+    "at": [
+     -98.727,
+     -57
+    ],
+    "headingDeg": 30
+   },
+   {
+    "at": [
+     98.727,
+     -57
+    ],
+    "headingDeg": 150
+   },
+   {
+    "at": [
+     -63,
+     -150
+    ],
+    "headingDeg": 0
+   },
+   {
+    "at": [
+     63,
+     -150
+    ],
+    "headingDeg": 180
+   },
+   {
+    "at": [
+     -63,
+     -200
+    ],
+    "headingDeg": 0
+   },
+   {
+    "at": [
+     63,
+     -200
+    ],
+    "headingDeg": 180
+   },
+   {
+    "at": [
+     -63,
+     150
+    ],
+    "headingDeg": 0
+   },
+   {
+    "at": [
+     63,
+     150
+    ],
+    "headingDeg": 180
+   },
+   {
+    "at": [
+     -63,
+     200
+    ],
+    "headingDeg": 0
+   },
+   {
+    "at": [
+     63,
+     200
+    ],
+    "headingDeg": 180
+   }
+  ],
+  "colour": "#8e9296",
+  "headColour": "#3b4148",
+  "lampColour": "#fff1dc"
+ },
+ "interior": {
+  "building": "SW",
+  "placement": "SW-head",
+  "buildingFrame": [
+   -760,
+   8,
+   115
+  ],
+  "campus": [
+   -3775,
+   8,
+   -185
+  ],
+  "yawDeg": -90,
+  "level": 1,
+  "walkingSurfaceY": 8,
+  "twinExtents": {
+   "x": [
+    -36,
+    39.6
+   ],
+   "z": [
+    -27,
+    27
+   ]
+  },
+  "campusExtents": {
+   "u": [
+    -3802,
+    -3748
+   ],
+   "v": [
+    -221,
+    -145.4
+   ]
+  },
+  "entrance": [
+   -3960,
+   0,
+   -130
+  ],
+  "canopyDropOff": [
+   -4020,
+   0,
+   0
+  ],
+  "enterZone": {
+   "u": [
+    -4110,
+    -3960
+   ],
+   "v": [
+    -60,
+    60
+   ],
+   "maxSpeed": 4
+  },
+  "orbitEnterDistance": 700,
+  "note": "FF2 frame to campus: the twin origin (its walking surface) at the locator, turned -90 degrees about Y, so FF2 +X (east) runs along campus +v and FF2 +Z (south) along campus -u; its gallery faces the atrium and the entrance. Inside, the scene renders the twin in its own frame (a floating origin at the locator) with the exterior hidden."
+ },
+ "tiers": {
+  "minimal": {
+   "fullWithin": 800,
+   "parking": 0.3,
+   "trafficHeadway": 18,
+   "trafficPerLane": 30,
+   "trafficLod": [
+    30,
+    120,
+    700
+   ],
+   "far": 26000
+  },
+  "economy": {
+   "fullWithin": 1200,
+   "parking": 0.5,
+   "trafficHeadway": 12,
+   "trafficPerLane": 50,
+   "trafficLod": [
+    40,
+    160,
+    1000
+   ],
+   "far": 30000
+  },
+  "balanced": {
+   "fullWithin": 1800,
+   "parking": 0.75,
+   "trafficHeadway": 9,
+   "trafficPerLane": 70,
+   "trafficLod": [
+    50,
+    200,
+    1400
+   ],
+   "far": 36000
+  },
+  "high": {
+   "fullWithin": 2400,
+   "parking": 1,
+   "trafficHeadway": 7,
+   "trafficPerLane": 90,
+   "trafficLod": [
+    60,
+    250,
+    1800
+   ],
+   "far": 40000
+  }
+ },
+ "views": {
+  "campus": {
+   "position": [
+    -3400,
+    3000,
+    -6400
+   ],
+   "target": [
+    -150,
+    0,
+    0
+   ],
+   "fov": 40,
+   "label": "Whole campus"
+  },
+  "pair": {
+   "position": [
+    -5300,
+    900,
+    -2300
+   ],
+   "target": [
+    -2000,
+    20,
+    0
+   ],
+   "fov": 40,
+   "label": "One pair"
+  },
+  "canopy": {
+   "position": [
+    -4460,
+    45,
+    -250
+   ],
+   "target": [
+    -4030,
+    14,
+    -10
+   ],
+   "fov": 50,
+   "label": "Arrival canopy"
+  },
+  "split": {
+   "position": [
+    -3920,
+    85,
+    0
+   ],
+   "target": [
+    -2400,
+    35,
+    0
+   ],
+   "fov": 50,
+   "label": "The split"
+  },
+  "bridge": {
+   "position": [
+    -1760,
+    3,
+    26
+   ],
+   "target": [
+    -1971,
+    32,
+    0
+   ],
+   "fov": 60,
+   "label": "Under a bridge"
+  },
+  "roundabout": {
+   "position": [
+    -330,
+    170,
+    -260
+   ],
+   "target": [
+    0,
+    0,
+    0
+   ],
+   "fov": 45,
+   "label": "Roundabout"
+  }
+ },
+ "looks": {
+  "day": {
+   "zenith": "#6e9bcb",
+   "horizon": "#d8e2ea",
+   "ground": "#7b8a6a",
+   "fog": {
+    "colour": "#d8e2ea",
+    "near": 2500,
+    "far": 26000
+   },
+   "sun": {
+    "colour": "#fff3e2",
+    "intensity": 2.6,
+    "azimuthDeg": 222,
+    "elevationDeg": 42
+   },
+   "hemisphere": {
+    "sky": "#dbe7f2",
+    "ground": "#8b8a7a",
+    "intensity": 1.1
+   },
+   "environmentIntensity": 0.8,
+   "exposure": 1,
+   "emissive": {
+    "edge-lit": 0.25,
+    "rooflight-warm": 1,
+    "port-lit": 1,
+    "soffit-lit": 1
+   },
+   "lamps": 0
+  }
+ },
+ "orbit": {
+  "minDistance": 25,
+  "maxDistance": 16000,
+  "maxPolar": 1.5,
+  "clearance": 6,
+  "bounds": {
+   "min": [
+    -5200,
+    0,
+    -2600
+   ],
+   "max": [
+    5200,
+    300,
+    2600
+   ]
+  }
+ },
+ "counts": {
+  "placements": 20,
+  "models": 12,
+  "solids": 194,
+  "lanes": 8,
+  "stalls": 3272,
+  "occupiedStalls": 2330,
+  "satellites": 24,
+  "lightStandards": 224,
+  "lampHeads": 224,
+  "satelliteBoxes": 24,
+  "groundTriangles": 13818,
+  "fullTriangles": 160012,
+  "farTriangles": 18688
+ },
+ "checks": [
+  {
+   "name": "seams",
+   "pass": true,
+   "measured": {
+    "buildings": {
+     "SW": {
+      "pass": true,
+      "seamU": -3015,
+      "reachPastSeam": {
+       "head": 0,
+       "hall": 0
+      },
+      "caps": {
+       "envelope": {
+        "head": 0,
+        "hall": 0
+       },
+       "interiorSlabs": {
+        "head": 0,
+        "hall": 18
+       },
+       "byPart": {
+        "head": {},
+        "hall": {
+         "floorSlab": 2,
+         "waffleSlabL1": 2,
+         "cleanFloorL1": 2,
+         "ffuCeilingL1": 2,
+         "slabL2": 2,
+         "waffleSlabL2": 2,
+         "cleanFloorL2": 2,
+         "ffuCeilingL2": 2,
+         "topSlab": 2
+        }
+       }
+      },
+      "contractOutline": {
+       "head": {
+        "walls": [
+         -190,
+         190
+        ],
+        "deckTop": [
+         46,
+         46
+        ],
+        "base": 0
+       },
+       "hall": {
+        "walls": [
+         -190,
+         190
+        ],
+        "deckTop": [
+         46,
+         46
+        ],
+        "base": 0
+       }
+      },
+      "outerOutline": {
+       "headToHall": {
+        "worstM": 0.051,
+        "unexplainedM": 0,
+        "where": "",
+        "known": {
+         "panelSeams": {
+          "maxM": 0.051,
+          "at": [
+           -190.001,
+           45.4
+          ],
+          "within": true
+         }
+        }
+       },
+       "hallToHead": {
+        "worstM": 0.1,
+        "unexplainedM": 0,
+        "where": "",
+        "known": {
+         "panelSeams": {
+          "maxM": 0.051,
+          "at": [
+           -189.95,
+           45.795
+          ],
+          "within": true
+         },
+         "edgeLights": {
+          "maxM": 0.1,
+          "at": [
+           -190,
+           47.3
+          ],
+          "within": true
+         }
+        }
+       }
+      },
+      "slabBands": {
+       "floorSlab": {
+        "head": [
+         0.5,
+         0.5
+        ],
+        "hall": [
+         0,
+         0.5
+        ],
+        "pass": true,
+        "note": "S1 builds no underside on grade (never seen)"
+       },
+       "level1": {
+        "head": [
+         6.5,
+         8
+        ],
+        "hall": [
+         6.5,
+         8
+        ],
+        "pass": true
+       },
+       "ffuCeilingL1": {
+        "head": [
+         14,
+         14.4
+        ],
+        "hall": [
+         14,
+         14.4
+        ],
+        "pass": true
+       },
+       "slabL2": {
+        "head": [
+         21.4,
+         22.5
+        ],
+        "hall": [
+         21.4,
+         22.5
+        ],
+        "pass": true
+       },
+       "level2": {
+        "head": [
+         28.5,
+         30
+        ],
+        "hall": [
+         28.5,
+         30
+        ],
+        "pass": true
+       },
+       "ffuCeilingL2": {
+        "head": [
+         36,
+         36.4
+        ],
+        "hall": [
+         36,
+         36.4
+        ],
+        "pass": true
+       },
+       "topSlab": {
+        "head": [
+         43.4,
+         44
+        ],
+        "hall": [
+         43.4,
+         44
+        ],
+        "pass": true
+       }
+      }
+     },
+     "SE": {
+      "pass": true,
+      "seamU": -3015,
+      "reachPastSeam": {
+       "head": 0,
+       "hall": 0
+      },
+      "caps": {
+       "envelope": {
+        "head": 0,
+        "hall": 0
+       },
+       "interiorSlabs": {
+        "head": 0,
+        "hall": 18
+       },
+       "byPart": {
+        "head": {},
+        "hall": {
+         "floorSlab": 2,
+         "waffleSlabL1": 2,
+         "cleanFloorL1": 2,
+         "ffuCeilingL1": 2,
+         "slabL2": 2,
+         "waffleSlabL2": 2,
+         "cleanFloorL2": 2,
+         "ffuCeilingL2": 2,
+         "topSlab": 2
+        }
+       }
+      },
+      "contractOutline": {
+       "head": {
+        "walls": [
+         -190,
+         190
+        ],
+        "deckTop": [
+         46,
+         46
+        ],
+        "base": 0
+       },
+       "hall": {
+        "walls": [
+         -190,
+         190
+        ],
+        "deckTop": [
+         46,
+         46
+        ],
+        "base": 0
+       }
+      },
+      "outerOutline": {
+       "headToHall": {
+        "worstM": 0.051,
+        "unexplainedM": 0,
+        "where": "",
+        "known": {
+         "panelSeams": {
+          "maxM": 0.051,
+          "at": [
+           190.001,
+           45.4
+          ],
+          "within": true
+         }
+        }
+       },
+       "hallToHead": {
+        "worstM": 0.1,
+        "unexplainedM": 0,
+        "where": "",
+        "known": {
+         "panelSeams": {
+          "maxM": 0.051,
+          "at": [
+           189.95,
+           45.8
+          ],
+          "within": true
+         },
+         "edgeLights": {
+          "maxM": 0.1,
+          "at": [
+           -190,
+           47.3
+          ],
+          "within": true
+         }
+        }
+       }
+      },
+      "slabBands": {
+       "floorSlab": {
+        "head": [
+         0.5,
+         0.5
+        ],
+        "hall": [
+         0,
+         0.5
+        ],
+        "pass": true,
+        "note": "S1 builds no underside on grade (never seen)"
+       },
+       "level1": {
+        "head": [
+         6.5,
+         8
+        ],
+        "hall": [
+         6.5,
+         8
+        ],
+        "pass": true
+       },
+       "ffuCeilingL1": {
+        "head": [
+         14,
+         14.4
+        ],
+        "hall": [
+         14,
+         14.4
+        ],
+        "pass": true
+       },
+       "slabL2": {
+        "head": [
+         21.4,
+         22.5
+        ],
+        "hall": [
+         21.4,
+         22.5
+        ],
+        "pass": true
+       },
+       "level2": {
+        "head": [
+         28.5,
+         30
+        ],
+        "hall": [
+         28.5,
+         30
+        ],
+        "pass": true
+       },
+       "ffuCeilingL2": {
+        "head": [
+         36,
+         36.4
+        ],
+        "hall": [
+         36,
+         36.4
+        ],
+        "pass": true
+       },
+       "topSlab": {
+        "head": [
+         43.4,
+         44
+        ],
+        "hall": [
+         43.4,
+         44
+        ],
+        "pass": true
+       }
+      }
+     },
+     "NE": {
+      "pass": true,
+      "seamU": 3015,
+      "reachPastSeam": {
+       "head": 0,
+       "hall": 0
+      },
+      "caps": {
+       "envelope": {
+        "head": 0,
+        "hall": 0
+       },
+       "interiorSlabs": {
+        "head": 0,
+        "hall": 18
+       },
+       "byPart": {
+        "head": {},
+        "hall": {
+         "floorSlab": 2,
+         "waffleSlabL1": 2,
+         "cleanFloorL1": 2,
+         "ffuCeilingL1": 2,
+         "slabL2": 2,
+         "waffleSlabL2": 2,
+         "cleanFloorL2": 2,
+         "ffuCeilingL2": 2,
+         "topSlab": 2
+        }
+       }
+      },
+      "contractOutline": {
+       "head": {
+        "walls": [
+         -190,
+         190
+        ],
+        "deckTop": [
+         46,
+         46
+        ],
+        "base": 0
+       },
+       "hall": {
+        "walls": [
+         -190,
+         190
+        ],
+        "deckTop": [
+         46,
+         46
+        ],
+        "base": 0
+       }
+      },
+      "outerOutline": {
+       "headToHall": {
+        "worstM": 0.051,
+        "unexplainedM": 0,
+        "where": "",
+        "known": {
+         "panelSeams": {
+          "maxM": 0.051,
+          "at": [
+           190.001,
+           45.4
+          ],
+          "within": true
+         }
+        }
+       },
+       "hallToHead": {
+        "worstM": 0.1,
+        "unexplainedM": 0,
+        "where": "",
+        "known": {
+         "panelSeams": {
+          "maxM": 0.051,
+          "at": [
+           189.95,
+           45.795
+          ],
+          "within": true
+         },
+         "edgeLights": {
+          "maxM": 0.1,
+          "at": [
+           -190,
+           47.3
+          ],
+          "within": true
+         }
+        }
+       }
+      },
+      "slabBands": {
+       "floorSlab": {
+        "head": [
+         0.5,
+         0.5
+        ],
+        "hall": [
+         0,
+         0.5
+        ],
+        "pass": true,
+        "note": "S1 builds no underside on grade (never seen)"
+       },
+       "level1": {
+        "head": [
+         6.5,
+         8
+        ],
+        "hall": [
+         6.5,
+         8
+        ],
+        "pass": true
+       },
+       "ffuCeilingL1": {
+        "head": [
+         14,
+         14.4
+        ],
+        "hall": [
+         14,
+         14.4
+        ],
+        "pass": true
+       },
+       "slabL2": {
+        "head": [
+         21.4,
+         22.5
+        ],
+        "hall": [
+         21.4,
+         22.5
+        ],
+        "pass": true
+       },
+       "level2": {
+        "head": [
+         28.5,
+         30
+        ],
+        "hall": [
+         28.5,
+         30
+        ],
+        "pass": true
+       },
+       "ffuCeilingL2": {
+        "head": [
+         36,
+         36.4
+        ],
+        "hall": [
+         36,
+         36.4
+        ],
+        "pass": true
+       },
+       "topSlab": {
+        "head": [
+         43.4,
+         44
+        ],
+        "hall": [
+         43.4,
+         44
+        ],
+        "pass": true
+       }
+      }
+     },
+     "NW": {
+      "pass": true,
+      "seamU": 3015,
+      "reachPastSeam": {
+       "head": 0,
+       "hall": 0
+      },
+      "caps": {
+       "envelope": {
+        "head": 0,
+        "hall": 0
+       },
+       "interiorSlabs": {
+        "head": 0,
+        "hall": 18
+       },
+       "byPart": {
+        "head": {},
+        "hall": {
+         "floorSlab": 2,
+         "waffleSlabL1": 2,
+         "cleanFloorL1": 2,
+         "ffuCeilingL1": 2,
+         "slabL2": 2,
+         "waffleSlabL2": 2,
+         "cleanFloorL2": 2,
+         "ffuCeilingL2": 2,
+         "topSlab": 2
+        }
+       }
+      },
+      "contractOutline": {
+       "head": {
+        "walls": [
+         -190,
+         190
+        ],
+        "deckTop": [
+         46,
+         46
+        ],
+        "base": 0
+       },
+       "hall": {
+        "walls": [
+         -190,
+         190
+        ],
+        "deckTop": [
+         46,
+         46
+        ],
+        "base": 0
+       }
+      },
+      "outerOutline": {
+       "headToHall": {
+        "worstM": 0.051,
+        "unexplainedM": 0,
+        "where": "",
+        "known": {
+         "panelSeams": {
+          "maxM": 0.051,
+          "at": [
+           -190.001,
+           45.4
+          ],
+          "within": true
+         }
+        }
+       },
+       "hallToHead": {
+        "worstM": 0.1,
+        "unexplainedM": 0,
+        "where": "",
+        "known": {
+         "panelSeams": {
+          "maxM": 0.051,
+          "at": [
+           -189.95,
+           45.8
+          ],
+          "within": true
+         },
+         "edgeLights": {
+          "maxM": 0.1,
+          "at": [
+           190,
+           47.3
+          ],
+          "within": true
+         }
+        }
+       }
+      },
+      "slabBands": {
+       "floorSlab": {
+        "head": [
+         0.5,
+         0.5
+        ],
+        "hall": [
+         0,
+         0.5
+        ],
+        "pass": true,
+        "note": "S1 builds no underside on grade (never seen)"
+       },
+       "level1": {
+        "head": [
+         6.5,
+         8
+        ],
+        "hall": [
+         6.5,
+         8
+        ],
+        "pass": true
+       },
+       "ffuCeilingL1": {
+        "head": [
+         14,
+         14.4
+        ],
+        "hall": [
+         14,
+         14.4
+        ],
+        "pass": true
+       },
+       "slabL2": {
+        "head": [
+         21.4,
+         22.5
+        ],
+        "hall": [
+         21.4,
+         22.5
+        ],
+        "pass": true
+       },
+       "level2": {
+        "head": [
+         28.5,
+         30
+        ],
+        "hall": [
+         28.5,
+         30
+        ],
+        "pass": true
+       },
+       "ffuCeilingL2": {
+        "head": [
+         36,
+         36.4
+        ],
+        "hall": [
+         36,
+         36.4
+        ],
+        "pass": true
+       },
+       "topSlab": {
+        "head": [
+         43.4,
+         44
+        ],
+        "hall": [
+         43.4,
+         44
+        ],
+        "pass": true
+       }
+      }
+     }
+    },
+    "known": {
+     "edgeLights": {
+      "radius": 0.11,
+      "clause": "the lit parapet strip: S1 (accepted 15:00) inlays it in the top 0.3 m of the parapet's outer face; S2 (review 2) puts it on top of the parapet, 0.3 wide and 0.1 tall (the rule settled at the head's second round); the coordinator's seam check (OVERNIGHT.md 16:05) kept S1 accepted, no head round 3"
+     },
+     "panelSeams": {
+      "radius": 0.06,
+      "clause": "the half grooves at the seam (0.05 deep): S1's stop 0.3 m below the wall top and start 0.1 m above the plinth top (contract rule of 15:00); S2's run the full wall height"
+     }
+    },
+    "cuts": "outline and slabs 1.37 mm inside each model; the contract outline extrapolated to the plane from 63.7 and 113.7 mm"
+   },
+   "rule": "item 1 and the contract's Seam face: each S1 and its S2 meet on the seam plane (both reach it, neither passes it by 1 mm: no gap); no envelope triangle lies in the plane (no cap); on both the outline is v +-190 about the centreline (wall faces between plinth and first reveal) and Y 0 up to the deck at 46 (the contract's 20 mm deck tolerance), within 5 mm; the outer outlines are identical: every outline sample of either model (the outermost point per 5 cm of Y either side, the highest and lowest per 5 cm of v) lies within 5 mm of the other model's surface, except the parts listed in `known` with their recorded decision and measured difference; every interior slab band reaches the seam at the same Y (5 mm; the ground slab's underside on grade excepted). Interior-slab caps are measured and listed: they lie inside the joined slabs"
+  },
+  {
+   "name": "negative-scale",
+   "pass": true,
+   "measured": {
+    "placedNodes": 1852,
+    "models": 12,
+    "negativeScales": 0,
+    "mirroredWorldMatrices": 0,
+    "placementDeterminants": [
+     1
+    ]
+   },
+   "rule": "item 1: no negative scale on any node (every placed node, the placement included, has a positive determinant)"
+  },
+  {
+   "name": "clear-height",
+   "pass": true,
+   "measured": {
+    "bridges": {
+     "bridge-S1": {
+      "u": -2547,
+      "clearM": 29.4,
+      "farClearM": 29.4,
+      "pass": true
+     },
+     "bridge-S2": {
+      "u": -1971,
+      "clearM": 29.4,
+      "farClearM": 29.4,
+      "pass": true
+     },
+     "bridge-S3": {
+      "u": -1395,
+      "clearM": 29.4,
+      "farClearM": 29.4,
+      "pass": true
+     },
+     "bridge-S4": {
+      "u": -819,
+      "clearM": 29.4,
+      "farClearM": 29.4,
+      "pass": true
+     },
+     "bridge-N1": {
+      "u": 2547,
+      "clearM": 29.4,
+      "farClearM": 29.4,
+      "pass": true
+     },
+     "bridge-N2": {
+      "u": 1971,
+      "clearM": 29.4,
+      "farClearM": 29.4,
+      "pass": true
+     },
+     "bridge-N3": {
+      "u": 1395,
+      "clearM": 29.4,
+      "farClearM": 29.4,
+      "pass": true
+     },
+     "bridge-N4": {
+      "u": 819,
+      "clearM": 29.4,
+      "farClearM": 29.4,
+      "pass": true
+     }
+    }
+   },
+   "rule": "item 1 and contract S5: every bridge clears the road (|v| <= 40, the split road) by 29.4 m, full and far shell, measured on the placed meshes"
+  },
+  {
+   "name": "road-profile",
+   "pass": true,
+   "measured": {
+    "vertices": 27956,
+    "maxOffsetFromGradeM": 0,
+    "gradeY": 0,
+    "triangles": {
+     "grade": 96,
+     "paved": 2390,
+     "ring": 608,
+     "markings": 10724
+    }
+   },
+   "rule": "item 1: the road profile is flat at grade (every road, marking and ground vertex at the grade height)"
+  },
+  {
+   "name": "lanes-on-road",
+   "pass": true,
+   "measured": {
+    "lanes": {
+     "nb-0": {
+      "lengthM": 8674.629,
+      "speed": 19,
+      "leastMarginM": 20.877,
+      "at": [
+       87,
+       19.2
+      ],
+      "pass": true
+     },
+     "sb-0": {
+      "lengthM": 8674.629,
+      "speed": 19,
+      "leastMarginM": 20.877,
+      "at": [
+       -87,
+       -19.2
+      ],
+      "pass": true
+     },
+     "nb-1": {
+      "lengthM": 8673.466,
+      "speed": 17,
+      "leastMarginM": 16.221,
+      "at": [
+       -90.7,
+       23.8
+      ],
+      "pass": true
+     },
+     "sb-1": {
+      "lengthM": 8673.466,
+      "speed": 17,
+      "leastMarginM": 16.221,
+      "at": [
+       90.7,
+       -23.8
+      ],
+      "pass": true
+     },
+     "nb-2": {
+      "lengthM": 8672.403,
+      "speed": 15,
+      "leastMarginM": 11.641,
+      "at": [
+       94.3,
+       28.4
+      ],
+      "pass": true
+     },
+     "sb-2": {
+      "lengthM": 8672.403,
+      "speed": 15,
+      "leastMarginM": 11.641,
+      "at": [
+       -94.3,
+       -28.4
+      ],
+      "pass": true
+     },
+     "nb-3": {
+      "lengthM": 8671.426,
+      "speed": 13,
+      "leastMarginM": 6.844,
+      "at": [
+       97.6,
+       33.4
+      ],
+      "pass": true
+     },
+     "sb-3": {
+      "lengthM": 8671.426,
+      "speed": 13,
+      "leastMarginM": 6.844,
+      "at": [
+       -97.6,
+       -33.4
+      ],
+      "pass": true
+     }
+    },
+    "halfWidthM": 1.3
+   },
+   "rule": "item 5: every traffic lane, sampled every 1 m, keeps a vehicle half width (1.3 m) on the paved surface either side (lane ends at the road ends excluded)"
+  },
+  {
+   "name": "road-envelope",
+   "pass": true,
+   "measured": {
+    "trianglesTested": 56,
+    "trianglesInside": 0,
+    "byPart": {},
+    "leastClearanceM": 0.1,
+    "band": [
+     0.05,
+     5
+    ],
+    "stubEnd": 224,
+    "linkNearFaceV": 239.7
+   },
+   "rule": "items 1 and 5: no structure triangle (full or far) enters the drivable area (the split road to its car ends, the drop-off bays, the roundabout outside its island, the cross-pass stubs) between 0.05 and 5 m above grade"
+  },
+  {
+   "name": "extents",
+   "pass": true,
+   "measured": {
+    "placements": {
+     "SW-head/s1-head-W": {
+      "pass": true,
+      "worstOverhangM": 0.632,
+      "beyondTolerance": {
+       "frontFins": {
+        "overhangM": 0.6,
+        "at": [
+         -3960.6,
+         -826.2
+        ]
+       },
+       "entrancePortal": {
+        "overhangM": 0.632,
+        "at": [
+         -3960.6,
+         -109.8
+        ]
+       }
+      },
+      "projections": {
+       "frontFins": "contract Head (S1): the front face carries trim-graphite fins 0.6 m deep",
+       "entrancePortal": "s1-head-half.md: entrancePortal frame 2 m deep around the opening"
+      },
+      "region": "blueprint head polygon (-3960,-832) (-3960,-110) (-3015,-110) (-3015,-490) (-3495,-832), mirrored"
+     },
+     "SW-head/s1-head-W-far": {
+      "pass": true,
+      "worstOverhangM": 0,
+      "beyondTolerance": {},
+      "projections": {},
+      "region": "blueprint head polygon (-3960,-832) (-3960,-110) (-3015,-110) (-3015,-490) (-3495,-832), mirrored"
+     },
+     "SW-hall/s2-hall-W": {
+      "pass": true,
+      "worstOverhangM": 12,
+      "beyondTolerance": {
+       "bayFins": {
+        "overhangM": 0.605,
+        "at": [
+         -422.4,
+         -490.6
+        ]
+       },
+       "outerPods": {
+        "overhangM": 12,
+        "at": [
+         -2920,
+         -572
+        ]
+       },
+       "splitPods": {
+        "overhangM": 12,
+        "at": [
+         -2950,
+         -48
+        ]
+       }
+      },
+      "projections": {
+       "bayFins": "s2-hall-half.md: bayFins 0.6 deep on both faces",
+       "outerPods": "contract revision 3 (port pods): each podCanopy projects 12 beyond the loading face",
+       "splitPods": "contract revision 3 (port pods): each podCanopy projects 12 beyond the loading face"
+      },
+      "region": "blueprint hall path (M -3015 -490 H -423 Q -243 -490 -243 -300 L -243 -110 H -3015 Z) and pod rows (v -525 stroke 70 over u -2990..-500; v -85 stroke 50 over u -2950..-560), mirrored"
+     },
+     "SW-hall/s2-hall-W-far": {
+      "pass": true,
+      "worstOverhangM": 0.014,
+      "beyondTolerance": {},
+      "projections": {},
+      "region": "blueprint hall path (M -3015 -490 H -423 Q -243 -490 -243 -300 L -243 -110 H -3015 Z) and pod rows (v -525 stroke 70 over u -2990..-500; v -85 stroke 50 over u -2950..-560), mirrored"
+     },
+     "SE-head/s1-head-E": {
+      "pass": true,
+      "worstOverhangM": 0.632,
+      "beyondTolerance": {
+       "frontFins": {
+        "overhangM": 0.6,
+        "at": [
+         -3960.6,
+         826.2
+        ]
+       },
+       "entrancePortal": {
+        "overhangM": 0.632,
+        "at": [
+         -3960.6,
+         109.8
+        ]
+       }
+      },
+      "projections": {
+       "frontFins": "contract Head (S1): the front face carries trim-graphite fins 0.6 m deep",
+       "entrancePortal": "s1-head-half.md: entrancePortal frame 2 m deep around the opening"
+      },
+      "region": "blueprint head polygon (-3960,-832) (-3960,-110) (-3015,-110) (-3015,-490) (-3495,-832), mirrored"
+     },
+     "SE-head/s1-head-E-far": {
+      "pass": true,
+      "worstOverhangM": 0,
+      "beyondTolerance": {},
+      "projections": {},
+      "region": "blueprint head polygon (-3960,-832) (-3960,-110) (-3015,-110) (-3015,-490) (-3495,-832), mirrored"
+     },
+     "SE-hall/s2-hall-E": {
+      "pass": true,
+      "worstOverhangM": 12,
+      "beyondTolerance": {
+       "bayFins": {
+        "overhangM": 0.605,
+        "at": [
+         -422.4,
+         490.6
+        ]
+       },
+       "outerPods": {
+        "overhangM": 12,
+        "at": [
+         -2920,
+         572
+        ]
+       },
+       "splitPods": {
+        "overhangM": 12,
+        "at": [
+         -2900,
+         48
+        ]
+       }
+      },
+      "projections": {
+       "bayFins": "s2-hall-half.md: bayFins 0.6 deep on both faces",
+       "outerPods": "contract revision 3 (port pods): each podCanopy projects 12 beyond the loading face",
+       "splitPods": "contract revision 3 (port pods): each podCanopy projects 12 beyond the loading face"
+      },
+      "region": "blueprint hall path (M -3015 -490 H -423 Q -243 -490 -243 -300 L -243 -110 H -3015 Z) and pod rows (v -525 stroke 70 over u -2990..-500; v -85 stroke 50 over u -2950..-560), mirrored"
+     },
+     "SE-hall/s2-hall-E-far": {
+      "pass": true,
+      "worstOverhangM": 0.014,
+      "beyondTolerance": {},
+      "projections": {},
+      "region": "blueprint hall path (M -3015 -490 H -423 Q -243 -490 -243 -300 L -243 -110 H -3015 Z) and pod rows (v -525 stroke 70 over u -2990..-500; v -85 stroke 50 over u -2950..-560), mirrored"
+     },
+     "NE-head/s1-head-W": {
+      "pass": true,
+      "worstOverhangM": 0.632,
+      "beyondTolerance": {
+       "frontFins": {
+        "overhangM": 0.6,
+        "at": [
+         3960.6,
+         826.2
+        ]
+       },
+       "entrancePortal": {
+        "overhangM": 0.632,
+        "at": [
+         3960.6,
+         109.8
+        ]
+       }
+      },
+      "projections": {
+       "frontFins": "contract Head (S1): the front face carries trim-graphite fins 0.6 m deep",
+       "entrancePortal": "s1-head-half.md: entrancePortal frame 2 m deep around the opening"
+      },
+      "region": "blueprint head polygon (-3960,-832) (-3960,-110) (-3015,-110) (-3015,-490) (-3495,-832), mirrored"
+     },
+     "NE-head/s1-head-W-far": {
+      "pass": true,
+      "worstOverhangM": 0,
+      "beyondTolerance": {},
+      "projections": {},
+      "region": "blueprint head polygon (-3960,-832) (-3960,-110) (-3015,-110) (-3015,-490) (-3495,-832), mirrored"
+     },
+     "NE-hall/s2-hall-W": {
+      "pass": true,
+      "worstOverhangM": 12,
+      "beyondTolerance": {
+       "bayFins": {
+        "overhangM": 0.605,
+        "at": [
+         422.4,
+         490.6
+        ]
+       },
+       "outerPods": {
+        "overhangM": 12,
+        "at": [
+         2920,
+         572
+        ]
+       },
+       "splitPods": {
+        "overhangM": 12,
+        "at": [
+         884,
+         48
+        ]
+       }
+      },
+      "projections": {
+       "bayFins": "s2-hall-half.md: bayFins 0.6 deep on both faces",
+       "outerPods": "contract revision 3 (port pods): each podCanopy projects 12 beyond the loading face",
+       "splitPods": "contract revision 3 (port pods): each podCanopy projects 12 beyond the loading face"
+      },
+      "region": "blueprint hall path (M -3015 -490 H -423 Q -243 -490 -243 -300 L -243 -110 H -3015 Z) and pod rows (v -525 stroke 70 over u -2990..-500; v -85 stroke 50 over u -2950..-560), mirrored"
+     },
+     "NE-hall/s2-hall-W-far": {
+      "pass": true,
+      "worstOverhangM": 0.014,
+      "beyondTolerance": {},
+      "projections": {},
+      "region": "blueprint hall path (M -3015 -490 H -423 Q -243 -490 -243 -300 L -243 -110 H -3015 Z) and pod rows (v -525 stroke 70 over u -2990..-500; v -85 stroke 50 over u -2950..-560), mirrored"
+     },
+     "NW-head/s1-head-E": {
+      "pass": true,
+      "worstOverhangM": 0.632,
+      "beyondTolerance": {
+       "frontFins": {
+        "overhangM": 0.6,
+        "at": [
+         3960.6,
+         -826.2
+        ]
+       },
+       "entrancePortal": {
+        "overhangM": 0.632,
+        "at": [
+         3960.6,
+         -109.8
+        ]
+       }
+      },
+      "projections": {
+       "frontFins": "contract Head (S1): the front face carries trim-graphite fins 0.6 m deep",
+       "entrancePortal": "s1-head-half.md: entrancePortal frame 2 m deep around the opening"
+      },
+      "region": "blueprint head polygon (-3960,-832) (-3960,-110) (-3015,-110) (-3015,-490) (-3495,-832), mirrored"
+     },
+     "NW-head/s1-head-E-far": {
+      "pass": true,
+      "worstOverhangM": 0,
+      "beyondTolerance": {},
+      "projections": {},
+      "region": "blueprint head polygon (-3960,-832) (-3960,-110) (-3015,-110) (-3015,-490) (-3495,-832), mirrored"
+     },
+     "NW-hall/s2-hall-E": {
+      "pass": true,
+      "worstOverhangM": 12,
+      "beyondTolerance": {
+       "bayFins": {
+        "overhangM": 0.605,
+        "at": [
+         422.4,
+         -490.6
+        ]
+       },
+       "outerPods": {
+        "overhangM": 12,
+        "at": [
+         1768,
+         -572
+        ]
+       },
+       "splitPods": {
+        "overhangM": 12,
+        "at": [
+         2900,
+         -48
+        ]
+       }
+      },
+      "projections": {
+       "bayFins": "s2-hall-half.md: bayFins 0.6 deep on both faces",
+       "outerPods": "contract revision 3 (port pods): each podCanopy projects 12 beyond the loading face",
+       "splitPods": "contract revision 3 (port pods): each podCanopy projects 12 beyond the loading face"
+      },
+      "region": "blueprint hall path (M -3015 -490 H -423 Q -243 -490 -243 -300 L -243 -110 H -3015 Z) and pod rows (v -525 stroke 70 over u -2990..-500; v -85 stroke 50 over u -2950..-560), mirrored"
+     },
+     "NW-hall/s2-hall-E-far": {
+      "pass": true,
+      "worstOverhangM": 0.014,
+      "beyondTolerance": {},
+      "projections": {},
+      "region": "blueprint hall path (M -3015 -490 H -423 Q -243 -490 -243 -300 L -243 -110 H -3015 Z) and pod rows (v -525 stroke 70 over u -2990..-500; v -85 stroke 50 over u -2950..-560), mirrored"
+     },
+     "link-W/s3-link": {
+      "pass": true,
+      "worstOverhangM": 0.3,
+      "beyondTolerance": {},
+      "projections": {},
+      "region": "contract S3 chevron (arms to +-271, -150 at the swept hall faces, 60 wide, continued 75 m inside the halls; the blueprint stroke's mitred apex) and the two halls it joins (the blueprint chevron's arms end at +-170)"
+     },
+     "link-E/s3-link": {
+      "pass": true,
+      "worstOverhangM": 0.3,
+      "beyondTolerance": {},
+      "projections": {},
+      "region": "contract S3 chevron (arms to +-271, -150 at the swept hall faces, 60 wide, continued 75 m inside the halls; the blueprint stroke's mitred apex) and the two halls it joins (the blueprint chevron's arms end at +-170)"
+     },
+     "canopy-S/s4-canopy": {
+      "pass": true,
+      "worstOverhangM": 0.332,
+      "beyondTolerance": {},
+      "projections": {},
+      "region": "blueprint canopy polygon (-3960,-60) (-4040,-150) (-4110,-150) (-4060,-40) (-4060,40) (-4110,150) (-4040,150) (-3960,60), mirrored"
+     },
+     "canopy-N/s4-canopy": {
+      "pass": true,
+      "worstOverhangM": 0.332,
+      "beyondTolerance": {},
+      "projections": {},
+      "region": "blueprint canopy polygon (-3960,-60) (-4040,-150) (-4110,-150) (-4060,-40) (-4060,40) (-4110,150) (-4040,150) (-3960,60), mirrored"
+     },
+     "bridge-S1/s5-split-bridge": {
+      "pass": true,
+      "worstOverhangM": 0,
+      "beyondTolerance": {},
+      "projections": {},
+      "region": "contract S5 (revision 3; blueprint v7 predates the bridges): 160 wide at the faces, landings to |v| 140"
+     },
+     "bridge-S1/s5-split-bridge-far": {
+      "pass": true,
+      "worstOverhangM": 0,
+      "beyondTolerance": {},
+      "projections": {},
+      "region": "contract S5 (revision 3; blueprint v7 predates the bridges): 160 wide at the faces, landings to |v| 140"
+     },
+     "bridge-S2/s5-split-bridge": {
+      "pass": true,
+      "worstOverhangM": 0,
+      "beyondTolerance": {},
+      "projections": {},
+      "region": "contract S5 (revision 3; blueprint v7 predates the bridges): 160 wide at the faces, landings to |v| 140"
+     },
+     "bridge-S2/s5-split-bridge-far": {
+      "pass": true,
+      "worstOverhangM": 0,
+      "beyondTolerance": {},
+      "projections": {},
+      "region": "contract S5 (revision 3; blueprint v7 predates the bridges): 160 wide at the faces, landings to |v| 140"
+     },
+     "bridge-S3/s5-split-bridge": {
+      "pass": true,
+      "worstOverhangM": 0,
+      "beyondTolerance": {},
+      "projections": {},
+      "region": "contract S5 (revision 3; blueprint v7 predates the bridges): 160 wide at the faces, landings to |v| 140"
+     },
+     "bridge-S3/s5-split-bridge-far": {
+      "pass": true,
+      "worstOverhangM": 0,
+      "beyondTolerance": {},
+      "projections": {},
+      "region": "contract S5 (revision 3; blueprint v7 predates the bridges): 160 wide at the faces, landings to |v| 140"
+     },
+     "bridge-S4/s5-split-bridge": {
+      "pass": true,
+      "worstOverhangM": 0,
+      "beyondTolerance": {},
+      "projections": {},
+      "region": "contract S5 (revision 3; blueprint v7 predates the bridges): 160 wide at the faces, landings to |v| 140"
+     },
+     "bridge-S4/s5-split-bridge-far": {
+      "pass": true,
+      "worstOverhangM": 0,
+      "beyondTolerance": {},
+      "projections": {},
+      "region": "contract S5 (revision 3; blueprint v7 predates the bridges): 160 wide at the faces, landings to |v| 140"
+     },
+     "bridge-N1/s5-split-bridge": {
+      "pass": true,
+      "worstOverhangM": 0,
+      "beyondTolerance": {},
+      "projections": {},
+      "region": "contract S5 (revision 3; blueprint v7 predates the bridges): 160 wide at the faces, landings to |v| 140"
+     },
+     "bridge-N1/s5-split-bridge-far": {
+      "pass": true,
+      "worstOverhangM": 0,
+      "beyondTolerance": {},
+      "projections": {},
+      "region": "contract S5 (revision 3; blueprint v7 predates the bridges): 160 wide at the faces, landings to |v| 140"
+     },
+     "bridge-N2/s5-split-bridge": {
+      "pass": true,
+      "worstOverhangM": 0,
+      "beyondTolerance": {},
+      "projections": {},
+      "region": "contract S5 (revision 3; blueprint v7 predates the bridges): 160 wide at the faces, landings to |v| 140"
+     },
+     "bridge-N2/s5-split-bridge-far": {
+      "pass": true,
+      "worstOverhangM": 0,
+      "beyondTolerance": {},
+      "projections": {},
+      "region": "contract S5 (revision 3; blueprint v7 predates the bridges): 160 wide at the faces, landings to |v| 140"
+     },
+     "bridge-N3/s5-split-bridge": {
+      "pass": true,
+      "worstOverhangM": 0,
+      "beyondTolerance": {},
+      "projections": {},
+      "region": "contract S5 (revision 3; blueprint v7 predates the bridges): 160 wide at the faces, landings to |v| 140"
+     },
+     "bridge-N3/s5-split-bridge-far": {
+      "pass": true,
+      "worstOverhangM": 0,
+      "beyondTolerance": {},
+      "projections": {},
+      "region": "contract S5 (revision 3; blueprint v7 predates the bridges): 160 wide at the faces, landings to |v| 140"
+     },
+     "bridge-N4/s5-split-bridge": {
+      "pass": true,
+      "worstOverhangM": 0,
+      "beyondTolerance": {},
+      "projections": {},
+      "region": "contract S5 (revision 3; blueprint v7 predates the bridges): 160 wide at the faces, landings to |v| 140"
+     },
+     "bridge-N4/s5-split-bridge-far": {
+      "pass": true,
+      "worstOverhangM": 0,
+      "beyondTolerance": {},
+      "projections": {},
+      "region": "contract S5 (revision 3; blueprint v7 predates the bridges): 160 wide at the faces, landings to |v| 140"
+     }
+    },
+    "toleranceM": 0.5
+   },
+   "rule": "item 1: every placement inside the blueprint's extents within 0.5 m (every placed vertex, plan distance outside the blueprint shape); parts the contract or a brief puts proud of the outline are allowed their stated projection plus 0.5 m and listed"
+  },
+  {
+   "name": "interior-fit",
+   "pass": true,
+   "measured": {
+    "locator": [
+     -3775,
+     8,
+     -185
+    ],
+    "campusExtents": {
+     "u": [
+      -3802,
+      -3748
+     ],
+     "v": [
+      -221,
+      -145.4
+     ]
+    },
+    "insideBar": true,
+    "atriumClearanceM": 12.7,
+    "bands": {
+     "walkingSurface": {
+      "head": 8,
+      "twin": 8
+     },
+     "ffuFace": {
+      "head": 14,
+      "twin": 14
+     },
+     "subfabFloor": {
+      "head": 0.5,
+      "twin": 0.5
+     },
+     "levelTop": {
+      "head": 21.4,
+      "twin": 21.4
+     }
+    },
+    "intrudingTriangles": 0,
+    "intrudingParts": []
+   },
+   "rule": "items 1 and 6: the twin's plan footprint lies in the south-west head's bar, at least 10 m clear of the atrium void; its walking surface, FFU face, subfab floor and level top land on the head's level-1 bands (FF2 + 8.0 m); no head part other than the level slabs enters its volume"
+  },
+  {
+   "name": "dressing-clear",
+   "pass": true,
+   "measured": {
+    "stalls": 3272,
+    "stallsOnRoad": 0,
+    "stallsWithin3mOfHead": 0,
+    "satelliteClearanceToHallM": 140,
+    "polesOnDrivable": 0
+   },
+   "rule": "item 3: parking stall centres at least 3 m off every road and head outline, satellites beyond the outer pods and their canopies (more than 82 m from the hall body), light standards at least 1 m off the drivable area"
+  }
+ ],
+ "discrepancies": [
+  {
+   "id": "blueprint-path",
+   "source": "TASK-FF-CAMPUS-1 Sources",
+   "says": "campus-blueprint-v7.svg is in the same directory as the contract (briefs/)",
+   "built": "read from pack2-research/terafab/campus-blueprint-v7.svg (the contract header names that path)",
+   "resolution": "path corrected; no content difference"
+  },
+  {
+   "id": "ten-glbs",
+   "source": "TASK-FF-CAMPUS-1 items 2 and 9",
+   "says": "the ten GLBs",
+   "built": "twelve: the brief's own table lists 5 + 5 + 2 files (S1 W/E full and far, S4; S2 W/E full and far, S3; S5 full and far)",
+   "resolution": "all twelve verified against the newest library revision and staged"
+  },
+  {
+   "id": "s3-blocks-cross-pass",
+   "source": "pack2-research/terafab/briefs/structures-contract.md S3 and pack2-research/terafab/campus-blueprint-v7.svg",
+   "says": "the blueprint draws the cross pass (u -60..60) straight through the chevron; the contract builds each link as a closed clad box from grade (Y 0 to 30)",
+   "built": "drivable cross-pass stubs from the roundabout to |v| = 224 (15 m short of the placed link's near face at |v| = 239.7); the outer legs from |v| = 353 are drawn, not driven, with no traffic",
+   "resolution": "open decision for the owner: a portal through the link, or the link raised over the road"
+  },
+  {
+   "id": "chevron-arms",
+   "source": "pack2-research/terafab/campus-blueprint-v7.svg",
+   "says": "chevron arms end at u = +-170",
+   "built": "the contract (S3, review 1) and the asset run them to (+-271, -150) in the link frame, the swept hall faces",
+   "resolution": "built as the asset and contract; the extents check uses the contract chevron and the halls it joins"
+  },
+  {
+   "id": "bridges-and-pod-canopies",
+   "source": "pack2-research/terafab/campus-blueprint-v7.svg and pack2-research/terafab/briefs/structures-contract.md revision 3",
+   "says": "blueprint v7: no bridges along the split; pod rows v -560..-490 and -110..-60",
+   "built": "eight S5 bridges (revision 3 supersedes \"no bridges\"); pod canopies 12 m beyond the loading faces",
+   "resolution": "contract projections listed in the extents check with their clauses"
+  },
+  {
+   "id": "tip-to-tip",
+   "source": "pack2-research/terafab/campus-blueprint-v7.svg",
+   "says": "text: 1,660 m tip to tip",
+   "built": "1,664 m (832 x 2), the contract and the drawn geometry",
+   "resolution": "built as the contract"
+  },
+  {
+   "id": "head-top",
+   "source": "pack2-research/terafab/briefs/structures-contract.md Head (S1)",
+   "says": "bar roof 70 m",
+   "built": "measured head top 74.821 m (the roof monitor over the taper; far shell 70 m)",
+   "resolution": "built as exported (the author's question 13 is on record)"
+  },
+  {
+   "id": "lanes-and-markings",
+   "source": "pack2-research/terafab/campus-blueprint-v7.svg",
+   "says": "split road 80 wide and cross pass 120 wide with dashed centre lines; no lanes drawn",
+   "built": "four 4.5 m lanes each way either side of the centre line, solid edge lines at |v| 18.5 and 39.5, the remainder a paved shoulder; a four-lane roundabout (r 85..105) with an apron and a planted island (r 40); estimates (E)",
+   "resolution": "scene design within the blueprint's paved outlines"
+  },
+  {
+   "id": "drop-off-bays",
+   "source": "s4-arrival-canopy.md dropOffKerb",
+   "says": "the canopy kerbs at Z +-60 are the road edge under the back of the roof; the blueprint road is 80 wide (|v| <= 40)",
+   "built": "drop-off bays from the road edge to the kerbs (|v| 40..59.4) under each canopy",
+   "resolution": "both honoured"
+  },
+  {
+   "id": "link-arm-ends",
+   "source": "pack2-research/terafab/briefs/structures-contract.md S3 (review 1)",
+   "says": "the arms run to (+-271, -150) in the link frame, the swept hall faces",
+   "built": "the asset's arm back corners reach (+-265.2, -181.1): 41 m outside the blueprint's quadratic hall end, in the corner the sweep leaves open, and 10 m past a square end at +-271",
+   "resolution": "built as the accepted asset; the extents region continues the arms 75 m inside the halls; a visible fact for the owner's look review"
+  },
+  {
+   "id": "seam-details",
+   "source": "pack2-research/terafab/briefs/structures-contract.md Seam face and the rules of 15:00",
+   "says": "S1 and S2 each stop at the seam with no cap; the lit strip sits on top of every parapet; half grooves meet across the join",
+   "built": "measured on the placed meshes: S1 inlays the lit strip in the top 0.3 m of its parapet face while S2 puts it on top (a 0.100 m step at the join); S1's half grooves stop 0.3 m below the wall top, S2's run the full height (0.051 m); S2 caps its nine interior slabs at the seam (18 triangles per building, inside the joined slabs); S1's ground slab has no underside (on grade)",
+   "resolution": "the envelope outline and slab bands match within 5 mm otherwise; the coordinator kept S1 accepted at the seam check (OVERNIGHT.md 16:05); listed for the owner"
+  }
+ ]
+}

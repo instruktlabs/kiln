@@ -1,0 +1,76 @@
+{
+  "source": "Sealed r33 play.mjs collision world (receipt-verified), frozen by audit-play-oracle.ts",
+  "colliders": 13,
+  "dynamic": 12,
+  "staticTriangles": 95118,
+  "dynamicTriangles": 14468,
+  "doors": 9,
+  "doorPivots": 10,
+  "keys": [
+    {
+      "key": "Static farm world",
+      "dynamic": false,
+      "triangles": 95118
+    },
+    {
+      "key": "Joint_FrontDoor",
+      "dynamic": true,
+      "triangles": 132
+    },
+    {
+      "key": "Joint_DoorRight",
+      "dynamic": true,
+      "triangles": 194
+    },
+    {
+      "key": "Joint_DoorLeft",
+      "dynamic": true,
+      "triangles": 194
+    },
+    {
+      "key": "DoorPivot",
+      "dynamic": true,
+      "triangles": 48
+    },
+    {
+      "key": "tractor-0",
+      "dynamic": true,
+      "triangles": 7196
+    },
+    {
+      "key": "trailer-0",
+      "dynamic": true,
+      "triangles": 3944
+    },
+    {
+      "key": "Joint_GateLeaf",
+      "dynamic": true,
+      "triangles": 460
+    },
+    {
+      "key": "Joint_GateLeaf",
+      "dynamic": true,
+      "triangles": 460
+    },
+    {
+      "key": "Joint_GateLeaf",
+      "dynamic": true,
+      "triangles": 460
+    },
+    {
+      "key": "Joint_GateLeaf",
+      "dynamic": true,
+      "triangles": 460
+    },
+    {
+      "key": "Joint_GateLeaf",
+      "dynamic": true,
+      "triangles": 460
+    },
+    {
+      "key": "Joint_GateLeaf",
+      "dynamic": true,
+      "triangles": 460
+    }
+  ]
+}

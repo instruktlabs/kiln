@@ -3,7 +3,7 @@ name: Website
 # Checks only: this workflow builds the site from a clean checkout and checks it on
 # every push and pull request, and deploys nothing. The site is deployed as a direct
 # upload of a reviewed local build to Cloudflare Pages (site-build decision S-4; the
-# owner runs site-build/ops/deploy.ps1), so the bytes that ship are the bytes that
+# maintainer runs site/scripts/deploy.ps1), so the bytes that ship are the bytes that
 # were reviewed. The build here is the pre-upload one (KILN_SITE_PACKS=0: no Commons
 # downloads, no asset mirror), which must stay green on its own.
 #
@@ -112,7 +112,7 @@ jobs:
         run: bunx biome check site/src
 
       # The site's own tests run here, after the site install. The root `bun test`
-      # passes `--path-ignore-patterns='site/**'`: bun treats `src` and `scripts` as
+      # passes `--path-ignore-patterns='{site,scenes}/**'`: bun treats `src` and `scripts` as
       # substring filters on paths, so without it the root run also picked up
       # site/scripts, whose imports need site/node_modules, and failed on a clean
       # clone that had not installed the site.

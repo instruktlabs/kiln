@@ -1,0 +1,752 @@
+{
+  "schema": "foundry-floor.review-replacements/1",
+  "entries": [
+    {
+      "id": "foup",
+      "path": "models/foup.glb",
+      "previous": {
+        "asset": "foup",
+        "revision": "r_2bab2591207a4eeb922f05cc2d52eaa7",
+        "bytes": 101204,
+        "sha256": "785434b2df7fadde0687710dbfd5957e61ea0e0fc47c44142446e709647f6554"
+      },
+      "next": {
+        "asset": "foup",
+        "revision": "r_f639b02180994fdd978a427bffb4de15",
+        "bytes": 73760,
+        "sha256": "a8ca511d996868d12c5b2ae3bdec5a58da5e7e008e34a56f60026ce92b610790",
+        "author": "codex-ff-lod-migration",
+        "file": "outputs/foup/asset.glb"
+      },
+      "lineage": [
+        {
+          "asset": "foup",
+          "revision": "r_2bab2591207a4eeb922f05cc2d52eaa7",
+          "bytes": 101204,
+          "sha256": "785434b2df7fadde0687710dbfd5957e61ea0e0fc47c44142446e709647f6554",
+          "model": "claude-sonnet-5-5",
+          "harness": "Claude Code",
+          "role": "Original authored asset, scene-pinned export"
+        }
+      ],
+      "reason": "Declared MSFT_lod preserves original named nodes and clips; lower tiers are excluded from the default scene. Current exporter re-tessellation is covered by bidirectional surface and current-source baseline proof. Owner visual review pending."
+    },
+    {
+      "id": "vehicle",
+      "path": "models/oht-vehicle.glb",
+      "previous": {
+        "asset": "oht-vehicle",
+        "revision": "r_bbf8c93343da4b7b96762d731872f67f",
+        "bytes": 164764,
+        "sha256": "5baefd88c8b439871db1f0f49351e458cf8a9f78a76e11b19c3ec93dd63a3aec"
+      },
+      "next": {
+        "asset": "oht-vehicle",
+        "revision": "r_a4fd2dfb3a3f4276b28464458cb0fbb9",
+        "bytes": 107472,
+        "sha256": "27dd159eeeaeb4ed0748159e550096dda1e8faac895bfd4a1d86ed8f808a3024",
+        "author": "codex-ff-lod-migration",
+        "file": "outputs/vehicle/asset.glb"
+      },
+      "lineage": [
+        {
+          "asset": "oht-vehicle",
+          "revision": "r_bbf8c93343da4b7b96762d731872f67f",
+          "bytes": 164764,
+          "sha256": "5baefd88c8b439871db1f0f49351e458cf8a9f78a76e11b19c3ec93dd63a3aec",
+          "model": "claude-sonnet-5-5",
+          "harness": "Claude Code",
+          "role": "Original authored asset, scene-pinned export"
+        }
+      ],
+      "reason": "Declared MSFT_lod preserves original named nodes and clips; lower tiers are excluded from the default scene. Current exporter re-tessellation is covered by bidirectional surface and current-source baseline proof. Owner visual review pending."
+    },
+    {
+      "id": "loadPort",
+      "path": "models/load-port.glb",
+      "previous": {
+        "asset": "load-port",
+        "revision": "r_ad0d81fde77d4fe08fbdcdd9911c4160",
+        "bytes": 51776,
+        "sha256": "bb7b217fb12e15f6c92e9f2aaf48f0eb3f7e96615e60034bf9880aad7d616190"
+      },
+      "next": {
+        "asset": "load-port",
+        "revision": "r_b45a5f436cd14d7294bc6866dcebb5f7",
+        "bytes": 32652,
+        "sha256": "500fa5d0a1e41879e2f20ebd18d8c064a13c0f86d49798830a0273aa08aa0ed2",
+        "author": "codex-ff-lod-migration",
+        "file": "outputs/loadPort/asset.glb"
+      },
+      "lineage": [
+        {
+          "asset": "load-port",
+          "revision": "r_ad0d81fde77d4fe08fbdcdd9911c4160",
+          "bytes": 51776,
+          "sha256": "bb7b217fb12e15f6c92e9f2aaf48f0eb3f7e96615e60034bf9880aad7d616190",
+          "model": "claude-sonnet-5-5",
+          "harness": "Claude Code",
+          "role": "Original authored asset, scene-pinned export"
+        }
+      ],
+      "reason": "Declared MSFT_lod preserves original named nodes and clips; lower tiers are excluded from the default scene. Current exporter re-tessellation is covered by bidirectional surface and current-source baseline proof. Owner visual review pending."
+    },
+    {
+      "id": "stocker",
+      "path": "models/stocker.glb",
+      "previous": {
+        "asset": "stocker",
+        "revision": "r_5098431bec1849eda5e160b664ab76f8",
+        "bytes": 299416,
+        "sha256": "4a3faff6f0ba4d9a2bd174aa005b5b8140420f47145eb62fea1219f44dbd7df7"
+      },
+      "next": {
+        "asset": "stocker",
+        "revision": "r_2719dba3ca554c159e41daa769233182",
+        "bytes": 299000,
+        "sha256": "cd4e7bb6d5341a5a86b613d2657be919a106cde63d0d2d2b05d343fd597ebcf2",
+        "author": "codex-ff-lod-migration",
+        "file": "outputs/stocker/asset.glb"
+      },
+      "lineage": [
+        {
+          "asset": "stocker",
+          "revision": "r_5098431bec1849eda5e160b664ab76f8",
+          "bytes": 299416,
+          "sha256": "4a3faff6f0ba4d9a2bd174aa005b5b8140420f47145eb62fea1219f44dbd7df7",
+          "model": "claude-sonnet-5-5",
+          "harness": "claude",
+          "role": "Original authored asset, scene-pinned export"
+        },
+        {
+          "asset": "stocker",
+          "revision": "r_5098431bec1849eda5e160b664ab76f8",
+          "bytes": 299412,
+          "sha256": "16fce2d9c352fdbf11c08e181821cff86d5b2496110ca9e976d07adc168281db",
+          "model": "claude-sonnet-5-5",
+          "harness": "claude",
+          "role": "Saved source parent; historical scene export differs and is separately reconciled"
+        }
+      ],
+      "reason": "Declared MSFT_lod preserves original named nodes and clips; lower tiers are excluded from the default scene. Owner visual review pending."
+    },
+    {
+      "id": "uts",
+      "path": "models/under-track-storage.glb",
+      "previous": {
+        "asset": "under-track-storage",
+        "revision": "r_7dabe4c644824eb4bdb014a45c276a56",
+        "bytes": 32016,
+        "sha256": "eb4331792b0f7b9be56f9928f40834be309db7748b332c3e50bfbc5a5a8d5e57"
+      },
+      "next": {
+        "asset": "under-track-storage",
+        "revision": "r_093ce3746e9c449585f6543f9db94f87",
+        "bytes": 32200,
+        "sha256": "f5818ef0791c74470d2d034ba9022d9f0243fa36da4f3fe15ba4ea308b2de15e",
+        "author": "codex-ff-lod-migration",
+        "file": "outputs/uts/asset.glb"
+      },
+      "lineage": [
+        {
+          "asset": "under-track-storage",
+          "revision": "r_7dabe4c644824eb4bdb014a45c276a56",
+          "bytes": 32016,
+          "sha256": "eb4331792b0f7b9be56f9928f40834be309db7748b332c3e50bfbc5a5a8d5e57",
+          "model": "claude-sonnet-5-5",
+          "harness": "Claude Code",
+          "role": "Original authored asset, scene-pinned export"
+        }
+      ],
+      "reason": "Declared MSFT_lod preserves original named nodes and clips; lower tiers are excluded from the default scene. Owner visual review pending."
+    },
+    {
+      "id": "railStraight",
+      "path": "models/oht-rail-straight.glb",
+      "previous": {
+        "asset": "oht-rail-straight",
+        "revision": "r_3a30a0b877a345f8bd562a372302f666",
+        "bytes": 15780,
+        "sha256": "2f22541674d9a6a1e9d6a5785d8c583d0e937598ee42a3564f3b990e0d6817d1"
+      },
+      "next": {
+        "asset": "oht-rail-straight",
+        "revision": "r_ed0c4b464c3f44419b6efed936349a64",
+        "bytes": 15968,
+        "sha256": "7289d13da5a095aa5483c28864e0a96de71d0e353b4040836cc52774e05d856b",
+        "author": "codex-ff-lod-migration",
+        "file": "outputs/railStraight/asset.glb"
+      },
+      "lineage": [
+        {
+          "asset": "oht-rail-straight",
+          "revision": "r_3a30a0b877a345f8bd562a372302f666",
+          "bytes": 15780,
+          "sha256": "2f22541674d9a6a1e9d6a5785d8c583d0e937598ee42a3564f3b990e0d6817d1",
+          "model": "claude-sonnet-5-5",
+          "harness": "Claude Code",
+          "role": "Original authored asset, scene-pinned export"
+        }
+      ],
+      "reason": "Declared MSFT_lod preserves original named nodes and clips; lower tiers are excluded from the default scene. Owner visual review pending."
+    },
+    {
+      "id": "railCurve",
+      "path": "models/oht-rail-curve.glb",
+      "previous": {
+        "asset": "oht-rail-curve",
+        "revision": "r_cc370801a4df4604b629c26ff1d9264a",
+        "bytes": 32888,
+        "sha256": "d861dfac2b94ac6c2242e48018ac975d8aea7b2daa3289887fcf86e6734e64e9"
+      },
+      "next": {
+        "asset": "oht-rail-curve",
+        "revision": "r_a2af1537d2cc4396a4d94bce0c19598c",
+        "bytes": 33072,
+        "sha256": "66f22a7b40bf28454611578047744e5ea2400a35dbce83b2006ac2b0f1155fa9",
+        "author": "codex-ff-lod-migration",
+        "file": "outputs/railCurve/asset.glb"
+      },
+      "lineage": [
+        {
+          "asset": "oht-rail-curve",
+          "revision": "r_cc370801a4df4604b629c26ff1d9264a",
+          "bytes": 32888,
+          "sha256": "d861dfac2b94ac6c2242e48018ac975d8aea7b2daa3289887fcf86e6734e64e9",
+          "model": "claude-sonnet-5-5",
+          "harness": "Claude Code",
+          "role": "Original authored asset, scene-pinned export"
+        }
+      ],
+      "reason": "Declared MSFT_lod preserves original named nodes and clips; lower tiers are excluded from the default scene. Owner visual review pending."
+    },
+    {
+      "id": "railSwitch",
+      "path": "models/oht-rail-switch.glb",
+      "previous": {
+        "asset": "oht-rail-switch",
+        "revision": "r_678517d2e36e4879b448f85f5f175266",
+        "bytes": 62032,
+        "sha256": "2e133a3571ac2eba66c526f5047d0e08a947e93e38c505e4dec5fe81f01e9749"
+      },
+      "next": {
+        "asset": "oht-rail-switch",
+        "revision": "r_b7fcebf6547545eab077be69796ec893",
+        "bytes": 61820,
+        "sha256": "1190709b4b55201db020cbb375001eb1d3c535ac9e8f93fefae20a11207753f4",
+        "author": "codex-ff-lod-migration",
+        "file": "outputs/railSwitch/asset.glb"
+      },
+      "lineage": [
+        {
+          "asset": "oht-rail-switch",
+          "revision": "r_678517d2e36e4879b448f85f5f175266",
+          "bytes": 62032,
+          "sha256": "2e133a3571ac2eba66c526f5047d0e08a947e93e38c505e4dec5fe81f01e9749",
+          "model": "claude-sonnet-5-5",
+          "harness": "Claude Code",
+          "role": "Original authored asset, scene-pinned export"
+        }
+      ],
+      "reason": "Declared MSFT_lod preserves original named nodes and clips; lower tiers are excluded from the default scene. Owner visual review pending."
+    },
+    {
+      "id": "floorModule",
+      "path": "models/raised-floor-module.glb",
+      "previous": {
+        "asset": "raised-floor-module",
+        "revision": "r_ca8f4b96cad641129e0f5c078f4465e5",
+        "bytes": 26152,
+        "sha256": "9fd7eae4e2ebdd3fdec6d38add569fb443ff835d4d37c0f8b0755f74a1829bd6"
+      },
+      "next": {
+        "asset": "raised-floor-module",
+        "revision": "r_f0104891f44a4c99a52739033e900757",
+        "bytes": 26336,
+        "sha256": "30b8cfddbfaccfd572f79c40a0483e9726b69fddc3b8bea36cd708b7612008fc",
+        "author": "codex-ff-lod-migration",
+        "file": "outputs/floorModule/asset.glb"
+      },
+      "lineage": [
+        {
+          "asset": "raised-floor-module",
+          "revision": "r_ca8f4b96cad641129e0f5c078f4465e5",
+          "bytes": 26152,
+          "sha256": "9fd7eae4e2ebdd3fdec6d38add569fb443ff835d4d37c0f8b0755f74a1829bd6",
+          "model": "claude-sonnet-5-5",
+          "harness": "claude",
+          "role": "Original authored asset, scene-pinned export"
+        }
+      ],
+      "reason": "Declared MSFT_lod preserves original named nodes and clips; lower tiers are excluded from the default scene. Owner visual review pending."
+    },
+    {
+      "id": "ceilingModule",
+      "path": "models/ffu-ceiling-module.glb",
+      "previous": {
+        "asset": "ffu-ceiling-module",
+        "revision": "r_d73b60677ff2417ea9a0d1add4114f10",
+        "bytes": 36928,
+        "sha256": "c015231559753309c1448223f4f34a84cc3aa2a638e069a8221c65d5cf41eab0"
+      },
+      "next": {
+        "asset": "ffu-ceiling-module",
+        "revision": "r_6d370c36023f401ea7ee526631bcf4df",
+        "bytes": 37112,
+        "sha256": "db5aa12a0b890785664a300393484ee175f91e626cabbe5b9900cc4be2d86642",
+        "author": "codex-ff-lod-migration",
+        "file": "outputs/ceilingModule/asset.glb"
+      },
+      "lineage": [
+        {
+          "asset": "ffu-ceiling-module",
+          "revision": "r_d73b60677ff2417ea9a0d1add4114f10",
+          "bytes": 36928,
+          "sha256": "c015231559753309c1448223f4f34a84cc3aa2a638e069a8221c65d5cf41eab0",
+          "model": "claude-sonnet-5-5",
+          "harness": "claude",
+          "role": "Original authored asset, scene-pinned export"
+        }
+      ],
+      "reason": "Declared MSFT_lod preserves original named nodes and clips; lower tiers are excluded from the default scene. Owner visual review pending."
+    },
+    {
+      "id": "tool:etch",
+      "path": "models/etch-cluster-tool.glb",
+      "previous": {
+        "asset": "etch-cluster-tool",
+        "revision": "r_c548f01cc98b4fb0adbee9b763ec1831",
+        "bytes": 455944,
+        "sha256": "fa75f3a4bada2652eecba79d8c5eebf900ad5651f4befbc95a19f15b0de130e4"
+      },
+      "next": {
+        "asset": "etch-cluster-tool",
+        "revision": "r_6456090ae2cb42f09b3ff18670f55c3e",
+        "bytes": 452424,
+        "sha256": "24d3ebb6818f54e7e341f9b4081ea29231b64f165ab6ffc3f2af562dea915c30",
+        "author": "codex-ff-lod-migration",
+        "file": "outputs/tool-etch/asset.glb"
+      },
+      "lineage": [
+        {
+          "asset": "etch-cluster-tool",
+          "revision": "r_c548f01cc98b4fb0adbee9b763ec1831",
+          "bytes": 455944,
+          "sha256": "fa75f3a4bada2652eecba79d8c5eebf900ad5651f4befbc95a19f15b0de130e4",
+          "model": "not recorded",
+          "harness": "not recorded",
+          "role": "Original authored asset, scene-pinned export"
+        }
+      ],
+      "reason": "Declared MSFT_lod preserves original named nodes and clips; lower tiers are excluded from the default scene. Current exporter preserves authored emissive intensity; material settings are unchanged. Owner visual review pending."
+    },
+    {
+      "id": "tool:cvd-ald",
+      "path": "models/cvd-ald-cluster-tool.glb",
+      "previous": {
+        "asset": "cvd-ald-cluster-tool",
+        "revision": "r_bcc14a9dbb4e41a997023b3712b05779",
+        "bytes": 464272,
+        "sha256": "e94b92992943df6de1a3e111faaa884c6f62236613ed237a6cedb8cc5cd5385c"
+      },
+      "next": {
+        "asset": "cvd-ald-cluster-tool",
+        "revision": "r_5555be8ebedc496ba137ba5d47132e1b",
+        "bytes": 460756,
+        "sha256": "6c097a2ddad1305ea349f37ab44757722204b71b07323bca157d8d8a21619649",
+        "author": "codex-ff-lod-migration",
+        "file": "outputs/tool-cvd-ald/asset.glb"
+      },
+      "lineage": [
+        {
+          "asset": "cvd-ald-cluster-tool",
+          "revision": "r_bcc14a9dbb4e41a997023b3712b05779",
+          "bytes": 464272,
+          "sha256": "e94b92992943df6de1a3e111faaa884c6f62236613ed237a6cedb8cc5cd5385c",
+          "model": "not recorded",
+          "harness": "not recorded",
+          "role": "Original authored asset, scene-pinned export"
+        }
+      ],
+      "reason": "Declared MSFT_lod preserves original named nodes and clips; lower tiers are excluded from the default scene. Current exporter preserves authored emissive intensity; material settings are unchanged. Owner visual review pending."
+    },
+    {
+      "id": "tool:pvd",
+      "path": "models/pvd-cluster-tool.glb",
+      "previous": {
+        "asset": "pvd-cluster-tool",
+        "revision": "r_5da63ee0e94648c7b2981a0021e3e616",
+        "bytes": 420220,
+        "sha256": "8c17a95496e498a08b114fd166ed6fe7e6caf97c095f1bea9be1a64d3b025849"
+      },
+      "next": {
+        "asset": "pvd-cluster-tool",
+        "revision": "r_3ef2fa3a9e594f94b65dffe40253bd0c",
+        "bytes": 416676,
+        "sha256": "e87669b3c87279389f7ef1035dc3994e81f74803c9b4ec2b81eec035da8998fb",
+        "author": "codex-ff-lod-migration",
+        "file": "outputs/tool-pvd/asset.glb"
+      },
+      "lineage": [
+        {
+          "asset": "pvd-cluster-tool",
+          "revision": "r_5da63ee0e94648c7b2981a0021e3e616",
+          "bytes": 420220,
+          "sha256": "8c17a95496e498a08b114fd166ed6fe7e6caf97c095f1bea9be1a64d3b025849",
+          "model": "claude-sonnet-5-5",
+          "harness": "Claude Code",
+          "role": "Original authored asset, scene-pinned export"
+        }
+      ],
+      "reason": "Declared MSFT_lod preserves original named nodes and clips; lower tiers are excluded from the default scene. Current exporter preserves authored emissive intensity; material settings are unchanged. Owner visual review pending."
+    },
+    {
+      "id": "tool:clean",
+      "path": "models/single-wafer-clean-tool.glb",
+      "previous": {
+        "asset": "single-wafer-clean-tool",
+        "revision": "r_ef576d03ece64a33a331429020148625",
+        "bytes": 64688,
+        "sha256": "aea4603362760b1828a6241471a4c60949d3bfa11822a3ed40c6812dcb46eeca"
+      },
+      "next": {
+        "asset": "single-wafer-clean-tool",
+        "revision": "r_c268a0f6f6174f7ba2b87e120c4344e8",
+        "bytes": 63304,
+        "sha256": "dcc8f518e828db258990e737db96aa87b440d7772122c735f67ab32c5174b429",
+        "author": "codex-ff-lod-migration",
+        "file": "outputs/tool-clean/asset.glb"
+      },
+      "lineage": [
+        {
+          "asset": "single-wafer-clean-tool",
+          "revision": "r_ef576d03ece64a33a331429020148625",
+          "bytes": 64688,
+          "sha256": "aea4603362760b1828a6241471a4c60949d3bfa11822a3ed40c6812dcb46eeca",
+          "model": "claude-sonnet-5-5",
+          "harness": "Claude Code",
+          "role": "Original authored asset, scene-pinned export"
+        }
+      ],
+      "reason": "Declared MSFT_lod preserves original named nodes and clips; lower tiers are excluded from the default scene. Current exporter preserves authored emissive intensity; material settings are unchanged. Owner visual review pending."
+    },
+    {
+      "id": "tool:cmp",
+      "path": "models/cmp-polisher.glb",
+      "previous": {
+        "asset": "cmp-polisher",
+        "revision": "r_bd4199a5d1c14b96935be86fc3316adb",
+        "bytes": 134168,
+        "sha256": "921f124b0e32ae74df59c2dfb5eb38880788ecdfe9adf1cb6d1f69a6d80c165f"
+      },
+      "next": {
+        "asset": "cmp-polisher",
+        "revision": "r_a8c4d8680a7f4aca96b240daa294bc4b",
+        "bytes": 127912,
+        "sha256": "0e479e5ee9dfd2a4f389f18ccf82d1cd2fc39e628a18a577643503980b81b344",
+        "author": "codex-ff-lod-migration",
+        "file": "outputs/tool-cmp/asset.glb"
+      },
+      "lineage": [
+        {
+          "asset": "cmp-polisher",
+          "revision": "r_bd4199a5d1c14b96935be86fc3316adb",
+          "bytes": 134168,
+          "sha256": "921f124b0e32ae74df59c2dfb5eb38880788ecdfe9adf1cb6d1f69a6d80c165f",
+          "model": "claude-sonnet-5-5",
+          "harness": "Claude Code",
+          "role": "Original authored asset, scene-pinned export"
+        }
+      ],
+      "reason": "Declared MSFT_lod preserves original named nodes and clips; lower tiers are excluded from the default scene. Current exporter preserves authored emissive intensity; material settings are unchanged. Owner visual review pending."
+    },
+    {
+      "id": "tool:furnace",
+      "path": "models/vertical-furnace.glb",
+      "previous": {
+        "asset": "vertical-furnace",
+        "revision": "r_11d06703f7c34eb2aeca0b7298a5784c",
+        "bytes": 100476,
+        "sha256": "ebe68d3dff40dd37fb45458e756147951bd7e6b4936639c8078920a7b1d35493"
+      },
+      "next": {
+        "asset": "vertical-furnace",
+        "revision": "r_72680f2e5830442f93afff6a94519629",
+        "bytes": 98668,
+        "sha256": "8f92dbbe43e0ae51e7a36f955fe1edc8f4e4cbbdf020c1ae80b8ed84a6eb36b4",
+        "author": "codex-ff-lod-migration",
+        "file": "outputs/tool-furnace/asset.glb"
+      },
+      "lineage": [
+        {
+          "asset": "vertical-furnace",
+          "revision": "r_11d06703f7c34eb2aeca0b7298a5784c",
+          "bytes": 100476,
+          "sha256": "ebe68d3dff40dd37fb45458e756147951bd7e6b4936639c8078920a7b1d35493",
+          "model": "claude-sonnet-5-5",
+          "harness": "claude",
+          "role": "Original authored asset, scene-pinned export"
+        }
+      ],
+      "reason": "Declared MSFT_lod preserves original named nodes and clips; lower tiers are excluded from the default scene. Owner visual review pending."
+    },
+    {
+      "id": "tool:implanter",
+      "path": "models/ion-implanter.glb",
+      "previous": {
+        "asset": "ion-implanter",
+        "revision": "r_f053ff760e7c46018c274ec2a12ee18b",
+        "bytes": 140092,
+        "sha256": "2edaa15d5fb023ec449a4ea08c41803085f6fe333507943b55e8ad1cb0197574"
+      },
+      "next": {
+        "asset": "ion-implanter",
+        "revision": "r_703483bb04b240bbaada2327534f7eef",
+        "bytes": 138320,
+        "sha256": "ad1a6f19be7894c0835e24cfaf4495819f25d7994ec0c5a8897aa01b4bb2af15",
+        "author": "codex-ff-lod-migration",
+        "file": "outputs/tool-implanter/asset.glb"
+      },
+      "lineage": [
+        {
+          "asset": "ion-implanter",
+          "revision": "r_f053ff760e7c46018c274ec2a12ee18b",
+          "bytes": 140092,
+          "sha256": "2edaa15d5fb023ec449a4ea08c41803085f6fe333507943b55e8ad1cb0197574",
+          "model": "claude-sonnet-5-5",
+          "harness": "Claude Code",
+          "role": "Original authored asset, scene-pinned export"
+        }
+      ],
+      "reason": "Declared MSFT_lod preserves original named nodes and clips; lower tiers are excluded from the default scene. Current exporter preserves authored emissive intensity; material settings are unchanged. Owner visual review pending."
+    },
+    {
+      "id": "tool:metrology",
+      "path": "models/metrology-inspection-tool.glb",
+      "previous": {
+        "asset": "metrology-inspection-tool",
+        "revision": "r_4ee6df55b165456abe7f9002bfd7b0d1",
+        "bytes": 110880,
+        "sha256": "3f9b5d4e3a40164ed211bad741bf2f3aa742f4914d9a76c57fc55c5d411272c8"
+      },
+      "next": {
+        "asset": "metrology-inspection-tool",
+        "revision": "r_a8395c71bb304806b3093749f7ab4ed4",
+        "bytes": 108984,
+        "sha256": "16e618ba8266ff1a87d03975b1e1b91b5e7f619bbf13152695683705ccef7f58",
+        "author": "codex-ff-lod-migration",
+        "file": "outputs/tool-metrology/asset.glb"
+      },
+      "lineage": [
+        {
+          "asset": "metrology-inspection-tool",
+          "revision": "r_4ee6df55b165456abe7f9002bfd7b0d1",
+          "bytes": 110880,
+          "sha256": "3f9b5d4e3a40164ed211bad741bf2f3aa742f4914d9a76c57fc55c5d411272c8",
+          "model": "claude-sonnet-5-5",
+          "harness": "claude",
+          "role": "Original authored asset, scene-pinned export"
+        }
+      ],
+      "reason": "Declared MSFT_lod preserves original named nodes and clips; lower tiers are excluded from the default scene. Owner visual review pending."
+    },
+    {
+      "id": "tool:prober",
+      "path": "models/wafer-prober-tester.glb",
+      "previous": {
+        "asset": "wafer-prober-tester",
+        "revision": "r_853a936fe0dd48d299ae55585d9d276a",
+        "bytes": 129744,
+        "sha256": "06585aa565430fea67a171322e6e38c39065ef6cf88f9732eb485756bc70dad0"
+      },
+      "next": {
+        "asset": "wafer-prober-tester",
+        "revision": "r_7357b53066af464abb6556bdde7866d4",
+        "bytes": 125036,
+        "sha256": "4a53871b19898e53b7f057107eee9d2f40bbe3ba72948df3b190d21e910662af",
+        "author": "codex-ff-lod-migration",
+        "file": "outputs/tool-prober/asset.glb"
+      },
+      "lineage": [
+        {
+          "asset": "wafer-prober-tester",
+          "revision": "r_853a936fe0dd48d299ae55585d9d276a",
+          "bytes": 129744,
+          "sha256": "06585aa565430fea67a171322e6e38c39065ef6cf88f9732eb485756bc70dad0",
+          "model": "claude-sonnet-5-5",
+          "harness": "claude",
+          "role": "Original authored asset, scene-pinned export"
+        }
+      ],
+      "reason": "Declared MSFT_lod preserves original named nodes and clips; lower tiers are excluded from the default scene. Owner visual review pending."
+    },
+    {
+      "id": "tool:track",
+      "path": "models/coater-developer-track.glb",
+      "previous": {
+        "asset": "coater-developer-track",
+        "revision": "r_2bdd2517bf744bc580b1af4314fcef3a",
+        "bytes": 363432,
+        "sha256": "8ef1194237daf8cdc874c44b3931eaf6c0458a32b660ef3f9360806ab7d6a029"
+      },
+      "next": {
+        "asset": "coater-developer-track",
+        "revision": "r_a2be2a40435341b9b196f678130109b4",
+        "bytes": 363352,
+        "sha256": "5b3436743daecbbff7cfdda351e67f324950767cf6d475a967d26f3aca05a11a",
+        "author": "codex-ff-lod-migration",
+        "file": "outputs/tool-track/asset.glb"
+      },
+      "lineage": [
+        {
+          "asset": "coater-developer-track",
+          "revision": "r_2bdd2517bf744bc580b1af4314fcef3a",
+          "bytes": 363432,
+          "sha256": "8ef1194237daf8cdc874c44b3931eaf6c0458a32b660ef3f9360806ab7d6a029",
+          "model": "claude-sonnet-5-5",
+          "harness": "Claude Code",
+          "role": "Original authored asset, scene-pinned export"
+        }
+      ],
+      "reason": "Declared MSFT_lod preserves original named nodes and clips; lower tiers are excluded from the default scene. Owner visual review pending."
+    },
+    {
+      "id": "tool:euv-scanner",
+      "path": "models/euv-scanner.glb",
+      "previous": {
+        "asset": "euv-scanner",
+        "revision": "r_f4a48de7bac1455da5a1f76be6702e4c",
+        "bytes": 595100,
+        "sha256": "6d351cbdd52e5f1f632e6f63faff2b56f6bbcb1d4daae5a8fbc78ce2560d383e"
+      },
+      "next": {
+        "asset": "euv-scanner",
+        "revision": "r_5fb445d57eec47fa9c7238b1a5ee4242",
+        "bytes": 591660,
+        "sha256": "0da38997d744b40180edb9d114a4fda63b336b2356747bcb8277dfc152ca69eb",
+        "author": "codex-ff-lod-migration",
+        "file": "outputs/tool-euv-scanner/asset.glb"
+      },
+      "lineage": [
+        {
+          "asset": "euv-scanner",
+          "revision": "r_f4a48de7bac1455da5a1f76be6702e4c",
+          "bytes": 595100,
+          "sha256": "6d351cbdd52e5f1f632e6f63faff2b56f6bbcb1d4daae5a8fbc78ce2560d383e",
+          "model": "claude-sonnet-5-5",
+          "harness": "Claude Code",
+          "role": "Original authored asset, scene-pinned export"
+        }
+      ],
+      "reason": "Declared MSFT_lod preserves original named nodes and clips; lower tiers are excluded from the default scene. Owner visual review pending."
+    },
+    {
+      "id": "tool:duv-scanner",
+      "path": "models/duv-immersion-scanner.glb",
+      "previous": {
+        "asset": "duv-immersion-scanner",
+        "revision": "r_60b7dd62114248d8b39445eb7a485c0b",
+        "bytes": 411368,
+        "sha256": "58b7682e6bece4b039c2ffb9605386fe42801aaf11c442926dcff1d9f89b2207"
+      },
+      "next": {
+        "asset": "duv-immersion-scanner",
+        "revision": "r_21ec88e7bb5b4c2c9ceae59c8142d978",
+        "bytes": 408276,
+        "sha256": "53e7026c98abb8e13b5b85b51b8bc5e58ee1baec74291c6971762ee6a2853efd",
+        "author": "codex-ff-lod-migration",
+        "file": "outputs/tool-duv-scanner/asset.glb"
+      },
+      "lineage": [
+        {
+          "asset": "duv-immersion-scanner",
+          "revision": "r_60b7dd62114248d8b39445eb7a485c0b",
+          "bytes": 411368,
+          "sha256": "58b7682e6bece4b039c2ffb9605386fe42801aaf11c442926dcff1d9f89b2207",
+          "model": "claude-sonnet-5-5",
+          "harness": "Claude Code",
+          "role": "Original authored asset, scene-pinned export"
+        }
+      ],
+      "reason": "Declared MSFT_lod preserves original named nodes and clips; lower tiers are excluded from the default scene. Owner visual review pending."
+    },
+    {
+      "id": "amrFloorRobot",
+      "path": "models/amr-floor-robot.glb",
+      "previous": {
+        "asset": "amr-floor-robot",
+        "revision": "r_4141b13a77bb45dd830fa66d35f799e7",
+        "bytes": 143956,
+        "sha256": "b173b7d81d6ba1d924e37283bfe05a2774db83421790ad3551fa3916d22c2c78"
+      },
+      "next": {
+        "asset": "amr-floor-robot-fit",
+        "revision": "r_a27481224b474e9cb1dd747c45a71e23",
+        "bytes": 77144,
+        "sha256": "ceb4d9565c396bed03d9ffd704447caac5e38e665e61224e0c092ec6df05da32",
+        "author": "codex-ff-lod-migration",
+        "file": "outputs/amrFloorRobot/asset.glb"
+      },
+      "lineage": [
+        {
+          "asset": "amr-floor-robot",
+          "revision": "r_4141b13a77bb45dd830fa66d35f799e7",
+          "bytes": 143956,
+          "sha256": "b173b7d81d6ba1d924e37283bfe05a2774db83421790ad3551fa3916d22c2c78",
+          "model": "not recorded",
+          "harness": "not recorded",
+          "role": "Original authored asset, scene-pinned export"
+        },
+        {
+          "asset": "amr-floor-robot-fit",
+          "revision": "r_d0e748e816fe4595917dc7e3e1dee102",
+          "bytes": 76956,
+          "sha256": "55535d1077456529ce2ca460b8ebea59fb7e9be8dca128fd79d6be86ced03515",
+          "model": "not recorded",
+          "harness": "Codex",
+          "role": "Physical fit repair"
+        }
+      ],
+      "reason": "Declared MSFT_lod preserves original named nodes and clips; lower tiers are excluded from the default scene. Locating pins fitted to the saved FOUP V-grooves. Owner visual review pending. Owner visual review pending."
+    },
+    {
+      "id": "toolFrontRobotArm",
+      "path": "models/tool-front-robot-arm.glb",
+      "previous": {
+        "asset": "tool-front-robot-arm",
+        "revision": "r_309f3e9884384c3e9090f2b0b76dc333",
+        "bytes": 311948,
+        "sha256": "c499bba543726ced9758f1d219882be10c6655616f84c769c2ca1a7c23917c86"
+      },
+      "next": {
+        "asset": "tool-front-robot-arm-fit",
+        "revision": "r_14bc5f09d6064a6aa8c20234c34b5d78",
+        "bytes": 135444,
+        "sha256": "3ae581fbee8b2e7a184b9ef22d5594c6a75f85dcc5e72b2da16bc1dec06e3010",
+        "author": "codex-ff-lod-migration",
+        "file": "outputs/toolFrontRobotArm/asset.glb"
+      },
+      "lineage": [
+        {
+          "asset": "tool-front-robot-arm",
+          "revision": "r_309f3e9884384c3e9090f2b0b76dc333",
+          "bytes": 311948,
+          "sha256": "c499bba543726ced9758f1d219882be10c6655616f84c769c2ca1a7c23917c86",
+          "model": "not recorded",
+          "harness": "not recorded",
+          "role": "Original authored asset, scene-pinned export"
+        },
+        {
+          "asset": "tool-front-robot-arm-fit",
+          "revision": "r_f20e1fcc5db64ec9939367871dd43527",
+          "bytes": 135252,
+          "sha256": "54f1a672451bea2a072587c3de05fb751f6d2991ef6b8ee8d8a7c314b5dd5428",
+          "model": "not recorded",
+          "harness": "Codex",
+          "role": "Physical fit repair"
+        }
+      ],
+      "reason": "Declared MSFT_lod preserves original named nodes and clips; lower tiers are excluded from the default scene. Gripper and transfer-path clearances qualified with the saved FOUP and load ports. Owner visual review pending. Owner visual review pending."
+    }
+  ]
+}

@@ -1,0 +1,24 @@
+{
+  "browser": "Chrome/154.0.8037.58",
+  "size": [
+    1920,
+    1080
+  ],
+  "scenes": {
+    "farm": {
+      "release": "r36-local-review",
+      "packSha256": "5d046aa2c04637436d7e3918db690f4f25f6684a58ae7a78d333dec9df428f48"
+    },
+    "golden-gate": {
+      "release": "g9",
+      "packSha256": "c2a1d83fce6caf07a7b3e87070ccb8a983dd68e0c7f98eee3f1ba5255ce059cb"
+    },
+    "foundry-floor": {
+      "release": "ff3-review2",
+      "packSha256": "6ce49d05791bf42d21f3628237a5cf005ce9f2fa15938f0c321430d781c2c5d4"
+    }
+  },
+  "farmRuntime": "d490f2e6607781f35c3b1cdce104c5c5ab43a47b32b25931c78c24c99389d274",
+  "method": "Actual scene canvas; scene view controls; overlays hidden. No scene-content compositing or retouching.",
+  "errors": []
+}

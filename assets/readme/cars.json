@@ -1,0 +1,42 @@
+{
+  "browser": "Chrome/154.0.8037.58",
+  "method": "Actual gallery viewer canvas after selecting the public body paint control; original GLBs remain unchanged.",
+  "cars": [
+    {
+      "slug": "hatchback",
+      "colour": "Yellow",
+      "modelUrl": "/models/vehicles/hatchback.glb?revision=r_74f393f06996497a9dce6c5ed50c2d62",
+      "file": "hatchback-yellow.png"
+    },
+    {
+      "slug": "sedan",
+      "colour": "Blue",
+      "modelUrl": "/models/vehicles/sedan.glb?revision=r_92ee0ac3d5cf4b258cc97d20ec941461",
+      "file": "sedan-blue.png"
+    },
+    {
+      "slug": "suv",
+      "colour": "Green",
+      "modelUrl": "/models/vehicles/suv.glb?revision=r_b4cc9048731b4c039de0b87ca6e75c17",
+      "file": "suv-green.png"
+    },
+    {
+      "slug": "pickup",
+      "colour": "Red",
+      "modelUrl": "/models/vehicles/pickup.glb?revision=r_218be4189a1b43e7b307c2263ba4f954",
+      "file": "pickup-red.png"
+    },
+    {
+      "slug": "box-truck",
+      "colour": "Silver",
+      "modelUrl": "/models/vehicles/box-truck.glb?revision=r_538b8a19c46d4086b456e27b32ee7d33",
+      "file": "box-truck-silver.png"
+    },
+    {
+      "slug": "transit-bus",
+      "colour": "Blue",
+      "modelUrl": "/models/vehicles/transit-bus.glb?revision=r_85ff097a61384efab445c55372d3b6f5",
+      "file": "transit-bus-blue.png"
+    }
+  ]
+}

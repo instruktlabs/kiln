@@ -1,0 +1,122 @@
+{
+  "repository": "Field Grass (Matthew Kissinger; repository URL absent from the sealed source subset)",
+  "repositoryUrl": null,
+  "commit": "2a0d3a3256dc8d8f6d9de68f3dc1636a621559c5",
+  "version": "0.1.0",
+  "license": "MIT",
+  "holder": "Copyright (c) 2026 Matthew Kissinger",
+  "source": {
+    "release": "r33",
+    "archive": "shapes-and-seasons-farm-scene.zip",
+    "archiveSha256": "sha256:d7b8c0c55c1278573773fec51ddd93b205b3497b260ddb4c77a27f462d67760c",
+    "path": "scene/source/field-grass/"
+  },
+  "imports": "The sealed source already uses three/webgpu and three/tsl; no import rewrite was necessary.",
+  "files": [
+    {
+      "path": "LICENSE",
+      "bytes": 1074,
+      "upstreamSha256": "cdba278ebf1d6de618869936226bf03be4887179c128efc7aaa13d22034826a5",
+      "localSha256": "cdba278ebf1d6de618869936226bf03be4887179c128efc7aaa13d22034826a5",
+      "changes": []
+    },
+    {
+      "path": "src/core/baked.ts",
+      "bytes": 5305,
+      "upstreamSha256": "4b15a5c69bc3be138c6f14a97628a1bf71f6c5c9c27e1ed21be530106dbd6e64",
+      "localSha256": "4b15a5c69bc3be138c6f14a97628a1bf71f6c5c9c27e1ed21be530106dbd6e64",
+      "changes": []
+    },
+    {
+      "path": "src/core/recovery.ts",
+      "bytes": 966,
+      "upstreamSha256": "0b4ebfe9b2762100e1013101feff20280344c05c3084925de5295c8860e5b979",
+      "localSha256": "0b4ebfe9b2762100e1013101feff20280344c05c3084925de5295c8860e5b979",
+      "changes": []
+    },
+    {
+      "path": "src/core/rng.ts",
+      "bytes": 737,
+      "upstreamSha256": "da36ebbd4720a85f63c0a266817cf69ac75507cbab961d6064b33d9252b10141",
+      "localSha256": "da36ebbd4720a85f63c0a266817cf69ac75507cbab961d6064b33d9252b10141",
+      "changes": []
+    },
+    {
+      "path": "src/core/scatter.ts",
+      "bytes": 3888,
+      "upstreamSha256": "deb71421e2e23bc628645b6d8e8c514ca7f69cef8780ffa20c78541cecb0dbeb",
+      "localSha256": "deb71421e2e23bc628645b6d8e8c514ca7f69cef8780ffa20c78541cecb0dbeb",
+      "changes": []
+    },
+    {
+      "path": "src/index.ts",
+      "bytes": 311,
+      "upstreamSha256": "e426532cd56f45d9a20a13da11b46b57838ee64a8481b09386ba8ca66d2bd4c6",
+      "localSha256": "e426532cd56f45d9a20a13da11b46b57838ee64a8481b09386ba8ca66d2bd4c6",
+      "changes": []
+    },
+    {
+      "path": "src/react.ts",
+      "bytes": 104,
+      "upstreamSha256": "572961d0a97be2c6bb3f8e58cc19c9f24a670c10c0cdc70d91c81ec9d28287b4",
+      "localSha256": "572961d0a97be2c6bb3f8e58cc19c9f24a670c10c0cdc70d91c81ec9d28287b4",
+      "changes": []
+    },
+    {
+      "path": "src/react/GrassLayer.tsx",
+      "bytes": 881,
+      "upstreamSha256": "b3f337859d56ca1d3d8684f0f92cb55a2a7ad099f0b77178d725e7f0bbfa8c9b",
+      "localSha256": "28b09c1d97947c8ff23f5883188125b3cc42f3461367abfe745f91b3cc721723",
+      "changes": [
+        "Include optional timeNode in the upstream React wrapper memo dependencies."
+      ]
+    },
+    {
+      "path": "src/three/grassLayer.ts",
+      "bytes": 2622,
+      "upstreamSha256": "dd3b0628cbb1f44660da5428540e761e9eb2c7e81f4efab48c373399a1e478e3",
+      "localSha256": "29171c084b133149c0b194c366cd11e73ffda53d2a01dd52c60154174495a713",
+      "changes": [
+        "Forward optional timeNode to makeGrassMaterial.",
+        "Dispose the InstancedMesh before its owned geometry/material so renderer instance buffers release."
+      ]
+    },
+    {
+      "path": "src/three/grassMaterial.ts",
+      "bytes": 17864,
+      "upstreamSha256": "6476fa1ce0cd28609b809a69db1d4adb22f59acdab5cd9163b49628ca8c313df",
+      "localSha256": "82320fbfcc91df727ed688ed4aa346d82abc7c34e7d70629a4544be3697e4afa",
+      "changes": [
+        "Optional timeNode drives all wind expressions; default remains upstream three time."
+      ]
+    },
+    {
+      "path": "src/three/interactionField.ts",
+      "bytes": 15644,
+      "upstreamSha256": "28b77b5aa762185c31c2d32e7a9bae2f4466a9797e93f7e0a17eaea7f861dfee",
+      "localSha256": "28b77b5aa762185c31c2d32e7a9bae2f4466a9797e93f7e0a17eaea7f861dfee",
+      "changes": []
+    },
+    {
+      "path": "src/three/nodes.ts",
+      "bytes": 3750,
+      "upstreamSha256": "c91b556a498a1c21b2ea3df35891d7f76a4e735053dcb8c2a156db26046ca0b2",
+      "localSha256": "c91b556a498a1c21b2ea3df35891d7f76a4e735053dcb8c2a156db26046ca0b2",
+      "changes": []
+    },
+    {
+      "path": "src/three/tuftGeometry.ts",
+      "bytes": 12447,
+      "upstreamSha256": "22c92c1abe49049064c600208b5f6230efeef06dc40d5f540cbddaf2052d2678",
+      "localSha256": "22c92c1abe49049064c600208b5f6230efeef06dc40d5f540cbddaf2052d2678",
+      "changes": []
+    },
+    {
+      "path": "src/vite-env.d.ts",
+      "bytes": 38,
+      "upstreamSha256": "65996936fbb042915f7b74a200fcdde7e410f32a669b1ab9597cfaa4b0faddb5",
+      "localSha256": "65996936fbb042915f7b74a200fcdde7e410f32a669b1ab9597cfaa4b0faddb5",
+      "changes": []
+    }
+  ]
+}

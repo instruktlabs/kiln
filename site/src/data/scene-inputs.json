@@ -1,0 +1,26 @@
+{
+  "base": "https://assets.kilnstudio.tools/",
+  "files": [
+    {
+      "id": "farm",
+      "release": "r36-local-review",
+      "path": "scene-inputs/v09-review3/farm.zip",
+      "bytes": 3647482,
+      "sha256": "0dce1d2cc48860968fe756ef36312ab6a77e51ffa057c627ff0e859a6adda956"
+    },
+    {
+      "id": "golden-gate",
+      "release": "g9",
+      "path": "scene-inputs/v09-review3/golden-gate.zip",
+      "bytes": 8333665,
+      "sha256": "c765ebb40d668ec6b90ffbd379e68dbcb4e9f475c515a06123f23f8d0e8a18bd"
+    },
+    {
+      "id": "foundry-floor",
+      "release": "ff3-review2",
+      "path": "scene-inputs/v09-review3/foundry-floor.zip",
+      "bytes": 2863842,
+      "sha256": "c1c1c5e642cb1a4db97b6cc1103fac4e107f9a0888498a4a78f3c218b6e7ef70"
+    }
+  ]
+}

@@ -1,0 +1,103 @@
+{
+  "schema": "foundry-floor.campus-driving/1",
+  "conventions": {
+    "summary": "arcade driving of the sedan on the campus roads (FF-C1 item 5) on the Golden Gate driving model's conventions (packages/golden-gate/data/driving.json): the same start rule, speeds, brakes, coasting, reverse, curb, traffic margins, road-end turn-around and controls; src/campus/drive/car.ts is the model",
+    "units": "metres, seconds, m/s and m/s^2; angles in degrees except freightParking.heading in radians; pairs written [a, b] run from standstill (a) to topSpeed (b)",
+    "frame": "the campus frame (data/campus.json): u north, v east, the roundabout centre at the origin; a heading is atan2(dv, du) (0 north, 90 east); right-hand traffic",
+    "steer": "Golden Gate's car keeps within a heading offset of its lane; the campus car drives a roundabout and turns into the cross pass, so it steers a kinematic bicycle about its rear axle: the front wheel angle follows the input at steer.rateDegPerSecond toward at most steer.wheelDeg (Golden Gate's wheel angles), held so the lateral acceleration v^2 tan(wheel) / wheelbase stays within steer.lateralAccel, and returns to straight when released; reversing swings the nose the other way, as a real car does",
+    "road": "the car drives the drivable area of data/campus.json (src/campus/roads.ts drivableArea): the split road to its car ends, the drop-off bays, the roundabout outside its island and kerb, and the cross-pass stubs; at its edge the footprint is held curb.clearance inside, the car bumps (keeps curb.speedKept of its speed, at most once per curb.cooldown seconds) and its heading relaxes along the edge",
+    "traffic": "the car brakes for a vehicle ahead and is held clear sideways; traffic brakes for the car. Lookahead is at least traffic.range and expands to cover stopping distance at boosted speed",
+    "roadEnd": "the car's roads end at the split road's car ends (roads.split.carEnd) and the cross-pass stub ends (roads.cross.stubEnd); facing one within roadEnd.promptDistance a turn-around prompt shows; the car stops roadEnd.stopDistance before it (under the arrival canopy at the split road's ends); holding the throttle against that stop, or reverse at rest within promptDistance (reverse does not engage there), for roadEnd.holdSeconds turns the car around, as does the turn-around key; turning around fades to black, moves the car to the mirror position across the road's centre line facing back along the road, at rest, and fades back",
+    "enter": "Enter the fab is offered while the car's centre is inside data/campus.json interior.enterZone at no more than its maxSpeed (the south-west arrival canopy); Exit brings the car back there, at rest",
+    "controls": "keyboard codes (KeyboardEvent.code); W/S accelerate or brake and reverse, A/D steer, Shift boosts forward acceleration and speed. Touch uses independent steering, Throttle, Brake / reverse and Boost controls. Brakes, traffic and road-end limits retain priority",
+    "chase": "the kit's VehicleRig behind the car with Golden Gate's chase values; a pinch or the mouse wheel scales distance and height within zoom (the kit's zoom range); a one-finger or mouse drag swings the camera around the car and it returns behind it (the kit's orbit offset); the near plane is chase.near while driving",
+    "flow": "traffic on the eight split-road lanes of data/campus.json (four each way, through the roundabout): Golden Gate's free-flowing model (packages/golden-gate/src/traffic/sim.ts) with its seed, class weights, palette, IDM and brake-light values; each lane's cruising speed is its lane speed, held on the fillets and the ring to sqrt(flow.lateralAccel x radius), planned ahead at flow.planDecel; vehicles enter and leave at the lane ends and fade over flow.fade metres there, which must fit inside roads.split.dissolve (the road fading into grade); mean entry headway and the per-lane cap are the tier's (data/campus.json tiers trafficHeadway, trafficPerLane) and levels of detail switch at the tier's trafficLod distances; vehicles[type].lanes are the lane indices (0 next to the centre line .. 3 outer) the type may use",
+    "lamps": "vehicle lamps as Golden Gate's layout.json lights.vehicleLamps: emissive = authored emissive colour x mix(gain[0], gain[1], level); brake lamps further scaled by mix(brakeOff, 1, braking); taillights scaled so their largest channel is at most taillightPeak; lamps.day is the day preset's level",
+    "paint": "the driven sedan's colour, a name from flow.palette"
+  },
+  "vehicle": "sedan",
+  "paint": "blue",
+  "start": { "lane": "nb-1", "u": -3860, "window": [-3950, -3500], "speed": 16 },
+  "topSpeed": 29,
+  "accel": 5,
+  "boost": { "topSpeedMultiplier": 1.5, "accelMultiplier": 1.6 },
+  "reverse": { "accel": 2.5, "maxSpeed": 5, "afterStopSeconds": 0.5 },
+  "brake": 7,
+  "handbrake": 5.8,
+  "coast": { "constant": 0.35, "quadratic": 0.0006 },
+  "steer": { "wheelDeg": [32, 6], "lateralAccel": 5.5, "rateDegPerSecond": 60 },
+  "curb": { "clearance": 0.15, "speedKept": 0.9, "cooldown": 0.4, "bumpDeg": 1.2 },
+  "traffic": { "minGap": 0.8, "followGain": 1.2, "lateralMargin": 0.25, "longitudinalMargin": 1, "range": 80 },
+  "roadEnd": { "promptDistance": 90, "stopDistance": 45, "fadeSeconds": 0.35, "holdSeconds": 1 },
+  "controls": {
+    "boost": ["ShiftLeft", "ShiftRight"],
+    "throttle": ["KeyW", "ArrowUp"],
+    "reverse": ["KeyS", "ArrowDown"],
+    "left": ["KeyA", "ArrowLeft"],
+    "right": ["KeyD", "ArrowRight"],
+    "brake": ["Space"],
+    "handbrake": ["KeyX"],
+    "turnAround": ["KeyR"],
+    "enterOrLeave": ["KeyE"],
+    "leave": ["Escape"]
+  },
+  "chase": {
+    "distance": 9.5, "height": 3.1, "targetHeight": 1.35, "lookAhead": 4, "fov": 55, "fovAtTopSpeed": 63,
+    "positionLag": 0.18, "yawLag": 0.3, "zoom": [0.7, 1.7], "zoomRate": 0.5, "near": 0.3
+  },
+  "flow": {
+    "seed": 27262,
+    "random": "mulberry32",
+    "stepsPerSecond": 30,
+    "lateralAccel": 2.2,
+    "planDecel": 1.2,
+    "vehicles": {
+      "sedan": { "weight": 0.30, "lanes": [0, 1, 2, 3] },
+      "suv": { "weight": 0.24, "lanes": [0, 1, 2, 3] },
+      "hatchback": { "weight": 0.17, "lanes": [0, 1, 2, 3] },
+      "pickup": { "weight": 0.14, "lanes": [0, 1, 2, 3] },
+      "box-truck": { "weight": 0.08, "lanes": [2, 3] },
+      "transit-bus": { "weight": 0.07, "lanes": [3] }
+    },
+    "freight": [
+      { "name": "semi-dryvan", "tractor": "truck-tractor", "trailer": "trailer-dryvan", "weight": 0.02, "lanes": [3] },
+      { "name": "semi-flatbed", "tractor": "truck-tractor", "trailer": "trailer-flatbed", "weight": 0.012, "lanes": [3] },
+      { "name": "semi-tanker", "tractor": "truck-tractor", "trailer": "trailer-tanker", "weight": 0.012, "lanes": [3] },
+      { "name": "van-delivery", "tractor": "van-delivery", "weight": 0.035, "lanes": [2, 3] }
+    ],
+    "palette": [
+      { "name": "white", "weight": 24, "srgb": [233, 234, 231] },
+      { "name": "black", "weight": 20, "srgb": [24, 25, 27] },
+      { "name": "grey", "weight": 16, "srgb": [98, 101, 105] },
+      { "name": "silver", "weight": 14, "srgb": [170, 173, 176] },
+      { "name": "dark blue", "weight": 6, "srgb": [30, 48, 88] },
+      { "name": "blue", "weight": 4, "srgb": [58, 96, 150] },
+      { "name": "red", "weight": 8, "srgb": [146, 20, 24] },
+      { "name": "green", "weight": 3, "srgb": [34, 64, 46] },
+      { "name": "beige", "weight": 2, "srgb": [186, 170, 140] },
+      { "name": "brown", "weight": 1.5, "srgb": [92, 62, 44] },
+      { "name": "yellow", "weight": 0.75, "srgb": [214, 170, 36] },
+      { "name": "orange", "weight": 0.75, "srgb": [200, 92, 32] }
+    ],
+    "paint": { "material": "Paint", "untinted": ["CargoBox", "Trim"], "brightnessJitter": 0.08, "avoidRadius": 40, "attempts": 8 },
+    "minHeadway": 2.2,
+    "fade": 100,
+    "speed": { "personal": 0.03, "oscillation": 0.02, "oscillationPeriod": [40, 80] },
+    "idm": { "accel": 1.1, "brake": 2.2, "headway": 1.4, "gap": 3, "emergency": 8 },
+    "brakeLights": { "decel": 0.9, "rate": 8 },
+    "contactShadow": 0.5
+  },
+  "freightParking": [
+    { "name": "semi-dryvan", "x": 920, "z": 612, "heading": 0, "apron": [30,12] },
+    { "name": "semi-flatbed", "x": 2000, "z": 612, "heading": 0, "apron": [30,12] },
+    { "name": "semi-tanker", "x": -2000, "z": -612, "heading": 3.141592653589793, "apron": [30,12] },
+    { "name": "van-delivery", "x": -920, "z": -612, "heading": 3.141592653589793, "apron": [18,12] }
+  ],
+  "lamps": {
+    "materials": { "Headlight": "head", "Taillight": "tail", "BrakeLight": "brake" },
+    "gain": { "head": [1, 3.5], "tail": [1, 2.4], "brake": [1, 1.6] },
+    "brakeOff": 0.08,
+    "taillightPeak": 0.3,
+    "day": 0
+  }
+}

@@ -1,0 +1,109 @@
+{
+  "schema": "foundry-floor.sim-config/1",
+  "floorTransport": {
+    "enabled": true,
+    "speedMps": 1.2,
+    "pickupMs": 24000,
+    "dropMs": 24000,
+    "basis": "E: synthetic FF3 design estimates, not physically calibrated",
+    "rule": "The four arm-station ports exchange real FOUPs with stocker floor transfer docks using AMRs and the accepted arms. One shared aisle authority and one FOUP per carrier. Humanoids retain repair and PM service roles because these transfer seats are dimensioned for the arm/AMR geometry. The remaining ports retain OHT service."
+  },
+  "basis": "E unless a value carries its own label (C sourced, R reported, T typical practice, E design estimate)",
+  "clock": {
+    "unit": "integer milliseconds since the run epoch (day 0, 00:00 sim time)",
+    "hashIntervalMs": 3600000
+  },
+  "starts": {
+    "waferStartsPerMonth": { "value": 4500, "basis": "E", "note": "owner decision 2026-09-29: the release rate is raised until the busiest families (etch, CVD/ALD) run at about 85 percent of calendar time; 180 lots of 25 wafers, one every 4 h. Tool counts, MTBF/MTTR and PM are as specified. The sweep is in evidence/sim/retunes.json", "sourced": { "value": 3000, "basis": "C", "note": "the scale of a public 'few thousand wafer starts' statement, as said; the sim spec's configuration" } },
+    "wafersPerLot": 25,
+    "monthDays": 30,
+    "releaseHours": [0, 4, 8, 12, 16, 20],
+    "conwipCap": 95,
+    "conwipRule": "a lot is released only while WIP is below the cap, so WIP never exceeds 95",
+    "releasePoint": "a stocker manual port; the release stream picks the stocker with even odds",
+    "lotClasses": { "hot": 0.02, "engineering": 0.03, "basis": "E", "note": "the lotClass stream draws the class; the rest are normal lots" }
+  },
+  "shipping": {
+    "dwellMs": 900000,
+    "rule": "after step 239 the lot is stored in the nearer stocker, the crane brings it to the manual port and it ships after the dwell; cycle time runs from release to ship"
+  },
+  "modes": {
+    "default": "pilot",
+    "pilot": { "label": "Pilot line", "vehicles": 6 },
+    "megafab": {
+      "label": "Megafab slice",
+      "vehicles": 6,
+      "synthetic": 15,
+      "syntheticCap": 34,
+      "maxVehicles": 40,
+      "foupInstances": 256,
+      "syntheticLabel": "synthetic through-traffic, standing in for the rest of a large fab"
+    }
+  },
+  "scales": {
+    "values": [0, 1, 10, 60, 600],
+    "labels": ["Pause", "1x", "10x", "60x", "600x"],
+    "wallDeltaCapMs": 250,
+    "oneShotMinWallMs": 250,
+    "loopWallSpeed": 2,
+    "pulseFromScale": 60
+  },
+  "vehicle": {
+    "straightMps": { "value": 5, "basis": "C" },
+    "curveMps": 1,
+    "switchMps": 2,
+    "idleSpineMps": 2,
+    "accel": 1.5,
+    "decel": 1.5,
+    "lengthM": 0.95,
+    "gapM": 1.5,
+    "authorityChunkM": 12,
+    "idleAuthorityChunkM": 24,
+    "followLookaheadM": 6,
+    "authorityNote": "a vehicle reserves blocks ahead to its stopping distance at its speed cap (line speed, or the idle spine speed when idle) plus the 1.5 m gap plus a chunk, so it re-checks once per chunk; blocks behind it free once its tail has passed their end; a follower blocked by the vehicle ahead on the same path is woken once the leader has cleared the lookahead distance, not at every short block",
+    "handoff": { "e84Ms": 500, "hoistDownMs": 5000, "gripMs": 1000, "hoistUpMs": 5000, "e84DoneMs": 500, "totalMs": 12000 },
+    "utsHandoff": { "e84Ms": 0, "hoistDownMs": 1500, "gripMs": 1000, "hoistUpMs": 1500, "e84DoneMs": 0, "totalMs": 4000 }
+  },
+  "dispatch": {
+    "nextTool": "least work in queue: the process time of the lots assigned to the tool and not started, plus the current lot's remainder, plus the known remainder of a PM and its qualification, or the MTTR for an unscheduled down; ties go to the lowest id",
+    "batchWork": "furnace: the remaining batch time plus waiting and assigned lots times the cycle over the batch size, so a forming batch attracts lots",
+    "utsUpstreamSlackS": 30,
+    "utsRule": "a free UTS seat is upstream of the tool when the detour through it costs at most the slack; among those, the one with the shortest travel from the pickup",
+    "switchPenaltyS": 0.5,
+    "vehicle": "the idle vehicle with the shortest travel time to the pickup; requests are served hot first, then by request time",
+    "queue": "lots wait at a tool and are called forward hot first, then first come",
+    "rules": ["leastWork", "fifo", "criticalRatio"],
+    "criticalRatioDueDays": 20
+  },
+  "ports": { "dockMs": 2000, "openMs": 2000, "closeMs": 2000, "undockMs": 2000 },
+  "stocker": {
+    "passThroughMs": 3000,
+    "passThroughM": 1.15,
+    "craneTravelMps": 2,
+    "craneLiftMps": 1,
+    "forkMs": 2000,
+    "usableSlots": 234,
+    "unusableSlots": "front rack, levels 0 and 1, behind the four OHT ports and the manual port (18 slots)",
+    "slotChoice": "the free slot nearest the source by crane time; ties go to the lowest index",
+    "manualPort": "an operator hand-off counter with room for every lot released or shipped"
+  },
+  "seeds": { "default": 1, "snapshots": [1] },
+  "warmup": { "days": 30, "budgetMs": 1000, "fallback": "a stored snapshot per seed" },
+  "technicians": "a stub: the twin simulates no technician travel; repairs start at the failure (sim-spec 3.8 lets the repair clock run during the walk). Repair and PM visits go through one interface (src/sim/service.ts, ServiceProvider); the scene draws a walker for each visit without changing the tool timeline: FF3's humanoid work robot (movers class humanoid) for the repair and PM visits, a technician (class technician) for the qualifications",
+  "movers": {
+    "note": "mover classes the scene draws from twin state: each names its asset-map entity (data/assets.json), the twin source of its poses and what it carries. A new class (FF3: a humanoid work robot hand-carrying FOUPs, entity with clips Walk, Idle, Carry, Handoff, Service and locators foupCarry, foupHandoff) is one entry here plus its asset-map entry and a twin source",
+    "classes": [
+      { "id": "oht", "entity": "vehicle", "source": "vehicles", "carries": "foup", "carryLocator": "foupGrip", "clips": { "hoist": "HoistDown", "gripClose": "GripClose", "gripOpen": "GripOpen" } },
+      { "id": "technician", "kind": "people", "entity": "technician", "source": "serviceVisits (the stub provider's visits, from tool state)", "visits": ["qualification"], "targets": "layout.people.targets", "walkSpeedMps": 1.2, "walkDesignSpeedMps": 1.2, "clips": { "walk": "Walk", "idle": "Idle", "service": "Service" }, "note": "walks in through layout.people.door, idles beside a qualifying tool, walks out; Walk plays at speed / walkDesignSpeedMps. `visits` lists the service-visit kinds this class draws: FF3 gives the repair and PM visits to the humanoid and keeps the qualifications here, so every visit is drawn exactly once" },
+      { "id": "humanoid", "kind": "people", "entity": "humanoidWorkRobot", "source": "serviceVisits (the stub provider's repair and PM visits, from tool state)", "visits": ["repair", "pm"], "targets": "layout.people.targets", "carries": "foup", "carryLocator": "foupCarry", "carryLocators": ["foupCarry", "foupHandoff"], "walkSpeedMps": 1.2, "walkDesignSpeedMps": 1.2, "clips": { "walk": "Walk", "idle": "Idle", "service": "Service", "carry": "Carry", "handoff": "Handoff" }, "note": "accepted and staged (r_9f717d17eec74f2dbd4c338612207ed5). FF3: takes the repair and PM visits through the technician's people path (src/scene/people.ts): walks in through layout.people.door along the target's aisle path at walkSpeedMps, services the tool (Service), walks out when the tool's state moves on; the qualification after a PM goes to the technician. Walk plays at speed / walkDesignSpeedMps. Carry and Handoff stay unplayed (clips play floor-move): the twin moves every FOUP by the overhead rail, so there is no hand-carry source (FF3 decision 1)" },
+      { "id": "amr", "kind": "floor-robot", "entity": "amrFloorRobot", "source": "layout.floorRobots.amrs (at rest: the FF2 twin moves every FOUP by the overhead rail)", "carries": "foup", "carryLocators": ["foup1", "foup2"], "clips": { "deckUp": "DeckUp", "deckDown": "DeckDown" } },
+      { "id": "arm", "kind": "floor-robot", "entity": "toolFrontRobotArm", "source": "layout.floorRobots.arms (at home in FF2)", "clips": { "homeToDeck": "HomeToDeck", "deckToSeat": "DeckToSeat", "seatToHome": "SeatToHome", "seatToDeck": "SeatToDeck" } }
+    ]
+  },
+  "tuning": {
+    "note": "every tool scheduled, the spec's repair times; the release rate is the owner's 4,500 starts a month. FF1's two retunes (tools NON_SCHEDULED, MTTR x2) were not adopted and stay in evidence/sim/retunes.json with the release sweep; these two knobs let a run repeat them",
+    "nonScheduled": [],
+    "mttrScale": 1,
+    "mttrScaleNote": "sensitivity only: multiplies every MTTR; 1 is the spec's reliability table (all E)"
+  }
+}

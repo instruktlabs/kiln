@@ -1,0 +1,45 @@
+{
+  "schema": "golden-gate-presets/1",
+  "conventions": {
+    "sun": "sunAzimuthDeg is measured in the horizontal plane from +X (west) toward +Z (north); sunElevationDeg is above the horizon; the direction toward the sun is [cos(e) cos(a), sin(e), cos(e) sin(a)]",
+    "colours": "linear RGB; sunColor is multiplied by sunIntensity",
+    "blend": "switching presets blends every value linearly (the sun direction as a vector, renormalised)",
+    "toneMapping": "Khronos PBR Neutral with a fixed exposure per preset (no auto-exposure)",
+    "fog": "The Fog preset keeps a dense marine layer at the water (visibility about 1.1 km at sea level) that thins with height, so both towers and the span read above it from the postcard; the fog banks are separate (banks, layout.json fogBanks). Fix round 1 (owner decision 2026-09-29) thinned hazeDensity from 1.7e-4 to 8e-5 and marineDensity from 5.5e-3 to 3.5e-3.",
+    "fields": "envIntensity scales the sky's prefiltered environment; envSaturation is the chroma kept in it (1 = the visible sky's). overcast 0 is a clear sky and 1 fully overcast. fogColor is the in-scatter at the horizon away from the sun, fogSun the sun-side lobe of sharpness fogPower. hazeDensity (1/m at sea level) and hazeHeight (m scale height) are the exponential haze; marineDensity and marineHeight the marine layer. skyGain calibrates the clear-sky radiance. wind scales whitecaps and chop. banks is the fog-bank opacity, lights the vehicle lamps and lamps the bridge lamps and beacons (layout.json lights)."
+  },
+  "order": ["day", "golden", "fog"],
+  "default": "day",
+  "presets": {
+    "day": {
+      "label": "Day",
+      "sunAzimuthDeg": -41, "sunElevationDeg": 43, "sunColor": [1, 0.955, 0.89], "sunIntensity": 3.5,
+      "envIntensity": 0.85, "envSaturation": 0.35,
+      "turbidity": 2.4, "rayleigh": 1.05, "mie": 0.0042, "mieG": 0.78, "sunDisc": 1,
+      "overcast": 0, "overcastColor": [0.56, 0.59, 0.63],
+      "fogColor": [0.58, 0.67, 0.79], "fogSun": [0.28, 0.25, 0.19], "fogPower": 10,
+      "hazeDensity": 6.5e-5, "hazeHeight": 1300, "marineDensity": 3e-5, "marineHeight": 70,
+      "exposure": 1, "skyGain": 0.45, "wind": 1, "banks": 0, "lights": 0, "lamps": 0
+    },
+    "golden": {
+      "label": "Golden hour",
+      "sunAzimuthDeg": 13, "sunElevationDeg": 5.5, "sunColor": [1, 0.66, 0.38], "sunIntensity": 2.7,
+      "envIntensity": 0.9, "envSaturation": 0.5,
+      "turbidity": 3.2, "rayleigh": 2.4, "mie": 0.0062, "mieG": 0.83, "sunDisc": 1,
+      "overcast": 0, "overcastColor": [0.56, 0.5, 0.46],
+      "fogColor": [0.55, 0.54, 0.6], "fogSun": [1.05, 0.62, 0.3], "fogPower": 24,
+      "hazeDensity": 8e-5, "hazeHeight": 1000, "marineDensity": 1.2e-4, "marineHeight": 45,
+      "exposure": 1.18, "skyGain": 0.6, "wind": 0.8, "banks": 0.35, "lights": 1, "lamps": 0.6
+    },
+    "fog": {
+      "label": "Fog",
+      "sunAzimuthDeg": -50, "sunElevationDeg": 36, "sunColor": [0.92, 0.93, 0.95], "sunIntensity": 0.55,
+      "envIntensity": 1.25, "envSaturation": 0.8,
+      "turbidity": 9, "rayleigh": 0.6, "mie": 0.018, "mieG": 0.7, "sunDisc": 0,
+      "overcast": 0.93, "overcastColor": [0.6, 0.63, 0.66],
+      "fogColor": [0.6, 0.63, 0.66], "fogSun": [0.07, 0.07, 0.06], "fogPower": 4,
+      "hazeDensity": 8e-5, "hazeHeight": 900, "marineDensity": 3.5e-3, "marineHeight": 38,
+      "exposure": 1.12, "skyGain": 0.45, "wind": 0.7, "banks": 1, "lights": 1, "lamps": 1
+    }
+  }
+}

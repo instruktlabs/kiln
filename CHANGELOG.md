@@ -5,9 +5,9 @@ separate milestones. The package is not published on the npm registry.
 
 ## 0.9.0
 
-**Local candidate, not release acceptance.** The changes below describe the current
-source, including uncommitted work. Final runtime/package and integrated local-review
-qualification remain outstanding. Publishing the package is deferred to v1.0.
+**Source and site preview for dogfooding.** The v0.9 work is integrated for the
+Cloudflare site rollout. Package publication remains deferred to v1.0 after feedback.
+Individual asset review status is recorded on its page; deployment does not change it.
 
 Kiln 0.9.0 adds optional projects, a material library and Live Review to standalone
 authoring, makes the calibrated `review-neutral-v1` rig the default for review views,

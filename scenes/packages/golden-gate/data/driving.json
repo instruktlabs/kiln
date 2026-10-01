@@ -1,0 +1,40 @@
+{
+  "schema": "golden-gate-driving/1",
+  "conventions": {
+    "summary": "arcade driving of the sedan on its own carriageway (SCENE-TASK 'Driving the sedan'); BEHAVIOUR.md specifies the model",
+    "units": "metres, seconds, m/s and m/s^2; angles in degrees; pairs written [a, b] run from standstill (a) to topSpeed (b)",
+    "heading": "the car's heading is its lane direction turned by a heading offset of at most steer.headingDeg; the offset follows the steering input at steer.rateDegPerSecond (scaled down below steer.fullRateSpeed) and returns to zero when the input is released",
+    "route": "the car drives the route (layout.json approaches; BEHAVIOUR.md 'Approach roads'): its position is a route station and a lateral offset, which are the scene Z and X on the deck; start.z is a station on the deck",
+    "carriageway": "the car stays between the median and the curb of its direction; at either edge it bumps (keeps curb.speedKept of its speed, at most once per curb.cooldown seconds) and its heading offset relaxes",
+    "traffic": "the car never overlaps a traffic vehicle: it brakes for the one ahead in its lateral span to keep traffic.minGap, and cannot move sideways into one (margins traffic.lateralMargin and traffic.longitudinalMargin); traffic brakes for the car",
+    "roadEnd": "the car's road ends at each approach's ends.car station (layout.json; fix round 2 moved it from the deck ends onto the approach roads, traffic drives on to the approach ends); within roadEnd.promptDistance of it a turn-around prompt shows; the car stops roadEnd.stopDistance before it; holding the throttle against that stop, or holding reverse at rest within promptDistance (reverse does not engage there), for roadEnd.holdSeconds turns the car around, as does the turn-around key; turning around fades to black, moves the car to the mirror position on the opposite carriageway facing the other way, at rest, and fades back",
+    "controls": "keyboard codes (KeyboardEvent.code); throttle, reverse, left and right are the kit's movement axes; Shift holds forward boost; on touch the throttle joystick accelerates forward, brakes then reverses backward, and steers sideways, with separate held Boost and Brake buttons",
+    "paint": "the driven sedan's colour, a name from traffic.json palette"
+  },
+  "vehicle": "sedan",
+  "paint": "blue",
+  "start": { "lane": "nb-middle", "z": -930, "window": [-990, -870], "speed": 16 },
+  "topSpeed": 29,
+  "accel": 5,
+  "boost": { "topSpeed": 42, "accel": 8 },
+  "reverse": { "accel": 2.5, "maxSpeed": 5, "afterStopSeconds": 0.5 },
+  "brake": 7,
+  "handbrake": 5.8,
+  "coast": { "constant": 0.35, "quadratic": 0.0006 },
+  "steer": { "headingDeg": [17, 6], "rateDegPerSecond": 34, "fullRateSpeed": 3, "wheelDeg": [32, 6] },
+  "curb": { "clearance": 0.15, "speedKept": 0.9, "cooldown": 0.4, "bumpDeg": 1.2 },
+  "traffic": { "minGap": 0.8, "followGain": 1.2, "lateralMargin": 0.25, "longitudinalMargin": 1 },
+  "roadEnd": { "promptDistance": 90, "stopDistance": 30, "fadeSeconds": 0.35, "holdSeconds": 1 },
+  "controls": {
+    "throttle": ["KeyW", "ArrowUp"],
+    "reverse": ["KeyS", "ArrowDown"],
+    "left": ["KeyA", "ArrowLeft"],
+    "right": ["KeyD", "ArrowRight"],
+    "brake": ["Space"],
+    "handbrake": ["KeyX"],
+    "boost": ["ShiftLeft", "ShiftRight"],
+    "turnAround": ["KeyR"],
+    "enterOrLeave": ["KeyE"],
+    "leave": ["Escape"]
+  }
+}

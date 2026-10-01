@@ -55,7 +55,7 @@ describe('repository reliability contracts', () => {
     // below a cold process spawn or a first native-library call on a loaded
     // runner, and the suite lost three Windows runs to it in one day.
     expect(pkg.scripts['test:coverage']).toBe(
-      "KILN_SPIKE_LIVE=0 KILN_RENDER=cpu bun test src scripts --path-ignore-patterns='site/**' --coverage --timeout 20000 && bun scripts/check-coverage.mjs",
+      "KILN_SPIKE_LIVE=0 KILN_RENDER=cpu bun test src scripts --path-ignore-patterns='{site,scenes}/**' --coverage --timeout 20000 && bun scripts/check-coverage.mjs",
     );
     // A warning baseline is a number kept in prose that everyone agrees to ignore, and
     // the twenty-sixth finding arrives invisible. The tree reports nothing, so the flag
@@ -321,8 +321,8 @@ describe('repository reliability contracts', () => {
     expect(install).toContain('tarball and checksum actually attached');
     expect(install).toContain('a source-only release');
     expect(install).toContain('does not imply that a built tarball is available');
-    expect(install).toContain('0.9.0 is currently a local candidate');
-    expect(install).toContain('package publication is deferred to v1.0');
+    expect(install).toContain('0.9.0 is a source and site preview for dogfooding');
+    expect(install.toLowerCase()).toContain('package publication is deferred to v1.0');
     expect(install).toContain('tools.md');
   });
 

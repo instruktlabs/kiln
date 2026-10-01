@@ -1,0 +1,28 @@
+{
+  "visibleMeshes": 2194,
+  "eligibleMeshes": 2004,
+  "narrow24m": {
+    "groups": 179,
+    "sourceMeshes": 1967,
+    "dynamicGroups": 83,
+    "tangentDerivatives": 9,
+    "frameGraph": {
+      "fixedRoots": 734,
+      "hiddenSourceRoots": 560
+    }
+  },
+  "wide96m": {
+    "groups": 83,
+    "sourceMeshes": 2000,
+    "dynamicGroups": 54,
+    "tangentDerivatives": 11
+  },
+  "frozen": {
+    "placements": 555,
+    "nodes": 4191
+  },
+  "frameGraph": {
+    "fixedRoots": 638,
+    "hiddenSourceRoots": 575
+  }
+}

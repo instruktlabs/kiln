@@ -1,0 +1,49 @@
+{
+  "schema": "golden-gate-tiers/1",
+  "conventions": {
+    "tiers": "the kit's device tiers (minimal, economy, balanced, high) map to three feature levels; high on a phone uses medium",
+    "features": "terrainSet names the level set in scene.json terrain.sets and terrain.water. water.displaceRadius is the radius (m) of vertex displacement (0 = normals only); displacedWaves the count of the longest Gerstner waves that displace vertices; fragmentWaves the count shaded per pixel; grid, tile0 and levels shape the geometry clipmap (quads per tile side, finest tile in metres, level count); depthContact enables scene-depth foam at piers and fenders. waveFade (Low only) is the view-distance range (m) over which the per-pixel Gerstner waves fade out, their slope variance becoming roughness in the environment reflection: four waves of nearly one direction otherwise sum to regular parallel bands across the bay at mid distance (fix round 1, SCENE-REVIEW-1 item 2); High and Medium omit it. traffic.lod holds the LOD1, LOD2 and cull distances (m) at a 50 degree vertical field of view (owner contract: LOD1 from about 60 m, LOD2 from about 250 m, cull at 1.5 km; Low shortens them). traffic.perLaneMax caps each lane; fix round 2 doubled it with the lanes (4,011 m of route instead of 2,066 m of deck), about 11 % above the steady count of the slowest lane (19 m/s) at the density's mean headway. traffic.contactShadow is the peak opacity of the soft contact shadow drawn under each vehicle at LOD0 and LOD1 on levels without a shadow map (0 = none; data/BEHAVIOUR.md section 1). bridgeFarSwitch is the distance (m) beyond which the far bridge model replaces the near one. shadowExtent is the range of the sun shadow box half-size (m): 0.75 x the camera's distance to its focus, clamped to [min, max] and stepped in 1.25x increments. vegetation.density is the share of the vegetation impostor candidates kept (layout.json dressing.vegetation, near representation only); vegetation.fade the camera distance range (m) over which the kept cards shrink away."
+  },
+  "features": {
+    "high": {
+      "terrainSet": "high",
+      "water": { "displaceRadius": 450, "displacedWaves": 4, "fragmentWaves": 6, "detailLayers": 3, "reflection": "planar", "reflectionScale": 0.5, "grid": 8, "tile0": 8, "levels": 13, "anisotropy": 8, "depthContact": true },
+      "fogBanks": 7,
+      "traffic": { "density": "high", "perLaneMax": 52, "lod": [60, 250, 1500], "contactShadow": 0 },
+      "bridgeFarSwitch": 5200,
+      "vegetation": { "density": 1, "fade": [1400, 2000] },
+      "envSize": 256,
+      "shadows": { "enabled": true, "filter": "pcf", "mapSize": 2048, "cascades": 1 },
+      "shadowExtent": [90, 1500]
+    },
+    "medium": {
+      "terrainSet": "medium",
+      "water": { "displaceRadius": 170, "displacedWaves": 3, "fragmentWaves": 6, "detailLayers": 3, "reflection": "environment", "reflectionScale": 0, "grid": 8, "tile0": 8, "levels": 13, "anisotropy": 4, "depthContact": true },
+      "fogBanks": 0,
+      "traffic": { "density": "medium", "perLaneMax": 36, "lod": [60, 250, 1500], "contactShadow": 0.6 },
+      "bridgeFarSwitch": 3200,
+      "vegetation": { "density": 0.7, "fade": [900, 1300] },
+      "envSize": 128,
+      "shadows": { "enabled": false, "filter": "pcf", "mapSize": 512, "cascades": 0 },
+      "shadowExtent": [0, 0]
+    },
+    "low": {
+      "terrainSet": "low",
+      "water": { "displaceRadius": 0, "displacedWaves": 0, "fragmentWaves": 4, "detailLayers": 2, "reflection": "environment", "reflectionScale": 0, "grid": 2, "tile0": 8, "levels": 13, "anisotropy": 2, "depthContact": false, "waveFade": [60, 450] },
+      "fogBanks": 0,
+      "traffic": { "density": "low", "perLaneMax": 22, "lod": [45, 180, 1200], "contactShadow": 0.6 },
+      "bridgeFarSwitch": 1900,
+      "vegetation": { "density": 0.45, "fade": [600, 900] },
+      "envSize": 128,
+      "shadows": { "enabled": false, "filter": "pcf", "mapSize": 512, "cascades": 0 },
+      "shadowExtent": [0, 0]
+    }
+  },
+  "tiers": {
+    "order": ["minimal", "economy", "balanced", "high"],
+    "minimal": { "features": "low", "pixelRatioCap": 0.75, "pixelRatioMin": 0.6 },
+    "economy": { "features": "low", "pixelRatioCap": 1, "pixelRatioMin": 0.75 },
+    "balanced": { "features": "medium", "pixelRatioCap": 1.25, "pixelRatioMin": 1 },
+    "high": { "features": "high", "pixelRatioCap": 1.5, "pixelRatioMin": 1, "phone": { "features": "medium" } }
+  }
+}

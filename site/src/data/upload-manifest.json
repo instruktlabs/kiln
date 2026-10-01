@@ -1,6 +1,6 @@
 {
   "base": "https://assets.kilnstudio.tools/",
-  "note": "Local candidate only; no upload authorized",
+  "note": "Pinned v0.9 site downloads; upload authorized for the Cloudflare rollout.",
   "files": [
     {
       "path": "packs/farm/r36-local-review/models/farmhouse.glb",

@@ -1,0 +1,39 @@
+{
+  "name": "@kiln-scenes/scene-kit",
+  "private": true,
+  "type": "module",
+  "sideEffects": false,
+  "version": "0.1.0",
+  "exports": {
+    ".": { "browser": "./src/index.browser.ts", "default": "./src/index.ts" },
+    "./contract": "./src/contract/index.tsx",
+    "./lifecycle": "./src/lifecycle/index.ts",
+    "./renderer": "./src/renderer/index.ts",
+    "./look": "./src/look/index.ts",
+    "./assets": "./src/assets/index.ts",
+    "./staging": "./src/staging/index.ts",
+    "./quality": "./src/quality/index.ts",
+    "./instancing": "./src/instancing/index.tsx",
+    "./input": "./src/input/index.tsx",
+    "./camera": "./src/camera/index.tsx",
+    "./collision": "./src/collision/index.ts",
+    "./ui": "./src/ui/index.tsx",
+    "./testing": "./src/testing/index.ts",
+    "./testing/node": "./src/testing/node.ts",
+    "./build": "./src/build/index.ts"
+  },
+  "dependencies": { "fflate": "0.8.3", "three-mesh-bvh": "0.9.15" },
+  "peerDependencies": {
+    "react": "19.3.0",
+    "react-dom": "19.3.0",
+    "@react-three/fiber": "9.8.1",
+    "three": "0.186.0"
+  },
+  "devDependencies": {
+    "react": "19.3.0",
+    "react-dom": "19.3.0",
+    "@react-three/fiber": "9.8.1",
+    "three": "0.186.0",
+    "@types/three": "0.186.0"
+  }
+}

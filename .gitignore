@@ -74,3 +74,7 @@ examples/renders/*.gif
 # Social-media masters. Archived at ~/kiln-media-archive/ and referenced by no
 # file in the repository; the README video is served by GitHub's asset CDN.
 assets/video/
+
+# Local qualification captures and build caches; preserved outside release source.
+/qa/
+/.cache/

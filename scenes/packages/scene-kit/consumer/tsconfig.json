@@ -1,0 +1,5 @@
+{
+  "extends": "../../../tsconfig.base.json",
+  "compilerOptions": { "customConditions": ["browser"] },
+  "include": ["./main.tsx", "../../../types/**/*.d.ts"]
+}

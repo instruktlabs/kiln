@@ -1,0 +1,1639 @@
+{
+ "schema": "foundry-floor.tools/1",
+ "generatedBy": "scripts/build-layout.ts",
+ "basis": "E: every process and reliability input is an estimate (report b.11 inputs; sim-spec 3.7)",
+ "wafersPerLot": 25,
+ "groups": {
+  "euv": {
+   "label": "EUV litho cell (track and scanner)",
+   "routeFamilies": [
+    "euv"
+   ],
+   "toolType": "euv-scanner",
+   "installed": 2,
+   "accent": "accent-litho",
+   "wph": {
+    "value": 100,
+    "basis": "E"
+   },
+   "lotOverheadMin": {
+    "value": 4,
+    "basis": "E"
+   },
+   "processMinPerLot": 19,
+   "processMsPerLot": 1140000,
+   "reliability": {
+    "mtbfH": 80,
+    "mttrH": 4,
+    "pmEveryH": 168,
+    "pmLengthH": 6,
+    "basis": "E",
+    "ttf": "exponential with the MTBF (calendar time)",
+    "repair": "lognormal with the MTTR as its mean, shape 0.5",
+    "pm": "staggered across the tools of the group"
+   }
+  },
+  "duv": {
+   "label": "DUV immersion litho cell (track and scanner)",
+   "routeFamilies": [
+    "duv"
+   ],
+   "toolType": "duv-immersion-scanner",
+   "installed": 2,
+   "accent": "accent-litho",
+   "wph": {
+    "value": 170,
+    "basis": "E"
+   },
+   "lotOverheadMin": {
+    "value": 4,
+    "basis": "E"
+   },
+   "processMinPerLot": 12.8235,
+   "processMsPerLot": 769412,
+   "reliability": {
+    "mtbfH": 150,
+    "mttrH": 3,
+    "pmEveryH": 336,
+    "pmLengthH": 4,
+    "basis": "E",
+    "ttf": "exponential with the MTBF (calendar time)",
+    "repair": "lognormal with the MTTR as its mean, shape 0.5",
+    "pm": "staggered across the tools of the group"
+   }
+  },
+  "etch": {
+   "label": "Plasma etch",
+   "routeFamilies": [
+    "etch"
+   ],
+   "toolType": "etch-cluster-tool",
+   "installed": 6,
+   "accent": "accent-etch",
+   "wph": {
+    "value": 55,
+    "basis": "E"
+   },
+   "lotOverheadMin": {
+    "value": 5,
+    "basis": "E"
+   },
+   "processMinPerLot": 32.2727,
+   "processMsPerLot": 1936364,
+   "reliability": {
+    "mtbfH": 120,
+    "mttrH": 3,
+    "pmEveryH": 168,
+    "pmLengthH": 4,
+    "basis": "E",
+    "ttf": "exponential with the MTBF (calendar time)",
+    "repair": "lognormal with the MTTR as its mean, shape 0.5",
+    "pm": "staggered across the tools of the group"
+   }
+  },
+  "cvdald": {
+   "label": "CVD and ALD deposition",
+   "routeFamilies": [
+    "cvd",
+    "ald"
+   ],
+   "toolType": "cvd-ald-cluster-tool",
+   "installed": 6,
+   "accent": "accent-deposition",
+   "wph": {
+    "value": 50,
+    "basis": "E"
+   },
+   "lotOverheadMin": {
+    "value": 5,
+    "basis": "E"
+   },
+   "processMinPerLot": 35,
+   "processMsPerLot": 2100000,
+   "reliability": {
+    "mtbfH": 120,
+    "mttrH": 3,
+    "pmEveryH": 168,
+    "pmLengthH": 4,
+    "basis": "E",
+    "ttf": "exponential with the MTBF (calendar time)",
+    "repair": "lognormal with the MTTR as its mean, shape 0.5",
+    "pm": "staggered across the tools of the group"
+   }
+  },
+  "pvd": {
+   "label": "PVD metallisation",
+   "routeFamilies": [
+    "pvd"
+   ],
+   "toolType": "pvd-cluster-tool",
+   "installed": 3,
+   "accent": "accent-deposition",
+   "wph": {
+    "value": 50,
+    "basis": "E"
+   },
+   "lotOverheadMin": {
+    "value": 5,
+    "basis": "E"
+   },
+   "processMinPerLot": 35,
+   "processMsPerLot": 2100000,
+   "reliability": {
+    "mtbfH": 120,
+    "mttrH": 3,
+    "pmEveryH": 168,
+    "pmLengthH": 4,
+    "basis": "E",
+    "ttf": "exponential with the MTBF (calendar time)",
+    "repair": "lognormal with the MTTR as its mean, shape 0.5",
+    "pm": "staggered across the tools of the group"
+   }
+  },
+  "implant": {
+   "label": "Ion implant",
+   "routeFamilies": [
+    "implant"
+   ],
+   "toolType": "ion-implanter",
+   "installed": 2,
+   "accent": "accent-implant",
+   "wph": {
+    "value": 150,
+    "basis": "E"
+   },
+   "lotOverheadMin": {
+    "value": 5,
+    "basis": "E"
+   },
+   "processMinPerLot": 15,
+   "processMsPerLot": 900000,
+   "reliability": {
+    "mtbfH": 100,
+    "mttrH": 4,
+    "pmEveryH": 336,
+    "pmLengthH": 6,
+    "basis": "E",
+    "ttf": "exponential with the MTBF (calendar time)",
+    "repair": "lognormal with the MTTR as its mean, shape 0.5",
+    "pm": "staggered across the tools of the group"
+   }
+  },
+  "cmp": {
+   "label": "Chemical-mechanical planarisation",
+   "routeFamilies": [
+    "cmp"
+   ],
+   "toolType": "cmp-polisher",
+   "installed": 4,
+   "accent": "accent-cmp",
+   "wph": {
+    "value": 45,
+    "basis": "E"
+   },
+   "lotOverheadMin": {
+    "value": 5,
+    "basis": "E"
+   },
+   "processMinPerLot": 38.3333,
+   "processMsPerLot": 2300000,
+   "reliability": {
+    "mtbfH": 150,
+    "mttrH": 2,
+    "pmEveryH": 168,
+    "pmLengthH": 3,
+    "basis": "E",
+    "ttf": "exponential with the MTBF (calendar time)",
+    "repair": "lognormal with the MTTR as its mean, shape 0.5",
+    "pm": "staggered across the tools of the group"
+   }
+  },
+  "clean": {
+   "label": "Single-wafer wet clean",
+   "routeFamilies": [
+    "clean"
+   ],
+   "toolType": "single-wafer-clean-tool",
+   "installed": 2,
+   "accent": "accent-clean",
+   "wph": {
+    "value": 300,
+    "basis": "E"
+   },
+   "lotOverheadMin": {
+    "value": 4,
+    "basis": "E"
+   },
+   "processMinPerLot": 9,
+   "processMsPerLot": 540000,
+   "reliability": {
+    "mtbfH": 200,
+    "mttrH": 2,
+    "pmEveryH": 336,
+    "pmLengthH": 3,
+    "basis": "E",
+    "ttf": "exponential with the MTBF (calendar time)",
+    "repair": "lognormal with the MTTR as its mean, shape 0.5",
+    "pm": "staggered across the tools of the group"
+   }
+  },
+  "furnace": {
+   "label": "Vertical furnace (batch)",
+   "routeFamilies": [
+    "furnace"
+   ],
+   "toolType": "vertical-furnace",
+   "installed": 3,
+   "accent": "accent-thermal",
+   "batch": true,
+   "processMinPerLot": 320,
+   "processMsPerLot": 19200000,
+   "reliability": {
+    "mtbfH": 300,
+    "mttrH": 4,
+    "pmEveryH": 720,
+    "pmLengthH": 8,
+    "basis": "E",
+    "ttf": "exponential with the MTBF (calendar time)",
+    "repair": "lognormal with the MTTR as its mean, shape 0.5",
+    "pm": "staggered across the tools of the group"
+   }
+  },
+  "metrology": {
+   "label": "Metrology and inspection",
+   "routeFamilies": [
+    "metrology"
+   ],
+   "toolType": "metrology-inspection-tool",
+   "installed": 4,
+   "accent": "accent-metrology",
+   "wph": {
+    "value": 90,
+    "basis": "E"
+   },
+   "lotOverheadMin": {
+    "value": 4,
+    "basis": "E"
+   },
+   "processMinPerLot": 20.6667,
+   "processMsPerLot": 1240000,
+   "reliability": {
+    "mtbfH": 250,
+    "mttrH": 2,
+    "pmEveryH": 720,
+    "pmLengthH": 4,
+    "basis": "E",
+    "ttf": "exponential with the MTBF (calendar time)",
+    "repair": "lognormal with the MTTR as its mean, shape 0.5",
+    "pm": "staggered across the tools of the group"
+   }
+  },
+  "probe": {
+   "label": "Wafer sort (probe test)",
+   "routeFamilies": [
+    "probe"
+   ],
+   "toolType": "wafer-prober-tester",
+   "installed": 4,
+   "accent": "accent-test",
+   "wph": {
+    "value": 2,
+    "basis": "E"
+   },
+   "lotOverheadMin": {
+    "value": 10,
+    "basis": "E"
+   },
+   "processMinPerLot": 760,
+   "processMsPerLot": 45600000,
+   "reliability": {
+    "mtbfH": 150,
+    "mttrH": 1,
+    "pmEveryH": 336,
+    "pmLengthH": 2,
+    "basis": "E",
+    "ttf": "exponential with the MTBF (calendar time)",
+    "repair": "lognormal with the MTTR as its mean, shape 0.5",
+    "pm": "staggered across the tools of the group"
+   }
+  }
+ },
+ "familyToGroup": {
+  "euv": "euv",
+  "duv": "duv",
+  "etch": "etch",
+  "cvd": "cvdald",
+  "ald": "cvdald",
+  "pvd": "pvd",
+  "implant": "implant",
+  "cmp": "cmp",
+  "clean": "clean",
+  "furnace": "furnace",
+  "metrology": "metrology",
+  "probe": "probe"
+ },
+ "furnaceBatch": {
+  "maxLots": 4,
+  "minLots": 2,
+  "oldestWaitH": 2,
+  "cycleH": 5,
+  "handlingMin": 20,
+  "internalBuffer": 8,
+  "portTransferS": 30,
+  "basis": "E (sim-spec 4; report b.11)"
+ },
+ "engineering": {
+  "afterPmQualificationMin": 30,
+  "basis": "E",
+  "note": "a qualification run after each PM shows the ENGINEERING state"
+ },
+ "tools": [
+  {
+   "id": "etch-01",
+   "type": "etch-cluster-tool",
+   "group": "etch",
+   "bay": "N1",
+   "side": "west",
+   "position": [
+    -33.2,
+    0,
+    -6
+   ],
+   "yaw": 0,
+   "ports": [
+    "etch-01.lp1",
+    "etch-01.lp2",
+    "etch-01.lp3"
+   ],
+   "scheduled": true
+  },
+  {
+   "id": "etch-02",
+   "type": "etch-cluster-tool",
+   "group": "etch",
+   "bay": "N1",
+   "side": "west",
+   "position": [
+    -33.2,
+    0,
+    -10.05
+   ],
+   "yaw": 0,
+   "ports": [
+    "etch-02.lp1",
+    "etch-02.lp2",
+    "etch-02.lp3"
+   ],
+   "scheduled": true
+  },
+  {
+   "id": "etch-03",
+   "type": "etch-cluster-tool",
+   "group": "etch",
+   "bay": "N1",
+   "side": "west",
+   "position": [
+    -33.2,
+    0,
+    -14.1
+   ],
+   "yaw": 0,
+   "ports": [
+    "etch-03.lp1",
+    "etch-03.lp2",
+    "etch-03.lp3"
+   ],
+   "scheduled": true
+  },
+  {
+   "id": "etch-04",
+   "type": "etch-cluster-tool",
+   "group": "etch",
+   "bay": "N1",
+   "side": "east",
+   "position": [
+    -24.4,
+    0,
+    -6
+   ],
+   "yaw": 180,
+   "ports": [
+    "etch-04.lp1",
+    "etch-04.lp2",
+    "etch-04.lp3"
+   ],
+   "scheduled": true
+  },
+  {
+   "id": "etch-05",
+   "type": "etch-cluster-tool",
+   "group": "etch",
+   "bay": "N1",
+   "side": "east",
+   "position": [
+    -24.4,
+    0,
+    -10.05
+   ],
+   "yaw": 180,
+   "ports": [
+    "etch-05.lp1",
+    "etch-05.lp2",
+    "etch-05.lp3"
+   ],
+   "scheduled": true
+  },
+  {
+   "id": "etch-06",
+   "type": "etch-cluster-tool",
+   "group": "etch",
+   "bay": "N1",
+   "side": "east",
+   "position": [
+    -24.4,
+    0,
+    -14.1
+   ],
+   "yaw": 180,
+   "ports": [
+    "etch-06.lp1",
+    "etch-06.lp2",
+    "etch-06.lp3"
+   ],
+   "scheduled": true
+  },
+  {
+   "id": "cvd-01",
+   "type": "cvd-ald-cluster-tool",
+   "group": "cvdald",
+   "bay": "N4",
+   "side": "west",
+   "position": [
+    9.9,
+    0,
+    -6
+   ],
+   "yaw": 0,
+   "ports": [
+    "cvd-01.lp1",
+    "cvd-01.lp2",
+    "cvd-01.lp3"
+   ],
+   "scheduled": true
+  },
+  {
+   "id": "cvd-02",
+   "type": "cvd-ald-cluster-tool",
+   "group": "cvdald",
+   "bay": "N4",
+   "side": "west",
+   "position": [
+    9.9,
+    0,
+    -10.05
+   ],
+   "yaw": 0,
+   "ports": [
+    "cvd-02.lp1",
+    "cvd-02.lp2",
+    "cvd-02.lp3"
+   ],
+   "scheduled": true
+  },
+  {
+   "id": "cvd-03",
+   "type": "cvd-ald-cluster-tool",
+   "group": "cvdald",
+   "bay": "N4",
+   "side": "west",
+   "position": [
+    9.9,
+    0,
+    -14.1
+   ],
+   "yaw": 0,
+   "ports": [
+    "cvd-03.lp1",
+    "cvd-03.lp2",
+    "cvd-03.lp3"
+   ],
+   "scheduled": true
+  },
+  {
+   "id": "cvd-04",
+   "type": "cvd-ald-cluster-tool",
+   "group": "cvdald",
+   "bay": "N4",
+   "side": "east",
+   "position": [
+    18.9,
+    0,
+    -6
+   ],
+   "yaw": 180,
+   "ports": [
+    "cvd-04.lp1",
+    "cvd-04.lp2",
+    "cvd-04.lp3"
+   ],
+   "scheduled": true
+  },
+  {
+   "id": "cvd-05",
+   "type": "cvd-ald-cluster-tool",
+   "group": "cvdald",
+   "bay": "N4",
+   "side": "east",
+   "position": [
+    18.9,
+    0,
+    -10.05
+   ],
+   "yaw": 180,
+   "ports": [
+    "cvd-05.lp1",
+    "cvd-05.lp2",
+    "cvd-05.lp3"
+   ],
+   "scheduled": true
+  },
+  {
+   "id": "cvd-06",
+   "type": "cvd-ald-cluster-tool",
+   "group": "cvdald",
+   "bay": "N4",
+   "side": "east",
+   "position": [
+    18.9,
+    0,
+    -14.1
+   ],
+   "yaw": 180,
+   "ports": [
+    "cvd-06.lp1",
+    "cvd-06.lp2",
+    "cvd-06.lp3"
+   ],
+   "scheduled": true
+  },
+  {
+   "id": "pvd-01",
+   "type": "pvd-cluster-tool",
+   "group": "pvd",
+   "bay": "N5",
+   "side": "west",
+   "position": [
+    24.2,
+    0,
+    -6.3
+   ],
+   "yaw": 0,
+   "ports": [
+    "pvd-01.lp1",
+    "pvd-01.lp2",
+    "pvd-01.lp3"
+   ],
+   "scheduled": true
+  },
+  {
+   "id": "pvd-02",
+   "type": "pvd-cluster-tool",
+   "group": "pvd",
+   "bay": "N5",
+   "side": "west",
+   "position": [
+    24.2,
+    0,
+    -10.8
+   ],
+   "yaw": 0,
+   "ports": [
+    "pvd-02.lp1",
+    "pvd-02.lp2",
+    "pvd-02.lp3"
+   ],
+   "scheduled": true
+  },
+  {
+   "id": "pvd-03",
+   "type": "pvd-cluster-tool",
+   "group": "pvd",
+   "bay": "N5",
+   "side": "west",
+   "position": [
+    24.2,
+    0,
+    -15.3
+   ],
+   "yaw": 0,
+   "ports": [
+    "pvd-03.lp1",
+    "pvd-03.lp2",
+    "pvd-03.lp3"
+   ],
+   "scheduled": true
+  },
+  {
+   "id": "clean-01",
+   "type": "single-wafer-clean-tool",
+   "group": "clean",
+   "bay": "N5",
+   "side": "east",
+   "position": [
+    33.4,
+    0,
+    -8.5
+   ],
+   "yaw": 180,
+   "ports": [
+    "clean-01.lp1",
+    "clean-01.lp2",
+    "clean-01.lp3",
+    "clean-01.lp4"
+   ],
+   "scheduled": true
+  },
+  {
+   "id": "clean-02",
+   "type": "single-wafer-clean-tool",
+   "group": "clean",
+   "bay": "N5",
+   "side": "east",
+   "position": [
+    33.4,
+    0,
+    -15.7
+   ],
+   "yaw": 180,
+   "ports": [
+    "clean-02.lp1",
+    "clean-02.lp2",
+    "clean-02.lp3",
+    "clean-02.lp4"
+   ],
+   "scheduled": true
+  },
+  {
+   "id": "cmp-01",
+   "type": "cmp-polisher",
+   "group": "cmp",
+   "bay": "S1",
+   "side": "west",
+   "position": [
+    -33.4,
+    0,
+    5.9
+   ],
+   "yaw": 0,
+   "ports": [
+    "cmp-01.lp1",
+    "cmp-01.lp2",
+    "cmp-01.lp3"
+   ],
+   "scheduled": true
+  },
+  {
+   "id": "cmp-02",
+   "type": "cmp-polisher",
+   "group": "cmp",
+   "bay": "S1",
+   "side": "west",
+   "position": [
+    -33.4,
+    0,
+    9.6
+   ],
+   "yaw": 0,
+   "ports": [
+    "cmp-02.lp1",
+    "cmp-02.lp2",
+    "cmp-02.lp3"
+   ],
+   "scheduled": true
+  },
+  {
+   "id": "cmp-03",
+   "type": "cmp-polisher",
+   "group": "cmp",
+   "bay": "S1",
+   "side": "east",
+   "position": [
+    -24.2,
+    0,
+    5.9
+   ],
+   "yaw": 180,
+   "ports": [
+    "cmp-03.lp1",
+    "cmp-03.lp2",
+    "cmp-03.lp3"
+   ],
+   "scheduled": true
+  },
+  {
+   "id": "cmp-04",
+   "type": "cmp-polisher",
+   "group": "cmp",
+   "bay": "S1",
+   "side": "east",
+   "position": [
+    -24.2,
+    0,
+    9.6
+   ],
+   "yaw": 180,
+   "ports": [
+    "cmp-04.lp1",
+    "cmp-04.lp2",
+    "cmp-04.lp3"
+   ],
+   "scheduled": true
+  },
+  {
+   "id": "furnace-01",
+   "type": "vertical-furnace",
+   "group": "furnace",
+   "bay": "S2",
+   "side": "west",
+   "position": [
+    -18.75,
+    0,
+    5.204
+   ],
+   "yaw": 0,
+   "ports": [
+    "furnace-01.lp1",
+    "furnace-01.lp2"
+   ],
+   "scheduled": true
+  },
+  {
+   "id": "furnace-02",
+   "type": "vertical-furnace",
+   "group": "furnace",
+   "bay": "S2",
+   "side": "west",
+   "position": [
+    -18.75,
+    0,
+    7.512
+   ],
+   "yaw": 0,
+   "ports": [
+    "furnace-02.lp1",
+    "furnace-02.lp2"
+   ],
+   "scheduled": true
+  },
+  {
+   "id": "furnace-03",
+   "type": "vertical-furnace",
+   "group": "furnace",
+   "bay": "S2",
+   "side": "west",
+   "position": [
+    -18.75,
+    0,
+    9.82
+   ],
+   "yaw": 0,
+   "ports": [
+    "furnace-03.lp1",
+    "furnace-03.lp2"
+   ],
+   "scheduled": true
+  },
+  {
+   "id": "implant-01",
+   "type": "ion-implanter",
+   "group": "implant",
+   "bay": "S2",
+   "side": "east",
+   "position": [
+    -10.05,
+    0,
+    8.455
+   ],
+   "yaw": 180,
+   "ports": [
+    "implant-01.lp1",
+    "implant-01.lp2"
+   ],
+   "scheduled": true
+  },
+  {
+   "id": "implant-02",
+   "type": "ion-implanter",
+   "group": "implant",
+   "bay": "S2",
+   "side": "east",
+   "position": [
+    -10.05,
+    0,
+    17.265
+   ],
+   "yaw": 180,
+   "ports": [
+    "implant-02.lp1",
+    "implant-02.lp2"
+   ],
+   "scheduled": true
+  },
+  {
+   "id": "metro-01",
+   "type": "metrology-inspection-tool",
+   "group": "metrology",
+   "bay": "S4",
+   "side": "west",
+   "position": [
+    10.8,
+    0,
+    5.409
+   ],
+   "yaw": 0,
+   "ports": [
+    "metro-01.lp1",
+    "metro-01.lp2"
+   ],
+   "scheduled": true
+  },
+  {
+   "id": "metro-02",
+   "type": "metrology-inspection-tool",
+   "group": "metrology",
+   "bay": "S4",
+   "side": "west",
+   "position": [
+    10.8,
+    0,
+    8.13
+   ],
+   "yaw": 0,
+   "ports": [
+    "metro-02.lp1",
+    "metro-02.lp2"
+   ],
+   "scheduled": true
+  },
+  {
+   "id": "metro-03",
+   "type": "metrology-inspection-tool",
+   "group": "metrology",
+   "bay": "S4",
+   "side": "east",
+   "position": [
+    18,
+    0,
+    5.412
+   ],
+   "yaw": 180,
+   "ports": [
+    "metro-03.lp1",
+    "metro-03.lp2"
+   ],
+   "scheduled": true
+  },
+  {
+   "id": "metro-04",
+   "type": "metrology-inspection-tool",
+   "group": "metrology",
+   "bay": "S4",
+   "side": "east",
+   "position": [
+    18,
+    0,
+    8.133
+   ],
+   "yaw": 180,
+   "ports": [
+    "metro-04.lp1",
+    "metro-04.lp2"
+   ],
+   "scheduled": true
+  },
+  {
+   "id": "probe-01",
+   "type": "wafer-prober-tester",
+   "group": "probe",
+   "bay": "S5",
+   "side": "west",
+   "position": [
+    24.9,
+    0,
+    5.506
+   ],
+   "yaw": 0,
+   "ports": [
+    "probe-01.lp1"
+   ],
+   "scheduled": true
+  },
+  {
+   "id": "probe-02",
+   "type": "wafer-prober-tester",
+   "group": "probe",
+   "bay": "S5",
+   "side": "west",
+   "position": [
+    24.9,
+    0,
+    8.422
+   ],
+   "yaw": 0,
+   "ports": [
+    "probe-02.lp1"
+   ],
+   "scheduled": true
+  },
+  {
+   "id": "probe-03",
+   "type": "wafer-prober-tester",
+   "group": "probe",
+   "bay": "S5",
+   "side": "east",
+   "position": [
+    32.7,
+    0,
+    5.51
+   ],
+   "yaw": 180,
+   "ports": [
+    "probe-03.lp1"
+   ],
+   "scheduled": true
+  },
+  {
+   "id": "probe-04",
+   "type": "wafer-prober-tester",
+   "group": "probe",
+   "bay": "S5",
+   "side": "east",
+   "position": [
+    32.7,
+    0,
+    10.41
+   ],
+   "yaw": 180,
+   "ports": [
+    "probe-04.lp1"
+   ],
+   "scheduled": true
+  },
+  {
+   "id": "track-duv-1",
+   "type": "coater-developer-track",
+   "group": "duv",
+   "bay": "N2",
+   "side": "north",
+   "position": [
+    -18,
+    0,
+    -6.1
+   ],
+   "yaw": -90,
+   "ports": [
+    "track-duv-1.lp1",
+    "track-duv-1.lp2",
+    "track-duv-1.lp3",
+    "track-duv-1.lp4"
+   ],
+   "cell": "cell-duv-1",
+   "scheduled": true
+  },
+  {
+   "id": "track-duv-2",
+   "type": "coater-developer-track",
+   "group": "duv",
+   "bay": "N2",
+   "side": "north",
+   "position": [
+    -10.88,
+    0,
+    -6.1
+   ],
+   "yaw": -90,
+   "ports": [
+    "track-duv-2.lp1",
+    "track-duv-2.lp2",
+    "track-duv-2.lp3",
+    "track-duv-2.lp4"
+   ],
+   "cell": "cell-duv-2",
+   "scheduled": true
+  },
+  {
+   "id": "track-euv-1",
+   "type": "coater-developer-track",
+   "group": "euv",
+   "bay": "N3",
+   "side": "north",
+   "position": [
+    -3.87,
+    0,
+    -6.1
+   ],
+   "yaw": -90,
+   "ports": [
+    "track-euv-1.lp1",
+    "track-euv-1.lp2",
+    "track-euv-1.lp3",
+    "track-euv-1.lp4"
+   ],
+   "cell": "cell-euv-1",
+   "scheduled": true
+  },
+  {
+   "id": "track-euv-2",
+   "type": "coater-developer-track",
+   "group": "euv",
+   "bay": "N3",
+   "side": "north",
+   "position": [
+    3.44,
+    0,
+    -6.1
+   ],
+   "yaw": -90,
+   "ports": [
+    "track-euv-2.lp1",
+    "track-euv-2.lp2",
+    "track-euv-2.lp3",
+    "track-euv-2.lp4"
+   ],
+   "cell": "cell-euv-2",
+   "scheduled": true
+  },
+  {
+   "id": "scanner-duv-1",
+   "type": "duv-immersion-scanner",
+   "group": "duv",
+   "bay": "N2",
+   "side": "north",
+   "position": [
+    -18,
+    0,
+    -12.85
+   ],
+   "yaw": -90,
+   "ports": [],
+   "cell": "cell-duv-1",
+   "scheduled": true
+  },
+  {
+   "id": "scanner-duv-2",
+   "type": "duv-immersion-scanner",
+   "group": "duv",
+   "bay": "N2",
+   "side": "north",
+   "position": [
+    -10.88,
+    0,
+    -12.85
+   ],
+   "yaw": -90,
+   "ports": [],
+   "cell": "cell-duv-2",
+   "scheduled": true
+  },
+  {
+   "id": "scanner-euv-1",
+   "type": "euv-scanner",
+   "group": "euv",
+   "bay": "N3",
+   "side": "north",
+   "position": [
+    -3.87,
+    0,
+    -17.1
+   ],
+   "yaw": -90,
+   "ports": [],
+   "cell": "cell-euv-1",
+   "scheduled": true
+  },
+  {
+   "id": "scanner-euv-2",
+   "type": "euv-scanner",
+   "group": "euv",
+   "bay": "N3",
+   "side": "north",
+   "position": [
+    3.44,
+    0,
+    -17.1
+   ],
+   "yaw": -90,
+   "ports": [],
+   "cell": "cell-euv-2",
+   "scheduled": true
+  }
+ ],
+ "cells": [
+  {
+   "id": "cell-duv-1",
+   "group": "duv",
+   "track": "track-duv-1",
+   "scanner": "scanner-duv-1",
+   "note": "one resource that uses the track's four ports"
+  },
+  {
+   "id": "cell-duv-2",
+   "group": "duv",
+   "track": "track-duv-2",
+   "scanner": "scanner-duv-2",
+   "note": "one resource that uses the track's four ports"
+  },
+  {
+   "id": "cell-euv-1",
+   "group": "euv",
+   "track": "track-euv-1",
+   "scanner": "scanner-euv-1",
+   "note": "one resource that uses the track's four ports"
+  },
+  {
+   "id": "cell-euv-2",
+   "group": "euv",
+   "track": "track-euv-2",
+   "scanner": "scanner-euv-2",
+   "note": "one resource that uses the track's four ports"
+  }
+ ],
+ "stockers": [
+  {
+   "id": "stocker-w",
+   "position": [
+    -3.9,
+    0,
+    10.2
+   ],
+   "yaw": 0,
+   "ports": [
+    "stocker-w.port1",
+    "stocker-w.port2",
+    "stocker-w.port3",
+    "stocker-w.port4"
+   ],
+   "manualPort": "stocker-w.manual",
+   "slots": 252,
+   "usableSlots": 234,
+   "crane": {
+    "travelZ": 2,
+    "lift": 1,
+    "forkCycleS": 2,
+    "basis": "E"
+   },
+   "passThrough": {
+    "distanceM": 1.15,
+    "seconds": 3,
+    "basis": "E"
+   }
+  },
+  {
+   "id": "stocker-e",
+   "position": [
+    3.9,
+    0,
+    10.2
+   ],
+   "yaw": 180,
+   "ports": [
+    "stocker-e.port1",
+    "stocker-e.port2",
+    "stocker-e.port3",
+    "stocker-e.port4"
+   ],
+   "manualPort": "stocker-e.manual",
+   "slots": 252,
+   "usableSlots": 234,
+   "crane": {
+    "travelZ": 2,
+    "lift": 1,
+    "forkCycleS": 2,
+    "basis": "E"
+   },
+   "passThrough": {
+    "distanceM": 1.15,
+    "seconds": 3,
+    "basis": "E"
+   }
+  }
+ ],
+ "uts": [
+  {
+   "id": "uts-n01",
+   "rail": "north",
+   "position": [
+    9.9,
+    3.2,
+    -1.8
+   ],
+   "seats": [
+    "uts-n01.a",
+    "uts-n01.b"
+   ]
+  },
+  {
+   "id": "uts-n02",
+   "rail": "north",
+   "position": [
+    8.5,
+    3.2,
+    -1.8
+   ],
+   "seats": [
+    "uts-n02.a",
+    "uts-n02.b"
+   ]
+  },
+  {
+   "id": "uts-n03",
+   "rail": "north",
+   "position": [
+    7.1,
+    3.2,
+    -1.8
+   ],
+   "seats": [
+    "uts-n03.a",
+    "uts-n03.b"
+   ]
+  },
+  {
+   "id": "uts-n04",
+   "rail": "north",
+   "position": [
+    5.7,
+    3.2,
+    -1.8
+   ],
+   "seats": [
+    "uts-n04.a",
+    "uts-n04.b"
+   ]
+  },
+  {
+   "id": "uts-n05",
+   "rail": "north",
+   "position": [
+    0.75,
+    3.2,
+    -1.8
+   ],
+   "seats": [
+    "uts-n05.a",
+    "uts-n05.b"
+   ]
+  },
+  {
+   "id": "uts-n06",
+   "rail": "north",
+   "position": [
+    -0.75,
+    3.2,
+    -1.8
+   ],
+   "seats": [
+    "uts-n06.a",
+    "uts-n06.b"
+   ]
+  },
+  {
+   "id": "uts-n07",
+   "rail": "north",
+   "position": [
+    -6.45,
+    3.2,
+    -1.8
+   ],
+   "seats": [
+    "uts-n07.a",
+    "uts-n07.b"
+   ]
+  },
+  {
+   "id": "uts-n08",
+   "rail": "north",
+   "position": [
+    -7.95,
+    3.2,
+    -1.8
+   ],
+   "seats": [
+    "uts-n08.a",
+    "uts-n08.b"
+   ]
+  },
+  {
+   "id": "uts-n09",
+   "rail": "north",
+   "position": [
+    -20.1,
+    3.2,
+    -1.8
+   ],
+   "seats": [
+    "uts-n09.a",
+    "uts-n09.b"
+   ]
+  },
+  {
+   "id": "uts-n10",
+   "rail": "north",
+   "position": [
+    -21.5,
+    3.2,
+    -1.8
+   ],
+   "seats": [
+    "uts-n10.a",
+    "uts-n10.b"
+   ]
+  },
+  {
+   "id": "uts-n11",
+   "rail": "north",
+   "position": [
+    -22.9,
+    3.2,
+    -1.8
+   ],
+   "seats": [
+    "uts-n11.a",
+    "uts-n11.b"
+   ]
+  },
+  {
+   "id": "uts-n12",
+   "rail": "north",
+   "position": [
+    -24.3,
+    3.2,
+    -1.8
+   ],
+   "seats": [
+    "uts-n12.a",
+    "uts-n12.b"
+   ]
+  },
+  {
+   "id": "uts-s01",
+   "rail": "south",
+   "position": [
+    -28.8,
+    3.2,
+    1.8
+   ],
+   "seats": [
+    "uts-s01.a",
+    "uts-s01.b"
+   ]
+  },
+  {
+   "id": "uts-s02",
+   "rail": "south",
+   "position": [
+    -23.85,
+    3.2,
+    1.8
+   ],
+   "seats": [
+    "uts-s02.a",
+    "uts-s02.b"
+   ]
+  },
+  {
+   "id": "uts-s03",
+   "rail": "south",
+   "position": [
+    -22.35,
+    3.2,
+    1.8
+   ],
+   "seats": [
+    "uts-s03.a",
+    "uts-s03.b"
+   ]
+  },
+  {
+   "id": "uts-s04",
+   "rail": "south",
+   "position": [
+    -20.85,
+    3.2,
+    1.8
+   ],
+   "seats": [
+    "uts-s04.a",
+    "uts-s04.b"
+   ]
+  },
+  {
+   "id": "uts-s05",
+   "rail": "south",
+   "position": [
+    -19.35,
+    3.2,
+    1.8
+   ],
+   "seats": [
+    "uts-s05.a",
+    "uts-s05.b"
+   ]
+  },
+  {
+   "id": "uts-s06",
+   "rail": "south",
+   "position": [
+    -14.4,
+    3.2,
+    1.8
+   ],
+   "seats": [
+    "uts-s06.a",
+    "uts-s06.b"
+   ]
+  },
+  {
+   "id": "uts-s07",
+   "rail": "south",
+   "position": [
+    -9.45,
+    3.2,
+    1.8
+   ],
+   "seats": [
+    "uts-s07.a",
+    "uts-s07.b"
+   ]
+  },
+  {
+   "id": "uts-s08",
+   "rail": "south",
+   "position": [
+    -7.95,
+    3.2,
+    1.8
+   ],
+   "seats": [
+    "uts-s08.a",
+    "uts-s08.b"
+   ]
+  },
+  {
+   "id": "uts-s09",
+   "rail": "south",
+   "position": [
+    -6.45,
+    3.2,
+    1.8
+   ],
+   "seats": [
+    "uts-s09.a",
+    "uts-s09.b"
+   ]
+  },
+  {
+   "id": "uts-s10",
+   "rail": "south",
+   "position": [
+    -4.95,
+    3.2,
+    1.8
+   ],
+   "seats": [
+    "uts-s10.a",
+    "uts-s10.b"
+   ]
+  },
+  {
+   "id": "uts-s11",
+   "rail": "south",
+   "position": [
+    4.95,
+    3.2,
+    1.8
+   ],
+   "seats": [
+    "uts-s11.a",
+    "uts-s11.b"
+   ]
+  },
+  {
+   "id": "uts-s12",
+   "rail": "south",
+   "position": [
+    6.45,
+    3.2,
+    1.8
+   ],
+   "seats": [
+    "uts-s12.a",
+    "uts-s12.b"
+   ]
+  },
+  {
+   "id": "uts-s13",
+   "rail": "south",
+   "position": [
+    7.95,
+    3.2,
+    1.8
+   ],
+   "seats": [
+    "uts-s13.a",
+    "uts-s13.b"
+   ]
+  },
+  {
+   "id": "uts-s14",
+   "rail": "south",
+   "position": [
+    9.45,
+    3.2,
+    1.8
+   ],
+   "seats": [
+    "uts-s14.a",
+    "uts-s14.b"
+   ]
+  },
+  {
+   "id": "uts-s15",
+   "rail": "south",
+   "position": [
+    14.4,
+    3.2,
+    1.8
+   ],
+   "seats": [
+    "uts-s15.a",
+    "uts-s15.b"
+   ]
+  },
+  {
+   "id": "uts-s16",
+   "rail": "south",
+   "position": [
+    19.35,
+    3.2,
+    1.8
+   ],
+   "seats": [
+    "uts-s16.a",
+    "uts-s16.b"
+   ]
+  },
+  {
+   "id": "uts-s17",
+   "rail": "south",
+   "position": [
+    20.85,
+    3.2,
+    1.8
+   ],
+   "seats": [
+    "uts-s17.a",
+    "uts-s17.b"
+   ]
+  },
+  {
+   "id": "uts-s18",
+   "rail": "south",
+   "position": [
+    22.35,
+    3.2,
+    1.8
+   ],
+   "seats": [
+    "uts-s18.a",
+    "uts-s18.b"
+   ]
+  },
+  {
+   "id": "uts-s19",
+   "rail": "south",
+   "position": [
+    23.85,
+    3.2,
+    1.8
+   ],
+   "seats": [
+    "uts-s19.a",
+    "uts-s19.b"
+   ]
+  },
+  {
+   "id": "uts-s20",
+   "rail": "south",
+   "position": [
+    28.8,
+    3.2,
+    1.8
+   ],
+   "seats": [
+    "uts-s20.a",
+    "uts-s20.b"
+   ]
+  }
+ ]
+}

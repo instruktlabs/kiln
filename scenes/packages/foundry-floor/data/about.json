@@ -1,0 +1,37 @@
+{
+  "schema": "foundry-floor.about/1",
+  "title": "About this model",
+  "modeLabel": "The mode and time scale are always on screen, for example \"Pilot line, 60x, day 3 14:05\".",
+  "sections": [
+    {
+      "heading": "What you are watching",
+      "body": "A generic 2 nm-class pilot line that makes an AI accelerator chip on 300 mm wafers. Lots of 25 wafers ride in FOUPs through a 240-step route; 42 tools process them, 2 stockers and 32 under-track shelves buffer them, and overhead hoist vehicles on about 465 m of rail move them. It is a lot-level digital twin: every FOUP, vehicle, lamp and robot motion follows from simulated state, not from canned loops. It is not a twin of any real fab; no real fab's layout, tools, process or data are public."
+    },
+    {
+      "heading": "Synthetic traffic",
+      "body": "In megafab-slice mode, 15 extra vehicles circulate the spine carrying synthetic FOUPs. They are labelled \"synthetic through-traffic, standing in for the rest of a large fab\", wear a muted slate band and never enter the bays."
+    },
+    {
+      "heading": "The route is compressed",
+      "body": "The route has 240 steps, while real flows exceed 300. Every lot follows the same route, and every tool of a family is qualified for every step of that family."
+    },
+    {
+      "heading": "Most numbers are estimates",
+      "body": "Dimensions, process times, failure and maintenance rates and dispatch rules are design estimates unless labelled otherwise. The line starts 4,500 wafers a month (a lot every 4 hours), a rate chosen so the busiest tool families run at about 85 percent of the time; the sourced public scale is a few thousand starts a month. The simulation is seeded and deterministic: the same seed gives the same fab at the same sim time."
+    },
+    {
+      "heading": "What the lamps mean",
+      "body": "Green P: processing. Amber S: up and waiting. Blue E: engineering or qualification. Blue D: scheduled maintenance. Red U: failed or under repair. Off N: not scheduled for use."
+    }
+  ],
+  "labels": {
+    "C": "confirmed (primary source read)",
+    "R": "reported (secondary source)",
+    "T": "typical value or general practice, not specific to any product",
+    "E": "design estimate; no public value found",
+    "S": "speculative or inferred"
+  },
+  "product": "A generic 2 nm-class AI accelerator on 300 mm wafers.",
+  "syntheticLabel": "synthetic through-traffic, standing in for the rest of a large fab",
+  "stateLetters": { "PRODUCTIVE": "P", "STANDBY": "S", "ENGINEERING": "E", "SCHEDULED_DOWN": "D", "UNSCHEDULED_DOWN": "U", "NON_SCHEDULED": "N" }
+}
