@@ -1,0 +1,158 @@
+---
+import PageHeader from "../../components/PageHeader.astro";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import ResponsiveImage from "../../components/ResponsiveImage.astro";
+import { farm, vehicles } from "../../lib/catalog";
+import { PACKS_ENABLED } from "../../lib/config";
+import foundryFloor from "../../data/foundry-floor.json";
+import foundryFloorPack from "../../data/packs/foundry-floor.json";
+// Six of the Foundry Floor models stand for the pack on its card; each must be in the staged catalog.
+const featured = ["euv-scanner", "etch-cluster-tool", "vertical-furnace", "stocker", "oht-vehicle", "foup"].map((slug) => {
+  const asset = foundryFloorPack.assets.find((candidate) => candidate.slug === slug);
+  if (!asset) throw new Error(`The Foundry Floor catalog has no model ${slug}`);
+  return asset;
+});
+const farmAwaiting = farm.ownerReview.total - farm.ownerReview.acceptedAssets;
+// Typed here: with every vehicle approved the record's list is empty, which the JSON import types as never[].
+const vehiclesAwaiting: string[] = vehicles.ownerReview.awaiting;
+---
+
+<BaseLayout
+  title="Packs · Kiln"
+  description="Download Farm and Vehicles GLBs with editable source and provenance, or inspect the Foundry Floor pack in production."
+  breadcrumbs={[{ label: "Packs", href: "/packs/" }]}
+  card="packs"
+>
+  <div class="container">
+    <PageHeader class="max-w-reading py-8">Packs</PageHeader>
+    <p class="lead">
+      Asset packs made with Kiln. Use the GLBs in your application, or keep the
+      source and revise them with your coding agent.
+    </p>
+    {PACKS_ENABLED && (
+      <a class="pack-card mt-12 grid items-center gap-8 border-y border-rule py-8 lg:grid-cols-3" href="/packs/farm/" aria-label="Shapes &amp; Seasons Farm">
+        <div class="lg:col-span-2">
+          <ResponsiveImage
+            image={{ ...farm.scene.poster, alt: "" }}
+            eager
+            sizes="(max-width: 1024px) 100vw, 65vw"
+          />
+        </div>
+        <div>
+          <h2 class="text-subheading">Shapes &amp; Seasons Farm</h2>
+          <p class="mt-5">
+            23 assets: buildings, animals, crops, fencing and farm equipment.
+          </p>
+          <p class="mt-4 text-dim">
+            Runtime, editable and scene profiles.{" "}
+            {farm.ownerReview.acceptedAssets} of {farm.ownerReview.total} current
+            revisions approved by the owner
+            {farmAwaiting > 0 ? `; ${farmAwaiting} await review` : ""}.
+          </p>
+          <span class="text-link mt-4">
+            Inspect the pack and downloads<span class="sr-only">: Shapes &amp; Seasons Farm</span> <span aria-hidden="true">→</span>
+          </span>
+        </div>
+      </a>
+    )}
+    {PACKS_ENABLED && (
+      <a href="/packs/vehicles/" aria-label="Generic Road Vehicles" class="mt-12 grid items-center gap-8 border-b border-rule pb-8 lg:grid-cols-3">
+        <div class="grid grid-cols-3 gap-2 lg:col-span-2">
+          {vehicles.assets.map((asset) => (
+            <div class="bg-stage">
+              <ResponsiveImage
+                image={{ ...asset.poster, alt: "" }}
+                sizes="(max-width: 1024px) 33vw, 22vw"
+                class="aspect-square w-full object-contain"
+              />
+            </div>
+          ))}
+        </div>
+        <div>
+          <h2 class="text-subheading">{vehicles.name}</h2>
+          <p class="mt-5">
+            Six vehicles: a hatchback, a sedan, an SUV, a pickup, a box truck
+            and a transit bus, each with three detail tiers.
+          </p>
+          <p class="mt-4 text-dim">
+            Runtime GLBs, editable source and licence texts.{" "}
+            {vehicles.ownerReview.acceptedAssets} of {vehicles.ownerReview.total}{" "}
+            assets approved by the owner
+            {vehiclesAwaiting.length > 0 &&
+              `; the corrected revision of the ${vehiclesAwaiting.map((name) => name.replace(/^Generic /, "")).join(" and the ")} awaits review`}.
+          </p>
+          <span class="text-link mt-4">
+            Inspect the pack and downloads<span class="sr-only">: Generic Road Vehicles</span> <span aria-hidden="true">→</span>
+          </span>
+        </div>
+      </a>
+    )}
+    {PACKS_ENABLED && (
+      <a href="/packs/foundry-floor/" aria-label="Foundry Floor, in production" class="mt-12 grid items-center gap-8 border-b border-rule pb-8 lg:grid-cols-3">
+        <div class="grid grid-cols-3 gap-2 lg:col-span-2">
+          {featured.map((asset) => (
+            <div class="bg-stage">
+              <ResponsiveImage
+                image={{ ...asset.poster, alt: "" }}
+                sizes="(max-width: 1024px) 33vw, 22vw"
+                class="aspect-square w-full object-contain"
+              />
+            </div>
+          ))}
+        </div>
+        <div>
+          <h2 class="text-subheading">{foundryFloorPack.name}</h2>
+          <p class="mt-5">
+            {foundryFloorPack.assetCount} models for a fictional 2 nm-class chip
+            fab: process tools, wafer transport and storage, the cleanroom’s
+            floor, ceiling and walls, and the people and robots who work there.
+          </p>
+          <p class="mt-4 text-dim">
+            In production. Runtime GLBs and the pack’s licence text. The owner
+            has not reviewed this pack; it stays in production until then.
+          </p>
+          <span class="text-link mt-4">
+            Inspect the pack in production <span aria-hidden="true">→</span>
+          </span>
+        </div>
+      </a>
+    )}
+    <div class="mt-12 grid gap-8 lg:grid-cols-2">
+      {!PACKS_ENABLED && (
+        <div>
+          <h2 class="text-subheading">{foundryFloor.name}</h2>
+          <p class="mt-4 max-w-reading">
+            In production: a fictional 2 nm-class chip fab with process tools,
+            wafer transport and a scene where the factory runs.
+          </p>
+          <a href={foundryFloor.packRoute} class="text-link mt-2">
+            Read the production note <span aria-hidden="true">→</span>
+          </a>
+        </div>
+      )}
+      <div>
+        <h2 class="text-subheading">Choose the files you need.</h2>
+        <p class="mt-4 max-w-reading">
+          Runtime profiles contain GLBs and metadata. Editable profiles add
+          source and rebuilding dependencies. Scene profiles include a runnable
+          demonstration. You do not need Kiln to use the runtime models.
+        </p>
+      </div>
+    </div>
+    <div class="mt-12 border-t border-ink pt-6">
+      <h2 class="text-subheading">
+        Asset content and software have separate licences.
+      </h2>
+      <p class="mt-4 max-w-reading">
+        <span data-verbatim>{farm.licenseScope}</span> Preserve the supplied licences, material records and
+        scene software notices.
+      </p>
+      <a
+        href="https://creativecommons.org/publicdomain/zero/1.0/"
+        class="text-link mt-2"
+      >
+        Read CC0-1.0 <span aria-hidden="true">↗</span>
+      </a>
+    </div>
+  </div>
+</BaseLayout>

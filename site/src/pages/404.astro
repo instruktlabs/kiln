@@ -1,0 +1,32 @@
+---
+import PageHeader from "../components/PageHeader.astro";
+import BaseLayout from "../layouts/BaseLayout.astro";
+---
+
+<BaseLayout
+  title="Page not found · Kiln"
+  description="This Kiln page could not be found. Find the documentation, reviewed assets and earlier examples."
+  noindex
+>
+  <div class="container py-16">
+    <PageHeader class="max-w-reading">Page not found</PageHeader>
+    <p class="lead mt-6">
+      The address may have changed. Start with the tool, find its docs or browse
+      the assets.
+    </p>
+    <nav aria-label="Find a page" class="mt-8 flex flex-wrap gap-4">
+      <a href="/" class="btn">
+        Kiln home
+      </a>
+      <a href="/docs/" class="btn btn-secondary">
+        Documentation
+      </a>
+      <a href="/gallery/" class="btn btn-secondary">
+        Gallery
+      </a>
+      <a href="/gallery/archive/" class="text-link">
+        Earlier examples →
+      </a>
+    </nav>
+  </div>
+</BaseLayout>

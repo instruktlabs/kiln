@@ -1,0 +1,74 @@
+[
+  {
+    "stage": "first-retry1",
+    "author": "sonnet-vehicles-a",
+    "requestedModel": "claude-sonnet-5-5",
+    "requestedEffort": "max",
+    "harness": "claude",
+    "harnessVersion": "2.1.280",
+    "confirmedEffort": null,
+    "confirmation": "Requested in receipt and invocation; effective reasoning effort not independently confirmed.",
+    "modelReported": [
+      "claude-sonnet-5-5"
+    ],
+    "status": "completed",
+    "stop": "success",
+    "startedAt": "2026-09-29T14:26:18.351Z",
+    "endedAt": "2026-09-29T15:24:18.613Z",
+    "source": {
+      "receipt": "showcase/runs/sonnet-vehicles-a/first-retry1/receipt.json",
+      "receiptSha256": "c04cf62d47048db887b5bc649c95cdd923afbe85b642c6bd7ef4b0258986be46",
+      "invocation": "showcase/runs/sonnet-vehicles-a/first-retry1/invocation.json",
+      "invocationSha256": "25f9583d27003fce8b2fb706fd0f0fa98ca69f1c100a81d28ab2b301befe2645"
+    },
+    "label": "first run, retry 1"
+  },
+  {
+    "stage": "first-retry1",
+    "author": "sonnet-vehicles-b",
+    "requestedModel": "claude-sonnet-5-5",
+    "requestedEffort": "max",
+    "harness": "claude",
+    "harnessVersion": "2.1.280",
+    "confirmedEffort": null,
+    "confirmation": "Requested in receipt and invocation; effective reasoning effort not independently confirmed.",
+    "modelReported": [
+      "claude-sonnet-5-5"
+    ],
+    "status": "failed",
+    "stop": "error_max_budget_usd",
+    "startedAt": "2026-09-29T14:26:18.351Z",
+    "endedAt": "2026-09-29T15:16:07.782Z",
+    "source": {
+      "receipt": "showcase/runs/sonnet-vehicles-b/first-retry1/receipt.json",
+      "receiptSha256": "a305707c2b87e6e0ea07cbdd925ff45b58875c196e75a926a51529c9de7bfe06",
+      "invocation": "showcase/runs/sonnet-vehicles-b/first-retry1/invocation.json",
+      "invocationSha256": "4e875215e6e845fb8813d1a1e015827445e0f00938a887c72d79557dce8d0de0"
+    },
+    "label": "first run, retry 1"
+  },
+  {
+    "stage": "review-2",
+    "author": "sonnet-vehicles-b",
+    "requestedModel": "claude-sonnet-5-5",
+    "requestedEffort": "max",
+    "harness": "claude",
+    "harnessVersion": "2.1.280",
+    "confirmedEffort": null,
+    "confirmation": "Requested in receipt and invocation; effective reasoning effort not independently confirmed.",
+    "modelReported": [
+      "claude-sonnet-5-5"
+    ],
+    "status": "completed",
+    "stop": "success",
+    "startedAt": "2026-09-29T17:21:22.123Z",
+    "endedAt": "2026-09-29T17:44:21.899Z",
+    "source": {
+      "receipt": "showcase/runs/sonnet-vehicles-b/review-2/receipt.json",
+      "receiptSha256": "ee02f927d4bdf60d60e94855c702d3da35aee301c5e9d3622ec78f48175af57e",
+      "invocation": "showcase/runs/sonnet-vehicles-b/review-2/invocation.json",
+      "invocationSha256": "734c1176a95b90b8f3cc77fd094aa28d60fb1c2b7c9d75fd9f5e6e7ba7d9ee31"
+    },
+    "label": "review 2"
+  }
+]

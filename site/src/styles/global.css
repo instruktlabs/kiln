@@ -1,0 +1,139 @@
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+@theme {
+  --color-*: initial;
+  --color-paper: #eee9df;
+  --color-sheet: #f7f3eb;
+  --color-stage: #e3ded3;
+  --color-backdrop: #aab1bc;
+  --color-rule: #c9c2b5;
+  --color-ink: #292d29;
+  --color-dim: #625e55;
+  --color-faint: #81796c;
+  --color-ember: #a44024;
+  --color-ember-deep: #7d2f19;
+  --color-glow: #e8823c;
+  --color-wire: #1f6466;
+  --color-carbon: #13110f;
+  --color-white: #ffffff;
+  --font-sans: 'Archivo', ui-sans-serif, system-ui, sans-serif;
+  --font-mono: 'IBM Plex Mono', 'Courier New', monospace;
+  --text-display: 4rem;
+  --text-display--line-height: 1.0625;
+  --text-display--letter-spacing: -.025em;
+  --text-heading: 2.75rem;
+  --text-heading--line-height: 1.091;
+  --text-heading--letter-spacing: -.02em;
+  --text-subheading: 1.75rem;
+  --text-subheading--line-height: 1.143;
+  --text-title: 1.25rem;
+  --text-title--line-height: 1.4;
+  --text-body: 1.0625rem;
+  --text-body--line-height: 1.647;
+  --text-code: .9375rem;
+  --text-code--line-height: 1.692;
+  --text-caption: .9375rem;
+  --text-caption--line-height: 1.6;
+  --spacing: .25rem;
+  --spacing-viewer: clamp(22rem, 60vh, 44rem);
+  --spacing-scene: 65vh;
+  --radius-*: initial;
+  --radius-control: 2px;
+  --container-reading: 36rem;
+  --container-site: 90rem;
+  --container-lead: 36rem;
+  --breakpoint-nav: 60rem;
+}
+@font-face {font-family:Archivo;src:url('/fonts/archivo-latin-full-normal.woff2') format('woff2');font-style:normal;font-weight:100 900;font-stretch:62% 125%;font-display:swap}
+@font-face {font-family:'IBM Plex Mono';src:url('/fonts/ibm-plex-mono-latin-400-normal.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap}
+@font-face {font-family:'IBM Plex Mono';src:url('/fonts/ibm-plex-mono-latin-500-normal.woff2') format('woff2');font-weight:500;font-style:normal;font-display:swap}
+@font-face {font-family:'IBM Plex Mono';src:url('/fonts/ibm-plex-mono-latin-600-normal.woff2') format('woff2');font-weight:600;font-style:normal;font-display:swap}
+@font-face {font-family:'IBM Plex Mono';src:url('/fonts/ibm-plex-mono-latin-400-italic.woff2') format('woff2');font-weight:400;font-style:italic;font-display:swap}
+@layer base {
+  :root {color-scheme:light;}
+  html {scroll-padding-top:2rem;}
+  body {@apply m-0 bg-paper text-ink font-sans text-base md:text-body; font-stretch:104%; -webkit-font-smoothing:antialiased;}
+  h1,h2,h3,h4 {font-weight:600;text-wrap:balance;font-stretch:112%;}
+  h1 {font-size:clamp(2.25rem,5vw,4rem);line-height:1.0625;letter-spacing:-.025em;}
+  h2 {font-size:clamp(1.875rem,3.7vw,2.75rem);line-height:1.091;letter-spacing:-.02em;}
+  h3 {font-size:clamp(1.5rem,2.6vw,1.75rem);line-height:1.143;}
+  h1,h2,h3,h4,dd,dt,li,td,figcaption {overflow-wrap:anywhere;}
+  p {text-wrap:pretty;}
+  a {text-underline-offset:.2em;}
+  a:hover {color:var(--color-ember-deep);text-decoration:underline;}
+  a,button,input,select,summary {-webkit-tap-highlight-color:transparent;}
+  :focus-visible {outline:2px solid var(--color-wire);outline-offset:4px;}
+  button,summary,select {cursor:pointer;}
+  button:disabled {cursor:wait;opacity:.65;}
+  img {max-width:100%;height:auto;}
+  code,pre {font-family:var(--font-mono);font-size:var(--text-code);}
+  pre {max-width:100%;overflow-x:auto;tab-size:2;}
+  summary {min-height:44px;display:list-item;padding:1rem;}
+  [hidden] {display:none!important;}
+  ::selection {background:var(--color-ember);color:var(--color-sheet);}
+}
+@utility container {width:100%;max-width:var(--container-site);margin-inline:auto;padding-inline:1rem;@media(min-width:48rem){padding-inline:2rem;}@media(min-width:80rem){padding-inline:4.5rem;}}
+@utility btn {@apply inline-flex min-h-12 items-center justify-center gap-2 rounded-control border border-ember bg-ember px-5 py-2.5 text-base font-semibold text-sheet no-underline; &:hover {background:var(--color-ember-deep);color:var(--color-sheet);border-color:var(--color-ember-deep);}}
+@utility btn-secondary {@apply border-ink bg-transparent text-ink; &:hover {background:var(--color-stage);color:var(--color-ink);border-color:var(--color-ink);}}
+@utility text-link {@apply inline-flex min-h-11 items-center gap-2 text-ink underline decoration-rule; &:hover {color:var(--color-ember);text-decoration-color:var(--color-ember);}}
+@utility section-space {@apply py-16 md:py-24;}
+@utility lead {@apply max-w-lead text-lg leading-relaxed md:text-xl md:leading-8;}
+@utility mono {@apply font-mono text-code;}
+@utility prose-kiln {--tw-prose-body:var(--color-ink);--tw-prose-headings:var(--color-ink);--tw-prose-links:var(--color-ember);--tw-prose-bold:var(--color-ink);--tw-prose-code:var(--color-ink);--tw-prose-pre-bg:var(--color-sheet);--tw-prose-th-borders:var(--color-rule);--tw-prose-td-borders:var(--color-rule);--tw-prose-hr:var(--color-rule);--tw-prose-quotes:var(--color-dim);}
+@layer components {
+  .pack-card {color:var(--color-ink);text-decoration:none;}
+  .pack-card:hover :is(h2,h3),a.block:hover :is(h2,h3) {color:var(--color-ember);text-decoration:underline;text-decoration-color:var(--color-rule);}
+  .meta-follow,.card-stat {display:inline-block;max-width:100%;overflow-wrap:anywhere;}
+  .meta-follow::before {content:" · ";white-space:pre;}
+  .page-header {min-width:0;}
+  .page-header h1 {max-width:55rem;}
+  .loop-connector {display:block;margin-top:1rem;color:var(--color-dim);}
+  .loop-connector::after {content:'↓';}
+  @media(min-width:64rem) {.loop-connector::after {content:'→';} }
+  .scene-notes > div {display:grid;grid-template-columns:minmax(0,1fr);gap:2rem;margin:0;border:0;padding:0;}
+  @media(min-width:64rem) {.scene-notes > div {grid-template-columns:minmax(0,1fr) minmax(0,1fr);} }
+  p.text-caption {max-width:32rem;}
+  .docs-heading-link {opacity:0;color:var(--color-dim);}
+  :is(h2,h3,h4):hover .docs-heading-link,.docs-heading-link:focus {opacity:1;}
+  [data-copy-code],[data-code-expand],.docs-code-actions button {color:var(--color-ink);}
+  nav[aria-label=Breadcrumb] a {display:inline-flex;align-items:center;min-height:2.75rem;}
+  @media(max-width:59.99rem) {#primary-nav {flex-direction:column;align-items:stretch;} #primary-nav a {border-top:1px solid var(--color-rule);display:flex;align-items:center;} }
+  #menu-toggle[aria-expanded=true] {background:var(--color-ink);color:var(--color-sheet);}
+  @media(max-height:400px) {.scene-topbar {padding:.25rem;gap:.25rem;} .scene-topbar p {order:3;flex-basis:100%;font-size:.8125rem;line-height:1.1;} .scene-topbar .text-link {min-height:1.5rem;} scene-shell [data-loading] {padding:.5rem;} }
+  .drawing-sheet {background-color:var(--color-paper);background-image:linear-gradient(to right,rgba(41,45,41,.055) 1px,transparent 1px),linear-gradient(to bottom,rgba(41,45,41,.055) 1px,transparent 1px);background-size:24px 24px;border:1px solid var(--color-ink);}
+  .drawing-annotations {position:absolute;inset:0;width:100%;height:100%;pointer-events:none;overflow:visible;}
+  .drawing-annotations path,.drawing-annotations line {fill:none;stroke:var(--color-ink);stroke-width:1;vector-effect:non-scaling-stroke;}
+  .drawing-annotations .drawing-faint {stroke:var(--color-faint);}
+  .drawing-annotations .drawing-tick {stroke-width:1.5;}
+  .drawing-annotations .drawing-triad {stroke-width:1.25;}
+  /* Labels over the drawing are HTML at a fixed 12 px, placed in poster pixels by src/lib/hero-drawing.mjs. */
+  .drawing-labels {position:absolute;inset:0;pointer-events:none;}
+  .drawing-chip,.drawing-callout,.drawing-axis,.drawing-index {position:absolute;font-family:var(--font-mono);font-size:12px;line-height:16px;white-space:nowrap;color:var(--color-ink);}
+  .drawing-chip {transform-origin:0 0;transform:rotate(var(--angle)) translate(-50%,-50%);padding:0 4px;background:var(--color-sheet);}
+  .drawing-chip[data-place=below] {transform:rotate(var(--angle)) translate(-50%,6px);}
+  .drawing-chip[data-place=above] {transform:rotate(var(--angle)) translate(-50%,calc(-100% - 6px));}
+  .drawing-callout {padding:0 4px;background:var(--color-sheet);transform:translate(6px,-50%);}
+  .drawing-callout[data-side=left] {transform:translate(calc(-100% - 6px),-50%);}
+  .drawing-index,.drawing-index-static {display:inline-grid;place-items:center;width:18px;height:18px;border-radius:50%;background:var(--color-ink);color:var(--color-sheet);font-family:var(--font-mono);font-size:12px;line-height:1;flex:none;}
+  .drawing-index {transform:translate(6px,-50%);}
+  .drawing-index[data-side=left] {transform:translate(calc(-100% - 6px),-50%);}
+  .drawing-index[data-side=mark] {transform:translate(10px,calc(-100% - 6px));}
+  .drawing-axis {transform:translate(-50%,-50%) translate(calc(var(--dx) * 14px),calc(var(--dy) * 14px));}
+  .drawing-dot {position:absolute;width:18px;height:18px;border:1px solid var(--color-ink);border-radius:50%;transform:translate(-50%,-50%);box-shadow:0 0 0 1px var(--color-sheet),inset 0 0 0 1px var(--color-sheet);}
+  .drawing-dot::after {content:'';position:absolute;inset:4px;border-radius:50%;background:var(--color-ink);box-shadow:0 0 0 1.5px var(--color-sheet);}
+}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;transition-duration:.01ms!important;}}
+/* These refinements must follow Tailwind Typography and utility classes in the cascade. */
+.scene-notes h2 {font-size:1.5rem;line-height:1.2;}
+p .text-link {display:inline;min-height:0;}
+.btn[aria-pressed=true] {background:var(--color-ink);border-color:var(--color-ink);color:var(--color-sheet);}
+.prose-kiln {font-size:var(--text-body);line-height:var(--text-body--line-height);}
+.prose-kiln :where(code):not(:where(pre code)) {font-weight:400;overflow-wrap:anywhere;}
+.prose-kiln code::before,.prose-kiln code::after {content:none;}
+.prose-kiln :where(blockquote) {border:1px solid var(--color-rule);padding:1rem;font-style:normal;font-weight:400;}
+.prose-kiln :where(a.text-link) {display:inline;min-height:0;}
+.prose-kiln h1 {font-size:clamp(2.25rem,5vw,4rem);line-height:1.0625;}
+.text-sm {font-size:.9375rem;}
+.prose-kiln :where(blockquote p:first-of-type)::before,.prose-kiln :where(blockquote p:last-of-type)::after {content:none;}
+
+nav[aria-label=Breadcrumb] .breadcrumb-item::before {content:"/" / "";color:var(--color-dim);flex:none;}

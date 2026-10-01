@@ -1,0 +1,110 @@
+{
+  "schemaVersion": 1,
+  "subject": {
+    "collection": "farm",
+    "slug": "farmhouse",
+    "tier": null,
+    "revisionId": "r_01f97f5e943e4c2693b6db8596f3e353"
+  },
+  "poster": {
+    "src": "/media/rig/review-neutral-v1/farm/r34/farmhouse.webp",
+    "width": 1024,
+    "height": 1024,
+    "alt": "Cream masonry house with a charcoal gabled roof, olive shutters and a timber porch.",
+    "srcsetWebp": "/media/rig/review-neutral-v1/farm/r34/farmhouse-320.webp 320w, /media/rig/review-neutral-v1/farm/r34/farmhouse-480.webp 480w, /media/rig/review-neutral-v1/farm/r34/farmhouse-672.webp 672w, /media/rig/review-neutral-v1/farm/r34/farmhouse-768.webp 768w, /media/rig/review-neutral-v1/farm/r34/farmhouse-1024.webp 1024w",
+    "srcsetAvif": "/media/rig/review-neutral-v1/farm/r34/farmhouse-320.avif 320w, /media/rig/review-neutral-v1/farm/r34/farmhouse-480.avif 480w, /media/rig/review-neutral-v1/farm/r34/farmhouse-672.avif 672w, /media/rig/review-neutral-v1/farm/r34/farmhouse-768.avif 768w, /media/rig/review-neutral-v1/farm/r34/farmhouse-1024.avif 1024w",
+    "inputPath": "media/rig/review-neutral-v1/farm/r34/farmhouse.png",
+    "sourceRevisionId": "r_01f97f5e943e4c2693b6db8596f3e353",
+    "exactRevision": true,
+    "rig": "review-neutral-v1"
+  },
+  "camera": {
+    "version": "kiln.camera.v1",
+    "projection": "orthographic",
+    "position": [
+      64.20902356517088,
+      48.56848162846744,
+      62.99187442672026
+    ],
+    "target": [
+      1.0921491384506226,
+      3.484999895095825,
+      -0.125
+    ],
+    "up": [
+      0,
+      1,
+      0
+    ],
+    "aspect": 1,
+    "halfHeight": 7.492969833507147
+  },
+  "bounds": {
+    "min": [
+      -3.4657018184661865,
+      0,
+      -4.650000095367432
+    ],
+    "max": [
+      5.650000095367432,
+      6.96999979019165,
+      4.400000095367432
+    ],
+    "size": [
+      9.115701913833618,
+      6.96999979019165,
+      9.050000190734863
+    ]
+  },
+  "callouts": [
+    {
+      "path": "Farmhouse/Roof/Mesh_RoofShingles",
+      "centre": [
+        0,
+        4.8679,
+        0
+      ],
+      "firstSurface": "Farmhouse/Roof/Mesh_RoofShingles"
+    },
+    {
+      "path": "Farmhouse/Porch/Mesh_PorchRoof",
+      "centre": [
+        4.1132,
+        3.0162,
+        0
+      ],
+      "firstSurface": "Farmhouse/Porch/Mesh_PorchRoof"
+    }
+  ],
+  "mask": {
+    "cells": 128,
+    "backdrop": [
+      170,
+      177,
+      188
+    ],
+    "bits": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIAAAAAAAAAAAAAAAAAAAAfgAAAAAAAAAAAAAAAAAAAP/AAAAAAAAAAAAAAAAAAAD/wAAAAAAAAAAAAAAAAAAAf4AAAAAAAAAAAAAAAAAAAH+AAAAAAAAAAAAAAAAAAAB/gAAAAAAAAAAAAAAAAAAAf4AAAAAAAAAAAAAAAAAAAH+AAAAAAAAAAAAAAAAAAAB/gAAAAAAAAAAAAAAAAAAAf4EAAAAAAAAAAAAAAAAAAH+PAAAAAAAAAAAAAAAAAAB/v4AAAAAAAAAAAAAAAAAAf/+AAAAAAAAAAAAAAAAAAH//wAAAAAAAAAAAAAAAAAB//8AAAAAAAAAAAAAAAAAAf//gAAAAAAAAAAAAAAAAAf//8AAAAAAAAAAAAAAAAAf///AAAAAAAAAAAAAAAAAf///4AAAAAAAAAAAAAAAA/////AAAAAAAAAAAAAAAA/////wAAAAAAAAAAAAAAA/////+AAAAAAAAAAAAAAA//////wAAAAAAAAAAAAAA//////8AAAAAAAAAAAAAB///////gAAAAAAAAAAAAB///////8AAAAAAAAAAAAB////////AAAAAAAAAAAAB////////4AAAAAAAAAAAB/////////AAAAAAAAAAAD/////////wAAAAAAAAAAD/////////+AAAAAAAAAAD//////////wAAAAAAAAAD//////////8AAAAAAAAAD///////////gAAAAAAAAD///////////4AAAAAAAAB////////////AAAAAAAAA////////////4AAAAAAAA////////////+AAAAAAAA/////////////wAAAAAAAf////////////+AAAAAAAf/////////////gAAAAAAf/////////////8AAAAAAP//////////////AAAAAAP//////////////wAAAAAP//////////////gAAAAAH//////////////gAAAAAH//////////////8AAAAAB///////////////wAAAAAc//////////////+AAAAAAP//////////////4AAAAAD///////////////AAAAAA///////////////8AAAAAP///////////////gAAAAD///////////////8AAAAA////////////////AAAAAP///////////////wAAAAD///////////////4AAAAA///////////////4AAAAAP//////////////+AAAAAD//////////////7gAAAAA//////////////44AAAAAP/////////////8OAAAAAD//////////////zgAAAAA///////////////4AAAAAP//////////////+AAAAAD///////////////gAAAAA///////////////4AAAAAP//////////////+AAAAAD///////////////gAAAAA///////////////4AAAAAf//////////////+AAAAAH///////////////wAAAAB///////////////8AAAAAf///////////////AAAAAD///////////////wAAAAAP//////////////8AAAAAA//////////////8AAAAAAD/////////////8AAAAAAAH////////////8AAAAAAAAf///////////8AAAAAAAAB///////////4AAAAAAAAAH//////////4AAAAAAAAAAP//////////gAAAAAAAAAA//////////4AAAAAAAAAAD/////////8AAAAAAAAAAAP////////8AAAAAAAAAAAA////////8AAAAAAAAAAAAB///////8AAAAAAAAAAAAAH/////x4AAAAAAAAAAAAAAf3///gAAAAAAAAAAAAAAABwf//gAAAAAAAAAAAAAAAAAA//gAAAAAAAAAAAAAAAAAAD/gAAAAAAAAAAAAAAAAAAAPgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+  },
+  "sources": {
+    "poster": {
+      "path": "media/rig/review-neutral-v1/farm/r34/farmhouse.png",
+      "bytes": 1855207,
+      "sha256": "217a1bd9b87a3a3889c072fe841e83bb81c9e6ef901ed0408cad1b2b759c5bd4",
+      "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1074"
+    },
+    "glb": {
+      "path": "models/farmhouse.glb",
+      "bytes": 549584,
+      "sha256": "1b02596b30e3417e3f8336893694f2614002e28154408803b145154097de8512",
+      "namedParts": 16
+    },
+    "camera": {
+      "direction": [
+        0.7,
+        0.5,
+        0.7
+      ],
+      "padding": 1.05
+    }
+  }
+}

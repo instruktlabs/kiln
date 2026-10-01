@@ -1,0 +1,10 @@
+---
+interface Props { class?: string; id?: string; }
+const { class: className, id } = Astro.props;
+---
+<header class:list={["page-header", className]}>
+  <h1 id={id}><slot /></h1>
+  <slot name="navigation" />
+  <slot name="description" />
+  <slot name="actions" />
+</header>

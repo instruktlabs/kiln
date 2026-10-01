@@ -2,6 +2,7 @@ import { createHash } from 'node:crypto';
 import { readFile } from 'node:fs/promises';
 import { resolve, dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import sharp from 'sharp';
 import { posterBytes } from './posters.mjs';
 import { verifyRecordedPoster } from './provenance.mjs';
 
@@ -24,7 +25,11 @@ for (const row of rows) {
       throw new Error(`Asset hash mismatch: ${file}`);
   }
   await readFile(join(root, row.thumb));
-  if (row.poster) await readFile(join(root, row.poster));
+  // Every item page declares its hero at the size the build recorded (engineering review, finding 17).
+  if (!row.poster) throw new Error(`No item poster recorded: ${row.name}`);
+  const poster = await sharp(join(root, row.poster)).metadata();
+  if (poster.width !== row.posterWidth || poster.height !== row.posterHeight)
+    throw new Error(`Poster size differs from its record: ${row.poster} is ${poster.width}x${poster.height}, recorded ${row.posterWidth}x${row.posterHeight}`);
   const source = await readFile(join(root, row.source));
   const canonical = await readFile(join(root, row.file));
   const runtime = row.runtime;
@@ -84,25 +89,6 @@ for (const row of rows) {
 }
 const build = JSON.parse(await readFile(join(root, 'assets/build.json'), 'utf8'));
 if (build.indexHash !== hash(await readFile(join(root, 'assets/index.json')))) throw new Error('Gallery index differs from its build receipt');
-const demo = JSON.parse(await readFile(join(root, 'assets/edit-demo.json'), 'utf8'));
-for (const row of demo.records) {
-  if (
-    hash(await readFile(join(root, `assets/workbench-${row.name}.kiln.js`))) !==
-    row.sourceHash
-  )
-    throw new Error(`Demo source mismatch: ${row.name}`);
-  if (hash(await readFile(join(root, `assets/workbench-${row.name}.glb`))) !== row.artifactHash)
-    throw new Error(`Demo GLB mismatch: ${row.name}`);
-}
-const geometry = JSON.parse(await readFile(join(root, 'assets/geometry-demo.json'), 'utf8'));
-for (const [file, digest] of [
-  ['equation-canopy.kiln.js', geometry.sourceHash],
-  ['equation-canopy.glb', geometry.artifactHash],
-  ['equation-canopy.png', geometry.imageHash],
-]) {
-  if (hash(await readFile(join(root, 'assets', file))) !== digest)
-    throw new Error(`Geometry demo mismatch: ${file}`);
-}
 console.log(
-  `Verified ${rows.length} source/GLB pairs, posters, and both source-edit demo revisions, and the geometry/camera example.`,
+  `Verified ${rows.length} source/GLB pairs, their posters at the recorded sizes, and the gallery build receipt.`,
 );

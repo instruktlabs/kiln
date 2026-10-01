@@ -1,0 +1,344 @@
+---
+import { sceneRuntimes } from "virtual:kiln-scenes";
+import { sceneInMode, scenes, type SceneId } from "../data/scenes";
+import { imageQualification, FULL_WIDTH_IMAGE_SIZES } from "../lib/catalog";
+import { PACKS_ENABLED } from "../lib/config";
+import PageHeader from "./PageHeader.astro";
+
+interface Props {
+  scene: SceneId;
+}
+const { scene: id } = Astro.props;
+const scene = scenes[id];
+const runtime = sceneRuntimes[id];
+// The fallback link and the copy naming it, for this build mode: a pre-upload build has no Commons pages.
+const inMode = sceneInMode(id, PACKS_ENABLED);
+const stateCopy = scene.available
+  ? scene.copy.available
+  : runtime
+    ? scene.copy.preview
+    : scene.copy.unavailable;
+---
+
+<div class="mb-8">
+  <PageHeader>{scene.name} scene</PageHeader>
+  <p class="lead mt-4">{scene.description}</p>
+  {PACKS_ENABLED && <a class="btn btn-secondary mt-6" href={scene.fallback.href}>{scene.fallback.label}</a>}
+  <slot name="notice" />
+</div>
+
+<scene-shell
+  class="block border border-rule bg-stage"
+  data-scene={id}
+  data-kind={runtime?.kind ?? "none"}
+  data-runtime-url={runtime?.url ?? ""}
+  data-asset-base={scene.assetBase}
+  data-error-text={inMode.errorText}
+  data-frame-title={`${scene.name} scene`}
+>
+  <div data-intro>
+    {PACKS_ENABLED && scene.posterImage && (
+      <picture>
+        <source
+          type="image/avif"
+          srcset={scene.posterImage.srcsetAvif}
+          sizes={FULL_WIDTH_IMAGE_SIZES}
+        />
+        <img
+          src={scene.poster}
+          srcset={scene.posterImage.srcsetWebp}
+          sizes={FULL_WIDTH_IMAGE_SIZES}
+          width={scene.posterWidth}
+          height={scene.posterHeight}
+          alt={scene.posterAlt}
+          class="w-full object-contain"
+          style={`aspect-ratio:${scene.posterWidth}/${scene.posterHeight}`}
+          fetchpriority="high"
+        />
+      </picture>
+    )}
+    {PACKS_ENABLED && scene.posterImage && "posterCaption" in scene && (
+      <p class="bg-sheet px-6 pt-4 text-caption text-dim">{scene.posterCaption}</p>
+    )}
+    {PACKS_ENABLED && scene.posterImage && imageQualification(scene.posterImage) && (
+      <p class="bg-sheet px-6 pt-4 text-caption text-dim">{imageQualification(scene.posterImage)}</p>
+    )}
+    <div class="flex flex-wrap items-center justify-between gap-6 bg-sheet p-6">
+      <div class="max-w-prose">
+        <p>{stateCopy}</p>
+        <p class="mt-2 text-sm text-dim">{scene.copy.devices}</p>
+      </div>
+      <button type="button" class="btn" data-explore hidden>
+        Explore
+      </button>
+    </div>
+  </div>
+  <div
+    data-active
+    role="dialog"
+    aria-modal="true"
+    aria-label={`${scene.name} interactive scene`}
+    hidden
+    class="fixed inset-0 z-50 flex flex-col overflow-auto bg-paper"
+  >
+    <div class="scene-topbar flex shrink-0 flex-wrap items-center justify-between gap-2 border-b border-rule p-2 sm:gap-4 sm:p-4">
+      <button type="button" class="btn btn-secondary" data-exit>
+        Exit scene
+      </button>
+      {runtime && (
+        <p class="flex flex-1 flex-wrap items-center justify-center gap-x-4 gap-y-1 text-sm text-dim">
+          {!scene.available && <span>{scene.copy.previewLabel}</span>}
+          {scene.links.map((link) => (
+            <a class="text-link" href={`${scene.assetBase}${link.path}`}>{link.label}</a>
+          ))}
+        </p>
+      )}
+      <button type="button" class="btn btn-secondary" data-fullscreen>
+        Enter fullscreen
+      </button>
+    </div>
+    <p data-loading role="status" class="p-6">
+      Loading the scene…
+    </p>
+    <div data-mount class="min-h-0 flex-1 overflow-auto"></div>
+  </div>
+  <template data-unavailable>
+    <div class="flex min-h-viewer flex-col items-center justify-center gap-6 p-8 text-center">
+      <h2 class="font-semibold">{scene.copy.unavailableTitle}</h2>
+      <p class="max-w-prose text-lg">{inMode.unavailableBody}</p>
+      <a class="btn btn-secondary" href={inMode.fallback.href}>
+        {inMode.fallback.label}
+      </a>
+    </div>
+  </template>
+  <p data-status role="status" class="sr-only"></p>
+  <noscript>
+    <p class="bg-sheet p-6">
+      JavaScript is required for interactive scenes.
+    </p>
+  </noscript>
+</scene-shell>
+<div class="scene-notes mt-8 border-t border-rule pt-6"><slot /></div>
+<script>
+  import { createIslandSession } from "./island-session";
+  import { createSceneWatchdog } from "./scene-watchdog";
+  import type { SceneMountProps, SceneRuntimeModule } from "../scenes/types";
+
+  /** A frame-kind runtime is a standalone page (scripts/scene-runtime.mjs) that reports through postMessage. */
+  function mountFrame(container: HTMLElement, url: string, title: string, props: SceneMountProps, leave: () => void) {
+    const frame = document.createElement("iframe");
+    frame.title = title;
+    frame.className = "block h-full min-h-0 w-full border-0";
+    frame.setAttribute("allow", "fullscreen");
+    const onMessage = (event: MessageEvent) => {
+      if (event.origin !== location.origin || event.source !== frame.contentWindow) return;
+      const data = event.data as { source?: string; state?: string; text?: string; message?: string; errorCode?: string } | null;
+      if (data?.source !== "kiln-scene") return;
+      if (data.state === "progress" || data.state === "started") props.onProgress?.({ phase: "assets", loaded: 0, total: 0, text: data.text ?? "Loading the scene…" });
+      else if (data.state === "ready") {
+        props.onReady?.();
+        frame.contentWindow?.focus();
+      } else if (data.state === "error") props.onError?.(Object.assign(new Error(data.message ?? "The scene could not start."), { code: data.errorCode ?? "runtime" }));
+      else if (data.state === "exit" && !document.fullscreenElement) leave();
+    };
+    window.addEventListener("message", onMessage);
+    container.append(frame);
+    frame.src = url;
+    return () => {
+      window.removeEventListener("message", onMessage);
+      frame.remove();
+    };
+  }
+
+  class SceneShell extends HTMLElement {
+    private dispose?: () => void;
+    connectedCallback() {
+      const intro = this.querySelector<HTMLElement>("[data-intro]")!;
+      const active = this.querySelector<HTMLElement>("[data-active]")!;
+      const mount = this.querySelector<HTMLElement>("[data-mount]")!;
+      const explore = this.querySelector<HTMLButtonElement>("[data-explore]")!;
+      const exit = this.querySelector<HTMLButtonElement>("[data-exit]")!;
+      const fullscreen =
+        this.querySelector<HTMLButtonElement>("[data-fullscreen]")!;
+      const status = this.querySelector<HTMLElement>("[data-status]")!;
+      const loading = this.querySelector<HTMLElement>("[data-loading]")!;
+      const unavailable =
+        this.querySelector<HTMLTemplateElement>("[data-unavailable]")!;
+      let contentReady = false;
+      const watchdog = createSceneWatchdog(() => fail(Object.assign(new Error("The scene stopped responding."), { code: "timeout" })));
+      // data-scene-state is idle, loading, ready or error; data-scene-phase is the scene's
+      // latest progress phase; data-scene-backend and data-scene-tier are what the scene reports.
+      // All are read by the browser checks.
+      const setState = (state: string) => {
+        this.dataset.sceneState = state;
+      };
+      setState("idle");
+      const ready = () => {
+        if (active.hidden) return;
+        contentReady = true;
+        watchdog.stop();
+        loading.hidden = true;
+        status.textContent = "Scene ready.";
+        setState("ready");
+      };
+      const progress = (update: { phase: string; text: string }) => {
+        if (contentReady || active.hidden) return;
+        watchdog.touch();
+        this.dataset.scenePhase = update.phase;
+        loading.textContent = update.text;
+      };
+      const inertElements: { element: HTMLElement; inert: boolean }[] = [];
+      const background = (hide: boolean) => {
+        if (!hide) {
+          for (const { element, inert } of inertElements) element.inert = inert;
+          inertElements.length = 0;
+          return;
+        }
+        if (inertElements.length) return;
+        let branch: HTMLElement = this;
+        while (branch.parentElement) {
+          for (const sibling of branch.parentElement.children) {
+            if (
+              sibling !== branch &&
+              sibling instanceof HTMLElement &&
+              !["SCRIPT", "STYLE", "LINK"].includes(sibling.tagName)
+            ) {
+              inertElements.push({ element: sibling, inert: sibling.inert });
+              sibling.inert = true;
+            }
+          }
+          if (branch.parentElement === document.body) break;
+          branch = branch.parentElement;
+        }
+      };
+      const fail = (error?: Error) => {
+        watchdog.stop();
+        session.stop();
+        status.classList.remove("sr-only");
+        status.classList.add("p-6");
+        const code = (error as { code?: string } | undefined)?.code ?? (/WebGL|WebGPU|graphics|renderer/i.test(error?.message ?? "") ? "renderer-init" : "runtime");
+        status.textContent = code === "renderer-init"
+          ? "Interactive graphics are unavailable in this browser. The scene poster and downloads remain available below. Try a browser with WebGL2 or WebGPU enabled."
+          : this.dataset.errorText ??
+          "The scene could not load. Check your connection and try Explore again.";
+        this.dataset.sceneError =
+          code;
+        setState("error");
+        explore.focus();
+      };
+      const session = createIslandSession(
+        async () => {
+          mount.scrollIntoView({ block: "nearest", behavior: "instant" });
+          const props: SceneMountProps = {
+            assetBase: this.dataset.assetBase!,
+            onReady: ready,
+            onProgress: progress,
+            onBackend: (backend) => {
+              this.dataset.sceneBackend = backend.backend;
+            },
+            onTier: (change) => {
+              const tier = change.tier ?? change.suggestedTier;
+              if (change.kind !== "advice" && tier) this.dataset.sceneTier = tier;
+            },
+            // The scene may report a fatal error from inside React's commit; leave it first.
+            onError: (error) => queueMicrotask(() => fail(error)),
+          };
+          const url = this.dataset.runtimeUrl;
+          if (this.dataset.kind === "module" && url) {
+            const runtime = (await import(/* @vite-ignore */ url)) as SceneRuntimeModule;
+            return runtime.mount(mount, props);
+          }
+          if (this.dataset.kind === "frame" && url) {
+            return mountFrame(mount, url, this.dataset.frameTitle ?? `${this.dataset.scene} scene`, props, leave);
+          }
+          // No runtime in this build: state the status in place of the scene.
+          mount.append(unavailable.content.cloneNode(true));
+          queueMicrotask(() => props.onReady?.());
+          return () => mount.replaceChildren();
+        },
+        (state, error) => {
+          const showing = state === "loading" || state === "ready";
+          if (state === "loading") {
+            watchdog.touch();
+            contentReady = false;
+            loading.textContent = "Loading the scene…";
+            delete this.dataset.scenePhase;
+            delete this.dataset.sceneError;
+            delete this.dataset.sceneBackend;
+            delete this.dataset.sceneTier;
+            setState("loading");
+          }
+          if (state === "idle") setState("idle");
+          loading.hidden = !showing || contentReady;
+          background(showing);
+          intro.hidden = showing;
+          active.hidden = !showing;
+          status.classList.add("sr-only");
+          status.classList.remove("p-6");
+          status.textContent = "";
+          if (state === "error") fail(error);
+          if (state === "loading") exit.focus();
+        },
+      );
+      const leave = () => {
+        watchdog.stop();
+        session.stop();
+        if (document.fullscreenElement === this)
+          void document.exitFullscreen().catch(() => {});
+        explore.focus();
+      };
+      const start = () => void session.start();
+      const toggleFullscreen = async () => {
+        try {
+          if (document.fullscreenElement === this)
+            await document.exitFullscreen();
+          else await this.requestFullscreen();
+          loading.hidden = contentReady;
+        } catch {
+          loading.hidden = false;
+          loading.textContent =
+            "Fullscreen is unavailable in this browser. You can continue in the page.";
+        }
+      };
+      const syncFullscreen = () => {
+        fullscreen.textContent =
+          document.fullscreenElement === this
+            ? "Leave fullscreen"
+            : "Enter fullscreen";
+      };
+      const onKey = (event: KeyboardEvent) => {
+        if (
+          event.key === "Escape" &&
+          !event.defaultPrevented &&
+          !document.fullscreenElement &&
+          !active.hidden
+        )
+          leave();
+      };
+      const onPageHide = () => { watchdog.stop(); session.stop(); };
+      fullscreen.hidden = !document.fullscreenEnabled;
+      explore.hidden = false;
+      explore.addEventListener("click", start);
+      exit.addEventListener("click", leave);
+      fullscreen.addEventListener("click", toggleFullscreen);
+      this.addEventListener("keydown", onKey);
+      document.addEventListener("fullscreenchange", syncFullscreen);
+      window.addEventListener("pagehide", onPageHide);
+      this.dispose = () => {
+        watchdog.stop();
+        session.stop();
+        explore.removeEventListener("click", start);
+        exit.removeEventListener("click", leave);
+        fullscreen.removeEventListener("click", toggleFullscreen);
+        this.removeEventListener("keydown", onKey);
+        document.removeEventListener("fullscreenchange", syncFullscreen);
+        window.removeEventListener("pagehide", onPageHide);
+      };
+    }
+    disconnectedCallback() {
+      this.dispose?.();
+    }
+  }
+  if (!customElements.get("scene-shell"))
+    customElements.define("scene-shell", SceneShell);
+</script>

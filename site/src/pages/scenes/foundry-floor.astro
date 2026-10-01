@@ -1,0 +1,66 @@
+---
+import Callout from "../../components/Callout.astro";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SceneShell from "../../components/SceneShell.astro";
+import foundryFloor from "../../data/foundry-floor.json";
+import foundryFloorPack from "../../data/packs/foundry-floor.json";
+import { foundryFloorScene } from "../../data/scenes";
+import { FULL_WIDTH_IMAGE_SIZES } from "../../lib/catalog";
+import { PACKS_ENABLED } from "../../lib/config";
+import { foundryPresentation } from "../../lib/foundry-presentation";
+// D-33/S-2: an in-production preview for the owner's local review. It stays out of search results and the sitemap whatever foundryFloorScene.available says.
+const scene = foundryFloorScene;
+const presentation = foundryPresentation(foundryFloorPack, scene.pack.release);
+---
+
+<BaseLayout
+  title={`${scene.name} scene · Kiln`}
+  description={presentation.metadata}
+  noindex
+  nofollow
+  breadcrumbs={[
+    { label: "Scenes", href: "/scenes/" },
+    { label: `${scene.name} scene`, href: foundryFloor.sceneRoute },
+  ]}
+  card="foundry-floor"
+  preloadImage={
+    PACKS_ENABLED && scene.posterImage
+      ? {
+          src: scene.poster,
+          srcset: scene.posterImage.srcsetAvif,
+          sizes: FULL_WIDTH_IMAGE_SIZES,
+        }
+      : undefined
+  }
+>
+  <div class="container pb-12 pt-8">
+    <SceneShell scene="foundry-floor">
+    <Callout slot="notice" label="In production"><p>This preview is staged for local owner review. Appearance and device feedback remain open; technical checks do not establish owner acceptance.</p></Callout>
+    <div class="mt-8 grid gap-6 border-t border-rule pt-6 md:grid-cols-3">
+      <div>
+        <h2 class="text-subheading font-semibold">
+          The factory runs as it is modelled.
+        </h2>
+        <p class="mt-3">
+          {presentation.factory}
+        </p>
+      </div>
+      <div>
+        <h2 class="text-subheading font-semibold">What you can do.</h2>
+        <p class="mt-3">
+          {presentation.controls}
+        </p>
+      </div>
+      <div>
+        <h2 class="text-subheading font-semibold">
+          What is under the scene.
+        </h2>
+        <p class="mt-3">
+          {presentation.foundation}
+        </p>
+      </div>
+    </div>
+    <p class="mt-8 max-w-prose text-sm text-dim">{foundryFloor.notice}</p>
+    </SceneShell>
+  </div>
+</BaseLayout>

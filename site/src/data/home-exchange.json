@@ -1,0 +1,195 @@
+{
+  "schemaVersion": 1,
+  "title": "An excerpt from the first farmhouse authoring run",
+  "description": "Recorded Claude Opus 5.5 calls through the claude harness on 27 September 2026. These excerpts precede the r33 delivery and the later wood-floor refinement.",
+  "engineVersion": "0.8.0",
+  "assetId": "a_793e1ebd4c32465ab937d93215ec2a50",
+  "savedRevisionId": "r_8420afabf8fb4d58997ea50b7d13c4c9",
+  "sourceSha256": "5c518feeec554f7704b6efb1ba7f698654a81430b5ecf1ac4ab257323f5b7f3f",
+  "redactionNote": "Arguments and results are excerpts. Ellipses mark omissions; image payloads, local paths and host identifiers are omitted. Remaining values are retained verbatim from the recorded calls and responses.",
+  "events": [
+    {
+      "tool": "kiln_discover",
+      "arguments": {
+        "ids": [
+          "compilePortableMaterialSpecV2"
+        ]
+      },
+      "result": {
+        "version": "kiln.catalog-entry.v1",
+        "id": "operation:compilePortableMaterialSpecV2",
+        "name": "compilePortableMaterialSpecV2",
+        "summary": "Compiles the strict portable material contract. Texture refs are typed procedural V2 specs or typed approved-resource references; bare IDs, paths, URLs, raw textures, callbacks, and shader source are rejected."
+      },
+      "callCode": "kiln_discover({\n  \"ids\": [\n    \"compilePortableMaterialSpecV2\"\n  ]\n})",
+      "resultCode": "{\n  \"version\": \"kiln.catalog-entry.v1\",\n  \"id\": \"operation:compilePortableMaterialSpecV2\",\n  \"name\": \"compilePortableMaterialSpecV2\",\n  \"summary\": \"Compiles the strict portable material contract. Texture refs are typed procedural V2 specs or typed approved-resource references; bare IDs, paths, URLs, raw textures, callbacks, and shader source are rejected.\"\n}\n// … additional recorded result fields omitted",
+      "elisions": {
+        "arguments": [],
+        "result": [
+          "catalog contract fields after summary"
+        ],
+        "imagePayloads": 0
+      },
+      "source": {
+        "path": "farm-pilot/pack-runs/opus-farmhouse/first/events.jsonl",
+        "callLine": 28,
+        "resultLine": 31
+      }
+    },
+    {
+      "tool": "kiln_render",
+      "arguments": {
+        "programRef": "p_e7510a92b181",
+        "projectId": "farm-production"
+      },
+      "result": {
+        "ok": true,
+        "programRef": "p_e7510a92b181",
+        "tris": 3696,
+        "meshes": 14,
+        "distinctMaterials": 10,
+        "qaReport": {
+          "acceptance": "accepted",
+          "disposition": "warn"
+        },
+        "viewFidelity": {
+          "delivered": "full-material",
+          "materialFaithful": true,
+          "exactArtifact": false
+        }
+      },
+      "callCode": "kiln_render({\n  \"programRef\": \"p_e7510a92b181\",\n  \"projectId\": \"farm-production\"\n  // … additional recorded arguments omitted\n})",
+      "resultCode": "{\n  \"ok\": true,\n  \"programRef\": \"p_e7510a92b181\",\n  \"tris\": 3696,\n  \"meshes\": 14,\n  \"distinctMaterials\": 10,\n  \"qaReport\": {\n    \"acceptance\": \"accepted\",\n    \"disposition\": \"warn\"\n  },\n  \"viewFidelity\": {\n    \"delivered\": \"full-material\",\n    \"materialFaithful\": true,\n    \"exactArtifact\": false\n  }\n}\n// … additional recorded result fields omitted",
+      "elisions": {
+        "arguments": [
+          "projectRevision",
+          "capture"
+        ],
+        "result": [
+          "requirements",
+          "QA findings",
+          "bounds",
+          "part paths",
+          "view payloads",
+          "renderer identity",
+          "cache fields"
+        ],
+        "imagePayloads": 1
+      },
+      "source": {
+        "path": "farm-pilot/pack-runs/opus-farmhouse/first/events.jsonl",
+        "callLine": 422,
+        "resultLine": 423
+      }
+    },
+    {
+      "tool": "kiln_edit",
+      "arguments": {
+        "programRef": "p_e7510a92b181",
+        "edits": [
+          {
+            "oldString": "masonry: await compilePortableMaterialSpecV2(MAT.masonry),",
+            "newString": "masonry: await compilePortableMaterialSpecV2({ ...MAT.masonry, baseColor: 0xeadcbf }),"
+          }
+        ]
+      },
+      "result": {
+        "ok": true,
+        "programRef": "p_8393cb60da1a",
+        "parentRef": "p_e7510a92b181",
+        "preservation": {
+          "status": "compared",
+          "comparison": {
+            "summary": {
+              "added": 0,
+              "removed": 0,
+              "changed": 11,
+              "unchanged": 11
+            }
+          }
+        }
+      },
+      "callCode": "kiln_edit({\n  \"programRef\": \"p_e7510a92b181\",\n  \"edits\": [\n    {\n      \"oldString\": \"masonry: await compilePortableMaterialSpecV2(MAT.masonry),\",\n      \"newString\": \"masonry: await compilePortableMaterialSpecV2({ ...MAT.masonry, baseColor: 0xeadcbf }),\"\n    }\n  ]\n  // … additional recorded arguments omitted\n})",
+      "resultCode": "{\n  \"ok\": true,\n  \"programRef\": \"p_8393cb60da1a\",\n  \"parentRef\": \"p_e7510a92b181\",\n  \"preservation\": {\n    \"status\": \"compared\",\n    \"comparison\": {\n      \"summary\": {\n        \"added\": 0,\n        \"removed\": 0,\n        \"changed\": 11,\n        \"unchanged\": 11\n      }\n    }\n  }\n}\n// … additional recorded result fields omitted",
+      "elisions": {
+        "arguments": [
+          "six further exact anchored edits",
+          "projectId",
+          "projectRevision",
+          "capture"
+        ],
+        "result": [
+          "applied edit records",
+          "full diff",
+          "detailed preservation comparison",
+          "rerendered views and checks"
+        ],
+        "imagePayloads": 1
+      },
+      "source": {
+        "path": "farm-pilot/pack-runs/opus-farmhouse/first/events.jsonl",
+        "callLine": 472,
+        "resultLine": 473
+      }
+    },
+    {
+      "tool": "kiln_save",
+      "arguments": {
+        "programRef": "p_8393cb60da1a",
+        "name": "Farmhouse",
+        "collection": "project",
+        "attribution": {
+          "model": "claude-opus-5-5",
+          "harness": "claude",
+          "author": "claude-opus-5-5"
+        }
+      },
+      "result": {
+        "ok": true,
+        "collection": "project",
+        "asset": {
+          "assetId": "a_793e1ebd4c32465ab937d93215ec2a50",
+          "revisionId": "r_8420afabf8fb4d58997ea50b7d13c4c9",
+          "editable": true,
+          "files": {
+            "asset.glb": {
+              "sha256": "sha256:1a95531a7a0df828d36c66e1d0e92878b51c89435aad2fac3a001a25c5567629",
+              "bytes": 508188
+            },
+            "source.kiln.js": {
+              "sha256": "sha256:8393cb60da1a351ba904dafe736011827da565699366ef452feed67359f4cda8",
+              "bytes": 20858
+            },
+            "preview.png": {
+              "sha256": "sha256:2314c5b98966f926db6c597e249c8ca0a034d046fd1f0dec0ea0d4b62d36d0bf",
+              "bytes": 368695
+            }
+          }
+        }
+      },
+      "callCode": "kiln_save({\n  \"programRef\": \"p_8393cb60da1a\",\n  \"name\": \"Farmhouse\",\n  \"collection\": \"project\",\n  \"attribution\": {\n    \"model\": \"claude-opus-5-5\",\n    \"harness\": \"claude\",\n    \"author\": \"claude-opus-5-5\"\n  }\n  // … additional recorded arguments omitted\n})",
+      "resultCode": "{\n  \"ok\": true,\n  \"collection\": \"project\",\n  \"asset\": {\n    \"assetId\": \"a_793e1ebd4c32465ab937d93215ec2a50\",\n    \"revisionId\": \"r_8420afabf8fb4d58997ea50b7d13c4c9\",\n    \"editable\": true,\n    \"files\": {\n      \"asset.glb\": {\n        \"sha256\": \"sha256:1a95531a7a0df828d36c66e1d0e92878b51c89435aad2fac3a001a25c5567629\",\n        \"bytes\": 508188\n      },\n      \"source.kiln.js\": {\n        \"sha256\": \"sha256:8393cb60da1a351ba904dafe736011827da565699366ef452feed67359f4cda8\",\n        \"bytes\": 20858\n      },\n      \"preview.png\": {\n        \"sha256\": \"sha256:2314c5b98966f926db6c597e249c8ca0a034d046fd1f0dec0ea0d4b62d36d0bf\",\n        \"bytes\": 368695\n      }\n    }\n  }\n}\n// … additional recorded result fields omitted",
+      "elisions": {
+        "arguments": [
+          "projectId",
+          "projectRevision",
+          "brief",
+          "description",
+          "tags"
+        ],
+        "result": [
+          "asset tags",
+          "creation time",
+          "build record",
+          "resource links"
+        ],
+        "imagePayloads": 0
+      },
+      "source": {
+        "path": "farm-pilot/pack-runs/opus-farmhouse/first/events.jsonl",
+        "callLine": 544,
+        "resultLine": 545
+      }
+    }
+  ]
+}

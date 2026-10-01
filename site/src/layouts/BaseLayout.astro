@@ -1,0 +1,303 @@
+---
+import "../styles/global.css";
+import Logo from "../components/Logo.astro";
+import { REPO, SITE, VERSION } from "../lib/config";
+import { socialCard } from "../lib/social";
+interface Props {
+  title: string;
+  description: string;
+  breadcrumbs?: { label: string; href: string }[];
+  noindex?: boolean;
+  /** With noindex, also keep crawlers from following this page's links. */
+  nofollow?: boolean;
+  skipTarget?: string;
+  /** The share card drawn by `scripts/build-site-media.mjs` (`src/lib/social-cards.mjs` lists them). */
+  card?: string;
+  jsonLd?: Record<string, unknown>;
+  preloadImage?: { src: string; srcset?: string; sizes?: string };
+}
+const {
+  title,
+  description,
+  breadcrumbs = [],
+  noindex = false,
+  nofollow = false,
+  skipTarget = "main",
+  card = "home",
+  jsonLd,
+  preloadImage,
+} = Astro.props;
+const canonical = new URL(
+  ["/404.html", "/404/"].includes(Astro.url.pathname)
+    ? "/404.html"
+    : `${Astro.url.pathname.replace(/\/$/, "")}/`,
+  SITE,
+).href;
+const social = socialCard(card);
+const archiveItem = /^\/gallery\/archive\/[^/]+\/$/.test(Astro.url.pathname);
+const pageTitle = archiveItem ? `${title.replace(/ · Kiln archive$/, "")} · Archive · Kiln` : breadcrumbs.length ? `${breadcrumbs.at(-1)!.label} · Kiln` : title;
+const pageDescription = description.length > 160 ? `${description.slice(0, 152).replace(/\s+\S*$/, "")}…` : description;
+const nav = [
+  ["Docs", "/docs/"],
+  ["Packs", "/packs/"],
+  ["Gallery", "/gallery/"],
+  ["Scenes", "/scenes/"],
+] as const;
+const structured = [
+  ...(jsonLd ? [jsonLd] : []),
+  ...(breadcrumbs.length
+    ? [
+        {
+          "@context": "https://schema.org",
+          "@type": "BreadcrumbList",
+          itemListElement: [{ label: "Home", href: "/" }, ...breadcrumbs].map(
+            (item, i) => ({
+              "@type": "ListItem",
+              position: i + 1,
+              name: item.label,
+              item: new URL(item.href, SITE).href,
+            }),
+          ),
+        },
+      ]
+    : []),
+];
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="light" />
+    <title>{pageTitle}</title>
+    <meta name="description" content={pageDescription} />
+    <link rel="canonical" href={canonical} />
+    {noindex && <meta name="robots" content={nofollow ? "noindex, nofollow" : "noindex, follow"} />}
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={pageDescription} />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:site_name" content="Kiln" />
+    <meta property="og:image" content={social.url} />
+    <meta property="og:image:width" content={String(social.width)} />
+    <meta property="og:image:height" content={String(social.height)} />
+    <meta property="og:image:type" content={social.type} />
+    <meta property="og:image:alt" content={social.alt} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={pageTitle} />
+    <meta name="twitter:description" content={pageDescription} />
+    <meta name="twitter:image" content={social.url} />
+    <meta name="twitter:image:alt" content={social.alt} />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="icon" href="/favicon-32.png" sizes="32x32" type="image/png" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link
+      rel="preload"
+      href="/fonts/archivo-latin-full-normal.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+    <link
+      rel="preload"
+      href="/fonts/ibm-plex-mono-latin-400-normal.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+    {preloadImage && (
+      <link
+        rel="preload"
+        as="image"
+        href={preloadImage.src}
+        imagesrcset={preloadImage.srcset}
+        imagesizes={preloadImage.sizes}
+        fetchpriority="high"
+      />
+    )}
+    <link
+      rel="alternate"
+      type="text/plain"
+      href="/llms.txt"
+      title="Kiln agent reading guide"
+    />
+    {structured.map((value) => (
+      <script
+        type="application/ld+json"
+        set:html={JSON.stringify(value).replace(/</g, "\\u003c")}
+      />
+    ))}
+    <slot name="head" />
+  </head>
+  <body>
+    <a
+      href={`#${skipTarget}`}
+      class="fixed top-2 left-2 z-50 -translate-y-24 bg-ink px-6 py-3 text-sheet hover:text-sheet focus:translate-y-0"
+    >
+      Skip to content
+    </a>
+    <header class="border-b border-rule">
+      <div class="container flex min-h-18 flex-wrap items-center justify-between gap-3 py-3">
+        <a
+          href="/"
+          aria-label="Kiln home"
+          class="flex min-h-11 items-center gap-2 text-ink no-underline"
+        >
+          <Logo />
+          <span class="text-2xl font-bold tracking-tight">Kiln</span>
+        </a>
+        <span class="border border-rule px-2 py-1 font-mono text-caption text-dim">{VERSION.split('.').slice(0, 2).join('.')}</span>
+          <button
+            type="button"
+            id="menu-toggle"
+            class="ml-auto min-h-11 border border-ink px-3 nav:hidden"
+            aria-expanded="false"
+            aria-controls="primary-nav"
+            hidden
+          >
+            Menu
+          </button>
+        <nav
+          id="primary-nav"
+          aria-label="Primary"
+          class="flex w-full flex-wrap items-center gap-1 nav:ml-auto nav:w-auto"
+        >
+          {nav.map(([label, href]) => (
+            <a
+              href={href}
+              aria-current={
+                Astro.url.pathname.startsWith(href) ? "page" : undefined
+              }
+              class:list={[
+                "min-h-11 px-3 py-2 text-base font-medium no-underline",
+                Astro.url.pathname.startsWith(href)
+                  ? "text-ember underline"
+                  : "text-ink",
+              ]}
+            >
+              {label}
+            </a>
+          ))}
+          <a
+            href={REPO}
+            class="inline-flex min-h-11 items-center gap-1 whitespace-nowrap px-3 py-2 text-base font-medium no-underline"
+          >
+            GitHub <span aria-hidden="true">↗</span>
+          </a>
+        </nav>
+        <a class:list={["btn min-h-11 px-4 py-2", Astro.url.pathname === "/" && "btn-secondary"]} href="/docs/install/">Get Kiln</a>
+      </div>
+    </header>
+    <script is:inline>
+      {
+        const desktop = matchMedia("(min-width: 60rem)").matches;
+        document.getElementById("menu-toggle").hidden = desktop;
+        document.getElementById("primary-nav").hidden = !desktop;
+      }
+    </script>
+    {breadcrumbs.length > 0 && (
+      <nav aria-label="Breadcrumb" class="container py-5">
+        <ol class="flex flex-wrap items-center gap-x-2 gap-y-1 font-mono text-caption">
+          <li>
+            <a href="/" class="text-dim">
+              Home
+            </a>
+          </li>
+          {breadcrumbs.map((item, i) => (
+            <li class="breadcrumb-item flex items-center gap-2">
+              {i === breadcrumbs.length - 1 ? (
+                <span aria-current="page">{item.label}</span>
+              ) : (
+                <a href={item.href} class="text-dim">
+                  {item.label}
+                </a>
+              )}
+            </li>
+          ))}
+        </ol>
+      </nav>
+    )}
+    <main id="main" tabindex="-1">
+      <slot />
+    </main>
+    <footer class="mt-24 border-t border-ink py-12 md:mt-32">
+      <div class="container">
+        <div class="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+          <div>
+            <a
+              href="/"
+              class="inline-flex min-h-11 items-center gap-2 text-xl font-semibold no-underline"
+            >
+              <Logo size={28} />
+              Kiln
+            </a>
+            <p class="mt-3 max-w-lead text-caption text-dim">
+              Build and revise 3D assets with your coding agent.
+            </p>
+          </div>
+          <nav
+            aria-label="Footer"
+            class="grid grid-cols-2 content-start gap-x-4"
+          >
+            <a class="text-link" href="/docs/">
+              Docs
+            </a>
+            <a class="text-link" href={REPO}>
+              GitHub
+            </a>
+            <a class="text-link" href={`${REPO}/blob/main/LICENSE`}>
+              Kiln licence: MIT
+            </a>
+            <a class="text-link" href="/packs/">
+              Kiln Commons
+            </a>
+            <a class="text-link" href="/llms.txt">
+              llms.txt
+            </a>
+            <a class="text-link" href="/sitemap.xml">
+              Sitemap
+            </a>
+          </nav>
+          <p class="max-w-reading text-caption text-dim">
+            CC0-1.0 covers authored Commons asset content to the extent of the
+            owner’s rights. Kiln, scene code, Three.js and other components
+            retain their own licences.
+          </p>
+        </div>
+        <div class="mt-10 flex flex-wrap justify-between gap-4 border-t border-rule pt-5 font-mono text-code text-dim">
+          <span>Kiln {VERSION} · local candidate</span>
+        </div>
+      </div>
+    </footer>
+    <script>
+      const toggle = document.querySelector<HTMLButtonElement>("#menu-toggle");
+      const nav = document.querySelector<HTMLElement>("#primary-nav");
+      if (toggle && nav) {
+        const media = window.matchMedia("(min-width: 60rem)");
+        const sync = () => {
+          toggle.hidden = media.matches;
+          toggle.textContent = toggle.getAttribute("aria-expanded") === "true" ? "Close" : "Menu";
+          nav.hidden =
+            !media.matches && toggle.getAttribute("aria-expanded") !== "true";
+        };
+        toggle.addEventListener("click", () => {
+          toggle.setAttribute(
+            "aria-expanded",
+            String(toggle.getAttribute("aria-expanded") !== "true"),
+          );
+          sync();
+        });
+        nav.addEventListener("keydown", (event) => {
+          if (event.key === "Escape" && !media.matches) {
+            toggle.setAttribute("aria-expanded", "false");
+            sync();
+            toggle.focus();
+          }
+        });
+        media.addEventListener("change", sync);
+        sync();
+      }
+    </script>
+  </body>
+</html>

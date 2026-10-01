@@ -1,0 +1,62 @@
+---
+import { sceneRuntimes } from "virtual:kiln-scenes";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SceneShell from "../../components/SceneShell.astro";
+import { farmScene } from "../../data/scenes";
+import { FULL_WIDTH_IMAGE_SIZES } from "../../lib/catalog";
+import { PACKS_ENABLED } from "../../lib/config";
+// The Farm preview stays out of search results and the sitemap whatever
+// farm.scene.available says; qualification, not this flag, decides when that changes.
+---
+
+<BaseLayout
+  title={`${farmScene.name} scene · Kiln`}
+  description={sceneRuntimes.farm
+    ? "The current Farm preview awaits owner review. Explore first-person walking, tractor driving and touch controls, or download the runnable scene."
+    : "View the Farm scene's current review status, control and device notes, and runnable scene download."}
+  noindex
+  nofollow
+  breadcrumbs={[
+    { label: "Scenes", href: "/scenes/" },
+    { label: `${farmScene.name} scene`, href: "/scenes/farm/" },
+  ]}
+  card="scenes"
+  preloadImage={
+    PACKS_ENABLED
+      ? {
+          src: farmScene.poster,
+          srcset: farmScene.posterImage.srcsetAvif,
+          sizes: FULL_WIDTH_IMAGE_SIZES,
+        }
+      : undefined
+  }
+>
+  <div class="container pb-12 pt-8">
+    <SceneShell scene="farm">
+    <div class="mt-8 grid gap-6 border-t border-rule pt-6 md:grid-cols-2 lg:grid-cols-3">
+      <div>
+        <h2 class="text-subheading font-semibold">{farmScene.touch.heading}</h2>
+        <p class="mt-3">{farmScene.touch.intro}</p>
+        <ul class="mt-3 list-disc space-y-2 pl-5">
+          {farmScene.touch.controls.map((line) => <li>{line}</li>)}
+        </ul>
+      </div>
+      <div>
+        <h2 class="text-subheading font-semibold">
+          {farmScene.touch.qualityHeading}
+        </h2>
+        {farmScene.touch.quality.map((line) => <p class="mt-3">{line}</p>)}
+      </div>
+      <div class="md:col-span-2 lg:col-span-1">
+        <h2 class="text-subheading font-semibold">
+          Use the current scene download.
+        </h2>
+        <p class="mt-3">
+          {farmScene.desktop} {farmScene.mobile} {farmScene.exclusions} Extract
+          the scene archive and run <code>node scene/serve.mjs --verify</code>.
+        </p>
+      </div>
+    </div>
+    </SceneShell>
+  </div>
+</BaseLayout>

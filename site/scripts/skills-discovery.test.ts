@@ -13,9 +13,10 @@ import { gunzipSync } from 'node:zlib';
 import { expect, test } from 'bun:test';
 
 import { buildSkillsDiscovery } from './build-skills-discovery.mjs';
+import { docsDirectory, skillsDirectory } from './source-dirs.mjs';
 
-const REPO = resolve(import.meta.dir, '../..');
-const SKILLS = join(REPO, 'skills');
+// The directory the build publishes from (KILN_SITE_SKILLS_DIR, else the docs directory's sibling skills/).
+const SKILLS = skillsDirectory();
 const sha256 = (bytes: Uint8Array) =>
   `sha256:${createHash('sha256').update(bytes).digest('hex')}`;
 
@@ -48,6 +49,16 @@ async function build() {
   const index = await buildSkillsDiscovery({ out });
   return { out, index };
 }
+
+test('the skills directory follows the docs directory unless it is named', () => {
+  const site = resolve('/work/site');
+  expect(skillsDirectory({}, site)).toBe(resolve('/work/skills'));
+  expect(docsDirectory({}, site)).toBe(resolve('/work/docs'));
+  const engineDocs = resolve('/engine/docs');
+  expect(skillsDirectory({ KILN_SITE_DOCS_DIR: engineDocs }, site)).toBe(resolve('/engine/skills'));
+  expect(skillsDirectory({ KILN_SITE_DOCS_DIR: engineDocs, KILN_SITE_SKILLS_DIR: resolve('/other/skills') }, site)).toBe(resolve('/other/skills'));
+  expect(skillsDirectory({ KILN_SITE_SKILLS_DIR: '../elsewhere/skills' }, site)).toBe(resolve('/work/elsewhere/skills'));
+});
 
 test('every published digest is the sha256 of the bytes actually served', async () => {
   const { out, index } = await build();

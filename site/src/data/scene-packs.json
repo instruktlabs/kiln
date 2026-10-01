@@ -1,0 +1,108 @@
+{
+  "farm": {
+    "schema": "kiln.scene-pack/1",
+    "id": "farm",
+    "release": "r36-local-review",
+    "three": "0.186.0",
+    "source": "../engine-work/local-v09-review/revision3-farmer-back-20261001/farm-runtime-final/standalone",
+    "base": "/scene-packs/farm/r36-local-review/",
+    "sealedFiles": 34,
+    "sealedBytes": 7133727,
+    "totalFiles": 37,
+    "totalBytes": 7168212,
+    "packJsonSha256": "5d046aa2c04637436d7e3918db690f4f25f6684a58ae7a78d333dec9df428f48",
+    "sha256sumsSha256": "3bea335e386e15ea652afd1545c7df1a03d8c719f11ec95e41a95680258c44e2",
+    "noticesSha256": "4bf6f2bd1d803606c88eb540c8e207ddee4a76be4d12fe14d6110bb7505e4ebc"
+  },
+  "golden-gate": {
+    "schema": "kiln.scene-pack/1",
+    "id": "golden-gate",
+    "release": "g9",
+    "three": "0.186.0",
+    "source": "../engine-work/local-v09-review/revision2-20260930/golden-runtime-final/standalone",
+    "base": "/scene-packs/golden-gate/g9/",
+    "sealedFiles": 103,
+    "sealedBytes": 12186327,
+    "totalFiles": 106,
+    "totalBytes": 12240923,
+    "packJsonSha256": "c2a1d83fce6caf07a7b3e87070ccb8a983dd68e0c7f98eee3f1ba5255ce059cb",
+    "sha256sumsSha256": "75ce79fc746eafd27d7b597396489294a821fef5d88a05981b6bb9572159a58a",
+    "noticesSha256": "4bf6f2bd1d803606c88eb540c8e207ddee4a76be4d12fe14d6110bb7505e4ebc",
+    "runtime": {
+      "kind": "frame",
+      "file": "index-CGkQ2AbK.js",
+      "bytes": 1721321,
+      "gzipBytes": 517862,
+      "gzipMethod": "bun-zlib",
+      "sha256": "45001bc0af79bf5668fdc3f8e227a5862cc57b97a32002a2e85ba9acc4a8460d",
+      "modulesSha256": "937d2b5c931d4f6e474528a4326413c82ac3b91a3fe29b56d0acbf606b14f9af"
+    }
+  },
+  "foundry-floor": {
+    "schema": "kiln.scene-pack/1",
+    "id": "foundry-floor",
+    "release": "ff3-review2",
+    "three": "0.186.0",
+    "source": "../engine-work/local-v09-review/revision2-20260930/foundry-runtime-final/standalone",
+    "base": "/scene-packs/foundry-floor/ff3-review2/",
+    "sealedFiles": 85,
+    "sealedBytes": 11519818,
+    "totalFiles": 88,
+    "totalBytes": 11637133,
+    "packJsonSha256": "6ce49d05791bf42d21f3628237a5cf005ce9f2fa15938f0c321430d781c2c5d4",
+    "sha256sumsSha256": "21ec914770e35ced418015e1e9965488d96cb8e457bbc1602273cc3936712e7c",
+    "noticesSha256": "4bf6f2bd1d803606c88eb540c8e207ddee4a76be4d12fe14d6110bb7505e4ebc",
+    "runtime": {
+      "kind": "frame",
+      "file": "index-umTduCLH.js",
+      "bytes": 1700697,
+      "gzipBytes": 516088,
+      "gzipMethod": "bun-zlib",
+      "sha256": "0a934e08ca4be7834aad4e6f6fef492a9248e4fa29b2953a6d6f22359ec92cb7",
+      "modulesSha256": "d5d56fe3e7945d39807b4d06bb7577d7850d55d8bb5f14bb90c4859735002828",
+      "initialLoad": {
+        "files": [
+          "data-BqQ-1EPs.js",
+          "exterior-9XKlTe53.js",
+          "index-umTduCLH.js"
+        ],
+        "bytes": 1525112,
+        "gzipBytes": 445765,
+        "deferredFiles": [
+          "interior-DxlT87x0.js"
+        ],
+        "receiptSha256": "da50afbbcaae6653a64fc9f93c92b3e78cc8124437346e623758680a82d41164"
+      },
+      "chunks": [
+        {
+          "file": "data-BqQ-1EPs.js",
+          "bytes": 42050,
+          "gzipBytes": 11685,
+          "gzipMethod": "bun-zlib",
+          "sha256": "a0a742ecd49f25e8edbba835c070f9307fece5c138e9fec73b78331a5e369176"
+        },
+        {
+          "file": "exterior-9XKlTe53.js",
+          "bytes": 73578,
+          "gzipBytes": 28254,
+          "gzipMethod": "bun-zlib",
+          "sha256": "15922b270ce2c577cdbde80207e77f2980dbfdb9def371ca13e05d01d3916e81"
+        },
+        {
+          "file": "index-umTduCLH.js",
+          "bytes": 1409484,
+          "gzipBytes": 405826,
+          "gzipMethod": "bun-zlib",
+          "sha256": "0a934e08ca4be7834aad4e6f6fef492a9248e4fa29b2953a6d6f22359ec92cb7"
+        },
+        {
+          "file": "interior-DxlT87x0.js",
+          "bytes": 175585,
+          "gzipBytes": 70323,
+          "gzipMethod": "bun-zlib",
+          "sha256": "babffc4fb0c7d49ebc971cb7a1bd0e38039ec980a6bd74a9b8df255ed31ec270"
+        }
+      ]
+    }
+  }
+}

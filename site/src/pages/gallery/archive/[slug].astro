@@ -1,0 +1,297 @@
+---
+import PageHeader from "../../../components/PageHeader.astro";
+import { readFile } from "node:fs/promises";
+import { resolve } from "node:path";
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+import AssetViewer from "../../../components/AssetViewer.astro";
+import EngineNote from "../../../components/EngineNote.astro";
+import CodeBlock from "../../../components/CodeBlock.astro";
+import type { Specimen } from "../../../types";
+import { REPO, SITE } from "../../../lib/config";
+import { archiveLabel, archiveName, isDemo, spaced } from "../../../lib/archive-names.mjs";
+import { harnessName } from "../../../lib/attribution";
+export async function getStaticPaths() {
+  const specimens: Specimen[] = JSON.parse(
+    await readFile(resolve("public/assets/index.json"), "utf8"),
+  );
+  return specimens.map((specimen, index) => ({
+    params: { slug: specimen.name },
+    props: {
+      specimen,
+      previous: specimens[(index + specimens.length - 1) % specimens.length]!,
+      next: specimens[(index + 1) % specimens.length]!,
+    },
+  }));
+}
+interface Props {
+  specimen: Specimen;
+  previous: Specimen;
+  next: Specimen;
+}
+const { specimen, previous, next } = Astro.props;
+const name = archiveName(specimen.name);
+const label = archiveLabel(specimen.name);
+const demo = isDemo(specimen.name);
+// A recorded demo run names no model; its attribution is one plain line instead of "{model} through {harness}".
+const modelRecorded = specimen.model !== "Not independently recorded";
+const description = `${label}: an unreviewed historical Kiln example. Inspect the GLB, read its JavaScript source and see the recorded model and harness attribution.`;
+const source = specimen.source
+  ? await readFile(resolve("public", specimen.source), "utf8")
+  : null;
+const fields = [
+  ["Source access", specimen.provenance?.sourceAccess],
+  ["Inherited context", specimen.provenance?.inheritedContext],
+  ["Starting example", specimen.provenance?.startingExample],
+  ["Human input", specimen.provenance?.humanIntervention],
+  ["Authoring review", specimen.provenance?.reviewFidelity],
+];
+const formatBytes = (bytes: number) => `${bytes.toLocaleString("en-US")} bytes`;
+// The archive renders are single files with a baked grey background (measured: rgb(118,118,118) in the corners of all
+// 80); the viewer frame takes that colour so the poster does not sit pillarboxed on the site backdrop. The poster is
+// declared at the size build-assets recorded for it, which verify-assets checks against the file.
+---
+
+<BaseLayout
+  title={`${label} · Kiln archive`}
+  description={description}
+  noindex
+  card={`archive-${specimen.name}`}
+  breadcrumbs={[
+    { label: "Gallery", href: "/gallery/" },
+    { label: "Archive", href: "/gallery/archive/" },
+    { label: name, href: `/gallery/archive/${specimen.name}/` },
+  ]}
+  jsonLd={{
+    "@context": "https://schema.org",
+    "@type": "3DModel",
+    name,
+    description,
+    url: `${SITE}/gallery/archive/${specimen.name}/`,
+    encoding: {
+      "@type": "MediaObject",
+      contentUrl: `${SITE}/${specimen.runtime.file}`,
+      encodingFormat: "model/gltf-binary",
+      contentSize: String(specimen.runtime.bytes),
+    },
+  }}
+>
+  <article class="container pt-8">
+    <div class="max-w-reading">
+      <PageHeader>{name}</PageHeader>
+      {demo && (
+        <p class="mt-3">
+          <span class="inline-block border border-rule px-2 py-0.5 font-mono text-code text-dim">Demo run</span>
+        </p>
+      )}
+      {specimen.caption && <p class="lead mt-5">{specimen.caption}</p>}
+      <p class="mt-4 text-caption text-dim">
+        Earlier examples from earlier Kiln versions, not reviewed to the pack
+        standard.
+      </p>
+    </div>
+    <div class="mt-8 grid items-start gap-8 lg:grid-cols-3">
+      <div class="min-w-0 lg:col-span-2">
+        <AssetViewer
+          name={name}
+          modelUrl={`/${specimen.file}`}
+          poster={`/${specimen.poster}`}
+          posterWidth={specimen.posterWidth}
+          posterHeight={specimen.posterHeight}
+          frameClass="bg-[#767676]"
+          posterAlt={`Historical gallery render of ${name}; see the poster provenance below.`}
+        />
+        <EngineNote />
+      </div>
+      <div class="min-w-0 border-y border-ink py-5">
+        <h2 class="text-subheading">Build measurements</h2>
+        <dl class="mt-5 grid grid-cols-2 gap-x-3 gap-y-3 text-caption">
+          <dt>Triangles</dt>
+          <dd class="font-mono">{specimen.tris.toLocaleString("en-US")}</dd>
+          <dt>Estimated draws</dt>
+          <dd class="font-mono">{specimen.drawCalls}</dd>
+          <dt>Materials</dt>
+          <dd class="font-mono">{specimen.materials}</dd>
+          <dt>Textures</dt>
+          <dd class="font-mono">{specimen.textures}</dd>
+          <dt>Animation clips</dt>
+          <dd class="font-mono">{specimen.animations ?? 0}</dd>
+          <dt>Bounds X × Y × Z</dt>
+          <dd class="font-mono">
+            {specimen.size
+              .map((value) =>
+                value.toLocaleString("en-US", { maximumFractionDigits: 2 }),
+              )
+              .join(" × ")}{" "}
+            m
+          </dd>
+          <dt>Build warnings</dt>
+          <dd class="font-mono">{specimen.warnings}</dd>
+        </dl>
+        <p class="mt-5 text-caption text-dim">
+          Measurements come from this build. They describe structure and cost,
+          not visual acceptance.
+        </p>
+      </div>
+    </div>
+    <div class="mt-14 grid items-start gap-12 lg:grid-cols-2">
+      <section class="min-w-0" aria-labelledby="downloads">
+        <h2 id="downloads">Download this build</h2>
+        <div class="mt-5 flex flex-wrap gap-3">
+          <a class="btn" href={`/${specimen.runtime.file}`} download>
+            Runtime GLB
+          </a>
+          <a class="btn btn-secondary" href={`/${specimen.file}`} download>
+            Original GLB
+          </a>
+          {specimen.source && (
+            <a class="btn btn-secondary" href={`/${specimen.source}`} download>
+              Source .kiln.js
+            </a>
+          )}
+        </div>
+        <p class="mt-4 text-caption">
+          Runtime: {formatBytes(specimen.runtime.bytes)}. Original:{" "}
+          {formatBytes(specimen.bytes)}.
+        </p>
+        <p class="mt-2 text-caption text-dim">
+          These GLBs are build outputs of the MIT-licensed example source; no
+          separate terms are stated for the builds.
+        </p>
+        <a
+          class="text-link"
+          href={`/${specimen.runtime.metadata.file}`}
+          download
+        >
+          Runtime provenance metadata
+        </a>
+        <details class="mt-4 border border-rule">
+          <summary class="font-medium">SHA-256 download hashes</summary>
+          <dl class="space-y-4 px-4 pb-5 text-caption">
+            <div>
+              <dt>Runtime GLB</dt>
+              <dd class="mt-1 break-all font-mono text-code">
+                {specimen.runtime.sha256}
+              </dd>
+            </div>
+            {specimen.artifactHash && (
+              <div>
+                <dt>Original GLB</dt>
+                <dd class="mt-1 break-all font-mono text-code">
+                  {specimen.artifactHash}
+                </dd>
+              </div>
+            )}
+            {specimen.sourceHash && (
+              <div>
+                <dt>Source</dt>
+                <dd class="mt-1 break-all font-mono text-code">
+                  {specimen.sourceHash}
+                </dd>
+              </div>
+            )}
+          </dl>
+        </details>
+        <p class="mt-5 text-caption">
+          The example source is part of the Kiln repository.{" "}
+          <a class="underline" href={`${REPO}/blob/main/LICENSE`}>
+            Repository licence: MIT
+          </a>
+          .
+        </p>
+        <p class="mt-4 text-caption">These GLBs are build outputs of the MIT-licensed example source; no separate terms are stated for the builds.</p>
+      </section>
+      <section class="min-w-0" aria-labelledby="authorship">
+        <h2 id="authorship">Recorded authorship</h2>
+        {modelRecorded ? (
+          <p class="mt-5">
+            {specimen.model}{specimen.harness && <> through {harnessName(specimen.harness)}</>}{specimen.authoredDate && <> · <time datetime={specimen.authoredDate}>{specimen.authoredDate}</time></>}
+          </p>
+        ) : (
+          <p class="mt-5">
+            Model not recorded. {specimen.harness ?? "Recorded session"}{specimen.authoredDate && <>, <time datetime={specimen.authoredDate}>{specimen.authoredDate}</time></>}.
+          </p>
+        )}
+        <p class="mt-2 text-caption text-dim">
+          {specimen.provenance?.attribution ??
+            "Historical collection attribution; no model header"}
+        </p>
+        <dl class="mt-6 space-y-4 text-caption">
+          {fields.map(([label, value]) => (
+            <div>
+              <dt class="font-semibold">{label}</dt>
+              <dd class="mt-1">{value ? spaced(value) : "Not recorded"}</dd>
+            </div>
+          ))}
+        </dl>
+        <p class="mt-5 text-caption">
+          {specimen.provenance?.poster ??
+            "Gallery poster is an archival render; its source revision was not recorded."}
+        </p>
+        {specimen.provenance?.posterReceipt && (
+          <a class="text-link" href={`/assets/${specimen.name}.poster.json`}>
+            Poster camera and render record
+          </a>
+        )}
+      </section>
+    </div>
+    <section class="mt-16 min-w-0" aria-labelledby="source">
+      <h2 id="source">The source behind this build</h2>
+      {source ? (
+        <div class="mt-6">
+          <CodeBlock code={source} label={`${specimen.name}.kiln.js`} />
+        </div>
+      ) : (
+        <p class="mt-5">A source file is not recorded for this example.</p>
+      )}
+    </section>
+    <section class="mt-16 max-w-reading" aria-labelledby="history">
+      <h2 id="history">Brief and retained revisions</h2>
+      {specimen.history ? (
+        <>
+          <h3 class="mt-6 text-title">
+            {specimen.history.brief.kind === "summary"
+              ? "Brief summary"
+              : "Recorded brief"}
+          </h3>
+          <p class="mt-3">{specimen.history.brief.text}</p>
+          <ol class="mt-8 space-y-8">
+            {specimen.history.revisions.map((revision) => (
+              <li class="border-t border-rule pt-5">
+                <h3 class="text-title">
+                  {revision.title}
+                  {revision.current && " · Shown here"}
+                </h3>
+                <p class="mt-3">{revision.description}</p>
+                <a class="text-link" href={`/${revision.source}`} download>
+                  Download {revision.title.toLowerCase()} source
+                </a>
+                <p class="break-all font-mono text-code text-dim">
+                  SHA-256: {revision.sourceHash}
+                </p>
+              </li>
+            ))}
+          </ol>
+        </>
+      ) : (
+        <p class="mt-5">
+          No brief or earlier revisions are recorded. The source download
+          contains the version built for this page.
+        </p>
+      )}
+    </section>
+    <nav
+      aria-label="More archive examples"
+      class="mt-16 flex flex-wrap justify-between gap-4 border-t border-rule pt-6"
+    >
+      <a class="text-link" href={`/gallery/archive/${previous.name}/`}>
+        <span aria-hidden="true">←</span> {archiveLabel(previous.name)}
+      </a>
+      <a class="text-link" href="/gallery/archive/">
+        All earlier examples
+      </a>
+      <a class="text-link" href={`/gallery/archive/${next.name}/`}>
+        {archiveLabel(next.name)} <span aria-hidden="true">→</span>
+      </a>
+    </nav>
+  </article>
+</BaseLayout>

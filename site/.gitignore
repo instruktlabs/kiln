@@ -1,0 +1,13 @@
+.cache/
+.astro/
+public/media/
+public/models/
+public/sources/
+public/social/
+public/fonts/
+public/apple-touch-icon.png
+public/favicon-*.png
+public/standalone/
+public/scene-packs/
+public/scene-runtime/
+.tmp/

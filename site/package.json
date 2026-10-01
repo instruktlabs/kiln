@@ -2,26 +2,47 @@
   "name": "kiln-site",
   "private": true,
   "type": "module",
-  "description": "The Kiln gallery: selected checked-in programs, built and shown as the GLB it produces.",
+  "description": "Kiln 0.9: the tool, source docs and revision-bound Commons assets.",
   "scripts": {
     "assets": "bun scripts/build-assets.mjs",
-    "dev": "vite",
-    "build": "vite build",
-    "preview": "vite preview"
+    "dev": "astro dev",
+    "build": "node scripts/fetch-mirror.mjs && node scripts/build-site-media.mjs && node scripts/scene-pack.mjs && node scripts/scene-runtime.mjs && astro build && node scripts/finalize-site.mjs && node scripts/subset-site-fonts.mjs && node scripts/build-info.mjs",
+    "stage:scene": "node scripts/scene-pack.mjs && node scripts/scene-runtime.mjs",
+    "preview": "astro preview",
+    "check": "astro check",
+    "test": "bun test scripts --timeout 20000"
   },
   "dependencies": {
-    "@react-three/drei": "^10.7.8",
-    "@react-three/fiber": "^9.7.0",
-    "react": "^19.3.0",
-    "react-dom": "^19.3.0",
-    "three": "0.186.0"
+    "astro": "7.3.5",
+    "@astrojs/react": "7.0.0",
+    "@astrojs/markdown-remark": "7.3.1",
+    "@react-three/drei": "10.7.9",
+    "@react-three/fiber": "9.8.1",
+    "react": "19.3.0",
+    "react-dom": "19.3.0",
+    "three": "0.186.0",
+    "@fontsource-variable/archivo": "5.3.0",
+    "@fontsource/ibm-plex-mono": "5.3.0",
+    "tailwindcss": "4.3.3",
+    "@tailwindcss/vite": "4.3.3",
+    "@tailwindcss/typography": "0.5.20"
   },
   "devDependencies": {
+    "@astrojs/check": "0.9.10",
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
-    "@types/three": "^0.186.0",
-    "@vitejs/plugin-react": "^6.1.1",
-    "typescript": "^7.0.2",
-    "vite": "^8.3.0"
+    "@types/three": "0.186.0",
+    "@vitejs/plugin-react": "6.1.1",
+    "axe-core": "4.13.0",
+    "fflate": "0.8.3",
+    "fontkitten": "1.0.3",
+    "fontverter": "2.0.0",
+    "html-validate": "11.16.1",
+    "lighthouse": "13.5.0",
+    "parse5": "8.0.0",
+    "puppeteer-core": "25.12.0",
+    "sharp": "0.35.5",
+    "subset-font": "2.9.0",
+    "typescript": "6.0.3"
   }
 }

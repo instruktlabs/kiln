@@ -16,7 +16,10 @@ export interface Specimen {
   };
   animations?: number;
   authoredDate?: string;
-  poster?: string;
+  /** The item page's hero, and its pixel size as the build wrote it. */
+  poster: string;
+  posterWidth: number;
+  posterHeight: number;
   heroPoster?: Record<string, unknown>;
   source?: string;
   sourceHash?: string;

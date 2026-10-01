@@ -1,0 +1,91 @@
+{
+  "golden-gate": {
+    "poster": {
+      "src": "/media/scenes/golden-gate/g5/golden-gate-scene-drive.webp",
+      "width": 1440,
+      "height": 925,
+      "alt": "A blue sedan driving across the deck of the Golden Gate Bridge scene, with traffic around it and both towers ahead.",
+      "srcsetWebp": "/media/scenes/golden-gate/g5/golden-gate-scene-drive-320.webp 320w, /media/scenes/golden-gate/g5/golden-gate-scene-drive-480.webp 480w, /media/scenes/golden-gate/g5/golden-gate-scene-drive-672.webp 672w, /media/scenes/golden-gate/g5/golden-gate-scene-drive-768.webp 768w, /media/scenes/golden-gate/g5/golden-gate-scene-drive-1024.webp 1024w, /media/scenes/golden-gate/g5/golden-gate-scene-drive-1440.webp 1440w",
+      "srcsetAvif": "/media/scenes/golden-gate/g5/golden-gate-scene-drive-320.avif 320w, /media/scenes/golden-gate/g5/golden-gate-scene-drive-480.avif 480w, /media/scenes/golden-gate/g5/golden-gate-scene-drive-672.avif 672w, /media/scenes/golden-gate/g5/golden-gate-scene-drive-768.avif 768w, /media/scenes/golden-gate/g5/golden-gate-scene-drive-1024.avif 1024w, /media/scenes/golden-gate/g5/golden-gate-scene-drive-1440.avif 1440w",
+      "inputPath": "media/scenes/golden-gate/g5/golden-gate-scene-drive.png"
+    },
+    "capture": {
+      "tool": "scripts/capture-scene-poster.mjs",
+      "view": "drive",
+      "release": "g5",
+      "size": [
+        1440,
+        925
+      ],
+      "browser": "Chrome/154.0.8037.58",
+      "source": "The staged scene frame page with its controls hidden; nothing composited or retouched.",
+      "runtimeSha256": "28aea5ca7efe35f4bdb6cdb19aefa080660cd55f302aadd3285862570d96ddc3",
+      "packJsonSha256": "45fd9e8ef1e7bdec173863ad520e42e8f996c943dfcf57c4842d432ea006335c",
+      "pngBytes": 740271,
+      "pngSha256": "871dc9f068e8509ee477c9873b62978b90e2960f3ae358ce01f7b6b2d41c095b"
+    }
+  },
+  "foundry-floor": {
+    "poster": {
+      "src": "/media/rig/review-neutral-v1/foundry-floor/ff3/scene-poster.webp",
+      "width": 1440,
+      "height": 900,
+      "alt": "The EUV scanner model from the Foundry Floor pack, rendered under the review rig on a neutral backdrop. The running scene is not pictured.",
+      "srcsetWebp": "/media/rig/review-neutral-v1/foundry-floor/ff3/scene-poster-320.webp 320w, /media/rig/review-neutral-v1/foundry-floor/ff3/scene-poster-480.webp 480w, /media/rig/review-neutral-v1/foundry-floor/ff3/scene-poster-672.webp 672w, /media/rig/review-neutral-v1/foundry-floor/ff3/scene-poster-768.webp 768w, /media/rig/review-neutral-v1/foundry-floor/ff3/scene-poster-1024.webp 1024w, /media/rig/review-neutral-v1/foundry-floor/ff3/scene-poster-1440.webp 1440w",
+      "srcsetAvif": "/media/rig/review-neutral-v1/foundry-floor/ff3/scene-poster-320.avif 320w, /media/rig/review-neutral-v1/foundry-floor/ff3/scene-poster-480.avif 480w, /media/rig/review-neutral-v1/foundry-floor/ff3/scene-poster-672.avif 672w, /media/rig/review-neutral-v1/foundry-floor/ff3/scene-poster-768.avif 768w, /media/rig/review-neutral-v1/foundry-floor/ff3/scene-poster-1024.avif 1024w, /media/rig/review-neutral-v1/foundry-floor/ff3/scene-poster-1440.avif 1440w",
+      "inputPath": "media/rig/review-neutral-v1/foundry-floor/ff3/scene-poster.png",
+      "sourceRevisionId": "r_5fb445d57eec47fa9c7238b1a5ee4242",
+      "exactRevision": true,
+      "rig": "review-neutral-v1"
+    },
+    "rig": {
+      "subject": "euv-scanner",
+      "revisionId": "r_5fb445d57eec47fa9c7238b1a5ee4242",
+      "glb": {
+        "member": "packs/foundry-floor/ff3/models/euv-scanner.glb",
+        "bytes": 591660,
+        "sha256": "0da38997d744b40180edb9d114a4fda63b336b2356747bcb8277dfc152ca69eb",
+        "triangles": 7512
+      },
+      "view": {
+        "direction": [
+          0.7102640395405222,
+          0.374606593415912,
+          0.5959822936169371
+        ],
+        "padding": 1.04,
+        "projection": "orthographic",
+        "halfHeight": 5.020553497366928
+      },
+      "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1074",
+      "pngBytes": 2060755,
+      "pngSha256": "e34d6103f0da8d04f60a1fbf3ae761c843eccdf9afec9f3ef4cc4d83cbeea4b4"
+    }
+  },
+  "farm": {
+    "poster": {
+      "src": "/media/scenes/farm/r36-local-review/farm-scene-opening.webp",
+      "width": 1440,
+      "height": 925,
+      "alt": "Farm scene with a farmhouse, barn, fields, woodland and a stream.",
+      "srcsetWebp": "/media/scenes/farm/r36-local-review/farm-scene-opening-320.webp 320w, /media/scenes/farm/r36-local-review/farm-scene-opening-480.webp 480w, /media/scenes/farm/r36-local-review/farm-scene-opening-672.webp 672w, /media/scenes/farm/r36-local-review/farm-scene-opening-768.webp 768w, /media/scenes/farm/r36-local-review/farm-scene-opening-1024.webp 1024w, /media/scenes/farm/r36-local-review/farm-scene-opening-1440.webp 1440w",
+      "srcsetAvif": "/media/scenes/farm/r36-local-review/farm-scene-opening-320.avif 320w, /media/scenes/farm/r36-local-review/farm-scene-opening-480.avif 480w, /media/scenes/farm/r36-local-review/farm-scene-opening-672.avif 672w, /media/scenes/farm/r36-local-review/farm-scene-opening-768.avif 768w, /media/scenes/farm/r36-local-review/farm-scene-opening-1024.avif 1024w, /media/scenes/farm/r36-local-review/farm-scene-opening-1440.avif 1440w",
+      "inputPath": "media/scenes/farm/r36-local-review/farm-scene-opening.png"
+    },
+    "capture": {
+      "tool": "scripts/capture-scene-poster.mjs",
+      "view": "opening",
+      "release": "r36-local-review",
+      "size": [
+        1440,
+        925
+      ],
+      "browser": "Chrome/154.0.8037.58",
+      "source": "The staged scene runtime, captured from its canvas with controls hidden; nothing composited or retouched.",
+      "runtimeSha256": "b40399968fa10bd6e645881d78a5e77dc9aa7fb9a631599bc796c72ddfd6e02c",
+      "packJsonSha256": "5d046aa2c04637436d7e3918db690f4f25f6684a58ae7a78d333dec9df428f48",
+      "pngBytes": 1552885,
+      "pngSha256": "4cd7e3d256094668827993c4179069ce39fd1b0b7aac08dad4ff09a9bff67723"
+    }
+  }
+}

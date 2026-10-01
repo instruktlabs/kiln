@@ -1,0 +1,31 @@
+---
+import type { MarkdownHeading } from "astro";
+interface Props {
+  headings: MarkdownHeading[];
+  label?: string;
+}
+const headings = Astro.props.headings.filter(
+  (heading) => heading.depth === 2 || heading.depth === 3,
+);
+---
+
+{headings.length > 0 && (
+  <nav aria-label={Astro.props.label ?? "On this page"}>
+    <h2 class="mb-3 text-base font-semibold">On this page</h2>
+    <ul class="m-0 list-none p-0">
+      {headings.map((heading) => (
+        <li>
+          <a
+            href={`#${heading.slug}`}
+            class:list={[
+              "docs-toc-link block min-h-11 py-2 text-sm leading-snug",
+              { "pl-3": heading.depth === 3 },
+            ]}
+          >
+            {heading.text}
+          </a>
+        </li>
+      ))}
+    </ul>
+  </nav>
+)}

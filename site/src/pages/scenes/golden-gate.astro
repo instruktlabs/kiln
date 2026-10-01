@@ -1,0 +1,105 @@
+---
+import { readFile } from "node:fs/promises";
+import { resolve } from "node:path";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SceneShell from "../../components/SceneShell.astro";
+import { sceneRuntimes } from "virtual:kiln-scenes";
+import { goldenGateScene } from "../../data/scenes";
+import { FULL_WIDTH_IMAGE_SIZES, bridge, bytes } from "../../lib/catalog";
+import { PACKS_ENABLED } from "../../lib/config";
+// The Golden Gate preview stays out of search results and the sitemap whatever
+// goldenGateScene.available says; qualification, not this flag, decides when that changes.
+const scene = goldenGateScene;
+// Which bridge tiers the staged scene loads, read from its served pack.json and compared byte for byte (SHA-256)
+// with the tiers the bridge asset page offers. A tier the page does not offer is stated with the pack's own revision,
+// size and digest, and called later only when the pack's scene data lists the offered revision among its ancestors.
+const staged = sceneRuntimes["golden-gate"];
+const packRevisions = (staged?.pack.source?.bridge ?? {}) as Record<string, string>;
+const sceneData = staged
+  ? JSON.parse(await readFile(resolve("public", scene.assetBase.replace(/^\/+/, ""), "data/scene.json"), "utf8"))
+  : null;
+const sceneTiers = (["web", "far"] as const).flatMap((tier) => {
+  const model = staged?.pack.models[`bridge-${tier}`];
+  const offered = bridge.tiers.find((entry) => entry.tier === tier);
+  const lineage: string[] = sceneData?.bridge?.[tier]?.lineage ?? [];
+  return model
+    ? [{ tier, ...model, revision: packRevisions[tier] ?? null, offered: model.sha256 === offered?.runtime.sha256, descends: Boolean(offered && lineage.slice(1).includes(offered.revisionId)) }]
+    : [];
+});
+const offeredTiers = sceneTiers.filter((tier) => tier.offered).map((tier) => tier.tier);
+const otherTiers = sceneTiers.filter((tier) => !tier.offered);
+const others = otherTiers.map((tier) => tier.tier).join(" and ");
+const kind = otherTiers.every((tier) => tier.descends) ? "later" : "different";
+const tierSentence = !staged || !sceneTiers.length
+  ? "The scene loads its web and far tiers."
+  : !otherTiers.length
+    ? `The scene loads the ${offeredTiers.join(" and ")} tiers offered there, byte for byte.`
+    : offeredTiers.length
+      ? `The scene loads the ${offeredTiers.join(" and ")} tier offered there and a ${kind} revision of the ${others} tier, which the asset page does not offer:`
+      : `The scene loads ${kind} revisions of the ${others} tiers, which the asset page does not offer:`;
+---
+
+<BaseLayout
+  title={`${scene.name} scene · Kiln`}
+  description="A preview of a Kiln-authored suspension bridge in a driving and traffic demonstration, still being qualified. Drive a sedan across the deck or view the span by day, at golden hour or in fog."
+  noindex
+  nofollow
+  breadcrumbs={[
+    { label: "Scenes", href: "/scenes/" },
+    { label: `${scene.name} scene`, href: "/scenes/golden-gate/" },
+  ]}
+  card="scenes"
+  preloadImage={
+    PACKS_ENABLED && scene.posterImage
+      ? {
+          src: scene.poster!,
+          srcset: scene.posterImage.srcsetAvif,
+          sizes: FULL_WIDTH_IMAGE_SIZES,
+        }
+      : undefined
+  }
+>
+  <div class="container pb-12 pt-8">
+    <SceneShell scene="golden-gate">
+    <div class="mt-8 grid gap-6 border-t border-rule pt-6 md:grid-cols-3">
+      <div>
+        <h2 class="text-subheading font-semibold">
+          The bridge is a Kiln asset.
+        </h2>
+        <p class="mt-3">
+          The span, towers, cables and six-lane deck are one Kiln-authored
+          model, reviewed on its own asset page. {tierSentence}
+        </p>
+        {otherTiers.map((tier) => (
+          <p class="mt-2 break-all font-mono text-code text-dim">
+            <span class="capitalize">{tier.tier}</span> tier in scene pack {staged?.pack.release}: revision {tier.revision}, {bytes(tier.bytes)}, SHA-256 {tier.sha256}
+          </p>
+        ))}
+      </div>
+      <div>
+        <h2 class="text-subheading font-semibold">
+          The scene is a driving and traffic demonstration.
+        </h2>
+        <p class="mt-3">
+          Six kinds of vehicle share the deck and its approach roads. Drive
+          the sedan behind a chase camera, take a flyover, or switch between
+          day, golden hour and fog. The approaches show the toll plaza at the
+          south end, and Vista Point and the road’s climb into Marin at the
+          north end. The controls are listed inside the scene.
+        </p>
+      </div>
+      <div>
+        <h2 class="text-subheading font-semibold">
+          What is under the scene.
+        </h2>
+        <p class="mt-3">
+          The bridge and the six vehicles are Kiln-authored models. Terrain,
+          water and ground imagery are built from US federal agency data. The
+          notices under Explore name every source, and the trademark notice
+          explains what the model's licence does not grant.
+        </p>
+      </div>
+    </div>
+    </SceneShell>
+  </div>
+</BaseLayout>

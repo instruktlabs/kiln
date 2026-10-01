@@ -1,0 +1,1939 @@
+{
+  "schemaVersion": 1,
+  "images": [
+    {
+      "src": "/media/rig/review-neutral-v1/foundry-floor/ff2/signal-tower.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "The signal tower model from the Foundry Floor pack, seen from the front right.",
+      "srcsetWebp": "/media/rig/review-neutral-v1/foundry-floor/ff2/signal-tower-320.webp 320w, /media/rig/review-neutral-v1/foundry-floor/ff2/signal-tower-480.webp 480w, /media/rig/review-neutral-v1/foundry-floor/ff2/signal-tower-672.webp 672w, /media/rig/review-neutral-v1/foundry-floor/ff2/signal-tower-768.webp 768w, /media/rig/review-neutral-v1/foundry-floor/ff2/signal-tower-1024.webp 1024w",
+      "srcsetAvif": "/media/rig/review-neutral-v1/foundry-floor/ff2/signal-tower-320.avif 320w, /media/rig/review-neutral-v1/foundry-floor/ff2/signal-tower-480.avif 480w, /media/rig/review-neutral-v1/foundry-floor/ff2/signal-tower-672.avif 672w, /media/rig/review-neutral-v1/foundry-floor/ff2/signal-tower-768.avif 768w, /media/rig/review-neutral-v1/foundry-floor/ff2/signal-tower-1024.avif 1024w",
+      "inputPath": "media/rig/review-neutral-v1/foundry-floor/ff2/signal-tower.png",
+      "sourceRevisionId": "r_0af702f0a7364dffbac3255c04a909ff",
+      "exactRevision": true,
+      "rig": "review-neutral-v1"
+    },
+    {
+      "src": "/media/rig/review-neutral-v1/foundry-floor/ff2/cleanroom-wall-kit.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "The cleanroom wall kit model from the Foundry Floor pack, seen from the front right.",
+      "srcsetWebp": "/media/rig/review-neutral-v1/foundry-floor/ff2/cleanroom-wall-kit-320.webp 320w, /media/rig/review-neutral-v1/foundry-floor/ff2/cleanroom-wall-kit-480.webp 480w, /media/rig/review-neutral-v1/foundry-floor/ff2/cleanroom-wall-kit-672.webp 672w, /media/rig/review-neutral-v1/foundry-floor/ff2/cleanroom-wall-kit-768.webp 768w, /media/rig/review-neutral-v1/foundry-floor/ff2/cleanroom-wall-kit-1024.webp 1024w",
+      "srcsetAvif": "/media/rig/review-neutral-v1/foundry-floor/ff2/cleanroom-wall-kit-320.avif 320w, /media/rig/review-neutral-v1/foundry-floor/ff2/cleanroom-wall-kit-480.avif 480w, /media/rig/review-neutral-v1/foundry-floor/ff2/cleanroom-wall-kit-672.avif 672w, /media/rig/review-neutral-v1/foundry-floor/ff2/cleanroom-wall-kit-768.avif 768w, /media/rig/review-neutral-v1/foundry-floor/ff2/cleanroom-wall-kit-1024.avif 1024w",
+      "inputPath": "media/rig/review-neutral-v1/foundry-floor/ff2/cleanroom-wall-kit.png",
+      "sourceRevisionId": "r_4e0249fdfb804779a0adb8c6cae9d2dd",
+      "exactRevision": true,
+      "rig": "review-neutral-v1"
+    },
+    {
+      "src": "/media/rig/review-neutral-v1/foundry-floor/ff2/subfab-pump-abatement-kit.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "The subfab pump/abatement kit model from the Foundry Floor pack, seen from the front right.",
+      "srcsetWebp": "/media/rig/review-neutral-v1/foundry-floor/ff2/subfab-pump-abatement-kit-320.webp 320w, /media/rig/review-neutral-v1/foundry-floor/ff2/subfab-pump-abatement-kit-480.webp 480w, /media/rig/review-neutral-v1/foundry-floor/ff2/subfab-pump-abatement-kit-672.webp 672w, /media/rig/review-neutral-v1/foundry-floor/ff2/subfab-pump-abatement-kit-768.webp 768w, /media/rig/review-neutral-v1/foundry-floor/ff2/subfab-pump-abatement-kit-1024.webp 1024w",
+      "srcsetAvif": "/media/rig/review-neutral-v1/foundry-floor/ff2/subfab-pump-abatement-kit-320.avif 320w, /media/rig/review-neutral-v1/foundry-floor/ff2/subfab-pump-abatement-kit-480.avif 480w, /media/rig/review-neutral-v1/foundry-floor/ff2/subfab-pump-abatement-kit-672.avif 672w, /media/rig/review-neutral-v1/foundry-floor/ff2/subfab-pump-abatement-kit-768.avif 768w, /media/rig/review-neutral-v1/foundry-floor/ff2/subfab-pump-abatement-kit-1024.avif 1024w",
+      "inputPath": "media/rig/review-neutral-v1/foundry-floor/ff2/subfab-pump-abatement-kit.png",
+      "sourceRevisionId": "r_d0ff94d7e74c487b9b822f61a1ccd171",
+      "exactRevision": true,
+      "rig": "review-neutral-v1"
+    },
+    {
+      "src": "/media/rig/review-neutral-v1/foundry-floor/ff2/visitor-gallery-segment.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "The visitor gallery segment model from the Foundry Floor pack, seen from the front right.",
+      "srcsetWebp": "/media/rig/review-neutral-v1/foundry-floor/ff2/visitor-gallery-segment-320.webp 320w, /media/rig/review-neutral-v1/foundry-floor/ff2/visitor-gallery-segment-480.webp 480w, /media/rig/review-neutral-v1/foundry-floor/ff2/visitor-gallery-segment-672.webp 672w, /media/rig/review-neutral-v1/foundry-floor/ff2/visitor-gallery-segment-768.webp 768w, /media/rig/review-neutral-v1/foundry-floor/ff2/visitor-gallery-segment-1024.webp 1024w",
+      "srcsetAvif": "/media/rig/review-neutral-v1/foundry-floor/ff2/visitor-gallery-segment-320.avif 320w, /media/rig/review-neutral-v1/foundry-floor/ff2/visitor-gallery-segment-480.avif 480w, /media/rig/review-neutral-v1/foundry-floor/ff2/visitor-gallery-segment-672.avif 672w, /media/rig/review-neutral-v1/foundry-floor/ff2/visitor-gallery-segment-768.avif 768w, /media/rig/review-neutral-v1/foundry-floor/ff2/visitor-gallery-segment-1024.avif 1024w",
+      "inputPath": "media/rig/review-neutral-v1/foundry-floor/ff2/visitor-gallery-segment.png",
+      "sourceRevisionId": "r_cf68f8f819f34684ac183610c45596cc",
+      "exactRevision": true,
+      "rig": "review-neutral-v1"
+    },
+    {
+      "src": "/media/rig/review-neutral-v1/foundry-floor/ff2/cleanroom-technician.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "The cleanroom technician model from the Foundry Floor pack, seen from the front right.",
+      "srcsetWebp": "/media/rig/review-neutral-v1/foundry-floor/ff2/cleanroom-technician-320.webp 320w, /media/rig/review-neutral-v1/foundry-floor/ff2/cleanroom-technician-480.webp 480w, /media/rig/review-neutral-v1/foundry-floor/ff2/cleanroom-technician-672.webp 672w, /media/rig/review-neutral-v1/foundry-floor/ff2/cleanroom-technician-768.webp 768w, /media/rig/review-neutral-v1/foundry-floor/ff2/cleanroom-technician-1024.webp 1024w",
+      "srcsetAvif": "/media/rig/review-neutral-v1/foundry-floor/ff2/cleanroom-technician-320.avif 320w, /media/rig/review-neutral-v1/foundry-floor/ff2/cleanroom-technician-480.avif 480w, /media/rig/review-neutral-v1/foundry-floor/ff2/cleanroom-technician-672.avif 672w, /media/rig/review-neutral-v1/foundry-floor/ff2/cleanroom-technician-768.avif 768w, /media/rig/review-neutral-v1/foundry-floor/ff2/cleanroom-technician-1024.avif 1024w",
+      "inputPath": "media/rig/review-neutral-v1/foundry-floor/ff2/cleanroom-technician.png",
+      "sourceRevisionId": "r_e1d7c6935493484d9586bcf0c21604de",
+      "exactRevision": true,
+      "rig": "review-neutral-v1"
+    },
+    {
+      "src": "/media/rig/review-neutral-v1/foundry-floor/ff2/humanoid-work-robot.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "The humanoid work robot model from the Foundry Floor pack, seen from the front right.",
+      "srcsetWebp": "/media/rig/review-neutral-v1/foundry-floor/ff2/humanoid-work-robot-320.webp 320w, /media/rig/review-neutral-v1/foundry-floor/ff2/humanoid-work-robot-480.webp 480w, /media/rig/review-neutral-v1/foundry-floor/ff2/humanoid-work-robot-672.webp 672w, /media/rig/review-neutral-v1/foundry-floor/ff2/humanoid-work-robot-768.webp 768w, /media/rig/review-neutral-v1/foundry-floor/ff2/humanoid-work-robot-1024.webp 1024w",
+      "srcsetAvif": "/media/rig/review-neutral-v1/foundry-floor/ff2/humanoid-work-robot-320.avif 320w, /media/rig/review-neutral-v1/foundry-floor/ff2/humanoid-work-robot-480.avif 480w, /media/rig/review-neutral-v1/foundry-floor/ff2/humanoid-work-robot-672.avif 672w, /media/rig/review-neutral-v1/foundry-floor/ff2/humanoid-work-robot-768.avif 768w, /media/rig/review-neutral-v1/foundry-floor/ff2/humanoid-work-robot-1024.avif 1024w",
+      "inputPath": "media/rig/review-neutral-v1/foundry-floor/ff2/humanoid-work-robot.png",
+      "sourceRevisionId": "r_9f717d17eec74f2dbd4c338612207ed5",
+      "exactRevision": true,
+      "rig": "review-neutral-v1"
+    },
+    {
+      "src": "/media/rig/review-neutral-v1/foundry-floor/ff2/level-section-module.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "The level section module model from the Foundry Floor pack, seen from the front right.",
+      "srcsetWebp": "/media/rig/review-neutral-v1/foundry-floor/ff2/level-section-module-320.webp 320w, /media/rig/review-neutral-v1/foundry-floor/ff2/level-section-module-480.webp 480w, /media/rig/review-neutral-v1/foundry-floor/ff2/level-section-module-672.webp 672w, /media/rig/review-neutral-v1/foundry-floor/ff2/level-section-module-768.webp 768w, /media/rig/review-neutral-v1/foundry-floor/ff2/level-section-module-1024.webp 1024w",
+      "srcsetAvif": "/media/rig/review-neutral-v1/foundry-floor/ff2/level-section-module-320.avif 320w, /media/rig/review-neutral-v1/foundry-floor/ff2/level-section-module-480.avif 480w, /media/rig/review-neutral-v1/foundry-floor/ff2/level-section-module-672.avif 672w, /media/rig/review-neutral-v1/foundry-floor/ff2/level-section-module-768.avif 768w, /media/rig/review-neutral-v1/foundry-floor/ff2/level-section-module-1024.avif 1024w",
+      "inputPath": "media/rig/review-neutral-v1/foundry-floor/ff2/level-section-module.png",
+      "sourceRevisionId": "r_3b3d090fa0494380bdcaafaf6f3a22f2",
+      "exactRevision": true,
+      "rig": "review-neutral-v1"
+    },
+    {
+      "src": "/media/scenes/golden-gate/g5/golden-gate-scene-drive.webp",
+      "width": 1440,
+      "height": 925,
+      "alt": "A blue sedan driving across the deck of the Golden Gate Bridge scene, with traffic around it and both towers ahead.",
+      "srcsetWebp": "/media/scenes/golden-gate/g5/golden-gate-scene-drive-320.webp 320w, /media/scenes/golden-gate/g5/golden-gate-scene-drive-480.webp 480w, /media/scenes/golden-gate/g5/golden-gate-scene-drive-672.webp 672w, /media/scenes/golden-gate/g5/golden-gate-scene-drive-768.webp 768w, /media/scenes/golden-gate/g5/golden-gate-scene-drive-1024.webp 1024w, /media/scenes/golden-gate/g5/golden-gate-scene-drive-1440.webp 1440w",
+      "srcsetAvif": "/media/scenes/golden-gate/g5/golden-gate-scene-drive-320.avif 320w, /media/scenes/golden-gate/g5/golden-gate-scene-drive-480.avif 480w, /media/scenes/golden-gate/g5/golden-gate-scene-drive-672.avif 672w, /media/scenes/golden-gate/g5/golden-gate-scene-drive-768.avif 768w, /media/scenes/golden-gate/g5/golden-gate-scene-drive-1024.avif 1024w, /media/scenes/golden-gate/g5/golden-gate-scene-drive-1440.avif 1440w",
+      "inputPath": "media/scenes/golden-gate/g5/golden-gate-scene-drive.png"
+    },
+    {
+      "src": "/standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/classic-neutral.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "Golden Gate Bridge seen obliquely from above: both towers, the main cables and the suspended roadway on a neutral grey backdrop.",
+      "srcsetWebp": "/standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/classic-neutral-320.webp 320w, /standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/classic-neutral-480.webp 480w, /standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/classic-neutral-672.webp 672w, /standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/classic-neutral-768.webp 768w, /standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/classic-neutral-1024.webp 1024w",
+      "srcsetAvif": "/standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/classic-neutral-320.avif 320w, /standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/classic-neutral-480.avif 480w, /standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/classic-neutral-672.avif 672w, /standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/classic-neutral-768.avif 768w, /standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/classic-neutral-1024.avif 1024w",
+      "inputPath": "standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/classic-neutral.png",
+      "sourceRevisionId": "r_76c7a4080e7844e185896b7e1b196e5a",
+      "exactRevision": true,
+      "rig": "review-neutral-v1"
+    },
+    {
+      "src": "/standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/review-sheet-neutral.webp",
+      "width": 1168,
+      "height": 780,
+      "alt": "Six saved review views of the Golden Gate Bridge: front, right, back, left, top and three-quarter.",
+      "srcsetWebp": "/standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/review-sheet-neutral-320.webp 320w, /standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/review-sheet-neutral-480.webp 480w, /standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/review-sheet-neutral-672.webp 672w, /standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/review-sheet-neutral-768.webp 768w, /standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/review-sheet-neutral-1024.webp 1024w",
+      "srcsetAvif": "/standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/review-sheet-neutral-320.avif 320w, /standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/review-sheet-neutral-480.avif 480w, /standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/review-sheet-neutral-672.avif 672w, /standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/review-sheet-neutral-768.avif 768w, /standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/review-sheet-neutral-1024.avif 1024w",
+      "inputPath": "standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/review-sheet-neutral.png"
+    },
+    {
+      "src": "/standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/water-level-neutral.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "Golden Gate Bridge from near water level, looking up at the south tower and the roadway.",
+      "srcsetWebp": "/standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/water-level-neutral-320.webp 320w, /standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/water-level-neutral-480.webp 480w, /standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/water-level-neutral-672.webp 672w, /standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/water-level-neutral-768.webp 768w, /standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/water-level-neutral-1024.webp 1024w",
+      "srcsetAvif": "/standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/water-level-neutral-320.avif 320w, /standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/water-level-neutral-480.avif 480w, /standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/water-level-neutral-672.avif 672w, /standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/water-level-neutral-768.avif 768w, /standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/water-level-neutral-1024.avif 1024w",
+      "inputPath": "standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/water-level-neutral.png",
+      "sourceRevisionId": "r_76c7a4080e7844e185896b7e1b196e5a",
+      "exactRevision": true,
+      "rig": "review-neutral-v1"
+    },
+    {
+      "src": "/standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/deck-neutral.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "Golden Gate Bridge from the roadway, looking along the lanes toward the towers ahead.",
+      "srcsetWebp": "/standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/deck-neutral-320.webp 320w, /standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/deck-neutral-480.webp 480w, /standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/deck-neutral-672.webp 672w, /standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/deck-neutral-768.webp 768w, /standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/deck-neutral-1024.webp 1024w",
+      "srcsetAvif": "/standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/deck-neutral-320.avif 320w, /standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/deck-neutral-480.avif 480w, /standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/deck-neutral-672.avif 672w, /standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/deck-neutral-768.avif 768w, /standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/deck-neutral-1024.avif 1024w",
+      "inputPath": "standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/deck-neutral.png",
+      "sourceRevisionId": "r_76c7a4080e7844e185896b7e1b196e5a",
+      "exactRevision": true,
+      "rig": "review-neutral-v1"
+    },
+    {
+      "src": "/standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/tower-top-neutral.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "Golden Gate Bridge from beside the top of the south tower, with the main cables and the roadway below.",
+      "srcsetWebp": "/standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/tower-top-neutral-320.webp 320w, /standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/tower-top-neutral-480.webp 480w, /standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/tower-top-neutral-672.webp 672w, /standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/tower-top-neutral-768.webp 768w, /standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/tower-top-neutral-1024.webp 1024w",
+      "srcsetAvif": "/standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/tower-top-neutral-320.avif 320w, /standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/tower-top-neutral-480.avif 480w, /standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/tower-top-neutral-672.avif 672w, /standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/tower-top-neutral-768.avif 768w, /standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/tower-top-neutral-1024.avif 1024w",
+      "inputPath": "standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/tower-top-neutral.png",
+      "sourceRevisionId": "r_76c7a4080e7844e185896b7e1b196e5a",
+      "exactRevision": true,
+      "rig": "review-neutral-v1"
+    },
+    {
+      "src": "/standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/elevation-neutral.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "Golden Gate Bridge in side elevation, the full span between both anchorages.",
+      "srcsetWebp": "/standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/elevation-neutral-320.webp 320w, /standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/elevation-neutral-480.webp 480w, /standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/elevation-neutral-672.webp 672w, /standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/elevation-neutral-768.webp 768w, /standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/elevation-neutral-1024.webp 1024w",
+      "srcsetAvif": "/standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/elevation-neutral-320.avif 320w, /standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/elevation-neutral-480.avif 480w, /standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/elevation-neutral-672.avif 672w, /standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/elevation-neutral-768.avif 768w, /standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/elevation-neutral-1024.avif 1024w",
+      "inputPath": "standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/elevation-neutral.png",
+      "sourceRevisionId": "r_76c7a4080e7844e185896b7e1b196e5a",
+      "exactRevision": true,
+      "rig": "review-neutral-v1"
+    },
+    {
+      "src": "/media/rig/review-neutral-v1/hero/r_de88c9d5481d4642837b9d00c81cf0a9/golden-gate-bridge.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "Golden Gate Bridge seen obliquely from above: both towers, the main cables and the suspended roadway on a neutral grey backdrop.",
+      "srcsetWebp": "/media/rig/review-neutral-v1/hero/r_de88c9d5481d4642837b9d00c81cf0a9/golden-gate-bridge-320.webp 320w, /media/rig/review-neutral-v1/hero/r_de88c9d5481d4642837b9d00c81cf0a9/golden-gate-bridge-480.webp 480w, /media/rig/review-neutral-v1/hero/r_de88c9d5481d4642837b9d00c81cf0a9/golden-gate-bridge-672.webp 672w, /media/rig/review-neutral-v1/hero/r_de88c9d5481d4642837b9d00c81cf0a9/golden-gate-bridge-768.webp 768w, /media/rig/review-neutral-v1/hero/r_de88c9d5481d4642837b9d00c81cf0a9/golden-gate-bridge-1024.webp 1024w",
+      "srcsetAvif": "/media/rig/review-neutral-v1/hero/r_de88c9d5481d4642837b9d00c81cf0a9/golden-gate-bridge-320.avif 320w, /media/rig/review-neutral-v1/hero/r_de88c9d5481d4642837b9d00c81cf0a9/golden-gate-bridge-480.avif 480w, /media/rig/review-neutral-v1/hero/r_de88c9d5481d4642837b9d00c81cf0a9/golden-gate-bridge-672.avif 672w, /media/rig/review-neutral-v1/hero/r_de88c9d5481d4642837b9d00c81cf0a9/golden-gate-bridge-768.avif 768w, /media/rig/review-neutral-v1/hero/r_de88c9d5481d4642837b9d00c81cf0a9/golden-gate-bridge-1024.avif 1024w",
+      "inputPath": "media/rig/review-neutral-v1/hero/r_de88c9d5481d4642837b9d00c81cf0a9/golden-gate-bridge.png",
+      "sourceRevisionId": "r_de88c9d5481d4642837b9d00c81cf0a9",
+      "exactRevision": true,
+      "rig": "review-neutral-v1"
+    },
+    {
+      "src": "/media/rig/review-neutral-v1/foundry-floor/ff3/foup.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "The FOUP model from the Foundry Floor pack, seen from the front right.",
+      "srcsetWebp": "/media/rig/review-neutral-v1/foundry-floor/ff3/foup-320.webp 320w, /media/rig/review-neutral-v1/foundry-floor/ff3/foup-480.webp 480w, /media/rig/review-neutral-v1/foundry-floor/ff3/foup-672.webp 672w, /media/rig/review-neutral-v1/foundry-floor/ff3/foup-768.webp 768w, /media/rig/review-neutral-v1/foundry-floor/ff3/foup-1024.webp 1024w",
+      "srcsetAvif": "/media/rig/review-neutral-v1/foundry-floor/ff3/foup-320.avif 320w, /media/rig/review-neutral-v1/foundry-floor/ff3/foup-480.avif 480w, /media/rig/review-neutral-v1/foundry-floor/ff3/foup-672.avif 672w, /media/rig/review-neutral-v1/foundry-floor/ff3/foup-768.avif 768w, /media/rig/review-neutral-v1/foundry-floor/ff3/foup-1024.avif 1024w",
+      "inputPath": "media/rig/review-neutral-v1/foundry-floor/ff3/foup.png",
+      "sourceRevisionId": "r_f639b02180994fdd978a427bffb4de15",
+      "exactRevision": true,
+      "rig": "review-neutral-v1"
+    },
+    {
+      "src": "/media/rig/review-neutral-v1/foundry-floor/ff3/oht-vehicle.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "The OHT vehicle model from the Foundry Floor pack, seen from the front right.",
+      "srcsetWebp": "/media/rig/review-neutral-v1/foundry-floor/ff3/oht-vehicle-320.webp 320w, /media/rig/review-neutral-v1/foundry-floor/ff3/oht-vehicle-480.webp 480w, /media/rig/review-neutral-v1/foundry-floor/ff3/oht-vehicle-672.webp 672w, /media/rig/review-neutral-v1/foundry-floor/ff3/oht-vehicle-768.webp 768w, /media/rig/review-neutral-v1/foundry-floor/ff3/oht-vehicle-1024.webp 1024w",
+      "srcsetAvif": "/media/rig/review-neutral-v1/foundry-floor/ff3/oht-vehicle-320.avif 320w, /media/rig/review-neutral-v1/foundry-floor/ff3/oht-vehicle-480.avif 480w, /media/rig/review-neutral-v1/foundry-floor/ff3/oht-vehicle-672.avif 672w, /media/rig/review-neutral-v1/foundry-floor/ff3/oht-vehicle-768.avif 768w, /media/rig/review-neutral-v1/foundry-floor/ff3/oht-vehicle-1024.avif 1024w",
+      "inputPath": "media/rig/review-neutral-v1/foundry-floor/ff3/oht-vehicle.png",
+      "sourceRevisionId": "r_a4fd2dfb3a3f4276b28464458cb0fbb9",
+      "exactRevision": true,
+      "rig": "review-neutral-v1"
+    },
+    {
+      "src": "/media/rig/review-neutral-v1/foundry-floor/ff3/load-port.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "The load port model from the Foundry Floor pack, seen from the front right.",
+      "srcsetWebp": "/media/rig/review-neutral-v1/foundry-floor/ff3/load-port-320.webp 320w, /media/rig/review-neutral-v1/foundry-floor/ff3/load-port-480.webp 480w, /media/rig/review-neutral-v1/foundry-floor/ff3/load-port-672.webp 672w, /media/rig/review-neutral-v1/foundry-floor/ff3/load-port-768.webp 768w, /media/rig/review-neutral-v1/foundry-floor/ff3/load-port-1024.webp 1024w",
+      "srcsetAvif": "/media/rig/review-neutral-v1/foundry-floor/ff3/load-port-320.avif 320w, /media/rig/review-neutral-v1/foundry-floor/ff3/load-port-480.avif 480w, /media/rig/review-neutral-v1/foundry-floor/ff3/load-port-672.avif 672w, /media/rig/review-neutral-v1/foundry-floor/ff3/load-port-768.avif 768w, /media/rig/review-neutral-v1/foundry-floor/ff3/load-port-1024.avif 1024w",
+      "inputPath": "media/rig/review-neutral-v1/foundry-floor/ff3/load-port.png",
+      "sourceRevisionId": "r_b45a5f436cd14d7294bc6866dcebb5f7",
+      "exactRevision": true,
+      "rig": "review-neutral-v1"
+    },
+    {
+      "src": "/media/rig/review-neutral-v1/foundry-floor/ff3/stocker.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "The stocker model from the Foundry Floor pack, seen from the front right.",
+      "srcsetWebp": "/media/rig/review-neutral-v1/foundry-floor/ff3/stocker-320.webp 320w, /media/rig/review-neutral-v1/foundry-floor/ff3/stocker-480.webp 480w, /media/rig/review-neutral-v1/foundry-floor/ff3/stocker-672.webp 672w, /media/rig/review-neutral-v1/foundry-floor/ff3/stocker-768.webp 768w, /media/rig/review-neutral-v1/foundry-floor/ff3/stocker-1024.webp 1024w",
+      "srcsetAvif": "/media/rig/review-neutral-v1/foundry-floor/ff3/stocker-320.avif 320w, /media/rig/review-neutral-v1/foundry-floor/ff3/stocker-480.avif 480w, /media/rig/review-neutral-v1/foundry-floor/ff3/stocker-672.avif 672w, /media/rig/review-neutral-v1/foundry-floor/ff3/stocker-768.avif 768w, /media/rig/review-neutral-v1/foundry-floor/ff3/stocker-1024.avif 1024w",
+      "inputPath": "media/rig/review-neutral-v1/foundry-floor/ff3/stocker.png",
+      "sourceRevisionId": "r_2719dba3ca554c159e41daa769233182",
+      "exactRevision": true,
+      "rig": "review-neutral-v1"
+    },
+    {
+      "src": "/media/rig/review-neutral-v1/foundry-floor/ff3/under-track-storage.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "The under-track storage model from the Foundry Floor pack, seen from the front right.",
+      "srcsetWebp": "/media/rig/review-neutral-v1/foundry-floor/ff3/under-track-storage-320.webp 320w, /media/rig/review-neutral-v1/foundry-floor/ff3/under-track-storage-480.webp 480w, /media/rig/review-neutral-v1/foundry-floor/ff3/under-track-storage-672.webp 672w, /media/rig/review-neutral-v1/foundry-floor/ff3/under-track-storage-768.webp 768w, /media/rig/review-neutral-v1/foundry-floor/ff3/under-track-storage-1024.webp 1024w",
+      "srcsetAvif": "/media/rig/review-neutral-v1/foundry-floor/ff3/under-track-storage-320.avif 320w, /media/rig/review-neutral-v1/foundry-floor/ff3/under-track-storage-480.avif 480w, /media/rig/review-neutral-v1/foundry-floor/ff3/under-track-storage-672.avif 672w, /media/rig/review-neutral-v1/foundry-floor/ff3/under-track-storage-768.avif 768w, /media/rig/review-neutral-v1/foundry-floor/ff3/under-track-storage-1024.avif 1024w",
+      "inputPath": "media/rig/review-neutral-v1/foundry-floor/ff3/under-track-storage.png",
+      "sourceRevisionId": "r_093ce3746e9c449585f6543f9db94f87",
+      "exactRevision": true,
+      "rig": "review-neutral-v1"
+    },
+    {
+      "src": "/media/rig/review-neutral-v1/foundry-floor/ff3/oht-rail-straight.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "The OHT rail, straight model from the Foundry Floor pack, seen from the front right.",
+      "srcsetWebp": "/media/rig/review-neutral-v1/foundry-floor/ff3/oht-rail-straight-320.webp 320w, /media/rig/review-neutral-v1/foundry-floor/ff3/oht-rail-straight-480.webp 480w, /media/rig/review-neutral-v1/foundry-floor/ff3/oht-rail-straight-672.webp 672w, /media/rig/review-neutral-v1/foundry-floor/ff3/oht-rail-straight-768.webp 768w, /media/rig/review-neutral-v1/foundry-floor/ff3/oht-rail-straight-1024.webp 1024w",
+      "srcsetAvif": "/media/rig/review-neutral-v1/foundry-floor/ff3/oht-rail-straight-320.avif 320w, /media/rig/review-neutral-v1/foundry-floor/ff3/oht-rail-straight-480.avif 480w, /media/rig/review-neutral-v1/foundry-floor/ff3/oht-rail-straight-672.avif 672w, /media/rig/review-neutral-v1/foundry-floor/ff3/oht-rail-straight-768.avif 768w, /media/rig/review-neutral-v1/foundry-floor/ff3/oht-rail-straight-1024.avif 1024w",
+      "inputPath": "media/rig/review-neutral-v1/foundry-floor/ff3/oht-rail-straight.png",
+      "sourceRevisionId": "r_ed0c4b464c3f44419b6efed936349a64",
+      "exactRevision": true,
+      "rig": "review-neutral-v1"
+    },
+    {
+      "src": "/media/rig/review-neutral-v1/foundry-floor/ff3/oht-rail-curve.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "The OHT rail, curve model from the Foundry Floor pack, seen from the front right.",
+      "srcsetWebp": "/media/rig/review-neutral-v1/foundry-floor/ff3/oht-rail-curve-320.webp 320w, /media/rig/review-neutral-v1/foundry-floor/ff3/oht-rail-curve-480.webp 480w, /media/rig/review-neutral-v1/foundry-floor/ff3/oht-rail-curve-672.webp 672w, /media/rig/review-neutral-v1/foundry-floor/ff3/oht-rail-curve-768.webp 768w, /media/rig/review-neutral-v1/foundry-floor/ff3/oht-rail-curve-1024.webp 1024w",
+      "srcsetAvif": "/media/rig/review-neutral-v1/foundry-floor/ff3/oht-rail-curve-320.avif 320w, /media/rig/review-neutral-v1/foundry-floor/ff3/oht-rail-curve-480.avif 480w, /media/rig/review-neutral-v1/foundry-floor/ff3/oht-rail-curve-672.avif 672w, /media/rig/review-neutral-v1/foundry-floor/ff3/oht-rail-curve-768.avif 768w, /media/rig/review-neutral-v1/foundry-floor/ff3/oht-rail-curve-1024.avif 1024w",
+      "inputPath": "media/rig/review-neutral-v1/foundry-floor/ff3/oht-rail-curve.png",
+      "sourceRevisionId": "r_a2af1537d2cc4396a4d94bce0c19598c",
+      "exactRevision": true,
+      "rig": "review-neutral-v1"
+    },
+    {
+      "src": "/media/rig/review-neutral-v1/foundry-floor/ff3/oht-rail-switch.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "The OHT rail, switch model from the Foundry Floor pack, seen from the front right.",
+      "srcsetWebp": "/media/rig/review-neutral-v1/foundry-floor/ff3/oht-rail-switch-320.webp 320w, /media/rig/review-neutral-v1/foundry-floor/ff3/oht-rail-switch-480.webp 480w, /media/rig/review-neutral-v1/foundry-floor/ff3/oht-rail-switch-672.webp 672w, /media/rig/review-neutral-v1/foundry-floor/ff3/oht-rail-switch-768.webp 768w, /media/rig/review-neutral-v1/foundry-floor/ff3/oht-rail-switch-1024.webp 1024w",
+      "srcsetAvif": "/media/rig/review-neutral-v1/foundry-floor/ff3/oht-rail-switch-320.avif 320w, /media/rig/review-neutral-v1/foundry-floor/ff3/oht-rail-switch-480.avif 480w, /media/rig/review-neutral-v1/foundry-floor/ff3/oht-rail-switch-672.avif 672w, /media/rig/review-neutral-v1/foundry-floor/ff3/oht-rail-switch-768.avif 768w, /media/rig/review-neutral-v1/foundry-floor/ff3/oht-rail-switch-1024.avif 1024w",
+      "inputPath": "media/rig/review-neutral-v1/foundry-floor/ff3/oht-rail-switch.png",
+      "sourceRevisionId": "r_b7fcebf6547545eab077be69796ec893",
+      "exactRevision": true,
+      "rig": "review-neutral-v1"
+    },
+    {
+      "src": "/media/rig/review-neutral-v1/foundry-floor/ff3/raised-floor-module.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "The raised-floor module model from the Foundry Floor pack, seen from the front right.",
+      "srcsetWebp": "/media/rig/review-neutral-v1/foundry-floor/ff3/raised-floor-module-320.webp 320w, /media/rig/review-neutral-v1/foundry-floor/ff3/raised-floor-module-480.webp 480w, /media/rig/review-neutral-v1/foundry-floor/ff3/raised-floor-module-672.webp 672w, /media/rig/review-neutral-v1/foundry-floor/ff3/raised-floor-module-768.webp 768w, /media/rig/review-neutral-v1/foundry-floor/ff3/raised-floor-module-1024.webp 1024w",
+      "srcsetAvif": "/media/rig/review-neutral-v1/foundry-floor/ff3/raised-floor-module-320.avif 320w, /media/rig/review-neutral-v1/foundry-floor/ff3/raised-floor-module-480.avif 480w, /media/rig/review-neutral-v1/foundry-floor/ff3/raised-floor-module-672.avif 672w, /media/rig/review-neutral-v1/foundry-floor/ff3/raised-floor-module-768.avif 768w, /media/rig/review-neutral-v1/foundry-floor/ff3/raised-floor-module-1024.avif 1024w",
+      "inputPath": "media/rig/review-neutral-v1/foundry-floor/ff3/raised-floor-module.png",
+      "sourceRevisionId": "r_f0104891f44a4c99a52739033e900757",
+      "exactRevision": true,
+      "rig": "review-neutral-v1"
+    },
+    {
+      "src": "/media/rig/review-neutral-v1/foundry-floor/ff3/ffu-ceiling-module.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "The FFU ceiling module model from the Foundry Floor pack, seen from the front right.",
+      "srcsetWebp": "/media/rig/review-neutral-v1/foundry-floor/ff3/ffu-ceiling-module-320.webp 320w, /media/rig/review-neutral-v1/foundry-floor/ff3/ffu-ceiling-module-480.webp 480w, /media/rig/review-neutral-v1/foundry-floor/ff3/ffu-ceiling-module-672.webp 672w, /media/rig/review-neutral-v1/foundry-floor/ff3/ffu-ceiling-module-768.webp 768w, /media/rig/review-neutral-v1/foundry-floor/ff3/ffu-ceiling-module-1024.webp 1024w",
+      "srcsetAvif": "/media/rig/review-neutral-v1/foundry-floor/ff3/ffu-ceiling-module-320.avif 320w, /media/rig/review-neutral-v1/foundry-floor/ff3/ffu-ceiling-module-480.avif 480w, /media/rig/review-neutral-v1/foundry-floor/ff3/ffu-ceiling-module-672.avif 672w, /media/rig/review-neutral-v1/foundry-floor/ff3/ffu-ceiling-module-768.avif 768w, /media/rig/review-neutral-v1/foundry-floor/ff3/ffu-ceiling-module-1024.avif 1024w",
+      "inputPath": "media/rig/review-neutral-v1/foundry-floor/ff3/ffu-ceiling-module.png",
+      "sourceRevisionId": "r_6d370c36023f401ea7ee526631bcf4df",
+      "exactRevision": true,
+      "rig": "review-neutral-v1"
+    },
+    {
+      "src": "/media/rig/review-neutral-v1/foundry-floor/ff3/etch-cluster-tool.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "The etch cluster tool model from the Foundry Floor pack, seen from the front right.",
+      "srcsetWebp": "/media/rig/review-neutral-v1/foundry-floor/ff3/etch-cluster-tool-320.webp 320w, /media/rig/review-neutral-v1/foundry-floor/ff3/etch-cluster-tool-480.webp 480w, /media/rig/review-neutral-v1/foundry-floor/ff3/etch-cluster-tool-672.webp 672w, /media/rig/review-neutral-v1/foundry-floor/ff3/etch-cluster-tool-768.webp 768w, /media/rig/review-neutral-v1/foundry-floor/ff3/etch-cluster-tool-1024.webp 1024w",
+      "srcsetAvif": "/media/rig/review-neutral-v1/foundry-floor/ff3/etch-cluster-tool-320.avif 320w, /media/rig/review-neutral-v1/foundry-floor/ff3/etch-cluster-tool-480.avif 480w, /media/rig/review-neutral-v1/foundry-floor/ff3/etch-cluster-tool-672.avif 672w, /media/rig/review-neutral-v1/foundry-floor/ff3/etch-cluster-tool-768.avif 768w, /media/rig/review-neutral-v1/foundry-floor/ff3/etch-cluster-tool-1024.avif 1024w",
+      "inputPath": "media/rig/review-neutral-v1/foundry-floor/ff3/etch-cluster-tool.png",
+      "sourceRevisionId": "r_6456090ae2cb42f09b3ff18670f55c3e",
+      "exactRevision": true,
+      "rig": "review-neutral-v1"
+    },
+    {
+      "src": "/media/rig/review-neutral-v1/foundry-floor/ff3/cvd-ald-cluster-tool.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "The CVD/ALD cluster tool model from the Foundry Floor pack, seen from the front right.",
+      "srcsetWebp": "/media/rig/review-neutral-v1/foundry-floor/ff3/cvd-ald-cluster-tool-320.webp 320w, /media/rig/review-neutral-v1/foundry-floor/ff3/cvd-ald-cluster-tool-480.webp 480w, /media/rig/review-neutral-v1/foundry-floor/ff3/cvd-ald-cluster-tool-672.webp 672w, /media/rig/review-neutral-v1/foundry-floor/ff3/cvd-ald-cluster-tool-768.webp 768w, /media/rig/review-neutral-v1/foundry-floor/ff3/cvd-ald-cluster-tool-1024.webp 1024w",
+      "srcsetAvif": "/media/rig/review-neutral-v1/foundry-floor/ff3/cvd-ald-cluster-tool-320.avif 320w, /media/rig/review-neutral-v1/foundry-floor/ff3/cvd-ald-cluster-tool-480.avif 480w, /media/rig/review-neutral-v1/foundry-floor/ff3/cvd-ald-cluster-tool-672.avif 672w, /media/rig/review-neutral-v1/foundry-floor/ff3/cvd-ald-cluster-tool-768.avif 768w, /media/rig/review-neutral-v1/foundry-floor/ff3/cvd-ald-cluster-tool-1024.avif 1024w",
+      "inputPath": "media/rig/review-neutral-v1/foundry-floor/ff3/cvd-ald-cluster-tool.png",
+      "sourceRevisionId": "r_5555be8ebedc496ba137ba5d47132e1b",
+      "exactRevision": true,
+      "rig": "review-neutral-v1"
+    },
+    {
+      "src": "/media/rig/review-neutral-v1/foundry-floor/ff3/pvd-cluster-tool.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "The PVD cluster tool model from the Foundry Floor pack, seen from the front right.",
+      "srcsetWebp": "/media/rig/review-neutral-v1/foundry-floor/ff3/pvd-cluster-tool-320.webp 320w, /media/rig/review-neutral-v1/foundry-floor/ff3/pvd-cluster-tool-480.webp 480w, /media/rig/review-neutral-v1/foundry-floor/ff3/pvd-cluster-tool-672.webp 672w, /media/rig/review-neutral-v1/foundry-floor/ff3/pvd-cluster-tool-768.webp 768w, /media/rig/review-neutral-v1/foundry-floor/ff3/pvd-cluster-tool-1024.webp 1024w",
+      "srcsetAvif": "/media/rig/review-neutral-v1/foundry-floor/ff3/pvd-cluster-tool-320.avif 320w, /media/rig/review-neutral-v1/foundry-floor/ff3/pvd-cluster-tool-480.avif 480w, /media/rig/review-neutral-v1/foundry-floor/ff3/pvd-cluster-tool-672.avif 672w, /media/rig/review-neutral-v1/foundry-floor/ff3/pvd-cluster-tool-768.avif 768w, /media/rig/review-neutral-v1/foundry-floor/ff3/pvd-cluster-tool-1024.avif 1024w",
+      "inputPath": "media/rig/review-neutral-v1/foundry-floor/ff3/pvd-cluster-tool.png",
+      "sourceRevisionId": "r_3ef2fa3a9e594f94b65dffe40253bd0c",
+      "exactRevision": true,
+      "rig": "review-neutral-v1"
+    },
+    {
+      "src": "/media/rig/review-neutral-v1/foundry-floor/ff3/single-wafer-clean-tool.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "The single-wafer clean tool model from the Foundry Floor pack, seen from the front right.",
+      "srcsetWebp": "/media/rig/review-neutral-v1/foundry-floor/ff3/single-wafer-clean-tool-320.webp 320w, /media/rig/review-neutral-v1/foundry-floor/ff3/single-wafer-clean-tool-480.webp 480w, /media/rig/review-neutral-v1/foundry-floor/ff3/single-wafer-clean-tool-672.webp 672w, /media/rig/review-neutral-v1/foundry-floor/ff3/single-wafer-clean-tool-768.webp 768w, /media/rig/review-neutral-v1/foundry-floor/ff3/single-wafer-clean-tool-1024.webp 1024w",
+      "srcsetAvif": "/media/rig/review-neutral-v1/foundry-floor/ff3/single-wafer-clean-tool-320.avif 320w, /media/rig/review-neutral-v1/foundry-floor/ff3/single-wafer-clean-tool-480.avif 480w, /media/rig/review-neutral-v1/foundry-floor/ff3/single-wafer-clean-tool-672.avif 672w, /media/rig/review-neutral-v1/foundry-floor/ff3/single-wafer-clean-tool-768.avif 768w, /media/rig/review-neutral-v1/foundry-floor/ff3/single-wafer-clean-tool-1024.avif 1024w",
+      "inputPath": "media/rig/review-neutral-v1/foundry-floor/ff3/single-wafer-clean-tool.png",
+      "sourceRevisionId": "r_c268a0f6f6174f7ba2b87e120c4344e8",
+      "exactRevision": true,
+      "rig": "review-neutral-v1"
+    },
+    {
+      "src": "/media/rig/review-neutral-v1/foundry-floor/ff3/cmp-polisher.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "The CMP polisher model from the Foundry Floor pack, seen from the front right.",
+      "srcsetWebp": "/media/rig/review-neutral-v1/foundry-floor/ff3/cmp-polisher-320.webp 320w, /media/rig/review-neutral-v1/foundry-floor/ff3/cmp-polisher-480.webp 480w, /media/rig/review-neutral-v1/foundry-floor/ff3/cmp-polisher-672.webp 672w, /media/rig/review-neutral-v1/foundry-floor/ff3/cmp-polisher-768.webp 768w, /media/rig/review-neutral-v1/foundry-floor/ff3/cmp-polisher-1024.webp 1024w",
+      "srcsetAvif": "/media/rig/review-neutral-v1/foundry-floor/ff3/cmp-polisher-320.avif 320w, /media/rig/review-neutral-v1/foundry-floor/ff3/cmp-polisher-480.avif 480w, /media/rig/review-neutral-v1/foundry-floor/ff3/cmp-polisher-672.avif 672w, /media/rig/review-neutral-v1/foundry-floor/ff3/cmp-polisher-768.avif 768w, /media/rig/review-neutral-v1/foundry-floor/ff3/cmp-polisher-1024.avif 1024w",
+      "inputPath": "media/rig/review-neutral-v1/foundry-floor/ff3/cmp-polisher.png",
+      "sourceRevisionId": "r_a8c4d8680a7f4aca96b240daa294bc4b",
+      "exactRevision": true,
+      "rig": "review-neutral-v1"
+    },
+    {
+      "src": "/media/rig/review-neutral-v1/foundry-floor/ff3/vertical-furnace.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "The vertical furnace model from the Foundry Floor pack, seen from the front right.",
+      "srcsetWebp": "/media/rig/review-neutral-v1/foundry-floor/ff3/vertical-furnace-320.webp 320w, /media/rig/review-neutral-v1/foundry-floor/ff3/vertical-furnace-480.webp 480w, /media/rig/review-neutral-v1/foundry-floor/ff3/vertical-furnace-672.webp 672w, /media/rig/review-neutral-v1/foundry-floor/ff3/vertical-furnace-768.webp 768w, /media/rig/review-neutral-v1/foundry-floor/ff3/vertical-furnace-1024.webp 1024w",
+      "srcsetAvif": "/media/rig/review-neutral-v1/foundry-floor/ff3/vertical-furnace-320.avif 320w, /media/rig/review-neutral-v1/foundry-floor/ff3/vertical-furnace-480.avif 480w, /media/rig/review-neutral-v1/foundry-floor/ff3/vertical-furnace-672.avif 672w, /media/rig/review-neutral-v1/foundry-floor/ff3/vertical-furnace-768.avif 768w, /media/rig/review-neutral-v1/foundry-floor/ff3/vertical-furnace-1024.avif 1024w",
+      "inputPath": "media/rig/review-neutral-v1/foundry-floor/ff3/vertical-furnace.png",
+      "sourceRevisionId": "r_72680f2e5830442f93afff6a94519629",
+      "exactRevision": true,
+      "rig": "review-neutral-v1"
+    },
+    {
+      "src": "/media/rig/review-neutral-v1/foundry-floor/ff3/ion-implanter.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "The ion implanter model from the Foundry Floor pack, seen from the front right.",
+      "srcsetWebp": "/media/rig/review-neutral-v1/foundry-floor/ff3/ion-implanter-320.webp 320w, /media/rig/review-neutral-v1/foundry-floor/ff3/ion-implanter-480.webp 480w, /media/rig/review-neutral-v1/foundry-floor/ff3/ion-implanter-672.webp 672w, /media/rig/review-neutral-v1/foundry-floor/ff3/ion-implanter-768.webp 768w, /media/rig/review-neutral-v1/foundry-floor/ff3/ion-implanter-1024.webp 1024w",
+      "srcsetAvif": "/media/rig/review-neutral-v1/foundry-floor/ff3/ion-implanter-320.avif 320w, /media/rig/review-neutral-v1/foundry-floor/ff3/ion-implanter-480.avif 480w, /media/rig/review-neutral-v1/foundry-floor/ff3/ion-implanter-672.avif 672w, /media/rig/review-neutral-v1/foundry-floor/ff3/ion-implanter-768.avif 768w, /media/rig/review-neutral-v1/foundry-floor/ff3/ion-implanter-1024.avif 1024w",
+      "inputPath": "media/rig/review-neutral-v1/foundry-floor/ff3/ion-implanter.png",
+      "sourceRevisionId": "r_703483bb04b240bbaada2327534f7eef",
+      "exactRevision": true,
+      "rig": "review-neutral-v1"
+    },
+    {
+      "src": "/media/rig/review-neutral-v1/foundry-floor/ff3/metrology-inspection-tool.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "The metrology inspection tool model from the Foundry Floor pack, seen from the front right.",
+      "srcsetWebp": "/media/rig/review-neutral-v1/foundry-floor/ff3/metrology-inspection-tool-320.webp 320w, /media/rig/review-neutral-v1/foundry-floor/ff3/metrology-inspection-tool-480.webp 480w, /media/rig/review-neutral-v1/foundry-floor/ff3/metrology-inspection-tool-672.webp 672w, /media/rig/review-neutral-v1/foundry-floor/ff3/metrology-inspection-tool-768.webp 768w, /media/rig/review-neutral-v1/foundry-floor/ff3/metrology-inspection-tool-1024.webp 1024w",
+      "srcsetAvif": "/media/rig/review-neutral-v1/foundry-floor/ff3/metrology-inspection-tool-320.avif 320w, /media/rig/review-neutral-v1/foundry-floor/ff3/metrology-inspection-tool-480.avif 480w, /media/rig/review-neutral-v1/foundry-floor/ff3/metrology-inspection-tool-672.avif 672w, /media/rig/review-neutral-v1/foundry-floor/ff3/metrology-inspection-tool-768.avif 768w, /media/rig/review-neutral-v1/foundry-floor/ff3/metrology-inspection-tool-1024.avif 1024w",
+      "inputPath": "media/rig/review-neutral-v1/foundry-floor/ff3/metrology-inspection-tool.png",
+      "sourceRevisionId": "r_a8395c71bb304806b3093749f7ab4ed4",
+      "exactRevision": true,
+      "rig": "review-neutral-v1"
+    },
+    {
+      "src": "/media/rig/review-neutral-v1/foundry-floor/ff3/wafer-prober-tester.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "The wafer prober/tester model from the Foundry Floor pack, seen from the front right.",
+      "srcsetWebp": "/media/rig/review-neutral-v1/foundry-floor/ff3/wafer-prober-tester-320.webp 320w, /media/rig/review-neutral-v1/foundry-floor/ff3/wafer-prober-tester-480.webp 480w, /media/rig/review-neutral-v1/foundry-floor/ff3/wafer-prober-tester-672.webp 672w, /media/rig/review-neutral-v1/foundry-floor/ff3/wafer-prober-tester-768.webp 768w, /media/rig/review-neutral-v1/foundry-floor/ff3/wafer-prober-tester-1024.webp 1024w",
+      "srcsetAvif": "/media/rig/review-neutral-v1/foundry-floor/ff3/wafer-prober-tester-320.avif 320w, /media/rig/review-neutral-v1/foundry-floor/ff3/wafer-prober-tester-480.avif 480w, /media/rig/review-neutral-v1/foundry-floor/ff3/wafer-prober-tester-672.avif 672w, /media/rig/review-neutral-v1/foundry-floor/ff3/wafer-prober-tester-768.avif 768w, /media/rig/review-neutral-v1/foundry-floor/ff3/wafer-prober-tester-1024.avif 1024w",
+      "inputPath": "media/rig/review-neutral-v1/foundry-floor/ff3/wafer-prober-tester.png",
+      "sourceRevisionId": "r_7357b53066af464abb6556bdde7866d4",
+      "exactRevision": true,
+      "rig": "review-neutral-v1"
+    },
+    {
+      "src": "/media/rig/review-neutral-v1/foundry-floor/ff3/coater-developer-track.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "The coater/developer track model from the Foundry Floor pack, seen from the front right.",
+      "srcsetWebp": "/media/rig/review-neutral-v1/foundry-floor/ff3/coater-developer-track-320.webp 320w, /media/rig/review-neutral-v1/foundry-floor/ff3/coater-developer-track-480.webp 480w, /media/rig/review-neutral-v1/foundry-floor/ff3/coater-developer-track-672.webp 672w, /media/rig/review-neutral-v1/foundry-floor/ff3/coater-developer-track-768.webp 768w, /media/rig/review-neutral-v1/foundry-floor/ff3/coater-developer-track-1024.webp 1024w",
+      "srcsetAvif": "/media/rig/review-neutral-v1/foundry-floor/ff3/coater-developer-track-320.avif 320w, /media/rig/review-neutral-v1/foundry-floor/ff3/coater-developer-track-480.avif 480w, /media/rig/review-neutral-v1/foundry-floor/ff3/coater-developer-track-672.avif 672w, /media/rig/review-neutral-v1/foundry-floor/ff3/coater-developer-track-768.avif 768w, /media/rig/review-neutral-v1/foundry-floor/ff3/coater-developer-track-1024.avif 1024w",
+      "inputPath": "media/rig/review-neutral-v1/foundry-floor/ff3/coater-developer-track.png",
+      "sourceRevisionId": "r_a2be2a40435341b9b196f678130109b4",
+      "exactRevision": true,
+      "rig": "review-neutral-v1"
+    },
+    {
+      "src": "/media/rig/review-neutral-v1/foundry-floor/ff3/euv-scanner.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "The EUV scanner model from the Foundry Floor pack, seen from the front right.",
+      "srcsetWebp": "/media/rig/review-neutral-v1/foundry-floor/ff3/euv-scanner-320.webp 320w, /media/rig/review-neutral-v1/foundry-floor/ff3/euv-scanner-480.webp 480w, /media/rig/review-neutral-v1/foundry-floor/ff3/euv-scanner-672.webp 672w, /media/rig/review-neutral-v1/foundry-floor/ff3/euv-scanner-768.webp 768w, /media/rig/review-neutral-v1/foundry-floor/ff3/euv-scanner-1024.webp 1024w",
+      "srcsetAvif": "/media/rig/review-neutral-v1/foundry-floor/ff3/euv-scanner-320.avif 320w, /media/rig/review-neutral-v1/foundry-floor/ff3/euv-scanner-480.avif 480w, /media/rig/review-neutral-v1/foundry-floor/ff3/euv-scanner-672.avif 672w, /media/rig/review-neutral-v1/foundry-floor/ff3/euv-scanner-768.avif 768w, /media/rig/review-neutral-v1/foundry-floor/ff3/euv-scanner-1024.avif 1024w",
+      "inputPath": "media/rig/review-neutral-v1/foundry-floor/ff3/euv-scanner.png",
+      "sourceRevisionId": "r_5fb445d57eec47fa9c7238b1a5ee4242",
+      "exactRevision": true,
+      "rig": "review-neutral-v1"
+    },
+    {
+      "src": "/media/rig/review-neutral-v1/foundry-floor/ff3/duv-immersion-scanner.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "The DUV immersion scanner model from the Foundry Floor pack, seen from the front right.",
+      "srcsetWebp": "/media/rig/review-neutral-v1/foundry-floor/ff3/duv-immersion-scanner-320.webp 320w, /media/rig/review-neutral-v1/foundry-floor/ff3/duv-immersion-scanner-480.webp 480w, /media/rig/review-neutral-v1/foundry-floor/ff3/duv-immersion-scanner-672.webp 672w, /media/rig/review-neutral-v1/foundry-floor/ff3/duv-immersion-scanner-768.webp 768w, /media/rig/review-neutral-v1/foundry-floor/ff3/duv-immersion-scanner-1024.webp 1024w",
+      "srcsetAvif": "/media/rig/review-neutral-v1/foundry-floor/ff3/duv-immersion-scanner-320.avif 320w, /media/rig/review-neutral-v1/foundry-floor/ff3/duv-immersion-scanner-480.avif 480w, /media/rig/review-neutral-v1/foundry-floor/ff3/duv-immersion-scanner-672.avif 672w, /media/rig/review-neutral-v1/foundry-floor/ff3/duv-immersion-scanner-768.avif 768w, /media/rig/review-neutral-v1/foundry-floor/ff3/duv-immersion-scanner-1024.avif 1024w",
+      "inputPath": "media/rig/review-neutral-v1/foundry-floor/ff3/duv-immersion-scanner.png",
+      "sourceRevisionId": "r_21ec88e7bb5b4c2c9ceae59c8142d978",
+      "exactRevision": true,
+      "rig": "review-neutral-v1"
+    },
+    {
+      "src": "/media/rig/review-neutral-v1/foundry-floor/ff3/amr-floor-robot.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "The AMR floor robot model from the Foundry Floor pack, seen from the front right.",
+      "srcsetWebp": "/media/rig/review-neutral-v1/foundry-floor/ff3/amr-floor-robot-320.webp 320w, /media/rig/review-neutral-v1/foundry-floor/ff3/amr-floor-robot-480.webp 480w, /media/rig/review-neutral-v1/foundry-floor/ff3/amr-floor-robot-672.webp 672w, /media/rig/review-neutral-v1/foundry-floor/ff3/amr-floor-robot-768.webp 768w, /media/rig/review-neutral-v1/foundry-floor/ff3/amr-floor-robot-1024.webp 1024w",
+      "srcsetAvif": "/media/rig/review-neutral-v1/foundry-floor/ff3/amr-floor-robot-320.avif 320w, /media/rig/review-neutral-v1/foundry-floor/ff3/amr-floor-robot-480.avif 480w, /media/rig/review-neutral-v1/foundry-floor/ff3/amr-floor-robot-672.avif 672w, /media/rig/review-neutral-v1/foundry-floor/ff3/amr-floor-robot-768.avif 768w, /media/rig/review-neutral-v1/foundry-floor/ff3/amr-floor-robot-1024.avif 1024w",
+      "inputPath": "media/rig/review-neutral-v1/foundry-floor/ff3/amr-floor-robot.png",
+      "sourceRevisionId": "r_a27481224b474e9cb1dd747c45a71e23",
+      "exactRevision": true,
+      "rig": "review-neutral-v1"
+    },
+    {
+      "src": "/media/rig/review-neutral-v1/foundry-floor/ff3/tool-front-robot-arm.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "The tool-front robot arm model from the Foundry Floor pack, seen from the front right.",
+      "srcsetWebp": "/media/rig/review-neutral-v1/foundry-floor/ff3/tool-front-robot-arm-320.webp 320w, /media/rig/review-neutral-v1/foundry-floor/ff3/tool-front-robot-arm-480.webp 480w, /media/rig/review-neutral-v1/foundry-floor/ff3/tool-front-robot-arm-672.webp 672w, /media/rig/review-neutral-v1/foundry-floor/ff3/tool-front-robot-arm-768.webp 768w, /media/rig/review-neutral-v1/foundry-floor/ff3/tool-front-robot-arm-1024.webp 1024w",
+      "srcsetAvif": "/media/rig/review-neutral-v1/foundry-floor/ff3/tool-front-robot-arm-320.avif 320w, /media/rig/review-neutral-v1/foundry-floor/ff3/tool-front-robot-arm-480.avif 480w, /media/rig/review-neutral-v1/foundry-floor/ff3/tool-front-robot-arm-672.avif 672w, /media/rig/review-neutral-v1/foundry-floor/ff3/tool-front-robot-arm-768.avif 768w, /media/rig/review-neutral-v1/foundry-floor/ff3/tool-front-robot-arm-1024.avif 1024w",
+      "inputPath": "media/rig/review-neutral-v1/foundry-floor/ff3/tool-front-robot-arm.png",
+      "sourceRevisionId": "r_14bc5f09d6064a6aa8c20234c34b5d78",
+      "exactRevision": true,
+      "rig": "review-neutral-v1"
+    },
+    {
+      "src": "/media/rig/review-neutral-v1/foundry-floor/ff3/s1-head-w.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "The s1 head w model from the Foundry Floor pack, seen from the front right.",
+      "srcsetWebp": "/media/rig/review-neutral-v1/foundry-floor/ff3/s1-head-w-320.webp 320w, /media/rig/review-neutral-v1/foundry-floor/ff3/s1-head-w-480.webp 480w, /media/rig/review-neutral-v1/foundry-floor/ff3/s1-head-w-672.webp 672w, /media/rig/review-neutral-v1/foundry-floor/ff3/s1-head-w-768.webp 768w, /media/rig/review-neutral-v1/foundry-floor/ff3/s1-head-w-1024.webp 1024w",
+      "srcsetAvif": "/media/rig/review-neutral-v1/foundry-floor/ff3/s1-head-w-320.avif 320w, /media/rig/review-neutral-v1/foundry-floor/ff3/s1-head-w-480.avif 480w, /media/rig/review-neutral-v1/foundry-floor/ff3/s1-head-w-672.avif 672w, /media/rig/review-neutral-v1/foundry-floor/ff3/s1-head-w-768.avif 768w, /media/rig/review-neutral-v1/foundry-floor/ff3/s1-head-w-1024.avif 1024w",
+      "inputPath": "media/rig/review-neutral-v1/foundry-floor/ff3/s1-head-w.png",
+      "sourceRevisionId": "r_c2d99522b58344b69dca0ad1ce41928a",
+      "exactRevision": true,
+      "rig": "review-neutral-v1"
+    },
+    {
+      "src": "/media/rig/review-neutral-v1/foundry-floor/ff3/s1-head-e.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "The s1 head e model from the Foundry Floor pack, seen from the front right.",
+      "srcsetWebp": "/media/rig/review-neutral-v1/foundry-floor/ff3/s1-head-e-320.webp 320w, /media/rig/review-neutral-v1/foundry-floor/ff3/s1-head-e-480.webp 480w, /media/rig/review-neutral-v1/foundry-floor/ff3/s1-head-e-672.webp 672w, /media/rig/review-neutral-v1/foundry-floor/ff3/s1-head-e-768.webp 768w, /media/rig/review-neutral-v1/foundry-floor/ff3/s1-head-e-1024.webp 1024w",
+      "srcsetAvif": "/media/rig/review-neutral-v1/foundry-floor/ff3/s1-head-e-320.avif 320w, /media/rig/review-neutral-v1/foundry-floor/ff3/s1-head-e-480.avif 480w, /media/rig/review-neutral-v1/foundry-floor/ff3/s1-head-e-672.avif 672w, /media/rig/review-neutral-v1/foundry-floor/ff3/s1-head-e-768.avif 768w, /media/rig/review-neutral-v1/foundry-floor/ff3/s1-head-e-1024.avif 1024w",
+      "inputPath": "media/rig/review-neutral-v1/foundry-floor/ff3/s1-head-e.png",
+      "sourceRevisionId": "r_df7dae73a55c46f1853280912ac1d593",
+      "exactRevision": true,
+      "rig": "review-neutral-v1"
+    },
+    {
+      "src": "/media/rig/review-neutral-v1/foundry-floor/ff3/s1-head-w-far.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "The s1 head w far model from the Foundry Floor pack, seen from the front right.",
+      "srcsetWebp": "/media/rig/review-neutral-v1/foundry-floor/ff3/s1-head-w-far-320.webp 320w, /media/rig/review-neutral-v1/foundry-floor/ff3/s1-head-w-far-480.webp 480w, /media/rig/review-neutral-v1/foundry-floor/ff3/s1-head-w-far-672.webp 672w, /media/rig/review-neutral-v1/foundry-floor/ff3/s1-head-w-far-768.webp 768w, /media/rig/review-neutral-v1/foundry-floor/ff3/s1-head-w-far-1024.webp 1024w",
+      "srcsetAvif": "/media/rig/review-neutral-v1/foundry-floor/ff3/s1-head-w-far-320.avif 320w, /media/rig/review-neutral-v1/foundry-floor/ff3/s1-head-w-far-480.avif 480w, /media/rig/review-neutral-v1/foundry-floor/ff3/s1-head-w-far-672.avif 672w, /media/rig/review-neutral-v1/foundry-floor/ff3/s1-head-w-far-768.avif 768w, /media/rig/review-neutral-v1/foundry-floor/ff3/s1-head-w-far-1024.avif 1024w",
+      "inputPath": "media/rig/review-neutral-v1/foundry-floor/ff3/s1-head-w-far.png",
+      "sourceRevisionId": "r_e8204a9885e14c2c9d09a22f755a80da",
+      "exactRevision": true,
+      "rig": "review-neutral-v1"
+    },
+    {
+      "src": "/media/rig/review-neutral-v1/foundry-floor/ff3/s1-head-e-far.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "The s1 head e far model from the Foundry Floor pack, seen from the front right.",
+      "srcsetWebp": "/media/rig/review-neutral-v1/foundry-floor/ff3/s1-head-e-far-320.webp 320w, /media/rig/review-neutral-v1/foundry-floor/ff3/s1-head-e-far-480.webp 480w, /media/rig/review-neutral-v1/foundry-floor/ff3/s1-head-e-far-672.webp 672w, /media/rig/review-neutral-v1/foundry-floor/ff3/s1-head-e-far-768.webp 768w, /media/rig/review-neutral-v1/foundry-floor/ff3/s1-head-e-far-1024.webp 1024w",
+      "srcsetAvif": "/media/rig/review-neutral-v1/foundry-floor/ff3/s1-head-e-far-320.avif 320w, /media/rig/review-neutral-v1/foundry-floor/ff3/s1-head-e-far-480.avif 480w, /media/rig/review-neutral-v1/foundry-floor/ff3/s1-head-e-far-672.avif 672w, /media/rig/review-neutral-v1/foundry-floor/ff3/s1-head-e-far-768.avif 768w, /media/rig/review-neutral-v1/foundry-floor/ff3/s1-head-e-far-1024.avif 1024w",
+      "inputPath": "media/rig/review-neutral-v1/foundry-floor/ff3/s1-head-e-far.png",
+      "sourceRevisionId": "r_2e4899a609764cf6a993093253b75fd8",
+      "exactRevision": true,
+      "rig": "review-neutral-v1"
+    },
+    {
+      "src": "/media/rig/review-neutral-v1/foundry-floor/ff3/s4-canopy.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "The s4 canopy model from the Foundry Floor pack, seen from the front right.",
+      "srcsetWebp": "/media/rig/review-neutral-v1/foundry-floor/ff3/s4-canopy-320.webp 320w, /media/rig/review-neutral-v1/foundry-floor/ff3/s4-canopy-480.webp 480w, /media/rig/review-neutral-v1/foundry-floor/ff3/s4-canopy-672.webp 672w, /media/rig/review-neutral-v1/foundry-floor/ff3/s4-canopy-768.webp 768w, /media/rig/review-neutral-v1/foundry-floor/ff3/s4-canopy-1024.webp 1024w",
+      "srcsetAvif": "/media/rig/review-neutral-v1/foundry-floor/ff3/s4-canopy-320.avif 320w, /media/rig/review-neutral-v1/foundry-floor/ff3/s4-canopy-480.avif 480w, /media/rig/review-neutral-v1/foundry-floor/ff3/s4-canopy-672.avif 672w, /media/rig/review-neutral-v1/foundry-floor/ff3/s4-canopy-768.avif 768w, /media/rig/review-neutral-v1/foundry-floor/ff3/s4-canopy-1024.avif 1024w",
+      "inputPath": "media/rig/review-neutral-v1/foundry-floor/ff3/s4-canopy.png",
+      "sourceRevisionId": "r_e6e9b7f634014bc6ab698dcbb0df91a5",
+      "exactRevision": true,
+      "rig": "review-neutral-v1"
+    },
+    {
+      "src": "/media/rig/review-neutral-v1/foundry-floor/ff3/s2-hall-w.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "The s2 hall w model from the Foundry Floor pack, seen from the front right.",
+      "srcsetWebp": "/media/rig/review-neutral-v1/foundry-floor/ff3/s2-hall-w-320.webp 320w, /media/rig/review-neutral-v1/foundry-floor/ff3/s2-hall-w-480.webp 480w, /media/rig/review-neutral-v1/foundry-floor/ff3/s2-hall-w-672.webp 672w, /media/rig/review-neutral-v1/foundry-floor/ff3/s2-hall-w-768.webp 768w, /media/rig/review-neutral-v1/foundry-floor/ff3/s2-hall-w-1024.webp 1024w",
+      "srcsetAvif": "/media/rig/review-neutral-v1/foundry-floor/ff3/s2-hall-w-320.avif 320w, /media/rig/review-neutral-v1/foundry-floor/ff3/s2-hall-w-480.avif 480w, /media/rig/review-neutral-v1/foundry-floor/ff3/s2-hall-w-672.avif 672w, /media/rig/review-neutral-v1/foundry-floor/ff3/s2-hall-w-768.avif 768w, /media/rig/review-neutral-v1/foundry-floor/ff3/s2-hall-w-1024.avif 1024w",
+      "inputPath": "media/rig/review-neutral-v1/foundry-floor/ff3/s2-hall-w.png",
+      "sourceRevisionId": "r_360a18d9520a47ba8f74803411d880d7",
+      "exactRevision": true,
+      "rig": "review-neutral-v1"
+    },
+    {
+      "src": "/media/rig/review-neutral-v1/foundry-floor/ff3/s2-hall-e.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "The s2 hall e model from the Foundry Floor pack, seen from the front right.",
+      "srcsetWebp": "/media/rig/review-neutral-v1/foundry-floor/ff3/s2-hall-e-320.webp 320w, /media/rig/review-neutral-v1/foundry-floor/ff3/s2-hall-e-480.webp 480w, /media/rig/review-neutral-v1/foundry-floor/ff3/s2-hall-e-672.webp 672w, /media/rig/review-neutral-v1/foundry-floor/ff3/s2-hall-e-768.webp 768w, /media/rig/review-neutral-v1/foundry-floor/ff3/s2-hall-e-1024.webp 1024w",
+      "srcsetAvif": "/media/rig/review-neutral-v1/foundry-floor/ff3/s2-hall-e-320.avif 320w, /media/rig/review-neutral-v1/foundry-floor/ff3/s2-hall-e-480.avif 480w, /media/rig/review-neutral-v1/foundry-floor/ff3/s2-hall-e-672.avif 672w, /media/rig/review-neutral-v1/foundry-floor/ff3/s2-hall-e-768.avif 768w, /media/rig/review-neutral-v1/foundry-floor/ff3/s2-hall-e-1024.avif 1024w",
+      "inputPath": "media/rig/review-neutral-v1/foundry-floor/ff3/s2-hall-e.png",
+      "sourceRevisionId": "r_9240eafbf13942e4a6263b1012889b2d",
+      "exactRevision": true,
+      "rig": "review-neutral-v1"
+    },
+    {
+      "src": "/media/rig/review-neutral-v1/foundry-floor/ff3/s2-hall-w-far.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "The s2 hall w far model from the Foundry Floor pack, seen from the front right.",
+      "srcsetWebp": "/media/rig/review-neutral-v1/foundry-floor/ff3/s2-hall-w-far-320.webp 320w, /media/rig/review-neutral-v1/foundry-floor/ff3/s2-hall-w-far-480.webp 480w, /media/rig/review-neutral-v1/foundry-floor/ff3/s2-hall-w-far-672.webp 672w, /media/rig/review-neutral-v1/foundry-floor/ff3/s2-hall-w-far-768.webp 768w, /media/rig/review-neutral-v1/foundry-floor/ff3/s2-hall-w-far-1024.webp 1024w",
+      "srcsetAvif": "/media/rig/review-neutral-v1/foundry-floor/ff3/s2-hall-w-far-320.avif 320w, /media/rig/review-neutral-v1/foundry-floor/ff3/s2-hall-w-far-480.avif 480w, /media/rig/review-neutral-v1/foundry-floor/ff3/s2-hall-w-far-672.avif 672w, /media/rig/review-neutral-v1/foundry-floor/ff3/s2-hall-w-far-768.avif 768w, /media/rig/review-neutral-v1/foundry-floor/ff3/s2-hall-w-far-1024.avif 1024w",
+      "inputPath": "media/rig/review-neutral-v1/foundry-floor/ff3/s2-hall-w-far.png",
+      "sourceRevisionId": "r_47f890f3d7314130ade16990037c4519",
+      "exactRevision": true,
+      "rig": "review-neutral-v1"
+    },
+    {
+      "src": "/media/rig/review-neutral-v1/foundry-floor/ff3/s2-hall-e-far.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "The s2 hall e far model from the Foundry Floor pack, seen from the front right.",
+      "srcsetWebp": "/media/rig/review-neutral-v1/foundry-floor/ff3/s2-hall-e-far-320.webp 320w, /media/rig/review-neutral-v1/foundry-floor/ff3/s2-hall-e-far-480.webp 480w, /media/rig/review-neutral-v1/foundry-floor/ff3/s2-hall-e-far-672.webp 672w, /media/rig/review-neutral-v1/foundry-floor/ff3/s2-hall-e-far-768.webp 768w, /media/rig/review-neutral-v1/foundry-floor/ff3/s2-hall-e-far-1024.webp 1024w",
+      "srcsetAvif": "/media/rig/review-neutral-v1/foundry-floor/ff3/s2-hall-e-far-320.avif 320w, /media/rig/review-neutral-v1/foundry-floor/ff3/s2-hall-e-far-480.avif 480w, /media/rig/review-neutral-v1/foundry-floor/ff3/s2-hall-e-far-672.avif 672w, /media/rig/review-neutral-v1/foundry-floor/ff3/s2-hall-e-far-768.avif 768w, /media/rig/review-neutral-v1/foundry-floor/ff3/s2-hall-e-far-1024.avif 1024w",
+      "inputPath": "media/rig/review-neutral-v1/foundry-floor/ff3/s2-hall-e-far.png",
+      "sourceRevisionId": "r_d946a31fc6c041a8b3d6ca0e6006fb36",
+      "exactRevision": true,
+      "rig": "review-neutral-v1"
+    },
+    {
+      "src": "/media/rig/review-neutral-v1/foundry-floor/ff3/s3-link.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "The s3 link model from the Foundry Floor pack, seen from the front right.",
+      "srcsetWebp": "/media/rig/review-neutral-v1/foundry-floor/ff3/s3-link-320.webp 320w, /media/rig/review-neutral-v1/foundry-floor/ff3/s3-link-480.webp 480w, /media/rig/review-neutral-v1/foundry-floor/ff3/s3-link-672.webp 672w, /media/rig/review-neutral-v1/foundry-floor/ff3/s3-link-768.webp 768w, /media/rig/review-neutral-v1/foundry-floor/ff3/s3-link-1024.webp 1024w",
+      "srcsetAvif": "/media/rig/review-neutral-v1/foundry-floor/ff3/s3-link-320.avif 320w, /media/rig/review-neutral-v1/foundry-floor/ff3/s3-link-480.avif 480w, /media/rig/review-neutral-v1/foundry-floor/ff3/s3-link-672.avif 672w, /media/rig/review-neutral-v1/foundry-floor/ff3/s3-link-768.avif 768w, /media/rig/review-neutral-v1/foundry-floor/ff3/s3-link-1024.avif 1024w",
+      "inputPath": "media/rig/review-neutral-v1/foundry-floor/ff3/s3-link.png",
+      "sourceRevisionId": "r_b2f1a7eab1cc48fb8d2561914e8888d3",
+      "exactRevision": true,
+      "rig": "review-neutral-v1"
+    },
+    {
+      "src": "/media/rig/review-neutral-v1/foundry-floor/ff3/s5-split-bridge.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "The s5 split bridge model from the Foundry Floor pack, seen from the front right.",
+      "srcsetWebp": "/media/rig/review-neutral-v1/foundry-floor/ff3/s5-split-bridge-320.webp 320w, /media/rig/review-neutral-v1/foundry-floor/ff3/s5-split-bridge-480.webp 480w, /media/rig/review-neutral-v1/foundry-floor/ff3/s5-split-bridge-672.webp 672w, /media/rig/review-neutral-v1/foundry-floor/ff3/s5-split-bridge-768.webp 768w, /media/rig/review-neutral-v1/foundry-floor/ff3/s5-split-bridge-1024.webp 1024w",
+      "srcsetAvif": "/media/rig/review-neutral-v1/foundry-floor/ff3/s5-split-bridge-320.avif 320w, /media/rig/review-neutral-v1/foundry-floor/ff3/s5-split-bridge-480.avif 480w, /media/rig/review-neutral-v1/foundry-floor/ff3/s5-split-bridge-672.avif 672w, /media/rig/review-neutral-v1/foundry-floor/ff3/s5-split-bridge-768.avif 768w, /media/rig/review-neutral-v1/foundry-floor/ff3/s5-split-bridge-1024.avif 1024w",
+      "inputPath": "media/rig/review-neutral-v1/foundry-floor/ff3/s5-split-bridge.png",
+      "sourceRevisionId": "r_8bbd9104498f4aad974d4f3cb29e810e",
+      "exactRevision": true,
+      "rig": "review-neutral-v1"
+    },
+    {
+      "src": "/media/rig/review-neutral-v1/foundry-floor/ff3/s5-split-bridge-far.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "The s5 split bridge far model from the Foundry Floor pack, seen from the front right.",
+      "srcsetWebp": "/media/rig/review-neutral-v1/foundry-floor/ff3/s5-split-bridge-far-320.webp 320w, /media/rig/review-neutral-v1/foundry-floor/ff3/s5-split-bridge-far-480.webp 480w, /media/rig/review-neutral-v1/foundry-floor/ff3/s5-split-bridge-far-672.webp 672w, /media/rig/review-neutral-v1/foundry-floor/ff3/s5-split-bridge-far-768.webp 768w, /media/rig/review-neutral-v1/foundry-floor/ff3/s5-split-bridge-far-1024.webp 1024w",
+      "srcsetAvif": "/media/rig/review-neutral-v1/foundry-floor/ff3/s5-split-bridge-far-320.avif 320w, /media/rig/review-neutral-v1/foundry-floor/ff3/s5-split-bridge-far-480.avif 480w, /media/rig/review-neutral-v1/foundry-floor/ff3/s5-split-bridge-far-672.avif 672w, /media/rig/review-neutral-v1/foundry-floor/ff3/s5-split-bridge-far-768.avif 768w, /media/rig/review-neutral-v1/foundry-floor/ff3/s5-split-bridge-far-1024.avif 1024w",
+      "inputPath": "media/rig/review-neutral-v1/foundry-floor/ff3/s5-split-bridge-far.png",
+      "sourceRevisionId": "r_51b50c962e754a098db9b438367ed1b1",
+      "exactRevision": true,
+      "rig": "review-neutral-v1"
+    },
+    {
+      "src": "/media/rig/review-neutral-v1/foundry-floor/ff3/tree-broad-l.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "The tree broad l model from the Foundry Floor pack, seen from the front right.",
+      "srcsetWebp": "/media/rig/review-neutral-v1/foundry-floor/ff3/tree-broad-l-320.webp 320w, /media/rig/review-neutral-v1/foundry-floor/ff3/tree-broad-l-480.webp 480w, /media/rig/review-neutral-v1/foundry-floor/ff3/tree-broad-l-672.webp 672w, /media/rig/review-neutral-v1/foundry-floor/ff3/tree-broad-l-768.webp 768w, /media/rig/review-neutral-v1/foundry-floor/ff3/tree-broad-l-1024.webp 1024w",
+      "srcsetAvif": "/media/rig/review-neutral-v1/foundry-floor/ff3/tree-broad-l-320.avif 320w, /media/rig/review-neutral-v1/foundry-floor/ff3/tree-broad-l-480.avif 480w, /media/rig/review-neutral-v1/foundry-floor/ff3/tree-broad-l-672.avif 672w, /media/rig/review-neutral-v1/foundry-floor/ff3/tree-broad-l-768.avif 768w, /media/rig/review-neutral-v1/foundry-floor/ff3/tree-broad-l-1024.avif 1024w",
+      "inputPath": "media/rig/review-neutral-v1/foundry-floor/ff3/tree-broad-l.png",
+      "sourceRevisionId": "r_9f23088183b1495a9d398603dae05ff5",
+      "exactRevision": true,
+      "rig": "review-neutral-v1"
+    },
+    {
+      "src": "/media/rig/review-neutral-v1/foundry-floor/ff3/tree-broad-m.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "The tree broad m model from the Foundry Floor pack, seen from the front right.",
+      "srcsetWebp": "/media/rig/review-neutral-v1/foundry-floor/ff3/tree-broad-m-320.webp 320w, /media/rig/review-neutral-v1/foundry-floor/ff3/tree-broad-m-480.webp 480w, /media/rig/review-neutral-v1/foundry-floor/ff3/tree-broad-m-672.webp 672w, /media/rig/review-neutral-v1/foundry-floor/ff3/tree-broad-m-768.webp 768w, /media/rig/review-neutral-v1/foundry-floor/ff3/tree-broad-m-1024.webp 1024w",
+      "srcsetAvif": "/media/rig/review-neutral-v1/foundry-floor/ff3/tree-broad-m-320.avif 320w, /media/rig/review-neutral-v1/foundry-floor/ff3/tree-broad-m-480.avif 480w, /media/rig/review-neutral-v1/foundry-floor/ff3/tree-broad-m-672.avif 672w, /media/rig/review-neutral-v1/foundry-floor/ff3/tree-broad-m-768.avif 768w, /media/rig/review-neutral-v1/foundry-floor/ff3/tree-broad-m-1024.avif 1024w",
+      "inputPath": "media/rig/review-neutral-v1/foundry-floor/ff3/tree-broad-m.png",
+      "sourceRevisionId": "r_947dbc2b30b94fdf85804e19fb665b4d",
+      "exactRevision": true,
+      "rig": "review-neutral-v1"
+    },
+    {
+      "src": "/media/rig/review-neutral-v1/foundry-floor/ff3/tree-broad-s.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "The tree broad s model from the Foundry Floor pack, seen from the front right.",
+      "srcsetWebp": "/media/rig/review-neutral-v1/foundry-floor/ff3/tree-broad-s-320.webp 320w, /media/rig/review-neutral-v1/foundry-floor/ff3/tree-broad-s-480.webp 480w, /media/rig/review-neutral-v1/foundry-floor/ff3/tree-broad-s-672.webp 672w, /media/rig/review-neutral-v1/foundry-floor/ff3/tree-broad-s-768.webp 768w, /media/rig/review-neutral-v1/foundry-floor/ff3/tree-broad-s-1024.webp 1024w",
+      "srcsetAvif": "/media/rig/review-neutral-v1/foundry-floor/ff3/tree-broad-s-320.avif 320w, /media/rig/review-neutral-v1/foundry-floor/ff3/tree-broad-s-480.avif 480w, /media/rig/review-neutral-v1/foundry-floor/ff3/tree-broad-s-672.avif 672w, /media/rig/review-neutral-v1/foundry-floor/ff3/tree-broad-s-768.avif 768w, /media/rig/review-neutral-v1/foundry-floor/ff3/tree-broad-s-1024.avif 1024w",
+      "inputPath": "media/rig/review-neutral-v1/foundry-floor/ff3/tree-broad-s.png",
+      "sourceRevisionId": "r_aad434508024485a80b48effabe15185",
+      "exactRevision": true,
+      "rig": "review-neutral-v1"
+    },
+    {
+      "src": "/media/rig/review-neutral-v1/foundry-floor/ff3/tree-conifer-l.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "The tree conifer l model from the Foundry Floor pack, seen from the front right.",
+      "srcsetWebp": "/media/rig/review-neutral-v1/foundry-floor/ff3/tree-conifer-l-320.webp 320w, /media/rig/review-neutral-v1/foundry-floor/ff3/tree-conifer-l-480.webp 480w, /media/rig/review-neutral-v1/foundry-floor/ff3/tree-conifer-l-672.webp 672w, /media/rig/review-neutral-v1/foundry-floor/ff3/tree-conifer-l-768.webp 768w, /media/rig/review-neutral-v1/foundry-floor/ff3/tree-conifer-l-1024.webp 1024w",
+      "srcsetAvif": "/media/rig/review-neutral-v1/foundry-floor/ff3/tree-conifer-l-320.avif 320w, /media/rig/review-neutral-v1/foundry-floor/ff3/tree-conifer-l-480.avif 480w, /media/rig/review-neutral-v1/foundry-floor/ff3/tree-conifer-l-672.avif 672w, /media/rig/review-neutral-v1/foundry-floor/ff3/tree-conifer-l-768.avif 768w, /media/rig/review-neutral-v1/foundry-floor/ff3/tree-conifer-l-1024.avif 1024w",
+      "inputPath": "media/rig/review-neutral-v1/foundry-floor/ff3/tree-conifer-l.png",
+      "sourceRevisionId": "r_b7d3879520f24b349d6a6ae6701ae2c3",
+      "exactRevision": true,
+      "rig": "review-neutral-v1"
+    },
+    {
+      "src": "/media/rig/review-neutral-v1/foundry-floor/ff3/tree-conifer-m.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "The tree conifer m model from the Foundry Floor pack, seen from the front right.",
+      "srcsetWebp": "/media/rig/review-neutral-v1/foundry-floor/ff3/tree-conifer-m-320.webp 320w, /media/rig/review-neutral-v1/foundry-floor/ff3/tree-conifer-m-480.webp 480w, /media/rig/review-neutral-v1/foundry-floor/ff3/tree-conifer-m-672.webp 672w, /media/rig/review-neutral-v1/foundry-floor/ff3/tree-conifer-m-768.webp 768w, /media/rig/review-neutral-v1/foundry-floor/ff3/tree-conifer-m-1024.webp 1024w",
+      "srcsetAvif": "/media/rig/review-neutral-v1/foundry-floor/ff3/tree-conifer-m-320.avif 320w, /media/rig/review-neutral-v1/foundry-floor/ff3/tree-conifer-m-480.avif 480w, /media/rig/review-neutral-v1/foundry-floor/ff3/tree-conifer-m-672.avif 672w, /media/rig/review-neutral-v1/foundry-floor/ff3/tree-conifer-m-768.avif 768w, /media/rig/review-neutral-v1/foundry-floor/ff3/tree-conifer-m-1024.avif 1024w",
+      "inputPath": "media/rig/review-neutral-v1/foundry-floor/ff3/tree-conifer-m.png",
+      "sourceRevisionId": "r_e551108244024278bd4ae74f4d30346e",
+      "exactRevision": true,
+      "rig": "review-neutral-v1"
+    },
+    {
+      "src": "/media/rig/review-neutral-v1/foundry-floor/ff3/tree-ornamental.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "The tree ornamental model from the Foundry Floor pack, seen from the front right.",
+      "srcsetWebp": "/media/rig/review-neutral-v1/foundry-floor/ff3/tree-ornamental-320.webp 320w, /media/rig/review-neutral-v1/foundry-floor/ff3/tree-ornamental-480.webp 480w, /media/rig/review-neutral-v1/foundry-floor/ff3/tree-ornamental-672.webp 672w, /media/rig/review-neutral-v1/foundry-floor/ff3/tree-ornamental-768.webp 768w, /media/rig/review-neutral-v1/foundry-floor/ff3/tree-ornamental-1024.webp 1024w",
+      "srcsetAvif": "/media/rig/review-neutral-v1/foundry-floor/ff3/tree-ornamental-320.avif 320w, /media/rig/review-neutral-v1/foundry-floor/ff3/tree-ornamental-480.avif 480w, /media/rig/review-neutral-v1/foundry-floor/ff3/tree-ornamental-672.avif 672w, /media/rig/review-neutral-v1/foundry-floor/ff3/tree-ornamental-768.avif 768w, /media/rig/review-neutral-v1/foundry-floor/ff3/tree-ornamental-1024.avif 1024w",
+      "inputPath": "media/rig/review-neutral-v1/foundry-floor/ff3/tree-ornamental.png",
+      "sourceRevisionId": "r_6f6398c81f134c3fb7880fd2bc7537e4",
+      "exactRevision": true,
+      "rig": "review-neutral-v1"
+    },
+    {
+      "src": "/media/rig/review-neutral-v1/foundry-floor/ff3/shrub-mound.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "The shrub mound model from the Foundry Floor pack, seen from the front right.",
+      "srcsetWebp": "/media/rig/review-neutral-v1/foundry-floor/ff3/shrub-mound-320.webp 320w, /media/rig/review-neutral-v1/foundry-floor/ff3/shrub-mound-480.webp 480w, /media/rig/review-neutral-v1/foundry-floor/ff3/shrub-mound-672.webp 672w, /media/rig/review-neutral-v1/foundry-floor/ff3/shrub-mound-768.webp 768w, /media/rig/review-neutral-v1/foundry-floor/ff3/shrub-mound-1024.webp 1024w",
+      "srcsetAvif": "/media/rig/review-neutral-v1/foundry-floor/ff3/shrub-mound-320.avif 320w, /media/rig/review-neutral-v1/foundry-floor/ff3/shrub-mound-480.avif 480w, /media/rig/review-neutral-v1/foundry-floor/ff3/shrub-mound-672.avif 672w, /media/rig/review-neutral-v1/foundry-floor/ff3/shrub-mound-768.avif 768w, /media/rig/review-neutral-v1/foundry-floor/ff3/shrub-mound-1024.avif 1024w",
+      "inputPath": "media/rig/review-neutral-v1/foundry-floor/ff3/shrub-mound.png",
+      "sourceRevisionId": "r_37b46919727c4c8a8bafe8884635a17b",
+      "exactRevision": true,
+      "rig": "review-neutral-v1"
+    },
+    {
+      "src": "/media/rig/review-neutral-v1/foundry-floor/ff3/hedge-4m.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "The hedge 4m model from the Foundry Floor pack, seen from the front right.",
+      "srcsetWebp": "/media/rig/review-neutral-v1/foundry-floor/ff3/hedge-4m-320.webp 320w, /media/rig/review-neutral-v1/foundry-floor/ff3/hedge-4m-480.webp 480w, /media/rig/review-neutral-v1/foundry-floor/ff3/hedge-4m-672.webp 672w, /media/rig/review-neutral-v1/foundry-floor/ff3/hedge-4m-768.webp 768w, /media/rig/review-neutral-v1/foundry-floor/ff3/hedge-4m-1024.webp 1024w",
+      "srcsetAvif": "/media/rig/review-neutral-v1/foundry-floor/ff3/hedge-4m-320.avif 320w, /media/rig/review-neutral-v1/foundry-floor/ff3/hedge-4m-480.avif 480w, /media/rig/review-neutral-v1/foundry-floor/ff3/hedge-4m-672.avif 672w, /media/rig/review-neutral-v1/foundry-floor/ff3/hedge-4m-768.avif 768w, /media/rig/review-neutral-v1/foundry-floor/ff3/hedge-4m-1024.avif 1024w",
+      "inputPath": "media/rig/review-neutral-v1/foundry-floor/ff3/hedge-4m.png",
+      "sourceRevisionId": "r_7b34245c9ea04e96ad8e449006f1f806",
+      "exactRevision": true,
+      "rig": "review-neutral-v1"
+    },
+    {
+      "src": "/media/rig/review-neutral-v1/foundry-floor/ff3/truck-tractor.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "The truck tractor model from the Foundry Floor pack, seen from the front right.",
+      "srcsetWebp": "/media/rig/review-neutral-v1/foundry-floor/ff3/truck-tractor-320.webp 320w, /media/rig/review-neutral-v1/foundry-floor/ff3/truck-tractor-480.webp 480w, /media/rig/review-neutral-v1/foundry-floor/ff3/truck-tractor-672.webp 672w, /media/rig/review-neutral-v1/foundry-floor/ff3/truck-tractor-768.webp 768w, /media/rig/review-neutral-v1/foundry-floor/ff3/truck-tractor-1024.webp 1024w",
+      "srcsetAvif": "/media/rig/review-neutral-v1/foundry-floor/ff3/truck-tractor-320.avif 320w, /media/rig/review-neutral-v1/foundry-floor/ff3/truck-tractor-480.avif 480w, /media/rig/review-neutral-v1/foundry-floor/ff3/truck-tractor-672.avif 672w, /media/rig/review-neutral-v1/foundry-floor/ff3/truck-tractor-768.avif 768w, /media/rig/review-neutral-v1/foundry-floor/ff3/truck-tractor-1024.avif 1024w",
+      "inputPath": "media/rig/review-neutral-v1/foundry-floor/ff3/truck-tractor.png",
+      "sourceRevisionId": "r_bbd6fc0083764d728aa0c796fb33ab91",
+      "exactRevision": true,
+      "rig": "review-neutral-v1"
+    },
+    {
+      "src": "/media/rig/review-neutral-v1/foundry-floor/ff3/trailer-dryvan.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "The trailer dryvan model from the Foundry Floor pack, seen from the front right.",
+      "srcsetWebp": "/media/rig/review-neutral-v1/foundry-floor/ff3/trailer-dryvan-320.webp 320w, /media/rig/review-neutral-v1/foundry-floor/ff3/trailer-dryvan-480.webp 480w, /media/rig/review-neutral-v1/foundry-floor/ff3/trailer-dryvan-672.webp 672w, /media/rig/review-neutral-v1/foundry-floor/ff3/trailer-dryvan-768.webp 768w, /media/rig/review-neutral-v1/foundry-floor/ff3/trailer-dryvan-1024.webp 1024w",
+      "srcsetAvif": "/media/rig/review-neutral-v1/foundry-floor/ff3/trailer-dryvan-320.avif 320w, /media/rig/review-neutral-v1/foundry-floor/ff3/trailer-dryvan-480.avif 480w, /media/rig/review-neutral-v1/foundry-floor/ff3/trailer-dryvan-672.avif 672w, /media/rig/review-neutral-v1/foundry-floor/ff3/trailer-dryvan-768.avif 768w, /media/rig/review-neutral-v1/foundry-floor/ff3/trailer-dryvan-1024.avif 1024w",
+      "inputPath": "media/rig/review-neutral-v1/foundry-floor/ff3/trailer-dryvan.png",
+      "sourceRevisionId": "r_900808c392da42e899ba67a161845870",
+      "exactRevision": true,
+      "rig": "review-neutral-v1"
+    },
+    {
+      "src": "/media/rig/review-neutral-v1/foundry-floor/ff3/trailer-flatbed.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "The trailer flatbed model from the Foundry Floor pack, seen from the front right.",
+      "srcsetWebp": "/media/rig/review-neutral-v1/foundry-floor/ff3/trailer-flatbed-320.webp 320w, /media/rig/review-neutral-v1/foundry-floor/ff3/trailer-flatbed-480.webp 480w, /media/rig/review-neutral-v1/foundry-floor/ff3/trailer-flatbed-672.webp 672w, /media/rig/review-neutral-v1/foundry-floor/ff3/trailer-flatbed-768.webp 768w, /media/rig/review-neutral-v1/foundry-floor/ff3/trailer-flatbed-1024.webp 1024w",
+      "srcsetAvif": "/media/rig/review-neutral-v1/foundry-floor/ff3/trailer-flatbed-320.avif 320w, /media/rig/review-neutral-v1/foundry-floor/ff3/trailer-flatbed-480.avif 480w, /media/rig/review-neutral-v1/foundry-floor/ff3/trailer-flatbed-672.avif 672w, /media/rig/review-neutral-v1/foundry-floor/ff3/trailer-flatbed-768.avif 768w, /media/rig/review-neutral-v1/foundry-floor/ff3/trailer-flatbed-1024.avif 1024w",
+      "inputPath": "media/rig/review-neutral-v1/foundry-floor/ff3/trailer-flatbed.png",
+      "sourceRevisionId": "r_7e81c6c0166b4142abad776a6ebb68d1",
+      "exactRevision": true,
+      "rig": "review-neutral-v1"
+    },
+    {
+      "src": "/media/rig/review-neutral-v1/foundry-floor/ff3/trailer-tanker.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "The trailer tanker model from the Foundry Floor pack, seen from the front right.",
+      "srcsetWebp": "/media/rig/review-neutral-v1/foundry-floor/ff3/trailer-tanker-320.webp 320w, /media/rig/review-neutral-v1/foundry-floor/ff3/trailer-tanker-480.webp 480w, /media/rig/review-neutral-v1/foundry-floor/ff3/trailer-tanker-672.webp 672w, /media/rig/review-neutral-v1/foundry-floor/ff3/trailer-tanker-768.webp 768w, /media/rig/review-neutral-v1/foundry-floor/ff3/trailer-tanker-1024.webp 1024w",
+      "srcsetAvif": "/media/rig/review-neutral-v1/foundry-floor/ff3/trailer-tanker-320.avif 320w, /media/rig/review-neutral-v1/foundry-floor/ff3/trailer-tanker-480.avif 480w, /media/rig/review-neutral-v1/foundry-floor/ff3/trailer-tanker-672.avif 672w, /media/rig/review-neutral-v1/foundry-floor/ff3/trailer-tanker-768.avif 768w, /media/rig/review-neutral-v1/foundry-floor/ff3/trailer-tanker-1024.avif 1024w",
+      "inputPath": "media/rig/review-neutral-v1/foundry-floor/ff3/trailer-tanker.png",
+      "sourceRevisionId": "r_247bb2b5dbd048889d3efd6c95aa20e0",
+      "exactRevision": true,
+      "rig": "review-neutral-v1"
+    },
+    {
+      "src": "/media/rig/review-neutral-v1/foundry-floor/ff3/van-delivery.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "The van delivery model from the Foundry Floor pack, seen from the front right.",
+      "srcsetWebp": "/media/rig/review-neutral-v1/foundry-floor/ff3/van-delivery-320.webp 320w, /media/rig/review-neutral-v1/foundry-floor/ff3/van-delivery-480.webp 480w, /media/rig/review-neutral-v1/foundry-floor/ff3/van-delivery-672.webp 672w, /media/rig/review-neutral-v1/foundry-floor/ff3/van-delivery-768.webp 768w, /media/rig/review-neutral-v1/foundry-floor/ff3/van-delivery-1024.webp 1024w",
+      "srcsetAvif": "/media/rig/review-neutral-v1/foundry-floor/ff3/van-delivery-320.avif 320w, /media/rig/review-neutral-v1/foundry-floor/ff3/van-delivery-480.avif 480w, /media/rig/review-neutral-v1/foundry-floor/ff3/van-delivery-672.avif 672w, /media/rig/review-neutral-v1/foundry-floor/ff3/van-delivery-768.avif 768w, /media/rig/review-neutral-v1/foundry-floor/ff3/van-delivery-1024.avif 1024w",
+      "inputPath": "media/rig/review-neutral-v1/foundry-floor/ff3/van-delivery.png",
+      "sourceRevisionId": "r_961acb32238d428192bdd939da41ae6c",
+      "exactRevision": true,
+      "rig": "review-neutral-v1"
+    },
+    {
+      "src": "/media/rig/review-neutral-v1/foundry-floor/ff3/scene-poster.webp",
+      "width": 1440,
+      "height": 900,
+      "alt": "The EUV scanner model from the Foundry Floor pack, rendered under the review rig on a neutral backdrop. The running scene is not pictured.",
+      "srcsetWebp": "/media/rig/review-neutral-v1/foundry-floor/ff3/scene-poster-320.webp 320w, /media/rig/review-neutral-v1/foundry-floor/ff3/scene-poster-480.webp 480w, /media/rig/review-neutral-v1/foundry-floor/ff3/scene-poster-672.webp 672w, /media/rig/review-neutral-v1/foundry-floor/ff3/scene-poster-768.webp 768w, /media/rig/review-neutral-v1/foundry-floor/ff3/scene-poster-1024.webp 1024w, /media/rig/review-neutral-v1/foundry-floor/ff3/scene-poster-1440.webp 1440w",
+      "srcsetAvif": "/media/rig/review-neutral-v1/foundry-floor/ff3/scene-poster-320.avif 320w, /media/rig/review-neutral-v1/foundry-floor/ff3/scene-poster-480.avif 480w, /media/rig/review-neutral-v1/foundry-floor/ff3/scene-poster-672.avif 672w, /media/rig/review-neutral-v1/foundry-floor/ff3/scene-poster-768.avif 768w, /media/rig/review-neutral-v1/foundry-floor/ff3/scene-poster-1024.avif 1024w, /media/rig/review-neutral-v1/foundry-floor/ff3/scene-poster-1440.avif 1440w",
+      "inputPath": "media/rig/review-neutral-v1/foundry-floor/ff3/scene-poster.png",
+      "sourceRevisionId": "r_5fb445d57eec47fa9c7238b1a5ee4242",
+      "exactRevision": true,
+      "rig": "review-neutral-v1"
+    },
+    {
+      "src": "/media/vehicles/r4-local-review/review/hatchback.webp",
+      "width": 1168,
+      "height": 780,
+      "alt": "Saved review views of Generic hatchback.",
+      "srcsetWebp": "/media/vehicles/r4-local-review/review/hatchback-320.webp 320w, /media/vehicles/r4-local-review/review/hatchback-480.webp 480w, /media/vehicles/r4-local-review/review/hatchback-672.webp 672w, /media/vehicles/r4-local-review/review/hatchback-768.webp 768w, /media/vehicles/r4-local-review/review/hatchback-1024.webp 1024w",
+      "srcsetAvif": "/media/vehicles/r4-local-review/review/hatchback-320.avif 320w, /media/vehicles/r4-local-review/review/hatchback-480.avif 480w, /media/vehicles/r4-local-review/review/hatchback-672.avif 672w, /media/vehicles/r4-local-review/review/hatchback-768.avif 768w, /media/vehicles/r4-local-review/review/hatchback-1024.avif 1024w",
+      "inputPath": "media/vehicles/r4-local-review/review/hatchback.png",
+      "sourceRevisionId": "r_74f393f06996497a9dce6c5ed50c2d62",
+      "exactRevision": true,
+      "fidelity": {
+        "version": "kiln.view-fidelity.v1",
+        "requested": "full-preferred",
+        "delivered": "full-material",
+        "materialFaithful": true,
+        "exactArtifact": true,
+        "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1074",
+        "inputGlbSha256": "sha256:c1f095f02514cc73f39353cfca74ab6dd703cc5696eb5cdb4e264306df02d67d",
+        "degraded": false,
+        "reasonCodes": []
+      }
+    },
+    {
+      "src": "/media/vehicles/r4-local-review/review/sedan.webp",
+      "width": 1168,
+      "height": 780,
+      "alt": "Saved review views of Generic sedan.",
+      "srcsetWebp": "/media/vehicles/r4-local-review/review/sedan-320.webp 320w, /media/vehicles/r4-local-review/review/sedan-480.webp 480w, /media/vehicles/r4-local-review/review/sedan-672.webp 672w, /media/vehicles/r4-local-review/review/sedan-768.webp 768w, /media/vehicles/r4-local-review/review/sedan-1024.webp 1024w",
+      "srcsetAvif": "/media/vehicles/r4-local-review/review/sedan-320.avif 320w, /media/vehicles/r4-local-review/review/sedan-480.avif 480w, /media/vehicles/r4-local-review/review/sedan-672.avif 672w, /media/vehicles/r4-local-review/review/sedan-768.avif 768w, /media/vehicles/r4-local-review/review/sedan-1024.avif 1024w",
+      "inputPath": "media/vehicles/r4-local-review/review/sedan.png",
+      "sourceRevisionId": "r_92ee0ac3d5cf4b258cc97d20ec941461",
+      "exactRevision": true,
+      "fidelity": {
+        "version": "kiln.view-fidelity.v1",
+        "requested": "full-preferred",
+        "delivered": "full-material",
+        "materialFaithful": true,
+        "exactArtifact": true,
+        "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1074",
+        "inputGlbSha256": "sha256:f4e5c482b43b365920b2894170646f3586c44afb334366366df0123ce5ac89ed",
+        "degraded": false,
+        "reasonCodes": []
+      }
+    },
+    {
+      "src": "/media/vehicles/r4-local-review/review/suv.webp",
+      "width": 1168,
+      "height": 780,
+      "alt": "Saved review views of Generic SUV.",
+      "srcsetWebp": "/media/vehicles/r4-local-review/review/suv-320.webp 320w, /media/vehicles/r4-local-review/review/suv-480.webp 480w, /media/vehicles/r4-local-review/review/suv-672.webp 672w, /media/vehicles/r4-local-review/review/suv-768.webp 768w, /media/vehicles/r4-local-review/review/suv-1024.webp 1024w",
+      "srcsetAvif": "/media/vehicles/r4-local-review/review/suv-320.avif 320w, /media/vehicles/r4-local-review/review/suv-480.avif 480w, /media/vehicles/r4-local-review/review/suv-672.avif 672w, /media/vehicles/r4-local-review/review/suv-768.avif 768w, /media/vehicles/r4-local-review/review/suv-1024.avif 1024w",
+      "inputPath": "media/vehicles/r4-local-review/review/suv.png",
+      "sourceRevisionId": "r_b4cc9048731b4c039de0b87ca6e75c17",
+      "exactRevision": true,
+      "fidelity": {
+        "version": "kiln.view-fidelity.v1",
+        "requested": "full-preferred",
+        "delivered": "full-material",
+        "materialFaithful": true,
+        "exactArtifact": true,
+        "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1074",
+        "inputGlbSha256": "sha256:680b79d0943b829fa6898a3afa58e816a1ec903c1f4544ec62fca75730222b00",
+        "degraded": false,
+        "reasonCodes": []
+      }
+    },
+    {
+      "src": "/media/vehicles/r4-local-review/review/pickup.webp",
+      "width": 1168,
+      "height": 780,
+      "alt": "Saved review views of Generic pickup truck.",
+      "srcsetWebp": "/media/vehicles/r4-local-review/review/pickup-320.webp 320w, /media/vehicles/r4-local-review/review/pickup-480.webp 480w, /media/vehicles/r4-local-review/review/pickup-672.webp 672w, /media/vehicles/r4-local-review/review/pickup-768.webp 768w, /media/vehicles/r4-local-review/review/pickup-1024.webp 1024w",
+      "srcsetAvif": "/media/vehicles/r4-local-review/review/pickup-320.avif 320w, /media/vehicles/r4-local-review/review/pickup-480.avif 480w, /media/vehicles/r4-local-review/review/pickup-672.avif 672w, /media/vehicles/r4-local-review/review/pickup-768.avif 768w, /media/vehicles/r4-local-review/review/pickup-1024.avif 1024w",
+      "inputPath": "media/vehicles/r4-local-review/review/pickup.png",
+      "sourceRevisionId": "r_218be4189a1b43e7b307c2263ba4f954",
+      "exactRevision": true,
+      "fidelity": {
+        "version": "kiln.view-fidelity.v1",
+        "requested": "full-preferred",
+        "delivered": "full-material",
+        "materialFaithful": true,
+        "exactArtifact": true,
+        "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1074",
+        "inputGlbSha256": "sha256:86f6ba799afb0fc3e46ffb95b3f0a99fa0ab59cd5b90b7c6134a9f6d39c4b1d9",
+        "degraded": false,
+        "reasonCodes": []
+      }
+    },
+    {
+      "src": "/media/vehicles/r4-local-review/review/box-truck.webp",
+      "width": 1168,
+      "height": 780,
+      "alt": "Saved review views of Generic box truck.",
+      "srcsetWebp": "/media/vehicles/r4-local-review/review/box-truck-320.webp 320w, /media/vehicles/r4-local-review/review/box-truck-480.webp 480w, /media/vehicles/r4-local-review/review/box-truck-672.webp 672w, /media/vehicles/r4-local-review/review/box-truck-768.webp 768w, /media/vehicles/r4-local-review/review/box-truck-1024.webp 1024w",
+      "srcsetAvif": "/media/vehicles/r4-local-review/review/box-truck-320.avif 320w, /media/vehicles/r4-local-review/review/box-truck-480.avif 480w, /media/vehicles/r4-local-review/review/box-truck-672.avif 672w, /media/vehicles/r4-local-review/review/box-truck-768.avif 768w, /media/vehicles/r4-local-review/review/box-truck-1024.avif 1024w",
+      "inputPath": "media/vehicles/r4-local-review/review/box-truck.png",
+      "sourceRevisionId": "r_538b8a19c46d4086b456e27b32ee7d33",
+      "exactRevision": true,
+      "fidelity": {
+        "version": "kiln.view-fidelity.v1",
+        "requested": "full-preferred",
+        "delivered": "full-material",
+        "materialFaithful": true,
+        "exactArtifact": true,
+        "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1074",
+        "inputGlbSha256": "sha256:8fca32fc32c11eba0a6df137cd1ae6285d605a73b0c877f4fc40113eba341767",
+        "degraded": false,
+        "reasonCodes": []
+      }
+    },
+    {
+      "src": "/media/vehicles/r4-local-review/review/transit-bus.webp",
+      "width": 1168,
+      "height": 780,
+      "alt": "Saved review views of Generic transit bus.",
+      "srcsetWebp": "/media/vehicles/r4-local-review/review/transit-bus-320.webp 320w, /media/vehicles/r4-local-review/review/transit-bus-480.webp 480w, /media/vehicles/r4-local-review/review/transit-bus-672.webp 672w, /media/vehicles/r4-local-review/review/transit-bus-768.webp 768w, /media/vehicles/r4-local-review/review/transit-bus-1024.webp 1024w",
+      "srcsetAvif": "/media/vehicles/r4-local-review/review/transit-bus-320.avif 320w, /media/vehicles/r4-local-review/review/transit-bus-480.avif 480w, /media/vehicles/r4-local-review/review/transit-bus-672.avif 672w, /media/vehicles/r4-local-review/review/transit-bus-768.avif 768w, /media/vehicles/r4-local-review/review/transit-bus-1024.avif 1024w",
+      "inputPath": "media/vehicles/r4-local-review/review/transit-bus.png",
+      "sourceRevisionId": "r_85ff097a61384efab445c55372d3b6f5",
+      "exactRevision": true,
+      "fidelity": {
+        "version": "kiln.view-fidelity.v1",
+        "requested": "full-preferred",
+        "delivered": "full-material",
+        "materialFaithful": true,
+        "exactArtifact": true,
+        "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1074",
+        "inputGlbSha256": "sha256:232c7176e8e56a36d6ba96705bb8f3b96f95b4fb9b87f94847d105146d2a5bf6",
+        "degraded": false,
+        "reasonCodes": []
+      }
+    },
+    {
+      "src": "/media/rig/review-neutral-v1/vehicles/r4-local-review/hatchback.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "Generic five-door hatchback with a two-box roofline, a steep tailgate and taillight clusters at the rear corners. Its paint is a neutral near-white, so a scene can tint each instance.",
+      "srcsetWebp": "/media/rig/review-neutral-v1/vehicles/r4-local-review/hatchback-320.webp 320w, /media/rig/review-neutral-v1/vehicles/r4-local-review/hatchback-480.webp 480w, /media/rig/review-neutral-v1/vehicles/r4-local-review/hatchback-672.webp 672w, /media/rig/review-neutral-v1/vehicles/r4-local-review/hatchback-768.webp 768w, /media/rig/review-neutral-v1/vehicles/r4-local-review/hatchback-1024.webp 1024w",
+      "srcsetAvif": "/media/rig/review-neutral-v1/vehicles/r4-local-review/hatchback-320.avif 320w, /media/rig/review-neutral-v1/vehicles/r4-local-review/hatchback-480.avif 480w, /media/rig/review-neutral-v1/vehicles/r4-local-review/hatchback-672.avif 672w, /media/rig/review-neutral-v1/vehicles/r4-local-review/hatchback-768.avif 768w, /media/rig/review-neutral-v1/vehicles/r4-local-review/hatchback-1024.avif 1024w",
+      "inputPath": "media/rig/review-neutral-v1/vehicles/r4-local-review/hatchback.png",
+      "sourceRevisionId": "r_74f393f06996497a9dce6c5ed50c2d62",
+      "exactRevision": true,
+      "rig": "review-neutral-v1"
+    },
+    {
+      "src": "/media/rig/review-neutral-v1/vehicles/r4-local-review/sedan.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "Generic four-door sedan with a low beltline, a notch-back deck and a full-width rear light bar. Authored as the drivable car of the Golden Gate scene, so its rear stays clean for a chase camera; the paint is a neutral near-white for scene tinting.",
+      "srcsetWebp": "/media/rig/review-neutral-v1/vehicles/r4-local-review/sedan-320.webp 320w, /media/rig/review-neutral-v1/vehicles/r4-local-review/sedan-480.webp 480w, /media/rig/review-neutral-v1/vehicles/r4-local-review/sedan-672.webp 672w, /media/rig/review-neutral-v1/vehicles/r4-local-review/sedan-768.webp 768w, /media/rig/review-neutral-v1/vehicles/r4-local-review/sedan-1024.webp 1024w",
+      "srcsetAvif": "/media/rig/review-neutral-v1/vehicles/r4-local-review/sedan-320.avif 320w, /media/rig/review-neutral-v1/vehicles/r4-local-review/sedan-480.avif 480w, /media/rig/review-neutral-v1/vehicles/r4-local-review/sedan-672.avif 672w, /media/rig/review-neutral-v1/vehicles/r4-local-review/sedan-768.avif 768w, /media/rig/review-neutral-v1/vehicles/r4-local-review/sedan-1024.avif 1024w",
+      "inputPath": "media/rig/review-neutral-v1/vehicles/r4-local-review/sedan.png",
+      "sourceRevisionId": "r_92ee0ac3d5cf4b258cc97d20ec941461",
+      "exactRevision": true,
+      "rig": "review-neutral-v1"
+    },
+    {
+      "src": "/media/rig/review-neutral-v1/vehicles/r4-local-review/suv.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "Generic five-door SUV with a tall, square greenhouse, raised ground clearance, larger wheel arches and a steep liftgate. Its paint is a neutral near-white for scene tinting.",
+      "srcsetWebp": "/media/rig/review-neutral-v1/vehicles/r4-local-review/suv-320.webp 320w, /media/rig/review-neutral-v1/vehicles/r4-local-review/suv-480.webp 480w, /media/rig/review-neutral-v1/vehicles/r4-local-review/suv-672.webp 672w, /media/rig/review-neutral-v1/vehicles/r4-local-review/suv-768.webp 768w, /media/rig/review-neutral-v1/vehicles/r4-local-review/suv-1024.webp 1024w",
+      "srcsetAvif": "/media/rig/review-neutral-v1/vehicles/r4-local-review/suv-320.avif 320w, /media/rig/review-neutral-v1/vehicles/r4-local-review/suv-480.avif 480w, /media/rig/review-neutral-v1/vehicles/r4-local-review/suv-672.avif 672w, /media/rig/review-neutral-v1/vehicles/r4-local-review/suv-768.avif 768w, /media/rig/review-neutral-v1/vehicles/r4-local-review/suv-1024.avif 1024w",
+      "inputPath": "media/rig/review-neutral-v1/vehicles/r4-local-review/suv.png",
+      "sourceRevisionId": "r_b4cc9048731b4c039de0b87ca6e75c17",
+      "exactRevision": true,
+      "rig": "review-neutral-v1"
+    },
+    {
+      "src": "/media/rig/review-neutral-v1/vehicles/r4-local-review/pickup.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "Generic crew-cab pickup truck with a short bed. Made for traffic seen from about 3 m to 1 km, it steps from a detailed cab down to a boxy silhouette across three tiers.",
+      "srcsetWebp": "/media/rig/review-neutral-v1/vehicles/r4-local-review/pickup-320.webp 320w, /media/rig/review-neutral-v1/vehicles/r4-local-review/pickup-480.webp 480w, /media/rig/review-neutral-v1/vehicles/r4-local-review/pickup-672.webp 672w, /media/rig/review-neutral-v1/vehicles/r4-local-review/pickup-768.webp 768w, /media/rig/review-neutral-v1/vehicles/r4-local-review/pickup-1024.webp 1024w",
+      "srcsetAvif": "/media/rig/review-neutral-v1/vehicles/r4-local-review/pickup-320.avif 320w, /media/rig/review-neutral-v1/vehicles/r4-local-review/pickup-480.avif 480w, /media/rig/review-neutral-v1/vehicles/r4-local-review/pickup-672.avif 672w, /media/rig/review-neutral-v1/vehicles/r4-local-review/pickup-768.avif 768w, /media/rig/review-neutral-v1/vehicles/r4-local-review/pickup-1024.avif 1024w",
+      "inputPath": "media/rig/review-neutral-v1/vehicles/r4-local-review/pickup.png",
+      "sourceRevisionId": "r_218be4189a1b43e7b307c2263ba4f954",
+      "exactRevision": true,
+      "rig": "review-neutral-v1"
+    },
+    {
+      "src": "/media/rig/review-neutral-v1/vehicles/r4-local-review/box-truck.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "Generic class 6 cab-over box truck with dual rear wheels. The cab takes the paint tint; the cargo box has its own untinted near-white material.",
+      "srcsetWebp": "/media/rig/review-neutral-v1/vehicles/r4-local-review/box-truck-320.webp 320w, /media/rig/review-neutral-v1/vehicles/r4-local-review/box-truck-480.webp 480w, /media/rig/review-neutral-v1/vehicles/r4-local-review/box-truck-672.webp 672w, /media/rig/review-neutral-v1/vehicles/r4-local-review/box-truck-768.webp 768w, /media/rig/review-neutral-v1/vehicles/r4-local-review/box-truck-1024.webp 1024w",
+      "srcsetAvif": "/media/rig/review-neutral-v1/vehicles/r4-local-review/box-truck-320.avif 320w, /media/rig/review-neutral-v1/vehicles/r4-local-review/box-truck-480.avif 480w, /media/rig/review-neutral-v1/vehicles/r4-local-review/box-truck-672.avif 672w, /media/rig/review-neutral-v1/vehicles/r4-local-review/box-truck-768.avif 768w, /media/rig/review-neutral-v1/vehicles/r4-local-review/box-truck-1024.avif 1024w",
+      "inputPath": "media/rig/review-neutral-v1/vehicles/r4-local-review/box-truck.png",
+      "sourceRevisionId": "r_538b8a19c46d4086b456e27b32ee7d33",
+      "exactRevision": true,
+      "rig": "review-neutral-v1"
+    },
+    {
+      "src": "/media/rig/review-neutral-v1/vehicles/r4-local-review/transit-bus.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "Generic 40 ft low-floor transit bus with two doors on the right, a two-tone body (paint above, trim below), dual rear wheels and a roof equipment pod. No operator livery, text or numbers.",
+      "srcsetWebp": "/media/rig/review-neutral-v1/vehicles/r4-local-review/transit-bus-320.webp 320w, /media/rig/review-neutral-v1/vehicles/r4-local-review/transit-bus-480.webp 480w, /media/rig/review-neutral-v1/vehicles/r4-local-review/transit-bus-672.webp 672w, /media/rig/review-neutral-v1/vehicles/r4-local-review/transit-bus-768.webp 768w, /media/rig/review-neutral-v1/vehicles/r4-local-review/transit-bus-1024.webp 1024w",
+      "srcsetAvif": "/media/rig/review-neutral-v1/vehicles/r4-local-review/transit-bus-320.avif 320w, /media/rig/review-neutral-v1/vehicles/r4-local-review/transit-bus-480.avif 480w, /media/rig/review-neutral-v1/vehicles/r4-local-review/transit-bus-672.avif 672w, /media/rig/review-neutral-v1/vehicles/r4-local-review/transit-bus-768.avif 768w, /media/rig/review-neutral-v1/vehicles/r4-local-review/transit-bus-1024.avif 1024w",
+      "inputPath": "media/rig/review-neutral-v1/vehicles/r4-local-review/transit-bus.png",
+      "sourceRevisionId": "r_85ff097a61384efab445c55372d3b6f5",
+      "exactRevision": true,
+      "rig": "review-neutral-v1"
+    },
+    {
+      "src": "/media/rig/review-neutral-v1/farm/r34/farmhouse.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "Cream masonry house with a charcoal gabled roof, olive shutters and a timber porch.",
+      "srcsetWebp": "/media/rig/review-neutral-v1/farm/r34/farmhouse-320.webp 320w, /media/rig/review-neutral-v1/farm/r34/farmhouse-480.webp 480w, /media/rig/review-neutral-v1/farm/r34/farmhouse-672.webp 672w, /media/rig/review-neutral-v1/farm/r34/farmhouse-768.webp 768w, /media/rig/review-neutral-v1/farm/r34/farmhouse-1024.webp 1024w",
+      "srcsetAvif": "/media/rig/review-neutral-v1/farm/r34/farmhouse-320.avif 320w, /media/rig/review-neutral-v1/farm/r34/farmhouse-480.avif 480w, /media/rig/review-neutral-v1/farm/r34/farmhouse-672.avif 672w, /media/rig/review-neutral-v1/farm/r34/farmhouse-768.avif 768w, /media/rig/review-neutral-v1/farm/r34/farmhouse-1024.avif 1024w",
+      "inputPath": "media/rig/review-neutral-v1/farm/r34/farmhouse.png",
+      "sourceRevisionId": "r_01f97f5e943e4c2693b6db8596f3e353",
+      "exactRevision": true,
+      "rig": "review-neutral-v1"
+    },
+    {
+      "src": "/media/farm/r34/poster/farmhouse.webp",
+      "width": 1168,
+      "height": 780,
+      "alt": "Six saved review views of Farmhouse.",
+      "srcsetWebp": "/media/farm/r34/poster/farmhouse-320.webp 320w, /media/farm/r34/poster/farmhouse-480.webp 480w, /media/farm/r34/poster/farmhouse-672.webp 672w, /media/farm/r34/poster/farmhouse-768.webp 768w, /media/farm/r34/poster/farmhouse-1024.webp 1024w",
+      "srcsetAvif": "/media/farm/r34/poster/farmhouse-320.avif 320w, /media/farm/r34/poster/farmhouse-480.avif 480w, /media/farm/r34/poster/farmhouse-672.avif 672w, /media/farm/r34/poster/farmhouse-768.avif 768w, /media/farm/r34/poster/farmhouse-1024.avif 1024w",
+      "inputPath": "media/farm/r34/poster/farmhouse.png",
+      "sourceRevisionId": "r_01f97f5e943e4c2693b6db8596f3e353",
+      "exactRevision": true
+    },
+    {
+      "src": "/media/rig/review-neutral-v1/farm/r34/barn.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "Red timber barn with white door bracing, a grey roof and an open side shelter.",
+      "srcsetWebp": "/media/rig/review-neutral-v1/farm/r34/barn-320.webp 320w, /media/rig/review-neutral-v1/farm/r34/barn-480.webp 480w, /media/rig/review-neutral-v1/farm/r34/barn-672.webp 672w, /media/rig/review-neutral-v1/farm/r34/barn-768.webp 768w, /media/rig/review-neutral-v1/farm/r34/barn-1024.webp 1024w",
+      "srcsetAvif": "/media/rig/review-neutral-v1/farm/r34/barn-320.avif 320w, /media/rig/review-neutral-v1/farm/r34/barn-480.avif 480w, /media/rig/review-neutral-v1/farm/r34/barn-672.avif 672w, /media/rig/review-neutral-v1/farm/r34/barn-768.avif 768w, /media/rig/review-neutral-v1/farm/r34/barn-1024.avif 1024w",
+      "inputPath": "media/rig/review-neutral-v1/farm/r34/barn.png",
+      "sourceRevisionId": "r_c0234dc50e0443f4a8819cdf754b22da",
+      "exactRevision": true,
+      "rig": "review-neutral-v1"
+    },
+    {
+      "src": "/media/farm/r33/poster/barn.webp",
+      "width": 1168,
+      "height": 780,
+      "alt": "Six rendered review views of Barn.",
+      "srcsetWebp": "/media/farm/r33/poster/barn-320.webp 320w, /media/farm/r33/poster/barn-480.webp 480w, /media/farm/r33/poster/barn-672.webp 672w, /media/farm/r33/poster/barn-768.webp 768w, /media/farm/r33/poster/barn-1024.webp 1024w",
+      "srcsetAvif": "/media/farm/r33/poster/barn-320.avif 320w, /media/farm/r33/poster/barn-480.avif 480w, /media/farm/r33/poster/barn-672.avif 672w, /media/farm/r33/poster/barn-768.avif 768w, /media/farm/r33/poster/barn-1024.avif 1024w",
+      "inputPath": "media/farm/r33/poster/barn.webp"
+    },
+    {
+      "src": "/media/rig/review-neutral-v1/farm/r34/windmill.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "Open timber wind pump with a metal rotor, tail vane and four braced legs.",
+      "srcsetWebp": "/media/rig/review-neutral-v1/farm/r34/windmill-320.webp 320w, /media/rig/review-neutral-v1/farm/r34/windmill-480.webp 480w, /media/rig/review-neutral-v1/farm/r34/windmill-672.webp 672w, /media/rig/review-neutral-v1/farm/r34/windmill-768.webp 768w, /media/rig/review-neutral-v1/farm/r34/windmill-1024.webp 1024w",
+      "srcsetAvif": "/media/rig/review-neutral-v1/farm/r34/windmill-320.avif 320w, /media/rig/review-neutral-v1/farm/r34/windmill-480.avif 480w, /media/rig/review-neutral-v1/farm/r34/windmill-672.avif 672w, /media/rig/review-neutral-v1/farm/r34/windmill-768.avif 768w, /media/rig/review-neutral-v1/farm/r34/windmill-1024.avif 1024w",
+      "inputPath": "media/rig/review-neutral-v1/farm/r34/windmill.png",
+      "sourceRevisionId": "r_ef9045311dd040258e0143345c171d6f",
+      "exactRevision": true,
+      "rig": "review-neutral-v1"
+    },
+    {
+      "src": "/media/farm/r33/poster/windmill.webp",
+      "width": 1168,
+      "height": 780,
+      "alt": "Six rendered review views of Windmill.",
+      "srcsetWebp": "/media/farm/r33/poster/windmill-320.webp 320w, /media/farm/r33/poster/windmill-480.webp 480w, /media/farm/r33/poster/windmill-672.webp 672w, /media/farm/r33/poster/windmill-768.webp 768w, /media/farm/r33/poster/windmill-1024.webp 1024w",
+      "srcsetAvif": "/media/farm/r33/poster/windmill-320.avif 320w, /media/farm/r33/poster/windmill-480.avif 480w, /media/farm/r33/poster/windmill-672.avif 672w, /media/farm/r33/poster/windmill-768.avif 768w, /media/farm/r33/poster/windmill-1024.avif 1024w",
+      "inputPath": "media/farm/r33/poster/windmill.webp"
+    },
+    {
+      "src": "/media/rig/review-neutral-v1/farm/r34/watermill.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "Pale masonry mill house with a gabled roof and an exposed timber waterwheel.",
+      "srcsetWebp": "/media/rig/review-neutral-v1/farm/r34/watermill-320.webp 320w, /media/rig/review-neutral-v1/farm/r34/watermill-480.webp 480w, /media/rig/review-neutral-v1/farm/r34/watermill-672.webp 672w, /media/rig/review-neutral-v1/farm/r34/watermill-768.webp 768w, /media/rig/review-neutral-v1/farm/r34/watermill-1024.webp 1024w",
+      "srcsetAvif": "/media/rig/review-neutral-v1/farm/r34/watermill-320.avif 320w, /media/rig/review-neutral-v1/farm/r34/watermill-480.avif 480w, /media/rig/review-neutral-v1/farm/r34/watermill-672.avif 672w, /media/rig/review-neutral-v1/farm/r34/watermill-768.avif 768w, /media/rig/review-neutral-v1/farm/r34/watermill-1024.avif 1024w",
+      "inputPath": "media/rig/review-neutral-v1/farm/r34/watermill.png",
+      "sourceRevisionId": "r_f8ab38b03b5a4fb691b860d9fb076200",
+      "exactRevision": true,
+      "rig": "review-neutral-v1"
+    },
+    {
+      "src": "/media/farm/r33/poster/watermill.webp",
+      "width": 1168,
+      "height": 780,
+      "alt": "Six rendered review views of Watermill.",
+      "srcsetWebp": "/media/farm/r33/poster/watermill-320.webp 320w, /media/farm/r33/poster/watermill-480.webp 480w, /media/farm/r33/poster/watermill-672.webp 672w, /media/farm/r33/poster/watermill-768.webp 768w, /media/farm/r33/poster/watermill-1024.webp 1024w",
+      "srcsetAvif": "/media/farm/r33/poster/watermill-320.avif 320w, /media/farm/r33/poster/watermill-480.avif 480w, /media/farm/r33/poster/watermill-672.avif 672w, /media/farm/r33/poster/watermill-768.avif 768w, /media/farm/r33/poster/watermill-1024.avif 1024w",
+      "inputPath": "media/farm/r33/poster/watermill.webp"
+    },
+    {
+      "src": "/media/rig/review-neutral-v1/farm/r34/fence-straight.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "Two timber rails between pointed posts, with a two-metre post-centre span.",
+      "srcsetWebp": "/media/rig/review-neutral-v1/farm/r34/fence-straight-320.webp 320w, /media/rig/review-neutral-v1/farm/r34/fence-straight-480.webp 480w, /media/rig/review-neutral-v1/farm/r34/fence-straight-672.webp 672w, /media/rig/review-neutral-v1/farm/r34/fence-straight-768.webp 768w, /media/rig/review-neutral-v1/farm/r34/fence-straight-1024.webp 1024w",
+      "srcsetAvif": "/media/rig/review-neutral-v1/farm/r34/fence-straight-320.avif 320w, /media/rig/review-neutral-v1/farm/r34/fence-straight-480.avif 480w, /media/rig/review-neutral-v1/farm/r34/fence-straight-672.avif 672w, /media/rig/review-neutral-v1/farm/r34/fence-straight-768.avif 768w, /media/rig/review-neutral-v1/farm/r34/fence-straight-1024.avif 1024w",
+      "inputPath": "media/rig/review-neutral-v1/farm/r34/fence-straight.png",
+      "sourceRevisionId": "r_05420c8a915d45e69257f61914d02ec3",
+      "exactRevision": true,
+      "rig": "review-neutral-v1"
+    },
+    {
+      "src": "/media/farm/r33/poster/fence-straight.webp",
+      "width": 1168,
+      "height": 780,
+      "alt": "Six rendered review views of fence-straight.",
+      "srcsetWebp": "/media/farm/r33/poster/fence-straight-320.webp 320w, /media/farm/r33/poster/fence-straight-480.webp 480w, /media/farm/r33/poster/fence-straight-672.webp 672w, /media/farm/r33/poster/fence-straight-768.webp 768w, /media/farm/r33/poster/fence-straight-1024.webp 1024w",
+      "srcsetAvif": "/media/farm/r33/poster/fence-straight-320.avif 320w, /media/farm/r33/poster/fence-straight-480.avif 480w, /media/farm/r33/poster/fence-straight-672.avif 672w, /media/farm/r33/poster/fence-straight-768.avif 768w, /media/farm/r33/poster/fence-straight-1024.avif 1024w",
+      "inputPath": "media/farm/r33/poster/fence-straight.webp"
+    },
+    {
+      "src": "/media/rig/review-neutral-v1/farm/r34/fence-corner.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "Two matching timber fence runs joined at a right-angle corner post.",
+      "srcsetWebp": "/media/rig/review-neutral-v1/farm/r34/fence-corner-320.webp 320w, /media/rig/review-neutral-v1/farm/r34/fence-corner-480.webp 480w, /media/rig/review-neutral-v1/farm/r34/fence-corner-672.webp 672w, /media/rig/review-neutral-v1/farm/r34/fence-corner-768.webp 768w, /media/rig/review-neutral-v1/farm/r34/fence-corner-1024.webp 1024w",
+      "srcsetAvif": "/media/rig/review-neutral-v1/farm/r34/fence-corner-320.avif 320w, /media/rig/review-neutral-v1/farm/r34/fence-corner-480.avif 480w, /media/rig/review-neutral-v1/farm/r34/fence-corner-672.avif 672w, /media/rig/review-neutral-v1/farm/r34/fence-corner-768.avif 768w, /media/rig/review-neutral-v1/farm/r34/fence-corner-1024.avif 1024w",
+      "inputPath": "media/rig/review-neutral-v1/farm/r34/fence-corner.png",
+      "sourceRevisionId": "r_071590a217854c5cbefb90275d3a6887",
+      "exactRevision": true,
+      "rig": "review-neutral-v1"
+    },
+    {
+      "src": "/media/farm/r33/poster/fence-corner.webp",
+      "width": 1168,
+      "height": 780,
+      "alt": "Six rendered review views of fence-corner.",
+      "srcsetWebp": "/media/farm/r33/poster/fence-corner-320.webp 320w, /media/farm/r33/poster/fence-corner-480.webp 480w, /media/farm/r33/poster/fence-corner-672.webp 672w, /media/farm/r33/poster/fence-corner-768.webp 768w, /media/farm/r33/poster/fence-corner-1024.webp 1024w",
+      "srcsetAvif": "/media/farm/r33/poster/fence-corner-320.avif 320w, /media/farm/r33/poster/fence-corner-480.avif 480w, /media/farm/r33/poster/fence-corner-672.avif 672w, /media/farm/r33/poster/fence-corner-768.avif 768w, /media/farm/r33/poster/fence-corner-1024.avif 1024w",
+      "inputPath": "media/farm/r33/poster/fence-corner.webp"
+    },
+    {
+      "src": "/media/rig/review-neutral-v1/farm/r34/fence-gate.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "Braced timber gate with visible hinges and a three-metre usable opening.",
+      "srcsetWebp": "/media/rig/review-neutral-v1/farm/r34/fence-gate-320.webp 320w, /media/rig/review-neutral-v1/farm/r34/fence-gate-480.webp 480w, /media/rig/review-neutral-v1/farm/r34/fence-gate-672.webp 672w, /media/rig/review-neutral-v1/farm/r34/fence-gate-768.webp 768w, /media/rig/review-neutral-v1/farm/r34/fence-gate-1024.webp 1024w",
+      "srcsetAvif": "/media/rig/review-neutral-v1/farm/r34/fence-gate-320.avif 320w, /media/rig/review-neutral-v1/farm/r34/fence-gate-480.avif 480w, /media/rig/review-neutral-v1/farm/r34/fence-gate-672.avif 672w, /media/rig/review-neutral-v1/farm/r34/fence-gate-768.avif 768w, /media/rig/review-neutral-v1/farm/r34/fence-gate-1024.avif 1024w",
+      "inputPath": "media/rig/review-neutral-v1/farm/r34/fence-gate.png",
+      "sourceRevisionId": "r_af2ceeafc87f44759b2af1448beb76b3",
+      "exactRevision": true,
+      "rig": "review-neutral-v1"
+    },
+    {
+      "src": "/media/farm/r33/poster/fence-gate.webp",
+      "width": 1168,
+      "height": 780,
+      "alt": "Six rendered review views of fence-gate.",
+      "srcsetWebp": "/media/farm/r33/poster/fence-gate-320.webp 320w, /media/farm/r33/poster/fence-gate-480.webp 480w, /media/farm/r33/poster/fence-gate-672.webp 672w, /media/farm/r33/poster/fence-gate-768.webp 768w, /media/farm/r33/poster/fence-gate-1024.webp 1024w",
+      "srcsetAvif": "/media/farm/r33/poster/fence-gate-320.avif 320w, /media/farm/r33/poster/fence-gate-480.avif 480w, /media/farm/r33/poster/fence-gate-672.avif 672w, /media/farm/r33/poster/fence-gate-768.avif 768w, /media/farm/r33/poster/fence-gate-1024.avif 1024w",
+      "inputPath": "media/farm/r33/poster/fence-gate.webp"
+    },
+    {
+      "src": "/media/rig/review-neutral-v1/farm/r34/tractor.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "Orange open-seat tractor with rear wheel guards, treaded tyres and a front grille.",
+      "srcsetWebp": "/media/rig/review-neutral-v1/farm/r34/tractor-320.webp 320w, /media/rig/review-neutral-v1/farm/r34/tractor-480.webp 480w, /media/rig/review-neutral-v1/farm/r34/tractor-672.webp 672w, /media/rig/review-neutral-v1/farm/r34/tractor-768.webp 768w, /media/rig/review-neutral-v1/farm/r34/tractor-1024.webp 1024w",
+      "srcsetAvif": "/media/rig/review-neutral-v1/farm/r34/tractor-320.avif 320w, /media/rig/review-neutral-v1/farm/r34/tractor-480.avif 480w, /media/rig/review-neutral-v1/farm/r34/tractor-672.avif 672w, /media/rig/review-neutral-v1/farm/r34/tractor-768.avif 768w, /media/rig/review-neutral-v1/farm/r34/tractor-1024.avif 1024w",
+      "inputPath": "media/rig/review-neutral-v1/farm/r34/tractor.png",
+      "sourceRevisionId": "r_ebeeb57adda343dd98d575e97ca24f92",
+      "exactRevision": true,
+      "rig": "review-neutral-v1"
+    },
+    {
+      "src": "/media/farm/r33/poster/tractor.webp",
+      "width": 1168,
+      "height": 780,
+      "alt": "Six rendered review views of Vintage tractor (review 2, motion, UV-exact merge).",
+      "srcsetWebp": "/media/farm/r33/poster/tractor-320.webp 320w, /media/farm/r33/poster/tractor-480.webp 480w, /media/farm/r33/poster/tractor-672.webp 672w, /media/farm/r33/poster/tractor-768.webp 768w, /media/farm/r33/poster/tractor-1024.webp 1024w",
+      "srcsetAvif": "/media/farm/r33/poster/tractor-320.avif 320w, /media/farm/r33/poster/tractor-480.avif 480w, /media/farm/r33/poster/tractor-672.avif 672w, /media/farm/r33/poster/tractor-768.avif 768w, /media/farm/r33/poster/tractor-1024.avif 1024w",
+      "inputPath": "media/farm/r33/poster/tractor.webp"
+    },
+    {
+      "src": "/media/rig/review-neutral-v1/farm/r34/trailer.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "Four-wheel timber farm trailer with low side boards and a drawbar.",
+      "srcsetWebp": "/media/rig/review-neutral-v1/farm/r34/trailer-320.webp 320w, /media/rig/review-neutral-v1/farm/r34/trailer-480.webp 480w, /media/rig/review-neutral-v1/farm/r34/trailer-672.webp 672w, /media/rig/review-neutral-v1/farm/r34/trailer-768.webp 768w, /media/rig/review-neutral-v1/farm/r34/trailer-1024.webp 1024w",
+      "srcsetAvif": "/media/rig/review-neutral-v1/farm/r34/trailer-320.avif 320w, /media/rig/review-neutral-v1/farm/r34/trailer-480.avif 480w, /media/rig/review-neutral-v1/farm/r34/trailer-672.avif 672w, /media/rig/review-neutral-v1/farm/r34/trailer-768.avif 768w, /media/rig/review-neutral-v1/farm/r34/trailer-1024.avif 1024w",
+      "inputPath": "media/rig/review-neutral-v1/farm/r34/trailer.png",
+      "sourceRevisionId": "r_c72e516ce16949cfbddedbc9155efa06",
+      "exactRevision": true,
+      "rig": "review-neutral-v1"
+    },
+    {
+      "src": "/media/farm/r33/poster/trailer.webp",
+      "width": 1168,
+      "height": 780,
+      "alt": "Six rendered review views of Trailer (Shapes & Seasons Farm Pack).",
+      "srcsetWebp": "/media/farm/r33/poster/trailer-320.webp 320w, /media/farm/r33/poster/trailer-480.webp 480w, /media/farm/r33/poster/trailer-672.webp 672w, /media/farm/r33/poster/trailer-768.webp 768w, /media/farm/r33/poster/trailer-1024.webp 1024w",
+      "srcsetAvif": "/media/farm/r33/poster/trailer-320.avif 320w, /media/farm/r33/poster/trailer-480.avif 480w, /media/farm/r33/poster/trailer-672.avif 672w, /media/farm/r33/poster/trailer-768.avif 768w, /media/farm/r33/poster/trailer-1024.avif 1024w",
+      "inputPath": "media/farm/r33/poster/trailer.webp"
+    },
+    {
+      "src": "/media/rig/review-neutral-v1/farm/r34/barrel.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "Upright wooden barrel with a closed stave lid and three dark metal hoops.",
+      "srcsetWebp": "/media/rig/review-neutral-v1/farm/r34/barrel-320.webp 320w, /media/rig/review-neutral-v1/farm/r34/barrel-480.webp 480w, /media/rig/review-neutral-v1/farm/r34/barrel-672.webp 672w, /media/rig/review-neutral-v1/farm/r34/barrel-768.webp 768w, /media/rig/review-neutral-v1/farm/r34/barrel-1024.webp 1024w",
+      "srcsetAvif": "/media/rig/review-neutral-v1/farm/r34/barrel-320.avif 320w, /media/rig/review-neutral-v1/farm/r34/barrel-480.avif 480w, /media/rig/review-neutral-v1/farm/r34/barrel-672.avif 672w, /media/rig/review-neutral-v1/farm/r34/barrel-768.avif 768w, /media/rig/review-neutral-v1/farm/r34/barrel-1024.avif 1024w",
+      "inputPath": "media/rig/review-neutral-v1/farm/r34/barrel.png",
+      "sourceRevisionId": "r_5cc08ab44fe3401cb1c4184a4d362bca",
+      "exactRevision": true,
+      "rig": "review-neutral-v1"
+    },
+    {
+      "src": "/media/farm/r33/poster/barrel.webp",
+      "width": 1168,
+      "height": 780,
+      "alt": "Six rendered review views of Farm barrel.",
+      "srcsetWebp": "/media/farm/r33/poster/barrel-320.webp 320w, /media/farm/r33/poster/barrel-480.webp 480w, /media/farm/r33/poster/barrel-672.webp 672w, /media/farm/r33/poster/barrel-768.webp 768w, /media/farm/r33/poster/barrel-1024.webp 1024w",
+      "srcsetAvif": "/media/farm/r33/poster/barrel-320.avif 320w, /media/farm/r33/poster/barrel-480.avif 480w, /media/farm/r33/poster/barrel-672.avif 672w, /media/farm/r33/poster/barrel-768.avif 768w, /media/farm/r33/poster/barrel-1024.avif 1024w",
+      "inputPath": "media/farm/r33/poster/barrel.webp"
+    },
+    {
+      "src": "/media/rig/review-neutral-v1/farm/r34/hay-bale.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "Rectangular golden hay bale held by two parallel twine bands.",
+      "srcsetWebp": "/media/rig/review-neutral-v1/farm/r34/hay-bale-320.webp 320w, /media/rig/review-neutral-v1/farm/r34/hay-bale-480.webp 480w, /media/rig/review-neutral-v1/farm/r34/hay-bale-672.webp 672w, /media/rig/review-neutral-v1/farm/r34/hay-bale-768.webp 768w, /media/rig/review-neutral-v1/farm/r34/hay-bale-1024.webp 1024w",
+      "srcsetAvif": "/media/rig/review-neutral-v1/farm/r34/hay-bale-320.avif 320w, /media/rig/review-neutral-v1/farm/r34/hay-bale-480.avif 480w, /media/rig/review-neutral-v1/farm/r34/hay-bale-672.avif 672w, /media/rig/review-neutral-v1/farm/r34/hay-bale-768.avif 768w, /media/rig/review-neutral-v1/farm/r34/hay-bale-1024.avif 1024w",
+      "inputPath": "media/rig/review-neutral-v1/farm/r34/hay-bale.png",
+      "sourceRevisionId": "r_aed1744fc5a34d32bb98f9f9bcfd5d0a",
+      "exactRevision": true,
+      "rig": "review-neutral-v1"
+    },
+    {
+      "src": "/media/farm/r33/poster/hay-bale.webp",
+      "width": 1168,
+      "height": 780,
+      "alt": "Six rendered review views of Farm hay bale.",
+      "srcsetWebp": "/media/farm/r33/poster/hay-bale-320.webp 320w, /media/farm/r33/poster/hay-bale-480.webp 480w, /media/farm/r33/poster/hay-bale-672.webp 672w, /media/farm/r33/poster/hay-bale-768.webp 768w, /media/farm/r33/poster/hay-bale-1024.webp 1024w",
+      "srcsetAvif": "/media/farm/r33/poster/hay-bale-320.avif 320w, /media/farm/r33/poster/hay-bale-480.avif 480w, /media/farm/r33/poster/hay-bale-672.avif 672w, /media/farm/r33/poster/hay-bale-768.avif 768w, /media/farm/r33/poster/hay-bale-1024.avif 1024w",
+      "inputPath": "media/farm/r33/poster/hay-bale.webp"
+    },
+    {
+      "src": "/media/farm/r36-local-review/poster/farmer.webp",
+      "width": 1168,
+      "height": 780,
+      "alt": "Saved review views of the farmer back clothing repair.",
+      "srcsetWebp": "/media/farm/r36-local-review/poster/farmer-320.webp 320w, /media/farm/r36-local-review/poster/farmer-480.webp 480w, /media/farm/r36-local-review/poster/farmer-672.webp 672w, /media/farm/r36-local-review/poster/farmer-768.webp 768w, /media/farm/r36-local-review/poster/farmer-1024.webp 1024w",
+      "srcsetAvif": "/media/farm/r36-local-review/poster/farmer-320.avif 320w, /media/farm/r36-local-review/poster/farmer-480.avif 480w, /media/farm/r36-local-review/poster/farmer-672.avif 672w, /media/farm/r36-local-review/poster/farmer-768.avif 768w, /media/farm/r36-local-review/poster/farmer-1024.avif 1024w",
+      "inputPath": "media/farm/r36-local-review/poster/farmer.png",
+      "sourceRevisionId": "r_70907c7fd97249ce807e9948613882cd",
+      "exactRevision": true
+    },
+    {
+      "src": "/media/rig/review-neutral-v1/farm/r34/cow.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "Brown-and-cream cow with small horns, a pink muzzle and dark hooves.",
+      "srcsetWebp": "/media/rig/review-neutral-v1/farm/r34/cow-320.webp 320w, /media/rig/review-neutral-v1/farm/r34/cow-480.webp 480w, /media/rig/review-neutral-v1/farm/r34/cow-672.webp 672w, /media/rig/review-neutral-v1/farm/r34/cow-768.webp 768w, /media/rig/review-neutral-v1/farm/r34/cow-1024.webp 1024w",
+      "srcsetAvif": "/media/rig/review-neutral-v1/farm/r34/cow-320.avif 320w, /media/rig/review-neutral-v1/farm/r34/cow-480.avif 480w, /media/rig/review-neutral-v1/farm/r34/cow-672.avif 672w, /media/rig/review-neutral-v1/farm/r34/cow-768.avif 768w, /media/rig/review-neutral-v1/farm/r34/cow-1024.avif 1024w",
+      "inputPath": "media/rig/review-neutral-v1/farm/r34/cow.png",
+      "sourceRevisionId": "r_712f18b9a9d9450ab77bddd59bd1c515",
+      "exactRevision": true,
+      "rig": "review-neutral-v1"
+    },
+    {
+      "src": "/media/farm/r33/poster/cow.webp",
+      "width": 1168,
+      "height": 780,
+      "alt": "Six rendered review views of Buttercup • faceted farm cow.",
+      "srcsetWebp": "/media/farm/r33/poster/cow-320.webp 320w, /media/farm/r33/poster/cow-480.webp 480w, /media/farm/r33/poster/cow-672.webp 672w, /media/farm/r33/poster/cow-768.webp 768w, /media/farm/r33/poster/cow-1024.webp 1024w",
+      "srcsetAvif": "/media/farm/r33/poster/cow-320.avif 320w, /media/farm/r33/poster/cow-480.avif 480w, /media/farm/r33/poster/cow-672.avif 672w, /media/farm/r33/poster/cow-768.avif 768w, /media/farm/r33/poster/cow-1024.avif 1024w",
+      "inputPath": "media/farm/r33/poster/cow.webp"
+    },
+    {
+      "src": "/media/rig/review-neutral-v1/farm/r34/sheep.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "Sheep with a faceted white fleece, dark face and four dark legs.",
+      "srcsetWebp": "/media/rig/review-neutral-v1/farm/r34/sheep-320.webp 320w, /media/rig/review-neutral-v1/farm/r34/sheep-480.webp 480w, /media/rig/review-neutral-v1/farm/r34/sheep-672.webp 672w, /media/rig/review-neutral-v1/farm/r34/sheep-768.webp 768w, /media/rig/review-neutral-v1/farm/r34/sheep-1024.webp 1024w",
+      "srcsetAvif": "/media/rig/review-neutral-v1/farm/r34/sheep-320.avif 320w, /media/rig/review-neutral-v1/farm/r34/sheep-480.avif 480w, /media/rig/review-neutral-v1/farm/r34/sheep-672.avif 672w, /media/rig/review-neutral-v1/farm/r34/sheep-768.avif 768w, /media/rig/review-neutral-v1/farm/r34/sheep-1024.avif 1024w",
+      "inputPath": "media/rig/review-neutral-v1/farm/r34/sheep.png",
+      "sourceRevisionId": "r_85d1e3a7c375412c9ba181f788753148",
+      "exactRevision": true,
+      "rig": "review-neutral-v1"
+    },
+    {
+      "src": "/media/farm/r33/poster/sheep.webp",
+      "width": 1168,
+      "height": 780,
+      "alt": "Six rendered review views of Sheep — first review.",
+      "srcsetWebp": "/media/farm/r33/poster/sheep-320.webp 320w, /media/farm/r33/poster/sheep-480.webp 480w, /media/farm/r33/poster/sheep-672.webp 672w, /media/farm/r33/poster/sheep-768.webp 768w, /media/farm/r33/poster/sheep-1024.webp 1024w",
+      "srcsetAvif": "/media/farm/r33/poster/sheep-320.avif 320w, /media/farm/r33/poster/sheep-480.avif 480w, /media/farm/r33/poster/sheep-672.avif 672w, /media/farm/r33/poster/sheep-768.avif 768w, /media/farm/r33/poster/sheep-1024.avif 1024w",
+      "inputPath": "media/farm/r33/poster/sheep.webp"
+    },
+    {
+      "src": "/media/rig/review-neutral-v1/farm/r34/chicken.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "White hen with a red comb, yellow legs and raised tail feathers.",
+      "srcsetWebp": "/media/rig/review-neutral-v1/farm/r34/chicken-320.webp 320w, /media/rig/review-neutral-v1/farm/r34/chicken-480.webp 480w, /media/rig/review-neutral-v1/farm/r34/chicken-672.webp 672w, /media/rig/review-neutral-v1/farm/r34/chicken-768.webp 768w, /media/rig/review-neutral-v1/farm/r34/chicken-1024.webp 1024w",
+      "srcsetAvif": "/media/rig/review-neutral-v1/farm/r34/chicken-320.avif 320w, /media/rig/review-neutral-v1/farm/r34/chicken-480.avif 480w, /media/rig/review-neutral-v1/farm/r34/chicken-672.avif 672w, /media/rig/review-neutral-v1/farm/r34/chicken-768.avif 768w, /media/rig/review-neutral-v1/farm/r34/chicken-1024.avif 1024w",
+      "inputPath": "media/rig/review-neutral-v1/farm/r34/chicken.png",
+      "sourceRevisionId": "r_b0b9b724b40e4d09a17c8dd8408fba62",
+      "exactRevision": true,
+      "rig": "review-neutral-v1"
+    },
+    {
+      "src": "/media/farm/r33/poster/chicken.webp",
+      "width": 1168,
+      "height": 780,
+      "alt": "Six rendered review views of Chicken.",
+      "srcsetWebp": "/media/farm/r33/poster/chicken-320.webp 320w, /media/farm/r33/poster/chicken-480.webp 480w, /media/farm/r33/poster/chicken-672.webp 672w, /media/farm/r33/poster/chicken-768.webp 768w, /media/farm/r33/poster/chicken-1024.webp 1024w",
+      "srcsetAvif": "/media/farm/r33/poster/chicken-320.avif 320w, /media/farm/r33/poster/chicken-480.avif 480w, /media/farm/r33/poster/chicken-672.avif 672w, /media/farm/r33/poster/chicken-768.avif 768w, /media/farm/r33/poster/chicken-1024.avif 1024w",
+      "inputPath": "media/farm/r33/poster/chicken.webp"
+    },
+    {
+      "src": "/media/rig/review-neutral-v1/farm/r34/cabbage-stage-1.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "Small cabbage seedling emerging from a low, faceted soil patch.",
+      "srcsetWebp": "/media/rig/review-neutral-v1/farm/r34/cabbage-stage-1-320.webp 320w, /media/rig/review-neutral-v1/farm/r34/cabbage-stage-1-480.webp 480w, /media/rig/review-neutral-v1/farm/r34/cabbage-stage-1-672.webp 672w, /media/rig/review-neutral-v1/farm/r34/cabbage-stage-1-768.webp 768w, /media/rig/review-neutral-v1/farm/r34/cabbage-stage-1-1024.webp 1024w",
+      "srcsetAvif": "/media/rig/review-neutral-v1/farm/r34/cabbage-stage-1-320.avif 320w, /media/rig/review-neutral-v1/farm/r34/cabbage-stage-1-480.avif 480w, /media/rig/review-neutral-v1/farm/r34/cabbage-stage-1-672.avif 672w, /media/rig/review-neutral-v1/farm/r34/cabbage-stage-1-768.avif 768w, /media/rig/review-neutral-v1/farm/r34/cabbage-stage-1-1024.avif 1024w",
+      "inputPath": "media/rig/review-neutral-v1/farm/r34/cabbage-stage-1.png",
+      "sourceRevisionId": "r_b2a06d73eefb4ca7b0617685bc560ef2",
+      "exactRevision": true,
+      "rig": "review-neutral-v1"
+    },
+    {
+      "src": "/media/farm/r33/poster/cabbage-stage-1.webp",
+      "width": 1168,
+      "height": 780,
+      "alt": "Six rendered review views of cabbage-stage-1.",
+      "srcsetWebp": "/media/farm/r33/poster/cabbage-stage-1-320.webp 320w, /media/farm/r33/poster/cabbage-stage-1-480.webp 480w, /media/farm/r33/poster/cabbage-stage-1-672.webp 672w, /media/farm/r33/poster/cabbage-stage-1-768.webp 768w, /media/farm/r33/poster/cabbage-stage-1-1024.webp 1024w",
+      "srcsetAvif": "/media/farm/r33/poster/cabbage-stage-1-320.avif 320w, /media/farm/r33/poster/cabbage-stage-1-480.avif 480w, /media/farm/r33/poster/cabbage-stage-1-672.avif 672w, /media/farm/r33/poster/cabbage-stage-1-768.avif 768w, /media/farm/r33/poster/cabbage-stage-1-1024.avif 1024w",
+      "inputPath": "media/farm/r33/poster/cabbage-stage-1.webp"
+    },
+    {
+      "src": "/media/rig/review-neutral-v1/farm/r34/cabbage-stage-2.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "Young cabbage with spreading pale-green leaves on a soil patch.",
+      "srcsetWebp": "/media/rig/review-neutral-v1/farm/r34/cabbage-stage-2-320.webp 320w, /media/rig/review-neutral-v1/farm/r34/cabbage-stage-2-480.webp 480w, /media/rig/review-neutral-v1/farm/r34/cabbage-stage-2-672.webp 672w, /media/rig/review-neutral-v1/farm/r34/cabbage-stage-2-768.webp 768w, /media/rig/review-neutral-v1/farm/r34/cabbage-stage-2-1024.webp 1024w",
+      "srcsetAvif": "/media/rig/review-neutral-v1/farm/r34/cabbage-stage-2-320.avif 320w, /media/rig/review-neutral-v1/farm/r34/cabbage-stage-2-480.avif 480w, /media/rig/review-neutral-v1/farm/r34/cabbage-stage-2-672.avif 672w, /media/rig/review-neutral-v1/farm/r34/cabbage-stage-2-768.avif 768w, /media/rig/review-neutral-v1/farm/r34/cabbage-stage-2-1024.avif 1024w",
+      "inputPath": "media/rig/review-neutral-v1/farm/r34/cabbage-stage-2.png",
+      "sourceRevisionId": "r_d2cb82ca31fd4fe8883da87ece0e9a1d",
+      "exactRevision": true,
+      "rig": "review-neutral-v1"
+    },
+    {
+      "src": "/media/farm/r33/poster/cabbage-stage-2.webp",
+      "width": 1168,
+      "height": 780,
+      "alt": "Six rendered review views of cabbage-stage-2.",
+      "srcsetWebp": "/media/farm/r33/poster/cabbage-stage-2-320.webp 320w, /media/farm/r33/poster/cabbage-stage-2-480.webp 480w, /media/farm/r33/poster/cabbage-stage-2-672.webp 672w, /media/farm/r33/poster/cabbage-stage-2-768.webp 768w, /media/farm/r33/poster/cabbage-stage-2-1024.webp 1024w",
+      "srcsetAvif": "/media/farm/r33/poster/cabbage-stage-2-320.avif 320w, /media/farm/r33/poster/cabbage-stage-2-480.avif 480w, /media/farm/r33/poster/cabbage-stage-2-672.avif 672w, /media/farm/r33/poster/cabbage-stage-2-768.avif 768w, /media/farm/r33/poster/cabbage-stage-2-1024.avif 1024w",
+      "inputPath": "media/farm/r33/poster/cabbage-stage-2.webp"
+    },
+    {
+      "src": "/media/rig/review-neutral-v1/farm/r34/cabbage-stage-3.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "Open cabbage rosette with layered green leaves and an upright centre.",
+      "srcsetWebp": "/media/rig/review-neutral-v1/farm/r34/cabbage-stage-3-320.webp 320w, /media/rig/review-neutral-v1/farm/r34/cabbage-stage-3-480.webp 480w, /media/rig/review-neutral-v1/farm/r34/cabbage-stage-3-672.webp 672w, /media/rig/review-neutral-v1/farm/r34/cabbage-stage-3-768.webp 768w, /media/rig/review-neutral-v1/farm/r34/cabbage-stage-3-1024.webp 1024w",
+      "srcsetAvif": "/media/rig/review-neutral-v1/farm/r34/cabbage-stage-3-320.avif 320w, /media/rig/review-neutral-v1/farm/r34/cabbage-stage-3-480.avif 480w, /media/rig/review-neutral-v1/farm/r34/cabbage-stage-3-672.avif 672w, /media/rig/review-neutral-v1/farm/r34/cabbage-stage-3-768.avif 768w, /media/rig/review-neutral-v1/farm/r34/cabbage-stage-3-1024.avif 1024w",
+      "inputPath": "media/rig/review-neutral-v1/farm/r34/cabbage-stage-3.png",
+      "sourceRevisionId": "r_8a446c3c2f514e358f8f897c420ecd0a",
+      "exactRevision": true,
+      "rig": "review-neutral-v1"
+    },
+    {
+      "src": "/media/farm/r33/poster/cabbage-stage-3.webp",
+      "width": 1168,
+      "height": 780,
+      "alt": "Six rendered review views of cabbage-stage-3.",
+      "srcsetWebp": "/media/farm/r33/poster/cabbage-stage-3-320.webp 320w, /media/farm/r33/poster/cabbage-stage-3-480.webp 480w, /media/farm/r33/poster/cabbage-stage-3-672.webp 672w, /media/farm/r33/poster/cabbage-stage-3-768.webp 768w, /media/farm/r33/poster/cabbage-stage-3-1024.webp 1024w",
+      "srcsetAvif": "/media/farm/r33/poster/cabbage-stage-3-320.avif 320w, /media/farm/r33/poster/cabbage-stage-3-480.avif 480w, /media/farm/r33/poster/cabbage-stage-3-672.avif 672w, /media/farm/r33/poster/cabbage-stage-3-768.avif 768w, /media/farm/r33/poster/cabbage-stage-3-1024.avif 1024w",
+      "inputPath": "media/farm/r33/poster/cabbage-stage-3.webp"
+    },
+    {
+      "src": "/media/rig/review-neutral-v1/farm/r34/cabbage-stage-4.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "Mature pale-green cabbage head held by broad outer leaves.",
+      "srcsetWebp": "/media/rig/review-neutral-v1/farm/r34/cabbage-stage-4-320.webp 320w, /media/rig/review-neutral-v1/farm/r34/cabbage-stage-4-480.webp 480w, /media/rig/review-neutral-v1/farm/r34/cabbage-stage-4-672.webp 672w, /media/rig/review-neutral-v1/farm/r34/cabbage-stage-4-768.webp 768w, /media/rig/review-neutral-v1/farm/r34/cabbage-stage-4-1024.webp 1024w",
+      "srcsetAvif": "/media/rig/review-neutral-v1/farm/r34/cabbage-stage-4-320.avif 320w, /media/rig/review-neutral-v1/farm/r34/cabbage-stage-4-480.avif 480w, /media/rig/review-neutral-v1/farm/r34/cabbage-stage-4-672.avif 672w, /media/rig/review-neutral-v1/farm/r34/cabbage-stage-4-768.avif 768w, /media/rig/review-neutral-v1/farm/r34/cabbage-stage-4-1024.avif 1024w",
+      "inputPath": "media/rig/review-neutral-v1/farm/r34/cabbage-stage-4.png",
+      "sourceRevisionId": "r_9bf8450fc5294c9d9dca1960625be36a",
+      "exactRevision": true,
+      "rig": "review-neutral-v1"
+    },
+    {
+      "src": "/media/farm/r33/poster/cabbage-stage-4.webp",
+      "width": 1168,
+      "height": 780,
+      "alt": "Six rendered review views of cabbage-stage-4.",
+      "srcsetWebp": "/media/farm/r33/poster/cabbage-stage-4-320.webp 320w, /media/farm/r33/poster/cabbage-stage-4-480.webp 480w, /media/farm/r33/poster/cabbage-stage-4-672.webp 672w, /media/farm/r33/poster/cabbage-stage-4-768.webp 768w, /media/farm/r33/poster/cabbage-stage-4-1024.webp 1024w",
+      "srcsetAvif": "/media/farm/r33/poster/cabbage-stage-4-320.avif 320w, /media/farm/r33/poster/cabbage-stage-4-480.avif 480w, /media/farm/r33/poster/cabbage-stage-4-672.avif 672w, /media/farm/r33/poster/cabbage-stage-4-768.avif 768w, /media/farm/r33/poster/cabbage-stage-4-1024.avif 1024w",
+      "inputPath": "media/farm/r33/poster/cabbage-stage-4.webp"
+    },
+    {
+      "src": "/media/rig/review-neutral-v1/farm/r34/wheat.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "Cluster of golden wheat stems with narrow leaves and upright seed heads.",
+      "srcsetWebp": "/media/rig/review-neutral-v1/farm/r34/wheat-320.webp 320w, /media/rig/review-neutral-v1/farm/r34/wheat-480.webp 480w, /media/rig/review-neutral-v1/farm/r34/wheat-672.webp 672w, /media/rig/review-neutral-v1/farm/r34/wheat-768.webp 768w, /media/rig/review-neutral-v1/farm/r34/wheat-1024.webp 1024w",
+      "srcsetAvif": "/media/rig/review-neutral-v1/farm/r34/wheat-320.avif 320w, /media/rig/review-neutral-v1/farm/r34/wheat-480.avif 480w, /media/rig/review-neutral-v1/farm/r34/wheat-672.avif 672w, /media/rig/review-neutral-v1/farm/r34/wheat-768.avif 768w, /media/rig/review-neutral-v1/farm/r34/wheat-1024.avif 1024w",
+      "inputPath": "media/rig/review-neutral-v1/farm/r34/wheat.png",
+      "sourceRevisionId": "r_254f9bdf4d004a7796033d5fe348a3e3",
+      "exactRevision": true,
+      "rig": "review-neutral-v1"
+    },
+    {
+      "src": "/media/farm/r33/poster/wheat.webp",
+      "width": 1168,
+      "height": 780,
+      "alt": "Six rendered review views of Wheat.",
+      "srcsetWebp": "/media/farm/r33/poster/wheat-320.webp 320w, /media/farm/r33/poster/wheat-480.webp 480w, /media/farm/r33/poster/wheat-672.webp 672w, /media/farm/r33/poster/wheat-768.webp 768w, /media/farm/r33/poster/wheat-1024.webp 1024w",
+      "srcsetAvif": "/media/farm/r33/poster/wheat-320.avif 320w, /media/farm/r33/poster/wheat-480.avif 480w, /media/farm/r33/poster/wheat-672.avif 672w, /media/farm/r33/poster/wheat-768.avif 768w, /media/farm/r33/poster/wheat-1024.avif 1024w",
+      "inputPath": "media/farm/r33/poster/wheat.webp"
+    },
+    {
+      "src": "/media/rig/review-neutral-v1/farm/r34/pumpkin-plant.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "Low pumpkin vine with green leaves and two faceted orange fruits.",
+      "srcsetWebp": "/media/rig/review-neutral-v1/farm/r34/pumpkin-plant-320.webp 320w, /media/rig/review-neutral-v1/farm/r34/pumpkin-plant-480.webp 480w, /media/rig/review-neutral-v1/farm/r34/pumpkin-plant-672.webp 672w, /media/rig/review-neutral-v1/farm/r34/pumpkin-plant-768.webp 768w, /media/rig/review-neutral-v1/farm/r34/pumpkin-plant-1024.webp 1024w",
+      "srcsetAvif": "/media/rig/review-neutral-v1/farm/r34/pumpkin-plant-320.avif 320w, /media/rig/review-neutral-v1/farm/r34/pumpkin-plant-480.avif 480w, /media/rig/review-neutral-v1/farm/r34/pumpkin-plant-672.avif 672w, /media/rig/review-neutral-v1/farm/r34/pumpkin-plant-768.avif 768w, /media/rig/review-neutral-v1/farm/r34/pumpkin-plant-1024.avif 1024w",
+      "inputPath": "media/rig/review-neutral-v1/farm/r34/pumpkin-plant.png",
+      "sourceRevisionId": "r_38897e8a2b944c38a4f4428ab39f4a2b",
+      "exactRevision": true,
+      "rig": "review-neutral-v1"
+    },
+    {
+      "src": "/media/farm/r33/poster/pumpkin-plant.webp",
+      "width": 1168,
+      "height": 780,
+      "alt": "Six rendered review views of Pumpkin plant.",
+      "srcsetWebp": "/media/farm/r33/poster/pumpkin-plant-320.webp 320w, /media/farm/r33/poster/pumpkin-plant-480.webp 480w, /media/farm/r33/poster/pumpkin-plant-672.webp 672w, /media/farm/r33/poster/pumpkin-plant-768.webp 768w, /media/farm/r33/poster/pumpkin-plant-1024.webp 1024w",
+      "srcsetAvif": "/media/farm/r33/poster/pumpkin-plant-320.avif 320w, /media/farm/r33/poster/pumpkin-plant-480.avif 480w, /media/farm/r33/poster/pumpkin-plant-672.avif 672w, /media/farm/r33/poster/pumpkin-plant-768.avif 768w, /media/farm/r33/poster/pumpkin-plant-1024.avif 1024w",
+      "inputPath": "media/farm/r33/poster/pumpkin-plant.webp"
+    },
+    {
+      "src": "/media/rig/review-neutral-v1/farm/r34/faceted-tree.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "Small deciduous tree with a branching brown trunk and a faceted green crown.",
+      "srcsetWebp": "/media/rig/review-neutral-v1/farm/r34/faceted-tree-320.webp 320w, /media/rig/review-neutral-v1/farm/r34/faceted-tree-480.webp 480w, /media/rig/review-neutral-v1/farm/r34/faceted-tree-672.webp 672w, /media/rig/review-neutral-v1/farm/r34/faceted-tree-768.webp 768w, /media/rig/review-neutral-v1/farm/r34/faceted-tree-1024.webp 1024w",
+      "srcsetAvif": "/media/rig/review-neutral-v1/farm/r34/faceted-tree-320.avif 320w, /media/rig/review-neutral-v1/farm/r34/faceted-tree-480.avif 480w, /media/rig/review-neutral-v1/farm/r34/faceted-tree-672.avif 672w, /media/rig/review-neutral-v1/farm/r34/faceted-tree-768.avif 768w, /media/rig/review-neutral-v1/farm/r34/faceted-tree-1024.avif 1024w",
+      "inputPath": "media/rig/review-neutral-v1/farm/r34/faceted-tree.png",
+      "sourceRevisionId": "r_6d5dd832c32b4d8682942980d02cde1b",
+      "exactRevision": true,
+      "rig": "review-neutral-v1"
+    },
+    {
+      "src": "/media/farm/r33/poster/faceted-tree.webp",
+      "width": 1168,
+      "height": 780,
+      "alt": "Six rendered review views of faceted-tree.",
+      "srcsetWebp": "/media/farm/r33/poster/faceted-tree-320.webp 320w, /media/farm/r33/poster/faceted-tree-480.webp 480w, /media/farm/r33/poster/faceted-tree-672.webp 672w, /media/farm/r33/poster/faceted-tree-768.webp 768w, /media/farm/r33/poster/faceted-tree-1024.webp 1024w",
+      "srcsetAvif": "/media/farm/r33/poster/faceted-tree-320.avif 320w, /media/farm/r33/poster/faceted-tree-480.avif 480w, /media/farm/r33/poster/faceted-tree-672.avif 672w, /media/farm/r33/poster/faceted-tree-768.avif 768w, /media/farm/r33/poster/faceted-tree-1024.avif 1024w",
+      "inputPath": "media/farm/r33/poster/faceted-tree.webp"
+    },
+    {
+      "src": "/media/rig/review-neutral-v1/farm/r34/rock-cluster.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "Group of low, pale faceted rocks with a larger central stone.",
+      "srcsetWebp": "/media/rig/review-neutral-v1/farm/r34/rock-cluster-320.webp 320w, /media/rig/review-neutral-v1/farm/r34/rock-cluster-480.webp 480w, /media/rig/review-neutral-v1/farm/r34/rock-cluster-672.webp 672w, /media/rig/review-neutral-v1/farm/r34/rock-cluster-768.webp 768w, /media/rig/review-neutral-v1/farm/r34/rock-cluster-1024.webp 1024w",
+      "srcsetAvif": "/media/rig/review-neutral-v1/farm/r34/rock-cluster-320.avif 320w, /media/rig/review-neutral-v1/farm/r34/rock-cluster-480.avif 480w, /media/rig/review-neutral-v1/farm/r34/rock-cluster-672.avif 672w, /media/rig/review-neutral-v1/farm/r34/rock-cluster-768.avif 768w, /media/rig/review-neutral-v1/farm/r34/rock-cluster-1024.avif 1024w",
+      "inputPath": "media/rig/review-neutral-v1/farm/r34/rock-cluster.png",
+      "sourceRevisionId": "r_37cde8b1f8d344aa8f6142aeab61a62e",
+      "exactRevision": true,
+      "rig": "review-neutral-v1"
+    },
+    {
+      "src": "/media/farm/r33/poster/rock-cluster.webp",
+      "width": 1168,
+      "height": 780,
+      "alt": "Six rendered review views of rock-cluster.",
+      "srcsetWebp": "/media/farm/r33/poster/rock-cluster-320.webp 320w, /media/farm/r33/poster/rock-cluster-480.webp 480w, /media/farm/r33/poster/rock-cluster-672.webp 672w, /media/farm/r33/poster/rock-cluster-768.webp 768w, /media/farm/r33/poster/rock-cluster-1024.webp 1024w",
+      "srcsetAvif": "/media/farm/r33/poster/rock-cluster-320.avif 320w, /media/farm/r33/poster/rock-cluster-480.avif 480w, /media/farm/r33/poster/rock-cluster-672.avif 672w, /media/farm/r33/poster/rock-cluster-768.avif 768w, /media/farm/r33/poster/rock-cluster-1024.avif 1024w",
+      "inputPath": "media/farm/r33/poster/rock-cluster.webp"
+    },
+    {
+      "src": "/media/farm/revisions/farmhouse-floor-before.webp",
+      "width": 508,
+      "height": 384,
+      "alt": "Farmhouse interior before the floor revision, with a masonry-looking floor.",
+      "srcsetWebp": "/media/farm/revisions/farmhouse-floor-before-320.webp 320w, /media/farm/revisions/farmhouse-floor-before-480.webp 480w",
+      "srcsetAvif": "/media/farm/revisions/farmhouse-floor-before-320.avif 320w, /media/farm/revisions/farmhouse-floor-before-480.avif 480w",
+      "inputPath": "media/farm/revisions/farmhouse-floor-before.webp"
+    },
+    {
+      "src": "/media/farm/revisions/farmhouse-floor-after.webp",
+      "width": 508,
+      "height": 384,
+      "alt": "Farmhouse interior after the revision, with honey-coloured wooden floorboards.",
+      "srcsetWebp": "/media/farm/revisions/farmhouse-floor-after-320.webp 320w, /media/farm/revisions/farmhouse-floor-after-480.webp 480w",
+      "srcsetAvif": "/media/farm/revisions/farmhouse-floor-after-320.avif 320w, /media/farm/revisions/farmhouse-floor-after-480.avif 480w",
+      "inputPath": "media/farm/revisions/farmhouse-floor-after.webp"
+    },
+    {
+      "src": "/media/rig/review-neutral-v1/farm/r36-local-review/farmer.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "Farmer in blue overalls and a brimmed hat, carrying a three-prong pitchfork.",
+      "srcsetWebp": "/media/rig/review-neutral-v1/farm/r36-local-review/farmer-320.webp 320w, /media/rig/review-neutral-v1/farm/r36-local-review/farmer-480.webp 480w, /media/rig/review-neutral-v1/farm/r36-local-review/farmer-672.webp 672w, /media/rig/review-neutral-v1/farm/r36-local-review/farmer-768.webp 768w, /media/rig/review-neutral-v1/farm/r36-local-review/farmer-1024.webp 1024w",
+      "srcsetAvif": "/media/rig/review-neutral-v1/farm/r36-local-review/farmer-320.avif 320w, /media/rig/review-neutral-v1/farm/r36-local-review/farmer-480.avif 480w, /media/rig/review-neutral-v1/farm/r36-local-review/farmer-672.avif 672w, /media/rig/review-neutral-v1/farm/r36-local-review/farmer-768.avif 768w, /media/rig/review-neutral-v1/farm/r36-local-review/farmer-1024.avif 1024w",
+      "inputPath": "media/rig/review-neutral-v1/farm/r36-local-review/farmer.png",
+      "sourceRevisionId": "r_70907c7fd97249ce807e9948613882cd",
+      "exactRevision": true,
+      "rig": "review-neutral-v1"
+    },
+    {
+      "src": "/media/scenes/farm/r36-local-review/farm-scene-opening.webp",
+      "width": 1440,
+      "height": 925,
+      "alt": "Farm scene with a farmhouse, barn, fields, woodland and a stream.",
+      "srcsetWebp": "/media/scenes/farm/r36-local-review/farm-scene-opening-320.webp 320w, /media/scenes/farm/r36-local-review/farm-scene-opening-480.webp 480w, /media/scenes/farm/r36-local-review/farm-scene-opening-672.webp 672w, /media/scenes/farm/r36-local-review/farm-scene-opening-768.webp 768w, /media/scenes/farm/r36-local-review/farm-scene-opening-1024.webp 1024w, /media/scenes/farm/r36-local-review/farm-scene-opening-1440.webp 1440w",
+      "srcsetAvif": "/media/scenes/farm/r36-local-review/farm-scene-opening-320.avif 320w, /media/scenes/farm/r36-local-review/farm-scene-opening-480.avif 480w, /media/scenes/farm/r36-local-review/farm-scene-opening-672.avif 672w, /media/scenes/farm/r36-local-review/farm-scene-opening-768.avif 768w, /media/scenes/farm/r36-local-review/farm-scene-opening-1024.avif 1024w, /media/scenes/farm/r36-local-review/farm-scene-opening-1440.avif 1440w",
+      "inputPath": "media/scenes/farm/r36-local-review/farm-scene-opening.png"
+    }
+  ],
+  "archives": [
+    "standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/golden-gate-editable.zip",
+    "packs/vehicles/r2/generic-road-vehicles-runtime.zip",
+    "packs/vehicles/r2/editable/hatchback-editable.zip",
+    "packs/vehicles/r2/editable/sedan-editable.zip",
+    "packs/vehicles/r2/editable/suv-editable.zip",
+    "packs/vehicles/r2/editable/pickup-editable.zip",
+    "packs/vehicles/r2/editable/box-truck-editable.zip",
+    "packs/vehicles/r2/editable/transit-bus-editable.zip",
+    "packs/vehicles/r3-local-review/editable/hatchback-editable.zip",
+    "packs/vehicles/r3-local-review/editable/sedan-editable.zip",
+    "packs/vehicles/r3-local-review/editable/suv-editable.zip",
+    "packs/vehicles/r4-local-review/generic-road-vehicles-runtime.zip",
+    "packs/vehicles/r4-local-review/editable/hatchback-editable.zip",
+    "packs/vehicles/r4-local-review/editable/sedan-editable.zip",
+    "packs/vehicles/r4-local-review/editable/suv-editable.zip",
+    "packs/vehicles/r4-local-review/editable/pickup-editable.zip",
+    "packs/vehicles/r4-local-review/editable/box-truck-editable.zip",
+    "packs/vehicles/r4-local-review/editable/transit-bus-editable.zip",
+    "packs/foundry-floor/ff3-review2/foundry-floor-ff3-review2-models.zip",
+    "packs/farm/r36-local-review/shapes-and-seasons-farm-runtime.zip",
+    "packs/farm/r36-local-review/shapes-and-seasons-farm-editable.zip",
+    "packs/farm/r36-local-review/shapes-and-seasons-farm-scene.zip"
+  ],
+  "sources": [
+    {
+      "archive": "packs/vehicles/r4-local-review/editable/hatchback-editable.zip",
+      "member": "generic-hatchback/r_74f393f06996497a9dce6c5ed50c2d62/source.kiln.js",
+      "output": "sources/vehicles/hatchback.kiln.js",
+      "bytes": 24691,
+      "sha256": "c3cd99e30b697e7a1e120f5ec931e831b7b5f76a4e7cf6580d960cca8062ad97"
+    },
+    {
+      "archive": "packs/vehicles/r4-local-review/editable/sedan-editable.zip",
+      "member": "generic-sedan/r_92ee0ac3d5cf4b258cc97d20ec941461/source.kiln.js",
+      "output": "sources/vehicles/sedan.kiln.js",
+      "bytes": 24461,
+      "sha256": "df38ba80d458a1e040e8d2646e4325ceb70ed440c5d36402787812c12a3196ef"
+    },
+    {
+      "archive": "packs/vehicles/r4-local-review/editable/suv-editable.zip",
+      "member": "generic-suv/r_b4cc9048731b4c039de0b87ca6e75c17/source.kiln.js",
+      "output": "sources/vehicles/suv.kiln.js",
+      "bytes": 24701,
+      "sha256": "92be21e9c7b467e20a8bdbcb1f62e77e9a9cd7d2f3e76c73eb6d5225a3398198"
+    },
+    {
+      "archive": "packs/vehicles/r4-local-review/editable/pickup-editable.zip",
+      "member": "a_557b9bd6c2c34340804e802081a9b983/r_218be4189a1b43e7b307c2263ba4f954/source.kiln.js",
+      "output": "sources/vehicles/pickup.kiln.js",
+      "bytes": 11583,
+      "sha256": "ce88a54e3703e7a02c46cc8082e0dfa4176532a09fc171d0014b0677bae3a5a1"
+    },
+    {
+      "archive": "packs/vehicles/r4-local-review/editable/box-truck-editable.zip",
+      "member": "a_2092ca0610c749b386c14c07dbaf4236/r_538b8a19c46d4086b456e27b32ee7d33/source.kiln.js",
+      "output": "sources/vehicles/box-truck.kiln.js",
+      "bytes": 12137,
+      "sha256": "aa5f5e777bfe2a0992ae6a9b97981ece095fe5f3ba9bd0bc412a4c44c4e94b8c"
+    },
+    {
+      "archive": "packs/vehicles/r4-local-review/editable/transit-bus-editable.zip",
+      "member": "a_a8c030b2570f4ae5aa54eefbd3767f4c/r_85ff097a61384efab445c55372d3b6f5/source.kiln.js",
+      "output": "sources/vehicles/transit-bus.kiln.js",
+      "bytes": 13436,
+      "sha256": "7353294abb36e623839fb889c70bfbd626ee2ebda69b3b96e73aeed3e8afc2e1"
+    },
+    {
+      "archive": "standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/golden-gate-editable.zip",
+      "profile": "editable",
+      "member": "a_9fafaa6e7f4c4868a372e8f3b0b84738/r_76c7a4080e7844e185896b7e1b196e5a/source.kiln.js",
+      "output": "sources/golden-gate-bridge.kiln.js",
+      "bytes": 45275,
+      "sha256": "2a739bea8197e718b6912930012c9ab36317965ff263d9fe05a9821ba7e138f2"
+    },
+    {
+      "archive": "packs/farm/r36-local-review/shapes-and-seasons-farm-editable.zip",
+      "member": "sources/farmhouse.kiln.js",
+      "output": "sources/farmhouse.kiln.js",
+      "bytes": 23633,
+      "sha256": "74fda08c6343b2a257c0da185f1486a0ca23392d6574fc8f55eeb37c74fd9fde"
+    },
+    {
+      "archive": "packs/farm/r36-local-review/shapes-and-seasons-farm-editable.zip",
+      "member": "sources/barn.kiln.js",
+      "output": "sources/barn.kiln.js",
+      "bytes": 25268,
+      "sha256": "f2a9f05c744355354d4ec34f841a69bae2ee9f4e42bbc94df653f4bea4c6064a"
+    },
+    {
+      "archive": "packs/farm/r36-local-review/shapes-and-seasons-farm-editable.zip",
+      "member": "sources/windmill.kiln.js",
+      "output": "sources/windmill.kiln.js",
+      "bytes": 28218,
+      "sha256": "fbbeb5d8db9b925f48194c533e0b6130681bf7f86b05d8b19ce898b049e0f5e6"
+    },
+    {
+      "archive": "packs/farm/r36-local-review/shapes-and-seasons-farm-editable.zip",
+      "member": "sources/watermill.kiln.js",
+      "output": "sources/watermill.kiln.js",
+      "bytes": 33643,
+      "sha256": "1f4ce4eecbd06a160a249760ec97c29cb85a26182bc92a390d520c9027607809"
+    },
+    {
+      "archive": "packs/farm/r36-local-review/shapes-and-seasons-farm-editable.zip",
+      "member": "sources/fence-straight.kiln.js",
+      "output": "sources/fence-straight.kiln.js",
+      "bytes": 10132,
+      "sha256": "b8cbd11566ddb0b24c6740372fe0e3b20f71128621d950f970950f226d55ffdf"
+    },
+    {
+      "archive": "packs/farm/r36-local-review/shapes-and-seasons-farm-editable.zip",
+      "member": "sources/fence-corner.kiln.js",
+      "output": "sources/fence-corner.kiln.js",
+      "bytes": 10416,
+      "sha256": "98df0c6ca88fa698155cbb26bf0e573d1141671aa27e4dea78e7ed21e8238439"
+    },
+    {
+      "archive": "packs/farm/r36-local-review/shapes-and-seasons-farm-editable.zip",
+      "member": "sources/fence-gate.kiln.js",
+      "output": "sources/fence-gate.kiln.js",
+      "bytes": 13612,
+      "sha256": "a6a2b7f79388bf5b9a9df88d141c0fab50f292cd5ef5281d5101e6af39cde440"
+    },
+    {
+      "archive": "packs/farm/r36-local-review/shapes-and-seasons-farm-editable.zip",
+      "member": "sources/tractor.kiln.js",
+      "output": "sources/tractor.kiln.js",
+      "bytes": 15253,
+      "sha256": "f88bff51dc25a2f55b87022b7fba5cf262697a4db6142a804b463f73bcc9bfb8"
+    },
+    {
+      "archive": "packs/farm/r36-local-review/shapes-and-seasons-farm-editable.zip",
+      "member": "sources/trailer.kiln.js",
+      "output": "sources/trailer.kiln.js",
+      "bytes": 13910,
+      "sha256": "a96ad2121938bd0bb19227b6c09bc795c2826c8917ff13db27e6a78bb5ef0e25"
+    },
+    {
+      "archive": "packs/farm/r36-local-review/shapes-and-seasons-farm-editable.zip",
+      "member": "sources/barrel.kiln.js",
+      "output": "sources/barrel.kiln.js",
+      "bytes": 5228,
+      "sha256": "e5e60ecd101a1b085e25b50d8ce816d7b20559fef2d844905949030291601818"
+    },
+    {
+      "archive": "packs/farm/r36-local-review/shapes-and-seasons-farm-editable.zip",
+      "member": "sources/hay-bale.kiln.js",
+      "output": "sources/hay-bale.kiln.js",
+      "bytes": 3837,
+      "sha256": "b5b108a698a79773644e2c78dc0e607c2a1bdae83e5055f231f2b6b6f74d1556"
+    },
+    {
+      "archive": "packs/farm/r36-local-review/shapes-and-seasons-farm-editable.zip",
+      "member": "sources/farmer.kiln.js",
+      "output": "sources/farmer.kiln.js",
+      "bytes": 21071,
+      "sha256": "8c6c6e460d89c98b91d68315adfb85acd9cf6f6f88b1085b004c88ca090bccc8"
+    },
+    {
+      "archive": "packs/farm/r36-local-review/shapes-and-seasons-farm-editable.zip",
+      "member": "sources/cow.kiln.js",
+      "output": "sources/cow.kiln.js",
+      "bytes": 15271,
+      "sha256": "c86b013a267d6d77bb69ee04cd5363769a2972ad18da4f83864c85aa975222cd"
+    },
+    {
+      "archive": "packs/farm/r36-local-review/shapes-and-seasons-farm-editable.zip",
+      "member": "sources/sheep.kiln.js",
+      "output": "sources/sheep.kiln.js",
+      "bytes": 6815,
+      "sha256": "0154c712f15b2d8a0288110601cf63886c7b29dad9773f3170b9c23b767db3f1"
+    },
+    {
+      "archive": "packs/farm/r36-local-review/shapes-and-seasons-farm-editable.zip",
+      "member": "sources/chicken.kiln.js",
+      "output": "sources/chicken.kiln.js",
+      "bytes": 7714,
+      "sha256": "bb9691903443556777e3ab0a6d8fc136b7924d3d63a7bc600925936c9e26d77e"
+    },
+    {
+      "archive": "packs/farm/r36-local-review/shapes-and-seasons-farm-editable.zip",
+      "member": "sources/cabbage-stage-1.kiln.js",
+      "output": "sources/cabbage-stage-1.kiln.js",
+      "bytes": 7951,
+      "sha256": "8d35f86994bda197c31f47a3e17fef18ae7632fb6a1dc60ed0091351547bff16"
+    },
+    {
+      "archive": "packs/farm/r36-local-review/shapes-and-seasons-farm-editable.zip",
+      "member": "sources/cabbage-stage-2.kiln.js",
+      "output": "sources/cabbage-stage-2.kiln.js",
+      "bytes": 7951,
+      "sha256": "24fc870a9d339af5a9b5d6c6b431158d0e984b26bb63ec97a5d8a9e51e9647cc"
+    },
+    {
+      "archive": "packs/farm/r36-local-review/shapes-and-seasons-farm-editable.zip",
+      "member": "sources/cabbage-stage-3.kiln.js",
+      "output": "sources/cabbage-stage-3.kiln.js",
+      "bytes": 8007,
+      "sha256": "ab421dc345a9beb9e51fd6c523957be7f044cd559b024a6ef461e79d0017bd09"
+    },
+    {
+      "archive": "packs/farm/r36-local-review/shapes-and-seasons-farm-editable.zip",
+      "member": "sources/cabbage-stage-4.kiln.js",
+      "output": "sources/cabbage-stage-4.kiln.js",
+      "bytes": 10653,
+      "sha256": "eda27b2a42289a99cda7aea846eefa2ed6dc35ab56331ee65d8f8f392454ebdc"
+    },
+    {
+      "archive": "packs/farm/r36-local-review/shapes-and-seasons-farm-editable.zip",
+      "member": "sources/wheat.kiln.js",
+      "output": "sources/wheat.kiln.js",
+      "bytes": 4167,
+      "sha256": "c8cc41a113683887a811796613fe44abe7d2be8302144de5cc22516169a1e669"
+    },
+    {
+      "archive": "packs/farm/r36-local-review/shapes-and-seasons-farm-editable.zip",
+      "member": "sources/pumpkin-plant.kiln.js",
+      "output": "sources/pumpkin-plant.kiln.js",
+      "bytes": 5788,
+      "sha256": "961ce83ff3c51969181f0175aaf7947bd5b518631b1a3cf276e3e379e5168d0a"
+    },
+    {
+      "archive": "packs/farm/r36-local-review/shapes-and-seasons-farm-editable.zip",
+      "member": "sources/faceted-tree.kiln.js",
+      "output": "sources/faceted-tree.kiln.js",
+      "bytes": 3793,
+      "sha256": "f19c2b60aed5b04a47b7454614b3c2bdb20abbb7f087c8a719129d92f349d5ef"
+    },
+    {
+      "archive": "packs/farm/r36-local-review/shapes-and-seasons-farm-editable.zip",
+      "member": "sources/rock-cluster.kiln.js",
+      "output": "sources/rock-cluster.kiln.js",
+      "bytes": 1890,
+      "sha256": "2ee4fed4c668f28260911affd4a9ee9c58cf1b416fcbd4a3fe1d657e97191868"
+    }
+  ],
+  "models": [
+    {
+      "path": "packs/vehicles/r4-local-review/models/hatchback.glb",
+      "output": "models/vehicles/hatchback.glb",
+      "bytes": 118752,
+      "sha256": "4030ac7f9c3a0ee141189b01615da4016353c6302f0805cf9d66dd756a32a0f0"
+    },
+    {
+      "path": "packs/vehicles/r4-local-review/models/sedan.glb",
+      "output": "models/vehicles/sedan.glb",
+      "bytes": 117780,
+      "sha256": "1bad1074f0583dfb7c650cfe6e0cae7633b93fb1dc614f50d36ed834d469b212"
+    },
+    {
+      "path": "packs/vehicles/r4-local-review/models/suv.glb",
+      "output": "models/vehicles/suv.glb",
+      "bytes": 120120,
+      "sha256": "3193157586a99fe8710be2303fea754c0b0799557a6d5757528b5b7c83e612b2"
+    },
+    {
+      "path": "packs/vehicles/r4-local-review/models/pickup.glb",
+      "output": "models/vehicles/pickup.glb",
+      "bytes": 170184,
+      "sha256": "584240cb33df27714545c6fafc2496f1459bdadad49b2b827be13a8e936b6d8f"
+    },
+    {
+      "path": "packs/vehicles/r4-local-review/models/box-truck.glb",
+      "output": "models/vehicles/box-truck.glb",
+      "bytes": 169728,
+      "sha256": "4cfccfdb2ddd15fc6ab9940e0406fe2b11bbef9d6098d783940cfeb572464420"
+    },
+    {
+      "path": "packs/vehicles/r4-local-review/models/transit-bus.glb",
+      "output": "models/vehicles/transit-bus.glb",
+      "bytes": 194148,
+      "sha256": "14713cb461f2ecb683ea9bace5cc7a79d595aa92d322f86d3831cda7bf647067"
+    },
+    {
+      "path": "standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/golden-gate-runtime.glb",
+      "output": "models/standalone/golden-gate-bridge.glb",
+      "bytes": 12402960,
+      "sha256": "31306263a1c5f7410eab1ff65253765fb4084d9f0ec0d4c1b27e66f12a9f7f28"
+    },
+    {
+      "archive": "packs/farm/r36-local-review/shapes-and-seasons-farm-runtime.zip",
+      "member": "models/farmhouse.glb",
+      "output": "models/farm/farmhouse.glb",
+      "bytes": 549584,
+      "sha256": "1b02596b30e3417e3f8336893694f2614002e28154408803b145154097de8512"
+    },
+    {
+      "archive": "packs/farm/r36-local-review/shapes-and-seasons-farm-runtime.zip",
+      "member": "models/barn.glb",
+      "output": "models/farm/barn.glb",
+      "bytes": 618912,
+      "sha256": "eae958ffee9be52c2f61c86859f138a1e999be3d3056dab9cb76df6286ea0041"
+    },
+    {
+      "archive": "packs/farm/r36-local-review/shapes-and-seasons-farm-runtime.zip",
+      "member": "models/windmill.glb",
+      "output": "models/farm/windmill.glb",
+      "bytes": 454760,
+      "sha256": "089e966217cbd05c81a123ab2419d9d9c172bb7567f30ef2f7020cc790c8148f"
+    },
+    {
+      "archive": "packs/farm/r36-local-review/shapes-and-seasons-farm-runtime.zip",
+      "member": "models/watermill.glb",
+      "output": "models/farm/watermill.glb",
+      "bytes": 580264,
+      "sha256": "b57f29056cf3b072058d65016b753551f146c4cace974458087bceaaab4d0ce0"
+    },
+    {
+      "archive": "packs/farm/r36-local-review/shapes-and-seasons-farm-runtime.zip",
+      "member": "models/fence-straight.glb",
+      "output": "models/farm/fence-straight.glb",
+      "bytes": 59260,
+      "sha256": "1468e8ca49f97a89b5a84e032960fc7b6b29e8b18adee0b1a86692aae6b2c496"
+    },
+    {
+      "archive": "packs/farm/r36-local-review/shapes-and-seasons-farm-runtime.zip",
+      "member": "models/fence-corner.glb",
+      "output": "models/farm/fence-corner.glb",
+      "bytes": 83084,
+      "sha256": "9af793228f396dce42eafacdd98b0203a714648b4e716c389656114217dde6cd"
+    },
+    {
+      "archive": "packs/farm/r36-local-review/shapes-and-seasons-farm-runtime.zip",
+      "member": "models/fence-gate.glb",
+      "output": "models/farm/fence-gate.glb",
+      "bytes": 162020,
+      "sha256": "e3e01d01c48333f7af74b2c8907eb42a2b4cfe66816570c7e4d49203a63b0366"
+    },
+    {
+      "archive": "packs/farm/r36-local-review/shapes-and-seasons-farm-runtime.zip",
+      "member": "models/tractor.glb",
+      "output": "models/farm/tractor.glb",
+      "bytes": 409684,
+      "sha256": "8185aea55248ec02eb49de46eb04d85c2cdd9a9f9a1d485d649d79009c3f1117"
+    },
+    {
+      "archive": "packs/farm/r36-local-review/shapes-and-seasons-farm-runtime.zip",
+      "member": "models/trailer.glb",
+      "output": "models/farm/trailer.glb",
+      "bytes": 183252,
+      "sha256": "6394d8c51b0c368a25f21d644630370cd6d8267dbd999642587460cb7a2b90de"
+    },
+    {
+      "archive": "packs/farm/r36-local-review/shapes-and-seasons-farm-runtime.zip",
+      "member": "models/barrel.glb",
+      "output": "models/farm/barrel.glb",
+      "bytes": 237868,
+      "sha256": "1d9b5c726d770a2875c52aa9bfa079c7f180877e3da0337be1a815c42c62c534"
+    },
+    {
+      "archive": "packs/farm/r36-local-review/shapes-and-seasons-farm-runtime.zip",
+      "member": "models/hay-bale.glb",
+      "output": "models/farm/hay-bale.glb",
+      "bytes": 242504,
+      "sha256": "1388fb610ef8ee3240f472ce45d89eb80fd78c2bdda46c7889563b653bd3fbd4"
+    },
+    {
+      "archive": "packs/farm/r36-local-review/shapes-and-seasons-farm-runtime.zip",
+      "member": "models/farmer.glb",
+      "output": "models/farm/farmer.glb",
+      "bytes": 817092,
+      "sha256": "b6c49161d0627c26e3cc7ea07e88f58c2726fe2c8b15773afcb621d3ab21b829"
+    },
+    {
+      "archive": "packs/farm/r36-local-review/shapes-and-seasons-farm-runtime.zip",
+      "member": "models/cow.glb",
+      "output": "models/farm/cow.glb",
+      "bytes": 371896,
+      "sha256": "d79307b03c4003cee0748d15bdaf1a6593434a8ad72de9f383fc9616e7084ce6"
+    },
+    {
+      "archive": "packs/farm/r36-local-review/shapes-and-seasons-farm-runtime.zip",
+      "member": "models/sheep.glb",
+      "output": "models/farm/sheep.glb",
+      "bytes": 391632,
+      "sha256": "41a9b3f464888e5e6f9c820d07181d64d6a544503d40401a753f8d628d76a20e"
+    },
+    {
+      "archive": "packs/farm/r36-local-review/shapes-and-seasons-farm-runtime.zip",
+      "member": "models/chicken.glb",
+      "output": "models/farm/chicken.glb",
+      "bytes": 373720,
+      "sha256": "8ee9087d4e0c0b9dfed9f992e133ac67d9d21e6effc788c2fb89ce80cd884e4d"
+    },
+    {
+      "archive": "packs/farm/r36-local-review/shapes-and-seasons-farm-runtime.zip",
+      "member": "models/cabbage-stage-1.glb",
+      "output": "models/farm/cabbage-stage-1.glb",
+      "bytes": 164988,
+      "sha256": "e6b177606ffefd4d4c9437fb9150f37a717202133796cb52e469c22e2570fe0c"
+    },
+    {
+      "archive": "packs/farm/r36-local-review/shapes-and-seasons-farm-runtime.zip",
+      "member": "models/cabbage-stage-2.glb",
+      "output": "models/farm/cabbage-stage-2.glb",
+      "bytes": 170768,
+      "sha256": "cbe951aa364a017889f03b5a60a31a6b9c5398064a5b20f7f1c5b6fb9332bec6"
+    },
+    {
+      "archive": "packs/farm/r36-local-review/shapes-and-seasons-farm-runtime.zip",
+      "member": "models/cabbage-stage-3.glb",
+      "output": "models/farm/cabbage-stage-3.glb",
+      "bytes": 176528,
+      "sha256": "ff9525150fe7f99142df59c36a316502d4830789e25efea70b5c9c38ecb1da9d"
+    },
+    {
+      "archive": "packs/farm/r36-local-review/shapes-and-seasons-farm-runtime.zip",
+      "member": "models/cabbage-stage-4.glb",
+      "output": "models/farm/cabbage-stage-4.glb",
+      "bytes": 187596,
+      "sha256": "8e6b8ea974b75843d7671641f2c3fa2ebd3f10a19810b6759d15ec9c4662bacb"
+    },
+    {
+      "archive": "packs/farm/r36-local-review/shapes-and-seasons-farm-runtime.zip",
+      "member": "models/wheat.glb",
+      "output": "models/farm/wheat.glb",
+      "bytes": 352648,
+      "sha256": "d13360234d2092d0982f385aed401f4f926e3ccacc593cd0cb5a95dcdea79b25"
+    },
+    {
+      "archive": "packs/farm/r36-local-review/shapes-and-seasons-farm-runtime.zip",
+      "member": "models/pumpkin-plant.glb",
+      "output": "models/farm/pumpkin-plant.glb",
+      "bytes": 155080,
+      "sha256": "22b9c424461cbc904b21e7d17a4862e2a034545912839147b314ba6f813c8371"
+    },
+    {
+      "archive": "packs/farm/r36-local-review/shapes-and-seasons-farm-runtime.zip",
+      "member": "models/faceted-tree.glb",
+      "output": "models/farm/faceted-tree.glb",
+      "bytes": 123176,
+      "sha256": "0f6eceb07f207eb27071767a8d0c7fae7a618efd623942219da1f2d29497b0c4"
+    },
+    {
+      "archive": "packs/farm/r36-local-review/shapes-and-seasons-farm-runtime.zip",
+      "member": "models/rock-cluster.glb",
+      "output": "models/farm/rock-cluster.glb",
+      "bytes": 39784,
+      "sha256": "6b6e767ed170aa1631a54e5d6df3d3335146a94cdedb5c49bf17b3659a93252d"
+    }
+  ]
+}
