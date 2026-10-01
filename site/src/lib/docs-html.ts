@@ -38,12 +38,12 @@ export function decorateDocsHtml(html: string, slug: string, available: Set<stri
       .replace(
         /<h([2-6])\b([^>]*?)id="([^"]+)"([^>]*)>([\s\S]*?)<\/h\1>/g,
         (_whole, level: string, before: string, id: string, after: string, label: string) =>
-          `<h${level}${before}id="${id}"${after}>${label}<a class="docs-heading-link" href="#${id}" aria-label="Link to this section">#</a></h${level}>`,
+          `<h${level}${before}id="${id}"${after}>${label}<a class="docs-heading-link" href="#${id}" aria-hidden="true" tabindex="-1">#</a></h${level}>`,
       )
       .replace(
         /<pre\b([^>]*)>([\s\S]*?)<\/pre>/g,
         (_whole, attributes: string, code: string) =>
-          `<section class="docs-code not-prose" aria-label="Code example ${++codeNumber}"><div class="docs-code-actions"><span>Scroll code horizontally when needed</span><button type="button" data-copy-docs hidden>Copy code</button></div><pre${attributes.includes('tabindex=') ? attributes : `${attributes} tabindex="0"`}>${code}</pre></section>`,
+          `<div role="group" class="docs-code not-prose" aria-label="Code example ${++codeNumber}"><div class="docs-code-actions"><span data-scroll-hint hidden>Scroll code horizontally</span><button type="button" data-copy-docs hidden aria-label="Copy code example ${codeNumber}">Copy code</button></div><pre${attributes.includes('tabindex=') ? attributes : `${attributes} tabindex="0"`}>${code}</pre></div>`,
       )
       .replace(/<table>([\s\S]*?)<\/table>/g, (_whole, table: string) => {
         const header = /<thead>([\s\S]*?)<\/thead>/.exec(table)?.[1] ?? '';

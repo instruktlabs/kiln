@@ -1,4 +1,5 @@
 ---
+import PageHeader from "../../components/PageHeader.astro";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import ResponsiveImage from "../../components/ResponsiveImage.astro";
 import { farm, vehicles } from "../../lib/catalog";
@@ -17,28 +18,28 @@ const vehiclesAwaiting: string[] = vehicles.ownerReview.awaiting;
 ---
 
 <BaseLayout
-  title="Kiln Commons — editable 3D asset packs"
-  description="Kiln Commons packs include runtime GLBs, editable source and provenance. Browse Shapes & Seasons Farm, Generic Road Vehicles and the in-production Foundry Floor pack."
+  title="Packs · Kiln"
+  description="Download Farm and Vehicles GLBs with editable source and provenance, or inspect the Foundry Floor pack in production."
   breadcrumbs={[{ label: "Packs", href: "/packs/" }]}
-  ogImage="/social/packs.jpg"
+  card="packs"
 >
   <div class="container">
-    <h1 class="max-w-reading py-8">Kiln Commons</h1>
+    <PageHeader class="max-w-reading py-8">Packs</PageHeader>
     <p class="lead">
       Asset packs made with Kiln. Use the GLBs in your application, or keep the
       source and revise them with your coding agent.
     </p>
     {PACKS_ENABLED && (
-      <article class="mt-12 grid items-center gap-8 border-y border-rule py-8 lg:grid-cols-3">
-        <a href="/packs/farm/" class="lg:col-span-2">
+      <a class="pack-card mt-12 grid items-center gap-8 border-y border-rule py-8 lg:grid-cols-3" href="/packs/farm/" aria-label="Shapes &amp; Seasons Farm">
+        <div class="lg:col-span-2">
           <ResponsiveImage
-            image={farm.scene.poster}
+            image={{ ...farm.scene.poster, alt: "" }}
             eager
             sizes="(max-width: 1024px) 100vw, 65vw"
           />
-        </a>
+        </div>
         <div>
-          <h2>Shapes &amp; Seasons Farm</h2>
+          <h2 class="text-subheading">Shapes &amp; Seasons Farm</h2>
           <p class="mt-5">
             23 assets: buildings, animals, crops, fencing and farm equipment.
           </p>
@@ -48,19 +49,15 @@ const vehiclesAwaiting: string[] = vehicles.ownerReview.awaiting;
             revisions approved by the owner
             {farmAwaiting > 0 ? `; ${farmAwaiting} await review` : ""}.
           </p>
-          <a href="/packs/farm/" class="text-link mt-4">
-            Inspect the pack and downloads →
-          </a>
+          <span class="text-link mt-4">
+            Inspect the pack and downloads<span class="sr-only">: Shapes &amp; Seasons Farm</span> <span aria-hidden="true">→</span>
+          </span>
         </div>
-      </article>
+      </a>
     )}
     {PACKS_ENABLED && (
-      <article class="mt-12 grid items-center gap-8 border-b border-rule pb-8 lg:grid-cols-3">
-        <a
-          href="/packs/vehicles/"
-          class="grid grid-cols-3 gap-2 lg:col-span-2"
-          aria-label="Generic Road Vehicles pack"
-        >
+      <a href="/packs/vehicles/" aria-label="Generic Road Vehicles" class="mt-12 grid items-center gap-8 border-b border-rule pb-8 lg:grid-cols-3">
+        <div class="grid grid-cols-3 gap-2 lg:col-span-2">
           {vehicles.assets.map((asset) => (
             <div class="bg-stage">
               <ResponsiveImage
@@ -70,9 +67,9 @@ const vehiclesAwaiting: string[] = vehicles.ownerReview.awaiting;
               />
             </div>
           ))}
-        </a>
+        </div>
         <div>
-          <h2>{vehicles.name}</h2>
+          <h2 class="text-subheading">{vehicles.name}</h2>
           <p class="mt-5">
             Six vehicles: a hatchback, a sedan, an SUV, a pickup, a box truck
             and a transit bus, each with three detail tiers.
@@ -84,19 +81,15 @@ const vehiclesAwaiting: string[] = vehicles.ownerReview.awaiting;
             {vehiclesAwaiting.length > 0 &&
               `; the corrected revision of the ${vehiclesAwaiting.map((name) => name.replace(/^Generic /, "")).join(" and the ")} awaits review`}.
           </p>
-          <a href="/packs/vehicles/" class="text-link mt-4">
-            Inspect the pack and downloads →
-          </a>
+          <span class="text-link mt-4">
+            Inspect the pack and downloads<span class="sr-only">: Generic Road Vehicles</span> <span aria-hidden="true">→</span>
+          </span>
         </div>
-      </article>
+      </a>
     )}
     {PACKS_ENABLED && (
-      <article class="mt-12 grid items-center gap-8 border-b border-rule pb-8 lg:grid-cols-3">
-        <a
-          href={foundryFloor.packRoute}
-          class="grid grid-cols-3 gap-2 lg:col-span-2"
-          aria-label="Foundry Floor pack, in production"
-        >
+      <a href="/packs/foundry-floor/" aria-label="Foundry Floor, in production" class="mt-12 grid items-center gap-8 border-b border-rule pb-8 lg:grid-cols-3">
+        <div class="grid grid-cols-3 gap-2 lg:col-span-2">
           {featured.map((asset) => (
             <div class="bg-stage">
               <ResponsiveImage
@@ -106,9 +99,9 @@ const vehiclesAwaiting: string[] = vehicles.ownerReview.awaiting;
               />
             </div>
           ))}
-        </a>
+        </div>
         <div>
-          <h2>{foundryFloorPack.name}</h2>
+          <h2 class="text-subheading">{foundryFloorPack.name}</h2>
           <p class="mt-5">
             {foundryFloorPack.assetCount} models for a fictional 2 nm-class chip
             fab: process tools, wafer transport and storage, the cleanroom’s
@@ -118,13 +111,13 @@ const vehiclesAwaiting: string[] = vehicles.ownerReview.awaiting;
             In production. Runtime GLBs and the pack’s licence text. The owner
             has not reviewed this pack; it stays in production until then.
           </p>
-          <a href={foundryFloor.packRoute} class="text-link mt-4">
-            Inspect the pack in production →
-          </a>
+          <span class="text-link mt-4">
+            Inspect the pack in production <span aria-hidden="true">→</span>
+          </span>
         </div>
-      </article>
+      </a>
     )}
-    <div class="mt-12 grid gap-8 md:grid-cols-2">
+    <div class="mt-12 grid gap-8 lg:grid-cols-2">
       {!PACKS_ENABLED && (
         <div>
           <h2 class="text-subheading">{foundryFloor.name}</h2>
@@ -133,7 +126,7 @@ const vehiclesAwaiting: string[] = vehicles.ownerReview.awaiting;
             wafer transport and a scene where the factory runs.
           </p>
           <a href={foundryFloor.packRoute} class="text-link mt-2">
-            Read the production note →
+            Read the production note <span aria-hidden="true">→</span>
           </a>
         </div>
       )}
@@ -148,17 +141,17 @@ const vehiclesAwaiting: string[] = vehicles.ownerReview.awaiting;
     </div>
     <div class="mt-12 border-t border-ink pt-6">
       <h2 class="text-subheading">
-        Asset content and software have separate licenses.
+        Asset content and software have separate licences.
       </h2>
       <p class="mt-4 max-w-reading">
-        {farm.licenseScope} Preserve the supplied licenses, material records and
+        <span data-verbatim>{farm.licenseScope}</span> Preserve the supplied licences, material records and
         scene software notices.
       </p>
       <a
         href="https://creativecommons.org/publicdomain/zero/1.0/"
         class="text-link mt-2"
       >
-        Read CC0-1.0 ↗
+        Read CC0-1.0 <span aria-hidden="true">↗</span>
       </a>
     </div>
   </div>

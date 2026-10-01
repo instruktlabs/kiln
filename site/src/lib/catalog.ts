@@ -3,7 +3,13 @@ import vehicles from '../data/packs/vehicles.json';
 import bridge from '../data/standalone/golden-gate-bridge.json';
 import { PACKS_ENABLED } from './config';
 export { farm, vehicles, bridge };
-export const assets = PACKS_ENABLED ? [...farm.assets, ...vehicles.assets, bridge] : [];
+/** The asset pages under /gallery/: launch mode only (KILN_SITE_PACKS=1), since they link the Commons downloads on R2. */
+export const catalogAssets = (packsEnabled: boolean) =>
+  packsEnabled ? [...farm.assets, ...vehicles.assets, bridge] : [];
+export const assets = catalogAssets(PACKS_ENABLED);
+/** The pack pages under /packs/: the Foundry Floor page states the pack's production status and is built in both modes. */
+export const packSlugs = (packsEnabled: boolean) =>
+  packsEnabled ? ['farm', 'vehicles', 'foundry-floor'] : ['foundry-floor'];
 export type CatalogAsset = (typeof assets)[number];
 export type VehicleAsset = (typeof vehicles.assets)[number];
 export const isVehicle = (asset: CatalogAsset): asset is VehicleAsset => asset.pack === 'vehicles';

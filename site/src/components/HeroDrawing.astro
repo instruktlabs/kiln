@@ -1,50 +1,126 @@
 ---
-import { hero } from "../lib/hero";
-import { bounds, imageQualification } from "../lib/catalog";
+import { hero, heroFacts, HERO_IMAGE_SIZES, type HeroData } from "../lib/hero";
+import { heroDrawing } from "../lib/hero-drawing.mjs";
 import ResponsiveImage from "./ResponsiveImage.astro";
-const asset = hero.asset;
+interface Props {
+  /** A hero data file; the site's own is `src/data/hero.json`. */
+  data?: HeroData;
+}
+const { data = hero } = Astro.props;
+const drawing = heroDrawing(data);
+const facts = heroFacts(data);
+// Poster pixels to a position over the image, so every mark stays on its part at any rendered width.
+const at = ([x, y]: number[]) =>
+  `left:${((x! / drawing.width) * 100).toFixed(3)}%;top:${((y! / drawing.height) * 100).toFixed(3)}%`;
+const routed = drawing.callouts.filter((callout) => !callout.legendOnly);
+const pathParts = (path: string) => path.split("/");
 ---
 
-<figure class="min-w-0 self-center">
-  <div class="relative aspect-square">
+<figure class="hero-figure -mx-5 min-w-0 md:mx-auto md:w-full md:max-w-[40rem] xl:max-w-none">
+  <div class="hero-drawing relative aspect-square">
     <ResponsiveImage
-      image={asset.poster}
-      sizes="(max-width: 767px) 95vw, 48vw"
+      image={data.poster}
+      sizes={HERO_IMAGE_SIZES}
       eager
       class="h-full w-full object-contain"
     />
-    <svg class="drawing-annotations" viewBox="0 0 614 614" aria-hidden="true">
-      <path d="M38 450V140M32 450h12M32 140h12M62 450H24M62 140H24" />
-      <text x="28" y="304" transform="rotate(-90 28 304)" text-anchor="middle">
-        {asset.metrics.bounds[1]?.toFixed(2)} m
-      </text>
-      <path d="M95 535H552M95 520v28M552 520v28" />
-      <text x="325" y="539" text-anchor="middle">
-        {asset.metrics.bounds[2]?.toFixed(2)} m · Z
-      </text>
-      {hero.callouts.map((part) => (
+    <svg
+      class="drawing-annotations"
+      viewBox={`0 0 ${drawing.width} ${drawing.height}`}
+      aria-hidden="true"
+    >
+      {drawing.dimensions.map((dimension) => (
         <g>
-          <circle cx={part.x} cy={part.y} r="3" fill="currentColor" />
-          <path
-            d={`M${part.x} ${part.y} L${part.endX - 12} ${part.endY} H${part.endX}`}
-          />
-          <text x={part.endX} y={part.endY - 8} text-anchor="end">
-            {part.name}
-          </text>
+          {dimension.extensions.map(([from, to]) => (
+            <path class="drawing-faint" d={`M${from}L${to}`} />
+          ))}
+          <path d={`M${dimension.line[0]}L${dimension.line[1]}`} />
+          {dimension.ticks.map(([from, to]) => (
+            <path class="drawing-tick" d={`M${from}L${to}`} />
+          ))}
         </g>
       ))}
+      {routed.map((callout) => (
+        <path d={`M${callout.anchor}L${callout.elbow}L${callout.end}`} />
+      ))}
+      {drawing.triad?.axes.map((axis) => (
+        <path class="drawing-triad" d={`M${drawing.triad!.origin}L${axis.tip}`} />
+      ))}
     </svg>
+    <div class="drawing-labels" aria-hidden="true">
+      {drawing.dimensions.map((dimension) => (
+        <span
+          class="drawing-chip"
+          data-place={dimension.chip.place}
+          style={`${at(dimension.chip.at)};--angle:${dimension.chip.angle}deg`}
+        >
+          {dimension.value}
+        </span>
+      ))}
+      {drawing.callouts.map((callout) => (
+        <>
+          <span class="drawing-dot" style={at(callout.anchor)} />
+          {!callout.legendOnly && (
+            <span
+              class="drawing-callout hidden md:block"
+              data-side={callout.side}
+              style={at(callout.end!)}
+            >
+              {callout.name}
+            </span>
+          )}
+          <span
+            class:list={["drawing-index", !callout.legendOnly && "md:hidden"]}
+            data-side={callout.legendOnly ? "mark" : callout.side}
+            style={at(callout.legendOnly ? callout.anchor : callout.end!)}
+          >
+            {callout.index}
+          </span>
+        </>
+      ))}
+      {drawing.triad?.axes.map((axis) => (
+        <span
+          class="drawing-axis"
+          style={`${at(axis.tip)};--dx:${axis.direction[0]};--dy:${axis.direction[1]}`}
+        >
+          {axis.name}
+        </span>
+      ))}
+    </div>
   </div>
-  <figcaption class="grid gap-2 border-t border-ink bg-paper px-4 py-3 font-mono text-code sm:grid-cols-2">
-    <a href={`/gallery/${asset.slug}/`} class="font-medium text-ember">
-      {asset.name} ↗
+  <ol
+    class:list={[
+      "drawing-legend mt-3 grid gap-1 font-mono text-code",
+      routed.length === drawing.callouts.length && "md:hidden",
+    ]}
+    aria-label="Named parts in the drawing"
+  >
+    {drawing.callouts.map((callout) => (
+      <li class:list={["flex gap-2", !callout.legendOnly && "md:hidden"]}>
+        <span class="drawing-index-static" aria-hidden="true">{callout.index}</span>
+        <span class="min-w-0">
+          {pathParts(callout.path).map((part, index) => (
+            <>{index > 0 && <>/<wbr /></>}{part}</>
+          ))}
+        </span>
+      </li>
+    ))}
+  </ol>
+  <figcaption class="mt-3 grid gap-1 border-t border-ink bg-paper px-4 py-3 font-mono text-code sm:grid-cols-2">
+    <a href={facts.href} class="flex min-h-11 items-center font-medium text-ink underline decoration-rule underline-offset-4 hover:text-ink hover:decoration-ember md:min-h-0">
+      {facts.name}
     </a>
-    <span class="sm:text-right">{bounds(asset.metrics.bounds)} m</span>
-    <span class="break-all text-dim sm:col-span-2">
-      Revision {asset.revisionId}
+    <span class="self-center sm:text-right">{facts.dimensions}</span>
+    <span class="text-dim sm:col-span-2">
+      {facts.tier ? `${facts.tier} · ` : ""}revision <span class="whitespace-nowrap" title={facts.revisionId}>{facts.revisionId.slice(0, 10)}…{facts.revisionId.slice(-8)}</span>
     </span>
-    {imageQualification(asset.poster) && (
-      <span class="min-w-0 break-words text-dim sm:col-span-2">{imageQualification(asset.poster)}</span>
-    )}
+    <span class="text-dim sm:col-span-2">
+      {facts.model}{facts.harness && ` · ${facts.harness}`}. Requested effort:{" "}
+      {facts.requestedEffort}. Independently confirmed: {facts.confirmedEffort}.
+    </span>
+    <span class="text-dim sm:col-span-2">
+      {facts.namedParts} named parts{facts.source && ` · ${facts.source}`} ·
+      rendered under {data.poster.rig} from this revision’s GLB
+    </span>
   </figcaption>
 </figure>

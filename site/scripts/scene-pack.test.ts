@@ -11,6 +11,12 @@ import { comparePackRecord, compareRuntimeRecord, main, packRecord, parseSums, s
 import { CEILINGS, checkCeiling, measureFrameRuntime } from './scene-runtime.mjs';
 
 const directories: string[] = [];
+test('review release suffixes stay confined to one pack directory', () => {
+  expect(stagedPackDirectory({ base: '/scene-packs/farm/r35-local-review/' }, '/site'))
+    .toBe(resolve('/site/public/scene-packs/farm/r35-local-review'));
+  for (const base of ['/scene-packs/farm/../', '/scene-packs/farm/r35/../../', '/scene-packs/farm/-review/', '/scene-packs/farm/r35\\escape/'])
+    expect(() => stagedPackDirectory({ base }, '/site')).toThrow('Unexpected');
+});
 afterEach(async () => {
   mock.restore();
   for (const directory of directories.splice(0)) await rm(directory, { recursive: true, force: true });
@@ -26,15 +32,15 @@ const files: Record<string, string> = {
 const MODULES = ['C:/scenes/packages/scene-kit/src/renderer/three-runtime.ts', 'C:/scenes/node_modules/three/build/three.core.js', 'C:/scenes/node_modules/react/index.js'];
 
 /** A small pack in the standalone layout: assets/{pack.json,SHA256SUMS,...} beside the notices. */
-async function fixture(id = 'farm') {
+async function fixture(id = 'farm', content: Record<string, string> = files) {
   const root = await mkdtemp(join(tmpdir(), 'kiln-scene-pack-'));
   directories.push(root);
   const assets = join(root, 'assets');
-  for (const [path, text] of Object.entries(files)) {
+  for (const [path, text] of Object.entries(content)) {
     await mkdir(join(assets, path, '..'), { recursive: true });
     await writeFile(join(assets, path), text);
   }
-  const sealed = Object.entries(files).map(([path, text]) => ({ path, bytes: Buffer.byteLength(text), sha256: hashBytes(Buffer.from(text)) }));
+  const sealed = Object.entries(content).map(([path, text]) => ({ path, bytes: Buffer.byteLength(text), sha256: hashBytes(Buffer.from(text)) }));
   await writeFile(join(assets, 'SHA256SUMS'), sealed.map((file) => `${file.sha256}  ${file.path}\n`).join(''));
   await writeFile(
     join(assets, 'pack.json'),
@@ -55,6 +61,15 @@ async function fixture(id = 'farm') {
 }
 
 describe('scene pack staging', () => {
+  test('an initial-load receipt must name the sealed pack release even when its pack hash matches', async () => {
+    const { root, assets } = await fixture('foundry-floor');
+    const pack = JSON.parse(await readFile(join(assets, 'pack.json'), 'utf8'));
+    pack.release = 'ff3-review2';
+    const bytes = Buffer.from(JSON.stringify(pack));
+    await writeFile(join(assets, 'pack.json'), bytes);
+    await writeFile(join(root, 'bundle-public.json'), JSON.stringify({ mode: 'public', release: 'ff3', packSha256: hashBytes(bytes), chunks: [], initialChunks: [] }));
+    await expect(measureFrameRuntime({ id: 'foundry-floor', source: root })).rejects.toThrow(/release/);
+  });
   test('copies a verified pack byte for byte and reports its totals', async () => {
     const { root } = await fixture();
     const target = join(root, 'served');
@@ -112,6 +127,21 @@ describe('scene pack staging', () => {
     expect(() => parseSums(`${digest}  models/a.glb\n${digest}  models/a.glb\n`)).toThrow('Duplicate');
     expect(() => parseSums(`${digest}  ../outside.glb\n`)).toThrow('Unsafe');
     expect(() => parseSums(`${digest}  /absolute.glb\n`)).toThrow('Unsafe');
+  });
+
+  test('refuses a sealed pack that carries a local user path, before copying anything', async () => {
+    // The Golden Gate g5 terrain record named the author's local path (design and engineering reviews, finding 1).
+    const path = ['C:', 'Users', 'alexq', 'X', 'kiln-commons', 'golden-gate.glb'].join('\\');
+    const { root } = await fixture('golden-gate', { ...files, 'terrain/frame.json': `{"bridge_glb":{"path":"${path}"}}` });
+    const target = join(root, 'served');
+    await mkdir(target, { recursive: true });
+    await writeFile(join(target, 'kept.txt'), 'previous stage');
+    await expect(stagePack({ source: root, target, names: ['alexq'] })).rejects.toThrow('The scene pack carries private data and is not staged (2)');
+    expect(await readFile(join(target, 'kept.txt'), 'utf8')).toBe('previous stage');
+    // The build's own module list beside the pack is not part of it and is never copied, so it is not scanned.
+    const clean = await fixture('golden-gate');
+    await writeFile(join(clean.root, 'bundle-modules.json'), JSON.stringify({ modules: [['C:', 'Users', 'alexq', 'scenes'].join('/')] }));
+    await expect(stagePack({ source: clean.root, target: join(clean.root, 'served'), names: ['alexq'] })).resolves.toMatchObject({ id: 'golden-gate' });
   });
 
   test('a stage that cannot verify its source leaves the served copy untouched', async () => {
@@ -236,52 +266,53 @@ describe('scene pack catalog record', () => {
     expect(compareRuntimeRecord(undefined, recorded)).toEqual(['the record has no runtime for this standalone build']);
   });
 
-  test('the Farm record is the pack the site serves: the m4 build, byte-identical to r34', () => {
+  test('the Farm record serves the r36 local review with repaired clothing and retained walking controls', () => {
     const record = scenePacks.farm;
-    expect(record.release).toBe('r34');
+    expect(record.release).toBe('r36-local-review');
     expect(record.base).toBe(`/scene-packs/farm/${record.release}/`);
-    expect(record.source).toBe('packages/farm/dist/m4/standalone');
+    expect(record.source).toBe('../engine-work/local-v09-review/revision3-farmer-back-20261001/farm-runtime-final/standalone');
+    expect(record).toMatchObject({ sealedFiles: 34, sealedBytes: 7_133_727, packJsonSha256: '5d046aa2c04637436d7e3918db690f4f25f6684a58ae7a78d333dec9df428f48' });
     expect(record.three).toBe(pkg.dependencies.three);
     expect(record.totalFiles).toBe(record.sealedFiles + 3);
     expect(record.totalBytes).toBeGreaterThan(record.sealedBytes);
     for (const digest of [record.packJsonSha256, record.sha256sumsSha256, record.noticesSha256]) expect(digest).toMatch(/^[0-9a-f]{64}$/);
     expect(farmScene.assetBase).toBe(record.base);
     expect(farmScene.pack).toBe(record);
-    expect(stagedPackDirectory(record, '/site')).toBe(resolve('/site', 'public', 'scene-packs', 'farm', 'r34'));
+    expect(stagedPackDirectory(record, '/site')).toBe(resolve('/site', 'public', 'scene-packs', 'farm', 'r36-local-review'));
     expect(() => stagedPackDirectory({ base: '/../escape/' }, '/site')).toThrow('Unexpected');
   });
 
-  test('the Golden Gate record is the g5 pack and its public chunk, inside its ceiling', () => {
+  test('the Golden Gate record is the g9 local review with the final six vehicles, inside its ceiling', () => {
     const record = scenePacks['golden-gate'];
-    expect(record.release).toBe('g5');
-    expect(record.base).toBe('/scene-packs/golden-gate/g5/');
-    // Round 3's staging of g5 printed these (review/round-3/golden-gate/stage-g5.log); g5 is g4 with bridge-fix review 5's web tier.
-    expect(record).toMatchObject({ sealedFiles: 103, sealedBytes: 12_616_781, packJsonSha256: '45fd9e8ef1e7bdec173863ad520e42e8f996c943dfcf57c4842d432ea006335c', sha256sumsSha256: 'b86a5b11c007a1ef14a0fd4b2c3c0b324eba5e6fb55273585c416a8319126341' });
-    expect(record.source).toBe('packages/golden-gate/dist/standalone');
+    expect(record.release).toBe('g9');
+    expect(record.base).toBe('/scene-packs/golden-gate/g9/');
+    // Preserved g9 carries the new six-vehicle delivery with the qualified water opening and controls.
+    expect(record).toMatchObject({ sealedFiles: 103, sealedBytes: 12_186_327, packJsonSha256: 'c2a1d83fce6caf07a7b3e87070ccb8a983dd68e0c7f98eee3f1ba5255ce059cb', sha256sumsSha256: '75ce79fc746eafd27d7b597396489294a821fef5d88a05981b6bb9572159a58a' });
+    expect(record.source).toBe('../engine-work/local-v09-review/revision2-20260930/golden-runtime-final/standalone');
     expect(record.three).toBe(pkg.dependencies.three);
     expect(record.totalFiles).toBe(record.sealedFiles + 3);
     for (const digest of [record.packJsonSha256, record.sha256sumsSha256, record.noticesSha256, record.runtime.sha256, record.runtime.modulesSha256]) expect(digest).toMatch(/^[0-9a-f]{64}$/);
-    expect(record.runtime).toMatchObject({ kind: 'frame', file: 'index-CA13LcNQ.js', bytes: 1_716_992 });
+    expect(record.runtime).toMatchObject({ kind: 'frame', file: 'index-CGkQ2AbK.js', bytes: 1_721_321, gzipBytes: 517_862 });
     expect(checkCeiling('golden-gate', record.runtime).within).toBe(true);
     expect(record.runtime.bytes).toBeLessThanOrEqual(CEILINGS['golden-gate'].bytes);
     expect(goldenGateScene.assetBase).toBe(record.base);
-    expect(stagedPackDirectory(record, '/site')).toBe(resolve('/site', 'public', 'scene-packs', 'golden-gate', 'g5'));
+    expect(stagedPackDirectory(record, '/site')).toBe(resolve('/site', 'public', 'scene-packs', 'golden-gate', 'g9'));
   });
 
-  test('the Foundry Floor record is the ff2 pack and its public chunk, inside its ceiling', () => {
+  test('the Foundry Floor record is ff3-review2 with a verified initial closure inside its ceiling', () => {
     const record = scenePacks['foundry-floor'];
-    expect(record.release).toBe('ff2');
-    expect(record.base).toBe('/scene-packs/foundry-floor/ff2/');
-    expect(record.source).toBe('packages/foundry-floor/dist/standalone');
+    expect(record.release).toBe('ff3-review2');
+    expect(record.base).toBe('/scene-packs/foundry-floor/ff3-review2/');
+    expect(record.source).toBe('../engine-work/local-v09-review/revision2-20260930/foundry-runtime-final/standalone');
     expect(record.three).toBe(pkg.dependencies.three);
     expect(record.totalFiles).toBe(record.sealedFiles + 3);
-    // Round 3's staging of ff2 printed these (review/round-3/foundry-floor/stage-ff2.log).
-    expect(record).toMatchObject({ sealedFiles: 40, sealedBytes: 6_148_457, packJsonSha256: '2a6840fbe3e541090753b5fdca23934442a4be2788b74765c16afcc4a63ff8fc' });
+    // Final frozen FF3 intake verifies 85 sealed files and every initial/deferred chunk.
+    expect(record).toMatchObject({ sealedFiles: 85, sealedBytes: 11_519_818, packJsonSha256: '6ce49d05791bf42d21f3628237a5cf005ce9f2fa15938f0c321430d781c2c5d4' });
     for (const digest of [record.packJsonSha256, record.sha256sumsSha256, record.noticesSha256, record.runtime.sha256, record.runtime.modulesSha256]) expect(digest).toMatch(/^[0-9a-f]{64}$/);
-    expect(record.runtime).toMatchObject({ kind: 'frame', file: 'index-UyCWwb6D.js', bytes: 1_586_280, gzipBytes: 473_835 });
+    expect(record.runtime).toMatchObject({ kind: 'frame', file: 'index-umTduCLH.js', bytes: 1_700_697, gzipBytes: 516_088, initialLoad: { bytes: 1_525_112, gzipBytes: 445_765 } });
     expect(checkCeiling('foundry-floor', record.runtime).within).toBe(true);
     expect(foundryFloorScene.assetBase).toBe(record.base);
-    expect(stagedPackDirectory(record, '/site')).toBe(resolve('/site', 'public', 'scene-packs', 'foundry-floor', 'ff2'));
+    expect(stagedPackDirectory(record, '/site')).toBe(resolve('/site', 'public', 'scene-packs', 'foundry-floor', 'ff3-review2'));
   });
 
   test.each(['farm', 'golden-gate', 'foundry-floor'])('the %s scene page stays out of search results whatever its availability says', async (id) => {

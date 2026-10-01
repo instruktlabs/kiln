@@ -130,7 +130,7 @@ async function main(argv = process.argv.slice(2)) {
   const harness = join(SITE, '.cache/viewer-rig-harness');
   await buildHarness(harness);
   const server = await serve(harness, glb);
-  const browser = await puppeteer.launch({ executablePath: chromeExecutable(), headless: true, args: ['--no-sandbox'] });
+  const browser = await puppeteer.launch({ executablePath: chromeExecutable(), headless: true, pipe: true, args: ['--no-sandbox'] });
   try {
     const page = await browser.newPage();
     const errors = [];

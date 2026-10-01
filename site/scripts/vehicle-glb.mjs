@@ -109,6 +109,71 @@ export function coverageToDistance(radius, coverage, { verticalFovDegrees, aspec
 }
 
 /**
+ * Compose the vehicle delivery policy with an already-linked body. Canonical author exports may link the
+ * body without linking the shared wheels. Add an empty far level to each missing wheel chain at the body's
+ * LOD2 onset, without changing any geometry, pivots, body links or other extensions. Existing compatible
+ * chains remain byte-identical; conflicting policies are refused. Run the named-group body conversion first
+ * when needed. The result is a runtime derivative, not a new saved author revision.
+ */
+export function ensureVehicleWheelLod(bytes) {
+  const input = Buffer.from(bytes);
+  const { json } = parseGlb(input);
+  const inspected = inspectVehicleGlb(input);
+  if (inspected.form !== 'MSFT_lod' || inspected.tiers.length !== 3) throw new Error('Link the three body tiers with MSFT_lod before adding wheel culling');
+  const root = json.nodes[json.scenes[json.scene ?? 0].nodes[0]];
+  const bodyIndex = root.children.find((index) => json.nodes[index].name === 'LOD0');
+  const body = json.nodes[bodyIndex];
+  const bodyThreshold = body.extras.MSFT_screencoverage[1];
+  const rootWorld = localMatrix(root);
+  const bodyRadius = sphereRadius(measure(json, bodyIndex, rootWorld).box);
+  if (!(bodyThreshold > 0 && bodyThreshold <= 1 && Number.isFinite(bodyRadius) && bodyRadius > 0)) throw new Error('Body LOD2 requires finite bounds and positive screen coverage');
+  const hideAt = coverageToDistance(bodyRadius, bodyThreshold);
+  const wheels = root.children.filter((index) => WHEEL_NAME.test(json.nodes[index].name ?? ''));
+  if (wheels.length !== 4 || new Set(wheels.map((index) => json.nodes[index].name)).size !== 4) throw new Error('Runtime delivery requires four distinct wheel pivots');
+  if (!json.extensionsUsed?.includes('MSFT_lod')) throw new Error('Body MSFT_lod must be declared in extensionsUsed');
+  let changed = false;
+  for (const index of wheels) {
+    const wheel = json.nodes[index];
+    if (wheel.extensions?.MSFT_lod) {
+      const ids = wheel.extensions.MSFT_lod.ids;
+      const far = Array.isArray(ids) && ids.length === 1 ? json.nodes[ids[0]] : null;
+      const coverage = wheel.extras?.MSFT_screencoverage;
+      const actual = inspected.wheels.find((entry) => entry.name === wheel.name).hiddenBeyondMetres;
+      if (!far || far.mesh !== undefined || far.children?.length || !Array.isArray(coverage) || coverage.length !== 2 || coverage[1] !== 0 || actual === null || Math.abs(actual - hideAt) > 0.02 * hideAt) {
+        throw new Error(`${wheel.name}: existing wheel chain does not cull at body LOD2`);
+      }
+      continue;
+    }
+    if (wheel.extras?.MSFT_screencoverage !== undefined) throw new Error(`${wheel.name}: wheel coverage has no corresponding LOD chain`);
+    const radius = sphereRadius(measure(json, index, rootWorld).box);
+    if (!(Number.isFinite(radius) && radius > 0)) throw new Error(`${wheel.name}: wheel has no finite geometry bounds`);
+    const far = json.nodes.length;
+    json.nodes.push({ name: `${wheel.name}_Hidden` });
+    wheel.extensions = { ...wheel.extensions, MSFT_lod: { ids: [far] } };
+    wheel.extras = { ...wheel.extras, MSFT_screencoverage: [bodyThreshold * (radius / bodyRadius) ** 2, 0] };
+    changed = true;
+  }
+  if (!changed) return input;
+
+  // Replace JSON only. Preserve the BIN and any unknown chunks verbatim, including their headers/padding.
+  const encoded = Buffer.from(JSON.stringify(json));
+  const padded = Buffer.alloc(Math.ceil(encoded.length / 4) * 4, 0x20);
+  encoded.copy(padded);
+  const jsonHeader = Buffer.alloc(8);
+  jsonHeader.writeUInt32LE(padded.length, 0);
+  jsonHeader.write('JSON', 4, 'ascii');
+  const chunks = [];
+  for (let offset = 12; offset < input.length;) {
+    const end = offset + 8 + input.readUInt32LE(offset);
+    chunks.push(input.toString('ascii', offset + 4, offset + 8) === 'JSON' ? Buffer.concat([jsonHeader, padded]) : input.subarray(offset, end));
+    offset = end;
+  }
+  const header = Buffer.from(input.subarray(0, 12));
+  header.writeUInt32LE(12 + chunks.reduce((sum, chunk) => sum + chunk.length, 0), 8);
+  return Buffer.concat([header, ...chunks]);
+}
+
+/**
  * What three.js's own loader (the one the site's viewer uses) puts in the scene from these bytes: the mesh and
  * triangle counts of everything it would draw. A file's `MSFT_lod` links are unknown to it, so this is how the
  * catalog's "top tier and wheels" figures are checked against the real loader instead of against a model of it.

@@ -34,6 +34,7 @@ const KNOWN_WARNINGS = [/^THREE\.Clock: This module has been deprecated/];
 const browser = await puppeteer.launch({
   executablePath: chromeExecutable(),
   headless: true,
+  pipe: true,
   args: ['--no-sandbox', '--window-size=1440,900', ...(process.env.KILN_SWIFTSHADER ? ['--use-angle=swiftshader', '--enable-unsafe-swiftshader'] : [])],
   defaultViewport: { width: 1440, height: 900, deviceScaleFactor: 1 },
 });
@@ -150,6 +151,25 @@ try {
   check('Explore again after an unavailable pack recovers to the ready state.');
   await broken.close();
 
+  if (scene.frame) {
+    const missingFrame = await browser.newPage();
+    observe(missingFrame, 'frame-document-404');
+    let blockFrame = true;
+    await missingFrame.setRequestInterception(true);
+    missingFrame.on('request', (request) => (blockFrame && request.url().includes(`${scene.runtime}frame.html`) ? void request.respond({ status: 404, contentType: 'text/html', body: '<!doctype html><title>Missing scene</title>Not found' }) : void request.continue()));
+    await missingFrame.goto(route, { waitUntil: 'networkidle0' });
+    await missingFrame.click('[data-explore]');
+    await missingFrame.waitForFunction(() => document.querySelector('scene-shell')?.dataset.sceneState === 'error', { timeout: 25000 });
+    assert.match((await state(missingFrame)).status, /could not load/);
+    assert.equal(await missingFrame.$eval('[data-explore]', (element) => element === document.activeElement), true);
+    blockFrame = false;
+    await missingFrame.click('[data-explore]');
+    await settled(missingFrame);
+    assert.equal((await state(missingFrame)).state, 'ready');
+    check('A frame document 404 reaches the watchdog error, restores focus, and a new Explore recovers.');
+    await missingFrame.close();
+  }
+
   // A mount that throws inside React is caught by the island's boundary and reaches the same surface.
   const throwing = await browser.newPage();
   observe(throwing, 'mount-throws');
@@ -197,7 +217,7 @@ try {
   await settled(noGraphics);
   const withoutGraphics = await state(noGraphics);
   assert.equal(withoutGraphics.state, 'error');
-  assert.match(withoutGraphics.status, /could not load/);
+  assert.match(withoutGraphics.status, /graphics|cannot draw/i);
   assert.equal(await noGraphics.$eval('[data-explore]', (element) => element === document.activeElement), true);
   report.noGraphics = withoutGraphics;
   check('Without WebGL or WebGPU the scene fails into the visible error and restores Explore focus.');

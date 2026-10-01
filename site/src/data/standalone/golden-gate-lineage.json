@@ -110,6 +110,18 @@
       "revisionId": "r_0d1532b4a00b4663909f8edf2bd290aa",
       "parentRevisionId": "r_03e7981b4ff84159aa4533c587f033c7",
       "request": "fix-review-3"
+    },
+    {
+      "stage": "Review 5: lift construction fix, first build (it carries the review-4 full tier, which review 4 never saved; superseded by the seam fix)",
+      "revisionId": "r_8e986268599c44ff93d451e81520aaec",
+      "parentRevisionId": "r_0d1532b4a00b4663909f8edf2bd290aa",
+      "request": "fix-review-5"
+    },
+    {
+      "stage": "Review 5: lift construction fix, seam closed",
+      "revisionId": "r_76c7a4080e7844e185896b7e1b196e5a",
+      "parentRevisionId": "r_8e986268599c44ff93d451e81520aaec",
+      "request": "fix-review-5"
     }
   ],
   "tiers": {
@@ -143,6 +155,24 @@
         "revisionId": "r_e5da8e08bd424a8796a033fbb9793104",
         "parentRevisionId": "r_8285ccc5ffab4519b049936f792c15ee",
         "request": "fix-review-3"
+      },
+      {
+        "stage": "Review 4: anchorage housings and pylons (web tier only; the run stopped at its spending limit before the full tier was saved)",
+        "revisionId": "r_c81f6d5fb70c492fb2c1d57e2d482437",
+        "parentRevisionId": "r_e5da8e08bd424a8796a033fbb9793104",
+        "request": "fix-review-4"
+      },
+      {
+        "stage": "Review 5: lift construction fix, first build (superseded by the seam fix)",
+        "revisionId": "r_2632afa018de4ac28bde9ffc7ed19e47",
+        "parentRevisionId": "r_c81f6d5fb70c492fb2c1d57e2d482437",
+        "request": "fix-review-5"
+      },
+      {
+        "stage": "Review 5: lift construction fix, seam closed",
+        "revisionId": "r_de88c9d5481d4642837b9d00c81cf0a9",
+        "parentRevisionId": "r_2632afa018de4ac28bde9ffc7ed19e47",
+        "request": "fix-review-5"
       }
     ],
     "far": [
@@ -165,7 +195,7 @@
         "request": "fix-review-1"
       },
       {
-        "stage": "Review 2: roadway profile (the far tier has no expansion joints, so review 3 left it unchanged)",
+        "stage": "Review 2: roadway profile (unchanged since: the far tier has no expansion joints for review 3, and reviews 4 and 5 left its export byte-identical)",
         "revisionId": "r_fcddc546fa134910b2221561353d97e2",
         "parentRevisionId": "r_d3f2f39ee4964708a0301d7e7082d12b",
         "request": "fix-review-2"

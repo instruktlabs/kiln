@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'bun:test';
-import { existsSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { ShaderChunk } from 'three';
@@ -7,7 +7,9 @@ import { CUSTOM_TONE_MAPPING_STUB, REVIEW_RIG, REVIEW_RIG_SOURCE, installReviewN
 import { DEFAULT_ENGINE_DIR } from './rig-render.mjs';
 
 const engineDir = process.env.KILN_RIG_ENGINE_DIR ?? DEFAULT_ENGINE_DIR;
-const hasEngine = existsSync(join(engineDir, 'render-service/src/presentation-presets.mjs'));
+const presetFile = join(engineDir, 'render-service/src/presentation-presets.mjs');
+// The separate site branch predates this rig; the integrated engine candidate must run these tests.
+const hasEngine = existsSync(presetFile) && readFileSync(presetFile, 'utf8').includes('review-neutral-v1');
 const engine = (file: string) => import(pathToFileURL(join(engineDir, 'render-service/src', file)).href);
 const chunkWithStub = () => ({ tonemapping_pars_fragment: ShaderChunk.tonemapping_pars_fragment });
 

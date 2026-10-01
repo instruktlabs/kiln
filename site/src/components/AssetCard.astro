@@ -1,8 +1,9 @@
 ---
 import ResponsiveImage from "./ResponsiveImage.astro";
-import { number, imageQualification, type CatalogAsset } from "../lib/catalog";
+import { number, imageQualification } from "../lib/catalog";
+import type { GalleryCard } from "../lib/gallery";
 interface Props {
-  asset: CatalogAsset;
+  asset: Pick<GalleryCard, "slug" | "name" | "pack" | "category" | "poster" | "metrics" | "review"> & Partial<Pick<GalleryCard, "href" | "packs">>;
   headingLevel?: "h2" | "h3";
 }
 const { asset, headingLevel = "h3" } = Astro.props;
@@ -12,13 +13,14 @@ const Heading = headingLevel;
 <article
   data-asset
   data-pack={asset.pack ?? "standalone"}
+  data-packs={(asset.packs ?? [asset.pack ?? "standalone"]).join(" ")}
   data-category={asset.category}
   class="group min-w-0 border-t border-rule"
 >
-  <a href={`/gallery/${asset.slug}/`} class="block text-ink no-underline">
+  <a href={asset.href ?? `/gallery/${asset.slug}/`} class="block text-ink no-underline" aria-label={asset.name}>
     <div class="bg-stage transition-colors group-hover:bg-sheet">
       <ResponsiveImage
-        image={asset.poster}
+        image={{ ...asset.poster, alt: "" }}
         sizes="(max-width: 639px) 50vw, (max-width: 1023px) 33vw, 25vw"
         class="aspect-square w-full object-contain"
       />
@@ -27,13 +29,12 @@ const Heading = headingLevel;
       <Heading class="text-lg font-semibold tracking-tight md:text-title">
         {asset.name}
       </Heading>
-      <span aria-hidden="true" class="text-ember">
-        ↗
+      <span aria-hidden="true" class="text-dim">
+        →
       </span>
     </div>
-  </a>
   <p class="mt-1 font-mono text-code text-dim">
-    {number(asset.metrics.triangles)} triangles · {asset.category}
+    <span class="card-stat">{number(asset.metrics.triangles)} triangles</span><span class="meta-follow">{asset.category}</span>
   </p>
   {imageQualification(asset.poster) && (
     <p class="mt-2 text-caption text-dim">Exterior view from the parent revision.</p>
@@ -47,4 +48,5 @@ const Heading = headingLevel;
           ? "Awaiting owner review"
           : "Review in progress"}
   </p>
+  </a>
 </article>

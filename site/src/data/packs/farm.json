@@ -3,10 +3,10 @@
   "id": "farm",
   "name": "Shapes & Seasons Farm",
   "description": "A low-poly farm collection with buildings, fencing, crops, animals and working animation clips.",
-  "revision": "r34",
-  "projectRevision": "r_0000000034_a1b09b00d04071160c72e6b52723e88e274da032319ca118738b53f73bc796cd",
-  "fullPackAccepted": true,
-  "ownerApprovedAssets": 23,
+  "revision": "r36-local-review",
+  "projectRevision": "r_0000000002_6bba0eae0009722bd75d7f40f3a4c36ef125630144d94e86a6b531fe1fa929dd",
+  "fullPackAccepted": false,
+  "ownerApprovedAssets": 22,
   "assetCount": 23,
   "materialRecords": 10,
   "textureMaps": 30,
@@ -16,84 +16,83 @@
     {
       "profile": "runtime",
       "archive": "shapes-and-seasons-farm-runtime.zip",
-      "bytes": 7680392,
-      "sha256": "5673740a511a2d68ef990882b815d4ce3aaa802bf8b06ba1e4ce6329367d875d",
-      "files": 107,
+      "bytes": 7699060,
+      "sha256": "aa6d2288754d427661a4e27fed9b259f5ea27e180416b25aa0cb4d5abfe11461",
+      "files": 112,
       "assets": 23,
-      "path": "packs/farm/r34/shapes-and-seasons-farm-runtime.zip",
-      "url": "https://assets.kilnstudio.tools/packs/farm/r34/shapes-and-seasons-farm-runtime.zip",
+      "path": "packs/farm/r36-local-review/shapes-and-seasons-farm-runtime.zip",
+      "url": "https://assets.kilnstudio.tools/packs/farm/r36-local-review/shapes-and-seasons-farm-runtime.zip",
       "contents": [
         "23 standalone runtime GLBs",
         "Asset metadata and provenance",
-        "Applicable license notices"
+        "Applicable licence notices"
       ],
       "compatibility": "Standard glTF 2.0 with Three.js consumer checks recorded. Godot, Unity, Unreal, Roblox, USDZ and s&box conversion are not qualified by this download."
     },
     {
       "profile": "editable",
       "archive": "shapes-and-seasons-farm-editable.zip",
-      "bytes": 22433293,
-      "sha256": "2e596172626e7498052a839ba6785c99f4475c72be2f329e0836c354a0fdfcd7",
-      "files": 130,
+      "bytes": 31278470,
+      "sha256": "f3153f0f0a7d90d57900b401a90c74e49462ca5fdda0add6da327e74719d9865",
+      "files": 138,
       "assets": 23,
-      "path": "packs/farm/r34/shapes-and-seasons-farm-editable.zip",
-      "url": "https://assets.kilnstudio.tools/packs/farm/r34/shapes-and-seasons-farm-editable.zip",
+      "path": "packs/farm/r36-local-review/shapes-and-seasons-farm-editable.zip",
+      "url": "https://assets.kilnstudio.tools/packs/farm/r36-local-review/shapes-and-seasons-farm-editable.zip",
       "contents": [
         "23 asset sources",
         "10 material records and 30 texture maps",
         "Pinned rebuild kit and authoring metadata"
       ],
-      "compatibility": "The image-free rebuild needs no provider or GPU service. It was verified in a fresh extraction of the exact master on Windows Node v24.20.0, which is not a cross-platform guarantee."
+      "compatibility": "Per-asset pinned rebuilds: unchanged originals retain their recorded runtime and Node version; the repaired farmer uses the included 0.9 local candidate. Exact current farmer rebuild and unchanged-input evidence are recorded separately."
     },
     {
       "profile": "scene",
       "archive": "shapes-and-seasons-farm-scene.zip",
-      "bytes": 4295548,
-      "sha256": "955aa5a8dee11f63a7205ee5c04cbe9e7112958870745bdaebd8baff23467f86",
-      "files": 117,
+      "bytes": 7028947,
+      "sha256": "7b6d66c762012f9dc97bd28be892d8b82da0545b0d2f539d12db16505081a142",
+      "files": 203,
       "assets": 23,
-      "path": "packs/farm/r34/shapes-and-seasons-farm-scene.zip",
-      "url": "https://assets.kilnstudio.tools/packs/farm/r34/shapes-and-seasons-farm-scene.zip",
+      "path": "packs/farm/r36-local-review/shapes-and-seasons-farm-scene.zip",
+      "url": "https://assets.kilnstudio.tools/packs/farm/r36-local-review/shapes-and-seasons-farm-scene.zip",
       "contents": [
         "Runnable scene and editable scene modules",
         "Runtime assets",
         "Bundled browser dependencies and notices"
       ],
-      "compatibility": "WebGPU with WebGL2 fallback. A reference application, not a complete farming game or physics engine; see metadata/performance-and-devices.md for tested configurations and limits."
+      "compatibility": "Current r36 local Farm scene with the repaired farmer. Controller and procedural-animation code is retained from r35; changed asset integration is checked separately. No physical-device performance qualification."
     }
   ],
   "scene": {
     "available": false,
     "status": "in-production",
-    "assetBase": "https://assets.kilnstudio.tools/packs/farm/r34/",
+    "assetBase": "https://assets.kilnstudio.tools/packs/farm/r36-local-review/",
     "poster": {
-      "src": "/media/farm/r33/scene/farm-scene-wide.webp",
+      "src": "/media/scenes/farm/r36-local-review/farm-scene-opening.webp",
       "width": 1440,
       "height": 925,
-      "alt": "Farm scene, wide elevated view: watermill and stream at top, red barn, cream farmhouse with porch, tractor and trailer, fenced paddocks with sheep, wheat field, low-poly woodland. Landscape.",
-      "srcsetWebp": "/media/farm/r33/scene/farm-scene-wide-320.webp 320w, /media/farm/r33/scene/farm-scene-wide-480.webp 480w, /media/farm/r33/scene/farm-scene-wide-672.webp 672w, /media/farm/r33/scene/farm-scene-wide-768.webp 768w, /media/farm/r33/scene/farm-scene-wide-1024.webp 1024w, /media/farm/r33/scene/farm-scene-wide-1440.webp 1440w",
-      "srcsetAvif": "/media/farm/r33/scene/farm-scene-wide-320.avif 320w, /media/farm/r33/scene/farm-scene-wide-480.avif 480w, /media/farm/r33/scene/farm-scene-wide-672.avif 672w, /media/farm/r33/scene/farm-scene-wide-768.avif 768w, /media/farm/r33/scene/farm-scene-wide-1024.avif 1024w, /media/farm/r33/scene/farm-scene-wide-1440.avif 1440w",
-      "inputPath": "media/farm/r33/scene/farm-scene-wide.webp",
-      "sourceDelivery": "r33",
-      "exactRevision": false,
-      "revisionQualification": "Scene view from r33. Layout and exterior are unchanged; it was not re-captured for r34. Farmhouse windows may differ at pixel level."
+      "alt": "Farm scene with a farmhouse, barn, fields, woodland and a stream.",
+      "srcsetWebp": "/media/scenes/farm/r36-local-review/farm-scene-opening-320.webp 320w, /media/scenes/farm/r36-local-review/farm-scene-opening-480.webp 480w, /media/scenes/farm/r36-local-review/farm-scene-opening-672.webp 672w, /media/scenes/farm/r36-local-review/farm-scene-opening-768.webp 768w, /media/scenes/farm/r36-local-review/farm-scene-opening-1024.webp 1024w, /media/scenes/farm/r36-local-review/farm-scene-opening-1440.webp 1440w",
+      "srcsetAvif": "/media/scenes/farm/r36-local-review/farm-scene-opening-320.avif 320w, /media/scenes/farm/r36-local-review/farm-scene-opening-480.avif 480w, /media/scenes/farm/r36-local-review/farm-scene-opening-672.avif 672w, /media/scenes/farm/r36-local-review/farm-scene-opening-768.avif 768w, /media/scenes/farm/r36-local-review/farm-scene-opening-1024.avif 1024w, /media/scenes/farm/r36-local-review/farm-scene-opening-1440.avif 1440w",
+      "inputPath": "media/scenes/farm/r36-local-review/farm-scene-opening.png"
     },
-    "description": "The interactive site scene is being rebuilt in React Three Fiber. The scene download contains the current runnable version.",
+    "description": "A runnable local review preview with first-person walking, tractor driving, doors and gates. Current controls have desktop and touch-emulated checks on WebGPU and WebGL2; new physical-device performance is not qualified.",
     "desktop": [
-      "Third-person play as Rowan",
+      "First-person walking with click-to-capture and Escape release",
       "Doors and gates",
       "Bridge crossing",
       "Tractor driving"
     ],
     "mobile": [
-      "Orbit viewing"
+      "Joystick walking and driving",
+      "Drag to look",
+      "Pinch to zoom while driving or orbit viewing",
+      "Contextual interaction"
     ],
     "excluded": [
       "Trailer towing",
-      "General vehicle physics",
-      "Mobile walking and driving"
+      "General vehicle physics"
     ],
-    "command": "node scene/serve.mjs"
+    "command": "node scene/serve.mjs --verify"
   },
   "floorRevision": {
     "recordedAt": "2026-09-29T03:57:53.773Z",
@@ -262,11 +261,11 @@
       "sourceSha256": "74fda08c6343b2a257c0da185f1486a0ca23392d6574fc8f55eeb37c74fd9fde",
       "modelPath": "/models/farm/farmhouse.glb",
       "runtimeDownload": {
-        "path": "packs/farm/r34/models/farmhouse.glb",
-        "url": "https://assets.kilnstudio.tools/packs/farm/r34/models/farmhouse.glb",
+        "path": "packs/farm/r36-local-review/models/farmhouse.glb",
+        "url": "https://assets.kilnstudio.tools/packs/farm/r36-local-review/models/farmhouse.glb",
         "bytes": 549584,
         "sha256": "1b02596b30e3417e3f8336893694f2614002e28154408803b145154097de8512",
-        "archive": "packs/farm/r34/shapes-and-seasons-farm-runtime.zip",
+        "archive": "packs/farm/r36-local-review/shapes-and-seasons-farm-runtime.zip",
         "member": "models/farmhouse.glb"
       },
       "provenance": {
@@ -470,11 +469,11 @@
       "sourceSha256": "f2a9f05c744355354d4ec34f841a69bae2ee9f4e42bbc94df653f4bea4c6064a",
       "modelPath": "/models/farm/barn.glb",
       "runtimeDownload": {
-        "path": "packs/farm/r34/models/barn.glb",
-        "url": "https://assets.kilnstudio.tools/packs/farm/r34/models/barn.glb",
+        "path": "packs/farm/r36-local-review/models/barn.glb",
+        "url": "https://assets.kilnstudio.tools/packs/farm/r36-local-review/models/barn.glb",
         "bytes": 618912,
         "sha256": "eae958ffee9be52c2f61c86859f138a1e999be3d3056dab9cb76df6286ea0041",
-        "archive": "packs/farm/r34/shapes-and-seasons-farm-runtime.zip",
+        "archive": "packs/farm/r36-local-review/shapes-and-seasons-farm-runtime.zip",
         "member": "models/barn.glb"
       },
       "provenance": {
@@ -583,11 +582,11 @@
       "sourceSha256": "fbbeb5d8db9b925f48194c533e0b6130681bf7f86b05d8b19ce898b049e0f5e6",
       "modelPath": "/models/farm/windmill.glb",
       "runtimeDownload": {
-        "path": "packs/farm/r34/models/windmill.glb",
-        "url": "https://assets.kilnstudio.tools/packs/farm/r34/models/windmill.glb",
+        "path": "packs/farm/r36-local-review/models/windmill.glb",
+        "url": "https://assets.kilnstudio.tools/packs/farm/r36-local-review/models/windmill.glb",
         "bytes": 454760,
         "sha256": "089e966217cbd05c81a123ab2419d9d9c172bb7567f30ef2f7020cc790c8148f",
-        "archive": "packs/farm/r34/shapes-and-seasons-farm-runtime.zip",
+        "archive": "packs/farm/r36-local-review/shapes-and-seasons-farm-runtime.zip",
         "member": "models/windmill.glb"
       },
       "provenance": {
@@ -757,11 +756,11 @@
       "sourceSha256": "1f4ce4eecbd06a160a249760ec97c29cb85a26182bc92a390d520c9027607809",
       "modelPath": "/models/farm/watermill.glb",
       "runtimeDownload": {
-        "path": "packs/farm/r34/models/watermill.glb",
-        "url": "https://assets.kilnstudio.tools/packs/farm/r34/models/watermill.glb",
+        "path": "packs/farm/r36-local-review/models/watermill.glb",
+        "url": "https://assets.kilnstudio.tools/packs/farm/r36-local-review/models/watermill.glb",
         "bytes": 580264,
         "sha256": "b57f29056cf3b072058d65016b753551f146c4cace974458087bceaaab4d0ce0",
-        "archive": "packs/farm/r34/shapes-and-seasons-farm-runtime.zip",
+        "archive": "packs/farm/r36-local-review/shapes-and-seasons-farm-runtime.zip",
         "member": "models/watermill.glb"
       },
       "provenance": {
@@ -990,11 +989,11 @@
       "sourceSha256": "b8cbd11566ddb0b24c6740372fe0e3b20f71128621d950f970950f226d55ffdf",
       "modelPath": "/models/farm/fence-straight.glb",
       "runtimeDownload": {
-        "path": "packs/farm/r34/models/fence-straight.glb",
-        "url": "https://assets.kilnstudio.tools/packs/farm/r34/models/fence-straight.glb",
+        "path": "packs/farm/r36-local-review/models/fence-straight.glb",
+        "url": "https://assets.kilnstudio.tools/packs/farm/r36-local-review/models/fence-straight.glb",
         "bytes": 59260,
         "sha256": "1468e8ca49f97a89b5a84e032960fc7b6b29e8b18adee0b1a86692aae6b2c496",
-        "archive": "packs/farm/r34/shapes-and-seasons-farm-runtime.zip",
+        "archive": "packs/farm/r36-local-review/shapes-and-seasons-farm-runtime.zip",
         "member": "models/fence-straight.glb"
       },
       "provenance": {
@@ -1100,11 +1099,11 @@
       "sourceSha256": "98df0c6ca88fa698155cbb26bf0e573d1141671aa27e4dea78e7ed21e8238439",
       "modelPath": "/models/farm/fence-corner.glb",
       "runtimeDownload": {
-        "path": "packs/farm/r34/models/fence-corner.glb",
-        "url": "https://assets.kilnstudio.tools/packs/farm/r34/models/fence-corner.glb",
+        "path": "packs/farm/r36-local-review/models/fence-corner.glb",
+        "url": "https://assets.kilnstudio.tools/packs/farm/r36-local-review/models/fence-corner.glb",
         "bytes": 83084,
         "sha256": "9af793228f396dce42eafacdd98b0203a714648b4e716c389656114217dde6cd",
-        "archive": "packs/farm/r34/shapes-and-seasons-farm-runtime.zip",
+        "archive": "packs/farm/r36-local-review/shapes-and-seasons-farm-runtime.zip",
         "member": "models/fence-corner.glb"
       },
       "provenance": {
@@ -1216,11 +1215,11 @@
       "sourceSha256": "a6a2b7f79388bf5b9a9df88d141c0fab50f292cd5ef5281d5101e6af39cde440",
       "modelPath": "/models/farm/fence-gate.glb",
       "runtimeDownload": {
-        "path": "packs/farm/r34/models/fence-gate.glb",
-        "url": "https://assets.kilnstudio.tools/packs/farm/r34/models/fence-gate.glb",
+        "path": "packs/farm/r36-local-review/models/fence-gate.glb",
+        "url": "https://assets.kilnstudio.tools/packs/farm/r36-local-review/models/fence-gate.glb",
         "bytes": 162020,
         "sha256": "e3e01d01c48333f7af74b2c8907eb42a2b4cfe66816570c7e4d49203a63b0366",
-        "archive": "packs/farm/r34/shapes-and-seasons-farm-runtime.zip",
+        "archive": "packs/farm/r36-local-review/shapes-and-seasons-farm-runtime.zip",
         "member": "models/fence-gate.glb"
       },
       "provenance": {
@@ -1348,11 +1347,11 @@
       "sourceSha256": "f88bff51dc25a2f55b87022b7fba5cf262697a4db6142a804b463f73bcc9bfb8",
       "modelPath": "/models/farm/tractor.glb",
       "runtimeDownload": {
-        "path": "packs/farm/r34/models/tractor.glb",
-        "url": "https://assets.kilnstudio.tools/packs/farm/r34/models/tractor.glb",
+        "path": "packs/farm/r36-local-review/models/tractor.glb",
+        "url": "https://assets.kilnstudio.tools/packs/farm/r36-local-review/models/tractor.glb",
         "bytes": 409684,
         "sha256": "8185aea55248ec02eb49de46eb04d85c2cdd9a9f9a1d485d649d79009c3f1117",
-        "archive": "packs/farm/r34/shapes-and-seasons-farm-runtime.zip",
+        "archive": "packs/farm/r36-local-review/shapes-and-seasons-farm-runtime.zip",
         "member": "models/tractor.glb"
       },
       "provenance": {
@@ -1553,11 +1552,11 @@
       "sourceSha256": "a96ad2121938bd0bb19227b6c09bc795c2826c8917ff13db27e6a78bb5ef0e25",
       "modelPath": "/models/farm/trailer.glb",
       "runtimeDownload": {
-        "path": "packs/farm/r34/models/trailer.glb",
-        "url": "https://assets.kilnstudio.tools/packs/farm/r34/models/trailer.glb",
+        "path": "packs/farm/r36-local-review/models/trailer.glb",
+        "url": "https://assets.kilnstudio.tools/packs/farm/r36-local-review/models/trailer.glb",
         "bytes": 183252,
         "sha256": "6394d8c51b0c368a25f21d644630370cd6d8267dbd999642587460cb7a2b90de",
-        "archive": "packs/farm/r34/shapes-and-seasons-farm-runtime.zip",
+        "archive": "packs/farm/r36-local-review/shapes-and-seasons-farm-runtime.zip",
         "member": "models/trailer.glb"
       },
       "provenance": {
@@ -1712,11 +1711,11 @@
       "sourceSha256": "e5e60ecd101a1b085e25b50d8ce816d7b20559fef2d844905949030291601818",
       "modelPath": "/models/farm/barrel.glb",
       "runtimeDownload": {
-        "path": "packs/farm/r34/models/barrel.glb",
-        "url": "https://assets.kilnstudio.tools/packs/farm/r34/models/barrel.glb",
+        "path": "packs/farm/r36-local-review/models/barrel.glb",
+        "url": "https://assets.kilnstudio.tools/packs/farm/r36-local-review/models/barrel.glb",
         "bytes": 237868,
         "sha256": "1d9b5c726d770a2875c52aa9bfa079c7f180877e3da0337be1a815c42c62c534",
-        "archive": "packs/farm/r34/shapes-and-seasons-farm-runtime.zip",
+        "archive": "packs/farm/r36-local-review/shapes-and-seasons-farm-runtime.zip",
         "member": "models/barrel.glb"
       },
       "provenance": {
@@ -1821,11 +1820,11 @@
       "sourceSha256": "b5b108a698a79773644e2c78dc0e607c2a1bdae83e5055f231f2b6b6f74d1556",
       "modelPath": "/models/farm/hay-bale.glb",
       "runtimeDownload": {
-        "path": "packs/farm/r34/models/hay-bale.glb",
-        "url": "https://assets.kilnstudio.tools/packs/farm/r34/models/hay-bale.glb",
+        "path": "packs/farm/r36-local-review/models/hay-bale.glb",
+        "url": "https://assets.kilnstudio.tools/packs/farm/r36-local-review/models/hay-bale.glb",
         "bytes": 242504,
         "sha256": "1388fb610ef8ee3240f472ce45d89eb80fd78c2bdda46c7889563b653bd3fbd4",
-        "archive": "packs/farm/r34/shapes-and-seasons-farm-runtime.zip",
+        "archive": "packs/farm/r36-local-review/shapes-and-seasons-farm-runtime.zip",
         "member": "models/hay-bale.glb"
       },
       "provenance": {
@@ -1878,10 +1877,10 @@
       "category": "Characters",
       "description": "Farmer in blue overalls and a brimmed hat, carrying a three-prong pitchfork.",
       "assetId": "a_2ff8e7e260894a879fb49e63a8521915",
-      "revisionId": "r_d0e65e4d47aa4449a07ed288a78d461b",
-      "parentRevision": "r_4168ca8e7b2c40f3a6168d160c76ed64",
+      "revisionId": "r_70907c7fd97249ce807e9948613882cd",
+      "parentRevision": "r_654c203b0ed3438c93d19b6709bef9f6",
       "metrics": {
-        "triangles": 8800,
+        "triangles": 10312,
         "meshes": 30,
         "materials": 12,
         "bounds": [
@@ -1937,35 +1936,37 @@
         ]
       },
       "poster": {
-        "src": "/media/rig/review-neutral-v1/farm/r34/farmer.webp",
+        "src": "/media/rig/review-neutral-v1/farm/r36-local-review/farmer.webp",
         "width": 1024,
         "height": 1024,
         "alt": "Farmer in blue overalls and a brimmed hat, carrying a three-prong pitchfork.",
-        "srcsetWebp": "/media/rig/review-neutral-v1/farm/r34/farmer-320.webp 320w, /media/rig/review-neutral-v1/farm/r34/farmer-480.webp 480w, /media/rig/review-neutral-v1/farm/r34/farmer-672.webp 672w, /media/rig/review-neutral-v1/farm/r34/farmer-768.webp 768w, /media/rig/review-neutral-v1/farm/r34/farmer-1024.webp 1024w",
-        "srcsetAvif": "/media/rig/review-neutral-v1/farm/r34/farmer-320.avif 320w, /media/rig/review-neutral-v1/farm/r34/farmer-480.avif 480w, /media/rig/review-neutral-v1/farm/r34/farmer-672.avif 672w, /media/rig/review-neutral-v1/farm/r34/farmer-768.avif 768w, /media/rig/review-neutral-v1/farm/r34/farmer-1024.avif 1024w",
-        "inputPath": "media/rig/review-neutral-v1/farm/r34/farmer.png",
-        "sourceRevisionId": "r_d0e65e4d47aa4449a07ed288a78d461b",
+        "srcsetWebp": "/media/rig/review-neutral-v1/farm/r36-local-review/farmer-320.webp 320w, /media/rig/review-neutral-v1/farm/r36-local-review/farmer-480.webp 480w, /media/rig/review-neutral-v1/farm/r36-local-review/farmer-672.webp 672w, /media/rig/review-neutral-v1/farm/r36-local-review/farmer-768.webp 768w, /media/rig/review-neutral-v1/farm/r36-local-review/farmer-1024.webp 1024w",
+        "srcsetAvif": "/media/rig/review-neutral-v1/farm/r36-local-review/farmer-320.avif 320w, /media/rig/review-neutral-v1/farm/r36-local-review/farmer-480.avif 480w, /media/rig/review-neutral-v1/farm/r36-local-review/farmer-672.avif 672w, /media/rig/review-neutral-v1/farm/r36-local-review/farmer-768.avif 768w, /media/rig/review-neutral-v1/farm/r36-local-review/farmer-1024.avif 1024w",
+        "inputPath": "media/rig/review-neutral-v1/farm/r36-local-review/farmer.png",
+        "sourceRevisionId": "r_70907c7fd97249ce807e9948613882cd",
         "exactRevision": true,
         "rig": "review-neutral-v1"
       },
       "reviewImage": {
-        "src": "/media/farm/r33/poster/farmer.webp",
+        "src": "/media/farm/r36-local-review/poster/farmer.webp",
         "width": 1168,
         "height": 780,
-        "alt": "Six rendered review views of Rowan - faithful draw consolidation.",
-        "srcsetWebp": "/media/farm/r33/poster/farmer-320.webp 320w, /media/farm/r33/poster/farmer-480.webp 480w, /media/farm/r33/poster/farmer-672.webp 672w, /media/farm/r33/poster/farmer-768.webp 768w, /media/farm/r33/poster/farmer-1024.webp 1024w",
-        "srcsetAvif": "/media/farm/r33/poster/farmer-320.avif 320w, /media/farm/r33/poster/farmer-480.avif 480w, /media/farm/r33/poster/farmer-672.avif 672w, /media/farm/r33/poster/farmer-768.avif 768w, /media/farm/r33/poster/farmer-1024.avif 1024w",
-        "inputPath": "media/farm/r33/poster/farmer.webp"
+        "alt": "Saved review views of the farmer back clothing repair.",
+        "srcsetWebp": "/media/farm/r36-local-review/poster/farmer-320.webp 320w, /media/farm/r36-local-review/poster/farmer-480.webp 480w, /media/farm/r36-local-review/poster/farmer-672.webp 672w, /media/farm/r36-local-review/poster/farmer-768.webp 768w, /media/farm/r36-local-review/poster/farmer-1024.webp 1024w",
+        "srcsetAvif": "/media/farm/r36-local-review/poster/farmer-320.avif 320w, /media/farm/r36-local-review/poster/farmer-480.avif 480w, /media/farm/r36-local-review/poster/farmer-672.avif 672w, /media/farm/r36-local-review/poster/farmer-768.avif 768w, /media/farm/r36-local-review/poster/farmer-1024.avif 1024w",
+        "inputPath": "media/farm/r36-local-review/poster/farmer.png",
+        "sourceRevisionId": "r_70907c7fd97249ce807e9948613882cd",
+        "exactRevision": true
       },
       "sourcePath": "/sources/farmer.kiln.js",
-      "sourceSha256": "7010571156b45214fe30b2a1e006f455c2fab2ab20afc613857f9fd8f63aec79",
+      "sourceSha256": "8c6c6e460d89c98b91d68315adfb85acd9cf6f6f88b1085b004c88ca090bccc8",
       "modelPath": "/models/farm/farmer.glb",
       "runtimeDownload": {
-        "path": "packs/farm/r34/models/farmer.glb",
-        "url": "https://assets.kilnstudio.tools/packs/farm/r34/models/farmer.glb",
-        "bytes": 1009436,
-        "sha256": "5f57902dc80999aadbd9442150bd54778ad02ac8177ce1a7a8c897f675f7293a",
-        "archive": "packs/farm/r34/shapes-and-seasons-farm-runtime.zip",
+        "path": "packs/farm/r36-local-review/models/farmer.glb",
+        "url": "https://assets.kilnstudio.tools/packs/farm/r36-local-review/models/farmer.glb",
+        "bytes": 817092,
+        "sha256": "b6c49161d0627c26e3cc7ea07e88f58c2726fe2c8b15773afcb621d3ab21b829",
+        "archive": "packs/farm/r36-local-review/shapes-and-seasons-farm-runtime.zip",
         "member": "models/farmer.glb"
       },
       "provenance": {
@@ -1997,6 +1998,67 @@
             "harness": "codex",
             "harnessVersion": "0.157.1",
             "confirmation": "native-turn-context"
+          },
+          {
+            "stage": "review-2",
+            "revisionId": "r_654c203b0ed3438c93d19b6709bef9f6",
+            "parentRevisionId": "r_d0e65e4d47aa4449a07ed288a78d461b",
+            "model": "GPT-6 Astra",
+            "modelId": "gpt-6-astra",
+            "requestedEffort": "ultra",
+            "confirmedEffort": null,
+            "harness": "codex",
+            "harnessVersion": "0.159.2",
+            "confirmation": "Configured Codex CLI model; independent effort confirmation not recorded",
+            "run": {
+              "schema": "kiln.public-author-run/1",
+              "label": "Owner review 2: farmer hand refinement",
+              "status": "completed",
+              "stop": "success",
+              "startedAt": "2026-10-01T01:27:22.506Z",
+              "endedAt": "2026-10-01T01:45:14.088Z",
+              "model": "gpt-6-astra",
+              "requestedModel": "gpt-6-astra",
+              "requestedEffort": "ultra",
+              "confirmedEffort": null,
+              "harness": "codex",
+              "harnessVersion": "0.159.2",
+              "sourceSessionSha256": "sha256:1896c88c988d5d9ecad19997ac14a44797bca48833e5a53cab887b6d1dbbcc20",
+              "note": "Model and requested effort from configured CLI turn context; independent effort confirmation is not recorded."
+            },
+            "change": "Hand-only refinement: tapered flatter left palm with four restrained fingers and seated thumb web; four graduated right fingers and opposed thumb around the exact unchanged pitchfork handle. No mirroring or rig/clip edits."
+          },
+          {
+            "stage": "review-3",
+            "revisionId": "r_70907c7fd97249ce807e9948613882cd",
+            "parentRevisionId": "r_654c203b0ed3438c93d19b6709bef9f6",
+            "model": "GPT-6 Astra",
+            "modelId": "gpt-6-astra",
+            "requestedEffort": "ultra",
+            "confirmedEffort": null,
+            "harness": "codex",
+            "harnessVersion": "0.159.2",
+            "confirmation": "Configured CLI model and requested effort from the sealed closed author run; independent effective effort is not recorded.",
+            "run": {
+              "schema": "kiln.review3.author-run/1",
+              "stage": "review-3",
+              "label": "Owner review 3: farmer rear clothing surface repair",
+              "status": "completed",
+              "stop": "success",
+              "startedAt": "2026-10-01T04:18:46.264Z",
+              "endedAt": "2026-10-01T04:43:32.612Z",
+              "requestedModel": "gpt-6-astra",
+              "requestedEffort": "ultra",
+              "confirmedEffort": null,
+              "harness": "codex",
+              "harnessVersion": "0.159.2",
+              "sessionRecordSha256": "0d6b43ad0940ef3b2d853ec177ea08ea1469b4aea5e8e36efc04f6e08bd3f758",
+              "eventRecordSha256": "539e5ebaedfe3025273a58ea85d05a3c2d38f1477e689e90ad4bf9e72f201e21",
+              "processExitCode": 0,
+              "checkpointScope": "Only the newly saved OverallBib posterior repair child belongs to this run. Approved hand parent retains its separately recorded author run.",
+              "model": "gpt-6-astra"
+            },
+            "change": "Rear bib facets conform to unchanged shirt; posterior shared-edge refinement remains closed; original lower tuck preserved through local y=.03 and blended to full correction at .05. No render/depth/material/shader workaround."
           }
         ]
       },
@@ -2024,17 +2086,89 @@
           "harness": "codex",
           "harnessVersion": "0.157.1",
           "confirmation": "native-turn-context"
+        },
+        {
+          "stage": "review-2",
+          "revisionId": "r_654c203b0ed3438c93d19b6709bef9f6",
+          "parentRevisionId": "r_d0e65e4d47aa4449a07ed288a78d461b",
+          "model": "GPT-6 Astra",
+          "modelId": "gpt-6-astra",
+          "requestedEffort": "ultra",
+          "confirmedEffort": null,
+          "harness": "codex",
+          "harnessVersion": "0.159.2",
+          "confirmation": "Configured Codex CLI model; independent effort confirmation not recorded",
+          "run": {
+            "schema": "kiln.public-author-run/1",
+            "label": "Owner review 2: farmer hand refinement",
+            "status": "completed",
+            "stop": "success",
+            "startedAt": "2026-10-01T01:27:22.506Z",
+            "endedAt": "2026-10-01T01:45:14.088Z",
+            "model": "gpt-6-astra",
+            "requestedModel": "gpt-6-astra",
+            "requestedEffort": "ultra",
+            "confirmedEffort": null,
+            "harness": "codex",
+            "harnessVersion": "0.159.2",
+            "sourceSessionSha256": "sha256:1896c88c988d5d9ecad19997ac14a44797bca48833e5a53cab887b6d1dbbcc20",
+            "note": "Model and requested effort from configured CLI turn context; independent effort confirmation is not recorded."
+          },
+          "change": "Hand-only refinement: tapered flatter left palm with four restrained fingers and seated thumb web; four graduated right fingers and opposed thumb around the exact unchanged pitchfork handle. No mirroring or rig/clip edits."
+        },
+        {
+          "stage": "review-3",
+          "revisionId": "r_70907c7fd97249ce807e9948613882cd",
+          "parentRevisionId": "r_654c203b0ed3438c93d19b6709bef9f6",
+          "model": "GPT-6 Astra",
+          "modelId": "gpt-6-astra",
+          "requestedEffort": "ultra",
+          "confirmedEffort": null,
+          "harness": "codex",
+          "harnessVersion": "0.159.2",
+          "confirmation": "Configured CLI model and requested effort from the sealed closed author run; independent effective effort is not recorded.",
+          "run": {
+            "schema": "kiln.review3.author-run/1",
+            "stage": "review-3",
+            "label": "Owner review 3: farmer rear clothing surface repair",
+            "status": "completed",
+            "stop": "success",
+            "startedAt": "2026-10-01T04:18:46.264Z",
+            "endedAt": "2026-10-01T04:43:32.612Z",
+            "requestedModel": "gpt-6-astra",
+            "requestedEffort": "ultra",
+            "confirmedEffort": null,
+            "harness": "codex",
+            "harnessVersion": "0.159.2",
+            "sessionRecordSha256": "0d6b43ad0940ef3b2d853ec177ea08ea1469b4aea5e8e36efc04f6e08bd3f758",
+            "eventRecordSha256": "539e5ebaedfe3025273a58ea85d05a3c2d38f1477e689e90ad4bf9e72f201e21",
+            "processExitCode": 0,
+            "checkpointScope": "Only the newly saved OverallBib posterior repair child belongs to this run. Approved hand parent retains its separately recorded author run.",
+            "model": "gpt-6-astra"
+          },
+          "change": "Rear bib facets conform to unchanged shirt; posterior shared-edge refinement remains closed; original lower tuck preserved through local y=.03 and blended to full correction at .05. No render/depth/material/shader workaround."
         }
       ],
       "review": {
+        "status": "awaiting-owner-review",
+        "ownerAccepted": false,
+        "scope": "The revised hands and proportions are retained. This back clothing repair awaits owner review; the 22 other asset approvals are unchanged.",
+        "recordedAt": null,
+        "source": "Owner review 3 back-clothing feedback and saved repair receipt"
+      },
+      "license": "CC0-1.0",
+      "sceneDeepLink": null,
+      "previousOwnerReview": {
         "status": "accepted",
         "ownerAccepted": true,
         "scope": "Exact delivered revision matches the current owner-accepted revision.",
         "recordedAt": "2026-09-29",
         "source": "site-build/FEEDBACK-site-review-1.md"
       },
-      "license": "CC0-1.0",
-      "sceneDeepLink": null
+      "canonicalGlb": {
+        "bytes": 816872,
+        "sha256": "3989680783ff99f3c10c05f4bbfdcb7df1fa15fdc8914d095d973d4a21053740"
+      }
     },
     {
       "id": "cow",
@@ -2140,11 +2274,11 @@
       "sourceSha256": "c86b013a267d6d77bb69ee04cd5363769a2972ad18da4f83864c85aa975222cd",
       "modelPath": "/models/farm/cow.glb",
       "runtimeDownload": {
-        "path": "packs/farm/r34/models/cow.glb",
-        "url": "https://assets.kilnstudio.tools/packs/farm/r34/models/cow.glb",
+        "path": "packs/farm/r36-local-review/models/cow.glb",
+        "url": "https://assets.kilnstudio.tools/packs/farm/r36-local-review/models/cow.glb",
         "bytes": 371896,
         "sha256": "d79307b03c4003cee0748d15bdaf1a6593434a8ad72de9f383fc9616e7084ce6",
-        "archive": "packs/farm/r34/shapes-and-seasons-farm-runtime.zip",
+        "archive": "packs/farm/r36-local-review/shapes-and-seasons-farm-runtime.zip",
         "member": "models/cow.glb"
       },
       "provenance": {
@@ -2420,11 +2554,11 @@
       "sourceSha256": "0154c712f15b2d8a0288110601cf63886c7b29dad9773f3170b9c23b767db3f1",
       "modelPath": "/models/farm/sheep.glb",
       "runtimeDownload": {
-        "path": "packs/farm/r34/models/sheep.glb",
-        "url": "https://assets.kilnstudio.tools/packs/farm/r34/models/sheep.glb",
+        "path": "packs/farm/r36-local-review/models/sheep.glb",
+        "url": "https://assets.kilnstudio.tools/packs/farm/r36-local-review/models/sheep.glb",
         "bytes": 391632,
         "sha256": "41a9b3f464888e5e6f9c820d07181d64d6a544503d40401a753f8d628d76a20e",
-        "archive": "packs/farm/r34/shapes-and-seasons-farm-runtime.zip",
+        "archive": "packs/farm/r36-local-review/shapes-and-seasons-farm-runtime.zip",
         "member": "models/sheep.glb"
       },
       "provenance": {
@@ -2544,11 +2678,11 @@
       "sourceSha256": "bb9691903443556777e3ab0a6d8fc136b7924d3d63a7bc600925936c9e26d77e",
       "modelPath": "/models/farm/chicken.glb",
       "runtimeDownload": {
-        "path": "packs/farm/r34/models/chicken.glb",
-        "url": "https://assets.kilnstudio.tools/packs/farm/r34/models/chicken.glb",
+        "path": "packs/farm/r36-local-review/models/chicken.glb",
+        "url": "https://assets.kilnstudio.tools/packs/farm/r36-local-review/models/chicken.glb",
         "bytes": 373720,
         "sha256": "8ee9087d4e0c0b9dfed9f992e133ac67d9d21e6effc788c2fb89ce80cd884e4d",
-        "archive": "packs/farm/r34/shapes-and-seasons-farm-runtime.zip",
+        "archive": "packs/farm/r36-local-review/shapes-and-seasons-farm-runtime.zip",
         "member": "models/chicken.glb"
       },
       "provenance": {
@@ -2680,11 +2814,11 @@
       "sourceSha256": "8d35f86994bda197c31f47a3e17fef18ae7632fb6a1dc60ed0091351547bff16",
       "modelPath": "/models/farm/cabbage-stage-1.glb",
       "runtimeDownload": {
-        "path": "packs/farm/r34/models/cabbage-stage-1.glb",
-        "url": "https://assets.kilnstudio.tools/packs/farm/r34/models/cabbage-stage-1.glb",
+        "path": "packs/farm/r36-local-review/models/cabbage-stage-1.glb",
+        "url": "https://assets.kilnstudio.tools/packs/farm/r36-local-review/models/cabbage-stage-1.glb",
         "bytes": 164988,
         "sha256": "e6b177606ffefd4d4c9437fb9150f37a717202133796cb52e469c22e2570fe0c",
-        "archive": "packs/farm/r34/shapes-and-seasons-farm-runtime.zip",
+        "archive": "packs/farm/r36-local-review/shapes-and-seasons-farm-runtime.zip",
         "member": "models/cabbage-stage-1.glb"
       },
       "provenance": {
@@ -2816,11 +2950,11 @@
       "sourceSha256": "24fc870a9d339af5a9b5d6c6b431158d0e984b26bb63ec97a5d8a9e51e9647cc",
       "modelPath": "/models/farm/cabbage-stage-2.glb",
       "runtimeDownload": {
-        "path": "packs/farm/r34/models/cabbage-stage-2.glb",
-        "url": "https://assets.kilnstudio.tools/packs/farm/r34/models/cabbage-stage-2.glb",
+        "path": "packs/farm/r36-local-review/models/cabbage-stage-2.glb",
+        "url": "https://assets.kilnstudio.tools/packs/farm/r36-local-review/models/cabbage-stage-2.glb",
         "bytes": 170768,
         "sha256": "cbe951aa364a017889f03b5a60a31a6b9c5398064a5b20f7f1c5b6fb9332bec6",
-        "archive": "packs/farm/r34/shapes-and-seasons-farm-runtime.zip",
+        "archive": "packs/farm/r36-local-review/shapes-and-seasons-farm-runtime.zip",
         "member": "models/cabbage-stage-2.glb"
       },
       "provenance": {
@@ -2952,11 +3086,11 @@
       "sourceSha256": "ab421dc345a9beb9e51fd6c523957be7f044cd559b024a6ef461e79d0017bd09",
       "modelPath": "/models/farm/cabbage-stage-3.glb",
       "runtimeDownload": {
-        "path": "packs/farm/r34/models/cabbage-stage-3.glb",
-        "url": "https://assets.kilnstudio.tools/packs/farm/r34/models/cabbage-stage-3.glb",
+        "path": "packs/farm/r36-local-review/models/cabbage-stage-3.glb",
+        "url": "https://assets.kilnstudio.tools/packs/farm/r36-local-review/models/cabbage-stage-3.glb",
         "bytes": 176528,
         "sha256": "ff9525150fe7f99142df59c36a316502d4830789e25efea70b5c9c38ecb1da9d",
-        "archive": "packs/farm/r34/shapes-and-seasons-farm-runtime.zip",
+        "archive": "packs/farm/r36-local-review/shapes-and-seasons-farm-runtime.zip",
         "member": "models/cabbage-stage-3.glb"
       },
       "provenance": {
@@ -3089,11 +3223,11 @@
       "sourceSha256": "eda27b2a42289a99cda7aea846eefa2ed6dc35ab56331ee65d8f8f392454ebdc",
       "modelPath": "/models/farm/cabbage-stage-4.glb",
       "runtimeDownload": {
-        "path": "packs/farm/r34/models/cabbage-stage-4.glb",
-        "url": "https://assets.kilnstudio.tools/packs/farm/r34/models/cabbage-stage-4.glb",
+        "path": "packs/farm/r36-local-review/models/cabbage-stage-4.glb",
+        "url": "https://assets.kilnstudio.tools/packs/farm/r36-local-review/models/cabbage-stage-4.glb",
         "bytes": 187596,
         "sha256": "8e6b8ea974b75843d7671641f2c3fa2ebd3f10a19810b6759d15ec9c4662bacb",
-        "archive": "packs/farm/r34/shapes-and-seasons-farm-runtime.zip",
+        "archive": "packs/farm/r36-local-review/shapes-and-seasons-farm-runtime.zip",
         "member": "models/cabbage-stage-4.glb"
       },
       "provenance": {
@@ -3250,11 +3384,11 @@
       "sourceSha256": "c8cc41a113683887a811796613fe44abe7d2be8302144de5cc22516169a1e669",
       "modelPath": "/models/farm/wheat.glb",
       "runtimeDownload": {
-        "path": "packs/farm/r34/models/wheat.glb",
-        "url": "https://assets.kilnstudio.tools/packs/farm/r34/models/wheat.glb",
+        "path": "packs/farm/r36-local-review/models/wheat.glb",
+        "url": "https://assets.kilnstudio.tools/packs/farm/r36-local-review/models/wheat.glb",
         "bytes": 352648,
         "sha256": "d13360234d2092d0982f385aed401f4f926e3ccacc593cd0cb5a95dcdea79b25",
-        "archive": "packs/farm/r34/shapes-and-seasons-farm-runtime.zip",
+        "archive": "packs/farm/r36-local-review/shapes-and-seasons-farm-runtime.zip",
         "member": "models/wheat.glb"
       },
       "provenance": {
@@ -3388,11 +3522,11 @@
       "sourceSha256": "961ce83ff3c51969181f0175aaf7947bd5b518631b1a3cf276e3e379e5168d0a",
       "modelPath": "/models/farm/pumpkin-plant.glb",
       "runtimeDownload": {
-        "path": "packs/farm/r34/models/pumpkin-plant.glb",
-        "url": "https://assets.kilnstudio.tools/packs/farm/r34/models/pumpkin-plant.glb",
+        "path": "packs/farm/r36-local-review/models/pumpkin-plant.glb",
+        "url": "https://assets.kilnstudio.tools/packs/farm/r36-local-review/models/pumpkin-plant.glb",
         "bytes": 155080,
         "sha256": "22b9c424461cbc904b21e7d17a4862e2a034545912839147b314ba6f813c8371",
-        "archive": "packs/farm/r34/shapes-and-seasons-farm-runtime.zip",
+        "archive": "packs/farm/r36-local-review/shapes-and-seasons-farm-runtime.zip",
         "member": "models/pumpkin-plant.glb"
       },
       "provenance": {
@@ -3549,11 +3683,11 @@
       "sourceSha256": "f19c2b60aed5b04a47b7454614b3c2bdb20abbb7f087c8a719129d92f349d5ef",
       "modelPath": "/models/farm/faceted-tree.glb",
       "runtimeDownload": {
-        "path": "packs/farm/r34/models/faceted-tree.glb",
-        "url": "https://assets.kilnstudio.tools/packs/farm/r34/models/faceted-tree.glb",
+        "path": "packs/farm/r36-local-review/models/faceted-tree.glb",
+        "url": "https://assets.kilnstudio.tools/packs/farm/r36-local-review/models/faceted-tree.glb",
         "bytes": 123176,
         "sha256": "0f6eceb07f207eb27071767a8d0c7fae7a618efd623942219da1f2d29497b0c4",
-        "archive": "packs/farm/r34/shapes-and-seasons-farm-runtime.zip",
+        "archive": "packs/farm/r36-local-review/shapes-and-seasons-farm-runtime.zip",
         "member": "models/faceted-tree.glb"
       },
       "provenance": {
@@ -3657,11 +3791,11 @@
       "sourceSha256": "2ee4fed4c668f28260911affd4a9ee9c58cf1b416fcbd4a3fe1d657e97191868",
       "modelPath": "/models/farm/rock-cluster.glb",
       "runtimeDownload": {
-        "path": "packs/farm/r34/models/rock-cluster.glb",
-        "url": "https://assets.kilnstudio.tools/packs/farm/r34/models/rock-cluster.glb",
+        "path": "packs/farm/r36-local-review/models/rock-cluster.glb",
+        "url": "https://assets.kilnstudio.tools/packs/farm/r36-local-review/models/rock-cluster.glb",
         "bytes": 39784,
         "sha256": "6b6e767ed170aa1631a54e5d6df3d3335146a94cdedb5c49bf17b3659a93252d",
-        "archive": "packs/farm/r34/shapes-and-seasons-farm-runtime.zip",
+        "archive": "packs/farm/r36-local-review/shapes-and-seasons-farm-runtime.zip",
         "member": "models/rock-cluster.glb"
       },
       "provenance": {
@@ -3708,16 +3842,16 @@
     }
   ],
   "deliveryReview": {
-    "revision": "r34",
-    "fullPackAccepted": true,
-    "acceptedAssets": 23,
+    "revision": "r36-local-review",
+    "fullPackAccepted": false,
+    "acceptedAssets": 22,
     "total": 23,
-    "source": "packs/farm/r34/downloads.json and exact-revision review records"
+    "source": "packs/farm/r36-local-review/downloads.json and exact-revision review records"
   },
   "ownerReview": {
-    "acceptedAssets": 23,
+    "acceptedAssets": 22,
     "total": 23,
-    "status": "all-current-revisions-accepted",
+    "status": "review-in-progress",
     "date": "2026-09-29",
     "statement": "Yes, the farmhouse wood floor revision passes.",
     "source": "site-build/FEEDBACK-site-review-1.md",
@@ -3779,8 +3913,8 @@
       },
       {
         "id": "farmer",
-        "revisionId": "r_d0e65e4d47aa4449a07ed288a78d461b",
-        "ownerAccepted": true
+        "revisionId": "r_70907c7fd97249ce807e9948613882cd",
+        "ownerAccepted": false
       },
       {
         "id": "cow",
@@ -3840,9 +3974,9 @@
     ]
   },
   "handoff": {
-    "source": "farm-pilot/delivery/farm-r34-documented-downloads/site-handoff.json",
-    "sha256": "2dca60c2d82e51c46ce52fa851d119c65b1f9df82965562cb201b6a4a229009b",
-    "previousDelivery": "r33"
+    "source": "review3 Farm back-repair intake",
+    "previousDelivery": "r35-local-review",
+    "status": "local-review-candidate"
   },
   "deliveryHistory": [
     {
@@ -3871,11 +4005,125 @@
           "sha256": "d7b8c0c55c1278573773fec51ddd93b205b3497b260ddb4c77a27f462d67760c"
         }
       ]
+    },
+    {
+      "revision": "r34",
+      "projectRevision": "r_0000000034_a1b09b00d04071160c72e6b52723e88e274da032319ca118738b53f73bc796cd",
+      "fullPackAccepted": true,
+      "acceptedAssets": 23,
+      "total": 23,
+      "downloads": [
+        {
+          "profile": "runtime",
+          "archive": "shapes-and-seasons-farm-runtime.zip",
+          "bytes": 7680392,
+          "sha256": "5673740a511a2d68ef990882b815d4ce3aaa802bf8b06ba1e4ce6329367d875d",
+          "files": 107,
+          "assets": 23,
+          "path": "packs/farm/r34/shapes-and-seasons-farm-runtime.zip",
+          "url": "https://assets.kilnstudio.tools/packs/farm/r34/shapes-and-seasons-farm-runtime.zip",
+          "contents": [
+            "23 standalone runtime GLBs",
+            "Asset metadata and provenance",
+            "Applicable licence notices"
+          ],
+          "compatibility": "Standard glTF 2.0 with Three.js consumer checks recorded. Godot, Unity, Unreal, Roblox, USDZ and s&box conversion are not qualified by this download."
+        },
+        {
+          "profile": "editable",
+          "archive": "shapes-and-seasons-farm-editable.zip",
+          "bytes": 22433293,
+          "sha256": "2e596172626e7498052a839ba6785c99f4475c72be2f329e0836c354a0fdfcd7",
+          "files": 130,
+          "assets": 23,
+          "path": "packs/farm/r34/shapes-and-seasons-farm-editable.zip",
+          "url": "https://assets.kilnstudio.tools/packs/farm/r34/shapes-and-seasons-farm-editable.zip",
+          "contents": [
+            "23 asset sources",
+            "10 material records and 30 texture maps",
+            "Pinned rebuild kit and authoring metadata"
+          ],
+          "compatibility": "The image-free rebuild needs no provider or GPU service. It was verified in a fresh extraction of the exact master on Windows Node v24.20.0, which is not a cross-platform guarantee."
+        },
+        {
+          "profile": "scene",
+          "archive": "shapes-and-seasons-farm-scene.zip",
+          "bytes": 4295548,
+          "sha256": "955aa5a8dee11f63a7205ee5c04cbe9e7112958870745bdaebd8baff23467f86",
+          "files": 117,
+          "assets": 23,
+          "path": "packs/farm/r34/shapes-and-seasons-farm-scene.zip",
+          "url": "https://assets.kilnstudio.tools/packs/farm/r34/shapes-and-seasons-farm-scene.zip",
+          "contents": [
+            "Runnable scene and editable scene modules",
+            "Runtime assets",
+            "Bundled browser dependencies and notices"
+          ],
+          "compatibility": "WebGPU with WebGL2 fallback. A reference application, not a complete farming game or physics engine; see metadata/performance-and-devices.md for tested configurations and limits."
+        }
+      ]
+    },
+    {
+      "revision": "r35-local-review",
+      "projectRevision": "r_0000000002_0dcfa1bae019346ce3191dec1bb5e6674ef8b1e2f32ffba8c6d65efa2d97b377",
+      "fullPackAccepted": false,
+      "acceptedAssets": 22,
+      "total": 23,
+      "downloads": [
+        {
+          "profile": "runtime",
+          "archive": "shapes-and-seasons-farm-runtime.zip",
+          "bytes": 7653748,
+          "sha256": "6a023617ed602d63768278b13ed9e8336cece11c66e580c11f0418552ffb6691",
+          "files": 109,
+          "assets": 23,
+          "path": "packs/farm/r35-local-review/shapes-and-seasons-farm-runtime.zip",
+          "url": "https://assets.kilnstudio.tools/packs/farm/r35-local-review/shapes-and-seasons-farm-runtime.zip",
+          "contents": [
+            "23 standalone runtime GLBs",
+            "Asset metadata and provenance",
+            "Applicable licence notices"
+          ],
+          "compatibility": "Standard glTF 2.0 with Three.js consumer checks recorded. Godot, Unity, Unreal, Roblox, USDZ and s&box conversion are not qualified by this download."
+        },
+        {
+          "profile": "editable",
+          "archive": "shapes-and-seasons-farm-editable.zip",
+          "bytes": 31229835,
+          "sha256": "df8bc0e01901f34270c80cab37c15550e3c92578f9338acb800cd0182a10fdef",
+          "files": 135,
+          "assets": 23,
+          "path": "packs/farm/r35-local-review/shapes-and-seasons-farm-editable.zip",
+          "url": "https://assets.kilnstudio.tools/packs/farm/r35-local-review/shapes-and-seasons-farm-editable.zip",
+          "contents": [
+            "23 asset sources",
+            "10 material records and 30 texture maps",
+            "Pinned rebuild kit and authoring metadata"
+          ],
+          "compatibility": "Per-asset pinned runtimes: 22 original revisions use their original exporter and the farmer uses the included 0.9 local candidate. Image-free, provider-free rebuild proof is recorded separately."
+        },
+        {
+          "profile": "scene",
+          "archive": "shapes-and-seasons-farm-scene.zip",
+          "bytes": 7006340,
+          "sha256": "091821b43fadf8b9c80ed01209b7d27a88f45a391cdae1c7790b913c8434f890",
+          "files": 201,
+          "assets": 23,
+          "path": "packs/farm/r35-local-review/shapes-and-seasons-farm-scene.zip",
+          "url": "https://assets.kilnstudio.tools/packs/farm/r35-local-review/shapes-and-seasons-farm-scene.zip",
+          "contents": [
+            "Runnable scene and editable scene modules",
+            "Runtime assets",
+            "Bundled browser dependencies and notices"
+          ],
+          "compatibility": "Current r35 scene with first-person walking and tractor driving, on-foot look-up, WebGPU and WebGL2 controls checks. Source rebuild reproduces the 40 runnable files exactly. No device performance qualification."
+        }
+      ]
     }
   ],
   "qualification": {
     "performanceQualified": false,
     "publicationAuthorized": false,
-    "note": "Owner approval records visual review. Scene performance qualification remains open."
+    "note": "22 unchanged exact asset approvals retained. New farmer back repair awaits owner review; previous interface evidence is separate from new asset qualification."
   }
 }

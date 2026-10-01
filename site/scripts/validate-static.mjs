@@ -4,7 +4,8 @@ import { fileURLToPath } from 'node:url';
 import { HtmlValidate } from 'html-validate';
 import sharp from 'sharp';
 import { engineNoteErrors, isAssetPageRoute, readGlbFacts } from './engine-note.mjs';
-import { ARCHIVE_INDEX_ROUTE, archiveIndexingErrors, discoveryErrors, embeddedDocumentErrors, foundryFloorErrors, inspectHtml, isArchiveItemRoute, isEmbeddedDocument, ORIGIN, resolveInternalLink, retiredNameErrors, routeForFile, socialMetadataErrors } from './static-validation-core.mjs';
+import { ARCHIVE_INDEX_ROUTE, archiveIndexingErrors, copyErrors, DESCRIPTION_WARNING_LENGTH, discoveryErrors, embeddedDocumentErrors, foundryFloorErrors, headersErrors, headersFor, inspectHtml, isArchiveItemRoute, isEmbeddedDocument, ORIGIN, parseHeaderRules, resolveInternalLink, retiredNameErrors, routeForFile, scriptHashSource, socialMetadataErrors } from './static-validation-core.mjs';
+import { glbJsonText } from './private-data.mjs';
 
 const site = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const args = process.argv.slice(2);
@@ -29,8 +30,22 @@ for (const file of htmlFiles) {
   const html = await readFile(file, 'utf8');
   pages.set(routeForFile(relative(root, file)), { file, html, ...inspectHtml(html) });
 }
+const foundryFloorPack = JSON.parse(await readFile(resolve(site, 'src/data/packs/foundry-floor.json'), 'utf8'));
+const reviewedCatalog = (await Promise.all(['packs/farm.json', 'packs/vehicles.json', 'standalone/golden-gate-bridge.json'].map(async (path) => {
+  const record = JSON.parse(await readFile(resolve(site, 'src/data', path), 'utf8'));
+  return record.assets ?? [record];
+}))).flat();
+const reviewStatusByRoute = new Map(reviewedCatalog.map((asset) => [`/gallery/${asset.slug}/`, asset.review.ownerAccepted ? 'approved' : 'pending']));
+for (const asset of foundryFloorPack.assets) {
+  const shared = reviewedCatalog.some((existing) => existing.slug === asset.slug && existing.revisionId === asset.revisionId && existing.runtimeDownload.sha256 === asset.runtimeDownload.sha256);
+  if (!shared) reviewStatusByRoute.set(`/gallery/foundry-floor/${asset.slug}/`, 'pending');
+}
+if ([...reviewStatusByRoute.values()].includes('pending')) reviewStatusByRoute.set('/gallery/', 'mixed');
+for (const pack of new Set(reviewedCatalog.filter((asset) => asset.pack && !asset.review.ownerAccepted).map((asset) => asset.pack)))
+  reviewStatusByRoute.set(`/packs/${pack}/`, 'mixed');
 const errors = [];
 const add = (page, kind, message) => errors.push({ page, kind, message });
+const warnings = [];
 const external = new Map();
 const imageChecks = new Map();
 const titles = new Map();
@@ -56,6 +71,9 @@ for (const [route, page] of pages) {
       else seen.set(text, route);
     }
     if (page.h1Count !== 1) add(route, 'headings', `Expected one H1, found ${page.h1Count}`);
+    // Review status comes from catalog identity, not the historical approval of an earlier asset revision.
+    for (const message of copyErrors(page.html, reviewStatusByRoute.get(route))) add(route, 'copy', message);
+    if ((page.description ?? '').length > DESCRIPTION_WARNING_LENGTH) warnings.push({ page: route, kind: 'description', message: `Meta description is ${page.description.length} characters (search and share previews cut it above ${DESCRIPTION_WARNING_LENGTH})` });
     if (page.language !== 'en') add(route, 'metadata', 'Missing lang="en"');
     const expectedCanonical = new URL(route, ORIGIN).href;
     if (page.canonicalCount !== 1) add(route, 'metadata', `Expected one canonical link, found ${page.canonicalCount}`);
@@ -160,9 +178,8 @@ const retired = retiredNameErrors({ pages, files: files.map((file) => relative(r
 for (const error of retired) add(error.page, 'retired-name', error.message);
 // The Foundry Floor pack record's placement; a build without Commons packs emits no Farm pack page and carries no
 // models on the Foundry Floor pack page.
-const foundryFloorPack = JSON.parse(await readFile(resolve(site, 'src/data/packs/foundry-floor.json'), 'utf8'));
 const placement = { assetCount: foundryFloorPack.assetCount, placedInScene: foundryFloorPack.placedInScene, packPage: pages.has('/packs/farm/') };
-const foundry = foundryFloorErrors({ pages, sitemapUrls, placement });
+const foundry = foundryFloorErrors({ pages, sitemapUrls, placement, hasCampus: foundryFloorPack.assets.some(asset => asset.group === "campus"), runtimeRelease: foundryFloorPack.scenePack?.release });
 for (const error of foundry) add(error.page, 'foundry-floor', error.message);
 // The engine note under each 3D view is present and true of the GLB that view loads.
 const glbFacts = new Map();
@@ -182,8 +199,30 @@ const engineSummary = {
   extensionsDeclared: [...new Set(engineChecked.flatMap((facts) => facts.extensionsUsed))],
   problems: engine.length,
 };
+// No shipped GLB may need a Draco decoder: the viewer loads without one (no third-party decoder path; engineering
+// review, finding 14), so such a file would fail to open.
+const glbs = files.filter((file) => file.endsWith('.glb'));
+let dracoFree = 0;
+for (const file of glbs) {
+  const json = glbJsonText(await readFile(file));
+  const gltf = json ? JSON.parse(json) : null;
+  if (!gltf) { add(relative(root, file).replaceAll('\\', '/'), 'glb', 'Not a readable GLB'); continue; }
+  const extensions = [...(gltf.extensionsUsed ?? []), ...(gltf.extensionsRequired ?? [])];
+  if (extensions.includes('KHR_draco_mesh_compression')) add(relative(root, file).replaceAll('\\', '/'), 'glb', 'Uses KHR_draco_mesh_compression, which the site viewer does not decode');
+  else dracoFree += 1;
+}
+// The header layer Cloudflare Pages serves from dist/_headers (engineering review, finding 11): its CSP hashes are the
+// inline scripts the pages carry, and only content-hashed files are cached as immutable.
+const inlineScripts = [...new Set([...pages.values()].flatMap((page) => page.inlineScripts))];
+const distFiles = files.map((file) => relative(root, file).replaceAll('\\', '/'));
+let headersText = '';
+try { headersText = await readFile(resolve(root, '_headers'), 'utf8'); } catch { add('/_headers', 'headers', 'dist/_headers is missing (site/public/_headers)'); }
+const headerProblems = headersText ? headersErrors({ text: headersText, inlineScripts, files: distFiles }) : [];
+for (const message of headerProblems) add('/_headers', 'headers', message);
+const headerRules = headersText ? parseHeaderRules(headersText) : [];
+const immutableFiles = distFiles.filter((file) => /immutable/.test(headersFor(headerRules, `/${file}`)['cache-control'] ?? ''));
 await mkdir(reportDirectory, { recursive: true });
-const result = { pages: pages.size, internalErrors: errors.length, htmlErrors: htmlErrorCount, errors, htmlResults, socialCards: Object.fromEntries(imageChecks), archive, discovery, engineNotes: engineSummary, sitemapUrls, externalLinks: Array.from(external, ([url, from]) => ({ url, pages: Array.from(from) })).sort((a, b) => a.url.localeCompare(b.url)) };
+const result = { pages: pages.size, headers: { rules: headerRules.length, inlineScripts: inlineScripts.map(scriptHashSource), immutableFiles: immutableFiles.length, problems: headerProblems.length }, internalErrors: errors.length, htmlErrors: htmlErrorCount, errors, warnings, glbs: { files: glbs.length, withoutDraco: dracoFree }, htmlResults, socialCards: Object.fromEntries(imageChecks), archive, discovery, engineNotes: engineSummary, sitemapUrls, externalLinks: Array.from(external, ([url, from]) => ({ url, pages: Array.from(from) })).sort((a, b) => a.url.localeCompare(b.url)) };
 await writeFile(resolve(reportDirectory, 'static-validation.json'), `${JSON.stringify(result, null, 2)}\n`);
 await writeFile(resolve(reportDirectory, 'external-links.txt'), `${result.externalLinks.map((entry) => entry.url).join('\n')}\n`);
 console.log(`Static validation: ${pages.size} pages, ${errors.length} link/metadata/sitemap errors, ${htmlErrorCount} HTML errors. ${result.externalLinks.length} external URLs listed.`);
@@ -193,5 +232,8 @@ console.log(`Archive: ${archive.items} item pages (${archive.specimens} specimen
 console.log(`Discovery: ${sitemapUrls.length} sitemap URLs, ${new Set(sitemapUrls).size} distinct, ${sitemapUrls.filter((url) => /[#?]/.test(url)).length} with a fragment or query; robots.txt: ${discovery.filter((error) => error.page === '/robots.txt').length} problems; sitemap-index.xml: ${discovery.filter((error) => error.page === '/sitemap-index.xml').length} problems; canonical links: ${[...pages].filter(([route, page]) => !isEmbeddedDocument(route) && page.canonicalCount === 1).length} of ${[...pages.keys()].filter((route) => !isEmbeddedDocument(route)).length} pages have exactly one.`);
 console.log(`Engine notes: ${engineSummary.withNote} of ${engineSummary.assetPages} asset pages carry one; ${engineSummary.glbsRead} GLBs read (glTF ${engineSummary.gltfVersions.join(', ')}; extensions declared: ${engineSummary.extensionsDeclared.join(', ') || 'none'}); ${engineSummary.problems} problems.`);
 console.log(`Retired working title: ${retired.length} matches in ${pages.size} pages, ${files.length} file names and the discovery files. Foundry Floor pages: ${foundry.length} problems.`);
+console.log(`GLBs: ${glbs.length} read, ${dracoFree} without KHR_draco_mesh_compression. Copy rules (glued numbers, licence spelling, owner status): ${errors.filter((error) => error.kind === 'copy').length} problems.`);
+console.log(`Headers: ${headerRules.length} rules in _headers; ${inlineScripts.length} distinct inline scripts, each listed by hash in the report-only CSP; ${immutableFiles.length} files cached as immutable; ${headerProblems.length} problems.`);
+console.log(`Warnings: ${warnings.length} meta descriptions over ${DESCRIPTION_WARNING_LENGTH} characters${warnings.length ? ` (${warnings.map((warning) => warning.page).join(', ')})` : ''}.`);
 console.log(`Report: ${resolve(reportDirectory, 'static-validation.json')}`);
 if (errors.length || htmlErrorCount) process.exitCode = 1;

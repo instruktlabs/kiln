@@ -3,6 +3,8 @@ import foundryFloor from './foundry-floor.json';
 import foundryFloorPack from './packs/foundry-floor.json';
 import sceneMedia from './scene-media.json';
 import scenePacks from './scene-packs.json';
+import { listOf } from '../lib/catalog';
+import { foundryPresentation } from '../lib/foundry-presentation';
 
 /** A link shown while a scene runs, relative to the scene's staged pack. */
 interface SceneLink {
@@ -27,11 +29,8 @@ interface SceneCopy {
 }
 
 /**
- * What the Farm scene page says about phones and tablets (D-11). It is written from the scene's own records: the
- * mobile-play check passes all 16 of its steps on each graphics backend, the tablet's frame-time target holds on a
- * Galaxy Tab S9 FE at the minimal tier, and the tier table starts a phone of the Galaxy S24+ class on high (a mobile
- * browser on WebGL2 starts on minimal, D-03). It names those devices and uses that number and no other; it says plainly
- * that nothing else was measured and promises nothing for it (scripts/scene-copy.test.ts holds it to that).
+ * Current Farm controls and qualification scope. Device tiers remain configured
+ * behavior; the earlier tablet measurements do not qualify the new scene bytes.
  */
 export const farmTouchCopy = {
   heading: 'Play with touch.',
@@ -39,17 +38,24 @@ export const farmTouchCopy = {
   controls: [
     'Move with the joystick. When you drive the tractor, push it forward to accelerate and pull it back to brake and, once stopped, to reverse. Push it left or right to steer.',
     'Drag one finger to look around.',
-    'Pinch to zoom in and out.',
+    'Pinch to zoom while driving the tractor or viewing the overview. Walking keeps a fixed eye height.',
     'One tap target appears when there is something to do: open a door or gate, drive the tractor or leave it.',
-    'You play in third person: the camera follows Rowan on foot and the tractor when you drive it.',
+    'Walking is in first person. The camera follows the tractor when you drive it.',
   ],
   qualityHeading: 'Quality follows the device.',
   quality: [
     'The scene chooses a quality tier when it opens. A phone of the Galaxy S24+ class starts on the high tier when its browser uses WebGPU, and on the minimal tier when it falls back to WebGL2. A tablet of the Galaxy Tab S9 FE class starts on the minimal tier on either graphics backend.',
-    'The scripted mobile-play check passes all 16 of its steps on each graphics backend, WebGPU and WebGL2, with touch emulation, and the controls were also tried with real touch on a Galaxy Tab S9 FE. On a Galaxy Tab S9 FE, at the minimal tier, the scene meets its frame-time target.',
-    'No other phone or tablet has been measured, so nothing is promised for other devices.',
+    'The current scene passed desktop input checks and checks with touch emulation on WebGPU and WebGL2. Earlier touch and timing measurements on a Galaxy Tab S9 FE belong to the earlier scene build and do not qualify this revision.',
+    'No physical phone or tablet has been measured for this revision, so no device performance is promised.',
   ],
 } as const;
+
+/**
+ * The one scene link every build has. A pre-upload build (KILN_SITE_PACKS=0) has no Commons pack or asset pages, so a
+ * scene whose fallback is one of them points here instead and names no download (engineering review, finding 2).
+ */
+const allScenes = { href: '/scenes/', label: 'View all scenes' } as const;
+const noDownloadsError = 'The scene could not load. Check your connection and try Explore again.';
 
 const farmPack = scenePacks.farm;
 const goldenGatePack = scenePacks['golden-gate'];
@@ -73,10 +79,10 @@ export const farmScene = {
   posterHeight: farm.scene.poster.height,
   posterAlt: 'The Farm scene with barn, farmhouse, fields, animals, woodland and stream',
   description: `A farm arranged from ${farm.assetCount} Kiln assets, with fields, a stream and woodland.`,
-  desktop: `The desktop scene download includes ${farm.scene.desktop.map((capability) => capability.charAt(0).toLowerCase() + capability.slice(1)).join(', ')}.`,
-  mobile: `In the download, mobile supports ${farm.scene.mobile.join(', ').toLowerCase()} only.`,
+  desktop: `The desktop scene download includes ${listOf(farm.scene.desktop.map((capability) => capability.charAt(0).toLowerCase() + capability.slice(1)))}.`,
+  mobile: `The download includes touch controls for ${listOf(farm.scene.mobile.map((capability) => capability.charAt(0).toLowerCase() + capability.slice(1)))}.`,
   touch: farmTouchCopy,
-  exclusions: `${farm.scene.excluded.join(', ').replace(', Mobile', ', mobile').replace(', General', ', general')} are not included.`,
+  exclusions: 'Trailer towing and general vehicle physics are not included in the scene download.',
   links: [
     { label: 'Software notices', path: 'THIRD-PARTY-NOTICES.txt' },
     { label: 'Asset licence', path: 'licenses/ASSET-LICENSE.txt' },
@@ -84,19 +90,24 @@ export const farmScene = {
   copy: {
     available: 'Explore the Farm in your browser.',
     preview:
-      'Explore opens a preview of the rebuilt Farm. It is still being qualified; the scene download remains the current runnable version.',
+      'Explore opens the current Farm preview for owner review. The scene download contains the same controls and asset revisions.',
     unavailable:
-      'The browser scene is being rebuilt. Explore opens its current in-production status.',
+      'The browser scene is not included in this build. Explore opens its current status and downloads.',
     devices:
-      'Desktop and touch play; the devices measured are listed below. Loads only when you choose Explore.',
-    unavailableTitle: 'The interactive Farm is being rebuilt.',
+      'Desktop and touch play; qualification notes are listed below. Loads only when you choose Explore.',
+    unavailableTitle: 'The interactive Farm is not included in this build.',
     unavailableBody:
       'This scene is in production. The Farm scene download contains the current runnable scene.',
     errorText:
       'The scene could not load. Check your connection and try Explore again. The Farm downloads remain available.',
-    previewLabel: 'Preview, still being qualified.',
+    previewLabel: 'Preview for owner review.',
   } satisfies SceneCopy,
   fallback: { href: '/packs/farm/', label: 'View the Farm downloads' },
+  preUpload: {
+    fallback: allScenes,
+    unavailableBody: 'This scene is in production.',
+    errorText: noDownloadsError,
+  },
 } as const;
 
 /**
@@ -128,7 +139,7 @@ export const goldenGateScene = {
     preview:
       'Explore opens a preview of the driving and traffic demonstration. It is still being qualified.',
     unavailable: 'The browser scene is not part of this build. Explore opens its status.',
-    devices: 'Load only when you choose Explore.',
+    devices: 'Loads only when you choose Explore.',
     unavailableTitle: 'The interactive bridge scene is not part of this build.',
     unavailableBody: 'The bridge itself is a Kiln-authored asset with its own page and downloads.',
     errorText:
@@ -136,16 +147,24 @@ export const goldenGateScene = {
     previewLabel: 'Preview, still being qualified.',
   } satisfies SceneCopy,
   fallback: { href: '/gallery/golden-gate-bridge/', label: 'View the bridge asset' },
+  preUpload: {
+    fallback: allScenes,
+    unavailableBody: 'The scene is still being qualified.',
+    errorText: noDownloadsError,
+  },
 } as const;
 
 const foundryFloorScenePack = scenePacks['foundry-floor'];
 const foundryFloorPoster = sceneMedia['foundry-floor'].poster;
+const foundryFloorPresentation = foundryPresentation(
+  foundryFloorPack,
+  foundryFloorScenePack.release,
+);
 
 /**
- * The Foundry Floor scene (D-33): an in-production preview of what FF2 has delivered, staged for the owner's local
- * review and replaced when FF2 is accepted. It is an interior, a lot-level twin of a fictional fab's pilot line, with
- * no exterior. The page makes no device claims: the scene's device test was not run (D-36). The poster is one pack
- * model under the review rig; the scene has no single file to render, and the alt text says the scene is not pictured.
+ * Foundry Floor remains an in-production preview for local owner review (D-33/S-2). Its copy follows the
+ * staged catalogue: older interior builds cannot promise a campus. No device claims are made. The poster
+ * is a pack model under the review rig, visibly captioned so it is not mistaken for a running-scene capture.
  */
 export const foundryFloorScene = {
   id: 'foundry-floor',
@@ -159,7 +178,8 @@ export const foundryFloorScene = {
   posterWidth: foundryFloorPoster.width,
   posterHeight: foundryFloorPoster.height,
   posterAlt: foundryFloorPoster.alt,
-  description: `An interior in production: a lot-level twin of a fictional chip fab’s pilot line, arranged from ${foundryFloorPack.placedInScene} of the pack’s ${foundryFloorPack.assetCount} models. Walk the fab floor, take a tour of seven views, open a tool’s panel or follow a wafer lot.`,
+  posterCaption: 'Model render from the pack; the running scene is not pictured.',
+  description: foundryFloorPresentation.description,
   links: [
     { label: 'Software notices', path: 'THIRD-PARTY-NOTICES.txt' },
     { label: 'Asset licence', path: 'licenses/ASSET-LICENSE.txt' },
@@ -169,7 +189,7 @@ export const foundryFloorScene = {
     preview:
       'Explore opens the scene as it stands in production: a preview for the owner’s local review, replaced when the scene is accepted.',
     unavailable: 'The browser scene is not part of this build. Explore opens its status.',
-    devices: 'Loads only when you choose Explore.',
+    devices: foundryFloorPresentation.loading,
     unavailableTitle: 'The Foundry Floor scene is not part of this build.',
     unavailableBody: 'The scene is in production. Its pack page says what the pack holds so far.',
     errorText:
@@ -185,3 +205,14 @@ export const scenes = {
   'foundry-floor': foundryFloorScene,
 } as const;
 export type SceneId = keyof typeof scenes;
+
+/** The status panel's link and copy and the error surface's text for a build mode (KILN_SITE_PACKS). */
+export function sceneInMode(id: SceneId, packsEnabled: boolean) {
+  const scene = scenes[id];
+  const preUpload = !packsEnabled && 'preUpload' in scene ? scene.preUpload : undefined;
+  return {
+    fallback: preUpload?.fallback ?? scene.fallback,
+    unavailableBody: preUpload?.unavailableBody ?? scene.copy.unavailableBody,
+    errorText: preUpload?.errorText ?? scene.copy.errorText,
+  };
+}

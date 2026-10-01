@@ -40,9 +40,15 @@ test('uses native named sections and preserves literal command placeholders', ()
   const result = decorateDocsHtml('<p>Use --file <file> and --name <name>.</p><pre><code>one</code></pre><pre><code>two</code></pre><table><thead><tr><th>Key</th></tr></thead><tbody><tr><td>Value</td></tr></tbody></table>', 'tools', available);
   expect(result).toContain('&lt;file&gt;');
   expect(result).toContain('&lt;name&gt;');
-  expect(result).toContain('<section class="docs-code not-prose" aria-label="Code example 1">');
+  expect(result).toContain('<div role="group" class="docs-code not-prose" aria-label="Code example 1">');
   expect(result).toContain('aria-label="Code example 2"');
   expect(result).toContain('<section class="docs-table-scroll docs-table-labelled"');
   expect(result).toContain('data-label="Key"');
   expect(result).not.toContain('role="region"');
+  expect(result).toContain('aria-label="Copy code example 1"');
+  expect(result).toContain('aria-label="Copy code example 2"');
+});
+
+test('heading permalinks do not add every heading to the keyboard order', () => {
+  expect(decorateDocsHtml('<h2 id="one">One</h2>', 'install', available)).toContain('aria-hidden="true" tabindex="-1"');
 });

@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "delivery": "review-3",
-  "source": "The pins in the Golden Gate scene release script (BRIDGE_PINS, BRIDGE_FULL, BRIDGE_LICENCE), which restate the accepted review-3 exports in the coordinator's review record. The site verifies every file against them before it lists it.",
+  "delivery": "review-5",
+  "source": "The pins in the Golden Gate scene release script (BRIDGE_PINS, BRIDGE_FULL, BRIDGE_LICENCE), which restate the accepted review-5 exports in the coordinator's review-5 record. The site verifies every file against them before it lists it.",
   "assetId": "a_9fafaa6e7f4c4868a372e8f3b0b84738",
   "licence": {
     "file": "ASSET-LICENSE.txt",
@@ -12,13 +12,13 @@
   "tiers": [
     {
       "tier": "full",
-      "revision": "r_0d1532b4a00b4663909f8edf2bd290aa",
-      "parent": "r_03e7981b4ff84159aa4533c587f033c7",
+      "revision": "r_76c7a4080e7844e185896b7e1b196e5a",
+      "parent": "r_8e986268599c44ff93d451e81520aaec",
       "glb": {
         "file": "golden-gate.glb",
-        "bytes": 12244400,
-        "sha256": "9dbff3c7bda8bfddd39b12899f2857ca8afb02f74f6edc087e5ef8156195c1b1",
-        "triangles": 309576
+        "bytes": 12402960,
+        "sha256": "31306263a1c5f7410eab1ff65253765fb4084d9f0ec0d4c1b27e66f12a9f7f28",
+        "triangles": 311826
       },
       "metadata": "golden-gate.kiln-metadata.json",
       "licensed": {
@@ -28,13 +28,13 @@
     },
     {
       "tier": "web",
-      "revision": "r_e5da8e08bd424a8796a033fbb9793104",
-      "parent": "r_8285ccc5ffab4519b049936f792c15ee",
+      "revision": "r_de88c9d5481d4642837b9d00c81cf0a9",
+      "parent": "r_2632afa018de4ac28bde9ffc7ed19e47",
       "glb": {
         "file": "golden-gate-web.glb",
-        "bytes": 3336720,
-        "sha256": "407f727a19898ba09e2143a729e4d353bcf92d90f2eae99f0407327ac37f151f",
-        "triangles": 83092
+        "bytes": 3508476,
+        "sha256": "6effde24b2b9dfac04451244ee533bb755ba7d4c192a280caaec70ca31656a03",
+        "triangles": 85822
       },
       "metadata": "golden-gate-web.kiln-metadata.json",
       "licensed": {

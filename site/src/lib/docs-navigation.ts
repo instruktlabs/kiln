@@ -23,7 +23,7 @@ export const DOC_GROUPS: { title: string; description: string; pages: DocDefinit
       },
       {
         slug: 'harnesses',
-        label: 'Agent harnesses',
+        label: 'Headless harnesses',
         description: 'Run and verify the coding agents that drive Kiln.',
       },
     ],
@@ -74,6 +74,12 @@ export const DOC_GROUPS: { title: string; description: string; pages: DocDefinit
         slug: 'export-profiles',
         label: 'Export profiles',
         description: 'Choose editable exports or a runtime GLB with provenance metadata.',
+      },
+      {
+        slug: 'engine-handoff',
+        label: 'Blender and Unity',
+        description:
+          'Import Kiln exports into Blender and Unity, with tested versions and limitations.',
       },
       {
         slug: 'runtime',

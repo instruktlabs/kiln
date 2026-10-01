@@ -1,8 +1,9 @@
-import { readdir, writeFile, mkdir } from 'node:fs/promises';
+import { readdir, readFile, writeFile, mkdir } from 'node:fs/promises';
 import { resolve, join, relative } from 'node:path';
 import puppeteer from 'puppeteer-core';
 import { chromeExecutable } from './build-site-media.mjs';
-import { routeForFile } from './static-validation-core.mjs';
+import { inspectHtml, routeForFile, isEmbeddedDocument } from './static-validation-core.mjs';
+import { compareSitemapRoutes } from './sitemap-routes.mjs';
 const base = process.argv[2] ?? 'http://127.0.0.1:4175';
 const out = resolve(process.argv[3] ?? '.cache/validation');
 const root = resolve('dist');
@@ -15,8 +16,18 @@ async function htmlFiles(directory) {
   }
   return result;
 }
-const routes = (await htmlFiles(root)).map(file => routeForFile(relative(root, file)));
-const browser = await puppeteer.launch({ executablePath: chromeExecutable(), headless: true, args: ['--no-sandbox'] });
+const files = await htmlFiles(root);
+const routes = files.map(file => routeForFile(relative(root, file)));
+const indexable = [];
+for (const file of files) {
+  const route = routeForFile(relative(root, file));
+  if (route !== '/404.html' && !isEmbeddedDocument(route) && !inspectHtml(await readFile(file, 'utf8')).noindex) indexable.push(route);
+}
+const sitemap = await fetch(new URL('/sitemap.xml', base));
+if (!sitemap.ok) throw new Error(`Sitemap HTTP ${sitemap.status}`);
+const sitemapErrors = compareSitemapRoutes(await sitemap.text(), indexable);
+if (sitemapErrors.length) throw new Error(sitemapErrors.join('\n'));
+const browser = await puppeteer.launch({ executablePath: chromeExecutable(), headless: true, pipe: true, args: ['--no-sandbox'] });
 const report = { browser: await browser.version(), node: process.version, pages: [], errors: [] };
 try {
   await Promise.all(Array.from({ length: 3 }, async () => {

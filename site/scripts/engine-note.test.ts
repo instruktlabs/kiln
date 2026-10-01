@@ -18,6 +18,8 @@ describe('which pages carry a 3D view of a GLB', () => {
   test('a reviewed asset page and an archive item, and nothing else', () => {
     expect(isAssetPageRoute('/gallery/farmhouse/')).toBe(true);
     expect(isAssetPageRoute('/gallery/archive/robot-arm/')).toBe(true);
+    expect(isAssetPageRoute('/gallery/foundry-floor/foup/')).toBe(true);
+    expect(isAssetPageRoute('/gallery/foundry-floor/')).toBe(false);
     expect(isAssetPageRoute('/gallery/')).toBe(false);
     expect(isAssetPageRoute('/gallery/archive/')).toBe(false);
     expect(isAssetPageRoute('/packs/farm/')).toBe(false);

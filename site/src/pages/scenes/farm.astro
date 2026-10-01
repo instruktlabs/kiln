@@ -10,17 +10,17 @@ import { PACKS_ENABLED } from "../../lib/config";
 ---
 
 <BaseLayout
-  title="Shapes & Seasons Farm scene"
+  title={`${farmScene.name} scene · Kiln`}
   description={sceneRuntimes.farm
-    ? "A preview of the rebuilt interactive Farm, still being qualified. View its touch controls, device notes and the current runnable scene download."
-    : "The interactive Farm is being rebuilt. View its status, device notes and current runnable scene download."}
+    ? "The current Farm preview awaits owner review. Explore first-person walking, tractor driving and touch controls, or download the runnable scene."
+    : "View the Farm scene's current review status, control and device notes, and runnable scene download."}
   noindex
   nofollow
   breadcrumbs={[
     { label: "Scenes", href: "/scenes/" },
-    { label: "Farm", href: "/scenes/farm/" },
+    { label: `${farmScene.name} scene`, href: "/scenes/farm/" },
   ]}
-  ogImage="/social/scenes.jpg"
+  card="scenes"
   preloadImage={
     PACKS_ENABLED
       ? {
@@ -32,18 +32,7 @@ import { PACKS_ENABLED } from "../../lib/config";
   }
 >
   <div class="container pb-12 pt-8">
-    <div class="mb-8 flex flex-wrap items-end justify-between gap-6">
-      <div>
-        <h1 class="font-semibold">The Farm scene</h1>
-        <p class="mt-4 max-w-prose text-lg">{farmScene.description}</p>
-      </div>
-      {PACKS_ENABLED && (
-        <a href="/packs/farm/" class="btn btn-secondary">
-          Farm pack and downloads
-        </a>
-      )}
-    </div>
-    <SceneShell scene="farm" />
+    <SceneShell scene="farm">
     <div class="mt-8 grid gap-6 border-t border-rule pt-6 md:grid-cols-2 lg:grid-cols-3">
       <div>
         <h2 class="text-subheading font-semibold">{farmScene.touch.heading}</h2>
@@ -64,9 +53,10 @@ import { PACKS_ENABLED } from "../../lib/config";
         </h2>
         <p class="mt-3">
           {farmScene.desktop} {farmScene.mobile} {farmScene.exclusions} Extract
-          the scene archive and run <code>node scene/serve.mjs</code>.
+          the scene archive and run <code>node scene/serve.mjs --verify</code>.
         </p>
       </div>
     </div>
+    </SceneShell>
   </div>
 </BaseLayout>

@@ -1,0 +1,86 @@
+{
+  "sonnet-ff-building": {
+    "requestedModel": "claude-sonnet-5-5",
+    "requestedEffort": "max",
+    "harness": "claude",
+    "confirmedEffort": null,
+    "source": "showcase/authors/sonnet-ff-building/inputs/author.json"
+  },
+  "sonnet-ff-cluster": {
+    "requestedModel": "claude-sonnet-5-5",
+    "requestedEffort": "max",
+    "harness": "claude",
+    "confirmedEffort": null,
+    "source": "showcase/authors/sonnet-ff-cluster/inputs/author.json"
+  },
+  "sonnet-ff-humanoid": {
+    "requestedModel": "claude-opus-5-5",
+    "requestedEffort": "high",
+    "harness": "claude",
+    "confirmedEffort": null,
+    "source": "showcase/authors/sonnet-ff-humanoid/inputs/author.json"
+  },
+  "sonnet-ff-litho": {
+    "requestedModel": "claude-sonnet-5-5",
+    "requestedEffort": "max",
+    "harness": "claude",
+    "confirmedEffort": null,
+    "source": "showcase/authors/sonnet-ff-litho/inputs/author.json"
+  },
+  "sonnet-ff-movers": {
+    "requestedModel": "claude-sonnet-5-5",
+    "requestedEffort": "max",
+    "harness": "claude",
+    "confirmedEffort": null,
+    "source": "showcase/authors/sonnet-ff-movers/inputs/author.json"
+  },
+  "sonnet-ff-rail": {
+    "requestedModel": "claude-sonnet-5-5",
+    "requestedEffort": "max",
+    "harness": "claude",
+    "confirmedEffort": null,
+    "source": "showcase/authors/sonnet-ff-rail/inputs/author.json"
+  },
+  "sonnet-ff-robots": {
+    "requestedModel": "claude-sonnet-5-5",
+    "requestedEffort": "max",
+    "harness": "claude",
+    "confirmedEffort": null,
+    "source": "showcase/authors/sonnet-ff-robots/inputs/author.json"
+  },
+  "sonnet-ff-section": {
+    "requestedModel": "claude-sonnet-5-5",
+    "requestedEffort": "high",
+    "harness": "claude",
+    "confirmedEffort": null,
+    "source": "showcase/authors/sonnet-ff-section/inputs/author.json"
+  },
+  "sonnet-ff-special-a": {
+    "requestedModel": "claude-sonnet-5-5",
+    "requestedEffort": "max",
+    "harness": "claude",
+    "confirmedEffort": null,
+    "source": "showcase/authors/sonnet-ff-special-a/inputs/author.json"
+  },
+  "sonnet-ff-special-b": {
+    "requestedModel": "claude-sonnet-5-5",
+    "requestedEffort": "max",
+    "harness": "claude",
+    "confirmedEffort": null,
+    "source": "showcase/authors/sonnet-ff-special-b/inputs/author.json"
+  },
+  "sonnet-ff-stocker": {
+    "requestedModel": "claude-sonnet-5-5",
+    "requestedEffort": "max",
+    "harness": "claude",
+    "confirmedEffort": null,
+    "source": "showcase/authors/sonnet-ff-stocker/inputs/author.json"
+  },
+  "sonnet-ff-utility": {
+    "requestedModel": "claude-opus-5-5",
+    "requestedEffort": "max",
+    "harness": "claude",
+    "confirmedEffort": null,
+    "source": "showcase/authors/sonnet-ff-utility/inputs/author.json"
+  }
+}

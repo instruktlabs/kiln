@@ -1,8 +1,9 @@
 ---
 import { sceneRuntimes } from "virtual:kiln-scenes";
-import { scenes, type SceneId } from "../data/scenes";
+import { sceneInMode, scenes, type SceneId } from "../data/scenes";
 import { imageQualification, FULL_WIDTH_IMAGE_SIZES } from "../lib/catalog";
 import { PACKS_ENABLED } from "../lib/config";
+import PageHeader from "./PageHeader.astro";
 
 interface Props {
   scene: SceneId;
@@ -10,6 +11,8 @@ interface Props {
 const { scene: id } = Astro.props;
 const scene = scenes[id];
 const runtime = sceneRuntimes[id];
+// The fallback link and the copy naming it, for this build mode: a pre-upload build has no Commons pages.
+const inMode = sceneInMode(id, PACKS_ENABLED);
 const stateCopy = scene.available
   ? scene.copy.available
   : runtime
@@ -17,13 +20,20 @@ const stateCopy = scene.available
     : scene.copy.unavailable;
 ---
 
+<div class="mb-8">
+  <PageHeader>{scene.name} scene</PageHeader>
+  <p class="lead mt-4">{scene.description}</p>
+  {PACKS_ENABLED && <a class="btn btn-secondary mt-6" href={scene.fallback.href}>{scene.fallback.label}</a>}
+  <slot name="notice" />
+</div>
+
 <scene-shell
   class="block border border-rule bg-stage"
   data-scene={id}
   data-kind={runtime?.kind ?? "none"}
   data-runtime-url={runtime?.url ?? ""}
   data-asset-base={scene.assetBase}
-  data-error-text={scene.copy.errorText}
+  data-error-text={inMode.errorText}
   data-frame-title={`${scene.name} scene`}
 >
   <div data-intro>
@@ -41,10 +51,14 @@ const stateCopy = scene.available
           width={scene.posterWidth}
           height={scene.posterHeight}
           alt={scene.posterAlt}
-          class="max-h-scene w-full object-cover"
+          class="w-full object-contain"
+          style={`aspect-ratio:${scene.posterWidth}/${scene.posterHeight}`}
           fetchpriority="high"
         />
       </picture>
+    )}
+    {PACKS_ENABLED && scene.posterImage && "posterCaption" in scene && (
+      <p class="bg-sheet px-6 pt-4 text-caption text-dim">{scene.posterCaption}</p>
     )}
     {PACKS_ENABLED && scene.posterImage && imageQualification(scene.posterImage) && (
       <p class="bg-sheet px-6 pt-4 text-caption text-dim">{imageQualification(scene.posterImage)}</p>
@@ -61,10 +75,13 @@ const stateCopy = scene.available
   </div>
   <div
     data-active
+    role="dialog"
+    aria-modal="true"
+    aria-label={`${scene.name} interactive scene`}
     hidden
     class="fixed inset-0 z-50 flex flex-col overflow-auto bg-paper"
   >
-    <div class="flex flex-wrap items-center justify-between gap-4 border-b border-rule p-4">
+    <div class="scene-topbar flex shrink-0 flex-wrap items-center justify-between gap-2 border-b border-rule p-2 sm:gap-4 sm:p-4">
       <button type="button" class="btn btn-secondary" data-exit>
         Exit scene
       </button>
@@ -72,7 +89,7 @@ const stateCopy = scene.available
         <p class="flex flex-1 flex-wrap items-center justify-center gap-x-4 gap-y-1 text-sm text-dim">
           {!scene.available && <span>{scene.copy.previewLabel}</span>}
           {scene.links.map((link) => (
-            <a href={`${scene.assetBase}${link.path}`}>{link.label}</a>
+            <a class="text-link" href={`${scene.assetBase}${link.path}`}>{link.label}</a>
           ))}
         </p>
       )}
@@ -83,14 +100,14 @@ const stateCopy = scene.available
     <p data-loading role="status" class="p-6">
       Loading the scene…
     </p>
-    <div data-mount class="min-h-viewer flex-1"></div>
+    <div data-mount class="min-h-0 flex-1 overflow-auto"></div>
   </div>
   <template data-unavailable>
     <div class="flex min-h-viewer flex-col items-center justify-center gap-6 p-8 text-center">
       <h2 class="font-semibold">{scene.copy.unavailableTitle}</h2>
-      <p class="max-w-prose text-lg">{scene.copy.unavailableBody}</p>
-      <a class="btn btn-secondary" href={scene.fallback.href}>
-        {scene.fallback.label}
+      <p class="max-w-prose text-lg">{inMode.unavailableBody}</p>
+      <a class="btn btn-secondary" href={inMode.fallback.href}>
+        {inMode.fallback.label}
       </a>
     </div>
   </template>
@@ -101,25 +118,28 @@ const stateCopy = scene.available
     </p>
   </noscript>
 </scene-shell>
+<div class="scene-notes mt-8 border-t border-rule pt-6"><slot /></div>
 <script>
   import { createIslandSession } from "./island-session";
+  import { createSceneWatchdog } from "./scene-watchdog";
   import type { SceneMountProps, SceneRuntimeModule } from "../scenes/types";
 
   /** A frame-kind runtime is a standalone page (scripts/scene-runtime.mjs) that reports through postMessage. */
-  function mountFrame(container: HTMLElement, url: string, title: string, props: SceneMountProps) {
+  function mountFrame(container: HTMLElement, url: string, title: string, props: SceneMountProps, leave: () => void) {
     const frame = document.createElement("iframe");
     frame.title = title;
-    frame.className = "block h-full min-h-viewer w-full border-0";
+    frame.className = "block h-full min-h-0 w-full border-0";
     frame.setAttribute("allow", "fullscreen");
     const onMessage = (event: MessageEvent) => {
       if (event.origin !== location.origin || event.source !== frame.contentWindow) return;
-      const data = event.data as { source?: string; state?: string; text?: string; message?: string } | null;
+      const data = event.data as { source?: string; state?: string; text?: string; message?: string; errorCode?: string } | null;
       if (data?.source !== "kiln-scene") return;
-      if (data.state === "progress") props.onProgress?.({ phase: "assets", loaded: 0, total: 0, text: data.text ?? "" });
+      if (data.state === "progress" || data.state === "started") props.onProgress?.({ phase: "assets", loaded: 0, total: 0, text: data.text ?? "Loading the scene…" });
       else if (data.state === "ready") {
         props.onReady?.();
         frame.contentWindow?.focus();
-      } else if (data.state === "error") props.onError?.(new Error(data.message ?? "The scene could not start."));
+      } else if (data.state === "error") props.onError?.(Object.assign(new Error(data.message ?? "The scene could not start."), { code: data.errorCode ?? "runtime" }));
+      else if (data.state === "exit" && !document.fullscreenElement) leave();
     };
     window.addEventListener("message", onMessage);
     container.append(frame);
@@ -145,6 +165,7 @@ const stateCopy = scene.available
       const unavailable =
         this.querySelector<HTMLTemplateElement>("[data-unavailable]")!;
       let contentReady = false;
+      const watchdog = createSceneWatchdog(() => fail(Object.assign(new Error("The scene stopped responding."), { code: "timeout" })));
       // data-scene-state is idle, loading, ready or error; data-scene-phase is the scene's
       // latest progress phase; data-scene-backend and data-scene-tier are what the scene reports.
       // All are read by the browser checks.
@@ -155,12 +176,14 @@ const stateCopy = scene.available
       const ready = () => {
         if (active.hidden) return;
         contentReady = true;
+        watchdog.stop();
         loading.hidden = true;
         status.textContent = "Scene ready.";
         setState("ready");
       };
       const progress = (update: { phase: string; text: string }) => {
         if (contentReady || active.hidden) return;
+        watchdog.touch();
         this.dataset.scenePhase = update.phase;
         loading.textContent = update.text;
       };
@@ -189,19 +212,23 @@ const stateCopy = scene.available
         }
       };
       const fail = (error?: Error) => {
+        watchdog.stop();
         session.stop();
         status.classList.remove("sr-only");
         status.classList.add("p-6");
-        status.textContent =
-          this.dataset.errorText ??
+        const code = (error as { code?: string } | undefined)?.code ?? (/WebGL|WebGPU|graphics|renderer/i.test(error?.message ?? "") ? "renderer-init" : "runtime");
+        status.textContent = code === "renderer-init"
+          ? "Interactive graphics are unavailable in this browser. The scene poster and downloads remain available below. Try a browser with WebGL2 or WebGPU enabled."
+          : this.dataset.errorText ??
           "The scene could not load. Check your connection and try Explore again.";
         this.dataset.sceneError =
-          (error as { code?: string } | undefined)?.code ?? "runtime";
+          code;
         setState("error");
         explore.focus();
       };
       const session = createIslandSession(
         async () => {
+          mount.scrollIntoView({ block: "nearest", behavior: "instant" });
           const props: SceneMountProps = {
             assetBase: this.dataset.assetBase!,
             onReady: ready,
@@ -222,7 +249,7 @@ const stateCopy = scene.available
             return runtime.mount(mount, props);
           }
           if (this.dataset.kind === "frame" && url) {
-            return mountFrame(mount, url, this.dataset.frameTitle ?? `${this.dataset.scene} scene`, props);
+            return mountFrame(mount, url, this.dataset.frameTitle ?? `${this.dataset.scene} scene`, props, leave);
           }
           // No runtime in this build: state the status in place of the scene.
           mount.append(unavailable.content.cloneNode(true));
@@ -232,6 +259,7 @@ const stateCopy = scene.available
         (state, error) => {
           const showing = state === "loading" || state === "ready";
           if (state === "loading") {
+            watchdog.touch();
             contentReady = false;
             loading.textContent = "Loading the scene…";
             delete this.dataset.scenePhase;
@@ -253,6 +281,7 @@ const stateCopy = scene.available
         },
       );
       const leave = () => {
+        watchdog.stop();
         session.stop();
         if (document.fullscreenElement === this)
           void document.exitFullscreen().catch(() => {});
@@ -280,12 +309,13 @@ const stateCopy = scene.available
       const onKey = (event: KeyboardEvent) => {
         if (
           event.key === "Escape" &&
+          !event.defaultPrevented &&
           !document.fullscreenElement &&
           !active.hidden
         )
           leave();
       };
-      const onPageHide = () => session.stop();
+      const onPageHide = () => { watchdog.stop(); session.stop(); };
       fullscreen.hidden = !document.fullscreenEnabled;
       explore.hidden = false;
       explore.addEventListener("click", start);
@@ -295,6 +325,7 @@ const stateCopy = scene.available
       document.addEventListener("fullscreenchange", syncFullscreen);
       window.addEventListener("pagehide", onPageHide);
       this.dispose = () => {
+        watchdog.stop();
         session.stop();
         explore.removeEventListener("click", start);
         exit.removeEventListener("click", leave);

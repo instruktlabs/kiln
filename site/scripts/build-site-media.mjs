@@ -5,6 +5,7 @@ import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import puppeteer from 'puppeteer-core';
 import sharp from 'sharp';
+import { SOCIAL_CARD, socialCards } from '../src/lib/social-cards.mjs';
 
 const site = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const publicDir = join(site, 'public');
@@ -13,11 +14,8 @@ const packsEnabled = !['0', 'false'].includes(process.env.KILN_SITE_PACKS ?? '1'
 const escape = (value) => String(value).replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;');
 const json = async (file) => JSON.parse(await readFile(file, 'utf8'));
 
-/**
- * Share cards are JPEG. Every network's crawler documents JPEG and PNG; the previous site's fixture required a PNG after two
- * LinkedIn-specific preview fixes, and WebP is not something all of them read. The site's page images stay AVIF and WebP.
- */
-export const SOCIAL_CARD_EXTENSION = '.jpg';
+/** Share cards are JPEG (see `src/lib/social-cards.mjs`, which lists the cards for this script and for the page tags). */
+export const SOCIAL_CARD_EXTENSION = SOCIAL_CARD.extension;
 
 /** Cards on disk that no page in this build uses: `public/social` is derived, but it keeps whatever an earlier build left (including cards written in another format). */
 export const staleSocialCards = (files, cards) => {
@@ -63,32 +61,14 @@ async function buildMedia() {
   }
 
   const release = await json(join(site, 'src/data/release.json'));
-  const version = release.version.replace(/\.0$/, '');
   const farm = await json(join(site, 'src/data/packs/farm.json'));
   const vehicles = await json(join(site, 'src/data/packs/vehicles.json'));
   const bridge = await json(join(site, 'src/data/standalone/golden-gate-bridge.json'));
   const foundryFloor = await json(join(site, 'src/data/foundry-floor.json'));
-  const homePoster = packsEnabled ? (process.env.KILN_SITE_HERO === 'golden-gate-bridge' ? bridge : farm.assets.find((asset) => asset.id === 'farmhouse'))?.poster.src : undefined;
-  const cards = [
-    { slug: 'home', title: 'Build and revise 3D assets with your coding agent.', note: `Kiln · ${version} release package`, poster: homePoster },
-    { slug: 'packs', title: 'Assets made with Kiln.', note: 'Kiln Commons', poster: homePoster },
-    { slug: 'farm', title: 'Shapes & Seasons Farm', note: '23 assets · Kiln Commons', poster: packsEnabled ? farm.scene.poster.src : undefined },
-    { slug: 'vehicles', title: 'Generic Road Vehicles', note: `${vehicles.assetCount} assets · Kiln Commons`, poster: packsEnabled ? vehicles.assets.find((asset) => asset.slug === 'sedan').poster.src : undefined },
-    { slug: 'scenes', title: 'See the assets together.', note: 'Scenes made with Kiln', poster: packsEnabled ? farm.scene.poster.src : undefined },
-    { slug: 'docs', title: 'Make the next revision.', note: 'Kiln documentation' },
-    { slug: 'foundry-floor', title: foundryFloor.name, note: 'In production · Kiln Commons' },
-    { slug: 'gallery', title: 'Read the source. Inspect the asset.', note: 'The Kiln gallery', poster: homePoster },
-    { slug: 'archive', title: 'Earlier Kiln examples.', note: 'Unreviewed historical examples' },
-  ];
-  if (packsEnabled) {
-    const packNames = { farm: 'Shapes & Seasons Farm', vehicles: 'Generic Road Vehicles' };
-    for (const asset of [...farm.assets, ...vehicles.assets, bridge]) cards.push({ slug: asset.slug, title: asset.name, note: asset.pack ? `${packNames[asset.pack]} · Kiln Commons` : 'Standalone · Kiln Commons', poster: asset.poster.src });
-  }
+  const hero = await json(join(site, 'src/data/hero.json'));
   const archiveIndex = join(publicDir, 'assets/index.json');
-  if (existsSync(archiveIndex)) {
-    const archive = await json(archiveIndex);
-    for (const asset of archive) cards.push({ slug: `archive-${asset.name}`, title: asset.name.split('-').map((word) => word[0].toUpperCase() + word.slice(1)).join(' '), note: 'Earlier Kiln example · Unreviewed', poster: `/${asset.poster ?? asset.thumb}` });
-  }
+  const archive = existsSync(archiveIndex) ? await json(archiveIndex) : [];
+  const cards = socialCards({ packsEnabled, release, farm, vehicles, bridge, hero, foundryFloor, archive });
   const archivoData = (await readFile(join(publicDir, 'fonts/archivo-latin-full-normal.woff2'))).toString('base64');
   const plexData = (await readFile(join(publicDir, 'fonts/ibm-plex-mono-latin-400-normal.woff2'))).toString('base64');
   let prior = {};
@@ -100,8 +80,8 @@ async function buildMedia() {
     for (const card of cards) {
       let poster = '';
       if (card.poster) {
-        const file = resolve(publicDir, `.${card.poster}`);
-        const bytes = await readFile(file).catch(() => { throw new Error(`Social card needs ${card.poster}. Run assets and fetch-mirror before build-site-media.`); });
+        const file = resolve(publicDir, `.${card.poster.src}`);
+        const bytes = await readFile(file).catch(() => { throw new Error(`Social card needs ${card.poster.src}. Run assets and fetch-mirror before build-site-media.`); });
         const resized = await sharp(bytes).resize(650, 550, { fit: 'inside', withoutEnlargement: true }).webp({ quality: 90 }).toBuffer();
         poster = `data:image/webp;base64,${resized.toString('base64')}`;
       }
@@ -115,7 +95,7 @@ async function buildMedia() {
       records[card.slug] = digest;
       const output = join(publicDir, 'social', `${card.slug}${SOCIAL_CARD_EXTENSION}`);
       if (prior[card.slug] === digest && existsSync(output)) continue;
-      if (!browser) browser = await puppeteer.launch({ executablePath: chromeExecutable(), headless: true, args: ['--no-sandbox', '--disable-dev-shm-usage'] });
+      if (!browser) browser = await puppeteer.launch({ executablePath: chromeExecutable(), headless: true, pipe: true, args: ['--no-sandbox', '--disable-dev-shm-usage'] });
       const page = await browser.newPage();
       try {
         await page.setViewport({ width: 1200, height: 630, deviceScaleFactor: 1 });

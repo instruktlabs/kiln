@@ -1,0 +1,27 @@
+---
+import type { MarkdownHeading } from "astro";
+import DocsNav from "./DocsNav.astro";
+import DocsToc from "./DocsToc.astro";
+interface Props { current?: string; headings?: MarkdownHeading[]; }
+const { current, headings = [] } = Astro.props;
+---
+    <div class="not-prose mt-6 mb-6 space-y-3 lg:hidden">
+      <details class="docs-disclosure">
+        <summary class="min-h-11 cursor-pointer py-3 font-semibold">
+          Browse documentation
+        </summary>
+        <div class="py-4">
+          <DocsNav current={current} label="Documentation menu" />
+        </div>
+      </details>
+      {headings.length > 0 && (
+        <details class="docs-disclosure">
+          <summary class="min-h-11 cursor-pointer py-3 font-semibold">
+            On this page
+          </summary>
+          <div class="py-4">
+            <DocsToc headings={headings} label="On this page menu" />
+          </div>
+        </details>
+      )}
+    </div>

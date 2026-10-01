@@ -1,0 +1,8 @@
+---
+interface Props { label: string; boundary?: boolean; }
+const { label, boundary = false } = Astro.props;
+---
+<aside class:list={["relative my-8 max-w-reading border bg-sheet p-5 pt-8", boundary ? "border-ember" : "border-ink"]} aria-label={label}>
+  <span class:list={["absolute left-0 top-0 px-2 py-1 font-mono text-code", boundary ? "bg-ember text-sheet" : "bg-ink text-sheet"]}>{label}</span>
+  <div class="space-y-4"><slot /></div>
+</aside>

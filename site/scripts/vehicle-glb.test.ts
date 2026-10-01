@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'bun:test';
-import { coverageToDistance, inspectVehicleGlb, loaderDraws, parseGlb, sha256Of } from './vehicle-glb.mjs';
+import { coverageToDistance, ensureVehicleWheelLod, inspectVehicleGlb, loaderDraws, parseGlb, sha256Of } from './vehicle-glb.mjs';
 import { coverageAt, glbBytes, sha, vehicleJson } from './vehicle-test-fixtures';
 
 /** The fixture's LOD0 body is 4.2 x 1.15 x 1.8 m; each of its four tyres is 0.6 x 0.6 x 0.2 m. */
@@ -164,6 +164,72 @@ describe('what three.js draws', () => {
 
   test('the saved export, whose tiers are all in the scene tree, is drawn in full: the reason the delivered form exists', async () => {
     expect(await loaderDraws(glbBytes(vehicleJson('named-groups')))).toEqual({ meshes: 8, triangles: 130 + 20 + 5 + 80 });
+  });
+});
+
+describe('runtime wheel LOD composition', () => {
+  test('adds wheel culling to existing body LOD without changing geometry, pivots, materials or near tiers', async () => {
+    const json = clone(vehicleJson('MSFT_lod', { wheelsHidden: false })) as any;
+    json.nodes[0].translation = [7, 0, -3];
+    json.nodes[4].extras = { purpose: 'independent wheel pivot' };
+    json.nodes[4].extensions = { EXT_example: { retained: true } };
+    json.extensionsUsed.push('EXT_example');
+    const before = glbBytes(json);
+    const output = ensureVehicleWheelLod(before);
+    const prior = inspectVehicleGlb(before);
+    const next = inspectVehicleGlb(output);
+    expect(next.tiers.map((tier) => tier.wheelsShown)).toEqual([true, true, false]);
+    expect(next.tiers.map((tier) => tier.triangles)).toEqual([210, 100, 5]);
+    expect(next.wheels.every((wheel) => wheel.hiddenBeyondMetres === 250)).toBe(true);
+    expect(next.wheelsHiddenAtLastTier).toBe(true);
+    expect(next.tiers.slice(0, 2)).toEqual(prior.tiers.slice(0, 2));
+    expect(next.drawnByPlainLoader).toEqual(prior.drawnByPlainLoader);
+    expect(await loaderDraws(output)).toEqual(await loaderDraws(before));
+    const after = parseGlb(output);
+    expect(after.binBytes.equals(parseGlb(before).binBytes)).toBe(true);
+    expect(after.json.nodes).toHaveLength(json.nodes.length + 4);
+    const normalized = clone(after.json);
+    normalized.nodes.length = json.nodes.length;
+    for (let index = 4; index <= 7; index++) {
+      const { extensions, extras, ...node } = normalized.nodes[index];
+      expect(node).toEqual(Object.fromEntries(Object.entries(json.nodes[index]).filter(([key]) => key !== 'extensions' && key !== 'extras')));
+      expect(extensions).toMatchObject(json.nodes[index].extensions ?? {});
+      expect(extras).toMatchObject(json.nodes[index].extras ?? {});
+      normalized.nodes[index] = json.nodes[index];
+    }
+    expect(normalized).toEqual(json);
+    expect(ensureVehicleWheelLod(output).equals(output)).toBe(true);
+    expect(parseGlb(before).json).toEqual(json);
+  });
+
+  test('keeps already-qualified runtime bytes and existing wheel links unchanged', () => {
+    const complete = glbBytes(vehicleJson('MSFT_lod'));
+    expect(ensureVehicleWheelLod(complete).equals(complete)).toBe(true);
+    const partial = clone(vehicleJson('MSFT_lod')) as any;
+    delete partial.nodes[4].extensions;
+    delete partial.nodes[4].extras;
+    const output = parseGlb(ensureVehicleWheelLod(glbBytes(partial))).json;
+    expect(output.nodes).toHaveLength(partial.nodes.length + 1);
+    for (const index of [5, 6, 7]) expect(output.nodes[index]).toEqual(partial.nodes[index]);
+    expect(inspectVehicleGlb(ensureVehicleWheelLod(glbBytes(partial))).wheelsHiddenAtLastTier).toBe(true);
+  });
+
+  test('preserves unknown non-JSON chunks when composing the delivery', () => {
+    const input = glbBytes(vehicleJson('MSFT_lod', { wheelsHidden: false }));
+    const extra = Buffer.from([4, 0, 0, 0, 84, 69, 83, 84, 9, 8, 7, 6]);
+    const withExtra = Buffer.concat([input, extra]);
+    withExtra.writeUInt32LE(withExtra.length, 8);
+    const output = ensureVehicleWheelLod(withExtra);
+    expect(output.subarray(-extra.length).equals(extra)).toBe(true);
+    expect(inspectVehicleGlb(output).wheelsHiddenAtLastTier).toBe(true);
+  });
+
+  test('refuses conflicting existing wheel policy and leaves named-group conversion to its caller', () => {
+    expect(() => ensureVehicleWheelLod(glbBytes(vehicleJson('MSFT_lod', { wheelsHideAt: 400 })))).toThrow(/wheel.*LOD2/i);
+    expect(() => ensureVehicleWheelLod(glbBytes(vehicleJson('named-groups')))).toThrow(/body.*MSFT_lod/i);
+    const missing = clone(vehicleJson('MSFT_lod', { wheelsHidden: false })) as any;
+    missing.nodes[0].children = missing.nodes[0].children.filter((index: number) => index !== 4);
+    expect(() => ensureVehicleWheelLod(glbBytes(missing))).toThrow(/four.*wheel/i);
   });
 });
 

@@ -25,10 +25,11 @@ import { mkdir, readdir, readFile, rm, writeFile } from 'node:fs/promises';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { gzipSync } from 'node:zlib';
+import { skillsDirectory } from './source-dirs.mjs';
 
 const SITE = resolve(dirname(fileURLToPath(import.meta.url)), '..');
-const REPO = resolve(SITE, '..');
-const SKILLS = join(REPO, 'skills');
+// The same engine tree as the docs: KILN_SITE_SKILLS_DIR, else the docs directory's sibling skills/ (source-dirs.mjs).
+const SKILLS = skillsDirectory();
 const WELL_KNOWN = join(SITE, 'public', '.well-known', 'agent-skills');
 const SCHEMA = 'https://schemas.agentskills.io/discovery/0.2.0/schema.json';
 const URL_PREFIX = '/.well-known/agent-skills';
@@ -160,5 +161,5 @@ if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.ur
   const index = await buildSkillsDiscovery();
   for (const skill of index.skills)
     console.log(`  ${skill.name.padEnd(22)} ${skill.type.padEnd(9)} ${skill.digest.slice(0, 23)}`);
-  console.log(`${index.skills.length} skills published at ${URL_PREFIX}/index.json`);
+  console.log(`${index.skills.length} skills published at ${URL_PREFIX}/index.json (from the skills directory named by KILN_SITE_SKILLS_DIR, else the docs directory's sibling)`);
 }

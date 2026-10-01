@@ -1,4 +1,5 @@
 ---
+import PageHeader from "../../components/PageHeader.astro";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import { sceneRuntimes } from "virtual:kiln-scenes";
 import { farmScene, foundryFloorScene, goldenGateScene } from "../../data/scenes";
@@ -11,9 +12,9 @@ const cards = [
     scene: farmScene,
     alt: "Barn, farmhouse and fields in the Farm scene",
     staged:
-      "A preview of the rebuilt browser scene opens on its page. It is still being qualified; the Farm scene download remains the current runnable version.",
+      "The current preview includes first-person walking, tractor driving and touch controls. It awaits owner review; the same scene is available to download.",
     unstaged:
-      "The browser scene is being rebuilt. The current runnable scene is included in the Farm scene download.",
+      "The browser scene is not included in this build. The current runnable scene is available in the Farm download.",
   },
   {
     scene: goldenGateScene,
@@ -35,23 +36,24 @@ const cards = [
 ---
 
 <BaseLayout
-  title="Scenes made with Kiln"
+  title="Scenes · Kiln"
   description="Scenes built from Kiln assets: the Farm, a Golden Gate Bridge driving and traffic demonstration and the in-production Foundry Floor. Each loads only when you choose Explore."
   breadcrumbs={[{ label: "Scenes", href: "/scenes/" }]}
-  ogImage="/social/scenes.jpg"
+  card="scenes"
 >
-  <div class="container py-12 md:py-20">
-    <h1 class="max-w-prose font-semibold">See the assets together.</h1>
+  <div class="container py-8">
+    <PageHeader class="max-w-prose font-semibold">Scenes</PageHeader>
     <p class="mt-6 max-w-prose text-lg">
       Scenes put individual assets into a place you can explore. They load only
       when you choose to open them.
     </p>
-    {cards.map(({ scene, alt, staged, unstaged }) => {
+    {cards.map(({ scene, staged, unstaged }) => {
       const runtime = sceneRuntimes[scene.id];
       return (
-        <article class="mt-12 grid gap-8 border-t border-ink pt-8 md:grid-cols-2">
+        <a href={scene.href} aria-label={scene.name} class="no-underline text-ink mt-12 grid gap-8 border-t border-ink pt-8 lg:grid-cols-2">
           {PACKS_ENABLED && scene.posterImage && (
-            <a href={scene.href} aria-label={`View the ${scene.name} scene`}>
+            <div>
+
               <picture>
                 <source
                   type="image/avif"
@@ -64,22 +66,26 @@ const cards = [
                   sizes="(max-width: 768px) 100vw, 50vw"
                   width={scene.posterWidth}
                   height={scene.posterHeight}
-                  alt={alt}
+                  alt=""
                   class="w-full border border-rule"
                   loading="lazy"
                 />
               </picture>
-            </a>
+
+            {"posterCaption" in scene && <p class="mt-2 text-caption text-dim">{scene.posterCaption}</p>}
+            </div>
           )}
           <div>
             <h2 class="font-semibold">{scene.name}</h2>
             <p class="mt-4 max-w-prose">{scene.description}</p>
             <p class="mt-4 max-w-prose">{runtime ? staged : unstaged}</p>
-            <a href={scene.href} class="btn btn-secondary mt-6">
+            <span class="text-link mt-6">
               {runtime ? "Open the scene preview" : "View the scene status"}
-            </a>
+              <span class="sr-only">: {scene.name}</span>
+            </span>
+
           </div>
-        </article>
+        </a>
       );
     })}
   </div>

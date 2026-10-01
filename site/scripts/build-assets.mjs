@@ -7,8 +7,6 @@ import sharp from 'sharp';
 import { createHash } from 'node:crypto';
 import { posterBytes, posterFile } from './posters.mjs';
 import { exampleProvenance, recordedExampleCredit, verifyRecordedPoster } from './provenance.mjs';
-import { buildEditDemo } from './build-edit-demo.mjs';
-import { buildGeometryDemo } from './build-geometry-demo.mjs';
 import { isPublicExample } from './collection.mjs';
 import { buildExampleHistory } from './history.mjs';
 import { runtimeBuildIdentity } from '../../scripts/build-runtime.mjs';
@@ -126,6 +124,18 @@ for (const name of names) {
     .webp({ quality: 82 })
     .toFile(join(THUMBS, `${name}.webp`));
 
+  // The item page's hero is drawn up to 480 CSS px wide, so the 560 px thumbnail
+  // was soft on a 2x phone (engineering review, finding 17). It gets the source
+  // render at up to 1024 px instead, never enlarged: every source measured
+  // 1024x1024 on 2026-09-30, and a smaller one is declared at its own size.
+  if (!manifest.at(-1).poster) {
+    const poster = await sharp(await posterFile(name))
+      .resize(1024, 1024, { fit: 'inside', withoutEnlargement: true })
+      .webp({ quality: 82 })
+      .toFile(join(THUMBS, `${name}-poster.webp`));
+    Object.assign(manifest.at(-1), { poster: `thumbs/${name}-poster.webp`, posterWidth: poster.width, posterHeight: poster.height });
+  }
+
   if (['orbital-station', 'abyssal-surveyor'].includes(name)) {
     let posterPath = await posterFile(name);
     try {
@@ -142,10 +152,11 @@ for (const name of names) {
         await writeFile(join(OUT, `${name}.hero-poster.json`), JSON.stringify(record, null, 2) + '\n');
       }
     } catch {}
-    await sharp(posterPath)
+    const hero = await sharp(posterPath)
       .resize(1400, 1400, { fit: 'inside', withoutEnlargement: true })
       .webp({ quality: 90 })
       .toFile(join(THUMBS, `${name}-hero.webp`));
+    Object.assign(manifest.at(-1), { posterWidth: hero.width, posterHeight: hero.height });
   }
 
   const w = r.warnings.length ? `  ${r.warnings.length} warnings` : '';
@@ -160,8 +171,6 @@ console.log(
     `${(bytes / 1024 / 1024).toFixed(1)} MB of GLB`,
 );
 
-await buildEditDemo(REPO, OUT);
-await buildGeometryDemo(REPO, OUT);
 try {
   await cp(join(REPO, 'assets', 'video'), join(OUT, 'video'), { recursive: true });
 } catch {}

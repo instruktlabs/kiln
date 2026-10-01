@@ -13,7 +13,7 @@ const available = new Set(docs.map((entry) => entry.id));
 <nav aria-label={label} class="space-y-6">
   {DOC_GROUPS.map((group) => (
     <div>
-      <h2 class="mb-2 text-base font-semibold">{group.title}</h2>
+      <p class="mb-2 text-base font-semibold">{group.title}</p>
       <ul class="m-0 list-none p-0">
         {group.pages
           .filter((page) => available.has(page.slug))

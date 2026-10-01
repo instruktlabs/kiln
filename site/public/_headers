@@ -1,0 +1,28 @@
+# Response headers for kilnstudio.tools on Cloudflare Pages (a direct upload of the reviewed build, decision S-4).
+# Pages applies every rule whose path matches, in this order; "! Name" removes a header an earlier rule set.
+# validate-static checks this file against the build: the CSP script hashes are exactly the inline scripts the
+# pages carry, and only files with a content hash in their name are cached as immutable.
+# finalize-site replaces the template script hashes with hashes of the emitted pages for this build mode.
+
+# Every response. HTML revalidates on each visit: a cached page that outlived a deployment would point at hashed
+# files the new deployment no longer has. The permissions policy turns off device features no page uses and
+# leaves WebGL, WebGPU and fullscreen alone. The content security policy is report-only: violations are logged in
+# the browser console and nothing is blocked; enforcing it is the owner's decision after the hosted dogfood.
+# Beyond the review's directives it allows what the measured pages use: 'wasm-unsafe-eval' for the viewer's
+# WebAssembly mesh decoder and blob: in connect-src for GLB textures, which three.js fetches from blob: URLs.
+/*
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: accelerometer=(), bluetooth=(), camera=(), display-capture=(), gamepad=(), geolocation=(), gyroscope=(), hid=(), magnetometer=(), microphone=(), midi=(), payment=(), serial=(), usb=(), xr-spatial-tracking=()
+  Cache-Control: public, max-age=0, must-revalidate
+  Content-Security-Policy-Report-Only: default-src 'self'; script-src 'self' 'wasm-unsafe-eval' 'sha256-wAGukfde07th8FeXAlx31NqovrboToJ/niuiFbyoI70=' 'sha256-nQyK+pVXDH5RpnnZ8bk4KjsgiC91NvDr20Qc7mo8J4w=' 'sha256-qsHLNpEk33lPgo1MnVDl/NNWHbeSVPK4+ksw8A84/ls=' 'sha256-pi2avave5D7tqBWNSP54Cy8gsoNF+VSK2JuekU4lFcg=' 'sha256-ynl5VnLFfq74TN1iDcyssM5zkT3yce8NSUQIazX5/GY='; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; connect-src 'self' blob: https://assets.kilnstudio.tools; worker-src blob:
+
+# Build output named by content hash: a changed file gets a new name, so these never need revalidating.
+/_astro/*
+  ! Cache-Control
+  Cache-Control: public, max-age=31536000, immutable
+
+# The scene runtimes' chunks are named by content hash too (frame.html and runtime.json beside them are not).
+/scene-runtime/:scene/*.js
+  ! Cache-Control
+  Cache-Control: public, max-age=31536000, immutable

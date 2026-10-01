@@ -1,4 +1,5 @@
 ---
+import PageHeader from "../../../components/PageHeader.astro";
 import { readFile } from "node:fs/promises";
 import { resolve } from "node:path";
 import BaseLayout from "../../../layouts/BaseLayout.astro";
@@ -7,6 +8,8 @@ import EngineNote from "../../../components/EngineNote.astro";
 import CodeBlock from "../../../components/CodeBlock.astro";
 import type { Specimen } from "../../../types";
 import { REPO, SITE } from "../../../lib/config";
+import { archiveLabel, archiveName, isDemo, spaced } from "../../../lib/archive-names.mjs";
+import { harnessName } from "../../../lib/attribution";
 export async function getStaticPaths() {
   const specimens: Specimen[] = JSON.parse(
     await readFile(resolve("public/assets/index.json"), "utf8"),
@@ -26,13 +29,12 @@ interface Props {
   next: Specimen;
 }
 const { specimen, previous, next } = Astro.props;
-const displayName = (name: string) =>
-  name
-    .split("-")
-    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(" ");
-const name = displayName(specimen.name);
-const description = `${name}: an unreviewed historical Kiln example. Inspect the GLB, read its JavaScript source and see the recorded model and harness attribution.`;
+const name = archiveName(specimen.name);
+const label = archiveLabel(specimen.name);
+const demo = isDemo(specimen.name);
+// A recorded demo run names no model; its attribution is one plain line instead of "{model} through {harness}".
+const modelRecorded = specimen.model !== "Not independently recorded";
+const description = `${label}: an unreviewed historical Kiln example. Inspect the GLB, read its JavaScript source and see the recorded model and harness attribution.`;
 const source = specimen.source
   ? await readFile(resolve("public", specimen.source), "utf8")
   : null;
@@ -44,13 +46,16 @@ const fields = [
   ["Authoring review", specimen.provenance?.reviewFidelity],
 ];
 const formatBytes = (bytes: number) => `${bytes.toLocaleString("en-US")} bytes`;
+// The archive renders are single files with a baked grey background (measured: rgb(118,118,118) in the corners of all
+// 80); the viewer frame takes that colour so the poster does not sit pillarboxed on the site backdrop. The poster is
+// declared at the size build-assets recorded for it, which verify-assets checks against the file.
 ---
 
 <BaseLayout
-  title={`${name} · Kiln archive`}
+  title={`${label} · Kiln archive`}
   description={description}
   noindex
-  ogImage={`/social/archive-${specimen.name}.jpg`}
+  card={`archive-${specimen.name}`}
   breadcrumbs={[
     { label: "Gallery", href: "/gallery/" },
     { label: "Archive", href: "/gallery/archive/" },
@@ -70,9 +75,14 @@ const formatBytes = (bytes: number) => `${bytes.toLocaleString("en-US")} bytes`;
     },
   }}
 >
-  <article class="container pt-4">
+  <article class="container pt-8">
     <div class="max-w-reading">
-      <h1>{name}</h1>
+      <PageHeader>{name}</PageHeader>
+      {demo && (
+        <p class="mt-3">
+          <span class="inline-block border border-rule px-2 py-0.5 font-mono text-code text-dim">Demo run</span>
+        </p>
+      )}
       {specimen.caption && <p class="lead mt-5">{specimen.caption}</p>}
       <p class="mt-4 text-caption text-dim">
         Earlier examples from earlier Kiln versions, not reviewed to the pack
@@ -84,7 +94,10 @@ const formatBytes = (bytes: number) => `${bytes.toLocaleString("en-US")} bytes`;
         <AssetViewer
           name={name}
           modelUrl={`/${specimen.file}`}
-          poster={`/${specimen.poster ?? specimen.thumb}`}
+          poster={`/${specimen.poster}`}
+          posterWidth={specimen.posterWidth}
+          posterHeight={specimen.posterHeight}
+          frameClass="bg-[#767676]"
           posterAlt={`Historical gallery render of ${name}; see the poster provenance below.`}
         />
         <EngineNote />
@@ -140,6 +153,10 @@ const formatBytes = (bytes: number) => `${bytes.toLocaleString("en-US")} bytes`;
           Runtime: {formatBytes(specimen.runtime.bytes)}. Original:{" "}
           {formatBytes(specimen.bytes)}.
         </p>
+        <p class="mt-2 text-caption text-dim">
+          These GLBs are build outputs of the MIT-licensed example source; no
+          separate terms are stated for the builds.
+        </p>
         <a
           class="text-link"
           href={`/${specimen.runtime.metadata.file}`}
@@ -177,31 +194,23 @@ const formatBytes = (bytes: number) => `${bytes.toLocaleString("en-US")} bytes`;
         <p class="mt-5 text-caption">
           The example source is part of the Kiln repository.{" "}
           <a class="underline" href={`${REPO}/blob/main/LICENSE`}>
-            Repository license: MIT
+            Repository licence: MIT
           </a>
           .
         </p>
+        <p class="mt-4 text-caption">These GLBs are build outputs of the MIT-licensed example source; no separate terms are stated for the builds.</p>
       </section>
       <section class="min-w-0" aria-labelledby="authorship">
         <h2 id="authorship">Recorded authorship</h2>
-        <p class="mt-5">
-          {specimen.model}
-          {specimen.harness && (
-            <>
-              {" "}
-              through <code>{specimen.harness}</code>
-            </>
-          )}
-          {specimen.authoredDate && (
-            <>
-              {" "}
-              ·{" "}
-              <time datetime={specimen.authoredDate}>
-                {specimen.authoredDate}
-              </time>
-            </>
-          )}
-        </p>
+        {modelRecorded ? (
+          <p class="mt-5">
+            {specimen.model}{specimen.harness && <> through {harnessName(specimen.harness)}</>}{specimen.authoredDate && <> · <time datetime={specimen.authoredDate}>{specimen.authoredDate}</time></>}
+          </p>
+        ) : (
+          <p class="mt-5">
+            Model not recorded. {specimen.harness ?? "Recorded session"}{specimen.authoredDate && <>, <time datetime={specimen.authoredDate}>{specimen.authoredDate}</time></>}.
+          </p>
+        )}
         <p class="mt-2 text-caption text-dim">
           {specimen.provenance?.attribution ??
             "Historical collection attribution; no model header"}
@@ -210,7 +219,7 @@ const formatBytes = (bytes: number) => `${bytes.toLocaleString("en-US")} bytes`;
           {fields.map(([label, value]) => (
             <div>
               <dt class="font-semibold">{label}</dt>
-              <dd class="mt-1">{value ?? "Not recorded"}</dd>
+              <dd class="mt-1">{value ? spaced(value) : "Not recorded"}</dd>
             </div>
           ))}
         </dl>
@@ -275,13 +284,13 @@ const formatBytes = (bytes: number) => `${bytes.toLocaleString("en-US")} bytes`;
       class="mt-16 flex flex-wrap justify-between gap-4 border-t border-rule pt-6"
     >
       <a class="text-link" href={`/gallery/archive/${previous.name}/`}>
-        <span aria-hidden="true">←</span> {displayName(previous.name)}
+        <span aria-hidden="true">←</span> {archiveLabel(previous.name)}
       </a>
       <a class="text-link" href="/gallery/archive/">
         All earlier examples
       </a>
       <a class="text-link" href={`/gallery/archive/${next.name}/`}>
-        {displayName(next.name)} <span aria-hidden="true">→</span>
+        {archiveLabel(next.name)} <span aria-hidden="true">→</span>
       </a>
     </nav>
   </article>

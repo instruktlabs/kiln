@@ -1,5 +1,12 @@
 name: Website
 
+# Checks only: this workflow builds the site from a clean checkout and checks it on
+# every push and pull request, and deploys nothing. The site is deployed as a direct
+# upload of a reviewed local build to Cloudflare Pages (site-build decision S-4; the
+# owner runs site-build/ops/deploy.ps1), so the bytes that ship are the bytes that
+# were reviewed. The build here is the pre-upload one (KILN_SITE_PACKS=0: no Commons
+# downloads, no asset mirror), which must stay green on its own.
+#
 # The gallery is built, not published from a folder of exported meshes: every GLB
 # it serves comes out of running `examples/*.kiln.js` through the engine on the
 # runner. That is the point of it -- a program and the model the page shows cannot
@@ -32,19 +39,19 @@ on:
       - 'README.md'
       - '.github/workflows/pages.yml'
 
+# A newer push to a branch or pull request supersedes a running check; runs on main
+# always finish.
 concurrency:
-  group: pages-${{ github.ref }}
-  cancel-in-progress: true
+  group: site-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
 
 permissions:
   contents: read
-  pages: write
-  id-token: write
 
 env:
   KILN_RENDER: cpu
-  # R2 Commons files are staged locally but not uploaded yet. Set this repository
-  # variable to 1 only after uploading and verifying the pinned manifest files.
+  # The pre-upload build: no Commons pack pages or downloads, so no asset mirror is
+  # needed. The launch-mode build (1) is made and reviewed on the owner's PC.
   KILN_SITE_PACKS: ${{ vars.KILN_SITE_PACKS || '0' }}
 
 jobs:
@@ -57,6 +64,7 @@ jobs:
     # asserts the source and the image, which are platform-stable, and records
     # the artifact hash as provenance rather than as an assertion (6.2).
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
 
@@ -103,11 +111,11 @@ jobs:
       - name: Lint site source
         run: bunx biome check site/src
 
-      # Not closing a gap: `bun run test` is `bun test src scripts`, and bun treats
-      # those as SUBSTRING filters on paths, so `site/scripts` already matched and
-      # CI already ran these. Kept because that coverage is incidental -- spelling
-      # the script `bun test ./src ./scripts` would silently drop it -- and because
-      # these are the only automated check on what a poster receipt asserts.
+      # The site's own tests run here, after the site install. The root `bun test`
+      # passes `--path-ignore-patterns='site/**'`: bun treats `src` and `scripts` as
+      # substring filters on paths, so without it the root run also picked up
+      # site/scripts, whose imports need site/node_modules, and failed on a clean
+      # clone that had not installed the site.
       - name: Test the site scripts
         run: bun test scripts --timeout 20000
         working-directory: site
@@ -136,30 +144,9 @@ jobs:
         run: node scripts/validate-static.mjs --out .cache/validation
         working-directory: site
 
-      - uses: actions/configure-pages@45bfe0192ca1faeb007ade9deae92b16b8254a0d # v6.0.0
-        if: github.event_name != 'pull_request'
-      # `include-hidden-files` is required, not optional. v5 of this action archives
-      # with `--exclude=.[^/]*` unless it is set, which silently strips EVERY
-      # hidden path. The well-known skills index is at `.well-known/`, so the first
-      # deployment built it correctly, vite copied it correctly, and the upload
-      # deleted it: 465 entries in the artifact and not one of them a dotfile,
-      # while the same build locally produced all seven. Nothing reproducible on a
-      # workstation would have found this, because the exclusion is in the action
-      # rather than in the build.
-      - uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
-        if: github.event_name != 'pull_request'
-        with:
-          path: site/dist
-          include-hidden-files: true
-
-  deploy:
-    name: deploy to Pages
-    if: github.event_name != 'pull_request'
-    needs: build
-    runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
-      - id: deployment
-        uses: actions/deploy-pages@368f82528645a54fb793d4d04e342629a3f51346 # v5.0.1
+      # The browser checks (check-all-pages, verify-site --phase=browser, the island
+      # and scene checks) are maintainer gates run against the local build
+      # (site/README.md), not steps here. The build above already launches Chrome
+      # for the share cards (scripts/build-site-media.mjs finds the runner's
+      # preinstalled /usr/bin/google-chrome); no run of this workflow has yet shown
+      # that it does, so the browser checks join only after one has.

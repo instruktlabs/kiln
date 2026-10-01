@@ -1,36 +1,38 @@
 ---
+import PageHeader from "../../components/PageHeader.astro";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import AssetCard from "../../components/AssetCard.astro";
-import { assets } from "../../lib/catalog";
+import { galleryCards as assets } from "../../lib/gallery";
 const categories = [...new Set(assets.map((asset) => asset.category))].sort();
 ---
 
 <BaseLayout
-  title="Gallery — source, revisions and models | Kiln"
-  description="Inspect 23 Farm assets, six generic road vehicles and the standalone Golden Gate Bridge, with exact source, revision histories, GLBs and review status."
+  title="Gallery · Kiln"
+  description="Explore Farm, road vehicles, Foundry Floor and the Golden Gate Bridge. Inspect individual 3D models, exact downloads, saved revisions and review status."
   breadcrumbs={[{ label: "Gallery", href: "/gallery/" }]}
-  ogImage="/social/gallery.jpg"
+  card="gallery"
 >
   <div class="container">
-    <div class="grid gap-6 py-8 md:grid-cols-2">
-      <h1>Assets with their source attached.</h1>
+    <div class="grid gap-6 py-8 lg:grid-cols-2">
+      <PageHeader>Gallery</PageHeader>
       <div>
         <p class="lead">
-          Every model here keeps its source, revision and review record.
-          Acceptance is stated on each asset.
+          Inspect each model, its saved revision and download.
+          Source availability and review status are stated on each asset.
         </p>
         <a href="/gallery/archive/" class="text-link mt-3">
-          Browse the earlier, unreviewed archive →
+          Browse the earlier, unreviewed archive <span aria-hidden="true">→</span>
         </a>
       </div>
     </div>
     {assets.length > 0 ? (
       <>
-        <form
+        <div
           id="gallery-filters"
           class="mt-6 grid grid-cols-2 items-end gap-4 border-y border-ink py-5 md:flex md:flex-wrap md:gap-5"
           hidden
           aria-label="Filter assets"
+          role="group"
         >
           <label class="grid min-w-0 gap-2 font-mono text-code">
             Pack
@@ -41,6 +43,7 @@ const categories = [...new Set(assets.map((asset) => asset.category))].sort();
               <option value="all">All assets</option>
               <option value="farm">Shapes &amp; Seasons Farm</option>
               <option value="vehicles">Generic Road Vehicles</option>
+              <option value="foundry-floor">Foundry Floor</option>
               <option value="standalone">Standalone</option>
             </select>
           </label>
@@ -52,14 +55,11 @@ const categories = [...new Set(assets.map((asset) => asset.category))].sort();
             >
               <option value="all">All categories</option>
               {categories.map((category) => (
-                <option value={category}>{category}</option>
+                <option value={category}>{category === "Vehicles" ? "Farm vehicles" : category}</option>
               ))}
             </select>
           </label>
-          <button type="submit" class="btn btn-secondary">
-            Apply filters
-          </button>
-          <button type="reset" class="btn btn-secondary">
+          <button type="button" data-reset-filters class="btn btn-secondary">
             Reset filters
           </button>
           <p
@@ -69,7 +69,7 @@ const categories = [...new Set(assets.map((asset) => asset.category))].sort();
           >
             {assets.length} assets
           </p>
-        </form>
+        </div>
         <script is:inline>
           document.getElementById("gallery-filters").hidden = false;
         </script>
@@ -89,7 +89,7 @@ const categories = [...new Set(assets.map((asset) => asset.category))].sort();
     ) : (
       <p class="my-8 max-w-reading border-y border-rule py-8">
         The Commons catalog is being prepared for publication.{" "}
-        <a href="/gallery/archive/" class="text-ember underline">
+        <a href="/gallery/archive/" class="text-ink underline">
           Explore the existing archive.
         </a>
       </p>
@@ -98,7 +98,7 @@ const categories = [...new Set(assets.map((asset) => asset.category))].sort();
 </BaseLayout>
 <script>
   import { matchesAsset } from "../../lib/navigation";
-  const form = document.querySelector<HTMLFormElement>("#gallery-filters");
+  const form = document.querySelector<HTMLElement>("#gallery-filters");
   if (form) {
     const pack = document.querySelector<HTMLSelectElement>("#pack-filter")!;
     const category =
@@ -110,6 +110,7 @@ const categories = [...new Set(assets.map((asset) => asset.category))].sort();
         const match = matchesAsset(
           {
             pack: row.dataset.pack ?? null,
+            packs: row.dataset.packs?.split(" "),
             category: row.dataset.category ?? "",
           },
           pack.value,
@@ -123,11 +124,11 @@ const categories = [...new Set(assets.map((asset) => asset.category))].sort();
       document.querySelector<HTMLElement>("#gallery-empty")!.hidden = count > 0;
     };
     form.hidden = false;
-    form.addEventListener("submit", (event) => {
-      event.preventDefault();
+    form.addEventListener("change", update);
+    form.querySelector('[data-reset-filters]')?.addEventListener("click", () => {
+      pack.value = "all";
+      category.value = "all";
       update();
     });
-    form.addEventListener("change", update);
-    form.addEventListener("reset", () => requestAnimationFrame(update));
   }
 </script>

@@ -1,14 +1,151 @@
 # Kiln Workbench website
 
+## Local site candidate ready for owner review, 2026-09-30
+
+Site round 4 is locally complete and uncommitted. This status supersedes the historical checkpoints below.
+It does not establish owner acceptance or authorize a commit, merge, main move, push, upload, deployment,
+DNS change, package publication or live provider call. The coordinator owns the combined engine/site/scene seal.
+
+The candidate contains Farm r34, Golden Gate g7 and the complete FF3 delivery: 62 models, including the
+24 standard-LOD replacements, eight plants, five freight vehicles, real lot-bearing AMRs and arm handoffs.
+All exact model posters are integrated. The full models ZIP is 11,336,735 bytes, SHA-256
+`fcf107a8f782fbedc75f2e532b139532820888ddb7e78e56a1f1cad637415364`. It includes licence texts, sealed metadata
+and original replacement lineage. The owner approved the LOD migration approach and humanoid repair/maintenance
+role; AMRs and arms carry lots. Individual candidate appearance and simulation calibration remain owner-review items.
+Golden Gate stays a Scene, with separate bridge-asset and reusable Vehicles downloads. Its runtime hash remains
+`22370bcfafe48c07e692fcf89f0338087a41e90ca586f320485bcd4a99e9d66b`; Farm's accepted runtime and canvas-only poster remain unchanged.
+
+The explicit uncommitted engine docs/skills snapshot is dirty `ac6d9eb`, 370 files, digest
+`668fc84bddd46b153c3f2a53db3037b269c3d8276a5f8f9e7ac24d76f93d4106`. It includes the frozen Blender/Unity guide,
+SHA-256 `55e5abd49555a020048eace258754eb4f6fee955e0b232178234fffd48891b41`, with actual consumer/player results
+and importer/animation/visibility limits. The current archive links directly to that guide. Provenance groups
+keep each recorded effort and caveat attached to its exact models; unknown values remain explicit.
+
+The final site is dirty `5b9c7db`. Its artifact manifest digest is `f967804043df54c99629ad1ea0e0a34d9a829422f3a40a6a7f1e67d8ae0af976`;
+the complete site-input digest is `092711fd2b87a2d8722d3e0f9eadb5eb8498b74cf89f7a7315ca4f3f5bb85cb5`. These identify emitted bytes and build inputs,
+including untracked files. Build-info records actual staged pack/runtime hashes and refuses unreadable Git diffs.
+FF3 initial startup plus exterior is 1,520,413 bytes / 444,177 gzip; all four delivered chunks total 1,692,527 /
+513,163 gzip. The interior remains deferred until Enter the fab; the original D-15 initial ceiling is unchanged.
+The final road-marking aliasing repair followed visual inspection within the existing local-completion scope.
+
+Validation: 433 site tests pass with no skips/failures, 6,595 assertions; Astro checks 66 files with no diagnostics,
+and source lint is clean. Static checks cover 144 routes and 303 Draco-free GLBs. The broad accessibility sweep
+covers 284 page/width checks and 44 full keyboard tours; final Foundry page rechecks replace the earlier two routes,
+for 1852 keyboard stops total and zero problems. The 19-template, five-width browser sweep and final changed-page
+checks pass. Viewer retry/no-graphics, all three tiny-viewport scenes, FF3 both-backend entry/deferred-load/exit,
+strict failure recovery, responsive scene controls and Farm touch emulation pass. Exact evidence scopes and hashes
+are in `site/.cache/round-4/site-final-seal.json` and `review/REPORT-round-4.md`; earlier unchanged-page receipts
+are identified as such rather than relabelled as new runs.
+
+The local review adapter verifies 116 mapped downloads, 520 linked built files, 33 mapped HTML pages and all
+three SHA256SUMS endpoints. A real Chrome click downloaded the exact full Foundry ZIP and opened the consumer
+guide. Production dist stays unchanged: only CDN download anchors are mapped in local HTTP responses, whose
+hashes are recorded separately. Run `site-build/ops/preview.ps1` for the exact-byte LAN preview on port 4321;
+`/_review/receipt.json` records its mapping and `/_review/` lists the files. This is no hosted-URL claim.
+
+The isolated packs=0 Astro/static build passed 108 routes under Node22.23.2 without a mirror, scenes workspace,
+docs override or root dependencies. The entire site test suite still requires the engine installation, as the
+Website workflow specifies; the isolated no-engine trial is retained as a documented prerequisite result.
+Physical phone/tablet, assistive technology, Safari/Firefox and real 400% zoom remain unmeasured here.
+S-2 stays In production/noindex until the owner explicitly changes it. S-4 remains later Cloudflare direct upload
+after owner review and separate authorization. Deployed v0.9 dogfooding and feedback precede v1.0 publication.
+
+
+## Historical active checkpoint, 2026-09-30 at 21:01 UTC
+
+The owner reactivated the complete local-candidate goal after the documentation-only checkpoint below.
+Site round 4 is active and remains uncommitted. This block supersedes the earlier stopped-work state;
+all earlier receipts remain historical. No commit, merge, main move, push, upload, deployment, DNS change,
+package publication or live provider call is authorized.
+
+The current engine docs/skills are now copied as an explicit dirty `ac6d9eb` snapshot: 370 files,
+combined input digest `30aa753fbdf84a4d3e42c6a8f512c5b9094a3eae1f24adec1d68788b148b4b4b`.
+This includes the local-candidate installation wording and the public Blender/Unity handoff guide.
+The snapshot is provisional until the coordinator freezes the engine and importer receipts; refresh it then.
+The build receipt now identifies actual staged scenes, emitted artifacts and all site source/public/config
+inputs, including untracked files, by hash. A source Git label alone is not the candidate identity.
+
+At the 21:01 UTC checkpoint, the full site script suite passed 425 tests with no skips or failures; Astro
+reported no errors, warnings or hints, and the source lint check passed. The completed broad accessibility
+receipt has 284 page/width checks, 44 keyboard tours and 1,787 stops, with zero violations, overflow or clipped
+focus rings. These are interim receipts; final FF3 changes still need the complete candidate gates.
+
+The latest served interim build is 2026-09-30T20:36:57.128Z, still with FF2, artifact digest
+`49d4d633289a274569c1a012291bb970fa8cabf271c42d13ce85404248cafdd3`. The local review adapter leaves those production
+files unchanged and maps only CDN download anchors in its HTTP responses. It verified 85 mapped downloads,
+520 linked site files, 33 mapped HTML pages and all three SHA256SUMS endpoints. A real Chrome download click
+saved the exact 549,584-byte Farmhouse GLB. The adapter records original and mapped HTML hashes separately;
+this is no hosted-URL or upload claim. `ops/preview.ps1` uses it for LAN review on port 4321 and its dry run passed.
+
+The isolated pre-upload build passed 108 routes with zero static/link/metadata/HTML/header errors under pinned
+Node 22.23.2, without a mirror, docs override, scenes workspace or root node_modules. It used a Git archive plus
+an explicit working-source overlay and the existing locked site dependencies. CSP remains report-only; its
+inline-script hashes now derive from the pages actually emitted in each mode.
+
+FF3 multi-chunk staging, modern licence/null-effort identities, complete campus inventory and standard MSFT_lod
+measurements are implemented. The canonical 62-model pack passes site intake, including all 24 new standard-LOD
+revisions. Thirty-one exact campus model posters are ready; migrated interior posters, frozen final runtime,
+current importer guide and final source snapshots still need integration. The full model archive retains sealed
+asset metadata and replacement lineage alongside the licence texts. Review-candidate status is never promoted
+to owner acceptance. Golden Gate retains runtime SHA-256
+`22370bcfafe48c07e692fcf89f0338087a41e90ca586f320485bcd4a99e9d66b`, accepted g7 asset pins, separate bridge and Vehicles
+downloads. Farm retains its accepted runtime and clean canvas-only poster.
+
+The first complete local review requires FF3 vegetation/freight and real robot transport with production
+revalidation, actual Blender/Unity consumer results with limits, frozen current docs/skills, and final static,
+privacy, all-page, 44-tour keyboard, enlarged-text, scene, viewer and download proof on one build. Physical
+phone/tablet, assistive-technology, Safari/Firefox and real zoom checks are not inferred from Chromium emulation.
+S-2 remains In production/noindex until the owner changes it. S-4 remains later Cloudflare direct upload,
+after owner review and separate authorization. The deployed v0.9 feedback period precedes v1.0 publication.
+
+
 The public site is an Astro static build. Pages, documentation, code highlighting and drawing annotations are rendered to HTML. React and Three.js load only after an explicit asset-viewer or scene action. The Farm island mounts the separately delivered R3F scene (`@kiln-scenes/farm`) when the scenes workspace and its staged pack are present, and keeps a "being rebuilt" stand-in otherwise. The Farm page is `noindex, nofollow` and outside the sitemap either way: the interactive Farm is a preview that is still being qualified, not newly qualified content. See [The Farm scene island](#the-farm-scene-island).
 
 Building locally does not publish the site or upload the Commons files. The source-release tag is pending, and the npm package is unpublished. See the external review report for measured browser/performance results and remaining release decisions.
+
+## Historical documentation-only handoff, 2026-09-30
+
+**Round 4 remains incomplete. Work is now stopped for documentation alignment and a proposed local-completion
+goal, at the owner's latest request.** The preceding local implementation pass was authorized; the current action
+starts no further implementation or gate waves. The gates already running have finished; results are in the
+progress log. No commit, merge, push,
+upload, deployment, DNS change, package publication or live provider run has occurred or is authorized here.
+This block supersedes current-tense staging and authorization statements in the earlier takeover notes below;
+those notes and all original receipts are preserved as dated history.
+
+Golden Gate g7 is now staged, including the fresh scene controls/runtime delivery. Its separate bridge asset
+and reusable Vehicles r2 downloads remain distinct. The g7 assets keep their accepted seals; runtime
+`index-Btvmch7-.js` is 1,719,318 bytes, 517,261 bytes gzip, SHA-256
+`22370bcfafe48c07e692fcf89f0338087a41e90ca586f320485bcd4a99e9d66b`, within the existing D-15 ceiling.
+The earlier statements that the catalog still names g5 or Golden Gate is missing describe the takeover baseline.
+
+Implemented site work includes actual-staging build receipts/output hashes; multi-chunk frame staging and served
+hash checks; startup/progress/error reporting and the 20-second frame watchdog; viewer cache eviction and specific
+graphics-unavailable copy; the public `engine-handoff` docs allowlist entry; the root reliability assertion repair;
+shared scene/page headers, code/typography/focus/filter/table improvements; and a clean Farm poster captured from
+the staged m4 runtime. These changes are uncommitted and are not a completion or visual-acceptance claim.
+
+The current interim build is **2026-09-30T19:36:44.248Z**, dirty site head `5b9c7db`, with Farm r34,
+Golden Gate g7 and **Foundry Floor ff2**, and docs/skills still at **bf98851**. Its artifact manifest records
+2,772 files / 191,769,315 bytes, digest `0a09358e42b9d37c155414aa1bc59ffec40d499ecac36ff918bb09ea487184d4`.
+`sourceDiffSha256` covers the tracked Git diff; the final integration receipt must also identify untracked source
+files through the coordinator's complete source snapshot. The artifact manifest identifies emitted bytes.
+
+The complete first local review still requires FF3 with campus vegetation/freight and real floor transport,
+revalidated production flow, fresh docs and skills from the selected engine candidate, actual Blender/Unity
+imports and their tested limits, and final site/root/browser/download/keyboard/LAN gates on that same frozen
+candidate. S-2 remains: Foundry Floor is **In production**, its scene is `noindex, nofollow`, and its pack is
+`noindex, follow`, until the owner explicitly changes it. S-4 remains: Cloudflare Pages direct upload only after
+owner review and separate authorization. The deployed v0.9 dogfood/feedback period precedes later v1.0 npm publication.
+
+See the sibling Commons workspace's `site-build/review/PROGRESS.md` for exact check results and remaining acceptance items. None of the interim measurements
+establish the FF3 candidate's quality or the owner's acceptance.
 
 ## Structure
 
 - `src/layouts/BaseLayout.astro` owns navigation, breadcrumbs, metadata, structured data and the license footer. Workbench tokens and Tailwind typography are in `src/styles/global.css`.
 - `src/data/release.json` is the single release-version value. `src/lib/config.ts` derives the short version, Git tag and install commands from it.
-- `src/lib/hero.ts` selects the home drawing's asset, real mesh callouts and revision. `KILN_SITE_HERO=golden-gate-bridge` selects the review variant without changing the default.
+- The home hero is one data file, `src/data/hero.json`, written from sealed records by `scripts/build-hero.mjs` (the rig poster of the drawn revision, its GLB, the capture camera, the bounds and the two callout parts, each checked visible from the camera). `src/lib/hero-drawing.mjs` projects the bounding box and the callout part centres through that camera to draw the dimension lines, callouts and axis triad; `src/lib/hero.ts` reads the title block's facts from the catalog entry the file names. Replacing the file replaces the whole figure: `scripts/fixtures/hero-farmhouse.json` is the second fixture of `scripts/hero-drawing.test.ts`.
 - `src/content.config.ts` and `src/lib/docs-loader.ts` load the repository Markdown. `src/lib/docs-navigation.ts` is the complete ordered publication allowlist. Relative links are rewritten to emitted docs pages or repository files; local filesystem links become visible text. Source bodies are not copied into page templates.
 - `src/data/packs/`, `src/data/standalone/` and their build manifests bind catalog copy, posters, exact model/source revisions, attribution and sealed downloads. Generated binaries remain outside Git.
 - `src/components/AssetViewerRuntime.tsx` adapts the existing R3F inspection controls into the on-demand asset viewer. `src/components/SceneShell.astro` owns the scene shell (poster, explicit Explore, lazy lifecycle, progress text, error surface) for every scene page; `src/scenes/runtime/farm.ts` is the Farm runtime entry the site builds separately, and `src/scenes/runtime/scene-package.d.ts` holds the ambient types of `@kiln-scenes/farm` and the `virtual:kiln-scenes` module.
@@ -62,148 +199,17 @@ node scripts/stage-vehicles.mjs --commons /path/to/kiln-commons --mirror /path/t
 bun scripts/rig-posters.mjs vehicles --service http://127.0.0.1:8123 --mirror /path/to/mirror
 ```
 
-`stage-vehicles.mjs` refuses a vehicle unless everything that vouches for it agrees: the delivered export, the scene pack's copy and the hash its licence text states; the saved revision's sealed files, its parent chain and a creation time inside the run credited with it; the binary chunk of the delivered file and of the saved export; every tier's triangles, bounds, materials and parts in both forms; wheels that stop being drawn where the last tier starts; each tier inside its brief's body-triangle budget; and three.js's own loader drawing exactly the top tier and the wheels the catalog reports. Sizes and triangle counts are read from the GLBs, and the descriptions are the authors' own briefs. The editable ZIP is the saved revision built with fixed timestamps (the revision's UTC creation time), so the same inputs give the same bytes; the pack ZIP is the six GLBs and licence texts under a `delivery.json` inventory. A repeated run leaves `mirror-manifest.json`, `commons-build.json` and `packs/vehicles.json` unchanged. Nothing is uploaded. The vehicles share the Farm pack's licence (CC0-1.0, authored content only; owner decision D-35). The owner approved all six at every tier; the transit bus was corrected afterwards and its corrected revision shows as awaiting review until approval is recorded. `vehicle-runs.mjs` records each run's requested model and effort from its receipt and invocation; no effort is independently confirmed.
+`stage-vehicles.mjs` refuses a vehicle unless everything that vouches for it agrees: the delivered export, the scene pack's copy and the hash its licence text states; the saved revision's sealed files, its parent chain and a creation time inside the run credited with it; the binary chunk of the delivered file and of the saved export; every tier's triangles, bounds, materials and parts in both forms; wheels that stop being drawn where the last tier starts; each tier inside its brief's body-triangle budget; and three.js's own loader drawing exactly the top tier and the wheels the catalog reports. Sizes and triangle counts are read from the GLBs, and the descriptions are the authors' own briefs. The editable ZIP is the saved revision built with fixed timestamps (the revision's UTC creation time), so the same inputs give the same bytes; the pack ZIP is the six GLBs and licence texts under a `delivery.json` inventory. A repeated run leaves `mirror-manifest.json`, `commons-build.json` and `packs/vehicles.json` unchanged. Nothing is uploaded. The vehicles share the Farm pack's licence (CC0-1.0, authored content only; owner decision D-35). The owner approved all six at every tier, including the corrected transit bus on 30 September 2026; the catalog records that approval against its exact revision. The Vehicles r2 catalogue now includes the g7 licence restage while preserving those accepted model identities. `vehicle-runs.mjs` records each run's requested model and effort from its receipt and invocation; no effort is independently confirmed.
 
 ### Foundry Floor pack (in production)
 
-The Foundry Floor pack (31 models of a fictional chip fab's pilot line, release FF2) is staged from the Foundry Floor scene pack the site already serves, not from the author workspaces: run `node scripts/scene-pack.mjs` first, then
+The Foundry Floor pack (62 interior and campus models, release FF3) is staged from the sealed Foundry Floor scene pack. It includes 31 interior models, 12 campus structures, six road vehicles, eight plants and five freight vehicles. Run `node scripts/scene-pack.mjs` first, then
 
 ```sh
 node scripts/stage-foundry-floor.mjs --mirror /path/to/mirror [--scene-pack public/scene-packs/foundry-floor/<release>]
 bun scripts/rig-posters.mjs foundry-floor --service http://127.0.0.1:8123 --mirror /path/to/mirror
 ```
 
-`stage-foundry-floor.mjs` refuses a model unless its GLB bytes, the pack's `SHA256SUMS`, the asset map's pins (`data/assets.json`), the source pins in `pack.json` and the licence text's line for it (model, revision, author folder, SHA-256) agree, and unless its triangles, bounds, materials, root and clips as read by `scripts/foundry-floor-glb.mjs` equal the asset map's measured values, with three.js's loader drawing every triangle counted. Any licence statement in the pack other than CC0-1.0 stops the run ("Stop and report"); the pack is never relabelled. Names are written from the pack's slugs (`displayName`, inverted by `slugOfName`). The page lists the licence text's author folders and states no model or effort, because the pack's records name none. The models ZIP is the 31 GLBs and the licence text under a `delivery.json` inventory, stored with the DOS epoch as every timestamp, so the same inputs give the same bytes. The catalog is `src/data/packs/foundry-floor.json`; it is not part of the gallery. The pack and scene pages stay `noindex` and say "in production" until the owner's review. Nothing is uploaded.
+`stage-foundry-floor.mjs` requires the GLB, pack seals, exact asset/revision pins and licence credit to agree. Interior measurements must also match `data/assets.json`; campus measurements come from the sealed GLBs. It counts the default detailed geometry separately from optional `MSFT_lod` tiers and scene-hidden parts, and verifies what an ordinary three.js loader actually draws. The 24 legacy interior LOD migrations retain their parent lineage in sealed evidence. The owner approved that migration approach; individual candidate assets still require review.
 
-### Rig posters
-
-Poster and detail images are rendered under the Kiln review lighting rig `review-neutral-v1` on its neutral backdrop, from the exact sealed GLB the catalog links to, with nothing composited or retouched. `rig-posters.mjs farm|bridge|vehicles|foundry-floor` needs a compatible running render service (`--service`) and a git worktree of the engine's `codex/review-lighting` branch (`--engine`, or `KILN_RIG_ENGINE_DIR`; by default the sibling directory `kiln-oss-review-lighting`); each pack's run header (engine commit, service build, renderer) is recorded in `src/data/rig-posters.json`. Saved six-view review sheets are the saved revision's own previews and are not re-rendered.
-
-`node scripts/fetch-mirror.mjs` resolves each pinned file from `KILN_ASSET_MIRROR` when set, otherwise from `https://assets.kilnstudio.tools/`. It verifies SHA-256, archive/member seals, and the extracted runtime GLB/source identities. Verified caches live in ignored `site/.cache/`; viewer models, source and responsive AVIF/WebP variants are generated under ignored `public/` paths. Missing or mismatched inputs fail the build.
-
-The selected Farm delivery is r34. Its 23 exact asset revisions are owner-approved; scene performance qualification remains open. The original r33 download facts remain in `farm.deliveryHistory`. To validate and select a supplied Farm delivery without changing its sealed source directory:
-
-```sh
-node scripts/switch-farm-delivery.mjs --handoff /path/to/farm-pilot/delivery/farm-r34-documented-downloads/site-handoff.json --source-root /path/to/farm-pilot
-```
-
-The real handoff uses `downloads[]` for archive seals and `evidence[]` for the download-index seal. The command verifies all archive members, identities and owner decisions before updating catalog files. It stages new archive/index/preview bytes under `site/.cache/commons/mirror/`, so the original local mirror may remain unchanged. The farmhouse review sheet comes from the exact r34 runtime ZIP; the retained r33 exterior cutout and scene poster carry visible revision qualifications. No sealed source is modified, no image is re-rendered, and no public file is uploaded. The historical floor before/after views and parent revision stay intact.
-
-Responsive widths are defined once in `scripts/media-variants.mjs`, including the 672 px mobile candidate. After changing that list, run `node scripts/media-variants.mjs` to refresh only derived srcsets in the selected catalogs (Farm, Vehicles, Bridge) and build plan; revisions, seals and source records are preserved. The fetch pipeline uses the same widths.
-
-The extra extracted Farm runtime GLBs awaiting an owner-authorized upload are listed in `src/data/upload-manifest.json`. The mirror manifest also names the pack archives, standalone delivery and media that must exist on R2 before enabling Commons in CI. `node scripts/upload-set.mjs` prints that set from the two manifests (files and bytes by group) and checks their records, so the upload list is never a number remembered from an earlier report; it uploads nothing.
-
-## Build and preview
-
-Install both dependency sets from the repository root:
-
-```sh
-bun install --frozen-lockfile
-cd site
-bun install --frozen-lockfile
-```
-
-For a full local review, set these environment variables before building:
-
-| Variable | Value and purpose |
-| --- | --- |
-| `KILN_ASSET_MIRROR` | Absolute path to the local R2-layout mirror. Omit it to fetch the same pinned files from public R2. |
-| `KILN_SITE_PACKS` | `1` to stage and emit Commons assets/pages; `0` for the pre-upload build without Commons downloads. Local default is enabled; CI defaults to 0. |
-| `KILN_SITE_DOCS_DIR` | Path to the docs directory, absolute or relative to `site/`. Default `../docs`. Point at the main 0.9 docs for local review. |
-| `CHROME_PATH` | Optional absolute Chrome/Chromium executable path for social cards and browser checks. |
-| `KILN_SITE_HERO` | Optional `golden-gate-bridge` review variant. Remove it for the default farmhouse. |
-| `KILN_SITE_SCENES_DIR` | Path to the scenes workspace that holds `@kiln-scenes/farm`, absolute or relative to `site/`; `off` builds the stand-in island. Default `../../kiln-commons/scenes`. A value that is not a workspace is an error. |
-| `KILN_SITE_SCENE_PACK_DIR` | Optional directory of a scene pack in the standalone layout (`assets/` and `THIRD-PARTY-NOTICES.txt`), instead of the workspace's recorded `packages/farm/dist/<release>/standalone`. |
-| `KILN_SITE_SCENE_PACK_DIR_<SCENE>` | The same for one scene, named in upper case with hyphens as underscores (`KILN_SITE_SCENE_PACK_DIR_GOLDEN_GATE`). Golden Gate's standalone build sits at an unversioned path that its authors rebuild in place, so a build that must stay reproducible takes a frozen copy of the standalone directory here. The catalog still has to agree with it: a source that differs from `src/data/scene-packs.json` stops the build until it is reviewed and recorded. |
-
-The `projects-and-live-review` and `material-library` docs are optional. With the default 0.8 checkout docs, they produce build warnings and are omitted. Other missing documentation is a build error. Documentation links are generated from the pages actually available. The install page's release aside ends with a line read from the rendered guide (`src/lib/install-note.ts`): it says the guide names the same release when the guide contains the site's version, and otherwise keeps the warning that parts of it may describe an earlier release, so a build from older docs still warns and one from the current docs does not.
-
-From the repository root, verify the existing published archive posters:
-
-```sh
-bun scripts/verify-posters.mjs
-```
-
-Then run the same site build sequence as Pages from `site/`:
-
-```sh
-bun scripts/build-assets.mjs
-bun scripts/build-skills-discovery.mjs
-bun run build
-bun scripts/verify-assets.mjs
-node scripts/validate-static.mjs --out /path/to/review/static
-bun run preview --host 127.0.0.1 --port 4175
-```
-
-The preview serves `dist/` on the port it is given or stops: `astro.config.mjs` sets Vite's `preview.strictPort`, so a busy port is an error rather than a move to the next free one. `site-build/ops/preview.ps1` in kiln-commons serves the same `dist/` to the local network on one fixed port.
-
-`bun run build` stages Commons, produces fonts/responsive media/social cards, stages the Farm scene pack when its workspace is present, builds Astro, then generates discovery files. Source highlighting uses Shiki at build time; `src/lib/shiki-contrast.ts` maps the default parameter orange to Workbench ember for AA contrast. Fonts are self-hosted WOFF2 with their OFL notices. After Astro emits HTML, `scripts/subset-site-fonts.mjs` subsets all five fonts to rendered text and dynamic UI characters, retaining ASCII, common typography, OpenType layout and Archivo’s complete width/weight ranges. Only `dist/fonts` is changed; full originals remain in `public/fonts` for social cards. The checksum-verified cache is invalidated by font or character-set changes. The build uses pinned Node dependencies, without a Python requirement. Social cards are 1200×630 JPEG (a format every network's crawler documents; the previous site needed two LinkedIn-specific card fixes) and checked against the 300 KB limit. The build removes cards no page uses any more, including any an earlier build wrote in another format.
-
-To verify the pre-upload path, unset `KILN_ASSET_MIRROR` and `KILN_SITE_DOCS_DIR`, set `KILN_SITE_PACKS=0`, and rerun the sequence. This requires no local Commons mirror. The public archive poster verification still contacts the already published archive URLs.
-
-For development, run `bun run dev` after the asset/media preparation steps. Restart the dev server after changing the selected docs directory or build flags.
-
-### The scene islands
-
-A scene page has two halves, both staged into ignored `public/` and both read-only inputs from the scenes workspace (`KILN_SITE_SCENES_DIR`, or the sibling `../../kiln-commons/scenes`; the site never runs the workspace's builds or tests):
-
-- **The pack** (`public/scene-packs/<scene>/<release>/`): `node scripts/scene-pack.mjs` verifies the workspace's standalone build against its `SHA256SUMS` and `pack.json` (every directory of the pack must be sealed), copies `pack.json`, `SHA256SUMS`, the sealed directories and `THIRD-PARTY-NOTICES.txt` byte for byte, verifies the copy again, and compares the result with the record in `src/data/scene-packs.json`. No asset is regenerated or re-encoded and the licence texts are copied unchanged. A different delivery fails that comparison until it has been reviewed and recorded with `node scripts/scene-pack.mjs --scene <id> --record`.
-- **The runtime** (`public/scene-runtime/<scene>/`): the code, delivered in one of two forms, each with a `runtime.json` (schema `kiln.scene-runtime/1`) recording bytes, gzip bytes, SHA-256 and the D-15 ceiling it was held to.
-  - The Farm runtime is built by the site: `node scripts/scene-runtime.mjs` runs one Vite application build of `src/scenes/runtime/farm.ts` with the scene kit's settings (bare `three` resolved to the kit's runtime facade, `resolve.dedupe` for `three`, `react`, `react-dom` and `@react-three/fiber`, the kit's `KILN_DEV`/`KILN_TEST` constants false, one exact alias per `exports` entry of `@kiln-scenes/farm` and `@kiln-scenes/scene-kit`). It fails on a second copy of any deduped package and on a bundle over the Farm ceiling. `node scripts/scene-runtime.mjs --measure` prints the build with and without the facade alias and stages nothing. The shell loads the chunk with a dynamic import of its staged URL.
-  - The Golden Gate and Foundry Floor runtimes are the scenes' own standalone builds: `scripts/scene-pack.mjs` stages each public chunk byte for byte after checking `bundle-modules.json` (one chunk, one `three`, the facade present, inside the ceiling) and writes `frame.html`, a page that hosts the chunk and reports progress, ready and error to the shell with `postMessage`. The shell loads it in an iframe.
-
-The Astro build itself holds no scene code and no alias, so the gallery viewer keeps the classic three build (a global facade alias would replace its `WebGLRenderer`). `astro.config.mjs` only exposes which scenes are staged as `virtual:kiln-scenes`. There is no `link:` or `file:` dependency, so `package.json` and `bun.lock` do not change with the scenes. `node scripts/typecheck-scenes.mjs` type-checks the scene sources the Farm runtime imports with the site's TypeScript, the kit's compiler settings and one copy of the React and three type packages.
-
-Without the workspace or a staged half (a clean checkout, CI, or `KILN_SITE_SCENES_DIR=off`), the build stays valid and hermetic: a scene is included only when both its runtime and its pack are staged, otherwise its page says the interactive scene is not part of this build, no scene code ships, and anything staged earlier is removed so the output never carries a pack its page does not use.
-
-While the scenes are previews, `src/pages/scenes/farm.astro`, `src/pages/scenes/golden-gate.astro` and `src/pages/scenes/foundry-floor.astro` pass `noindex` and `nofollow` unconditionally, so each page emits `noindex, nofollow` and stays out of `sitemap.xml` whatever the scene's `available` flag says. `node scripts/verify-scene-island.mjs http://127.0.0.1:4175 farm .tmp/farm-island.png` (or `golden-gate`, `foundry-floor`) drives a preview in headless Chrome: no scene request before Explore, Explore, the scene's ready state, one `three` copy (Farm: the runtime's `REVISION` is the revision the page announces), fullscreen, Exit, a second Explore, an unavailable pack and recovery, a throwing mount, WebGL2 without WebGPU, and no graphics API. It writes the screenshot and a JSON report, records no timings, and with `--strict` fails on unexpected console errors or warnings and on three's "Multiple instances" warning.
-
-Device copy for a scene comes only from measurements its workspace recorded. The Farm page describes the touch scheme (joystick, pinch, drag look, one context tap, third-person driving), says phones of the Galaxy S24+ class start at the high tier and tablets of the Galaxy Tab S9 FE class at minimal, and says no other device was measured. `scripts/scene-copy.test.ts` fails when that copy gains a frame-rate or timing figure, another number, or a promise for a device that was not measured. Golden Gate makes no device claims until its workspace records some, and neither does the Foundry Floor: `validate-static.mjs` fails its scene page on any device word, on a maker named outside the no-affiliation line and on wording that implies an exterior. The Golden Gate page reads the bridge tiers its staged pack loads from the served `pack.json` (through `virtual:kiln-scenes`), compares them by SHA-256 with the tiers the bridge asset page offers, and states a tier the asset page does not offer with the pack's own revision, size and digest. `node scripts/verify-scene-touch.mjs` opens the Farm under touch emulation (390 x 844, a touch screen and a coarse pointer) and checks that the controls the page describes are the ones the scene draws: one camera tap target and no arrow, plus or minus pad in the overview; the joystick and at most one context tap target in play. It is emulation in desktop Chrome, so it shows what is drawn and measures no device. `bun scripts/verify-scene-served.mjs <site-url>` hashes what a running site serves for each staged scene (runtime chunk over HTTP, then every file the pack's `SHA256SUMS` seals) against `runtime.json` and `src/data/scene-packs.json`, and against the frozen build named by `KILN_SITE_SCENE_PACK_DIR_<SCENE>`; run it with bun, whose zlib the ceilings are measured with.
-
-### Long code blocks
-
-`src/components/CodeBlock.astro` renders every source excerpt on the site: the home page's `source.kiln.js`, the gallery and archive sources, the workspace command and the tool exchange. The server always renders the whole file. When at least six lines would be hidden (a block of 20 lines or more at the default 14 preview lines, `src/lib/code-preview.ts`), the small classic script that ends the block collapses it to its first lines with a fade and shows a button that expands it in place: `aria-expanded`, `aria-controls`, named "Show all N lines of <label>". Expanded, the button stays at the bottom of the viewport while the block is in view and collapses it again. The script runs while the page is parsed, so nothing below the block moves when it collapses, and the button never appears without its handler. The Copy button copies the whole file whether or not the block is collapsed. Without scripts the whole file is shown and there is no control. Documentation code fences are complete snippets of at most 36 lines and are left whole. `scripts/verify-source.mjs` and `scripts/verify-copy.mjs` check all of this in Chrome (collapsed and expanded, keyboard, layout shift, the copied text against the source, axe). The layout-shift part (`scripts/layout-shift.mjs`) loads each page in a 12,000 px window as served, with the collapse script removed, and with the collapse deferred until after the load (the control: it has to shift the page by 0.01 or more, or the comparison could not see a shift if there were one); the served page may not score more than the page without the script. The 3D viewer is held off in those loads, because its Open control appearing once its script runs moves the content below it by 28 px on some loads and not on others, which is the page's own shift and not the collapse's. A returning load with the viewer live has to stay under 0.01.
-
-### The 3D view: tone mapping and the engine note
-
-The gallery viewer lights every asset with the Kiln review rig's own values (`src/lib/review-rig.ts`; `src/lib/review-rig-three.ts` applies them). Under the 3D controls, a Tone mapping select shows the same GLB under the rig's Review Neutral (the default, selected on load and drawn exactly as before the control existed), ACES or Linear. The choices are `TONE_MAPPINGS` and `applyToneMapping` rebuilds the materials for the one picked. A GLB carries no lighting or tone mapping, so the same file reads differently in each engine, and every asset page says so in an engine note (`src/components/EngineNote.astro`): the download is a standard glTF 2.0 binary with PBR metallic-roughness materials (the vehicle files also declare the optional `MSFT_lod` extension), and this view tone-maps with Review Neutral at the rig's exposure. `node scripts/verify-viewer-models.mjs <site-url> <review-directory>` opens the 3D view of each of the build plan's 30 models and requires the response to carry the planned byte count and SHA-256 and the canvas to have drawn a solid shape other than its backdrop (a control run with the model request held back must show none, since the viewer draws a grid and a loading line before any model arrives). `scripts/engine-note.mjs` reads the JSON chunk of the GLB each page loads, and `validate-static.mjs` fails a page whose note is missing, or whose claims its GLB contradicts (another glTF version, a required extension, a shading model other than metallic-roughness). `scripts/verify-viewer-tone.mjs` drives the control in Chrome: it is named, offers three choices with the default selected, works from the keyboard, changes the picture, and choosing the default again restores the picture (all within the same run-to-run tolerance, since two renders of one state are not always byte-identical); `--baseline` on a build made before the control and `--compare` on the build after it check that the default picture is unchanged, within the run-to-run noise `--repeat` measures (some assets differ by a few pixels between loads of one build).
-
-## Verification
-
-From `site/`:
-
-```sh
-bunx astro sync
-bunx tsc --noEmit
-bunx astro check
-bun test scripts --timeout 20000
-node scripts/validate-static.mjs --dist dist --out /path/to/review/static
-node scripts/verify-islands.mjs http://127.0.0.1:4175 /path/to/review
-node scripts/typecheck-scenes.mjs
-node scripts/verify-scene-island.mjs http://127.0.0.1:4175 farm /path/to/review/farm-island.png --strict
-node scripts/verify-scene-island.mjs http://127.0.0.1:4175 golden-gate /path/to/review/golden-gate-island.png --strict
-node scripts/verify-source.mjs http://127.0.0.1:4175 /path/to/review
-node scripts/verify-copy.mjs http://127.0.0.1:4175 /path/to/review
-node scripts/verify-scene-widths.mjs http://127.0.0.1:4175 /path/to/review/scene-widths /path/to/review/screenshots/scene-widths
-node scripts/verify-scene-touch.mjs http://127.0.0.1:4175 /path/to/review/scene-touch /path/to/review/screenshots/scene-touch
-node scripts/verify-archive.mjs http://127.0.0.1:4175 /path/to/review/archive.json
-bun scripts/verify-scene-served.mjs http://127.0.0.1:4175
-node scripts/verify-viewer-tone.mjs http://127.0.0.1:4175 /path/to/review/tone /path/to/review/screenshots/tone --repeat 4
-node scripts/verify-viewer-models.mjs http://127.0.0.1:4175 /path/to/review/viewer-models /path/to/review/screenshots/viewer-models
-node scripts/verify-hero-qualification.mjs http://127.0.0.1:4175 /path/to/review
-node scripts/check-all-pages.mjs http://127.0.0.1:4175 /path/to/review
-node scripts/verify-site.mjs --base=http://127.0.0.1:4175 --out=/path/to/review --phase=browser
-node scripts/verify-site.mjs --base=http://127.0.0.1:4175 --out=/path/to/review --phase=lighthouse
-```
-
-The browser runner accepts `--executable=/path/to/browser` for a second Chromium build. Run Lighthouse without concurrent asset builds or test workloads. Chrome/Chromium checks are not claims of physical Safari, iOS, Android or Firefox coverage.
-
-From the root, also run `bunx biome check site/src`, `bun run check:toolchain`, `bun run typecheck`, `bun run lint` and `bun run test`. The root fixture `scripts/site-indexing.test.mjs` (the single-page site's crawler test) is retired. It could not pass on the multipage build: it read the retired single-page entry file, required the 27-example PNG share card and expected a one-URL sitemap. What it protected still matters, so the same guarantees are now checked against the built pages: each indexable page has exactly one canonical URL, hash routes are never advertised as pages, `robots.txt` does not block the sitemap, and every declared share image exists at the size it declares in a format crawlers read (PNG or JPEG). The checks are `inspectHtml`, `discoveryErrors` and `socialMetadataErrors` in `scripts/static-validation-core.mjs` (unit-tested in `scripts/static-validation.test.ts`); `scripts/validate-static.mjs` enforces them on `dist` and prints a `Discovery:` line. Two things the fixture led to are kept on purpose. `sitemap-index.xml` is generated and the validator fails when it is missing or lists anything but the site's sitemap. Share cards are JPEG instead of WebP. The 27-example card is not shipped; `git show 5e6c422:site/public/kiln-social-27-v2.png` restores it. The site validator checks the actual built pages, all internal links/anchors, unique metadata, social images, and sitemap exclusions.
-
-## Pages and launch
-
-`.github/workflows/pages.yml` retains the existing archive GLB build, poster receipts, source/runtime verification and `.well-known` skills generation. `include-hidden-files: true` must remain on the Pages upload action or the skills index disappears from the artifact.
-
-The Pages workflow has no scenes workspace, so it builds the stand-in Farm island and ships no scene pack. Shipping the interactive Farm needs an owner decision on where the pack is hosted and on its qualification; staging it locally does not authorize that.
-
-The workflow reads repository variable `KILN_SITE_PACKS`, defaulting to 0 before upload. Launch requires owner approval: upload and hash-check the manifest's R2 files, set that variable to 1, resolve release/acceptance decisions, then merge and deploy through the existing Pages workflow. No script in this site uploads assets, changes DNS, publishes npm packages or authorizes deployment.
+The page presents recorded model/harness and requested effort, including explicit unknown values and any provenance qualification. Effort is never independently inferred. The deterministic models ZIP contains all 62 GLBs, licence files, sealed asset metadata, replacement lineage and a `delivery.json` inventory. The catalog is `src/data/packs/foundry-floor.json`; it remains separate from the gallery. Foundry Floor stays **In production** with the recorded noindex policy until the owner changes S-2. The Blender/Unity handoff guide describes actual importer/player checks, required derivatives and unsupported behavior. Staging uploads nothing.

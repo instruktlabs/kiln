@@ -196,7 +196,7 @@ describe('the pack archive', () => {
       const files = unzipSync(zip);
       expect(Object.keys(files)).toEqual(['delivery.json', 'models/sedan.glb', 'licenses/sedan.ASSET-LICENSE.txt']);
       const inventory = JSON.parse(new TextDecoder().decode(files['delivery.json']));
-      expect(inventory).toMatchObject({ schemaVersion: 1, profile: 'runtime', release: 'r1', license: 'CC0-1.0' });
+      expect(inventory).toMatchObject({ schemaVersion: 1, profile: 'runtime', release: 'r2', license: 'CC0-1.0' });
       expect(inventory.files['models/sedan.glb']).toEqual({ bytes: fixture.glb.length, sha256: sha(fixture.glb) });
       expect(inventory.assets[0]).toMatchObject({ slug: 'sedan', revisionId: 'r_00000000000000000000000000000001', model: 'models/sedan.glb' });
       expect(inventory.assets[0].tiers.map((tier: { tier: string; triangles: number }) => [tier.tier, tier.triangles])).toEqual([['LOD0', 210], ['LOD1', 100], ['LOD2', 5]]);
@@ -242,11 +242,11 @@ describe('staging into the mirror, the manifest, the plan and the catalog', () =
     await withFixture({}, async (fixture) => {
       const first = await stage(fixture);
       expect(first.pins.map((pin) => pin.path).sort()).toEqual([
-        'media/vehicles/r1/review/sedan.png',
-        'packs/vehicles/r1/editable/sedan-editable.zip',
-        'packs/vehicles/r1/generic-road-vehicles-runtime.zip',
-        'packs/vehicles/r1/licenses/sedan.ASSET-LICENSE.txt',
-        'packs/vehicles/r1/models/sedan.glb',
+        'media/vehicles/r2/review/sedan.png',
+        'packs/vehicles/r2/editable/sedan-editable.zip',
+        'packs/vehicles/r2/generic-road-vehicles-runtime.zip',
+        'packs/vehicles/r2/licenses/sedan.ASSET-LICENSE.txt',
+        'packs/vehicles/r2/models/sedan.glb',
       ]);
       for (const pin of first.pins) expect(hashBytes(await readFile(join(fixture.mirror, pin.path)))).toBe(pin.sha256);
       const manifest = await readJsonFile(join(fixture.data, 'mirror-manifest.json'));
@@ -255,10 +255,10 @@ describe('staging into the mirror, the manifest, the plan and the catalog', () =
       expect(manifest.files).toHaveLength(6);
       const plan = await readJsonFile(join(fixture.data, 'commons-build.json'));
       expect(plan.archives).toEqual(['packs/farm/keep.zip', RUNTIME_ARCHIVE_PATH, vehicleFiles('sedan').editable]);
-      expect(plan.models).toEqual([{ path: 'packs/vehicles/r1/models/sedan.glb', output: 'models/vehicles/sedan.glb', bytes: fixture.glb.length, sha256: sha(fixture.glb) }]);
+      expect(plan.models).toEqual([{ path: 'packs/vehicles/r2/models/sedan.glb', output: 'models/vehicles/sedan.glb', bytes: fixture.glb.length, sha256: sha(fixture.glb) }]);
       expect(plan.sources).toHaveLength(1);
       expect(plan.sources[0]).toMatchObject({ archive: vehicleFiles('sedan').editable, member: 'fixture-sedan/r_00000000000000000000000000000001/source.kiln.js', output: 'sources/vehicles/sedan.kiln.js' });
-      expect(plan.images.map((image: { inputPath: string }) => image.inputPath)).toEqual(['media/vehicles/r1/review/sedan.png']);
+      expect(plan.images.map((image: { inputPath: string }) => image.inputPath)).toEqual(['media/vehicles/r2/review/sedan.png']);
       const catalog = await readJsonFile(join(fixture.data, 'packs/vehicles.json'));
       expect(catalog).toMatchObject({ id: 'vehicles', assetCount: 1, license: 'CC0-1.0' });
       expect(catalog.assets[0]).toMatchObject({ slug: 'sedan', pack: 'vehicles', category: 'Cars', modelPath: '/models/vehicles/sedan.glb', sourcePath: '/sources/vehicles/sedan.kiln.js' });
@@ -284,11 +284,11 @@ describe('staging into the mirror, the manifest, the plan and the catalog', () =
       const manifestFile = join(fixture.data, 'mirror-manifest.json');
       const planFile = join(fixture.data, 'commons-build.json');
       const manifest = await readJsonFile(manifestFile);
-      manifest.files.push({ path: 'packs/vehicles/r1/models/old.glb', bytes: 1, sha256: sha('old') }, { path: 'media/vehicles/r1/review/old.png', bytes: 1, sha256: sha('old') });
+      manifest.files.push({ path: 'packs/vehicles/r2/models/old.glb', bytes: 1, sha256: sha('old') }, { path: 'media/vehicles/r2/review/old.png', bytes: 1, sha256: sha('old') });
       await writeJsonFile(manifestFile, manifest);
       const plan = await readJsonFile(planFile);
-      plan.models.push({ path: 'packs/vehicles/r1/models/old.glb', output: 'models/vehicles/old.glb', bytes: 1, sha256: sha('old') }, { path: 'packs/farm/r34/x.glb', output: 'models/farm/x.glb', bytes: 1, sha256: sha('x') });
-      plan.images.push({ inputPath: 'media/vehicles/r1/review/old.png', src: '/media/vehicles/r1/review/old.webp', width: 1, height: 1 });
+      plan.models.push({ path: 'packs/vehicles/r2/models/old.glb', output: 'models/vehicles/old.glb', bytes: 1, sha256: sha('old') }, { path: 'packs/farm/r34/x.glb', output: 'models/farm/x.glb', bytes: 1, sha256: sha('x') });
+      plan.images.push({ inputPath: 'media/vehicles/r2/review/old.png', src: '/media/vehicles/r2/review/old.webp', width: 1, height: 1 });
       await writeJsonFile(planFile, plan);
       await stage(fixture);
       const after = await readJsonFile(manifestFile);

@@ -9,6 +9,8 @@
     "confirmedEffort": null,
     "confirmation": "Requested in receipt and invocation; effective reasoning effort not independently confirmed.",
     "modelReported": null,
+    "status": "completed",
+    "stop": null,
     "startedAt": "2026-09-29T03:50:28.801Z",
     "endedAt": "2026-09-29T04:38:49.507Z",
     "source": {
@@ -28,6 +30,8 @@
     "confirmedEffort": null,
     "confirmation": "Requested in receipt and invocation; effective reasoning effort not independently confirmed.",
     "modelReported": null,
+    "status": "completed",
+    "stop": null,
     "startedAt": "2026-09-29T04:45:04.790Z",
     "endedAt": "2026-09-29T05:21:53.869Z",
     "source": {
@@ -47,6 +51,8 @@
     "confirmedEffort": null,
     "confirmation": "Requested in receipt and invocation; effective reasoning effort not independently confirmed.",
     "modelReported": null,
+    "status": "completed",
+    "stop": null,
     "startedAt": "2026-09-29T07:28:00.371Z",
     "endedAt": "2026-09-29T08:04:05.466Z",
     "source": {
@@ -68,6 +74,8 @@
     "modelReported": [
       "claude-sonnet-5-5"
     ],
+    "status": "completed",
+    "stop": "success",
     "startedAt": "2026-09-29T20:31:59.792Z",
     "endedAt": "2026-09-29T21:33:37.433Z",
     "source": {
@@ -89,6 +97,8 @@
     "modelReported": [
       "claude-sonnet-5-5"
     ],
+    "status": "completed",
+    "stop": "success",
     "startedAt": "2026-09-30T00:41:33.038Z",
     "endedAt": "2026-09-30T01:26:32.738Z",
     "source": {
@@ -110,6 +120,8 @@
     "modelReported": [
       "claude-sonnet-5-5"
     ],
+    "status": "completed",
+    "stop": "success",
     "startedAt": "2026-09-30T01:33:36.647Z",
     "endedAt": "2026-09-30T02:25:39.161Z",
     "source": {
@@ -131,6 +143,8 @@
     "modelReported": [
       "claude-sonnet-5-5"
     ],
+    "status": "completed",
+    "stop": "success",
     "startedAt": "2026-09-30T02:49:27.521Z",
     "endedAt": "2026-09-30T03:07:22.699Z",
     "source": {
@@ -138,6 +152,52 @@
       "receiptSha256": "f1dfb487f30f8eb11026da8f88c03cfd060d8f21b0b62f1ea4c315e772cfd04c",
       "invocation": "showcase/runs/sonnet-gg-bridge-fix/review-3/invocation.json",
       "invocationSha256": "b6fe48c27dc49e871ce27ad2f89a6cf02d442affba1e829acb75783ebe6eb038"
+    }
+  },
+  {
+    "stage": "fix-review-4",
+    "author": "sonnet-gg-bridge-fix",
+    "requestedModel": "claude-sonnet-5-5",
+    "requestedEffort": "max",
+    "harness": "claude",
+    "harnessVersion": "2.1.280",
+    "confirmedEffort": null,
+    "confirmation": "Requested in receipt and invocation; effective reasoning effort not independently confirmed.",
+    "modelReported": [
+      "claude-sonnet-5-5"
+    ],
+    "status": "failed",
+    "stop": "error_max_budget_usd",
+    "startedAt": "2026-09-30T09:21:25.193Z",
+    "endedAt": "2026-09-30T09:58:51.905Z",
+    "source": {
+      "receipt": "showcase/runs/sonnet-gg-bridge-fix/review-4/receipt.json",
+      "receiptSha256": "edcae419a4786bb43a795c8f8951721180de0902dc4a3845fdb3d05cea987565",
+      "invocation": "showcase/runs/sonnet-gg-bridge-fix/review-4/invocation.json",
+      "invocationSha256": "e9178daea28eab0bca9da6483396e9c6f73fd5f431f12432c8d7b05c16395cd5"
+    }
+  },
+  {
+    "stage": "fix-review-5",
+    "author": "sonnet-gg-bridge-fix",
+    "requestedModel": "claude-sonnet-5-5",
+    "requestedEffort": "max",
+    "harness": "claude",
+    "harnessVersion": "2.1.280",
+    "confirmedEffort": null,
+    "confirmation": "Requested in receipt and invocation; effective reasoning effort not independently confirmed.",
+    "modelReported": [
+      "claude-sonnet-5-5"
+    ],
+    "status": "completed",
+    "stop": "success",
+    "startedAt": "2026-09-30T11:45:55.121Z",
+    "endedAt": "2026-09-30T12:33:47.036Z",
+    "source": {
+      "receipt": "showcase/runs/sonnet-gg-bridge-fix/review-5/receipt.json",
+      "receiptSha256": "ab1b6479812e399062c7cffc9502d632e0d0eadf57de605e976c9fab01f15974",
+      "invocation": "showcase/runs/sonnet-gg-bridge-fix/review-5/invocation.json",
+      "invocationSha256": "0b1f0d9079beb69a65ed7041b302137334b40f7cd29a5571cd4aa47e86d4827b"
     }
   }
 ]

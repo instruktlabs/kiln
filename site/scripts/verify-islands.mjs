@@ -14,7 +14,7 @@ const farm = JSON.parse(await readFile(new URL('../src/data/packs/farm.json', im
 const farmhouse = farm.assets.find((asset) => asset.id === 'farmhouse');
 assert.ok(farmhouse, 'The selected Farm delivery must contain farmhouse.');
 const results = { browser: '', pages: [], behaviors: [], errors: [] };
-const browser = await puppeteer.launch({ executablePath: chromeExecutable(), headless: true, args: ['--no-sandbox'] });
+const browser = await puppeteer.launch({ executablePath: chromeExecutable(), headless: true, pipe: true, args: ['--no-sandbox'] });
 results.browser = await browser.version();
 const page = await browser.newPage();
 page.on('pageerror', (error) => results.errors.push(error.message));
@@ -144,6 +144,38 @@ try {
   }
   await page.click('[data-close]');
 
+  // A failed first GLB request must not poison later opens: drei caches the rejected load by URL until the viewer's
+  // error path clears it (engineering review, finding 5). Fail the first request, then let the retry through.
+  const retry = await browser.newPage();
+  await retry.setRequestInterception(true);
+  let failModel = true;
+  let modelRequests = 0;
+  retry.on('request', (request) => {
+    const url = new URL(request.url());
+    if (url.pathname === farmhouse.modelPath) {
+      modelRequests += 1;
+      if (failModel) {
+        failModel = false;
+        void request.abort();
+        return;
+      }
+    }
+    void request.continue();
+  });
+  await retry.goto(new URL('/gallery/farmhouse/', base).href, { waitUntil: 'networkidle0' });
+  await retry.click('[data-open]');
+  await retry.waitForFunction(() => document.querySelector('[data-status]')?.textContent.includes('try again'), { timeout: 20000 });
+  assert.equal(await retry.$eval('[data-open]', (element) => !element.hidden && element === document.activeElement), true);
+  assert.equal(modelRequests, 1);
+  await retry.click('[data-open]');
+  await retry.waitForSelector('[data-mount] canvas', { timeout: 20000 });
+  await retry.waitForNetworkIdle({ idleTime: 750 });
+  assert.equal(modelRequests, 2, 'The second open must request the GLB again.');
+  assert.equal(await retry.$eval('[data-status]', (element) => element.textContent.includes('Drag to orbit')), true);
+  results.retry = { modelRequests, status: await retry.$eval('[data-status]', (element) => element.textContent.trim()) };
+  results.behaviors.push('A failed first GLB request shows the retry copy and restores Open; the second open requests the GLB again and loads it.');
+  await retry.close();
+
   const fallback = await browser.newPage();
   await fallback.evaluateOnNewDocument(() => {
     const original = HTMLCanvasElement.prototype.getContext;
@@ -153,7 +185,7 @@ try {
   });
   await fallback.goto(new URL('/gallery/archive/robot-arm/', base).href, { waitUntil: 'networkidle0' });
   await fallback.click('[data-open]');
-  await fallback.waitForFunction(() => document.querySelector('[data-status]')?.textContent.includes('could not load'));
+  await fallback.waitForFunction(() => document.querySelector('[data-status]')?.textContent.includes('cannot draw'));
   assert.equal(await fallback.$eval('[data-poster]', (element) => element.hidden), false);
   assert.equal(await fallback.$eval('[data-open]', (element) => element === document.activeElement), true);
   results.behaviors.push('Forced no-WebGL leaves the poster, source and downloads usable with a visible error.');

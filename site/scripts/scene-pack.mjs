@@ -3,6 +3,7 @@ import { copyFile, mkdir, readFile, readdir, rm, writeFile } from 'node:fs/promi
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { assetPath, hashBytes } from './mirror-core.mjs';
+import { describeFinding, scanFiles } from './private-data.mjs';
 import { checkCeiling, measureFrameRuntime, stageFrameRuntime, stagedRuntimeDirectory } from './scene-runtime.mjs';
 import { PACK_DIRECTORY, resolveScenesDir } from './scene-source.mjs';
 
@@ -13,12 +14,12 @@ export const PACK_SCHEMA = 'kiln.scene-pack/1';
 export const SCENE_SOURCES = {
   farm: 'packages/farm/dist/m4/standalone',
   'golden-gate': 'packages/golden-gate/dist/standalone',
-  'foundry-floor': 'packages/foundry-floor/dist/standalone',
+  'foundry-floor': 'packages/foundry-floor/dist/ff3/standalone',
 };
 /** Scenes staged as a standalone build (its public chunk served as built) rather than built by the site. */
 export const FRAME_SCENES = ['golden-gate', 'foundry-floor'];
 const RECORDED = ['id', 'release', 'three', 'sealedFiles', 'sealedBytes', 'totalFiles', 'totalBytes', 'packJsonSha256', 'sha256sumsSha256', 'noticesSha256'];
-const RUNTIME_RECORDED = ['kind', 'file', 'bytes', 'gzipBytes', 'gzipMethod', 'sha256', 'modulesSha256'];
+const RUNTIME_RECORDED = ['kind', 'file', 'bytes', 'gzipBytes', 'gzipMethod', 'sha256', 'modulesSha256', 'chunks', 'initialLoad'];
 
 /** Parse `sha256sum` output: one `<64 hex digits>  <relative path>` per line. */
 export function parseSums(text) {
@@ -110,11 +111,19 @@ export async function verifyPack(assets, notices) {
   };
 }
 
-/** Copy a verified pack byte for byte into `target`, then verify the copy the same way. */
-export async function stagePack({ source, target }) {
+/**
+ * Copy a verified pack byte for byte into `target`, then verify the copy the same way. A pack that carries private
+ * data (a local user name or path, a private address, a credential shape; scripts/private-data.mjs) is refused before
+ * anything is copied: a pack is sealed and named by release, so what it publishes cannot be taken back.
+ */
+export async function stagePack({ source, target, names }) {
   const assets = join(source, 'assets');
   const notices = join(source, NOTICES);
   const inventory = await verifyPack(assets, notices);
+  const scan = await scanFiles(assets, { files: ['pack.json', 'SHA256SUMS', ...inventory.paths], names, label: `${inventory.id}/${inventory.release}/` });
+  const noticesScan = await scanFiles(source, { files: [NOTICES], names });
+  const findings = [...scan.findings, ...noticesScan.findings];
+  if (findings.length) throw new Error(`The scene pack carries private data and is not staged (${findings.length}):\n${findings.slice(0, 12).map(describeFinding).join('\n')}`);
   await rm(target, { recursive: true, force: true });
   for (const path of ['pack.json', 'SHA256SUMS', ...inventory.paths]) {
     await mkdir(dirname(join(target, path)), { recursive: true });
@@ -161,14 +170,14 @@ export function comparePackRecord(record, inventory, id = inventory?.id) {
 /** Differences between a recorded standalone runtime and its measurement; empty when they agree. */
 export function compareRuntimeRecord(record, measured) {
   if (!record) return ['the record has no runtime for this standalone build'];
-  return RUNTIME_RECORDED.filter((key) => record[key] !== measured[key]).map(
+  return RUNTIME_RECORDED.filter((key) => JSON.stringify(record[key]) !== JSON.stringify(measured[key])).map(
     (key) => `runtime.${key}: catalog ${JSON.stringify(record[key])}, build ${JSON.stringify(measured[key])}`,
   );
 }
 
 /** The directory under public/ that the record's `base` maps to. */
 export function stagedPackDirectory(record, site = SITE) {
-  if (!new RegExp(`^/${PACK_DIRECTORY}/[a-z0-9-]+/[a-z0-9]+/$`).test(record?.base ?? '')) throw new Error(`Unexpected scene pack base: ${record?.base}`);
+  if (!new RegExp(`^/${PACK_DIRECTORY}/[a-z0-9-]+/[a-z0-9]+(?:-[a-z0-9]+)*/$`).test(record?.base ?? '')) throw new Error(`Unexpected scene pack base: ${record?.base}`);
   return resolve(site, 'public', record.base.replace(/^\/+/, ''));
 }
 
@@ -217,7 +226,7 @@ export async function main(argv = process.argv.slice(2), env = process.env, site
     if (runtime) {
       const { measurement } = runtime;
       const fit = checkCeiling(id, measurement);
-      console.log(`Runtime ${id}: ${measurement.file} ${measurement.bytes} bytes, ${measurement.gzipBytes} bytes gzip (${measurement.gzipMethod}), sha256 ${measurement.sha256}; ${fit.percent.bytes}% and ${fit.percent.gzipBytes}% of the D-15 ceiling ${fit.ceiling.bytes} / ${fit.ceiling.gzipBytes} bytes; ${Object.entries(measurement.copies).map(([name, copies]) => `${name} ${copies.length}`).join(', ')} (copies in bundle-modules.json, sha256 ${runtime.record.modulesSha256}); kit three facade ${measurement.facade ? 'present' : 'absent'}.`);
+      console.log(`Runtime ${id}: ${measurement.file} ${measurement.bytes} bytes, ${measurement.gzipBytes} bytes gzip (${measurement.gzipMethod}), sha256 ${measurement.sha256}; ${measurement.initialLoad ? `initial campus ${measurement.initialLoad.bytes} bytes / ${measurement.initialLoad.gzipBytes} gzip; ` : ''}${fit.percent.bytes}% and ${fit.percent.gzipBytes}% of the D-15 ceiling ${fit.ceiling.bytes} / ${fit.ceiling.gzipBytes} bytes; ${Object.entries(measurement.copies).map(([name, copies]) => `${name} ${copies.length}`).join(', ')} (copies in bundle-modules.json, sha256 ${runtime.record.modulesSha256}); kit three facade ${measurement.facade ? 'present' : 'absent'}.`);
     }
     if (record) {
       catalog[id] = { ...packRecord(inventory, current), ...(runtime ? { runtime: runtime.record } : {}) };

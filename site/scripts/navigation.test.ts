@@ -11,3 +11,11 @@ test('pack and category filters intersect; standalone is explicit',()=>{
  expect(matchesAsset({pack:'farm',category:'Buildings'},'farm','Animals')).toBe(false);
  expect(matchesAsset({pack:'farm',category:'Buildings'},'all','Buildings')).toBe(true);
 });
+
+test('an asset shared by two packs is visible in either pack filter without a duplicate card', () => {
+ const shared = { pack: 'vehicles', packs: ['vehicles', 'foundry-floor'], category: 'Road vehicles' };
+ expect(matchesAsset(shared, 'foundry-floor', 'all')).toBe(true);
+ expect(matchesAsset(shared, 'vehicles', 'Road vehicles')).toBe(true);
+ expect(matchesAsset(shared, 'farm', 'all')).toBe(false);
+ expect(matchesAsset(shared, 'foundry-floor', 'Buildings')).toBe(false);
+});

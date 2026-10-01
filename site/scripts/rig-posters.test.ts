@@ -2,7 +2,7 @@ import { describe, expect, test } from 'bun:test';
 import { mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
-import { RIG_ID, DEFAULT_ENGINE_DIR, fitCamera, orbitDirection } from './rig-render.mjs';
+import { RIG_ID, resolveRigEngine, fitCamera, orbitDirection } from './rig-render.mjs';
 import { applyRigPoster, applyRigPosters, rigPosterImage, rigPosterKey, rigPosterPath } from './rig-posters-core.mjs';
 import { VEHICLE_POSTER, pruneImagePlan, vehicleTargets } from './rig-posters.mjs';
 import { hashBytes } from './mirror-core.mjs';
@@ -126,17 +126,27 @@ describe('the checked-in Farm posters', () => {
   test('every vehicle has a rig poster from the same place, rendered from its own delivered GLB, pinned and planned', async () => {
     const [vehicles, recorded, manifest, plan] = await Promise.all([json('packs/vehicles.json'), json('rig-posters.json'), json('mirror-manifest.json'), json('commons-build.json')]);
     expect(recorded.rig.runs.vehicles.engine.commit).toBe(recorded.rig.runs.farm.engine.commit);
-    expect(recorded.rig.runs.vehicles.engine.dirty).toBe(false);
+    // All six final posters must bind the newly delivered runtime, independently of saved-preview canonical bytes.
+    expect(recorded.rig.runs.vehicles.engine).toMatchObject({ commit: 'ac6d9eb492b4891a54dbf563cfef14af5633254a', dirty: true });
+    expect(recorded.rig.runs.vehicles.service).toMatchObject({
+      protocol: 'kiln.render-service.v2',
+      sourceFingerprint: 'sha256:ea13cf0d48a53734132568066d5a94121c8dd3b088ea8606b1c4dbe14b896ef6',
+      buildFingerprint: 'sha256:56d89e736bb03575c9131be509f3411c9b764750d354f82d8a601188e723b576',
+      dependencies: { three: '0.186.0', webgpu: '0.6.1', pngjs: '7.0.0' },
+    });
     const pins = new Map<string, { path: string; bytes: number; sha256: string }>(manifest.files.map((file: { path: string; bytes: number; sha256: string }) => [file.path, file]));
     const planned = new Set(plan.images.map((image: { inputPath: string }) => image.inputPath));
     expect(vehicles.assets).toHaveLength(6);
     for (const item of vehicles.assets) {
       const poster = recorded.posters[rigPosterKey('vehicles', item.slug)];
       expect(poster, item.slug).toBeDefined();
-      expect(poster.path).toBe(rigPosterPath('vehicles', 'r1', item.slug));
+      expect(vehicles.release).toBe('r4-local-review');
+      expect(poster.path).toBe(rigPosterPath('vehicles', vehicles.release, item.slug));
       expect(poster.revisionId).toBe(item.revisionId);
       expect(poster.glb.sha256).toBe(item.runtimeDownload.sha256);
-      expect(poster.glb.member).toBe(item.runtimeDownload.path);
+      expect(poster.glb.bytes).toBe(item.runtimeDownload.bytes);
+      // The runtime member can differ from the saved canonical export through explicit wheel-cull links.
+      expect(poster.glb.member).toEndWith(`/models/${item.slug}.glb`);
       expect(item.poster.inputPath).toBe(poster.path);
       expect(item.poster.rig).toBe(RIG_ID);
       expect(item.poster.exactRevision).toBe(true);
@@ -170,7 +180,10 @@ describe('the checked-in Farm posters', () => {
     }
   });
 
-  test('the engine worktree default sits beside the site worktree, not inside the maintainer checkout', () => {
-    expect(DEFAULT_ENGINE_DIR.replaceAll('\\', '/')).toMatch(/kiln-oss-review-lighting$/);
+  test('the rig uses this repository when available and an explicit fallback otherwise', () => {
+    const site = resolve('fixture/site');
+    expect(resolveRigEngine({ site, env: {}, exists: () => true })).toBe(resolve(site, '..'));
+    expect(resolveRigEngine({ site, env: { KILN_RIG_ENGINE_DIR: 'override' }, exists: () => false })).toBe(resolve('override'));
+    expect(() => resolveRigEngine({ site, env: {}, exists: () => false })).toThrow('KILN_RIG_ENGINE_DIR');
   });
 });

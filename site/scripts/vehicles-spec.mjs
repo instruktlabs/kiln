@@ -10,7 +10,8 @@
 
 export const VEHICLES_ID = 'vehicles';
 export const VEHICLES_NAME = 'Generic Road Vehicles';
-export const VEHICLES_RELEASE = 'r1';
+// Licence text corrected from the sealed g7 scene; accepted GLB revision bytes are unchanged.
+export const VEHICLES_RELEASE = 'r2';
 /** Mirror directory of the pack's files (and, later, their place on the asset host). */
 export const VEHICLES_DIR = `packs/${VEHICLES_ID}/${VEHICLES_RELEASE}`;
 

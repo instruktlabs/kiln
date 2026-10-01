@@ -4,27 +4,37 @@ interface Props {
   modelUrl: string;
   poster: string;
   posterAlt?: string;
-  posterWidth?: number;
-  posterHeight?: number;
+  /** The poster file's own pixel size, as the build recorded it: there is no default. */
+  posterWidth: number;
+  posterHeight: number;
   srcsetWebp?: string;
   srcsetAvif?: string;
+  /** The frame behind the poster: the site backdrop, or a poster's own baked background colour (archive renders). */
+  frameClass?: string;
+  /** Exact allowlisted Vehicles catalog ID; omitted on all other assets. */
+  paintAssetId?: string;
 }
 const {
   name,
   modelUrl,
   poster,
   posterAlt = `${name}, rendered from the downloadable revision`,
-  posterWidth = 1024,
-  posterHeight = 1024,
+  posterWidth,
+  posterHeight,
   srcsetWebp,
   srcsetAvif,
+  frameClass = "bg-backdrop",
+  paintAssetId,
 } = Astro.props;
+// A single-file poster has no candidates to choose from, so it declares no sizes.
+const sizes = srcsetWebp || srcsetAvif ? "(max-width: 768px) 100vw, 70vw" : undefined;
 ---
 
 <asset-viewer
   data-name={name}
   data-model={modelUrl}
-  class="block border border-rule bg-backdrop"
+  data-paint-asset={paintAssetId}
+  class:list={["block border border-rule", frameClass]}
 >
   <div data-poster>
     <picture>
@@ -32,13 +42,13 @@ const {
         <source
           type="image/avif"
           srcset={srcsetAvif}
-          sizes="(max-width: 768px) 100vw, 70vw"
+          sizes={sizes}
         />
       )}
       <img
         src={poster}
         srcset={srcsetWebp}
-        sizes="(max-width: 768px) 100vw, 70vw"
+        sizes={sizes}
         width={posterWidth}
         height={posterHeight}
         alt={posterAlt}
@@ -54,7 +64,7 @@ const {
     <button type="button" data-close hidden class="btn btn-secondary">
       Close 3D view
     </button>
-    <p data-status role="status" class="text-sm text-dim">
+    <p data-status role="status" class="text-caption text-dim">
       Drag to orbit after opening. The model starts stationary.
     </p>
   </div>
@@ -68,6 +78,7 @@ const {
 </asset-viewer>
 <script>
   import { createIslandSession } from "./island-session";
+  import { viewerErrorMessage } from "./viewer-retry";
   class AssetViewerElement extends HTMLElement {
     private stop?: () => void;
     connectedCallback() {
@@ -84,15 +95,15 @@ const {
           return mountAssetViewer(mount, {
             name: this.dataset.name!,
             modelUrl: this.dataset.model!,
-            onError: () => {
+            paintAssetId: this.dataset.paintAsset,
+            onError: (error) => {
               session.stop();
-              status.textContent =
-                "The 3D view is unavailable. The poster and downloads are still available.";
+              status.textContent = viewerErrorMessage(error);
               open.focus();
             },
           });
         },
-        (state) => {
+        (state, error) => {
           const showing = state === "loading" || state === "ready";
           mount.hidden = !showing;
           poster.hidden = showing;
@@ -100,7 +111,7 @@ const {
           close.hidden = !showing;
           status.textContent =
             state === "error"
-              ? "The 3D view could not load. Check your connection and try again; downloads remain available."
+              ? viewerErrorMessage(error)
               : state === "loading"
                 ? "Loading the 3D viewer…"
                 : showing

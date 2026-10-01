@@ -1,7 +1,7 @@
 ---
 import { createHash } from "node:crypto";
 import { Code } from "astro:components";
-import { workbenchContrast } from "../lib/shiki-contrast";
+import { workbenchContrast, workbenchTheme } from "../lib/shiki-contrast";
 import { codePreview, collapseLabel, EXPAND_SCRIPT, expandLabel } from "../lib/code-preview";
 import type { ComponentProps } from "astro/types";
 interface Props {
@@ -21,6 +21,7 @@ const regionId = `code-${createHash("sha256").update(label).update("\0").update(
 <div
   class="code-block min-w-0 border border-rule bg-sheet"
   data-code-block
+  data-language={lang}
   data-preview-lines={preview.collapsible ? preview.previewLines : undefined}
   data-expand-label={preview.collapsible ? expandLabel(preview.lines) : undefined}
   data-collapse-label={preview.collapsible ? collapseLabel : undefined}
@@ -31,7 +32,7 @@ const regionId = `code-${createHash("sha256").update(label).update("\0").update(
     <span class="font-mono text-code text-dim">{label}</span>
     <button
       type="button"
-      class="min-h-11 px-2 font-mono text-code text-ember"
+      class="min-h-11 px-2 font-mono text-code text-ink"
       data-copy-code
       hidden
       aria-label={`Copy ${label}`}
@@ -47,7 +48,7 @@ const regionId = `code-${createHash("sha256").update(label).update("\0").update(
       tabindex="0"
       aria-label={`${label}, horizontally scrollable`}
     >
-      <Code code={code} lang={lang} theme="github-light" transformers={[workbenchContrast]} />
+      <Code code={code} lang={lang} theme={workbenchTheme} transformers={[workbenchContrast]} />
     </section>
     {preview.collapsible && <div class="code-fade" aria-hidden="true"></div>}
   </div>
@@ -55,7 +56,7 @@ const regionId = `code-${createHash("sha256").update(label).update("\0").update(
     preview.collapsible && (
       <button
         type="button"
-        class="flex min-h-11 w-full items-center gap-2 border-t border-rule px-4 py-1 text-left font-mono text-code text-ember"
+        class="flex min-h-11 w-full items-center gap-2 border-t border-rule px-4 py-1 text-left font-mono text-code text-ink"
         data-code-expand
         aria-expanded="false"
         aria-controls={regionId}
@@ -67,8 +68,8 @@ const regionId = `code-${createHash("sha256").update(label).update("\0").update(
       </button>
     )
   }
-  <p class="border-t border-rule px-4 py-1 font-mono text-code text-dim">
-    Scroll code horizontally ↔
+  <p data-scroll-hint hidden class="border-t border-rule px-4 py-1 font-mono text-code text-dim">
+    Scroll code horizontally <span aria-hidden="true">↔</span>
   </p>
   {/* Last in the block, so it runs while the page is still being parsed: collapsed before anything below exists. */}
   {preview.collapsible && <script is:inline set:html={EXPAND_SCRIPT} />}
@@ -77,6 +78,8 @@ const regionId = `code-${createHash("sha256").update(label).update("\0").update(
   .code-wrap {
     position: relative;
   }
+  .code-scroll pre { overflow: visible !important; width: max-content; min-width: 100%; max-width: none; margin: 0; }
+  .code-block:is([data-language="sh"],[data-language="bash"],[data-language="shell"]) .code-scroll pre { width: auto; white-space: pre-wrap; overflow-wrap: anywhere; }
   .code-fade {
     display: none;
   }
@@ -134,6 +137,13 @@ const regionId = `code-${createHash("sha256").update(label).update("\0").update(
   }
 
   function enhance(block: HTMLElement) {
+    const scroll = block.querySelector<HTMLElement>(".code-scroll");
+    const hint = block.querySelector<HTMLElement>("[data-scroll-hint]");
+    if (scroll && hint) {
+      const sync = () => { hint.hidden = scroll.scrollWidth <= scroll.clientWidth + 1; };
+      new ResizeObserver(sync).observe(scroll);
+      sync();
+    }
     const copyButton = block.querySelector<HTMLButtonElement>("[data-copy-code]");
     if (copyButton) {
       copyButton.hidden = false;

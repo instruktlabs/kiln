@@ -33,7 +33,15 @@ describe('a recorded bridge run', () => {
       expect(request.source.receipt).toBe('showcase/runs/author-x/first/receipt.json');
       expect(request.source.receiptSha256).toBe(hashBytes(await readFile(join(commons, request.source.receipt))));
       expect(request.source.invocationSha256).toBe(hashBytes(await readFile(join(commons, request.source.invocation))));
+      expect(request).toMatchObject({ status: 'completed', stop: null });
     });
+  });
+
+  test('keeps a run that stopped at its cap when that run allows it, with the stop reason', async () => {
+    await withRuns(async (commons) => {
+      const request = await bridgeRequest(commons, { ...RUN, statuses: ['completed', 'failed'] });
+      expect(request).toMatchObject({ status: 'failed', stop: 'error_max_budget_usd' });
+    }, { receipt: { status: 'failed', result: { subtype: 'error_max_budget_usd' } } });
   });
 
   test('keeps the models a harness reported apart from the one requested', async () => {
@@ -55,7 +63,9 @@ describe('a recorded bridge run', () => {
   });
 
   test('lists the runs in the order they happened, each stage once', async () => {
-    expect(BRIDGE_RUNS.map((run) => run.stage)).toEqual(['first', 'review-1', 'review-2', 'fix-up-1', 'fix-review-1', 'fix-review-2', 'fix-review-3']);
+    expect(BRIDGE_RUNS.map((run) => run.stage)).toEqual(['first', 'review-1', 'review-2', 'fix-up-1', 'fix-review-1', 'fix-review-2', 'fix-review-3', 'fix-review-4', 'fix-review-5']);
+    // Only review 4, which stopped at its cap after saving the web tier, is accepted as a failed run.
+    expect(BRIDGE_RUNS.filter((run) => run.statuses).map((run) => run.stage)).toEqual(['fix-review-4']);
     await withRuns(async (commons) => {
       expect((await bridgeRequests(commons, [RUN, { ...RUN, stage: 'second' }])).map((request) => request.stage)).toEqual(['first', 'second']);
     });
@@ -76,6 +86,7 @@ describe('the checked-in bridge requests', () => {
       expect(request.requestedEffort).toEqual(expect.any(String));
       expect(request.source.receiptSha256).toMatch(/^[0-9a-f]{64}$/);
       expect(request.source.invocationSha256).toMatch(/^[0-9a-f]{64}$/);
+      expect(request.status).toBe(request.stage === 'fix-review-4' ? 'failed' : 'completed');
     }
   });
 

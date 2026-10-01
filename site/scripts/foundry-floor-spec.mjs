@@ -22,6 +22,10 @@ export const FOUNDRY_FLOOR_GROUPS = [
   { id: 'tools', title: 'Process tools', classes: ['tool'] },
   { id: 'transport', title: 'Wafer transport and storage', classes: ['mover', 'port', 'stocker', 'tower', 'storage', 'rail'] },
   { id: 'building', title: 'Building', classes: ['building', 'wall'] },
+  { id: 'campus', title: 'Campus structures', classes: ['campus'] },
+  { id: 'vehicles', title: 'Road vehicles', classes: ['vehicles'] },
+  { id: 'vegetation', title: 'Campus vegetation', classes: ['vegetation'] },
+  { id: 'freight', title: 'Freight vehicles', classes: ['freight'] },
   { id: 'people', title: 'People and robots', classes: ['people', 'robot'] },
 ];
 

@@ -1,4 +1,6 @@
 ---
+import { harnessWithVersion, modelName } from "../lib/attribution";
+import PageHeader from "./PageHeader.astro";
 import AssetCard from "./AssetCard.astro";
 import { vehicles, bytes, bounds, number, type VehicleAsset } from "../lib/catalog";
 import { wheelSummary } from "../lib/vehicles";
@@ -30,8 +32,8 @@ const conventions = [
 ] as const;
 ---
 
-<div class="grid items-end gap-6 py-8 md:grid-cols-2">
-  <h1>{vehicles.name}</h1>
+<div class="grid items-start gap-6 py-8 lg:grid-cols-2">
+  <PageHeader>{vehicles.name}</PageHeader>
   <p class="lead">
     Six road vehicles with no brand, badge, text or livery: three cars, two
     trucks and a transit bus. Each file carries three detail tiers and separate
@@ -45,7 +47,7 @@ const conventions = [
         {vehicles.ownerReview.acceptedAssets} of {vehicles.ownerReview.total}{" "}
         current revisions have owner approval.
       </strong>{" "}
-      The owner approved all six vehicles at every tier on 29 September 2026.
+      The earlier delivery was approved on 29 September 2026. New revisions have their own review status below.
     </p>
     {corrected.map((asset) => (
       <p class="mt-3 max-w-reading text-dim">{asset.review.correction}</p>
@@ -56,7 +58,7 @@ const conventions = [
       The Golden Gate scene uses these six files: all six appear in its
       traffic, and the sedan is the car you drive.
     </p>
-    <a class="text-link mt-2" href={vehicles.scene.href}>View the Golden Gate scene preview →</a>
+    <a class="text-link mt-2" href={vehicles.scene.href}>View the Golden Gate scene preview <span aria-hidden="true">→</span></a>
   </div>
 </div>
 <section class="pt-16" aria-labelledby="inventory">
@@ -149,7 +151,7 @@ const conventions = [
   <p class="mt-5 max-w-reading">
     {setups.map((setup) => (
       <span class="block">
-        {setup.model} through <code>{setup.harness}</code> {setup.harnessVersion}:
+        {modelName(setup.model)} through {harnessWithVersion(setup.harness, setup.harnessVersion)}:
         reasoning effort {setup.requestedEffort} requested, independently
         confirmed: {setup.confirmedEffort ?? "not recorded"}.
       </span>
@@ -173,7 +175,7 @@ const conventions = [
               <li class="grid gap-2 md:grid-cols-2">
                 <div>
                   <p>
-                    {revision.model} · <code>{revision.harness} {revision.harnessVersion}</code>
+                    {modelName(revision.model)} · {harnessWithVersion(revision.harness, revision.harnessVersion)}
                   </p>
                   <p class="mt-1 text-caption text-dim">
                     Requested effort: {revision.requestedEffort}. Independently
@@ -188,7 +190,7 @@ const conventions = [
             ))}
           </ol>
           <a href={`/gallery/${asset.slug}/`} class="text-link mt-3">
-            Source and revision details →
+            Source and revision details <span aria-hidden="true">→</span>
           </a>
         </div>
       </details>
@@ -196,14 +198,14 @@ const conventions = [
   </div>
 </section>
 <section class="pt-16" aria-labelledby="license">
-  <h2 id="license">Keep the license boundary intact.</h2>
-  <p class="mt-5 max-w-reading">{vehicles.licenseScope}</p>
+  <h2 id="license">Keep the licence boundary intact.</h2>
+  <p class="mt-5 max-w-reading" data-verbatim>{vehicles.licenseScope}</p>
   <p class="mt-4 max-w-reading">{vehicles.licenceNote}</p>
   <p class="mt-4 max-w-reading">
     Keep each vehicle’s licence text with its GLB. The text names the asset, the
     saved revision and the SHA-256 of the delivered GLB it covers.
   </p>
   <a class="text-link mt-2" href="https://creativecommons.org/publicdomain/zero/1.0/">
-    CC0-1.0 dedication ↗
+    CC0-1.0 dedication <span aria-hidden="true">↗</span>
   </a>
 </section>

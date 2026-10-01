@@ -1,23 +1,25 @@
 ---
+import PageHeader from "./PageHeader.astro";
+import authorRecords from "../data/foundry-floor-authors.json";
+import { modelName, harnessName, groupAssetAttribution } from "../lib/attribution";
 import ResponsiveImage from "./ResponsiveImage.astro";
 import pack from "../data/packs/foundry-floor.json";
 import foundryFloor from "../data/foundry-floor.json";
 import { bytes, bounds, listOf as list, number } from "../lib/catalog";
+import { foundryGalleryHref } from "../lib/gallery";
 
 // Everything on this page is read from src/data/packs/foundry-floor.json, which scripts/stage-foundry-floor.mjs
 // writes from the staged scene pack (pack.json, data/assets.json, licenses/ASSET-LICENSE.txt) and the GLBs.
 const download = pack.downloads[0]!;
+const hasCampus = pack.assets.some(asset => asset.group === "campus");
 type Asset = (typeof pack.assets)[number];
+type RecordedAsset = Asset & { attribution?: { author:string; requestedEffort:string|null; note?:string }; reviewStatus?:string; lod: (Asset['lod'] & {form?:string}) | null };
 const groups = pack.groups.map((group) => ({
   ...group,
   assets: pack.assets.filter((asset) => asset.group === group.id),
 }));
 const unplaced = pack.assets.filter((asset) => !asset.placedInScene);
-const authors = [
-  ...pack.assets
-    .reduce((map, asset) => map.set(asset.author, [...(map.get(asset.author) ?? []), asset]), new Map<string, Asset[]>())
-    .entries(),
-];
+const authors = groupAssetAttribution(pack.assets as RecordedAsset[]);
 const conventions = [
   ["Frame", pack.conventions.frame],
   ["Far forms", pack.conventions.lod],
@@ -35,12 +37,12 @@ const triangleSplit = (metrics: Asset["metrics"]) =>
     .join(" / ");
 ---
 
-<div class="grid items-end gap-6 py-8 md:grid-cols-2">
-  <h1>{pack.name}</h1>
+<div class="grid items-start gap-6 py-8 lg:grid-cols-2">
+  <PageHeader>{pack.name}</PageHeader>
   <p class="lead">
     {pack.assetCount} models for a fictional chip fab: process tools, wafer
     transport and storage, the cleanroom’s floor, ceiling and walls, and the
-    people and robots who work there.
+    people and robots who work there{hasCampus ? ", plus the campus models included in this release." : "."}
   </p>
 </div>
 <div class="mt-4 grid gap-6 border-y border-ink py-6 md:grid-cols-2">
@@ -52,11 +54,10 @@ const triangleSplit = (metrics: Asset["metrics"]) =>
   <div>
     <p class="max-w-reading">
       The {foundryFloor.name} scene places {pack.placedInScene} of the{" "}
-      {pack.assetCount} models. The {list(unplaced.map((asset) => asset.name.charAt(0).toLowerCase() + asset.name.slice(1)))}{" "}
-      are in the pack but not placed.
+      {pack.assetCount} models.{unplaced.length>0 && <> The {list(unplaced.map((asset) => asset.name.charAt(0).toLowerCase() + asset.name.slice(1)))} are in the pack but not placed.</>}
     </p>
     <a class="text-link mt-2" href={pack.scene.href}>
-      View the Foundry Floor scene preview →
+      View the Foundry Floor scene preview <span aria-hidden="true">→</span>
     </a>
   </div>
 </div>
@@ -81,11 +82,13 @@ const triangleSplit = (metrics: Asset["metrics"]) =>
               />
             </div>
             <h4 class="pt-4 text-lg font-semibold tracking-tight md:text-title">
-              {asset.name}
+              {foundryGalleryHref(asset) ? <a class="text-link" href={foundryGalleryHref(asset)}>{asset.name}</a> : asset.name}
             </h4>
             <p class="mt-1 font-mono text-code text-dim">
               {number(asset.metrics.triangles)} triangles
             </p>
+            {(asset as RecordedAsset).lod?.form === 'MSFT_lod' && <p class="mt-1 text-caption text-dim">Optional LOD tiers included.</p>}
+            {(asset as RecordedAsset).reviewStatus === 'review-candidate' && <p class="mt-1 text-caption text-dim">Local review candidate.</p>}
             <p class="mt-1 font-mono text-code text-dim">
               {bounds(asset.metrics.bounds)} m
             </p>
@@ -111,24 +114,17 @@ const triangleSplit = (metrics: Asset["metrics"]) =>
   <h2 id="measured">Measured from the files.</h2>
   <p class="mt-4 max-w-reading text-dim">
     Sizes and triangle counts are read from each delivered GLB and agree with
-    the pack’s own asset map. Triangles are split into the detailed parts, the
-    lod1 far form and the parts the scene hides at load; a plain viewer draws
-    all three.
+    the interior asset map where it provides measurements. {hasCampus && "Campus measurements are read directly from their sealed GLBs."} The table splits detailed geometry, lower tiers and scene-hidden parts. Optional MSFT_lod tiers are outside the default scene; legacy visible lod1 groups remain visible in an ordinary loader. Each card counts only what that loader actually draws.
   </p>
-  <ul class="mt-6 border-t border-ink">
-    {pack.assets.map((asset) => (
-      <li class="grid gap-2 border-b border-rule py-4 lg:grid-cols-12">
-        <p class="font-semibold lg:col-span-3">{asset.name}</p>
-        <p class="font-mono text-code lg:col-span-3">{bounds(asset.metrics.bounds)} m</p>
-        <p class="font-mono text-code lg:col-span-4">{triangleSplit(asset.metrics)} triangles</p>
-        <p class="text-caption text-dim lg:col-span-2">
-          {asset.metrics.materials} {asset.metrics.materials === 1 ? "material" : "materials"}
-          {" · "}
-          {asset.metrics.clips.length} {asset.metrics.clips.length === 1 ? "clip" : "clips"}
-        </p>
-      </li>
-    ))}
-  </ul>
+  <section class="mt-6 overflow-x-auto" tabindex="0" aria-label="Foundry Floor model measurements">
+    <table class="w-full border-collapse text-left text-caption">
+      <caption class="sr-only">Dimensions, triangles, materials and clips in each delivered GLB</caption>
+      <thead><tr class="border-y border-ink"><th scope="col" class="p-3">Model</th><th scope="col" class="p-3">Bounds (m)</th><th scope="col" class="p-3">Triangles</th><th scope="col" class="p-3">Materials / clips</th></tr></thead>
+      <tbody>{pack.assets.map((asset) => (
+        <tr class="border-b border-rule"><th scope="row" class="p-3 font-semibold">{asset.name}</th><td class="p-3 font-mono">{bounds(asset.metrics.bounds)}</td><td class="p-3 font-mono">{triangleSplit(asset.metrics)}</td><td class="p-3">{asset.metrics.materials} / {asset.metrics.clips.length}</td></tr>
+      ))}</tbody>
+    </table>
+  </section>
   <p class="mt-3 font-mono text-code text-dim">Length × height × width, in metres.</p>
 </section>
 <section class="pt-16" aria-labelledby="downloads">
@@ -151,6 +147,7 @@ const triangleSplit = (metrics: Asset["metrics"]) =>
           ))}
         </ul>
         <p class="mt-3 max-w-reading text-caption text-dim">{download.compatibility}</p>
+        <p class="mt-3 text-caption"><a class="text-link" href="/docs/engine-handoff/">Blender and Unity handoff guide</a></p>
         <details class="mt-3 border border-rule">
           <summary class="font-mono text-code">SHA-256</summary>
           <p class="break-all px-4 pb-4 font-mono text-code">{download.sha256}</p>
@@ -165,7 +162,7 @@ const triangleSplit = (metrics: Asset["metrics"]) =>
   </div>
 </section>
 <section class="pt-16" aria-labelledby="conventions">
-  <h2 id="conventions">One set of conventions across the pack.</h2>
+  <h2 id="conventions">File and scene conventions.</h2>
   <dl class="mt-8 border-t border-ink">
     {conventions.map(([term, text]) => (
       <div class="grid gap-2 border-b border-rule py-5 lg:grid-cols-12">
@@ -177,24 +174,23 @@ const triangleSplit = (metrics: Asset["metrics"]) =>
   <p class="mt-4 max-w-reading text-caption text-dim">{pack.conventions.source}</p>
 </section>
 <section class="pt-16" aria-labelledby="authorship">
-  <h2 id="authorship">Authorship as the licence records it.</h2>
+  <h2 id="authorship">Recorded authorship</h2>
   <p class="mt-5 max-w-reading">
-    The pack’s licence text names, for every model, its saved Kiln revision and
-    the author folder it was delivered from. The pack’s records do not name the
-    model or the effort behind each folder, so this page does not state them.
+    The licence binds each model to its saved revision. The author inputs record
+    the requested model, effort and harness below. Effort is not independently confirmed.
   </p>
   <dl class="mt-8 border-t border-ink">
-    {authors.map(([author, assets]) => (
+    {authors.map((assets) => { const author = assets[0]!.author; const attribution = authorRecords[author as keyof typeof authorRecords]; const recorded = assets[0]!.attribution; const notes=recorded?.note; return (
       <div class="grid gap-2 border-b border-rule py-4 lg:grid-cols-12">
-        <dt class="break-all font-mono text-code lg:col-span-4">{author}</dt>
-        <dd class="max-w-reading lg:col-span-8">{list(assets.map((asset) => asset.name))}</dd>
+        <dt class="font-semibold lg:col-span-4">{list(assets.map((asset) => asset.name))}</dt>
+        <dd class="max-w-reading lg:col-span-8">{recorded ? `${recorded.author.replace(" · claude ", " · Claude Code ").replace(" · agy ", " · Antigravity CLI (agy) ").replace(" · codex ", " · Codex ")}. Requested effort: ${recorded.requestedEffort ?? "not recorded"}. Independently confirmed: not recorded.${notes ? ` ${notes}` : ""}` : attribution ? `${modelName(attribution.requestedModel)} through ${harnessName(attribution.harness)}. Requested effort: ${attribution.requestedEffort}. Independently confirmed: not recorded.` : "Model and effort not recorded in the staged author inputs."}</dd>
       </div>
-    ))}
+    ); })}
   </dl>
 </section>
 <section class="pt-16" aria-labelledby="license">
-  <h2 id="license">Keep the license boundary intact.</h2>
-  <p class="mt-5 max-w-reading">{pack.licenseScope}</p>
+  <h2 id="license">Keep the licence boundary intact.</h2>
+  <p class="mt-5 max-w-reading" data-verbatim>{pack.licenseScope}</p>
   <p class="mt-4 max-w-reading">{pack.licenceNote}</p>
   <p class="mt-4 max-w-reading">
     Keep the licence text with the models. It names every model, the saved
@@ -205,7 +201,7 @@ const triangleSplit = (metrics: Asset["metrics"]) =>
       Read the pack’s licence text ({bytes(pack.licence.bytes)})
     </a>
     <a class="text-link" href="https://creativecommons.org/publicdomain/zero/1.0/">
-      CC0-1.0 dedication ↗
+      CC0-1.0 dedication <span aria-hidden="true">↗</span>
     </a>
   </div>
   <p class="mt-8 max-w-reading text-caption text-dim">{foundryFloor.notice}</p>

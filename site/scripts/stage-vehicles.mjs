@@ -25,7 +25,7 @@ import {
  * Stage the Generic Road Vehicles pack: verify the six delivered vehicles against everything that vouches for
  * them, put the pack's files in the asset mirror, pin them, extend the build plan and write the catalog.
  *
- *   node scripts/stage-vehicles.mjs --commons C:/Users/Mattm/X/kiln-commons --mirror DIR [--scene-pack DIR]
+ *   node scripts/stage-vehicles.mjs --commons <commons> --mirror DIR [--scene-pack DIR]
  *
  * A vehicle is refused unless all of these agree: the author's delivered export, the Golden Gate scene pack's
  * copy of it and the hash its licence text states; the saved revision's sealed files and manifest (asset,

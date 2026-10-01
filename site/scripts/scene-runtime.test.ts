@@ -148,10 +148,10 @@ describe('a standalone runtime staged as built', () => {
     expect(record.modulesSha256).toBe(hashBytes(await readFile(join(source, 'bundle-modules.json'))));
   });
 
-  test('refuses a second chunk, a second three, a missing facade and a bundle over its ceiling', async () => {
+  test('refuses a second entry, a second three, a missing facade and a bundle over its ceiling', async () => {
     const two = await standalone(await temp());
     await writeFile(join(two, 'assets', 'index-other.js'), 'x');
-    await expect(measureFrameRuntime({ id: 'golden-gate', source: two })).rejects.toThrow('one public chunk');
+    await expect(measureFrameRuntime({ id: 'golden-gate', source: two })).rejects.toThrow('one public entry');
 
     const duplicated = await standalone(await temp(), { modules: [...oneCopy, 'C:/site/node_modules/three/build/three.core.js'] });
     await expect(measureFrameRuntime({ id: 'golden-gate', source: duplicated })).rejects.toThrow('more than one copy');
@@ -161,6 +161,26 @@ describe('a standalone runtime staged as built', () => {
 
     const heavy = await standalone(await temp(), { chunk: 'a'.repeat(CEILINGS['golden-gate'].bytes + 1) });
     await expect(measureFrameRuntime({ id: 'golden-gate', source: heavy })).rejects.toThrow('D-15 ceiling');
+  });
+
+  test('stages every split chunk and applies the frozen ceiling to the aggregate payload', async () => {
+    const root = await temp();
+    const source = await standalone(root, { chunk: 'import "./renderer-def456.js";\n' });
+    const dependency = 'export const renderer = true;\n';
+    await writeFile(join(source, 'assets/renderer-def456.js'), dependency);
+    const measured = await measureFrameRuntime({ id: 'foundry-floor', source });
+    expect(measured.record.chunks).toHaveLength(2);
+    expect(measured.measurement.bytes).toBe(61);
+    expect(measured.measurement.gzipBytes).toBe(gzipMeasure(Buffer.from('import "./renderer-def456.js";\n')).bytes + gzipMeasure(Buffer.from(dependency)).bytes);
+    const site = join(root, 'site');
+    await stageFrameRuntime({ id: 'foundry-floor', source, measurement: measured, packBase: '/scene-packs/foundry-floor/ff3/', site });
+    const target = stagedRuntimeDirectory('foundry-floor', site);
+    expect(await readFile(join(target, 'renderer-def456.js'), 'utf8')).toBe(dependency);
+    expect((await verifyStagedRuntime(target)).chunks).toHaveLength(2);
+    await writeFile(join(target, 'renderer-def456.js'), 'corrupt');
+    await expect(verifyStagedRuntime(target)).rejects.toThrow('does not match');
+    await writeFile(join(source, 'assets/renderer-def456.js'), 'x'.repeat(CEILINGS['foundry-floor'].bytes));
+    await expect(measureFrameRuntime({ id: 'foundry-floor', source })).rejects.toThrow('D-15 ceiling');
   });
 
   test('stages the chunk byte for byte with a frame page and a manifest that carries no local path', async () => {
@@ -187,7 +207,7 @@ describe('a standalone runtime staged as built', () => {
     expect(page).toContain('<meta name="kiln-asset-base" content="/scene-packs/golden-gate/g3/">');
     expect(page).toContain('<script type="module" src="./index-abc123.js"></script>');
     expect(page).toContain('id="golden-gate"');
-    expect(page).toContain("source: 'kiln-scene'");
+    expect(page).toMatch(/source: ['"]kiln-scene['"]/);
     expect(page).toContain('location.origin');
   });
 });

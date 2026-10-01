@@ -1,25 +1,28 @@
+import { execFileSync } from 'node:child_process';
 import { readFile, writeFile, mkdir } from 'node:fs/promises';
-import { join, resolve } from 'node:path';
+import { dirname, join, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { gzipSync, brotliCompressSync } from 'node:zlib';
 import puppeteer from 'puppeteer-core';
 import sharp from 'sharp';
 import lighthouse from 'lighthouse';
 import { chromeExecutable } from './build-site-media.mjs';
+import { describeFinding, scanFiles } from './private-data.mjs';
 
 const args = Object.fromEntries(process.argv.slice(2).map((value) => {
   const at = value.indexOf('=');
   return at < 0 ? [value.replace(/^--/, ''), true] : [value.slice(0, at).replace(/^--/, ''), value.slice(at + 1)];
 }));
-if (!args.base || !args.out) throw new Error('Usage: node scripts/verify-site.mjs --base=http://127.0.0.1:4175 --out=<review-dir> [--phase=browser|lighthouse|all] [--routes=home,docs-page] [--executable=<Chrome-or-Chromium>]');
+const phase = args.phase ?? 'all';
+if ((!args.base && phase !== 'private') || !args.out) throw new Error('Usage: node scripts/verify-site.mjs --base=http://127.0.0.1:4175 --out=<review-dir> [--phase=private|browser|lighthouse|all] [--dist=<dist>] [--routes=home,docs-page] [--executable=<Chrome-or-Chromium>]');
 const base = String(args.base);
 const out = resolve(String(args.out));
-const phase = args.phase ?? 'all';
 const executablePath = typeof args.executable === 'string' ? args.executable : chromeExecutable();
 const suffix = typeof args.suffix === 'string' ? `-${args.suffix}` : '';
 const routeSelection = typeof args.routes === 'string' ? args.routes.split(',') : null;
 const routes = [
   ['home', '/'], ['packs', '/packs/'], ['pack-farm', '/packs/farm/'], ['pack-vehicles', '/packs/vehicles/'], ['pack-foundry-floor', '/packs/foundry-floor/'],
-  ['gallery', '/gallery/'], ['asset-farmhouse', '/gallery/farmhouse/'], ['asset-sedan', '/gallery/sedan/'], ['asset-bridge', '/gallery/golden-gate-bridge/'],
+  ['gallery', '/gallery/'], ['asset-farmhouse', '/gallery/farmhouse/'], ['asset-sedan', '/gallery/sedan/'], ['asset-bridge', '/gallery/golden-gate-bridge/'], ['asset-foundry', '/gallery/foundry-floor/foup/'],
   ['archive', '/gallery/archive/'], ['archive-asset', '/gallery/archive/robot-arm/'],
   ['docs', '/docs/'], ['docs-page', '/docs/install/'], ['docs-projects', '/docs/projects-and-live-review/'],
   ['scenes', '/scenes/'], ['scene-farm', '/scenes/farm/'], ['scene-golden-gate', '/scenes/golden-gate/'], ['scene-foundry-floor', '/scenes/foundry-floor/'], ['404', '/404.html'],
@@ -139,6 +142,11 @@ async function browserChecks() {
     if (!routeSelection || routeSelection.includes('gallery')) {
       const page = await browser.newPage();
       await page.goto(new URL('/gallery/', base).href, { waitUntil: 'networkidle0' });
+      const allGalleryLinks = await page.$$eval('[data-asset]', (elements) => elements.map(element => element.querySelector('a')?.getAttribute('href')).sort());
+      await page.select('#pack-filter', 'foundry-floor');
+      const foundryLinks = await page.$$eval('[data-asset]', (elements) => elements.filter(element => !element.hidden).map(element => element.querySelector('a')?.getAttribute('href')));
+      const foundryInventory = JSON.parse(await readFile(new URL('../src/data/packs/foundry-floor.json', import.meta.url), 'utf8'));
+      result.interactions.push({ name: 'Foundry filter', pass: foundryLinks.length === foundryInventory.assets.length && foundryLinks.includes('/gallery/foundry-floor/foup/') && foundryLinks.includes('/gallery/sedan/'), visible: foundryLinks });
       await page.select('#pack-filter', 'standalone');
       const visible = await page.$$eval('[data-asset]', (elements) => elements.filter((element) => !element.hidden).map((element) => element.querySelector('a')?.getAttribute('href')));
       result.interactions.push({ name: 'Standalone filter', pass: visible.length === 1 && visible[0] === '/gallery/golden-gate-bridge/', visible });
@@ -149,15 +157,15 @@ async function browserChecks() {
       await page.select('#pack-filter', 'standalone');
       await page.select('#category-filter', 'Nature');
       result.interactions.push({ name: 'Empty-filter state', pass: await page.$eval('#gallery-empty', (element) => !element.hidden) });
-      await page.click('button[type="reset"]');
+      await page.click('button[data-reset-filters]');
       await page.waitForFunction(() => [...document.querySelectorAll('[data-asset]')].every((element) => !element.hidden));
       result.interactions.push({ name: 'Filter reset', pass: true });
       await page.close();
       const noJs = await browser.newPage();
       await noJs.setJavaScriptEnabled(false);
       await noJs.goto(new URL('/gallery/', base).href, { waitUntil: 'networkidle0' });
-      const count = await noJs.$$eval('[data-asset]', (elements) => elements.filter((element) => !element.hidden).length);
-      result.interactions.push({ name: 'Gallery without JavaScript', pass: count === 30, visibleCount: count });
+      const noJsLinks = await noJs.$$eval('[data-asset]', (elements) => elements.filter(element => !element.hidden).map(element => element.querySelector('a')?.getAttribute('href')).sort());
+      result.interactions.push({ name: 'Gallery without JavaScript', pass: JSON.stringify(noJsLinks) === JSON.stringify(allGalleryLinks), visibleCount: noJsLinks.length });
       await noJs.close();
     }
     if (!routeSelection || routeSelection.includes('home')) {
@@ -239,5 +247,30 @@ async function lighthouseChecks() {
   }
 }
 
+/**
+ * No private data in any file of dist/ (text, the JSON chunk of every GLB, ZIP and tar entries) or in the source under
+ * site/ that git tracks or would track (design review finding 1, engineering findings 1 and 15; scripts/private-data.mjs).
+ * It runs before the browser checks, and alone with --phase=private.
+ */
+async function privateChecks() {
+  const site = resolve(dirname(fileURLToPath(import.meta.url)), '..');
+  const dist = resolve(typeof args.dist === 'string' ? args.dist : join(site, 'dist'));
+  const repository = execFileSync('git', ['-C', site, 'rev-parse', '--show-toplevel'], { encoding: 'utf8' }).trim();
+  const tracked = execFileSync('git', ['-C', repository, 'ls-files', '-z', '--cached', '--others', '--exclude-standard', 'site'], { encoding: 'utf8' }).split('\0').filter(Boolean);
+  const built = await scanFiles(dist);
+  const source = await scanFiles(repository, { files: tracked });
+  const report = {
+    patterns: built.patterns,
+    dist: { files: built.files, scanned: built.scanned, parts: built.parts, findings: built.findings.map(describeFinding) },
+    source: { files: source.files, scanned: source.scanned, findings: source.findings.map(describeFinding) },
+  };
+  await writeFile(join(out, 'private-data.json'), `${JSON.stringify(report, null, 2)}
+`);
+  console.log(`Private data: dist ${built.scanned} of ${built.files} files read (${built.parts} parts), ${built.findings.length} findings; source under site/ ${source.scanned} of ${source.files} files read, ${source.findings.length} findings.`);
+  for (const finding of [...report.dist.findings, ...report.source.findings].slice(0, 20)) console.error(finding);
+  if (built.findings.length || source.findings.length) throw new Error('Private data found; see private-data.json.');
+}
+
+if (['private', 'browser', 'all'].includes(phase)) await privateChecks();
 if (phase === 'browser' || phase === 'all') await browserChecks();
 if (phase === 'lighthouse' || phase === 'all') await lighthouseChecks();

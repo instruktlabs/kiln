@@ -1,10 +1,25 @@
 import { mkdir, readFile, readdir, writeFile } from 'node:fs/promises';
 import { dirname, relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { ARCHIVE_INDEX_ROUTE, inspectHtml, isArchiveItemRoute, ORIGIN, routeForFile } from './static-validation-core.mjs';
+import { ARCHIVE_INDEX_ROUTE, inspectHtml, isArchiveItemRoute, ORIGIN, routeForFile, scriptHashSource } from './static-validation-core.mjs';
 
 const escapeXml = (text) => text.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;');
-const link = (page) => `- [${page.title.replace(/ · Kiln docs$| · Kiln$| — Kiln$/g, '')}](${new URL(page.route, ORIGIN).href}): ${page.description ?? ''}`;
+const link = (page) => `- [${page.title.replace(/ · Archive · Kiln$| · Kiln docs$| · Kiln$| — Kiln$| — source and 3D model \| Kiln$| — Kiln Commons$/g, '')}](${new URL(page.route, ORIGIN).href}): ${page.description ?? ''}`;
+
+/** Keep the reviewed report-only policy, replacing its inline allowlist with exact emitted script bytes. */
+export function buildHeaders(template, pages) {
+  const hashes=[...new Set(pages.flatMap(page=>page.inlineScripts??[]).map(scriptHashSource))].sort();
+  let changed=false;
+  const text=template.replace(/(Content-Security-Policy-Report-Only:\s*)([^\r\n]+)/gi,(_match,label,policy)=>{
+    const directives=policy.split(';').map(directive=>directive.trim());
+    const at=directives.findIndex(directive=>/^script-src\s/.test(directive));
+    if(at<0)throw new Error('The report-only policy has no script-src directive');
+    directives[at]=[...directives[at].split(/\s+/).filter(token=>!token.startsWith("'sha256-")),...hashes].join(' ');
+    changed=true;return `${label}${directives.join('; ')}`;
+  });
+  if(!changed)throw new Error('Missing report-only response policy');
+  return text;
+}
 
 /** Derive discovery files from the pages that were actually emitted by Astro. */
 export function buildIndexFiles(pages) {
@@ -55,12 +70,15 @@ export async function finalizeSite({ dist = resolve(dirname(fileURLToPath(import
   }
   if (!pages.some((page) => page.route === '/')) throw new Error(`Astro home output missing in ${dist}; build the site before finalizing.`);
   const { sitemap, sitemapIndex, robots, llms } = buildIndexFiles(pages);
+  const headerPath=resolve(dist,'_headers');
+  const headers=buildHeaders(await readFile(headerPath,'utf8'),pages);
   await mkdir(dist, { recursive: true });
   await Promise.all([
     writeFile(resolve(dist, 'sitemap.xml'), sitemap),
     writeFile(resolve(dist, 'sitemap-index.xml'), sitemapIndex),
     writeFile(resolve(dist, 'robots.txt'), robots),
     writeFile(resolve(dist, 'llms.txt'), llms),
+    writeFile(headerPath, headers),
   ]);
   console.log(`Generated sitemap, sitemap-index.xml, robots.txt and llms.txt from ${pages.length} static pages (${pages.filter((page) => page.noindex).length} noindex).`);
   return pages;

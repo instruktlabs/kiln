@@ -3,11 +3,11 @@
   "id": "vehicles",
   "name": "Generic Road Vehicles",
   "description": "Six generic road vehicles made with Kiln: hatchback, sedan, SUV, pickup truck, box truck and transit bus. Each has three detail tiers, separate wheels, a near-white paint a scene can tint, its source and its revision history.",
-  "release": "r1",
+  "release": "r4-local-review",
   "assetCount": 6,
   "license": "CC0-1.0",
   "licenseScope": "CC0-1.0 covers authored asset content only, to the extent of the owner’s rights. Kiln and any software that opens these files retain their own licenses.",
-  "licenceNote": "The saved revision of each vehicle lists no dependencies, so no imported model or texture is in it; the site checked that. The licence texts were written by the Golden Gate scene’s pack staging, because the vehicle authors’ folders ship none, and are published here unchanged.",
+  "licenceNote": "Each licence text names the exact saved revision, canonical GLB and delivered runtime hash. The runtime adds wheel-cull links at the final body tier while preserving geometry and pivots. Prior revisions remain preserved under CC0-1.0.",
   "conventions": {
     "frame": "Metres, +Y up, +X forward, the vehicle’s right side at +Z. The origin is on the ground, centred between the axles and left to right.",
     "wheels": "Four nodes named Wheel_FL, Wheel_FR, Wheel_RL and Wheel_RR sit outside the detail groups. Each pivots at the wheel centre with the axle along local Z, so rolling is a rotation about Z and steering a rotation about Y. On the box truck and the bus each rear node holds the dual pair.",
@@ -31,12 +31,12 @@
     {
       "profile": "runtime",
       "archive": "generic-road-vehicles-runtime.zip",
-      "bytes": 1335772,
-      "sha256": "62dff817ce3182d94d96a686a330a44006dfbcde92eb7fc5a48b9556bd009ae6",
+      "bytes": 920215,
+      "sha256": "8cb30b3b8612dc5bedf1ed0ae35c4f61c6368d36e0d51101a3ff80472b992168",
       "files": 13,
       "assets": 6,
-      "path": "packs/vehicles/r1/generic-road-vehicles-runtime.zip",
-      "url": "https://assets.kilnstudio.tools/packs/vehicles/r1/generic-road-vehicles-runtime.zip",
+      "path": "packs/vehicles/r4-local-review/generic-road-vehicles-runtime.zip",
+      "url": "https://assets.kilnstudio.tools/packs/vehicles/r4-local-review/generic-road-vehicles-runtime.zip",
       "contents": [
         "Six runtime GLBs with their three detail tiers linked by MSFT_lod",
         "One licence text per vehicle",
@@ -78,13 +78,20 @@
     }
   ],
   "ownerReview": {
-    "acceptedAssets": 6,
+    "acceptedAssets": 0,
     "total": 6,
-    "status": "all-current-revisions-accepted",
-    "date": "2026-09-29",
-    "statement": "All six vehicles approved at every tier; one GLB per vehicle with the tiers inside stays.",
-    "source": "Coordinator overnight log, 12:46 entry (owner answer through the question tool)",
-    "awaiting": []
+    "status": "awaiting-owner-review",
+    "date": "2026-10-01",
+    "statement": "All six preserved child revisions await owner review. Hatchback, sedan and SUV have front and rear lamp repairs. Pickup, box truck and bus preserve their geometry and now declare standard LODs in their saved source masters.",
+    "source": "Local owner review 2",
+    "awaiting": [
+      "hatchback",
+      "sedan",
+      "suv",
+      "pickup",
+      "box-truck",
+      "transit-bus"
+    ]
   },
   "scene": {
     "id": "golden-gate",
@@ -100,19 +107,19 @@
       "category": "Cars",
       "description": "Generic five-door hatchback with a two-box roofline, a steep tailgate and taillight clusters at the rear corners. Its paint is a neutral near-white, so a scene can tint each instance.",
       "assetId": "generic-hatchback",
-      "revisionId": "r_105b27d31fe44f2aa188a333e19e3977",
-      "parentRevision": null,
+      "revisionId": "r_74f393f06996497a9dce6c5ed50c2d62",
+      "parentRevision": "r_0393505feabd4814907bc4b527194caf",
       "metrics": {
-        "triangles": 3684,
+        "triangles": 3752,
         "meshes": 20,
         "materials": 10,
         "bounds": [
-          4.250985,
+          4.251062,
           1.467385,
           1.81
         ],
         "boundsMin": [
-          -2.095785,
+          -2.095862,
           0,
           -0.905
         ],
@@ -179,13 +186,13 @@
       "tiers": [
         {
           "tier": "LOD0",
-          "bodyTriangles": 2116,
+          "bodyTriangles": 2184,
           "wheelTriangles": 1568,
-          "triangles": 3684,
+          "triangles": 3752,
           "budget": 12000,
           "wheelsShown": true,
           "bounds": [
-            4.250985,
+            4.251062,
             1.467385,
             1.81
           ],
@@ -205,9 +212,9 @@
         },
         {
           "tier": "LOD1",
-          "bodyTriangles": 708,
+          "bodyTriangles": 724,
           "wheelTriangles": 1568,
-          "triangles": 2276,
+          "triangles": 2292,
           "budget": 3000,
           "wheelsShown": true,
           "bounds": [
@@ -230,13 +237,13 @@
         },
         {
           "tier": "LOD2",
-          "bodyTriangles": 190,
+          "bodyTriangles": 252,
           "wheelTriangles": 0,
-          "triangles": 190,
+          "triangles": 252,
           "budget": 600,
           "wheelsShown": false,
           "bounds": [
-            4.268251,
+            4.269227,
             1.297048,
             1.75
           ],
@@ -258,74 +265,80 @@
         "culledBelow": 0.0000052,
         "culledDistanceMetres": 1500.7,
         "wheelsHiddenAtLastTier": true,
-        "wheelsHiddenBeyondMetres": 249.9
+        "wheelsHiddenBeyondMetres": 250.3
       },
       "poster": {
-        "src": "/media/rig/review-neutral-v1/vehicles/r1/hatchback.webp",
+        "src": "/media/rig/review-neutral-v1/vehicles/r4-local-review/hatchback.webp",
         "width": 1024,
         "height": 1024,
         "alt": "Generic five-door hatchback with a two-box roofline, a steep tailgate and taillight clusters at the rear corners. Its paint is a neutral near-white, so a scene can tint each instance.",
-        "srcsetWebp": "/media/rig/review-neutral-v1/vehicles/r1/hatchback-320.webp 320w, /media/rig/review-neutral-v1/vehicles/r1/hatchback-480.webp 480w, /media/rig/review-neutral-v1/vehicles/r1/hatchback-672.webp 672w, /media/rig/review-neutral-v1/vehicles/r1/hatchback-768.webp 768w, /media/rig/review-neutral-v1/vehicles/r1/hatchback-1024.webp 1024w",
-        "srcsetAvif": "/media/rig/review-neutral-v1/vehicles/r1/hatchback-320.avif 320w, /media/rig/review-neutral-v1/vehicles/r1/hatchback-480.avif 480w, /media/rig/review-neutral-v1/vehicles/r1/hatchback-672.avif 672w, /media/rig/review-neutral-v1/vehicles/r1/hatchback-768.avif 768w, /media/rig/review-neutral-v1/vehicles/r1/hatchback-1024.avif 1024w",
-        "inputPath": "media/rig/review-neutral-v1/vehicles/r1/hatchback.png",
-        "sourceRevisionId": "r_105b27d31fe44f2aa188a333e19e3977",
+        "srcsetWebp": "/media/rig/review-neutral-v1/vehicles/r4-local-review/hatchback-320.webp 320w, /media/rig/review-neutral-v1/vehicles/r4-local-review/hatchback-480.webp 480w, /media/rig/review-neutral-v1/vehicles/r4-local-review/hatchback-672.webp 672w, /media/rig/review-neutral-v1/vehicles/r4-local-review/hatchback-768.webp 768w, /media/rig/review-neutral-v1/vehicles/r4-local-review/hatchback-1024.webp 1024w",
+        "srcsetAvif": "/media/rig/review-neutral-v1/vehicles/r4-local-review/hatchback-320.avif 320w, /media/rig/review-neutral-v1/vehicles/r4-local-review/hatchback-480.avif 480w, /media/rig/review-neutral-v1/vehicles/r4-local-review/hatchback-672.avif 672w, /media/rig/review-neutral-v1/vehicles/r4-local-review/hatchback-768.avif 768w, /media/rig/review-neutral-v1/vehicles/r4-local-review/hatchback-1024.avif 1024w",
+        "inputPath": "media/rig/review-neutral-v1/vehicles/r4-local-review/hatchback.png",
+        "sourceRevisionId": "r_74f393f06996497a9dce6c5ed50c2d62",
         "exactRevision": true,
         "rig": "review-neutral-v1"
       },
       "reviewImage": {
-        "src": "/media/vehicles/r1/review/hatchback.webp",
+        "src": "/media/vehicles/r4-local-review/review/hatchback.webp",
         "width": 1168,
         "height": 780,
-        "alt": "Six saved review views of Generic hatchback: front, right, back, left, top and three-quarter.",
-        "srcsetWebp": "/media/vehicles/r1/review/hatchback-320.webp 320w, /media/vehicles/r1/review/hatchback-480.webp 480w, /media/vehicles/r1/review/hatchback-672.webp 672w, /media/vehicles/r1/review/hatchback-768.webp 768w, /media/vehicles/r1/review/hatchback-1024.webp 1024w",
-        "srcsetAvif": "/media/vehicles/r1/review/hatchback-320.avif 320w, /media/vehicles/r1/review/hatchback-480.avif 480w, /media/vehicles/r1/review/hatchback-672.avif 672w, /media/vehicles/r1/review/hatchback-768.avif 768w, /media/vehicles/r1/review/hatchback-1024.avif 1024w",
-        "inputPath": "media/vehicles/r1/review/hatchback.png",
-        "sourceRevisionId": "r_105b27d31fe44f2aa188a333e19e3977",
+        "alt": "Saved review views of Generic hatchback.",
+        "srcsetWebp": "/media/vehicles/r4-local-review/review/hatchback-320.webp 320w, /media/vehicles/r4-local-review/review/hatchback-480.webp 480w, /media/vehicles/r4-local-review/review/hatchback-672.webp 672w, /media/vehicles/r4-local-review/review/hatchback-768.webp 768w, /media/vehicles/r4-local-review/review/hatchback-1024.webp 1024w",
+        "srcsetAvif": "/media/vehicles/r4-local-review/review/hatchback-320.avif 320w, /media/vehicles/r4-local-review/review/hatchback-480.avif 480w, /media/vehicles/r4-local-review/review/hatchback-672.avif 672w, /media/vehicles/r4-local-review/review/hatchback-768.avif 768w, /media/vehicles/r4-local-review/review/hatchback-1024.avif 1024w",
+        "inputPath": "media/vehicles/r4-local-review/review/hatchback.png",
+        "sourceRevisionId": "r_74f393f06996497a9dce6c5ed50c2d62",
         "exactRevision": true,
         "fidelity": {
-          "materialFaithful": true,
-          "exactArtifact": false,
+          "version": "kiln.view-fidelity.v1",
+          "requested": "full-preferred",
           "delivered": "full-material",
+          "materialFaithful": true,
+          "exactArtifact": true,
           "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1074",
-          "backdrop": "neutral"
+          "inputGlbSha256": "sha256:c1f095f02514cc73f39353cfca74ab6dd703cc5696eb5cdb4e264306df02d67d",
+          "degraded": false,
+          "reasonCodes": []
         }
       },
       "sourcePath": "/sources/vehicles/hatchback.kiln.js",
-      "sourceSha256": "09e1fe958ae9d99364eb61eb761986560a4f9345da478c23582a8ebae0541df0",
+      "sourceSha256": "c3cd99e30b697e7a1e120f5ec931e831b7b5f76a4e7cf6580d960cca8062ad97",
       "modelPath": "/models/vehicles/hatchback.glb",
       "runtimeDownload": {
-        "path": "packs/vehicles/r1/models/hatchback.glb",
-        "bytes": 262464,
-        "sha256": "c2f941f89816b5d8a48bb2d9481a00411c2af45591d26ea46a99399d385a3bfa",
-        "url": "https://assets.kilnstudio.tools/packs/vehicles/r1/models/hatchback.glb",
-        "archive": "packs/vehicles/r1/generic-road-vehicles-runtime.zip",
+        "path": "packs/vehicles/r4-local-review/models/hatchback.glb",
+        "bytes": 118752,
+        "sha256": "4030ac7f9c3a0ee141189b01615da4016353c6302f0805cf9d66dd756a32a0f0",
+        "url": "https://assets.kilnstudio.tools/packs/vehicles/r4-local-review/models/hatchback.glb",
+        "archive": "packs/vehicles/r4-local-review/generic-road-vehicles-runtime.zip",
         "member": "models/hatchback.glb",
         "form": "MSFT_lod"
       },
       "editableDownload": {
-        "path": "packs/vehicles/r1/editable/hatchback-editable.zip",
-        "bytes": 418733,
-        "sha256": "dbe5d5ea3f8384695e8711462f37c6dc71c9ebffa4747ce85786c2d572e27bbc",
-        "url": "https://assets.kilnstudio.tools/packs/vehicles/r1/editable/hatchback-editable.zip",
+        "path": "packs/vehicles/r4-local-review/editable/hatchback-editable.zip",
+        "bytes": 280404,
+        "sha256": "02668b09f34d2de4e91bad707cef841258d189be8de6a6a8869cc672c0a707a8",
+        "url": "https://assets.kilnstudio.tools/packs/vehicles/r4-local-review/editable/hatchback-editable.zip",
         "members": [
           "manifest.json",
           "asset.glb",
           "source.kiln.js",
           "preview.png"
         ],
-        "glbForm": "named-groups"
+        "glbForm": "MSFT_lod"
       },
       "licence": {
-        "path": "packs/vehicles/r1/licenses/hatchback.ASSET-LICENSE.txt",
-        "bytes": 777,
-        "sha256": "02e8355880da33fc2422a7205cb0234fc4a6a338e37eec60ab2898c647a2ffdf",
-        "url": "https://assets.kilnstudio.tools/packs/vehicles/r1/licenses/hatchback.ASSET-LICENSE.txt",
+        "path": "packs/vehicles/r4-local-review/licenses/hatchback.ASSET-LICENSE.txt",
+        "bytes": 1132,
+        "sha256": "565e262d82792d22258d4e7e1274e24dd1f41569d47dd8153b317428cfc78377",
+        "url": "https://assets.kilnstudio.tools/packs/vehicles/r4-local-review/licenses/hatchback.ASSET-LICENSE.txt",
         "spdx": "CC0-1.0",
-        "statesDeliveredGlbSha256": "c2f941f89816b5d8a48bb2d9481a00411c2af45591d26ea46a99399d385a3bfa"
+        "statesDeliveredGlbSha256": "4030ac7f9c3a0ee141189b01615da4016353c6302f0805cf9d66dd756a32a0f0"
       },
       "provenance": {
         "originalModel": "Claude Sonnet 5.5",
-        "refinementModels": [],
+        "refinementModels": [
+          "GPT-6 Astra"
+        ],
         "history": [
           {
             "stage": "First saved revision",
@@ -350,6 +363,110 @@
               "endedAt": "2026-09-29T15:24:18.613Z",
               "receiptSha256": "c04cf62d47048db887b5bc649c95cdd923afbe85b642c6bd7ef4b0258986be46",
               "invocationSha256": "25f9583d27003fce8b2fb706fd0f0fa98ca69f1c100a81d28ab2b301befe2645"
+            }
+          },
+          {
+            "stage": "Owner review 2 · rear lamp repair",
+            "request": "owner-review-2",
+            "revisionId": "r_4978d843f7c44dadbb574b64d78fb158",
+            "parentRevisionId": "r_105b27d31fe44f2aa188a333e19e3977",
+            "savedAt": "2026-10-01T01:30:26.892Z",
+            "brief": "4.27 x 1.81 x 1.47 m hatchback, wheelbase 2.62 m, wheel radius 0.315 m, track 1.53 m. Review 2 refinement: rear Taillight/BrakeLight surfaces clipped to existing body facets and original lamp envelope across all three tiers; existing geometry/materials/wheels retained. Explicit defineLod contract uses accepted catalogue thresholds. Original author sonnet-vehicles-a, Claude Sonnet 5.5, Claude Code preserved in parent. Current refinement GPT-6, Codex; reasoning effort not independently confirmed.",
+            "model": "GPT-6 Astra",
+            "modelId": "gpt-6-astra",
+            "savedModelLabel": "GPT-6",
+            "requestedEffort": "ultra",
+            "confirmedEffort": null,
+            "harness": "codex",
+            "harnessVersion": "0.159.2",
+            "confirmation": "Saved manifests retain the generic GPT-6 label; the authoring session explicitly records gpt-6-astra with ultra configured effort.",
+            "run": {
+              "stage": "review-2",
+              "label": "Owner review 2: rear taillight repair",
+              "status": "completed",
+              "stop": "success",
+              "startedAt": "2026-10-01T01:20:41.060Z",
+              "endedAt": "2026-10-01T01:36:10.724Z",
+              "receiptSha256": "594736b61d05bd42ad60aca561428e554f00dadf8dfdfbe215b62e167540e9e8",
+              "invocationSha256": "b966599658212da1455e1545b9fbc15e078768ef887da5d1ba169639db3e95fe"
+            }
+          },
+          {
+            "stage": "Owner review 2 · front lamp fit",
+            "request": "owner-review-2",
+            "revisionId": "r_67e5bfdadba745a99864e8910ba58f2b",
+            "parentRevisionId": "r_4978d843f7c44dadbb574b64d78fb158",
+            "savedAt": "2026-10-01T02:18:07.115Z",
+            "brief": "Front Headlight-only host-facet clipping repair across all LODs and hood continuations. Exact rear repair and every non-Headlight exported primitive preserved. Matched canonical material GPU views and independent finite angular interior fit reviewed; owner review pending.",
+            "model": "GPT-6 Astra",
+            "modelId": "gpt-6-astra",
+            "savedModelLabel": "gpt-6-astra",
+            "requestedEffort": "ultra",
+            "confirmedEffort": null,
+            "harness": "codex",
+            "harnessVersion": "0.159.2",
+            "confirmation": "Actual CLI session_meta, all turn_context records, task_complete and exec turn.completed; configured effort is recorded, independent backend effort is not.",
+            "run": {
+              "stage": "review-2",
+              "label": "Owner review 2: front headlight repair and complete hood-outline follow-up",
+              "status": "completed",
+              "stop": "success",
+              "startedAt": "2026-10-01T02:08:52.327Z",
+              "endedAt": "2026-10-01T02:49:04.999Z",
+              "receiptSha256": "db903f08ce1bb407fa64adc1d2b65fc59b8a96d0ebffa26a899d0a9a8a4be932",
+              "invocationSha256": "4817e5c1611eb1d27fd694211b00c71cdf02adbb3b9ea4c6e9191cba11c97be7"
+            }
+          },
+          {
+            "stage": "Owner review 2 · front lamp fit",
+            "request": "owner-review-2",
+            "revisionId": "r_0393505feabd4814907bc4b527194caf",
+            "parentRevisionId": "r_67e5bfdadba745a99864e8910ba58f2b",
+            "savedAt": "2026-10-01T02:37:07.952Z",
+            "brief": "Front Headlight fit final checkpoint: retain the declared top outline on first-hit upward host facets by removing only the sampled minimum-Y crop. Preserves front-v1, rear repair, canonical white Paint, body and every non-Headlight primitive. Whole-outline, angular, canonical and preview-only contrasting-colour reviews completed; owner review pending. Same active CLI author run as front-v1.",
+            "model": "GPT-6 Astra",
+            "modelId": "gpt-6-astra",
+            "savedModelLabel": "gpt-6-astra",
+            "requestedEffort": "ultra",
+            "confirmedEffort": null,
+            "harness": "codex",
+            "harnessVersion": "0.159.2",
+            "confirmation": "Actual CLI session_meta, all turn_context records, task_complete and exec turn.completed; configured effort is recorded, independent backend effort is not.",
+            "run": {
+              "stage": "review-2",
+              "label": "Owner review 2: front headlight repair and complete hood-outline follow-up",
+              "status": "completed",
+              "stop": "success",
+              "startedAt": "2026-10-01T02:08:52.327Z",
+              "endedAt": "2026-10-01T02:49:04.999Z",
+              "receiptSha256": "db903f08ce1bb407fa64adc1d2b65fc59b8a96d0ebffa26a899d0a9a8a4be932",
+              "invocationSha256": "4817e5c1611eb1d27fd694211b00c71cdf02adbb3b9ea4c6e9191cba11c97be7"
+            }
+          },
+          {
+            "stage": "Owner review 2 · medium-detail headlight cleanup",
+            "request": "owner-review-2",
+            "revisionId": "r_74f393f06996497a9dce6c5ed50c2d62",
+            "parentRevisionId": "r_0393505feabd4814907bc4b527194caf",
+            "savedAt": "2026-10-01T03:25:25.954Z",
+            "brief": "Owner-approved bounded LOD1 Headlight outline cleanup: retain tapered front lamps, omit coarse hood continuation at LOD1. All protected geometry/materials/LODs/bounds exact. GPU neutral/blue display-size review and finite host-fit passed; owner visual acceptance pending.",
+            "model": "GPT-6 Astra",
+            "modelId": "gpt-6-astra",
+            "savedModelLabel": "gpt-6-astra",
+            "requestedEffort": "ultra",
+            "confirmedEffort": null,
+            "harness": "codex",
+            "harnessVersion": "0.159.2",
+            "confirmation": "Actual CLI session_meta, all turn_context records, task_complete and exec turn.completed; independent backend effort is not recorded.",
+            "run": {
+              "stage": "review-2",
+              "label": "Owner review 2: bounded medium-detail front lamp cleanup",
+              "status": "completed",
+              "stop": "success",
+              "startedAt": "2026-10-01T03:13:25.532Z",
+              "endedAt": "2026-10-01T03:29:28.744Z",
+              "receiptSha256": "6d77d7bc8249d2f6e84ce7e5befe0d83f2932084d5bbcc0aaca017482a8bb45a",
+              "invocationSha256": "d40a5dd01e5c05dd6ce6d24ee8f354043184ff42e6f3150c79432ce0e72539b6"
             }
           }
         ]
@@ -379,17 +496,126 @@
             "receiptSha256": "c04cf62d47048db887b5bc649c95cdd923afbe85b642c6bd7ef4b0258986be46",
             "invocationSha256": "25f9583d27003fce8b2fb706fd0f0fa98ca69f1c100a81d28ab2b301befe2645"
           }
+        },
+        {
+          "stage": "Owner review 2 · rear lamp repair",
+          "request": "owner-review-2",
+          "revisionId": "r_4978d843f7c44dadbb574b64d78fb158",
+          "parentRevisionId": "r_105b27d31fe44f2aa188a333e19e3977",
+          "savedAt": "2026-10-01T01:30:26.892Z",
+          "brief": "4.27 x 1.81 x 1.47 m hatchback, wheelbase 2.62 m, wheel radius 0.315 m, track 1.53 m. Review 2 refinement: rear Taillight/BrakeLight surfaces clipped to existing body facets and original lamp envelope across all three tiers; existing geometry/materials/wheels retained. Explicit defineLod contract uses accepted catalogue thresholds. Original author sonnet-vehicles-a, Claude Sonnet 5.5, Claude Code preserved in parent. Current refinement GPT-6, Codex; reasoning effort not independently confirmed.",
+          "model": "GPT-6 Astra",
+          "modelId": "gpt-6-astra",
+          "savedModelLabel": "GPT-6",
+          "requestedEffort": "ultra",
+          "confirmedEffort": null,
+          "harness": "codex",
+          "harnessVersion": "0.159.2",
+          "confirmation": "Saved manifests retain the generic GPT-6 label; the authoring session explicitly records gpt-6-astra with ultra configured effort.",
+          "run": {
+            "stage": "review-2",
+            "label": "Owner review 2: rear taillight repair",
+            "status": "completed",
+            "stop": "success",
+            "startedAt": "2026-10-01T01:20:41.060Z",
+            "endedAt": "2026-10-01T01:36:10.724Z",
+            "receiptSha256": "594736b61d05bd42ad60aca561428e554f00dadf8dfdfbe215b62e167540e9e8",
+            "invocationSha256": "b966599658212da1455e1545b9fbc15e078768ef887da5d1ba169639db3e95fe"
+          }
+        },
+        {
+          "stage": "Owner review 2 · front lamp fit",
+          "request": "owner-review-2",
+          "revisionId": "r_67e5bfdadba745a99864e8910ba58f2b",
+          "parentRevisionId": "r_4978d843f7c44dadbb574b64d78fb158",
+          "savedAt": "2026-10-01T02:18:07.115Z",
+          "brief": "Front Headlight-only host-facet clipping repair across all LODs and hood continuations. Exact rear repair and every non-Headlight exported primitive preserved. Matched canonical material GPU views and independent finite angular interior fit reviewed; owner review pending.",
+          "model": "GPT-6 Astra",
+          "modelId": "gpt-6-astra",
+          "savedModelLabel": "gpt-6-astra",
+          "requestedEffort": "ultra",
+          "confirmedEffort": null,
+          "harness": "codex",
+          "harnessVersion": "0.159.2",
+          "confirmation": "Actual CLI session_meta, all turn_context records, task_complete and exec turn.completed; configured effort is recorded, independent backend effort is not.",
+          "run": {
+            "stage": "review-2",
+            "label": "Owner review 2: front headlight repair and complete hood-outline follow-up",
+            "status": "completed",
+            "stop": "success",
+            "startedAt": "2026-10-01T02:08:52.327Z",
+            "endedAt": "2026-10-01T02:49:04.999Z",
+            "receiptSha256": "db903f08ce1bb407fa64adc1d2b65fc59b8a96d0ebffa26a899d0a9a8a4be932",
+            "invocationSha256": "4817e5c1611eb1d27fd694211b00c71cdf02adbb3b9ea4c6e9191cba11c97be7"
+          }
+        },
+        {
+          "stage": "Owner review 2 · front lamp fit",
+          "request": "owner-review-2",
+          "revisionId": "r_0393505feabd4814907bc4b527194caf",
+          "parentRevisionId": "r_67e5bfdadba745a99864e8910ba58f2b",
+          "savedAt": "2026-10-01T02:37:07.952Z",
+          "brief": "Front Headlight fit final checkpoint: retain the declared top outline on first-hit upward host facets by removing only the sampled minimum-Y crop. Preserves front-v1, rear repair, canonical white Paint, body and every non-Headlight primitive. Whole-outline, angular, canonical and preview-only contrasting-colour reviews completed; owner review pending. Same active CLI author run as front-v1.",
+          "model": "GPT-6 Astra",
+          "modelId": "gpt-6-astra",
+          "savedModelLabel": "gpt-6-astra",
+          "requestedEffort": "ultra",
+          "confirmedEffort": null,
+          "harness": "codex",
+          "harnessVersion": "0.159.2",
+          "confirmation": "Actual CLI session_meta, all turn_context records, task_complete and exec turn.completed; configured effort is recorded, independent backend effort is not.",
+          "run": {
+            "stage": "review-2",
+            "label": "Owner review 2: front headlight repair and complete hood-outline follow-up",
+            "status": "completed",
+            "stop": "success",
+            "startedAt": "2026-10-01T02:08:52.327Z",
+            "endedAt": "2026-10-01T02:49:04.999Z",
+            "receiptSha256": "db903f08ce1bb407fa64adc1d2b65fc59b8a96d0ebffa26a899d0a9a8a4be932",
+            "invocationSha256": "4817e5c1611eb1d27fd694211b00c71cdf02adbb3b9ea4c6e9191cba11c97be7"
+          }
+        },
+        {
+          "stage": "Owner review 2 · medium-detail headlight cleanup",
+          "request": "owner-review-2",
+          "revisionId": "r_74f393f06996497a9dce6c5ed50c2d62",
+          "parentRevisionId": "r_0393505feabd4814907bc4b527194caf",
+          "savedAt": "2026-10-01T03:25:25.954Z",
+          "brief": "Owner-approved bounded LOD1 Headlight outline cleanup: retain tapered front lamps, omit coarse hood continuation at LOD1. All protected geometry/materials/LODs/bounds exact. GPU neutral/blue display-size review and finite host-fit passed; owner visual acceptance pending.",
+          "model": "GPT-6 Astra",
+          "modelId": "gpt-6-astra",
+          "savedModelLabel": "gpt-6-astra",
+          "requestedEffort": "ultra",
+          "confirmedEffort": null,
+          "harness": "codex",
+          "harnessVersion": "0.159.2",
+          "confirmation": "Actual CLI session_meta, all turn_context records, task_complete and exec turn.completed; independent backend effort is not recorded.",
+          "run": {
+            "stage": "review-2",
+            "label": "Owner review 2: bounded medium-detail front lamp cleanup",
+            "status": "completed",
+            "stop": "success",
+            "startedAt": "2026-10-01T03:13:25.532Z",
+            "endedAt": "2026-10-01T03:29:28.744Z",
+            "receiptSha256": "6d77d7bc8249d2f6e84ce7e5befe0d83f2932084d5bbcc0aaca017482a8bb45a",
+            "invocationSha256": "d40a5dd01e5c05dd6ce6d24ee8f354043184ff42e6f3150c79432ce0e72539b6"
+          }
         }
       ],
       "review": {
-        "status": "accepted",
-        "ownerAccepted": true,
-        "scope": "The owner approved all six vehicles at every tier on 29 September 2026. This is the revision that was approved.",
-        "recordedAt": "2026-09-29",
-        "source": "Coordinator overnight log, 12:46 entry (owner answer through the question tool)"
+        "status": "awaiting-owner-review",
+        "ownerAccepted": false,
+        "scope": "Front and rear lamp fit repaired, with simplified medium-detail headlight outlines. Preserved parent revisions retain their historical review records; acceptance of this revision is pending.",
+        "correction": "Generic hatchback: Front and rear lamp fit repaired, with simplified medium-detail headlight outlines; awaiting owner review.",
+        "recordedAt": "2026-10-01",
+        "source": "Local owner review 2 sealed author handoff and exact saved revision manifests"
       },
       "license": "CC0-1.0",
-      "sceneDeepLink": null
+      "sceneDeepLink": null,
+      "canonicalGlb": {
+        "bytes": 118244,
+        "sha256": "c1f095f02514cc73f39353cfca74ab6dd703cc5696eb5cdb4e264306df02d67d"
+      }
     },
     {
       "id": "sedan",
@@ -399,10 +625,10 @@
       "category": "Cars",
       "description": "Generic four-door sedan with a low beltline, a notch-back deck and a full-width rear light bar. Authored as the drivable car of the Golden Gate scene, so its rear stays clean for a chase camera; the paint is a neutral near-white for scene tinting.",
       "assetId": "generic-sedan",
-      "revisionId": "r_1cb27a0c14d44e48afff84db23013dad",
-      "parentRevision": null,
+      "revisionId": "r_92ee0ac3d5cf4b258cc97d20ec941461",
+      "parentRevision": "r_7680f4bae18445b19dc11dd74b62d3e6",
       "metrics": {
-        "triangles": 3664,
+        "triangles": 3758,
         "meshes": 20,
         "materials": 10,
         "bounds": [
@@ -478,9 +704,9 @@
       "tiers": [
         {
           "tier": "LOD0",
-          "bodyTriangles": 2096,
+          "bodyTriangles": 2190,
           "wheelTriangles": 1568,
-          "triangles": 3664,
+          "triangles": 3758,
           "budget": 12000,
           "wheelsShown": true,
           "bounds": [
@@ -504,9 +730,9 @@
         },
         {
           "tier": "LOD1",
-          "bodyTriangles": 688,
+          "bodyTriangles": 706,
           "wheelTriangles": 1568,
-          "triangles": 2256,
+          "triangles": 2274,
           "budget": 3000,
           "wheelsShown": true,
           "bounds": [
@@ -529,9 +755,9 @@
         },
         {
           "tier": "LOD2",
-          "bodyTriangles": 190,
+          "bodyTriangles": 240,
           "wheelTriangles": 0,
-          "triangles": 190,
+          "triangles": 240,
           "budget": 600,
           "wheelsShown": false,
           "bounds": [
@@ -557,74 +783,80 @@
         "culledBelow": 0.0000065,
         "culledDistanceMetres": 1499.8,
         "wheelsHiddenAtLastTier": true,
-        "wheelsHiddenBeyondMetres": 249.9
+        "wheelsHiddenBeyondMetres": 250
       },
       "poster": {
-        "src": "/media/rig/review-neutral-v1/vehicles/r1/sedan.webp",
+        "src": "/media/rig/review-neutral-v1/vehicles/r4-local-review/sedan.webp",
         "width": 1024,
         "height": 1024,
         "alt": "Generic four-door sedan with a low beltline, a notch-back deck and a full-width rear light bar. Authored as the drivable car of the Golden Gate scene, so its rear stays clean for a chase camera; the paint is a neutral near-white for scene tinting.",
-        "srcsetWebp": "/media/rig/review-neutral-v1/vehicles/r1/sedan-320.webp 320w, /media/rig/review-neutral-v1/vehicles/r1/sedan-480.webp 480w, /media/rig/review-neutral-v1/vehicles/r1/sedan-672.webp 672w, /media/rig/review-neutral-v1/vehicles/r1/sedan-768.webp 768w, /media/rig/review-neutral-v1/vehicles/r1/sedan-1024.webp 1024w",
-        "srcsetAvif": "/media/rig/review-neutral-v1/vehicles/r1/sedan-320.avif 320w, /media/rig/review-neutral-v1/vehicles/r1/sedan-480.avif 480w, /media/rig/review-neutral-v1/vehicles/r1/sedan-672.avif 672w, /media/rig/review-neutral-v1/vehicles/r1/sedan-768.avif 768w, /media/rig/review-neutral-v1/vehicles/r1/sedan-1024.avif 1024w",
-        "inputPath": "media/rig/review-neutral-v1/vehicles/r1/sedan.png",
-        "sourceRevisionId": "r_1cb27a0c14d44e48afff84db23013dad",
+        "srcsetWebp": "/media/rig/review-neutral-v1/vehicles/r4-local-review/sedan-320.webp 320w, /media/rig/review-neutral-v1/vehicles/r4-local-review/sedan-480.webp 480w, /media/rig/review-neutral-v1/vehicles/r4-local-review/sedan-672.webp 672w, /media/rig/review-neutral-v1/vehicles/r4-local-review/sedan-768.webp 768w, /media/rig/review-neutral-v1/vehicles/r4-local-review/sedan-1024.webp 1024w",
+        "srcsetAvif": "/media/rig/review-neutral-v1/vehicles/r4-local-review/sedan-320.avif 320w, /media/rig/review-neutral-v1/vehicles/r4-local-review/sedan-480.avif 480w, /media/rig/review-neutral-v1/vehicles/r4-local-review/sedan-672.avif 672w, /media/rig/review-neutral-v1/vehicles/r4-local-review/sedan-768.avif 768w, /media/rig/review-neutral-v1/vehicles/r4-local-review/sedan-1024.avif 1024w",
+        "inputPath": "media/rig/review-neutral-v1/vehicles/r4-local-review/sedan.png",
+        "sourceRevisionId": "r_92ee0ac3d5cf4b258cc97d20ec941461",
         "exactRevision": true,
         "rig": "review-neutral-v1"
       },
       "reviewImage": {
-        "src": "/media/vehicles/r1/review/sedan.webp",
+        "src": "/media/vehicles/r4-local-review/review/sedan.webp",
         "width": 1168,
         "height": 780,
-        "alt": "Six saved review views of Generic sedan: front, right, back, left, top and three-quarter.",
-        "srcsetWebp": "/media/vehicles/r1/review/sedan-320.webp 320w, /media/vehicles/r1/review/sedan-480.webp 480w, /media/vehicles/r1/review/sedan-672.webp 672w, /media/vehicles/r1/review/sedan-768.webp 768w, /media/vehicles/r1/review/sedan-1024.webp 1024w",
-        "srcsetAvif": "/media/vehicles/r1/review/sedan-320.avif 320w, /media/vehicles/r1/review/sedan-480.avif 480w, /media/vehicles/r1/review/sedan-672.avif 672w, /media/vehicles/r1/review/sedan-768.avif 768w, /media/vehicles/r1/review/sedan-1024.avif 1024w",
-        "inputPath": "media/vehicles/r1/review/sedan.png",
-        "sourceRevisionId": "r_1cb27a0c14d44e48afff84db23013dad",
+        "alt": "Saved review views of Generic sedan.",
+        "srcsetWebp": "/media/vehicles/r4-local-review/review/sedan-320.webp 320w, /media/vehicles/r4-local-review/review/sedan-480.webp 480w, /media/vehicles/r4-local-review/review/sedan-672.webp 672w, /media/vehicles/r4-local-review/review/sedan-768.webp 768w, /media/vehicles/r4-local-review/review/sedan-1024.webp 1024w",
+        "srcsetAvif": "/media/vehicles/r4-local-review/review/sedan-320.avif 320w, /media/vehicles/r4-local-review/review/sedan-480.avif 480w, /media/vehicles/r4-local-review/review/sedan-672.avif 672w, /media/vehicles/r4-local-review/review/sedan-768.avif 768w, /media/vehicles/r4-local-review/review/sedan-1024.avif 1024w",
+        "inputPath": "media/vehicles/r4-local-review/review/sedan.png",
+        "sourceRevisionId": "r_92ee0ac3d5cf4b258cc97d20ec941461",
         "exactRevision": true,
         "fidelity": {
-          "materialFaithful": true,
-          "exactArtifact": false,
+          "version": "kiln.view-fidelity.v1",
+          "requested": "full-preferred",
           "delivered": "full-material",
+          "materialFaithful": true,
+          "exactArtifact": true,
           "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1074",
-          "backdrop": "neutral"
+          "inputGlbSha256": "sha256:f4e5c482b43b365920b2894170646f3586c44afb334366366df0123ce5ac89ed",
+          "degraded": false,
+          "reasonCodes": []
         }
       },
       "sourcePath": "/sources/vehicles/sedan.kiln.js",
-      "sourceSha256": "2ac438f25341b6c13cfa4e86f6058c0bdc73daec8129b12e9e1767eb211787a5",
+      "sourceSha256": "df38ba80d458a1e040e8d2646e4325ceb70ed440c5d36402787812c12a3196ef",
       "modelPath": "/models/vehicles/sedan.glb",
       "runtimeDownload": {
-        "path": "packs/vehicles/r1/models/sedan.glb",
-        "bytes": 259596,
-        "sha256": "e05943cd76110e6ed7e3210b9bc33ede40d48371def8439ca1bc9c8dcabf8e96",
-        "url": "https://assets.kilnstudio.tools/packs/vehicles/r1/models/sedan.glb",
-        "archive": "packs/vehicles/r1/generic-road-vehicles-runtime.zip",
+        "path": "packs/vehicles/r4-local-review/models/sedan.glb",
+        "bytes": 117780,
+        "sha256": "1bad1074f0583dfb7c650cfe6e0cae7633b93fb1dc614f50d36ed834d469b212",
+        "url": "https://assets.kilnstudio.tools/packs/vehicles/r4-local-review/models/sedan.glb",
+        "archive": "packs/vehicles/r4-local-review/generic-road-vehicles-runtime.zip",
         "member": "models/sedan.glb",
         "form": "MSFT_lod"
       },
       "editableDownload": {
-        "path": "packs/vehicles/r1/editable/sedan-editable.zip",
-        "bytes": 410336,
-        "sha256": "587f448d9385678f243a6bde7b0d64989e88cae5faf6a2f3954c2819ac2d71bf",
-        "url": "https://assets.kilnstudio.tools/packs/vehicles/r1/editable/sedan-editable.zip",
+        "path": "packs/vehicles/r4-local-review/editable/sedan-editable.zip",
+        "bytes": 276866,
+        "sha256": "f3e9aed40b6edadea3e28518e39901489df1e30eaab7ea35fe8a2dbffe8f9bab",
+        "url": "https://assets.kilnstudio.tools/packs/vehicles/r4-local-review/editable/sedan-editable.zip",
         "members": [
           "manifest.json",
           "asset.glb",
           "source.kiln.js",
           "preview.png"
         ],
-        "glbForm": "named-groups"
+        "glbForm": "MSFT_lod"
       },
       "licence": {
-        "path": "packs/vehicles/r1/licenses/sedan.ASSET-LICENSE.txt",
-        "bytes": 765,
-        "sha256": "9011f4c35291edf6dafab7a5589aefa60a96cd6cf302a80e42cc6f2480499553",
-        "url": "https://assets.kilnstudio.tools/packs/vehicles/r1/licenses/sedan.ASSET-LICENSE.txt",
+        "path": "packs/vehicles/r4-local-review/licenses/sedan.ASSET-LICENSE.txt",
+        "bytes": 1120,
+        "sha256": "71900c60adf01d58926d0a4cc2afed2126c312c8af52d4b122a1eb92dd86ca1a",
+        "url": "https://assets.kilnstudio.tools/packs/vehicles/r4-local-review/licenses/sedan.ASSET-LICENSE.txt",
         "spdx": "CC0-1.0",
-        "statesDeliveredGlbSha256": "e05943cd76110e6ed7e3210b9bc33ede40d48371def8439ca1bc9c8dcabf8e96"
+        "statesDeliveredGlbSha256": "1bad1074f0583dfb7c650cfe6e0cae7633b93fb1dc614f50d36ed834d469b212"
       },
       "provenance": {
         "originalModel": "Claude Sonnet 5.5",
-        "refinementModels": [],
+        "refinementModels": [
+          "GPT-6 Astra"
+        ],
         "history": [
           {
             "stage": "First saved revision",
@@ -649,6 +881,84 @@
               "endedAt": "2026-09-29T15:24:18.613Z",
               "receiptSha256": "c04cf62d47048db887b5bc649c95cdd923afbe85b642c6bd7ef4b0258986be46",
               "invocationSha256": "25f9583d27003fce8b2fb706fd0f0fa98ca69f1c100a81d28ab2b301befe2645"
+            }
+          },
+          {
+            "stage": "Owner review 2 · rear lamp repair",
+            "request": "owner-review-2",
+            "revisionId": "r_ae693b4eb528451886750fcb083d01a4",
+            "parentRevisionId": "r_1cb27a0c14d44e48afff84db23013dad",
+            "savedAt": "2026-10-01T01:30:28.804Z",
+            "brief": "4.88 x 1.87 x 1.45 m sedan, wheelbase 2.85 m, wheel radius 0.330 m, track 1.58 m. Materials: Paint, Trim, Glass, Chrome, Tyre, Rim, Headlight, Taillight, BrakeLight, Plate. Review 2 refinement: rear Taillight/BrakeLight surfaces clipped to existing body facets and original lamp envelope across all three tiers; existing geometry/materials/wheels retained. Explicit defineLod contract uses accepted catalogue thresholds. Original author sonnet-vehicles-a, Claude Sonnet 5.5, Claude Code preserved in parent. Current refinement GPT-6, Codex; reasoning effort not independently confirmed.",
+            "model": "GPT-6 Astra",
+            "modelId": "gpt-6-astra",
+            "savedModelLabel": "GPT-6",
+            "requestedEffort": "ultra",
+            "confirmedEffort": null,
+            "harness": "codex",
+            "harnessVersion": "0.159.2",
+            "confirmation": "Saved manifests retain the generic GPT-6 label; the authoring session explicitly records gpt-6-astra with ultra configured effort.",
+            "run": {
+              "stage": "review-2",
+              "label": "Owner review 2: rear taillight repair",
+              "status": "completed",
+              "stop": "success",
+              "startedAt": "2026-10-01T01:20:41.060Z",
+              "endedAt": "2026-10-01T01:36:10.724Z",
+              "receiptSha256": "594736b61d05bd42ad60aca561428e554f00dadf8dfdfbe215b62e167540e9e8",
+              "invocationSha256": "b966599658212da1455e1545b9fbc15e078768ef887da5d1ba169639db3e95fe"
+            }
+          },
+          {
+            "stage": "Owner review 2 · front lamp fit",
+            "request": "owner-review-2",
+            "revisionId": "r_7680f4bae18445b19dc11dd74b62d3e6",
+            "parentRevisionId": "r_ae693b4eb528451886750fcb083d01a4",
+            "savedAt": "2026-10-01T02:18:53.547Z",
+            "brief": "Front Headlight-only host-facet clipping repair across all LODs and hood continuations. Exact rear repair and every non-Headlight exported primitive preserved. Matched canonical material GPU views and independent finite angular interior fit reviewed; owner review pending.",
+            "model": "GPT-6 Astra",
+            "modelId": "gpt-6-astra",
+            "savedModelLabel": "gpt-6-astra",
+            "requestedEffort": "ultra",
+            "confirmedEffort": null,
+            "harness": "codex",
+            "harnessVersion": "0.159.2",
+            "confirmation": "Actual CLI session_meta, all turn_context records, task_complete and exec turn.completed; configured effort is recorded, independent backend effort is not.",
+            "run": {
+              "stage": "review-2",
+              "label": "Owner review 2: front headlight repair and complete hood-outline follow-up",
+              "status": "completed",
+              "stop": "success",
+              "startedAt": "2026-10-01T02:08:52.327Z",
+              "endedAt": "2026-10-01T02:49:04.999Z",
+              "receiptSha256": "db903f08ce1bb407fa64adc1d2b65fc59b8a96d0ebffa26a899d0a9a8a4be932",
+              "invocationSha256": "4817e5c1611eb1d27fd694211b00c71cdf02adbb3b9ea4c6e9191cba11c97be7"
+            }
+          },
+          {
+            "stage": "Owner review 2 · medium-detail headlight cleanup",
+            "request": "owner-review-2",
+            "revisionId": "r_92ee0ac3d5cf4b258cc97d20ec941461",
+            "parentRevisionId": "r_7680f4bae18445b19dc11dd74b62d3e6",
+            "savedAt": "2026-10-01T03:25:27.238Z",
+            "brief": "Owner-approved bounded LOD1 Headlight outline cleanup: retain tapered front lamps, omit coarse hood continuation at LOD1. All protected geometry/materials/LODs/bounds exact. GPU neutral/blue display-size review and finite host-fit passed; owner visual acceptance pending.",
+            "model": "GPT-6 Astra",
+            "modelId": "gpt-6-astra",
+            "savedModelLabel": "gpt-6-astra",
+            "requestedEffort": "ultra",
+            "confirmedEffort": null,
+            "harness": "codex",
+            "harnessVersion": "0.159.2",
+            "confirmation": "Actual CLI session_meta, all turn_context records, task_complete and exec turn.completed; independent backend effort is not recorded.",
+            "run": {
+              "stage": "review-2",
+              "label": "Owner review 2: bounded medium-detail front lamp cleanup",
+              "status": "completed",
+              "stop": "success",
+              "startedAt": "2026-10-01T03:13:25.532Z",
+              "endedAt": "2026-10-01T03:29:28.744Z",
+              "receiptSha256": "6d77d7bc8249d2f6e84ce7e5befe0d83f2932084d5bbcc0aaca017482a8bb45a",
+              "invocationSha256": "d40a5dd01e5c05dd6ce6d24ee8f354043184ff42e6f3150c79432ce0e72539b6"
             }
           }
         ]
@@ -678,17 +988,100 @@
             "receiptSha256": "c04cf62d47048db887b5bc649c95cdd923afbe85b642c6bd7ef4b0258986be46",
             "invocationSha256": "25f9583d27003fce8b2fb706fd0f0fa98ca69f1c100a81d28ab2b301befe2645"
           }
+        },
+        {
+          "stage": "Owner review 2 · rear lamp repair",
+          "request": "owner-review-2",
+          "revisionId": "r_ae693b4eb528451886750fcb083d01a4",
+          "parentRevisionId": "r_1cb27a0c14d44e48afff84db23013dad",
+          "savedAt": "2026-10-01T01:30:28.804Z",
+          "brief": "4.88 x 1.87 x 1.45 m sedan, wheelbase 2.85 m, wheel radius 0.330 m, track 1.58 m. Materials: Paint, Trim, Glass, Chrome, Tyre, Rim, Headlight, Taillight, BrakeLight, Plate. Review 2 refinement: rear Taillight/BrakeLight surfaces clipped to existing body facets and original lamp envelope across all three tiers; existing geometry/materials/wheels retained. Explicit defineLod contract uses accepted catalogue thresholds. Original author sonnet-vehicles-a, Claude Sonnet 5.5, Claude Code preserved in parent. Current refinement GPT-6, Codex; reasoning effort not independently confirmed.",
+          "model": "GPT-6 Astra",
+          "modelId": "gpt-6-astra",
+          "savedModelLabel": "GPT-6",
+          "requestedEffort": "ultra",
+          "confirmedEffort": null,
+          "harness": "codex",
+          "harnessVersion": "0.159.2",
+          "confirmation": "Saved manifests retain the generic GPT-6 label; the authoring session explicitly records gpt-6-astra with ultra configured effort.",
+          "run": {
+            "stage": "review-2",
+            "label": "Owner review 2: rear taillight repair",
+            "status": "completed",
+            "stop": "success",
+            "startedAt": "2026-10-01T01:20:41.060Z",
+            "endedAt": "2026-10-01T01:36:10.724Z",
+            "receiptSha256": "594736b61d05bd42ad60aca561428e554f00dadf8dfdfbe215b62e167540e9e8",
+            "invocationSha256": "b966599658212da1455e1545b9fbc15e078768ef887da5d1ba169639db3e95fe"
+          }
+        },
+        {
+          "stage": "Owner review 2 · front lamp fit",
+          "request": "owner-review-2",
+          "revisionId": "r_7680f4bae18445b19dc11dd74b62d3e6",
+          "parentRevisionId": "r_ae693b4eb528451886750fcb083d01a4",
+          "savedAt": "2026-10-01T02:18:53.547Z",
+          "brief": "Front Headlight-only host-facet clipping repair across all LODs and hood continuations. Exact rear repair and every non-Headlight exported primitive preserved. Matched canonical material GPU views and independent finite angular interior fit reviewed; owner review pending.",
+          "model": "GPT-6 Astra",
+          "modelId": "gpt-6-astra",
+          "savedModelLabel": "gpt-6-astra",
+          "requestedEffort": "ultra",
+          "confirmedEffort": null,
+          "harness": "codex",
+          "harnessVersion": "0.159.2",
+          "confirmation": "Actual CLI session_meta, all turn_context records, task_complete and exec turn.completed; configured effort is recorded, independent backend effort is not.",
+          "run": {
+            "stage": "review-2",
+            "label": "Owner review 2: front headlight repair and complete hood-outline follow-up",
+            "status": "completed",
+            "stop": "success",
+            "startedAt": "2026-10-01T02:08:52.327Z",
+            "endedAt": "2026-10-01T02:49:04.999Z",
+            "receiptSha256": "db903f08ce1bb407fa64adc1d2b65fc59b8a96d0ebffa26a899d0a9a8a4be932",
+            "invocationSha256": "4817e5c1611eb1d27fd694211b00c71cdf02adbb3b9ea4c6e9191cba11c97be7"
+          }
+        },
+        {
+          "stage": "Owner review 2 · medium-detail headlight cleanup",
+          "request": "owner-review-2",
+          "revisionId": "r_92ee0ac3d5cf4b258cc97d20ec941461",
+          "parentRevisionId": "r_7680f4bae18445b19dc11dd74b62d3e6",
+          "savedAt": "2026-10-01T03:25:27.238Z",
+          "brief": "Owner-approved bounded LOD1 Headlight outline cleanup: retain tapered front lamps, omit coarse hood continuation at LOD1. All protected geometry/materials/LODs/bounds exact. GPU neutral/blue display-size review and finite host-fit passed; owner visual acceptance pending.",
+          "model": "GPT-6 Astra",
+          "modelId": "gpt-6-astra",
+          "savedModelLabel": "gpt-6-astra",
+          "requestedEffort": "ultra",
+          "confirmedEffort": null,
+          "harness": "codex",
+          "harnessVersion": "0.159.2",
+          "confirmation": "Actual CLI session_meta, all turn_context records, task_complete and exec turn.completed; independent backend effort is not recorded.",
+          "run": {
+            "stage": "review-2",
+            "label": "Owner review 2: bounded medium-detail front lamp cleanup",
+            "status": "completed",
+            "stop": "success",
+            "startedAt": "2026-10-01T03:13:25.532Z",
+            "endedAt": "2026-10-01T03:29:28.744Z",
+            "receiptSha256": "6d77d7bc8249d2f6e84ce7e5befe0d83f2932084d5bbcc0aaca017482a8bb45a",
+            "invocationSha256": "d40a5dd01e5c05dd6ce6d24ee8f354043184ff42e6f3150c79432ce0e72539b6"
+          }
         }
       ],
       "review": {
-        "status": "accepted",
-        "ownerAccepted": true,
-        "scope": "The owner approved all six vehicles at every tier on 29 September 2026. This is the revision that was approved.",
-        "recordedAt": "2026-09-29",
-        "source": "Coordinator overnight log, 12:46 entry (owner answer through the question tool)"
+        "status": "awaiting-owner-review",
+        "ownerAccepted": false,
+        "scope": "Front and rear lamp fit repaired, with simplified medium-detail headlight outlines. Preserved parent revisions retain their historical review records; acceptance of this revision is pending.",
+        "correction": "Generic sedan: Front and rear lamp fit repaired, with simplified medium-detail headlight outlines; awaiting owner review.",
+        "recordedAt": "2026-10-01",
+        "source": "Local owner review 2 sealed author handoff and exact saved revision manifests"
       },
       "license": "CC0-1.0",
-      "sceneDeepLink": null
+      "sceneDeepLink": null,
+      "canonicalGlb": {
+        "bytes": 117272,
+        "sha256": "f4e5c482b43b365920b2894170646f3586c44afb334366366df0123ce5ac89ed"
+      }
     },
     {
       "id": "suv",
@@ -698,10 +1091,10 @@
       "category": "Cars",
       "description": "Generic five-door SUV with a tall, square greenhouse, raised ground clearance, larger wheel arches and a steep liftgate. Its paint is a neutral near-white for scene tinting.",
       "assetId": "generic-suv",
-      "revisionId": "r_8261935e39684470b65549b1c39142fd",
-      "parentRevision": null,
+      "revisionId": "r_b4cc9048731b4c039de0b87ca6e75c17",
+      "parentRevision": "r_97a598c2b8b840dd88ff162264e85860",
       "metrics": {
-        "triangles": 3736,
+        "triangles": 3794,
         "meshes": 20,
         "materials": 10,
         "bounds": [
@@ -777,9 +1170,9 @@
       "tiers": [
         {
           "tier": "LOD0",
-          "bodyTriangles": 2168,
+          "bodyTriangles": 2226,
           "wheelTriangles": 1568,
-          "triangles": 3736,
+          "triangles": 3794,
           "budget": 12000,
           "wheelsShown": true,
           "bounds": [
@@ -803,9 +1196,9 @@
         },
         {
           "tier": "LOD1",
-          "bodyTriangles": 718,
+          "bodyTriangles": 738,
           "wheelTriangles": 1568,
-          "triangles": 2286,
+          "triangles": 2306,
           "budget": 3000,
           "wheelsShown": true,
           "bounds": [
@@ -828,9 +1221,9 @@
         },
         {
           "tier": "LOD2",
-          "bodyTriangles": 190,
+          "bodyTriangles": 246,
           "wheelTriangles": 0,
-          "triangles": 190,
+          "triangles": 246,
           "budget": 600,
           "wheelsShown": false,
           "bounds": [
@@ -856,74 +1249,80 @@
         "culledBelow": 0.0000068,
         "culledDistanceMetres": 1500.1,
         "wheelsHiddenAtLastTier": true,
-        "wheelsHiddenBeyondMetres": 250
+        "wheelsHiddenBeyondMetres": 249.9
       },
       "poster": {
-        "src": "/media/rig/review-neutral-v1/vehicles/r1/suv.webp",
+        "src": "/media/rig/review-neutral-v1/vehicles/r4-local-review/suv.webp",
         "width": 1024,
         "height": 1024,
         "alt": "Generic five-door SUV with a tall, square greenhouse, raised ground clearance, larger wheel arches and a steep liftgate. Its paint is a neutral near-white for scene tinting.",
-        "srcsetWebp": "/media/rig/review-neutral-v1/vehicles/r1/suv-320.webp 320w, /media/rig/review-neutral-v1/vehicles/r1/suv-480.webp 480w, /media/rig/review-neutral-v1/vehicles/r1/suv-672.webp 672w, /media/rig/review-neutral-v1/vehicles/r1/suv-768.webp 768w, /media/rig/review-neutral-v1/vehicles/r1/suv-1024.webp 1024w",
-        "srcsetAvif": "/media/rig/review-neutral-v1/vehicles/r1/suv-320.avif 320w, /media/rig/review-neutral-v1/vehicles/r1/suv-480.avif 480w, /media/rig/review-neutral-v1/vehicles/r1/suv-672.avif 672w, /media/rig/review-neutral-v1/vehicles/r1/suv-768.avif 768w, /media/rig/review-neutral-v1/vehicles/r1/suv-1024.avif 1024w",
-        "inputPath": "media/rig/review-neutral-v1/vehicles/r1/suv.png",
-        "sourceRevisionId": "r_8261935e39684470b65549b1c39142fd",
+        "srcsetWebp": "/media/rig/review-neutral-v1/vehicles/r4-local-review/suv-320.webp 320w, /media/rig/review-neutral-v1/vehicles/r4-local-review/suv-480.webp 480w, /media/rig/review-neutral-v1/vehicles/r4-local-review/suv-672.webp 672w, /media/rig/review-neutral-v1/vehicles/r4-local-review/suv-768.webp 768w, /media/rig/review-neutral-v1/vehicles/r4-local-review/suv-1024.webp 1024w",
+        "srcsetAvif": "/media/rig/review-neutral-v1/vehicles/r4-local-review/suv-320.avif 320w, /media/rig/review-neutral-v1/vehicles/r4-local-review/suv-480.avif 480w, /media/rig/review-neutral-v1/vehicles/r4-local-review/suv-672.avif 672w, /media/rig/review-neutral-v1/vehicles/r4-local-review/suv-768.avif 768w, /media/rig/review-neutral-v1/vehicles/r4-local-review/suv-1024.avif 1024w",
+        "inputPath": "media/rig/review-neutral-v1/vehicles/r4-local-review/suv.png",
+        "sourceRevisionId": "r_b4cc9048731b4c039de0b87ca6e75c17",
         "exactRevision": true,
         "rig": "review-neutral-v1"
       },
       "reviewImage": {
-        "src": "/media/vehicles/r1/review/suv.webp",
+        "src": "/media/vehicles/r4-local-review/review/suv.webp",
         "width": 1168,
         "height": 780,
-        "alt": "Six saved review views of Generic SUV: front, right, back, left, top and three-quarter.",
-        "srcsetWebp": "/media/vehicles/r1/review/suv-320.webp 320w, /media/vehicles/r1/review/suv-480.webp 480w, /media/vehicles/r1/review/suv-672.webp 672w, /media/vehicles/r1/review/suv-768.webp 768w, /media/vehicles/r1/review/suv-1024.webp 1024w",
-        "srcsetAvif": "/media/vehicles/r1/review/suv-320.avif 320w, /media/vehicles/r1/review/suv-480.avif 480w, /media/vehicles/r1/review/suv-672.avif 672w, /media/vehicles/r1/review/suv-768.avif 768w, /media/vehicles/r1/review/suv-1024.avif 1024w",
-        "inputPath": "media/vehicles/r1/review/suv.png",
-        "sourceRevisionId": "r_8261935e39684470b65549b1c39142fd",
+        "alt": "Saved review views of Generic SUV.",
+        "srcsetWebp": "/media/vehicles/r4-local-review/review/suv-320.webp 320w, /media/vehicles/r4-local-review/review/suv-480.webp 480w, /media/vehicles/r4-local-review/review/suv-672.webp 672w, /media/vehicles/r4-local-review/review/suv-768.webp 768w, /media/vehicles/r4-local-review/review/suv-1024.webp 1024w",
+        "srcsetAvif": "/media/vehicles/r4-local-review/review/suv-320.avif 320w, /media/vehicles/r4-local-review/review/suv-480.avif 480w, /media/vehicles/r4-local-review/review/suv-672.avif 672w, /media/vehicles/r4-local-review/review/suv-768.avif 768w, /media/vehicles/r4-local-review/review/suv-1024.avif 1024w",
+        "inputPath": "media/vehicles/r4-local-review/review/suv.png",
+        "sourceRevisionId": "r_b4cc9048731b4c039de0b87ca6e75c17",
         "exactRevision": true,
         "fidelity": {
-          "materialFaithful": true,
-          "exactArtifact": false,
+          "version": "kiln.view-fidelity.v1",
+          "requested": "full-preferred",
           "delivered": "full-material",
+          "materialFaithful": true,
+          "exactArtifact": true,
           "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1074",
-          "backdrop": "neutral"
+          "inputGlbSha256": "sha256:680b79d0943b829fa6898a3afa58e816a1ec903c1f4544ec62fca75730222b00",
+          "degraded": false,
+          "reasonCodes": []
         }
       },
       "sourcePath": "/sources/vehicles/suv.kiln.js",
-      "sourceSha256": "c283fe3e30b84206b58a19533bd12f8f1f2ab5ec284990b1eaafa1ad2880368d",
+      "sourceSha256": "92be21e9c7b467e20a8bdbcb1f62e77e9a9cd7d2f3e76c73eb6d5225a3398198",
       "modelPath": "/models/vehicles/suv.glb",
       "runtimeDownload": {
-        "path": "packs/vehicles/r1/models/suv.glb",
-        "bytes": 266964,
-        "sha256": "f46d4535adf8a2730ff832fba59476db2cc63b0dece497aebc1651ae53a6d28d",
-        "url": "https://assets.kilnstudio.tools/packs/vehicles/r1/models/suv.glb",
-        "archive": "packs/vehicles/r1/generic-road-vehicles-runtime.zip",
+        "path": "packs/vehicles/r4-local-review/models/suv.glb",
+        "bytes": 120120,
+        "sha256": "3193157586a99fe8710be2303fea754c0b0799557a6d5757528b5b7c83e612b2",
+        "url": "https://assets.kilnstudio.tools/packs/vehicles/r4-local-review/models/suv.glb",
+        "archive": "packs/vehicles/r4-local-review/generic-road-vehicles-runtime.zip",
         "member": "models/suv.glb",
         "form": "MSFT_lod"
       },
       "editableDownload": {
-        "path": "packs/vehicles/r1/editable/suv-editable.zip",
-        "bytes": 422218,
-        "sha256": "248dfad959d0da2ede5e5145936e0b9616ced771731d9d8d7c7a59b18e9f70e1",
-        "url": "https://assets.kilnstudio.tools/packs/vehicles/r1/editable/suv-editable.zip",
+        "path": "packs/vehicles/r4-local-review/editable/suv-editable.zip",
+        "bytes": 286061,
+        "sha256": "c7fadbd9c8857e94a1fbab78f98e8ca1a97e4ece6ec1ac91ebe1a2949ce0359f",
+        "url": "https://assets.kilnstudio.tools/packs/vehicles/r4-local-review/editable/suv-editable.zip",
         "members": [
           "manifest.json",
           "asset.glb",
           "source.kiln.js",
           "preview.png"
         ],
-        "glbForm": "named-groups"
+        "glbForm": "MSFT_lod"
       },
       "licence": {
-        "path": "packs/vehicles/r1/licenses/suv.ASSET-LICENSE.txt",
-        "bytes": 759,
-        "sha256": "abeda698b88cb5f115e25397f989bca22c4f38d46a6816847cdb2da4239c7b19",
-        "url": "https://assets.kilnstudio.tools/packs/vehicles/r1/licenses/suv.ASSET-LICENSE.txt",
+        "path": "packs/vehicles/r4-local-review/licenses/suv.ASSET-LICENSE.txt",
+        "bytes": 1114,
+        "sha256": "ab90d346640f2902b9b5eb98ba2f6d4dd5f65efff9df9785c61c2c18bee85dfc",
+        "url": "https://assets.kilnstudio.tools/packs/vehicles/r4-local-review/licenses/suv.ASSET-LICENSE.txt",
         "spdx": "CC0-1.0",
-        "statesDeliveredGlbSha256": "f46d4535adf8a2730ff832fba59476db2cc63b0dece497aebc1651ae53a6d28d"
+        "statesDeliveredGlbSha256": "3193157586a99fe8710be2303fea754c0b0799557a6d5757528b5b7c83e612b2"
       },
       "provenance": {
         "originalModel": "Claude Sonnet 5.5",
-        "refinementModels": [],
+        "refinementModels": [
+          "GPT-6 Astra"
+        ],
         "history": [
           {
             "stage": "First saved revision",
@@ -948,6 +1347,110 @@
               "endedAt": "2026-09-29T15:24:18.613Z",
               "receiptSha256": "c04cf62d47048db887b5bc649c95cdd923afbe85b642c6bd7ef4b0258986be46",
               "invocationSha256": "25f9583d27003fce8b2fb706fd0f0fa98ca69f1c100a81d28ab2b301befe2645"
+            }
+          },
+          {
+            "stage": "Owner review 2 · rear lamp repair",
+            "request": "owner-review-2",
+            "revisionId": "r_a9760325250e4aef858b823d1dc43b7e",
+            "parentRevisionId": "r_8261935e39684470b65549b1c39142fd",
+            "savedAt": "2026-10-01T01:30:30.696Z",
+            "brief": "4.92 x 1.94 x 1.76 m SUV, wheelbase 2.90 m, wheel radius 0.365 m, track 1.64 m, ground clearance 0.23 m. Review 2 refinement: rear Taillight/BrakeLight surfaces clipped to existing body facets and original lamp envelope across all three tiers; existing geometry/materials/wheels retained. Explicit defineLod contract uses accepted catalogue thresholds. Original author sonnet-vehicles-a, Claude Sonnet 5.5, Claude Code preserved in parent. Current refinement GPT-6, Codex; reasoning effort not independently confirmed.",
+            "model": "GPT-6 Astra",
+            "modelId": "gpt-6-astra",
+            "savedModelLabel": "GPT-6",
+            "requestedEffort": "ultra",
+            "confirmedEffort": null,
+            "harness": "codex",
+            "harnessVersion": "0.159.2",
+            "confirmation": "Saved manifests retain the generic GPT-6 label; the authoring session explicitly records gpt-6-astra with ultra configured effort.",
+            "run": {
+              "stage": "review-2",
+              "label": "Owner review 2: rear taillight repair",
+              "status": "completed",
+              "stop": "success",
+              "startedAt": "2026-10-01T01:20:41.060Z",
+              "endedAt": "2026-10-01T01:36:10.724Z",
+              "receiptSha256": "594736b61d05bd42ad60aca561428e554f00dadf8dfdfbe215b62e167540e9e8",
+              "invocationSha256": "b966599658212da1455e1545b9fbc15e078768ef887da5d1ba169639db3e95fe"
+            }
+          },
+          {
+            "stage": "Owner review 2 · front lamp fit",
+            "request": "owner-review-2",
+            "revisionId": "r_881324cad46f427080e4a2fd31bae36f",
+            "parentRevisionId": "r_a9760325250e4aef858b823d1dc43b7e",
+            "savedAt": "2026-10-01T02:18:54.849Z",
+            "brief": "Front Headlight-only host-facet clipping repair across all LODs and hood continuations. Exact rear repair and every non-Headlight exported primitive preserved. Matched canonical material GPU views and independent finite angular interior fit reviewed; owner review pending.",
+            "model": "GPT-6 Astra",
+            "modelId": "gpt-6-astra",
+            "savedModelLabel": "gpt-6-astra",
+            "requestedEffort": "ultra",
+            "confirmedEffort": null,
+            "harness": "codex",
+            "harnessVersion": "0.159.2",
+            "confirmation": "Actual CLI session_meta, all turn_context records, task_complete and exec turn.completed; configured effort is recorded, independent backend effort is not.",
+            "run": {
+              "stage": "review-2",
+              "label": "Owner review 2: front headlight repair and complete hood-outline follow-up",
+              "status": "completed",
+              "stop": "success",
+              "startedAt": "2026-10-01T02:08:52.327Z",
+              "endedAt": "2026-10-01T02:49:04.999Z",
+              "receiptSha256": "db903f08ce1bb407fa64adc1d2b65fc59b8a96d0ebffa26a899d0a9a8a4be932",
+              "invocationSha256": "4817e5c1611eb1d27fd694211b00c71cdf02adbb3b9ea4c6e9191cba11c97be7"
+            }
+          },
+          {
+            "stage": "Owner review 2 · front lamp fit",
+            "request": "owner-review-2",
+            "revisionId": "r_97a598c2b8b840dd88ff162264e85860",
+            "parentRevisionId": "r_881324cad46f427080e4a2fd31bae36f",
+            "savedAt": "2026-10-01T02:37:33.058Z",
+            "brief": "Front Headlight fit final checkpoint: retain the declared top outline on first-hit upward host facets by removing only the sampled minimum-Y crop. Preserves front-v1, rear repair, canonical white Paint, body and every non-Headlight primitive. Whole-outline, angular, canonical and preview-only contrasting-colour reviews completed; owner review pending. Same active CLI author run as front-v1.",
+            "model": "GPT-6 Astra",
+            "modelId": "gpt-6-astra",
+            "savedModelLabel": "gpt-6-astra",
+            "requestedEffort": "ultra",
+            "confirmedEffort": null,
+            "harness": "codex",
+            "harnessVersion": "0.159.2",
+            "confirmation": "Actual CLI session_meta, all turn_context records, task_complete and exec turn.completed; configured effort is recorded, independent backend effort is not.",
+            "run": {
+              "stage": "review-2",
+              "label": "Owner review 2: front headlight repair and complete hood-outline follow-up",
+              "status": "completed",
+              "stop": "success",
+              "startedAt": "2026-10-01T02:08:52.327Z",
+              "endedAt": "2026-10-01T02:49:04.999Z",
+              "receiptSha256": "db903f08ce1bb407fa64adc1d2b65fc59b8a96d0ebffa26a899d0a9a8a4be932",
+              "invocationSha256": "4817e5c1611eb1d27fd694211b00c71cdf02adbb3b9ea4c6e9191cba11c97be7"
+            }
+          },
+          {
+            "stage": "Owner review 2 · medium-detail headlight cleanup",
+            "request": "owner-review-2",
+            "revisionId": "r_b4cc9048731b4c039de0b87ca6e75c17",
+            "parentRevisionId": "r_97a598c2b8b840dd88ff162264e85860",
+            "savedAt": "2026-10-01T03:25:28.522Z",
+            "brief": "Owner-approved bounded LOD1 Headlight outline cleanup: retain tapered front lamps, omit coarse hood continuation at LOD1, shorten only LOD1 outer endpoint to 0.88m for host fit. All protected geometry/materials/LODs/bounds exact. GPU neutral/blue display-size review and finite host-fit passed; owner visual acceptance pending.",
+            "model": "GPT-6 Astra",
+            "modelId": "gpt-6-astra",
+            "savedModelLabel": "gpt-6-astra",
+            "requestedEffort": "ultra",
+            "confirmedEffort": null,
+            "harness": "codex",
+            "harnessVersion": "0.159.2",
+            "confirmation": "Actual CLI session_meta, all turn_context records, task_complete and exec turn.completed; independent backend effort is not recorded.",
+            "run": {
+              "stage": "review-2",
+              "label": "Owner review 2: bounded medium-detail front lamp cleanup",
+              "status": "completed",
+              "stop": "success",
+              "startedAt": "2026-10-01T03:13:25.532Z",
+              "endedAt": "2026-10-01T03:29:28.744Z",
+              "receiptSha256": "6d77d7bc8249d2f6e84ce7e5befe0d83f2932084d5bbcc0aaca017482a8bb45a",
+              "invocationSha256": "d40a5dd01e5c05dd6ce6d24ee8f354043184ff42e6f3150c79432ce0e72539b6"
             }
           }
         ]
@@ -977,17 +1480,126 @@
             "receiptSha256": "c04cf62d47048db887b5bc649c95cdd923afbe85b642c6bd7ef4b0258986be46",
             "invocationSha256": "25f9583d27003fce8b2fb706fd0f0fa98ca69f1c100a81d28ab2b301befe2645"
           }
+        },
+        {
+          "stage": "Owner review 2 · rear lamp repair",
+          "request": "owner-review-2",
+          "revisionId": "r_a9760325250e4aef858b823d1dc43b7e",
+          "parentRevisionId": "r_8261935e39684470b65549b1c39142fd",
+          "savedAt": "2026-10-01T01:30:30.696Z",
+          "brief": "4.92 x 1.94 x 1.76 m SUV, wheelbase 2.90 m, wheel radius 0.365 m, track 1.64 m, ground clearance 0.23 m. Review 2 refinement: rear Taillight/BrakeLight surfaces clipped to existing body facets and original lamp envelope across all three tiers; existing geometry/materials/wheels retained. Explicit defineLod contract uses accepted catalogue thresholds. Original author sonnet-vehicles-a, Claude Sonnet 5.5, Claude Code preserved in parent. Current refinement GPT-6, Codex; reasoning effort not independently confirmed.",
+          "model": "GPT-6 Astra",
+          "modelId": "gpt-6-astra",
+          "savedModelLabel": "GPT-6",
+          "requestedEffort": "ultra",
+          "confirmedEffort": null,
+          "harness": "codex",
+          "harnessVersion": "0.159.2",
+          "confirmation": "Saved manifests retain the generic GPT-6 label; the authoring session explicitly records gpt-6-astra with ultra configured effort.",
+          "run": {
+            "stage": "review-2",
+            "label": "Owner review 2: rear taillight repair",
+            "status": "completed",
+            "stop": "success",
+            "startedAt": "2026-10-01T01:20:41.060Z",
+            "endedAt": "2026-10-01T01:36:10.724Z",
+            "receiptSha256": "594736b61d05bd42ad60aca561428e554f00dadf8dfdfbe215b62e167540e9e8",
+            "invocationSha256": "b966599658212da1455e1545b9fbc15e078768ef887da5d1ba169639db3e95fe"
+          }
+        },
+        {
+          "stage": "Owner review 2 · front lamp fit",
+          "request": "owner-review-2",
+          "revisionId": "r_881324cad46f427080e4a2fd31bae36f",
+          "parentRevisionId": "r_a9760325250e4aef858b823d1dc43b7e",
+          "savedAt": "2026-10-01T02:18:54.849Z",
+          "brief": "Front Headlight-only host-facet clipping repair across all LODs and hood continuations. Exact rear repair and every non-Headlight exported primitive preserved. Matched canonical material GPU views and independent finite angular interior fit reviewed; owner review pending.",
+          "model": "GPT-6 Astra",
+          "modelId": "gpt-6-astra",
+          "savedModelLabel": "gpt-6-astra",
+          "requestedEffort": "ultra",
+          "confirmedEffort": null,
+          "harness": "codex",
+          "harnessVersion": "0.159.2",
+          "confirmation": "Actual CLI session_meta, all turn_context records, task_complete and exec turn.completed; configured effort is recorded, independent backend effort is not.",
+          "run": {
+            "stage": "review-2",
+            "label": "Owner review 2: front headlight repair and complete hood-outline follow-up",
+            "status": "completed",
+            "stop": "success",
+            "startedAt": "2026-10-01T02:08:52.327Z",
+            "endedAt": "2026-10-01T02:49:04.999Z",
+            "receiptSha256": "db903f08ce1bb407fa64adc1d2b65fc59b8a96d0ebffa26a899d0a9a8a4be932",
+            "invocationSha256": "4817e5c1611eb1d27fd694211b00c71cdf02adbb3b9ea4c6e9191cba11c97be7"
+          }
+        },
+        {
+          "stage": "Owner review 2 · front lamp fit",
+          "request": "owner-review-2",
+          "revisionId": "r_97a598c2b8b840dd88ff162264e85860",
+          "parentRevisionId": "r_881324cad46f427080e4a2fd31bae36f",
+          "savedAt": "2026-10-01T02:37:33.058Z",
+          "brief": "Front Headlight fit final checkpoint: retain the declared top outline on first-hit upward host facets by removing only the sampled minimum-Y crop. Preserves front-v1, rear repair, canonical white Paint, body and every non-Headlight primitive. Whole-outline, angular, canonical and preview-only contrasting-colour reviews completed; owner review pending. Same active CLI author run as front-v1.",
+          "model": "GPT-6 Astra",
+          "modelId": "gpt-6-astra",
+          "savedModelLabel": "gpt-6-astra",
+          "requestedEffort": "ultra",
+          "confirmedEffort": null,
+          "harness": "codex",
+          "harnessVersion": "0.159.2",
+          "confirmation": "Actual CLI session_meta, all turn_context records, task_complete and exec turn.completed; configured effort is recorded, independent backend effort is not.",
+          "run": {
+            "stage": "review-2",
+            "label": "Owner review 2: front headlight repair and complete hood-outline follow-up",
+            "status": "completed",
+            "stop": "success",
+            "startedAt": "2026-10-01T02:08:52.327Z",
+            "endedAt": "2026-10-01T02:49:04.999Z",
+            "receiptSha256": "db903f08ce1bb407fa64adc1d2b65fc59b8a96d0ebffa26a899d0a9a8a4be932",
+            "invocationSha256": "4817e5c1611eb1d27fd694211b00c71cdf02adbb3b9ea4c6e9191cba11c97be7"
+          }
+        },
+        {
+          "stage": "Owner review 2 · medium-detail headlight cleanup",
+          "request": "owner-review-2",
+          "revisionId": "r_b4cc9048731b4c039de0b87ca6e75c17",
+          "parentRevisionId": "r_97a598c2b8b840dd88ff162264e85860",
+          "savedAt": "2026-10-01T03:25:28.522Z",
+          "brief": "Owner-approved bounded LOD1 Headlight outline cleanup: retain tapered front lamps, omit coarse hood continuation at LOD1, shorten only LOD1 outer endpoint to 0.88m for host fit. All protected geometry/materials/LODs/bounds exact. GPU neutral/blue display-size review and finite host-fit passed; owner visual acceptance pending.",
+          "model": "GPT-6 Astra",
+          "modelId": "gpt-6-astra",
+          "savedModelLabel": "gpt-6-astra",
+          "requestedEffort": "ultra",
+          "confirmedEffort": null,
+          "harness": "codex",
+          "harnessVersion": "0.159.2",
+          "confirmation": "Actual CLI session_meta, all turn_context records, task_complete and exec turn.completed; independent backend effort is not recorded.",
+          "run": {
+            "stage": "review-2",
+            "label": "Owner review 2: bounded medium-detail front lamp cleanup",
+            "status": "completed",
+            "stop": "success",
+            "startedAt": "2026-10-01T03:13:25.532Z",
+            "endedAt": "2026-10-01T03:29:28.744Z",
+            "receiptSha256": "6d77d7bc8249d2f6e84ce7e5befe0d83f2932084d5bbcc0aaca017482a8bb45a",
+            "invocationSha256": "d40a5dd01e5c05dd6ce6d24ee8f354043184ff42e6f3150c79432ce0e72539b6"
+          }
         }
       ],
       "review": {
-        "status": "accepted",
-        "ownerAccepted": true,
-        "scope": "The owner approved all six vehicles at every tier on 29 September 2026. This is the revision that was approved.",
-        "recordedAt": "2026-09-29",
-        "source": "Coordinator overnight log, 12:46 entry (owner answer through the question tool)"
+        "status": "awaiting-owner-review",
+        "ownerAccepted": false,
+        "scope": "Front and rear lamp fit repaired, with simplified medium-detail headlight outlines. Preserved parent revisions retain their historical review records; acceptance of this revision is pending.",
+        "correction": "Generic SUV: Front and rear lamp fit repaired, with simplified medium-detail headlight outlines; awaiting owner review.",
+        "recordedAt": "2026-10-01",
+        "source": "Local owner review 2 sealed author handoff and exact saved revision manifests"
       },
       "license": "CC0-1.0",
-      "sceneDeepLink": null
+      "sceneDeepLink": null,
+      "canonicalGlb": {
+        "bytes": 119612,
+        "sha256": "680b79d0943b829fa6898a3afa58e816a1ec903c1f4544ec62fca75730222b00"
+      }
     },
     {
       "id": "pickup",
@@ -997,8 +1609,8 @@
       "category": "Trucks",
       "description": "Generic crew-cab pickup truck with a short bed. Made for traffic seen from about 3 m to 1 km, it steps from a detailed cab down to a boxy silhouette across three tiers.",
       "assetId": "a_557b9bd6c2c34340804e802081a9b983",
-      "revisionId": "r_b74ac56a93a44c7484890f712df9c64c",
-      "parentRevision": null,
+      "revisionId": "r_218be4189a1b43e7b307c2263ba4f954",
+      "parentRevision": "r_b74ac56a93a44c7484890f712df9c64c",
       "metrics": {
         "triangles": 2992,
         "meshes": 16,
@@ -1148,74 +1760,80 @@
         "culledBelow": 0.00000943,
         "culledDistanceMetres": 1500.4,
         "wheelsHiddenAtLastTier": true,
-        "wheelsHiddenBeyondMetres": 250.2
+        "wheelsHiddenBeyondMetres": 249.9
       },
       "poster": {
-        "src": "/media/rig/review-neutral-v1/vehicles/r1/pickup.webp",
+        "src": "/media/rig/review-neutral-v1/vehicles/r4-local-review/pickup.webp",
         "width": 1024,
         "height": 1024,
         "alt": "Generic crew-cab pickup truck with a short bed. Made for traffic seen from about 3 m to 1 km, it steps from a detailed cab down to a boxy silhouette across three tiers.",
-        "srcsetWebp": "/media/rig/review-neutral-v1/vehicles/r1/pickup-320.webp 320w, /media/rig/review-neutral-v1/vehicles/r1/pickup-480.webp 480w, /media/rig/review-neutral-v1/vehicles/r1/pickup-672.webp 672w, /media/rig/review-neutral-v1/vehicles/r1/pickup-768.webp 768w, /media/rig/review-neutral-v1/vehicles/r1/pickup-1024.webp 1024w",
-        "srcsetAvif": "/media/rig/review-neutral-v1/vehicles/r1/pickup-320.avif 320w, /media/rig/review-neutral-v1/vehicles/r1/pickup-480.avif 480w, /media/rig/review-neutral-v1/vehicles/r1/pickup-672.avif 672w, /media/rig/review-neutral-v1/vehicles/r1/pickup-768.avif 768w, /media/rig/review-neutral-v1/vehicles/r1/pickup-1024.avif 1024w",
-        "inputPath": "media/rig/review-neutral-v1/vehicles/r1/pickup.png",
-        "sourceRevisionId": "r_b74ac56a93a44c7484890f712df9c64c",
+        "srcsetWebp": "/media/rig/review-neutral-v1/vehicles/r4-local-review/pickup-320.webp 320w, /media/rig/review-neutral-v1/vehicles/r4-local-review/pickup-480.webp 480w, /media/rig/review-neutral-v1/vehicles/r4-local-review/pickup-672.webp 672w, /media/rig/review-neutral-v1/vehicles/r4-local-review/pickup-768.webp 768w, /media/rig/review-neutral-v1/vehicles/r4-local-review/pickup-1024.webp 1024w",
+        "srcsetAvif": "/media/rig/review-neutral-v1/vehicles/r4-local-review/pickup-320.avif 320w, /media/rig/review-neutral-v1/vehicles/r4-local-review/pickup-480.avif 480w, /media/rig/review-neutral-v1/vehicles/r4-local-review/pickup-672.avif 672w, /media/rig/review-neutral-v1/vehicles/r4-local-review/pickup-768.avif 768w, /media/rig/review-neutral-v1/vehicles/r4-local-review/pickup-1024.avif 1024w",
+        "inputPath": "media/rig/review-neutral-v1/vehicles/r4-local-review/pickup.png",
+        "sourceRevisionId": "r_218be4189a1b43e7b307c2263ba4f954",
         "exactRevision": true,
         "rig": "review-neutral-v1"
       },
       "reviewImage": {
-        "src": "/media/vehicles/r1/review/pickup.webp",
+        "src": "/media/vehicles/r4-local-review/review/pickup.webp",
         "width": 1168,
         "height": 780,
-        "alt": "Six saved review views of Generic pickup truck: front, right, back, left, top and three-quarter.",
-        "srcsetWebp": "/media/vehicles/r1/review/pickup-320.webp 320w, /media/vehicles/r1/review/pickup-480.webp 480w, /media/vehicles/r1/review/pickup-672.webp 672w, /media/vehicles/r1/review/pickup-768.webp 768w, /media/vehicles/r1/review/pickup-1024.webp 1024w",
-        "srcsetAvif": "/media/vehicles/r1/review/pickup-320.avif 320w, /media/vehicles/r1/review/pickup-480.avif 480w, /media/vehicles/r1/review/pickup-672.avif 672w, /media/vehicles/r1/review/pickup-768.avif 768w, /media/vehicles/r1/review/pickup-1024.avif 1024w",
-        "inputPath": "media/vehicles/r1/review/pickup.png",
-        "sourceRevisionId": "r_b74ac56a93a44c7484890f712df9c64c",
+        "alt": "Saved review views of Generic pickup truck.",
+        "srcsetWebp": "/media/vehicles/r4-local-review/review/pickup-320.webp 320w, /media/vehicles/r4-local-review/review/pickup-480.webp 480w, /media/vehicles/r4-local-review/review/pickup-672.webp 672w, /media/vehicles/r4-local-review/review/pickup-768.webp 768w, /media/vehicles/r4-local-review/review/pickup-1024.webp 1024w",
+        "srcsetAvif": "/media/vehicles/r4-local-review/review/pickup-320.avif 320w, /media/vehicles/r4-local-review/review/pickup-480.avif 480w, /media/vehicles/r4-local-review/review/pickup-672.avif 672w, /media/vehicles/r4-local-review/review/pickup-768.avif 768w, /media/vehicles/r4-local-review/review/pickup-1024.avif 1024w",
+        "inputPath": "media/vehicles/r4-local-review/review/pickup.png",
+        "sourceRevisionId": "r_218be4189a1b43e7b307c2263ba4f954",
         "exactRevision": true,
         "fidelity": {
-          "materialFaithful": true,
-          "exactArtifact": false,
+          "version": "kiln.view-fidelity.v1",
+          "requested": "full-preferred",
           "delivered": "full-material",
+          "materialFaithful": true,
+          "exactArtifact": true,
           "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1074",
-          "backdrop": "neutral"
+          "inputGlbSha256": "sha256:86f6ba799afb0fc3e46ffb95b3f0a99fa0ab59cd5b90b7c6134a9f6d39c4b1d9",
+          "degraded": false,
+          "reasonCodes": []
         }
       },
       "sourcePath": "/sources/vehicles/pickup.kiln.js",
-      "sourceSha256": "1641c5071a5d34749c71e8459ac53d7c71f8736f6480ca400d22035ef06a45db",
+      "sourceSha256": "ce88a54e3703e7a02c46cc8082e0dfa4176532a09fc171d0014b0677bae3a5a1",
       "modelPath": "/models/vehicles/pickup.glb",
       "runtimeDownload": {
-        "path": "packs/vehicles/r1/models/pickup.glb",
-        "bytes": 170228,
-        "sha256": "3adba5410c857ae9e4ec9e2a6eb65428b928783746a7a34fd18679a4d29d83a4",
-        "url": "https://assets.kilnstudio.tools/packs/vehicles/r1/models/pickup.glb",
-        "archive": "packs/vehicles/r1/generic-road-vehicles-runtime.zip",
+        "path": "packs/vehicles/r4-local-review/models/pickup.glb",
+        "bytes": 170184,
+        "sha256": "584240cb33df27714545c6fafc2496f1459bdadad49b2b827be13a8e936b6d8f",
+        "url": "https://assets.kilnstudio.tools/packs/vehicles/r4-local-review/models/pickup.glb",
+        "archive": "packs/vehicles/r4-local-review/generic-road-vehicles-runtime.zip",
         "member": "models/pickup.glb",
         "form": "MSFT_lod"
       },
       "editableDownload": {
-        "path": "packs/vehicles/r1/editable/pickup-editable.zip",
-        "bytes": 261330,
-        "sha256": "78d1071e89746bbba68f2509274e946f176c47799c3b31dfd474b04bdcd911cb",
-        "url": "https://assets.kilnstudio.tools/packs/vehicles/r1/editable/pickup-editable.zip",
+        "path": "packs/vehicles/r4-local-review/editable/pickup-editable.zip",
+        "bytes": 252950,
+        "sha256": "f81685101c218a6cb1f82f21197ea7c895b3e97317c6e2afea32b5c7b0c03493",
+        "url": "https://assets.kilnstudio.tools/packs/vehicles/r4-local-review/editable/pickup-editable.zip",
         "members": [
           "manifest.json",
           "asset.glb",
           "source.kiln.js",
           "preview.png"
         ],
-        "glbForm": "named-groups"
+        "glbForm": "MSFT_lod"
       },
       "licence": {
-        "path": "packs/vehicles/r1/licenses/pickup.ASSET-LICENSE.txt",
-        "bytes": 794,
-        "sha256": "2586337f44954739f199319bbb286f07b3ff183ce0d6264de494e47344b101ec",
-        "url": "https://assets.kilnstudio.tools/packs/vehicles/r1/licenses/pickup.ASSET-LICENSE.txt",
+        "path": "packs/vehicles/r4-local-review/licenses/pickup.ASSET-LICENSE.txt",
+        "bytes": 1034,
+        "sha256": "8ffadbd1d0ee1d15f83c7813b1e1250d221c173df3c57469ceaabb9244b4f679",
+        "url": "https://assets.kilnstudio.tools/packs/vehicles/r4-local-review/licenses/pickup.ASSET-LICENSE.txt",
         "spdx": "CC0-1.0",
-        "statesDeliveredGlbSha256": "3adba5410c857ae9e4ec9e2a6eb65428b928783746a7a34fd18679a4d29d83a4"
+        "statesDeliveredGlbSha256": "584240cb33df27714545c6fafc2496f1459bdadad49b2b827be13a8e936b6d8f"
       },
       "provenance": {
         "originalModel": "Claude Sonnet 5.5",
-        "refinementModels": [],
+        "refinementModels": [
+          "GPT-6 Astra"
+        ],
         "history": [
           {
             "stage": "First saved revision",
@@ -1240,6 +1858,32 @@
               "endedAt": "2026-09-29T15:16:07.782Z",
               "receiptSha256": "a305707c2b87e6e0ea07cbdd925ff45b58875c196e75a926a51529c9de7bfe06",
               "invocationSha256": "4e875215e6e845fb8813d1a1e015827445e0f00938a887c72d79557dce8d0de0"
+            }
+          },
+          {
+            "stage": "Owner review 2 · saved-source LOD conversion",
+            "request": "owner-review-2",
+            "revisionId": "r_218be4189a1b43e7b307c2263ba4f954",
+            "parentRevisionId": "r_b74ac56a93a44c7484890f712df9c64c",
+            "savedAt": "2026-10-01T03:01:53.179Z",
+            "brief": "Original-parent child. Added standard source defineLod for existing body tiers with approved r3 screenCoverage; only two authorized rear-light emissiveIntensity literals changed to 1 for exact historical exported material compatibility under candidate2. All original geometry, materials, transforms, lamps, pivots and shared wheels qualify exact; pending owner review.",
+            "model": "GPT-6 Astra",
+            "modelId": "gpt-6-astra",
+            "savedModelLabel": "gpt-6-astra",
+            "requestedEffort": "ultra",
+            "confirmedEffort": null,
+            "harness": "codex",
+            "harnessVersion": "0.159.2",
+            "confirmation": "Actual CLI session_meta, all turn_context records, task_complete and exec turn.completed; independent backend effort is not recorded.",
+            "run": {
+              "stage": "review-2",
+              "label": "Owner review 2: preserved heavy-vehicle source LOD conversion",
+              "status": "completed",
+              "stop": "success",
+              "startedAt": "2026-10-01T02:51:04.975Z",
+              "endedAt": "2026-10-01T03:11:55.501Z",
+              "receiptSha256": "44d5ce5810543c98f74046bd0698ae167cef7d7fcf9eebc61991a3cc14e32f55",
+              "invocationSha256": "8371748f40e8b208c65558d4fe2e4c44b48846e1bf380c2bd6fc65e51e2e8ffb"
             }
           }
         ]
@@ -1269,17 +1913,48 @@
             "receiptSha256": "a305707c2b87e6e0ea07cbdd925ff45b58875c196e75a926a51529c9de7bfe06",
             "invocationSha256": "4e875215e6e845fb8813d1a1e015827445e0f00938a887c72d79557dce8d0de0"
           }
+        },
+        {
+          "stage": "Owner review 2 · saved-source LOD conversion",
+          "request": "owner-review-2",
+          "revisionId": "r_218be4189a1b43e7b307c2263ba4f954",
+          "parentRevisionId": "r_b74ac56a93a44c7484890f712df9c64c",
+          "savedAt": "2026-10-01T03:01:53.179Z",
+          "brief": "Original-parent child. Added standard source defineLod for existing body tiers with approved r3 screenCoverage; only two authorized rear-light emissiveIntensity literals changed to 1 for exact historical exported material compatibility under candidate2. All original geometry, materials, transforms, lamps, pivots and shared wheels qualify exact; pending owner review.",
+          "model": "GPT-6 Astra",
+          "modelId": "gpt-6-astra",
+          "savedModelLabel": "gpt-6-astra",
+          "requestedEffort": "ultra",
+          "confirmedEffort": null,
+          "harness": "codex",
+          "harnessVersion": "0.159.2",
+          "confirmation": "Actual CLI session_meta, all turn_context records, task_complete and exec turn.completed; independent backend effort is not recorded.",
+          "run": {
+            "stage": "review-2",
+            "label": "Owner review 2: preserved heavy-vehicle source LOD conversion",
+            "status": "completed",
+            "stop": "success",
+            "startedAt": "2026-10-01T02:51:04.975Z",
+            "endedAt": "2026-10-01T03:11:55.501Z",
+            "receiptSha256": "44d5ce5810543c98f74046bd0698ae167cef7d7fcf9eebc61991a3cc14e32f55",
+            "invocationSha256": "8371748f40e8b208c65558d4fe2e4c44b48846e1bf380c2bd6fc65e51e2e8ffb"
+          }
         }
       ],
       "review": {
-        "status": "accepted",
-        "ownerAccepted": true,
-        "scope": "The owner approved all six vehicles at every tier on 29 September 2026. This is the revision that was approved.",
-        "recordedAt": "2026-09-29",
-        "source": "Coordinator overnight log, 12:46 entry (owner answer through the question tool)"
+        "status": "awaiting-owner-review",
+        "ownerAccepted": false,
+        "scope": "Standard LOD links authored in a preserved source revision with unchanged geometry, materials and wheel pivots. Preserved parent revisions retain their historical review records; acceptance of this revision is pending.",
+        "correction": "Generic pickup truck: Standard LOD links authored in a preserved source revision with unchanged geometry, materials and wheel pivots; awaiting owner review.",
+        "recordedAt": "2026-10-01",
+        "source": "Local owner review 2 sealed author handoff and exact saved revision manifests"
       },
       "license": "CC0-1.0",
-      "sceneDeepLink": null
+      "sceneDeepLink": null,
+      "canonicalGlb": {
+        "bytes": 169676,
+        "sha256": "86f6ba799afb0fc3e46ffb95b3f0a99fa0ab59cd5b90b7c6134a9f6d39c4b1d9"
+      }
     },
     {
       "id": "box-truck",
@@ -1289,8 +1964,8 @@
       "category": "Trucks",
       "description": "Generic class 6 cab-over box truck with dual rear wheels. The cab takes the paint tint; the cargo box has its own untinted near-white material.",
       "assetId": "a_2092ca0610c749b386c14c07dbaf4236",
-      "revisionId": "r_d5e37b6d4e7347ac863220cdbd8e49a4",
-      "parentRevision": null,
+      "revisionId": "r_538b8a19c46d4086b456e27b32ee7d33",
+      "parentRevision": "r_d5e37b6d4e7347ac863220cdbd8e49a4",
       "metrics": {
         "triangles": 3546,
         "meshes": 19,
@@ -1447,74 +2122,80 @@
         "culledBelow": 0.0000168,
         "culledDistanceMetres": 1501.7,
         "wheelsHiddenAtLastTier": true,
-        "wheelsHiddenBeyondMetres": 249.5
+        "wheelsHiddenBeyondMetres": 250
       },
       "poster": {
-        "src": "/media/rig/review-neutral-v1/vehicles/r1/box-truck.webp",
+        "src": "/media/rig/review-neutral-v1/vehicles/r4-local-review/box-truck.webp",
         "width": 1024,
         "height": 1024,
         "alt": "Generic class 6 cab-over box truck with dual rear wheels. The cab takes the paint tint; the cargo box has its own untinted near-white material.",
-        "srcsetWebp": "/media/rig/review-neutral-v1/vehicles/r1/box-truck-320.webp 320w, /media/rig/review-neutral-v1/vehicles/r1/box-truck-480.webp 480w, /media/rig/review-neutral-v1/vehicles/r1/box-truck-672.webp 672w, /media/rig/review-neutral-v1/vehicles/r1/box-truck-768.webp 768w, /media/rig/review-neutral-v1/vehicles/r1/box-truck-1024.webp 1024w",
-        "srcsetAvif": "/media/rig/review-neutral-v1/vehicles/r1/box-truck-320.avif 320w, /media/rig/review-neutral-v1/vehicles/r1/box-truck-480.avif 480w, /media/rig/review-neutral-v1/vehicles/r1/box-truck-672.avif 672w, /media/rig/review-neutral-v1/vehicles/r1/box-truck-768.avif 768w, /media/rig/review-neutral-v1/vehicles/r1/box-truck-1024.avif 1024w",
-        "inputPath": "media/rig/review-neutral-v1/vehicles/r1/box-truck.png",
-        "sourceRevisionId": "r_d5e37b6d4e7347ac863220cdbd8e49a4",
+        "srcsetWebp": "/media/rig/review-neutral-v1/vehicles/r4-local-review/box-truck-320.webp 320w, /media/rig/review-neutral-v1/vehicles/r4-local-review/box-truck-480.webp 480w, /media/rig/review-neutral-v1/vehicles/r4-local-review/box-truck-672.webp 672w, /media/rig/review-neutral-v1/vehicles/r4-local-review/box-truck-768.webp 768w, /media/rig/review-neutral-v1/vehicles/r4-local-review/box-truck-1024.webp 1024w",
+        "srcsetAvif": "/media/rig/review-neutral-v1/vehicles/r4-local-review/box-truck-320.avif 320w, /media/rig/review-neutral-v1/vehicles/r4-local-review/box-truck-480.avif 480w, /media/rig/review-neutral-v1/vehicles/r4-local-review/box-truck-672.avif 672w, /media/rig/review-neutral-v1/vehicles/r4-local-review/box-truck-768.avif 768w, /media/rig/review-neutral-v1/vehicles/r4-local-review/box-truck-1024.avif 1024w",
+        "inputPath": "media/rig/review-neutral-v1/vehicles/r4-local-review/box-truck.png",
+        "sourceRevisionId": "r_538b8a19c46d4086b456e27b32ee7d33",
         "exactRevision": true,
         "rig": "review-neutral-v1"
       },
       "reviewImage": {
-        "src": "/media/vehicles/r1/review/box-truck.webp",
+        "src": "/media/vehicles/r4-local-review/review/box-truck.webp",
         "width": 1168,
         "height": 780,
-        "alt": "Six saved review views of Generic box truck: front, right, back, left, top and three-quarter.",
-        "srcsetWebp": "/media/vehicles/r1/review/box-truck-320.webp 320w, /media/vehicles/r1/review/box-truck-480.webp 480w, /media/vehicles/r1/review/box-truck-672.webp 672w, /media/vehicles/r1/review/box-truck-768.webp 768w, /media/vehicles/r1/review/box-truck-1024.webp 1024w",
-        "srcsetAvif": "/media/vehicles/r1/review/box-truck-320.avif 320w, /media/vehicles/r1/review/box-truck-480.avif 480w, /media/vehicles/r1/review/box-truck-672.avif 672w, /media/vehicles/r1/review/box-truck-768.avif 768w, /media/vehicles/r1/review/box-truck-1024.avif 1024w",
-        "inputPath": "media/vehicles/r1/review/box-truck.png",
-        "sourceRevisionId": "r_d5e37b6d4e7347ac863220cdbd8e49a4",
+        "alt": "Saved review views of Generic box truck.",
+        "srcsetWebp": "/media/vehicles/r4-local-review/review/box-truck-320.webp 320w, /media/vehicles/r4-local-review/review/box-truck-480.webp 480w, /media/vehicles/r4-local-review/review/box-truck-672.webp 672w, /media/vehicles/r4-local-review/review/box-truck-768.webp 768w, /media/vehicles/r4-local-review/review/box-truck-1024.webp 1024w",
+        "srcsetAvif": "/media/vehicles/r4-local-review/review/box-truck-320.avif 320w, /media/vehicles/r4-local-review/review/box-truck-480.avif 480w, /media/vehicles/r4-local-review/review/box-truck-672.avif 672w, /media/vehicles/r4-local-review/review/box-truck-768.avif 768w, /media/vehicles/r4-local-review/review/box-truck-1024.avif 1024w",
+        "inputPath": "media/vehicles/r4-local-review/review/box-truck.png",
+        "sourceRevisionId": "r_538b8a19c46d4086b456e27b32ee7d33",
         "exactRevision": true,
         "fidelity": {
-          "materialFaithful": true,
-          "exactArtifact": false,
+          "version": "kiln.view-fidelity.v1",
+          "requested": "full-preferred",
           "delivered": "full-material",
+          "materialFaithful": true,
+          "exactArtifact": true,
           "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1074",
-          "backdrop": "neutral"
+          "inputGlbSha256": "sha256:8fca32fc32c11eba0a6df137cd1ae6285d605a73b0c877f4fc40113eba341767",
+          "degraded": false,
+          "reasonCodes": []
         }
       },
       "sourcePath": "/sources/vehicles/box-truck.kiln.js",
-      "sourceSha256": "cb8d522dde0198cd84b9a59134e7fd2ebcb8c353f8ec36d111ae01f82c684678",
+      "sourceSha256": "aa5f5e777bfe2a0992ae6a9b97981ece095fe5f3ba9bd0bc412a4c44c4e94b8c",
       "modelPath": "/models/vehicles/box-truck.glb",
       "runtimeDownload": {
-        "path": "packs/vehicles/r1/models/box-truck.glb",
-        "bytes": 169772,
-        "sha256": "bea417d293d5e2a32f99795bc2841ef845bd1a94ccc6f9d9e4691c050c5a0e94",
-        "url": "https://assets.kilnstudio.tools/packs/vehicles/r1/models/box-truck.glb",
-        "archive": "packs/vehicles/r1/generic-road-vehicles-runtime.zip",
+        "path": "packs/vehicles/r4-local-review/models/box-truck.glb",
+        "bytes": 169728,
+        "sha256": "4cfccfdb2ddd15fc6ab9940e0406fe2b11bbef9d6098d783940cfeb572464420",
+        "url": "https://assets.kilnstudio.tools/packs/vehicles/r4-local-review/models/box-truck.glb",
+        "archive": "packs/vehicles/r4-local-review/generic-road-vehicles-runtime.zip",
         "member": "models/box-truck.glb",
         "form": "MSFT_lod"
       },
       "editableDownload": {
-        "path": "packs/vehicles/r1/editable/box-truck-editable.zip",
-        "bytes": 242952,
-        "sha256": "4250f94271161b6a14fee4a9239c81ba4da9f88094c10ff9e18ed337d4b0db40",
-        "url": "https://assets.kilnstudio.tools/packs/vehicles/r1/editable/box-truck-editable.zip",
+        "path": "packs/vehicles/r4-local-review/editable/box-truck-editable.zip",
+        "bytes": 240743,
+        "sha256": "5b4b3fd5d890d37ee4ca2c627403889d99d037dce3bd4d3aad2fc6f70c683185",
+        "url": "https://assets.kilnstudio.tools/packs/vehicles/r4-local-review/editable/box-truck-editable.zip",
         "members": [
           "manifest.json",
           "asset.glb",
           "source.kiln.js",
           "preview.png"
         ],
-        "glbForm": "named-groups"
+        "glbForm": "MSFT_lod"
       },
       "licence": {
-        "path": "packs/vehicles/r1/licenses/box-truck.ASSET-LICENSE.txt",
-        "bytes": 794,
-        "sha256": "024bf2497a9dfa0873bf91491e3076c8ba515890455a83f2151bf5736acb906d",
-        "url": "https://assets.kilnstudio.tools/packs/vehicles/r1/licenses/box-truck.ASSET-LICENSE.txt",
+        "path": "packs/vehicles/r4-local-review/licenses/box-truck.ASSET-LICENSE.txt",
+        "bytes": 1034,
+        "sha256": "654256a91ce265d292dbe83ee822e76a6db741f0cdf8f6173b750b21ef1e3aa0",
+        "url": "https://assets.kilnstudio.tools/packs/vehicles/r4-local-review/licenses/box-truck.ASSET-LICENSE.txt",
         "spdx": "CC0-1.0",
-        "statesDeliveredGlbSha256": "bea417d293d5e2a32f99795bc2841ef845bd1a94ccc6f9d9e4691c050c5a0e94"
+        "statesDeliveredGlbSha256": "4cfccfdb2ddd15fc6ab9940e0406fe2b11bbef9d6098d783940cfeb572464420"
       },
       "provenance": {
         "originalModel": "Claude Sonnet 5.5",
-        "refinementModels": [],
+        "refinementModels": [
+          "GPT-6 Astra"
+        ],
         "history": [
           {
             "stage": "First saved revision",
@@ -1539,6 +2220,32 @@
               "endedAt": "2026-09-29T15:16:07.782Z",
               "receiptSha256": "a305707c2b87e6e0ea07cbdd925ff45b58875c196e75a926a51529c9de7bfe06",
               "invocationSha256": "4e875215e6e845fb8813d1a1e015827445e0f00938a887c72d79557dce8d0de0"
+            }
+          },
+          {
+            "stage": "Owner review 2 · saved-source LOD conversion",
+            "request": "owner-review-2",
+            "revisionId": "r_538b8a19c46d4086b456e27b32ee7d33",
+            "parentRevisionId": "r_d5e37b6d4e7347ac863220cdbd8e49a4",
+            "savedAt": "2026-10-01T03:02:08.442Z",
+            "brief": "Original-parent child. Added standard source defineLod for existing body tiers with approved r3 screenCoverage; only two authorized rear-light emissiveIntensity literals changed to 1 for exact historical exported material compatibility under candidate2. All original geometry, materials, transforms, lamps, pivots and shared wheels qualify exact; pending owner review.",
+            "model": "GPT-6 Astra",
+            "modelId": "gpt-6-astra",
+            "savedModelLabel": "gpt-6-astra",
+            "requestedEffort": "ultra",
+            "confirmedEffort": null,
+            "harness": "codex",
+            "harnessVersion": "0.159.2",
+            "confirmation": "Actual CLI session_meta, all turn_context records, task_complete and exec turn.completed; independent backend effort is not recorded.",
+            "run": {
+              "stage": "review-2",
+              "label": "Owner review 2: preserved heavy-vehicle source LOD conversion",
+              "status": "completed",
+              "stop": "success",
+              "startedAt": "2026-10-01T02:51:04.975Z",
+              "endedAt": "2026-10-01T03:11:55.501Z",
+              "receiptSha256": "44d5ce5810543c98f74046bd0698ae167cef7d7fcf9eebc61991a3cc14e32f55",
+              "invocationSha256": "8371748f40e8b208c65558d4fe2e4c44b48846e1bf380c2bd6fc65e51e2e8ffb"
             }
           }
         ]
@@ -1568,17 +2275,48 @@
             "receiptSha256": "a305707c2b87e6e0ea07cbdd925ff45b58875c196e75a926a51529c9de7bfe06",
             "invocationSha256": "4e875215e6e845fb8813d1a1e015827445e0f00938a887c72d79557dce8d0de0"
           }
+        },
+        {
+          "stage": "Owner review 2 · saved-source LOD conversion",
+          "request": "owner-review-2",
+          "revisionId": "r_538b8a19c46d4086b456e27b32ee7d33",
+          "parentRevisionId": "r_d5e37b6d4e7347ac863220cdbd8e49a4",
+          "savedAt": "2026-10-01T03:02:08.442Z",
+          "brief": "Original-parent child. Added standard source defineLod for existing body tiers with approved r3 screenCoverage; only two authorized rear-light emissiveIntensity literals changed to 1 for exact historical exported material compatibility under candidate2. All original geometry, materials, transforms, lamps, pivots and shared wheels qualify exact; pending owner review.",
+          "model": "GPT-6 Astra",
+          "modelId": "gpt-6-astra",
+          "savedModelLabel": "gpt-6-astra",
+          "requestedEffort": "ultra",
+          "confirmedEffort": null,
+          "harness": "codex",
+          "harnessVersion": "0.159.2",
+          "confirmation": "Actual CLI session_meta, all turn_context records, task_complete and exec turn.completed; independent backend effort is not recorded.",
+          "run": {
+            "stage": "review-2",
+            "label": "Owner review 2: preserved heavy-vehicle source LOD conversion",
+            "status": "completed",
+            "stop": "success",
+            "startedAt": "2026-10-01T02:51:04.975Z",
+            "endedAt": "2026-10-01T03:11:55.501Z",
+            "receiptSha256": "44d5ce5810543c98f74046bd0698ae167cef7d7fcf9eebc61991a3cc14e32f55",
+            "invocationSha256": "8371748f40e8b208c65558d4fe2e4c44b48846e1bf380c2bd6fc65e51e2e8ffb"
+          }
         }
       ],
       "review": {
-        "status": "accepted",
-        "ownerAccepted": true,
-        "scope": "The owner approved all six vehicles at every tier on 29 September 2026. This is the revision that was approved.",
-        "recordedAt": "2026-09-29",
-        "source": "Coordinator overnight log, 12:46 entry (owner answer through the question tool)"
+        "status": "awaiting-owner-review",
+        "ownerAccepted": false,
+        "scope": "Standard LOD links authored in a preserved source revision with unchanged geometry, materials and wheel pivots. Preserved parent revisions retain their historical review records; acceptance of this revision is pending.",
+        "correction": "Generic box truck: Standard LOD links authored in a preserved source revision with unchanged geometry, materials and wheel pivots; awaiting owner review.",
+        "recordedAt": "2026-10-01",
+        "source": "Local owner review 2 sealed author handoff and exact saved revision manifests"
       },
       "license": "CC0-1.0",
-      "sceneDeepLink": null
+      "sceneDeepLink": null,
+      "canonicalGlb": {
+        "bytes": 169220,
+        "sha256": "8fca32fc32c11eba0a6df137cd1ae6285d605a73b0c877f4fc40113eba341767"
+      }
     },
     {
       "id": "transit-bus",
@@ -1588,8 +2326,8 @@
       "category": "Buses",
       "description": "Generic 40 ft low-floor transit bus with two doors on the right, a two-tone body (paint above, trim below), dual rear wheels and a roof equipment pod. No operator livery, text or numbers.",
       "assetId": "a_a8c030b2570f4ae5aa54eefbd3767f4c",
-      "revisionId": "r_6ab2ee53817449c59972502fcf008f1a",
-      "parentRevision": "r_4dc2fb11b58b4dcd9f89197a8f7e28ff",
+      "revisionId": "r_85ff097a61384efab445c55372d3b6f5",
+      "parentRevision": "r_6ab2ee53817449c59972502fcf008f1a",
       "metrics": {
         "triangles": 3684,
         "meshes": 18,
@@ -1742,75 +2480,80 @@
         "culledBelow": 0.000037,
         "culledDistanceMetres": 1500.5,
         "wheelsHiddenAtLastTier": true,
-        "wheelsHiddenBeyondMetres": 249.9
+        "wheelsHiddenBeyondMetres": 250.3
       },
       "poster": {
-        "src": "/media/rig/review-neutral-v1/vehicles/r1/transit-bus.webp",
+        "src": "/media/rig/review-neutral-v1/vehicles/r4-local-review/transit-bus.webp",
         "width": 1024,
         "height": 1024,
         "alt": "Generic 40 ft low-floor transit bus with two doors on the right, a two-tone body (paint above, trim below), dual rear wheels and a roof equipment pod. No operator livery, text or numbers.",
-        "srcsetWebp": "/media/rig/review-neutral-v1/vehicles/r1/transit-bus-320.webp 320w, /media/rig/review-neutral-v1/vehicles/r1/transit-bus-480.webp 480w, /media/rig/review-neutral-v1/vehicles/r1/transit-bus-672.webp 672w, /media/rig/review-neutral-v1/vehicles/r1/transit-bus-768.webp 768w, /media/rig/review-neutral-v1/vehicles/r1/transit-bus-1024.webp 1024w",
-        "srcsetAvif": "/media/rig/review-neutral-v1/vehicles/r1/transit-bus-320.avif 320w, /media/rig/review-neutral-v1/vehicles/r1/transit-bus-480.avif 480w, /media/rig/review-neutral-v1/vehicles/r1/transit-bus-672.avif 672w, /media/rig/review-neutral-v1/vehicles/r1/transit-bus-768.avif 768w, /media/rig/review-neutral-v1/vehicles/r1/transit-bus-1024.avif 1024w",
-        "inputPath": "media/rig/review-neutral-v1/vehicles/r1/transit-bus.png",
-        "sourceRevisionId": "r_6ab2ee53817449c59972502fcf008f1a",
+        "srcsetWebp": "/media/rig/review-neutral-v1/vehicles/r4-local-review/transit-bus-320.webp 320w, /media/rig/review-neutral-v1/vehicles/r4-local-review/transit-bus-480.webp 480w, /media/rig/review-neutral-v1/vehicles/r4-local-review/transit-bus-672.webp 672w, /media/rig/review-neutral-v1/vehicles/r4-local-review/transit-bus-768.webp 768w, /media/rig/review-neutral-v1/vehicles/r4-local-review/transit-bus-1024.webp 1024w",
+        "srcsetAvif": "/media/rig/review-neutral-v1/vehicles/r4-local-review/transit-bus-320.avif 320w, /media/rig/review-neutral-v1/vehicles/r4-local-review/transit-bus-480.avif 480w, /media/rig/review-neutral-v1/vehicles/r4-local-review/transit-bus-672.avif 672w, /media/rig/review-neutral-v1/vehicles/r4-local-review/transit-bus-768.avif 768w, /media/rig/review-neutral-v1/vehicles/r4-local-review/transit-bus-1024.avif 1024w",
+        "inputPath": "media/rig/review-neutral-v1/vehicles/r4-local-review/transit-bus.png",
+        "sourceRevisionId": "r_85ff097a61384efab445c55372d3b6f5",
         "exactRevision": true,
         "rig": "review-neutral-v1"
       },
       "reviewImage": {
-        "src": "/media/vehicles/r1/review/transit-bus.webp",
+        "src": "/media/vehicles/r4-local-review/review/transit-bus.webp",
         "width": 1168,
         "height": 780,
-        "alt": "Six saved review views of Generic transit bus: front, right, back, left, top and three-quarter.",
-        "srcsetWebp": "/media/vehicles/r1/review/transit-bus-320.webp 320w, /media/vehicles/r1/review/transit-bus-480.webp 480w, /media/vehicles/r1/review/transit-bus-672.webp 672w, /media/vehicles/r1/review/transit-bus-768.webp 768w, /media/vehicles/r1/review/transit-bus-1024.webp 1024w",
-        "srcsetAvif": "/media/vehicles/r1/review/transit-bus-320.avif 320w, /media/vehicles/r1/review/transit-bus-480.avif 480w, /media/vehicles/r1/review/transit-bus-672.avif 672w, /media/vehicles/r1/review/transit-bus-768.avif 768w, /media/vehicles/r1/review/transit-bus-1024.avif 1024w",
-        "inputPath": "media/vehicles/r1/review/transit-bus.png",
-        "sourceRevisionId": "r_6ab2ee53817449c59972502fcf008f1a",
+        "alt": "Saved review views of Generic transit bus.",
+        "srcsetWebp": "/media/vehicles/r4-local-review/review/transit-bus-320.webp 320w, /media/vehicles/r4-local-review/review/transit-bus-480.webp 480w, /media/vehicles/r4-local-review/review/transit-bus-672.webp 672w, /media/vehicles/r4-local-review/review/transit-bus-768.webp 768w, /media/vehicles/r4-local-review/review/transit-bus-1024.webp 1024w",
+        "srcsetAvif": "/media/vehicles/r4-local-review/review/transit-bus-320.avif 320w, /media/vehicles/r4-local-review/review/transit-bus-480.avif 480w, /media/vehicles/r4-local-review/review/transit-bus-672.avif 672w, /media/vehicles/r4-local-review/review/transit-bus-768.avif 768w, /media/vehicles/r4-local-review/review/transit-bus-1024.avif 1024w",
+        "inputPath": "media/vehicles/r4-local-review/review/transit-bus.png",
+        "sourceRevisionId": "r_85ff097a61384efab445c55372d3b6f5",
         "exactRevision": true,
         "fidelity": {
-          "materialFaithful": true,
-          "exactArtifact": false,
+          "version": "kiln.view-fidelity.v1",
+          "requested": "full-preferred",
           "delivered": "full-material",
+          "materialFaithful": true,
+          "exactArtifact": true,
           "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1074",
-          "backdrop": "neutral"
+          "inputGlbSha256": "sha256:232c7176e8e56a36d6ba96705bb8f3b96f95b4fb9b87f94847d105146d2a5bf6",
+          "degraded": false,
+          "reasonCodes": []
         }
       },
       "sourcePath": "/sources/vehicles/transit-bus.kiln.js",
-      "sourceSha256": "b253949bf9d9a39db635b44119cc50158baaecd84c9d46322f1454b31e177ee6",
+      "sourceSha256": "7353294abb36e623839fb889c70bfbd626ee2ebda69b3b96e73aeed3e8afc2e1",
       "modelPath": "/models/vehicles/transit-bus.glb",
       "runtimeDownload": {
-        "path": "packs/vehicles/r1/models/transit-bus.glb",
-        "bytes": 194196,
-        "sha256": "c55fbf069668774e0d3dc98db76c3efd05ff630f0ffd2b2cf475579336875617",
-        "url": "https://assets.kilnstudio.tools/packs/vehicles/r1/models/transit-bus.glb",
-        "archive": "packs/vehicles/r1/generic-road-vehicles-runtime.zip",
+        "path": "packs/vehicles/r4-local-review/models/transit-bus.glb",
+        "bytes": 194148,
+        "sha256": "14713cb461f2ecb683ea9bace5cc7a79d595aa92d322f86d3831cda7bf647067",
+        "url": "https://assets.kilnstudio.tools/packs/vehicles/r4-local-review/models/transit-bus.glb",
+        "archive": "packs/vehicles/r4-local-review/generic-road-vehicles-runtime.zip",
         "member": "models/transit-bus.glb",
         "form": "MSFT_lod"
       },
       "editableDownload": {
-        "path": "packs/vehicles/r1/editable/transit-bus-editable.zip",
-        "bytes": 264771,
-        "sha256": "a6ab52c86df3abb02de42439e3ee73853adb21d740d095eb5df9dd288c530546",
-        "url": "https://assets.kilnstudio.tools/packs/vehicles/r1/editable/transit-bus-editable.zip",
+        "path": "packs/vehicles/r4-local-review/editable/transit-bus-editable.zip",
+        "bytes": 261499,
+        "sha256": "75a177c053ec601ca475b7dad14aaa20431b31300663a7fd000cff85561eb2a2",
+        "url": "https://assets.kilnstudio.tools/packs/vehicles/r4-local-review/editable/transit-bus-editable.zip",
         "members": [
           "manifest.json",
           "asset.glb",
           "source.kiln.js",
           "preview.png"
         ],
-        "glbForm": "named-groups"
+        "glbForm": "MSFT_lod"
       },
       "licence": {
-        "path": "packs/vehicles/r1/licenses/transit-bus.ASSET-LICENSE.txt",
-        "bytes": 798,
-        "sha256": "c141b6823a31569cdcf7096a075c5995eea3ad7e4c522b5790dc56d4597e1ab5",
-        "url": "https://assets.kilnstudio.tools/packs/vehicles/r1/licenses/transit-bus.ASSET-LICENSE.txt",
+        "path": "packs/vehicles/r4-local-review/licenses/transit-bus.ASSET-LICENSE.txt",
+        "bytes": 1038,
+        "sha256": "e3b28dc837a737f8dff35192c1cb92fb0ae9ba15927958e70dcbc906676e44e1",
+        "url": "https://assets.kilnstudio.tools/packs/vehicles/r4-local-review/licenses/transit-bus.ASSET-LICENSE.txt",
         "spdx": "CC0-1.0",
-        "statesDeliveredGlbSha256": "c55fbf069668774e0d3dc98db76c3efd05ff630f0ffd2b2cf475579336875617"
+        "statesDeliveredGlbSha256": "14713cb461f2ecb683ea9bace5cc7a79d595aa92d322f86d3831cda7bf647067"
       },
       "provenance": {
         "originalModel": "Claude Sonnet 5.5",
         "refinementModels": [
-          "Claude Sonnet 5.5"
+          "Claude Sonnet 5.5",
+          "GPT-6 Astra"
         ],
         "history": [
           {
@@ -1861,6 +2604,32 @@
               "endedAt": "2026-09-29T17:44:21.899Z",
               "receiptSha256": "ee02f927d4bdf60d60e94855c702d3da35aee301c5e9d3622ec78f48175af57e",
               "invocationSha256": "734c1176a95b90b8f3cc77fd094aa28d60fb1c2b7c9d75fd9f5e6e7ba7d9ee31"
+            }
+          },
+          {
+            "stage": "Owner review 2 · saved-source LOD conversion",
+            "request": "owner-review-2",
+            "revisionId": "r_85ff097a61384efab445c55372d3b6f5",
+            "parentRevisionId": "r_6ab2ee53817449c59972502fcf008f1a",
+            "savedAt": "2026-10-01T03:02:38.929Z",
+            "brief": "Original-parent child. Added standard source defineLod for existing body tiers with approved r3 screenCoverage; only two authorized rear-light emissiveIntensity literals changed to 1 for exact historical exported material compatibility under candidate2. All original geometry, materials, transforms, lamps, pivots and shared wheels qualify exact; pending owner review.",
+            "model": "GPT-6 Astra",
+            "modelId": "gpt-6-astra",
+            "savedModelLabel": "gpt-6-astra",
+            "requestedEffort": "ultra",
+            "confirmedEffort": null,
+            "harness": "codex",
+            "harnessVersion": "0.159.2",
+            "confirmation": "Actual CLI session_meta, all turn_context records, task_complete and exec turn.completed; independent backend effort is not recorded.",
+            "run": {
+              "stage": "review-2",
+              "label": "Owner review 2: preserved heavy-vehicle source LOD conversion",
+              "status": "completed",
+              "stop": "success",
+              "startedAt": "2026-10-01T02:51:04.975Z",
+              "endedAt": "2026-10-01T03:11:55.501Z",
+              "receiptSha256": "44d5ce5810543c98f74046bd0698ae167cef7d7fcf9eebc61991a3cc14e32f55",
+              "invocationSha256": "8371748f40e8b208c65558d4fe2e4c44b48846e1bf380c2bd6fc65e51e2e8ffb"
             }
           }
         ]
@@ -1915,18 +2684,48 @@
             "receiptSha256": "ee02f927d4bdf60d60e94855c702d3da35aee301c5e9d3622ec78f48175af57e",
             "invocationSha256": "734c1176a95b90b8f3cc77fd094aa28d60fb1c2b7c9d75fd9f5e6e7ba7d9ee31"
           }
+        },
+        {
+          "stage": "Owner review 2 · saved-source LOD conversion",
+          "request": "owner-review-2",
+          "revisionId": "r_85ff097a61384efab445c55372d3b6f5",
+          "parentRevisionId": "r_6ab2ee53817449c59972502fcf008f1a",
+          "savedAt": "2026-10-01T03:02:38.929Z",
+          "brief": "Original-parent child. Added standard source defineLod for existing body tiers with approved r3 screenCoverage; only two authorized rear-light emissiveIntensity literals changed to 1 for exact historical exported material compatibility under candidate2. All original geometry, materials, transforms, lamps, pivots and shared wheels qualify exact; pending owner review.",
+          "model": "GPT-6 Astra",
+          "modelId": "gpt-6-astra",
+          "savedModelLabel": "gpt-6-astra",
+          "requestedEffort": "ultra",
+          "confirmedEffort": null,
+          "harness": "codex",
+          "harnessVersion": "0.159.2",
+          "confirmation": "Actual CLI session_meta, all turn_context records, task_complete and exec turn.completed; independent backend effort is not recorded.",
+          "run": {
+            "stage": "review-2",
+            "label": "Owner review 2: preserved heavy-vehicle source LOD conversion",
+            "status": "completed",
+            "stop": "success",
+            "startedAt": "2026-10-01T02:51:04.975Z",
+            "endedAt": "2026-10-01T03:11:55.501Z",
+            "receiptSha256": "44d5ce5810543c98f74046bd0698ae167cef7d7fcf9eebc61991a3cc14e32f55",
+            "invocationSha256": "8371748f40e8b208c65558d4fe2e4c44b48846e1bf380c2bd6fc65e51e2e8ffb"
+          }
         }
       ],
       "review": {
-        "status": "accepted",
-        "ownerAccepted": true,
-        "scope": "The owner approved all six vehicles at every tier on 29 September 2026. The transit bus was then found to be see-through from behind, and this revision (review 2) corrects that. Its triangle counts, body bounds and wheels equal the first revision’s at every tier. The owner approved the corrected revision on 30 September 2026.",
-        "correction": "The transit bus was then found to be see-through from behind, and this revision (review 2) corrects that. Its triangle counts, body bounds and wheels equal the first revision’s at every tier. The owner approved the corrected revision on 30 September 2026.",
-        "recordedAt": "2026-09-30",
-        "source": "Coordinator message to the site round 3 builder, 30 September 2026 (owner decision confirmed that morning)"
+        "status": "awaiting-owner-review",
+        "ownerAccepted": false,
+        "scope": "Standard LOD links authored in a preserved source revision with unchanged geometry, materials and wheel pivots. Preserved parent revisions retain their historical review records; acceptance of this revision is pending.",
+        "correction": "Generic transit bus: Standard LOD links authored in a preserved source revision with unchanged geometry, materials and wheel pivots; awaiting owner review.",
+        "recordedAt": "2026-10-01",
+        "source": "Local owner review 2 sealed author handoff and exact saved revision manifests"
       },
       "license": "CC0-1.0",
-      "sceneDeepLink": null
+      "sceneDeepLink": null,
+      "canonicalGlb": {
+        "bytes": 193640,
+        "sha256": "232c7176e8e56a36d6ba96705bb8f3b96f95b4fb9b87f94847d105146d2a5bf6"
+      }
     }
   ]
 }

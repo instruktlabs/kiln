@@ -17,6 +17,7 @@ import { FOUNDRY_FLOOR_ID, FOUNDRY_FLOOR_POSTER, FOUNDRY_FLOOR_SCENE_POSTER } fr
  *   bun scripts/rig-posters.mjs bridge --service ... --mirror ... --outputs DIR --cameras DIR [--out DIR]
  *   bun scripts/rig-posters.mjs vehicles --service ... --mirror C:/.../mirror [--only sedan,suv] [--out DIR]
  *   bun scripts/rig-posters.mjs foundry-floor --service ... --mirror C:/.../mirror [--only foup,scene-poster] [--out DIR]
+ *   bun scripts/rig-posters.mjs hero --service ... --mirror ... --outputs DIR [--out DIR]
  *
  * Each GLB is read from its sealed source (a delivery archive in the mirror, or the bridge author's export) and
  * verified against the catalog's SHA-256 before it is sent to the renderer. An image is the engine's own view of
@@ -141,6 +142,37 @@ export async function bridgeTargets({ outputs, cameras, tiers }) {
   return targets;
 }
 
+/** The home page hero's key family in the record and its mirror folder (`media/rig/<rig>/hero/<revision>/`). */
+export const HERO_PACK = 'hero';
+
+/**
+ * The home page hero: the bridge's web tier (the tier its page loads first) through the author's classic poster
+ * camera, as recorded for the bridge poster, at the Farm poster's size, and pinned like the pack posters. The GLB is
+ * the author's export, verified against the accepted web-tier pin. `scripts/build-hero.mjs` draws on the result.
+ */
+export async function heroTargets({ outputs, tiers, recorded }) {
+  const web = tiers.tiers.find((tier) => tier.tier === 'web');
+  if (!web) throw new Error('The accepted tiers list has no web tier');
+  const glb = await readFile(join(outputs, web.glb.file));
+  verifyBytes(glb, web.glb, web.glb.file);
+  const classic = BRIDGE_CAPTURES.find((capture) => capture.poster);
+  const poster = recorded?.posters?.[bridgeCaptureKey(classic)];
+  if (!poster?.view?.camera) throw new Error('The bridge poster record has no capture camera: render the bridge views first');
+  return [{
+    pack: HERO_PACK,
+    release: web.revision,
+    slug: BRIDGE_ID,
+    revisionId: web.revision,
+    assetId: tiers.assetId,
+    alt: classic.alt,
+    glb,
+    glbPath: web.glb.file,
+    camera: poster.view.camera,
+    cameraSource: poster.view.source,
+    view: { width: FARM_POSTER.width, height: FARM_POSTER.height },
+  }];
+}
+
 /** Render one target under the rig; the receipt names everything the image depends on. */
 export async function renderTarget(rig, target) {
   const bounds = inspectGlb(target.glb);
@@ -240,7 +272,7 @@ async function main(argv = process.argv.slice(2), env = process.env) {
   const option = (flag, fallback) => (argv.includes(flag) ? argv[argv.indexOf(flag) + 1] : fallback);
   const pack = argv[0];
   const mirror = option('--mirror', env.KILN_ASSET_MIRROR);
-  if (!['farm', 'bridge', 'vehicles', FOUNDRY_FLOOR_ID].includes(pack) || !mirror) throw new Error('Usage: bun scripts/rig-posters.mjs farm|bridge|vehicles|foundry-floor --mirror DIR [--service URL] [--engine DIR] [--only a,b] [--out DIR] [--dry]  (bridge also needs --outputs DIR --cameras DIR)');
+  if (!['farm', 'bridge', 'vehicles', FOUNDRY_FLOOR_ID, HERO_PACK].includes(pack) || !mirror) throw new Error('Usage: bun scripts/rig-posters.mjs farm|bridge|vehicles|foundry-floor|hero --mirror DIR [--service URL] [--engine DIR] [--only a,b] [--out DIR] [--dry]  (bridge also needs --outputs DIR --cameras DIR; hero needs --outputs DIR)');
   const only = option('--only')?.split(',');
   const rig = await connectRig({ url: option('--service', env.KILN_RENDER_SERVICE_URL), engineDir: option('--engine') });
   console.log(`Rig ${RIG_ID} on ${rig.service.rendererId}; engine ${rig.engine.provenance.commit.slice(0, 7)} (${rig.engine.provenance.subject})${rig.engine.provenance.dirty ? ' with local changes' : ''}`);
@@ -250,6 +282,10 @@ async function main(argv = process.argv.slice(2), env = process.env) {
     const cameras = option('--cameras');
     if (!outputs || !cameras) throw new Error('The bridge views need --outputs (the author export folder) and --cameras (the capture files folder)');
     targets = (await bridgeTargets({ outputs: resolve(outputs), cameras: resolve(cameras), tiers: await readJson(join(DATA, 'standalone/golden-gate-tiers.json')) })).filter((target) => !only || only.includes(target.capture));
+  } else if (pack === HERO_PACK) {
+    const outputs = option('--outputs');
+    if (!outputs) throw new Error('The hero needs --outputs (the bridge author export folder)');
+    targets = await heroTargets({ outputs: resolve(outputs), tiers: await readJson(join(DATA, 'standalone/golden-gate-tiers.json')), recorded: await readJson(join(DATA, 'rig-posters.json')) });
   } else if (pack === 'vehicles') {
     targets = (await vehicleTargets({ mirror })).filter((target) => !only || only.includes(target.slug));
   } else if (pack === FOUNDRY_FLOOR_ID) {
@@ -271,7 +307,9 @@ async function main(argv = process.argv.slice(2), env = process.env) {
   }
   if (argv.includes('--dry')) return console.log(`Dry run: ${rendered.length} images rendered; nothing recorded.`);
   const posters = await recordPosters({ rig, rendered, mirror, pin: pack !== 'bridge' });
-  if (pack !== 'bridge') {
+  if (pack === HERO_PACK) {
+    console.log('Pinned the hero poster; scripts/build-hero.mjs writes the hero data from it.');
+  } else if (pack !== 'bridge') {
     await refreshCatalog({ file: join(DATA, `packs/${pack}.json`), pack });
     if (pack === FOUNDRY_FLOOR_ID && (await recordFoundryFloorScenePoster({ posters }))) console.log('Recorded the scene page poster in scene-media.json.');
     const dropped = await pruneImagePlan();

@@ -9,8 +9,13 @@ interface Props {
   current?: string;
   headings?: MarkdownHeading[];
   source?: string;
+  /**
+   * The page body is the engine's documentation, published as written: rules about the site's own words (the
+   * spelling of licence) skip it. The install page's release aside is the site's and has no such word.
+   */
+  verbatim?: boolean;
 }
-const { title, description, current, headings = [], source } = Astro.props;
+const { title, description, current, headings = [], source, verbatim = false } = Astro.props;
 const breadcrumbs = current
   ? [
       { label: "Docs", href: "/docs/" },
@@ -23,45 +28,26 @@ const breadcrumbs = current
   title={`${title} · Kiln docs`}
   description={description}
   breadcrumbs={breadcrumbs}
-  ogImage="/social/docs.jpg"
+  card="docs"
+  skipTarget="docs-content"
 >
-  <div class="container py-8 lg:py-12">
-    <div class="mb-6 space-y-3 lg:hidden">
-      <details class="docs-disclosure">
-        <summary class="min-h-11 cursor-pointer py-3 font-semibold">
-          Browse documentation
-        </summary>
-        <div class="py-4">
-          <DocsNav current={current} label="Documentation menu" />
-        </div>
-      </details>
-      {headings.length > 0 && (
-        <details class="docs-disclosure">
-          <summary class="min-h-11 cursor-pointer py-3 font-semibold">
-            On this page
-          </summary>
-          <div class="py-4">
-            <DocsToc headings={headings} label="On this page menu" />
-          </div>
-        </details>
-      )}
-    </div>
+  <div class="container py-8">
     <div class="flex items-start gap-8 xl:gap-12">
       <aside
         aria-label="Documentation sidebar"
         class="hidden w-48 shrink-0 lg:block"
       >
-        <div class="sticky top-8 max-h-screen overflow-y-auto pb-8">
+        <div class="sticky top-8 -mx-2 max-h-screen overflow-y-auto px-2 pb-8">
           <DocsNav current={current} />
         </div>
       </aside>
       <div class="min-w-0 flex-1">
-        <article class="prose prose-kiln max-w-none docs-prose">
+        <article id="docs-content" tabindex="-1" class="prose prose-kiln max-w-none docs-prose" data-verbatim={verbatim ? "" : undefined}>
           <slot />
         </article>
         {source && (
           <p class="mt-12 border-t border-rule pt-6 text-sm">
-            <a href={source}>Read this page in the repository</a>
+            <a class="text-link" href={source}>Read this page in the repository</a>
           </p>
         )}
       </div>
@@ -70,7 +56,7 @@ const breadcrumbs = current
           aria-label="Page table of contents"
           class="hidden w-48 shrink-0 xl:block"
         >
-          <div class="sticky top-8 max-h-screen overflow-y-auto pb-8">
+          <div class="sticky top-8 -mx-2 max-h-screen overflow-y-auto px-2 pb-8">
             <DocsToc headings={headings} />
           </div>
         </aside>
@@ -91,6 +77,8 @@ const breadcrumbs = current
     button.addEventListener("click", async () => {
       const code = button.closest(".docs-code")?.querySelector("code");
       if (!code) return;
+      if (copyStatus) copyStatus.textContent = "";
+      await new Promise((resolve) => window.setTimeout(resolve, 0));
       try {
         await navigator.clipboard.writeText(code.textContent ?? "");
         button.textContent = "Copied";
@@ -106,6 +94,15 @@ const breadcrumbs = current
             "Code selected. Use your device’s copy command.";
       }
     });
+  }
+  for (const block of document.querySelectorAll<HTMLElement>(".docs-code")) {
+    const pre = block.querySelector<HTMLElement>("pre");
+    const hint = block.querySelector<HTMLElement>("[data-scroll-hint]");
+    if (pre && hint) {
+      const sync = () => { hint.hidden = pre.scrollWidth <= pre.clientWidth + 1; };
+      new ResizeObserver(sync).observe(pre);
+      sync();
+    }
   }
 </script>
 
@@ -131,7 +128,7 @@ const breadcrumbs = current
   .docs-prose > p,
   .docs-prose > ul,
   .docs-prose > ol {
-    max-width: 72ch;
+    max-width: 36rem;
   }
   .docs-prose h1 {
     font-family: var(--font-sans);
@@ -179,7 +176,7 @@ const breadcrumbs = current
     padding-inline: 1rem;
     min-height: 2.75rem;
     border-bottom: 1px solid var(--color-rule);
-    font-size: 0.75rem;
+    font-size: 0.9375rem;
     font-family: var(--font-mono);
   }
   .docs-code-actions > span {
@@ -217,7 +214,7 @@ const breadcrumbs = current
   .docs-table-scroll table {
     margin: 0;
     min-width: 100%;
-    font-size: 0.875rem;
+    font-size: 0.9375rem;
   }
   .docs-table-scroll th,
   .docs-table-scroll td {
@@ -266,7 +263,7 @@ const breadcrumbs = current
   }
   @media (min-width: 80rem) {
     .docs-prose {
-      max-width: 75ch;
+      max-width: 36rem;
     }
   }
 </style>

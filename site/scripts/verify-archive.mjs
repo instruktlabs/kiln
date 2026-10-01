@@ -88,7 +88,7 @@ report.checks = {
 };
 
 // The old #/<slug> links, in a real browser: on load and on hash change.
-const browser = await puppeteer.launch({ executablePath: chromeExecutable(), headless: true, args: ['--no-sandbox'] });
+const browser = await puppeteer.launch({ executablePath: chromeExecutable(), headless: true, pipe: true, args: ['--no-sandbox'] });
 report.browser = await browser.version();
 try {
   const first = items[0];

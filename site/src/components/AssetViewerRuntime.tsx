@@ -14,6 +14,8 @@ import {
   toneMappingChoice,
 } from '../lib/review-rig-three';
 import { AZIMUTH, frameAsset, orbitDirection } from './viewer-framing';
+import { clearingOnError } from './viewer-retry';
+import { createVehiclePaint, PAINT_SWATCHES } from './vehicle-paint';
 
 interface OrbitLike {
   target: THREE.Vector3;
@@ -98,6 +100,9 @@ function Model({
   paused,
   onClips,
   onReady,
+  paintAssetId,
+  paintColour,
+  onPaintReady,
 }: {
   url: string;
   onReady: () => void;
@@ -107,8 +112,20 @@ function Model({
   clipIndex: number;
   paused: boolean;
   onClips: (clips: { id: string; name: string }[]) => void;
+  paintAssetId?: string;
+  paintColour: string | null;
+  onPaintReady: (originalHex: string | undefined) => void;
 }) {
-  const { scene, animations } = useGLTF(url);
+  // No Draco decoder path: drei's default would fetch the decoder from a third-party host. No shipped GLB uses
+  // KHR_draco_mesh_compression, and validate-static fails the build if one ever does.
+  const { scene: loadedScene, animations } = useGLTF(url, false);
+  const paint = useMemo(
+    () => createVehiclePaint(loadedScene, paintAssetId),
+    [loadedScene, paintAssetId],
+  );
+  const scene = paint?.scene ?? loadedScene;
+  useEffect(() => onPaintReady(paint?.originalHex), [paint, onPaintReady]);
+  useEffect(() => paint?.setColour(paintColour), [paint, paintColour]);
   useEffect(() => {
     onReady();
     return () => {
@@ -236,6 +253,7 @@ interface ViewerProps {
   name: string;
   modelUrl: string;
   onError: (error: Error) => void;
+  paintAssetId?: string;
 }
 
 class ViewerBoundary extends Component<
@@ -296,7 +314,7 @@ function KeyboardCamera({ command }: { command: CameraCommand | undefined }) {
   return null;
 }
 
-function Viewer({ name, modelUrl, onError }: ViewerProps) {
+function Viewer({ name, modelUrl, onError, paintAssetId }: ViewerProps) {
   const [wireframe, setWireframe] = useState(false);
   const [grid, setGrid] = useState(true);
   const [spin, setSpin] = useState(false);
@@ -308,6 +326,8 @@ function Viewer({ name, modelUrl, onError }: ViewerProps) {
   const [paused, setPaused] = useState(false);
   const [toneMapping, setToneMapping] = useState<ToneMappingId>(DEFAULT_TONE_MAPPING);
   const [command, setCommand] = useState<CameraCommand>();
+  const [paintColour, setPaintColour] = useState<string | null>(null);
+  const [originalPaint, setOriginalPaint] = useState<string>();
   const onReady = useMemo(() => () => setReady(true), []);
   const move = (action: CameraCommand['action']) =>
     setCommand((previous) => ({ action, sequence: (previous?.sequence ?? 0) + 1 }));
@@ -347,6 +367,9 @@ function Viewer({ name, modelUrl, onError }: ViewerProps) {
               paused={paused}
               onClips={setClips}
               onReady={onReady}
+              paintAssetId={paintAssetId}
+              paintColour={paintColour}
+              onPaintReady={setOriginalPaint}
             />
           </Suspense>
           <ContactShadows
@@ -374,6 +397,52 @@ function Viewer({ name, modelUrl, onError }: ViewerProps) {
         </Canvas>
         {!ready && <Loading />}
       </section>
+      {originalPaint && (
+        <fieldset className="border-t border-rule bg-sheet p-4" data-paint-palette>
+          <legend className="px-2 font-semibold">Body paint</legend>
+          <div className="flex flex-wrap items-center gap-2">
+            <button
+              type="button"
+              className="btn btn-secondary"
+              aria-pressed={paintColour === null}
+              onClick={() => setPaintColour(null)}
+            >
+              Original paint
+            </button>
+            {PAINT_SWATCHES.map(({ name: colourName, hex }) => (
+              <button
+                key={hex}
+                type="button"
+                className="btn btn-secondary gap-2"
+                aria-label={`${colourName} body paint`}
+                aria-pressed={paintColour === hex}
+                onClick={() => setPaintColour(hex)}
+              >
+                <span
+                  aria-hidden="true"
+                  className="inline-block h-5 w-5 rounded-full border border-rule"
+                  style={{ backgroundColor: hex }}
+                />
+                {colourName}
+              </button>
+            ))}
+            <label className="flex min-h-11 items-center gap-2 px-2">
+              Custom colour
+              <input
+                type="color"
+                aria-label="Custom body paint colour"
+                className="h-11 w-12 cursor-pointer"
+                value={paintColour ?? originalPaint}
+                onInput={(event) => setPaintColour(event.currentTarget.value)}
+                onChange={(event) => setPaintColour(event.target.value)}
+              />
+            </label>
+          </div>
+          <p className="mt-3 text-caption text-dim">
+            Explore different body colours. The GLB download keeps its original paint.
+          </p>
+        </fieldset>
+      )}
       <section
         className="flex flex-wrap gap-2 border-t border-rule bg-sheet p-4"
         aria-label="3D inspection controls"
@@ -432,7 +501,7 @@ function Viewer({ name, modelUrl, onError }: ViewerProps) {
           aria-pressed={wireframe}
           onClick={() => setWireframe(!wireframe)}
         >
-          Wireframe
+          <span aria-hidden="true">{wireframe ? '✓ ' : ''}</span>Wireframe
         </button>
         <button
           type="button"
@@ -440,7 +509,7 @@ function Viewer({ name, modelUrl, onError }: ViewerProps) {
           aria-pressed={grid}
           onClick={() => setGrid(!grid)}
         >
-          Grid
+          <span aria-hidden="true">{grid ? '✓ ' : ''}</span>Grid
         </button>
         <button
           type="button"
@@ -448,7 +517,7 @@ function Viewer({ name, modelUrl, onError }: ViewerProps) {
           aria-pressed={spin}
           onClick={() => setSpin(!spin)}
         >
-          Rotate
+          <span aria-hidden="true">{spin ? '✓ ' : ''}</span>Rotate
         </button>
         <button
           type="button"
@@ -494,7 +563,7 @@ function Viewer({ name, modelUrl, onError }: ViewerProps) {
           Tone mapping
           <select
             data-tone-mapping
-            className="min-h-11 border border-rule bg-sheet px-3 font-mono text-sm"
+            className="min-h-11 border border-ink bg-sheet px-3 font-mono text-sm"
             value={toneMapping}
             onChange={(event) => setToneMapping(toneMappingChoice(event.target.value).id)}
           >
@@ -516,10 +585,11 @@ export function mountAssetViewer(element: HTMLElement, props: ViewerProps) {
   const context = probe.getContext('webgl2');
   if (!context) throw new Error('WebGL2 is unavailable');
   context.getExtension('WEBGL_lose_context')?.loseContext();
+  const onError = clearingOnError(props.modelUrl, props.onError, (url) => useGLTF.clear(url));
   const root = createRoot(element);
   root.render(
-    <ViewerBoundary onError={props.onError}>
-      <Viewer {...props} />
+    <ViewerBoundary onError={onError}>
+      <Viewer {...props} onError={onError} />
     </ViewerBoundary>,
   );
   return () => root.unmount();

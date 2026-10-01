@@ -13,10 +13,11 @@ const SITE = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const TYPES = { '.html': 'text/html', '.js': 'text/javascript', '.json': 'application/json', '.glb': 'model/gltf-binary', '.png': 'image/png', '.webp': 'image/webp', '.txt': 'text/plain', '.bin': 'application/octet-stream' };
 export const POSTER_SIZE = { width: 1440, height: 925 };
 
-/** Serve the staged `public/` directory (the scene's frame page, runtime chunk and verified pack) on a free local port. */
-export async function servePublic(root = resolve(SITE, 'public')) {
+/** Serve the staged `public/` directory (the scene's frame page, runtime chunk and verified pack) on a loopback port (0: a free one). */
+export async function servePublic(root = resolve(SITE, 'public'), port = 0, pages = {}) {
   const server = createServer((request, response) => {
     const path = normalize(decodeURIComponent(new URL(request.url ?? '/', 'http://local').pathname)).replace(/^[/\\]+/, '');
+    if (pages[path]) { response.writeHead(200, { 'content-type': 'text/html' }).end(pages[path]); return; }
     const file = join(root, path);
     if (!file.startsWith(root) || !existsSync(file) || !statSync(file).isFile()) {
       response.writeHead(404).end();
@@ -25,17 +26,21 @@ export async function servePublic(root = resolve(SITE, 'public')) {
     response.writeHead(200, { 'content-type': TYPES[extname(file)] ?? 'application/octet-stream', 'content-length': statSync(file).size });
     createReadStream(file).pipe(response);
   });
-  await new Promise((done) => server.listen(0, '127.0.0.1', done));
+  await new Promise((done, fail) => server.once('error', fail).listen(port, '127.0.0.1', done));
   return { origin: `http://127.0.0.1:${server.address().port}`, close: () => new Promise((done) => server.close(done)) };
 }
 
 /** Views a scene's own controls offer; each names the button that selects it (null keeps the opening view). */
 const VIEWS = {
+  farm: { opening: null },
   'golden-gate': { day: null, 'golden-hour': 'Golden hour', fog: 'Fog', drive: 'Drive the sedan' },
+  'foundry-floor': { opening: null, overview: 'Overview', gallery: 'Gallery' },
 };
 
 /** What each captured view shows, for the image's alternative text. */
 const POSTER_ALT = {
+  farm: { opening: 'Farm scene with a farmhouse, barn, fields, woodland and a stream.' },
+  'foundry-floor': { opening: 'Foundry Floor scene, looking across the fab interior.', overview: 'Foundry Floor scene viewed from above.', gallery: 'The models arranged in the Foundry Floor scene.' },
   'golden-gate': {
     drive: 'A blue sedan driving across the deck of the Golden Gate Bridge scene, with traffic around it and both towers ahead.',
   },
@@ -46,13 +51,21 @@ const POSTER_ALT = {
  * size, the scene's own view button pressed, the scene's controls hidden, a fixed settle time. Nothing is
  * composited or retouched. The result is a lossless PNG; the media pipeline derives the site's variants.
  */
-export async function captureScenePoster({ scene = 'golden-gate', view = 'day', settleMs = 6000, size = POSTER_SIZE } = {}) {
+export async function captureScenePoster({ scene = 'golden-gate', view = 'day', settleMs = 6000, size = POSTER_SIZE, port = 0 } = {}) {
   const buttons = VIEWS[scene];
   if (!buttons || !(view in buttons)) throw new Error(`Unknown scene view: ${scene}/${view}`);
-  const server = await servePublic();
+  const pages = {};
+  if (scene === 'farm') {
+    const runtime = await readJson(resolve(SITE, 'public/scene-runtime/farm/runtime.json'));
+    const pack = (await readJson(resolve(SITE, 'src/data/scene-packs.json'))).farm;
+    pages['farm-poster.html'] = `<!doctype html><html lang="en"><title>Farm poster capture</title><style>html,body,#scene{margin:0;width:100%;height:100%;overflow:hidden}</style><div id="scene"></div><script type="module">import {mount} from ${JSON.stringify(runtime.url)};mount(document.getElementById('scene'),{assetBase:${JSON.stringify(pack.base)},onReady(){document.body.dataset.ready='true'},onError(error){throw error}});</script></html>`;
+  }
+  const server = await servePublic(undefined, port, pages);
+  // Over a pipe: no DevTools port is opened.
   const browser = await puppeteer.launch({
     executablePath: chromeExecutable(),
     headless: true,
+    pipe: true,
     args: ['--no-sandbox', `--window-size=${size.width},${size.height}`],
     defaultViewport: { ...size, deviceScaleFactor: 1 },
   });
@@ -60,8 +73,8 @@ export async function captureScenePoster({ scene = 'golden-gate', view = 'day', 
     const page = await browser.newPage();
     const problems = [];
     page.on('pageerror', (error) => problems.push(error.message));
-    await page.goto(`${server.origin}/scene-runtime/${scene}/frame.html`, { waitUntil: 'load' });
-    await page.waitForFunction(() => document.getElementById('page-status')?.textContent.trim() === '' && document.querySelector('.ks-root canvas'), { timeout: 180_000 });
+    await page.goto(`${server.origin}/${scene === 'farm' ? 'farm-poster.html' : `scene-runtime/${scene}/frame.html`}`, { waitUntil: 'load' });
+    await page.waitForFunction(() => (document.body.dataset.ready === 'true' || document.getElementById('page-status')?.dataset.state === 'ready' || document.getElementById('page-status')?.textContent.trim() === '') && document.querySelector('.ks-root canvas'), { timeout: 180_000 });
     if (buttons[view]) {
       const pressed = await page.evaluate((label) => {
         const button = [...document.querySelectorAll('button')].find((candidate) => candidate.textContent.trim() === label);
@@ -75,7 +88,8 @@ export async function captureScenePoster({ scene = 'golden-gate', view = 'day', 
     await page.addStyleTag({ content: '.ks-hud,.ks-fade{display:none!important}.ks-root,.ks-root *{outline:none!important}' });
     await page.evaluate(() => document.activeElement?.blur?.());
     await new Promise((done) => setTimeout(done, 500));
-    const png = await page.screenshot({ type: 'png' });
+    const canvas = await page.$('.ks-root canvas');
+    const png = await canvas.screenshot({ type: 'png' });
     if (problems.length) throw new Error(`The scene reported page errors during capture: ${problems.join('; ')}`);
     const meta = await sharp(png).metadata();
     if (meta.width !== size.width || meta.height !== size.height) throw new Error(`Unexpected capture size ${meta.width}x${meta.height}`);
@@ -95,6 +109,7 @@ export async function recordScenePoster({ scene, view, png, browser, mirror, sit
   const packs = await readJson(join(site, 'src/data/scene-packs.json'));
   const pack = packs[scene];
   if (!pack) throw new Error(`No scene pack record for ${scene}`);
+  const runtime = await readJson(join(site, 'public/scene-runtime', scene, 'runtime.json'));
   const alt = POSTER_ALT[scene]?.[view];
   if (!alt) throw new Error(`No poster description for ${scene}/${view}`);
   const path = `media/scenes/${scene}/${pack.release}/${scene}-scene-${view}.png`;
@@ -113,14 +128,20 @@ export async function recordScenePoster({ scene, view, png, browser, mirror, sit
       release: pack.release,
       size: [POSTER_SIZE.width, POSTER_SIZE.height],
       browser,
-      source: 'The staged scene frame page with its controls hidden; nothing composited or retouched.',
-      runtimeSha256: pack.runtime?.sha256 ?? null,
+      source: 'The staged scene runtime, captured from its canvas with controls hidden; nothing composited or retouched.',
+      runtimeSha256: runtime.sha256,
       packJsonSha256: pack.packJsonSha256,
       pngBytes: pin.bytes,
       pngSha256: pin.sha256,
     },
   };
   await writeJson(mediaFile, media);
+  if (scene === 'farm') {
+    const farmFile = join(site, 'src/data/packs/farm.json');
+    const farm = await readJson(farmFile);
+    farm.scene.poster = image;
+    await writeJson(farmFile, farm);
+  }
   return { pin, image };
 }
 
@@ -130,8 +151,8 @@ async function main(argv = process.argv.slice(2), env = process.env) {
   const view = option('--view', 'drive');
   const record = argv.includes('--record');
   const out = option('--out');
-  if (!out && !record) throw new Error('Usage: node scripts/capture-scene-poster.mjs (--out file.png | --record [--mirror DIR]) [--scene golden-gate] [--view day|golden-hour|fog|drive] [--settle 6000]');
-  const { png, browser } = await captureScenePoster({ scene, view, settleMs: Number(option('--settle', 6000)) });
+  if (!out && !record) throw new Error('Usage: node scripts/capture-scene-poster.mjs (--out file.png | --record [--mirror DIR]) [--scene golden-gate] [--view day|golden-hour|fog|drive] [--settle 6000] [--port 0]');
+  const { png, browser } = await captureScenePoster({ scene, view, settleMs: Number(option('--settle', 6000)), port: Number(option('--port', 0)) });
   if (out) {
     await mkdir(dirname(resolve(out)), { recursive: true });
     await writeFile(resolve(out), png);

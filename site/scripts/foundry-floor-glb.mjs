@@ -5,17 +5,13 @@ import { parseGlb } from './vehicle-glb.mjs';
  * Measure a Foundry Floor model from its GLB: triangles, vertex-exact bounds, materials, clips and nodes, read from
  * the file itself.
  *
- * A Foundry Floor model keeps its far form as a node named `lod1` inside the same file, and some models carry parts
- * the scene hides when it loads them (`hideByDefault` in the pack's `data/assets.json`). The file itself has no
- * visibility flags: every part exports visible, so a plain glTF viewer draws the detailed parts, `lod1` and the
- * hidden parts together. The pack's own asset map counts three groups, and so does this reader:
+ * Historical files use a visible named `lod1`; standard files reference optional detached lower subtrees with
+ * MSFT_lod. Both are measured, without counting optional lower tiers as default-scene drawing. Scene-specific
+ * hideByDefault names stay a separate measured group; generic loaders do not apply that scene policy.
  *
- * - detailed: every mesh that is neither under `lod1` nor under a hidden-by-default node;
- * - lod1: every mesh under the `lod1` node;
- * - hiddenByDefault: every mesh under a hidden-by-default node (and not under `lod1`).
- *
- * `bounds` covers everything outside `lod1` (the asset map's `bounds`); `detailedBounds` only the detailed group;
- * `lod1Bounds` the `lod1` group; `allBounds` everything a plain viewer draws.
+ * `triangles` splits all geometry into detailed, lower and hidden groups; `defaultTriangles` counts the actual
+ * scene roots. `bounds` excludes lower forms, `lod1Bounds` includes them, and `allBounds` covers every tier.
+ * Unreferenced mesh nodes, invalid extension targets and cycles remain errors at the intake boundary.
  */
 
 const TRIANGLES = 4;
@@ -103,23 +99,44 @@ export function inspectFoundryFloorGlb(bytes, { hideByDefault = [] } = {}) {
     return index;
   });
   const world = new Array(nodes.length);
-  const walk = (index, parentWorld) => {
+  const parentWorlds = new Array(nodes.length);
+  const defaultNodes = new Set();
+  const optionalLodNodes = new Set();
+  const walk = (index, parentWorld, optional = false) => {
+    if(!Number.isInteger(index)||!nodes[index]||world[index])throw new Error('Invalid, cyclic or overlapping scene/LOD node');
     world[index] = parentWorld.clone().multiply(localMatrix(nodes[index]));
-    for (const child of nodes[index].children ?? []) walk(child, world[index]);
+    parentWorlds[index] = parentWorld;
+    (optional ? optionalLodNodes : defaultNodes).add(index);
+    for (const child of nodes[index].children ?? []) walk(child, world[index], optional);
   };
   for (const root of roots) walk(root, new Matrix4());
+  const lodOwners = new Set();
+  // Optional MSFT_lod subtrees deliberately live outside the default scene tree. Measure them
+  // through their declared owner transform; an ordinary loader still draws only the scene roots.
+  for(let changed=true;changed;) {
+    changed=false;
+    for(let index=0;index<nodes.length;index++) {
+      const ids=nodes[index].extensions?.MSFT_lod?.ids;
+      if(ids===undefined||!world[index]||lodOwners.has(index))continue;
+      if(!Array.isArray(ids)||!ids.length||!json.extensionsUsed?.includes('MSFT_lod'))throw new Error('Invalid MSFT_lod declaration');
+      lodOwners.add(index);changed=true;
+      const parentWorld=parentWorlds[index];
+      for(const id of ids)walk(id,parentWorld,true);
+    }
+  }
 
   const groups = { detailed: { triangles: 0, meshes: 0, box: emptyBox() }, lod1: { triangles: 0, meshes: 0, box: emptyBox() }, hiddenByDefault: { triangles: 0, meshes: 0, box: emptyBox() } };
   const materialsUsed = new Set();
   const unreachable = [];
   const point = new Vector3();
+  let defaultTriangles=0;
   nodes.forEach((node, index) => {
     if (node.mesh === undefined) return;
     if (!world[index]) {
       unreachable.push(node.name ?? `node${index}`);
       return;
     }
-    const group = lod !== undefined && under(index, lod) ? groups.lod1 : hidden.some((ancestor) => under(index, ancestor)) ? groups.hiddenByDefault : groups.detailed;
+    const group = optionalLodNodes.has(index) || lod !== undefined && under(index, lod) ? groups.lod1 : hidden.some((ancestor) => under(index, ancestor)) ? groups.hiddenByDefault : groups.detailed;
     group.meshes += 1;
     for (const primitive of json.meshes[node.mesh].primitives) {
       if ((primitive.mode ?? TRIANGLES) !== TRIANGLES || primitive.attributes.POSITION === undefined) continue;
@@ -127,6 +144,7 @@ export function inspectFoundryFloorGlb(bytes, { hideByDefault = [] } = {}) {
       const indices = primitive.indices !== undefined ? readAccessor(json, binBytes, primitive.indices) : Float64Array.from({ length: positions.length / 3 }, (_, vertex) => vertex);
       const count = Math.floor(indices.length / 3);
       group.triangles += count;
+      if(defaultNodes.has(index))defaultTriangles+=count;
       if (primitive.material !== undefined) materialsUsed.add(json.materials?.[primitive.material]?.name ?? '');
       for (let corner = 0; corner < count * 3; corner++) {
         const vertex = indices[corner] * 3;
@@ -138,7 +156,9 @@ export function inspectFoundryFloorGlb(bytes, { hideByDefault = [] } = {}) {
   const materials = (json.materials ?? []).map((material) => material.name ?? '');
   return {
     root: roots.map((index) => nodes[index].name ?? `node${index}`).join(','),
-    hasLod1: lod !== undefined,
+    hasLod1: lod !== undefined || lodOwners.size>0,
+    lodMode: lodOwners.size>0?'MSFT_lod':lod!==undefined?'named-visible':'none',
+    defaultTriangles,
     triangles: {
       detailed: groups.detailed.triangles,
       lod1: groups.lod1.triangles,

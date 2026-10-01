@@ -5,6 +5,8 @@ import { copyFile, mkdir, readFile, readdir, rm, writeFile } from 'node:fs/promi
 import { dirname, join, resolve } from 'node:path';
 import { gzipSync } from 'node:zlib';
 import { fileURLToPath } from 'node:url';
+import { measureInitialLoad, verifyInitialLoad } from './initial-runtime.mjs';
+import { installFrameReporter } from '../src/scenes/frame-reporter.mjs';
 import { RUNTIME_DIRECTORY, SCENE_DEDUPE, SCENE_PACKAGES, duplicatePackages, exportAliases, packageRoots, posix, resolveScenesDir, threeFacade } from './scene-source.mjs';
 
 const SITE = resolve(dirname(fileURLToPath(import.meta.url)), '..');
@@ -136,10 +138,11 @@ export async function buildRuntime({ id = 'farm', scenesDir, outDir, alias = tru
 export function checkCeiling(id, measurement) {
   const ceiling = CEILINGS[id];
   if (!ceiling) return { within: null, ceiling: null };
+  const load = measurement.initialLoad ?? measurement;
   return {
     ceiling,
-    within: measurement.bytes <= ceiling.bytes && measurement.gzipBytes <= ceiling.gzipBytes,
-    percent: { bytes: Number(((measurement.bytes / ceiling.bytes) * 100).toFixed(1)), gzipBytes: Number(((measurement.gzipBytes / ceiling.gzipBytes) * 100).toFixed(1)) },
+    within: load.bytes <= ceiling.bytes && load.gzipBytes <= ceiling.gzipBytes,
+    percent: { bytes: Number(((load.bytes / ceiling.bytes) * 100).toFixed(1)), gzipBytes: Number(((load.gzipBytes / ceiling.gzipBytes) * 100).toFixed(1)) },
   };
 }
 
@@ -164,7 +167,9 @@ export function runtimeManifest(id, measurement, { kind = 'module', site = SITE 
     gzipBytes: measurement.gzipBytes,
     gzipMethod: measurement.gzipMethod,
     sha256: measurement.sha256,
-    ceiling: { ...fit.ceiling, decision: 'D-15', withinCeiling: fit.within, percent: fit.percent },
+    ...(measurement.chunks ? { chunks: measurement.chunks } : {}),
+    ...(measurement.initialLoad ? { initialLoad: measurement.initialLoad } : {}),
+    ceiling: { ...fit.ceiling, decision: 'D-15', ...(measurement.initialLoad ? { scope: 'Initial campus static closure; interior deferred until Enter the fab' } : {}), withinCeiling: fit.within, percent: fit.percent },
     three: { version: toolVersion('three', site), facade: measurement.facade, copies: Object.fromEntries(Object.entries(measurement.copies).map(([name, roots]) => [name, roots.map((root) => root.replace(/^.*\/node_modules\//, 'node_modules/'))])) },
     build: { vite: toolVersion('vite', site), pluginReact: toolVersion('@vitejs/plugin-react', site), dedupe: [...SCENE_DEDUPE] },
   };
@@ -222,20 +227,7 @@ export function frameDocument({ id, file, packBase }) {
 <button id="exit-scene" type="button" hidden>Exit scene</button>
 <button id="fullscreen-scene" type="button" hidden>Fullscreen</button>
 <script>
-(function () {
-  var status = document.getElementById('page-status');
-  function post(message) {
-    if (window.parent !== window) window.parent.postMessage(Object.assign({ source: 'kiln-scene' }, message), location.origin);
-  }
-  function report() {
-    var text = status.textContent.trim();
-    if (/^Scene could not start/i.test(text)) post({ state: 'error', message: text });
-    else if (text) post({ state: 'progress', text: text });
-    else post({ state: 'ready' });
-  }
-  new MutationObserver(report).observe(status, { childList: true, characterData: true, subtree: true });
-  report();
-})();
+(${installFrameReporter.toString()})(window);
 </script>
 </body>
 </html>
@@ -243,15 +235,25 @@ export function frameDocument({ id, file, packBase }) {
 }
 
 /**
- * Measure the public chunk of a standalone build and check its module list: exactly one chunk, one
+ * Measure every public chunk of a standalone build and check its module list: one entry, one
  * copy of each guarded package, the kit's three facade present, within the D-15 ceiling. Returns the
  * measurement and the record the catalog keeps for it.
  */
 export async function measureFrameRuntime({ id, source }) {
   const assets = join(source, 'assets');
-  const chunks = (await readdir(assets)).filter((name) => /^index-[A-Za-z0-9_-]+.js$/.test(name));
-  if (chunks.length !== 1) throw new Error(`Expected one public chunk in ${assets}, found ${chunks.length}: ${chunks.join(', ')}`);
-  const bytes = await readFile(join(assets, chunks[0]));
+  const files = (await readdir(assets)).filter((name) => name.endsWith('.js')).sort();
+  if (files.some((name) => !/^[A-Za-z0-9_-]+\.js$/.test(name))) throw new Error('Unsafe standalone chunk filename');
+  const entries = files.filter((name) => /^index-[A-Za-z0-9_-]+\.js$/.test(name));
+  if (entries.length !== 1) throw new Error(`Expected one public entry in ${assets}, found ${entries.length}: ${entries.join(', ')}`);
+  const chunks = [];
+  const code = {};
+  for (const file of files) {
+    const bytes = await readFile(join(assets, file));
+    code[file] = bytes.toString('utf8');
+    const gzip = gzipMeasure(bytes);
+    chunks.push({ file, bytes: bytes.length, gzipBytes: gzip.bytes, gzipMethod: gzip.method, sha256: sha256(bytes) });
+  }
+  const entry = chunks.find((chunk) => chunk.file === entries[0]);
   const modulesBytes = await readFile(join(source, 'bundle-modules.json'));
   const modules = JSON.parse(modulesBytes.toString('utf8')).modules;
   if (!Array.isArray(modules)) throw new Error('bundle-modules.json lists no modules');
@@ -259,14 +261,24 @@ export async function measureFrameRuntime({ id, source }) {
   if (duplicates.length) {
     throw new Error(`The ${id} build carries more than one copy of ${duplicates.map(({ name, copies }) => `${name} (${copies.join(', ')})`).join('; ')}`);
   }
-  const gzip = gzipMeasure(bytes);
+  let initialLoad;
+  if (existsSync(join(source, 'bundle-public.json'))) {
+    if (id !== 'foundry-floor') throw new Error('Initial campus receipts are specific to Foundry Floor');
+    const receiptBytes = await readFile(join(source, 'bundle-public.json'));
+    const receipt = JSON.parse(receiptBytes.toString('utf8'));
+    const packBytes = await readFile(join(assets, 'pack.json'));
+    if (receipt.packSha256 !== sha256(packBytes)) throw new Error('Initial-load receipt names a different scene pack');
+    initialLoad = { ...await measureInitialLoad({ receipt, chunks, code, packRelease: JSON.parse(packBytes.toString('utf8')).release }), receiptSha256: sha256(receiptBytes) };
+  }
   const measurement = {
     id,
-    file: chunks[0],
-    bytes: bytes.length,
-    gzipBytes: gzip.bytes,
-    gzipMethod: gzip.method,
-    sha256: sha256(bytes),
+    ...(initialLoad ? { initialLoad } : {}),
+    file: entry.file,
+    bytes: chunks.reduce((sum, chunk) => sum + chunk.bytes, 0),
+    gzipBytes: chunks.reduce((sum, chunk) => sum + chunk.gzipBytes, 0),
+    gzipMethod: entry.gzipMethod,
+    sha256: entry.sha256,
+    ...(chunks.length > 1 ? { chunks } : {}),
     modules,
     copies: packageCopies(modules),
     facade: modules.some((moduleId) => posix(moduleId).endsWith('/packages/scene-kit/src/renderer/three-runtime.ts')),
@@ -277,7 +289,7 @@ export async function measureFrameRuntime({ id, source }) {
   if (fit.within === false) throw new Error(`The ${id} runtime is over its D-15 ceiling: ${measurement.bytes} B / ${measurement.gzipBytes} B gzip against ${fit.ceiling.bytes} B / ${fit.ceiling.gzipBytes} B gzip`);
   return {
     measurement,
-    record: { kind: 'frame', file: measurement.file, bytes: measurement.bytes, gzipBytes: measurement.gzipBytes, gzipMethod: measurement.gzipMethod, sha256: measurement.sha256, modulesSha256: sha256(modulesBytes) },
+    record: { kind: 'frame', file: measurement.file, bytes: measurement.bytes, gzipBytes: measurement.gzipBytes, gzipMethod: measurement.gzipMethod, sha256: measurement.sha256, modulesSha256: sha256(modulesBytes), ...(initialLoad ? { initialLoad } : {}), ...(measurement.chunks ? { chunks: measurement.chunks } : {}) },
   };
 }
 
@@ -287,8 +299,10 @@ export async function stageFrameRuntime({ id, source, measurement, packBase, sit
   const { file } = measurement.measurement;
   await rm(target, { recursive: true, force: true });
   await mkdir(target, { recursive: true });
-  await copyFile(join(source, 'assets', file), join(target, file));
-  if (sha256(await readFile(join(target, file))) !== measurement.measurement.sha256) throw new Error(`The staged ${id} chunk differs from its source`);
+  for (const chunk of measurement.measurement.chunks ?? [measurement.measurement]) {
+    await copyFile(join(source, 'assets', chunk.file), join(target, chunk.file));
+    if (sha256(await readFile(join(target, chunk.file))) !== chunk.sha256) throw new Error(`The staged ${id} chunk ${chunk.file} differs from its source`);
+  }
   const frame = frameDocument({ id, file, packBase });
   await writeFile(join(target, FRAME_FILE), frame);
   const manifest = {
@@ -307,8 +321,19 @@ export async function stageFrameRuntime({ id, source, measurement, packBase, sit
 export async function verifyStagedRuntime(directory) {
   const manifest = JSON.parse(await readFile(join(directory, RUNTIME_MANIFEST), 'utf8'));
   if (manifest.schema !== RUNTIME_SCHEMA) throw new Error(`Not a ${RUNTIME_SCHEMA} manifest: ${directory}`);
-  const bytes = await readFile(join(directory, manifest.file));
-  if (bytes.length !== manifest.bytes || sha256(bytes) !== manifest.sha256) throw new Error(`The staged runtime ${manifest.file} does not match its manifest`);
+  const chunks = manifest.chunks ?? [manifest];
+  let total = 0;
+  const seen = new Set();
+  for (const chunk of chunks) {
+    if (!/^[A-Za-z0-9_-]+\.js$/.test(chunk.file) || seen.has(chunk.file)) throw new Error('Invalid runtime chunk manifest');
+    seen.add(chunk.file);
+    const bytes = await readFile(join(directory, chunk.file));
+    if (bytes.length !== chunk.bytes || sha256(bytes) !== chunk.sha256) throw new Error(`The staged runtime ${chunk.file} does not match its manifest`);
+    total += bytes.length;
+  }
+  if (total !== manifest.bytes || !chunks.some((chunk) => chunk.file === manifest.file && chunk.sha256 === manifest.sha256)) throw new Error('The staged runtime aggregate does not match its manifest');
+  verifyInitialLoad(manifest);
+  if (manifest.kind === 'frame' && sha256(await readFile(join(directory, FRAME_FILE))) !== manifest.frameSha256) throw new Error('The staged runtime frame does not match its manifest');
   return manifest;
 }
 

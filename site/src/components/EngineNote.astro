@@ -4,8 +4,10 @@ import { REVIEW_RIG } from "../lib/review-rig";
 interface Props {
   /** The vehicle files also declare the optional MSFT_lod extension for their detail tiers. */
   vehicle?: boolean;
+  /** Exact optional extensions read from this page's staged GLB. */
+  extensions?: string[];
 }
-const { vehicle = false } = Astro.props;
+const { vehicle = false, extensions = [] } = Astro.props;
 const { exposure, toneMapping } = REVIEW_RIG;
 ---
 
@@ -13,6 +15,7 @@ const { exposure, toneMapping } = REVIEW_RIG;
   <strong class="font-semibold text-ink">For your engine.</strong>{" "}
   The download is a standard glTF 2.0 binary (GLB) with PBR metallic-roughness
   materials{vehicle ? ", and the vehicle files also declare the optional MSFT_lod extension for their detail tiers" : ""}.
+  {extensions.length > 0 && <> Optional extensions declared by this file: {extensions.join(", ")}. Importer support varies; see the <a class="text-link" href="/docs/engine-handoff/">Blender and Unity guide</a>.</>}
   {" "}glTF stores materials, not lighting or tone mapping, so your engine decides
   how they read. This 3D view tone-maps with Review Neutral, the Khronos PBR
   Neutral construction with a smaller glare offset ({toneMapping.offset} instead

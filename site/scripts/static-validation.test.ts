@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'bun:test';
-import { ARCHIVE_INDEX_ROUTE, archiveIndexingErrors, discoveryErrors, embeddedDocumentErrors, foundryFloorErrors, inspectHtml, isArchiveItemRoute, isEmbeddedDocument, resolveInternalLink, retiredNameErrors, routeForFile, socialMetadataErrors } from './static-validation-core.mjs';
+import { ARCHIVE_INDEX_ROUTE, archiveIndexingErrors, copyErrors, discoveryErrors, embeddedDocumentErrors, foundryFloorErrors, headersErrors, headersFor, inspectHtml, parseHeaderRules, scriptHashSource, isArchiveItemRoute, isEmbeddedDocument, licenceSpellingErrors, ownerReviewErrors, resolveInternalLink, retiredNameErrors, routeForFile, socialMetadataErrors } from './static-validation-core.mjs';
 import foundryFloor from '../src/data/foundry-floor.json';
 test('static routes use directory URLs while 404 keeps its HTML route', () => {
   expect(routeForFile('index.html')).toBe('/');
@@ -145,6 +145,10 @@ describe('the Foundry Floor pages', () => {
     const followed = good();
     followed.set('/scenes/foundry-floor/', page(`<p>In production.</p><p>${notice}</p>`, 'noindex, follow'));
     expect(check(followed)).toEqual(['/scenes/foundry-floor/: The Foundry Floor scene page must be "noindex, nofollow", got "noindex, follow"']);
+    // Exactly the two values of S-2 as corrected (content review, finding 4): a pack page that is also unfollowed is wrong.
+    const unfollowedPack = good();
+    unfollowedPack.set('/packs/foundry-floor/', page(`<p>In production.</p><p>${notice}</p>`, 'noindex, nofollow'));
+    expect(check(unfollowedPack)).toEqual(['/packs/foundry-floor/: The Foundry Floor pack page must be "noindex, follow", got "noindex, nofollow"']);
     const altered = good();
     altered.set('/packs/foundry-floor/', page('<p>In production.</p><p>Not affiliated with Tesla.</p>'));
     // An altered line also names a maker outside the exact line.
@@ -168,6 +172,15 @@ describe('the Foundry Floor pages', () => {
     const outside = good();
     outside.set('/scenes/foundry-floor/', page(`<p>In production. Walk the campus.</p><p>${notice}</p>`, 'noindex, nofollow'));
     expect(check(outside)).toEqual(['/scenes/foundry-floor/: The Foundry Floor page implies an exterior: campus']);
+  });
+
+  test('campus copy requires the explicitly staged campus inventory and keeps the in-production indexing rules', () => {
+    const pages = good();
+    pages.set('/scenes/foundry-floor/', page(`<p>In production. Walk the campus.</p><p>${notice}</p>`, 'noindex, nofollow'));
+    expect(foundryFloorErrors({ pages: pages as never, sitemapUrls: [], hasCampus: true })).toEqual([]);
+    expect(foundryFloorErrors({ pages: pages as never, sitemapUrls: [], hasCampus: false })).toHaveLength(1);
+    pages.set('/scenes/foundry-floor/', page(`<p>In production. Walk the campus.</p><p>${notice}</p>`, 'index, follow'));
+    expect(foundryFloorErrors({ pages: pages as never, sitemapUrls: [], hasCampus: true })).toHaveLength(1);
   });
 
   test('with the pack record, both pages state its placement: how many models the scene places, and the rest', () => {
@@ -238,28 +251,43 @@ describe('discovery files', () => {
 
 describe('social card metadata', () => {
   const home = 'https://kilnstudio.tools/social/home.jpg';
+  const alt = 'Isometric render of the farmhouse on a grey square, titled Farmhouse';
   const page = (over: Record<string, unknown> = {}) => ({
-    og: { image: home, 'image:width': '1200', 'image:height': '630' },
-    twitter: { card: 'summary_large_image', image: home },
+    title: 'Farmhouse — source and 3D model',
+    og: { title: 'Farmhouse — source and 3D model', image: home, 'image:width': '1200', 'image:height': '630', 'image:type': 'image/jpeg', 'image:alt': alt },
+    twitter: { card: 'summary_large_image', image: home, 'image:alt': alt },
     ...over,
   });
   const jpeg = { width: 1200, height: 630, format: 'jpeg' };
 
   test('a large-image card that repeats the Open Graph card, as a JPEG or PNG at its real size, passes', () => {
     expect(socialMetadataErrors(page(), jpeg)).toEqual([]);
-    expect(socialMetadataErrors(page(), { ...jpeg, format: 'png' })).toEqual([]);
+    expect(socialMetadataErrors(page({ og: { ...page().og, 'image:type': 'image/png' } }), { ...jpeg, format: 'png' })).toEqual([]);
+  });
+
+  // Engineering review, finding 4: every page declared image/webp for a JPEG card.
+  test('a declared type that differs from the card’s own is reported', () => {
+    expect(socialMetadataErrors(page({ og: { ...page().og, 'image:type': 'image/webp' } }), jpeg)).toEqual(['og:image:type declares "image/webp" but the card is image/jpeg']);
+    expect(socialMetadataErrors(page({ og: { ...page().og, 'image:type': undefined } }), jpeg)).toEqual(['og:image:type declares null but the card is image/jpeg']);
+  });
+
+  // Content review, finding 7: the alt text repeated the page title.
+  test('the card’s alt text must describe the card: present, not the page title, the same for both networks', () => {
+    expect(socialMetadataErrors(page({ og: { ...page().og, 'image:alt': '' } }), jpeg)).toContain('og:image:alt is missing');
+    expect(socialMetadataErrors(page({ og: { ...page().og, 'image:alt': 'Farmhouse — source and 3D model' }, twitter: { ...page().twitter, 'image:alt': 'Farmhouse — source and 3D model' } }), jpeg)).toEqual(['og:image:alt repeats the page title instead of describing the card']);
+    expect(socialMetadataErrors(page({ twitter: { ...page().twitter, 'image:alt': 'Something else' } }), jpeg)).toEqual(['twitter:image:alt must describe the same card as og:image:alt']);
   });
 
   test('report another card kind, a different Twitter image and declared sizes that differ from the file', () => {
-    expect(socialMetadataErrors(page({ twitter: { card: 'summary', image: home } }), jpeg)).toEqual(['twitter:card must be summary_large_image, got "summary"']);
-    expect(socialMetadataErrors(page({ twitter: { card: 'summary_large_image', image: 'https://kilnstudio.tools/social/other.jpg' } }), jpeg)).toEqual(['twitter:image must be the same card as og:image']);
+    expect(socialMetadataErrors(page({ twitter: { ...page().twitter, card: 'summary' } }), jpeg)).toEqual(['twitter:card must be summary_large_image, got "summary"']);
+    expect(socialMetadataErrors(page({ twitter: { ...page().twitter, image: 'https://kilnstudio.tools/social/other.jpg' } }), jpeg)).toEqual(['twitter:image must be the same card as og:image']);
     expect(socialMetadataErrors(page(), { ...jpeg, height: 628 })).toEqual(['og:image declares 1200×630 but the card is 1200×628']);
   });
 
   // The previous site's fixture required a PNG after two LinkedIn-specific preview fixes; every crawler documents JPEG and PNG.
   test('a card in a format only some crawlers read is reported', () => {
-    expect(socialMetadataErrors(page(), { ...jpeg, format: 'webp' })).toEqual(['og:image must be a JPEG or PNG, the formats every share crawler reads, not webp']);
-    expect(socialMetadataErrors(page(), { ...jpeg, format: 'gif' })).toEqual(['og:image must be a JPEG or PNG, the formats every share crawler reads, not gif']);
+    expect(socialMetadataErrors(page({ og: { ...page().og, 'image:type': 'image/webp' } }), { ...jpeg, format: 'webp' })).toEqual(['og:image must be a JPEG or PNG, the formats every share crawler reads, not webp']);
+    expect(socialMetadataErrors(page({ og: { ...page().og, 'image:type': 'image/gif' } }), { ...jpeg, format: 'gif' })).toEqual(['og:image must be a JPEG or PNG, the formats every share crawler reads, not gif']);
   });
 });
 
@@ -278,5 +306,114 @@ describe('the sitemap index kept for the existing Search Console submission', ()
     expect(check('')).toEqual(['/sitemap-index.xml: /sitemap-index.xml is missing or empty, so the submission kept in Search Console would fail']);
     expect(check(index(['https://kilnstudio.tools/other.xml']))).toEqual(['/sitemap-index.xml: The sitemap index must list only https://kilnstudio.tools/sitemap.xml, got https://kilnstudio.tools/other.xml']);
     expect(check(index(['https://kilnstudio.tools/sitemap.xml', 'https://kilnstudio.tools/docs/install/']))).toEqual(['/sitemap-index.xml: The sitemap index must list only https://kilnstudio.tools/sitemap.xml, got https://kilnstudio.tools/sitemap.xml, https://kilnstudio.tools/docs/install/']);
+  });
+});
+
+describe('copy rules on every page', () => {
+  const html = (body: string) => `<html lang="en"><head><title>Page</title></head><body><main>${body}</main><footer><p>Kiln licence: MIT</p></footer></body></html>`;
+
+  test('the site spells the noun "licence"; file names, quoted text and the verb forms are left alone', () => {
+    expect(licenceSpellingErrors(html('<p>Keep the licence boundary intact. The GLBs are MIT-licensed builds; see ASSET-LICENSE.txt and LICENSE.</p>'))).toEqual([]);
+    expect(licenceSpellingErrors(html('<p data-verbatim>Kiln and any software that opens these files retain their own licenses.</p><div data-verbatim><p>Record the license of each source.</p></div>'))).toEqual([]);
+    expect(licenceSpellingErrors(html('<h2>Keep the license boundary intact.</h2><a href="/x">CC0-1.0 asset content License</a>'))).toEqual([
+      `Spell the noun "licence" in the site's own prose: "Keep the license boundary intact."`,
+      `Spell the noun "licence" in the site's own prose: "CC0-1.0 asset content License"`,
+    ]);
+    expect(licenceSpellingErrors(html('<code>license: MIT</code>'))).toEqual([]);
+  });
+
+  test('approved records must not be described as awaiting owner review', () => {
+    expect(ownerReviewErrors(html('<h2>Owner approved</h2>'))).toEqual([]);
+    expect(ownerReviewErrors(html('<p>Awaiting owner review</p>'))).toHaveLength(1);
+  });
+
+  test('verified review2 touch instructions do not authorize device or performance claims', () => {
+    const instructions = 'Touch controls provide separate steering, throttle, brake / reverse and Boost.';
+    const validate = (text: string, runtimeRelease = 'ff3-review2') => {
+      const page = (copy: string, robots: string) => ({html: `<html><body><p>In production. ${copy}</p><p>${foundryFloor.notice}</p></body></html>`, robots, noindex: true});
+      const pages = new Map([
+        ['/packs/foundry-floor/', page('', 'noindex, follow')],
+        ['/scenes/foundry-floor/', page(text, 'noindex, nofollow')],
+      ]);
+      return foundryFloorErrors({ pages: pages as never, sitemapUrls: [], hasCampus: true, runtimeRelease });
+    };
+    expect(validate(instructions)).toEqual([]);
+    expect(validate(instructions, 'ff3')).toHaveLength(1);
+    expect(validate(instructions, 'ff2')).toHaveLength(1);
+    expect(validate('Touch controls run smoothly at 60 fps.')).toHaveLength(1);
+    expect(validate(`${instructions} It plays on a phone.`)).toHaveLength(1);
+    expect(validate('It performs smoothly on every touchscreen.')).toHaveLength(1);
+  });
+
+  test('new candidate records remain pending, and mixed gallery listings can show both statuses', () => {
+    expect(ownerReviewErrors(html('<p>Awaiting owner review</p>'), 'pending')).toEqual([]);
+    expect(ownerReviewErrors(html('<p>Owner approved</p>'), 'pending')).toHaveLength(2);
+    expect(ownerReviewErrors(html('<p>A model.</p>'), 'pending')).toHaveLength(1);
+    expect(ownerReviewErrors(html('<p>Owner approved</p><p>Awaiting owner review</p>'), 'mixed')).toEqual([]);
+    expect(copyErrors(html('<p>Awaiting owner review</p>'), 'pending')).toEqual([]);
+  });
+
+  test('the copy rules combine: glued numbers, licence spelling and owner status', () => {
+    expect(copyErrors(html('<p>Owner approved. The licence is CC0-1.0.</p>'))).toEqual([]);
+    expect(copyErrors(html('<p>Unity 6000.2.3f1 and 6000.0.0b12.</p>'))).toEqual([]);
+    expect(copyErrors(html('<p>Awaiting owner review of the license, due April1935.</p>'))).toHaveLength(3);
+  });
+});
+
+describe('the header layer in _headers (engineering review, finding 11)', () => {
+  const script = 'document.body.dataset.ready = "1";';
+  const file = (policy: string, extra = '') => `# comment
+/*
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: camera=(), microphone=()
+  Cache-Control: public, max-age=0, must-revalidate
+  Content-Security-Policy-Report-Only: ${policy}
+
+/_astro/*
+  ! Cache-Control
+  Cache-Control: public, max-age=31536000, immutable
+
+/scene-runtime/:scene/*.js
+  ! Cache-Control
+  Cache-Control: public, max-age=31536000, immutable
+${extra}`;
+  const good = file(`default-src 'self'; script-src 'self' ${scriptHashSource(script)}`);
+
+  test('rules apply in order, "!" removes what an earlier rule set, placeholders match one segment', () => {
+    const rules = parseHeaderRules(good);
+    expect(rules.map((rule) => rule.path)).toEqual(['/*', '/_astro/*', '/scene-runtime/:scene/*.js']);
+    expect(headersFor(rules, '/')['cache-control']).toBe('public, max-age=0, must-revalidate');
+    expect(headersFor(rules, '/_astro/viewer.GoKKfp1n.js')['cache-control']).toBe('public, max-age=31536000, immutable');
+    expect(headersFor(rules, '/scene-runtime/golden-gate/index-CA13LcNQ.js')['cache-control']).toBe('public, max-age=31536000, immutable');
+    expect(headersFor(rules, '/scene-runtime/golden-gate/frame.html')['cache-control']).toBe('public, max-age=0, must-revalidate');
+    expect(headersFor(rules, '/scene-runtime/a/b/c.js')['cache-control']).toBe('public, max-age=31536000, immutable');
+    expect(headersFor(rules, '/_astro/x.js')['x-content-type-options']).toBe('nosniff');
+  });
+
+  test('a complete layer passes; the CSP hashes must be exactly the pages’ inline scripts', () => {
+    const files = ['index.html', '_astro/viewer.GoKKfp1n.js', 'scene-runtime/golden-gate/index-CA13LcNQ.js', 'scene-runtime/golden-gate/frame.html'];
+    expect(headersErrors({ text: good, inlineScripts: [script], files })).toEqual([]);
+    expect(headersErrors({ text: good, inlineScripts: [script, 'other()'], files })).toEqual([`script-src does not list the inline script ${scriptHashSource('other()')}`]);
+    expect(headersErrors({ text: good, inlineScripts: [], files })).toEqual([`script-src lists ${scriptHashSource(script)}, which no page carries`]);
+  });
+
+  test('an enforced policy, a lost header, a blocked fullscreen or an unhashed immutable file are reported', () => {
+    const enforced = good.replace('Content-Security-Policy-Report-Only', 'Content-Security-Policy');
+    expect(headersErrors({ text: enforced, inlineScripts: [script] })).toEqual([
+      'The content security policy is enforced; it stays report-only until the owner decides',
+      'Pages carry no Content-Security-Policy-Report-Only',
+    ]);
+    expect(headersErrors({ text: good.replace('  X-Content-Type-Options: nosniff\n', ''), inlineScripts: [script] })).toEqual(['x-content-type-options on pages must be "nosniff", got null']);
+    expect(headersErrors({ text: good.replace('camera=()', 'fullscreen=()'), inlineScripts: [script] })).toEqual(['The Permissions-Policy must leave fullscreen alone (the scenes use it)']);
+    expect(headersErrors({ text: good, inlineScripts: [script], files: ['scene-runtime/farm/runtime.js'] })).toEqual(['/scene-runtime/farm/runtime.js is cached as immutable but its name carries no content hash']);
+    const doubled = good.replace('/_astro/*\n  ! Cache-Control\n', '/_astro/*\n');
+    expect(headersErrors({ text: doubled, inlineScripts: [script], files: ['_astro/a.GoKKfp1n.js'] })).toEqual(['/_astro/a.GoKKfp1n.js: Cache-Control is set twice (public, max-age=0, must-revalidate, public, max-age=31536000, immutable)']);
+    expect(headersErrors({ text: good.replace('max-age=0, must-revalidate', 'max-age=86400'), inlineScripts: [script] })).toEqual(['HTML must be cached briefly and revalidated, got Cache-Control "public, max-age=86400"']);
+  });
+
+  test('inline scripts are found in pages; JSON-LD data blocks are not scripts to a CSP', () => {
+    const page = inspectHtml(`<html><head><script>${script}</script><script type="application/ld+json">{"@type":"Thing"}</script><script type="module" src="/_astro/a.js"></script></head><body></body></html>`);
+    expect(page.inlineScripts).toEqual([script]);
   });
 });

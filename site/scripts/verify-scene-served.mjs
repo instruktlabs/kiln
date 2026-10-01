@@ -2,7 +2,7 @@ import { createHash } from 'node:crypto';
 import { existsSync, readFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { gzipSync } from 'node:zlib';
+import { verifyRuntimePayload } from './served-runtime.mjs';
 
 /**
  * What the site serves for each staged scene, hashed and compared with what the site's own records say.
@@ -38,14 +38,10 @@ const envName = (id) => `KILN_SITE_SCENE_PACK_DIR_${id.toUpperCase().replace(/-/
 
 for (const [id, record] of Object.entries(records)) {
   const runtime = JSON.parse((await get(`/scene-runtime/${id}/runtime.json`)).toString('utf8'));
-  const chunkPath = runtime.chunk ?? runtime.url;
-  const chunk = await get(chunkPath);
-  const gzip = gzipSync(chunk).length;
-  console.log(`${id}: served ${chunkPath} ${chunk.length} B, ${gzip} B gzip, sha256 ${sha(chunk)}`);
-  line(chunk.length === runtime.bytes, `${id} chunk bytes ${chunk.length} equal runtime.json ${runtime.bytes}`);
-  line(sha(chunk) === runtime.sha256, `${id} chunk sha256 equals runtime.json`);
-  line(gzip === runtime.gzipBytes, `${id} chunk gzip ${gzip} equals runtime.json ${runtime.gzipBytes} (${runtime.gzipMethod}; measured here with ${typeof Bun === 'undefined' ? 'node' : 'bun'} zlib)`);
-  line(runtime.ceiling.withinCeiling && chunk.length <= runtime.ceiling.bytes && gzip <= runtime.ceiling.gzipBytes, `${id} chunk inside the ${runtime.ceiling.decision} ceiling ${runtime.ceiling.bytes} B / ${runtime.ceiling.gzipBytes} B gzip (${runtime.ceiling.percent.bytes}% / ${runtime.ceiling.percent.gzipBytes}%)`);
+  const payload = await verifyRuntimePayload(runtime, get);
+  console.log(`${id}: ${payload.files} served chunks verified, ${payload.bytes} B, ${payload.gzipBytes} B gzip, entry sha256 ${runtime.sha256}`);
+  const initial = runtime.initialLoad ?? payload;
+  line(runtime.ceiling.withinCeiling && initial.bytes <= runtime.ceiling.bytes && initial.gzipBytes <= runtime.ceiling.gzipBytes, `${id} ${runtime.initialLoad ? 'verified initial campus closure' : 'aggregate payload'} inside the ${runtime.ceiling.decision} ceiling`);
   line(runtime.three.facade === true && Object.values(runtime.three.copies).every((copies) => copies.length === 1), `${id} one copy each of three, react, react-dom and @react-three/fiber`);
 
   const pack = join(distribution, 'scene-packs', id, record.release);
@@ -56,11 +52,18 @@ for (const [id, record] of Object.entries(records)) {
   line(sha(readFileSync(join(pack, 'pack.json'))) === record.packJsonSha256, `${id} pack.json sha256 equals the record`);
   line(sha(readFileSync(join(pack, 'SHA256SUMS'))) === record.sha256sumsSha256, `${id} SHA256SUMS sha256 equals the record`);
   line(sha(readFileSync(join(pack, 'THIRD-PARTY-NOTICES.txt'))) === record.noticesSha256, `${id} THIRD-PARTY-NOTICES.txt sha256 equals the record`);
+  for (const match of sums.filter(Boolean)) {
+    line(sha(await get(`${record.base}${match[2]}`)) === match[1], `${id} served ${match[2]} equals its seal`);
+  }
+  for (const file of ['pack.json', 'SHA256SUMS', 'THIRD-PARTY-NOTICES.txt']) {
+    line(sha(await get(`${record.base}${file}`)) === sha(readFileSync(join(pack, file))), `${id} served ${file} equals the staged record`);
+  }
 
-  const frozen = process.env[envName(id)] ? join(process.env[envName(id)], 'assets', runtime.file) : null;
-  if (frozen && existsSync(frozen)) {
-    const original = readFileSync(frozen);
-    line(original.length === chunk.length && sha(original) === sha(chunk), `${id} served chunk is byte for byte the frozen build's ${runtime.file} (${original.length} B, sha256 ${sha(original).slice(0, 12)}...)`);
+  if (process.env[envName(id)] && runtime.kind === 'frame') {
+    for (const chunk of runtime.chunks ?? [runtime]) {
+      const frozen = join(process.env[envName(id)], 'assets', chunk.file);
+      line(existsSync(frozen) && sha(readFileSync(frozen)) === chunk.sha256, `${id} served ${chunk.file} is byte for byte the frozen build`);
+    }
   }
 }
 console.log(failures ? `${failures} FAILED` : `All scene hash checks passed (${Object.keys(records).length} scenes).`);

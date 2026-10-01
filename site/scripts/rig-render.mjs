@@ -7,8 +7,7 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 
 /**
  * Renders posters and captures under the Kiln review lighting rig. The rig (`review-neutral-v1`) lives in the
- * engine's `codex/review-lighting` branch, so this module loads the engine from a separate git worktree
- * (KILN_RIG_ENGINE_DIR, default `../../kiln-oss-review-lighting` next to the site's worktree) and talks to a
+ * current engine tree when the rig is present, or an explicitly selected KILN_RIG_ENGINE_DIR, and talks to a
  * render service started from that same worktree. Nothing here starts a service, installs anything or reaches
  * a network beyond the loopback render service. It needs Bun (the engine is TypeScript): `bun scripts/...`.
  */
@@ -16,7 +15,13 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 const SITE = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 export const RIG_ID = 'review-neutral-v1';
 export const RIG_BACKDROP = 'neutral';
-export const DEFAULT_ENGINE_DIR = resolve(SITE, '../../kiln-oss-review-lighting');
+export const DEFAULT_ENGINE_DIR = resolve(SITE, '..');
+export function resolveRigEngine({ site = SITE, env = process.env, exists = existsSync } = {}) {
+  const current = resolve(site, '..');
+  if (exists(join(current, 'render-service/src/presentation-presets.mjs'))) return current;
+  if (env.KILN_RIG_ENGINE_DIR) return resolve(env.KILN_RIG_ENGINE_DIR);
+  throw new Error('This engine tree does not contain the review rig. Set KILN_RIG_ENGINE_DIR to a compatible engine tree.');
+}
 const hex = (bytes) => createHash('sha256').update(bytes).digest('hex');
 
 /** The engine worktree's commit, and whether its tracked files differ from it. */
@@ -25,8 +30,8 @@ export function engineProvenance(engineDir) {
   return { commit: git('rev-parse', 'HEAD'), subject: git('log', '-1', '--format=%s'), dirty: git('status', '--porcelain', '--untracked-files=no') !== '' };
 }
 
-export async function loadRigEngine(engineDir = process.env.KILN_RIG_ENGINE_DIR ?? DEFAULT_ENGINE_DIR) {
-  if (!existsSync(join(engineDir, 'src/render-service-client.ts'))) throw new Error(`No Kiln engine worktree at ${engineDir}. Add a git worktree of codex/review-lighting there (set KILN_RIG_ENGINE_DIR to use another directory).`);
+export async function loadRigEngine(engineDir = resolveRigEngine()) {
+  if (!existsSync(join(engineDir, 'src/render-service-client.ts'))) throw new Error('No compatible Kiln engine tree. Set KILN_RIG_ENGINE_DIR to a tree containing the review rig.');
   const load = (file) => import(pathToFileURL(join(engineDir, file)).href);
   const [client, mode, camera] = await Promise.all([load('src/render-service-client.ts'), load('src/cli-render-mode.ts'), load('src/views/camera.ts')]);
   return { engineDir, client, mode, camera, provenance: engineProvenance(engineDir) };

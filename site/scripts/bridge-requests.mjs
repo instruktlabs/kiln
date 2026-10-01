@@ -7,14 +7,19 @@ import { writeJson } from './media-pins.mjs';
 /**
  * The runs that authored the Golden Gate Bridge revisions, as the site records them: what each run asked for
  * (model, reasoning effort, harness) and which receipt and invocation say so, pinned by SHA-256. A run's
- * requested effort stays separate from any independent confirmation; none of these receipts confirms one.
+ * requested effort stays separate from any independent confirmation; none of these receipts confirms one. The fix
+ * author's review 4 is 'failed': it stopped at its spending cap after it had saved the web tier, so it is accepted
+ * with its status and stop reason recorded rather than hidden.
  *
- *   node scripts/bridge-requests.mjs --commons C:/Users/Mattm/X/kiln-commons
+ *   node scripts/bridge-requests.mjs --commons <commons>
  */
 
 const SITE = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 
-/** `stage` is the id the lineage file refers to; `dir` is the run folder under `showcase/runs/<author>/`. */
+/**
+ * `stage` is the id the lineage file refers to; `dir` is the run folder under `showcase/runs/<author>/`;
+ * `statuses` lists the receipt statuses accepted for that run (default: completed only).
+ */
 export const BRIDGE_RUNS = [
   { stage: 'first', author: 'astra-golden-gate', dir: 'first' },
   { stage: 'review-1', author: 'astra-golden-gate', dir: 'review-1' },
@@ -23,6 +28,8 @@ export const BRIDGE_RUNS = [
   { stage: 'fix-review-1', author: 'sonnet-gg-bridge-fix', dir: 'review-1' },
   { stage: 'fix-review-2', author: 'sonnet-gg-bridge-fix', dir: 'review-2' },
   { stage: 'fix-review-3', author: 'sonnet-gg-bridge-fix', dir: 'review-3' },
+  { stage: 'fix-review-4', author: 'sonnet-gg-bridge-fix', dir: 'review-4', statuses: ['completed', 'failed'] },
+  { stage: 'fix-review-5', author: 'sonnet-gg-bridge-fix', dir: 'review-5' },
 ];
 
 /**
@@ -66,7 +73,8 @@ export async function runRequest(commons, run, { statuses = ['completed'], outco
   };
 }
 
-export const bridgeRequest = (commons, run) => runRequest(commons, run);
+/** A bridge run always records how it ended: the page's history says which run stopped at its cap. */
+export const bridgeRequest = (commons, run) => runRequest(commons, run, { statuses: run.statuses ?? ['completed'], outcome: true });
 
 export async function bridgeRequests(commons, runs = BRIDGE_RUNS) {
   const requests = [];
@@ -79,7 +87,7 @@ async function main(argv = process.argv.slice(2)) {
   if (!commons) throw new Error('Usage: node scripts/bridge-requests.mjs --commons DIR');
   const requests = await bridgeRequests(resolve(commons));
   await writeJson(join(SITE, 'src/data/bridge-requests.json'), requests);
-  for (const request of requests) console.log(`${request.stage}: ${request.requestedModel} effort ${request.requestedEffort} via ${request.harness} ${request.harnessVersion}, confirmed ${request.confirmedEffort}, receipt ${request.source.receiptSha256.slice(0, 12)}`);
+  for (const request of requests) console.log(`${request.stage}: ${request.requestedModel} effort ${request.requestedEffort} via ${request.harness} ${request.harnessVersion}, confirmed ${request.confirmedEffort}, ${request.status} (${request.stop}), receipt ${request.source.receiptSha256.slice(0, 12)}`);
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1])).href) await main();

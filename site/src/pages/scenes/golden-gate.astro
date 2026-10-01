@@ -40,15 +40,15 @@ const tierSentence = !staged || !sceneTiers.length
 ---
 
 <BaseLayout
-  title="Golden Gate Bridge scene"
+  title={`${scene.name} scene · Kiln`}
   description="A preview of a Kiln-authored suspension bridge in a driving and traffic demonstration, still being qualified. Drive a sedan across the deck or view the span by day, at golden hour or in fog."
   noindex
   nofollow
   breadcrumbs={[
     { label: "Scenes", href: "/scenes/" },
-    { label: "Golden Gate Bridge", href: "/scenes/golden-gate/" },
+    { label: `${scene.name} scene`, href: "/scenes/golden-gate/" },
   ]}
-  ogImage="/social/scenes.jpg"
+  card="scenes"
   preloadImage={
     PACKS_ENABLED && scene.posterImage
       ? {
@@ -60,18 +60,7 @@ const tierSentence = !staged || !sceneTiers.length
   }
 >
   <div class="container pb-12 pt-8">
-    <div class="mb-8 flex flex-wrap items-end justify-between gap-6">
-      <div>
-        <h1 class="font-semibold">The Golden Gate Bridge scene</h1>
-        <p class="mt-4 max-w-prose text-lg">{scene.description}</p>
-      </div>
-      {PACKS_ENABLED && (
-        <a href="/gallery/golden-gate-bridge/" class="btn btn-secondary">
-          The bridge asset and downloads
-        </a>
-      )}
-    </div>
-    <SceneShell scene="golden-gate" />
+    <SceneShell scene="golden-gate">
     <div class="mt-8 grid gap-6 border-t border-rule pt-6 md:grid-cols-3">
       <div>
         <h2 class="text-subheading font-semibold">
@@ -111,5 +100,6 @@ const tierSentence = !staged || !sceneTiers.length
         </p>
       </div>
     </div>
+    </SceneShell>
   </div>
 </BaseLayout>

@@ -2,64 +2,107 @@
   "farm": {
     "schema": "kiln.scene-pack/1",
     "id": "farm",
-    "release": "r34",
+    "release": "r36-local-review",
     "three": "0.186.0",
-    "source": "packages/farm/dist/m4/standalone",
-    "base": "/scene-packs/farm/r34/",
+    "source": "../engine-work/local-v09-review/revision3-farmer-back-20261001/farm-runtime-final/standalone",
+    "base": "/scene-packs/farm/r36-local-review/",
     "sealedFiles": 34,
-    "sealedBytes": 7326021,
+    "sealedBytes": 7133727,
     "totalFiles": 37,
-    "totalBytes": 7360911,
-    "packJsonSha256": "e852bf1953a2737cc55f89077db45f5291c2e8218a6e9d03febfaf412fdc9045",
-    "sha256sumsSha256": "d1bff1b76a29e6ac012f846adc8ba499ecc2dcbd09f790444ec68b6ca0ecf405",
+    "totalBytes": 7168212,
+    "packJsonSha256": "5d046aa2c04637436d7e3918db690f4f25f6684a58ae7a78d333dec9df428f48",
+    "sha256sumsSha256": "3bea335e386e15ea652afd1545c7df1a03d8c719f11ec95e41a95680258c44e2",
     "noticesSha256": "4bf6f2bd1d803606c88eb540c8e207ddee4a76be4d12fe14d6110bb7505e4ebc"
   },
   "golden-gate": {
     "schema": "kiln.scene-pack/1",
     "id": "golden-gate",
-    "release": "g5",
+    "release": "g9",
     "three": "0.186.0",
-    "source": "packages/golden-gate/dist/standalone",
-    "base": "/scene-packs/golden-gate/g5/",
+    "source": "../engine-work/local-v09-review/revision2-20260930/golden-runtime-final/standalone",
+    "base": "/scene-packs/golden-gate/g9/",
     "sealedFiles": 103,
-    "sealedBytes": 12616781,
+    "sealedBytes": 12186327,
     "totalFiles": 106,
-    "totalBytes": 12671371,
-    "packJsonSha256": "45fd9e8ef1e7bdec173863ad520e42e8f996c943dfcf57c4842d432ea006335c",
-    "sha256sumsSha256": "b86a5b11c007a1ef14a0fd4b2c3c0b324eba5e6fb55273585c416a8319126341",
+    "totalBytes": 12240923,
+    "packJsonSha256": "c2a1d83fce6caf07a7b3e87070ccb8a983dd68e0c7f98eee3f1ba5255ce059cb",
+    "sha256sumsSha256": "75ce79fc746eafd27d7b597396489294a821fef5d88a05981b6bb9572159a58a",
     "noticesSha256": "4bf6f2bd1d803606c88eb540c8e207ddee4a76be4d12fe14d6110bb7505e4ebc",
     "runtime": {
       "kind": "frame",
-      "file": "index-CA13LcNQ.js",
-      "bytes": 1716992,
-      "gzipBytes": 516345,
+      "file": "index-CGkQ2AbK.js",
+      "bytes": 1721321,
+      "gzipBytes": 517862,
       "gzipMethod": "bun-zlib",
-      "sha256": "28aea5ca7efe35f4bdb6cdb19aefa080660cd55f302aadd3285862570d96ddc3",
-      "modulesSha256": "dcaabe53ef91aa13ce148982a37c1d3c4dcbfd17b68aab803bca99f087cb6775"
+      "sha256": "45001bc0af79bf5668fdc3f8e227a5862cc57b97a32002a2e85ba9acc4a8460d",
+      "modulesSha256": "937d2b5c931d4f6e474528a4326413c82ac3b91a3fe29b56d0acbf606b14f9af"
     }
   },
   "foundry-floor": {
     "schema": "kiln.scene-pack/1",
     "id": "foundry-floor",
-    "release": "ff2",
+    "release": "ff3-review2",
     "three": "0.186.0",
-    "source": "packages/foundry-floor/dist/standalone",
-    "base": "/scene-packs/foundry-floor/ff2/",
-    "sealedFiles": 40,
-    "sealedBytes": 6148457,
-    "totalFiles": 43,
-    "totalBytes": 6201820,
-    "packJsonSha256": "2a6840fbe3e541090753b5fdca23934442a4be2788b74765c16afcc4a63ff8fc",
-    "sha256sumsSha256": "dd53e8b9e531aeed521901f243727417175c70943ab8998e75911cd6c86a9c88",
+    "source": "../engine-work/local-v09-review/revision2-20260930/foundry-runtime-final/standalone",
+    "base": "/scene-packs/foundry-floor/ff3-review2/",
+    "sealedFiles": 85,
+    "sealedBytes": 11519818,
+    "totalFiles": 88,
+    "totalBytes": 11637133,
+    "packJsonSha256": "6ce49d05791bf42d21f3628237a5cf005ce9f2fa15938f0c321430d781c2c5d4",
+    "sha256sumsSha256": "21ec914770e35ced418015e1e9965488d96cb8e457bbc1602273cc3936712e7c",
     "noticesSha256": "4bf6f2bd1d803606c88eb540c8e207ddee4a76be4d12fe14d6110bb7505e4ebc",
     "runtime": {
       "kind": "frame",
-      "file": "index-UyCWwb6D.js",
-      "bytes": 1586280,
-      "gzipBytes": 473835,
+      "file": "index-umTduCLH.js",
+      "bytes": 1700697,
+      "gzipBytes": 516088,
       "gzipMethod": "bun-zlib",
-      "sha256": "b7345f919ecff62e53b6db8a890c9cd6e6a62342dfe8ff4ffd0d2b9072e5c0a9",
-      "modulesSha256": "8309dd58b1338bb4260573263e7ab635a406d929c6befbb6a1d088144fdee8f9"
+      "sha256": "0a934e08ca4be7834aad4e6f6fef492a9248e4fa29b2953a6d6f22359ec92cb7",
+      "modulesSha256": "d5d56fe3e7945d39807b4d06bb7577d7850d55d8bb5f14bb90c4859735002828",
+      "initialLoad": {
+        "files": [
+          "data-BqQ-1EPs.js",
+          "exterior-9XKlTe53.js",
+          "index-umTduCLH.js"
+        ],
+        "bytes": 1525112,
+        "gzipBytes": 445765,
+        "deferredFiles": [
+          "interior-DxlT87x0.js"
+        ],
+        "receiptSha256": "da50afbbcaae6653a64fc9f93c92b3e78cc8124437346e623758680a82d41164"
+      },
+      "chunks": [
+        {
+          "file": "data-BqQ-1EPs.js",
+          "bytes": 42050,
+          "gzipBytes": 11685,
+          "gzipMethod": "bun-zlib",
+          "sha256": "a0a742ecd49f25e8edbba835c070f9307fece5c138e9fec73b78331a5e369176"
+        },
+        {
+          "file": "exterior-9XKlTe53.js",
+          "bytes": 73578,
+          "gzipBytes": 28254,
+          "gzipMethod": "bun-zlib",
+          "sha256": "15922b270ce2c577cdbde80207e77f2980dbfdb9def371ca13e05d01d3916e81"
+        },
+        {
+          "file": "index-umTduCLH.js",
+          "bytes": 1409484,
+          "gzipBytes": 405826,
+          "gzipMethod": "bun-zlib",
+          "sha256": "0a934e08ca4be7834aad4e6f6fef492a9248e4fa29b2953a6d6f22359ec92cb7"
+        },
+        {
+          "file": "interior-DxlT87x0.js",
+          "bytes": 175585,
+          "gzipBytes": 70323,
+          "gzipMethod": "bun-zlib",
+          "sha256": "babffc4fb0c7d49ebc971cb7a1bd0e38039ec980a6bd74a9b8df255ed31ec270"
+        }
+      ]
     }
   }
 }

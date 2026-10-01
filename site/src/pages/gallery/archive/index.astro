@@ -1,17 +1,17 @@
 ---
+import PageHeader from "../../../components/PageHeader.astro";
 import { readFile } from "node:fs/promises";
 import { resolve } from "node:path";
 import BaseLayout from "../../../layouts/BaseLayout.astro";
 import type { Specimen } from "../../../types";
 import { SITE } from "../../../lib/config";
+import { archiveName, isDemo } from "../../../lib/archive-names.mjs";
 const specimens: Specimen[] = JSON.parse(
   await readFile(resolve("public/assets/index.json"), "utf8"),
 );
-const title = (name: string) =>
-  name
-    .split("-")
-    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(" ");
+// A recorded demo run names no model (three items); the card says so in the same words as the item page.
+const modelLine = (model: string) =>
+  model === "Not independently recorded" ? "Model not recorded" : model;
 const description =
   "Earlier examples from earlier Kiln versions, not reviewed to the pack standard. Browse their source, model downloads and recorded provenance.";
 ---
@@ -19,7 +19,7 @@ const description =
 <BaseLayout
   title="Archive · Earlier Kiln examples"
   description={description}
-  ogImage="/social/archive.jpg"
+  card="archive"
   breadcrumbs={[
     { label: "Gallery", href: "/gallery/" },
     { label: "Archive", href: "/gallery/archive/" },
@@ -32,9 +32,9 @@ const description =
     description,
   }}
 >
-  <div class="container pt-5">
+  <div class="container pt-8">
     <div class="max-w-reading">
-      <h1>Earlier Kiln examples</h1>
+      <PageHeader>Archive</PageHeader>
       <p class="lead mt-6">
         Earlier examples from earlier Kiln versions, not reviewed to the pack
         standard.
@@ -59,20 +59,25 @@ const description =
               src={`/${specimen.thumb}`}
               width="560"
               height="560"
-              alt={`Historical render of ${title(specimen.name)}`}
+              alt=""
               loading={index < 4 ? "eager" : "lazy"}
               decoding="async"
               class="aspect-square w-full border border-rule bg-stage object-contain"
             />
             <h2 class="mt-4 text-title font-semibold group-hover:underline">
-              {title(specimen.name)}
+              {archiveName(specimen.name)}
             </h2>
           </a>
+          {isDemo(specimen.name) && (
+            <p class="mt-2">
+              <span class="inline-block border border-rule px-2 py-0.5 font-mono text-code text-dim">Demo run</span>
+            </p>
+          )}
           {specimen.caption && (
             <p class="mt-2 text-caption">{specimen.caption}</p>
           )}
           <p class="mt-3 font-mono text-code text-dim">
-            {specimen.tris.toLocaleString("en-US")} triangles · {specimen.model}
+            {specimen.tris.toLocaleString("en-US")} triangles · {modelLine(specimen.model)}
           </p>
         </li>
       ))}

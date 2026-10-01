@@ -1,0 +1,6 @@
+export function foundryGlbFixture(mode) {
+ const positions=Buffer.from(new Float32Array([0,0,0,1,0,0,0,1,0]).buffer);
+ const json={asset:{version:'2.0'},scene:0,scenes:[{nodes:[0]}],nodes:[{name:'root',children:mode==='legacy'?[1,3]:[1]},{name:'LOD0',children:[2],...(mode==='standard'||mode==='cycle'?{extensions:{MSFT_lod:{ids:[mode==='cycle'?1:3]}}}:{})},{name:'detail',mesh:0},{name:'LOD1',children:[4]},{name:'lod1',mesh:0}],meshes:[{primitives:[{attributes:{POSITION:0}}]}],buffers:[{byteLength:positions.length}],bufferViews:[{buffer:0,byteLength:positions.length}],accessors:[{bufferView:0,componentType:5126,count:3,type:'VEC3',min:[0,0,0],max:[1,1,0]}],...(mode==='standard'||mode==='cycle'?{extensionsUsed:['MSFT_lod']}:{})};
+ const text=Buffer.from(JSON.stringify(json));const padded=Buffer.alloc(Math.ceil(text.length/4)*4,32);text.copy(padded);
+ const bytes=Buffer.alloc(28+padded.length+positions.length);bytes.write('glTF');bytes.writeUInt32LE(2,4);bytes.writeUInt32LE(bytes.length,8);bytes.writeUInt32LE(padded.length,12);bytes.write('JSON',16);padded.copy(bytes,20);bytes.writeUInt32LE(positions.length,20+padded.length);bytes.write('BIN\0',24+padded.length);positions.copy(bytes,28+padded.length);return bytes;
+}

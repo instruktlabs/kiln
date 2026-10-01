@@ -61,7 +61,7 @@ await writeFile(
   join(site, `public/assets/${name}.hero-poster.json`),
   JSON.stringify(receipt, null, 2) + '\n',
 );
-await sharp(png)
+const hero = await sharp(png)
   .webp({ quality: 90 })
   .toFile(join(site, `public/thumbs/${name}-hero.webp`));
 const indexPath = join(site, 'public/assets/index.json');
@@ -69,6 +69,8 @@ const rows = JSON.parse(await readFile(indexPath, 'utf8'));
 const row = rows.find((entry) => entry.name === name);
 if (!row) throw new Error('Hero is not in the generated gallery index');
 row.poster = `thumbs/${name}-hero.webp`;
+row.posterWidth = hero.width;
+row.posterHeight = hero.height;
 row.heroPoster = receipt;
 await writeFile(indexPath, JSON.stringify(rows, null, 2) + '\n');
 const buildPath = join(site, 'public/assets/build.json');

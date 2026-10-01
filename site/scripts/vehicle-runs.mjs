@@ -11,7 +11,7 @@ import { VEHICLE_RUNS } from './vehicles-spec.mjs';
  * One run (`sonnet-vehicles-b/first-retry1`) is 'failed': it reached its spending cap after it had saved all three
  * vehicles, which is why it is accepted here with its stop reason recorded rather than hidden.
  *
- *   node scripts/vehicle-runs.mjs --commons C:/Users/Mattm/X/kiln-commons
+ *   node scripts/vehicle-runs.mjs --commons <commons>
  */
 
 const SITE = resolve(dirname(fileURLToPath(import.meta.url)), '..');
