@@ -13,7 +13,7 @@ const specimens: Specimen[] = JSON.parse(
 const modelLine = (model: string) =>
   model === "Not independently recorded" ? "Model not recorded" : model;
 const description =
-  "Earlier examples from earlier Kiln versions, not reviewed to the pack standard. Browse their source, model downloads and recorded provenance.";
+  "Earlier examples from earlier Kiln versions. Browse their source and model downloads.";
 ---
 
 <BaseLayout
@@ -36,8 +36,7 @@ const description =
     <div class="max-w-reading">
       <PageHeader>Archive</PageHeader>
       <p class="lead mt-6">
-        Earlier examples from earlier Kiln versions, not reviewed to the pack
-        standard.
+        Earlier examples from earlier Kiln versions.
       </p>
       <p class="mt-4">
         These {specimens.length} historical examples retain their source, model
@@ -45,7 +44,7 @@ const description =
         do not establish their visual quality.
       </p>
       <a class="text-link mt-4" href="/gallery/">
-        Browse the reviewed asset gallery <span aria-hidden="true">→</span>
+        Browse the asset gallery <span aria-hidden="true">→</span>
       </a>
     </div>
     <ul class="mt-10 grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">

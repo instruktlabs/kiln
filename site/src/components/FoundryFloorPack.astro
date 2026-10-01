@@ -48,7 +48,7 @@ const triangleSplit = (metrics: Asset["metrics"]) =>
 <div class="mt-4 grid gap-6 border-y border-ink py-6 md:grid-cols-2">
   <div>
     <p class="max-w-reading">
-      <strong>In production.</strong> {pack.acceptance.statement}
+      <strong>In production.</strong> The pack is still growing; models are added and revised as the scene is built.
     </p>
   </div>
   <div>
@@ -88,7 +88,6 @@ const triangleSplit = (metrics: Asset["metrics"]) =>
               {number(asset.metrics.triangles)} triangles
             </p>
             {(asset as RecordedAsset).lod?.form === 'MSFT_lod' && <p class="mt-1 text-caption text-dim">Optional LOD tiers included.</p>}
-            {(asset as RecordedAsset).reviewStatus === 'review-candidate' && <p class="mt-1 text-caption text-dim">Local review candidate.</p>}
             <p class="mt-1 font-mono text-code text-dim">
               {bounds(asset.metrics.bounds)} m
             </p>
@@ -180,7 +179,7 @@ const triangleSplit = (metrics: Asset["metrics"]) =>
     the requested model, effort and harness below. Effort is not independently confirmed.
   </p>
   <dl class="mt-8 border-t border-ink">
-    {authors.map((assets) => { const author = assets[0]!.author; const attribution = authorRecords[author as keyof typeof authorRecords]; const recorded = assets[0]!.attribution; const notes=recorded?.note; return (
+    {authors.map((assets) => { const author = assets[0]!.author; const attribution = authorRecords[author as keyof typeof authorRecords]; const recorded = assets[0]!.attribution; const notes=recorded?.note?.replace(/ Owner review is pending\.$/, ''); return (
       <div class="grid gap-2 border-b border-rule py-4 lg:grid-cols-12">
         <dt class="font-semibold lg:col-span-4">{list(assets.map((asset) => asset.name))}</dt>
         <dd class="max-w-reading lg:col-span-8">{recorded ? `${recorded.author.replace(" · claude ", " · Claude Code ").replace(" · agy ", " · Antigravity CLI (agy) ").replace(" · codex ", " · Codex ")}. Requested effort: ${recorded.requestedEffort ?? "not recorded"}. Independently confirmed: not recorded.${notes ? ` ${notes}` : ""}` : attribution ? `${modelName(attribution.requestedModel)} through ${harnessName(attribution.harness)}. Requested effort: ${attribution.requestedEffort}. Independently confirmed: not recorded.` : "Model and effort not recorded in the staged author inputs."}</dd>

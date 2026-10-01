@@ -31,18 +31,6 @@ for (const file of htmlFiles) {
   pages.set(routeForFile(relative(root, file)), { file, html, ...inspectHtml(html) });
 }
 const foundryFloorPack = JSON.parse(await readFile(resolve(site, 'src/data/packs/foundry-floor.json'), 'utf8'));
-const reviewedCatalog = (await Promise.all(['packs/farm.json', 'packs/vehicles.json', 'standalone/golden-gate-bridge.json'].map(async (path) => {
-  const record = JSON.parse(await readFile(resolve(site, 'src/data', path), 'utf8'));
-  return record.assets ?? [record];
-}))).flat();
-const reviewStatusByRoute = new Map(reviewedCatalog.map((asset) => [`/gallery/${asset.slug}/`, asset.review.ownerAccepted ? 'approved' : 'pending']));
-for (const asset of foundryFloorPack.assets) {
-  const shared = reviewedCatalog.some((existing) => existing.slug === asset.slug && existing.revisionId === asset.revisionId && existing.runtimeDownload.sha256 === asset.runtimeDownload.sha256);
-  if (!shared) reviewStatusByRoute.set(`/gallery/foundry-floor/${asset.slug}/`, 'pending');
-}
-if ([...reviewStatusByRoute.values()].includes('pending')) reviewStatusByRoute.set('/gallery/', 'mixed');
-for (const pack of new Set(reviewedCatalog.filter((asset) => asset.pack && !asset.review.ownerAccepted).map((asset) => asset.pack)))
-  reviewStatusByRoute.set(`/packs/${pack}/`, 'mixed');
 const errors = [];
 const add = (page, kind, message) => errors.push({ page, kind, message });
 const warnings = [];
@@ -71,8 +59,7 @@ for (const [route, page] of pages) {
       else seen.set(text, route);
     }
     if (page.h1Count !== 1) add(route, 'headings', `Expected one H1, found ${page.h1Count}`);
-    // Review status comes from catalog identity, not the historical approval of an earlier asset revision.
-    for (const message of copyErrors(page.html, reviewStatusByRoute.get(route))) add(route, 'copy', message);
+    for (const message of copyErrors(page.html)) add(route, 'copy', message);
     if ((page.description ?? '').length > DESCRIPTION_WARNING_LENGTH) warnings.push({ page: route, kind: 'description', message: `Meta description is ${page.description.length} characters (search and share previews cut it above ${DESCRIPTION_WARNING_LENGTH})` });
     if (page.language !== 'en') add(route, 'metadata', 'Missing lang="en"');
     const expectedCanonical = new URL(route, ORIGIN).href;

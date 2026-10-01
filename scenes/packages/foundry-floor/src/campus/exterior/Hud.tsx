@@ -6,7 +6,7 @@
 // touch or pen input, or a coarse primary pointer unless the keyboard was used last: drag, pinch and two-finger pan
 // move the camera there, and Reset view (back to the chosen named view) sits in the toolbar.
 import { useEffect, useRef, useState } from 'react';
-import { CreditsPanel, HelpOverlay, HudButton, HudPanel, HudSegmented, StatusLine, TouchButtons, useHud, useInput, usePanelEscape, usePlayMode, useSceneRootRef, VirtualJoystick } from '@kiln-scenes/scene-kit';
+import { CreditsPanel, HelpOverlay, HudButton, HudHideButton, HudMenu, HudPanel, HudSegmented, HudToolbar, StatusLine, TouchButtons, useHud, useInput, usePanelEscape, usePlayMode, useSceneRootRef, VirtualJoystick } from '@kiln-scenes/scene-kit';
 import { useCampusSession } from '../session';
 import type { CampusViewName } from '../data';
 import { DRIVE_TOUCH_BUTTONS } from '../drive/input';
@@ -44,7 +44,6 @@ const CSS = `
 .fc-bottom>.ks-status:empty{display:none}
 /* The kit joystick sits inside this layer, not directly under .ks-hud, so it takes its touches back explicitly. */
 .fc-hud>.ks-joystick,.fc-hud>.ks-touch-buttons{pointer-events:auto}
-.fc-destination{font:12px/1.4 system-ui,sans-serif;padding:4px 10px;max-width:260px;text-align:center;background:#101e24e8;border-radius:5px;color:#e8f4f3}
 .fc-hud.fc-joystick>.fc-bottom{bottom:calc(max(24px,env(safe-area-inset-bottom)) + 144px)}
 `;
 
@@ -74,15 +73,21 @@ export function ExteriorHud() {
   return <div className={joystick ? 'fc-hud fc-joystick' : 'fc-hud'}>
     <style>{CSS}</style>
     <div className="fc-top">
-      <div className="ks-toolbar">
-        {!driving && <HudSegmented label="View" value={hud.view} options={VIEW_OPTIONS} onChange={value => campus.setView(value as CampusViewName)}/>}
-        {!driving && touchLayout && <HudButton onClick={() => campus.setView(hud.view)}>{S.resetView}</HudButton>}
+      <HudToolbar>
+        {/* Three groups: what to look at, the drive, and everything secondary. */}
+        {!driving && <HudMenu label="View" collapse="narrow">
+          <HudSegmented label="View" value={hud.view} options={VIEW_OPTIONS} onChange={value => campus.setView(value as CampusViewName)}/>
+          {touchLayout && <HudButton onClick={() => campus.setView(hud.view)}>{S.resetView}</HudButton>}
+        </HudMenu>}
         {hud.driveReady && <HudButton disabled={busy} onClick={drive}>{driving ? S.leaveCar : S.drive}</HudButton>}
-        <HudButton aria-pressed={hud.paused} onClick={() => campus.setPaused(!hud.paused)}>{hud.paused ? 'Resume motion' : 'Pause motion'}</HudButton>
-        <HudButton ref={aboutTrigger} aria-expanded={hud.about} aria-controls="fc-about" onClick={() => campus.setAbout(!hud.about)}>About the campus</HudButton>
-        <HelpOverlay label={S.controls} desktop={S.helpKeyboard} touch={S.helpTouch}/>
-        <CreditsPanel label="Credits"/>
-      </div>
+        <HudMenu label="More">
+          <HudButton aria-pressed={hud.paused} onClick={() => campus.setPaused(!hud.paused)}>{hud.paused ? 'Resume motion' : 'Pause motion'}</HudButton>
+          <HudButton ref={aboutTrigger} aria-expanded={hud.about} aria-controls="fc-about" onClick={() => campus.setAbout(!hud.about)}>About the campus</HudButton>
+          <HelpOverlay label={S.controls} desktop={S.helpKeyboard} touch={S.helpTouch}/>
+          <CreditsPanel label="Credits"/>
+        </HudMenu>
+        <HudHideButton/>
+      </HudToolbar>
       {hud.about && <HudPanel id="fc-about" className="fc-about" role="region" aria-label="About the campus" data-ks-dismiss-panel>
         <h2>The Foundry Floor campus</h2>
         <p>Four fab buildings in two mirrored pairs, each a head and a 2.6 km hall, joined by two links across the cross pass,
@@ -97,7 +102,6 @@ export function ExteriorHud() {
     <div className="fc-bottom">
       {driving && <div className="ks-panel fc-speed" aria-live="off">{S.speed(hud.speedKmh)}</div>}
       <HudButton disabled={busy} onClick={() => campus.enter()}>{S.enter}</HudButton>
-      <div className="fc-destination">South-west building · Level 1<br/>Entrance-to-floor transition</div>
       <StatusLine text={driving && hud.atRoadEnd ? (touchLayout ? S.turnAroundTouch : S.turnAroundPrompt) : hud.status}/>
     </div>
     {joystick && <><VirtualJoystick label={S.joystick} axes="x"/><TouchButtons buttons={DRIVE_TOUCH_BUTTONS}/></>}

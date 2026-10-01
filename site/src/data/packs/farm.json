@@ -6,7 +6,7 @@
   "revision": "r36-local-review",
   "projectRevision": "r_0000000002_6bba0eae0009722bd75d7f40f3a4c36ef125630144d94e86a6b531fe1fa929dd",
   "fullPackAccepted": false,
-  "ownerApprovedAssets": 22,
+  "ownerApprovedAssets": 23,
   "assetCount": 23,
   "materialRecords": 10,
   "textureMaps": 30,
@@ -59,7 +59,7 @@
         "Runtime assets",
         "Bundled browser dependencies and notices"
       ],
-      "compatibility": "Current r36 local Farm scene with the repaired farmer. Controller and procedural-animation code is retained from r35; changed asset integration is checked separately. No physical-device performance qualification."
+      "compatibility": "Runs in a browser with WebGPU or WebGL2."
     }
   ],
   "scene": {
@@ -75,9 +75,9 @@
       "srcsetAvif": "/media/scenes/farm/r36-local-review/farm-scene-opening-320.avif 320w, /media/scenes/farm/r36-local-review/farm-scene-opening-480.avif 480w, /media/scenes/farm/r36-local-review/farm-scene-opening-672.avif 672w, /media/scenes/farm/r36-local-review/farm-scene-opening-768.avif 768w, /media/scenes/farm/r36-local-review/farm-scene-opening-1024.avif 1024w, /media/scenes/farm/r36-local-review/farm-scene-opening-1440.avif 1440w",
       "inputPath": "media/scenes/farm/r36-local-review/farm-scene-opening.png"
     },
-    "description": "A runnable local review preview with first-person walking, tractor driving, doors and gates. Current controls have desktop and touch-emulated checks on WebGPU and WebGL2; new physical-device performance is not qualified.",
+    "description": "A runnable local review preview with third-person walking, tractor driving, doors and gates. Current controls have desktop and touch-emulated checks on WebGPU and WebGL2; new physical-device performance is not qualified.",
     "desktop": [
-      "First-person walking with click-to-capture and Escape release",
+      "Third-person walking with drag to look and scroll to zoom",
       "Doors and gates",
       "Bridge crossing",
       "Tractor driving"
@@ -85,7 +85,7 @@
     "mobile": [
       "Joystick walking and driving",
       "Drag to look",
-      "Pinch to zoom while driving or orbit viewing",
+      "Pinch to zoom",
       "Contextual interaction"
     ],
     "excluded": [
@@ -2150,11 +2150,11 @@
         }
       ],
       "review": {
-        "status": "awaiting-owner-review",
-        "ownerAccepted": false,
-        "scope": "The revised hands and proportions are retained. This back clothing repair awaits owner review; the 22 other asset approvals are unchanged.",
-        "recordedAt": null,
-        "source": "Owner review 3 back-clothing feedback and saved repair receipt"
+        "status": "accepted",
+        "ownerAccepted": true,
+        "scope": "The owner accepted this back clothing repair revision. The revised hands and proportions are retained.",
+        "recordedAt": "2026-10-01",
+        "source": "Owner statement in the site design review of 1 October 2026: the farmer back-clothing repair revision is approved"
       },
       "license": "CC0-1.0",
       "sceneDeepLink": null,
@@ -3844,14 +3844,14 @@
   "deliveryReview": {
     "revision": "r36-local-review",
     "fullPackAccepted": false,
-    "acceptedAssets": 22,
+    "acceptedAssets": 23,
     "total": 23,
     "source": "packs/farm/r36-local-review/downloads.json and exact-revision review records"
   },
   "ownerReview": {
-    "acceptedAssets": 22,
+    "acceptedAssets": 23,
     "total": 23,
-    "status": "review-in-progress",
+    "status": "all-current-revisions-accepted",
     "date": "2026-09-29",
     "statement": "Yes, the farmhouse wood floor revision passes.",
     "source": "site-build/FEEDBACK-site-review-1.md",
@@ -3914,7 +3914,7 @@
       {
         "id": "farmer",
         "revisionId": "r_70907c7fd97249ce807e9948613882cd",
-        "ownerAccepted": false
+        "ownerAccepted": true
       },
       {
         "id": "cow",
@@ -4124,6 +4124,6 @@
   "qualification": {
     "performanceQualified": false,
     "publicationAuthorized": false,
-    "note": "22 unchanged exact asset approvals retained. New farmer back repair awaits owner review; previous interface evidence is separate from new asset qualification."
+    "note": "22 unchanged exact asset approvals retained. The owner accepted the farmer back repair on 1 October 2026; previous interface evidence is separate from new asset qualification."
   }
 }

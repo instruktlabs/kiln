@@ -12,9 +12,6 @@ const featured = ["euv-scanner", "etch-cluster-tool", "vertical-furnace", "stock
   if (!asset) throw new Error(`The Foundry Floor catalog has no model ${slug}`);
   return asset;
 });
-const farmAwaiting = farm.ownerReview.total - farm.ownerReview.acceptedAssets;
-// Typed here: with every vehicle approved the record's list is empty, which the JSON import types as never[].
-const vehiclesAwaiting: string[] = vehicles.ownerReview.awaiting;
 ---
 
 <BaseLayout
@@ -44,10 +41,7 @@ const vehiclesAwaiting: string[] = vehicles.ownerReview.awaiting;
             23 assets: buildings, animals, crops, fencing and farm equipment.
           </p>
           <p class="mt-4 text-dim">
-            Runtime, editable and scene profiles.{" "}
-            {farm.ownerReview.acceptedAssets} of {farm.ownerReview.total} current
-            revisions approved by the owner
-            {farmAwaiting > 0 ? `; ${farmAwaiting} await review` : ""}.
+            Runtime, editable and scene profiles.
           </p>
           <span class="text-link mt-4">
             Inspect the pack and downloads<span class="sr-only">: Shapes &amp; Seasons Farm</span> <span aria-hidden="true">→</span>
@@ -75,11 +69,7 @@ const vehiclesAwaiting: string[] = vehicles.ownerReview.awaiting;
             and a transit bus, each with three detail tiers.
           </p>
           <p class="mt-4 text-dim">
-            Runtime GLBs, editable source and licence texts.{" "}
-            {vehicles.ownerReview.acceptedAssets} of {vehicles.ownerReview.total}{" "}
-            assets approved by the owner
-            {vehiclesAwaiting.length > 0 &&
-              `; the corrected revision of the ${vehiclesAwaiting.map((name) => name.replace(/^Generic /, "")).join(" and the ")} awaits review`}.
+            Runtime GLBs, editable source and licence texts.
           </p>
           <span class="text-link mt-4">
             Inspect the pack and downloads<span class="sr-only">: Generic Road Vehicles</span> <span aria-hidden="true">→</span>
@@ -108,8 +98,7 @@ const vehiclesAwaiting: string[] = vehicles.ownerReview.awaiting;
             floor, ceiling and walls, and the people and robots who work there.
           </p>
           <p class="mt-4 text-dim">
-            In production. Runtime GLBs and the pack’s licence text. The owner
-            has not reviewed this pack; it stays in production until then.
+            In production. Runtime GLBs and the pack’s licence text.
           </p>
           <span class="text-link mt-4">
             Inspect the pack in production <span aria-hidden="true">→</span>

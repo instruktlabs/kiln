@@ -223,6 +223,13 @@ test('U-18 Farm string table: pilot messages verbatim, four door labels, prompts
   expect(new Set(all).size).toBe(all.length);
 });
 
+test('walking is third person: the help says so and no pointer-capture strings remain', () => {
+  expect(FARM_STRINGS.helpKeyboard).toMatch(/third person/); expect(FARM_STRINGS.helpTouch).toMatch(/third person/);
+  for (const text of Object.values(FARM_STRINGS) as string[]) expect(text).not.toMatch(/first person|capture the mouse/i);
+  expect(Object.keys(FARM_STRINGS)).not.toContain('walkCapture'); expect(Object.keys(FARM_STRINGS)).not.toContain('walkCaptured');
+  expect(FARM_STRINGS.walkHint).toBe('WASD to walk · Drag to look · Scroll to zoom · Shift to run · E to interact · Escape to leave');
+});
+
 // Opt-in: the sealed r33 play controller in lockstep with the port, then the port-only B-08 fixture searches
 // (about 7 s measured on this PC as a script; staged pilot delivery required).
 if (process.env.ORACLE === '1') test('M2c sealed r33 play oracle: byte-identical colliders and lockstep play within 1e-9', async () => {

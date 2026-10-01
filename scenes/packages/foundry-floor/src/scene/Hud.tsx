@@ -7,7 +7,7 @@
 // twin's state (panels.ts); the cameras (Cameras.tsx) refresh them.
 import { useEffect, useRef, useState } from 'react';
 import type { ReactNode } from 'react';
-import { CreditsPanel, HelpOverlay, HudButton, HudPanel, HudSegmented, StatusLine, useHud, useInput, usePanelEscape, usePlayMode, useSceneRootRef, VirtualJoystick } from '@kiln-scenes/scene-kit';
+import { CreditsPanel, HelpOverlay, HudButton, HudHideButton, HudMenu, HudPanel, HudSegmented, HudToolbar, StatusLine, useHud, useInput, usePanelEscape, usePlayMode, useSceneRootRef, VirtualJoystick } from '@kiln-scenes/scene-kit';
 import about from '../../data/about.json';
 import { SIM_CONFIG } from '../sim/config';
 import type { FabMode } from '../sim/fab';
@@ -22,24 +22,33 @@ const VIEW_OPTIONS: { value: ViewName; label: string }[] = [{ value: 'landing', 
 const LABELS = about.labels as Record<string, string>;
 
 /** Sized by the HUD's own box. Wide: the status panel top left, the toolbar top right, the panels and the status line
- *  bottom right. Narrow (900 px and under): the status panel and the panels stack at the bottom (the KPI list folds away
- *  while a panel is open or the joystick is up, and the stack rises above the joystick). The `.ks-hud>` prefix outranks
+ *  bottom right. Narrow (1060 px and under): the status panel and the panels stack at the bottom (the details fold away
+ *  while a panel is open or the joystick is up, and the stack rises above the joystick). The status panel is a header
+ *  (mode, scale, sim time and the synthetic label: always on screen, even with the HUD hidden) over details the header
+ *  toggles (location, KPIs, floor transfers): open on a wide HUD, folded on a narrow one until asked for. The `.ks-hud>` prefix outranks
  *  the kit's `.ks-hud>*{pointer-events:auto}` so the canvas keeps its gestures; the controls take pointer events back.
  *  HUD updates arrive through the kit's store, which coalesces them to ten a second. */
 const FF_HUD_CSS = `
 .ks-hud>.ff-hud{position:absolute;inset:0;pointer-events:none;container:ff-hud/size}
 .ff-hud>.ff-top{position:absolute;inset:0;display:flex;flex-direction:column;align-items:flex-end;gap:8px;box-sizing:border-box;pointer-events:none;
   padding:max(12px,env(safe-area-inset-top)) max(12px,env(safe-area-inset-right)) 12px max(12px,env(safe-area-inset-left))}
-.ff-top>.ks-toolbar{position:static;justify-content:flex-end;max-width:min(680px,100%);pointer-events:auto}
-.ff-top .ks-toolbar>.ks-help{position:static;flex:1 0 100%;max-width:none;max-height:40cqh;overflow:auto;text-align:left;font:14px/1.5 system-ui,sans-serif}
+.ff-top>.ks-toolbar{position:static;justify-content:flex-end;max-width:calc(100% - 364px);pointer-events:auto}
+.ff-top .ks-toolbar .ks-help{position:static;order:11;flex:1 0 100%;max-width:none;max-height:40cqh;overflow:auto;text-align:left;font:14px/1.5 system-ui,sans-serif}
 .ff-top>.ff-about{pointer-events:auto;overflow:auto;max-height:calc(100% - 110px);max-width:min(480px,100%);font:14px/1.5 system-ui,sans-serif}
 .ff-about h2{margin:0 0 8px;font-size:17px}.ff-about h3{margin:12px 0 4px;font-size:14px}.ff-about p{margin:0 0 6px}
 .ff-about dl{display:grid;grid-template-columns:auto 1fr;gap:2px 8px;margin:4px 0 10px}.ff-about dt{font-weight:600}.ff-about dd{margin:0}
 .ff-hud>.ff-bottom{display:contents}
 .ff-bottom>.ff-status{position:absolute;left:max(12px,env(safe-area-inset-left));top:max(12px,env(safe-area-inset-top));pointer-events:auto;
-  max-width:min(340px,calc(100% - 24px));padding:10px 12px;font:13px/1.45 system-ui,sans-serif}
-.ff-status .ff-mode{font-weight:600;font-size:14px}.ff-status .ff-syn{font-size:12px;opacity:.86}
+  max-width:min(340px,calc(100% - 24px));padding:0;font:13px/1.45 system-ui,sans-serif}
+.ff-status .ff-head{display:grid;grid-template-columns:1fr auto;column-gap:10px;align-items:start;width:100%;min-height:44px;box-sizing:border-box;margin:0;padding:10px 12px;
+  border:0;border-radius:inherit;background:none;color:inherit;font:inherit;text-align:left;cursor:pointer;touch-action:manipulation}
+.ff-status .ff-head:focus-visible{outline:3px solid #fff;outline-offset:-3px}
+.ff-status .ff-mode{font-weight:600;font-size:14px}.ff-status .ff-syn{grid-column:1;font-size:12px;opacity:.86}
+.ff-status .ff-caret{grid-column:2;grid-row:1;margin-top:8px;border:5px solid transparent;border-top-color:currentColor;border-bottom:0}
+.ff-status .ff-head[aria-expanded=true] .ff-caret{transform:rotate(180deg)}
+.ff-status .ff-details{padding:0 12px 10px}.ff-status .ff-details[hidden]{display:none}.ff-status .ff-details p{margin:6px 0 0}
 .ff-status ul{margin:6px 0 0;padding:0;list-style:none;font-variant-numeric:tabular-nums}
+.ks-hud[data-ks-hidden] .ff-status{visibility:visible;pointer-events:none}.ks-hud[data-ks-hidden] .ff-status :is(.ff-details,.ff-caret){display:none}
 .ff-bottom>.ff-dock{position:absolute;right:max(12px,env(safe-area-inset-right));bottom:max(12px,env(safe-area-inset-bottom));width:min(380px,calc(100% - 24px));
   display:flex;flex-direction:column;justify-content:flex-end;gap:8px;pointer-events:none}
 .ff-dock>*{pointer-events:auto}
@@ -54,13 +63,14 @@ const FF_HUD_CSS = `
 .ff-info p{margin:0 0 6px}
 .ff-picker li+li{margin-top:6px}.ff-picker li>.ks-button{width:100%;text-align:left;padding:8px 12px}
 .ff-progress{height:8px;margin:6px 0 4px;border-radius:4px;background:#2c3f3b;overflow:hidden}.ff-progress>span{display:block;height:100%;background:#7fd1b9}
-@container ff-hud (max-width: 900px){
+@container ff-hud (max-width: 1060px){
   .ff-hud>.ff-bottom{position:absolute;left:max(12px,env(safe-area-inset-left));right:max(12px,env(safe-area-inset-right));bottom:max(12px,env(safe-area-inset-bottom));
     display:flex;flex-direction:column-reverse;gap:8px;pointer-events:none}
+  .ff-top>.ks-toolbar{max-width:100%}
   .ff-bottom>.ff-status,.ff-bottom>.ff-dock{position:static;width:auto;max-width:none}
   .ff-bottom>.ff-status{align-self:flex-start;max-width:min(420px,100%)}
   .ff-info{max-height:36cqh}
-  .ff-hud.ff-compact .ff-status ul{display:none}
+  .ff-hud.ff-compact .ff-status .ff-details{display:none}
   .ff-hud.ff-joystick>.ff-bottom{bottom:calc(max(24px,env(safe-area-inset-bottom)) + 144px)}
 }
 `;
@@ -76,10 +86,13 @@ function useCoarsePointer(): boolean {
   return coarse;
 }
 
-/** `leading`: controls a host places first in the toolbar (the campus puts its Exit there); FF2 passes none. */
-export function FoundryHud({ leading }: { leading?: ReactNode } = {}) {
+/** `leading`: controls a host places first in the toolbar (the campus puts its Exit there); FF2 passes none.
+ *  `location`: where this floor is (the campus names the registered cutaway); it heads the status details. */
+export function FoundryHud({ leading, location }: { leading?: ReactNode; location?: string } = {}) {
   const session = useFoundrySession(), hud = useHud(session.hud), { playing, setPlaying } = usePlayMode(), input = useInput(), root = useSceneRootRef();
   const aboutTrigger = useRef<HTMLButtonElement>(null);
+  // Details start open where the status panel has its own corner (a wide HUD) and folded where it shares the bottom.
+  const [details, setDetails] = useState(() => (root.current?.clientWidth ?? 1280) > 1060);
   usePanelEscape(hud.about, 'ff-about', aboutTrigger, () => session.setAbout(false));
   const coarse = useCoarsePointer(), pointer = input.state.lastPointer;
   const touch = pointer === 'touch' || pointer === 'pen' || (coarse && pointer !== 'keyboard');
@@ -93,22 +106,32 @@ export function FoundryHud({ leading }: { leading?: ReactNode } = {}) {
   return <div className={`ff-hud ff-camera-${camera}${joystick ? ' ff-joystick' : ''}${open || joystick ? ' ff-compact' : ''}`}>
     <style>{FF_HUD_CSS}</style>
     <div className="ff-top">
-      <div className="ks-toolbar">
+      <HudToolbar>
+        {/* Four groups: the way out, the clock, what to look at and how (one menu), and everything secondary.
+            A running walk, tour or follow puts its own stop in the toolbar. */}
         {leading}
-        <HudSegmented label="Time scale" value={String(hud.scale)} options={SCALE_OPTIONS} onChange={value => session.setScale(Number(value))}/>
-        {camera === 'orbit' && <HudSegmented label="Mode" value={hud.mode} options={MODE_OPTIONS} onChange={value => session.setMode(value as FabMode)}/>}
-        {camera === 'orbit' && <HudSegmented label="View" value={hud.view} options={VIEW_OPTIONS} onChange={value => session.setView(value as ViewName)}/>}
-        {hud.floor?.followLot !== null && hud.floor?.followLot !== undefined && !playing && <HudButton onClick={() => control()?.follow(hud.floor!.followLot!)}>Follow floor transfer</HudButton>}
-        <HudButton aria-pressed={playing} onClick={walk}>{playing ? S.stopWalking : S.walk}</HudButton>
-        {playing && <HelpOverlay label={S.controls} desktop={S.helpKeyboard} touch={S.helpTouch}/>}
-        {!playing && <HudButton aria-pressed={camera === 'tour'} onClick={() => (camera === 'tour' ? control()?.stopTour() : control()?.startTour())}>
-          {camera === 'tour' ? S.stopTour : S.tour}</HudButton>}
-        {!playing && <HudButton aria-expanded={camera === 'follow' ? undefined : !!hud.picker} aria-controls={camera === 'follow' ? undefined : 'ff-picker'}
-          onClick={() => (camera === 'follow' ? control()?.unfollow() : hud.picker ? control()?.closePicker() : control()?.openPicker())}>
-          {camera === 'follow' ? S.stopFollowing : S.follow}</HudButton>}
-        <HudButton ref={aboutTrigger} aria-expanded={hud.about} aria-controls="ff-about" onClick={() => session.setAbout(!hud.about)}>About this model</HudButton>
-        <CreditsPanel label="Credits"/>
-      </div>
+        <HudMenu label="Speed" value={SCALE_OPTIONS.find(option => option.value === String(hud.scale))?.label} collapse="narrow">
+          <HudSegmented label="Time scale" value={String(hud.scale)} options={SCALE_OPTIONS} onChange={value => session.setScale(Number(value))}/>
+        </HudMenu>
+        {playing && <HudButton aria-pressed onClick={walk}>{S.stopWalking}</HudButton>}
+        {!playing && camera === 'tour' && <HudButton aria-pressed onClick={() => control()?.stopTour()}>{S.stopTour}</HudButton>}
+        {!playing && camera === 'follow' && <HudButton onClick={() => control()?.unfollow()}>{S.stopFollowing}</HudButton>}
+        {!playing && <HudMenu label="View">
+          {camera === 'orbit' && <HudSegmented label="Mode" value={hud.mode} options={MODE_OPTIONS} onChange={value => session.setMode(value as FabMode)}/>}
+          {camera === 'orbit' && <HudSegmented label="View" value={hud.view} options={VIEW_OPTIONS} onChange={value => session.setView(value as ViewName)}/>}
+          {hud.floor?.followLot !== null && hud.floor?.followLot !== undefined && <HudButton onClick={() => control()?.follow(hud.floor!.followLot!)}>Follow floor transfer</HudButton>}
+          <HudButton onClick={walk}>{S.walk}</HudButton>
+          {camera !== 'tour' && <HudButton onClick={() => control()?.startTour()}>{S.tour}</HudButton>}
+          {camera !== 'follow' && <HudButton aria-expanded={!!hud.picker} aria-controls="ff-picker"
+            onClick={() => (hud.picker ? control()?.closePicker() : control()?.openPicker())}>{S.follow}</HudButton>}
+        </HudMenu>}
+        <HudMenu label="More">
+          {playing && <HelpOverlay label={S.controls} desktop={S.helpKeyboard} touch={S.helpTouch}/>}
+          <HudButton ref={aboutTrigger} aria-expanded={hud.about} aria-controls="ff-about" onClick={() => session.setAbout(!hud.about)}>About this model</HudButton>
+          <CreditsPanel label="Credits"/>
+        </HudMenu>
+        <HudHideButton/>
+      </HudToolbar>
       {hud.about && <HudPanel id="ff-about" className="ff-about" role="region" aria-label={about.title} data-ks-dismiss-panel>
         <h2>{about.title}</h2>
         {about.sections.map(section => <section key={section.heading}><h3>{section.heading}</h3><p>{section.body}</p></section>)}
@@ -120,10 +143,16 @@ export function FoundryHud({ leading }: { leading?: ReactNode } = {}) {
     </div>
     <div className="ff-bottom">
       <HudPanel className="ff-status" aria-label="Fab status" aria-live="off">
-        <div className="ff-mode">{lines.mode}</div>
-        {lines.synthetic && <div className="ff-syn">{lines.synthetic}</div>}
-        {hud.kpis && <ul>{kpiLines(hud.kpis).map(line => <li key={line.slice(0, 8)}>{line}</li>)}</ul>}
-        {hud.floor && <p className="ff-floor-status">{hud.floor.active}<br/>{hud.floor.delivered} delivered · {hud.floor.collected} collected · {hud.floor.queued} queued</p>}
+        <button type="button" className="ff-head" aria-expanded={details} aria-controls="ff-details" onClick={() => setDetails(!details)}>
+          <span className="ff-mode">{lines.mode}</span>
+          {lines.synthetic && <span className="ff-syn">{lines.synthetic}</span>}
+          <span className="ff-caret" aria-hidden="true"/>
+        </button>
+        <div id="ff-details" className="ff-details" hidden={!details}>
+          {location && <div className="ff-syn fc-interior-location">{location}</div>}
+          {hud.kpis && <ul>{kpiLines(hud.kpis).map(line => <li key={line.slice(0, 8)}>{line}</li>)}</ul>}
+          {hud.floor && <p className="ff-floor-status">{hud.floor.active}<br/>{hud.floor.delivered} delivered · {hud.floor.collected} collected · {hud.floor.queued} queued</p>}
+        </div>
       </HudPanel>
       <div className="ff-dock">
         {hud.tour && <HudPanel className="ff-info ff-tour" role="region" aria-label="Tour">

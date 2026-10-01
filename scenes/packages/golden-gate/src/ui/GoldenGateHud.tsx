@@ -1,5 +1,5 @@
 import { useEffect, useId, useMemo, useRef, useState } from 'react';
-import { CameraButtons, CreditsPanel, HelpOverlay, HudButton, HudSegmented, StatusLine, TouchButtons, useHud, useInput, usePanelEscape, usePlayMode, useReducedMotion, useSceneRootRef, VirtualJoystick } from '@kiln-scenes/scene-kit';
+import { CameraButtons, CreditsPanel, HelpOverlay, HudButton, HudHideButton, HudMenu, HudSegmented, HudToolbar, StatusLine, TouchButtons, useHud, useInput, usePanelEscape, usePlayMode, useReducedMotion, useSceneRootRef, VirtualJoystick } from '@kiln-scenes/scene-kit';
 import type { CreditEntry, TouchButtonDef } from '@kiln-scenes/scene-kit';
 import { useGoldenGateSession } from '../state';
 import { PRESET_LABELS, PRESET_ORDER } from '../presets';
@@ -49,17 +49,22 @@ export function GoldenGateHud() {
   // Layout in ./styles.ts: sized by the HUD's own width, with the kit's help and credits panels sized against the whole HUD (GG-007).
   return <div className="gg-hud">
     <style>{GG_HUD_CSS}</style>
-    <div className="gg-top"><div className="ks-toolbar">
-      <HudSegmented label={GG_STRINGS.light} value={hud.preset} options={presetOptions} onChange={value => session.presets?.set(value, { immediate: reduced || hud.paused })}/>
-      {!playing && (hud.flight
-        ? <HudButton onClick={() => session.camera?.stopFlight()}>{GG_STRINGS.flyoverStop}</HudButton>
-        : <HudButton ref={menuTrigger} aria-expanded={menu} aria-controls={menuId} onClick={() => setMenu(!menu)}>{GG_STRINGS.flyovers}</HudButton>)}
-      <HudButton data-ks-preserve-path aria-pressed={hud.paused} onClick={() => session.motion.setPaused(!hud.paused)}>{hud.paused ? GG_STRINGS.resumeMotion : GG_STRINGS.pauseMotion}</HudButton>
-      {overview && touchLayout && <HudButton onClick={() => session.orbit.current?.reset()}>{GG_STRINGS.resetView}</HudButton>}
+    <div className="gg-top"><HudToolbar>
+      {/* Three groups: what to look at (light, flyovers, reset), the drive, and everything secondary. */}
+      <HudMenu label={GG_STRINGS.view} collapse="narrow">
+        <HudSegmented label={GG_STRINGS.light} value={hud.preset} options={presetOptions} onChange={value => session.presets?.set(value, { immediate: reduced || hud.paused })}/>
+        {overview && <HudButton ref={menuTrigger} aria-expanded={menu} aria-controls={menuId} onClick={() => setMenu(!menu)}>{GG_STRINGS.flyovers}</HudButton>}
+        {overview && touchLayout && <HudButton onClick={() => session.orbit.current?.reset()}>{GG_STRINGS.resetView}</HudButton>}
+      </HudMenu>
+      {!playing && hud.flight && <HudButton onClick={() => session.camera?.stopFlight()}>{GG_STRINGS.flyoverStop}</HudButton>}
       <HudButton onClick={drive}>{playing ? GG_STRINGS.leaveCar : GG_STRINGS.drive}</HudButton>
-      <HelpOverlay label={GG_STRINGS.controls} desktop={GG_STRINGS.helpKeyboard} touch={GG_STRINGS.helpTouch}/>
-      <CreditsPanel label={GG_STRINGS.credits} credits={[TRADEMARK_ENTRY, ...(session.world?.credits ?? [])]}/>
-    </div>
+      <HudMenu label={GG_STRINGS.more} preservePath>
+        <HudButton aria-pressed={hud.paused} onClick={() => session.motion.setPaused(!hud.paused)}>{hud.paused ? GG_STRINGS.resumeMotion : GG_STRINGS.pauseMotion}</HudButton>
+        <HelpOverlay label={GG_STRINGS.controls} desktop={GG_STRINGS.helpKeyboard} touch={GG_STRINGS.helpTouch}/>
+        <CreditsPanel label={GG_STRINGS.credits} credits={[TRADEMARK_ENTRY, ...(session.world?.credits ?? [])]}/>
+      </HudMenu>
+      <HudHideButton/>
+    </HudToolbar>
     {menu && !playing && !hud.flight && <div id={menuId} className="ks-panel gg-flights" role="group" aria-label={GG_STRINGS.flyovers} data-ks-dismiss-panel>
       {FLIGHT_NAMES.map(name => {
         const needsFog = name === 'fog-roll' && hud.preset !== 'fog';

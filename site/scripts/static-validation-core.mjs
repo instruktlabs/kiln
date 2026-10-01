@@ -146,21 +146,14 @@ export function licenceSpellingErrors(html) {
     .map((match) => `Spell the noun "licence" in the site's own prose: ${JSON.stringify(match[0])}`);
 }
 
-/** Review claims follow the exact catalog record; new local revisions never inherit prior approval. */
-export function ownerReviewErrors(html, status = 'approved') {
-  const text = `${visibleText(html)} ${proseText(html)}`;
-  const pending = /awaiting owner review/i.test(text);
-  const approved = /owner approved/i.test(text);
-  if (status === 'mixed') return [];
-  if (status === 'pending') return [
-    ...(!pending ? ['The candidate asset page must say "Awaiting owner review"'] : []),
-    ...(approved ? ['The candidate asset page must not claim "Owner approved"'] : []),
-  ];
-  return pending ? ['The page says "Awaiting owner review" but its catalog record is owner approved'] : [];
+/** Owner review status stays in the catalog records; no page states it. */
+export function ownerReviewErrors(html) {
+  const match = /awaiting owner review|owner approved/i.exec(`${visibleText(html)} ${proseText(html)}`);
+  return match ? [`The page states owner review status (${JSON.stringify(match[0])}); that belongs in the catalog record, not in page copy`] : [];
 }
 
 /** The copy rules every page answers to: numbers not glued to words, the site's spelling of licence, owner status. */
-export const copyErrors = (html, reviewStatus) => [...gluedNumberErrors(html), ...licenceSpellingErrors(html), ...ownerReviewErrors(html, reviewStatus)];
+export const copyErrors = (html) => [...gluedNumberErrors(html), ...licenceSpellingErrors(html), ...ownerReviewErrors(html)];
 
 /** Meta descriptions over this length are cut in search and share previews (content review finding 13). */
 export const DESCRIPTION_WARNING_LENGTH = 160;

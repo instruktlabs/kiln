@@ -30,18 +30,40 @@ export async function servePublic(root = resolve(SITE, 'public'), port = 0, page
   return { origin: `http://127.0.0.1:${server.address().port}`, close: () => new Promise((done) => server.close(done)) };
 }
 
-/** Views a scene's own controls offer; each names the button that selects it (null keeps the opening view). */
+/**
+ * Views a scene's own controls offer; each names the button that selects it (null keeps the opening view), or
+ * the steps to take in order when the view is behind another control or reached by playing the scene: a
+ * button's label, a held key, a drag from the middle of the view, a wheel turn or a wait.
+ */
 const VIEWS = {
-  farm: { opening: null },
+  farm: {
+    opening: null,
+    // On foot behind Rowan: turn the camera to the pens and walk up to the sheep pen, with the cows beyond.
+    walk: ['Walk the farm', { wait: 1500 }, { key: 's', ms: 3000 }, { drag: [430, 0] }, { key: 'w', ms: 12000 }],
+  },
   'golden-gate': { day: null, 'golden-hour': 'Golden hour', fog: 'Fog', drive: 'Drive the sedan' },
-  'foundry-floor': { opening: null, overview: 'Overview', gallery: 'Gallery' },
+  'foundry-floor': { campus: 'One pair', interior: ['Enter the fab', 'Overview'] },
 };
+
+/**
+ * Every scene is pictured by two captures, one above the other: a wide view, then a closer one. A scene's
+ * main view keeps its poster record; its other view is recorded beside it under `captures`. Foundry Floor
+ * keeps both of its views under `captures`, because its main record is the pack's rig poster.
+ */
+const MAIN_VIEW = { farm: 'opening', 'golden-gate': 'drive' };
 
 /** What each captured view shows, for the image's alternative text. */
 const POSTER_ALT = {
-  farm: { opening: 'Farm scene with a farmhouse, barn, fields, woodland and a stream.' },
-  'foundry-floor': { opening: 'Foundry Floor scene, looking across the fab interior.', overview: 'Foundry Floor scene viewed from above.', gallery: 'The models arranged in the Foundry Floor scene.' },
+  farm: {
+    opening: 'Farm scene with a farmhouse, barn, fields, woodland and a stream.',
+    walk: 'The farmer seen from behind in the Farm scene, standing at the sheep pen fence with cows, wheat and pumpkins beyond.',
+  },
+  'foundry-floor': {
+    campus: 'The Foundry Floor campus from above: paired fab buildings along a central road, with parking and planting at the near entrance.',
+    interior: 'The Foundry Floor fab interior from above: process tools in bays, joined by the loops of an overhead transport track.',
+  },
   'golden-gate': {
+    day: 'The Golden Gate Bridge scene from above the water by day: the full span between its two towers, with the headlands on either side.',
     drive: 'A blue sedan driving across the deck of the Golden Gate Bridge scene, with traffic around it and both towers ahead.',
   },
 };
@@ -75,13 +97,21 @@ export async function captureScenePoster({ scene = 'golden-gate', view = 'day', 
     page.on('pageerror', (error) => problems.push(error.message));
     await page.goto(`${server.origin}/${scene === 'farm' ? 'farm-poster.html' : `scene-runtime/${scene}/frame.html`}`, { waitUntil: 'load' });
     await page.waitForFunction(() => (document.body.dataset.ready === 'true' || document.getElementById('page-status')?.dataset.state === 'ready' || document.getElementById('page-status')?.textContent.trim() === '') && document.querySelector('.ks-root canvas'), { timeout: 180_000 });
-    if (buttons[view]) {
-      const pressed = await page.evaluate((label) => {
-        const button = [...document.querySelectorAll('button')].find((candidate) => candidate.textContent.trim() === label);
-        button?.click();
-        return Boolean(button);
-      }, buttons[view]);
-      if (!pressed) throw new Error(`The scene has no "${buttons[view]}" control`);
+    const middle = [size.width / 2, size.height / 2];
+    for (const step of [buttons[view] ?? []].flat()) {
+      if (typeof step !== 'string') {
+        if (step.wait) await new Promise((done) => setTimeout(done, step.wait));
+        if (step.key) { await page.focus('.ks-root'); await page.keyboard.down(step.key); await new Promise((done) => setTimeout(done, step.ms)); await page.keyboard.up(step.key); }
+        if (step.drag) { await page.mouse.move(...middle); await page.mouse.down(); await page.mouse.move(middle[0] + step.drag[0], middle[1] + step.drag[1], { steps: 10 }); await page.mouse.up(); }
+        if (step.wheel) { await page.mouse.move(...middle); await page.mouse.wheel({ deltaY: step.wheel }); }
+        await new Promise((done) => setTimeout(done, 300));
+        continue;
+      }
+      const label = step;
+      // A control behind another one (the interior's views) appears only once the first has loaded its part.
+      const button = await page.waitForFunction((text) => [...document.querySelectorAll('button')].find((candidate) => candidate.textContent.trim() === text && !candidate.disabled), { timeout: 60_000 }, label).catch(() => null);
+      if (!button) throw new Error(`The scene has no "${label}" control`);
+      await button.evaluate((element) => element.click());
     }
     await new Promise((done) => setTimeout(done, settleMs));
     // The scene's controls and any focus ring are chrome, not scene: hide them for the poster.
@@ -120,7 +150,7 @@ export async function recordScenePoster({ scene, view, png, browser, mirror, sit
   await writeJson(planFile, { ...plan, images: upsertBy(plan.images, 'inputPath', image) });
   const mediaFile = join(site, 'src/data/scene-media.json');
   const media = await readJson(mediaFile).catch(() => ({}));
-  media[scene] = {
+  const record = {
     poster: image,
     capture: {
       tool: 'scripts/capture-scene-poster.mjs',
@@ -135,8 +165,11 @@ export async function recordScenePoster({ scene, view, png, browser, mirror, sit
       pngSha256: pin.sha256,
     },
   };
+  // A scene's main view is its poster; every other view is kept under its name, beside whatever else it records.
+  if (MAIN_VIEW[scene] === view) media[scene] = { ...media[scene], ...record };
+  else media[scene] = { ...media[scene], captures: { ...media[scene]?.captures, [view]: record } };
   await writeJson(mediaFile, media);
-  if (scene === 'farm') {
+  if (scene === 'farm' && MAIN_VIEW.farm === view) {
     const farmFile = join(site, 'src/data/packs/farm.json');
     const farm = await readJson(farmFile);
     farm.scene.poster = image;
@@ -151,7 +184,7 @@ async function main(argv = process.argv.slice(2), env = process.env) {
   const view = option('--view', 'drive');
   const record = argv.includes('--record');
   const out = option('--out');
-  if (!out && !record) throw new Error('Usage: node scripts/capture-scene-poster.mjs (--out file.png | --record [--mirror DIR]) [--scene golden-gate] [--view day|golden-hour|fog|drive] [--settle 6000] [--port 0]');
+  if (!out && !record) throw new Error('Usage: node scripts/capture-scene-poster.mjs (--out file.png | --record [--mirror DIR]) [--scene golden-gate] [--view day|golden-hour|fog|drive; foundry-floor: campus|interior] [--settle 6000] [--port 0]');
   const { png, browser } = await captureScenePoster({ scene, view, settleMs: Number(option('--settle', 6000)), port: Number(option('--port', 0)) });
   if (out) {
     await mkdir(dirname(resolve(out)), { recursive: true });

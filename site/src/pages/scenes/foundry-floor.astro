@@ -1,5 +1,4 @@
 ---
-import Callout from "../../components/Callout.astro";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import SceneShell from "../../components/SceneShell.astro";
 import foundryFloor from "../../data/foundry-floor.json";
@@ -35,7 +34,6 @@ const presentation = foundryPresentation(foundryFloorPack, scene.pack.release);
 >
   <div class="container pb-12 pt-8">
     <SceneShell scene="foundry-floor">
-    <Callout slot="notice" label="In production"><p>This preview is staged for local owner review. Appearance and device feedback remain open; technical checks do not establish owner acceptance.</p></Callout>
     <div class="mt-8 grid gap-6 border-t border-rule pt-6 md:grid-cols-3">
       <div>
         <h2 class="text-subheading font-semibold">

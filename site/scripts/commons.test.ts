@@ -77,7 +77,7 @@ describe('Commons catalog bindings', () => {
     expect(result.clips).toEqual(['Open', 'ArticulationProbe']);
     expect(result.partPaths).toEqual(['root/first', 'root/second']);
   });
-  test('selected r36 retains the accepted floor and 22 approvals without inheriting r34 acceptance', () => {
+  test('selected r36 retains the accepted floor and all 23 approvals without inheriting r34 acceptance', () => {
     const house = farm.assets.find((asset) => asset.id === 'farmhouse');
     expect(farm.revision).toBe('r36-local-review');
     expect(house?.revisionId).toBe(farm.floorRevision.asset.revisionId);
@@ -85,9 +85,9 @@ describe('Commons catalog bindings', () => {
     expect(house?.metrics.triangles).toBe(4080);
     expect(house?.review.ownerAccepted).toBe(true);
     expect(farm.floorRevision.ownerAccepted).toBe(true);
-    expect(farm.ownerReview.acceptedAssets).toBe(22);
-    expect(farm.deliveryReview.acceptedAssets).toBe(22);
-    expect(farm.ownerApprovedAssets).toBe(22);
+    expect(farm.ownerReview.acceptedAssets).toBe(23);
+    expect(farm.deliveryReview.acceptedAssets).toBe(23);
+    expect(farm.ownerApprovedAssets).toBe(23);
     expect(farm.fullPackAccepted).toBe(false);
     expect(farm.deliveryHistory.find((entry) => entry.revision === 'r34')?.fullPackAccepted).toBe(true);
     expect(farm.deliveryHistory.find((entry) => entry.revision === 'r34')?.acceptedAssets).toBe(23);

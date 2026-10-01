@@ -6,7 +6,7 @@ import AssetCard from "../../components/AssetCard.astro";
 import CodeBlock from "../../components/CodeBlock.astro";
 import VehiclesPack from "../../components/VehiclesPack.astro";
 import FoundryFloorPack from "../../components/FoundryFloorPack.astro";
-import { farm, vehicles, bytes, imageQualification, packSlugs, FULL_WIDTH_IMAGE_SIZES } from "../../lib/catalog";
+import { farm, vehicles, bytes, packSlugs, FULL_WIDTH_IMAGE_SIZES } from "../../lib/catalog";
 import { PACKS_ENABLED, REPO } from "../../lib/config";
 import foundryFloor from "../../data/foundry-floor.json";
 import { sceneRuntimes } from "virtual:kiln-scenes";
@@ -19,23 +19,15 @@ const isFarm = Astro.params.slug === "farm";
 const isVehicles = Astro.params.slug === "vehicles";
 const title = isFarm ? farm.name : isVehicles ? vehicles.name : foundryFloor.name;
 const pageTitle = isFarm || isVehicles ? title : `${title}, in production`;
-const qualificationNote =
-  "qualification" in farm &&
-  farm.qualification &&
-  typeof farm.qualification === "object" &&
-  "note" in farm.qualification &&
-  typeof farm.qualification.note === "string"
-    ? farm.qualification.note
-    : undefined;
 ---
 
 <BaseLayout
   title={`${pageTitle} — Kiln Commons`}
   description={
     isFarm
-      ? "23 farm assets with runtime GLBs, editable source and a runnable scene. Exact delivery downloads, provenance and owner review status."
+      ? "23 farm assets with runtime GLBs, editable source and a runnable scene. Exact downloads for each profile."
       : isVehicles
-        ? "Six generic road vehicles with three detail tiers, separate wheels, editable source and revision history. Exact downloads, provenance and owner review status."
+        ? "Six generic road vehicles with three detail tiers, separate wheels, editable source and revision history."
         : `${foundryFloor.name} is in production: ${foundryFloor.summary}.`
   }
   noindex={!isFarm && !isVehicles}
@@ -81,43 +73,28 @@ const qualificationNote =
           <p class="lead">
             A low-poly farm built from 23 assets, from a shuttered farmhouse and
             working mills to animals, crops and timber fencing. Every asset has
-            its source and provenance.
+            its editable source.
           </p>
         </div>
         <figure class="mt-4">
           <ResponsiveImage image={farm.scene.poster} eager sizes={FULL_WIDTH_IMAGE_SIZES} />
           <figcaption class="mt-3 font-mono text-code text-dim">
-            The downloadable Farm scene · {farm.revision} documented delivery ·{" "}
+            The Farm scene ·{" "}
             {farm.assetCount} assets / {farm.materialRecords} material records /{" "}
             {farm.textureMaps} texture maps
-            {imageQualification(farm.scene.poster) && (
-              <span class="mt-2 block">{imageQualification(farm.scene.poster)}</span>
-            )}
           </figcaption>
         </figure>
         <div class="mt-8 grid gap-6 border-y border-ink py-6 md:grid-cols-2">
           <p class="max-w-reading">
-            <strong>
-              {farm.ownerReview.acceptedAssets} of {farm.ownerReview.total}{" "}
-              current revisions have owner approval.
-            </strong>{" "}
-            The owner accepted the wood-floor farmhouse on 29 September 2026.
-            The sealed {farm.deliveryReview.revision} package records{" "}
-            <code>
-              fullPackAccepted: {String(farm.deliveryReview.fullPackAccepted)}
-            </code>
-            .{" "}
-            {farm.assets[0]!.revisionId === farm.floorRevision.asset.revisionId
-              ? "This delivery includes the accepted floor."
-              : "It contains the earlier farmhouse; owner acceptance of the child revision does not change the sealed record."}
-            {" "}{qualificationNote}
+            Runtime GLBs for engines, editable source for changes, and a scene
+            download that runs the whole farm locally.
           </p>
           <div>
             <p class="max-w-reading">
               {farm.scene.available
                 ? "Explore the Farm in your browser."
                 : sceneRuntimes.farm
-                  ? "The current browser scene is available for owner review. The scene download below contains the same controls and asset revisions."
+                  ? "Explore the current Farm in your browser. The scene download below is an earlier build with the same assets."
                   : "The interactive scene is not included in this site build. The scene download below contains the current runnable scene."}
             </p>
             <a class="text-link" href="/scenes/farm/">
@@ -176,21 +153,19 @@ const qualificationNote =
             <div>
               <h2 id="scene">The scene is a place to try the pack.</h2>
               <p class="mt-5 max-w-reading">
-                On desktop, walk in first person as Rowan, open doors and gates,
-                cross the bridge and drive the tractor. Click to capture the
-                mouse while walking; Escape releases it and returns to overview.
-                The browser preview on
-                the{" "}
+                On desktop, walk in third person as Rowan, open doors and gates,
+                cross the bridge and drive the tractor. Drag to look around and
+                scroll to zoom; Escape returns to overview. The browser preview
+                on the{" "}
                 <a class="text-link" href="/scenes/farm/">Farm scene page</a>{" "}
                 and the scene download both include joystick movement, drag-look
-                and contextual touch controls. Pinch zoom is available in
-                overview and tractor driving; walking keeps a fixed eye height.
+                and contextual touch controls, with pinch zoom in the preview.
+                The scene download is an earlier build, which walks in first
+                person.
               </p>
               <p class="mt-4 max-w-reading text-dim">
                 Trailer towing and general vehicle physics are not included.
                 The scene uses Three.js 0.186.0 with WebGPU and a WebGL2 fallback.
-                Current checks cover desktop and emulated touch on both backends;
-                this revision has no physical-device performance qualification.
               </p>
             </div>
             <div class="min-w-0">
@@ -269,9 +244,7 @@ const qualificationNote =
                   {asset.id === "farmhouse" && (
                     <p class="mt-5 max-w-reading text-dim">
                       The wood-floor child was refined by Gemini 3.8 Flash High
-                      via agy after the r33 revision. High effort was requested,
-                      not independently confirmed. The owner accepted the child
-                      on 29 September 2026.
+                      via agy after the r33 revision.
                     </p>
                   )}
                   <a href={`/gallery/${asset.slug}/`} class="text-link mt-3">

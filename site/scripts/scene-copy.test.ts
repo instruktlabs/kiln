@@ -8,7 +8,7 @@ const strings = (value: unknown): string[] =>
 const touchText = strings(farmTouchCopy).join('\n');
 
 describe('Farm touch copy', () => {
-  test('describes first-person touch walking and mode-specific tractor zoom', () => {
+  test('describes third-person touch walking with pinch zoom on foot and in the tractor', () => {
     expect(touchText).toMatch(/joystick/i);
     expect(touchText).toMatch(/push it forward to accelerate/);
     expect(touchText).toMatch(/pull it back to brake/);
@@ -16,16 +16,14 @@ describe('Farm touch copy', () => {
     expect(touchText).toMatch(/[Dd]rag one finger to look/);
     expect(touchText).toMatch(/[Pp]inch to zoom/);
     expect(touchText).toMatch(/One tap target/);
-    expect(touchText).toMatch(/first person/);
+    expect(touchText).toMatch(/third person/);
+    expect(touchText).not.toMatch(/first person|fixed eye height/);
     expect(touchText).toMatch(/[Pp]inch to zoom.*(?:tractor|driving)/);
-    expect(touchText).toMatch(/Walking keeps a fixed eye height/);
   });
 
-  test('distinguishes automatic device tiers from historical measurements', () => {
+  test('describes the automatic device tiers', () => {
     expect(touchText).toMatch(/Galaxy S24\+ class starts on the high tier when its browser uses WebGPU/);
     expect(touchText).toMatch(/Galaxy Tab S9 FE class starts on the minimal tier on either graphics backend/);
-    expect(touchText).toMatch(/earlier.*Galaxy Tab S9 FE/i);
-    expect(touchText).toMatch(/do not qualify this revision/);
   });
 
   test('does not promote old step counts or timing into the current result', () => {
@@ -34,14 +32,12 @@ describe('Farm touch copy', () => {
   });
 
   test('promises nothing for a device that was not measured', () => {
-    expect(touchText).toMatch(/No physical phone or tablet has been measured for this revision/);
     expect(touchText).not.toMatch(/\b(?:any|all|every) (?:phones?|tablets?|devices?)\b/i);
     expect(touchText).not.toMatch(/guarantee|works on|smooth on|runs on/i);
   });
 
-  test('says the current checks used touch emulation on both backends', () => {
-    expect(touchText).toMatch(/with touch emulation/);
-    expect(touchText).toMatch(/WebGPU and WebGL2/);
+  test('carries no qualification or review-status notes', () => {
+    expect(touchText).not.toMatch(/qualif|touch emulation|owner review|has been measured/i);
   });
 });
 
@@ -49,7 +45,7 @@ describe('Farm scene device line and download limits', () => {
   test('the line under Explore offers touch play, not orbit viewing only', () => {
     expect(farmScene.copy.devices).toMatch(/[Tt]ouch play/);
     expect(farmScene.copy.devices).not.toMatch(/orbit/i);
-    expect(farmScene.copy.devices).toMatch(/qualification notes are listed below/);
+    expect(farmScene.copy.devices).not.toMatch(/qualif/i);
     expect(farmScene.copy.devices).not.toMatch(/phones? and tablets?/i);
     expect(farmScene.copy.devices).not.toMatch(/\d/);
   });

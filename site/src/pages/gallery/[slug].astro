@@ -222,31 +222,14 @@ const schema = {
     <section class="grid gap-8 pt-12 lg:grid-cols-12" aria-labelledby="review">
       <div class="lg:col-span-4">
         <h2 id="review" class="text-subheading">
-          {asset.review.ownerAccepted
-            ? "Owner approved"
-            : asset.review.status === "changes-requested"
-              ? "Accepted child recorded"
-              : asset.review.status === "awaiting-owner-review"
-                ? "Awaiting owner review"
-                : "Review in progress"}
+          Review views
         </h2>
-        <p class="mt-4 max-w-reading text-dim">{asset.review.scope}</p>
-        {asset.id === "farmhouse" && (
-          <p class="mt-4 max-w-reading">
-            The wood-floor child{" "}
-            <code class="break-all">{farm.floorRevision.asset.revisionId}</code>{" "}
-            was accepted by the owner on 29 September 2026.{" "}
-            {asset.revisionId === farm.floorRevision.asset.revisionId
-              ? "This delivery includes that accepted revision."
-              : `This page’s source, model and downloads remain the sealed ${farm.revision} parent shown above.`}
-          </p>
-        )}
+        <p class="mt-4 max-w-reading text-dim">Six views of this revision, rendered on the GPU from its source.</p>
       </div>
       <figure class="lg:col-span-8">
         <ResponsiveImage image={asset.reviewImage} sizes="(min-width: 1024px) 66vw, 100vw" />
         <figcaption class="mt-3 font-mono text-code text-dim">
-          Material-faithful GPU source review views for {asset.revisionId}.
-          Structural QA and owner acceptance are separate.{" "}
+          Material-faithful GPU source review views for {asset.revisionId}.{" "}
           {isBridge &&
             "These views come from a source evaluation (exactArtifact: false), not a capture of the exported runtime GLB."}
           {vehicle &&
