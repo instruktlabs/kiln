@@ -398,50 +398,52 @@ function Viewer({ name, modelUrl, onError, paintAssetId }: ViewerProps) {
         {!ready && <Loading />}
       </section>
       {originalPaint && (
-        <fieldset className="border-t border-rule bg-sheet p-4" data-paint-palette>
-          <legend className="px-2 font-semibold">Body paint</legend>
-          <div className="flex flex-wrap items-center gap-2">
-            <button
-              type="button"
-              className="btn btn-secondary"
-              aria-pressed={paintColour === null}
-              onClick={() => setPaintColour(null)}
-            >
-              Original paint
-            </button>
-            {PAINT_SWATCHES.map(({ name: colourName, hex }) => (
+        <div className="border-t border-rule bg-sheet p-4">
+          <fieldset className="min-w-0" data-paint-palette>
+            <legend className="mb-3 p-0 font-semibold">Body paint</legend>
+            <div className="flex flex-wrap items-center gap-2">
               <button
-                key={hex}
                 type="button"
-                className="btn btn-secondary gap-2"
-                aria-label={`${colourName} body paint`}
-                aria-pressed={paintColour === hex}
-                onClick={() => setPaintColour(hex)}
+                className="btn btn-secondary"
+                aria-pressed={paintColour === null}
+                onClick={() => setPaintColour(null)}
               >
-                <span
-                  aria-hidden="true"
-                  className="inline-block h-5 w-5 rounded-full border border-rule"
-                  style={{ backgroundColor: hex }}
-                />
-                {colourName}
+                Original paint
               </button>
-            ))}
-            <label className="flex min-h-11 items-center gap-2 px-2">
-              Custom colour
-              <input
-                type="color"
-                aria-label="Custom body paint colour"
-                className="h-11 w-12 cursor-pointer"
-                value={paintColour ?? originalPaint}
-                onInput={(event) => setPaintColour(event.currentTarget.value)}
-                onChange={(event) => setPaintColour(event.target.value)}
-              />
-            </label>
-          </div>
-          <p className="mt-3 text-caption text-dim">
-            Explore different body colours. The GLB download keeps its original paint.
-          </p>
-        </fieldset>
+              {PAINT_SWATCHES.map(({ name: colourName, hex }) => (
+                <button
+                  key={hex}
+                  type="button"
+                  className="btn btn-secondary gap-2"
+                  aria-label={`${colourName} body paint`}
+                  aria-pressed={paintColour === hex}
+                  onClick={() => setPaintColour(hex)}
+                >
+                  <span
+                    aria-hidden="true"
+                    className="inline-block h-5 w-5 rounded-full border border-rule"
+                    style={{ backgroundColor: hex }}
+                  />
+                  {colourName}
+                </button>
+              ))}
+              <label className="flex min-h-11 items-center gap-2 px-2">
+                Custom colour
+                <input
+                  type="color"
+                  aria-label="Custom body paint colour"
+                  className="h-11 w-12 cursor-pointer"
+                  value={paintColour ?? originalPaint}
+                  onInput={(event) => setPaintColour(event.currentTarget.value)}
+                  onChange={(event) => setPaintColour(event.target.value)}
+                />
+              </label>
+            </div>
+            <p className="mt-3 text-caption text-dim">
+              Explore different body colours. The GLB download keeps its original paint.
+            </p>
+          </fieldset>
+        </div>
       )}
       <section
         className="flex flex-wrap gap-2 border-t border-rule bg-sheet p-4"
