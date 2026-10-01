@@ -93,8 +93,7 @@ export const farmScene = {
       'The browser scene is not included in this build. Explore opens its current status and downloads.',
     devices: 'Desktop and touch play. Loads only when you choose Explore.',
     unavailableTitle: 'The interactive Farm is not included in this build.',
-    unavailableBody:
-      'The Farm scene download contains the current runnable scene.',
+    unavailableBody: 'The Farm scene download contains the current runnable scene.',
     errorText:
       'The scene could not load. Check your connection and try Explore again. The Farm downloads remain available.',
   } satisfies SceneCopy,
