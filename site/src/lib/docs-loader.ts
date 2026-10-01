@@ -1,5 +1,5 @@
 import { readFile } from 'node:fs/promises';
-import { isAbsolute, resolve } from 'node:path';
+import { isAbsolute, relative, resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import type { Loader } from 'astro/loaders';
 import { decorateDocsHtml } from './docs-html';
@@ -55,7 +55,13 @@ export function repositoryDocs(): Loader {
               source: `https://github.com/matthew-kissinger/kiln/blob/main/docs/${page.slug}.md`,
             },
           });
-          store.set({ id: page.slug, data, body: markdown, rendered, filePath });
+          store.set({
+            id: page.slug,
+            data,
+            body: markdown,
+            rendered,
+            filePath: relative(root, filePath).split(sep).join('/'),
+          });
         }
       };
       await sync();
