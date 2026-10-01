@@ -115,6 +115,80 @@ replace edited skills. Consult the updated runtime documentation when working in
   Bake Animation. Reimport the FBX and check offsets; materials and sidedness can still change.
   See [Blender's option documentation](https://docs.blender.org/api/main/bpy.ops.export_scene.html).
 
+## Measured LOD import behavior
+
+On 2026-09-30, headless structural checks imported 13 static vegetation and freight GLBs
+from a prior 0.9 candidate. Both tested destinations exposed the expected LOD0 triangle counts
+in their active scenes.
+The results apply to those files and installed importer versions, not every feature in the
+current development tree.
+
+| Destination | Measured behavior |
+| --- | --- |
+| Blender 5.2.0 LTS | LOD0 was visible. Lower tiers remained detached in the excluded Orphan Nodes collection. `MSFT_screencoverage` extras survived as custom properties. |
+| Unity 6000.2.3f1, Built-in RP, glTFast 6.20.0 | The default LOD0 scene imported with the expected node and triangle counts. No `LODGroup` was created; lower tiers were not instantiated in the imported scene. |
+
+That first check established structural import, not automatic LOD switching, material
+appearance or player traversal. Its fixtures had no source animations, textures, skins or
+morph targets. For runtime LOD switching, arrange the tiers through the destination's
+supported import or runtime workflow and verify the transitions there; the presence of
+`MSFT_lod` alone does not establish that the consumer switches levels.
+
+Kiln's viewer has a global Level selector and per-part overrides for independent LOD chains.
+The global selector applies one index to every chain, clamping to each chain's available
+levels. Per-part controls let you inspect combinations such as a tractor's LOD1 body with
+LOD0 wheels; the global selector then reads Mixed. Live Review's current and pinned assets
+have independent controls. A body's LOD1 and a wheel's LOD1 can represent different switching
+thresholds, so these controls are manual inspection aids and do not simulate a shared
+distance. Verify the combinations needed by the destination, including geometry outside
+the selected body subtree.
+
+## Animated assets and visibility: tested destination limits
+
+A later 2026-09-30 check used the revised campus plants, 24 Foundry assets with declared
+LOD chains, and an animation/visibility fixture from each Kiln exporter: 39 files in total.
+Blender imported all 39. The tested Unity/glTFast profile imported 38 canonical files;
+the AMR's animation channel targeting its detached lower-tier deck caused an importer
+assertion. Preserve the canonical file. For a destination that needs only LOD0, a separate
+derivative can retain the default scene and filter animation channels whose targets are
+outside it. That explicit AMR derivative imported with both detailed-level clips working.
+Do not remove the coarse animation from the editable master merely to accommodate this
+importer. Lower-tier runtime animation needs a destination workflow that imports those nodes.
+
+Both tested importers ignored `KHR_node_visibility`. A fixture containing 46 intended
+visible triangles and a hidden 12-triangle cube drew all 58. The Foundry container's hidden
+wafer payload also became active. Apply the authored visibility in the destination, or
+prepare an explicit delivery derivative that omits hidden subtrees and their unreachable
+animation targets. Keep the source and canonical GLB. Selecting the other Kiln exporter did
+not change this result.
+
+Intermediate animation samples matter too. Blender reproduced the tested eased translation.
+In glTFast 6.20.0, the same standard cubic curve differed between endpoints: at 25% of a
+one-second movement from Y=0.5 to Y=1.5, the intended value was 0.65625, but the imported
+clip sampled 0.605893. Both Kiln exporters produced this result. A separate Unity clip copy
+with the cubic keys' `weightedMode` set to `WeightedMode.None` matched all five tested times
+while retaining the imported tangents. Apply this only to curves known to originate as
+glTF cubic Hermite curves; it is not a general instruction to alter authored Unity curves.
+
+For Blender animation inspection, choose each imported action separately and use its actual
+frame range. Its NLA strips can start at frame 1. Enable the glTF add-on's Animation UI
+before importing to retain the glTF rest pose. Muting an action alone can leave
+animated-property defaults rather than that rest pose.
+Check the rest pose as well as intermediate clip positions before judging hierarchy or fit.
+
+These results qualify the named importer profiles and fixtures. They do not establish
+texture, skin, morph, other render-pipeline or arbitrary cubic-curve compatibility.
+
+A Windows standalone player built with the same Unity profile rendered all 39 test cases
+on Direct3D 11 with an RTX 3070, with supported shaders and no missing-material pink.
+It exercised 49 clips and verified movement of their authored targets. This player used
+the explicit LOD0 AMR derivative and the two visibility-fixture derivatives; the canonical
+Foundry container still exposed the visibility limitation described above. A separate
+all-tier conifer derivative wired into a Unity `LODGroup` rendered 1,376, 184 and 48
+triangles when each level was forced. This demonstrates an explicit destination setup,
+not automatic importer-created LODs or qualified distance thresholds. Material appearance
+and silhouette remain part of owner review.
+
 ## Known experimental limits
 
 - Rotated nonuniform Three.js UV scaling and manually sheared/perspective UV matrices are
@@ -130,11 +204,10 @@ replace edited skills. Consult the updated runtime documentation when working in
 - Declared LOD sets export as `MSFT_lod` chains: LOD0 stays in the scene carrying
   `extensions.MSFT_lod.ids` and `extras.MSFT_screencoverage`, and the lower levels are
   off-scene nodes whose transforms are relative to LOD0's parent. An importer without the
-  extension shows LOD0 only, as three.js `GLTFLoader` 0.186 does. Whether a given Blender or
-  glTFast version builds the lower levels and switches by the thresholds has not been
-  measured; check it in the destination. An imported GLB's chains survive save, optimisation
-  and export too. GPU instancing skips a file with chains, and full optimisation falls back
-  to palette.
+  extension shows LOD0 only, as three.js `GLTFLoader` 0.186 does. The measured Blender and
+  glTFast behavior is recorded above; automatic threshold switching still needs destination
+  qualification. An imported GLB's chains survive save, optimisation and export too. GPU
+  instancing skips a file with chains, and full optimisation falls back to palette.
 - More extensions in a valid GLB do not guarantee support in every importer or shader. GPU
   appearance, runtime-loaded shader inclusion, compression codecs and other render pipelines
   need their own checks. This option does not change KTX2 defaults or fix unsupported Node versions.

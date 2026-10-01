@@ -1,4 +1,4 @@
-import { Vector3, Matrix4, Euler, type Object3D } from 'three';
+import { Vector3, Matrix4, Euler, Group, type Object3D } from 'three';
 import { collectTriangles, compositingOrder, measureBounds, orbitDir } from './raster';
 import { resolveBackdrop, type BackdropId } from './background';
 
@@ -36,6 +36,8 @@ export interface CameraShotV1 {
   name?: string;
   subject?: CameraSubjectV1;
   visibility?: 'context' | 'isolate';
+  /** Capture v2: exact paths or unambiguous names, hidden after subject isolation. */
+  hide?: string[];
   camera?: AssetCameraRequestV1;
 }
 export interface ResolvedAssetCameraV1 {
@@ -55,6 +57,8 @@ export interface ResolvedCameraShotV1 {
   camera: ResolvedAssetCameraV1;
   subject: { path: string; name: string; bounds: CameraBounds };
   visibility: 'context' | 'isolate';
+  /** Exact paths hidden for this shot. Framing still uses the selected subject's bounds. */
+  hide?: string[];
 }
 const vec = (a: CameraVec3) => new Vector3(...a);
 const tuple = (v: Vector3): CameraVec3 => [v.x || 0, v.y || 0, v.z || 0];
@@ -281,7 +285,20 @@ export function validateResolvedAssetCamera(value: ResolvedAssetCameraV1): Resol
   return camera;
 }
 export function resolveAssetCamera(root: unknown, shot: CameraShotV1 = {}): ResolvedCameraShotV1 {
-  strict(shot, ['name', 'subject', 'visibility', 'camera'], 'shot');
+  strict(shot, ['name', 'subject', 'visibility', 'camera', 'hide'], 'shot');
+  if (
+    shot.hide !== undefined &&
+    (!Array.isArray(shot.hide) ||
+      shot.hide.length > 64 ||
+      shot.hide.some((value) => typeof value !== 'string' || !value.length || value.length > 1024))
+  )
+    throw new Error(
+      'shot.hide requires at most 64 exact paths or unambiguous names of 1..1024 characters',
+    );
+  const hide = shot.hide?.map(
+    (value) =>
+      selectCameraSubject(root, value.startsWith('/') ? { path: value } : { name: value }).path,
+  );
   const rootNode = root as Object3D;
   rootNode.updateMatrixWorld(true);
   const selected = selectCameraSubject(root, shot.subject);
@@ -418,6 +435,7 @@ export function resolveAssetCamera(root: unknown, shot: CameraShotV1 = {}): Reso
     camera: validateResolvedAssetCamera(camera),
     subject: { path: selected.path, name: selected.name, bounds },
     visibility: shot.visibility ?? 'context',
+    ...(hide?.length ? { hide: [...new Set(hide)] } : {}),
   };
 }
 /** Temporary per-mesh isolation restored even if rendering fails; never mutate stored artifacts. */
@@ -426,25 +444,38 @@ export async function withCameraVisibility<T>(
   shot: ResolvedCameraShotV1,
   run: () => Promise<T>,
 ): Promise<T> {
-  if (shot.visibility === 'context') return run();
+  if (shot.visibility === 'context' && !shot.hide?.length) return run();
   const keep = new Set<Object3D>();
   const subject = selectCameraSubject(root, { path: shot.subject.path }).node;
   subject.traverse((n) => keep.add(n));
   const restore: Array<[Object3D, boolean]> = [];
   // An isolated subject draws even when it, or an ancestor, is hidden (visible = false);
   // hidden parts inside it stay hidden.
-  for (let node: Object3D | null = subject; node; node = node.parent) {
+  for (
+    let node: Object3D | null = shot.visibility === 'isolate' ? subject : null;
+    node;
+    node = node.parent
+  ) {
     if (node.visible === false) {
       restore.push([node, false]);
       node.visible = true;
     }
   }
   (root as Object3D).traverse((n) => {
-    if ((n as Object3D & { isMesh?: boolean }).isMesh && !keep.has(n)) {
+    if (
+      shot.visibility === 'isolate' &&
+      (n as Object3D & { isMesh?: boolean }).isMesh &&
+      !keep.has(n)
+    ) {
       restore.push([n, n.visible]);
       n.visible = false;
     }
   });
+  for (const path of shot.hide ?? []) {
+    const node = selectCameraSubject(root, { path }).node;
+    restore.push([node, node.visible]);
+    node.visible = false;
+  }
   try {
     return await run();
   } finally {
@@ -452,7 +483,8 @@ export async function withCameraVisibility<T>(
   }
 }
 /**
- * The render service's loader does not read `KHR_node_visibility`, so a derivative GLB
+ * Remove hidden subtrees from a shot derivative so every renderer receives the same geometry.
+ * A derivative GLB
  * serialized from a scene with hidden nodes (authored, or isolated by
  * {@link withCameraVisibility}) would ship them to the GPU. Every node with
  * `visible = false` leaves with its subtree, which is what three draws. Returns the root
@@ -460,6 +492,12 @@ export async function withCameraVisibility<T>(
  * restores `.visible` itself.
  */
 export function withoutHiddenMeshes(root: Object3D): Object3D {
+  if (root.visible === false) {
+    // A mesh root may itself carry geometry; use a plain empty group for this derivative.
+    const empty = new Group();
+    empty.name = root.name;
+    return empty;
+  }
   const hidden = (node: Object3D) => node !== root && node.visible === false;
   let any = false;
   root.traverse((node) => {

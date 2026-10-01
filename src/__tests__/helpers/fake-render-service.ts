@@ -124,14 +124,17 @@ if (process.env.FAKE_STARTUP_BARRIER) {
     await new Promise(done=>setTimeout(done,10));
   }
 }
+const healthReadyAt = Date.now() + Number(process.env.FAKE_HEALTH_DELAY_MS ?? 0);
 createServer((req, res) => {
   let body = '';
   req.on('data', (piece) => {
     body += piece;
   });
-  req.on('end', () => {
+  req.on('end', async () => {
     res.writeHead(200, { 'content-type': 'application/json' });
     if (req.url === '/health') {
+      const wait = healthReadyAt - Date.now();
+      if (wait > 0) await new Promise(done => setTimeout(done, wait));
       res.end(JSON.stringify({ ok: true, authRequired: false, rendererId: '${FAKE_RENDERER_ID}', instance, protocol: RENDER_SERVICE_PROTOCOL,
         compatibility, capabilities: REQUIRED_RENDER_CAPABILITIES, captureIdentity: { version: 'kiln.capture-producer.v1', fingerprint: compatibility.fingerprint, instanceId: String(process.pid) } }));
       return;

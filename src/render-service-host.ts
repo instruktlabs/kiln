@@ -248,18 +248,21 @@ export async function startLocalRenderService(
     stderr = `${stderr}${chunk.toString()}`.slice(-2_000);
   });
   const deadline = Date.now() + budget;
+  let exitedAt: number | undefined;
   try {
     while (Date.now() < deadline) {
       const fresh = await inspectLocalRenderService(url, dir, 1_000);
       if (fresh.kind === 'service' && !fresh.stale) return url;
       if (fresh.kind === 'service' || fresh.kind === 'incompatible' || fresh.kind === 'foreign')
         throw new Error(describeUnavailableService(url, fresh));
-      if (
-        spawnError ||
-        (windowsLaunch
-          ? windowsLaunch.hasExited()
-          : running.exitCode !== null || running.signalCode !== null)
-      )
+      const exited = windowsLaunch
+        ? windowsLaunch.hasExited()
+        : running.exitCode !== null || running.signalCode !== null;
+      if (exited) exitedAt ??= Date.now();
+      // Another client may have won the socket while this child lost its bind. Give
+      // that listener a bounded health warmup, and join only after full verification.
+      // A failed spawn has no such race; absent/unknown never count as success.
+      if (spawnError || (exitedAt !== undefined && Date.now() - exitedAt >= 1500))
         throw new Error(
           `render service exited during startup${spawnError ? `: ${spawnError.message}` : ''}${stderr.trim() ? `: ${stderr.trim().split('\n').slice(-3).join(' ')}` : windowsLaunch ? '; launch the renderer manually to inspect native-driver errors' : ''}`,
         );

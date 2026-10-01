@@ -5,8 +5,18 @@ import {
   selectReviewOperation,
   reviewedSaveRequest,
   visibleReviewOperation,
+  reviewStageLabel,
   type ReviewState,
 } from './live-state';
+
+test('selecting another observation of identical bytes retains geometry statistics with the new identity', () => {
+  const stats = { triangles: 72, meshes: 6 };
+  expect(reviewStageLabel(stats, 'first')).toBe('72 triangles · 6 meshes · first');
+  expect(reviewStageLabel(stats, 'second')).toBe('72 triangles · 6 meshes · second');
+  expect(reviewStageLabel(stats, 'second', { triangles: 60 })).toBe(
+    '60 triangles displayed · second',
+  );
+});
 
 const operation = (
   id: string,

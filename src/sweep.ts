@@ -3,6 +3,7 @@ import * as THREE from 'three';
 import { meshGeo, type Point3 } from './geometry';
 import { geometryFrameMatrix, type GeometryFrame } from './deform';
 import { AuthoringDiagnosticError } from './evaluator/authoring-diagnostic';
+import { recordSweepAnalysis } from './sweep-analysis';
 
 export type ProfilePoint = readonly [number, number];
 export interface LoftSection {
@@ -322,13 +323,15 @@ export function loftProfiles(
     loftCapEnds(options.cap),
     new THREE.Vector3(0, 1, 0).transformDirection(frames[0]!),
   );
-  out.userData.kilnGeometryWarnings = [
-    {
-      code: 'LOFT_SELF_INTERSECTION_UNCHECKED',
-      message:
-        'Corresponding profiles are connected directly. Caps and closed boundaries do not prove the loft is free of self-intersections.',
-    },
-  ];
+  const analysis = recordSweepAnalysis(out, rings, profiles, false);
+  out.userData.kilnGeometryWarnings = analysis.complete
+    ? []
+    : [
+        {
+          code: 'LOFT_SELF_INTERSECTION_UNCHECKED',
+          message: 'The bounded local ring analysis did not finish; unchecked geometry remains.',
+        },
+      ];
   return out;
 }
 
@@ -463,11 +466,17 @@ export function sweepProfile(
     undefined,
     creaseAngle,
   );
-  warnings.push({
-    code: 'SWEEP_SELF_INTERSECTION_UNCHECKED',
-    message:
-      'Transported frames and caps do not prove a sweep is free of self-intersections. Review tight turns and nearby path segments.',
-  });
+  const analysis = recordSweepAnalysis(
+    out,
+    rings,
+    rings.map(() => points),
+    closed,
+  );
+  if (!analysis.complete)
+    warnings.push({
+      code: 'SWEEP_SELF_INTERSECTION_UNCHECKED',
+      message: 'The bounded local ring analysis did not finish; unchecked geometry remains.',
+    });
   out.userData.kilnGeometryWarnings = warnings;
   return out;
 }

@@ -56,7 +56,7 @@ export interface CaptureCell {
 }
 
 export interface CaptureConfig {
-  version?: 'kiln.capture.v1';
+  version?: 'kiln.capture.v1' | 'kiln.capture.v2';
   shots?: import('./camera').CameraShotV1[];
   cols?: number;
   size?: number;

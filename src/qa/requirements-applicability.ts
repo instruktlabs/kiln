@@ -18,6 +18,7 @@ interface RuleMapping {
     | 'scope'
     | 'connectivity'
     | 'partVolume'
+    | 'sweep'
     | 'rig';
   observation?: true;
 }
@@ -94,6 +95,7 @@ export const REQUIREMENTS_RULE_MAP: readonly RuleMapping[] = [
     kernel: 'connectivity',
   },
   { id: 'REF_COMPARISON', mode: 'observe', keys: [], observation: true },
+  { id: 'SWEEP_SELF_INTERSECTION', mode: 'observe', keys: [], observation: true, kernel: 'sweep' },
 ];
 export interface UnevaluatedRequirement {
   key: RequirementKey;

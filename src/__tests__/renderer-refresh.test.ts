@@ -173,6 +173,9 @@ test('refresh preserves an in-flight image while later captures use the new CPU 
       renderer: { configured: false, status: 'unknown' },
     });
   } finally {
+    // The in-flight connection must still verify the same service at completion.
+    // Recovery does not undo the CPU connection selected by the failed reprobe.
+    state.healthy = true;
     release();
   }
   const old = (await operation) as KilnRenderViewsResult & { programRef: string };

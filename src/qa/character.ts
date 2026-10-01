@@ -9,6 +9,7 @@ import {
   type CharacterJointDescriptorV1,
   type CharacterRigGraphV1,
 } from '../character';
+import { isCubicSplineTrack } from '../animation-spline';
 import { readSemanticMetadataV1, type CharacterClipIntentV1 } from '../contracts';
 import type { AssetRequirementsV1 } from '../contracts/requirements';
 import { withCharacterRepair } from './character-repairs';
@@ -96,6 +97,7 @@ function isClipLike(value: unknown): value is ClipLike {
 function collectNodes(root: THREE.Object3D): CharacterNodeEvidence[] {
   const nodes: CharacterNodeEvidence[] = [];
   const visit = (node: THREE.Object3D, parentPath: string, siblingIndex: number): void => {
+    if (!node.visible) return;
     const segment = `${node.name.trim() || node.type || 'Object3D'}[${siblingIndex}]`;
     const nodePath = parentPath ? `${parentPath}/${segment}` : segment;
     nodes.push({ node, nodePath });
@@ -516,9 +518,13 @@ function valueSize(track: TrackLike): number | undefined {
   return undefined;
 }
 
-function endpointDelta(track: TrackLike, size: number): number {
-  const first = Array.from({ length: size }, (_, index) => Number(track.values[index]));
-  const lastOffset = track.values.length - size;
+function endpointDelta(track: TrackLike, tuple: number): number {
+  // A cubic-spline key is [in-tangent, value, out-tangent]; the endpoints are the values.
+  const cubic = isCubicSplineTrack(track);
+  const size = cubic ? tuple / 3 : tuple;
+  const offset = cubic ? size : 0;
+  const first = Array.from({ length: size }, (_, index) => Number(track.values[offset + index]));
+  const lastOffset = track.values.length - tuple + offset;
   const last = Array.from({ length: size }, (_, index) => Number(track.values[lastOffset + index]));
   if (track.name.endsWith('.quaternion') && size === 4) {
     const dot = Math.abs(first.reduce((sum, value, index) => sum + value * last[index]!, 0));

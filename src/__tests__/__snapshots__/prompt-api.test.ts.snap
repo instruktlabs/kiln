@@ -620,18 +620,20 @@ normalMapFromHeight(source: THREE.Texture, { strength?: number, name?: string })
   // pbrMaterial({ albedo: bark, normal: normalMapFromHeight(bark, { strength: 4 }) });
 
 // Animation — keyframes use "rotation"/"position"/"scale" keys, NOT "value"
-rotationTrack(jointName: string, keyframes: Array<{ time, rotation: [xDeg, yDeg, zDeg] }>, interp?: 'LINEAR' | 'STEP')
+rotationTrack(jointName: string, keyframes: Array<{ time, rotation: [xDeg, yDeg, zDeg] }>, interp?: 'LINEAR' | 'STEP' | 'CUBICSPLINE' | 'EASE_IN' | 'EASE_OUT' | 'EASE_IN_OUT')
   // Absolute local XYZ Euler degrees converted to quaternion keys. Use an exact node name;
   // Joint_ is a convention. LINEAR follows shortest quaternion arcs; STEP holds until the next
-  // key.
+  // key. CUBICSPLINE is one smooth curve through the keys; EASE_IN, EASE_OUT and EASE_IN_OUT
+  // ease every segment, so one key pair is a smooth swing. The last four export as glTF
+  // CUBICSPLINE and need two or more keys.
   // e.g. rotationTrack('Joint_Lid', [{ time: 0, rotation: [0, 0, 0] }, { time: 1, rotation:
-  // [90, 0, 0] }]);
-positionTrack(jointName: string, keyframes: Array<{ time, position: [x, y, z] }>, interp?: 'LINEAR' | 'STEP')
+  // [90, 0, 0] }], 'EASE_IN_OUT');
+positionTrack(jointName: string, keyframes: Array<{ time, position: [x, y, z] }>, interp?: 'LINEAR' | 'STEP' | 'CUBICSPLINE' | 'EASE_IN' | 'EASE_OUT' | 'EASE_IN_OUT')
   // Absolute parent-local positions in authored length units. Use \`position:\`, not \`value:\`.
   // Finite nonnegative times must stay strictly increasing in float32.
   // e.g. positionTrack('Joint_Body', [{ time: 0, position: [0, 0, 0] }, { time: 1, position:
   // [0, 0.1, 0] }]);
-scaleTrack(jointName: string, keyframes: Array<{ time, scale: [x, y, z] }>, interp?: 'LINEAR' | 'STEP')
+scaleTrack(jointName: string, keyframes: Array<{ time, scale: [x, y, z] }>, interp?: 'LINEAR' | 'STEP' | 'CUBICSPLINE' | 'EASE_IN' | 'EASE_OUT' | 'EASE_IN_OUT')
   // Uniform or per-axis scale track.
   // e.g. scaleTrack('Joint_Chest', [{ time: 0, scale: [1, 1, 1] }, { time: 1, scale: [1.1, 1.1,
   // 1.1] }]);

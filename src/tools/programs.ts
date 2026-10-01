@@ -33,7 +33,7 @@ export function withProgramReferences(def: KilnToolDef, store: ProgramStore): Ki
     kiln_validate:
       'Check program syntax, sandbox rules and retired globals before building. Returns findings with codes, lines and repair hints where available; use kiln_render to evaluate geometry and see the asset.',
     kiln_render:
-      'Build a program and return geometry metrics, a bounded part-path preview and images. If partsTruncated, use kiln_inspect listParts for remaining paths. Omit capture for six views; choose preset/cells for orbit grids or version kiln.capture.v1 plus shots for part-local framing, perspective and separate images. Check viewFidelity before judging materials. Failed builds return errors without an image.',
+      'Build and return metrics, part paths and images. If partsTruncated, use kiln_inspect listParts. Omit capture for six views, preset/cells for orbit grids, or kiln.capture.v1/v2 shots for exact orthographic/perspective cameras; v2 adds hide. Check viewFidelity before judging materials. Failed builds return errors without images.',
     kiln_screenshot_animation:
       'Review animation images, poseBounds and loopClosure endpoint evidence. loopIntent is createClip({loop}); open is valid for one-shots; closed endpoints do not prove smooth velocity. Check motion, attachments and requested clearance; sampled bounds do not certify continuous contact or collision safety. Use shot for camera/subject, frameTimes for phases, and framing locked (default) or follow. Add phases when symmetry hides motion. The program must define animate(). Check viewFidelity before judging materials.',
     kiln_view_interior:
@@ -44,7 +44,7 @@ export function withProgramReferences(def: KilnToolDef, store: ProgramStore): Ki
   const description =
     def.name === 'kiln_edit'
       ? 'Atomically apply ordered exact-string replacements and render. Copy anchors from kiln_source. Returns programRef, parentRef, diff and preservation comparing static data and animation channels. Review changes; use kiln_inspect compare for more pages or protected subtrees. Failed comparison preserves the repair; render:false leaves preservation not_assessed. capture selects cameras; includeCode returns full source.'
-      : `${summaries[def.name] ?? def.description} Supply code OR a retained programRef. Even invalid drafts return a ref; read it with kiln_source.`;
+      : `${summaries[def.name] ?? def.description} Supply code OR programRef. Invalid drafts retain a ref; read with kiln_source.`;
   return {
     ...def,
     inputSchema,

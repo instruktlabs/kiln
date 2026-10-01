@@ -69,7 +69,7 @@ function collectParts(root: THREE.Object3D, measureVertices = false): LocalPart[
   root.updateWorldMatrix(true, true);
   const rootInverse = root.matrixWorld.clone().invert();
   const result: LocalPart[] = [];
-  root.traverse((node) => {
+  root.traverseVisible((node) => {
     const roles = rolesOf(node);
     const renderable = node instanceof THREE.Mesh;
     let box: THREE.Box3 | undefined;
@@ -205,7 +205,7 @@ function allowedClearanceContactRoles(assembly: PropMotionAssembly): ReadonlySet
 
 function legacyArticulationEvidence(context: QaContext, root: THREE.Object3D): boolean {
   const joints: string[] = [];
-  root.traverse((node) => {
+  root.traverseVisible((node) => {
     if (/^(?:Joint|Pivot)[_.-]/i.test(node.name)) joints.push(node.name);
   });
   if (joints.length === 0) return false;
@@ -407,7 +407,7 @@ export function evaluatePropContainerQa(context: QaContext): readonly QaFinding[
     // jointed lid is evidence of an opening, but is never used to hard-judge
     // the invisible interior volume.
     const names: string[] = [];
-    context.scene.traverse((node) => names.push(node.name));
+    context.scene.traverseVisible((node) => names.push(node.name));
     const hasSemanticContainerEvidence = collectParts(context.scene).some((part) =>
       part.roles.some((role) => /^prop\.container\.(interior|opening)(?:\.|$)/.test(role)),
     );

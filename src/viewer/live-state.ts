@@ -1,5 +1,16 @@
 import type { LiveOperation } from '../live-review';
 
+/** Geometry statistics belong to loaded bytes and remain available across observation IDs. */
+export function reviewStageLabel(
+  stats: { triangles: number; meshes: number },
+  operationId: string,
+  lod?: { triangles: number },
+): string {
+  return lod
+    ? `${lod.triangles.toLocaleString()} triangles displayed · ${operationId}`
+    : `${stats.triangles.toLocaleString()} triangles · ${stats.meshes} meshes · ${operationId}`;
+}
+
 export interface ReviewState {
   following: boolean;
   crossRunContinuity?: boolean;

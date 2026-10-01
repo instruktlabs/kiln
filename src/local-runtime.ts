@@ -70,6 +70,9 @@ export function createLocalToolContext(
           workId: env.KILN_WORK_ITEM,
         }));
   const geometryPolicy = base.geometryPolicy ?? env.KILN_GEOMETRY_POLICY ?? 'warn';
+  const indexPolicy = base.indexPolicy ?? env.KILN_INDEX_POLICY ?? 'indexed';
+  if (indexPolicy !== 'indexed' && indexPolicy !== 'asBuilt')
+    throw new Error('KILN_INDEX_POLICY must be indexed or asBuilt.');
   if (!['warn', 'strict'].includes(geometryPolicy))
     throw new Error('KILN_GEOMETRY_POLICY must be warn or strict.');
   const mode = resolveEvaluatorMode({
@@ -112,6 +115,7 @@ export function createLocalToolContext(
       )
         throw new Error('geometryPolicy must be warn or strict');
       const resolved: RenderGlbOptions = {
+        indexPolicy,
         gltfExporter,
         optimize,
         instance,
@@ -173,6 +177,7 @@ export function createLocalToolContext(
       base.reviewStore ?? (liveReview instanceof FileLiveReview ? liveReview : undefined),
     approvedTextureResources: () => approvedTextureCatalogV1({ cache: workerTextures }),
     geometryPolicy: geometryPolicy as 'warn' | 'strict',
+    indexPolicy,
     programStore: base.programStore ?? new FileProgramStore(localProgramStoreDirectory(env)),
     evaluatorPort,
     assetBuildOptions: {
@@ -180,11 +185,12 @@ export function createLocalToolContext(
       optimize,
       instance,
       geometryPolicy,
+      indexPolicy,
       qaMode: env.KILN_QA_MODE ?? 'enforce',
       evaluatorMode: mode,
     },
     buildCache: new MemoryBuildCache(),
-    evaluatorCacheIdentity: `kiln-local-${process.pid}-${++scope}:${JSON.stringify({ mode, optimize, instance, geometryPolicy, qa: env.KILN_QA_MODE, deadlineMs, heapMb })}`,
+    evaluatorCacheIdentity: `kiln-local-${process.pid}-${++scope}:${JSON.stringify({ mode, optimize, instance, geometryPolicy, indexPolicy, qa: env.KILN_QA_MODE, deadlineMs, heapMb })}`,
     localExecution,
   };
 }
@@ -209,6 +215,7 @@ export async function createPackagedLocalToolContext(
           code,
           {
             ...options,
+            indexPolicy: options?.indexPolicy ?? context.indexPolicy,
             ...(context.workspace?.current()?.materialResources.records.length
               ? { materialResources: context.workspace.current()!.materialResources }
               : {}),
@@ -277,6 +284,7 @@ export async function createPackagedLocalToolContext(
     instance: env.KILN_BAKE_INSTANCE ?? 'auto',
     qa: env.KILN_QA_MODE ?? 'enforce',
     geometryPolicy: context.geometryPolicy,
+    indexPolicy: context.indexPolicy,
     timezone: env.TZ,
     ...(env.KILN_GLTF_EXPORTER === 'three' ? { gltfExporter: 'three' } : {}),
   })}`;

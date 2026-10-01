@@ -152,7 +152,7 @@ function collectParts(root: THREE.Object3D): LocalPart[] {
   root.updateWorldMatrix(true, true);
   const rootInverse = root.matrixWorld.clone().invert();
   const result: LocalPart[] = [];
-  root.traverse((node) => {
+  root.traverseVisible((node) => {
     const roles = rolesOf(node);
     const renderable = node instanceof THREE.Mesh;
     let box: THREE.Box3 | undefined;
@@ -234,7 +234,7 @@ function resolveSocket(
 /** Resolve semantic frames in asset-local space for Studio/starter consumers. */
 export function resolveEnvironmentSockets(root: THREE.Object3D): ResolvedEnvironmentSocketV1[] {
   const result: ResolvedEnvironmentSocketV1[] = [];
-  root.traverse((node) => {
+  root.traverseVisible((node) => {
     const metadata = readSemanticMetadataV1(node);
     for (const socket of metadata?.sockets ?? []) {
       if (!socket.type.startsWith('environment.')) continue;
@@ -373,7 +373,7 @@ function boundarySamples(
   const crossExtent = Math.max(1e-9, localBounds.max[crossAxis] - crossMin);
   const byBin = new Map<number, BoundarySample>();
 
-  root.traverse((node) => {
+  root.traverseVisible((node) => {
     if (!(node instanceof THREE.Mesh) || !(node.geometry instanceof THREE.BufferGeometry)) return;
     const positions = node.geometry.getAttribute('position');
     if (positions?.itemSize !== 3) return;

@@ -2,12 +2,13 @@
 import type { LiveOperation, LiveSnapshot } from '../live-review';
 import type { ProjectRevision } from '../projects';
 import { createAssetStage } from './scene';
-import { describeLevels, levelLabels } from './lod';
+import { bindLodControls } from './lod-control';
 import {
   reconcileReview,
   selectReviewOperation,
   reviewedSaveRequest,
   visibleReviewOperation,
+  reviewStageLabel,
   type ReviewState,
 } from './live-state';
 import type { AssetManifest } from '../assets';
@@ -27,6 +28,9 @@ export function mountLiveReview() {
   let comparisonStage: ReturnType<typeof createAssetStage> | undefined;
   let loadedCurrent: LiveOperation | undefined;
   let loadedComparison: LiveOperation | undefined;
+  let currentStats: { triangles: number; meshes: number } | undefined;
+  let comparisonStats: { triangles: number; meshes: number } | undefined;
+  let comparisonLod: ReturnType<typeof bindLodControls>;
   let loadGeneration = 0;
   let compareGeneration = 0;
   let wire = false;
@@ -251,6 +255,22 @@ export function mountLiveReview() {
     el<HTMLButtonElement>('pin-build').disabled = !visible;
     saveButton.disabled = visible?.status !== 'complete';
   }
+  function currentLabel() {
+    if (currentStats && loadedCurrent)
+      el('live-stage-label').textContent = reviewStageLabel(
+        currentStats,
+        shortId(loadedCurrent.operationId),
+        currentStage?.lod(),
+      );
+  }
+  function comparisonLabel() {
+    if (comparisonStats && loadedComparison)
+      el('compare-stage-label').textContent = `Pinned · ${reviewStageLabel(
+        comparisonStats,
+        shortId(loadedComparison.operationId),
+        comparisonStage?.lod(),
+      )}`;
+  }
   async function loadCurrent(operation?: LiveOperation) {
     if (el('live-panel').hidden) return;
     const ticket = ++loadGeneration;
@@ -263,7 +283,10 @@ export function mountLiveReview() {
       currentStage?.dispose();
       currentStage = undefined;
       loadedCurrent = undefined;
+      currentStats = undefined;
       el('live-level-field').hidden = true;
+      el('live-lod').replaceChildren();
+      el('live-lod').hidden = true;
       el('live-stage-status').textContent = 'No completed artifact available for this run.';
       el('live-stage-label').textContent = 'Current';
       renderActions();
@@ -272,7 +295,7 @@ export function mountLiveReview() {
     if (loadedCurrent?.artifact?.sha256 === operation.artifact.sha256) {
       loadedCurrent = operation;
       el('live-stage-status').textContent = '';
-      el('live-stage-label').textContent = `Observed · ${shortId(operation.operationId)}`;
+      currentLabel();
       renderActions();
       return;
     }
@@ -296,23 +319,23 @@ export function mountLiveReview() {
       if (!result || ticket !== loadGeneration) return;
       el('live-performance').replaceChildren();
       loadedCurrent = operation;
+      currentStats = result;
       renderActions();
-      // MSFT_lod chains open at LOD0, or at the level already chosen when this build has it.
+      // New artifact bytes start at LOD0; part IDs are scoped to one GLB's node table.
       const levelSelect = el<HTMLSelectElement>('live-level');
-      const chosen = Number(levelSelect.value || 0);
-      levelSelect.replaceChildren(
-        ...levelLabels(result.levels ?? []).map((label, i) => new Option(label, String(i))),
-      );
       el('live-level-field').hidden = !result.levels;
-      const level = result.levels && chosen < result.levels.length ? chosen : 0;
-      levelSelect.value = String(level);
-      currentStage.level(level);
-      comparisonStage?.level(level);
+      bindLodControls(levelSelect, el('live-lod'), currentStage, (globalIndex) => {
+        if (globalIndex !== undefined) {
+          comparisonStage?.level(globalIndex);
+          comparisonLod?.refresh();
+          comparisonLabel();
+        }
+        currentLabel();
+      });
       currentStage.wire(wire);
       currentStage.navigation(el<HTMLSelectElement>('live-navigation').value);
       el('live-stage-status').textContent = '';
-      el('live-stage-label').textContent =
-        `${result.levels ? describeLevels(result.levels) : `${result.triangles.toLocaleString()} triangles`} · ${result.meshes} meshes · ${shortId(operation.operationId)}`;
+      currentLabel();
       if (comparisonStage) comparisonStage.setView(currentStage.view());
     } catch (error) {
       if (ticket !== loadGeneration) return;
@@ -330,11 +353,15 @@ export function mountLiveReview() {
       comparisonStage?.dispose();
       comparisonStage = undefined;
       loadedComparison = undefined;
+      comparisonStats = undefined;
+      comparisonLod = undefined;
+      el('compare-lod').replaceChildren();
+      el('compare-level-field').hidden = true;
       return;
     }
     if (loadedComparison?.artifact?.sha256 === operation.artifact.sha256) {
       loadedComparison = operation;
-      el('compare-stage-label').textContent = `Pinned · ${shortId(operation.operationId)}`;
+      comparisonLabel();
       el('compare-stage-status').textContent = '';
       return;
     }
@@ -355,9 +382,18 @@ export function mountLiveReview() {
       });
       if (!result || ticket !== compareGeneration) return;
       loadedComparison = operation;
-      el('compare-stage-label').textContent = `Pinned · ${shortId(operation.operationId)}`;
+      comparisonStats = result;
       if (currentStage) comparisonStage.setView(currentStage.view());
-      comparisonStage.level(Number(el<HTMLSelectElement>('live-level').value || 0));
+      const globalValue = Number(el<HTMLSelectElement>('live-level').value || 0);
+      comparisonStage.level(Number.isFinite(globalValue) ? globalValue : 0);
+      el('compare-level-field').hidden = !result.levels;
+      comparisonLod = bindLodControls(
+        el<HTMLSelectElement>('compare-level'),
+        el('compare-lod'),
+        comparisonStage,
+        comparisonLabel,
+      );
+      comparisonLabel();
       comparisonStage.wire(wire);
       comparisonStage.navigation(el<HTMLSelectElement>('live-navigation').value);
       el('compare-stage-status').textContent = '';
@@ -560,11 +596,6 @@ export function mountLiveReview() {
   el('live-frame').onclick = () => {
     currentStage?.reset();
     if (currentStage) comparisonStage?.setView(currentStage.view());
-  };
-  el<HTMLSelectElement>('live-level').onchange = (event) => {
-    const level = Number((event.target as HTMLSelectElement).value);
-    currentStage?.level(level);
-    comparisonStage?.level(level);
   };
   el('live-wire').onclick = () => {
     wire = !wire;

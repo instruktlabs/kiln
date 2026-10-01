@@ -628,18 +628,18 @@ const PRIMITIVES: HelperSpec[] = [
   {
     name: 'rotationTrack',
     signature:
-      "rotationTrack(jointName: string, keyframes: Array<{ time, rotation: [xDeg, yDeg, zDeg] }>, interp?: 'LINEAR' | 'STEP')",
+      "rotationTrack(jointName: string, keyframes: Array<{ time, rotation: [xDeg, yDeg, zDeg] }>, interp?: 'LINEAR' | 'STEP' | 'CUBICSPLINE' | 'EASE_IN' | 'EASE_OUT' | 'EASE_IN_OUT')",
     returns: 'THREE.QuaternionKeyframeTrack',
     category: 'animation',
     description:
-      'Absolute local XYZ Euler degrees converted to quaternion keys. Use an exact node name; Joint_ is a convention. LINEAR follows shortest quaternion arcs; STEP holds until the next key.',
+      'Absolute local XYZ Euler degrees converted to quaternion keys. Use an exact node name; Joint_ is a convention. LINEAR follows shortest quaternion arcs; STEP holds until the next key. CUBICSPLINE is one smooth curve through the keys; EASE_IN, EASE_OUT and EASE_IN_OUT ease every segment, so one key pair is a smooth swing. The last four export as glTF CUBICSPLINE and need two or more keys.',
     example:
-      "rotationTrack('Joint_Lid', [{ time: 0, rotation: [0, 0, 0] }, { time: 1, rotation: [90, 0, 0] }]);",
+      "rotationTrack('Joint_Lid', [{ time: 0, rotation: [0, 0, 0] }, { time: 1, rotation: [90, 0, 0] }], 'EASE_IN_OUT');",
   },
   {
     name: 'positionTrack',
     signature:
-      "positionTrack(jointName: string, keyframes: Array<{ time, position: [x, y, z] }>, interp?: 'LINEAR' | 'STEP')",
+      "positionTrack(jointName: string, keyframes: Array<{ time, position: [x, y, z] }>, interp?: 'LINEAR' | 'STEP' | 'CUBICSPLINE' | 'EASE_IN' | 'EASE_OUT' | 'EASE_IN_OUT')",
     returns: 'THREE.VectorKeyframeTrack',
     category: 'animation',
     description:
@@ -650,7 +650,7 @@ const PRIMITIVES: HelperSpec[] = [
   {
     name: 'scaleTrack',
     signature:
-      "scaleTrack(jointName: string, keyframes: Array<{ time, scale: [x, y, z] }>, interp?: 'LINEAR' | 'STEP')",
+      "scaleTrack(jointName: string, keyframes: Array<{ time, scale: [x, y, z] }>, interp?: 'LINEAR' | 'STEP' | 'CUBICSPLINE' | 'EASE_IN' | 'EASE_OUT' | 'EASE_IN_OUT')",
     returns: 'THREE.VectorKeyframeTrack',
     category: 'animation',
     description: 'Uniform or per-axis scale track.',

@@ -94,7 +94,12 @@ export async function exportAssetGlb(
     if (!object(scene) || !object(scene.extras) || !owns(scene.extras, 'kilnReviewClipsV1'))
       continue;
     const review = scene.extras.kilnReviewClipsV1;
-    if (!object(review) || review.version !== 1 || !Array.isArray(review.clips))
+    // Version 2 is the review copy of clips with a cubic-spline track.
+    if (
+      !object(review) ||
+      (review.version !== 1 && review.version !== 2) ||
+      !Array.isArray(review.clips)
+    )
       throw new Error('Unsupported scenes[].extras.kilnReviewClipsV1');
     scenes.push({ index, kilnReviewClipsV1: review });
     delete scene.extras.kilnReviewClipsV1;

@@ -71,13 +71,19 @@ reported against 0.8. [CHANGELOG.md](CHANGELOG.md) lists the changes and the
 notice. The [foundation checkpoint](docs/plans/2026-09-26-project-foundation.md) records
 how projects, materials and Live Review were qualified.
 
+The current **0.9.0 candidate is being prepared for local review**. Its working-tree changes still need
+final package and integration checks; earlier checkpoint receipts do not qualify this
+candidate. Site deployment and package publication are separate decisions. Package
+publication is deferred to v1.0 after deployed-v0.9 dogfooding and feedback.
+
 ## Install and start an asset workspace
 
 Use Node.js **20.15.0+ on the 20.x line**, or **22.2.0 and later**, with npm.
-Download the package tarball, `kiln-engine-VERSION.tgz`, from the
-[latest release](https://github.com/matthew-kissinger/kiln/releases/latest), or build it
-from a checkout with `npm pack`. Bun and a separate model API key are not required
-for this installation:
+For this candidate, [build a local package](docs/install.md#install-a-local-package)
+from the exact checkout, including its runtime build. If using a published release,
+use only a tarball actually attached to that release and its matching documentation;
+the release page does not imply that this candidate is available. Bun and a separate
+model API key are not required to install an already-built tarball:
 
 ```sh
 mkdir kiln-install

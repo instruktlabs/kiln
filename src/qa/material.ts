@@ -266,7 +266,7 @@ export function inspectPortableSceneMaterials(
   const root = scene as THREE.Object3D | undefined;
   if (!root?.traverse) return [];
   const findings: QaFinding[] = [];
-  root.traverse((node) => {
+  root.traverseVisible((node) => {
     const mesh = node as THREE.Mesh;
     if (!mesh.isMesh || !mesh.geometry) return;
     const materials = Array.isArray(mesh.material) ? mesh.material : [mesh.material];

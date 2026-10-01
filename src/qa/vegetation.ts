@@ -156,7 +156,7 @@ function collectRenderableBounds(root: THREE.Object3D): LocalBounds[] {
   root.updateWorldMatrix(true, true);
   const inverse = root.matrixWorld.clone().invert();
   const values: LocalBounds[] = [];
-  root.traverse((node) => {
+  root.traverseVisible((node) => {
     if (!(node instanceof THREE.Mesh)) return;
     const box = meshLocalBox(node, inverse);
     if (!box) return;
@@ -184,7 +184,7 @@ export function inspectFoliageContact(context: FoliageQaInput): readonly QaFindi
   const inverse = root.matrixWorld.clone().invert();
   const contacts: VegetationContactMarker[] = [];
   const semanticSupports: THREE.Object3D[] = [];
-  root.traverse((node) => {
+  root.traverseVisible((node) => {
     const metadata = readSemanticMetadataV1(node);
     const roles = metadata?.roles ?? [];
     if (
@@ -267,7 +267,7 @@ export function inspectFoliageContact(context: FoliageQaInput): readonly QaFindi
 
   for (const support of semanticSupports) {
     let minimumY = Infinity;
-    support.traverse((node) => {
+    support.traverseVisible((node) => {
       if (!(node instanceof THREE.Mesh)) return;
       const box = meshLocalBox(node, inverse);
       if (box) minimumY = Math.min(minimumY, box.min.y);
@@ -1031,7 +1031,7 @@ export function measureFoliageMaterials(
 ): VegetationFoliageMaterialMeasurementsV1 {
   const values: number[] = [];
   let foliageNodeCount = 0;
-  root.traverse((node) => {
+  root.traverseVisible((node) => {
     if (!(node instanceof THREE.Mesh)) return;
     const bounds: LocalBounds = {
       node,

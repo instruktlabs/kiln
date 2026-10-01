@@ -179,6 +179,7 @@ export interface KilnToolContext {
   /** Effective host defaults, captured for saved build provenance. */
   assetBuildOptions?: Record<string, unknown>;
   geometryPolicy?: import('../geometry-export').GeometryExportPolicy;
+  indexPolicy?: import('../index-policy').IndexPolicy;
   localExecution?: import('../local-runtime').LocalExecution;
   /** Host-only, lazy provenance scan for saved builds; independent of evaluator reuse. */
   prepareBuildProvenance?: () => Promise<void>;
@@ -413,6 +414,7 @@ async function evaluateGeneratedSource(
         ? { materialResources: context.workspace.current()!.materialResources }
         : {}),
       ...(context.geometryPolicy ? { geometryPolicy: context.geometryPolicy } : {}),
+      ...(context.indexPolicy ? { indexPolicy: context.indexPolicy } : {}),
       ...(requirements.binding ? { requirements: requirements.binding } : {}),
     },
     context.evaluationControls?.(),
@@ -697,43 +699,29 @@ const legacyCaptureInput = z
     preset: z
       .enum(['1x1', '1x2', '2x1', '3x1', '2x2', '3x2', '3x3'])
       .optional()
-      .describe(
-        'Grid shape as COLSxROWS. Default 3x2. Choose fewer views for simple shapes, up to 3x3 for more angles.',
-      ),
+      .describe('COLSxROWS; default 3x2. Fewer views for simple shapes, up to 3x3.'),
     cells: z
       .array(
         z.object({
           azimuthDeg: z.number().describe('0 = front, 90 = right, 180 = back, 270 = left. Wraps.'),
           elevationDeg: z
             .number()
-            .describe(
-              '0 = eye level, positive looks down, negative from below. Clamped to -89..89.',
-            ),
+            .describe('0 eye level; positive above, negative below. Clamped -89..89.'),
           zoom: z
             .number()
             .optional()
-            .describe(
-              'Padding multiplier around the asset bounds for this cell only. Omit for the ' +
-                'default framing; below 1 crops in, above 1 pulls back.',
-            ),
-          name: z
-            .string()
-            .optional()
-            .describe('Cell label. Auto-derived from the angles if omitted.'),
+            .describe('Bounds padding: below 1 crops, above 1 pulls back; omit for auto-framing.'),
+          name: z.string().optional().describe('Label; defaults to angles.'),
         }),
       )
       .optional()
       .describe(
-        'One camera per cell, in row-major order. Omit to use the preset default cameras. ' +
-          'Must not exceed the preset capacity (max 9 overall).',
+        'Row-major cameras; omit for preset defaults. Count cannot exceed preset capacity (max 9).',
       ),
     backdrop: backdropInput,
   })
   .optional()
-  .describe(
-    'Optional. Choose the contact-sheet shape and cameras. Omit it entirely for the standard ' +
-      'six-view 3x2 grid, which is the right default for most assets.',
-  );
+  .describe('Sheet layout and cameras; omit for six views in a 3x2 grid.');
 
 /**
  * A three-number vector, advertised as a bounded uniform array rather than a tuple.
@@ -801,6 +789,7 @@ const cameraShotInput = z
       })
       .optional(),
     visibility: z.enum(['context', 'isolate']).optional(),
+    hide: z.array(z.string().min(1).max(1024)).max(64).optional(),
     camera: z
       .discriminatedUnion('type', [
         z.strictObject(
@@ -842,17 +831,26 @@ const cameraShotInput = z
       .optional(),
   })
   .strict();
-const advancedCaptureInput = z.strictObject(
-  {
-    version: z.literal('kiln.capture.v1'),
-    shots: z.array(cameraShotInput).min(1).max(9),
-    cols: z.number().int().min(1).max(3).optional(),
-    size: z.number().int().min(128).max(MAX_CAPTURE_SHOT_SIZE).optional(),
-    output: z.enum(['grid', 'separate']).optional(),
-    backdrop: backdropInput,
-  },
-  { error: advancedCaptureError },
-);
+const advancedCaptureInput = z
+  .strictObject(
+    {
+      version: z.enum(['kiln.capture.v1', 'kiln.capture.v2']),
+      shots: z.array(cameraShotInput).min(1).max(9),
+      cols: z.number().int().min(1).max(3).optional(),
+      size: z.number().int().min(128).max(MAX_CAPTURE_SHOT_SIZE).optional(),
+      output: z.enum(['grid', 'separate']).optional(),
+      backdrop: backdropInput,
+    },
+    { error: advancedCaptureError },
+  )
+  .superRefine((input, context) => {
+    if (input.version === 'kiln.capture.v1' && input.shots.some((shot) => shot.hide !== undefined))
+      context.addIssue({
+        code: 'custom',
+        path: ['shots'],
+        message: 'shot.hide requires version kiln.capture.v2',
+      });
+  });
 // Error selection only: tagged input should explain its shot fields, not the
 // legacy branch's unknown keys. This does not coerce values or change JSON Schema.
 function taggedCaptureError(issue: { input?: unknown }): string | undefined {
@@ -861,7 +859,7 @@ function taggedCaptureError(issue: { input?: unknown }): string | undefined {
     typeof input !== 'object' ||
     input === null ||
     !('version' in input) ||
-    input.version !== 'kiln.capture.v1'
+    (input.version !== 'kiln.capture.v1' && input.version !== 'kiln.capture.v2')
   )
     return undefined;
   const parsed = advancedCaptureInput.safeParse(input);
@@ -870,7 +868,7 @@ function taggedCaptureError(issue: { input?: unknown }): string | undefined {
   const details = issues
     .slice(0, 6)
     .map((problem) => `${problem.path.join('.') || 'capture'}: ${problem.message.slice(0, 240)}`);
-  return `Invalid kiln.capture.v1: ${details.join('; ')}${issues.length > 6 ? '; additional issues omitted' : ''}`;
+  return `Invalid ${input.version}: ${details.join('; ')}${issues.length > 6 ? '; additional issues omitted' : ''}`;
 }
 const captureInput = z
   .union(
@@ -884,7 +882,7 @@ const captureInput = z
   )
   .optional()
   .describe(
-    'Use legacy preset/cells for an orbit sheet, or version kiln.capture.v1 with 1..9 shots for exact part framing, local axes, perspective and separate images. Omit for six default views.',
+    'Omit for six views; preset/cells for orbit sheets. Use kiln.capture.v1 or v2 with 1..9 shots for exact cameras. v2 adds hide: exact paths or unique names. Framing retains subject bounds.',
   );
 
 const renderViewsInput = renderInput.extend({ capture: captureInput, detail: reviewDetailInput });
@@ -1199,6 +1197,8 @@ export function screenshotMedia(output: unknown): { png: Uint8Array; json: unkno
 // =============================================================================
 
 export interface KilnRenderViewsResult extends PartPreview {
+  /** Exact vertex/index accessor payload before and after the export indexing pass. */
+  indexBuffers?: import('../index-policy').IndexBufferReceipt;
   captureCache?: { hit: boolean; reused: number; total: number };
   buildCache?: { key: `sha256:${string}`; hit: boolean };
   cameraShots?: import('../views').ResolvedCameraShotV1[];
@@ -1350,6 +1350,7 @@ async function runRenderViews(
       const reviewed: KilnRenderViewsResult = {
         ok: true,
         ...evaluationEvidence(rendered),
+        ...(rendered.meta.indexBuffers ? { indexBuffers: rendered.meta.indexBuffers } : {}),
         ...(rendered.buildCache ? { buildCache: rendered.buildCache } : {}),
         tris: rendered.tris,
         meshes: metrics.meshes,
@@ -1510,6 +1511,7 @@ async function runRenderViews(
     const reviewed: KilnRenderViewsResult = {
       ok: true,
       requirements: rendered.requirements,
+      ...(rendered.meta.indexBuffers ? { indexBuffers: rendered.meta.indexBuffers } : {}),
       ...(rendered.buildCache ? { buildCache: rendered.buildCache } : {}),
       ...(await partPreview(root)),
       tris: rendered.tris,
@@ -2106,7 +2108,7 @@ async function runInspect(
       return await withSubjectLevel(root, shot.subject, async (levels) => {
         const grid = await renderCaptureGrid(
           root,
-          { version: 'kiln.capture.v1', shots: [shot], size: 512 },
+          { version: shot.hide ? 'kiln.capture.v2' : 'kiln.capture.v1', shots: [shot], size: 512 },
           (cell) => renderDerivativeCell(cell, context),
         );
         return {

@@ -30,6 +30,13 @@ import { collectLodSets } from './lod';
 import { applyLodChains, summarizeLodChains } from './lod-export';
 import { applyNodeVisibility, drawnSceneBounds, summarizeHiddenNodes } from './node-visibility';
 import { communitySceneDocument, resolveGltfExporter } from './community-exporter';
+import { isCubicSplineTrack } from './animation-spline';
+import {
+  applyIndexPolicy,
+  resolveIndexPolicy,
+  type IndexPolicy,
+  type IndexBufferReceipt,
+} from './index-policy';
 import { openShellExtras } from './open-shell';
 import { rigExtrasForExport } from './rig-export';
 import { type AuthorExtras, collectAuthorExtras } from './user-data-extras';
@@ -293,6 +300,7 @@ export async function inspectGlbIntegration(
 }
 
 export interface KilnCodeMeta {
+  indexBuffers?: IndexBufferReceipt;
   name?: string;
   category?: string;
   /** Scene-placement role (agent-declared). Drives composer layout + city budgeting. */
@@ -789,6 +797,8 @@ function bridgeNode(
     threeObj.quaternion.w,
   ]);
   gtNode.setScale([threeObj.scale.x, threeObj.scale.y, threeObj.scale.z]);
+  // Review-loaded GPU instances carry an explicit local matrix, not authored TRS.
+  if (!threeObj.matrixAutoUpdate) gtNode.setMatrix(threeObj.matrix.toArray());
 
   if ((threeObj as { isMesh?: boolean }).isMesh) {
     const threeMesh = threeObj as THREE.Mesh;
@@ -854,11 +864,28 @@ function bridgeNode(
   return gtNode;
 }
 
-function animationInterpolation(track: THREE.KeyframeTrack): 'LINEAR' | 'STEP' {
+function animationInterpolation(track: THREE.KeyframeTrack): 'LINEAR' | 'STEP' | 'CUBICSPLINE' {
+  if (isCubicSplineTrack(track)) return 'CUBICSPLINE';
   const mode = track.getInterpolation();
   if (mode === THREE.InterpolateDiscrete) return 'STEP';
   if (mode === THREE.InterpolateLinear) return 'LINEAR';
-  throw new Error(`Unsupported animation interpolation on ${track.name}; use LINEAR or STEP.`);
+  throw new Error(
+    `Unsupported animation interpolation on ${track.name}; use LINEAR, STEP or CUBICSPLINE.`,
+  );
+}
+
+/** A track's values with its final value held to one more key. A cubic-spline key is
+ * [in-tangent, value, out-tangent]: the old last key leaves at rest and the held key arrives
+ * at rest, so the tail stays still. */
+function valuesWithHeldKey(track: THREE.KeyframeTrack): Float32Array {
+  const values = Array.from(track.values);
+  const tuple = track.getValueSize();
+  if (!isCubicSplineTrack(track)) return Float32Array.from([...values, ...values.slice(-tuple)]);
+  const size = tuple / 3;
+  values.fill(0, values.length - size);
+  const rest = new Array<number>(size).fill(0);
+  const held = values.slice(values.length - 2 * size, values.length - size);
+  return Float32Array.from([...values, ...rest, ...held, ...rest]);
 }
 
 /** glTF derives duration from sampler times. Encode a trailing hold so an explicit
@@ -872,9 +899,9 @@ function clipsWithDurationSamples(clips: THREE.AnimationClip[]): THREE.Animation
     const copied = clip.clone();
     for (const track of copied.tracks) {
       if (!needsHold(track)) continue;
-      const stride = track.getValueSize();
+      const values = valuesWithHeldKey(track);
       track.times = Float32Array.from([...track.times, end]);
-      track.values = Float32Array.from([...track.values, ...track.values.slice(-stride)]);
+      track.values = values;
     }
     return copied;
   });
@@ -987,14 +1014,16 @@ const REVIEW_CLIP_LIMITS = {
  * unresolved tracks that glTF cannot encode as native channels. Review tools
  * use this bounded data only to reconstruct deterministic poses/warnings; it
  * is not executable source and native valid channels remain authoritative to
- * ordinary glTF consumers. */
+ * ordinary glTF consumers. Version 2 adds CUBICSPLINE tracks, whose values hold
+ * [in-tangent, value, out-tangent] per key as a glTF sampler does; it is written
+ * only when a clip has one, so every other copy stays version 1. */
 function reviewClipExtras(clips: THREE.AnimationClip[]): Record<string, unknown> {
   if (clips.length > REVIEW_CLIP_LIMITS.clips) {
     throw new Error(`Animation review clip limit exceeded (${REVIEW_CLIP_LIMITS.clips}).`);
   }
   let trackCount = 0;
   return {
-    version: 1,
+    version: clips.some((clip) => clip.tracks.some(isCubicSplineTrack)) ? 2 : 1,
     clips: clips.map((clip) => ({
       name: clip.name,
       duration: clip.duration,
@@ -1103,6 +1132,7 @@ export interface InstancingSummary {
 }
 
 export interface RenderSceneResult {
+  indexBuffers: IndexBufferReceipt;
   /** Binary GLB bytes, platform-agnostic (Buffer-compatible in Node). */
   bytes: Uint8Array;
   /** SHA-256 identity of `bytes`. */
@@ -1134,6 +1164,8 @@ export interface RenderSceneResult {
 }
 
 export interface RenderSceneOptions {
+  /** Exact full-vertex welding by default; asBuilt skips the index pass. */
+  indexPolicy?: IndexPolicy;
   /** Host-only migration option; omitted keeps the established exporter. */
   gltfExporter?: 'legacy' | 'three';
   /** Warn about unsupported custom attributes (default), or reject before export. */
@@ -1332,6 +1364,18 @@ function hasNodeLevelsOfDetail(doc: Document): boolean {
     .some((n) => n.getExtension(MSFT_LOD) !== null);
 }
 
+/** These transforms cannot preserve per-node state when they remove or reparent nodes. */
+function hasPreservedNodeState(doc: Document): boolean {
+  return doc
+    .getRoot()
+    .listNodes()
+    .some(
+      (node) =>
+        node.getExtension('KHR_node_visibility') !== null ||
+        Object.keys(node.getExtras()).length > 0,
+    );
+}
+
 /**
  * Run the opt-in GPU-instancing pass (M1c) on a baked Document, in place.
  *
@@ -1360,7 +1404,8 @@ async function applyGpuInstancing(
   if (mode === 'auto' && role !== 'fill') return undefined;
   const root = doc.getRoot();
   if (root.listAnimations().length > 0 || root.listSkins().length > 0) return undefined;
-  if (hasJointPivots(doc) || hasNodeLevelsOfDetail(doc)) return undefined;
+  if (hasJointPivots(doc) || hasNodeLevelsOfDetail(doc) || hasPreservedNodeState(doc))
+    return undefined;
 
   const before = collectGlbMetrics(doc);
   await doc.transform(instance({ min: INSTANCE_MIN }));
@@ -1414,11 +1459,18 @@ async function consolidateMaterials(
     .listNodes()
     .some((node) => node.getExtras()[KILN_SEMANTIC_EXTRAS_KEY] !== undefined);
   const effective: 'palette' | 'full' =
-    mode === 'full' && (animatedOrSkinned || semanticGraph || hasNodeLevelsOfDetail(doc))
+    mode === 'full' &&
+    (animatedOrSkinned || semanticGraph || hasNodeLevelsOfDetail(doc) || hasPreservedNodeState(doc))
       ? 'palette'
       : mode;
 
-  const steps = [palette({ min: PALETTE_MIN })];
+  // palette() groups by shading properties and copies only one material's extras.
+  // Keep authored material identities whenever those carry application metadata.
+  const steps = root
+    .listMaterials()
+    .some((material) => Object.keys(material.getExtras()).length > 0)
+    ? []
+    : [palette({ min: PALETTE_MIN })];
   if (effective === 'full') {
     // flatten() leaves skeletons + animation-targeted nodes in place, but it may
     // remove empty semantic clearance/socket nodes even when prune keeps leaves
@@ -1467,6 +1519,9 @@ export async function renderSceneToGLB(
   assertNoLegacyRuntimePolicy(opts);
   const requirements = resolveRequirementsContext(opts.requirements);
   const clips = opts.clips ?? [];
+  const indexPolicy = resolveIndexPolicy(opts.indexPolicy);
+  if (indexPolicy === 'asBuilt' && resolveOptimize(opts.optimize) !== 'off')
+    throw new Error('asBuilt indexPolicy requires optimize off to preserve authored buffers');
   if (opts.geometryPolicy !== undefined && !['warn', 'strict'].includes(opts.geometryPolicy))
     throw new Error('geometryPolicy must be warn or strict');
   const exporter = resolveGltfExporter(opts.gltfExporter);
@@ -1582,6 +1637,7 @@ export async function renderSceneToGLB(
   // those passes see them and keep them; flags first, while every node is still in place.
   applyNodeVisibility(root, doc);
   applyLodChains(root, lodSets, doc);
+  const indexBuffers = applyIndexPolicy(doc, indexPolicy);
 
   // Dedupe accessors/materials/meshes so instanced parts (4 wheels, 10 posts,
   // 12 windows) share a single underlying resource in the GLB. Cuts file
@@ -1700,24 +1756,38 @@ export async function renderSceneToGLB(
 
   const diagnosticViews: CapturedDiagnosticV1[] = [];
   const rig = requirements.requirements.requirements.rig;
-  if (rig?.state === 'requested') {
-    const { captureCharacterDiagnosticViews } = await import('./views/character-capture');
-    diagnosticViews.push(
-      ...(await captureCharacterDiagnosticViews(
-        root,
-        clips as readonly DuckClip[],
-        rig.value,
-        Object.values(qaReport.dimensions).flatMap((d) => d.findings),
-      )),
-    );
-  }
-  if (requirements.requirements.requirements.mobility?.state === 'requested') {
-    const { captureVehicleDiagnosticViews } = await import('./views');
-    diagnosticViews.push(...captureVehicleDiagnosticViews(root));
+  // Category diagnostics inspect source semantics/rigs, but show the same default level
+  // as the exported scene. Detach alternates so bounds and semantic scans exclude them,
+  // then restore exact sibling order even if a capture fails.
+  const diagnosticParents = new Map(lodSets.map(({ parent }) => [parent, [...parent.children]]));
+  for (const { parent, levels } of lodSets)
+    for (const level of levels.slice(1)) parent.remove(level);
+  try {
+    if (rig?.state === 'requested') {
+      const { captureCharacterDiagnosticViews } = await import('./views/character-capture');
+      diagnosticViews.push(
+        ...(await captureCharacterDiagnosticViews(
+          root,
+          clips as readonly DuckClip[],
+          rig.value,
+          Object.values(qaReport.dimensions).flatMap((d) => d.findings),
+        )),
+      );
+    }
+    if (requirements.requirements.requirements.mobility?.state === 'requested') {
+      const { captureVehicleDiagnosticViews } = await import('./views');
+      diagnosticViews.push(...captureVehicleDiagnosticViews(root));
+    }
+  } finally {
+    for (const [parent, children] of diagnosticParents) {
+      parent.clear();
+      parent.add(...children);
+    }
   }
 
   return {
     bytes,
+    indexBuffers,
     requirements,
     artifactGlbSha256,
     tris,
@@ -1747,6 +1817,7 @@ export async function renderSceneToGLB(
  * Pure function: no file I/O, no globals, no WebGL.
  */
 export interface RenderGlbOptions {
+  indexPolicy?: IndexPolicy;
   requirements?: RequirementsBinding;
   /** Host-only migration option, transported explicitly to isolated workers. */
   gltfExporter?: 'legacy' | 'three';
@@ -1779,6 +1850,7 @@ export async function renderGLBInProcess(
     throw new Error('geometryPolicy must be warn or strict');
   let textureResolver = opts.textureResolver ?? DEFAULT_TEXTURE_RESOLVER;
   const rebuildOptions: RebuildOptions = {
+    indexPolicy: resolveIndexPolicy(opts.indexPolicy),
     gltfExporter: resolveGltfExporter(opts.gltfExporter),
     geometryPolicy: opts.geometryPolicy ?? 'warn',
     optimize: resolveOptimize(opts.optimize),
@@ -1823,6 +1895,7 @@ export async function renderGLBInProcess(
     tris: scene.tris,
     meta: {
       ...modelMeta,
+      indexBuffers: scene.indexBuffers,
       ...(modelCategory !== undefined ? { modelCategory } : {}),
       tris: scene.tris,
       primitiveUsage,
@@ -2379,7 +2452,7 @@ interface MeshStats {
 function collectMeshStats(root: THREE.Object3D): MeshStats[] {
   root.updateMatrixWorld(true);
   const out: MeshStats[] = [];
-  root.traverse((obj) => {
+  root.traverseVisible((obj) => {
     if (!(obj as { isMesh?: boolean }).isMesh) return;
     const meshObj = obj as THREE.Mesh;
     const geo = meshObj.geometry;
@@ -2388,7 +2461,23 @@ function collectMeshStats(root: THREE.Object3D): MeshStats[] {
     const idx = geo.getIndex();
     const tri = idx ? idx.count / 3 : (geo.getAttribute('position')?.count ?? 0) / 3;
 
-    const box = new THREE.Box3().setFromObject(obj);
+    // Measure this drawn mesh alone. setFromObject also includes descendants,
+    // including invisible children, and can make a visible body look connected
+    // to a hidden part or inflate the orientation advisory's bounds.
+    const bounded = meshObj as THREE.Mesh & {
+      boundingBox?: THREE.Box3 | null;
+      computeBoundingBox?: () => void;
+    };
+    let localBounds: THREE.Box3 | null;
+    if (bounded.boundingBox !== undefined) {
+      if (bounded.boundingBox === null) bounded.computeBoundingBox?.();
+      localBounds = bounded.boundingBox ?? null;
+    } else {
+      if (geo.boundingBox === null) geo.computeBoundingBox();
+      localBounds = geo.boundingBox;
+    }
+    if (!localBounds) return;
+    const box = localBounds.clone().applyMatrix4(meshObj.matrixWorld);
     if (!Number.isFinite(box.min.x) || !Number.isFinite(box.max.x)) {
       return;
     }

@@ -265,6 +265,16 @@ export function makeRemoteRenderPort(
     if (!json.ok) throw new Error(json.error ?? 'render service reported failure');
     if (json.rendererId !== health.rendererId)
       throw new Error('render service producer changed after health verification');
+    // rendererId names the implementation, not the running process. A replacement can
+    // have the same rendererId while invalidating the capture/cache instance attestation.
+    const after = await verifiedHealth(url, token, sourceFingerprint, execution?.signal);
+    if (
+      after.captureIdentity.instanceId !== health.captureIdentity.instanceId ||
+      after.captureIdentity.fingerprint !== health.captureIdentity.fingerprint ||
+      after.compatibility.fingerprint !== health.compatibility.fingerprint ||
+      after.rendererId !== health.rendererId
+    )
+      throw new Error('render service instance changed during capture');
     return {
       ok: true,
       rendererId: health.rendererId,

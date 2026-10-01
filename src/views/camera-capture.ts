@@ -30,10 +30,12 @@ export function validateAdvancedCapture(config: CaptureConfig): void {
   for (const key of Object.keys(config))
     if (!['version', 'shots', 'cols', 'size', 'output', 'backdrop'].includes(key))
       throw new Error(`capture.${key} is unknown or incompatible with shots`);
-  if (config.version !== 'kiln.capture.v1')
-    throw new Error('advanced capture requires version kiln.capture.v1');
+  if (config.version !== 'kiln.capture.v1' && config.version !== 'kiln.capture.v2')
+    throw new Error('advanced capture requires version kiln.capture.v1 or kiln.capture.v2');
   if (!Array.isArray(config.shots) || config.shots.length < 1 || config.shots.length > 9)
     throw new Error('capture.shots must contain 1..9 shots');
+  if (config.version !== 'kiln.capture.v2' && config.shots.some((shot) => shot.hide !== undefined))
+    throw new Error('shot.hide requires version kiln.capture.v2');
   if (
     config.cols !== undefined &&
     (!Number.isInteger(config.cols) || config.cols < 1 || config.cols > 3)

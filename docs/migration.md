@@ -53,6 +53,12 @@ Changes that alter output an author already has:
   scene, so GLB bytes change, headline triangles and bounds count LOD0 and the parts
   outside every set, and default sheets draw LOD0 only. See
   [levels of detail](../skills/kiln-author-asset/references/geometry-recipes.md#levels-of-detail-only-when-the-brief-asks).
+- **Viewer LOD selection.** The global selector remains available. Expand **Per-part
+  levels** in Library or Live Review to select independent chains, with an updated
+  total for the displayed combination. Part selections belong to the loaded GLB;
+  loading different artifact bytes resets them to LOD0. Pinned comparisons have
+  independent part controls. These are manual review controls, not automatic
+  distance switching or proof that another application's importer supports LOD.
 
 Changes to results and messages:
 
@@ -108,6 +114,48 @@ Changes to results and messages:
   optimisation falls back to palette. Revision comparison compares each lower level at
   the path it takes beside LOD0 and does not compare switch thresholds. Library and Live
   Review show a Level control for a GLB with chains.
+
+### Additional 0.9 author contracts
+
+- **Part inspection.** `listParts` entries now include world `position`, `quaternion`,
+  `scale`, `mirrored` and world `bounds`. Paging and compact limits are unchanged.
+- **Application metadata.** Plain JSON in node/material `userData` exports as extras
+  and imports back. Keep each object below 4 KiB of UTF-8 JSON and the asset below
+  64 KiB. Do not write `kiln*` keys. `kiln_validate` checks literal assignments without
+  running source; build warnings identify dynamic values that cannot be exported.
+  Metadata may reduce optimization: nodes keep their identity, and palette merging
+  is skipped when materials carry extras.
+- **Visibility.** `visible = false` now changes exported intent using
+  `KHR_node_visibility`, including hidden ancestors. Headline metrics and category QA
+  count visible geometry; `hiddenNodes` lists excluded triangles. Verify support in
+  the intended importer before depending on this extension outside Kiln.
+- **Intentional sheets.** Call `markOpenShell(part, 'specific reason')` when an open
+  boundary is intentional. The overlap report lists an acknowledgment with that
+  reason; it still measures closed geometry and reports unrelated measurement limits.
+- **Easing.** Pass `'CUBICSPLINE'`, `'EASE_IN'`, `'EASE_OUT'` or
+  `'EASE_IN_OUT'` as the third argument to a track helper. The cubic mode computes monotone tangents per
+  component; easing applies per consecutive key pair. GLBs contain standard
+  `CUBICSPLINE` data, and review playback uses those same samples. `STEP` and `LINEAR`
+  remain supported. A quaternion sign flip alone no longer warns about loop closure.
+- **Index buffers.** Source exports default to `indexPolicy: 'indexed'`, adding
+  indices to previously unindexed primitives and welding only exactly equal full
+  vertices. UV seams, normals, morph data and triangle order are retained. GLB bytes
+  can change. Set `indexPolicy: 'asBuilt'` on render calls, or
+  `KILN_INDEX_POLICY=asBuilt` in a local host, to preserve helper buffers; combine it
+  with optimization off. Saved rebuild settings and cache identities retain the
+  policy. `indexBuffers` reports unique vertex/morph/index accessor payload bytes at
+  this pass, before later optimizations; it is not a GLB compression measurement.
+- **Sweep evidence.** `SWEEP_SELF_INTERSECTION` is an observation of a tight station
+  radius or intersecting consecutive filled rings. Limits are 4096 stations, 512
+  points per ring and 65536 segment/triangle tests. Budget exhaustion retains an
+  unchecked warning and a partial finding. A completed local check does not certify
+  distant segments or a manufacturing solid.
+- **Hidden capture parts.** Use `version: 'kiln.capture.v2'` and shot-level
+  `hide: [EXACT_PATH_OR_UNIQUE_NAME]`, with up to 64 selectors. Names are exact and
+  ambiguous names fail before drawing. A hidden group hides its subtree. The hide
+  list applies after subject framing and isolation, leaving the same camera for
+  comparison; resolved paths are returned in `cameraShots`. CLI `--capture` accepts
+  the same JSON. Version 1 remains valid but rejects `hide` explicitly.
 
 ## Geometry helper and diagnostic contracts
 

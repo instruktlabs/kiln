@@ -19,6 +19,8 @@ import {
   detachedLevels,
   loadViewerLevels,
   showLevel,
+  showChainLevel,
+  viewerLevelState,
   type ViewerLevels,
 } from './lod';
 
@@ -329,7 +331,15 @@ export function createAssetStage(container: HTMLElement) {
     },
     /** Draw every MSFT_lod chain at `index` (0 is LOD0); a shorter chain shows its last level. */
     level(index: number) {
+      cancelMeasurement('The level of detail changed. Measure the displayed combination again.');
       if (levels) showLevel(levels, index);
+    },
+    partLevel(id: string, index: number) {
+      cancelMeasurement('The level of detail changed. Measure the displayed combination again.');
+      if (levels) showChainLevel(levels, id, index);
+    },
+    lod() {
+      return root ? viewerLevelState(levels, root) : undefined;
     },
     reset,
     cancelMeasurement,

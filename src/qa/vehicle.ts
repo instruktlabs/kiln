@@ -371,7 +371,7 @@ function renderableMinYInRoot(
   node: THREE.Object3D,
 ): number | undefined {
   let minimum = Infinity;
-  node.traverse((part) => {
+  node.traverseVisible((part) => {
     if (!(part instanceof THREE.Mesh) || !(part.geometry instanceof THREE.BufferGeometry)) return;
     part.geometry.computeBoundingBox();
     const bounds = part.geometry.boundingBox;
@@ -399,7 +399,7 @@ function supportContactFindings(
   const inverse = root.matrixWorld.clone().invert();
   const explicitContacts: SupportContactMeasurement[] = [];
   const supports: SupportContactMeasurement[] = [];
-  root.traverse((node) => {
+  root.traverseVisible((node) => {
     const roles = readSemanticMetadataV1(node)?.roles ?? [];
     const isWheelContact = roles.some((role) => role.startsWith('wheel.contact.'));
     if (!isWheelContact && roles.some((role) => role.startsWith('contact.'))) {
@@ -582,7 +582,7 @@ function propulsionFindings(
   if (expectedKinds.length === 0) return [];
   const pivots = new Map<string, THREE.Object3D>();
   const components: PropulsionPart[] = [];
-  root.traverse((node) => {
+  root.traverseVisible((node) => {
     const metadata = readSemanticMetadataV1(node);
     for (const role of metadata?.roles ?? []) {
       if (role.startsWith('propulsion.pivot.'))

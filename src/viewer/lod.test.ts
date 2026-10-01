@@ -10,7 +10,15 @@ import type { Object3D } from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { importedLodGlb, TIERED_CAR, WHEELS } from '../__tests__/helpers/lod-fixture';
 import { renderGLBInProcess } from '../render';
-import { countTriangles, describeLevels, levelLabels, loadViewerLevels, showLevel } from './lod';
+import {
+  countTriangles,
+  describeLevels,
+  levelLabels,
+  loadViewerLevels,
+  showLevel,
+  showChainLevel,
+  viewerLevelState,
+} from './lod';
 
 const parse = (glb: Uint8Array) => new GLTFLoader().parseAsync(Uint8Array.from(glb).buffer, '');
 
@@ -62,6 +70,54 @@ describe('the viewer level control', () => {
       'Bus_LOD1',
       'Bus_Sign',
     ]);
+  });
+
+  test('a body and its wheel chains can show different levels and report the combined geometry', async () => {
+    const gltf = await parse((await renderGLBInProcess(TIERED_CAR)).glb);
+    const levels = (await loadViewerLevels(gltf))!;
+    showLevel(levels, 1);
+    for (const chain of levels.chains.slice(1)) showChainLevel(levels, chain.id, 0);
+
+    expect(countTriangles(gltf.scene)).toBe(60);
+    expect(viewerLevelState(levels, gltf.scene)).toMatchObject({
+      triangles: 60,
+      chains: [{ level: 1 }, ...WHEELS.map(() => ({ level: 0 }))],
+    });
+    expect(names(gltf.scene)).toContain('Body_LOD1');
+    for (const wheel of WHEELS) expect(names(gltf.scene)).toContain(`${wheel}_LOD0`);
+    showLevel(levels, 0);
+    expect(viewerLevelState(levels, gltf.scene)?.chains.every((chain) => chain.level === 0)).toBe(
+      true,
+    );
+    expect(countTriangles(gltf.scene)).toBe(72);
+  });
+
+  test('chain identifiers survive reload and an unknown identifier cannot change another part', async () => {
+    const bytes = (await renderGLBInProcess(TIERED_CAR)).glb;
+    const first = await parse(bytes);
+    const second = await parse(bytes);
+    const levels = (await loadViewerLevels(first))!;
+    const reloaded = (await loadViewerLevels(second))!;
+    expect(levels.chains.map((chain) => chain.id)).toEqual(
+      reloaded.chains.map((chain) => chain.id),
+    );
+    expect(new Set(levels.chains.map((chain) => chain.id)).size).toBe(levels.chains.length);
+    expect(showChainLevel(levels, 'missing-part', 1)).toBe(false);
+    expect(countTriangles(first.scene)).toBe(72);
+  });
+
+  test('hidden ancestors contribute no triangles at any global or per-part level', async () => {
+    const gltf = await parse((await renderGLBInProcess(TIERED_CAR)).glb);
+    gltf.scene.getObjectByName('Car')!.visible = false;
+    const levels = (await loadViewerLevels(gltf))!;
+    expect(levels.triangles).toEqual([0, 0, 0]);
+    showChainLevel(levels, levels.chains[0]!.id, 2);
+    expect(viewerLevelState(levels, gltf.scene)?.triangles).toBe(0);
+    expect(
+      viewerLevelState(levels, gltf.scene)?.chains.every((chain) =>
+        chain.triangles.every((count) => count === 0),
+      ),
+    ).toBe(true);
   });
 
   test('a GLB without chains has no level control', async () => {

@@ -115,6 +115,9 @@ export async function communitySceneDocument(
     const shadow = Object.create(source) as THREE.Object3D;
     shadow.userData = {};
     let copy = shadow.clone(false);
+    // GLTFExporter uses TRS when animations are enabled. Manual matrices (including
+    // expanded GPU instances in review derivatives) must populate those fields too.
+    if (!copy.matrixAutoUpdate) copy.matrix.decompose(copy.position, copy.quaternion, copy.scale);
     if ((source as THREE.Scene).isScene) {
       copy = new THREE.Group();
       copy.copy(shadow, false);

@@ -8,7 +8,7 @@ import {
 } from '../assets';
 import { assetAttributionRows } from './attribution';
 import { createAssetStage } from './scene';
-import { levelLabels } from './lod';
+import { bindLodControls } from './lod-control';
 import { assetViewerSelection } from './deep-link';
 import { exportAssetGlb } from '../asset-export';
 import { mountDashboard } from './dashboard';
@@ -425,6 +425,8 @@ async function openDetail(entry: Entry) {
   const level = el<HTMLSelectElement>('level');
   level.replaceChildren();
   level.hidden = true;
+  el('library-lod').replaceChildren();
+  el('library-lod').hidden = true;
   try {
     stage ??= createAssetStage(el('stage'));
     const data = await bytes(entry, 'asset.glb');
@@ -440,17 +442,13 @@ async function openDetail(entry: Entry) {
     stage.wire(false);
     stage.navigation(el<HTMLSelectElement>('library-navigation').value);
     stage.lighting(el<HTMLSelectElement>('lighting').value);
-    // A GLB with MSFT_lod chains opens at LOD0 and counts every level's triangles.
-    if (info.levels) {
-      level.append(...levelLabels(info.levels).map((label, i) => new Option(label, String(i))));
-      level.hidden = false;
-    }
+    bindLodControls(level, el('library-lod'), stage);
     for (const [value, label] of [
       ...(info.levels
         ? info.levels.map((count, i) => [count.toLocaleString(), `LOD${i} triangles`])
         : [[info.triangles.toLocaleString(), 'triangles']]),
-      [info.meshes, 'meshes'],
-      [info.materials, 'materials'],
+      [info.meshes, info.levels ? 'LOD0 meshes' : 'meshes'],
+      [info.materials, info.levels ? 'LOD0 materials' : 'materials'],
       [`${(data.length / 1024).toFixed(0)} KB`, 'GLB'],
     ]) {
       const item = node('div');
@@ -561,8 +559,6 @@ el<HTMLSelectElement>('animation').onchange = (event) => {
   stage?.clip(value === '' ? -1 : Number(value));
   el<HTMLButtonElement>('play').disabled = value === '';
 };
-el<HTMLSelectElement>('level').onchange = (event) =>
-  stage?.level(Number((event.target as HTMLSelectElement).value));
 el('play').onclick = () => {
   paused = !paused;
   stage?.pause(paused);

@@ -266,6 +266,7 @@ function parseOptions(
       'category',
       'requirements',
       'geometryPolicy',
+      'indexPolicy',
       'gltfExporter',
       'materialResources',
     ])
@@ -282,6 +283,10 @@ function parseOptions(
   if (value.geometryPolicy !== undefined) {
     if (!['warn', 'strict'].includes(String(value.geometryPolicy))) fail('request');
     options.geometryPolicy = value.geometryPolicy as 'warn' | 'strict';
+  }
+  if (value.indexPolicy !== undefined) {
+    if (value.indexPolicy !== 'indexed' && value.indexPolicy !== 'asBuilt') fail('request');
+    options.indexPolicy = value.indexPolicy;
   }
   if (value.optimize !== undefined) {
     if (!['off', 'auto', 'palette', 'full'].includes(String(value.optimize))) fail('request');

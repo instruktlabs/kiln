@@ -136,52 +136,56 @@ test('stale services survive owner exit and both auto and gpu explicitly report 
   expect((await inspectLocalRenderService(url, dir)).kind).toBe('service');
   expect(child.exitCode).toBeNull();
 });
-test('concurrent cold starts join one verified managed service on the shared socket', async () => {
-  const { dir, url } = await installation();
-  const journal = join(dir, 'startup.jsonl');
-  const barrier = join(dir, 'release-startup');
-  const environment = {
-    ...process.env,
-    FAKE_STARTUP_JOURNAL: journal,
-    FAKE_STARTUP_BARRIER: barrier,
-  };
-  const pending = Promise.allSettled([
-    startLocalRenderService(dir, environment),
-    startLocalRenderService(dir, environment),
-  ]);
-  // Windows Start-Process may still be launching the second child when both
-  // host calls return from the first child's health. Own both children first,
-  // then release their listeners; teardown cannot leave a late launcher alive.
-  const deadline = Date.now() + 10000;
-  let starts: Array<{ pid: number }> = [];
-  while (starts.length < 2 && Date.now() < deadline) {
-    starts = await readFile(journal, 'utf8')
-      .then((text) =>
-        text
-          .trim()
-          .split('\n')
-          .map((line) => JSON.parse(line)),
-      )
-      .catch(() => []);
-    if (starts.length < 2) await new Promise((done) => setTimeout(done, 20));
-  }
-  ownedPids.push(...starts.map((start) => start.pid));
-  await writeFile(barrier, 'release');
-  const outcomes = await pending;
-  expect(starts).toHaveLength(2);
-  const [one, two] = outcomes.map((outcome) => {
-    if (outcome.status === 'rejected') throw outcome.reason;
-    return outcome.value;
-  });
-  expect(one).toBe(url);
-  expect(two).toBe(url);
-  const probe = await inspectLocalRenderService(url, dir);
-  expect(probe).toMatchObject({
-    kind: 'service',
-    stale: false,
-    instance: { mode: 'managed', ownerPid: process.pid },
-  });
-});
+test.each([0, 2000])(
+  'concurrent cold starts join one verified managed service with %dms health warmup',
+  async (healthDelay) => {
+    const { dir, url } = await installation();
+    const journal = join(dir, 'startup.jsonl');
+    const barrier = join(dir, 'release-startup');
+    const environment = {
+      ...process.env,
+      FAKE_STARTUP_JOURNAL: journal,
+      FAKE_STARTUP_BARRIER: barrier,
+      FAKE_HEALTH_DELAY_MS: String(healthDelay),
+    };
+    const pending = Promise.allSettled([
+      startLocalRenderService(dir, environment),
+      startLocalRenderService(dir, environment),
+    ]);
+    // Windows Start-Process may still be launching the second child when both
+    // host calls return from the first child's health. Own both children first,
+    // then release their listeners; teardown cannot leave a late launcher alive.
+    const deadline = Date.now() + 10000;
+    let starts: Array<{ pid: number }> = [];
+    while (starts.length < 2 && Date.now() < deadline) {
+      starts = await readFile(journal, 'utf8')
+        .then((text) =>
+          text
+            .trim()
+            .split('\n')
+            .map((line) => JSON.parse(line)),
+        )
+        .catch(() => []);
+      if (starts.length < 2) await new Promise((done) => setTimeout(done, 20));
+    }
+    ownedPids.push(...starts.map((start) => start.pid));
+    await writeFile(barrier, 'release');
+    const outcomes = await pending;
+    expect(starts).toHaveLength(2);
+    const [one, two] = outcomes.map((outcome) => {
+      if (outcome.status === 'rejected') throw outcome.reason;
+      return outcome.value;
+    });
+    expect(one).toBe(url);
+    expect(two).toBe(url);
+    const probe = await inspectLocalRenderService(url, dir);
+    expect(probe).toMatchObject({
+      kind: 'service',
+      stale: false,
+      instance: { mode: 'managed', ownerPid: process.pid },
+    });
+  },
+);
 
 test('a renderer that exits before health is reported as startup failure', async () => {
   const { dir } = await installation();

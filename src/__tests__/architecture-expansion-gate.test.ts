@@ -1065,6 +1065,9 @@ async function measureUvCase(
   const initial = await renderSceneToGLB(shell.root, {
     requirements: bindLegacyFixtureRequirements(intent),
     optimize: 'off',
+    // Preserve this historical experiment's original representation. The v0.9
+    // default indexing policy has its own acceptance tests in index-policy.test.ts.
+    indexPolicy: 'asBuilt',
   });
   const rebaked = await optimizeGlbBytes(initial.bytes, {
     mode: 'palette',

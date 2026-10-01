@@ -4,6 +4,19 @@ Search `kiln_discover` for the shape or operation you need, then fetch exact `id
 
 Parts use the asset frame: metres, +X forward, +Y up, +Z right. Forward is the direction the object faces; a bench's sitter faces +X. Part `rotation` is in degrees and follows the right-hand rule in this frame: `[0, 90, 0]` turns forward (+X) toward -Z, the object's left; `[0, 0, 90]` tips +X up to +Y; `[90, 0, 0]` rolls +Y toward +Z.
 
+For a gripper or carrier, define the payload's occupied volume as well as its
+attachment marker. Check the complete gripper housing, palm and jaws against that
+volume; separated fingers do not prove the central body clears it. Size the open
+jaw gap for approach and release, then verify the closed contact surfaces. Mating
+pins and grooves must agree in count, spacing, orientation, depth and clearance in
+one shared frame. A locator proves a pose, not a physical fit. Keep these mating
+dimensions in the asset brief and shared source parameters.
+
+For moving attachments, inspect intermediate poses along approach, pickup, travel
+and release. Matching endpoints can still produce a path through the payload or
+support. Keep joints, contact markers and payload motion in the intended hierarchy;
+repair the geometry or path where the swept volumes collide.
+
 ## Surfaces from equations
 
 An asymmetric canopy or corrugated sheet can be much shorter as a function than as many primitives:
@@ -48,6 +61,19 @@ contact with the actual mesh. Check both attachment and final dimensions after a
 shape edit; a normal offset can change height as well as depth. This recipe is an
 optional open-surface construction, not a requirement to turn every detail into a strip.
 
+For a decal or lamp following a faceted body, ray-projecting the detail's vertices
+outside the body does not prove its connecting triangles stay outside. Coarse detail
+triangles can cut through the host between those vertices. Where the detail must lie
+flush, clip the actual host triangles to the intended footprint and retain their
+facet boundaries before applying a small controlled offset. Check the exported
+surface head-on and obliquely at every promised detail level; preserve the
+footprint and overall dimensions rather than covering the defect with a larger patch.
+Check the entire intended footprint, including points where no detail triangles were
+emitted: sampling only existing triangles cannot detect clipped-away holes. Use the
+first hit on the outward-facing host to distinguish missing coverage from backfaces.
+Contrasting body/detail colours can expose gaps; keep that diagnostic tint separate
+from the saved material design.
+
 ## Interfaces that must fit or move
 
 Derive mating surfaces from shared dimensions and local frames. Surface contact at
@@ -73,6 +99,11 @@ silhouette and inspect the moving seam from several sides. Identify the anatomic
 joint each pivot represents before reversing its bend direction. Correct exposed
 attachment caps, gaps and snapping through the motion, without assuming every
 stylized creature needs one rigging or deformation technique.
+
+Before mirroring a hand, inspect its local frame, palm, thumb web and any tool grip.
+Weak anatomical cues can look reversed without a left/right frame error. Refine the
+shape while preserving a correct wrist pivot and attachment frame, then check hand
+clearance through the relevant motion and against the complete carried tool.
 
 When reducing draw calls, consolidate compatible geometry within the same rigid
 motion parent. Preserve independently moving nodes, attachment markers and names
@@ -151,6 +182,28 @@ attaching beneath a transformed parent.
 `roundedBoxGeo` rounds a box's twelve edges. Profile beveling rounds profile corners; extrusion cap edges remain sharp. Subdivision is smoothing, not a dimension-preserving general bevel.
 
 ## Reuse structure without a new language
+
+Node and material `userData` carries application metadata as glTF extras. Use plain
+JSON and stay within 4 KiB per object and 64 KiB per asset; keys beginning `kiln` are
+reserved. Build warnings name omitted values. `visible = false` preserves hidden
+subtrees in export through `KHR_node_visibility`; their triangles are listed apart
+from headline metrics. Verify visibility support in the target application.
+
+Use `markOpenShell(part, 'why the boundary is intentionally open')` for a sheet or
+open tube. This records an acknowledgment when solid overlap cannot be measured;
+it does not suppress a measured collision or certify topology.
+
+Track helpers accept `STEP`, `LINEAR`, `CUBICSPLINE`, `EASE_IN`, `EASE_OUT` and
+`EASE_IN_OUT` interpolation. The eased choices apply between each pair of keys and
+export standard cubic sampler tangents. For example,
+`rotationTrack('Joint_Lid', [{ time: 0, rotation: [0,0,0] }, { time: 1, rotation: [0,0,90] }], 'EASE_IN_OUT')`
+starts and ends a swing at rest. Discover the track helper for its exact key format
+before authoring other channels.
+
+Source export indexes unindexed geometry using exact full-vertex equality. The
+`indexBuffers` receipt measures accessor bytes before and after this pass. Host
+`KILN_INDEX_POLICY=asBuilt` preserves helper buffers with optimization off; this
+choice belongs to export settings, not asset source.
 
 Put repeated assemblies in ordinary functions with JSDoc parameters and named return values. Pass parent/material explicitly; return the assembly root and attachment markers. Change one parameter at the call site for a variant. Give such a function a name prefix or suffix and use it for every part it creates (`Leg_L`, `Leg_R`); calling it twice with the same names makes duplicate node names, which QA reports as `UNIVERSAL_DUPLICATE_NODE_NAME`. The runnable [reusable-frame recipe](reusable-frame.kiln.js) demonstrates this without imports or hidden dependencies.
 

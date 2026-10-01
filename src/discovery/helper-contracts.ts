@@ -618,12 +618,12 @@ const sweepFacts: Facts = {
   topology: [
     'Simple profiles without holes; supplied holes fields fail explicitly. Optional caps do not prove freedom from self-intersection or create wall thickness.',
     'Warped side panels use four triangles around a bilinear midpoint to avoid diagonal bias; planar panels use two. This is piecewise-linear sampling, not a smooth surface.',
-    'A corresponding edge that collapses between stations is rejected. Check matching starts/order or add intermediate stations for an intended twist. Other self-intersections remain unchecked.',
+    'A corresponding edge that collapses between stations is rejected. Check matching starts/order or add intermediate stations for an intended twist. Bounded local analysis observes tight station curvature and intersecting consecutive rings; distant segments remain unchecked.',
   ],
   preservation: [
-    'Generates UVs, normals and bounds; stamps geometry warnings where checks are incomplete.',
+    'Generates UVs, normals and bounds; SWEEP_SELF_INTERSECTION observes station radius or intersecting consecutive rings. Incomplete analysis keeps an unchecked warning and partial finding.',
   ],
-  cost: 'Grows with profile vertex count × station/section count. Each warped side panel adds one midpoint vertex and two triangles over a planar panel; no universal self-intersection check or hard allocation cap.',
+  cost: 'Geometry grows with profile points × stations; each warped side panel adds one midpoint and two triangles. Local analysis is capped at 4096 stations, 512 points per ring and 65536 segment/triangle tests; no global surface-intersection certification or geometry allocation cap.',
 };
 define(
   'sweepProfile',
@@ -1437,7 +1437,7 @@ const animationFacts = {
   parameters: [
     'Exact nonempty node names; no property/path syntax or control characters. Existence and uniqueness require scene-aware inspection.',
     'Nonempty finite keyframes; nonnegative times must remain strictly increasing after float32 storage. Values must fit finite float32.',
-    'LINEAR and STEP survive native export and source/GLB review. Cubic interpolation is unsupported.',
+    'LINEAR, STEP, CUBICSPLINE and the EASE_IN, EASE_OUT and EASE_IN_OUT shorthands survive native export and source/GLB review; the last four are glTF CUBICSPLINE samplers with computed tangents and need at least two keys. three.js smooth and Bezier interpolants have no glTF form and are rejected.',
   ],
   topology: [noMesh],
   preservation: [
@@ -1449,9 +1449,14 @@ const animationFacts = {
   cost: 'Linear in keyframe/track count.',
 } satisfies Facts;
 const animationMetadata: Metadata = {
-  references: ['src/primitives.ts'],
+  references: ['src/primitives.ts', 'src/animation-spline.ts'],
   tags: ['animation', 'keyframes'],
 };
+/** How the cubic modes shape a track, shared by the three track constructors. */
+const easingSemantics = [
+  'CUBICSPLINE passes one smooth curve through every key with PCHIP slopes: monotone between keys, never overshooting a key, at rest where the value holds or turns; two keys give a straight line.',
+  'EASE_IN (s^2), EASE_OUT (2s - s^2) and EASE_IN_OUT (3s^2 - 2s^3) shape each segment between consecutive keys, s being the fraction of that segment; one key pair makes a smooth swing without sub-keys.',
+];
 define(
   'rotationTrack',
   {
@@ -1460,8 +1465,9 @@ define(
       'Times in seconds; Euler XYZ input rotations in degrees, converted to quaternion keyframes.',
     parameters: [
       ...animationFacts.parameters,
-      'rotation contains XYZ degree triples. LINEAR follows shortest quaternion arcs, not Euler turns; use quarter-turn samples for a full revolution.',
+      'rotation contains XYZ degree triples. LINEAR, the cubic modes and the eases follow shortest quaternion arcs between keys, not Euler turns; use quarter-turn samples for a full revolution.',
     ],
+    semantics: [...animationFacts.semantics, ...easingSemantics],
   },
   {
     ...animationMetadata,
@@ -1478,6 +1484,7 @@ define(
       ...animationFacts.parameters,
       'position contains absolute parent-local XYZ values, not value:.',
     ],
+    semantics: [...animationFacts.semantics, ...easingSemantics],
   },
   {
     ...animationMetadata,
@@ -1489,7 +1496,11 @@ define(
 );
 define(
   'scaleTrack',
-  { ...animationFacts, units: 'Times in seconds; XYZ scale factors are dimensionless.' },
+  {
+    ...animationFacts,
+    units: 'Times in seconds; XYZ scale factors are dimensionless.',
+    semantics: [...animationFacts.semantics, ...easingSemantics],
+  },
   {
     ...animationMetadata,
     aliases: ['scaling keyframes'],
@@ -1506,6 +1517,7 @@ define(
     parameters: [
       ...animationFacts.parameters,
       'Only position/scale vector and quaternion tracks, unique target/channel pairs, valid strides and unit quaternion samples (squared-length tolerance 1e-4). No silent repairs.',
+      'A cubic-spline track holds [in-tangent, value, out-tangent] per key, as a glTF CUBICSPLINE sampler does, and needs at least two keys; only its key values must be unit quaternions.',
       'Duration -1 derives from keys; explicit nonnegative seconds must include every key. Zero-duration time-zero static clips are valid. Longer duration is preserved by a held final native sample.',
       'options.loop: true declares a cycle and false a one-shot; omitted is unspecified. Exported as animations[].extras.kilnLoopIntent (loop | once); three.js GLTFLoader exposes it as clip.userData.kilnLoopIntent. Animation review reports it in loopClosure.loopIntent and warns when a declared loop does not close.',
     ],

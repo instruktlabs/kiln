@@ -24,6 +24,14 @@ import { describeAssembly, replicateAssembly } from './assembly';
 import { defineLod } from './lod';
 export { defineLod } from './lod';
 import { markOpenShell } from './open-shell';
+import { useCubicSpline } from './animation-cubic';
+import {
+  CUBIC_INTERPOLATIONS,
+  cubicSplineValues,
+  isCubicInterpolation,
+  isCubicSplineTrack,
+  type CubicInterpolation,
+} from './animation-spline';
 export { markOpenShell } from './open-shell';
 export * from './assembly';
 export { createRoofPlanes } from './architecture';
@@ -1465,18 +1473,54 @@ export function lambertMaterial(
 
 /**
  * Keyframe interpolation mode.
- * - LINEAR: default, smooth transitions between keyframes.
+ * - LINEAR: default, straight between keyframes (rotations along the shortest arc).
  * - STEP: discrete, hold value until next keyframe (good for robotic/mechanical motion).
+ * - CUBICSPLINE: one smooth curve through every key. Tangents are the slopes PCHIP computes:
+ *   monotone, so the curve never overshoots a key, and zero where the value holds or turns.
+ *   Two keys give a straight line.
+ * - EASE_IN, EASE_OUT, EASE_IN_OUT: each segment between consecutive keys starts at rest (s^2),
+ *   ends at rest (2s - s^2) or both (3s^2 - 2s^3). One key pair makes a smooth swing.
+ * The last four export as standard glTF CUBICSPLINE samplers with the tangents baked in, and
+ * need at least two keys. See `animation-spline.ts`.
  */
-export type TrackInterpolation = 'LINEAR' | 'STEP';
+export type TrackInterpolation = 'LINEAR' | 'STEP' | CubicInterpolation;
+
+const TRACK_INTERPOLATIONS: readonly TrackInterpolation[] = [
+  'LINEAR',
+  'STEP',
+  ...CUBIC_INTERPOLATIONS,
+];
 
 function threeInterpolation(mode?: TrackInterpolation): THREE.InterpolationModes {
-  if (mode !== undefined && mode !== 'LINEAR' && mode !== 'STEP') {
-    throw new Error(
-      'Animation interpolation must be LINEAR or STEP; cubic splines are unsupported.',
-    );
+  if (mode !== undefined && !TRACK_INTERPOLATIONS.includes(mode)) {
+    throw new Error(`Animation interpolation must be one of ${TRACK_INTERPOLATIONS.join(', ')}.`);
   }
   return mode === 'STEP' ? THREE.InterpolateDiscrete : THREE.InterpolateLinear;
+}
+
+/** A track of `Type` with `interpolation`; the cubic modes store the glTF CUBICSPLINE layout. */
+function interpolatedTrack<T extends THREE.KeyframeTrack>(
+  Type: new (
+    name: string,
+    times: number[],
+    values: number[],
+    interpolation?: THREE.InterpolationModes,
+  ) => T,
+  name: string,
+  times: number[],
+  values: number[],
+  interpolation: TrackInterpolation | undefined,
+): T {
+  if (!isCubicInterpolation(interpolation))
+    return new Type(name, times, values, threeInterpolation(interpolation));
+  const quaternion = (Type as unknown) === THREE.QuaternionKeyframeTrack;
+  return useCubicSpline(
+    new Type(
+      name,
+      times,
+      cubicSplineValues(times, values, quaternion ? 4 : 3, interpolation, quaternion),
+    ),
+  );
 }
 
 function animationNumber(value: unknown, label: string): asserts value is number {
@@ -1539,6 +1583,11 @@ function animationKeys(
   if (!Array.isArray(frames) || frames.length === 0) {
     throw new Error(`${channel}Track requires at least one keyframe.`);
   }
+  if (isCubicInterpolation(interpolation) && frames.length < 2) {
+    throw new Error(
+      `${channel}Track ${interpolation} needs at least two keyframes; a single key is a constant pose, so use LINEAR.`,
+    );
+  }
   for (const [i, frame] of frames.entries()) {
     if (!frame || typeof frame !== 'object')
       throw new Error(`${channel}Track keyframe ${i} must be an object.`);
@@ -1555,8 +1604,9 @@ function animationKeys(
 
 /**
  * Absolute local rotation: XYZ Euler angles in degrees, converted to unit quaternions.
- * LINEAR uses shortest-arc quaternion interpolation, not linear Euler angles. A two-key
- * 0-to-360 degree track is stationary; use intermediate rotations (as spinAnimation does).
+ * LINEAR uses shortest-arc quaternion interpolation, not linear Euler angles; the cubic modes
+ * and eases also take the shortest arc between keys. A two-key 0-to-360 degree track is
+ * stationary; use intermediate rotations (as spinAnimation does).
  * Times are nonnegative seconds, strictly increasing after float32 storage.
  * The exact target node must exist in the authored scene; this constructor has no scene.
  */
@@ -1582,11 +1632,12 @@ export function rotationTrack(
     values.push(quat.x, quat.y, quat.z, quat.w);
   }
 
-  return new THREE.QuaternionKeyframeTrack(
+  return interpolatedTrack(
+    THREE.QuaternionKeyframeTrack,
     `${jointName}.quaternion`,
     times,
     values,
-    threeInterpolation(interpolation),
+    interpolation,
   );
 }
 
@@ -1605,11 +1656,12 @@ export function positionTrack(
     values.push(...kf.position);
   }
 
-  return new THREE.VectorKeyframeTrack(
+  return interpolatedTrack(
+    THREE.VectorKeyframeTrack,
     `${jointName}.position`,
     times,
     values,
-    threeInterpolation(interpolation),
+    interpolation,
   );
 }
 
@@ -1628,11 +1680,12 @@ export function scaleTrack(
     values.push(...kf.scale);
   }
 
-  return new THREE.VectorKeyframeTrack(
+  return interpolatedTrack(
+    THREE.VectorKeyframeTrack,
     `${jointName}.scale`,
     times,
     values,
-    threeInterpolation(interpolation),
+    interpolation,
   );
 }
 
@@ -1641,8 +1694,10 @@ export function scaleTrack(
  * the final stored key. An explicit duration must include every key (float32 rounding
  * is allowed); zero is valid for time-zero static poses. Tracks remain shared references.
  * Export adds held final samples when needed to preserve an explicit longer duration.
- * Supports LINEAR/STEP vector and quaternion tracks, not cubic splines or other channels.
- * Quaternion samples must already be unit length (squared-length tolerance 1e-4).
+ * Supports LINEAR, STEP and cubic-spline vector and quaternion tracks, not three.js smooth or
+ * Bezier interpolants or other channels. A cubic-spline track (CUBICSPLINE and the EASE_*
+ * shorthands) holds [in-tangent, value, out-tangent] per key and needs at least two keys.
+ * Quaternion key values must already be unit length (squared-length tolerance 1e-4).
  * Validates target syntax, not scene existence/uniqueness: use scene inspection/QA for that.
  * `options.loop` declares intent: true for a cycle, false for a one-shot. It is exported as
  * the glTF animation extra `kilnLoopIntent` ('loop' | 'once') and reported by animation review;
@@ -1685,19 +1740,28 @@ export function createClip(
       throw new Error(
         `Animation channel ${channel} requires ${quaternion ? 'QuaternionKeyframeTrack' : 'VectorKeyframeTrack'}.`,
       );
+    const cubic = isCubicSplineTrack(track);
     const mode = track.getInterpolation();
-    if (mode !== THREE.InterpolateLinear && mode !== THREE.InterpolateDiscrete) {
+    if (!cubic && mode !== THREE.InterpolateLinear && mode !== THREE.InterpolateDiscrete) {
       throw new Error(
-        'Animation interpolation must be LINEAR or STEP; cubic splines are unsupported.',
+        'Animation interpolation must be LINEAR, STEP or CUBICSPLINE (the glTF sampler modes); three.js smooth and Bezier interpolants have no glTF form.',
       );
     }
     animationTimes(track.times, track.name);
-    const stride = quaternion ? 4 : 3;
+    if (cubic && track.times.length < 2)
+      throw new Error(
+        `Animation track ${track.name} is a cubic spline and needs at least two keys.`,
+      );
+    const size = quaternion ? 4 : 3;
+    // A cubic-spline key is [in-tangent, value, out-tangent]; only the value is a pose.
+    const stride = cubic ? size * 3 : size;
     if (track.values.length !== track.times.length * stride)
-      throw new Error(`Animation track ${track.name} requires ${stride} values per keyframe.`);
+      throw new Error(
+        `Animation track ${track.name} requires ${stride} values per keyframe${cubic ? ' (in-tangent, value and out-tangent)' : ''}.`,
+      );
     for (const value of track.values) animationNumber(value, `Animation track ${track.name} value`);
     if (quaternion) {
-      for (let i = 0; i < track.values.length; i += 4) {
+      for (let i = cubic ? size : 0; i < track.values.length; i += stride) {
         const lengthSquared =
           track.values[i]! ** 2 +
           track.values[i + 1]! ** 2 +

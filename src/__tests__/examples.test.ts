@@ -57,49 +57,12 @@ const outcomes = new Map<string, Outcome>(
   ),
 );
 
-const loftMessage =
-  'Corresponding profiles are connected directly. Caps and closed boundaries do not prove the loft is free of self-intersections.';
-const sweepMessage =
-  'Transported frames and caps do not prove a sweep is free of self-intersections. Review tight turns and nearby path segments.';
-const loftAdvisory = (meshes: string) =>
-  `LOFT_SELF_INTERSECTION_UNCHECKED (${meshes}): ${loftMessage}`;
-const sweepAdvisory = (meshes: string) =>
-  `SWEEP_SELF_INTERSECTION_UNCHECKED (${meshes}): ${sweepMessage}`;
-// Exact reviewed advisory groups: a note repeated across meshes is reported once with its
-// mesh count and first names. New meshes, warnings or changed warning text still fail.
+// Completed local sweep/loft checks no longer emit unconditional unchecked warnings.
+// Exact remaining advisory groups are still asserted, without a blanket filter.
 const documentedAdvisories: Record<string, string[]> = {
-  'mechanical-peacock': [
-    sweepAdvisory('8 meshes: Mesh_SpineStrip, Mesh_BellyKeel, Mesh_Neck, +5 more'),
-  ],
-  'alpine-cable-terminal': [sweepAdvisory('2 meshes: Mesh_CableReturnLoop, Mesh_GondolaHangerArm')],
-  'kestrel-rescue-craft': [loftAdvisory('2 meshes: Mesh_PortNacelle, Mesh_StarboardNacelle')],
-  'nautilus-habitat': [
-    sweepAdvisory('7 meshes: Mesh_CurvedRib_0, Mesh_CurvedRib_1, Mesh_CurvedRib_2, +4 more'),
-  ],
-  'ribbon-tea-pavilion': [
-    sweepAdvisory('33 meshes: Mesh_GlulamRib_0, Mesh_GlulamRib_1, Mesh_GlulamRib_2, +30 more'),
-  ],
-  'bench-refractor': [
-    loftAdvisory('4 meshes: Mesh_BasePlate, Mesh_Pier, Mesh_Barrel, +1 more'),
-    sweepAdvisory('4 meshes: Mesh_Rib0, Mesh_Rib1, Mesh_Rib2, +1 more'),
-  ],
-  'twisting-canopy': [
-    sweepAdvisory(
-      '13 meshes: Mesh_StructuralRib_1, Mesh_StructuralRib_2, Mesh_StructuralRib_3, +10 more',
-    ),
-  ],
-  'demo-argent-aircraft-carrier': [
-    loftAdvisory('43 meshes: Mesh_SculptedHull, Mesh_RedLowerHull, Mesh_FlightDeckRim, +40 more'),
-  ],
   'demo-floating-observatory': [
     'Floating parts (no mesh overlap with any sibling, 2cm tol): Mesh_WaterfallSprayDroplet_3 — Fix: shift "Mesh_WaterfallSprayDroplet_3" by [0.000, 0.000, -0.024] toward "Mesh_ContinuousWaterCurtain", or call snapTo(part, hostPart) to do it automatically. | Mesh_WaterfallSprayDroplet_5 — Fix: shift "Mesh_WaterfallSprayDroplet_5" by [0.000, 0.000, -0.026] toward "Mesh_ContinuousWaterCurtain", or call snapTo(part, hostPart) to do it automatically. | Mesh_WaterfallSprayDroplet_9 — Fix: shift "Mesh_WaterfallSprayDroplet_9" by [0.000, 0.000, -0.046] toward "Mesh_ContinuousWaterCurtain", or call snapTo(part, hostPart) to do it automatically. | Mesh_WaterfallSprayDroplet_11 — Fix: shift "Mesh_WaterfallSprayDroplet_11" by [0.000, 0.000, -0.059] toward "Mesh_ContinuousWaterCurtain", or call snapTo(part, hostPart) to do it automatically.',
   ],
-  'demo-noctilus-nuclear-submarine': [
-    loftAdvisory(
-      '15 meshes: Mesh_Streamlined_Sail, Mesh_Sail_Crown, Mesh_Port_Bow_Diving_Plane, +12 more',
-    ),
-  ],
-  'demo-ocean-salvage-tug': [loftAdvisory('2 meshes: Mesh_Hull, Mesh_BootStripe')],
 };
 
 describe('examples', () => {

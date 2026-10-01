@@ -791,9 +791,9 @@ describe('QaRegistry', () => {
 
   test('publishes a stable auditable state and owner for every checked-in rule', () => {
     const decisions = DETERMINISTIC_QA_REGISTRY.describePolicy();
-    // 26 -> 27 with T4.3's REF_COMPARISON. The count is asserted so a rule can
+    // 27 -> 28 with the approved bounded sweep/loft observation. The count means a rule can
     // never join the deterministic registry without someone noticing.
-    expect(decisions).toHaveLength(27);
+    expect(decisions).toHaveLength(28);
     expect(
       decisions
         .filter((item) => item.ruleClass === 'exact')

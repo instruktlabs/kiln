@@ -2,6 +2,7 @@ import { describe, expect, test } from 'bun:test';
 import * as THREE from 'three';
 
 import { createAssetIntentV1, stampSemanticMetadataV1 } from '../contracts';
+import { createClip, rotationTrack, scaleTrack } from '../primitives';
 import { renderSceneToGLB } from '../render';
 import { bindLegacyFixtureRequirements } from '../__tests__/helpers/requirements-fixture';
 import {
@@ -257,6 +258,59 @@ describe('W7 engine-derived QA evidence', () => {
       .flatMap((dimension) => dimension.findings)
       .map((finding) => finding.code);
     expect(codes).toContain('VFX_SIDECAR_IDENTITY_MISMATCH');
+  });
+
+  test('an eased loop matches its start on key values, whatever its end tangents', () => {
+    const material = new THREE.SpriteMaterial({ transparent: true, opacity: 0.5 });
+    const pulse = (end: number) =>
+      createClip('SmokeLoop', 1, [
+        scaleTrack(
+          'SmokeCard',
+          [
+            { time: 0, scale: [1, 1, 1] },
+            { time: 0.5, scale: [1.25, 1.25, 1.25] },
+            { time: 1, scale: [end, end, end] },
+          ],
+          'EASE_IN',
+        ),
+      ]);
+    const playback = (end: number) =>
+      analyzeVfxArtifactEvidenceV1(vfxIntent().vfx!, vfxScene(material), [pulse(end)]).animation;
+    expect(playback(1)).toMatchObject({ playback: 'loop', endpointMatches: true });
+    expect(playback(1.5)).toMatchObject({ playback: 'oneShot', endpointMatches: false });
+  });
+
+  test('hidden subtrees do not alter VFX material or facing evidence', () => {
+    const root = vfxScene(new THREE.SpriteMaterial({ transparent: true, opacity: 0.5 }));
+    const before = analyzeVfxArtifactEvidenceV1(vfxIntent().vfx!, root, [loopClip()]);
+    const hidden = new THREE.Group();
+    hidden.visible = false;
+    hidden.add(new THREE.Mesh(new THREE.BoxGeometry(), new THREE.ShaderMaterial()));
+    root.add(hidden);
+    expect(analyzeVfxArtifactEvidenceV1(vfxIntent().vfx!, root, [loopClip()])).toEqual(before);
+  });
+
+  test('quaternion loop endpoints compare orientations including q and minus q', () => {
+    const material = new THREE.SpriteMaterial({ transparent: true, opacity: 0.5 });
+    for (const interpolation of ['LINEAR', 'EASE_IN_OUT', 'CUBICSPLINE'] as const) {
+      for (const end of [360, 300]) {
+        const clip = createClip('Spin', 3, [
+          rotationTrack(
+            'SmokeCard',
+            [0, 120, 240, end].map((degrees, time) => ({
+              time,
+              rotation: [0, degrees, 0] as [number, number, number],
+            })),
+            interpolation,
+          ),
+        ]);
+        const evidence = analyzeVfxArtifactEvidenceV1(vfxIntent().vfx!, vfxScene(material), [clip]);
+        expect(evidence.animation).toMatchObject({
+          endpointMatches: end === 360,
+          playback: end === 360 ? 'loop' : 'oneShot',
+        });
+      }
+    }
   });
 
   test('dedicated alphaMap is actual alpha evidence even without raw RGBA pixels', () => {

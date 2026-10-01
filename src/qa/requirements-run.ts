@@ -25,6 +25,7 @@ import {
   PROP_ADVISORY_QA_RULE,
 } from './prop';
 import { inspectPartConnectivity, PART_CONNECTIVITY_QA_RULE } from './part-connectivity';
+import { inspectSweepGeometry, SWEEP_QA_RULE } from './sweep';
 import {
   analyzePartPenetration,
   inspectPartPenetration,
@@ -64,6 +65,7 @@ const registry = new QaRegistry([
   PROP_ADVISORY_QA_RULE,
   PART_CONNECTIVITY_QA_RULE,
   SELF_INTERSECTION_QA_RULE,
+  SWEEP_QA_RULE,
   ...VEHICLE_QA_RULES,
   ...ARCHITECTURE_QA_RULES,
   ...ENVIRONMENT_QA_RULES,
@@ -269,60 +271,62 @@ export function runRequirementsSceneQa(
       continue;
     }
     const measured =
-      decision.ruleId === PART_CONNECTIVITY_QA_RULE.id
-        ? inspectPartConnectivity(scene)
-        : decision.ruleId === ASSET_SCOPE_QA_RULE.id && scope?.state === 'requested'
-          ? inspectAssetScope({
-              profile: 'asset.requirements.v1',
-              scope: { schemaVersion: 1, scope: scope.value, explicit: true },
-              derivedEvidence: { source: 'engine-scene-analysis', assetScope: scopeObservation },
-            })
-          : decision.ruleId === 'CHARACTER_PROFILE'
-            ? inspectRig(rigInput)
-            : decision.ruleId === 'CHARACTER_ADVISORY_PROFILE'
-              ? inspectRigAdvisory(rigInput)
-              : decision.ruleId === 'VEGETATION_CONTACT_PROFILE'
-                ? inspectFoliageContact(foliageInput)
-                : decision.ruleId === 'VEGETATION_ADVISORY_PROFILE'
-                  ? inspectFoliageAdvisory(foliageInput)
-                  : decision.ruleId === MATERIAL_QA_RULE.id
-                    ? inspectPortableSceneMaterials(scene, tangents)
-                    : decision.ruleId === 'VFX_EXACT_PROFILE'
-                      ? inspectEffectsExact(effectsInput)
-                      : decision.ruleId === 'VFX_ADVISORY_PROFILE'
-                        ? inspectEffectsAdvisory(effectsInput)
-                        : decision.ruleId === 'ARCHITECTURE_PROFILE'
-                          ? structureFindings.filter((f) => f.disposition === 'block')
-                          : decision.ruleId === 'ARCHITECTURE_ADVISORY_PROFILE'
-                            ? structureFindings.filter((f) => f.disposition !== 'block')
-                            : decision.ruleId === 'ENVIRONMENT_EXACT_PROFILE'
-                              ? spatialFindings.filter((f) => f.disposition === 'block')
-                              : decision.ruleId === 'ENVIRONMENT_ADVISORY_PROFILE'
-                                ? spatialFindings.filter((f) => f.disposition !== 'block')
-                                : decision.ruleId === 'VEHICLE_PROFILE'
-                                  ? mobilityFindings.filter((f) => f.disposition === 'block')
-                                  : decision.ruleId === 'VEHICLE_ADVISORY_PROFILE'
-                                    ? mobilityFindings.filter((f) => f.disposition !== 'block')
-                                    : decision.ruleId === 'VEHICLE_W6_ADVISORY_PROFILE'
-                                      ? inspectMobilityAdvisory(mobilityInput)
-                                      : decision.ruleId === PROP_ADVISORY_QA_RULE.id
-                                        ? inspectPlacement({
-                                            scene,
-                                            bounds:
-                                              needs.bounds?.state === 'requested'
-                                                ? needs.bounds.value
-                                                : undefined,
-                                            groundPlaneY:
-                                              needs.grounding?.state === 'requested'
-                                                ? (needs.grounding.value.planeY ?? 0)
-                                                : undefined,
-                                          })
-                                        : UNIVERSAL_QA_KERNELS[decision.ruleId]!({
-                                            scene,
-                                            clips,
-                                            requiredParts: parts,
-                                            animation: { clips: requiredClips },
-                                          });
+      decision.ruleId === SWEEP_QA_RULE.id
+        ? inspectSweepGeometry(scene)
+        : decision.ruleId === PART_CONNECTIVITY_QA_RULE.id
+          ? inspectPartConnectivity(scene)
+          : decision.ruleId === ASSET_SCOPE_QA_RULE.id && scope?.state === 'requested'
+            ? inspectAssetScope({
+                profile: 'asset.requirements.v1',
+                scope: { schemaVersion: 1, scope: scope.value, explicit: true },
+                derivedEvidence: { source: 'engine-scene-analysis', assetScope: scopeObservation },
+              })
+            : decision.ruleId === 'CHARACTER_PROFILE'
+              ? inspectRig(rigInput)
+              : decision.ruleId === 'CHARACTER_ADVISORY_PROFILE'
+                ? inspectRigAdvisory(rigInput)
+                : decision.ruleId === 'VEGETATION_CONTACT_PROFILE'
+                  ? inspectFoliageContact(foliageInput)
+                  : decision.ruleId === 'VEGETATION_ADVISORY_PROFILE'
+                    ? inspectFoliageAdvisory(foliageInput)
+                    : decision.ruleId === MATERIAL_QA_RULE.id
+                      ? inspectPortableSceneMaterials(scene, tangents)
+                      : decision.ruleId === 'VFX_EXACT_PROFILE'
+                        ? inspectEffectsExact(effectsInput)
+                        : decision.ruleId === 'VFX_ADVISORY_PROFILE'
+                          ? inspectEffectsAdvisory(effectsInput)
+                          : decision.ruleId === 'ARCHITECTURE_PROFILE'
+                            ? structureFindings.filter((f) => f.disposition === 'block')
+                            : decision.ruleId === 'ARCHITECTURE_ADVISORY_PROFILE'
+                              ? structureFindings.filter((f) => f.disposition !== 'block')
+                              : decision.ruleId === 'ENVIRONMENT_EXACT_PROFILE'
+                                ? spatialFindings.filter((f) => f.disposition === 'block')
+                                : decision.ruleId === 'ENVIRONMENT_ADVISORY_PROFILE'
+                                  ? spatialFindings.filter((f) => f.disposition !== 'block')
+                                  : decision.ruleId === 'VEHICLE_PROFILE'
+                                    ? mobilityFindings.filter((f) => f.disposition === 'block')
+                                    : decision.ruleId === 'VEHICLE_ADVISORY_PROFILE'
+                                      ? mobilityFindings.filter((f) => f.disposition !== 'block')
+                                      : decision.ruleId === 'VEHICLE_W6_ADVISORY_PROFILE'
+                                        ? inspectMobilityAdvisory(mobilityInput)
+                                        : decision.ruleId === PROP_ADVISORY_QA_RULE.id
+                                          ? inspectPlacement({
+                                              scene,
+                                              bounds:
+                                                needs.bounds?.state === 'requested'
+                                                  ? needs.bounds.value
+                                                  : undefined,
+                                              groundPlaneY:
+                                                needs.grounding?.state === 'requested'
+                                                  ? (needs.grounding.value.planeY ?? 0)
+                                                  : undefined,
+                                            })
+                                          : UNIVERSAL_QA_KERNELS[decision.ruleId]!({
+                                              scene,
+                                              clips,
+                                              requiredParts: parts,
+                                              animation: { clips: requiredClips },
+                                            });
     for (const finding of measured)
       findings.push(
         decision.mode === 'observe' || decision.mode === 'warn'

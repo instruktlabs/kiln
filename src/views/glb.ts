@@ -1,4 +1,5 @@
 /** GLB-native input adapter for the deterministic CPU geometry-flat renderer. */
+import { useCubicSpline } from '../animation-cubic';
 import { createGltfIO } from '../gltf-io';
 import { listLodChainNodes } from '../lod-export';
 import { isHiddenGltfNode } from '../metrics';
@@ -132,12 +133,21 @@ function withLoopIntent(clip: AnimationClip, intent: unknown): AnimationClip {
   return clip;
 }
 
+/** Values per key of a CUBICSPLINE track: [in-tangent, value, out-tangent]. */
+const cubicTuple = (property: string) => (property === 'quaternion' ? 12 : 9);
+
+/** The review copy: version 1, or version 2 when a clip has a CUBICSPLINE track. */
 function reviewClipsFromExtras(extras: unknown): AnimationClip[] | undefined {
   if (!record(extras)) return undefined;
   const envelope = extras[REVIEW_CLIPS_EXTRAS_KEY];
-  if (!record(envelope) || envelope.version !== 1 || !Array.isArray(envelope.clips)) {
+  if (
+    !record(envelope) ||
+    (envelope.version !== 1 && envelope.version !== 2) ||
+    !Array.isArray(envelope.clips)
+  ) {
     return undefined;
   }
+  const cubicAllowed = envelope.version === 2;
   if (envelope.clips.length > REVIEW_CLIP_LIMITS.clips) {
     throw new GlbGeometryFlatError(
       'GLB_FLAT_PARSE_FAILED',
@@ -168,7 +178,8 @@ function reviewClipsFromExtras(extras: unknown): AnimationClip[] | undefined {
         !Array.isArray(track.values) ||
         (track.interpolation !== undefined &&
           track.interpolation !== 'LINEAR' &&
-          track.interpolation !== 'STEP') ||
+          track.interpolation !== 'STEP' &&
+          !(cubicAllowed && track.interpolation === 'CUBICSPLINE')) ||
         track.times.length > REVIEW_CLIP_LIMITS.samplesPerTrack ||
         track.values.length > REVIEW_CLIP_LIMITS.valuesPerTrack ||
         !track.times.every((value) => typeof value === 'number' && Number.isFinite(value)) ||
@@ -178,6 +189,18 @@ function reviewClipsFromExtras(extras: unknown): AnimationClip[] | undefined {
       }
       const property = track.name.slice(track.name.lastIndexOf('.') + 1);
       const Track = property === 'quaternion' ? QuaternionKeyframeTrack : VectorKeyframeTrack;
+      if (track.interpolation === 'CUBICSPLINE') {
+        if (
+          track.times.length < 2 ||
+          track.values.length !== track.times.length * cubicTuple(property)
+        ) {
+          throw new GlbGeometryFlatError(
+            'GLB_FLAT_PARSE_FAILED',
+            'Invalid animation review track.',
+          );
+        }
+        return useCubicSpline(new Track(track.name, track.times, track.values));
+      }
       return new Track(
         track.name,
         track.times,
@@ -679,14 +702,27 @@ export async function loadGlbReviewScene(bytes: Uint8Array): Promise<LoadedGlbRe
             const property =
               path === 'translation' ? 'position' : path === 'rotation' ? 'quaternion' : path;
             if (!node || !property || property === 'weights' || !input || !output) return [];
-            const interpolation = sampler!.getInterpolation();
-            if (interpolation !== 'STEP' && interpolation !== 'LINEAR') {
+            const interpolation: string = sampler!.getInterpolation();
+            if (
+              interpolation !== 'STEP' &&
+              interpolation !== 'LINEAR' &&
+              interpolation !== 'CUBICSPLINE'
+            ) {
               throw new GlbGeometryFlatError(
                 'GLB_FLAT_PARSE_FAILED',
-                `Animation review does not support ${interpolation} interpolation; use LINEAR or STEP.`,
+                `Animation review does not support ${interpolation} interpolation; use LINEAR, STEP or CUBICSPLINE.`,
               );
             }
             const Track = path === 'rotation' ? QuaternionKeyframeTrack : VectorKeyframeTrack;
+            if (interpolation === 'CUBICSPLINE') {
+              if (input.length < 2 || output.length !== input.length * cubicTuple(property)) {
+                throw new GlbGeometryFlatError(
+                  'GLB_FLAT_PARSE_FAILED',
+                  `Animation sampler for ${node.getName()}.${property} is not a valid CUBICSPLINE sampler: it needs at least two keys and three values per key.`,
+                );
+              }
+              return [useCubicSpline(new Track(`${node.getName()}.${property}`, input, output))];
+            }
             return [
               new Track(
                 `${node.getName()}.${property}`,

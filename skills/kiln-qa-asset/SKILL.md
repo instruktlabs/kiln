@@ -22,7 +22,21 @@ Read validation/build findings and export warnings. MCP render and inspection re
 
 Distinguish expected open sheets from invalid solid topology. `geometryDiagnostics` reports boundary edges, non-manifold edges, orientation conflicts and degenerates; it does not prove absence of self-intersection. A capped loft, shell-like surface, or sampled field is not automatically a manufacturing-grade solid.
 
-The part-overlap observer (`GEO_PART_SELF_INTERSECTION`) tests the most-overlapping pairs first. `_TRUNCATED` means pairs went untested for budget (`pairsNotReached`); `_UNMEASURED` groups parts it could not measure, such as open shells, by reason. Neither is a finding of overlap; check those pairs with `measure` or focused views when they matter. A name token such as `LOD1`, `lod2` or `Trim_LOD0` on a node or its nearest tagged ancestor marks LOD alternates: overlap skips pairs across levels, and connectivity leaves out visible parts on LOD1 and above. An asset has tiers only when its brief asked for them; each set of sibling tiers carries one `defineLod` declaration with its screen-coverage thresholds, or the build fails with `LOD_SET`. Check the thresholds against the brief's switch distances. The written GLB carries each set as one `MSFT_lod` chain; headline triangles and bounds are LOD0's, and `levelsOfDetail` lists every level's triangles and path. Default sheets draw LOD0; review each lower level with a shot whose subject is its `path` and `visibility: "isolate"`, and read each chain's `drawn` for the level every view drew. Findings with `disposition: "observe"` on joins you intended, such as a leg passing into its rail or an open `curveToMesh` end buried in another part, are informational while the report's disposition passes; review the pairs you did not intend.
+An intentional boundary can use `markOpenShell(part, 'specific reason')`. Read the
+overlap report's acknowledgment and reason; this is an explicit measurement limit,
+not a clean result. Closed components are unioned before measuring overlap;
+unsupported inward shells or component budgets remain unmeasured. Hidden subtrees
+are excluded from category QA, while `hiddenNodes` accounts for their triangles.
+
+`SWEEP_SELF_INTERSECTION` observes tight station curvature or intersecting
+consecutive rings in a sweep/loft. Inspect the station and radius evidence. A
+`_PARTIAL` finding or `_UNCHECKED` warning means the bounded local analysis did not
+finish; even a completed check does not cover distant segments. Review the rest
+when those contacts matter. Eased animation is exported as standard cubic sampler
+data; inspect intermediate poses, and treat quaternion `q` and `-q` endpoints as
+the same rotation when reading loop closure.
+
+The part-overlap observer (`GEO_PART_SELF_INTERSECTION`) tests the most-overlapping pairs first. `_TRUNCATED` means pairs went untested for budget (`pairsNotReached`); `_UNMEASURED` groups parts it could not measure, such as open shells, by reason. Neither is a finding of overlap; check those pairs with `measure` or focused views when they matter. Overlap skips different levels only within the same sibling LOD chain; independent chains can appear together at different levels. Connectivity retains its LOD0 baseline and leaves out visible parts labeled LOD1 and above. An asset has tiers only when its brief asked for them; each set of sibling tiers carries one `defineLod` declaration with its screen-coverage thresholds, or the build fails with `LOD_SET`. Check the thresholds against the brief's switch distances. The written GLB carries each set as one `MSFT_lod` chain; headline triangles and bounds are LOD0's, and `levelsOfDetail` lists every level's triangles and path. Default sheets draw LOD0; review each lower level with a shot whose subject is its `path` and `visibility: "isolate"`, and read each chain's `drawn` for the level every view drew. Findings with `disposition: "observe"` on joins you intended, such as a leg passing into its rail or an open `curveToMesh` end buried in another part, are informational while the report's disposition passes; review the pairs you did not intend.
 
 For an assembly, identify the required contact pairs and the required separation
 pairs. Review both ends of supports against their intended neighbors with focused

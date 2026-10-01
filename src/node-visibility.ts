@@ -8,8 +8,8 @@
  * with its own triangles, so hidden state costs no variant program.
  */
 import type { Document, Node as GltfNode, Scene } from '@gltf-transform/core';
-import { KHRNodeVisibility } from '@gltf-transform/extensions';
-import type * as THREE from 'three';
+import { KHRNodeVisibility, type InstancedMesh } from '@gltf-transform/extensions';
+import * as THREE from 'three';
 import type { HiddenNodeV1 } from './contracts/integration';
 import { isHiddenGltfNode, nodeTriangles } from './metrics';
 import { writtenNodeResolver } from './written-nodes';
@@ -59,7 +59,7 @@ export function summarizeHiddenNodes(doc: Document): HiddenNodeV1[] {
 
 /**
  * World bounds of the geometry a loader draws: `getBounds` without hidden subtrees, vertex by
- * vertex so rotated geometry stays tight. Instanced copies are not expanded, as in `getBounds`.
+ * vertex so rotated geometry stays tight, including every GPU instance placement.
  */
 export function drawnSceneBounds(scene: Scene): { min: number[]; max: number[] } {
   const min = [Infinity, Infinity, Infinity];
@@ -68,26 +68,45 @@ export function drawnSceneBounds(scene: Scene): { min: number[]; max: number[] }
     if (isHiddenGltfNode(node)) return;
     const mesh = node.getMesh();
     if (mesh) {
-      const m = node.getWorldMatrix();
+      const base = new THREE.Matrix4().fromArray(node.getWorldMatrix());
+      const instances = node.getExtension<InstancedMesh>('EXT_mesh_gpu_instancing');
+      const translation = instances?.getAttribute('TRANSLATION');
+      const rotation = instances?.getAttribute('ROTATION');
+      const scale = instances?.getAttribute('SCALE');
+      const countInstances =
+        translation?.getCount() ?? rotation?.getCount() ?? scale?.getCount() ?? 1;
+      const matrices: number[][] = [];
+      for (let i = 0; i < countInstances; i++) {
+        const t = translation?.getElement(i, []) ?? [0, 0, 0];
+        const r = rotation?.getElement(i, []) ?? [0, 0, 0, 1];
+        const s = scale?.getElement(i, []) ?? [1, 1, 1];
+        const localMatrix = new THREE.Matrix4().compose(
+          new THREE.Vector3().fromArray(t),
+          new THREE.Quaternion().fromArray(r),
+          new THREE.Vector3().fromArray(s),
+        );
+        matrices.push(base.clone().multiply(localMatrix).toArray());
+      }
       const local = [0, 0, 0];
       for (const primitive of mesh.listPrimitives()) {
         const position = primitive.getAttribute('POSITION');
         if (!position) continue;
         const indices = primitive.getIndices();
         const count = indices ? indices.getCount() : position.getCount();
-        for (let i = 0; i < count; i++) {
-          position.getElement(indices ? indices.getScalar(i) : i, local);
-          const [x, y, z] = local as [number, number, number];
-          const world = [
-            m[0]! * x + m[4]! * y + m[8]! * z + m[12]!,
-            m[1]! * x + m[5]! * y + m[9]! * z + m[13]!,
-            m[2]! * x + m[6]! * y + m[10]! * z + m[14]!,
-          ];
-          for (let k = 0; k < 3; k++) {
-            if (world[k]! < min[k]!) min[k] = world[k]!;
-            if (world[k]! > max[k]!) max[k] = world[k]!;
+        for (const m of matrices)
+          for (let i = 0; i < count; i++) {
+            position.getElement(indices ? indices.getScalar(i) : i, local);
+            const [x, y, z] = local as [number, number, number];
+            const world = [
+              m[0]! * x + m[4]! * y + m[8]! * z + m[12]!,
+              m[1]! * x + m[5]! * y + m[9]! * z + m[13]!,
+              m[2]! * x + m[6]! * y + m[10]! * z + m[14]!,
+            ];
+            for (let k = 0; k < 3; k++) {
+              if (world[k]! < min[k]!) min[k] = world[k]!;
+              if (world[k]! > max[k]!) max[k] = world[k]!;
+            }
           }
-        }
       }
     }
     for (const child of node.listChildren()) visit(child);

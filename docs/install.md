@@ -3,14 +3,18 @@
 This guide installs Kiln **0.9.0**: standalone authoring with optional projects, a
 material library and Live Review in the local dashboard. [CHANGELOG.md](../CHANGELOG.md)
 lists what changed. Existing users should read the [migration notes](migration.md)
-before upgrading a workspace.
+before upgrading a workspace. **0.9.0 is currently a local candidate:** build the exact
+checkout for local evaluation. Its final installed-package qualification is still open;
+package publication is deferred to v1.0.
 
 ## Install the package
 
-Kiln is distributed as an npm package tarball, `kiln-engine-VERSION.tgz`, that you
-install with Node.js and npm. Download it with `SHA256SUMS.txt` from the
-[latest release](https://github.com/matthew-kissinger/kiln/releases/latest), or build it
-from a checkout as described in [Install a local package](#install-a-local-package).
+Kiln can be packaged as a tarball, `kiln-engine-VERSION.tgz`, and installed with
+Node.js and npm. For the current candidate, use
+[Install a local package](#install-a-local-package). For a published package, use
+the tarball and checksum actually attached to its
+[release](https://github.com/matthew-kissinger/kiln/releases); a source-only release
+does not imply that a built tarball is available.
 The package includes the built CLI/MCP runtimes, renderer code, plugins and skills.
 You do not need Bun, a source checkout, a build step or a separate model API key to
 use the CLI/MCP tools. Use the real tarball path and filename:
@@ -61,17 +65,16 @@ For agent-assisted installation, give your agent the repository URL and ask:
 
 ## Release compatibility
 
-Install the [latest release](https://github.com/matthew-kissinger/kiln/releases/latest).
-Its connected MCP server lists the fourteen tools in the
+The current candidate's connected MCP server lists the fourteen tools in the
 [generated tool reference](tools.md), plus `kiln_project`, `kiln_material` and
 `kiln_review` from the packaged local host: seventeen in all. When installing an
 older release, use the documentation and receipt attached to that release; newer
 tools and migration changes are not retroactively available there.
 
-Every release attaches a per-platform package receipt (Linux, Windows, macOS arm64,
-macOS x64) and `SHA256SUMS.txt`. Each receipt records the sha256 of the tarball beside
-it and is checked against that exact file before publication, so you can verify what you
-downloaded rather than trusting the filename.
+Package publication requires per-platform receipts (Linux, Windows, macOS arm64,
+macOS x64) and `SHA256SUMS.txt` for the exact tarball. Check the artifacts actually
+attached to the selected release; do not treat an older receipt or a source archive
+as qualification of the current candidate.
 
 A successful local build or an unreleased fix does not update the GitHub release: a
 checkout can be ahead of it. Do not substitute an unverified npm registry package -- this

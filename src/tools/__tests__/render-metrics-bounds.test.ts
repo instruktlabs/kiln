@@ -2,6 +2,22 @@ import { describe, expect, test } from 'bun:test';
 import { kilnRenderViewsDef, type KilnRenderViewsResult } from '../registry';
 
 describe('render metrics from exported vertices', () => {
+  for (const capture of [undefined, { version: 'kiln.capture.v2', shots: [{}], size: 128 }]) {
+    test(`render exposes the index buffer receipt (${capture ? 'versioned' : 'default'} capture)`, async () => {
+      const result = (await kilnRenderViewsDef.run({
+        code: `function build() {
+        return createPart('Panel', planeGeo(2, 2).toNonIndexed(), gameMaterial('#888888'));
+      }`,
+        ...(capture ? { capture } : {}),
+      })) as KilnRenderViewsResult;
+      expect(result.ok).toBe(true);
+      expect((result as unknown as { indexBuffers?: unknown }).indexBuffers).toMatchObject({
+        version: 'kiln.index-buffers.v1',
+        policy: 'indexed',
+        primitivesConverted: 1,
+      });
+    });
+  }
   for (const indexed of [false, true]) {
     test(`rotated triangle excludes empty box corners (${indexed ? 'indexed' : 'unindexed'})`, async () => {
       const code = `

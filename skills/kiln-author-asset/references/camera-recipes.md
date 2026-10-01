@@ -37,6 +37,14 @@ Versioned capture accepts 1–9 shots, 1–3 columns, and a square per-shot `siz
 
 The same capture object can accompany `kiln_edit` so the edited result answers the same visual question. It is a render request, not a source change.
 
+For selective occluders, use `version: 'kiln.capture.v2'` and add
+`hide: [EXACT_PATH_FROM_LISTING, 'UniqueCoverName']` to a shot. There are at most 64
+selectors; a hidden group hides its subtree, and missing or ambiguous names fail
+before any image is drawn. CPU and GPU captures use the same list. Framing is
+resolved first so hiding a cover retains the comparison camera. Read the canonical
+paths in the returned `cameraShots[].hide`. Version 1 stays valid but cannot use
+`hide`. CLI `--capture` reads the same capture JSON.
+
 ## Explicit framing
 
 ```js

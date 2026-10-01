@@ -207,6 +207,7 @@ function collectArchitectureEvidence(scene: unknown): ArchitectureSceneEvidence 
     siblingIndex: number,
     inheritedRoles: readonly string[],
   ): void => {
+    if (!node.visible) return;
     const metadata = semanticMetadata(node);
     const directRoles = metadata?.roles ?? [];
     const directRelationships = metadata?.relationships ?? [];

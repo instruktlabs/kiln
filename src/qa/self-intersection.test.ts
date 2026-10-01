@@ -9,6 +9,7 @@
 
 import { describe, expect, test } from 'bun:test';
 import * as THREE from 'three';
+import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 import {
   analyzePartPenetration,
   CONTACT_VOLUME_FRACTION,
@@ -41,6 +42,32 @@ const pairNames = (e: { penetrations: { a: string; b: string }[] }) =>
 // -----------------------------------------------------------------------------
 
 describe('true positives — parts occupying the same space', () => {
+  test('different LOD chains may coexist at different levels and must be compared', async () => {
+    const body = new THREE.Group();
+    body.name = 'Body_LOD1';
+    const wheel = new THREE.Group();
+    wheel.name = 'Wheel_LOD0';
+    body.add(boxAt('Body', [1, 1, 1], [0, 0, 0]));
+    wheel.add(boxAt('Wheel', [1, 1, 1], [0.5, 0, 0]));
+    const evidence = await analyzePartPenetration(sceneOf(body, wheel));
+    expect(evidence.pairsLodAlternates).toBe(0);
+    expect(evidence.penetrations).toHaveLength(1);
+  });
+  test('overlapping closed components use union volume, not signed shell sums', async () => {
+    const compound = new THREE.Mesh(
+      mergeGeometries([
+        new THREE.BoxGeometry(1, 1, 1),
+        new THREE.BoxGeometry(1, 1, 1).translate(0.5, 0, 0),
+      ]),
+    );
+    compound.name = 'Compound';
+    const evidence = await analyzePartPenetration(
+      sceneOf(compound, boxAt('Enclosure', [4, 4, 4], [0, 0, 0])),
+    );
+    expect(evidence.penetrations).toHaveLength(1);
+    expect(evidence.penetrations[0]!.volume).toBeCloseTo(1.5, 6);
+    expect(evidence.penetrations[0]!.fraction).toBeCloseTo(1, 6);
+  });
   test('two boxes overlapping by half report the shared volume and fraction', async () => {
     const e = await analyzePartPenetration(
       sceneOf(boxAt('A', [1, 1, 1], [0, 0, 0]), boxAt('B', [1, 1, 1], [0.5, 0, 0])),
@@ -167,6 +194,30 @@ describe('true negatives — correct geometry that must not be flagged', () => {
 // -----------------------------------------------------------------------------
 
 describe('determinism and bounds', () => {
+  test('compound budget failures are unmeasured and cannot be acknowledged as open shells', async () => {
+    const compound = new THREE.Mesh(
+      mergeGeometries(
+        Array.from({ length: 33 }, (_, i) =>
+          new THREE.BoxGeometry(0.1, 0.1, 0.1).translate(i * 0.2, 0, 0),
+        ),
+      ),
+    );
+    compound.name = 'TooManyComponents';
+    markOpenShell(compound, 'An unrelated intended opening');
+    const result = await analyzePartPenetration(
+      sceneOf(compound, boxAt('Enclosure', [20, 20, 20], [0, 0, 0])),
+    );
+    expect(result.penetrations).toHaveLength(0);
+    expect(result.acknowledged).toBeUndefined();
+    expect(result.skipped).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          part: 'TooManyComponents',
+          reason: expect.stringContaining('component budget'),
+        }),
+      ]),
+    );
+  });
   test('reflection, distant origins and scale preserve measured overlap', async () => {
     for (const [scale, offset, reflected] of [
       [1, 0, true],
@@ -316,7 +367,7 @@ function group(name: string, ...children: THREE.Object3D[]) {
 }
 
 describe('pair selection within the budget', () => {
-  test('parts in different LOD levels are alternates, not overlapping parts', async () => {
+  test('only different levels of the same sibling chain are alternates', async () => {
     const e = await analyzePartPenetration(
       sceneOf(
         group('Car_LOD0', boxAt('Body', [1, 1, 1], [0, 0, 0])),
@@ -326,15 +377,15 @@ describe('pair selection within the budget', () => {
         boxAt('Glod2', [1, 1, 1], [0, 0, 0]),
       ),
     );
-    // Body (LOD0) against BodyLow and Trim_lod1 (LOD1) are alternates. Untagged parts and
-    // parts on the same level still share space with each other; "Glod2" carries no tag.
+    // Only Body and BodyLow share a sibling chain. Trim_lod1 is an independent part;
+    // different chains may use different levels, and "Glod2" carries no tag.
     expect(pairNames(e)).not.toContainEqual(['Body', 'BodyLow']);
-    expect(pairNames(e)).not.toContainEqual(['Body', 'Trim_lod1']);
+    expect(pairNames(e)).toContainEqual(['Body', 'Trim_lod1']);
     expect(pairNames(e)).toContainEqual(['BodyLow', 'Trim_lod1']);
-    expect(e.penetrations).toHaveLength(8);
-    expect(e.pairsLodAlternates).toBe(2);
-    expect(e.candidatePairs).toBe(8);
-    expect(e.pairsTested).toBe(8);
+    expect(e.penetrations).toHaveLength(9);
+    expect(e.pairsLodAlternates).toBe(1);
+    expect(e.candidatePairs).toBe(9);
+    expect(e.pairsTested).toBe(9);
   });
 
   test('an open shell containing the assembly does not use up the boolean budget', async () => {

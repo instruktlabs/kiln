@@ -140,7 +140,7 @@ function objectBoundsInFrame(
   const worldToFrame = frame.matrixWorld.clone().invert();
   const bounds = new THREE.Box3();
   let found = false;
-  object.traverse((part) => {
+  object.traverseVisible((part) => {
     if (!(part instanceof THREE.Mesh) || !(part.geometry instanceof THREE.BufferGeometry)) return;
     part.geometry.computeBoundingBox();
     const box = part.geometry.boundingBox;
@@ -190,7 +190,7 @@ function probeBox(id: string, root: THREE.Object3D, bounds: THREE.Box3): Oriente
 
 function chassisMeshes(root: THREE.Object3D): THREE.Mesh[] {
   const meshes: THREE.Mesh[] = [];
-  root.traverse((node) => {
+  root.traverseVisible((node) => {
     if (isChassisMesh(node)) meshes.push(node);
   });
   return meshes;
@@ -304,7 +304,7 @@ function weldedBoundaryEdges(root: THREE.Object3D, loop: THREE.Object3D): number
   let triangleCount = 0;
   const vertexKey = (point: THREE.Vector3): string =>
     [point.x, point.y, point.z].map((value) => Math.round(value * 1e6)).join(',');
-  loop.traverse((node) => {
+  loop.traverseVisible((node) => {
     if (!(node instanceof THREE.Mesh) || !(node.geometry instanceof THREE.BufferGeometry)) return;
     const positions = node.geometry.getAttribute('position');
     if (!positions) return;
@@ -339,7 +339,7 @@ function trackProfileFindings(
   if (intent.subtype !== 'tracked') return [];
   const loops: THREE.Object3D[] = [];
   const roadWheels: THREE.Object3D[] = [];
-  root.traverse((node) => {
+  root.traverseVisible((node) => {
     const roles = semanticRoles(node);
     if (
       roles.some((role) => role.startsWith('track.loop.')) ||

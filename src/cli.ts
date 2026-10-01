@@ -76,6 +76,9 @@ OPTIONS
   --query <text>         source --json: find literal text at or after --offset
   -h, --help              this message
 
+EXPORT ENVIRONMENT
+  KILN_INDEX_POLICY      indexed (default) | asBuilt (requires optimization off)
+
 EXAMPLES
   kiln render examples/crate.kiln.js --out crate.glb --views sheet.png
   kiln generate "a weathered wooden crate" --out crate.glb --views sheet.png
@@ -315,6 +318,7 @@ async function emit(
     requirements: result.requirements,
     ...(result.buildCache ? { buildCache: result.buildCache } : {}),
     tris: result.tris,
+    ...(result.meta.indexBuffers ? { indexBuffers: result.meta.indexBuffers } : {}),
     bounds: result.integrationManifest.bounds,
     ...(result.integrationManifest.levelsOfDetail
       ? { levelsOfDetail: result.integrationManifest.levelsOfDetail }
@@ -363,6 +367,12 @@ async function emit(
   // Tris and bounds count what draws; a subtree KHR_node_visibility hides is listed apart.
   for (const node of result.integrationManifest.hiddenNodes ?? [])
     log(`  hidden ${node.path}  ${node.triangles} tris (not drawn, not in the headline)`);
+  if (result.meta.indexBuffers) {
+    const buffers = result.meta.indexBuffers;
+    log(
+      `  index buffers ${buffers.policy}: ${buffers.bufferBytesBefore} -> ${buffers.bufferBytesAfter} geometry payload bytes; ${buffers.primitivesConverted} primitives indexed`,
+    );
+  }
   for (const w of result.warnings) log(`  warning: ${w}`);
 
   if (args.views) {

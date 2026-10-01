@@ -6,6 +6,7 @@ import { createAssetRequirementsV1 } from '../../contracts/requirements';
 import { createAssetRequirementsStore } from '../../requirements-store';
 import { renderSceneToGLB } from '../../render';
 import { createVehicleFrame, createWheelAssembly } from '../../vehicle';
+import { defineLod } from '../../lod';
 import {
   captureVehicleDiagnosticViews,
   createVehicleDiagnosticOverlay,
@@ -52,6 +53,29 @@ function fixture() {
 }
 
 describe('vehicle diagnostics', () => {
+  test('production diagnostic sheets draw the default LOD0 scene and restore source tiers', async () => {
+    const root = fixture();
+    const expected = captureVehicleDiagnosticViews(root).map((view) => view.png);
+    const high = new THREE.Group();
+    high.name = 'Car_LOD0';
+    high.add(...[...root.children]);
+    const low = new THREE.Mesh(new THREE.BoxGeometry(30, 30, 30), new THREE.MeshStandardMaterial());
+    low.name = 'Car_LOD1';
+    root.add(high, low);
+    defineLod([high, low], { screenCoverage: [0.2, 0] });
+    const requirements = createAssetRequirementsStore().host.bind(
+      { taskId: 'lod-diagnostics', lineageId: 'mobility' },
+      createAssetRequirementsV1({
+        requirements: { mobility: { state: 'requested', value: { wheelCount: 4 } } },
+      }),
+      { actor: 'owner', source: 'brief', reason: 'Mobility inspection' },
+    );
+    const result = await renderSceneToGLB(root, { requirements });
+    expect(result.diagnosticViews?.every((view, i) => view.png.equals(expected[i]!))).toBe(true);
+    expect(root.children).toEqual([high, low]);
+    expect(low.parent).toBe(root);
+    expect(low.visible).toBe(true);
+  });
   test('describes +X, chassis, axle, wheel, support, underbody, and section evidence', () => {
     const descriptor = describeVehicleDiagnostics(fixture());
     expect(descriptor.forwardArrow).toEqual({ start: [0, 0, 0], end: [1, 0, 0] });

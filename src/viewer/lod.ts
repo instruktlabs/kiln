@@ -14,6 +14,9 @@ import type { GLTF } from 'three/addons/loaders/GLTFLoader.js';
 import { applyNodeVisibility } from './visibility';
 
 export interface ViewerLodChain {
+  /** The GLB node index identifies a chain within this loaded artifact. */
+  id: string;
+  label: string;
   /** LOD0 first. LOD0 is in the scene as loaded; the lower levels start detached. */
   levels: THREE.Object3D[];
 }
@@ -22,6 +25,14 @@ export interface ViewerLevels {
   chains: ViewerLodChain[];
   /** Triangles the whole model draws at each level, LOD0 first. */
   triangles: number[];
+}
+
+export interface ViewerLevelState {
+  /** Actual triangles in the current combination, including geometry outside the chains. */
+  triangles: number;
+  /** Whole-asset totals when every chain uses the same index. */
+  levels: number[];
+  chains: { id: string; label: string; level: number; triangles: number[] }[];
 }
 
 /** Triangles drawn by the meshes under `object`, instances counted; hidden subtrees draw none. */
@@ -69,35 +80,78 @@ export async function loadViewerLevels(gltf: GLTF): Promise<ViewerLevels | undef
       levels.push((await gltf.parser.getDependency('node', id)) as THREE.Object3D);
     applyNodeVisibility(gltf, levels.slice(1));
     bases.add(base);
-    chains.push({ levels });
+    const label = (
+      base.name.replace(/[_ -]?LOD0$/i, '') ||
+      base.parent?.name ||
+      `Part ${index}`
+    ).replace(/^Mesh_/, '');
+    chains.push({ id: String(index), label, levels });
   }
   if (chains.length === 0) return undefined;
   const outside =
     countTriangles(gltf.scene) -
-    chains.reduce((sum, chain) => sum + countTriangles(chain.levels[0]!), 0);
+    chains.reduce((sum, chain) => sum + drawnChainTriangles(chain, 0), 0);
   const depth = Math.max(...chains.map((chain) => chain.levels.length));
   const triangles = Array.from(
     { length: depth },
     (_, level) =>
-      outside + chains.reduce((sum, chain) => sum + countTriangles(levelOf(chain, level)), 0),
+      outside + chains.reduce((sum, chain) => sum + drawnChainTriangles(chain, level), 0),
   );
   return { chains, triangles };
 }
 
 const levelOf = (chain: ViewerLodChain, level: number) =>
-  chain.levels[Math.min(Math.max(level, 0), chain.levels.length - 1)]!;
+  chain.levels[
+    Math.min(Math.max(Number.isFinite(level) ? Math.floor(level) : 0, 0), chain.levels.length - 1)
+  ]!;
+
+function drawnChainTriangles(chain: ViewerLodChain, index: number): number {
+  let parent = chain.levels.find((level) => level.parent)?.parent;
+  while (parent) {
+    if (!parent.visible) return 0;
+    parent = parent.parent;
+  }
+  return countTriangles(levelOf(chain, index));
+}
+
+function showChain(chain: ViewerLodChain, level: number): void {
+  const wanted = levelOf(chain, level);
+  const shown = chain.levels.find((candidate) => candidate.parent !== null);
+  if (!shown || shown === wanted) return;
+  const parent = shown.parent!;
+  parent.children[parent.children.indexOf(shown)] = wanted;
+  wanted.parent = parent;
+  shown.parent = null;
+}
 
 /** Show `level` in every chain, each at its LOD0's place among its siblings. */
 export function showLevel(levels: ViewerLevels, level: number): void {
-  for (const chain of levels.chains) {
-    const wanted = levelOf(chain, level);
-    const shown = chain.levels.find((candidate) => candidate.parent !== null);
-    if (!shown || shown === wanted) continue;
-    const parent = shown.parent!;
-    parent.children[parent.children.indexOf(shown)] = wanted;
-    wanted.parent = parent;
-    shown.parent = null;
-  }
+  for (const chain of levels.chains) showChain(chain, level);
+}
+
+/** Choose one independent part without changing the other chains or authored visibility. */
+export function showChainLevel(levels: ViewerLevels, id: string, level: number): boolean {
+  const chain = levels.chains.find((candidate) => candidate.id === id);
+  if (!chain) return false;
+  showChain(chain, level);
+  return true;
+}
+
+export function viewerLevelState(
+  levels: ViewerLevels | undefined,
+  root: THREE.Object3D,
+): ViewerLevelState | undefined {
+  if (!levels) return undefined;
+  return {
+    triangles: countTriangles(root),
+    levels: levels.triangles,
+    chains: levels.chains.map((chain) => ({
+      id: chain.id,
+      label: chain.label,
+      level: chain.levels.findIndex((level) => level.parent !== null),
+      triangles: chain.levels.map((_, index) => drawnChainTriangles(chain, index)),
+    })),
+  };
 }
 
 /** Every level's object that is not in the scene now, for disposal and material toggles. */

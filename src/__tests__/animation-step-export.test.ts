@@ -146,7 +146,12 @@ describe('STEP animation survives every review boundary', () => {
     const io = new NodeIO();
     const doc = await io.readBinary(rendered.glb);
     for (const scene of doc.getRoot().listScenes()) scene.setExtras({});
-    const sampler = doc.getRoot().listAnimations()[0]!.listSamplers()[0]!;
+    const sampler = doc
+      .getRoot()
+      .listAnimations()[0]!
+      .listChannels()
+      .find((channel) => channel.getTargetPath() === 'translation')!
+      .getSampler()!;
     const output = sampler.getOutput()!;
     const values = Array.from(output.getArray()!);
     const stride = output.getElementSize();
@@ -159,7 +164,15 @@ describe('STEP animation survives every review boundary', () => {
       );
     output.setArray(Float32Array.from(cubic));
     sampler.setInterpolation('CUBICSPLINE');
-    await expect(loadGlbReviewScene(await io.writeBinary(doc))).rejects.toThrow(/CUBICSPLINE/);
+    // A native cubic sampler is reviewed as the cubic spline it is: with zero tangents the
+    // body eases from 0 to 2 (3s^2 - 2s^3), never LINEAR's 0.5 or STEP's 0 at a quarter.
+    const reviewed = await loadGlbReviewScene(await io.writeBinary(doc));
+    const prepared = prepareClip(reviewed.root, reviewed.clips[0]!);
+    poseSceneAtTime(reviewed.root, prepared, 0.25);
+    expect(reviewed.root.getObjectByName('Joint_Body')!.position.x).toBeCloseTo(
+      2 * (3 * 0.25 ** 2 - 2 * 0.25 ** 3),
+      6,
+    );
   });
 });
 

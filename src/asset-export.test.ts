@@ -43,13 +43,15 @@ function record(bytes: Uint8Array): AssetRecord {
   };
 }
 const review = { version: 1, clips: [{ name: 'Open', duration: 1, tracks: [] }] };
+// Version 2 is the review copy of clips with a cubic track (R67).
+const cubicReview = { version: 2, clips: [{ name: 'Open', duration: 1, tracks: [] }] };
 const fixture = () =>
   record(
     glb({
       asset: { version: '2.0', extras: { application: 'keep' } },
       scenes: [
         { nodes: [0], extras: { kilnReviewClipsV1: review, custom: [1, 2] } },
-        { extras: { kilnReviewClipsV1: review } },
+        { extras: { kilnReviewClipsV1: cubicReview } },
       ],
       nodes: [{ name: 'Socket', extras: { kilnReviewClipsV1: 'not scene-owned', socket: true } }],
       animations: [{ name: 'Open', channels: [], samplers: [] }],
@@ -83,7 +85,7 @@ test('runtime externalizes only owned scene review data, preserving JSON semanti
     source: { assetId: 'a_test', revisionId: 'r_test', glbSha256: sha(before) },
     scenes: [
       { index: 0, kilnReviewClipsV1: review },
-      { index: 1, kilnReviewClipsV1: review },
+      { index: 1, kilnReviewClipsV1: cubicReview },
     ],
   });
   const actual = json(output.glb);
@@ -157,7 +159,7 @@ test('runtime rejects unsafe sidecar names and unsupported owned metadata withou
       exportAssetGlb(fixture(), { profile: 'runtime', metadataFileName: name }),
     ).rejects.toThrow('filename');
   }
-  for (const value of [null, {}, { version: 2, clips: [] }, { version: 1, clips: 'bad' }]) {
+  for (const value of [null, {}, { version: 3, clips: [] }, { version: 2, clips: 'bad' }]) {
     await expect(
       exportAssetGlb(
         record(

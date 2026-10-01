@@ -10,6 +10,7 @@ import {
   type VfxAxisDirection,
   type VfxIntentV1,
 } from '../contracts';
+import { isCubicSplineTrack } from '../animation-spline';
 import type { VfxArtifactEvidenceV1, VfxMaterialEvidenceV1 } from './breadth';
 import type { QaContext } from './types';
 
@@ -211,7 +212,7 @@ function collectMaterialEvidence(
   const inverse = root.matrixWorld.clone().invert();
   const byMaterial = new Map<THREE.Material, { nodes: THREE.Object3D[]; boxes: THREE.Box3[] }>();
   const overall = new THREE.Box3();
-  root.traverse((node) => {
+  root.traverseVisible((node) => {
     const box = localRenderableBox(inverse, node);
     if (!box || (!isMeshNode(node) && !isSpriteNode(node))) return;
     overall.union(box);
@@ -258,7 +259,7 @@ function dominantGeometryAxis(root: THREE.Object3D, mode: 'normal' | 'length'): 
   root.updateWorldMatrix(true, true);
   const inverse = root.matrixWorld.clone().invert();
   let best: { score: number; direction: THREE.Vector3 } | undefined;
-  root.traverse((node) => {
+  root.traverseVisible((node) => {
     if (!isMeshNode(node) || !node.geometry?.isBufferGeometry || !isEffectSurface([node])) return;
     node.geometry.computeBoundingBox();
     const bounds = node.geometry.boundingBox;
@@ -288,7 +289,7 @@ function dominantGeometryAxis(root: THREE.Object3D, mode: 'normal' | 'length'): 
   if (best) return signedAxis(best.direction);
 
   const overall = new THREE.Box3();
-  root.traverse((node) => {
+  root.traverseVisible((node) => {
     const box = localRenderableBox(inverse, node);
     if (box) overall.union(box);
   });
@@ -314,7 +315,7 @@ function analyzedFacing(
   intent: VfxIntentV1,
 ): VfxArtifactEvidenceV1['facing'] {
   let cameraFacing = false;
-  root.traverse((node) => {
+  root.traverseVisible((node) => {
     if (isSpriteNode(node)) cameraFacing = true;
   });
   return {
@@ -332,9 +333,23 @@ function clipEndpointMatches(clip: THREE.AnimationClip | undefined): boolean {
   return clip.tracks.every((track) => {
     const stride = track.getValueSize();
     if (stride <= 0 || track.values.length < stride * 2) return false;
-    for (let index = 0; index < stride; index++) {
-      const first = Number(track.values[index]);
-      const last = Number(track.values[track.values.length - stride + index]);
+    // A cubic-spline key is [in-tangent, value, out-tangent]; the endpoints are the values.
+    const cubic = isCubicSplineTrack(track);
+    const size = cubic ? stride / 3 : stride;
+    const offset = cubic ? size : 0;
+    if (track.ValueTypeName === 'quaternion' && size === 4) {
+      const first = Array.from(track.values.slice(offset, offset + size));
+      const end = track.values.length - stride + offset;
+      const last = Array.from(track.values.slice(end, end + size));
+      if (![...first, ...last].every(Number.isFinite)) return false;
+      const a = new THREE.Quaternion().fromArray(first);
+      const b = new THREE.Quaternion().fromArray(last);
+      if (a.lengthSq() === 0 || b.lengthSq() === 0) return false;
+      return 1 - Math.abs(a.normalize().dot(b.normalize())) <= 1e-6;
+    }
+    for (let index = 0; index < size; index++) {
+      const first = Number(track.values[offset + index]);
+      const last = Number(track.values[track.values.length - stride + offset + index]);
       if (!Number.isFinite(first) || !Number.isFinite(last) || Math.abs(first - last) > 1e-6) {
         return false;
       }
@@ -345,7 +360,7 @@ function clipEndpointMatches(clip: THREE.AnimationClip | undefined): boolean {
 
 function shaderMaterials(root: THREE.Object3D): THREE.Material[] {
   const values = new Set<THREE.Material>();
-  root.traverse((node) => {
+  root.traverseVisible((node) => {
     if (!isMeshNode(node) && !isSpriteNode(node)) return;
     const materials = Array.isArray(node.material) ? node.material : [node.material];
     for (const material of materials) {
@@ -423,7 +438,7 @@ export function analyzeAssetScopeObservationV1(root: THREE.Object3D): AssetScope
   let renderableCount = 0;
   const members = new Set<THREE.Object3D>();
   const dressing = new Set<string>();
-  root.traverse((node) => {
+  root.traverseVisible((node) => {
     if ((isMeshNode(node) || isSpriteNode(node)) && node.visible) renderableCount++;
     const roles = readSemanticMetadataV1(node)?.roles ?? [];
     if (roles.some((role) => MEMBER_ROLE.test(role))) members.add(node);
@@ -468,7 +483,7 @@ function analyzeSockets(root: THREE.Object3D): AnalyzedSocket[] {
   const rootInverse = root.matrixWorld.clone().invert();
   const rootWorldRotation = root.getWorldQuaternion(new THREE.Quaternion()).invert();
   const values: AnalyzedSocket[] = [];
-  root.traverse((node) => {
+  root.traverseVisible((node) => {
     const metadata = readSemanticMetadataV1(node);
     if (!metadata) return;
     const nodeWorldRotation = node.getWorldQuaternion(new THREE.Quaternion());

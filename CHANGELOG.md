@@ -1,9 +1,13 @@
 # Changelog
 
-Changes to `@kiln/engine`. Source and installable packages are distributed through
-GitHub. The package is not published on the npm registry.
+Changes to `@kiln/engine`. Source releases and installable package publication are
+separate milestones. The package is not published on the npm registry.
 
 ## 0.9.0
+
+**Local candidate, not release acceptance.** The changes below describe the current
+source, including uncommitted work. Final runtime/package and integrated local-review
+qualification remain outstanding. Publishing the package is deferred to v1.0.
 
 Kiln 0.9.0 adds optional projects, a material library and Live Review to standalone
 authoring, makes the calibrated `review-neutral-v1` rig the default for review views,
@@ -82,9 +86,47 @@ records how projects, materials and Live Review were qualified.
   and each chain's `drawn` says which level every view drew. No tool input changed.
 - **Viewer.** Library and Live Review show a Level control (LOD0 to the last level,
   LOD0 by default) and every level's triangles for a GLB with chains, imported or
-  authored.
+  authored. Expand **Per-part levels** to choose each independent chain, such as a
+  medium tractor body with detailed wheels. Mixed selections report the triangles
+  actually displayed. Current and pinned Live Review artifacts have their own part
+  controls; the current artifact's global selector still sets both views. Selecting
+  another observation of identical bytes retains geometry statistics and updates
+  the observation identity.
 - **Revision comparison** reads chains: each lower level is compared at the path it
   takes beside LOD0. Switch thresholds are not compared.
+
+### Authoring and review contracts
+
+- Part listings include world position, quaternion, scale, mirrored orientation and
+  world bounds, including compact results.
+- Node and material `userData` round-trips through glTF extras: plain JSON, at most
+  4 KiB per object and 64 KiB per asset. `kiln*` keys remain engine-owned. Validation
+  reports literal problems; builds report omitted dynamic values. Optimization keeps
+  metadata-bearing nodes and materials instead of merging away their identities.
+- `visible = false` survives export as `KHR_node_visibility`. Headline metrics and
+  category QA exclude hidden subtrees; `hiddenNodes` reports their triangle counts.
+  Instancing and flattening preserve the flag and its ancestor scope.
+- `markOpenShell(part, reason)` acknowledges an intentionally unmeasurable open shell
+  without suppressing measured overlap or other failures. Overlapping closed components
+  use union volume; unsupported inward shells and component budgets remain unmeasured.
+- `CUBICSPLINE`, `EASE_IN`, `EASE_OUT` and `EASE_IN_OUT` tracks export standard cubic
+  samplers with computed tangents and play consistently in review. Quaternion loop
+  closure treats `q` and `-q` as the same rotation.
+- Source exports index unindexed primitives by welding exact complete vertices.
+  `indexPolicy: 'asBuilt'` (local host: `KILN_INDEX_POLICY=asBuilt`) retains helper
+  buffers and requires optimization off. Render results and CLI receipts report the
+  index pass's accessor payload bytes before/after, separately from GLB file size.
+- Sweep and loft helpers observe tight curvature and intersecting consecutive rings
+  with station evidence. The bounded local check replaces unconditional unchecked
+  warnings; budget-limited checks remain explicitly partial. Distant segments are
+  outside this check.
+- `kiln.capture.v2` adds shot-level `hide` with exact paths or unique names. Version 1
+  and legacy captures remain valid. CPU and GPU derivatives apply the same hide list;
+  post-loop CPU captures resolve subjects from the exported hierarchy.
+- Instanced capture derivatives and canonical bounds retain every instance transform.
+  Overlap QA excludes alternate levels only within the same LOD chain, and category
+  diagnostic sheets show the default LOD0 scene. Render-service startup tolerates a
+  concurrent winner's bounded warmup; completed captures verify the service instance.
 
 ### Fixes from author reports
 

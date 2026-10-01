@@ -63,7 +63,11 @@ import {
   type SnapPaletteSlot,
   type Vec3,
 } from '../palette-snap';
-import { loadGlbGeometryFlatScene, type GlbGeometryFlatReasonCode } from './glb';
+import {
+  loadGlbGeometryFlatScene,
+  loadGlbReviewScene,
+  type GlbGeometryFlatReasonCode,
+} from './glb';
 import {
   resolveEvaluatorPortV2,
   type EvaluatorExecutionProfileV2,
@@ -312,6 +316,8 @@ export function snapSceneToPalette(
 
 export interface ViewGridResult {
   captureCache?: { hit: boolean; reused: number; total: number };
+  /** Resolved identities and cameras for versioned capture shots. */
+  cameraShots?: ResolvedCameraShotV1[];
   png: Buffer;
   width: number;
   height: number;
@@ -503,7 +509,12 @@ export async function renderGlbViewGrid(
   // mutates its Buffer while this async render is running cannot make the
   // rasterized geometry and reported hash refer to different byte sequences.
   const exactBytes = Uint8Array.from(bytes);
-  const loaded = await loadGlbGeometryFlatScene(exactBytes);
+  // Exact subject paths and LOD chains need the hierarchy; the legacy flat adapter
+  // deliberately has neither names nor children. Both loaders read these exact bytes.
+  const loaded =
+    options.capture?.version || options.capture?.shots
+      ? await loadGlbReviewScene(exactBytes)
+      : await loadGlbGeometryFlatScene(exactBytes);
   const artifactGlbSha256 = await hashGlbViewInput(exactBytes);
   const grid = await renderViewGrid(loaded.root, { ...options, artifactGlbSha256 });
   return {

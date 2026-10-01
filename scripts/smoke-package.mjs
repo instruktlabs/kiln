@@ -376,7 +376,7 @@ try {
       ],
       root,
     ),
-    /missing camera subject; choose an exact path/,
+    /missing camera subject: no node is named "Body"; similar: \/PackedEnclosure\[0\]\/PackedEnclosure\[0\]\/Mesh_Body\[0\]/,
   );
   badCapture.shots[0].subject = { path: '/PackedEnclosure[0]/PackedEnclosure[0]/Mesh_Body[0]' };
   await writeFile(recipe, JSON.stringify(badCapture));

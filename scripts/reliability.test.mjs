@@ -317,7 +317,12 @@ describe('repository reliability contracts', () => {
     }
     // And the replacement has to actually point somewhere that is kept current.
     const install = await readText('docs/install.md');
-    expect(install).toContain('releases/latest');
+    expect(install).toContain('https://github.com/matthew-kissinger/kiln/releases)');
+    expect(install).toContain('tarball and checksum actually attached');
+    expect(install).toContain('a source-only release');
+    expect(install).toContain('does not imply that a built tarball is available');
+    expect(install).toContain('0.9.0 is currently a local candidate');
+    expect(install).toContain('package publication is deferred to v1.0');
     expect(install).toContain('tools.md');
   });
 

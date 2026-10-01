@@ -64,7 +64,7 @@
 
 import * as THREE from 'three';
 import { openShellIntent } from '../open-shell';
-import { lodLevel } from './lod';
+import { lodMembership } from './lod';
 import type { QaContext, QaFinding } from './types';
 import { KILN_ENGINE_QA_OWNER, type QaRule } from './registry';
 
@@ -74,6 +74,8 @@ export const MAX_PART_TRIANGLES = 20000;
 export const MAX_NARROW_PHASE_PAIRS = 64;
 /** Solid-build budget: as many parts as the boolean budget could ever need. */
 export const MAX_SOLID_BUILDS = 2 * MAX_NARROW_PHASE_PAIRS;
+/** Bound normalization of merged, disconnected closed shells before measuring volume. */
+export const MAX_SOLID_COMPONENTS = 32;
 /** Bound pair discovery even when many boxes overlap. */
 export const MAX_BROAD_PHASE_PAIRS = 250_000;
 /**
@@ -142,8 +144,8 @@ interface AnalyzedPart {
   triangles: number;
   center: THREE.Vector3;
   scale: number;
-  /** LOD level from the part or an ancestor name; undefined belongs to every level. */
-  lod: number | undefined;
+  /** Named sibling chain membership; independent chains can appear together. */
+  lod: ReturnType<typeof lodMembership>;
   /** The author's `markOpenShell` reason on the part or an ancestor. */
   intent: string | undefined;
 }
@@ -253,7 +255,7 @@ function collectParts(
       triangles,
       center,
       scale,
-      lod: lodLevel(mesh),
+      lod: lodMembership(mesh),
       intent: openShellIntent(mesh),
     });
   });
@@ -358,7 +360,13 @@ export async function analyzePartPenetration(
       const a = parts[i]!;
       const b = parts[j]!;
       if (!a.box.intersectsBox(b.box)) continue;
-      if (a.lod !== undefined && b.lod !== undefined && a.lod !== b.lod) {
+      if (
+        a.lod &&
+        b.lod &&
+        a.lod.parent === b.lod.parent &&
+        a.lod.stem === b.lod.stem &&
+        a.lod.level !== b.lod.level
+      ) {
         base.pairsLodAlternates++;
         continue;
       }
@@ -397,6 +405,30 @@ export async function analyzePartPenetration(
         // is the same step `solids.ts` takes before every CSG operand.
         mesh.merge();
         solid = new Manifold(mesh);
+        const components = solid.decompose();
+        try {
+          if (
+            components.length > MAX_SOLID_COMPONENTS ||
+            components.some((part) => part.volume() <= 0)
+          ) {
+            unbuildable.push({
+              index,
+              reason:
+                'compound solid exceeds the component budget or contains an unsupported inward shell',
+              open: false,
+            });
+            solid.delete();
+            solid = null;
+          } else if (components.length > 1) {
+            // Concatenating closed meshes does not take their union: intersections can
+            // double-count their overlapping interiors and exceed an operand's volume.
+            const union = Manifold.union(components);
+            solid.delete();
+            solid = union;
+          }
+        } finally {
+          for (const component of components) component.delete();
+        }
       } else {
         unbuildable.push({
           index,
@@ -411,6 +443,7 @@ export async function analyzePartPenetration(
         reason: `a valid closed solid could not be measured (${err instanceof Error ? err.message : String(err)})`,
         open: true,
       });
+      solid?.delete();
       solid = null;
     }
     solids.set(index, solid);

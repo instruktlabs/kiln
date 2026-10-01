@@ -38,6 +38,16 @@ clearance or reach. Distinguish a demo controller's pose from clips included in 
 asset download. Limb joints need intermediate-pose views as well as endpoint
 closure; flush rest-pose joins can separate or expose caps during motion.
 
+For a payload transfer, test the actual payload against the full gripper housing,
+jaws and carrier, including pin/groove alignment and opening clearance. Matching
+attachment transforms or contact at the endpoints does not establish a valid
+transfer. Sample the approach and release paths with the destination's actual
+interpolation, changing attachment ownership at the intended handoff. Check for
+penetration and visible jumps immediately before and after that change. Record the
+sample spacing and clearance tolerance; discrete samples alone do not prove a
+continuous collision-free sweep. Keep controller logic and scenario dimensions in
+the destination workspace, then recheck the exact repaired asset revision.
+
 After batching, compression or other optimization, verify named moving nodes,
 attachment transforms, clips and material appearance again. Treat the optimized
 file as a derivative with its own hash and keep the editable source and baseline.
