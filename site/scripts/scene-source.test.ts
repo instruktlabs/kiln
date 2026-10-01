@@ -71,7 +71,8 @@ describe('source aliases', () => {
 
   test('bare three resolves to the scene kit facade, the way the kit builds a public scene', () => {
     expect(THREE_FACADE).toBe('packages/scene-kit/src/renderer/three-runtime.ts');
-    expect(threeFacade('C:\\scenes')).toBe('C:/scenes/packages/scene-kit/src/renderer/three-runtime.ts');
+    const directory = join(tmpdir(), 'kiln-scenes');
+    expect(threeFacade(directory)).toBe(join(directory, THREE_FACADE).replaceAll('\\', '/'));
   });
 });
 

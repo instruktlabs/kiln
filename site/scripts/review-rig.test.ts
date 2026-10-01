@@ -2,7 +2,7 @@ import { describe, expect, test } from 'bun:test';
 import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { pathToFileURL } from 'node:url';
-import { ShaderChunk } from 'three';
+import toneMappingChunk from 'three/src/renderers/shaders/ShaderChunk/tonemapping_pars_fragment.glsl.js';
 import { CUSTOM_TONE_MAPPING_STUB, REVIEW_RIG, REVIEW_RIG_SOURCE, installReviewNeutral, reviewNeutral, reviewNeutralBytes, reviewNeutralGlsl } from '../src/lib/review-rig';
 import { DEFAULT_ENGINE_DIR } from './rig-render.mjs';
 
@@ -11,7 +11,9 @@ const presetFile = join(engineDir, 'render-service/src/presentation-presets.mjs'
 // The separate site branch predates this rig; the integrated engine candidate must run these tests.
 const hasEngine = existsSync(presetFile) && readFileSync(presetFile, 'utf8').includes('review-neutral-v1');
 const engine = (file: string) => import(pathToFileURL(join(engineDir, 'render-service/src', file)).href);
-const chunkWithStub = () => ({ tonemapping_pars_fragment: ShaderChunk.tonemapping_pars_fragment });
+// Use the actual unmodified shader source: engine imports can install their rig in
+// the shared ShaderChunk singleton before this test runs on a deduplicated install.
+const chunkWithStub = () => ({ tonemapping_pars_fragment: toneMappingChunk });
 
 describe('the rig constants', () => {
   test('are the review-neutral-v1 rig on the neutral backdrop, white and without shadows', () => {
@@ -103,7 +105,7 @@ describe('the WebGL tone mapping shader', () => {
   });
 
   test('differs from three’s own Neutral mapping only in constants, which this documents', () => {
-    const neutral = ShaderChunk.tonemapping_pars_fragment;
+    const neutral = toneMappingChunk;
     expect(neutral).toContain('const float StartCompression = 0.8 - 0.04;');
     expect(neutral).toContain('float offset = x < 0.08 ? x - 6.25 * x * x : 0.04;');
     expect(neutral).toContain('const float Desaturation = 0.15;');
