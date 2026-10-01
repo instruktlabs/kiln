@@ -164,7 +164,11 @@ describe('default exporter keeps emissive intensity', () => {
     for (const [i, value] of expected.entries()) expect(actual[i]!).toBeCloseTo(value, 5);
   }
 
-  async function standardLamp(emissive: number, emissiveIntensity: number) {
+  async function standardLamp(
+    emissive: number,
+    emissiveIntensity: number,
+    gltfExporter: 'legacy' | 'three' = 'legacy',
+  ) {
     const material = new THREE.MeshStandardMaterial({
       color: 0x202020,
       emissive,
@@ -173,7 +177,7 @@ describe('default exporter keeps emissive intensity', () => {
     const authored = [material.emissive.r, material.emissive.g, material.emissive.b].map(
       (component) => component * emissiveIntensity,
     );
-    const result = await renderSceneToGLB(lampScene(material), { optimize: 'off' });
+    const result = await renderSceneToGLB(lampScene(material), { optimize: 'off', gltfExporter });
     return { authored, bytes: result.bytes, ...(await exported(result.bytes)) };
   }
 
@@ -207,10 +211,28 @@ describe('default exporter keeps emissive intensity', () => {
     expectClose(lamp.factor, lamp.authored);
   });
 
+  test('both exporters preserve effective Standard-material brightness across intensity ranges', async () => {
+    // Their factor/extension decomposition differs; compare the resulting light contribution.
+    for (const exporter of ['legacy', 'three'] as const) {
+      for (const [colour, intensity] of [
+        [0xff8000, 0.25],
+        [0xff8000, 1],
+        [0xff8000, 8],
+        [0x404040, 8],
+      ] as const) {
+        const lamp = await standardLamp(colour, intensity, exporter);
+        expectClose(lamp.effective, lamp.authored);
+      }
+    }
+  });
+
   test('Lambert materials use the same emissive product', async () => {
     const material = new THREE.MeshLambertMaterial({ color: 0x202020, emissive: 0x00ff00 });
     material.emissiveIntensity = 3;
-    const result = await renderSceneToGLB(lampScene(material), { optimize: 'off' });
+    const result = await renderSceneToGLB(lampScene(material), {
+      optimize: 'off',
+      gltfExporter: 'legacy',
+    });
     const lamp = await exported(result.bytes);
     expect(lamp.strength).toBeCloseTo(3, 5);
     expectClose(lamp.effective, [0, 3, 0]);
@@ -230,7 +252,11 @@ describe('default exporter keeps emissive intensity', () => {
       [loaded!.emissive.r, loaded!.emissive.g, loaded!.emissive.b].map((c) => c * 8),
       lamp.authored,
     );
-    const reexported = await renderSceneToGLB(review.root, { optimize: 'off', derivative: true });
+    const reexported = await renderSceneToGLB(review.root, {
+      optimize: 'off',
+      derivative: true,
+      gltfExporter: 'legacy',
+    });
     const again = await exported(reexported.bytes);
     expect(again.strength).toBeCloseTo(8, 5);
     expectClose(again.effective, lamp.authored);
