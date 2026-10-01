@@ -460,7 +460,7 @@ test('cleanup releases orphan bytes before retention admission without losing ex
   );
   expect(snapshot.operations.some((op) => op.tool === 'retained-after-cleanup')).toBe(true);
   expect(snapshot.retention.bytes).toBeLessThanOrEqual(4096);
-  expect(await readdir(join(review.directory, pinned.operationId))).toEqual([
+  expect((await readdir(join(review.directory, pinned.operationId))).sort()).toEqual([
     'pinned',
     'record.json',
   ]);
