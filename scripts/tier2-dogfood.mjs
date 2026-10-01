@@ -46,6 +46,8 @@ Defaults to a no-call dry run. Live runs additionally require:
 
 Options:
   --runs N                 Repeat one goal N times (default: number of goals)
+  --repository URL_OR_PATH Repository the agent clones (default: the public repository);
+                           a local mirror lets a blind run test an unpushed branch
   --model ID               Override the outer harness model
   --provider ID            Provider override where the harness supports one (Hermes)
   --reasoning LEVEL        Per-run reasoning/variant override
@@ -69,6 +71,7 @@ export function parseArgs(argv) {
   const opts = {
     harness: null,
     goals: [],
+    repository: PUBLIC_REPOSITORY,
     model: null,
     provider: null,
     reasoning: null,
@@ -98,6 +101,7 @@ export function parseArgs(argv) {
     };
     if (arg === '--harness') opts.harness = value();
     else if (arg === '--goal') opts.goals.push(value());
+    else if (arg === '--repository') opts.repository = value();
     else if (arg === '--model') opts.model = value();
     else if (arg === '--provider') opts.provider = value();
     else if (arg === '--reasoning') opts.reasoning = value();
@@ -130,6 +134,9 @@ export function parseArgs(argv) {
     throw new Error(`--harness must be one of: ${SUPPORTED_HARNESSES.join(', ')}.`);
   if (opts.goals.length === 0) throw new Error('Supply at least one --goal.');
   if (opts.goals.some((goal) => !goal.trim())) throw new Error('--goal cannot be empty.');
+  // The value becomes one line of the prompt, so it must be a single clonable token.
+  if (/\s/u.test(opts.repository))
+    throw new Error('--repository must be one URL or path without whitespace.');
   if (opts.requestedRuns !== null) {
     if (!Number.isInteger(opts.requestedRuns) || opts.requestedRuns < 1)
       throw new Error('--runs must be a positive integer.');
@@ -171,9 +178,9 @@ export function parseArgs(argv) {
 }
 
 /** Keep the experimental prompt from teaching the setup path it is meant to test. */
-export function composeBlindPrompt(goal) {
+export function composeBlindPrompt(goal, repository = PUBLIC_REPOSITORY) {
   return [
-    `Repository: ${PUBLIC_REPOSITORY}`,
+    `Repository: ${repository}`,
     `Goal: Create a visually distinctive, production-worthy 3D asset: ${goal.trim()}.`,
     'Start from a fresh clone, set up Kiln from its public documentation in a separate asset workspace inside your current run directory, then launch your own headless coding agent to author, render, visually review, revise, and export the asset. Continue until the source and GLB are saved.',
   ].join('\n');
@@ -812,7 +819,7 @@ async function main(argv) {
       invocation: buildInvocation({
         harness: opts.harness,
         model: opts.model,
-        prompt: composeBlindPrompt(goal),
+        prompt: composeBlindPrompt(goal, opts.repository),
         workspace,
         emptyMcpConfig,
         compactTokens: opts.compactTokens,
@@ -831,6 +838,7 @@ async function main(argv) {
         sanitizeReceipt(
           {
             mode: 'dry-run',
+            repository: opts.repository,
             harness: opts.harness,
             model: opts.model ?? 'harness default',
             provider: opts.provider ?? 'harness default',
@@ -881,6 +889,7 @@ async function main(argv) {
     agyHome: opts.agyHome,
     authorization: opts.authorization,
     publicRepository: PUBLIC_REPOSITORY,
+    repository: opts.repository,
     timeoutSeconds: opts.timeoutMs / 1000,
     compactTokens: opts.compactTokens,
     rawEvidence: outDir,

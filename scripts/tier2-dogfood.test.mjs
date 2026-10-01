@@ -11,6 +11,7 @@ import {
   discoverArtifacts,
   evidenceFromTrace,
   hermesRunConfig,
+  PUBLIC_REPOSITORY,
   parseArgs,
   receiptPathReplacements,
   runProcess,
@@ -58,6 +59,19 @@ describe('Tier 2 blind dogfood driver', () => {
     expect(prompt).not.toContain('kiln_render');
     expect(prompt).not.toContain('create-workspace.mjs');
     expect(prompt).not.toContain('AGENTS.md');
+  });
+
+  test('a blind run can name another repository, such as a local mirror of an unpushed branch', () => {
+    const base = ['--harness', 'codex', '--goal', 'an intricate walking crane'];
+    expect(parseArgs(base).repository).toBe(PUBLIC_REPOSITORY);
+    const parsed = parseArgs([...base, '--repository', 'C:/mirrors/kiln.git']);
+    expect(parsed.repository).toBe('C:/mirrors/kiln.git');
+
+    const prompt = composeBlindPrompt('an intricate walking crane', parsed.repository);
+    expect(prompt.split('\n')[0]).toBe('Repository: C:/mirrors/kiln.git');
+    expect(prompt).not.toContain(PUBLIC_REPOSITORY);
+    expect(() => parseArgs([...base, '--repository'])).toThrow(/needs a value/);
+    expect(() => parseArgs([...base, '--repository', 'two words'])).toThrow(/--repository/);
   });
 
   test('dry-run is the default and live execution needs an authorization record', () => {
