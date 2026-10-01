@@ -199,6 +199,15 @@ export async function main(argv = process.argv.slice(2), env = process.env, site
   const only = option('--scene');
   if (only && !(only in SCENE_SOURCES)) throw new Error(`Unknown scene: ${only}`);
   if (option('--source') && !only) throw new Error('--source needs --scene');
+  if (['0', 'false'].includes(env.KILN_SITE_PACKS ?? '1')) {
+    const served = join(site, 'public', PACK_DIRECTORY);
+    await rm(only ? join(served, only) : served, { recursive: true, force: true });
+    for (const id of only ? [only] : Object.keys(SCENE_SOURCES)) {
+      await rm(stagedRuntimeDirectory(id, site), { recursive: true, force: true });
+    }
+    console.log('Scene packs and runtimes removed: Commons packs are disabled.');
+    return [];
+  }
   const record = argv.includes('--record');
   const hashes = argv.includes('--hashes');
   const catalog = existsSync(catalogFile(site)) ? JSON.parse(await readFile(catalogFile(site), 'utf8')) : {};

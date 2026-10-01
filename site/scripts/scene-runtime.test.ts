@@ -224,6 +224,17 @@ describe('a runtime manifest', () => {
 });
 
 describe('without a scenes workspace', () => {
+  test('packs-off mode removes an earlier runtime even when scene source exists', async () => {
+    const site = await temp();
+    const source = await temp();
+    await json(join(source, 'packages/farm/package.json'), { exports: { '.': './src/index.ts' } });
+    const served = stagedRuntimeDirectory('farm', site);
+    await mkdir(served, { recursive: true });
+    await writeFile(join(served, 'old.js'), 'old');
+    const result = await main([], { KILN_SITE_PACKS: '0', KILN_SITE_SCENES_DIR: source }, site);
+    expect(result).toBeNull();
+    expect(existsSync(served)).toBe(false);
+  });
   test('keeps the fallback and removes a runtime staged earlier', async () => {
     const root = await temp();
     spyOn(console, 'log').mockImplementation(() => {});

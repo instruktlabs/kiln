@@ -17,6 +17,18 @@ test('review release suffixes stay confined to one pack directory', () => {
   for (const base of ['/scene-packs/farm/../', '/scene-packs/farm/r35/../../', '/scene-packs/farm/-review/', '/scene-packs/farm/r35\\escape/'])
     expect(() => stagedPackDirectory({ base }, '/site')).toThrow('Unexpected');
 });
+
+test('packs-off mode clears served scenes even when an explicit pack input exists', async () => {
+  const { root } = await fixture();
+  const site = join(root, 'site');
+  for (const directory of ['scene-packs/farm/r1', 'scene-runtime/farm', 'scene-runtime/golden-gate']) {
+    await mkdir(join(site, 'public', directory), { recursive: true });
+    await writeFile(join(site, 'public', directory, 'stale.json'), '{}');
+  }
+  await main(['--scene', 'farm', '--source', root], { KILN_SITE_PACKS: '0' }, site);
+  expect(existsSync(join(site, 'public/scene-packs/farm'))).toBe(false);
+  expect(existsSync(join(site, 'public/scene-runtime/farm'))).toBe(false);
+});
 afterEach(async () => {
   mock.restore();
   for (const directory of directories.splice(0)) await rm(directory, { recursive: true, force: true });

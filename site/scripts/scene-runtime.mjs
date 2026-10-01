@@ -340,12 +340,13 @@ export async function verifyStagedRuntime(directory) {
 export async function main(argv = process.argv.slice(2), env = process.env, site = SITE) {
   const option = (flag) => (argv.includes(flag) ? argv[argv.indexOf(flag) + 1] : undefined);
   const id = option('--scene') ?? 'farm';
-  const scenesDir = resolveScenesDir({ env, site });
+  const packsOff = ['0', 'false'].includes(env.KILN_SITE_PACKS ?? '1');
+  const scenesDir = packsOff ? null : resolveScenesDir({ env, site });
   const served = stagedRuntimeDirectory(id, site);
   if (!scenesDir) {
     const removed = existsSync(served);
     if (removed) await rm(served, { recursive: true, force: true });
-    console.log(`Scene runtime ${id} not built: no scenes workspace (KILN_SITE_SCENES_DIR). The scene keeps its fallback.${removed ? ' A copy staged earlier was removed.' : ''}`);
+    console.log(`Scene runtime ${id} not built: ${packsOff ? 'Commons packs are disabled' : 'no scenes workspace (KILN_SITE_SCENES_DIR)'}. The scene keeps its fallback.${removed ? ' A copy staged earlier was removed.' : ''}`);
     return null;
   }
   if (argv.includes('--measure')) {
