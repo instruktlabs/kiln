@@ -16,7 +16,7 @@ const featured = ["euv-scanner", "etch-cluster-tool", "vertical-furnace", "stock
 
 <BaseLayout
   title="Packs · Kiln"
-  description="Download Farm and Vehicles GLBs with editable source and provenance, or inspect the Foundry Floor pack in production."
+  description="Download Farm and Vehicles GLBs with editable source and provenance, or inspect the Foundry Floor pack."
   breadcrumbs={[{ label: "Packs", href: "/packs/" }]}
   card="packs"
 >
@@ -78,7 +78,7 @@ const featured = ["euv-scanner", "etch-cluster-tool", "vertical-furnace", "stock
       </a>
     )}
     {PACKS_ENABLED && (
-      <a href="/packs/foundry-floor/" aria-label="Foundry Floor, in production" class="mt-12 grid items-center gap-8 border-b border-rule pb-8 lg:grid-cols-3">
+      <a href="/packs/foundry-floor/" aria-label="Foundry Floor" class="mt-12 grid items-center gap-8 border-b border-rule pb-8 lg:grid-cols-3">
         <div class="grid grid-cols-3 gap-2 lg:col-span-2">
           {featured.map((asset) => (
             <div class="bg-stage">
@@ -98,10 +98,10 @@ const featured = ["euv-scanner", "etch-cluster-tool", "vertical-furnace", "stock
             floor, ceiling and walls, and the people and robots who work there.
           </p>
           <p class="mt-4 text-dim">
-            In production. Runtime GLBs and the pack’s licence text.
+            Runtime GLBs and the pack’s licence text.
           </p>
           <span class="text-link mt-4">
-            Inspect the pack in production <span aria-hidden="true">→</span>
+            Inspect the pack <span aria-hidden="true">→</span>
           </span>
         </div>
       </a>
@@ -111,7 +111,7 @@ const featured = ["euv-scanner", "etch-cluster-tool", "vertical-furnace", "stock
         <div>
           <h2 class="text-subheading">{foundryFloor.name}</h2>
           <p class="mt-4 max-w-reading">
-            In production: a fictional 2 nm-class chip fab with process tools,
+            A fictional 2 nm-class chip fab with process tools,
             wafer transport and a scene where the factory runs.
           </p>
           <a href={foundryFloor.packRoute} class="text-link mt-2">

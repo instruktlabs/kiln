@@ -94,14 +94,14 @@ export const farmScene = {
     devices: 'Desktop and touch play. Loads only when you choose Explore.',
     unavailableTitle: 'The interactive Farm is not included in this build.',
     unavailableBody:
-      'This scene is in production. The Farm scene download contains the current runnable scene.',
+      'The Farm scene download contains the current runnable scene.',
     errorText:
       'The scene could not load. Check your connection and try Explore again. The Farm downloads remain available.',
   } satisfies SceneCopy,
   fallback: { href: '/packs/farm/', label: 'View the Farm downloads' },
   preUpload: {
     fallback: allScenes,
-    unavailableBody: 'This scene is in production.',
+    unavailableBody: 'This scene is not part of this build.',
     errorText: noDownloadsError,
   },
 } as const;
@@ -158,7 +158,7 @@ const foundryFloorPresentation = foundryPresentation(
 );
 
 /**
- * Foundry Floor is an in-production preview (D-33/S-2). Its copy follows the
+ * Foundry Floor stays out of search results (D-33/S-2). Its copy follows the
  * staged catalogue: older interior builds cannot promise a campus. No device claims are made. The scene is
  * pictured by two captures of its staged runtime, the campus outside and the fab floor inside, shown together.
  */
@@ -182,11 +182,11 @@ export const foundryFloorScene = {
   ] satisfies SceneLink[],
   copy: {
     available: 'Explore the Foundry Floor in your browser.',
-    preview: 'Explore opens the scene as it stands in production.',
+    preview: 'Explore opens the Foundry Floor scene.',
     unavailable: 'The browser scene is not part of this build. Explore opens its status.',
     devices: foundryFloorPresentation.loading,
     unavailableTitle: 'The Foundry Floor scene is not part of this build.',
-    unavailableBody: 'The scene is in production. Its pack page says what the pack holds so far.',
+    unavailableBody: 'Its pack page lists the models the scene is built from.',
     errorText:
       'The scene could not load. Check your connection and try Explore again. The Foundry Floor pack page remains available.',
   } satisfies SceneCopy,

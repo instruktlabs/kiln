@@ -131,11 +131,11 @@ describe('the Foundry Floor pages', () => {
     expect(JSON.stringify(foundryFloor)).not.toMatch(/terafab/i);
   });
 
-  test('pass when both pages are in production, unindexed, out of the sitemap and carry the line', () => {
+  test('pass when both pages are unindexed, out of the sitemap and carry the line', () => {
     expect(check(good())).toEqual([]);
   });
 
-  test('report a missing page, an indexable page, a followed scene, a missing or altered line and a page that is not in production', () => {
+  test('report a missing page, an indexable page, a followed scene, and a missing or altered line', () => {
     const missing = good();
     missing.delete('/scenes/foundry-floor/');
     expect(check(missing)).toEqual(['/scenes/foundry-floor/: The Foundry Floor page was not emitted']);
@@ -153,9 +153,6 @@ describe('the Foundry Floor pages', () => {
     altered.set('/packs/foundry-floor/', page('<p>In production.</p><p>Not affiliated with Tesla.</p>'));
     // An altered line also names a maker outside the exact line.
     expect(check(altered)).toEqual(['/packs/foundry-floor/: The Foundry Floor page must carry the no-affiliation line word for word', '/packs/foundry-floor/: A maker named in the no-affiliation line appears outside it: Tesla']);
-    const planned = good();
-    planned.set('/packs/foundry-floor/', page(`<p>Coming soon.</p><p>${notice}</p>`));
-    expect(check(planned)).toEqual(['/packs/foundry-floor/: The Foundry Floor page must say it is in production']);
   });
 
   test('report a page that reached the sitemap', () => {

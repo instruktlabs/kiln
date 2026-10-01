@@ -415,7 +415,7 @@ const CARD_SIZES = "(max-width: 767px) 100vw, 33vw";
             <h3 class="mt-5 text-ink">{foundryFloor.name}</h3>
           </a>
           <p class="mt-2 text-dim">
-            In production: {foundryFloorPack.assetCount} models for a fictional
+            {foundryFloorPack.assetCount} models for a fictional
             2 nm-class chip fab, and a scene of its campus and fab floor where
             the factory runs.
           </p>
@@ -423,7 +423,7 @@ const CARD_SIZES = "(max-width: 767px) 100vw, 33vw";
             <a class="text-link" href={foundryFloor.sceneRoute}>
               {sceneRuntimes["foundry-floor"] ? "The scene preview" : "The scene status"}
             </a>
-            <a class="text-link" href={foundryFloor.packRoute}>The pack in production</a>
+            <a class="text-link" href={foundryFloor.packRoute}>The Foundry Floor pack</a>
           </div>
         </article>
       </div>
@@ -467,7 +467,7 @@ const CARD_SIZES = "(max-width: 767px) 100vw, 33vw";
         <div>
           <h3 class="text-title">{foundryFloor.name}</h3>
           <p class="mt-2 max-w-reading text-dim">
-            In production: a fictional 2 nm-class chip fab pack with process
+            A fictional 2 nm-class chip fab pack with process
             tools, wafer transport and a scene where the factory runs.
           </p>
           <div class="flex flex-wrap gap-x-6">

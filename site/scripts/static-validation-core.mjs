@@ -171,8 +171,8 @@ const EXTERIOR = /\b(campus|landscape|exterior|outdoors?|roads?|parking)\b/i;
 const PLACEMENT = /\b(?:places|arranged from) (\d+) of the (?:pack’s )?(\d+)\b/g;
 
 /**
- * Foundry Floor is in production (D-33): its pack and scene pages are unindexed (the scene page also unfollowed),
- * out of the sitemap and say so, and carry the owner's no-affiliation line word for word. The makers that line names
+ * Foundry Floor (D-33): its pack and scene pages are unindexed (the scene page also unfollowed),
+ * out of the sitemap, and carry the owner's no-affiliation line word for word. The makers that line names
  * appear nowhere else on them; the scene page makes no device claims; neither implies an exterior. Given the pack
  * record's `placement` ({ assetCount, placedInScene, packPage }), each page states how many models the scene places,
  * with the record's numbers, and the scene page says how many of the rest are in the pack but not placed. `packPage:
@@ -193,7 +193,6 @@ export function foundryFloorErrors({ pages, sitemapUrls, placement = null, hasCa
     else if (scene && !wanted.has('nofollow')) add(`The Foundry Floor scene page must be "noindex, nofollow", got ${JSON.stringify(page.robots)}`);
     else if (page.robots !== expected) add(`The Foundry Floor ${scene ? 'scene' : 'pack'} page must be "${expected}", got ${JSON.stringify(page.robots)}`);
     if (!page.html.includes(foundryFloor.notice)) add('The Foundry Floor page must carry the no-affiliation line word for word');
-    if (!/in production/i.test(page.html)) add('The Foundry Floor page must say it is in production');
     if (inSitemap.has(new URL(route, ORIGIN).href)) add('The Foundry Floor page is in the sitemap');
     const text = visibleText(page.html).split(foundryFloor.notice).join(' ');
     const maker = NOTICE_MAKERS.exec(text);

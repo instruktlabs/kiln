@@ -18,7 +18,7 @@ export function getStaticPaths() {
 const isFarm = Astro.params.slug === "farm";
 const isVehicles = Astro.params.slug === "vehicles";
 const title = isFarm ? farm.name : isVehicles ? vehicles.name : foundryFloor.name;
-const pageTitle = isFarm || isVehicles ? title : `${title}, in production`;
+const pageTitle = isFarm || isVehicles ? title : title;
 ---
 
 <BaseLayout
@@ -28,7 +28,7 @@ const pageTitle = isFarm || isVehicles ? title : `${title}, in production`;
       ? "23 farm assets with runtime GLBs, editable source and a runnable scene. Exact downloads for each profile."
       : isVehicles
         ? "Six generic road vehicles with three detail tiers, separate wheels, editable source and revision history."
-        : `${foundryFloor.name} is in production: ${foundryFloor.summary}.`
+        : `${foundryFloor.name}: ${foundryFloor.summary}.`
   }
   noindex={!isFarm && !isVehicles}
   breadcrumbs={[
@@ -280,8 +280,7 @@ const pageTitle = isFarm || isVehicles ? title : `${title}, in production`;
     ) : (
       <div class="max-w-reading py-12 md:py-20">
         <PageHeader>{foundryFloor.name}</PageHeader>
-        <p class="lead mt-8">In production.</p>
-        <p class="mt-6">
+        <p class="lead mt-8">
           A fictional 2 nm-class chip fab as a Kiln pack: process tools, wafer
           transport and a scene where the factory runs.
         </p>
