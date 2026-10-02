@@ -3,7 +3,8 @@
 // pipeline pre-compile so the first frames do not stall. Every step checks the abort signal; a
 // failed or aborted build releases everything it created.
 import { Group, Vector3 } from 'three/webgpu';
-import type { PerspectiveCamera, Scene, WebGPURenderer } from 'three/webgpu';
+import type { Mesh, PerspectiveCamera, Scene, WebGPURenderer } from 'three/webgpu';
+import { cachedSunShadow, passCameraLayers, shadowOncePerFrame, ShadowLayers } from '@kiln-scenes/scene-kit';
 import type { LoadedPack, PackReader } from '@kiln-scenes/scene-kit';
 import type { GoldenGateKnobs } from '../tiers';
 import { createAtmosphere } from './atmosphere';
@@ -13,7 +14,9 @@ import { approachCorridorPlans } from './corridor';
 import { parkedVehicles } from './dressing';
 import { vegetationCandidates } from './vegetation';
 import { LAYOUT } from '../data';
-import { BRIDGE } from '../constants';
+import { BRIDGE, LAYERS } from '../constants';
+import { drawOptions } from './draw-options';
+import type { DrawOptions } from './draw-options';
 import type { SceneIndex, Terrain } from './terrain';
 import { decodeWaterLevel } from './water-maps';
 import { decodePng } from './png16';
@@ -38,8 +41,14 @@ export interface BuildContext {
   knobs: GoldenGateKnobs; signal: AbortSignal;
   /** Deck traffic (on unless the `traffic` development parameter empties the lanes); density defaults to the tier's. */
   traffic?: { enabled: boolean; density?: TrafficDensity };
+  /** Draw optimisation overrides (test and dev builds); the feature level's defaults otherwise (./draw-options). */
+  draw?: Partial<DrawOptions>;
   onProgress?(loaded: number, total: number, text: string): void;
 }
+/** Reflection stand-in layers (High): the near approaches draw for main and shadow cameras, the far-approach stand-ins in the reflection. */
+const PASS = { main: LAYERS.mainOnly, pass: LAYERS.reflectionOnly } as const;
+/** The cached sun shadow is a development option (World.tsx shadowCache): public builds leave its code out. */
+const TEST = !!(import.meta.env.KILN_TEST || import.meta.env.KILN_DEV);
 function abortIfNeeded(signal: AbortSignal): void { if (signal.aborted) throw signal.reason ?? new DOMException('Golden Gate build aborted', 'AbortError'); }
 export function readSceneIndex(pack: LoadedPack): SceneIndex {
   const bytes = pack.data.get('scene');
@@ -57,14 +66,21 @@ export async function readCollisionField(pack: LoadedPack, index: SceneIndex): P
 }
 
 export async function buildGoldenGateWorld(c: BuildContext) {
-  const features = c.knobs.gg, index = readSceneIndex(c.pack), owned: { dispose(): void }[] = [];
+  const features = c.knobs.gg, draw = drawOptions(features, c.draw ?? {}), index = readSceneIndex(c.pack), owned: { dispose(): void }[] = [];
   const release = () => { for (const item of owned.splice(0).reverse()) { try { item.dispose(); } catch { /* keep releasing */ } } };
   const tiles = index.terrain.sets[features.terrainSet].reduce((sum, level) => sum + (index.terrain.levels[level]?.tiles.length ?? 0), 0);
   const total = tiles + 7; let loaded = 0;
   const step = (text: string) => c.onProgress?.(++loaded, total, text);
   try {
     const atmosphere: Atmosphere = createAtmosphere(c.renderer, c.scene, { envSize: features.envSize, shadows: c.knobs.shadows.enabled, shadowMapSize: c.knobs.shadows.mapSize, shadowExtent: features.shadowExtent });
-    owned.push(atmosphere); step('Sky and light');
+    // Draw optimisation (High): the sun's shadow camera sees the depth stand-ins and the main-only near approaches; the map
+    // renders once per frame (the reflector's camera rendered it again), or through the opt-in cached static and live maps,
+    // whose shadow node must be in place before any receiver builds and which are disposed after the light leaves the scene.
+    const sun = atmosphere.sun, pass = draw.reflection ? PASS : undefined;
+    if (draw.depth) sun.shadow.camera.layers.enable(LAYERS.shadowStandIn);
+    if (pass && c.knobs.shadows.enabled) sun.shadow.camera.layers.enable(pass.main);
+    const once = draw.once ? shadowOncePerFrame(sun) : null, cache = TEST && draw.cache ? cachedSunShadow({ light: sun }) : null;
+    owned.push({ dispose() { atmosphere.dispose(); once?.restore(); cache?.dispose(); } }); step('Sky and light');
     const fogNode = sceneFogNode(atmosphere.uniforms);
     const maps = index.terrain.water[features.terrainSet];
     const fetch = (path: string) => c.reader.fetchFile(path, c.signal);
@@ -90,11 +106,11 @@ export async function buildGoldenGateWorld(c: BuildContext) {
     abortIfNeeded(c.signal); step('Water maps');
     const web = c.pack.models.get(index.bridge.web.model), far = c.pack.models.get(index.bridge.far.model);
     if (!web || !far) throw new Error('Bridge models are missing from the verified pack');
-    const bridge: Bridge = createBridge(web, far, { farSwitch: features.bridgeFarSwitch, castShadow: c.knobs.shadows.enabled });
+    const bridge: Bridge = createBridge(web, far, { farSwitch: features.bridgeFarSwitch, castShadow: c.knobs.shadows.enabled, merge: draw.merge, standInLayer: draw.depth ? LAYERS.shadowStandIn : undefined, passLayers: pass });
     owned.push(bridge); step('Bridge');
     // The vegetation impostors switch with the approaches' near representation (fix round 3 item 5).
     bridge.approachMeshes.near.group.add(terrain.vegetation.root);
-    const water: Water = createWater(c.scene, { features: features.water, atmosphere, near: near.level, mid: mid.level, midGrid: mid.grid });
+    const water: Water = createWater(c.scene, { features: features.water, atmosphere, near: near.level, mid: mid.level, midGrid: mid.grid, passLayers: pass });
     owned.push(water); step('Water');
     const banks: FogBanks | null = features.fogBanks > 0 ? createFogBanks(atmosphere.uniforms, water.textures.macroNoise, features.fogBanks) : null;
     if (banks) owned.push(banks);
@@ -117,6 +133,8 @@ export async function buildGoldenGateWorld(c: BuildContext) {
     const traffic: Traffic = createTraffic({ models, route: bridge.route, density: c.traffic?.density ?? features.traffic.density,
       perLaneMax: c.traffic?.enabled === false ? 0 : features.traffic.perLaneMax, lod: features.traffic.lod, shadows: c.knobs.shadows.enabled, contactShadow: features.traffic.contactShadow, parked });
     owned.push(traffic);
+    const movers: Mesh[] = []; let fit = '', hadLive = false;
+    if (cache) { cache.track(bridge.root); traffic.root.traverse(n => { const m = n as Mesh; if (m.isMesh && m.castShadow) { m.layers.enable(ShadowLayers.live); movers.push(m); } }); }
     step('Traffic');
     const root = new Group(); root.name = 'golden-gate-world';
     root.add(terrain.root, bridge.root, traffic.root); if (banks) root.add(banks.sprite);
@@ -128,7 +146,7 @@ export async function buildGoldenGateWorld(c: BuildContext) {
     const focus = new Vector3();
     const stats = {
       tier: features.feature, terrainTiles: terrain.tiles, terrainTriangles: terrain.triangles, terrainTextureBytes: terrain.textureBytes, terrainUvFlipped: terrain.uvFlipped, terrainCorridor: terrain.corridor,
-      bridge: bridge.stats, fogBankPuffs: banks?.puffs ?? 0, water: water.stats,
+      bridge: bridge.stats, draw, sunCache: cache?.stats ?? null, fogBankPuffs: banks?.puffs ?? 0, water: water.stats,
       vegetation: { candidates: terrain.vegetation.candidates, cards: terrain.vegetation.cards, dropped: terrain.vegetation.dropped, meshes: terrain.vegetation.meshes, bytes: terrain.vegetation.bytes, atlasBytes: terrain.vegetation.atlasBytes },
       vehicles: [...models.values()].map(m => ({ type: m.type, triangles: m.triangles, length: +m.length.toFixed(3), wheelRadius: m.wheelRadius })),
     };
@@ -145,12 +163,25 @@ export async function buildGoldenGateWorld(c: BuildContext) {
       /** Per frame after the cameras: view-dependent state. */
       update(camera: PerspectiveCamera, time: number, bankOpacity: number, delta: number) {
         if (c.scene.fogNode !== fogNode) c.scene.fogNode = fogNode; // the kit's look may reset it
+        if (pass) passCameraLayers(camera, pass, 'main');
         atmosphere.hideSunFor(water.reflectionCamera(camera));
         atmosphere.update(camera, focus, performance.now() / 1000); // wall clock: environment throttle only
         water.update(camera, time);
         bridge.update(camera.position);
         banks?.update(time, bankOpacity);
         traffic.update(camera, delta, vehicleLights);
+        once?.update();
+        if (cache) {
+          // The static map re-renders when its fit or the bridge and approach representations change. Traffic moves
+          // through instance attributes, which the cache's watch cannot see, so the live map renders while any casting
+          // bucket draws and once more to clear it.
+          const key = `${atmosphere.shadowFit}|${bridge.usingFar}|${bridge.approachesFar}`;
+          if (key !== fit) { fit = key; cache.invalidate('fit'); }
+          cache.update();
+          const live = movers.some(m => m.visible);
+          if (live || hadLive) cache.liveShadow.needsUpdate = true;
+          hadLive = live;
+        }
       },
       dispose() { if (c.scene.fogNode === fogNode) c.scene.fogNode = null; release(); },
     };
