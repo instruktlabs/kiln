@@ -142,6 +142,27 @@ async function checkOneSource(dir) {
   }
 }
 
+/**
+ * Fifth, rule 7's default has to hold in practice. The wave sessions of 1 October
+ * 2026 (OpenCode, both the compact and the lean arm) asked `detail: "full"` on
+ * every render and edit because the skills said to pass it "for every finding",
+ * so the bounded default never reached the model. A skill may name full detail
+ * only as a qualified second look: every sentence that names it says "only".
+ */
+async function checkFullDetail(label, dir) {
+  for (const file of await tree(dir)) {
+    if (!file.endsWith('.md')) continue;
+    const text = await readFile(join(dir, file), 'utf8');
+    for (const sentence of text.split(/(?<=[.!?])\s+|\r?\n/u)) {
+      if (!/detail: ?"full"|--detail full/u.test(sentence)) continue;
+      if (!/\bonly\b/u.test(sentence))
+        errors.push(
+          `${label}/${file.replaceAll('\\', '/')}: "${sentence.trim().slice(0, 90)}" names full detail without "only"; the compact result is the way to review (rule 7) and full is a qualified second look`,
+        );
+    }
+  }
+}
+
 /** Every file of a skill, rejected if its bytes are not canonically LF. */
 async function checkLineEndings(label, dir) {
   for (const file of await tree(dir)) {
@@ -160,6 +181,7 @@ if (names.length === 0) errors.push(`${CANONICAL}/ contains no skills`);
 for (const name of names) {
   await validate(`${CANONICAL}/${name}`, join(canonicalDir, name), name);
   await checkLineEndings(`${CANONICAL}/${name}`, join(canonicalDir, name));
+  await checkFullDetail(`${CANONICAL}/${name}`, join(canonicalDir, name));
 }
 await checkOneSource(canonicalDir);
 

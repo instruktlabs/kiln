@@ -30,7 +30,7 @@ import {
 import { buildMcpManifest } from './mcp-manifest';
 import { localProgramStore } from './program-store-node';
 import { validateRequirementsBinding } from './requirements-context';
-import { describeInputError } from './tools/actions';
+import { describeInputError, schemaFields } from './tools/actions';
 import {
   createKilnProgramToolRegistry,
   type KilnToolContext,
@@ -187,7 +187,9 @@ export function createKilnToolHost(
           content: [
             {
               type: 'text',
-              text: withoutLocalPaths(describeInputError(name, err) ?? errorMessage(err)),
+              text: withoutLocalPaths(
+                describeInputError(name, err, schemaFields(def.inputSchema)) ?? errorMessage(err),
+              ),
             },
           ],
         };

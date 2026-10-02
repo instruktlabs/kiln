@@ -1421,12 +1421,12 @@ Manage optional immutable material resources in this workspace. presets discover
       "additionalProperties": false
     },
     "materialId": {
-      "description": "get; create-preset: optional id.",
+      "description": "get: the id a project palette lists as resourceId; create-preset: optional id.",
       "type": "string",
       "pattern": "^[a-z][a-z0-9_-]{0,79}$"
     },
     "revisionId": {
-      "description": "get: the immutable revision.",
+      "description": "get: the immutable revision; omitted, the material's only revision.",
       "type": "string",
       "pattern": "^sha256:[a-f0-9]{64}$"
     },
@@ -1724,6 +1724,7 @@ Browse saved assets: collections discovers storage; catalog searches all configu
       "pattern": "^[a-z][a-z0-9_-]{0,79}$"
     },
     "revisionId": {
+      "description": "get, restore: the saved revision; omitted, the newest.",
       "type": "string",
       "pattern": "^[a-z][a-z0-9_-]{0,79}$"
     },

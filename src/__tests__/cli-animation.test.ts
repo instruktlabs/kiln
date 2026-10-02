@@ -155,7 +155,14 @@ test('CLI samples real clips with the same frames as the shared tool and preserv
     expect(grid.exitCode).toBe(0);
     const gridResult = JSON.parse(grid.stdout.toString());
     expect(gridResult.frames).toBe(3);
-    expect(gridResult.cameraShots).toHaveLength(3);
+    // The compact receipt states each distinct resolved shot once with its frame count: the
+    // swing returns to its first pose, so two of the three followed frames share a shot.
+    expect(
+      (gridResult.cameraShots as { frames?: number }[]).reduce(
+        (frames, shot) => frames + (shot.frames ?? 1),
+        0,
+      ),
+    ).toBe(3);
     expect(gridResult.images).toHaveLength(1);
     expect((await readFile(gridResult.images[0].path)).subarray(0, 4)).toEqual(
       Buffer.from([137, 80, 78, 71]),

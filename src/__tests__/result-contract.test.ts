@@ -58,6 +58,44 @@ const ANIMATED =
   '  return r;\n' +
   '}\n' +
   "function animate() { return [createClip('spin', 1, [rotationTrack('Mesh_Blade', [{ time: 0, rotation: [0, 0, 0] }, { time: 0.5, rotation: [0, 90, 0] }, { time: 1, rotation: [0, 180, 0] }])])]; }\n";
+/** A jointed figure with swinging legs and arms: fifteen named nodes to measure per frame. */
+const WALKER =
+  "const meta = { name: 'Walker', category: 'character' };\n" +
+  'function build() {\n' +
+  "  const r = createRoot('Walker');\n" +
+  "  const hips = createPivot('Hips', [0, 1, 0], r);\n" +
+  "  createPart('Torso', boxGeo(0.4, 0.6, 0.2), gameMaterial(0x888888), { parent: hips, position: [0, 0.3, 0] });\n" +
+  "  createPart('Head', boxGeo(0.2, 0.2, 0.2), gameMaterial(0x888888), { parent: hips, position: [0, 0.75, 0] });\n" +
+  "  for (const [side, x] of [['L', -0.1], ['R', 0.1]]) {\n" +
+  "    const leg = createPivot('Leg' + side, [x, 0, 0], hips);\n" +
+  "    createPart('Shin' + side, boxGeo(0.1, 0.8, 0.1), gameMaterial(0x888888), { parent: leg, position: [0, -0.4, 0] });\n" +
+  "    createPart('Foot' + side, boxGeo(0.1, 0.1, 0.3), gameMaterial(0x666666), { parent: leg, position: [0, -0.85, 0.1] });\n" +
+  "    const arm = createPivot('Arm' + side, [x * 2.5, 0.55, 0], hips);\n" +
+  "    createPart('UpperArm' + side, boxGeo(0.08, 0.5, 0.08), gameMaterial(0x888888), { parent: arm, position: [0, -0.25, 0] });\n" +
+  "    createPart('Hand' + side, boxGeo(0.08, 0.1, 0.1), gameMaterial(0x666666), { parent: arm, position: [0, -0.55, 0] });\n" +
+  '  }\n' +
+  '  return r;\n' +
+  '}\n' +
+  "function animate() { return [createClip('walk', 1, [rotationTrack('Joint_LegL', [{ time: 0, rotation: [30, 0, 0] }, { time: 0.5, rotation: [-30, 0, 0] }, { time: 1, rotation: [30, 0, 0] }]), rotationTrack('Joint_LegR', [{ time: 0, rotation: [-30, 0, 0] }, { time: 0.5, rotation: [30, 0, 0] }, { time: 1, rotation: [-30, 0, 0] }]), rotationTrack('Joint_ArmL', [{ time: 0, rotation: [-30, 0, 0] }, { time: 0.5, rotation: [30, 0, 0] }, { time: 1, rotation: [-30, 0, 0] }]), rotationTrack('Joint_ArmR', [{ time: 0, rotation: [30, 0, 0] }, { time: 0.5, rotation: [-30, 0, 0] }, { time: 1, rotation: [30, 0, 0] }])])]; }\n";
+/** Every exported node of the walker: pivots are `Joint_<name>`, parts `Mesh_<name>`. */
+const WALKER_PARTS = [
+  'Joint_Hips',
+  'Mesh_Torso',
+  'Mesh_Head',
+  'Joint_LegL',
+  'Mesh_ShinL',
+  'Mesh_FootL',
+  'Joint_ArmL',
+  'Mesh_UpperArmL',
+  'Mesh_HandL',
+  'Joint_LegR',
+  'Mesh_ShinR',
+  'Mesh_FootR',
+  'Joint_ArmR',
+  'Mesh_UpperArmR',
+  'Mesh_HandR',
+];
+const NINE_PHASES = [0, 0.15, 0.25, 0.32, 0.4, 0.5, 0.6, 0.8, 1];
 
 type Host = ReturnType<typeof createKilnToolHost>;
 let root: string;
@@ -180,6 +218,39 @@ describe('contract rule 7: bounded results on one line', () => {
       expect(receipt['cameraFidelity']).toBeDefined();
     }
     expect(shotRender['viewFidelity']).toBeDefined();
+
+    // Nine frame times with one custom shot and two measured parts (the c37 shape: 24,223
+    // characters, the shot repeated per frame and every number at 17 digits) state the shot
+    // once and keep every frame.
+    const walked = await call('kiln_screenshot_animation', {
+      code: WALKER,
+      clip: 'walk',
+      size: 300,
+      frameTimes: NINE_PHASES,
+      shot: { name: 'Side', camera: { type: 'orbit', azimuthDeg: 150, elevationDeg: 10 } },
+      measureParts: [{ name: 'Mesh_FootL' }, { name: 'Mesh_FootR' }],
+    });
+    expect(walked.result.isError, walked.text.slice(0, 400)).not.toBe(true);
+    bounded('kiln_screenshot_animation default, nine frames', walked.text);
+    const sharedShots = walked.json!['cameraShots'] as Record<string, unknown>[];
+    expect(sharedShots).toHaveLength(1);
+    expect(sharedShots[0]!['frames']).toBe(9);
+    expect((walked.json!['poseBounds'] as unknown[]).length).toBe(9);
+    expect(walked.json!['poseBoundsOmitted']).toBeUndefined();
+    expect(walked.text).not.toMatch(/\d\.\d{7}|\de-\d/u);
+
+    // Nine frame times and fifteen measured parts, near the schema's maximum of each, stay
+    // inside the default limit by counting the frames they leave out.
+    const measured = await call('kiln_screenshot_animation', {
+      code: WALKER,
+      clip: 'walk',
+      frameTimes: NINE_PHASES,
+      measureParts: WALKER_PARTS.map((name) => ({ name })),
+    });
+    expect(measured.result.isError, measured.text.slice(0, 400)).not.toBe(true);
+    bounded('kiln_screenshot_animation default, nine frames and fifteen parts', measured.text);
+    const frames = (measured.json!['poseBounds'] as unknown[]).length;
+    expect(frames + ((measured.json!['poseBoundsOmitted'] as number | undefined) ?? 0)).toBe(9);
 
     // The same comparison asked of kiln_inspect (f10 measured 38,952 characters for a 50-entry
     // page with bounds) is a compact page too.
@@ -403,7 +474,48 @@ describe('contract rule 7: bounded results on one line', () => {
       detail: 'full',
     });
     bounded('kiln_screenshot_animation full', animated.text, MAX_RESULT_LIMIT);
-  }, 120_000);
+
+    // w21 (Agy horse, 1 October 2026): a full edit of 40,533 characters, its render bounded at
+    // 40,000 on its own and an 8,177-character diff on top. The whole edit is bounded.
+    const longEdit = await call('kiln_edit', {
+      programRef: rendered.json!['programRef'] as string,
+      edits: [
+        {
+          oldString: "createPart('Block'",
+          newString: `// ${'a long comment '.repeat(200)}\n    createPart('Block'`,
+        },
+      ],
+      detail: 'full',
+    });
+    expect(longEdit.result.isError, longEdit.text.slice(0, 400)).not.toBe(true);
+    bounded('kiln_edit full, long diff', longEdit.text, MAX_RESULT_LIMIT);
+    expect(longEdit.json!['retainedReport'] ?? longEdit.json!['render']).toBeDefined();
+
+    // Every part renamed with the bounds of every change: the comparison is bounded too.
+    const grid = await call('kiln_render', { code: GRID, detail: 'full' });
+    const renamed = await call('kiln_edit', {
+      programRef: grid.json!['programRef'] as string,
+      edits: [{ oldString: "'Block' + i", newString: `'Cube' + i // ${'x'.repeat(4000)}` }],
+      detail: 'full',
+    });
+    expect(renamed.result.isError, renamed.text.slice(0, 400)).not.toBe(true);
+    bounded('kiln_edit full, every part renamed', renamed.text, MAX_RESULT_LIMIT);
+
+    // Nine frames and fifteen measured parts in full: every frame that fits, the rest counted.
+    const measured = await call('kiln_screenshot_animation', {
+      code: WALKER,
+      clip: 'walk',
+      frameTimes: NINE_PHASES,
+      measureParts: WALKER_PARTS.map((name) => ({ name })),
+      detail: 'full',
+    });
+    expect(measured.result.isError, measured.text.slice(0, 400)).not.toBe(true);
+    bounded(
+      'kiln_screenshot_animation full, nine frames and fifteen parts',
+      measured.text,
+      MAX_RESULT_LIMIT,
+    );
+  }, 180_000); // Seven CPU evaluations, two of the 130-part asset: the file ran in 13 s warm on the Windows gate host; cold starts there have been several times slower.
 
   it('the review listing returns short records in pages', async () => {
     // More operations than any page: a realistic result summary on each.

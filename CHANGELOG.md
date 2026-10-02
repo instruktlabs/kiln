@@ -140,7 +140,33 @@ part floats, the compact render result is 9,103 characters, `full` 16,734 and `l
   result's `viewFidelity`; the camera is in `cameraShots` under the same name. A live
   six-shot compact edit measured 22,417 characters with 4,672 of receipts repeating the
   summary and the cameras; `full` keeps whole receipts.
-- An invalid-input error no longer ends an issue sentence twice (`...or file.. Check`).
+- **Breaking:** a compact or lean result rounds every number to six decimals (a micrometre
+  on a metre-scale asset); `full` and the retained report keep every digit. The 17-digit
+  doubles of bounds, cameras and origins were 4,346 of a live 24,223-character compact
+  animation result and 1,514 of a 20,556-character compact six-shot edit.
+- **Breaking:** in `compact` and `lean` detail, frames of an animation that resolve to one
+  shot are stated once in `cameraShots` with `frames` counting them and each frame's
+  bounds in `poseBounds` (nine frames repeated a 631-character camera and subject, 5,666
+  characters); `viewFidelity` states once what every receipt shares (the renderer id, a
+  degrade reason); and `viewEvidence.lastFaithful` is omitted when it is the current view.
+  When nine phases and many measured parts would still pass 20,000 characters, the leading
+  frames of `poseBounds` stay whole and `poseBoundsOmitted` counts the rest, with
+  `poseBoundsHint` naming the way to them; `full` keeps every frame that fits 40,000.
+- **Breaking:** a `detail: 'full'` edit is bounded as a whole. A live full edit measured
+  40,533 characters: its render bounded at 40,000 on its own, the 8,177-character diff and
+  the 10,973-character comparison on top. The diff shrinks first (to 2,000, with
+  `diffOmitted`), then the bounds of each change leave the comparison (the retained report
+  keeps them), then the render is bounded again with what is left.
+- An invalid-input error no longer ends an issue sentence twice (`...or file.. Check`), and
+  one that names a key the tool does not take lists the keys it does (`kiln_material takes
+  action, materialId, ...`): a live session passed a project palette's `resourceId` to
+  `kiln_material get` twice and was told only to check the schema. The `materialId`
+  description names the palette's `resourceId`.
+- `kiln_assets get` and `restore` without `revisionId` read the asset's newest revision (the
+  one no later revision names as its parent), and `kiln_material get` without `revisionId`
+  reads the material's only revision, naming the revisions when there are several; both
+  match `kiln_project get`. Three live sessions called `get` with the id alone and were
+  refused.
 - **Breaking:** `kiln_inspect listParts` returns names and paths; `placement: true` adds
   the world transform, mirroring and bounds in pages of 50. The floating-parts warning
   names the first six parts with their fix and the next 24 by name, and a render result
@@ -180,10 +206,14 @@ compaction, so it is a budget: the generated guide is at most 5,000 characters a
   whose `opencode.json` names `skills/` in `skills.paths`. Existing workspaces are not
   rewritten: `kiln-init --check` reports the second registry a 0.9 workspace carried as
   `retired`, `--upgrade` removes it when unchanged and stops on an edited copy.
-- `kiln-author-asset/SKILL.md` is 15,846 characters (19,030 before). Its delivery paragraph
+- `kiln-author-asset/SKILL.md` is 15,969 characters (19,030 before). Its delivery paragraph
   offers `node kiln.mjs view` to a person who is present instead of telling the agent to
   launch it: a headless Codex session saved its asset and then sat behind the viewer until
-  the 30-minute cap. `engine-handoff.md` lives once in `kiln-qa-asset` and
+  the 30-minute cap. The author, QA and camera guidance make the compact result the way
+  to review and name `detail: "full"` only as a qualified second look: the first wave
+  pair asked `full` on every render and edit in both the compact and the lean arm because
+  the skills said to pass it "for every finding". `check:skills` now refuses a skill
+  sentence that names full detail without "only". `engine-handoff.md` lives once in `kiln-qa-asset` and
   `export-profiles.md` once in `kiln-author-asset`, each named by skill and path from the
   other (a skill's markdown links stay inside the skill, so a workspace that installs one
   skill alone resolves every link); `check:skills` refuses two files under `skills/` with the

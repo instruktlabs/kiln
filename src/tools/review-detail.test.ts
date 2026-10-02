@@ -418,29 +418,206 @@ describe('compact review results', () => {
         receipts: [receipt('a'), receipt('b', { degraded: true, degradeReason: 'deadline' })],
       },
     };
+    // A field every receipt carries with one value (the renderer, the posed hash) is stated
+    // once, on the summary: nine receipts of c37 each repeated an 85-character renderer id.
     for (const detail of ['compact', 'lean'] as const) {
-      const { viewFidelity } = compactReviewResult(nested, detail) as unknown as typeof nested;
+      const { viewFidelity } = compactReviewResult(nested, detail) as unknown as typeof nested & {
+        viewFidelity: { rendererId?: string; inputGlbSha256?: string };
+      };
+      expect(viewFidelity.rendererId).toBe('cpu-raster');
       expect(viewFidelity.receipts).toEqual([
         {
           derivativeLabel: 'a',
           cameraFidelity: 'engine-resolved',
           captureCache: { hit: false, reused: 0, total: 1 },
-          rendererId: 'cpu-raster',
-          inputGlbSha256: 'sha256:same',
           degraded: false,
         },
         {
           derivativeLabel: 'b',
           cameraFidelity: 'engine-resolved',
           captureCache: { hit: false, reused: 0, total: 1 },
-          rendererId: 'cpu-raster',
-          inputGlbSha256: 'sha256:same',
           degradeReason: 'deadline',
         },
       ] as unknown as typeof nested.viewFidelity.receipts);
       expect(viewFidelity.degraded).toBe(true);
+      // Lean keeps the summary's fidelity fields and not its hash, as before.
+      expect(viewFidelity.inputGlbSha256).toBe(detail === 'compact' ? 'sha256:same' : undefined);
     }
     expect(compactReviewResult(nested, 'full')).toEqual(nested);
+  });
+
+  // c37 (Claude Code Trojan soldier, Opus 5.5, 1 October 2026): a default animation result of
+  // 24,223 characters for nine frame times, one custom shot and two measured parts. The shot
+  // was repeated per frame (5,666), every number carried 17 digits (4,346 of the total), the
+  // `lastFaithful` reference repeated `current` (900) and each receipt the renderer id.
+  const soldierCamera = {
+    version: 'kiln.camera.v1',
+    projection: 'orthographic',
+    position: [-5.571529363434595, 2.218511091590594, 3.4934024286978786],
+    target: [0.020724887295280714, 1.0799009502757115, 0.26471293166215615],
+    up: [0.15038373318043533, 0.9848077530122084, -0.08682408883346518],
+    aspect: 1,
+    near: 3.2784972368060736,
+    far: 10.835491710418221,
+    halfHeight: 1.6630639070301758,
+  };
+  const posed = (i: number) => ({
+    min: [-0.4124558048328256 - i * 0.01, 2.2306171937325203e-8, -0.203750004991889],
+    max: [0.30097457448828496, 1.9127075120641193 + i * 0.01, 0.8694816053177239],
+  });
+  const animation = (frames: number, parts: number) => {
+    const shots = Array.from({ length: frames }, (_, i) => ({
+      name: 'Trojan soldier',
+      camera: soldierCamera,
+      subject: { path: '/Trojan%20soldier[0]', name: 'Trojan soldier', bounds: posed(i) },
+      visibility: 'context',
+    }));
+    const receipt = (i: number) => ({
+      version: 'kiln.view-fidelity.v1',
+      derivativeLabel: `${Math.round((100 * i) / (frames - 1))}%`,
+      camera: soldierCamera,
+      cameraFidelity: 'echo-validated',
+      captureCache: { hit: false, reused: 0, total: 1 },
+      requested: 'full-preferred',
+      delivered: 'full-material',
+      materialFaithful: true,
+      exactArtifact: false,
+      degraded: false,
+      rendererId: 'dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1074',
+      inputGlbSha256: `sha256:${String(i).repeat(64)}`,
+    });
+    return {
+      ok: true,
+      frames,
+      cameraShots: shots,
+      poseBounds: Array.from({ length: frames }, (_, i) => ({
+        phase: i / (frames - 1),
+        timeSeconds: (1.1 * i) / (frames - 1),
+        scene: posed(i),
+        parts: Array.from({ length: parts }, (_, p) => ({
+          path: `/Trojan%20soldier[0]/TrojanSoldier[0]/Joint_hips[0]/Joint_hip_${p}[0]/Joint_knee_${p}[0]/Joint_ankle_${p}[0]/Mesh_foot_${p}[0]`,
+          name: `Mesh_foot_${p}`,
+          bounds: posed(i + p),
+          origin: [0.095 * p, 0.08500002878599466, 0.14999999282662274],
+        })),
+      })),
+      viewFidelity: {
+        version: 'kiln.derivative-review-fidelity.v1',
+        requested: 'full-preferred',
+        delivered: 'full-material',
+        materialFaithful: true,
+        exactArtifact: false,
+        degraded: false,
+        receipts: shots.map((_, i) => receipt(i)),
+      },
+      viewEvidence: {
+        version: 'kiln.view-evidence-history.v1',
+        current: {
+          sequence: 2,
+          surface: 'kiln_screenshot_animation',
+          materialFaithful: true,
+          inputGlbSha256: shots.map((_, i) => `sha256:${String(i).repeat(64)}`),
+        },
+        lastFaithful: {
+          version: 'kiln.faithful-view-evidence-ref.v1',
+          sequence: 2,
+          surface: 'kiln_screenshot_animation',
+          inputGlbSha256: shots.map((_, i) => `sha256:${String(i).repeat(64)}`),
+        },
+        faithfulHistory: [],
+      },
+      warnings: [] as string[],
+    };
+  };
+
+  it('states a shared animation shot once, rounds to six decimals and drops the evidence repeat', () => {
+    const source = animation(9, 1);
+    for (const detail of ['compact', 'lean'] as const) {
+      const out = compactReviewResult(source, detail) as unknown as {
+        cameraShots: Record<string, unknown>[];
+        poseBounds: { scene: { min: number[] }; parts: { origin: number[] }[] }[];
+        viewFidelity: { rendererId?: string; receipts: Record<string, unknown>[] };
+        viewEvidence?: Record<string, unknown>;
+      };
+      // One resolved shot for the nine frames; poseBounds carries each frame's bounds.
+      expect(out.cameraShots).toEqual([
+        {
+          name: 'Trojan soldier',
+          camera: {
+            ...soldierCamera,
+            position: [-5.571529, 2.218511, 3.493402],
+            target: [0.020725, 1.079901, 0.264713],
+            up: [0.150384, 0.984808, -0.086824],
+            near: 3.278497,
+            far: 10.835492,
+            halfHeight: 1.663064,
+          },
+          subject: { path: '/Trojan%20soldier[0]', name: 'Trojan soldier' },
+          visibility: 'context',
+          frames: 9,
+        },
+      ]);
+      expect(out.poseBounds).toHaveLength(9);
+      expect(out.poseBounds[0]!.scene.min).toEqual([-0.412456, 0, -0.20375]);
+      expect(out.poseBounds[0]!.parts[0]!.origin).toEqual([0, 0.085, 0.15]);
+      expect(JSON.stringify(out)).not.toMatch(/\d\.\d{7}|e-\d/u);
+      expect(out.viewFidelity.rendererId).toContain('dawn-d3d12');
+      expect(out.viewFidelity.receipts[1]).toEqual({
+        derivativeLabel: '13%',
+        cameraFidelity: 'echo-validated',
+        captureCache: { hit: false, reused: 0, total: 1 },
+        inputGlbSha256: `sha256:${'1'.repeat(64)}`,
+      });
+      expect(resultCharacters(out)).toBeLessThan(resultCharacters(source) / 2);
+    }
+    const compact = compactReviewResult(source) as unknown as { viewEvidence: unknown };
+    expect(compact.viewEvidence).toEqual({ current: source.viewEvidence.current });
+    // An earlier faithful view is still named.
+    const earlier = animation(2, 1);
+    earlier.viewEvidence.lastFaithful.sequence = 1;
+    expect(
+      (compactReviewResult(earlier) as unknown as { viewEvidence: { lastFaithful?: unknown } })
+        .viewEvidence.lastFaithful,
+    ).toEqual(earlier.viewEvidence.lastFaithful);
+    // Full keeps every frame, every digit and the evidence as they were.
+    const full = compactReviewResult(source, 'full') as unknown as typeof source;
+    expect(full.cameraShots).toBe(source.cameraShots);
+    expect(full.poseBounds).toBe(source.poseBounds);
+    expect(full.viewEvidence).toBe(source.viewEvidence);
+    // Distinct shots of a static capture stay as they are, bounds included.
+    const grid = compactReviewResult({
+      ok: true,
+      cameraShots: [0, 1].map((i) => ({ ...animation(2, 1).cameraShots[i]!, name: `shot ${i}` })),
+    }) as unknown as { cameraShots: { subject: { bounds?: unknown }; frames?: number }[] };
+    expect(grid.cameraShots).toHaveLength(2);
+    expect(grid.cameraShots[0]!.subject.bounds).toBeDefined();
+    expect(grid.cameraShots[0]!.frames).toBeUndefined();
+  });
+
+  it('bounds the pose frames when a result would pass its limit, and says what was left out', () => {
+    // Nine frame times and sixteen measured parts, the schema's maximum of each.
+    const source = animation(9, 16);
+    expect(resultCharacters(source)).toBeGreaterThan(MAX_RESULT_LIMIT);
+    for (const detail of ['compact', 'lean'] as const) {
+      const out = compactReviewResult(source, detail) as unknown as {
+        poseBounds: unknown[];
+        poseBoundsOmitted?: number;
+        poseBoundsHint?: string;
+      };
+      expect(resultCharacters(out)).toBeLessThanOrEqual(DEFAULT_RESULT_LIMIT);
+      expect(out.poseBounds.length).toBeGreaterThan(0);
+      expect(out.poseBounds.length).toBeLessThan(9);
+      expect(out.poseBoundsOmitted).toBe(9 - out.poseBounds.length);
+      expect(out.poseBoundsHint).toContain("detail: 'full'");
+    }
+    const full = compactReviewResult(source, 'full', {
+      retainedReport: () => ({ operationId: 'op_9', path: '.kiln/review/op_9/evaluation.json' }),
+    }) as unknown as { poseBounds: unknown[]; poseBoundsOmitted?: number; poseBoundsHint?: string };
+    expect(resultCharacters(full)).toBeLessThanOrEqual(MAX_RESULT_LIMIT);
+    expect(full.poseBounds.length + full.poseBoundsOmitted!).toBe(9);
+    expect(full.poseBoundsHint).toContain('.kiln/review/op_9/evaluation.json');
+    // A result that fits keeps every frame and says nothing.
+    expect(compactReviewResult(animation(9, 1))).not.toHaveProperty('poseBoundsOmitted');
   });
 });
 
@@ -591,6 +768,47 @@ describe('compact edit results', () => {
     const small = compactEditResult(edited()) as { diff: string; diffOmitted?: number };
     expect(small.diff).toBe(edited().diff);
     expect(small.diffOmitted).toBeUndefined();
+  });
+
+  it('full bounds the whole edit inside the hard limit: the diff first, then the comparison', () => {
+    // w21 (Agy horse, 1 October 2026): a full edit of 40,533 characters. Its render was bounded
+    // at 40,000 on its own; the 8,177-character diff and 10,973-character comparison sat on top.
+    const source = edited();
+    source.diff = '-old line\n+new line\n'.repeat(400); // 8,000 characters, the kiln_edit cap
+    source.preservation.comparison.changes = Array.from({ length: 120 }, (_, i) => ({
+      ...comparison().changes[1]!,
+      path: `/Chariot[0]/Mesh_Part${i}[0]`,
+      beforePath: `/Chariot[0]/Mesh_Part${i}[0]`,
+      name: `Mesh_Part${i}`,
+    }));
+    expect(resultCharacters(source)).toBeGreaterThan(MAX_RESULT_LIMIT);
+    const retained = { operationId: 'op_21', path: '.kiln/review/op_21/evaluation.json' };
+    const full = compactEditResult(source, 'full', {
+      retainedReport: () => retained,
+    }) as unknown as {
+      diff: string;
+      diffOmitted?: number;
+      preservation: { comparison: { changes: Record<string, unknown>[]; detail?: string } };
+      render: { qaReport: { rules?: unknown }; retainedReport?: unknown };
+    };
+    expect(resultCharacters(full as unknown as Record<string, unknown>)).toBeLessThanOrEqual(
+      MAX_RESULT_LIMIT,
+    );
+    expect(full.diff).toBe(source.diff.slice(0, 2_000));
+    expect(full.diffOmitted).toBe(6_000);
+    expect(full.preservation.comparison.changes).toHaveLength(120);
+    expect(full.preservation.comparison.changes[0]).toEqual({
+      path: '/Chariot[0]/Mesh_Part0[0]',
+      name: 'Mesh_Part0',
+      status: 'removed',
+    });
+    expect(full.preservation.comparison.detail).toContain(retained.path);
+    // The render kept its complete report: the diff and the comparison were enough.
+    expect(Array.isArray(full.render.qaReport.rules)).toBe(true);
+    expect(full.render.retainedReport).toEqual(retained);
+    // The input is never mutated.
+    expect(source.diff).toHaveLength(8_000);
+    expect(source.preservation.comparison.changes[0]).toHaveProperty('beforeBounds');
   });
 });
 

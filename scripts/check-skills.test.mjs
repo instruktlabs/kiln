@@ -49,6 +49,23 @@ test('a SKILL.md over 16,000 characters fails with the rule', async () => {
   }
 });
 
+test('a skill that tells the model to pass full detail as a matter of course fails', async () => {
+  // The OpenCode wave sessions of 1 October 2026 asked `detail: "full"` on every review
+  // call in both arms because the skills said to pass it "for every finding" (H28).
+  const root = await scratchTree();
+  try {
+    const skill = join(root, 'skills', 'kiln-qa-asset', 'SKILL.md');
+    const text = await readFile(skill, 'utf8');
+    await writeFile(skill, `${text}\nPass \`detail: "full"\` to every render for every finding.\n`);
+    const result = run(root);
+    expect(result.status).toBe(1);
+    expect(result.stderr).toContain('skills/kiln-qa-asset/SKILL.md');
+    expect(result.stderr).toContain('names full detail without "only"');
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+});
+
 test('a reference file duplicated into another skill fails: one source per file', async () => {
   const root = await scratchTree();
   try {

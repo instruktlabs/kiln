@@ -61,7 +61,7 @@ needs a renderer for `image:false` listings. Paths belong to that evaluated revi
 }
 ```
 
-Replace the sample path with one returned for your asset. Paths encode node names and distinguish same-name siblings with occurrence indices. They are scoped to the evaluated revision; a topology-changing edit can change them. The first segment is the glTF scene, which usually repeats the root name (`/Hall[0]/Hall[0]/...`), and each mesh node lists one `<name>:primitive-N` child per material primitive. Those entries are valid selectors but are not exported nodes, so node counts in a listing exceed the GLB's. A versioned capture returns each resolved shot in `cameraShots`, whose `subject.bounds` is that part's world bounds; use it, animation `measureParts` and `measure` instead of parsing the GLB.
+Replace the sample path with one returned for your asset. Paths encode node names and distinguish same-name siblings with occurrence indices. They are scoped to the evaluated revision; a topology-changing edit can change them. The first segment is the glTF scene, which usually repeats the root name (`/Hall[0]/Hall[0]/...`), and each mesh node lists one `<name>:primitive-N` child per material primitive. Those entries are valid selectors but are not exported nodes, so node counts in a listing exceed the GLB's. A versioned capture returns each resolved shot in `cameraShots`, whose `subject.bounds` is that part's world bounds; use it, animation `measureParts` and `measure` instead of parsing the GLB. Frames of an animation that resolve to one shot are stated once in a compact or lean result, with `frames` counting them and each frame's bounds in `poseBounds`; `full` lists every frame.
 
 `relativeTo` accepts `world`, `asset`, or `part`. Part-local directions follow the selected node's transformed axes. The camera frames its world bounds. `visibility:"context"` retains surrounding geometry; `"isolate"` hides other meshes for that shot. GPU and CPU views both draw only the subject subtree, so an isolated LOD group shows no sibling parts. Inspection does not alter the saved program or exported original asset.
 
@@ -108,6 +108,11 @@ geometry returns `bounds:null`, so read a locator from `origin`. Use this to com
 contacts or attachments together; scene bounds alone cannot establish support.
 CLI accepts the same array in `--measure-parts parts.json`. These are sampled
 geometry bounds, not continuous collision, balance or physical-contact evidence.
+A compact or lean result keeps `poseBounds` inside the default 20,000 characters: when
+nine phases and many measured parts would pass it, the leading frames stay whole and
+`poseBoundsOmitted` counts the rest, with `poseBoundsHint` naming the way to the
+remainder (`detail: "full"`, bounded at 40,000 with the retained report holding every
+frame, or fewer phases or parts per call).
 
 ## Comparing edits
 
@@ -121,7 +126,7 @@ fit. Unsupported or ambiguous structures fail explicitly. See
 
 ## What the receipts establish
 
-`cameraShots` describes the resolved world cameras, subject bounds, and visibility. Derivative receipts carry `cameraFidelity`: `engine-resolved` for the CPU projection, or `echo-validated` when a GPU service acknowledges the exact requested parameters and dimensions. An echo is a transport check, not independent proof that an arbitrary remote service rendered honest pixels. In `full` detail each receipt also repeats its camera and every fidelity field; a compact or lean receipt is its label, `cameraFidelity`, the capture cache and only the fields that differ from the result's `viewFidelity` summary.
+`cameraShots` describes the resolved world cameras, subject bounds, and visibility. Derivative receipts carry `cameraFidelity`: `engine-resolved` for the CPU projection, or `echo-validated` when a GPU service acknowledges the exact requested parameters and dimensions. An echo is a transport check, not independent proof that an arbitrary remote service rendered honest pixels. In `full` detail each receipt also repeats its camera and every fidelity field; a compact or lean receipt is its label, `cameraFidelity`, the capture cache and only the fields that differ from the result's `viewFidelity` summary, which states once whatever every receipt shares (the renderer id, a degrade reason). Compact and lean results also round every number to six decimals and omit `viewEvidence.lastFaithful` when it is the current view; `full` keeps the digits and the reference.
 
 Read `viewFidelity` separately before judging textures or materials. A CPU fallback preserves the requested camera while reporting geometry-flat material evidence. A backend that cannot honor the camera cannot silently substitute another projection. `--render gpu` treats GPU failure as failure instead of returning CPU success.
 

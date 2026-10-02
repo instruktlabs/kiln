@@ -28,7 +28,7 @@ const REQUIREMENTS: Record<MaterialAction, Parameters<typeof requireActionFields
   presets: { required: [] },
   'create-preset': { required: ['presetId', 'seed', 'creator', 'license'] },
   list: { required: [] },
-  get: { required: ['materialId', 'revisionId'] },
+  get: { required: ['materialId'] },
   'create-procedural': { required: ['draft'], shapes: { draft: 'shape:material-draft' } },
   import: { required: ['payload'], shapes: { payload: 'shape:material-import' } },
 };
@@ -50,8 +50,12 @@ export const materialToolInput = z.strictObject({
   license: materialSourceSchema.shape.license
     .optional()
     .describe('create-preset: spdx, url and attribution.'),
-  materialId: materialLibraryIdSchema.optional().describe('get; create-preset: optional id.'),
-  revisionId: materialLibraryHashSchema.optional().describe('get: the immutable revision.'),
+  materialId: materialLibraryIdSchema
+    .optional()
+    .describe('get: the id a project palette lists as resourceId; create-preset: optional id.'),
+  revisionId: materialLibraryHashSchema
+    .optional()
+    .describe("get: the immutable revision; omitted, the material's only revision."),
   draft: record(
     nestedRecordDescription(
       'create-procedural: materialId, name, tileable, sources, maps with layered procedural specs; optional tags, physicalSizeMeters, parameters.',
@@ -70,6 +74,27 @@ const materialResult = (material: MaterialManifestV1) => ({
   material,
   portableSpec: materialLibraryPortableSpec(material),
 });
+const unknownMaterial = (materialId: string, revisionId?: string) =>
+  new Error(
+    `Unknown material ${materialId}${revisionId ? ` at ${revisionId}` : ''}. kiln_material { action: 'list' } lists the materials in this workspace with their revision IDs.`,
+  );
+/**
+ * The revision a `get` without `revisionId` means: the material's only one.
+ * Revisions are content hashes with no order, so several are named for the
+ * caller to choose (two live sessions of 1 October 2026 called get with the
+ * id alone and were refused).
+ */
+async function onlyRevision(library: MaterialLibrary, materialId: string): Promise<string> {
+  const revisions = (await library.list())
+    .filter((material) => material.materialId === materialId)
+    .map((material) => material.revisionId)
+    .sort();
+  if (revisions.length === 1) return revisions[0]!;
+  if (revisions.length === 0) throw unknownMaterial(materialId);
+  throw new Error(
+    `Material ${materialId} has ${revisions.length} revisions: ${revisions.join(', ')}. Pass revisionId to get one.`,
+  );
+}
 export function createKilnMaterialDef(library: MaterialLibrary): KilnToolDef {
   return {
     name: 'kiln_material',
@@ -128,19 +153,17 @@ export function createKilnMaterialDef(library: MaterialLibrary): KilnToolDef {
               })),
           };
         }
-        case 'get':
+        case 'get': {
+          const revisionId = input.revisionId ?? (await onlyRevision(library, input.materialId!));
           try {
-            return materialResult(
-              (await library.read(input.materialId!, input.revisionId!)).manifest,
-            );
+            return materialResult((await library.read(input.materialId!, revisionId)).manifest);
           } catch (error) {
             // Rule 9: an unknown id names the call that lists the known ones.
             if ((error as NodeJS.ErrnoException).code === 'ENOENT')
-              throw new Error(
-                `Unknown material ${input.materialId} at ${input.revisionId}. kiln_material { action: 'list' } lists the materials in this workspace with their revision IDs.`,
-              );
+              throw unknownMaterial(input.materialId!, revisionId);
             throw error;
           }
+        }
         case 'create-procedural': {
           const record = await createMaterialRecordV1(
             proceduralMaterialDraftSchema.parse(input.draft),

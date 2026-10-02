@@ -108,6 +108,19 @@ describe('contract rule 9: errors that teach', () => {
       arguments: { image: false, listParts: { limit: 30 } },
     });
     expect(teaches('no program', noProgram)).toContain('programRef');
+    // w28: the key a project's palette lists, passed to the material tool, is answered
+    // with the keys the tool takes.
+    const alias = await server.request('tools/call', {
+      name: 'kiln_material',
+      arguments: {
+        action: 'get',
+        resourceId: 'troy-timber',
+        revisionId: `sha256:${'0'.repeat(64)}`,
+      },
+    });
+    const aliased = teaches('unknown key', alias);
+    expect(aliased).toContain('resourceId');
+    expect(aliased).toContain('materialId');
     await server.close();
   });
 

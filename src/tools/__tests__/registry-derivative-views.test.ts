@@ -110,9 +110,10 @@ describe('derivative review surfaces', () => {
   test('GPU failure uses GLB-native geometry-flat frames with stable reasons', async () => {
     const execute = spyOn(renderModule, 'executeKilnCode');
     try {
+      // Whole receipts: a compact result states the reason every receipt shares once.
       const result = (await createKilnScreenshotAnimationDef({
         viewRenderPort: async () => ({ ok: false, rendererId: 'gpu:test', error: 'offline' }),
-      }).run({ code: ANIMATED, clip: 'move' })) as KilnScreenshotAnimationResult;
+      }).run({ code: ANIMATED, clip: 'move', detail: 'full' })) as KilnScreenshotAnimationResult;
       expect(result.ok).toBe(true);
       expect(execute).toHaveBeenCalledTimes(1);
       expect(result.viewFidelity).toMatchObject({
@@ -125,6 +126,15 @@ describe('derivative review surfaces', () => {
       expect(
         result.viewFidelity?.receipts.every((receipt) => receipt.degradeReason === 'offline'),
       ).toBe(true);
+      const compact = (await createKilnScreenshotAnimationDef({
+        viewRenderPort: async () => ({ ok: false, rendererId: 'gpu:test', error: 'offline' }),
+      }).run({ code: ANIMATED, clip: 'move' })) as KilnScreenshotAnimationResult & {
+        viewFidelity?: { degradeReason?: string };
+      };
+      expect(compact.viewFidelity?.degradeReason).toBe('offline');
+      expect(compact.viewFidelity?.receipts.some((receipt) => 'degradeReason' in receipt)).toBe(
+        false,
+      );
     } finally {
       execute.mockRestore();
     }

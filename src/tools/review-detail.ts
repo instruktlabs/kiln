@@ -13,8 +13,10 @@
  * keeps every acceptance field, every rule that was not evaluated, the current
  * view-fidelity receipt, a bounded part preview and bounded build warnings.
  * `lean` keeps the signal, the metrics and the fidelity receipt and nothing
- * else. `full` keeps every finding, rule and part that fits the hard limit and
- * names the retained report file for the rest.
+ * else. Both state a shot shared by every frame once, round every number to
+ * six decimals and keep the sampled frames inside the default limit. `full`
+ * keeps every finding, rule, part, frame and digit that fits the hard limit
+ * and names the retained report file for the rest.
  *
  * Compaction never mutates its input and runs only where a result leaves the
  * tool: the retained reviewed artifact (kiln_save, kiln_finish) and Live Review
@@ -38,6 +40,8 @@ export const WARNING_CHARS = 1_000;
 /** Rule 7: the default result size, and the size no detail value may exceed. */
 export const DEFAULT_RESULT_LIMIT = 20_000;
 export const MAX_RESULT_LIMIT = 40_000;
+/** Decimals a compact or lean number keeps: a micrometre on a metre-scale asset. */
+export const COMPACT_DECIMALS = 6;
 
 export const reviewDetailInput = z
   .enum(['lean', 'compact', 'full'])
@@ -254,19 +258,60 @@ function lead(result: Json): Json {
 }
 
 /**
+ * Every non-integer number to COMPACT_DECIMALS. The 17-digit doubles of bounds,
+ * cameras and origins were 4,346 of a 24,223-character compact animation result
+ * and 1,514 of a 20,556-character compact edit on 1 October 2026; a model edits
+ * in millimetres. `full` and the retained artifact keep every digit.
+ */
+function roundNumbers<T>(value: T): T {
+  if (typeof value === 'number')
+    return (
+      Number.isInteger(value) || !Number.isFinite(value)
+        ? value
+        : Number(value.toFixed(COMPACT_DECIMALS))
+    ) as T;
+  if (Array.isArray(value)) return value.map(roundNumbers) as T;
+  if (isRecord(value)) {
+    const out: Json = {};
+    for (const [key, entry] of Object.entries(value)) out[key] = roundNumbers(entry);
+    return out as T;
+  }
+  return value;
+}
+
+/**
  * The current view and the hash-only `lastFaithful` reference stay: a degraded
- * render must still say which earlier artifact the faithful views belong to. The
- * faithful history behind them is only ever a repeat of that reference.
+ * render must still say which earlier artifact the faithful views belong to.
+ * When the current view is that artifact the reference only repeats it (nine
+ * posed hashes twice, 900 characters, in c37), and the faithful history behind
+ * them is only ever a repeat of that reference.
  */
 function withCurrentEvidence(result: Json): Json {
   const evidence = result.viewEvidence;
   if (!isRecord(evidence) || !('current' in evidence)) return result;
   const { current, lastFaithful } = evidence;
+  const repeated =
+    isRecord(current) &&
+    isRecord(lastFaithful) &&
+    typeof current.sequence === 'number' &&
+    lastFaithful.sequence === current.sequence;
   return {
     ...result,
-    viewEvidence: { current, ...(lastFaithful !== undefined ? { lastFaithful } : {}) },
+    viewEvidence: {
+      current,
+      ...(lastFaithful !== undefined && !repeated ? { lastFaithful } : {}),
+    },
   };
 }
+
+/** Receipt fields that identify one view; never shared with the summary. */
+const RECEIPT_IDENTITY = new Set([
+  'version',
+  'camera',
+  'derivativeLabel',
+  'cameraFidelity',
+  'captureCache',
+]);
 
 /**
  * A per-view receipt in compact and lean detail: its label, camera fidelity and
@@ -291,15 +336,43 @@ function compactReceipt(receipt: unknown, summary: Json): unknown {
   return out;
 }
 
-/** The receipts beside the summary and the ones inside it, compacted against the summary. */
+/**
+ * The fields every receipt carries with one value and the summary does not
+ * state: nine receipts of c37 each repeated an 85-character renderer id.
+ */
+function sharedReceiptFields(receipts: readonly unknown[], summary: Json): Json {
+  const shared: Json = {};
+  const [first, ...rest] = receipts;
+  if (!isRecord(first) || !rest.every(isRecord)) return shared;
+  for (const [key, value] of Object.entries(first)) {
+    if (RECEIPT_IDENTITY.has(key) || summary[key] !== undefined) continue;
+    const json = JSON.stringify(value);
+    if (rest.every((receipt) => JSON.stringify(receipt[key]) === json)) shared[key] = value;
+  }
+  return shared;
+}
+
+/**
+ * The receipts beside the summary and the ones inside it, compacted against
+ * the summary, which first takes what every receipt shares.
+ */
 function withCompactReceipts(result: Json): Json {
   const fidelity = isRecord(result.viewFidelity) ? result.viewFidelity : undefined;
-  const { receipts, ...summary } = fidelity ?? {};
+  const { receipts, ...rest } = fidelity ?? {};
+  const list = Array.isArray(receipts)
+    ? receipts
+    : Array.isArray(result.derivativeReceipts)
+      ? result.derivativeReceipts
+      : undefined;
+  if (!list) return result;
+  const summary: Json = { ...rest, ...(fidelity ? sharedReceiptFields(list, rest) : {}) };
   let out = result;
-  if (fidelity && Array.isArray(receipts))
+  if (fidelity)
     out = {
       ...out,
-      viewFidelity: { ...fidelity, receipts: receipts.map((r) => compactReceipt(r, summary)) },
+      viewFidelity: Array.isArray(receipts)
+        ? { ...summary, receipts: receipts.map((r) => compactReceipt(r, summary)) }
+        : summary,
     };
   if (Array.isArray(result.derivativeReceipts))
     out = {
@@ -307,6 +380,61 @@ function withCompactReceipts(result: Json): Json {
       derivativeReceipts: result.derivativeReceipts.map((r) => compactReceipt(r, summary)),
     };
   return out;
+}
+
+/**
+ * Frames of an animation that resolve to one shot state it once, with the
+ * frame count: nine frames of c37 repeated a 631-character orthographic camera
+ * and subject, 5,666 of a 24,223-character result. `poseBounds` carries each
+ * frame's bounds, so a shared shot drops the per-frame `subject.bounds`. The
+ * distinct shots of a static capture stay whole.
+ */
+function withSharedShots(result: Json): Json {
+  const shots = result.cameraShots;
+  if (!Array.isArray(shots) || shots.length < 2 || !shots.every(isRecord)) return result;
+  const groups = new Map<string, Json>();
+  for (const shot of shots) {
+    const entry: Json = {};
+    for (const [key, value] of Object.entries(shot)) {
+      if (key === 'subject' && isRecord(value)) {
+        const { bounds: _bounds, ...identity } = value;
+        entry.subject = identity;
+      } else entry[key] = value;
+    }
+    const key = JSON.stringify(entry);
+    const group = groups.get(key);
+    if (group) group.frames = (group.frames as number) + 1;
+    else groups.set(key, { ...entry, frames: 1 });
+  }
+  if (groups.size === shots.length) return result;
+  return { ...result, cameraShots: [...groups.values()] };
+}
+
+/** How a bounded animation result names the frames it left out. */
+const poseFramesHint = (retained: RetainedReport | undefined): string =>
+  retained
+    ? `Every frame: read ${retained.path} (pretty-printed), or ask fewer frameTimes or measureParts per call.`
+    : "Every frame: detail: 'full' (inside the 40,000-character limit), or fewer frameTimes or measureParts per call.";
+
+/**
+ * The sampled frames go last and whole: nine frame times with sixteen measured
+ * parts, the schema's maximum of each, are 60,000 characters of `poseBounds`.
+ * A result that still passes its limit keeps the leading frames and counts the
+ * rest, so the model keeps what it asked for, in order, and knows what is missing.
+ */
+function boundPoseBounds(result: Json, limit: number, hint: string): Json {
+  const poses = result.poseBounds;
+  if (!Array.isArray(poses) || poses.length < 2 || resultCharacters(result) <= limit) return result;
+  for (let kept = poses.length - 1; kept >= 1; kept--) {
+    const out: Json = {
+      ...result,
+      poseBounds: poses.slice(0, kept),
+      poseBoundsOmitted: poses.length - kept,
+      poseBoundsHint: hint,
+    };
+    if (resultCharacters(out) <= limit || kept === 1) return out;
+  }
+  return result;
 }
 
 function withPartPreview(result: Json, limit = COMPACT_PART_PREVIEW): Json {
@@ -390,7 +518,7 @@ function leanFidelity(fidelity: unknown): unknown {
 
 /** Verdict, blockers, metrics, fidelity and the next step: nothing a later call cannot fetch. */
 function leanReviewResult(source: Json): Json {
-  const result = withCompactReceipts(source);
+  const result = withSharedShots(withCompactReceipts(source));
   const led = lead(result);
   const out: Json = {};
   for (const key of [
@@ -412,30 +540,34 @@ function leanReviewResult(source: Json): Json {
   if (Array.isArray(result.parts)) out.partsTotal = result.partsTotal ?? result.parts.length;
   out.detail = 'lean';
   out.fullDetail = "Findings, parts and receipts: detail: 'compact' or 'full'.";
-  return out;
+  return boundPoseBounds(roundNumbers(out), DEFAULT_RESULT_LIMIT, poseFramesHint(undefined));
 }
 
 /**
  * Everything, inside the hard limit. When the complete report does not fit,
  * repetition goes first: the warnings are bounded, then findings that share a
  * code group with their counts (every rule kept). Only then does the part list
- * shrink to the preview and the finding groups halve per dimension; the
- * retained report keeps the rest.
+ * shrink to the preview and the finding groups halve per dimension, and last
+ * the sampled frames; the retained report keeps the rest.
  */
-function fullReviewResult(result: Json, retained: RetainedReport | undefined): Json {
+function fullReviewResult(
+  result: Json,
+  retained: RetainedReport | undefined,
+  limit = MAX_RESULT_LIMIT,
+): Json {
   let out = lead(result);
   if (retained) out = { ...out, retainedReport: retained };
-  const fits = (candidate: Json) => resultCharacters(candidate) <= MAX_RESULT_LIMIT;
+  const fits = (candidate: Json) => resultCharacters(candidate) <= limit;
   if (fits(out)) return out;
   out = boundWarnings(out, COMPACT_WARNINGS);
   if (fits(out)) return out;
-  const withGroups = (limit: number): Json => {
+  const withGroups = (groups: number): Json => {
     const report = out.qaReport;
     if (!isRecord(report) || !isRecord(report.dimensions)) return out;
     return {
       ...out,
       qaReport: {
-        ...(compactQaReport(report, limit, true) as Json),
+        ...(compactQaReport(report, groups, true) as Json),
         detail: 'full-bounded',
         fullDetail: retained
           ? `Every finding: read ${retained.path} (pretty-printed).`
@@ -446,9 +578,10 @@ function fullReviewResult(result: Json, retained: RetainedReport | undefined): J
   let bounded = withGroups(512);
   if (fits(bounded)) return bounded;
   out = withPartPreview(out);
-  for (let limit = 512; ; limit = Math.floor(limit / 2)) {
-    bounded = withGroups(limit);
-    if (fits(bounded) || limit <= 1) return bounded;
+  for (let groups = 512; ; groups = Math.floor(groups / 2)) {
+    bounded = withGroups(groups);
+    if (fits(bounded)) return bounded;
+    if (groups <= 1) return boundPoseBounds(bounded, limit, poseFramesHint(retained));
   }
 }
 
@@ -462,11 +595,13 @@ export function compactReviewResult<T>(
   if (detail === 'lean') return leanReviewResult(result) as T;
   if (detail === 'full') return fullReviewResult(result, options.retainedReport?.()) as T;
   const out = boundWarnings(
-    withCompactReceipts(withCompactComparison(withPartPreview(withCurrentEvidence(lead(result))))),
+    withCompactReceipts(
+      withCompactComparison(withPartPreview(withSharedShots(withCurrentEvidence(lead(result))))),
+    ),
     COMPACT_WARNINGS,
   );
   if (out.qaReport !== undefined) out.qaReport = compactQaReport(out.qaReport);
-  return out as T;
+  return boundPoseBounds(roundNumbers(out), DEFAULT_RESULT_LIMIT, poseFramesHint(undefined)) as T;
 }
 
 /** The static comparison in a sentence of counts, for the edit result's lead. */
@@ -551,11 +686,51 @@ function compactPreservation(preservation: unknown): unknown {
 }
 
 /**
+ * A full edit inside the hard limit. w21 (Agy horse, 1 October 2026) was 40,533
+ * characters: its render bounded at 40,000 on its own, the 8,177-character diff
+ * and the 10,973-character comparison on top. The diff goes first, down to the
+ * lean length (the model wrote the change), then the bounds of each change (the
+ * retained report keeps them), then the render is bounded again with what is left.
+ */
+function boundFullEdit(
+  edited: Json,
+  render: Json | undefined,
+  retained: RetainedReport | undefined,
+): Json {
+  const fits = (candidate: Json) => resultCharacters(candidate) <= MAX_RESULT_LIMIT;
+  if (fits(edited)) return edited;
+  let out = edited;
+  if (typeof out.diff === 'string' && out.diff.length > LEAN_DIFF) {
+    out = { ...out, diff: out.diff.slice(0, LEAN_DIFF), diffOmitted: out.diff.length - LEAN_DIFF };
+    if (fits(out)) return out;
+  }
+  if (isRecord(out.preservation) && isRecord(out.preservation.comparison)) {
+    out = {
+      ...out,
+      preservation: {
+        ...out.preservation,
+        comparison: compactComparison(
+          out.preservation.comparison,
+          `Bounds per change and the comparison scope: ${retained ? `read ${retained.path} (pretty-printed)` : 'kiln_inspect compare on this programRef'}; compare.offset pages the changes.`,
+        ),
+      },
+    };
+    if (fits(out)) return out;
+  }
+  if (render && isRecord(out.render)) {
+    const budget = MAX_RESULT_LIMIT - (resultCharacters(out) - resultCharacters(out.render));
+    out = { ...out, render: fullReviewResult(render, retained, budget) };
+  }
+  return out;
+}
+
+/**
  * kiln_edit nests the render of the patched program. The edit result leads
  * with what applied, what changed and the next step; the render takes the
  * requested detail, a lean edit keeps the diff but not the comparison, and a
  * compact edit shrinks its diff (the model's own change) before anything else
- * when the whole would pass the default limit.
+ * when the whole would pass the default limit. A full edit stays inside the
+ * hard limit as a whole.
  */
 export function compactEditResult<T>(
   result: T,
@@ -588,7 +763,13 @@ export function compactEditResult<T>(
     else if (detail === 'compact') out.preservation = compactPreservation(preservation);
   }
   if (reviewed) out.render = reviewed;
-  const edited: Json = { ...out, ...rest };
+  if (detail === 'full')
+    return boundFullEdit(
+      { ...out, ...rest },
+      isRecord(render) ? render : undefined,
+      options.retainedReport?.(),
+    ) as T;
+  const edited: Json = roundNumbers({ ...out, ...rest });
   if (detail === 'compact' && typeof edited.diff === 'string' && edited.diff.length > LEAN_DIFF) {
     // Every raw character cut removes at least one JSON character; 40 covers the omitted count.
     const over = resultCharacters(edited) - DEFAULT_RESULT_LIMIT + 40;

@@ -41,18 +41,34 @@ export const nestedRecordDescription = (purpose: string, shape: string): string 
 /**
  * Rule 9 text for a failed input parse: each issue as "field: what is wrong",
  * then where the shape is. The raw zod message is a JSON array of issues,
- * which a model reads as data rather than as an instruction.
+ * which a model reads as data rather than as an instruction. A key the tool
+ * does not take is answered with the keys it does: w28 called
+ * `kiln_material get` with the `resourceId` a project's palette lists.
  */
-export function describeInputError(tool: string, error: unknown): string | undefined {
+export function describeInputError(
+  tool: string,
+  error: unknown,
+  fields: readonly string[] = [],
+): string | undefined {
   const issues = (error as { issues?: unknown } | null)?.issues;
   if (!Array.isArray(issues) || !issues.length) return undefined;
   // An issue's own full stop would meet the template's: "...or file.. Check" (f09).
   const lines = flattenIssues(issues)
     .slice(0, 6)
     .map((line) => line.replace(/\.+$/u, ''));
+  const unknownKey = issues.some(
+    (issue) => (issue as Issue).code === 'unrecognized_keys' && !(issue as Issue).path?.length,
+  );
+  const takes = unknownKey && fields.length ? ` ${tool} takes ${list(fields)}.` : '';
   return `${tool}: invalid input. ${lines.join('; ')}${
     issues.length > 6 ? `; ${issues.length - 6} more` : ''
-  }. Check the field names and values against the ${tool} schema; nested shapes: kiln_discover({ ids: ['shape:...'] }).`;
+  }.${takes} Check the field names and values against the ${tool} schema; nested shapes: kiln_discover({ ids: ['shape:...'] }).`;
+}
+
+/** The top-level keys an advertised zod object schema takes, for the error above. */
+export function schemaFields(schema: unknown): string[] {
+  const shape = (schema as { shape?: unknown } | null)?.shape;
+  return shape && typeof shape === 'object' ? Object.keys(shape) : [];
 }
 
 interface Issue {

@@ -191,4 +191,6 @@ test('compiled CLI renders and saves standalone textured assets with zero, one o
   } finally {
     await rm(root, { recursive: true, force: true });
   }
-}, 20000);
+  // Three compiled-CLI runs with CPU renders: 9.9 s in the plain gate on the loaded Windows host
+  // (2 October 2026) and past 20 s there under coverage instrumentation.
+}, 60_000);

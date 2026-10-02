@@ -32,11 +32,21 @@ integration notices first.
   of `kiln_edit`, `comparison` of `kiln_inspect compare`) names each change by path,
   name, status and changed fields without its bounds or the scope prose, and a compact
   or lean per-view receipt (`derivativeReceipts`, `viewFidelity.receipts`) carries its
-  label, `cameraFidelity`, `captureCache` and only what differs from `viewFidelity`; both
-  are whole in `full`. CLI `render --json` and `animation --json` carry the compact
-  result unless `--detail full`.
+  label, `cameraFidelity`, `captureCache` and only what differs from `viewFidelity`,
+  which states once what every receipt shares; both are whole in `full`. A compact or
+  lean result rounds every number to six decimals, states an animation shot shared by
+  several frames once (`cameraShots[].frames`, each frame's bounds in `poseBounds`),
+  omits `viewEvidence.lastFaithful` when it is the current view and keeps `poseBounds`
+  inside the default limit by counting the trailing frames it leaves out
+  (`poseBoundsOmitted`, `poseBoundsHint`). A full `kiln_edit` is bounded as a whole: its
+  diff shrinks first, then the bounds of each change, then the render. CLI `render --json`
+  and `animation --json` carry the compact result unless `--detail full`.
 - **Errors.** `ok: false` is an MCP error (`isError: true`) naming the cause and the next
   call, with no local path. Invalid input is a sentence, not a zod issue list.
+- **Revisions by default.** `kiln_assets get` and `restore` without `revisionId` read the
+  asset's newest revision; `kiln_material get` without `revisionId` reads the material's
+  only revision and names the revisions when there are several, as `kiln_project get`
+  reads the latest project revision.
 
 ## Changes in 0.9.0
 

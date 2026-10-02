@@ -90,7 +90,20 @@ test('inspection shares strict shot selection; animation locks explicit frame an
     perFrame: true,
   })) as Record<string, unknown>;
   expect(out).toMatchObject({ ok: true, frames: 3, frameTimes: [0, 0.25, 1] });
-  const cameras = (out.cameraShots as { camera: unknown }[]).map((s) => s.camera);
+  // Locked: the compact result states the one shot once, for all three frames.
+  const shots = out.cameraShots as { camera: unknown; frames?: number }[];
+  expect(shots).toHaveLength(1);
+  expect(shots[0]!.frames).toBe(3);
+  const full = (await anim.run({
+    code: animated,
+    clip: 'move',
+    frameTimes: [0, 0.25, 1],
+    shot: { camera: { type: 'orbit', azimuthDeg: 90, elevationDeg: 0 } },
+    perFrame: true,
+    detail: 'full',
+  })) as Record<string, unknown>;
+  const cameras = (full.cameraShots as { camera: unknown }[]).map((s) => s.camera);
+  expect(cameras).toHaveLength(3);
   expect(cameras[0]).toEqual(cameras[2]);
 });
 test('required GPU does not return CPU success when camera attestation is missing', async () => {

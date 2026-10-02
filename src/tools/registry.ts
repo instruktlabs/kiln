@@ -2670,6 +2670,35 @@ const assetSelector = {
   revisionId: z.string().regex(/^[a-z][a-z0-9_-]{0,79}$/),
 };
 
+/**
+ * The revision a get or restore without `revisionId` means: the newest, the
+ * one no later revision names as its parent, ties to the latest `createdAt`
+ * (c40 of 1 October 2026 called get with the asset id alone and was refused).
+ */
+async function newestRevision(
+  target: {
+    list(
+      collection: string,
+    ): Promise<
+      { assetId: string; revisionId: string; parentRevision?: string | null; createdAt: string }[]
+    >;
+  },
+  collection: string,
+  assetId: string,
+): Promise<string> {
+  const revisions = (await target.list(collection)).filter((a) => a.assetId === assetId);
+  if (!revisions.length)
+    throw new Error(
+      `Unknown asset ${assetId} in ${collection}; kiln_assets { action: 'list', collection: '${collection}' } lists them.`,
+    );
+  const parents = new Set(revisions.map((a) => a.parentRevision).filter(Boolean));
+  const heads = revisions.filter((a) => !parents.has(a.revisionId));
+  const newest = (heads.length ? heads : revisions).sort((a, b) =>
+    a.createdAt < b.createdAt ? 1 : a.createdAt > b.createdAt ? -1 : 0,
+  );
+  return newest[0]!.revisionId;
+}
+
 /** Build one current-policy revision for ordinary save or explicit migration. */
 export async function buildProgramAssetDraft(
   code: string,
@@ -2807,7 +2836,9 @@ export function createKilnAssetDefs(context: KilnToolContext): KilnToolDef[] {
     action: z.enum(['collections', 'catalog', 'list', 'get', 'restore']).default('list'),
     collection: assetSelector.collection,
     assetId: assetSelector.assetId.optional(),
-    revisionId: assetSelector.revisionId.optional(),
+    revisionId: assetSelector.revisionId
+      .optional()
+      .describe('get, restore: the saved revision; omitted, the newest.'),
     query: z.string().max(200).optional(),
     offset: z.number().int().min(0).default(0),
     limit: z.number().int().min(1).max(50).default(20),
@@ -2914,16 +2945,13 @@ export function createKilnAssetDefs(context: KilnToolContext): KilnToolDef[] {
             })),
           };
         }
-        if (!input.assetId || !input.revisionId)
+        if (!input.assetId)
           throw new Error(
-            `kiln_assets ${input.action} requires assetId and revisionId; kiln_assets { action: 'list', collection: '${input.collection}' } lists them.`,
+            `kiln_assets ${input.action} requires assetId; kiln_assets { action: 'list', collection: '${input.collection}' } lists them.`,
           );
-        const record = await readSavedRevision(
-          target,
-          input.collection,
-          input.assetId,
-          input.revisionId,
-        );
+        const revisionId =
+          input.revisionId ?? (await newestRevision(target, input.collection, input.assetId));
+        const record = await readSavedRevision(target, input.collection, input.assetId, revisionId);
         if (input.action === 'get') return links(input.collection, record.manifest);
         const saved = assertSavedRequirementsAuthorized(record.manifest, activeRequirements);
         const code = record.files['source.kiln.js'];

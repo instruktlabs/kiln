@@ -39368,12 +39368,18 @@ function requireActionFields(tool, action, input, requirements) {
   throw new Error(`${tool} ${action} requires ${list(requirements.required)}; missing ${list(missing)}.${shapes.length ? ` ${shapes.join(". ")}.` : ""}`);
 }
 var nestedRecordDescription = (purpose, shape) => `${purpose} Shape: kiln_discover({ ids: ['${shape}'] }).`;
-function describeInputError(tool, error) {
+function describeInputError(tool, error, fields = []) {
   const issues = error?.issues;
   if (!Array.isArray(issues) || !issues.length)
     return;
   const lines = flattenIssues(issues).slice(0, 6).map((line) => line.replace(/\.+$/u, ""));
-  return `${tool}: invalid input. ${lines.join("; ")}${issues.length > 6 ? `; ${issues.length - 6} more` : ""}. Check the field names and values against the ${tool} schema; nested shapes: kiln_discover({ ids: ['shape:...'] }).`;
+  const unknownKey = issues.some((issue) => issue.code === "unrecognized_keys" && !issue.path?.length);
+  const takes = unknownKey && fields.length ? ` ${tool} takes ${list(fields)}.` : "";
+  return `${tool}: invalid input. ${lines.join("; ")}${issues.length > 6 ? `; ${issues.length - 6} more` : ""}.${takes} Check the field names and values against the ${tool} schema; nested shapes: kiln_discover({ ids: ['shape:...'] }).`;
+}
+function schemaFields(schema) {
+  const shape = schema?.shape;
+  return shape && typeof shape === "object" ? Object.keys(shape) : [];
 }
 function flattenIssues(issues, prefix = []) {
   const lines = [];
@@ -39687,7 +39693,7 @@ var REQUIREMENTS2 = {
   presets: { required: [] },
   "create-preset": { required: ["presetId", "seed", "creator", "license"] },
   list: { required: [] },
-  get: { required: ["materialId", "revisionId"] },
+  get: { required: ["materialId"] },
   "create-procedural": { required: ["draft"], shapes: { draft: "shape:material-draft" } },
   import: { required: ["payload"], shapes: { payload: "shape:material-import" } }
 };
@@ -39701,8 +39707,8 @@ var materialToolInput = z17.strictObject({
   size: z17.union([z17.literal(64), z17.literal(128), z17.literal(256), z17.literal(512)]).optional().describe("create-preset: map edge in pixels; default 256."),
   creator: z17.string().min(1).max(1000).optional().describe("create-preset."),
   license: materialSourceSchema.shape.license.optional().describe("create-preset: spdx, url and attribution."),
-  materialId: materialLibraryIdSchema.optional().describe("get; create-preset: optional id."),
-  revisionId: materialLibraryHashSchema.optional().describe("get: the immutable revision."),
+  materialId: materialLibraryIdSchema.optional().describe("get: the id a project palette lists as resourceId; create-preset: optional id."),
+  revisionId: materialLibraryHashSchema.optional().describe("get: the immutable revision; omitted, the material's only revision."),
   draft: record7(nestedRecordDescription("create-procedural: materialId, name, tileable, sources, maps with layered procedural specs; optional tags, physicalSizeMeters, parameters.", "shape:material-draft")),
   payload: record7(nestedRecordDescription("import: schemaVersion 1 and complete normalized records with embedded PNG bytes.", "shape:material-import"))
 });
@@ -39711,6 +39717,15 @@ var materialResult = (material) => ({
   material,
   portableSpec: materialLibraryPortableSpec(material)
 });
+var unknownMaterial = (materialId, revisionId) => new Error(`Unknown material ${materialId}${revisionId ? ` at ${revisionId}` : ""}. kiln_material { action: 'list' } lists the materials in this workspace with their revision IDs.`);
+async function onlyRevision(library, materialId) {
+  const revisions = (await library.list()).filter((material) => material.materialId === materialId).map((material) => material.revisionId).sort();
+  if (revisions.length === 1)
+    return revisions[0];
+  if (revisions.length === 0)
+    throw unknownMaterial(materialId);
+  throw new Error(`Material ${materialId} has ${revisions.length} revisions: ${revisions.join(", ")}. Pass revisionId to get one.`);
+}
 function createKilnMaterialDef(library) {
   return {
     name: "kiln_material",
@@ -39760,14 +39775,16 @@ function createKilnMaterialDef(library) {
             }))
           };
         }
-        case "get":
+        case "get": {
+          const revisionId = input.revisionId ?? await onlyRevision(library, input.materialId);
           try {
-            return materialResult((await library.read(input.materialId, input.revisionId)).manifest);
+            return materialResult((await library.read(input.materialId, revisionId)).manifest);
           } catch (error) {
             if (error.code === "ENOENT")
-              throw new Error(`Unknown material ${input.materialId} at ${input.revisionId}. kiln_material { action: 'list' } lists the materials in this workspace with their revision IDs.`);
+              throw unknownMaterial(input.materialId, revisionId);
             throw error;
           }
+        }
         case "create-procedural": {
           const record = await createMaterialRecordV1(proceduralMaterialDraftSchema.parse(input.draft));
           const [material] = await library.import([record]);
@@ -39821,6 +39838,7 @@ var COMPACT_WARNINGS = 12;
 var WARNING_CHARS = 1000;
 var DEFAULT_RESULT_LIMIT = 20000;
 var MAX_RESULT_LIMIT = 40000;
+var COMPACT_DECIMALS = 6;
 var reviewDetailInput = z18.enum(["lean", "compact", "full"]).optional().describe("compact (default) groups findings by code; lean: verdict, blockers, metrics only; full: every finding, rule and part plus the retained report path");
 function requestedDetail(input, fallback = "compact") {
   const detail = input?.detail;
@@ -39979,16 +39997,40 @@ function lead(result) {
     ...rest
   };
 }
+function roundNumbers(value) {
+  if (typeof value === "number")
+    return Number.isInteger(value) || !Number.isFinite(value) ? value : Number(value.toFixed(COMPACT_DECIMALS));
+  if (Array.isArray(value))
+    return value.map(roundNumbers);
+  if (isRecord6(value)) {
+    const out = {};
+    for (const [key, entry] of Object.entries(value))
+      out[key] = roundNumbers(entry);
+    return out;
+  }
+  return value;
+}
 function withCurrentEvidence(result) {
   const evidence = result.viewEvidence;
   if (!isRecord6(evidence) || !("current" in evidence))
     return result;
   const { current, lastFaithful } = evidence;
+  const repeated = isRecord6(current) && isRecord6(lastFaithful) && typeof current.sequence === "number" && lastFaithful.sequence === current.sequence;
   return {
     ...result,
-    viewEvidence: { current, ...lastFaithful !== undefined ? { lastFaithful } : {} }
+    viewEvidence: {
+      current,
+      ...lastFaithful !== undefined && !repeated ? { lastFaithful } : {}
+    }
   };
 }
+var RECEIPT_IDENTITY = new Set([
+  "version",
+  "camera",
+  "derivativeLabel",
+  "cameraFidelity",
+  "captureCache"
+]);
 function compactReceipt(receipt, summary) {
   if (!isRecord6(receipt))
     return receipt;
@@ -40001,14 +40043,32 @@ function compactReceipt(receipt, summary) {
   }
   return out;
 }
+function sharedReceiptFields(receipts, summary) {
+  const shared = {};
+  const [first, ...rest] = receipts;
+  if (!isRecord6(first) || !rest.every(isRecord6))
+    return shared;
+  for (const [key, value] of Object.entries(first)) {
+    if (RECEIPT_IDENTITY.has(key) || summary[key] !== undefined)
+      continue;
+    const json = JSON.stringify(value);
+    if (rest.every((receipt) => JSON.stringify(receipt[key]) === json))
+      shared[key] = value;
+  }
+  return shared;
+}
 function withCompactReceipts(result) {
   const fidelity = isRecord6(result.viewFidelity) ? result.viewFidelity : undefined;
-  const { receipts, ...summary } = fidelity ?? {};
+  const { receipts, ...rest } = fidelity ?? {};
+  const list = Array.isArray(receipts) ? receipts : Array.isArray(result.derivativeReceipts) ? result.derivativeReceipts : undefined;
+  if (!list)
+    return result;
+  const summary = { ...rest, ...fidelity ? sharedReceiptFields(list, rest) : {} };
   let out = result;
-  if (fidelity && Array.isArray(receipts))
+  if (fidelity)
     out = {
       ...out,
-      viewFidelity: { ...fidelity, receipts: receipts.map((r) => compactReceipt(r, summary)) }
+      viewFidelity: Array.isArray(receipts) ? { ...summary, receipts: receipts.map((r) => compactReceipt(r, summary)) } : summary
     };
   if (Array.isArray(result.derivativeReceipts))
     out = {
@@ -40016,6 +40076,48 @@ function withCompactReceipts(result) {
       derivativeReceipts: result.derivativeReceipts.map((r) => compactReceipt(r, summary))
     };
   return out;
+}
+function withSharedShots(result) {
+  const shots = result.cameraShots;
+  if (!Array.isArray(shots) || shots.length < 2 || !shots.every(isRecord6))
+    return result;
+  const groups = new Map;
+  for (const shot of shots) {
+    const entry = {};
+    for (const [key, value] of Object.entries(shot)) {
+      if (key === "subject" && isRecord6(value)) {
+        const { bounds: _bounds, ...identity } = value;
+        entry.subject = identity;
+      } else
+        entry[key] = value;
+    }
+    const key = JSON.stringify(entry);
+    const group = groups.get(key);
+    if (group)
+      group.frames = group.frames + 1;
+    else
+      groups.set(key, { ...entry, frames: 1 });
+  }
+  if (groups.size === shots.length)
+    return result;
+  return { ...result, cameraShots: [...groups.values()] };
+}
+var poseFramesHint = (retained) => retained ? `Every frame: read ${retained.path} (pretty-printed), or ask fewer frameTimes or measureParts per call.` : "Every frame: detail: 'full' (inside the 40,000-character limit), or fewer frameTimes or measureParts per call.";
+function boundPoseBounds(result, limit, hint) {
+  const poses = result.poseBounds;
+  if (!Array.isArray(poses) || poses.length < 2 || resultCharacters(result) <= limit)
+    return result;
+  for (let kept = poses.length - 1;kept >= 1; kept--) {
+    const out = {
+      ...result,
+      poseBounds: poses.slice(0, kept),
+      poseBoundsOmitted: poses.length - kept,
+      poseBoundsHint: hint
+    };
+    if (resultCharacters(out) <= limit || kept === 1)
+      return out;
+  }
+  return result;
 }
 function withPartPreview(result, limit = COMPACT_PART_PREVIEW) {
   if (!Array.isArray(result.parts) || result.parts.length <= limit)
@@ -40090,7 +40192,7 @@ function leanFidelity(fidelity) {
   return keep;
 }
 function leanReviewResult(source) {
-  const result = withCompactReceipts(source);
+  const result = withSharedShots(withCompactReceipts(source));
   const led = lead(result);
   const out = {};
   for (const key of [
@@ -40120,26 +40222,26 @@ function leanReviewResult(source) {
     out.partsTotal = result.partsTotal ?? result.parts.length;
   out.detail = "lean";
   out.fullDetail = "Findings, parts and receipts: detail: 'compact' or 'full'.";
-  return out;
+  return boundPoseBounds(roundNumbers(out), DEFAULT_RESULT_LIMIT, poseFramesHint(undefined));
 }
-function fullReviewResult(result, retained) {
+function fullReviewResult(result, retained, limit = MAX_RESULT_LIMIT) {
   let out = lead(result);
   if (retained)
     out = { ...out, retainedReport: retained };
-  const fits = (candidate) => resultCharacters(candidate) <= MAX_RESULT_LIMIT;
+  const fits = (candidate) => resultCharacters(candidate) <= limit;
   if (fits(out))
     return out;
   out = boundWarnings(out, COMPACT_WARNINGS);
   if (fits(out))
     return out;
-  const withGroups = (limit) => {
+  const withGroups = (groups) => {
     const report = out.qaReport;
     if (!isRecord6(report) || !isRecord6(report.dimensions))
       return out;
     return {
       ...out,
       qaReport: {
-        ...compactQaReport(report, limit, true),
+        ...compactQaReport(report, groups, true),
         detail: "full-bounded",
         fullDetail: retained ? `Every finding: read ${retained.path} (pretty-printed).` : "Every finding is in the retained artifact when the host records one."
       }
@@ -40149,10 +40251,12 @@ function fullReviewResult(result, retained) {
   if (fits(bounded))
     return bounded;
   out = withPartPreview(out);
-  for (let limit = 512;; limit = Math.floor(limit / 2)) {
-    bounded = withGroups(limit);
-    if (fits(bounded) || limit <= 1)
+  for (let groups = 512;; groups = Math.floor(groups / 2)) {
+    bounded = withGroups(groups);
+    if (fits(bounded))
       return bounded;
+    if (groups <= 1)
+      return boundPoseBounds(bounded, limit, poseFramesHint(retained));
   }
 }
 function compactReviewResult(result, detail = "compact", options = {}) {
@@ -40162,10 +40266,10 @@ function compactReviewResult(result, detail = "compact", options = {}) {
     return leanReviewResult(result);
   if (detail === "full")
     return fullReviewResult(result, options.retainedReport?.());
-  const out = boundWarnings(withCompactReceipts(withCompactComparison(withPartPreview(withCurrentEvidence(lead(result))))), COMPACT_WARNINGS);
+  const out = boundWarnings(withCompactReceipts(withCompactComparison(withPartPreview(withSharedShots(withCurrentEvidence(lead(result)))))), COMPACT_WARNINGS);
   if (out.qaReport !== undefined)
     out.qaReport = compactQaReport(out.qaReport);
-  return out;
+  return boundPoseBounds(roundNumbers(out), DEFAULT_RESULT_LIMIT, poseFramesHint(undefined));
 }
 function changeSummary(result) {
   const preservation = isRecord6(result.preservation) ? result.preservation : undefined;
@@ -40229,6 +40333,33 @@ function compactPreservation(preservation) {
     comparison: compactComparison(preservation.comparison, "Bounds per change and the comparison scope: detail: 'full'. More changes: kiln_inspect compare on this programRef.", COMPACT_COMPARISON_CHANGES)
   };
 }
+function boundFullEdit(edited, render, retained) {
+  const fits = (candidate) => resultCharacters(candidate) <= MAX_RESULT_LIMIT;
+  if (fits(edited))
+    return edited;
+  let out = edited;
+  if (typeof out.diff === "string" && out.diff.length > LEAN_DIFF) {
+    out = { ...out, diff: out.diff.slice(0, LEAN_DIFF), diffOmitted: out.diff.length - LEAN_DIFF };
+    if (fits(out))
+      return out;
+  }
+  if (isRecord6(out.preservation) && isRecord6(out.preservation.comparison)) {
+    out = {
+      ...out,
+      preservation: {
+        ...out.preservation,
+        comparison: compactComparison(out.preservation.comparison, `Bounds per change and the comparison scope: ${retained ? `read ${retained.path} (pretty-printed)` : "kiln_inspect compare on this programRef"}; compare.offset pages the changes.`)
+      }
+    };
+    if (fits(out))
+      return out;
+  }
+  if (render && isRecord6(out.render)) {
+    const budget = MAX_RESULT_LIMIT - (resultCharacters(out) - resultCharacters(out.render));
+    out = { ...out, render: fullReviewResult(render, retained, budget) };
+  }
+  return out;
+}
 function compactEditResult(result, detail = "compact", options = {}) {
   if (!isRecord6(result))
     return result;
@@ -40256,7 +40387,9 @@ function compactEditResult(result, detail = "compact", options = {}) {
   }
   if (reviewed)
     out.render = reviewed;
-  const edited = { ...out, ...rest };
+  if (detail === "full")
+    return boundFullEdit({ ...out, ...rest }, isRecord6(render) ? render : undefined, options.retainedReport?.());
+  const edited = roundNumbers({ ...out, ...rest });
   if (detail === "compact" && typeof edited.diff === "string" && edited.diff.length > LEAN_DIFF) {
     const over = resultCharacters(edited) - DEFAULT_RESULT_LIMIT + 40;
     if (over > 0) {
@@ -42009,6 +42142,15 @@ var assetSelector = {
   assetId: z21.string().regex(/^[a-z][a-z0-9_-]{0,79}$/),
   revisionId: z21.string().regex(/^[a-z][a-z0-9_-]{0,79}$/)
 };
+async function newestRevision(target, collection, assetId) {
+  const revisions = (await target.list(collection)).filter((a) => a.assetId === assetId);
+  if (!revisions.length)
+    throw new Error(`Unknown asset ${assetId} in ${collection}; kiln_assets { action: 'list', collection: '${collection}' } lists them.`);
+  const parents = new Set(revisions.map((a) => a.parentRevision).filter(Boolean));
+  const heads = revisions.filter((a) => !parents.has(a.revisionId));
+  const newest = (heads.length ? heads : revisions).sort((a, b) => a.createdAt < b.createdAt ? 1 : a.createdAt > b.createdAt ? -1 : 0);
+  return newest[0].revisionId;
+}
 async function buildProgramAssetDraft(code, context, backdrop) {
   await context.prepareBuildProvenance?.();
   const callContext = {
@@ -42116,7 +42258,7 @@ function createKilnAssetDefs(context) {
     action: z21.enum(["collections", "catalog", "list", "get", "restore"]).default("list"),
     collection: assetSelector.collection,
     assetId: assetSelector.assetId.optional(),
-    revisionId: assetSelector.revisionId.optional(),
+    revisionId: assetSelector.revisionId.optional().describe("get, restore: the saved revision; omitted, the newest."),
     query: z21.string().max(200).optional(),
     offset: z21.number().int().min(0).default(0),
     limit: z21.number().int().min(1).max(50).default(20)
@@ -42202,9 +42344,10 @@ function createKilnAssetDefs(context) {
             }))
           };
         }
-        if (!input.assetId || !input.revisionId)
-          throw new Error(`kiln_assets ${input.action} requires assetId and revisionId; kiln_assets { action: 'list', collection: '${input.collection}' } lists them.`);
-        const record = await readSavedRevision(target, input.collection, input.assetId, input.revisionId);
+        if (!input.assetId)
+          throw new Error(`kiln_assets ${input.action} requires assetId; kiln_assets { action: 'list', collection: '${input.collection}' } lists them.`);
+        const revisionId = input.revisionId ?? await newestRevision(target, input.collection, input.assetId);
+        const record = await readSavedRevision(target, input.collection, input.assetId, revisionId);
         if (input.action === "get")
           return links(input.collection, record.manifest);
         const saved = assertSavedRequirementsAuthorized(record.manifest, activeRequirements);
@@ -42444,7 +42587,7 @@ function createKilnToolHost(context = {}, options = {}) {
           content: [
             {
               type: "text",
-              text: withoutLocalPaths(describeInputError(name, err) ?? errorMessage(err))
+              text: withoutLocalPaths(describeInputError(name, err, schemaFields(def.inputSchema)) ?? errorMessage(err))
             }
           ]
         };
