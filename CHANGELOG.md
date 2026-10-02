@@ -3,6 +3,26 @@
 Changes to `@kiln/engine`. Source releases and installable package publication are
 separate milestones. The package is not published on the npm registry.
 
+## Unreleased
+
+On `main` after the 0.10.0 release; the package version stays 0.10.0 until the next one.
+
+- The kit pass (`applyKitContract`, `packKitGlb`) no longer folds an occlusion map into the
+  metallic-roughness image when the two are read through different UV sets or
+  `KHR_texture_transform` values. It used to point the occlusion slot at the
+  metallic-roughness UV set as well, so a baked AO map on `TEXCOORD_1` was sampled through
+  `TEXCOORD_0`. Such a material keeps its separate occlusion image and UV set, and the
+  summary's new `ormSkipped` names the material and the reason; a matching pair packs as
+  before, and packing no longer rewrites the occlusion slot's UV set.
+- `src/render.ts` and `src/__tests__/optimize.test.ts` no longer cite
+  `docs/kiln-material-consolidation-cycle.md`, which exists on no branch; the `OptimizeMode`
+  comment states the rule in place.
+- `docs/runtime.md` documents `KILN_BAKE_OPTIMIZE` and `KILN_BAKE_INSTANCE`: their values,
+  that they only set the default for a render that omits `optimize` or `instance`, that the
+  MCP and CLI tools pin `optimize: 'off'` (so only `KILN_BAKE_INSTANCE` reaches their GLBs),
+  which library renders take the variables, and that a saved revision rebuilds with the
+  options its manifest recorded. No behaviour changes.
+
 ## 0.10.0
 
 **Protocol revision 2026-07-28, and a server that answers before it loads.** The v1

@@ -131,6 +131,17 @@ Use `kiln_discover({ capabilities: true })` or `node kiln.mjs discover --capabil
 
 Advanced geometry callbacks also have operation-specific input limits. Those checks do not replace the process deadline: a callback that never returns cannot check its own evaluation counter. Capture pixels and PNG payloads have independent host limits described in [cameras](cameras.md).
 
+### Bake defaults
+
+`KILN_BAKE_OPTIMIZE` and `KILN_BAKE_INSTANCE` choose the bake passes for a render that does not pass `optimize` or `instance`; a value the call passes always wins.
+
+| Environment variable | Supported values |
+| --- | --- |
+| `KILN_BAKE_OPTIMIZE` | `off` (default), `auto`, `palette` or `full`; any other value means `off`. `palette` merges flat-colour materials into one palette material and texture, `auto` does so only for an asset with at least four distinct materials, and `full` also flattens and joins meshes to cut draw calls, falling back to `palette` for an asset that is animated, skinned or LOD-chained or has nodes that carry extras or visibility |
+| `KILN_BAKE_INSTANCE` | `auto` (default), `off` or `on`; any other value means `auto`. `on` batches a mesh shared by five or more nodes with `EXT_mesh_gpu_instancing` and `auto` does so only for `role: 'fill'` assets; neither batches an animated or skinned asset, or one with `Joint_` pivots, LOD chains, or nodes that carry extras or visibility |
+
+The MCP and CLI tools pin `optimize: 'off'` for every render, inspection and save, so `KILN_BAKE_OPTIMIZE` does not change a tool's GLB; they leave `instance` to the host, so `KILN_BAKE_INSTANCE` does. Library calls that omit `optimize` take the variable: `renderGLB` in process, `renderSceneToGLB` (including the review copies some tool views are rendered from), `renderCodeViewGrid` and `rasterizeComposedScene`. The library's own subprocess mode does not pass either variable to its worker. `node kiln.mjs asset ASSET_ID REVISION --rebuild --out rebuilt.glb` replays the `optimize` and `instance` the saved manifest recorded, whatever the variables say. Both variables are part of the local build-cache key.
+
 ## What a build identity covers
 
 Two hashes identify a local Kiln and they answer different questions. The **build
