@@ -185,7 +185,9 @@ test('render JSON reports argument/build/view errors and only files actually wri
   expect(partial.files[0].bytes).toBe((await readFile(join(directory, 'partial.glb'))).length);
   expect(await readFile(join(directory, 'protected.png'), 'utf8')).toBe('existing image');
   expect(run(['source', 'source.js', '--json']).exitCode).toBe(0);
-});
+  // Six compiled-CLI runs: 3.2 to 4.8 s in the gates of 2 October 2026 and 20.2 s on the same tree
+  // in a fresh clone's gate that ran beside two live sessions (the loaded Windows host).
+}, 60_000);
 
 test('source JSON is the shared kiln_source result, pages like it, and exports with a receipt', async () => {
   const shared = createKilnSourceDef(new FileProgramStore(join(directory, 'programs')));
@@ -243,7 +245,9 @@ test('source JSON is the shared kiln_source result, pages like it, and exports w
   // Paging belongs to source --json; other commands and plain source refuse it.
   expect(run(['source', saved.programRef, '--query', 'Box']).exitCode).not.toBe(0);
   expect(run(['render', 'source.js', '--query', 'Box', '--json']).exitCode).not.toBe(0);
-});
+  // Fourteen compiled-CLI runs: 11.3 to 14.0 s in the gates of 2 October 2026 and 20.0 s on the
+  // same tree in a fresh clone's gate that ran beside two live sessions (the loaded Windows host).
+}, 60_000);
 
 test('authored console messages stay off CLI JSON stdout in trusted in-process mode', async () => {
   await writeFile(
