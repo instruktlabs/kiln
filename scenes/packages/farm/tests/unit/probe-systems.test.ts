@@ -40,3 +40,11 @@ test('farm probe assets name batches by their first source, woodland as the tree
   expect([asset(w.house.mesh), asset(w.cow.instance.object), asset(node('deep', w.barrel.mesh))]).toEqual(['farmhouse', 'cow', 'barrel']);
   expect([asset(w.parts.ground), asset(w.notPacked)]).toEqual([null, null]);
 });
+
+test('S4b/S4: merged hero meshes and shadow stand-ins sit under their hero, so they count as heroes and as its asset', () => {
+  const w = world(), hooks = farmProbeHooks(w.farm), pivot = node('Joint_GateLeaf', w.gate.mesh);
+  const merged = node('Merged farmhouse/masonry', w.house.mesh, { isMesh: true }), proxy = node('Shadow stand-in Joint_GateLeaf', pivot, { isMesh: true, userData: { kilnShadowStandIn: true } });
+  expect([hooks.probeAsset!(merged), hooks.probeAsset!(proxy)]).toEqual(['farmhouse', 'fence-gate']);
+  const heroes = (hooks.probeSystems!() as Record<string, any>).heroes as any[], under = (o: any) => { for (let n = o; n; n = n.parent) if (heroes.includes(n)) return n.name; return null; };
+  expect([under(merged), under(proxy)]).toEqual(['farmhouse', 'fence-gate']);
+});

@@ -1,32 +1,41 @@
+import { useMemo } from 'react';
 import { useThree } from '@react-three/fiber';
-import { Group, HemisphereLight, DirectionalLight } from 'three/webgpu';
+import { Group, HemisphereLight } from 'three/webgpu';
+import type { Scene, Texture } from 'three/webgpu';
 import { asWebGPU, buildRoomEnvironment, useBuilt, useQuality } from '@kiln-scenes/scene-kit';
-import { FARM_LOOK } from '../constants';
+import type { TierKnobs } from '@kiln-scenes/scene-kit';
+import { cachedSunShadow } from '@kiln-scenes/scene-kit/shadows';
+import type { CachedSunShadow } from '@kiln-scenes/scene-kit/shadows';
+import { FARM_LOOK, FARM_SHADOW } from '../constants';
+import { readFarmDevParams } from '../dev-params';
+import { useFarmSession } from '../state';
+import { createFarmSun, farmShadowOptions } from './shadows';
+import type { FarmShadowOptions } from './shadows';
 
-/** INV 4.1; the shadow projection is updated after every bound is assigned. */
+/**
+ * INV 4.1 lights. On tiers with shadows the OD-9 cached sun shadow is installed here, before any receiver builds (three r186
+ * reads a light's custom shadow node once), and published on the session; it is disposed after the lights leave the scene.
+ * With stand-ins the sun's own camera also sees their layer (a mask with a bit above 0 keeps its own layers).
+ */
+export function buildFarmLighting(scene: Scene, shadows: TierKnobs['shadows'], environment: () => { texture: Texture; dispose(): void }, o: FarmShadowOptions, session: { shadow: CachedSunShadow | null }) {
+  const root = new Group(); root.name = 'Farm lighting';
+  const hemisphere = new HemisphereLight(FARM_LOOK.hemisphereSky, FARM_LOOK.hemisphereGround, FARM_LOOK.hemisphereIntensity);
+  const sun = createFarmSun(shadows.mapSize); sun.castShadow = shadows.enabled;
+  if (shadows.enabled && o.standIns) sun.shadow.camera.layers.enable(FARM_SHADOW.standInLayer);
+  const shadow = shadows.enabled && o.cache ? cachedSunShadow({ light: sun, settleFrames: o.settleFrames }) : null;
+  session.shadow = shadow;
+  const env = environment();
+  scene.environment = env.texture; scene.environmentIntensity = FARM_LOOK.environmentIntensity;
+  root.add(hemisphere, sun, sun.target);
+  return { root, sun, shadow, dispose() {
+    root.removeFromParent(); if (session.shadow === shadow) session.shadow = null; shadow?.dispose(); sun.shadow.dispose();
+    if (scene.environment === env.texture) scene.environment = null;
+    env.dispose(); root.clear();
+  } };
+}
 export function FarmLighting() {
-  const state = useThree(), quality = useQuality();
-  const lights = useBuilt(() => {
-    const root = new Group(); root.name = 'Farm lighting';
-    const hemisphere = new HemisphereLight(FARM_LOOK.hemisphereSky, FARM_LOOK.hemisphereGround, FARM_LOOK.hemisphereIntensity);
-    const sun = new DirectionalLight(FARM_LOOK.sunColor, FARM_LOOK.sunIntensity);
-    sun.position.fromArray(FARM_LOOK.sunPosition); sun.castShadow = quality.knobs.shadows.enabled;
-    sun.shadow.mapSize.setScalar(quality.knobs.shadows.mapSize);
-    Object.assign(sun.shadow.camera, {
-      left: -FARM_LOOK.shadowExtent, right: FARM_LOOK.shadowExtent,
-      top: FARM_LOOK.shadowExtent, bottom: -FARM_LOOK.shadowExtent,
-      near: FARM_LOOK.shadowNear, far: FARM_LOOK.shadowFar,
-    });
-    sun.shadow.normalBias = FARM_LOOK.shadowNormalBias;
-    sun.shadow.camera.updateProjectionMatrix();
-    const environment = buildRoomEnvironment(asWebGPU(state.gl), { blur: FARM_LOOK.environmentBlur, intensity: FARM_LOOK.environmentIntensity });
-    state.scene.environment = environment.texture; state.scene.environmentIntensity = FARM_LOOK.environmentIntensity;
-    root.add(hemisphere, sun, sun.target);
-    return { root, dispose() {
-      root.removeFromParent(); sun.shadow.dispose();
-      if (state.scene.environment === environment.texture) state.scene.environment = null;
-      environment.dispose(); root.clear();
-    } };
-  }, value => value.dispose(), [state.gl, state.scene, quality.knobs.shadows]);
+  const state = useThree(), quality = useQuality(), session = useFarmSession(), options = useMemo(() => farmShadowOptions(readFarmDevParams()), []);
+  const lights = useBuilt(() => buildFarmLighting(state.scene, quality.knobs.shadows, () => buildRoomEnvironment(asWebGPU(state.gl), { blur: FARM_LOOK.environmentBlur, intensity: FARM_LOOK.environmentIntensity }), options, session),
+    value => value.dispose(), [state.gl, state.scene, quality.knobs.shadows]);
   return lights ? <primitive object={lights.root} dispose={null}/> : null;
 }

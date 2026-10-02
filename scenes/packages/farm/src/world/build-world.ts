@@ -18,7 +18,8 @@ import { optimizeFarmWorld } from './optimize';
 import { buildFarmColliders } from './colliders';
 import { createFarmSim } from '../play/sim';
 
-export interface FarmBuildOptions { woodlandTangents?: boolean; prepared?: PreparedFarm | null; optimize?: boolean }
+/** S4b `heroMerge` (default on); S4 `shadow`, hero stand-ins and the small-caster threshold, applied on tiers with shadows. */
+export interface FarmBuildOptions { woodlandTangents?: boolean; prepared?: PreparedFarm | null; optimize?: boolean; heroMerge?: boolean; shadow?: { standIns: boolean; minCasterTexels: number } }
 export function readFarmLayout(pack: LoadedPack) {
   const bytes = pack.data.get('layout');
   if (!bytes) throw new Error('Farm layout is missing from the verified pack');
@@ -68,7 +69,8 @@ export function buildFarmWorld(pack: LoadedPack, knobs: TierKnobs, clock: SceneC
     // independently of whether placement batching has been enabled yet.
     setCropShadows(placements.instances, false, false);
     root.updateMatrixWorld(true);
-    const optimization = options.optimize === false ? null : optimizeFarmWorld(root, placements.instances, woodland, { packWoodland: knobs.shadows.enabled });
+    const optimization = options.optimize === false ? null : optimizeFarmWorld(root, placements.instances, woodland, { packWoodland: knobs.shadows.enabled,
+      heroMerge: options.heroMerge, shadow: knobs.shadows.enabled && options.shadow ? { mapSize: knobs.shadows.mapSize, ...options.shadow } : null });
     if (optimization) registry.add(optimization.restore);
     if ((import.meta.env.KILN_TEST || import.meta.env.KILN_DEV) && !(options.optimize === false && options.woodlandTangents === false)) {
       const offenders = assertInstancingSafe(root);

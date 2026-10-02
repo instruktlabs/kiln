@@ -100,4 +100,18 @@ describe('SPEC 6.4 warm pass', () => {
     expect(r2.calls.map(c => c.name)).not.toContain('b');
     expect(pass.step()).toBe(false);
   });
+
+  test('S5: onDraw runs once as drawing starts (after the reveal, culling off); drawables the camera layers miss are not compiled but draw unculled', async () => {
+    const f = fixture(), r = recorder(f.root), proxy = new Mesh(new BoxGeometry(), new MeshStandardMaterial()), seen: string[] = [];
+    proxy.name = 'stand-in'; proxy.layers.set(1); f.b.add(proxy);
+    expect(warmRenderables(f.root, f.camera.layers).map(o => o.name)).toEqual(['a', 'child', 'b', 'batch1', 'batch2']);
+    expect(warmRenderables(f.root).map(o => o.name)).toEqual(['a', 'child', 'b', 'stand-in', 'batch1', 'batch2']);
+    const pass = startWarmPass(r.renderer, f.scene, f.camera, f.root, { reveal: true, onDraw: () => seen.push(`${pass.phase} ${f.root.visible} ${f.a.frustumCulled} ${proxy.frustumCulled}`) });
+    expect(pass.stats.renderables).toBe(5);
+    for (let i = 0; i < 3; i++) { for (const p of r.pending.splice(0)) p.settle(); await flush(); }
+    expect(r.calls.map(c => c.name)).not.toContain('stand-in');
+    expect(pass.step()).toBe(false); expect(seen).toEqual(['drawing true false false']);
+    expect(pass.step()).toBe(true); expect(proxy.frustumCulled && f.a.frustumCulled).toBe(true); expect(pass.step()).toBe(true);
+    expect(seen.length).toBe(1);
+  });
 });
