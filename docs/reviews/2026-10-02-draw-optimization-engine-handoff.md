@@ -11,8 +11,31 @@ local commits on `main` `c734e2a`, none pushed. Every claim about `v1-readiness`
 against its tip `966c8d6` at the time of writing.
 
 Like every dated record, it does not override current code, `AGENTS.md` or the changelog. The
-owner has accepted nothing in it yet. The decision IDs (D1 to D34) come from this cycle's
-decision briefs. They are not the `D-` numbers in `scenes/DECISIONS.md`.
+decision IDs (D1 to D34) come from this cycle's decision briefs. They are not the `D-` numbers in
+`scenes/DECISIONS.md`. The owner answered the engine decisions at 13:00 and 13:05; the answers are in
+the next section.
+
+## Owner answers (2026-10-02, 13:00 and 13:05 -04:00)
+
+The owner took the recommended option on every engine decision:
+- **D1 (a):** wire the merge into `optimize: 'full'` after 0.10.0 (PR #129) merges, as one
+  engine PR. The engine agent does it from this record.
+- **D4 (a):** two PRs. PR 1 is this branch's scene, skill and record work without `e72b610`, and
+  comes from the draw-optimization session. PR 2 is the engine work: `e72b610`, the wiring, D2,
+  D3, the texts, the CHANGELOG and one `dist/` rebuild.
+- **D2 (a):** copy a shared mesh only when it costs at most 4 KB per saved draw.
+- **D3 (a):** split a merged bucket at 65,534 vertices to keep 16-bit indices.
+- **D23 (b):** output only. The export summary and `kiln_inspect` gain draws per anchor, a draw
+  estimate and the two flags. The `kiln_render` compact result and every input schema stay as
+  they are.
+- **D24 (a):** the compose-scene corrections ride PR 1. The authoring and QA proposals (section
+  6.4) go to the engine agent after 0.10.0, with dogfood.
+- **D31 (a):** live dogfood before each PR. The owner wants Agy and OpenCode for the dogfood
+  runs.
+- **D34 (a):** fix the three hazards in the engine PR, with a test for the occlusion UV set.
+
+The owner-only questions at the end of section 5 were not asked in this round. Put them to the
+owner before or during the engine PR.
 
 ## In short
 
@@ -27,8 +50,8 @@ decision briefs. They are not the `D-` numbers in `scenes/DECISIONS.md`.
   `render-service/` and `site/`. Every scene optimization is runtime code under `scenes/`.
 - **No overlap.** `v1-readiness` changes 220 files since `c734e2a` and this branch changes 112;
   no file is in both.
-- **Engine decisions** are open with the owner: D1, D2, D3, D23, D34 and the authoring and QA
-  half of D24. Sections 4 and 5 give the facts and the recommendations.
+- **Engine decisions** D1, D2, D3, D23, D34 and the authoring and QA half of D24 are answered: the
+  owner took every recommendation. Sections 4 and 5 give the facts behind them.
 
 ## 1. What changed outside `scenes/`
 
@@ -282,9 +305,10 @@ any scratch copy of `src/` before running the gate.
 
 ### Where they come from
 
-A decision sweep found 36 open decisions in all: D1 to D34, plus D7b and D11b. The owner has not
-answered any of them yet. They will be asked in nine ordered batches from the draw-optimization
-session. The engine items are in batch 6 (D1, with D4) and batch 8 (D2, D3, D23 and D34).
+A decision sweep found 36 open decisions in all: D1 to D34, plus D7b and D11b. The owner answered
+them in ten batches on 2026-10-02 between 12:53 and 13:08. The engine items were in batch 6
+(D1, with D4) and batch 8 (D2, D3, D23 and D34). The table keeps the options as they were put;
+the chosen option is the recommended one in every row.
 
 | ID | Question | Recommendation | Key numbers |
 |---|---|---|---|
@@ -492,7 +516,7 @@ is ignored and exists only on this machine.
 | `tmp/drawcalls/gates/final/` | Gate logs on `69f92fe` |
 | `scenes/evidence/` | Counts, parity images and timing |
 
-## 10. Suggested order, if the owner takes the recommendations
+## 10. Suggested order for the engine PR
 
 1. Merge 0.10.0 (PR #129).
 2. Bring `e72b610` onto it, then apply `wiring.patch` and `wiring-tests.patch`.
@@ -501,5 +525,6 @@ is ignored and exists only on this machine.
 4. Fix the D34 hazards, with a test for the occlusion UV set.
 5. Update the three texts, the test citation and the CHANGELOG.
 6. Run `node scripts/build-runtime.mjs all`, then the full gate including coverage.
-7. If D23 is approved, add its outputs as a separate model-facing change, with the dogfood runs
-   from D31.
+7. Add D23's outputs as a separate model-facing change. Then run the D31 dogfood sessions in
+   Agy and OpenCode.
+8. The authoring and QA skill proposals (section 6.4) follow the same dogfood rule.
