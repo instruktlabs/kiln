@@ -486,5 +486,36 @@ materials). `picks.md` has the same table with what changed per asset; the viewe
 
 ### Gate and fresh clone on the final commit
 
-Pending: the gate and the fresh clone run on the records commit that carries this section; their
-numbers follow in the docs-only commit after them, in section 1b's form.
+Gate `final-3` (`gate/final-3/`), launched 11:42 on the records commit `20e0673` with the
+runtime rebuild, every step exit 0 at 11:58: `build-runtime` (3 s; `dist/` unchanged after it, so
+the committed bundles are the tree's own), `check:toolchain`, `check:skills`, `typecheck` (4 s),
+`lint` (3 s), `test` (489 s: 3134 pass, 2 skip, 0 fail across 399 files), `test:render-service`
+(21 s: 78 pass), `test:coverage` (451 s: 3134 pass, 0 fail; functions 95.15% against the 94.00%
+minimum with 55 functions of slack, lines 92.45% against 92.10% with 234 lines of slack; no
+threshold changed). The skills commit `5a803eb` (`git diff --stat 20e0673..5a803eb`: five
+Markdown files, skill text only) landed at 11:45 during the `test` step, so the gate's last two
+steps and its summary ran on `5a803eb`; the fresh clone below runs the whole gate on that commit.
+
+Fresh clone `fresh-5a803eb` of the branch tip, 11:59 to 12:16
+(`measurements/fresh-5a803eb-*.log`, `gate/fresh-fresh-5a803eb/`): clone, `bun install
+--frozen-lockfile` (22 s) and `node scripts/build-runtime.mjs all` (6 s) exit 0 with `dist/`
+identical to the committed copy (build identity `sha256:fdf269f53a7c012595be3dc58bf8683487f155d05b2d4fccb8f8ade33122d8c8`);
+its gate passed every step: `check:toolchain`, `check:skills`, `typecheck` (3 s) and `lint` (3 s)
+exit 0, `test` exit 0 (424 s: 3134 pass, 2 skip, 0 fail across 399 files), `test:render-service`
+exit 0 (18 s: 78 pass), `test:coverage` exit 0 (437 s: 3134 pass, 0 fail; functions 95.15%,
+lines 92.45%, both above the ratchet), 885 s in all; `test:package` exit 0 (81 s); the four
+generated workspaces each answered `tools/list` with 17 tools on both protocol revisions in 253
+to 330 ms (claude 288 and 287, codex 286 and 266, opencode 253 and 261, agy 309 and 330, Agy
+under the new empty home `agy-homes/fresh-5a803eb-agy`), each harness's own listing recorded in
+`measurements/fresh-5a803eb-tools-up-*.json`.
+
+### After the owner's redirection (decisions 35 to 38)
+
+At 12:03 the owner, leaving to work from his laptop, redirected the end of the cycle: the branch
+merged into `main` by me with a merge commit after the PR's checks (35); the evidence folder as a
+curated private repository the laptop clones to the same path (36); the pack's record in this
+repository under `packs/troy/` with its binaries on R2 and nothing on the site (37); the laptop
+mirroring this PC's paths under user `Mattm`, and the real battle scene left to the hub agent, the
+composed `battle-scene` being a reference only (38). What landed under them is recorded in the
+plan's log and in `packs/troy/HANDOFF.md`; the private repository's `README.md` says what it
+holds and what stays out.
