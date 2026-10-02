@@ -17,6 +17,7 @@
     "./input": "./src/input/index.tsx",
     "./camera": "./src/camera/index.tsx",
     "./collision": "./src/collision/index.ts",
+    "./shadows": "./src/shadows/index.ts",
     "./ui": "./src/ui/index.tsx",
     "./testing": "./src/testing/index.ts",
     "./testing/node": "./src/testing/node.ts",

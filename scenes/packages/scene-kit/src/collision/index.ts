@@ -49,7 +49,8 @@ export function createCollisionWorld(): CollisionWorld {
     const meshes: Mesh[] = []; let count = 0;
     root.traverse(node => {
       const mesh = node as Mesh;
-      if (!mesh.isMesh || !mesh.geometry?.getAttribute('position') || (o.filter && !o.filter(mesh))) return;
+      // Shadow and pass stand-ins (src/shadows) duplicate geometry for other passes; they are never solid.
+      if (!mesh.isMesh || mesh.userData.kilnShadowStandIn || mesh.userData.kilnPassStandIn || !mesh.geometry?.getAttribute('position') || (o.filter && !o.filter(mesh))) return;
       meshes.push(mesh); count += mesh.geometry.index?.count ?? mesh.geometry.getAttribute('position').count;
     });
     if (!count) return null;

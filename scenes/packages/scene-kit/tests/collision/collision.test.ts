@@ -2,6 +2,8 @@ import { describe, expect, test } from 'bun:test';
 import { BoxGeometry, Group, Mesh, MeshBasicMaterial, Vector3 } from 'three/webgpu';
 import { createCollisionWorld, fixedStep, stepCapsule } from '../../src/collision/index';
 import fixture from './pilot-boxes.json';
+import { shadowStandIns } from '../../src/shadows/stand-ins';
+import { passStandIn } from '../../src/shadows/pass';
 
 function box(x: number, y: number, z: number, width = 2, height = 2, depth = 2) {
   const mesh = new Mesh(new BoxGeometry(width, height, depth), new MeshBasicMaterial());
@@ -60,6 +62,16 @@ describe('U-09 collision', () => {
     expect(world.colliders[0]!.key).toBe('merged');
     expect(world.rayDistance(new Vector3(0, 1, 0), new Vector3(5, 1, 0))).toBeCloseTo(1, 6);
     world.dispose(); world.dispose(); expect(world.add(box(0, 0, 0))).toBeNull();
+  });
+  test('shadow and pass stand-ins never become colliders', () => {
+    const world = createCollisionWorld(), root = new Group(), wall = box(0, 1, 0); wall.castShadow = true; root.add(wall);
+    const holder = new Group(); holder.position.x = 10; root.add(holder);
+    const shadow = shadowStandIns(root, { layer: 29, isAnchor: () => false }), pass = passStandIn(wall, { layer: 28, parent: holder });
+    expect(shadow.proxies).toHaveLength(1); expect(pass.stats.meshes).toBe(1);
+    const c = world.add(root)!; expect(c.geometry.getAttribute('position').count).toBe(36);
+    expect(world.rayDistance(new Vector3(10, 1, -5), new Vector3(10, 1, 5))).toBeCloseTo(10, 6);
+    expect(world.rayDistance(new Vector3(0, 1, -5), new Vector3(0, 1, 5))).toBeCloseTo(4, 6);
+    world.dispose(); shadow.restore(); pass.restore();
   });
 });
 const rules = { radius: .3, height: 1.9, pace: 1.05, runPace: 1.8, gravity: 18, terminal: -10, stepUp: .22, stepProbe: .25, clampX: 34.8, clampZ: 34.8 };
