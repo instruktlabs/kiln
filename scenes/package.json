@@ -22,6 +22,8 @@
     "check:site-compat": "bun scripts/check-site-compat.ts",
     "stage:farm": "bun packages/farm/scripts/stage-assets.ts",
     "perf:farm": "bun packages/farm/scripts/perf.ts",
+    "build:scene": "bun scripts/build-scene.ts",
+    "probe:counts": "bun scripts/count-probe.ts",
     "spike:build": "vite build --config packages/scene-kit/spike/vite.config.ts",
     "spike:test": "bun scripts/run-m0.ts"
   },

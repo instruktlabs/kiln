@@ -10,6 +10,7 @@ import type { CellStreamerOptions, Zone } from './streaming';
 import type { Object3D, Vector3 } from 'three/webgpu';
 import { useRuntime } from '../internal/runtime';
 export * from './core';export * from './instances';export * from './streaming';
+export * from './rigid-merge';
 function assignRef<T>(ref:Ref<T>|undefined,value:T|null){if(typeof ref==='function')ref(value);else if(ref)ref.current=value;}
 export function InstancedGroup(p:{set:InstanceSet;drawDistance?:number;handleRef?:Ref<InstanceHandle>;maxCellsPerFrame?:number}):JSX.Element{
  const quality=useQuality(),built=useBuilt(()=>{const value=buildInstanceSet(p.set);if(import.meta.env.KILN_DEV){const offenders=assertInstancingSafe(value.root);if(offenders.length){value.dispose();throw new Error(`Unsafe instanced geometry: ${offenders.join(', ')}`);}}return value;},value=>value.dispose(),[p.set]);

@@ -19,6 +19,9 @@ describe('P-16 Farm tier table (SPEC 15)', () => {
     expect(k.drawDistance).toEqual({ far: 250, fogNear: 120, fogFar: 220, lodBias: 1, streamRadiusScale: 1, zoneHops: 1 });
     expect(k.effects).toEqual({ water, wind, ambientAnimation: wind });
   });
+  test('OD-10: every tier discards the canvas pass 4x attachments (no viewport-texture node or transmission splits the Farm pass)', () => {
+    for (const name of farmTiers.order) expect(knobsOf(name).multisample).toEqual({ discard: true });
+  });
   test('classification start tiers: S24+ high, Tab S9 FE minimal on WebGPU (X-07, both adapter spellings), unknown tablet economy, desktop high, mobile WebGL2 minimal', () => {
     const tierOf = (patch: Partial<DeviceProbe>) => classifyDevice({ ...phone, ...patch }, farmTiers).tier;
     expect(tierOf({ adapter: { vendor: 'qualcomm', architecture: 'adreno-7xx', device: '', description: '' } })).toBe('high');

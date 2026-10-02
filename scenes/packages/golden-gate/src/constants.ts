@@ -40,5 +40,9 @@ export const INTERNATIONAL_ORANGE = [1, 3, 5].map(i => parseInt(LAYOUT.reference
 /** Credits shown in the scene (full text lives in the staged licences and credits.json). */
 export const TRADEMARK_NOTE = 'The Golden Gate Bridge name and likeness are trademarks of the Golden Gate Bridge, Highway and Transportation District. The CC0 dedication covers copyright in this model only and grants no trademark rights.';
 
-/** Render layers: 0 reflected world, 1 water, 2 dynamic objects kept out of reflections (traffic, player car, fog banks). */
-export const LAYERS = { world: 0, water: 1, dynamic: 2 } as const;
+/**
+ * Render layers: 0 reflected world, 1 water, 2 dynamic objects kept out of reflections (traffic, player car, fog banks).
+ * Draw optimisation (High): 3 shadow depth stand-ins (the sun's shadow camera only), 4 drawn by the main and shadow cameras
+ * but not the reflection (the near approaches), 5 drawn only in the reflection (the far approaches standing in for them).
+ */
+export const LAYERS = { world: 0, water: 1, dynamic: 2, shadowStandIn: 3, mainOnly: 4, reflectionOnly: 5 } as const;

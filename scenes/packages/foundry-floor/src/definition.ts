@@ -11,6 +11,8 @@ function tier(pixelRatioCap: number): TierKnobs {
     vegetationDensity: 0, instanceDensity: 1,
     drawDistance: { far: 400, fogNear: 300, fogFar: 400, lodBias: 1, streamRadiusScale: 1, zoneHops: 1 },
     effects: { water: 'off', wind: false, ambientAnimation: true },
+    // OD-10: no viewport-texture node or transmission splits the main pass.
+    multisample: { discard: true },
   };
 }
 

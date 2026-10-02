@@ -1,6 +1,6 @@
 import { createContext, useContext } from 'react';
 import { createHudStore } from '@kiln-scenes/scene-kit';
-import type { RigHandle } from '@kiln-scenes/scene-kit';
+import type { CachedSunShadow, RigHandle } from '@kiln-scenes/scene-kit';
 import type { FarmWorld } from './world/build-world';
 import type { PreparedFarm } from './world/prepare';
 import { FARM_STRINGS } from './ui/strings';
@@ -10,8 +10,10 @@ export function createFarmSession() {
   const hud = createHudStore<FarmHudState>({ status: '', interact: FARM_STRINGS.approach, canInteract: false, driving: false });
   return {
     hud, world: null as FarmWorld | null, prepared: null as PreparedFarm | null, orbit: { current: null as RigHandle | null },
+    /** The lights' cached sun shadow on tiers with shadows (FarmLighting publishes it; the world tracks and updates it). */
+    shadow: null as CachedSunShadow | null,
     view: 'hero', ambientEnabled: true,
-    dispose() { hud.dispose(); this.world = null; this.orbit.current = null; },
+    dispose() { hud.dispose(); this.world = null; this.shadow = null; this.orbit.current = null; },
   };
 }
 export type FarmSession = ReturnType<typeof createFarmSession>;

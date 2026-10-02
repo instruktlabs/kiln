@@ -13,17 +13,21 @@ import type { WaterGrid, WaterMapLevel } from './water-maps';
 import { macroNoiseTexture, slopeMomentTexture, synthesizeSlopes } from './detail-textures';
 import type { Atmosphere } from './atmosphere';
 import type { GoldenGateFeatures } from '../tiers';
+import { passCameraLayers } from '@kiln-scenes/scene-kit';
+import type { PassLayers } from '@kiln-scenes/scene-kit';
 import { LAYERS } from '../constants';
 
 export interface WaterOptions {
   features: GoldenGateFeatures['water'];
   atmosphere: Atmosphere;
   near: WaterMapLevel; mid: WaterMapLevel; midGrid: WaterGrid;
+  /** Reflection stand-ins (High): the virtual camera drops `main` and takes `pass`; its other bits stay as cloned from the main camera. */
+  passLayers?: PassLayers;
 }
 export interface Water {
   mesh: Mesh; uniforms: WaterUniforms; clipmap: ClipmapOptions;
   textures: { macroNoise: DataTexture; slopeMoments: DataTexture; flow: DataTexture };
-  /** The reflector's virtual camera (High), so the sky can hide its sun disc there. */
+  /** The reflector's virtual camera (High), so the sky can hide its sun disc there; with pass layers, its two pass bits are set on every call (three may recreate it). */
   reflectionCamera(camera: Camera): Camera | null;
   update(camera: PerspectiveCamera, time: number): void;
   readonly stats: { tiles: number; maxTiles: number; vertices: number; reflection: string; description: ReturnType<typeof describeWater> };
@@ -63,7 +67,12 @@ export function createWater(scene: Scene, o: WaterOptions): Water {
   const stats = { tiles: 0, maxTiles: maxTiles(clipmap), vertices: 0, reflection: f.reflection, description: describeWater(options) };
   return {
     mesh, uniforms, clipmap, textures: { macroNoise, slopeMoments, flow },
-    reflectionCamera(camera) { return reflection ? (reflection as unknown as { reflector: { getVirtualCamera(c: Camera): Camera } }).reflector.getVirtualCamera(camera) : null; },
+    reflectionCamera(camera) {
+      if (!reflection) return null;
+      const virtual = (reflection as unknown as { reflector: { getVirtualCamera(c: Camera): Camera } }).reflector.getVirtualCamera(camera);
+      if (o.passLayers) passCameraLayers(virtual, o.passLayers, 'pass');
+      return virtual;
+    },
     update(camera, time) {
       camera.updateMatrixWorld();
       projection.multiplyMatrices(camera.projectionMatrix, camera.matrixWorldInverse); frustum.setFromProjectionMatrix(projection);

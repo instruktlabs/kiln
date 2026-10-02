@@ -1,4 +1,4 @@
-import type { Camera, Material, Object3D, Scene } from 'three/webgpu';
+import type { Camera, Layers, Material, Object3D, Scene } from 'three/webgpu';
 
 /** The part of three's WebGPURenderer (WebGPU and WebGL2 backends alike) that the warm pass uses. */
 export interface WarmPassRenderer { compileAsync(object: Object3D, camera: Camera, targetScene?: Scene | null): Promise<unknown> }
@@ -42,14 +42,19 @@ export interface WarmPassOptions {
   reveal: boolean;
   /** Chains compiled at once; defaults to WARM_CONCURRENCY. */
   concurrency?: number;
+  /** Called once as the drawing frame starts, with the world shown and culling off (S5: the cached shadow's prime). */
+  onDraw?(): void;
 }
 
 const drawable = (object: Object3D) => { const o = object as unknown as Record<string, unknown>; return !!(o.isMesh || o.isLine || o.isPoints || o.isSprite); };
 
-/** Every drawable node below root whose own visibility and that of its ancestors below root is true (root's own flag is ignored). */
-export function warmRenderables(root: Object3D): Object3D[] {
+/**
+ * Every drawable node below root whose own visibility and that of its ancestors below root is true (root's own flag is
+ * ignored); with `layers`, only those a camera on them draws (three tests layers per object: shadow stand-ins are not).
+ */
+export function warmRenderables(root: Object3D, layers?: Layers): Object3D[] {
   const found: Object3D[] = [];
-  const visit = (object: Object3D) => { if (!object.visible) return; if (drawable(object)) found.push(object); for (const child of object.children) visit(child); };
+  const visit = (object: Object3D) => { if (!object.visible) return; if (drawable(object) && (!layers || object.layers.test(layers))) found.push(object); for (const child of object.children) visit(child); };
   for (const child of root.children) visit(child);
   return found;
 }
@@ -84,11 +89,12 @@ export function warmChainKey(object: Object3D): string {
  *    shown when the compiles are done; the lights are outside the world, so the pipelines match the lit frame.
  * 2. drawing: the world is shown and one frame is drawn with frustum culling off for every drawable, which compiles
  *    what compileAsync does not (shadow-map pipelines, which three skips while pre-compiling) and makes every
- *    first-draw driver variant happen before ready.
+ *    first-draw driver variant happen before ready. Drawables off the camera's layers (shadow stand-ins) are not compiled
+ *    but draw unculled here too; `onDraw` runs as this frame starts (the cached shadow re-arms at the reveal).
  * 3. done: culling is restored; the next frame is the first complete frame.
  */
 export function startWarmPass(renderer: WarmPassRenderer, scene: Scene, camera: Camera, root: Object3D, options: WarmPassOptions): WarmPass {
-  const renderables = warmRenderables(root), chains = new Map<string, Object3D[]>();
+  const drawables = warmRenderables(root), renderables = drawables.filter(o => o.layers.test(camera.layers)), chains = new Map<string, Object3D[]>();
   for (const object of renderables) { const key = warmChainKey(object); (chains.get(key) ?? chains.set(key, []).get(key)!).push(object); }
   const concurrency = Math.max(1, Math.min(Math.floor(options.concurrency ?? WARM_CONCURRENCY), chains.size));
   const stats: WarmPassStats = { renderables: renderables.length, chains: chains.size, concurrency: chains.size ? concurrency : 0, failed: 0, compileFrames: 0, revealed: options.reveal };
@@ -122,9 +128,9 @@ export function startWarmPass(renderer: WarmPassRenderer, scene: Scene, camera: 
       if (phase === 'compiling') {
         if (!compiled) { stats.compileFrames++; return false; }
         if (options.reveal) root.visible = true;
-        unculled = renderables.filter(object => object.frustumCulled);
+        unculled = drawables.filter(object => object.frustumCulled);
         for (const object of unculled) object.frustumCulled = false;
-        phase = 'drawing';
+        phase = 'drawing'; options.onDraw?.();
         return false;
       }
       if (phase === 'drawing') {

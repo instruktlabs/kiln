@@ -19,6 +19,9 @@ application have different requirements; exporting a monolithic GLB is optional.
 For terrain, animated environments, traversal or measured optimization, read
 [runtime scene guidance](references/runtime-scenes.md). Keep those systems in
 the consuming scene rather than adding them to every asset-authoring task.
+To reduce draw calls, count them per render pass first. Then merge by material
+within each animation and interaction anchor, and give shadow and reflection
+passes their own stand-ins. Do not flatten an asset into one mesh.
 
 Inspect each GLB with `inspectGlbIntegration(bytes)` and confirm it returned a usable manifest. Use units, axes, bounds, and ground information to place the object deliberately. Give instances stable names and explicit transforms.
 

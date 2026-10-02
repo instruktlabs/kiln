@@ -11,6 +11,8 @@ export interface TierKnobs {
   drawDistance: { far: number; fogNear: number; fogFar: number; lodBias: number; streamRadiusScale: number; zoneHops: number };
   effects: { water: 'off' | 'simple' | 'full'; wind: boolean; ambientAnimation: boolean };
   ladder?: LadderLevel[];
+  /** OD-10: discard the canvas pass's 4x attachments after resolve. Only for a tier whose main pass is never split by a framebuffer copy (viewport depth or texture nodes, transmission). Default store. */
+  multisample?: { discard: boolean };
 }
 export interface DeviceClass { form: 'desktop' | 'tablet' | 'phone'; backend: 'webgpu' | 'webgl2'; gpu: 'high' | 'mid' | 'low' | 'unknown'; devicePixelRatio: number }
 export type TierEntry<K extends TierKnobs = TierKnobs> = K | ((d: DeviceClass) => K);

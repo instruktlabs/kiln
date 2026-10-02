@@ -8,5 +8,6 @@ export * from './instancing';
 export * from './input';
 export * from './camera';
 export * from './collision';
+export * from './shadows';
 export * from './ui';
 export * from './testing';

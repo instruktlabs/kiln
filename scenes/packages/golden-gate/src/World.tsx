@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { useThree } from '@react-three/fiber';
 import { Raycaster, Vector3 } from 'three/webgpu';
 import type { PerspectiveCamera, WebGPURenderer } from 'three/webgpu';
-import { SystemOrder, useLoadedPack, usePackReader, usePresets, useQuality, useReducedMotion, useRegisterTestHooks, useSceneBuilt, useSceneClock, useSystem } from '@kiln-scenes/scene-kit';
+import { readDevParams, SystemOrder, useLoadedPack, usePackReader, usePresets, useQuality, useReducedMotion, useRegisterTestHooks, useSceneBuilt, useSceneClock, useSystem } from '@kiln-scenes/scene-kit';
 import type { Vec3 } from '@kiln-scenes/scene-kit';
 import { buildGoldenGateWorld } from './world/build-world';
 import type { GoldenGateWorld } from './world/build-world';
@@ -18,14 +18,21 @@ import { sightlineClearance, surfaceHeight } from './world/heightfield';
 import { GoldenGateCameras } from './camera/GoldenGateCameras';
 import { Driving } from './play/Driving';
 import { LAYOUT } from './data';
+import type { DrawOptions } from './world/draw-options';
 
 const TEST = !!(import.meta.env.KILN_TEST || import.meta.env.KILN_DEV);
+/** Test and dev builds: draw optimisation switches for A/B counts and parity captures (./world/draw-options; each defaults on where its pass exists, shadowCache off). */
+function drawOverrides(): Partial<DrawOptions> {
+  if (!TEST) return {};
+  const B = { kind: 'boolean' } as const, p = readDevParams({ bridgeMerge: B, shadowOnce: B, standIns: B, reflectionStandIns: B, shadowCache: B });
+  return { merge: p.bridgeMerge, once: p.shadowOnce, depth: p.standIns, reflection: p.reflectionStandIns, cache: p.shadowCache };
+}
 
 export function GoldenGateWorldContent() {
   const pack = useLoadedPack(), reader = usePackReader(), quality = useQuality<GoldenGateKnobs>(), markBuilt = useSceneBuilt(), session = useGoldenGateSession(), reduced = useReducedMotion(), clock = useSceneClock();
   const gl = useThree(state => state.gl) as unknown as WebGPURenderer, scene = useThree(state => state.scene), camera = useThree(state => state.camera) as PerspectiveCamera;
   const size = useThree(state => state.size);
-  const params = useMemo(() => readGoldenGateParams(), []);
+  const params = useMemo(() => readGoldenGateParams(), []), draw = useMemo(drawOverrides, []);
   // The kit applies the development-only `preset` URL parameter (WATER-SPEC determinism) on mount.
   const presets = usePresets<GoldenGatePreset>(PRESETS, 'day');
   const [world, setWorld] = useState<GoldenGateWorld | null>(null), [failure, setFailure] = useState<unknown>(null);
@@ -44,7 +51,7 @@ export function GoldenGateWorldContent() {
 
   useEffect(() => {
     const abort = new AbortController(); let built: GoldenGateWorld | null = null;
-    buildGoldenGateWorld({ pack, reader, renderer: gl, scene, camera, knobs: quality.knobs, signal: abort.signal,
+    buildGoldenGateWorld({ pack, reader, renderer: gl, scene, camera, knobs: quality.knobs, signal: abort.signal, draw,
       traffic: { enabled: params.traffic !== false, density: typeof params.density === 'string' ? params.density as TrafficDensity : undefined },
       onProgress: (loaded, total, text) => session.progress?.({ phase: 'build', loaded, total, text }) })
       .then(value => {
@@ -101,6 +108,11 @@ export function GoldenGateWorldContent() {
         const target = { terrain: world.terrain.root, bridge: world.bridge.root, water: world.water.mesh, banks: world.banks?.sprite, sky: world.atmosphere.sky, traffic: world.traffic.root }[part];
         if (!target) return false; target.visible = visible; return true;
       },
+      /** Count-probe systems (scene-kit testing/probe.ts): the setPartVisible parts, with the bridge split into its web and
+       *  far models, the approaches and the vegetation carried under the near approaches. */
+      probeSystems: () => ({ terrain: world.terrain.root, vegetation: world.terrain.vegetation.root, bridge: world.bridge.views.web, 'bridge-far': world.bridge.views.far,
+        approaches: [world.bridge.approachMeshes.near.group, world.bridge.approachMeshes.far.group], water: world.water.mesh, banks: world.banks?.sprite ?? null,
+        sky: world.atmosphere.sky, traffic: world.traffic.root }),
       /** The point on the water plane (y = 0) under a screen pixel, or null above the horizon. */
       groundPoint: (sx: number, sy: number) => { camera.updateMatrixWorld(); v.set(sx / size.width * 2 - 1, 1 - sy / size.height * 2, .5).unproject(camera).sub(camera.position); if (v.y >= 0) return null; const t = -camera.position.y / v.y; return [camera.position.x + v.x * t, camera.position.z + v.z * t]; },
       project: (point: Vec3) => { camera.updateMatrixWorld(); v.fromArray(point).project(camera); return [(v.x + 1) / 2 * size.width, (1 - v.y) / 2 * size.height, v.z]; },

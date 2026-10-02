@@ -93,6 +93,17 @@ describe('tier selection through the kit', () => {
     expect(differ(k => k.shadows.enabled)).toBe(true);         // one cascade at High, contact shadows elsewhere
     expect(differ(k => k.pixelRatioCap)).toBe(true);           // pixel ratio
   });
+  test('OD-10: MSAA discard only where no viewport depth copy splits the main pass, phones included', () => {
+    // Depth contact (water) and fog banks read viewportDepthTexture, which copies the 4x depth mid-pass.
+    for (const probe of [rtx3070, s24plus, tabS9fe]) for (const tier of goldenGateTiers.order) {
+      const k = select(probe, tier).knobs;
+      expect(k.multisample).toEqual({ discard: !k.gg.water.depthContact && k.gg.fogBanks === 0 });
+    }
+    const discard = (probe: DeviceProbe, tier: TierName) => select(probe, tier).knobs.multisample?.discard;
+    expect(goldenGateTiers.order.map(tier => discard(rtx3070, tier))).toEqual([true, true, false, false]);
+    expect(discard(s24plus, 'high')).toBe(false); // high on a phone is Medium, which keeps depth contact
+    expect(discard(tabS9fe, 'minimal')).toBe(true);
+  });
   test('Low fades its per-pixel waves with view distance; High and Medium keep the accepted water', () => {
     // SCENE-REVIEW-1 item 2: the Low waves banded across the bay at mid distance. The fade adds no pass,
     // texture or wave; High and Medium (accepted) carry no fade.

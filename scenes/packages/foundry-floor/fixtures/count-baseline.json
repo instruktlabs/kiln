@@ -1,0 +1,583 @@
+{
+ "schema": "kiln.foundry-floor-count-baseline/1",
+ "decision": "OD-8 (D-53)",
+ "rule": "Inclusive ±2% draws and triangles; pipelines bound per frame at most +5% of this reference (the cache too under the same page policy); workload fixtures listed, not judged",
+ "provenance": {
+  "build": "draw-after",
+  "commit": "892d103",
+  "chunks": [
+   "data-DsjFnmns.js",
+   "exterior-D40Deo1z.js",
+   "index-DFDCL5v-.js",
+   "interior-CMvuQhmn.js"
+  ],
+  "source": "test build draw-after of the working tree at HEAD 892d103 (no uncommitted source changes; build.json source: working tree)",
+  "tool": "scripts/check-foundry-counts.ts --record",
+  "probe": "scripts/count-probe.ts --scenes foundry-floor --what-if none --build draw-after (summary draw-after-ff)",
+  "date": "2026-10-02"
+ },
+ "conditions": {
+  "viewport": [
+   1920,
+   1080
+  ],
+  "freshPage": false,
+  "clock": "frozen",
+  "backend": "webgpu",
+  "settled": true
+ },
+ "tiers": {
+  "minimal": {
+   "campus-bridge": {
+    "drawCalls": 68,
+    "triangles": 97053,
+    "pipelines": 12,
+    "pipelineCache": 18,
+    "geometries": 121,
+    "textures": 8,
+    "programs": 29
+   },
+   "campus-campus": {
+    "drawCalls": 96,
+    "triangles": 97619,
+    "pipelines": 11,
+    "pipelineCache": 17,
+    "geometries": 104,
+    "textures": 8,
+    "programs": 27
+   },
+   "campus-canopy": {
+    "drawCalls": 120,
+    "triangles": 142057,
+    "pipelines": 12,
+    "pipelineCache": 18,
+    "geometries": 114,
+    "textures": 8,
+    "programs": 29
+   },
+   "campus-pair": {
+    "drawCalls": 96,
+    "triangles": 97619,
+    "pipelines": 11,
+    "pipelineCache": 17,
+    "geometries": 104,
+    "textures": 8,
+    "programs": 27
+   },
+   "campus-roundabout": {
+    "drawCalls": 112,
+    "triangles": 124749,
+    "pipelines": 12,
+    "pipelineCache": 18,
+    "geometries": 123,
+    "textures": 8,
+    "programs": 29
+   },
+   "campus-split": {
+    "drawCalls": 118,
+    "triangles": 139045,
+    "pipelines": 12,
+    "pipelineCache": 18,
+    "geometries": 118,
+    "textures": 8,
+    "programs": 29
+   },
+   "drive": {
+    "drawCalls": 119,
+    "triangles": 150635,
+    "pipelines": 14,
+    "pipelineCache": 20,
+    "geometries": 128,
+    "textures": 8,
+    "programs": 32,
+    "workload": true
+   },
+   "fab-cluster": {
+    "drawCalls": 40,
+    "triangles": 75135,
+    "pipelines": 6,
+    "pipelineCache": 8,
+    "geometries": 158,
+    "textures": 5,
+    "programs": 16
+   },
+   "fab-gallery": {
+    "drawCalls": 103,
+    "triangles": 164308,
+    "pipelines": 7,
+    "pipelineCache": 8,
+    "geometries": 158,
+    "textures": 5,
+    "programs": 16
+   },
+   "fab-landing": {
+    "drawCalls": 134,
+    "triangles": 203476,
+    "pipelines": 7,
+    "pipelineCache": 8,
+    "geometries": 135,
+    "textures": 5,
+    "programs": 16
+   },
+   "fab-litho": {
+    "drawCalls": 39,
+    "triangles": 59061,
+    "pipelines": 6,
+    "pipelineCache": 8,
+    "geometries": 158,
+    "textures": 5,
+    "programs": 16
+   },
+   "fab-overview": {
+    "drawCalls": 81,
+    "triangles": 125806,
+    "pipelines": 7,
+    "pipelineCache": 8,
+    "geometries": 146,
+    "textures": 5,
+    "programs": 16
+   },
+   "fab-section": {
+    "drawCalls": 99,
+    "triangles": 140862,
+    "pipelines": 7,
+    "pipelineCache": 8,
+    "geometries": 165,
+    "textures": 5,
+    "programs": 16
+   },
+   "fab-spine": {
+    "drawCalls": 130,
+    "triangles": 237960,
+    "pipelines": 7,
+    "pipelineCache": 8,
+    "geometries": 157,
+    "textures": 5,
+    "programs": 16
+   },
+   "fab-stocker": {
+    "drawCalls": 119,
+    "triangles": 203424,
+    "pipelines": 7,
+    "pipelineCache": 8,
+    "geometries": 158,
+    "textures": 5,
+    "programs": 16
+   }
+  },
+  "economy": {
+   "campus-bridge": {
+    "drawCalls": 75,
+    "triangles": 134292,
+    "pipelines": 14,
+    "pipelineCache": 20,
+    "geometries": 119,
+    "textures": 8,
+    "programs": 32
+   },
+   "campus-campus": {
+    "drawCalls": 96,
+    "triangles": 108683,
+    "pipelines": 11,
+    "pipelineCache": 17,
+    "geometries": 104,
+    "textures": 8,
+    "programs": 27
+   },
+   "campus-canopy": {
+    "drawCalls": 120,
+    "triangles": 156289,
+    "pipelines": 12,
+    "pipelineCache": 18,
+    "geometries": 114,
+    "textures": 8,
+    "programs": 29
+   },
+   "campus-pair": {
+    "drawCalls": 96,
+    "triangles": 108683,
+    "pipelines": 11,
+    "pipelineCache": 17,
+    "geometries": 104,
+    "textures": 8,
+    "programs": 27
+   },
+   "campus-roundabout": {
+    "drawCalls": 116,
+    "triangles": 143631,
+    "pipelines": 12,
+    "pipelineCache": 20,
+    "geometries": 125,
+    "textures": 8,
+    "programs": 32
+   },
+   "campus-split": {
+    "drawCalls": 133,
+    "triangles": 175029,
+    "pipelines": 12,
+    "pipelineCache": 18,
+    "geometries": 117,
+    "textures": 8,
+    "programs": 29
+   },
+   "drive": {
+    "drawCalls": 136,
+    "triangles": 193929,
+    "pipelines": 14,
+    "pipelineCache": 20,
+    "geometries": 127,
+    "textures": 8,
+    "programs": 32,
+    "workload": true
+   },
+   "fab-cluster": {
+    "drawCalls": 40,
+    "triangles": 75135,
+    "pipelines": 6,
+    "pipelineCache": 8,
+    "geometries": 158,
+    "textures": 5,
+    "programs": 16
+   },
+   "fab-gallery": {
+    "drawCalls": 103,
+    "triangles": 164308,
+    "pipelines": 7,
+    "pipelineCache": 8,
+    "geometries": 158,
+    "textures": 5,
+    "programs": 16
+   },
+   "fab-landing": {
+    "drawCalls": 134,
+    "triangles": 203476,
+    "pipelines": 7,
+    "pipelineCache": 8,
+    "geometries": 135,
+    "textures": 5,
+    "programs": 16
+   },
+   "fab-litho": {
+    "drawCalls": 39,
+    "triangles": 59061,
+    "pipelines": 6,
+    "pipelineCache": 8,
+    "geometries": 158,
+    "textures": 5,
+    "programs": 16
+   },
+   "fab-overview": {
+    "drawCalls": 81,
+    "triangles": 125806,
+    "pipelines": 7,
+    "pipelineCache": 8,
+    "geometries": 146,
+    "textures": 5,
+    "programs": 16
+   },
+   "fab-section": {
+    "drawCalls": 99,
+    "triangles": 140862,
+    "pipelines": 7,
+    "pipelineCache": 8,
+    "geometries": 165,
+    "textures": 5,
+    "programs": 16
+   },
+   "fab-spine": {
+    "drawCalls": 130,
+    "triangles": 237960,
+    "pipelines": 7,
+    "pipelineCache": 8,
+    "geometries": 157,
+    "textures": 5,
+    "programs": 16
+   },
+   "fab-stocker": {
+    "drawCalls": 119,
+    "triangles": 203424,
+    "pipelines": 7,
+    "pipelineCache": 8,
+    "geometries": 158,
+    "textures": 5,
+    "programs": 16
+   }
+  },
+  "balanced": {
+   "campus-bridge": {
+    "drawCalls": 87,
+    "triangles": 177141,
+    "pipelines": 14,
+    "pipelineCache": 20,
+    "geometries": 124,
+    "textures": 8,
+    "programs": 32
+   },
+   "campus-campus": {
+    "drawCalls": 96,
+    "triangles": 122987,
+    "pipelines": 11,
+    "pipelineCache": 17,
+    "geometries": 104,
+    "textures": 8,
+    "programs": 27
+   },
+   "campus-canopy": {
+    "drawCalls": 137,
+    "triangles": 200867,
+    "pipelines": 12,
+    "pipelineCache": 18,
+    "geometries": 115,
+    "textures": 8,
+    "programs": 29
+   },
+   "campus-pair": {
+    "drawCalls": 96,
+    "triangles": 122987,
+    "pipelines": 11,
+    "pipelineCache": 17,
+    "geometries": 104,
+    "textures": 8,
+    "programs": 27
+   },
+   "campus-roundabout": {
+    "drawCalls": 117,
+    "triangles": 169503,
+    "pipelines": 12,
+    "pipelineCache": 20,
+    "geometries": 127,
+    "textures": 8,
+    "programs": 32
+   },
+   "campus-split": {
+    "drawCalls": 138,
+    "triangles": 200917,
+    "pipelines": 12,
+    "pipelineCache": 18,
+    "geometries": 121,
+    "textures": 8,
+    "programs": 29
+   },
+   "drive": {
+    "drawCalls": 143,
+    "triangles": 232993,
+    "pipelines": 14,
+    "pipelineCache": 20,
+    "geometries": 132,
+    "textures": 8,
+    "programs": 32,
+    "workload": true
+   },
+   "fab-cluster": {
+    "drawCalls": 40,
+    "triangles": 75135,
+    "pipelines": 6,
+    "pipelineCache": 8,
+    "geometries": 158,
+    "textures": 5,
+    "programs": 16
+   },
+   "fab-gallery": {
+    "drawCalls": 103,
+    "triangles": 164308,
+    "pipelines": 7,
+    "pipelineCache": 8,
+    "geometries": 158,
+    "textures": 5,
+    "programs": 16
+   },
+   "fab-landing": {
+    "drawCalls": 134,
+    "triangles": 203476,
+    "pipelines": 7,
+    "pipelineCache": 8,
+    "geometries": 135,
+    "textures": 5,
+    "programs": 16
+   },
+   "fab-litho": {
+    "drawCalls": 39,
+    "triangles": 59061,
+    "pipelines": 6,
+    "pipelineCache": 8,
+    "geometries": 158,
+    "textures": 5,
+    "programs": 16
+   },
+   "fab-overview": {
+    "drawCalls": 81,
+    "triangles": 125806,
+    "pipelines": 7,
+    "pipelineCache": 8,
+    "geometries": 146,
+    "textures": 5,
+    "programs": 16
+   },
+   "fab-section": {
+    "drawCalls": 99,
+    "triangles": 140862,
+    "pipelines": 7,
+    "pipelineCache": 8,
+    "geometries": 165,
+    "textures": 5,
+    "programs": 16
+   },
+   "fab-spine": {
+    "drawCalls": 130,
+    "triangles": 237960,
+    "pipelines": 7,
+    "pipelineCache": 8,
+    "geometries": 157,
+    "textures": 5,
+    "programs": 16
+   },
+   "fab-stocker": {
+    "drawCalls": 119,
+    "triangles": 203424,
+    "pipelines": 7,
+    "pipelineCache": 8,
+    "geometries": 158,
+    "textures": 5,
+    "programs": 16
+   }
+  },
+  "high": {
+   "campus-bridge": {
+    "drawCalls": 88,
+    "triangles": 207075,
+    "pipelines": 14,
+    "pipelineCache": 20,
+    "geometries": 125,
+    "textures": 8,
+    "programs": 32
+   },
+   "campus-campus": {
+    "drawCalls": 96,
+    "triangles": 137051,
+    "pipelines": 11,
+    "pipelineCache": 17,
+    "geometries": 104,
+    "textures": 8,
+    "programs": 27
+   },
+   "campus-canopy": {
+    "drawCalls": 140,
+    "triangles": 225941,
+    "pipelines": 12,
+    "pipelineCache": 18,
+    "geometries": 117,
+    "textures": 8,
+    "programs": 29
+   },
+   "campus-pair": {
+    "drawCalls": 103,
+    "triangles": 154280,
+    "pipelines": 11,
+    "pipelineCache": 17,
+    "geometries": 104,
+    "textures": 8,
+    "programs": 27
+   },
+   "campus-roundabout": {
+    "drawCalls": 118,
+    "triangles": 202129,
+    "pipelines": 12,
+    "pipelineCache": 20,
+    "geometries": 129,
+    "textures": 8,
+    "programs": 32
+   },
+   "campus-split": {
+    "drawCalls": 138,
+    "triangles": 227157,
+    "pipelines": 12,
+    "pipelineCache": 18,
+    "geometries": 120,
+    "textures": 8,
+    "programs": 29
+   },
+   "drive": {
+    "drawCalls": 144,
+    "triangles": 262555,
+    "pipelines": 14,
+    "pipelineCache": 20,
+    "geometries": 133,
+    "textures": 8,
+    "programs": 32,
+    "workload": true
+   },
+   "fab-cluster": {
+    "drawCalls": 40,
+    "triangles": 75135,
+    "pipelines": 6,
+    "pipelineCache": 8,
+    "geometries": 158,
+    "textures": 5,
+    "programs": 16
+   },
+   "fab-gallery": {
+    "drawCalls": 103,
+    "triangles": 164308,
+    "pipelines": 7,
+    "pipelineCache": 8,
+    "geometries": 158,
+    "textures": 5,
+    "programs": 16
+   },
+   "fab-landing": {
+    "drawCalls": 134,
+    "triangles": 203476,
+    "pipelines": 7,
+    "pipelineCache": 8,
+    "geometries": 135,
+    "textures": 5,
+    "programs": 16
+   },
+   "fab-litho": {
+    "drawCalls": 39,
+    "triangles": 59061,
+    "pipelines": 6,
+    "pipelineCache": 8,
+    "geometries": 158,
+    "textures": 5,
+    "programs": 16
+   },
+   "fab-overview": {
+    "drawCalls": 81,
+    "triangles": 125806,
+    "pipelines": 7,
+    "pipelineCache": 8,
+    "geometries": 146,
+    "textures": 5,
+    "programs": 16
+   },
+   "fab-section": {
+    "drawCalls": 99,
+    "triangles": 140862,
+    "pipelines": 7,
+    "pipelineCache": 8,
+    "geometries": 165,
+    "textures": 5,
+    "programs": 16
+   },
+   "fab-spine": {
+    "drawCalls": 130,
+    "triangles": 237960,
+    "pipelines": 7,
+    "pipelineCache": 8,
+    "geometries": 157,
+    "textures": 5,
+    "programs": 16
+   },
+   "fab-stocker": {
+    "drawCalls": 119,
+    "triangles": 203424,
+    "pipelines": 7,
+    "pipelineCache": 8,
+    "geometries": 158,
+    "textures": 5,
+    "programs": 16
+   }
+  }
+ }
+}

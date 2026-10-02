@@ -1,4 +1,4 @@
-export type SceneErrorCode = 'no-container' | 'renderer-init' | 'asset-fetch' | 'asset-hash' | 'asset-parse' | 'pack-invalid' | 'three-version' | 'context-lost' | 'runtime';
+export type SceneErrorCode = 'no-container' | 'renderer-init' | 'asset-fetch' | 'asset-hash' | 'asset-parse' | 'pack-invalid' | 'three-version' | 'context-lost' | 'msaa-discard' | 'runtime';
 export class SceneError extends Error {
   readonly code: SceneErrorCode; override readonly cause?: unknown;
   constructor(code: SceneErrorCode, message: string, cause?: unknown) { super(message); this.name = 'SceneError'; this.code = code; this.cause = cause; }

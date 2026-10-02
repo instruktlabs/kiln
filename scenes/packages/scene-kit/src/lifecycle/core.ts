@@ -28,7 +28,7 @@ export function disposeObject3D(root: Object3D, opts: { textures?: boolean; skip
   });
 }
 export interface SceneClock { time: number; ambient: number; delta: number; timeScale: number; readonly frame: number }
-export const SystemOrder = { input: 100, path: 200, herd: 300, mixers: 400, sim: 500, frameGraph: 600, camera: 700, governor: 900 } as const;
+export const SystemOrder = { input: 100, path: 200, herd: 300, mixers: 400, sim: 500, frameGraph: 600, camera: 700, shadows: 800, governor: 900 } as const;
 export function createSceneClock(): SceneClock { return { time: 0, ambient: 0, delta: 0, timeScale: 1, frame: 0 }; }
 export function advanceSceneClock(clock: SceneClock, dt: number, flags: { paused: boolean; reduced: boolean }): void {
   clock.delta = flags.paused ? 0 : Math.max(0, Math.min(.1, dt)) * clock.timeScale;

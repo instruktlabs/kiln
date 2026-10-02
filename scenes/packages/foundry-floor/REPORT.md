@@ -936,7 +936,10 @@ Each cell gives draw calls / triangles, the full shells drawn (f) and the traffi
 
 - Driven views at the high tier: drive start 131 / 218,647; under a bridge 123 / 204,629; at the roundabout 83 /
   178,999. The traffic takes 13 draws in each driven view, 49,582 to 52,508 triangles.
-- Programs 23 to 28 on both backends; pipelines 15 to 18 on WebGPU and 13 to 16 on WebGL2, by view.
+- Programs 23 to 28 on both backends; pipelines 15 to 18 on WebGPU and 13 to 16 on WebGL2, by view. Corrected
+  2026-10-02: these are the FF-C1 counts. With the campus vegetation, the campus views measured 87 to 92 programs
+  and 78 to 81 pipelines on WebGPU (`main` at `c734e2a`); the draw-optimization shared plant material brings the
+  campus view to 27 programs and 17 pipelines.
 - Inside, FF2's counts are unchanged: landing 117 / 185,631, overview 72 / 104,103, spine 121 / 220,453, litho 37 /
   58,943, cluster 42 / 82,815, stocker 100 / 183,799, gallery 94 / 142,067, section 88 / 121,465.
 
