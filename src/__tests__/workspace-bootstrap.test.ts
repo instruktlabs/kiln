@@ -197,7 +197,8 @@ it('launches Agy in its own project and disables automatic skill expansion for h
       KILN_RESULT_DETAIL: 'lean',
       KILN_RENDER: 'auto',
     });
-    expect(config.mcpServers.kiln_workspace.env.KILN_WORKSPACE).toBe(task);
+    // The setup writes the real path; on a Windows runner `tmpdir()` is an 8.3 alias (`RUNNER~1`).
+    await expectSameDirectory(config.mcpServers.kiln_workspace.env.KILN_WORKSPACE, task);
   } finally {
     await rm(root, { recursive: true, force: true });
   }
