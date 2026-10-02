@@ -48,9 +48,13 @@ export function frameStats(intervals: readonly number[]) {
   return { count: finite.length, p50: percentile(finite, .5), p95: percentile(finite, .95), p99: percentile(finite, .99), max: percentile(finite, 1),
     mean: finite.length ? sum / finite.length : null, fps: sum > 0 ? 1000 * finite.length / sum : null, sampledMs: sum };
 }
-/** Display rate from rAF intervals on an idle page: the median interval (robust to the odd skipped vsync). */
+/**
+ * Display rate from rAF intervals on a probe page: the lower quartile. Throttling and skipped vsyncs only lengthen an
+ * interval (the tablet's Chrome dropped an idle about:blank to 30 Hz part-way through the probe in 2 of 36 runs), so the
+ * shorter intervals carry the refresh period; the median does not when half the window is throttled.
+ */
 export function displayRate(intervals: readonly number[]) {
-  const periodMs = median(intervals.filter(v => v > 0));
+  const periodMs = percentile(intervals.filter(v => v > 0), .25);
   return { periodMs, hz: periodMs ? 1000 / periodMs : null, samples: intervals.length };
 }
 /**
@@ -398,9 +402,11 @@ function installCss(css: string) { const add = () => { const s = document.create
 /** The display rate on an idle page (about:blank) just before the run: 1.5 s of rAF intervals. */
 async function measureDisplay(page: Page) {
   await page.goto('about:blank');
-  const intervals = await page.evaluate(() => new Promise<number[]>(done => { const out: number[] = []; let last: number | null = null, start: number | null = null;
-    const tick = (t: number) => { start ??= t; if (last !== null) out.push(t - last); last = t; if (t - start < 1500) requestAnimationFrame(tick); else done(out); }; requestAnimationFrame(tick); }));
-  return { ...displayRate(intervals), method: 'median rAF interval over 1.5 s on about:blank in the same tab just before the run', intervalsMs: intervals.map(v => round(v)) };
+  // Every frame repaints a small box, so the compositor has damage each frame and does not throttle an idle page.
+  const intervals = await page.evaluate(() => new Promise<number[]>(done => { const out: number[] = []; let last: number | null = null, start: number | null = null, n = 0;
+    const box = document.createElement('div'); box.style.cssText = 'position:fixed;left:0;top:0;width:8px;height:8px'; document.documentElement.append(box);
+    const tick = (t: number) => { start ??= t; if (last !== null) out.push(t - last); last = t; box.style.background = ++n % 2 ? '#000' : '#fff'; if (t - start < 1500) requestAnimationFrame(tick); else { box.remove(); done(out); } }; requestAnimationFrame(tick); }));
+  return { ...displayRate(intervals), method: 'lower-quartile rAF interval over 1.5 s on about:blank in the same tab just before the run, a box repainted every frame', intervalsMs: intervals.map(v => round(v)) };
 }
 
 interface Served { side: Side; label: string; root: string; base: string; port: number; build: unknown; close(): Promise<void> }

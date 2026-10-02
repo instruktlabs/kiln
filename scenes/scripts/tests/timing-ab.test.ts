@@ -10,10 +10,14 @@ test('percentile uses the pilot rule (ceil(n q)-th smallest) and frame stats kee
   expect(frameStats([NaN, 10]).count).toBe(1);
 });
 
-test('the display rate is the median idle rAF interval', () => {
+test('the display rate is the lower-quartile probe interval, robust to a throttled half window', () => {
   const r = displayRate([8.33, 8.34, 8.32, 16.67, 8.33]);
   expect(r.periodMs).toBe(8.33); expect(r.hz).toBeCloseTo(120.05, 1);
   expect(displayRate([]).periodMs).toBeNull();
+  // The tablet case: an idle page at 60 Hz, then throttled to 30 Hz for most of the window.
+  const throttled = [...Array(12).fill(16.6), ...Array(30).fill(33.3)];
+  expect(displayRate(throttled).periodMs).toBe(16.6); // the median would read 33.3
+  expect(displayRate([...Array(15).fill(16.6), ...Array(25).fill(33.3)]).periodMs).toBe(16.6);
 });
 
 test('refresh share counts frames within one (< 1.5 P) and within two (< 2.5 P) display periods', () => {
