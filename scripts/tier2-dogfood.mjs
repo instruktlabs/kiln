@@ -474,12 +474,15 @@ const KILN_MCP_TOOL = new RegExp(
  *
  * Shapes recognised: OpenCode (`{type:'tool_use', part:{tool}}`), Claude stream
  * JSON (`{type:'tool_use', name}` inside message content), Codex JSONL
- * (`{type:'mcp_tool_call', server, tool}` and `command_execution` items). Anything
+ * (`{type:'mcp_tool_call', server, tool}` and `command_execution` items), Agy stream
+ * JSON (`{event:'step_update', step_update:{step_index, tool_name}}`, emitted when a
+ * tool step starts and again when it ends, so one step index is one call). Anything
  * else counts as no tool calls, which the receipt reports as `unknown` rather than
  * as `not-exercised`.
  */
 export function toolUsageFromEvents(events) {
   const calls = {};
+  const agySteps = new Set();
   const record = (name) => {
     if (typeof name !== 'string' || !name) return;
     calls[name] = (calls[name] ?? 0) + 1;
@@ -490,6 +493,17 @@ export function toolUsageFromEvents(events) {
       return;
     }
     if (!node || typeof node !== 'object') return;
+    if (node.event === 'step_update' && node.step_update && typeof node.step_update === 'object') {
+      const step = node.step_update;
+      if (typeof step.tool_name === 'string') {
+        const key = `${step.conversation_id ?? ''}:${step.step_index}`;
+        if (!agySteps.has(key)) {
+          agySteps.add(key);
+          record(step.tool_name);
+        }
+      }
+      return;
+    }
     if (node.type === 'tool_use') {
       record(node.name ?? node.tool ?? node.part?.tool);
       return;

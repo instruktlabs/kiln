@@ -426,6 +426,48 @@ describe('Tier 2 blind dogfood driver', () => {
       workspaceMcp: 'exercised',
     });
 
+    // Agy stream JSON: a tool step is a `step_update` carrying `tool_name`, emitted once when it
+    // starts and again when it ends; one step is one call (a live run counted none, 2 October 2026).
+    const step = (step_index, state, tool_name) => ({
+      event: 'step_update',
+      step_update: {
+        conversation_id: 'c1',
+        step_index,
+        state,
+        step_type: 'tool',
+        tool_name,
+        tool_info: { name: tool_name, parameters: {} },
+      },
+    });
+    const agy = [
+      {
+        event: 'init',
+        conversation_id: 'c1',
+        init: { model: 'gemini', tools: ['run_command', 'view_file'] },
+      },
+      step(3, 'ACTIVE', 'run_command'),
+      step(3, 'DONE', 'run_command'),
+      step(4, 'ACTIVE', 'kiln_workspace_kiln_render'),
+      step(4, 'DONE', 'kiln_workspace_kiln_render'),
+      {
+        event: 'step_update',
+        step_update: {
+          conversation_id: 'c1',
+          step_index: 5,
+          state: 'DONE',
+          step_type: 'agent_response',
+          usage: { input_tokens: 1 },
+        },
+      },
+      { event: 'result', result: { status: 'SUCCESS', response: 'kiln_render in prose' } },
+    ];
+    expect(toolUsageFromEvents(agy)).toEqual({
+      calls: { run_command: 1, kiln_workspace_kiln_render: 1 },
+      total: 2,
+      mcpCalls: 1,
+      workspaceMcp: 'exercised',
+    });
+
     // The tool names come from the packaged manifest, not a list kept by hand: the
     // hand-written one lacked `kiln_discover`, `kiln_renderer`, `kiln_project`,
     // `kiln_material` and `kiln_review`, so a Codex session that only discovered

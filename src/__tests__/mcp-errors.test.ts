@@ -121,6 +121,22 @@ describe('contract rule 9: errors that teach', () => {
     const aliased = teaches('unknown key', alias);
     expect(aliased).toContain('resourceId');
     expect(aliased).toContain('materialId');
+    // w35: a shot with the camera fields at its root reached the capture guard, which
+    // answered ok: false with zod's issue dump under "Fix the error in the source".
+    const rootCamera = await server.request('tools/call', {
+      name: 'kiln_screenshot_animation',
+      arguments: {
+        code: CUBE_PROGRAM,
+        clip: 'spin',
+        frameTimes: [0, 0.5],
+        shot: { type: 'orbit', azimuthDeg: 50, elevationDeg: -8 },
+      },
+    });
+    const shot = teaches('shot without camera', rootCamera);
+    expect(shot).toContain('shot');
+    expect(shot).toContain('shape:camera-shot');
+    expect(shot).not.toContain('"code"');
+    expect(shot).not.toContain('Fix the error in the source');
     await server.close();
   });
 

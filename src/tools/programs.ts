@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import { programRefPattern, retainProgram, type ProgramStore } from '../program-store';
 import type { KilnToolDef } from './registry';
+import { DEFAULT_RESULT_LIMIT, MAX_RESULT_LIMIT, resultCharacters } from './review-detail';
 
 const refInput = z
   .string()
@@ -40,7 +41,7 @@ export function withProgramReferences(
               .boolean()
               .optional()
               .describe(
-                'Return the full updated source. Defaults to false with programRef, true with code.',
+                'Also return the patched source, bounded with the result; kiln_source pages it. Default false.',
               ),
           }
         : {}),
@@ -68,7 +69,7 @@ export function withProgramReferences(
   const kept = store.retention ?? 'kept by the host program store';
   const description =
     def.name === 'kiln_edit'
-      ? `Atomically apply ordered exact-string replacements and render. Copy anchors from kiln_source. Supply ${sources}. Returns programRef (${kept}), parentRef, diff and preservation comparing static data and animation channels. Review changes; use kiln_inspect compare for more pages or protected subtrees. Failed comparison preserves the repair; render:false leaves preservation not_assessed. capture selects cameras; includeCode returns full source.`
+      ? `Atomically apply ordered exact-string replacements and render. Copy anchors from kiln_source. Supply ${sources}. Returns programRef (${kept}), parentRef, diff and preservation comparing static data and animation channels. Review changes; use kiln_inspect compare for more pages or protected subtrees. Failed comparison preserves the repair; render:false leaves preservation not_assessed. capture selects cameras; includeCode adds the patched source, bounded.`
       : `${summaries[def.name] ?? def.description} Supply ${sources} (${kept}). Invalid drafts keep a ref.`;
   return {
     ...def,
@@ -98,20 +99,42 @@ export function withProgramReferences(
         return { programRef: parentRef, ...output };
       const programRef = await retainProgram(store, output.code);
       const { code: updatedCode, ...rest } = output;
-      const includeCode = args.includeCode ?? args.code !== undefined;
+      // The retained ref serves the source through kiln_source. Echoing it by default put
+      // an edit sent by `code` at 28,539 characters (w26); includeCode asks for it, inside
+      // the limit of the requested detail.
+      const includeCode = args.includeCode === true;
       const diff = typeof rest.diff === 'string' ? rest.diff : '';
-      return {
-        programRef,
-        parentRef,
-        ...rest,
-        ...(includeCode
-          ? { code: updatedCode }
-          : {
-              diff: diff.slice(0, 8000),
-              diffTruncated: diff.length > 8000 || typeof rest.diffOmitted === 'number',
-            }),
-      };
+      if (!includeCode)
+        return {
+          programRef,
+          parentRef,
+          ...rest,
+          diff: diff.slice(0, 8000),
+          diffTruncated: diff.length > 8000 || typeof rest.diffOmitted === 'number',
+        };
+      return boundIncludedCode(
+        { programRef, parentRef, ...rest, code: updatedCode },
+        args.detail === 'full' ? MAX_RESULT_LIMIT : DEFAULT_RESULT_LIMIT,
+      );
     },
+  };
+}
+
+/** Rule 7 for a result that carries the patched source: the source gives way first. */
+function boundIncludedCode(
+  result: Record<string, unknown>,
+  limit: number,
+): Record<string, unknown> {
+  const code = typeof result.code === 'string' ? result.code : '';
+  const over = resultCharacters(result) - limit;
+  if (over <= 0) return result;
+  // Every raw character cut removes at least one JSON character; 120 covers the two fields added.
+  const keep = Math.max(0, code.length - over - 120);
+  return {
+    ...result,
+    code: code.slice(0, keep),
+    codeOmitted: code.length - keep,
+    codeHint: 'The whole patched source: kiln_source with this programRef.',
   };
 }
 

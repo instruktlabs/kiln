@@ -5609,7 +5609,7 @@ var init_material_texture_library_generated = __esm(() => {
 // src/material-recipes.ts
 function validateMaterialRecipeRequestV1(value) {
   const issues = [];
-  if (!isRecord(value)) {
+  if (!isRecord2(value)) {
     return {
       valid: false,
       issues: [{ code: "EXPECTED_OBJECT", path: "", message: "materialRecipe must be an object." }]
@@ -5629,14 +5629,14 @@ function validateMaterialRecipeRequestV1(value) {
       message: `Unsupported material recipe ID ${JSON.stringify(value.id)}. Listed IDs: ${MATERIAL_RECIPE_IDS.join(", ")}.`
     });
   }
-  if (value.overrides !== undefined && !isRecord(value.overrides)) {
+  if (value.overrides !== undefined && !isRecord2(value.overrides)) {
     issues.push({
       code: "INVALID_OVERRIDES",
       path: "overrides",
       message: "materialRecipe.overrides must be an object."
     });
   }
-  if (recipeId(value.id) && isRecord(value.overrides)) {
+  if (recipeId(value.id) && isRecord2(value.overrides)) {
     const allowed = new Set(MATERIAL_RECIPE_LIBRARY_V1[value.id].allowedOverrides);
     for (const [key, override] of Object.entries(value.overrides)) {
       if (!MATERIAL_RECIPE_OVERRIDE_KEYS.includes(key)) {
@@ -5680,7 +5680,7 @@ function validateMaterialRecipeRequestV1(value) {
           message: "emissiveIntensity must be a finite number in [0,1] for core glTF."
         });
       } else if (key === "textureResources") {
-        if (!isRecord(override)) {
+        if (!isRecord2(override)) {
           issues.push({
             code: "INVALID_OVERRIDE_VALUE",
             path: "overrides.textureResources",
@@ -5833,7 +5833,7 @@ var MATERIAL_RECIPE_IDS, MATERIAL_RECIPE_OVERRIDE_KEYS, APPROVED_TEXTURE_RESOURC
   portable: true,
   gltfMaterialModel: "pbrMetallicRoughness",
   ...value
-}), MATERIAL_RECIPE_LIBRARY_V1, APPROVED_TEXTURE_RESOURCES_V1, isRecord = (value) => typeof value === "object" && value !== null && !Array.isArray(value), recipeId = (value) => typeof value === "string" && MATERIAL_RECIPE_IDS.includes(value), resourceId = (value) => typeof value === "string" && APPROVED_TEXTURE_RESOURCE_IDS.includes(value), finiteUnit = (value) => typeof value === "number" && Number.isFinite(value) && value >= 0 && value <= 1, hexColor = (value) => typeof value === "string" && /^#[0-9a-fA-F]{6}$/.test(value);
+}), MATERIAL_RECIPE_LIBRARY_V1, APPROVED_TEXTURE_RESOURCES_V1, isRecord2 = (value) => typeof value === "object" && value !== null && !Array.isArray(value), recipeId = (value) => typeof value === "string" && MATERIAL_RECIPE_IDS.includes(value), resourceId = (value) => typeof value === "string" && APPROVED_TEXTURE_RESOURCE_IDS.includes(value), finiteUnit = (value) => typeof value === "number" && Number.isFinite(value) && value >= 0 && value <= 1, hexColor = (value) => typeof value === "string" && /^#[0-9a-fA-F]{6}$/.test(value);
 var init_material_recipes = __esm(() => {
   init_material_texture_library_generated();
   init_authoring_diagnostic();
@@ -6921,7 +6921,7 @@ function pushUniqueStrings(issues, value, path, options = {}) {
 }
 function validateFrame(frame, index, issues) {
   const path = `frames[${index}]`;
-  if (!isRecord2(frame)) {
+  if (!isRecord3(frame)) {
     issues.push({ code: "INVALID_FRAME", path, message: `${path} must be an object.` });
     return false;
   }
@@ -6955,7 +6955,7 @@ function validateFrame(frame, index, issues) {
 }
 function validateRelationship(relationship, index, issues) {
   const path = `relationships[${index}]`;
-  if (!isRecord2(relationship)) {
+  if (!isRecord3(relationship)) {
     issues.push({
       code: "INVALID_RELATIONSHIP",
       path,
@@ -6992,7 +6992,7 @@ function validateRelationship(relationship, index, issues) {
 }
 function validateSocket(socket, index, issues) {
   const path = `sockets[${index}]`;
-  if (!isRecord2(socket)) {
+  if (!isRecord3(socket)) {
     issues.push({ code: "INVALID_SOCKET", path, message: `${path} must be an object.` });
     return false;
   }
@@ -7021,7 +7021,7 @@ function validateSocket(socket, index, issues) {
 }
 function validateSemanticMetadataV1(value) {
   const issues = [];
-  if (!isRecord2(value)) {
+  if (!isRecord3(value)) {
     return {
       valid: false,
       issues: [
@@ -7048,7 +7048,7 @@ function validateSemanticMetadataV1(value) {
   const frameIds = new Set;
   frames.forEach((frame, index) => {
     validateFrame(frame, index, issues);
-    if (isRecord2(frame) && isNonEmptyString(frame.id)) {
+    if (isRecord3(frame) && isNonEmptyString(frame.id)) {
       if (frameIds.has(frame.id)) {
         issues.push({
           code: "DUPLICATE_FRAME_ID",
@@ -7069,7 +7069,7 @@ function validateSemanticMetadataV1(value) {
   }
   relationships.forEach((relationship, index) => {
     validateRelationship(relationship, index, issues);
-    if (isRecord2(relationship)) {
+    if (isRecord3(relationship)) {
       for (const property of ["sourceFrame", "targetFrame"]) {
         const frameId = relationship[property];
         if (isNonEmptyString(frameId) && !frameIds.has(frameId)) {
@@ -7089,7 +7089,7 @@ function validateSemanticMetadataV1(value) {
   const socketIds = new Set;
   sockets.forEach((socket, index) => {
     validateSocket(socket, index, issues);
-    if (isRecord2(socket) && isNonEmptyString(socket.id)) {
+    if (isRecord3(socket) && isNonEmptyString(socket.id)) {
       if (socketIds.has(socket.id)) {
         issues.push({
           code: "DUPLICATE_SOCKET_ID",
@@ -7099,7 +7099,7 @@ function validateSemanticMetadataV1(value) {
       }
       socketIds.add(socket.id);
     }
-    if (isRecord2(socket) && isNonEmptyString(socket.frame) && !frameIds.has(socket.frame)) {
+    if (isRecord3(socket) && isNonEmptyString(socket.frame) && !frameIds.has(socket.frame)) {
       issues.push({
         code: "UNKNOWN_FRAME_REFERENCE",
         path: `sockets[${index}].frame`,
@@ -7184,7 +7184,7 @@ function readSemanticMetadataV1FromExtras(extras) {
   const result = validateSemanticMetadataV1(value);
   return result.valid ? result.value : undefined;
 }
-var KILN_SEMANTIC_EXTRAS_KEY = "kilnSemantic", KILN_SEMANTIC_SCHEMA_VERSION = 1, KILN_SEMANTIC_ROLES, isRecord2 = (value) => typeof value === "object" && value !== null && !Array.isArray(value), isNonEmptyString = (value) => typeof value === "string" && value.trim().length > 0 && value === value.trim(), isFiniteTuple = (value, length) => Array.isArray(value) && value.length === length && value.every((component) => typeof component === "number" && Number.isFinite(component)), cloneTuple3 = (value) => [
+var KILN_SEMANTIC_EXTRAS_KEY = "kilnSemantic", KILN_SEMANTIC_SCHEMA_VERSION = 1, KILN_SEMANTIC_ROLES, isRecord3 = (value) => typeof value === "object" && value !== null && !Array.isArray(value), isNonEmptyString = (value) => typeof value === "string" && value.trim().length > 0 && value === value.trim(), isFiniteTuple = (value, length) => Array.isArray(value) && value.length === length && value.every((component) => typeof component === "number" && Number.isFinite(component)), cloneTuple3 = (value) => [
   value[0],
   value[1],
   value[2]
@@ -7265,7 +7265,7 @@ function cloneCharacterJointDescriptorV1(descriptor) {
 }
 function validateCharacterJointDescriptorV1(value) {
   const issues = [];
-  if (!isRecord3(value)) {
+  if (!isRecord4(value)) {
     return {
       valid: false,
       issues: [
@@ -7310,7 +7310,7 @@ function validateCharacterJointDescriptorV1(value) {
       message: "side must be left, right, or center."
     });
   }
-  if (!isRecord3(value.rest)) {
+  if (!isRecord4(value.rest)) {
     issues.push({ code: "INVALID_REST", path: "rest", message: "rest transform is required." });
   } else {
     if (!isFiniteTuple2(value.rest.translation, 3)) {
@@ -7398,7 +7398,7 @@ function createCharacterJointDescriptorV1(input) {
 }
 function validateCharacterRigGraphV1(value) {
   const issues = [];
-  if (!isRecord3(value)) {
+  if (!isRecord4(value)) {
     return {
       valid: false,
       issues: [{ code: "EXPECTED_OBJECT", path: "", message: "Rig graph must be an object." }]
@@ -7652,7 +7652,7 @@ function collectCharacterJointNodes(root) {
   visit(root, "", 0);
   return joints;
 }
-var KILN_CHARACTER_JOINT_EXTRAS_KEY = "kilnCharacterJoint", KILN_CHARACTER_RIG_EXTRAS_KEY = "kilnCharacterRig", KILN_CHARACTER_JOINT_SCHEMA_VERSION = 1, CHARACTER_BODY_PLANS2, CHARACTER_JOINT_SIDES, IDENTITY_QUATERNION, UNIT_SCALE, FORWARD_AXIS, BEND_AXIS, isRecord3 = (value) => typeof value === "object" && value !== null && !Array.isArray(value), isFiniteTuple2 = (value, length) => Array.isArray(value) && value.length === length && value.every((component) => typeof component === "number" && Number.isFinite(component)), tuple3 = (value) => [value[0], value[1], value[2]], tuple4 = (value) => [
+var KILN_CHARACTER_JOINT_EXTRAS_KEY = "kilnCharacterJoint", KILN_CHARACTER_RIG_EXTRAS_KEY = "kilnCharacterRig", KILN_CHARACTER_JOINT_SCHEMA_VERSION = 1, CHARACTER_BODY_PLANS2, CHARACTER_JOINT_SIDES, IDENTITY_QUATERNION, UNIT_SCALE, FORWARD_AXIS, BEND_AXIS, isRecord4 = (value) => typeof value === "object" && value !== null && !Array.isArray(value), isFiniteTuple2 = (value, length) => Array.isArray(value) && value.length === length && value.every((component) => typeof component === "number" && Number.isFinite(component)), tuple3 = (value) => [value[0], value[1], value[2]], tuple4 = (value) => [
   value[0],
   value[1],
   value[2],
@@ -7757,11 +7757,11 @@ var init_character = __esm(() => {
 });
 
 // src/projects.ts
-import { z as z7 } from "zod";
+import { z as z8 } from "zod";
 function checkContent(data, ctx) {
   const unique = (items, path) => {
     if (new Set(items).size !== items.length)
-      ctx.addIssue({ code: z7.ZodIssueCode.custom, path: [path], message: "Duplicate identity" });
+      ctx.addIssue({ code: z8.ZodIssueCode.custom, path: [path], message: "Duplicate identity" });
   };
   unique(data.inventory.map((v) => v.id), "inventory");
   unique(data.references.map((v) => v.id), "references");
@@ -7777,20 +7777,20 @@ function checkContent(data, ctx) {
     unique(item.references, `inventory.${item.id}.references`);
     if (item.references.some((id) => !references.has(id)))
       ctx.addIssue({
-        code: z7.ZodIssueCode.custom,
+        code: z8.ZodIssueCode.custom,
         path: ["inventory"],
         message: "Unknown reference"
       });
   }
   if (data.reviews.some((review) => !inventory.has(review.inventoryId)))
     ctx.addIssue({
-      code: z7.ZodIssueCode.custom,
+      code: z8.ZodIssueCode.custom,
       path: ["reviews"],
       message: "Unknown inventory item"
     });
   if (data.design.materialRoles.some((role) => role.resourceId && !resources.has(role.resourceId)))
     ctx.addIssue({
-      code: z7.ZodIssueCode.custom,
+      code: z8.ZodIssueCode.custom,
       path: ["design"],
       message: "Material role requires a locked resource"
     });
@@ -7798,80 +7798,80 @@ function checkContent(data, ctx) {
 var MAX_PROJECT_BYTES, projectIdSchema, projectRevisionIdSchema, hash3, text6, resourceId2, assetReference, projectDesignSchema, projectMaterialDependencySchema, materialDependenciesSchema, content, projectDraftSchema, projectPatchSchema, projectRevisionSchema, ProjectNotFoundError;
 var init_projects = __esm(() => {
   MAX_PROJECT_BYTES = 1024 * 1024;
-  projectIdSchema = z7.string().regex(/^[a-z][a-z0-9_-]{0,79}$/).refine((value) => !/^(con|prn|aux|nul|com[1-9]|lpt[1-9])$/.test(value), "Reserved filesystem name");
-  projectRevisionIdSchema = z7.string().regex(/^r_[0-9]{10}_[a-f0-9]{64}$/);
-  hash3 = z7.string().regex(/^sha256:[a-f0-9]{64}$/);
-  text6 = z7.string().max(4000);
-  resourceId2 = z7.string().regex(/^[a-zA-Z0-9][a-zA-Z0-9_.:/-]{0,199}$/);
-  assetReference = z7.object({
+  projectIdSchema = z8.string().regex(/^[a-z][a-z0-9_-]{0,79}$/).refine((value) => !/^(con|prn|aux|nul|com[1-9]|lpt[1-9])$/.test(value), "Reserved filesystem name");
+  projectRevisionIdSchema = z8.string().regex(/^r_[0-9]{10}_[a-f0-9]{64}$/);
+  hash3 = z8.string().regex(/^sha256:[a-f0-9]{64}$/);
+  text6 = z8.string().max(4000);
+  resourceId2 = z8.string().regex(/^[a-zA-Z0-9][a-zA-Z0-9_.:/-]{0,199}$/);
+  assetReference = z8.object({
     collectionId: projectIdSchema,
     assetId: projectIdSchema,
     revisionId: projectIdSchema
   }).strict();
-  projectDesignSchema = z7.object({
+  projectDesignSchema = z8.object({
     style: text6.default(""),
-    scale: z7.string().max(1000).default(""),
-    palette: z7.array(z7.object({
-      role: z7.string().min(1).max(100),
-      color: z7.string().regex(/^#[a-fA-F0-9]{6}$/)
+    scale: z8.string().max(1000).default(""),
+    palette: z8.array(z8.object({
+      role: z8.string().min(1).max(100),
+      color: z8.string().regex(/^#[a-fA-F0-9]{6}$/)
     }).strict()).max(64).default([]),
-    materialRoles: z7.array(z7.object({
-      role: z7.string().min(1).max(100),
+    materialRoles: z8.array(z8.object({
+      role: z8.string().min(1).max(100),
       description: text6.default(""),
       resourceId: resourceId2.optional()
     }).strict()).max(128).default([]),
-    conventions: z7.array(z7.string().max(1000)).max(100).default([]),
-    exceptions: z7.array(z7.string().max(1000)).max(100).default([])
+    conventions: z8.array(z8.string().max(1000)).max(100).default([]),
+    exceptions: z8.array(z8.string().max(1000)).max(100).default([])
   }).strict();
-  projectMaterialDependencySchema = z7.object({
+  projectMaterialDependencySchema = z8.object({
     resourceId: resourceId2,
-    revisionId: z7.string().min(1).max(200),
+    revisionId: z8.string().min(1).max(200),
     sha256: hash3,
-    role: z7.string().max(100).optional()
+    role: z8.string().max(100).optional()
   }).strict();
-  materialDependenciesSchema = z7.array(projectMaterialDependencySchema).max(512);
+  materialDependenciesSchema = z8.array(projectMaterialDependencySchema).max(512);
   content = {
-    name: z7.string().trim().min(1).max(200),
-    brief: z7.string().max(16000).default(""),
+    name: z8.string().trim().min(1).max(200),
+    brief: z8.string().max(16000).default(""),
     design: projectDesignSchema.default(() => projectDesignSchema.parse({})),
-    inventory: z7.array(z7.object({
+    inventory: z8.array(z8.object({
       id: projectIdSchema,
-      name: z7.string().trim().min(1).max(200),
-      kind: z7.enum(["asset", "environment"]).default("asset"),
+      name: z8.string().trim().min(1).max(200),
+      kind: z8.enum(["asset", "environment"]).default("asset"),
       brief: text6.default(""),
-      references: z7.array(projectIdSchema).max(64).default([]),
+      references: z8.array(projectIdSchema).max(64).default([]),
       asset: assetReference.optional()
     }).strict()).max(1000).default([]),
-    deliveryProfiles: z7.array(z7.object({
+    deliveryProfiles: z8.array(z8.object({
       id: projectIdSchema,
-      target: z7.enum(["three", "godot", "unity", "unreal", "roblox", "sbox", "usdz", "custom"]),
+      target: z8.enum(["three", "godot", "unity", "unreal", "roblox", "sbox", "usdz", "custom"]),
       description: text6.default(""),
-      performanceIntent: z7.string().max(1000).default(""),
-      constraints: z7.array(z7.string().max(1000)).max(100).default([])
+      performanceIntent: z8.string().max(1000).default(""),
+      constraints: z8.array(z8.string().max(1000)).max(100).default([])
     }).strict()).max(32).default([]),
     materialDependencies: materialDependenciesSchema.default([]),
-    references: z7.array(z7.object({
+    references: z8.array(z8.object({
       id: projectIdSchema,
-      title: z7.string().min(1).max(200),
-      uri: z7.string().min(1).max(2048),
+      title: z8.string().min(1).max(200),
+      uri: z8.string().min(1).max(2048),
       description: text6.default(""),
       sha256: hash3.optional()
     }).strict()).max(256).default([]),
-    reviews: z7.array(z7.object({
+    reviews: z8.array(z8.object({
       id: projectIdSchema,
       inventoryId: projectIdSchema,
       projectRevisionId: projectRevisionIdSchema,
       asset: assetReference,
-      reviewer: z7.string().trim().min(1).max(200),
-      verdict: z7.enum(["comment", "changes-requested", "accepted"]),
+      reviewer: z8.string().trim().min(1).max(200),
+      verdict: z8.enum(["comment", "changes-requested", "accepted"]),
       notes: text6
     }).strict()).max(2000).default([])
   };
-  projectDraftSchema = z7.object({
+  projectDraftSchema = z8.object({
     projectId: projectIdSchema.optional(),
     ...content
   }).strict().superRefine(checkContent);
-  projectPatchSchema = z7.object({
+  projectPatchSchema = z8.object({
     name: content.name.optional(),
     brief: content.brief.removeDefault().optional(),
     design: content.design.removeDefault().optional(),
@@ -7881,12 +7881,12 @@ var init_projects = __esm(() => {
     references: content.references.removeDefault().optional(),
     reviews: content.reviews.removeDefault().optional()
   }).strict();
-  projectRevisionSchema = z7.object({
-    version: z7.literal("kiln.project.v1"),
+  projectRevisionSchema = z8.object({
+    version: z8.literal("kiln.project.v1"),
     projectId: projectIdSchema,
     revisionId: projectRevisionIdSchema,
     parentRevision: projectRevisionIdSchema.optional(),
-    createdAt: z7.string().datetime(),
+    createdAt: z8.string().datetime(),
     ...content
   }).strict().superRefine(checkContent);
   ProjectNotFoundError = class ProjectNotFoundError extends Error {
@@ -8082,11 +8082,11 @@ var init_requirements_applicability = __esm(() => {
 
 // src/qa/types.ts
 function isQaFinding(value) {
-  if (!isRecord4(value))
+  if (!isRecord5(value))
     return false;
   return typeof value.code === "string" && /^[A-Z][A-Z0-9_]*$/.test(value.code) && (value.disposition === "observe" || value.disposition === "warn" || value.disposition === "block") && QA_DIMENSIONS.includes(value.dimension) && typeof value.profile === "string" && value.profile.length > 0 && typeof value.message === "string" && value.message.length > 0;
 }
-var QA_DIMENSIONS, isRecord4 = (value) => typeof value === "object" && value !== null && !Array.isArray(value);
+var QA_DIMENSIONS, isRecord5 = (value) => typeof value === "object" && value !== null && !Array.isArray(value);
 var init_types = __esm(() => {
   QA_DIMENSIONS = [
     "exportIntegrity",
@@ -9312,15 +9312,15 @@ var init_material_library_node = __esm(() => {
 });
 
 // src/rebuild-options.ts
-import { z as z11 } from "zod";
+import { z as z12 } from "zod";
 var rebuildOptionsSchema;
 var init_rebuild_options = __esm(() => {
-  rebuildOptionsSchema = z11.object({
-    indexPolicy: z11.enum(["indexed", "asBuilt"]).optional(),
-    gltfExporter: z11.enum(["legacy", "three"]),
-    geometryPolicy: z11.enum(["warn", "strict"]),
-    optimize: z11.enum(["off", "auto", "palette", "full"]),
-    instance: z11.enum(["off", "auto", "on"])
+  rebuildOptionsSchema = z12.object({
+    indexPolicy: z12.enum(["indexed", "asBuilt"]).optional(),
+    gltfExporter: z12.enum(["legacy", "three"]),
+    geometryPolicy: z12.enum(["warn", "strict"]),
+    optimize: z12.enum(["off", "auto", "palette", "full"]),
+    instance: z12.enum(["off", "auto", "on"])
   });
 });
 
@@ -30113,7 +30113,7 @@ var init_asset_export = __esm(() => {
 });
 
 // src/project-bundle.ts
-import { z as z12 } from "zod";
+import { z as z13 } from "zod";
 import { zipSync as zipSync2, unzipSync as unzipSync2 } from "three/addons/libs/fflate.module.js";
 async function projectBundleHash(bytes) {
   const result = new Uint8Array(await crypto.subtle.digest("SHA-256", Uint8Array.from(bytes)));
@@ -30131,27 +30131,27 @@ var init_project_bundle = __esm(() => {
     maxEntries: 8192,
     maxManifestBytes: 2 * 1024 * 1024
   });
-  hashSchema = z12.string().regex(/^sha256:[a-f0-9]{64}$/);
-  pathSchema = z12.string().regex(new RegExp(`^(project\\.json|materials/${id2}/[a-f0-9]{64}/(manifest\\.json|baseColor\\.png|normal\\.png|metallicRoughness\\.png|emissive\\.png|occlusion\\.png)|assets/${id2}/${id2}/${id2}/(manifest\\.json|asset\\.glb|source\\.kiln\\.js|preview\\.png|runtime\\.glb|runtime\\.kiln-metadata\\.json))$`));
-  identitySchema = z12.object({
+  hashSchema = z13.string().regex(/^sha256:[a-f0-9]{64}$/);
+  pathSchema = z13.string().regex(new RegExp(`^(project\\.json|materials/${id2}/[a-f0-9]{64}/(manifest\\.json|baseColor\\.png|normal\\.png|metallicRoughness\\.png|emissive\\.png|occlusion\\.png)|assets/${id2}/${id2}/${id2}/(manifest\\.json|asset\\.glb|source\\.kiln\\.js|preview\\.png|runtime\\.glb|runtime\\.kiln-metadata\\.json))$`));
+  identitySchema = z13.object({
     inventoryId: assetIdSchema,
     collectionId: assetIdSchema,
     assetId: assetIdSchema,
     revisionId: assetIdSchema,
     canonicalGlbSha256: hashSchema
   }).strict();
-  projectBundleManifestSchema = z12.object({
-    version: z12.literal("kiln.project-bundle.v1"),
-    profile: z12.enum(["editable", "runtime"]),
-    editable: z12.boolean(),
-    resourceClosure: z12.enum(["normalized-maps-and-procedural-recipes", "embedded-runtime-only"]),
-    referenceMediaIncluded: z12.literal(false),
-    originalAcquisitionFilesIncluded: z12.literal(false),
-    assets: z12.array(identitySchema).max(1000),
-    materials: z12.array(z12.object({ materialId: assetIdSchema, revisionId: hashSchema }).strict()).max(1024),
-    files: z12.record(pathSchema, z12.object({
+  projectBundleManifestSchema = z13.object({
+    version: z13.literal("kiln.project-bundle.v1"),
+    profile: z13.enum(["editable", "runtime"]),
+    editable: z13.boolean(),
+    resourceClosure: z13.enum(["normalized-maps-and-procedural-recipes", "embedded-runtime-only"]),
+    referenceMediaIncluded: z13.literal(false),
+    originalAcquisitionFilesIncluded: z13.literal(false),
+    assets: z13.array(identitySchema).max(1000),
+    materials: z13.array(z13.object({ materialId: assetIdSchema, revisionId: hashSchema }).strict()).max(1024),
+    files: z13.record(pathSchema, z13.object({
       sha256: hashSchema,
-      bytes: z12.number().int().nonnegative().max(64 * 1024 * 1024)
+      bytes: z13.number().int().nonnegative().max(64 * 1024 * 1024)
     }).strict())
   }).strict();
   encoder3 = new TextEncoder;
@@ -31499,20 +31499,597 @@ function assertSavedRequirementsAuthorized(manifest, current) {
 }
 
 // src/tools/programs.ts
+import { z as z6 } from "zod";
+
+// src/tools/review-detail.ts
 import { z as z5 } from "zod";
-var refInput = z5.string().regex(programRefPattern).describe("Returned p_ handle or full sha256 ref.");
+var COMPACT_PART_PREVIEW = 24;
+var COMPACT_FINDINGS_PER_DIMENSION = 12;
+var LEAD_BLOCKERS = 8;
+var LEAN_WARNINGS = 3;
+var COMPACT_WARNINGS = 12;
+var WARNING_CHARS = 1000;
+var DEFAULT_RESULT_LIMIT = 20000;
+var MAX_RESULT_LIMIT = 40000;
+var COMPACT_DECIMALS = 6;
+var reviewDetailInput = z5.enum(["lean", "compact", "full"]).optional().describe("compact (default) groups findings by code; lean: verdict, blockers, metrics only; full: every finding, rule and part plus the retained report path");
+function requestedDetail(input, fallback = "compact") {
+  const detail = input?.detail;
+  return detail === "full" || detail === "lean" || detail === "compact" ? detail : fallback;
+}
+var partsHint = (offset) => `For remaining paths use kiln_inspect with image:false and listParts:{offset:${offset}}. listParts.query filters names/paths; follow partListing.nextOffset on the same programRef and query.`;
+var isRecord = (value) => typeof value === "object" && value !== null && !Array.isArray(value);
+var SEVERITY = { block: 0, warn: 1, observe: 2 };
+var severity = (finding) => isRecord(finding) && typeof finding.disposition === "string" && SEVERITY[finding.disposition] || (isRecord(finding) && finding.disposition === "block" ? 0 : 3);
+function affectedLabel(finding) {
+  const affected = finding.affected;
+  if (!isRecord(affected))
+    return;
+  for (const key of ["nodePath", "node", "material", "texture", "clip", "track", "attribute"])
+    if (typeof affected[key] === "string")
+      return affected[key];
+  return;
+}
+function groupFindings(findings) {
+  const groups = new Map;
+  for (const finding of findings) {
+    if (!isRecord(finding))
+      continue;
+    const code = typeof finding.code === "string" ? finding.code : "UNKNOWN";
+    const label = affectedLabel(finding);
+    const group = groups.get(code);
+    if (!group) {
+      groups.set(code, { ...finding, code, count: 1 });
+      continue;
+    }
+    group.count++;
+    if (label && label !== affectedLabel(group)) {
+      const more = Array.isArray(group.alsoAffected) ? group.alsoAffected : [];
+      if (more.length < 2 && !more.includes(label))
+        group.alsoAffected = [...more, label];
+    }
+  }
+  return [...groups.values()].sort((a, b) => severity(a) - severity(b));
+}
+function countFindings(report) {
+  const counts = { block: 0, warn: 0, observe: 0 };
+  if (!isRecord(report) || !isRecord(report.dimensions))
+    return counts;
+  for (const dimension of Object.values(report.dimensions)) {
+    if (!isRecord(dimension) || !Array.isArray(dimension.findings))
+      continue;
+    for (const finding of dimension.findings) {
+      const disposition = isRecord(finding) ? finding.disposition : undefined;
+      if (disposition === "block" || disposition === "warn" || disposition === "observe")
+        counts[disposition]++;
+    }
+  }
+  return counts;
+}
+function leadBlockers(report) {
+  if (!isRecord(report) || !isRecord(report.dimensions))
+    return [];
+  const blockers = [];
+  for (const [name, dimension] of Object.entries(report.dimensions)) {
+    if (!isRecord(dimension) || !Array.isArray(dimension.findings))
+      continue;
+    for (const group of groupFindings(dimension.findings)) {
+      if (group.disposition !== "block")
+        continue;
+      blockers.push({
+        code: group.code,
+        dimension: name,
+        count: group.count,
+        message: group.message,
+        ...group.affected !== undefined ? { affected: group.affected } : {},
+        ...group.alsoAffected !== undefined ? { alsoAffected: group.alsoAffected } : {},
+        ...group.repairText !== undefined ? { repairText: group.repairText } : {}
+      });
+    }
+  }
+  return blockers;
+}
+function compactDimension(dimension, limit = COMPACT_FINDINGS_PER_DIMENSION) {
+  if (!isRecord(dimension) || !Array.isArray(dimension.findings))
+    return dimension;
+  const groups = groupFindings(dimension.findings);
+  const kept = groups.slice(0, limit);
+  const dropped = groups.slice(limit);
+  const out = { ...dimension, findings: kept };
+  if (dimension.findings.length !== kept.length)
+    out.findingsTotal = dimension.findings.length;
+  if (dropped.length) {
+    out.findingsOmitted = dropped.reduce((sum, group) => sum + group.count, 0);
+    out.omittedByCode = Object.fromEntries(dropped.map((group) => [group.code, group.count]));
+  }
+  return out;
+}
+function compactQaReport(report, limit = COMPACT_FINDINGS_PER_DIMENSION, keepRules = false) {
+  if (!isRecord(report) || !isRecord(report.dimensions))
+    return report;
+  const { dimensions, rules, ...rest } = report;
+  const compact = {
+    ...rest,
+    detail: "compact",
+    dimensions: Object.fromEntries(Object.entries(dimensions).map(([name, value]) => [name, compactDimension(value, limit)]))
+  };
+  if (keepRules && rules !== undefined)
+    compact.rules = rules;
+  else if (Array.isArray(rules)) {
+    let evaluated = 0;
+    const notEvaluated = [];
+    for (const rule of rules) {
+      if (!isRecord(rule))
+        continue;
+      if (rule.status === "evaluated")
+        evaluated++;
+      else if (rule.status !== "notRequested")
+        notEvaluated.push({ id: rule.id, ...rule.reason ? { reason: rule.reason } : {} });
+    }
+    compact.ruleSummary = { evaluated, notEvaluated };
+  }
+  compact.fullDetail = "Every finding and rule: detail: 'full'.";
+  return compact;
+}
+function nextStep(result) {
+  if (result.ok === false) {
+    if (typeof result.error === "string" && /GPU render|render service|renderer/u.test(result.error))
+      return 'The source may be fine; the renderer is not. Set KILN_RENDER=auto (CLI --render auto) for CPU geometry views, or repair the render service and call kiln_renderer { action: "reprobe" }, then kiln_render this programRef again.';
+    if (typeof result.error === "string" && /^(?:missing|ambiguous) camera subject/u.test(result.error))
+      return "The source is unchanged; the shot is wrong. Name the subject by one exact part path from the list in the error, then call again with this programRef.";
+    return "Fix the error in the source: kiln_edit with this programRef, or kiln_render with corrected code.";
+  }
+  const report = result.qaReport;
+  const counts = countFindings(report);
+  if (counts.block)
+    return `Fix the ${counts.block} blocking finding${counts.block === 1 ? "" : "s"} with kiln_edit on this programRef, then kiln_render again.`;
+  if (counts.warn)
+    return "Review the warnings; fix what matters with kiln_edit on this programRef, or kiln_save it when accepted.";
+  return "kiln_save this programRef when done, or kiln_edit to refine.";
+}
+function lead(result) {
+  const report = isRecord(result.qaReport) ? result.qaReport : undefined;
+  const {
+    ok,
+    acceptance: _acceptance,
+    disposition: _disposition,
+    blockers: _blockers,
+    findings: _findings,
+    next: _next,
+    ...rest
+  } = result;
+  const blockers = leadBlockers(report);
+  return {
+    ok,
+    ...report && typeof report.acceptance === "string" ? { acceptance: report.acceptance } : {},
+    ...report && typeof report.disposition === "string" ? { disposition: report.disposition } : {},
+    ...report ? {
+      blockers: blockers.slice(0, LEAD_BLOCKERS),
+      ...blockers.length > LEAD_BLOCKERS ? { blockersOmitted: blockers.length - LEAD_BLOCKERS } : {},
+      findings: countFindings(report)
+    } : {},
+    ...report || ok === false ? { next: nextStep(result) } : {},
+    ...rest
+  };
+}
+function roundNumbers(value) {
+  if (typeof value === "number")
+    return Number.isInteger(value) || !Number.isFinite(value) ? value : Number(value.toFixed(COMPACT_DECIMALS));
+  if (Array.isArray(value))
+    return value.map(roundNumbers);
+  if (isRecord(value)) {
+    const out = {};
+    for (const [key, entry] of Object.entries(value))
+      out[key] = roundNumbers(entry);
+    return out;
+  }
+  return value;
+}
+function withCurrentEvidence(result) {
+  const evidence = result.viewEvidence;
+  if (!isRecord(evidence) || !("current" in evidence))
+    return result;
+  const { current, lastFaithful } = evidence;
+  const repeated = isRecord(current) && isRecord(lastFaithful) && typeof current.sequence === "number" && lastFaithful.sequence === current.sequence;
+  return {
+    ...result,
+    viewEvidence: {
+      current,
+      ...lastFaithful !== undefined && !repeated ? { lastFaithful } : {}
+    }
+  };
+}
+var RECEIPT_IDENTITY = new Set([
+  "version",
+  "camera",
+  "derivativeLabel",
+  "cameraFidelity",
+  "captureCache"
+]);
+function compactReceipt(receipt, summary) {
+  if (!isRecord(receipt))
+    return receipt;
+  const out = {};
+  for (const [key, value] of Object.entries(receipt)) {
+    if (key === "version" || key === "camera")
+      continue;
+    if (key === "derivativeLabel" || key === "cameraFidelity" || key === "captureCache" || JSON.stringify(summary[key]) !== JSON.stringify(value))
+      out[key] = value;
+  }
+  return out;
+}
+function sharedReceiptFields(receipts, summary) {
+  const shared = {};
+  const [first, ...rest] = receipts;
+  if (!isRecord(first) || !rest.every(isRecord))
+    return shared;
+  for (const [key, value] of Object.entries(first)) {
+    if (RECEIPT_IDENTITY.has(key) || summary[key] !== undefined)
+      continue;
+    const json = JSON.stringify(value);
+    if (rest.every((receipt) => JSON.stringify(receipt[key]) === json))
+      shared[key] = value;
+  }
+  return shared;
+}
+function withCompactReceipts(result) {
+  const fidelity = isRecord(result.viewFidelity) ? result.viewFidelity : undefined;
+  const { receipts, ...rest } = fidelity ?? {};
+  const list = Array.isArray(receipts) ? receipts : Array.isArray(result.derivativeReceipts) ? result.derivativeReceipts : undefined;
+  if (!list)
+    return result;
+  const summary = { ...rest, ...fidelity ? sharedReceiptFields(list, rest) : {} };
+  let out = result;
+  if (fidelity)
+    out = {
+      ...out,
+      viewFidelity: Array.isArray(receipts) ? { ...summary, receipts: receipts.map((r) => compactReceipt(r, summary)) } : summary
+    };
+  if (Array.isArray(result.derivativeReceipts))
+    out = {
+      ...out,
+      derivativeReceipts: result.derivativeReceipts.map((r) => compactReceipt(r, summary))
+    };
+  return out;
+}
+function withSharedShots(result) {
+  const shots = result.cameraShots;
+  if (!Array.isArray(shots) || shots.length < 2 || !shots.every(isRecord))
+    return result;
+  const groups = new Map;
+  for (const shot of shots) {
+    const entry = {};
+    for (const [key, value] of Object.entries(shot)) {
+      if (key === "subject" && isRecord(value)) {
+        const { bounds: _bounds, ...identity } = value;
+        entry.subject = identity;
+      } else
+        entry[key] = value;
+    }
+    const key = JSON.stringify(entry);
+    const group = groups.get(key);
+    if (group)
+      group.frames = group.frames + 1;
+    else
+      groups.set(key, { ...entry, frames: 1 });
+  }
+  if (groups.size === shots.length)
+    return result;
+  return { ...result, cameraShots: [...groups.values()] };
+}
+var poseFramesHint = (retained) => retained ? `Every frame: read ${retained.path} (pretty-printed), or ask fewer frameTimes or measureParts per call.` : "Every frame: detail: 'full' (inside the 40,000-character limit), or fewer frameTimes or measureParts per call.";
+function boundPoseBounds(result, limit, hint) {
+  const poses = result.poseBounds;
+  if (!Array.isArray(poses) || poses.length < 2 || resultCharacters(result) <= limit)
+    return result;
+  for (let kept = poses.length - 1;kept >= 1; kept--) {
+    const out = {
+      ...result,
+      poseBounds: poses.slice(0, kept),
+      poseBoundsOmitted: poses.length - kept,
+      poseBoundsHint: hint
+    };
+    if (resultCharacters(out) <= limit || kept === 1)
+      return out;
+  }
+  return result;
+}
+function withPartPreview(result, limit = COMPACT_PART_PREVIEW) {
+  if (!Array.isArray(result.parts) || result.parts.length <= limit)
+    return result;
+  return {
+    ...result,
+    parts: result.parts.slice(0, limit),
+    partsTruncated: true,
+    partsNextOffset: limit,
+    partsHint: partsHint(limit)
+  };
+}
+function boundWarnings(result, count) {
+  const all = result.warnings;
+  if (!Array.isArray(all))
+    return result;
+  const warnings = all.slice(0, count).map((warning) => typeof warning === "string" && warning.length > WARNING_CHARS ? `${warning.slice(0, WARNING_CHARS)}… (+${warning.length - WARNING_CHARS} chars)` : warning);
+  const omitted = all.length - warnings.length;
+  if (omitted === 0 && warnings.every((warning, i) => warning === all[i]))
+    return result;
+  return { ...result, warnings, ...omitted > 0 ? { warningsOmitted: omitted } : {} };
+}
+function resultCharacters(result) {
+  if (!isRecord(result))
+    return JSON.stringify(result).length;
+  const { pngBase64: _png, framesBase64: _frames, ...rest } = result;
+  return JSON.stringify(rest).length;
+}
+var LEAN_KEYS = [
+  "tris",
+  "meshes",
+  "materials",
+  "distinctMaterials",
+  "bbox",
+  "lowestPart",
+  "views",
+  "capture",
+  "gridWidth",
+  "gridHeight",
+  "width",
+  "height",
+  "cameraShot",
+  "cameraShots",
+  "loopClosure",
+  "poseBounds",
+  "roofsHidden",
+  "partListing",
+  "measurement",
+  "surfaceMeasurements",
+  "comparison",
+  "materialContract",
+  "error",
+  "pngBase64",
+  "framesBase64",
+  "derivativeReceipts"
+];
+function leanFidelity(fidelity) {
+  if (!isRecord(fidelity))
+    return fidelity;
+  const keep = {};
+  for (const key of [
+    "delivered",
+    "materialFaithful",
+    "rendererId",
+    "exactArtifact",
+    "degraded",
+    "degradeReason",
+    "receipts"
+  ])
+    if (fidelity[key] !== undefined)
+      keep[key] = fidelity[key];
+  return keep;
+}
+function leanReviewResult(source) {
+  const result = withSharedShots(withCompactReceipts(source));
+  const led = lead(result);
+  const out = {};
+  for (const key of [
+    "ok",
+    "acceptance",
+    "disposition",
+    "blockers",
+    "blockersOmitted",
+    "findings",
+    "next"
+  ])
+    if (led[key] !== undefined)
+      out[key] = led[key];
+  for (const key of LEAN_KEYS)
+    if (result[key] !== undefined)
+      out[key] = result[key];
+  if (isRecord(out.comparison))
+    out.comparison = withCompactComparison(out).comparison;
+  if (result.viewFidelity !== undefined)
+    out.viewFidelity = leanFidelity(result.viewFidelity);
+  const { warnings, warningsOmitted } = boundWarnings(result, LEAN_WARNINGS);
+  if (warnings !== undefined)
+    out.warnings = warnings;
+  if (warningsOmitted !== undefined)
+    out.warningsOmitted = warningsOmitted;
+  if (Array.isArray(result.parts))
+    out.partsTotal = result.partsTotal ?? result.parts.length;
+  out.detail = "lean";
+  out.fullDetail = "Findings, parts and receipts: detail: 'compact' or 'full'.";
+  return boundPoseBounds(roundNumbers(out), DEFAULT_RESULT_LIMIT, poseFramesHint(undefined));
+}
+function fullReviewResult(result, retained, limit = MAX_RESULT_LIMIT) {
+  let out = lead(result);
+  if (retained)
+    out = { ...out, retainedReport: retained };
+  const fits = (candidate) => resultCharacters(candidate) <= limit;
+  if (fits(out))
+    return out;
+  out = boundWarnings(out, COMPACT_WARNINGS);
+  if (fits(out))
+    return out;
+  const withGroups = (groups) => {
+    const report = out.qaReport;
+    if (!isRecord(report) || !isRecord(report.dimensions))
+      return out;
+    return {
+      ...out,
+      qaReport: {
+        ...compactQaReport(report, groups, true),
+        detail: "full-bounded",
+        fullDetail: retained ? `Every finding: read ${retained.path} (pretty-printed).` : "Every finding is in the retained artifact when the host records one."
+      }
+    };
+  };
+  let bounded = withGroups(512);
+  if (fits(bounded))
+    return bounded;
+  out = withPartPreview(out);
+  for (let groups = 512;; groups = Math.floor(groups / 2)) {
+    bounded = withGroups(groups);
+    if (fits(bounded))
+      return bounded;
+    if (groups <= 1)
+      return boundPoseBounds(bounded, limit, poseFramesHint(retained));
+  }
+}
+function compactReviewResult(result, detail = "compact", options = {}) {
+  if (!isRecord(result))
+    return result;
+  if (detail === "lean")
+    return leanReviewResult(result);
+  if (detail === "full")
+    return fullReviewResult(result, options.retainedReport?.());
+  const out = boundWarnings(withCompactReceipts(withCompactComparison(withPartPreview(withSharedShots(withCurrentEvidence(lead(result)))))), COMPACT_WARNINGS);
+  if (out.qaReport !== undefined)
+    out.qaReport = compactQaReport(out.qaReport);
+  return boundPoseBounds(roundNumbers(out), DEFAULT_RESULT_LIMIT, poseFramesHint(undefined));
+}
+function changeSummary(result) {
+  const preservation = isRecord(result.preservation) ? result.preservation : undefined;
+  const comparison = preservation && isRecord(preservation.comparison) ? preservation.comparison : undefined;
+  const out = { status: preservation?.status ?? "not_assessed" };
+  if (comparison) {
+    if (comparison.summary !== undefined)
+      out.parts = comparison.summary;
+    if (comparison.animationSummary !== undefined)
+      out.animation = comparison.animationSummary;
+    if (Array.isArray(comparison.changes))
+      out.changed = comparison.changes.slice(0, 5).map((change) => isRecord(change) ? `${change.path ?? "?"}: ${change.status ?? ""}${Array.isArray(change.fields) && change.fields.length ? ` (${change.fields.join(", ")})` : ""}` : String(change));
+  } else if (preservation?.reason !== undefined)
+    out.reason = preservation.reason;
+  return out;
+}
+var LEAN_DIFF = 2000;
+var COMPACT_COMPARISON_CHANGES = 12;
+function compactComparison(comparison, hint, limit) {
+  const out = {};
+  for (const key of ["programRef", "version", "units", "summary", "before", "after", "subtrees"])
+    if (comparison[key] !== undefined)
+      out[key] = comparison[key];
+  if (isRecord(comparison.animation)) {
+    const { scope: _scope, ...animation } = comparison.animation;
+    out.animation = animation;
+  }
+  if (comparison.animationSummary !== undefined)
+    out.animationSummary = comparison.animationSummary;
+  if (Array.isArray(comparison.changes)) {
+    const changes = limit === undefined ? comparison.changes : comparison.changes.slice(0, limit);
+    out.changes = changes.map((change) => {
+      if (!isRecord(change))
+        return change;
+      const kept = { path: change.path };
+      if (typeof change.name === "string")
+        kept.name = change.name;
+      kept.status = change.status;
+      if (Array.isArray(change.fields) && change.fields.length > 0)
+        kept.fields = change.fields;
+      return kept;
+    });
+  }
+  for (const key of ["offset", "nextOffset"])
+    if (comparison[key] !== undefined)
+      out[key] = comparison[key];
+  out.detail = hint;
+  return out;
+}
+var COMPARE_HINT = "Bounds per change and the comparison scope: detail: 'full'. compare.offset pages the changes.";
+function withCompactComparison(result) {
+  if (!isRecord(result.comparison))
+    return result;
+  return { ...result, comparison: compactComparison(result.comparison, COMPARE_HINT) };
+}
+function compactPreservation(preservation) {
+  if (!isRecord(preservation) || !isRecord(preservation.comparison))
+    return preservation;
+  return {
+    ...preservation,
+    comparison: compactComparison(preservation.comparison, "Bounds per change and the comparison scope: detail: 'full'. More changes: kiln_inspect compare on this programRef.", COMPACT_COMPARISON_CHANGES)
+  };
+}
+function boundFullEdit(edited, render, retained) {
+  const fits = (candidate) => resultCharacters(candidate) <= MAX_RESULT_LIMIT;
+  if (fits(edited))
+    return edited;
+  let out = edited;
+  if (typeof out.diff === "string" && out.diff.length > LEAN_DIFF) {
+    out = { ...out, diff: out.diff.slice(0, LEAN_DIFF), diffOmitted: out.diff.length - LEAN_DIFF };
+    if (fits(out))
+      return out;
+  }
+  if (isRecord(out.preservation) && isRecord(out.preservation.comparison)) {
+    out = {
+      ...out,
+      preservation: {
+        ...out.preservation,
+        comparison: compactComparison(out.preservation.comparison, `Bounds per change and the comparison scope: ${retained ? `read ${retained.path} (pretty-printed)` : "kiln_inspect compare on this programRef"}; compare.offset pages the changes.`)
+      }
+    };
+    if (fits(out))
+      return out;
+  }
+  if (render && isRecord(out.render)) {
+    const budget = MAX_RESULT_LIMIT - (resultCharacters(out) - resultCharacters(out.render));
+    out = { ...out, render: fullReviewResult(render, retained, budget) };
+  }
+  return out;
+}
+function compactEditResult(result, detail = "compact", options = {}) {
+  if (!isRecord(result))
+    return result;
+  const { ok, applied, diff, preservation, render, ...rest } = result;
+  const reviewed = isRecord(render) ? compactReviewResult(render, detail, options) : undefined;
+  const next = ok === false ? "Copy the exact text from kiln_source and send the edit again with this programRef." : reviewed ? reviewed.next : "kiln_render this programRef to review the change.";
+  const out = {
+    ok,
+    ...applied !== undefined ? { applied } : {},
+    ...ok === false ? {} : { changed: changeSummary(result) },
+    next
+  };
+  if (typeof diff === "string") {
+    if (detail === "lean" && diff.length > LEAN_DIFF) {
+      out.diff = diff.slice(0, LEAN_DIFF);
+      out.diffOmitted = diff.length - LEAN_DIFF;
+    } else
+      out.diff = diff;
+  }
+  if (preservation !== undefined) {
+    if (detail === "full")
+      out.preservation = preservation;
+    else if (detail === "compact")
+      out.preservation = compactPreservation(preservation);
+  }
+  if (reviewed)
+    out.render = reviewed;
+  if (detail === "full")
+    return boundFullEdit({ ...out, ...rest }, isRecord(render) ? render : undefined, options.retainedReport?.());
+  const edited = roundNumbers({ ...out, ...rest });
+  if (detail === "compact" && typeof edited.diff === "string" && edited.diff.length > LEAN_DIFF) {
+    const over = resultCharacters(edited) - DEFAULT_RESULT_LIMIT + 40;
+    if (over > 0) {
+      const keep = Math.max(LEAN_DIFF, edited.diff.length - over);
+      edited.diffOmitted = edited.diff.length - keep;
+      edited.diff = edited.diff.slice(0, keep);
+    }
+  }
+  return edited;
+}
+
+// src/tools/programs.ts
+var refInput = z6.string().regex(programRefPattern).describe("Returned p_ handle or full sha256 ref.");
 function withProgramReferences(def, store, readSourceFile) {
-  if (!(def.inputSchema instanceof z5.ZodObject))
+  if (!(def.inputSchema instanceof z6.ZodObject))
     throw new Error(`${def.name} must have an object input schema.`);
   const sources = readSourceFile ? "code, programRef OR file" : "code OR programRef";
   const inputSchema = def.inputSchema.extend({
-    code: z5.string().optional().describe("New source."),
+    code: z6.string().optional().describe("New source."),
     programRef: refInput.optional(),
     ...readSourceFile ? {
-      file: z5.string().min(1).max(1024).optional().describe("A program file inside the workspace, relative to its root.")
+      file: z6.string().min(1).max(1024).optional().describe("A program file inside the workspace, relative to its root.")
     } : {},
     ...def.name === "kiln_edit" ? {
-      includeCode: z5.boolean().optional().describe("Return the full updated source. Defaults to false with programRef, true with code.")
+      includeCode: z6.boolean().optional().describe("Also return the patched source, bounded with the result; kiln_source pages it. Default false.")
     } : {}
   }).refine((input) => [input.code, input.programRef, input.file].filter((value) => value !== undefined).length === 1, { message: `Supply exactly one of ${sources.replace(" OR ", " or ")}.` });
   const summaries = {
@@ -31523,7 +32100,7 @@ function withProgramReferences(def, store, readSourceFile) {
     kiln_inspect: "List part paths and inspect joints, clearances and edit preservation. listParts filters names/paths with query; follow partListing.nextOffset on the same programRef/query. measure/surfacePairs return distances, not fit certificates. compare reports static changes and separate animation channel changes; paths adds complete static subtree summaries. image:false skips rendering. Otherwise use part/orbit or exact shot; check viewFidelity for materials."
   };
   const kept = store.retention ?? "kept by the host program store";
-  const description = def.name === "kiln_edit" ? `Atomically apply ordered exact-string replacements and render. Copy anchors from kiln_source. Supply ${sources}. Returns programRef (${kept}), parentRef, diff and preservation comparing static data and animation channels. Review changes; use kiln_inspect compare for more pages or protected subtrees. Failed comparison preserves the repair; render:false leaves preservation not_assessed. capture selects cameras; includeCode returns full source.` : `${summaries[def.name] ?? def.description} Supply ${sources} (${kept}). Invalid drafts keep a ref.`;
+  const description = def.name === "kiln_edit" ? `Atomically apply ordered exact-string replacements and render. Copy anchors from kiln_source. Supply ${sources}. Returns programRef (${kept}), parentRef, diff and preservation comparing static data and animation channels. Review changes; use kiln_inspect compare for more pages or protected subtrees. Failed comparison preserves the repair; render:false leaves preservation not_assessed. capture selects cameras; includeCode adds the patched source, bounded.` : `${summaries[def.name] ?? def.description} Supply ${sources} (${kept}). Invalid drafts keep a ref.`;
   return {
     ...def,
     inputSchema,
@@ -31537,26 +32114,39 @@ function withProgramReferences(def, store, readSourceFile) {
         return { programRef: parentRef, ...output };
       const programRef = await retainProgram(store, output.code);
       const { code: updatedCode, ...rest } = output;
-      const includeCode = args.includeCode ?? args.code !== undefined;
+      const includeCode = args.includeCode === true;
       const diff = typeof rest.diff === "string" ? rest.diff : "";
-      return {
-        programRef,
-        parentRef,
-        ...rest,
-        ...includeCode ? { code: updatedCode } : {
+      if (!includeCode)
+        return {
+          programRef,
+          parentRef,
+          ...rest,
           diff: diff.slice(0, 8000),
           diffTruncated: diff.length > 8000 || typeof rest.diffOmitted === "number"
-        }
-      };
+        };
+      return boundIncludedCode({ programRef, parentRef, ...rest, code: updatedCode }, args.detail === "full" ? MAX_RESULT_LIMIT : DEFAULT_RESULT_LIMIT);
     }
   };
 }
+function boundIncludedCode(result, limit) {
+  const code = typeof result.code === "string" ? result.code : "";
+  const over = resultCharacters(result) - limit;
+  if (over <= 0)
+    return result;
+  const keep = Math.max(0, code.length - over - 120);
+  return {
+    ...result,
+    code: code.slice(0, keep),
+    codeOmitted: code.length - keep,
+    codeHint: "The whole patched source: kiln_source with this programRef."
+  };
+}
 function createKilnSourceDef(store) {
-  const inputSchema = z5.object({
+  const inputSchema = z6.object({
     programRef: refInput,
-    offset: z5.number().int().min(0).default(0).describe("UTF-16 character offset; use nextOffset to continue."),
-    limit: z5.number().int().min(1).max(16000).default(8000).describe("Maximum characters returned."),
-    query: z5.string().min(1).max(1000).optional().describe("Find literal text at or after offset; return bounded surrounding source.")
+    offset: z6.number().int().min(0).default(0).describe("UTF-16 character offset; use nextOffset to continue."),
+    limit: z6.number().int().min(1).max(16000).default(8000).describe("Maximum characters returned."),
+    query: z6.string().min(1).max(1000).optional().describe("Find literal text at or after offset; return bounded surrounding source.")
   });
   return {
     name: "kiln_source",
@@ -31593,12 +32183,12 @@ function engineIdentity() {
 init_helper_specs();
 
 // src/discovery/catalog-schema.ts
-import { z as z6 } from "zod";
-var text5 = z6.string().trim().min(1);
-var texts = z6.array(text5);
-var id = z6.string().regex(/^(operation|assembly|recipe|shape):[A-Za-z][A-Za-z0-9-]*$/);
+import { z as z7 } from "zod";
+var text5 = z7.string().trim().min(1);
+var texts = z7.array(text5);
+var id = z7.string().regex(/^(operation|assembly|recipe|shape):[A-Za-z][A-Za-z0-9-]*$/);
 var common = {
-  version: z6.literal("kiln.catalog-entry.v1"),
+  version: z7.literal("kiln.catalog-entry.v1"),
   id,
   name: text5,
   summary: text5.max(500),
@@ -31606,21 +32196,21 @@ var common = {
   tags: texts,
   aliases: texts,
   intents: texts,
-  stability: z6.enum(["stable", "experimental", "deprecated"]),
-  related: z6.array(z6.object({
+  stability: z7.enum(["stable", "experimental", "deprecated"]),
+  related: z7.array(z7.object({
     id,
-    relation: z6.enum(["alternative", "prerequisite", "companion"])
+    relation: z7.enum(["alternative", "prerequisite", "companion"])
   }).strict()),
   references: texts,
   limitations: texts
 };
-var operationContractSchema = z6.object({
+var operationContractSchema = z7.object({
   signature: text5,
   returns: text5,
   units: text5,
   axes: text5,
   origin: text5,
-  execution: z6.enum(["sync", "async"]),
+  execution: z7.enum(["sync", "async"]),
   ownership: text5,
   coordinates: text5,
   parameters: texts,
@@ -31630,24 +32220,24 @@ var operationContractSchema = z6.object({
   cost: text5,
   example: text5
 }).strict();
-var discoveryEntrySchema = z6.discriminatedUnion("kind", [
-  z6.object({ ...common, kind: z6.literal("operation"), contract: operationContractSchema }).strict(),
-  z6.object({ ...common, kind: z6.literal("assembly"), contract: operationContractSchema }).strict(),
-  z6.object({
+var discoveryEntrySchema = z7.discriminatedUnion("kind", [
+  z7.object({ ...common, kind: z7.literal("operation"), contract: operationContractSchema }).strict(),
+  z7.object({ ...common, kind: z7.literal("assembly"), contract: operationContractSchema }).strict(),
+  z7.object({
     ...common,
-    kind: z6.literal("recipe"),
-    recipe: z6.object({
-      prerequisites: z6.array(id),
+    kind: z7.literal("recipe"),
+    recipe: z7.object({
+      prerequisites: z7.array(id),
       steps: texts.min(1),
       example: text5,
       adaptations: texts,
       checks: texts
     }).strict()
   }).strict(),
-  z6.object({
+  z7.object({
     ...common,
-    kind: z6.literal("shape"),
-    shape: z6.object({ tool: text5, field: text5, schema: z6.record(z6.string(), z6.unknown()) }).strict()
+    kind: z7.literal("shape"),
+    shape: z7.object({ tool: text5, field: text5, schema: z7.record(z7.string(), z7.unknown()) }).strict()
   }).strict()
 ]).superRefine((entry, ctx) => {
   if (!entry.id.startsWith(`${entry.kind}:`)) {
@@ -31666,7 +32256,7 @@ var discoveryEntrySchema = z6.discriminatedUnion("kind", [
   }
 });
 function parseCatalog(value) {
-  const entries = z6.array(discoveryEntrySchema).parse(value);
+  const entries = z7.array(discoveryEntrySchema).parse(value);
   const ids = new Set;
   const names = new Set;
   for (const entry of entries) {
@@ -34678,24 +35268,24 @@ var discoveryRecipes = [
 // src/discovery/shapes.ts
 init_material_library();
 init_projects();
-import { z as z9 } from "zod";
+import { z as z10 } from "zod";
 
 // src/tools/capture-input.ts
 init_background();
 init_capture_limits();
-import { z as z8 } from "zod";
-var backdropInput = z8.enum(BACKDROP_IDS).optional().describe("neutral (default); light for dark parts, dark for light parts.");
-var legacyCaptureInput = z8.object({
-  preset: z8.enum(["1x1", "1x2", "2x1", "3x1", "2x2", "3x2", "3x3"]).optional().describe("COLSxROWS; default 3x2. Fewer views for simple shapes, up to 3x3."),
-  cells: z8.array(z8.object({
-    azimuthDeg: z8.number().describe("0 = front, 90 = right, 180 = back, 270 = left. Wraps."),
-    elevationDeg: z8.number().describe("0 eye level; positive above, negative below. Clamped -89..89."),
-    zoom: z8.number().optional().describe("Bounds padding: below 1 crops, above 1 pulls back; omit for auto-framing."),
-    name: z8.string().optional().describe("Label; defaults to angles.")
+import { z as z9 } from "zod";
+var backdropInput = z9.enum(BACKDROP_IDS).optional().describe("neutral (default); light for dark parts, dark for light parts.");
+var legacyCaptureInput = z9.object({
+  preset: z9.enum(["1x1", "1x2", "2x1", "3x1", "2x2", "3x2", "3x3"]).optional().describe("COLSxROWS; default 3x2. Fewer views for simple shapes, up to 3x3."),
+  cells: z9.array(z9.object({
+    azimuthDeg: z9.number().describe("0 = front, 90 = right, 180 = back, 270 = left. Wraps."),
+    elevationDeg: z9.number().describe("0 eye level; positive above, negative below. Clamped -89..89."),
+    zoom: z9.number().optional().describe("Bounds padding: below 1 crops, above 1 pulls back; omit for auto-framing."),
+    name: z9.string().optional().describe("Label; defaults to angles.")
   })).optional().describe("Row-major cameras; omit for preset defaults. Count cannot exceed preset capacity (max 9)."),
   backdrop: backdropInput
 }).optional().describe("Sheet layout and cameras; omit for six views in a 3x2 grid.");
-var cameraVec3Input = z8.array(z8.number()).length(3);
+var cameraVec3Input = z9.array(z9.number()).length(3);
 var orbitCameraError = (issue) => {
   if (issue.code === "unrecognized_keys" && issue.keys?.some((key) => key === "target" || key === "distance")) {
     return "Orbit cameras derive target and distance from the selected subject bounds; choose subject and padding, or use an explicit camera with position and target.";
@@ -34715,48 +35305,48 @@ var advancedCaptureError = (issue) => {
   }
   return;
 };
-var cameraShotInput = z8.object({
-  name: z8.string().optional(),
-  subject: z8.object({ path: z8.string().optional(), name: z8.string().optional() }).strict().refine((v) => v.path === undefined !== (v.name === undefined), {
+var cameraShotInput = z9.object({
+  name: z9.string().optional(),
+  subject: z9.object({ path: z9.string().optional(), name: z9.string().optional() }).strict().refine((v) => v.path === undefined !== (v.name === undefined), {
     message: "Choose subject path OR exact name."
   }).optional(),
-  visibility: z8.enum(["context", "isolate"]).optional(),
-  hide: z8.array(z8.string().min(1).max(1024)).max(64).optional(),
-  camera: z8.discriminatedUnion("type", [
-    z8.strictObject({
-      type: z8.literal("orbit"),
-      azimuthDeg: z8.number().optional(),
-      elevationDeg: z8.number().optional(),
-      relativeTo: z8.enum(["world", "asset", "part"]).optional(),
-      padding: z8.number().positive().max(100).optional()
+  visibility: z9.enum(["context", "isolate"]).optional(),
+  hide: z9.array(z9.string().min(1).max(1024)).max(64).optional(),
+  camera: z9.discriminatedUnion("type", [
+    z9.strictObject({
+      type: z9.literal("orbit"),
+      azimuthDeg: z9.number().optional(),
+      elevationDeg: z9.number().optional(),
+      relativeTo: z9.enum(["world", "asset", "part"]).optional(),
+      padding: z9.number().positive().max(100).optional()
     }, { error: orbitCameraError }),
-    z8.strictObject({
-      type: z8.literal("explicit"),
-      projection: z8.enum(["orthographic", "perspective"]),
+    z9.strictObject({
+      type: z9.literal("explicit"),
+      projection: z9.enum(["orthographic", "perspective"]),
       position: cameraVec3Input,
       target: cameraVec3Input.optional(),
-      relativeTo: z8.enum(["world", "asset", "part", "local"]).optional(),
-      frame: z8.object({
+      relativeTo: z9.enum(["world", "asset", "part", "local"]).optional(),
+      frame: z9.object({
         origin: cameraVec3Input.optional(),
         rotation: cameraVec3Input.optional()
       }).strict().optional(),
-      framing: z8.enum(["explicit", "bounds"]).optional(),
-      padding: z8.number().positive().max(100).optional(),
+      framing: z9.enum(["explicit", "bounds"]).optional(),
+      padding: z9.number().positive().max(100).optional(),
       targetOffset: cameraVec3Input.optional(),
       up: cameraVec3Input.optional(),
-      halfHeight: z8.number().positive().optional(),
-      fovDeg: z8.number().positive().lt(180).optional(),
-      near: z8.number().positive().optional(),
-      far: z8.number().positive().optional()
+      halfHeight: z9.number().positive().optional(),
+      fovDeg: z9.number().positive().lt(180).optional(),
+      near: z9.number().positive().optional(),
+      far: z9.number().positive().optional()
     }, { error: explicitCameraError })
   ]).optional()
 }).strict();
-var advancedCaptureInput = z8.strictObject({
-  version: z8.enum(["kiln.capture.v1", "kiln.capture.v2"]),
-  shots: z8.array(cameraShotInput).min(1).max(9),
-  cols: z8.number().int().min(1).max(3).optional(),
-  size: z8.number().int().min(128).max(MAX_CAPTURE_SHOT_SIZE).optional(),
-  output: z8.enum(["grid", "separate"]).optional(),
+var advancedCaptureInput = z9.strictObject({
+  version: z9.enum(["kiln.capture.v1", "kiln.capture.v2"]),
+  shots: z9.array(cameraShotInput).min(1).max(9),
+  cols: z9.number().int().min(1).max(3).optional(),
+  size: z9.number().int().min(128).max(MAX_CAPTURE_SHOT_SIZE).optional(),
+  output: z9.enum(["grid", "separate"]).optional(),
   backdrop: backdropInput
 }, { error: advancedCaptureError }).superRefine((input, context) => {
   if (input.version === "kiln.capture.v1" && input.shots.some((shot) => shot.hide !== undefined))
@@ -34777,19 +35367,19 @@ function taggedCaptureError(issue) {
   const details = issues.slice(0, 6).map((problem) => `${problem.path.join(".") || "capture"}: ${problem.message.slice(0, 240)}`);
   return `Invalid ${input.version}: ${details.join("; ")}${issues.length > 6 ? "; additional issues omitted" : ""}`;
 }
-var captureShapeInput = z8.union([
+var captureShapeInput = z9.union([
   advancedCaptureInput,
-  z8.strictObject(legacyCaptureInput.unwrap().shape, {
+  z9.strictObject(legacyCaptureInput.unwrap().shape, {
     error: taggedCaptureError
   })
 ], { error: taggedCaptureError });
 var captureInput = captureShapeInput.optional().describe("Omit for six views; preset/cells for orbit sheets. Use kiln.capture.v1 or v2 with 1..9 shots for exact cameras. v2 adds hide: exact paths or unique names. Framing retains subject bounds.");
-var captureRecordInput = z8.record(z8.string(), z8.unknown()).optional().describe('Cameras, as kiln_render capture takes them. Shape: kiln_discover ids ["shape:capture"].');
-var cameraShotRecordInput = z8.record(z8.string(), z8.unknown()).optional().describe('One exact camera shot. Shape: kiln_discover ids ["shape:camera-shot"].');
+var captureRecordInput = z9.record(z9.string(), z9.unknown()).optional().describe('Cameras, as kiln_render capture takes them. Shape: kiln_discover ids ["shape:capture"].');
+var cameraShotRecordInput = z9.record(z9.string(), z9.unknown()).optional().describe('One exact camera shot. Shape: kiln_discover ids ["shape:camera-shot"].');
 
 // src/discovery/shapes.ts
 var jsonSchema = (schema) => {
-  const { $schema: _dialect, ...rest } = z9.toJSONSchema(schema, { io: "input" });
+  const { $schema: _dialect, ...rest } = z10.toJSONSchema(schema, { io: "input" });
   return rest;
 };
 var shape = (name, tool, field, summary, schema, extra = {}) => ({
@@ -34975,25 +35565,25 @@ function createLexicalDiscoveryIndex(entries) {
 }
 
 // src/discovery/query-schema.ts
-import { z as z10 } from "zod";
-var selector = z10.string().trim().min(1).max(120);
+import { z as z11 } from "zod";
+var selector = z11.string().trim().min(1).max(120);
 function discoverySelectorMigration(keys) {
   if (!keys.some((key) => ["category", "name", "names"].includes(key)))
     return;
   return "Legacy Discovery selectors category/name/names were removed. Use query for search, ids (CLI --id) for exact contracts, and family (CLI --family), kind or tags for filtering. See docs/migration.md.";
 }
-var discoveryInputSchema = z10.object({
-  query: z10.string().trim().min(1).max(500).optional(),
-  ids: z10.array(selector).min(1).max(6).refine((ids) => new Set(ids).size === ids.length, {
+var discoveryInputSchema = z11.object({
+  query: z11.string().trim().min(1).max(500).optional(),
+  ids: z11.array(selector).min(1).max(6).refine((ids) => new Set(ids).size === ids.length, {
     message: "Exact IDs must be unique."
   }).optional(),
-  overview: z10.literal(true).optional(),
-  capabilities: z10.literal(true).optional(),
+  overview: z11.literal(true).optional(),
+  capabilities: z11.literal(true).optional(),
   family: selector.optional(),
-  kind: z10.enum(["operation", "assembly", "recipe", "shape"]).optional(),
-  tags: z10.array(selector).min(1).max(8).optional(),
-  offset: z10.number().int().min(0).max(1e4).optional(),
-  limit: z10.number().int().min(1).max(12).optional()
+  kind: z11.enum(["operation", "assembly", "recipe", "shape"]).optional(),
+  tags: z11.array(selector).min(1).max(8).optional(),
+  offset: z11.number().int().min(0).max(1e4).optional(),
+  limit: z11.number().int().min(1).max(12).optional()
 }, {
   error: (issue) => issue.code === "unrecognized_keys" ? discoverySelectorMigration(issue.keys) : undefined
 }).strict().superRefine((input, context) => {
@@ -35381,7 +35971,7 @@ async function currentCapabilities(context) {
 
 // src/tools/projects.ts
 init_projects();
-import { z as z13 } from "zod";
+import { z as z14 } from "zod";
 
 // src/tools/actions.ts
 var list = (fields) => fields.length <= 1 ? fields.join("") : `${fields.slice(0, -1).join(", ")} and ${fields.at(-1)}`;
@@ -35393,6 +35983,35 @@ function requireActionFields(tool, action, input, requirements) {
   throw new Error(`${tool} ${action} requires ${list(requirements.required)}; missing ${list(missing)}.${shapes.length ? ` ${shapes.join(". ")}.` : ""}`);
 }
 var nestedRecordDescription = (purpose, shape) => `${purpose} Shape: kiln_discover({ ids: ['${shape}'] }).`;
+function describeInputError(tool, error, options = {}) {
+  const issues = error?.issues;
+  if (!Array.isArray(issues) || !issues.length)
+    return;
+  const { fields = [], shapes = {} } = options;
+  const lines = flattenIssues(issues).slice(0, 6).map((line) => line.replace(/\.+$/u, ""));
+  const unknownKey = issues.some((issue) => issue.code === "unrecognized_keys" && !issue.path?.length);
+  const takes = unknownKey && fields.length ? ` ${tool} takes ${list(fields)}.` : "";
+  const nested = [
+    ...new Set(issues.map((issue) => String(issue.path?.[0] ?? "")).filter((field) => shapes[field]))
+  ].map((field) => `${field} shape: kiln_discover({ ids: ['${shapes[field]}'] })`);
+  const where = nested.length ? nested.join("; ") : `nested shapes: kiln_discover({ ids: ['shape:...'] })`;
+  return `${tool}: invalid input. ${lines.join("; ")}${issues.length > 6 ? `; ${issues.length - 6} more` : ""}.${takes} Check the field names and values against the ${tool} schema; ${where}.`;
+}
+function flattenIssues(issues, prefix = []) {
+  const lines = [];
+  for (const raw of issues) {
+    const issue = raw;
+    const path = [...prefix, ...issue.path ?? []];
+    const branches = Array.isArray(issue.errors) ? issue.errors.filter((branch) => Array.isArray(branch) && branch.length) : [];
+    if (issue.code === "invalid_union" && branches.length) {
+      const closest = branches.reduce((best, branch) => branch.length < best.length ? branch : best);
+      lines.push(...flattenIssues(closest, path));
+      continue;
+    }
+    lines.push(`${path.join(".") || "input"}: ${issue.message ?? "invalid"}`);
+  }
+  return lines;
+}
 
 // src/tools/projects.ts
 var PROJECT_ACTIONS = ["list", "get", "create", "update", "export"];
@@ -35406,16 +36025,16 @@ var REQUIREMENTS = {
   },
   export: { required: ["projectId"] }
 };
-var record6 = (description) => z13.record(z13.string(), z13.unknown()).optional().describe(description);
+var record6 = (description) => z14.record(z14.string(), z14.unknown()).optional().describe(description);
 function projectToolInput(actions = PROJECT_ACTIONS) {
-  return z13.strictObject({
-    action: z13.enum(actions),
+  return z14.strictObject({
+    action: z14.enum(actions),
     projectId: projectIdSchema.optional().describe("get, update, export."),
     revisionId: projectRevisionIdSchema.optional().describe("get, export: an exact revision; omit for the current one."),
     expectedRevision: projectRevisionIdSchema.optional().describe("update: the revision being replaced; a stale value is a conflict."),
     draft: record6(nestedRecordDescription("create: name, brief, design, inventory, deliveryProfiles, materialDependencies, references, reviews; optional projectId.", "shape:project-draft")),
     patch: record6(nestedRecordDescription("update: the same top-level fields as draft; each supplied field replaces its previous value whole.", "shape:project-patch")),
-    profile: z13.enum(["editable", "runtime"]).optional().describe("export: editable (default) keeps source and resources; runtime is GLB plus metadata.")
+    profile: z14.enum(["editable", "runtime"]).optional().describe("export: editable (default) keeps source and resources; runtime is GLB plus metadata.")
   });
 }
 function createKilnProjectDef(store, bundleReader) {
@@ -35499,11 +36118,11 @@ async function listAssetCatalog(library) {
 // src/tools/materials.ts
 init_material_library();
 init_material_library_node();
-import { z as z15 } from "zod";
+import { z as z16 } from "zod";
 
 // src/material-presets.ts
 init_material_library();
-import { z as z14 } from "zod";
+import { z as z15 } from "zod";
 var catalog2 = [
   {
     id: "warm-brick",
@@ -35541,10 +36160,10 @@ var catalog2 = [
     description: "Layered granular soil variation and subtle relief for terrain and planting beds."
   }
 ];
-var materialPresetOptionsSchema = z14.object({
-  seed: z14.number().int().min(-2147483648).max(2147483647),
-  size: z14.union([z14.literal(64), z14.literal(128), z14.literal(256), z14.literal(512)]).default(256),
-  creator: z14.string().min(1).max(1000),
+var materialPresetOptionsSchema = z15.object({
+  seed: z15.number().int().min(-2147483648).max(2147483647),
+  size: z15.union([z15.literal(64), z15.literal(128), z15.literal(256), z15.literal(512)]).default(256),
+  creator: z15.string().min(1).max(1000),
   license: materialSourceSchema.shape.license,
   materialId: materialLibraryIdSchema.optional()
 }).strict();
@@ -35694,15 +36313,15 @@ var REQUIREMENTS2 = {
   "create-procedural": { required: ["draft"], shapes: { draft: "shape:material-draft" } },
   import: { required: ["payload"], shapes: { payload: "shape:material-import" } }
 };
-var record7 = (description) => z15.record(z15.string(), z15.unknown()).optional().describe(description);
-var tag = z15.string().min(1).max(80).optional().describe("presets, list: keep one tag.");
-var materialToolInput = z15.strictObject({
-  action: z15.enum(MATERIAL_ACTIONS),
+var record7 = (description) => z16.record(z16.string(), z16.unknown()).optional().describe(description);
+var tag = z16.string().min(1).max(80).optional().describe("presets, list: keep one tag.");
+var materialToolInput = z16.strictObject({
+  action: z16.enum(MATERIAL_ACTIONS),
   tag,
-  presetId: z15.string().min(1).max(80).optional().describe("create-preset: an id from presets."),
-  seed: z15.number().int().min(-2147483648).max(2147483647).optional().describe("create-preset."),
-  size: z15.union([z15.literal(64), z15.literal(128), z15.literal(256), z15.literal(512)]).optional().describe("create-preset: map edge in pixels; default 256."),
-  creator: z15.string().min(1).max(1000).optional().describe("create-preset."),
+  presetId: z16.string().min(1).max(80).optional().describe("create-preset: an id from presets."),
+  seed: z16.number().int().min(-2147483648).max(2147483647).optional().describe("create-preset."),
+  size: z16.union([z16.literal(64), z16.literal(128), z16.literal(256), z16.literal(512)]).optional().describe("create-preset: map edge in pixels; default 256."),
+  creator: z16.string().min(1).max(1000).optional().describe("create-preset."),
   license: materialSourceSchema.shape.license.optional().describe("create-preset: spdx, url and attribution."),
   materialId: materialLibraryIdSchema.optional().describe("get: the id a project palette lists as resourceId; create-preset: optional id."),
   revisionId: materialLibraryHashSchema.optional().describe("get: the immutable revision; omitted, the material's only revision."),
@@ -35823,579 +36442,6 @@ async function persistedPreviewFidelity(fidelity, glb) {
     exactArtifact: true,
     reasonCodes: (view.reasonCodes ?? []).filter((code) => code !== "IN_LOOP_BUILD_NOT_PERSISTED")
   };
-}
-
-// src/tools/review-detail.ts
-import { z as z16 } from "zod";
-var COMPACT_PART_PREVIEW = 24;
-var COMPACT_FINDINGS_PER_DIMENSION = 12;
-var LEAD_BLOCKERS = 8;
-var LEAN_WARNINGS = 3;
-var COMPACT_WARNINGS = 12;
-var WARNING_CHARS = 1000;
-var DEFAULT_RESULT_LIMIT = 20000;
-var MAX_RESULT_LIMIT = 40000;
-var COMPACT_DECIMALS = 6;
-var reviewDetailInput = z16.enum(["lean", "compact", "full"]).optional().describe("compact (default) groups findings by code; lean: verdict, blockers, metrics only; full: every finding, rule and part plus the retained report path");
-function requestedDetail(input, fallback = "compact") {
-  const detail = input?.detail;
-  return detail === "full" || detail === "lean" || detail === "compact" ? detail : fallback;
-}
-var partsHint = (offset) => `For remaining paths use kiln_inspect with image:false and listParts:{offset:${offset}}. listParts.query filters names/paths; follow partListing.nextOffset on the same programRef and query.`;
-var isRecord5 = (value) => typeof value === "object" && value !== null && !Array.isArray(value);
-var SEVERITY = { block: 0, warn: 1, observe: 2 };
-var severity = (finding) => isRecord5(finding) && typeof finding.disposition === "string" && SEVERITY[finding.disposition] || (isRecord5(finding) && finding.disposition === "block" ? 0 : 3);
-function affectedLabel(finding) {
-  const affected = finding.affected;
-  if (!isRecord5(affected))
-    return;
-  for (const key of ["nodePath", "node", "material", "texture", "clip", "track", "attribute"])
-    if (typeof affected[key] === "string")
-      return affected[key];
-  return;
-}
-function groupFindings(findings) {
-  const groups = new Map;
-  for (const finding of findings) {
-    if (!isRecord5(finding))
-      continue;
-    const code = typeof finding.code === "string" ? finding.code : "UNKNOWN";
-    const label = affectedLabel(finding);
-    const group = groups.get(code);
-    if (!group) {
-      groups.set(code, { ...finding, code, count: 1 });
-      continue;
-    }
-    group.count++;
-    if (label && label !== affectedLabel(group)) {
-      const more = Array.isArray(group.alsoAffected) ? group.alsoAffected : [];
-      if (more.length < 2 && !more.includes(label))
-        group.alsoAffected = [...more, label];
-    }
-  }
-  return [...groups.values()].sort((a, b) => severity(a) - severity(b));
-}
-function countFindings(report) {
-  const counts = { block: 0, warn: 0, observe: 0 };
-  if (!isRecord5(report) || !isRecord5(report.dimensions))
-    return counts;
-  for (const dimension of Object.values(report.dimensions)) {
-    if (!isRecord5(dimension) || !Array.isArray(dimension.findings))
-      continue;
-    for (const finding of dimension.findings) {
-      const disposition = isRecord5(finding) ? finding.disposition : undefined;
-      if (disposition === "block" || disposition === "warn" || disposition === "observe")
-        counts[disposition]++;
-    }
-  }
-  return counts;
-}
-function leadBlockers(report) {
-  if (!isRecord5(report) || !isRecord5(report.dimensions))
-    return [];
-  const blockers = [];
-  for (const [name, dimension] of Object.entries(report.dimensions)) {
-    if (!isRecord5(dimension) || !Array.isArray(dimension.findings))
-      continue;
-    for (const group of groupFindings(dimension.findings)) {
-      if (group.disposition !== "block")
-        continue;
-      blockers.push({
-        code: group.code,
-        dimension: name,
-        count: group.count,
-        message: group.message,
-        ...group.affected !== undefined ? { affected: group.affected } : {},
-        ...group.alsoAffected !== undefined ? { alsoAffected: group.alsoAffected } : {},
-        ...group.repairText !== undefined ? { repairText: group.repairText } : {}
-      });
-    }
-  }
-  return blockers;
-}
-function compactDimension(dimension, limit = COMPACT_FINDINGS_PER_DIMENSION) {
-  if (!isRecord5(dimension) || !Array.isArray(dimension.findings))
-    return dimension;
-  const groups = groupFindings(dimension.findings);
-  const kept = groups.slice(0, limit);
-  const dropped = groups.slice(limit);
-  const out = { ...dimension, findings: kept };
-  if (dimension.findings.length !== kept.length)
-    out.findingsTotal = dimension.findings.length;
-  if (dropped.length) {
-    out.findingsOmitted = dropped.reduce((sum, group) => sum + group.count, 0);
-    out.omittedByCode = Object.fromEntries(dropped.map((group) => [group.code, group.count]));
-  }
-  return out;
-}
-function compactQaReport(report, limit = COMPACT_FINDINGS_PER_DIMENSION, keepRules = false) {
-  if (!isRecord5(report) || !isRecord5(report.dimensions))
-    return report;
-  const { dimensions, rules, ...rest } = report;
-  const compact = {
-    ...rest,
-    detail: "compact",
-    dimensions: Object.fromEntries(Object.entries(dimensions).map(([name, value]) => [name, compactDimension(value, limit)]))
-  };
-  if (keepRules && rules !== undefined)
-    compact.rules = rules;
-  else if (Array.isArray(rules)) {
-    let evaluated = 0;
-    const notEvaluated = [];
-    for (const rule of rules) {
-      if (!isRecord5(rule))
-        continue;
-      if (rule.status === "evaluated")
-        evaluated++;
-      else if (rule.status !== "notRequested")
-        notEvaluated.push({ id: rule.id, ...rule.reason ? { reason: rule.reason } : {} });
-    }
-    compact.ruleSummary = { evaluated, notEvaluated };
-  }
-  compact.fullDetail = "Every finding and rule: detail: 'full'.";
-  return compact;
-}
-function nextStep(result) {
-  if (result.ok === false) {
-    if (typeof result.error === "string" && /GPU render|render service|renderer/u.test(result.error))
-      return 'The source may be fine; the renderer is not. Set KILN_RENDER=auto (CLI --render auto) for CPU geometry views, or repair the render service and call kiln_renderer { action: "reprobe" }, then kiln_render this programRef again.';
-    return "Fix the error in the source: kiln_edit with this programRef, or kiln_render with corrected code.";
-  }
-  const report = result.qaReport;
-  const counts = countFindings(report);
-  if (counts.block)
-    return `Fix the ${counts.block} blocking finding${counts.block === 1 ? "" : "s"} with kiln_edit on this programRef, then kiln_render again.`;
-  if (counts.warn)
-    return "Review the warnings; fix what matters with kiln_edit on this programRef, or kiln_save it when accepted.";
-  return "kiln_save this programRef when done, or kiln_edit to refine.";
-}
-function lead(result) {
-  const report = isRecord5(result.qaReport) ? result.qaReport : undefined;
-  const {
-    ok,
-    acceptance: _acceptance,
-    disposition: _disposition,
-    blockers: _blockers,
-    findings: _findings,
-    next: _next,
-    ...rest
-  } = result;
-  const blockers = leadBlockers(report);
-  return {
-    ok,
-    ...report && typeof report.acceptance === "string" ? { acceptance: report.acceptance } : {},
-    ...report && typeof report.disposition === "string" ? { disposition: report.disposition } : {},
-    ...report ? {
-      blockers: blockers.slice(0, LEAD_BLOCKERS),
-      ...blockers.length > LEAD_BLOCKERS ? { blockersOmitted: blockers.length - LEAD_BLOCKERS } : {},
-      findings: countFindings(report)
-    } : {},
-    ...report || ok === false ? { next: nextStep(result) } : {},
-    ...rest
-  };
-}
-function roundNumbers(value) {
-  if (typeof value === "number")
-    return Number.isInteger(value) || !Number.isFinite(value) ? value : Number(value.toFixed(COMPACT_DECIMALS));
-  if (Array.isArray(value))
-    return value.map(roundNumbers);
-  if (isRecord5(value)) {
-    const out = {};
-    for (const [key, entry] of Object.entries(value))
-      out[key] = roundNumbers(entry);
-    return out;
-  }
-  return value;
-}
-function withCurrentEvidence(result) {
-  const evidence = result.viewEvidence;
-  if (!isRecord5(evidence) || !("current" in evidence))
-    return result;
-  const { current, lastFaithful } = evidence;
-  const repeated = isRecord5(current) && isRecord5(lastFaithful) && typeof current.sequence === "number" && lastFaithful.sequence === current.sequence;
-  return {
-    ...result,
-    viewEvidence: {
-      current,
-      ...lastFaithful !== undefined && !repeated ? { lastFaithful } : {}
-    }
-  };
-}
-var RECEIPT_IDENTITY = new Set([
-  "version",
-  "camera",
-  "derivativeLabel",
-  "cameraFidelity",
-  "captureCache"
-]);
-function compactReceipt(receipt, summary) {
-  if (!isRecord5(receipt))
-    return receipt;
-  const out = {};
-  for (const [key, value] of Object.entries(receipt)) {
-    if (key === "version" || key === "camera")
-      continue;
-    if (key === "derivativeLabel" || key === "cameraFidelity" || key === "captureCache" || JSON.stringify(summary[key]) !== JSON.stringify(value))
-      out[key] = value;
-  }
-  return out;
-}
-function sharedReceiptFields(receipts, summary) {
-  const shared = {};
-  const [first, ...rest] = receipts;
-  if (!isRecord5(first) || !rest.every(isRecord5))
-    return shared;
-  for (const [key, value] of Object.entries(first)) {
-    if (RECEIPT_IDENTITY.has(key) || summary[key] !== undefined)
-      continue;
-    const json = JSON.stringify(value);
-    if (rest.every((receipt) => JSON.stringify(receipt[key]) === json))
-      shared[key] = value;
-  }
-  return shared;
-}
-function withCompactReceipts(result) {
-  const fidelity = isRecord5(result.viewFidelity) ? result.viewFidelity : undefined;
-  const { receipts, ...rest } = fidelity ?? {};
-  const list = Array.isArray(receipts) ? receipts : Array.isArray(result.derivativeReceipts) ? result.derivativeReceipts : undefined;
-  if (!list)
-    return result;
-  const summary = { ...rest, ...fidelity ? sharedReceiptFields(list, rest) : {} };
-  let out = result;
-  if (fidelity)
-    out = {
-      ...out,
-      viewFidelity: Array.isArray(receipts) ? { ...summary, receipts: receipts.map((r) => compactReceipt(r, summary)) } : summary
-    };
-  if (Array.isArray(result.derivativeReceipts))
-    out = {
-      ...out,
-      derivativeReceipts: result.derivativeReceipts.map((r) => compactReceipt(r, summary))
-    };
-  return out;
-}
-function withSharedShots(result) {
-  const shots = result.cameraShots;
-  if (!Array.isArray(shots) || shots.length < 2 || !shots.every(isRecord5))
-    return result;
-  const groups = new Map;
-  for (const shot of shots) {
-    const entry = {};
-    for (const [key, value] of Object.entries(shot)) {
-      if (key === "subject" && isRecord5(value)) {
-        const { bounds: _bounds, ...identity } = value;
-        entry.subject = identity;
-      } else
-        entry[key] = value;
-    }
-    const key = JSON.stringify(entry);
-    const group = groups.get(key);
-    if (group)
-      group.frames = group.frames + 1;
-    else
-      groups.set(key, { ...entry, frames: 1 });
-  }
-  if (groups.size === shots.length)
-    return result;
-  return { ...result, cameraShots: [...groups.values()] };
-}
-var poseFramesHint = (retained) => retained ? `Every frame: read ${retained.path} (pretty-printed), or ask fewer frameTimes or measureParts per call.` : "Every frame: detail: 'full' (inside the 40,000-character limit), or fewer frameTimes or measureParts per call.";
-function boundPoseBounds(result, limit, hint) {
-  const poses = result.poseBounds;
-  if (!Array.isArray(poses) || poses.length < 2 || resultCharacters(result) <= limit)
-    return result;
-  for (let kept = poses.length - 1;kept >= 1; kept--) {
-    const out = {
-      ...result,
-      poseBounds: poses.slice(0, kept),
-      poseBoundsOmitted: poses.length - kept,
-      poseBoundsHint: hint
-    };
-    if (resultCharacters(out) <= limit || kept === 1)
-      return out;
-  }
-  return result;
-}
-function withPartPreview(result, limit = COMPACT_PART_PREVIEW) {
-  if (!Array.isArray(result.parts) || result.parts.length <= limit)
-    return result;
-  return {
-    ...result,
-    parts: result.parts.slice(0, limit),
-    partsTruncated: true,
-    partsNextOffset: limit,
-    partsHint: partsHint(limit)
-  };
-}
-function boundWarnings(result, count) {
-  const all = result.warnings;
-  if (!Array.isArray(all))
-    return result;
-  const warnings = all.slice(0, count).map((warning) => typeof warning === "string" && warning.length > WARNING_CHARS ? `${warning.slice(0, WARNING_CHARS)}… (+${warning.length - WARNING_CHARS} chars)` : warning);
-  const omitted = all.length - warnings.length;
-  if (omitted === 0 && warnings.every((warning, i) => warning === all[i]))
-    return result;
-  return { ...result, warnings, ...omitted > 0 ? { warningsOmitted: omitted } : {} };
-}
-function resultCharacters(result) {
-  if (!isRecord5(result))
-    return JSON.stringify(result).length;
-  const { pngBase64: _png, framesBase64: _frames, ...rest } = result;
-  return JSON.stringify(rest).length;
-}
-var LEAN_KEYS = [
-  "tris",
-  "meshes",
-  "materials",
-  "distinctMaterials",
-  "bbox",
-  "lowestPart",
-  "views",
-  "capture",
-  "gridWidth",
-  "gridHeight",
-  "width",
-  "height",
-  "cameraShot",
-  "cameraShots",
-  "loopClosure",
-  "poseBounds",
-  "roofsHidden",
-  "partListing",
-  "measurement",
-  "surfaceMeasurements",
-  "comparison",
-  "materialContract",
-  "error",
-  "pngBase64",
-  "framesBase64",
-  "derivativeReceipts"
-];
-function leanFidelity(fidelity) {
-  if (!isRecord5(fidelity))
-    return fidelity;
-  const keep = {};
-  for (const key of [
-    "delivered",
-    "materialFaithful",
-    "rendererId",
-    "exactArtifact",
-    "degraded",
-    "degradeReason",
-    "receipts"
-  ])
-    if (fidelity[key] !== undefined)
-      keep[key] = fidelity[key];
-  return keep;
-}
-function leanReviewResult(source) {
-  const result = withSharedShots(withCompactReceipts(source));
-  const led = lead(result);
-  const out = {};
-  for (const key of [
-    "ok",
-    "acceptance",
-    "disposition",
-    "blockers",
-    "blockersOmitted",
-    "findings",
-    "next"
-  ])
-    if (led[key] !== undefined)
-      out[key] = led[key];
-  for (const key of LEAN_KEYS)
-    if (result[key] !== undefined)
-      out[key] = result[key];
-  if (isRecord5(out.comparison))
-    out.comparison = withCompactComparison(out).comparison;
-  if (result.viewFidelity !== undefined)
-    out.viewFidelity = leanFidelity(result.viewFidelity);
-  const { warnings, warningsOmitted } = boundWarnings(result, LEAN_WARNINGS);
-  if (warnings !== undefined)
-    out.warnings = warnings;
-  if (warningsOmitted !== undefined)
-    out.warningsOmitted = warningsOmitted;
-  if (Array.isArray(result.parts))
-    out.partsTotal = result.partsTotal ?? result.parts.length;
-  out.detail = "lean";
-  out.fullDetail = "Findings, parts and receipts: detail: 'compact' or 'full'.";
-  return boundPoseBounds(roundNumbers(out), DEFAULT_RESULT_LIMIT, poseFramesHint(undefined));
-}
-function fullReviewResult(result, retained, limit = MAX_RESULT_LIMIT) {
-  let out = lead(result);
-  if (retained)
-    out = { ...out, retainedReport: retained };
-  const fits = (candidate) => resultCharacters(candidate) <= limit;
-  if (fits(out))
-    return out;
-  out = boundWarnings(out, COMPACT_WARNINGS);
-  if (fits(out))
-    return out;
-  const withGroups = (groups) => {
-    const report = out.qaReport;
-    if (!isRecord5(report) || !isRecord5(report.dimensions))
-      return out;
-    return {
-      ...out,
-      qaReport: {
-        ...compactQaReport(report, groups, true),
-        detail: "full-bounded",
-        fullDetail: retained ? `Every finding: read ${retained.path} (pretty-printed).` : "Every finding is in the retained artifact when the host records one."
-      }
-    };
-  };
-  let bounded = withGroups(512);
-  if (fits(bounded))
-    return bounded;
-  out = withPartPreview(out);
-  for (let groups = 512;; groups = Math.floor(groups / 2)) {
-    bounded = withGroups(groups);
-    if (fits(bounded))
-      return bounded;
-    if (groups <= 1)
-      return boundPoseBounds(bounded, limit, poseFramesHint(retained));
-  }
-}
-function compactReviewResult(result, detail = "compact", options = {}) {
-  if (!isRecord5(result))
-    return result;
-  if (detail === "lean")
-    return leanReviewResult(result);
-  if (detail === "full")
-    return fullReviewResult(result, options.retainedReport?.());
-  const out = boundWarnings(withCompactReceipts(withCompactComparison(withPartPreview(withSharedShots(withCurrentEvidence(lead(result)))))), COMPACT_WARNINGS);
-  if (out.qaReport !== undefined)
-    out.qaReport = compactQaReport(out.qaReport);
-  return boundPoseBounds(roundNumbers(out), DEFAULT_RESULT_LIMIT, poseFramesHint(undefined));
-}
-function changeSummary(result) {
-  const preservation = isRecord5(result.preservation) ? result.preservation : undefined;
-  const comparison = preservation && isRecord5(preservation.comparison) ? preservation.comparison : undefined;
-  const out = { status: preservation?.status ?? "not_assessed" };
-  if (comparison) {
-    if (comparison.summary !== undefined)
-      out.parts = comparison.summary;
-    if (comparison.animationSummary !== undefined)
-      out.animation = comparison.animationSummary;
-    if (Array.isArray(comparison.changes))
-      out.changed = comparison.changes.slice(0, 5).map((change) => isRecord5(change) ? `${change.path ?? "?"}: ${change.status ?? ""}${Array.isArray(change.fields) && change.fields.length ? ` (${change.fields.join(", ")})` : ""}` : String(change));
-  } else if (preservation?.reason !== undefined)
-    out.reason = preservation.reason;
-  return out;
-}
-var LEAN_DIFF = 2000;
-var COMPACT_COMPARISON_CHANGES = 12;
-function compactComparison(comparison, hint, limit) {
-  const out = {};
-  for (const key of ["programRef", "version", "units", "summary", "before", "after", "subtrees"])
-    if (comparison[key] !== undefined)
-      out[key] = comparison[key];
-  if (isRecord5(comparison.animation)) {
-    const { scope: _scope, ...animation } = comparison.animation;
-    out.animation = animation;
-  }
-  if (comparison.animationSummary !== undefined)
-    out.animationSummary = comparison.animationSummary;
-  if (Array.isArray(comparison.changes)) {
-    const changes = limit === undefined ? comparison.changes : comparison.changes.slice(0, limit);
-    out.changes = changes.map((change) => {
-      if (!isRecord5(change))
-        return change;
-      const kept = { path: change.path };
-      if (typeof change.name === "string")
-        kept.name = change.name;
-      kept.status = change.status;
-      if (Array.isArray(change.fields) && change.fields.length > 0)
-        kept.fields = change.fields;
-      return kept;
-    });
-  }
-  for (const key of ["offset", "nextOffset"])
-    if (comparison[key] !== undefined)
-      out[key] = comparison[key];
-  out.detail = hint;
-  return out;
-}
-var COMPARE_HINT = "Bounds per change and the comparison scope: detail: 'full'. compare.offset pages the changes.";
-function withCompactComparison(result) {
-  if (!isRecord5(result.comparison))
-    return result;
-  return { ...result, comparison: compactComparison(result.comparison, COMPARE_HINT) };
-}
-function compactPreservation(preservation) {
-  if (!isRecord5(preservation) || !isRecord5(preservation.comparison))
-    return preservation;
-  return {
-    ...preservation,
-    comparison: compactComparison(preservation.comparison, "Bounds per change and the comparison scope: detail: 'full'. More changes: kiln_inspect compare on this programRef.", COMPACT_COMPARISON_CHANGES)
-  };
-}
-function boundFullEdit(edited, render, retained) {
-  const fits = (candidate) => resultCharacters(candidate) <= MAX_RESULT_LIMIT;
-  if (fits(edited))
-    return edited;
-  let out = edited;
-  if (typeof out.diff === "string" && out.diff.length > LEAN_DIFF) {
-    out = { ...out, diff: out.diff.slice(0, LEAN_DIFF), diffOmitted: out.diff.length - LEAN_DIFF };
-    if (fits(out))
-      return out;
-  }
-  if (isRecord5(out.preservation) && isRecord5(out.preservation.comparison)) {
-    out = {
-      ...out,
-      preservation: {
-        ...out.preservation,
-        comparison: compactComparison(out.preservation.comparison, `Bounds per change and the comparison scope: ${retained ? `read ${retained.path} (pretty-printed)` : "kiln_inspect compare on this programRef"}; compare.offset pages the changes.`)
-      }
-    };
-    if (fits(out))
-      return out;
-  }
-  if (render && isRecord5(out.render)) {
-    const budget = MAX_RESULT_LIMIT - (resultCharacters(out) - resultCharacters(out.render));
-    out = { ...out, render: fullReviewResult(render, retained, budget) };
-  }
-  return out;
-}
-function compactEditResult(result, detail = "compact", options = {}) {
-  if (!isRecord5(result))
-    return result;
-  const { ok, applied, diff, preservation, render, ...rest } = result;
-  const reviewed = isRecord5(render) ? compactReviewResult(render, detail, options) : undefined;
-  const next = ok === false ? "Copy the exact text from kiln_source and send the edit again with this programRef." : reviewed ? reviewed.next : "kiln_render this programRef to review the change.";
-  const out = {
-    ok,
-    ...applied !== undefined ? { applied } : {},
-    ...ok === false ? {} : { changed: changeSummary(result) },
-    next
-  };
-  if (typeof diff === "string") {
-    if (detail === "lean" && diff.length > LEAN_DIFF) {
-      out.diff = diff.slice(0, LEAN_DIFF);
-      out.diffOmitted = diff.length - LEAN_DIFF;
-    } else
-      out.diff = diff;
-  }
-  if (preservation !== undefined) {
-    if (detail === "full")
-      out.preservation = preservation;
-    else if (detail === "compact")
-      out.preservation = compactPreservation(preservation);
-  }
-  if (reviewed)
-    out.render = reviewed;
-  if (detail === "full")
-    return boundFullEdit({ ...out, ...rest }, isRecord5(render) ? render : undefined, options.retainedReport?.());
-  const edited = roundNumbers({ ...out, ...rest });
-  if (detail === "compact" && typeof edited.diff === "string" && edited.diff.length > LEAN_DIFF) {
-    const over = resultCharacters(edited) - DEFAULT_RESULT_LIMIT + 40;
-    if (over > 0) {
-      const keep = Math.max(LEAN_DIFF, edited.diff.length - over);
-      edited.diffOmitted = edited.diff.length - keep;
-      edited.diff = edited.diff.slice(0, keep);
-    }
-  }
-  return edited;
 }
 
 // src/tools/review.ts
@@ -38257,12 +38303,19 @@ async function guardCaptureBudget(name, input, context, run) {
     }
     return out;
   } catch (error) {
+    const described = describeInputError(name, error, { shapes: NESTED_RECORD_SHAPES });
+    if (described)
+      throw new Error(described);
     return {
       ok: false,
       error: error instanceof Error ? error.message : String(error)
     };
   }
 }
+var NESTED_RECORD_SHAPES = {
+  shot: "shape:camera-shot",
+  capture: "shape:capture"
+};
 function snapshotRenderContext(context) {
   return context.viewRenderState ? { ...context, ...context.viewRenderState(), viewRenderState: undefined } : context;
 }

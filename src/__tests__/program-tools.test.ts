@@ -72,7 +72,16 @@ describe('program references', () => {
       string,
       unknown
     >;
-    expect(inline.code).toContain("name: 'D'");
+    expect(inline.code).toBeUndefined();
+    expect(inline.diff).toContain("name: 'D'");
+    expect(await store.get(inline.programRef as string)).toContain("name: 'D'");
+    const withCode = (await edit.run({
+      code,
+      edits: change('D'),
+      render: false,
+      includeCode: true,
+    })) as Record<string, unknown>;
+    expect(withCode.code).toContain("name: 'D'");
     const failed = (await edit.run({
       programRef: a,
       edits: [...change('E'), { oldString: 'missing', newString: 'x' }],

@@ -23,6 +23,7 @@ import { listAssetCatalog } from '../asset-catalog';
 import { createKilnMaterialDef } from './materials';
 import { createKilnReviewDef, type ReviewStore } from './review';
 import { withWorkspaceContext } from './workspace';
+import { describeInputError } from './actions';
 import {
   advancedCaptureInput,
   cameraShotInput,
@@ -2416,12 +2417,23 @@ async function guardCaptureBudget(
     }
     return out;
   } catch (error) {
+    // An input the tool cannot parse is the caller's error, not a build failure (w35: a
+    // shot with the camera fields at its root came back as zod's issue dump under "Fix
+    // the error in the source"). Rule 9: the sentence and the record's shape, as a tool error.
+    const described = describeInputError(name, error, { shapes: NESTED_RECORD_SHAPES });
+    if (described) throw new Error(described);
     return {
       ok: false,
       error: error instanceof Error ? error.message : String(error),
     };
   }
 }
+
+/** The nested records the image tools enforce when they run, by field, as Discovery serves them. */
+const NESTED_RECORD_SHAPES: Readonly<Record<string, string>> = {
+  shot: 'shape:camera-shot',
+  capture: 'shape:capture',
+};
 
 function snapshotRenderContext(context: KilnToolContext): KilnToolContext {
   return context.viewRenderState

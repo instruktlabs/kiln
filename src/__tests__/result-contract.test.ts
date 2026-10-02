@@ -165,6 +165,29 @@ describe('contract rule 7: bounded results on one line', () => {
     expect(edited.result.isError, edited.text.slice(0, 400)).not.toBe(true);
     bounded('kiln_edit default', edited.text);
 
+    // w26: an edit sent by `code` (a 13,173-character program) echoed the patched source
+    // and reached 28,539 characters. The retained programRef serves the source; includeCode
+    // asks for it, bounded with the rest of the result.
+    const longSource = `${HEAVY}\n// ${'detail '.repeat(2000)}`;
+    const byCode = await call('kiln_edit', {
+      code: longSource,
+      edits: [{ oldString: 'boxGeo(1.2, 1, 1.2)', newString: 'boxGeo(1.1, 1, 1.1)' }],
+    });
+    expect(byCode.result.isError, byCode.text.slice(0, 400)).not.toBe(true);
+    bounded('kiln_edit default by code', byCode.text);
+    expect(byCode.json!['code']).toBeUndefined();
+    expect(byCode.json!['programRef']).toMatch(/^p_/u);
+    const withCode = await call('kiln_edit', {
+      code: longSource,
+      edits: [{ oldString: 'boxGeo(1.2, 1, 1.2)', newString: 'boxGeo(1.1, 1, 1.1)' }],
+      includeCode: true,
+    });
+    expect(withCode.result.isError, withCode.text.slice(0, 400)).not.toBe(true);
+    bounded('kiln_edit default by code with includeCode', withCode.text);
+    expect(typeof withCode.json!['code']).toBe('string');
+    expect(withCode.json!['codeOmitted'] as number).toBeGreaterThan(0);
+    expect(String(withCode.json!['codeHint'])).toContain('kiln_source');
+
     // Renaming every part (the f07 shape: 22 of 49 parts renamed put a compact edit at
     // 20,069 characters) keeps the comparison to paths, statuses and changed fields. The
     // comparison needs unique sibling names, so this is the uniquely named grid.

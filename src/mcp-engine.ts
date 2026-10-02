@@ -188,7 +188,8 @@ export function createKilnToolHost(
             {
               type: 'text',
               text: withoutLocalPaths(
-                describeInputError(name, err, schemaFields(def.inputSchema)) ?? errorMessage(err),
+                describeInputError(name, err, { fields: schemaFields(def.inputSchema) }) ??
+                  errorMessage(err),
               ),
             },
           ],

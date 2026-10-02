@@ -149,9 +149,12 @@ test('material CLI creates deterministic recipes and exports/imports exact porta
     const generated = run(['material', 'procedural', '--file', file]);
     expect(generated.status, generated.stderr).toBe(0);
     const material = JSON.parse(generated.stdout).materials[0];
-    expect(JSON.parse(run(['material', 'list']).stdout).materials[0].revisionId).toBe(
-      material.revisionId,
-    );
+    const listed = JSON.parse(run(['material', 'list']).stdout);
+    expect(listed.materials[0].revisionId).toBe(material.revisionId);
+    // The CLI lists the summaries kiln_material list returns, not every manifest (a workspace
+    // with five pinned materials printed 34,116 characters, 2 October 2026).
+    expect(listed.materials[0].slots).toEqual(['baseColor']);
+    expect(listed.materials[0]).not.toHaveProperty('maps');
     const exact = run(['material', 'get', 'plaster', material.revisionId]);
     expect(exact.status, exact.stderr).toBe(0);
     expect(JSON.parse(exact.stdout).manifest).toEqual(material);

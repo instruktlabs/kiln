@@ -189,3 +189,44 @@ it('explains the supported equivalents for common orbit and image-size guesses',
     await server.close();
   }
 });
+
+it('a nested record that fails to parse is a readable tool error, not a build failure', async () => {
+  // w35: a shot with the camera fields at its root came back ok: false with zod's issue
+  // dump under "Fix the error in the source", through the capture guard's catch.
+  let builds = 0;
+  const server = createKilnMcpServer({
+    evaluatorPort: {
+      async render() {
+        builds++;
+        throw new Error('invalid input reached evaluation');
+      },
+    },
+  });
+  const client = new Client({ name: 'nested-record-test', version: '0' });
+  const [ct, st] = InMemoryTransport.createLinkedPair();
+  await Promise.all([server.connect(st), client.connect(ct)]);
+  try {
+    const result = await client.callTool({
+      name: 'kiln_screenshot_animation',
+      arguments: {
+        code: 'function build(){}',
+        clip: 'spin',
+        frameTimes: [0, 0.5],
+        shot: { type: 'orbit', azimuthDeg: 50, elevationDeg: -8 },
+      },
+    });
+    const message = result.content
+      .filter((content) => content.type === 'text')
+      .map((content) => content.text)
+      .join(' ');
+    expect(result.isError).toBe(true);
+    expect(message).toContain('shot');
+    expect(message).toContain('shape:camera-shot');
+    expect(message).not.toContain('"code"');
+    expect(message).not.toContain('Fix the error in the source');
+    expect(builds).toBe(0);
+  } finally {
+    await client.close();
+    await server.close();
+  }
+});

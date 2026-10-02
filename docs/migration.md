@@ -39,10 +39,14 @@ integration notices first.
   omits `viewEvidence.lastFaithful` when it is the current view and keeps `poseBounds`
   inside the default limit by counting the trailing frames it leaves out
   (`poseBoundsOmitted`, `poseBoundsHint`). A full `kiln_edit` is bounded as a whole: its
-  diff shrinks first, then the bounds of each change, then the render. CLI `render --json`
-  and `animation --json` carry the compact result unless `--detail full`.
+  diff shrinks first, then the bounds of each change, then the render. A `kiln_edit` sent
+  by `code` no longer echoes the patched source: the result's `programRef` serves it through
+  `kiln_source`, and `includeCode: true` asks for it bounded with the rest (`codeOmitted`,
+  `codeHint`). CLI `render --json` and `animation --json` carry the compact result unless
+  `--detail full`.
 - **Errors.** `ok: false` is an MCP error (`isError: true`) naming the cause and the next
-  call, with no local path. Invalid input is a sentence, not a zod issue list.
+  call, with no local path. Invalid input is a sentence, not a zod issue list; a wrong
+  camera subject is answered with the shot's fix, not the source's.
 - **Revisions by default.** `kiln_assets get` and `restore` without `revisionId` read the
   asset's newest revision; `kiln_material get` without `revisionId` reads the material's
   only revision and names the revisions when there are several, as `kiln_project get`

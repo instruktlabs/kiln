@@ -1073,7 +1073,7 @@ List part paths and inspect joints, clearances and edit preservation. listParts 
 
 ## kiln_edit
 
-Atomically apply ordered exact-string replacements and render. Copy anchors from kiln_source. Supply code, programRef OR file. Returns programRef (kept in the program store across sessions and processes, never evicted), parentRef, diff and preservation comparing static data and animation channels. Review changes; use kiln_inspect compare for more pages or protected subtrees. Failed comparison preserves the repair; render:false leaves preservation not_assessed. capture selects cameras; includeCode returns full source.
+Atomically apply ordered exact-string replacements and render. Copy anchors from kiln_source. Supply code, programRef OR file. Returns programRef (kept in the program store across sessions and processes, never evicted), parentRef, diff and preservation comparing static data and animation channels. Review changes; use kiln_inspect compare for more pages or protected subtrees. Failed comparison preserves the repair; render:false leaves preservation not_assessed. capture selects cameras; includeCode adds the patched source, bounded.
 
 <details>
 <summary>Input JSON Schema</summary>
@@ -1147,7 +1147,7 @@ Atomically apply ordered exact-string replacements and render. Copy anchors from
       "maxLength": 1024
     },
     "includeCode": {
-      "description": "Return the full updated source. Defaults to false with programRef, true with code.",
+      "description": "Also return the patched source, bounded with the result; kiln_source pages it. Default false.",
       "type": "boolean"
     },
     "projectId": {

@@ -1,9 +1,13 @@
 # Kiln roadmap
 
-Kiln **0.9.0** is the current release: standalone authoring with optional projects, a
-material library and Live Review in the packaged local dashboard, the calibrated
-`review-neutral-v1` review rig, compact tool results, and the fixes authors reported
-against 0.8. [CHANGELOG.md](CHANGELOG.md) lists the changes. The
+Kiln **0.10.0** is the current release, the v1 readiness release: the stdio server serves
+protocol revision 2026-07-28 beside the 2025 handshakes and answers before the engine
+loads, the three record tools are flat objects with an `action` field, every tool result is
+bounded and leads with its verdict, and the generated workspace guide and skills are
+shorter. It builds on 0.9.0's standalone authoring with optional projects, a material
+library and Live Review in the packaged local dashboard and the calibrated
+`review-neutral-v1` review rig. [CHANGELOG.md](CHANGELOG.md) lists the changes with each
+breaking one marked. The
 [foundation checkpoint](docs/plans/2026-09-26-project-foundation.md) is history: it records
 how projects, materials and Live Review were qualified, and the changelog describes 0.9.0.
 Dated plans and reviews under `docs/` record how earlier work was qualified; the September

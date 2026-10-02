@@ -157,11 +157,20 @@ part floats, the compact render result is 9,103 characters, `full` 16,734 and `l
   the 10,973-character comparison on top. The diff shrinks first (to 2,000, with
   `diffOmitted`), then the bounds of each change leave the comparison (the retained report
   keeps them), then the render is bounded again with what is left.
+- **Breaking:** `kiln_edit` no longer echoes the patched source when the program was sent as
+  `code`: a live edit of a 13,173-character program came back at 28,539 characters, the
+  source beside the render. The retained `programRef` serves it through `kiln_source`;
+  `includeCode: true` asks for it, bounded with the rest of the result (`codeOmitted`,
+  `codeHint`).
 - An invalid-input error no longer ends an issue sentence twice (`...or file.. Check`), and
   one that names a key the tool does not take lists the keys it does (`kiln_material takes
   action, materialId, ...`): a live session passed a project palette's `resourceId` to
   `kiln_material get` twice and was told only to check the schema. The `materialId`
-  description names the palette's `resourceId`.
+  description names the palette's `resourceId`. A nested record the image tools enforce
+  when they run (`shot`, `capture`) that fails to parse is the same kind of sentence naming
+  the record's Discovery shape, as a tool error: a live session put the camera fields at the
+  root of a `shot` and received `ok: false` with zod's issue dump under "Fix the error in
+  the source".
 - `kiln_assets get` and `restore` without `revisionId` read the asset's newest revision (the
   one no later revision names as its parent), and `kiln_material get` without `revisionId`
   reads the material's only revision, naming the revisions when there are several; both
@@ -184,10 +193,15 @@ part floats, the compact render result is 9,103 characters, `full` 16,734 and `l
   material, asset or review id names the `list` action; a renderer that is required but
   unavailable names `KILN_RENDER`, `KILN_RENDER_PORT_URL` and `kiln_renderer reprobe`;
   `kiln_review save` names the revision or status to fix; a project import refusing its
-  own id says to pass a different `--id`.
+  own id says to pass a different `--id`; a shot whose subject names no node, or more
+  than one, is answered with the shot's fix (one exact part path from the list in the
+  error), not the source's.
 - The CLI `render --json` and `animation --json` receipts carry the compact result by
   default (one receipt measured 51,312 characters at `full`); `--detail lean|compact|full`
-  selects the detail.
+  selects the detail. The CLI `material list` prints the summaries `kiln_material list`
+  returns, not every manifest (34,116 characters for five pinned materials before).
+- `scripts/tier2-dogfood.mjs` counts the tool steps of an Agy stream (`step_update` with
+  `tool_name`, one per step index), so a blind Agy run's receipt no longer says `unknown`.
 
 ### Knowledge and setup
 

@@ -211,7 +211,8 @@ export async function projectMain(argv: readonly string[]): Promise<number> {
     if (!input || typeof input !== 'object' || Array.isArray(input))
       throw new Error('Preset options must be a JSON object');
     output = await createKilnMaterialDef(materials).run({ ...input, action: 'create-preset' });
-  } else if (action === 'list') output = { materials: await materials.list() };
+  } else if (action === 'list')
+    output = await createKilnMaterialDef(materials).run({ action: 'list' });
   else if (action === 'get' || action === 'export') {
     const record = await materials.read(positional[0]!, positional[1]!);
     if (action === 'get')

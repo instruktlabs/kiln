@@ -35478,20 +35478,597 @@ function assertSavedRequirementsAuthorized(manifest, current) {
 }
 
 // src/tools/programs.ts
+import { z as z11 } from "zod";
+
+// src/tools/review-detail.ts
 import { z as z10 } from "zod";
-var refInput = z10.string().regex(programRefPattern).describe("Returned p_ handle or full sha256 ref.");
+var COMPACT_PART_PREVIEW = 24;
+var COMPACT_FINDINGS_PER_DIMENSION = 12;
+var LEAD_BLOCKERS = 8;
+var LEAN_WARNINGS = 3;
+var COMPACT_WARNINGS = 12;
+var WARNING_CHARS = 1000;
+var DEFAULT_RESULT_LIMIT = 20000;
+var MAX_RESULT_LIMIT = 40000;
+var COMPACT_DECIMALS = 6;
+var reviewDetailInput = z10.enum(["lean", "compact", "full"]).optional().describe("compact (default) groups findings by code; lean: verdict, blockers, metrics only; full: every finding, rule and part plus the retained report path");
+function requestedDetail(input, fallback = "compact") {
+  const detail = input?.detail;
+  return detail === "full" || detail === "lean" || detail === "compact" ? detail : fallback;
+}
+var partsHint = (offset) => `For remaining paths use kiln_inspect with image:false and listParts:{offset:${offset}}. listParts.query filters names/paths; follow partListing.nextOffset on the same programRef and query.`;
+var isRecord6 = (value) => typeof value === "object" && value !== null && !Array.isArray(value);
+var SEVERITY = { block: 0, warn: 1, observe: 2 };
+var severity = (finding) => isRecord6(finding) && typeof finding.disposition === "string" && SEVERITY[finding.disposition] || (isRecord6(finding) && finding.disposition === "block" ? 0 : 3);
+function affectedLabel(finding) {
+  const affected = finding.affected;
+  if (!isRecord6(affected))
+    return;
+  for (const key of ["nodePath", "node", "material", "texture", "clip", "track", "attribute"])
+    if (typeof affected[key] === "string")
+      return affected[key];
+  return;
+}
+function groupFindings(findings) {
+  const groups = new Map;
+  for (const finding of findings) {
+    if (!isRecord6(finding))
+      continue;
+    const code = typeof finding.code === "string" ? finding.code : "UNKNOWN";
+    const label = affectedLabel(finding);
+    const group = groups.get(code);
+    if (!group) {
+      groups.set(code, { ...finding, code, count: 1 });
+      continue;
+    }
+    group.count++;
+    if (label && label !== affectedLabel(group)) {
+      const more = Array.isArray(group.alsoAffected) ? group.alsoAffected : [];
+      if (more.length < 2 && !more.includes(label))
+        group.alsoAffected = [...more, label];
+    }
+  }
+  return [...groups.values()].sort((a, b) => severity(a) - severity(b));
+}
+function countFindings(report) {
+  const counts = { block: 0, warn: 0, observe: 0 };
+  if (!isRecord6(report) || !isRecord6(report.dimensions))
+    return counts;
+  for (const dimension of Object.values(report.dimensions)) {
+    if (!isRecord6(dimension) || !Array.isArray(dimension.findings))
+      continue;
+    for (const finding of dimension.findings) {
+      const disposition = isRecord6(finding) ? finding.disposition : undefined;
+      if (disposition === "block" || disposition === "warn" || disposition === "observe")
+        counts[disposition]++;
+    }
+  }
+  return counts;
+}
+function leadBlockers(report) {
+  if (!isRecord6(report) || !isRecord6(report.dimensions))
+    return [];
+  const blockers = [];
+  for (const [name, dimension] of Object.entries(report.dimensions)) {
+    if (!isRecord6(dimension) || !Array.isArray(dimension.findings))
+      continue;
+    for (const group of groupFindings(dimension.findings)) {
+      if (group.disposition !== "block")
+        continue;
+      blockers.push({
+        code: group.code,
+        dimension: name,
+        count: group.count,
+        message: group.message,
+        ...group.affected !== undefined ? { affected: group.affected } : {},
+        ...group.alsoAffected !== undefined ? { alsoAffected: group.alsoAffected } : {},
+        ...group.repairText !== undefined ? { repairText: group.repairText } : {}
+      });
+    }
+  }
+  return blockers;
+}
+function compactDimension(dimension, limit = COMPACT_FINDINGS_PER_DIMENSION) {
+  if (!isRecord6(dimension) || !Array.isArray(dimension.findings))
+    return dimension;
+  const groups = groupFindings(dimension.findings);
+  const kept = groups.slice(0, limit);
+  const dropped = groups.slice(limit);
+  const out = { ...dimension, findings: kept };
+  if (dimension.findings.length !== kept.length)
+    out.findingsTotal = dimension.findings.length;
+  if (dropped.length) {
+    out.findingsOmitted = dropped.reduce((sum, group) => sum + group.count, 0);
+    out.omittedByCode = Object.fromEntries(dropped.map((group) => [group.code, group.count]));
+  }
+  return out;
+}
+function compactQaReport(report, limit = COMPACT_FINDINGS_PER_DIMENSION, keepRules = false) {
+  if (!isRecord6(report) || !isRecord6(report.dimensions))
+    return report;
+  const { dimensions, rules, ...rest } = report;
+  const compact = {
+    ...rest,
+    detail: "compact",
+    dimensions: Object.fromEntries(Object.entries(dimensions).map(([name, value]) => [name, compactDimension(value, limit)]))
+  };
+  if (keepRules && rules !== undefined)
+    compact.rules = rules;
+  else if (Array.isArray(rules)) {
+    let evaluated = 0;
+    const notEvaluated = [];
+    for (const rule of rules) {
+      if (!isRecord6(rule))
+        continue;
+      if (rule.status === "evaluated")
+        evaluated++;
+      else if (rule.status !== "notRequested")
+        notEvaluated.push({ id: rule.id, ...rule.reason ? { reason: rule.reason } : {} });
+    }
+    compact.ruleSummary = { evaluated, notEvaluated };
+  }
+  compact.fullDetail = "Every finding and rule: detail: 'full'.";
+  return compact;
+}
+function nextStep(result) {
+  if (result.ok === false) {
+    if (typeof result.error === "string" && /GPU render|render service|renderer/u.test(result.error))
+      return 'The source may be fine; the renderer is not. Set KILN_RENDER=auto (CLI --render auto) for CPU geometry views, or repair the render service and call kiln_renderer { action: "reprobe" }, then kiln_render this programRef again.';
+    if (typeof result.error === "string" && /^(?:missing|ambiguous) camera subject/u.test(result.error))
+      return "The source is unchanged; the shot is wrong. Name the subject by one exact part path from the list in the error, then call again with this programRef.";
+    return "Fix the error in the source: kiln_edit with this programRef, or kiln_render with corrected code.";
+  }
+  const report = result.qaReport;
+  const counts = countFindings(report);
+  if (counts.block)
+    return `Fix the ${counts.block} blocking finding${counts.block === 1 ? "" : "s"} with kiln_edit on this programRef, then kiln_render again.`;
+  if (counts.warn)
+    return "Review the warnings; fix what matters with kiln_edit on this programRef, or kiln_save it when accepted.";
+  return "kiln_save this programRef when done, or kiln_edit to refine.";
+}
+function lead(result) {
+  const report = isRecord6(result.qaReport) ? result.qaReport : undefined;
+  const {
+    ok,
+    acceptance: _acceptance,
+    disposition: _disposition,
+    blockers: _blockers,
+    findings: _findings,
+    next: _next,
+    ...rest
+  } = result;
+  const blockers = leadBlockers(report);
+  return {
+    ok,
+    ...report && typeof report.acceptance === "string" ? { acceptance: report.acceptance } : {},
+    ...report && typeof report.disposition === "string" ? { disposition: report.disposition } : {},
+    ...report ? {
+      blockers: blockers.slice(0, LEAD_BLOCKERS),
+      ...blockers.length > LEAD_BLOCKERS ? { blockersOmitted: blockers.length - LEAD_BLOCKERS } : {},
+      findings: countFindings(report)
+    } : {},
+    ...report || ok === false ? { next: nextStep(result) } : {},
+    ...rest
+  };
+}
+function roundNumbers(value) {
+  if (typeof value === "number")
+    return Number.isInteger(value) || !Number.isFinite(value) ? value : Number(value.toFixed(COMPACT_DECIMALS));
+  if (Array.isArray(value))
+    return value.map(roundNumbers);
+  if (isRecord6(value)) {
+    const out = {};
+    for (const [key, entry] of Object.entries(value))
+      out[key] = roundNumbers(entry);
+    return out;
+  }
+  return value;
+}
+function withCurrentEvidence(result) {
+  const evidence = result.viewEvidence;
+  if (!isRecord6(evidence) || !("current" in evidence))
+    return result;
+  const { current, lastFaithful } = evidence;
+  const repeated = isRecord6(current) && isRecord6(lastFaithful) && typeof current.sequence === "number" && lastFaithful.sequence === current.sequence;
+  return {
+    ...result,
+    viewEvidence: {
+      current,
+      ...lastFaithful !== undefined && !repeated ? { lastFaithful } : {}
+    }
+  };
+}
+var RECEIPT_IDENTITY = new Set([
+  "version",
+  "camera",
+  "derivativeLabel",
+  "cameraFidelity",
+  "captureCache"
+]);
+function compactReceipt(receipt, summary) {
+  if (!isRecord6(receipt))
+    return receipt;
+  const out = {};
+  for (const [key, value] of Object.entries(receipt)) {
+    if (key === "version" || key === "camera")
+      continue;
+    if (key === "derivativeLabel" || key === "cameraFidelity" || key === "captureCache" || JSON.stringify(summary[key]) !== JSON.stringify(value))
+      out[key] = value;
+  }
+  return out;
+}
+function sharedReceiptFields(receipts, summary) {
+  const shared = {};
+  const [first, ...rest] = receipts;
+  if (!isRecord6(first) || !rest.every(isRecord6))
+    return shared;
+  for (const [key, value] of Object.entries(first)) {
+    if (RECEIPT_IDENTITY.has(key) || summary[key] !== undefined)
+      continue;
+    const json = JSON.stringify(value);
+    if (rest.every((receipt) => JSON.stringify(receipt[key]) === json))
+      shared[key] = value;
+  }
+  return shared;
+}
+function withCompactReceipts(result) {
+  const fidelity = isRecord6(result.viewFidelity) ? result.viewFidelity : undefined;
+  const { receipts, ...rest } = fidelity ?? {};
+  const list = Array.isArray(receipts) ? receipts : Array.isArray(result.derivativeReceipts) ? result.derivativeReceipts : undefined;
+  if (!list)
+    return result;
+  const summary = { ...rest, ...fidelity ? sharedReceiptFields(list, rest) : {} };
+  let out = result;
+  if (fidelity)
+    out = {
+      ...out,
+      viewFidelity: Array.isArray(receipts) ? { ...summary, receipts: receipts.map((r) => compactReceipt(r, summary)) } : summary
+    };
+  if (Array.isArray(result.derivativeReceipts))
+    out = {
+      ...out,
+      derivativeReceipts: result.derivativeReceipts.map((r) => compactReceipt(r, summary))
+    };
+  return out;
+}
+function withSharedShots(result) {
+  const shots = result.cameraShots;
+  if (!Array.isArray(shots) || shots.length < 2 || !shots.every(isRecord6))
+    return result;
+  const groups = new Map;
+  for (const shot of shots) {
+    const entry = {};
+    for (const [key, value] of Object.entries(shot)) {
+      if (key === "subject" && isRecord6(value)) {
+        const { bounds: _bounds, ...identity } = value;
+        entry.subject = identity;
+      } else
+        entry[key] = value;
+    }
+    const key = JSON.stringify(entry);
+    const group = groups.get(key);
+    if (group)
+      group.frames = group.frames + 1;
+    else
+      groups.set(key, { ...entry, frames: 1 });
+  }
+  if (groups.size === shots.length)
+    return result;
+  return { ...result, cameraShots: [...groups.values()] };
+}
+var poseFramesHint = (retained) => retained ? `Every frame: read ${retained.path} (pretty-printed), or ask fewer frameTimes or measureParts per call.` : "Every frame: detail: 'full' (inside the 40,000-character limit), or fewer frameTimes or measureParts per call.";
+function boundPoseBounds(result, limit, hint) {
+  const poses = result.poseBounds;
+  if (!Array.isArray(poses) || poses.length < 2 || resultCharacters(result) <= limit)
+    return result;
+  for (let kept = poses.length - 1;kept >= 1; kept--) {
+    const out = {
+      ...result,
+      poseBounds: poses.slice(0, kept),
+      poseBoundsOmitted: poses.length - kept,
+      poseBoundsHint: hint
+    };
+    if (resultCharacters(out) <= limit || kept === 1)
+      return out;
+  }
+  return result;
+}
+function withPartPreview(result, limit = COMPACT_PART_PREVIEW) {
+  if (!Array.isArray(result.parts) || result.parts.length <= limit)
+    return result;
+  return {
+    ...result,
+    parts: result.parts.slice(0, limit),
+    partsTruncated: true,
+    partsNextOffset: limit,
+    partsHint: partsHint(limit)
+  };
+}
+function boundWarnings(result, count) {
+  const all = result.warnings;
+  if (!Array.isArray(all))
+    return result;
+  const warnings = all.slice(0, count).map((warning) => typeof warning === "string" && warning.length > WARNING_CHARS ? `${warning.slice(0, WARNING_CHARS)}… (+${warning.length - WARNING_CHARS} chars)` : warning);
+  const omitted = all.length - warnings.length;
+  if (omitted === 0 && warnings.every((warning, i) => warning === all[i]))
+    return result;
+  return { ...result, warnings, ...omitted > 0 ? { warningsOmitted: omitted } : {} };
+}
+function resultCharacters(result) {
+  if (!isRecord6(result))
+    return JSON.stringify(result).length;
+  const { pngBase64: _png, framesBase64: _frames, ...rest } = result;
+  return JSON.stringify(rest).length;
+}
+var LEAN_KEYS = [
+  "tris",
+  "meshes",
+  "materials",
+  "distinctMaterials",
+  "bbox",
+  "lowestPart",
+  "views",
+  "capture",
+  "gridWidth",
+  "gridHeight",
+  "width",
+  "height",
+  "cameraShot",
+  "cameraShots",
+  "loopClosure",
+  "poseBounds",
+  "roofsHidden",
+  "partListing",
+  "measurement",
+  "surfaceMeasurements",
+  "comparison",
+  "materialContract",
+  "error",
+  "pngBase64",
+  "framesBase64",
+  "derivativeReceipts"
+];
+function leanFidelity(fidelity) {
+  if (!isRecord6(fidelity))
+    return fidelity;
+  const keep = {};
+  for (const key of [
+    "delivered",
+    "materialFaithful",
+    "rendererId",
+    "exactArtifact",
+    "degraded",
+    "degradeReason",
+    "receipts"
+  ])
+    if (fidelity[key] !== undefined)
+      keep[key] = fidelity[key];
+  return keep;
+}
+function leanReviewResult(source) {
+  const result = withSharedShots(withCompactReceipts(source));
+  const led = lead(result);
+  const out = {};
+  for (const key of [
+    "ok",
+    "acceptance",
+    "disposition",
+    "blockers",
+    "blockersOmitted",
+    "findings",
+    "next"
+  ])
+    if (led[key] !== undefined)
+      out[key] = led[key];
+  for (const key of LEAN_KEYS)
+    if (result[key] !== undefined)
+      out[key] = result[key];
+  if (isRecord6(out.comparison))
+    out.comparison = withCompactComparison(out).comparison;
+  if (result.viewFidelity !== undefined)
+    out.viewFidelity = leanFidelity(result.viewFidelity);
+  const { warnings, warningsOmitted } = boundWarnings(result, LEAN_WARNINGS);
+  if (warnings !== undefined)
+    out.warnings = warnings;
+  if (warningsOmitted !== undefined)
+    out.warningsOmitted = warningsOmitted;
+  if (Array.isArray(result.parts))
+    out.partsTotal = result.partsTotal ?? result.parts.length;
+  out.detail = "lean";
+  out.fullDetail = "Findings, parts and receipts: detail: 'compact' or 'full'.";
+  return boundPoseBounds(roundNumbers(out), DEFAULT_RESULT_LIMIT, poseFramesHint(undefined));
+}
+function fullReviewResult(result, retained, limit = MAX_RESULT_LIMIT) {
+  let out = lead(result);
+  if (retained)
+    out = { ...out, retainedReport: retained };
+  const fits = (candidate) => resultCharacters(candidate) <= limit;
+  if (fits(out))
+    return out;
+  out = boundWarnings(out, COMPACT_WARNINGS);
+  if (fits(out))
+    return out;
+  const withGroups = (groups) => {
+    const report = out.qaReport;
+    if (!isRecord6(report) || !isRecord6(report.dimensions))
+      return out;
+    return {
+      ...out,
+      qaReport: {
+        ...compactQaReport(report, groups, true),
+        detail: "full-bounded",
+        fullDetail: retained ? `Every finding: read ${retained.path} (pretty-printed).` : "Every finding is in the retained artifact when the host records one."
+      }
+    };
+  };
+  let bounded = withGroups(512);
+  if (fits(bounded))
+    return bounded;
+  out = withPartPreview(out);
+  for (let groups = 512;; groups = Math.floor(groups / 2)) {
+    bounded = withGroups(groups);
+    if (fits(bounded))
+      return bounded;
+    if (groups <= 1)
+      return boundPoseBounds(bounded, limit, poseFramesHint(retained));
+  }
+}
+function compactReviewResult(result, detail = "compact", options = {}) {
+  if (!isRecord6(result))
+    return result;
+  if (detail === "lean")
+    return leanReviewResult(result);
+  if (detail === "full")
+    return fullReviewResult(result, options.retainedReport?.());
+  const out = boundWarnings(withCompactReceipts(withCompactComparison(withPartPreview(withSharedShots(withCurrentEvidence(lead(result)))))), COMPACT_WARNINGS);
+  if (out.qaReport !== undefined)
+    out.qaReport = compactQaReport(out.qaReport);
+  return boundPoseBounds(roundNumbers(out), DEFAULT_RESULT_LIMIT, poseFramesHint(undefined));
+}
+function changeSummary(result) {
+  const preservation = isRecord6(result.preservation) ? result.preservation : undefined;
+  const comparison = preservation && isRecord6(preservation.comparison) ? preservation.comparison : undefined;
+  const out = { status: preservation?.status ?? "not_assessed" };
+  if (comparison) {
+    if (comparison.summary !== undefined)
+      out.parts = comparison.summary;
+    if (comparison.animationSummary !== undefined)
+      out.animation = comparison.animationSummary;
+    if (Array.isArray(comparison.changes))
+      out.changed = comparison.changes.slice(0, 5).map((change) => isRecord6(change) ? `${change.path ?? "?"}: ${change.status ?? ""}${Array.isArray(change.fields) && change.fields.length ? ` (${change.fields.join(", ")})` : ""}` : String(change));
+  } else if (preservation?.reason !== undefined)
+    out.reason = preservation.reason;
+  return out;
+}
+var LEAN_DIFF = 2000;
+var COMPACT_COMPARISON_CHANGES = 12;
+function compactComparison(comparison, hint, limit) {
+  const out = {};
+  for (const key of ["programRef", "version", "units", "summary", "before", "after", "subtrees"])
+    if (comparison[key] !== undefined)
+      out[key] = comparison[key];
+  if (isRecord6(comparison.animation)) {
+    const { scope: _scope, ...animation } = comparison.animation;
+    out.animation = animation;
+  }
+  if (comparison.animationSummary !== undefined)
+    out.animationSummary = comparison.animationSummary;
+  if (Array.isArray(comparison.changes)) {
+    const changes = limit === undefined ? comparison.changes : comparison.changes.slice(0, limit);
+    out.changes = changes.map((change) => {
+      if (!isRecord6(change))
+        return change;
+      const kept = { path: change.path };
+      if (typeof change.name === "string")
+        kept.name = change.name;
+      kept.status = change.status;
+      if (Array.isArray(change.fields) && change.fields.length > 0)
+        kept.fields = change.fields;
+      return kept;
+    });
+  }
+  for (const key of ["offset", "nextOffset"])
+    if (comparison[key] !== undefined)
+      out[key] = comparison[key];
+  out.detail = hint;
+  return out;
+}
+var COMPARE_HINT = "Bounds per change and the comparison scope: detail: 'full'. compare.offset pages the changes.";
+function withCompactComparison(result) {
+  if (!isRecord6(result.comparison))
+    return result;
+  return { ...result, comparison: compactComparison(result.comparison, COMPARE_HINT) };
+}
+function compactPreservation(preservation) {
+  if (!isRecord6(preservation) || !isRecord6(preservation.comparison))
+    return preservation;
+  return {
+    ...preservation,
+    comparison: compactComparison(preservation.comparison, "Bounds per change and the comparison scope: detail: 'full'. More changes: kiln_inspect compare on this programRef.", COMPACT_COMPARISON_CHANGES)
+  };
+}
+function boundFullEdit(edited, render, retained) {
+  const fits = (candidate) => resultCharacters(candidate) <= MAX_RESULT_LIMIT;
+  if (fits(edited))
+    return edited;
+  let out = edited;
+  if (typeof out.diff === "string" && out.diff.length > LEAN_DIFF) {
+    out = { ...out, diff: out.diff.slice(0, LEAN_DIFF), diffOmitted: out.diff.length - LEAN_DIFF };
+    if (fits(out))
+      return out;
+  }
+  if (isRecord6(out.preservation) && isRecord6(out.preservation.comparison)) {
+    out = {
+      ...out,
+      preservation: {
+        ...out.preservation,
+        comparison: compactComparison(out.preservation.comparison, `Bounds per change and the comparison scope: ${retained ? `read ${retained.path} (pretty-printed)` : "kiln_inspect compare on this programRef"}; compare.offset pages the changes.`)
+      }
+    };
+    if (fits(out))
+      return out;
+  }
+  if (render && isRecord6(out.render)) {
+    const budget = MAX_RESULT_LIMIT - (resultCharacters(out) - resultCharacters(out.render));
+    out = { ...out, render: fullReviewResult(render, retained, budget) };
+  }
+  return out;
+}
+function compactEditResult(result, detail = "compact", options = {}) {
+  if (!isRecord6(result))
+    return result;
+  const { ok, applied, diff, preservation, render, ...rest } = result;
+  const reviewed = isRecord6(render) ? compactReviewResult(render, detail, options) : undefined;
+  const next = ok === false ? "Copy the exact text from kiln_source and send the edit again with this programRef." : reviewed ? reviewed.next : "kiln_render this programRef to review the change.";
+  const out = {
+    ok,
+    ...applied !== undefined ? { applied } : {},
+    ...ok === false ? {} : { changed: changeSummary(result) },
+    next
+  };
+  if (typeof diff === "string") {
+    if (detail === "lean" && diff.length > LEAN_DIFF) {
+      out.diff = diff.slice(0, LEAN_DIFF);
+      out.diffOmitted = diff.length - LEAN_DIFF;
+    } else
+      out.diff = diff;
+  }
+  if (preservation !== undefined) {
+    if (detail === "full")
+      out.preservation = preservation;
+    else if (detail === "compact")
+      out.preservation = compactPreservation(preservation);
+  }
+  if (reviewed)
+    out.render = reviewed;
+  if (detail === "full")
+    return boundFullEdit({ ...out, ...rest }, isRecord6(render) ? render : undefined, options.retainedReport?.());
+  const edited = roundNumbers({ ...out, ...rest });
+  if (detail === "compact" && typeof edited.diff === "string" && edited.diff.length > LEAN_DIFF) {
+    const over = resultCharacters(edited) - DEFAULT_RESULT_LIMIT + 40;
+    if (over > 0) {
+      const keep = Math.max(LEAN_DIFF, edited.diff.length - over);
+      edited.diffOmitted = edited.diff.length - keep;
+      edited.diff = edited.diff.slice(0, keep);
+    }
+  }
+  return edited;
+}
+
+// src/tools/programs.ts
+var refInput = z11.string().regex(programRefPattern).describe("Returned p_ handle or full sha256 ref.");
 function withProgramReferences(def, store, readSourceFile) {
-  if (!(def.inputSchema instanceof z10.ZodObject))
+  if (!(def.inputSchema instanceof z11.ZodObject))
     throw new Error(`${def.name} must have an object input schema.`);
   const sources = readSourceFile ? "code, programRef OR file" : "code OR programRef";
   const inputSchema = def.inputSchema.extend({
-    code: z10.string().optional().describe("New source."),
+    code: z11.string().optional().describe("New source."),
     programRef: refInput.optional(),
     ...readSourceFile ? {
-      file: z10.string().min(1).max(1024).optional().describe("A program file inside the workspace, relative to its root.")
+      file: z11.string().min(1).max(1024).optional().describe("A program file inside the workspace, relative to its root.")
     } : {},
     ...def.name === "kiln_edit" ? {
-      includeCode: z10.boolean().optional().describe("Return the full updated source. Defaults to false with programRef, true with code.")
+      includeCode: z11.boolean().optional().describe("Also return the patched source, bounded with the result; kiln_source pages it. Default false.")
     } : {}
   }).refine((input) => [input.code, input.programRef, input.file].filter((value) => value !== undefined).length === 1, { message: `Supply exactly one of ${sources.replace(" OR ", " or ")}.` });
   const summaries = {
@@ -35502,7 +36079,7 @@ function withProgramReferences(def, store, readSourceFile) {
     kiln_inspect: "List part paths and inspect joints, clearances and edit preservation. listParts filters names/paths with query; follow partListing.nextOffset on the same programRef/query. measure/surfacePairs return distances, not fit certificates. compare reports static changes and separate animation channel changes; paths adds complete static subtree summaries. image:false skips rendering. Otherwise use part/orbit or exact shot; check viewFidelity for materials."
   };
   const kept = store.retention ?? "kept by the host program store";
-  const description = def.name === "kiln_edit" ? `Atomically apply ordered exact-string replacements and render. Copy anchors from kiln_source. Supply ${sources}. Returns programRef (${kept}), parentRef, diff and preservation comparing static data and animation channels. Review changes; use kiln_inspect compare for more pages or protected subtrees. Failed comparison preserves the repair; render:false leaves preservation not_assessed. capture selects cameras; includeCode returns full source.` : `${summaries[def.name] ?? def.description} Supply ${sources} (${kept}). Invalid drafts keep a ref.`;
+  const description = def.name === "kiln_edit" ? `Atomically apply ordered exact-string replacements and render. Copy anchors from kiln_source. Supply ${sources}. Returns programRef (${kept}), parentRef, diff and preservation comparing static data and animation channels. Review changes; use kiln_inspect compare for more pages or protected subtrees. Failed comparison preserves the repair; render:false leaves preservation not_assessed. capture selects cameras; includeCode adds the patched source, bounded.` : `${summaries[def.name] ?? def.description} Supply ${sources} (${kept}). Invalid drafts keep a ref.`;
   return {
     ...def,
     inputSchema,
@@ -35516,26 +36093,39 @@ function withProgramReferences(def, store, readSourceFile) {
         return { programRef: parentRef, ...output };
       const programRef = await retainProgram(store, output.code);
       const { code: updatedCode, ...rest } = output;
-      const includeCode = args.includeCode ?? args.code !== undefined;
+      const includeCode = args.includeCode === true;
       const diff = typeof rest.diff === "string" ? rest.diff : "";
-      return {
-        programRef,
-        parentRef,
-        ...rest,
-        ...includeCode ? { code: updatedCode } : {
+      if (!includeCode)
+        return {
+          programRef,
+          parentRef,
+          ...rest,
           diff: diff.slice(0, 8000),
           diffTruncated: diff.length > 8000 || typeof rest.diffOmitted === "number"
-        }
-      };
+        };
+      return boundIncludedCode({ programRef, parentRef, ...rest, code: updatedCode }, args.detail === "full" ? MAX_RESULT_LIMIT : DEFAULT_RESULT_LIMIT);
     }
   };
 }
+function boundIncludedCode(result, limit) {
+  const code = typeof result.code === "string" ? result.code : "";
+  const over = resultCharacters(result) - limit;
+  if (over <= 0)
+    return result;
+  const keep = Math.max(0, code.length - over - 120);
+  return {
+    ...result,
+    code: code.slice(0, keep),
+    codeOmitted: code.length - keep,
+    codeHint: "The whole patched source: kiln_source with this programRef."
+  };
+}
 function createKilnSourceDef(store) {
-  const inputSchema = z10.object({
+  const inputSchema = z11.object({
     programRef: refInput,
-    offset: z10.number().int().min(0).default(0).describe("UTF-16 character offset; use nextOffset to continue."),
-    limit: z10.number().int().min(1).max(16000).default(8000).describe("Maximum characters returned."),
-    query: z10.string().min(1).max(1000).optional().describe("Find literal text at or after offset; return bounded surrounding source.")
+    offset: z11.number().int().min(0).default(0).describe("UTF-16 character offset; use nextOffset to continue."),
+    limit: z11.number().int().min(1).max(16000).default(8000).describe("Maximum characters returned."),
+    query: z11.string().min(1).max(1000).optional().describe("Find literal text at or after offset; return bounded surrounding source.")
   });
   return {
     name: "kiln_source",
@@ -35568,12 +36158,12 @@ init_requirements_context();
 init_helper_specs();
 
 // src/discovery/catalog-schema.ts
-import { z as z11 } from "zod";
-var text6 = z11.string().trim().min(1);
-var texts = z11.array(text6);
-var id2 = z11.string().regex(/^(operation|assembly|recipe|shape):[A-Za-z][A-Za-z0-9-]*$/);
+import { z as z12 } from "zod";
+var text6 = z12.string().trim().min(1);
+var texts = z12.array(text6);
+var id2 = z12.string().regex(/^(operation|assembly|recipe|shape):[A-Za-z][A-Za-z0-9-]*$/);
 var common = {
-  version: z11.literal("kiln.catalog-entry.v1"),
+  version: z12.literal("kiln.catalog-entry.v1"),
   id: id2,
   name: text6,
   summary: text6.max(500),
@@ -35581,21 +36171,21 @@ var common = {
   tags: texts,
   aliases: texts,
   intents: texts,
-  stability: z11.enum(["stable", "experimental", "deprecated"]),
-  related: z11.array(z11.object({
+  stability: z12.enum(["stable", "experimental", "deprecated"]),
+  related: z12.array(z12.object({
     id: id2,
-    relation: z11.enum(["alternative", "prerequisite", "companion"])
+    relation: z12.enum(["alternative", "prerequisite", "companion"])
   }).strict()),
   references: texts,
   limitations: texts
 };
-var operationContractSchema = z11.object({
+var operationContractSchema = z12.object({
   signature: text6,
   returns: text6,
   units: text6,
   axes: text6,
   origin: text6,
-  execution: z11.enum(["sync", "async"]),
+  execution: z12.enum(["sync", "async"]),
   ownership: text6,
   coordinates: text6,
   parameters: texts,
@@ -35605,24 +36195,24 @@ var operationContractSchema = z11.object({
   cost: text6,
   example: text6
 }).strict();
-var discoveryEntrySchema = z11.discriminatedUnion("kind", [
-  z11.object({ ...common, kind: z11.literal("operation"), contract: operationContractSchema }).strict(),
-  z11.object({ ...common, kind: z11.literal("assembly"), contract: operationContractSchema }).strict(),
-  z11.object({
+var discoveryEntrySchema = z12.discriminatedUnion("kind", [
+  z12.object({ ...common, kind: z12.literal("operation"), contract: operationContractSchema }).strict(),
+  z12.object({ ...common, kind: z12.literal("assembly"), contract: operationContractSchema }).strict(),
+  z12.object({
     ...common,
-    kind: z11.literal("recipe"),
-    recipe: z11.object({
-      prerequisites: z11.array(id2),
+    kind: z12.literal("recipe"),
+    recipe: z12.object({
+      prerequisites: z12.array(id2),
       steps: texts.min(1),
       example: text6,
       adaptations: texts,
       checks: texts
     }).strict()
   }).strict(),
-  z11.object({
+  z12.object({
     ...common,
-    kind: z11.literal("shape"),
-    shape: z11.object({ tool: text6, field: text6, schema: z11.record(z11.string(), z11.unknown()) }).strict()
+    kind: z12.literal("shape"),
+    shape: z12.object({ tool: text6, field: text6, schema: z12.record(z12.string(), z12.unknown()) }).strict()
   }).strict()
 ]).superRefine((entry, ctx) => {
   if (!entry.id.startsWith(`${entry.kind}:`)) {
@@ -35641,7 +36231,7 @@ var discoveryEntrySchema = z11.discriminatedUnion("kind", [
   }
 });
 function parseCatalog(value) {
-  const entries = z11.array(discoveryEntrySchema).parse(value);
+  const entries = z12.array(discoveryEntrySchema).parse(value);
   const ids = new Set;
   const names = new Set;
   for (const entry of entries) {
@@ -38653,24 +39243,24 @@ var discoveryRecipes = [
 // src/discovery/shapes.ts
 init_material_library();
 init_projects();
-import { z as z13 } from "zod";
+import { z as z14 } from "zod";
 
 // src/tools/capture-input.ts
 init_background();
 init_capture_limits();
-import { z as z12 } from "zod";
-var backdropInput = z12.enum(BACKDROP_IDS).optional().describe("neutral (default); light for dark parts, dark for light parts.");
-var legacyCaptureInput = z12.object({
-  preset: z12.enum(["1x1", "1x2", "2x1", "3x1", "2x2", "3x2", "3x3"]).optional().describe("COLSxROWS; default 3x2. Fewer views for simple shapes, up to 3x3."),
-  cells: z12.array(z12.object({
-    azimuthDeg: z12.number().describe("0 = front, 90 = right, 180 = back, 270 = left. Wraps."),
-    elevationDeg: z12.number().describe("0 eye level; positive above, negative below. Clamped -89..89."),
-    zoom: z12.number().optional().describe("Bounds padding: below 1 crops, above 1 pulls back; omit for auto-framing."),
-    name: z12.string().optional().describe("Label; defaults to angles.")
+import { z as z13 } from "zod";
+var backdropInput = z13.enum(BACKDROP_IDS).optional().describe("neutral (default); light for dark parts, dark for light parts.");
+var legacyCaptureInput = z13.object({
+  preset: z13.enum(["1x1", "1x2", "2x1", "3x1", "2x2", "3x2", "3x3"]).optional().describe("COLSxROWS; default 3x2. Fewer views for simple shapes, up to 3x3."),
+  cells: z13.array(z13.object({
+    azimuthDeg: z13.number().describe("0 = front, 90 = right, 180 = back, 270 = left. Wraps."),
+    elevationDeg: z13.number().describe("0 eye level; positive above, negative below. Clamped -89..89."),
+    zoom: z13.number().optional().describe("Bounds padding: below 1 crops, above 1 pulls back; omit for auto-framing."),
+    name: z13.string().optional().describe("Label; defaults to angles.")
   })).optional().describe("Row-major cameras; omit for preset defaults. Count cannot exceed preset capacity (max 9)."),
   backdrop: backdropInput
 }).optional().describe("Sheet layout and cameras; omit for six views in a 3x2 grid.");
-var cameraVec3Input = z12.array(z12.number()).length(3);
+var cameraVec3Input = z13.array(z13.number()).length(3);
 var orbitCameraError = (issue) => {
   if (issue.code === "unrecognized_keys" && issue.keys?.some((key) => key === "target" || key === "distance")) {
     return "Orbit cameras derive target and distance from the selected subject bounds; choose subject and padding, or use an explicit camera with position and target.";
@@ -38690,48 +39280,48 @@ var advancedCaptureError = (issue) => {
   }
   return;
 };
-var cameraShotInput = z12.object({
-  name: z12.string().optional(),
-  subject: z12.object({ path: z12.string().optional(), name: z12.string().optional() }).strict().refine((v) => v.path === undefined !== (v.name === undefined), {
+var cameraShotInput = z13.object({
+  name: z13.string().optional(),
+  subject: z13.object({ path: z13.string().optional(), name: z13.string().optional() }).strict().refine((v) => v.path === undefined !== (v.name === undefined), {
     message: "Choose subject path OR exact name."
   }).optional(),
-  visibility: z12.enum(["context", "isolate"]).optional(),
-  hide: z12.array(z12.string().min(1).max(1024)).max(64).optional(),
-  camera: z12.discriminatedUnion("type", [
-    z12.strictObject({
-      type: z12.literal("orbit"),
-      azimuthDeg: z12.number().optional(),
-      elevationDeg: z12.number().optional(),
-      relativeTo: z12.enum(["world", "asset", "part"]).optional(),
-      padding: z12.number().positive().max(100).optional()
+  visibility: z13.enum(["context", "isolate"]).optional(),
+  hide: z13.array(z13.string().min(1).max(1024)).max(64).optional(),
+  camera: z13.discriminatedUnion("type", [
+    z13.strictObject({
+      type: z13.literal("orbit"),
+      azimuthDeg: z13.number().optional(),
+      elevationDeg: z13.number().optional(),
+      relativeTo: z13.enum(["world", "asset", "part"]).optional(),
+      padding: z13.number().positive().max(100).optional()
     }, { error: orbitCameraError }),
-    z12.strictObject({
-      type: z12.literal("explicit"),
-      projection: z12.enum(["orthographic", "perspective"]),
+    z13.strictObject({
+      type: z13.literal("explicit"),
+      projection: z13.enum(["orthographic", "perspective"]),
       position: cameraVec3Input,
       target: cameraVec3Input.optional(),
-      relativeTo: z12.enum(["world", "asset", "part", "local"]).optional(),
-      frame: z12.object({
+      relativeTo: z13.enum(["world", "asset", "part", "local"]).optional(),
+      frame: z13.object({
         origin: cameraVec3Input.optional(),
         rotation: cameraVec3Input.optional()
       }).strict().optional(),
-      framing: z12.enum(["explicit", "bounds"]).optional(),
-      padding: z12.number().positive().max(100).optional(),
+      framing: z13.enum(["explicit", "bounds"]).optional(),
+      padding: z13.number().positive().max(100).optional(),
       targetOffset: cameraVec3Input.optional(),
       up: cameraVec3Input.optional(),
-      halfHeight: z12.number().positive().optional(),
-      fovDeg: z12.number().positive().lt(180).optional(),
-      near: z12.number().positive().optional(),
-      far: z12.number().positive().optional()
+      halfHeight: z13.number().positive().optional(),
+      fovDeg: z13.number().positive().lt(180).optional(),
+      near: z13.number().positive().optional(),
+      far: z13.number().positive().optional()
     }, { error: explicitCameraError })
   ]).optional()
 }).strict();
-var advancedCaptureInput = z12.strictObject({
-  version: z12.enum(["kiln.capture.v1", "kiln.capture.v2"]),
-  shots: z12.array(cameraShotInput).min(1).max(9),
-  cols: z12.number().int().min(1).max(3).optional(),
-  size: z12.number().int().min(128).max(MAX_CAPTURE_SHOT_SIZE).optional(),
-  output: z12.enum(["grid", "separate"]).optional(),
+var advancedCaptureInput = z13.strictObject({
+  version: z13.enum(["kiln.capture.v1", "kiln.capture.v2"]),
+  shots: z13.array(cameraShotInput).min(1).max(9),
+  cols: z13.number().int().min(1).max(3).optional(),
+  size: z13.number().int().min(128).max(MAX_CAPTURE_SHOT_SIZE).optional(),
+  output: z13.enum(["grid", "separate"]).optional(),
   backdrop: backdropInput
 }, { error: advancedCaptureError }).superRefine((input, context) => {
   if (input.version === "kiln.capture.v1" && input.shots.some((shot) => shot.hide !== undefined))
@@ -38752,19 +39342,19 @@ function taggedCaptureError(issue) {
   const details = issues.slice(0, 6).map((problem) => `${problem.path.join(".") || "capture"}: ${problem.message.slice(0, 240)}`);
   return `Invalid ${input.version}: ${details.join("; ")}${issues.length > 6 ? "; additional issues omitted" : ""}`;
 }
-var captureShapeInput = z12.union([
+var captureShapeInput = z13.union([
   advancedCaptureInput,
-  z12.strictObject(legacyCaptureInput.unwrap().shape, {
+  z13.strictObject(legacyCaptureInput.unwrap().shape, {
     error: taggedCaptureError
   })
 ], { error: taggedCaptureError });
 var captureInput = captureShapeInput.optional().describe("Omit for six views; preset/cells for orbit sheets. Use kiln.capture.v1 or v2 with 1..9 shots for exact cameras. v2 adds hide: exact paths or unique names. Framing retains subject bounds.");
-var captureRecordInput = z12.record(z12.string(), z12.unknown()).optional().describe('Cameras, as kiln_render capture takes them. Shape: kiln_discover ids ["shape:capture"].');
-var cameraShotRecordInput = z12.record(z12.string(), z12.unknown()).optional().describe('One exact camera shot. Shape: kiln_discover ids ["shape:camera-shot"].');
+var captureRecordInput = z13.record(z13.string(), z13.unknown()).optional().describe('Cameras, as kiln_render capture takes them. Shape: kiln_discover ids ["shape:capture"].');
+var cameraShotRecordInput = z13.record(z13.string(), z13.unknown()).optional().describe('One exact camera shot. Shape: kiln_discover ids ["shape:camera-shot"].');
 
 // src/discovery/shapes.ts
 var jsonSchema = (schema) => {
-  const { $schema: _dialect, ...rest } = z13.toJSONSchema(schema, { io: "input" });
+  const { $schema: _dialect, ...rest } = z14.toJSONSchema(schema, { io: "input" });
   return rest;
 };
 var shape = (name, tool, field, summary, schema, extra = {}) => ({
@@ -38950,25 +39540,25 @@ function createLexicalDiscoveryIndex(entries) {
 }
 
 // src/discovery/query-schema.ts
-import { z as z14 } from "zod";
-var selector = z14.string().trim().min(1).max(120);
+import { z as z15 } from "zod";
+var selector = z15.string().trim().min(1).max(120);
 function discoverySelectorMigration(keys) {
   if (!keys.some((key) => ["category", "name", "names"].includes(key)))
     return;
   return "Legacy Discovery selectors category/name/names were removed. Use query for search, ids (CLI --id) for exact contracts, and family (CLI --family), kind or tags for filtering. See docs/migration.md.";
 }
-var discoveryInputSchema = z14.object({
-  query: z14.string().trim().min(1).max(500).optional(),
-  ids: z14.array(selector).min(1).max(6).refine((ids) => new Set(ids).size === ids.length, {
+var discoveryInputSchema = z15.object({
+  query: z15.string().trim().min(1).max(500).optional(),
+  ids: z15.array(selector).min(1).max(6).refine((ids) => new Set(ids).size === ids.length, {
     message: "Exact IDs must be unique."
   }).optional(),
-  overview: z14.literal(true).optional(),
-  capabilities: z14.literal(true).optional(),
+  overview: z15.literal(true).optional(),
+  capabilities: z15.literal(true).optional(),
   family: selector.optional(),
-  kind: z14.enum(["operation", "assembly", "recipe", "shape"]).optional(),
-  tags: z14.array(selector).min(1).max(8).optional(),
-  offset: z14.number().int().min(0).max(1e4).optional(),
-  limit: z14.number().int().min(1).max(12).optional()
+  kind: z15.enum(["operation", "assembly", "recipe", "shape"]).optional(),
+  tags: z15.array(selector).min(1).max(8).optional(),
+  offset: z15.number().int().min(0).max(1e4).optional(),
+  limit: z15.number().int().min(1).max(12).optional()
 }, {
   error: (issue) => issue.code === "unrecognized_keys" ? discoverySelectorMigration(issue.keys) : undefined
 }).strict().superRefine((input, context) => {
@@ -39356,7 +39946,7 @@ async function currentCapabilities(context) {
 
 // src/tools/projects.ts
 init_projects();
-import { z as z15 } from "zod";
+import { z as z16 } from "zod";
 
 // src/tools/actions.ts
 var list = (fields) => fields.length <= 1 ? fields.join("") : `${fields.slice(0, -1).join(", ")} and ${fields.at(-1)}`;
@@ -39368,14 +39958,19 @@ function requireActionFields(tool, action, input, requirements) {
   throw new Error(`${tool} ${action} requires ${list(requirements.required)}; missing ${list(missing)}.${shapes.length ? ` ${shapes.join(". ")}.` : ""}`);
 }
 var nestedRecordDescription = (purpose, shape) => `${purpose} Shape: kiln_discover({ ids: ['${shape}'] }).`;
-function describeInputError(tool, error, fields = []) {
+function describeInputError(tool, error, options = {}) {
   const issues = error?.issues;
   if (!Array.isArray(issues) || !issues.length)
     return;
+  const { fields = [], shapes = {} } = options;
   const lines = flattenIssues(issues).slice(0, 6).map((line) => line.replace(/\.+$/u, ""));
   const unknownKey = issues.some((issue) => issue.code === "unrecognized_keys" && !issue.path?.length);
   const takes = unknownKey && fields.length ? ` ${tool} takes ${list(fields)}.` : "";
-  return `${tool}: invalid input. ${lines.join("; ")}${issues.length > 6 ? `; ${issues.length - 6} more` : ""}.${takes} Check the field names and values against the ${tool} schema; nested shapes: kiln_discover({ ids: ['shape:...'] }).`;
+  const nested = [
+    ...new Set(issues.map((issue) => String(issue.path?.[0] ?? "")).filter((field) => shapes[field]))
+  ].map((field) => `${field} shape: kiln_discover({ ids: ['${shapes[field]}'] })`);
+  const where = nested.length ? nested.join("; ") : `nested shapes: kiln_discover({ ids: ['shape:...'] })`;
+  return `${tool}: invalid input. ${lines.join("; ")}${issues.length > 6 ? `; ${issues.length - 6} more` : ""}.${takes} Check the field names and values against the ${tool} schema; ${where}.`;
 }
 function schemaFields(schema) {
   const shape = schema?.shape;
@@ -39409,16 +40004,16 @@ var REQUIREMENTS = {
   },
   export: { required: ["projectId"] }
 };
-var record6 = (description) => z15.record(z15.string(), z15.unknown()).optional().describe(description);
+var record6 = (description) => z16.record(z16.string(), z16.unknown()).optional().describe(description);
 function projectToolInput(actions = PROJECT_ACTIONS) {
-  return z15.strictObject({
-    action: z15.enum(actions),
+  return z16.strictObject({
+    action: z16.enum(actions),
     projectId: projectIdSchema.optional().describe("get, update, export."),
     revisionId: projectRevisionIdSchema.optional().describe("get, export: an exact revision; omit for the current one."),
     expectedRevision: projectRevisionIdSchema.optional().describe("update: the revision being replaced; a stale value is a conflict."),
     draft: record6(nestedRecordDescription("create: name, brief, design, inventory, deliveryProfiles, materialDependencies, references, reviews; optional projectId.", "shape:project-draft")),
     patch: record6(nestedRecordDescription("update: the same top-level fields as draft; each supplied field replaces its previous value whole.", "shape:project-patch")),
-    profile: z15.enum(["editable", "runtime"]).optional().describe("export: editable (default) keeps source and resources; runtime is GLB plus metadata.")
+    profile: z16.enum(["editable", "runtime"]).optional().describe("export: editable (default) keeps source and resources; runtime is GLB plus metadata.")
   });
 }
 function createKilnProjectDef(store, bundleReader) {
@@ -39502,11 +40097,11 @@ async function listAssetCatalog(library) {
 // src/tools/materials.ts
 init_material_library();
 init_material_library_node();
-import { z as z17 } from "zod";
+import { z as z18 } from "zod";
 
 // src/material-presets.ts
 init_material_library();
-import { z as z16 } from "zod";
+import { z as z17 } from "zod";
 var catalog2 = [
   {
     id: "warm-brick",
@@ -39544,10 +40139,10 @@ var catalog2 = [
     description: "Layered granular soil variation and subtle relief for terrain and planting beds."
   }
 ];
-var materialPresetOptionsSchema = z16.object({
-  seed: z16.number().int().min(-2147483648).max(2147483647),
-  size: z16.union([z16.literal(64), z16.literal(128), z16.literal(256), z16.literal(512)]).default(256),
-  creator: z16.string().min(1).max(1000),
+var materialPresetOptionsSchema = z17.object({
+  seed: z17.number().int().min(-2147483648).max(2147483647),
+  size: z17.union([z17.literal(64), z17.literal(128), z17.literal(256), z17.literal(512)]).default(256),
+  creator: z17.string().min(1).max(1000),
   license: materialSourceSchema.shape.license,
   materialId: materialLibraryIdSchema.optional()
 }).strict();
@@ -39697,15 +40292,15 @@ var REQUIREMENTS2 = {
   "create-procedural": { required: ["draft"], shapes: { draft: "shape:material-draft" } },
   import: { required: ["payload"], shapes: { payload: "shape:material-import" } }
 };
-var record7 = (description) => z17.record(z17.string(), z17.unknown()).optional().describe(description);
-var tag = z17.string().min(1).max(80).optional().describe("presets, list: keep one tag.");
-var materialToolInput = z17.strictObject({
-  action: z17.enum(MATERIAL_ACTIONS),
+var record7 = (description) => z18.record(z18.string(), z18.unknown()).optional().describe(description);
+var tag = z18.string().min(1).max(80).optional().describe("presets, list: keep one tag.");
+var materialToolInput = z18.strictObject({
+  action: z18.enum(MATERIAL_ACTIONS),
   tag,
-  presetId: z17.string().min(1).max(80).optional().describe("create-preset: an id from presets."),
-  seed: z17.number().int().min(-2147483648).max(2147483647).optional().describe("create-preset."),
-  size: z17.union([z17.literal(64), z17.literal(128), z17.literal(256), z17.literal(512)]).optional().describe("create-preset: map edge in pixels; default 256."),
-  creator: z17.string().min(1).max(1000).optional().describe("create-preset."),
+  presetId: z18.string().min(1).max(80).optional().describe("create-preset: an id from presets."),
+  seed: z18.number().int().min(-2147483648).max(2147483647).optional().describe("create-preset."),
+  size: z18.union([z18.literal(64), z18.literal(128), z18.literal(256), z18.literal(512)]).optional().describe("create-preset: map edge in pixels; default 256."),
+  creator: z18.string().min(1).max(1000).optional().describe("create-preset."),
   license: materialSourceSchema.shape.license.optional().describe("create-preset: spdx, url and attribution."),
   materialId: materialLibraryIdSchema.optional().describe("get: the id a project palette lists as resourceId; create-preset: optional id."),
   revisionId: materialLibraryHashSchema.optional().describe("get: the immutable revision; omitted, the material's only revision."),
@@ -39826,579 +40421,6 @@ async function persistedPreviewFidelity(fidelity, glb) {
     exactArtifact: true,
     reasonCodes: (view.reasonCodes ?? []).filter((code) => code !== "IN_LOOP_BUILD_NOT_PERSISTED")
   };
-}
-
-// src/tools/review-detail.ts
-import { z as z18 } from "zod";
-var COMPACT_PART_PREVIEW = 24;
-var COMPACT_FINDINGS_PER_DIMENSION = 12;
-var LEAD_BLOCKERS = 8;
-var LEAN_WARNINGS = 3;
-var COMPACT_WARNINGS = 12;
-var WARNING_CHARS = 1000;
-var DEFAULT_RESULT_LIMIT = 20000;
-var MAX_RESULT_LIMIT = 40000;
-var COMPACT_DECIMALS = 6;
-var reviewDetailInput = z18.enum(["lean", "compact", "full"]).optional().describe("compact (default) groups findings by code; lean: verdict, blockers, metrics only; full: every finding, rule and part plus the retained report path");
-function requestedDetail(input, fallback = "compact") {
-  const detail = input?.detail;
-  return detail === "full" || detail === "lean" || detail === "compact" ? detail : fallback;
-}
-var partsHint = (offset) => `For remaining paths use kiln_inspect with image:false and listParts:{offset:${offset}}. listParts.query filters names/paths; follow partListing.nextOffset on the same programRef and query.`;
-var isRecord6 = (value) => typeof value === "object" && value !== null && !Array.isArray(value);
-var SEVERITY = { block: 0, warn: 1, observe: 2 };
-var severity = (finding) => isRecord6(finding) && typeof finding.disposition === "string" && SEVERITY[finding.disposition] || (isRecord6(finding) && finding.disposition === "block" ? 0 : 3);
-function affectedLabel(finding) {
-  const affected = finding.affected;
-  if (!isRecord6(affected))
-    return;
-  for (const key of ["nodePath", "node", "material", "texture", "clip", "track", "attribute"])
-    if (typeof affected[key] === "string")
-      return affected[key];
-  return;
-}
-function groupFindings(findings) {
-  const groups = new Map;
-  for (const finding of findings) {
-    if (!isRecord6(finding))
-      continue;
-    const code = typeof finding.code === "string" ? finding.code : "UNKNOWN";
-    const label = affectedLabel(finding);
-    const group = groups.get(code);
-    if (!group) {
-      groups.set(code, { ...finding, code, count: 1 });
-      continue;
-    }
-    group.count++;
-    if (label && label !== affectedLabel(group)) {
-      const more = Array.isArray(group.alsoAffected) ? group.alsoAffected : [];
-      if (more.length < 2 && !more.includes(label))
-        group.alsoAffected = [...more, label];
-    }
-  }
-  return [...groups.values()].sort((a, b) => severity(a) - severity(b));
-}
-function countFindings(report) {
-  const counts = { block: 0, warn: 0, observe: 0 };
-  if (!isRecord6(report) || !isRecord6(report.dimensions))
-    return counts;
-  for (const dimension of Object.values(report.dimensions)) {
-    if (!isRecord6(dimension) || !Array.isArray(dimension.findings))
-      continue;
-    for (const finding of dimension.findings) {
-      const disposition = isRecord6(finding) ? finding.disposition : undefined;
-      if (disposition === "block" || disposition === "warn" || disposition === "observe")
-        counts[disposition]++;
-    }
-  }
-  return counts;
-}
-function leadBlockers(report) {
-  if (!isRecord6(report) || !isRecord6(report.dimensions))
-    return [];
-  const blockers = [];
-  for (const [name, dimension] of Object.entries(report.dimensions)) {
-    if (!isRecord6(dimension) || !Array.isArray(dimension.findings))
-      continue;
-    for (const group of groupFindings(dimension.findings)) {
-      if (group.disposition !== "block")
-        continue;
-      blockers.push({
-        code: group.code,
-        dimension: name,
-        count: group.count,
-        message: group.message,
-        ...group.affected !== undefined ? { affected: group.affected } : {},
-        ...group.alsoAffected !== undefined ? { alsoAffected: group.alsoAffected } : {},
-        ...group.repairText !== undefined ? { repairText: group.repairText } : {}
-      });
-    }
-  }
-  return blockers;
-}
-function compactDimension(dimension, limit = COMPACT_FINDINGS_PER_DIMENSION) {
-  if (!isRecord6(dimension) || !Array.isArray(dimension.findings))
-    return dimension;
-  const groups = groupFindings(dimension.findings);
-  const kept = groups.slice(0, limit);
-  const dropped = groups.slice(limit);
-  const out = { ...dimension, findings: kept };
-  if (dimension.findings.length !== kept.length)
-    out.findingsTotal = dimension.findings.length;
-  if (dropped.length) {
-    out.findingsOmitted = dropped.reduce((sum, group) => sum + group.count, 0);
-    out.omittedByCode = Object.fromEntries(dropped.map((group) => [group.code, group.count]));
-  }
-  return out;
-}
-function compactQaReport(report, limit = COMPACT_FINDINGS_PER_DIMENSION, keepRules = false) {
-  if (!isRecord6(report) || !isRecord6(report.dimensions))
-    return report;
-  const { dimensions, rules, ...rest } = report;
-  const compact = {
-    ...rest,
-    detail: "compact",
-    dimensions: Object.fromEntries(Object.entries(dimensions).map(([name, value]) => [name, compactDimension(value, limit)]))
-  };
-  if (keepRules && rules !== undefined)
-    compact.rules = rules;
-  else if (Array.isArray(rules)) {
-    let evaluated = 0;
-    const notEvaluated = [];
-    for (const rule of rules) {
-      if (!isRecord6(rule))
-        continue;
-      if (rule.status === "evaluated")
-        evaluated++;
-      else if (rule.status !== "notRequested")
-        notEvaluated.push({ id: rule.id, ...rule.reason ? { reason: rule.reason } : {} });
-    }
-    compact.ruleSummary = { evaluated, notEvaluated };
-  }
-  compact.fullDetail = "Every finding and rule: detail: 'full'.";
-  return compact;
-}
-function nextStep(result) {
-  if (result.ok === false) {
-    if (typeof result.error === "string" && /GPU render|render service|renderer/u.test(result.error))
-      return 'The source may be fine; the renderer is not. Set KILN_RENDER=auto (CLI --render auto) for CPU geometry views, or repair the render service and call kiln_renderer { action: "reprobe" }, then kiln_render this programRef again.';
-    return "Fix the error in the source: kiln_edit with this programRef, or kiln_render with corrected code.";
-  }
-  const report = result.qaReport;
-  const counts = countFindings(report);
-  if (counts.block)
-    return `Fix the ${counts.block} blocking finding${counts.block === 1 ? "" : "s"} with kiln_edit on this programRef, then kiln_render again.`;
-  if (counts.warn)
-    return "Review the warnings; fix what matters with kiln_edit on this programRef, or kiln_save it when accepted.";
-  return "kiln_save this programRef when done, or kiln_edit to refine.";
-}
-function lead(result) {
-  const report = isRecord6(result.qaReport) ? result.qaReport : undefined;
-  const {
-    ok,
-    acceptance: _acceptance,
-    disposition: _disposition,
-    blockers: _blockers,
-    findings: _findings,
-    next: _next,
-    ...rest
-  } = result;
-  const blockers = leadBlockers(report);
-  return {
-    ok,
-    ...report && typeof report.acceptance === "string" ? { acceptance: report.acceptance } : {},
-    ...report && typeof report.disposition === "string" ? { disposition: report.disposition } : {},
-    ...report ? {
-      blockers: blockers.slice(0, LEAD_BLOCKERS),
-      ...blockers.length > LEAD_BLOCKERS ? { blockersOmitted: blockers.length - LEAD_BLOCKERS } : {},
-      findings: countFindings(report)
-    } : {},
-    ...report || ok === false ? { next: nextStep(result) } : {},
-    ...rest
-  };
-}
-function roundNumbers(value) {
-  if (typeof value === "number")
-    return Number.isInteger(value) || !Number.isFinite(value) ? value : Number(value.toFixed(COMPACT_DECIMALS));
-  if (Array.isArray(value))
-    return value.map(roundNumbers);
-  if (isRecord6(value)) {
-    const out = {};
-    for (const [key, entry] of Object.entries(value))
-      out[key] = roundNumbers(entry);
-    return out;
-  }
-  return value;
-}
-function withCurrentEvidence(result) {
-  const evidence = result.viewEvidence;
-  if (!isRecord6(evidence) || !("current" in evidence))
-    return result;
-  const { current, lastFaithful } = evidence;
-  const repeated = isRecord6(current) && isRecord6(lastFaithful) && typeof current.sequence === "number" && lastFaithful.sequence === current.sequence;
-  return {
-    ...result,
-    viewEvidence: {
-      current,
-      ...lastFaithful !== undefined && !repeated ? { lastFaithful } : {}
-    }
-  };
-}
-var RECEIPT_IDENTITY = new Set([
-  "version",
-  "camera",
-  "derivativeLabel",
-  "cameraFidelity",
-  "captureCache"
-]);
-function compactReceipt(receipt, summary) {
-  if (!isRecord6(receipt))
-    return receipt;
-  const out = {};
-  for (const [key, value] of Object.entries(receipt)) {
-    if (key === "version" || key === "camera")
-      continue;
-    if (key === "derivativeLabel" || key === "cameraFidelity" || key === "captureCache" || JSON.stringify(summary[key]) !== JSON.stringify(value))
-      out[key] = value;
-  }
-  return out;
-}
-function sharedReceiptFields(receipts, summary) {
-  const shared = {};
-  const [first, ...rest] = receipts;
-  if (!isRecord6(first) || !rest.every(isRecord6))
-    return shared;
-  for (const [key, value] of Object.entries(first)) {
-    if (RECEIPT_IDENTITY.has(key) || summary[key] !== undefined)
-      continue;
-    const json = JSON.stringify(value);
-    if (rest.every((receipt) => JSON.stringify(receipt[key]) === json))
-      shared[key] = value;
-  }
-  return shared;
-}
-function withCompactReceipts(result) {
-  const fidelity = isRecord6(result.viewFidelity) ? result.viewFidelity : undefined;
-  const { receipts, ...rest } = fidelity ?? {};
-  const list = Array.isArray(receipts) ? receipts : Array.isArray(result.derivativeReceipts) ? result.derivativeReceipts : undefined;
-  if (!list)
-    return result;
-  const summary = { ...rest, ...fidelity ? sharedReceiptFields(list, rest) : {} };
-  let out = result;
-  if (fidelity)
-    out = {
-      ...out,
-      viewFidelity: Array.isArray(receipts) ? { ...summary, receipts: receipts.map((r) => compactReceipt(r, summary)) } : summary
-    };
-  if (Array.isArray(result.derivativeReceipts))
-    out = {
-      ...out,
-      derivativeReceipts: result.derivativeReceipts.map((r) => compactReceipt(r, summary))
-    };
-  return out;
-}
-function withSharedShots(result) {
-  const shots = result.cameraShots;
-  if (!Array.isArray(shots) || shots.length < 2 || !shots.every(isRecord6))
-    return result;
-  const groups = new Map;
-  for (const shot of shots) {
-    const entry = {};
-    for (const [key, value] of Object.entries(shot)) {
-      if (key === "subject" && isRecord6(value)) {
-        const { bounds: _bounds, ...identity } = value;
-        entry.subject = identity;
-      } else
-        entry[key] = value;
-    }
-    const key = JSON.stringify(entry);
-    const group = groups.get(key);
-    if (group)
-      group.frames = group.frames + 1;
-    else
-      groups.set(key, { ...entry, frames: 1 });
-  }
-  if (groups.size === shots.length)
-    return result;
-  return { ...result, cameraShots: [...groups.values()] };
-}
-var poseFramesHint = (retained) => retained ? `Every frame: read ${retained.path} (pretty-printed), or ask fewer frameTimes or measureParts per call.` : "Every frame: detail: 'full' (inside the 40,000-character limit), or fewer frameTimes or measureParts per call.";
-function boundPoseBounds(result, limit, hint) {
-  const poses = result.poseBounds;
-  if (!Array.isArray(poses) || poses.length < 2 || resultCharacters(result) <= limit)
-    return result;
-  for (let kept = poses.length - 1;kept >= 1; kept--) {
-    const out = {
-      ...result,
-      poseBounds: poses.slice(0, kept),
-      poseBoundsOmitted: poses.length - kept,
-      poseBoundsHint: hint
-    };
-    if (resultCharacters(out) <= limit || kept === 1)
-      return out;
-  }
-  return result;
-}
-function withPartPreview(result, limit = COMPACT_PART_PREVIEW) {
-  if (!Array.isArray(result.parts) || result.parts.length <= limit)
-    return result;
-  return {
-    ...result,
-    parts: result.parts.slice(0, limit),
-    partsTruncated: true,
-    partsNextOffset: limit,
-    partsHint: partsHint(limit)
-  };
-}
-function boundWarnings(result, count) {
-  const all = result.warnings;
-  if (!Array.isArray(all))
-    return result;
-  const warnings = all.slice(0, count).map((warning) => typeof warning === "string" && warning.length > WARNING_CHARS ? `${warning.slice(0, WARNING_CHARS)}… (+${warning.length - WARNING_CHARS} chars)` : warning);
-  const omitted = all.length - warnings.length;
-  if (omitted === 0 && warnings.every((warning, i) => warning === all[i]))
-    return result;
-  return { ...result, warnings, ...omitted > 0 ? { warningsOmitted: omitted } : {} };
-}
-function resultCharacters(result) {
-  if (!isRecord6(result))
-    return JSON.stringify(result).length;
-  const { pngBase64: _png, framesBase64: _frames, ...rest } = result;
-  return JSON.stringify(rest).length;
-}
-var LEAN_KEYS = [
-  "tris",
-  "meshes",
-  "materials",
-  "distinctMaterials",
-  "bbox",
-  "lowestPart",
-  "views",
-  "capture",
-  "gridWidth",
-  "gridHeight",
-  "width",
-  "height",
-  "cameraShot",
-  "cameraShots",
-  "loopClosure",
-  "poseBounds",
-  "roofsHidden",
-  "partListing",
-  "measurement",
-  "surfaceMeasurements",
-  "comparison",
-  "materialContract",
-  "error",
-  "pngBase64",
-  "framesBase64",
-  "derivativeReceipts"
-];
-function leanFidelity(fidelity) {
-  if (!isRecord6(fidelity))
-    return fidelity;
-  const keep = {};
-  for (const key of [
-    "delivered",
-    "materialFaithful",
-    "rendererId",
-    "exactArtifact",
-    "degraded",
-    "degradeReason",
-    "receipts"
-  ])
-    if (fidelity[key] !== undefined)
-      keep[key] = fidelity[key];
-  return keep;
-}
-function leanReviewResult(source) {
-  const result = withSharedShots(withCompactReceipts(source));
-  const led = lead(result);
-  const out = {};
-  for (const key of [
-    "ok",
-    "acceptance",
-    "disposition",
-    "blockers",
-    "blockersOmitted",
-    "findings",
-    "next"
-  ])
-    if (led[key] !== undefined)
-      out[key] = led[key];
-  for (const key of LEAN_KEYS)
-    if (result[key] !== undefined)
-      out[key] = result[key];
-  if (isRecord6(out.comparison))
-    out.comparison = withCompactComparison(out).comparison;
-  if (result.viewFidelity !== undefined)
-    out.viewFidelity = leanFidelity(result.viewFidelity);
-  const { warnings, warningsOmitted } = boundWarnings(result, LEAN_WARNINGS);
-  if (warnings !== undefined)
-    out.warnings = warnings;
-  if (warningsOmitted !== undefined)
-    out.warningsOmitted = warningsOmitted;
-  if (Array.isArray(result.parts))
-    out.partsTotal = result.partsTotal ?? result.parts.length;
-  out.detail = "lean";
-  out.fullDetail = "Findings, parts and receipts: detail: 'compact' or 'full'.";
-  return boundPoseBounds(roundNumbers(out), DEFAULT_RESULT_LIMIT, poseFramesHint(undefined));
-}
-function fullReviewResult(result, retained, limit = MAX_RESULT_LIMIT) {
-  let out = lead(result);
-  if (retained)
-    out = { ...out, retainedReport: retained };
-  const fits = (candidate) => resultCharacters(candidate) <= limit;
-  if (fits(out))
-    return out;
-  out = boundWarnings(out, COMPACT_WARNINGS);
-  if (fits(out))
-    return out;
-  const withGroups = (groups) => {
-    const report = out.qaReport;
-    if (!isRecord6(report) || !isRecord6(report.dimensions))
-      return out;
-    return {
-      ...out,
-      qaReport: {
-        ...compactQaReport(report, groups, true),
-        detail: "full-bounded",
-        fullDetail: retained ? `Every finding: read ${retained.path} (pretty-printed).` : "Every finding is in the retained artifact when the host records one."
-      }
-    };
-  };
-  let bounded = withGroups(512);
-  if (fits(bounded))
-    return bounded;
-  out = withPartPreview(out);
-  for (let groups = 512;; groups = Math.floor(groups / 2)) {
-    bounded = withGroups(groups);
-    if (fits(bounded))
-      return bounded;
-    if (groups <= 1)
-      return boundPoseBounds(bounded, limit, poseFramesHint(retained));
-  }
-}
-function compactReviewResult(result, detail = "compact", options = {}) {
-  if (!isRecord6(result))
-    return result;
-  if (detail === "lean")
-    return leanReviewResult(result);
-  if (detail === "full")
-    return fullReviewResult(result, options.retainedReport?.());
-  const out = boundWarnings(withCompactReceipts(withCompactComparison(withPartPreview(withSharedShots(withCurrentEvidence(lead(result)))))), COMPACT_WARNINGS);
-  if (out.qaReport !== undefined)
-    out.qaReport = compactQaReport(out.qaReport);
-  return boundPoseBounds(roundNumbers(out), DEFAULT_RESULT_LIMIT, poseFramesHint(undefined));
-}
-function changeSummary(result) {
-  const preservation = isRecord6(result.preservation) ? result.preservation : undefined;
-  const comparison = preservation && isRecord6(preservation.comparison) ? preservation.comparison : undefined;
-  const out = { status: preservation?.status ?? "not_assessed" };
-  if (comparison) {
-    if (comparison.summary !== undefined)
-      out.parts = comparison.summary;
-    if (comparison.animationSummary !== undefined)
-      out.animation = comparison.animationSummary;
-    if (Array.isArray(comparison.changes))
-      out.changed = comparison.changes.slice(0, 5).map((change) => isRecord6(change) ? `${change.path ?? "?"}: ${change.status ?? ""}${Array.isArray(change.fields) && change.fields.length ? ` (${change.fields.join(", ")})` : ""}` : String(change));
-  } else if (preservation?.reason !== undefined)
-    out.reason = preservation.reason;
-  return out;
-}
-var LEAN_DIFF = 2000;
-var COMPACT_COMPARISON_CHANGES = 12;
-function compactComparison(comparison, hint, limit) {
-  const out = {};
-  for (const key of ["programRef", "version", "units", "summary", "before", "after", "subtrees"])
-    if (comparison[key] !== undefined)
-      out[key] = comparison[key];
-  if (isRecord6(comparison.animation)) {
-    const { scope: _scope, ...animation } = comparison.animation;
-    out.animation = animation;
-  }
-  if (comparison.animationSummary !== undefined)
-    out.animationSummary = comparison.animationSummary;
-  if (Array.isArray(comparison.changes)) {
-    const changes = limit === undefined ? comparison.changes : comparison.changes.slice(0, limit);
-    out.changes = changes.map((change) => {
-      if (!isRecord6(change))
-        return change;
-      const kept = { path: change.path };
-      if (typeof change.name === "string")
-        kept.name = change.name;
-      kept.status = change.status;
-      if (Array.isArray(change.fields) && change.fields.length > 0)
-        kept.fields = change.fields;
-      return kept;
-    });
-  }
-  for (const key of ["offset", "nextOffset"])
-    if (comparison[key] !== undefined)
-      out[key] = comparison[key];
-  out.detail = hint;
-  return out;
-}
-var COMPARE_HINT = "Bounds per change and the comparison scope: detail: 'full'. compare.offset pages the changes.";
-function withCompactComparison(result) {
-  if (!isRecord6(result.comparison))
-    return result;
-  return { ...result, comparison: compactComparison(result.comparison, COMPARE_HINT) };
-}
-function compactPreservation(preservation) {
-  if (!isRecord6(preservation) || !isRecord6(preservation.comparison))
-    return preservation;
-  return {
-    ...preservation,
-    comparison: compactComparison(preservation.comparison, "Bounds per change and the comparison scope: detail: 'full'. More changes: kiln_inspect compare on this programRef.", COMPACT_COMPARISON_CHANGES)
-  };
-}
-function boundFullEdit(edited, render, retained) {
-  const fits = (candidate) => resultCharacters(candidate) <= MAX_RESULT_LIMIT;
-  if (fits(edited))
-    return edited;
-  let out = edited;
-  if (typeof out.diff === "string" && out.diff.length > LEAN_DIFF) {
-    out = { ...out, diff: out.diff.slice(0, LEAN_DIFF), diffOmitted: out.diff.length - LEAN_DIFF };
-    if (fits(out))
-      return out;
-  }
-  if (isRecord6(out.preservation) && isRecord6(out.preservation.comparison)) {
-    out = {
-      ...out,
-      preservation: {
-        ...out.preservation,
-        comparison: compactComparison(out.preservation.comparison, `Bounds per change and the comparison scope: ${retained ? `read ${retained.path} (pretty-printed)` : "kiln_inspect compare on this programRef"}; compare.offset pages the changes.`)
-      }
-    };
-    if (fits(out))
-      return out;
-  }
-  if (render && isRecord6(out.render)) {
-    const budget = MAX_RESULT_LIMIT - (resultCharacters(out) - resultCharacters(out.render));
-    out = { ...out, render: fullReviewResult(render, retained, budget) };
-  }
-  return out;
-}
-function compactEditResult(result, detail = "compact", options = {}) {
-  if (!isRecord6(result))
-    return result;
-  const { ok, applied, diff, preservation, render, ...rest } = result;
-  const reviewed = isRecord6(render) ? compactReviewResult(render, detail, options) : undefined;
-  const next = ok === false ? "Copy the exact text from kiln_source and send the edit again with this programRef." : reviewed ? reviewed.next : "kiln_render this programRef to review the change.";
-  const out = {
-    ok,
-    ...applied !== undefined ? { applied } : {},
-    ...ok === false ? {} : { changed: changeSummary(result) },
-    next
-  };
-  if (typeof diff === "string") {
-    if (detail === "lean" && diff.length > LEAN_DIFF) {
-      out.diff = diff.slice(0, LEAN_DIFF);
-      out.diffOmitted = diff.length - LEAN_DIFF;
-    } else
-      out.diff = diff;
-  }
-  if (preservation !== undefined) {
-    if (detail === "full")
-      out.preservation = preservation;
-    else if (detail === "compact")
-      out.preservation = compactPreservation(preservation);
-  }
-  if (reviewed)
-    out.render = reviewed;
-  if (detail === "full")
-    return boundFullEdit({ ...out, ...rest }, isRecord6(render) ? render : undefined, options.retainedReport?.());
-  const edited = roundNumbers({ ...out, ...rest });
-  if (detail === "compact" && typeof edited.diff === "string" && edited.diff.length > LEAN_DIFF) {
-    const over = resultCharacters(edited) - DEFAULT_RESULT_LIMIT + 40;
-    if (over > 0) {
-      const keep = Math.max(LEAN_DIFF, edited.diff.length - over);
-      edited.diffOmitted = edited.diff.length - keep;
-      edited.diff = edited.diff.slice(0, keep);
-    }
-  }
-  return edited;
 }
 
 // src/tools/review.ts
@@ -42012,12 +42034,19 @@ async function guardCaptureBudget(name, input, context, run) {
     }
     return out;
   } catch (error) {
+    const described = describeInputError(name, error, { shapes: NESTED_RECORD_SHAPES });
+    if (described)
+      throw new Error(described);
     return {
       ok: false,
       error: error instanceof Error ? error.message : String(error)
     };
   }
 }
+var NESTED_RECORD_SHAPES = {
+  shot: "shape:camera-shot",
+  capture: "shape:capture"
+};
 function snapshotRenderContext(context) {
   return context.viewRenderState ? { ...context, ...context.viewRenderState(), viewRenderState: undefined } : context;
 }
@@ -42587,7 +42616,7 @@ function createKilnToolHost(context = {}, options = {}) {
           content: [
             {
               type: "text",
-              text: withoutLocalPaths(describeInputError(name, err, schemaFields(def.inputSchema)) ?? errorMessage(err))
+              text: withoutLocalPaths(describeInputError(name, err, { fields: schemaFields(def.inputSchema) }) ?? errorMessage(err))
             }
           ]
         };

@@ -213,6 +213,11 @@ export function nextStep(result: Json): string {
       /GPU render|render service|renderer/u.test(result.error)
     )
       return 'The source may be fine; the renderer is not. Set KILN_RENDER=auto (CLI --render auto) for CPU geometry views, or repair the render service and call kiln_renderer { action: "reprobe" }, then kiln_render this programRef again.';
+    if (
+      typeof result.error === 'string' &&
+      /^(?:missing|ambiguous) camera subject/u.test(result.error)
+    )
+      return 'The source is unchanged; the shot is wrong. Name the subject by one exact part path from the list in the error, then call again with this programRef.';
     return 'Fix the error in the source: kiln_edit with this programRef, or kiln_render with corrected code.';
   }
   const report = result.qaReport;
