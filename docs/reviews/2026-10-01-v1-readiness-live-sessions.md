@@ -26,7 +26,7 @@ the decisions listed at the end are the owner's.
 
 ## 1a. What changed: the branch's commits
 
-Nine commits on `v1-readiness` after `main` (`c734e2a`), each ending with the Claude trailer,
+Twelve commits on `v1-readiness` after `main` (`c734e2a`), each ending with the Claude trailer,
 none pushed. `CHANGELOG.md` states each change under 0.10.0 and marks the breaking ones;
 `docs/migration.md` has the client's view.
 
@@ -42,15 +42,34 @@ none pushed. `CHANGELOG.md` states each change under 0.10.0 and marks the breaki
 | `333e69c` | 2 Oct 01:31 | Six-decimal rounding, one shot per camera with frames, bounded pose bounds; a `full` edit bounded as a whole; `get` without a revision reads the only or newest one; an unknown key answered with the keys the tool takes; the skills say `full` is for a second look only; a measured test budget. |
 | `3fc369c` | 2 Oct 02:48 | A nested record that fails to parse is a tool error naming its Discovery shape; a wrong camera subject is answered with the shot's fix; `kiln_edit` no longer echoes the source of an edit sent by `code` (`includeCode` opt-in, bounded); the CLI `material list` prints summaries; the blind driver counts Agy's tool steps. |
 
-The commit that follows `3fc369c` carries this report, the plan's progress log, the cleanup list
-and two measured test budgets in `src/__tests__/cli-render-json.test.ts` (3.2 to 4.8 s and 11.3 to
-14.0 s in the gates of 2 October, 20 s on the same tree in a fresh clone's gate beside two live
-sessions). The final gate and the fresh clone ran on that commit; a last docs-only commit adds their
-numbers here and to the plan's progress log.
+| `6ec32a1` | 2 Oct 08:24 | This report, the plan's progress log through session 50 and two measured test budgets in `src/__tests__/cli-render-json.test.ts`. |
+| `6c50ec9` | 2 Oct 09:07 | Measured budgets for the CLI-spawning tests that timed out or ran near their limits on the loaded host (60, 90 and 120 s, each with its gate, fresh-clone and loaded-host durations beside it; the first CLI render JSON budget moved to the test it measured); no assertion or production path changed. |
+| the commit after `6c50ec9` | 2 Oct | The final gate's and the fresh clone's numbers in this report and the plan's log; `git diff --stat 6c50ec9..HEAD` touches only `docs/`. |
 
 ## 1b. Final gate and fresh clone
 
-FINAL_GATE_PARAGRAPH
+Gate `final` on the records commit `6ec32a1` (08:24 to 08:55, `gate/final/`) failed its `test`
+step: 3112 pass, 2 skip, 5 fail across 399 files in 932 s, the five being timeouts of CLI-spawning
+tests at their 20 and 30 s budgets while the host ran at 97% CPU on its sixteen logical processors
+(another checkout's dev server, browsers and other sessions' processes); every other step exit 0, and
+the same run's `test:coverage` step passed all 3117 tests under instrumentation (functions 95.13%,
+lines 92.44%). The budgets commit `6c50ec9` sized those tests' budgets from their measured durations
+(section 1a). Gate `final-2` on `6c50ec9` with the runtime rebuild, 09:07 to 09:26
+(`gate/final-2/`): `build-runtime` exit 0 (4 s), `check:toolchain` exit 0,
+`check:skills` exit 0, `typecheck` exit 0, `lint` exit 0, `test` exit 0 (3117 pass,
+2 skip, 0 fail across 399 files, 557 s), `test:render-service`
+exit 0 (78 pass), `test:coverage` exit 0 (3117 pass, 0 fail, 565 s;
+functions 95.13% against the 94.00% minimum with 54 functions of slack,
+lines 92.44% against 92.10% with 227 lines of slack; no threshold changed).
+
+Fresh clone `fresh-6c50ec9` of the branch tip, 09:26 to 09:45
+(`measurements/fresh-6c50ec9-*.log`, `gate/fresh-fresh-6c50ec9/`): clone, `bun install
+--frozen-lockfile` (25 s) and `node scripts/build-runtime.mjs all` (8 s)
+exit 0 with `dist/` identical to the committed copy (build identity `sha256:306f465a65156d1a5c8bdefabdd898f65ebf4f76920f8a0bfb13563f1f30acac`); its
+gate passed every step: `check:toolchain`, `check:skills`, `typecheck` and `lint` exit 0, `test` exit 0 (471 s: 3117 pass, 2 skip, 0 fail across 399 files), `test:render-service` exit 0 (78 pass), `test:coverage` exit 0 (501 s: 3117 pass, 0 fail; functions 95.13%, lines 92.44%, both above the ratchet); `test:package` exit 0 (80 s); the four generated workspaces
+each answered `tools/list` with 17 tools on both protocol revisions in 306 to 368 ms
+(claude 354 and 327, codex 312 and 306, opencode 314 and 318, agy 368 and 332), Agy under the new empty home `agy-homes/fresh-6c50ec9-agy`, each harness's own
+listing recorded in `measurements/fresh-6c50ec9-tools-up-*.json`.
 
 ## 2. Contract evidence
 
@@ -61,9 +80,9 @@ One row per rule of the plan's contract table, on the final build.
 | 1 Both revisions | `src/__tests__/mcp-conformance.test.ts` (12) drives the built server over stdio with `initialize` (2025-06-18 and 2025-11-25) and `server/discover` (2026-07-28). Live: Claude Code opens with `server/discover` by default on the live API (f13, w33 to w36, c37 to c40) and with the switch (f14); Codex `initialize` 2025-06-18 by default (f11, w27 to w32) and `server/discover` with `features.mcp_2026_07_28` (f12); Agy `server/discover` by default (every Agy session); OpenCode `initialize` 2025-11-25 (every OpenCode session; its per-server `protocol` entry does not reach a stdio server, H22). |
 | 2 First answer before the engine | The thin entry (`dist/mcp-server.mjs`, protocol library and manifest only) answers `tools/list` and `server/discover` before `dist/mcp-engine.mjs` loads: startup test 229 to 245 ms; rig on 51e382b 261 to 290 ms after process start; fresh-clone checker 265 to 374 ms across the four harness workspaces; the rig on the final build, run beside two live sessions: Claude Code's `server/discover` answered 16 ms and `tools/list` 291 ms after process start, Codex's 21 ms and 343 ms (`rig-0.10.0-fix3`, `cc-live-first-modern`, `cx-live-first-modern`); fresh clone of `3fc369c`: the four generated workspaces answered `tools/list` with 17 tools on both revisions in 273 to 348 ms (claude 286 and 319, codex 285 and 273, opencode 277 and 274, agy 320 and 348; `measurements/fresh-3fc369c-tools-up-*.json`). |
 | 3 Plain schemas | `src/tools/__tests__/registry-contract.test.ts`: no root `oneOf`/`anyOf`; `kiln_project`, `kiln_material` and `kiln_review` are flat objects with an `action` enum. Rig: all 17 tools in Claude Code's first request with tool search off (0.9.0 dropped three). |
-| 4 Schemas within 5,000 bytes | Largest `kiln_render` at 4,914 bytes; all 17 within 5,000 (`registry-contract.test.ts`). |
+| 4 Schemas within 5,000 bytes | Largest `kiln_render` at 4,988 bytes and `kiln_inspect` at 4,917 on the final build (`6c50ec9`; `kiln_render` was 4,914 at 5d56895); all 17 within 5,000, 27,574 bytes together (`registry-contract.test.ts`). |
 | 5 Short text | Instructions 692 characters; every description within 1,024 with its purpose in the first 250. |
-| 6 Definitions within 45,000 | 17 definitions 39,603 characters as JSON (the fourteen base tools 32,695, under their 32,768 budget test). |
+| 6 Definitions within 45,000 | 17 definitions 40,715 characters as JSON on the final build (39,603 at 5d56895; `registry-contract.test.ts` measures `JSON.stringify` of the advertised list); the fourteen program tools 29,486 characters as name, description and schema, under the 32,768 of `mcp-payload.test.ts`. |
 | 7 Results within 20,000 by default, 40,000 at most | `src/__tests__/result-contract.test.ts` (the 130-part asset, the renamed 60-part grid, the compare page, the six-shot edit, the nine-frame animation, an edit by `code` with and without `includeCode`, every case in compact, lean and full). Live sizes that drove the fixes: compact edits 20,069 to 27,865 on 51e382b (F19, F23), a compare page 38,952 (F22), a nine-frame animation 24,223 (F24), a full edit 40,533 (F25), by-code edits 28,539 and 28,167 (F30). On the final build: s42 `kiln_render` 13,684 with four named shots, r48 `kiln_edit` 14,977, r47 `kiln_edit` 13,496, s41 `kiln_render` 11,116, s50 `kiln_render` 11,302 (compact with named shots; `kiln_inspect` 11,176): every default result under 20,000 and every result under 40,000. |
 | 8 Newest result stands alone | Fixture test on the lead fields and their order; every live render, edit and inspection led with `ok`, `acceptance`, `disposition`, `blockers`, `findings` and `next`. |
 | 9 Errors that teach | `src/__tests__/mcp-errors.test.ts` (`teaches()`: a cause, the next call, no local path, no doubled period) over the stdio server; live: F21, F26, F27, F29 and F31 each came from a live error and each is a test now; the errors the models recovered from unaided named the part (`MAT_TEXTURE_UV_MISSING`, w36), the fields (`oldString`/`newString`, w30), the similar paths (w17, w35, b44) or the fix (`UNSAFE_THREE…`, w36; `this`, w29). |
@@ -74,7 +93,9 @@ One row per rule of the plan's contract table, on the final build.
 
 ## 3. Four-harness table on the final build
 
-Measured first-hand on `runtime-0.10.0-fix3` (`3fc369c`): the rig (`tools/rig-final.ps1`,
+Measured first-hand on `runtime-0.10.0-fix3` (`3fc369c`), whose `dist/` is byte-identical to the
+final commit's (build identity `sha256:306f465a…` in both; the commits after `3fc369c` change
+tests and records only): the rig (`tools/rig-final.ps1`,
 a stand-in provider, no model) for the request shapes of Claude Code and Codex, and the live
 sessions of that build (s41, s42, r47, r48) for the rest. Cells that rest on an earlier build
 say so. The plan's 0.9.0 and 51e382b tables stay in the plan for comparison.
@@ -358,8 +379,11 @@ The Claude Code composition (s50, Sonnet 5.5, `sessions/s50-claude-scene-repeat/
   or the 30-minute cap; it counts and was repeated as session 50.
 - The fresh clone of `3fc369c` failed its gate's `test` step on two CLI JSON tests at the 20 s
   budget while two live sessions ran beside it (3,115 pass, 2 fail; the same run's coverage
-  step passed them at 4.8 and 11.5 s). The two tests now carry measured budgets and the fresh
-  clone was rerun on the final commit (section 1b).
+  step passed them at 4.8 and 11.5 s), and gate `final` on `6ec32a1` failed its `test` step on
+  five more CLI timeouts with the host at 97% CPU (its coverage step passed all 3117). Those
+  tests now carry budgets sized from their measured durations (`6c50ec9`); gate `final-2` and
+  the fresh clone `fresh-6c50ec9` passed on that commit (section 1b). Whether an idle runner
+  needs the larger budgets was not measured: hosted CI did not run.
 
 ## 9. Decisions left to the owner
 
@@ -376,6 +400,10 @@ The Claude Code composition (s50, Sonnet 5.5, `sessions/s50-claude-scene-repeat/
   revision; and `kiln save --help` prints the global usage.
 - Whether `module`, like `this`, should be allowed in generated code the sandbox checks (s42's
   first composition hit it; the error taught the fix).
+- Whether the generic "Generated asset execution was rejected." should add engine-owned advice
+  that a thrown message never crosses the sandbox and measurements come from `kiln_inspect`
+  (s50 threw an `Error` to print bounding boxes and got the bare sentence, H30; the adversarial
+  isolation test fixes that exact sentence today).
 - Where the composed battle scene goes: it stays in the session workspaces for review; nothing
   enters the gallery or the site.
 
