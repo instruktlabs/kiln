@@ -18,17 +18,11 @@ export const workspaceSelectionSchema = z
     projectId: projectIdSchema
       .nullable()
       .optional()
-      .describe(
-        'Optional project. Omission is standalone unless the host explicitly configures a default; null always selects standalone authoring.',
-      ),
-    projectRevision: projectRevisionIdSchema
-      .optional()
-      .describe('Exact project revision; requires a selected or configured project.'),
+      .describe('Project; omit for the configured default, null for standalone.'),
+    projectRevision: projectRevisionIdSchema.optional().describe('Exact project revision.'),
     materialDependencies: materialDependenciesSchema
       .optional()
-      .describe(
-        'Exact immutable material pins for this invocation, usable with or without a project. Project locks cannot be replaced.',
-      ),
+      .describe('Exact material pins for this call; project locks cannot be replaced.'),
   })
   .strict()
   .superRefine((selection, ctx) => {
@@ -44,4 +38,6 @@ export type WorkspaceSelection = z.infer<typeof workspaceSelectionSchema>;
 export interface WorkspacePort {
   run<T>(selection: WorkspaceSelection, execute: () => Promise<T>): Promise<T>;
   current(): WorkspaceBinding | undefined;
+  /** The project an omitted `projectId` selects, when the host configured one. */
+  configured?(): string | undefined;
 }

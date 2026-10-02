@@ -20,7 +20,7 @@ export const discoveryInputSchema = z
       overview: z.literal(true).optional(),
       capabilities: z.literal(true).optional(),
       family: selector.optional(),
-      kind: z.enum(['operation', 'assembly', 'recipe']).optional(),
+      kind: z.enum(['operation', 'assembly', 'recipe', 'shape']).optional(),
       tags: z.array(selector).min(1).max(8).optional(),
       offset: z.number().int().min(0).max(10000).optional(),
       limit: z.number().int().min(1).max(12).optional(),

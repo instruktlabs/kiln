@@ -4,6 +4,7 @@ import { helperContracts } from './helper-contracts';
 import { discoveryIntents } from './intents';
 import { REMOVED_AUTHORING_HELPERS } from '../geometry-catalog';
 import { discoveryRecipes } from './recipes';
+import { discoveryShapes } from './shapes';
 
 /** Migration data only. These names must never reappear as executable Discovery entries. */
 export const DISCOVERY_HELPER_RETIREMENTS = [
@@ -78,6 +79,7 @@ const catalog = parseCatalog([
     };
   }),
   ...discoveryRecipes,
+  ...discoveryShapes,
 ]);
 
 /** Catalog reads cannot mutate shared definitions or another consumer's response. */

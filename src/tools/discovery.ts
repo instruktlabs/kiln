@@ -12,11 +12,14 @@ import { approvedTextureCatalogV1 } from '../material-resources';
 
 /** Shared native tool definition; all transports use the same Discovery service. */
 export function createKilnDiscoveryDef(context: KilnToolContext): KilnToolDef {
-  const run = createDiscovery(() => currentCapabilities(context));
+  const run = createDiscovery(
+    () => currentCapabilities(context),
+    async () => projectNotes(context),
+  );
   return {
     name: 'kiln_discover',
     description:
-      'Discover Kiln operations, assemblies, recipes and current host capabilities. Omit arguments for a compact overview. Search with ordinary modeling language using query; refine with family, kind or tags. Fetch complete contracts/examples with ids (up to six exact IDs or executable names). Overview/search pages default to six summaries. Recipes guide construction without restricting the asset. Search runs locally without models or network calls.',
+      'Discover Kiln operations, assemblies, recipes, tool-input shapes and current host capabilities. Omit arguments for a compact overview. Search with ordinary modeling language using query; refine with family, kind or tags. Fetch complete contracts/examples with ids (up to six exact IDs, executable names or shape: ids). Overview/search pages default to six summaries. Recipes guide construction without restricting the asset. Search runs locally without models or network calls.',
     inputSchema: discoveryInputSchema,
     run,
     text: (output) => {
@@ -29,6 +32,20 @@ export function createKilnDiscoveryDef(context: KilnToolContext): KilnToolDef {
         : text;
     },
   };
+}
+
+/** The project an omitted `projectId` selects, named where the agent orients itself (F1, F8). */
+function configuredProject(context: KilnToolContext): string | null {
+  return context.workspace?.configured?.() ?? null;
+}
+
+function projectNotes(context: KilnToolContext): string[] {
+  const projectId = configuredProject(context);
+  return projectId
+    ? [
+        `Project ${projectId} is configured for this workspace and applies when projectId is omitted: read its brief, design, inventory and material pins first with kiln_project { action: "get", projectId: "${projectId}" }; projectId: null selects standalone work.`,
+      ]
+    : [];
 }
 
 async function currentCapabilities(context: KilnToolContext) {
@@ -85,6 +102,12 @@ async function currentCapabilities(context: KilnToolContext) {
     // you -- so the workspace guide's "do not substitute it silently" had
     // nothing to check against. Compare with `runtime` in .kiln/workspace.json.
     engine: engineIdentity(),
+    project: {
+      configured: configuredProject(context),
+      select:
+        'projectId per call; omitted uses the configured project, null selects standalone work',
+      read: 'kiln_project { action: "get", projectId } returns the brief, design, inventory and material pins',
+    },
     renderer,
     execution:
       context.localExecution ??

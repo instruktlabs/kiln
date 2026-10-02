@@ -7,14 +7,33 @@ const refInput = z
   .regex(programRefPattern)
   .describe('Returned p_ handle or full sha256 ref.');
 
-/** Adapt source-taking definitions once, for all hosts. Legacy definitions remain unchanged. */
-export function withProgramReferences(def: KilnToolDef, store: ProgramStore): KilnToolDef {
+/**
+ * Adapt source-taking definitions once, for all hosts. Legacy definitions remain unchanged.
+ * A host that can read workspace files also accepts `file`, a path relative to the workspace
+ * root, so a code-mode harness need not quote a program into an argument.
+ */
+export function withProgramReferences(
+  def: KilnToolDef,
+  store: ProgramStore,
+  readSourceFile?: (file: string) => Promise<string>,
+): KilnToolDef {
   if (!(def.inputSchema instanceof z.ZodObject))
     throw new Error(`${def.name} must have an object input schema.`);
+  const sources = readSourceFile ? 'code, programRef OR file' : 'code OR programRef';
   const inputSchema = def.inputSchema
     .extend({
       code: z.string().optional().describe('New source.'),
       programRef: refInput.optional(),
+      ...(readSourceFile
+        ? {
+            file: z
+              .string()
+              .min(1)
+              .max(1024)
+              .optional()
+              .describe('A program file inside the workspace, relative to its root.'),
+          }
+        : {}),
       ...(def.name === 'kiln_edit'
         ? {
             includeCode: z
@@ -26,9 +45,13 @@ export function withProgramReferences(def: KilnToolDef, store: ProgramStore): Ki
           }
         : {}),
     })
-    .refine((input) => (input.code !== undefined) !== (input.programRef !== undefined), {
-      message: 'Supply exactly one of code or programRef.',
-    });
+    .refine(
+      (input) =>
+        [input.code, input.programRef, (input as { file?: string }).file].filter(
+          (value) => value !== undefined,
+        ).length === 1,
+      { message: `Supply exactly one of ${sources.replace(' OR ', ' or ')}.` },
+    );
   const summaries: Record<string, string> = {
     kiln_validate:
       'Check program syntax, sandbox rules and retired globals before building. Returns findings with codes, lines and repair hints where available; use kiln_render to evaluate geometry and see the asset.',
@@ -45,16 +68,25 @@ export function withProgramReferences(def: KilnToolDef, store: ProgramStore): Ki
   const kept = store.retention ?? 'kept by the host program store';
   const description =
     def.name === 'kiln_edit'
-      ? `Atomically apply ordered exact-string replacements and render. Copy anchors from kiln_source. Supply code OR programRef. Returns programRef (${kept}), parentRef, diff and preservation comparing static data and animation channels. Review changes; use kiln_inspect compare for more pages or protected subtrees. Failed comparison preserves the repair; render:false leaves preservation not_assessed. capture selects cameras; includeCode returns full source.`
-      : `${summaries[def.name] ?? def.description} Supply code OR programRef (${kept}). Invalid drafts keep a ref.`;
+      ? `Atomically apply ordered exact-string replacements and render. Copy anchors from kiln_source. Supply ${sources}. Returns programRef (${kept}), parentRef, diff and preservation comparing static data and animation channels. Review changes; use kiln_inspect compare for more pages or protected subtrees. Failed comparison preserves the repair; render:false leaves preservation not_assessed. capture selects cameras; includeCode returns full source.`
+      : `${summaries[def.name] ?? def.description} Supply ${sources} (${kept}). Invalid drafts keep a ref.`;
   return {
     ...def,
     inputSchema,
     description,
     run: async (input) => {
-      const args = inputSchema.parse(input);
+      const args = inputSchema.parse(input) as Record<string, unknown> & {
+        code?: string;
+        programRef?: string;
+        file?: string;
+        includeCode?: boolean;
+      };
       const code =
-        typeof args.code === 'string' ? args.code : await store.get(args.programRef as string);
+        typeof args.code === 'string'
+          ? args.code
+          : typeof args.file === 'string' && readSourceFile
+            ? await readSourceFile(args.file)
+            : await store.get(args.programRef as string);
       // Keep malformed drafts too, so a failed build can be repaired by reference.
       const parentRef = await retainProgram(store, code);
       const { programRef: _inner, ...output } = (await def.run({ ...args, code })) as Record<

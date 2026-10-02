@@ -57,6 +57,8 @@ export function createDiscoveryService(
   index: DiscoveryIndex,
   capabilities: () => Promise<unknown>,
   retirements: Readonly<Record<string, string>> = {},
+  /** Host notes for the overview, such as the project an omitted `projectId` selects. */
+  notes: () => Promise<string[]> = async () => [],
 ): (input: unknown) => Promise<DiscoveryResponse> {
   const entries = parseCatalog(source);
   const byId = new Map(entries.map((entry) => [entry.id, entry]));
@@ -78,7 +80,7 @@ export function createDiscoveryService(
   const orientation: NonNullable<DiscoveryResponse['orientation']> = {
     start: ['createRoot', 'createPart'].flatMap((name) => {
       const entry = byName.get(name);
-      return entry
+      return entry && 'contract' in entry
         ? [{ id: entry.id, signature: entry.contract.signature, returns: entry.contract.returns }]
         : [];
     }),
@@ -140,7 +142,9 @@ export function createDiscoveryService(
     tags: entry.tags,
     stability: entry.stability,
     limitations: entry.limitations,
-    ...(entry.kind === 'recipe' ? {} : { execution: entry.contract.execution }),
+    ...(entry.kind === 'operation' || entry.kind === 'assembly'
+      ? { execution: entry.contract.execution }
+      : {}),
     ...(match ? { match } : {}),
   });
   return async (value) => {
@@ -254,13 +258,14 @@ export function createDiscoveryService(
     const page = matches.slice(input.offset, input.offset + input.limit);
     const nextOffset =
       input.offset + page.length < matches.length ? input.offset + page.length : null;
+    const guidance = [...orientation.guidance, ...(input.mode === 'overview' ? await notes() : [])];
     return finish({
       version: 'kiln.discovery.v1',
       mode: input.mode,
       entries: page,
       total: matches.length,
       nextOffset,
-      ...(input.mode === 'overview' ? { orientation } : {}),
+      ...(input.mode === 'overview' ? { orientation: { ...orientation, guidance } } : {}),
       text: [
         input.query
           ? 'Potential helpers and related guidance. Fetch selected contracts with ids before calling unfamiliar helpers. Search relevance does not certify support for the entire requested asset.'
@@ -268,7 +273,7 @@ export function createDiscoveryService(
         ...(input.mode === 'overview'
           ? [
               ...orientation.start.map((entry) => `${entry.signature} -> ${entry.returns}`),
-              ...orientation.guidance,
+              ...guidance,
               `Families: ${orientation.families.join(', ')}. Tags: ${orientation.tags.join(', ')}.`,
             ]
           : []),

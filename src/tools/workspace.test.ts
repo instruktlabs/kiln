@@ -129,11 +129,16 @@ test('shared tool selection exposes explicit standalone intent and validates res
   const workspace = new FileWorkspace(root, 'pilot');
   await workspace.projects.create({ projectId: 'pilot', name: 'Pilot' });
   const tool = withWorkspaceContext(
-    definition(async () => ({ project: workspace.current()?.project?.projectId })),
+    definition(async () => ({ bound: workspace.current()?.project?.projectId })),
     { workspace },
   );
-  expect(await tool.run({})).toEqual({ project: 'pilot' });
-  expect(await tool.run({ projectId: null })).toEqual({ project: undefined });
+  // The bound result also names the exact project revision it used; standalone adds nothing.
+  const pilot = await workspace.projects.read('pilot');
+  expect(await tool.run({})).toEqual({
+    bound: 'pilot',
+    project: { projectId: 'pilot', revisionId: pilot.revisionId },
+  });
+  expect(await tool.run({ projectId: null })).toEqual({ bound: undefined });
   await expect(
     tool.run({ projectId: null, projectRevision: `r_0000000001_${'0'.repeat(64)}` }),
   ).rejects.toThrow();

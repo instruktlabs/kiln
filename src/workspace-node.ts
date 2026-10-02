@@ -26,6 +26,9 @@ export class FileWorkspace implements WorkspacePort {
   current() {
     return this.active.getStore();
   }
+  configured() {
+    return this.defaultProjectId;
+  }
   async run<T>(requested: WorkspaceSelection, execute: () => Promise<T>): Promise<T> {
     const selection = workspaceSelectionSchema.parse(requested);
     const existing = this.current();

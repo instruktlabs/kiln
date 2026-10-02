@@ -98,7 +98,15 @@ export function withWorkspaceContext(def: KilnToolDef, context: KilnToolContext)
     inputSchema: schema,
     run: async (raw) => {
       const input = schema.parse(raw) as Record<string, unknown>;
-      return observeWorkspaceOperation(context, def.name, input, () => def.run(input));
+      return observeWorkspaceOperation(context, def.name, input, async () => {
+        const output = await def.run(input);
+        // A project-bound result names the exact revision it used, so the agent can see
+        // that the configured project applied (and which revision) without another call.
+        const project = context.workspace?.current()?.project;
+        return project && output && typeof output === 'object' && !Array.isArray(output)
+          ? { ...output, project: { projectId: project.projectId, revisionId: project.revisionId } }
+          : output;
+      });
     },
   };
 }

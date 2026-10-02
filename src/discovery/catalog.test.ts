@@ -12,17 +12,19 @@ import {
 import { geometryDiagnostics } from '../geometry';
 import { sweepProfile } from '../sweep';
 import { listHelperSpecs } from './helper-specs';
-import { parseCatalog } from './catalog-schema';
+import { parseCatalog, type DiscoveryEntry } from './catalog-schema';
 import { listDiscoveryEntries, DISCOVERY_HELPER_RETIREMENTS } from './catalog';
 import { helperContracts } from './helper-contracts';
 
 const byName = () => new Map(listDiscoveryEntries().map((entry) => [entry.name, entry]));
+type Executable = Extract<DiscoveryEntry, { kind: 'operation' | 'assembly' }>;
+const executable = (entry: DiscoveryEntry): entry is Executable => 'contract' in entry;
 
 describe('executable Discovery catalog', () => {
   test('foliage helper contracts disclose the placeholder texture before an agent uses the examples', () => {
     for (const name of ['foliageCardGeo', 'foliageMaterial']) {
       const entry = byName().get(name);
-      if (!entry || entry.kind === 'recipe') throw new Error(`Missing helper ${name}`);
+      if (!entry || !executable(entry)) throw new Error(`Missing helper ${name}`);
       expect(entry.contract.parameters.join(' ')).toContain('4x4 teaching placeholder');
     }
   });
@@ -34,7 +36,7 @@ describe('executable Discovery catalog', () => {
       .map(([name]) => name)
       .sort();
     const catalog = listDiscoveryEntries();
-    const entries = catalog.filter((entry) => entry.kind !== 'recipe');
+    const entries = catalog.filter(executable);
     expect(entries.map((entry) => entry.name).sort()).toEqual(names);
     expect(Object.keys(helperContracts).sort()).toEqual(names);
     expect(parseCatalog(catalog)).toEqual(catalog);
@@ -75,7 +77,7 @@ describe('executable Discovery catalog', () => {
     const advisory = catalog.get('materialBudgetAdvisory');
     expect(uv).toBeDefined();
     expect(advisory).toBeDefined();
-    if (!uv || uv.kind === 'recipe' || !advisory || advisory.kind === 'recipe')
+    if (!uv || !executable(uv) || !advisory || !executable(advisory))
       throw new Error('Missing replacement contracts');
     expect(uv.contract.parameters.join(' ')).toContain('[1,1]');
     expect(uv.contract.preservation.join(' ')).toContain('tangent');
@@ -89,7 +91,7 @@ describe('executable Discovery catalog', () => {
     const catalog = byName();
     for (const previous of listHelperSpecs()) {
       const current = catalog.get(previous.name);
-      if (!current || current.kind === 'recipe') continue;
+      if (!current || !executable(current)) continue;
       expect(current.contract.signature).toBe(previous.signature);
       expect(current.contract.example).toBe(previous.example);
     }
@@ -107,13 +109,13 @@ describe('executable Discovery catalog', () => {
     const wheel = catalog.get('createWheelAssembly');
     if (
       !box ||
-      box.kind === 'recipe' ||
+      !executable(box) ||
       !copy ||
-      copy.kind === 'recipe' ||
+      !executable(copy) ||
       !material ||
-      material.kind === 'recipe' ||
+      !executable(material) ||
       !wheel ||
-      wheel.kind === 'recipe'
+      !executable(wheel)
     )
       throw new Error('missing representative contracts');
     expect(box.contract.ownership).toContain('cached');
@@ -127,7 +129,7 @@ describe('executable Discovery catalog', () => {
     const catalog = byName();
     const get = (name: string) => {
       const entry = catalog.get(name);
-      if (!entry || entry.kind === 'recipe') throw new Error(`Missing operation ${name}`);
+      if (!entry || !('contract' in entry)) throw new Error(`Missing operation ${name}`);
       return entry;
     };
     expect(get('revolveGeo').contract.units).toContain('radians');
@@ -145,7 +147,7 @@ describe('executable Discovery catalog', () => {
     const first = entries[0]!;
     first.tags.push('contaminated');
     first.related.push({ id: 'operation:missing', relation: 'companion' });
-    if (first.kind !== 'recipe') first.contract.parameters.push('contaminated');
+    if ('contract' in first) first.contract.parameters.push('contaminated');
     expect(listDiscoveryEntries()[0]?.tags).not.toContain('contaminated');
     expect(() => parseCatalog(listDiscoveryEntries())).not.toThrow();
   });
@@ -193,7 +195,7 @@ describe('executable Discovery catalog', () => {
     );
     expect(geometryDiagnostics(sheet).boundaryEdges).toBeGreaterThan(0);
     const roomContract = byName().get('room');
-    if (!roomContract || roomContract.kind === 'recipe') throw new Error('missing room contract');
+    if (!roomContract || !('contract' in roomContract)) throw new Error('missing room contract');
     expect(roomContract.contract.axes).toContain('Width spans Z');
   });
 });

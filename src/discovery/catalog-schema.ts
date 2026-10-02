@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 const text = z.string().trim().min(1);
 const texts = z.array(text);
-const id = z.string().regex(/^(operation|assembly|recipe):[A-Za-z][A-Za-z0-9-]*$/);
+const id = z.string().regex(/^(operation|assembly|recipe|shape):[A-Za-z][A-Za-z0-9-]*$/);
 const common = {
   version: z.literal('kiln.catalog-entry.v1'),
   id,
@@ -64,6 +64,16 @@ export const discoveryEntrySchema = z
             adaptations: texts,
             checks: texts,
           })
+          .strict(),
+      })
+      .strict(),
+    // A tool input record served on request, so the advertised schema can stay small.
+    z
+      .object({
+        ...common,
+        kind: z.literal('shape'),
+        shape: z
+          .object({ tool: text, field: text, schema: z.record(z.string(), z.unknown()) })
           .strict(),
       })
       .strict(),

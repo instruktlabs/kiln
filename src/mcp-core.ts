@@ -38,7 +38,6 @@ import {
   serveStdio,
 } from '@modelcontextprotocol/server/stdio';
 import { readFile } from 'node:fs/promises';
-import { fileURLToPath } from 'node:url';
 
 import { KILN_ASSET_WIDGET_URI } from './asset-widget-uri';
 import type { AssetLink } from './assets-resources';
@@ -50,14 +49,6 @@ export const MCP_SERVER_NAME = 'kiln';
 export const MCP_SERVER_VERSION = ENGINE_VERSION;
 
 /**
- * Absolute path to the skills that ship beside this server. Both entry shapes
- * resolve correctly: `dist/mcp-server.mjs` and `src/mcp-core.ts` each sit one
- * level below the installation root, where `skills/` lives. URL arithmetic only,
- * so nothing touches the filesystem at module load.
- */
-const packagedSkillsDir = fileURLToPath(new URL('../skills', import.meta.url));
-
-/**
  * The spec's optional `instructions` field, returned by `initialize` and
  * `server/discover`.
  *
@@ -66,28 +57,13 @@ const packagedSkillsDir = fileURLToPath(new URL('../skills', import.meta.url));
  * AGENTS.md, no CLAUDE.md and no registered skills -- but the skills do ship
  * beside the server, so the useful thing to say is that they exist and where.
  *
- * Deliberately an index and a pointer rather than the skill bodies themselves.
- * The bodies are about 2,700 tokens and would be paid at every session start by
- * every client, which is exactly what the Agent Skills progressive-disclosure
- * model exists to avoid: names and descriptions up front, bodies on activation.
+ * At most 700 characters, with the essentials inside the first 512 (v1 contract
+ * rule 5): the text rides on every session start in every client, and the
+ * harnesses that cut it cut from the end. It names no absolute path, so the
+ * same bytes serve every installation.
  */
-export const MCP_SERVER_INSTRUCTIONS = `Kiln turns JavaScript you write into GLB 3D assets and returns rendered views for review.
-
-Work by reference. Send a program once to kiln_validate or kiln_render; the result carries a programRef. Keep it exactly as returned, including a short p_ handle, and use it for every later view and edit. kiln_source with that ref and a literal query returns exact edit anchors, and kiln_edit with that ref plus edits returns a new ref and renders by default. Do not resend a whole program to change part of it.
-
-Call kiln_discover before writing code to get exact helper signatures, with capabilities: true for the runtime, source, export and camera contract. Read viewFidelity in any render result before judging materials: a geometry-flat CPU image is evidence about shape, not about material. When materialFaithful is false and the task concerns appearance, say so rather than concluding from a CPU view. Material-faithful views come from the GPU render service included as render-service/ in this Kiln installation. Its native dependencies are optional dependencies of Kiln; keep them enabled when installing. Check kiln service status for readiness and follow docs/rendering.md for local or remote setup. Auto mode starts a compatible local service on demand. Installed dependencies alone do not prove GPU support.
-
-Detailed workflows ship beside this server as Agent Skills, one directory each under ${packagedSkillsDir}:
-- kiln-setup-workspace: create a managed workspace for authoring, and verify its tools came up
-- kiln-author-asset: write a new asset and export a GLB
-- kiln-refine-asset: change a saved asset through revisions
-- kiln-qa-asset: verify geometry, export fidelity, and behaviour in the destination project
-- kiln-compose-scene: arrange several existing GLB assets into a scene
-- kiln-batch-dispatch: run comparable trials across harnesses or models
-
-Read the one matching the task before authoring; each names its own reference files.
-
-Most harnesses register skills only from their own directories, so these may not appear as registered skills where you are. If the user wants them registered, offer to copy the relevant directories into .claude/skills/ or .agents/skills/ in their project. Ask before writing, and say that registration takes effect in a new session.`;
+export const MCP_SERVER_INSTRUCTIONS =
+  "Kiln turns JavaScript you write into GLB assets and returns rendered views. Work by reference: send a program once to kiln_validate or kiln_render, keep the returned programRef exactly, and use it for every later render, inspect, kiln_source and kiln_edit call; never resend a program to change part of it. Call kiln_discover first for helper contracts, with capabilities:true for the host's runtime, project and camera facts. Read viewFidelity before judging materials: a CPU view shows shape, not material; GPU views need the render service in render-service/. Agent Skills for authoring, refining, QA and scenes ship in skills/ beside this server's dist/; read the matching SKILL.md first.";
 
 /** One MCP content block. Mirrors the SDK's `CallToolResult['content']` element. */
 export type KilnContentBlock =

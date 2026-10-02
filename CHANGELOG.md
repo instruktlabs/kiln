@@ -43,6 +43,41 @@ marked **Breaking** change what a client or an embedder observes.
   live in `src/mcp-core.ts`. `src/requirements-json.ts` reads a host binding file without
   zod; `readHostRequirementsFile` validates on top of it as before.
 
+### Tool surface
+
+One versioned batch: tool definitions are prompt-cached, so every schema and description
+change lands together. Measured on the packaged manifest: the seventeen advertised
+definitions 39,603 characters as JSON (74,649 before), every input schema within 5,000
+bytes (four were over, the largest 18,788), input schemas 26,475 bytes in all (61,598),
+`src/generated/mcp-manifest.json` 72,659 characters (205,917).
+
+- **Breaking:** `kiln_project`, `kiln_material` and `kiln_review` are one flat object each
+  with an `action` enum instead of a root `oneOf` (Claude Code dropped all three). Every
+  other field is optional in the schema; the server checks what each action needs and names
+  the missing fields. The nested `draft`, `patch` and `payload` records are opaque in the
+  schema and validated when the action runs; `kiln_discover({ ids: ['shape:project-draft'] })`
+  (and `shape:project-patch`, `shape:material-draft`, `shape:material-import`) returns the
+  full JSON Schema through the new Discovery kind `shape`. `kiln_project` offers `export`
+  only when the host can read project bundles. The field names and defaults are unchanged.
+- **Breaking:** `kiln_edit capture`, `kiln_view_interior capture`, `kiln_inspect shot` and
+  `kiln_screenshot_animation shot` are advertised as opaque records; `kiln_render` states the
+  capture shape in full, `shape:capture` and `shape:camera-shot` describe it, and each tool
+  validates the record as before when it runs. The capture schemas live in
+  `src/tools/capture-input.ts`.
+- `kiln_validate`, `kiln_render`, `kiln_edit`, `kiln_inspect`, `kiln_view_interior` and
+  `kiln_screenshot_animation` accept `file`, a program file inside the workspace named
+  relative to its root, beside `code` and `programRef`; absolute paths and `..` are refused
+  with the rule. A code-mode harness can hand Kiln a path instead of quoting a program.
+- The configured project is visible: `kiln_discover` capabilities carry
+  `project.configured`, the overview says to read it first, and a project-bound render,
+  edit, inspection or save result carries `project: { projectId, revisionId }`.
+- **Breaking:** the server instructions are 692 characters (2,297 before), name no absolute
+  path and point at `skills/` beside the server; the list of skills and the offer to copy
+  them into `.claude/skills/` or `.agents/skills/` moved out. Workspace selection and
+  camera field text is shorter, and every description opens with its purpose.
+- `docs/tools.md` is the packaged manifest pretty-printed (seventeen tools, the advertised
+  bytes), no longer the embedding registry's fourteen.
+
 ### Program handles
 
 - A `programRef` the store does not know comes back as a tool result that names the next

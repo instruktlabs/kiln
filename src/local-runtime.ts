@@ -8,9 +8,11 @@ import { createCachedEvaluatorPort, MemoryBuildCache } from './build-cache';
 import { resolveGltfExporter } from './community-exporter';
 import { FileBuildCache } from './build-cache-node';
 import { installedRuntimeIdentity } from './runtime-identity';
-import { dirname, join, resolve } from 'node:path';
+import { readFile, stat } from 'node:fs/promises';
+import { dirname, isAbsolute, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { Console } from 'node:console';
+import { MAX_PROGRAM_BYTES } from './program-store';
 import { ApprovedTextureResourceCache, approvedTextureCatalogV1 } from './material-resources';
 import { FileWorkspace, localWorkspaceRoot } from './workspace-node';
 import { FileLiveReview } from './live-review-node';
@@ -35,6 +37,40 @@ export interface LocalExecution {
 }
 
 let scope = 0;
+
+/**
+ * Reads a program file named relative to the workspace root, so a code-mode harness can
+ * hand Kiln a path instead of quoting a program into an argument. Absolute paths and `..`
+ * are refused with the rule rather than the root (no local path leaves in an error), and
+ * the size bound is the program store's.
+ */
+function workspaceSourceReader(root: string): (file: string) => Promise<string> {
+  return async (file) => {
+    const segments = file.split(/[\\/]/u);
+    if (
+      !file ||
+      isAbsolute(file) ||
+      /^[A-Za-z]:/u.test(file) ||
+      segments.includes('..') ||
+      segments.includes('')
+    )
+      throw new Error(
+        'file must name a program inside the workspace, relative to its root: no absolute path and no "..". Use a path such as assets/asset.kiln.js, or pass code or programRef.',
+      );
+    const path = resolve(root, file);
+    const info = await stat(path).catch(() => undefined);
+    if (!info?.isFile())
+      throw new Error(
+        `file ${file} was not found inside the workspace. Check the relative path, or pass code or programRef.`,
+      );
+    if (info.size > MAX_PROGRAM_BYTES)
+      throw new Error(
+        `file ${file} exceeds the ${MAX_PROGRAM_BYTES / (1024 * 1024)} MiB source limit.`,
+      );
+    return readFile(path, 'utf8');
+  };
+}
+
 function integer(
   env: Record<string, string | undefined>,
   name: string,
@@ -179,6 +215,7 @@ export function createLocalToolContext(
     geometryPolicy: geometryPolicy as 'warn' | 'strict',
     indexPolicy,
     programStore: base.programStore ?? new FileProgramStore(localProgramStoreDirectory(env)),
+    readSourceFile: base.readSourceFile ?? workspaceSourceReader(workspaceRoot),
     evaluatorPort,
     assetBuildOptions: {
       gltfExporter,

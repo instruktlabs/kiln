@@ -1,6 +1,6 @@
 # Projects and Live Review
 
-The packaged local dashboard adds shared project configuration, a material library and observation history to standalone authoring. The CLI, the stdio MCP tools `kiln_project`, `kiln_material` and `kiln_review`, and the dashboard read and write the same records. The [foundation checkpoint](plans/2026-09-26-project-foundation.md) records how this was qualified and what production acceptance remains.
+The packaged local dashboard adds shared project configuration, a material library and observation history to standalone authoring. The CLI, the stdio MCP tools `kiln_project`, `kiln_material` and `kiln_review`, and the dashboard read and write the same records. Each MCP tool takes one flat object whose `action` names the operation; the server reports the fields that action needs, and `kiln_discover({ ids: ["shape:project-draft"] })` and the other `shape:` entries return the full nested record schemas. The [foundation checkpoint](plans/2026-09-26-project-foundation.md) records how this was qualified and what production acceptance remains.
 
 ## One workspace across interfaces
 

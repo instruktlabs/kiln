@@ -6,7 +6,7 @@ import { createDiscoveryService, type DiscoveryIndex } from './service';
 type Executable = Extract<DiscoveryEntry, { kind: 'operation' | 'assembly' }>;
 function operation(name: string): Executable {
   const template = listDiscoveryEntries().find((entry) => entry.name === 'copyGeometry');
-  if (!template || template.kind === 'recipe') throw new Error('Missing contract fixture');
+  if (!template || !('contract' in template)) throw new Error('Missing contract fixture');
   return {
     ...template,
     id: `operation:${name}`,

@@ -32557,9 +32557,9 @@ var workspaceSelectionSchema;
 var init_workspace = __esm(() => {
   init_projects();
   workspaceSelectionSchema = z6.object({
-    projectId: projectIdSchema.nullable().optional().describe("Optional project. Omission is standalone unless the host explicitly configures a default; null always selects standalone authoring."),
-    projectRevision: projectRevisionIdSchema.optional().describe("Exact project revision; requires a selected or configured project."),
-    materialDependencies: materialDependenciesSchema.optional().describe("Exact immutable material pins for this invocation, usable with or without a project. Project locks cannot be replaced.")
+    projectId: projectIdSchema.nullable().optional().describe("Project; omit for the configured default, null for standalone."),
+    projectRevision: projectRevisionIdSchema.optional().describe("Exact project revision."),
+    materialDependencies: materialDependenciesSchema.optional().describe("Exact material pins for this call; project locks cannot be replaced.")
   }).strict().superRefine((selection, ctx) => {
     if (selection.projectId === null && selection.projectRevision !== undefined)
       ctx.addIssue({
@@ -32588,6 +32588,9 @@ class FileWorkspace {
   }
   current() {
     return this.active.getStore();
+  }
+  configured() {
+    return this.defaultProjectId;
   }
   async run(requested, execute) {
     const selection = workspaceSelectionSchema.parse(requested);
@@ -34639,9 +34642,26 @@ var init_source_check = __esm(() => {
 });
 
 // src/local-runtime.ts
-import { dirname as dirname6, join as join13, resolve as resolve11 } from "node:path";
+import { readFile as readFile8, stat as stat5 } from "node:fs/promises";
+import { dirname as dirname6, isAbsolute, join as join13, resolve as resolve11 } from "node:path";
 import { fileURLToPath as fileURLToPath4 } from "node:url";
 import { Console } from "node:console";
+function workspaceSourceReader(root) {
+  return async (file) => {
+    const segments = file.split(/[\\/]/u);
+    if (!file || isAbsolute(file) || /^[A-Za-z]:/u.test(file) || segments.includes("..") || segments.includes(""))
+      throw new Error('file must name a program inside the workspace, relative to its root: no absolute path and no "..". Use a path such as assets/asset.kiln.js, or pass code or programRef.');
+    const path = resolve11(root, file);
+    const info = await stat5(path).catch(() => {
+      return;
+    });
+    if (!info?.isFile())
+      throw new Error(`file ${file} was not found inside the workspace. Check the relative path, or pass code or programRef.`);
+    if (info.size > MAX_PROGRAM_BYTES)
+      throw new Error(`file ${file} exceeds the ${MAX_PROGRAM_BYTES / (1024 * 1024)} MiB source limit.`);
+    return readFile8(path, "utf8");
+  };
+}
 function integer2(env, name, fallback, min, max) {
   const value = env[name] === undefined ? fallback : Number(env[name]);
   if (!Number.isInteger(value) || value < min || value > max)
@@ -34743,6 +34763,7 @@ function createLocalToolContext(base = {}, env = process.env) {
     geometryPolicy,
     indexPolicy,
     programStore: base.programStore ?? new FileProgramStore(localProgramStoreDirectory(env)),
+    readSourceFile: base.readSourceFile ?? workspaceSourceReader(workspaceRoot),
     evaluatorPort,
     assetBuildOptions: {
       gltfExporter,
@@ -34844,6 +34865,7 @@ var init_local_runtime = __esm(() => {
   init_community_exporter();
   init_build_cache_node();
   init_runtime_identity();
+  init_program_store();
   init_material_resources();
   init_workspace_node();
   init_live_review_node();
@@ -34883,18 +34905,20 @@ var init_requirements_assets = __esm(() => {
 
 // src/tools/programs.ts
 import { z as z10 } from "zod";
-function withProgramReferences(def, store) {
+function withProgramReferences(def, store, readSourceFile) {
   if (!(def.inputSchema instanceof z10.ZodObject))
     throw new Error(`${def.name} must have an object input schema.`);
+  const sources = readSourceFile ? "code, programRef OR file" : "code OR programRef";
   const inputSchema = def.inputSchema.extend({
     code: z10.string().optional().describe("New source."),
     programRef: refInput.optional(),
+    ...readSourceFile ? {
+      file: z10.string().min(1).max(1024).optional().describe("A program file inside the workspace, relative to its root.")
+    } : {},
     ...def.name === "kiln_edit" ? {
       includeCode: z10.boolean().optional().describe("Return the full updated source. Defaults to false with programRef, true with code.")
     } : {}
-  }).refine((input) => input.code !== undefined !== (input.programRef !== undefined), {
-    message: "Supply exactly one of code or programRef."
-  });
+  }).refine((input) => [input.code, input.programRef, input.file].filter((value) => value !== undefined).length === 1, { message: `Supply exactly one of ${sources.replace(" OR ", " or ")}.` });
   const summaries = {
     kiln_validate: "Check program syntax, sandbox rules and retired globals before building. Returns findings with codes, lines and repair hints where available; use kiln_render to evaluate geometry and see the asset.",
     kiln_render: "Build and return metrics, part paths and images. If partsTruncated, use kiln_inspect listParts. Omit capture for six views, preset/cells for orbit grids, or kiln.capture.v1/v2 shots for exact orthographic/perspective cameras; v2 adds hide. Check viewFidelity before judging materials. Failed builds return errors without images.",
@@ -34903,14 +34927,14 @@ function withProgramReferences(def, store) {
     kiln_inspect: "List part paths and inspect joints, clearances and edit preservation. listParts filters names/paths with query; follow partListing.nextOffset on the same programRef/query. measure/surfacePairs return distances, not fit certificates. compare reports static changes and separate animation channel changes; paths adds complete static subtree summaries. image:false skips rendering. Otherwise use part/orbit or exact shot; check viewFidelity for materials."
   };
   const kept = store.retention ?? "kept by the host program store";
-  const description = def.name === "kiln_edit" ? `Atomically apply ordered exact-string replacements and render. Copy anchors from kiln_source. Supply code OR programRef. Returns programRef (${kept}), parentRef, diff and preservation comparing static data and animation channels. Review changes; use kiln_inspect compare for more pages or protected subtrees. Failed comparison preserves the repair; render:false leaves preservation not_assessed. capture selects cameras; includeCode returns full source.` : `${summaries[def.name] ?? def.description} Supply code OR programRef (${kept}). Invalid drafts keep a ref.`;
+  const description = def.name === "kiln_edit" ? `Atomically apply ordered exact-string replacements and render. Copy anchors from kiln_source. Supply ${sources}. Returns programRef (${kept}), parentRef, diff and preservation comparing static data and animation channels. Review changes; use kiln_inspect compare for more pages or protected subtrees. Failed comparison preserves the repair; render:false leaves preservation not_assessed. capture selects cameras; includeCode returns full source.` : `${summaries[def.name] ?? def.description} Supply ${sources} (${kept}). Invalid drafts keep a ref.`;
   return {
     ...def,
     inputSchema,
     description,
     run: async (input) => {
       const args = inputSchema.parse(input);
-      const code = typeof args.code === "string" ? args.code : await store.get(args.programRef);
+      const code = typeof args.code === "string" ? args.code : typeof args.file === "string" && readSourceFile ? await readSourceFile(args.file) : await store.get(args.programRef);
       const parentRef = await retainProgram(store, code);
       const { programRef: _inner, ...output } = await def.run({ ...args, code });
       if (def.name !== "kiln_edit" || output.ok !== true || typeof output.code !== "string")
@@ -35014,7 +35038,7 @@ var text6, texts, id2, common, operationContractSchema, discoveryEntrySchema;
 var init_catalog_schema = __esm(() => {
   text6 = z11.string().trim().min(1);
   texts = z11.array(text6);
-  id2 = z11.string().regex(/^(operation|assembly|recipe):[A-Za-z][A-Za-z0-9-]*$/);
+  id2 = z11.string().regex(/^(operation|assembly|recipe|shape):[A-Za-z][A-Za-z0-9-]*$/);
   common = {
     version: z11.literal("kiln.catalog-entry.v1"),
     id: id2,
@@ -35061,6 +35085,11 @@ var init_catalog_schema = __esm(() => {
         adaptations: texts,
         checks: texts
       }).strict()
+    }).strict(),
+    z11.object({
+      ...common,
+      kind: z11.literal("shape"),
+      shape: z11.object({ tool: text6, field: text6, schema: z11.record(z11.string(), z11.unknown()) }).strict()
     }).strict()
   ]).superRefine((entry, ctx) => {
     if (!entry.id.startsWith(`${entry.kind}:`)) {
@@ -38079,6 +38108,171 @@ async function build() {
   ];
 });
 
+// src/tools/capture-input.ts
+import { z as z12 } from "zod";
+function taggedCaptureError(issue) {
+  const input = issue.input;
+  if (typeof input !== "object" || input === null || !("version" in input) || input.version !== "kiln.capture.v1" && input.version !== "kiln.capture.v2")
+    return;
+  const parsed = advancedCaptureInput.safeParse(input);
+  if (parsed.success)
+    return;
+  const issues = parsed.error.issues;
+  const details = issues.slice(0, 6).map((problem) => `${problem.path.join(".") || "capture"}: ${problem.message.slice(0, 240)}`);
+  return `Invalid ${input.version}: ${details.join("; ")}${issues.length > 6 ? "; additional issues omitted" : ""}`;
+}
+var backdropInput, legacyCaptureInput, cameraVec3Input, orbitCameraError = (issue) => {
+  if (issue.code === "unrecognized_keys" && issue.keys?.some((key) => key === "target" || key === "distance")) {
+    return "Orbit cameras derive target and distance from the selected subject bounds; choose subject and padding, or use an explicit camera with position and target.";
+  }
+  return;
+}, EXPLICIT_CAMERA_KEYS = "type, projection, position, target, relativeTo, frame, framing, padding, targetOffset, up, halfHeight (orthographic), fovDeg (perspective, degrees), near, far", explicitCameraError = (issue) => {
+  if (issue.code !== "unrecognized_keys")
+    return;
+  const fov = issue.keys?.some((key) => key === "fov" || key === "fovY" || key === "fieldOfView");
+  return `Unknown explicit camera key${issue.keys && issue.keys.length > 1 ? "s" : ""} ${(issue.keys ?? []).join(", ")}${fov ? "; use fovDeg" : ""}. Explicit cameras accept ${EXPLICIT_CAMERA_KEYS}.`;
+}, advancedCaptureError = (issue) => {
+  if (issue.code === "unrecognized_keys" && issue.keys?.some((key) => key === "width" || key === "height")) {
+    return `Advanced capture uses one square per-shot size from 128 to ${MAX_CAPTURE_SHOT_SIZE}; width and height are returned image dimensions, not request fields.`;
+  }
+  return;
+}, cameraShotInput, advancedCaptureInput, captureShapeInput, captureInput, captureRecordInput, cameraShotRecordInput;
+var init_capture_input = __esm(() => {
+  init_background();
+  init_capture_limits();
+  backdropInput = z12.enum(BACKDROP_IDS).optional().describe("neutral (default); light for dark parts, dark for light parts.");
+  legacyCaptureInput = z12.object({
+    preset: z12.enum(["1x1", "1x2", "2x1", "3x1", "2x2", "3x2", "3x3"]).optional().describe("COLSxROWS; default 3x2. Fewer views for simple shapes, up to 3x3."),
+    cells: z12.array(z12.object({
+      azimuthDeg: z12.number().describe("0 = front, 90 = right, 180 = back, 270 = left. Wraps."),
+      elevationDeg: z12.number().describe("0 eye level; positive above, negative below. Clamped -89..89."),
+      zoom: z12.number().optional().describe("Bounds padding: below 1 crops, above 1 pulls back; omit for auto-framing."),
+      name: z12.string().optional().describe("Label; defaults to angles.")
+    })).optional().describe("Row-major cameras; omit for preset defaults. Count cannot exceed preset capacity (max 9)."),
+    backdrop: backdropInput
+  }).optional().describe("Sheet layout and cameras; omit for six views in a 3x2 grid.");
+  cameraVec3Input = z12.array(z12.number()).length(3);
+  cameraShotInput = z12.object({
+    name: z12.string().optional(),
+    subject: z12.object({ path: z12.string().optional(), name: z12.string().optional() }).strict().refine((v) => v.path === undefined !== (v.name === undefined), {
+      message: "Choose subject path OR exact name."
+    }).optional(),
+    visibility: z12.enum(["context", "isolate"]).optional(),
+    hide: z12.array(z12.string().min(1).max(1024)).max(64).optional(),
+    camera: z12.discriminatedUnion("type", [
+      z12.strictObject({
+        type: z12.literal("orbit"),
+        azimuthDeg: z12.number().optional(),
+        elevationDeg: z12.number().optional(),
+        relativeTo: z12.enum(["world", "asset", "part"]).optional(),
+        padding: z12.number().positive().max(100).optional()
+      }, { error: orbitCameraError }),
+      z12.strictObject({
+        type: z12.literal("explicit"),
+        projection: z12.enum(["orthographic", "perspective"]),
+        position: cameraVec3Input,
+        target: cameraVec3Input.optional(),
+        relativeTo: z12.enum(["world", "asset", "part", "local"]).optional(),
+        frame: z12.object({
+          origin: cameraVec3Input.optional(),
+          rotation: cameraVec3Input.optional()
+        }).strict().optional(),
+        framing: z12.enum(["explicit", "bounds"]).optional(),
+        padding: z12.number().positive().max(100).optional(),
+        targetOffset: cameraVec3Input.optional(),
+        up: cameraVec3Input.optional(),
+        halfHeight: z12.number().positive().optional(),
+        fovDeg: z12.number().positive().lt(180).optional(),
+        near: z12.number().positive().optional(),
+        far: z12.number().positive().optional()
+      }, { error: explicitCameraError })
+    ]).optional()
+  }).strict();
+  advancedCaptureInput = z12.strictObject({
+    version: z12.enum(["kiln.capture.v1", "kiln.capture.v2"]),
+    shots: z12.array(cameraShotInput).min(1).max(9),
+    cols: z12.number().int().min(1).max(3).optional(),
+    size: z12.number().int().min(128).max(MAX_CAPTURE_SHOT_SIZE).optional(),
+    output: z12.enum(["grid", "separate"]).optional(),
+    backdrop: backdropInput
+  }, { error: advancedCaptureError }).superRefine((input, context) => {
+    if (input.version === "kiln.capture.v1" && input.shots.some((shot) => shot.hide !== undefined))
+      context.addIssue({
+        code: "custom",
+        path: ["shots"],
+        message: "shot.hide requires version kiln.capture.v2"
+      });
+  });
+  captureShapeInput = z12.union([
+    advancedCaptureInput,
+    z12.strictObject(legacyCaptureInput.unwrap().shape, {
+      error: taggedCaptureError
+    })
+  ], { error: taggedCaptureError });
+  captureInput = captureShapeInput.optional().describe("Omit for six views; preset/cells for orbit sheets. Use kiln.capture.v1 or v2 with 1..9 shots for exact cameras. v2 adds hide: exact paths or unique names. Framing retains subject bounds.");
+  captureRecordInput = z12.record(z12.string(), z12.unknown()).optional().describe('Cameras, as kiln_render capture takes them. Shape: kiln_discover ids ["shape:capture"].');
+  cameraShotRecordInput = z12.record(z12.string(), z12.unknown()).optional().describe('One exact camera shot. Shape: kiln_discover ids ["shape:camera-shot"].');
+});
+
+// src/discovery/shapes.ts
+import { z as z13 } from "zod";
+var jsonSchema = (schema) => {
+  const { $schema: _dialect, ...rest } = z13.toJSONSchema(schema, { io: "input" });
+  return rest;
+}, shape = (name, tool, field, summary, schema, extra = {}) => ({
+  version: "kiln.catalog-entry.v1",
+  id: `shape:${name}`,
+  kind: "shape",
+  name,
+  summary,
+  family: "tool-input",
+  tags: ["schema", tool, field],
+  aliases: extra.aliases ?? [],
+  intents: extra.intents ?? [],
+  stability: "stable",
+  related: [],
+  references: extra.references ?? [],
+  limitations: extra.limitations ?? [],
+  shape: { tool, field, schema: jsonSchema(schema) }
+}), discoveryShapes;
+var init_shapes = __esm(() => {
+  init_material_library();
+  init_projects();
+  init_capture_input();
+  discoveryShapes = [
+    shape("project-draft", "kiln_project", "draft", "The record kiln_project create takes: name, brief, design (style, scale, palette, materialRoles, conventions, exceptions), inventory, deliveryProfiles, materialDependencies, references and reviews, with an optional projectId.", projectDraftSchema, {
+      aliases: ["project draft", "new project fields", "project record"],
+      intents: ["create a project for a pack", "write a project brief and inventory"],
+      references: ["docs/projects-and-live-review.md"]
+    }),
+    shape("project-patch", "kiln_project", "patch", "The record kiln_project update takes: the same top-level fields as the draft, each optional; a supplied field replaces its previous value whole, so read and merge design before changing one preference.", projectPatchSchema, {
+      aliases: ["project patch", "project update fields"],
+      intents: ["update a project brief, design, inventory or material pins"],
+      references: ["docs/projects-and-live-review.md"]
+    }),
+    shape("material-draft", "kiln_material", "draft", "The record kiln_material create-procedural takes: materialId, name, tileable, sources with license, and maps whose layered procedural specs (solid, checker, stripes, gradient, bricks, noise) bake into PNG maps; optional tags, physicalSizeMeters and parameters.", proceduralMaterialDraftSchema, {
+      aliases: ["procedural material", "material recipe draft", "texture layers"],
+      intents: ["bake a custom tileable material from layers"],
+      references: ["docs/projects-and-live-review.md"]
+    }),
+    shape("material-import", "kiln_material", "payload", "The record kiln_material import takes: schemaVersion 1 and complete normalized material records, each a manifest plus base64 PNG files keyed by map name.", materialLibraryPayloadSchema, {
+      aliases: ["material import payload", "material records"],
+      intents: ["import a material library payload"],
+      references: ["docs/projects-and-live-review.md"]
+    }),
+    shape("capture", "kiln_render", "capture", "The capture record kiln_render, kiln_edit and kiln_view_interior take: either preset/cells/backdrop for an orbit sheet, or kiln.capture.v1 or v2 with 1 to 9 shots, cols, size, output and backdrop; v2 shots may hide nodes.", captureShapeInput, {
+      aliases: ["capture config", "camera sheet", "exact cameras", "orbit grid"],
+      intents: ["choose cameras for a render", "render exact orthographic or perspective views"],
+      references: ["docs/cameras.md"]
+    }),
+    shape("camera-shot", "kiln_inspect", "shot", "One shot, as kiln_inspect shot and kiln_screenshot_animation shot take it and as capture.shots lists it: optional name, subject (path or exact name), visibility, hide, and an orbit or explicit camera.", cameraShotInput, {
+      aliases: ["camera shot", "explicit camera", "orbit camera"],
+      intents: ["frame one part with an exact camera"],
+      references: ["docs/cameras.md"]
+    })
+  ];
+});
+
 // src/discovery/catalog.ts
 function listDiscoveryEntries() {
   return structuredClone(catalog);
@@ -38096,6 +38290,7 @@ var init_catalog = __esm(() => {
   init_intents();
   init_geometry_catalog();
   init_recipes();
+  init_shapes();
   DISCOVERY_HELPER_RETIREMENTS = [
     ...["boxUnwrap", "cylinderUnwrap", "planeUnwrap"].map((name) => ({
       name,
@@ -38157,7 +38352,8 @@ var init_catalog = __esm(() => {
         }
       };
     }),
-    ...discoveryRecipes
+    ...discoveryRecipes,
+    ...discoveryShapes
   ]);
 });
 
@@ -38223,7 +38419,7 @@ var init_lexical_index = __esm(() => {
 });
 
 // src/discovery/query-schema.ts
-import { z as z12 } from "zod";
+import { z as z14 } from "zod";
 function discoverySelectorMigration(keys) {
   if (!keys.some((key) => ["category", "name", "names"].includes(key)))
     return;
@@ -38245,19 +38441,19 @@ function parseDiscoveryRequest(value) {
 }
 var selector, discoveryInputSchema;
 var init_query_schema = __esm(() => {
-  selector = z12.string().trim().min(1).max(120);
-  discoveryInputSchema = z12.object({
-    query: z12.string().trim().min(1).max(500).optional(),
-    ids: z12.array(selector).min(1).max(6).refine((ids) => new Set(ids).size === ids.length, {
+  selector = z14.string().trim().min(1).max(120);
+  discoveryInputSchema = z14.object({
+    query: z14.string().trim().min(1).max(500).optional(),
+    ids: z14.array(selector).min(1).max(6).refine((ids) => new Set(ids).size === ids.length, {
       message: "Exact IDs must be unique."
     }).optional(),
-    overview: z12.literal(true).optional(),
-    capabilities: z12.literal(true).optional(),
+    overview: z14.literal(true).optional(),
+    capabilities: z14.literal(true).optional(),
     family: selector.optional(),
-    kind: z12.enum(["operation", "assembly", "recipe"]).optional(),
-    tags: z12.array(selector).min(1).max(8).optional(),
-    offset: z12.number().int().min(0).max(1e4).optional(),
-    limit: z12.number().int().min(1).max(12).optional()
+    kind: z14.enum(["operation", "assembly", "recipe", "shape"]).optional(),
+    tags: z14.array(selector).min(1).max(8).optional(),
+    offset: z14.number().int().min(0).max(1e4).optional(),
+    limit: z14.number().int().min(1).max(12).optional()
   }, {
     error: (issue) => issue.code === "unrecognized_keys" ? discoverySelectorMigration(issue.keys) : undefined
   }).strict().superRefine((input, context) => {
@@ -38286,7 +38482,7 @@ var init_query_schema = __esm(() => {
 });
 
 // src/discovery/service.ts
-function createDiscoveryService(source, index, capabilities, retirements = {}) {
+function createDiscoveryService(source, index, capabilities, retirements = {}, notes = async () => []) {
   const entries = parseCatalog(source);
   const byId = new Map(entries.map((entry) => [entry.id, entry]));
   const byName = new Map(entries.filter((entry) => entry.kind !== "recipe").map((entry) => [entry.name, entry]));
@@ -38301,7 +38497,7 @@ function createDiscoveryService(source, index, capabilities, retirements = {}) {
   const orientation = {
     start: ["createRoot", "createPart"].flatMap((name) => {
       const entry = byName.get(name);
-      return entry ? [{ id: entry.id, signature: entry.contract.signature, returns: entry.contract.returns }] : [];
+      return entry && "contract" in entry ? [{ id: entry.id, signature: entry.contract.signature, returns: entry.contract.returns }] : [];
     }),
     families: [...families].sort(compare2),
     tags: [...tags].sort(compare2),
@@ -38353,7 +38549,7 @@ Text truncated; structured entries are complete.`;
     tags: entry.tags,
     stability: entry.stability,
     limitations: entry.limitations,
-    ...entry.kind === "recipe" ? {} : { execution: entry.contract.execution },
+    ...entry.kind === "operation" || entry.kind === "assembly" ? { execution: entry.contract.execution } : {},
     ...match ? { match } : {}
   });
   return async (value) => {
@@ -38437,18 +38633,19 @@ ${removed.join(`
     }
     const page = matches.slice(input.offset, input.offset + input.limit);
     const nextOffset = input.offset + page.length < matches.length ? input.offset + page.length : null;
+    const guidance = [...orientation.guidance, ...input.mode === "overview" ? await notes() : []];
     return finish({
       version: "kiln.discovery.v1",
       mode: input.mode,
       entries: page,
       total: matches.length,
       nextOffset,
-      ...input.mode === "overview" ? { orientation } : {},
+      ...input.mode === "overview" ? { orientation: { ...orientation, guidance } } : {},
       text: [
         input.query ? "Potential helpers and related guidance. Fetch selected contracts with ids before calling unfamiliar helpers. Search relevance does not certify support for the entire requested asset." : "Kiln catalog overview. Fetch exact contracts with ids before calling unfamiliar helpers.",
         ...input.mode === "overview" ? [
           ...orientation.start.map((entry) => `${entry.signature} -> ${entry.returns}`),
-          ...orientation.guidance,
+          ...guidance,
           `Families: ${orientation.families.join(", ")}. Tags: ${orientation.tags.join(", ")}.`
         ] : [],
         ...page.map((entry) => `${entry.id}${entry.execution ? ` (${entry.execution === "async" ? "async; await the result" : "sync"})` : ""}: ${entry.summary}${entry.limitations.length ? ` Limits: ${entry.limitations.join(" ")}` : ""}${formatMatch(entry.match)}`),
@@ -38484,12 +38681,12 @@ var init_service = __esm(() => {
 function createDiscovery(capabilities = async () => ({
   host: "No host capability provider was supplied.",
   discovery: { mode: "lexical", offline: true, requiresModel: false }
-})) {
+}), notes = async () => []) {
   snapshot2 ??= (() => {
     const entries = listDiscoveryEntries();
     return { entries, index: createLexicalDiscoveryIndex(entries) };
   })();
-  return createDiscoveryService(snapshot2.entries, snapshot2.index, capabilities, REMOVED_AUTHORING_HELPERS);
+  return createDiscoveryService(snapshot2.entries, snapshot2.index, capabilities, REMOVED_AUTHORING_HELPERS, notes);
 }
 var snapshot2;
 var init_discovery = __esm(() => {
@@ -38505,10 +38702,10 @@ var init_discovery = __esm(() => {
 
 // src/tools/discovery.ts
 function createKilnDiscoveryDef(context) {
-  const run = createDiscovery(() => currentCapabilities(context));
+  const run = createDiscovery(() => currentCapabilities(context), async () => projectNotes(context));
   return {
     name: "kiln_discover",
-    description: "Discover Kiln operations, assemblies, recipes and current host capabilities. Omit arguments for a compact overview. Search with ordinary modeling language using query; refine with family, kind or tags. Fetch complete contracts/examples with ids (up to six exact IDs or executable names). Overview/search pages default to six summaries. Recipes guide construction without restricting the asset. Search runs locally without models or network calls.",
+    description: "Discover Kiln operations, assemblies, recipes, tool-input shapes and current host capabilities. Omit arguments for a compact overview. Search with ordinary modeling language using query; refine with family, kind or tags. Fetch complete contracts/examples with ids (up to six exact IDs, executable names or shape: ids). Overview/search pages default to six summaries. Recipes guide construction without restricting the asset. Search runs locally without models or network calls.",
     inputSchema: discoveryInputSchema,
     run,
     text: (output) => {
@@ -38519,6 +38716,15 @@ function createKilnDiscoveryDef(context) {
 Suggestions: ${structured.suggestions.join(", ")}` : text;
     }
   };
+}
+function configuredProject(context) {
+  return context.workspace?.configured?.() ?? null;
+}
+function projectNotes(context) {
+  const projectId = configuredProject(context);
+  return projectId ? [
+    `Project ${projectId} is configured for this workspace and applies when projectId is omitted: read its brief, design, inventory and material pins first with kiln_project { action: "get", projectId: "${projectId}" }; projectId: null selects standalone work.`
+  ] : [];
 }
 async function currentCapabilities(context) {
   const externalEvaluator = Boolean(context.evaluatorPort) || context.evaluatorProfile === "evaluator-required";
@@ -38549,6 +38755,11 @@ async function currentCapabilities(context) {
       requiresModel: false
     },
     engine: engineIdentity(),
+    project: {
+      configured: configuredProject(context),
+      select: "projectId per call; omitted uses the configured project, null selects standalone work",
+      read: 'kiln_project { action: "get", projectId } returns the brief, design, inventory and material pins'
+    },
     renderer,
     execution: context.localExecution ?? (context.evaluatorPort ? { mode: "host-injected", limits: "unspecified by host" } : context.evaluatorProfile === "evaluator-required" ? { mode: "host-required", available: false } : { mode: "trusted-local", terminable: false }),
     source: {
@@ -38623,21 +38834,34 @@ var init_discovery2 = __esm(() => {
   init_material_resources();
 });
 
+// src/tools/actions.ts
+function requireActionFields(tool, action, input, requirements) {
+  const missing = requirements.required.filter((field) => input[field] === undefined);
+  if (!missing.length)
+    return;
+  const shapes = missing.filter((field) => requirements.shapes?.[field]).map((field) => `${field} shape: kiln_discover({ ids: ['${requirements.shapes[field]}'] })`);
+  throw new Error(`${tool} ${action} requires ${list(requirements.required)}; missing ${list(missing)}.${shapes.length ? ` ${shapes.join(". ")}.` : ""}`);
+}
+var list = (fields) => fields.length <= 1 ? fields.join("") : `${fields.slice(0, -1).join(", ")} and ${fields.at(-1)}`, nestedRecordDescription = (purpose, shape) => `${purpose} Shape: kiln_discover({ ids: ['${shape}'] }).`;
+
 // src/tools/projects.ts
-import { z as z13 } from "zod";
+import { z as z15 } from "zod";
+function projectToolInput(actions = PROJECT_ACTIONS) {
+  return z15.strictObject({
+    action: z15.enum(actions),
+    projectId: projectIdSchema.optional().describe("get, update, export."),
+    revisionId: projectRevisionIdSchema.optional().describe("get, export: an exact revision; omit for the current one."),
+    expectedRevision: projectRevisionIdSchema.optional().describe("update: the revision being replaced; a stale value is a conflict."),
+    draft: record6(nestedRecordDescription("create: name, brief, design, inventory, deliveryProfiles, materialDependencies, references, reviews; optional projectId.", "shape:project-draft")),
+    patch: record6(nestedRecordDescription("update: the same top-level fields as draft; each supplied field replaces its previous value whole.", "shape:project-patch")),
+    profile: z15.enum(["editable", "runtime"]).optional().describe("export: editable (default) keeps source and resources; runtime is GLB plus metadata.")
+  });
+}
 function createKilnProjectDef(store, bundleReader) {
-  const schema = bundleReader ? z13.discriminatedUnion("action", [
-    ...projectToolInput.options,
-    z13.strictObject({
-      action: z13.literal("export"),
-      projectId: projectIdSchema,
-      revisionId: projectRevisionIdSchema.optional(),
-      profile: z13.enum(["editable", "runtime"]).default("editable")
-    })
-  ]) : projectToolInput;
+  const schema = projectToolInput(bundleReader ? PROJECT_ACTIONS : PROJECT_ACTIONS.filter((action) => action !== "export"));
   return {
     name: "kiln_project",
-    description: "Manage optional shared workspace projects. Assets and materials can be authored, saved and exported without a project; creating one never binds unrelated authoring automatically. list discovers IDs; get reads current or exact historical configuration; create adds a project; update requires the exact expectedRevision and replaces supplied top-level fields. Design preferences, inventory, references, delivery profiles and pinned material dependencies are versioned. Review annotations do not change trusted QA or authorize a release. CLI and the local dashboard use these same records." + (bundleReader ? " export returns an MCP resource URI for an exact editable project ZIP with normalized material maps and recipes, or a runtime GLB/metadata ZIP. Only inventory entries linked to saved revisions contribute assets; referenced concept images and original acquisition archives are not embedded." : ""),
+    description: "Manage optional shared workspace projects: list discovers IDs; get reads the current or an exact historical configuration; create adds a project; update needs the exact expectedRevision and replaces each supplied top-level field. Assets and materials are authored, saved and exported without a project, and creating one never binds unrelated authoring. Design preferences, inventory, references, delivery profiles and pinned material dependencies are versioned; review annotations do not change trusted QA or authorize a release. CLI and the local dashboard use the same records." + (bundleReader ? " export returns an MCP resource URI for an exact editable project ZIP with normalized material maps and recipes, or a runtime GLB/metadata ZIP; only inventory entries linked to saved revisions contribute assets, and referenced concept images and acquisition archives are not embedded." : ""),
     inputSchema: schema,
     annotations: {
       readOnlyHint: false,
@@ -38647,48 +38871,55 @@ function createKilnProjectDef(store, bundleReader) {
     },
     run: async (raw) => {
       const input = schema.parse(raw);
-      if (input.action === "export") {
-        const project = await store.read(input.projectId, input.revisionId);
-        const bytes = await bundleReader(project.projectId, project.revisionId, input.profile);
-        await Promise.resolve().then(() => init_project_bundle());
-        return {
-          ok: true,
-          projectId: project.projectId,
-          revisionId: project.revisionId,
-          profile: input.profile,
-          resource: {
-            uri: `kiln://projects/${project.projectId}/${project.revisionId}/${input.profile}.zip`,
-            mimeType: "application/zip",
-            bytes: bytes.length,
-            sha256: await projectBundleHash(bytes)
-          }
-        };
+      requireActionFields("kiln_project", input.action, input, REQUIREMENTS[input.action]);
+      switch (input.action) {
+        case "list":
+          return { ok: true, projects: await store.list() };
+        case "get":
+          return { ok: true, project: await store.read(input.projectId, input.revisionId) };
+        case "create":
+          return { ok: true, project: await store.create(projectDraftSchema.parse(input.draft)) };
+        case "update":
+          return {
+            ok: true,
+            project: await store.update(input.projectId, input.expectedRevision, projectPatchSchema.parse(input.patch))
+          };
+        case "export": {
+          const profile = input.profile ?? "editable";
+          const project = await store.read(input.projectId, input.revisionId);
+          const bytes = await bundleReader(project.projectId, project.revisionId, profile);
+          await Promise.resolve().then(() => init_project_bundle());
+          return {
+            ok: true,
+            projectId: project.projectId,
+            revisionId: project.revisionId,
+            profile,
+            resource: {
+              uri: `kiln://projects/${project.projectId}/${project.revisionId}/${profile}.zip`,
+              mimeType: "application/zip",
+              bytes: bytes.length,
+              sha256: await projectBundleHash(bytes)
+            }
+          };
+        }
       }
-      if (input.action === "list")
-        return { ok: true, projects: await store.list() };
-      const project = input.action === "create" ? await store.create(input.draft) : input.action === "update" ? await store.update(input.projectId, input.expectedRevision, input.patch) : await store.read(input.projectId, input.revisionId);
-      return { ok: true, project };
     }
   };
 }
-var projectToolInput;
+var PROJECT_ACTIONS, REQUIREMENTS, record6 = (description) => z15.record(z15.string(), z15.unknown()).optional().describe(description);
 var init_projects2 = __esm(() => {
   init_projects();
-  projectToolInput = z13.discriminatedUnion("action", [
-    z13.strictObject({ action: z13.literal("list") }),
-    z13.strictObject({
-      action: z13.literal("get"),
-      projectId: projectIdSchema,
-      revisionId: projectRevisionIdSchema.optional()
-    }),
-    z13.strictObject({ action: z13.literal("create"), draft: projectDraftSchema }),
-    z13.strictObject({
-      action: z13.literal("update"),
-      projectId: projectIdSchema,
-      expectedRevision: projectRevisionIdSchema,
-      patch: projectPatchSchema
-    })
-  ]);
+  PROJECT_ACTIONS = ["list", "get", "create", "update", "export"];
+  REQUIREMENTS = {
+    list: { required: [] },
+    get: { required: ["projectId"] },
+    create: { required: ["draft"], shapes: { draft: "shape:project-draft" } },
+    update: {
+      required: ["projectId", "expectedRevision", "patch"],
+      shapes: { patch: "shape:project-patch" }
+    },
+    export: { required: ["projectId"] }
+  };
 });
 
 // src/asset-catalog.ts
@@ -38711,7 +38942,7 @@ async function listAssetCatalog(library) {
 }
 
 // src/material-presets.ts
-import { z as z14 } from "zod";
+import { z as z16 } from "zod";
 function listMaterialPresets() {
   return catalog2.map((item) => ({
     ...item,
@@ -38880,21 +39111,21 @@ var init_material_presets = __esm(() => {
       description: "Layered granular soil variation and subtle relief for terrain and planting beds."
     }
   ];
-  materialPresetOptionsSchema = z14.object({
-    seed: z14.number().int().min(-2147483648).max(2147483647),
-    size: z14.union([z14.literal(64), z14.literal(128), z14.literal(256), z14.literal(512)]).default(256),
-    creator: z14.string().min(1).max(1000),
+  materialPresetOptionsSchema = z16.object({
+    seed: z16.number().int().min(-2147483648).max(2147483647),
+    size: z16.union([z16.literal(64), z16.literal(128), z16.literal(256), z16.literal(512)]).default(256),
+    creator: z16.string().min(1).max(1000),
     license: materialSourceSchema.shape.license,
     materialId: materialLibraryIdSchema.optional()
   }).strict();
 });
 
 // src/tools/materials.ts
-import { z as z15 } from "zod";
+import { z as z17 } from "zod";
 function createKilnMaterialDef(library) {
   return {
     name: "kiln_material",
-    description: "Manage optional immutable material resources in this workspace. presets discovers shipped architecture, wood, metal, fabric and ground recipes; create-preset bakes one with an explicit seed, creator and license. list returns compact material/revision summaries; get returns full provenance, hashes, map conventions, physical repeat scale and a code-ready portable material spec. create-procedural bakes bounded editable layer recipes including optional height-derived normals. import accepts complete normalized records with embedded PNG bytes. No operation downloads URLs or executes source. Pin returned materialId/revisionId through per-invocation materialDependencies or project dependencies before authored evaluation resolves the resources; no project is required.",
+    description: "Manage optional immutable material resources in this workspace. presets discovers shipped architecture, wood, metal, fabric and ground recipes; create-preset bakes one with an explicit seed, creator and license; list returns compact material/revision summaries; get returns full provenance, hashes, map conventions, physical repeat scale and a code-ready portable material spec; create-procedural bakes bounded editable layer recipes including optional height-derived normals; import accepts complete normalized records with embedded PNG bytes. No action downloads URLs or executes source. Pin the returned materialId/revisionId through per-invocation materialDependencies or project dependencies before authored evaluation resolves the resources; no project is required.",
     inputSchema: materialToolInput,
     annotations: {
       readOnlyHint: false,
@@ -38905,53 +39136,64 @@ function createKilnMaterialDef(library) {
     async run(raw) {
       assertMaterialJson(raw);
       const input = materialToolInput.parse(raw);
-      if (input.action === "presets")
-        return {
-          ok: true,
-          presets: listMaterialPresets().filter((item) => !input.tag || item.tags.includes(input.tag))
-        };
-      if (input.action === "create-preset") {
-        const { action: _, presetId, ...options } = input;
-        const record = await createMaterialRecordV1(createMaterialPresetDraft(presetId, options));
-        const [material] = await library.import([record]);
-        return materialResult(material);
+      requireActionFields("kiln_material", input.action, input, REQUIREMENTS2[input.action]);
+      switch (input.action) {
+        case "presets":
+          return {
+            ok: true,
+            presets: listMaterialPresets().filter((item) => !input.tag || item.tags.includes(input.tag))
+          };
+        case "create-preset": {
+          const options = Object.fromEntries(Object.entries({
+            seed: input.seed,
+            size: input.size,
+            creator: input.creator,
+            license: input.license,
+            materialId: input.materialId
+          }).filter(([, value]) => value !== undefined));
+          const record = await createMaterialRecordV1(createMaterialPresetDraft(input.presetId, options));
+          const [material] = await library.import([record]);
+          return materialResult(material);
+        }
+        case "list": {
+          const records = await library.list();
+          return {
+            ok: true,
+            materials: records.filter((item) => !input.tag || item.tags.includes(input.tag)).map((item) => ({
+              materialId: item.materialId,
+              revisionId: item.revisionId,
+              name: item.name,
+              tags: item.tags,
+              tileable: item.tileable,
+              ...item.physicalSizeMeters ? { physicalSizeMeters: item.physicalSizeMeters } : {},
+              slots: item.maps.map((map) => map.slot),
+              licenses: [...new Set(item.sources.map((source) => source.license.spdx))]
+            }))
+          };
+        }
+        case "get":
+          return materialResult((await library.read(input.materialId, input.revisionId)).manifest);
+        case "create-procedural": {
+          const record = await createMaterialRecordV1(proceduralMaterialDraftSchema.parse(input.draft));
+          const [material] = await library.import([record]);
+          return materialResult(material);
+        }
+        case "import": {
+          const records = await decodeMaterialLibraryPayload(materialLibraryPayloadSchema.parse(input.payload));
+          const materials = await library.import(records);
+          return {
+            ok: true,
+            materials: materials.map((material) => ({
+              material,
+              portableSpec: materialLibraryPortableSpec(material)
+            }))
+          };
+        }
       }
-      if (input.action === "list") {
-        const records = await library.list();
-        return {
-          ok: true,
-          materials: records.filter((item) => !input.tag || item.tags.includes(input.tag)).map((item) => ({
-            materialId: item.materialId,
-            revisionId: item.revisionId,
-            name: item.name,
-            tags: item.tags,
-            tileable: item.tileable,
-            ...item.physicalSizeMeters ? { physicalSizeMeters: item.physicalSizeMeters } : {},
-            slots: item.maps.map((map) => map.slot),
-            licenses: [...new Set(item.sources.map((source) => source.license.spdx))]
-          }))
-        };
-      }
-      if (input.action === "get")
-        return materialResult((await library.read(input.materialId, input.revisionId)).manifest);
-      if (input.action === "create-procedural") {
-        const record = await createMaterialRecordV1(input.draft);
-        const [material] = await library.import([record]);
-        return materialResult(material);
-      }
-      const records = await decodeMaterialLibraryPayload(input.payload);
-      const materials = await library.import(records);
-      return {
-        ok: true,
-        materials: materials.map((material) => ({
-          material,
-          portableSpec: materialLibraryPortableSpec(material)
-        }))
-      };
     }
   };
 }
-var materialToolInput, materialResult = (material) => ({
+var MATERIAL_ACTIONS, REQUIREMENTS2, record7 = (description) => z17.record(z17.string(), z17.unknown()).optional().describe(description), tag, materialToolInput, materialResult = (material) => ({
   ok: true,
   material,
   portableSpec: materialLibraryPortableSpec(material)
@@ -38960,18 +39202,36 @@ var init_materials = __esm(() => {
   init_material_library();
   init_material_library_node();
   init_material_presets();
-  materialToolInput = z15.discriminatedUnion("action", [
-    z15.object({ action: z15.literal("presets"), tag: z15.string().min(1).max(80).optional() }).strict(),
-    materialPresetOptionsSchema.extend({ action: z15.literal("create-preset"), presetId: z15.string().min(1).max(80) }).strict(),
-    z15.object({ action: z15.literal("list"), tag: z15.string().min(1).max(80).optional() }).strict(),
-    z15.object({
-      action: z15.literal("get"),
-      materialId: materialLibraryIdSchema,
-      revisionId: materialLibraryHashSchema
-    }).strict(),
-    z15.object({ action: z15.literal("create-procedural"), draft: proceduralMaterialDraftSchema }).strict(),
-    z15.object({ action: z15.literal("import"), payload: materialLibraryPayloadSchema }).strict()
-  ]);
+  MATERIAL_ACTIONS = [
+    "presets",
+    "create-preset",
+    "list",
+    "get",
+    "create-procedural",
+    "import"
+  ];
+  REQUIREMENTS2 = {
+    presets: { required: [] },
+    "create-preset": { required: ["presetId", "seed", "creator", "license"] },
+    list: { required: [] },
+    get: { required: ["materialId", "revisionId"] },
+    "create-procedural": { required: ["draft"], shapes: { draft: "shape:material-draft" } },
+    import: { required: ["payload"], shapes: { payload: "shape:material-import" } }
+  };
+  tag = z17.string().min(1).max(80).optional().describe("presets, list: keep one tag.");
+  materialToolInput = z17.strictObject({
+    action: z17.enum(MATERIAL_ACTIONS),
+    tag,
+    presetId: z17.string().min(1).max(80).optional().describe("create-preset: an id from presets."),
+    seed: z17.number().int().min(-2147483648).max(2147483647).optional().describe("create-preset."),
+    size: z17.union([z17.literal(64), z17.literal(128), z17.literal(256), z17.literal(512)]).optional().describe("create-preset: map edge in pixels; default 256."),
+    creator: z17.string().min(1).max(1000).optional().describe("create-preset."),
+    license: materialSourceSchema.shape.license.optional().describe("create-preset: spdx, url and attribution."),
+    materialId: materialLibraryIdSchema.optional().describe("get; create-preset: optional id."),
+    revisionId: materialLibraryHashSchema.optional().describe("get: the immutable revision."),
+    draft: record7(nestedRecordDescription("create-procedural: materialId, name, tileable, sources, maps with layered procedural specs; optional tags, physicalSizeMeters, parameters.", "shape:material-draft")),
+    payload: record7(nestedRecordDescription("import: schemaVersion 1 and complete normalized records with embedded PNG bytes.", "shape:material-import"))
+  });
 });
 
 // src/tools/preview-fidelity.ts
@@ -38991,7 +39251,7 @@ async function persistedPreviewFidelity(fidelity, glb) {
 }
 
 // src/tools/review.ts
-import { z as z16 } from "zod";
+import { z as z18 } from "zod";
 function createKilnReviewDef(context) {
   const store = context.reviewStore;
   return {
@@ -39006,6 +39266,7 @@ function createKilnReviewDef(context) {
     },
     async run(raw) {
       const input = reviewToolInput.parse(raw);
+      requireActionFields("kiln_review", input.action, input, REQUIREMENTS3[input.action]);
       if (input.action === "list")
         return { ok: true, ...await store.snapshot({ projectId: input.projectId }) };
       if (input.action === "pin") {
@@ -39015,6 +39276,7 @@ function createKilnReviewDef(context) {
       const operation = await store.get(input.operationId);
       if (input.action === "get")
         return { ok: true, operation };
+      const collection = input.collection ?? "project";
       if (!context.assetLibrary)
         throw new Error("No asset library configured for reviewed save");
       if (operation.revision !== input.expectedRevision)
@@ -39032,7 +39294,7 @@ function createKilnReviewDef(context) {
       if (!requirementsContextsEqual(validateRequirementsContext(evaluation.requirements), active))
         throw new Error("Reviewed requirements do not match the current trusted host binding");
       if (input.assetId && input.parentRevision)
-        assertSavedRequirementsAuthorized((await context.assetLibrary.read(input.collection, input.assetId, input.parentRevision)).manifest, active);
+        assertSavedRequirementsAuthorized((await context.assetLibrary.read(collection, input.assetId, input.parentRevision)).manifest, active);
       const code = new TextDecoder().decode(source);
       const checkpoint = evaluation.requirements.binding ? createRequirementsCheckpoint(await programReference(code), evaluation.requirements.binding) : undefined;
       const dependencies = [
@@ -39044,8 +39306,8 @@ function createKilnReviewDef(context) {
         }))
       ];
       const preview = operation.captures[0] ? await store.readFile(operation.operationId, operation.captures[0].name) : undefined;
-      const capture = z16.object({ backdrop: z16.enum(BACKDROP_IDS).optional() }).safeParse(operation.result?.capture);
-      const asset = await context.assetLibrary.save(input.collection, {
+      const capture = z18.object({ backdrop: z18.enum(BACKDROP_IDS).optional() }).safeParse(operation.result?.capture);
+      const asset = await context.assetLibrary.save(collection, {
         name: input.name,
         assetId: input.assetId,
         parentRevision: input.parentRevision,
@@ -39075,39 +39337,43 @@ function createKilnReviewDef(context) {
           rebuild: dependencies.some((item) => item.delivery === "runtime") ? "external-dependencies-required" : "engine-required"
         }
       });
-      return { ok: true, collection: input.collection, asset };
+      return { ok: true, collection, asset };
     }
   };
 }
-var operationId, assetId, reviewToolInput;
+var operationId, assetId, REVIEW_ACTIONS, REQUIREMENTS3, reviewToolInput;
 var init_review = __esm(() => {
   init_assets();
   init_requirements_context();
   init_requirements_assets();
   init_program_store();
   init_background();
-  operationId = z16.string().regex(/^op_[a-f0-9-]{36}$/);
-  assetId = z16.string().regex(/^[a-z][a-z0-9_-]{0,79}$/);
-  reviewToolInput = z16.discriminatedUnion("action", [
-    z16.strictObject({ action: z16.literal("list"), projectId: assetId.optional() }),
-    z16.strictObject({ action: z16.literal("get"), operationId }),
-    z16.strictObject({ action: z16.literal("pin"), operationId, pinned: z16.boolean() }),
-    z16.strictObject({
-      action: z16.literal("save"),
-      operationId,
-      expectedRevision: z16.number().int().nonnegative(),
-      collection: assetId.default("project"),
-      name: z16.string().min(1).max(200),
-      assetId: assetId.optional(),
-      parentRevision: assetId.optional(),
-      description: z16.string().max(4000).optional(),
-      tags: z16.array(z16.string().max(80)).max(30).optional()
-    })
-  ]);
+  operationId = z18.string().regex(/^op_[a-f0-9-]{36}$/);
+  assetId = z18.string().regex(/^[a-z][a-z0-9_-]{0,79}$/);
+  REVIEW_ACTIONS = ["list", "get", "pin", "save"];
+  REQUIREMENTS3 = {
+    list: { required: [] },
+    get: { required: ["operationId"] },
+    pin: { required: ["operationId", "pinned"] },
+    save: { required: ["operationId", "expectedRevision", "name"] }
+  };
+  reviewToolInput = z18.strictObject({
+    action: z18.enum(REVIEW_ACTIONS),
+    projectId: assetId.optional().describe("list: only operations bound to this project."),
+    operationId: operationId.optional().describe("get, pin, save."),
+    pinned: z18.boolean().optional().describe("pin: true keeps the operation past normal retention."),
+    expectedRevision: z18.number().int().nonnegative().optional().describe("save: the revision the listing displayed."),
+    collection: assetId.optional().describe("save: destination collection; default project."),
+    name: z18.string().min(1).max(200).optional().describe("save."),
+    assetId: assetId.optional().describe("save: revise this asset."),
+    parentRevision: assetId.optional().describe("save: the revision being revised."),
+    description: z18.string().max(4000).optional().describe("save."),
+    tags: z18.array(z18.string().max(80)).max(30).optional().describe("save.")
+  });
 });
 
 // src/tools/workspace.ts
-import { z as z17 } from "zod";
+import { z as z19 } from "zod";
 async function observeLiveReview(observer, tool, input, run) {
   let authoring;
   const invokeOnce = () => authoring ??= Promise.resolve().then(run);
@@ -39147,13 +39413,17 @@ async function observeWorkspaceOperation(context, tool, input, run) {
 function withWorkspaceContext(def, context) {
   if (!observed.has(def.name))
     return def;
-  const schema = context.workspace && def.inputSchema instanceof z17.ZodObject ? def.inputSchema.safeExtend(workspaceSelectionSchema.shape) : def.inputSchema;
+  const schema = context.workspace && def.inputSchema instanceof z19.ZodObject ? def.inputSchema.safeExtend(workspaceSelectionSchema.shape) : def.inputSchema;
   return {
     ...def,
     inputSchema: schema,
     run: async (raw) => {
       const input = schema.parse(raw);
-      return observeWorkspaceOperation(context, def.name, input, () => def.run(input));
+      return observeWorkspaceOperation(context, def.name, input, async () => {
+        const output = await def.run(input);
+        const project = context.workspace?.current()?.project;
+        return project && output && typeof output === "object" && !Array.isArray(output) ? { ...output, project: { projectId: project.projectId, revisionId: project.revisionId } } : output;
+      });
     }
   };
 }
@@ -39171,7 +39441,7 @@ var init_workspace2 = __esm(() => {
 });
 
 // src/tools/review-detail.ts
-import { z as z18 } from "zod";
+import { z as z20 } from "zod";
 function compactDimension(dimension) {
   if (!isRecord7(dimension) || !Array.isArray(dimension.findings))
     return dimension;
@@ -39249,7 +39519,7 @@ function compactEditResult(result) {
 }
 var COMPACT_PART_PREVIEW = 24, COMPACT_FINDINGS_PER_DIMENSION = 12, reviewDetailInput, partsHint = (offset) => `For remaining paths use kiln_inspect with image:false and listParts:{offset:${offset}}. listParts.query filters names/paths; follow partListing.nextOffset on the same programRef and query.`, isRecord7 = (value) => typeof value === "object" && value !== null && !Array.isArray(value);
 var init_review_detail = __esm(() => {
-  reviewDetailInput = z18.enum(["compact", "full"]).optional().describe("compact (default) counts repeated findings; full returns every finding and rule");
+  reviewDetailInput = z20.enum(["compact", "full"]).optional().describe("compact (default) counts repeated findings; full returns every finding and rule");
 });
 
 // src/edit-buffer.ts
@@ -40631,7 +40901,7 @@ var init_asset_widget = __esm(() => {
 });
 
 // src/tools/registry.ts
-import { z as z19 } from "zod";
+import { z as z21 } from "zod";
 import * as THREE44 from "three";
 function proceduralTextureMaterialContract(rendered, context) {
   const required = [...new Set(context.requiredProceduralTextureUsages ?? [])];
@@ -40857,17 +41127,6 @@ function derivativeReviewFidelity(receipts) {
     receipts,
     ...reasonCodes.length ? { reasonCodes } : {}
   };
-}
-function taggedCaptureError(issue) {
-  const input = issue.input;
-  if (typeof input !== "object" || input === null || !("version" in input) || input.version !== "kiln.capture.v1" && input.version !== "kiln.capture.v2")
-    return;
-  const parsed = advancedCaptureInput.safeParse(input);
-  if (parsed.success)
-    return;
-  const issues = parsed.error.issues;
-  const details = issues.slice(0, 6).map((problem) => `${problem.path.join(".") || "capture"}: ${problem.message.slice(0, 240)}`);
-  return `Invalid ${input.version}: ${details.join("; ")}${issues.length > 6 ? "; additional issues omitted" : ""}`;
 }
 function runValidate(input, context) {
   const requirements = toolRequirements(context);
@@ -41276,7 +41535,7 @@ function createKilnScreenshotAnimationDef(context = {}) {
   return {
     name: "kiln_screenshot_animation",
     description: KILN_SCREENSHOT_ANIMATION_DESCRIPTION,
-    inputSchema: screenshotAnimationInput,
+    inputSchema: screenshotAnimationAdvertisedInput,
     run: async (input) => compactReviewResult(await guardCaptureBudget("kiln_screenshot_animation", input, statefulContext, () => runScreenshotAnimation(screenshotAnimationInput.parse(input), statefulContext)), requestedDetail(input)),
     media: screenshotAnimationMedia,
     mediaMulti: screenshotAnimationMediaMulti
@@ -41329,7 +41588,7 @@ function createKilnViewInteriorDef(context = {}) {
     name: "kiln_view_interior",
     mediaMulti: screenshotAnimationMediaMulti,
     description: KILN_VIEW_INTERIOR_DESCRIPTION,
-    inputSchema: viewInteriorInput,
+    inputSchema: viewInteriorAdvertisedInput,
     run: async (input) => compactReviewResult(await guardCaptureBudget("kiln_view_interior", input, statefulContext, () => runViewInterior(viewInteriorInput.parse(input), statefulContext))),
     media: screenshotMedia
   };
@@ -41482,7 +41741,7 @@ function createKilnInspectDef(context = {}) {
   return {
     name: "kiln_inspect",
     description: KILN_INSPECT_DESCRIPTION,
-    inputSchema: inspectInput,
+    inputSchema: inspectAdvertisedInput,
     run: async (input) => compactReviewResult(await guardCaptureBudget("kiln_inspect", input, statefulContext, () => runInspect(inspectInput.parse(input), statefulContext))),
     media: screenshotMedia
   };
@@ -41562,7 +41821,7 @@ function createKilnEditDef(context = {}) {
     name: "kiln_edit",
     mediaMulti: screenshotAnimationMediaMulti,
     description: KILN_EDIT_DESCRIPTION,
-    inputSchema: editInput,
+    inputSchema: editAdvertisedInput,
     run: async (input) => compactEditResult(await guardCaptureBudget("kiln_edit", input, statefulContext, () => runEdit(editInput.parse(input), statefulContext))),
     media: (output) => {
       const o = output;
@@ -41740,7 +41999,7 @@ function createKilnProgramToolRegistry(suppliedContext = {}) {
       createKilnViewInteriorDef(context),
       createKilnInspectDef(context),
       createKilnEditDef(context)
-    ].map((def) => withProgramReferences(def, store)),
+    ].map((def) => withProgramReferences(def, store, context.readSourceFile)),
     createKilnSourceDef(store),
     ...context.projectStore ? [createKilnProjectDef(context.projectStore, context.projectBundleReader)] : [],
     ...context.materialLibrary ? [createKilnMaterialDef(context.materialLibrary)] : [],
@@ -41850,36 +42109,36 @@ function createKilnAssetDefs(context) {
     resources: (await Promise.resolve().then(() => (init_assets_resources(), exports_assets_resources))).assetLinks(collection, asset),
     downloadUrls: await context.assetDownloadUrls?.(collection, asset.assetId, asset.revisionId)
   });
-  const saveInput = z19.object({
+  const saveInput = z21.object({
     collection: assetSelector.collection,
-    programRef: z19.string(),
-    name: z19.string().min(1).max(200),
+    programRef: z21.string(),
+    name: z21.string().min(1).max(200),
     assetId: assetSelector.assetId.optional(),
     parentRevision: assetSelector.revisionId.optional(),
-    tags: z19.array(z19.string().max(80)).max(30).optional(),
-    brief: z19.string().max(8000).optional(),
-    description: z19.string().max(4000).optional(),
-    attribution: z19.object({
-      model: z19.string().max(200).optional(),
-      harness: z19.string().max(200).optional(),
-      author: z19.string().max(200).optional()
+    tags: z21.array(z21.string().max(80)).max(30).optional(),
+    brief: z21.string().max(8000).optional(),
+    description: z21.string().max(4000).optional(),
+    attribution: z21.object({
+      model: z21.string().max(200).optional(),
+      harness: z21.string().max(200).optional(),
+      author: z21.string().max(200).optional()
     }).optional(),
-    backdrop: z19.enum(BACKDROP_IDS).optional().describe("Preview backdrop: the one the reviewed sheet used.")
+    backdrop: z21.enum(BACKDROP_IDS).optional().describe("Preview backdrop: the one the reviewed sheet used.")
   });
-  const assetsInput = z19.object({
-    action: z19.enum(["collections", "catalog", "list", "get", "restore"]).default("list"),
+  const assetsInput = z21.object({
+    action: z21.enum(["collections", "catalog", "list", "get", "restore"]).default("list"),
     collection: assetSelector.collection,
     assetId: assetSelector.assetId.optional(),
     revisionId: assetSelector.revisionId.optional(),
-    query: z19.string().max(200).optional(),
-    offset: z19.number().int().min(0).default(0),
-    limit: z19.number().int().min(1).max(50).default(20)
+    query: z21.string().max(200).optional(),
+    offset: z21.number().int().min(0).default(0),
+    limit: z21.number().int().min(1).max(50).default(20)
   });
-  const exportInput = z19.object(assetSelector);
+  const exportInput = z21.object(assetSelector);
   const profileExportInput = exportInput.extend({
-    profile: z19.enum(["editable", "runtime"]).default("editable").describe("editable preserves canonical source/GLB/build resources. runtime returns a standalone GLB and versioned review-metadata sidecar; no source bundle or geometry optimization.")
+    profile: z21.enum(["editable", "runtime"]).default("editable").describe("editable preserves canonical source/GLB/build resources. runtime returns a standalone GLB and versioned review-metadata sidecar; no source bundle or geometry optimization.")
   });
-  const importInput = z19.object({
+  const importInput = z21.object({
     ...assetSelector,
     sourceCollection: assetSelector.collection
   });
@@ -41910,7 +42169,7 @@ function createKilnAssetDefs(context) {
     },
     {
       name: "kiln_assets",
-      description: "collections discovers storage; catalog searches all configured collections; list searches one. Both searches paginate. get returns a build record/downloads; restore loads exact source for kiln_source/kiln_edit. Collection is not project membership. Binary-only assets cannot restore source.",
+      description: "Browse saved assets: collections discovers storage; catalog searches all configured collections; list searches one. Both searches paginate. get returns a build record/downloads; restore loads exact source for kiln_source/kiln_edit. Collection is not project membership. Binary-only assets cannot restore source.",
       inputSchema: assetsInput,
       run: async (raw) => {
         const input = assetsInput.parse(raw);
@@ -41978,9 +42237,9 @@ function createKilnAssetDefs(context) {
       name: "kiln_present",
       description: "Present one exact saved revision. Supporting MCP App clients show an interactive 3D card with GLB, editable ZIP, and source downloads. Every host receives exact artifact descriptors with resource URIs in the JSON result; verified hosts may also receive core MCP resource-link blocks. This tool does not launch a local browser in coding harnesses. Call after saving or when the user wants to see or download an asset.",
       inputSchema: exportInput,
-      outputSchema: z19.object({
-        ok: z19.literal(true),
-        collection: z19.string(),
+      outputSchema: z21.object({
+        ok: z21.literal(true),
+        collection: z21.string(),
         asset: assetManifestSchema.pick({
           assetId: true,
           revisionId: true,
@@ -41991,25 +42250,25 @@ function createKilnAssetDefs(context) {
           editable: true,
           files: true
         }).extend({
-          build: z19.object({
-            engine: z19.string(),
-            rebuild: z19.enum(["engine-required", "external-dependencies-required"]),
-            warningCount: z19.number().int(),
-            warnings: z19.array(z19.string())
+          build: z21.object({
+            engine: z21.string(),
+            rebuild: z21.enum(["engine-required", "external-dependencies-required"]),
+            warningCount: z21.number().int(),
+            warnings: z21.array(z21.string())
           }).optional()
         }),
-        resources: z19.array(z19.object({
-          type: z19.literal("resource_link"),
-          name: z19.string(),
-          uri: z19.string(),
-          mimeType: z19.string(),
-          size: z19.number().int().nonnegative(),
-          annotations: z19.object({
-            audience: z19.array(z19.enum(["user", "assistant"])),
-            priority: z19.number()
+        resources: z21.array(z21.object({
+          type: z21.literal("resource_link"),
+          name: z21.string(),
+          uri: z21.string(),
+          mimeType: z21.string(),
+          size: z21.number().int().nonnegative(),
+          annotations: z21.object({
+            audience: z21.array(z21.enum(["user", "assistant"])),
+            priority: z21.number()
           })
         })),
-        downloadUrls: z19.record(z19.string(), z19.string()).optional()
+        downloadUrls: z21.record(z21.string(), z21.string()).optional()
       }),
       ui: {
         resourceUri: KILN_ASSET_WIDGET_URI,
@@ -42057,22 +42316,7 @@ function createKilnAssetDefs(context) {
     }
   ];
 }
-var KILN_ASSET_WIDGET_URI = "ui://kiln/asset-v5.html", DEFAULT_INLOOP_VIEW_RENDER_TIMEOUT_MS = 6000, viewEvidenceHistoryByContext, VIEW_EVIDENCE_GUIDANCE = " viewEvidence.current describes ONLY this request. lastFaithful is older hash-only evidence for reference, not reused pixels and not current verification.", validateInput, renderInput, backdropInput, legacyCaptureInput, cameraVec3Input, orbitCameraError = (issue) => {
-  if (issue.code === "unrecognized_keys" && issue.keys?.some((key) => key === "target" || key === "distance")) {
-    return "Orbit cameras derive target and distance from the selected subject bounds; choose subject and padding, or use an explicit camera with position and target.";
-  }
-  return;
-}, EXPLICIT_CAMERA_KEYS = "type, projection, position, target, relativeTo, frame, framing, padding, targetOffset, up, halfHeight (orthographic), fovDeg (perspective, degrees), near, far", explicitCameraError = (issue) => {
-  if (issue.code !== "unrecognized_keys")
-    return;
-  const fov = issue.keys?.some((key) => key === "fov" || key === "fovY" || key === "fieldOfView");
-  return `Unknown explicit camera key${issue.keys && issue.keys.length > 1 ? "s" : ""} ${(issue.keys ?? []).join(", ")}${fov ? "; use fovDeg" : ""}. Explicit cameras accept ${EXPLICIT_CAMERA_KEYS}.`;
-}, advancedCaptureError = (issue) => {
-  if (issue.code === "unrecognized_keys" && issue.keys?.some((key) => key === "width" || key === "height")) {
-    return `Advanced capture uses one square per-shot size from 128 to ${MAX_CAPTURE_SHOT_SIZE}; width and height are returned image dimensions, not request fields.`;
-  }
-  return;
-}, cameraShotInput, advancedCaptureInput, captureInput, renderViewsInput, requestedDetail = (input) => input?.detail === "full" ? "full" : "compact", renderViewsBufferInput, screenshotAnimationInput, viewInteriorInput, partListInput, lod0Views = (views) => Array.from({ length: views }, () => []), KILN_RENDER_VIEWS_DESCRIPTION, kilnRenderViewsDef, KILN_SCREENSHOT_ANIMATION_DESCRIPTION, kilnScreenshotAnimationDef, KILN_VIEW_INTERIOR_DESCRIPTION, kilnViewInteriorDef, attachmentEndpointInput, surfacePairInput, inspectInput, inspectBufferInput, KILN_INSPECT_DESCRIPTION, kilnInspectDef, editOperationInput, editInput, KILN_EDIT_DESCRIPTION = "Patch an EXISTING Kiln program with exact-string replacements and render the result in one call. This is the refine verb: use it to change an asset you already have rather than re-emitting the whole file, so every line you did not touch stays byte-for-byte identical and the reply carries a unified diff of what actually changed. Pass the full current source as `code` and one or more { oldString, newString } edits, copied verbatim from that source. Edits apply in order and the call is all-or-nothing: if any oldString does not match, or matches more than once without replaceAll, NOTHING is applied and the reply names the edit that failed -- fix it and call again. The patched program comes back as `code`; write it to your file to keep it. Renders by default, so you see the change immediately; pass render:false to patch without rendering. Writes no files.", kilnEditDef, localCacheScope = 0, rendererInput, assetSelector;
+var KILN_ASSET_WIDGET_URI = "ui://kiln/asset-v5.html", DEFAULT_INLOOP_VIEW_RENDER_TIMEOUT_MS = 6000, viewEvidenceHistoryByContext, VIEW_EVIDENCE_GUIDANCE = " viewEvidence.current describes ONLY this request. lastFaithful is older hash-only evidence for reference, not reused pixels and not current verification.", validateInput, renderInput, renderViewsInput, requestedDetail = (input) => input?.detail === "full" ? "full" : "compact", renderViewsBufferInput, screenshotAnimationInput, screenshotAnimationAdvertisedInput, viewInteriorInput, viewInteriorAdvertisedInput, partListInput, lod0Views = (views) => Array.from({ length: views }, () => []), KILN_RENDER_VIEWS_DESCRIPTION, kilnRenderViewsDef, KILN_SCREENSHOT_ANIMATION_DESCRIPTION, kilnScreenshotAnimationDef, KILN_VIEW_INTERIOR_DESCRIPTION, kilnViewInteriorDef, attachmentEndpointInput, surfacePairInput, inspectInput, inspectBufferInput, inspectAdvertisedInput, KILN_INSPECT_DESCRIPTION, kilnInspectDef, editOperationInput, editInput, editAdvertisedInput, KILN_EDIT_DESCRIPTION = "Patch an EXISTING Kiln program with exact-string replacements and render the result in one call. This is the refine verb: use it to change an asset you already have rather than re-emitting the whole file, so every line you did not touch stays byte-for-byte identical and the reply carries a unified diff of what actually changed. Pass the full current source as `code` and one or more { oldString, newString } edits, copied verbatim from that source. Edits apply in order and the call is all-or-nothing: if any oldString does not match, or matches more than once without replaceAll, NOTHING is applied and the reply names the edit that failed -- fix it and call again. The patched program comes back as `code`; write it to your file to keep it. Renders by default, so you see the change immediately; pass render:false to patch without rendering. Writes no files.", kilnEditDef, localCacheScope = 0, rendererInput, assetSelector;
 var init_registry2 = __esm(() => {
   init_capture_cache();
   init_assets();
@@ -42085,6 +42329,7 @@ var init_registry2 = __esm(() => {
   init_materials();
   init_review();
   init_workspace2();
+  init_capture_input();
   init_review_detail();
   init_build_cache();
   init_validation();
@@ -42097,107 +42342,41 @@ var init_registry2 = __esm(() => {
   init_view_render_timeout();
   init_evidence_history();
   init_background();
-  init_capture_limits();
   viewEvidenceHistoryByContext = new WeakMap;
-  validateInput = z19.object({
-    code: z19.string().describe("Kiln source code (defines `meta` + `build()`, optional `animate()`).")
+  validateInput = z21.object({
+    code: z21.string().describe("Kiln source code (defines `meta` + `build()`, optional `animate()`).")
   });
-  renderInput = z19.object({
-    code: z19.string().describe("Kiln source code to execute and render to an in-memory GLB.")
+  renderInput = z21.object({
+    code: z21.string().describe("Kiln source code to execute and render to an in-memory GLB.")
   });
-  backdropInput = z19.enum(BACKDROP_IDS).optional().describe("neutral (default); light for dark parts, dark for light parts.");
-  legacyCaptureInput = z19.object({
-    preset: z19.enum(["1x1", "1x2", "2x1", "3x1", "2x2", "3x2", "3x3"]).optional().describe("COLSxROWS; default 3x2. Fewer views for simple shapes, up to 3x3."),
-    cells: z19.array(z19.object({
-      azimuthDeg: z19.number().describe("0 = front, 90 = right, 180 = back, 270 = left. Wraps."),
-      elevationDeg: z19.number().describe("0 eye level; positive above, negative below. Clamped -89..89."),
-      zoom: z19.number().optional().describe("Bounds padding: below 1 crops, above 1 pulls back; omit for auto-framing."),
-      name: z19.string().optional().describe("Label; defaults to angles.")
-    })).optional().describe("Row-major cameras; omit for preset defaults. Count cannot exceed preset capacity (max 9)."),
-    backdrop: backdropInput
-  }).optional().describe("Sheet layout and cameras; omit for six views in a 3x2 grid.");
-  cameraVec3Input = z19.array(z19.number()).length(3);
-  cameraShotInput = z19.object({
-    name: z19.string().optional(),
-    subject: z19.object({ path: z19.string().optional(), name: z19.string().optional() }).strict().refine((v) => v.path === undefined !== (v.name === undefined), {
-      message: "Choose subject path OR exact name."
-    }).optional(),
-    visibility: z19.enum(["context", "isolate"]).optional(),
-    hide: z19.array(z19.string().min(1).max(1024)).max(64).optional(),
-    camera: z19.discriminatedUnion("type", [
-      z19.strictObject({
-        type: z19.literal("orbit"),
-        azimuthDeg: z19.number().optional(),
-        elevationDeg: z19.number().optional(),
-        relativeTo: z19.enum(["world", "asset", "part"]).optional(),
-        padding: z19.number().positive().max(100).optional()
-      }, { error: orbitCameraError }),
-      z19.strictObject({
-        type: z19.literal("explicit"),
-        projection: z19.enum(["orthographic", "perspective"]),
-        position: cameraVec3Input,
-        target: cameraVec3Input.optional(),
-        relativeTo: z19.enum(["world", "asset", "part", "local"]).optional(),
-        frame: z19.object({
-          origin: cameraVec3Input.optional(),
-          rotation: cameraVec3Input.optional()
-        }).strict().optional(),
-        framing: z19.enum(["explicit", "bounds"]).optional(),
-        padding: z19.number().positive().max(100).optional(),
-        targetOffset: cameraVec3Input.optional(),
-        up: cameraVec3Input.optional(),
-        halfHeight: z19.number().positive().optional(),
-        fovDeg: z19.number().positive().lt(180).optional(),
-        near: z19.number().positive().optional(),
-        far: z19.number().positive().optional()
-      }, { error: explicitCameraError })
-    ]).optional()
-  }).strict();
-  advancedCaptureInput = z19.strictObject({
-    version: z19.enum(["kiln.capture.v1", "kiln.capture.v2"]),
-    shots: z19.array(cameraShotInput).min(1).max(9),
-    cols: z19.number().int().min(1).max(3).optional(),
-    size: z19.number().int().min(128).max(MAX_CAPTURE_SHOT_SIZE).optional(),
-    output: z19.enum(["grid", "separate"]).optional(),
-    backdrop: backdropInput
-  }, { error: advancedCaptureError }).superRefine((input, context) => {
-    if (input.version === "kiln.capture.v1" && input.shots.some((shot) => shot.hide !== undefined))
-      context.addIssue({
-        code: "custom",
-        path: ["shots"],
-        message: "shot.hide requires version kiln.capture.v2"
-      });
-  });
-  captureInput = z19.union([
-    advancedCaptureInput,
-    z19.strictObject(legacyCaptureInput.unwrap().shape, {
-      error: taggedCaptureError
-    })
-  ], { error: taggedCaptureError }).optional().describe("Omit for six views; preset/cells for orbit sheets. Use kiln.capture.v1 or v2 with 1..9 shots for exact cameras. v2 adds hide: exact paths or unique names. Framing retains subject bounds.");
   renderViewsInput = renderInput.extend({ capture: captureInput, detail: reviewDetailInput });
   renderViewsBufferInput = renderViewsInput.omit({ code: true });
-  screenshotAnimationInput = z19.object({
+  screenshotAnimationInput = z21.object({
     shot: cameraShotInput.optional(),
-    measureParts: z19.array(cameraShotInput.shape.subject.unwrap()).min(1).max(16).optional().describe("Exact names or paths of subtrees measured together at each phase, independent of camera selection."),
-    frames: z19.number().int().min(2).max(6).optional(),
-    frameTimes: z19.array(z19.number().min(0).max(1)).min(1).max(9).optional().describe("Ordered phase fractions 0..1; mutually exclusive with frames."),
-    framing: z19.enum(["locked", "follow"]).optional(),
-    size: z19.number().int().min(128).max(1024).optional().describe("Frame size in px; default 256."),
+    measureParts: z21.array(cameraShotInput.shape.subject.unwrap()).min(1).max(16).optional().describe("Exact names or paths of subtrees measured together at each phase, independent of camera selection."),
+    frames: z21.number().int().min(2).max(6).optional(),
+    frameTimes: z21.array(z21.number().min(0).max(1)).min(1).max(9).optional().describe("Ordered phase fractions 0..1; mutually exclusive with frames."),
+    framing: z21.enum(["locked", "follow"]).optional(),
+    size: z21.number().int().min(128).max(1024).optional().describe("Frame size in px; default 256."),
     detail: reviewDetailInput,
-    code: z19.string().describe("Kiln source code to execute; must define animate() returning the named clip."),
-    clip: z19.string().describe('The animation clip to view, by name (e.g. "walk", "attack"). Must be one your animate() returns.'),
-    camera: z19.string().optional().describe("Camera angle: right (default — side profile, best for leg swing + knee bend direction), front " + "(reveals sideways/lateral motion), back, left, top, or three-quarter."),
-    perFrame: z19.boolean().optional().describe("Return the frames as separate high-res images instead of one composite grid. Default false.")
+    code: z21.string().describe("Kiln source code to execute; must define animate() returning the named clip."),
+    clip: z21.string().describe('The animation clip to view, by name (e.g. "walk", "attack"). Must be one your animate() returns.'),
+    camera: z21.string().optional().describe("Camera angle: right (default — side profile, best for leg swing + knee bend direction), front " + "(reveals sideways/lateral motion), back, left, top, or three-quarter."),
+    perFrame: z21.boolean().optional().describe("Return the frames as separate high-res images instead of one composite grid. Default false.")
   });
-  viewInteriorInput = z19.object({
+  screenshotAnimationAdvertisedInput = screenshotAnimationInput.extend({
+    shot: cameraShotRecordInput
+  });
+  viewInteriorInput = z21.object({
     capture: advancedCaptureInput.optional(),
-    code: z19.string().describe("Kiln source code to execute and render with the roof hidden."),
-    nodeName: z19.string().optional().describe("Override: lift the roof by exact node name instead of by role. Matches that node and its " + "children. Normally OMIT it — Kiln finds the roof from its semantic role (anything built " + 'with createRoofPlanes/createGableRoof), falling back to historical "Roof" naming.')
+    code: z21.string().describe("Kiln source code to execute and render with the roof hidden."),
+    nodeName: z21.string().optional().describe("Override: lift the roof by exact node name instead of by role. Matches that node and its " + "children. Normally OMIT it — Kiln finds the roof from its semantic role (anything built " + 'with createRoofPlanes/createGableRoof), falling back to historical "Roof" naming.')
   });
-  partListInput = z19.object({
-    query: z19.string().max(4096).optional().describe("Case-insensitive substring of name or exact encoded path; not a regex."),
-    offset: z19.number().int().min(0).optional(),
-    limit: z19.number().int().min(1).max(100).optional()
+  viewInteriorAdvertisedInput = viewInteriorInput.extend({ capture: captureRecordInput });
+  partListInput = z21.object({
+    query: z21.string().max(4096).optional().describe("Case-insensitive substring of name or exact encoded path; not a regex."),
+    offset: z21.number().int().min(0).optional(),
+    limit: z21.number().int().min(1).max(100).optional()
   }).strict();
   KILN_RENDER_VIEWS_DESCRIPTION = "Build the current asset and return geometry metrics, exact part paths and images. Omit capture for six orthographic views. Choose preset/cells for a smaller orbit sheet, or version kiln.capture.v1 with shots for per-part framing, local axes, perspective and separate images. +X is forward, +Y up, +Z right. Review silhouette, attachments, proportion and ground contact. GPU PBR shading supports textured or metallic materials; a flat-shaded CPU render supports geometry review. Read viewFidelity; do not judge material fidelity from CPU views. Failed builds return errors without images." + VIEW_EVIDENCE_GUIDANCE;
   kilnRenderViewsDef = createKilnRenderViewsDef();
@@ -42205,57 +42384,59 @@ var init_registry2 = __esm(() => {
   kilnScreenshotAnimationDef = createKilnScreenshotAnimationDef();
   KILN_VIEW_INTERIOR_DESCRIPTION = "SEE INSIDE an enterable building: renders it with the roof lifted off, as a " + "three-view grid. (1) Floor plan: top-down — check the interior is open and walkable and the footprint " + "is right. (2) Dollhouse: a 3/4 cutaway — check built-in fixtures (hearth, counter, shelves) rest ON the " + "floor, not floating or sunk, and the walls enclose a real volume with headroom. (3) Eye-level: a low " + "angle looking in through the doorway with the near walls also removed — confirm the doorway is a REAL " + "gap you could walk through (not a panel) and no wall or glass is buried inside a solid mass. Call this before finalizing any building. Take no argument: the roof is found from its semantic role, so any roof built with createRoofPlanes/createGableRoof lifts whatever it is named. If " + "roofsHidden comes back 0 no roof was resolvable and the interior stays hidden — build the roof " + 'with a roof primitive (or name the group "Roof"). Each cell is rendered from deterministic cutaway GLB bytes: GPU PBR when available, otherwise a GLB-native geometry-flat fallback. Read viewFidelity before judging materials; writes no files.' + VIEW_EVIDENCE_GUIDANCE;
   kilnViewInteriorDef = createKilnViewInteriorDef();
-  attachmentEndpointInput = z19.object({
-    subject: z19.object({ path: z19.string().optional(), name: z19.string().optional() }).strict(),
+  attachmentEndpointInput = z21.object({
+    subject: z21.object({ path: z21.string().optional(), name: z21.string().optional() }).strict(),
     point: cameraVec3Input.optional()
   }).strict();
-  surfacePairInput = z19.array(z19.string().max(4096)).length(2);
-  inspectInput = z19.object({
-    image: z19.boolean().optional().describe("False: requires listParts/measure/surfacePairs/compare; no image or camera controls. Default true."),
+  surfacePairInput = z21.array(z21.string().max(4096)).length(2);
+  inspectInput = z21.object({
+    image: z21.boolean().optional().describe("False: requires listParts/measure/surfacePairs/compare; no image or camera controls. Default true."),
     listParts: partListInput.optional().describe("List exported-scene paths, including nested parts. Default 80, max 100 per page. Follow partListing.nextOffset with the same programRef/query. image:false avoids rendering."),
-    surfacePairs: z19.array(surfacePairInput).min(1).max(12).optional().describe("[from,to] pairs of exact listParts paths or unambiguous node names; check surfaceMeasurements.status and each result."),
-    compare: z19.object({
-      programRef: z19.string().regex(programRefPattern),
-      offset: z19.number().int().min(0).optional(),
-      limit: z19.number().int().min(1).max(100).optional(),
-      paths: z19.array(z19.string().max(4096)).min(1).max(12).optional().describe("Exact baseline node paths, scene-prefixed without primitive children. Complete subtree summaries.")
+    surfacePairs: z21.array(surfacePairInput).min(1).max(12).optional().describe("[from,to] pairs of exact listParts paths or unambiguous node names; check surfaceMeasurements.status and each result."),
+    compare: z21.object({
+      programRef: z21.string().regex(programRefPattern),
+      offset: z21.number().int().min(0).optional(),
+      limit: z21.number().int().min(1).max(100).optional(),
+      paths: z21.array(z21.string().max(4096)).min(1).max(12).optional().describe("Exact baseline node paths, scene-prefixed without primitive children. Complete subtree summaries.")
     }).strict().optional().describe("Static geometry/material/transform/bounds under current host settings. Follow nextOffset; paths adds complete subtrees."),
-    measure: z19.object({
-      mode: z19.enum(["anchors", "surface"]).optional(),
+    measure: z21.object({
+      mode: z21.enum(["anchors", "surface"]).optional(),
       from: attachmentEndpointInput,
       to: attachmentEndpointInput
     }).strict().optional().describe("Default anchors: origin/local-point distance. Surface: disjoint mesh triangles, omit points. Rest pose, asset units. Check status/bounds; no solid clearance/attachment proof."),
     shot: cameraShotInput.optional().describe("Exact shot; omit part/view/orbit controls."),
-    code: z19.string().describe("Kiln source code to execute and inspect."),
-    part: z19.string().optional().describe("Frame named part and descendants (case-insensitive, substring fallback). Omit for whole asset."),
-    view: z19.string().optional().describe("front/right/back/left/top/three-quarter (default). Orbit angles override."),
-    azimuthDeg: z19.number().optional().describe("Orbit degrees: 0 front, 90 right, 180 back, 270 left. Wraps."),
-    elevationDeg: z19.number().optional().describe("Elevation degrees: 0 eye level, positive above. Clamped -89..89."),
-    zoom: z19.number().optional().describe("Bounds padding 1..4; default 1.2. Larger = more context."),
-    isolate: z19.boolean().optional().describe("Hide surrounding geometry. Requires part; default false.")
+    code: z21.string().describe("Kiln source code to execute and inspect."),
+    part: z21.string().optional().describe("Frame named part and descendants (case-insensitive, substring fallback). Omit for whole asset."),
+    view: z21.string().optional().describe("front/right/back/left/top/three-quarter (default). Orbit angles override."),
+    azimuthDeg: z21.number().optional().describe("Orbit degrees: 0 front, 90 right, 180 back, 270 left. Wraps."),
+    elevationDeg: z21.number().optional().describe("Elevation degrees: 0 eye level, positive above. Clamped -89..89."),
+    zoom: z21.number().optional().describe("Bounds padding 1..4; default 1.2. Larger = more context."),
+    isolate: z21.boolean().optional().describe("Hide surrounding geometry. Requires part; default false.")
   });
   inspectBufferInput = inspectInput.omit({ code: true });
+  inspectAdvertisedInput = inspectInput.extend({ shot: cameraShotRecordInput });
   KILN_INSPECT_DESCRIPTION = "List complete part paths with listParts and image:false; query filters names/paths, offset/limit paginate. Follow partListing.nextOffset. ZOOM IN on one part: renders a single 512x512 close-up framed to the named part (the node name you gave createPart, matched case-insensitively with a substring fallback) and its descendants, " + "from one camera. Use it after kiln_render reveals a suspect region — a floating part, a bad " + "joint, a wrong proportion — to see fine detail one grid cell cannot show. args: part (omit to " + "frame the whole asset in one large view), view (front/right/back/left/top/three-quarter, default three-quarter), azimuthDeg + elevationDeg (orbit to ANY angle instead of a named view: azimuth 0 = front, 90 = right, 180 = back, 270 = left; elevation 0 = eye level, positive looks down, clamped to -89..89), zoom (padding multiplier around the part bounds, 1 = tight crop up to 4 = wide context, default 1.2), isolate (hide everything except that part, default false). Reach for the orbit angles when a named view puts the thing you need to judge edge-on or " + "behind something — the reply always tells you the azimuth/elevation it used, so you can step " + "from there. " + "If the part name does not resolve you get the list of available part names back — pick one and " + "retry. By default surrounding geometry stays visible for context and can occlude the part: either pick a different view, or set isolate:true to hide everything else and see the part unobstructed (use it for anything buried inside or behind other geometry). The view is rendered from deterministic derivative GLB bytes; GPU PBR is used only when it can preserve the requested framing, otherwise the GLB-native geometry-flat fallback reports why in viewFidelity. Writes no files." + VIEW_EVIDENCE_GUIDANCE;
   kilnInspectDef = createKilnInspectDef();
-  editOperationInput = z19.object({
-    oldString: z19.string().describe("The exact text to replace, copied verbatim from the program (including whitespace and indentation, and with no line-number prefixes). Must be unique unless replaceAll is true."),
-    newString: z19.string().describe("The replacement text. Use an empty string to delete."),
-    replaceAll: z19.boolean().optional().describe("Replace every occurrence instead of failing when oldString matches more than once.")
+  editOperationInput = z21.object({
+    oldString: z21.string().describe("The exact text to replace, copied verbatim from the program (including whitespace and indentation, and with no line-number prefixes). Must be unique unless replaceAll is true."),
+    newString: z21.string().describe("The replacement text. Use an empty string to delete."),
+    replaceAll: z21.boolean().optional().describe("Replace every occurrence instead of failing when oldString matches more than once.")
   });
-  editInput = z19.object({
-    code: z19.string().describe("The Kiln program to patch. The full current source."),
-    edits: z19.array(editOperationInput).min(1).max(20).describe("Edits applied in order against the program. If any one fails to match, none are applied and the reply says which. Batch related changes into a single call."),
-    render: z19.boolean().optional().describe("Render the patched program and return the views (default true). false = patch only."),
+  editInput = z21.object({
+    code: z21.string().describe("The Kiln program to patch. The full current source."),
+    edits: z21.array(editOperationInput).min(1).max(20).describe("Edits applied in order against the program. If any one fails to match, none are applied and the reply says which. Batch related changes into a single call."),
+    render: z21.boolean().optional().describe("Render the patched program and return the views (default true). false = patch only."),
     capture: captureInput
   });
+  editAdvertisedInput = editInput.extend({ capture: captureRecordInput });
   kilnEditDef = createKilnEditDef();
-  rendererInput = z19.strictObject({
-    action: z19.enum(["status", "reprobe"]).default("status")
+  rendererInput = z21.strictObject({
+    action: z21.enum(["status", "reprobe"]).default("status")
   });
   assetSelector = {
-    collection: z19.string().regex(/^[a-z][a-z0-9_-]{0,79}$/).describe("Collection ID (list with kiln_assets action=collections): the user destination, else project.").default("project"),
-    assetId: z19.string().regex(/^[a-z][a-z0-9_-]{0,79}$/),
-    revisionId: z19.string().regex(/^[a-z][a-z0-9_-]{0,79}$/)
+    collection: z21.string().regex(/^[a-z][a-z0-9_-]{0,79}$/).describe("Collection ID (list with kiln_assets action=collections): the user destination, else project.").default("project"),
+    assetId: z21.string().regex(/^[a-z][a-z0-9_-]{0,79}$/),
+    revisionId: z21.string().regex(/^[a-z][a-z0-9_-]{0,79}$/)
   };
 });
 
@@ -43051,7 +43232,7 @@ var init_loopback = __esm(() => {
 });
 
 // src/workspace-http.ts
-import { z as z20 } from "zod";
+import { z as z22 } from "zod";
 async function readJson(req, origin) {
   if (req.headers.origin !== origin)
     throw new WorkspaceHttpError(403, "Same-origin writes only");
@@ -43220,17 +43401,17 @@ var init_workspace_http = __esm(() => {
       this.status = status;
     }
   };
-  updateSchema = z20.strictObject({
+  updateSchema = z22.strictObject({
     expectedRevision: projectRevisionIdSchema,
     patch: projectPatchSchema
   });
-  pinSchema = z20.strictObject({ pinned: z20.boolean() });
+  pinSchema = z22.strictObject({ pinned: z22.boolean() });
   filePattern3 = /^(asset\.glb|source\.kiln\.js|evaluation\.json|capture-\d{1,2}\.png)$/;
 });
 
 // src/asset-viewer.ts
 import { createServer } from "node:http";
-import { readFile as readFile8 } from "node:fs/promises";
+import { readFile as readFile9 } from "node:fs/promises";
 import { dirname as dirname8, join as join18 } from "node:path";
 import { fileURLToPath as fileURLToPath7 } from "node:url";
 function quoted(value) {
@@ -43314,7 +43495,7 @@ async function startAssetViewer(library, options = {}) {
         return;
       }
       res.setHeader("Content-Security-Policy", "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' blob: data:; connect-src 'self' blob: data:; worker-src 'self' blob:; object-src 'none'; base-uri 'none'; frame-ancestors 'none'");
-      return send(await readFile8(join18(staticDirectory, file[0])), file[1]);
+      return send(await readFile9(join18(staticDirectory, file[0])), file[1]);
     } catch (error) {
       res.statusCode = error instanceof WorkspaceHttpError ? error.status : error && typeof error === "object" && ("code" in error) && error.code === "PROJECT_CONFLICT" ? 409 : 400;
       send(JSON.stringify({ error: error instanceof Error ? error.message : "Asset unavailable" }));
@@ -43383,8 +43564,8 @@ __export(exports_asset_cli, {
   ASSET_USAGE: () => ASSET_USAGE,
   assetMain: () => assetMain
 });
-import { readFile as readFile9, writeFile as writeFile8, stat as stat5, mkdir as mkdir9, rename as rename6 } from "node:fs/promises";
-import { basename, resolve as resolve13, dirname as dirname9, isAbsolute } from "node:path";
+import { readFile as readFile10, writeFile as writeFile8, stat as stat6, mkdir as mkdir9, rename as rename6 } from "node:fs/promises";
+import { basename, resolve as resolve13, dirname as dirname9, isAbsolute as isAbsolute2 } from "node:path";
 import { randomUUID as randomUUID9 } from "node:crypto";
 import { createHash as createHash18 } from "node:crypto";
 async function assetMain(argv) {
@@ -43469,9 +43650,9 @@ async function assetMain(argv) {
   const library = localAssetLibrary();
   const collection = flags.collection ?? "project";
   const fileBytes = async (path) => {
-    if ((await stat5(path)).size > ASSET_LIMIT)
+    if ((await stat6(path)).size > ASSET_LIMIT)
       throw new Error("File exceeds 64 MiB");
-    return new Uint8Array(await readFile9(path));
+    return new Uint8Array(await readFile10(path));
   };
   if (command === "collections") {
     if (positional[0] === "add") {
@@ -43481,7 +43662,7 @@ async function assetMain(argv) {
       if (!name || !directory)
         throw new Error("collections add requires name and directory");
       assetIdSchema.parse(name);
-      assertCollectionRoot(name, isAbsolute(directory) ? directory : resolve13(directory));
+      assertCollectionRoot(name, isAbsolute2(directory) ? directory : resolve13(directory));
       const roots = Object.fromEntries(library.collections().map((c) => [c.id, library.directory(c.id)]));
       if (roots[name] && roots[name] !== resolve13(directory))
         throw new Error("Collection name already points to another directory");
@@ -43668,7 +43849,7 @@ async function assetMain(argv) {
     let standalone;
     const file = positional[0];
     if (file) {
-      if ((await stat5(file)).isDirectory()) {
+      if ((await stat6(file)).isDirectory()) {
         await Promise.resolve().then(() => init_assets_node());
         target = new FileAssetLibrary({ project: resolve13(file) });
       } else
@@ -43684,7 +43865,7 @@ async function assetMain(argv) {
     const { realpath } = await import("node:fs/promises");
     const currentRoot = await realpath(root);
     for (const path of observeWorkspaces) {
-      if (!(await stat5(path)).isDirectory())
+      if (!(await stat6(path)).isDirectory())
         throw new Error("Observation source must be a directory");
       const canonical = await realpath(path);
       if (canonical === currentRoot)
@@ -44353,7 +44534,7 @@ __export(exports_animation_cli, {
   ANIMATION_USAGE: () => ANIMATION_USAGE,
   animationMain: () => animationMain
 });
-import { open as open6, readFile as readFile10 } from "node:fs/promises";
+import { open as open6, readFile as readFile11 } from "node:fs/promises";
 import { extname, resolve as resolve15 } from "node:path";
 async function readReviewJson(path, option) {
   const file = await open6(resolve15(path), "r");
@@ -44472,7 +44653,7 @@ async function animationMain(argv) {
       ...await buildRenderPort(args.render, args.renderPort),
       requirements
     });
-    const source = programRefPattern.test(args.source) ? { programRef: args.source } : { code: await readFile10(resolve15(args.source), "utf8") };
+    const source = programRefPattern.test(args.source) ? { programRef: args.source } : { code: await readFile11(resolve15(args.source), "utf8") };
     const tool = createKilnProgramToolRegistry(context).find((t) => t.name === "kiln_screenshot_animation");
     let output;
     try {
@@ -44693,7 +44874,7 @@ __export(exports_inspect_cli, {
   INSPECT_USAGE: () => INSPECT_USAGE,
   inspectMain: () => inspectMain
 });
-import { open as open8, readFile as readFile11 } from "node:fs/promises";
+import { open as open8, readFile as readFile12 } from "node:fs/promises";
 import { resolve as resolve17 } from "node:path";
 async function readControls(path) {
   const file = await open8(resolve17(path), "r");
@@ -44790,7 +44971,7 @@ async function inspectMain(argv) {
       ...controls.image === false ? {} : await buildRenderPort(args.render, args.renderPort),
       requirements
     });
-    const source = programRefPattern.test(args.source) ? { programRef: args.source } : { code: await readFile11(resolve17(args.source), "utf8") };
+    const source = programRefPattern.test(args.source) ? { programRef: args.source } : { code: await readFile12(resolve17(args.source), "utf8") };
     const tool = createKilnProgramToolRegistry(context).find((t) => t.name === "kiln_inspect");
     let output;
     try {
@@ -45591,7 +45772,7 @@ var init_migration_cli = __esm(() => {
 
 // src/cli.ts
 init_cli_output();
-import { open as open11, readFile as readFile12 } from "node:fs/promises";
+import { open as open11, readFile as readFile13 } from "node:fs/promises";
 import { resolve as resolvePath, extname as extname2 } from "node:path";
 
 // src/direct-entry.ts
@@ -46020,7 +46201,7 @@ async function cmdRender(args) {
   const receipt = { files: [] };
   let context;
   try {
-    const code = file.startsWith("sha256:") || programRefPattern.test(file) ? await localProgramStore().get(file) : await readFile12(resolvePath(file), "utf8");
+    const code = file.startsWith("sha256:") || programRefPattern.test(file) ? await localProgramStore().get(file) : await readFile13(resolvePath(file), "utf8");
     context = await createPackagedLocalToolContext({
       ...await buildRenderPort(args.render, args.renderPort),
       requirements: args.requirements
@@ -46149,10 +46330,10 @@ async function cmdSource(args) {
     if (isRef)
       process.stdout.write(await store.get(input));
     else
-      console.log(await retainProgram(store, await readFile12(resolvePath(input), "utf8")));
+      console.log(await retainProgram(store, await readFile13(resolvePath(input), "utf8")));
     return 0;
   }
-  const programRef = isRef ? input : await retainProgram(store, await readFile12(resolvePath(input), "utf8"));
+  const programRef = isRef ? input : await retainProgram(store, await readFile13(resolvePath(input), "utf8"));
   const offset = integerOption("--offset", args.offset);
   const limit = integerOption("--limit", args.limit);
   const result = await createKilnSourceDef(store).run({

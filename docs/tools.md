@@ -1,18 +1,18 @@
 # Tool reference
 
-Generated from the public registry with `bun run docs:tools`. Change the registry to update names, descriptions or schemas; use `bun run docs:tools --check` to check for drift.
+Generated with `bun run docs:tools` from the definitions the packaged stdio server advertises (the same bytes as `src/generated/mcp-manifest.json`). Change the registry in `src/tools/registry.ts` to update names, descriptions or schemas; `bun run docs:tools --check` reports drift.
 
-Use these tools through your connected agent. Supply `code` once, then pass the returned `programRef` to later calls. References identify exact source revisions; the retention each description states is the packaged file store's, and an injected store states its own. [Source workflow](programs.md) · [Camera recipes](cameras.md) · [Geometry guide](geometry.md).
+Use these tools through your connected agent. Supply `code` once (or `file`, a path inside the workspace), then pass the returned `programRef` to later calls. References identify exact source revisions and are kept in the workspace program store across sessions and processes. [Source workflow](programs.md) · [Camera recipes](cameras.md) · [Geometry guide](geometry.md).
 
-Call `kiln_discover({capabilities:true})` for the current host limits and export/camera support. The schema below describes inputs; actual image replies include fidelity and capture metadata. Source reads return exact text, edits return a new revision, and failed builds return their errors.
+Call `kiln_discover({capabilities:true})` for the current host limits, the configured project and export/camera support. Nested records that the schemas keep opaque (`draft`, `patch`, `payload`, `capture`, `shot`) are described in full by `kiln_discover({ ids: ["shape:project-draft"] })` and the other `shape:` entries. The schema below describes inputs; actual image replies include fidelity and capture metadata. Source reads return exact text, edits return a new revision, and failed builds return their errors.
 
-The packaged local host additionally injects kiln_project, kiln_material and kiln_review. Projects are optional. Authoring tools there accept projectId, projectRevision and independent materialDependencies; projectId:null explicitly selects standalone work. These optional schemas come from the same registry and are advertised only when their host stores are available; connected tools/list is authoritative. See [projects and live review](projects-and-live-review.md) for CLI equivalents, project packages and exact reviewed saves. The base schemas below remain available to embeddings without workspace services.
+kiln_project, kiln_material and kiln_review are injected by the packaged local host; an embedding advertises them only when it supplies the corresponding store, and the connected tools/list is authoritative. Projects are optional: authoring tools accept projectId, projectRevision and independent materialDependencies, and projectId:null selects standalone work. See [projects and live review](projects-and-live-review.md) for CLI equivalents, project packages and exact reviewed saves.
 
 Renderer capabilities distinguish configured routing, dependency readiness, endpoint health and unverified authentication. Use kiln_renderer with action=reprobe after renderer setup or repair to refresh the current session. Material capabilities list approved texture IDs by allowed slot for the selected evaluator. Capability inspection never starts a renderer, requests an image or fetches texture bytes; ordinary catalog search is offline. See [renderer readiness and resources](rendering.md).
 
 ## kiln_discover
 
-Discover Kiln operations, assemblies, recipes and current host capabilities. Omit arguments for a compact overview. Search with ordinary modeling language using query; refine with family, kind or tags. Fetch complete contracts/examples with ids (up to six exact IDs or executable names). Overview/search pages default to six summaries. Recipes guide construction without restricting the asset. Search runs locally without models or network calls.
+Discover Kiln operations, assemblies, recipes, tool-input shapes and current host capabilities. Omit arguments for a compact overview. Search with ordinary modeling language using query; refine with family, kind or tags. Fetch complete contracts/examples with ids (up to six exact IDs, executable names or shape: ids). Overview/search pages default to six summaries. Recipes guide construction without restricting the asset. Search runs locally without models or network calls.
 
 <details>
 <summary>Input JSON Schema</summary>
@@ -20,7 +20,6 @@ Discover Kiln operations, assemblies, recipes and current host capabilities. Omi
 
 ```json
 {
-  "$schema": "https://json-schema.org/draft/2020-12/schema",
   "type": "object",
   "properties": {
     "query": {
@@ -56,7 +55,8 @@ Discover Kiln operations, assemblies, recipes and current host capabilities. Omi
       "enum": [
         "operation",
         "assembly",
-        "recipe"
+        "recipe",
+        "shape"
       ]
     },
     "tags": {
@@ -96,7 +96,6 @@ Inspect status, or reprobe after renderer setup/repair to refresh this session a
 
 ```json
 {
-  "$schema": "https://json-schema.org/draft/2020-12/schema",
   "type": "object",
   "properties": {
     "action": {
@@ -108,9 +107,6 @@ Inspect status, or reprobe after renderer setup/repair to refresh this session a
       ]
     }
   },
-  "required": [
-    "action"
-  ],
   "additionalProperties": false
 }
 ```
@@ -119,7 +115,7 @@ Inspect status, or reprobe after renderer setup/repair to refresh this session a
 
 ## kiln_validate
 
-Check program syntax, sandbox rules and retired globals before building. Returns findings with codes, lines and repair hints where available; use kiln_render to evaluate geometry and see the asset. Supply code OR programRef (kept in the program store across sessions and processes, never evicted). Invalid drafts keep a ref.
+Check program syntax, sandbox rules and retired globals before building. Returns findings with codes, lines and repair hints where available; use kiln_render to evaluate geometry and see the asset. Supply code, programRef OR file (kept in the program store across sessions and processes, never evicted). Invalid drafts keep a ref.
 
 <details>
 <summary>Input JSON Schema</summary>
@@ -127,7 +123,6 @@ Check program syntax, sandbox rules and retired globals before building. Returns
 
 ```json
 {
-  "$schema": "https://json-schema.org/draft/2020-12/schema",
   "type": "object",
   "properties": {
     "code": {
@@ -138,9 +133,14 @@ Check program syntax, sandbox rules and retired globals before building. Returns
       "type": "string",
       "pattern": "^(?:sha256:[a-f0-9]{64}|p_[a-f0-9]{12}(?:[a-f0-9]{4}){0,13})(?![\\s\\S])",
       "description": "Returned p_ handle or full sha256 ref."
+    },
+    "file": {
+      "description": "A program file inside the workspace, relative to its root.",
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1024
     }
-  },
-  "additionalProperties": false
+  }
 }
 ```
 
@@ -148,7 +148,7 @@ Check program syntax, sandbox rules and retired globals before building. Returns
 
 ## kiln_render
 
-Build and return metrics, part paths and images. If partsTruncated, use kiln_inspect listParts. Omit capture for six views, preset/cells for orbit grids, or kiln.capture.v1/v2 shots for exact orthographic/perspective cameras; v2 adds hide. Check viewFidelity before judging materials. Failed builds return errors without images. Supply code OR programRef (kept in the program store across sessions and processes, never evicted). Invalid drafts keep a ref.
+Build and return metrics, part paths and images. If partsTruncated, use kiln_inspect listParts. Omit capture for six views, preset/cells for orbit grids, or kiln.capture.v1/v2 shots for exact orthographic/perspective cameras; v2 adds hide. Check viewFidelity before judging materials. Failed builds return errors without images. Supply code, programRef OR file (kept in the program store across sessions and processes, never evicted). Invalid drafts keep a ref.
 
 <details>
 <summary>Input JSON Schema</summary>
@@ -156,7 +156,6 @@ Build and return metrics, part paths and images. If partsTruncated, use kiln_ins
 
 ```json
 {
-  "$schema": "https://json-schema.org/draft/2020-12/schema",
   "type": "object",
   "properties": {
     "code": {
@@ -443,8 +442,7 @@ Build and return metrics, part paths and images. If partsTruncated, use kiln_ins
                 "required": [
                   "azimuthDeg",
                   "elevationDeg"
-                ],
-                "additionalProperties": false
+                ]
               }
             },
             "backdrop": {
@@ -473,9 +471,64 @@ Build and return metrics, part paths and images. If partsTruncated, use kiln_ins
       "type": "string",
       "pattern": "^(?:sha256:[a-f0-9]{64}|p_[a-f0-9]{12}(?:[a-f0-9]{4}){0,13})(?![\\s\\S])",
       "description": "Returned p_ handle or full sha256 ref."
+    },
+    "file": {
+      "description": "A program file inside the workspace, relative to its root.",
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1024
+    },
+    "projectId": {
+      "description": "Project; omit for the configured default, null for standalone.",
+      "anyOf": [
+        {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_-]{0,79}$"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "projectRevision": {
+      "description": "Exact project revision.",
+      "type": "string",
+      "pattern": "^r_[0-9]{10}_[a-f0-9]{64}$"
+    },
+    "materialDependencies": {
+      "description": "Exact material pins for this call; project locks cannot be replaced.",
+      "maxItems": 512,
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "resourceId": {
+            "type": "string",
+            "pattern": "^[a-zA-Z0-9][a-zA-Z0-9_.:/-]{0,199}$"
+          },
+          "revisionId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "sha256": {
+            "type": "string",
+            "pattern": "^sha256:[a-f0-9]{64}$"
+          },
+          "role": {
+            "type": "string",
+            "maxLength": 100
+          }
+        },
+        "required": [
+          "resourceId",
+          "revisionId",
+          "sha256"
+        ],
+        "additionalProperties": false
+      }
     }
-  },
-  "additionalProperties": false
+  }
 }
 ```
 
@@ -483,7 +536,7 @@ Build and return metrics, part paths and images. If partsTruncated, use kiln_ins
 
 ## kiln_screenshot_animation
 
-Review animation images, poseBounds and loopClosure endpoint evidence. loopIntent is createClip({loop}); open is valid for one-shots; closed endpoints do not prove smooth velocity. Check motion, attachments and requested clearance; sampled bounds do not certify continuous contact or collision safety. Use shot for camera/subject, frameTimes for phases, and framing locked (default) or follow. Add phases when symmetry hides motion. The program must define animate(). Check viewFidelity before judging materials. Supply code OR programRef (kept in the program store across sessions and processes, never evicted). Invalid drafts keep a ref.
+Review animation images, poseBounds and loopClosure endpoint evidence. loopIntent is createClip({loop}); open is valid for one-shots; closed endpoints do not prove smooth velocity. Check motion, attachments and requested clearance; sampled bounds do not certify continuous contact or collision safety. Use shot for camera/subject, frameTimes for phases, and framing locked (default) or follow. Add phases when symmetry hides motion. The program must define animate(). Check viewFidelity before judging materials. Supply code, programRef OR file (kept in the program store across sessions and processes, never evicted). Invalid drafts keep a ref.
 
 <details>
 <summary>Input JSON Schema</summary>
@@ -491,195 +544,15 @@ Review animation images, poseBounds and loopClosure endpoint evidence. loopInten
 
 ```json
 {
-  "$schema": "https://json-schema.org/draft/2020-12/schema",
   "type": "object",
   "properties": {
     "shot": {
+      "description": "One exact camera shot. Shape: kiln_discover ids [\"shape:camera-shot\"].",
       "type": "object",
-      "properties": {
-        "name": {
-          "type": "string"
-        },
-        "subject": {
-          "type": "object",
-          "properties": {
-            "path": {
-              "type": "string"
-            },
-            "name": {
-              "type": "string"
-            }
-          },
-          "additionalProperties": false
-        },
-        "visibility": {
-          "type": "string",
-          "enum": [
-            "context",
-            "isolate"
-          ]
-        },
-        "hide": {
-          "maxItems": 64,
-          "type": "array",
-          "items": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 1024
-          }
-        },
-        "camera": {
-          "oneOf": [
-            {
-              "type": "object",
-              "properties": {
-                "type": {
-                  "type": "string",
-                  "const": "orbit"
-                },
-                "azimuthDeg": {
-                  "type": "number"
-                },
-                "elevationDeg": {
-                  "type": "number"
-                },
-                "relativeTo": {
-                  "type": "string",
-                  "enum": [
-                    "world",
-                    "asset",
-                    "part"
-                  ]
-                },
-                "padding": {
-                  "type": "number",
-                  "exclusiveMinimum": 0,
-                  "maximum": 100
-                }
-              },
-              "required": [
-                "type"
-              ],
-              "additionalProperties": false
-            },
-            {
-              "type": "object",
-              "properties": {
-                "type": {
-                  "type": "string",
-                  "const": "explicit"
-                },
-                "projection": {
-                  "type": "string",
-                  "enum": [
-                    "orthographic",
-                    "perspective"
-                  ]
-                },
-                "position": {
-                  "minItems": 3,
-                  "maxItems": 3,
-                  "type": "array",
-                  "items": {
-                    "type": "number"
-                  }
-                },
-                "target": {
-                  "minItems": 3,
-                  "maxItems": 3,
-                  "type": "array",
-                  "items": {
-                    "type": "number"
-                  }
-                },
-                "relativeTo": {
-                  "type": "string",
-                  "enum": [
-                    "world",
-                    "asset",
-                    "part",
-                    "local"
-                  ]
-                },
-                "frame": {
-                  "type": "object",
-                  "properties": {
-                    "origin": {
-                      "minItems": 3,
-                      "maxItems": 3,
-                      "type": "array",
-                      "items": {
-                        "type": "number"
-                      }
-                    },
-                    "rotation": {
-                      "minItems": 3,
-                      "maxItems": 3,
-                      "type": "array",
-                      "items": {
-                        "type": "number"
-                      }
-                    }
-                  },
-                  "additionalProperties": false
-                },
-                "framing": {
-                  "type": "string",
-                  "enum": [
-                    "explicit",
-                    "bounds"
-                  ]
-                },
-                "padding": {
-                  "type": "number",
-                  "exclusiveMinimum": 0,
-                  "maximum": 100
-                },
-                "targetOffset": {
-                  "minItems": 3,
-                  "maxItems": 3,
-                  "type": "array",
-                  "items": {
-                    "type": "number"
-                  }
-                },
-                "up": {
-                  "minItems": 3,
-                  "maxItems": 3,
-                  "type": "array",
-                  "items": {
-                    "type": "number"
-                  }
-                },
-                "halfHeight": {
-                  "type": "number",
-                  "exclusiveMinimum": 0
-                },
-                "fovDeg": {
-                  "type": "number",
-                  "exclusiveMinimum": 0,
-                  "exclusiveMaximum": 180
-                },
-                "near": {
-                  "type": "number",
-                  "exclusiveMinimum": 0
-                },
-                "far": {
-                  "type": "number",
-                  "exclusiveMinimum": 0
-                }
-              },
-              "required": [
-                "type",
-                "projection",
-                "position"
-              ],
-              "additionalProperties": false
-            }
-          ]
-        }
+      "propertyNames": {
+        "type": "string"
       },
-      "additionalProperties": false
+      "additionalProperties": {}
     },
     "measureParts": {
       "description": "Exact names or paths of subtrees measured together at each phase, independent of camera selection.",
@@ -756,12 +629,67 @@ Review animation images, poseBounds and loopClosure endpoint evidence. loopInten
       "type": "string",
       "pattern": "^(?:sha256:[a-f0-9]{64}|p_[a-f0-9]{12}(?:[a-f0-9]{4}){0,13})(?![\\s\\S])",
       "description": "Returned p_ handle or full sha256 ref."
+    },
+    "file": {
+      "description": "A program file inside the workspace, relative to its root.",
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1024
+    },
+    "projectId": {
+      "description": "Project; omit for the configured default, null for standalone.",
+      "anyOf": [
+        {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_-]{0,79}$"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "projectRevision": {
+      "description": "Exact project revision.",
+      "type": "string",
+      "pattern": "^r_[0-9]{10}_[a-f0-9]{64}$"
+    },
+    "materialDependencies": {
+      "description": "Exact material pins for this call; project locks cannot be replaced.",
+      "maxItems": 512,
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "resourceId": {
+            "type": "string",
+            "pattern": "^[a-zA-Z0-9][a-zA-Z0-9_.:/-]{0,199}$"
+          },
+          "revisionId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "sha256": {
+            "type": "string",
+            "pattern": "^sha256:[a-f0-9]{64}$"
+          },
+          "role": {
+            "type": "string",
+            "maxLength": 100
+          }
+        },
+        "required": [
+          "resourceId",
+          "revisionId",
+          "sha256"
+        ],
+        "additionalProperties": false
+      }
     }
   },
   "required": [
     "clip"
-  ],
-  "additionalProperties": false
+  ]
 }
 ```
 
@@ -769,7 +697,7 @@ Review animation images, poseBounds and loopClosure endpoint evidence. loopInten
 
 ## kiln_view_interior
 
-Render roof-off floor-plan, dollhouse, and eye-level cutaway views. Optional versioned capture selects custom roof-off shots. Select a roof by nodeName or let Kiln resolve its role/name. Review roofsHidden and warnings for unresolved occlusion. Supply code OR programRef (kept in the program store across sessions and processes, never evicted). Invalid drafts keep a ref.
+Render roof-off floor-plan, dollhouse, and eye-level cutaway views. Optional versioned capture selects custom roof-off shots. Select a roof by nodeName or let Kiln resolve its role/name. Review roofsHidden and warnings for unresolved occlusion. Supply code, programRef OR file (kept in the program store across sessions and processes, never evicted). Invalid drafts keep a ref.
 
 <details>
 <summary>Input JSON Schema</summary>
@@ -777,243 +705,15 @@ Render roof-off floor-plan, dollhouse, and eye-level cutaway views. Optional ver
 
 ```json
 {
-  "$schema": "https://json-schema.org/draft/2020-12/schema",
   "type": "object",
   "properties": {
     "capture": {
+      "description": "Cameras, as kiln_render capture takes them. Shape: kiln_discover ids [\"shape:capture\"].",
       "type": "object",
-      "properties": {
-        "version": {
-          "type": "string",
-          "enum": [
-            "kiln.capture.v1",
-            "kiln.capture.v2"
-          ]
-        },
-        "shots": {
-          "minItems": 1,
-          "maxItems": 9,
-          "type": "array",
-          "items": {
-            "type": "object",
-            "properties": {
-              "name": {
-                "type": "string"
-              },
-              "subject": {
-                "type": "object",
-                "properties": {
-                  "path": {
-                    "type": "string"
-                  },
-                  "name": {
-                    "type": "string"
-                  }
-                },
-                "additionalProperties": false
-              },
-              "visibility": {
-                "type": "string",
-                "enum": [
-                  "context",
-                  "isolate"
-                ]
-              },
-              "hide": {
-                "maxItems": 64,
-                "type": "array",
-                "items": {
-                  "type": "string",
-                  "minLength": 1,
-                  "maxLength": 1024
-                }
-              },
-              "camera": {
-                "oneOf": [
-                  {
-                    "type": "object",
-                    "properties": {
-                      "type": {
-                        "type": "string",
-                        "const": "orbit"
-                      },
-                      "azimuthDeg": {
-                        "type": "number"
-                      },
-                      "elevationDeg": {
-                        "type": "number"
-                      },
-                      "relativeTo": {
-                        "type": "string",
-                        "enum": [
-                          "world",
-                          "asset",
-                          "part"
-                        ]
-                      },
-                      "padding": {
-                        "type": "number",
-                        "exclusiveMinimum": 0,
-                        "maximum": 100
-                      }
-                    },
-                    "required": [
-                      "type"
-                    ],
-                    "additionalProperties": false
-                  },
-                  {
-                    "type": "object",
-                    "properties": {
-                      "type": {
-                        "type": "string",
-                        "const": "explicit"
-                      },
-                      "projection": {
-                        "type": "string",
-                        "enum": [
-                          "orthographic",
-                          "perspective"
-                        ]
-                      },
-                      "position": {
-                        "minItems": 3,
-                        "maxItems": 3,
-                        "type": "array",
-                        "items": {
-                          "type": "number"
-                        }
-                      },
-                      "target": {
-                        "minItems": 3,
-                        "maxItems": 3,
-                        "type": "array",
-                        "items": {
-                          "type": "number"
-                        }
-                      },
-                      "relativeTo": {
-                        "type": "string",
-                        "enum": [
-                          "world",
-                          "asset",
-                          "part",
-                          "local"
-                        ]
-                      },
-                      "frame": {
-                        "type": "object",
-                        "properties": {
-                          "origin": {
-                            "minItems": 3,
-                            "maxItems": 3,
-                            "type": "array",
-                            "items": {
-                              "type": "number"
-                            }
-                          },
-                          "rotation": {
-                            "minItems": 3,
-                            "maxItems": 3,
-                            "type": "array",
-                            "items": {
-                              "type": "number"
-                            }
-                          }
-                        },
-                        "additionalProperties": false
-                      },
-                      "framing": {
-                        "type": "string",
-                        "enum": [
-                          "explicit",
-                          "bounds"
-                        ]
-                      },
-                      "padding": {
-                        "type": "number",
-                        "exclusiveMinimum": 0,
-                        "maximum": 100
-                      },
-                      "targetOffset": {
-                        "minItems": 3,
-                        "maxItems": 3,
-                        "type": "array",
-                        "items": {
-                          "type": "number"
-                        }
-                      },
-                      "up": {
-                        "minItems": 3,
-                        "maxItems": 3,
-                        "type": "array",
-                        "items": {
-                          "type": "number"
-                        }
-                      },
-                      "halfHeight": {
-                        "type": "number",
-                        "exclusiveMinimum": 0
-                      },
-                      "fovDeg": {
-                        "type": "number",
-                        "exclusiveMinimum": 0,
-                        "exclusiveMaximum": 180
-                      },
-                      "near": {
-                        "type": "number",
-                        "exclusiveMinimum": 0
-                      },
-                      "far": {
-                        "type": "number",
-                        "exclusiveMinimum": 0
-                      }
-                    },
-                    "required": [
-                      "type",
-                      "projection",
-                      "position"
-                    ],
-                    "additionalProperties": false
-                  }
-                ]
-              }
-            },
-            "additionalProperties": false
-          }
-        },
-        "cols": {
-          "type": "integer",
-          "minimum": 1,
-          "maximum": 3
-        },
-        "size": {
-          "type": "integer",
-          "minimum": 128,
-          "maximum": 2048
-        },
-        "output": {
-          "type": "string",
-          "enum": [
-            "grid",
-            "separate"
-          ]
-        },
-        "backdrop": {
-          "description": "neutral (default); light for dark parts, dark for light parts.",
-          "type": "string",
-          "enum": [
-            "neutral",
-            "dark",
-            "light"
-          ]
-        }
+      "propertyNames": {
+        "type": "string"
       },
-      "required": [
-        "version",
-        "shots"
-      ],
-      "additionalProperties": false
+      "additionalProperties": {}
     },
     "code": {
       "description": "New source.",
@@ -1027,9 +727,64 @@ Render roof-off floor-plan, dollhouse, and eye-level cutaway views. Optional ver
       "type": "string",
       "pattern": "^(?:sha256:[a-f0-9]{64}|p_[a-f0-9]{12}(?:[a-f0-9]{4}){0,13})(?![\\s\\S])",
       "description": "Returned p_ handle or full sha256 ref."
+    },
+    "file": {
+      "description": "A program file inside the workspace, relative to its root.",
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1024
+    },
+    "projectId": {
+      "description": "Project; omit for the configured default, null for standalone.",
+      "anyOf": [
+        {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_-]{0,79}$"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "projectRevision": {
+      "description": "Exact project revision.",
+      "type": "string",
+      "pattern": "^r_[0-9]{10}_[a-f0-9]{64}$"
+    },
+    "materialDependencies": {
+      "description": "Exact material pins for this call; project locks cannot be replaced.",
+      "maxItems": 512,
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "resourceId": {
+            "type": "string",
+            "pattern": "^[a-zA-Z0-9][a-zA-Z0-9_.:/-]{0,199}$"
+          },
+          "revisionId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "sha256": {
+            "type": "string",
+            "pattern": "^sha256:[a-f0-9]{64}$"
+          },
+          "role": {
+            "type": "string",
+            "maxLength": 100
+          }
+        },
+        "required": [
+          "resourceId",
+          "revisionId",
+          "sha256"
+        ],
+        "additionalProperties": false
+      }
     }
-  },
-  "additionalProperties": false
+  }
 }
 ```
 
@@ -1037,7 +792,7 @@ Render roof-off floor-plan, dollhouse, and eye-level cutaway views. Optional ver
 
 ## kiln_inspect
 
-List part paths and inspect joints, clearances and edit preservation. listParts filters names/paths with query; follow partListing.nextOffset on the same programRef/query. measure/surfacePairs return distances, not fit certificates. compare reports static changes and separate animation channel changes; paths adds complete static subtree summaries. image:false skips rendering. Otherwise use part/orbit or exact shot; check viewFidelity for materials. Supply code OR programRef (kept in the program store across sessions and processes, never evicted). Invalid drafts keep a ref.
+List part paths and inspect joints, clearances and edit preservation. listParts filters names/paths with query; follow partListing.nextOffset on the same programRef/query. measure/surfacePairs return distances, not fit certificates. compare reports static changes and separate animation channel changes; paths adds complete static subtree summaries. image:false skips rendering. Otherwise use part/orbit or exact shot; check viewFidelity for materials. Supply code, programRef OR file (kept in the program store across sessions and processes, never evicted). Invalid drafts keep a ref.
 
 <details>
 <summary>Input JSON Schema</summary>
@@ -1045,7 +800,6 @@ List part paths and inspect joints, clearances and edit preservation. listParts 
 
 ```json
 {
-  "$schema": "https://json-schema.org/draft/2020-12/schema",
   "type": "object",
   "properties": {
     "image": {
@@ -1200,192 +954,12 @@ List part paths and inspect joints, clearances and edit preservation. listParts 
       "additionalProperties": false
     },
     "shot": {
-      "description": "Exact shot; omit part/view/orbit controls.",
+      "description": "One exact camera shot. Shape: kiln_discover ids [\"shape:camera-shot\"].",
       "type": "object",
-      "properties": {
-        "name": {
-          "type": "string"
-        },
-        "subject": {
-          "type": "object",
-          "properties": {
-            "path": {
-              "type": "string"
-            },
-            "name": {
-              "type": "string"
-            }
-          },
-          "additionalProperties": false
-        },
-        "visibility": {
-          "type": "string",
-          "enum": [
-            "context",
-            "isolate"
-          ]
-        },
-        "hide": {
-          "maxItems": 64,
-          "type": "array",
-          "items": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 1024
-          }
-        },
-        "camera": {
-          "oneOf": [
-            {
-              "type": "object",
-              "properties": {
-                "type": {
-                  "type": "string",
-                  "const": "orbit"
-                },
-                "azimuthDeg": {
-                  "type": "number"
-                },
-                "elevationDeg": {
-                  "type": "number"
-                },
-                "relativeTo": {
-                  "type": "string",
-                  "enum": [
-                    "world",
-                    "asset",
-                    "part"
-                  ]
-                },
-                "padding": {
-                  "type": "number",
-                  "exclusiveMinimum": 0,
-                  "maximum": 100
-                }
-              },
-              "required": [
-                "type"
-              ],
-              "additionalProperties": false
-            },
-            {
-              "type": "object",
-              "properties": {
-                "type": {
-                  "type": "string",
-                  "const": "explicit"
-                },
-                "projection": {
-                  "type": "string",
-                  "enum": [
-                    "orthographic",
-                    "perspective"
-                  ]
-                },
-                "position": {
-                  "minItems": 3,
-                  "maxItems": 3,
-                  "type": "array",
-                  "items": {
-                    "type": "number"
-                  }
-                },
-                "target": {
-                  "minItems": 3,
-                  "maxItems": 3,
-                  "type": "array",
-                  "items": {
-                    "type": "number"
-                  }
-                },
-                "relativeTo": {
-                  "type": "string",
-                  "enum": [
-                    "world",
-                    "asset",
-                    "part",
-                    "local"
-                  ]
-                },
-                "frame": {
-                  "type": "object",
-                  "properties": {
-                    "origin": {
-                      "minItems": 3,
-                      "maxItems": 3,
-                      "type": "array",
-                      "items": {
-                        "type": "number"
-                      }
-                    },
-                    "rotation": {
-                      "minItems": 3,
-                      "maxItems": 3,
-                      "type": "array",
-                      "items": {
-                        "type": "number"
-                      }
-                    }
-                  },
-                  "additionalProperties": false
-                },
-                "framing": {
-                  "type": "string",
-                  "enum": [
-                    "explicit",
-                    "bounds"
-                  ]
-                },
-                "padding": {
-                  "type": "number",
-                  "exclusiveMinimum": 0,
-                  "maximum": 100
-                },
-                "targetOffset": {
-                  "minItems": 3,
-                  "maxItems": 3,
-                  "type": "array",
-                  "items": {
-                    "type": "number"
-                  }
-                },
-                "up": {
-                  "minItems": 3,
-                  "maxItems": 3,
-                  "type": "array",
-                  "items": {
-                    "type": "number"
-                  }
-                },
-                "halfHeight": {
-                  "type": "number",
-                  "exclusiveMinimum": 0
-                },
-                "fovDeg": {
-                  "type": "number",
-                  "exclusiveMinimum": 0,
-                  "exclusiveMaximum": 180
-                },
-                "near": {
-                  "type": "number",
-                  "exclusiveMinimum": 0
-                },
-                "far": {
-                  "type": "number",
-                  "exclusiveMinimum": 0
-                }
-              },
-              "required": [
-                "type",
-                "projection",
-                "position"
-              ],
-              "additionalProperties": false
-            }
-          ]
-        }
+      "propertyNames": {
+        "type": "string"
       },
-      "additionalProperties": false
+      "additionalProperties": {}
     },
     "code": {
       "description": "New source.",
@@ -1419,9 +993,64 @@ List part paths and inspect joints, clearances and edit preservation. listParts 
       "type": "string",
       "pattern": "^(?:sha256:[a-f0-9]{64}|p_[a-f0-9]{12}(?:[a-f0-9]{4}){0,13})(?![\\s\\S])",
       "description": "Returned p_ handle or full sha256 ref."
+    },
+    "file": {
+      "description": "A program file inside the workspace, relative to its root.",
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1024
+    },
+    "projectId": {
+      "description": "Project; omit for the configured default, null for standalone.",
+      "anyOf": [
+        {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_-]{0,79}$"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "projectRevision": {
+      "description": "Exact project revision.",
+      "type": "string",
+      "pattern": "^r_[0-9]{10}_[a-f0-9]{64}$"
+    },
+    "materialDependencies": {
+      "description": "Exact material pins for this call; project locks cannot be replaced.",
+      "maxItems": 512,
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "resourceId": {
+            "type": "string",
+            "pattern": "^[a-zA-Z0-9][a-zA-Z0-9_.:/-]{0,199}$"
+          },
+          "revisionId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "sha256": {
+            "type": "string",
+            "pattern": "^sha256:[a-f0-9]{64}$"
+          },
+          "role": {
+            "type": "string",
+            "maxLength": 100
+          }
+        },
+        "required": [
+          "resourceId",
+          "revisionId",
+          "sha256"
+        ],
+        "additionalProperties": false
+      }
     }
-  },
-  "additionalProperties": false
+  }
 }
 ```
 
@@ -1429,7 +1058,7 @@ List part paths and inspect joints, clearances and edit preservation. listParts 
 
 ## kiln_edit
 
-Atomically apply ordered exact-string replacements and render. Copy anchors from kiln_source. Supply code OR programRef. Returns programRef (kept in the program store across sessions and processes, never evicted), parentRef, diff and preservation comparing static data and animation channels. Review changes; use kiln_inspect compare for more pages or protected subtrees. Failed comparison preserves the repair; render:false leaves preservation not_assessed. capture selects cameras; includeCode returns full source.
+Atomically apply ordered exact-string replacements and render. Copy anchors from kiln_source. Supply code, programRef OR file. Returns programRef (kept in the program store across sessions and processes, never evicted), parentRef, diff and preservation comparing static data and animation channels. Review changes; use kiln_inspect compare for more pages or protected subtrees. Failed comparison preserves the repair; render:false leaves preservation not_assessed. capture selects cameras; includeCode returns full source.
 
 <details>
 <summary>Input JSON Schema</summary>
@@ -1437,7 +1066,6 @@ Atomically apply ordered exact-string replacements and render. Copy anchors from
 
 ```json
 {
-  "$schema": "https://json-schema.org/draft/2020-12/schema",
   "type": "object",
   "properties": {
     "code": {
@@ -1467,8 +1095,7 @@ Atomically apply ordered exact-string replacements and render. Copy anchors from
         "required": [
           "oldString",
           "newString"
-        ],
-        "additionalProperties": false
+        ]
       },
       "description": "Edits applied in order against the program. If any one fails to match, none are applied and the reply says which. Batch related changes into a single call."
     },
@@ -1477,317 +1104,82 @@ Atomically apply ordered exact-string replacements and render. Copy anchors from
       "type": "boolean"
     },
     "capture": {
-      "description": "Omit for six views; preset/cells for orbit sheets. Use kiln.capture.v1 or v2 with 1..9 shots for exact cameras. v2 adds hide: exact paths or unique names. Framing retains subject bounds.",
-      "anyOf": [
-        {
-          "type": "object",
-          "properties": {
-            "version": {
-              "type": "string",
-              "enum": [
-                "kiln.capture.v1",
-                "kiln.capture.v2"
-              ]
-            },
-            "shots": {
-              "minItems": 1,
-              "maxItems": 9,
-              "type": "array",
-              "items": {
-                "type": "object",
-                "properties": {
-                  "name": {
-                    "type": "string"
-                  },
-                  "subject": {
-                    "type": "object",
-                    "properties": {
-                      "path": {
-                        "type": "string"
-                      },
-                      "name": {
-                        "type": "string"
-                      }
-                    },
-                    "additionalProperties": false
-                  },
-                  "visibility": {
-                    "type": "string",
-                    "enum": [
-                      "context",
-                      "isolate"
-                    ]
-                  },
-                  "hide": {
-                    "maxItems": 64,
-                    "type": "array",
-                    "items": {
-                      "type": "string",
-                      "minLength": 1,
-                      "maxLength": 1024
-                    }
-                  },
-                  "camera": {
-                    "oneOf": [
-                      {
-                        "type": "object",
-                        "properties": {
-                          "type": {
-                            "type": "string",
-                            "const": "orbit"
-                          },
-                          "azimuthDeg": {
-                            "type": "number"
-                          },
-                          "elevationDeg": {
-                            "type": "number"
-                          },
-                          "relativeTo": {
-                            "type": "string",
-                            "enum": [
-                              "world",
-                              "asset",
-                              "part"
-                            ]
-                          },
-                          "padding": {
-                            "type": "number",
-                            "exclusiveMinimum": 0,
-                            "maximum": 100
-                          }
-                        },
-                        "required": [
-                          "type"
-                        ],
-                        "additionalProperties": false
-                      },
-                      {
-                        "type": "object",
-                        "properties": {
-                          "type": {
-                            "type": "string",
-                            "const": "explicit"
-                          },
-                          "projection": {
-                            "type": "string",
-                            "enum": [
-                              "orthographic",
-                              "perspective"
-                            ]
-                          },
-                          "position": {
-                            "minItems": 3,
-                            "maxItems": 3,
-                            "type": "array",
-                            "items": {
-                              "type": "number"
-                            }
-                          },
-                          "target": {
-                            "minItems": 3,
-                            "maxItems": 3,
-                            "type": "array",
-                            "items": {
-                              "type": "number"
-                            }
-                          },
-                          "relativeTo": {
-                            "type": "string",
-                            "enum": [
-                              "world",
-                              "asset",
-                              "part",
-                              "local"
-                            ]
-                          },
-                          "frame": {
-                            "type": "object",
-                            "properties": {
-                              "origin": {
-                                "minItems": 3,
-                                "maxItems": 3,
-                                "type": "array",
-                                "items": {
-                                  "type": "number"
-                                }
-                              },
-                              "rotation": {
-                                "minItems": 3,
-                                "maxItems": 3,
-                                "type": "array",
-                                "items": {
-                                  "type": "number"
-                                }
-                              }
-                            },
-                            "additionalProperties": false
-                          },
-                          "framing": {
-                            "type": "string",
-                            "enum": [
-                              "explicit",
-                              "bounds"
-                            ]
-                          },
-                          "padding": {
-                            "type": "number",
-                            "exclusiveMinimum": 0,
-                            "maximum": 100
-                          },
-                          "targetOffset": {
-                            "minItems": 3,
-                            "maxItems": 3,
-                            "type": "array",
-                            "items": {
-                              "type": "number"
-                            }
-                          },
-                          "up": {
-                            "minItems": 3,
-                            "maxItems": 3,
-                            "type": "array",
-                            "items": {
-                              "type": "number"
-                            }
-                          },
-                          "halfHeight": {
-                            "type": "number",
-                            "exclusiveMinimum": 0
-                          },
-                          "fovDeg": {
-                            "type": "number",
-                            "exclusiveMinimum": 0,
-                            "exclusiveMaximum": 180
-                          },
-                          "near": {
-                            "type": "number",
-                            "exclusiveMinimum": 0
-                          },
-                          "far": {
-                            "type": "number",
-                            "exclusiveMinimum": 0
-                          }
-                        },
-                        "required": [
-                          "type",
-                          "projection",
-                          "position"
-                        ],
-                        "additionalProperties": false
-                      }
-                    ]
-                  }
-                },
-                "additionalProperties": false
-              }
-            },
-            "cols": {
-              "type": "integer",
-              "minimum": 1,
-              "maximum": 3
-            },
-            "size": {
-              "type": "integer",
-              "minimum": 128,
-              "maximum": 2048
-            },
-            "output": {
-              "type": "string",
-              "enum": [
-                "grid",
-                "separate"
-              ]
-            },
-            "backdrop": {
-              "description": "neutral (default); light for dark parts, dark for light parts.",
-              "type": "string",
-              "enum": [
-                "neutral",
-                "dark",
-                "light"
-              ]
-            }
-          },
-          "required": [
-            "version",
-            "shots"
-          ],
-          "additionalProperties": false
-        },
-        {
-          "type": "object",
-          "properties": {
-            "preset": {
-              "description": "COLSxROWS; default 3x2. Fewer views for simple shapes, up to 3x3.",
-              "type": "string",
-              "enum": [
-                "1x1",
-                "1x2",
-                "2x1",
-                "3x1",
-                "2x2",
-                "3x2",
-                "3x3"
-              ]
-            },
-            "cells": {
-              "description": "Row-major cameras; omit for preset defaults. Count cannot exceed preset capacity (max 9).",
-              "type": "array",
-              "items": {
-                "type": "object",
-                "properties": {
-                  "azimuthDeg": {
-                    "type": "number",
-                    "description": "0 = front, 90 = right, 180 = back, 270 = left. Wraps."
-                  },
-                  "elevationDeg": {
-                    "type": "number",
-                    "description": "0 eye level; positive above, negative below. Clamped -89..89."
-                  },
-                  "zoom": {
-                    "description": "Bounds padding: below 1 crops, above 1 pulls back; omit for auto-framing.",
-                    "type": "number"
-                  },
-                  "name": {
-                    "description": "Label; defaults to angles.",
-                    "type": "string"
-                  }
-                },
-                "required": [
-                  "azimuthDeg",
-                  "elevationDeg"
-                ],
-                "additionalProperties": false
-              }
-            },
-            "backdrop": {
-              "description": "neutral (default); light for dark parts, dark for light parts.",
-              "type": "string",
-              "enum": [
-                "neutral",
-                "dark",
-                "light"
-              ]
-            }
-          },
-          "additionalProperties": false
-        }
-      ]
+      "description": "Cameras, as kiln_render capture takes them. Shape: kiln_discover ids [\"shape:capture\"].",
+      "type": "object",
+      "propertyNames": {
+        "type": "string"
+      },
+      "additionalProperties": {}
     },
     "programRef": {
       "type": "string",
       "pattern": "^(?:sha256:[a-f0-9]{64}|p_[a-f0-9]{12}(?:[a-f0-9]{4}){0,13})(?![\\s\\S])",
       "description": "Returned p_ handle or full sha256 ref."
     },
+    "file": {
+      "description": "A program file inside the workspace, relative to its root.",
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1024
+    },
     "includeCode": {
       "description": "Return the full updated source. Defaults to false with programRef, true with code.",
       "type": "boolean"
+    },
+    "projectId": {
+      "description": "Project; omit for the configured default, null for standalone.",
+      "anyOf": [
+        {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_-]{0,79}$"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "projectRevision": {
+      "description": "Exact project revision.",
+      "type": "string",
+      "pattern": "^r_[0-9]{10}_[a-f0-9]{64}$"
+    },
+    "materialDependencies": {
+      "description": "Exact material pins for this call; project locks cannot be replaced.",
+      "maxItems": 512,
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "resourceId": {
+            "type": "string",
+            "pattern": "^[a-zA-Z0-9][a-zA-Z0-9_.:/-]{0,199}$"
+          },
+          "revisionId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "sha256": {
+            "type": "string",
+            "pattern": "^sha256:[a-f0-9]{64}$"
+          },
+          "role": {
+            "type": "string",
+            "maxLength": 100
+          }
+        },
+        "required": [
+          "resourceId",
+          "revisionId",
+          "sha256"
+        ],
+        "additionalProperties": false
+      }
     }
   },
   "required": [
     "edits"
-  ],
-  "additionalProperties": false
+  ]
 }
 ```
 
@@ -1803,7 +1195,6 @@ Read a saved program revision without changing it. Returns exact source text in 
 
 ```json
 {
-  "$schema": "https://json-schema.org/draft/2020-12/schema",
   "type": "object",
   "properties": {
     "programRef": {
@@ -1833,9 +1224,293 @@ Read a saved program revision without changing it. Returns exact source text in 
     }
   },
   "required": [
-    "programRef",
-    "offset",
-    "limit"
+    "programRef"
+  ]
+}
+```
+
+</details>
+
+## kiln_project
+
+Manage optional shared workspace projects: list discovers IDs; get reads the current or an exact historical configuration; create adds a project; update needs the exact expectedRevision and replaces each supplied top-level field. Assets and materials are authored, saved and exported without a project, and creating one never binds unrelated authoring. Design preferences, inventory, references, delivery profiles and pinned material dependencies are versioned; review annotations do not change trusted QA or authorize a release. CLI and the local dashboard use the same records. export returns an MCP resource URI for an exact editable project ZIP with normalized material maps and recipes, or a runtime GLB/metadata ZIP; only inventory entries linked to saved revisions contribute assets, and referenced concept images and acquisition archives are not embedded.
+
+<details>
+<summary>Input JSON Schema</summary>
+
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "action": {
+      "type": "string",
+      "enum": [
+        "list",
+        "get",
+        "create",
+        "update",
+        "export"
+      ]
+    },
+    "projectId": {
+      "description": "get, update, export.",
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_-]{0,79}$"
+    },
+    "revisionId": {
+      "description": "get, export: an exact revision; omit for the current one.",
+      "type": "string",
+      "pattern": "^r_[0-9]{10}_[a-f0-9]{64}$"
+    },
+    "expectedRevision": {
+      "description": "update: the revision being replaced; a stale value is a conflict.",
+      "type": "string",
+      "pattern": "^r_[0-9]{10}_[a-f0-9]{64}$"
+    },
+    "draft": {
+      "description": "create: name, brief, design, inventory, deliveryProfiles, materialDependencies, references, reviews; optional projectId. Shape: kiln_discover({ ids: ['shape:project-draft'] }).",
+      "type": "object",
+      "propertyNames": {
+        "type": "string"
+      },
+      "additionalProperties": {}
+    },
+    "patch": {
+      "description": "update: the same top-level fields as draft; each supplied field replaces its previous value whole. Shape: kiln_discover({ ids: ['shape:project-patch'] }).",
+      "type": "object",
+      "propertyNames": {
+        "type": "string"
+      },
+      "additionalProperties": {}
+    },
+    "profile": {
+      "description": "export: editable (default) keeps source and resources; runtime is GLB plus metadata.",
+      "type": "string",
+      "enum": [
+        "editable",
+        "runtime"
+      ]
+    }
+  },
+  "required": [
+    "action"
+  ],
+  "additionalProperties": false
+}
+```
+
+</details>
+
+## kiln_material
+
+Manage optional immutable material resources in this workspace. presets discovers shipped architecture, wood, metal, fabric and ground recipes; create-preset bakes one with an explicit seed, creator and license; list returns compact material/revision summaries; get returns full provenance, hashes, map conventions, physical repeat scale and a code-ready portable material spec; create-procedural bakes bounded editable layer recipes including optional height-derived normals; import accepts complete normalized records with embedded PNG bytes. No action downloads URLs or executes source. Pin the returned materialId/revisionId through per-invocation materialDependencies or project dependencies before authored evaluation resolves the resources; no project is required.
+
+<details>
+<summary>Input JSON Schema</summary>
+
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "action": {
+      "type": "string",
+      "enum": [
+        "presets",
+        "create-preset",
+        "list",
+        "get",
+        "create-procedural",
+        "import"
+      ]
+    },
+    "tag": {
+      "description": "presets, list: keep one tag.",
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 80
+    },
+    "presetId": {
+      "description": "create-preset: an id from presets.",
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 80
+    },
+    "seed": {
+      "description": "create-preset.",
+      "type": "integer",
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "size": {
+      "description": "create-preset: map edge in pixels; default 256.",
+      "anyOf": [
+        {
+          "type": "number",
+          "const": 64
+        },
+        {
+          "type": "number",
+          "const": 128
+        },
+        {
+          "type": "number",
+          "const": 256
+        },
+        {
+          "type": "number",
+          "const": 512
+        }
+      ]
+    },
+    "creator": {
+      "description": "create-preset.",
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1000
+    },
+    "license": {
+      "description": "create-preset: spdx, url and attribution.",
+      "type": "object",
+      "properties": {
+        "spdx": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1000
+        },
+        "url": {
+          "type": "string",
+          "maxLength": 2000,
+          "format": "uri"
+        },
+        "attribution": {
+          "type": "string",
+          "maxLength": 4000
+        }
+      },
+      "required": [
+        "spdx",
+        "url",
+        "attribution"
+      ],
+      "additionalProperties": false
+    },
+    "materialId": {
+      "description": "get; create-preset: optional id.",
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_-]{0,79}$"
+    },
+    "revisionId": {
+      "description": "get: the immutable revision.",
+      "type": "string",
+      "pattern": "^sha256:[a-f0-9]{64}$"
+    },
+    "draft": {
+      "description": "create-procedural: materialId, name, tileable, sources, maps with layered procedural specs; optional tags, physicalSizeMeters, parameters. Shape: kiln_discover({ ids: ['shape:material-draft'] }).",
+      "type": "object",
+      "propertyNames": {
+        "type": "string"
+      },
+      "additionalProperties": {}
+    },
+    "payload": {
+      "description": "import: schemaVersion 1 and complete normalized records with embedded PNG bytes. Shape: kiln_discover({ ids: ['shape:material-import'] }).",
+      "type": "object",
+      "propertyNames": {
+        "type": "string"
+      },
+      "additionalProperties": {}
+    }
+  },
+  "required": [
+    "action"
+  ],
+  "additionalProperties": false
+}
+```
+
+</details>
+
+## kiln_review
+
+Read persisted Kiln observation history, pin an operation against normal retention, or save an exact completed reviewed operation into a collection without re-execution. Pinning does not pause an agent. save requires the displayed expectedRevision and matching trusted host requirements, preserves exact source/GLB/capture, and does not assert QA acceptance. Missing or evicted evidence is an error.
+
+<details>
+<summary>Input JSON Schema</summary>
+
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "action": {
+      "type": "string",
+      "enum": [
+        "list",
+        "get",
+        "pin",
+        "save"
+      ]
+    },
+    "projectId": {
+      "description": "list: only operations bound to this project.",
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_-]{0,79}$"
+    },
+    "operationId": {
+      "description": "get, pin, save.",
+      "type": "string",
+      "pattern": "^op_[a-f0-9-]{36}$"
+    },
+    "pinned": {
+      "description": "pin: true keeps the operation past normal retention.",
+      "type": "boolean"
+    },
+    "expectedRevision": {
+      "description": "save: the revision the listing displayed.",
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "collection": {
+      "description": "save: destination collection; default project.",
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_-]{0,79}$"
+    },
+    "name": {
+      "description": "save.",
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200
+    },
+    "assetId": {
+      "description": "save: revise this asset.",
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_-]{0,79}$"
+    },
+    "parentRevision": {
+      "description": "save: the revision being revised.",
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_-]{0,79}$"
+    },
+    "description": {
+      "description": "save.",
+      "type": "string",
+      "maxLength": 4000
+    },
+    "tags": {
+      "description": "save.",
+      "maxItems": 30,
+      "type": "array",
+      "items": {
+        "type": "string",
+        "maxLength": 80
+      }
+    }
+  },
+  "required": [
+    "action"
   ],
   "additionalProperties": false
 }
@@ -1853,7 +1528,6 @@ Save a completed source revision into the user-requested collection, or project 
 
 ```json
 {
-  "$schema": "https://json-schema.org/draft/2020-12/schema",
   "type": "object",
   "properties": {
     "collection": {
@@ -1909,8 +1583,7 @@ Save a completed source revision into the user-requested collection, or project 
           "type": "string",
           "maxLength": 200
         }
-      },
-      "additionalProperties": false
+      }
     },
     "backdrop": {
       "description": "Preview backdrop: the one the reviewed sheet used.",
@@ -1920,14 +1593,62 @@ Save a completed source revision into the user-requested collection, or project 
         "dark",
         "light"
       ]
+    },
+    "projectId": {
+      "description": "Project; omit for the configured default, null for standalone.",
+      "anyOf": [
+        {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_-]{0,79}$"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "projectRevision": {
+      "description": "Exact project revision.",
+      "type": "string",
+      "pattern": "^r_[0-9]{10}_[a-f0-9]{64}$"
+    },
+    "materialDependencies": {
+      "description": "Exact material pins for this call; project locks cannot be replaced.",
+      "maxItems": 512,
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "resourceId": {
+            "type": "string",
+            "pattern": "^[a-zA-Z0-9][a-zA-Z0-9_.:/-]{0,199}$"
+          },
+          "revisionId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "sha256": {
+            "type": "string",
+            "pattern": "^sha256:[a-f0-9]{64}$"
+          },
+          "role": {
+            "type": "string",
+            "maxLength": 100
+          }
+        },
+        "required": [
+          "resourceId",
+          "revisionId",
+          "sha256"
+        ],
+        "additionalProperties": false
+      }
     }
   },
   "required": [
-    "collection",
     "programRef",
     "name"
-  ],
-  "additionalProperties": false
+  ]
 }
 ```
 
@@ -1935,7 +1656,7 @@ Save a completed source revision into the user-requested collection, or project 
 
 ## kiln_assets
 
-collections discovers storage; catalog searches all configured collections; list searches one. Both searches paginate. get returns a build record/downloads; restore loads exact source for kiln_source/kiln_edit. Collection is not project membership. Binary-only assets cannot restore source.
+Browse saved assets: collections discovers storage; catalog searches all configured collections; list searches one. Both searches paginate. get returns a build record/downloads; restore loads exact source for kiln_source/kiln_edit. Collection is not project membership. Binary-only assets cannot restore source.
 
 <details>
 <summary>Input JSON Schema</summary>
@@ -1943,7 +1664,6 @@ collections discovers storage; catalog searches all configured collections; list
 
 ```json
 {
-  "$schema": "https://json-schema.org/draft/2020-12/schema",
   "type": "object",
   "properties": {
     "action": {
@@ -1987,14 +1707,7 @@ collections discovers storage; catalog searches all configured collections; list
       "minimum": 1,
       "maximum": 50
     }
-  },
-  "required": [
-    "action",
-    "collection",
-    "offset",
-    "limit"
-  ],
-  "additionalProperties": false
+  }
 }
 ```
 
@@ -2010,7 +1723,6 @@ Present one exact saved revision. Supporting MCP App clients show an interactive
 
 ```json
 {
-  "$schema": "https://json-schema.org/draft/2020-12/schema",
   "type": "object",
   "properties": {
     "collection": {
@@ -2029,11 +1741,9 @@ Present one exact saved revision. Supporting MCP App clients show an interactive
     }
   },
   "required": [
-    "collection",
     "assetId",
     "revisionId"
-  ],
-  "additionalProperties": false
+  ]
 }
 ```
 
@@ -2049,7 +1759,6 @@ Export one saved revision. Default editable returns exact GLB, source, preview, 
 
 ```json
 {
-  "$schema": "https://json-schema.org/draft/2020-12/schema",
   "type": "object",
   "properties": {
     "collection": {
@@ -2077,12 +1786,9 @@ Export one saved revision. Default editable returns exact GLB, source, preview, 
     }
   },
   "required": [
-    "collection",
     "assetId",
-    "revisionId",
-    "profile"
-  ],
-  "additionalProperties": false
+    "revisionId"
+  ]
 }
 ```
 
@@ -2098,7 +1804,6 @@ Copy a pinned asset revision between configured collections, preserving identity
 
 ```json
 {
-  "$schema": "https://json-schema.org/draft/2020-12/schema",
   "type": "object",
   "properties": {
     "collection": {
@@ -2123,12 +1828,9 @@ Copy a pinned asset revision between configured collections, preserving identity
     }
   },
   "required": [
-    "collection",
     "assetId",
-    "revisionId",
-    "sourceCollection"
-  ],
-  "additionalProperties": false
+    "revisionId"
+  ]
 }
 ```
 

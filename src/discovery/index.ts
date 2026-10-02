@@ -20,6 +20,7 @@ export function createDiscovery(
     host: 'No host capability provider was supplied.',
     discovery: { mode: 'lexical', offline: true, requiresModel: false },
   }),
+  notes: () => Promise<string[]> = async () => [],
 ) {
   snapshot ??= (() => {
     const entries = listDiscoveryEntries();
@@ -30,5 +31,6 @@ export function createDiscovery(
     snapshot.index,
     capabilities,
     REMOVED_AUTHORING_HELPERS,
+    notes,
   );
 }

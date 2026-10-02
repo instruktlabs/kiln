@@ -13,6 +13,7 @@ import {
 import { assertSavedRequirementsAuthorized } from '../requirements-assets';
 import { programReference } from '../program-store';
 import { BACKDROP_IDS } from '../views/background';
+import { requireActionFields } from './actions';
 import type { KilnToolDef } from './registry';
 import { persistedPreviewFidelity } from './preview-fidelity';
 
@@ -24,22 +25,33 @@ export interface ReviewStore {
 }
 const operationId = z.string().regex(/^op_[a-f0-9-]{36}$/);
 const assetId = z.string().regex(/^[a-z][a-z0-9_-]{0,79}$/);
-export const reviewToolInput = z.discriminatedUnion('action', [
-  z.strictObject({ action: z.literal('list'), projectId: assetId.optional() }),
-  z.strictObject({ action: z.literal('get'), operationId }),
-  z.strictObject({ action: z.literal('pin'), operationId, pinned: z.boolean() }),
-  z.strictObject({
-    action: z.literal('save'),
-    operationId,
-    expectedRevision: z.number().int().nonnegative(),
-    collection: assetId.default('project'),
-    name: z.string().min(1).max(200),
-    assetId: assetId.optional(),
-    parentRevision: assetId.optional(),
-    description: z.string().max(4000).optional(),
-    tags: z.array(z.string().max(80)).max(30).optional(),
-  }),
-]);
+const REVIEW_ACTIONS = ['list', 'get', 'pin', 'save'] as const;
+type ReviewAction = (typeof REVIEW_ACTIONS)[number];
+const REQUIREMENTS: Record<ReviewAction, Parameters<typeof requireActionFields>[3]> = {
+  list: { required: [] },
+  get: { required: ['operationId'] },
+  pin: { required: ['operationId', 'pinned'] },
+  save: { required: ['operationId', 'expectedRevision', 'name'] },
+};
+/** One flat object; each field names the actions it serves. */
+export const reviewToolInput = z.strictObject({
+  action: z.enum(REVIEW_ACTIONS),
+  projectId: assetId.optional().describe('list: only operations bound to this project.'),
+  operationId: operationId.optional().describe('get, pin, save.'),
+  pinned: z.boolean().optional().describe('pin: true keeps the operation past normal retention.'),
+  expectedRevision: z
+    .number()
+    .int()
+    .nonnegative()
+    .optional()
+    .describe('save: the revision the listing displayed.'),
+  collection: assetId.optional().describe('save: destination collection; default project.'),
+  name: z.string().min(1).max(200).optional().describe('save.'),
+  assetId: assetId.optional().describe('save: revise this asset.'),
+  parentRevision: assetId.optional().describe('save: the revision being revised.'),
+  description: z.string().max(4000).optional().describe('save.'),
+  tags: z.array(z.string().max(80)).max(30).optional().describe('save.'),
+});
 export function createKilnReviewDef(context: {
   reviewStore: ReviewStore;
   assetLibrary?: AssetLibrary;
@@ -59,14 +71,16 @@ export function createKilnReviewDef(context: {
     },
     async run(raw) {
       const input = reviewToolInput.parse(raw);
+      requireActionFields('kiln_review', input.action, input, REQUIREMENTS[input.action]);
       if (input.action === 'list')
         return { ok: true, ...(await store.snapshot({ projectId: input.projectId })) };
       if (input.action === 'pin') {
-        await store.pin(input.operationId, input.pinned);
-        return { ok: true, operation: await store.get(input.operationId) };
+        await store.pin(input.operationId!, input.pinned!);
+        return { ok: true, operation: await store.get(input.operationId!) };
       }
-      const operation = await store.get(input.operationId);
+      const operation = await store.get(input.operationId!);
       if (input.action === 'get') return { ok: true, operation };
+      const collection = input.collection ?? 'project';
       if (!context.assetLibrary) throw new Error('No asset library configured for reviewed save');
       if (operation.revision !== input.expectedRevision)
         throw new Error('Review revision changed; refresh before saving');
@@ -91,7 +105,7 @@ export function createKilnReviewDef(context: {
         throw new Error('Reviewed requirements do not match the current trusted host binding');
       if (input.assetId && input.parentRevision)
         assertSavedRequirementsAuthorized(
-          (await context.assetLibrary.read(input.collection, input.assetId, input.parentRevision))
+          (await context.assetLibrary.read(collection, input.assetId, input.parentRevision))
             .manifest,
           active,
         );
@@ -116,8 +130,8 @@ export function createKilnReviewDef(context: {
       const capture = z
         .object({ backdrop: z.enum(BACKDROP_IDS).optional() })
         .safeParse(operation.result?.capture);
-      const asset = await context.assetLibrary.save(input.collection, {
-        name: input.name,
+      const asset = await context.assetLibrary.save(collection, {
+        name: input.name!,
         assetId: input.assetId,
         parentRevision: input.parentRevision,
         description: input.description,
@@ -152,7 +166,7 @@ export function createKilnReviewDef(context: {
             : 'engine-required',
         },
       });
-      return { ok: true, collection: input.collection, asset };
+      return { ok: true, collection, asset };
     },
   };
 }
