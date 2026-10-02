@@ -18,6 +18,8 @@ import {
   PACKAGE_TARBALL,
   WORKSPACE_COMMAND,
   PACKS_ENABLED,
+  RELEASE_TAG,
+  RELEASE_URL,
   REPO,
   VERSION,
   VERSION_SHORT,
@@ -492,17 +494,17 @@ const CARD_SIZES = "(max-width: 767px) 100vw, 33vw";
   <section class="container" aria-labelledby="start-heading">
     <div class="grid gap-8 border-t border-ink pt-8 lg:grid-cols-12 lg:gap-12">
       <div class="lg:col-span-4">
-        <h2 id="start-heading" class="text-subheading">Try Kiln 0.9 locally.</h2>
+        <h2 id="start-heading" class="text-subheading">Try Kiln {VERSION_SHORT} locally.</h2>
         <p class="mt-5 max-w-reading">
           Use Node.js 20.15+ on the 20.x line, or 22.2 and later. Kiln is not
-          published to the npm registry. Build the package tarball locally
-          from the reviewed source, then install <code>{PACKAGE_TARBALL}</code>
-          from that build. The installation guide includes the build commands.
+          published to the npm registry: download <code>{PACKAGE_TARBALL}</code>{" "}
+          and <code>SHA256SUMS.txt</code> from the{" "}
+          <a href={RELEASE_URL} class="text-link">{RELEASE_TAG} release</a>, check
+          the tarball against the checksum file, then install it with npm.
         </p>
         <p class="mt-4 max-w-reading text-dim">
-          The v{VERSION} preview is available for dogfooding. Package publication
-          is planned for v1.0 after deployed dogfooding and feedback. Give npm
-          your locally built tarball’s real path.
+          The {VERSION} release is for dogfooding. Package publication is planned
+          for v1.0 after feedback. Give npm the downloaded tarball’s real path.
         </p>
         <a href="/docs/install/" class="text-link mt-3">
           Read the installation guide <span aria-hidden="true">→</span>

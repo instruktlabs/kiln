@@ -11,6 +11,7 @@ import {
   PACKAGE_TARBALL,
   WORKSPACE_COMMAND,
   RELEASE_TAG,
+  RELEASE_URL,
   VERSION,
   VERSION_SHORT,
 } from "../../lib/config";
@@ -42,15 +43,17 @@ const { Content, headings } = await render(entry);
     <DocsMobileNav slot="navigation" current={entry.id} headings={headings} />
   </PageHeader>
   {entry.id === "install" && (
-    <Callout label={`${VERSION_SHORT} candidate status`} boundary>
+    <Callout label={`${VERSION_SHORT} release status`} boundary>
       <h2 class="text-xl font-semibold">
-        Install the local {VERSION_SHORT} package
+        Install the {VERSION_SHORT} package
       </h2>
       <p>
-        The <code>{RELEASE_TAG}</code> candidate is under local review. Build
-        <code>{PACKAGE_TARBALL}</code> from the reviewed source as described below,
-        then install that local tarball. Kiln
-        is not published to the npm registry; publication is planned for v1.0 after deployed dogfooding.
+        <code>{PACKAGE_TARBALL}</code> is attached to the{" "}
+        <a href={RELEASE_URL} class="text-link">{RELEASE_TAG} release</a> with{" "}
+        <code>SHA256SUMS.txt</code> and the installed-package receipts. Download the
+        tarball and the checksum file, check the tarball against it, then install it
+        from its real path. Kiln is not published to the npm registry; publication is
+        planned for v1.0 after feedback.
       </p>
       <CodeBlock
         code={`mkdir kiln-install\ncd kiln-install\nnpm init -y\n${INSTALL_COMMAND}`}

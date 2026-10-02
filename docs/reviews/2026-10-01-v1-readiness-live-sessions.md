@@ -519,3 +519,18 @@ mirroring this PC's paths under user `Mattm`, and the real battle scene left to 
 composed `battle-scene` being a reference only (38). What landed under them is recorded in the
 plan's log and in `packs/troy/HANDOFF.md`; the private repository's `README.md` says what it
 holds and what stays out.
+
+Decision 39 (13:12): `main` requires linear history, so GitHub refused the merge commit of
+decision 35, and the owner chose the squash merge the repository has always used. PR #129 is
+`9375d04` on `main`, after two checks were fixed on the branch: the Website workflow's
+`social-cards.test.ts`, which wrote "0.9" into its expectation (`7c13a96`), and the Agy bootstrap
+assertion that compared an 8.3 temp path (`RUNNER~1`) by string on the Windows runner
+(`a959f1c`); the hashes cited above remain on the PR. After `main`'s CI passed, the owner asked
+for the release, packed but not published to npm: `v0.10.0` is the annotated tag on `9375d04`,
+and the GitHub release attaches the engine CI's `kiln-engine-0.10.0.tgz` (sha256 `e1ce85d7…`,
+identical to a local `npm pack --ignore-scripts` of the same tree), six installed-package
+receipts (Linux with Node 20.15.0, 22.2.0 and 24.20.0; macOS arm64 and x64; Windows) and
+`SHA256SUMS.txt`, verified by public read-back. The install guide, the README and the site's
+install copy point at that download; the site deployment is a separate step. The laptop turned
+out to be Linux (decision 38 assumed Windows paths): the engine checkout there is `~/X/kiln` and
+the private repository `~/X/kiln-dogfood/v1-readiness-2026-10`.

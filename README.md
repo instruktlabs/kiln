@@ -66,18 +66,20 @@ builds on 0.9.0's optional projects, material library, Live Review and calibrate
 each breaking one marked, and the [migration notes](docs/migration.md#changes-in-0100)
 list what an existing author will notice.
 
-**0.10.0 is the source and site preview for dogfooding.** Package publication is
-deferred to v1.0 after feedback. Build a local tarball from this checkout to try
-the current engine; the site deployment does not publish a package to npm.
+**0.10.0 is the source and site release for dogfooding.** Its package tarball,
+`kiln-engine-0.10.0.tgz`, is attached to the
+[v0.10.0 release](https://github.com/matthew-kissinger/kiln/releases/tag/v0.10.0) with
+`SHA256SUMS.txt` and the installed-package receipts; registry publication is deferred
+to v1.0 after feedback, and the site deployment publishes no package.
 
 ## Install and start an asset workspace
 
 Use Node.js **20.15.0+ on the 20.x line**, or **22.2.0 and later**, with npm.
-For this candidate, [build a local package](docs/install.md#install-a-local-package)
-from the exact checkout, including its runtime build. If using a published release,
-use only a tarball actually attached to that release and its matching documentation;
-the release page does not imply that this candidate is available. Bun and a separate
-model API key are not required to install an already-built tarball:
+Download the tarball and `SHA256SUMS.txt` from the release and check the tarball
+against the checksum file before installing. Use only a tarball actually attached to
+a release, with that release's documentation; a checkout ahead of the release
+[builds its own package](docs/install.md#install-a-local-package). Bun and a separate
+model API key are not required to install the tarball:
 
 ```sh
 mkdir kiln-install
