@@ -321,7 +321,7 @@ describe('repository reliability contracts', () => {
     expect(install).toContain('tarball and checksum actually attached');
     expect(install).toContain('a source-only release');
     expect(install).toContain('does not imply that a built tarball is available');
-    expect(install).toContain('0.9.0 is a source and site preview for dogfooding');
+    expect(install).toContain('0.10.0 is a source and site preview for dogfooding');
     expect(install.toLowerCase()).toContain('package publication is deferred to v1.0');
     expect(install).toContain('tools.md');
   });

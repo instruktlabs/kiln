@@ -452,9 +452,10 @@ var mcp_manifest_default = {
             ]
           },
           detail: {
-            description: "compact (default) counts repeated findings; full returns every finding and rule",
+            description: "compact (default) groups findings by code; lean: verdict, blockers, metrics only; full: every finding, rule and part plus the retained report path",
             type: "string",
             enum: [
+              "lean",
               "compact",
               "full"
             ]
@@ -591,9 +592,10 @@ var mcp_manifest_default = {
             maximum: 1024
           },
           detail: {
-            description: "compact (default) counts repeated findings; full returns every finding and rule",
+            description: "compact (default) groups findings by code; lean: verdict, blockers, metrics only; full: every finding, rule and part plus the retained report path",
             type: "string",
             enum: [
+              "lean",
               "compact",
               "full"
             ]
@@ -789,6 +791,15 @@ var mcp_manifest_default = {
             description: "False: requires listParts/measure/surfacePairs/compare; no image or camera controls. Default true.",
             type: "boolean"
           },
+          detail: {
+            description: "compact (default) groups findings by code; lean: verdict, blockers, metrics only; full: every finding, rule and part plus the retained report path",
+            type: "string",
+            enum: [
+              "lean",
+              "compact",
+              "full"
+            ]
+          },
           listParts: {
             description: "List exported-scene paths, including nested parts. Default 80, max 100 per page. Follow partListing.nextOffset with the same programRef/query. image:false avoids rendering.",
             type: "object",
@@ -807,6 +818,10 @@ var mcp_manifest_default = {
                 type: "integer",
                 minimum: 1,
                 maximum: 100
+              },
+              placement: {
+                description: "Add world position, rotation, scale, mirroring and bounds per part; pages of 50.",
+                type: "boolean"
               }
             },
             additionalProperties: false
@@ -1090,6 +1105,15 @@ var mcp_manifest_default = {
               type: "string"
             },
             additionalProperties: {}
+          },
+          detail: {
+            description: "compact (default) groups findings by code; lean: verdict, blockers, metrics only; full: every finding, rule and part plus the retained report path",
+            type: "string",
+            enum: [
+              "lean",
+              "compact",
+              "full"
+            ]
           },
           programRef: {
             type: "string",
@@ -1425,6 +1449,18 @@ var mcp_manifest_default = {
             description: "list: only operations bound to this project.",
             type: "string",
             pattern: "^[a-z][a-z0-9_-]{0,79}$"
+          },
+          offset: {
+            description: "list: page start; default 0.",
+            type: "integer",
+            minimum: 0,
+            maximum: 9007199254740991
+          },
+          limit: {
+            description: "list: page size; default 20.",
+            type: "integer",
+            minimum: 1,
+            maximum: 100
           },
           operationId: {
             description: "get, pin, save.",
@@ -2048,7 +2084,7 @@ import { readFile } from "node:fs/promises";
 var KILN_ASSET_WIDGET_URI = "ui://kiln/asset-v5.html";
 
 // src/engine-identity.ts
-var ENGINE_VERSION = "0.9.0";
+var ENGINE_VERSION = "0.10.0";
 var ENGINE_INSTALL_URL = new URL("../", import.meta.url).href;
 
 // src/requirements-json.ts

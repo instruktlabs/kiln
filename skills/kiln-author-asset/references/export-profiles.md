@@ -21,7 +21,8 @@ is available: a runtime sidecar is **not** a replacement for it.
   Compare the actual sizes; a static asset may gain nothing. Keep the sidecar for
   traceability and keep the editable ZIP for future authoring.
 - **Need additional glTF feature preservation:** separately compare the experimental
-  Three.js converter described in the [engine handoff guide](engine-handoff.md).
+  Three.js converter described in the engine handoff guide (`references/engine-handoff.md`
+  in the `kiln-qa-asset` skill).
   Preserve the baseline and check the result in the destination importer.
 
 ### Converter and delivery profile are separate settings

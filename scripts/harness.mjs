@@ -514,11 +514,11 @@ export function run(
  * scoped to it, and its working directory is it. The model arrives knowing only
  * what the skills say and what the MCP tools answer.
  *
- * The skills go in `.claude/skills/`, which is the one location every harness
- * here agrees on -- Claude Code natively, and OpenCode which reads
- * `.claude/skills/<name>/SKILL.md` alongside its own `.opencode/skills`.
- * Antigravity loads them from its installed plugin copy instead, so for `agy`
- * this directory is belt and braces rather than the delivery mechanism.
+ * The skills go in `.claude/skills/`, which Claude Code reads natively. OpenCode
+ * 2.0.14 names no skill directory in its binary, only the `skills.paths` config
+ * key, so the sandbox also writes an `opencode.json` pointing that key at the same
+ * copy. Antigravity loads them from its installed plugin copy instead, so for
+ * `agy` this directory is belt and braces rather than the delivery mechanism.
  *
  * What this does NOT isolate, and it is worth being exact: skills and MCP
  * servers the operator has installed at USER scope are still in scope, because
@@ -540,8 +540,13 @@ export function makeSandbox(name) {
   rmSync(sandbox, { recursive: true, force: true });
   mkdirSync(sandbox, { recursive: true });
   const skillsSrc = join(REPO, 'skills');
-  if (existsSync(skillsSrc))
+  if (existsSync(skillsSrc)) {
     cpSync(skillsSrc, join(sandbox, '.claude', 'skills'), { recursive: true });
+    writeFileSync(
+      join(sandbox, 'opencode.json'),
+      `${JSON.stringify({ $schema: 'https://opencode.ai/config.json', skills: { paths: [join(sandbox, '.claude', 'skills')] } }, null, 2)}\n`,
+    );
+  }
 
   // Pre-approve the tools the brief asks the child to use.
   //

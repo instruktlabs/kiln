@@ -1,9 +1,10 @@
 # Install Kiln for your coding agent
 
-This guide installs Kiln **0.9.0**: standalone authoring with optional projects, a
-material library and Live Review in the local dashboard. [CHANGELOG.md](../CHANGELOG.md)
+This guide installs Kiln **0.10.0**: standalone authoring with optional projects, a
+material library and Live Review in the local dashboard, served to a coding agent over
+the 2026-07-28 and 2025 protocol revisions. [CHANGELOG.md](../CHANGELOG.md)
 lists what changed. Existing users should read the [migration notes](migration.md)
-before upgrading a workspace. **0.9.0 is a source and site preview for dogfooding.** Build this checkout
+before upgrading a workspace. **0.10.0 is a source and site preview for dogfooding.** Build this checkout
 to evaluate the current engine. Package publication is deferred to v1.0.
 
 ## Install the package
@@ -224,7 +225,7 @@ connecting an existing harness does not load that stack.
 | Harness | Project configuration | Launch from the workspace |
 | --- | --- | --- |
 | Claude Code | `.mcp.json` | `claude` |
-| Codex | `.codex/config.toml` | `codex` |
+| Codex | `.codex/config.toml`, read once `$CODEX_HOME/config.toml` marks the project trusted | `node codex.mjs` (applies the same values per run) |
 | OpenCode | `opencode.json` | `opencode` |
 | Antigravity | `.agents/mcp_config.json` | `node agy.mjs` |
 | Hermes | Separate `.hermes/config.yaml` profile | `node hermes.mjs --ignore-rules` |

@@ -146,10 +146,11 @@ it('teaches agents to honor the requested destination and save immutable history
   expect(author).toContain('The user chooses the destination');
   expect(author).toContain('Use `project` only as the fallback');
   expect(author).toContain('use `library` for an explicitly requested cross-workspace library');
-  expect(author).toContain(
-    'launch `node kiln.mjs view --collection COLLECTION --asset ASSET_ID --revision REVISION_ID` yourself',
-  );
-  expect(author).toContain('Do not ask the user to start the viewer');
+  // The viewer is for a person who is present. Told to launch it, a headless Codex
+  // session saved its asset and then sat behind the viewer process until it was
+  // killed at the 30-minute cap (baseline session b05, 2026-10-01).
+  expect(author).toContain('is optional and for a person who is present');
+  expect(author).toContain('never as a step of a headless or unattended run');
   expect(author).toContain('Record the actual model and harness');
   expect(author).toContain('A finished asset is not delivered until');
   expect(refine).toContain('immutable child revision');
@@ -243,10 +244,54 @@ it('steers the session to the loop, the render service and its own inherited con
     expect(guide).toContain('KILN_PROGRESS.md');
     expect(guide).toContain('current programRef');
     expect(guide).toContain('exact next action');
-    expect(await readFile(join(task, 'CLAUDE.md'), 'utf8')).toBe(guide);
+    // Contract rule 12 (lean standing knowledge): the guide is read whole at the
+    // start of every session and re-read after each compaction, so it is at most
+    // 5,000 characters, and CLAUDE.md is a one-line import rather than a second
+    // copy of it for a harness that reads both files.
+    expect(guide.length).toBeLessThanOrEqual(5_000);
+    expect(await readFile(join(task, 'CLAUDE.md'), 'utf8')).toBe('@AGENTS.md\n');
     expect(await readFile(join(task, 'START.md'), 'utf8')).toContain(
       'Long-running and headless sessions may compact context automatically',
     );
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+}, 30000);
+
+it('registers skills once, in the one directory each harness reads', async () => {
+  const root = await mkdtemp(join(tmpdir(), 'kiln-skill-registry-'));
+  try {
+    // Measured on the installed CLIs (docs/harnesses.md): Claude Code 2.1.287 names
+    // `.claude/skills` and `.agents/skills`, so a workspace that carried both
+    // registered every skill twice; Codex 0.160.0 and Agy 1.2.14 name
+    // `.agents/skills`; OpenCode 2.0.14 reads only the `skills.paths` its config
+    // names, which is `skills/` itself. Every copy is also bytes an upgrade tracks.
+    const registries: Record<string, string[]> = {
+      claude: ['.claude/skills'],
+      codex: ['.agents/skills'],
+      agy: ['.agents/skills'],
+      opencode: [],
+    };
+    for (const [harness, expected] of Object.entries(registries)) {
+      const task = join(root, harness);
+      expect(run([task, '--harness', harness], root).status).toBe(0);
+      for (const registry of ['.claude/skills', '.agents/skills']) {
+        const present = await readdir(join(task, registry)).then(
+          () => true,
+          () => false,
+        );
+        expect({ harness, registry, present }).toEqual({
+          harness,
+          registry,
+          present: expected.includes(registry),
+        });
+      }
+      const manifest = JSON.parse(await readFile(join(task, '.kiln/workspace.json'), 'utf8'));
+      const tracked = Object.keys(manifest.managedHashes)
+        .filter((name: string) => /^\.(claude|agents)\/skills\//u.test(name))
+        .map((name: string) => name.split('/').slice(0, 2).join('/'));
+      expect([...new Set(tracked)].sort()).toEqual([...expected].sort());
+    }
   } finally {
     await rm(root, { recursive: true, force: true });
   }
@@ -282,7 +327,8 @@ it('writes each harness the MCP config spelling it actually reads', async () => 
 // The two defects this covers were invisible to every existing check, because
 // `harness-smoke.mjs` invokes each CLI directly and never touches the generated
 // launcher. A generated codex workspace could not see Kiln at all -- codex reads
-// no project-local config, so `.codex/config.toml` was inert -- and a generated
+// `.codex/config.toml` only for a project its home marks trusted, so the file was
+// inert in a fresh workspace -- and a generated
 // hermes workspace could not reach a model, because redirecting HERMES_HOME to
 // the workspace took the provider selection and the credential store with it.
 //
@@ -437,6 +483,10 @@ it('emits names-only Codex renderer forwarding for initial and resume launches w
     'KILN_RENDER_PORT_URL',
     'KILN_RENDER_SERVICE_PORT',
     'KILN_WORK_ITEM',
+    // Codex starts an MCP server with only the named variables, so a configured
+    // project that every other harness's server inherits from the shell was
+    // invisible under Codex alone (finding S7, 2026-10-01).
+    'KILN_PROJECT',
   ];
   const fixture = {
     KILN_RENDER_TOKEN: 'synthetic-client-token-not-a-real-credential',
@@ -444,6 +494,7 @@ it('emits names-only Codex renderer forwarding for initial and resume launches w
     KILN_RENDER_PORT_URL: 'https://renderer.invalid/fixture',
     KILN_RENDER_SERVICE_PORT: '43123',
     KILN_WORK_ITEM: 'cow',
+    KILN_PROJECT: 'pack-fixture',
   };
   try {
     const task = join(root, 'assets');
@@ -485,6 +536,7 @@ it('emits names-only Codex renderer forwarding for initial and resume launches w
       },
       fixture,
       { KILN_RENDER_TOKEN: '', RENDER_SERVICE_TOKEN: fixture.RENDER_SERVICE_TOKEN },
+      { KILN_PROJECT: fixture.KILN_PROJECT },
     ];
     for (const values of cases) {
       const env = { ...process.env };

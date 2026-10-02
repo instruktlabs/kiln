@@ -145,6 +145,44 @@ part floats, the compact render result is 9,103 characters, `full` 16,734 and `l
   default (one receipt measured 51,312 characters at `full`); `--detail lean|compact|full`
   selects the detail.
 
+### Knowledge and setup
+
+Standing knowledge is read whole at the start of every session and again after each
+compaction, so it is a budget: the generated guide is at most 5,000 characters and a
+`SKILL.md` at most 16,000 characters and 500 lines, enforced by the workspace tests and
+`check:skills`.
+
+- **Breaking** for generated workspaces: `AGENTS.md` carries a 4,461-character guide
+  (10,716 before) and `CLAUDE.md` is the one-line import `@AGENTS.md`. Claude Code 2.1.287
+  loads `AGENTS.md` by default only where no `CLAUDE.md` exists, so the import keeps one
+  copy of the guide in context whichever file it reads. A workspace carries one skill
+  registry, the directory its harness reads: `.claude/skills/` for Claude Code (whose binary
+  also names `.agents/skills`, so the two copies registered every skill twice),
+  `.agents/skills/` for codex, hermes, agy, copilot and cursor-agent, and none for OpenCode,
+  whose `opencode.json` names `skills/` in `skills.paths`. Existing workspaces are not
+  rewritten: `kiln-init --check` reports the second registry a 0.9 workspace carried as
+  `retired`, `--upgrade` removes it when unchanged and stops on an edited copy.
+- `kiln-author-asset/SKILL.md` is 15,846 characters (19,030 before). Its delivery paragraph
+  offers `node kiln.mjs view` to a person who is present instead of telling the agent to
+  launch it: a headless Codex session saved its asset and then sat behind the viewer until
+  the 30-minute cap. `engine-handoff.md` lives once in `kiln-qa-asset` and
+  `export-profiles.md` once in `kiln-author-asset`, each named by skill and path from the
+  other (a skill's markdown links stay inside the skill, so a workspace that installs one
+  skill alone resolves every link); `check:skills` refuses two files under `skills/` with the
+  same bytes.
+- Codex: the generated `.codex/config.toml` is read once `$CODEX_HOME/config.toml` marks
+  the project trusted (measured on 0.160.0; the generator and `START.md` said Codex read no
+  project-local config), `node codex.mjs` applies the same values per run so no trust entry
+  is needed, and its `env_vars` forward `KILN_PROJECT`, so a configured project reaches the
+  server under Codex as it does elsewhere. `kiln-init --help` lists all seven harnesses.
+- Records: the plugin manifests say 0.10.0 and `kiln` (the Codex plugin manifest said
+  `kiln-oss`), the root `plugin.json` no longer names a schema URL that returns 404,
+  `docs/dogfooding.md` and `docs/clean-room.md` name OpenCode's `--standalone` (there is no
+  `--pure` in 2.0.14), `docs/harnesses.md` records the measured skill directories and the
+  Codex trust rule, and the Tier 2 driver reads the packaged manifest for the tool names it
+  counts as workspace MCP use (its hand-kept list lacked `kiln_discover`, `kiln_renderer`,
+  `kiln_project`, `kiln_material` and `kiln_review`).
+
 ## 0.9.0
 
 **Source and site preview for dogfooding.** The v0.9 work is integrated for the

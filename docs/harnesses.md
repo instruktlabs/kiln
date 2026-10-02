@@ -196,19 +196,24 @@ overlap; the contents do not.
 | copilot | `.mcp.json` | `mcpServers.<name>` with `type: "local"` and `tools: ["*"]` |
 | cursor-agent | `.cursor/mcp.json` | `mcpServers.<name>` |
 | agy | `.agents/mcp_config.json` | `mcpServers.<name>` |
-| codex | **none** -- config is `$CODEX_HOME`-rooted | per-invocation `-c mcp_servers.<name>.…` from `codex.mjs` |
+| codex | `.codex/config.toml`, read only once `$CODEX_HOME/config.toml` marks the project trusted | the same values as per-invocation `-c mcp_servers.<name>.…` from `codex.mjs`, so no trust entry is needed |
 | opencode | `opencode.json` | `mcp.<name>` with `type: "local"` and `command` as an array |
 | hermes | **none** -- config is `$HERMES_HOME`-rooted | one user-level `hermes mcp add`; the workspace supplies `--in` and the program store |
 
-**Two of these have no project-local configuration at all, and both used to be written as
-though they did.** Codex reads only `$CODEX_HOME`: `-c` overrides `~/.codex/config.toml`,
-`-p <name>` layers `$CODEX_HOME/<name>.config.toml`, and `-C`/`--cd` changes the working
-directory and nothing else. Hermes reads only `$HERMES_HOME`, and `hermes mcp add` has no
+**Codex reads a project's `.codex/config.toml` only for a trusted project, and Hermes has no
+project-local configuration at all.** Measured on Codex 0.160.0 under an empty `$CODEX_HOME`
+(2026-10-01): `codex mcp list` from a directory holding `.codex/config.toml` lists nothing until
+the home's `config.toml` carries `[projects."<path>"] trust_level = "trusted"`, and lists the
+server after it. Everything else Codex reads is `$CODEX_HOME`-rooted: `-c` overrides
+`~/.codex/config.toml`, `-p <name>` layers `$CODEX_HOME/<name>.config.toml`, and `-C`/`--cd`
+changes the working directory. Hermes reads only `$HERMES_HOME`, and `hermes mcp add` has no
 scope flag -- confirmed against upstream HEAD, not just the installed build.
 
 So a workspace configures them **per invocation**, through a generated launcher. Codex takes
-nested TOML overrides, which is a complete fix: the server is registered for that run and
-nothing is written, so `$CODEX_HOME` keeps its configuration and its authentication. Hermes
+nested TOML overrides, which is complete without a trust entry: the server is registered for
+that run and nothing is written, so `$CODEX_HOME` keeps its configuration and its
+authentication; the generated `.codex/config.toml` carries the same values for a reader and
+for a project the user chooses to trust. Hermes
 has no equivalent for MCP servers, so registering the server is one user-level command that
 `START.md` prints; the launcher still supplies the project directory and retargets the program
 store through the environment, so one registration serves every workspace.
@@ -243,12 +248,23 @@ Call `kiln_discover` with `{ capabilities: true }` and compare `capabilities.eng
 register under their own `kiln_workspace` name. Report a mismatch rather than silently
 substituting it.
 
-Skills need no per-harness directory beyond the two the generator already writes. Claude Code
-reads `.claude/skills/`. Every other harness here reads `.agents/skills/`: `copilot skill
+A workspace carries one skill registry, the directory its harness reads, beside the maintained
+`skills/`. Measured in the installed binaries on 2026-10-01: Claude Code 2.1.287 names
+`.claude/skills` (and `.agents/skills`, so a workspace that carried both registered every
+skill twice); Codex 0.160.0 names `.agents/skills` and `.codex/skills`; Agy 1.2.14 names
+`.agents/skills`; OpenCode 2.0.14 names only the `skills.paths` key, which its generated
+`opencode.json` points at `skills/`. Documented rather than measured here: `copilot skill
 --help` lists `.github/skills/`, `.agents/skills/` and `.claude/skills/`, and Cursor's project
 skill paths are `.agents/skills/` and `.cursor/skills/` with `.claude/skills/` supported as
-legacy. cursor-agent additionally applies a project-root `AGENTS.md` as a rule, alongside
-`.cursor/rules/`.
+legacy, so both get `.agents/skills/`. cursor-agent additionally applies a project-root
+`AGENTS.md` as a rule, alongside `.cursor/rules/`. `kiln-init --check` reports the second
+registry a 0.9 workspace carried as `retired`, and `--upgrade` removes it when unchanged.
+
+Claude Code 2.1.287 loads `AGENTS.md` as project instructions only where the project has no
+`CLAUDE.md`; its `instructionFiles` setting can load `CLAUDE.md` alone or both, and in the
+both-files mode "a file CLAUDE.md already imports or links to is not loaded twice" (the
+binary's own description). So the generated `CLAUDE.md` is the one-line import `@AGENTS.md`:
+one copy of the guide in context under every setting.
 
 ## Protocol revisions and each harness's switch
 

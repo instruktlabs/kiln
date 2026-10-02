@@ -136,7 +136,7 @@ end-state: a fresh clone, a separate workspace, and an independently launched he
 It does not name setup commands, skills, Kiln tools, primitives, or examples. Those are the public
 surface being tested. Claude runs in safe mode with a strict empty MCP configuration and no saved
 outer session. Codex ignores user configuration and execution rules and uses an ephemeral outer
-session. OpenCode uses `--pure` under a fresh `XDG_CONFIG_HOME`; Hermes uses `--safe-mode`.
+session. OpenCode uses `--standalone` under a fresh `XDG_CONFIG_HOME`; Hermes uses `--safe-mode`.
 Agy has no equivalent flag, so it requires `--agy-home` pointing to an operator-prepared home
 whose `agy mcp list` is empty and which exposes only the authentication/runtime files the test
 needs. The driver never copies credentials into it. Authentication remains available where the
@@ -198,7 +198,9 @@ bun run dogfood:gallery -- /path/to/old-run /path/to/another-run
 ```
 
 Use `--gallery-root /private/path` to relocate the archive. Tier 2 accepts the same option, and
-`--no-local-gallery` is the explicit opt-out for an intentionally disposable run. Re-importing the
+`--no-local-gallery` is the explicit opt-out for an intentionally disposable run. Tier 2 also
+accepts `--repository URL_OR_PATH`, the repository the outer agent clones (a local mirror or a
+branch under test instead of the public repository), and `--agy-home PATH` for Agy. Re-importing the
 same bytes is safe: entries are content-addressed and provenance is merged rather than duplicated.
 Review the collection in Kiln's normal interactive asset viewer from an asset workspace:
 

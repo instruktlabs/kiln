@@ -57,16 +57,16 @@ Earlier examples remain in the gallery and [example provenance](docs/example-pro
 They are historical showcases, not golden outputs or a model ranking.
 Screenshots above show the v0.9 review builds; [image provenance](assets/readme/README.md).
 
-Version **0.9.0** adds optional projects, a curated and procedural material library
-and Live Review of CLI/MCP work to standalone authoring. Review views use the calibrated
-`review-neutral-v1` lighting rig, so a lit surface reads back close to its authored
-colour. Results are compact by default, and the release fixes the defects authors
-reported against 0.8. [CHANGELOG.md](CHANGELOG.md) lists the changes and the
-[migration notes](docs/migration.md#changes-in-090) list what an existing author will
-notice. The [foundation checkpoint](docs/plans/2026-09-26-project-foundation.md) records
-how projects, materials and Live Review were qualified.
+Version **0.10.0** is the v1 readiness release: the stdio server serves protocol revision
+2026-07-28 beside the 2025 handshakes and answers before the engine loads, the three
+record tools are flat objects with an `action` field, every tool result is bounded and
+leads with its verdict, and the generated workspace guide and skills are shorter. It
+builds on 0.9.0's optional projects, material library, Live Review and calibrated
+`review-neutral-v1` lighting rig. [CHANGELOG.md](CHANGELOG.md) lists the changes with
+each breaking one marked, and the [migration notes](docs/migration.md#changes-in-0100)
+list what an existing author will notice.
 
-**0.9.0 is the source and site preview for dogfooding.** Package publication is
+**0.10.0 is the source and site preview for dogfooding.** Package publication is
 deferred to v1.0 after feedback. Build a local tarball from this checkout to try
 the current engine; the site deployment does not publish a package to npm.
 

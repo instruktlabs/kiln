@@ -74,7 +74,7 @@ Report the rest of the session's loadout at the same time. Skills and MCP server
 
 ## Wiring a workspace by hand
 
-`--harness` covers claude, codex, opencode, hermes, agy, copilot and cursor-agent. For any other harness, or an engine installed as a package elsewhere, assemble the same loadout in an empty directory: register the installation's `dist/mcp-server.mjs` as a stdio MCP server named `kiln_workspace`, give it `KILN_WORKSPACE` pointing at that directory, `KILN_PROGRAM_STORE` pointing at its `.kiln/programs`, plus `KILN_RENDER=auto`, and copy the skills you need from `skills/` into both `.claude/skills/` and `.agents/skills/` there.
+`--harness` covers claude, codex, opencode, hermes, agy, copilot and cursor-agent. For any other harness, or an engine installed as a package elsewhere, assemble the same loadout in an empty directory: register the installation's `dist/mcp-server.mjs` as a stdio MCP server named `kiln_workspace`, give it `KILN_WORKSPACE` pointing at that directory, `KILN_PROGRAM_STORE` pointing at its `.kiln/programs`, plus `KILN_RENDER=auto`, and copy the skills you need from `skills/` into the one directory that harness reads (`.claude/skills/` for Claude Code, `.agents/skills/` for the others; OpenCode instead takes a `skills.paths` entry naming the copy).
 
 A hand-wired directory carries no manifest, so it gets no runtime preflight and `--repair` cannot correct its paths later. Prefer the generated workspace wherever the harness is supported, and tell the user which of the two they have.
 

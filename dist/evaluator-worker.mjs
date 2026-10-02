@@ -26878,15 +26878,23 @@ function inspectSceneStructure(root, opts = {}) {
         }
       }
       const fix = nearest && nearestGap ? ` Fix: shift "${a.name}" by [${nearestGap.x.toFixed(3)}, ${nearestGap.y.toFixed(3)}, ${nearestGap.z.toFixed(3)}] toward "${nearest.name}", or call snapTo(part, hostPart) to do it automatically.` : "";
-      floaters.push(`${a.name}${fix ? ` —${fix}` : ""}`);
+      floaters.push({ name: a.name, fix });
     }
     if (floaters.length > 0) {
-      warnings.push(`Floating parts (no mesh overlap with any sibling, 2cm tol): ${floaters.join(" | ")}`);
+      const entries = floaters.slice(0, FLOATER_FIXES_SHOWN).map(({ name, fix }) => `${name}${fix ? ` —${fix}` : ""}`);
+      const rest = floaters.slice(FLOATER_FIXES_SHOWN);
+      if (rest.length > 0) {
+        const names = rest.slice(0, FLOATER_NAMES_SHOWN).map((floater) => floater.name);
+        if (rest.length > names.length)
+          names.push(`+${rest.length - names.length} more`);
+        entries.push(`+${rest.length} more floating: ${names.join(", ")} — the same fix applies: shift each onto its nearest sibling, or call snapTo(part, hostPart).`);
+      }
+      warnings.push(`Floating parts (no mesh overlap with any sibling, 2cm tol): ${entries.join(" | ")}`);
     }
   }
   return warnings;
 }
-var engineIO, TYPE_SCALAR = "SCALAR", TYPE_VEC2 = "VEC2", TYPE_VEC3 = "VEC3", TYPE_VEC4 = "VEC4", GROUND_CONTACT_TOLERANCE = 0.02, REVIEW_CLIPS_EXTRAS_KEY = "kilnReviewClipsV1", REVIEW_CLIP_LIMITS, PALETTE_MIN = 4, INSTANCE_MIN = 5;
+var engineIO, TYPE_SCALAR = "SCALAR", TYPE_VEC2 = "VEC2", TYPE_VEC3 = "VEC3", TYPE_VEC4 = "VEC4", GROUND_CONTACT_TOLERANCE = 0.02, REVIEW_CLIPS_EXTRAS_KEY = "kilnReviewClipsV1", REVIEW_CLIP_LIMITS, PALETTE_MIN = 4, INSTANCE_MIN = 5, FLOATER_FIXES_SHOWN = 6, FLOATER_NAMES_SHOWN = 24;
 var init_render = __esm(() => {
   init_requirements_context();
   init_requirements_run();

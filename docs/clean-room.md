@@ -122,13 +122,14 @@ a fresh session as described in its `START.md`. Do not assume a session that cre
 the workspace has loaded that workspace's MCP configuration. In our OpenCode 1.18.27
 test, the original setup session used CLI commands; a fresh session in `my-assets`
 loaded the native Kiln tools and completed a requested revision. Check actual tool
-calls before describing a run as native MCP. `--pure` disables external plugins;
-do not use it as a general isolation switch for a workflow that needs those plugins.
-Audit inherited instructions separately.
+calls before describing a run as native MCP. `opencode run --standalone` starts a private
+server instead of joining the shared background service (OpenCode 2.0.14 has no `--pure`);
+it isolates the process, not the configuration, so audit inherited instructions and plugins
+separately.
 
-For headless Codex evaluation, use the generated launcher. Codex has no project-local
-configuration; `.codex/config.toml` records the intended server for a human reader, while
-`codex.mjs` supplies the server and program store through per-run overrides:
+For headless Codex evaluation, use the generated launcher. Codex reads `.codex/config.toml`
+only for a project its `$CODEX_HOME/config.toml` marks trusted, so `codex.mjs` supplies the
+same server and program store through per-run overrides:
 
 ```sh
 node codex.mjs --ignore-user-config --ephemeral --approve-for-me \

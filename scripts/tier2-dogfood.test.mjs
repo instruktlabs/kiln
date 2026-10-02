@@ -426,6 +426,27 @@ describe('Tier 2 blind dogfood driver', () => {
       workspaceMcp: 'exercised',
     });
 
+    // The tool names come from the packaged manifest, not a list kept by hand: the
+    // hand-written one lacked `kiln_discover`, `kiln_renderer`, `kiln_project`,
+    // `kiln_material` and `kiln_review`, so a Codex session that only discovered
+    // and configured a project read as `not-exercised`.
+    for (const tool of [
+      'kiln_discover',
+      'kiln_renderer',
+      'kiln_project',
+      'kiln_material',
+      'kiln_review',
+    ]) {
+      const only = [
+        { type: 'item.completed', item: { type: 'mcp_tool_call', server: 'kiln_workspace', tool } },
+      ];
+      expect(toolUsageFromEvents(only)).toMatchObject({ mcpCalls: 1, workspaceMcp: 'exercised' });
+    }
+    expect(
+      toolUsageFromEvents([{ type: 'tool_use', name: 'mcp__kiln_workspace__kiln_render_later' }])
+        .mcpCalls,
+    ).toBe(0);
+
     expect(toolUsageFromEvents([{ type: 'text' }]).workspaceMcp).toBe('unknown');
   });
 

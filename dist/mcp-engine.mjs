@@ -30180,15 +30180,23 @@ function inspectSceneStructure(root, opts = {}) {
         }
       }
       const fix = nearest && nearestGap ? ` Fix: shift "${a.name}" by [${nearestGap.x.toFixed(3)}, ${nearestGap.y.toFixed(3)}, ${nearestGap.z.toFixed(3)}] toward "${nearest.name}", or call snapTo(part, hostPart) to do it automatically.` : "";
-      floaters.push(`${a.name}${fix ? ` —${fix}` : ""}`);
+      floaters.push({ name: a.name, fix });
     }
     if (floaters.length > 0) {
-      warnings.push(`Floating parts (no mesh overlap with any sibling, 2cm tol): ${floaters.join(" | ")}`);
+      const entries = floaters.slice(0, FLOATER_FIXES_SHOWN).map(({ name, fix }) => `${name}${fix ? ` —${fix}` : ""}`);
+      const rest = floaters.slice(FLOATER_FIXES_SHOWN);
+      if (rest.length > 0) {
+        const names = rest.slice(0, FLOATER_NAMES_SHOWN).map((floater) => floater.name);
+        if (rest.length > names.length)
+          names.push(`+${rest.length - names.length} more`);
+        entries.push(`+${rest.length} more floating: ${names.join(", ")} — the same fix applies: shift each onto its nearest sibling, or call snapTo(part, hostPart).`);
+      }
+      warnings.push(`Floating parts (no mesh overlap with any sibling, 2cm tol): ${entries.join(" | ")}`);
     }
   }
   return warnings;
 }
-var engineIO, TYPE_SCALAR = "SCALAR", TYPE_VEC2 = "VEC2", TYPE_VEC3 = "VEC3", TYPE_VEC4 = "VEC4", GROUND_CONTACT_TOLERANCE = 0.02, REVIEW_CLIPS_EXTRAS_KEY2 = "kilnReviewClipsV1", REVIEW_CLIP_LIMITS2, PALETTE_MIN = 4, INSTANCE_MIN = 5;
+var engineIO, TYPE_SCALAR = "SCALAR", TYPE_VEC2 = "VEC2", TYPE_VEC3 = "VEC3", TYPE_VEC4 = "VEC4", GROUND_CONTACT_TOLERANCE = 0.02, REVIEW_CLIPS_EXTRAS_KEY2 = "kilnReviewClipsV1", REVIEW_CLIP_LIMITS2, PALETTE_MIN = 4, INSTANCE_MIN = 5, FLOATER_FIXES_SHOWN = 6, FLOATER_NAMES_SHOWN = 24;
 var init_render = __esm(() => {
   init_requirements_context();
   init_requirements_run();
@@ -31251,6 +31259,10 @@ var init_port = __esm(() => {
 });
 
 // src/views/part-placement.ts
+var exports_part_placement = {};
+__export(exports_part_placement, {
+  createPartPlacementReader: () => createPartPlacementReader
+});
 import * as THREE43 from "three";
 function createPartPlacementReader(root) {
   const bounds = createPartBoundsReader(root);
@@ -33058,6 +33070,7 @@ function resolveRenderMode(value) {
     return selected;
   throw new Error(`${source} must be auto, cpu or gpu (got: ${selected})`);
 }
+var GPU_REQUIRED_NEXT_STEP = 'A GPU renderer is required by KILN_RENDER=gpu (CLI --render gpu). Set KILN_RENDER=auto (--render auto) to continue with CPU geometry views, or KILN_RENDER_PORT_URL (--render-port) for a renderer on another device; after repairing the local service call kiln_renderer { action: "reprobe" } (CLI: kiln service reprobe)';
 function makeLazyRenderPort(start, token, sourceFingerprint, initialUrl) {
   let resolving = initialUrl ? Promise.resolve({
     url: initialUrl,
@@ -33159,7 +33172,7 @@ async function buildRenderPort(mode, portUrl, options) {
     if (probe.kind !== "absent") {
       const why = describeUnavailableService(url, probe);
       if (mode === "gpu")
-        throw new Error(why);
+        throw new Error(`${why}. ${GPU_REQUIRED_NEXT_STEP}`);
       selected.set(context, `cpu raster (${why})`);
       return context;
     }
@@ -33169,7 +33182,7 @@ async function buildRenderPort(mode, portUrl, options) {
         return attachLocal();
       const why = explainRenderServiceState(state, dir);
       if (mode === "gpu")
-        throw new Error(`${why}; set --render-port or KILN_RENDER_PORT_URL for another device, or use --render auto for CPU`);
+        throw new Error(`${why}. ${GPU_REQUIRED_NEXT_STEP}`);
       selected.set(context, `cpu raster (${why})`);
       return context;
     }
@@ -33788,7 +33801,9 @@ class FileLiveReview {
       if (hash3(rendered.glb) !== rendered.artifactGlbSha256)
         throw new Error("Artifact hash mismatch");
       const { glb, diagnosticViews: _, ...evaluation } = rendered;
-      const metadata = Buffer.from(JSON.stringify(jsonValue(evaluation, evaluationLimit)));
+      const bounded = jsonValue(evaluation, evaluationLimit);
+      const pretty = JSON.stringify(bounded, null, 2);
+      const metadata = Buffer.from(Buffer.byteLength(pretty) <= evaluationLimit ? pretty : JSON.stringify(bounded));
       const source = Buffer.from(code);
       state.operation.programRef = hash3(source);
       state.operation.artifact = this.file(state, "asset.glb", glb);
@@ -33808,6 +33823,10 @@ class FileLiveReview {
   async flush() {
     while (this.pending)
       await this.pending;
+  }
+  currentOperation() {
+    const state = this.current.getStore();
+    return state ? { operationId: state.operation.operationId } : undefined;
   }
   async record(operationId) {
     await this.root();
@@ -35291,7 +35310,7 @@ import { readFile as readFile8 } from "node:fs/promises";
 var KILN_ASSET_WIDGET_URI = "ui://kiln/asset-v5.html";
 
 // src/engine-identity.ts
-var ENGINE_VERSION = "0.9.0";
+var ENGINE_VERSION = "0.10.0";
 var ENGINE_INSTALL_URL = new URL("../", import.meta.url).href;
 function engineIdentity() {
   return { version: ENGINE_VERSION, installUrl: ENGINE_INSTALL_URL };
@@ -35505,7 +35524,7 @@ function withProgramReferences(def, store, readSourceFile) {
         ...rest,
         ...includeCode ? { code: updatedCode } : {
           diff: diff.slice(0, 8000),
-          diffTruncated: diff.length > 8000
+          diffTruncated: diff.length > 8000 || typeof rest.diffOmitted === "number"
         }
       };
     }
@@ -38993,6 +39012,7 @@ function parseDiscoveryRequest(value) {
 // src/discovery/service.ts
 var MAX_RESPONSE_BYTES = 64 * 1024;
 var MAX_TEXT_CHARS = 16 * 1024;
+var DETAIL_RESULT_BUDGET = 15000;
 var compare2 = (a, b) => a < b ? -1 : a > b ? 1 : 0;
 function createDiscoveryService(source, index, capabilities, retirements = {}, notes = async () => []) {
   const entries = parseCatalog(source);
@@ -39076,7 +39096,7 @@ Text truncated; structured entries are complete.`;
         nextOffset: null,
         capabilities: current,
         text: `Current host capabilities.
-${JSON.stringify(current, null, 2)}`
+${JSON.stringify(current)}`
       });
     }
     if (input.mode === "detail") {
@@ -39097,19 +39117,29 @@ ${removed.join(`
           suggestions
         });
       }
-      const details = selected;
-      if (new Set(details.map((entry) => entry.id)).size !== details.length) {
+      const requested = selected;
+      if (new Set(requested.map((entry) => entry.id)).size !== requested.length) {
         return error(input.mode, "DUPLICATE_ID", "Each exact selector must identify a different catalog entry. A name or unprefixed slug and its canonical ID refer to the same entry.");
       }
+      const details = [];
+      let characters = 2;
+      for (const entry of requested) {
+        const cost = JSON.stringify(entry).length + 1;
+        if (details.length && characters + cost > DETAIL_RESULT_BUDGET)
+          break;
+        details.push(entry);
+        characters += cost;
+      }
+      const omitted = requested.slice(details.length).map((entry) => entry.id);
       return finish({
         version: "kiln.discovery.v1",
         mode: input.mode,
         entries: details,
-        total: details.length,
+        total: requested.length,
         nextOffset: null,
-        text: details.map((entry) => JSON.stringify(entry, null, 2)).join(`
-
-`)
+        ...omitted.length ? { omittedIds: omitted } : {},
+        text: JSON.stringify(details) + (omitted.length ? `
+Not returned, over the result size: ${omitted.join(", ")}. Fetch them with another kiln_discover ids call.` : "")
       });
     }
     if (input.family && !families.has(input.family) || input.tags?.some((tag) => !tags.has(tag))) {
@@ -39338,6 +39368,28 @@ function requireActionFields(tool, action, input, requirements) {
   throw new Error(`${tool} ${action} requires ${list(requirements.required)}; missing ${list(missing)}.${shapes.length ? ` ${shapes.join(". ")}.` : ""}`);
 }
 var nestedRecordDescription = (purpose, shape) => `${purpose} Shape: kiln_discover({ ids: ['${shape}'] }).`;
+function describeInputError(tool, error) {
+  const issues = error?.issues;
+  if (!Array.isArray(issues) || !issues.length)
+    return;
+  const lines = flattenIssues(issues).slice(0, 6);
+  return `${tool}: invalid input. ${lines.join("; ")}${issues.length > 6 ? `; ${issues.length - 6} more` : ""}. Check the field names and values against the ${tool} schema; nested shapes: kiln_discover({ ids: ['shape:...'] }).`;
+}
+function flattenIssues(issues, prefix = []) {
+  const lines = [];
+  for (const raw of issues) {
+    const issue = raw;
+    const path = [...prefix, ...issue.path ?? []];
+    const branches = Array.isArray(issue.errors) ? issue.errors.filter((branch) => Array.isArray(branch) && branch.length) : [];
+    if (issue.code === "invalid_union" && branches.length) {
+      const closest = branches.reduce((best, branch) => branch.length < best.length ? branch : best);
+      lines.push(...flattenIssues(closest, path));
+      continue;
+    }
+    lines.push(`${path.join(".") || "input"}: ${issue.message ?? "invalid"}`);
+  }
+  return lines;
+}
 
 // src/tools/projects.ts
 var PROJECT_ACTIONS = ["list", "get", "create", "update", "export"];
@@ -39378,39 +39430,48 @@ function createKilnProjectDef(store, bundleReader) {
     run: async (raw) => {
       const input = schema.parse(raw);
       requireActionFields("kiln_project", input.action, input, REQUIREMENTS[input.action]);
-      switch (input.action) {
-        case "list":
-          return { ok: true, projects: await store.list() };
-        case "get":
-          return { ok: true, project: await store.read(input.projectId, input.revisionId) };
-        case "create":
-          return { ok: true, project: await store.create(projectDraftSchema.parse(input.draft)) };
-        case "update":
-          return {
-            ok: true,
-            project: await store.update(input.projectId, input.expectedRevision, projectPatchSchema.parse(input.patch))
-          };
-        case "export": {
-          const profile = input.profile ?? "editable";
-          const project = await store.read(input.projectId, input.revisionId);
-          const bytes = await bundleReader(project.projectId, project.revisionId, profile);
-          await Promise.resolve().then(() => init_project_bundle());
-          return {
-            ok: true,
-            projectId: project.projectId,
-            revisionId: project.revisionId,
-            profile,
-            resource: {
-              uri: `kiln://projects/${project.projectId}/${project.revisionId}/${profile}.zip`,
-              mimeType: "application/zip",
-              bytes: bytes.length,
-              sha256: await projectBundleHash(bytes)
-            }
-          };
-        }
+      try {
+        return await act(input);
+      } catch (error) {
+        if (error instanceof ProjectNotFoundError)
+          throw new Error(`${error.message} kiln_project { action: 'list' } lists the project IDs in this workspace.`);
+        throw error;
       }
     }
   };
+  async function act(input) {
+    switch (input.action) {
+      case "list":
+        return { ok: true, projects: await store.list() };
+      case "get":
+        return { ok: true, project: await store.read(input.projectId, input.revisionId) };
+      case "create":
+        return { ok: true, project: await store.create(projectDraftSchema.parse(input.draft)) };
+      case "update":
+        return {
+          ok: true,
+          project: await store.update(input.projectId, input.expectedRevision, projectPatchSchema.parse(input.patch))
+        };
+      case "export": {
+        const profile = input.profile ?? "editable";
+        const project = await store.read(input.projectId, input.revisionId);
+        const bytes = await bundleReader(project.projectId, project.revisionId, profile);
+        await Promise.resolve().then(() => init_project_bundle());
+        return {
+          ok: true,
+          projectId: project.projectId,
+          revisionId: project.revisionId,
+          profile,
+          resource: {
+            uri: `kiln://projects/${project.projectId}/${project.revisionId}/${profile}.zip`,
+            mimeType: "application/zip",
+            bytes: bytes.length,
+            sha256: await projectBundleHash(bytes)
+          }
+        };
+      }
+    }
+  }
 }
 
 // src/asset-catalog.ts
@@ -39700,7 +39761,13 @@ function createKilnMaterialDef(library) {
           };
         }
         case "get":
-          return materialResult((await library.read(input.materialId, input.revisionId)).manifest);
+          try {
+            return materialResult((await library.read(input.materialId, input.revisionId)).manifest);
+          } catch (error) {
+            if (error.code === "ENOENT")
+              throw new Error(`Unknown material ${input.materialId} at ${input.revisionId}. kiln_material { action: 'list' } lists the materials in this workspace with their revision IDs.`);
+            throw error;
+          }
         case "create-procedural": {
           const record = await createMaterialRecordV1(proceduralMaterialDraftSchema.parse(input.draft));
           const [material] = await library.import([record]);
@@ -39725,7 +39792,7 @@ function createKilnMaterialDef(library) {
 // src/tools/review.ts
 init_assets();
 init_requirements_context();
-import { z as z18 } from "zod";
+import { z as z19 } from "zod";
 init_background();
 
 // src/tools/preview-fidelity.ts
@@ -39744,9 +39811,376 @@ async function persistedPreviewFidelity(fidelity, glb) {
   };
 }
 
+// src/tools/review-detail.ts
+import { z as z18 } from "zod";
+var COMPACT_PART_PREVIEW = 24;
+var COMPACT_FINDINGS_PER_DIMENSION = 12;
+var LEAD_BLOCKERS = 8;
+var LEAN_WARNINGS = 3;
+var COMPACT_WARNINGS = 12;
+var WARNING_CHARS = 1000;
+var DEFAULT_RESULT_LIMIT = 20000;
+var MAX_RESULT_LIMIT = 40000;
+var reviewDetailInput = z18.enum(["lean", "compact", "full"]).optional().describe("compact (default) groups findings by code; lean: verdict, blockers, metrics only; full: every finding, rule and part plus the retained report path");
+function requestedDetail(input, fallback = "compact") {
+  const detail = input?.detail;
+  return detail === "full" || detail === "lean" || detail === "compact" ? detail : fallback;
+}
+var partsHint = (offset) => `For remaining paths use kiln_inspect with image:false and listParts:{offset:${offset}}. listParts.query filters names/paths; follow partListing.nextOffset on the same programRef and query.`;
+var isRecord6 = (value) => typeof value === "object" && value !== null && !Array.isArray(value);
+var SEVERITY = { block: 0, warn: 1, observe: 2 };
+var severity = (finding) => isRecord6(finding) && typeof finding.disposition === "string" && SEVERITY[finding.disposition] || (isRecord6(finding) && finding.disposition === "block" ? 0 : 3);
+function affectedLabel(finding) {
+  const affected = finding.affected;
+  if (!isRecord6(affected))
+    return;
+  for (const key of ["nodePath", "node", "material", "texture", "clip", "track", "attribute"])
+    if (typeof affected[key] === "string")
+      return affected[key];
+  return;
+}
+function groupFindings(findings) {
+  const groups = new Map;
+  for (const finding of findings) {
+    if (!isRecord6(finding))
+      continue;
+    const code = typeof finding.code === "string" ? finding.code : "UNKNOWN";
+    const label = affectedLabel(finding);
+    const group = groups.get(code);
+    if (!group) {
+      groups.set(code, { ...finding, code, count: 1 });
+      continue;
+    }
+    group.count++;
+    if (label && label !== affectedLabel(group)) {
+      const more = Array.isArray(group.alsoAffected) ? group.alsoAffected : [];
+      if (more.length < 2 && !more.includes(label))
+        group.alsoAffected = [...more, label];
+    }
+  }
+  return [...groups.values()].sort((a, b) => severity(a) - severity(b));
+}
+function countFindings(report) {
+  const counts = { block: 0, warn: 0, observe: 0 };
+  if (!isRecord6(report) || !isRecord6(report.dimensions))
+    return counts;
+  for (const dimension of Object.values(report.dimensions)) {
+    if (!isRecord6(dimension) || !Array.isArray(dimension.findings))
+      continue;
+    for (const finding of dimension.findings) {
+      const disposition = isRecord6(finding) ? finding.disposition : undefined;
+      if (disposition === "block" || disposition === "warn" || disposition === "observe")
+        counts[disposition]++;
+    }
+  }
+  return counts;
+}
+function leadBlockers(report) {
+  if (!isRecord6(report) || !isRecord6(report.dimensions))
+    return [];
+  const blockers = [];
+  for (const [name, dimension] of Object.entries(report.dimensions)) {
+    if (!isRecord6(dimension) || !Array.isArray(dimension.findings))
+      continue;
+    for (const group of groupFindings(dimension.findings)) {
+      if (group.disposition !== "block")
+        continue;
+      blockers.push({
+        code: group.code,
+        dimension: name,
+        count: group.count,
+        message: group.message,
+        ...group.affected !== undefined ? { affected: group.affected } : {},
+        ...group.alsoAffected !== undefined ? { alsoAffected: group.alsoAffected } : {},
+        ...group.repairText !== undefined ? { repairText: group.repairText } : {}
+      });
+    }
+  }
+  return blockers;
+}
+function compactDimension(dimension, limit = COMPACT_FINDINGS_PER_DIMENSION) {
+  if (!isRecord6(dimension) || !Array.isArray(dimension.findings))
+    return dimension;
+  const groups = groupFindings(dimension.findings);
+  const kept = groups.slice(0, limit);
+  const dropped = groups.slice(limit);
+  const out = { ...dimension, findings: kept };
+  if (dimension.findings.length !== kept.length)
+    out.findingsTotal = dimension.findings.length;
+  if (dropped.length) {
+    out.findingsOmitted = dropped.reduce((sum, group) => sum + group.count, 0);
+    out.omittedByCode = Object.fromEntries(dropped.map((group) => [group.code, group.count]));
+  }
+  return out;
+}
+function compactQaReport(report, limit = COMPACT_FINDINGS_PER_DIMENSION, keepRules = false) {
+  if (!isRecord6(report) || !isRecord6(report.dimensions))
+    return report;
+  const { dimensions, rules, ...rest } = report;
+  const compact = {
+    ...rest,
+    detail: "compact",
+    dimensions: Object.fromEntries(Object.entries(dimensions).map(([name, value]) => [name, compactDimension(value, limit)]))
+  };
+  if (keepRules && rules !== undefined)
+    compact.rules = rules;
+  else if (Array.isArray(rules)) {
+    let evaluated = 0;
+    const notEvaluated = [];
+    for (const rule of rules) {
+      if (!isRecord6(rule))
+        continue;
+      if (rule.status === "evaluated")
+        evaluated++;
+      else if (rule.status !== "notRequested")
+        notEvaluated.push({ id: rule.id, ...rule.reason ? { reason: rule.reason } : {} });
+    }
+    compact.ruleSummary = { evaluated, notEvaluated };
+  }
+  compact.fullDetail = "Every finding and rule: detail: 'full'.";
+  return compact;
+}
+function nextStep(result) {
+  if (result.ok === false) {
+    if (typeof result.error === "string" && /GPU render|render service|renderer/u.test(result.error))
+      return 'The source may be fine; the renderer is not. Set KILN_RENDER=auto (CLI --render auto) for CPU geometry views, or repair the render service and call kiln_renderer { action: "reprobe" }, then kiln_render this programRef again.';
+    return "Fix the error in the source: kiln_edit with this programRef, or kiln_render with corrected code.";
+  }
+  const report = result.qaReport;
+  const counts = countFindings(report);
+  if (counts.block)
+    return `Fix the ${counts.block} blocking finding${counts.block === 1 ? "" : "s"} with kiln_edit on this programRef, then kiln_render again.`;
+  if (counts.warn)
+    return "Review the warnings; fix what matters with kiln_edit on this programRef, or kiln_save it when accepted.";
+  return "kiln_save this programRef when done, or kiln_edit to refine.";
+}
+function lead(result) {
+  const report = isRecord6(result.qaReport) ? result.qaReport : undefined;
+  const {
+    ok,
+    acceptance: _acceptance,
+    disposition: _disposition,
+    blockers: _blockers,
+    findings: _findings,
+    next: _next,
+    ...rest
+  } = result;
+  const blockers = leadBlockers(report);
+  return {
+    ok,
+    ...report && typeof report.acceptance === "string" ? { acceptance: report.acceptance } : {},
+    ...report && typeof report.disposition === "string" ? { disposition: report.disposition } : {},
+    ...report ? {
+      blockers: blockers.slice(0, LEAD_BLOCKERS),
+      ...blockers.length > LEAD_BLOCKERS ? { blockersOmitted: blockers.length - LEAD_BLOCKERS } : {},
+      findings: countFindings(report)
+    } : {},
+    ...report || ok === false ? { next: nextStep(result) } : {},
+    ...rest
+  };
+}
+function withCurrentEvidence(result) {
+  const evidence = result.viewEvidence;
+  if (!isRecord6(evidence) || !("current" in evidence))
+    return result;
+  const { current, lastFaithful } = evidence;
+  return {
+    ...result,
+    viewEvidence: { current, ...lastFaithful !== undefined ? { lastFaithful } : {} }
+  };
+}
+function withPartPreview(result, limit = COMPACT_PART_PREVIEW) {
+  if (!Array.isArray(result.parts) || result.parts.length <= limit)
+    return result;
+  return {
+    ...result,
+    parts: result.parts.slice(0, limit),
+    partsTruncated: true,
+    partsNextOffset: limit,
+    partsHint: partsHint(limit)
+  };
+}
+function boundWarnings(result, count) {
+  const all = result.warnings;
+  if (!Array.isArray(all))
+    return result;
+  const warnings = all.slice(0, count).map((warning) => typeof warning === "string" && warning.length > WARNING_CHARS ? `${warning.slice(0, WARNING_CHARS)}… (+${warning.length - WARNING_CHARS} chars)` : warning);
+  const omitted = all.length - warnings.length;
+  if (omitted === 0 && warnings.every((warning, i) => warning === all[i]))
+    return result;
+  return { ...result, warnings, ...omitted > 0 ? { warningsOmitted: omitted } : {} };
+}
+function resultCharacters(result) {
+  if (!isRecord6(result))
+    return JSON.stringify(result).length;
+  const { pngBase64: _png, framesBase64: _frames, ...rest } = result;
+  return JSON.stringify(rest).length;
+}
+var LEAN_KEYS = [
+  "tris",
+  "meshes",
+  "materials",
+  "distinctMaterials",
+  "bbox",
+  "lowestPart",
+  "views",
+  "capture",
+  "gridWidth",
+  "gridHeight",
+  "width",
+  "height",
+  "cameraShot",
+  "cameraShots",
+  "loopClosure",
+  "poseBounds",
+  "roofsHidden",
+  "partListing",
+  "measurement",
+  "surfaceMeasurements",
+  "comparison",
+  "materialContract",
+  "error",
+  "pngBase64",
+  "framesBase64",
+  "derivativeReceipts"
+];
+function leanFidelity(fidelity) {
+  if (!isRecord6(fidelity))
+    return fidelity;
+  const keep = {};
+  for (const key of [
+    "delivered",
+    "materialFaithful",
+    "rendererId",
+    "exactArtifact",
+    "degraded",
+    "degradeReason",
+    "receipts"
+  ])
+    if (fidelity[key] !== undefined)
+      keep[key] = fidelity[key];
+  return keep;
+}
+function leanReviewResult(result) {
+  const led = lead(result);
+  const out = {};
+  for (const key of [
+    "ok",
+    "acceptance",
+    "disposition",
+    "blockers",
+    "blockersOmitted",
+    "findings",
+    "next"
+  ])
+    if (led[key] !== undefined)
+      out[key] = led[key];
+  for (const key of LEAN_KEYS)
+    if (result[key] !== undefined)
+      out[key] = result[key];
+  if (result.viewFidelity !== undefined)
+    out.viewFidelity = leanFidelity(result.viewFidelity);
+  const { warnings, warningsOmitted } = boundWarnings(result, LEAN_WARNINGS);
+  if (warnings !== undefined)
+    out.warnings = warnings;
+  if (warningsOmitted !== undefined)
+    out.warningsOmitted = warningsOmitted;
+  if (Array.isArray(result.parts))
+    out.partsTotal = result.partsTotal ?? result.parts.length;
+  out.detail = "lean";
+  out.fullDetail = "Findings, parts and receipts: detail: 'compact' or 'full'.";
+  return out;
+}
+function fullReviewResult(result, retained) {
+  let out = lead(result);
+  if (retained)
+    out = { ...out, retainedReport: retained };
+  const fits = (candidate) => resultCharacters(candidate) <= MAX_RESULT_LIMIT;
+  if (fits(out))
+    return out;
+  out = boundWarnings(out, COMPACT_WARNINGS);
+  if (fits(out))
+    return out;
+  const withGroups = (limit) => {
+    const report = out.qaReport;
+    if (!isRecord6(report) || !isRecord6(report.dimensions))
+      return out;
+    return {
+      ...out,
+      qaReport: {
+        ...compactQaReport(report, limit, true),
+        detail: "full-bounded",
+        fullDetail: retained ? `Every finding: read ${retained.path} (pretty-printed).` : "Every finding is in the retained artifact when the host records one."
+      }
+    };
+  };
+  let bounded = withGroups(512);
+  if (fits(bounded))
+    return bounded;
+  out = withPartPreview(out);
+  for (let limit = 512;; limit = Math.floor(limit / 2)) {
+    bounded = withGroups(limit);
+    if (fits(bounded) || limit <= 1)
+      return bounded;
+  }
+}
+function compactReviewResult(result, detail = "compact", options = {}) {
+  if (!isRecord6(result))
+    return result;
+  if (detail === "lean")
+    return leanReviewResult(result);
+  if (detail === "full")
+    return fullReviewResult(result, options.retainedReport?.());
+  const out = boundWarnings(withPartPreview(withCurrentEvidence(lead(result))), COMPACT_WARNINGS);
+  if (out.qaReport !== undefined)
+    out.qaReport = compactQaReport(out.qaReport);
+  return out;
+}
+function changeSummary(result) {
+  const preservation = isRecord6(result.preservation) ? result.preservation : undefined;
+  const comparison = preservation && isRecord6(preservation.comparison) ? preservation.comparison : undefined;
+  const out = { status: preservation?.status ?? "not_assessed" };
+  if (comparison) {
+    if (comparison.summary !== undefined)
+      out.parts = comparison.summary;
+    if (comparison.animationSummary !== undefined)
+      out.animation = comparison.animationSummary;
+    if (Array.isArray(comparison.changes))
+      out.changed = comparison.changes.slice(0, 5).map((change) => isRecord6(change) ? `${change.path ?? "?"}: ${change.status ?? ""}${Array.isArray(change.fields) && change.fields.length ? ` (${change.fields.join(", ")})` : ""}` : String(change));
+  } else if (preservation?.reason !== undefined)
+    out.reason = preservation.reason;
+  return out;
+}
+var LEAN_DIFF = 2000;
+function compactEditResult(result, detail = "compact", options = {}) {
+  if (!isRecord6(result))
+    return result;
+  const { ok, applied, diff, preservation, render, ...rest } = result;
+  const reviewed = isRecord6(render) ? compactReviewResult(render, detail, options) : undefined;
+  const next = ok === false ? "Copy the exact text from kiln_source and send the edit again with this programRef." : reviewed ? reviewed.next : "kiln_render this programRef to review the change.";
+  const out = {
+    ok,
+    ...applied !== undefined ? { applied } : {},
+    ...ok === false ? {} : { changed: changeSummary(result) },
+    next
+  };
+  if (typeof diff === "string") {
+    if (detail === "lean" && diff.length > LEAN_DIFF) {
+      out.diff = diff.slice(0, LEAN_DIFF);
+      out.diffOmitted = diff.length - LEAN_DIFF;
+    } else
+      out.diff = diff;
+  }
+  if (detail !== "lean" && preservation !== undefined)
+    out.preservation = preservation;
+  if (reviewed)
+    out.render = reviewed;
+  return { ...out, ...rest };
+}
+
 // src/tools/review.ts
-var operationId = z18.string().regex(/^op_[a-f0-9-]{36}$/);
-var assetId = z18.string().regex(/^[a-z][a-z0-9_-]{0,79}$/);
+var operationId = z19.string().regex(/^op_[a-f0-9-]{36}$/);
+var assetId = z19.string().regex(/^[a-z][a-z0-9_-]{0,79}$/);
 var REVIEW_ACTIONS = ["list", "get", "pin", "save"];
 var REQUIREMENTS3 = {
   list: { required: [] },
@@ -39754,19 +40188,68 @@ var REQUIREMENTS3 = {
   pin: { required: ["operationId", "pinned"] },
   save: { required: ["operationId", "expectedRevision", "name"] }
 };
-var reviewToolInput = z18.strictObject({
-  action: z18.enum(REVIEW_ACTIONS),
+var reviewToolInput = z19.strictObject({
+  action: z19.enum(REVIEW_ACTIONS),
   projectId: assetId.optional().describe("list: only operations bound to this project."),
+  offset: z19.number().int().min(0).optional().describe("list: page start; default 0."),
+  limit: z19.number().int().min(1).max(100).optional().describe("list: page size; default 20."),
   operationId: operationId.optional().describe("get, pin, save."),
-  pinned: z18.boolean().optional().describe("pin: true keeps the operation past normal retention."),
-  expectedRevision: z18.number().int().nonnegative().optional().describe("save: the revision the listing displayed."),
+  pinned: z19.boolean().optional().describe("pin: true keeps the operation past normal retention."),
+  expectedRevision: z19.number().int().nonnegative().optional().describe("save: the revision the listing displayed."),
   collection: assetId.optional().describe("save: destination collection; default project."),
-  name: z18.string().min(1).max(200).optional().describe("save."),
+  name: z19.string().min(1).max(200).optional().describe("save."),
   assetId: assetId.optional().describe("save: revise this asset."),
   parentRevision: assetId.optional().describe("save: the revision being revised."),
-  description: z18.string().max(4000).optional().describe("save."),
-  tags: z18.array(z18.string().max(80)).max(30).optional().describe("save.")
+  description: z19.string().max(4000).optional().describe("save."),
+  tags: z19.array(z19.string().max(80)).max(30).optional().describe("save.")
 });
+var DEFAULT_PAGE = 20;
+function summarizeOperation(operation) {
+  const fidelity = operation.viewFidelity && typeof operation.viewFidelity === "object" ? operation.viewFidelity : undefined;
+  return {
+    operationId: operation.operationId,
+    revision: operation.revision,
+    tool: operation.tool,
+    status: operation.status,
+    startedAt: operation.startedAt,
+    updatedAt: operation.updatedAt,
+    ...operation.projectId ? { projectId: operation.projectId } : {},
+    ...operation.programRef ? { programRef: operation.programRef } : {},
+    pinned: operation.pinned,
+    ...operation.artifact ? { artifact: operation.artifact.sha256 } : {},
+    captures: operation.captures.length,
+    ...fidelity && fidelity.delivered !== undefined ? {
+      viewFidelity: {
+        delivered: fidelity.delivered,
+        materialFaithful: fidelity.materialFaithful
+      }
+    } : {},
+    ...operation.error ? { error: operation.error.slice(0, 200) } : {}
+  };
+}
+function boundOperation(operation) {
+  let bounded = operation;
+  const omitted = [];
+  for (const key of ["warnings", "qaReport", "requirements"]) {
+    if (JSON.stringify(bounded).length <= DEFAULT_RESULT_LIMIT)
+      break;
+    if (!bounded.result || bounded.result[key] === undefined)
+      continue;
+    const { [key]: _dropped, ...result } = bounded.result;
+    omitted.push(`result.${key}`);
+    bounded = { ...bounded, result, omitted: [...omitted] };
+  }
+  if (JSON.stringify(bounded).length > DEFAULT_RESULT_LIMIT) {
+    omitted.push("phases");
+    bounded = { ...bounded, phases: [], omitted: [...omitted] };
+  }
+  if (omitted.length)
+    bounded.result = {
+      ...bounded.result,
+      retainedReport: `.kiln/review/${operation.operationId}/evaluation.json`
+    };
+  return bounded;
+}
 function createKilnReviewDef(context) {
   const store = context.reviewStore;
   return {
@@ -39782,23 +40265,55 @@ function createKilnReviewDef(context) {
     async run(raw) {
       const input = reviewToolInput.parse(raw);
       requireActionFields("kiln_review", input.action, input, REQUIREMENTS3[input.action]);
-      if (input.action === "list")
-        return { ok: true, ...await store.snapshot({ projectId: input.projectId }) };
-      if (input.action === "pin") {
-        await store.pin(input.operationId, input.pinned);
-        return { ok: true, operation: await store.get(input.operationId) };
+      if (input.action === "list") {
+        const snapshot = await store.snapshot({ projectId: input.projectId });
+        const offset = input.offset ?? 0;
+        const page = snapshot.operations.slice(offset, offset + (input.limit ?? DEFAULT_PAGE));
+        const next = offset + page.length;
+        return {
+          ok: true,
+          total: snapshot.operations.length,
+          offset,
+          nextOffset: next < snapshot.operations.length ? next : null,
+          operations: page.map(summarizeOperation),
+          cursor: snapshot.cursor,
+          retention: snapshot.retention,
+          ...snapshot.observationIssues ? { observationIssues: snapshot.observationIssues } : {}
+        };
       }
-      const operation = await store.get(input.operationId);
+      const read = async (id) => {
+        try {
+          return await store.get(id);
+        } catch (error) {
+          const code = error.code;
+          if (code === "ENOENT" || code === "ENOTDIR" || /Invalid|Unsafe/u.test(String(error)))
+            throw new Error(`Unknown review operation ${id}. kiln_review { action: 'list' } lists the recorded operations.`);
+          throw error;
+        }
+      };
+      if (input.action === "pin") {
+        await read(input.operationId);
+        await store.pin(input.operationId, input.pinned);
+        return { ok: true, operation: boundOperation(await store.get(input.operationId)) };
+      }
+      const operation = await read(input.operationId);
       if (input.action === "get")
-        return { ok: true, operation };
+        return { ok: true, operation: boundOperation(operation) };
       const collection = input.collection ?? "project";
       if (!context.assetLibrary)
         throw new Error("No asset library configured for reviewed save");
       if (operation.revision !== input.expectedRevision)
-        throw new Error("Review revision changed; refresh before saving");
+        throw new Error(`Review revision changed: operation ${operation.operationId} is at revision ${operation.revision}, not ${input.expectedRevision}. kiln_review { action: 'get', operationId } (CLI: review get) returns the current revision; send it as expectedRevision.`);
       if (operation.status !== "complete" || !operation.artifact)
-        throw new Error("A completed operation with a retained artifact is required");
-      const [glb, source, metadata] = await Promise.all(["asset.glb", "source.kiln.js", "evaluation.json"].map((name) => store.readFile(operation.operationId, name)));
+        throw new Error(`Review operation ${operation.operationId} is ${operation.status}${operation.artifact ? "" : " with no retained artifact"}; only a completed operation with a retained artifact can be saved. kiln_review { action: 'list' } shows each operation's status, or render again with kiln_render and save that.`);
+      let glb;
+      let source;
+      let metadata;
+      try {
+        [glb, source, metadata] = await Promise.all(["asset.glb", "source.kiln.js", "evaluation.json"].map((name) => store.readFile(operation.operationId, name)));
+      } catch (error) {
+        throw new Error(`Review operation ${operation.operationId} has no readable retained files (${error instanceof Error ? error.message : String(error)}). Its evidence was evicted or never written; kiln_render the program again and save that result, or kiln_review { action: 'list' } for other operations.`);
+      }
       validateAssetGlb(glb);
       const digest = await crypto.subtle.digest("SHA-256", Uint8Array.from(glb));
       const sha256 = `sha256:${Array.from(new Uint8Array(digest), (byte) => byte.toString(16).padStart(2, "0")).join("")}`;
@@ -39821,7 +40336,7 @@ function createKilnReviewDef(context) {
         }))
       ];
       const preview = operation.captures[0] ? await store.readFile(operation.operationId, operation.captures[0].name) : undefined;
-      const capture = z18.object({ backdrop: z18.enum(BACKDROP_IDS).optional() }).safeParse(operation.result?.capture);
+      const capture = z19.object({ backdrop: z19.enum(BACKDROP_IDS).optional() }).safeParse(operation.result?.capture);
       const asset = await context.assetLibrary.save(collection, {
         name: input.name,
         assetId: input.assetId,
@@ -39858,7 +40373,7 @@ function createKilnReviewDef(context) {
 }
 
 // src/tools/workspace.ts
-import { z as z19 } from "zod";
+import { z as z20 } from "zod";
 async function observeLiveReview(observer, tool, input, run) {
   let authoring;
   const invokeOnce = () => authoring ??= Promise.resolve().then(run);
@@ -39906,7 +40421,7 @@ async function observeWorkspaceOperation(context, tool, input, run) {
 function withWorkspaceContext(def, context) {
   if (!observed.has(def.name))
     return def;
-  const schema = context.workspace && def.inputSchema instanceof z19.ZodObject ? def.inputSchema.safeExtend(workspaceSelectionSchema.shape) : def.inputSchema;
+  const schema = context.workspace && def.inputSchema instanceof z20.ZodObject ? def.inputSchema.safeExtend(workspaceSelectionSchema.shape) : def.inputSchema;
   return {
     ...def,
     inputSchema: schema,
@@ -39919,89 +40434,6 @@ function withWorkspaceContext(def, context) {
       });
     }
   };
-}
-
-// src/tools/review-detail.ts
-import { z as z20 } from "zod";
-var COMPACT_PART_PREVIEW = 24;
-var COMPACT_FINDINGS_PER_DIMENSION = 12;
-var reviewDetailInput = z20.enum(["compact", "full"]).optional().describe("compact (default) counts repeated findings; full returns every finding and rule");
-var partsHint = (offset) => `For remaining paths use kiln_inspect with image:false and listParts:{offset:${offset}}. listParts.query filters names/paths; follow partListing.nextOffset on the same programRef and query.`;
-var isRecord6 = (value) => typeof value === "object" && value !== null && !Array.isArray(value);
-function compactDimension(dimension) {
-  if (!isRecord6(dimension) || !Array.isArray(dimension.findings))
-    return dimension;
-  const findings = [];
-  const omittedByCode = {};
-  const observedCodes = new Set;
-  let actionable = 0;
-  let omitted = 0;
-  for (const finding of dimension.findings) {
-    const code = isRecord6(finding) && typeof finding.code === "string" ? finding.code : "UNKNOWN";
-    let keep;
-    if (isRecord6(finding) && finding.disposition === "observe") {
-      keep = !observedCodes.has(code) && observedCodes.size < COMPACT_FINDINGS_PER_DIMENSION;
-      if (keep)
-        observedCodes.add(code);
-    } else
-      keep = actionable++ < COMPACT_FINDINGS_PER_DIMENSION;
-    if (keep)
-      findings.push(finding);
-    else {
-      omitted++;
-      omittedByCode[code] = (omittedByCode[code] ?? 0) + 1;
-    }
-  }
-  if (omitted === 0)
-    return dimension;
-  return { ...dimension, findings, findingsOmitted: omitted, omittedByCode };
-}
-function compactQaReport(report) {
-  if (!isRecord6(report) || !isRecord6(report.dimensions))
-    return report;
-  const { dimensions, rules, ...rest } = report;
-  const compact = {
-    ...rest,
-    detail: "compact",
-    dimensions: Object.fromEntries(Object.entries(dimensions).map(([name, value]) => [name, compactDimension(value)]))
-  };
-  if (Array.isArray(rules)) {
-    let evaluated = 0;
-    let notRequested = 0;
-    const notEvaluated = [];
-    for (const rule of rules) {
-      if (!isRecord6(rule))
-        continue;
-      if (rule.status === "evaluated")
-        evaluated++;
-      else if (rule.status === "notRequested")
-        notRequested++;
-      else
-        notEvaluated.push({ id: rule.id, ...rule.reason ? { reason: rule.reason } : {} });
-    }
-    compact.ruleSummary = { evaluated, notEvaluated, notRequested };
-  }
-  compact.fullDetail = "Every finding and rule: kiln_render with detail: 'full'.";
-  return compact;
-}
-function compactReviewResult(result, detail = "compact") {
-  if (detail === "full" || !isRecord6(result))
-    return result;
-  const out = { ...result };
-  if (out.qaReport !== undefined)
-    out.qaReport = compactQaReport(out.qaReport);
-  if (Array.isArray(out.parts) && out.parts.length > COMPACT_PART_PREVIEW) {
-    out.parts = out.parts.slice(0, COMPACT_PART_PREVIEW);
-    out.partsTruncated = true;
-    out.partsNextOffset = COMPACT_PART_PREVIEW;
-    out.partsHint = partsHint(COMPACT_PART_PREVIEW);
-  }
-  return out;
-}
-function compactEditResult(result) {
-  if (!isRecord6(result) || !isRecord6(result.render))
-    return result;
-  return { ...result, render: compactReviewResult(result.render) };
 }
 
 // src/tools/registry.ts
@@ -40476,7 +40908,15 @@ var renderInput = z21.object({
   code: z21.string().describe("Kiln source code to execute and render to an in-memory GLB.")
 });
 var renderViewsInput = renderInput.extend({ capture: captureInput, detail: reviewDetailInput });
-var requestedDetail = (input) => input?.detail === "full" ? "full" : "compact";
+var reviewDetailOptions = (context) => ({
+  retainedReport: () => {
+    const operation = context.liveReview?.currentOperation?.();
+    return operation ? {
+      operationId: operation.operationId,
+      path: `.kiln/review/${operation.operationId}/evaluation.json`
+    } : undefined;
+  }
+});
 var renderViewsBufferInput = renderViewsInput.omit({ code: true });
 var screenshotAnimationInput = z21.object({
   shot: cameraShotInput.optional(),
@@ -40515,15 +40955,18 @@ function runValidate(input, context) {
 var partListInput = z21.object({
   query: z21.string().max(4096).optional().describe("Case-insensitive substring of name or exact encoded path; not a regex."),
   offset: z21.number().int().min(0).optional(),
-  limit: z21.number().int().min(1).max(100).optional()
+  limit: z21.number().int().min(1).max(100).optional(),
+  placement: z21.boolean().optional().describe("Add world position, rotation, scale, mirroring and bounds per part; pages of 50.")
 }).strict();
+var PLACEMENT_PAGE_LIMIT = 50;
 async function listPartNames2(root, options = {}) {
   await Promise.resolve().then(() => init_camera());
   const all = listCameraSubjects(root);
   const query = options.query?.trim().toLowerCase();
   const matches = query ? all.filter((part) => part.name.toLowerCase().includes(query) || part.path.toLowerCase().includes(query)) : all;
   const offset = options.offset ?? 0;
-  const page = matches.slice(offset, offset + (options.limit ?? 80));
+  const limit = options.placement ? Math.min(options.limit ?? PLACEMENT_PAGE_LIMIT, PLACEMENT_PAGE_LIMIT) : options.limit ?? 80;
+  const page = matches.slice(offset, offset + limit);
   const nextOffset = offset + page.length;
   return {
     total: all.length,
@@ -40535,15 +40978,19 @@ async function listPartNames2(root, options = {}) {
 }
 async function listPartPage(root, options = {}) {
   const { page, ...listing } = await listPartNames2(root, options);
-  await Promise.resolve().then(() => init_part_placement());
-  const placement = createPartPlacementReader(root);
+  const placement = options.placement ? (await Promise.resolve().then(() => (init_part_placement(), exports_part_placement))).createPartPlacementReader(root) : undefined;
   return {
     ...listing,
     parts: page.map(({ path, name, node }) => {
       let hidden = false;
       for (let at = node;at && !hidden; at = at.parent)
         hidden = at.visible === false;
-      return { path, name, ...hidden ? { hidden: true } : {}, ...placement(node) };
+      return {
+        path,
+        name,
+        ...hidden ? { hidden: true } : {},
+        ...placement ? placement(node) : {}
+      };
     })
   };
 }
@@ -40657,7 +41104,6 @@ async function runRenderViews(input, context, onEvaluated) {
     const materialContractFailure = missingProceduralTextureResult(rendered, context);
     if (materialContractFailure)
       return materialContractFailure;
-    const structuralWarnings = inspectSceneStructure(root);
     const metrics = collectSceneMetrics(root);
     if ("shots" in (input.capture ?? {})) {
       await Promise.resolve().then(() => init_views());
@@ -40700,7 +41146,7 @@ async function runRenderViews(input, context, onEvaluated) {
           degraded: !materialFaithful,
           reasonCodes: ["IN_LOOP_BUILD_NOT_PERSISTED"]
         },
-        warnings: [...structuralWarnings, ...rendered.warnings]
+        warnings: [...rendered.warnings]
       };
       return await retainReviewedArtifact(input, rendered, reviewed, context);
     }
@@ -40769,7 +41215,7 @@ async function runRenderViews(input, context, onEvaluated) {
     try {
       context.onViewsRendered?.(drawnBy);
     } catch {}
-    const warnings = [...structuralWarnings, ...rendered.warnings];
+    const warnings = [...rendered.warnings];
     const materialContract = proceduralTextureMaterialContract(rendered, context);
     const reviewed = {
       ok: true,
@@ -40822,7 +41268,7 @@ function createKilnRenderViewsDef(context = {}) {
     description: KILN_RENDER_VIEWS_DESCRIPTION,
     mediaMulti: screenshotAnimationMediaMulti,
     inputSchema: renderViewsInput,
-    run: async (input) => compactReviewResult(await guardCaptureBudget("kiln_render", input, statefulContext, () => runRenderViews(renderViewsInput.parse(input), statefulContext)), requestedDetail(input)),
+    run: async (input) => compactReviewResult(await guardCaptureBudget("kiln_render", input, statefulContext, () => runRenderViews(renderViewsInput.parse(input), statefulContext)), requestedDetail(input, statefulContext.resultDetail), reviewDetailOptions(statefulContext)),
     media: screenshotMedia
   };
 }
@@ -40917,7 +41363,7 @@ function createKilnScreenshotAnimationDef(context = {}) {
     name: "kiln_screenshot_animation",
     description: KILN_SCREENSHOT_ANIMATION_DESCRIPTION,
     inputSchema: screenshotAnimationAdvertisedInput,
-    run: async (input) => compactReviewResult(await guardCaptureBudget("kiln_screenshot_animation", input, statefulContext, () => runScreenshotAnimation(screenshotAnimationInput.parse(input), statefulContext)), requestedDetail(input)),
+    run: async (input) => compactReviewResult(await guardCaptureBudget("kiln_screenshot_animation", input, statefulContext, () => runScreenshotAnimation(screenshotAnimationInput.parse(input), statefulContext)), requestedDetail(input, statefulContext.resultDetail), reviewDetailOptions(statefulContext)),
     media: screenshotAnimationMedia,
     mediaMulti: screenshotAnimationMediaMulti
   };
@@ -40972,7 +41418,7 @@ function createKilnViewInteriorDef(context = {}) {
     mediaMulti: screenshotAnimationMediaMulti,
     description: KILN_VIEW_INTERIOR_DESCRIPTION,
     inputSchema: viewInteriorAdvertisedInput,
-    run: async (input) => compactReviewResult(await guardCaptureBudget("kiln_view_interior", input, statefulContext, () => runViewInterior(viewInteriorInput.parse(input), statefulContext))),
+    run: async (input) => compactReviewResult(await guardCaptureBudget("kiln_view_interior", input, statefulContext, () => runViewInterior(viewInteriorInput.parse(input), statefulContext)), requestedDetail(input, statefulContext.resultDetail), reviewDetailOptions(statefulContext)),
     media: screenshotMedia
   };
 }
@@ -40984,6 +41430,7 @@ var attachmentEndpointInput = z21.object({
 var surfacePairInput = z21.array(z21.string().max(4096)).length(2);
 var inspectInput = z21.object({
   image: z21.boolean().optional().describe("False: requires listParts/measure/surfacePairs/compare; no image or camera controls. Default true."),
+  detail: reviewDetailInput,
   listParts: partListInput.optional().describe("List exported-scene paths, including nested parts. Default 80, max 100 per page. Follow partListing.nextOffset with the same programRef/query. image:false avoids rendering."),
   surfacePairs: z21.array(surfacePairInput).min(1).max(12).optional().describe("[from,to] pairs of exact listParts paths or unambiguous node names; check surfaceMeasurements.status and each result."),
   compare: z21.object({
@@ -41158,7 +41605,7 @@ function createKilnInspectDef(context = {}) {
     name: "kiln_inspect",
     description: KILN_INSPECT_DESCRIPTION,
     inputSchema: inspectAdvertisedInput,
-    run: async (input) => compactReviewResult(await guardCaptureBudget("kiln_inspect", input, statefulContext, () => runInspect(inspectInput.parse(input), statefulContext))),
+    run: async (input) => compactReviewResult(await guardCaptureBudget("kiln_inspect", input, statefulContext, () => runInspect(inspectInput.parse(input), statefulContext)), requestedDetail(input, statefulContext.resultDetail), reviewDetailOptions(statefulContext)),
     media: screenshotMedia
   };
 }
@@ -41172,7 +41619,8 @@ var editInput = z21.object({
   code: z21.string().describe("The Kiln program to patch. The full current source."),
   edits: z21.array(editOperationInput).min(1).max(20).describe("Edits applied in order against the program. If any one fails to match, none are applied and the reply says which. Batch related changes into a single call."),
   render: z21.boolean().optional().describe("Render the patched program and return the views (default true). false = patch only."),
-  capture: captureInput
+  capture: captureInput,
+  detail: reviewDetailInput
 });
 var editAdvertisedInput = editInput.extend({ capture: captureRecordInput });
 async function runEdit(input, context) {
@@ -41252,7 +41700,7 @@ function createKilnEditDef(context = {}) {
     mediaMulti: screenshotAnimationMediaMulti,
     description: KILN_EDIT_DESCRIPTION,
     inputSchema: editAdvertisedInput,
-    run: async (input) => compactEditResult(await guardCaptureBudget("kiln_edit", input, statefulContext, () => runEdit(editInput.parse(input), statefulContext))),
+    run: async (input) => compactEditResult(await guardCaptureBudget("kiln_edit", input, statefulContext, () => runEdit(editInput.parse(input), statefulContext)), requestedDetail(input, statefulContext.resultDetail), reviewDetailOptions(statefulContext)),
     media: (output) => {
       const o = output;
       if (!o || typeof o.pngBase64 !== "string" || o.pngBase64.length === 0)
@@ -41392,6 +41840,15 @@ function withCaptureCache(context) {
 var rendererInput = z21.strictObject({
   action: z21.enum(["status", "reprobe"]).default("status")
 });
+async function readSavedRevision(target, collection, assetId, revisionId) {
+  try {
+    return await target.read(collection, assetId, revisionId);
+  } catch (error) {
+    if (error.code === "ENOENT")
+      throw new Error(`Unknown asset ${assetId} revision ${revisionId} in collection ${collection}. kiln_assets { action: 'list', collection: '${collection}' } lists the saved revisions.`);
+    throw error;
+  }
+}
 function createKilnProgramToolRegistry(suppliedContext = {}) {
   toolRequirements(suppliedContext);
   const store = suppliedContext.programStore ?? new MemoryProgramStore;
@@ -41407,12 +41864,12 @@ function createKilnProgramToolRegistry(suppliedContext = {}) {
         if (action === "reprobe" && !suppliedContext.reprobeRenderer)
           return {
             ok: false,
-            error: "Renderer reprobe is not provided by this host. Configure its render connection through the host."
+            error: "Renderer reprobe is not provided by this host. Configure its render connection through the host, or read the declared configuration with kiln_discover({ capabilities: true })."
           };
         if (!suppliedContext.renderCapabilities)
           return {
             ok: false,
-            error: "Renderer status is not provided by this host. Discovery reports its declared configuration."
+            error: "Renderer status is not provided by this host. Read the declared render configuration with kiln_discover({ capabilities: true })."
           };
         try {
           return {
@@ -41596,7 +42053,7 @@ function createKilnAssetDefs(context) {
           requirements: activeRequirements.binding
         };
         if (input.assetId && input.parentRevision) {
-          const previous = await target.read(input.collection, input.assetId, input.parentRevision);
+          const previous = await readSavedRevision(target, input.collection, input.assetId, input.parentRevision);
           assertSavedRequirementsAuthorized(previous.manifest, activeRequirements);
         }
         const code = await context.programStore.get(input.programRef);
@@ -41656,8 +42113,8 @@ function createKilnAssetDefs(context) {
           };
         }
         if (!input.assetId || !input.revisionId)
-          throw new Error("get/restore requires assetId and revisionId");
-        const record = await target.read(input.collection, input.assetId, input.revisionId);
+          throw new Error(`kiln_assets ${input.action} requires assetId and revisionId; kiln_assets { action: 'list', collection: '${input.collection}' } lists them.`);
+        const record = await readSavedRevision(target, input.collection, input.assetId, input.revisionId);
         if (input.action === "get")
           return links(input.collection, record.manifest);
         const saved = assertSavedRequirementsAuthorized(record.manifest, activeRequirements);
@@ -41726,7 +42183,7 @@ function createKilnAssetDefs(context) {
       run: async (raw) => {
         const input = profileExportInput.parse(raw);
         if (input.profile === "runtime") {
-          const record = await library().read(input.collection, input.assetId, input.revisionId);
+          const record = await readSavedRevision(library(), input.collection, input.assetId, input.revisionId);
           return {
             ok: true,
             profile: input.profile,
@@ -41739,7 +42196,7 @@ function createKilnAssetDefs(context) {
             resources: await (await Promise.resolve().then(() => (init_assets_resources(), exports_assets_resources))).runtimeAssetLinks(input.collection, record)
           };
         }
-        return links(input.collection, (await library().read(input.collection, input.assetId, input.revisionId)).manifest);
+        return links(input.collection, (await readSavedRevision(library(), input.collection, input.assetId, input.revisionId)).manifest);
       }
     },
     {
@@ -41749,7 +42206,7 @@ function createKilnAssetDefs(context) {
       run: async (raw) => {
         const input = importInput.parse(raw);
         const target = library();
-        const record = await target.read(input.sourceCollection, input.assetId, input.revisionId);
+        const record = await readSavedRevision(target, input.sourceCollection, input.assetId, input.revisionId);
         await target.import(input.collection, [record]);
         return links(input.collection, record.manifest);
       }
@@ -41811,41 +42268,45 @@ function kilnMcpToolDefs(context = {}) {
 }
 async function runTool(def, args, options = {}) {
   const output = await def.run(args);
+  const failed = typeof output === "object" && output !== null && output.ok === false ? { isError: true } : {};
   const multi = def.mediaMulti?.(output);
   if (multi) {
     return {
+      ...failed,
       content: [
         ...multi.pngs.map((png) => ({
           type: "image",
           data: Buffer.from(png).toString("base64"),
           mimeType: "image/png"
         })),
-        { type: "text", text: JSON.stringify(multi.json, null, 2) }
+        { type: "text", text: JSON.stringify(multi.json) }
       ]
     };
   }
   const media = def.media?.(output);
   if (media) {
     return {
+      ...failed,
       content: [
         {
           type: "image",
           data: Buffer.from(media.png).toString("base64"),
           mimeType: "image/png"
         },
-        { type: "text", text: JSON.stringify(media.json, null, 2) }
+        { type: "text", text: JSON.stringify(media.json) }
       ]
     };
   }
   const asText = def.text?.(output);
   if (asText !== undefined)
-    return { content: [{ type: "text", text: asText }] };
+    return { ...failed, content: [{ type: "text", text: asText }] };
   const resources = output?.resources ?? [];
   const includeResourceLinks = options.artifactResourceLinks === true;
   const payload = resources.length && includeResourceLinks ? { ...output, resources: undefined } : output;
   return {
+    ...failed,
     content: [
-      { type: "text", text: JSON.stringify(payload, null, 2) },
+      { type: "text", text: JSON.stringify(payload) },
       ...includeResourceLinks ? resources : []
     ],
     ...def.ui ? {
@@ -41888,7 +42349,15 @@ function createKilnToolHost(context = {}, options = {}) {
       try {
         return await requests.run(request.signal, () => runTool(def, args, options));
       } catch (err) {
-        return { isError: true, content: [{ type: "text", text: errorMessage(err) }] };
+        return {
+          isError: true,
+          content: [
+            {
+              type: "text",
+              text: withoutLocalPaths(describeInputError(name, err) ?? errorMessage(err))
+            }
+          ]
+        };
       }
     },
     async readResource(uri) {
@@ -41953,6 +42422,12 @@ async function createPackagedKilnHost(options = {}) {
     } : {}
   });
   context.programStore = localProgramStore();
+  const detail = env["KILN_RESULT_DETAIL"];
+  if (detail) {
+    if (detail !== "lean" && detail !== "compact")
+      throw new Error("KILN_RESULT_DETAIL must be lean or compact (full is per call). Correct the variable and restart the MCP session.");
+    context.resultDetail = detail;
+  }
   const deliveryBase = env["KILN_ASSET_DOWNLOAD_BASE_URL"];
   if (deliveryBase) {
     const base = new URL(deliveryBase);

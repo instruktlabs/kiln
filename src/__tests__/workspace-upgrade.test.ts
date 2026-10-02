@@ -30,16 +30,18 @@ const put = async (path: string, text: string) => {
   await mkdir(dirname(path), { recursive: true });
   await writeFile(path, text);
 };
-const invoke = (root: string, runtime: string, options = {}, node = 'node') =>
+// The harness matters only at creation; a check, repair or upgrade reads it from the manifest.
+const invoke = (root: string, runtime: string, options = {}, node = 'node', harness = 'opencode') =>
   spawnSync(
     node,
     [
       '--input-type=module',
       '-e',
-      `import {createWorkspace} from ${JSON.stringify(setup)}; console.log(JSON.stringify(await createWorkspace(process.argv[1], 'opencode', {...JSON.parse(process.argv[3]),installation:process.argv[2]})));`,
+      `import {createWorkspace} from ${JSON.stringify(setup)}; console.log(JSON.stringify(await createWorkspace(process.argv[1], process.argv[4], {...JSON.parse(process.argv[3]),installation:process.argv[2]})));`,
       root,
       runtime,
       JSON.stringify(options),
+      harness,
     ],
     { encoding: 'utf8' },
   );
@@ -177,11 +179,11 @@ it('retires only tracked unchanged resources and refuses directory links before 
     await fixture(runtime, 'before');
     const resource = 'kiln-author-asset/references/retired.md';
     await put(join(runtime, 'skills', resource), 'old guidance');
-    expect(invoke(root, runtime).status).toBe(0);
+    expect(invoke(root, runtime, {}, 'node', 'codex').status).toBe(0);
     await put(join(root, 'skills/kiln-author-asset/owner-note.md'), 'owner note');
     await rm(join(runtime, 'skills', resource));
     expect(invoke(root, runtime, { upgrade: true }).status).toBe(0);
-    for (const folder of ['skills', '.agents/skills', '.claude/skills'])
+    for (const folder of ['skills', '.agents/skills'])
       expect(await Bun.file(join(root, folder, resource)).exists()).toBe(false);
     expect(await readFile(join(root, 'skills/kiln-author-asset/owner-note.md'), 'utf8')).toBe(
       'owner note',
@@ -212,7 +214,7 @@ it('diagnoses and upgrades a same-version runtime and all skill copies without c
     const runtime = join(temp, 'runtime'),
       root = join(temp, 'workspace');
     await fixture(runtime, 'before');
-    expect(invoke(root, runtime).status).toBe(0);
+    expect(invoke(root, runtime, {}, 'node', 'claude').status).toBe(0);
     const asset = join(root, '.kiln/programs/retained-source');
     await put(asset, '// original asset');
     await put(join(root, 'brief.md'), 'Owner brief');
@@ -223,7 +225,7 @@ it('diagnoses and upgrades a same-version runtime and all skill copies without c
     const upgrade = invoke(root, runtime, { upgrade: true });
     expect(upgrade.status).toBe(0);
     expect(JSON.parse(upgrade.stdout).upgraded).toBe(true);
-    for (const folder of ['skills', '.agents/skills', '.claude/skills'])
+    for (const folder of ['skills', '.claude/skills'])
       expect(await readFile(join(root, folder, 'kiln-author-asset/SKILL.md'), 'utf8')).toContain(
         'after',
       );
@@ -273,10 +275,9 @@ it('stops CLI startup on stale skill copies, reports them in the first MCP call,
     const skill = 'kiln-author-asset/SKILL.md';
     const old = '# Old instructions for kiln_list_primitives';
     manifest.skillHashes[skill] = sha(old);
-    for (const folder of ['skills', '.agents/skills', '.claude/skills']) {
-      manifest.managedHashes[`${folder}/${skill}`] = sha(old);
-      await put(join(temp, folder, skill), old);
-    }
+    // An OpenCode workspace registers `skills/` itself through `skills.paths`.
+    manifest.managedHashes[`skills/${skill}`] = sha(old);
+    await put(join(temp, 'skills', skill), old);
     await put(manifestPath, JSON.stringify(manifest));
     const cli = spawnSync('node', [join(temp, 'kiln.mjs'), 'discover', '--json'], {
       encoding: 'utf8',
@@ -332,7 +333,7 @@ it('reports conflicting customizations before any upgrade and accepts manually r
     const runtime = join(temp, 'runtime'),
       root = join(temp, 'workspace');
     await fixture(runtime, 'before');
-    expect(invoke(root, runtime).status).toBe(0);
+    expect(invoke(root, runtime, {}, 'node', 'codex').status).toBe(0);
     const relative = '.agents/skills/kiln-author-asset/SKILL.md';
     await put(join(root, relative), '# Owner customized instructions');
     const before = await readFile(join(root, '.kiln/workspace.json'), 'utf8');
@@ -350,6 +351,49 @@ it('reports conflicting customizations before any upgrade and accepts manually r
       await readFile(join(runtime, 'skills/kiln-author-asset/SKILL.md'), 'utf8'),
     );
     expect(invoke(root, runtime, { upgrade: true }).status).toBe(0);
+  } finally {
+    await rm(temp, { recursive: true, force: true });
+  }
+}, 30000);
+
+it('retires the second skill registry a 0.9 workspace carried, and refuses when it was edited', async () => {
+  const temp = await mkdtemp(join(tmpdir(), 'kiln-upgrade-registry-'));
+  try {
+    const runtime = join(temp, 'runtime'),
+      root = join(temp, 'workspace');
+    await fixture(runtime, 'before');
+    expect(invoke(root, runtime, {}, 'node', 'codex').status).toBe(0);
+    // 0.9.0 wrote `.claude/skills` and `.agents/skills` for every harness. Replay
+    // that for a codex workspace: the extra copies, tracked under their digests.
+    const path = join(root, '.kiln/workspace.json');
+    const manifest = JSON.parse(await readFile(path, 'utf8'));
+    const legacy = Object.keys(manifest.skillHashes).map((name) => `.claude/skills/${name}`);
+    for (const name of Object.keys(manifest.skillHashes)) {
+      await put(
+        join(root, '.claude/skills', name),
+        await readFile(join(root, 'skills', name), 'utf8'),
+      );
+      manifest.managedHashes[`.claude/skills/${name}`] = manifest.skillHashes[name];
+    }
+    await put(path, JSON.stringify(manifest));
+    const check = JSON.parse(invoke(root, runtime, { check: true }).stdout);
+    expect(check.status).toBe('update-required');
+    expect(check.files.map((e: { path: string }) => e.path).sort()).toEqual(legacy.sort());
+    expect(check.files.every((e: { status: string }) => e.status === 'retired')).toBe(true);
+    // Edited, the copy is the owner's and stops the upgrade before any write.
+    const edited = join(root, legacy[0]!);
+    await put(edited, '# owner customized copy');
+    const refused = invoke(root, runtime, { upgrade: true });
+    expect(refused.status).toBe(1);
+    expect(refused.stderr).toContain(legacy[0]!);
+    expect(await readFile(edited, 'utf8')).toBe('# owner customized copy');
+    await put(edited, await readFile(join(root, 'skills/kiln-author-asset/SKILL.md'), 'utf8'));
+    expect(invoke(root, runtime, { upgrade: true }).status).toBe(0);
+    for (const name of legacy) expect(await Bun.file(join(root, name)).exists()).toBe(false);
+    expect(
+      await readFile(join(root, '.agents/skills/kiln-author-asset/SKILL.md'), 'utf8'),
+    ).toContain('before');
+    expect(JSON.parse(invoke(root, runtime, { check: true }).stdout).status).toBe('current');
   } finally {
     await rm(temp, { recursive: true, force: true });
   }

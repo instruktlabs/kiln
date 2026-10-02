@@ -449,9 +449,20 @@ async function evidenceFromFiles(stdoutPath, stderrPath) {
   return evidence;
 }
 
-/** The workspace MCP tools, by their unprefixed names; a harness adds its own prefix. */
-const KILN_MCP_TOOL =
-  /kiln_(?:list_primitives|validate|render|screenshot_animation|view_interior|inspect|edit|source|save|assets|present|export|import)\b/u;
+/**
+ * The workspace MCP tools by their unprefixed names, read from the packaged manifest so a
+ * tool added to the registry counts the day it ships; a harness adds its own prefix. The
+ * hand-kept list this replaced lacked five tools, so a session that only discovered and
+ * configured a project read as `not-exercised`. Longest names first, so `renderer` is not
+ * cut short by `render`.
+ */
+const KILN_MCP_TOOL = new RegExp(
+  `kiln_(?:${JSON.parse(readFileSync(join(REPO, 'src/generated/mcp-manifest.json'), 'utf8'))
+    .tools.map((tool) => tool.name.replace(/^kiln_/u, ''))
+    .sort((a, b) => b.length - a.length)
+    .join('|')})\\b`,
+  'u',
+);
 
 /**
  * Every tool call in a trace, counted by name, and whether any of them reached the

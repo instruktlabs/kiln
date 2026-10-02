@@ -23,8 +23,20 @@ const installation = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const quote = JSON.stringify;
 const hash = (value) => createHash('sha256').update(value).digest('hex');
 const harnesses = ['claude', 'codex', 'opencode', 'hermes', 'agy', 'copilot', 'cursor-agent'];
-/** Where each harness family actually looks for skills, relative to the workspace. */
-const skillRegistries = ['.claude/skills', '.agents/skills'];
+/**
+ * Where the chosen harness looks for project skills, relative to the workspace, as
+ * measured on the installed CLIs (docs/harnesses.md). Claude Code names `.claude/skills`
+ * and `.agents/skills`, so a workspace that carried both registered every skill twice;
+ * codex, hermes, agy, copilot and cursor-agent name `.agents/skills`; opencode reads only
+ * the `skills.paths` its generated config names, which is `skills/` itself. One registry
+ * per harness: every copy is bytes an upgrade must track and a reader may edit.
+ */
+const skillRegistries = (harness) =>
+  harness === 'claude' ? ['.claude/skills'] : harness === 'opencode' ? [] : ['.agents/skills'];
+/** Every registry any version of the generator has written; an upgrade retires the rest. */
+const allSkillRegistries = ['.claude/skills', '.agents/skills'];
+/** Claude Code reads CLAUDE.md and, by default, AGENTS.md only where no CLAUDE.md exists. */
+const claudeImport = '@AGENTS.md\n';
 const core = ['kiln-author-asset', 'kiln-refine-asset', 'kiln-qa-asset'];
 const optional = { compose: 'kiln-compose-scene', batch: 'kiln-batch-dispatch' };
 const inside = (parent, child) => {
@@ -128,28 +140,32 @@ function managedFiles(root, runtime, harness, nodeExecutable) {
   };
   if (harness === 'claude') files['.mcp.json'] = quote({ mcpServers: { kiln_workspace: mcp } });
   if (harness === 'codex') {
+    // Codex starts an MCP server with only the variables named here, so anything
+    // the other harnesses' servers inherit from the shell must be listed:
+    // KILN_PROJECT was not, and a configured project was invisible under Codex alone.
     const rendererEnvironment = [
       'KILN_RENDER_TOKEN',
       'RENDER_SERVICE_TOKEN',
       'KILN_RENDER_PORT_URL',
       'KILN_RENDER_SERVICE_PORT',
       'KILN_WORK_ITEM',
+      'KILN_PROJECT',
     ];
-    // Codex has NO project-local configuration. Every source it reads is
-    // $CODEX_HOME-rooted: `-c` overrides ~/.codex/config.toml, `-p <name>` layers
-    // $CODEX_HOME/<name>.config.toml, and `-C`/`--cd` changes only the working
-    // directory. So this file is documentation of intent, not configuration --
-    // codex will never read it, and the launcher below is what registers the
-    // server. It stays because a reader looking for the workspace's MCP wiring
-    // looks here first, and finding nothing is worse than finding a pointer.
+    // Codex 0.160 reads a project's `.codex/config.toml` only once its own
+    // $CODEX_HOME/config.toml marks that project trusted (measured 2026-10-01:
+    // `codex mcp list` under an empty home lists the server after a
+    // `[projects."<path>"] trust_level = "trusted"` entry and not before). The
+    // launcher below applies the same values as per-invocation `-c` overrides, so
+    // the workspace works without a trust entry, and this file is what a reader
+    // looking for the wiring finds first.
     files['.codex/config.toml'] =
-      `# Codex does not read a project-local config. This file records what the\n# workspace registers; \`node codex.mjs\` is what actually applies it, passing\n# these values as -c overrides per invocation.\n[mcp_servers.kiln_workspace]\ncommand = ${quote(mcp.command)}\nargs = [${quote(server)}]\nenv_vars = ${quote(rendererEnvironment)}\n[mcp_servers.kiln_workspace.env]\nKILN_PROGRAM_STORE = ${quote(store)}\nKILN_RENDER = "auto"\nKILN_WORKSPACE = ${quote(root)}\n`;
-    // Per-invocation `-c` overrides are the whole fix. They add the server to
-    // this one run and write nothing anywhere: $CODEX_HOME keeps its own config
-    // and, critically, its authentication. That is the rule a workspace has to
-    // respect for any harness whose configuration is user-global -- it may add
-    // configuration to an invocation, but it must not relocate the home that
-    // holds credentials. Redirecting the home is what broke hermes.
+      `# Codex reads this file only for a project its $CODEX_HOME/config.toml marks\n# trusted. \`node codex.mjs\` applies the same values as -c overrides per\n# invocation, so the workspace works without a trust entry.\n[mcp_servers.kiln_workspace]\ncommand = ${quote(mcp.command)}\nargs = [${quote(server)}]\nenv_vars = ${quote(rendererEnvironment)}\n[mcp_servers.kiln_workspace.env]\nKILN_PROGRAM_STORE = ${quote(store)}\nKILN_RENDER = "auto"\nKILN_WORKSPACE = ${quote(root)}\n`;
+    // Per-invocation `-c` overrides add the server to this one run and write
+    // nothing anywhere: $CODEX_HOME keeps its own config and, critically, its
+    // authentication. That is the rule a workspace has to respect for any harness
+    // whose configuration is user-global -- it may add configuration to an
+    // invocation, but it must not relocate the home that holds credentials.
+    // Redirecting the home is what broke hermes.
     //
     // `--cd` sets the project directory; a workspace is deliberately not a git
     // checkout, so `--skip-git-repo-check` is required rather than optional.
@@ -287,65 +303,42 @@ function startGuide(root, runtime, harness, nodeExecutable, server) {
       : harness === 'agy'
         ? 'The launcher supplies the absolute project directory. For headless runs, use node agy.mjs --model MODEL --print="Read AGENTS.md and the project skills. Use only kiln_workspace MCP tools. YOUR TASK.". The attached `--print=TEXT` spelling is required; a separated value is parsed incorrectly. Print mode disables automatic slash-command/skill expansion to avoid automatic expansion of a global skill. Use absolute task-file paths in headless prompts and verify that tool calls use kiln_workspace; global configuration and authentication remain unchanged.'
         : harness === 'codex'
-          ? 'Codex keeps configuration in $CODEX_HOME and has no project-local equivalent, so `node codex.mjs` passes this workspace\'s server, program store and directory as per-invocation `-c` overrides. It writes nothing outside this directory and leaves your $CODEX_HOME and its authentication untouched. Running bare `codex` here reaches no Kiln tools. For headless runs, add the prompt: node codex.mjs "Read AGENTS.md and the project skills, then YOUR TASK.".'
+          ? 'Codex reads this directory\'s `.codex/config.toml` only once your $CODEX_HOME/config.toml marks the project trusted, so `node codex.mjs` passes the same server, program store and directory as per-invocation `-c` overrides. It writes nothing outside this directory and leaves your $CODEX_HOME and its authentication untouched. Bare `codex` here reaches the Kiln tools only after you trust the project. For headless runs, add the prompt: node codex.mjs "Read AGENTS.md and the project skills, then YOUR TASK.".'
           : `This directory is configured for ${harness}.`;
   return `# Start making assets\n\n\`\`\`bash\ncd ${root}\n${command}\n\`\`\`\n\n${launch} Accept the project/MCP trust prompts. Ask the agent to read AGENTS.md and create an asset. Kiln needs no separate model key.\n\nCore author/refine/QA skills are installed and registered for this harness. Optional compose/batch skills are selected at setup with --skills compose,batch.\n\nThese are shared CLI/MCP skills for your chosen harness. The optional built-in Strands agent adds its workflow internally; do not copy its prompt or native workflow into this workspace.\n\nLong-running and headless sessions may compact context automatically. AGENTS.md describes the harness-neutral KILN_PROGRESS.md handoff that preserves the current programRef and next action across compaction. Harness-specific thresholds are documented in Kiln's docs/harnesses.md; leave native automatic compaction enabled when the active model's context size is unknown.\n\nKeep assets here and engine source outside. This separates task context, not operating-system permissions. User instructions and authentication can still apply.\n\nRun repair after anything that invalidates the generated absolute paths: moving this workspace, moving or reinstalling the runtime, or removing the Node executable that setup recorded. The manifest pins the exact interpreter the preflight check validated. Invoking the CLI with another supported Node does not require repair while the recorded executable remains available.\n\n\`\`\`bash\nnode ${join(runtime, 'scripts/create-workspace.mjs')} ${root} --repair\n\`\`\`\n\nThat path is where the installation was at setup. If the installation itself moved, run the same command from its current location; \`runtime\` in .kiln/workspace.json records where this workspace last expected it.\n\nRepair updates generated runtime paths only and refuses edited configuration. For a runtime or skill update, stop the harness/MCP session, run kiln-init on this directory with --check and then --upgrade, and restart the session. Upgrade refreshes unchanged managed configuration, instructions and all skill copies; conflicting edits stop it before writing. Preserve and resolve the named files explicitly. Assets and saved revisions remain in place.\n`;
 }
 
 const guide = `# Kiln asset workspace
 
-Author and refine assets in this directory. The engine is installed separately. Do not read its implementation or example collection to solve an asset task.
+Author and refine assets here. The engine is installed elsewhere; do not read its source or examples to solve an asset task.
 
-Two surfaces drive the same engine and share .kiln/programs, so either is fine and you can mix them freely. The kiln_workspace MCP server returns each render as an image in your context. The node kiln.mjs CLI writes renders to disk, so read the PNG back before judging anything visual. A server named kiln may be a different installation; do not substitute it silently, and report the setup problem instead. To check, call kiln_discover with { capabilities: true } and compare capabilities.engine.installUrl against runtime in .kiln/workspace.json.
+Two surfaces drive one engine and share .kiln/programs: the kiln_workspace MCP server returns each render as an image in your context; the node kiln.mjs CLI writes renders to disk, so read the PNG back before judging anything visual. A server named kiln is another installation: do not use it, report it. If node is not on PATH, use the executable recorded as node in .kiln/workspace.json in its place (PowerShell: & "ABSOLUTE_NODE_PATH" kiln.mjs ...). A server that reports a runtime or skill mismatch in its first result needs kiln-init --check and --upgrade on this directory from the desired installation, then a new session; never overwrite local edits to clear a diagnostic.
 
-If the shell cannot resolve node, read manifest.node (the node field in .kiln/workspace.json) and substitute that quoted absolute executable. In PowerShell: & "ABSOLUTE_NODE_PATH" kiln.mjs discover --json. Use the same substitution for a generated harness launcher such as codex.mjs; no global PATH change is needed. kiln.mjs itself always runs the CLI under that recorded Node, the one the MCP server uses, so a CLI export and kiln_save of one programRef are byte-identical.
-
-Read the skill for your task from skills/ in this directory, never a global plugin copy. The maintained copies are there, mirrored into .claude/skills/ and .agents/skills/ because harnesses scan different directories. Use kiln_discover with no arguments for a compact overview and starting createRoot/createPart signatures. Search the Kiln catalog with kiln_discover({ query: "curved hollow tube" }) in ordinary modeling language; a harness's own search tool is unrelated and cannot see this catalog. The catalog indexes operations, assemblies, recipes and materials, so name parts and materials (slats along a line, braced legs, cast iron) rather than only the object. Fetch complete contracts with kiln_discover({ ids: ["sweepProfile"] }). kiln_discover search and overview return six summaries by default, with current family/kind/tags filters and offset/limit pagination. Exact ids accepts up to six distinct IDs or executable names. Recipes are optional guidance, and no asset-category selection or separate search model is required. CLI equivalents are node kiln.mjs discover --query "curved hollow tube" and node kiln.mjs discover --id sweepProfile --json.
-
-Managed CLI/MCP startup checks runtime and copied-skill versions. If they differ, stop this session and run kiln-init on this directory with --check and --upgrade from the desired installation. Conflicting local edits require an explicit merge; do not overwrite them to clear a diagnostic. Restart the session after upgrading.
-
-## Standalone assets and optional projects
-
-This workspace supports standalone assets, experiments, scenes and projects. A project is optional: it stores a shared brief, inventory, design profile and material lock for related work. Do not create one just to build, review, save or export an asset. The save collection named project is a destination and does not imply project membership.
-
-Omitted project selection stays standalone even when projects exist, unless KILN_PROJECT was explicitly configured. CLI --no-project or MCP projectId: null overrides that default. For a pack or other related work, create a project with node kiln.mjs project create --id my-pack --name "My pack", or kiln_project with {action:"create", draft:{projectId:"my-pack", name:"My pack"}}. Read the returned revision, then use project update --expected or MCP expectedRevision to update the brief, design, inventory and materialDependencies. Every supplied top-level field replaces its previous value, including the whole design object: read and merge preferences before updating. Creating or opening a project does not select it for subsequent authoring calls.
-
-Select a project per operation with --project / projectId and optionally --project-revision / projectRevision for an exact configuration. Library materials also work standalone through call-level materialDependencies or CLI --materials pins.json; pin returned immutable revisions before compiling a portableSpec. Read skills/kiln-author-asset/references/projects-and-materials.md when using these facilities. Project preferences do not establish trusted QA requirements. Check connected schemas before assuming optional host services.
-
-Run node kiln.mjs view to open the shared Library, Materials, Projects and Live Review dashboard. Live Review observes standalone and project work, including exact retained artifacts and render fidelity. kiln_review save uses the displayed expectedRevision to save the reviewed artifact without re-evaluation. Pinning retains evidence but does not pause the agent, and feedback remains in the agent conversation. Use individual asset delivery for standalone work and project export for saved inventory packs; editable delivery carries source/resources, while runtime delivery supplies GLB/metadata.
+Read the skill for your task from skills/ here: kiln-author-asset, kiln-refine-asset, kiln-qa-asset, and the optional compose and batch skills when installed. Start with kiln_discover({}) for the overview and the starting signatures; search in modeling language with kiln_discover({ query: "curved hollow tube" }), naming parts and materials rather than the object; fetch contracts with { ids: [...] }, up to six. A harness's own search cannot see this catalog. CLI: node kiln.mjs discover --query TEXT or --id NAME --json.
 
 ## The loop
 
-1. Draft. Pass code once to kiln_render or kiln_validate, or import a file with node kiln.mjs source asset.kiln.js. Either returns a programRef, normally a short immutable p_ handle. Keep it even when validation fails. Copy it exactly; never construct, expand or shorten one, and do not retransmit the program.
-2. Render. kiln_render, or node kiln.mjs render PROGRAM_REF --views sheet.png.
-3. Review. Look at the image. Check viewFidelity before judging materials: a CPU view is honest about silhouette, proportion and contact, and says nothing about colour, metalness or roughness.
-   For animation, use kiln_screenshot_animation or node kiln.mjs animation PROGRAM_REF --clip CLIP_NAME --phases 0,0.25,0.5,0.75,1 --views motion.png --json. Phases are fractions of clip duration. Add --render gpu for material review, read the PNG and check attachments in intermediate poses; do not replace clip sampling with source edits that bake a rest pose.
-4. Edit. Read exact anchors with kiln_source and a literal query, following nextOffset for more context, then call kiln_edit with programRef and edits. Each edit returns a new programRef; use that one from then on. Rewriting the whole file through the CLI works, but it loses the anchored diff and the revision lineage.
-5. Save. The user chooses a named destination; discover configured collections when needed and otherwise default to project. Use kiln_save, or node kiln.mjs save. Keep the exact asset and revision IDs. Save refinements as child revisions rather than replacing their parent. When the user wants to see the result, call kiln_present; if the host cannot render it, launch node kiln.mjs view yourself and provide its loopback URL.
+1. Draft: send code once to kiln_render or kiln_validate (CLI: node kiln.mjs source asset.kiln.js). Keep the returned programRef exactly, even after a failed build; never construct one or resend the program.
+2. Render: kiln_render, or node kiln.mjs render PROGRAM_REF --views sheet.png.
+3. Review the image. Read viewFidelity first: materialFaithful false means a CPU view, evidence about silhouette, proportion and contact, not about colour, metalness or roughness. Animation: kiln_screenshot_animation, or node kiln.mjs animation PROGRAM_REF --clip NAME --phases 0,0.25,0.5,0.75,1 --views motion.png --json; sample the clip rather than baking poses into source.
+4. Edit: kiln_source with a literal query for exact anchors, then kiln_edit with programRef and edits. Each edit returns a new programRef; use it from then on.
+5. Save: kiln_save, or node kiln.mjs save, to the destination the user names (kiln_assets { action: "collections" } lists them; project is the fallback). Refinements are child revisions. kiln_present shows a saved revision when the host can; node kiln.mjs view is an optional local viewer for a person who is present, not a step of an unattended run.
 
-Export at any point. Source is node kiln.mjs source PROGRAM_REF --out revised.kiln.js; geometry is node kiln.mjs render PROGRAM_REF --out asset.glb --views sheet.png. Source and ZIP exports refuse to overwrite a file. Render replaces existing GLB and PNG files only after each replacement is fully written and closed; a failed write or rename preserves the previous file. Replacement is per file, not a transaction across outputs. Replace PROGRAM_REF with the exact returned reference; full sha256 references also remain valid.
+Export any time: node kiln.mjs source PROGRAM_REF --out revised.kiln.js and node kiln.mjs render PROGRAM_REF --out asset.glb --views sheet.png. Source and ZIP exports never overwrite; render replaces a GLB or PNG only after a complete write.
+
+## Projects and materials
+
+Standalone work needs no project. Omitted project selection stays standalone unless KILN_PROJECT is configured (kiln_discover capabilities shows it); --no-project or projectId: null overrides it. A project holds a shared brief, inventory, design profile and material pins; select it per call with --project or projectId. Read skills/kiln-author-asset/references/projects-and-materials.md before creating or updating one. The save collection named project is a destination, not membership.
 
 ## Material-faithful views
 
-This workspace asks for render mode auto. Textured or metallic scenes use a verified compatible GPU service, starting one lazily when local dependencies are available. Ordinary untextured scenes with zero metalness and no advanced material extensions use CPU geometry views; this does not indicate renderer failure. CPU views report viewFidelity.materialFaithful false and cannot confirm PBR appearance. Use CLI --render gpu when GPU material review is required, including roughness on nonmetallic surfaces.
-
-The render-service code is included with Kiln, with its native GPU dependency optional at the Kiln package root. Check node kiln.mjs service status first. node kiln.mjs service start joins or starts the shared managed service ahead of a review session and refuses, stopping nothing, when an unknown listener holds the port. If dependencies are missing or incompatible, reinstall the official Kiln package with optional dependencies enabled; read runtime from .kiln/workspace.json to identify the installation. A source checkout uses bun install --frozen-lockfile at that root. CLI and MCP start the managed service when needed; compatible clients share it until five minutes pass without admitted work. From the installation root, node --import ./render-service/src/register-hooks.mjs render-service/src/server.mjs starts a manual service that remains running while idle. Unknown or incompatible listeners are reported and left in place.
-
-After dependency repair or a cached startup failure, call kiln_renderer with {action:"reprobe"} in this MCP session. It refreshes the existing route without installing dependencies or starting a renderer; the next view starts one if needed. CLI service reprobe checks only its own process. Restart the session after changing Kiln, environment variables or credentials.
-
-For a renderer on another device, configure this MCP server process with KILN_RENDER_PORT_URL and, when required, KILN_RENDER_TOKEN through the harness's environment settings. CLI commands accept --render-port URL and read KILN_RENDER_TOKEN. Run a compatible Kiln renderer on that device; a bind beyond loopback requires service-side RENDER_SERVICE_TOKEN unless an authenticated proxy is explicitly configured. A remote service is managed on its own device. Check capabilities for the selected route and an actual viewFidelity receipt for successful material rendering.
-
-For a task about appearance, say so rather than silently accepting CPU views.
+Render mode is auto: scenes with textures or metalness use a compatible GPU render service (render-service/ in the Kiln installation), started on demand when its dependencies are installed; flat scenes use CPU geometry views, which is not a failure. node kiln.mjs service status reports readiness; after repairing dependencies call kiln_renderer { action: "reprobe" } (CLI: node kiln.mjs service reprobe). For a renderer on another device, configure KILN_RENDER_PORT_URL and, when required, KILN_RENDER_TOKEN on the server, or pass --render-port URL to the CLI. When a task is about appearance and only CPU views exist, say so.
 
 ## Context compaction
 
-Long-running and headless sessions may compact context automatically. Keep a small KILN_PROGRESS.md when the task spans many tool calls. Before a compaction boundary, or after each meaningful revision, record the active goal, current programRef, files changed, validation and render results, unresolved errors, and the exact next action. After compaction, read that note and continue; do not stop merely because the conversation was summarized. Never replace a programRef from memory -- copy the exact current value from the note or the latest tool result.
+Long sessions compact. Keep a short KILN_PROGRESS.md with the goal, the current programRef, what changed and the exact next action; after compaction read it and continue, copying the programRef from it or from the latest result, never from memory.
 
-## Keep this context clean
-
-Skills and MCP servers from user-level configuration still load here: a workspace separates task context, not operating-system permissions. When you verify the server, report anything registered that is unrelated to this task so the user can decide whether to narrow it.
-
-Keep .kiln/programs while working. Source files are portable; references resolve only in a store containing their source.
+Skills and MCP servers from user-level configuration still load here; report anything registered that is unrelated to this task. Keep .kiln/programs while working: references resolve only in the store that holds their source.
 `;
 
 async function readManifest(root) {
@@ -404,7 +397,7 @@ async function managedHashes(root, manifest, files) {
   );
   for (const name of ['AGENTS.md', 'CLAUDE.md', 'START.md'])
     hashes[name] = hash(await readFile(join(root, name)));
-  for (const folder of ['skills', ...skillRegistries])
+  for (const folder of ['skills', ...skillRegistries(manifest.harness)])
     for (const [name, digest] of Object.entries(manifest.skillHashes))
       hashes[`${folder}/${name}`] = digest;
   return hashes;
@@ -416,7 +409,7 @@ async function upgradeWorkspace(root, runtime, previous, manifest, files, check)
   const desired = {
     ...files,
     'AGENTS.md': guide,
-    'CLAUDE.md': guide,
+    'CLAUDE.md': claudeImport,
     'START.md': startGuide(
       root,
       runtime,
@@ -431,15 +424,17 @@ async function upgradeWorkspace(root, runtime, previous, manifest, files, check)
       const relativeName = `${skill}/${name}`;
       skillHashes[relativeName] = digest;
       const body = await readFile(join(runtime, 'skills', relativeName));
-      for (const folder of ['skills', ...skillRegistries])
+      for (const folder of ['skills', ...skillRegistries(manifest.harness)])
         desired[`${folder}/${relativeName}`] = body;
     }
   }
   const knownNames = new Set(
     harnesses.flatMap((h) => Object.keys(managedFiles(root, runtime, h, manifest.node).files)),
   );
+  // Every registry an earlier generator wrote is an original: a copy this harness no
+  // longer needs is retired when unchanged and reported as a conflict when edited.
   const originalHashes = { ...previous.generated };
-  for (const folder of ['skills', ...skillRegistries])
+  for (const folder of ['skills', ...allSkillRegistries])
     for (const [name, digest] of Object.entries(previous.skillHashes ?? {})) {
       safeManagedName(`${folder}/${name}`, manifest.skills, knownNames);
       originalHashes[`${folder}/${name}`] = digest;
@@ -706,25 +701,23 @@ export async function createWorkspace(directory, harness = 'claude', options = {
     await mkdir(join(stage, '.kiln', 'programs'), { recursive: true });
     await writeFile(join(stage, '.kiln/workspace.json'), quote(manifest));
     await writeFile(join(stage, '.gitignore'), '.kiln/programs/\n.hermes/\n*.glb\n*.png\n');
-    for (const name of ['AGENTS.md', 'CLAUDE.md']) await writeFile(join(stage, name), guide);
+    await writeFile(join(stage, 'AGENTS.md'), guide);
+    await writeFile(join(stage, 'CLAUDE.md'), claudeImport);
     for (const name of skills)
       await cp(join(runtime, 'skills', name), join(stage, 'skills', name), { recursive: true });
-    // Registration copies. No harness scans a bare `skills/`: Claude Code reads
-    // only `.claude/skills/`, while codex, opencode, hermes, agy, copilot and
-    // cursor-agent read `.agents/skills/`. Without these the workspace has skill files that the
-    // agent can read only when told to, which is how it worked before. Copies
-    // rather than symlinks because those need developer mode or an
-    // administrator on Windows.
-    for (const registry of skillRegistries)
+    // The registration copy for the chosen harness. Only opencode scans a bare
+    // `skills/`, through the `skills.paths` its config names; the others read the
+    // directory `skillRegistries` records. A copy rather than a symlink because
+    // those need developer mode or an administrator on Windows.
+    for (const registry of skillRegistries(harness))
       for (const name of skills)
         await cp(join(runtime, 'skills', name), join(stage, registry, name), { recursive: true });
     manifest.skillHashes = await fileHashes(join(stage, 'skills'));
     await writeFile(join(stage, '.kiln/workspace.json'), quote(manifest));
     // Harnesses whose configuration is user-global reach this workspace only
     // through their generated launcher. codex was missing from this map, so
-    // START.md told the reader to run bare `codex` -- which reads no
-    // project-local config at all, and is exactly the invocation that cannot see
-    // the tools.
+    // START.md told the reader to run bare `codex` -- which reads the project's
+    // config only once the home marks it trusted, and so could not see the tools.
     await writeFile(
       join(stage, 'START.md'),
       startGuide(root, runtime, harness, nodeExecutable, server),
@@ -771,7 +764,7 @@ if (isDirectSetupEntry()) {
     const args = process.argv.slice(2);
     if (args.includes('--help') || args.includes('-h')) {
       console.log(
-        'Usage: kiln-init <empty-directory> [--harness claude|codex|opencode|hermes|agy] [--skills compose,batch]\n       kiln-init <managed-workspace> --repair|--check|--upgrade',
+        `Usage: kiln-init <empty-directory> [--harness ${harnesses.join('|')}] [--skills compose,batch]\n       kiln-init <managed-workspace> --repair|--check|--upgrade`,
       );
     } else {
       const directory = args.shift();
