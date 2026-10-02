@@ -4,21 +4,23 @@ This guide installs Kiln **0.10.0**: standalone authoring with optional projects
 material library and Live Review in the local dashboard, served to a coding agent over
 the 2026-07-28 and 2025 protocol revisions. [CHANGELOG.md](../CHANGELOG.md)
 lists what changed. Existing users should read the [migration notes](migration.md)
-before upgrading a workspace. **0.10.0 is a source and site release for dogfooding, with its package
-tarball attached to the [v0.10.0 release](https://github.com/matthew-kissinger/kiln/releases/tag/v0.10.0).**
-Registry publication is deferred to v1.0.
+before upgrading a workspace. **0.10.0 is a source and site preview for dogfooding**, with its
+package tarball attached to the
+[v0.10.0 release](https://github.com/matthew-kissinger/kiln/releases/tag/v0.10.0).
+Package publication is deferred to v1.0.
 
 ## Install the package
 
 Kiln is distributed as a tarball, `kiln-engine-VERSION.tgz`, installed with Node.js and
-npm. Download `kiln-engine-0.10.0.tgz` and `SHA256SUMS.txt` from the
-[v0.10.0 release](https://github.com/matthew-kissinger/kiln/releases/tag/v0.10.0) and
-check the tarball against the checksum file before installing (`sha256sum -c SHA256SUMS.txt`
-beside it, or `Get-FileHash` on Windows); the release also attaches the installed-package
-receipts that name that tarball. Use only a tarball actually attached to a
-[release](https://github.com/matthew-kissinger/kiln/releases), with that release's
-documentation: a release that attaches none is source-only, and a checkout ahead of the
-release builds its own package under [Install a local package](#install-a-local-package).
+npm. Use the tarball and checksum actually attached to the current
+[release](https://github.com/matthew-kissinger/kiln/releases) (for 0.10.0, the
+[v0.10.0 release](https://github.com/matthew-kissinger/kiln/releases/tag/v0.10.0)): download
+the tarball and `SHA256SUMS.txt`, check the tarball against the checksum file before
+installing (`sha256sum -c SHA256SUMS.txt` beside it, or `Get-FileHash` on Windows), and read
+that release's documentation; the release also attaches the installed-package receipts that
+name the tarball. A source-only release does not imply that a built tarball is available;
+a source-only release, like a checkout ahead of the release, builds its own package under
+[Install a local package](#install-a-local-package).
 The package includes the built CLI/MCP runtimes, renderer code, plugins and skills.
 You do not need Bun, a source checkout, a build step or a separate model API key to
 use the CLI/MCP tools. Use the real tarball path and filename:

@@ -66,11 +66,12 @@ builds on 0.9.0's optional projects, material library, Live Review and calibrate
 each breaking one marked, and the [migration notes](docs/migration.md#changes-in-0100)
 list what an existing author will notice.
 
-**0.10.0 is the source and site release for dogfooding.** Its package tarball,
-`kiln-engine-0.10.0.tgz`, is attached to the
-[v0.10.0 release](https://github.com/matthew-kissinger/kiln/releases/tag/v0.10.0) with
-`SHA256SUMS.txt` and the installed-package receipts; registry publication is deferred
-to v1.0 after feedback, and the site deployment publishes no package.
+**0.10.0 is the source and site release for dogfooding.** Its package tarball is attached
+to the [v0.10.0 release](https://github.com/matthew-kissinger/kiln/releases/tag/v0.10.0)
+with `SHA256SUMS.txt` and the installed-package receipts, as later releases' tarballs are
+on the [releases page](https://github.com/matthew-kissinger/kiln/releases); registry
+publication is deferred to v1.0 after feedback, and the site deployment publishes no
+package.
 
 ## Install and start an asset workspace
 
