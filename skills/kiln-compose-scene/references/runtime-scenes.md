@@ -86,8 +86,13 @@ limbs, colliders and the frame graph working while a farmhouse went from 16 to
 spatial groups so culling still works. Two side effects need checks:
 - Keeping the source vertex layout can avoid extra pipelines. It saved 2-3 per
   view in one scene and cost 5-10 in another, so measure it.
-- Merging changes the draw order of coplanar faces. A curb that now won the depth
-  tie against a walkway stippled the kerbs.
+- Merging changes the draw order of coplanar and nearly coplanar faces. A curb
+  that now won the depth tie against a walkway stippled the kerbs; ordering the
+  curbs first inside the merged mesh fixed it at no extra draw. Parts in
+  different buckets keep one fixed order for every view, so split a bucket
+  where the per-part draw order matters: splitting a bridge's tower panels at
+  the ribs' height, one draw per tower, brought a 193 px tie under a 100 px
+  budget.
 
 Treat each extra pass as its own budget:
 - **Shadow pass.** Use material-free depth stand-ins per anchor and shadow side.
@@ -108,10 +113,14 @@ A cached shadow only pays where its frustum stays still. A shadow box that
 follows a driven car re-renders every frame, so measure moving workloads before
 enabling it.
 
-Many instanced groups that differ only by a material constant compile one
-pipeline each. Carrying part colour and roughness as vertex data behind one
-shared material took a campus planting from 21 pipelines to 10 at the overview
-and from 40-49 to 11-13 near the ground, with pixel parity.
+In three r186's WebGPU renderer every `InstancedMesh` binds its own pipeline,
+because its uuid is part of the material cache key. `EXT_mesh_gpu_instancing`
+therefore saves draws but adds a pipeline per instanced group: instancing one
+campus's structures raised its main-pass pipelines, summed over its views, from
+77 to 346. What worked was one shared material reading per-part data: colour
+and roughness as vertex data, instance matrices as attributes of plain meshes.
+That took a campus planting from 21 pipelines to 10 at the overview and from
+40-49 to 11-13 near the ground, with pixel parity.
 
 When a frame's main pass is never split by a mid-pass copy (for example a
 depth-texture read for water), its multisampled attachments need not be stored
@@ -119,6 +128,18 @@ after the resolve. Discarding them changed nothing measurable on a desktop GPU.
 On a mobile GPU, GPU busy at the same frame rate fell by 3-8 points, and frames
 within one refresh at a GPU-bound tier rose from 40% to 49%. Fail loudly when
 something would reload the attachments.
+
+Read mobile GPU work as busy × clock, not busy alone. The governor changes the
+clock with load, so the same busy share at a higher clock is more work. Where a
+tablet's busy column read mixed, busy × clock fell by 15% and 24%.
+
+Over long view distances, a 24-bit depth buffer with a 0.5 m near plane steps
+by about 0.12 m at 1 km, 3 m at 5 km and 48 m at 20 km, growing with distance
+squared, so distant near-coplanar surfaces flicker as the camera moves.
+Reversed depth is the remedy. In three r186 it needs three adaptations: draw
+the sky first without a depth test, rebuild a planar reflector's oblique
+projection, and flip the sign of polygon offsets. On WebGL2 it also needs
+`EXT_clip_control`, or three falls back to a standard buffer.
 
 Report cached features in both their settled and their running state. With the
 clock running, the farm view that drew 583 drew 314-337, with about ten static
