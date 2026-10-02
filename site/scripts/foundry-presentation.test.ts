@@ -4,14 +4,14 @@ import { foundryPresentation } from '../src/lib/foundry-presentation';
 describe('Foundry scene claims follow its staged inventory', () => {
   test('an interior catalogue keeps exterior and floor-transfer claims out of the page', () => {
     const copy = foundryPresentation({ assetCount: 31, placedInScene: 23, assets: [{ group: 'tools' }] });
-    expect(copy.description).toContain('An interior in production');
+    expect(copy.description).toContain('An interior: a lot-level');
     expect(copy.foundation).toContain('other 8 are in the pack but not placed');
     expect(copy.controls).toContain('seven views');
     expect(JSON.stringify(copy)).not.toMatch(/campus|freight|floor robots|sedan/i);
   });
   test('the complete campus catalogue describes its actual scene without promoting acceptance', () => {
     const copy = foundryPresentation({ assetCount: 62, placedInScene: 62, assets: [{ group: 'campus' }, { group: 'vegetation' }, { group: 'freight' }] });
-    expect(copy.description).toContain('campus in production');
+    expect(copy.description).toContain('fictional chip fab and campus, arranged');
     expect(copy.description).toContain('62');
     expect(copy.controls).toContain('Drive the sedan');
     expect(copy.factory).toContain('AMRs carry actual lots');

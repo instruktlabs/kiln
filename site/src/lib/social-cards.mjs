@@ -27,7 +27,7 @@ export function socialCards({ packsEnabled, release, farm, vehicles, bridge, her
     { slug: 'vehicles', title: PACK_NAMES.vehicles, note: `${vehicles.assetCount} assets · Kiln Commons`, poster: packsEnabled ? poster(vehicles.assets.find((asset) => asset.slug === 'sedan').poster) : undefined },
     { slug: 'scenes', title: 'See the assets together.', note: 'Scenes made with Kiln', poster: packsEnabled ? poster(farm.scene.poster) : undefined },
     { slug: 'docs', title: 'Make the next revision.', note: 'Kiln documentation' },
-    { slug: 'foundry-floor', title: foundryFloor.name, note: 'In production · Kiln Commons' },
+    { slug: 'foundry-floor', title: foundryFloor.name, note: 'Kiln Commons' },
     { slug: 'gallery', title: 'Read the source. Inspect the asset.', note: 'The Kiln gallery', poster: heroPoster },
     { slug: 'archive', title: 'Earlier Kiln examples.', note: 'Unreviewed historical examples' },
   ];

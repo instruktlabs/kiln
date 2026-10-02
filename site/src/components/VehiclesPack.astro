@@ -6,8 +6,6 @@ import { vehicles, bytes, bounds, number, type VehicleAsset } from "../lib/catal
 import { wheelSummary } from "../lib/vehicles";
 
 const download = vehicles.downloads[0]!;
-// A corrected revision says what it corrects and whether the owner has approved it (vehicleReview in stage-vehicles.mjs).
-const corrected = vehicles.assets.filter((asset) => "correction" in asset.review && asset.review.correction);
 type Revision = VehicleAsset["revisions"][number];
 const revisions: Revision[] = vehicles.assets.flatMap((asset) => [...asset.revisions]);
 // One line per distinct authoring setup, taken from the saved revisions themselves.
@@ -43,15 +41,9 @@ const conventions = [
 <div class="mt-4 grid gap-6 border-y border-ink py-6 md:grid-cols-2">
   <div>
     <p class="max-w-reading">
-      <strong>
-        {vehicles.ownerReview.acceptedAssets} of {vehicles.ownerReview.total}{" "}
-        current revisions have owner approval.
-      </strong>{" "}
-      The earlier delivery was approved on 29 September 2026. New revisions have their own review status below.
+      Use them as traffic, props or cars to drive: the wheels are separate
+      nodes, so they can turn and steer.
     </p>
-    {corrected.map((asset) => (
-      <p class="mt-3 max-w-reading text-dim">{asset.review.correction}</p>
-    ))}
   </div>
   <div>
     <p class="max-w-reading">

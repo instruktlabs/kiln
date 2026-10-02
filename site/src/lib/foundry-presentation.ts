@@ -11,13 +11,13 @@ export function foundryPresentation(pack: FoundryInventory, runtimeRelease?: str
   const unplaced = pack.assetCount - pack.placedInScene;
   return {
     metadata: hasCampus
-      ? 'Explore a fictional chip fab and planted campus, with traffic and wafer transport driven by its simulation. An in-production preview for local review.'
-      : 'Explore a fictional chip fab’s pilot line, with wafer lots and overhead transport driven by its simulation. An in-production preview for local review.',
+      ? 'Explore a fictional chip fab and planted campus, with traffic and wafer transport driven by its simulation.'
+      : 'Explore a fictional chip fab’s pilot line, with wafer lots and overhead transport driven by its simulation.',
     description: registeredFloor
-      ? `A fictional chip fab and campus in production, arranged from ${pack.placedInScene} Kiln-authored models. Explore the planted grounds, road and freight traffic, then visit a working level-1 cutaway inside the south-west building.`
+      ? `A fictional chip fab and campus, arranged from ${pack.placedInScene} Kiln-authored models. Explore the planted grounds, road and freight traffic, then visit a working level-1 cutaway inside the south-west building.`
       : hasCampus
-        ? `A fictional chip fab and campus in production, arranged from ${pack.placedInScene} Kiln-authored models. Explore the planted grounds, road and freight traffic, then enter the fab to follow its wafer lots and transport.`
-        : `An interior in production: a lot-level twin of a fictional chip fab’s pilot line, arranged from ${pack.placedInScene} of the pack’s ${pack.assetCount} models. Walk the fab floor, take a tour of seven views, open a tool’s panel or follow a wafer lot.`,
+        ? `A fictional chip fab and campus, arranged from ${pack.placedInScene} Kiln-authored models. Explore the planted grounds, road and freight traffic, then enter the fab to follow its wafer lots and transport.`
+        : `An interior: a lot-level twin of a fictional chip fab’s pilot line, arranged from ${pack.placedInScene} of the pack’s ${pack.assetCount} models. Walk the fab floor, take a tour of seven views, open a tool’s panel or follow a wafer lot.`,
     factory: hasCampus
       ? 'Wafer lots queue, ride the overhead transport, wait in stockers and run on tools. AMRs carry actual lots between the metrology and probe ports and stockers; arms lift and set the FOUP at each handoff. Humanoid work robots handle repair and preventive maintenance; technicians handle tool qualification. Panels and status lines read from this model. Its figures describe a fictional pilot line, not a real fab, and calibration remains open.'
       : 'The scene is an interior: a lot-level twin of a pilot line. Wafer lots queue, ride the overhead transport, wait in stockers and run on the tools, and every panel and status line is read from the twin’s state. The figures come from the twin’s own model, not from any real fab, and its calibration is still open.',

@@ -1,5 +1,5 @@
-import { useEffect, useId, useRef, useState, useSyncExternalStore } from 'react';
-import type { ButtonHTMLAttributes, HTMLAttributes, JSX, ReactNode, Ref, RefObject } from 'react';
+import { createContext, useContext, useEffect, useId, useMemo, useRef, useState, useSyncExternalStore } from 'react';
+import type { ButtonHTMLAttributes, HTMLAttributes, JSX, KeyboardEvent as ReactKeyboardEvent, ReactNode, Ref, RefObject } from 'react';
 import type { CreditEntry } from '../assets';
 import { useRuntime } from '../internal/runtime';
 import { useSystem } from '../lifecycle';
@@ -34,7 +34,51 @@ export function useHud<T extends object>(store?: HudStore<T>): T {
   const runtime = useRuntime(), value = store ?? runtime.hud as unknown as HudStore<T>;
   return useSyncExternalStore(value.subscribe, value.getSnapshot, value.getSnapshot);
 }
-export function HudLayer(p: HTMLAttributes<HTMLDivElement>): JSX.Element { return <div {...p} className={`ks-hud ${p.className ?? ''}`} />; }
+/** Returns keyboard focus to the scene root so Space, Enter and the play keys reach the scene, not the last button. */
+function focusSceneRoot(from: Element | null): void { (from?.closest('.ks-root') as HTMLElement | null)?.focus({ preventScroll: true }); }
+const HudVisibility = createContext<{ hidden: boolean; setHidden(value: boolean): void } | null>(null);
+/**
+ * The HUD layer owns one visibility switch: `HudHideButton` hides every control except the touch play controls
+ * (joystick and touch buttons), and the layer then shows a single Show controls button in the toolbar's corner.
+ */
+export function HudLayer(p: HTMLAttributes<HTMLDivElement>): JSX.Element {
+  const [hidden, setHidden] = useState(false), visibility = useMemo(() => ({ hidden, setHidden }), [hidden]);
+  return <HudVisibility.Provider value={visibility}><div {...p} className={`ks-hud ${p.className ?? ''}`} data-ks-hidden={hidden ? '' : undefined}>
+    {p.children}
+    {hidden && <HudButton className="ks-hud-show" data-ks-preserve-path="" onClick={event => { setHidden(false); focusSceneRoot(event.currentTarget); }}>Show controls</HudButton>}
+  </div></HudVisibility.Provider>;
+}
+/** Hides the HUD (see `HudLayer`). Renders nothing outside a HUD layer. */
+export function HudHideButton(p: { label?: string }): JSX.Element | null {
+  const visibility = useContext(HudVisibility);
+  if (!visibility) return null;
+  return <HudButton className="ks-hud-hide" aria-label="Hide controls" data-ks-preserve-path="" onClick={event => { focusSceneRoot(event.currentTarget); visibility.setHidden(true); }}>{p.label ?? 'Hide'}</HudButton>;
+}
+const HudMenus = createContext<{ open: string | null; setOpen(id: string | null): void } | null>(null);
+/** The scene toolbar. Its menus share one open slot, so opening one closes the other. */
+export function HudToolbar(p: HTMLAttributes<HTMLDivElement>): JSX.Element {
+  const [open, setOpen] = useState<string | null>(null), menus = useMemo(() => ({ open, setOpen }), [open]);
+  return <HudMenus.Provider value={menus}><div {...p} className={`ks-toolbar ${p.className ?? ''}`} /></HudMenus.Provider>;
+}
+/**
+ * A group of toolbar controls behind one trigger. `collapse: 'always'` keeps the group folded at every width;
+ * `'narrow'` shows the controls inline on a wide HUD and folds them when the HUD is narrow (kit stylesheet, by the
+ * HUD's own width). The controls stay mounted: open, they take their own toolbar row; choosing one closes the
+ * group. Panels (`.ks-panel`) a control opens from inside the group stay visible after it closes.
+ */
+export function HudMenu(p: { label: string; value?: string; collapse?: 'always' | 'narrow'; children?: ReactNode; className?: string;
+  /** The group's controls do not interrupt a running camera path (`PathRig`). */ preservePath?: boolean }): JSX.Element {
+  const shared = useContext(HudMenus), [local, setLocal] = useState<string | null>(null), id = `ks-menu-${useId()}`;
+  const open = (shared ? shared.open : local) === id, setOpen = (value: boolean) => (shared ? shared.setOpen : setLocal)(value ? id : null);
+  const trigger = useRef<HTMLButtonElement>(null);
+  const key = (event: ReactKeyboardEvent) => { if (open) closeScenePanelOnEscape(event.nativeEvent, () => { setOpen(false); trigger.current?.focus({ preventScroll: true }); }); };
+  return <div className={`ks-menu ${p.className ?? ''}`} data-collapse={p.collapse ?? 'always'} data-open={open ? '' : undefined} data-ks-preserve-path={p.preservePath ? '' : undefined} onKeyDown={key}>
+    <HudButton ref={trigger} aria-expanded={open} aria-controls={id} aria-label={p.value ? `${p.label}: ${p.value}` : p.label} className="ks-menu-trigger" onClick={() => setOpen(!open)}>
+      {p.value ?? p.label}<span className="ks-menu-caret" aria-hidden="true"/></HudButton>
+    <i className="ks-menu-break" aria-hidden="true"/>
+    <div id={id} className="ks-menu-items" role="group" aria-label={p.label} onClick={event => { if (open && (event.target as Element).closest('button')) setOpen(false); }}>{p.children}</div>
+  </div>;
+}
 export function HudButton(p: ButtonHTMLAttributes<HTMLButtonElement> & { ref?: Ref<HTMLButtonElement> }): JSX.Element { return <button type="button" {...p} className={`ks-button ${p.className ?? ''}`} />; }
 export function HudPanel(p: HTMLAttributes<HTMLElement>): JSX.Element { return <section {...p} className={`ks-panel ${p.className ?? ''}`} />; }
 export interface HudSegmentOption { value: string; label: string; disabled?: boolean }

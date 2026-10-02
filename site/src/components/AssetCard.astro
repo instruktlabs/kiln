@@ -39,14 +39,5 @@ const Heading = headingLevel;
   {imageQualification(asset.poster) && (
     <p class="mt-2 text-caption text-dim">Exterior view from the parent revision.</p>
   )}
-  <p class="mt-2 text-caption text-dim">
-    {asset.review.ownerAccepted
-      ? "Owner approved"
-      : asset.review.status === "changes-requested"
-        ? "Earlier delivery · accepted child recorded"
-        : asset.review.status === "awaiting-owner-review"
-          ? "Awaiting owner review"
-          : "Review in progress"}
-  </p>
   </a>
 </article>

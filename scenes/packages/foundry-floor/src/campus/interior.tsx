@@ -52,6 +52,6 @@ export function InteriorPlace({ session }: { session: FoundrySession }) {
   return <FoundryContext.Provider value={session}>{modelsReady&&<FoundryWorld/>}</FoundryContext.Provider>;
 }
 
-export function InteriorHud({ session, leading }: { session: FoundrySession; leading?: ReactNode }) {
-  return <FoundryContext.Provider value={session}><FoundryHud leading={leading}/></FoundryContext.Provider>;
+export function InteriorHud({ session, leading, location }: { session: FoundrySession; leading?: ReactNode; location?: string }) {
+  return <FoundryContext.Provider value={session}><FoundryHud leading={leading} location={location}/></FoundryContext.Provider>;
 }

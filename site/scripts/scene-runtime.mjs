@@ -199,7 +199,7 @@ export async function stageRuntime({ id = 'farm', scenesDir, site = SITE, alias 
 }
 
 export const FRAME_FILE = 'frame.html';
-const FRAME_TITLES = { 'golden-gate': 'Golden Gate Bridge scene', 'foundry-floor': 'Foundry Floor scene, in production' };
+const FRAME_TITLES = { 'golden-gate': 'Golden Gate Bridge scene', 'foundry-floor': 'Foundry Floor scene' };
 
 /**
  * The page a frame-kind scene runs in: the elements the scene's standalone entry looks up (its

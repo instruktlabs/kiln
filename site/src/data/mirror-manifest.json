@@ -2270,6 +2270,26 @@
       "path": "media/scenes/farm/r36-local-review/farm-scene-opening.png",
       "bytes": 1552885,
       "sha256": "4cd7e3d256094668827993c4179069ce39fd1b0b7aac08dad4ff09a9bff67723"
+    },
+    {
+      "path": "media/scenes/foundry-floor/ff3-review2/foundry-floor-scene-campus.png",
+      "bytes": 116562,
+      "sha256": "7f841f81e7030b4dff5ed2f6a0605644dd32f3730028767841ead7ed8b808229"
+    },
+    {
+      "path": "media/scenes/foundry-floor/ff3-review2/foundry-floor-scene-interior.png",
+      "bytes": 264001,
+      "sha256": "083d6d07d4038edc49ee665a5b542494b6606116259029879d41614b2bc74c5b"
+    },
+    {
+      "path": "media/scenes/farm/r36-local-review/farm-scene-walk.png",
+      "bytes": 1213110,
+      "sha256": "e2c0b86f851736c3345bfe0ea629ef816ee4fb7b05e0ca369df5242b772f32cd"
+    },
+    {
+      "path": "media/scenes/golden-gate/g9/golden-gate-scene-day.png",
+      "bytes": 963303,
+      "sha256": "50a2ecf3bd0eec02231ce614c56128be3bdb61bba8cf6be46535b2742c56e945"
     }
   ]
 }

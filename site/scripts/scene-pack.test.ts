@@ -304,7 +304,7 @@ describe('scene pack catalog record', () => {
     expect(record.three).toBe(pkg.dependencies.three);
     expect(record.totalFiles).toBe(record.sealedFiles + 3);
     for (const digest of [record.packJsonSha256, record.sha256sumsSha256, record.noticesSha256, record.runtime.sha256, record.runtime.modulesSha256]) expect(digest).toMatch(/^[0-9a-f]{64}$/);
-    expect(record.runtime).toMatchObject({ kind: 'frame', file: 'index-CGkQ2AbK.js', bytes: 1_721_321, gzipBytes: 517_862 });
+    expect(record.runtime).toMatchObject({ kind: 'frame', file: 'index-BDTQ3svb.js', bytes: 1_724_619, gzipBytes: 518_716 });
     expect(checkCeiling('golden-gate', record.runtime).within).toBe(true);
     expect(record.runtime.bytes).toBeLessThanOrEqual(CEILINGS['golden-gate'].bytes);
     expect(goldenGateScene.assetBase).toBe(record.base);
@@ -321,7 +321,7 @@ describe('scene pack catalog record', () => {
     // Final frozen FF3 intake verifies 85 sealed files and every initial/deferred chunk.
     expect(record).toMatchObject({ sealedFiles: 85, sealedBytes: 11_519_818, packJsonSha256: '6ce49d05791bf42d21f3628237a5cf005ce9f2fa15938f0c321430d781c2c5d4' });
     for (const digest of [record.packJsonSha256, record.sha256sumsSha256, record.noticesSha256, record.runtime.sha256, record.runtime.modulesSha256]) expect(digest).toMatch(/^[0-9a-f]{64}$/);
-    expect(record.runtime).toMatchObject({ kind: 'frame', file: 'index-umTduCLH.js', bytes: 1_700_697, gzipBytes: 516_088, initialLoad: { bytes: 1_525_112, gzipBytes: 445_765 } });
+    expect(record.runtime).toMatchObject({ kind: 'frame', file: 'index-Y86dU6mu.js', bytes: 1_705_082, gzipBytes: 517_258, initialLoad: { bytes: 1_527_808, gzipBytes: 446_414 } });
     expect(checkCeiling('foundry-floor', record.runtime).within).toBe(true);
     expect(foundryFloorScene.assetBase).toBe(record.base);
     expect(stagedPackDirectory(record, '/site')).toBe(resolve('/site', 'public', 'scene-packs', 'foundry-floor', 'ff3-review2'));

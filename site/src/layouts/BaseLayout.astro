@@ -161,7 +161,7 @@ const structured = [
         <nav
           id="primary-nav"
           aria-label="Primary"
-          class="flex w-full flex-wrap items-center gap-1 nav:ml-auto nav:w-auto"
+          class="order-last flex w-full flex-col nav:order-none nav:ml-auto nav:w-auto nav:flex-row nav:items-center nav:gap-1"
         >
           {nav.map(([label, href]) => (
             <a
@@ -170,7 +170,7 @@ const structured = [
                 Astro.url.pathname.startsWith(href) ? "page" : undefined
               }
               class:list={[
-                "min-h-11 px-3 py-2 text-base font-medium no-underline",
+                "flex min-h-12 items-center border-t border-rule px-1 py-2 text-base font-medium no-underline nav:min-h-11 nav:border-t-0 nav:px-3",
                 Astro.url.pathname.startsWith(href)
                   ? "text-ember underline"
                   : "text-ink",
@@ -181,7 +181,7 @@ const structured = [
           ))}
           <a
             href={REPO}
-            class="inline-flex min-h-11 items-center gap-1 whitespace-nowrap px-3 py-2 text-base font-medium no-underline"
+            class="flex min-h-12 items-center gap-1 whitespace-nowrap border-t border-rule px-1 py-2 text-base font-medium no-underline nav:min-h-11 nav:border-t-0 nav:px-3"
           >
             GitHub <span aria-hidden="true">↗</span>
           </a>

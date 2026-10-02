@@ -59,7 +59,7 @@ async function directoryBytes(path: string): Promise<{ files: number; bytes: num
 }
 
 /** Each landmark module's chunk and rendered bytes; a landmark in no chunk is an error. */
-function landmarks(rollup: Rollup.RollupOutput): Record<string, { module: string; chunk: string; renderedBytes: number }[]> {
+export function landmarks(rollup: Rollup.RollupOutput): Record<string, { module: string; chunk: string; renderedBytes: number }[]> {
   const where = new Map<string, { chunk: string; renderedBytes: number }>();
   for (const o of rollup.output) if (o.type === 'chunk') for (const [id, m] of Object.entries(o.modules)) where.set(moduleLabel(id), { chunk: o.fileName, renderedBytes: m.renderedLength });
   const out: Record<string, { module: string; chunk: string; renderedBytes: number }[]> = {};
@@ -74,7 +74,7 @@ function landmarks(rollup: Rollup.RollupOutput): Record<string, { module: string
 }
 
 /** Every chunk against the frozen ceiling: bytes and gzip, and their share of it in percent. */
-function againstCeiling(c: { bytes: number; gzipBytes: number }) {
+export function againstCeiling(c: { bytes: number; gzipBytes: number }) {
   return {
     bytes: c.bytes, gzipBytes: c.gzipBytes, withinCeiling: c.bytes <= CEILING.bytes && c.gzipBytes <= CEILING.gzipBytes,
     percentOfCeiling: Math.round(c.bytes / CEILING.bytes * 10000) / 100, percentOfGzipCeiling: Math.round(c.gzipBytes / CEILING.gzipBytes * 10000) / 100,

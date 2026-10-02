@@ -23,6 +23,34 @@
       "packJsonSha256": "45fd9e8ef1e7bdec173863ad520e42e8f996c943dfcf57c4842d432ea006335c",
       "pngBytes": 740271,
       "pngSha256": "871dc9f068e8509ee477c9873b62978b90e2960f3ae358ce01f7b6b2d41c095b"
+    },
+    "captures": {
+      "day": {
+        "poster": {
+          "src": "/media/scenes/golden-gate/g9/golden-gate-scene-day.webp",
+          "width": 1440,
+          "height": 925,
+          "alt": "The Golden Gate Bridge scene from above the water by day: the full span between its two towers, with the headlands on either side.",
+          "srcsetWebp": "/media/scenes/golden-gate/g9/golden-gate-scene-day-320.webp 320w, /media/scenes/golden-gate/g9/golden-gate-scene-day-480.webp 480w, /media/scenes/golden-gate/g9/golden-gate-scene-day-672.webp 672w, /media/scenes/golden-gate/g9/golden-gate-scene-day-768.webp 768w, /media/scenes/golden-gate/g9/golden-gate-scene-day-1024.webp 1024w, /media/scenes/golden-gate/g9/golden-gate-scene-day-1440.webp 1440w",
+          "srcsetAvif": "/media/scenes/golden-gate/g9/golden-gate-scene-day-320.avif 320w, /media/scenes/golden-gate/g9/golden-gate-scene-day-480.avif 480w, /media/scenes/golden-gate/g9/golden-gate-scene-day-672.avif 672w, /media/scenes/golden-gate/g9/golden-gate-scene-day-768.avif 768w, /media/scenes/golden-gate/g9/golden-gate-scene-day-1024.avif 1024w, /media/scenes/golden-gate/g9/golden-gate-scene-day-1440.avif 1440w",
+          "inputPath": "media/scenes/golden-gate/g9/golden-gate-scene-day.png"
+        },
+        "capture": {
+          "tool": "scripts/capture-scene-poster.mjs",
+          "view": "day",
+          "release": "g9",
+          "size": [
+            1440,
+            925
+          ],
+          "browser": "Chrome/154.0.8037.58",
+          "source": "The staged scene runtime, captured from its canvas with controls hidden; nothing composited or retouched.",
+          "runtimeSha256": "203118926ca1e11c43542ce1605d06d19b9a984ebe1877251ae152c73bc634d6",
+          "packJsonSha256": "c2a1d83fce6caf07a7b3e87070ccb8a983dd68e0c7f98eee3f1ba5255ce059cb",
+          "pngBytes": 963303,
+          "pngSha256": "50a2ecf3bd0eec02231ce614c56128be3bdb61bba8cf6be46535b2742c56e945"
+        }
+      }
     }
   },
   "foundry-floor": {
@@ -60,6 +88,60 @@
       "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1074",
       "pngBytes": 2060755,
       "pngSha256": "e34d6103f0da8d04f60a1fbf3ae761c843eccdf9afec9f3ef4cc4d83cbeea4b4"
+    },
+    "captures": {
+      "campus": {
+        "poster": {
+          "src": "/media/scenes/foundry-floor/ff3-review2/foundry-floor-scene-campus.webp",
+          "width": 1440,
+          "height": 925,
+          "alt": "The Foundry Floor campus from above: paired fab buildings along a central road, with parking and planting at the near entrance.",
+          "srcsetWebp": "/media/scenes/foundry-floor/ff3-review2/foundry-floor-scene-campus-320.webp 320w, /media/scenes/foundry-floor/ff3-review2/foundry-floor-scene-campus-480.webp 480w, /media/scenes/foundry-floor/ff3-review2/foundry-floor-scene-campus-672.webp 672w, /media/scenes/foundry-floor/ff3-review2/foundry-floor-scene-campus-768.webp 768w, /media/scenes/foundry-floor/ff3-review2/foundry-floor-scene-campus-1024.webp 1024w, /media/scenes/foundry-floor/ff3-review2/foundry-floor-scene-campus-1440.webp 1440w",
+          "srcsetAvif": "/media/scenes/foundry-floor/ff3-review2/foundry-floor-scene-campus-320.avif 320w, /media/scenes/foundry-floor/ff3-review2/foundry-floor-scene-campus-480.avif 480w, /media/scenes/foundry-floor/ff3-review2/foundry-floor-scene-campus-672.avif 672w, /media/scenes/foundry-floor/ff3-review2/foundry-floor-scene-campus-768.avif 768w, /media/scenes/foundry-floor/ff3-review2/foundry-floor-scene-campus-1024.avif 1024w, /media/scenes/foundry-floor/ff3-review2/foundry-floor-scene-campus-1440.avif 1440w",
+          "inputPath": "media/scenes/foundry-floor/ff3-review2/foundry-floor-scene-campus.png"
+        },
+        "capture": {
+          "tool": "scripts/capture-scene-poster.mjs",
+          "view": "campus",
+          "release": "ff3-review2",
+          "size": [
+            1440,
+            925
+          ],
+          "browser": "Chrome/154.0.8037.58",
+          "source": "The staged scene runtime, captured from its canvas with controls hidden; nothing composited or retouched.",
+          "runtimeSha256": "fdf0724ffc38717f3289aaaa0de3891be907a74a2a1570b1a9e926e4e306398d",
+          "packJsonSha256": "6ce49d05791bf42d21f3628237a5cf005ce9f2fa15938f0c321430d781c2c5d4",
+          "pngBytes": 116562,
+          "pngSha256": "7f841f81e7030b4dff5ed2f6a0605644dd32f3730028767841ead7ed8b808229"
+        }
+      },
+      "interior": {
+        "poster": {
+          "src": "/media/scenes/foundry-floor/ff3-review2/foundry-floor-scene-interior.webp",
+          "width": 1440,
+          "height": 925,
+          "alt": "The Foundry Floor fab interior from above: process tools in bays, joined by the loops of an overhead transport track.",
+          "srcsetWebp": "/media/scenes/foundry-floor/ff3-review2/foundry-floor-scene-interior-320.webp 320w, /media/scenes/foundry-floor/ff3-review2/foundry-floor-scene-interior-480.webp 480w, /media/scenes/foundry-floor/ff3-review2/foundry-floor-scene-interior-672.webp 672w, /media/scenes/foundry-floor/ff3-review2/foundry-floor-scene-interior-768.webp 768w, /media/scenes/foundry-floor/ff3-review2/foundry-floor-scene-interior-1024.webp 1024w, /media/scenes/foundry-floor/ff3-review2/foundry-floor-scene-interior-1440.webp 1440w",
+          "srcsetAvif": "/media/scenes/foundry-floor/ff3-review2/foundry-floor-scene-interior-320.avif 320w, /media/scenes/foundry-floor/ff3-review2/foundry-floor-scene-interior-480.avif 480w, /media/scenes/foundry-floor/ff3-review2/foundry-floor-scene-interior-672.avif 672w, /media/scenes/foundry-floor/ff3-review2/foundry-floor-scene-interior-768.avif 768w, /media/scenes/foundry-floor/ff3-review2/foundry-floor-scene-interior-1024.avif 1024w, /media/scenes/foundry-floor/ff3-review2/foundry-floor-scene-interior-1440.avif 1440w",
+          "inputPath": "media/scenes/foundry-floor/ff3-review2/foundry-floor-scene-interior.png"
+        },
+        "capture": {
+          "tool": "scripts/capture-scene-poster.mjs",
+          "view": "interior",
+          "release": "ff3-review2",
+          "size": [
+            1440,
+            925
+          ],
+          "browser": "Chrome/154.0.8037.58",
+          "source": "The staged scene runtime, captured from its canvas with controls hidden; nothing composited or retouched.",
+          "runtimeSha256": "fdf0724ffc38717f3289aaaa0de3891be907a74a2a1570b1a9e926e4e306398d",
+          "packJsonSha256": "6ce49d05791bf42d21f3628237a5cf005ce9f2fa15938f0c321430d781c2c5d4",
+          "pngBytes": 264001,
+          "pngSha256": "083d6d07d4038edc49ee665a5b542494b6606116259029879d41614b2bc74c5b"
+        }
+      }
     }
   },
   "farm": {
@@ -86,6 +168,34 @@
       "packJsonSha256": "5d046aa2c04637436d7e3918db690f4f25f6684a58ae7a78d333dec9df428f48",
       "pngBytes": 1552885,
       "pngSha256": "4cd7e3d256094668827993c4179069ce39fd1b0b7aac08dad4ff09a9bff67723"
+    },
+    "captures": {
+      "walk": {
+        "poster": {
+          "src": "/media/scenes/farm/r36-local-review/farm-scene-walk.webp",
+          "width": 1440,
+          "height": 925,
+          "alt": "The farmer seen from behind in the Farm scene, standing at the sheep pen fence with cows, wheat and pumpkins beyond.",
+          "srcsetWebp": "/media/scenes/farm/r36-local-review/farm-scene-walk-320.webp 320w, /media/scenes/farm/r36-local-review/farm-scene-walk-480.webp 480w, /media/scenes/farm/r36-local-review/farm-scene-walk-672.webp 672w, /media/scenes/farm/r36-local-review/farm-scene-walk-768.webp 768w, /media/scenes/farm/r36-local-review/farm-scene-walk-1024.webp 1024w, /media/scenes/farm/r36-local-review/farm-scene-walk-1440.webp 1440w",
+          "srcsetAvif": "/media/scenes/farm/r36-local-review/farm-scene-walk-320.avif 320w, /media/scenes/farm/r36-local-review/farm-scene-walk-480.avif 480w, /media/scenes/farm/r36-local-review/farm-scene-walk-672.avif 672w, /media/scenes/farm/r36-local-review/farm-scene-walk-768.avif 768w, /media/scenes/farm/r36-local-review/farm-scene-walk-1024.avif 1024w, /media/scenes/farm/r36-local-review/farm-scene-walk-1440.avif 1440w",
+          "inputPath": "media/scenes/farm/r36-local-review/farm-scene-walk.png"
+        },
+        "capture": {
+          "tool": "scripts/capture-scene-poster.mjs",
+          "view": "walk",
+          "release": "r36-local-review",
+          "size": [
+            1440,
+            925
+          ],
+          "browser": "Chrome/154.0.8037.58",
+          "source": "The staged scene runtime, captured from its canvas with controls hidden; nothing composited or retouched.",
+          "runtimeSha256": "c64eacfe1a376b1d9850f7759322a30223f3f5ae07d2755ba7bf358d0c7e03b6",
+          "packJsonSha256": "5d046aa2c04637436d7e3918db690f4f25f6684a58ae7a78d333dec9df428f48",
+          "pngBytes": 1213110,
+          "pngSha256": "e2c0b86f851736c3345bfe0ea629ef816ee4fb7b05e0ca369df5242b772f32cd"
+        }
+      }
     }
   }
 }

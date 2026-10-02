@@ -7,8 +7,9 @@ import { getCollection } from "astro:content";
 import BaseLayout from "../layouts/BaseLayout.astro";
 import HeroDrawing from "../components/HeroDrawing.astro";
 import ResponsiveImage from "../components/ResponsiveImage.astro";
+import ScenePoster from "../components/ScenePoster.astro";
 import CodeBlock from "../components/CodeBlock.astro";
-import { farm, vehicles, bridge, number, bounds } from "../lib/catalog";
+import { farm, vehicles, number, bounds } from "../lib/catalog";
 import { harnessName, modelName } from "../lib/attribution";
 import { hero, HERO_IMAGE_SIZES } from "../lib/hero";
 import {
@@ -25,6 +26,7 @@ import exchange from "../data/home-exchange.json";
 import foundryFloor from "../data/foundry-floor.json";
 import foundryFloorPack from "../data/packs/foundry-floor.json";
 import { sceneRuntimes } from "virtual:kiln-scenes";
+import { farmScene, foundryFloorScene, goldenGateScene } from "../data/scenes";
 import { PUBLIC_EXAMPLES } from "../../scripts/collection.mjs";
 const house = farm.assets[0]!;
 const docs = new Set((await getCollection("docs")).map((doc) => doc.id));
@@ -88,9 +90,7 @@ kiln_save(${JSON.stringify(save!.arguments, null, 2)})
 // → asset.revisionId: ${save!.result.asset!.revisionId}
 // … project arguments, file hashes and further result fields omitted`;
 const floorIncluded = house.revisionId === floor.asset.revisionId;
-// The hero already shows the bridge from the classic three-quarter camera; the card uses the water-level capture.
-const bridgeCardImage = bridge.captures.find((capture) => capture.inputPath.endsWith("/water-level-neutral.png"));
-if (!bridgeCardImage) throw new Error("The bridge has no water-level capture for the home card");
+const CARD_SIZES = "(max-width: 767px) 100vw, 33vw";
 ---
 
 <BaseLayout
@@ -169,19 +169,71 @@ if (!bridgeCardImage) throw new Error("The bridge has no water-level capture for
           <p class="max-w-reading text-dim">
             A roof pitch, a named part, a material pin: the shape has an
             editable definition. Kiln returns views and geometry checks so your
-            agent can inspect what the program actually built.
+            agent can inspect what the program actually built. Here one
+            request changes the farmhouse floor and leaves the rest of the
+            house as it was.
           </p>
         </div>
         <figure class="mt-8 border border-ink bg-sheet p-5" aria-label="A recorded farmhouse revision, from request to delivery">
           <figcaption class="mb-5 font-semibold">One farmhouse revision, from request to files</figcaption>
-          <ol class="loop-artifacts grid gap-6 lg:grid-cols-5">
-            <li><h3 class="text-title">1. Request</h3><p class="mt-2 text-caption">The owner asked for a wood ground floor in place of the masonry-looking floor.</p><span class="loop-connector" aria-hidden="true"></span></li>
+          <ol class="loop-artifacts grid gap-6 lg:grid-cols-6">
+            <li><h3 class="text-title">1. Request</h3><p class="mt-2 text-caption">A wood ground floor in place of the masonry-looking floor.</p><span class="loop-connector" aria-hidden="true"></span></li>
             <li><h3 class="text-title">2. Source</h3><pre class="mt-2 whitespace-pre-wrap break-words text-code"><code>{source.split('\n').filter((line) => /createPart\('InteriorFloor'/.test(line)).slice(0, 1).join('\n')}</code></pre><span class="loop-connector" aria-hidden="true"></span></li>
-            <li><h3 class="text-title">3. Inspect</h3><ResponsiveImage image={floor.after} sizes="(min-width:1024px) 18vw, 100vw" /><p class="mt-2 text-caption">Bounds unchanged. 132 exterior probes unchanged.</p><span class="loop-connector" aria-hidden="true"></span></li>
-            <li><h3 class="text-title">4. Retain</h3><p class="mt-2 font-mono text-code break-all">{floor.asset.revisionId}</p><p class="mt-2 text-caption">Owner accepted, 29 September 2026.</p><span class="loop-connector" aria-hidden="true"></span></li>
+            <li class="lg:col-span-2">
+              <h3 class="text-title">3. Inspect</h3>
+              <div class="mt-2 grid grid-cols-2 gap-3">
+                <figure>
+                  <ResponsiveImage image={floor.before} sizes="(min-width:1024px) 14vw, 50vw" />
+                  <figcaption class="mt-1 font-mono text-code">Before · masonry-looking</figcaption>
+                </figure>
+                <figure>
+                  <ResponsiveImage image={floor.after} sizes="(min-width:1024px) 14vw, 50vw" />
+                  <figcaption class="mt-1 font-mono text-code">After · wood</figcaption>
+                </figure>
+              </div>
+              <p class="mt-2 text-caption">Bounds unchanged. 132 exterior probes unchanged.</p>
+              <span class="loop-connector" aria-hidden="true"></span>
+            </li>
+            <li><h3 class="text-title">4. Retain</h3><p class="mt-2 font-mono text-code break-all">{floor.asset.revisionId}</p><p class="mt-2 text-caption">Saved as a new revision; the parent stays intact.</p><span class="loop-connector" aria-hidden="true"></span></li>
             <li><h3 class="text-title">5. Deliver</h3><a class="text-link" href={house.modelPath}>Farmhouse GLB</a><br /><a class="text-link" href={house.sourcePath}>Editable source</a><p class="mt-2 text-caption">The same saved revision.</p></li>
           </ol>
         </figure>
+        <div class="mt-8 grid gap-8 lg:grid-cols-12 lg:gap-12">
+          <div class="lg:col-span-5">
+            <p class="max-w-reading">
+              Gemini 3.8 Flash via Antigravity CLI edited the source written by
+              Claude Opus 5.5. Kiln rendered the room before and after: 132
+              exterior probes identical, bounds unchanged. Fourteen meshes, all
+              transforms and all materials stayed unchanged; the stone shell
+              was re-tessellated around the new floor.
+            </p>
+            <p class="mt-4 max-w-reading">
+              The child revision keeps its parent and model attribution.{" "}
+              {floorIncluded
+                ? "The current downloads include the wood floor."
+                : `The sealed ${farm.revision} downloads still contain the earlier floor.`}
+            </p>
+            <a class="text-link mt-3" href="/gallery/farmhouse/">
+              Inspect the farmhouse and its history <span aria-hidden="true">→</span>
+            </a>
+          </div>
+          <dl class="min-w-0 self-start border-y border-rule py-4 font-mono text-code lg:col-span-7">
+            <div class="grid gap-1 py-2 sm:grid-cols-4">
+              <dt class="text-dim">Parent</dt>
+              <dd class="break-all sm:col-span-3">{floor.parentRevision}</dd>
+            </div>
+            <div class="grid gap-1 py-2 sm:grid-cols-4">
+              <dt class="text-dim">Child</dt>
+              <dd class="break-all sm:col-span-3">
+                {floor.asset.revisionId}
+              </dd>
+            </div>
+            <div class="grid gap-1 py-2 sm:grid-cols-4">
+              <dt class="text-dim">Attribution</dt>
+              <dd class="sm:col-span-3">{modelName("gemini-3.8-flash-high")} · {harnessName("agy")}</dd>
+            </div>
+          </dl>
+        </div>
         <div class="mt-8 grid items-start gap-6 lg:grid-cols-2">
           <div class="min-w-0">
             <CodeBlock code={source} label="Farmhouse · source.kiln.js" />
@@ -215,104 +267,27 @@ if (!bridgeCardImage) throw new Error("The bridge has no water-level capture for
             </dd>
           </div>
         </dl>
-      </section>
-      <section
-        class="container pt-16 md:pt-24"
-        aria-labelledby="revision-heading"
-      >
-        <div class="grid gap-8 lg:grid-cols-12 lg:gap-12">
-          <div class="lg:col-span-5">
-            <h2 id="revision-heading">Change the floor. Keep the house.</h2>
-            <p class="mt-6 max-w-reading">
-              The owner said the ground floor read as brick and asked for wood.
-              Gemini 3.8 Flash via Antigravity CLI edited the source written by
-              Claude Opus 5.5.
-            </p>
-            <p class="mt-4 max-w-reading">
-              Kiln rendered the room before and after. The comparison found 132
-              exterior probes identical and unchanged bounds. Fourteen meshes,
-              all transforms and all materials stayed unchanged; the stone shell
-              was re-tessellated around the new floor.
-            </p>
-            <p class="mt-4 max-w-reading">
-              The child revision keeps its parent and model attribution.{" "}
-              {floor.ownerAccepted
-                ? "The owner has accepted the floor revision."
-                : "Owner acceptance of the floor is pending."}{" "}
-              {floorIncluded
-                ? "The current downloads include the accepted wood floor."
-                : `The sealed ${farm.revision} downloads still contain the earlier floor.`}
-            </p>
-            <a class="text-link mt-3" href="/gallery/farmhouse/">
-              Inspect the farmhouse and its history <span aria-hidden="true">→</span>
-            </a>
-          </div>
-          <div class="min-w-0 lg:col-span-7">
-            <div class="grid gap-4 sm:grid-cols-2">
-              <figure>
-                <ResponsiveImage image={floor.before} />
-                <figcaption class="mt-2 font-mono text-code">
-                  Before · masonry-looking floor
-                </figcaption>
-              </figure>
-              <figure>
-                <ResponsiveImage image={floor.after} />
-                <figcaption class="mt-2 font-mono text-code">
-                  After · wood floor
-                  {floor.ownerAccepted
-                    ? ", owner accepted"
-                    : ", review pending"}
-                </figcaption>
-              </figure>
-            </div>
-            <dl class="mt-6 border-y border-rule py-4 font-mono text-code">
-              <div class="grid gap-1 py-2 sm:grid-cols-4">
-                <dt class="text-dim">Parent</dt>
-                <dd class="break-all sm:col-span-3">{floor.parentRevision}</dd>
-              </div>
-              <div class="grid gap-1 py-2 sm:grid-cols-4">
-                <dt class="text-dim">Child</dt>
-                <dd class="break-all sm:col-span-3">
-                  {floor.asset.revisionId}
-                </dd>
-              </div>
-              <div class="grid gap-1 py-2 sm:grid-cols-4">
-                <dt class="text-dim">Attribution</dt>
-                <dd class="sm:col-span-3">{modelName("gemini-3.8-flash-high")} · {harnessName("agy")}</dd>
-              </div>
-            </dl>
-          </div>
-        </div>
         <div class="mt-10 grid gap-6 border-t border-ink pt-6 md:grid-cols-2">
           <div>
-            <h3>Checks make the limits visible.</h3>
+            <h3>Checks read the file, not the picture.</h3>
             <p class="mt-4 max-w-reading text-dim">
-              The wood-floor candidate has 4,080 triangles. Its QA report
-              accepts the structural result with a runtime warning. Checks read
-              geometry and export data, never pixels; they do not replace the
-              owner’s review.
-            </p>
-            <p class="mt-3 text-caption text-dim">
-              The report records 10 visual-quality observations, including
-              overlap between Mesh_DoorLeaf and Mesh_DoorHardware. Twelve images
-              exceed the four-image portable web budget.
+              Every render comes back with a QA report on the exported GLB:
+              whether it is valid glTF, whether the parts the request named are
+              there, and what it will cost to draw. Checks read geometry and
+              export data, never pixels.
             </p>
           </div>
           <dl class="border-y border-rule font-mono text-code">
             {[
-              ["acceptance", "accepted"],
-              ["disposition", "warn"],
               ["exportIntegrity", "pass · 0 glTF errors / warnings"],
               ["requirementReadiness", "pass"],
-              ["promptAlignment", "notEvaluated"],
-              ["visualQuality", "pass · 10 observations"],
-              ["runtimeCost", "warn · 10 mat / 16 geo / 16 draws"],
+              ["visualQuality", "pass"],
+              ["triangles", "4,080"],
+              ["namedParts", "16"],
             ].map(([key, value]) => (
               <div class="flex flex-wrap justify-between gap-2 border-b border-rule px-3 py-2 last:border-b-0">
                 <dt>{key}</dt>
-                <dd
-                  class={value?.startsWith("warn") ? "text-ember" : "text-wire"}
-                >
+                <dd class="text-wire">
                   {value}
                 </dd>
               </div>
@@ -402,41 +377,54 @@ if (!bridgeCardImage) throw new Error("The bridge has no water-level capture for
     </p>
     {PACKS_ENABLED ? (
       <>
-      <div class="mt-8 grid gap-8 md:grid-cols-3">
-        <article class="md:col-span-2">
+      <div class="mt-8 grid gap-10 md:grid-cols-3 md:gap-8">
+        <article>
           <a href="/packs/farm/" class="block no-underline text-ink" aria-label="Shapes &amp; Seasons Farm">
-            <ResponsiveImage
-              image={{ ...farm.scene.poster, alt: "" }}
-              sizes="(max-width: 768px) 100vw, 65vw"
-            />
+            <ScenePoster images={farmScene.posterImages} sizes={CARD_SIZES} decorative />
             <h3 class="mt-5 text-ink">Shapes &amp; Seasons Farm</h3>
-          <p class="mt-2 max-w-reading text-dim">
-            23 assets, their editable source and a runnable scene. Runtime,
-            editable and scene downloads retain their own notices and
-            provenance.
-          </p>
-          <span class="text-link mt-2">
-            Browse the Farm pack <span aria-hidden="true">→</span>
-          </span>
           </a>
+          <p class="mt-2 text-dim">
+            23 assets, their editable source and a runnable scene.
+          </p>
+          <div class="mt-2 flex flex-wrap gap-x-6">
+            <a class="text-link" href="/packs/farm/">Browse the Farm pack</a>
+            <a class="text-link" href="/scenes/farm/">Open the scene</a>
+          </div>
         </article>
         <article>
-          <a href="/gallery/golden-gate-bridge/" class="block no-underline text-ink" aria-label="Golden Gate Bridge">
-            <ResponsiveImage
-              image={{ ...bridgeCardImage, alt: "" }}
-              sizes="(max-width: 768px) 100vw, 33vw"
-            />
+          <a href={goldenGateScene.href} class="block no-underline text-ink" aria-label="Golden Gate Bridge scene">
+            <ScenePoster images={goldenGateScene.posterImages} sizes={CARD_SIZES} decorative />
             <h3 class="mt-5 text-ink">Golden Gate Bridge</h3>
-          <p class="mt-2 text-dim">
-            A standalone asset with published-dimension references, procedural
-            source and GPU captures.{" "}
-            {bridge.review.ownerAccepted
-              ? "Owner approved."
-              : bridge.review.status === "awaiting-owner-review"
-                ? "Awaiting owner review."
-                : "Review is in progress."}
-          </p>
           </a>
+          <p class="mt-2 text-dim">
+            A driving and traffic scene on a bridge authored from
+            published dimensions, with procedural source and GPU captures.
+          </p>
+          <div class="mt-2 flex flex-wrap gap-x-6">
+            <a class="text-link" href={goldenGateScene.href}>Open the scene</a>
+            <a class="text-link" href="/gallery/golden-gate-bridge/">The bridge asset</a>
+          </div>
+        </article>
+        <article>
+          <a href={foundryFloor.sceneRoute} class="block no-underline text-ink" aria-label={`${foundryFloor.name} scene`}>
+            <ScenePoster
+              images={foundryFloorScene.posterImages}
+              sizes={CARD_SIZES}
+              decorative
+            />
+            <h3 class="mt-5 text-ink">{foundryFloor.name}</h3>
+          </a>
+          <p class="mt-2 text-dim">
+            {foundryFloorPack.assetCount} models for a fictional
+            2 nm-class chip fab, and a scene of its campus and fab floor where
+            the factory runs.
+          </p>
+          <div class="mt-2 flex flex-wrap gap-x-6">
+            <a class="text-link" href={foundryFloor.sceneRoute}>
+              {sceneRuntimes["foundry-floor"] ? "The scene preview" : "The scene status"}
+            </a>
+            <a class="text-link" href={foundryFloor.packRoute}>The Foundry Floor pack</a>
+          </div>
         </article>
       </div>
       <article class="mt-10 grid items-center gap-6 border-t border-rule pt-8 md:grid-cols-3 md:gap-8">
@@ -475,27 +463,25 @@ if (!bridgeCardImage) throw new Error("The bridge has no water-level capture for
       </p>
     )}
     <div class="mt-10 grid gap-8 border-y border-rule py-6 md:grid-cols-2">
-      <div>
-        <h3 class="text-title">{foundryFloor.name}</h3>
-        <p class="mt-2 max-w-reading text-dim">
-          {PACKS_ENABLED
-            ? `In production: ${foundryFloorPack.assetCount} models for a fictional 2 nm-class chip fab, and an interior scene where the factory runs. Both are staged for the owner’s review and are not yet accepted.`
-            : "In production: a fictional 2 nm-class chip fab pack with process tools, wafer transport and a scene where the factory runs."}
-        </p>
-        <div class="flex flex-wrap gap-x-6">
-          <a href={foundryFloor.packRoute} class="text-link">
-            {PACKS_ENABLED ? "The pack in production" : "Production note"}
-          </a>
-          <a href={foundryFloor.sceneRoute} class="text-link">
-            {sceneRuntimes["foundry-floor"] ? "The scene preview" : "The scene status"}
-          </a>
+      {!PACKS_ENABLED && (
+        <div>
+          <h3 class="text-title">{foundryFloor.name}</h3>
+          <p class="mt-2 max-w-reading text-dim">
+            A fictional 2 nm-class chip fab pack with process
+            tools, wafer transport and a scene where the factory runs.
+          </p>
+          <div class="flex flex-wrap gap-x-6">
+            <a href={foundryFloor.packRoute} class="text-link">Production note</a>
+            <a href={foundryFloor.sceneRoute} class="text-link">
+              {sceneRuntimes["foundry-floor"] ? "The scene preview" : "The scene status"}
+            </a>
+          </div>
         </div>
-      </div>
+      )}
       <div>
         <h3 class="text-title">Earlier examples</h3>
         <p class="mt-2 max-w-reading text-dim">
-          Earlier examples from earlier Kiln versions, not reviewed to the pack
-          standard.
+          Earlier examples from earlier Kiln versions.
         </p>
         <a class="text-link" href="/gallery/archive/">
           Open the archive <span aria-hidden="true">→</span>

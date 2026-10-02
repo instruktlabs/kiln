@@ -90,14 +90,14 @@ const pathParts = (path: string) => path.split("/");
   </div>
   <ol
     class:list={[
-      "drawing-legend mt-3 grid gap-1 font-mono text-code",
+      "drawing-legend mt-3 grid gap-2 px-4 font-mono text-code md:px-0",
       routed.length === drawing.callouts.length && "md:hidden",
     ]}
     aria-label="Named parts in the drawing"
   >
     {drawing.callouts.map((callout) => (
       <li class:list={["flex gap-2", !callout.legendOnly && "md:hidden"]}>
-        <span class="drawing-index-static" aria-hidden="true">{callout.index}</span>
+        <span class="drawing-index-static mt-1" aria-hidden="true">{callout.index}</span>
         <span class="min-w-0">
           {pathParts(callout.path).map((part, index) => (
             <>{index > 0 && <>/<wbr /></>}{part}</>

@@ -11,16 +11,16 @@
     {
       "id": "golden-gate",
       "release": "g9",
-      "path": "scene-inputs/v09-review3/golden-gate.zip",
-      "bytes": 8333665,
-      "sha256": "c765ebb40d668ec6b90ffbd379e68dbcb4e9f475c515a06123f23f8d0e8a18bd"
+      "path": "scene-inputs/v09-review4/golden-gate.zip",
+      "bytes": 8335422,
+      "sha256": "5645e6d67d899c521cadb43da71f01dc1769a6ff931f29f374f9e65134275546"
     },
     {
       "id": "foundry-floor",
       "release": "ff3-review2",
-      "path": "scene-inputs/v09-review3/foundry-floor.zip",
-      "bytes": 2863842,
-      "sha256": "c1c1c5e642cb1a4db97b6cc1103fac4e107f9a0888498a4a78f3c218b6e7ef70"
+      "path": "scene-inputs/v09-review4/foundry-floor.zip",
+      "bytes": 2858786,
+      "sha256": "9043809403236964ffac8401358a1a946fde44d98e73ace1933b03e3ba9764ee"
     }
   ]
 }

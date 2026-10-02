@@ -12,14 +12,11 @@ const featured = ["euv-scanner", "etch-cluster-tool", "vertical-furnace", "stock
   if (!asset) throw new Error(`The Foundry Floor catalog has no model ${slug}`);
   return asset;
 });
-const farmAwaiting = farm.ownerReview.total - farm.ownerReview.acceptedAssets;
-// Typed here: with every vehicle approved the record's list is empty, which the JSON import types as never[].
-const vehiclesAwaiting: string[] = vehicles.ownerReview.awaiting;
 ---
 
 <BaseLayout
   title="Packs · Kiln"
-  description="Download Farm and Vehicles GLBs with editable source and provenance, or inspect the Foundry Floor pack in production."
+  description="Download Farm and Vehicles GLBs with editable source and provenance, or inspect the Foundry Floor pack."
   breadcrumbs={[{ label: "Packs", href: "/packs/" }]}
   card="packs"
 >
@@ -44,10 +41,7 @@ const vehiclesAwaiting: string[] = vehicles.ownerReview.awaiting;
             23 assets: buildings, animals, crops, fencing and farm equipment.
           </p>
           <p class="mt-4 text-dim">
-            Runtime, editable and scene profiles.{" "}
-            {farm.ownerReview.acceptedAssets} of {farm.ownerReview.total} current
-            revisions approved by the owner
-            {farmAwaiting > 0 ? `; ${farmAwaiting} await review` : ""}.
+            Runtime, editable and scene profiles.
           </p>
           <span class="text-link mt-4">
             Inspect the pack and downloads<span class="sr-only">: Shapes &amp; Seasons Farm</span> <span aria-hidden="true">→</span>
@@ -75,11 +69,7 @@ const vehiclesAwaiting: string[] = vehicles.ownerReview.awaiting;
             and a transit bus, each with three detail tiers.
           </p>
           <p class="mt-4 text-dim">
-            Runtime GLBs, editable source and licence texts.{" "}
-            {vehicles.ownerReview.acceptedAssets} of {vehicles.ownerReview.total}{" "}
-            assets approved by the owner
-            {vehiclesAwaiting.length > 0 &&
-              `; the corrected revision of the ${vehiclesAwaiting.map((name) => name.replace(/^Generic /, "")).join(" and the ")} awaits review`}.
+            Runtime GLBs, editable source and licence texts.
           </p>
           <span class="text-link mt-4">
             Inspect the pack and downloads<span class="sr-only">: Generic Road Vehicles</span> <span aria-hidden="true">→</span>
@@ -88,7 +78,7 @@ const vehiclesAwaiting: string[] = vehicles.ownerReview.awaiting;
       </a>
     )}
     {PACKS_ENABLED && (
-      <a href="/packs/foundry-floor/" aria-label="Foundry Floor, in production" class="mt-12 grid items-center gap-8 border-b border-rule pb-8 lg:grid-cols-3">
+      <a href="/packs/foundry-floor/" aria-label="Foundry Floor" class="mt-12 grid items-center gap-8 border-b border-rule pb-8 lg:grid-cols-3">
         <div class="grid grid-cols-3 gap-2 lg:col-span-2">
           {featured.map((asset) => (
             <div class="bg-stage">
@@ -108,11 +98,10 @@ const vehiclesAwaiting: string[] = vehicles.ownerReview.awaiting;
             floor, ceiling and walls, and the people and robots who work there.
           </p>
           <p class="mt-4 text-dim">
-            In production. Runtime GLBs and the pack’s licence text. The owner
-            has not reviewed this pack; it stays in production until then.
+            Runtime GLBs and the pack’s licence text.
           </p>
           <span class="text-link mt-4">
-            Inspect the pack in production <span aria-hidden="true">→</span>
+            Inspect the pack <span aria-hidden="true">→</span>
           </span>
         </div>
       </a>
@@ -122,7 +111,7 @@ const vehiclesAwaiting: string[] = vehicles.ownerReview.awaiting;
         <div>
           <h2 class="text-subheading">{foundryFloor.name}</h2>
           <p class="mt-4 max-w-reading">
-            In production: a fictional 2 nm-class chip fab with process tools,
+            A fictional 2 nm-class chip fab with process tools,
             wafer transport and a scene where the factory runs.
           </p>
           <a href={foundryFloor.packRoute} class="text-link mt-2">

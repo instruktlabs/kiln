@@ -1,5 +1,4 @@
 ---
-import Callout from "../../components/Callout.astro";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import SceneShell from "../../components/SceneShell.astro";
 import foundryFloor from "../../data/foundry-floor.json";
@@ -8,7 +7,7 @@ import { foundryFloorScene } from "../../data/scenes";
 import { FULL_WIDTH_IMAGE_SIZES } from "../../lib/catalog";
 import { PACKS_ENABLED } from "../../lib/config";
 import { foundryPresentation } from "../../lib/foundry-presentation";
-// D-33/S-2: an in-production preview for the owner's local review. It stays out of search results and the sitemap whatever foundryFloorScene.available says.
+// D-33/S-2: this page stays out of search results and the sitemap whatever foundryFloorScene.available says.
 const scene = foundryFloorScene;
 const presentation = foundryPresentation(foundryFloorPack, scene.pack.release);
 ---
@@ -35,7 +34,6 @@ const presentation = foundryPresentation(foundryFloorPack, scene.pack.release);
 >
   <div class="container pb-12 pt-8">
     <SceneShell scene="foundry-floor">
-    <Callout slot="notice" label="In production"><p>This preview is staged for local owner review. Appearance and device feedback remain open; technical checks do not establish owner acceptance.</p></Callout>
     <div class="mt-8 grid gap-6 border-t border-rule pt-6 md:grid-cols-3">
       <div>
         <h2 class="text-subheading font-semibold">

@@ -1,9 +1,10 @@
 ---
 import { sceneRuntimes } from "virtual:kiln-scenes";
 import { sceneInMode, scenes, type SceneId } from "../data/scenes";
-import { imageQualification, FULL_WIDTH_IMAGE_SIZES } from "../lib/catalog";
+import { FULL_WIDTH_IMAGE_SIZES } from "../lib/catalog";
 import { PACKS_ENABLED } from "../lib/config";
 import PageHeader from "./PageHeader.astro";
+import ScenePoster from "./ScenePoster.astro";
 
 interface Props {
   scene: SceneId;
@@ -37,41 +38,30 @@ const stateCopy = scene.available
   data-frame-title={`${scene.name} scene`}
 >
   <div data-intro>
-    {PACKS_ENABLED && scene.posterImage && (
-      <picture>
-        <source
-          type="image/avif"
-          srcset={scene.posterImage.srcsetAvif}
-          sizes={FULL_WIDTH_IMAGE_SIZES}
-        />
-        <img
-          src={scene.poster}
-          srcset={scene.posterImage.srcsetWebp}
-          sizes={FULL_WIDTH_IMAGE_SIZES}
-          width={scene.posterWidth}
-          height={scene.posterHeight}
-          alt={scene.posterAlt}
-          class="w-full object-contain"
-          style={`aspect-ratio:${scene.posterWidth}/${scene.posterHeight}`}
-          fetchpriority="high"
-        />
-      </picture>
-    )}
-    {PACKS_ENABLED && scene.posterImage && "posterCaption" in scene && (
-      <p class="bg-sheet px-6 pt-4 text-caption text-dim">{scene.posterCaption}</p>
-    )}
-    {PACKS_ENABLED && scene.posterImage && imageQualification(scene.posterImage) && (
-      <p class="bg-sheet px-6 pt-4 text-caption text-dim">{imageQualification(scene.posterImage)}</p>
-    )}
+    {/* Explore comes first so it is on screen without scrolling; the two captures follow, one above the other. */}
     <div class="flex flex-wrap items-center justify-between gap-6 bg-sheet p-6">
       <div class="max-w-prose">
         <p>{stateCopy}</p>
         <p class="mt-2 text-sm text-dim">{scene.copy.devices}</p>
+        {runtime && (
+          <p class="mt-2 flex flex-wrap gap-x-4 text-sm">
+            {scene.links.map((link) => (
+              <a class="text-dim underline decoration-rule hover:text-ember" href={`${scene.assetBase}${link.path}`}>{link.label}</a>
+            ))}
+          </p>
+        )}
       </div>
       <button type="button" class="btn" data-explore hidden>
         Explore
       </button>
     </div>
+    {PACKS_ENABLED && scene.posterImage && (
+      <ScenePoster
+        images={scene.posterImages}
+        sizes={FULL_WIDTH_IMAGE_SIZES}
+        eager
+      />
+    )}
   </div>
   <div
     data-active
@@ -81,20 +71,12 @@ const stateCopy = scene.available
     hidden
     class="fixed inset-0 z-50 flex flex-col overflow-auto bg-paper"
   >
-    <div class="scene-topbar flex shrink-0 flex-wrap items-center justify-between gap-2 border-b border-rule p-2 sm:gap-4 sm:p-4">
-      <button type="button" class="btn btn-secondary" data-exit>
-        Exit scene
+    <div class="scene-topbar flex shrink-0 items-center justify-between gap-2">
+      <button type="button" class="scene-topbar-button" data-exit>
+        <span aria-hidden="true">←</span> Exit scene
       </button>
-      {runtime && (
-        <p class="flex flex-1 flex-wrap items-center justify-center gap-x-4 gap-y-1 text-sm text-dim">
-          {!scene.available && <span>{scene.copy.previewLabel}</span>}
-          {scene.links.map((link) => (
-            <a class="text-link" href={`${scene.assetBase}${link.path}`}>{link.label}</a>
-          ))}
-        </p>
-      )}
-      <button type="button" class="btn btn-secondary" data-fullscreen>
-        Enter fullscreen
+      <button type="button" class="scene-topbar-button" data-fullscreen>
+        Fullscreen
       </button>
     </div>
     <p data-loading role="status" class="p-6">
@@ -304,7 +286,7 @@ const stateCopy = scene.available
         fullscreen.textContent =
           document.fullscreenElement === this
             ? "Leave fullscreen"
-            : "Enter fullscreen";
+            : "Fullscreen";
       };
       const onKey = (event: KeyboardEvent) => {
         if (

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { CameraButtons, HelpOverlay, HudButton, InteractButton, InteractPrompt, StatusLine, useHud, useInput, usePlayMode, useSceneRootRef, VirtualJoystick } from '@kiln-scenes/scene-kit';
+import { CameraButtons, HelpOverlay, HudButton, HudHideButton, HudToolbar, InteractButton, InteractPrompt, StatusLine, SystemOrder, useHud, useInput, usePlayMode, useSceneRootRef, useSystem, VirtualJoystick } from '@kiln-scenes/scene-kit';
 import { useFarmSession } from '../state';
 import { FARM_STRINGS } from './strings';
 
@@ -46,17 +46,21 @@ function useCoarsePointer(): boolean {
 /**
  * SPEC 13.1 public HUD with the D-22 touch scheme (M3a). On touch: the joystick moves Rowan and, while driving,
  * is the throttle (forward accelerates, back brakes then reverses, sideways steers); one-finger drag looks and a
- * pinch zooms while driving; walking uses a fixed first-person eye. A context button appears when there is something to do
+ * pinch zooms; the camera follows Rowan in third person on foot and the tractor while driving. A context button appears when there is something to do
  * (open a door, drive, leave the tractor). The overview keeps one tap target, Reset view, since drag, pinch and
  * two-finger pan replace the rest of the camera pad. The mode button leaves play, so no Leave play pad exists.
- * Desktop walking captures the pointer; Escape releases it and returns to overview. Strings come from the table.
+ * Desktop walking drags to look and scrolls to zoom; Escape returns to overview. Strings come from the table.
  */
 export function FarmHud() {
   const session = useFarmSession(), hud = useHud(session.hud), { playing, setPlaying } = usePlayMode(), input = useInput(), root = useSceneRootRef();
   const pointer = input.state.lastPointer, coarse = useCoarsePointer();
   const touch = pointer === 'touch' || pointer === 'pen' || (coarse && pointer !== 'keyboard');
+  // The walking hint leaves once Rowan has moved; it returns with the next walk.
+  const [hint, setHint] = useState(true);
+  useEffect(() => { if (!playing) setHint(true); }, [playing]);
+  useSystem('farm-walk-hint', SystemOrder.sim + 1, () => { if (hint && input.enabled && (input.state.move.x || input.state.move.y)) setHint(false); });
   const toggle = () => {
-    if (!playing) { setPlaying(true); root.current?.focus({ preventScroll: true }); if (!touch) void session.captureWalk?.(); return; }
+    if (!playing) { setPlaying(true); root.current?.focus({ preventScroll: true }); return; }
     // The pilot's play button stays in play while the tractor has no free exit.
     const sim = session.world?.sim; if (sim && !sim.stop()) return;
     setPlaying(false);
@@ -64,14 +68,15 @@ export function FarmHud() {
   const layout = !playing ? (touch ? 'farm-overview-touch' : 'farm-overview') : touch ? 'farm-play-touch' : 'farm-play-desktop';
   return <div className={`farm-hud ${layout}`}>
     <style data-farm-styles="">{FARM_HUD_CSS}</style>
-    <div className="ks-toolbar">
+    <HudToolbar>
       <HudButton onClick={toggle}>{playing ? FARM_STRINGS.overview : FARM_STRINGS.walk}</HudButton>
       <HelpOverlay playing={false} label={FARM_STRINGS.controls} desktop={FARM_STRINGS.helpKeyboard} touch={FARM_STRINGS.helpTouch}/>
-    </div>
+      <HudHideButton/>
+    </HudToolbar>
     {!playing && <div className="farm-camera">{touch
       ? <HudButton className="farm-reset-view" onClick={() => session.orbit.current?.reset()}>{FARM_STRINGS.resetView}</HudButton>
       : <CameraButtons rig={session.orbit}/>}</div>}
-    <StatusLine text={playing && !hud.driving && !touch ? (hud.captured ? FARM_STRINGS.walkCaptured : FARM_STRINGS.walkCapture) : hud.status}/>
+    <StatusLine text={playing && !hud.driving && !touch ? (hud.status || (hint ? FARM_STRINGS.walkHint : '')) : hud.status}/>
     {playing && !touch && <InteractPrompt label={hud.interact} available={hud.canInteract}/>}
     {playing && touch && <VirtualJoystick label={hud.driving ? FARM_STRINGS.joystickDrive : FARM_STRINGS.joystick} axes={hud.driving ? 'throttle' : 'both'}/>}
     {playing && touch && hud.canInteract && <InteractButton label={hud.interact}/>}

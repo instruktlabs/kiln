@@ -8,7 +8,7 @@ const categories = [...new Set(assets.map((asset) => asset.category))].sort();
 
 <BaseLayout
   title="Gallery · Kiln"
-  description="Explore Farm, road vehicles, Foundry Floor and the Golden Gate Bridge. Inspect individual 3D models, exact downloads, saved revisions and review status."
+  description="Explore Farm, road vehicles, Foundry Floor and the Golden Gate Bridge. Inspect individual 3D models, exact downloads, and saved revisions."
   breadcrumbs={[{ label: "Gallery", href: "/gallery/" }]}
   card="gallery"
 >
@@ -18,10 +18,9 @@ const categories = [...new Set(assets.map((asset) => asset.category))].sort();
       <div>
         <p class="lead">
           Inspect each model, its saved revision and download.
-          Source availability and review status are stated on each asset.
         </p>
         <a href="/gallery/archive/" class="text-link mt-3">
-          Browse the earlier, unreviewed archive <span aria-hidden="true">→</span>
+          Browse the earlier archive <span aria-hidden="true">→</span>
         </a>
       </div>
     </div>

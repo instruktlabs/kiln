@@ -1,0 +1,25 @@
+---
+import type { CatalogImage } from "../lib/catalog";
+import ResponsiveImage from "./ResponsiveImage.astro";
+interface Props {
+  /** One capture, or two full captures stacked one above the other. */
+  images: readonly CatalogImage[];
+  sizes: string;
+  eager?: boolean;
+  /** Decorative inside a link that already names the scene. */
+  decorative?: boolean;
+  class?: string;
+}
+const { images, sizes, eager = false, decorative = false, class: className } = Astro.props;
+---
+
+<div class:list={[images.length > 1 && "grid gap-px bg-rule", className]}>
+  {images.map((image) => (
+    <ResponsiveImage
+      image={decorative ? { ...image, alt: "" } : image}
+      sizes={sizes}
+      eager={eager}
+      class="block w-full"
+    />
+  ))}
+</div>

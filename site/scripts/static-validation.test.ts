@@ -131,11 +131,11 @@ describe('the Foundry Floor pages', () => {
     expect(JSON.stringify(foundryFloor)).not.toMatch(/terafab/i);
   });
 
-  test('pass when both pages are in production, unindexed, out of the sitemap and carry the line', () => {
+  test('pass when both pages are unindexed, out of the sitemap and carry the line', () => {
     expect(check(good())).toEqual([]);
   });
 
-  test('report a missing page, an indexable page, a followed scene, a missing or altered line and a page that is not in production', () => {
+  test('report a missing page, an indexable page, a followed scene, and a missing or altered line', () => {
     const missing = good();
     missing.delete('/scenes/foundry-floor/');
     expect(check(missing)).toEqual(['/scenes/foundry-floor/: The Foundry Floor page was not emitted']);
@@ -153,9 +153,6 @@ describe('the Foundry Floor pages', () => {
     altered.set('/packs/foundry-floor/', page('<p>In production.</p><p>Not affiliated with Tesla.</p>'));
     // An altered line also names a maker outside the exact line.
     expect(check(altered)).toEqual(['/packs/foundry-floor/: The Foundry Floor page must carry the no-affiliation line word for word', '/packs/foundry-floor/: A maker named in the no-affiliation line appears outside it: Tesla']);
-    const planned = good();
-    planned.set('/packs/foundry-floor/', page(`<p>Coming soon.</p><p>${notice}</p>`));
-    expect(check(planned)).toEqual(['/packs/foundry-floor/: The Foundry Floor page must say it is in production']);
   });
 
   test('report a page that reached the sitemap', () => {
@@ -322,8 +319,9 @@ describe('copy rules on every page', () => {
     expect(licenceSpellingErrors(html('<code>license: MIT</code>'))).toEqual([]);
   });
 
-  test('approved records must not be described as awaiting owner review', () => {
-    expect(ownerReviewErrors(html('<h2>Owner approved</h2>'))).toEqual([]);
+  test('pages do not state owner review status: it stays in the catalog records', () => {
+    expect(ownerReviewErrors(html('<h2>Review views</h2><p>A model.</p>'))).toEqual([]);
+    expect(ownerReviewErrors(html('<h2>Owner approved</h2>'))).toHaveLength(1);
     expect(ownerReviewErrors(html('<p>Awaiting owner review</p>'))).toHaveLength(1);
   });
 
@@ -345,16 +343,8 @@ describe('copy rules on every page', () => {
     expect(validate('It performs smoothly on every touchscreen.')).toHaveLength(1);
   });
 
-  test('new candidate records remain pending, and mixed gallery listings can show both statuses', () => {
-    expect(ownerReviewErrors(html('<p>Awaiting owner review</p>'), 'pending')).toEqual([]);
-    expect(ownerReviewErrors(html('<p>Owner approved</p>'), 'pending')).toHaveLength(2);
-    expect(ownerReviewErrors(html('<p>A model.</p>'), 'pending')).toHaveLength(1);
-    expect(ownerReviewErrors(html('<p>Owner approved</p><p>Awaiting owner review</p>'), 'mixed')).toEqual([]);
-    expect(copyErrors(html('<p>Awaiting owner review</p>'), 'pending')).toEqual([]);
-  });
-
   test('the copy rules combine: glued numbers, licence spelling and owner status', () => {
-    expect(copyErrors(html('<p>Owner approved. The licence is CC0-1.0.</p>'))).toEqual([]);
+    expect(copyErrors(html('<p>The licence is CC0-1.0.</p>'))).toEqual([]);
     expect(copyErrors(html('<p>Unity 6000.2.3f1 and 6000.0.0b12.</p>'))).toEqual([]);
     expect(copyErrors(html('<p>Awaiting owner review of the license, due April1935.</p>'))).toHaveLength(3);
   });

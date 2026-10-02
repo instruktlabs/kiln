@@ -4,6 +4,7 @@ export const GG_STRINGS = {
   graphics: 'Starting graphics…',
   build: 'Building the scene…',
   firstFrame: 'Almost ready…',
+  view: 'View', more: 'More',
   light: 'Light',
   flyovers: 'Flyovers',
   flyoverStop: 'Stop flyover',

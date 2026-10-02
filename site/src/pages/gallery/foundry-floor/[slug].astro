@@ -29,7 +29,6 @@ const description = `${asset.name}: a ${group.title.toLowerCase()} model from Fo
       <div><PageHeader>{asset.name}</PageHeader><p class="mt-4 max-w-reading">{description}</p></div>
       <p class="font-mono text-code lg:text-right"><a class="text-link" href="/packs/foundry-floor/">Foundry Floor</a> · {group.title}</p>
     </div>
-    <p class="mb-6 max-w-reading"><strong>In production.</strong> This saved revision is awaiting owner review.</p>
     <div class="drawing-sheet">
       <AssetViewer name={asset.name} modelUrl={`${modelUrl}?revision=${encodeURIComponent(asset.revisionId)}`}
         poster={asset.poster.src} posterAlt={asset.poster.alt} posterWidth={asset.poster.width}

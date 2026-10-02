@@ -146,21 +146,14 @@ export function licenceSpellingErrors(html) {
     .map((match) => `Spell the noun "licence" in the site's own prose: ${JSON.stringify(match[0])}`);
 }
 
-/** Review claims follow the exact catalog record; new local revisions never inherit prior approval. */
-export function ownerReviewErrors(html, status = 'approved') {
-  const text = `${visibleText(html)} ${proseText(html)}`;
-  const pending = /awaiting owner review/i.test(text);
-  const approved = /owner approved/i.test(text);
-  if (status === 'mixed') return [];
-  if (status === 'pending') return [
-    ...(!pending ? ['The candidate asset page must say "Awaiting owner review"'] : []),
-    ...(approved ? ['The candidate asset page must not claim "Owner approved"'] : []),
-  ];
-  return pending ? ['The page says "Awaiting owner review" but its catalog record is owner approved'] : [];
+/** Owner review status stays in the catalog records; no page states it. */
+export function ownerReviewErrors(html) {
+  const match = /awaiting owner review|owner approved/i.exec(`${visibleText(html)} ${proseText(html)}`);
+  return match ? [`The page states owner review status (${JSON.stringify(match[0])}); that belongs in the catalog record, not in page copy`] : [];
 }
 
 /** The copy rules every page answers to: numbers not glued to words, the site's spelling of licence, owner status. */
-export const copyErrors = (html, reviewStatus) => [...gluedNumberErrors(html), ...licenceSpellingErrors(html), ...ownerReviewErrors(html, reviewStatus)];
+export const copyErrors = (html) => [...gluedNumberErrors(html), ...licenceSpellingErrors(html), ...ownerReviewErrors(html)];
 
 /** Meta descriptions over this length are cut in search and share previews (content review finding 13). */
 export const DESCRIPTION_WARNING_LENGTH = 160;
@@ -178,8 +171,8 @@ const EXTERIOR = /\b(campus|landscape|exterior|outdoors?|roads?|parking)\b/i;
 const PLACEMENT = /\b(?:places|arranged from) (\d+) of the (?:pack’s )?(\d+)\b/g;
 
 /**
- * Foundry Floor is in production (D-33): its pack and scene pages are unindexed (the scene page also unfollowed),
- * out of the sitemap and say so, and carry the owner's no-affiliation line word for word. The makers that line names
+ * Foundry Floor (D-33): its pack and scene pages are unindexed (the scene page also unfollowed),
+ * out of the sitemap, and carry the owner's no-affiliation line word for word. The makers that line names
  * appear nowhere else on them; the scene page makes no device claims; neither implies an exterior. Given the pack
  * record's `placement` ({ assetCount, placedInScene, packPage }), each page states how many models the scene places,
  * with the record's numbers, and the scene page says how many of the rest are in the pack but not placed. `packPage:
@@ -200,7 +193,6 @@ export function foundryFloorErrors({ pages, sitemapUrls, placement = null, hasCa
     else if (scene && !wanted.has('nofollow')) add(`The Foundry Floor scene page must be "noindex, nofollow", got ${JSON.stringify(page.robots)}`);
     else if (page.robots !== expected) add(`The Foundry Floor ${scene ? 'scene' : 'pack'} page must be "${expected}", got ${JSON.stringify(page.robots)}`);
     if (!page.html.includes(foundryFloor.notice)) add('The Foundry Floor page must carry the no-affiliation line word for word');
-    if (!/in production/i.test(page.html)) add('The Foundry Floor page must say it is in production');
     if (inSitemap.has(new URL(route, ORIGIN).href)) add('The Foundry Floor page is in the sitemap');
     const text = visibleText(page.html).split(foundryFloor.notice).join(' ');
     const maker = NOTICE_MAKERS.exec(text);

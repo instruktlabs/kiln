@@ -36,7 +36,7 @@ const label = archiveLabel(specimen.name);
 const demo = isDemo(specimen.name);
 // A recorded demo run names no model; its attribution is one plain line instead of "{model} through {harness}".
 const modelRecorded = specimen.model !== "Not independently recorded";
-const description = `${label}: an unreviewed historical Kiln example. Inspect the GLB, read its JavaScript source and see the recorded model and harness attribution.`;
+const description = `${label}: an earlier Kiln example. Inspect the GLB, read its JavaScript source and see the recorded model and harness attribution.`;
 const source = specimen.source
   ? await readFile(resolve("public", specimen.source), "utf8")
   : null;
@@ -87,8 +87,7 @@ const formatBytes = (bytes: number) => `${bytes.toLocaleString("en-US")} bytes`;
       )}
       {specimen.caption && <p class="lead mt-5">{specimen.caption}</p>}
       <p class="mt-4 text-caption text-dim">
-        Earlier examples from earlier Kiln versions, not reviewed to the pack
-        standard.
+        Earlier examples from earlier Kiln versions.
       </p>
     </div>
     <div class="mt-8 grid items-start gap-8 lg:grid-cols-3">
@@ -130,8 +129,7 @@ const formatBytes = (bytes: number) => `${bytes.toLocaleString("en-US")} bytes`;
           <dd class="font-mono">{specimen.warnings}</dd>
         </dl>
         <p class="mt-5 text-caption text-dim">
-          Measurements come from this build. They describe structure and cost,
-          not visual acceptance.
+          Measurements come from this build.
         </p>
       </div>
     </div>

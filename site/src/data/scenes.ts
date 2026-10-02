@@ -24,8 +24,6 @@ interface SceneCopy {
   unavailableBody: string;
   /** What the error surface says; the last sentence names what remains available. */
   errorText: string;
-  /** Shown beside the notices while an unqualified preview runs. */
-  previewLabel: string;
 }
 
 /**
@@ -38,15 +36,13 @@ export const farmTouchCopy = {
   controls: [
     'Move with the joystick. When you drive the tractor, push it forward to accelerate and pull it back to brake and, once stopped, to reverse. Push it left or right to steer.',
     'Drag one finger to look around.',
-    'Pinch to zoom while driving the tractor or viewing the overview. Walking keeps a fixed eye height.',
+    'Pinch to zoom on foot, while driving the tractor or in the overview.',
     'One tap target appears when there is something to do: open a door or gate, drive the tractor or leave it.',
-    'Walking is in first person. The camera follows the tractor when you drive it.',
+    'Walking is in third person: the camera follows Rowan on foot and the tractor when you drive it.',
   ],
   qualityHeading: 'Quality follows the device.',
   quality: [
     'The scene chooses a quality tier when it opens. A phone of the Galaxy S24+ class starts on the high tier when its browser uses WebGPU, and on the minimal tier when it falls back to WebGL2. A tablet of the Galaxy Tab S9 FE class starts on the minimal tier on either graphics backend.',
-    'The current scene passed desktop input checks and checks with touch emulation on WebGPU and WebGL2. Earlier touch and timing measurements on a Galaxy Tab S9 FE belong to the earlier scene build and do not qualify this revision.',
-    'No physical phone or tablet has been measured for this revision, so no device performance is promised.',
   ],
 } as const;
 
@@ -75,6 +71,8 @@ export const farmScene = {
   pack: farmPack,
   poster: farm.scene.poster.src,
   posterImage: farm.scene.poster,
+  /** A wide view, then a closer one, stacked wherever the scene is pictured. */
+  posterImages: [farm.scene.poster, sceneMedia.farm.captures.walk.poster],
   posterWidth: farm.scene.poster.width,
   posterHeight: farm.scene.poster.height,
   posterAlt: 'The Farm scene with barn, farmhouse, fields, animals, woodland and stream',
@@ -90,22 +88,19 @@ export const farmScene = {
   copy: {
     available: 'Explore the Farm in your browser.',
     preview:
-      'Explore opens the current Farm preview for owner review. The scene download contains the same controls and asset revisions.',
+      'Explore opens the current Farm. The scene download is an earlier build with the same assets; it walks in first person.',
     unavailable:
       'The browser scene is not included in this build. Explore opens its current status and downloads.',
-    devices:
-      'Desktop and touch play; qualification notes are listed below. Loads only when you choose Explore.',
+    devices: 'Desktop and touch play. Loads only when you choose Explore.',
     unavailableTitle: 'The interactive Farm is not included in this build.',
-    unavailableBody:
-      'This scene is in production. The Farm scene download contains the current runnable scene.',
+    unavailableBody: 'The Farm scene download contains the current runnable scene.',
     errorText:
       'The scene could not load. Check your connection and try Explore again. The Farm downloads remain available.',
-    previewLabel: 'Preview for owner review.',
   } satisfies SceneCopy,
   fallback: { href: '/packs/farm/', label: 'View the Farm downloads' },
   preUpload: {
     fallback: allScenes,
-    unavailableBody: 'This scene is in production.',
+    unavailableBody: 'This scene is not part of this build.',
     errorText: noDownloadsError,
   },
 } as const;
@@ -124,6 +119,7 @@ export const goldenGateScene = {
   pack: goldenGatePack,
   poster: goldenGatePoster.src,
   posterImage: goldenGatePoster,
+  posterImages: [sceneMedia['golden-gate'].captures.day.poster, goldenGatePoster],
   posterWidth: goldenGatePoster.width,
   posterHeight: goldenGatePoster.height,
   posterAlt: goldenGatePoster.alt,
@@ -136,35 +132,34 @@ export const goldenGateScene = {
   ] satisfies SceneLink[],
   copy: {
     available: 'Explore the bridge in your browser.',
-    preview:
-      'Explore opens a preview of the driving and traffic demonstration. It is still being qualified.',
+    preview: 'Explore opens the driving and traffic demonstration.',
     unavailable: 'The browser scene is not part of this build. Explore opens its status.',
     devices: 'Loads only when you choose Explore.',
     unavailableTitle: 'The interactive bridge scene is not part of this build.',
     unavailableBody: 'The bridge itself is a Kiln-authored asset with its own page and downloads.',
     errorText:
       'The scene could not load. Check your connection and try Explore again. The bridge asset and its downloads remain available.',
-    previewLabel: 'Preview, still being qualified.',
   } satisfies SceneCopy,
   fallback: { href: '/gallery/golden-gate-bridge/', label: 'View the bridge asset' },
   preUpload: {
     fallback: allScenes,
-    unavailableBody: 'The scene is still being qualified.',
+    unavailableBody: 'The bridge scene is not part of this build.',
     errorText: noDownloadsError,
   },
 } as const;
 
 const foundryFloorScenePack = scenePacks['foundry-floor'];
-const foundryFloorPoster = sceneMedia['foundry-floor'].poster;
+const foundryFloorCaptures = sceneMedia['foundry-floor'].captures;
+const foundryFloorPoster = foundryFloorCaptures.campus.poster;
 const foundryFloorPresentation = foundryPresentation(
   foundryFloorPack,
   foundryFloorScenePack.release,
 );
 
 /**
- * Foundry Floor remains an in-production preview for local owner review (D-33/S-2). Its copy follows the
- * staged catalogue: older interior builds cannot promise a campus. No device claims are made. The poster
- * is a pack model under the review rig, visibly captioned so it is not mistaken for a running-scene capture.
+ * Foundry Floor stays out of search results (D-33/S-2). Its copy follows the
+ * staged catalogue: older interior builds cannot promise a campus. No device claims are made. The scene is
+ * pictured by two captures of its staged runtime, the campus outside and the fab floor inside, shown together.
  */
 export const foundryFloorScene = {
   id: 'foundry-floor',
@@ -178,7 +173,7 @@ export const foundryFloorScene = {
   posterWidth: foundryFloorPoster.width,
   posterHeight: foundryFloorPoster.height,
   posterAlt: foundryFloorPoster.alt,
-  posterCaption: 'Model render from the pack; the running scene is not pictured.',
+  posterImages: [foundryFloorPoster, foundryFloorCaptures.interior.poster],
   description: foundryFloorPresentation.description,
   links: [
     { label: 'Software notices', path: 'THIRD-PARTY-NOTICES.txt' },
@@ -186,15 +181,13 @@ export const foundryFloorScene = {
   ] satisfies SceneLink[],
   copy: {
     available: 'Explore the Foundry Floor in your browser.',
-    preview:
-      'Explore opens the scene as it stands in production: a preview for the owner’s local review, replaced when the scene is accepted.',
+    preview: 'Explore opens the Foundry Floor scene.',
     unavailable: 'The browser scene is not part of this build. Explore opens its status.',
     devices: foundryFloorPresentation.loading,
     unavailableTitle: 'The Foundry Floor scene is not part of this build.',
-    unavailableBody: 'The scene is in production. Its pack page says what the pack holds so far.',
+    unavailableBody: 'Its pack page lists the models the scene is built from.',
     errorText:
       'The scene could not load. Check your connection and try Explore again. The Foundry Floor pack page remains available.',
-    previewLabel: 'In production: a preview for the owner’s review.',
   } satisfies SceneCopy,
   fallback: { href: foundryFloor.packRoute, label: 'View the Foundry Floor pack' },
 } as const;

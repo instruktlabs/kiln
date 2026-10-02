@@ -103,6 +103,7 @@ export async function recordFoundryFloorScenePoster({ posters, data = DATA }) {
   const file = join(data, 'scene-media.json');
   const media = await readJson(file);
   media[FOUNDRY_FLOOR_ID] = {
+    ...media[FOUNDRY_FLOOR_ID],
     poster: rigPosterImage(record, FOUNDRY_FLOOR_SCENE_POSTER.alt),
     rig: { subject: FOUNDRY_FLOOR_SCENE_POSTER.slug, revisionId: record.revisionId, glb: record.glb, view: record.view, rendererId: record.rendererId, pngBytes: record.bytes, pngSha256: record.sha256 },
   };
