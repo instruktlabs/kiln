@@ -52,7 +52,7 @@ test('project CLI exports and imports an exact configuration bundle into an expl
   } finally {
     await rm(root, { recursive: true, force: true });
   }
-});
+}, 60_000); // Five compiled-CLI runs: 2.1 to 3.5 s in the gates of 2 October 2026; past 20 s in the final gate's test step on a host at 97% CPU (3.0 s in that run's coverage step).
 
 test('project CLI shares immutable revisions and rejects stale updates, ignored flags and implicit file selection', async () => {
   const { root, run } = await fixture();
@@ -103,7 +103,7 @@ test('project CLI shares immutable revisions and rejects stale updates, ignored 
   } finally {
     await rm(root, { recursive: true, force: true });
   }
-});
+}, 60_000); // Twelve compiled-CLI runs: 4.8 to 7.8 s in the gates of 2 October 2026; past 20 s on the same loaded host (7.6 s in that run's coverage step).
 
 test('material CLI creates deterministic recipes and exports/imports exact portable records with no implicit paths', async () => {
   const { root, run } = await fixture();
@@ -201,4 +201,4 @@ test('material CLI creates deterministic recipes and exports/imports exact porta
   } finally {
     await rm(root, { recursive: true, force: true });
   }
-});
+}, 60_000); // Eleven compiled-CLI runs: 4.6 to 7.1 s in the gates of 2 October 2026; past 20 s on the same loaded host (6.1 s in that run's coverage step).

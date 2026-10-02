@@ -135,7 +135,7 @@ test('render JSON describes exact files and preserves shared image/requirements 
   expect(decodePng(await readFile(join(directory, 'sheet.png'))).rgb).toEqual(
     decodePng(Buffer.from(media.png)).rgb,
   );
-});
+}, 60_000); // Compiled-CLI render runs: 3.2 to 4.8 s in the gates of 2 October 2026, 20.2 s in a fresh clone's gate beside two live sessions (the records commit put this budget on the next test by mistake).
 
 test('render JSON reports argument/build/view errors and only files actually written', async () => {
   for (const args of [
@@ -185,9 +185,7 @@ test('render JSON reports argument/build/view errors and only files actually wri
   expect(partial.files[0].bytes).toBe((await readFile(join(directory, 'partial.glb'))).length);
   expect(await readFile(join(directory, 'protected.png'), 'utf8')).toBe('existing image');
   expect(run(['source', 'source.js', '--json']).exitCode).toBe(0);
-  // Six compiled-CLI runs: 3.2 to 4.8 s in the gates of 2 October 2026 and 20.2 s on the same tree
-  // in a fresh clone's gate that ran beside two live sessions (the loaded Windows host).
-}, 60_000);
+}, 60_000); // Compiled-CLI error runs: 6.1 to 8.2 s in the gates of 2 October 2026, 15.3 s in a fresh clone's gate beside two live sessions.
 
 test('source JSON is the shared kiln_source result, pages like it, and exports with a receipt', async () => {
   const shared = createKilnSourceDef(new FileProgramStore(join(directory, 'programs')));

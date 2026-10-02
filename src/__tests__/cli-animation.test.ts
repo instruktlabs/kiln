@@ -250,4 +250,4 @@ test('CLI samples real clips with the same frames as the shared tool and preserv
   } finally {
     await rm(directory, { recursive: true, force: true });
   }
-}, 30000);
+}, 90_000); // Compiled-CLI animation runs: 12.2 to 17.4 s in the gates of 2 October 2026, 29.4 s in a fresh clone's gate beside two live sessions.

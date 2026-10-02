@@ -7,6 +7,9 @@ import { join, resolve, sep } from 'node:path';
 const repo = resolve(import.meta.dir, '../..');
 const base = join(repo, 'tmp');
 let root: string;
+// One Node probe per test (bundle, save, read back): 2.0 to 9.7 s in the gates of 2 October 2026,
+// 19.4 s in the step5-fix3 gate's test step and past 20 s in the final gate's on a host at 97% CPU.
+const PROBE_BUDGET_MS = 90_000;
 const sha = (value: string | Uint8Array) =>
   `sha256:${createHash('sha256').update(value).digest('hex')}`;
 
@@ -109,7 +112,7 @@ function run(policy: string, scenario = 'normal', command = 'node') {
     cwd: root,
     encoding: 'utf8',
     windowsHide: true,
-    timeout: 30000,
+    timeout: 60000, // the probe itself; the test around it has PROBE_BUDGET_MS
     env: { ...process.env, KILN_RENDER: 'cpu', KILN_RENDER_SERVICE_PORT: '8011' },
   });
   expect(child.status, child.stderr).toBe(0);
@@ -117,52 +120,76 @@ function run(policy: string, scenario = 'normal', command = 'node') {
 }
 
 for (const policy of ['off', 'memory']) {
-  it(`records verified packaged save provenance with ${policy} reuse`, () => {
-    const result = run(policy);
-    expect(result.engine).toBe(result.expected);
-    expect(result.execution.runtimeIdentity).toBe(result.expected);
-    // The dist build identity a workspace manifest records, reported under its own name.
-    expect(result.execution.buildIdentity).toBe(sha('provenance-fixture'));
-    expect(result.absent).toContainEqual({
-      path: 'dependencies/kiln-provenance-fixture/kiln-provenance-omitted-peer',
-      kind: 'peer-absent',
-    });
-    expect(result.execution.cacheScope).toBe(policy === 'off' ? 'disabled' : 'process');
-  });
-  it(`defers the ${policy} scan until saving and retains one host snapshot`, () => {
-    const result = run(policy, 'lazy');
-    expect(result.initial.runtimeIdentity).toBeUndefined();
-    expect(result.initial.cacheReason).toBeUndefined();
-    expect(result.disposable.runtimeIdentity).toBeUndefined();
-    expect(result.disposable.cacheReason).toBeUndefined();
-    expect(result.engine).toBe(result.expected);
-    expect(result.second).toBe(result.expected);
-  });
-  it(`keeps ${policy} identity failures visible without blocking a save`, () => {
-    const result = run(policy, 'invalid');
-    expect(result.engine).toBe('source-development:unverified');
-    expect(result.execution.runtimeIdentity).toBeUndefined();
-    expect(result.execution.buildIdentity).toBeUndefined();
-    expect(result.execution.cacheReason).toContain('No valid packaged worker identity');
-  });
+  it(
+    `records verified packaged save provenance with ${policy} reuse`,
+    () => {
+      const result = run(policy);
+      expect(result.engine).toBe(result.expected);
+      expect(result.execution.runtimeIdentity).toBe(result.expected);
+      // The dist build identity a workspace manifest records, reported under its own name.
+      expect(result.execution.buildIdentity).toBe(sha('provenance-fixture'));
+      expect(result.absent).toContainEqual({
+        path: 'dependencies/kiln-provenance-fixture/kiln-provenance-omitted-peer',
+        kind: 'peer-absent',
+      });
+      expect(result.execution.cacheScope).toBe(policy === 'off' ? 'disabled' : 'process');
+    },
+    PROBE_BUDGET_MS,
+  );
+  it(
+    `defers the ${policy} scan until saving and retains one host snapshot`,
+    () => {
+      const result = run(policy, 'lazy');
+      expect(result.initial.runtimeIdentity).toBeUndefined();
+      expect(result.initial.cacheReason).toBeUndefined();
+      expect(result.disposable.runtimeIdentity).toBeUndefined();
+      expect(result.disposable.cacheReason).toBeUndefined();
+      expect(result.engine).toBe(result.expected);
+      expect(result.second).toBe(result.expected);
+    },
+    PROBE_BUDGET_MS,
+  );
+  it(
+    `keeps ${policy} identity failures visible without blocking a save`,
+    () => {
+      const result = run(policy, 'invalid');
+      expect(result.engine).toBe('source-development:unverified');
+      expect(result.execution.runtimeIdentity).toBeUndefined();
+      expect(result.execution.buildIdentity).toBeUndefined();
+      expect(result.execution.cacheReason).toContain('No valid packaged worker identity');
+    },
+    PROBE_BUDGET_MS,
+  );
 }
 
-it('records provenance when the host disables evaluation reuse', () => {
-  const result = run('disk', 'disabled');
-  expect(result.engine).toBe(result.expected);
-  expect(result.execution.runtimeIdentity).toBe(result.expected);
-  expect(result.execution.cacheScope).toBe('disabled');
-  expect(result.cacheEvaluations).toBe(false);
-});
+it(
+  'records provenance when the host disables evaluation reuse',
+  () => {
+    const result = run('disk', 'disabled');
+    expect(result.engine).toBe(result.expected);
+    expect(result.execution.runtimeIdentity).toBe(result.expected);
+    expect(result.execution.cacheScope).toBe('disabled');
+    expect(result.cacheEvaluations).toBe(false);
+  },
+  PROBE_BUDGET_MS,
+);
 
-it('does not claim the packaged worker for in-process execution', () => {
-  const result = run('off', 'in-process');
-  expect(result.engine).toBe('source-development:unverified');
-  expect(result.execution.runtimeIdentity).toBeUndefined();
-});
+it(
+  'does not claim the packaged worker for in-process execution',
+  () => {
+    const result = run('off', 'in-process');
+    expect(result.engine).toBe('source-development:unverified');
+    expect(result.execution.runtimeIdentity).toBeUndefined();
+  },
+  PROBE_BUDGET_MS,
+);
 
-it('does not claim the Node packaged worker when run by Bun', () => {
-  const result = run('memory', 'normal', process.execPath);
-  expect(result.engine).toBe('source-development:unverified');
-  expect(result.execution.runtimeIdentity).toBeUndefined();
-});
+it(
+  'does not claim the Node packaged worker when run by Bun',
+  () => {
+    const result = run('memory', 'normal', process.execPath);
+    expect(result.engine).toBe('source-development:unverified');
+    expect(result.execution.runtimeIdentity).toBeUndefined();
+  },
+  PROBE_BUDGET_MS,
+);

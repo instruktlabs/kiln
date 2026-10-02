@@ -124,4 +124,4 @@ test('edit, inspect and animation honor exact CLI project selection and the envi
   } finally {
     await rm(root, { recursive: true, force: true });
   }
-}, 30000);
+}, 60_000); // Compiled-CLI project-selection runs: 7.7 to 11.5 s in the gates of 2 October 2026, 15.1 s in a fresh clone's gate beside two live sessions.

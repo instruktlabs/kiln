@@ -176,7 +176,7 @@ test('CLI saves, exports, imports, and restores a revision across independent st
   } finally {
     await rm(root, { recursive: true, force: true });
   }
-}, 30000);
+}, 120_000); // Many compiled-CLI runs: 6.9 to 9.6 s in the gates of 2 October 2026, 18.9 s in a fresh clone's gate beside two live sessions, and past 30 s in the final gate's test step on a host at 97% CPU (10.7 s in that run's coverage step).
 
 test('CLI collections name each directory, and add refuses a Windows root without a drive', async () => {
   const root = await mkdtemp(join(tmpdir(), 'kiln-collections-cli-'));

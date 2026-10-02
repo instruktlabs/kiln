@@ -242,4 +242,4 @@ it('renders retained source with a capture file and rejects invalid recipes befo
   } finally {
     await rm(directory, { recursive: true, force: true });
   }
-}, 30000);
+}, 90_000); // Compiled-CLI capture runs: 10.5 to 13.2 s in the gates of 2 October 2026, 21.1 s in a fresh clone's gate beside two live sessions and 19.2 s under coverage on the loaded host.
