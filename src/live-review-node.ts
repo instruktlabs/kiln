@@ -692,7 +692,14 @@ export class FileLiveReview implements LiveReviewPort {
       if (hash(rendered.glb) !== rendered.artifactGlbSha256)
         throw new Error('Artifact hash mismatch');
       const { glb, diagnosticViews: _, ...evaluation } = rendered;
-      const metadata = Buffer.from(JSON.stringify(jsonValue(evaluation, evaluationLimit)));
+      // Pretty-printed when it fits, so a line-based file tool can read the one
+      // report a bounded tool result points at; compact only when that would
+      // exceed the file limit.
+      const bounded = jsonValue(evaluation, evaluationLimit);
+      const pretty = JSON.stringify(bounded, null, 2);
+      const metadata = Buffer.from(
+        Buffer.byteLength(pretty) <= evaluationLimit ? pretty : JSON.stringify(bounded),
+      );
       const source = Buffer.from(code);
       state.operation.programRef = hash(source);
       state.operation.artifact = this.file(state, 'asset.glb', glb);
@@ -714,6 +721,10 @@ export class FileLiveReview implements LiveReviewPort {
   }
   async flush() {
     while (this.pending) await this.pending;
+  }
+  currentOperation(): { operationId: string } | undefined {
+    const state = this.current.getStore();
+    return state ? { operationId: state.operation.operationId } : undefined;
   }
   private async record(operationId: string): Promise<OperationState> {
     await this.root();

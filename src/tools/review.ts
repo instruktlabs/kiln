@@ -16,6 +16,7 @@ import { BACKDROP_IDS } from '../views/background';
 import { requireActionFields } from './actions';
 import type { KilnToolDef } from './registry';
 import { persistedPreviewFidelity } from './preview-fidelity';
+import { DEFAULT_RESULT_LIMIT } from './review-detail';
 
 export interface ReviewStore {
   snapshot(options?: { cursor?: string; projectId?: string }): Promise<LiveSnapshot>;
@@ -37,6 +38,8 @@ const REQUIREMENTS: Record<ReviewAction, Parameters<typeof requireActionFields>[
 export const reviewToolInput = z.strictObject({
   action: z.enum(REVIEW_ACTIONS),
   projectId: assetId.optional().describe('list: only operations bound to this project.'),
+  offset: z.number().int().min(0).optional().describe('list: page start; default 0.'),
+  limit: z.number().int().min(1).max(100).optional().describe('list: page size; default 20.'),
   operationId: operationId.optional().describe('get, pin, save.'),
   pinned: z.boolean().optional().describe('pin: true keeps the operation past normal retention.'),
   expectedRevision: z
@@ -52,6 +55,58 @@ export const reviewToolInput = z.strictObject({
   description: z.string().max(4000).optional().describe('save.'),
   tags: z.array(z.string().max(80)).max(30).optional().describe('save.'),
 });
+const DEFAULT_PAGE = 20;
+/** Rule 7: a listing record is what a reader needs to pick an operation, not the operation. */
+function summarizeOperation(operation: LiveOperation) {
+  const fidelity =
+    operation.viewFidelity && typeof operation.viewFidelity === 'object'
+      ? (operation.viewFidelity as { delivered?: unknown; materialFaithful?: unknown })
+      : undefined;
+  return {
+    operationId: operation.operationId,
+    revision: operation.revision,
+    tool: operation.tool,
+    status: operation.status,
+    startedAt: operation.startedAt,
+    updatedAt: operation.updatedAt,
+    ...(operation.projectId ? { projectId: operation.projectId } : {}),
+    ...(operation.programRef ? { programRef: operation.programRef } : {}),
+    pinned: operation.pinned,
+    ...(operation.artifact ? { artifact: operation.artifact.sha256 } : {}),
+    captures: operation.captures.length,
+    ...(fidelity && fidelity.delivered !== undefined
+      ? {
+          viewFidelity: {
+            delivered: fidelity.delivered,
+            materialFaithful: fidelity.materialFaithful,
+          },
+        }
+      : {}),
+    ...(operation.error ? { error: operation.error.slice(0, 200) } : {}),
+  };
+}
+/** One operation inside the default result size: the summary's heaviest parts go first. */
+function boundOperation(operation: LiveOperation): LiveOperation & { omitted?: string[] } {
+  let bounded: LiveOperation & { omitted?: string[] } = operation;
+  const omitted: string[] = [];
+  for (const key of ['warnings', 'qaReport', 'requirements'] as const) {
+    if (JSON.stringify(bounded).length <= DEFAULT_RESULT_LIMIT) break;
+    if (!bounded.result || bounded.result[key] === undefined) continue;
+    const { [key]: _dropped, ...result } = bounded.result;
+    omitted.push(`result.${key}`);
+    bounded = { ...bounded, result, omitted: [...omitted] };
+  }
+  if (JSON.stringify(bounded).length > DEFAULT_RESULT_LIMIT) {
+    omitted.push('phases');
+    bounded = { ...bounded, phases: [], omitted: [...omitted] };
+  }
+  if (omitted.length)
+    bounded.result = {
+      ...bounded.result,
+      retainedReport: `.kiln/review/${operation.operationId}/evaluation.json`,
+    };
+  return bounded;
+}
 export function createKilnReviewDef(context: {
   reviewStore: ReviewStore;
   assetLibrary?: AssetLibrary;
@@ -72,25 +127,67 @@ export function createKilnReviewDef(context: {
     async run(raw) {
       const input = reviewToolInput.parse(raw);
       requireActionFields('kiln_review', input.action, input, REQUIREMENTS[input.action]);
-      if (input.action === 'list')
-        return { ok: true, ...(await store.snapshot({ projectId: input.projectId })) };
-      if (input.action === 'pin') {
-        await store.pin(input.operationId!, input.pinned!);
-        return { ok: true, operation: await store.get(input.operationId!) };
+      if (input.action === 'list') {
+        // Rule 7: one short record per operation, paged; `get` returns one in full.
+        const snapshot = await store.snapshot({ projectId: input.projectId });
+        const offset = input.offset ?? 0;
+        const page = snapshot.operations.slice(offset, offset + (input.limit ?? DEFAULT_PAGE));
+        const next = offset + page.length;
+        return {
+          ok: true,
+          total: snapshot.operations.length,
+          offset,
+          nextOffset: next < snapshot.operations.length ? next : null,
+          operations: page.map(summarizeOperation),
+          cursor: snapshot.cursor,
+          retention: snapshot.retention,
+          ...(snapshot.observationIssues ? { observationIssues: snapshot.observationIssues } : {}),
+        };
       }
-      const operation = await store.get(input.operationId!);
-      if (input.action === 'get') return { ok: true, operation };
+      const read = async (id: string) => {
+        try {
+          return await store.get(id);
+        } catch (error) {
+          // Rule 9: an unknown or unreadable record names the listing call, not a path.
+          const code = (error as NodeJS.ErrnoException).code;
+          if (code === 'ENOENT' || code === 'ENOTDIR' || /Invalid|Unsafe/u.test(String(error)))
+            throw new Error(
+              `Unknown review operation ${id}. kiln_review { action: 'list' } lists the recorded operations.`,
+            );
+          throw error;
+        }
+      };
+      if (input.action === 'pin') {
+        await read(input.operationId!);
+        await store.pin(input.operationId!, input.pinned!);
+        return { ok: true, operation: boundOperation(await store.get(input.operationId!)) };
+      }
+      const operation = await read(input.operationId!);
+      if (input.action === 'get') return { ok: true, operation: boundOperation(operation) };
       const collection = input.collection ?? 'project';
       if (!context.assetLibrary) throw new Error('No asset library configured for reviewed save');
       if (operation.revision !== input.expectedRevision)
-        throw new Error('Review revision changed; refresh before saving');
+        throw new Error(
+          `Review revision changed: operation ${operation.operationId} is at revision ${operation.revision}, not ${input.expectedRevision}. kiln_review { action: 'get', operationId } (CLI: review get) returns the current revision; send it as expectedRevision.`,
+        );
       if (operation.status !== 'complete' || !operation.artifact)
-        throw new Error('A completed operation with a retained artifact is required');
-      const [glb, source, metadata] = await Promise.all(
-        ['asset.glb', 'source.kiln.js', 'evaluation.json'].map((name) =>
-          store.readFile(operation.operationId, name),
-        ),
-      );
+        throw new Error(
+          `Review operation ${operation.operationId} is ${operation.status}${operation.artifact ? '' : ' with no retained artifact'}; only a completed operation with a retained artifact can be saved. kiln_review { action: 'list' } shows each operation's status, or render again with kiln_render and save that.`,
+        );
+      let glb: Uint8Array | undefined;
+      let source: Uint8Array | undefined;
+      let metadata: Uint8Array | undefined;
+      try {
+        [glb, source, metadata] = await Promise.all(
+          ['asset.glb', 'source.kiln.js', 'evaluation.json'].map((name) =>
+            store.readFile(operation.operationId, name),
+          ),
+        );
+      } catch (error) {
+        throw new Error(
+          `Review operation ${operation.operationId} has no readable retained files (${error instanceof Error ? error.message : String(error)}). Its evidence was evicted or never written; kiln_render the program again and save that result, or kiln_review { action: 'list' } for other operations.`,
+        );
+      }
       validateAssetGlb(glb!);
       const digest = await crypto.subtle.digest('SHA-256', Uint8Array.from(glb!));
       const sha256 = `sha256:${Array.from(new Uint8Array(digest), (byte) => byte.toString(16).padStart(2, '0')).join('')}`;

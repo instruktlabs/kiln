@@ -184,13 +184,20 @@ const close = (actual: number[] | undefined, expected: number[]) => {
   for (const [i, value] of expected.entries()) expect(actual![i]).toBeCloseTo(value, 5);
 };
 
-test('listed parts carry world transforms, mirrored flags and world bounds in every detail level', async () => {
+test('listed parts carry world transforms, mirrored flags and world bounds on request in every detail level', async () => {
   const inspect = createKilnProgramToolRegistry().find((t) => t.name === 'kiln_inspect')!;
+  // Paths and names by default (rule 7: a placement record is ten times a path).
+  const plain = (await inspect.run({ code: transformed, image: false, listParts: {} })) as {
+    partListing: { parts: TransformedPart[] };
+  };
+  expect(
+    plain.partListing.parts.every((part) => Object.keys(part).sort().join() === 'name,path'),
+  ).toBe(true);
   for (const detail of [undefined, 'full'] as const) {
     const output = (await inspect.run({
       code: transformed,
       image: false,
-      listParts: {},
+      listParts: { placement: true },
       detail,
     })) as { ok: boolean; partListing: { parts: TransformedPart[] } };
     expect(output.ok).toBe(true);

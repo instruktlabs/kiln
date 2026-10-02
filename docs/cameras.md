@@ -25,7 +25,7 @@ Kiln uses +X forward, +Y up and +Z right. Azimuth 0 looks from the front (+X), 9
 
 The versioned capture format supports up to nine `shots`. Use the exact `parts[].path` or a unique `parts[].name` from a render result. These identify evaluated scene nodes, whose names can include generated prefixes. Duplicate names require a path.
 
-Render results preview 24 paths (80 with `detail: "full"`) and report `partsTotal`, `partsTruncated`
+Render results preview 24 paths (every path that fits with `detail: "full"`) and report `partsTotal`, `partsTruncated`
 and, when needed, `partsNextOffset`. An absent preview entry is not evidence of a
 missing exported part. Retrieve the full inventory without generating an image:
 

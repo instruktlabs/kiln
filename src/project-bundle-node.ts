@@ -136,7 +136,9 @@ export async function importWorkspaceProjectBundle(
   if (!decoded.manifest.editable)
     throw new Error('Project import requires an editable bundle, not a runtime derivative');
   if (options.projectId === decoded.project.projectId)
-    throw new Error('Import requires a new explicit project ID');
+    throw new Error(
+      `Import requires a new project ID: ${options.projectId} is the packaged project's own id. Pass a different --id for the imported copy; the packaged id stays with the original.`,
+    );
   if (!library.collections().some((collection) => collection.id === options.collectionId))
     throw new Error('Unknown import asset collection');
   try {

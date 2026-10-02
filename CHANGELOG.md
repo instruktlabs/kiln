@@ -3,7 +3,7 @@
 Changes to `@kiln/engine`. Source releases and installable package publication are
 separate milestones. The package is not published on the npm registry.
 
-## Unreleased
+## 0.10.0
 
 **Protocol revision 2026-07-28, and a server that answers before it loads.** The v1
 readiness cycle ([plan](docs/plans/2026-10-01-v1-readiness-cycle.md)) measures Kiln under
@@ -87,6 +87,63 @@ bytes (four were over, the largest 18,788), input schemas 26,475 bytes in all (6
   file store keeps it across sessions and processes without eviction. `ProgramStore` gains
   an optional `retention` sentence for injected stores, and `docs/tools.md` states the
   packaged store's.
+
+### Results
+
+The baseline sessions measured a `detail: 'full'` render of 79,078 characters (cut near
+40,000 before Codex's model saw it; 24% of it line breaks and indentation), 41 copies of
+one finding with the same 300-character repair text, and Agy writing every result over
+about 4,000 characters to a file the model then read back. A default result is now at
+most 20,000 characters and no result is over 40,000; on a 97-part fixture whose every
+part floats, the compact render result is 9,103 characters, `full` 16,734 and `lean`
+2,018. `src/__tests__/result-contract.test.ts` and `mcp-errors.test.ts` hold the rules.
+
+- **Breaking:** every tool result is JSON on one line. A render, edit, inspection,
+  interior or animation result leads with `ok`, `acceptance`, `disposition`, up to eight
+  `blockers` (grouped by code with the repair text once), the `findings` counts and
+  `next`, the sentence naming the next call; the `programRef` follows, then the metrics.
+- **Breaking:** the compact report groups the findings of each dimension by code, most
+  severe first: one record per code with `count`, the first affected entity and up to two
+  `alsoAffected`, `findingsTotal`, and `findingsOmitted`/`omittedByCode` beyond twelve
+  groups. The rule records collapse to `ruleSummary` (`evaluated`, `notEvaluated`;
+  `notRequested` rules are not listed). `viewEvidence` carries `current` and the hash-only
+  `lastFaithful`, not the faithful history. The part
+  preview is 24 paths with `partsNextOffset` and the `kiln_inspect listParts` hint.
+  Build warnings are at most twelve of 1,000 characters each with `warningsOmitted`.
+- `detail` on `kiln_render`, `kiln_edit`, `kiln_inspect`, `kiln_view_interior` and
+  `kiln_screenshot_animation` takes `lean`, `compact` (default) or `full`. `lean` is the
+  verdict, blockers, counts, next step, metrics, a short fidelity receipt and three
+  warnings. `full` is every finding, rule and part that fits 40,000 characters, with
+  `retainedReport: { operationId, path }` naming `.kiln/review/<operation>/evaluation.json`
+  (now pretty-printed) when Live Review records the operation; when the complete report
+  does not fit, the warnings are bounded first, then repeated findings group by code
+  with every rule kept, then the part list shrinks and the groups halve, and
+  `qaReport.detail` reads `full-bounded`. The packaged host reads `KILN_RESULT_DETAIL`
+  (`lean` or `compact`) as its default.
+- **Breaking:** a `kiln_edit` result is `ok`, `applied`, `changed` (status, part and
+  animation summaries, the first five changes), `next`, the `diff` (2,000 characters in
+  `lean`, with `diffOmitted`), `preservation` (not in `lean`) and the compacted `render`.
+- **Breaking:** `kiln_inspect listParts` returns names and paths; `placement: true` adds
+  the world transform, mirroring and bounds in pages of 50. The floating-parts warning
+  names the first six parts with their fix and the next 24 by name, and a render result
+  carries the export-time structural warnings once (a second pass over the re-imported
+  scene repeated every floating part under its primitive name).
+- **Breaking:** `kiln_review list` pages (`offset`, `limit` up to 100, default 20) and
+  returns short records (`operationId`, `revision`, `tool`, `status`, timestamps,
+  `programRef`, `pinned`, the artifact hash, capture count and fidelity) with `total` and
+  `nextOffset`; `get` and `pin` return an operation bounded to 20,000 characters, naming
+  the retained file for what was left out. `kiln_discover` detail pages stop at 15,000
+  characters and name the ids not returned in `omittedIds`.
+- **Breaking:** a result with `ok: false` is an MCP error (`isError: true`). Every error
+  names the next call and no absolute local path: an invalid input is a sentence naming
+  the fields and the `shape:` id to read instead of a zod issue dump; an unknown project,
+  material, asset or review id names the `list` action; a renderer that is required but
+  unavailable names `KILN_RENDER`, `KILN_RENDER_PORT_URL` and `kiln_renderer reprobe`;
+  `kiln_review save` names the revision or status to fix; a project import refusing its
+  own id says to pass a different `--id`.
+- The CLI `render --json` and `animation --json` receipts carry the compact result by
+  default (one receipt measured 51,312 characters at `full`); `--detail lean|compact|full`
+  selects the detail.
 
 ## 0.9.0
 

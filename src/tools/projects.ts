@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import {
+  ProjectNotFoundError,
   projectDraftSchema,
   projectPatchSchema,
   projectIdSchema,
@@ -88,41 +89,53 @@ export function createKilnProjectDef(
     run: async (raw) => {
       const input = schema.parse(raw);
       requireActionFields('kiln_project', input.action, input, REQUIREMENTS[input.action]);
-      switch (input.action) {
-        case 'list':
-          return { ok: true, projects: await store.list() };
-        case 'get':
-          return { ok: true, project: await store.read(input.projectId!, input.revisionId) };
-        case 'create':
-          return { ok: true, project: await store.create(projectDraftSchema.parse(input.draft)) };
-        case 'update':
-          return {
-            ok: true,
-            project: await store.update(
-              input.projectId!,
-              input.expectedRevision!,
-              projectPatchSchema.parse(input.patch),
-            ),
-          };
-        case 'export': {
-          const profile = input.profile ?? 'editable';
-          const project = await store.read(input.projectId!, input.revisionId);
-          const bytes = await bundleReader!(project.projectId, project.revisionId, profile);
-          const { projectBundleHash } = await import('../project-bundle');
-          return {
-            ok: true,
-            projectId: project.projectId,
-            revisionId: project.revisionId,
-            profile,
-            resource: {
-              uri: `kiln://projects/${project.projectId}/${project.revisionId}/${profile}.zip`,
-              mimeType: 'application/zip',
-              bytes: bytes.length,
-              sha256: await projectBundleHash(bytes),
-            },
-          };
-        }
+      try {
+        return await act(input);
+      } catch (error) {
+        // Rule 9: an unknown id names the call that lists the known ones.
+        if (error instanceof ProjectNotFoundError)
+          throw new Error(
+            `${error.message} kiln_project { action: 'list' } lists the project IDs in this workspace.`,
+          );
+        throw error;
       }
     },
   };
+  async function act(input: z.infer<typeof schema>) {
+    switch (input.action) {
+      case 'list':
+        return { ok: true, projects: await store.list() };
+      case 'get':
+        return { ok: true, project: await store.read(input.projectId!, input.revisionId) };
+      case 'create':
+        return { ok: true, project: await store.create(projectDraftSchema.parse(input.draft)) };
+      case 'update':
+        return {
+          ok: true,
+          project: await store.update(
+            input.projectId!,
+            input.expectedRevision!,
+            projectPatchSchema.parse(input.patch),
+          ),
+        };
+      case 'export': {
+        const profile = input.profile ?? 'editable';
+        const project = await store.read(input.projectId!, input.revisionId);
+        const bytes = await bundleReader!(project.projectId, project.revisionId, profile);
+        const { projectBundleHash } = await import('../project-bundle');
+        return {
+          ok: true,
+          projectId: project.projectId,
+          revisionId: project.revisionId,
+          profile,
+          resource: {
+            uri: `kiln://projects/${project.projectId}/${project.revisionId}/${profile}.zip`,
+            mimeType: 'application/zip',
+            bytes: bytes.length,
+            sha256: await projectBundleHash(bytes),
+          },
+        };
+      }
+    }
+  }
 }

@@ -68,7 +68,10 @@ context or shell/filesystem tools. This context boundary is not an OS sandbox.
 receipt on stdout. It includes the retained `programRef`, requirements, triangle
 count, bounds, QA, exact GLB hash and a `files` list with absolute paths and byte
 counts. With `--views`, it also carries the shared MCP render metadata, including
-part paths, camera settings and `viewFidelity`. PNG and GLB bytes are not embedded.
+part paths, camera settings and `viewFidelity`, at the same compact detail as
+`kiln_render`; `--detail full` keeps every finding and `--detail lean` keeps the
+verdict and metrics (`animation --json` takes the same option). PNG and GLB bytes
+are not embedded.
 Without an image request, it makes no image-fidelity claim. Read the image file
 separately; a JSON receipt does not establish visual quality.
 
@@ -120,6 +123,7 @@ Use `kiln_discover({ capabilities: true })` or `node kiln.mjs discover --capabil
 | `KILN_BUILD_CACHE_MB` | Disk artifact budget, 0–1,024; default 128 |
 | `KILN_BUILD_CACHE_DIR` | Optional disk-cache directory |
 | `KILN_GEOMETRY_POLICY` | `warn` (default) or `strict`; strict rejects unsupported export attributes and cannot be weakened by a tool request |
+| `KILN_RESULT_DETAIL` | `compact` (default) or `lean`: the result detail of the review tools when a call names none; `full` stays per call |
 
 Advanced geometry callbacks also have operation-specific input limits. Those checks do not replace the process deadline: a callback that never returns cannot check its own evaluation counter. Capture pixels and PNG payloads have independent host limits described in [cameras](cameras.md).
 

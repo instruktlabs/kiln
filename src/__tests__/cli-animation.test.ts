@@ -161,7 +161,10 @@ test('CLI samples real clips with the same frames as the shared tool and preserv
       Buffer.from([137, 80, 78, 71]),
     );
 
-    // The frame size is selectable, and the CLI receipt keeps the complete QA report.
+    // The frame size is selectable; the receipt is compact unless --detail full
+    // asks for the complete QA report.
+    expect(gridResult.qaReport.detail).toBe('compact');
+    expect(gridResult.qaReport.ruleSummary).toBeDefined();
     const sized = run([
       result.programRef,
       '--clip',
@@ -175,12 +178,18 @@ test('CLI samples real clips with the same frames as the shared tool and preserv
       '--views',
       'sized.png',
       '--json',
+      '--detail',
+      'full',
     ]);
     expect(sized.stderr.toString()).toBe('');
     expect(sized.exitCode).toBe(0);
     const sizedResult = JSON.parse(sized.stdout.toString());
     expect(decodePng(await readFile(sizedResult.images[0].path)).width).toBeGreaterThan(2 * 384);
     expect(Array.isArray(sizedResult.qaReport.rules)).toBe(true);
+    expect(
+      run([result.programRef, '--clip', 'Swing', '--views', 'x.png', '--detail', 'verbose'])
+        .exitCode,
+    ).not.toBe(0);
 
     await writeFile(join(directory, 'guard.png'), 'existing image');
     const absent = run([

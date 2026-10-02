@@ -33,6 +33,10 @@ export function resolveRenderMode(value?: string): RenderMode {
   if (selected === 'auto' || selected === 'cpu' || selected === 'gpu') return selected;
   throw new Error(`${source} must be auto, cpu or gpu (got: ${selected})`);
 }
+/** What to do when a required GPU renderer is unavailable: the setting for each surface and the reprobe. */
+export const GPU_REQUIRED_NEXT_STEP =
+  'A GPU renderer is required by KILN_RENDER=gpu (CLI --render gpu). Set KILN_RENDER=auto (--render auto) to continue with CPU geometry views, or KILN_RENDER_PORT_URL (--render-port) for a renderer on another device; after repairing the local service call kiln_renderer { action: "reprobe" } (CLI: kiln service reprobe)';
+
 /** Failed starts are cached. Only an explicitly refused socket permits a new local start. */
 export function makeLazyRenderPort(
   start: () => Promise<string>,
@@ -226,7 +230,7 @@ export async function buildRenderPort(
     }
     if (probe.kind !== 'absent') {
       const why = describeUnavailableService(url, probe);
-      if (mode === 'gpu') throw new Error(why);
+      if (mode === 'gpu') throw new Error(`${why}. ${GPU_REQUIRED_NEXT_STEP}`);
       selected.set(context, `cpu raster (${why})`);
       return context;
     }
@@ -234,10 +238,7 @@ export async function buildRenderPort(
       const state = options?.start ? 'ready' : localRenderServiceState(dir);
       if (state === 'ready') return attachLocal();
       const why = explainRenderServiceState(state, dir);
-      if (mode === 'gpu')
-        throw new Error(
-          `${why}; set --render-port or KILN_RENDER_PORT_URL for another device, or use --render auto for CPU`,
-        );
+      if (mode === 'gpu') throw new Error(`${why}. ${GPU_REQUIRED_NEXT_STEP}`);
       selected.set(context, `cpu raster (${why})`);
       return context;
     }

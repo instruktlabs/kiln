@@ -15,6 +15,7 @@ import { createKilnSourceDef } from './tools/programs';
 import { BACKDROP_IDS, isBackdropId, type BackdropId } from './views/background';
 import { resolveRenderMode, buildRenderPort, describeDrawnBy } from './cli-render-mode';
 import type { RenderMode } from './cli-render-mode';
+import type { ReviewDetail } from './tools/review-detail';
 import { localProgramStore } from './program-store-node';
 import { retainProgram, programRefPattern } from './program-store';
 import { observeWorkspaceOperation } from './tools/workspace';
@@ -71,6 +72,7 @@ OPTIONS
                          export, discover, inspect, animation and service
                          status|reprobe print receipts; commands that print
                          JSON already accept it; generate and view refuse it
+  --detail <level>       render --json: lean | compact | full QA detail (default: compact)
   --offset <n>           source --json: page start; pass the returned nextOffset
   --limit <n>            source --json: page size in characters (1-16000)
   --query <text>         source --json: find literal text at or after --offset
@@ -107,6 +109,8 @@ interface Args extends WorkspaceSelection {
   offset?: string;
   limit?: string;
   query?: string;
+  /** render --json: the shared result detail; compact unless asked otherwise. */
+  detail?: ReviewDetail;
   help: boolean;
   json: boolean;
 }
@@ -145,6 +149,13 @@ export function parseArgs(argv: readonly string[]): Args {
       case '--json':
         args.json = true;
         break;
+      case '--detail': {
+        const level = next();
+        if (level !== 'lean' && level !== 'compact' && level !== 'full')
+          throw new Error(`--detail must be lean, compact or full (got ${level})`);
+        args.detail = level;
+        break;
+      }
       case '--views':
         args.views = next();
         break;
@@ -388,8 +399,9 @@ async function emit(
     const output = await def.run({
       programRef,
       ...(args.captureRecipe === undefined ? {} : { capture: args.captureRecipe }),
-      // The receipt is machine output: keep the complete QA report and part preview.
-      detail: 'full',
+      // The receipt reaches a model's context like a tool result: the same
+      // compact default, with --detail full for the complete report.
+      detail: args.detail ?? 'compact',
     });
     captured = output as Record<string, unknown>;
     const failure = output as { ok?: unknown; error?: unknown } | null;

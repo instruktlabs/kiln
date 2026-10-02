@@ -129,9 +129,18 @@ export function createKilnMaterialDef(library: MaterialLibrary): KilnToolDef {
           };
         }
         case 'get':
-          return materialResult(
-            (await library.read(input.materialId!, input.revisionId!)).manifest,
-          );
+          try {
+            return materialResult(
+              (await library.read(input.materialId!, input.revisionId!)).manifest,
+            );
+          } catch (error) {
+            // Rule 9: an unknown id names the call that lists the known ones.
+            if ((error as NodeJS.ErrnoException).code === 'ENOENT')
+              throw new Error(
+                `Unknown material ${input.materialId} at ${input.revisionId}. kiln_material { action: 'list' } lists the materials in this workspace with their revision IDs.`,
+              );
+            throw error;
+          }
         case 'create-procedural': {
           const record = await createMaterialRecordV1(
             proceduralMaterialDraftSchema.parse(input.draft),

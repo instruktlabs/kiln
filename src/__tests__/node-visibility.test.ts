@@ -145,10 +145,11 @@ describe('node visibility', () => {
       ['Mesh_Cover', 12],
       ['Joint_Panel', 12],
     ]);
+    // The hidden flag is in every listing; bounds come with placement on request.
     const listed = (await inspect.run({
       programRef: rendered.programRef,
       image: false,
-      listParts: {},
+      listParts: { placement: true },
     })) as {
       partListing: {
         parts: { name: string; hidden?: boolean; bounds: { min: number[]; max: number[] } }[];

@@ -95,8 +95,8 @@ test('render JSON describes exact files and preserves shared image/requirements 
     { KILN_EVALUATOR_MODE: 'in-process', KILN_WORKSPACE: directory },
   );
   const tool = createKilnProgramToolRegistry(context).find((t) => t.name === 'kiln_render')!;
-  // The CLI receipt is the full-detail form of the shared tool result.
-  const expected = await tool.run({ code: source, capture: { preset: '1x1' }, detail: 'full' });
+  // The CLI receipt is the compact form of the shared tool result unless --detail asks otherwise.
+  const expected = await tool.run({ code: source, capture: { preset: '1x1' } });
   await context.liveReview?.flush?.();
   expect(
     (await readdir(join(directory, '.kiln', 'review'))).filter((name) => name.startsWith('op_')),
@@ -105,6 +105,26 @@ test('render JSON describes exact files and preserves shared image/requirements 
   const fields = media.json as typeof reviewed;
   expect(reviewed.parts).toEqual(fields.parts);
   expect(reviewed.qaReport).toEqual(fields.qaReport);
+  expect(reviewed.qaReport.detail).toBe('compact');
+  expect(reviewed.qaReport.ruleSummary).toBeDefined();
+  const full = run([
+    'render',
+    receipt.programRef,
+    '--render',
+    'cpu',
+    '--views',
+    'full.png',
+    '--capture',
+    'capture.json',
+    '--json',
+    '--detail',
+    'full',
+  ]);
+  expect(full.exitCode).toBe(0);
+  const complete = JSON.parse(full.stdout.toString());
+  expect(complete.qaReport.detail).toBeUndefined();
+  expect(Array.isArray(complete.qaReport.rules)).toBe(true);
+  expect(complete.pngBase64).toBeUndefined();
   // Node and Bun exporters have different byte identities; each fidelity receipt
   // must identify its own artifact, while the delivered view contract agrees.
   expect(reviewed.viewFidelity.inputGlbSha256).toBe(receipt.artifactGlbSha256);
@@ -121,6 +141,7 @@ test('render JSON reports argument/build/view errors and only files actually wri
   for (const args of [
     [],
     ['source.js', '--unknown'],
+    ['source.js', '--detail', 'verbose'],
     ['source.js', '--capture', 'capture.json'],
     ['missing.js'],
   ]) {

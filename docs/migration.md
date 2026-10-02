@@ -4,6 +4,35 @@ Existing inline-code transport and the legacy capture format remain supported. T
 Discovery and authoring-helper changes below require explicit migration; retired
 names have no callable compatibility aliases.
 
+## Changes in 0.10.0
+
+The [changelog](../CHANGELOG.md) names every break; these are the ones an existing
+integration notices first.
+
+- **Server.** `dist/mcp-server.mjs` answers the handshake and `tools/list` from a
+  generated manifest and loads `dist/mcp-engine.mjs` on the first call that needs the
+  engine: both bundles stay together. Protocol revision 2026-07-28 is served beside the
+  2025 revisions; a request with neither a protocol version nor a preceding
+  `initialize` is refused with both ways in. A configuration problem comes back as the
+  first tool result instead of killing the server.
+- **Tool schemas.** `kiln_project`, `kiln_material` and `kiln_review` are one flat object
+  each with an `action` field; their `draft`, `patch` and `payload` records, and the
+  `capture`/`shot` records of the review tools other than `kiln_render`, are opaque in
+  the schema and described by `kiln_discover({ ids: ['shape:…'] })`. Every input schema
+  is within 5,000 bytes. The field names and defaults are unchanged.
+- **Results.** Every result is JSON on one line and leads with the verdict (`ok`,
+  `acceptance`, `disposition`, `blockers`, `findings` counts, `next`). The compact
+  report groups findings by code with counts, lists no `notRequested` rules and shows
+  24 part paths; `detail` takes `lean`, `compact` or `full`, and `full` is bounded at
+  40,000 characters with `retainedReport.path` naming the complete pretty-printed
+  report. `kiln_edit` returns what applied and changed with the compacted render;
+  `kiln_inspect listParts` returns paths unless `placement: true`; `kiln_review list`
+  pages. A `kiln_render` or `kiln_edit` result is never larger than 40,000 characters
+  and at most 20,000 by default. CLI `render --json` and `animation --json` carry the
+  compact result unless `--detail full`.
+- **Errors.** `ok: false` is an MCP error (`isError: true`) naming the cause and the next
+  call, with no local path. Invalid input is a sentence, not a zod issue list.
+
 ## Changes in 0.9.0
 
 Upgrade the installation and each workspace together: run the new installation's

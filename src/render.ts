@@ -2528,6 +2528,10 @@ export interface InspectStructureOptions {
   category?: 'vehicle' | 'weapon' | 'boat' | 'aircraft' | (string & {});
 }
 
+/** Floating parts named with their own fix; the rest share one line of names. */
+const FLOATER_FIXES_SHOWN = 6;
+const FLOATER_NAMES_SHOWN = 24;
+
 /** Minimal world-space translation that closes the gap between two boxes
  *  (zero on axes that already overlap). */
 function minimalGapVector(a: THREE.Box3, b: THREE.Box3): THREE.Vector3 {
@@ -2584,7 +2588,7 @@ export function inspectSceneStructure(
   }
 
   if (meshes.length > 1) {
-    const floaters: string[] = [];
+    const floaters: { name: string; fix: string }[] = [];
     for (let i = 0; i < meshes.length; i++) {
       const a = meshes[i]!;
       const ax = a.box.clone().expandByScalar(FLOATING_EXPAND);
@@ -2615,11 +2619,25 @@ export function inspectSceneStructure(
         nearest && nearestGap
           ? ` Fix: shift "${a.name}" by [${nearestGap.x.toFixed(3)}, ${nearestGap.y.toFixed(3)}, ${nearestGap.z.toFixed(3)}] toward "${nearest.name}", or call snapTo(part, hostPart) to do it automatically.`
           : '';
-      floaters.push(`${a.name}${fix ? ` —${fix}` : ''}`);
+      floaters.push({ name: a.name, fix });
     }
     if (floaters.length > 0) {
+      // The per-part fix text is 170 characters; a scattered asset repeated it
+      // for every part. The first few floaters keep their fix, the rest are
+      // named, and the names are bounded too.
+      const entries = floaters
+        .slice(0, FLOATER_FIXES_SHOWN)
+        .map(({ name, fix }) => `${name}${fix ? ` —${fix}` : ''}`);
+      const rest = floaters.slice(FLOATER_FIXES_SHOWN);
+      if (rest.length > 0) {
+        const names = rest.slice(0, FLOATER_NAMES_SHOWN).map((floater) => floater.name);
+        if (rest.length > names.length) names.push(`+${rest.length - names.length} more`);
+        entries.push(
+          `+${rest.length} more floating: ${names.join(', ')} — the same fix applies: shift each onto its nearest sibling, or call snapTo(part, hostPart).`,
+        );
+      }
       warnings.push(
-        `Floating parts (no mesh overlap with any sibling, 2cm tol): ${floaters.join(' | ')}`,
+        `Floating parts (no mesh overlap with any sibling, 2cm tol): ${entries.join(' | ')}`,
       );
     }
   }

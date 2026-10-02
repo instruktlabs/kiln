@@ -108,7 +108,7 @@ export function withProgramReferences(
           ? { code: updatedCode }
           : {
               diff: diff.slice(0, 8000),
-              diffTruncated: diff.length > 8000,
+              diffTruncated: diff.length > 8000 || typeof rest.diffOmitted === 'number',
             }),
       };
     },

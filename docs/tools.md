@@ -460,9 +460,10 @@ Build and return metrics, part paths and images. If partsTruncated, use kiln_ins
       ]
     },
     "detail": {
-      "description": "compact (default) counts repeated findings; full returns every finding and rule",
+      "description": "compact (default) groups findings by code; lean: verdict, blockers, metrics only; full: every finding, rule and part plus the retained report path",
       "type": "string",
       "enum": [
+        "lean",
         "compact",
         "full"
       ]
@@ -602,9 +603,10 @@ Review animation images, poseBounds and loopClosure endpoint evidence. loopInten
       "maximum": 1024
     },
     "detail": {
-      "description": "compact (default) counts repeated findings; full returns every finding and rule",
+      "description": "compact (default) groups findings by code; lean: verdict, blockers, metrics only; full: every finding, rule and part plus the retained report path",
       "type": "string",
       "enum": [
+        "lean",
         "compact",
         "full"
       ]
@@ -806,6 +808,15 @@ List part paths and inspect joints, clearances and edit preservation. listParts 
       "description": "False: requires listParts/measure/surfacePairs/compare; no image or camera controls. Default true.",
       "type": "boolean"
     },
+    "detail": {
+      "description": "compact (default) groups findings by code; lean: verdict, blockers, metrics only; full: every finding, rule and part plus the retained report path",
+      "type": "string",
+      "enum": [
+        "lean",
+        "compact",
+        "full"
+      ]
+    },
     "listParts": {
       "description": "List exported-scene paths, including nested parts. Default 80, max 100 per page. Follow partListing.nextOffset with the same programRef/query. image:false avoids rendering.",
       "type": "object",
@@ -824,6 +835,10 @@ List part paths and inspect joints, clearances and edit preservation. listParts 
           "type": "integer",
           "minimum": 1,
           "maximum": 100
+        },
+        "placement": {
+          "description": "Add world position, rotation, scale, mirroring and bounds per part; pages of 50.",
+          "type": "boolean"
         }
       },
       "additionalProperties": false
@@ -1110,6 +1125,15 @@ Atomically apply ordered exact-string replacements and render. Copy anchors from
         "type": "string"
       },
       "additionalProperties": {}
+    },
+    "detail": {
+      "description": "compact (default) groups findings by code; lean: verdict, blockers, metrics only; full: every finding, rule and part plus the retained report path",
+      "type": "string",
+      "enum": [
+        "lean",
+        "compact",
+        "full"
+      ]
     },
     "programRef": {
       "type": "string",
@@ -1457,6 +1481,18 @@ Read persisted Kiln observation history, pin an operation against normal retenti
       "description": "list: only operations bound to this project.",
       "type": "string",
       "pattern": "^[a-z][a-z0-9_-]{0,79}$"
+    },
+    "offset": {
+      "description": "list: page start; default 0.",
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "limit": {
+      "description": "list: page size; default 20.",
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 100
     },
     "operationId": {
       "description": "get, pin, save.",

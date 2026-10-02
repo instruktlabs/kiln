@@ -69,6 +69,30 @@ describe('floating-part fix hints', () => {
     // 4cm downward gap → the hint vector's Y component is -0.040.
     expect(floatWarning).toContain('-0.040');
   });
+
+  test('many floaters share one bounded warning: fix text for the first few, names for the rest', async () => {
+    // Forty separated boxes: 47 of these on a real asset cost 8,600 characters per warning.
+    const { root } = await executeKilnCode(`
+      const meta = { name: 'scattered' };
+      function build() {
+        const root = createRoot('Root');
+        for (let i = 0; i < 40; i++)
+          createPart('P' + i, boxGeo(0.1, 0.1, 0.1), gameMaterial('#888888'), { parent: root, position: [i * 0.2, 0, 0] });
+        return root;
+      }
+    `);
+    const warnings = inspectSceneStructure(root).filter((w) => w.includes('Floating parts'));
+    expect(warnings).toHaveLength(1);
+    const [warning] = warnings;
+    expect(warning!.length).toBeLessThan(2000);
+    // Six per-part fixes verbatim, then names only, bounded, with the count of the rest.
+    expect(warning!.match(/ — Fix: shift /g)).toHaveLength(6);
+    expect(warning).toContain('"Mesh_P0" by [0.100, 0.000, 0.000] toward "Mesh_P1"');
+    expect(warning).toContain('+34 more floating: Mesh_P6, Mesh_P7');
+    expect(warning).toContain('Mesh_P29, +10 more');
+    expect(warning).not.toContain('Mesh_P30');
+    expect(warning).toContain('snapTo(part, hostPart)');
+  });
 });
 
 describe('orientation advisory', () => {

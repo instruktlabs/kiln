@@ -30,6 +30,7 @@ import {
 import { buildMcpManifest } from './mcp-manifest';
 import { localProgramStore } from './program-store-node';
 import { validateRequirementsBinding } from './requirements-context';
+import { describeInputError } from './tools/actions';
 import {
   createKilnProgramToolRegistry,
   type KilnToolContext,
@@ -71,10 +72,20 @@ export async function runTool(
   options: KilnMcpCompatibilityOptions = {},
 ): Promise<KilnToolResult> {
   const output = await def.run(args);
+  // Rule 9: a result that reports its own failure is an error to the harness
+  // too, so the model sees it as one instead of as a successful result that
+  // happens to say ok: false.
+  const failed =
+    typeof output === 'object' && output !== null && (output as { ok?: unknown }).ok === false
+      ? { isError: true as const }
+      : {};
 
+  // Rule 7: JSON on one line. The indented form cost 24% more tokens in the
+  // measured sessions and told the model nothing the keys do not.
   const multi = def.mediaMulti?.(output);
   if (multi) {
     return {
+      ...failed,
       content: [
         ...multi.pngs.map(
           (png): KilnContentBlock => ({
@@ -83,7 +94,7 @@ export async function runTool(
             mimeType: 'image/png',
           }),
         ),
-        { type: 'text', text: JSON.stringify(multi.json, null, 2) },
+        { type: 'text', text: JSON.stringify(multi.json) },
       ],
     };
   }
@@ -91,20 +102,21 @@ export async function runTool(
   const media = def.media?.(output);
   if (media) {
     return {
+      ...failed,
       content: [
         {
           type: 'image',
           data: Buffer.from(media.png).toString('base64'),
           mimeType: 'image/png',
         },
-        { type: 'text', text: JSON.stringify(media.json, null, 2) },
+        { type: 'text', text: JSON.stringify(media.json) },
       ],
     };
   }
 
   // A def may render its own text when the default JSON would repeat itself.
   const asText = def.text?.(output);
-  if (asText !== undefined) return { content: [{ type: 'text', text: asText }] };
+  if (asText !== undefined) return { ...failed, content: [{ type: 'text', text: asText }] };
 
   const resources = (output as { resources?: AssetLink[] } | null)?.resources ?? [];
   const includeResourceLinks = options.artifactResourceLinks === true;
@@ -113,8 +125,9 @@ export async function runTool(
       ? { ...(output as object), resources: undefined }
       : output;
   return {
+    ...failed,
     content: [
-      { type: 'text', text: JSON.stringify(payload, null, 2) },
+      { type: 'text', text: JSON.stringify(payload) },
       ...(includeResourceLinks ? resources : []),
     ],
     ...(def.ui
@@ -168,8 +181,16 @@ export function createKilnToolHost(
       } catch (err) {
         // A tool error is a result, not a transport failure: the calling agent
         // should see the message and correct its program rather than lose the
-        // session.
-        return { isError: true, content: [{ type: 'text', text: errorMessage(err) }] };
+        // session. Rule 9: readable, naming the next step, with no local path.
+        return {
+          isError: true,
+          content: [
+            {
+              type: 'text',
+              text: withoutLocalPaths(describeInputError(name, err) ?? errorMessage(err)),
+            },
+          ],
+        };
       }
     },
     async readResource(uri): Promise<KilnResourceContents> {
@@ -300,6 +321,16 @@ export async function createPackagedKilnHost(
       : {}),
   });
   context.programStore = localProgramStore();
+  // Decision 12: the lean and compact defaults are compared live with the same
+  // briefs, switched per session here so the advertised schema never changes.
+  const detail = env['KILN_RESULT_DETAIL'];
+  if (detail) {
+    if (detail !== 'lean' && detail !== 'compact')
+      throw new Error(
+        'KILN_RESULT_DETAIL must be lean or compact (full is per call). Correct the variable and restart the MCP session.',
+      );
+    context.resultDetail = detail;
+  }
   const deliveryBase = env['KILN_ASSET_DOWNLOAD_BASE_URL'];
   if (deliveryBase) {
     const base = new URL(deliveryBase);

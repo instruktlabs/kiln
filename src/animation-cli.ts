@@ -28,6 +28,7 @@ ANIMATION REVIEW
   --no-project            standalone authoring, overriding KILN_PROJECT
   --materials <json>      exact material dependency pins
   --json                  phases, posed bounds, image paths and fidelity receipts
+  --detail <level>        lean | compact | full QA detail in --json (default: compact)
 
 Reviews the actual exported clip through the shared animation tool. Keeps source
 unchanged; writes PNGs, not posed source or replacement GLBs. Inspect intermediate
@@ -84,6 +85,7 @@ function parse(argv: readonly string[]) {
         '--project',
         '--project-revision',
         '--materials',
+        '--detail',
       ].includes(key)
     )
       throw new Error(`Unknown animation option: ${key}. Use kiln animation --help.`);
@@ -106,6 +108,9 @@ function parse(argv: readonly string[]) {
     });
   if (phases && flags.has('--frames'))
     throw new Error('--phases and --frames are mutually exclusive.');
+  const detail = value('--detail') ?? 'compact';
+  if (detail !== 'lean' && detail !== 'compact' && detail !== 'full')
+    throw new Error(`--detail must be lean, compact or full (got ${detail}).`);
   const selection = cliWorkspaceSelection(
     value('--project'),
     value('--project-revision'),
@@ -116,6 +121,7 @@ function parse(argv: readonly string[]) {
     source: positional[0]!,
     views: value('--views')!,
     json: flags.has('--json'),
+    detail,
     shot: value('--shot'),
     measureParts: value('--measure-parts'),
     requirements: value('--requirements'),
@@ -180,8 +186,8 @@ export async function animationMain(argv: readonly string[]): Promise<number> {
       programRef?: string;
     };
     try {
-      // CLI receipts are machine output: keep the complete QA report.
-      output = (await tool.run({ ...source, ...input, detail: 'full' })) as typeof output;
+      // The receipt reaches a model's context like a tool result: compact by default.
+      output = (await tool.run({ ...source, ...input, detail: args.detail })) as typeof output;
     } finally {
       await context.liveReview?.flush?.();
     }

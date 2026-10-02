@@ -34,7 +34,9 @@ import {
 import {
   compactEditResult,
   compactReviewResult,
+  type DetailOptions,
   partsHint,
+  requestedDetail,
   reviewDetailInput,
   type ReviewDetail,
 } from './review-detail';
@@ -211,6 +213,8 @@ export interface KilnToolContext {
   readSourceFile?: (file: string) => Promise<string>;
   /** Private evaluated revisions for native completion; never accepted as tool input. */
   programArtifacts?: ProgramArtifactStore;
+  /** The review detail a result takes when the call names none; the packaged host reads KILN_RESULT_DETAIL. */
+  resultDetail?: ReviewDetail;
   /** Host binding, snapshotted before each evaluation. Omit for neutral authoring. */
   requirements?: RequirementsBinding;
   /** Retained only to issue an explicit migration error; never executed. */
@@ -694,9 +698,18 @@ const renderInput = z.object({
 
 const renderViewsInput = renderInput.extend({ capture: captureInput, detail: reviewDetailInput });
 
-/** The requested review detail; anything but 'full' is compact, and invalid input fails parsing later. */
-const requestedDetail = (input: unknown): ReviewDetail =>
-  (input as { detail?: unknown } | null)?.detail === 'full' ? 'full' : 'compact';
+/** Where the complete report of this call goes when the host observes it: rule 7's retained report. */
+const reviewDetailOptions = (context: KilnToolContext): DetailOptions => ({
+  retainedReport: () => {
+    const operation = context.liveReview?.currentOperation?.();
+    return operation
+      ? {
+          operationId: operation.operationId,
+          path: `.kiln/review/${operation.operationId}/evaluation.json`,
+        }
+      : undefined;
+  },
+});
 
 /** Unified-agent schema: the working buffer supplies `code`, while the model
  * still owns the deliberately bounded camera selection. Keeping this derived
@@ -808,21 +821,27 @@ const partListInput = z
       .describe('Case-insensitive substring of name or exact encoded path; not a regex.'),
     offset: z.number().int().min(0).optional(),
     limit: z.number().int().min(1).max(100).optional(),
+    placement: z
+      .boolean()
+      .optional()
+      .describe('Add world position, rotation, scale, mirroring and bounds per part; pages of 50.'),
   })
   .strict();
+/** Placement pages carry about 250 characters per part. */
+const PLACEMENT_PAGE_LIMIT = 50;
 
 export interface PartListing {
   total: number;
   matched: number;
   offset: number;
   nextOffset?: number;
-  /** Every listed part carries its world placement and bounds; `hidden` marks a part that
-   *  does not draw because it or an ancestor is hidden. */
+  /** Paths and names; `placement: true` adds world placement and bounds, and `hidden` marks
+   *  a part that does not draw because it or an ancestor is hidden. */
   parts: ({
     path: string;
     name: string;
     hidden?: true;
-  } & import('../views/part-placement').PartPlacementV1)[];
+  } & Partial<import('../views/part-placement').PartPlacementV1>)[];
 }
 
 interface PartPreview {
@@ -846,7 +865,12 @@ async function listPartNames(root: THREE.Object3D, options: z.infer<typeof partL
       )
     : all;
   const offset = options.offset ?? 0;
-  const page = matches.slice(offset, offset + (options.limit ?? 80));
+  // Rule 7: a placement record is about 250 characters, so a placement page is
+  // capped well under the paths-only page.
+  const limit = options.placement
+    ? Math.min(options.limit ?? PLACEMENT_PAGE_LIMIT, PLACEMENT_PAGE_LIMIT)
+    : (options.limit ?? 80);
+  const page = matches.slice(offset, offset + limit);
   const nextOffset = offset + page.length;
   return {
     total: all.length,
@@ -857,21 +881,27 @@ async function listPartNames(root: THREE.Object3D, options: z.infer<typeof partL
   };
 }
 
-/** A `listParts` page: paths plus world transform, mirroring and bounds per part. */
+/** A `listParts` page: paths and names, plus world transform, mirroring and bounds on request. */
 async function listPartPage(
   root: THREE.Object3D,
   options: z.infer<typeof partListInput> = {},
 ): Promise<PartListing> {
   const { page, ...listing } = await listPartNames(root, options);
-  const { createPartPlacementReader } = await import('../views/part-placement');
-  const placement = createPartPlacementReader(root);
+  const placement = options.placement
+    ? (await import('../views/part-placement')).createPartPlacementReader(root)
+    : undefined;
   return {
     ...listing,
     parts: page.map(({ path, name, node }) => {
       let hidden = false;
       for (let at: THREE.Object3D | null = node; at && !hidden; at = at.parent)
         hidden = at.visible === false;
-      return { path, name, ...(hidden ? { hidden: true as const } : {}), ...placement(node) };
+      return {
+        path,
+        name,
+        ...(hidden ? { hidden: true as const } : {}),
+        ...(placement ? placement(node) : {}),
+      };
     }),
   };
 }
@@ -1152,7 +1182,9 @@ async function runRenderViews(
     const materialContractFailure = missingProceduralTextureResult(rendered, context);
     if (materialContractFailure) return materialContractFailure;
 
-    const structuralWarnings = inspectSceneStructure(root);
+    // `rendered.warnings` already holds the structural check of the authored
+    // scene; repeating it over the re-imported review scene named every
+    // floating part a second time under its primitive name.
     const metrics = collectSceneMetrics(root);
     if ('shots' in (input.capture ?? {})) {
       const { renderCaptureGrid } = await import('../views');
@@ -1201,7 +1233,7 @@ async function runRenderViews(
           degraded: !materialFaithful,
           reasonCodes: ['IN_LOOP_BUILD_NOT_PERSISTED'],
         },
-        warnings: [...structuralWarnings, ...rendered.warnings],
+        warnings: [...rendered.warnings],
       };
       return await retainReviewedArtifact(input, rendered, reviewed, context);
     }
@@ -1320,7 +1352,7 @@ async function runRenderViews(
       /* ignore */
     }
 
-    const warnings = [...structuralWarnings, ...rendered.warnings];
+    const warnings = [...rendered.warnings];
     const materialContract = proceduralTextureMaterialContract(rendered, context);
 
     const reviewed: KilnRenderViewsResult = {
@@ -1389,7 +1421,8 @@ export function createKilnRenderViewsDef(context: KilnToolContext = {}): KilnToo
         await guardCaptureBudget('kiln_render', input, statefulContext, () =>
           runRenderViews(renderViewsInput.parse(input), statefulContext),
         ),
-        requestedDetail(input),
+        requestedDetail(input, statefulContext.resultDetail),
+        reviewDetailOptions(statefulContext),
       ),
     media: screenshotMedia,
   };
@@ -1552,7 +1585,8 @@ export function createKilnScreenshotAnimationDef(context: KilnToolContext = {}):
         await guardCaptureBudget('kiln_screenshot_animation', input, statefulContext, () =>
           runScreenshotAnimation(screenshotAnimationInput.parse(input), statefulContext),
         ),
-        requestedDetail(input),
+        requestedDetail(input, statefulContext.resultDetail),
+        reviewDetailOptions(statefulContext),
       ),
     media: screenshotAnimationMedia,
     mediaMulti: screenshotAnimationMediaMulti,
@@ -1692,6 +1726,8 @@ export function createKilnViewInteriorDef(context: KilnToolContext = {}): KilnTo
         await guardCaptureBudget('kiln_view_interior', input, statefulContext, () =>
           runViewInterior(viewInteriorInput.parse(input), statefulContext),
         ),
+        requestedDetail(input, statefulContext.resultDetail),
+        reviewDetailOptions(statefulContext),
       ),
     media: screenshotMedia,
   };
@@ -1721,6 +1757,7 @@ const inspectInput = z.object({
     .describe(
       'False: requires listParts/measure/surfacePairs/compare; no image or camera controls. Default true.',
     ),
+  detail: reviewDetailInput,
   listParts: partListInput
     .optional()
     .describe(
@@ -2049,6 +2086,8 @@ export function createKilnInspectDef(context: KilnToolContext = {}): KilnToolDef
         await guardCaptureBudget('kiln_inspect', input, statefulContext, () =>
           runInspect(inspectInput.parse(input), statefulContext),
         ),
+        requestedDetail(input, statefulContext.resultDetail),
+        reviewDetailOptions(statefulContext),
       ),
     media: screenshotMedia,
   };
@@ -2100,6 +2139,7 @@ const editInput = z.object({
       'Render the patched program and return the views (default true). false = patch only.',
     ),
   capture: captureInput,
+  detail: reviewDetailInput,
 });
 
 /** Advertised with capture opaque; the tool enforces `editInput`. */
@@ -2249,6 +2289,8 @@ export function createKilnEditDef(context: KilnToolContext = {}): KilnToolDef {
         await guardCaptureBudget('kiln_edit', input, statefulContext, () =>
           runEdit(editInput.parse(input), statefulContext),
         ),
+        requestedDetail(input, statefulContext.resultDetail),
+        reviewDetailOptions(statefulContext),
       ),
     media: (output) => {
       const o = output as KilnEditResult | undefined;
@@ -2434,6 +2476,24 @@ const rendererInput = z.strictObject({
   action: z.enum(['status', 'reprobe']).default('status'),
 });
 
+/** A saved-revision read whose failure names the listing call instead of a filesystem path (rule 9). */
+async function readSavedRevision(
+  target: import('../assets').AssetLibrary,
+  collection: string,
+  assetId: string,
+  revisionId: string,
+) {
+  try {
+    return await target.read(collection, assetId, revisionId);
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code === 'ENOENT')
+      throw new Error(
+        `Unknown asset ${assetId} revision ${revisionId} in collection ${collection}. kiln_assets { action: 'list', collection: '${collection}' } lists the saved revisions.`,
+      );
+    throw error;
+  }
+}
+
 export function createKilnProgramToolRegistry(
   suppliedContext: KilnToolContext = {},
 ): KilnToolDef[] {
@@ -2453,13 +2513,13 @@ export function createKilnProgramToolRegistry(
           return {
             ok: false,
             error:
-              'Renderer reprobe is not provided by this host. Configure its render connection through the host.',
+              'Renderer reprobe is not provided by this host. Configure its render connection through the host, or read the declared configuration with kiln_discover({ capabilities: true }).',
           };
         if (!suppliedContext.renderCapabilities)
           return {
             ok: false,
             error:
-              'Renderer status is not provided by this host. Discovery reports its declared configuration.',
+              'Renderer status is not provided by this host. Read the declared render configuration with kiln_discover({ capabilities: true }).',
           };
         try {
           return {
@@ -2780,7 +2840,12 @@ export function createKilnAssetDefs(context: KilnToolContext): KilnToolDef[] {
           requirements: activeRequirements.binding,
         };
         if (input.assetId && input.parentRevision) {
-          const previous = await target.read(input.collection, input.assetId, input.parentRevision);
+          const previous = await readSavedRevision(
+            target,
+            input.collection,
+            input.assetId,
+            input.parentRevision,
+          );
           assertSavedRequirementsAuthorized(previous.manifest, activeRequirements);
         }
         const code = await context.programStore!.get(input.programRef);
@@ -2850,8 +2915,15 @@ export function createKilnAssetDefs(context: KilnToolContext): KilnToolDef[] {
           };
         }
         if (!input.assetId || !input.revisionId)
-          throw new Error('get/restore requires assetId and revisionId');
-        const record = await target.read(input.collection, input.assetId, input.revisionId);
+          throw new Error(
+            `kiln_assets ${input.action} requires assetId and revisionId; kiln_assets { action: 'list', collection: '${input.collection}' } lists them.`,
+          );
+        const record = await readSavedRevision(
+          target,
+          input.collection,
+          input.assetId,
+          input.revisionId,
+        );
         if (input.action === 'get') return links(input.collection, record.manifest);
         const saved = assertSavedRequirementsAuthorized(record.manifest, activeRequirements);
         const code = record.files['source.kiln.js'];
@@ -2936,7 +3008,12 @@ export function createKilnAssetDefs(context: KilnToolContext): KilnToolDef[] {
       run: async (raw) => {
         const input = profileExportInput.parse(raw);
         if (input.profile === 'runtime') {
-          const record = await library().read(input.collection, input.assetId, input.revisionId);
+          const record = await readSavedRevision(
+            library(),
+            input.collection,
+            input.assetId,
+            input.revisionId,
+          );
           return {
             ok: true,
             profile: input.profile,
@@ -2954,7 +3031,8 @@ export function createKilnAssetDefs(context: KilnToolContext): KilnToolDef[] {
         }
         return links(
           input.collection,
-          (await library().read(input.collection, input.assetId, input.revisionId)).manifest,
+          (await readSavedRevision(library(), input.collection, input.assetId, input.revisionId))
+            .manifest,
         );
       },
     },
@@ -2966,7 +3044,12 @@ export function createKilnAssetDefs(context: KilnToolContext): KilnToolDef[] {
       run: async (raw) => {
         const input = importInput.parse(raw);
         const target = library();
-        const record = await target.read(input.sourceCollection, input.assetId, input.revisionId);
+        const record = await readSavedRevision(
+          target,
+          input.sourceCollection,
+          input.assetId,
+          input.revisionId,
+        );
         await target.import(input.collection, [record]);
         return links(input.collection, record.manifest);
       },

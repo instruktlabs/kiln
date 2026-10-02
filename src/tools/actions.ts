@@ -37,3 +37,49 @@ export function requireActionFields(
 /** A nested record the action validates with its own schema when it runs. */
 export const nestedRecordDescription = (purpose: string, shape: string): string =>
   `${purpose} Shape: kiln_discover({ ids: ['${shape}'] }).`;
+
+/**
+ * Rule 9 text for a failed input parse: each issue as "field: what is wrong",
+ * then where the shape is. The raw zod message is a JSON array of issues,
+ * which a model reads as data rather than as an instruction.
+ */
+export function describeInputError(tool: string, error: unknown): string | undefined {
+  const issues = (error as { issues?: unknown } | null)?.issues;
+  if (!Array.isArray(issues) || !issues.length) return undefined;
+  const lines = flattenIssues(issues).slice(0, 6);
+  return `${tool}: invalid input. ${lines.join('; ')}${
+    issues.length > 6 ? `; ${issues.length - 6} more` : ''
+  }. Check the field names and values against the ${tool} schema; nested shapes: kiln_discover({ ids: ['shape:...'] }).`;
+}
+
+interface Issue {
+  code?: string;
+  path?: (string | number)[];
+  message?: string;
+  errors?: unknown[][];
+}
+
+/**
+ * "field: what is wrong" per issue. A union reports only "Invalid input" at
+ * its root; the branch that came closest (the fewest issues) says which field
+ * was wrong, so that branch's issues stand in for it.
+ */
+function flattenIssues(issues: readonly unknown[], prefix: (string | number)[] = []): string[] {
+  const lines: string[] = [];
+  for (const raw of issues) {
+    const issue = raw as Issue;
+    const path = [...prefix, ...(issue.path ?? [])];
+    const branches = Array.isArray(issue.errors)
+      ? issue.errors.filter((branch) => Array.isArray(branch) && branch.length)
+      : [];
+    if (issue.code === 'invalid_union' && branches.length) {
+      const closest = branches.reduce((best, branch) =>
+        branch.length < best.length ? branch : best,
+      );
+      lines.push(...flattenIssues(closest, path));
+      continue;
+    }
+    lines.push(`${path.join('.') || 'input'}: ${issue.message ?? 'invalid'}`);
+  }
+  return lines;
+}

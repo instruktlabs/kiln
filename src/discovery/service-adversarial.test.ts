@@ -43,15 +43,25 @@ describe('Discovery service adversarial boundaries', () => {
     expect(bytes(result)).toBeLessThanOrEqual(64 * 1024);
   });
 
-  test('oversized exact detail fails atomically instead of returning clipped contracts', async () => {
+  test('an exact detail page returns whole contracts and names the ones that did not fit', async () => {
     const source = operation('oversized');
     source.contract.example = 'x'.repeat(70_000);
     const run = createDiscoveryService([operation('small'), source], emptyIndex, async () => ({}));
+    // Contract rule 7: the page stays inside the default result size; an entry
+    // beyond it is named for another call, never clipped mid-contract.
     const result = await run({ ids: ['small', 'oversized'] });
-    expect(result.error?.code).toBe('RESPONSE_TOO_LARGE');
-    expect(result.entries).toEqual([]);
-    expect(result.total).toBe(0);
+    expect(result.error).toBeUndefined();
+    expect(result.entries.map((entry) => entry.id)).toEqual(['operation:small']);
+    expect(result.total).toBe(2);
+    expect(result.omittedIds).toEqual(['operation:oversized']);
+    expect(result.text).toContain('operation:oversized');
+    expect(result.text.startsWith('[{')).toBe(true);
     expect(bytes(result)).toBeLessThanOrEqual(64 * 1024);
+    // A single contract that cannot fit at all still fails atomically.
+    const alone = await run({ ids: ['oversized'] });
+    expect(alone.error?.code).toBe('RESPONSE_TOO_LARGE');
+    expect(alone.entries).toEqual([]);
+    expect(bytes(alone)).toBeLessThanOrEqual(64 * 1024);
   });
 
   test('response budget counts UTF-8 bytes rather than JavaScript string length', async () => {

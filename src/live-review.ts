@@ -50,4 +50,6 @@ export interface LiveReviewPort {
   observe<T>(tool: string, input: unknown, run: () => Promise<T>): Promise<T>;
   artifact(code: string, rendered: import('./render').RenderResult): void;
   flush?(): Promise<void>;
+  /** The operation observing the current call, so a result can name its retained report. */
+  currentOperation?(): { operationId: string } | undefined;
 }
