@@ -1,0 +1,2195 @@
+{
+  "version": "kiln.asset.v1",
+  "assetId": "battle-scene",
+  "revisionId": "r_4573e90abb4848c3b3d4996de6834184",
+  "parentRevision": "r_150bbef8028442ae90ce5a957250f61b",
+  "name": "Battle before the gate",
+  "tags": [
+    "troy",
+    "scene",
+    "material-pass"
+  ],
+  "createdAt": "2026-10-02T15:34:47.048Z",
+  "description": "Revision 2: s50's composition recomposed from the material-pass revisions (wall revision 2, breached wall revision 3, gate, house, temple and horse revision 2) by review/troy-refine/scene/recompose.mjs; the scene helpers and the layout are revision 1's byte for byte. Owner-directed, 2 October 2026.",
+  "attribution": {
+    "harness": "cli",
+    "author": "Claude Fable 5.1 (owner-directed)"
+  },
+  "editable": true,
+  "files": {
+    "asset.glb": {
+      "sha256": "sha256:d2ba5e05718c7889134d51bb89680a7dc05b5b24100c4f3e9d89b18034991dfb",
+      "bytes": 14464712
+    },
+    "source.kiln.js": {
+      "sha256": "sha256:6ad86c8957f16e1a74ab6c771adf103db1395421f5e07d5877114cc7f7ead7b8",
+      "bytes": 222102
+    },
+    "preview.png": {
+      "sha256": "sha256:996a3771fb008a2693e65b234b543f57c821acda14dc3120c516434603b2eca0",
+      "bytes": 141747
+    }
+  },
+  "build": {
+    "engine": "sha256:efeef6a90e341b0c449b5c8a0227999448df227dee346c5181e08e5b596fabaf",
+    "options": {
+      "gltfExporter": "legacy",
+      "optimize": "off",
+      "instance": "auto",
+      "geometryPolicy": "warn",
+      "indexPolicy": "indexed",
+      "qaMode": "enforce",
+      "evaluatorMode": "subprocess",
+      "projectId": "troy",
+      "projectRevision": "r_0000000002_74cde56be4430bc5d4367a46e9fb2391681d3f964170c6f92d1881b3ec09e7f8",
+      "requirements": {
+        "kind": "kiln.requirements-context.v1",
+        "requirements": {
+          "kind": "kiln.asset-requirements",
+          "schemaVersion": 1,
+          "labels": [],
+          "frame": {
+            "units": "m",
+            "forward": "+X",
+            "up": "+Y",
+            "right": "+Z",
+            "groundY": 0
+          },
+          "requirements": {}
+        },
+        "policyHash": "sha256:9efcec929bf8a510c7dd0e18b687381e3824ff3d26cc20307f601d17535e5f34",
+        "adviceHash": "sha256:ca1f59b45e82e712e06149909000e2bc37b8cf159af70e32847088cecf153268"
+      }
+    },
+    "warnings": [],
+    "integration": {
+      "schemaVersion": "kiln.integration-manifest.v1",
+      "analyzerVersion": 1,
+      "artifactSha256": "d2ba5e05718c7889134d51bb89680a7dc05b5b24100c4f3e9d89b18034991dfb",
+      "units": "m",
+      "axes": {
+        "forward": "+X",
+        "up": "+Y",
+        "right": "+Z"
+      },
+      "bounds": {
+        "min": [
+          -50,
+          -0.40000000298023225,
+          -45
+        ],
+        "max": [
+          50,
+          9.100000381469727,
+          75
+        ],
+        "size": [
+          100,
+          9.500000384449958,
+          120
+        ],
+        "center": [
+          0,
+          4.3500001892447475,
+          15
+        ]
+      },
+      "pivot": {
+        "convention": "author-origin",
+        "position": [
+          0,
+          0,
+          0
+        ]
+      },
+      "ground": {
+        "groundY": 0,
+        "contactTolerance": 0.02,
+        "minY": -0.40000000298023225,
+        "offsetToGround": 0.40000000298023225,
+        "grounded": false
+      },
+      "defaultScene": {
+        "index": 0,
+        "name": "Battle before the gate"
+      },
+      "renderMetrics": {
+        "triangles": 208178,
+        "drawCalls": 130,
+        "uniqueGeometries": 76,
+        "uniqueMaterials": 28,
+        "textureCount": 16,
+        "transparentMaterials": 0,
+        "skinned": false
+      },
+      "structuralQa": {
+        "hasDefaultScene": true,
+        "finiteBounds": true,
+        "validatorErrors": 0,
+        "validatorWarnings": 0
+      },
+      "visualQa": "not_assessed"
+    },
+    "qa": {
+      "kind": "kiln.asset-qa-report",
+      "schemaVersion": 2,
+      "qaProfile": "asset.requirements.v1",
+      "policyHash": "sha256:9efcec929bf8a510c7dd0e18b687381e3824ff3d26cc20307f601d17535e5f34",
+      "adviceHash": "sha256:ca1f59b45e82e712e06149909000e2bc37b8cf159af70e32847088cecf153268",
+      "acceptance": "accepted",
+      "disposition": "warn",
+      "dimensions": {
+        "exportIntegrity": {
+          "status": "pass",
+          "findings": [],
+          "metrics": {
+            "gltfErrors": 0,
+            "gltfWarnings": 0
+          }
+        },
+        "requirementReadiness": {
+          "status": "pass",
+          "findings": []
+        },
+        "promptAlignment": {
+          "status": "notEvaluated",
+          "findings": []
+        },
+        "visualQuality": {
+          "status": "notEvaluated",
+          "findings": [
+            {
+              "code": "GEO_PART_SELF_INTERSECTION",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "Parts \"WoodenHorse_m0\" and \"WoodenHorse_m1\" occupy the same space: they share 0.297 m³, which is 50.5% of the smaller part.",
+              "affected": {
+                "node": "WoodenHorse_m0"
+              },
+              "measurement": {
+                "name": "intersectionVolumeFraction",
+                "actual": 0.504745967,
+                "expected": 0.001
+              },
+              "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
+            },
+            {
+              "code": "GEO_PART_SELF_INTERSECTION",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "Parts \"Achilles_Chariot_m4\" and \"Achilles_Chariot_m6\" occupy the same space: they share 0.00390 m³, which is 27.1% of the smaller part.",
+              "affected": {
+                "node": "Achilles_Chariot_m4"
+              },
+              "measurement": {
+                "name": "intersectionVolumeFraction",
+                "actual": 0.271054807,
+                "expected": 0.001
+              },
+              "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
+            },
+            {
+              "code": "GEO_PART_SELF_INTERSECTION",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "Parts \"CityGate_m1\" and \"CityGate_m2\" occupy the same space: they share 1.02 m³, which is 19.8% of the smaller part.",
+              "affected": {
+                "node": "CityGate_m1"
+              },
+              "measurement": {
+                "name": "intersectionVolumeFraction",
+                "actual": 0.198449679,
+                "expected": 0.001
+              },
+              "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
+            },
+            {
+              "code": "GEO_PART_SELF_INTERSECTION",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "Parts \"WoodenHorse_m0\" and \"WoodenHorse_m2\" occupy the same space: they share 0.181 m³, which is 11.5% of the smaller part.",
+              "affected": {
+                "node": "WoodenHorse_m0"
+              },
+              "measurement": {
+                "name": "intersectionVolumeFraction",
+                "actual": 0.114632566,
+                "expected": 0.001
+              },
+              "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
+            },
+            {
+              "code": "GEO_PART_SELF_INTERSECTION",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "Parts \"WoodenHorse_m1\" and \"WoodenHorse_m2\" occupy the same space: they share 0.0660 m³, which is 11.2% of the smaller part.",
+              "affected": {
+                "node": "WoodenHorse_m1"
+              },
+              "measurement": {
+                "name": "intersectionVolumeFraction",
+                "actual": 0.112326009,
+                "expected": 0.001
+              },
+              "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
+            },
+            {
+              "code": "GEO_PART_SELF_INTERSECTION",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "Parts \"House_1_m0\" and \"House_1_m1\" occupy the same space: they share 0.234 m³, which is 11.1% of the smaller part.",
+              "affected": {
+                "node": "House_1_m0"
+              },
+              "measurement": {
+                "name": "intersectionVolumeFraction",
+                "actual": 0.111230612,
+                "expected": 0.001
+              },
+              "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
+            },
+            {
+              "code": "GEO_PART_SELF_INTERSECTION",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "Parts \"House_2_m0\" and \"House_2_m1\" occupy the same space: they share 0.234 m³, which is 11.1% of the smaller part.",
+              "affected": {
+                "node": "House_2_m0"
+              },
+              "measurement": {
+                "name": "intersectionVolumeFraction",
+                "actual": 0.111230612,
+                "expected": 0.001
+              },
+              "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
+            },
+            {
+              "code": "GEO_PART_SELF_INTERSECTION",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "Parts \"House_3_m0\" and \"House_3_m1\" occupy the same space: they share 0.234 m³, which is 11.1% of the smaller part.",
+              "affected": {
+                "node": "House_3_m0"
+              },
+              "measurement": {
+                "name": "intersectionVolumeFraction",
+                "actual": 0.111230612,
+                "expected": 0.001
+              },
+              "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
+            },
+            {
+              "code": "GEO_PART_SELF_INTERSECTION",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "Parts \"Wall_breached_-18_m0\" and \"Wall_breached_-18_m2\" occupy the same space: they share 0.0229 m³, which is 4.8% of the smaller part.",
+              "affected": {
+                "node": "Wall_breached_-18_m0"
+              },
+              "measurement": {
+                "name": "intersectionVolumeFraction",
+                "actual": 0.048214454,
+                "expected": 0.001
+              },
+              "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
+            },
+            {
+              "code": "GEO_PART_SELF_INTERSECTION",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "Parts \"Achilles_Chariot_m4\" and \"Achilles_Chariot_m7\" occupy the same space: they share 0.000313 m³, which is 4.0% of the smaller part.",
+              "affected": {
+                "node": "Achilles_Chariot_m4"
+              },
+              "measurement": {
+                "name": "intersectionVolumeFraction",
+                "actual": 0.04021625,
+                "expected": 0.001
+              },
+              "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
+            },
+            {
+              "code": "GEO_PART_SELF_INTERSECTION",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "Parts \"House_1_m1\" and \"House_1_m2\" occupy the same space: they share 0.211 m³, which is 3.2% of the smaller part.",
+              "affected": {
+                "node": "House_1_m1"
+              },
+              "measurement": {
+                "name": "intersectionVolumeFraction",
+                "actual": 0.031938294,
+                "expected": 0.001
+              },
+              "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
+            },
+            {
+              "code": "GEO_PART_SELF_INTERSECTION",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "Parts \"House_3_m1\" and \"House_3_m2\" occupy the same space: they share 0.211 m³, which is 3.2% of the smaller part.",
+              "affected": {
+                "node": "House_3_m1"
+              },
+              "measurement": {
+                "name": "intersectionVolumeFraction",
+                "actual": 0.031938294,
+                "expected": 0.001
+              },
+              "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
+            },
+            {
+              "code": "GEO_PART_SELF_INTERSECTION",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "Parts \"House_2_m1\" and \"House_2_m2\" occupy the same space: they share 0.211 m³, which is 3.2% of the smaller part.",
+              "affected": {
+                "node": "House_2_m1"
+              },
+              "measurement": {
+                "name": "intersectionVolumeFraction",
+                "actual": 0.031938292,
+                "expected": 0.001
+              },
+              "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
+            },
+            {
+              "code": "GEO_PART_SELF_INTERSECTION",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "Parts \"Hector_Chariot_m4\" and \"Hector_Chariot_m7\" occupy the same space: they share 0.000211 m³, which is 2.7% of the smaller part.",
+              "affected": {
+                "node": "Hector_Chariot_m4"
+              },
+              "measurement": {
+                "name": "intersectionVolumeFraction",
+                "actual": 0.027168215,
+                "expected": 0.001
+              },
+              "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
+            },
+            {
+              "code": "GEO_PART_SELF_INTERSECTION",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "Parts \"WoodenHorse_m0\" and \"Mesh_hatch_bronze\" occupy the same space: they share 0.000144 m³, which is 2.2% of the smaller part.",
+              "affected": {
+                "node": "WoodenHorse_m0"
+              },
+              "measurement": {
+                "name": "intersectionVolumeFraction",
+                "actual": 0.022140194,
+                "expected": 0.001
+              },
+              "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
+            },
+            {
+              "code": "GEO_PART_SELF_INTERSECTION",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "Parts \"GateSortie_m3\" and \"GateSortie_m4\" occupy the same space: they share 0.000435 m³, which is 1.4% of the smaller part.",
+              "affected": {
+                "node": "GateSortie_m3"
+              },
+              "measurement": {
+                "name": "intersectionVolumeFraction",
+                "actual": 0.013986217,
+                "expected": 0.001
+              },
+              "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
+            },
+            {
+              "code": "GEO_PART_SELF_INTERSECTION",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "Parts \"WallDefenders_E_m5\" and \"WallDefenders_E_m6\" occupy the same space: they share 0.000218 m³, which is 1.4% of the smaller part.",
+              "affected": {
+                "node": "WallDefenders_E_m5"
+              },
+              "measurement": {
+                "name": "intersectionVolumeFraction",
+                "actual": 0.013986213,
+                "expected": 0.001
+              },
+              "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
+            },
+            {
+              "code": "GEO_PART_SELF_INTERSECTION",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "Parts \"WallDefenders_far_m5\" and \"WallDefenders_far_m6\" occupy the same space: they share 0.000218 m³, which is 1.4% of the smaller part.",
+              "affected": {
+                "node": "WallDefenders_far_m5"
+              },
+              "measurement": {
+                "name": "intersectionVolumeFraction",
+                "actual": 0.013986213,
+                "expected": 0.001
+              },
+              "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
+            },
+            {
+              "code": "GEO_PART_SELF_INTERSECTION",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "Parts \"WallDefenders_W_m5\" and \"WallDefenders_W_m6\" occupy the same space: they share 0.000218 m³, which is 1.4% of the smaller part.",
+              "affected": {
+                "node": "WallDefenders_W_m5"
+              },
+              "measurement": {
+                "name": "intersectionVolumeFraction",
+                "actual": 0.013986213,
+                "expected": 0.001
+              },
+              "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
+            },
+            {
+              "code": "GEO_PART_SELF_INTERSECTION",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "Parts \"Wall_breached_-18_m0\" and \"BreachFight_m3\" occupy the same space: they share 0.000650 m³, which is 1.4% of the smaller part.",
+              "affected": {
+                "node": "Wall_breached_-18_m0"
+              },
+              "measurement": {
+                "name": "intersectionVolumeFraction",
+                "actual": 0.013923659,
+                "expected": 0.001
+              },
+              "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
+            },
+            {
+              "code": "GEO_PART_SELF_INTERSECTION",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "Parts \"TempleHall_m0\" and \"TempleHall_m2\" occupy the same space: they share 1.08 m³, which is 1.2% of the smaller part.",
+              "affected": {
+                "node": "TempleHall_m0"
+              },
+              "measurement": {
+                "name": "intersectionVolumeFraction",
+                "actual": 0.012091906,
+                "expected": 0.001
+              },
+              "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
+            },
+            {
+              "code": "GEO_PART_SELF_INTERSECTION",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "Parts \"TempleHall_m0\" and \"TempleHall_m3\" occupy the same space: they share 0.0611 m³, which is 0.9% of the smaller part.",
+              "affected": {
+                "node": "TempleHall_m0"
+              },
+              "measurement": {
+                "name": "intersectionVolumeFraction",
+                "actual": 0.009068875,
+                "expected": 0.001
+              },
+              "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
+            },
+            {
+              "code": "GEO_PART_SELF_INTERSECTION",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "Parts \"Wall_breached_-18_m0\" and \"Wall_breached_-18_m1\" occupy the same space: they share 0.155 m³, which is 0.7% of the smaller part.",
+              "affected": {
+                "node": "Wall_breached_-18_m0"
+              },
+              "measurement": {
+                "name": "intersectionVolumeFraction",
+                "actual": 0.006912524,
+                "expected": 0.001
+              },
+              "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
+            },
+            {
+              "code": "GEO_PART_SELF_INTERSECTION",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "Parts \"Hector_Chariot_m2\" and \"Hector_Chariot_m4\" occupy the same space: they share 0.000158 m³, which is 0.6% of the smaller part.",
+              "affected": {
+                "node": "Hector_Chariot_m2"
+              },
+              "measurement": {
+                "name": "intersectionVolumeFraction",
+                "actual": 0.006388344,
+                "expected": 0.001
+              },
+              "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
+            },
+            {
+              "code": "GEO_PART_SELF_INTERSECTION",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "Parts \"WoodenHorse_m1\" and \"Mesh_hatch_timber\" occupy the same space: they share 0.000434 m³, which is 0.3% of the smaller part.",
+              "affected": {
+                "node": "WoodenHorse_m1"
+              },
+              "measurement": {
+                "name": "intersectionVolumeFraction",
+                "actual": 0.003260955,
+                "expected": 0.001
+              },
+              "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
+            },
+            {
+              "code": "GEO_PART_SELF_INTERSECTION_TRUNCATED",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "Tested 64 of 377 overlapping part pairs: 227 involve parts that could not be measured, 86 were beyond the analysis budget (64 booleans, 128 solids). Unreached pairs were not examined; the most overlapping bounding boxes were tested first.",
+              "measurement": {
+                "name": "overlappingPartPairsTested",
+                "actual": 64,
+                "expected": 377,
+                "breakdown": {
+                  "pairsUnmeasurable": 227,
+                  "pairsNotReached": 86
+                }
+              }
+            },
+            {
+              "code": "GEO_PART_SELF_INTERSECTION_UNMEASURED",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "54 part-volume measurements were unavailable. 25 because compound solid exceeds the component budget or contains an unsupported inward shell: \"TempleHall_m1\", \"Galley_1_m1\", \"Galley_1_m2\", \"Galley_2_m1\", \"Galley_2_m2\" and 20 more. 29 because a valid closed solid could not be measured (Not manifold): \"Galley_1_m0\", \"Galley_1_m3\", \"Galley_2_m0\", \"Galley_2_m3\", \"WallDefenders_W_m1\" and 24 more. 227 overlapping part pairs include one of these parts and were not measured. These parts are not certified clear."
+            }
+          ],
+          "metrics": {
+            "partVolumeCoverage": "partial",
+            "partVolumeScope": "Visible static closed mesh pairs, except alternates on different LOD levels; excludes intra-mesh intersections, motion, open surfaces and usable passage space. Positive overlap may be intentional.",
+            "partVolumeEligibleParts": 130,
+            "partVolumeCandidatePairs": 377,
+            "partVolumeCandidatesLowerBound": false,
+            "partVolumePairsTested": 64,
+            "partVolumeUnmeasurablePairs": 227,
+            "partVolumePairsNotReached": 86,
+            "partVolumeLodAlternatePairs": 0,
+            "partVolumeSkipped": 54
+          }
+        },
+        "runtimeCost": {
+          "status": "warn",
+          "findings": [
+            {
+              "code": "MATERIAL_IMAGE_COUNT_BUDGET",
+              "disposition": "warn",
+              "dimension": "runtimeCost",
+              "profile": "web.portable.v1.standard",
+              "message": "16 images exceed the 4-image web.portable.v1/standard budget. Reuse approved resource IDs, remove unused images, or atlas compatible same-color-space slots; never atlas normal/data maps into an sRGB image.",
+              "measurement": {
+                "name": "imageCount",
+                "actual": 16,
+                "threshold": 4,
+                "unit": "images"
+              }
+            }
+          ],
+          "metrics": {
+            "instanceabilityGrade": "F",
+            "instanceabilitySummary": "F (informational, not a QA verdict), set by 28 distinct materials (F at 13+). Also: 16 textures (over 4 lowers only A/B to C); 76 geometries; 130 draw calls.",
+            "uniqueGeometries": 76,
+            "uniqueMaterials": 28,
+            "meshNodes": 130,
+            "meshInstances": 130,
+            "drawCalls": 130,
+            "textureCount": 16,
+            "skinned": false,
+            "transparentMaterials": 0,
+            "triangles": 208178,
+            "materialCount": 28,
+            "opaqueMaterials": 28,
+            "maskedMaterials": 0,
+            "blendedMaterials": 0,
+            "singleSidedMaterials": 26,
+            "doubleSidedMaterials": 2,
+            "texturedMaterials": 28,
+            "materialExtensionCount": 0,
+            "materialExtensionsUsed": "",
+            "imageCount": 16,
+            "maxImageDimension": 512,
+            "decodedImageBytesRgba8": 5767168,
+            "estimatedGpuBytesWithMipmaps": 7689568,
+            "blendedSurfaceAreaRatio": 0
+          }
+        }
+      },
+      "rules": [
+        {
+          "id": "UNIVERSAL_SCENE_CONTENT_RULE",
+          "mode": "enforce",
+          "status": "evaluated"
+        },
+        {
+          "id": "UNIVERSAL_FINITE_DATA_RULE",
+          "mode": "enforce",
+          "status": "evaluated"
+        },
+        {
+          "id": "UNIVERSAL_INDEX_RULE",
+          "mode": "enforce",
+          "status": "evaluated"
+        },
+        {
+          "id": "UNIVERSAL_ZERO_SCALE_RULE",
+          "mode": "enforce",
+          "status": "evaluated"
+        },
+        {
+          "id": "UNIVERSAL_NODE_NAME_RULE",
+          "mode": "enforce",
+          "status": "evaluated"
+        },
+        {
+          "id": "UNIVERSAL_ANIMATION_TARGET_RULE",
+          "mode": "enforce",
+          "status": "evaluated"
+        },
+        {
+          "id": "MATERIAL_PORTABLE_PBR_RULE",
+          "mode": "enforce",
+          "status": "evaluated"
+        },
+        {
+          "id": "ARCHITECTURE_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        },
+        {
+          "id": "ARCHITECTURE_ADVISORY_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "CHARACTER_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        },
+        {
+          "id": "CHARACTER_ADVISORY_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "VEHICLE_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        },
+        {
+          "id": "VEHICLE_ADVISORY_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "VEHICLE_W6_ADVISORY_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "VEGETATION_CONTACT_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        },
+        {
+          "id": "VEGETATION_ADVISORY_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "PROP_CAPABILITY_EXACT_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        },
+        {
+          "id": "PROP_ADVISORY_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "ENVIRONMENT_EXACT_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        },
+        {
+          "id": "ENVIRONMENT_ADVISORY_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "VFX_EXACT_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        },
+        {
+          "id": "VFX_ADVISORY_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "MODULAR_JOIN_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        },
+        {
+          "id": "ASSET_SCOPE_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "GEO_PART_SELF_INTERSECTION",
+          "mode": "observe",
+          "status": "notEvaluated"
+        },
+        {
+          "id": "GEO_PART_CONNECTIVITY",
+          "mode": "observe",
+          "status": "evaluated"
+        },
+        {
+          "id": "REF_COMPARISON",
+          "mode": "observe",
+          "status": "notEvaluated",
+          "reason": "Neutral measurement adapter remains to be qualified; no category fallback is used."
+        },
+        {
+          "id": "SWEEP_SELF_INTERSECTION",
+          "mode": "observe",
+          "status": "evaluated"
+        }
+      ],
+      "unevaluatedRequirements": []
+    },
+    "dependencies": [
+      {
+        "kind": "kiln.material.v1",
+        "delivery": "runtime",
+        "manifest": {
+          "schemaVersion": 1,
+          "materialId": "troy-bronze",
+          "revisionId": "sha256:2748d26e15d49933d18ed70d5352b51ecf5bf5c92d60b41ceddffa52750582d6",
+          "name": "Brushed neutral metal",
+          "tags": [
+            "metal",
+            "procedural"
+          ],
+          "tileable": true,
+          "physicalSizeMeters": {
+            "width": 1,
+            "height": 1
+          },
+          "parameters": {
+            "roughness": 1,
+            "metalness": 1,
+            "emissiveIntensity": 1,
+            "alphaMode": "opaque",
+            "alphaCutoff": 0.5,
+            "doubleSided": false
+          },
+          "sources": [
+            {
+              "id": "preset",
+              "kind": "procedural",
+              "provider": "Kiln material presets v1",
+              "creator": "Kiln v1 readiness dogfood (procedural preset)",
+              "assetId": "brushed-metal",
+              "license": {
+                "spdx": "CC0-1.0",
+                "url": "https://creativecommons.org/publicdomain/zero/1.0/",
+                "attribution": ""
+              },
+              "originalFiles": []
+            }
+          ],
+          "maps": [
+            {
+              "slot": "baseColor",
+              "file": "baseColor.png",
+              "sha256": "sha256:1155caf62d7b4b648b91d2d5b7f44a7ff4442fc9c825fbeabc6eaef29370b506",
+              "bytes": 14894,
+              "width": 256,
+              "height": 256,
+              "usage": "albedo",
+              "colorSpace": "srgb",
+              "sourceId": "preset",
+              "transforms": [
+                {
+                  "operation": "preset",
+                  "tool": "kiln.material-presets",
+                  "version": "1",
+                  "parameters": {
+                    "presetId": "brushed-metal",
+                    "seed": 1203
+                  }
+                }
+              ],
+              "procedural": {
+                "compiler": "kiln.procedural-texture.v2",
+                "spec": {
+                  "schemaVersion": 2,
+                  "size": 256,
+                  "usage": "albedo",
+                  "layers": [
+                    {
+                      "op": "noise",
+                      "colorA": 10988461,
+                      "colorB": 12370114,
+                      "scale": 4,
+                      "octaves": 3,
+                      "seed": 1203,
+                      "blend": "normal",
+                      "opacity": 1
+                    },
+                    {
+                      "op": "stripes",
+                      "colorA": 10067102,
+                      "colorB": 12896201,
+                      "count": 64,
+                      "angleDeg": 0,
+                      "blend": "normal",
+                      "opacity": 0.1
+                    }
+                  ]
+                },
+                "recipeHash": "sha256:d7fe21c12d515e9d2f062c2aaa1165963c9dd158a83038cf92b67bb0aaf60c9f",
+                "pixelHash": "sha256:f23389a7e63d5b6bf5528cb998de935af9329b5cac0cd544b20ff2699b40a22f",
+                "encoder": {
+                  "name": "sharp",
+                  "version": "0.35.4"
+                }
+              }
+            },
+            {
+              "slot": "normal",
+              "file": "normal.png",
+              "sha256": "sha256:8b0ee806baea93d13f60111565b5aae68645455c9a92038317f5fb81fb1f2ddb",
+              "bytes": 16005,
+              "width": 256,
+              "height": 256,
+              "usage": "normal",
+              "colorSpace": "linear",
+              "normalConvention": "opengl",
+              "sourceId": "preset",
+              "transforms": [
+                {
+                  "operation": "preset",
+                  "tool": "kiln.material-presets",
+                  "version": "1",
+                  "parameters": {
+                    "presetId": "brushed-metal",
+                    "seed": 1203
+                  }
+                }
+              ],
+              "procedural": {
+                "compiler": "kiln.procedural-texture.v2",
+                "spec": {
+                  "schemaVersion": 2,
+                  "size": 256,
+                  "usage": "normal",
+                  "layers": [
+                    {
+                      "op": "noise",
+                      "colorA": 7368816,
+                      "colorB": 9474192,
+                      "scale": 8,
+                      "octaves": 3,
+                      "seed": 1203,
+                      "blend": "normal",
+                      "opacity": 1
+                    },
+                    {
+                      "op": "stripes",
+                      "colorA": 6710886,
+                      "colorB": 10066329,
+                      "count": 64,
+                      "angleDeg": 0,
+                      "blend": "normal",
+                      "opacity": 0.3
+                    }
+                  ]
+                },
+                "derive": {
+                  "kind": "normal-from-height",
+                  "strength": 1
+                },
+                "recipeHash": "sha256:89daaeb4f1815b55049e9e88729be8bb617e6c6ac820a1df040cb57fb6b1b6b2",
+                "pixelHash": "sha256:020eebbcc4ae89ecda69572edffbca5b8db2c7354df895d82cb1674b4d72c1df",
+                "encoder": {
+                  "name": "sharp",
+                  "version": "0.35.4"
+                }
+              }
+            },
+            {
+              "slot": "metallicRoughness",
+              "file": "metallicRoughness.png",
+              "sha256": "sha256:c94eb899b82be79cbb33e7839d069299c321b7ec9e03cd9d87a509fab3da8209",
+              "bytes": 20116,
+              "width": 256,
+              "height": 256,
+              "usage": "metallicRoughness",
+              "colorSpace": "linear",
+              "channelPacking": "r-occlusion-g-roughness-b-metallic",
+              "sourceId": "preset",
+              "transforms": [
+                {
+                  "operation": "preset",
+                  "tool": "kiln.material-presets",
+                  "version": "1",
+                  "parameters": {
+                    "presetId": "brushed-metal",
+                    "seed": 1203
+                  }
+                }
+              ],
+              "procedural": {
+                "compiler": "kiln.procedural-texture.v2",
+                "spec": {
+                  "schemaVersion": 2,
+                  "size": 256,
+                  "usage": "metallicRoughness",
+                  "layers": [
+                    {
+                      "op": "noise",
+                      "colorA": 16732415,
+                      "colorB": 16745215,
+                      "scale": 8,
+                      "octaves": 3,
+                      "seed": 1203,
+                      "blend": "normal",
+                      "opacity": 1
+                    }
+                  ]
+                },
+                "recipeHash": "sha256:74e333df6db0e55f404e306a4dc4f0b4fac660c19e0f810c419765fe05be62cd",
+                "pixelHash": "sha256:78b16242bc457b9978358124b18b8b2771fc5f07fac190b218aea421bfb90910",
+                "encoder": {
+                  "name": "sharp",
+                  "version": "0.35.4"
+                }
+              }
+            }
+          ]
+        }
+      },
+      {
+        "kind": "kiln.material.v1",
+        "delivery": "runtime",
+        "manifest": {
+          "schemaVersion": 1,
+          "materialId": "troy-ground",
+          "revisionId": "sha256:a8fec5a60022707b7cb0a07cb7c98f51758a58871ac12ff83ec4738c5b8ae27e",
+          "name": "Coarse brown soil",
+          "tags": [
+            "ground",
+            "procedural"
+          ],
+          "tileable": true,
+          "physicalSizeMeters": {
+            "width": 2,
+            "height": 2
+          },
+          "parameters": {
+            "roughness": 1,
+            "metalness": 1,
+            "emissiveIntensity": 1,
+            "alphaMode": "opaque",
+            "alphaCutoff": 0.5,
+            "doubleSided": false
+          },
+          "sources": [
+            {
+              "id": "preset",
+              "kind": "procedural",
+              "provider": "Kiln material presets v1",
+              "creator": "Kiln v1 readiness dogfood (procedural preset)",
+              "assetId": "coarse-soil",
+              "license": {
+                "spdx": "CC0-1.0",
+                "url": "https://creativecommons.org/publicdomain/zero/1.0/",
+                "attribution": ""
+              },
+              "originalFiles": []
+            }
+          ],
+          "maps": [
+            {
+              "slot": "baseColor",
+              "file": "baseColor.png",
+              "sha256": "sha256:f1aecef72fc1f2ed54605c882aee63ad42531b09f8f341f923d2bd85fc337003",
+              "bytes": 53559,
+              "width": 256,
+              "height": 256,
+              "usage": "albedo",
+              "colorSpace": "srgb",
+              "sourceId": "preset",
+              "transforms": [
+                {
+                  "operation": "preset",
+                  "tool": "kiln.material-presets",
+                  "version": "1",
+                  "parameters": {
+                    "presetId": "coarse-soil",
+                    "seed": 1205
+                  }
+                }
+              ],
+              "procedural": {
+                "compiler": "kiln.procedural-texture.v2",
+                "spec": {
+                  "schemaVersion": 2,
+                  "size": 256,
+                  "usage": "albedo",
+                  "layers": [
+                    {
+                      "op": "noise",
+                      "colorA": 5061676,
+                      "colorB": 8942420,
+                      "scale": 4,
+                      "octaves": 3,
+                      "seed": 1205,
+                      "blend": "normal",
+                      "opacity": 1
+                    },
+                    {
+                      "op": "noise",
+                      "colorA": 3418656,
+                      "colorB": 10850155,
+                      "scale": 32,
+                      "octaves": 3,
+                      "seed": 1205,
+                      "blend": "normal",
+                      "opacity": 0.25
+                    }
+                  ]
+                },
+                "recipeHash": "sha256:176692ea97e7f511634e4a7b413c6e5adc739954346c8120f9de300ef62ac060",
+                "pixelHash": "sha256:c7fb5b79d94d8b62e34a7eda730e15fffd2f7910755fa8f34e1b88a2a2d525e3",
+                "encoder": {
+                  "name": "sharp",
+                  "version": "0.35.4"
+                }
+              }
+            },
+            {
+              "slot": "normal",
+              "file": "normal.png",
+              "sha256": "sha256:1a73f9a05c553ec0c7bfb629eb374641a98a7834960486d00451a06b4ae5da49",
+              "bytes": 78431,
+              "width": 256,
+              "height": 256,
+              "usage": "normal",
+              "colorSpace": "linear",
+              "normalConvention": "opengl",
+              "sourceId": "preset",
+              "transforms": [
+                {
+                  "operation": "preset",
+                  "tool": "kiln.material-presets",
+                  "version": "1",
+                  "parameters": {
+                    "presetId": "coarse-soil",
+                    "seed": 1205
+                  }
+                }
+              ],
+              "procedural": {
+                "compiler": "kiln.procedural-texture.v2",
+                "spec": {
+                  "schemaVersion": 2,
+                  "size": 256,
+                  "usage": "normal",
+                  "layers": [
+                    {
+                      "op": "noise",
+                      "colorA": 5592405,
+                      "colorB": 11184810,
+                      "scale": 8,
+                      "octaves": 3,
+                      "seed": 1205,
+                      "blend": "normal",
+                      "opacity": 1
+                    },
+                    {
+                      "op": "noise",
+                      "colorA": 2236962,
+                      "colorB": 14540253,
+                      "scale": 32,
+                      "octaves": 3,
+                      "seed": 1205,
+                      "blend": "normal",
+                      "opacity": 0.3
+                    }
+                  ]
+                },
+                "derive": {
+                  "kind": "normal-from-height",
+                  "strength": 1.5
+                },
+                "recipeHash": "sha256:e0db2c390ce48c2c5e5d08f50066cf4f0c9c0438b3bcc8bd28829cdc132aa792",
+                "pixelHash": "sha256:fb8e1bd224b5e43699b92cba6e33cd2ed6722d62967dbbce104fc0f93c6215c2",
+                "encoder": {
+                  "name": "sharp",
+                  "version": "0.35.4"
+                }
+              }
+            },
+            {
+              "slot": "metallicRoughness",
+              "file": "metallicRoughness.png",
+              "sha256": "sha256:1aa2e221324da217bc209113ade0a82f0749b7230f002c7903a3193968518851",
+              "bytes": 21206,
+              "width": 256,
+              "height": 256,
+              "usage": "metallicRoughness",
+              "colorSpace": "linear",
+              "channelPacking": "r-occlusion-g-roughness-b-metallic",
+              "sourceId": "preset",
+              "transforms": [
+                {
+                  "operation": "preset",
+                  "tool": "kiln.material-presets",
+                  "version": "1",
+                  "parameters": {
+                    "presetId": "coarse-soil",
+                    "seed": 1205
+                  }
+                }
+              ],
+              "procedural": {
+                "compiler": "kiln.procedural-texture.v2",
+                "spec": {
+                  "schemaVersion": 2,
+                  "size": 256,
+                  "usage": "metallicRoughness",
+                  "layers": [
+                    {
+                      "op": "noise",
+                      "colorA": 16757760,
+                      "colorB": 16771840,
+                      "scale": 8,
+                      "octaves": 3,
+                      "seed": 1205,
+                      "blend": "normal",
+                      "opacity": 1
+                    }
+                  ]
+                },
+                "recipeHash": "sha256:8f2e48aacbbceb2e18f70e048adeb9eae223eaf1a1339ba89678ae5c8c1b422d",
+                "pixelHash": "sha256:7ae6dd8edf0c16842bd93ac5d6df714647621101c1c22c77aa57d632b66d533e",
+                "encoder": {
+                  "name": "sharp",
+                  "version": "0.35.4"
+                }
+              }
+            }
+          ]
+        }
+      },
+      {
+        "kind": "kiln.material.v1",
+        "delivery": "runtime",
+        "manifest": {
+          "schemaVersion": 1,
+          "materialId": "troy-limestone",
+          "revisionId": "sha256:118cd21f2b4775fea0005aad90da65ade37215ca06d04d6997862c773bb236ed",
+          "name": "Troy coursed limestone",
+          "tags": [
+            "architecture",
+            "procedural",
+            "troy",
+            "limestone"
+          ],
+          "tileable": true,
+          "physicalSizeMeters": {
+            "width": 1.2,
+            "height": 1.2
+          },
+          "parameters": {
+            "roughness": 1,
+            "metalness": 0,
+            "emissiveIntensity": 1,
+            "alphaMode": "opaque",
+            "alphaCutoff": 0.5,
+            "doubleSided": false
+          },
+          "sources": [
+            {
+              "id": "authored",
+              "kind": "procedural",
+              "provider": "Kiln",
+              "creator": "Kiln v1 readiness: owner-directed pack material",
+              "license": {
+                "spdx": "CC0-1.0",
+                "url": "https://creativecommons.org/publicdomain/zero/1.0/",
+                "attribution": ""
+              },
+              "originalFiles": []
+            }
+          ],
+          "maps": [
+            {
+              "slot": "baseColor",
+              "file": "baseColor.png",
+              "sha256": "sha256:c65c0c46c110a3fc6ca7b71cd5f03e39aeb1350a3d77b9d4bbf9fdaa15822540",
+              "bytes": 76049,
+              "width": 512,
+              "height": 512,
+              "usage": "albedo",
+              "colorSpace": "srgb",
+              "sourceId": "authored",
+              "transforms": [],
+              "procedural": {
+                "compiler": "kiln.procedural-texture.v2",
+                "spec": {
+                  "schemaVersion": 2,
+                  "size": 512,
+                  "usage": "albedo",
+                  "layers": [
+                    {
+                      "op": "solid",
+                      "color": 13483935,
+                      "blend": "normal",
+                      "opacity": 1
+                    },
+                    {
+                      "op": "bricks",
+                      "brick": 13483935,
+                      "mortar": 8747618,
+                      "rows": 2,
+                      "cols": 1,
+                      "mortarWidth": 0.035,
+                      "stagger": 0.5,
+                      "blend": "normal",
+                      "opacity": 1
+                    },
+                    {
+                      "op": "noise",
+                      "colorA": 12101508,
+                      "colorB": 14537398,
+                      "scale": 3,
+                      "octaves": 4,
+                      "seed": 7,
+                      "blend": "overlay",
+                      "opacity": 0.55
+                    },
+                    {
+                      "op": "noise",
+                      "colorA": 10260340,
+                      "colorB": 15129795,
+                      "scale": 24,
+                      "octaves": 3,
+                      "seed": 11,
+                      "blend": "overlay",
+                      "opacity": 0.25
+                    }
+                  ]
+                },
+                "recipeHash": "sha256:90c7a600a7856563308938b3537be9fd5f248e9f847e477171bf265966e8d380",
+                "pixelHash": "sha256:0144d8d22cc70bb6bade331c48fde71477c8e2dd03f563010cf4ee48cf1be5b2",
+                "encoder": {
+                  "name": "sharp",
+                  "version": "0.35.4"
+                }
+              }
+            },
+            {
+              "slot": "metallicRoughness",
+              "file": "metallicRoughness.png",
+              "sha256": "sha256:44ba371058ec65b88d34df2ca915f601a4daecf92eb0d047921675af264b8097",
+              "bytes": 13031,
+              "width": 256,
+              "height": 256,
+              "usage": "metallicRoughness",
+              "colorSpace": "linear",
+              "channelPacking": "r-occlusion-g-roughness-b-metallic",
+              "sourceId": "authored",
+              "transforms": [],
+              "procedural": {
+                "compiler": "kiln.procedural-texture.v2",
+                "spec": {
+                  "schemaVersion": 2,
+                  "size": 256,
+                  "usage": "metallicRoughness",
+                  "layers": [
+                    {
+                      "op": "noise",
+                      "colorA": 16767232,
+                      "colorB": 16773632,
+                      "scale": 8,
+                      "octaves": 3,
+                      "seed": 7,
+                      "blend": "normal",
+                      "opacity": 1
+                    }
+                  ]
+                },
+                "recipeHash": "sha256:7dbb5738f4421a20b1afb4ddf423e759452318988ef83a1993c6e50651c8e459",
+                "pixelHash": "sha256:fd2effadb8ba6d8dff4a0544b9c35108fac7a0d513cccd29cd8f20d4b8209fe4",
+                "encoder": {
+                  "name": "sharp",
+                  "version": "0.35.4"
+                }
+              }
+            }
+          ]
+        }
+      },
+      {
+        "kind": "kiln.material.v1",
+        "delivery": "runtime",
+        "manifest": {
+          "schemaVersion": 1,
+          "materialId": "troy-linen",
+          "revisionId": "sha256:b3b5d252a37410d00716cf771f6e843e6dc142bad6747ad73f748bcd6e856de8",
+          "name": "Neutral woven fabric",
+          "tags": [
+            "fabric",
+            "procedural"
+          ],
+          "tileable": true,
+          "physicalSizeMeters": {
+            "width": 0.5,
+            "height": 0.5
+          },
+          "parameters": {
+            "roughness": 1,
+            "metalness": 1,
+            "emissiveIntensity": 1,
+            "alphaMode": "opaque",
+            "alphaCutoff": 0.5,
+            "doubleSided": false
+          },
+          "sources": [
+            {
+              "id": "preset",
+              "kind": "procedural",
+              "provider": "Kiln material presets v1",
+              "creator": "Kiln v1 readiness dogfood (procedural preset)",
+              "assetId": "woven-fabric",
+              "license": {
+                "spdx": "CC0-1.0",
+                "url": "https://creativecommons.org/publicdomain/zero/1.0/",
+                "attribution": ""
+              },
+              "originalFiles": []
+            }
+          ],
+          "maps": [
+            {
+              "slot": "baseColor",
+              "file": "baseColor.png",
+              "sha256": "sha256:3dcf1f2bc42d86c926bda0af4b9a3acf8f7b657b671aefcb56d111b2e5b6935a",
+              "bytes": 24986,
+              "width": 256,
+              "height": 256,
+              "usage": "albedo",
+              "colorSpace": "srgb",
+              "sourceId": "preset",
+              "transforms": [
+                {
+                  "operation": "preset",
+                  "tool": "kiln.material-presets",
+                  "version": "1",
+                  "parameters": {
+                    "presetId": "woven-fabric",
+                    "seed": 1204
+                  }
+                }
+              ],
+              "procedural": {
+                "compiler": "kiln.procedural-texture.v2",
+                "spec": {
+                  "schemaVersion": 2,
+                  "size": 256,
+                  "usage": "albedo",
+                  "layers": [
+                    {
+                      "op": "noise",
+                      "colorA": 10787463,
+                      "colorB": 12498079,
+                      "scale": 8,
+                      "octaves": 3,
+                      "seed": 1204,
+                      "blend": "normal",
+                      "opacity": 1
+                    },
+                    {
+                      "op": "stripes",
+                      "colorA": 9866361,
+                      "colorB": 13682609,
+                      "count": 32,
+                      "angleDeg": 0,
+                      "blend": "normal",
+                      "opacity": 0.3
+                    },
+                    {
+                      "op": "stripes",
+                      "colorA": 9866361,
+                      "colorB": 13682609,
+                      "count": 32,
+                      "angleDeg": 90,
+                      "blend": "normal",
+                      "opacity": 0.3
+                    }
+                  ]
+                },
+                "recipeHash": "sha256:47aa78a70ffd59507d39679e969026d07dada0e697282fa0d6306e59f1452261",
+                "pixelHash": "sha256:304cf0a10e4c08f6820f744e2be2581789c5d6e739a8ee3974aa925afa716445",
+                "encoder": {
+                  "name": "sharp",
+                  "version": "0.35.4"
+                }
+              }
+            },
+            {
+              "slot": "normal",
+              "file": "normal.png",
+              "sha256": "sha256:5fdbce73444af96fea31ea46119e7da05ae503a7f5eb54438ab7ed9d1e405da3",
+              "bytes": 20370,
+              "width": 256,
+              "height": 256,
+              "usage": "normal",
+              "colorSpace": "linear",
+              "normalConvention": "opengl",
+              "sourceId": "preset",
+              "transforms": [
+                {
+                  "operation": "preset",
+                  "tool": "kiln.material-presets",
+                  "version": "1",
+                  "parameters": {
+                    "presetId": "woven-fabric",
+                    "seed": 1204
+                  }
+                }
+              ],
+              "procedural": {
+                "compiler": "kiln.procedural-texture.v2",
+                "spec": {
+                  "schemaVersion": 2,
+                  "size": 256,
+                  "usage": "normal",
+                  "layers": [
+                    {
+                      "op": "noise",
+                      "colorA": 6316128,
+                      "colorB": 10066329,
+                      "scale": 8,
+                      "octaves": 3,
+                      "seed": 1204,
+                      "blend": "normal",
+                      "opacity": 1
+                    },
+                    {
+                      "op": "stripes",
+                      "colorA": 3355443,
+                      "colorB": 13421772,
+                      "count": 32,
+                      "angleDeg": 0,
+                      "blend": "normal",
+                      "opacity": 0.4
+                    },
+                    {
+                      "op": "stripes",
+                      "colorA": 3355443,
+                      "colorB": 13421772,
+                      "count": 32,
+                      "angleDeg": 90,
+                      "blend": "normal",
+                      "opacity": 0.4
+                    }
+                  ]
+                },
+                "derive": {
+                  "kind": "normal-from-height",
+                  "strength": 1
+                },
+                "recipeHash": "sha256:f278290ea94f614002f435f8a07f11003a8de786849aa182fa8dd6b119c8c502",
+                "pixelHash": "sha256:eb183f114aaae1a2942cdfa9df33e64030fca0273c364dd316492d27903cb9e1",
+                "encoder": {
+                  "name": "sharp",
+                  "version": "0.35.4"
+                }
+              }
+            },
+            {
+              "slot": "metallicRoughness",
+              "file": "metallicRoughness.png",
+              "sha256": "sha256:5ad755500635bceaea5f1db7acd2da819455088f995a7aa82a60f307b60ef06a",
+              "bytes": 21428,
+              "width": 256,
+              "height": 256,
+              "usage": "metallicRoughness",
+              "colorSpace": "linear",
+              "channelPacking": "r-occlusion-g-roughness-b-metallic",
+              "sourceId": "preset",
+              "transforms": [
+                {
+                  "operation": "preset",
+                  "tool": "kiln.material-presets",
+                  "version": "1",
+                  "parameters": {
+                    "presetId": "woven-fabric",
+                    "seed": 1204
+                  }
+                }
+              ],
+              "procedural": {
+                "compiler": "kiln.procedural-texture.v2",
+                "spec": {
+                  "schemaVersion": 2,
+                  "size": 256,
+                  "usage": "metallicRoughness",
+                  "layers": [
+                    {
+                      "op": "noise",
+                      "colorA": 16757760,
+                      "colorB": 16771840,
+                      "scale": 8,
+                      "octaves": 3,
+                      "seed": 1204,
+                      "blend": "normal",
+                      "opacity": 1
+                    }
+                  ]
+                },
+                "recipeHash": "sha256:051758c3061029e9292c41b09540364ab0aae03561b5fa2190fe9d5a40bbffa4",
+                "pixelHash": "sha256:82256f6ce1395d5928930204cbb8ef8910da710f8dc7b17081490371da24eecc",
+                "encoder": {
+                  "name": "sharp",
+                  "version": "0.35.4"
+                }
+              }
+            }
+          ]
+        }
+      },
+      {
+        "kind": "kiln.material.v1",
+        "delivery": "runtime",
+        "manifest": {
+          "schemaVersion": 1,
+          "materialId": "troy-masonry",
+          "revisionId": "sha256:bdadf5681b7f781dc116ca696211c87592144b6cccab9275743e3033ccddd8aa",
+          "name": "Warm brick and mortar",
+          "tags": [
+            "architecture",
+            "procedural"
+          ],
+          "tileable": true,
+          "physicalSizeMeters": {
+            "width": 2,
+            "height": 2
+          },
+          "parameters": {
+            "roughness": 1,
+            "metalness": 1,
+            "emissiveIntensity": 1,
+            "alphaMode": "opaque",
+            "alphaCutoff": 0.5,
+            "doubleSided": false
+          },
+          "sources": [
+            {
+              "id": "preset",
+              "kind": "procedural",
+              "provider": "Kiln material presets v1",
+              "creator": "Kiln v1 readiness dogfood (procedural preset)",
+              "assetId": "warm-brick",
+              "license": {
+                "spdx": "CC0-1.0",
+                "url": "https://creativecommons.org/publicdomain/zero/1.0/",
+                "attribution": ""
+              },
+              "originalFiles": []
+            }
+          ],
+          "maps": [
+            {
+              "slot": "baseColor",
+              "file": "baseColor.png",
+              "sha256": "sha256:94efb274b3fca40959e59ae19bea95de5dd4dd1ddfe7cb07751999bf511d0570",
+              "bytes": 41211,
+              "width": 256,
+              "height": 256,
+              "usage": "albedo",
+              "colorSpace": "srgb",
+              "sourceId": "preset",
+              "transforms": [
+                {
+                  "operation": "preset",
+                  "tool": "kiln.material-presets",
+                  "version": "1",
+                  "parameters": {
+                    "presetId": "warm-brick",
+                    "seed": 1201
+                  }
+                }
+              ],
+              "procedural": {
+                "compiler": "kiln.procedural-texture.v2",
+                "spec": {
+                  "schemaVersion": 2,
+                  "size": 256,
+                  "usage": "albedo",
+                  "layers": [
+                    {
+                      "op": "bricks",
+                      "brick": 10968130,
+                      "mortar": 11840150,
+                      "rows": 12,
+                      "cols": 4,
+                      "mortarWidth": 0.07,
+                      "stagger": 0.5,
+                      "blend": "normal",
+                      "opacity": 1
+                    },
+                    {
+                      "op": "noise",
+                      "colorA": 5257516,
+                      "colorB": 15384730,
+                      "scale": 16,
+                      "octaves": 3,
+                      "seed": 1201,
+                      "blend": "normal",
+                      "opacity": 0.2
+                    }
+                  ]
+                },
+                "recipeHash": "sha256:fe88591f1e2fc8bfa22131f1af950091435a1ae237ef35cc0b15574f97606dfa",
+                "pixelHash": "sha256:68863b4c35824e44927004ed0a3bcbfc865b91990ea0732a7cf5b59f4998745d",
+                "encoder": {
+                  "name": "sharp",
+                  "version": "0.35.4"
+                }
+              }
+            },
+            {
+              "slot": "normal",
+              "file": "normal.png",
+              "sha256": "sha256:d1bdcf4d8e1586405964b6e9a792e969d1d1ddbe17dca0ec8bfa81f4119d5c38",
+              "bytes": 38165,
+              "width": 256,
+              "height": 256,
+              "usage": "normal",
+              "colorSpace": "linear",
+              "normalConvention": "opengl",
+              "sourceId": "preset",
+              "transforms": [
+                {
+                  "operation": "preset",
+                  "tool": "kiln.material-presets",
+                  "version": "1",
+                  "parameters": {
+                    "presetId": "warm-brick",
+                    "seed": 1201
+                  }
+                }
+              ],
+              "procedural": {
+                "compiler": "kiln.procedural-texture.v2",
+                "spec": {
+                  "schemaVersion": 2,
+                  "size": 256,
+                  "usage": "normal",
+                  "layers": [
+                    {
+                      "op": "bricks",
+                      "brick": 11579568,
+                      "mortar": 4210752,
+                      "rows": 12,
+                      "cols": 4,
+                      "mortarWidth": 0.07,
+                      "stagger": 0.5,
+                      "blend": "normal",
+                      "opacity": 1
+                    },
+                    {
+                      "op": "noise",
+                      "colorA": 3158064,
+                      "colorB": 13684944,
+                      "scale": 16,
+                      "octaves": 3,
+                      "seed": 1201,
+                      "blend": "normal",
+                      "opacity": 0.12
+                    }
+                  ]
+                },
+                "derive": {
+                  "kind": "normal-from-height",
+                  "strength": 3
+                },
+                "recipeHash": "sha256:ba16c57e68ad474c5d6bcccf12ac7237497398048da516957873f559515cb8b6",
+                "pixelHash": "sha256:033ff00fd46c04598532534ee64d9a84af8241da8f07493e1c70a773676ce056",
+                "encoder": {
+                  "name": "sharp",
+                  "version": "0.35.4"
+                }
+              }
+            },
+            {
+              "slot": "metallicRoughness",
+              "file": "metallicRoughness.png",
+              "sha256": "sha256:41b59948dfdd727bdf28b99b4d68c0e0e9b424a42361ccd88a7177465ccd8082",
+              "bytes": 21262,
+              "width": 256,
+              "height": 256,
+              "usage": "metallicRoughness",
+              "colorSpace": "linear",
+              "channelPacking": "r-occlusion-g-roughness-b-metallic",
+              "sourceId": "preset",
+              "transforms": [
+                {
+                  "operation": "preset",
+                  "tool": "kiln.material-presets",
+                  "version": "1",
+                  "parameters": {
+                    "presetId": "warm-brick",
+                    "seed": 1201
+                  }
+                }
+              ],
+              "procedural": {
+                "compiler": "kiln.procedural-texture.v2",
+                "spec": {
+                  "schemaVersion": 2,
+                  "size": 256,
+                  "usage": "metallicRoughness",
+                  "layers": [
+                    {
+                      "op": "noise",
+                      "colorA": 16757760,
+                      "colorB": 16771840,
+                      "scale": 8,
+                      "octaves": 3,
+                      "seed": 1201,
+                      "blend": "normal",
+                      "opacity": 1
+                    }
+                  ]
+                },
+                "recipeHash": "sha256:5f361cd635239a50d16b515e050120b07418a376b53d7548a65b91f24d7b128d",
+                "pixelHash": "sha256:c5705f8158df98d33578363572d7cd181e6e35c53dfcff71f51e3b7c9b2904fa",
+                "encoder": {
+                  "name": "sharp",
+                  "version": "0.35.4"
+                }
+              }
+            }
+          ]
+        }
+      },
+      {
+        "kind": "kiln.material.v1",
+        "delivery": "runtime",
+        "manifest": {
+          "schemaVersion": 1,
+          "materialId": "troy-mudbrick",
+          "revisionId": "sha256:421914182486ebb17266b4b953976ac273c19da2d449919cd10baa7d25844363",
+          "name": "Troy plastered mudbrick",
+          "tags": [
+            "architecture",
+            "procedural",
+            "troy",
+            "mudbrick"
+          ],
+          "tileable": true,
+          "physicalSizeMeters": {
+            "width": 1,
+            "height": 1
+          },
+          "parameters": {
+            "roughness": 1,
+            "metalness": 0,
+            "emissiveIntensity": 1,
+            "alphaMode": "opaque",
+            "alphaCutoff": 0.5,
+            "doubleSided": false
+          },
+          "sources": [
+            {
+              "id": "authored",
+              "kind": "procedural",
+              "provider": "Kiln",
+              "creator": "Kiln v1 readiness: owner-directed pack material",
+              "license": {
+                "spdx": "CC0-1.0",
+                "url": "https://creativecommons.org/publicdomain/zero/1.0/",
+                "attribution": ""
+              },
+              "originalFiles": []
+            }
+          ],
+          "maps": [
+            {
+              "slot": "baseColor",
+              "file": "baseColor.png",
+              "sha256": "sha256:f7f6160d81af89924a64d1d1afc24d3badfb6b3565dd73f8c7d479634b125d26",
+              "bytes": 126367,
+              "width": 512,
+              "height": 512,
+              "usage": "albedo",
+              "colorSpace": "srgb",
+              "sourceId": "authored",
+              "transforms": [],
+              "procedural": {
+                "compiler": "kiln.procedural-texture.v2",
+                "spec": {
+                  "schemaVersion": 2,
+                  "size": 512,
+                  "usage": "albedo",
+                  "layers": [
+                    {
+                      "op": "solid",
+                      "color": 11108955,
+                      "blend": "normal",
+                      "opacity": 1
+                    },
+                    {
+                      "op": "bricks",
+                      "brick": 11108955,
+                      "mortar": 9071177,
+                      "rows": 10,
+                      "cols": 3,
+                      "mortarWidth": 0.08,
+                      "stagger": 0.5,
+                      "blend": "normal",
+                      "opacity": 1
+                    },
+                    {
+                      "op": "solid",
+                      "color": 14932160,
+                      "blend": "normal",
+                      "opacity": 0.6
+                    },
+                    {
+                      "op": "noise",
+                      "colorA": 13352352,
+                      "colorB": 15788246,
+                      "scale": 5,
+                      "octaves": 4,
+                      "seed": 21,
+                      "blend": "overlay",
+                      "opacity": 0.5
+                    },
+                    {
+                      "op": "noise",
+                      "colorA": 9402972,
+                      "colorB": 16777215,
+                      "scale": 28,
+                      "octaves": 2,
+                      "seed": 22,
+                      "blend": "multiply",
+                      "opacity": 0.15
+                    }
+                  ]
+                },
+                "recipeHash": "sha256:509cafdbc33e40feb74424380fbce6639c60735c2c6b0026ced975adb1edeb76",
+                "pixelHash": "sha256:6ab75d50440bef52acd71e0df5dd1e6647e5c6b7274206ed025c017ba927e30f",
+                "encoder": {
+                  "name": "sharp",
+                  "version": "0.35.4"
+                }
+              }
+            },
+            {
+              "slot": "metallicRoughness",
+              "file": "metallicRoughness.png",
+              "sha256": "sha256:7510625b70c27ff06286f9e09e087301629cd868e1440155715b9a2a6bbfe3c7",
+              "bytes": 7586,
+              "width": 256,
+              "height": 256,
+              "usage": "metallicRoughness",
+              "colorSpace": "linear",
+              "channelPacking": "r-occlusion-g-roughness-b-metallic",
+              "sourceId": "authored",
+              "transforms": [],
+              "procedural": {
+                "compiler": "kiln.procedural-texture.v2",
+                "spec": {
+                  "schemaVersion": 2,
+                  "size": 256,
+                  "usage": "metallicRoughness",
+                  "layers": [
+                    {
+                      "op": "noise",
+                      "colorA": 16770560,
+                      "colorB": 16774912,
+                      "scale": 6,
+                      "octaves": 3,
+                      "seed": 21,
+                      "blend": "normal",
+                      "opacity": 1
+                    }
+                  ]
+                },
+                "recipeHash": "sha256:b8ede9cabbe54ae2ae5cfe592f63de99a7a235b8da71fc1222b63a7701afce43",
+                "pixelHash": "sha256:b16e69450a168c9e3dcf15e441892493cd43b040f0ec4f290ae27e0c179d83e5",
+                "encoder": {
+                  "name": "sharp",
+                  "version": "0.35.4"
+                }
+              }
+            }
+          ]
+        }
+      },
+      {
+        "kind": "kiln.material.v1",
+        "delivery": "runtime",
+        "manifest": {
+          "schemaVersion": 1,
+          "materialId": "troy-timber",
+          "revisionId": "sha256:e62c1bd5bf46305aa50732b3a82cdd9c66da1c8b2d0f5e0fdd392656851feb5c",
+          "name": "Warm straight wood grain",
+          "tags": [
+            "wood",
+            "procedural"
+          ],
+          "tileable": true,
+          "physicalSizeMeters": {
+            "width": 1,
+            "height": 1
+          },
+          "parameters": {
+            "roughness": 1,
+            "metalness": 1,
+            "emissiveIntensity": 1,
+            "alphaMode": "opaque",
+            "alphaCutoff": 0.5,
+            "doubleSided": false
+          },
+          "sources": [
+            {
+              "id": "preset",
+              "kind": "procedural",
+              "provider": "Kiln material presets v1",
+              "creator": "Kiln v1 readiness dogfood (procedural preset)",
+              "assetId": "wood-grain",
+              "license": {
+                "spdx": "CC0-1.0",
+                "url": "https://creativecommons.org/publicdomain/zero/1.0/",
+                "attribution": ""
+              },
+              "originalFiles": []
+            }
+          ],
+          "maps": [
+            {
+              "slot": "baseColor",
+              "file": "baseColor.png",
+              "sha256": "sha256:1d3f050d5ccf15afc1086c9d2b0a0d5b8b7dc9ee509b1da6ee38964222c0dab3",
+              "bytes": 29666,
+              "width": 256,
+              "height": 256,
+              "usage": "albedo",
+              "colorSpace": "srgb",
+              "sourceId": "preset",
+              "transforms": [
+                {
+                  "operation": "preset",
+                  "tool": "kiln.material-presets",
+                  "version": "1",
+                  "parameters": {
+                    "presetId": "wood-grain",
+                    "seed": 1202
+                  }
+                }
+              ],
+              "procedural": {
+                "compiler": "kiln.procedural-texture.v2",
+                "spec": {
+                  "schemaVersion": 2,
+                  "size": 256,
+                  "usage": "albedo",
+                  "layers": [
+                    {
+                      "op": "noise",
+                      "colorA": 7688503,
+                      "colorB": 12358752,
+                      "scale": 4,
+                      "octaves": 3,
+                      "seed": 1202,
+                      "blend": "normal",
+                      "opacity": 1
+                    },
+                    {
+                      "op": "stripes",
+                      "colorA": 6833455,
+                      "colorB": 13280630,
+                      "count": 40,
+                      "angleDeg": 0,
+                      "blend": "normal",
+                      "opacity": 0.3
+                    }
+                  ]
+                },
+                "recipeHash": "sha256:fd30d78e7c046d4a99f2a5c439d706537da4cbe571b149190e4a8265b3ba755a",
+                "pixelHash": "sha256:ddb5f88e13397a4a5ddfb7bf5512347afd5272c9fb7dcfe650a477add0f88532",
+                "encoder": {
+                  "name": "sharp",
+                  "version": "0.35.4"
+                }
+              }
+            },
+            {
+              "slot": "normal",
+              "file": "normal.png",
+              "sha256": "sha256:94c56a70ff76a97e7a0ceb3800c915620d27cd11b8637baba45c69e1edfa06b5",
+              "bytes": 17189,
+              "width": 256,
+              "height": 256,
+              "usage": "normal",
+              "colorSpace": "linear",
+              "normalConvention": "opengl",
+              "sourceId": "preset",
+              "transforms": [
+                {
+                  "operation": "preset",
+                  "tool": "kiln.material-presets",
+                  "version": "1",
+                  "parameters": {
+                    "presetId": "wood-grain",
+                    "seed": 1202
+                  }
+                }
+              ],
+              "procedural": {
+                "compiler": "kiln.procedural-texture.v2",
+                "spec": {
+                  "schemaVersion": 2,
+                  "size": 256,
+                  "usage": "normal",
+                  "layers": [
+                    {
+                      "op": "noise",
+                      "colorA": 6710886,
+                      "colorB": 10066329,
+                      "scale": 4,
+                      "octaves": 3,
+                      "seed": 1202,
+                      "blend": "normal",
+                      "opacity": 1
+                    },
+                    {
+                      "op": "stripes",
+                      "colorA": 6710886,
+                      "colorB": 11184810,
+                      "count": 40,
+                      "angleDeg": 0,
+                      "blend": "normal",
+                      "opacity": 0.25
+                    }
+                  ]
+                },
+                "derive": {
+                  "kind": "normal-from-height",
+                  "strength": 1.5
+                },
+                "recipeHash": "sha256:a32240399e76a57c0cdde62f6423afc57f1f0deaf23d0d16ba8fcf7168410629",
+                "pixelHash": "sha256:9de2b178dfd095d96244f0e8185212761b6672cb49ec22602093d8ef89ffb5d7",
+                "encoder": {
+                  "name": "sharp",
+                  "version": "0.35.4"
+                }
+              }
+            },
+            {
+              "slot": "metallicRoughness",
+              "file": "metallicRoughness.png",
+              "sha256": "sha256:99f3c7d1140ec2ff0176941b8ac88f930632cc569af308b18dc9ee83a7508d07",
+              "bytes": 22124,
+              "width": 256,
+              "height": 256,
+              "usage": "metallicRoughness",
+              "colorSpace": "linear",
+              "channelPacking": "r-occlusion-g-roughness-b-metallic",
+              "sourceId": "preset",
+              "transforms": [
+                {
+                  "operation": "preset",
+                  "tool": "kiln.material-presets",
+                  "version": "1",
+                  "parameters": {
+                    "presetId": "wood-grain",
+                    "seed": 1202
+                  }
+                }
+              ],
+              "procedural": {
+                "compiler": "kiln.procedural-texture.v2",
+                "spec": {
+                  "schemaVersion": 2,
+                  "size": 256,
+                  "usage": "metallicRoughness",
+                  "layers": [
+                    {
+                      "op": "noise",
+                      "colorA": 16744960,
+                      "colorB": 16760320,
+                      "scale": 8,
+                      "octaves": 3,
+                      "seed": 1202,
+                      "blend": "normal",
+                      "opacity": 1
+                    }
+                  ]
+                },
+                "recipeHash": "sha256:f0ec49219836d1735911405762eae895e71493c1467c200f16c43866b03cd1fe",
+                "pixelHash": "sha256:088a0c6cc69973435ace75f114c998ec34b9434584c75fd833159755fdf897e7",
+                "encoder": {
+                  "name": "sharp",
+                  "version": "0.35.4"
+                }
+              }
+            }
+          ]
+        }
+      }
+    ],
+    "rebuild": "external-dependencies-required"
+  },
+  "preview": {
+    "fidelity": {
+      "version": "kiln.view-fidelity.v1",
+      "requested": "full-preferred",
+      "delivered": "full-material",
+      "materialFaithful": true,
+      "exactArtifact": true,
+      "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1074",
+      "inputGlbSha256": "sha256:d2ba5e05718c7889134d51bb89680a7dc05b5b24100c4f3e9d89b18034991dfb",
+      "degraded": false,
+      "reasonCodes": []
+    },
+    "backdrop": "neutral"
+  }
+}

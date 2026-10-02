@@ -1,0 +1,545 @@
+{
+  "bucket": "kiln-assets",
+  "publicBase": "https://assets.kilnstudio.tools",
+  "objects": {
+    "troy/assets/achilles/r_a108d7a33da5428aa24880ec5393a725/asset.glb": {
+      "bytes": 431504,
+      "sha256": "2693e4c87ecd4ddc374acfabeb604c7dfe40d7f44233f4efc41c58b33550c550",
+      "url": "https://assets.kilnstudio.tools/troy/assets/achilles/r_a108d7a33da5428aa24880ec5393a725/asset.glb",
+      "verified": true,
+      "at": "2026-10-02T16:14:33.011Z"
+    },
+    "troy/assets/achilles/r_a108d7a33da5428aa24880ec5393a725/preview.png": {
+      "bytes": 221267,
+      "sha256": "cab03a294f167b3f696cca3d1425bc89b36945985c0af59d58bed6171cbf931e",
+      "url": "https://assets.kilnstudio.tools/troy/assets/achilles/r_a108d7a33da5428aa24880ec5393a725/preview.png",
+      "verified": true,
+      "at": "2026-10-02T16:14:36.903Z"
+    },
+    "troy/assets/a_0a67bce7656144c2b9e1c54aa7bea6eb/r_b8159cce845f442181910880090d09fe/asset.glb": {
+      "bytes": 182764,
+      "sha256": "90a164bf7cbc9c98f7877bce029ed1ab016ab8043086f724ce70b92a0feff72a",
+      "url": "https://assets.kilnstudio.tools/troy/assets/a_0a67bce7656144c2b9e1c54aa7bea6eb/r_b8159cce845f442181910880090d09fe/asset.glb",
+      "verified": true,
+      "at": "2026-10-02T16:14:40.503Z"
+    },
+    "troy/assets/a_0a67bce7656144c2b9e1c54aa7bea6eb/r_b8159cce845f442181910880090d09fe/preview.png": {
+      "bytes": 293220,
+      "sha256": "18637c3570491b20b362c0ee6dce49c46fc07a008ad6c47cb3ae50c477097c7a",
+      "url": "https://assets.kilnstudio.tools/troy/assets/a_0a67bce7656144c2b9e1c54aa7bea6eb/r_b8159cce845f442181910880090d09fe/preview.png",
+      "verified": true,
+      "at": "2026-10-02T16:14:44.060Z"
+    },
+    "troy/assets/a_3a4fc574c2534f21977eeed0a3560f80/r_85c06c033d7c4f899a6f67c53069537a/asset.glb": {
+      "bytes": 492876,
+      "sha256": "6609d8e4f5be92b88f5a14facad3cb9cb39f43d257bc2bcec51adeaca66f41ee",
+      "url": "https://assets.kilnstudio.tools/troy/assets/a_3a4fc574c2534f21977eeed0a3560f80/r_85c06c033d7c4f899a6f67c53069537a/asset.glb",
+      "verified": true,
+      "at": "2026-10-02T16:14:47.797Z"
+    },
+    "troy/assets/a_3a4fc574c2534f21977eeed0a3560f80/r_85c06c033d7c4f899a6f67c53069537a/preview.png": {
+      "bytes": 249757,
+      "sha256": "fe4c132d99b0ee1f3592232073c59fb81f233a1e6893182901222cebee58be48",
+      "url": "https://assets.kilnstudio.tools/troy/assets/a_3a4fc574c2534f21977eeed0a3560f80/r_85c06c033d7c4f899a6f67c53069537a/preview.png",
+      "verified": true,
+      "at": "2026-10-02T16:14:51.788Z"
+    },
+    "troy/assets/a_3a4fc574c2534f21977eeed0a3560f80/r_af557a9002e64290abe4c8e4cecabb29/asset.glb": {
+      "bytes": 290944,
+      "sha256": "7ffc0629df9dae9c002c7b5c52f24ebbd4349ff1fc26c7cebc641f268354d2a2",
+      "url": "https://assets.kilnstudio.tools/troy/assets/a_3a4fc574c2534f21977eeed0a3560f80/r_af557a9002e64290abe4c8e4cecabb29/asset.glb",
+      "verified": true,
+      "at": "2026-10-02T16:14:56.721Z"
+    },
+    "troy/assets/a_3a4fc574c2534f21977eeed0a3560f80/r_af557a9002e64290abe4c8e4cecabb29/preview.png": {
+      "bytes": 75456,
+      "sha256": "f0ffcc896caa4b1e1eb84da89f2548e064c89bcfb89dce8a98f4acc2c4d131d1",
+      "url": "https://assets.kilnstudio.tools/troy/assets/a_3a4fc574c2534f21977eeed0a3560f80/r_af557a9002e64290abe4c8e4cecabb29/preview.png",
+      "verified": true,
+      "at": "2026-10-02T16:15:00.711Z"
+    },
+    "troy/assets/a_582ae189884340d7ac23a1a23bd7bcc8/r_89ac2dc4345d47d4b10a99d8e4bf34f7/asset.glb": {
+      "bytes": 396772,
+      "sha256": "c438f0275186e34ad724dade9f22426a4ad4dab412a17ea7b1d62d468c151f4f",
+      "url": "https://assets.kilnstudio.tools/troy/assets/a_582ae189884340d7ac23a1a23bd7bcc8/r_89ac2dc4345d47d4b10a99d8e4bf34f7/asset.glb",
+      "verified": true,
+      "at": "2026-10-02T16:15:05.567Z"
+    },
+    "troy/assets/a_582ae189884340d7ac23a1a23bd7bcc8/r_89ac2dc4345d47d4b10a99d8e4bf34f7/preview.png": {
+      "bytes": 289287,
+      "sha256": "f2786988bfebb8fccffe2a0c6b53705fc99a621857172c166c9ec0591361c852",
+      "url": "https://assets.kilnstudio.tools/troy/assets/a_582ae189884340d7ac23a1a23bd7bcc8/r_89ac2dc4345d47d4b10a99d8e4bf34f7/preview.png",
+      "verified": true,
+      "at": "2026-10-02T16:15:09.802Z"
+    },
+    "troy/assets/a_65b2d411e2a14b41b490a575fc14e98a/r_6a593b8e58af4befb3db8f3c256b9cc2/asset.glb": {
+      "bytes": 171244,
+      "sha256": "fccda14fa2b0b2c56d15dc26ea026028726bb69c8194bc1debde9e62f15629d3",
+      "url": "https://assets.kilnstudio.tools/troy/assets/a_65b2d411e2a14b41b490a575fc14e98a/r_6a593b8e58af4befb3db8f3c256b9cc2/asset.glb",
+      "verified": true,
+      "at": "2026-10-02T16:15:13.656Z"
+    },
+    "troy/assets/a_65b2d411e2a14b41b490a575fc14e98a/r_6a593b8e58af4befb3db8f3c256b9cc2/preview.png": {
+      "bytes": 159849,
+      "sha256": "6616e39e392bc8c4f3066b9bae69130785964aef9f5d1dec291a028a00b693a5",
+      "url": "https://assets.kilnstudio.tools/troy/assets/a_65b2d411e2a14b41b490a575fc14e98a/r_6a593b8e58af4befb3db8f3c256b9cc2/preview.png",
+      "verified": true,
+      "at": "2026-10-02T16:15:17.508Z"
+    },
+    "troy/assets/a_65b2d411e2a14b41b490a575fc14e98a/r_de6797d6511b47a2a6da3c49448741a9/asset.glb": {
+      "bytes": 330524,
+      "sha256": "d69aaca4db3b1963a28ea62fd5a54c9a2dbe277a083086f3c31e3270fd300b5b",
+      "url": "https://assets.kilnstudio.tools/troy/assets/a_65b2d411e2a14b41b490a575fc14e98a/r_de6797d6511b47a2a6da3c49448741a9/asset.glb",
+      "verified": true,
+      "at": "2026-10-02T16:15:23.460Z"
+    },
+    "troy/assets/a_65b2d411e2a14b41b490a575fc14e98a/r_de6797d6511b47a2a6da3c49448741a9/preview.png": {
+      "bytes": 408541,
+      "sha256": "1af0c1bbfad7448af0b05623b569032a90ded88b886bbb2945ebd4e738689c6c",
+      "url": "https://assets.kilnstudio.tools/troy/assets/a_65b2d411e2a14b41b490a575fc14e98a/r_de6797d6511b47a2a6da3c49448741a9/preview.png",
+      "verified": true,
+      "at": "2026-10-02T16:15:27.113Z"
+    },
+    "troy/assets/a_6858bae420a940b5b8798e11666070a7/r_b277a52b09ae48b39afd8471557ed41b/asset.glb": {
+      "bytes": 614312,
+      "sha256": "6b06d838c3f8016e5ca1f94abd6da317fc0825f83b3f12f932ae5968b5b60c29",
+      "url": "https://assets.kilnstudio.tools/troy/assets/a_6858bae420a940b5b8798e11666070a7/r_b277a52b09ae48b39afd8471557ed41b/asset.glb",
+      "verified": true,
+      "at": "2026-10-02T16:15:30.972Z"
+    },
+    "troy/assets/a_6858bae420a940b5b8798e11666070a7/r_b277a52b09ae48b39afd8471557ed41b/preview.png": {
+      "bytes": 200882,
+      "sha256": "1e9ce585413e1603ccf720f50dd39e3a61d90c132148fd5aad63403e917d80f8",
+      "url": "https://assets.kilnstudio.tools/troy/assets/a_6858bae420a940b5b8798e11666070a7/r_b277a52b09ae48b39afd8471557ed41b/preview.png",
+      "verified": true,
+      "at": "2026-10-02T16:15:34.870Z"
+    },
+    "troy/assets/a_6858bae420a940b5b8798e11666070a7/r_e3bcea17f1ff455b99b3deb51182f964/asset.glb": {
+      "bytes": 514964,
+      "sha256": "9b7c07b3e2416b5d0edbf8c35b8aa7c33d62f4fd6c227f4836218bfbc56dbc1a",
+      "url": "https://assets.kilnstudio.tools/troy/assets/a_6858bae420a940b5b8798e11666070a7/r_e3bcea17f1ff455b99b3deb51182f964/asset.glb",
+      "verified": true,
+      "at": "2026-10-02T16:15:38.691Z"
+    },
+    "troy/assets/a_6858bae420a940b5b8798e11666070a7/r_e3bcea17f1ff455b99b3deb51182f964/preview.png": {
+      "bytes": 201945,
+      "sha256": "f4eb0ff3246b2201525cc47fd0863aeeab0e362fd836db3c588c988924ed53c0",
+      "url": "https://assets.kilnstudio.tools/troy/assets/a_6858bae420a940b5b8798e11666070a7/r_e3bcea17f1ff455b99b3deb51182f964/preview.png",
+      "verified": true,
+      "at": "2026-10-02T16:15:42.657Z"
+    },
+    "troy/assets/a_784f8007d64b466ca453813913d73933/r_12fa73f24e3240c28c8bcd0d6d828a26/asset.glb": {
+      "bytes": 180068,
+      "sha256": "6c43399311e569b9dba96bf241b680ddd553a127b87644979a991f423683e26c",
+      "url": "https://assets.kilnstudio.tools/troy/assets/a_784f8007d64b466ca453813913d73933/r_12fa73f24e3240c28c8bcd0d6d828a26/asset.glb",
+      "verified": true,
+      "at": "2026-10-02T16:15:46.434Z"
+    },
+    "troy/assets/a_784f8007d64b466ca453813913d73933/r_12fa73f24e3240c28c8bcd0d6d828a26/preview.png": {
+      "bytes": 675078,
+      "sha256": "5c921daf5411bc5dab16c999773785805fa5c764303eeab15ded71a28d890376",
+      "url": "https://assets.kilnstudio.tools/troy/assets/a_784f8007d64b466ca453813913d73933/r_12fa73f24e3240c28c8bcd0d6d828a26/preview.png",
+      "verified": true,
+      "at": "2026-10-02T16:15:50.162Z"
+    },
+    "troy/assets/a_784f8007d64b466ca453813913d73933/r_29dcf94872e74d468d005c55bcbfc3e5/asset.glb": {
+      "bytes": 302776,
+      "sha256": "d2e5c1a6885f509caeb9428980d74b2760bae735af81549ae08fdd825fadffa8",
+      "url": "https://assets.kilnstudio.tools/troy/assets/a_784f8007d64b466ca453813913d73933/r_29dcf94872e74d468d005c55bcbfc3e5/asset.glb",
+      "verified": true,
+      "at": "2026-10-02T16:15:53.990Z"
+    },
+    "troy/assets/a_784f8007d64b466ca453813913d73933/r_29dcf94872e74d468d005c55bcbfc3e5/preview.png": {
+      "bytes": 437397,
+      "sha256": "3aa2a7f017fddcf60ad117431aa572677bc7b05ac992ca0fe0a77058938b6a0c",
+      "url": "https://assets.kilnstudio.tools/troy/assets/a_784f8007d64b466ca453813913d73933/r_29dcf94872e74d468d005c55bcbfc3e5/preview.png",
+      "verified": true,
+      "at": "2026-10-02T16:15:57.545Z"
+    },
+    "troy/assets/a_784f8007d64b466ca453813913d73933/r_98d0a72a5110475a9fef34721a9dad64/asset.glb": {
+      "bytes": 333340,
+      "sha256": "77c48aa6dbff40b212c5eacc4f340838358f71ee52ccc99966cd2bdc7f9b37e7",
+      "url": "https://assets.kilnstudio.tools/troy/assets/a_784f8007d64b466ca453813913d73933/r_98d0a72a5110475a9fef34721a9dad64/asset.glb",
+      "verified": true,
+      "at": "2026-10-02T16:16:01.231Z"
+    },
+    "troy/assets/a_784f8007d64b466ca453813913d73933/r_98d0a72a5110475a9fef34721a9dad64/preview.png": {
+      "bytes": 390411,
+      "sha256": "d35e842007ab7c138c2a17006fa94354b10c594a3af44f8cf47b185c1fd849b7",
+      "url": "https://assets.kilnstudio.tools/troy/assets/a_784f8007d64b466ca453813913d73933/r_98d0a72a5110475a9fef34721a9dad64/preview.png",
+      "verified": true,
+      "at": "2026-10-02T16:16:05.277Z"
+    },
+    "troy/assets/a_784f8007d64b466ca453813913d73933/r_99688a42a9fb46559fd563a2378dd55d/asset.glb": {
+      "bytes": 210492,
+      "sha256": "2dc9f4277c775829d0aba4dd0561db409bf67a715d5a5029d933d843860f882a",
+      "url": "https://assets.kilnstudio.tools/troy/assets/a_784f8007d64b466ca453813913d73933/r_99688a42a9fb46559fd563a2378dd55d/asset.glb",
+      "verified": true,
+      "at": "2026-10-02T16:16:09.032Z"
+    },
+    "troy/assets/a_784f8007d64b466ca453813913d73933/r_99688a42a9fb46559fd563a2378dd55d/preview.png": {
+      "bytes": 564782,
+      "sha256": "5e0ec4e5a704602af138236feb672106dea0934bfe992ee87cab4e3ac155e038",
+      "url": "https://assets.kilnstudio.tools/troy/assets/a_784f8007d64b466ca453813913d73933/r_99688a42a9fb46559fd563a2378dd55d/preview.png",
+      "verified": true,
+      "at": "2026-10-02T16:16:13.052Z"
+    },
+    "troy/assets/a_f71b18076a3d47f084dc86a40e038812/r_6f63da6600ae46bbba5636e575ae1b9e/asset.glb": {
+      "bytes": 137688,
+      "sha256": "b15e157bf0e01fab0c421e232c08ab2572a7c42738d4454f994dfa275e99b4d9",
+      "url": "https://assets.kilnstudio.tools/troy/assets/a_f71b18076a3d47f084dc86a40e038812/r_6f63da6600ae46bbba5636e575ae1b9e/asset.glb",
+      "verified": true,
+      "at": "2026-10-02T16:16:16.770Z"
+    },
+    "troy/assets/a_f71b18076a3d47f084dc86a40e038812/r_6f63da6600ae46bbba5636e575ae1b9e/preview.png": {
+      "bytes": 122502,
+      "sha256": "816be656b10c04f6c90056506d4b02d634ea6edf8e65810b836c787dd83a5aac",
+      "url": "https://assets.kilnstudio.tools/troy/assets/a_f71b18076a3d47f084dc86a40e038812/r_6f63da6600ae46bbba5636e575ae1b9e/preview.png",
+      "verified": true,
+      "at": "2026-10-02T16:16:20.767Z"
+    },
+    "troy/assets/battle-scene/r_150bbef8028442ae90ce5a957250f61b/asset.glb": {
+      "bytes": 14371004,
+      "sha256": "9c9cf526c144aa8480bc78572dccedc344b1c3cab0503c8bcb068e6d7f5aa6af",
+      "url": "https://assets.kilnstudio.tools/troy/assets/battle-scene/r_150bbef8028442ae90ce5a957250f61b/asset.glb",
+      "verified": true,
+      "at": "2026-10-02T16:16:25.214Z"
+    },
+    "troy/assets/battle-scene/r_150bbef8028442ae90ce5a957250f61b/preview.png": {
+      "bytes": 140944,
+      "sha256": "14d44106a48b637f2bacb759443150dd4f1260770a3029ecd9aa16c56d713eae",
+      "url": "https://assets.kilnstudio.tools/troy/assets/battle-scene/r_150bbef8028442ae90ce5a957250f61b/preview.png",
+      "verified": true,
+      "at": "2026-10-02T16:16:30.295Z"
+    },
+    "troy/assets/battle-scene/r_4573e90abb4848c3b3d4996de6834184/asset.glb": {
+      "bytes": 14464712,
+      "sha256": "d2ba5e05718c7889134d51bb89680a7dc05b5b24100c4f3e9d89b18034991dfb",
+      "url": "https://assets.kilnstudio.tools/troy/assets/battle-scene/r_4573e90abb4848c3b3d4996de6834184/asset.glb",
+      "verified": true,
+      "at": "2026-10-02T16:16:35.482Z"
+    },
+    "troy/assets/battle-scene/r_4573e90abb4848c3b3d4996de6834184/preview.png": {
+      "bytes": 141747,
+      "sha256": "996a3771fb008a2693e65b234b543f57c821acda14dc3120c516434603b2eca0",
+      "url": "https://assets.kilnstudio.tools/troy/assets/battle-scene/r_4573e90abb4848c3b3d4996de6834184/preview.png",
+      "verified": true,
+      "at": "2026-10-02T16:16:39.618Z"
+    },
+    "troy/assets/bow-set/r_356b134d3d5e471fba86cb875c829463/asset.glb": {
+      "bytes": 137780,
+      "sha256": "861da8a5dad6265aa823c4b86f73142da14accfa48f486372241fba3e51ac366",
+      "url": "https://assets.kilnstudio.tools/troy/assets/bow-set/r_356b134d3d5e471fba86cb875c829463/asset.glb",
+      "verified": true,
+      "at": "2026-10-02T16:16:43.061Z"
+    },
+    "troy/assets/bow-set/r_356b134d3d5e471fba86cb875c829463/preview.png": {
+      "bytes": 131632,
+      "sha256": "3a38b7020f4f51cc3cee976c58aa6e72fbdec4a7cce1f761c604a7ec14487f50",
+      "url": "https://assets.kilnstudio.tools/troy/assets/bow-set/r_356b134d3d5e471fba86cb875c829463/preview.png",
+      "verified": true,
+      "at": "2026-10-02T16:16:46.424Z"
+    },
+    "troy/assets/city-gate/r_932d7b9aa1714e3b8e2343b42506bc44/asset.glb": {
+      "bytes": 391512,
+      "sha256": "19322963f4704e5a9e4b31e242d7d1991126e0ffde750d57152a622089ac4f91",
+      "url": "https://assets.kilnstudio.tools/troy/assets/city-gate/r_932d7b9aa1714e3b8e2343b42506bc44/asset.glb",
+      "verified": true,
+      "at": "2026-10-02T16:16:49.889Z"
+    },
+    "troy/assets/city-gate/r_932d7b9aa1714e3b8e2343b42506bc44/preview.png": {
+      "bytes": 533609,
+      "sha256": "276d0fd94a4998c6f25b03ee4f0022ecd1c61953e2115c26062ed1c989817264",
+      "url": "https://assets.kilnstudio.tools/troy/assets/city-gate/r_932d7b9aa1714e3b8e2343b42506bc44/preview.png",
+      "verified": true,
+      "at": "2026-10-02T16:16:53.300Z"
+    },
+    "troy/assets/city-gate/r_bb47b8810cd54ddd860e616bbf3e6120/asset.glb": {
+      "bytes": 275040,
+      "sha256": "15f45857684a9165e17638e7325075ddde50c04df97a79862583264a451eb23a",
+      "url": "https://assets.kilnstudio.tools/troy/assets/city-gate/r_bb47b8810cd54ddd860e616bbf3e6120/asset.glb",
+      "verified": true,
+      "at": "2026-10-02T16:16:56.885Z"
+    },
+    "troy/assets/city-gate/r_bb47b8810cd54ddd860e616bbf3e6120/preview.png": {
+      "bytes": 639965,
+      "sha256": "8a6498c8467ec4923ed5dbfedc0fc26e71b2715658c58f4f7df86e11270b4286",
+      "url": "https://assets.kilnstudio.tools/troy/assets/city-gate/r_bb47b8810cd54ddd860e616bbf3e6120/preview.png",
+      "verified": true,
+      "at": "2026-10-02T16:17:00.402Z"
+    },
+    "troy/assets/greek-soldier/r_647e60b4c8c94640aca8a8266a371b0f/asset.glb": {
+      "bytes": 377992,
+      "sha256": "47b09daff2edede7ba58eca207ffe12ea4e75a24773630b12806247f7dde29ac",
+      "url": "https://assets.kilnstudio.tools/troy/assets/greek-soldier/r_647e60b4c8c94640aca8a8266a371b0f/asset.glb",
+      "verified": true,
+      "at": "2026-10-02T16:17:03.862Z"
+    },
+    "troy/assets/greek-soldier/r_647e60b4c8c94640aca8a8266a371b0f/preview.png": {
+      "bytes": 234363,
+      "sha256": "dbfaad24a9a174505ad5c976f2de377fbf6748dd4e27554954d6a3cdda7a0e93",
+      "url": "https://assets.kilnstudio.tools/troy/assets/greek-soldier/r_647e60b4c8c94640aca8a8266a371b0f/preview.png",
+      "verified": true,
+      "at": "2026-10-02T16:17:07.922Z"
+    },
+    "troy/assets/hector/r_44e1d7983d16474085678924a0ab0376/asset.glb": {
+      "bytes": 410580,
+      "sha256": "0a6464f0571b11638c1cec0a8b5e658efb8516e4df64f8065274c1af9e3a1e2c",
+      "url": "https://assets.kilnstudio.tools/troy/assets/hector/r_44e1d7983d16474085678924a0ab0376/asset.glb",
+      "verified": true,
+      "at": "2026-10-02T16:17:11.945Z"
+    },
+    "troy/assets/hector/r_44e1d7983d16474085678924a0ab0376/preview.png": {
+      "bytes": 249384,
+      "sha256": "13f8ea0b78504f16ee5d36528d6036ea79fa3d73c5be258a68c7cfed1c76e5fb",
+      "url": "https://assets.kilnstudio.tools/troy/assets/hector/r_44e1d7983d16474085678924a0ab0376/preview.png",
+      "verified": true,
+      "at": "2026-10-02T16:17:15.502Z"
+    },
+    "troy/assets/horse/r_6f5b30d1a37843e0ba8856f790e6c6ce/asset.glb": {
+      "bytes": 179672,
+      "sha256": "4788dc1d03987c9ccefd94644f0eb2d08bd3bf7edee31108dc1de8fa6b0d32d6",
+      "url": "https://assets.kilnstudio.tools/troy/assets/horse/r_6f5b30d1a37843e0ba8856f790e6c6ce/asset.glb",
+      "verified": true,
+      "at": "2026-10-02T16:17:19.082Z"
+    },
+    "troy/assets/horse/r_6f5b30d1a37843e0ba8856f790e6c6ce/preview.png": {
+      "bytes": 277521,
+      "sha256": "e1c8d420e9bf2e30f34c0d67fbf44fa3928b831af19e4c7596819e4f29e852ba",
+      "url": "https://assets.kilnstudio.tools/troy/assets/horse/r_6f5b30d1a37843e0ba8856f790e6c6ce/preview.png",
+      "verified": true,
+      "at": "2026-10-02T16:17:22.600Z"
+    },
+    "troy/assets/horse/r_f088964ec411466ab2c0d4afe8d20a31/asset.glb": {
+      "bytes": 179784,
+      "sha256": "04e2681d25dfc9784e0816eed680528a8d081d44317ac54ed6f46602977e4c92",
+      "url": "https://assets.kilnstudio.tools/troy/assets/horse/r_f088964ec411466ab2c0d4afe8d20a31/asset.glb",
+      "verified": true,
+      "at": "2026-10-02T16:17:26.355Z"
+    },
+    "troy/assets/horse/r_f088964ec411466ab2c0d4afe8d20a31/preview.png": {
+      "bytes": 269136,
+      "sha256": "63c9efd45ff8f6eec66c051a2a8deaa518a177efcf42e2ea22a978e26eee9b56",
+      "url": "https://assets.kilnstudio.tools/troy/assets/horse/r_f088964ec411466ab2c0d4afe8d20a31/preview.png",
+      "verified": true,
+      "at": "2026-10-02T16:17:29.872Z"
+    },
+    "troy/assets/trojan-soldier/r_036bd9d29d9747fa8d50899e089c695b/asset.glb": {
+      "bytes": 356996,
+      "sha256": "555ea9c4c10190b3e97717794021168c72aa180bf738a2eddd0ff40c7ed347b9",
+      "url": "https://assets.kilnstudio.tools/troy/assets/trojan-soldier/r_036bd9d29d9747fa8d50899e089c695b/asset.glb",
+      "verified": true,
+      "at": "2026-10-02T16:17:33.295Z"
+    },
+    "troy/assets/trojan-soldier/r_036bd9d29d9747fa8d50899e089c695b/preview.png": {
+      "bytes": 237004,
+      "sha256": "5f516ce0929ec9996721abb1da0002c644225e73d25c27eab475f320afe475bb",
+      "url": "https://assets.kilnstudio.tools/troy/assets/trojan-soldier/r_036bd9d29d9747fa8d50899e089c695b/preview.png",
+      "verified": true,
+      "at": "2026-10-02T16:17:36.824Z"
+    },
+    "troy/assets/wooden-horse/r_7ee4d96189a4442bb0efdab61a46300f/asset.glb": {
+      "bytes": 279516,
+      "sha256": "af734651877a9a746d94bc449dee966eb62b912ddee70db51089acb80b779fc9",
+      "url": "https://assets.kilnstudio.tools/troy/assets/wooden-horse/r_7ee4d96189a4442bb0efdab61a46300f/asset.glb",
+      "verified": true,
+      "at": "2026-10-02T16:17:40.284Z"
+    },
+    "troy/assets/wooden-horse/r_7ee4d96189a4442bb0efdab61a46300f/preview.png": {
+      "bytes": 323149,
+      "sha256": "22feb69ae747840ca1438fe76c30653dc9c9418b01bd7599b1e593a188e3a754",
+      "url": "https://assets.kilnstudio.tools/troy/assets/wooden-horse/r_7ee4d96189a4442bb0efdab61a46300f/preview.png",
+      "verified": true,
+      "at": "2026-10-02T16:17:43.863Z"
+    },
+    "troy/materials/troy-bronze/2748d26e15d49933d18ed70d5352b51ecf5bf5c92d60b41ceddffa52750582d6/baseColor.png": {
+      "bytes": 14894,
+      "sha256": "1155caf62d7b4b648b91d2d5b7f44a7ff4442fc9c825fbeabc6eaef29370b506",
+      "url": "https://assets.kilnstudio.tools/troy/materials/troy-bronze/2748d26e15d49933d18ed70d5352b51ecf5bf5c92d60b41ceddffa52750582d6/baseColor.png",
+      "verified": true,
+      "at": "2026-10-02T16:17:47.296Z"
+    },
+    "troy/materials/troy-bronze/2748d26e15d49933d18ed70d5352b51ecf5bf5c92d60b41ceddffa52750582d6/manifest.json": {
+      "bytes": 3506,
+      "sha256": "0c4dbaac49ef38c0081ca757390b0bcd96ec64a268b851186649a27afd4ff3eb",
+      "url": "https://assets.kilnstudio.tools/troy/materials/troy-bronze/2748d26e15d49933d18ed70d5352b51ecf5bf5c92d60b41ceddffa52750582d6/manifest.json",
+      "verified": true,
+      "at": "2026-10-02T16:17:50.568Z"
+    },
+    "troy/materials/troy-bronze/2748d26e15d49933d18ed70d5352b51ecf5bf5c92d60b41ceddffa52750582d6/metallicRoughness.png": {
+      "bytes": 20116,
+      "sha256": "c94eb899b82be79cbb33e7839d069299c321b7ec9e03cd9d87a509fab3da8209",
+      "url": "https://assets.kilnstudio.tools/troy/materials/troy-bronze/2748d26e15d49933d18ed70d5352b51ecf5bf5c92d60b41ceddffa52750582d6/metallicRoughness.png",
+      "verified": true,
+      "at": "2026-10-02T16:17:54.015Z"
+    },
+    "troy/materials/troy-bronze/2748d26e15d49933d18ed70d5352b51ecf5bf5c92d60b41ceddffa52750582d6/normal.png": {
+      "bytes": 16005,
+      "sha256": "8b0ee806baea93d13f60111565b5aae68645455c9a92038317f5fb81fb1f2ddb",
+      "url": "https://assets.kilnstudio.tools/troy/materials/troy-bronze/2748d26e15d49933d18ed70d5352b51ecf5bf5c92d60b41ceddffa52750582d6/normal.png",
+      "verified": true,
+      "at": "2026-10-02T16:17:57.757Z"
+    },
+    "troy/materials/troy-ground/a8fec5a60022707b7cb0a07cb7c98f51758a58871ac12ff83ec4738c5b8ae27e/baseColor.png": {
+      "bytes": 53559,
+      "sha256": "f1aecef72fc1f2ed54605c882aee63ad42531b09f8f341f923d2bd85fc337003",
+      "url": "https://assets.kilnstudio.tools/troy/materials/troy-ground/a8fec5a60022707b7cb0a07cb7c98f51758a58871ac12ff83ec4738c5b8ae27e/baseColor.png",
+      "verified": true,
+      "at": "2026-10-02T16:18:01.479Z"
+    },
+    "troy/materials/troy-ground/a8fec5a60022707b7cb0a07cb7c98f51758a58871ac12ff83ec4738c5b8ae27e/manifest.json": {
+      "bytes": 3514,
+      "sha256": "9a25d13d97b3420cc031e684f921d95056c7b8b44ab79cc66d55a1f269fd648f",
+      "url": "https://assets.kilnstudio.tools/troy/materials/troy-ground/a8fec5a60022707b7cb0a07cb7c98f51758a58871ac12ff83ec4738c5b8ae27e/manifest.json",
+      "verified": true,
+      "at": "2026-10-02T16:18:05.010Z"
+    },
+    "troy/materials/troy-ground/a8fec5a60022707b7cb0a07cb7c98f51758a58871ac12ff83ec4738c5b8ae27e/metallicRoughness.png": {
+      "bytes": 21206,
+      "sha256": "1aa2e221324da217bc209113ade0a82f0749b7230f002c7903a3193968518851",
+      "url": "https://assets.kilnstudio.tools/troy/materials/troy-ground/a8fec5a60022707b7cb0a07cb7c98f51758a58871ac12ff83ec4738c5b8ae27e/metallicRoughness.png",
+      "verified": true,
+      "at": "2026-10-02T16:18:08.846Z"
+    },
+    "troy/materials/troy-ground/a8fec5a60022707b7cb0a07cb7c98f51758a58871ac12ff83ec4738c5b8ae27e/normal.png": {
+      "bytes": 78431,
+      "sha256": "1a73f9a05c553ec0c7bfb629eb374641a98a7834960486d00451a06b4ae5da49",
+      "url": "https://assets.kilnstudio.tools/troy/materials/troy-ground/a8fec5a60022707b7cb0a07cb7c98f51758a58871ac12ff83ec4738c5b8ae27e/normal.png",
+      "verified": true,
+      "at": "2026-10-02T16:18:13.195Z"
+    },
+    "troy/materials/troy-limestone/118cd21f2b4775fea0005aad90da65ade37215ca06d04d6997862c773bb236ed/baseColor.png": {
+      "bytes": 76049,
+      "sha256": "c65c0c46c110a3fc6ca7b71cd5f03e39aeb1350a3d77b9d4bbf9fdaa15822540",
+      "url": "https://assets.kilnstudio.tools/troy/materials/troy-limestone/118cd21f2b4775fea0005aad90da65ade37215ca06d04d6997862c773bb236ed/baseColor.png",
+      "verified": true,
+      "at": "2026-10-02T16:18:17.247Z"
+    },
+    "troy/materials/troy-limestone/118cd21f2b4775fea0005aad90da65ade37215ca06d04d6997862c773bb236ed/manifest.json": {
+      "bytes": 2464,
+      "sha256": "e05da51b0574cd9d3c8fbd203cb1a81e8f1d04e305163572f48843452ef7010e",
+      "url": "https://assets.kilnstudio.tools/troy/materials/troy-limestone/118cd21f2b4775fea0005aad90da65ade37215ca06d04d6997862c773bb236ed/manifest.json",
+      "verified": true,
+      "at": "2026-10-02T16:18:21.066Z"
+    },
+    "troy/materials/troy-limestone/118cd21f2b4775fea0005aad90da65ade37215ca06d04d6997862c773bb236ed/metallicRoughness.png": {
+      "bytes": 13031,
+      "sha256": "44ba371058ec65b88d34df2ca915f601a4daecf92eb0d047921675af264b8097",
+      "url": "https://assets.kilnstudio.tools/troy/materials/troy-limestone/118cd21f2b4775fea0005aad90da65ade37215ca06d04d6997862c773bb236ed/metallicRoughness.png",
+      "verified": true,
+      "at": "2026-10-02T16:18:24.770Z"
+    },
+    "troy/materials/troy-linen/b3b5d252a37410d00716cf771f6e843e6dc142bad6747ad73f748bcd6e856de8/baseColor.png": {
+      "bytes": 24986,
+      "sha256": "3dcf1f2bc42d86c926bda0af4b9a3acf8f7b657b671aefcb56d111b2e5b6935a",
+      "url": "https://assets.kilnstudio.tools/troy/materials/troy-linen/b3b5d252a37410d00716cf771f6e843e6dc142bad6747ad73f748bcd6e856de8/baseColor.png",
+      "verified": true,
+      "at": "2026-10-02T16:18:28.222Z"
+    },
+    "troy/materials/troy-linen/b3b5d252a37410d00716cf771f6e843e6dc142bad6747ad73f748bcd6e856de8/manifest.json": {
+      "bytes": 3721,
+      "sha256": "88e47bed469ffb7263d2476cc5f0e2ac7b99cf9146d51b00af9a890fac50cd57",
+      "url": "https://assets.kilnstudio.tools/troy/materials/troy-linen/b3b5d252a37410d00716cf771f6e843e6dc142bad6747ad73f748bcd6e856de8/manifest.json",
+      "verified": true,
+      "at": "2026-10-02T16:18:31.934Z"
+    },
+    "troy/materials/troy-linen/b3b5d252a37410d00716cf771f6e843e6dc142bad6747ad73f748bcd6e856de8/metallicRoughness.png": {
+      "bytes": 21428,
+      "sha256": "5ad755500635bceaea5f1db7acd2da819455088f995a7aa82a60f307b60ef06a",
+      "url": "https://assets.kilnstudio.tools/troy/materials/troy-linen/b3b5d252a37410d00716cf771f6e843e6dc142bad6747ad73f748bcd6e856de8/metallicRoughness.png",
+      "verified": true,
+      "at": "2026-10-02T16:18:35.496Z"
+    },
+    "troy/materials/troy-linen/b3b5d252a37410d00716cf771f6e843e6dc142bad6747ad73f748bcd6e856de8/normal.png": {
+      "bytes": 20370,
+      "sha256": "5fdbce73444af96fea31ea46119e7da05ae503a7f5eb54438ab7ed9d1e405da3",
+      "url": "https://assets.kilnstudio.tools/troy/materials/troy-linen/b3b5d252a37410d00716cf771f6e843e6dc142bad6747ad73f748bcd6e856de8/normal.png",
+      "verified": true,
+      "at": "2026-10-02T16:18:39.323Z"
+    },
+    "troy/materials/troy-masonry/bdadf5681b7f781dc116ca696211c87592144b6cccab9275743e3033ccddd8aa/baseColor.png": {
+      "bytes": 41211,
+      "sha256": "94efb274b3fca40959e59ae19bea95de5dd4dd1ddfe7cb07751999bf511d0570",
+      "url": "https://assets.kilnstudio.tools/troy/materials/troy-masonry/bdadf5681b7f781dc116ca696211c87592144b6cccab9275743e3033ccddd8aa/baseColor.png",
+      "verified": true,
+      "at": "2026-10-02T16:18:42.953Z"
+    },
+    "troy/materials/troy-masonry/bdadf5681b7f781dc116ca696211c87592144b6cccab9275743e3033ccddd8aa/manifest.json": {
+      "bytes": 3557,
+      "sha256": "19dc36014f0fad4b04b80d75b69a885a95c6407d12502c6ba78f0efe6b91e6b1",
+      "url": "https://assets.kilnstudio.tools/troy/materials/troy-masonry/bdadf5681b7f781dc116ca696211c87592144b6cccab9275743e3033ccddd8aa/manifest.json",
+      "verified": true,
+      "at": "2026-10-02T16:18:46.627Z"
+    },
+    "troy/materials/troy-masonry/bdadf5681b7f781dc116ca696211c87592144b6cccab9275743e3033ccddd8aa/metallicRoughness.png": {
+      "bytes": 21262,
+      "sha256": "41b59948dfdd727bdf28b99b4d68c0e0e9b424a42361ccd88a7177465ccd8082",
+      "url": "https://assets.kilnstudio.tools/troy/materials/troy-masonry/bdadf5681b7f781dc116ca696211c87592144b6cccab9275743e3033ccddd8aa/metallicRoughness.png",
+      "verified": true,
+      "at": "2026-10-02T16:18:50.157Z"
+    },
+    "troy/materials/troy-masonry/bdadf5681b7f781dc116ca696211c87592144b6cccab9275743e3033ccddd8aa/normal.png": {
+      "bytes": 38165,
+      "sha256": "d1bdcf4d8e1586405964b6e9a792e969d1d1ddbe17dca0ec8bfa81f4119d5c38",
+      "url": "https://assets.kilnstudio.tools/troy/materials/troy-masonry/bdadf5681b7f781dc116ca696211c87592144b6cccab9275743e3033ccddd8aa/normal.png",
+      "verified": true,
+      "at": "2026-10-02T16:18:53.608Z"
+    },
+    "troy/materials/troy-mudbrick/421914182486ebb17266b4b953976ac273c19da2d449919cd10baa7d25844363/baseColor.png": {
+      "bytes": 126367,
+      "sha256": "f7f6160d81af89924a64d1d1afc24d3badfb6b3565dd73f8c7d479634b125d26",
+      "url": "https://assets.kilnstudio.tools/troy/materials/troy-mudbrick/421914182486ebb17266b4b953976ac273c19da2d449919cd10baa7d25844363/baseColor.png",
+      "verified": true,
+      "at": "2026-10-02T16:18:57.173Z"
+    },
+    "troy/materials/troy-mudbrick/421914182486ebb17266b4b953976ac273c19da2d449919cd10baa7d25844363/manifest.json": {
+      "bytes": 2523,
+      "sha256": "98fcc01505387a109f23bb6be2ad102508b3b97fc6b1c033a18eb8f1f7f619e9",
+      "url": "https://assets.kilnstudio.tools/troy/materials/troy-mudbrick/421914182486ebb17266b4b953976ac273c19da2d449919cd10baa7d25844363/manifest.json",
+      "verified": true,
+      "at": "2026-10-02T16:19:01.019Z"
+    },
+    "troy/materials/troy-mudbrick/421914182486ebb17266b4b953976ac273c19da2d449919cd10baa7d25844363/metallicRoughness.png": {
+      "bytes": 7586,
+      "sha256": "7510625b70c27ff06286f9e09e087301629cd868e1440155715b9a2a6bbfe3c7",
+      "url": "https://assets.kilnstudio.tools/troy/materials/troy-mudbrick/421914182486ebb17266b4b953976ac273c19da2d449919cd10baa7d25844363/metallicRoughness.png",
+      "verified": true,
+      "at": "2026-10-02T16:19:04.965Z"
+    },
+    "troy/materials/troy-timber/e62c1bd5bf46305aa50732b3a82cdd9c66da1c8b2d0f5e0fdd392656851feb5c/baseColor.png": {
+      "bytes": 29666,
+      "sha256": "1d3f050d5ccf15afc1086c9d2b0a0d5b8b7dc9ee509b1da6ee38964222c0dab3",
+      "url": "https://assets.kilnstudio.tools/troy/materials/troy-timber/e62c1bd5bf46305aa50732b3a82cdd9c66da1c8b2d0f5e0fdd392656851feb5c/baseColor.png",
+      "verified": true,
+      "at": "2026-10-02T16:19:08.924Z"
+    },
+    "troy/materials/troy-timber/e62c1bd5bf46305aa50732b3a82cdd9c66da1c8b2d0f5e0fdd392656851feb5c/manifest.json": {
+      "bytes": 3498,
+      "sha256": "35769dbc4f634505b6fbf6d18056cba934334884337d1716a3a5e33b23390fd1",
+      "url": "https://assets.kilnstudio.tools/troy/materials/troy-timber/e62c1bd5bf46305aa50732b3a82cdd9c66da1c8b2d0f5e0fdd392656851feb5c/manifest.json",
+      "verified": true,
+      "at": "2026-10-02T16:19:13.088Z"
+    },
+    "troy/materials/troy-timber/e62c1bd5bf46305aa50732b3a82cdd9c66da1c8b2d0f5e0fdd392656851feb5c/metallicRoughness.png": {
+      "bytes": 22124,
+      "sha256": "99f3c7d1140ec2ff0176941b8ac88f930632cc569af308b18dc9ee83a7508d07",
+      "url": "https://assets.kilnstudio.tools/troy/materials/troy-timber/e62c1bd5bf46305aa50732b3a82cdd9c66da1c8b2d0f5e0fdd392656851feb5c/metallicRoughness.png",
+      "verified": true,
+      "at": "2026-10-02T16:19:18.085Z"
+    },
+    "troy/materials/troy-timber/e62c1bd5bf46305aa50732b3a82cdd9c66da1c8b2d0f5e0fdd392656851feb5c/normal.png": {
+      "bytes": 17189,
+      "sha256": "94c56a70ff76a97e7a0ceb3800c915620d27cd11b8637baba45c69e1edfa06b5",
+      "url": "https://assets.kilnstudio.tools/troy/materials/troy-timber/e62c1bd5bf46305aa50732b3a82cdd9c66da1c8b2d0f5e0fdd392656851feb5c/normal.png",
+      "verified": true,
+      "at": "2026-10-02T16:19:21.814Z"
+    },
+    "troy/workspace/troy-refine-ws-2026-10-02.zip": {
+      "bytes": 50300343,
+      "sha256": "69b4fb6b35a3a08db2ac0b67b501271cdbceefb64749fe0aef9a2165ac4f75d0",
+      "url": "https://assets.kilnstudio.tools/troy/workspace/troy-refine-ws-2026-10-02.zip",
+      "verified": true,
+      "at": "2026-10-02T16:19:30.028Z"
+    }
+  }
+}

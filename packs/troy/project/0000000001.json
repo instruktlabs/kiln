@@ -1,0 +1,273 @@
+{
+  "version": "kiln.project.v1",
+  "projectId": "troy",
+  "revisionId": "r_0000000001_0165da3163775348db0bc7af23352283b7f71510e29ee771637033f83dc63495",
+  "createdAt": "2026-10-02T11:53:27.567Z",
+  "name": "Troy",
+  "brief": "Troy is a low-poly asset pack for the siege of Troy, Greeks against Trojans. Every asset is placed in one scene, the battle before the city gate, so the pieces must agree on scale, style and materials.\n\nSource: the Iliad and Late Bronze Age Aegean and Anatolian buildings and equipment, about 1200 BC. Sloped stone footings under mudbrick, flat roofs, timber and plaster, bronze weapons, ox-hide shields, crested helmets, linen and bronze-scale armour, black-hulled galleys with one mast. No film design and no actor likeness.\n\nUnits: 1 unit is 1 metre, Y is up, an asset stands on Y = 0 and faces +Z. A soldier is 1.8 m tall. A hand grip is 0.03 m in radius and 0.11 m long: every held item carries a grip that size, and every hand closes to it. Door and gate openings are at least 1.2 m wide and 2.2 m high. The wall walk is 2 m wide.\n\nStyle: clean low-poly forms, readable in silhouette from 20 m, flat or lightly bevelled surfaces, no detail that only reads close up.\n\nDraw calls: build each asset from the pinned pack materials only, tinted from the palette, with at most 4 materials per asset. Parts that move (doors, wheels, hatches, limbs) are separate named nodes; everything static shares as few materials as possible. Targets: props and weapons up to 1,500 triangles and 2 materials; characters and animals up to 6,000 triangles and 3 materials; structures, vehicles and ships up to 12,000 triangles and 4 materials.",
+  "design": {
+    "style": "Clean low-poly Late Bronze Age: simple planes and bevels, strong silhouettes, matte stone, plaster and wood, restrained bronze.",
+    "scale": "1 unit = 1 m. Soldier 1.8 m. Hand grip 0.03 m radius, 0.11 m long. Door openings at least 1.2 m by 2.2 m. Wall walk 2 m wide.",
+    "palette": [
+      {
+        "role": "limestone",
+        "color": "#cdbf9f"
+      },
+      {
+        "role": "mudbrick",
+        "color": "#a9825b"
+      },
+      {
+        "role": "plaster",
+        "color": "#e3d8c0"
+      },
+      {
+        "role": "timber",
+        "color": "#6b4a2e"
+      },
+      {
+        "role": "pitch",
+        "color": "#2b2420"
+      },
+      {
+        "role": "bronze",
+        "color": "#b08d57"
+      },
+      {
+        "role": "linen",
+        "color": "#d9d2bf"
+      },
+      {
+        "role": "leather",
+        "color": "#7a5536"
+      },
+      {
+        "role": "trojan-crimson",
+        "color": "#8c2f2a"
+      },
+      {
+        "role": "greek-blue",
+        "color": "#2f4a6b"
+      },
+      {
+        "role": "skin",
+        "color": "#c59a78"
+      },
+      {
+        "role": "earth",
+        "color": "#7d6a4f"
+      }
+    ],
+    "materialRoles": [
+      {
+        "role": "masonry",
+        "description": "Mudbrick and coursed stone: walls, towers, houses, the temple.",
+        "resourceId": "troy-masonry"
+      },
+      {
+        "role": "timber",
+        "description": "All wood: doors, beams, chariots, ships, the wooden horse, weapon shafts.",
+        "resourceId": "troy-timber"
+      },
+      {
+        "role": "bronze",
+        "description": "The only metal. Tint it bronze (#b08d57) for blades, helmets, fittings and shield faces.",
+        "resourceId": "troy-bronze"
+      },
+      {
+        "role": "cloth",
+        "description": "Linen and wool: tunics, sails, tent cloth, crests. Tint per faction.",
+        "resourceId": "troy-linen"
+      },
+      {
+        "role": "ground",
+        "description": "Packed earth for bases and the scene ground only.",
+        "resourceId": "troy-ground"
+      }
+    ],
+    "conventions": [
+      "Y up, +Z forward, origin on the ground at the centre of the footprint.",
+      "Name moving parts for what they are: door_left, wheel_right, hatch.",
+      "Trojans wear crimson, Greeks wear blue; everything else is shared.",
+      "A held item has its grip centred on its own origin so it can be parented to a hand."
+    ],
+    "exceptions": [
+      "The scene ground may use the ground material at its own scale."
+    ]
+  },
+  "inventory": [
+    {
+      "id": "war-chariot",
+      "name": "War chariot",
+      "kind": "asset",
+      "brief": "A light two-wheeled chariot for two horses: spoked wheels that turn, a pole with a yoke, an open car for a driver and a warrior. No horses and no crew.",
+      "references": []
+    },
+    {
+      "id": "wall-section",
+      "name": "Wall section",
+      "kind": "asset",
+      "brief": "A 6 m long, 8 m high stretch of the city wall with a sloped stone footing, mudbrick above, a 2 m wall walk and a parapet. Copies placed end to end every 6 m meet without a gap or an overlap.",
+      "references": []
+    },
+    {
+      "id": "city-gate",
+      "name": "City gate",
+      "kind": "asset",
+      "brief": "A gate that fits between two wall sections: a 3 m wide passage, two timber doors that swing open, a lintel and a walk above.",
+      "references": []
+    },
+    {
+      "id": "house",
+      "name": "House",
+      "kind": "asset",
+      "brief": "A flat-roofed mudbrick house, about 6 m by 5 m, that a soldier can walk into: a door opening, one room with a floor and a hearth, a ladder to the roof.",
+      "references": []
+    },
+    {
+      "id": "temple-hall",
+      "name": "Temple hall",
+      "kind": "asset",
+      "brief": "A megaron for the citadel: a porch with two columns, a doorway and one long hall with a central hearth and four columns. The interior can be entered.",
+      "references": []
+    },
+    {
+      "id": "horse",
+      "name": "Horse",
+      "kind": "asset",
+      "brief": "A chariot horse at Bronze Age size, about 1.4 m at the shoulder, with a stand pose and a gallop.",
+      "references": []
+    },
+    {
+      "id": "greek-ship",
+      "name": "Greek ship",
+      "kind": "asset",
+      "brief": "A black-hulled galley about 18 m long, drawn up for a beach: one mast with a furled or set sail, a steering oar, oars along both sides.",
+      "references": []
+    },
+    {
+      "id": "wooden-horse",
+      "name": "Wooden horse",
+      "kind": "asset",
+      "brief": "The Trojan Horse: a hollow timber horse about 7 m tall on a wheeled platform, with a hatch in its belly that opens.",
+      "references": []
+    },
+    {
+      "id": "sword",
+      "name": "Sword",
+      "kind": "asset",
+      "brief": "A bronze leaf-shaped sword about 0.7 m long with a pack-size grip.",
+      "references": []
+    },
+    {
+      "id": "round-shield",
+      "name": "Round shield",
+      "kind": "asset",
+      "brief": "A round shield about 0.9 m across: bronze-faced ox-hide with a boss, and an arm band and hand grip on the back.",
+      "references": []
+    },
+    {
+      "id": "bow-set",
+      "name": "Bow, arrows and quiver",
+      "kind": "asset",
+      "brief": "A recurved bow about 1.2 m long with a string, three arrows and a quiver that holds them.",
+      "references": []
+    },
+    {
+      "id": "wall-breached",
+      "name": "Breached wall section",
+      "kind": "asset",
+      "brief": "The wall section with a gap broken through it wide enough for three soldiers abreast, and rubble at its foot. It still tiles with intact sections.",
+      "references": []
+    },
+    {
+      "id": "trojan-soldier",
+      "name": "Trojan soldier",
+      "kind": "asset",
+      "brief": "A 1.8 m Trojan infantryman in crimson with helmet, linen armour and greaves; hands sized for the pack grip. An idle and a spear or sword attack.",
+      "references": []
+    },
+    {
+      "id": "greek-soldier",
+      "name": "Greek soldier",
+      "kind": "asset",
+      "brief": "Made from the Trojan soldier so proportions, rig and grips match: blue, a different helmet and crest.",
+      "references": []
+    },
+    {
+      "id": "hector",
+      "name": "Hector",
+      "kind": "asset",
+      "brief": "Made from the Trojan soldier: Troy’s champion, taller crest, bronze cuirass, a cloak.",
+      "references": []
+    },
+    {
+      "id": "achilles",
+      "name": "Achilles",
+      "kind": "asset",
+      "brief": "Made from the Greek soldier: the Greek champion, bronze armour, a tall crest.",
+      "references": []
+    },
+    {
+      "id": "battle-scene",
+      "name": "Battle before the gate",
+      "kind": "environment",
+      "brief": "The composed scene: gate and wall, houses and the temple behind, both armies on the plain, chariots, ships on the shore and the wooden horse. Repeated pieces are instanced.",
+      "references": []
+    }
+  ],
+  "deliveryProfiles": [
+    {
+      "id": "scene-web",
+      "target": "three",
+      "description": "The composed battle scene in a web viewer.",
+      "performanceIntent": "The whole scene stays under 150 draw calls and 400,000 triangles.",
+      "constraints": [
+        "Plain glTF 2.0 binary, no engine-specific extensions.",
+        "Repeated assets are instanced in the scene, not duplicated in the files."
+      ]
+    }
+  ],
+  "materialDependencies": [
+    {
+      "resourceId": "troy-masonry",
+      "revisionId": "sha256:bdadf5681b7f781dc116ca696211c87592144b6cccab9275743e3033ccddd8aa",
+      "sha256": "sha256:bdadf5681b7f781dc116ca696211c87592144b6cccab9275743e3033ccddd8aa",
+      "role": "masonry"
+    },
+    {
+      "resourceId": "troy-timber",
+      "revisionId": "sha256:e62c1bd5bf46305aa50732b3a82cdd9c66da1c8b2d0f5e0fdd392656851feb5c",
+      "sha256": "sha256:e62c1bd5bf46305aa50732b3a82cdd9c66da1c8b2d0f5e0fdd392656851feb5c",
+      "role": "timber"
+    },
+    {
+      "resourceId": "troy-bronze",
+      "revisionId": "sha256:2748d26e15d49933d18ed70d5352b51ecf5bf5c92d60b41ceddffa52750582d6",
+      "sha256": "sha256:2748d26e15d49933d18ed70d5352b51ecf5bf5c92d60b41ceddffa52750582d6",
+      "role": "bronze"
+    },
+    {
+      "resourceId": "troy-linen",
+      "revisionId": "sha256:b3b5d252a37410d00716cf771f6e843e6dc142bad6747ad73f748bcd6e856de8",
+      "sha256": "sha256:b3b5d252a37410d00716cf771f6e843e6dc142bad6747ad73f748bcd6e856de8",
+      "role": "cloth"
+    },
+    {
+      "resourceId": "troy-ground",
+      "revisionId": "sha256:a8fec5a60022707b7cb0a07cb7c98f51758a58871ac12ff83ec4738c5b8ae27e",
+      "sha256": "sha256:a8fec5a60022707b7cb0a07cb7c98f51758a58871ac12ff83ec4738c5b8ae27e",
+      "role": "ground"
+    }
+  ],
+  "references": [
+    {
+      "id": "import-c212d366d732cf37fb8f54c43aaa4e71fdd90a7d38010cb0c0fc6108ab76ad5e",
+      "title": "Original imported project and review provenance",
+      "uri": "kiln-import:sha256:c212d366d732cf37fb8f54c43aaa4e71fdd90a7d38010cb0c0fc6108ab76ad5e#project.json",
+      "description": "Exact original troy-seed at r_0000000001_f37c14a8b5f659b7e19afb803c34cdde17cce471b85888a20cbd53a340d95ec7, including its review annotations, retained in .kiln/imports/c212d366d732cf37fb8f54c43aaa4e71fdd90a7d38010cb0c0fc6108ab76ad5e.zip. Working-project review acceptance is not transferred. Reference media and original acquisition archives are not embedded; normalized maps and procedural recipes are included.",
+      "sha256": "sha256:c212d366d732cf37fb8f54c43aaa4e71fdd90a7d38010cb0c0fc6108ab76ad5e"
+    }
+  ],
+  "reviews": []
+}
