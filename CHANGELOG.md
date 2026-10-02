@@ -123,6 +123,24 @@ part floats, the compact render result is 9,103 characters, `full` 16,734 and `l
 - **Breaking:** a `kiln_edit` result is `ok`, `applied`, `changed` (status, part and
   animation summaries, the first five changes), `next`, the `diff` (2,000 characters in
   `lean`, with `diffOmitted`), `preservation` (not in `lean`) and the compacted `render`.
+  The compact `preservation.comparison` is the counts, the artifact before and after and
+  up to twelve changes as path, name, status and changed fields; the bounds of each
+  change and the scope sentences stay in `full` (a live compact edit of a 49-part asset
+  measured 20,069 characters with them, 7,191 of it the comparison). When a compact edit
+  would still pass 20,000 characters, its `diff` is shortened first, never below 2,000,
+  with `diffOmitted`.
+- **Breaking:** a `kiln_inspect compare` page in `compact` or `lean` is the same shape:
+  the counts, the artifact before and after, `offset`, `nextOffset` and each change of
+  the page as path, name, status and changed fields. A live compact page of 50 changes
+  measured 38,952 characters with their bounds and the scope sentences; `detail: 'full'`
+  keeps them.
+- **Breaking:** in `compact` and `lean` detail a per-view receipt (`derivativeReceipts`,
+  and `viewFidelity.receipts` of shot and animation results) is its `derivativeLabel`,
+  `cameraFidelity`, `captureCache` and only the fidelity fields that differ from the
+  result's `viewFidelity`; the camera is in `cameraShots` under the same name. A live
+  six-shot compact edit measured 22,417 characters with 4,672 of receipts repeating the
+  summary and the cameras; `full` keeps whole receipts.
+- An invalid-input error no longer ends an issue sentence twice (`...or file.. Check`).
 - **Breaking:** `kiln_inspect listParts` returns names and paths; `placement: true` adds
   the world transform, mirroring and bounds in pages of 50. The floating-parts warning
   names the first six parts with their fix and the next 24 by name, and a render result

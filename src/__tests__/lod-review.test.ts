@@ -167,11 +167,14 @@ describe('a shot draws the level its subject names', () => {
   });
 
   test('the CPU and the GPU draw the same derivative bytes for every shot', async () => {
-    const cpu = await tool('kiln_render')({ code: TIERED_CAR, capture: SHOTS });
+    // Whole receipts (renderer and input bytes per view) are full detail; compact and lean
+    // keep only what differs from the viewFidelity summary.
+    const cpu = await tool('kiln_render')({ code: TIERED_CAR, capture: SHOTS, detail: 'full' });
     const requests: PbrRenderRequest[] = [];
     const gpu = await tool('kiln_render', { viewRenderPort: fakeGpu(requests) })({
       code: TIERED_CAR,
       capture: SHOTS,
+      detail: 'full',
     });
 
     expect(gpu.derivativeReceipts!.map((receipt) => receipt.rendererId)).toEqual([

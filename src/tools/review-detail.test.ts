@@ -6,7 +6,9 @@ import {
   COMPACT_FINDINGS_PER_DIMENSION,
   COMPACT_PART_PREVIEW,
   COMPACT_WARNINGS,
+  compactEditResult,
   compactReviewResult,
+  DEFAULT_RESULT_LIMIT,
   MAX_RESULT_LIMIT,
   resultCharacters,
   WARNING_CHARS,
@@ -336,36 +338,259 @@ describe('compact review results', () => {
     expect(full.qaReport.rules).toBeDefined();
   });
 
-  it('keeps every view fidelity receipt exactly', () => {
-    const receipt = (label: string) => ({
+  it('keeps the view fidelity summary exactly and each receipt as what differs from it', () => {
+    // f13 (Claude Code chariot, 1 October 2026): a six-shot compact edit of 22,417 characters
+    // carried 4,672 of per-view receipts, each repeating the summary's fidelity fields and the
+    // camera that cameraShots states under the same name.
+    const camera = { position: [1, 2, 3], target: [0, 0, 0], up: [0, 1, 0], fovDeg: 40 };
+    const receipt = (label: string, extra: Record<string, unknown> = {}) => ({
       version: 'kiln.view-fidelity.v1',
+      derivativeLabel: label,
+      camera,
+      cameraFidelity: 'engine-resolved',
+      captureCache: { hit: false, reused: 0, total: 1 },
       requested: 'auto',
       delivered: 'geometry-flat',
       materialFaithful: false,
       exactArtifact: false,
       rendererId: 'cpu-raster',
-      inputGlbSha256: `sha256:${label}`,
+      inputGlbSha256: 'sha256:same',
       degraded: false,
-      derivativeLabel: label,
-      camera: { position: [1, 2, 3], target: [0, 0, 0], up: [0, 1, 0], fovDeg: 40 },
-      cameraFidelity: 'engine-resolved',
+      ...extra,
     });
     const result = {
       ok: true,
       warnings: [],
+      viewFidelity: {
+        version: 'kiln.view-fidelity.v1',
+        requested: 'auto',
+        delivered: 'geometry-flat',
+        materialFaithful: false,
+        exactArtifact: false,
+        rendererId: 'cpu-raster',
+        inputGlbSha256: 'sha256:same',
+        degraded: false,
+        reasonCodes: ['IN_LOOP_BUILD_NOT_PERSISTED'],
+      },
+      cameraShots: [
+        { name: 'a', camera, visibility: 'context' },
+        { name: 'b', camera, visibility: 'context' },
+      ],
+      derivativeReceipts: [
+        receipt('a'),
+        receipt('b', { degraded: true, degradeReason: 'deadline', delivered: 'geometry-flat' }),
+      ],
+    };
+    const compact = compactReviewResult(result) as unknown as typeof result;
+    // The summary is the model-visible ViewFidelityV1 contract; compaction never edits it.
+    expect(compact.viewFidelity).toEqual(result.viewFidelity);
+    expect(compact.cameraShots).toEqual(result.cameraShots);
+    expect(compact.derivativeReceipts).toEqual([
+      {
+        derivativeLabel: 'a',
+        cameraFidelity: 'engine-resolved',
+        captureCache: { hit: false, reused: 0, total: 1 },
+      },
+      {
+        derivativeLabel: 'b',
+        cameraFidelity: 'engine-resolved',
+        captureCache: { hit: false, reused: 0, total: 1 },
+        degraded: true,
+        degradeReason: 'deadline',
+      },
+    ] as unknown as typeof result.derivativeReceipts);
+    const lean = compactReviewResult(result, 'lean') as unknown as typeof result;
+    expect(lean.derivativeReceipts).toEqual(compact.derivativeReceipts);
+    const full = compactReviewResult(result, 'full') as unknown as typeof result;
+    expect(full.derivativeReceipts).toEqual(result.derivativeReceipts);
+
+    // Shot and animation results carry the receipts inside the summary (f13's lean animation
+    // result of 8,475 characters held 3,678 of them); the same rule applies there.
+    const nested = {
+      ok: true,
       viewFidelity: {
         version: 'kiln.derivative-review-fidelity.v1',
         requested: 'auto',
         delivered: 'geometry-flat',
         materialFaithful: false,
         exactArtifact: false,
-        degraded: false,
-        receipts: [receipt('a'), receipt('b')],
+        degraded: true,
+        receipts: [receipt('a'), receipt('b', { degraded: true, degradeReason: 'deadline' })],
       },
-      derivativeReceipts: [receipt('c')],
     };
-    // Receipts are the model-visible ViewFidelityV1 contract; compaction never edits them.
-    expect(compactReviewResult(result)).toEqual(result);
+    for (const detail of ['compact', 'lean'] as const) {
+      const { viewFidelity } = compactReviewResult(nested, detail) as unknown as typeof nested;
+      expect(viewFidelity.receipts).toEqual([
+        {
+          derivativeLabel: 'a',
+          cameraFidelity: 'engine-resolved',
+          captureCache: { hit: false, reused: 0, total: 1 },
+          rendererId: 'cpu-raster',
+          inputGlbSha256: 'sha256:same',
+          degraded: false,
+        },
+        {
+          derivativeLabel: 'b',
+          cameraFidelity: 'engine-resolved',
+          captureCache: { hit: false, reused: 0, total: 1 },
+          rendererId: 'cpu-raster',
+          inputGlbSha256: 'sha256:same',
+          degradeReason: 'deadline',
+        },
+      ] as unknown as typeof nested.viewFidelity.receipts);
+      expect(viewFidelity.degraded).toBe(true);
+    }
+    expect(compactReviewResult(nested, 'full')).toEqual(nested);
+  });
+});
+
+describe('compact edit results', () => {
+  // The f07 live session of 1 October 2026: 22 parts renamed on a 49-part chariot put the
+  // compact edit at 20,069 characters, 7,191 of them the comparison with bounds per change.
+  const bounds = () => ({
+    min: [0.73, 0.4, -0.36],
+    max: [0.76, 0.52, -0.24],
+    size: [0.03, 0.11, 0.12],
+  });
+  const comparison = () => ({
+    version: 'kiln.revision-comparison.v1',
+    scope: 'Exact exported static mesh data and rest transforms; named hierarchy paths. '.repeat(6),
+    animation: {
+      scope: 'Exact exported channel target.'.repeat(8),
+      summary: { added: 0, removed: 0, changed: 0, unchanged: 2 },
+      changes: [],
+      offset: 0,
+      nextOffset: null,
+    },
+    units: 'asset units',
+    before: { glbSha256: 'sha256:before', bounds: bounds(), scenePath: '/Chariot[0]' },
+    after: { glbSha256: 'sha256:after', bounds: bounds(), scenePath: '/Chariot[0]' },
+    summary: { added: 22, removed: 22, changed: 1, unchanged: 27 },
+    changes: Array.from({ length: 12 }, (_, i) => ({
+      path: `/Chariot[0]/wheel[0]/Mesh_Band${i}[0]`,
+      beforePath: `/Chariot[0]/wheel[0]/Mesh_Band${i}[0]`,
+      afterPath: i === 0 ? `/Chariot[0]/wheel[0]/Mesh_Band${i}[0]` : null,
+      name: `Mesh_Band${i}`,
+      status: i === 0 ? 'changed' : 'removed',
+      fields: i === 0 ? ['position'] : [],
+      beforeBounds: bounds(),
+      afterBounds: i === 0 ? bounds() : null,
+    })),
+    offset: 0,
+    nextOffset: 12,
+  });
+  const edited = () => ({
+    programRef: 'p_after',
+    parentRef: 'p_before',
+    ok: true,
+    applied: [{ occurrences: 1 }],
+    diff: '-a\n+b\n'.repeat(400),
+    preservation: { status: 'compared', comparison: comparison() },
+    render: { ok: true, qaReport: report(), warnings: [] as string[] },
+  });
+
+  it('compact keeps the comparison counts and the changed paths without the per-part bounds', () => {
+    const compact = compactEditResult(edited()) as unknown as {
+      changed: { status: string; parts: unknown; changed: string[] };
+      preservation: { status: string; comparison: Record<string, unknown> };
+    };
+    expect(compact.changed.status).toBe('compared');
+    expect(compact.changed.parts).toEqual({ added: 22, removed: 22, changed: 1, unchanged: 27 });
+    expect(compact.changed.changed).toHaveLength(5);
+    const kept = compact.preservation.comparison;
+    expect(kept.summary).toEqual({ added: 22, removed: 22, changed: 1, unchanged: 27 });
+    expect(kept.before).toEqual(comparison().before);
+    expect(kept.after).toEqual(comparison().after);
+    expect(kept.nextOffset).toBe(12);
+    expect(kept.scope).toBeUndefined();
+    expect((kept.animation as Record<string, unknown>).scope).toBeUndefined();
+    expect((kept.animation as Record<string, unknown>).summary).toEqual(
+      comparison().animation.summary,
+    );
+    // Each change is its path, its status and the fields that changed: the bounds and the
+    // scope prose belong to detail: 'full' and to kiln_inspect compare.
+    expect(kept.changes).toEqual([
+      {
+        path: '/Chariot[0]/wheel[0]/Mesh_Band0[0]',
+        name: 'Mesh_Band0',
+        status: 'changed',
+        fields: ['position'],
+      },
+      ...Array.from({ length: 11 }, (_, i) => ({
+        path: `/Chariot[0]/wheel[0]/Mesh_Band${i + 1}[0]`,
+        name: `Mesh_Band${i + 1}`,
+        status: 'removed',
+      })),
+    ]);
+    expect(JSON.stringify(compact.preservation).length).toBeLessThan(1_800);
+    expect(typeof kept.detail).toBe('string');
+    // The input is never mutated, and full keeps the comparison whole.
+    const source = edited();
+    expect((compactEditResult(source, 'full') as { preservation: unknown }).preservation).toBe(
+      source.preservation,
+    );
+    expect(compactEditResult(edited(), 'lean')).not.toHaveProperty('preservation');
+  });
+
+  it('compacts a comparison asked of kiln_inspect the same way, in compact and in lean', () => {
+    // f10 (Agy refine, 1 October 2026): a compact `kiln_inspect compare` of 38,952 characters,
+    // 32,443 of them a 50-entry page of changes with bounds. The page stays a page; the bounds go.
+    const page = {
+      ...comparison(),
+      programRef: 'p_before',
+      changes: Array.from({ length: 50 }, (_, i) => ({
+        ...comparison().changes[0]!,
+        path: `/Chariot[0]/Mesh_Part${i}[0]`,
+        name: `Mesh_Part${i}`,
+        status: i % 2 ? 'added' : 'removed',
+        fields: [],
+      })),
+      nextOffset: 50,
+    };
+    const inspected = { ok: true, programRef: 'p_after', qaReport: report(), comparison: page };
+    const compact = compactReviewResult(inspected) as unknown as {
+      comparison: Record<string, unknown> & { changes: Record<string, unknown>[] };
+    };
+    expect(compact.comparison.programRef).toBe('p_before');
+    expect(compact.comparison.scope).toBeUndefined();
+    expect(compact.comparison.summary).toEqual(page.summary);
+    expect(compact.comparison.before).toEqual(page.before);
+    expect(compact.comparison.nextOffset).toBe(50);
+    expect(compact.comparison.changes).toHaveLength(50);
+    expect(compact.comparison.changes[1]).toEqual({
+      path: '/Chariot[0]/Mesh_Part1[0]',
+      name: 'Mesh_Part1',
+      status: 'added',
+    });
+    expect(JSON.stringify(compact.comparison).length).toBeLessThan(5_500);
+    const lean = compactReviewResult(inspected, 'lean') as unknown as { comparison: unknown };
+    expect(lean.comparison).toEqual(compact.comparison);
+    const full = compactReviewResult(inspected, 'full') as unknown as { comparison: unknown };
+    expect(full.comparison).toBe(inspected.comparison);
+  });
+
+  it('compact shrinks the diff last so the edit stays inside the default limit', () => {
+    const source = edited();
+    source.render.warnings = Array.from({ length: COMPACT_WARNINGS }, (_, i) =>
+      `${i}:`.padEnd(WARNING_CHARS, 'w'),
+    );
+    source.diff = '-old line\n+new line\n'.repeat(400); // 8,000 characters, the kiln_edit cap
+    const compact = compactEditResult(source) as unknown as {
+      diff: string;
+      diffOmitted?: number;
+      render: { warnings: string[] };
+    };
+    expect(resultCharacters(compact as unknown as Record<string, unknown>)).toBeLessThanOrEqual(
+      DEFAULT_RESULT_LIMIT,
+    );
+    expect(compact.render.warnings).toHaveLength(COMPACT_WARNINGS);
+    expect(compact.diff.length).toBeLessThan(source.diff.length);
+    expect(compact.diff.length).toBeGreaterThanOrEqual(2_000);
+    expect(compact.diffOmitted).toBe(source.diff.length - compact.diff.length);
+    // A short diff is kept whole when the result fits.
+    const small = compactEditResult(edited()) as { diff: string; diffOmitted?: number };
+    expect(small.diff).toBe(edited().diff);
+    expect(small.diffOmitted).toBeUndefined();
   });
 });
 

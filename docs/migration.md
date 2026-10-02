@@ -28,8 +28,13 @@ integration notices first.
   report. `kiln_edit` returns what applied and changed with the compacted render;
   `kiln_inspect listParts` returns paths unless `placement: true`; `kiln_review list`
   pages. A `kiln_render` or `kiln_edit` result is never larger than 40,000 characters
-  and at most 20,000 by default. CLI `render --json` and `animation --json` carry the
-  compact result unless `--detail full`.
+  and at most 20,000 by default. A compact or lean comparison (`preservation.comparison`
+  of `kiln_edit`, `comparison` of `kiln_inspect compare`) names each change by path,
+  name, status and changed fields without its bounds or the scope prose, and a compact
+  or lean per-view receipt (`derivativeReceipts`, `viewFidelity.receipts`) carries its
+  label, `cameraFidelity`, `captureCache` and only what differs from `viewFidelity`; both
+  are whole in `full`. CLI `render --json` and `animation --json` carry the compact
+  result unless `--detail full`.
 - **Errors.** `ok: false` is an MCP error (`isError: true`) naming the cause and the next
   call, with no local path. Invalid input is a sentence, not a zod issue list.
 

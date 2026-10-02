@@ -268,6 +268,47 @@ function withCurrentEvidence(result: Json): Json {
   };
 }
 
+/**
+ * A per-view receipt in compact and lean detail: its label, camera fidelity and
+ * capture cache, and whatever differs from the result's fidelity summary. The
+ * resolved camera is stated once, by `cameraShots` under the same name. Six
+ * receipts were 4,672 of a 22,417-character compact edit on 1 October 2026,
+ * each repeating the summary and the camera; `full` keeps them whole.
+ */
+function compactReceipt(receipt: unknown, summary: Json): unknown {
+  if (!isRecord(receipt)) return receipt;
+  const out: Json = {};
+  for (const [key, value] of Object.entries(receipt)) {
+    if (key === 'version' || key === 'camera') continue;
+    if (
+      key === 'derivativeLabel' ||
+      key === 'cameraFidelity' ||
+      key === 'captureCache' ||
+      JSON.stringify(summary[key]) !== JSON.stringify(value)
+    )
+      out[key] = value;
+  }
+  return out;
+}
+
+/** The receipts beside the summary and the ones inside it, compacted against the summary. */
+function withCompactReceipts(result: Json): Json {
+  const fidelity = isRecord(result.viewFidelity) ? result.viewFidelity : undefined;
+  const { receipts, ...summary } = fidelity ?? {};
+  let out = result;
+  if (fidelity && Array.isArray(receipts))
+    out = {
+      ...out,
+      viewFidelity: { ...fidelity, receipts: receipts.map((r) => compactReceipt(r, summary)) },
+    };
+  if (Array.isArray(result.derivativeReceipts))
+    out = {
+      ...out,
+      derivativeReceipts: result.derivativeReceipts.map((r) => compactReceipt(r, summary)),
+    };
+  return out;
+}
+
 function withPartPreview(result: Json, limit = COMPACT_PART_PREVIEW): Json {
   if (!Array.isArray(result.parts) || result.parts.length <= limit) return result;
   return {
@@ -348,7 +389,8 @@ function leanFidelity(fidelity: unknown): unknown {
 }
 
 /** Verdict, blockers, metrics, fidelity and the next step: nothing a later call cannot fetch. */
-function leanReviewResult(result: Json): Json {
+function leanReviewResult(source: Json): Json {
+  const result = withCompactReceipts(source);
   const led = lead(result);
   const out: Json = {};
   for (const key of [
@@ -362,6 +404,7 @@ function leanReviewResult(result: Json): Json {
   ])
     if (led[key] !== undefined) out[key] = led[key];
   for (const key of LEAN_KEYS) if (result[key] !== undefined) out[key] = result[key];
+  if (isRecord(out.comparison)) out.comparison = withCompactComparison(out).comparison;
   if (result.viewFidelity !== undefined) out.viewFidelity = leanFidelity(result.viewFidelity);
   const { warnings, warningsOmitted } = boundWarnings(result, LEAN_WARNINGS);
   if (warnings !== undefined) out.warnings = warnings;
@@ -418,7 +461,10 @@ export function compactReviewResult<T>(
   if (!isRecord(result)) return result;
   if (detail === 'lean') return leanReviewResult(result) as T;
   if (detail === 'full') return fullReviewResult(result, options.retainedReport?.()) as T;
-  const out = boundWarnings(withPartPreview(withCurrentEvidence(lead(result))), COMPACT_WARNINGS);
+  const out = boundWarnings(
+    withCompactReceipts(withCompactComparison(withPartPreview(withCurrentEvidence(lead(result))))),
+    COMPACT_WARNINGS,
+  );
   if (out.qaReport !== undefined) out.qaReport = compactQaReport(out.qaReport);
   return out as T;
 }
@@ -444,12 +490,72 @@ function changeSummary(result: Json): Json {
   return out;
 }
 
-const LEAN_DIFF = 2000;
+/** The diff a lean edit keeps, and the least a compact edit shrinks its diff to. */
+export const LEAN_DIFF = 2000;
+/** Changes a compact edit names; kiln_inspect compare pages the rest. */
+export const COMPACT_COMPARISON_CHANGES = 12;
+
+/**
+ * A static comparison as the counts, the artifact before and after, and each
+ * change as its path, status and changed fields. The bounds of every change and
+ * the scope prose belong to `full`: they were 7,191 of the 20,069 characters of
+ * a live compact edit and 32,443 of a 38,952-character compact kiln_inspect
+ * compare on 1 October 2026. An edit keeps its first `limit` changes; a compare
+ * keeps the page that was asked for.
+ */
+function compactComparison(comparison: Json, hint: string, limit?: number): Json {
+  const out: Json = {};
+  for (const key of ['programRef', 'version', 'units', 'summary', 'before', 'after', 'subtrees'])
+    if (comparison[key] !== undefined) out[key] = comparison[key];
+  if (isRecord(comparison.animation)) {
+    const { scope: _scope, ...animation } = comparison.animation;
+    out.animation = animation;
+  }
+  if (comparison.animationSummary !== undefined) out.animationSummary = comparison.animationSummary;
+  if (Array.isArray(comparison.changes)) {
+    const changes = limit === undefined ? comparison.changes : comparison.changes.slice(0, limit);
+    out.changes = changes.map((change) => {
+      if (!isRecord(change)) return change;
+      const kept: Json = { path: change.path };
+      if (typeof change.name === 'string') kept.name = change.name;
+      kept.status = change.status;
+      if (Array.isArray(change.fields) && change.fields.length > 0) kept.fields = change.fields;
+      return kept;
+    });
+  }
+  for (const key of ['offset', 'nextOffset'])
+    if (comparison[key] !== undefined) out[key] = comparison[key];
+  out.detail = hint;
+  return out;
+}
+
+const COMPARE_HINT =
+  "Bounds per change and the comparison scope: detail: 'full'. compare.offset pages the changes.";
+
+/** The compact comparison of a kiln_inspect compare page, in place. */
+function withCompactComparison(result: Json): Json {
+  if (!isRecord(result.comparison)) return result;
+  return { ...result, comparison: compactComparison(result.comparison, COMPARE_HINT) };
+}
+
+function compactPreservation(preservation: unknown): unknown {
+  if (!isRecord(preservation) || !isRecord(preservation.comparison)) return preservation;
+  return {
+    ...preservation,
+    comparison: compactComparison(
+      preservation.comparison,
+      "Bounds per change and the comparison scope: detail: 'full'. More changes: kiln_inspect compare on this programRef.",
+      COMPACT_COMPARISON_CHANGES,
+    ),
+  };
+}
 
 /**
  * kiln_edit nests the render of the patched program. The edit result leads
  * with what applied, what changed and the next step; the render takes the
- * requested detail, and a lean edit keeps the diff but not the comparison.
+ * requested detail, a lean edit keeps the diff but not the comparison, and a
+ * compact edit shrinks its diff (the model's own change) before anything else
+ * when the whole would pass the default limit.
  */
 export function compactEditResult<T>(
   result: T,
@@ -477,7 +583,20 @@ export function compactEditResult<T>(
       out.diffOmitted = diff.length - LEAN_DIFF;
     } else out.diff = diff;
   }
-  if (detail !== 'lean' && preservation !== undefined) out.preservation = preservation;
+  if (preservation !== undefined) {
+    if (detail === 'full') out.preservation = preservation;
+    else if (detail === 'compact') out.preservation = compactPreservation(preservation);
+  }
   if (reviewed) out.render = reviewed;
-  return { ...out, ...rest } as T;
+  const edited: Json = { ...out, ...rest };
+  if (detail === 'compact' && typeof edited.diff === 'string' && edited.diff.length > LEAN_DIFF) {
+    // Every raw character cut removes at least one JSON character; 40 covers the omitted count.
+    const over = resultCharacters(edited) - DEFAULT_RESULT_LIMIT + 40;
+    if (over > 0) {
+      const keep = Math.max(LEAN_DIFF, edited.diff.length - over);
+      edited.diffOmitted = edited.diff.length - keep;
+      edited.diff = edited.diff.slice(0, keep);
+    }
+  }
+  return edited as T;
 }

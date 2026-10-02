@@ -35992,6 +35992,34 @@ function withCurrentEvidence(result) {
     viewEvidence: { current, ...lastFaithful !== undefined ? { lastFaithful } : {} }
   };
 }
+function compactReceipt(receipt, summary) {
+  if (!isRecord5(receipt))
+    return receipt;
+  const out = {};
+  for (const [key, value] of Object.entries(receipt)) {
+    if (key === "version" || key === "camera")
+      continue;
+    if (key === "derivativeLabel" || key === "cameraFidelity" || key === "captureCache" || JSON.stringify(summary[key]) !== JSON.stringify(value))
+      out[key] = value;
+  }
+  return out;
+}
+function withCompactReceipts(result) {
+  const fidelity = isRecord5(result.viewFidelity) ? result.viewFidelity : undefined;
+  const { receipts, ...summary } = fidelity ?? {};
+  let out = result;
+  if (fidelity && Array.isArray(receipts))
+    out = {
+      ...out,
+      viewFidelity: { ...fidelity, receipts: receipts.map((r) => compactReceipt(r, summary)) }
+    };
+  if (Array.isArray(result.derivativeReceipts))
+    out = {
+      ...out,
+      derivativeReceipts: result.derivativeReceipts.map((r) => compactReceipt(r, summary))
+    };
+  return out;
+}
 function withPartPreview(result, limit = COMPACT_PART_PREVIEW) {
   if (!Array.isArray(result.parts) || result.parts.length <= limit)
     return result;
@@ -36064,7 +36092,8 @@ function leanFidelity(fidelity) {
       keep[key] = fidelity[key];
   return keep;
 }
-function leanReviewResult(result) {
+function leanReviewResult(source) {
+  const result = withCompactReceipts(source);
   const led = lead(result);
   const out = {};
   for (const key of [
@@ -36081,6 +36110,8 @@ function leanReviewResult(result) {
   for (const key of LEAN_KEYS)
     if (result[key] !== undefined)
       out[key] = result[key];
+  if (isRecord5(out.comparison))
+    out.comparison = withCompactComparison(out).comparison;
   if (result.viewFidelity !== undefined)
     out.viewFidelity = leanFidelity(result.viewFidelity);
   const { warnings, warningsOmitted } = boundWarnings(result, LEAN_WARNINGS);
@@ -36134,7 +36165,7 @@ function compactReviewResult(result, detail = "compact", options = {}) {
     return leanReviewResult(result);
   if (detail === "full")
     return fullReviewResult(result, options.retainedReport?.());
-  const out = boundWarnings(withPartPreview(withCurrentEvidence(lead(result))), COMPACT_WARNINGS);
+  const out = boundWarnings(withCompactReceipts(withCompactComparison(withPartPreview(withCurrentEvidence(lead(result))))), COMPACT_WARNINGS);
   if (out.qaReport !== undefined)
     out.qaReport = compactQaReport(out.qaReport);
   return out;
@@ -36155,6 +36186,52 @@ function changeSummary(result) {
   return out;
 }
 var LEAN_DIFF = 2000;
+var COMPACT_COMPARISON_CHANGES = 12;
+function compactComparison(comparison, hint, limit) {
+  const out = {};
+  for (const key of ["programRef", "version", "units", "summary", "before", "after", "subtrees"])
+    if (comparison[key] !== undefined)
+      out[key] = comparison[key];
+  if (isRecord5(comparison.animation)) {
+    const { scope: _scope, ...animation } = comparison.animation;
+    out.animation = animation;
+  }
+  if (comparison.animationSummary !== undefined)
+    out.animationSummary = comparison.animationSummary;
+  if (Array.isArray(comparison.changes)) {
+    const changes = limit === undefined ? comparison.changes : comparison.changes.slice(0, limit);
+    out.changes = changes.map((change) => {
+      if (!isRecord5(change))
+        return change;
+      const kept = { path: change.path };
+      if (typeof change.name === "string")
+        kept.name = change.name;
+      kept.status = change.status;
+      if (Array.isArray(change.fields) && change.fields.length > 0)
+        kept.fields = change.fields;
+      return kept;
+    });
+  }
+  for (const key of ["offset", "nextOffset"])
+    if (comparison[key] !== undefined)
+      out[key] = comparison[key];
+  out.detail = hint;
+  return out;
+}
+var COMPARE_HINT = "Bounds per change and the comparison scope: detail: 'full'. compare.offset pages the changes.";
+function withCompactComparison(result) {
+  if (!isRecord5(result.comparison))
+    return result;
+  return { ...result, comparison: compactComparison(result.comparison, COMPARE_HINT) };
+}
+function compactPreservation(preservation) {
+  if (!isRecord5(preservation) || !isRecord5(preservation.comparison))
+    return preservation;
+  return {
+    ...preservation,
+    comparison: compactComparison(preservation.comparison, "Bounds per change and the comparison scope: detail: 'full'. More changes: kiln_inspect compare on this programRef.", COMPACT_COMPARISON_CHANGES)
+  };
+}
 function compactEditResult(result, detail = "compact", options = {}) {
   if (!isRecord5(result))
     return result;
@@ -36174,11 +36251,24 @@ function compactEditResult(result, detail = "compact", options = {}) {
     } else
       out.diff = diff;
   }
-  if (detail !== "lean" && preservation !== undefined)
-    out.preservation = preservation;
+  if (preservation !== undefined) {
+    if (detail === "full")
+      out.preservation = preservation;
+    else if (detail === "compact")
+      out.preservation = compactPreservation(preservation);
+  }
   if (reviewed)
     out.render = reviewed;
-  return { ...out, ...rest };
+  const edited = { ...out, ...rest };
+  if (detail === "compact" && typeof edited.diff === "string" && edited.diff.length > LEAN_DIFF) {
+    const over = resultCharacters(edited) - DEFAULT_RESULT_LIMIT + 40;
+    if (over > 0) {
+      const keep = Math.max(LEAN_DIFF, edited.diff.length - over);
+      edited.diffOmitted = edited.diff.length - keep;
+      edited.diff = edited.diff.slice(0, keep);
+    }
+  }
+  return edited;
 }
 
 // src/tools/review.ts

@@ -78,9 +78,11 @@ describe('derivative review surfaces', () => {
     };
     const execute = spyOn(renderModule, 'executeKilnCode');
     try {
+      // Whole receipts are full detail; compact keeps what differs from the summary.
       const result = (await createKilnScreenshotAnimationDef({ viewRenderPort: port }).run({
         code: ANIMATED,
         clip: 'move',
+        detail: 'full',
       })) as KilnScreenshotAnimationResult;
       expect(result.ok).toBe(true);
       expect(execute).toHaveBeenCalledTimes(1);

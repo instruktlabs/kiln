@@ -41,6 +41,15 @@ const HEAVY =
   '  }\n' +
   '  return root;\n' +
   '}\n';
+/** 60 uniquely named boxes: every part renamed by one edit, for the comparison's shape. */
+const GRID =
+  "const meta = { name: 'Grid', category: 'prop' };\n" +
+  'function build() {\n' +
+  "  const r = createRoot('Grid');\n" +
+  '  for (let i = 0; i < 60; i++)\n' +
+  "    createPart('Block' + i, boxGeo(0.4, 0.4, 0.4), gameMaterial(0x888888), { parent: r, position: [(i % 10) * 0.5, 0.2, Math.floor(i / 10) * 0.5] });\n" +
+  '  return r;\n' +
+  '}\n';
 const ANIMATED =
   "const meta = { name: 'Spin', category: 'prop' };\n" +
   'function build() {\n' +
@@ -117,6 +126,80 @@ describe('contract rule 7: bounded results on one line', () => {
     });
     expect(edited.result.isError, edited.text.slice(0, 400)).not.toBe(true);
     bounded('kiln_edit default', edited.text);
+
+    // Renaming every part (the f07 shape: 22 of 49 parts renamed put a compact edit at
+    // 20,069 characters) keeps the comparison to paths, statuses and changed fields. The
+    // comparison needs unique sibling names, so this is the uniquely named grid.
+    const grid = await call('kiln_render', { code: GRID });
+    expect(grid.result.isError, grid.text.slice(0, 400)).not.toBe(true);
+    const renamed = await call('kiln_edit', {
+      programRef: grid.json!['programRef'] as string,
+      edits: [{ oldString: "'Block' + i", newString: "'Cube' + i" }],
+    });
+    expect(renamed.result.isError, renamed.text.slice(0, 400)).not.toBe(true);
+    bounded('kiln_edit default, every part renamed', renamed.text);
+    const comparison = (renamed.json!['preservation'] as { comparison: Record<string, unknown> })
+      .comparison;
+    const changes = comparison['changes'] as Record<string, unknown>[];
+    expect(changes.length).toBeGreaterThan(0);
+    expect(changes.length).toBeLessThanOrEqual(12);
+    for (const change of changes) {
+      expect(Object.keys(change).sort()).toEqual(
+        Array.isArray(change['fields'])
+          ? ['fields', 'name', 'path', 'status']
+          : ['name', 'path', 'status'],
+      );
+    }
+    expect(comparison['scope']).toBeUndefined();
+    expect(comparison['summary']).toBeDefined();
+
+    // Six named shots (the f13 shape: a six-shot compact edit of 22,417 characters carried
+    // 4,672 of per-view receipts repeating the summary and the cameras of cameraShots).
+    const shots = await call('kiln_edit', {
+      programRef: renamed.json!['programRef'] as string,
+      edits: [{ oldString: "'Cube' + i", newString: "'Brick' + i" }],
+      capture: {
+        version: 'kiln.capture.v1',
+        size: 384,
+        cols: 3,
+        shots: [55, 140, 0, 90, 270, 0].map((azimuthDeg, i) => ({
+          name: `shot ${i}`,
+          camera: { type: 'orbit', azimuthDeg, elevationDeg: i === 5 ? 89 : 10 + i },
+        })),
+      },
+    });
+    expect(shots.result.isError, shots.text.slice(0, 400)).not.toBe(true);
+    bounded('kiln_edit default, six shots', shots.text);
+    const shotRender = shots.json!['render'] as Record<string, unknown>;
+    expect((shotRender['cameraShots'] as unknown[]).length).toBe(6);
+    const receipts = shotRender['derivativeReceipts'] as Record<string, unknown>[];
+    expect(receipts.length).toBe(6);
+    for (const receipt of receipts) {
+      expect(receipt['camera']).toBeUndefined();
+      expect(receipt['derivativeLabel']).toMatch(/^shot \d$/u);
+      expect(receipt['cameraFidelity']).toBeDefined();
+    }
+    expect(shotRender['viewFidelity']).toBeDefined();
+
+    // The same comparison asked of kiln_inspect (f10 measured 38,952 characters for a 50-entry
+    // page with bounds) is a compact page too.
+    const compared = await call('kiln_inspect', {
+      programRef: renamed.json!['programRef'] as string,
+      compare: { programRef: grid.json!['programRef'] as string },
+      image: false,
+    });
+    expect(compared.result.isError, compared.text.slice(0, 400)).not.toBe(true);
+    bounded('kiln_inspect compare default', compared.text);
+    const inspected = compared.json!['comparison'] as Record<string, unknown>;
+    expect(inspected['scope']).toBeUndefined();
+    expect((inspected['changes'] as unknown[]).length).toBeGreaterThan(12);
+    for (const change of inspected['changes'] as Record<string, unknown>[]) {
+      expect(Object.keys(change).sort()).toEqual(
+        Array.isArray(change['fields'])
+          ? ['fields', 'name', 'path', 'status']
+          : ['name', 'path', 'status'],
+      );
+    }
 
     const project = await call('kiln_project', {
       action: 'create',

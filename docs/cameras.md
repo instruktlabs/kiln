@@ -121,7 +121,7 @@ fit. Unsupported or ambiguous structures fail explicitly. See
 
 ## What the receipts establish
 
-`cameraShots` describes the resolved world cameras, subject bounds, and visibility. Derivative receipts also carry the camera and `cameraFidelity`: `engine-resolved` for the CPU projection, or `echo-validated` when a GPU service acknowledges the exact requested parameters and dimensions. An echo is a transport check, not independent proof that an arbitrary remote service rendered honest pixels.
+`cameraShots` describes the resolved world cameras, subject bounds, and visibility. Derivative receipts carry `cameraFidelity`: `engine-resolved` for the CPU projection, or `echo-validated` when a GPU service acknowledges the exact requested parameters and dimensions. An echo is a transport check, not independent proof that an arbitrary remote service rendered honest pixels. In `full` detail each receipt also repeats its camera and every fidelity field; a compact or lean receipt is its label, `cameraFidelity`, the capture cache and only the fields that differ from the result's `viewFidelity` summary.
 
 Read `viewFidelity` separately before judging textures or materials. A CPU fallback preserves the requested camera while reporting geometry-flat material evidence. A backend that cannot honor the camera cannot silently substitute another projection. `--render gpu` treats GPU failure as failure instead of returning CPU success.
 

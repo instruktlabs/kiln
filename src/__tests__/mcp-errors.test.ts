@@ -51,6 +51,8 @@ function teaches(label: string, message: Awaited<ReturnType<StdioServer['request
   expect(body, `${label} names a next call`).toMatch(NEXT_CALL);
   expect(body, `${label} carries a local path`).not.toMatch(LOCAL_PATH);
   expect(body.startsWith('['), `${label} is a raw issue dump`).toBe(false);
+  // An issue text that ends with a period must not meet the template's own period (f09).
+  expect(body, `${label} ends a sentence twice`).not.toMatch(/\.\.(?:\s|$)/u);
   return body;
 }
 
@@ -101,6 +103,11 @@ describe('contract rule 9: errors that teach', () => {
       arguments: { action: 'get' },
     });
     expect(teaches('missing field', missing)).toContain('projectId');
+    const noProgram = await server.request('tools/call', {
+      name: 'kiln_inspect',
+      arguments: { image: false, listParts: { limit: 30 } },
+    });
+    expect(teaches('no program', noProgram)).toContain('programRef');
     await server.close();
   });
 

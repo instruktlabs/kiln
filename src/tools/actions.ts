@@ -46,7 +46,10 @@ export const nestedRecordDescription = (purpose: string, shape: string): string 
 export function describeInputError(tool: string, error: unknown): string | undefined {
   const issues = (error as { issues?: unknown } | null)?.issues;
   if (!Array.isArray(issues) || !issues.length) return undefined;
-  const lines = flattenIssues(issues).slice(0, 6);
+  // An issue's own full stop would meet the template's: "...or file.. Check" (f09).
+  const lines = flattenIssues(issues)
+    .slice(0, 6)
+    .map((line) => line.replace(/\.+$/u, ''));
   return `${tool}: invalid input. ${lines.join('; ')}${
     issues.length > 6 ? `; ${issues.length - 6} more` : ''
   }. Check the field names and values against the ${tool} schema; nested shapes: kiln_discover({ ids: ['shape:...'] }).`;

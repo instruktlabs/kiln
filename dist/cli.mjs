@@ -39454,6 +39454,34 @@ function withCurrentEvidence(result) {
     viewEvidence: { current, ...lastFaithful !== undefined ? { lastFaithful } : {} }
   };
 }
+function compactReceipt(receipt, summary) {
+  if (!isRecord7(receipt))
+    return receipt;
+  const out = {};
+  for (const [key, value] of Object.entries(receipt)) {
+    if (key === "version" || key === "camera")
+      continue;
+    if (key === "derivativeLabel" || key === "cameraFidelity" || key === "captureCache" || JSON.stringify(summary[key]) !== JSON.stringify(value))
+      out[key] = value;
+  }
+  return out;
+}
+function withCompactReceipts(result) {
+  const fidelity = isRecord7(result.viewFidelity) ? result.viewFidelity : undefined;
+  const { receipts, ...summary } = fidelity ?? {};
+  let out = result;
+  if (fidelity && Array.isArray(receipts))
+    out = {
+      ...out,
+      viewFidelity: { ...fidelity, receipts: receipts.map((r) => compactReceipt(r, summary)) }
+    };
+  if (Array.isArray(result.derivativeReceipts))
+    out = {
+      ...out,
+      derivativeReceipts: result.derivativeReceipts.map((r) => compactReceipt(r, summary))
+    };
+  return out;
+}
 function withPartPreview(result, limit = COMPACT_PART_PREVIEW) {
   if (!Array.isArray(result.parts) || result.parts.length <= limit)
     return result;
@@ -39498,7 +39526,8 @@ function leanFidelity(fidelity) {
       keep[key] = fidelity[key];
   return keep;
 }
-function leanReviewResult(result) {
+function leanReviewResult(source) {
+  const result = withCompactReceipts(source);
   const led = lead(result);
   const out = {};
   for (const key of [
@@ -39515,6 +39544,8 @@ function leanReviewResult(result) {
   for (const key of LEAN_KEYS)
     if (result[key] !== undefined)
       out[key] = result[key];
+  if (isRecord7(out.comparison))
+    out.comparison = withCompactComparison(out).comparison;
   if (result.viewFidelity !== undefined)
     out.viewFidelity = leanFidelity(result.viewFidelity);
   const { warnings, warningsOmitted } = boundWarnings(result, LEAN_WARNINGS);
@@ -39568,7 +39599,7 @@ function compactReviewResult(result, detail = "compact", options = {}) {
     return leanReviewResult(result);
   if (detail === "full")
     return fullReviewResult(result, options.retainedReport?.());
-  const out = boundWarnings(withPartPreview(withCurrentEvidence(lead(result))), COMPACT_WARNINGS);
+  const out = boundWarnings(withCompactReceipts(withCompactComparison(withPartPreview(withCurrentEvidence(lead(result))))), COMPACT_WARNINGS);
   if (out.qaReport !== undefined)
     out.qaReport = compactQaReport(out.qaReport);
   return out;
@@ -39587,6 +39618,50 @@ function changeSummary(result) {
   } else if (preservation?.reason !== undefined)
     out.reason = preservation.reason;
   return out;
+}
+function compactComparison(comparison, hint, limit) {
+  const out = {};
+  for (const key of ["programRef", "version", "units", "summary", "before", "after", "subtrees"])
+    if (comparison[key] !== undefined)
+      out[key] = comparison[key];
+  if (isRecord7(comparison.animation)) {
+    const { scope: _scope, ...animation } = comparison.animation;
+    out.animation = animation;
+  }
+  if (comparison.animationSummary !== undefined)
+    out.animationSummary = comparison.animationSummary;
+  if (Array.isArray(comparison.changes)) {
+    const changes = limit === undefined ? comparison.changes : comparison.changes.slice(0, limit);
+    out.changes = changes.map((change) => {
+      if (!isRecord7(change))
+        return change;
+      const kept = { path: change.path };
+      if (typeof change.name === "string")
+        kept.name = change.name;
+      kept.status = change.status;
+      if (Array.isArray(change.fields) && change.fields.length > 0)
+        kept.fields = change.fields;
+      return kept;
+    });
+  }
+  for (const key of ["offset", "nextOffset"])
+    if (comparison[key] !== undefined)
+      out[key] = comparison[key];
+  out.detail = hint;
+  return out;
+}
+function withCompactComparison(result) {
+  if (!isRecord7(result.comparison))
+    return result;
+  return { ...result, comparison: compactComparison(result.comparison, COMPARE_HINT) };
+}
+function compactPreservation(preservation) {
+  if (!isRecord7(preservation) || !isRecord7(preservation.comparison))
+    return preservation;
+  return {
+    ...preservation,
+    comparison: compactComparison(preservation.comparison, "Bounds per change and the comparison scope: detail: 'full'. More changes: kiln_inspect compare on this programRef.", COMPACT_COMPARISON_CHANGES)
+  };
 }
 function compactEditResult(result, detail = "compact", options = {}) {
   if (!isRecord7(result))
@@ -39607,13 +39682,26 @@ function compactEditResult(result, detail = "compact", options = {}) {
     } else
       out.diff = diff;
   }
-  if (detail !== "lean" && preservation !== undefined)
-    out.preservation = preservation;
+  if (preservation !== undefined) {
+    if (detail === "full")
+      out.preservation = preservation;
+    else if (detail === "compact")
+      out.preservation = compactPreservation(preservation);
+  }
   if (reviewed)
     out.render = reviewed;
-  return { ...out, ...rest };
+  const edited = { ...out, ...rest };
+  if (detail === "compact" && typeof edited.diff === "string" && edited.diff.length > LEAN_DIFF) {
+    const over = resultCharacters(edited) - DEFAULT_RESULT_LIMIT + 40;
+    if (over > 0) {
+      const keep = Math.max(LEAN_DIFF, edited.diff.length - over);
+      edited.diffOmitted = edited.diff.length - keep;
+      edited.diff = edited.diff.slice(0, keep);
+    }
+  }
+  return edited;
 }
-var COMPACT_PART_PREVIEW = 24, COMPACT_FINDINGS_PER_DIMENSION = 12, LEAD_BLOCKERS = 8, LEAN_WARNINGS = 3, COMPACT_WARNINGS = 12, WARNING_CHARS = 1000, DEFAULT_RESULT_LIMIT = 20000, MAX_RESULT_LIMIT = 40000, reviewDetailInput, partsHint = (offset) => `For remaining paths use kiln_inspect with image:false and listParts:{offset:${offset}}. listParts.query filters names/paths; follow partListing.nextOffset on the same programRef and query.`, isRecord7 = (value) => typeof value === "object" && value !== null && !Array.isArray(value), SEVERITY, severity = (finding) => isRecord7(finding) && typeof finding.disposition === "string" && SEVERITY[finding.disposition] || (isRecord7(finding) && finding.disposition === "block" ? 0 : 3), LEAN_KEYS, LEAN_DIFF = 2000;
+var COMPACT_PART_PREVIEW = 24, COMPACT_FINDINGS_PER_DIMENSION = 12, LEAD_BLOCKERS = 8, LEAN_WARNINGS = 3, COMPACT_WARNINGS = 12, WARNING_CHARS = 1000, DEFAULT_RESULT_LIMIT = 20000, MAX_RESULT_LIMIT = 40000, reviewDetailInput, partsHint = (offset) => `For remaining paths use kiln_inspect with image:false and listParts:{offset:${offset}}. listParts.query filters names/paths; follow partListing.nextOffset on the same programRef and query.`, isRecord7 = (value) => typeof value === "object" && value !== null && !Array.isArray(value), SEVERITY, severity = (finding) => isRecord7(finding) && typeof finding.disposition === "string" && SEVERITY[finding.disposition] || (isRecord7(finding) && finding.disposition === "block" ? 0 : 3), LEAN_KEYS, LEAN_DIFF = 2000, COMPACT_COMPARISON_CHANGES = 12, COMPARE_HINT = "Bounds per change and the comparison scope: detail: 'full'. compare.offset pages the changes.";
 var init_review_detail = __esm(() => {
   reviewDetailInput = z18.enum(["lean", "compact", "full"]).optional().describe("compact (default) groups findings by code; lean: verdict, blockers, metrics only; full: every finding, rule and part plus the retained report path");
   SEVERITY = { block: 0, warn: 1, observe: 2 };
