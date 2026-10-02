@@ -2,10 +2,10 @@
   "schemaVersion": 1,
   "entries": {
     "worker": {
-      "identity": "sha256:fdf269f53a7c012595be3dc58bf8683487f155d05b2d4fccb8f8ade33122d8c8",
+      "identity": "sha256:61dd296db8c37eb2c80142e782c3fd764715e4200be5936dce3603fe7d1fd691",
       "engineVersion": "0.10.0",
       "toolchain": "bun@1.4.2",
-      "sourceHash": "ae0f3033c91c1291a1d939411d006cf2fb1896816549ed48f07387827c50b460",
+      "sourceHash": "fbb15dfad54f8e6be78b497b268b19402fdbc636a0aac2abb89beba16345cd58",
       "rendererSourceHash": "27a01f842fffb183ce0da5044a100c172109bf791b0701da1cf56b6bc74db442",
       "dependencyHash": "da9e9142ff49f835d5438b770d065358aba655fb38e9dd453220d31b65ec17e9",
       "dependencies": {
@@ -34,13 +34,13 @@
       },
       "target": "node",
       "file": "evaluator-worker.mjs",
-      "bundleHash": "sha256:f786c2b8086fd3c1118231ec1fb367d200edb7009e1cbf7b2d904efae7a3920f"
+      "bundleHash": "sha256:2b59a716045f271f1b4d1588d10e6021bf7b61d2f487de738f47cf20fe64472f"
     },
     "agent-run": {
-      "identity": "sha256:fdf269f53a7c012595be3dc58bf8683487f155d05b2d4fccb8f8ade33122d8c8",
+      "identity": "sha256:61dd296db8c37eb2c80142e782c3fd764715e4200be5936dce3603fe7d1fd691",
       "engineVersion": "0.10.0",
       "toolchain": "bun@1.4.2",
-      "sourceHash": "ae0f3033c91c1291a1d939411d006cf2fb1896816549ed48f07387827c50b460",
+      "sourceHash": "fbb15dfad54f8e6be78b497b268b19402fdbc636a0aac2abb89beba16345cd58",
       "rendererSourceHash": "27a01f842fffb183ce0da5044a100c172109bf791b0701da1cf56b6bc74db442",
       "dependencyHash": "da9e9142ff49f835d5438b770d065358aba655fb38e9dd453220d31b65ec17e9",
       "dependencies": {
@@ -69,13 +69,13 @@
       },
       "target": "node",
       "file": "agent-run.mjs",
-      "bundleHash": "sha256:0c3949cb6de4a6a8fd0404ab91ea1e059ce7f37d8f65908a02d81d456b292b3c"
+      "bundleHash": "sha256:7b458dd2b0156445ac01721bd977532f12ba6c7ef7f12298fa717f9aa1474709"
     },
     "agent-providers": {
-      "identity": "sha256:fdf269f53a7c012595be3dc58bf8683487f155d05b2d4fccb8f8ade33122d8c8",
+      "identity": "sha256:61dd296db8c37eb2c80142e782c3fd764715e4200be5936dce3603fe7d1fd691",
       "engineVersion": "0.10.0",
       "toolchain": "bun@1.4.2",
-      "sourceHash": "ae0f3033c91c1291a1d939411d006cf2fb1896816549ed48f07387827c50b460",
+      "sourceHash": "fbb15dfad54f8e6be78b497b268b19402fdbc636a0aac2abb89beba16345cd58",
       "rendererSourceHash": "27a01f842fffb183ce0da5044a100c172109bf791b0701da1cf56b6bc74db442",
       "dependencyHash": "da9e9142ff49f835d5438b770d065358aba655fb38e9dd453220d31b65ec17e9",
       "dependencies": {
@@ -107,10 +107,10 @@
       "bundleHash": "sha256:9d6faf03d307321bc2e3bd5ce5bdee0bbbf61e0ebed8bfebfa1fb072287b83fa"
     },
     "mcp": {
-      "identity": "sha256:fdf269f53a7c012595be3dc58bf8683487f155d05b2d4fccb8f8ade33122d8c8",
+      "identity": "sha256:61dd296db8c37eb2c80142e782c3fd764715e4200be5936dce3603fe7d1fd691",
       "engineVersion": "0.10.0",
       "toolchain": "bun@1.4.2",
-      "sourceHash": "ae0f3033c91c1291a1d939411d006cf2fb1896816549ed48f07387827c50b460",
+      "sourceHash": "fbb15dfad54f8e6be78b497b268b19402fdbc636a0aac2abb89beba16345cd58",
       "rendererSourceHash": "27a01f842fffb183ce0da5044a100c172109bf791b0701da1cf56b6bc74db442",
       "dependencyHash": "da9e9142ff49f835d5438b770d065358aba655fb38e9dd453220d31b65ec17e9",
       "dependencies": {
@@ -142,10 +142,10 @@
       "bundleHash": "sha256:aff8b03e5146a9e7bc32f0fcb7dea5e46d1e47634046b1df09b86f4cdc73b772"
     },
     "cli": {
-      "identity": "sha256:fdf269f53a7c012595be3dc58bf8683487f155d05b2d4fccb8f8ade33122d8c8",
+      "identity": "sha256:61dd296db8c37eb2c80142e782c3fd764715e4200be5936dce3603fe7d1fd691",
       "engineVersion": "0.10.0",
       "toolchain": "bun@1.4.2",
-      "sourceHash": "ae0f3033c91c1291a1d939411d006cf2fb1896816549ed48f07387827c50b460",
+      "sourceHash": "fbb15dfad54f8e6be78b497b268b19402fdbc636a0aac2abb89beba16345cd58",
       "rendererSourceHash": "27a01f842fffb183ce0da5044a100c172109bf791b0701da1cf56b6bc74db442",
       "dependencyHash": "da9e9142ff49f835d5438b770d065358aba655fb38e9dd453220d31b65ec17e9",
       "dependencies": {
@@ -174,13 +174,13 @@
       },
       "target": "node",
       "file": "cli.mjs",
-      "bundleHash": "sha256:fe51598f7eb10c64665c1ec4dbe5cddc18ac3a32d92cc1a498f94a6645fee147"
+      "bundleHash": "sha256:8f7369895732aaf38879b8ea3f5003625f0b0fe114ec1f7e010c83c5fab15908"
     },
     "engine": {
-      "identity": "sha256:fdf269f53a7c012595be3dc58bf8683487f155d05b2d4fccb8f8ade33122d8c8",
+      "identity": "sha256:61dd296db8c37eb2c80142e782c3fd764715e4200be5936dce3603fe7d1fd691",
       "engineVersion": "0.10.0",
       "toolchain": "bun@1.4.2",
-      "sourceHash": "ae0f3033c91c1291a1d939411d006cf2fb1896816549ed48f07387827c50b460",
+      "sourceHash": "fbb15dfad54f8e6be78b497b268b19402fdbc636a0aac2abb89beba16345cd58",
       "rendererSourceHash": "27a01f842fffb183ce0da5044a100c172109bf791b0701da1cf56b6bc74db442",
       "dependencyHash": "da9e9142ff49f835d5438b770d065358aba655fb38e9dd453220d31b65ec17e9",
       "dependencies": {
@@ -209,7 +209,7 @@
       },
       "target": "node",
       "file": "mcp-engine.mjs",
-      "bundleHash": "sha256:e7e14a009a845bcad45693218f1559459c7a45f187d8baa958fbe6e6338586e5"
+      "bundleHash": "sha256:76df0fd371e5b1da8f3f94f087791a043738e3169364cc2653f6df25359d00fc"
     }
   }
 }

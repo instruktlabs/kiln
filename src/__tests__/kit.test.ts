@@ -8,16 +8,23 @@
  */
 import { describe, expect, test } from 'bun:test';
 
-import { WebIO } from '@gltf-transform/core';
+import { Document, WebIO } from '@gltf-transform/core';
 import {
   KHRMaterialsEmissiveStrength,
   KHRMaterialsVariants,
   KHRTextureBasisu,
+  KHRTextureTransform,
 } from '@gltf-transform/extensions';
 
-import { findKtxEncoder, resetKtxEncoderProbe, type KitVariantSpec } from '../kit';
+import {
+  applyKitContract,
+  findKtxEncoder,
+  resetKtxEncoderProbe,
+  type KitVariantSpec,
+} from '../kit';
 import { hexToLinearRgb } from '../palette-snap';
 import { packKitGlb, renderGLB } from '../render';
+import { encodePng } from '../views/png';
 
 const io = (): WebIO => new WebIO().registerExtensions([KHRMaterialsVariants, KHRTextureBasisu]);
 
@@ -126,6 +133,27 @@ async function glbOf(code: string): Promise<Uint8Array> {
   return (await renderGLB(code, {})).glb;
 }
 
+/** One material whose occlusion and metallic-roughness maps are distinct PNGs of the
+ *  same size, each read through the UV set given — so all a case varies is how the
+ *  two maps are sampled. */
+function occlusionBesideMetallicRoughness(occlusionUv: number, metallicRoughnessUv: number) {
+  const doc = new Document();
+  const png = (value: number): Uint8Array =>
+    Uint8Array.from(encodePng(new Uint8Array(4 * 4 * 3).fill(value), 4, 4));
+  const occlusion = doc.createTexture('Occlusion').setMimeType('image/png').setImage(png(200));
+  const metallicRoughness = doc
+    .createTexture('MetallicRoughness')
+    .setMimeType('image/png')
+    .setImage(png(90));
+  const material = doc
+    .createMaterial('Panel')
+    .setOcclusionTexture(occlusion)
+    .setMetallicRoughnessTexture(metallicRoughness);
+  material.getOcclusionTextureInfo()!.setTexCoord(occlusionUv);
+  material.getMetallicRoughnessTextureInfo()!.setTexCoord(metallicRoughnessUv);
+  return { doc, material, occlusion, metallicRoughness };
+}
+
 describe('ORM channel packing', () => {
   test('the occlusion image is folded in AND removed from the file', async () => {
     const original = await glbOf(ORM);
@@ -162,6 +190,75 @@ describe('ORM channel packing', () => {
     const packed = await packKitGlb(await glbOf(TEXTURED), { ktx2: false });
 
     expect(packed).toBeUndefined();
+  });
+
+  test('an occlusion map on another UV set keeps its own image and UV set', async () => {
+    // A baked AO map usually lives on TEXCOORD_1 while metallic-roughness uses
+    // TEXCOORD_0. Their pixels describe different layouts, so folding the AO into
+    // the metallic-roughness image would sample it through the wrong UV set.
+    const { doc, material, occlusion, metallicRoughness } = occlusionBesideMetallicRoughness(1, 0);
+    const occlusionBytes = occlusion.getImage();
+    const metallicRoughnessBytes = metallicRoughness.getImage();
+
+    const summary = await applyKitContract(doc, { ktx2: false });
+
+    expect(material.getOcclusionTexture()).toBe(occlusion);
+    expect(material.getOcclusionTextureInfo()?.getTexCoord()).toBe(1);
+    expect(occlusion.getImage()).toEqual(occlusionBytes);
+    expect(metallicRoughness.getImage()).toEqual(metallicRoughnessBytes);
+    expect(doc.getRoot().listTextures()).toHaveLength(2);
+    expect(summary.ormPacked).toBe(0);
+    expect(summary.ormSkipped).toHaveLength(1);
+    expect(summary.ormSkipped?.[0]).toMatch(/"Panel".*TEXCOORD_1.*TEXCOORD_0/);
+  });
+
+  test('an occlusion map under a different texture transform keeps its own image', async () => {
+    // Same UV set, but KHR_texture_transform tiles metallic-roughness four times, so
+    // the two images still map different pixels to the same point on the surface.
+    const { doc, material, occlusion } = occlusionBesideMetallicRoughness(0, 0);
+    const transforms = doc.createExtension(KHRTextureTransform);
+    material
+      .getMetallicRoughnessTextureInfo()!
+      .setExtension('KHR_texture_transform', transforms.createTransform().setScale([4, 4]));
+
+    const summary = await applyKitContract(doc, { ktx2: false });
+
+    expect(material.getOcclusionTexture()).toBe(occlusion);
+    expect(summary.ormPacked).toBe(0);
+    expect(summary.ormSkipped).toHaveLength(1);
+    expect(summary.ormSkipped?.[0]).toMatch(/"Panel".*KHR_texture_transform/);
+  });
+
+  test('an occlusion map on the same UV set as metallic-roughness still packs', async () => {
+    // Both on UV set 1: packing names one image for both slots and leaves the
+    // occlusion reading the UV set it was authored for.
+    const { doc, material, metallicRoughness } = occlusionBesideMetallicRoughness(1, 1);
+
+    const summary = await applyKitContract(doc, { ktx2: false });
+
+    expect(summary.ormPacked).toBe(1);
+    expect(summary.ormSkipped).toBeUndefined();
+    expect(material.getOcclusionTexture()).toBe(metallicRoughness);
+    expect(material.getOcclusionTextureInfo()?.getTexCoord()).toBe(1);
+    expect(doc.getRoot().listTextures()).toHaveLength(1);
+  });
+
+  test('equal texture transforms held in separate objects still pack', async () => {
+    // The pass compares the transforms' values, not their identity.
+    const { doc, material, metallicRoughness } = occlusionBesideMetallicRoughness(0, 0);
+    const transforms = doc.createExtension(KHRTextureTransform);
+    for (const info of [
+      material.getOcclusionTextureInfo()!,
+      material.getMetallicRoughnessTextureInfo()!,
+    ]) {
+      info.setExtension('KHR_texture_transform', transforms.createTransform().setScale([2, 2]));
+    }
+
+    const summary = await applyKitContract(doc, { ktx2: false });
+
+    expect(summary.ormPacked).toBe(1);
+    expect(summary.ormSkipped).toBeUndefined();
+    expect(material.getOcclusionTexture()).toBe(metallicRoughness);
   });
 });
 

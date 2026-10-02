@@ -34,8 +34,13 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { promisify } from 'node:util';
 
-import type { Document, Material, Texture } from '@gltf-transform/core';
-import { KHRMaterialsVariants, KHRTextureBasisu } from '@gltf-transform/extensions';
+import type { Document, Material, Texture, TextureInfo } from '@gltf-transform/core';
+import {
+  KHRMaterialsVariants,
+  KHRTextureBasisu,
+  KHRTextureTransform,
+  type Transform,
+} from '@gltf-transform/extensions';
 
 import { buildSlotIndex, chooseSlot, hexToLinearRgb, type SnapPaletteSlot } from './palette-snap';
 
@@ -91,6 +96,11 @@ export const KTX2_SIZE_ACCEPT_RATIO = 0.9;
 
 export interface KitPackSummary {
   ormPacked: number;
+  /**
+   * Present when a material kept a separate occlusion image because the two maps
+   * are read through different UV sets or texture transforms: why, one per material.
+   */
+  ormSkipped?: readonly string[];
   variantsAdded: readonly string[];
   variantMaterialsCreated: number;
   ktx2: KitKtx2Summary;
@@ -142,22 +152,71 @@ function disposeIfOrphaned(texture: Texture): void {
   if (!stillUsed) texture.dispose();
 }
 
+/** The UV set a slot reads (after any `KHR_texture_transform` override) and the
+ *  transform it applies, as offset, rotation and scale; identity when absent. */
+function uvMapping(info: TextureInfo): { texCoord: number; transform: number[] } {
+  const transform = info.getExtension<Transform>(KHRTextureTransform.EXTENSION_NAME);
+  return {
+    texCoord: transform?.getTexCoord() ?? info.getTexCoord(),
+    transform: [
+      ...(transform?.getOffset() ?? [0, 0]),
+      transform?.getRotation() ?? 0,
+      ...(transform?.getScale() ?? [1, 1]),
+    ],
+  };
+}
+
+/**
+ * Why this material's occlusion map cannot share the metallic-roughness image, or
+ * undefined when it can.
+ *
+ * Packing copies occlusion into R pixel for pixel, so both slots must read the image
+ * the same way. A baked AO map usually sits on its own UV set (TEXCOORD_1); folded
+ * into an image read through TEXCOORD_0, its shadows would land in the wrong places.
+ */
+function uvMappingMismatch(material: Material, index: number): string | undefined {
+  const occlusionInfo = material.getOcclusionTextureInfo();
+  const metallicRoughnessInfo = material.getMetallicRoughnessTextureInfo();
+  if (!occlusionInfo || !metallicRoughnessInfo) return undefined;
+  const occlusion = uvMapping(occlusionInfo);
+  const metallicRoughness = uvMapping(metallicRoughnessInfo);
+  const name = material.getName()
+    ? `material ${JSON.stringify(material.getName())}`
+    : `material ${index}`;
+  if (occlusion.texCoord !== metallicRoughness.texCoord) {
+    return `${name}: occlusion reads TEXCOORD_${occlusion.texCoord} and metallic-roughness TEXCOORD_${metallicRoughness.texCoord}; kept separate images`;
+  }
+  if (occlusion.transform.some((value, i) => value !== metallicRoughness.transform[i])) {
+    return `${name}: occlusion and metallic-roughness use different KHR_texture_transform values; kept separate images`;
+  }
+  return undefined;
+}
+
 /**
  * Fold occlusion into metallic-roughness R.
  *
- * Only when the two are genuinely distinct images of identical size — a
- * mismatched pair would need resampling, and silently resampling an author's
- * occlusion map is a bigger change than leaving one extra image in the file.
+ * Only when the two are genuinely distinct images of identical size, read through
+ * the same UV set and texture transform — a mismatched pair would need resampling,
+ * and silently resampling an author's occlusion map is a bigger change than leaving
+ * one extra image in the file. A UV mismatch is reported in `skipped`.
  */
-async function packOcclusionIntoMetallicRoughness(doc: Document): Promise<number> {
+async function packOcclusionIntoMetallicRoughness(
+  doc: Document,
+): Promise<{ packed: number; skipped: string[] }> {
   const sharp = (await import('sharp')).default;
   let packed = 0;
+  const skipped: string[] = [];
 
-  for (const material of doc.getRoot().listMaterials()) {
+  for (const [index, material] of doc.getRoot().listMaterials().entries()) {
     const occlusion = material.getOcclusionTexture();
     const metallicRoughness = material.getMetallicRoughnessTexture();
     if (!occlusion || !metallicRoughness || occlusion === metallicRoughness) continue;
     if (!isPng(occlusion) || !isPng(metallicRoughness)) continue;
+    const mismatch = uvMappingMismatch(material, index);
+    if (mismatch) {
+      skipped.push(mismatch);
+      continue;
+    }
 
     const occlusionBytes = occlusion.getImage();
     const mrBytes = metallicRoughness.getImage();
@@ -198,10 +257,9 @@ async function packOcclusionIntoMetallicRoughness(doc: Document): Promise<number
         .toBuffer();
 
       metallicRoughness.setImage(new Uint8Array(png));
+      // Only the image changes: the occlusion slot keeps its own UV set and transform,
+      // which the mismatch check above found equal to the metallic-roughness slot's.
       material.setOcclusionTexture(metallicRoughness);
-      const info = material.getOcclusionTextureInfo();
-      const mrInfo = material.getMetallicRoughnessTextureInfo();
-      if (info && mrInfo) info.setTexCoord(mrInfo.getTexCoord());
       disposeIfOrphaned(occlusion);
       packed += 1;
     } catch {
@@ -209,7 +267,7 @@ async function packOcclusionIntoMetallicRoughness(doc: Document): Promise<number
     }
   }
 
-  return packed;
+  return { packed, skipped };
 }
 
 /** A palette-snapped clone of one material, or undefined when the palette does not cover it. */
@@ -392,7 +450,10 @@ export async function applyKitContract(
   doc: Document,
   options: KitPackOptions = {},
 ): Promise<KitPackSummary> {
-  const ormPacked = options.packOrm === false ? 0 : await packOcclusionIntoMetallicRoughness(doc);
+  const orm =
+    options.packOrm === false
+      ? { packed: 0, skipped: [] }
+      : await packOcclusionIntoMetallicRoughness(doc);
 
   const specs = options.variants ?? [];
   const { names, materialsCreated } = specs.length
@@ -450,5 +511,11 @@ export async function applyKitContract(
     }
   }
 
-  return { ormPacked, variantsAdded: names, variantMaterialsCreated: materialsCreated, ktx2 };
+  return {
+    ormPacked: orm.packed,
+    ...(orm.skipped.length > 0 ? { ormSkipped: orm.skipped } : {}),
+    variantsAdded: names,
+    variantMaterialsCreated: materialsCreated,
+    ktx2,
+  };
 }

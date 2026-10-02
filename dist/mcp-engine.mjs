@@ -24324,7 +24324,11 @@ var init_validation = __esm(() => {
 // src/kit.ts
 import { execFile } from "node:child_process";
 import { promisify } from "node:util";
-import { KHRMaterialsVariants, KHRTextureBasisu } from "@gltf-transform/extensions";
+import {
+  KHRMaterialsVariants,
+  KHRTextureBasisu,
+  KHRTextureTransform
+} from "@gltf-transform/extensions";
 var run, KTX_ENCODER_CANDIDATES;
 var init_kit = __esm(() => {
   run = promisify(execFile);
