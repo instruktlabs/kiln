@@ -15,6 +15,11 @@ type N = any; // eslint-disable-line @typescript-eslint/no-explicit-any
 /** The instance matrix columns (column-major, as Matrix4.elements) of a plant mesh's instances. */
 export const PLANT_COLUMNS = ['plantI0', 'plantI1', 'plantI2', 'plantI3'] as const;
 
+/**
+ * The instance transform lives in setupPosition, which only this material's own build runs: a pass that draws with an override
+ * material (shadow depth, a depth prepass, picking) would put every plant at its origin. Shared plant meshes therefore never
+ * cast shadows (tests/unit/campus-vegetation-shared.test.ts); a pass like that needs the transform in a node it carries over.
+ */
 class InstancedPlantMaterial extends MeshStandardNodeMaterial {
   override customProgramCacheKey(): string { return super.customProgramCacheKey() + ':plant-instanced'; }
   override setupPosition(builder: NodeBuilder): Node {

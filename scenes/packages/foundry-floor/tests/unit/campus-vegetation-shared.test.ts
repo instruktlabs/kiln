@@ -122,6 +122,15 @@ describe('shared planting', () => {
     shared.dispose(); classic.dispose();
   });
 
+  test('no shared plant casts a shadow: its instancing runs in the material setupPosition, which override-material passes skip', async () => {
+    // A shadow, depth-prepass or picking pass draws with an override material that never runs setupPosition, so there every
+    // plant would sit at its origin (wave-B review R7). Foundry Floor has no such pass; this fails if a shared plant joins one.
+    const shared = (await buildCampusVegetation(data, models(), placements, { shared: true }))!;
+    shared.update(near(), 1);
+    expect(meshes(shared.root).filter(m => !(m as unknown as InstancedMesh).isInstancedMesh && m.castShadow).map(m => m.name)).toEqual([]);
+    shared.dispose();
+  });
+
   test('a still camera uploads nothing: the instance buffer is rewritten only when a slot or the count changes', async () => {
     const shared = (await buildCampusVegetation(data, models(), placements, { shared: true }))!, camera = near();
     shared.update(camera, 1);

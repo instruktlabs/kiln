@@ -5,10 +5,13 @@
 // far representations switching by the camera's distance to the route (deck axis and approach centrelines).
 // Draw optimisation (OD-18; tmp/drawcalls/understand/golden-gate.md sections 2-3): the scene draws a render copy of each
 // model that shares the pack's geometry and materials, its parts regrouped under south, north and span groups and merged
-// by material inside each group. The pack's models are never changed (World.tsx rebuilds from the same pack.models on a
-// tier change); a detached copy of the web model keeps the authored graph for the Roadway raster, the colliders and route
-// contact. On High, shadow depth stand-ins replace the web model's and the near approaches' casters, and in the planar
-// reflection a copy of the far approaches stands in for the near ones.
+// by material inside each group. The pack's scene graphs are never changed, so a second build from the same pack (React
+// StrictMode, tests) starts from the authored graph; a tier change remounts and reloads the pack. Their shared materials do
+// carry the joint-plate polygon offset and the current lamp level. A detached copy of the web model keeps the authored graph
+// for the Roadway raster, the colliders and route contact. Two draw orders keep depth ties the merge would flip: the curbs
+// before the walks (DRAWN_FIRST) and the span's paint after the roadway (drawnLast). On High, shadow depth stand-ins replace
+// the web model's and the near approaches' casters, and in the planar reflection a copy of the far approaches stands in for
+// the near ones.
 import { Color, Group, MeshStandardMaterial } from 'three/webgpu';
 import type { Material, Mesh, Object3D, Vector3 } from 'three/webgpu';
 import type { GLTF } from 'three/addons/loaders/GLTFLoader.js';
@@ -36,6 +39,18 @@ const AUTHORED = /*@__PURE__*/ new WeakMap<MeshStandardMaterial, number>();
 const SIDES = [/^South/, /^North/] as const, GROUPS = ['south', 'north', 'span'] as const;
 /** Shadow stand-in anchors below the groups, so each tower and anchorage casts through its own proxy and keeps shadow-frustum culling. */
 const PROXY_ANCHOR = /^(South|North)(Tower|Anchorage)$/;
+/**
+ * Parts first in their merged mesh. The curbs share Concrete with the walks and their road-facing faces are coplanar; unmerged,
+ * three drew the curbs first and the walks won the depth ties. In one draw later triangles win, so the curbs' come first.
+ */
+const DRAWN_FIRST = /^Curbs(East|West)$/;
+/**
+ * The span's merged paint draws after the other opaque draws. Far out the depth buffer cannot separate the deck's stacked
+ * surfaces (the underdeck's top is 0.45 m below the roadway); unmerged and seen from above, three drew the lower painted parts
+ * after the roadway by their centre depth, so the paint won those ties. Merged, the span's paint centre rises to the cables
+ * and it would draw first.
+ */
+const drawnLast = (m: Mesh) => m.parent?.name === 'span' && (m.material as Material).name === 'Paint';
 
 export interface BridgeOptions {
   farSwitch: number; castShadow: boolean;
@@ -151,7 +166,8 @@ export function createBridge(web: GLTF, far: GLTF, o: BridgeOptions): Bridge {
   // Stand-ins before the merge: a merged mesh spans its whole group, so proxies built after it could not split per tower.
   const layer = o.standInLayer, proxies: ShadowStandIns[] = o.castShadow && layer !== undefined
     ? [shadowStandIns(views.web.root, { layer, isAnchor: n => views.web.groups.has(n) || PROXY_ANCHOR.test(n.name) }), shadowStandIns(meshes.near.group, { layer, isAnchor: () => false })] : [];
-  const merged: RigidMerge[] = o.merge ? [views.web, views.far].map(v => mergeRigidByMaterial(v.root, { isAnchor: n => v.groups.has(n) })) : [];
+  const merged: RigidMerge[] = o.merge ? [views.web, views.far].map(v => mergeRigidByMaterial(v.root, { isAnchor: n => v.groups.has(n), order: m => DRAWN_FIRST.test(m.name) ? -1 : 0 })) : [];
+  for (const m of merged) for (const mesh of m.merged) if (drawnLast(mesh)) mesh.renderOrder = 1;
   let reflection: ReturnType<typeof passStandIn> | null = null;
   if (o.passLayers) {
     // Before the vegetation joins the near group (build-world), so it stays reflected.

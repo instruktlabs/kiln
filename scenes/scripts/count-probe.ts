@@ -4,13 +4,13 @@
 // half (count-probe-gpu.ts) counts the encoder's passes, draws, pipelines and load/store ops and is joined per frame.
 //   bun scripts/count-probe.ts --label <l> [--build <label>] [--scenes farm,foundry-floor,golden-gate]
 //     [--tiers minimal,economy,balanced,high] [--fixtures all|id,…] [--what-if none|standard] [--size 1920x1080]
-//     [--fresh-page] [--compare <baseline summary.json>] [--summary-only]
+//     [--fresh-page] [--compare <baseline summary.json or evidence label>] [--summary-only]
 // Output: evidence/counts/<label>/<scene>/<tier>/<fixture>.json, scene-summary.json per scene and tier, and
 // summary.json + summary.md (plus levers.md appended when present). Each record names its build (code chunks and
 // source) and run (viewport, fresh page or shared), and summary.json carries that provenance; --compare checks pipelines
 // only between two fresh-page runs. Counts only: nothing here reads or reports time.
 // Ports 4400-4499 are try-bound by serveOwned; the runner closes every page, server and browser it starts.
-import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, readdirSync, readFileSync, statSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import type { BrowserContext, Page } from 'puppeteer-core';
 import { assertOwnedUrl, launchChrome, serveOwned, waitForReady } from '../packages/scene-kit/src/testing/node';
@@ -150,6 +150,11 @@ function readRecords(label: string): FixtureRecord[] {
 const fixtureOrder = (scene: SceneId) => SCENE_FIXTURES[scene].fixtures.map(f => f.id);
 const desc = (a: { samples?: number; format?: string } | null | undefined, load?: string, store?: string, resolveTarget?: boolean) => a ? `${a.samples ?? 1}x ${a.format ?? '?'} ${load}/${store}${resolveTarget ? ' +resolve' : ''}` : '-';
 
+/** The `--compare` baseline: a summary.json path (relative to the working directory) or a label under evidence/counts. */
+export function baselineSummary(compareWith: string): string {
+  const path = resolve(compareWith);
+  return existsSync(path) && statSync(path).isFile() ? path : evidence(compareWith, 'summary.json');
+}
 export function summarize(label: string, compareWith?: string) {
   const records = readRecords(label), scenes = [...new Set(records.map(r => r.scene))].sort();
   const rows = records.filter(r => r.base).map(r => ({
@@ -164,7 +169,7 @@ export function summarize(label: string, compareWith?: string) {
     returned: r.returned?.equal ?? null, messages: r.messages.length,
   }));
   const errors = records.filter(r => r.error).map(r => ({ scene: r.scene, tier: r.tier, fixture: r.fixture.id, error: r.error!.split('\n')[0] }));
-  const provenance = runProvenance(records), before = compareWith ? JSON.parse(readFileSync(resolve(compareWith), 'utf8')) as { rows: CountRow[]; provenance?: RunProvenance } : null;
+  const provenance = runProvenance(records), before = compareWith ? JSON.parse(readFileSync(baselineSummary(compareWith), 'utf8')) as { rows: CountRow[]; provenance?: RunProvenance } : null;
   const comparison = before ? compareRows(rows, before.rows, pipelinesComparable(before.provenance, provenance)) : null;
   writeJson(evidence(label, 'summary.json'), { label, provenance, rows, errors, comparison });
   const builds = [...new Map(records.filter(r => r.build).map(r => [`${r.scene} ${r.build!.chunks.join('+')}`, r])).values()].map(r => {

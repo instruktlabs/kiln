@@ -2,9 +2,10 @@
 // Draw optimisation (docs/plans/2026-10-01-draw-optimization-cycle.md S4b, OD-18; tmp/drawcalls/understand/golden-gate.md
 // sections 2-3): the bridge draws a render copy of each pack model, merged by material inside its south, north and span
 // groups, with shadow depth stand-ins per tower, anchorage and span on High and far-approach stand-ins in the planar
-// reflection. The pack's models are never changed (World.tsx rebuilds from the same pack.models on a tier change), the
-// semantic web model keeps its node names for route contact and the colliders, and the merge is look-neutral: the same
-// triangles, world bounds and materials, with the material-level lamp and joint-plate edits still applied.
+// reflection. The pack's scene graphs are never changed (a second build from the same pack starts from the authored graph;
+// its shared materials carry the joint-plate offset and the lamp level), the semantic web model keeps its node names for
+// route contact and the colliders, and the merge keeps the same triangles, world bounds, materials and coplanar depth ties,
+// with the material-level lamp and joint-plate edits still applied.
 import { describe, expect, test } from 'bun:test';
 import { Box3, BoxGeometry, FrontSide, Group, Mesh, MeshStandardMaterial, PlaneGeometry, Vector3 } from 'three/webgpu';
 import type { BufferGeometry, Material, Object3D } from 'three/webgpu';
@@ -90,7 +91,7 @@ describe('bridge draws', () => {
     bridge.dispose();
   });
 
-  test('the pack models are untouched after two builds, and the semantic web model keeps names for route contact and colliders', () => {
+  test('the pack scene graphs are untouched after two builds, and the semantic web model keeps names for route contact and colliders', () => {
     const p = pack(), before = [snapshot(p.web), snapshot(p.far)], authored = NAMES.map(n => p.materials[n].emissiveIntensity);
     for (let i = 0; i < 2; i++) {
       const bridge = createBridge(p.web, p.far, HIGH);
@@ -127,6 +128,39 @@ describe('bridge draws', () => {
     // Shared pack geometry is never disposed by the bridge.
     let shared = 0; p.web.scene.traverse(n => { const m = n as Mesh; if (m.isMesh) m.geometry.addEventListener('dispose', () => shared++); });
     createBridge(p.web, p.far, HIGH).dispose(); expect(shared).toBe(0);
+  });
+
+  test('the merge puts the curbs before the walks in their shared Concrete mesh, so the walks keep winning their coplanar depth ties', () => {
+    // GoldenGateBridge's CurbsEast/West share Concrete with Deck_Mesh_EastWalk/WestWalk and their road-facing faces are coplanar
+    // (x = +/-9.449). Unmerged, three drew the curbs first and the walks won the LessEqual ties; inside one merged draw later
+    // triangles win, so the curbs' triangles must come first, whatever the scene order (wave-B review R1: a kerb stipple).
+    const p = pack();
+    for (const gltf of [p.web, p.far]) {
+      const deck = gltf.scene.getObjectByName('Deck')!, curb = deck.getObjectByName('CurbsEast')!;
+      const part = (name: string, x: number, size: [number, number, number]) => { const g = new BoxGeometry(...size).translate(x, 62.65, 0); g.clearGroups(); return Object.assign(new Mesh(g, p.materials.Concrete), { name }); };
+      // As in the runtime GLB, the walks come before the curbs.
+      deck.add(part('Deck_Mesh_EastWalk', -11.5, [2, .2, 2000]), part('Deck_Mesh_WestWalk', 11.5, [2, .2, 2000])); deck.remove(curb); deck.add(curb, part('CurbsWest', 10, [.3, .3, 2000]));
+    }
+    const bridge = createBridge(p.web, p.far, HIGH);
+    for (const view of [bridge.views.web, bridge.views.far]) {
+      const concrete = view.getObjectByName('Merged span/Concrete') as Mesh, g = concrete.geometry, x = g.attributes.position!, index = g.index!, kinds: string[] = [];
+      for (let i = 0; i < index.count; i += 3) kinds.push(Math.abs(x.getX(index.getX(i)) + x.getX(index.getX(i + 1)) + x.getX(index.getX(i + 2))) / 3 < 10.3 ? 'curb' : 'walk');
+      expect(kinds.filter(k => k === 'curb').length).toBe(24); expect(kinds.filter(k => k === 'walk').length).toBe(24);
+      expect(kinds.lastIndexOf('curb')).toBeLessThan(kinds.indexOf('walk'));
+    }
+    // The order costs no draw: one Concrete mesh in the span, as without it.
+    expect(bridge.stats.draws).toEqual({ web: 14, far: 14 });
+    bridge.dispose();
+  });
+
+  test('the span\'s merged paint draws after the other opaque draws, as the deck\'s lower painted parts did when far out', () => {
+    // The underdeck's top lies 0.45 m below the roadway; from 2 km the depth buffer cannot separate them, and unmerged three
+    // drew the lower underdeck after the roadway (its centre is farther), so the paint won the ties. Merged, the span's paint
+    // centre rises to the cables and would draw first (wave-B review R2 residual: arrival 256 px over 32 levels on WebGL2).
+    const p = pack(), bridge = createBridge(p.web, p.far, HIGH), merged = [bridge.views.web, bridge.views.far].flatMap(v => { const out: Mesh[] = []; v.traverse(n => { if (n.userData.kilnMerged) out.push(n as Mesh); }); return out; });
+    expect(merged.filter(m => m.renderOrder !== 0).map(m => [m.name, m.renderOrder])).toEqual([['Merged span/Paint', 1], ['Merged span/Paint', 1]]);
+    bridge.dispose();
+    const off = createBridge(p.web, p.far, { ...HIGH, merge: false }); let ordered = 0; off.root.traverse(n => { if ((n as Mesh).renderOrder) ordered++; }); expect(ordered).toBe(0); off.dispose();
   });
 
   test('bridgeMerge off draws every part as authored', () => {

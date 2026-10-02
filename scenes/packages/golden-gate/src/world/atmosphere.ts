@@ -15,6 +15,9 @@ import { createAtmosphereUniforms, skyWithFog, type AtmosphereUniforms } from '.
 import { normalizedSun, type GoldenGatePreset } from '../presets';
 import { LAYERS } from '../constants';
 
+/** The cached sun shadow's fit tracking is a development option (build-world.ts): public builds leave it out. */
+const TEST = !!(import.meta.env.KILN_TEST || import.meta.env.KILN_DEV);
+
 export interface AtmosphereOptions { envSize: number; shadows: boolean; shadowMapSize: number; shadowExtent: readonly [number, number] }
 export interface Atmosphere {
   readonly uniforms: AtmosphereUniforms;
@@ -30,7 +33,10 @@ export interface Atmosphere {
   update(camera: Camera, focus: Vector3, nowSeconds: number): void;
   /** Cameras for which the sky must hide its sun disc (planar reflection). */
   hideSunFor(camera: Camera | null): void;
-  /** The shadow cascade's fit (snapped centre in light space, extent and sun direction): a cached shadow re-renders when it changes. */
+  /**
+   * The shadow cascade's fit (snapped centre in light space, extent and sun direction): a cached shadow re-renders when it
+   * changes. Test and dev builds only, where the cached shadow exists; '' in public builds.
+   */
   readonly shadowFit: string;
   readonly stats: { environmentRenders: number };
   dispose(): void;
@@ -96,7 +102,7 @@ export function createAtmosphere(renderer: WebGPURenderer, scene: Scene, o: Atmo
 
   const atmosphere: Atmosphere = {
     uniforms: u, sky, sun,
-    get shadowFit() { return `${fitR}|${fitV}|${fitExtent}|${sunDir.x}|${sunDir.y}|${sunDir.z}`; },
+    get shadowFit() { return TEST ? `${fitR}|${fitV}|${fitExtent}|${sunDir.x}|${sunDir.y}|${sunDir.z}` : ''; },
     get environment() { return envTarget.texture; },
     stats,
     apply(p, now, force = false) {
@@ -142,7 +148,7 @@ export function createAtmosphere(renderer: WebGPURenderer, scene: Scene, o: Atmo
       const cam = sun.shadow.camera;
       if (cam.right !== extent) { cam.left = -extent; cam.right = extent; cam.top = extent; cam.bottom = -extent; cam.updateProjectionMatrix(); }
       // The depth along the sun is left out: an orthographic map shifted along its own axis covers the same casters.
-      fitR = r; fitV = v; fitExtent = extent;
+      if (TEST) { fitR = r; fitV = v; fitExtent = extent; }
     },
     hideSunFor(camera) { hiddenFor = camera; },
     dispose() {

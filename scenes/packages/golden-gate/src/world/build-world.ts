@@ -3,8 +3,8 @@
 // pipeline pre-compile so the first frames do not stall. Every step checks the abort signal; a
 // failed or aborted build releases everything it created.
 import { Group, Vector3 } from 'three/webgpu';
-import type { Mesh, PerspectiveCamera, Scene, WebGPURenderer } from 'three/webgpu';
-import { cachedSunShadow, passCameraLayers, shadowOncePerFrame, ShadowLayers } from '@kiln-scenes/scene-kit';
+import type { PerspectiveCamera, Scene, WebGPURenderer } from 'three/webgpu';
+import { cachedSunShadow, passCameraLayers, shadowOncePerFrame } from '@kiln-scenes/scene-kit';
 import type { LoadedPack, PackReader } from '@kiln-scenes/scene-kit';
 import type { GoldenGateKnobs } from '../tiers';
 import { createAtmosphere } from './atmosphere';
@@ -133,8 +133,10 @@ export async function buildGoldenGateWorld(c: BuildContext) {
     const traffic: Traffic = createTraffic({ models, route: bridge.route, density: c.traffic?.density ?? features.traffic.density,
       perLaneMax: c.traffic?.enabled === false ? 0 : features.traffic.perLaneMax, lod: features.traffic.lod, shadows: c.knobs.shadows.enabled, contactShadow: features.traffic.contactShadow, parked });
     owned.push(traffic);
-    const movers: Mesh[] = []; let fit = '', hadLive = false;
-    if (cache) { cache.track(bridge.root); traffic.root.traverse(n => { const m = n as Mesh; if (m.isMesh && m.castShadow) { m.layers.enable(ShadowLayers.live); movers.push(m); } }); }
+    // Traffic moves through instance attributes, which the cache's watch cannot see: its casters draw in the live map, which
+    // renders while any of them is shown with instances and once more to clear it.
+    let fit = '';
+    if (cache) { cache.track(bridge.root); cache.track(traffic.root, { live: () => true }); }
     step('Traffic');
     const root = new Group(); root.name = 'golden-gate-world';
     root.add(terrain.root, bridge.root, traffic.root); if (banks) root.add(banks.sprite);
@@ -172,15 +174,10 @@ export async function buildGoldenGateWorld(c: BuildContext) {
         traffic.update(camera, delta, vehicleLights);
         once?.update();
         if (cache) {
-          // The static map re-renders when its fit or the bridge and approach representations change. Traffic moves
-          // through instance attributes, which the cache's watch cannot see, so the live map renders while any casting
-          // bucket draws and once more to clear it.
+          // The static map re-renders when its fit or the bridge and approach representations change.
           const key = `${atmosphere.shadowFit}|${bridge.usingFar}|${bridge.approachesFar}`;
           if (key !== fit) { fit = key; cache.invalidate('fit'); }
           cache.update();
-          const live = movers.some(m => m.visible);
-          if (live || hadLive) cache.liveShadow.needsUpdate = true;
-          hadLive = live;
         }
       },
       dispose() { if (c.scene.fogNode === fogNode) c.scene.fogNode = null; release(); },
