@@ -1,7 +1,13 @@
 // SPEC 20.3's local evidence for Golden Gate: the count, byte and memory checks that do not depend on
 // machine load (no timing is taken or kept). Headless Chrome (owner rule 11:40) on this builder's ports.
-//   X-02 renderer.info at the ten named views, four hero-orbit points and the drive fixture, on the
-//        frozen clock (WATER-SPEC time 12, Day), tiers high, balanced and economy, WebGPU and WebGL2
+//   X-02 renderer.info at the named views (eleven since `arrival` joined layout.json's cameras, so 16 views in
+//        all), four hero-orbit points and the drive fixture, on the frozen clock (WATER-SPEC time 12, Day),
+//        tiers high, balanced and economy, WebGPU and WebGL2. Golden Gate has no pilot, so its own run is the
+//        baseline: `--baseline=<x02-counts.json>` checks every view's draw calls and triangles against one
+//        within 2 percent (OD-8 / D-53: the rule binds at High; the other tiers are reported). Since the draw
+//        optimisation (OD-18) each view also records the bridge's `webMeshes` (meshes in the authored web
+//        model, counted before the merge: unchanged at 148) and `bridgeDraws` (meshes the merged web and far
+//        views draw: 20 and 18); webMeshes no longer equals the bridge's draws.
 //   X-03 the kit's B-05 protocol for this scene: initialization cycles, then ten measured mount and
 //        unmount cycles alternating WebGPU and WebGL2; heap after a forced collection within 5 percent,
 //        one released backend per mount, no canvas, HUD, callback or extra listener left
@@ -10,11 +16,16 @@
 //   X-12 per-frame allocation: 1,000 frames of each workload (orbit, flyover, drive) between forced
 //        collections; growth under 2 MB
 //   ./scripts/toolchain-run.ps1 packages/golden-gate/tests/tools/perf-local.ts [x02] [x03] [x11] [x12] [--out=<dir>]
+//     [--build=<label>] [--baseline=<x02-counts.json>]
 // --out= writes the files to another directory under the package (default evidence/perf; fix round 2 wrote
 // nothing there while the hub session owned it). One token with "=": toolchain-run.ps1 is an advanced PowerShell
-// script, which reads a separate "--out" as its ambiguous -OutVariable/-OutBuffer.
+// script, which reads a separate "--out" as its ambiguous -OutVariable/-OutBuffer. --build= measures a labelled
+// build from scripts/build-scene.ts (dist/<label>/test and dist/<label>/public) instead of dist/test and
+// dist/standalone; x02-counts.json names the build's chunks and source either way. --baseline= (a path from the
+// working directory) writes x02-check.json beside the counts and exits 1 when a High view is outside 2 percent.
 import assert from 'node:assert/strict';
-import { readFileSync } from 'node:fs';
+import { createHash } from 'node:crypto';
+import { existsSync, readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import type { CDPSession, Page } from 'puppeteer-core';
 import { assertTeardownListenerAudit } from '@kiln-scenes/scene-kit';
@@ -29,7 +40,21 @@ const WIDTH = 1920, HEIGHT = 1080, TIME = 12, TIMEOUT = 180_000;
 const wanted = new Set(process.argv.slice(2).filter(a => /^x\d\d$/.test(a))); const run = (id: string) => !wanted.size || wanted.has(id);
 const servers: Hosted[] = [], owned = new Set<number>();
 const serve = async (root: string) => { const hosted = await serveOwned(root, owned); servers.push(hosted); owned.add(hosted.port); return hosted; };
-const test = await serve(outputFor('test')), publicBuild = await serve(outputFor('public'));
+const argValue = (name: string) => process.argv.find(a => a.startsWith(`--${name}=`))?.slice(name.length + 3);
+const label = argValue('build'), baselinePath = argValue('baseline');
+if (label !== undefined && !/^[a-z0-9-]+$/.test(label)) throw new Error('--build=<label> takes lowercase letters, numbers and hyphens');
+/** A labelled build from scripts/build-scene.ts keeps its public output in dist/<label>/public; tests/tools/build.ts writes dist/standalone. */
+const testRoot = label ? resolve(PACKAGE_ROOT, 'dist', label, 'test') : outputFor('test');
+const publicRoot = label ? [resolve(PACKAGE_ROOT, 'dist', label, 'public'), outputFor('public', label)].find(p => existsSync(resolve(p, 'index.html'))) ?? resolve(PACKAGE_ROOT, 'dist', label, 'public') : outputFor('public');
+if (!existsSync(resolve(testRoot, 'index.html'))) throw new Error(`No test build at ${testRoot}`);
+const test = await serve(testRoot), publicBuild = run('x11') ? await serve(publicRoot) : null;
+/** What was measured: the test build's code chunks and source (build.json, when the build wrote one) and the staged pack it carries. */
+const measured = (() => {
+  const built = existsSync(resolve(testRoot, 'build.json')) ? JSON.parse(readFileSync(resolve(testRoot, 'build.json'), 'utf8')) as { chunks: { name: string }[]; source?: unknown } : null;
+  const pack = resolve(testRoot, 'assets/pack.json');
+  return { label: label ?? null, root: testRoot.replace(/\\/g, '/'), chunks: built?.chunks.map(c => c.name).sort() ?? null, source: built?.source ?? null,
+    release: JSON.parse(readFileSync(resolve(testRoot, 'assets/data/scene.json'), 'utf8')).release as string, packSha256: existsSync(pack) ? createHash('sha256').update(readFileSync(pack)).digest('hex') : null };
+})();
 const chrome = await launchHeadless('gg-perf-local', WIDTH, HEIGHT);
 const outArg = process.argv.find(a => a.startsWith('--out=')), outDir = outArg ? outArg.slice('--out='.length) : 'evidence/perf';
 const out = (name: string) => resolve(PACKAGE_ROOT, outDir, name);
@@ -44,6 +69,19 @@ async function open(url: string, messages: ConsoleRecord[]): Promise<Page> {
 const ready = (page: Page) => page.waitForFunction(() => { const s = (window as any).__kilnHarness?.snapshot(); if (s?.errors?.length) throw new Error(JSON.stringify(s.errors[0])); return (s?.readyCount ?? 0) > 0; }, { timeout: TIMEOUT, polling: 100 });
 const frames = (page: Page, n: number) => page.evaluate(count => (window as any).__kilnScene.waitFrames(count), n);
 const call = (page: Page, name: string, ...args: unknown[]) => page.evaluate((n, a) => (window as any).__kilnScene.invoke(n, ...a), name, args);
+interface X02View { view: string; drawCalls: number | null; triangles: number | null }
+interface X02Case { backend: string; tier: string; views: X02View[] }
+/** X-02 against a baseline run (OD-8 / D-53): each view's draw calls and triangles within 2 percent, matched by backend, tier and view; the verdict is High's. */
+function compareX02(baseline: X02Case[], current: X02Case[]) {
+  const near = (value: number | null, base: number | null) => value !== null && base !== null && Math.abs(value - base) <= .02 * base;
+  const rows = current.flatMap(c => {
+    const b = baseline.find(x => x.backend === c.backend && x.tier === c.tier);
+    return b ? c.views.flatMap(v => { const w = b.views.find(x => x.view === v.view); return w ? [{ backend: c.backend, tier: c.tier, view: v.view, drawCalls: [w.drawCalls, v.drawCalls], triangles: [w.triangles, v.triangles], within: near(v.drawCalls, w.drawCalls) && near(v.triangles, w.triangles) }] : []; }) : [];
+  });
+  const tally = (list: typeof rows) => ({ views: list.length, within: list.filter(r => r.within).length });
+  const high = tally(rows.filter(r => r.tier === 'high'));
+  return { rule: 'draw calls and triangles within 2 percent of the baseline at each view (OD-8 / D-53; the verdict is High, the other tiers are reported)', pass: high.views > 0 && high.within === high.views, high, all: tally(rows), rows };
+}
 async function heap(client: CDPSession, collect: boolean) { if (collect) await client.send('HeapProfiler.collectGarbage'); return client.send('Runtime.getHeapUsage'); }
 
 /** renderer.info and the scene's own counters for the frame just rendered. */
@@ -51,6 +89,8 @@ const counts = (page: Page) => page.evaluate(() => {
   const api = (window as any).__kilnScene, s = api.stats(), gg = api.invoke('ggStats'), t = api.invoke('trafficStats');
   return { drawCalls: s.render?.drawCalls ?? null, triangles: s.render?.triangles ?? null, geometries: s.memory?.geometries ?? null, textures: s.memory?.textures ?? null, pipelines: s.pipelines, programs: s.programs,
     mode: gg?.camera?.mode ?? null, terrainTiles: gg?.terrainTiles ?? null, farBridge: gg?.usingFarBridge ?? null,
+    // webMeshes: meshes in the authored web model (before any merge); bridgeDraws: meshes the web and far views draw (null before the merge existed).
+    webMeshes: gg?.bridge?.webMeshes ?? null, bridgeDraws: gg?.bridge?.draws ?? null,
     traffic: t ? { vehicles: t.vehicles, drawn: t.drawn, draws: t.draws, triangles: t.triangles, perLevel: t.perLevel, contactShadows: t.contactShadows } : null };
 });
 /** Counts once the view has settled: two samples 20 frames apart must agree (terrain and LOD selection follow the camera). */
@@ -88,14 +128,22 @@ try {
       } finally { await page.close(); }
     }
     const unexpected = unexpectedMessages(messages);
-    writeJson(out('x02-counts.json'), { id: 'X-02', captured: new Date().toISOString(), note: 'Counts only (renderer.info for the frame just rendered, after two equal samples 20 frames apart); no timing. Golden Gate has no pilot, so these are the baseline.', window: { width: WIDTH, height: HEIGHT, deviceScaleFactor: 1 }, preset: 'day', time: TIME, unexpectedMessages: unexpected, cases });
+    writeJson(out('x02-counts.json'), { id: 'X-02', captured: new Date().toISOString(), note: 'Counts only (renderer.info for the frame just rendered, after two equal samples 20 frames apart); no timing. Golden Gate has no pilot, so these are the baseline. The drive-chase view runs 90 frames of real time before the clock freezes, so where the car stops (drive.z) and the traffic around it vary between runs.', build: measured, window: { width: WIDTH, height: HEIGHT, deviceScaleFactor: 1 }, preset: 'day', time: TIME, unexpectedMessages: unexpected, cases });
     summary['X-02'] = { cases: cases.length, unexpectedMessages: unexpected.length };
+    if (baselinePath) {
+      const baseline = JSON.parse(readFileSync(resolve(baselinePath), 'utf8')) as { captured: string; build?: typeof measured; cases: X02Case[] }, check = compareX02(baseline.cases, cases as X02Case[]);
+      writeJson(out('x02-check.json'), { id: 'X-02', checked: new Date().toISOString(), baseline: { path: resolve(baselinePath).replace(/\\/g, '/'), captured: baseline.captured, build: baseline.build ?? null }, build: measured, ...check });
+      console.log(`X-02 against ${baselinePath}: High ${check.high.within}/${check.high.views} views within 2 percent (${check.pass ? 'pass' : 'FAIL'}); all tiers ${check.all.within}/${check.all.views}`);
+      for (const r of check.rows.filter(x => !x.within && x.tier === 'high').slice(0, 20)) console.log(`  outside: ${r.backend} ${r.tier} ${r.view} draws ${r.drawCalls.join(' -> ')} triangles ${r.triangles.join(' -> ')}`);
+      summary['X-02 check'] = { pass: check.pass, high: check.high, all: check.all };
+      if (!check.pass) process.exitCode = 1;
+    }
   }
 
   if (run('x11')) {
     const staging = JSON.parse(readFileSync(resolve(PACKAGE_ROOT, `evidence/staging/${STAGED_RELEASE}.json`), 'utf8')), bundle = JSON.parse(readFileSync(resolve(PACKAGE_ROOT, 'evidence/build/bundle-public.json'), 'utf8'));
     const loads: unknown[] = [], messages: ConsoleRecord[] = [];
-    const cases = [{ build: 'public', tier: 'auto (high on this desktop)', url: `${publicBuild.url}/` },
+    const cases = [{ build: 'public', tier: 'auto (high on this desktop)', url: `${publicBuild!.url}/` },
       ...(['high', 'balanced', 'economy'] as const).map(tier => ({ build: 'test', tier, url: `${test.url}/?tier=${tier}` }))];
     for (const c of cases) {
       const page = await chrome.browser.newPage(); page.setDefaultTimeout(TIMEOUT); await page.setViewport({ width: WIDTH, height: HEIGHT, deviceScaleFactor: 1 });

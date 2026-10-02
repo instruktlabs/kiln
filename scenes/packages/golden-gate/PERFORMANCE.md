@@ -16,7 +16,7 @@ State on 2026-09-29, 16:56:
 | Id | Check | Where | Method for Golden Gate | Pass rule | State |
 |---|---|---|---|---|---|
 | X-01 | CPU frame time versus the pilot | none | none | not applicable: Golden Gate has no pilot | n/a |
-| X-02 | Draw calls, triangles, geometries, textures, pipelines | dev PC, counts only | `renderer.info` at 15 views: the ten named views, four hero-orbit points and the drive chase fixture. Frozen clock (Day, time 12), tiers high, balanced and economy, WebGPU and WebGL2. A count is kept once two samples 20 frames apart agree. | no pilot: recorded as the baseline; draw calls and triangles must match across backends | done; `evidence/perf/x02-counts.json`; g3: `evidence/build/g3/` |
+| X-02 | Draw calls, triangles, geometries, textures, pipelines | dev PC, counts only | `renderer.info` at 15 views: the ten named views, four hero-orbit points and the drive chase fixture. Frozen clock (Day, time 12), tiers high, balanced and economy, WebGPU and WebGL2. A count is kept once two samples 20 frames apart agree. | no pilot: recorded as the baseline; draw calls and triangles must match across backends | done; `evidence/perf/x02-counts.json`; g3: `evidence/build/g3/`; re-baselined 2026-10-02 on the draw-optimized build (OD-8, D-53; section "X-02 re-baseline" below) |
 | X-03 | Leaks | dev PC, counts only | The kit's B-05 protocol (R2-13/C-04) for this scene: a cold teardown, two 120-frame cycles, ten initialization cycles, then ten measured mount and unmount cycles alternating automatic (WebGPU) and forced WebGL2 | heap after a forced collection within 5 percent; every receipt disposed with 0 resources and a lost device or context; no listener, canvas or HUD left | **pass**; `x03-leaks.json`; g3 pass, `evidence/build/g3/` |
 | X-04 | Time to `onReady` | hub | cold (a new profile per run) and warm, both backends, 5 runs each | WebGL2 worst run at most 45 s; medians recorded | **pass** 2026-09-29 (hub session 1, g1 kit): WebGL2 worst run 3585 ms against 45 s; median (worst of 5) WebGPU cold 3929 (4056) ms, warm 3823 (3865); WebGL2 cold 3542 (3585), warm 3335 (3575); `evidence/perf/hub-2026-09-29/` |
 | X-05 | Desktop tier qualification | hub | tiers high, balanced and economy, both backends, workloads orbit, flyover and drive, 60 s each, 5 runs, governor held at the tier's level 0 | recorded per tier, including which tiers reach 60 FPS (no pilot) | **recorded 2026-09-29** (hub session 2, g2 kit): all three tiers reach 60 FPS on both backends and all three workloads (18 of 18 groups, 90 of 90 runs valid and quiet); median interval 8.3 ms and 119.8 to 119.9 FPS at the panel's 120.11 Hz refresh, so no headroom is visible; table under "Hub session 2"; `evidence/perf/hub-2026-09-29-session-2/` |
@@ -152,6 +152,51 @@ Fix round 2 staged g3 (bridge review 3, the approach roads) and reran `tests/too
 - The bytes before ready grow by the same amount on every tier: 243,168 B of bridge GLB, 31,844 B of JSON (the approaches in `layout.json`) and the code.
 - D-15 still holds and was not re-frozen.
 - The g3 hub kit's README and MANIFEST copies are in the same directory.
+
+### X-02 re-baseline on the draw-optimized build (OD-8, D-53; 2026-10-02)
+
+The draw-optimization cycle (`docs/plans/2026-10-01-draw-optimization-cycle.md`) lowers draw calls on purpose: the bridge is merged by material at every tier, and at High the sun shadow renders once per frame from depth stand-ins and the planar reflection draws far-approach stand-ins. Golden Gate has no pilot, so its own X-02 run is the baseline, and OD-8 re-baselines it on the optimized build. Pixel parity is checked separately (S5 parity, two builds).
+
+- **New baseline.** `tests/tools/perf-local.ts x02 --build=draw-after` on the draw-after test build (HEAD `892d103`; chunks `index-D-gELBet.js`, `route-contact-CxuZU847.js`; staged g9, `pack.json` sha256 `c2a1d83f…`), headless Chrome 1920 x 1080, frozen clock (Day, time 12), captured 2026-10-02 08:42:56 UTC. File: `scenes/evidence/draw-after/golden-gate/x02/draw-after/x02-counts.json` (ignored; it names the build).
+- **Old baseline, measured the same way** on draw-base (main `c734e2a` plus the count-probe overlay; chunks `index-CdjtRS9C.js`, `route-contact-Ck7E03By.js`; the same pack) at 08:39:05 UTC: `…/x02/draw-base/x02-counts.json`.
+- **Views.** 16: the eleven named views (`arrival` joined layout.json's cameras after the g3 run, which had ten), four hero-orbit points and the drive chase.
+
+| Tier (feature set) | Backend | Draw calls | Triangles | Pipelines | Programs | Geometries |
+|---|---|---|---|---|---|---|
+| high (High) | WebGPU | 176 to 486 → 45 to 116 | 1,068,907 to 1,709,297 → 954,385 to 1,547,917 | 69 to 70 → 31 to 32 | 40 to 42 → 38 to 40 | 129 to 140 → 81 to 93 |
+| high (High) | WebGL2 | 176 to 486 → 45 to 116 | 1,068,907 to 1,709,297 → 954,385 to 1,547,917 | 20 to 21 → 19 to 20 | 39 to 41 → 37 to 39 | 129 to 140 → 82 to 93 |
+| balanced (Medium) | WebGPU | 52 to 182 → 23 to 54 | 391,612 to 631,479 (same range) | 29 to 31 → 17 to 19 | 30 to 32 | 126 to 137 → 68 to 80 |
+| balanced (Medium) | WebGL2 | 52 to 182 → 23 to 54 | 391,612 to 631,479 (same range) | 15 to 16 | 30 to 32 | 126 to 137 → 68 to 79 |
+| economy (Low) | WebGPU | 52 to 180 → 23 to 52 | 232,289 to 344,564 (same range) | 29 to 31 → 17 to 19 | 30 to 32 | 127 to 136 → 69 to 78 |
+| economy (Low) | WebGL2 | 52 to 180 → 23 to 52 | 232,289 to 344,564 (same range) | 15 to 16 | 30 to 32 | 127 to 136 → 69 to 78 |
+
+High, WebGPU, per view (old → new baseline; the check run's values last):
+
+| View | Draw calls | Triangles | Check run |
+|---|---|---|---|
+| arrival | 432 → 103 | 1,540,569 → 1,426,047 | 103, 1,426,047 |
+| postcard | 407 → 101 | 1,442,209 → 1,329,477 | 101, 1,329,477 |
+| pier | 270 → 75 | 1,234,833 → 1,104,205 | 75, 1,104,205 |
+| topdown | 212 → 64 | 1,349,785 → 1,235,407 | 64, 1,235,407 |
+| horizon | 176 → 45 | 1,068,907 → 954,385 | 45, 954,385 |
+| deck | 354 → 116 | 1,666,885 → 1,516,537 | 116, 1,516,537 |
+| tower | 379 → 94 | 1,142,113 → 1,009,189 | 94, 1,009,189 |
+| span | 436 → 107 | 1,531,157 → 1,416,635 | 107, 1,416,635 |
+| lanes | 350 → 113 | 1,708,781 → 1,546,855 | 113, 1,546,855 |
+| sidewalk | 354 → 116 | 1,709,297 → 1,547,917 | 116, 1,547,917 |
+| traffic | 318 → 106 | 1,647,561 → 1,503,153 | 106, 1,503,153 |
+| hero-orbit-0deg | 444 → 94 | 1,427,621 → 1,305,259 | 94, 1,305,259 |
+| hero-orbit-90deg | 398 → 93 | 1,417,181 → 1,302,707 | 93, 1,302,707 |
+| hero-orbit-180deg | 486 → 101 | 1,555,953 → 1,434,847 | 101, 1,434,847 |
+| hero-orbit-270deg | 396 → 91 | 1,408,069 → 1,293,595 | 91, 1,293,595 |
+| drive-chase | 350 → 113 | 1,683,369 → 1,523,583 | 113, 1,520,825 |
+
+- **The old baseline fails against the new counts.** `--baseline=…/x02/draw-base/x02-counts.json` on draw-after: 0 of 32 High views within 2 percent (0 of 96 over all tiers), exit 1 (`…/x02/draw-after/x02-check.json`).
+- **The new baseline passes.** A second draw-after run with `--baseline=…/x02/draw-after/x02-counts.json`: 32 of 32 High views within 2 percent (96 of 96), exit 0 (`…/x02/draw-after-check/x02-check.json`).
+- **Triangles.** High falls 7.4 to 11.6 percent per view: one sun-shadow pass instead of two, and the far-approach stand-ins in the reflection. Medium and Low move by −0.06 to +1.51 percent (the pier view most): the merged meshes span whole bridge groups, so frustum culling is coarser.
+- **Backends.** Draw calls and triangles match on both backends at every view except the drive chase, before and after.
+- **The drive chase is workload state.** It runs 90 frames of real time before the clock freezes, so the car stops between z −274 and −293 m in these runs, and the traffic around it varies. That moves its triangles by up to 1.4 percent and its draws by 1 between runs and backends, which is within the 2 percent rule.
+- **`ggStats.bridge.webMeshes` keeps its meaning.** It counts the meshes in the authored web model before any merge: 148 in both builds. It no longer equals what the bridge draws. X-02 records now carry both `webMeshes` and `bridgeDraws`, the meshes the merged views draw: web 20, far 18.
 
 ## Tablet (X-07): pass
 
@@ -314,12 +359,12 @@ Reproduce the local parts from the scenes root:
 
 ```
 ./scripts/toolchain-run.ps1 packages/golden-gate/tests/tools/build.ts public test
-./scripts/toolchain-run.ps1 packages/golden-gate/tests/tools/perf-local.ts [x02] [x03] [x11] [x12] [--out=<dir>]
+./scripts/toolchain-run.ps1 packages/golden-gate/tests/tools/perf-local.ts [x02] [x03] [x11] [x12] [--out=<dir>] [--build=<label>] [--baseline=<x02-counts.json>]
 ./scripts/toolchain-run.ps1 packages/golden-gate/tests/tools/make-hub-kit.ts [--copies=<dir>]
 ./scripts/toolchain-run.ps1 packages/golden-gate/tests/tools/tablet-check.ts [--seconds 60]
 ```
 
-`--out=<dir>` and `--copies=<dir>` default to `evidence/perf`. Each is one token: `toolchain-run.ps1` is an advanced PowerShell script, so a separate `--out` is read as its ambiguous `-OutVariable`/`-OutBuffer`.
+`--out=<dir>` and `--copies=<dir>` default to `evidence/perf`. `--build=<label>` measures a labelled build from `scripts/build-scene.ts` (`dist/<label>/test`), and `--baseline=<file>` checks X-02 against an earlier `x02-counts.json` (2 percent per view; the verdict is High's). Each is one token: `toolchain-run.ps1` is an advanced PowerShell script, so a separate `--out` is read as its ambiguous `-OutVariable`/`-OutBuffer`.
 
 ## Deferred, with reasons
 
