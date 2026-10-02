@@ -20,7 +20,10 @@ test('one card per slug; the home card pictures the hero poster; the pre-upload 
   expect(new Set(cards.map((card) => card.slug)).size).toBe(cards.length);
   expect(cards.find((card) => card.slug === 'home')?.poster?.src).toBe(hero.poster.src);
   expect(cards.find((card) => card.slug === 'golden-gate-bridge')?.poster?.alt).toBe(bridge.poster.alt);
-  expect(cards.find((card) => card.slug === 'home')?.note).toBe('Kiln · 0.9 release package');
+  // The home card names the release in `release.json` without a `.0` patch: "0.10", not "0.10.0" (and never a number
+  // written into this test, which broke on the 0.10.0 bump).
+  expect(release.version).toMatch(/^\d+\.\d+\.\d+$/);
+  expect(cards.find((card) => card.slug === 'home')?.note).toBe(`Kiln · ${release.version.replace(/\.0$/, '')} release package`);
   const preUpload = socialCards({ ...data, packsEnabled: false });
   expect(preUpload.some((card) => card.poster && !card.slug.startsWith('archive-'))).toBe(false);
   expect(preUpload.some((card) => card.slug === 'farmhouse')).toBe(false);
