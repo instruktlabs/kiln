@@ -135,7 +135,7 @@ function rethrowAuthoringError(error) {
   }
   throw error;
 }
-var UNBOUND_VARIABLE_ADVICE = "Check variable spelling and scope: generated code used an undeclared variable. Read the current source and check declarations before retrying. If it was meant to be a Kiln helper, call kiln_discover to confirm the exact name and signature; the sandbox exposes only those globals.", GEAR_RADII_ORDER_ADVICE = "gearGeo requires boreRadius < rootRadius < tipRadius; specify rootRadius when changing tipRadius. Omitted radii keep their absolute defaults.", ROUNDED_BOX_RADIUS_ADVICE = "roundedBoxGeo: radius must be less than half the smallest dimension. Reduce radius or increase the smallest dimension; equality is invalid.", PROCEDURAL_TEXTURE_UNKNOWN_KEY_ADVICE = 'Remove unsupported proceduralTexture fields. Call kiln_discover with ids ["proceduralTexture"] and use only the documented fields for the selected layer op.', MATERIAL_FRACTION_RANGE_ADVICE = "Material fractions must be finite numbers between 0 and 1, inclusive. In proceduralTexture, mortarWidth and stagger are fractions, not pixels; opacity uses the same range. materialRecipe roughness, metalness, opacity, alphaCutoff and emissiveIntensity use 0..1. portableMaterial roughness, metalness and alphaCutoff also use 0..1; its emissiveIntensity has a separate 0..64 range. Call kiln_discover for the exact field contracts.", PARAMETRIC_PERIODIC_ENDPOINT_ADVICE = "Periodic parametricSurface endpoints must return matching positions. For periodicU, sample(uMin, v) and sample(uMax, v) must match; for periodicV, sample(u, vMin) and sample(u, vMax) must match.", PROFILE_HOLES_UNSUPPORTED_ADVICE = "loftProfiles and sweepProfile: holes are unsupported in options or sections. Use extrudeProfile for a holed cross-section with optional twist/taper; independently varying contours need explicit geometry or solid subtraction. cap:false does not create inner walls or thickness.", PROFILE_CORRESPONDENCE_COLLAPSE_ADVICE = "loftProfiles or sweepProfile: corresponding profile edges collapse between stations. Check matching start vertices and vertex order; for an intended twist, add intermediate sections or path stations. No automatic correspondence repair is applied. Other self-intersections remain unchecked.", UNINITIALIZED_BINDING_ADVICE = "A const, let or class binding was read before its declaration ran (temporal dead zone). Move the declaration above the first code that reads it; top-level constants must be declared before other top-level code uses them. kiln_validate names the binding and line when the read runs immediately.", BUILD_RESULT_ADVICE = 'Define a top-level function build() (it may be async) that returns the root Object3D, for example const root = createRoot("Name"); ...; return root;. A build() that returns nothing, or returns a geometry or material, is rejected.', MATERIAL_RECIPE_OVERRIDE_ADVICE = 'materialRecipe takes a listed kiln.material.*.v1 ID and only the overrides that recipe allows; the allowed overrides differ by recipe (the emissive recipe has no metalness). Call kiln_discover with ids ["materialRecipe"] to see what each recipe allows; kiln_validate names the recipe and key when both are literals.', PROGRAM_TYPE_ERROR_ADVICE = "The program or a helper it called threw a TypeError: a value had the wrong type. Usually something is undefined (a function without a return, an un-awaited async helper such as roundedBoxGeo, extrudeProfile or materialRecipe, or a misspelt property) or a non-function was called. Run kiln_validate, then check the helper contract with kiln_discover.", PROGRAM_RANGE_ERROR_ADVICE = "The program or a helper it called threw a RangeError: a number was outside its allowed range, for example a non-positive size, an invalid array length or segment count, or unbounded recursion. Check the helper arguments against kiln_discover.", LOD_SET_ADVICE = 'Levels of detail: sibling nodes whose names share a stem and carry LOD0, LOD1, ... tokens (Body_LOD0, Body_LOD1) form one set. A set needs LOD0 and consecutive levels under one parent, outside any other tier, and one defineLod([lod0, lod1, ...], { screenCoverage: [...] }) call listing its tiers in level order with one value per level, each from 0 to 1 and strictly decreasing; the last may be 0, which never culls. Build one tier without LOD tokens unless the brief asks for levels. Call kiln_discover with ids ["defineLod"].', OPEN_SHELL_ADVICE = 'markOpenShell(part, reason) marks a part as intentionally open: part is the mesh createPart returned or a group whose meshes it covers, and reason is a non-empty string of at most 200 characters saying why, for example markOpenShell(rail, "C-channel closed by the end plates"). The engine owns the kilnOpenShell userData key; set it only through markOpenShell. Call kiln_discover with ids ["markOpenShell"].', AuthoringDiagnosticError;
+var UNBOUND_VARIABLE_ADVICE = "Check variable spelling and scope: generated code used an undeclared variable. Read the current source and check declarations before retrying. If it was meant to be a Kiln helper, call kiln_discover to confirm the exact name and signature; the sandbox exposes only those globals.", GEAR_RADII_ORDER_ADVICE = "gearGeo requires boreRadius < rootRadius < tipRadius; specify rootRadius when changing tipRadius. Omitted radii keep their absolute defaults.", ROUNDED_BOX_RADIUS_ADVICE = "roundedBoxGeo: radius must be less than half the smallest dimension. Reduce radius or increase the smallest dimension; equality is invalid.", PROCEDURAL_TEXTURE_UNKNOWN_KEY_ADVICE = 'Remove unsupported proceduralTexture fields. Call kiln_discover with ids ["proceduralTexture"] and use only the documented fields for the selected layer op.', MATERIAL_FRACTION_RANGE_ADVICE = "Material fractions must be finite numbers between 0 and 1, inclusive. In proceduralTexture, mortarWidth and stagger are fractions, not pixels; opacity uses the same range. materialRecipe roughness, metalness, opacity, alphaCutoff and emissiveIntensity use 0..1. portableMaterial roughness, metalness and alphaCutoff also use 0..1; its emissiveIntensity has a separate 0..64 range. Call kiln_discover for the exact field contracts.", PARAMETRIC_PERIODIC_ENDPOINT_ADVICE = "Periodic parametricSurface endpoints must return matching positions. For periodicU, sample(uMin, v) and sample(uMax, v) must match; for periodicV, sample(u, vMin) and sample(u, vMax) must match.", PROFILE_HOLES_UNSUPPORTED_ADVICE = "loftProfiles and sweepProfile: holes are unsupported in options or sections. Use extrudeProfile for a holed cross-section with optional twist/taper; independently varying contours need explicit geometry or solid subtraction. cap:false does not create inner walls or thickness.", PROFILE_CORRESPONDENCE_COLLAPSE_ADVICE = "loftProfiles or sweepProfile: corresponding profile edges collapse between stations. Check matching start vertices and vertex order; for an intended twist, add intermediate sections or path stations. No automatic correspondence repair is applied. Other self-intersections remain unchecked.", UNINITIALIZED_BINDING_ADVICE = "A const, let or class binding was read before its declaration ran (temporal dead zone). Move the declaration above the first code that reads it; top-level constants must be declared before other top-level code uses them. kiln_validate names the binding and line when the read runs immediately.", BUILD_RESULT_ADVICE = 'Define a top-level function build() (it may be async) that returns the root Object3D, for example const root = createRoot("Name"); ...; return root;. A build() that returns nothing, or returns a geometry or material, is rejected.', MATERIAL_RECIPE_OVERRIDE_ADVICE = 'materialRecipe takes a listed kiln.material.*.v1 ID and only the overrides that recipe allows; the allowed overrides differ by recipe (the emissive recipe has no metalness). Call kiln_discover with ids ["materialRecipe"] to see what each recipe allows; kiln_validate names the recipe and key when both are literals.', PROGRAM_TYPE_ERROR_ADVICE = "The program or a helper it called threw a TypeError: a value had the wrong type. Usually something is undefined (a function without a return, an un-awaited async helper such as roundedBoxGeo, extrudeProfile or materialRecipe, or a misspelt property) or a non-function was called. Run kiln_validate, then check the helper contract with kiln_discover.", PROGRAM_RANGE_ERROR_ADVICE = "The program or a helper it called threw a RangeError: a number was outside its allowed range, for example a non-positive size, an invalid array length or segment count, or unbounded recursion. Check the helper arguments against kiln_discover.", LOD_SET_ADVICE = 'Levels of detail: sibling nodes whose names share a stem and carry LOD0, LOD1, ... tokens (Body_LOD0, Body_LOD1) form one set. A set needs LOD0 and consecutive levels under one parent, outside any other tier, and one defineLod([lod0, lod1, ...], { screenCoverage: [...] }) call listing its tiers in level order with one value per level, each from 0 to 1 and strictly decreasing; the last may be 0, which never culls. Build one tier without LOD tokens unless the brief asks for levels. Call kiln_discover with ids ["defineLod"].', OPEN_SHELL_ADVICE = 'markOpenShell(part, reason) marks a part as intentionally open: part is the mesh createPart returned or a group whose meshes it covers, and reason is a non-empty string of at most 200 characters saying why, for example markOpenShell(rail, "C-channel closed by the end plates"). The engine owns the kilnOpenShell userData key; set it only through markOpenShell. Call kiln_discover with ids ["markOpenShell"].', EXECUTION_REJECTED_ADVICE = "No message, stack or identifier crosses the sandbox: a thrown Error, a source-policy denial and any other failure are each reported only as this sentence. Run kiln_validate on the same source for the failing line and code; to read values, render the program and call kiln_inspect (listParts, measurements) instead of throwing. A TypeError, RangeError, unbound variable or build() mistake is named when it is the cause.", AuthoringDiagnosticError;
 var init_authoring_diagnostic = __esm(() => {
   AuthoringDiagnosticError = class AuthoringDiagnosticError extends Error {
     diagnostic;
@@ -23010,7 +23010,6 @@ import * as walk from "acorn-walk";
 function sourceBindings(ast) {
   const scopes = new Map;
   const allNames = new Set;
-  const sloppyFunctions = [];
   const bind = (scope, pattern) => {
     if (!pattern)
       return;
@@ -23052,18 +23051,9 @@ function sourceBindings(ast) {
     Function(node, _state, ancestors) {
       for (const parameter of node.params)
         bind(node, parameter);
-      if (node.type === "FunctionDeclaration") {
-        const outer = ancestors.slice(0, -1);
-        bind(scopeFor(outer), node.id);
-        const isStrict = ancestors.some((ancestor) => {
-          if (ancestor.type === "ClassDeclaration" || ancestor.type === "ClassExpression")
-            return true;
-          const body = ancestor;
-          return Array.isArray(body.body) && body.body.some((statement, index, list) => statement.type === "ExpressionStatement" && ("directive" in statement) && statement.directive === "use strict" && list.slice(0, index).every((prior) => ("directive" in prior)));
-        });
-        if (!isStrict && node.id)
-          sloppyFunctions.push({ id: node.id, ancestors: outer, scope: scopeFor(outer) });
-      } else
+      if (node.type === "FunctionDeclaration")
+        bind(scopeFor(ancestors.slice(0, -1)), node.id);
+      else
         bind(node, node.id);
     },
     Class(node, _state, ancestors) {
@@ -23075,12 +23065,6 @@ function sourceBindings(ast) {
       bind(node, node.param);
     }
   });
-  for (const { id, ancestors, scope } of sloppyFunctions) {
-    const target = scopeFor(ancestors, true);
-    const between = ancestors.slice(ancestors.indexOf(target) + 1);
-    if (!between.some((node) => node !== scope && node.type !== "CatchClause" && scopes.get(node)?.has(id.name)))
-      bind(target, id);
-  }
   return {
     allNames,
     has(name, ancestors) {
@@ -23594,6 +23578,15 @@ function validate(code, _opts = {}) {
     });
     return toResult(issues, warnings);
   }
+  const strict = strictModeSyntaxError(normalized);
+  if (strict) {
+    issues.push({
+      code: "SYNTAX_ERROR",
+      message: `Syntax error in strict mode: ${strict.message}`,
+      fixHint: "Generated code runs in strict mode; rewrite the construct at the reported line (no with, legacy octal literal, duplicate parameter name or delete of a plain name).",
+      line: strict.line
+    });
+  }
   issues.push(...analyzeGeneratedSourceSafety(ast));
   issues.push(...analyzeBuildTimeThrows(ast));
   const structure = analyzeTopLevel(ast);
@@ -23691,6 +23684,20 @@ function unknownHelperWarnings(ast) {
     ...line === undefined ? {} : { line }
   });
 }
+function strictModeSyntaxError(code) {
+  try {
+    acorn.parse(`'use strict';${code}`, {
+      ecmaVersion: 2022,
+      sourceType: "script",
+      allowReturnOutsideFunction: false,
+      locations: true
+    });
+    return;
+  } catch (error) {
+    const loc = error && typeof error === "object" && "loc" in error ? error.loc : undefined;
+    return { message: error instanceof Error ? error.message : String(error), line: loc?.line };
+  }
+}
 function assertGeneratedSourceSafe(code) {
   let ast;
   try {
@@ -23708,6 +23715,13 @@ function assertGeneratedSourceSafe(code) {
       line
     });
   }
+  const strict = strictModeSyntaxError(code);
+  if (strict)
+    throw new GeneratedSourcePolicyError({
+      code: "SYNTAX_ERROR",
+      message: "Generated source has invalid strict-mode syntax.",
+      line: strict.line
+    });
   const issue = analyzeGeneratedSourceSafety(ast)[0];
   if (issue)
     throw new GeneratedSourcePolicyError(issue);
@@ -23752,6 +23766,22 @@ function analyzeGeneratedSourceSafety(ast) {
     fixHint: "Use a documented direct THREE constructor or a sandbox material/texture helper.",
     line
   });
+  const thisBindsToMethodReceiver = (ancestors) => {
+    for (let i = ancestors.length - 2;i >= 0; i--) {
+      const node = ancestors[i];
+      if (node.type === "ArrowFunctionExpression")
+        continue;
+      if (node.type === "PropertyDefinition" || node.type === "StaticBlock")
+        return true;
+      if (node.type === "FunctionDeclaration")
+        return false;
+      if (node.type !== "FunctionExpression")
+        continue;
+      const parent = ancestors[i - 1];
+      return (parent?.type === "Property" || parent?.type === "MethodDefinition") && parent.value === node;
+    }
+    return false;
+  };
   walk4.ancestor(ast, {
     Identifier(node, _state, ancestors) {
       const parent = ancestors.at(-2);
@@ -23761,7 +23791,9 @@ function analyzeGeneratedSourceSafety(ast) {
         ambient(node.name, node.loc?.start.line);
       }
     },
-    ThisExpression(node) {
+    ThisExpression(node, _state, ancestors) {
+      if (thisBindsToMethodReceiver(ancestors))
+        return;
       ambient("this", node.loc?.start.line);
     },
     ImportExpression(node) {
@@ -29302,7 +29334,8 @@ async function executeKilnCode(code, options = {}) {
     });
     const globalNames = Object.keys(globals);
     const globalValues = Object.values(globals);
-    const fn = new Function(...globalNames, `${normalized}
+    const fn = new Function(...globalNames, `'use strict';
+${normalized}
 return { meta: typeof meta !== 'undefined' ? meta : {}, build, animate: typeof animate !== 'undefined' ? animate : null };`);
     const { meta, build, animate } = fn(...globalValues);
     if (typeof build !== "function") {
@@ -30457,7 +30490,7 @@ var init_protocol = __esm(() => {
     code;
     diagnostic;
     constructor(code, message = evaluatorOutcomeMessage(code), diagnostic) {
-      super(diagnostic ? `${message} ${authoringDiagnosticAdvice(diagnostic)}` : message);
+      super(diagnostic ? `${message} ${authoringDiagnosticAdvice(diagnostic)}` : code === "EXECUTION_REJECTED" ? `${message} ${EXECUTION_REJECTED_ADVICE}` : message);
       this.code = code;
       this.diagnostic = diagnostic;
       this.name = "EvaluatorPortError";
@@ -30661,7 +30694,7 @@ var init_subprocess = __esm(() => {
     diagnostic;
     code;
     constructor(code, message, diagnostic) {
-      super(diagnostic ? `${message} ${authoringDiagnosticAdvice(diagnostic)}` : message);
+      super(diagnostic ? `${message} ${authoringDiagnosticAdvice(diagnostic)}` : code === "EXECUTION_REJECTED" ? `${message} ${EXECUTION_REJECTED_ADVICE}` : message);
       this.diagnostic = diagnostic;
       this.name = "EvaluatorSubprocessError";
       this.code = code;
@@ -34961,7 +34994,7 @@ import { z as z8 } from "zod";
 var workspaceSelectionSchema = z8.object({
   projectId: projectIdSchema.nullable().optional().describe("Project; omit for the configured default, null for standalone."),
   projectRevision: projectRevisionIdSchema.optional().describe("Exact project revision."),
-  materialDependencies: materialDependenciesSchema.optional().describe("Exact material pins for this call; project locks cannot be replaced.")
+  materialDependencies: materialDependenciesSchema.optional().describe("Pins for this call; each replaces the project pin of its resourceId.")
 }).strict().superRefine((selection, ctx) => {
   if (selection.projectId === null && selection.projectRevision !== undefined)
     ctx.addIssue({
@@ -35004,15 +35037,10 @@ class FileWorkspace {
       throw new Error("projectRevision requires a project");
     const project = inherit ? existing.project : projectId ? await this.projects.read(projectId, selection.projectRevision) : undefined;
     const pins = new Map;
-    for (const dependency of [
-      ...inherit ? existing.materialDependencies : project?.materialDependencies ?? [],
-      ...selection.materialDependencies ?? []
-    ]) {
-      const previous = pins.get(dependency.resourceId);
-      if (previous && (previous.revisionId !== dependency.revisionId || previous.sha256 !== dependency.sha256))
-        throw new Error(`Conflicting material revisions for ${dependency.resourceId}; project or inherited resource locks cannot be replaced.`);
-      pins.set(dependency.resourceId, previous ?? dependency);
-    }
+    for (const dependency of inherit ? existing.materialDependencies : project?.materialDependencies ?? [])
+      pins.set(dependency.resourceId, dependency);
+    for (const dependency of selection.materialDependencies ?? [])
+      pins.set(dependency.resourceId, dependency);
     const materialDependencies = materialDependenciesSchema.parse([...pins.values()].sort((a, b) => a.resourceId.localeCompare(b.resourceId)));
     if (materialDependencies.length > MATERIAL_LIBRARY_LIMITS.maxPayloadRecords)
       throw new Error(`An evaluation may resolve at most ${MATERIAL_LIBRARY_LIMITS.maxPayloadRecords} material resources; select a smaller dependency closure.`);
@@ -40321,6 +40349,16 @@ async function onlyRevision(library, materialId) {
     throw unknownMaterial(materialId);
   throw new Error(`Material ${materialId} has ${revisions.length} revisions: ${revisions.join(", ")}. Pass revisionId to get one.`);
 }
+function aliasMaterialId(raw) {
+  if (!raw || typeof raw !== "object" || Array.isArray(raw))
+    return raw;
+  const { resourceId, ...rest } = raw;
+  if (resourceId === undefined)
+    return raw;
+  if (rest.materialId !== undefined && rest.materialId !== resourceId)
+    throw new Error(`kiln_material: resourceId (${String(resourceId)}) and materialId (${String(rest.materialId)}) name different materials; pass materialId alone.`);
+  return { ...rest, materialId: resourceId };
+}
 function createKilnMaterialDef(library) {
   return {
     name: "kiln_material",
@@ -40334,7 +40372,7 @@ function createKilnMaterialDef(library) {
     },
     async run(raw) {
       assertMaterialJson(raw);
-      const input = materialToolInput.parse(raw);
+      const input = materialToolInput.parse(aliasMaterialId(raw));
       requireActionFields("kiln_material", input.action, input, REQUIREMENTS2[input.action]);
       switch (input.action) {
         case "presets":
@@ -42630,7 +42668,7 @@ function createKilnToolHost(context = {}, options = {}) {
         return {
           uri,
           mimeType: file.mimeType,
-          ...file.name.endsWith(".json") || file.name.endsWith(".js") ? { text: new TextDecoder().decode(file.bytes) } : { blob: Buffer.from(file.bytes).toString("base64") }
+          ...file.name.endsWith(".json") || file.name.endsWith(".js") ? { text: resourceText(file.name, file.bytes) } : { blob: Buffer.from(file.bytes).toString("base64") }
         };
       }
       if (uri.startsWith("kiln://projects/")) {
@@ -42645,6 +42683,16 @@ function createKilnToolHost(context = {}, options = {}) {
       throw new Error(`Resource not found: ${uri}`);
     }
   };
+}
+function resourceText(name, bytes) {
+  const text = new TextDecoder().decode(bytes);
+  if (!name.endsWith(".json"))
+    return text;
+  try {
+    return JSON.stringify(JSON.parse(text));
+  } catch {
+    return text;
+  }
 }
 function createKilnMcpServer(context = {}, options = {}) {
   const host = createKilnToolHost(context, options);

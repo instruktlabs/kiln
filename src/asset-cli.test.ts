@@ -280,3 +280,62 @@ test('CLI save paints its preview on the named backdrop and records it, like kil
     await rm(root, { recursive: true, force: true });
   }
 }, 30000);
+
+// Decision 28 of 2 October 2026: `kiln asset <id>` without a revision reads the newest one,
+// as `kiln_assets get` does, and `kiln save --help` prints the save usage alone (a blind
+// OpenCode run read 16,077 characters of global usage for it).
+test('CLI asset without a revision reads the newest one, and save --help prints its own usage', async () => {
+  const root = await mkdtemp(join(tmpdir(), 'kiln-asset-cli-newest-'));
+  const cli = resolve('src/cli.ts');
+  const run = (args: string[]) =>
+    spawnSync(process.execPath, [cli, ...args], {
+      cwd: root,
+      env: {
+        ...process.env,
+        KILN_RENDER: 'cpu',
+        KILN_EVALUATOR_MODE: 'in-process',
+        KILN_PROGRAM_STORE: join(root, '.kiln', 'programs'),
+        KILN_COLLECTIONS: JSON.stringify({ project: join(root, 'collection') }),
+      },
+      encoding: 'utf8',
+      windowsHide: true,
+    });
+  try {
+    const help = run(['save', '--help']);
+    expect(help.status).toBe(0);
+    expect(help.stdout).toContain('kiln save <source.js|programRef>');
+    expect(help.stdout).not.toContain('kiln view');
+    expect(help.stdout.length).toBeLessThan(1500);
+    const crate = resolve('examples/crate.kiln.js');
+    const first = run(['save', crate, '--name', 'Crate', '--render', 'cpu']);
+    expect(first.status).toBe(0);
+    const parent = JSON.parse(first.stdout).asset;
+    const second = run([
+      'save',
+      crate,
+      '--name',
+      'Crate',
+      '--render',
+      'cpu',
+      '--asset',
+      parent.assetId,
+      '--parent',
+      parent.revisionId,
+    ]);
+    expect(second.status).toBe(0);
+    const child = JSON.parse(second.stdout).asset;
+    expect(child.revisionId).not.toBe(parent.revisionId);
+    const newest = run(['asset', parent.assetId]);
+    expect(newest.status).toBe(0);
+    expect(JSON.parse(newest.stdout).revisionId).toBe(child.revisionId);
+    const named = run(['asset', parent.assetId, parent.revisionId]);
+    expect(named.status).toBe(0);
+    expect(JSON.parse(named.stdout).revisionId).toBe(parent.revisionId);
+    // An export hands off one exact revision and still names it.
+    const exported = run(['export', parent.assetId, '--out', join(root, 'crate.zip')]);
+    expect(exported.status).not.toBe(0);
+    expect(exported.stderr).toContain('revision ID');
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+}, 120_000); // Six compiled-CLI runs, two of them CPU saves: the round trip above ran 10 to 30 s on this host and past 30 s at 97% CPU on 2 October 2026, so its 120 s budget applies here.

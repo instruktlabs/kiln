@@ -2687,7 +2687,7 @@ const assetSelector = {
  * one no later revision names as its parent, ties to the latest `createdAt`
  * (c40 of 1 October 2026 called get with the asset id alone and was refused).
  */
-async function newestRevision(
+export async function newestRevision(
   target: {
     list(
       collection: string,

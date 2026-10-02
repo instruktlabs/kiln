@@ -489,7 +489,7 @@ var mcp_manifest_default = {
             pattern: "^r_[0-9]{10}_[a-f0-9]{64}$"
           },
           materialDependencies: {
-            description: "Exact material pins for this call; project locks cannot be replaced.",
+            description: "Pins for this call; each replaces the project pin of its resourceId.",
             maxItems: 512,
             type: "array",
             items: {
@@ -645,7 +645,7 @@ var mcp_manifest_default = {
             pattern: "^r_[0-9]{10}_[a-f0-9]{64}$"
           },
           materialDependencies: {
-            description: "Exact material pins for this call; project locks cannot be replaced.",
+            description: "Pins for this call; each replaces the project pin of its resourceId.",
             maxItems: 512,
             type: "array",
             items: {
@@ -740,7 +740,7 @@ var mcp_manifest_default = {
             pattern: "^r_[0-9]{10}_[a-f0-9]{64}$"
           },
           materialDependencies: {
-            description: "Exact material pins for this call; project locks cannot be replaced.",
+            description: "Pins for this call; each replaces the project pin of its resourceId.",
             maxItems: 512,
             type: "array",
             items: {
@@ -1016,7 +1016,7 @@ var mcp_manifest_default = {
             pattern: "^r_[0-9]{10}_[a-f0-9]{64}$"
           },
           materialDependencies: {
-            description: "Exact material pins for this call; project locks cannot be replaced.",
+            description: "Pins for this call; each replaces the project pin of its resourceId.",
             maxItems: 512,
             type: "array",
             items: {
@@ -1148,7 +1148,7 @@ var mcp_manifest_default = {
             pattern: "^r_[0-9]{10}_[a-f0-9]{64}$"
           },
           materialDependencies: {
-            description: "Exact material pins for this call; project locks cannot be replaced.",
+            description: "Pins for this call; each replaces the project pin of its resourceId.",
             maxItems: 512,
             type: "array",
             items: {
@@ -1613,7 +1613,7 @@ var mcp_manifest_default = {
             pattern: "^r_[0-9]{10}_[a-f0-9]{64}$"
           },
           materialDependencies: {
-            description: "Exact material pins for this call; project locks cannot be replaced.",
+            description: "Pins for this call; each replaces the project pin of its resourceId.",
             maxItems: 512,
             type: "array",
             items: {

@@ -213,6 +213,13 @@ part floats, the compact render result is 9,103 characters, `full` 16,734 and `l
   returns, not every manifest (34,116 characters for five pinned materials before).
 - `scripts/tier2-dogfood.mjs` counts the tool steps of an Agy stream (`step_update` with
   `tool_name`, one per step index), so a blind Agy run's receipt no longer says `unknown`.
+- A saved manifest read as a resource (`kiln://assets/.../manifest.json`) is one line, as
+  every tool result is; the file on disk stays pretty-printed. CLI `kiln asset <id>`
+  without a revision reads the asset's newest revision, as `kiln_assets get` does (it
+  refused with "requires asset ID and revision ID"), while `export` still names one exact
+  revision; `kiln save --help` prints the save usage alone (a blind OpenCode run read
+  2,275 characters of the assets-and-viewer block for it, and the whole block had been
+  16,077 before the records trim).
 
 ### Generated code
 

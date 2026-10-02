@@ -7,7 +7,7 @@ import { listAssetCatalog } from './asset-catalog';
 import { ASSET_LIMIT, assetIdSchema, decodeAssetBundle } from './assets';
 import { localProgramStore } from './program-store-node';
 import { programRefPattern, retainProgram } from './program-store';
-import { createKilnProgramToolRegistry } from './tools/registry';
+import { createKilnProgramToolRegistry, newestRevision } from './tools/registry';
 import { writeNewDestinationsAtomic } from './cli-output';
 import { exportAssetGlb } from './asset-export';
 import { createPackagedLocalToolContext } from './local-runtime';
@@ -24,20 +24,30 @@ import { CATEGORY_MIGRATION_MESSAGE, readHostRequirementsFile } from './requirem
 import { observeLiveReview } from './tools/workspace';
 import { cliWorkspaceSelection, readMaterialDependencies } from './workspace-cli';
 
-export const ASSET_USAGE = `
-ASSETS & VIEWER
-  kiln save <source.js|programRef> --name <name> [--collection project]
+const SAVE_LINES = `  kiln save <source.js|programRef> --name <name> [--collection project]
        [--asset <id> --parent <revision>] [--description <text>] [--tag <tag>]
        [--model <model>] [--harness <harness>] [--author <author>]  declared attribution
        [--backdrop neutral|dark|light]   preview backdrop; the one the reviewed sheet used
-       [--project <id> | --no-project] [--project-revision <r>] [--materials <json>]
+       [--project <id> | --no-project] [--project-revision <r>] [--materials <json>]`;
+/** What `kiln save --help` prints: the one command (a blind run read 16,077 characters of global usage for it). */
+export const SAVE_USAGE = `
+SAVE
+${SAVE_LINES}
+       [--render auto|cpu|gpu]           views for the preview and its review (default: auto)
+       [--requirements <host-binding.json>]   optional host policy
+  Prints the saved revision as JSON: assetId, revisionId and the review. A later revision
+  of the same asset names it with --asset and --parent. kiln --help lists every command.
+`;
+export const ASSET_USAGE = `
+ASSETS & VIEWER
+${SAVE_LINES}
   kiln collections                        list configured collections and their directories
   kiln collections add <name> <directory>  remember another collection root
   --requirements <host-binding.json>      optional host policy for save or asset --restore
   kiln assets [--collection project]      list saved revisions (JSON)
   kiln assets --all                       Library across all registered collections
-  kiln asset <id> <revision> [--collection project] [--restore]
-  kiln asset <id> <revision> --rebuild --out rebuilt.glb [--requirements file]
+  kiln asset <id> [<revision>] [--collection project] [--restore]   newest revision by default
+  kiln asset <id> [<revision>] --rebuild --out rebuilt.glb [--requirements file]
   kiln export <id> <revision> --out asset.zip [--format bundle|glb|source]
        [--profile editable|runtime]   runtime writes GLB + sibling metadata JSON
        [--json]   receipt naming each file with its bytes and sha256
@@ -101,7 +111,7 @@ export async function assetMain(argv: readonly string[]): Promise<number> {
       continue;
     }
     if (arg === '--help' || arg === '-h') {
-      console.log(ASSET_USAGE);
+      console.log(command === 'save' ? SAVE_USAGE : ASSET_USAGE);
       return 0;
     }
     if (arg === '--category' || arg.startsWith('--category='))
@@ -263,8 +273,12 @@ export async function assetMain(argv: readonly string[]): Promise<number> {
       }
     }
   } else if (command === 'asset' || command === 'export') {
-    const [assetId, revisionId] = positional;
-    if (!assetId || !revisionId) throw new Error(`${command} requires asset ID and revision ID`);
+    const [assetId, named] = positional;
+    if (!assetId || (command === 'export' && !named))
+      throw new Error(`${command} requires asset ID and revision ID`);
+    // `asset` without a revision reads the newest one, as kiln_assets get does (decision
+    // 28 of 2 October 2026); export hands off one exact revision and still names it.
+    const revisionId = named ?? (await newestRevision(library, collection, assetId));
     const record = await library.read(collection, assetId, revisionId);
     if (command === 'asset') {
       if (flags.rebuild) {
