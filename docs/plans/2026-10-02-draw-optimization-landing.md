@@ -14,6 +14,8 @@ is PR 2, which the 0.10.0 engine agent builds after PR #129 merges, from
 
 ## Inputs
 
+The `tmp/` and `scenes/evidence/` paths below are ignored and local only.
+
 - **The cycle's records:** the plan `docs/plans/2026-10-01-draw-optimization-cycle.md`, the review
   `docs/reviews/2026-10-02-draw-optimization.md` and the engine handoff above.
 - **Decision briefs** (ignored, `tmp/drawcalls/decisions/`): `decide-sweep.brief.md` (D15-D34 and the batch
@@ -24,7 +26,8 @@ is PR 2, which the 0.10.0 engine agent builds after PR #129 merges, from
   `scenes/evidence/perf/tablet-2026-10-02/tablet-revz-2026-10-02/`.
 - **Pilot parity:** `tmp/drawcalls/decisions/decide-sweep/e2-samephase.ts`, the prototype of the paired audit, and
   its 17 same-phase pairs.
-- **v1-readiness:** PR #129 at `966c8d6` is open. It shares no file with this branch.
+- **v1-readiness:** PR #129 (`966c8d6`) shares no file with this branch. It merged as `9375d04` (Kiln 0.10.0) at
+  13:04 on 2 October (corrected: this line first said it was open).
 
 ## Owner decisions (2026-10-02, 12:53-13:08 -04:00)
 
@@ -205,7 +208,8 @@ The owner took the recommended option on every question.
 **L5, evidence.**
 - The paired pilot audit of the final Farm build against `draw-base`, on WebGPU and WebGL2, using the prototype.
 - The count probe on the final builds.
-- The hub timing (D21) against `draw-base`, using the commands in `tmp/drawcalls/s6/timing-full.report.md`.
+- The hub timing (D21) against `draw-base`, using the commands in `tmp/drawcalls/s6/timing-full.report.md` (ignored,
+  local only).
 
 **L6, gates on a quiet host.**
 - Engine: typecheck, lint, test, `test:render-service`, `test:coverage` and `check:skills`.
@@ -238,8 +242,8 @@ Keep `draw-base`, `draw-after`, `flicker-revz2`, the evidence and the reports.
 
 ## Progress log
 
-- 13:17: plan written. The answers are in `tmp/drawcalls/decisions/answers.md`, and the engine handoff gained the
-  owner's engine answers.
+- 13:17: plan written. The answers are in `tmp/drawcalls/decisions/answers.md` (ignored, local only), and the engine
+  handoff gained the owner's engine answers.
 - 13:17-13:19: D32 clean-up, approved as "clean now".
   - 352 of the 356 leaked Chrome folders in `scenes/.tmp` were removed (`*-chrome-XXXXXX` profiles and Chrome's
     `chrome_chrome_BITS_*` temp folders). C: gained 13,661 MB.
@@ -248,6 +252,13 @@ Keep `draw-base`, `draw-after`, `flicker-revz2`, the evidence and the reports.
   - No Chrome, Bun or Node process was using the worktree. No record cites a profile path.
 - 13:20: the batch times in `answers.md`, this plan and the handoff were corrected from the session transcript.
   They had been stamped 2-22 minutes too late.
+- 13:58: the landing was split, by the owner's direction of 2 October ("avoid tedium and ceremony; get this over the
+  line"). PR 1 carries the existing commits (every `draw-optimization` commit except `e72b610`, cherry-picked onto
+  `draw-optimization-landing` from `origin/main` at `9375d04`), the records corrections and the D24 skill
+  corrections. The new scene work (L2), the hub timing (D21) and the dogfood sessions (D31) are deferred to after the
+  owner's trip; DECISIONS D-65 to D-76 mark each deferred answer.
+- 14:02: PR #130 (docs and site only, no shared file) merged as `a396612` at 13:53, so the landing branch was rebased
+  onto it before the push and its gates were rerun.
 
 ## Goal statement
 

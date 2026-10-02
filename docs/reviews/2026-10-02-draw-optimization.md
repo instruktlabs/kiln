@@ -6,7 +6,7 @@ The draw-optimization cycle ran on branch `draw-optimization` in the worktree
 are recorded as D-46 to D-63 in `scenes/DECISIONS.md`, and the X-02 re-baseline
 as D-64.
 
-The private page with the parity images is https://claude.ai/artifact/8yyK4nmGRcLbAEb3dLAvbo. This record covers counts, look parity, quiet-host timing, what worked where, the
+The parity images are on the private report page (owner). This record covers counts, look parity, quiet-host timing, what worked where, the
 open decisions and a feedback map. The commits are local only: nothing was pushed,
 deployed, posted upstream, or run against a live model. No owner acceptance is
 implied.
@@ -38,6 +38,10 @@ Representative views, draws per frame:
 
 ## What changed
 
+The hashes are those of the source branch `draw-optimization`. PR 1 lands every
+commit except `e72b610` as a cherry-pick under a new hash; the engine modules of
+`e72b610` land in the separate engine PR.
+
 | Commit | Step |
 |---|---|
 | `417da63` | Committed per-pass count probe for every scene (S1) |
@@ -64,7 +68,7 @@ following for every scene, tier and named view or workload:
 
 It covered 204 fixtures, all stable. GPU draws equal JS draws everywhere, and every
 what-if restores its baseline. The ranked levers are in
-`scenes/evidence/counts/draw-base/levers.md`. The short version:
+`scenes/evidence/counts/draw-base/levers.md` (ignored, local only). The short version:
 
 - **Farm:**
   - The shadow pass was 270 of 583 draws at the landing view. A cached static map
@@ -87,6 +91,9 @@ what-if restores its baseline. The ranked levers are in
 
 ## Phase 0 engine (S2)
 
+These modules (`e72b610`) are not in PR 1; they land in the engine PR described in
+`docs/reviews/2026-10-02-draw-optimization-engine-handoff.md`.
+
 `mergeRigidGroups` merges by material inside rigid groups. Its boundaries are:
 - animation targets;
 - `Joint_*` pivots;
@@ -108,7 +115,8 @@ For `farmhouse.glb`:
 Wiring the merge into `optimize:'full'` is held (see the open decisions).
 `src/render.ts` and `dist/` are `v1-readiness` files, and the bundle test checks
 `dist/` byte for byte. The patch and its test updates are in
-`tmp/drawcalls/phase0/wiring.patch`; all 401 optimize-related tests pass with it.
+`tmp/drawcalls/phase0/wiring.patch` (ignored, local only); all 401 optimize-related
+tests pass with it.
 
 ## Multisample store (S3, OD-10)
 
@@ -134,9 +142,8 @@ when a pass would reload the attachments. Pin tests read three's build.
 | Tablet, Farm economy (GPU-bound) | frames within one refresh 39.9% → 48.8%, 37.5 → 39.8 fps |
 
 three r186 makes the attachments transient when the store flags are false, and the
-tablet supports `TRANSIENT_ATTACHMENT`. The private page (issue, how it was found,
-fix) is https://claude.ai/artifact/TZzjtuijtZAmMd42jL1K3d. Nothing was posted
-upstream.
+tablet supports `TRANSIENT_ATTACHMENT`. The issue, how it was found and the fix
+are on a private report page (owner). Nothing was posted upstream.
 
 ## Scene-kit features (S4, S4b)
 
@@ -205,6 +212,14 @@ Where each one is on:
   budget 100):
   - WebGPU: 20 views at 4 tiers;
   - WebGL2: 6.
+- **Pilot parity** (D-53, D-64) did not run in S5. The decision sweep of 2 October
+  ran it as D20 against the sealed r34 pilot, on WebGPU and WebGL2. Standalone runs
+  failed a different view for each build, for reasons in the tool (a loose phase
+  capture, animations it cannot align). Captured at the same pilot phase,
+  draw-after and draw-base got the same verdict in 17 of 17 pairs, so all 17
+  same-phase pairs pass: the cycle did not change pilot parity. The pairs came
+  from a prototype script,
+  `tmp/drawcalls/decisions/decide-sweep/e2-samephase.ts` (ignored, local only).
 - **OD-4 shadow changes** at economy (2 texels = 34 cm):
   - the trailer drawbar, hitch ring and hitch pin stop casting (146 px over 8
     levels);
@@ -214,7 +229,8 @@ Where each one is on:
   - balanced changes 5 px or fewer.
 
   The farmers keep their small parts, so the player's shadow keeps its neck and boot
-  contact. Images: `tmp/drawcalls/s5/images/farm/` (on the private page).
+  contact. Images: `tmp/drawcalls/s5/images/farm/` (ignored, local only; also on
+  the private report page).
 - **Merge pixels** (OD-18): isolated flips on the barn cupola louvres and the
   watermill corner speckle, up to 153 px over 8 levels; they pass both checks.
 - **X-02** now compares against `packages/farm/fixtures/x02-baseline.json` (D-64).
@@ -226,12 +242,14 @@ Where each one is on:
     1,746 to 104.
   - Reflection draws go from 2,163 to 773.
   - Main-pass draws at high go from 2,231 to 811.
-- **Parity:** 488 of 489 cases pass, over day, golden and fog presets on WebGPU and
-  WebGL2.
-  - **The failure:** high golden-hour side-full has 193 px over 32 levels, against
-    a budget of 100; B-06 passes. It comes from the tower ribs against their
-    panels: a depth tie that the merge settles in one fixed order where the
-    per-mesh sort used to vary with the view.
+- **Parity:** 488 of 489 cases pass in the S5 parity run, over day, golden and fog
+  presets on WebGPU and WebGL2. That count is too high: the run covered golden-hour
+  side-full only at high on WebGPU, and the view also fails at economy and
+  balanced (193 px) and on High WebGL2 (200 px).
+  - **The failure:** golden-hour side-full has 193 px over 32 levels at high (200
+    on WebGL2), against a budget of 100; B-06 passes. It comes from the tower ribs
+    against their panels: a depth tie that the merge settles in one fixed order
+    where the per-mesh sort used to vary with the view.
   - **Accepted residuals:** golden arrival 74 px, day span 52, low shore
     reflections 21-35.
   - **Kerb stipple:** the review found it (the merge put the curbs after the
@@ -274,8 +292,8 @@ The timing uses quiet hosts only (OD-5).
   display refreshes.
 
 The full tables, load samples and draw cross-checks are in
-`tmp/drawcalls/s6/timing-full.report.md`. Evidence is in
-`scenes/evidence/perf/{hub,tablet}-2026-10-02/`.
+`tmp/drawcalls/s6/timing-full.report.md` (ignored, local only). Evidence is in
+`scenes/evidence/perf/{hub,tablet}-2026-10-02/` (ignored, local only).
 
 **Tablet, minimal** (its tier, D-25). Both builds hold 60 Hz, p95 stays within OD-7
 (33.3 ms), and D-41 passes in every run.
@@ -288,6 +306,10 @@ The full tables, load samples and draw cross-checks are in
 | Foundry Floor drive | 17.2 → 16.7 | 96.3 → 100% | 100 → 100% | 92 → 82 (3/3) | 148 → 135 |
 | Golden Gate arrival | 16.7 → 16.7 | 100 → 100% | 100 → 100% | 87 → 83 (3/3) | 140 → 36 |
 | Golden Gate drive | 16.7 → 16.8 | 98.4 → 98.3% | 100 → 100% | 93 → 90 (3/3) | 128 → 50 |
+
+Busy alone understates the GPU savings. The Mali clock changes with load, so the
+same busy share at a higher clock is more work; read as busy × clock, Farm walk
+falls by 15% and Foundry Floor campus by 24%, where the busy column reads mixed.
 
 In the Foundry Floor drive, the old build misses vsync throughout: its longest frame
 is 33.8 ms, against 17.8 ms after.
@@ -349,7 +371,7 @@ Within 2 refreshes is 100% in both builds in every hub cell.
 - Hub balanced and economy beyond Farm hero and Golden Gate arrival: 14 cells,
   about 1 h 45 min.
 - Golden Gate hero orbit (arrival was run instead).
-- Foundry Floor economy on the tablet.
+- Foundry Floor economy on the tablet: no longer pending; it has since run.
 - Any run on this PC, once it passes its quiet check.
 
 ## What worked where
@@ -367,6 +389,10 @@ Within 2 refreshes is 100% in both builds in every hub cell.
 
 ## Open decisions for the owner
 
+The owner answered all ten on 2 October in a wider decision sweep: the scene
+answers are in `scenes/DECISIONS.md` from D-65, the engine answers in
+`docs/reviews/2026-10-02-draw-optimization-engine-handoff.md`.
+
 1. **Engine wiring** of `mergeRigidGroups` into `optimize:'full'`:
    - (a) commit regenerated `dist/` here and regenerate at rebase; or
    - (b) wait until `v1-readiness` merges (recommended, OD-1).
@@ -378,7 +404,8 @@ Within 2 refreshes is 100% in both builds in every hub cell.
 4. **OD-4 images:** accept the economy small-caster changes on the private page (or
    exempt the trailer hitch).
 5. **Golden Gate tower depth tie:** accept 193 px at golden-hour side-full, or keep
-   the tower ribs unmerged for a few draws.
+   the tower ribs unmerged for a few draws. Correction: keeping the ribs unmerged
+   also fails, at 177 px.
 6. **OD-9 live map size:** full size is the default. `?liveMapSize=1024` at high
    saves 25.2 MB at a small look risk.
 7. **Woodland packing at minimal** (Farm, up to −48 draws on the tablet tier).
@@ -447,13 +474,20 @@ The following are ignored local paths in the worktree:
 - `scenes/evidence/perf/{hub,tablet}-2026-10-02/`.
 
 Reports are under `tmp/drawcalls/` (`understand/`, `wave-a/`, `wave-b/`,
-`wave-b-review/`, `s5/`, `s6/`).
+`wave-b-review/`, `s5/`, `s6/`), which is ignored and local only too.
 
 Gates are listed in the last section.
 
 ## Gates
 
-All gates were run on HEAD `69f92fe`. Logs are in `tmp/drawcalls/gates/final/`.
+All gates were run on HEAD `69f92fe`. Logs are in `tmp/drawcalls/gates/final/`
+(ignored, local only).
+
+On 2 October the landing branch `draw-optimization-landing` (on `main` `a396612`)
+reran `bun run check:skills` (pass) and the scenes gates: typecheck pass, lint 0
+findings, test 525 pass, 30 skip, 0 fail. The 8 skips beyond the 22 below are
+suites whose ignored staged inputs a fresh worktree does not have (Golden Gate's
+vehicle models, 7; Foundry Floor's saved plants, 1).
 
 **Engine**
 

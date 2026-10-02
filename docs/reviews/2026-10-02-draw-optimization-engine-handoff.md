@@ -6,9 +6,11 @@ its skills, assets or projects. That covers what is ready to apply, what is only
 which decisions are still the owner's.
 
 It was written on 2026-10-02 at about 12:45 -04:00, in the worktree
-`C:/Users/Mattm/X/kiln-draw-optimization`. That worktree is on branch `draw-optimization`: 23
-local commits on `main` `c734e2a`, none pushed. Every claim about `v1-readiness` was rechecked
-against its tip `966c8d6` at the time of writing.
+`C:/Users/Mattm/X/kiln-draw-optimization`. That worktree is on branch `draw-optimization`: 25
+local commits on `main` `c734e2a` (this record and the landing plan are the last two), none
+pushed. Every claim about `v1-readiness` was rechecked against its tip `966c8d6` at the time of
+writing. PR #129 has since merged as `9375d04` (Kiln 0.10.0) on 2 October; the engine PR comes
+after it.
 
 Like every dated record, it does not override current code, `AGENTS.md` or the changelog. The
 decision IDs (D1 to D34) come from this cycle's decision briefs. They are not the `D-` numbers in
@@ -48,7 +50,7 @@ owner before or during the engine PR.
 - **Skills.** Only `kiln-compose-scene` changed, in two commits.
 - **Unchanged.** Assets, GLBs, sealed packs, `packs/`, Kiln projects, materials, the library,
   `render-service/` and `site/`. Every scene optimization is runtime code under `scenes/`.
-- **No overlap.** `v1-readiness` changes 220 files since `c734e2a` and this branch changes 112;
+- **No overlap.** `v1-readiness` changes 220 files since `c734e2a` and this branch changes 114;
   no file is in both.
 - **Engine decisions** D1, D2, D3, D23, D34 and the authoring and QA half of D24 are answered: the
   owner took every recommendation. Sections 4 and 5 give the facts behind them.
@@ -218,8 +220,8 @@ Today `full` runs `flatten()` + `join()` on static, semantics-free graphs, and d
 
 ### The patch
 
-`C:/Users/Mattm/X/kiln-draw-optimization/tmp/drawcalls/phase0/wiring.patch` changes
-`src/render.ts` by +21/−35:
+`C:/Users/Mattm/X/kiln-draw-optimization/tmp/drawcalls/phase0/wiring.patch` (ignored, local
+only) changes `src/render.ts` by +21/−35:
 - `full` now degrades only when an animation channel has no target node (a pointer);
 - `flatten()` + `join({keepNamed: true})` becomes `rigidMerge()`. The order inside
   `consolidateMaterials` is palette (behind the same material-extras guard), the merge, `weld`,
@@ -228,7 +230,7 @@ Today `full` runs `flatten()` + `join()` on static, semantics-free graphs, and d
   `docs/kiln-material-consolidation-cycle.md`;
 - `off`, `auto` and `palette` stay byte-identical: 49 of 49 outputs were checked.
 
-The full description is in `tmp/drawcalls/phase0/wiring.md`.
+The full description is in `tmp/drawcalls/phase0/wiring.md` (ignored, local only).
 
 ### Test expectations
 
@@ -297,7 +299,8 @@ KILN_RENDER=cpu bun tmp/drawcalls/phase0/rigid-merge-evidence.ts
 bun tmp/drawcalls/phase0/extension-compat-scan.ts
 ```
 
-The two scripts need the ignored scene inputs, so run them from the draw-optimization worktree.
+The two scripts under `tmp/` are ignored, local only, and need the ignored scene inputs, so run
+them from the draw-optimization worktree.
 `bun test src scripts` matches any path containing `src`, including copies under `tmp/`. Delete
 any scratch copy of `src/` before running the gate.
 
@@ -315,7 +318,7 @@ the chosen option is the recommended one in every row.
 | D1 | When does `full` switch to the merge? | (a) After 0.10.0 merges: rebase, wire, apply D2 and D3, fix the texts, add the CHANGELOG entry, rebuild `dist/` once, in one engine PR | (b) Wiring now causes a measured `dist/` conflict at rebase. (c) Putting it into `v1-readiness` voids PR #129's recorded gate and fresh clone |
 | D2 | Which shared meshes may `full` copy? | (a) Copy a mesh when it costs at most 4 KB per saved draw | Examples: draws −90%, raw +33.6%. Scene assets: −81%, +2.1%. Golden Gate web: 148 → 33 draws. Expand all (module default): −94%, +48.0%. Lock shared users: −12.5%, −5.7% |
 | D3 | Cap merged indices at 16 bits? | (a) Split a merged bucket at 65,534 vertices | Only Golden Gate web triggers it: +1 draw, raw −8%, index bytes −44%, brotli −1.8% to −3.0%, gzip +4% |
-| D4 | Landing order | (a) PR 1 now carries the 22 scene, skill and record commits. PR 2, after `v1-readiness`, carries `e72b610`, the wiring, D2, D3, the texts, the CHANGELOG and `dist/` | PR 1's tree rebuilds `dist/` byte-identical, `build.json` included |
+| D4 | Landing order | (a) PR 1 now carries the 24 non-engine commits (scene, skill and record). PR 2, after `v1-readiness`, carries `e72b610`, the wiring, D2, D3, the texts, the CHANGELOG and `dist/` | PR 1's tree rebuilds `dist/` byte-identical, `build.json` included |
 | D23 | Model-facing additions | (b) Output only: the export summary and `kiln_inspect` gain draws per anchor, a draw estimate and flags; the `kiln_render` compact result stays as is | No input-schema change |
 | D24 | Skill proposals | (a) Compose-scene corrections in PR 1, on this branch. Authoring and QA proposals after 0.10.0, with dogfood | See sections 6.4 and 6.5 |
 | D34 | Phase 0 hazards | (a) Fix them in the engine PR | See below |
@@ -326,6 +329,7 @@ eight policies with the palette baseline. It is
 `C:/Users/Mattm/X/kiln-draw-optimization/tmp/drawcalls/decisions/decide-engine/d2-table.md` and
 the chart is `d2-policies.png`. The scratch module variant with the per-mesh price rule and the
 D3 split is `decide-engine/rigid-merge-variant.ts`, +38/−7 lines against `src/rigid-merge.ts`.
+All three files are ignored and local only.
 
 **D34 hazards.** All three are present on `main`, on `966c8d6` and on this branch.
 1. **Occlusion UV set.** `src/kit.ts:204`: after `packOcclusionIntoMetallicRoughness` folds
@@ -491,10 +495,15 @@ Do not copy these from the review or plan:
 4. **"Foundry Floor economy on the tablet"** (review line 352) has since run.
 5. **The Farm pilot parity** (D-53, D-64) is missing from the review. The sweep ran it as D20.
 6. **`scenes/packages/foundry-floor/REPORT.md:939`** gives 23-28 programs and 15-18 pipelines.
-   The campus now measures 87-92 programs and 78-81 pipelines.
+   The campus now measures 87-92 programs and 78-81 pipelines. That is `main` before this
+   branch: with this branch's shared plant material, the campus view measures 27 programs and
+   17 pipelines.
 
 The review (lines 9 and 138) and the plan (lines 248 and 292) also carry two private links.
 D30 recommends replacing them before any push.
+
+The records commit on `draw-optimization-landing` (PR 1) corrects all six and replaces the
+links; the line numbers above are those before it.
 
 ## 9. Where the evidence is
 

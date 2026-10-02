@@ -31,7 +31,8 @@ for authoring scenes and assets.
   - Shares of that frame: vegetation ~37%, 4x MSAA ~21%, shadow pass ~12%, heroes 0.9 ms.
   - p95 is 33.6 ms against the 33.3 ms rule.
 - Count snapshots of the other scenes (2026-10-01 22:40; built standalones in `scenes/.cache/site-inputs`;
-  headless 1920x1080; one camera each; counts only; scratch probe `tmp/drawcalls/scene-snapshot.mjs`):
+  headless 1920x1080; one camera each; counts only; scratch probe `tmp/drawcalls/scene-snapshot.mjs`,
+  ignored, local only):
 
   | Scene and view | Draws per frame | Per pass | Triangles | Notes |
   |---|---|---|---|---|
@@ -195,6 +196,8 @@ Each is a kit option, off by default. Commit.
 
 ## Progress log
 
+The `tmp/` and `scenes/evidence/` paths cited in this log are ignored and local only.
+
 - 2026-10-01 22:20: Worktree created at `c734e2a` (main = origin/main). Plan written. Waiting for the goal.
 - 2026-10-01 22:50: OD-17 and OD-18 added after count snapshots of Golden Gate and Foundry Floor. S1 widened to a per-scene diagnosis; S4b added. Goal statement updated.
 - 2026-10-01 23:00: Goal passed; cycle started.
@@ -245,7 +248,7 @@ Each is a kit option, off by default. Commit.
     - Pixel diff within noise; B-06 144/144.
     - Mutation tests: 14/14 caught.
     - Hygiene on the three `wavea` public builds: 12 files, 0 hits.
-    - Private page: https://claude.ai/artifact/TZzjtuijtZAmMd42jL1K3d
+    - Private page: private report page (owner).
   - Scenes gates on the combined tree: typecheck, lint 0, test 433 pass / 22 skip / 0 fail.
 - 01:35: Wave B launched (workflow): kit rigid merge, kit shadow cache/once/threshold, kit stand-ins, then Farm and Golden Gate wiring, with Foundry planting in parallel. The S6 timing kit was built in parallel. Owner decisions recorded as D-46 to D-63 (`57177cf`). The probe gained `--query` (`5042a16`).
 - 02:13, S6 timing kit committed (`67cafa4`). MSAA-only A/B, `draw-base` against `wavea`: 60 s runs, 3 interleaved pairs, quiet checks recorded. Evidence is in `scenes/evidence/perf/{hub,tablet}-2026-10-02/`.
@@ -278,6 +281,7 @@ Each is a kit option, off by default. Commit.
   - Kit guards: shadow mask, late install, drift tolerance and untrack. The Farm adopts `layout:'source'`, which saves 2-3 pipelines.
 - 05:10: S5 done. Commits `4383a1a`, `dc77f27`, `bf4b2dd`; D-64 `75751ec`.
   - Cross-build parity: Farm 86/86, Golden Gate 488/489 (golden-hour side-full, 193 px tower depth tie, held for the owner), Foundry 160/160.
+    Correction (2 October): 488/489 is too high. S5's parity run covered golden side-full only at high on WebGPU; the view also fails at economy and balanced (193 px) and on High WebGL2 (200 px).
   - X-02 re-baselined per scene.
 - 05:12-05:45: Final engine gates green: test 3,070/2/0, render-service 78/78, coverage functions 95.28% and lines 92.55%, check:skills.
 - 07:15: S6 done (`69f92fe` fixes the timing probe). 196/198 runs valid.
@@ -289,7 +293,7 @@ Each is a kit option, off by default. Commit.
 - 07:25: S7/S8.
   - Scenes gates green: test 533/22/0, scripts 58/58.
   - Review record `docs/reviews/2026-10-02-draw-optimization.md`.
-  - Private page https://claude.ai/artifact/8yyK4nmGRcLbAEb3dLAvbo.
+  - Private report page (owner).
   - The skill gains the measured frame-time effect.
 
 ## Goal statement
