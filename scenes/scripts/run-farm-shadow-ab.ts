@@ -3,12 +3,16 @@
 //   creations: after ready (live clock, ambient on), a door toggle, the tractor-drive workload and the walk workload must
 //     create no render pipeline or shader module (GPUDevice wraps installed before any page script, and three's pipeline
 //     cache); bind groups and buffers are listed beside them for both settings.
-//   live: per shadow tier at the hero view with ambient life on, draws per pass on a stable frame (the live map carries the
-//     herd and the rotors) and the static-map re-arms over 600 frames.
+//   live: per shadow tier at the hero view with ambient life on (the live clock), draws per pass on a stable frame (the live
+//     map carries the herd and the rotors) and the static-map re-arms over --live-frames frames (default 600; review RF-4
+//     measured 12 in 3600 frames, about one every 5 s, so use 3600 for a rate).
 //   parity: B-06 conditions (scripts/capture-farm-parity.ts: 1280x720, high, frozen clock, ambient off, 3 s settle) at the
 //     hero view, the house interior and the open front door; OFF, OFF repeat and ON, judged by compareParityImages with the
-//     OFF repeat as noise, plus exact pixel counts.
+//     OFF repeat as noise, plus exact pixel counts. Each lever set is also captured alone (review RF-2): MERGE (the hero merge,
+//     shadow levers off) and SHADOW (cache, stand-ins and threshold, ?heroMerge=false), so a difference is attributed to the
+//     OD-18 merge or the OD-4 shadow allowance by measurement.
 //   bun scripts/run-farm-shadow-ab.ts [--build packages/farm/dist/waveb-farm/test] [--dest ../tmp/drawcalls/wave-b/farm] [--only creations,live,parity]
+//     [--live-frames 600] [--views hero,house-interior,play-house-door]
 import { readFileSync } from 'node:fs';
 import { mkdir, writeFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
@@ -20,8 +24,11 @@ import { compareParityImages } from './parity-images';
 
 const args = process.argv.slice(2), value = (key: string, fallback: string) => { const at = args.indexOf(key); return at < 0 ? fallback : args[at + 1] ?? fallback; };
 const workspace = resolve(import.meta.dir, '..'), build = value('--build', 'packages/farm/dist/waveb-farm/test'), dest = resolve(workspace, value('--dest', '../tmp/drawcalls/wave-b/farm'));
-const only = new Set(value('--only', 'creations,live,parity').split(','));
+const only = new Set(value('--only', 'creations,live,parity').split(',')), liveFrames = Number(value('--live-frames', '600'));
+const views = value('--views', 'hero,house-interior,play-house-door').split(',');
 const OFF = 'heroMerge=false&shadowCache=false&standIns=false&casterTexels=0', SETTINGS = { on: '', off: OFF } as const;
+/** One lever set alone against OFF (RF-2): the merge without the shadow levers, the shadow levers without the merge. */
+const ALONE = { merge: 'shadowCache=false&standIns=false&casterTexels=0', shadow: 'heroMerge=false' } as const;
 // A partial run (--only) keeps the other sections of an earlier report for the same build.
 const previous = (() => { try { const r = JSON.parse(readFileSync(resolve(dest, 'shadow-ab.json'), 'utf8')); return r.build === build ? r : {}; } catch { return {}; } })();
 const report: Record<string, unknown> = { ...previous, schema: 'kiln.farm-shadow-ab/1', build, off: OFF };
@@ -86,11 +93,11 @@ try {
     for (const tier of ['economy', 'balanced', 'high']) for (const [setting, query] of Object.entries(SETTINGS)) {
       const { page, messages } = await open(browser, `${hosted.url}/?tier=${tier}&view=hero${query ? '&' + query : ''}`, [1920, 1080]), s = scene(page);
       try {
-        await s.frames(120); const before = await s.snapshot(); await s.frames(600); const after = await s.snapshot();
+        await s.frames(120); const before = await s.snapshot(); await s.frames(liveFrames); const after = await s.snapshot();
         const r = await page.evaluate(() => (window as any).__kilnScene.probeFrames({ frames: 8, stableFrames: 3, maxFrames: 600, timeoutMs: 150_000 })) as any; // eslint-disable-line @typescript-eslint/no-explicit-any
         const passes = r.passes.map((p: any) => ({ kind: p.kind, label: p.label, draws: p.draws, pipelines: p.pipelines, bySystem: Object.fromEntries(Object.entries(p.bySystem).map(([k, v]: [string, any]) => [k, v.draws])) })); // eslint-disable-line @typescript-eslint/no-explicit-any
-        rows.push({ tier, setting, stable: r.stable, passes, totals: { draws: r.totals.draws, pipelines: r.totals.pipelinesUsed }, staticReArmsIn600Frames: after.shadow && before.shadow ? after.shadow.staticRenders - before.shadow.staticRenders : null, shadow: after.shadow, messages });
-        console.log(`live ${tier} ${setting}: ${passes.map((p: any) => `${p.label} ${p.draws}`).join(', ')}; static re-arms in 600 frames ${after.shadow ? after.shadow.staticRenders - before.shadow.staticRenders : '-'}`); // eslint-disable-line @typescript-eslint/no-explicit-any
+        rows.push({ tier, setting, stable: r.stable, passes, totals: { draws: r.totals.draws, pipelines: r.totals.pipelinesUsed }, frames: liveFrames, staticReArms: after.shadow && before.shadow ? after.shadow.staticRenders - before.shadow.staticRenders : null, shadow: after.shadow, messages });
+        console.log(`live ${tier} ${setting}: ${passes.map((p: any) => `${p.label} ${p.draws}`).join(', ')}; static re-arms in ${liveFrames} frames ${after.shadow ? after.shadow.staticRenders - before.shadow.staticRenders : '-'}`); // eslint-disable-line @typescript-eslint/no-explicit-any
       } finally { await page.close(); }
       await save();
     }
@@ -98,14 +105,19 @@ try {
   if (only.has('parity')) {
     const rows: unknown[] = []; report.parity = rows; const ports = new Set([hosted.port]), dir = resolve(dest, 'parity'); await mkdir(dir, { recursive: true });
     const exact = (a: CapturedFarm['png'], b: CapturedFarm['png']) => { let pixels = 0, max = 0; for (let i = 0; i < a.data.length; i += 4) { let d = 0; for (let c = 0; c < 3; c++) d = Math.max(d, Math.abs(a.data[i + c]! - b.data[i + c]!)); if (d) { pixels++; max = Math.max(max, d); } } return { differingPixels: pixels, differingFraction: pixels / (a.width * a.height), maxChannelDifference: max }; };
-    for (const view of ['hero', 'house-interior', 'play-house-door']) {
-      const play = PLAY_FIXTURES[view], shot = (setting: keyof typeof SETTINGS, file: string) => captureFarmNew({ browser: browser!, url: `${hosted!.url}/${SETTINGS[setting] ? '?' + SETTINGS[setting] : ''}`, ports, backend: 'webgpu', view, file: resolve(dir, `${view}-${file}.png`), ...(play ? { play } : {}) });
-      const off = await shot('off', 'off'), repeat = await shot('off', 'off-repeat'), on = await shot('on', 'on');
+    for (const view of views) {
+      const play = PLAY_FIXTURES[view], shot = (query: string, file: string) => captureFarmNew({ browser: browser!, url: `${hosted!.url}/${query ? '?' + query : ''}`, ports, backend: 'webgpu', view, file: resolve(dir, `${view}-${file}.png`), ...(play ? { play } : {}) });
+      const off = await shot(SETTINGS.off, 'off'), repeat = await shot(SETTINGS.off, 'off-repeat'), on = await shot(SETTINGS.on, 'on');
       const metric = compareParityImages(off.png, repeat.png, on.png), { diff, tiles, ...numbers } = metric;
       await writeFile(resolve(dir, `${view}-diff.png`), PNG.sync.write({ width: diff.width, height: diff.height, data: Buffer.from(diff.data) }));
       const counts = (c: CapturedFarm) => ({ drawCalls: (c.stats.render as any)?.drawCalls, triangles: (c.stats.render as any)?.triangles, pipelines: c.stats.pipelines, programs: c.stats.programs, shadow: (c.stats.counts as any)?.shadow ?? null }); // eslint-disable-line @typescript-eslint/no-explicit-any
-      rows.push({ view, metric: numbers, failingTiles: tiles.filter(t => !t.pass).map(t => ({ x: t.x, y: t.y, mean: t.mean, threshold: t.threshold })), exactOnOff: exact(off.png, on.png), exactOffRepeat: exact(off.png, repeat.png), counts: { off: counts(off), on: counts(on) } });
-      console.log(`parity ${view}: pass ${numbers.pass} (tiles ${numbers.passingTiles}/144, global mean ${numbers.globalMean.toExponential(3)}); on vs off differing pixels ${exact(off.png, on.png).differingPixels}, max ${exact(off.png, on.png).maxChannelDifference}; off repeat ${exact(off.png, repeat.png).differingPixels}`);
+      const alone: Record<string, { pass: boolean; passingTiles: number; globalMean: number; exactVsOff: ReturnType<typeof exact>; exactVsOn: ReturnType<typeof exact>; counts: ReturnType<typeof counts> }> = {};
+      for (const [name, query] of Object.entries(ALONE)) {
+        const one = await shot(query, name), m = compareParityImages(off.png, repeat.png, one.png);
+        alone[name] = { pass: m.pass, passingTiles: m.passingTiles, globalMean: m.globalMean, exactVsOff: exact(off.png, one.png), exactVsOn: exact(on.png, one.png), counts: counts(one) };
+      }
+      rows.push({ view, metric: numbers, failingTiles: tiles.filter(t => !t.pass).map(t => ({ x: t.x, y: t.y, mean: t.mean, threshold: t.threshold })), exactOnOff: exact(off.png, on.png), exactOffRepeat: exact(off.png, repeat.png), alone, counts: { off: counts(off), on: counts(on) } });
+      console.log(`parity ${view}: pass ${numbers.pass} (tiles ${numbers.passingTiles}/144, global mean ${numbers.globalMean.toExponential(3)}); on vs off differing pixels ${exact(off.png, on.png).differingPixels}, max ${exact(off.png, on.png).maxChannelDifference}; off repeat ${exact(off.png, repeat.png).differingPixels}; merge alone ${alone.merge!.exactVsOff.differingPixels}, shadow alone ${alone.shadow!.exactVsOff.differingPixels}`);
       await save();
     }
   }

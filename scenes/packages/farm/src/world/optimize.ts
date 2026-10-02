@@ -5,7 +5,7 @@ import {shadowStandIns,shadowTexelSize,smallCasterThreshold} from '@kiln-scenes/
 import {FARM_SHADOW} from '../constants';
 import type {FarmInstance} from './types';
 import {countPlacementSources,farmBatchPolicy,farmInstanceOwners,isFixedFarmOwner} from './optimize-policy';
-import {createFarmSun,farmHeroAnchors} from './shadows';
+import {createFarmSun,farmHeroAnchors,farmShadowMask} from './shadows';
 
 export interface FarmOptimizationStats {
  woodland:{packed:boolean;groups:number;instances:number;sourceMeshes:number;tangentDerivatives:number};
@@ -25,7 +25,9 @@ export interface FarmShadowBuild {mapSize:number;standIns:boolean;minCasterTexel
  * Pack geometry/materials and prepared geometry are borrowed throughout.
  * Heroes (non-fixed owners with no batch source: the policy-excluded placements and the windmill) are merged per anchor and
  * material after batching, so every B-07 count is taken first, then given shadow stand-ins before freezing (stand-ins copy
- * their anchor's matrix flags). Merged geometry is shared per asset, anchor path and group through one cache (the gates).
+ * their anchor's matrix flags). Merged geometry is shared per asset, anchor path and group through one cache (the gates), and
+ * keeps the GLB's interleaved vertex layout, so a merged mesh shares the pipeline of unmerged meshes (review RK-1).
+ * Stand-ins bake only sources the sun's shadow camera draws (farmShadowMask); farmers keep their small parts (RF-1).
  */
 export function optimizeFarmWorld(root:Scene,instances:readonly FarmInstance[],woodland:{meshes:InstancedMesh[];derivatives:number},options:{packWoodland:boolean;heroMerge?:boolean;shadow?:FarmShadowBuild|null}){
  const owners=farmInstanceOwners(instances),policy=farmBatchPolicy(),registry=new DisposeRegistry();
@@ -51,7 +53,7 @@ export function optimizeFarmWorld(root:Scene,instances:readonly FarmInstance[],w
    heroStats={owners:heroes.length,sourceMeshes:0,mergedMeshes:0,keptMeshes:0,groups:0};
    for(const hero of heroes){
     const keep=anchors.get(hero)!,path=(n:Object3D)=>{const names:string[]=[];for(let x:Object3D|null=n;x&&x!==hero.object;x=x.parent)names.push(x.name);return hero.asset.id+':'+names.reverse().join('/');};
-    const merge=mergeRigidByMaterial(hero.object,{isAnchor:n=>keep.has(n),cache,cacheKey:path});registry.add(()=>merge.restore());
+    const merge=mergeRigidByMaterial(hero.object,{isAnchor:n=>keep.has(n),cache,cacheKey:path,layout:'source'});registry.add(()=>merge.restore());
     sum(heroStats,merge.stats,['sourceMeshes','mergedMeshes','keptMeshes','groups']);
    }
   }
@@ -59,7 +61,7 @@ export function optimizeFarmWorld(root:Scene,instances:readonly FarmInstance[],w
    const sun=createFarmSun(options.shadow.mapSize),texel=shadowTexelSize(sun.shadow),minTexels=options.shadow.minCasterTexels;
    shadow={proxies:0,sourceMeshes:0,groups:0,dropped:0,triangles:0,smallCasters:0,texel};
    if(options.shadow.standIns)for(const hero of heroes){
-    const keep=anchors.get(hero)!,s=shadowStandIns(hero.object,{layer:FARM_SHADOW.standInLayer,isAnchor:n=>keep.has(n),texel,minCasterTexels:minTexels});registry.add(()=>s.restore());
+    const keep=anchors.get(hero)!,s=shadowStandIns(hero.object,{layer:FARM_SHADOW.standInLayer,shadowMask:farmShadowMask(true),isAnchor:n=>keep.has(n),texel,minCasterTexels:FARM_SHADOW.keepSmallCasters.includes(hero.asset.id)?0:minTexels});registry.add(()=>s.restore());
     sum(shadow,s.stats,['proxies','sourceMeshes','groups','dropped','triangles']);
    }
    if(minTexels>0){const herd=new Set<Mesh>(batches.batches.filter(b=>b.dynamic).map(b=>b.mesh)),t=smallCasterThreshold(root,sun,{minTexels,include:m=>herd.has(m)});registry.add(()=>t.restore());shadow.smallCasters=t.stats.dropped;}

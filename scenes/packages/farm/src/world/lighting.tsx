@@ -6,10 +6,10 @@ import { asWebGPU, buildRoomEnvironment, useBuilt, useQuality } from '@kiln-scen
 import type { TierKnobs } from '@kiln-scenes/scene-kit';
 import { cachedSunShadow } from '@kiln-scenes/scene-kit/shadows';
 import type { CachedSunShadow } from '@kiln-scenes/scene-kit/shadows';
-import { FARM_LOOK, FARM_SHADOW } from '../constants';
+import { FARM_LOOK } from '../constants';
 import { readFarmDevParams } from '../dev-params';
 import { useFarmSession } from '../state';
-import { createFarmSun, farmShadowOptions } from './shadows';
+import { createFarmSun, farmShadowMask, farmShadowOptions } from './shadows';
 import type { FarmShadowOptions } from './shadows';
 
 /**
@@ -21,8 +21,8 @@ export function buildFarmLighting(scene: Scene, shadows: TierKnobs['shadows'], e
   const root = new Group(); root.name = 'Farm lighting';
   const hemisphere = new HemisphereLight(FARM_LOOK.hemisphereSky, FARM_LOOK.hemisphereGround, FARM_LOOK.hemisphereIntensity);
   const sun = createFarmSun(shadows.mapSize); sun.castShadow = shadows.enabled;
-  if (shadows.enabled && o.standIns) sun.shadow.camera.layers.enable(FARM_SHADOW.standInLayer);
-  const shadow = shadows.enabled && o.cache ? cachedSunShadow({ light: sun, settleFrames: o.settleFrames }) : null;
+  sun.shadow.camera.layers.mask = farmShadowMask(shadows.enabled && o.standIns);
+  const shadow = shadows.enabled && o.cache ? cachedSunShadow({ light: sun, settleFrames: o.settleFrames, ...(o.liveMapSize ? { liveMapSize: Math.min(o.liveMapSize, shadows.mapSize) } : {}) }) : null;
   session.shadow = shadow;
   const env = environment();
   scene.environment = env.texture; scene.environmentIntensity = FARM_LOOK.environmentIntensity;

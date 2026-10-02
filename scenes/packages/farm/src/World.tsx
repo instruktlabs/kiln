@@ -35,6 +35,7 @@ export function FarmWorldContent() {
   const frameGraph = useBuilt(() => world?.optimization ? bindFarmFrameGraph(scene, { root: world.root, registry: world.registry, optimization: world.optimization }, () => !!scene.getObjectByName('Farm lighting')) : null, binding => binding?.dispose(), [world, scene]);
   // OD-9: the lights' cached sun shadow (session.shadow, tiers with shadows) tracks this world once it shows.
   const shadow = useMemo(() => world ? bindFarmShadow(world, () => session.shadow) : null, [world, session]);
+  useEffect(() => () => shadow?.dispose(), [shadow]);
   useEffect(() => { session.world = world; return () => { if (session.world === world) session.world = null; readyWorld.current = null; markBuilt(false); }; }, [world, session, markBuilt]);
   useEffect(() => () => { if (warm.current && warm.current.world === world) { warm.current.pass.dispose(); warm.current = null; } }, [world]);
   useSystem('farm-herd', SystemOrder.herd, () => {

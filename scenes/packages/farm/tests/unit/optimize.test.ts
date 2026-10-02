@@ -1,6 +1,6 @@
 import {expect,test} from 'bun:test';
-import {AnimationClip,AnimationMixer,BoxGeometry,Float32BufferAttribute,Group,InstancedMesh,Matrix4,Mesh,MeshStandardMaterial,QuaternionKeyframeTrack,Scene,StaticDrawUsage,Texture,Vector3,VectorKeyframeTrack} from 'three/webgpu';
-import type {BufferGeometry,Material,Object3D} from 'three/webgpu';
+import {AnimationClip,AnimationMixer,BoxGeometry,BufferGeometry,Float32BufferAttribute,Group,InstancedMesh,InterleavedBuffer,InterleavedBufferAttribute,Matrix4,Mesh,MeshStandardMaterial,QuaternionKeyframeTrack,Scene,StaticDrawUsage,Texture,Vector3,VectorKeyframeTrack} from 'three/webgpu';
+import type {Material,Object3D} from 'three/webgpu';
 import type {FarmInstance} from '../../src/world/types';
 await import('three');
 const {DisposeRegistry,createFrameGraph}=await import('@kiln-scenes/scene-kit');
@@ -8,6 +8,7 @@ const {farmBatchPolicy,farmInstanceOwners,isFixedFarmOwner,countPlacementSources
 const {optimizeFarmWorld}=await import('../../src/world/optimize');
 const {findDoor,doorCenter}=await import('../../src/play/doors');
 const {FARM_SHADOW}=await import('../../src/constants');
+const shadowsModule=await import('../../src/world/shadows');
 
 function fixture(asset:string,geometry:BoxGeometry,material:MeshStandardMaterial,x=0,clips:AnimationClip[]=[]):FarmInstance{
  const object=new Group(),mesh=new Mesh(geometry,material);object.name=asset;object.position.x=x;object.add(mesh);
@@ -142,6 +143,44 @@ test('S4: shadow tiers build hero depth stand-ins and drop herd batches under tw
  const herd=o.batches.batches.filter(b=>b.dynamic).map(b=>[(b.mesh.material as Material).name,b.mesh.castShadow]);
  expect(herd.sort()).toEqual([['eye',false],['hide',true]]);
  o.restore();expect(meshes(w.root).every(m=>m.castShadow)).toBe(true);expect(proxies.every(p=>!p.parent)).toBe(true);plain.restore();
+});
+
+// RK-1: a glTF primitive with a byte stride (position, normal and uv in one Float32 buffer), as the Farm GLBs load.
+function interleavedBox(){
+ const box=new BoxGeometry(),n=box.getAttribute('position').count,data=new Float32Array(n*8),g=new BufferGeometry();
+ for(let i=0;i<n;i++){let at=i*8;for(const[k,s]of[['position',3],['normal',3],['uv',2]]as const)for(let c=0;c<s;c++)data[at++]=box.getAttribute(k).getComponent(i,c);}
+ const ib=new InterleavedBuffer(data,8);g.setAttribute('position',new InterleavedBufferAttribute(ib,3,0));g.setAttribute('normal',new InterleavedBufferAttribute(ib,3,3));g.setAttribute('uv',new InterleavedBufferAttribute(ib,2,6));g.setIndex(box.index);
+ return g;
+}
+test('S4b: the hero merge keeps the source vertex layout (RK-1), so a merged mesh shares the pipeline key of unmerged ones',()=>{
+ const root=new Scene(),g=interleavedBox(),house=hero('farmhouse',0,[['wall-a',shared.masonry,0],['wall-b',shared.masonry,2]],[]);root.add(house.object);
+ house.object.traverse(n=>{if((n as Mesh).isMesh)(n as Mesh).geometry=g;});root.updateMatrixWorld(true);
+ const o=optimizeFarmWorld(root,[house],{meshes:[],derivatives:0},{packWoodland:false}),merged=house.object.getObjectByName('Merged farmhouse/masonry') as Mesh;
+ const layout=(geometry:BufferGeometry)=>Object.entries(geometry.attributes).map(([k,a])=>{const i=a as InterleavedBufferAttribute;return[k,!!i.isInterleavedBufferAttribute,i.data?.stride,i.offset,a.itemSize];});
+ expect(merged).toBeDefined();expect(layout(merged.geometry)).toEqual(layout(g));
+ const buffers=new Set(Object.values(merged.geometry.attributes).map(a=>(a as InterleavedBufferAttribute).data));expect(buffers.size).toBe(1);
+ o.restore();g.dispose();
+});
+test('S4: stand-ins bake exactly what the sun shadow camera draws, and every farmer part stays a caster at economy (RF-1)',()=>{
+ const root=new Scene(),{farmShadowMask}=shadowsModule;
+ const house=hero('farmhouse',0,[['wall-a',shared.masonry,0],['pin',shared.brass,.8],['seen',shared.trim,1],['unseen',shared.trim,3]],[]);
+ // The player rig: a 1 cm neck alone under its joint, and a 1 cm cuff beside a boot under the ankle.
+ const farmer=hero('farmer',10,[['Mesh_Body',shared.hide,0],['Mesh_Neck',shared.brass,0,'Joint_Neck'],['Mesh_Cuff',shared.brass,.2,'Joint_Ankle'],['Mesh_Boot',shared.leaf,0,'Joint_Ankle']],['Joint_Neck','Joint_Ankle']);
+ const part=(o:FarmInstance,name:string)=>o.object.getObjectByName(name) as Mesh;
+ for(const name of['Mesh_Neck','Mesh_Cuff'])part(farmer,name).geometry=shared.pin;
+ part(house,'seen').layers.set(FARM_SHADOW.standInLayer);part(house,'unseen').layers.set(5);
+ root.add(house.object,farmer.object);root.traverse(n=>{if((n as Mesh).isMesh)n.castShadow=true;});root.updateMatrixWorld(true);
+ const o=optimizeFarmWorld(root,[house,farmer],{meshes:[],derivatives:0},{packWoodland:false,shadow:{mapSize:512,standIns:true,minCasterTexels:2}});
+ // The sun's shadow camera sees layer 0 and the stand-in layer; a caster on another layer is never drawn, so it is left alone.
+ expect(farmShadowMask(true)).toBe(1|1<<FARM_SHADOW.standInLayer);expect(farmShadowMask(false)).toBe(1);
+ expect([part(house,'seen').castShadow,part(house,'unseen').castShadow]).toEqual([false,true]);
+ // Economy's two texels are 0.34 m: the house pin drops, the farmer's neck and cuff bake into their joints' stand-ins.
+ expect(o.stats.shadow).toMatchObject({dropped:1});expect(part(house,'pin').castShadow).toBe(false);
+ const proxies:string[]=[];farmer.object.traverse(n=>{if(n.userData.kilnShadowStandIn)proxies.push(n.parent!.name);});
+ expect(proxies.sort()).toEqual(['Joint_Ankle','Joint_Neck','farmer']);
+ const ankle=part(farmer,'Joint_Ankle').children.find(n=>n.userData.kilnShadowStandIn) as Mesh;
+ expect(ankle.geometry.getAttribute('position').count).toBe(2*shared.pin.getAttribute('position').count);
+ o.restore();expect(meshes(root).every(m=>m.castShadow)).toBe(true);
 });
 
 if(process.env.ORACLE==='1')test('B-07 count-only sealed r33 oracle matches Farm optimization and the frozen historical/current counts',async()=>{

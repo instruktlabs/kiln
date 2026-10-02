@@ -55,6 +55,13 @@ test('S5 lighting: the cached sun shadow exists only on shadow tiers, is publish
   expect(scene.environment).toBeNull();
 });
 
+test('S5 live map size (RF-5): full size by default; ?liveMapSize offers OD-9 a smaller live map, never above the tier map', () => {
+  expect(farmShadowOptions({ liveMapSize: 1024 })).toEqual({ ...on, liveMapSize: 1024 });
+  const scene = new Scene(), session: { shadow: CachedSunShadow | null } = { shadow: null };
+  const sizes = (o: typeof on & { liveMapSize?: number }, mapSize: number) => { const l = buildFarmLighting(scene, tier(true, mapSize), environment, o, session), s = [l.shadow!.staticShadow.mapSize.x, l.shadow!.liveShadow.mapSize.x]; l.dispose(); return s; };
+  expect([sizes(on, 2048), sizes({ ...on, liveMapSize: 1024 }, 2048), sizes({ ...on, liveMapSize: 1024 }, 512)]).toEqual([[2048, 2048], [2048, 1024], [512, 512]]);
+});
+
 // A world as World.tsx binds it: a farmhouse with a door, a fixed fence, the herd's dynamic batch.
 function world(optimized = true) {
   const geometry = new BoxGeometry(), material = new MeshStandardMaterial(), root = new Scene();
@@ -103,4 +110,14 @@ test('S5 binding: tracks once the world shows (a hidden first world would all go
   cache.dispose(); const next = cachedSunShadow({ light, settleFrames: 2 }); cache = next; binding.update();
   expect(next.stats.reasons.track).toBe(1); expect(w.body.layers.mask).toBe(1 | S_BIT);
   cache = null; binding.update(); next.dispose();
+});
+
+test('S5 binding dispose (RF-7): a world that leaves while the cache stays is untracked, and its casters return to their own layers', () => {
+  const w = world(), light = createFarmSun(2048); light.castShadow = true;
+  const cache = cachedSunShadow({ light, settleFrames: 2 }), binding = bindFarmShadow(w.farm, () => cache);
+  binding.update(); expect([w.body.layers.mask, cache.stats.staticCasters]).toEqual([1 | S_BIT, 8]);
+  binding.dispose(); expect([w.body.layers.mask, w.leaf.layers.mask, w.herd.layers.mask, cache.stats.staticCasters, cache.stats.reasons.untrack]).toEqual([1, 1, 1, 0, 1]);
+  // Disposed: the next frame neither re-tracks the old world nor touches the cache; a second dispose is a no-op.
+  binding.update(); binding.dispose(); expect([w.body.layers.mask, cache.stats.reasons.track, cache.stats.reasons.untrack]).toEqual([1, 1, 1]);
+  cache.dispose();
 });

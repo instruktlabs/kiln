@@ -14,22 +14,26 @@ import { runCountProbe, summarize } from './count-probe';
 import { FARM_FIXTURES } from './scene-fixtures';
 
 const ROOT = resolve(import.meta.dir, '..'), SETTLE_FRAMES = 900, QUIET = 45;
-interface StaticRow { tier: string; fixture: string; settle: { frames: number; live: number; pending: number }; staticRender: { draws: number; triangles: number; pipelines: number; label: string } | null; live: number; stats: unknown }
+interface StaticRow { tier: string; fixture: string; settle: { frames: number; live: number; pending: number; unsettled?: true }; staticRender: { draws: number; triangles: number; pipelines: number; label: string } | null; live: number; stats: unknown }
 const rows: StaticRow[] = [];
 /**
- * Wraps the page's probe once: each probe first waits until counts().shadow.pendingSettle is 0 (or there is no cache), or,
- * where a caster keeps moving (in play Rowan's resolved position drifts by about 1e-14 m a frame at the porch), until the
- * cache's counters (static re-arms, live casters, invalidations, pending) held for QUIET frames, beyond its 30-frame settle.
+ * Wraps the page's probe once: each probe first waits until counts().shadow.pendingSettle is 0 (or there is no cache). The
+ * probe's clock is frozen and ambient life is off, and the kit ignores sub-micrometre drift, so every fixture settles; the
+ * tractor coasts on the frame's own delta (its damped speed never reaches 0) for a few hundred frames after a drive. Only a
+ * caster still moving after SETTLE_FRAMES falls back to the cache's counters held for QUIET frames, marked `unsettled`. (A
+ * quiet run alone is not settled: the coasting tractor holds the counters still while it creeps, then settles mid-what-if,
+ * review RF-3.)
  */
 async function installSettle(page: Page) {
   await page.evaluate((limit, quiet) => {
     const s = (window as any).__kilnScene; if (s.__settledProbe) return; // eslint-disable-line @typescript-eslint/no-explicit-any
     const probe = s.probeFrames, settle = async () => {
       let last = '', same = 0;
-      for (let i = 0; i < limit; i++) {
+      for (let i = 0; ; i++) {
         const c = s.invoke('counts')?.shadow; if (!c || c.pendingSettle === 0) return { frames: i, live: c?.liveCasters ?? 0, pending: 0 };
         const key = [c.staticRenders, c.liveCasters, c.invalidations, c.pendingSettle].join('|');
-        if (key !== last) { last = key; same = 0; } else if (++same >= quiet) return { frames: i, live: c.liveCasters, pending: c.pendingSettle };
+        if (key !== last) { last = key; same = 0; } else same++;
+        if (i >= limit) { if (same >= quiet) return { frames: i, live: c.liveCasters, pending: c.pendingSettle, unsettled: true }; if (i >= limit + 4 * quiet) break; }
         await s.waitFrames(1);
       }
       throw new Error(`Cached shadow did not settle within ${limit} frames`);
@@ -66,11 +70,11 @@ if (import.meta.main) {
   await runCountProbe({ label, build: option('--build', label), scenes: ['farm'], tiers, fixtures: fixtures === 'all' ? 'all' : fixtures.split(','), whatIfs: option('--what-if', 'standard') === 'standard',
     size: [1920, 1080], freshPage: false, ...(args.includes('--query') ? { query: Object.fromEntries(new URLSearchParams(option('--query', ''))) } : {}) });
   const dir = resolve(ROOT, 'evidence/counts', label); mkdirSync(dir, { recursive: true });
-  writeFileSync(resolve(dir, 'farm-static-shadow.json'), JSON.stringify({ label, rule: `Settled first (pendingSettle 0, or the cache's counters still for ${QUIET} frames while a caster keeps moving); then one re-armed static render probed alone. live = live-map draws in that frame.`, rows }, null, 1) + '\n');
+  writeFileSync(resolve(dir, 'farm-static-shadow.json'), JSON.stringify({ label, rule: `Settled first (pendingSettle 0; only after ${SETTLE_FRAMES} frames, the cache's counters still for ${QUIET} frames, marked unsettled); then one re-armed static render probed alone. live = live-map draws in that frame.`, rows }, null, 1) + '\n');
   console.log(JSON.stringify(summarize(label, args.includes('--compare') ? option('--compare', '') : undefined)));
   const md = ['', '## farm · cached sun shadow: settle state and one static re-render', '',
-    `Each probe waits until the cache is settled: pendingSettle 0 (the live map empty, no map armed), or, where a caster keeps moving, the cache's counters still for ${QUIET} frames; the live casters left are listed. The static map re-renders only on events (a caster settling, a re-arm); here it is re-armed once and that frame is probed alone.`, '',
+    `Each probe waits until the cache is settled: pendingSettle 0 (the live map empty, no map armed); only a caster still moving after ${SETTLE_FRAMES} frames falls back to the cache's counters still for ${QUIET} frames (marked unsettled, live casters listed). The static map re-renders only on events (a caster settling, a re-arm); here it is re-armed once and that frame is probed alone.`, '',
     '| Tier | Fixture | Frames waited | Live casters (pending) | Static render draws | Triangles | Pipelines | Live draws that frame |', '|---|---|---|---|---|---|---|---|',
-    ...rows.map(r => `| ${r.tier} | ${r.fixture} | ${r.settle.frames} | ${r.settle.live} (${r.settle.pending}) | ${r.staticRender?.draws ?? '-'} | ${r.staticRender?.triangles.toLocaleString('en-US') ?? '-'} | ${r.staticRender?.pipelines ?? '-'} | ${r.live} |`), ''];
+    ...rows.map(r => `| ${r.tier} | ${r.fixture} | ${r.settle.frames} | ${r.settle.live} (${r.settle.pending})${r.settle.unsettled ? ' unsettled' : ''} | ${r.staticRender?.draws ?? '-'} | ${r.staticRender?.triangles.toLocaleString('en-US') ?? '-'} | ${r.staticRender?.pipelines ?? '-'} | ${r.live} |`), ''];
   appendFileSync(resolve(dir, 'summary.md'), md.join('\n'));
 }
