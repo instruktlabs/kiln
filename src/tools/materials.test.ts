@@ -72,6 +72,13 @@ test('material tool creates repeatable recipes, lists summaries and reads code-r
   // Two live sessions of 1 October 2026 called get with the id alone (w21, w22). A material's
   // only revision needs no revisionId; several are named for the caller to choose.
   expect(await tool.run({ action: 'get', materialId: 'mortar' })).toEqual(result);
+  // w28: Codex passed the id a project's palette lists, `resourceId`, twice. It is an alias
+  // of materialId here (decision 25 of 2 October 2026); the docs keep materialId. The two
+  // may not disagree.
+  expect(await tool.run({ action: 'get', resourceId: 'mortar' })).toEqual(result);
+  await expect(
+    tool.run({ action: 'get', resourceId: 'mortar', materialId: 'plaster' }),
+  ).rejects.toThrow('name different materials');
   const second = (await tool.run({
     action: 'create-procedural',
     draft: { ...draft, name: 'Cool mortar' },

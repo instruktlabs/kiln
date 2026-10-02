@@ -77,6 +77,10 @@ bytes (four were over, the largest 18,788), input schemas 26,475 bytes in all (6
   camera field text is shorter, and every description opens with its purpose.
 - `docs/tools.md` is the packaged manifest pretty-printed (seventeen tools, the advertised
   bytes), no longer the embedding registry's fourteen.
+- `kiln_material` accepts `resourceId`, the name a project's palette and
+  `materialDependencies` give a material, as an alias of `materialId` (a Codex session
+  passed it twice and was refused both times); the advertised schema and the docs keep
+  `materialId`, and a call naming both with different values is refused with the fix.
 
 ### Program handles
 

@@ -95,6 +95,22 @@ async function onlyRevision(library: MaterialLibrary, materialId: string): Promi
     `Material ${materialId} has ${revisions.length} revisions: ${revisions.join(', ')}. Pass revisionId to get one.`,
   );
 }
+/**
+ * `resourceId`, the name a project's palette and `materialDependencies` use for a
+ * material, is accepted as an alias of `materialId` (w28 passed it twice; decision 25
+ * of 2 October 2026). The advertised schema keeps `materialId` alone, so the alias is
+ * resolved before the strict parse; the two may not disagree.
+ */
+function aliasMaterialId(raw: unknown): unknown {
+  if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return raw;
+  const { resourceId, ...rest } = raw as Record<string, unknown>;
+  if (resourceId === undefined) return raw;
+  if (rest.materialId !== undefined && rest.materialId !== resourceId)
+    throw new Error(
+      `kiln_material: resourceId (${String(resourceId)}) and materialId (${String(rest.materialId)}) name different materials; pass materialId alone.`,
+    );
+  return { ...rest, materialId: resourceId };
+}
 export function createKilnMaterialDef(library: MaterialLibrary): KilnToolDef {
   return {
     name: 'kiln_material',
@@ -109,7 +125,7 @@ export function createKilnMaterialDef(library: MaterialLibrary): KilnToolDef {
     },
     async run(raw) {
       assertMaterialJson(raw);
-      const input = materialToolInput.parse(raw);
+      const input = materialToolInput.parse(aliasMaterialId(raw));
       requireActionFields('kiln_material', input.action, input, REQUIREMENTS[input.action]);
       switch (input.action) {
         case 'presets':

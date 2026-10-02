@@ -108,8 +108,21 @@ describe('contract rule 9: errors that teach', () => {
       arguments: { image: false, listParts: { limit: 30 } },
     });
     expect(teaches('no program', noProgram)).toContain('programRef');
-    // w28: the key a project's palette lists, passed to the material tool, is answered
-    // with the keys the tool takes.
+    // A key the tool does not take is answered with the keys it takes.
+    const unknownKey = await server.request('tools/call', {
+      name: 'kiln_material',
+      arguments: {
+        action: 'get',
+        material: 'troy-timber',
+        revisionId: `sha256:${'0'.repeat(64)}`,
+      },
+    });
+    const keys = teaches('unknown key', unknownKey);
+    expect(keys).toContain('material:');
+    expect(keys).toContain('materialId');
+    // w28: the key a project's palette lists, `resourceId`, is an alias of materialId
+    // (decision 25 of 2 October 2026): the call reaches the action, whose answer here is
+    // that no such material exists, naming the list.
     const alias = await server.request('tools/call', {
       name: 'kiln_material',
       arguments: {
@@ -118,9 +131,9 @@ describe('contract rule 9: errors that teach', () => {
         revisionId: `sha256:${'0'.repeat(64)}`,
       },
     });
-    const aliased = teaches('unknown key', alias);
-    expect(aliased).toContain('resourceId');
-    expect(aliased).toContain('materialId');
+    const aliased = teaches('alias', alias);
+    expect(aliased).toContain('Unknown material troy-timber');
+    expect(aliased).not.toContain('invalid input');
     // w35: a shot with the camera fields at its root reached the capture guard, which
     // answered ok: false with zod's issue dump under "Fix the error in the source".
     const rootCamera = await server.request('tools/call', {
