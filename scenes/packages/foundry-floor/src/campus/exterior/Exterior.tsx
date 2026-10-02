@@ -10,7 +10,7 @@ import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { useThree } from '@react-three/fiber';
 import { Box3, Group, Vector3 } from 'three/webgpu';
 import type { PerspectiveCamera } from 'three/webgpu';
-import { asWebGPU, OrbitRig, SystemOrder, useFade, useLoadedPack, usePlayMode, useQuality, useReducedMotion, useRegisterTestHooks, useSceneBuilt, useSceneClock, useSystem } from '@kiln-scenes/scene-kit';
+import { asWebGPU, OrbitRig, readDevParams, SystemOrder, useFade, useLoadedPack, usePlayMode, useQuality, useReducedMotion, useRegisterTestHooks, useSceneBuilt, useSceneClock, useSystem } from '@kiln-scenes/scene-kit';
 import { CAMPUS_DATA_ID, CAMPUS_VIEW_NAMES, parseCampus } from '../data';
 import type { CampusData, CampusTierName, CampusViewName } from '../data';
 import { useCampusSession } from '../session';
@@ -125,7 +125,9 @@ export function CampusExterior() {
       if(hasPlants&&!bytes)throw new Error('The scene pack has plants but no campus-assets data');
       placements=hasPlants?parseCampusPlantings(bytes!,data):[];
     } catch(error){setFailure(error);return;}
-    buildCampusVegetation(data, pack.models, placements).then(value => {
+    // Test and dev builds take ?plantingShared=false (the per-material planting) for A/B counts and captures.
+    const shared = (TEST ? readDevParams({ plantingShared: { kind: 'boolean' } }).plantingShared : undefined) !== false;
+    buildCampusVegetation(data, pack.models, placements, { shared }).then(value => {
       if (!alive) { value?.dispose(); return; }
       planted = value; if (value) world.root.add(value.root); setVegetation(value);
     }, error => { if (alive) setFailure(error); });
