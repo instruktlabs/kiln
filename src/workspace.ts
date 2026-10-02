@@ -22,7 +22,7 @@ export const workspaceSelectionSchema = z
     projectRevision: projectRevisionIdSchema.optional().describe('Exact project revision.'),
     materialDependencies: materialDependenciesSchema
       .optional()
-      .describe('Exact material pins for this call; project locks cannot be replaced.'),
+      .describe('Pins for this call; each replaces the project pin of its resourceId.'),
   })
   .strict()
   .superRefine((selection, ctx) => {

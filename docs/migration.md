@@ -57,6 +57,11 @@ integration notices first.
   legacy octal literal or a duplicate parameter name is an error with its line, and a
   function declared inside a block is visible in that block only. A saved source that
   relied on sloppy behaviour fails `kiln_validate` or its rebuild with the line named.
+- **Material pins.** A project revision implies its pins, so a call under a project
+  need not repeat them; a pin named on the call replaces the project's for the same
+  `resourceId` instead of being refused as a conflict. A saved manifest read as a
+  resource (`kiln://assets/.../manifest.json`) is one line; the file on disk is
+  unchanged.
 
 ## Changes in 0.9.0
 

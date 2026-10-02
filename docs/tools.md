@@ -497,7 +497,7 @@ Build and return metrics, part paths and images. If partsTruncated, use kiln_ins
       "pattern": "^r_[0-9]{10}_[a-f0-9]{64}$"
     },
     "materialDependencies": {
-      "description": "Exact material pins for this call; project locks cannot be replaced.",
+      "description": "Pins for this call; each replaces the project pin of its resourceId.",
       "maxItems": 512,
       "type": "array",
       "items": {
@@ -656,7 +656,7 @@ Review animation images, poseBounds and loopClosure endpoint evidence. loopInten
       "pattern": "^r_[0-9]{10}_[a-f0-9]{64}$"
     },
     "materialDependencies": {
-      "description": "Exact material pins for this call; project locks cannot be replaced.",
+      "description": "Pins for this call; each replaces the project pin of its resourceId.",
       "maxItems": 512,
       "type": "array",
       "items": {
@@ -754,7 +754,7 @@ Render roof-off floor-plan, dollhouse, and eye-level cutaway views. Optional ver
       "pattern": "^r_[0-9]{10}_[a-f0-9]{64}$"
     },
     "materialDependencies": {
-      "description": "Exact material pins for this call; project locks cannot be replaced.",
+      "description": "Pins for this call; each replaces the project pin of its resourceId.",
       "maxItems": 512,
       "type": "array",
       "items": {
@@ -1033,7 +1033,7 @@ List part paths and inspect joints, clearances and edit preservation. listParts 
       "pattern": "^r_[0-9]{10}_[a-f0-9]{64}$"
     },
     "materialDependencies": {
-      "description": "Exact material pins for this call; project locks cannot be replaced.",
+      "description": "Pins for this call; each replaces the project pin of its resourceId.",
       "maxItems": 512,
       "type": "array",
       "items": {
@@ -1168,7 +1168,7 @@ Atomically apply ordered exact-string replacements and render. Copy anchors from
       "pattern": "^r_[0-9]{10}_[a-f0-9]{64}$"
     },
     "materialDependencies": {
-      "description": "Exact material pins for this call; project locks cannot be replaced.",
+      "description": "Pins for this call; each replaces the project pin of its resourceId.",
       "maxItems": 512,
       "type": "array",
       "items": {
@@ -1648,7 +1648,7 @@ Save a completed source revision into the user-requested collection, or project 
       "pattern": "^r_[0-9]{10}_[a-f0-9]{64}$"
     },
     "materialDependencies": {
-      "description": "Exact material pins for this call; project locks cannot be replaced.",
+      "description": "Pins for this call; each replaces the project pin of its resourceId.",
       "maxItems": 512,
       "type": "array",
       "items": {

@@ -204,7 +204,7 @@ export function createKilnToolHost(
           uri,
           mimeType: file.mimeType,
           ...(file.name.endsWith('.json') || file.name.endsWith('.js')
-            ? { text: new TextDecoder().decode(file.bytes) }
+            ? { text: resourceText(file.name, file.bytes) }
             : { blob: Buffer.from(file.bytes).toString('base64') }),
         };
       }
@@ -232,6 +232,22 @@ export function createKilnToolHost(
       throw new Error(`Resource not found: ${uri}`);
     },
   };
+}
+
+/**
+ * A saved manifest is pretty-printed on disk and one line as a resource: a Codex session
+ * read 33,563 characters of one, a quarter of them line breaks and indentation (H26;
+ * decision 27 of 2 October 2026). Source files and anything that is not JSON are served
+ * as they are.
+ */
+function resourceText(name: string, bytes: Uint8Array): string {
+  const text = new TextDecoder().decode(bytes);
+  if (!name.endsWith('.json')) return text;
+  try {
+    return JSON.stringify(JSON.parse(text));
+  } catch {
+    return text;
+  }
 }
 
 /** Build the complete in-process server: the protocol core over this context's engine. */

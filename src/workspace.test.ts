@@ -186,9 +186,17 @@ test('standalone material pins resolve exact resources, merge only compatible pr
   expect(
     merged?.materialResources.records.map((record) => record.manifest.materialId).sort(),
   ).toEqual(['stone', 'wood']);
-  await expect(
-    workspace.run({ projectId: 'farm', materialDependencies: [pin(newWood)] }, inspect),
-  ).rejects.toThrow('Conflicting material');
+  // A project revision implies its pins and an explicit pin for the same resource wins
+  // (decision 27 of 2 October 2026; f12 repeated the project's five pins on every call).
+  const overridden = await workspace.run(
+    { projectId: 'farm', materialDependencies: [pin(newWood)] },
+    inspect,
+  );
+  expect(overridden?.project?.projectId).toBe('farm');
+  expect(overridden?.materialDependencies).toEqual([pin(newWood)]);
+  expect(overridden?.materialResources.records.map((record) => record.manifest.revisionId)).toEqual(
+    [newWood.manifest.revisionId],
+  );
   const independent = await workspace.run(
     { projectId: null, materialDependencies: [pin(newWood)] },
     inspect,

@@ -49,21 +49,18 @@ export class FileWorkspace implements WorkspacePort {
       : projectId
         ? await this.projects.read(projectId, selection.projectRevision)
         : undefined;
+    // A project revision implies its pins, and a pin the call names replaces the
+    // project's or the inherited one for the same resource (decision 27 of 2 October
+    // 2026: a Codex session repeated the project's five pins on every call, 1,300 to
+    // 3,400 characters of arguments each, because the schema said they could not be
+    // replaced).
     const pins = new Map<string, MaterialDependency>();
-    for (const dependency of [
-      ...(inherit ? existing.materialDependencies : (project?.materialDependencies ?? [])),
-      ...(selection.materialDependencies ?? []),
-    ]) {
-      const previous = pins.get(dependency.resourceId);
-      if (
-        previous &&
-        (previous.revisionId !== dependency.revisionId || previous.sha256 !== dependency.sha256)
-      )
-        throw new Error(
-          `Conflicting material revisions for ${dependency.resourceId}; project or inherited resource locks cannot be replaced.`,
-        );
-      pins.set(dependency.resourceId, previous ?? dependency);
-    }
+    for (const dependency of inherit
+      ? existing.materialDependencies
+      : (project?.materialDependencies ?? []))
+      pins.set(dependency.resourceId, dependency);
+    for (const dependency of selection.materialDependencies ?? [])
+      pins.set(dependency.resourceId, dependency);
     const materialDependencies = materialDependenciesSchema.parse(
       [...pins.values()].sort((a, b) => a.resourceId.localeCompare(b.resourceId)),
     );

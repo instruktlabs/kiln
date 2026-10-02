@@ -81,6 +81,13 @@ bytes (four were over, the largest 18,788), input schemas 26,475 bytes in all (6
   `materialDependencies` give a material, as an alias of `materialId` (a Codex session
   passed it twice and was refused both times); the advertised schema and the docs keep
   `materialId`, and a call naming both with different values is refused with the fix.
+- **Breaking** for a call that pins another revision of a project's material: a project
+  revision implies its material pins, and a pin the call names replaces the project's or
+  the inherited one for the same `resourceId` instead of being refused as a conflict (a
+  Codex session repeated the project's five pins on every render, edit, inspect and
+  animation call, 1,300 to 3,400 characters of arguments each, because the field said
+  project locks could not be replaced). The `materialDependencies` description of the
+  six workspace-bound tools says so in the same number of bytes.
 
 ### Program handles
 

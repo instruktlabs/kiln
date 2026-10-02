@@ -304,6 +304,17 @@ test('the default MCP transport keeps artifact URIs readable without resource-li
     );
     const read = await client.readResource({ uri: source.uri });
     expect('text' in read.contents[0]! ? read.contents[0].text : undefined).toBe(code);
+    // Decision 27 of 2 October 2026 (H26): the manifest is pretty-printed on disk and one
+    // line as a resource (a Codex session read 33,563 characters of it, a quarter of
+    // them line breaks and indentation).
+    const manifest = payload.resources.find(
+      (link: { name?: string }) => link.name === 'manifest.json',
+    );
+    const manifestRead = await client.readResource({ uri: manifest.uri });
+    const manifestText =
+      'text' in manifestRead.contents[0]! ? manifestRead.contents[0].text : undefined;
+    expect(manifestText).not.toContain('\n');
+    expect(JSON.parse(manifestText!).assetId).toBe(payload.asset.assetId);
   } finally {
     await client.close();
     await server.close();
