@@ -3,6 +3,7 @@ import { useRuntime, type SceneRuntime } from '../internal/runtime';
 import { rendererProgramCounts } from './counts';
 import { KIT_DEV_PARAMS, readDevParams, FrameTimeRecorder } from './core';
 import type { DeviceProbe } from '../quality/core';
+import { createRenderProbe, type ProbeOptions } from './probe';
 export * from './core';
 const live=new Set<SceneRuntime>();
 const context=(runtime?:SceneRuntime)=>runtime??Array.from(live).at(-1);
@@ -46,6 +47,7 @@ export function installTestHooks(runtime:SceneRuntime) {
   if(typeof runtime.devParams.time==='number'){runtime.clock.time=runtime.clock.ambient=runtime.devParams.time;runtime.clock.timeScale=0;}
   if(runtime.devParams.freeze)runtime.clock.timeScale=0;
   if((window as unknown as {__kilnMeasureRequested?:boolean}).__kilnMeasureRequested){runtime.data.set('startupAt',performance.now());measurement(true);}
+  const probe=createRenderProbe(runtime);
   const api={
     whenReady:()=>runtime.ready?Promise.resolve():new Promise<void>((accept,reject)=>{
       if(runtime.failed||runtime.disposed){reject(new Error('Scene did not become ready'));return;}
@@ -69,6 +71,18 @@ export function installTestHooks(runtime:SceneRuntime) {
     runWorkload:(name:string)=>{runtime.data.set('workload',name);},
     events,
     invoke:(name:string,...args:unknown[])=>runtime.testHooks[name]?.(...args),
+    // S1 count probe (probe.ts): per-pass draws, triangles and pipelines once K frames agree, with count-only what-ifs.
+    // `timeoutMs` cancels the probe in the page (restoring its what-if), so a caller's own timeout never leaves one running.
+    probeFrames:({timeoutMs,...options}:ProbeOptions&{timeoutMs?:number}={})=>new Promise((accept,reject)=>{
+      if(runtime.disposed){reject(new Error('Scene disposed'));return;}
+      let cancel=()=>{},timer:ReturnType<typeof setTimeout>|undefined;
+      const settle=()=>{clearTimeout(timer);pending.delete(fail);},fail=(error:Error)=>{cancel();settle();reject(error);};
+      try{cancel=probe.run(options,result=>{settle();accept({...result,tier:api.tierState()});},error=>{settle();reject(error);});}catch(error){reject(error);return;}
+      pending.add(fail);
+      if(timeoutMs!==undefined)timer=setTimeout(()=>fail(new Error(`probeFrames timed out after ${timeoutMs} ms`)),timeoutMs);
+    }),
+    sceneSummary:()=>probe.sceneSummary(),
+    get frame(){return runtime.clock.frame;},
     get disposed(){return runtime.disposed;},
   };
   const proxy=new Proxy(api,{get(target,key,receiver){if(typeof key==='string'&&runtime.testHooks[key])return runtime.testHooks[key];return Reflect.get(target,key,receiver);}});

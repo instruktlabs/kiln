@@ -101,6 +101,11 @@ export function GoldenGateWorldContent() {
         const target = { terrain: world.terrain.root, bridge: world.bridge.root, water: world.water.mesh, banks: world.banks?.sprite, sky: world.atmosphere.sky, traffic: world.traffic.root }[part];
         if (!target) return false; target.visible = visible; return true;
       },
+      /** Count-probe systems (scene-kit testing/probe.ts): the setPartVisible parts, with the bridge split into its web and
+       *  far models, the approaches and the vegetation carried under the near approaches. */
+      probeSystems: () => ({ terrain: world.terrain.root, vegetation: world.terrain.vegetation.root, bridge: world.bridge.web, 'bridge-far': world.bridge.far,
+        approaches: [world.bridge.approachMeshes.near.group, world.bridge.approachMeshes.far.group], water: world.water.mesh, banks: world.banks?.sprite ?? null,
+        sky: world.atmosphere.sky, traffic: world.traffic.root }),
       /** The point on the water plane (y = 0) under a screen pixel, or null above the horizon. */
       groundPoint: (sx: number, sy: number) => { camera.updateMatrixWorld(); v.set(sx / size.width * 2 - 1, 1 - sy / size.height * 2, .5).unproject(camera).sub(camera.position); if (v.y >= 0) return null; const t = -camera.position.y / v.y; return [camera.position.x + v.x * t, camera.position.z + v.z * t]; },
       project: (point: Vec3) => { camera.updateMatrixWorld(); v.fromArray(point).project(camera); return [(v.x + 1) / 2 * size.width, (1 - v.y) / 2 * size.height, v.z]; },

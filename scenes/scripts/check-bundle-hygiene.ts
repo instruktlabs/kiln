@@ -2,7 +2,7 @@ import { existsSync, readFileSync } from 'node:fs';
 import { join, relative, resolve } from 'node:path';
 import { filesUnder, printCheck, ROOT, slash, workspaceManifests } from './check-common';
 
-export const DENYLIST = ['__kilnScene', '__kilnProbeOverride', 'DevPanel', 'registerWorkload', 'feedFrameTimes', 'Preview farm activity', 'suite-client', 'createMeasurement', 'sample-case', '#view-quality', 'Look exploration', 'Unknown look option'] as const;
+export const DENYLIST = ['__kilnScene', '__kilnProbeOverride', 'DevPanel', 'registerWorkload', 'feedFrameTimes', 'probeFrames', 'sceneSummary', 'probeSystems', 'probeAsset', 'kiln-render-probe', 'Preview farm activity', 'suite-client', 'createMeasurement', 'sample-case', '#view-quality', 'Look exploration', 'Unknown look option'] as const;
 export interface HygieneHit { file: string; token: string; line: number }
 export function findHygieneHits(file: string, text: string): HygieneHit[] {
   return DENYLIST.flatMap(token => {

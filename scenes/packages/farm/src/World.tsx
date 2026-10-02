@@ -9,6 +9,7 @@ import { useFarmWorkloads } from './play/workloads';
 import { bindFarmFrameGraph } from './world/frame-graph';
 import { startWarmPass, type WarmPass } from './world/prewarm';
 import { installInstanceAttributes, type InstanceAttributeRenderer } from './world/instance-attributes';
+import { farmProbeHooks } from './world/probe-systems';
 import type { FarmWorld } from './world/build-world';
 
 export function FarmWorldContent() {
@@ -64,6 +65,8 @@ export function FarmWorldContent() {
       warmPass: warm.current?.world === world ? { phase: warm.current.pass.phase, ...warm.current.pass.stats } : null }),
     setAmbient: (enabled: boolean) => { session.ambientEnabled = enabled; if (!enabled) world.herd.stop(); },
     initialClips: () => world.placements.initialClips,
+    // Count-probe systems and asset names (scene-kit testing/probe.ts); folds away in public builds.
+    ...(import.meta.env.KILN_TEST || import.meta.env.KILN_DEV ? farmProbeHooks(world) : {}),
   }; }, [world, session, frameGraph]);
   useRegisterTestHooks(import.meta.env.KILN_TEST || import.meta.env.KILN_DEV ? hooks : {});
   return world ? <><primitive object={world.root} dispose={null}/><FarmCameras layout={world.layout} sim={world.sim}/></> : null;

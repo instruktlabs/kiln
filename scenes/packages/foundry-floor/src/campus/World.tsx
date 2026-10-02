@@ -9,6 +9,7 @@ import { SystemOrder, useFade, useLoadedPack, usePlayMode, useRegisterTestHooks,
 import { useThree } from '@react-three/fiber';
 import { useCampusSession } from './session';
 import type { CampusPlace } from './session';
+import { foundryProbeAsset, foundryProbeSystems } from './probe-systems';
 
 const TEST = !!(import.meta.env.KILN_TEST || import.meta.env.KILN_DEV);
 const FADE_MS = 350;
@@ -67,6 +68,9 @@ export function CampusWorld() {
       campusResources:()=>({models:[...pack.models.keys()],exterior:!!scene.getObjectByName('campus-exterior'),context:!!scene.getObjectByName('campus-interior-context')}),
       campusEnter: () => { campus.enter(); return true; },
       campusExit: () => { campus.exit(); return true; },
+      /** Count-probe systems and fab entity names (scene-kit testing/probe.ts), found by name for either place. */
+      probeSystems: () => foundryProbeSystems(scene),
+      probeAsset: foundryProbeAsset,
     };
   }, [campus,pack,scene]);
   useRegisterTestHooks(hooks);
