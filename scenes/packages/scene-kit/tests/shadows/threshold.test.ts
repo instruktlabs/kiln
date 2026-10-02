@@ -92,3 +92,12 @@ test('the default sphere measure keeps a rod pointed at the sun; the light measu
   expect(projected.dropped).toEqual([rod]); projected.restore();
   expect(rod.castShadow).toBe(true);
 });
+
+test('RK-7e the light measure brings a light and target whose world matrices are stale up to date first', () => {
+  const light = new DirectionalLight(); light.position.set(25, 42, 20); light.shadow.mapSize.setScalar(2048);  // never added or updated
+  Object.assign(light.shadow.camera, { left: -44, right: 44, top: 44, bottom: -44, near: 1, far: 115 }); light.shadow.camera.updateProjectionMatrix();
+  const m = mesh(4, .2, .2); m.updateMatrixWorld(true);
+  const texel = shadowTexelSize(light.shadow), stale = casterTexels(m, light, texel);
+  light.updateMatrixWorld(true); light.target.updateMatrixWorld(true);
+  expect(stale).toBeCloseTo(casterTexels(m, light, texel), 9);
+});

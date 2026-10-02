@@ -1,8 +1,12 @@
 import { BackSide, Box3, DoubleSide, FrontSide, Mesh, MeshBasicNodeMaterial, Vector3 } from 'three/webgpu';
 import type { BufferGeometry, Material, Object3D, Side } from 'three/webgpu';
 import { bakeRigidGeometry } from '../instancing/rigid-merge';
-import { suppressedCasters } from './layers';
-export interface ShadowStandInOptions { layer: number; isAnchor(n: Object3D): boolean; include?(m: Mesh): boolean; texel?: number; minCasterTexels?: number; chunk?: { cell: number; maxTriangles?: number } }
+import { layerBit, suppressedCasters } from './layers';
+export interface ShadowStandInOptions {
+  layer: number; isAnchor(n: Object3D): boolean; include?(m: Mesh): boolean; texel?: number; minCasterTexels?: number; chunk?: { cell: number; maxTriangles?: number };
+  /** The shadow camera's layer mask: sources sharing no bit with it are skipped as `layer`, since three never draws them. Default layer 0 only; it must include `layer`. */
+  shadowMask?: number;
+}
 export interface ShadowStandIns {
   readonly proxies: Mesh[]; readonly sources: Mesh[]; readonly dropped: Mesh[];
   readonly stats: { groups: number; sourceMeshes: number; proxies: number; triangles: number; dropped: number; skipped: Record<string, number> }; restore(): void;
@@ -34,7 +38,7 @@ function excluded(m: Mesh): string | undefined {
  * its anchor, so it inherits the anchor's motion and visibility; it sits on `layer` alone (never 0: main cameras and
  * raycasters never see it) with a material-free node material per side that writes no colour or depth outside a shadow
  * pass. Sources stop casting and stay on shadow layers through suppressedCasters. Eligible: visible below its anchor,
- * castShadow, one material, a plain mesh with the default draw range and no own render hooks, not under a LOD or
+ * castShadow, on a layer the shadow camera sees (`shadowMask`, default layer 0), one material, a plain mesh with the default draw range and no own render hooks, not under a LOD or
  * ClippingGroup below its anchor, and a material the override draws as plain depth. Plain transparency qualifies: three
  * r186 draws it with NoBlending, depth written and no discard (twice when double-sided). Parts whose sphere diameter is under
  * `minCasterTexels` texels drop before the merge. Build after batching. The proxy's matrixWorld is set once and it copies
@@ -42,6 +46,8 @@ function excluded(m: Mesh): string | undefined {
  */
 export function shadowStandIns(root: Object3D, o: ShadowStandInOptions): ShadowStandIns {
   if (!(Number.isInteger(o.layer) && o.layer >= 1 && o.layer <= 31)) throw new Error('Stand-in layer must be 1..31');
+  if (o.shadowMask !== undefined && !(o.shadowMask & layerBit(o.layer))) throw new Error('The shadow camera mask must include the stand-in layer');
+  const sees = o.shadowMask ?? 1;
   root.updateWorldMatrix(true, true);
   const skipped: Record<string, number> = {}, groups = new Map<string, Bucket>(), dropped: Mesh[] = [], min = (o.texel ?? 0) * (o.minCasterTexels ?? 0), cell = o.chunk?.cell, box = new Box3(), c = new Vector3();
   const visit = (n: Object3D, anchor: Object3D, hidden: boolean, cut?: string) => {
@@ -50,7 +56,7 @@ export function shadowStandIns(root: Object3D, o: ShadowStandInOptions): ShadowS
     if (has(n, 'isLOD')) cut ??= 'lod';
     const m = n as Mesh;
     if (m.isMesh) {
-      const why = m.userData.kilnShadowStandIn || m.userData.kilnPassStandIn ? 'standIn' : hidden ? 'hidden' : !m.castShadow ? 'noCast' : cut ?? (o.include?.(m) === false ? 'include' : excluded(m));
+      const why = m.userData.kilnShadowStandIn || m.userData.kilnPassStandIn ? 'standIn' : hidden ? 'hidden' : !m.castShadow ? 'noCast' : !(m.layers.mask & sees) ? 'layer' : cut ?? (o.include?.(m) === false ? 'include' : excluded(m));
       const g = m.geometry; if (!why && !g.boundingSphere) g.computeBoundingSphere();
       if (why) skipped[why] = (skipped[why] ?? 0) + 1;
       else if (2 * g.boundingSphere!.radius * m.matrixWorld.getMaxScaleOnAxis() < min) dropped.push(m);

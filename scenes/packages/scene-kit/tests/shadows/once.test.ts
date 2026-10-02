@@ -14,6 +14,8 @@ function counted(light: DirectionalLight) {
   return { renders, draw: (frameId: number, camera: PerspectiveCamera, precompiling = false) => node.updateBefore({ renderer: { _isPreCompiling: precompiling }, camera, frameId }) };
 }
 const main = Object.assign(new PerspectiveCamera(), { name: 'main' }), mirror = Object.assign(new PerspectiveCamera(), { name: 'mirror' });
+/** A sun whose shadow camera keeps its own layers (a bit above 0), as Golden Gate's enables LAYERS.dynamic. */
+const layered = () => { const light = new DirectionalLight(); light.shadow.camera.layers.enable(2); return light; };
 
 test('without the helper a second camera re-renders the map every frame (the Golden Gate reflector duplicate)', () => {
   const light = new DirectionalLight(), { renders, draw } = counted(light);
@@ -22,7 +24,7 @@ test('without the helper a second camera re-renders the map every frame (the Gol
 });
 
 test('once per frame: armed at install, re-armed by update, reused by the second camera', () => {
-  const light = new DirectionalLight(), { renders, draw } = counted(light), once = shadowOncePerFrame(light);
+  const light = layered(), { renders, draw } = counted(light), once = shadowOncePerFrame(light);
   expect([light.shadow.autoUpdate, light.shadow.needsUpdate]).toEqual([false, true]);
   draw(0, main, true); expect(renders).toEqual([]);              // compileAsync never renders shadows
   for (let f = 0; f < 4; f++) { once.update(); draw(f, main); draw(f, mirror); }
@@ -36,7 +38,18 @@ test('once per frame: armed at install, re-armed by update, reused by the second
 });
 
 test('restore keeps an author-frozen shadow frozen', () => {
-  const light = new DirectionalLight(); light.shadow.autoUpdate = false;
+  const light = layered(); light.shadow.autoUpdate = false;
   const once = shadowOncePerFrame(light); once.restore();
   expect(light.shadow.autoUpdate).toBe(false);
+});
+
+test('RK-2 refuses a shadow camera mask three swaps for each viewing camera mask, where cameras with other layers need their own map', () => {
+  // ShadowNode.updateShadow: a mask with no bit at layer 1 or above becomes the rendering camera's mask, so one shared map
+  // would carry the first camera's casters into the second camera's view.
+  for (const mask of [1, 0]) {
+    const light = new DirectionalLight(); light.shadow.camera.layers.mask = mask;
+    expect(() => shadowOncePerFrame(light)).toThrow('layer above 0');
+    expect([light.shadow.autoUpdate, light.shadow.needsUpdate]).toEqual([true, false]);
+  }
+  expect(() => shadowOncePerFrame(layered()).restore()).not.toThrow();
 });

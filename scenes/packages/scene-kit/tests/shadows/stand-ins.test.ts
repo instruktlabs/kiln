@@ -259,3 +259,14 @@ test('stand-ins never take layer 0 or an out-of-range layer', () => {
   for (const layer of [0, 32, 1.5]) expect(() => shadowStandIns(h.root, { layer, isAnchor })).toThrow();
   for (const m of h.eligible) expect(m.castShadow).toBe(true);
 });
+
+test('RK-4 sources the shadow camera cannot see are skipped as layer (default: layer 0 only); the camera must see the stand-in layer', () => {
+  const root = new Group(), stone = new MeshStandardMaterial(), a = mesh('onLayer0', stone, root), b = mesh('onLayer5', stone, root, 3), c = mesh('onLayer2', stone, root, 6);
+  b.layers.set(5); c.layers.set(2); root.updateMatrixWorld(true);
+  const r = shadowStandIns(root, { layer: LAYER, isAnchor });
+  expect(r.sources).toEqual([a]); expect(r.stats.skipped).toEqual({ layer: 2 }); expect([b.castShadow, c.castShadow, suppressedCasters.has(b)]).toEqual([true, true, false]);
+  r.restore();
+  const seen = shadowStandIns(root, { layer: LAYER, isAnchor, shadowMask: 1 | 1 << 2 | 1 << LAYER });
+  expect(seen.sources).toEqual([a, c]); expect(seen.stats.skipped).toEqual({ layer: 1 }); seen.restore();
+  expect(() => shadowStandIns(root, { layer: LAYER, isAnchor, shadowMask: 1 | 1 << 2 })).toThrow('stand-in layer');
+});

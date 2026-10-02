@@ -73,14 +73,14 @@ test('install: two armed clones with their own placeholder lights, combined with
 });
 
 test('track adds the static bit per object to casters, suppressed casters and stand-ins, once', () => {
-  const { scene, cache } = setup(), group = new Group(), caster = box('caster'), quiet = box('quiet', false), dropped = box('dropped', false), standIn = box('standIn');
+  const { scene, light, cache } = setup(), group = new Group(), caster = box('caster'), quiet = box('quiet', false), dropped = box('dropped', false), standIn = box('standIn');
   const batch = new InstancedMesh(geometry, material, 2); batch.castShadow = true; suppressedCasters.add(dropped);
-  standIn.userData.kilnShadowStandIn = true; standIn.castShadow = false; standIn.layers.disableAll();
+  standIn.userData.kilnShadowStandIn = true; standIn.castShadow = false; standIn.layers.set(29); light.shadow.camera.layers.enable(29);
   group.add(caster, quiet, dropped, standIn, batch); scene.add(group);
-  expect(cache.track(scene)).toBe(4);
+  expect(cache.track(scene).added).toBe(4);
   expect([caster, dropped, batch].map(m => m.layers.mask)).toEqual([1 | S_BIT, 1 | S_BIT, 1 | S_BIT]);
-  expect([standIn.layers.mask, quiet.layers.mask, group.layers.mask]).toEqual([S_BIT, 1, 1]);
-  expect(cache.track(scene)).toBe(0); expect(cache.track(group, { movable: () => true })).toBe(0);
+  expect([standIn.layers.mask, quiet.layers.mask, group.layers.mask]).toEqual([1 << 29 | S_BIT, 1, 1]);
+  expect(cache.track(scene).added).toBe(0); expect(cache.track(group, { movable: () => true }).added).toBe(0);
   expect(cache.stats).toMatchObject({ staticCasters: 4, liveCasters: 0 });
 });
 
@@ -151,7 +151,7 @@ test('a prime before the first frame holds its mask until three clears the flag'
   expect(D.log).toEqual([[0, 'still'], [1, 'still'], [2]]);
 });
 
-test('template sync: extents, depth range, zoom and filter values reach the live map every frame, the static map on re-arm', () => {
+test('template sync: extents, depth range and zoom reach the live map every frame, the static map on re-arm; sampling values reach both every frame', () => {
   const { light, cache, step } = setup(), S = cache.staticShadow, D = cache.liveShadow; step();
   Object.assign(light.shadow.camera, { left: -30, right: 30, top: 20, bottom: -20, near: 2, far: 90, zoom: 2 });
   Object.assign(light.shadow, { bias: -.001, normalBias: .05, radius: 3, intensity: .6 });
@@ -161,7 +161,9 @@ test('template sync: extents, depth range, zoom and filter values reach the live
   expect(pick(D)).toEqual([-30, 30, 20, -20, 2, 90, 2, -.001, .05, 3, .6]);
   expected.coordinateSystem = D.camera.coordinateSystem; expected.updateProjectionMatrix();
   expect(D.camera.projectionMatrix.elements).toEqual(expected.projectionMatrix.elements);
-  expect(pick(S)).toEqual([-44, 44, 44, -44, 1, 115, 1, 0, 0, 1, 1]);
+  // RK-7b: bias, normal bias, radius and intensity are sampling uniforms (ShadowNode reference()), so the static map's
+  // receivers take them at once; its camera keeps the extents its depth was rendered with until a re-arm.
+  expect(pick(S)).toEqual([-44, 44, 44, -44, 1, 115, 1, -.001, .05, 3, .6]);
   cache.invalidate('extent');
   expect(pick(S)).toEqual(pick(D)); expect(S.camera.projectionMatrix.elements).toEqual(expected.projectionMatrix.elements);
 });
@@ -195,4 +197,78 @@ test('dispose: both shadow nodes, both shadows, then the custom node; only the b
   expect(cache.stats.invalidations).toBe(0);
   expect(() => cache.track(scene)).toThrow('disposed');
   expect(() => cachedSunShadow({ light }).dispose()).not.toThrow();
+});
+
+// Wave-B review fixes (tmp/drawcalls/wave-b-review/fix-kit). Finding ids name the review items.
+test('RK-3 track tags only casters the shadow camera draws: its own layers, or layer 0 where three would use the viewing camera mask', () => {
+  const { scene, light, cache, S, step } = setup(), kept = box('onLayer0'), two = box('onLayer2'), five = box('onLayer5');
+  light.shadow.camera.layers.mask = 1 | 1 << 2; two.layers.set(2); five.layers.set(5);
+  scene.add(kept, two, five); scene.updateMatrixWorld(true);
+  expect(cache.track(scene).added).toBe(2); step(); step();
+  expect(S.log.at(-1)!.slice(1)).toEqual(['onLayer0', 'onLayer2']);
+  expect(five.layers.mask).toBe(1 << 5);
+  const fallback = setup(), zero = box('zero'), other = box('other'); other.layers.set(5); fallback.scene.add(zero, other); fallback.scene.updateMatrixWorld(true);
+  expect(fallback.cache.track(fallback.scene).added).toBe(1); expect([zero.layers.mask, other.layers.mask]).toEqual([1 | S_BIT, 1 << 5]);
+});
+
+test('RK-5 install refuses a light whose stock shadow map a receiver already built', () => {
+  const light = farmSun(); (light.shadow as any).map = { isRenderTarget: true };
+  expect(() => cachedSunShadow({ light })).toThrow('before any receiver');
+  expect('shadowNode' in light.shadow).toBe(false);
+});
+
+test('RK-6 drift under the tolerance is not motion: a creeping caster settles; creep past it from the last counted pose goes live', () => {
+  const { scene, cache, D, step } = setup(), rig = new Group(), rowan = box('rowan'); rig.add(rowan); scene.add(rig); rig.position.set(4, 0, 4); scene.updateMatrixWorld(true);
+  cache.track(scene, { movable: n => n === rig }); step(); step(); step();
+  const renders = D.log.length;
+  for (let i = 0; i < 60; i++) { rig.position.x += (i % 2 ? -1 : 1) * 1e-14; rig.updateMatrixWorld(true); step(); }
+  expect([cache.stats.liveCasters, D.log.length - renders, rowan.layers.mask]).toEqual([0, 0, 1 | S_BIT]);
+  for (let i = 0; i < 2; i++) { rig.position.x += 4e-7; rig.updateMatrixWorld(true); step(); }
+  expect(rowan.layers.mask).toBe(1 | S_BIT);                             // 0.8 µm from the counted pose
+  rig.position.x += 4e-7; rig.updateMatrixWorld(true); step();
+  expect(rowan.layers.mask).toBe(1 | D_BIT);                             // 1.2 µm: motion
+  const exact = setup({ tolerance: 0 }), r2 = new Group(), m2 = box('m2'); r2.add(m2); exact.scene.add(r2); exact.scene.updateMatrixWorld(true);
+  exact.cache.track(exact.scene, { movable: n => n === r2 }); exact.step(); exact.step();
+  r2.position.x += 1e-14; r2.updateMatrixWorld(true); exact.step(); expect(m2.layers.mask).toBe(1 | D_BIT);
+  expect(() => cachedSunShadow({ light: farmSun(), tolerance: -1 })).toThrow('tolerance');
+});
+
+test('RK-7a a mesh that starts casting after track() joins on the next track() of its root', () => {
+  const { scene, cache, S, step } = setup(), late = box('late', false); scene.add(late); scene.updateMatrixWorld(true);
+  expect(cache.track(scene).added).toBe(0); late.castShadow = true;
+  expect(cache.track(scene).added).toBe(1); cache.invalidate('castShadow'); step(); step();
+  expect(S.log.at(-1)!.slice(1)).toEqual(['late']);
+});
+
+test('RK-7c track returns an untrack that clears only the casters that call tagged and re-arms the static map', () => {
+  const { scene, cache, S, D, step } = setup(), old = new Group(), next = new Group(), rig = new Group(), mover = box('mover'), wall = box('wall'), kept = box('kept');
+  rig.add(mover); old.add(rig, wall); next.add(kept); scene.add(old, next); scene.updateMatrixWorld(true);
+  const a = cache.track(old, { movable: n => n === rig }), b = cache.track(next);
+  expect([a.added, b.added]).toEqual([2, 1]); step(); step();
+  rig.position.x = 1; rig.updateMatrixWorld(true); step();             // frame 2: the mover goes live
+  expect(mover.layers.mask).toBe(1 | D_BIT);
+  const renders = cache.stats.staticRenders; scene.remove(old); a.untrack(); a.untrack();
+  expect([mover.layers.mask, wall.layers.mask, kept.layers.mask]).toEqual([1, 1, 1 | S_BIT]);
+  expect(cache.stats).toMatchObject({ staticCasters: 1, liveCasters: 0, staticRenders: renders + 1, reasons: { untrack: 1 } });
+  step();                                                                // frame 3: the static map without the old world, the live map cleared once
+  expect([S.log.at(-1), D.log.at(-1)]).toEqual([[3, 'kept'], [3]]);
+  rig.position.x = 2; rig.updateMatrixWorld(true); step(); expect(mover.layers.mask).toBe(1);
+  expect(cache.track(old).added).toBe(2);
+  b.untrack(); cache.dispose(); expect([kept.layers.mask, mover.layers.mask]).toEqual([1, 1]);
+});
+
+test('live() casters, whose motion the watch cannot see, draw in the live map every frame they are shown, then once more to clear', () => {
+  const { scene, cache, S, D, step } = setup(), still = box('still'), cars = new Group(), car = new InstancedMesh(geometry, material, 4);
+  car.name = 'car'; car.castShadow = true; cars.add(car); scene.add(still, cars); scene.updateMatrixWorld(true);
+  const t = cache.track(scene, { live: n => n === cars, movable: () => true });
+  expect([t.added, still.layers.mask, car.layers.mask]).toEqual([2, 1 | S_BIT, 1 | D_BIT]);
+  step(); step(); step();
+  expect(S.log).toEqual([[0, 'still'], [1, 'still']]); expect(D.log).toEqual([[0, 'car'], [1, 'car'], [2, 'car']]);
+  expect(cache.stats).toMatchObject({ staticCasters: 1, liveCasters: 1, pendingSettle: 0 });
+  cars.visible = false; step(); step();
+  expect(D.log.slice(-2)).toEqual([[2, 'car'], [3]]); expect(cache.stats.liveCasters).toBe(0);
+  car.count = 0; cars.visible = true; step(); expect(D.log.length).toBe(4);   // nothing to draw: no render
+  car.count = 4; step(); expect(D.log.at(-1)).toEqual([6, 'car']);
+  expect(S.log.length).toBe(2);                                          // live casters never re-arm the static map
+  cache.dispose(); expect([car.layers.mask, still.layers.mask]).toEqual([1, 1]);
 });

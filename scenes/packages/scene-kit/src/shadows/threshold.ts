@@ -8,7 +8,7 @@ export function shadowTexelSize(shadow: LightShadow): number {
   const c = shadow.camera as OrthographicCamera; return c.isOrthographicCamera ? (c.right - c.left) / c.zoom / shadow.mapSize.x : 0;
 }
 const _view = /*@__PURE__*/ new Matrix4(), _instance = /*@__PURE__*/ new Matrix4();
-/** Caster size in shadow texels; an InstancedMesh is its largest drawn instance. World matrices must be current. */
+/** Caster size in shadow texels; an InstancedMesh is its largest drawn instance. The caster's world matrix must be current; the 'light' measure brings the light's and target's up to date. */
 export function casterTexels(o: Mesh, light: DirectionalLight, texel: number, measure: CasterMeasure = 'light'): number {
   const g = o.geometry, im = o as InstancedMesh, n = im.isInstancedMesh ? im.count : 1;let size = 0;
   if (measure === 'sphere') {
@@ -18,7 +18,8 @@ export function casterTexels(o: Mesh, light: DirectionalLight, texel: number, me
   }
   if (!g.boundingBox) g.computeBoundingBox();
   const { min, max } = g.boundingBox!, hx = (max.x - min.x) / 2, hy = (max.y - min.y) / 2, hz = (max.z - min.z) / 2;
-  light.shadow.updateMatrices(light);
+  // A light that never joined a rendered scene (a measuring copy) has stale world matrices; three updates them only when it renders.
+  light.updateWorldMatrix(true, false); light.target.updateWorldMatrix(true, false); light.shadow.updateMatrices(light);
   for (let i = 0; i < n; i++) {
     _view.multiplyMatrices(light.shadow.camera.matrixWorldInverse, o.matrixWorld); if (im.isInstancedMesh) _view.multiply(im.getMatrixAt(i, _instance));
     const e = _view.elements; size = Math.max(size, Math.abs(e[0]!) * hx + Math.abs(e[4]!) * hy + Math.abs(e[8]!) * hz, Math.abs(e[1]!) * hx + Math.abs(e[5]!) * hy + Math.abs(e[9]!) * hz);

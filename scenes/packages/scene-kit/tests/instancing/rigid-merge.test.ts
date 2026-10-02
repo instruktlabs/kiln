@@ -1,7 +1,9 @@
 import { expect, test } from 'bun:test';
-import { Box3, BoxGeometry, BufferAttribute, BufferGeometry, Group, InstancedMesh, InterleavedBuffer, InterleavedBufferAttribute, Matrix3, Matrix4, Mesh, MeshPhysicalMaterial, MeshStandardMaterial, SkinnedMesh, SphereGeometry, Vector3 } from 'three/webgpu';
+import { Box3, BoxGeometry, BufferAttribute, BufferGeometry, Group, InstancedMesh, InterleavedBuffer, InterleavedBufferAttribute, Matrix3, Matrix4, Mesh, MeshPhysicalMaterial, MeshStandardMaterial, Scene, SkinnedMesh, SphereGeometry, Vector3 } from 'three/webgpu';
 import type { Material, Object3D } from 'three/webgpu';
 import { bakeRigidGeometry, mergeRigidByMaterial } from '../../src/instancing/rigid-merge';
+import { createFrameGraph, freezeTransforms } from '../../src/instancing/core';
+import type { InstanceOwner } from '../../src/instancing/core';
 const isAnchor=(n:Object3D)=>/^Joint_/.test(n.name);
 const box=(x=1,y=1,z=1)=>{const g=new BoxGeometry(x,y,z);g.clearGroups();return g;};
 const node=(name:string,parent:Object3D|null,x=0,y=0,z=0)=>{const g=new Group();g.name=name;g.position.set(x,y,z);parent?.add(g);return g;};
@@ -143,4 +145,39 @@ test('minGroup sets the smallest group that merges',()=>{
  const scene=()=>{const root=node('R',null),stone=new MeshStandardMaterial(),iron=new MeshStandardMaterial();for(let i=0;i<3;i++)mesh('S'+i,stone,root,i,0,0);for(let i=0;i<2;i++)mesh('I'+i,iron,root,i,1,0);return root;};
  expect(mergeRigidByMaterial(scene(),{isAnchor}).stats).toMatchObject({mergedMeshes:2,sourceMeshes:5,keptMeshes:0,groups:2});
  expect(mergeRigidByMaterial(scene(),{isAnchor,minGroup:3}).stats).toMatchObject({mergedMeshes:1,sourceMeshes:3,keptMeshes:2,groups:2});
+});
+// Wave-B review fixes (tmp/drawcalls/wave-b-review/fix-kit). Finding ids name the review items.
+test('RK-7d merged meshes copy their anchor matrix flags, so a merge after freezeTransforms leaves the owner frozen',()=>{
+ const scene=new Scene(),world=new Group();scene.add(world);const owner=node('barn',world),mat=new MeshStandardMaterial();for(let i=0;i<3;i++)mesh('part'+i,mat,owner,i);
+ const owners:InstanceOwner[]=[{id:'barn',object:owner,dynamic:false,assetId:'barn'}];scene.updateMatrixWorld(true);
+ const frozen=freezeTransforms(owners,()=>true),merge=mergeRigidByMaterial(owner,{isAnchor});expect(merge.merged).toHaveLength(1);
+ expect([merge.merged[0]!.matrixAutoUpdate,merge.merged[0]!.matrixWorldAutoUpdate]).toEqual([false,false]);expect(merge.merged[0]!.matrixWorld.equals(owner.matrixWorld)).toBe(true);
+ const graph=createFrameGraph({scene,worldRoot:world,owners,batches:null,isFixed:()=>true});expect(graph.stats.dynamicRoots).toBe(0);
+ graph.restore();merge.restore();frozen.restore();
+ expect(mergeRigidByMaterial(house().root,{isAnchor}).merged.every(m=>m.matrixAutoUpdate&&m.matrixWorldAutoUpdate)).toBe(true);
+});
+/** A box whose position, normal and uv share one Float32 InterleavedBuffer of stride 8, as GLTFLoader builds a strided bufferView. */
+const interleavedBox=()=>{const s=box(),n=s.attributes.position!.count,data=new Float32Array(n*8);for(let i=0;i<n;i++){data.set([s.attributes.position!.getX(i),s.attributes.position!.getY(i),s.attributes.position!.getZ(i)],i*8);data.set([s.attributes.normal!.getX(i),s.attributes.normal!.getY(i),s.attributes.normal!.getZ(i)],i*8+3);data.set([s.attributes.uv!.getX(i),s.attributes.uv!.getY(i)],i*8+6);}
+ const ib=new InterleavedBuffer(data,8),g=new BufferGeometry();g.setAttribute('position',new InterleavedBufferAttribute(ib,3,0));g.setAttribute('normal',new InterleavedBufferAttribute(ib,3,3));g.setAttribute('uv',new InterleavedBufferAttribute(ib,2,6));g.setIndex(s.index);return g;};
+/** three r186 RenderObject.getGeometryCacheKey, which the WebGPU pipeline key includes. */
+const geometryKey=(g:BufferGeometry)=>Object.keys(g.attributes).sort().map(n=>{const a=g.attributes[n] as BufferAttribute&{data?:{stride:number};offset?:number};return n+','+(a.data?a.data.stride+',':'')+(a.offset?a.offset+',':'')+a.itemSize+','+(a.normalized?'n,':'');}).join('');
+test("RK-1 layout 'source' mirrors the first part's interleaved Float32 layout, so the pipeline geometry key matches its parts; values equal the canonical merge",()=>{
+ const merge=(layout?:'canonical'|'source',cache?:Map<string,BufferGeometry>)=>{const root=node('R',null),mat=new MeshStandardMaterial({name:'M'});mesh('a',mat,root,0,0,0,interleavedBox());const b=mesh('b',mat,root,0,2,0,interleavedBox());b.rotation.x=.7;root.updateMatrixWorld(true);return mergeRigidByMaterial(root,{isAnchor,layout,cache,cacheKey:cache&&(()=>'r')}).merged[0]!.geometry;};
+ const source=merge('source'),canonical=merge(),part=interleavedBox();
+ expect(geometryKey(source)).toBe(geometryKey(part));expect(geometryKey(canonical)).not.toBe(geometryKey(part));expect(geometryKey(merge('canonical'))).toBe(geometryKey(canonical));
+ const p=source.attributes.position as InterleavedBufferAttribute;expect(p.isInterleavedBufferAttribute).toBe(true);expect(p.data).toBe((source.attributes.uv as InterleavedBufferAttribute).data);expect(p.data.array).toBeInstanceOf(Float32Array);expect(p.data.count).toBe(2*part.attributes.position!.count);
+ for(const name of ['position','normal','uv']){const s=source.getAttribute(name)!,c=canonical.getAttribute(name)!;expect(s.count).toBe(c.count);for(let i=0;i<s.count;i++)for(let k=0;k<s.itemSize;k++)expect(s.getComponent(i,k)).toBe(c.getComponent(i,k));}
+ expect(Array.from(source.index!.array)).toEqual(Array.from(canonical.index!.array));expect(source.boundingSphere!.equals(canonical.boundingSphere!)).toBe(true);
+ const shared=new Map<string,BufferGeometry>(),a=merge('canonical',shared),b=merge('source',shared);expect(shared.size).toBe(2);expect(geometryKey(b)).toBe(geometryKey(part));expect(a).not.toBe(b);
+ // Plain and normalised inputs keep the canonical non-interleaved Float32 output in either layout.
+ const plain=()=>{const root=node('R',null),mat=new MeshStandardMaterial();mesh('a',mat,root);mesh('b',mat,root,2);return mergeRigidByMaterial(root,{isAnchor,layout:'source'}).merged[0]!.geometry;};
+ expect(geometryKey(plain())).toBe(geometryKey(box()));
+});
+test('R1 order puts parts with a lower value first in the merged vertex and index ranges; ties keep scene order',()=>{
+ const build=(order?:(m:Mesh)=>number)=>{const root=node('R',null),mat=new MeshStandardMaterial();mesh('Walk',mat,root,0,0,0);mesh('Curb',mat,root,5,0,0);mesh('Rail',mat,root,10,0,0);root.updateMatrixWorld(true);return mergeRigidByMaterial(root,{isAnchor,order});};
+ const centres=(g:BufferGeometry)=>[0,1,2].map(k=>{let x=0;for(let i=24*k;i<24*k+24;i++)x+=g.attributes.position!.getX(i);return x/24;});
+ const firstTriangles=(g:BufferGeometry)=>Array.from(g.index!.array).slice(0,36).every(i=>i<24);
+ const plain=build(),ordered=build(m=>m.name==='Curb'?-1:0);
+ expect(centres(plain.merged[0]!.geometry)).toEqual([0,5,10]);expect(centres(ordered.merged[0]!.geometry)).toEqual([5,0,10]);expect(firstTriangles(ordered.merged[0]!.geometry)).toBe(true);
+ expect(ordered.sources.map(s=>s.name)).toEqual(['Curb','Walk','Rail']);expect(ordered.stats).toEqual(plain.stats);
 });

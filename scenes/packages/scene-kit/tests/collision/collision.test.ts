@@ -4,6 +4,7 @@ import { createCollisionWorld, fixedStep, stepCapsule } from '../../src/collisio
 import fixture from './pilot-boxes.json';
 import { shadowStandIns } from '../../src/shadows/stand-ins';
 import { passStandIn } from '../../src/shadows/pass';
+import { mergeRigidByMaterial } from '../../src/instancing/rigid-merge';
 
 function box(x: number, y: number, z: number, width = 2, height = 2, depth = 2) {
   const mesh = new Mesh(new BoxGeometry(width, height, depth), new MeshBasicMaterial());
@@ -72,6 +73,13 @@ describe('U-09 collision', () => {
     expect(world.rayDistance(new Vector3(10, 1, -5), new Vector3(10, 1, 5))).toBeCloseTo(10, 6);
     expect(world.rayDistance(new Vector3(0, 1, -5), new Vector3(0, 1, 5))).toBeCloseTo(4, 6);
     world.dispose(); shadow.restore(); pass.restore();
+  });
+  test('RF-6 a collider built after a rigid merge holds the hidden sources once, never the merged copy', () => {
+    const world = createCollisionWorld(), root = new Group(), material = new MeshBasicMaterial();
+    for (const x of [0, 4]) { const g = new BoxGeometry(2, 2, 2); g.clearGroups(); const m = new Mesh(g, material); m.position.x = x; root.add(m); }
+    const merge = mergeRigidByMaterial(root, { isAnchor: () => false }); expect(merge.merged).toHaveLength(1);
+    expect(world.add(root)!.geometry.getAttribute('position').count).toBe(72);
+    world.dispose(); merge.restore();
   });
 });
 const rules = { radius: .3, height: 1.9, pace: 1.05, runPace: 1.8, gravity: 18, terminal: -10, stepUp: .22, stepProbe: .25, clampX: 34.8, clampZ: 34.8 };
