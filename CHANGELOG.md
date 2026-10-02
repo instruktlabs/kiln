@@ -273,6 +273,13 @@ compaction, so it is a budget: the generated guide is at most 5,000 characters a
   project-local config), `node codex.mjs` applies the same values per run so no trust entry
   is needed, and its `env_vars` forward `KILN_PROJECT`, so a configured project reaches the
   server under Codex as it does elsewhere. `kiln-init --help` lists all seven harnesses.
+- Antigravity: the generated `.agents/mcp_config.json` sets `KILN_RESULT_DETAIL=lean` on
+  the server entry. Antigravity writes a result over about 4,000 characters to a file the
+  model then reads back, and the wave's paired sessions showed lean winning both measures
+  only there (24% fewer result characters, 8% fewer output tokens); the other harnesses'
+  entries set nothing and keep the compact default, and a call's own `detail` still wins.
+  An existing Antigravity workspace shows the entry as changed managed configuration to
+  `kiln-init --check`; `--upgrade` refreshes it when the file is unedited.
 - Records: the plugin manifests say 0.10.0 and `kiln` (the Codex plugin manifest said
   `kiln-oss`), the root `plugin.json` no longer names a schema URL that returns 404,
   `docs/dogfooding.md` and `docs/clean-room.md` name OpenCode's `--standalone` (there is no

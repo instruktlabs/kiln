@@ -127,7 +127,7 @@ Use `kiln_discover({ capabilities: true })` or `node kiln.mjs discover --capabil
 | `KILN_BUILD_CACHE_MB` | Disk artifact budget, 0–1,024; default 128 |
 | `KILN_BUILD_CACHE_DIR` | Optional disk-cache directory |
 | `KILN_GEOMETRY_POLICY` | `warn` (default) or `strict`; strict rejects unsupported export attributes and cannot be weakened by a tool request |
-| `KILN_RESULT_DETAIL` | `compact` (default) or `lean`: the result detail of the review tools when a call names none; `full` stays per call |
+| `KILN_RESULT_DETAIL` | `compact` (default) or `lean`: the result detail of the review tools when a call names none; `full` stays per call. A generated Antigravity workspace sets `lean` in its server entry (`.agents/mcp_config.json`), the one harness where lean won both measures of the readiness cycle; the other harnesses' entries set nothing |
 
 Advanced geometry callbacks also have operation-specific input limits. Those checks do not replace the process deadline: a callback that never returns cannot check its own evaluation counter. Capture pixels and PNG payloads have independent host limits described in [cameras](cameras.md).
 

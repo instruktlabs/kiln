@@ -189,6 +189,15 @@ it('launches Agy in its own project and disables automatic skill expansion for h
     expect(resumed.args).not.toContain('--new-project');
     expect(JSON.parse(invoke([]).stdout).args).not.toContain('--disable-slash-commands');
     expect(await readFile(join(task, 'AGENTS.md'), 'utf8')).toContain('kiln_workspace');
+    // Decision 26 of 2 October 2026: lean won both measures only in the Agy pairs of the
+    // wave (a result over about 4,000 characters spills to a file there), so the Agy
+    // server entry alone carries the lean default; every other harness keeps compact.
+    const config = JSON.parse(await readFile(join(task, '.agents', 'mcp_config.json'), 'utf8'));
+    expect(config.mcpServers.kiln_workspace.env).toMatchObject({
+      KILN_RESULT_DETAIL: 'lean',
+      KILN_RENDER: 'auto',
+    });
+    expect(config.mcpServers.kiln_workspace.env.KILN_WORKSPACE).toBe(task);
   } finally {
     await rm(root, { recursive: true, force: true });
   }
@@ -319,6 +328,9 @@ it('writes each harness the MCP config spelling it actually reads', async () => 
     expect(run([cursor, '--harness', 'cursor-agent'], root).status).toBe(0);
     const forCursor = JSON.parse(await readFile(join(cursor, '.cursor/mcp.json'), 'utf8'));
     expect(forCursor.mcpServers.kiln_workspace.args[0]).toMatch(server);
+    // The lean default is Antigravity's alone (decision 26 of 2 October 2026).
+    for (const config of [forCopilot, forCursor])
+      expect(config.mcpServers.kiln_workspace.env.KILN_RESULT_DETAIL).toBeUndefined();
   } finally {
     await rm(root, { recursive: true, force: true });
   }

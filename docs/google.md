@@ -26,8 +26,12 @@ from its installation directory instead. Check [release compatibility](install.m
 before following saved-asset examples with an older package.
 
 Setup creates `.agents/mcp_config.json`, a local CLI launcher, `AGENTS.md`, and
-authoring/refinement/QA skills with their references. Start a new conversation in
-this workspace and accept normal project/tool trust prompts. Try:
+authoring/refinement/QA skills with their references. The server entry sets
+`KILN_RESULT_DETAIL=lean`: Antigravity writes a result over about 4,000 characters to a
+file the model then reads back, and the lean review results cost it a quarter fewer
+result characters in the readiness cycle's paired sessions; a call's own `detail` still
+wins. Start a new conversation in this workspace and accept normal project/tool trust
+prompts. Try:
 
 > Read AGENTS.md and skills/kiln-author-asset/SKILL.md. Use the kiln_workspace MCP
 > server. Check its capabilities, make a blue one-metre cube on the ground,

@@ -221,7 +221,16 @@ try {
 `;
   }
   if (harness === 'agy') {
-    files['.agents/mcp_config.json'] = quote({ mcpServers: { kiln_workspace: mcp } });
+    // Antigravity writes a result over about 4,000 characters to a file the model then
+    // reads back (measured on 1.2.14, 1 October 2026), and lean results won both
+    // measures only in its wave pairs (-24% result characters, -8% output tokens). So
+    // this entry alone carries the lean default (decision 26 of 2 October 2026); a
+    // call's own `detail` still wins, and every other harness keeps compact.
+    files['.agents/mcp_config.json'] = quote({
+      mcpServers: {
+        kiln_workspace: { ...mcp, env: { ...mcp.env, KILN_RESULT_DETAIL: 'lean' } },
+      },
+    });
     files['agy.mjs'] =
       `import { spawn } from 'node:child_process';\nimport { dirname } from 'node:path';\nimport { fileURLToPath } from 'node:url';\nconst root = dirname(fileURLToPath(import.meta.url));\nconst args = process.argv.slice(2);\nconst has = names => args.some(arg => names.some(name => arg === name || arg.startsWith(name + '=')));\nif (!has(['--project', '--new-project', '--conversation', '--continue', '-c'])) args.unshift('--new-project');\nargs.unshift('--add-dir', root);\nif (has(['--print', '--prompt', '-p']) && !has(['--disable-slash-commands'])) args.unshift('--disable-slash-commands');\nconst child = spawn('agy', args, { cwd: root, stdio: 'inherit', windowsHide: true });\nchild.on('error', error => { console.error(error.message); process.exitCode = 1; });\nchild.on('exit', code => { process.exitCode = code ?? 1; });\n`;
   }
