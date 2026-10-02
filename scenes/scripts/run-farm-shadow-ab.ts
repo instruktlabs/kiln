@@ -12,7 +12,7 @@
 //     shadow levers off) and SHADOW (cache, stand-ins and threshold, ?heroMerge=false), so a difference is attributed to the
 //     OD-18 merge or the OD-4 shadow allowance by measurement.
 //   bun scripts/run-farm-shadow-ab.ts [--build packages/farm/dist/waveb-farm/test] [--dest ../tmp/drawcalls/wave-b/farm] [--only creations,live,parity]
-//     [--live-frames 600] [--views hero,house-interior,play-house-door]
+//     [--live-frames 600] [--live-tiers economy,balanced,high] [--views hero,house-interior,play-house-door]
 import { readFileSync } from 'node:fs';
 import { mkdir, writeFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
@@ -25,7 +25,7 @@ import { compareParityImages } from './parity-images';
 const args = process.argv.slice(2), value = (key: string, fallback: string) => { const at = args.indexOf(key); return at < 0 ? fallback : args[at + 1] ?? fallback; };
 const workspace = resolve(import.meta.dir, '..'), build = value('--build', 'packages/farm/dist/waveb-farm/test'), dest = resolve(workspace, value('--dest', '../tmp/drawcalls/wave-b/farm'));
 const only = new Set(value('--only', 'creations,live,parity').split(',')), liveFrames = Number(value('--live-frames', '600'));
-const views = value('--views', 'hero,house-interior,play-house-door').split(',');
+const views = value('--views', 'hero,house-interior,play-house-door').split(','), liveTiers = value('--live-tiers', 'economy,balanced,high').split(',');
 const OFF = 'heroMerge=false&shadowCache=false&standIns=false&casterTexels=0', SETTINGS = { on: '', off: OFF } as const;
 /** One lever set alone against OFF (RF-2): the merge without the shadow levers, the shadow levers without the merge. */
 const ALONE = { merge: 'shadowCache=false&standIns=false&casterTexels=0', shadow: 'heroMerge=false' } as const;
@@ -90,7 +90,7 @@ try {
   }
   if (only.has('live')) {
     const rows: unknown[] = []; report.live = rows;
-    for (const tier of ['economy', 'balanced', 'high']) for (const [setting, query] of Object.entries(SETTINGS)) {
+    for (const tier of liveTiers) for (const [setting, query] of Object.entries(SETTINGS)) {
       const { page, messages } = await open(browser, `${hosted.url}/?tier=${tier}&view=hero${query ? '&' + query : ''}`, [1920, 1080]), s = scene(page);
       try {
         await s.frames(120); const before = await s.snapshot(); await s.frames(liveFrames); const after = await s.snapshot();

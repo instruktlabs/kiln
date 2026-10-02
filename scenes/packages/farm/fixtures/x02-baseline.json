@@ -1,0 +1,322 @@
+{
+ "schema": "kiln.farm-x02-baseline/1",
+ "decision": "OD-8 (D-53): X-02 re-baselined on the optimized build; pixel parity against the sealed pilot (B-06) is unchanged",
+ "rule": "Inclusive ±2% draws (renderer.info drawCalls of one frame, shadow passes included) and triangles; pipeline cache at most +5% of this reference",
+ "provenance": {
+  "build": "draw-after",
+  "commit": "0174e7da6a75f3abf57c49b93db872bc03c6713c",
+  "chunks": [
+   "index-oAhThwe1.js"
+  ],
+  "source": "working tree; Farm and kit sources last changed in 0174e7d, clean at HEAD 7db7325 when measured",
+  "tool": "scripts/farm-x02-baseline.ts measure --build draw-after",
+  "date": "2026-10-02",
+  "browser": "headless Chrome/154.0.8037.58",
+  "viewport": "1280x720 CSS at device scale 1 (B-06 normalization)",
+  "pagePolicy": "one fresh page per view and backend"
+ },
+ "conditions": {
+  "tier": "high",
+  "viewport": [
+   1280,
+   720
+  ],
+  "freshPage": true,
+  "clock": "frozen",
+  "settled": true
+ },
+ "backends": {
+  "webgpu": {
+   "hero": {
+    "kind": "named view",
+    "drawCalls": 283,
+    "triangles": 1884297,
+    "pipelines": 52,
+    "programs": 40,
+    "geometries": 269,
+    "textures": 41
+   },
+   "opposite": {
+    "kind": "named view",
+    "drawCalls": 283,
+    "triangles": 1884297,
+    "pipelines": 52,
+    "programs": 40,
+    "geometries": 269,
+    "textures": 41
+   },
+   "top": {
+    "kind": "named view",
+    "drawCalls": 283,
+    "triangles": 1884297,
+    "pipelines": 52,
+    "programs": 40,
+    "geometries": 269,
+    "textures": 41
+   },
+   "eye-height": {
+    "kind": "named view",
+    "drawCalls": 239,
+    "triangles": 1832662,
+    "pipelines": 52,
+    "programs": 40,
+    "geometries": 269,
+    "textures": 41
+   },
+   "crops": {
+    "kind": "named view",
+    "drawCalls": 263,
+    "triangles": 1875737,
+    "pipelines": 52,
+    "programs": 40,
+    "geometries": 269,
+    "textures": 41
+   },
+   "fences": {
+    "kind": "named view",
+    "drawCalls": 280,
+    "triangles": 1879969,
+    "pipelines": 52,
+    "programs": 40,
+    "geometries": 269,
+    "textures": 41
+   },
+   "props": {
+    "kind": "named view",
+    "drawCalls": 104,
+    "triangles": 1532872,
+    "pipelines": 52,
+    "programs": 40,
+    "geometries": 269,
+    "textures": 41
+   },
+   "watermill-wheel": {
+    "kind": "named view",
+    "drawCalls": 42,
+    "triangles": 877726,
+    "pipelines": 52,
+    "programs": 40,
+    "geometries": 269,
+    "textures": 41
+   },
+   "watermill-interior": {
+    "kind": "named view",
+    "drawCalls": 35,
+    "triangles": 833520,
+    "pipelines": 52,
+    "programs": 40,
+    "geometries": 269,
+    "textures": 41
+   },
+   "house-interior": {
+    "kind": "named view",
+    "drawCalls": 123,
+    "triangles": 1701084,
+    "pipelines": 52,
+    "programs": 40,
+    "geometries": 269,
+    "textures": 41
+   },
+   "house-porch": {
+    "kind": "named view",
+    "drawCalls": 258,
+    "triangles": 1805146,
+    "pipelines": 52,
+    "programs": 40,
+    "geometries": 269,
+    "textures": 41
+   },
+   "house-window-out": {
+    "kind": "named view",
+    "drawCalls": 52,
+    "triangles": 881794,
+    "pipelines": 52,
+    "programs": 40,
+    "geometries": 269,
+    "textures": 41
+   },
+   "play-yard": {
+    "kind": "play fixture",
+    "drawCalls": 91,
+    "triangles": 1504427,
+    "pipelines": 52,
+    "programs": 40,
+    "geometries": 269,
+    "textures": 41
+   },
+   "play-house": {
+    "kind": "play fixture",
+    "drawCalls": 201,
+    "triangles": 1676329,
+    "pipelines": 52,
+    "programs": 40,
+    "geometries": 269,
+    "textures": 41
+   },
+   "play-bridge": {
+    "kind": "play fixture",
+    "drawCalls": 69,
+    "triangles": 865551,
+    "pipelines": 52,
+    "programs": 40,
+    "geometries": 269,
+    "textures": 41
+   },
+   "play-house-door": {
+    "kind": "play fixture",
+    "drawCalls": 201,
+    "triangles": 1676329,
+    "pipelines": 52,
+    "programs": 40,
+    "geometries": 269,
+    "textures": 41
+   }
+  },
+  "webgl2": {
+   "hero": {
+    "kind": "named view",
+    "drawCalls": 283,
+    "triangles": 1884297,
+    "pipelines": 21,
+    "programs": 40,
+    "geometries": 269,
+    "textures": 41
+   },
+   "opposite": {
+    "kind": "named view",
+    "drawCalls": 283,
+    "triangles": 1884297,
+    "pipelines": 21,
+    "programs": 40,
+    "geometries": 269,
+    "textures": 41
+   },
+   "top": {
+    "kind": "named view",
+    "drawCalls": 283,
+    "triangles": 1884297,
+    "pipelines": 21,
+    "programs": 40,
+    "geometries": 269,
+    "textures": 41
+   },
+   "eye-height": {
+    "kind": "named view",
+    "drawCalls": 239,
+    "triangles": 1832662,
+    "pipelines": 21,
+    "programs": 40,
+    "geometries": 269,
+    "textures": 41
+   },
+   "crops": {
+    "kind": "named view",
+    "drawCalls": 263,
+    "triangles": 1875737,
+    "pipelines": 21,
+    "programs": 40,
+    "geometries": 269,
+    "textures": 41
+   },
+   "fences": {
+    "kind": "named view",
+    "drawCalls": 280,
+    "triangles": 1879969,
+    "pipelines": 21,
+    "programs": 40,
+    "geometries": 269,
+    "textures": 41
+   },
+   "props": {
+    "kind": "named view",
+    "drawCalls": 104,
+    "triangles": 1532872,
+    "pipelines": 21,
+    "programs": 40,
+    "geometries": 269,
+    "textures": 41
+   },
+   "watermill-wheel": {
+    "kind": "named view",
+    "drawCalls": 42,
+    "triangles": 877726,
+    "pipelines": 21,
+    "programs": 40,
+    "geometries": 269,
+    "textures": 41
+   },
+   "watermill-interior": {
+    "kind": "named view",
+    "drawCalls": 35,
+    "triangles": 833520,
+    "pipelines": 21,
+    "programs": 40,
+    "geometries": 269,
+    "textures": 41
+   },
+   "house-interior": {
+    "kind": "named view",
+    "drawCalls": 123,
+    "triangles": 1701084,
+    "pipelines": 21,
+    "programs": 40,
+    "geometries": 269,
+    "textures": 41
+   },
+   "house-porch": {
+    "kind": "named view",
+    "drawCalls": 258,
+    "triangles": 1805146,
+    "pipelines": 21,
+    "programs": 40,
+    "geometries": 269,
+    "textures": 41
+   },
+   "house-window-out": {
+    "kind": "named view",
+    "drawCalls": 52,
+    "triangles": 881794,
+    "pipelines": 21,
+    "programs": 40,
+    "geometries": 269,
+    "textures": 41
+   },
+   "play-yard": {
+    "kind": "play fixture",
+    "drawCalls": 91,
+    "triangles": 1504427,
+    "pipelines": 21,
+    "programs": 40,
+    "geometries": 269,
+    "textures": 41
+   },
+   "play-house": {
+    "kind": "play fixture",
+    "drawCalls": 201,
+    "triangles": 1676329,
+    "pipelines": 21,
+    "programs": 40,
+    "geometries": 269,
+    "textures": 41
+   },
+   "play-bridge": {
+    "kind": "play fixture",
+    "drawCalls": 69,
+    "triangles": 865551,
+    "pipelines": 21,
+    "programs": 40,
+    "geometries": 269,
+    "textures": 41
+   },
+   "play-house-door": {
+    "kind": "play fixture",
+    "drawCalls": 201,
+    "triangles": 1676329,
+    "pipelines": 21,
+    "programs": 40,
+    "geometries": 269,
+    "textures": 41
+   }
+  }
+ }
+}

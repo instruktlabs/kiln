@@ -4,7 +4,7 @@
 // pass; the static map's cost is reported separately: per fixture the static map is re-armed (test hook shadowRearm) and the
 // one frame that redraws it is probed on its own. Without a cache (?shadowCache=0, minimal) it runs exactly as count-probe.
 //   bun scripts/count-probe-settled.ts --label <l> [--build <label>] [--tiers …] [--fixtures all|id,…] [--what-if none|standard]
-//     [--query 'k=v&…'] [--compare <baseline summary.json>]
+//     [--query 'k=v&…'] [--compare <baseline summary.json>] [--fresh-page] [--size 1920x1080]
 // Output: as count-probe (records carry base.settle.frames), plus evidence/counts/<label>/farm-static-shadow.json and a section
 // appended to summary.md. Counts only.
 import { appendFileSync, mkdirSync, writeFileSync } from 'node:fs';
@@ -68,7 +68,7 @@ if (import.meta.main) {
   const label = option('--label', ''); if (!/^[a-z0-9-]+$/.test(label)) throw new Error('--label <lowercase-label> is required');
   const fixtures = option('--fixtures', 'all'), tiers = option('--tiers', 'minimal,economy,balanced,high').split(',') as ('minimal' | 'economy' | 'balanced' | 'high')[];
   await runCountProbe({ label, build: option('--build', label), scenes: ['farm'], tiers, fixtures: fixtures === 'all' ? 'all' : fixtures.split(','), whatIfs: option('--what-if', 'standard') === 'standard',
-    size: [1920, 1080], freshPage: false, ...(args.includes('--query') ? { query: Object.fromEntries(new URLSearchParams(option('--query', ''))) } : {}) });
+    size: option('--size', '1920x1080').split('x').map(Number) as [number, number], freshPage: args.includes('--fresh-page'), ...(args.includes('--query') ? { query: Object.fromEntries(new URLSearchParams(option('--query', ''))) } : {}) });
   const dir = resolve(ROOT, 'evidence/counts', label); mkdirSync(dir, { recursive: true });
   writeFileSync(resolve(dir, 'farm-static-shadow.json'), JSON.stringify({ label, rule: `Settled first (pendingSettle 0; only after ${SETTLE_FRAMES} frames, the cache's counters still for ${QUIET} frames, marked unsettled); then one re-armed static render probed alone. live = live-map draws in that frame.`, rows }, null, 1) + '\n');
   console.log(JSON.stringify(summarize(label, args.includes('--compare') ? option('--compare', '') : undefined)));

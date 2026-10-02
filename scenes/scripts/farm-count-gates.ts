@@ -36,6 +36,72 @@ export function compareStaticRendererCounts(pilot: RendererCountSnapshot, rewrit
     validObservations };
 }
 
+/**
+ * OD-8 (D-53): X-02 is re-baselined on the optimized build. The reference is a committed file of that build's fresh-page
+ * high counts per view and backend (`packages/farm/fixtures/x02-baseline.json`, written by `scripts/farm-x02-baseline.ts`),
+ * and an observation passes on the same rule as before: draws and triangles within an inclusive ±2%, the pipeline cache at
+ * most +5%. Pixel parity against the sealed pilot (B-06) and the B-07 goldens are unchanged.
+ */
+export const X02_BASELINE_SCHEMA = 'kiln.farm-x02-baseline/1';
+export const X02_BASELINE_PATH = 'packages/farm/fixtures/x02-baseline.json';
+/** The X-02 fixtures: every named view of the layout and the SPEC 19.3/19.7 play fixtures (workloads are not X-02 views). */
+export const FARM_X02_VIEWS = ['hero', 'opposite', 'top', 'eye-height', 'crops', 'fences', 'props', 'watermill-wheel', 'watermill-interior', 'house-interior', 'house-porch', 'house-window-out',
+  'play-yard', 'play-house', 'play-bridge', 'play-house-door'] as const;
+export type X02Backend = 'webgpu' | 'webgl2';
+export interface X02ReferenceEntry extends RendererCountSnapshot { kind: CountFixtureKind }
+export interface X02Baseline {
+  schema: string; decision: string; rule: string;
+  provenance: { build: string; commit: string; chunks: string[]; source: string; tool: string; date: string; [key: string]: unknown };
+  /** One page per view (the pipeline cache is cumulative), the scene clock frozen, the cached shadow settled. */
+  conditions: { tier: string; viewport: [number, number]; freshPage: boolean; clock: 'frozen'; settled: boolean };
+  backends: Partial<Record<X02Backend, Record<string, X02ReferenceEntry>>>;
+}
+export interface X02Run { tier: string; backend: X02Backend; viewport: [number, number]; freshPage: boolean }
+/** Problems with a reference file; an empty list means it can be used. */
+export function validateX02Baseline(value: X02Baseline): string[] {
+  const problems: string[] = [];
+  if (value?.schema !== X02_BASELINE_SCHEMA) problems.push(`schema is not ${X02_BASELINE_SCHEMA}`);
+  for (const key of ['build', 'commit', 'source', 'tool', 'date'] as const) if (typeof value?.provenance?.[key] !== 'string' || !value.provenance[key]) problems.push(`provenance.${key} is missing`);
+  if (!Array.isArray(value?.provenance?.chunks) || !value.provenance.chunks.length) problems.push('provenance.chunks is missing');
+  const c = value?.conditions;
+  if (c?.tier !== 'high') problems.push('conditions.tier is not high');
+  if (c?.freshPage !== true) problems.push('conditions are not one fresh page per view');
+  if (c?.clock !== 'frozen' || c?.settled !== true) problems.push('conditions are not a frozen, settled clock');
+  if (!Array.isArray(c?.viewport) || c.viewport.length !== 2 || !c.viewport.every(n => validCount(n) && n > 0)) problems.push('conditions.viewport is missing');
+  const backends = Object.entries(value?.backends ?? {});
+  if (!backends.length) problems.push('no backend has reference counts');
+  for (const [backend, views] of backends) for (const [view, e] of Object.entries(views ?? {})) {
+    for (const key of ['drawCalls', 'triangles', 'pipelines', 'geometries', 'textures', 'programs'] as const) if (!validCount(e?.[key])) problems.push(`${backend}/${view}.${key} is not a count`);
+    if (e?.kind !== 'named view' && e?.kind !== 'play fixture') problems.push(`${backend}/${view}.kind is not a fixture kind`);
+  }
+  return problems;
+}
+/** Conditions that would make a count incomparable with the reference. Viewports compare by aspect ratio (frustum culling). */
+function x02Differences(reference: X02Baseline['conditions'], run: X02Run) {
+  const differences: string[] = [];
+  if (run.tier !== reference.tier) differences.push(`tier ${run.tier}, reference ${reference.tier}`);
+  if (run.freshPage !== reference.freshPage) differences.push(`${run.freshPage ? 'a fresh page' : 'a shared page'} per view, reference ${reference.freshPage ? 'a fresh page' : 'a shared page'}`);
+  const [w, h] = run.viewport, [rw, rh] = reference.viewport;
+  if (!(w > 0 && h > 0) || w * rh !== h * rw) differences.push(`viewport ${w}x${h} has another aspect ratio than the reference ${rw}x${rh}`);
+  return differences;
+}
+/** One view and backend against the committed reference: X-02's bounds, refusing a missing entry or other run conditions. */
+export function compareX02Reference(baseline: X02Baseline, o: X02Run & { view: string }, observed: RendererCountSnapshot) {
+  const reference = baseline.backends[o.backend]?.[o.view], differences = x02Differences(baseline.conditions, o);
+  const head = { id: 'X-02' as const, view: o.view, backend: o.backend, reference: { file: X02_BASELINE_PATH, build: baseline.provenance.build, commit: baseline.provenance.commit, date: baseline.provenance.date }, conditions: { match: differences.length === 0, differences } };
+  if (!reference) return { ...head, missing: true, pass: false, fixture: null, checks: null, observed: null, validObservations: false, scope: `No reference counts for ${o.view} on ${o.backend}` };
+  const { kind, ...counts } = reference, result = compareStaticRendererCounts(counts, observed, kind);
+  return { ...head, ...result, missing: false, pass: result.pass && differences.length === 0 };
+}
+/** Count-probe rows (summary.json) against the reference: every reference view at the reference tier must be present and pass. */
+export function checkX02Rows(baseline: X02Baseline, rows: readonly { tier: string; fixture: string; draws: number; triangles: number; pipelineCache: number; programs: number; memory: { geometries: number; textures: number } }[], run: X02Run) {
+  const reference = baseline.backends[run.backend] ?? {}, tierRows = rows.filter(r => r.tier === baseline.conditions.tier);
+  const views = tierRows.filter(r => Object.hasOwn(reference, r.fixture)).map(r => compareX02Reference(baseline, { ...run, tier: r.tier, view: r.fixture },
+    { drawCalls: r.draws, triangles: r.triangles, pipelines: r.pipelineCache, geometries: r.memory.geometries, textures: r.memory.textures, programs: r.programs }));
+  const missing = Object.keys(reference).filter(view => !tierRows.some(r => r.fixture === view)), extra = tierRows.filter(r => !Object.hasOwn(reference, r.fixture)).map(r => r.fixture);
+  return { pass: missing.length === 0 && views.length > 0 && views.every(v => v.pass), conditions: x02Differences(baseline.conditions, { ...run, tier: baseline.conditions.tier }), views, missing, extra };
+}
+
 interface PilotOptimizationReference extends RendererCountSnapshot { assetTexturePool: { uniqueBefore: number; uniqueAfter: number } | null }
 export interface ColliderCounts { colliders: number; dynamic: number; staticTriangles: number; dynamicTriangles: number; doors: number; doorPivots: number; keys: { key: string; dynamic: boolean; triangles: number }[] }
 /** B-07 collider portion: the live collision world against the frozen sealed-pilot fixture (`packages/farm/fixtures/play-colliders.json`). */
