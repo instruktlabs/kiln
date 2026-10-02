@@ -1,7 +1,7 @@
 /**
  * Move 1 — bake-time material consolidation (the opt-in `optimize` pass).
  *
- * Covers the load-bearing guarantees from docs/kiln-material-consolidation-cycle.md:
+ * Covers the pass's load-bearing guarantees:
  *   - palette collapses many distinct flat materials -> ~1 and lifts the grade
  *   - the grade is recomputed on the OPTIMIZED document
  *   - `full` auto-degrades to `palette` when the asset is animated (rig-safe)

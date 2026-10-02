@@ -1100,7 +1100,8 @@ export interface RenderResult {
  *   - `full`    — `palette` plus `flatten → join` to also cut draw calls. STATIC
  *                 assets only: auto-degrades to `palette` when the Document has
  *                 animations or skins (flatten/join must not disturb a rig).
- * See docs/kiln-material-consolidation-cycle.md (Move 1).
+ * A render that omits the mode takes `KILN_BAKE_OPTIMIZE` (else `off`); what every
+ * pass keeps intact is listed on {@link consolidateMaterials}.
  */
 export type OptimizeMode = 'off' | 'auto' | 'palette' | 'full';
 
