@@ -122,11 +122,12 @@ Use the same pins on later edit, inspect, animation and save calls that evaluate
 the source. The source reference alone does not restore dependency context.
 
 For a project, put the pins in its `materialDependencies` through a revision-aware
-update. Each project-bound invocation resolves that exact configuration and lock.
-Call-level pins can add resources; conflicting revisions for the same resource are
-errors, not overrides of the project lock. Update the lock deliberately when changing
-shared art direction. A missing resource or mismatched hash must be resolved before
-building; neither source URLs nor material names authorize an implicit download.
+update. A project-bound invocation (`projectId`, plus `projectRevision` for an exact
+configuration) implies that revision's pins, so the call need not repeat them.
+Call-level pins add resources, and a call-level pin for a resource the project
+already pins replaces the project's for that call. Update the lock deliberately when
+changing shared art direction. A missing resource or mismatched hash must be resolved
+before building; neither source URLs nor material names authorize an implicit download.
 
 Material records carry physical repeat scale, but the author controls mesh UV scale.
 Review seams, repeats, roughness and normal strength on representative geometry with
