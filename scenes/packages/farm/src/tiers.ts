@@ -22,6 +22,8 @@ const tier = (pixelRatioCap: number, pixelRatioMin: number, vegetationDensity: n
   drawDistance: { far: 250, fogNear: 120, fogFar: 220, lodBias: 1, streamRadiusScale: 1, zoneHops: 1 },
   effects: { water: enabled ? 'full' : 'simple', wind: enabled, ambientAnimation: enabled },
   ladder: vegetationLadder(pixelRatioCap, vegetationDensity),
+  // OD-10: no viewport-texture node or transmission splits the main pass at any tier.
+  multisample: { discard: true },
 });
 export const farmTiers = defineTiers({
   order: ['minimal', 'economy', 'balanced', 'high'],

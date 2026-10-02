@@ -158,6 +158,8 @@ Under D-05, automatic classification, Save-Data adjustments, persisted learning 
 
 The default ladder first reduces vegetation, then LOD distance, streaming radius and instance density. Scenes may supply a custom ladder containing their permitted live levels. Shadow configuration, far/fog distances and water material variants remain structural.
 
+`multisample.discard` is structural too (OD-10). The default is store. Set it only for a WebGPU tier whose main pass is never split by a framebuffer copy (viewport depth or texture nodes, transmission). The 4x canvas attachments are then resolved and discarded, and three creates them transient. Anything that would load or store them trips the policy back to store for the mount; in test and dev builds a trip is a fatal `SceneError` with code `msaa-discard`.
+
 ## Modules and build boundaries
 
 | Entry | Main APIs |

@@ -13,11 +13,12 @@ import { prepareSceneData } from './prepare-data';
 import type { SceneDefinition, SceneHandle, SceneProps } from './types';
 import { createSceneClock, createSystemLoop, DisposeRegistry, SceneSystemLoop, usePauseWhenHidden, useReducedMotion } from '../lifecycle';
 import { configureRenderer, createGlFactory, releaseRendererLook } from '../renderer';
+import { installMsaaStorePolicy, resolveMsaaDiscard } from '../renderer/msaa-store';
 import { createQualityController, probeDevice } from '../quality';
 import { createPackReader, disposeLoadedModels, loadPack } from '../assets';
 import { createInputApi, InputProvider } from '../input';
 import { createFadeController, createHudStore, FadeOverlay, HudLayer, SceneStyles } from '../ui';
-import { applyProbeOverride, installTestHooks, KIT_DEV_PARAMS, readDevParams } from '../testing';
+import { applyProbeOverride, installTestHooks, KIT_DEV_PARAMS, readDevParams, registerTestHooks } from '../testing';
 export * from './core';
 export * from './types';
 
@@ -230,15 +231,30 @@ export function SceneRoot({ options, definition, children }: { options: ScenePro
         if(rt.disposed)return;
         const device = (renderer.backend as unknown as { device?: { lost: Promise<{ reason: string }> } }).device;
         deviceLoss = device?.lost.then(() => { deviceLost = true; if (!rt.disposed) rt.fatal(new SceneError('context-lost', 'Graphics device lost')); }).catch(error => { if (!rt.disposed) rt.fatal(error); });
+        // OD-10: the MSAA store policy is decided once per mount from the structural tier, before the first frame.
+        let forced: 'store' | 'discard' | undefined;
+        if (import.meta.env.KILN_TEST || import.meta.env.KILN_DEV) forced = readDevParams({ msaa: { kind: 'enum', values: ['store', 'discard'] } } as const).msaa as typeof forced;
+        const discard = resolveMsaaDiscard(tier, forced);
+        const msaa = installMsaaStorePolicy(renderer, _roots.get(canvas)!.store.getState().scene, { discard, onTrip: reason => {
+          // A trip can fire inside three's pass, so the failure waits for it; public builds recover silently with store.
+          if (import.meta.env.KILN_TEST || import.meta.env.KILN_DEV) queueMicrotask(() => rt.fatal(new SceneError('msaa-discard', `MSAA discard tripped: ${reason}`)));
+        } });
+        // Its remover is in place from here, and a failing remove cannot skip the rest of the release.
+        const removeMsaa = () => { try { msaa.remove(); } catch (error) { registry.errors.push(error); } };
+        restoreRender = removeMsaa;
+        if (import.meta.env.KILN_TEST || import.meta.env.KILN_DEV) registerTestHooks({ msaaPolicy: () => ({ discard, active: msaa.active, tripped: msaa.tripped }) }, rt);
         // Catch only this renderer's synchronous submission errors; no global handler.
         const render = renderer.render.bind(renderer);
-        restoreRender = () => { renderer.render=render; };
+        restoreRender = () => { renderer.render=render; removeMsaa(); };
         renderer.render = ((...args: Parameters<WebGPURenderer['render']>) => {
           if (rt.disposed || rt.failed || rt.paused) return;
           let began = 0;
           if ((import.meta.env.KILN_TEST || import.meta.env.KILN_DEV) && rt.data.get('measure')) began = performance.now();
-          try { return render(...args); } catch (error) { rt.fatal(error); }
-          finally { if ((import.meta.env.KILN_TEST || import.meta.env.KILN_DEV) && began) (rt.data.get('cpuRecorder') as {push(ms:number):void} | undefined)?.push(performance.now()-began); }
+          try { msaa.beforeRender(args[0]); return render(...args); } catch (error) { rt.fatal(error); }
+          finally {
+            try { msaa.afterRender(); } catch (error) { rt.fatal(error); }
+            if ((import.meta.env.KILN_TEST || import.meta.env.KILN_DEV) && began) (rt.data.get('cpuRecorder') as {push(ms:number):void} | undefined)?.push(performance.now()-began);
+          }
         }) as WebGPURenderer['render'];
         await packTask;
         if (rt.disposed) return;
