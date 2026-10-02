@@ -97,7 +97,9 @@ Treat each extra pass as its own budget:
   about two shadow texels from casting. Together these took one farm's shadow
   pass from 270 draws a frame to 0 when settled, and to 31-54 with ambient
   animal life. A bridge scene went from two 37-draw shadow passes to one 2-draw
-  pass.
+  pass. On a GPU-bound mobile tier, the combined changes raised frames within one
+  display refresh from 39% to 61-82%. On a desktop locked to 120 Hz, frame time
+  did not move; CPU render time fell from 5.5 ms to 1.6 ms.
 - **Reflection pass.** Draw a cheaper representation, such as a far LOD, on a
   layer that only the reflection camera sees. Keep which moving objects appear
   in the reflection as a look decision of its own.
