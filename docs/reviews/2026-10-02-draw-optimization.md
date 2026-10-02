@@ -327,7 +327,20 @@ Within 2 refreshes is 100% in both builds in every hub cell.
   B pair 3: one frame of 50.1 ms, 0.1 ms over. Every flyover run in both builds has
   its longest frame at the same moment, 25 s in, when the flight changes (A 41.6 /
   33.2 / 41.7 ms; B 41.6 / 41.7 / 50.1 ms). So three pairs cannot attribute it to
-  the change. A 5-pair rerun is reported below if it ran.
+  the change.
+
+  A 5-pair rerun on the quiet hub settled it: 20 of 20 runs were valid. The stall
+  appears in every run of both builds at 24.9-25.1 s.
+  - Median stall: minimal 41.6 ms (before) and 41.7 ms (after); high 33.3 and
+    25.0 ms.
+  - The after build was shorter in 3 of 5 pairs.
+  - At minimal, both builds hit six-refresh stalls: before 49.9 and 50.0 ms, after
+    50.0 and 50.1 ms. Six refreshes take 49.95 ms, so the same stall passes or
+    fails the 50 ms rule on jitter.
+  - D-41: before 5/5 and 5/5; after 4/5 at minimal and 5/5 at high.
+
+  The flight-change stall is a pre-existing scene hitch, not caused by this cycle.
+  Fixing it is separate work.
 - **GPU busy at balanced** rose 2-4 points in all three pairs, at matching clocks.
   This metric is a 5 s share-of-time sample from `nvidia-smi`. GPU timestamp
   queries would measure GPU time per frame; the adapter exposes `timestamp-query`.
