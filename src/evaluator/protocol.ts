@@ -1,4 +1,8 @@
-import { authoringDiagnosticAdvice, type AuthoringDiagnostic } from './authoring-diagnostic';
+import {
+  authoringDiagnosticAdvice,
+  EXECUTION_REJECTED_ADVICE,
+  type AuthoringDiagnostic,
+} from './authoring-diagnostic';
 import { createHash } from 'node:crypto';
 import {
   assertNoLegacyRuntimePolicy,
@@ -117,7 +121,15 @@ export class EvaluatorPortError extends Error {
     message = evaluatorOutcomeMessage(code),
     readonly diagnostic?: AuthoringDiagnostic,
   ) {
-    super(diagnostic ? `${message} ${authoringDiagnosticAdvice(diagnostic)}` : message);
+    // A rejection with a closed cause carries that cause's advice; one without carries
+    // the engine's generic advice (decision 24). The wire message itself never changes.
+    super(
+      diagnostic
+        ? `${message} ${authoringDiagnosticAdvice(diagnostic)}`
+        : code === 'EXECUTION_REJECTED'
+          ? `${message} ${EXECUTION_REJECTED_ADVICE}`
+          : message,
+    );
     this.name = 'EvaluatorPortError';
   }
 }

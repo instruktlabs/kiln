@@ -5,6 +5,7 @@ import { join } from 'node:path';
 import { createLocalToolContext } from '../local-runtime';
 import { createKilnProgramToolRegistry } from '../tools/registry';
 import { validate } from '../validation';
+import { EXECUTION_REJECTED_ADVICE } from './authoring-diagnostic';
 import { evaluateEvaluatorRequestV2 } from './handler';
 import { createEvaluatorRequestV2, decodeEvaluatorResultV2 } from './protocol';
 import { renderGLBViaSubprocess } from './subprocess';
@@ -47,6 +48,31 @@ test('build-time throws carry a closed cause and no program text across the work
       expect(wire).not.toContain(value);
   }
 });
+
+test('a throw with no closed cause is answered with the engine-owned generic advice', async () => {
+  // s50 threw an Error to print bounding boxes and got the bare sentence (H30, decision 24
+  // of 2 October 2026): the sentence stays exact and first; the advice is the engine's.
+  const code = `function build() { throw new Error('PRIVATE_MARKER'); }`;
+  const { wire, error } = await wireError(code);
+  expect(error).toEqual({
+    code: 'EXECUTION_REJECTED',
+    message: 'Generated asset execution was rejected.',
+  });
+  expect(wire).not.toContain('PRIVATE_MARKER');
+  const thrown = (await renderGLBViaSubprocess(code).catch((e: unknown) => e)) as Error;
+  expect(thrown.message).toStartWith('Generated asset execution was rejected. ');
+  expect(thrown.message).toBe(
+    `Generated asset execution was rejected. ${EXECUTION_REJECTED_ADVICE}`,
+  );
+  expect(thrown.message).toContain('kiln_inspect');
+  expect(thrown.message).not.toContain('PRIVATE_MARKER');
+  // A rejection that carries a cause keeps that cause's advice alone.
+  const typed = (await renderGLBViaSubprocess(
+    `function build() { const o = undefined; return o.PRIVATE_MARKER; }`,
+  ).catch((e: unknown) => e)) as Error;
+  expect(typed.message).toContain('TypeError');
+  expect(typed.message).not.toContain(EXECUTION_REJECTED_ADVICE);
+}, 20000);
 
 test('the actual subprocess turns those causes into engine-owned advice', async () => {
   await expect(renderGLBViaSubprocess(tdz)).rejects.toThrow('before its declaration ran');

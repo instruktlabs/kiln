@@ -92,7 +92,11 @@ the source it sent. `kiln_render`, `kiln_inspect`, `kiln_view_interior`,
 `kiln_screenshot_animation` and the CLI parse that source and append `Source check:`
 with up to three codes and lines that `kiln_validate` reports for it. Examples are
 `TEMPORAL_DEAD_ZONE`, `MATERIAL_RECIPE_OVERRIDE`, `UNSAFE_GLOBAL_ACCESS` and
-`SYNTAX_ERROR`. An unrecognised exception stays generic.
+`SYNTAX_ERROR`. An unrecognised exception stays generic: the sentence continues with a
+fixed engine-owned paragraph that says no message crosses the sandbox, that values are
+read with `kiln_inspect` on a rendered program rather than a thrown `Error`, and that
+`kiln_validate` names the line (`EXECUTION_REJECTED_ADVICE` in
+`src/evaluator/authoring-diagnostic.ts`).
 
 ## Animation measurements
 

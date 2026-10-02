@@ -1,5 +1,6 @@
 import { afterEach, describe, expect, test } from 'bun:test';
 import { renderGLB } from '../render';
+import { EXECUTION_REJECTED_ADVICE } from './authoring-diagnostic';
 import { renderGLBViaSubprocess } from './subprocess';
 
 const previousMode = process.env['KILN_EVALUATOR_MODE'];
@@ -29,8 +30,13 @@ describe('isolated evaluator adversarial settlement', () => {
         throw new Error('expected adversarial rejection');
       } catch (error) {
         expect(error).toMatchObject({ code: 'EXECUTION_REJECTED' });
-        expect(String(error)).toBe(
+        // The exact match is the first sentence; what follows is the engine's own fixed
+        // advice and nothing else (decision 24 of 2 October 2026, H30).
+        expect(String(error)).toStartWith(
           'EvaluatorSubprocessError: Generated asset execution was rejected.',
+        );
+        expect(String(error)).toBe(
+          `EvaluatorSubprocessError: Generated asset execution was rejected. ${EXECUTION_REJECTED_ADVICE}`,
         );
         expect(String(error)).not.toContain(secretMarker);
         expect(String(error)).not.toContain('/etc/passwd');

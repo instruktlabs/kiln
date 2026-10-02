@@ -219,6 +219,14 @@ The follow-ups the owner decided on 2 October 2026 after reading the cycle's rep
   inside those, where it is the receiver the program built (w29's mesh batcher was an
   object literal whose `add` method read `this`); `this` at the top level or in a plain
   function stays `UNSAFE_GLOBAL_ACCESS`, as does `module`.
+- The generic rejection carries the engine's own advice. A program that throws without
+  a closed cause is still answered `Generated asset execution was rejected.` with no
+  message, stack or identifier from it; that sentence now continues with a fixed
+  engine-owned paragraph saying so and naming the way to read values (`kiln_inspect` on
+  a rendered program, not a thrown `Error`) and the way to find the line
+  (`kiln_validate`). The scene session that threw an `Error` to print bounding boxes got
+  the bare sentence (H30). A rejection with a cause keeps that cause's advice alone; the
+  wire message and the adversarial isolation test's exact first sentence are unchanged.
 
 ### Knowledge and setup
 

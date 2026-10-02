@@ -1,4 +1,8 @@
-import { authoringDiagnosticAdvice, type AuthoringDiagnostic } from './authoring-diagnostic';
+import {
+  authoringDiagnosticAdvice,
+  EXECUTION_REJECTED_ADVICE,
+  type AuthoringDiagnostic,
+} from './authoring-diagnostic';
 import { spawn, type SpawnOptions } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import type { RenderGlbOptions, RenderResult } from '../render';
@@ -46,7 +50,15 @@ export class EvaluatorSubprocessError extends Error {
     message: string,
     readonly diagnostic?: AuthoringDiagnostic,
   ) {
-    super(diagnostic ? `${message} ${authoringDiagnosticAdvice(diagnostic)}` : message);
+    // As EvaluatorPortError: a closed cause's advice, or the generic advice for a bare
+    // EXECUTION_REJECTED (decision 24); the wire message itself never changes.
+    super(
+      diagnostic
+        ? `${message} ${authoringDiagnosticAdvice(diagnostic)}`
+        : code === 'EXECUTION_REJECTED'
+          ? `${message} ${EXECUTION_REJECTED_ADVICE}`
+          : message,
+    );
     this.name = 'EvaluatorSubprocessError';
     this.code = code;
   }
