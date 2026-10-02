@@ -46,6 +46,9 @@ none pushed. `CHANGELOG.md` states each change under 0.10.0 and marks the breaki
 | `6c50ec9` | 2 Oct 09:07 | Measured budgets for the CLI-spawning tests that timed out or ran near their limits on the loaded host (60, 90 and 120 s, each with its gate, fresh-clone and loaded-host durations beside it; the first CLI render JSON budget moved to the test it measured); no assertion or production path changed. |
 | the commit after `6c50ec9` | 2 Oct | The final gate's and the fresh clone's numbers in this report and the plan's log; `git diff --stat 6c50ec9..HEAD` touches only `docs/`. |
 
+The six follow-up commits of 2 October (`7202312` to `5fee79a`, after the owner's decisions in
+`0df0b4a`) and the records after them are in section 11.
+
 ## 1b. Final gate and fresh clone
 
 Gate `final` on the records commit `6ec32a1` (08:24 to 08:55, `gate/final/`) failed its `test`
@@ -387,29 +390,101 @@ The Claude Code composition (s50, Sonnet 5.5, `sessions/s50-claude-scene-repeat/
 
 ## 9. Decisions left to the owner
 
-- The dropped plugin `$schema` (its URL answered 404).
-- The site release value 0.10.0.
-- Updating OpenCode to 2.0.21 over the running background service.
-- Whether the generated Agy workspace should set `KILN_RESULT_DETAIL=lean` (section 6).
+Answered on 2 October (decisions 19 to 34 under "Owner decisions, 2 October 2026" in the plan,
+committed `0df0b4a`); section 11 records what landed. The list as it stood, with each answer:
+
+- The dropped plugin `$schema` (its URL answered 404). Stays out (21).
+- The site release value 0.10.0. Stays; the owner cuts 1.0.0 later (20).
+- Updating OpenCode to 2.0.21 over the running background service. No (22).
+- Whether the generated Agy workspace should set `KILN_RESULT_DETAIL=lean` (section 6). Yes,
+  for Agy only (26, `5db5c5d`).
 - Serving saved manifests as resources minified, and whether a project revision should imply
-  its material pins instead of repeating them per call (H26).
-- The horse pick: w21's pinned materials and lower draws against w22's cleaner silhouette.
-- F28: allowing `this` inside object-literal and class methods in generated code.
+  its material pins instead of repeating them per call (H26). Both (27, `19db5af`).
+- The horse pick: w21's pinned materials and lower draws against w22's cleaner silhouette. w21,
+  with its body slimmed as revision 2 (31).
+- F28: allowing `this` inside object-literal and class methods in generated code. Yes, under a
+  strict-mode guarantee (23, `7202312`).
 - One name for a material: `resourceId` in projects and pins, `materialId` in the tool.
+  `resourceId` accepted as an alias; the docs keep `materialId` (25, `fd4ec27`).
 - The CLI `kiln asset <id> <revision>` requires both while `kiln_assets get` reads the newest
-  revision; and `kiln save --help` prints the global usage.
+  revision; and `kiln save --help` prints the global usage. Both changed (28, `5fee79a`).
 - Whether `module`, like `this`, should be allowed in generated code the sandbox checks (s42's
-  first composition hit it; the error taught the fix).
+  first composition hit it; the error taught the fix). Still refused (23).
 - Whether the generic "Generated asset execution was rejected." should add engine-owned advice
   that a thrown message never crosses the sandbox and measurements come from `kiln_inspect`
   (s50 threw an `Error` to print bounding boxes and got the bare sentence, H30; the adversarial
-  isolation test fixes that exact sentence today).
+  isolation test fixes that exact sentence today). Yes (24, `0f413db`).
 - Where the composed battle scene goes: it stays in the session workspaces for review; nothing
-  enters the gallery or the site.
+  enters the gallery or the site. Local: s50's composition is carried and recomposed from the
+  refined revisions, s42's stays for comparison; the full pack and scene are a later task for
+  another agent (32, 33).
+
+Still the owner's: `kiln material get` needing both ids where the MCP action reads the only
+revision (section 5); the merge, the 1.0.0 cut and the cleanup (19, 20, 34).
 
 ## 10. Cleanup list
 
 The read-only cleanup list is `kiln-dogfood/v1-readiness-2026-10/cleanup/cleanup-list-2026-10-02.md`
 (with the step-0 inventory `cleanup-list-draft.md` and `cleanup-facts.json` beside it): one row
 per worktree, branch, log and stale folder with a proposed action and its reason. Nothing was
-deleted, moved or pruned during the cycle; every action there waits for the owner.
+deleted, moved or pruned during the cycle; every action there waits for the owner (decision 34:
+after the PR merges, the owner runs the removals).
+
+## 11. Addendum, 2 October 2026: the follow-ups and the material pass
+
+Written after the owner answered section 9. Nothing above was rewritten; this section states what
+changed after it. The plan's progress log carries each step with its time.
+
+### Engine follow-ups, test first, one commit each
+
+| Commit | When | Decision | What |
+| --- | --- | --- | --- |
+| `7202312` | 11:04 | 23 | Generated code runs in strict mode (`render.ts` prepends the directive; `kiln_validate` reads strict-only syntax errors with their line; `source-bindings.ts` drops Annex B hoisting), and `analyzeGeneratedSourceSafety` allows `this` where the nearest non-arrow function is an object-literal property or class method value, a class field initializer or a static block; `this` at the top level or in a plain function and `module` stay refused. `generated-source-policy.test.ts`: six allowed and six refused placements, the strict-mode unbound assignment, strict-only syntax errors with their line (failing first on the method case). Changelog "Generated code" (breaking), migration note, the author skill's program contract. |
+| `0f413db` | 11:07 | 24 | `EXECUTION_REJECTED_ADVICE` follows the exact "Generated asset execution was rejected." sentence when no closed cause crossed the boundary (no message, stack or identifier crosses; `kiln_validate` for the line, `kiln_inspect` for values); the wire message is unchanged; the adversarial isolation test matches the first sentence exactly, then the sentence plus the advice and nothing else; `rejection-cause.test.ts` throws an `Error('PRIVATE_MARKER')` from `build()` (failing first on the bare sentence). `docs/runtime.md`. |
+| `fd4ec27` | 11:09 | 25 | `kiln_material` resolves `resourceId` as an alias of `materialId` before the strict parse; a call naming both with different values is refused with the fix; the schema and docs keep `materialId`. `materials.test.ts` (failing first on the unrecognized key) and the rule-9 stdio case. |
+| `19db5af` | 11:16 | 27 | A project revision implies its material pins and an explicit pin replaces the project's for the same `resourceId` (`FileWorkspace.run`; the field description changed in place at 68 bytes, so no schema changed size and `kiln_render` stays 4,988 bytes); JSON asset resources are served on one line (`resourceText` in `mcp-engine.ts`). `workspace.test.ts` (failing first on the conflict refusal) and `assets-tools.test.ts` (failing first on the newline). Changelog "Tool surface" (breaking for a call that pinned another revision of a project material), migration note, `docs/tools.md` regenerated. |
+| `5db5c5d` | 11:17 | 26 | `scripts/create-workspace.mjs` writes `KILN_RESULT_DETAIL: 'lean'` into the generated Agy workspace's `.agents/mcp_config.json` server entry only; `workspace-bootstrap.test.ts` (failing first on the missing variable; the other harnesses assert its absence). Changelog "Knowledge and setup", `docs/runtime.md`, `docs/google.md`. |
+| `5fee79a` | 11:19 | 28 | `kiln asset <id>` without a revision reads the newest one through the registry's `newestRevision` (`export` still names one); `kiln save --help` prints `SAVE_USAGE` alone. `asset-cli.test.ts` (failing first on the save usage; the pre-fix `dist/` printed 2,275 characters with the viewer block and refused `asset <id>`). `dist/` rebuilt from the whole tree and committed with it. Changelog "Results". |
+
+Each commit ran its focused suites, `typecheck` and `lint` at exit 0 before the next (the plan's
+log has the counts). No tool input schema changed in bytes; `docs/tools.md` and the manifest were
+regenerated for the pins description.
+
+### The Troy pack material pass (decisions 30 to 33)
+
+Done by me through the 0.10.0 CLI (`runtime-0.10.0-fix3`, a fresh clone of `3fc369c`, so the
+pass itself ran on the build the live sessions used, not on the follow-ups) in
+`kiln-dogfood/v1-readiness-2026-10/review/troy-refine/` on a copy of s50's workspace; no live
+model session, no new scene authoring, nothing published. The owner's two procedural materials
+`troy-limestone` (coursed blocks, 1.2 m tile) and `troy-mudbrick` (plaster-lined courses, 1 m
+tile), pinned by project `troy` revision 2, replace the tinted `warm-brick` preset; box UVs are
+mapped from world position in metres so courses run across pieces and match from the wall
+sections to the gate. The owner looked at the wall's revision 2 before the rest. Metrics are
+Kiln's at save time.
+
+| Subject | Revision (parent) | Triangles | Draws | Materials | Textures | GLB | QA |
+| --- | --- | ---: | ---: | ---: | ---: | ---: | --- |
+| Wall section | 2 `r_29dcf948…` (w19) | 168 | 14 | 3 | 7 | 296 KB | accepted/warn |
+| Breached wall | 3 `r_98d0a72a…` (w25 revision 2) | 528 | 44 | 3 | 7 | 326 KB | accepted/warn |
+| City gate | 2 `r_932d7b9a…` (w34) | 516 | 7 | 4 | 10 | 382 KB | accepted/warn |
+| House | 2 `r_de6797d6…` (w31) | 876 | 8 | 3 | 6 | 323 KB | accepted/warn (was pass) |
+| Temple hall | 2 `r_85c06c03…` (w30) | 2,024 | 12 | 4 | 7 | 481 KB | accepted/warn (was pass) |
+| Horse | 2 `r_f088964e…` (w21), the body slimmed | 1,324 | 55 | 3 | 4 | 176 KB | accepted/pass |
+| Battle before the gate | 2 `r_4573e90a…` (s50), recomposed | 208,178 | 130 | 28 | 16 | 14,126 KB | accepted/warn |
+
+The geometry, part names, pivots and clips of every asset are its parent's; the horse's barrel,
+chest and croup are 0.8 to 0.84 as wide as deep with the harness and legs following (0.49 m over
+the thighs, from 0.53). The scene is s50's source with its six asset blocks swapped for these
+revisions by `review/troy-refine/scene/recompose.mjs`; the 13,531-byte helpers-and-layout tail is
+byte-identical to revision 1, so the layout is unchanged; 28 materials from 32 because the shared
+limestone and mudbrick merge in the bake, 130 draws from 125 because the wall sections carry three
+materials instead of two, inside the `scene-web` budget of 150. The `warn` on each masonry
+revision is `MATERIAL_IMAGE_COUNT_BUDGET` (the `web.portable.v1/standard` four-image budget; the
+wall and gate carried it before, the house and temple pick it up from the two textured
+materials). `picks.md` has the same table with what changed per asset; the viewer
+(`tools/view-troy.ps1`, collection `troy-refine`) shows every revision.
+
+### Gate and fresh clone on the final commit
+
+Pending: the gate and the fresh clone run on the records commit that carries this section; their
+numbers follow in the docs-only commit after them, in section 1b's form.
