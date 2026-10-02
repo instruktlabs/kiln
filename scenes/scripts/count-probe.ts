@@ -28,7 +28,7 @@ type Tier = typeof TIERS[number];
 interface WhatIfRun { name: string; whatIf: ProbeWhatIf; stable: boolean; frame: number; totals: ProbeResult['totals']; affected: Record<string, number>; dropped?: DroppedCaster[]; delta: Record<string, unknown>; error?: string }
 export interface BuildIdentity { label: string; chunks: string[]; source: unknown }
 export interface FixtureRecord {
-  scene: SceneId; tier: Tier; fixture: { id: string; hudLabel: string | null }; url: string; build?: BuildIdentity; run?: { viewport: [number, number]; freshPage: boolean }; base: ProbeResult & { tier?: unknown };
+  scene: SceneId; tier: Tier; fixture: { id: string; hudLabel: string | null }; url: string; build?: BuildIdentity; run?: { viewport: [number, number]; freshPage: boolean; query?: Record<string, string> }; base: ProbeResult & { tier?: unknown };
   gpu: { passes: GpuFrame['passes']; check: ReturnType<typeof crossCheck>; errors: string[] } | null; whatIfs: WhatIfRun[];
   returned: { equal: boolean; totals: ProbeResult['totals'] } | null; messages: { type: string; text: string }[]; error?: string;
   systems?: string[]; census?: Census;
@@ -83,7 +83,7 @@ async function runFixture(page: Page, scene: SceneId, tier: Tier, fixture: Probe
 const evidence = (label: string, ...parts: string[]) => resolve(ROOT, 'evidence/counts', label, ...parts);
 const writeJson = (path: string, value: unknown) => { mkdirSync(resolve(path, '..'), { recursive: true }); writeFileSync(path, JSON.stringify(value, null, 1) + '\n'); };
 
-export async function runCountProbe(o: { label: string; build: string; scenes: SceneId[]; tiers: Tier[]; fixtures: string[] | 'all'; whatIfs: boolean; size: [number, number]; freshPage: boolean }) {
+export async function runCountProbe(o: { label: string; build: string; scenes: SceneId[]; tiers: Tier[]; fixtures: string[] | 'all'; whatIfs: boolean; size: [number, number]; freshPage: boolean; query?: Record<string, string> }) {
   const browser = await launchChrome({ workspace: ROOT, name: 'count-probe', windowSize: o.size }), log: string[] = [];
   try {
     for (const scene of o.scenes) {
@@ -91,7 +91,7 @@ export async function runCountProbe(o: { label: string; build: string; scenes: S
       if (!existsSync(resolve(dir, 'index.html'))) throw new Error(`No test build at ${dir}; run scripts/build-scene.ts --scene ${scene} --mode test --label ${o.build}`);
       const built = existsSync(resolve(dir, 'build.json')) ? JSON.parse(readFileSync(resolve(dir, 'build.json'), 'utf8')) as { chunks: { name: string }[]; source?: unknown } : null;
       // Every record names the build it measured (code chunks are content-hashed) and the viewport and page policy.
-      const stamp: RecordContext = { ...(built ? { build: { label: o.build, chunks: built.chunks.map(c => c.name).sort(), source: built.source ?? null } } : {}), run: { viewport: o.size, freshPage: o.freshPage } };
+      const stamp: RecordContext = { ...(built ? { build: { label: o.build, chunks: built.chunks.map(c => c.name).sort(), source: built.source ?? null } } : {}), run: { viewport: o.size, freshPage: o.freshPage, ...(o.query ? { query: o.query } : {}) } };
       // Scenes reuse the same port one after another and share asset paths (assets/pack.json): one browser context per
       // scene keeps one scene's cache out of the next.
       const hosted = await serveOwned(dir), owned = new Set([hosted.port]), context = await browser.createBrowserContext();
@@ -102,7 +102,7 @@ export async function runCountProbe(o: { label: string; build: string; scenes: S
           for (const f of chosen) { const last = groups.at(-1); if (!o.freshPage && last && JSON.stringify(last[0]!.query ?? null) === JSON.stringify(f.query ?? null)) last.push(f); else groups.push([f]); }
           let summarized = false;
           for (const group of groups) {
-            const query = new URLSearchParams({ ...(group[0]!.query ?? table.query), tier }), url = `${hosted.url}/?${query}`, messages: { type: string; text: string }[] = [];
+            const query = new URLSearchParams({ ...(group[0]!.query ?? table.query), ...o.query, tier }), url = `${hosted.url}/?${query}`, messages: { type: string; text: string }[] = [];
             let page: Page | null = null;
             try {
               page = await openPage(context, url, owned, o.size, messages);
@@ -258,7 +258,9 @@ if (import.meta.main) {
     for (const s of scenes) if (!SCENE_FIXTURES[s]) throw new Error(`Unknown scene ${s}`);
     for (const t of tiers) if (!TIERS.includes(t)) throw new Error(`Unknown tier ${t}`);
     const fixtures = option('--fixtures', 'all'), size = option('--size', '1920x1080').split('x').map(Number) as [number, number];
-    await runCountProbe({ label, build: option('--build', label), scenes, tiers, fixtures: fixtures === 'all' ? 'all' : fixtures.split(','), whatIfs: option('--what-if', 'standard') === 'standard', size, freshPage: args.includes('--fresh-page') });
+    await runCountProbe({ label, build: option('--build', label), scenes, tiers, fixtures: fixtures === 'all' ? 'all' : fixtures.split(','), whatIfs: option('--what-if', 'standard') === 'standard', size, freshPage: args.includes('--fresh-page'),
+      // --query adds dev parameters (for example heroMerge=false) to every fixture URL, for A/B counts within one build.
+      ...(args.includes('--query') ? { query: Object.fromEntries(new URLSearchParams(option('--query', ''))) } : {}) });
   }
   console.log(JSON.stringify(summarize(label, compareWith)));
 }
