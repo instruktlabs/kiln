@@ -388,9 +388,13 @@ export async function executeKilnCode(
     const globalNames = Object.keys(globals);
     const globalValues = Object.values(globals);
 
+    // Generated code runs in strict mode: `this` outside a method is undefined rather
+    // than the host global, an undeclared assignment throws instead of creating a
+    // global, and a block-level function stays in its block. Validation parses with
+    // the same directive (decision 23 of 2 October 2026).
     const fn = new Function(
       ...globalNames,
-      `${normalized}\nreturn { meta: typeof meta !== 'undefined' ? meta : {}, build, animate: typeof animate !== 'undefined' ? animate : null };`,
+      `'use strict';\n${normalized}\nreturn { meta: typeof meta !== 'undefined' ? meta : {}, build, animate: typeof animate !== 'undefined' ? animate : null };`,
     );
 
     const { meta, build, animate } = fn(...globalValues) as {

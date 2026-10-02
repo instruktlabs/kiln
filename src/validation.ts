@@ -280,6 +280,16 @@ export function validate(code: string, _opts: { category?: string } = {}): Valid
     // Can't continue AST-level checks without a tree — return now.
     return toResult(issues, warnings);
   }
+  const strict = strictModeSyntaxError(normalized);
+  if (strict) {
+    issues.push({
+      code: 'SYNTAX_ERROR',
+      message: `Syntax error in strict mode: ${strict.message}`,
+      fixHint:
+        'Generated code runs in strict mode; rewrite the construct at the reported line (no with, legacy octal literal, duplicate parameter name or delete of a plain name).',
+      line: strict.line,
+    });
+  }
 
   // --- Structural checks --------------------------------------------------
 
@@ -495,6 +505,32 @@ export class GeneratedSourcePolicyError extends Error {
   }
 }
 
+/**
+ * The evaluator prepends 'use strict' to generated code (render.ts), so a construct
+ * only strict mode refuses -- `with`, a legacy octal literal, duplicate parameter
+ * names, `delete` of a plain name -- is a syntax error there. Parsing a second time
+ * with the directive on the same first line keeps every line number the author's
+ * and names the line before any evaluation (rule 9) instead of surfacing it as a
+ * generic rejection. Undefined when the code is valid strict-mode script.
+ */
+function strictModeSyntaxError(code: string): { message: string; line?: number } | undefined {
+  try {
+    acorn.parse(`'use strict';${code}`, {
+      ecmaVersion: 2022,
+      sourceType: 'script',
+      allowReturnOutsideFunction: false,
+      locations: true,
+    });
+    return undefined;
+  } catch (error) {
+    const loc =
+      error && typeof error === 'object' && 'loc' in error
+        ? (error as { loc?: { line?: number } }).loc
+        : undefined;
+    return { message: error instanceof Error ? error.message : String(error), line: loc?.line };
+  }
+}
+
 /** Defense-in-depth gate used immediately before the Function evaluator. */
 export function assertGeneratedSourceSafe(code: string): void {
   let ast: acorn.Program;
@@ -516,6 +552,13 @@ export function assertGeneratedSourceSafe(code: string): void {
       line,
     });
   }
+  const strict = strictModeSyntaxError(code);
+  if (strict)
+    throw new GeneratedSourcePolicyError({
+      code: 'SYNTAX_ERROR',
+      message: 'Generated source has invalid strict-mode syntax.',
+      line: strict.line,
+    });
   const issue = analyzeGeneratedSourceSafety(ast)[0];
   if (issue) throw new GeneratedSourcePolicyError(issue);
   if (unknownHelperWarnings(ast).some((entry) => entry.code === 'REMOVED_HELPER'))
@@ -605,6 +648,28 @@ function analyzeGeneratedSourceSafety(ast: acorn.Program): ValidationIssue[] {
       line,
     });
 
+  // `this` is allowed where it is a method receiver: an object-literal method, getter,
+  // setter or function property, a class method, constructor, accessor, field
+  // initializer or static block, and arrows nested inside those. Generated code runs
+  // in strict mode (render.ts), so every other `this` -- the top level, a plain
+  // function -- is undefined or a caller's value, never the host global; those stay
+  // refused as the denylist safety net (decision 23 of 2 October 2026; F28: w29's mesh
+  // batcher was an object literal whose `add` method read `this`).
+  const thisBindsToMethodReceiver = (ancestors: readonly acorn.Node[]): boolean => {
+    for (let i = ancestors.length - 2; i >= 0; i--) {
+      const node = ancestors[i]!;
+      if (node.type === 'ArrowFunctionExpression') continue;
+      if (node.type === 'PropertyDefinition' || node.type === 'StaticBlock') return true;
+      if (node.type === 'FunctionDeclaration') return false;
+      if (node.type !== 'FunctionExpression') continue;
+      const parent = ancestors[i - 1] as acorn.Property | acorn.MethodDefinition | undefined;
+      return (
+        (parent?.type === 'Property' || parent?.type === 'MethodDefinition') &&
+        parent.value === node
+      );
+    }
+    return false;
+  };
   walk.ancestor(ast, {
     Identifier(node, _state, ancestors) {
       const parent = ancestors.at(-2);
@@ -613,7 +678,8 @@ function analyzeGeneratedSourceSafety(ast: acorn.Program): ValidationIssue[] {
         ambient(node.name, node.loc?.start.line);
       }
     },
-    ThisExpression(node) {
+    ThisExpression(node, _state, ancestors) {
+      if (thisBindsToMethodReceiver(ancestors)) return;
       ambient('this', node.loc?.start.line);
     },
     ImportExpression(node) {

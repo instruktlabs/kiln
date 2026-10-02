@@ -61,6 +61,10 @@ describe('removed authoring helpers', () => {
     'class C { method() { { function cloneGeometry() {} } cloneGeometry(); } }',
     '{ let cloneGeometry; { function cloneGeometry() {} } } cloneGeometry(root);',
     'function f() { "use strict"; { function cloneGeometry() {} } cloneGeometry(); }',
+    // Generated code runs in strict mode (decision 23 of 2 October 2026), so a block-level
+    // function declaration never hoists out of its block: the call outside reaches the
+    // removed global, and validate says so before the evaluator throws.
+    '{ function cloneGeometry(x) { return x; } } cloneGeometry(root);',
     'cloneGeometry = root;',
     '({value: cloneGeometry} = {value: root});',
   ])('does not let an unrelated local binding hide a removed global: %s', (body) => {
@@ -79,7 +83,6 @@ describe('removed authoring helpers', () => {
     'class C { static { var cloneGeometry = x => x; cloneGeometry(root); } }',
     'switch (0) { case 0: const cloneGeometry = x => x; cloneGeometry(root); }',
     'const o = { cloneGeometry: root }; void o.cloneGeometry;',
-    '{ function cloneGeometry(x) { return x; } } cloneGeometry(root);',
   ])('preserves valid scoped locals and property names: %s', async (body) => {
     expect(validate(source(body)).valid).toBe(true);
     await expect(executeKilnCode(source(body))).resolves.toBeDefined();

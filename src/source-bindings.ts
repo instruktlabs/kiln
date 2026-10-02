@@ -20,8 +20,6 @@ const lexicalScopes = new Set([
 export function sourceBindings(ast: acorn.Program) {
   const scopes = new Map<acorn.Node, Set<string>>();
   const allNames = new Set<string>();
-  const sloppyFunctions: { id: acorn.Identifier; ancestors: acorn.Node[]; scope: acorn.Node }[] =
-    [];
   const bind = (scope: acorn.Node, pattern: acorn.Node | null | undefined): void => {
     if (!pattern) return;
     const node = pattern as acorn.AnyNode;
@@ -61,30 +59,11 @@ export function sourceBindings(ast: acorn.Program) {
     },
     Function(node, _state, ancestors) {
       for (const parameter of node.params) bind(node, parameter);
-      if (node.type === 'FunctionDeclaration') {
-        const outer = ancestors.slice(0, -1);
-        bind(scopeFor(outer), node.id);
-        // Authored scripts are not implicitly strict. Annex B block functions
-        // can also bind in the enclosing body; retain those legitimate locals.
-        // Strictness is resolved below before adding that extra binding.
-        const isStrict = ancestors.some((ancestor) => {
-          if (ancestor.type === 'ClassDeclaration' || ancestor.type === 'ClassExpression')
-            return true;
-          const body = ancestor as acorn.Program | acorn.BlockStatement;
-          return (
-            Array.isArray(body.body) &&
-            body.body.some(
-              (statement, index, list) =>
-                statement.type === 'ExpressionStatement' &&
-                'directive' in statement &&
-                statement.directive === 'use strict' &&
-                list.slice(0, index).every((prior) => 'directive' in prior),
-            )
-          );
-        });
-        if (!isStrict && node.id)
-          sloppyFunctions.push({ id: node.id, ancestors: outer, scope: scopeFor(outer) });
-      } else bind(node, node.id);
+      // Generated code runs in strict mode (render.ts prepends the directive), so a
+      // function declaration binds in its own block and never hoists out of it: no
+      // Annex B binding in the enclosing body.
+      if (node.type === 'FunctionDeclaration') bind(scopeFor(ancestors.slice(0, -1)), node.id);
+      else bind(node, node.id);
     },
     Class(node, _state, ancestors) {
       bind(node, node.id);
@@ -94,18 +73,6 @@ export function sourceBindings(ast: acorn.Program) {
       bind(node, node.param);
     },
   });
-  // Annex B hoisting is suppressed by an intervening lexical binding. Resolve
-  // this after collecting declarations so statement order cannot hide one.
-  for (const { id, ancestors, scope } of sloppyFunctions) {
-    const target = scopeFor(ancestors, true);
-    const between = ancestors.slice(ancestors.indexOf(target) + 1);
-    if (
-      !between.some(
-        (node) => node !== scope && node.type !== 'CatchClause' && scopes.get(node)?.has(id.name),
-      )
-    )
-      bind(target, id);
-  }
   return {
     allNames,
     has(name: string, ancestors: acorn.Node[]): boolean {

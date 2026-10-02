@@ -203,6 +203,23 @@ part floats, the compact render result is 9,103 characters, `full` 16,734 and `l
 - `scripts/tier2-dogfood.mjs` counts the tool steps of an Agy stream (`step_update` with
   `tool_name`, one per step index), so a blind Agy run's receipt no longer says `unknown`.
 
+### Generated code
+
+The follow-ups the owner decided on 2 October 2026 after reading the cycle's report
+(decisions 23 to 28 in the plan) land here, on the same branch, before it merges.
+
+- **Breaking:** generated code runs in strict mode. The evaluator prepends `'use strict'`
+  to every program and `kiln_validate` parses with the same directive, so a construct only
+  strict mode refuses (`with`, a legacy octal literal, a duplicate parameter name) is a
+  `SYNTAX_ERROR` with its line before any evaluation; an assignment to an undeclared name
+  throws (answered as an unbound variable) instead of creating a host global; and a
+  function declared inside a block stays in that block. The source policy allows `this`
+  inside object-literal methods, getters, setters and function properties, class methods,
+  constructors, accessors, field initializers and static blocks, and in arrows nested
+  inside those, where it is the receiver the program built (w29's mesh batcher was an
+  object literal whose `add` method read `this`); `this` at the top level or in a plain
+  function stays `UNSAFE_GLOBAL_ACCESS`, as does `module`.
+
 ### Knowledge and setup
 
 Standing knowledge is read whole at the start of every session and again after each

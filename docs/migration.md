@@ -51,6 +51,12 @@ integration notices first.
   asset's newest revision; `kiln_material get` without `revisionId` reads the material's
   only revision and names the revisions when there are several, as `kiln_project get`
   reads the latest project revision.
+- **Strict mode.** Generated code runs under `'use strict'`: `this` is allowed inside
+  object-literal and class methods (and in field initializers, static blocks and arrows
+  nested in them) and refused elsewhere; an assignment to an undeclared name, `with`, a
+  legacy octal literal or a duplicate parameter name is an error with its line, and a
+  function declared inside a block is visible in that block only. A saved source that
+  relied on sloppy behaviour fails `kiln_validate` or its rebuild with the line named.
 
 ## Changes in 0.9.0
 

@@ -39,6 +39,6 @@ Custom `THREE.BufferGeometry` is available. `meshGeo` helps validate flat positi
 
 Use deterministic equations or explicit seeded recipes when repeatable builds matter. Avoid ambient state in reusable geometry functions.
 
-The source policy rejects host-global access, network access, dynamic imports/evaluation, constructor chains, and raw `THREE.DataTexture`, `ShaderMaterial`, or `RawShaderMaterial`. Use approved texture/material helpers. Source checks are not an operating-system sandbox; evaluator process boundaries belong to the host.
+The source policy rejects host-global access, network access, dynamic imports/evaluation, constructor chains, and raw `THREE.DataTexture`, `ShaderMaterial`, or `RawShaderMaterial`. Use approved texture/material helpers. Generated code runs in strict mode: `this` is allowed inside object-literal and class methods (an object whose `add` method reads `this.parts`), not at the top level or in a plain function; an assignment to an undeclared name, `with` or a legacy octal literal is an error. Source checks are not an operating-system sandbox; evaluator process boundaries belong to the host.
 
 `kiln_validate` checks source without building geometry. `kiln_render` evaluates and returns images and structural findings. A valid program can still make an unsuitable shape or fail a later export check.
