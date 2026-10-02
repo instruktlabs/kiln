@@ -65,6 +65,70 @@ a shared shadow map also freezes their shadows. Compare filtering, shadow-map
 resolution and caster geometry explicitly rather than assuming a smaller main
 render buffer removes shadow cost.
 
+### Draw calls and extra passes
+
+Count before changing anything. Record draws, bound pipelines and triangles per
+render pass (main, each shadow map, reflections, output) for every quality tier
+and named view or workload, not only the landing camera. Attribute draws to
+scene systems. Count-only what-ifs (hide a system, freeze a pass, drop small
+casters) give upper bounds for each lever before you build it. In the three.js
+proving scenes, one farm view drew 583: 312 main, 270 shadow and 1 output. A
+bridge drew 148 of the 180 draws at the lowest tier. Rank levers per scene from
+its own numbers; the same lever can matter in one scene and be absent in another.
+
+Merge rigid parts by material inside anchors, and keep every anchor as a real
+node with its name, transform and children. Anchors are animation targets,
+pivots the application moves, nodes it looks up by name, nodes carrying
+semantic data, and visibility or LOD switches. Leave transparent, multi-material,
+skinned and morphed parts separate. A per-material merge kept doors, wheels,
+limbs, colliders and the frame graph working while a farmhouse went from 16 to
+11 draws and a bridge from 148 to 20. Split very long structures into a few
+spatial groups so culling still works. Two side effects need checks:
+- Keeping the source vertex layout can avoid extra pipelines. It saved 2-3 per
+  view in one scene and cost 5-10 in another, so measure it.
+- Merging changes the draw order of coplanar faces. A curb that now won the depth
+  tie against a walkway stippled the kerbs.
+
+Treat each extra pass as its own budget:
+- **Shadow pass.** Use material-free depth stand-ins per anchor and shadow side.
+  Cache a static sun map, and keep a separate live map for casters observed to
+  move, with a settle period. Render the map once per frame when a second camera,
+  such as a planar reflector, would render it again. Stop casters smaller than
+  about two shadow texels from casting. Together these took one farm's shadow
+  pass from 270 draws a frame to 0 when settled, and to 31-54 with ambient
+  animal life. A bridge scene went from two 37-draw shadow passes to one 2-draw
+  pass.
+- **Reflection pass.** Draw a cheaper representation, such as a far LOD, on a
+  layer that only the reflection camera sees. Keep which moving objects appear
+  in the reflection as a look decision of its own.
+
+A cached shadow only pays where its frustum stays still. A shadow box that
+follows a driven car re-renders every frame, so measure moving workloads before
+enabling it.
+
+Many instanced groups that differ only by a material constant compile one
+pipeline each. Carrying part colour and roughness as vertex data behind one
+shared material took a campus planting from 21 pipelines to 10 at the overview
+and from 40-49 to 11-13 near the ground, with pixel parity.
+
+When a frame's main pass is never split by a mid-pass copy (for example a
+depth-texture read for water), its multisampled attachments need not be stored
+after the resolve. Discarding them changed nothing measurable on a desktop GPU.
+On a mobile GPU, GPU busy at the same frame rate fell by 3-8 points, and frames
+within one refresh at a GPU-bound tier rose from 40% to 49%. Fail loudly when
+something would reload the attachments.
+
+Report cached features in both their settled and their running state. With the
+clock running, the farm view that drew 583 drew 314-337, with about ten static
+re-renders a minute. Check look parity three ways:
+- the same build with each lever switched off;
+- the build before the change against the build after;
+- a repeat capture of the same build, for the noise floor.
+
+Tile-mean metrics can miss thin-line regressions, so also count the pixels that
+differ strongly. Show every intended shadow change, such as small parts that stop
+casting, as image pairs for review.
+
 Profile transform updates as well as draw submission. Cache matrices only for
 placements the application knows will remain fixed. Keep animated and controlled
 hierarchies live, and restore or rebuild the cache before placement or variant
