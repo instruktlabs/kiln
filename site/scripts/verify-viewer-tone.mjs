@@ -5,6 +5,7 @@ import { join } from 'node:path';
 import puppeteer from 'puppeteer-core';
 import sharp from 'sharp';
 import { chromeExecutable } from './build-site-media.mjs';
+import { sceneBrowserOptions } from '../../scenes/scripts/browser-options.mjs';
 
 /**
  * Check, in a real browser, the tone mapping control of the 3D view.
@@ -83,8 +84,9 @@ const grab = async (page, file) => {
   return { data, hash: sha256(data), width: info.width, height: info.height };
 };
 
-const browser = await puppeteer.launch({ executablePath: chromeExecutable(), headless: true, pipe: true, args: ['--no-sandbox'] });
-const results = { browser: await browser.version(), rig: 'review-neutral-v1', repeat, noiseFraction: NOISE_FRACTION, pages: [], errors: [], consoleProblems: [] };
+const launch = sceneBrowserOptions();
+const browser = await puppeteer.launch({ executablePath: chromeExecutable(), headless: launch.headless, pipe: true, args: ['--no-sandbox', ...launch.args] });
+const results = { browser: await browser.version(), browserLaunch: launch, rig: 'review-neutral-v1', repeat, noiseFraction: NOISE_FRACTION, pages: [], errors: [], consoleProblems: [] };
 await mkdir(screenshotDirectory, { recursive: true });
 try {
   for (const route of routes) {

@@ -1,20 +1,42 @@
+import { sceneBrowserOptions } from '../../scenes/scripts/browser-options.mjs';
 import assert from 'node:assert/strict';
 import { readFile, mkdir, writeFile } from 'node:fs/promises';
 import { join, resolve } from 'node:path';
+import { pathToFileURL } from 'node:url';
 import puppeteer from 'puppeteer-core';
 import { chromeExecutable } from './build-site-media.mjs';
 import { hashBytes } from './mirror-core.mjs';
-const [base, destination='.cache/round-4/ff3-site-flow']=process.argv.slice(2);
-if(!base)throw new Error('Usage: bun scripts/verify-foundry-flow.mjs <site-url> [report-directory]');
+
+export function flowBackendPlan(autoSmoke = false) {
+  return autoSmoke
+    ? { qualification: 'auto-smoke', backends: ['auto'] }
+    : { qualification: 'webgpu-and-webgl2', backends: ['webgpu', 'webgl2'] };
+}
+
+export function assertRenderedBackend(requested, rendered) {
+  assert.ok(['auto', 'webgpu', 'webgl2'].includes(requested), 'Unknown requested backend');
+  assert.ok(['webgpu', 'webgl2'].includes(rendered), `No recognized rendered backend: ${rendered}`);
+  if (requested !== 'auto') {
+    assert.equal(rendered, requested, `Required ${requested} backend; rendered ${rendered}`);
+  }
+}
+
+export async function main(argv = process.argv.slice(2)) {
+const unknown = argv.filter(arg => arg.startsWith('--') && arg !== '--auto-smoke');
+if (unknown.length) throw new Error(`Unknown Foundry flow option: ${unknown.join(', ')}`);
+const positional = argv.filter(arg => arg !== '--auto-smoke');
+const [base, destination='.cache/round-4/ff3-site-flow']=positional;
+if(!base || positional.length > 2)throw new Error('Usage: bun scripts/verify-foundry-flow.mjs <site-url> [report-directory] [--auto-smoke]');
+const plan = flowBackendPlan(argv.includes('--auto-smoke'));
 const out=resolve(destination);await mkdir(out,{recursive:true});
 const runtime=JSON.parse(await readFile('dist/scene-runtime/foundry-floor/runtime.json','utf8'));
 assert.ok(runtime.initialLoad,'The full FF3 runtime with verified initial closure is required');
-const report={runtimeSha256:runtime.sha256,initialLoad:runtime.initialLoad,checks:[],scenarios:[],errors:[]};
-const browser=await puppeteer.launch({executablePath:chromeExecutable(),headless:true,pipe:true,args:['--no-sandbox'],defaultViewport:{width:1440,height:900}});
+const report={qualification:plan.qualification,runtimeSha256:runtime.sha256,initialLoad:runtime.initialLoad,checks:[],scenarios:[],errors:[]};
+const browser=await puppeteer.launch({executablePath:chromeExecutable(),headless:sceneBrowserOptions().headless,pipe:true,args:['--no-sandbox', ...sceneBrowserOptions().args],defaultViewport:{width:1440,height:900}});
 report.browser=await browser.version();
 async function clickText(frame,text){const handles=await frame.$$('button');for(const handle of handles)if(await handle.evaluate((button,label)=>button.textContent.trim()===label,text)){await handle.click();return;}throw new Error(`No visible control ${text}`);}
 try{
- for(const backend of ['auto','webgl2']){
+ for(const backend of plan.backends){
   const page=await browser.newPage(),received=new Map(),pending=[];const observed=[];
   // Each backend qualification verifies response bytes, so it must fetch bodies rather than reuse 304s.
   await page.setCacheEnabled(false);
@@ -31,6 +53,8 @@ try{
   await page.click('[data-explore]');
   await page.waitForFunction(()=>document.querySelector('scene-shell')?.dataset.sceneState==='ready',{timeout:60000});
   const iframe=await page.$('[data-mount] iframe');const frame=await iframe.contentFrame();assert.ok(frame);
+  const campusBackend=await frame.$eval('.ks-root',root=>root.getAttribute('data-kiln-backend'));
+  assertRenderedBackend(backend,campusBackend);
   await page.waitForNetworkIdle({idleTime:500,timeout:30000});await Promise.all(pending);
   assert.deepEqual([...received.keys()].sort(),[...runtime.initialLoad.files].sort(),'Only initial campus code loads before entry');
   await clickText(frame,'Arrival');
@@ -40,17 +64,20 @@ try{
   await page.waitForNetworkIdle({idleTime:500,timeout:30000});await Promise.all(pending);
   assert.deepEqual([...received.keys()].sort(),runtime.chunks.map(chunk=>chunk.file).sort(),'Entering fetches all deferred interior code with exact hashes');
   const status=await frame.evaluate(()=>({backend:document.querySelector('.ks-root')?.getAttribute('data-kiln-backend'),hud:document.querySelector('.ff-hud')?.textContent,canvases:document.querySelectorAll('canvas').length}));
-  assert.equal(status.canvases,1);assert.match(status.hud,/Wafer|wafer|lot|Lot/);if(backend==='webgl2')assert.equal(status.backend,'webgl2');
+  assert.equal(status.canvases,1);assert.match(status.hud,/Wafer|wafer|lot|Lot/);assertRenderedBackend(backend,status.backend);
   await page.screenshot({path:join(out,`${backend}-interior.png`)});
   await clickText(frame,'Exit to campus');
   await frame.waitForFunction(()=>Boolean(document.querySelector('.fc-hud')),{timeout:30000});
   await page.click('[data-exit]');
   await page.waitForFunction(()=>document.querySelector('scene-shell')?.dataset.sceneState==='idle',{timeout:10000});
   assert.equal(await page.$eval('[data-explore]',button=>button===document.activeElement),true);
-  report.scenarios.push({backend,renderedBackend:status.backend,chunks:[...received.values()],interiorHud:status.hud,entryAndReturn:true});
+  report.scenarios.push({backend,campusBackend,renderedBackend:status.backend,chunks:[...received.values()],interiorHud:status.hud,entryAndReturn:true});
   await page.close();
  }
- report.checks.push('No scene code before Explore; exact initial closure only before Enter; all deferred chunks after Enter; real interior HUD/canvas; return to campus, exit and focus restore on both backends.');
+ report.checks.push(`No scene code before Explore; exact initial closure only before Enter; all deferred chunks after Enter; real interior HUD/canvas; return to campus, exit and focus restore. ${plan.qualification === 'auto-smoke' ? 'Automatic-backend smoke only; not both-backend release qualification.' : 'Required WebGPU and WebGL2 backends verified in campus and interior.'}`);
  assert.equal(report.errors.length,0,JSON.stringify(report.errors));
 }finally{await browser.close();await writeFile(join(out,'flow.json'),JSON.stringify(report,null,2));}
-console.log(JSON.stringify({scenarios:report.scenarios.length,errors:report.errors.length,checks:report.checks}));
+console.log(JSON.stringify({qualification:report.qualification,scenarios:report.scenarios.length,errors:report.errors.length,checks:report.checks}));
+}
+
+if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1])).href) await main();

@@ -148,6 +148,28 @@ describe('a standalone runtime staged as built', () => {
     expect(record.modulesSha256).toBe(hashBytes(await readFile(join(source, 'bundle-modules.json'))));
   });
 
+  test('validates new producer receipts before staging a runtime independently of the asset pack version', async () => {
+    const root = await temp();
+    const modules = [FACADE, '/producer/node_modules/.bun/three@0.186.1/node_modules/three/build/three.core.js'];
+    const source = await standalone(root, { modules });
+    const chunk = await readFile(join(source, 'assets/index-abc123.js'));
+    const producer = { schema: 'kiln.scene-producer/1', dependencies: { three: '0.186.1', react: null, 'react-dom': null, '@react-three/fiber': null }, build: { vite: '8.3.2', pluginReact: '6.0.3' }, chunks: [{ file: 'assets/index-abc123.js', bytes: chunk.length, sha256: hashBytes(chunk) }] };
+    // Asset provenance remains the sealed pack's version; a code-only rebuild may advance the renderer.
+    await json(join(source, 'assets/pack.json'), { three: '0.186.0', release: 'g9' });
+    await json(join(source, 'bundle-modules.json'), { modules, producer });
+    const measurement = await measureFrameRuntime({ id: 'golden-gate', source });
+    const manifest = await stageFrameRuntime({ id: 'golden-gate', source, measurement, packBase: '/scene-packs/golden-gate/g9/', site: join(root, 'site') });
+    expect(manifest.three.version).toBe('0.186.1');
+    expect(manifest.build).toMatchObject({ vite: '8.3.2', pluginReact: '6.0.3', evidence: 'producer-receipt' });
+    expect(JSON.stringify(manifest)).not.toContain('/producer/');
+    await writeFile(join(source, 'assets/index-abc123.js'), 'changed');
+    await expect(measureFrameRuntime({ id: 'golden-gate', source })).rejects.toThrow('Producer chunks');
+    await writeFile(join(source, 'assets/index-abc123.js'), chunk);
+    producer.dependencies.three = '0.186.0';
+    await json(join(source, 'bundle-modules.json'), { modules, producer });
+    await expect(measureFrameRuntime({ id: 'golden-gate', source })).rejects.toThrow('contradicts');
+  });
+
   test('refuses a second entry, a second three, a missing facade and a bundle over its ceiling', async () => {
     const two = await standalone(await temp());
     await writeFile(join(two, 'assets', 'index-other.js'), 'x');
@@ -213,6 +235,22 @@ describe('a standalone runtime staged as built', () => {
 });
 
 describe('a runtime manifest', () => {
+  test('archived runtime metadata describes its producer, even beside newer installed dependencies', async () => {
+    const root = await temp();
+    const source = await standalone(root);
+    const site = join(root, 'site');
+    await json(join(site, 'node_modules/three/package.json'), { version: '9.9.9' });
+    await json(join(site, 'node_modules/vite/package.json'), { version: '99.0.0' });
+    await json(join(site, 'node_modules/@vitejs/plugin-react/package.json'), { version: '99.0.0' });
+    const { measurement } = await measureFrameRuntime({ id: 'golden-gate', source });
+    const manifest = runtimeManifest('golden-gate', measurement, { kind: 'frame', site });
+    expect(manifest.three.version).toBe('0.186.0');
+    expect(manifest.build).toMatchObject({ vite: null, pluginReact: null, evidence: 'module-paths' });
+    const unknown = await standalone(await temp(), { modules: [FACADE, '/old/node_modules/three/build/three.core.js'] });
+    const unversioned = await measureFrameRuntime({ id: 'golden-gate', source: unknown });
+    expect(runtimeManifest('golden-gate', unversioned.measurement, { kind: 'frame', site }).three.version).toBeNull();
+  });
+
   test('records the measurement, the ceiling it was held to and the three it carries', () => {
     const measurement = { file: 'farm-abc.js', bytes: 1_582_844, gzipBytes: 462_811, gzipMethod: 'bun-zlib', sha256: 'a'.repeat(64), facade: true, copies: { three: ['C:/scenes/node_modules/.bun/three@0.186.0/node_modules/three'], react: [], 'react-dom': [], '@react-three/fiber': [] } };
     const manifest = runtimeManifest('farm', measurement, { site: SITE });

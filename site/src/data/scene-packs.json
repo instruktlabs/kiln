@@ -17,90 +17,98 @@
   "golden-gate": {
     "schema": "kiln.scene-pack/1",
     "id": "golden-gate",
-    "release": "g9",
+    "release": "g9-code5",
     "three": "0.186.0",
     "source": ".cache/site-inputs/golden-gate/standalone",
-    "base": "/scene-packs/golden-gate/g9/",
+    "base": "/scene-packs/golden-gate/g9-code5/",
     "sealedFiles": 103,
     "sealedBytes": 12186327,
     "totalFiles": 106,
-    "totalBytes": 12240923,
-    "packJsonSha256": "c2a1d83fce6caf07a7b3e87070ccb8a983dd68e0c7f98eee3f1ba5255ce059cb",
+    "totalBytes": 12240929,
+    "packJsonSha256": "748536356d9639c65c76bc18f1e865c3426f5ee49904239efcb9b9c24c8a1524",
     "sha256sumsSha256": "75ce79fc746eafd27d7b597396489294a821fef5d88a05981b6bb9572159a58a",
-    "noticesSha256": "4bf6f2bd1d803606c88eb540c8e207ddee4a76be4d12fe14d6110bb7505e4ebc",
+    "noticesSha256": "1c27b112542ccdf247a592f918c7753cea14852a1e5234012bc06bd5ef9b859b",
     "runtime": {
       "kind": "frame",
-      "file": "index-BDTQ3svb.js",
-      "bytes": 1724619,
-      "gzipBytes": 518716,
+      "file": "index-DhpWxFro.js",
+      "bytes": 1708928,
+      "gzipBytes": 512680,
       "gzipMethod": "bun-zlib",
-      "sha256": "203118926ca1e11c43542ce1605d06d19b9a984ebe1877251ae152c73bc634d6",
-      "modulesSha256": "928ffa3a06eb8c8f227c4ab842a51b1c5b4cda46e58ce7e65423e7cd1ca4466b"
+      "sha256": "1a01a81a912157936f05a2060f1df377c418607a83567753e4db2b0257bdb556",
+      "modulesSha256": "ace29d2d8e9395d6887ca2b30ca68ce5ed596a781ec214ad68538902995553ae"
     }
   },
   "foundry-floor": {
     "schema": "kiln.scene-pack/1",
     "id": "foundry-floor",
-    "release": "ff3-review2",
+    "release": "ff3-review2-code5",
     "three": "0.186.0",
     "source": ".cache/site-inputs/foundry-floor/standalone",
-    "base": "/scene-packs/foundry-floor/ff3-review2/",
+    "base": "/scene-packs/foundry-floor/ff3-review2-code5/",
     "sealedFiles": 85,
     "sealedBytes": 11519818,
     "totalFiles": 88,
-    "totalBytes": 11637133,
-    "packJsonSha256": "6ce49d05791bf42d21f3628237a5cf005ce9f2fa15938f0c321430d781c2c5d4",
+    "totalBytes": 11637139,
+    "packJsonSha256": "822be1171621273dfdf857fe6ca320ed41d16e03c49fc49860c13e7092be4836",
     "sha256sumsSha256": "21ec914770e35ced418015e1e9965488d96cb8e457bbc1602273cc3936712e7c",
-    "noticesSha256": "4bf6f2bd1d803606c88eb540c8e207ddee4a76be4d12fe14d6110bb7505e4ebc",
+    "noticesSha256": "1c27b112542ccdf247a592f918c7753cea14852a1e5234012bc06bd5ef9b859b",
     "runtime": {
       "kind": "frame",
-      "file": "index-Y86dU6mu.js",
-      "bytes": 1705082,
-      "gzipBytes": 517258,
+      "file": "index-BpDIz-38.js",
+      "bytes": 1710132,
+      "gzipBytes": 519928,
       "gzipMethod": "bun-zlib",
-      "sha256": "fdf0724ffc38717f3289aaaa0de3891be907a74a2a1570b1a9e926e4e306398d",
-      "modulesSha256": "429151e104015482e5e29d7b8d7bebb8d1e868664de36ff7106bff7028a64339",
+      "sha256": "252a06c4a8812d803942e581182e5e3a73951982def9e4ae1fea686d7c5a3899",
+      "modulesSha256": "7ed7a35df2406548c5e1065bf08e777e1e4dd9da3f2fa0f48215bd97bc39e27d",
       "initialLoad": {
         "files": [
-          "data-CtFNqKxF.js",
-          "exterior-BhOIr0wM.js",
-          "index-Y86dU6mu.js"
+          "data-D6ylNSp1.js",
+          "exterior-DhGtl-eu.js",
+          "index-BpDIz-38.js",
+          "session-B17LXo16.js"
         ],
-        "bytes": 1527808,
-        "gzipBytes": 446414,
+        "bytes": 1532295,
+        "gzipBytes": 448748,
         "deferredFiles": [
-          "interior-CaAk33CR.js"
+          "interior-CvvOKxxa.js"
         ],
-        "receiptSha256": "637febfc07fbae74c57933d5edfc83a7624168fa5fca0cf31616a2c46ce1f108"
+        "receiptSha256": "628545d568431c5000e1d683b7fea4230eb1fd9c1c377636e000e2cac3fdf029"
       },
       "chunks": [
         {
-          "file": "data-CtFNqKxF.js",
-          "bytes": 42050,
-          "gzipBytes": 11708,
+          "file": "data-D6ylNSp1.js",
+          "bytes": 41809,
+          "gzipBytes": 11688,
           "gzipMethod": "bun-zlib",
-          "sha256": "221e0bb094f1246917827439b92b18d4826e3c248b50191c4590c6b61dfc113f"
+          "sha256": "45fdb75ca785b1f7b7261977f5f73da4b209c806d9f74ed12f07bd1417f812ce"
         },
         {
-          "file": "exterior-BhOIr0wM.js",
-          "bytes": 73389,
-          "gzipBytes": 28182,
+          "file": "exterior-DhGtl-eu.js",
+          "bytes": 75547,
+          "gzipBytes": 28943,
           "gzipMethod": "bun-zlib",
-          "sha256": "de54e858f5d70550caa1083e09fc673ecbe2bf67496dbc5ccd46590422ffc678"
+          "sha256": "889c81e92b8f20ba4b9d973774c2bbb367b943c2b91be3ee87ffa706b03cfc61"
         },
         {
-          "file": "index-Y86dU6mu.js",
-          "bytes": 1412369,
-          "gzipBytes": 406524,
+          "file": "index-BpDIz-38.js",
+          "bytes": 8667,
+          "gzipBytes": 3767,
           "gzipMethod": "bun-zlib",
-          "sha256": "fdf0724ffc38717f3289aaaa0de3891be907a74a2a1570b1a9e926e4e306398d"
+          "sha256": "252a06c4a8812d803942e581182e5e3a73951982def9e4ae1fea686d7c5a3899"
         },
         {
-          "file": "interior-CaAk33CR.js",
-          "bytes": 177274,
-          "gzipBytes": 70844,
+          "file": "interior-CvvOKxxa.js",
+          "bytes": 177837,
+          "gzipBytes": 71180,
           "gzipMethod": "bun-zlib",
-          "sha256": "918836da73f0e67c8ffa54dc3c77c221d4c25e7f3feed294e4ff520f474a41d8"
+          "sha256": "058074e51339c7494afbc62a42e6daa98746280c6ff65f43f402e2f1372321a7"
+        },
+        {
+          "file": "session-B17LXo16.js",
+          "bytes": 1406272,
+          "gzipBytes": 404350,
+          "gzipMethod": "bun-zlib",
+          "sha256": "3bb2adb93396a112785afc79e5945f30181a0464a7e6e4107d49a6aba6f6483c"
         }
       ]
     }

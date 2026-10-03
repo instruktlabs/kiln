@@ -2,11 +2,13 @@ import { spawnSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
 import { existsSync, readFileSync } from 'node:fs';
 import { copyFile, mkdir, readFile, readdir, rm, writeFile } from 'node:fs/promises';
+import { createRequire } from 'node:module';
 import { dirname, join, resolve } from 'node:path';
 import { gzipSync } from 'node:zlib';
 import { fileURLToPath } from 'node:url';
 import { measureInitialLoad, verifyInitialLoad } from './initial-runtime.mjs';
 import { installFrameReporter } from '../src/scenes/frame-reporter.mjs';
+import { createProducerReceipt, producerEvidence } from './scene-producer.mjs';
 import { RUNTIME_DIRECTORY, SCENE_DEDUPE, SCENE_PACKAGES, duplicatePackages, exportAliases, packageRoots, posix, resolveScenesDir, threeFacade } from './scene-source.mjs';
 
 const SITE = resolve(dirname(fileURLToPath(import.meta.url)), '..');
@@ -121,6 +123,7 @@ export async function buildRuntime({ id = 'farm', scenesDir, outDir, alias = tru
   const file = files[0];
   const bytes = await readFile(join(outDir, file));
   const gzip = gzipMeasure(bytes);
+  const producer = createProducerReceipt({ modules, chunks: [{ file, bytes: bytes.length, sha256: sha256(bytes) }], build: { vite: toolVersion('vite'), pluginReact: toolVersion('@vitejs/plugin-react') } });
   return {
     id,
     file,
@@ -131,6 +134,7 @@ export async function buildRuntime({ id = 'farm', scenesDir, outDir, alias = tru
     modules: [...new Set(modules)].sort(),
     copies: packageCopies(modules),
     facade: modules.some((moduleId) => posix(moduleId).endsWith('/packages/scene-kit/src/renderer/three-runtime.ts')),
+    producer: producerEvidence({ modules, producer, chunks: producer.chunks }),
   };
 }
 
@@ -146,17 +150,25 @@ export function checkCeiling(id, measurement) {
   };
 }
 
-const toolVersion = (name, site = SITE) => {
-  try {
-    return JSON.parse(readFileSync(resolve(site, 'node_modules', name, 'package.json'), 'utf8')).version;
-  } catch {
-    return null;
+const require = createRequire(import.meta.url);
+const toolVersion = (name) => {
+  let directory = dirname(require.resolve(name));
+  while (true) {
+    const path = join(directory, 'package.json');
+    if (existsSync(path)) {
+      const metadata = JSON.parse(readFileSync(path, 'utf8'));
+      if (metadata.name === name) return metadata.version;
+    }
+    const parent = dirname(directory);
+    if (parent === directory) throw new Error(`Cannot identify the ${name} producer version`);
+    directory = parent;
   }
 };
 
 /** The public build record stored beside the staged runtime. It carries no local paths. */
-export function runtimeManifest(id, measurement, { kind = 'module', site = SITE } = {}) {
+export function runtimeManifest(id, measurement, { kind = 'module' } = {}) {
   const fit = checkCeiling(id, measurement);
+  const producer = measurement.producer ?? producerEvidence({ modules: measurement.modules ?? [] });
   return {
     schema: RUNTIME_SCHEMA,
     id,
@@ -170,8 +182,8 @@ export function runtimeManifest(id, measurement, { kind = 'module', site = SITE 
     ...(measurement.chunks ? { chunks: measurement.chunks } : {}),
     ...(measurement.initialLoad ? { initialLoad: measurement.initialLoad } : {}),
     ceiling: { ...fit.ceiling, decision: 'D-15', ...(measurement.initialLoad ? { scope: 'Initial campus static closure; interior deferred until Enter the fab' } : {}), withinCeiling: fit.within, percent: fit.percent },
-    three: { version: toolVersion('three', site), facade: measurement.facade, copies: Object.fromEntries(Object.entries(measurement.copies).map(([name, roots]) => [name, roots.map((root) => root.replace(/^.*\/node_modules\//, 'node_modules/'))])) },
-    build: { vite: toolVersion('vite', site), pluginReact: toolVersion('@vitejs/plugin-react', site), dedupe: [...SCENE_DEDUPE] },
+    three: { version: producer.dependencies.three, facade: measurement.facade, copies: Object.fromEntries(Object.entries(measurement.copies).map(([name, roots]) => [name, roots.map((root) => root.replace(/^.*\/node_modules\//, 'node_modules/'))])) },
+    build: { ...producer.build, dedupe: [...SCENE_DEDUPE], dependencies: producer.dependencies, evidence: producer.source },
   };
 }
 
@@ -255,12 +267,14 @@ export async function measureFrameRuntime({ id, source }) {
   }
   const entry = chunks.find((chunk) => chunk.file === entries[0]);
   const modulesBytes = await readFile(join(source, 'bundle-modules.json'));
-  const modules = JSON.parse(modulesBytes.toString('utf8')).modules;
+  const moduleReceipt = JSON.parse(modulesBytes.toString('utf8'));
+  const modules = moduleReceipt.modules;
   if (!Array.isArray(modules)) throw new Error('bundle-modules.json lists no modules');
   const duplicates = duplicatePackages(modules);
   if (duplicates.length) {
     throw new Error(`The ${id} build carries more than one copy of ${duplicates.map(({ name, copies }) => `${name} (${copies.join(', ')})`).join('; ')}`);
   }
+  const producer = producerEvidence({ modules, producer: moduleReceipt.producer, chunks: chunks.map((chunk) => ({ ...chunk, file: `assets/${chunk.file}` })) });
   let initialLoad;
   if (existsSync(join(source, 'bundle-public.json'))) {
     if (id !== 'foundry-floor') throw new Error('Initial campus receipts are specific to Foundry Floor');
@@ -280,6 +294,7 @@ export async function measureFrameRuntime({ id, source }) {
     sha256: entry.sha256,
     ...(chunks.length > 1 ? { chunks } : {}),
     modules,
+    producer,
     copies: packageCopies(modules),
     facade: modules.some((moduleId) => posix(moduleId).endsWith('/packages/scene-kit/src/renderer/three-runtime.ts')),
   };

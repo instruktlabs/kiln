@@ -3,6 +3,7 @@ import { existsSync, readFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { verifyRuntimePayload } from './served-runtime.mjs';
+import { verifySceneDeliveryBinding } from './scene-delivery-binding.mjs';
 
 /**
  * What the site serves for each staged scene, hashed and compared with what the site's own records say.
@@ -38,6 +39,10 @@ const envName = (id) => `KILN_SITE_SCENE_PACK_DIR_${id.toUpperCase().replace(/-/
 
 for (const [id, record] of Object.entries(records)) {
   const runtime = JSON.parse((await get(`/scene-runtime/${id}/runtime.json`)).toString('utf8'));
+  const shellHtml = (await get(`/scenes/${id}/`)).toString('utf8');
+  const frameHtml = runtime.kind === 'frame' ? (await get(`/scene-runtime/${id}/frame.html`)).toString('utf8') : undefined;
+  const binding = verifySceneDeliveryBinding({ id, record, runtime, shellHtml, frameHtml });
+  console.log(`${id}: emitted shell and ${binding.kind} entry bind the selected ${record.release} pack and catalog runtime.`);
   const payload = await verifyRuntimePayload(runtime, get);
   console.log(`${id}: ${payload.files} served chunks verified, ${payload.bytes} B, ${payload.gzipBytes} B gzip, entry sha256 ${runtime.sha256}`);
   const initial = runtime.initialLoad ?? payload;

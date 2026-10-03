@@ -1,54 +1,64 @@
 {
   "golden-gate": {
     "poster": {
-      "src": "/media/scenes/golden-gate/g5/golden-gate-scene-drive.webp",
+      "src": "/media/scenes/golden-gate/g9-code5/golden-gate-scene-drive.webp",
       "width": 1440,
       "height": 925,
       "alt": "A blue sedan driving across the deck of the Golden Gate Bridge scene, with traffic around it and both towers ahead.",
-      "srcsetWebp": "/media/scenes/golden-gate/g5/golden-gate-scene-drive-320.webp 320w, /media/scenes/golden-gate/g5/golden-gate-scene-drive-480.webp 480w, /media/scenes/golden-gate/g5/golden-gate-scene-drive-672.webp 672w, /media/scenes/golden-gate/g5/golden-gate-scene-drive-768.webp 768w, /media/scenes/golden-gate/g5/golden-gate-scene-drive-1024.webp 1024w, /media/scenes/golden-gate/g5/golden-gate-scene-drive-1440.webp 1440w",
-      "srcsetAvif": "/media/scenes/golden-gate/g5/golden-gate-scene-drive-320.avif 320w, /media/scenes/golden-gate/g5/golden-gate-scene-drive-480.avif 480w, /media/scenes/golden-gate/g5/golden-gate-scene-drive-672.avif 672w, /media/scenes/golden-gate/g5/golden-gate-scene-drive-768.avif 768w, /media/scenes/golden-gate/g5/golden-gate-scene-drive-1024.avif 1024w, /media/scenes/golden-gate/g5/golden-gate-scene-drive-1440.avif 1440w",
-      "inputPath": "media/scenes/golden-gate/g5/golden-gate-scene-drive.png"
+      "srcsetWebp": "/media/scenes/golden-gate/g9-code5/golden-gate-scene-drive-320.webp 320w, /media/scenes/golden-gate/g9-code5/golden-gate-scene-drive-480.webp 480w, /media/scenes/golden-gate/g9-code5/golden-gate-scene-drive-672.webp 672w, /media/scenes/golden-gate/g9-code5/golden-gate-scene-drive-768.webp 768w, /media/scenes/golden-gate/g9-code5/golden-gate-scene-drive-1024.webp 1024w, /media/scenes/golden-gate/g9-code5/golden-gate-scene-drive-1440.webp 1440w",
+      "srcsetAvif": "/media/scenes/golden-gate/g9-code5/golden-gate-scene-drive-320.avif 320w, /media/scenes/golden-gate/g9-code5/golden-gate-scene-drive-480.avif 480w, /media/scenes/golden-gate/g9-code5/golden-gate-scene-drive-672.avif 672w, /media/scenes/golden-gate/g9-code5/golden-gate-scene-drive-768.avif 768w, /media/scenes/golden-gate/g9-code5/golden-gate-scene-drive-1024.avif 1024w, /media/scenes/golden-gate/g9-code5/golden-gate-scene-drive-1440.avif 1440w",
+      "inputPath": "media/scenes/golden-gate/g9-code5/golden-gate-scene-drive.png"
     },
     "capture": {
       "tool": "scripts/capture-scene-poster.mjs",
       "view": "drive",
-      "release": "g5",
+      "release": "g9-code5",
       "size": [
         1440,
         925
       ],
-      "browser": "Chrome/154.0.8037.58",
-      "source": "The staged scene frame page with its controls hidden; nothing composited or retouched.",
-      "runtimeSha256": "28aea5ca7efe35f4bdb6cdb19aefa080660cd55f302aadd3285862570d96ddc3",
-      "packJsonSha256": "45fd9e8ef1e7bdec173863ad520e42e8f996c943dfcf57c4842d432ea006335c",
-      "pngBytes": 740271,
-      "pngSha256": "871dc9f068e8509ee477c9873b62978b90e2960f3ae358ce01f7b6b2d41c095b"
+      "browser": "Chrome/150.0.7871.128",
+      "source": "The staged scene runtime, captured from its canvas with controls hidden in headed Chrome on NVIDIA WebGPU; nothing composited or retouched.",
+      "runtimeSha256": "1a01a81a912157936f05a2060f1df377c418607a83567753e4db2b0257bdb556",
+      "packJsonSha256": "748536356d9639c65c76bc18f1e865c3426f5ee49904239efcb9b9c24c8a1524",
+      "pngBytes": 728452,
+      "pngSha256": "487793596f730d5424c1b25016fbc27408d6d2ab707c57343acbbc6a52b1bc56",
+      "renderer": {
+        "backend": "webgpu",
+        "vendor": "nvidia",
+        "architecture": "turing"
+      }
     },
     "captures": {
       "day": {
         "poster": {
-          "src": "/media/scenes/golden-gate/g9/golden-gate-scene-day.webp",
+          "src": "/media/scenes/golden-gate/g9-code5/golden-gate-scene-day.webp",
           "width": 1440,
           "height": 925,
           "alt": "The Golden Gate Bridge scene from above the water by day: the full span between its two towers, with the headlands on either side.",
-          "srcsetWebp": "/media/scenes/golden-gate/g9/golden-gate-scene-day-320.webp 320w, /media/scenes/golden-gate/g9/golden-gate-scene-day-480.webp 480w, /media/scenes/golden-gate/g9/golden-gate-scene-day-672.webp 672w, /media/scenes/golden-gate/g9/golden-gate-scene-day-768.webp 768w, /media/scenes/golden-gate/g9/golden-gate-scene-day-1024.webp 1024w, /media/scenes/golden-gate/g9/golden-gate-scene-day-1440.webp 1440w",
-          "srcsetAvif": "/media/scenes/golden-gate/g9/golden-gate-scene-day-320.avif 320w, /media/scenes/golden-gate/g9/golden-gate-scene-day-480.avif 480w, /media/scenes/golden-gate/g9/golden-gate-scene-day-672.avif 672w, /media/scenes/golden-gate/g9/golden-gate-scene-day-768.avif 768w, /media/scenes/golden-gate/g9/golden-gate-scene-day-1024.avif 1024w, /media/scenes/golden-gate/g9/golden-gate-scene-day-1440.avif 1440w",
-          "inputPath": "media/scenes/golden-gate/g9/golden-gate-scene-day.png"
+          "srcsetWebp": "/media/scenes/golden-gate/g9-code5/golden-gate-scene-day-320.webp 320w, /media/scenes/golden-gate/g9-code5/golden-gate-scene-day-480.webp 480w, /media/scenes/golden-gate/g9-code5/golden-gate-scene-day-672.webp 672w, /media/scenes/golden-gate/g9-code5/golden-gate-scene-day-768.webp 768w, /media/scenes/golden-gate/g9-code5/golden-gate-scene-day-1024.webp 1024w, /media/scenes/golden-gate/g9-code5/golden-gate-scene-day-1440.webp 1440w",
+          "srcsetAvif": "/media/scenes/golden-gate/g9-code5/golden-gate-scene-day-320.avif 320w, /media/scenes/golden-gate/g9-code5/golden-gate-scene-day-480.avif 480w, /media/scenes/golden-gate/g9-code5/golden-gate-scene-day-672.avif 672w, /media/scenes/golden-gate/g9-code5/golden-gate-scene-day-768.avif 768w, /media/scenes/golden-gate/g9-code5/golden-gate-scene-day-1024.avif 1024w, /media/scenes/golden-gate/g9-code5/golden-gate-scene-day-1440.avif 1440w",
+          "inputPath": "media/scenes/golden-gate/g9-code5/golden-gate-scene-day.png"
         },
         "capture": {
           "tool": "scripts/capture-scene-poster.mjs",
           "view": "day",
-          "release": "g9",
+          "release": "g9-code5",
           "size": [
             1440,
             925
           ],
-          "browser": "Chrome/154.0.8037.58",
-          "source": "The staged scene runtime, captured from its canvas with controls hidden; nothing composited or retouched.",
-          "runtimeSha256": "203118926ca1e11c43542ce1605d06d19b9a984ebe1877251ae152c73bc634d6",
-          "packJsonSha256": "c2a1d83fce6caf07a7b3e87070ccb8a983dd68e0c7f98eee3f1ba5255ce059cb",
-          "pngBytes": 963303,
-          "pngSha256": "50a2ecf3bd0eec02231ce614c56128be3bdb61bba8cf6be46535b2742c56e945"
+          "browser": "Chrome/150.0.7871.128",
+          "source": "The staged scene runtime, captured from its canvas with controls hidden in headed Chrome on NVIDIA WebGPU; nothing composited or retouched.",
+          "runtimeSha256": "1a01a81a912157936f05a2060f1df377c418607a83567753e4db2b0257bdb556",
+          "packJsonSha256": "748536356d9639c65c76bc18f1e865c3426f5ee49904239efcb9b9c24c8a1524",
+          "pngBytes": 886155,
+          "pngSha256": "3b75ae261e59a034165ec705d20931484b03600d39fae51c42fc02db22ba42e5",
+          "renderer": {
+            "backend": "webgpu",
+            "vendor": "nvidia",
+            "architecture": "turing"
+          }
         }
       }
     }

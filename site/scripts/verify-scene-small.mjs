@@ -3,11 +3,14 @@ import { mkdir, writeFile } from 'node:fs/promises';
 import { resolve, join } from 'node:path';
 import puppeteer from 'puppeteer-core';
 import { chromeExecutable } from './build-site-media.mjs';
+import { sceneBrowserOptions } from '../../scenes/scripts/browser-options.mjs';
 const [base = 'http://127.0.0.1:4407', destination = '.cache/round-4/small-scenes'] = process.argv.slice(2);
 const out = resolve(destination); await mkdir(out, { recursive: true });
 const report = { runs: [], errors: [] };
+const launch = sceneBrowserOptions();
+report.browserLaunch = launch;
 for (const disabled of [false, true]) {
-  const browser = await puppeteer.launch({ executablePath: chromeExecutable(), headless: true, pipe: true, args: ['--no-sandbox', ...(disabled ? ['--disable-3d-apis', '--disable-gpu'] : [])] });
+  const browser = await puppeteer.launch({ executablePath: chromeExecutable(), headless: launch.headless, pipe: true, args: ['--no-sandbox', ...launch.args, ...(disabled ? ['--disable-3d-apis', '--disable-gpu'] : [])] });
   try {
     for (const scene of ['farm', 'golden-gate', 'foundry-floor']) {
       const page = await browser.newPage();

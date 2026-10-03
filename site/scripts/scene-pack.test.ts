@@ -3,7 +3,6 @@ import { existsSync } from 'node:fs';
 import { mkdir, mkdtemp, readFile, readdir, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
-import pkg from '../package.json';
 import scenePacks from '../src/data/scene-packs.json';
 import { farmScene, foundryFloorScene, goldenGateScene } from '../src/data/scenes';
 import { hashBytes } from './mirror-core.mjs';
@@ -284,7 +283,8 @@ describe('scene pack catalog record', () => {
     expect(record.base).toBe(`/scene-packs/farm/${record.release}/`);
     expect(record.source).toBe('.cache/site-inputs/farm/standalone');
     expect(record).toMatchObject({ sealedFiles: 34, sealedBytes: 7_133_727, packJsonSha256: '5d046aa2c04637436d7e3918db690f4f25f6684a58ae7a78d333dec9df428f48' });
-    expect(record.three).toBe(pkg.dependencies.three);
+    // The sealed asset pack keeps its original producer version when current runtime code advances.
+    expect(record.three).toBe('0.186.0');
     expect(record.totalFiles).toBe(record.sealedFiles + 3);
     expect(record.totalBytes).toBeGreaterThan(record.sealedBytes);
     for (const digest of [record.packJsonSha256, record.sha256sumsSha256, record.noticesSha256]) expect(digest).toMatch(/^[0-9a-f]{64}$/);
@@ -294,37 +294,37 @@ describe('scene pack catalog record', () => {
     expect(() => stagedPackDirectory({ base: '/../escape/' }, '/site')).toThrow('Unexpected');
   });
 
-  test('the Golden Gate record is the g9 local review with the final six vehicles, inside its ceiling', () => {
+  test('the Golden Gate code5 delivery retains the g9 asset payload inside its runtime ceiling', () => {
     const record = scenePacks['golden-gate'];
-    expect(record.release).toBe('g9');
-    expect(record.base).toBe('/scene-packs/golden-gate/g9/');
-    // Preserved g9 carries the new six-vehicle delivery with the qualified water opening and controls.
-    expect(record).toMatchObject({ sealedFiles: 103, sealedBytes: 12_186_327, packJsonSha256: 'c2a1d83fce6caf07a7b3e87070ccb8a983dd68e0c7f98eee3f1ba5255ce059cb', sha256sumsSha256: '75ce79fc746eafd27d7b597396489294a821fef5d88a05981b6bb9572159a58a' });
+    expect(record.release).toBe('g9-code5');
+    expect(record.base).toBe('/scene-packs/golden-gate/g9-code5/');
+    // Only the delivery release changes the asset manifest; every sealed g9 payload digest remains.
+    expect(record).toMatchObject({ sealedFiles: 103, sealedBytes: 12_186_327, packJsonSha256: '748536356d9639c65c76bc18f1e865c3426f5ee49904239efcb9b9c24c8a1524', sha256sumsSha256: '75ce79fc746eafd27d7b597396489294a821fef5d88a05981b6bb9572159a58a' });
     expect(record.source).toBe('.cache/site-inputs/golden-gate/standalone');
-    expect(record.three).toBe(pkg.dependencies.three);
+    expect(record.three).toBe('0.186.0');
     expect(record.totalFiles).toBe(record.sealedFiles + 3);
     for (const digest of [record.packJsonSha256, record.sha256sumsSha256, record.noticesSha256, record.runtime.sha256, record.runtime.modulesSha256]) expect(digest).toMatch(/^[0-9a-f]{64}$/);
-    expect(record.runtime).toMatchObject({ kind: 'frame', file: 'index-BDTQ3svb.js', bytes: 1_724_619, gzipBytes: 518_716 });
+    expect(record.runtime).toMatchObject({ kind: 'frame', file: 'index-DhpWxFro.js', bytes: 1_708_928, gzipBytes: 512_680 });
     expect(checkCeiling('golden-gate', record.runtime).within).toBe(true);
     expect(record.runtime.bytes).toBeLessThanOrEqual(CEILINGS['golden-gate'].bytes);
     expect(goldenGateScene.assetBase).toBe(record.base);
-    expect(stagedPackDirectory(record, '/site')).toBe(resolve('/site', 'public', 'scene-packs', 'golden-gate', 'g9'));
+    expect(stagedPackDirectory(record, '/site')).toBe(resolve('/site', 'public', 'scene-packs', 'golden-gate', 'g9-code5'));
   });
 
-  test('the Foundry Floor record is ff3-review2 with a verified initial closure inside its ceiling', () => {
+  test('the Foundry Floor code5 delivery retains the review2 payload with a verified initial closure inside its ceiling', () => {
     const record = scenePacks['foundry-floor'];
-    expect(record.release).toBe('ff3-review2');
-    expect(record.base).toBe('/scene-packs/foundry-floor/ff3-review2/');
+    expect(record.release).toBe('ff3-review2-code5');
+    expect(record.base).toBe('/scene-packs/foundry-floor/ff3-review2-code5/');
     expect(record.source).toBe('.cache/site-inputs/foundry-floor/standalone');
-    expect(record.three).toBe(pkg.dependencies.three);
+    expect(record.three).toBe('0.186.0');
     expect(record.totalFiles).toBe(record.sealedFiles + 3);
     // Final frozen FF3 intake verifies 85 sealed files and every initial/deferred chunk.
-    expect(record).toMatchObject({ sealedFiles: 85, sealedBytes: 11_519_818, packJsonSha256: '6ce49d05791bf42d21f3628237a5cf005ce9f2fa15938f0c321430d781c2c5d4' });
+    expect(record).toMatchObject({ sealedFiles: 85, sealedBytes: 11_519_818, packJsonSha256: '822be1171621273dfdf857fe6ca320ed41d16e03c49fc49860c13e7092be4836' });
     for (const digest of [record.packJsonSha256, record.sha256sumsSha256, record.noticesSha256, record.runtime.sha256, record.runtime.modulesSha256]) expect(digest).toMatch(/^[0-9a-f]{64}$/);
-    expect(record.runtime).toMatchObject({ kind: 'frame', file: 'index-Y86dU6mu.js', bytes: 1_705_082, gzipBytes: 517_258, initialLoad: { bytes: 1_527_808, gzipBytes: 446_414 } });
+    expect(record.runtime).toMatchObject({ kind: 'frame', file: 'index-BpDIz-38.js', bytes: 1_710_132, gzipBytes: 519_928, initialLoad: { bytes: 1_532_295, gzipBytes: 448_748 } });
     expect(checkCeiling('foundry-floor', record.runtime).within).toBe(true);
     expect(foundryFloorScene.assetBase).toBe(record.base);
-    expect(stagedPackDirectory(record, '/site')).toBe(resolve('/site', 'public', 'scene-packs', 'foundry-floor', 'ff3-review2'));
+    expect(stagedPackDirectory(record, '/site')).toBe(resolve('/site', 'public', 'scene-packs', 'foundry-floor', 'ff3-review2-code5'));
   });
 
   test.each(['farm', 'golden-gate', 'foundry-floor'])('the %s scene page stays out of search results whatever its availability says', async (id) => {

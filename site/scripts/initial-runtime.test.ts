@@ -25,6 +25,18 @@ test('the registered-floor review release keeps the same verified initial closur
  await expect(measureInitialLoad({receipt:next,chunks,code,packRelease:'ff3'})).rejects.toThrow(/release/);
  await expect(measureInitialLoad({receipt:{...next,release:'ff3-unreviewed'},chunks,code,packRelease:'ff3-unreviewed'})).rejects.toThrow(/receipt/);
 });
+test.each(['ff3-review2-code1','ff3-review2-code2','ff3-review2-code3','ff3-review2-code4','ff3-review2-code5'])('the explicit %s delivery label retains pack equality, hashes and initial closure checks', async release=>{
+ const next={...receipt(),release};
+ const result=await measureInitialLoad({receipt:next,chunks,code,packRelease:next.release});
+ expect(result.files).toEqual(['camera-part.js','exterior-part.js','index-root.js']);
+ expect(result.bytes).toBe(next.initialCode.bytes);
+ await expect(measureInitialLoad({receipt:next,chunks,code,packRelease:'ff3-review2'})).rejects.toThrow(/release/);
+ await expect(measureInitialLoad({receipt:{...next,release:'ff3-review2-code6'},chunks,code,packRelease:'ff3-review2-code6'})).rejects.toThrow(/receipt/);
+ const forged=structuredClone(next);forged.chunks[0]!.sha256='0'.repeat(64);
+ await expect(measureInitialLoad({receipt:forged,chunks,code,packRelease:next.release})).rejects.toThrow(/pin/);
+ const omitted={...next,initialChunks:next.initialChunks.filter(name=>!name.includes('camera'))};
+ await expect(measureInitialLoad({receipt:omitted,chunks,code,packRelease:next.release})).rejects.toThrow(/closure/);
+});
 test('missing chunks, forged hashes, omitted static dependencies and non-dynamic interiors fail closed',async()=>{
  const missing=receipt();missing.chunks.pop();await expect(measureInitialLoad({receipt:missing,chunks,code})).rejects.toThrow(/chunk inventory/);
  const hash=receipt();hash.chunks[0]!.sha256='0'.repeat(64);await expect(measureInitialLoad({receipt:hash,chunks,code})).rejects.toThrow(/pin/);

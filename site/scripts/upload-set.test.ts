@@ -16,6 +16,14 @@ const upload = {
   base,
   files: [{ path: 'packs/farm/r1/models/a.glb', url: `${base}packs/farm/r1/models/a.glb`, bytes: 40, sha256: sha('d'), archive: 'packs/farm/r1/farm.zip', member: 'models/a.glb' }],
 };
+const sceneInputs = {
+  base,
+  files: [
+    { path: 'scene-inputs/release1/farm.zip', bytes: 60, sha256: sha('e') },
+    { path: 'scene-inputs/release2/golden-gate.zip', bytes: 70, sha256: sha('f') },
+    { path: 'scene-inputs/release2/foundry-floor.zip', bytes: 80, sha256: sha('a') },
+  ],
+};
 
 describe('the R2 upload set', () => {
   test('counts the pinned mirror files and the extracted GLBs, by group', () => {
@@ -29,6 +37,46 @@ describe('the R2 upload set', () => {
       { group: 'media/farm', files: 2, bytes: 50 },
       { group: 'packs/farm', files: 1, bytes: 100 },
     ]);
+  });
+
+  test('includes all three scene archives in the required upload totals and groups', () => {
+    const summary = summarizeUploadSet(mirror, upload, sceneInputs);
+    expect(summary.problems).toEqual([]);
+    expect(summary.sceneInputFiles).toBe(3);
+    expect(summary.total).toEqual({ files: 7, bytes: 400 });
+    expect(summary.groups.slice(-2)).toEqual([
+      { group: 'scene-inputs/release1', files: 1, bytes: 60 },
+      { group: 'scene-inputs/release2', files: 2, bytes: 150 },
+    ]);
+  });
+
+  test('validates scene pins and reports duplicate paths across or within manifests', () => {
+    const result = summarizeUploadSet(mirror, upload, { base, files: [
+      { ...sceneInputs.files[0], bytes: -1, sha256: 'invalid', url: 'https://elsewhere.test/farm.zip' },
+      sceneInputs.files[0],
+      mirror.files[0],
+      upload.files[0],
+      { path: '../outside', bytes: 1, sha256: sha('a') },
+    ] });
+    const text = result.problems.join('\n');
+    expect(text).toContain('scene-inputs/release1/farm.zip: bytes is not a whole number');
+    expect(text).toContain('scene-inputs/release1/farm.zip: sha256 is not 64 hex characters');
+    expect(text).toContain(`scene-inputs/release1/farm.zip: url is not ${base}scene-inputs/release1/farm.zip`);
+    expect(text).toContain('listed in scene-inputs and scene-inputs');
+    expect(text).toContain('listed in mirror-manifest and scene-inputs');
+    expect(text).toContain('listed in upload-manifest and scene-inputs');
+    expect(text).toContain('scene-inputs: a record has no usable path');
+  });
+
+  test('requires valid matching upload bases and keeps extracted archive provenance in the mirror manifest', () => {
+    for (const invalid of ['', 'relative/', 'file:///tmp/', 'https://assets.example.test', 'https://name:password@assets.example.test/', 'https://assets.example.test/?query']) {
+      const result = summarizeUploadSet(mirror, upload, { ...sceneInputs, base: invalid });
+      expect(result.problems.join('\n')).toContain('scene-inputs: base must be an absolute HTTP(S) URL ending in /');
+    }
+    expect(summarizeUploadSet(mirror, upload, { ...sceneInputs, base: 'https://other.example.test/' }).problems)
+      .toContain('scene-inputs: base does not match mirror-manifest base');
+    const unpinned = summarizeUploadSet(mirror, { ...upload, files: [{ ...upload.files[0], archive: sceneInputs.files[0]!.path }] }, sceneInputs);
+    expect(unpinned.problems.join('\n')).toContain('its archive scene-inputs/release1/farm.zip is not a pinned mirror file');
   });
 
   test('reports a bad hash, a bad size, a duplicated path, a foreign url and an archive that is not pinned', () => {
@@ -51,9 +99,12 @@ describe('the R2 upload set', () => {
 
   test('the checked-in manifests are consistent: valid records, no duplicate path, every extracted file inside a pinned archive', () => {
     const read = (name: string) => JSON.parse(readFileSync(new URL(`../src/data/${name}`, import.meta.url), 'utf8'));
-    const summary = summarizeUploadSet(read('mirror-manifest.json'), read('upload-manifest.json'));
+    const inputs = read('scene-inputs.json');
+    const summary = summarizeUploadSet(read('mirror-manifest.json'), read('upload-manifest.json'), inputs);
     expect(summary.problems).toEqual([]);
     expect(summary.mirrorFiles).toBeGreaterThan(0);
     expect(summary.extractedFiles).toBeGreaterThan(0);
+    expect(summary.sceneInputFiles).toBe(inputs.files.length);
+    expect(summary.total.files).toBe(summary.mirrorFiles + summary.extractedFiles + summary.sceneInputFiles);
   });
 });

@@ -5,7 +5,8 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 /**
  * The files that have to be on the asset host before KILN_SITE_PACKS can be 1: every pinned file in
  * `src/data/mirror-manifest.json` plus the exact GLBs extracted from the sealed Farm archive in
- * `src/data/upload-manifest.json`. Nothing here uploads anything; this reads the two checked-in manifests and
+ * `src/data/upload-manifest.json`, and the pinned runtime archives in `src/data/scene-inputs.json`.
+ * Nothing here uploads anything; this reads the three checked-in manifests and
  * prints what the owner would upload and what to check afterwards, so the list is never a number remembered from an
  * earlier report.
  *
@@ -15,13 +16,22 @@ const SITE = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const SHA256 = /^[0-9a-f]{64}$/;
 
 const groupOf = (path) => path.split('/').slice(0, 2).join('/');
+const validBase = (value) => {
+  if (typeof value !== 'string' || !value.endsWith('/')) return false;
+  try {
+    const url = new URL(value);
+    return ['http:', 'https:'].includes(url.protocol) && !url.username && !url.password && !url.search && !url.hash;
+  } catch { return false; }
+};
 
-export function summarizeUploadSet(mirror, upload) {
+export function summarizeUploadSet(mirror, upload, sceneInputs = { base: mirror.base, files: [] }) {
   const problems = [];
   const groups = new Map();
   const seen = new Map();
   const mirrorPaths = new Set((mirror.files ?? []).map((record) => record.path));
   const count = (source, records, base) => {
+    if (!validBase(base)) problems.push(`${source}: base must be an absolute HTTP(S) URL ending in /`);
+    else if (base !== mirror.base) problems.push(`${source}: base does not match mirror-manifest base`);
     for (const record of records ?? []) {
       if (typeof record?.path !== 'string' || !record.path || record.path.startsWith('/') || record.path.includes('..')) {
         problems.push(`${source}: a record has no usable path (${JSON.stringify(record)?.slice(0, 80)})`);
@@ -41,6 +51,7 @@ export function summarizeUploadSet(mirror, upload) {
   };
   count('mirror-manifest', mirror.files, mirror.base);
   count('upload-manifest', upload.files, upload.base);
+  count('scene-inputs', sceneInputs.files, sceneInputs.base);
   // An extracted GLB is a member of an archive that is itself in the mirror; one that names another archive would be unverifiable.
   for (const record of upload.files ?? []) {
     if (!mirrorPaths.has(record.archive)) problems.push(`${record.path}: its archive ${record.archive} is not a pinned mirror file`);
@@ -50,13 +61,13 @@ export function summarizeUploadSet(mirror, upload) {
     total.files += entry.files;
     total.bytes += entry.bytes;
   }
-  return { mirrorFiles: mirror.files?.length ?? 0, extractedFiles: upload.files?.length ?? 0, groups: [...groups].sort(([a], [b]) => a.localeCompare(b)).map(([group, entry]) => ({ group, ...entry })), total, problems };
+  return { mirrorFiles: mirror.files?.length ?? 0, extractedFiles: upload.files?.length ?? 0, sceneInputFiles: sceneInputs.files?.length ?? 0, groups: [...groups].sort(([a], [b]) => a.localeCompare(b)).map(([group, entry]) => ({ group, ...entry })), total, problems };
 }
 
 async function main() {
   const readJson = async (name) => JSON.parse(await readFile(join(SITE, 'src/data', name), 'utf8'));
-  const summary = summarizeUploadSet(await readJson('mirror-manifest.json'), await readJson('upload-manifest.json'));
-  console.log(`Upload set: ${summary.mirrorFiles} pinned mirror files and ${summary.extractedFiles} extracted Farm GLBs; ${summary.total.files} files, ${summary.total.bytes.toLocaleString('en-US')} bytes. Nothing is uploaded by this script.`);
+  const summary = summarizeUploadSet(await readJson('mirror-manifest.json'), await readJson('upload-manifest.json'), await readJson('scene-inputs.json'));
+  console.log(`Upload set: ${summary.mirrorFiles} pinned mirror files, ${summary.extractedFiles} extracted Farm GLBs and ${summary.sceneInputFiles} scene input archives; ${summary.total.files} files, ${summary.total.bytes.toLocaleString('en-US')} bytes. Nothing is uploaded by this script.`);
   for (const { group, files, bytes } of summary.groups) console.log(`  ${group.padEnd(40)} ${String(files).padStart(4)} files ${String(bytes).padStart(13)} bytes`);
   console.log(`Problems: ${summary.problems.length}`);
   for (const problem of summary.problems) console.log(`  ${problem}`);

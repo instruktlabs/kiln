@@ -2290,6 +2290,16 @@
       "path": "media/scenes/golden-gate/g9/golden-gate-scene-day.png",
       "bytes": 963303,
       "sha256": "50a2ecf3bd0eec02231ce614c56128be3bdb61bba8cf6be46535b2742c56e945"
+    },
+    {
+      "path": "media/scenes/golden-gate/g9-code5/golden-gate-scene-day.png",
+      "bytes": 886155,
+      "sha256": "3b75ae261e59a034165ec705d20931484b03600d39fae51c42fc02db22ba42e5"
+    },
+    {
+      "path": "media/scenes/golden-gate/g9-code5/golden-gate-scene-drive.png",
+      "bytes": 728452,
+      "sha256": "487793596f730d5424c1b25016fbc27408d6d2ab707c57343acbbc6a52b1bc56"
     }
   ]
 }

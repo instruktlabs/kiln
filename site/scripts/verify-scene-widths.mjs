@@ -1,8 +1,10 @@
+import { sceneBrowserOptions } from '../../scenes/scripts/browser-options.mjs';
 import assert from 'node:assert/strict';
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import puppeteer from 'puppeteer-core';
 import { chromeExecutable } from './build-site-media.mjs';
+import { observeSceneLayoutShifts, sceneHasRoom } from './scene-viewport.mjs';
 
 /**
  * The scene pages at 390, 768, 1280 and 1440 px, in each state a visitor can be in:
@@ -12,7 +14,8 @@ import { chromeExecutable } from './build-site-media.mjs';
  * - layout shift: what the page moves by while it loads (Explore is revealed by the shell's script), under 0.01.
  * - loaded: the poster, the state copy and the Explore control. No horizontal scroll, the poster inside the window, Explore
  *   shown, at least 44 px each way, inside the window, the element that answers a tap at its centre, reachable by keyboard.
- * - no JavaScript: the poster, the copy and the noscript notice are readable and nothing scrolls sideways.
+ * - no JavaScript: the poster, the copy and the noscript notice are readable and nothing scrolls sideways. The hidden
+ *   Explore control retains its button box so revealing it cannot add a row after hydration.
  * - error: Explore pressed with the scene's runtime failing; the failure copy is readable in place and Explore is back.
  * - unavailable: a build with no runtime for the scene (the shell's `data-kind` is "none", which is what such a build emits, set
  *   before Explore so the component's own code shows its own copy); the fallback the overlay shows is readable and its link reachable.
@@ -56,7 +59,7 @@ const measure = () => {
     documentScrollWidth: document.documentElement.scrollWidth,
     shellClipped: shell.scrollWidth > shell.clientWidth + 1,
     poster: poster && { ...box(poster), loaded: poster.complete && poster.naturalWidth > 0 },
-    explore: explore && { ...box(explore), shown: !explore.hidden && explore.checkVisibility() },
+    explore: explore && { ...box(explore), hidden: explore.hidden, visibility: getComputedStyle(explore).visibility, shown: !explore.hidden && explore.checkVisibility() },
     introCopy: [...shell.querySelectorAll('[data-intro] p')].filter((element) => element.checkVisibility()).map(text),
     status: (() => { const element = shell.querySelector('[data-status]'); return element && !element.classList.contains('sr-only') && element.textContent.trim() ? text(element) : null; })(),
     noscript: (() => { const element = shell.querySelector('noscript p'); return element ? text(element) : null; })(),
@@ -131,7 +134,7 @@ const measureNote = () => {
 };
 
 const results = { browser: '', scenes: [], errors: [], failures: [] };
-const browser = await puppeteer.launch({ executablePath: chromeExecutable(), headless: true, pipe: true, args: ['--no-sandbox'] });
+const browser = await puppeteer.launch({ executablePath: chromeExecutable(), headless: sceneBrowserOptions().headless, pipe: true, args: ['--no-sandbox', ...sceneBrowserOptions().args] });
 results.browser = await browser.version();
 const lines = [];
 try {
@@ -192,18 +195,14 @@ try {
       for (const width of widths) {
         const shifted = await browser.newPage();
         try {
-          await shifted.evaluateOnNewDocument(() => {
-            window.__shifts = [];
-            new PerformanceObserver((list) => {
-              for (const entry of list.getEntries()) window.__shifts.push({ value: entry.value, hadRecentInput: entry.hadRecentInput });
-            }).observe({ type: 'layout-shift', buffered: true });
-          });
+          await shifted.evaluateOnNewDocument(observeSceneLayoutShifts);
           await shifted.setViewport({ width, height: 900, deviceScaleFactor: 1 });
           await shifted.goto(url, { waitUntil: 'networkidle0' });
           await shifted.evaluate(async () => { await document.fonts.ready; });
           await new Promise((resolve) => setTimeout(resolve, 800));
-          const total = await shifted.evaluate(() => window.__shifts.filter((entry) => !entry.hadRecentInput).reduce((sum, entry) => sum + entry.value, 0));
-          step(item, width, { [`layout shift under ${MAX_SHIFT}`]: total < MAX_SHIFT }, { total, summary: total.toFixed(4) });
+          const shifts = await shifted.evaluate(() => window.__shifts);
+          const total = shifts.filter((entry) => !entry.hadRecentInput).reduce((sum, entry) => sum + entry.value, 0);
+          step(item, width, { [`layout shift under ${MAX_SHIFT}`]: total < MAX_SHIFT }, { total, shifts, summary: total.toFixed(4) });
         } finally { await shifted.close(); }
       }
     }
@@ -252,6 +251,7 @@ try {
         'no horizontal scroll': shown.documentScrollWidth <= shown.innerWidth && !shown.shellClipped,
         'poster inside the window and loaded': !shown.poster || (insideWindow(shown.poster, width) && shown.poster.loaded),
         'Explore stays out of sight': !shown.explore?.shown,
+        [`hidden Explore reserves at least ${MIN_TARGET_PX} px each way`]: shown.explore?.hidden && shown.explore.width >= MIN_TARGET_PX && shown.explore.height >= MIN_TARGET_PX,
         'copy readable': readable(shown.introCopy, width),
         'noscript notice readable': Boolean(shown.noscript) && shown.noscript.visible && shown.noscript.fontSize >= MIN_TEXT_PX && !shown.noscript.clipped && insideWindow(shown.noscript, width),
       }, { measured: shown, summary: `notice "${shown.noscript?.text}"` });
@@ -343,14 +343,16 @@ try {
         const controls = await live.evaluate(() => {
           const rectOf = (selector) => { const element = document.querySelector(selector); if (!element || element.hidden || !element.checkVisibility()) return null; const rect = element.getBoundingClientRect(); return { left: rect.left, right: rect.right, top: rect.top, bottom: rect.bottom, width: rect.width, height: rect.height }; };
           const overlay = document.querySelector('scene-shell [data-active]');
-          return { scrollWidth: overlay.scrollWidth, clientWidth: overlay.clientWidth, exit: rectOf('scene-shell [data-exit]'), fullscreen: rectOf('scene-shell [data-fullscreen]'), mount: rectOf('scene-shell [data-mount]'), innerHeight };
+          return { scrollWidth: overlay.scrollWidth, clientWidth: overlay.clientWidth, viewportWidth: innerWidth, documentClientWidth: document.documentElement.clientWidth,
+            overlay: rectOf('scene-shell [data-active]'), overlayClientWidth: overlay.clientWidth,
+            exit: rectOf('scene-shell [data-exit]'), fullscreen: rectOf('scene-shell [data-fullscreen]'), mount: rectOf('scene-shell [data-mount]'), innerHeight };
         });
         await live.screenshot({ path: join(shots, `open-${width}.png`) });
         step(opened, width, {
           'no horizontal scroll in the overlay': controls.scrollWidth <= controls.clientWidth,
           'Exit inside the window and large enough': Boolean(controls.exit) && insideWindow(controls.exit, width) && controls.exit.height >= MIN_TARGET_PX && controls.exit.top >= 0,
           'Fullscreen, when offered, inside the window': !controls.fullscreen || insideWindow(controls.fullscreen, width),
-          'the scene has room': Boolean(controls.mount) && controls.mount.width >= width - 1 && controls.mount.height >= 200,
+          'the scene has room': sceneHasRoom(controls),
         }, { measured: controls, summary: `Exit ${Math.round(controls.exit?.width ?? 0)}x${Math.round(controls.exit?.height ?? 0)}, scene ${Math.round(controls.mount?.width ?? 0)}x${Math.round(controls.mount?.height ?? 0)}` });
       }
       await live.click('scene-shell [data-exit]');

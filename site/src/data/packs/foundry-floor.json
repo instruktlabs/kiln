@@ -7,11 +7,11 @@
   "assetCount": 62,
   "placedInScene": 62,
   "acceptance": {
-    "statement": "This 62-model pack combines the staged interior and campus deliveries. Its source pins, licence identities and downloaded bytes have been checked together. Those checks do not establish the owner’s visual or simulation acceptance; the pack stays in production until that review.",
+    "statement": "This 62-model pack combines the staged interior and campus deliveries. Its source pins, licence identities and downloaded bytes have been checked together. Those checks do not establish the owner\u2019s visual or simulation acceptance; the pack stays in production until that review.",
     "source": "Sealed pack.json source pins and credits, data/assets.json, data/campus-assets.json when present, and the licence text"
   },
   "license": "CC0-1.0",
-  "licenseScope": "CC0-1.0 covers authored asset content only, to the extent of the owner’s rights. Kiln and any software that opens these files retain their own licenses.",
+  "licenseScope": "CC0-1.0 covers authored asset content only, to the extent of the owner\u2019s rights. Kiln and any software that opens these files retain their own licenses.",
   "licenceNote": "The licence text comes from the sealed Foundry Floor scene pack. It names every model, its saved revision, author attribution and the SHA-256 of its GLB, and is published here unchanged.",
   "licence": {
     "path": "packs/foundry-floor/ff3-review2/licenses/ASSET-LICENSE.txt",
@@ -22,9 +22,9 @@
     "models": 62
   },
   "scenePack": {
-    "release": "ff3-review2",
-    "base": "/scene-packs/foundry-floor/ff3-review2/",
-    "packJsonSha256": "6ce49d05791bf42d21f3628237a5cf005ce9f2fa15938f0c321430d781c2c5d4",
+    "release": "ff3-review2-code5",
+    "base": "/scene-packs/foundry-floor/ff3-review2-code5/",
+    "packJsonSha256": "822be1171621273dfdf857fe6ca320ed41d16e03c49fc49860c13e7092be4836",
     "sha256sumsSha256": "21ec914770e35ced418015e1e9965488d96cb8e457bbc1602273cc3936712e7c",
     "assetMapSha256": "e898b0f3b78cbc49cf828433ea0203273e3844ec761bde451a22f3b7ec4352d3"
   },
@@ -32,7 +32,7 @@
     "frame": "Metres. Interior assets use +X forward, +Y up and +Z right. Campus assets retain the coordinate frames of their source models.",
     "lod": "43 models declare optional MSFT_lod tiers. A loader that ignores this extension draws the default detailed form; an LOD-aware application can select the separate lower tiers.",
     "hidden": "Two models carry parts the scene hides when it loads them: the FOUP (waferStack) and the level section module (raisedFloor, ffuPlenum, cutFaceCaps_raisedFloor, cutFaceCaps_ffuWhite, cutFaceCaps_ffuHousing). They are part of the file, and a plain viewer draws them.",
-    "materials": "No model uses a texture; colours are material factors. The pack’s accent colours are invented for readability and are not any maker’s livery.",
+    "materials": "No model uses a texture; colours are material factors. The pack\u2019s accent colours are invented for readability and are not any maker\u2019s livery.",
     "clips": "Animation clips carry no loop flags; the scene decides what loops.",
     "source": "Interior conventions come from data/assets.json; every figure on this page was read from its sealed GLB. Campus assets retain their source conventions."
   },
@@ -82,7 +82,7 @@
       "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2/foundry-floor-ff3-review2-models.zip",
       "contents": [
         "The 62 model GLBs",
-        "The pack’s licence text, naming every model, its revision and its SHA-256",
+        "The pack\u2019s licence text, naming every model, its revision and its SHA-256",
         "Sealed asset metadata and replacement lineage where supplied",
         "A delivery.json inventory with member hashes"
       ],
@@ -105,9 +105,9 @@
       "description": "The FOUP model from the Foundry Floor pack, seen from the front right.",
       "revisionId": "r_f639b02180994fdd978a427bffb4de15",
       "reviewStatus": "review-candidate",
-      "author": "Codex · model and harness version not recorded",
+      "author": "Codex \u00b7 model and harness version not recorded",
       "attribution": {
-        "author": "Codex · model and harness version not recorded",
+        "author": "Codex \u00b7 model and harness version not recorded",
         "asset": "foup",
         "requestedEffort": null,
         "confirmedEffort": null
@@ -191,9 +191,9 @@
       "description": "The OHT vehicle model from the Foundry Floor pack, seen from the front right.",
       "revisionId": "r_a4fd2dfb3a3f4276b28464458cb0fbb9",
       "reviewStatus": "review-candidate",
-      "author": "Codex · model and harness version not recorded",
+      "author": "Codex \u00b7 model and harness version not recorded",
       "attribution": {
-        "author": "Codex · model and harness version not recorded",
+        "author": "Codex \u00b7 model and harness version not recorded",
         "asset": "oht-vehicle",
         "requestedEffort": null,
         "confirmedEffort": null
@@ -277,9 +277,9 @@
       "description": "The load port model from the Foundry Floor pack, seen from the front right.",
       "revisionId": "r_b45a5f436cd14d7294bc6866dcebb5f7",
       "reviewStatus": "review-candidate",
-      "author": "Codex · model and harness version not recorded",
+      "author": "Codex \u00b7 model and harness version not recorded",
       "attribution": {
-        "author": "Codex · model and harness version not recorded",
+        "author": "Codex \u00b7 model and harness version not recorded",
         "asset": "load-port",
         "requestedEffort": null,
         "confirmedEffort": null
@@ -363,9 +363,9 @@
       "description": "The stocker model from the Foundry Floor pack, seen from the front right.",
       "revisionId": "r_2719dba3ca554c159e41daa769233182",
       "reviewStatus": "review-candidate",
-      "author": "Codex · model and harness version not recorded",
+      "author": "Codex \u00b7 model and harness version not recorded",
       "attribution": {
-        "author": "Codex · model and harness version not recorded",
+        "author": "Codex \u00b7 model and harness version not recorded",
         "asset": "stocker",
         "requestedEffort": null,
         "confirmedEffort": null
@@ -446,9 +446,9 @@
       "description": "The signal tower model from the Foundry Floor pack, seen from the front right.",
       "revisionId": "r_0af702f0a7364dffbac3255c04a909ff",
       "reviewStatus": "accepted",
-      "author": "Claude Sonnet 5.5 · claude 2.1.280",
+      "author": "Claude Sonnet 5.5 \u00b7 claude 2.1.280",
       "attribution": {
-        "author": "Claude Sonnet 5.5 · claude 2.1.280",
+        "author": "Claude Sonnet 5.5 \u00b7 claude 2.1.280",
         "asset": "signal-tower",
         "requestedEffort": "max",
         "confirmedEffort": null
@@ -522,9 +522,9 @@
       "description": "The under-track storage model from the Foundry Floor pack, seen from the front right.",
       "revisionId": "r_093ce3746e9c449585f6543f9db94f87",
       "reviewStatus": "review-candidate",
-      "author": "Codex · model and harness version not recorded",
+      "author": "Codex \u00b7 model and harness version not recorded",
       "attribution": {
-        "author": "Codex · model and harness version not recorded",
+        "author": "Codex \u00b7 model and harness version not recorded",
         "asset": "under-track-storage",
         "requestedEffort": null,
         "confirmedEffort": null
@@ -603,9 +603,9 @@
       "description": "The OHT rail, straight model from the Foundry Floor pack, seen from the front right.",
       "revisionId": "r_ed0c4b464c3f44419b6efed936349a64",
       "reviewStatus": "review-candidate",
-      "author": "Codex · model and harness version not recorded",
+      "author": "Codex \u00b7 model and harness version not recorded",
       "attribution": {
-        "author": "Codex · model and harness version not recorded",
+        "author": "Codex \u00b7 model and harness version not recorded",
         "asset": "oht-rail-straight",
         "requestedEffort": null,
         "confirmedEffort": null
@@ -684,9 +684,9 @@
       "description": "The OHT rail, curve model from the Foundry Floor pack, seen from the front right.",
       "revisionId": "r_a2af1537d2cc4396a4d94bce0c19598c",
       "reviewStatus": "review-candidate",
-      "author": "Codex · model and harness version not recorded",
+      "author": "Codex \u00b7 model and harness version not recorded",
       "attribution": {
-        "author": "Codex · model and harness version not recorded",
+        "author": "Codex \u00b7 model and harness version not recorded",
         "asset": "oht-rail-curve",
         "requestedEffort": null,
         "confirmedEffort": null
@@ -765,9 +765,9 @@
       "description": "The OHT rail, switch model from the Foundry Floor pack, seen from the front right.",
       "revisionId": "r_b7fcebf6547545eab077be69796ec893",
       "reviewStatus": "review-candidate",
-      "author": "Codex · model and harness version not recorded",
+      "author": "Codex \u00b7 model and harness version not recorded",
       "attribution": {
-        "author": "Codex · model and harness version not recorded",
+        "author": "Codex \u00b7 model and harness version not recorded",
         "asset": "oht-rail-switch",
         "requestedEffort": null,
         "confirmedEffort": null
@@ -848,9 +848,9 @@
       "description": "The raised-floor module model from the Foundry Floor pack, seen from the front right.",
       "revisionId": "r_f0104891f44a4c99a52739033e900757",
       "reviewStatus": "review-candidate",
-      "author": "Codex · model and harness version not recorded",
+      "author": "Codex \u00b7 model and harness version not recorded",
       "attribution": {
-        "author": "Codex · model and harness version not recorded",
+        "author": "Codex \u00b7 model and harness version not recorded",
         "asset": "raised-floor-module",
         "requestedEffort": null,
         "confirmedEffort": null
@@ -929,9 +929,9 @@
       "description": "The FFU ceiling module model from the Foundry Floor pack, seen from the front right.",
       "revisionId": "r_6d370c36023f401ea7ee526631bcf4df",
       "reviewStatus": "review-candidate",
-      "author": "Codex · model and harness version not recorded",
+      "author": "Codex \u00b7 model and harness version not recorded",
       "attribution": {
-        "author": "Codex · model and harness version not recorded",
+        "author": "Codex \u00b7 model and harness version not recorded",
         "asset": "ffu-ceiling-module",
         "requestedEffort": null,
         "confirmedEffort": null
@@ -1010,9 +1010,9 @@
       "description": "The cleanroom wall kit model from the Foundry Floor pack, seen from the front right.",
       "revisionId": "r_4e0249fdfb804779a0adb8c6cae9d2dd",
       "reviewStatus": "accepted",
-      "author": "Claude Sonnet 5.5 · claude 2.1.280",
+      "author": "Claude Sonnet 5.5 \u00b7 claude 2.1.280",
       "attribution": {
-        "author": "Claude Sonnet 5.5 · claude 2.1.280",
+        "author": "Claude Sonnet 5.5 \u00b7 claude 2.1.280",
         "asset": "cleanroom-wall-kit",
         "requestedEffort": "max",
         "confirmedEffort": null
@@ -1089,9 +1089,9 @@
       "description": "The etch cluster tool model from the Foundry Floor pack, seen from the front right.",
       "revisionId": "r_6456090ae2cb42f09b3ff18670f55c3e",
       "reviewStatus": "review-candidate",
-      "author": "Codex · model and harness version not recorded",
+      "author": "Codex \u00b7 model and harness version not recorded",
       "attribution": {
-        "author": "Codex · model and harness version not recorded",
+        "author": "Codex \u00b7 model and harness version not recorded",
         "asset": "etch-cluster-tool",
         "requestedEffort": null,
         "confirmedEffort": null
@@ -1174,9 +1174,9 @@
       "description": "The CVD/ALD cluster tool model from the Foundry Floor pack, seen from the front right.",
       "revisionId": "r_5555be8ebedc496ba137ba5d47132e1b",
       "reviewStatus": "review-candidate",
-      "author": "Codex · model and harness version not recorded",
+      "author": "Codex \u00b7 model and harness version not recorded",
       "attribution": {
-        "author": "Codex · model and harness version not recorded",
+        "author": "Codex \u00b7 model and harness version not recorded",
         "asset": "cvd-ald-cluster-tool",
         "requestedEffort": null,
         "confirmedEffort": null
@@ -1259,9 +1259,9 @@
       "description": "The PVD cluster tool model from the Foundry Floor pack, seen from the front right.",
       "revisionId": "r_3ef2fa3a9e594f94b65dffe40253bd0c",
       "reviewStatus": "review-candidate",
-      "author": "Codex · model and harness version not recorded",
+      "author": "Codex \u00b7 model and harness version not recorded",
       "attribution": {
-        "author": "Codex · model and harness version not recorded",
+        "author": "Codex \u00b7 model and harness version not recorded",
         "asset": "pvd-cluster-tool",
         "requestedEffort": null,
         "confirmedEffort": null
@@ -1344,9 +1344,9 @@
       "description": "The single-wafer clean tool model from the Foundry Floor pack, seen from the front right.",
       "revisionId": "r_c268a0f6f6174f7ba2b87e120c4344e8",
       "reviewStatus": "review-candidate",
-      "author": "Codex · model and harness version not recorded",
+      "author": "Codex \u00b7 model and harness version not recorded",
       "attribution": {
-        "author": "Codex · model and harness version not recorded",
+        "author": "Codex \u00b7 model and harness version not recorded",
         "asset": "single-wafer-clean-tool",
         "requestedEffort": null,
         "confirmedEffort": null
@@ -1427,9 +1427,9 @@
       "description": "The CMP polisher model from the Foundry Floor pack, seen from the front right.",
       "revisionId": "r_a8c4d8680a7f4aca96b240daa294bc4b",
       "reviewStatus": "review-candidate",
-      "author": "Codex · model and harness version not recorded",
+      "author": "Codex \u00b7 model and harness version not recorded",
       "attribution": {
-        "author": "Codex · model and harness version not recorded",
+        "author": "Codex \u00b7 model and harness version not recorded",
         "asset": "cmp-polisher",
         "requestedEffort": null,
         "confirmedEffort": null
@@ -1512,9 +1512,9 @@
       "description": "The vertical furnace model from the Foundry Floor pack, seen from the front right.",
       "revisionId": "r_72680f2e5830442f93afff6a94519629",
       "reviewStatus": "review-candidate",
-      "author": "Codex · model and harness version not recorded",
+      "author": "Codex \u00b7 model and harness version not recorded",
       "attribution": {
-        "author": "Codex · model and harness version not recorded",
+        "author": "Codex \u00b7 model and harness version not recorded",
         "asset": "vertical-furnace",
         "requestedEffort": null,
         "confirmedEffort": null
@@ -1596,9 +1596,9 @@
       "description": "The ion implanter model from the Foundry Floor pack, seen from the front right.",
       "revisionId": "r_703483bb04b240bbaada2327534f7eef",
       "reviewStatus": "review-candidate",
-      "author": "Codex · model and harness version not recorded",
+      "author": "Codex \u00b7 model and harness version not recorded",
       "attribution": {
-        "author": "Codex · model and harness version not recorded",
+        "author": "Codex \u00b7 model and harness version not recorded",
         "asset": "ion-implanter",
         "requestedEffort": null,
         "confirmedEffort": null
@@ -1681,9 +1681,9 @@
       "description": "The metrology inspection tool model from the Foundry Floor pack, seen from the front right.",
       "revisionId": "r_a8395c71bb304806b3093749f7ab4ed4",
       "reviewStatus": "review-candidate",
-      "author": "Codex · model and harness version not recorded",
+      "author": "Codex \u00b7 model and harness version not recorded",
       "attribution": {
-        "author": "Codex · model and harness version not recorded",
+        "author": "Codex \u00b7 model and harness version not recorded",
         "asset": "metrology-inspection-tool",
         "requestedEffort": null,
         "confirmedEffort": null
@@ -1764,9 +1764,9 @@
       "description": "The wafer prober/tester model from the Foundry Floor pack, seen from the front right.",
       "revisionId": "r_7357b53066af464abb6556bdde7866d4",
       "reviewStatus": "review-candidate",
-      "author": "Codex · model and harness version not recorded",
+      "author": "Codex \u00b7 model and harness version not recorded",
       "attribution": {
-        "author": "Codex · model and harness version not recorded",
+        "author": "Codex \u00b7 model and harness version not recorded",
         "asset": "wafer-prober-tester",
         "requestedEffort": null,
         "confirmedEffort": null
@@ -1849,9 +1849,9 @@
       "description": "The coater/developer track model from the Foundry Floor pack, seen from the front right.",
       "revisionId": "r_a2be2a40435341b9b196f678130109b4",
       "reviewStatus": "review-candidate",
-      "author": "Codex · model and harness version not recorded",
+      "author": "Codex \u00b7 model and harness version not recorded",
       "attribution": {
-        "author": "Codex · model and harness version not recorded",
+        "author": "Codex \u00b7 model and harness version not recorded",
         "asset": "coater-developer-track",
         "requestedEffort": null,
         "confirmedEffort": null
@@ -1932,9 +1932,9 @@
       "description": "The EUV scanner model from the Foundry Floor pack, seen from the front right.",
       "revisionId": "r_5fb445d57eec47fa9c7238b1a5ee4242",
       "reviewStatus": "review-candidate",
-      "author": "Codex · model and harness version not recorded",
+      "author": "Codex \u00b7 model and harness version not recorded",
       "attribution": {
-        "author": "Codex · model and harness version not recorded",
+        "author": "Codex \u00b7 model and harness version not recorded",
         "asset": "euv-scanner",
         "requestedEffort": null,
         "confirmedEffort": null
@@ -2017,9 +2017,9 @@
       "description": "The DUV immersion scanner model from the Foundry Floor pack, seen from the front right.",
       "revisionId": "r_21ec88e7bb5b4c2c9ceae59c8142d978",
       "reviewStatus": "review-candidate",
-      "author": "Codex · model and harness version not recorded",
+      "author": "Codex \u00b7 model and harness version not recorded",
       "attribution": {
-        "author": "Codex · model and harness version not recorded",
+        "author": "Codex \u00b7 model and harness version not recorded",
         "asset": "duv-immersion-scanner",
         "requestedEffort": null,
         "confirmedEffort": null
@@ -2102,9 +2102,9 @@
       "description": "The subfab pump/abatement kit model from the Foundry Floor pack, seen from the front right.",
       "revisionId": "r_d0ff94d7e74c487b9b822f61a1ccd171",
       "reviewStatus": "accepted",
-      "author": "Claude Sonnet 5.5 · claude 2.1.280",
+      "author": "Claude Sonnet 5.5 \u00b7 claude 2.1.280",
       "attribution": {
-        "author": "Claude Sonnet 5.5 · claude 2.1.280",
+        "author": "Claude Sonnet 5.5 \u00b7 claude 2.1.280",
         "asset": "subfab-pump-abatement-kit",
         "requestedEffort": "max",
         "confirmedEffort": null
@@ -2180,9 +2180,9 @@
       "description": "The visitor gallery segment model from the Foundry Floor pack, seen from the front right.",
       "revisionId": "r_cf68f8f819f34684ac183610c45596cc",
       "reviewStatus": "accepted",
-      "author": "Claude Sonnet 5.5 · claude 2.1.280",
+      "author": "Claude Sonnet 5.5 \u00b7 claude 2.1.280",
       "attribution": {
-        "author": "Claude Sonnet 5.5 · claude 2.1.280",
+        "author": "Claude Sonnet 5.5 \u00b7 claude 2.1.280",
         "asset": "visitor-gallery-segment",
         "requestedEffort": "max",
         "confirmedEffort": null
@@ -2256,9 +2256,9 @@
       "description": "The cleanroom technician model from the Foundry Floor pack, seen from the front right.",
       "revisionId": "r_e1d7c6935493484d9586bcf0c21604de",
       "reviewStatus": "accepted",
-      "author": "Claude Opus 5.5 · claude 2.1.280",
+      "author": "Claude Opus 5.5 \u00b7 claude 2.1.280",
       "attribution": {
-        "author": "Claude Opus 5.5 · claude 2.1.280",
+        "author": "Claude Opus 5.5 \u00b7 claude 2.1.280",
         "asset": "cleanroom-technician",
         "requestedEffort": "max",
         "confirmedEffort": null
@@ -2336,9 +2336,9 @@
       "description": "The humanoid work robot model from the Foundry Floor pack, seen from the front right.",
       "revisionId": "r_9f717d17eec74f2dbd4c338612207ed5",
       "reviewStatus": "accepted",
-      "author": "Claude Opus 5.5 · claude 2.1.280",
+      "author": "Claude Opus 5.5 \u00b7 claude 2.1.280",
       "attribution": {
-        "author": "Claude Opus 5.5 · claude 2.1.280",
+        "author": "Claude Opus 5.5 \u00b7 claude 2.1.280",
         "asset": "humanoid-work-robot",
         "requestedEffort": "high",
         "confirmedEffort": null
@@ -2418,9 +2418,9 @@
       "description": "The AMR floor robot model from the Foundry Floor pack, seen from the front right.",
       "revisionId": "r_a27481224b474e9cb1dd747c45a71e23",
       "reviewStatus": "review-candidate",
-      "author": "Codex · model and harness version not recorded",
+      "author": "Codex \u00b7 model and harness version not recorded",
       "attribution": {
-        "author": "Codex · model and harness version not recorded",
+        "author": "Codex \u00b7 model and harness version not recorded",
         "asset": "amr-floor-robot-fit",
         "requestedEffort": null,
         "confirmedEffort": null
@@ -2502,9 +2502,9 @@
       "description": "The tool-front robot arm model from the Foundry Floor pack, seen from the front right.",
       "revisionId": "r_14bc5f09d6064a6aa8c20234c34b5d78",
       "reviewStatus": "review-candidate",
-      "author": "Codex · model and harness version not recorded",
+      "author": "Codex \u00b7 model and harness version not recorded",
       "attribution": {
-        "author": "Codex · model and harness version not recorded",
+        "author": "Codex \u00b7 model and harness version not recorded",
         "asset": "tool-front-robot-arm-fit",
         "requestedEffort": null,
         "confirmedEffort": null
@@ -2588,9 +2588,9 @@
       "description": "The level section module model from the Foundry Floor pack, seen from the front right.",
       "revisionId": "r_3b3d090fa0494380bdcaafaf6f3a22f2",
       "reviewStatus": "accepted",
-      "author": "Claude Sonnet 5.5 · claude 2.1.280",
+      "author": "Claude Sonnet 5.5 \u00b7 claude 2.1.280",
       "attribution": {
-        "author": "Claude Sonnet 5.5 · claude 2.1.280",
+        "author": "Claude Sonnet 5.5 \u00b7 claude 2.1.280",
         "asset": "level-section-module",
         "requestedEffort": "high",
         "confirmedEffort": null
@@ -2670,9 +2670,9 @@
       "description": "The s1 head w model from the Foundry Floor pack, seen from the front right.",
       "revisionId": "r_c2d99522b58344b69dca0ad1ce41928a",
       "reviewStatus": "review-candidate",
-      "author": "Claude Opus 5.5 · claude 2.1.280",
+      "author": "Claude Opus 5.5 \u00b7 claude 2.1.280",
       "attribution": {
-        "author": "Claude Opus 5.5 · claude 2.1.280",
+        "author": "Claude Opus 5.5 \u00b7 claude 2.1.280",
         "asset": "a_99c239a460b54a6db070df7d28338c63",
         "requestedEffort": "max",
         "confirmedEffort": null
@@ -2746,9 +2746,9 @@
       "description": "The s1 head e model from the Foundry Floor pack, seen from the front right.",
       "revisionId": "r_df7dae73a55c46f1853280912ac1d593",
       "reviewStatus": "review-candidate",
-      "author": "Claude Opus 5.5 · claude 2.1.280",
+      "author": "Claude Opus 5.5 \u00b7 claude 2.1.280",
       "attribution": {
-        "author": "Claude Opus 5.5 · claude 2.1.280",
+        "author": "Claude Opus 5.5 \u00b7 claude 2.1.280",
         "asset": "a_a56d232bf5674ad78607864566f2e4e0",
         "requestedEffort": "max",
         "confirmedEffort": null
@@ -2822,9 +2822,9 @@
       "description": "The s1 head w far model from the Foundry Floor pack, seen from the front right.",
       "revisionId": "r_e8204a9885e14c2c9d09a22f755a80da",
       "reviewStatus": "review-candidate",
-      "author": "Claude Opus 5.5 · claude 2.1.280",
+      "author": "Claude Opus 5.5 \u00b7 claude 2.1.280",
       "attribution": {
-        "author": "Claude Opus 5.5 · claude 2.1.280",
+        "author": "Claude Opus 5.5 \u00b7 claude 2.1.280",
         "asset": "a_eb6754b1b7fe4c7a8560895c763cb48c",
         "requestedEffort": "max",
         "confirmedEffort": null
@@ -2898,9 +2898,9 @@
       "description": "The s1 head e far model from the Foundry Floor pack, seen from the front right.",
       "revisionId": "r_2e4899a609764cf6a993093253b75fd8",
       "reviewStatus": "review-candidate",
-      "author": "Claude Opus 5.5 · claude 2.1.280",
+      "author": "Claude Opus 5.5 \u00b7 claude 2.1.280",
       "attribution": {
-        "author": "Claude Opus 5.5 · claude 2.1.280",
+        "author": "Claude Opus 5.5 \u00b7 claude 2.1.280",
         "asset": "a_7d13f66d7d7b45a98136055b3a759856",
         "requestedEffort": "max",
         "confirmedEffort": null
@@ -2974,9 +2974,9 @@
       "description": "The s4 canopy model from the Foundry Floor pack, seen from the front right.",
       "revisionId": "r_e6e9b7f634014bc6ab698dcbb0df91a5",
       "reviewStatus": "review-candidate",
-      "author": "Claude Opus 5.5 · claude 2.1.280",
+      "author": "Claude Opus 5.5 \u00b7 claude 2.1.280",
       "attribution": {
-        "author": "Claude Opus 5.5 · claude 2.1.280",
+        "author": "Claude Opus 5.5 \u00b7 claude 2.1.280",
         "asset": "a_ac56fc354640463fabb09a9d9b1a3879",
         "requestedEffort": "max",
         "confirmedEffort": null
@@ -3050,9 +3050,9 @@
       "description": "The s2 hall w model from the Foundry Floor pack, seen from the front right.",
       "revisionId": "r_360a18d9520a47ba8f74803411d880d7",
       "reviewStatus": "review-candidate",
-      "author": "Claude Sonnet 5.5 · claude 2.1.280",
+      "author": "Claude Sonnet 5.5 \u00b7 claude 2.1.280",
       "attribution": {
-        "author": "Claude Sonnet 5.5 · claude 2.1.280",
+        "author": "Claude Sonnet 5.5 \u00b7 claude 2.1.280",
         "asset": "a_700fda75271246d686ed6ecbd9c02520",
         "requestedEffort": "max",
         "confirmedEffort": null
@@ -3126,9 +3126,9 @@
       "description": "The s2 hall e model from the Foundry Floor pack, seen from the front right.",
       "revisionId": "r_9240eafbf13942e4a6263b1012889b2d",
       "reviewStatus": "review-candidate",
-      "author": "Claude Sonnet 5.5 · claude 2.1.280",
+      "author": "Claude Sonnet 5.5 \u00b7 claude 2.1.280",
       "attribution": {
-        "author": "Claude Sonnet 5.5 · claude 2.1.280",
+        "author": "Claude Sonnet 5.5 \u00b7 claude 2.1.280",
         "asset": "a_20881fa191c9400e8253ee566f285583",
         "requestedEffort": "max",
         "confirmedEffort": null
@@ -3202,9 +3202,9 @@
       "description": "The s2 hall w far model from the Foundry Floor pack, seen from the front right.",
       "revisionId": "r_47f890f3d7314130ade16990037c4519",
       "reviewStatus": "review-candidate",
-      "author": "Claude Sonnet 5.5 · claude 2.1.280",
+      "author": "Claude Sonnet 5.5 \u00b7 claude 2.1.280",
       "attribution": {
-        "author": "Claude Sonnet 5.5 · claude 2.1.280",
+        "author": "Claude Sonnet 5.5 \u00b7 claude 2.1.280",
         "asset": "a_c6f2f32770a741e88e2adbd699c717bb",
         "requestedEffort": "max",
         "confirmedEffort": null
@@ -3278,9 +3278,9 @@
       "description": "The s2 hall e far model from the Foundry Floor pack, seen from the front right.",
       "revisionId": "r_d946a31fc6c041a8b3d6ca0e6006fb36",
       "reviewStatus": "review-candidate",
-      "author": "Claude Sonnet 5.5 · claude 2.1.280",
+      "author": "Claude Sonnet 5.5 \u00b7 claude 2.1.280",
       "attribution": {
-        "author": "Claude Sonnet 5.5 · claude 2.1.280",
+        "author": "Claude Sonnet 5.5 \u00b7 claude 2.1.280",
         "asset": "a_3446d4140fb441929bafb1858ddfbc56",
         "requestedEffort": "max",
         "confirmedEffort": null
@@ -3354,9 +3354,9 @@
       "description": "The s3 link model from the Foundry Floor pack, seen from the front right.",
       "revisionId": "r_b2f1a7eab1cc48fb8d2561914e8888d3",
       "reviewStatus": "review-candidate",
-      "author": "Claude Sonnet 5.5 · claude 2.1.280",
+      "author": "Claude Sonnet 5.5 \u00b7 claude 2.1.280",
       "attribution": {
-        "author": "Claude Sonnet 5.5 · claude 2.1.280",
+        "author": "Claude Sonnet 5.5 \u00b7 claude 2.1.280",
         "asset": "a_f5fc41aa4c354116908f4b2cd26c4958",
         "requestedEffort": "max",
         "confirmedEffort": null
@@ -3430,9 +3430,9 @@
       "description": "The s5 split bridge model from the Foundry Floor pack, seen from the front right.",
       "revisionId": "r_8bbd9104498f4aad974d4f3cb29e810e",
       "reviewStatus": "review-candidate",
-      "author": "Claude Sonnet 5.5 · claude 2.1.280",
+      "author": "Claude Sonnet 5.5 \u00b7 claude 2.1.280",
       "attribution": {
-        "author": "Claude Sonnet 5.5 · claude 2.1.280",
+        "author": "Claude Sonnet 5.5 \u00b7 claude 2.1.280",
         "asset": "s5-split-bridge",
         "requestedEffort": "max",
         "confirmedEffort": null
@@ -3506,9 +3506,9 @@
       "description": "The s5 split bridge far model from the Foundry Floor pack, seen from the front right.",
       "revisionId": "r_51b50c962e754a098db9b438367ed1b1",
       "reviewStatus": "review-candidate",
-      "author": "Claude Sonnet 5.5 · claude 2.1.280",
+      "author": "Claude Sonnet 5.5 \u00b7 claude 2.1.280",
       "attribution": {
-        "author": "Claude Sonnet 5.5 · claude 2.1.280",
+        "author": "Claude Sonnet 5.5 \u00b7 claude 2.1.280",
         "asset": "s5-split-bridge-far",
         "requestedEffort": "max",
         "confirmedEffort": null
@@ -3582,9 +3582,9 @@
       "description": "The sedan model from the Foundry Floor pack, seen from the front right.",
       "revisionId": "r_92ee0ac3d5cf4b258cc97d20ec941461",
       "reviewStatus": "review-candidate",
-      "author": "GPT-6 Astra · codex 0.159.2",
+      "author": "GPT-6 Astra \u00b7 codex 0.159.2",
       "attribution": {
-        "author": "GPT-6 Astra · codex 0.159.2",
+        "author": "GPT-6 Astra \u00b7 codex 0.159.2",
         "asset": "generic-sedan",
         "requestedEffort": "ultra",
         "confirmedEffort": null,
@@ -3663,9 +3663,9 @@
       "description": "The hatchback model from the Foundry Floor pack, seen from the front right.",
       "revisionId": "r_74f393f06996497a9dce6c5ed50c2d62",
       "reviewStatus": "review-candidate",
-      "author": "GPT-6 Astra · codex 0.159.2",
+      "author": "GPT-6 Astra \u00b7 codex 0.159.2",
       "attribution": {
-        "author": "GPT-6 Astra · codex 0.159.2",
+        "author": "GPT-6 Astra \u00b7 codex 0.159.2",
         "asset": "generic-hatchback",
         "requestedEffort": "ultra",
         "confirmedEffort": null,
@@ -3744,9 +3744,9 @@
       "description": "The suv model from the Foundry Floor pack, seen from the front right.",
       "revisionId": "r_b4cc9048731b4c039de0b87ca6e75c17",
       "reviewStatus": "review-candidate",
-      "author": "GPT-6 Astra · codex 0.159.2",
+      "author": "GPT-6 Astra \u00b7 codex 0.159.2",
       "attribution": {
-        "author": "GPT-6 Astra · codex 0.159.2",
+        "author": "GPT-6 Astra \u00b7 codex 0.159.2",
         "asset": "generic-suv",
         "requestedEffort": "ultra",
         "confirmedEffort": null,
@@ -3825,9 +3825,9 @@
       "description": "The pickup model from the Foundry Floor pack, seen from the front right.",
       "revisionId": "r_218be4189a1b43e7b307c2263ba4f954",
       "reviewStatus": "review-candidate",
-      "author": "GPT-6 Astra · codex 0.159.2",
+      "author": "GPT-6 Astra \u00b7 codex 0.159.2",
       "attribution": {
-        "author": "GPT-6 Astra · codex 0.159.2",
+        "author": "GPT-6 Astra \u00b7 codex 0.159.2",
         "asset": "a_557b9bd6c2c34340804e802081a9b983",
         "requestedEffort": "ultra",
         "confirmedEffort": null,
@@ -3906,9 +3906,9 @@
       "description": "The box truck model from the Foundry Floor pack, seen from the front right.",
       "revisionId": "r_538b8a19c46d4086b456e27b32ee7d33",
       "reviewStatus": "review-candidate",
-      "author": "GPT-6 Astra · codex 0.159.2",
+      "author": "GPT-6 Astra \u00b7 codex 0.159.2",
       "attribution": {
-        "author": "GPT-6 Astra · codex 0.159.2",
+        "author": "GPT-6 Astra \u00b7 codex 0.159.2",
         "asset": "a_2092ca0610c749b386c14c07dbaf4236",
         "requestedEffort": "ultra",
         "confirmedEffort": null,
@@ -3987,9 +3987,9 @@
       "description": "The transit bus model from the Foundry Floor pack, seen from the front right.",
       "revisionId": "r_85ff097a61384efab445c55372d3b6f5",
       "reviewStatus": "review-candidate",
-      "author": "GPT-6 Astra · codex 0.159.2",
+      "author": "GPT-6 Astra \u00b7 codex 0.159.2",
       "attribution": {
-        "author": "GPT-6 Astra · codex 0.159.2",
+        "author": "GPT-6 Astra \u00b7 codex 0.159.2",
         "asset": "a_a8c030b2570f4ae5aa54eefbd3767f4c",
         "requestedEffort": "ultra",
         "confirmedEffort": null,
@@ -4068,9 +4068,9 @@
       "description": "The tree broad l model from the Foundry Floor pack, seen from the front right.",
       "revisionId": "r_9f23088183b1495a9d398603dae05ff5",
       "reviewStatus": "review-candidate",
-      "author": "GPT-6.1 Sol · codex 0.159.2",
+      "author": "GPT-6.1 Sol \u00b7 codex 0.159.2",
       "attribution": {
-        "author": "GPT-6.1 Sol · codex 0.159.2",
+        "author": "GPT-6.1 Sol \u00b7 codex 0.159.2",
         "asset": "a_b78c96bc78ba49f3ad8cea40aa50eb4c",
         "requestedEffort": "high",
         "confirmedEffort": null
@@ -4148,9 +4148,9 @@
       "description": "The tree broad m model from the Foundry Floor pack, seen from the front right.",
       "revisionId": "r_947dbc2b30b94fdf85804e19fb665b4d",
       "reviewStatus": "review-candidate",
-      "author": "GPT-6.1 Sol · codex 0.159.2",
+      "author": "GPT-6.1 Sol \u00b7 codex 0.159.2",
       "attribution": {
-        "author": "GPT-6.1 Sol · codex 0.159.2",
+        "author": "GPT-6.1 Sol \u00b7 codex 0.159.2",
         "asset": "a_af17477e70f74a5dacd28c8440fb857d",
         "requestedEffort": "high",
         "confirmedEffort": null
@@ -4228,9 +4228,9 @@
       "description": "The tree broad s model from the Foundry Floor pack, seen from the front right.",
       "revisionId": "r_aad434508024485a80b48effabe15185",
       "reviewStatus": "review-candidate",
-      "author": "GPT-6.1 Sol · codex 0.159.2",
+      "author": "GPT-6.1 Sol \u00b7 codex 0.159.2",
       "attribution": {
-        "author": "GPT-6.1 Sol · codex 0.159.2",
+        "author": "GPT-6.1 Sol \u00b7 codex 0.159.2",
         "asset": "a_57cf88474beb46d19832ce0f43e93b9c",
         "requestedEffort": "high",
         "confirmedEffort": null
@@ -4308,9 +4308,9 @@
       "description": "The tree conifer l model from the Foundry Floor pack, seen from the front right.",
       "revisionId": "r_b7d3879520f24b349d6a6ae6701ae2c3",
       "reviewStatus": "review-candidate",
-      "author": "GPT-6.1 Sol · codex 0.159.2",
+      "author": "GPT-6.1 Sol \u00b7 codex 0.159.2",
       "attribution": {
-        "author": "GPT-6.1 Sol · codex 0.159.2",
+        "author": "GPT-6.1 Sol \u00b7 codex 0.159.2",
         "asset": "a_2314a308a2074b0089a66cd18acac29e",
         "requestedEffort": "high",
         "confirmedEffort": null
@@ -4388,9 +4388,9 @@
       "description": "The tree conifer m model from the Foundry Floor pack, seen from the front right.",
       "revisionId": "r_e551108244024278bd4ae74f4d30346e",
       "reviewStatus": "review-candidate",
-      "author": "GPT-6.1 Sol · codex 0.159.2",
+      "author": "GPT-6.1 Sol \u00b7 codex 0.159.2",
       "attribution": {
-        "author": "GPT-6.1 Sol · codex 0.159.2",
+        "author": "GPT-6.1 Sol \u00b7 codex 0.159.2",
         "asset": "a_9152a27cdfac4d47abfd3eeecba986f5",
         "requestedEffort": "high",
         "confirmedEffort": null
@@ -4468,9 +4468,9 @@
       "description": "The tree ornamental model from the Foundry Floor pack, seen from the front right.",
       "revisionId": "r_6f6398c81f134c3fb7880fd2bc7537e4",
       "reviewStatus": "review-candidate",
-      "author": "GPT-6.1 Sol · codex 0.159.2",
+      "author": "GPT-6.1 Sol \u00b7 codex 0.159.2",
       "attribution": {
-        "author": "GPT-6.1 Sol · codex 0.159.2",
+        "author": "GPT-6.1 Sol \u00b7 codex 0.159.2",
         "asset": "a_d652aa1bc6594109ab5792a12847f75f",
         "requestedEffort": "high",
         "confirmedEffort": null
@@ -4548,9 +4548,9 @@
       "description": "The shrub mound model from the Foundry Floor pack, seen from the front right.",
       "revisionId": "r_37b46919727c4c8a8bafe8884635a17b",
       "reviewStatus": "review-candidate",
-      "author": "GPT-6.1 Sol · codex 0.159.2",
+      "author": "GPT-6.1 Sol \u00b7 codex 0.159.2",
       "attribution": {
-        "author": "GPT-6.1 Sol · codex 0.159.2",
+        "author": "GPT-6.1 Sol \u00b7 codex 0.159.2",
         "asset": "a_04e07c6b49f94dce8bb469a89b253bab",
         "requestedEffort": "high",
         "confirmedEffort": null
@@ -4628,9 +4628,9 @@
       "description": "The hedge 4m model from the Foundry Floor pack, seen from the front right.",
       "revisionId": "r_7b34245c9ea04e96ad8e449006f1f806",
       "reviewStatus": "review-candidate",
-      "author": "GPT-6.1 Sol · codex 0.159.2",
+      "author": "GPT-6.1 Sol \u00b7 codex 0.159.2",
       "attribution": {
-        "author": "GPT-6.1 Sol · codex 0.159.2",
+        "author": "GPT-6.1 Sol \u00b7 codex 0.159.2",
         "asset": "a_4168e827aacb40aeb1847781e1c5d88d",
         "requestedEffort": "high",
         "confirmedEffort": null
@@ -4708,9 +4708,9 @@
       "description": "The truck tractor model from the Foundry Floor pack, seen from the front right.",
       "revisionId": "r_bbd6fc0083764d728aa0c796fb33ab91",
       "reviewStatus": "review-candidate",
-      "author": "GPT-6.1 Sol · codex 0.159.2",
+      "author": "GPT-6.1 Sol \u00b7 codex 0.159.2",
       "attribution": {
-        "author": "GPT-6.1 Sol · codex 0.159.2",
+        "author": "GPT-6.1 Sol \u00b7 codex 0.159.2",
         "asset": "a_94bce49c4e934f20a3c188bc1d7f51d5",
         "requestedEffort": "high",
         "confirmedEffort": null,
@@ -4789,9 +4789,9 @@
       "description": "The trailer dryvan model from the Foundry Floor pack, seen from the front right.",
       "revisionId": "r_900808c392da42e899ba67a161845870",
       "reviewStatus": "review-candidate",
-      "author": "GPT-6.1 Sol · codex 0.159.2",
+      "author": "GPT-6.1 Sol \u00b7 codex 0.159.2",
       "attribution": {
-        "author": "GPT-6.1 Sol · codex 0.159.2",
+        "author": "GPT-6.1 Sol \u00b7 codex 0.159.2",
         "asset": "a_33ef365199464573912c7c7a771b37c7",
         "requestedEffort": "high",
         "confirmedEffort": null,
@@ -4870,9 +4870,9 @@
       "description": "The trailer flatbed model from the Foundry Floor pack, seen from the front right.",
       "revisionId": "r_7e81c6c0166b4142abad776a6ebb68d1",
       "reviewStatus": "review-candidate",
-      "author": "GPT-6.1 Sol · codex 0.159.2",
+      "author": "GPT-6.1 Sol \u00b7 codex 0.159.2",
       "attribution": {
-        "author": "GPT-6.1 Sol · codex 0.159.2",
+        "author": "GPT-6.1 Sol \u00b7 codex 0.159.2",
         "asset": "a_1c0fdc7dfefd4b1593e587f5a964467f",
         "requestedEffort": "high",
         "confirmedEffort": null,
@@ -4951,9 +4951,9 @@
       "description": "The trailer tanker model from the Foundry Floor pack, seen from the front right.",
       "revisionId": "r_247bb2b5dbd048889d3efd6c95aa20e0",
       "reviewStatus": "review-candidate",
-      "author": "GPT-6.1 Sol · codex 0.159.2",
+      "author": "GPT-6.1 Sol \u00b7 codex 0.159.2",
       "attribution": {
-        "author": "GPT-6.1 Sol · codex 0.159.2",
+        "author": "GPT-6.1 Sol \u00b7 codex 0.159.2",
         "asset": "a_2f10f10f73ab474c9d624e25f363b469",
         "requestedEffort": "high",
         "confirmedEffort": null,
@@ -5032,9 +5032,9 @@
       "description": "The van delivery model from the Foundry Floor pack, seen from the front right.",
       "revisionId": "r_961acb32238d428192bdd939da41ae6c",
       "reviewStatus": "review-candidate",
-      "author": "GPT-6.1 Sol · codex 0.159.2",
+      "author": "GPT-6.1 Sol \u00b7 codex 0.159.2",
       "attribution": {
-        "author": "GPT-6.1 Sol · codex 0.159.2",
+        "author": "GPT-6.1 Sol \u00b7 codex 0.159.2",
         "asset": "a_595dd1e9c1ce4f9d9e6e9d19daace9ac",
         "requestedEffort": "high",
         "confirmedEffort": null,

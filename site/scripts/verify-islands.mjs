@@ -4,6 +4,7 @@ import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import puppeteer from 'puppeteer-core';
 import { chromeExecutable } from './build-site-media.mjs';
+import { sceneBrowserOptions } from '../../scenes/scripts/browser-options.mjs';
 
 const base = process.argv[2];
 const review = process.argv[3];
@@ -14,7 +15,9 @@ const farm = JSON.parse(await readFile(new URL('../src/data/packs/farm.json', im
 const farmhouse = farm.assets.find((asset) => asset.id === 'farmhouse');
 assert.ok(farmhouse, 'The selected Farm delivery must contain farmhouse.');
 const results = { browser: '', pages: [], behaviors: [], errors: [] };
-const browser = await puppeteer.launch({ executablePath: chromeExecutable(), headless: true, pipe: true, args: ['--no-sandbox'] });
+const launch = sceneBrowserOptions();
+const browser = await puppeteer.launch({ executablePath: chromeExecutable(), headless: launch.headless, pipe: true, args: ['--no-sandbox', ...launch.args] });
+results.browserLaunch = launch;
 results.browser = await browser.version();
 const page = await browser.newPage();
 page.on('pageerror', (error) => results.errors.push(error.message));
@@ -47,7 +50,8 @@ try {
   // The island is ready when the scene reports its first complete frame (or, in a build without
   // the scene package, when the stand-in mounts). Either way the shell says so in data-scene-state.
   await page.waitForFunction(() => ['ready', 'error'].includes(document.querySelector('scene-shell')?.dataset.sceneState), { timeout: 120000 });
-  assert.equal(await page.$eval('scene-shell', (element) => element.dataset.sceneState), 'ready', 'The Farm island must reach its ready state.');
+  results.sceneStartup = await page.$eval('scene-shell', (element) => ({ state: element.dataset.sceneState, error: element.dataset.sceneError ?? null, backend: element.dataset.sceneBackend ?? null, status: element.querySelector('[data-status]')?.textContent }));
+  assert.equal(results.sceneStartup.state, 'ready', `The Farm island must reach its ready state: ${JSON.stringify(results.sceneStartup)}`);
   assert.equal(await page.$eval('[data-exit]', (element) => element === document.activeElement), true);
   assert.equal(await page.$eval('body > header', (element) => element.inert), true);
   await mkdir(join(review, 'screenshots/scene-open'), { recursive: true });

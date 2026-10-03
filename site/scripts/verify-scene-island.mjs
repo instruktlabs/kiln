@@ -1,8 +1,10 @@
+import { sceneBrowserOptions } from '../../scenes/scripts/browser-options.mjs';
 import assert from 'node:assert/strict';
 import { mkdir, writeFile } from 'node:fs/promises';
 import { dirname, resolve } from 'node:path';
 import puppeteer from 'puppeteer-core';
 import { chromeExecutable } from './build-site-media.mjs';
+import { classifyExploreConsole } from './scene-console.mjs';
 
 const positional = process.argv.slice(2).filter((argument) => !argument.startsWith('--'));
 const [base, sceneId = 'farm', screenshot = `.tmp/${sceneId}-island.png`] = positional;
@@ -26,16 +28,12 @@ const sceneRoot = (page) => page.evaluate((frame) => {
   return { backend: root?.getAttribute('data-kiln-backend') ?? null, canvas: canvas ? [canvas.width, canvas.height] : null, region: root?.getAttribute('role') ?? null };
 }, scene.frame);
 const check = (message) => report.checks.push(message);
-// @react-three/fiber 9.8.1 constructs THREE.Clock, which three 0.186 marks deprecated. The
-// gallery viewers on this site log the same line, so it is expected here and still reported.
-const KNOWN_WARNINGS = [/^THREE\.Clock: This module has been deprecated/];
-
-// Headless only, with an explicit window size. No frame or load timings are recorded.
+// Explicit window size; host may opt into headed GPU qualification. No frame/load timings recorded.
 const browser = await puppeteer.launch({
   executablePath: chromeExecutable(),
-  headless: true,
+  headless: sceneBrowserOptions().headless,
   pipe: true,
-  args: ['--no-sandbox', '--window-size=1440,900', ...(process.env.KILN_SWIFTSHADER ? ['--use-angle=swiftshader', '--enable-unsafe-swiftshader'] : [])],
+  args: ['--no-sandbox', '--window-size=1440,900', ...sceneBrowserOptions().args, ...(process.env.KILN_SWIFTSHADER ? ['--use-angle=swiftshader', '--enable-unsafe-swiftshader'] : [])],
   defaultViewport: { width: 1440, height: 900, deviceScaleFactor: 1 },
 });
 report.browser = await browser.version();
@@ -68,7 +66,21 @@ try {
     if (/\.js(?:$|\?)/.test(response.url())) scripts.push(Number(response.headers()['content-length'] ?? 0));
     if (response.url().includes(scene.runtime)) served.push(response);
   });
-  await page.goto(route, { waitUntil: 'networkidle0' });
+  const documentResponse = await page.goto(route, { waitUntil: 'networkidle0' });
+  report.consoleEnvironment = {
+    browser: report.browser,
+    responseUrl: documentResponse?.url() ?? null,
+    permissionsPolicy: documentResponse?.headers()['permissions-policy'] ?? null,
+    ...await page.evaluate(() => {
+      const policy = document.permissionsPolicy ?? document.featurePolicy;
+      return {
+        platform: navigator.platform,
+        secureContext: window.isSecureContext,
+        bluetoothApiPresent: 'bluetooth' in navigator,
+        supportedPolicyFeatures: typeof policy?.features === 'function' ? policy.features() : null,
+      };
+    }),
+  };
   assert.equal(await page.$eval('meta[name="robots"]', (meta) => meta.content), 'noindex, nofollow');
   check('The page carries robots noindex, nofollow.');
   assert.equal(requests.some((url) => url.includes('/scene-packs/') || url.includes('/scene-runtime/')), false);
@@ -106,10 +118,12 @@ try {
       await mkdir(dirname(resolve(screenshot)), { recursive: true });
       await page.screenshot({ path: resolve(screenshot) });
       if (await page.$eval('[data-fullscreen]', (element) => !element.hidden)) {
-        await page.click('[data-fullscreen]');
-        assert.equal(await page.evaluate(() => Boolean(document.fullscreenElement)), true);
-        await page.click('[data-fullscreen]');
-        assert.equal(await page.evaluate(() => Boolean(document.fullscreenElement)), false);
+        // Fullscreen changes the viewport asynchronously. A locator waits for the
+        // visible button's stable bounding box before issuing each real click.
+        await page.locator('[data-fullscreen]').click();
+        await page.waitForFunction(() => document.fullscreenElement === document.querySelector('scene-shell'));
+        await page.locator('[data-fullscreen]').click();
+        await page.waitForFunction(() => document.fullscreenElement === null);
         check('Fullscreen enters and leaves while the scene runs.');
       }
     }
@@ -225,10 +239,8 @@ try {
 } finally {
   await browser.close();
 }
-// Puppeteer reports console warnings as "warn". A known upstream line is listed, never hidden.
-const flagged = report.console.filter((entry) => entry.scenario === 'explore' && ['error', 'warn', 'warning'].includes(entry.type));
-const isKnown = (entry) => KNOWN_WARNINGS.some((pattern) => pattern.test(entry.text));
-report.exploreConsole = { known: flagged.filter(isKnown), unexpected: flagged.filter((entry) => !isKnown(entry)) };
+// Known upstream/platform warnings are retained with their observed environment.
+report.exploreConsole = classifyExploreConsole(report.console, report.consoleEnvironment);
 report.multipleInstances = report.console.filter((entry) => /Multiple instances of Three\.js/i.test(entry.text));
 console.log(JSON.stringify(report, null, 2));
 assert.equal(report.multipleInstances.length, 0, 'three logged its Multiple instances warning: the page loaded two copies.');

@@ -10,17 +10,17 @@
     },
     {
       "id": "golden-gate",
-      "release": "g9",
-      "path": "scene-inputs/v09-review4/golden-gate.zip",
-      "bytes": 8335422,
-      "sha256": "5645e6d67d899c521cadb43da71f01dc1769a6ff931f29f374f9e65134275546"
+      "release": "g9-code5",
+      "path": "scene-inputs/alignment-motion3-20261003/golden-gate.zip",
+      "bytes": 8329648,
+      "sha256": "78f956059db0b6265f250f64b96bbc5bf4e52e02eec629cc9dcf7cb4aa991f8d"
     },
     {
       "id": "foundry-floor",
-      "release": "ff3-review2",
-      "path": "scene-inputs/v09-review4/foundry-floor.zip",
-      "bytes": 2858786,
-      "sha256": "9043809403236964ffac8401358a1a946fde44d98e73ace1933b03e3ba9764ee"
+      "release": "ff3-review2-code5",
+      "path": "scene-inputs/alignment-motion3-20261003/foundry-floor.zip",
+      "bytes": 2868640,
+      "sha256": "22a49f2ef8e48fcdb37c12a9c475d94798870a3dca39d6798a3a6e60dd812ee4"
     }
   ]
 }

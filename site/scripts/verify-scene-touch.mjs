@@ -1,3 +1,4 @@
+import { sceneBrowserOptions } from '../../scenes/scripts/browser-options.mjs';
 import assert from 'node:assert/strict';
 import { mkdir, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
@@ -20,7 +21,7 @@ if (!base || !review) throw new Error('Usage: node scripts/verify-scene-touch.mj
 const PAD = new Set(['+', '-', '−', '←', '→', '↑', '↓']);
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
-const browser = await puppeteer.launch({ executablePath: chromeExecutable(), headless: true, pipe: true, args: ['--no-sandbox'] });
+const browser = await puppeteer.launch({ executablePath: chromeExecutable(), headless: sceneBrowserOptions().headless, pipe: true, args: ['--no-sandbox', ...sceneBrowserOptions().args] });
 const results = { browser: await browser.version(), viewport: '390x844, touch, mobile', checks: [], observed: {}, errors: [] };
 const check = (name, pass, detail) => results.checks.push(detail === undefined ? { name, pass: Boolean(pass) } : { name, pass: Boolean(pass), detail });
 await mkdir(screenshotDirectory, { recursive: true });
