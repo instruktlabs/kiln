@@ -13,6 +13,7 @@
     "lint": "bun scripts/lint.ts",
     "test": "bun scripts/test-portable.ts",
     "test:integration": "bun test",
+    "test:release-inputs": "bun scripts/test-release-inputs.ts",
     "test:browser": "bun scripts/run-m1.ts",
     "build": "bun packages/scene-kit/demo/stage-demo.ts && bun scripts/build-demo.ts --all",
     "demo:build": "bun packages/scene-kit/demo/stage-demo.ts && bun scripts/build-demo.ts --all",
@@ -35,16 +36,16 @@
     "@vitejs/plugin-react": "6.1.1",
     "axe-core": "4.13.0",
     "fflate": "0.8.3",
-    "npm": "12.0.2",
+    "npm": "12.2.0",
     "pixelmatch": "7.2.0",
     "pngjs": "7.0.0",
     "puppeteer-core": "25.12.0",
     "react": "19.3.0",
     "react-dom": "19.3.0",
-    "three": "0.186.0",
+    "three": "0.186.1",
     "three-mesh-bvh": "0.9.15",
     "typescript": "7.0.2",
     "typescript-6": "npm:typescript@6.0.3",
-    "vite": "8.3.0"
+    "vite": "8.3.2"
   }
 }

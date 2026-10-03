@@ -101,7 +101,7 @@ test('compatibility binds source and all expected dependency versions without lo
     );
     assert.throws(
       () => resolvedRendererDependencies(anchor),
-      /webgpu version conflict.*0.6.1.*0.4.0/,
+      /webgpu version conflict.*0.6.2.*0.4.0/,
     );
   } finally {
     rmSync(dir, { recursive: true, force: true });

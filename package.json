@@ -127,24 +127,24 @@
     "dogfood:tier2": "node scripts/tier2-dogfood.mjs"
   },
   "dependencies": {
-    "@gltf-transform/core": "4.5.0",
-    "@gltf-transform/extensions": "4.5.0",
-    "@gltf-transform/functions": "4.5.0",
-    "@modelcontextprotocol/client": "^2.2.0",
+    "@gltf-transform/core": "4.5.1",
+    "@gltf-transform/extensions": "4.5.1",
+    "@gltf-transform/functions": "4.5.1",
+    "@modelcontextprotocol/client": "^2.3.0",
     "@modelcontextprotocol/ext-apps": "2.0.3",
-    "@modelcontextprotocol/server": "^2.2.0",
+    "@modelcontextprotocol/server": "^2.3.0",
     "@types/three": "^0.186.0",
     "acorn": "^8.18.0",
     "acorn-walk": "^8.3.5",
     "gltf-validator": "2.0.0-dev.3.10",
-    "manifold-3d": "^3.5.3",
+    "manifold-3d": "^3.5.4",
     "minisearch": "7.2.0",
     "pngjs": "7.0.0",
-    "sharp": "^0.35.4",
-    "three": "0.186.0",
+    "sharp": "^0.35.5",
+    "three": "0.186.1",
     "three-subdivide": "1.1.5",
     "xatlasjs": "^0.2.0",
-    "zod": "^4.6.4"
+    "zod": "^4.6.5"
   },
   "peerDependencies": {
     "@ai-sdk/provider": "^3.0.0",
@@ -152,7 +152,7 @@
     "@openrouter/ai-sdk-provider": "^2.10.0"
   },
   "overrides": {
-    "sharp": "^0.35.4"
+    "sharp": "^0.35.5"
   },
   "peerDependenciesMeta": {
     "@ai-sdk/provider": {
@@ -166,20 +166,20 @@
     }
   },
   "devDependencies": {
-    "@ai-sdk/provider": "^3.0.16",
+    "@ai-sdk/provider": "^3.0.18",
     "@anthropic-ai/sdk": "0.109.1",
-    "@aws-sdk/client-bedrock-runtime": "^3.1131.0",
-    "@biomejs/biome": "^2.5.13",
-    "@google/genai": "^2.22.0",
+    "@aws-sdk/client-bedrock-runtime": "^3.1146.0",
+    "@biomejs/biome": "^2.5.15",
+    "@google/genai": "^2.27.0",
     "@openrouter/ai-sdk-provider": "^2.10.0",
-    "@strands-agents/sdk": "1.18.0",
+    "@strands-agents/sdk": "1.19.0",
     "@types/bun": "^1.4.2",
-    "ai": "^6.0.282",
+    "ai": "^6.0.300",
     "openai": "^6.49.0",
     "typescript": "^7.0.2"
   },
   "optionalDependencies": {
-    "@napi-rs/canvas": "1.0.9",
-    "webgpu": "0.6.1"
+    "@napi-rs/canvas": "1.0.10",
+    "webgpu": "0.6.2"
   }
 }

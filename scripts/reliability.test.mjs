@@ -22,8 +22,8 @@ describe('repository reliability contracts', () => {
     expect(pkg.engines).toEqual({ node: '^20.15.0 || >=22.2.0' });
     expect(await readJson('toolchain.json')).toEqual({
       bun: '1.4.2',
-      node: '22.23.2',
-      npm: '12.0.2',
+      node: '22.23.3',
+      npm: '12.2.0',
     });
   });
 
@@ -36,7 +36,7 @@ describe('repository reliability contracts', () => {
 
     expect(pkg.scripts['check:toolchain']).toBe('bun scripts/check-toolchain.mjs');
     expect(result.status, result.stderr || result.stdout).toBe(0);
-    expect(result.stdout.trim()).toBe('Toolchain metadata: Bun 1.4.2, Node 22.23.2, npm 12.0.2');
+    expect(result.stdout.trim()).toBe('Toolchain metadata: Bun 1.4.2, Node 22.23.3, npm 12.2.0');
   });
 
   test('coverage is measured, ratcheted, and retained by CI', async () => {

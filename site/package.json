@@ -2,7 +2,7 @@
   "name": "kiln-site",
   "private": true,
   "type": "module",
-  "description": "Kiln 0.9: the tool, source docs and revision-bound Commons assets.",
+  "description": "Kiln: the tool, source docs and revision-bound Commons assets.",
   "scripts": {
     "assets": "bun scripts/build-assets.mjs",
     "dev": "astro dev",
@@ -20,7 +20,7 @@
     "@react-three/fiber": "9.8.1",
     "react": "19.3.0",
     "react-dom": "19.3.0",
-    "three": "0.186.0",
+    "three": "0.186.1",
     "@fontsource-variable/archivo": "5.3.0",
     "@fontsource/ibm-plex-mono": "5.3.0",
     "tailwindcss": "4.3.3",
@@ -39,10 +39,14 @@
     "fontverter": "2.0.0",
     "html-validate": "11.16.1",
     "lighthouse": "13.5.0",
-    "parse5": "8.0.0",
+    "parse5": "8.0.1",
     "puppeteer-core": "25.12.0",
     "sharp": "0.35.5",
     "subset-font": "2.9.0",
-    "typescript": "6.0.3"
+    "typescript": "6.0.3",
+    "vite": "8.3.2"
+  },
+  "overrides": {
+    "vite": "8.3.2"
   }
 }

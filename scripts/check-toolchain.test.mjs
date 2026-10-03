@@ -95,7 +95,7 @@ test('the staged copy of this repository passes, so every rule below can fail', 
   try {
     const { status, out } = run(root);
     expect(status, out).toBe(0);
-    expect(out.trim()).toBe('Toolchain metadata: Bun 1.4.2, Node 22.23.2, npm 12.0.2');
+    expect(out.trim()).toBe('Toolchain metadata: Bun 1.4.2, Node 22.23.3, npm 12.2.0');
   } finally {
     await rm(root, { recursive: true, force: true });
   }
@@ -106,7 +106,7 @@ test('maintainer pins do not become consumer Bun or npm requirements', async () 
     'package.json',
     (text) => {
       const pkg = JSON.parse(text);
-      pkg.engines.npm = '12.0.2';
+      pkg.engines.npm = '12.2.0';
       return JSON.stringify(pkg);
     },
     'engines must contain only the end-user Node range',
@@ -126,7 +126,7 @@ test('a stale consumer floor is named independently of maintainer pins', async (
     'package.json',
     (text) => {
       const pkg = JSON.parse(text);
-      pkg.engines.node = '22.23.2';
+      pkg.engines.node = '22.23.3';
       return JSON.stringify(pkg);
     },
     'engines.node must match the runtime compatibility contract',
@@ -147,7 +147,7 @@ test('prose that tells a contributor to install the wrong Bun is named', async (
 test('three drifting in the site manifest is named, with the manifest', async () => {
   await rejects(
     'site/package.json',
-    (text) => text.replace('"three": "0.186.0"', '"three": "0.185.1"'),
+    (text) => text.replace('"three": "0.186.1"', '"three": "0.185.1"'),
     'site/package.json=0.185.1',
   );
 });
@@ -155,7 +155,7 @@ test('three drifting in the site manifest is named, with the manifest', async ()
 test('three drifting in the render service is named, with the manifest', async () => {
   await rejects(
     'render-service/package.json',
-    (text) => text.replace('"three": "0.186.0"', '"three": "0.187.0"'),
+    (text) => text.replace('"three": "0.186.1"', '"three": "0.187.0"'),
     'render-service/package.json=0.187.0',
   );
 });

@@ -2,7 +2,7 @@ import { spawnSync } from 'node:child_process';
 import { readJson, ROOT, printCheck } from './check-common';
 import { join } from 'node:path';
 
-export const REQUIRED_TOOLCHAIN = { bun: '1.4.2', node: '22.23.2', npm: '12.0.2' } as const;
+export const REQUIRED_TOOLCHAIN = { bun: '1.4.2', node: '22.23.3', npm: '12.2.0' } as const;
 export type Toolchain = Record<keyof typeof REQUIRED_TOOLCHAIN, string>;
 export function validateToolchain(expected: Toolchain, actual: Toolchain): string[] {
   const problems: string[] = [];

@@ -6,8 +6,8 @@ import { fingerprintSourceDir } from './instance.mjs';
 
 export const RENDER_SERVICE_PROTOCOL = 'kiln.render-service.v2';
 export const RENDER_SERVICE_DEPENDENCIES = Object.freeze({
-  three: '0.186.0',
-  webgpu: '0.6.1',
+  three: '0.186.1',
+  webgpu: '0.6.2',
   pngjs: '7.0.0',
 });
 export const REQUIRED_RENDER_CAPABILITIES = Object.freeze([

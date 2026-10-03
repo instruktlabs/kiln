@@ -22,7 +22,7 @@ jobs:
           bun-version: 1.4.2
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
-          node-version: 22.23.2
+          node-version: 22.23.3
       - run: bun install --frozen-lockfile
         working-directory: scenes
       - run: bun run typecheck && bun run lint && bun run test
