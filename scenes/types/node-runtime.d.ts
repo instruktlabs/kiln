@@ -1,9 +1,17 @@
 // Small declarations for the Node-only staging/build surface; no extra installed type package.
+declare namespace NodeJS {
+  type Platform = 'aix' | 'android' | 'darwin' | 'freebsd' | 'haiku' | 'linux' | 'openbsd' | 'sunos' | 'win32' | 'cygwin' | 'netbsd';
+  interface ProcessEnv { [key: string]: string | undefined }
+}
+declare module 'node:module' {
+  export function createRequire(filename: string | URL): { (id: string): unknown; resolve(id: string): string };
+}
 declare module 'node:crypto' {
   interface Hash { update(data: Uint8Array | string): Hash; digest(encoding: 'hex'): string }
   export function createHash(algorithm: string): Hash;
 }
 declare module 'node:fs' {
+  export const constants: { F_OK: number; X_OK: number };
   interface Dirent { name: string; isDirectory(): boolean; isSymbolicLink(): boolean; isFile(): boolean }
   interface Stats { size: number; isDirectory(): boolean; isSymbolicLink(): boolean; isFile(): boolean }
   export function readFileSync(path: string | URL): Uint8Array;
@@ -22,6 +30,8 @@ declare module 'node:fs' {
   export function rmSync(path: string | URL, options?: { recursive?: boolean; force?: boolean }): void;
 }
 declare module 'node:path' {
+  export const posix: { join(...paths: string[]): string };
+  export const win32: { join(...paths: string[]): string };
   export const sep: string;
   export function resolve(...paths: string[]): string;
   export function join(...paths: string[]): string;
@@ -41,6 +51,7 @@ declare module 'node:assert/strict' {
   export default assert;
 }
 declare module 'node:fs/promises' {
+  export function access(path: string | URL, mode?: number): Promise<void>;
   export function mkdir(path: string | URL, options?: { recursive?: boolean }): Promise<string | undefined>;
   export function mkdtemp(prefix: string): Promise<string>;
   export function readFile(path: string | URL): Promise<Uint8Array>;
@@ -49,7 +60,7 @@ declare module 'node:fs/promises' {
   export function readdir(path: string | URL): Promise<string[]>;
   export function realpath(path: string | URL): Promise<string>;
   export function stat(path: string | URL): Promise<{ size: number; isFile(): boolean; isDirectory(): boolean }>;
-  export function rm(path: string | URL, options?: { recursive?: boolean; force?: boolean }): Promise<void>;
+  export function rm(path: string | URL, options?: { recursive?: boolean; force?: boolean; maxRetries?: number; retryDelay?: number }): Promise<void>;
 }
 declare module 'node:http' {
   interface Server {
@@ -77,7 +88,7 @@ declare module 'node:child_process' {
   }): ChildProcess;
 }
 
-declare const process: { cwd(): string; pid: number; execPath: string; env: Record<string, string | undefined>; argv: string[]; exitCode?: number; platform: string; version: string; exit(code?: number): never };
+declare const process: { cwd(): string; pid: number; execPath: string; env: NodeJS.ProcessEnv; argv: string[]; exitCode?: number; platform: NodeJS.Platform; version: string; exit(code?: number): never };
 declare module 'node:os' {
   interface CpuInfo { model: string; times: { user: number; nice: number; sys: number; idle: number; irq: number } }
   export function cpus(): CpuInfo[];
