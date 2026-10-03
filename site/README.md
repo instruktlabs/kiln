@@ -1,12 +1,46 @@
 # Kiln website
 
-## v0.9 Cloudflare rollout, 2026-10-01
+## Current delivery and alignment, 2026-10-03
+
+The site runs on Cloudflare Pages direct upload: project `kilnstudio`, production
+branch `production`, domain `kilnstudio.tools`. Public assets use the `kiln-assets`
+R2 bucket. GitHub checks validate source; they do not deploy it. Public build-info
+and the authenticated deployment list agree on production commit `b1ac6ee`, clean
+with packs enabled, deployment `33c716c7-16e5-46c6-93bf-f2260f0082be`. Source main
+is `ac8456c`; those are different checkpoints.
+
+The [alignment plan](../docs/plans/2026-10-02-core-scenes-site-alignment.md) and
+[backlog](../docs/backlog.md) govern upcoming core, assets, scenes and site work.
+Troy is deferred. The portable Node deployment wrapper is implemented and tested,
+including final artifact-hash verification; existing OAuth has been verified on the
+Linux hub. Follow [DEPLOYMENT.md](DEPLOYMENT.md) for the contract. No deployment was
+made by this alignment work.
+
+The local launch candidate and exact runtime archives are rebuilt as fixes are
+qualified. Use the backlog for current controls, accessibility and performance
+results and remaining release boundaries; earlier artifacts retain their
+own evidence. The site records its exact served bytes in `build-info.json` and
+`artifact-files.json`. A successful local build is not production approval.
+
+Current asset catalogs distinguish revision acceptance: Farm's 23 exact asset picks
+are owner-accepted; the six Vehicles r4 children remain candidates even though
+their earlier r2 parents were accepted. Foundry has 62 models (55 candidates and
+seven accepted) with internally consistent source/download pins. The large #131
+optimization changed scene runtime code, not those model files. Review status does
+not imply a newly discovered defect. See the alignment plan's complete asset inventory.
+
+All checkpoint sections below are historical. Their authorization, preview labels,
+local candidates and test counts describe those dates; they do not override the
+current plan, manifests or a new release's acceptance requirements.
+
+## Historical v0.9 Cloudflare rollout, 2026-10-01
 
 The owner authorized integration to main and site deployment. Current inputs are Farm
 r36-local-review, Golden Gate g9 and Foundry ff3-review2. The engine, site and maintained
 scene sources now share this repository. Follow [DEPLOYMENT.md](DEPLOYMENT.md) for a
 clean build, pinned assets, exact-commit deployment and live verification. Package
-publication remains deferred to v1.0. Foundry retains its in-production preview status.
+publication remained deferred to v1.0. The Foundry preview label in this checkpoint
+was subsequently removed; consult current site data for presentation status.
 
 The records below are historical checkpoints. Their old no-deploy boundaries and
 revision numbers do not override the current release authorization or manifests.
@@ -168,9 +202,9 @@ establish the FF3 candidate's quality or the owner's acceptance.
 
 ## Toolchain
 
-Use the repository's pinned maintainer tools: Bun 1.4.2, Node 22.23.2 and npm 12.0.2. Put that Node installation first on `PATH` before running build/check commands; the site media pipeline uses Node, native Sharp and an installed Chrome or Chromium.
+Use the repository's pinned maintainer tools: Bun 1.4.2, Node 22.23.3 and npm 12.2.0, as recorded in `../toolchain.json` and `../scenes/toolchain.json`. Put that Node installation first on `PATH` before running build/check commands; the site media pipeline uses Node, native Sharp and an installed Chrome or Chromium.
 
-Runtime dependencies are exact pins. The owner-required `@types/react` and `@types/react-dom` literals remain `^19.3.0`, with exact resolutions in `bun.lock`. Astro 7.3.5 and React 19.3.0 are used with `@astrojs/react` 7.0.0. Site TypeScript is 6.0.3 because `@astrojs/check` 0.9.10 declares TypeScript 5/6 support, excluding 7. Site Three.js is 0.186.0, matching the unchanged engine/render-service manifests and their repository gate. The sealed Farm's original scene uses 0.186.1; it is not loaded or ported into this website. The separately delivered R3F scene also pins 0.186.0, as agreed by the owner, and the site build refuses to bundle a second copy of Three.js, React, React DOM or `@react-three/fiber`.
+Runtime dependencies are exact pins. The owner-required `@types/react` and `@types/react-dom` literals remain `^19.3.0`, with exact resolutions in `bun.lock`. Astro 7.3.5 and React 19.3.0 are used with `@astrojs/react` 7.0.0. Site TypeScript is 6.0.3 because `@astrojs/check` 0.9.10 declares TypeScript 5/6 support, excluding 7. The site, engine, render service and maintained scene packages pin Three.js 0.186.1; the site and scene packages pin `@types/three` 0.186.0 and `@react-three/fiber` 9.8.1. The site builds Farm from maintained scene source and serves the separately sealed Golden Gate and Foundry public bundles. Each sealed runtime retains its own producer identity; historical builds are not relabeled by current manifest pins. The site build refuses to bundle a second copy of Three.js, React, React DOM or `@react-three/fiber`.
 
 ## Data preparation
 
@@ -213,7 +247,7 @@ bun scripts/rig-posters.mjs vehicles --service http://127.0.0.1:8123 --mirror /p
 
 `stage-vehicles.mjs` refuses a vehicle unless everything that vouches for it agrees: the delivered export, the scene pack's copy and the hash its licence text states; the saved revision's sealed files, its parent chain and a creation time inside the run credited with it; the binary chunk of the delivered file and of the saved export; every tier's triangles, bounds, materials and parts in both forms; wheels that stop being drawn where the last tier starts; each tier inside its brief's body-triangle budget; and three.js's own loader drawing exactly the top tier and the wheels the catalog reports. Sizes and triangle counts are read from the GLBs, and the descriptions are the authors' own briefs. The editable ZIP is the saved revision built with fixed timestamps (the revision's UTC creation time), so the same inputs give the same bytes; the pack ZIP is the six GLBs and licence texts under a `delivery.json` inventory. A repeated run leaves `mirror-manifest.json`, `commons-build.json` and `packs/vehicles.json` unchanged. Nothing is uploaded. The vehicles share the Farm pack's licence (CC0-1.0, authored content only; owner decision D-35). The owner approved all six at every tier, including the corrected transit bus on 30 September 2026; the catalog records that approval against its exact revision. The Vehicles r2 catalogue now includes the g7 licence restage while preserving those accepted model identities. `vehicle-runs.mjs` records each run's requested model and effort from its receipt and invocation; no effort is independently confirmed.
 
-### Foundry Floor pack (in production)
+### Foundry Floor pack (historical delivery record)
 
 The Foundry Floor pack (62 interior and campus models, release FF3) is staged from the sealed Foundry Floor scene pack. It includes 31 interior models, 12 campus structures, six road vehicles, eight plants and five freight vehicles. Run `node scripts/scene-pack.mjs` first, then
 

@@ -2,6 +2,8 @@
 
 Read this for an environment or proving application, rather than a simple asset
 arrangement. These are consumer workflows, not additional Kiln CLI/MCP commands.
+The examples describe consumer implementations; the private proving-scene kit is
+not installed by the Kiln engine package. Verify the destination's available APIs.
 
 ## Layout and environment
 
@@ -40,12 +42,45 @@ For a follow camera, run its actual update and controls during passage checks.
 A controller-only loop can pass while the rendered camera hides the actor behind
 an eave or lintel. Inspect the animated head and accessories, not only a clear
 ray toward the torso; keep camera dimensions and fixes in the consuming scene.
+Keep the user's orbit and zoom separate from obstacle-induced camera pull-in.
+Exercise a continuous drag with rendered frames between touch moves, and check
+both heading and distance; a heading-only check misses progressive zoom drift.
+Verify two-finger pinch in both directions, gesture changes, obstruction recovery
+and release without moving the actor. Touch emulation is functional evidence,
+not a substitute for physical-device rendering or timing evidence.
+
+When switching between touch and keyboard controls, release only the movement
+owned by the control being removed. Test the first keyboard press after both an
+idle and an active joystick, plus delayed touch release, cancellation and unmount;
+old cleanup must not erase newer input. Also verify that releasing the current
+control stops movement and that disabling input clears every source.
 
 Separate in-place animation from world movement. A representative animated scene
 may need both, including changing camera visibility, instead of every actor
 walking at its origin. Preview controllers should restore inspection poses and
 hand control back cleanly. State limitations such as kinematic driving or lack of
 navigation instead of presenting a scripted preview as complete gameplay.
+
+When animation runs every rendered frame but movement uses fixed steps, apply the
+final pose and attachment corrections after animation on every rendered frame,
+including frames with no simulation step. Check start/stop, tool removal, seating
+and return to overview at substep intervals. Hand clearance alone does not prove
+that an empty hand has a relaxed gesture or a natural wrist orientation.
+
+For shaders using a moving local origin, compensate every wave phase and texture
+lookup in the same signed, rotated and scaled coordinates as its shader stage.
+Freeze animation and move the camera a small distance across origin and tile
+boundaries on both axes; compare against a repeated capture at the same position.
+Review low and aerial camera paths as well as static views for surface snapping.
+
+For an embedded HUD, size panels against the scene's own box, including short
+landscape views. The optional proving kit anchors its default help and credits
+panels to the HUD independently of toolbar height, and lets nested joystick and
+touch buttons receive pointer input. Scene CSS may keep an inline panel or bottom
+sheet; preserve its intended stacking above play controls. Check scrolling,
+keyboard entry and Escape focus return, then use actual touch events to verify
+movement, release and no click-through. Desktop mouse success alone does not
+establish the touch contract or physical-device acceptance.
 
 ## Optimization and measurement
 
@@ -76,11 +111,18 @@ proving scenes, one farm view drew 583: 312 main, 270 shadow and 1 output. A
 bridge drew 148 of the 180 draws at the lowest tier. Rank levers per scene from
 its own numbers; the same lever can matter in one scene and be absent in another.
 
-Merge rigid parts by material inside anchors, and keep every anchor as a real
-node with its name, transform and children. Anchors are animation targets,
-pivots the application moves, nodes it looks up by name, nodes carrying
-semantic data, and visibility or LOD switches. Leave transparent, multi-material,
-skinned and morphed parts separate. A per-material merge kept doors, wheels,
+Merge compatible material/layout groups inside real animation and interaction
+anchors. Preserve every anchor's name, transform, children and own geometry.
+For builds with Kiln's rigid-group `full` mode, consult the named-part contract in the QA skill's
+`references/engine-handoff.md`: a name alone does not make a boundary, and a
+named non-boundary mesh can become empty or absorb its group's geometry.
+Check the meshes each runtime lookup controls. Disable separate GPU instancing
+when per-node identity or geometry matters (`instance: 'off'` in library calls);
+that pass can remove named instance nodes. The rigid-merge pass protects animation,
+joint, semantic, visibility and LOD boundaries and composition placement roots;
+its locked primitives and vertex splits can leave several draws per material.
+The scene-specific merge behind the following measurements separately excluded
+transparent, multi-material, skinned and morphed parts. It kept doors, wheels,
 limbs, colliders and the frame graph working while a farmhouse went from 16 to
 11 draws and a bridge from 148 to 20. Split very long structures into a few
 spatial groups so culling still works. Two side effects need checks:
@@ -90,9 +132,17 @@ spatial groups so culling still works. Two side effects need checks:
   that now won the depth tie against a walkway stippled the kerbs; ordering the
   curbs first inside the merged mesh fixed it at no extra draw. Parts in
   different buckets keep one fixed order for every view, so split a bucket
-  where the per-part draw order matters: splitting a bridge's tower panels at
-  the ribs' height, one draw per tower, brought a 193 px tie under a 100 px
-  budget.
+  where the per-part draw order matters. In an experimental bridge variant,
+  splitting tower panels at the ribs' height, one draw per tower, brought a
+  193 px tie under a 100 px budget. That prototype was not the adopted bridge
+  solution; do not treat its result as acceptance of a shipped scene.
+
+Use available `drawDiagnostics` as a bounded inspection aid; the QA skill's
+`references/integration-checks.md` explains its scope, skips and observations.
+Its per-anchor estimate uses existing materials and eligible rigid groups,
+including locks and splits; it is not a full-mode or renderer prediction.
+Mirrored-tangent and sampled coplanar candidates direct destination checks,
+not automatic repairs or acceptance. Count the actual extra passes separately.
 
 Treat each extra pass as its own budget:
 - **Shadow pass.** Use material-free depth stand-ins per anchor and shadow side.
@@ -113,6 +163,16 @@ A cached shadow only pays where its frustum stays still. A shadow box that
 follows a driven car re-renders every frame, so measure moving workloads before
 enabling it.
 
+The current proving kit watches `morphTargetInfluences` on casters registered
+under a `movable` node, alongside matrices, visibility, casting and instance
+matrix/count changes. Changing morph weights promotes them to the live map until
+they settle; watched skins remain live. This does not scan geometry or shader
+graphs. Register continuous shader-position animation, custom instance attributes
+and other unobserved deformation with the `live` predicate on the first track;
+call `invalidate` after discrete unobserved changes to static casters. Verify
+that the deformation also reaches the shadow pass. These are consumer cache APIs,
+not extra requirements on standalone assets.
+
 In three r186's WebGPU renderer every `InstancedMesh` binds its own pipeline,
 because its uuid is part of the material cache key. `EXT_mesh_gpu_instancing`
 therefore saves draws but adds a pipeline per instanced group: instancing one
@@ -121,6 +181,11 @@ campus's structures raised its main-pass pipelines, summed over its views, from
 and roughness as vertex data, instance matrices as attributes of plain meshes.
 That took a campus planting from 21 pipelines to 10 at the overview and from
 40-49 to 11-13 near the ground, with pixel parity.
+
+Transforms implemented only in a material graph may be bypassed by override
+materials in shadow, depth or picking passes. Supply equivalent transforms for
+those passes or keep the affected meshes out of them. The planting example has
+no such pass and explicitly prevents the shared plant meshes from casting shadows.
 
 When a frame's main pass is never split by a mid-pass copy (for example a
 depth-texture read for water), its multisampled attachments need not be stored
@@ -136,10 +201,19 @@ tablet's busy column read mixed, busy × clock fell by 15% and 24%.
 Over long view distances, a 24-bit depth buffer with a 0.5 m near plane steps
 by about 0.12 m at 1 km, 3 m at 5 km and 48 m at 20 km, growing with distance
 squared, so distant near-coplanar surfaces flicker as the camera moves.
-Reversed depth is the remedy. In three r186 it needs three adaptations: draw
+Reversed depth addresses that loss of precision. In three r186 it needs three adaptations: draw
 the sky first without a depth test, rebuild a planar reflector's oblique
 projection, and flip the sign of polygon offsets. On WebGL2 it also needs
 `EXT_clip_control`, or three falls back to a standard buffer.
+This repository's optional scene-kit exposes `reversedDepthBuffer` on
+`SceneDefinition` and `RendererFactoryOptions`, defaulting to `false`. A scene
+must opt in and implement its own adaptations. After renderer initialization,
+use the effective `renderer.reversedDepthBuffer` for projection and offset
+changes: a request can become `false` on unsupported WebGL2. Pass the camera's
+coordinate system and effective reversed-depth flag to custom frustum tests.
+Recheck sky, reflection clipping, offsets and depth-reading materials on both
+backends when upgrading three; support in the renderer alone is not scene
+qualification. These are consumer runtime APIs, not Kiln CLI/MCP switches.
 
 Report cached features in both their settled and their running state. With the
 clock running, the farm view that drew 583 drew 314-337, with about ten static

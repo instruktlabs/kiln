@@ -4,6 +4,28 @@ Existing inline-code transport and the legacy capture format remain supported. T
 Discovery and authoring-helper changes below require explicit migration; retired
 names have no callable compatibility aliases.
 
+## Unreleased changes planned for 0.11
+
+These changes describe the local alignment candidate, not the downloadable 0.10.0
+release. Use the documentation and package from the same release when upgrading.
+
+- **Full optimization.** `optimize: 'full'` replaces flatten/join with rigid-group
+  merging. The rigid-merge pass keeps every node's name, parent and transform, but an
+  ordinary named mesh can become empty or hold its group's merged geometry. The
+  separate GPU-instancing pass can remove named instance nodes. Use `instance: 'off'`
+  with `optimize: 'off'` or `'palette'` if your integration requires geometry on each
+  named part. Animation, joint,
+  semantic, composition-placement and LOD boundaries remain protected. See the
+  [full-mode contract](runtime.md#bake-defaults).
+- **Saved rebuilds.** New full-mode builds record `optimizationPipeline: 'rigid-v1'`.
+  Rebuilding an older unversioned full-mode revision with the new pipeline is refused.
+  Keep its original pinned engine for an exact rebuild, or explicitly author and
+  save a new child revision with the new engine. Reading or exporting its original
+  saved GLB remains supported; existing revisions are not rewritten.
+- **Tool outputs.** Inspection and export add bounded draw diagnostics and advisory
+  geometry observations. Tool input schemas and compact render results are unchanged;
+  older packages do not provide these new observations.
+
 ## Changes in 0.10.0
 
 The [changelog](../CHANGELOG.md) names every break; these are the ones an existing

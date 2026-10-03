@@ -8,7 +8,7 @@ used CPU or GPU. Remove credentials and private paths from shared logs.
 ## Work on the engine
 
 Read [AGENTS.md](AGENTS.md) and the [README](README.md). Contributor checks use Bun
-1.4.2, Node 22.23.2 and npm 12.0.2. End users only need Node/npm for a built package.
+1.4.2, Node 22.23.3 and npm 12.2.0. End users only need Node/npm for a built package.
 
 ```sh
 bun install --frozen-lockfile
@@ -24,9 +24,25 @@ bun run test:coverage
 `bun run test` is `bun test src scripts`, so it never reaches `render-service/` -- a
 separate npm project with its own lockfile and a native dependency.
 `bun run test:render-service` does, after `npm --prefix render-service ci
---ignore-scripts` once. All 37 of those tests are pure, so none of them needs a GPU or
-the Dawn build; CI requires the job, and before this the only way to find a break in it
-was a red pull request.
+--ignore-scripts` once. This suite needs no GPU or Dawn build; CI requires it.
+
+The maintained scenes have a separate lockfile and validation commands:
+
+```sh
+cd scenes
+bun install --frozen-lockfile
+bun run check:toolchain
+bun run check:pins
+bun run typecheck
+bun run lint
+bun run test
+bun test ./scripts/tests --timeout 20000
+```
+
+The pin check reads the engine, render service and site from the same checkout.
+The portable test runner covers scene source contracts; the separate script-test
+command covers the validation and evidence tooling. Asset and browser qualification
+require staged inputs; see [scenes/README.md](scenes/README.md).
 
 `lint` reports **nothing** on a clean tree, and a warning fails it. There is no
 tolerated baseline to compare against, so any diagnostic your change produces is
@@ -41,11 +57,12 @@ count read off the output is a floor.
 
 ### Version
 
-`version` in `package.json` moves with every change that ships. It sat at `0.6.0`
-through 21 shipped changes while CI named every tarball from it, so two people could
-hold `kiln-engine-0.6.0.tgz` and have materially different software. Patch for a fix,
-minor for changed or added capability; this package is pre-1.0 and unpublished, so a
-minor is the normal case.
+`version` in `package.json` identifies the installable release. Changes on `main`
+ahead of that release go in the changelog's `Unreleased` section and can retain the
+released version until the next release is prepared. A new release must bump the
+version before producing its tarball: two different releases must never share a
+package version. Patch for a fix, minor for changed or added capability; this
+package is pre-1.0 and unpublished, so a minor is the normal case.
 
 Bumping it means rebuilding: `runtimeBuildIdentity` hashes the version into each
 entry's `identity` in `dist/build.json`, which is the value a build receipt cites. Run

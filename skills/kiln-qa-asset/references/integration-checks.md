@@ -54,6 +54,31 @@ file as a derivative with its own hash and keep the editable source and baseline
 
 ## Performance evidence
 
+In builds that provide it, `drawDiagnostics` appears in `kiln_inspect` compact/full
+results, `kiln_export`, and CLI export JSON for GLBs/bundles. It is advisory output,
+not a QA rule or acceptance result. Read `status` and `reason` first: `input-limit`,
+`unreadable-glb` or `analysis-failed` means no assessment. An absent field in an older
+installation or a lean response is not a clean result.
+
+Read `scope` and `mergeEstimate.method` with the numbers. These are static single-pass
+primitive counts across document scenes with node visibility, without culling,
+alternate LOD selections, shadows, reflections, depth or other renderer passes.
+The estimate uses current materials and the rigid merge's layouts, boundaries,
+locks, byte budget and vertex splits; it excludes palette consolidation and
+instancing, so it does not predict complete `full` output or GPU speed. Check
+`mergeEstimate.skipped` and rejected buckets. Compare per-anchor `draws` and
+`afterRigidMerge` by ID, and report `anchors.omitted` when the listing is truncated.
+Measure actual destination draws by anchor, material and pass after export, then
+exercise the interactions and attachments those anchors protect.
+
+Read each observation's `evidence` and sampling/omission counts.
+`mirroredTangents` identifies static tangent-bearing parts with mirrored transforms;
+it does not establish a shading defect. `coplanarParts` samples triangle overlaps
+between parts; it neither proves visible z-fighting nor clears unsampled faces.
+Skinned, morphed and GPU-instanced uses are unexamined by these observations.
+Review candidate surfaces and normal-map lighting in the destination before
+changing geometry or material behavior.
+
 Separate cold loading/compilation and first interactions from warmed playback.
 Record actual renderer/backend, versions, resolution, quality and representative
 instances. Distinguish CPU submission/update time, browser frame intervals and

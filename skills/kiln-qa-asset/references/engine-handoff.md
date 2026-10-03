@@ -116,6 +116,28 @@ replace edited skills. Consult the updated runtime documentation when working in
   Bake Animation. Reimport the FBX and check offsets; materials and sidedness can still change.
   See [Blender's option documentation](https://docs.blender.org/api/main/bpy.ops.export_scene.html).
 
+### Full optimization and named parts
+
+In builds with rigid-group `full` optimization, the rigid-merge pass retains every node's name,
+transform and hierarchy. It preserves geometry directly attached to boundaries:
+animation targets, skin joints, `Joint_*` pivots, nodes carrying extras or named by semantic
+relationships, visibility switches, LOD owners and levels, shared scene roots,
+and composition placement roots. Compatible rigid descendants can merge inside
+each boundary. A name alone is not a boundary: another named mesh may become
+empty or hold merged geometry from its rigid group.
+
+Check the exact meshes each consumer lookup moves, replaces, hides or uses for
+collision. If those depend on geometry staying on a particular unprotected node,
+retain `palette`/`off` or establish a supported boundary before using `full`.
+Also disable separate GPU instancing when per-node identity or geometry matters:
+that pass can remove named instance nodes. Set `instance: 'off'` in library calls
+or `KILN_BAKE_INSTANCE=off` in the host; this is not a new tool input.
+Full optimization is separate from the editable/runtime delivery profile and
+does not retroactively change a saved asset. Check merge warnings and the
+[bounded diagnostic guidance](integration-checks.md#performance-evidence), then
+verify the exported derivative's interactions and material appearance in the
+destination. Preserved names alone do not prove compatibility.
+
 ## Measured LOD import behavior
 
 On 2026-09-30, headless structural checks imported 13 static vegetation and freight GLBs
@@ -208,7 +230,9 @@ and silhouette remain part of owner review.
   extension shows LOD0 only, as three.js `GLTFLoader` 0.186 does. The measured Blender and
   glTFast behavior is recorded above; automatic threshold switching still needs destination
   qualification. An imported GLB's chains survive save, optimisation and export too. GPU
-  instancing skips a file with chains, and full optimisation falls back to palette.
+  instancing skips a file with chains. In builds with rigid-group `full` optimisation,
+  the rigid-merge pass preserves the chain owner and every referenced level as separate boundaries; compatible rigid descendants
+  can merge within those boundaries. This does not qualify destination LOD switching.
 - More extensions in a valid GLB do not guarantee support in every importer or shader. GPU
   appearance, runtime-loaded shader inclusion, compression codecs and other render pipelines
   need their own checks. This option does not change KTX2 defaults or fix unsupported Node versions.

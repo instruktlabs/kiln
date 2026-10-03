@@ -1,7 +1,14 @@
-# Draw optimization landing (PR 1): plan of record
+# Draw optimization landing (PR 1): historical plan
 
-Status: waiting for the owner to pass the goal statement at the end of this file. Nothing below is implemented
-until then. Written 2026-10-02 at 13:17 -04:00.
+Current disposition (3 October): PR #131 landed the 24 existing non-engine commits,
+records and compose-scene corrections as `b1ac6ee`. The larger goal statement below
+was split; its new follow-up work was explicitly deferred, as the progress log and
+scenes/DECISIONS.md D-65 through D-76 record. The engine modules did not land.
+Use the [current alignment plan](2026-10-02-core-scenes-site-alignment.md) and
+[backlog](../backlog.md) for remaining work. Do not redo the completed scene pass.
+
+Status at writing: waiting for the owner to pass the goal statement at the end of
+this file. Written 2026-10-02 at 13:17 -04:00. The original proposal follows.
 
 ## Purpose
 
@@ -260,7 +267,7 @@ Keep `draw-base`, `draw-after`, `flicker-revz2`, the evidence and the reports.
 - 14:02: PR #130 (docs and site only, no shared file) merged as `a396612` at 13:53, so the landing branch was rebased
   onto it before the push and its gates were rerun.
 
-## Goal statement
+## Original goal statement before the landing split
 
 <!-- goal:start -->
 Land the draw-optimization scene work as PR 1 by following docs/plans/2026-10-02-draw-optimization-landing.md (owner answers of 2 October to sweep decisions D1-D34). Work on a new branch, draw-optimization-landing, cut from origin/main in the worktree C:/Users/Mattm/X/kiln-draw-optimization, with every draw-optimization commit except e72b610 cherry-picked (the engine modules are for the engine agent's PR 2). Never edit, stash, switch or clean C:/Users/Mattm/X/kiln-oss or C:/Users/Mattm/X/kiln-v1-readiness. Never edit a file PR #129 changes. Never touch site/, deploy, upload assets or post upstream. Artifacts stay private. The only live spend is the D31 dogfood runs.

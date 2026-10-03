@@ -5,8 +5,47 @@ separate milestones. The package is not published on the npm registry.
 
 ## Unreleased
 
-On `main` after the 0.10.0 release; the package version stays 0.10.0 until the next one.
+Changes since the 0.10.0 tagged package release. The package version stays 0.10.0
+until the next package release; source/main and website deployment are separate
+from publishing a new installable package.
 
+- **Breaking (planned 0.11):** `optimize: 'full'` replaces flatten/join with rigid-group
+  merging. Its rigid-merge pass preserves node names, hierarchy and transforms, including animated targets,
+  named joint pivots, semantic nodes, composition placements and LOD levels. Ordinary
+  named mesh nodes can become empty or hold merged geometry. When geometry must remain
+  on every named part, use `optimize: 'off'` or `'palette'` with `instance: 'off'`;
+  the separate GPU-instancing pass can remove named instance nodes. Shared-buffer expansion is limited
+  to 4 KiB per saved draw, and merged buckets split at 65,534 vertices. Results expose
+  boundary, lock and rejection diagnostics. New builds record `rigid-v1`; exact
+  rebuilds of older unversioned full-mode revisions require their original engine
+  or an explicit new authoring revision. Original saved GLBs remain exportable.
+- ORM packing isolates shared images per metallic-roughness/occlusion pair. Materials
+  with different AO maps and consumers in other texture slots retain their original
+  pixels, UVs and samplers; identical packing pairs reuse the packed image.
+- Scene browser tools share portable executable discovery and clean up temporary
+  profiles on launch failure and close. The normal portable scene gate includes
+  script tests, and the static server identifies WebP images correctly.
+- Cloudflare Pages deployment has a portable Node preflight that verifies the exact
+  launch-mode artifact inventory, sizes and hashes against a clean checkout before
+  upload. The PowerShell entry delegates to the same implementation.
+- Inspection and export summaries add bounded per-anchor draw counts, a qualified
+  rigid-merge estimate, and sampled mirrored-tangent/coplanar-part observations.
+  Compact render output and tool input schemas stay unchanged; estimates and flags
+  are advisory, not GPU timings or QA acceptance.
+- Compatible dependency updates include glTF Transform 4.5.1, manifold 3.5.4,
+  MCP client/server 2.3.0, Strands 1.19.0 with the compatible AI SDK 6/provider 3
+  family, image libraries and tooling. Site/scenes use Vite 8.3.2. Maintainer pins
+  move to Node 22.23.3/npm 12.2.0, retaining Bun 1.4.2 and consumer Node compatibility.
+- The exact-input scene release gate verifies public pack hashes and cannot pass
+  through missing-fixture skips. Shadow caches observe morph weights, Farm's economy
+  tier retains its trailer casters, and Golden Gate reflections exclude dynamic
+  traffic/player/fog while preserving vegetation; diagnostic fog hiding persists.
+
+- The scenes' dependency pin check resolves the engine, site and render service
+  from the integrated checkout instead of hard-coded Windows worktrees. It now
+  runs on the Linux hub and relocated checkouts; a filesystem regression test
+  verifies collection and detection of an engine pin mismatch. Contributor and
+  Troy resume instructions name the current validation and workspace setup commands.
 - The kit pass (`applyKitContract`, `packKitGlb`) no longer folds an occlusion map into the
   metallic-roughness image when the two are read through different UV sets or
   `KHR_texture_transform` values. It used to point the occlusion slot at the

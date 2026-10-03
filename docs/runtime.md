@@ -133,14 +133,35 @@ Advanced geometry callbacks also have operation-specific input limits. Those che
 
 ### Bake defaults
 
+The rigid-group `full` contract and `rigid-v1` rebuild policy below describe the
+unreleased alignment candidate planned for 0.11. They are not implemented by the
+downloadable 0.10.0 package; see the [migration notes](migration.md#unreleased-changes-planned-for-011).
+
 `KILN_BAKE_OPTIMIZE` and `KILN_BAKE_INSTANCE` choose the bake passes for a render that does not pass `optimize` or `instance`; a value the call passes always wins.
 
 | Environment variable | Supported values |
 | --- | --- |
-| `KILN_BAKE_OPTIMIZE` | `off` (default), `auto`, `palette` or `full`; any other value means `off`. `palette` merges flat-colour materials into one palette material and texture, `auto` does so only for an asset with at least four distinct materials, and `full` also flattens and joins meshes to cut draw calls, falling back to `palette` for an asset that is animated, skinned or LOD-chained or has nodes that carry extras or visibility |
+| `KILN_BAKE_OPTIMIZE` | `off` (default), `auto`, `palette` or `full`; any other value means `off`. `palette` merges flat-colour materials into one palette material and texture; `auto` does so only for an asset with at least four distinct materials. `full` also merges compatible primitives within rigid groups, preserving animation, joint, semantic, visibility and LOD boundaries |
 | `KILN_BAKE_INSTANCE` | `auto` (default), `off` or `on`; any other value means `auto`. `on` batches a mesh shared by five or more nodes with `EXT_mesh_gpu_instancing` and `auto` does so only for `role: 'fill'` assets; neither batches an animated or skinned asset, or one with `Joint_` pivots, LOD chains, or nodes that carry extras or visibility |
 
 The MCP and CLI tools pin `optimize: 'off'` for every render, inspection and save, so `KILN_BAKE_OPTIMIZE` does not change a tool's GLB; they leave `instance` to the host, so `KILN_BAKE_INSTANCE` does. Library calls that omit `optimize` take the variable: `renderGLB` in process, `renderSceneToGLB` (including the review copies some tool views are rendered from), `renderCodeViewGrid` and `rasterizeComposedScene`. The library's own subprocess mode does not pass either variable to its worker. `node kiln.mjs asset ASSET_ID REVISION --rebuild --out rebuilt.glb` replays the `optimize` and `instance` the saved manifest recorded, whatever the variables say. Both variables are part of the local build-cache key.
+
+Full mode's rigid-merge pass retains every node name, parent and transform. Geometry on a protected
+boundary stays there; other named mesh nodes can become empty or hold their group's
+merged geometry. Consumers that require geometry attached to each ordinary named
+part should use `optimize: 'off'` or `'palette'` with `instance: 'off'`: the separate
+GPU-instancing pass runs first and can remove named instance nodes. A host can
+disable that pass with `KILN_BAKE_INSTANCE=off`. Composition placement wrappers are protected
+automatically. Transparent, skinned, morphing and other incompatible primitives stay
+separate. Shared geometry is copied only within 4 KiB per saved draw, and merged
+buckets split at 65,534 vertices. The optimization summary reports locks and rejected
+buckets; these are geometry results, not GPU performance or appearance acceptance.
+
+New full-mode builds record `optimizationPipeline: 'rigid-v1'`. An older saved
+revision with unversioned `full` options cannot use the new algorithm as an exact
+rebuild: use its original pinned engine, or explicitly author and save a new child
+revision. Reading and exporting the original saved GLB still work. Other saved modes
+retain their replay behavior.
 
 ## What a build identity covers
 

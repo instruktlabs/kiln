@@ -20,7 +20,7 @@ cd ../my-assets
 node agy.mjs --model gemini-3.8-flash-high
 ```
 
-Use the supported Bun 1.4.2 and Node 22.23.2 toolchain. A built package avoids the
+Use the supported Bun 1.4.2 and Node 22.23.3 toolchain. A built package avoids the
 Bun/build steps: run `npm exec --offline -- kiln-init ../my-assets --harness agy`
 from its installation directory instead. Check [release compatibility](install.md#release-compatibility)
 before following saved-asset examples with an older package.

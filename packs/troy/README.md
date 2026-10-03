@@ -51,7 +51,7 @@ masonry is `MATERIAL_IMAGE_COUNT_BUDGET` (the `web.portable.v1/standard` four-im
 | Greek soldier | `greek-soldier` | `r_647e60b4…` | 2,000 | 24 | 3 | 6 | accepted/warn | c38, from the Trojan soldier |
 | Hector | `hector` | `r_44e1d798…` | 2,224 | 25 | 3 | 6 | accepted/warn | c39 |
 | Achilles | `achilles` | `r_a108d7a3…` | 2,424 | 27 | 3 | 6 | accepted/warn | c40 |
-| Trojan Horse | `wooden-horse` | `r_7ee4d961…` | 2,060 | 16 | 3 | 6 | accepted/warn | w36; `open_hatch` clip |
+| Trojan Horse | `wooden-horse` | `r_7ee4d961…` | 2,060 | 16 | 3 | 6 | accepted/warn | w36; `hatch_open` clip |
 | Battle before the gate | `battle-scene-reference` | `r_4573e90a…` (`r_150bbef8…`) | 208,178 | 130 | 28 | 16 | accepted/warn | s50's composition recomposed from the revisions above: a reference for the real scene, not the scene itself |
 
 The sessions named in the origin column (w19, c37, ...) are the live sessions of the report; the

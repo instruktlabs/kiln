@@ -106,9 +106,29 @@ shape while preserving a correct wrist pivot and attachment frame, then check ha
 clearance through the relevant motion and against the complete carried tool.
 
 When reducing draw calls, consolidate compatible geometry within the same rigid
-motion parent. Preserve independently moving nodes, attachment markers and names
-that the consumer uses. Recheck clip targets and intermediate poses after export;
-fewer meshes alone does not establish a successful optimization.
+motion parent. Give independently moving groups real, named `Joint_*` pivots and
+put their rigid geometry beneath them. Preserve attachment markers and consumer
+lookups. In builds with rigid-group `full` optimization, the rigid-merge pass retains
+node names, but a named mesh outside a protected boundary can become empty or contain
+other parts' geometry. If each named part must keep its geometry, use `off` or
+`palette` optimization and disable the separate GPU-instancing pass, which can remove
+named instance nodes (`instance: 'off'` in library calls or `KILN_BAKE_INSTANCE=off`
+in the host). Recheck what each
+lookup controls, clip targets and intermediate poses after export; fewer meshes
+alone does not establish a successful optimization.
+
+Budget materials within each rigid group. Reuse the parent's material for tiny
+fixed details when it gives the intended appearance; a separate material adds a
+potential draw even when the detail is small. One material does not guarantee
+one draw: vertex layouts, protected parts, transparency and vertex-limit splits
+also constrain merging. Available `drawDiagnostics` can help locate these costs;
+read its scope and skip reasons, then measure in the destination.
+
+Avoid unintentionally overlapping coplanar faces on separate parts. Merging can
+change which face wins a depth tie even when geometry and colours are preserved.
+Use a shared surface, remove hidden duplicate faces or give a deliberate overlay
+the separation it needs. Inspect the actual exported surface from relevant views;
+do not offset every touching joint or treat a sampled coplanar flag as a defect.
 
 ## Materials and directional UVs
 

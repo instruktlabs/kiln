@@ -1,5 +1,14 @@
 # Draw optimization: handoff to the engine and 0.10.0 work
 
+Current disposition (3 October): #129, #131 and #132 are merged. The scene runtime
+optimization landed; the separate engine modules and full-mode replacement did not.
+#132 fixed UV/transform handling, while the pre-existing shared-image ORM overwrite
+remains reproduced on main. The old wiring patch no longer applies cleanly after
+#132. The [current alignment plan](../plans/2026-10-02-core-scenes-site-alignment.md)
+records six implementation conditions and release scope; the [backlog](../backlog.md)
+separates pending work from completed scene work. Patch applicability and readiness
+claims below describe the original commit, not current main.
+
 This record is for the agent that owns the engine and the 0.10.0 release (branch `v1-readiness`,
 PR #129). It lists what the draw-optimization cycle changed or found that touches the engine,
 its skills, assets or projects. That covers what is ready to apply, what is only proposed, and

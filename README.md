@@ -15,7 +15,7 @@ the model; Kiln does not require a separate model API key for its tools.
 
 Walk the [Farm](https://kilnstudio.tools/scenes/farm/), drive across
 [Golden Gate](https://kilnstudio.tools/scenes/golden-gate/), or explore the
-[Foundry Floor preview](https://kilnstudio.tools/scenes/foundry-floor/).
+[Foundry Floor](https://kilnstudio.tools/scenes/foundry-floor/).
 The scenes put Kiln assets to work with animation, levels of detail and interactive controls.
 
 | Farm | Golden Gate |
@@ -27,9 +27,8 @@ The scenes put Kiln assets to work with animation, levels of detail and interact
 | --- | --- |
 | [![Foundry campus exterior](assets/readme/foundry-campus-v09.png)](https://kilnstudio.tools/scenes/foundry-floor/) | [![Container transport inside the Foundry Floor](assets/readme/foundry-floor-v09.png)](https://kilnstudio.tools/scenes/foundry-floor/) |
 
-The Foundry preview pairs a factory campus with a representative floor in its southwest
+Foundry Floor pairs a factory campus with a representative floor in its southwest
 building. AMRs, robot arms and overhead transport move containers through the fab.
-This scene is still in production.
 
 Six reusable vehicles, shown with the gallery's live body-paint controls:
 

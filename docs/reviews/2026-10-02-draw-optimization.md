@@ -1,5 +1,13 @@
 # Draw optimization across the three scenes
 
+Current disposition (3 October): the non-engine optimization work below landed in
+PR #131 (`b1ac6ee`). Optimized Farm is deployed; Golden Gate and Foundry await the
+planned reseal of their optimized runtimes. The separate engine modules remain
+unlanded. The [current plan](../plans/2026-10-02-core-scenes-site-alignment.md) and
+[backlog](../backlog.md) distinguish completed work from adopted follow-ups. All
+before/after counts, timing and local-only statements below describe the recorded
+cycle, not a new run or the current delivery state.
+
 The draw-optimization cycle ran on branch `draw-optimization` in the worktree
 `C:/Users/Mattm/X/kiln-draw-optimization`, following
 `docs/plans/2026-10-01-draw-optimization-cycle.md`. Owner decisions OD-1 to OD-18

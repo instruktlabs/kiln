@@ -1,5 +1,10 @@
 # Cycle close before the trip: plan of record (2 October 2026)
 
+**Later hub direction:** the owner has deferred the full Troy scene until core, existing
+assets/scenes, upgrades and Cloudflare delivery are aligned. The current work queue is
+[Kiln alignment before Troy](2026-10-02-core-scenes-site-alignment.md). This document
+retains the cycle-close scope, decisions and verification as their dated record.
+
 Written 14:05 -04:00, revised 14:40 after the owner's direction ("finish what can be committed, pushed, merged and deployed before the trip; clear-cut engine defects confirmed by the adversarial review go in; tricky or undetermined work waits for the hub and is documented") and after the engine module review.
 
 Owners: **F** = the engine session (orchestration, merges, releases, hub sync), **O1** = Opus agent landing the scenes work (PR 1), **O2** = Opus agent fixing the clear-cut engine defects (PR 3), **Owner** = Matt, who continues on the hub (his Linux laptop) after the trip.
@@ -72,3 +77,64 @@ Plus missing tests (D2/D3 cases, in-scene LOD levels, partial-mesh and cross-gro
 ## 8. Decisions
 - A (the split), B (no 0.11.0 now; clear-cut fixes land without a bump) and C (one site deploy after the merges, on the owner's word): taken by the owner's direction of 2 October, 14:00 to 14:20.
 - Q1 to Q3: open, for the hub.
+
+## 9. Hub readiness verification (2 October 2026)
+
+The hub fetched and pulled `origin/main`: both the checkout and remote are at
+`ac8456c` (#132), with a clean starting tree. PRs #129 through #132 are merged;
+there are no open PRs. CI and Website passed on that commit. The package remains
+0.10.0 with the three engine fixes under `Unreleased`; the rigid-merge and
+extension-compatibility modules are still only on the raw `draw-optimization`
+branch at `4a1d238`. Its worktree, wiring patches and ignored evidence are intact.
+The private evidence repository is also current with its remote at `3cdd416`.
+
+Readiness changes, left uncommitted for review:
+
+- Fix `scenes/scripts/check-pins.ts` to read this integrated checkout's engine,
+  site, renderer and toolchain instead of the old Windows worktrees. The relocated
+  filesystem test failed on the old path and passes with the fix; it also verifies
+  detection of a changed engine pin.
+- Refresh contributor validation/version guidance, scene checks, the Troy setup
+  commands and the hub's `~/X/START-HERE.md`. Preserve the earlier dated plans and
+  evidence; the original landing goal's deferred items remain deferred.
+- Upgrade the live Troy workspace's runtime metadata through managed setup. The
+  initial refresh needed no managed file rewrites. After the owner approved the
+  host's full OS upgrade for ChatGPT, install isolated Node 22.23.2/npm 12.0.2
+  under `~/.local/share/kiln-toolchain/` rather than downgrade system packages,
+  then repin `kiln.mjs` and `.mcp.json` through another managed upgrade. Existing
+  local relocation/skill edits were preserved. Setup reports `current`; CLI
+  Discovery resolves `~/X/kiln`. Restart a previously open harness/MCP session.
+
+Local checks used Bun 1.4.2, Node 22.23.2 and npm 12.0.2:
+
+| Check | Result |
+| --- | --- |
+| Root and scene frozen installs | No dependency or lockfile changes |
+| All six runtime bundles | Source identities and bundle hashes match |
+| Root toolchain, skills, typecheck and lint | Pass |
+| Root `test:coverage` | 3,137 pass, 3 skip, 0 fail; functions 95.06%, lines 92.25%; ratchet passes |
+| Render-service tests | 78 pass, 0 fail; no GPU required |
+| Scene toolchain, pins, typecheck and lint | Pass |
+| Scene portable tests | 525 pass, 30 fixture skips, 0 fail |
+| Scene script tests (run separately) | 58 pass, 1 fixture skip, 0 fail |
+
+After the owner's approved host OS upgrade, the full root coverage gate was
+rerun: the same 3,137 passes, three skips and coverage percentages, with no
+failures. Root toolchain, skills, typecheck and lint, all 78 render-service tests,
+45 focused runtime/capture/material tests and the 11 scene-check tests also
+passed. Scene toolchain/pins and the repinned Troy setup/Discovery checks remained
+current. The official ChatGPT Linux preview was installed and its visible
+XWayland launch verified; host installation, update and reboot notes are in
+`~/X/START-HERE.md`. No reboot or GPU qualification was performed.
+
+The raw branch's author-reported scene acceptance figures are still historical
+evidence. These portable checks do not establish browser parity, GPU readiness,
+quiet-host timing, pack acceptance or live dogfood. Those remain in section 7.
+
+One queued engine defect was independently reproduced on current `main`:
+materials A and B share a metallic-roughness texture but have distinct occlusion
+maps, with red values 40 and 220. After `applyKitContract`, both occlusion slots
+read 220 and the summary reports two successful packs with no skip. The UV and
+transform guard in #132 does not prevent mutation of the shared image. Add a
+focused failing test in `src/__tests__/kit.test.ts`, then preserve each material's
+occlusion through a per-occlusion image copy or an explicitly reported skip.
