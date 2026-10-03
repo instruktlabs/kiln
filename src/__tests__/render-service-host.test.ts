@@ -81,7 +81,7 @@ describe('localRenderServiceState', () => {
     expect(localRenderServiceState(nested)).toBe('dependencies-incompatible');
     await writeFile(
       join(installation, 'node_modules/webgpu/package.json'),
-      JSON.stringify({ name: 'webgpu', version: '0.6.1', main: 'index.js' }),
+      JSON.stringify({ name: 'webgpu', version: '0.6.2', main: 'index.js' }),
     );
     expect(localRenderServiceState(nested)).toBe('ready');
   });

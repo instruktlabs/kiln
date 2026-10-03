@@ -10,13 +10,14 @@ import { programRefPattern, retainProgram } from './program-store';
 import { createKilnProgramToolRegistry, newestRevision } from './tools/registry';
 import { writeNewDestinationsAtomic } from './cli-output';
 import { exportAssetGlb } from './asset-export';
+import { inspectDrawDiagnostics } from './draw-diagnostics';
 import { createPackagedLocalToolContext } from './local-runtime';
 import { buildRenderPort, resolveRenderMode } from './cli-render-mode';
 import { startAssetViewer } from './asset-viewer';
 import { FileWorkspace, localWorkspaceRoot } from './workspace-node';
 import { FileLiveReview } from './live-review-node';
 import { resolveAssetMaterialPayload } from './project-bundle-node';
-import { rebuildOptionsSchema } from './rebuild-options';
+import { FULL_OPTIMIZATION_PIPELINE, rebuildOptionsSchema } from './rebuild-options';
 import { assertSavedRequirementsAuthorized } from './requirements-assets';
 import { resolveRequirementsContext } from './requirements-context';
 import { assetViewerHref } from './viewer/deep-link';
@@ -295,13 +296,22 @@ export async function assetMain(argv: readonly string[]): Promise<number> {
             throw new Error(
               'Saved exporter settings are incomplete; use an explicit new authoring run instead of an exact rebuild.',
             );
+          if (
+            parsed.data.optimize === 'full' &&
+            parsed.data.optimizationPipeline !== FULL_OPTIMIZATION_PIPELINE
+          )
+            throw new Error(
+              'Saved revision uses an unversioned full optimization pipeline; rebuild with its original pinned engine, or explicitly author and save a new child revision to migrate.',
+            );
+          // The pipeline version is replay metadata, not an evaluator input option.
+          const { optimizationPipeline: _pipeline, ...renderOptions } = parsed.data;
           const materialResources = await resolveAssetMaterialPayload(
             new FileWorkspace(localWorkspaceRoot()),
             record,
           );
           const code = new TextDecoder().decode(source);
           const rendered = await context.evaluatorPort!.render(code, {
-            ...parsed.data,
+            ...renderOptions,
             materialResources,
             requirements,
           });
@@ -404,6 +414,14 @@ export async function assetMain(argv: readonly string[]): Promise<number> {
               revisionId,
               profile,
               format,
+              ...(format !== 'source'
+                ? {
+                    drawDiagnostics: await inspectDrawDiagnostics(
+                      written.find(({ kind }) => kind === 'glb')?.data ??
+                        record.files['asset.glb']!,
+                    ),
+                  }
+                : {}),
               files: written.map(({ kind, path, data }) => ({
                 kind,
                 path,

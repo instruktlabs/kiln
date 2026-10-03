@@ -47,18 +47,9 @@ import {
   type GeometryExportPolicy,
 } from './geometry-export';
 import { createHash } from 'node:crypto';
-import { Document } from '@gltf-transform/core';
+import { Document, Logger } from '@gltf-transform/core';
 import { KHRMaterialsEmissiveStrength } from '@gltf-transform/extensions';
-import {
-  dedup,
-  instance,
-  palette,
-  flatten,
-  join,
-  weld,
-  prune,
-  mergeDocuments,
-} from '@gltf-transform/functions';
+import { dedup, instance, palette, weld, prune, mergeDocuments } from '@gltf-transform/functions';
 
 import {
   buildSlotIndex,
@@ -108,7 +99,8 @@ import {
 } from './material-resources';
 import { DEFAULT_TEXTURE_RESOLVER, type TextureResolver } from './texture-resolver';
 import type { MaterialLibraryPayloadV1, MaterialManifestV1 } from './material-library';
-import type { RebuildOptions } from './rebuild-options';
+import { FULL_OPTIMIZATION_PIPELINE, type RebuildOptions } from './rebuild-options';
+import { rigidMerge, type RigidMergeSummary } from './rigid-merge';
 import { assertGeneratedSourceSafe } from './validation';
 import { applyKitContract, type KitPackOptions, type KitPackSummary } from './kit';
 import {
@@ -1097,9 +1089,11 @@ export interface RenderResult {
  *                 named pivots, and animations are fully preserved, so it is safe
  *                 for animated assets + Kiln City behaviors. Lifts the grade by
  *                 collapsing the material count (the grade's primary axis).
- *   - `full`    — `palette` plus `flatten → join` to also cut draw calls. STATIC
- *                 assets only: auto-degrades to `palette` when the Document has
- *                 animations or skins (flatten/join must not disturb a rig).
+ *   - `full`    — `palette` plus rigid-group merging. Animation targets, joints,
+ *                 semantic, visibility and LOD boundaries keep their geometry;
+ *                 every node keeps its name and hierarchy. Other named meshes
+ *                 may become empty or hold a merged group. Shared geometry is
+ *                 copied only within the byte budget; merged indices stay 16-bit.
  * A render that omits the mode takes `KILN_BAKE_OPTIMIZE` (else `off`); what every
  * pass keeps intact is listed on {@link consolidateMaterials}.
  */
@@ -1113,6 +1107,8 @@ export interface OptimizeSummary {
   materialsAfter: number;
   drawsBefore: number;
   drawsAfter: number;
+  /** Full-mode boundaries, locks and rejected buckets, before final cleanup. */
+  rigidMerge?: RigidMergeSummary;
 }
 
 /**
@@ -1441,11 +1437,9 @@ async function applyGpuInstancing(
  *
  * `palette` collapses distinct untextured flat-color materials into one palette
  * material + a small palette texture (textured materials pass through untouched);
- * `weld` + `prune` clean up. `full` adds `flatten → join` to also reduce draws,
- * but ONLY for static, semantics-free assets — animations, skins, `MSFT_lod`
- * chains, or any reserved semantic extras auto-degrade to `palette` so a rig,
- * LOD level, portal-clearance node, socket, or separable role is never flattened
- * away. `prune` keeps empty leaf nodes + extras so named pivots that Kiln City
+ * `weld` + `prune` clean up. `full` merges rigid groups, preserving animation,
+ * joint, semantic, LOD and visibility boundaries while optimizing their rigid
+ * descendants independently. `prune` keeps empty leaf nodes + extras so named pivots that Kiln City
  * behaviors target by name survive, and LOD levels that only a chain references.
  * palette groups by alpha mode, so opaque + the one glass slot stay distinct
  * materials (transparency is never flattened into opaque).
@@ -1456,18 +1450,13 @@ async function applyGpuInstancing(
 async function consolidateMaterials(
   doc: Document,
   mode: 'palette' | 'full',
+  keep: readonly string[] = [],
 ): Promise<OptimizeSummary> {
+  // Transform progress must not corrupt CLI/MCP JSON on stdout. Warnings and
+  // errors remain visible on stderr; structured merge diagnostics ride below.
+  doc.setLogger(new Logger(Logger.Verbosity.WARN));
   const before = collectGlbMetrics(doc);
   const root = doc.getRoot();
-  const animatedOrSkinned = root.listAnimations().length > 0 || root.listSkins().length > 0;
-  const semanticGraph = root
-    .listNodes()
-    .some((node) => node.getExtras()[KILN_SEMANTIC_EXTRAS_KEY] !== undefined);
-  const effective: 'palette' | 'full' =
-    mode === 'full' &&
-    (animatedOrSkinned || semanticGraph || hasNodeLevelsOfDetail(doc) || hasPreservedNodeState(doc))
-      ? 'palette'
-      : mode;
 
   // palette() groups by shading properties and copies only one material's extras.
   // Keep authored material identities whenever those carry application metadata.
@@ -1476,12 +1465,13 @@ async function consolidateMaterials(
     .some((material) => Object.keys(material.getExtras()).length > 0)
     ? []
     : [palette({ min: PALETTE_MIN })];
-  if (effective === 'full') {
-    // flatten() leaves skeletons + animation-targeted nodes in place, but it may
-    // remove empty semantic clearance/socket nodes even when prune keeps leaves
-    // and extras. Full therefore runs only on static, semantics-free graphs.
-    steps.push(flatten(), join({ keepNamed: true }));
-  }
+  let merge: RigidMergeSummary | undefined;
+  if (mode === 'full')
+    steps.push(
+      rigidMerge({ keep }, (summary) => {
+        merge = summary;
+      }),
+    );
   // A solid texture can be semantically meaningful in more than one slot (for
   // example the same unnamed bytes used as base color, normal, and packed MR).
   // gltf-transform's default solid-texture pruning folds base/MR pixels into
@@ -1495,12 +1485,31 @@ async function consolidateMaterials(
 
   const after = collectGlbMetrics(doc);
   return {
-    mode: effective,
+    mode,
     materialsBefore: before.uniqueMaterials,
     materialsAfter: after.uniqueMaterials,
     drawsBefore: before.drawCalls,
     drawsAfter: after.drawCalls,
+    ...(merge ? { rigidMerge: merge } : {}),
   };
+}
+
+/** Surface incomplete full-mode work without flooding compact render output per part. */
+function optimizeWarnings(summary: OptimizeSummary): string[] {
+  const merge = summary.rigidMerge;
+  if (!merge) return [];
+  const warnings: string[] = [];
+  if (merge.skipped)
+    warnings.push(`Rigid merge skipped: ${merge.skipped}; geometry left separate.`);
+  if (merge.rejected.length)
+    warnings.push(
+      `Rigid merge retained ${merge.rejected.length} rejected buckets; first: ${merge.rejected[0]!.error}`,
+    );
+  if (merge.unmatchedKeep.length)
+    warnings.push(
+      `Rigid merge did not find ${merge.unmatchedKeep.length} requested boundary names.`,
+    );
+  return warnings;
 }
 
 /**
@@ -1681,6 +1690,7 @@ export async function renderSceneToGLB(
   if (effectiveOptimize !== 'off') {
     try {
       optimize = await consolidateMaterials(doc, effectiveOptimize);
+      warnings.push(...optimizeWarnings(optimize));
     } catch (err) {
       warnings.push(
         `optimize (${effectiveOptimize}) failed: ${err instanceof Error ? err.message : String(err)}`,
@@ -1859,6 +1869,9 @@ export async function renderGLBInProcess(
     gltfExporter: resolveGltfExporter(opts.gltfExporter),
     geometryPolicy: opts.geometryPolicy ?? 'warn',
     optimize: resolveOptimize(opts.optimize),
+    ...(resolveOptimize(opts.optimize) === 'full'
+      ? { optimizationPipeline: FULL_OPTIMIZATION_PIPELINE }
+      : {}),
     instance: resolveInstance(opts.instance),
   };
   let materialLibraryDependencies: MaterialManifestV1[] | undefined;
@@ -1993,6 +2006,8 @@ export interface OptimizeGlbResult {
   instancing?: InstancingSummary;
   /** Official Khronos report for the exact rebaked bytes. */
   gltfValidation: KhronosGltfValidationReport;
+  /** Nonfatal optimization diagnostics; exact bucket details are in summary.rigidMerge. */
+  warnings?: string[];
 }
 
 /**
@@ -2051,6 +2066,7 @@ export async function optimizeGlbBytes(
       gltfValidation,
       ...(report ? { report } : {}),
       ...(summary ? { summary } : {}),
+      ...(summary ? { warnings: optimizeWarnings(summary) } : {}),
       ...(instancing ? { instancing } : {}),
     };
   } catch (error) {
@@ -2257,6 +2273,8 @@ export interface SceneComposeResult {
   warnings: string[];
   /** Official Khronos report for the exact composed bytes. */
   gltfValidation: KhronosGltfValidationReport;
+  /** Consolidation and rigid-boundary diagnostics when an optimization pass ran. */
+  optimize?: OptimizeSummary;
 }
 
 /** Euler degrees (XYZ) → a glTF quaternion [x, y, z, w] via THREE (the viewer's frame). */
@@ -2298,6 +2316,7 @@ export async function composeSceneGLB(
   const masterScene = master.createScene(opts.sceneName ?? 'Scene');
   master.getRoot().setDefaultScene(masterScene);
   let composed = 0;
+  const placementNames: string[] = [];
 
   for (let i = 0; i < parts.length; i++) {
     const part = parts[i]!;
@@ -2323,6 +2342,7 @@ export async function composeSceneGLB(
         mergedScene.dispose();
       }
       masterScene.addChild(wrap);
+      placementNames.push(wrap.getName());
       composed++;
     } catch (err) {
       warnings.push(
@@ -2350,9 +2370,11 @@ export async function composeSceneGLB(
   if (optimizeMode === 'auto' && collectGlbMetrics(master).uniqueMaterials >= PALETTE_MIN) {
     effectiveOptimize = 'palette';
   }
+  let optimize: OptimizeSummary | undefined;
   if (effectiveOptimize !== 'off') {
     try {
-      await consolidateMaterials(master, effectiveOptimize);
+      optimize = await consolidateMaterials(master, effectiveOptimize, placementNames);
+      warnings.push(...optimizeWarnings(optimize));
     } catch (err) {
       warnings.push(
         `optimize (${effectiveOptimize}) failed: ${err instanceof Error ? err.message : String(err)}`,
@@ -2386,6 +2408,7 @@ export async function composeSceneGLB(
     materials: metrics.uniqueMaterials,
     warnings,
     gltfValidation,
+    ...(optimize ? { optimize } : {}),
   };
 }
 

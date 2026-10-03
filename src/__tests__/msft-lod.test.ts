@@ -190,10 +190,10 @@ for (const fixture of FIXTURES) {
       }
     });
 
-    test('full consolidation degrades to palette instead of flattening a LOD chain', async () => {
+    test('full consolidation preserves every referenced LOD level', async () => {
       const result = await optimizeGlbBytes(await fixture.make(), { mode: 'full' });
 
-      expect(result?.summary?.mode).toBe('palette');
+      expect(result?.summary?.mode).toBe('full');
       expectLodChains(result!.bytes, ['Bus'], fixture);
     });
 

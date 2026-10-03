@@ -8,13 +8,21 @@
  */
 import { describe, expect, test } from 'bun:test';
 
-import { Document, WebIO } from '@gltf-transform/core';
+import {
+  Document,
+  type Material,
+  type Texture,
+  type TextureInfo,
+  WebIO,
+} from '@gltf-transform/core';
 import {
   KHRMaterialsEmissiveStrength,
   KHRMaterialsVariants,
   KHRTextureBasisu,
   KHRTextureTransform,
+  type Transform,
 } from '@gltf-transform/extensions';
+import sharp from 'sharp';
 
 import {
   applyKitContract,
@@ -154,7 +162,210 @@ function occlusionBesideMetallicRoughness(occlusionUv: number, metallicRoughness
   return { doc, material, occlusion, metallicRoughness };
 }
 
+async function sharedOrmFixture(reverse = false) {
+  const doc = new Document();
+  const texture = async (name: string, rgba: [number, number, number, number]) =>
+    doc
+      .createTexture(name)
+      .setMimeType('image/png')
+      .setImage(
+        await sharp(Buffer.from(rgba), { raw: { width: 1, height: 1, channels: 4 } })
+          .png()
+          .toBuffer(),
+      );
+  const mr = await texture('Shared MR', [100, 130, 170, 60]);
+  const a = await texture('AO A', [40, 0, 0, 255]);
+  const b = await texture('AO B', [220, 0, 0, 255]);
+  const materials = new Map<string, Material>();
+  const entries: [string, Texture][] = [
+    ['A', a],
+    ['B', b],
+    ['A again', a],
+  ];
+  for (const [name, ao] of reverse ? entries.reverse() : entries) {
+    materials.set(
+      name,
+      doc.createMaterial(name).setOcclusionTexture(ao).setMetallicRoughnessTexture(mr),
+    );
+  }
+  return { doc, mr, materials };
+}
+
+async function rgba(texture: Texture | null): Promise<number[]> {
+  return Array.from(await sharp(texture!.getImage()!).ensureAlpha().raw().toBuffer());
+}
+
+function sampling(info: TextureInfo) {
+  const transform = info.getExtension<Transform>('KHR_texture_transform');
+  return {
+    texCoord: info.getTexCoord(),
+    magFilter: info.getMagFilter(),
+    minFilter: info.getMinFilter(),
+    wrapS: info.getWrapS(),
+    wrapT: info.getWrapT(),
+    transform: transform && {
+      texCoord: transform.getTexCoord(),
+      offset: transform.getOffset(),
+      rotation: transform.getRotation(),
+      scale: transform.getScale(),
+    },
+  };
+}
+
 describe('ORM channel packing', () => {
+  test('shared metallic-roughness retains each occlusion independently of material order', async () => {
+    for (const reverse of [false, true]) {
+      const { doc, materials } = await sharedOrmFixture(reverse);
+      const summary = await applyKitContract(doc, { ktx2: false });
+
+      for (const [name, red] of [
+        ['A', 40],
+        ['B', 220],
+        ['A again', 40],
+      ] as const) {
+        const material = materials.get(name)!;
+        expect(await rgba(material.getOcclusionTexture())).toEqual([red, 130, 170, 255]);
+        expect(material.getOcclusionTexture()).toBe(material.getMetallicRoughnessTexture());
+      }
+      expect(materials.get('A')!.getOcclusionTexture()).toBe(
+        materials.get('A again')!.getOcclusionTexture(),
+      );
+      expect(doc.getRoot().listTextures()).toHaveLength(2);
+      expect(summary.ormPacked).toBe(3);
+      expect(summary.ormSkipped).toBeUndefined();
+      doc.createBuffer();
+      const serialized = await io().writeBinary(doc);
+      expect((await applyKitContract(doc, { ktx2: false })).ormPacked).toBe(0);
+      expect(await io().writeBinary(doc)).toEqual(serialized);
+    }
+  });
+
+  test('packing keeps already-packed, unpaired and other-slot consumers unchanged', async () => {
+    const { doc, mr, materials } = await sharedOrmFixture();
+    const original = Uint8Array.from(mr.getImage()!);
+    const packed = doc
+      .createMaterial('Already packed')
+      .setOcclusionTexture(mr)
+      .setMetallicRoughnessTexture(mr);
+    const unpaired = doc.createMaterial('MR only').setMetallicRoughnessTexture(mr);
+    // The same material can use the image in multiple slots: counting parents alone
+    // would miss the base-color/alpha dependency after the other MR users move.
+    const baseColor = materials.get('A')!.setBaseColorTexture(mr).setAlphaMode('BLEND');
+    const normal = doc.createMaterial('Normal').setNormalTexture(mr);
+
+    await applyKitContract(doc, { ktx2: false });
+
+    expect(mr.getImage()).toEqual(original);
+    expect(await rgba(packed.getOcclusionTexture())).toEqual([100, 130, 170, 60]);
+    expect(unpaired.getMetallicRoughnessTexture()).toBe(mr);
+    expect(baseColor.getBaseColorTexture()).toBe(mr);
+    expect(normal.getNormalTexture()).toBe(mr);
+    expect(await rgba(baseColor.getOcclusionTexture())).toEqual([40, 130, 170, 255]);
+    expect(doc.getRoot().listTextures()).toHaveLength(3);
+  });
+
+  test('a sole material using MR as base color keeps its original pixels and alpha', async () => {
+    const { doc, material, metallicRoughness } = occlusionBesideMetallicRoughness(0, 0);
+    const original = await sharp(
+      Buffer.from(Array.from({ length: 16 }, () => [100, 130, 170, 60]).flat()),
+      { raw: { width: 4, height: 4, channels: 4 } },
+    )
+      .png()
+      .toBuffer();
+    metallicRoughness.setImage(original);
+    material.setBaseColorTexture(metallicRoughness).setAlphaMode('BLEND');
+
+    await applyKitContract(doc, { ktx2: false });
+
+    expect(material.getBaseColorTexture()!.getImage()).toEqual(original);
+    expect(material.getOcclusionTexture()).not.toBe(metallicRoughness);
+    expect((await rgba(material.getOcclusionTexture())).slice(0, 4)).toEqual([200, 130, 170, 255]);
+  });
+
+  test('serialized shared ORM pairs keep pixels, slot sampling and material factors', async () => {
+    const { doc, mr, materials } = await sharedOrmFixture();
+    const transforms = doc.createExtension(KHRTextureTransform);
+    const a = materials.get('A')!;
+    a.setOcclusionStrength(0.4).setRoughnessFactor(0.6).setMetallicFactor(0.8);
+    const aoInfo = a.getOcclusionTextureInfo()!;
+    const mrInfo = a.getMetallicRoughnessTextureInfo()!;
+    for (const [index, info] of [aoInfo, mrInfo].entries()) {
+      info
+        .setTexCoord(index)
+        .setMagFilter(index === 0 ? 9728 : 9729)
+        .setMinFilter(index === 0 ? 9984 : 9987)
+        .setWrapS(index === 0 ? 33071 : 10497)
+        .setWrapT(index === 0 ? 33648 : 10497)
+        .setExtension(
+          'KHR_texture_transform',
+          transforms
+            .createTransform()
+            .setTexCoord(1)
+            .setOffset([0.25, 0.5])
+            .setScale([2, 3])
+            .setRotation(0.2),
+        );
+    }
+    const expectedSampling = [sampling(aoInfo), sampling(mrInfo)];
+    a.setBaseColorTexture(mr).setAlphaMode('BLEND');
+    const buffer = doc.createBuffer();
+    const position = doc
+      .createAccessor()
+      .setType('VEC3')
+      .setBuffer(buffer)
+      .setArray(new Float32Array([0, 0, 0, 1, 0, 0, 0, 1, 0]));
+    const uv = doc
+      .createAccessor()
+      .setType('VEC2')
+      .setBuffer(buffer)
+      .setArray(new Float32Array([0, 0, 1, 0, 0, 1]));
+    const scene = doc.createScene();
+    for (const material of materials.values()) {
+      scene.addChild(
+        doc
+          .createNode()
+          .setMesh(
+            doc
+              .createMesh()
+              .addPrimitive(
+                doc
+                  .createPrimitive()
+                  .setAttribute('POSITION', position)
+                  .setAttribute('TEXCOORD_0', uv)
+                  .setAttribute('TEXCOORD_1', uv)
+                  .setMaterial(material),
+              ),
+          ),
+      );
+    }
+    const serializer = io().registerExtensions([KHRTextureTransform]);
+    const result = await packKitGlb(await serializer.writeBinary(doc), { ktx2: false });
+    expect(result!.gltfValidation.issues.numErrors).toBe(0);
+    expect(result!.summary.ormPacked).toBe(3);
+    const after = await serializer.readBinary(result!.bytes);
+    const byName = new Map(
+      after
+        .getRoot()
+        .listMaterials()
+        .map((m) => [m.getName(), m]),
+    );
+    const afterA = byName.get('A')!;
+    expect(await rgba(afterA.getOcclusionTexture())).toEqual([40, 130, 170, 255]);
+    expect(await rgba(byName.get('B')!.getOcclusionTexture())).toEqual([220, 130, 170, 255]);
+    expect(await rgba(afterA.getBaseColorTexture())).toEqual([100, 130, 170, 60]);
+    expect([
+      sampling(afterA.getOcclusionTextureInfo()!),
+      sampling(afterA.getMetallicRoughnessTextureInfo()!),
+    ]).toEqual(expectedSampling);
+    expect([
+      afterA.getOcclusionStrength(),
+      afterA.getRoughnessFactor(),
+      afterA.getMetallicFactor(),
+    ]).toEqual([0.4, 0.6, 0.8]);
+    expect(afterA.getOcclusionTexture()).toBe(byName.get('A again')!.getOcclusionTexture());
+    expect(await packKitGlb(result!.bytes, { ktx2: false })).toBeUndefined();
+  });
+
   test('the occlusion image is folded in AND removed from the file', async () => {
     const original = await glbOf(ORM);
     const packed = await packKitGlb(original, { ktx2: false });

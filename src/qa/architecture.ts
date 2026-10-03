@@ -1327,7 +1327,13 @@ export const ARCHITECTURE_QA_RULE: QaRule = {
   promotion: conformancePromotionAuthorization(
     'architecture-qa-v1',
     'src/qa/architecture.test.ts',
-    'c3a3bdc764c62238cede39813995fcaa428131d0aa3774bcd86cfc8b60f36671',
+    // Full-mode export now retains the semantic boundaries directly. Only the
+    // mode assertion/title changed; all architecture conformance assertions remain.
+    'ce42ab6baef737d109f272413d902ea0903bd66c4da13ea723a52aff2f9e6c66',
+    KILN_ENGINE_QA_OWNER,
+    '2026-10-03T05:45:42.000Z',
+    'enforce',
+    'cpu-raster:0.10.0',
   ),
   defaultMode: 'enforce',
   evaluate: (context) =>

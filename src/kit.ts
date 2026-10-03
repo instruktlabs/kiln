@@ -206,6 +206,13 @@ async function packOcclusionIntoMetallicRoughness(
   const sharp = (await import('sharp')).default;
   let packed = 0;
   const skipped: string[] = [];
+  // Reuse images for the same source pair; sampling stays on each material slot.
+  const packedPairs = new Map<Texture, Map<Texture, Texture>>();
+  const assign = (material: Material, mr: Texture, ao: Texture, result: Texture): void => {
+    material.setMetallicRoughnessTexture(result).setOcclusionTexture(result);
+    disposeIfOrphaned(ao);
+    if (mr !== result) disposeIfOrphaned(mr);
+  };
 
   for (const [index, material] of doc.getRoot().listMaterials().entries()) {
     const occlusion = material.getOcclusionTexture();
@@ -215,6 +222,12 @@ async function packOcclusionIntoMetallicRoughness(
     const mismatch = uvMappingMismatch(material, index);
     if (mismatch) {
       skipped.push(mismatch);
+      continue;
+    }
+    const cached = packedPairs.get(metallicRoughness)?.get(occlusion);
+    if (cached) {
+      assign(material, metallicRoughness, occlusion, cached);
+      packed += 1;
       continue;
     }
 
@@ -256,11 +269,24 @@ async function packOcclusionIntoMetallicRoughness(
         .png({ compressionLevel: 9 })
         .toBuffer();
 
-      metallicRoughness.setImage(new Uint8Array(png));
-      // Only the image changes: the occlusion slot keeps its own UV set and transform,
-      // which the mismatch check above found equal to the metallic-roughness slot's.
-      material.setOcclusionTexture(metallicRoughness);
-      disposeIfOrphaned(occlusion);
+      // Another slot may need the original R or alpha, including another slot on
+      // this same material. Count reference edges, not just parent materials.
+      const shared = doc
+        .getGraph()
+        .listParentEdges(metallicRoughness)
+        .some(
+          (edge) =>
+            edge.getParent().propertyType !== 'Root' &&
+            (edge.getParent() !== material || edge.getName() !== 'metallicRoughnessTexture'),
+        );
+      // Clear a cloned image's URI so a later JSON export cannot overwrite its source.
+      const result = shared ? metallicRoughness.clone().setURI('') : metallicRoughness;
+      result.setImage(new Uint8Array(png));
+      const pairs = packedPairs.get(metallicRoughness) ?? new Map<Texture, Texture>();
+      pairs.set(occlusion, result);
+      packedPairs.set(metallicRoughness, pairs);
+      // Rebinding leaves each slot's UV, transform and sampler settings intact.
+      assign(material, metallicRoughness, occlusion, result);
       packed += 1;
     } catch {
       // A texture we cannot decode stays as it is. The file is still valid.

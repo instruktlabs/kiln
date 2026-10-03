@@ -148,13 +148,13 @@ describe('ARCH-010–016 validator policy', () => {
     }
   });
 
-  test('final export preserves helper portal/roof semantics and safely degrades full optimize', async () => {
+  test('final export preserves helper portal/roof semantics with full optimize', async () => {
     const { shell, intent } = canonicalHelperShell('x');
     const rendered = await renderSceneToGLB(shell.root, {
       requirements: bindLegacyFixtureRequirements(intent),
       optimize: 'full',
     });
-    expect(rendered.optimize?.mode).toBe('palette');
+    expect(rendered.optimize?.mode).toBe('full');
     expect(rendered.qaReport.dimensions.exportIntegrity.status).toBe('pass');
     expect(rendered.qaReport.rules.find((r) => r.id === 'ARCHITECTURE_PROFILE')?.status).toBe(
       'evaluated',

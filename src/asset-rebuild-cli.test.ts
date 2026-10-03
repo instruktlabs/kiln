@@ -118,3 +118,69 @@ test('CLI rebuild after project import uses exact saved source/options/materials
     await rm(root, { recursive: true, force: true });
   }
 }, 20000);
+
+for (const versioned of [false, true]) {
+  test(`CLI full rebuild ${versioned ? 'replays a versioned artifact exactly' : 'refuses an unversioned legacy pipeline before writing'}`, async () => {
+    const root = await mkdtemp(join(tmpdir(), 'kiln-full-rebuild-cli-'));
+    try {
+      const workspace = new FileWorkspace(root);
+      const library = new FileAssetLibrary({ project: join(root, 'assets', 'kiln') });
+      const code = `const meta={name:'Pair'}; function build(){const r=createRoot('Root');const m=gameMaterial(0x888888);createPart('A',boxGeo(1,1,1),m,{parent:r});createPart('B',boxGeo(1,1,1),m,{parent:r,position:[1,0,0]});return r;}`;
+      const rendered = await renderGLBInProcess(code, { optimize: 'full', instance: 'off' });
+      const { optimizationPipeline, ...olderOptions } = rendered.rebuildOptions!;
+      expect(optimizationPipeline).toBe('rigid-v1');
+      const asset = await library.save('project', {
+        name: 'Pair',
+        code,
+        glb: rendered.glb,
+        build: {
+          engine: 'fixture',
+          warnings: [],
+          options: {
+            ...(versioned ? rendered.rebuildOptions : olderOptions),
+            requirements: rendered.requirements,
+          },
+        },
+      });
+      const output = join(root, 'rebuilt.glb');
+      const rebuilt = spawnSync(
+        process.execPath,
+        [
+          resolve('src/cli.ts'),
+          'asset',
+          asset.assetId,
+          asset.revisionId,
+          '--rebuild',
+          '--out',
+          output,
+        ],
+        {
+          cwd: root,
+          env: {
+            ...process.env,
+            KILN_WORKSPACE: workspace.root,
+            KILN_PROJECT: '',
+            KILN_PROGRAM_STORE: '',
+            KILN_COLLECTIONS: '',
+            KILN_EVALUATOR_MODE: 'in-process',
+            KILN_BUILD_CACHE: 'memory',
+            KILN_RENDER: 'cpu',
+          },
+          encoding: 'utf8',
+          windowsHide: true,
+        },
+      );
+      if (versioned) {
+        expect(rebuilt.status, rebuilt.stderr).toBe(0);
+        expect(JSON.parse(rebuilt.stdout).matchesSavedArtifact).toBe(true);
+        expect(new Uint8Array(await readFile(output))).toEqual(Uint8Array.from(rendered.glb));
+      } else {
+        expect(rebuilt.status, rebuilt.stderr).toBe(1);
+        expect(rebuilt.stderr).toContain('unversioned full optimization pipeline');
+        await expect(readFile(output)).rejects.toMatchObject({ code: 'ENOENT' });
+      }
+    } finally {
+      await rm(root, { recursive: true, force: true });
+    }
+  }, 20000);
+}

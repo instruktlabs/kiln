@@ -112,6 +112,11 @@ test('CLI saves, exports, imports, and restores a revision across independent st
       profile: 'editable',
       format: 'glb',
       files: [{ kind: 'glb', path: editable, bytes: canonical.length, sha256: sha256(canonical) }],
+      drawDiagnostics: expect.objectContaining({
+        version: 'kiln.draw-diagnostics.v1',
+        status: 'assessed',
+        currentDraws: expect.any(Number),
+      }),
     });
     expect(new Uint8Array(await readFile(editable))).toEqual(Uint8Array.from(canonical));
     const runtime = join(root, 'runtime.glb');
@@ -129,6 +134,11 @@ test('CLI saves, exports, imports, and restores a revision across independent st
     const metadataPath = join(root, 'runtime.kiln-metadata.json');
     const receipt = JSON.parse(runtimeRun.stdout);
     expect(receipt).toMatchObject({ ok: true, profile: 'runtime', format: 'glb' });
+    expect(receipt.drawDiagnostics).toMatchObject({
+      version: 'kiln.draw-diagnostics.v1',
+      status: 'assessed',
+      currentDraws: expect.any(Number),
+    });
     expect(receipt.files).toEqual(
       await Promise.all(
         [

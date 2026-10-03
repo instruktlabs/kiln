@@ -4,7 +4,7 @@ import {
   type AssetManifest,
   type AssetRecord,
 } from './assets';
-import { exportAssetGlb } from './asset-export';
+import { exportAssetGlb, type AssetGlbExport } from './asset-export';
 
 export interface AssetLink {
   type: 'resource_link';
@@ -79,8 +79,9 @@ export function assetMime(name: string): string {
 export async function runtimeAssetLinks(
   collection: string,
   record: AssetRecord,
+  derived?: Extract<AssetGlbExport, { profile: 'runtime' }>,
 ): Promise<AssetLink[]> {
-  const output = await exportAssetGlb(record, { profile: 'runtime' });
+  const output = derived ?? (await exportAssetGlb(record, { profile: 'runtime' }));
   if (output.profile !== 'runtime') throw new Error('Expected runtime export');
   return [
     { name: 'runtime.glb', bytes: output.glb },

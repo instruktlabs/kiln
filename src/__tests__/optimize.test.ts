@@ -4,7 +4,7 @@
  * Covers the pass's load-bearing guarantees:
  *   - palette collapses many distinct flat materials -> ~1 and lifts the grade
  *   - the grade is recomputed on the OPTIMIZED document
- *   - `full` auto-degrades to `palette` when the asset is animated (rig-safe)
+ *   - `full` merges rigid groups without deleting static or animated pivots
  *   - transparency is never flattened into opaque (glass stays its own material)
  *   - prune keeps named pivots (Kiln City behaviors target createPivot Joint_ by name)
  *   - `optimize='off'` is byte-stable (deterministic, no consolidation)
@@ -21,7 +21,8 @@ import {
   gameMaterial,
   glassMaterial,
 } from '../primitives';
-import { renderSceneToGLB, optimizeGlbBytes } from '../render';
+import { renderSceneToGLB, optimizeGlbBytes, composeSceneGLB, renderGLBInProcess } from '../render';
+import { createGltfIO } from '../gltf-io';
 import { WebIO } from '@gltf-transform/core';
 
 /** A distinct flat color per index (HSL hue sweep — guaranteed unique materials). */
@@ -119,8 +120,8 @@ describe('optimize=palette (material collapse)', () => {
   });
 });
 
-describe('optimize=full (static-only; auto-degrade on animation)', () => {
-  it('auto-degrades to palette when the asset is animated', async () => {
+describe('optimize=full (rigid groups)', () => {
+  it('merges within an animated pivot while preserving its animation target', async () => {
     const root = createRoot('Spinner');
     const hub = createPivot('Spin', [0, 1, 0], root);
     for (let i = 0; i < 8; i++) {
@@ -140,10 +141,75 @@ describe('optimize=full (static-only; auto-degrade on animation)', () => {
 
     const after = await renderSceneToGLB(root, { optimize: 'full', clips: [clip] });
     expect(after.optimize).toBeDefined();
-    // full requested, but animated -> degrades to palette (rig stays intact).
-    expect(after.optimize!.mode).toBe('palette');
+    expect(after.optimize!.mode).toBe('full');
+    expect(after.optimize!.drawsAfter).toBeLessThan(after.optimize!.drawsBefore);
     const names = await nodeNamesOf(after.bytes);
     expect(names.has('Joint_Spin')).toBe(true);
+    const doc = await createGltfIO().readBinary(after.bytes);
+    expect(doc.getRoot().listAnimations()[0]!.listChannels()[0]!.getTargetNode()!.getName()).toBe(
+      'Joint_Spin',
+    );
+  });
+
+  it('preserves an unanimated joint and reports its merge boundaries', async () => {
+    const root = createRoot('Cabinet');
+    const material = gameMaterial(0x888888);
+    for (let i = 0; i < 3; i++)
+      createPart(`Body${i}`, boxGeo(1, 1, 1), material, { position: [i, 0, 0], parent: root });
+    const door = createPivot('Door', [0, 1, 0], root);
+    createPart('Panel', boxGeo(1, 0.1, 1), material, { parent: door });
+    const after = await renderSceneToGLB(root, { optimize: 'full' });
+    const doc = await createGltfIO().readBinary(after.bytes);
+    const joint = doc
+      .getRoot()
+      .listNodes()
+      .find((n) => n.getName() === 'Joint_Door');
+    expect(joint).toBeDefined();
+    expect(joint!.getTranslation()).toEqual([0, 1, 0]);
+    expect(joint!.listChildren()).toHaveLength(1);
+    expect(after.optimize?.rigidMerge?.boundaries).toContainEqual({
+      node: 'Joint_Door',
+      reasons: ['joint-pivot'],
+    });
+    expect(after.optimize?.drawsAfter).toBe(2);
+  });
+
+  it('keeps separate placement wrappers and reports composition optimization', async () => {
+    const asset = await renderSceneToGLB(manyColorScene(6), { optimize: 'off' });
+    const composed = await composeSceneGLB(
+      [
+        {
+          name: 'First',
+          bytes: asset.bytes,
+          transform: { pos: [0, 0, 0], rotDeg: [0, 0, 0], scale: [1, 1, 1] },
+        },
+        {
+          name: 'Second',
+          bytes: asset.bytes,
+          transform: { pos: [0, 0, 5], rotDeg: [0, 90, 0], scale: [1, 1, 1] },
+        },
+      ],
+      { optimize: 'full' },
+    );
+    const doc = await createGltfIO().readBinary(composed.bytes);
+    const placements = doc.getRoot().listScenes()[0]!.listChildren();
+    expect(placements.map((n) => n.getName())).toEqual(['First', 'Second']);
+    const draws = (node: (typeof placements)[number]): number =>
+      (node.getMesh()?.listPrimitives().length ?? 0) +
+      node.listChildren().reduce((n, child) => n + draws(child), 0);
+    expect(placements.map(draws)).toEqual([1, 1]);
+    expect(composed.optimize?.rigidMerge?.boundaries).toEqual([
+      { node: 'First', reasons: ['kept'] },
+      { node: 'Second', reasons: ['kept'] },
+    ]);
+  });
+
+  it('records the full optimizer pipeline version and is byte deterministic', async () => {
+    const code = `const meta={name:'Pair'}; function build(){const r=createRoot('Root');const m=gameMaterial(0x888888);createPart('A',boxGeo(1,1,1),m,{parent:r});createPart('B',boxGeo(1,1,1),m,{parent:r,position:[1,0,0]});return r;}`;
+    const a = await renderGLBInProcess(code, { optimize: 'full', instance: 'off' });
+    const b = await renderGLBInProcess(code, { optimize: 'full', instance: 'off' });
+    expect(a.rebuildOptions?.optimizationPipeline).toBe('rigid-v1');
+    expect(b.glb).toEqual(a.glb);
   });
 });
 

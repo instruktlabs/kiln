@@ -1837,6 +1837,7 @@ export const inspectBufferInput = inspectInput.omit({ code: true });
 const inspectAdvertisedInput = inspectInput.extend({ shot: cameraShotRecordInput });
 
 export interface KilnInspectResult extends EvaluationEvidence {
+  drawDiagnostics?: import('../draw-diagnostics').DrawDiagnostics;
   partListing?: PartListing;
   surfaceMeasurements?: ReturnType<typeof import('../views/surface-distance').measureSurfacePairs>;
   comparison?: Awaited<ReturnType<typeof import('../revision-comparison').compareRevisionGlbs>> & {
@@ -1943,6 +1944,9 @@ async function runInspect(
     if (input.measure && input.measure.mode !== 'surface')
       measurement = measureAttachment(root, input.measure);
     const measurements = {
+      drawDiagnostics: await (await import('../draw-diagnostics')).inspectDrawDiagnostics(
+        evaluated.glb,
+      ),
       ...(input.listParts ? { partListing: await listPartPage(root, input.listParts) } : {}),
       ...(measurement ? { measurement } : {}),
       ...(surfaceMeasurements ? { surfaceMeasurements } : {}),
@@ -3047,15 +3051,21 @@ export function createKilnAssetDefs(context: KilnToolContext): KilnToolDef[] {
       inputSchema: profileExportInput,
       run: async (raw) => {
         const input = profileExportInput.parse(raw);
+        const record = await readSavedRevision(
+          library(),
+          input.collection,
+          input.assetId,
+          input.revisionId,
+        );
+        const { inspectDrawDiagnostics } = await import('../draw-diagnostics');
         if (input.profile === 'runtime') {
-          const record = await readSavedRevision(
-            library(),
-            input.collection,
-            input.assetId,
-            input.revisionId,
-          );
+          const output = await (await import('../asset-export')).exportAssetGlb(record, {
+            profile: 'runtime',
+          });
+          if (output.profile !== 'runtime') throw new Error('Expected runtime export');
           return {
             ok: true,
+            drawDiagnostics: await inspectDrawDiagnostics(output.glb),
             profile: input.profile,
             collection: input.collection,
             asset: {
@@ -3066,14 +3076,14 @@ export function createKilnAssetDefs(context: KilnToolContext): KilnToolDef[] {
             resources: await (await import('../assets-resources')).runtimeAssetLinks(
               input.collection,
               record,
+              output,
             ),
           };
         }
-        return links(
-          input.collection,
-          (await readSavedRevision(library(), input.collection, input.assetId, input.revisionId))
-            .manifest,
-        );
+        return {
+          ...(await links(input.collection, record.manifest)),
+          drawDiagnostics: await inspectDrawDiagnostics(record.files['asset.glb']!),
+        };
       },
     },
     {

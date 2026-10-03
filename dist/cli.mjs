@@ -3577,7 +3577,7 @@ var init_architecture = __esm(() => {
     scope: { kind: "category", category: "architecture" },
     ruleClass: "exact",
     owner: KILN_ENGINE_QA_OWNER,
-    promotion: conformancePromotionAuthorization("architecture-qa-v1", "src/qa/architecture.test.ts", "c3a3bdc764c62238cede39813995fcaa428131d0aa3774bcd86cfc8b60f36671"),
+    promotion: conformancePromotionAuthorization("architecture-qa-v1", "src/qa/architecture.test.ts", "ce42ab6baef737d109f272413d902ea0903bd66c4da13ea723a52aff2f9e6c66", KILN_ENGINE_QA_OWNER, "2026-10-03T05:45:42.000Z", "enforce", "cpu-raster:0.10.0"),
     defaultMode: "enforce",
     evaluate: (context) => evaluateArchitectureQa(context).filter((finding) => finding.disposition === "block")
   };
@@ -16076,13 +16076,14 @@ var init_requirements_report = __esm(() => {
 
 // src/rebuild-options.ts
 import { z as z4 } from "zod";
-var rebuildOptionsSchema;
+var FULL_OPTIMIZATION_PIPELINE = "rigid-v1", rebuildOptionsSchema;
 var init_rebuild_options = __esm(() => {
   rebuildOptionsSchema = z4.object({
     indexPolicy: z4.enum(["indexed", "asBuilt"]).optional(),
     gltfExporter: z4.enum(["legacy", "three"]),
     geometryPolicy: z4.enum(["warn", "strict"]),
     optimize: z4.enum(["off", "auto", "palette", "full"]),
+    optimizationPipeline: z4.literal(FULL_OPTIMIZATION_PIPELINE).optional(),
     instance: z4.enum(["off", "auto", "on"])
   });
 });
@@ -22855,6 +22856,507 @@ var init_material_metrics = __esm(() => {
   });
 });
 
+// src/rigid-merge.ts
+import {
+  ComponentTypeToTypedArray,
+  Primitive,
+  PropertyType as PropertyType3
+} from "@gltf-transform/core";
+import { createTransform, dequantizePrimitive, joinPrimitives } from "@gltf-transform/functions";
+import * as THREE37 from "three";
+function isSingular(matrix) {
+  const e = matrix.elements;
+  const scale = Math.hypot(e[0], e[1], e[2]) * Math.hypot(e[4], e[5], e[6]) * Math.hypot(e[8], e[9], e[10]);
+  const det = matrix.determinant();
+  return !Number.isFinite(det) || Math.abs(det) <= 0.000000001 * scale;
+}
+function findRigidBoundaries(doc, keep) {
+  const root = doc.getRoot();
+  const found = new Map;
+  const add = (node, reason) => {
+    const reasons = found.get(node) ?? [];
+    if (!reasons.includes(reason))
+      reasons.push(reason);
+    found.set(node, reasons);
+  };
+  for (const animation of root.listAnimations())
+    for (const channel of animation.listChannels()) {
+      const target = channel.getTargetNode();
+      if (target)
+        add(target, "animated");
+    }
+  for (const skin of root.listSkins())
+    for (const joint of skin.listJoints())
+      add(joint, "skin-joint");
+  const targets = new Set;
+  for (const node of root.listNodes()) {
+    const semantic = node.getExtras()[KILN_SEMANTIC_EXTRAS_KEY];
+    if (Array.isArray(semantic?.relationships)) {
+      for (const relationship of semantic.relationships)
+        if (relationship?.targetType === "node" && typeof relationship.target === "string")
+          targets.add(relationship.target);
+    }
+  }
+  for (const node of root.listNodes()) {
+    const name = node.getName();
+    const sceneParents = node.listParents().filter((parent) => parent.propertyType === PropertyType3.SCENE).length;
+    if (sceneParents > 1)
+      add(node, "shared-scene");
+    if (JOINT_PIVOT.test(name))
+      add(node, "joint-pivot");
+    if (hasKeys(node.getExtras()))
+      add(node, "extras");
+    if (targets.has(name))
+      add(node, "relationship-target");
+    if (node.getExtension("KHR_node_visibility"))
+      add(node, "visibility");
+    const lod = node.getExtension(MSFT_LOD);
+    if (lod) {
+      add(node, "lod");
+      for (const level of lod.listLevels())
+        if (level.propertyType === PropertyType3.NODE)
+          add(level, "lod");
+    }
+    if (keep.has(name))
+      add(node, "kept");
+  }
+  return found;
+}
+function nodeLock(node, mesh, world, expandShared) {
+  if (node.getSkin())
+    return "skinned";
+  if (node.getExtension("EXT_mesh_gpu_instancing"))
+    return "instanced";
+  if (hasKeys(mesh.getExtras()))
+    return "mesh-extras";
+  if (!expandShared && nodeUsers(mesh) > 1)
+    return "shared-mesh";
+  if (isSingular(world))
+    return "singular-matrix";
+  return;
+}
+function primLock(prim, mergeTransparent) {
+  if (prim.listTargets().length > 0)
+    return "morph-targets";
+  if (RESTART_MODES.has(prim.getMode()))
+    return "primitive-mode";
+  if (prim.listExtensions().length > 0)
+    return "primitive-extensions";
+  if (hasKeys(prim.getExtras()))
+    return "primitive-extras";
+  if (!prim.getAttribute("POSITION"))
+    return "no-position";
+  const material = prim.getMaterial();
+  if (material?.getExtension("KHR_materials_volume"))
+    return "volume";
+  if (!mergeTransparent && material && (material.getAlphaMode() === "BLEND" || material.getExtension("KHR_materials_transmission") || material.getExtension("KHR_materials_diffuse_transmission")))
+    return "transparent";
+  return;
+}
+function bucketKey(prim, materials, handedness) {
+  const layout = prim.listSemantics().sort().map((semantic) => {
+    const a = prim.getAttribute(semantic);
+    return `${semantic}:${a.getElementSize()}:${a.getComponentType()}:${a.getNormalized()}`;
+  }).join("+");
+  const hand = handedness !== null && prim.getAttribute("TANGENT") ? `|${handedness}` : "";
+  return `${materials.get(prim.getMaterial()) ?? -1}|${prim.getMode()}|${!!prim.getIndices()}|${layout}${hand}`;
+}
+function reverseWinding(prim) {
+  const indices = prim.getIndices()?.getArray();
+  const swap = (array, size, i) => {
+    for (let k = 0;k < size; k++) {
+      const [j, l] = [(i + 1) * size + k, (i + 2) * size + k];
+      [array[j], array[l]] = [array[l], array[j]];
+    }
+  };
+  if (indices) {
+    for (let i = 0;i + 2 < indices.length; i += 3)
+      swap(indices, 1, i);
+    return;
+  }
+  for (const semantic of prim.listSemantics()) {
+    const attribute = prim.getAttribute(semantic);
+    for (let i = 0;i + 2 < attribute.getCount(); i += 3)
+      swap(attribute.getArray(), attribute.getElementSize(), i);
+  }
+}
+function bake(prim, matrix) {
+  const linear = new THREE37.Matrix3().setFromMatrix4(matrix);
+  const normalMatrix = new THREE37.Matrix3().getNormalMatrix(matrix);
+  const mirrored = matrix.determinant() < 0;
+  const v = new THREE37.Vector3;
+  const each = (semantic, apply) => {
+    const attribute = prim.getAttribute(semantic);
+    const element = [];
+    for (let i = 0;i < (attribute?.getCount() ?? 0); i++) {
+      apply(attribute.getElement(i, element));
+      attribute.setElement(i, element);
+    }
+  };
+  each("POSITION", (e) => v.fromArray(e).applyMatrix4(matrix).toArray(e));
+  each("NORMAL", (e) => v.fromArray(e).applyMatrix3(normalMatrix).normalize().toArray(e));
+  each("TANGENT", (e) => {
+    v.fromArray(e).applyMatrix3(linear).normalize().toArray(e);
+    if (mirrored)
+      e[3] = -e[3];
+  });
+  if (mirrored && prim.getMode() === Primitive.Mode.TRIANGLES)
+    reverseWinding(prim);
+}
+function destinationOf(entries) {
+  let chosen = entries[0].node;
+  let best = Infinity;
+  let bestScale = Infinity;
+  for (const { node } of entries) {
+    const linear = new THREE37.Matrix3().setFromMatrix4(worldOf(node));
+    const norm = Math.hypot(...linear.elements);
+    const inverseNorm = Math.hypot(...linear.clone().invert().elements);
+    const condition = norm * inverseNorm;
+    const scale = Math.max(norm, inverseNorm);
+    if (condition < best * (1 - 0.000000000001) || Math.abs(condition - best) <= best * 0.000000000001 && scale < bestScale) {
+      chosen = node;
+      best = condition;
+      bestScale = scale;
+    }
+  }
+  return chosen;
+}
+function checkPositionPrecision(input, output, sourceWorld, destinationWorld, reversed) {
+  const expected = new THREE37.Vector3;
+  const actual = new THREE37.Vector3;
+  const bounds = new THREE37.Box3;
+  const element = [];
+  let error = 0;
+  let magnitude = 0;
+  for (let i = 0;i < input.getCount(); i++) {
+    const out = reversed ? i % 3 === 1 ? i + 1 : i % 3 === 2 ? i - 1 : i : i;
+    expected.fromArray(input.getElement(i, element)).applyMatrix4(sourceWorld);
+    actual.fromArray(output.getElement(out, element)).applyMatrix4(destinationWorld);
+    bounds.expandByPoint(expected);
+    error = Math.max(error, expected.distanceTo(actual));
+    magnitude = Math.max(magnitude, expected.length());
+  }
+  const tolerance = Math.max(bounds.getSize(expected).length() * 0.000001, magnitude * Number.EPSILON * 32, Number.EPSILON);
+  if (error > tolerance)
+    throw new Error("rigid merge: destination frame loses position precision");
+}
+function splitVertices(prim, created) {
+  if (prim.getAttribute("POSITION").getCount() <= MAX_VERTICES)
+    return [prim];
+  const width = prim.getMode() === Primitive.Mode.POINTS ? 1 : prim.getMode() === Primitive.Mode.LINES ? 2 : 3;
+  const sourceIndices = prim.getIndices()?.getArray();
+  const count = sourceIndices?.length ?? prim.getAttribute("POSITION").getCount();
+  if (count % width !== 0)
+    throw new Error("rigid merge: incomplete primitive element");
+  const chunks = [];
+  let remap = new Map;
+  let indices = [];
+  const flush = () => {
+    if (!indices.length)
+      return;
+    const chunk = prim.clone();
+    created.push(chunk);
+    const vertices = [...remap.keys()];
+    for (const semantic of prim.listSemantics()) {
+      const source = prim.getAttribute(semantic);
+      const size = source.getElementSize();
+      const ArrayType = ComponentTypeToTypedArray[source.getComponentType()];
+      if (!ArrayType)
+        throw new Error(`rigid merge: unsupported component type for ${semantic}`);
+      const data = new ArrayType(vertices.length * size);
+      const sourceData = source.getArray();
+      for (const [out, input] of vertices.entries())
+        data.set(sourceData.subarray(input * size, (input + 1) * size), out * size);
+      const attribute = source.clone().setArray(data);
+      created.push(attribute);
+      chunk.setAttribute(semantic, attribute);
+    }
+    if (prim.getIndices()) {
+      const accessor = prim.getIndices().clone().setArray(new Uint16Array(indices));
+      created.push(accessor);
+      chunk.setIndices(accessor);
+    }
+    chunks.push(chunk);
+    remap = new Map;
+    indices = [];
+  };
+  for (let offset = 0;offset < count; offset += width) {
+    const element = Array.from({ length: width }, (_, i) => sourceIndices?.[offset + i] ?? offset + i);
+    const extra = new Set(element.filter((index) => !remap.has(index))).size;
+    if (remap.size + extra > MAX_VERTICES)
+      flush();
+    for (const index of element) {
+      if (!remap.has(index))
+        remap.set(index, remap.size);
+      indices.push(remap.get(index));
+    }
+  }
+  flush();
+  for (const property of [prim, ...accessorsOf(prim)])
+    property.dispose();
+  return chunks;
+}
+function prepare(entries, dst, created) {
+  const destinationWorld = worldOf(dst);
+  const inverse = destinationWorld.clone().invert();
+  const copies = entries.map(({ node, prim }) => {
+    const copy = prim.clone();
+    created.push(copy);
+    for (const semantic of copy.listSemantics()) {
+      const attribute = copy.getAttribute(semantic).clone();
+      created.push(attribute);
+      copy.setAttribute(semantic, attribute);
+    }
+    const indices = copy.getIndices()?.clone();
+    if (indices) {
+      created.push(indices);
+      copy.setIndices(indices);
+    }
+    dequantizePrimitive(copy, { pattern: BAKED });
+    if (node !== dst) {
+      const sourceWorld = worldOf(node);
+      const matrix = inverse.clone().multiply(sourceWorld);
+      bake(copy, matrix);
+      const reversed = !copy.getIndices() && copy.getMode() === Primitive.Mode.TRIANGLES && matrix.determinant() < 0;
+      checkPositionPrecision(prim.getAttribute("POSITION"), copy.getAttribute("POSITION"), sourceWorld, destinationWorld, reversed);
+    }
+    return copy;
+  });
+  const merged = joinPrimitives(copies);
+  created.push(merged, ...accessorsOf(merged));
+  for (const semantic of ["POSITION", "NORMAL", "TANGENT"]) {
+    const array = merged.getAttribute(semantic)?.getArray();
+    if (array && !array.every(Number.isFinite))
+      throw new Error(`rigid merge: non-finite ${semantic} in the joined primitive`);
+  }
+  const elements = (p) => p.getIndices()?.getCount() ?? p.getAttribute("POSITION").getCount();
+  const expected = copies.reduce((sum, copy) => sum + elements(copy), 0);
+  if (elements(merged) !== expected)
+    throw new Error(`rigid merge: joined ${elements(merged)} of ${expected} elements`);
+  for (const copy of copies)
+    for (const property of [copy, ...accessorsOf(copy)])
+      property.dispose();
+  return splitVertices(merged, created);
+}
+function removableBytes(entries) {
+  const uses = new Map;
+  for (const { node, prim } of entries) {
+    const nodes = uses.get(prim) ?? new Set;
+    nodes.add(node);
+    uses.set(prim, nodes);
+  }
+  const removed = new Set;
+  for (const [prim, nodes] of uses) {
+    const retained = prim.listParents().some((parent) => {
+      if (parent.propertyType === PropertyType3.ROOT)
+        return false;
+      if (parent.propertyType !== PropertyType3.MESH)
+        return true;
+      return parent.listParents().some((user) => user.propertyType !== PropertyType3.ROOT && (user.propertyType !== PropertyType3.NODE || !nodes.has(user)));
+    });
+    if (!retained)
+      removed.add(prim);
+  }
+  const accessors = new Set([...removed].flatMap(accessorsOf));
+  let bytes = 0;
+  for (const accessor of accessors)
+    if (accessor.listParents().every((parent) => parent.propertyType === PropertyType3.ROOT || removed.has(parent)))
+      bytes += accessor.getArray()?.byteLength ?? 0;
+  return bytes;
+}
+function sceneNodes2(doc) {
+  const seen = new Set;
+  const visit = (node) => {
+    if (seen.has(node))
+      return;
+    seen.add(node);
+    for (const child of node.listChildren())
+      visit(child);
+  };
+  for (const scene of doc.getRoot().listScenes())
+    for (const child of scene.listChildren())
+      visit(child);
+  return seen;
+}
+function mergeRigidGroups(doc, options = {}) {
+  const root = doc.getRoot();
+  const keep = new Set(options.keep ?? []);
+  const nodes = sceneNodes2(doc);
+  const names = new Set([...nodes].map((node) => node.getName()));
+  const summary = {
+    primitivesBefore: countPrimitives(nodes),
+    primitivesAfter: 0,
+    groups: 0,
+    merges: 0,
+    boundaries: [],
+    locked: [],
+    rejected: [],
+    unmatchedKeep: [...keep].filter((name) => !names.has(name))
+  };
+  if (root.listAnimations().some((a) => a.listChannels().some((c) => !c.getTargetNode()))) {
+    summary.skipped = "unbounded-animation";
+    summary.primitivesAfter = summary.primitivesBefore;
+    return summary;
+  }
+  const boundaries = findRigidBoundaries(doc, keep);
+  const materials = new Map(root.listMaterials().map((m, i) => [m, i]));
+  const groups = [];
+  const locks = new Map;
+  const lock = (node, reason, primitives) => {
+    const key = `${node.getName()}|${reason}`;
+    const known = locks.get(key);
+    if (known)
+      known.primitives += primitives;
+    else {
+      const entry = { node: node.getName(), reason, primitives };
+      locks.set(key, entry);
+      summary.locked.push(entry);
+    }
+  };
+  const seen = new Set;
+  const visit = (node, parentGroup) => {
+    if (seen.has(node))
+      return;
+    seen.add(node);
+    const reasons = boundaries.get(node);
+    let group = parentGroup;
+    if (reasons) {
+      summary.boundaries.push({ node: node.getName(), reasons });
+      group = new Map;
+      groups.push(group);
+    }
+    const mesh = node.getMesh();
+    if (mesh) {
+      const world = worldOf(node);
+      const nodeReason = reasons ? "boundary" : nodeLock(node, mesh, world, options.expandSharedMeshes !== false);
+      const handedness = options.mergeMirroredTangents ? null : Math.sign(world.determinant());
+      if (nodeReason)
+        lock(node, nodeReason, mesh.listPrimitives().length);
+      else
+        for (const prim of mesh.listPrimitives()) {
+          const primReason = primLock(prim, options.mergeTransparent === true);
+          if (primReason)
+            lock(node, primReason, 1);
+          else {
+            const key = bucketKey(prim, materials, handedness);
+            const list = group.get(key);
+            if (list)
+              list.push({ node, prim });
+            else
+              group.set(key, [{ node, prim }]);
+          }
+        }
+    }
+    for (const child of node.listChildren())
+      visit(child, group);
+  };
+  for (const scene of root.listScenes()) {
+    const group = new Map;
+    groups.push(group);
+    for (const child of scene.listChildren())
+      visit(child, group);
+  }
+  summary.groups = groups.length;
+  const plans = [];
+  for (const group of groups)
+    for (const bucket of group.values()) {
+      let entries = bucket;
+      while (entries.length >= 2) {
+        const created = [];
+        const track = (event) => created.push(event.target);
+        doc.getGraph().addEventListener("node:create", track);
+        try {
+          const destination = destinationOf(entries);
+          const merged = prepare(entries, destination, created);
+          const savedDraws = entries.length - merged.length;
+          const shared = entries.filter((entry) => removableBytes([entry]) < primitiveBytes([entry.prim]));
+          const addedBytes = Math.max(0, primitiveBytes(merged) - removableBytes(entries));
+          if (savedDraws > 0 && addedBytes <= savedDraws * MAX_BYTES_PER_SAVED_DRAW) {
+            plans.push({ entries, destination, merged });
+            break;
+          }
+          for (const property of created)
+            property.dispose();
+          if (!shared.length || savedDraws <= 0)
+            break;
+          const costly = shared.reduce((best, entry) => primitiveBytes(entry.node.getMesh().listPrimitives()) > primitiveBytes(best.node.getMesh().listPrimitives()) ? entry : best);
+          const mesh = costly.node.getMesh();
+          for (const entry of entries.filter((entry) => entry.node.getMesh() === mesh))
+            lock(entry.node, "shared-byte-budget", 1);
+          entries = entries.filter((entry) => entry.node.getMesh() !== mesh);
+        } catch (error) {
+          for (const property of created)
+            property.dispose();
+          summary.rejected.push({
+            node: entries[0].node.getName(),
+            primitives: entries.length,
+            error: error instanceof Error ? error.message : String(error)
+          });
+          break;
+        } finally {
+          doc.getGraph().removeEventListener("node:create", track);
+        }
+      }
+    }
+  const owned = new Map;
+  const ownMesh = (node) => {
+    let mesh = owned.get(node);
+    if (mesh)
+      return mesh;
+    mesh = node.getMesh();
+    if (nodeUsers(mesh) > 1) {
+      mesh = mesh.clone();
+      node.setMesh(mesh);
+    }
+    owned.set(node, mesh);
+    return mesh;
+  };
+  const removed = new Set;
+  for (const { entries, destination, merged } of plans) {
+    for (const { node, prim } of entries) {
+      ownMesh(node).removePrimitive(prim);
+      removed.add(prim);
+    }
+    for (const primitive of merged)
+      ownMesh(destination).addPrimitive(primitive);
+  }
+  for (const [node, mesh] of owned)
+    if (mesh.listPrimitives().length === 0) {
+      node.setMesh(null);
+      if (nodeUsers(mesh) === 0)
+        mesh.dispose();
+    }
+  for (const prim of removed) {
+    if (prim.listParents().some((parent) => parent.propertyType === PropertyType3.MESH))
+      continue;
+    const accessors = accessorsOf(prim);
+    prim.dispose();
+    for (const accessor of accessors)
+      if (accessor.listParents().every((parent) => parent.propertyType === PropertyType3.ROOT))
+        accessor.dispose();
+  }
+  summary.merges = plans.length;
+  summary.primitivesAfter = countPrimitives(nodes);
+  return summary;
+}
+function rigidMerge(options = {}, onSummary) {
+  return createTransform("kilnRigidMerge", (doc) => {
+    const summary = mergeRigidGroups(doc, options);
+    onSummary?.(summary);
+  });
+}
+var JOINT_PIVOT, RESTART_MODES, BAKED, MAX_VERTICES = 65534, MAX_BYTES_PER_SAVED_DRAW = 4096, hasKeys = (value) => Object.keys(value).length > 0, worldOf = (node) => new THREE37.Matrix4().fromArray(node.getWorldMatrix()), nodeUsers = (mesh) => mesh.listParents().filter((parent) => parent.propertyType === PropertyType3.NODE).length, accessorsOf = (prim) => {
+  const indices = prim.getIndices();
+  return indices ? [...prim.listAttributes(), indices] : prim.listAttributes();
+}, primitiveBytes = (primitives) => [...new Set(primitives.flatMap(accessorsOf))].reduce((sum, a) => sum + (a.getArray()?.byteLength ?? 0), 0), countPrimitives = (nodes) => [...nodes].reduce((sum, node) => sum + (node.getMesh()?.listPrimitives().length ?? 0), 0);
+var init_rigid_merge = __esm(() => {
+  init_semantic();
+  init_gltf_io();
+  JOINT_PIVOT = /^joint[_-]/i;
+  RESTART_MODES = new Set([2, 3, 5, 6]);
+  BAKED = /^(POSITION|NORMAL|TANGENT)$/;
+});
+
 // src/geometry-catalog.ts
 var REMOVED_AUTHORING_HELPERS, geometryPrimitives;
 var init_geometry_catalog = __esm(() => {
@@ -25137,7 +25639,7 @@ var init_kit = __esm(() => {
 
 // src/texture-bake.ts
 import { createHash as createHash6 } from "node:crypto";
-import * as THREE37 from "three";
+import * as THREE38 from "three";
 function readPixels(texture) {
   const image = texture.image;
   if (!image)
@@ -25229,7 +25731,7 @@ async function bakeSceneTextures(root, warnings) {
       mime: "image/png",
       bytes
     };
-    const colorSpace = entry.texture.colorSpace === THREE37.SRGBColorSpace ? "srgb" : "linear";
+    const colorSpace = entry.texture.colorSpace === THREE38.SRGBColorSpace ? "srgb" : "linear";
     const recipe = entry.texture.userData["kilnProcedural"];
     const primaryUsage = recipe?.usage ?? (entry.bindings.some(({ slot }) => slot === "roughnessMap") && entry.bindings.some(({ slot }) => slot === "metalnessMap") ? "metallicRoughness" : entry.bindings[0]?.usage ?? "albedo");
     entry.texture.userData["kilnTexture"] = {
@@ -25310,10 +25812,10 @@ function computeTangentBasis(geometry) {
     }
   }
   const out = new Float32Array(vertexCount * 4);
-  const n = new THREE37.Vector3;
-  const t = new THREE37.Vector3;
-  const tmp = new THREE37.Vector3;
-  const tmp2 = new THREE37.Vector3;
+  const n = new THREE38.Vector3;
+  const t = new THREE38.Vector3;
+  const tmp = new THREE38.Vector3;
+  const tmp2 = new THREE38.Vector3;
   for (let v = 0;v < vertexCount; v++) {
     n.set(normal.getX(v), normal.getY(v), normal.getZ(v));
     t.set(tan1[v * 3], tan1[v * 3 + 1], tan1[v * 3 + 2]);
@@ -25333,7 +25835,7 @@ function computeTangentBasis(geometry) {
     out[v * 4 + 2] = tmp.z;
     out[v * 4 + 3] = w;
   }
-  geometry.setAttribute("tangent", new THREE37.BufferAttribute(out, 4));
+  geometry.setAttribute("tangent", new THREE38.BufferAttribute(out, 4));
 }
 function ensureNormalMapTangents(root, warnings) {
   let count = 0;
@@ -25444,7 +25946,7 @@ var init_exporter_node = __esm(() => {
 });
 
 // src/views/character.ts
-import * as THREE38 from "three";
+import * as THREE39 from "three";
 function rounded(value) {
   const result = Math.round(value * 1e9) / 1e9;
   return Object.is(result, -0) ? 0 : result;
@@ -25486,9 +25988,9 @@ function buildCharacterDiagnosticDescriptor(root, findings = []) {
   const invalidPaths = new Set(invalidFindingNodePaths);
   const joints = evidence.map((joint) => {
     const relative = rootInverse.clone().multiply(joint.node.matrixWorld);
-    const position = new THREE38.Vector3().setFromMatrixPosition(relative);
-    const forward = new THREE38.Vector3(...joint.descriptor.localForwardAxis).transformDirection(relative).multiplyScalar(0.2).add(position);
-    const bend = new THREE38.Vector3(...joint.descriptor.localBendAxis).transformDirection(relative).multiplyScalar(0.2).add(position);
+    const position = new THREE39.Vector3().setFromMatrixPosition(relative);
+    const forward = new THREE39.Vector3(...joint.descriptor.localForwardAxis).transformDirection(relative).multiplyScalar(0.2).add(position);
+    const bend = new THREE39.Vector3(...joint.descriptor.localBendAxis).transformDirection(relative).multiplyScalar(0.2).add(position);
     const chainId = chainIdFor(joint.descriptor, descriptorByRole);
     return {
       role: joint.descriptor.role,
@@ -27177,7 +27679,7 @@ var init_raster = __esm(() => {
 });
 
 // src/views/camera.ts
-import { Vector3 as Vector330, Matrix4 as Matrix412, Euler as Euler4, Group as Group3 } from "three";
+import { Vector3 as Vector331, Matrix4 as Matrix413, Euler as Euler4, Group as Group3 } from "three";
 function strict(value, keys, label) {
   for (const key of Object.keys(value))
     if (!keys.includes(key)) {
@@ -27271,14 +27773,14 @@ function cameraFromBounds(bounds, dir, padding = 1, up, sceneBounds = bounds) {
   const z = vec(dir).normalize();
   if (!z.length())
     throw new Error("camera direction must be non-zero");
-  const hint = up ? vec(up) : Math.abs(z.y) > 0.99 ? new Vector330(0, 0, -1) : new Vector330(0, 1, 0);
+  const hint = up ? vec(up) : Math.abs(z.y) > 0.99 ? new Vector331(0, 0, -1) : new Vector331(0, 1, 0);
   const x = hint.clone().cross(z).normalize();
   if (x.length() < 0.000000001)
     throw new Error("camera up must not be collinear with view");
   const y = z.clone().cross(x);
   let extent = 0.000001;
   for (let i = 0;i < 8; i++) {
-    const p = new Vector330((i & 1 ? bounds.max : bounds.min)[0], (i & 2 ? bounds.max : bounds.min)[1], (i & 4 ? bounds.max : bounds.min)[2]).sub(target);
+    const p = new Vector331((i & 1 ? bounds.max : bounds.min)[0], (i & 2 ? bounds.max : bounds.min)[1], (i & 4 ? bounds.max : bounds.min)[2]).sub(target);
     extent = Math.max(extent, Math.abs(p.dot(x)), Math.abs(p.dot(y)));
   }
   const depthMin = bounds.min.map((v, i) => Math.min(v, sceneBounds.min[i]));
@@ -27359,7 +27861,7 @@ function resolveAssetCamera(root, shot = {}) {
     if (relative !== "world") {
       const node = relative === "part" ? selected.node : rootNode;
       dir.transformDirection(node.matrixWorld);
-      up = tuple5(new Vector330(0, 1, 0).transformDirection(node.matrixWorld));
+      up = tuple5(new Vector331(0, 1, 0).transformDirection(node.matrixWorld));
     }
     camera = cameraFromBounds(bounds, tuple5(dir), request.padding ?? 1.2, up, measureBounds(root));
   } else if (request.type === "explicit") {
@@ -27394,7 +27896,7 @@ function resolveAssetCamera(root, shot = {}) {
       throw new Error("padding requires bounds framing");
     if (request.framing === "bounds" && request.halfHeight !== undefined)
       throw new Error("bounds framing derives halfHeight");
-    let matrix = new Matrix412;
+    let matrix = new Matrix413;
     if (relative === "asset" || relative === "part")
       matrix = (relative === "asset" ? rootNode : selected.node).matrixWorld;
     if (request.frame) {
@@ -27406,7 +27908,7 @@ function resolveAssetCamera(root, shot = {}) {
     const position = vec(triple(request.position, "position")).applyMatrix4(matrix);
     const target = request.target ? vec(triple(request.target, "target")).applyMatrix4(matrix) : vec(bounds.min).add(vec(bounds.max)).multiplyScalar(0.5);
     const up = vec(triple(request.up ?? [0, 1, 0], "up")).transformDirection(matrix);
-    const offset = vec(triple(request.targetOffset ?? [0, 0, 0], "targetOffset")).applyMatrix4(matrix).sub(new Vector330().setFromMatrixPosition(matrix));
+    const offset = vec(triple(request.targetOffset ?? [0, 0, 0], "targetOffset")).applyMatrix4(matrix).sub(new Vector331().setFromMatrixPosition(matrix));
     const radius = vec(bounds.max).sub(vec(bounds.min)).length();
     camera = {
       version: "kiln.camera.v1",
@@ -27534,11 +28036,11 @@ function rasterizeCamera(root, input, size = 384, backfaceCull = true, backdrop)
     }
     return result;
   };
-  const key = new Vector330(1.5, 2, 1).normalize();
+  const key = new Vector331(1.5, 2, 1).normalize();
   const srgb = (n) => n <= 0.0031308 ? n * 12.92 : 1.055 * n ** (1 / 2.4) - 0.055;
   const ordered = compositingOrder(collectTriangles(root).tris, (px, py, pz) => camera.projection === "perspective" ? Math.hypot(px - position.x, py - position.y, pz - position.z) : (position.x - px) * z.x + (position.y - py) * z.y + (position.z - pz) * z.z);
   for (const tri of ordered) {
-    const world = [0, 1, 2].map((i) => new Vector330(tri.v[i * 3], tri.v[i * 3 + 1], tri.v[i * 3 + 2]));
+    const world = [0, 1, 2].map((i) => new Vector331(tri.v[i * 3], tri.v[i * 3 + 1], tri.v[i * 3 + 2]));
     const normal = world[1].clone().sub(world[0]).cross(world[2].clone().sub(world[0])).normalize();
     if (backfaceCull && !tri.doubleSided && normal.dot(camera.projection === "perspective" ? position.clone().sub(world[0]) : z) <= 0)
       continue;
@@ -27548,7 +28050,7 @@ function rasterizeCamera(root, input, size = 384, backfaceCull = true, backdrop)
     const color = tri.color.map((c) => Math.round(srgb(c * light) * 255));
     let polygon = world.map((p) => {
       const d = p.clone().sub(position);
-      return new Vector330(d.dot(x), d.dot(y), -d.dot(z));
+      return new Vector331(d.dot(x), d.dot(y), -d.dot(z));
     });
     polygon = clip(clip(polygon, camera.near, true), camera.far, false);
     for (let t = 1;t < polygon.length - 1; t++) {
@@ -27581,7 +28083,7 @@ function rasterizeCamera(root, input, size = 384, backfaceCull = true, backdrop)
   }
   return out;
 }
-var vec = (a) => new Vector330(...a), tuple5 = (v) => [v.x || 0, v.y || 0, v.z || 0], KEY_HINTS;
+var vec = (a) => new Vector331(...a), tuple5 = (v) => [v.x || 0, v.y || 0, v.z || 0], KEY_HINTS;
 var init_camera = __esm(() => {
   init_raster();
   init_background();
@@ -28330,13 +28832,13 @@ var init_architecture3 = __esm(() => {
 
 // src/views/glb.ts
 import {
-  Primitive
+  Primitive as Primitive2
 } from "@gltf-transform/core";
 import {
   BufferAttribute as BufferAttribute8,
   BufferGeometry as BufferGeometry15,
   Group as Group4,
-  Matrix4 as Matrix413,
+  Matrix4 as Matrix414,
   Mesh as Mesh12,
   MeshStandardMaterial as MeshStandardMaterial5,
   NoColorSpace as NoColorSpace4,
@@ -28346,7 +28848,7 @@ import {
   QuaternionKeyframeTrack as QuaternionKeyframeTrack2,
   VectorKeyframeTrack as VectorKeyframeTrack2,
   Quaternion as Quaternion17,
-  Vector3 as Vector331,
+  Vector3 as Vector332,
   InterpolateDiscrete as InterpolateDiscrete2,
   InterpolateLinear as InterpolateLinear2
 } from "three";
@@ -28411,16 +28913,16 @@ function triangleIndices(primitive, vertexCount) {
   const sourceAccessor = primitive.getIndices();
   const source = sourceAccessor ? Array.from(decodedAccessor(sourceAccessor), (value) => Math.trunc(value)) : Array.from({ length: vertexCount }, (_, index) => index);
   switch (primitive.getMode()) {
-    case Primitive.Mode.TRIANGLES:
+    case Primitive2.Mode.TRIANGLES:
       return Uint32Array.from(source);
-    case Primitive.Mode.TRIANGLE_STRIP: {
+    case Primitive2.Mode.TRIANGLE_STRIP: {
       const triangles = [];
       for (let index = 0;index + 2 < source.length; index++) {
         triangles.push(source[index], source[index + 1 + index % 2], source[index + 2 - index % 2]);
       }
       return Uint32Array.from(triangles);
     }
-    case Primitive.Mode.TRIANGLE_FAN: {
+    case Primitive2.Mode.TRIANGLE_FAN: {
       const triangles = [];
       for (let index = 1;index + 1 < source.length; index++) {
         triangles.push(source[index], source[index + 1], source[0]);
@@ -28498,7 +29000,7 @@ function noteMaterialTextures(material, reasons) {
   }
 }
 function instanceMatrices(node) {
-  const world = new Matrix413().fromArray(node.getWorldMatrix());
+  const world = new Matrix414().fromArray(node.getWorldMatrix());
   const extension = node.getExtension("EXT_mesh_gpu_instancing");
   if (!extension)
     return { matrices: [world], count: 1 };
@@ -28521,7 +29023,7 @@ function instanceMatrices(node) {
     translations?.getElement(index, translation);
     rotations?.getElement(index, rotation);
     scales?.getElement(index, scale);
-    const local = new Matrix413().compose(new Vector331(translations ? translation[0] : 0, translations ? translation[1] : 0, translations ? translation[2] : 0), new Quaternion17(rotations ? rotation[0] : 0, rotations ? rotation[1] : 0, rotations ? rotation[2] : 0, rotations ? rotation[3] : 1).normalize(), new Vector331(scales ? scale[0] : 1, scales ? scale[1] : 1, scales ? scale[2] : 1));
+    const local = new Matrix414().compose(new Vector332(translations ? translation[0] : 0, translations ? translation[1] : 0, translations ? translation[2] : 0), new Quaternion17(rotations ? rotation[0] : 0, rotations ? rotation[1] : 0, rotations ? rotation[2] : 0, rotations ? rotation[3] : 1).normalize(), new Vector332(scales ? scale[0] : 1, scales ? scale[1] : 1, scales ? scale[2] : 1));
     matrices.push(world.clone().multiply(local));
   }
   return { matrices, count };
@@ -28609,7 +29111,7 @@ async function loadGlbGeometryFlatScene(bytes) {
 function localInstanceMatrices(node) {
   const extension = node.getExtension("EXT_mesh_gpu_instancing");
   if (!extension)
-    return [new Matrix413];
+    return [new Matrix414];
   const attributes = extension.listAttributes();
   if (attributes.length === 0) {
     throw new GlbGeometryFlatError("GLB_FLAT_INVALID_INSTANCING", "Invalid empty instancing data.");
@@ -28628,7 +29130,7 @@ function localInstanceMatrices(node) {
     translations?.getElement(index, translation);
     rotations?.getElement(index, rotation);
     scales?.getElement(index, scale);
-    return new Matrix413().compose(new Vector331(...translations ? translation.slice(0, 3) : [0, 0, 0]), new Quaternion17(...rotations ? rotation.slice(0, 4) : [0, 0, 0, 1]).normalize(), new Vector331(...scales ? scale.slice(0, 3) : [1, 1, 1]));
+    return new Matrix414().compose(new Vector332(...translations ? translation.slice(0, 3) : [0, 0, 0]), new Quaternion17(...rotations ? rotation.slice(0, 4) : [0, 0, 0, 1]).normalize(), new Vector332(...scales ? scale.slice(0, 3) : [1, 1, 1]));
   });
 }
 async function loadGlbReviewScene(bytes) {
@@ -29084,7 +29586,7 @@ var init_renderer_id = __esm(() => {
 });
 
 // src/views/scene-raster.ts
-import * as THREE39 from "three";
+import * as THREE40 from "three";
 var DEG2;
 var init_scene_raster = __esm(() => {
   init_evaluator();
@@ -29095,18 +29597,18 @@ var init_scene_raster = __esm(() => {
 });
 
 // src/views/vehicle.ts
-import * as THREE40 from "three";
+import * as THREE41 from "three";
 function hasRole2(node, prefix) {
   return readSemanticMetadataV1(node)?.roles.some((role) => role === prefix || role.startsWith(`${prefix}.`)) ?? false;
 }
 function chassisBounds(root, inverse) {
-  const bounds = new THREE40.Box3;
+  const bounds = new THREE41.Box3;
   let found = false;
   root.traverse((node) => {
     if (!hasRole2(node, "chassis"))
       return;
     node.traverse((part) => {
-      if (!(part instanceof THREE40.Mesh) || !(part.geometry instanceof THREE40.BufferGeometry))
+      if (!(part instanceof THREE41.Mesh) || !(part.geometry instanceof THREE41.BufferGeometry))
         return;
       part.geometry.computeBoundingBox();
       const box = part.geometry.boundingBox;
@@ -29116,7 +29618,7 @@ function chassisBounds(root, inverse) {
       for (const x of [box.min.x, box.max.x])
         for (const y of [box.min.y, box.max.y])
           for (const z of [box.min.z, box.max.z]) {
-            bounds.expandByPoint(new THREE40.Vector3(x, y, z).applyMatrix4(matrix));
+            bounds.expandByPoint(new THREE41.Vector3(x, y, z).applyMatrix4(matrix));
             found = true;
           }
     });
@@ -29184,33 +29686,33 @@ function tagDiagnostic(node, role) {
   stampSemanticMetadataV1(node, { roles: [role] });
 }
 function rod(name, start, end, radius, color, role) {
-  const from = new THREE40.Vector3(...start);
-  const to = new THREE40.Vector3(...end);
+  const from = new THREE41.Vector3(...start);
+  const to = new THREE41.Vector3(...end);
   const direction = to.clone().sub(from);
   const length = direction.length();
-  const geometry = length > 0.000000001 ? new THREE40.CylinderGeometry(radius, radius, length, 8) : new THREE40.SphereGeometry(radius, 8, 6);
-  const result = new THREE40.Mesh(geometry, new THREE40.MeshBasicMaterial({ color }));
+  const geometry = length > 0.000000001 ? new THREE41.CylinderGeometry(radius, radius, length, 8) : new THREE41.SphereGeometry(radius, 8, 6);
+  const result = new THREE41.Mesh(geometry, new THREE41.MeshBasicMaterial({ color }));
   result.name = name;
   result.position.copy(from).add(to).multiplyScalar(0.5);
   if (length > 0.000000001) {
-    result.quaternion.setFromUnitVectors(new THREE40.Vector3(0, 1, 0), direction.multiplyScalar(1 / length));
+    result.quaternion.setFromUnitVectors(new THREE41.Vector3(0, 1, 0), direction.multiplyScalar(1 / length));
   }
   tagDiagnostic(result, role);
   return result;
 }
 function createVehicleDiagnosticOverlay(root, descriptor = describeVehicleDiagnostics(root)) {
-  const overlay = new THREE40.Group;
+  const overlay = new THREE41.Group;
   overlay.name = "VehicleDiagnosticOverlay";
   const chassisSpan = descriptor.chassisBox ? Math.max(descriptor.chassisBox.max[0] - descriptor.chassisBox.min[0], descriptor.chassisBox.max[1] - descriptor.chassisBox.min[1], descriptor.chassisBox.max[2] - descriptor.chassisBox.min[2]) : 1;
   const thickness = Math.max(0.01, chassisSpan * 0.008);
-  const arrow = new THREE40.Group;
+  const arrow = new THREE41.Group;
   arrow.name = "Diagnostic_Forward_+X";
   tagDiagnostic(arrow, "diagnostic.vehicle.forward");
   arrow.add(rod("Diagnostic_Forward_Shaft", descriptor.forwardArrow.start, [descriptor.forwardArrow.end[0] - 0.12, 0, 0], thickness, 16724804, "diagnostic.vehicle.forward"));
-  const arrowHead = new THREE40.Mesh(new THREE40.ConeGeometry(thickness * 3.2, 0.24, 10), new THREE40.MeshBasicMaterial({ color: 16724804 }));
+  const arrowHead = new THREE41.Mesh(new THREE41.ConeGeometry(thickness * 3.2, 0.24, 10), new THREE41.MeshBasicMaterial({ color: 16724804 }));
   arrowHead.name = "Diagnostic_Forward_Head";
   arrowHead.position.set(descriptor.forwardArrow.end[0] - 0.12, 0, 0);
-  arrowHead.quaternion.setFromUnitVectors(new THREE40.Vector3(0, 1, 0), new THREE40.Vector3(1, 0, 0));
+  arrowHead.quaternion.setFromUnitVectors(new THREE41.Vector3(0, 1, 0), new THREE41.Vector3(1, 0, 0));
   tagDiagnostic(arrowHead, "diagnostic.vehicle.forward");
   arrow.add(arrowHead);
   overlay.add(arrow);
@@ -29218,18 +29720,18 @@ function createVehicleDiagnosticOverlay(root, descriptor = describeVehicleDiagno
     overlay.add(rod(`Diagnostic_Axle_${axle.id}`, axle.start, axle.end, thickness, 3386111, `diagnostic.vehicle.axle.${axle.id}`));
   }
   for (const wheel of descriptor.wheels) {
-    const ring = new THREE40.Mesh(new THREE40.TorusGeometry(wheel.radius, Math.min(thickness, wheel.radius * 0.15), 6, 32), new THREE40.MeshBasicMaterial({ color: 16763955 }));
+    const ring = new THREE41.Mesh(new THREE41.TorusGeometry(wheel.radius, Math.min(thickness, wheel.radius * 0.15), 6, 32), new THREE41.MeshBasicMaterial({ color: 16763955 }));
     ring.name = `Diagnostic_Wheel_${wheel.id}`;
     ring.position.set(...wheel.center);
-    const axle = new THREE40.Vector3(...wheel.axle);
+    const axle = new THREE41.Vector3(...wheel.axle);
     if (axle.lengthSq() > 0.000000000001) {
-      ring.quaternion.setFromUnitVectors(new THREE40.Vector3(0, 0, 1), axle.normalize());
+      ring.quaternion.setFromUnitVectors(new THREE41.Vector3(0, 0, 1), axle.normalize());
     }
     tagDiagnostic(ring, `diagnostic.vehicle.wheel.${wheel.id}`);
     overlay.add(ring);
   }
   if (descriptor.chassisBox) {
-    const chassis = new THREE40.Group;
+    const chassis = new THREE41.Group;
     chassis.name = "Diagnostic_ChassisBox";
     tagDiagnostic(chassis, "diagnostic.vehicle.chassis");
     const { min, max } = descriptor.chassisBox;
@@ -29263,7 +29765,7 @@ function createVehicleDiagnosticOverlay(root, descriptor = describeVehicleDiagno
     overlay.add(chassis);
   }
   if (descriptor.supportPlaneY !== undefined) {
-    const plane = new THREE40.Group;
+    const plane = new THREE41.Group;
     plane.name = "Diagnostic_SupportPlane";
     tagDiagnostic(plane, "diagnostic.vehicle.support-plane");
     const halfX = Math.max(1, ...descriptor.chassisBox ? [Math.abs(descriptor.chassisBox.min[0]), Math.abs(descriptor.chassisBox.max[0])] : [], ...descriptor.wheels.map((wheel) => Math.abs(wheel.center[0]) + wheel.radius)) + 0.2;
@@ -29861,7 +30363,7 @@ var init_views = __esm(() => {
 });
 
 // src/views/character-capture.ts
-import * as THREE41 from "three";
+import * as THREE42 from "three";
 function drawLine2(rgb, width, height, from, to, color) {
   let x0 = Math.round(from[0]);
   let y0 = Math.round(from[1]);
@@ -29898,22 +30400,22 @@ function drawCross(rgb, width, height, point, color, radius = 3) {
 }
 function projector(root, cameraId, size) {
   root.updateMatrixWorld(true);
-  const bounds = new THREE41.Box3().setFromObject(root);
+  const bounds = new THREE42.Box3().setFromObject(root);
   if (bounds.isEmpty())
-    bounds.set(new THREE41.Vector3(-0.5, 0, -0.5), new THREE41.Vector3(0.5, 1, 0.5));
-  const center = bounds.getCenter(new THREE41.Vector3);
-  const camera = cameraId === "front" ? new THREE41.Vector3(1, 0, 0) : new THREE41.Vector3(0, 0, 1);
-  const upHint = new THREE41.Vector3(0, 1, 0);
-  const xAxis = new THREE41.Vector3().crossVectors(upHint, camera).normalize();
-  const yAxis = new THREE41.Vector3().crossVectors(camera, xAxis).normalize();
+    bounds.set(new THREE42.Vector3(-0.5, 0, -0.5), new THREE42.Vector3(0.5, 1, 0.5));
+  const center = bounds.getCenter(new THREE42.Vector3);
+  const camera = cameraId === "front" ? new THREE42.Vector3(1, 0, 0) : new THREE42.Vector3(0, 0, 1);
+  const upHint = new THREE42.Vector3(0, 1, 0);
+  const xAxis = new THREE42.Vector3().crossVectors(upHint, camera).normalize();
+  const yAxis = new THREE42.Vector3().crossVectors(camera, xAxis).normalize();
   let extent = 0.000001;
   for (let corner = 0;corner < 8; corner++) {
-    const point = new THREE41.Vector3(corner & 1 ? bounds.max.x : bounds.min.x, corner & 2 ? bounds.max.y : bounds.min.y, corner & 4 ? bounds.max.z : bounds.min.z).sub(center);
+    const point = new THREE42.Vector3(corner & 1 ? bounds.max.x : bounds.min.x, corner & 2 ? bounds.max.y : bounds.min.y, corner & 4 ? bounds.max.z : bounds.min.z).sub(center);
     extent = Math.max(extent, Math.abs(point.dot(xAxis)), Math.abs(point.dot(yAxis)));
   }
   const scale = size * 0.45 / extent;
   return (assetPoint) => {
-    const world = new THREE41.Vector3(...assetPoint).applyMatrix4(root.matrixWorld).sub(center);
+    const world = new THREE42.Vector3(...assetPoint).applyMatrix4(root.matrixWorld).sub(center);
     return [size / 2 + world.dot(xAxis) * scale, size / 2 - world.dot(yAxis) * scale];
   };
 }
@@ -30039,19 +30541,10 @@ var init_character_capture = __esm(() => {
 });
 
 // src/render.ts
-import * as THREE42 from "three";
-import { Document } from "@gltf-transform/core";
+import * as THREE43 from "three";
+import { Document, Logger } from "@gltf-transform/core";
 import { KHRMaterialsEmissiveStrength } from "@gltf-transform/extensions";
-import {
-  dedup,
-  instance,
-  palette,
-  flatten,
-  join as join3,
-  weld,
-  prune,
-  mergeDocuments
-} from "@gltf-transform/functions";
+import { dedup, instance, palette, weld, prune, mergeDocuments } from "@gltf-transform/functions";
 function hiddenTriangles(root, lowerLevels) {
   let hidden = 0;
   const visit = (node) => {
@@ -30212,7 +30705,7 @@ function bridgeMaterial(doc, threeMat, cache, textureCache, authorExtras) {
     } else if (stdMat.transparent) {
       mat.setAlphaMode("BLEND");
     }
-    if (stdMat.side === THREE42.DoubleSide) {
+    if (stdMat.side === THREE43.DoubleSide) {
       mat.setDoubleSided(true);
     }
     if (stdMat.map) {
@@ -30279,7 +30772,7 @@ function bridgeMaterial(doc, threeMat, cache, textureCache, authorExtras) {
   } else if (common.transparent || (common.opacity ?? 1) < 1) {
     mat.setAlphaMode("BLEND");
   }
-  if (threeMat.side === THREE42.DoubleSide)
+  if (threeMat.side === THREE43.DoubleSide)
     mat.setDoubleSided(true);
   if (common.map && !mat.getBaseColorTexture()) {
     const texture = bridgeTexture(doc, common.map, textureCache);
@@ -30414,7 +30907,7 @@ function bridgeNode(doc, buf, threeObj, matCache, nodeMap, meshCache, texCache, 
     const cacheKey = `kiln-sprite-quad:${centerX}:${centerY}:${rotation}__${threeMat.uuid}`;
     let gtMesh = meshCache.get(cacheKey);
     if (!gtMesh) {
-      const geometry = new THREE42.PlaneGeometry(1, 1);
+      const geometry = new THREE43.PlaneGeometry(1, 1);
       if (centerX !== 0.5 || centerY !== 0.5) {
         geometry.translate(0.5 - centerX, 0.5 - centerY, 0);
       }
@@ -30438,9 +30931,9 @@ function animationInterpolation(track) {
   if (isCubicSplineTrack(track))
     return "CUBICSPLINE";
   const mode = track.getInterpolation();
-  if (mode === THREE42.InterpolateDiscrete)
+  if (mode === THREE43.InterpolateDiscrete)
     return "STEP";
-  if (mode === THREE42.InterpolateLinear)
+  if (mode === THREE43.InterpolateLinear)
     return "LINEAR";
   throw new Error(`Unsupported animation interpolation on ${track.name}; use LINEAR, STEP or CUBICSPLINE.`);
 }
@@ -30604,26 +31097,40 @@ async function applyGpuInstancing(doc, mode, role) {
   const after = collectGlbMetrics(doc);
   return { batches, instances, drawsBefore: before.drawCalls, drawsAfter: after.drawCalls };
 }
-async function consolidateMaterials(doc, mode) {
+async function consolidateMaterials(doc, mode, keep = []) {
+  doc.setLogger(new Logger(Logger.Verbosity.WARN));
   const before = collectGlbMetrics(doc);
   const root = doc.getRoot();
-  const animatedOrSkinned = root.listAnimations().length > 0 || root.listSkins().length > 0;
-  const semanticGraph = root.listNodes().some((node) => node.getExtras()[KILN_SEMANTIC_EXTRAS_KEY] !== undefined);
-  const effective = mode === "full" && (animatedOrSkinned || semanticGraph || hasNodeLevelsOfDetail(doc) || hasPreservedNodeState(doc)) ? "palette" : mode;
   const steps = root.listMaterials().some((material) => Object.keys(material.getExtras()).length > 0) ? [] : [palette({ min: PALETTE_MIN })];
-  if (effective === "full") {
-    steps.push(flatten(), join3({ keepNamed: true }));
-  }
+  let merge;
+  if (mode === "full")
+    steps.push(rigidMerge({ keep }, (summary) => {
+      merge = summary;
+    }));
   steps.push(weld(), prune({ keepLeaves: true, keepExtras: true, keepSolidTextures: true }));
   await doc.transform(...steps);
   const after = collectGlbMetrics(doc);
   return {
-    mode: effective,
+    mode,
     materialsBefore: before.uniqueMaterials,
     materialsAfter: after.uniqueMaterials,
     drawsBefore: before.drawCalls,
-    drawsAfter: after.drawCalls
+    drawsAfter: after.drawCalls,
+    ...merge ? { rigidMerge: merge } : {}
   };
+}
+function optimizeWarnings(summary) {
+  const merge = summary.rigidMerge;
+  if (!merge)
+    return [];
+  const warnings = [];
+  if (merge.skipped)
+    warnings.push(`Rigid merge skipped: ${merge.skipped}; geometry left separate.`);
+  if (merge.rejected.length)
+    warnings.push(`Rigid merge retained ${merge.rejected.length} rejected buckets; first: ${merge.rejected[0].error}`);
+  if (merge.unmatchedKeep.length)
+    warnings.push(`Rigid merge did not find ${merge.unmatchedKeep.length} requested boundary names.`);
+  return warnings;
 }
 async function renderSceneToGLB(root, opts = {}) {
   assertNoLegacyRuntimePolicy(opts);
@@ -30720,6 +31227,7 @@ async function renderSceneToGLB(root, opts = {}) {
   if (effectiveOptimize !== "off") {
     try {
       optimize = await consolidateMaterials(doc, effectiveOptimize);
+      warnings.push(...optimizeWarnings(optimize));
     } catch (err) {
       warnings.push(`optimize (${effectiveOptimize}) failed: ${err instanceof Error ? err.message : String(err)}`);
     }
@@ -30823,6 +31331,7 @@ async function renderGLBInProcess(code, opts = {}) {
     gltfExporter: resolveGltfExporter(opts.gltfExporter),
     geometryPolicy: opts.geometryPolicy ?? "warn",
     optimize: resolveOptimize(opts.optimize),
+    ...resolveOptimize(opts.optimize) === "full" ? { optimizationPipeline: FULL_OPTIMIZATION_PIPELINE } : {},
     instance: resolveInstance(opts.instance)
   };
   let materialLibraryDependencies;
@@ -30948,8 +31457,8 @@ function collectMeshStats(root) {
     if (!Number.isFinite(box.min.x) || !Number.isFinite(box.max.x)) {
       return;
     }
-    const center = new THREE42.Vector3;
-    const size = new THREE42.Vector3;
+    const center = new THREE43.Vector3;
+    const size = new THREE43.Vector3;
     box.getCenter(center);
     box.getSize(size);
     out.push({
@@ -30964,7 +31473,7 @@ function collectMeshStats(root) {
   return out;
 }
 function minimalGapVector(a, b) {
-  const v = new THREE42.Vector3;
+  const v = new THREE43.Vector3;
   for (const axis of ["x", "y", "z"]) {
     if (a.min[axis] > b.max[axis])
       v[axis] = b.max[axis] - a.min[axis];
@@ -30982,10 +31491,10 @@ function inspectSceneStructure(root, opts = {}) {
     return warnings;
   const cat = opts.category?.toLowerCase();
   if (cat === "vehicle" || cat === "weapon" || cat === "boat" || cat === "aircraft") {
-    const all = new THREE42.Box3;
+    const all = new THREE43.Box3;
     for (const m of meshes)
       all.union(m.box);
-    const size = new THREE42.Vector3;
+    const size = new THREE43.Vector3;
     all.getSize(size);
     if (cat === "aircraft") {
       if (size.y > size.x * 1.2) {
@@ -31078,6 +31587,8 @@ var init_render = __esm(() => {
   init_material_recipe_runtime();
   init_material_resources();
   init_texture_resolver();
+  init_rebuild_options();
+  init_rigid_merge();
   init_validation();
   init_kit();
   init_texture_bake();
@@ -31528,12 +32039,12 @@ var init_subprocess = __esm(() => {
 });
 
 // src/workspace-location.ts
-import { dirname as dirname3, join as join4, resolve as resolve5 } from "node:path";
+import { dirname as dirname3, join as join3, resolve as resolve5 } from "node:path";
 function localWorkspaceRoot(env = process.env) {
   return env.KILN_WORKSPACE ? resolve5(env.KILN_WORKSPACE) : env.KILN_PROGRAM_STORE ? dirname3(dirname3(resolve5(env.KILN_PROGRAM_STORE))) : process.cwd();
 }
 function localProgramStoreDirectory(env = process.env) {
-  return env.KILN_PROGRAM_STORE ? resolve5(env.KILN_PROGRAM_STORE) : join4(localWorkspaceRoot(env), ".kiln", "programs");
+  return env.KILN_PROGRAM_STORE ? resolve5(env.KILN_PROGRAM_STORE) : join3(localWorkspaceRoot(env), ".kiln", "programs");
 }
 var init_workspace_location = () => {};
 
@@ -31633,7 +32144,7 @@ __export(exports_program_store_node, {
 });
 import { link as link2, lstat as lstat3, mkdir as mkdir3, readFile as readFile2, readdir as readdir2, stat as stat2, unlink as unlink2, writeFile as writeFile3 } from "node:fs/promises";
 import { randomUUID as randomUUID3 } from "node:crypto";
-import { join as join5 } from "node:path";
+import { join as join4 } from "node:path";
 
 class FileProgramStore {
   directory;
@@ -31649,7 +32160,7 @@ class FileProgramStore {
         if (!entry.isFile() || !/^[a-f0-9]{64}\.js$/.test(entry.name))
           continue;
         try {
-          bytes += (await stat2(join5(this.directory, entry.name))).size;
+          bytes += (await stat2(join4(this.directory, entry.name))).size;
           entries++;
         } catch (error) {
           if (error.code !== "ENOENT")
@@ -31667,7 +32178,7 @@ class FileProgramStore {
     const canonical = ref.startsWith("p_") ? await this.readHandle(ref) : ref;
     if (canonical === undefined)
       throw this.notFound(ref);
-    const path = join5(this.directory, `${canonical.slice(7)}.js`);
+    const path = join4(this.directory, `${canonical.slice(7)}.js`);
     let code;
     try {
       if ((await stat2(path)).size > MAX_PROGRAM_BYTES)
@@ -31686,7 +32197,7 @@ class FileProgramStore {
     return programNotFound(ref, "This program store has no such reference; it was issued by another store (KILN_PROGRAM_STORE selects which) or its store was removed.");
   }
   async readHandle(handle) {
-    const path = join5(this.directory, "refs", `${handle}.ref`);
+    const path = join4(this.directory, "refs", `${handle}.ref`);
     try {
       const info = await lstat3(path);
       if (!info.isFile() || info.size !== 71)
@@ -31705,7 +32216,7 @@ class FileProgramStore {
     await this.get(ref);
     if (ref.startsWith("p_"))
       return ref;
-    const directory = join5(this.directory, "refs");
+    const directory = join4(this.directory, "refs");
     await mkdir3(directory, { recursive: true });
     for (const handle of shortProgramRefCandidates(ref)) {
       const owner = await this.readHandle(handle);
@@ -31713,11 +32224,11 @@ class FileProgramStore {
         return handle;
       if (owner !== undefined)
         continue;
-      const temporary = join5(directory, `.write-${randomUUID3()}`);
+      const temporary = join4(directory, `.write-${randomUUID3()}`);
       await writeFile3(temporary, ref, { encoding: "utf8", flag: "wx", mode: 384 });
       try {
         try {
-          await link2(temporary, join5(directory, `${handle}.ref`));
+          await link2(temporary, join4(directory, `${handle}.ref`));
           return handle;
         } catch (error) {
           if (error.code !== "EEXIST")
@@ -31734,8 +32245,8 @@ class FileProgramStore {
   async put(code) {
     const ref = await programReference(code);
     await mkdir3(this.directory, { recursive: true });
-    const target = join5(this.directory, `${ref.slice(7)}.js`);
-    const temporary = join5(this.directory, `.write-${randomUUID3()}`);
+    const target = join4(this.directory, `${ref.slice(7)}.js`);
+    const temporary = join4(this.directory, `.write-${randomUUID3()}`);
     await writeFile3(temporary, code, { encoding: "utf8", flag: "wx", mode: 384 });
     try {
       try {
@@ -31968,7 +32479,7 @@ import {
   utimes,
   writeFile as writeFile4
 } from "node:fs/promises";
-import { join as join6, resolve as resolve6 } from "node:path";
+import { join as join5, resolve as resolve6 } from "node:path";
 
 class FileBuildCache {
   maxBytes;
@@ -31982,7 +32493,7 @@ class FileBuildCache {
   path(key) {
     if (!keyPattern.test(key))
       throw new Error("Invalid build cache key.");
-    return join6(this.directory, `${key.slice(7)}.json`);
+    return join5(this.directory, `${key.slice(7)}.json`);
   }
   async get(key) {
     const path = this.path(key);
@@ -32010,7 +32521,7 @@ class FileBuildCache {
     if (Buffer.byteLength(bytes) > Math.min(this.maxBytes, 96 * 1024 * 1024))
       return;
     await mkdir4(this.directory, { recursive: true });
-    const temporary = join6(this.directory, `.write-${randomUUID4()}`);
+    const temporary = join5(this.directory, `.write-${randomUUID4()}`);
     await writeFile4(temporary, bytes, { encoding: "utf8", flag: "wx", mode: 384 });
     try {
       await rename3(temporary, path);
@@ -32024,7 +32535,7 @@ class FileBuildCache {
     for (const name of await readdir3(this.directory)) {
       if (!filePattern.test(name))
         continue;
-      const path = join6(this.directory, name);
+      const path = join5(this.directory, name);
       try {
         const item = await stat3(path);
         entries.push({ path, size: item.size, used: item.mtimeMs });
@@ -32051,14 +32562,14 @@ var init_build_cache_node = __esm(() => {
 import { createHash as createHash11 } from "node:crypto";
 import { lstat as lstat4, readFile as readFile4, readdir as readdir4, realpath as realpath3, stat as stat4 } from "node:fs/promises";
 import { createRequire } from "node:module";
-import { dirname as dirname4, join as join7, relative as relative2 } from "node:path";
+import { dirname as dirname4, join as join6, relative as relative2 } from "node:path";
 async function installedRuntimeIdentity(root, limits = {}) {
   let bytes = 0;
   let files = 0;
   const absentPackages = [];
   const maxBytes = limits.maxBytes ?? 512 * 1024 * 1024;
   const maxFiles = limits.maxFiles ?? 40000;
-  const manifest = async (directory) => JSON.parse(await readFile4(join7(directory, "package.json"), "utf8"));
+  const manifest = async (directory) => JSON.parse(await readFile4(join6(directory, "package.json"), "utf8"));
   let readers = 0;
   const waiting = [];
   const read = async (path) => {
@@ -32084,17 +32595,17 @@ async function installedRuntimeIdentity(root, limits = {}) {
     const pkg = await manifest(root);
     if (pkg.name !== "@kiln/engine")
       throw new Error("Not a Kiln installation.");
-    const build = JSON.parse(await readFile4(join7(root, "dist", "build.json"), "utf8"));
+    const build = JSON.parse(await readFile4(join6(root, "dist", "build.json"), "utf8"));
     const worker = build.entries?.worker;
     if (build.schemaVersion !== 1 || worker?.file !== "evaluator-worker.mjs" || !/^sha256:[a-f0-9]{64}$/.test(worker.identity))
       throw new Error("No valid packaged worker identity.");
-    const workerHash = `sha256:${digest4(await read(join7(root, "dist", worker.file)))}`;
+    const workerHash = `sha256:${digest4(await read(join6(root, "dist", worker.file)))}`;
     if (worker.bundleHash !== workerHash)
       throw new Error("Packaged worker differs from its build manifest.");
     const records = [];
     const visited = new Map;
     async function resolvePackage(parent, name) {
-      const require2 = createRequire(join7(parent, "package.json"));
+      const require2 = createRequire(join6(parent, "package.json"));
       let found;
       try {
         found = require2.resolve(`${name}/package.json`);
@@ -32103,7 +32614,7 @@ async function installedRuntimeIdentity(root, limits = {}) {
           found = require2.resolve(name);
         } catch {
           for (const modules of require2.resolve.paths(name) ?? []) {
-            const candidate = join7(modules, name);
+            const candidate = join6(modules, name);
             try {
               await lstat4(candidate);
             } catch (error) {
@@ -32135,7 +32646,7 @@ async function installedRuntimeIdentity(root, limits = {}) {
       return (await Promise.all(entries.map(async (entry) => {
         if (entry.name === "node_modules" || entry.name === ".git")
           return [];
-        const path = join7(directory, entry.name);
+        const path = join6(directory, entry.name);
         if (entry.isSymbolicLink())
           throw new Error("Dependency contains an untracked internal symlink.");
         if (entry.isDirectory())
@@ -32384,7 +32895,7 @@ var init_projects = __esm(() => {
 // src/projects-node.ts
 import { createHash as createHash12, randomUUID as randomUUID5 } from "node:crypto";
 import { link as link3, lstat as lstat5, mkdir as mkdir5, open as open3, readdir as readdir5, realpath as realpath4, unlink as unlink4 } from "node:fs/promises";
-import { join as join8, relative as relative3, resolve as resolve7, sep as sep2 } from "node:path";
+import { join as join7, relative as relative3, resolve as resolve7, sep as sep2 } from "node:path";
 function sequenceOf(revisionId) {
   projectRevisionIdSchema.parse(revisionId);
   const sequence = Number(revisionId.slice(2, 12));
@@ -32404,7 +32915,7 @@ class FileProjectStore {
     if (!workspace.trim())
       throw new Error("A workspace directory is required");
     this.workspace = resolve7(workspace);
-    this.directory = join8(this.workspace, ".kiln", "projects");
+    this.directory = join7(this.workspace, ".kiln", "projects");
   }
   async path(projectId, create = false) {
     if (projectId !== undefined)
@@ -32414,7 +32925,7 @@ class FileProjectStore {
     const canonical = await realpath4(this.workspace);
     let path = this.workspace;
     for (const part of [".kiln", "projects", ...projectId ? [projectId, "revisions"] : []]) {
-      path = join8(path, part);
+      path = join7(path, part);
       if (create)
         await mkdir5(path).catch((error) => {
           if (!exists(error))
@@ -32446,7 +32957,7 @@ class FileProjectStore {
     return latest;
   }
   async load(projectId, directory, sequence) {
-    const path = join8(directory, filename(sequence));
+    const path = join7(directory, filename(sequence));
     const info = await lstat5(path);
     if (!info.isFile() || info.isSymbolicLink() || info.size > MAX_PROJECT_BYTES)
       throw new Error("Invalid or oversized project revision file");
@@ -32529,7 +33040,7 @@ class FileProjectStore {
     for (const revision of new Set(record.reviews.map((review) => review.projectRevisionId)))
       await this.read(record.projectId, revision);
     const directory = await this.path(record.projectId, true);
-    const temporary = join8(directory, `.write-${randomUUID5()}`);
+    const temporary = join7(directory, `.write-${randomUUID5()}`);
     const handle = await open3(temporary, "wx", 384);
     try {
       try {
@@ -32539,7 +33050,7 @@ class FileProjectStore {
         await handle.close();
       }
       try {
-        await link3(temporary, join8(directory, filename(sequenceOf(record.revisionId))));
+        await link3(temporary, join7(directory, filename(sequenceOf(record.revisionId))));
       } catch (error) {
         if (!exists(error))
           throw error;
@@ -32617,7 +33128,7 @@ var init_workspace = __esm(() => {
 
 // src/workspace-node.ts
 import { AsyncLocalStorage } from "node:async_hooks";
-import { join as join9 } from "node:path";
+import { join as join8 } from "node:path";
 
 class FileWorkspace {
   root;
@@ -32629,7 +33140,7 @@ class FileWorkspace {
     this.root = root;
     this.defaultProjectId = defaultProjectId;
     this.projects = new FileProjectStore(root);
-    this.materials = new FileMaterialLibrary(join9(root, ".kiln", "materials"));
+    this.materials = new FileMaterialLibrary(join8(root, ".kiln", "materials"));
   }
   current() {
     return this.active.getStore();
@@ -32879,7 +33390,7 @@ import {
   writeFile as writeFile5,
   realpath as realpath5
 } from "node:fs/promises";
-import { join as join10, resolve as resolve8, relative as relative4, sep as sep3 } from "node:path";
+import { join as join9, resolve as resolve8, relative as relative4, sep as sep3 } from "node:path";
 import { z as z8 } from "zod";
 function notify(run) {
   try {
@@ -33052,7 +33563,7 @@ class FileLiveReview {
   unreportedIssues = [];
   constructor(workspace, options = {}) {
     this.workspace = resolve8(workspace);
-    this.directory = join10(this.workspace, ".kiln", "review");
+    this.directory = join9(this.workspace, ".kiln", "review");
     this.maxOperations = options.maxOperations ?? 200;
     this.maxBytes = options.maxBytes ?? 256 * 1024 * 1024;
     this.maxQueuedBytes = options.maxQueuedBytes ?? 128 * 1024 * 1024;
@@ -33075,7 +33586,7 @@ class FileLiveReview {
   path(operationId, file) {
     if (!operationPattern.test(operationId))
       throw new Error("Invalid operation ID");
-    return join10(this.directory, operationId, ...file ? [file] : []);
+    return join9(this.directory, operationId, ...file ? [file] : []);
   }
   async root(create = false) {
     if (create)
@@ -33083,7 +33594,7 @@ class FileLiveReview {
     const canonical = await realpath5(this.workspace);
     let path = this.workspace;
     for (const part of [".kiln", "review"]) {
-      path = join10(path, part);
+      path = join9(path, part);
       if (create)
         await mkdir6(path).catch((error) => {
           if (!collision(error))
@@ -33121,7 +33632,7 @@ class FileLiveReview {
   async locked(run) {
     await this.root(true);
     const token = randomUUID6();
-    const directory = join10(this.directory, ".locks");
+    const directory = join9(this.directory, ".locks");
     await mkdir6(directory).catch((error) => {
       if (!collision(error))
         throw error;
@@ -33129,7 +33640,7 @@ class FileLiveReview {
     const info = await lstat6(directory);
     if (!info.isDirectory() || info.isSymbolicLink())
       throw new Error("Unsafe live lock directory");
-    const candidate = join10(directory, `.candidate-${process.pid}-${token}.tmp`);
+    const candidate = join9(directory, `.candidate-${process.pid}-${token}.tmp`);
     const owner = JSON.stringify({ pid: process.pid, token });
     await writeFile5(candidate, owner, { flag: "wx", mode: 384 });
     const generations = async () => (await readdir6(directory)).filter((name) => /^[0-9]{16}\.lock$/.test(name)).sort();
@@ -33146,8 +33657,8 @@ class FileLiveReview {
           throw new Error("Live lock generation exhausted");
         if (latest) {
           try {
-            const prior = z8.object({ pid: z8.number().int().positive(), token: z8.string().uuid() }).strict().parse(JSON.parse(new TextDecoder().decode(await this.boundedFile(join10(directory, latest), 1024))));
-            const released = await lstat6(join10(directory, `${latest}.released`)).then((entry) => {
+            const prior = z8.object({ pid: z8.number().int().positive(), token: z8.string().uuid() }).strict().parse(JSON.parse(new TextDecoder().decode(await this.boundedFile(join9(directory, latest), 1024))));
+            const released = await lstat6(join9(directory, `${latest}.released`)).then((entry) => {
               if (!entry.isFile() || entry.isSymbolicLink() || entry.size !== 0)
                 throw new Error("Invalid lock release");
               return true;
@@ -33168,9 +33679,9 @@ class FileLiveReview {
         }
         const name = `${String(sequence).padStart(16, "0")}.lock`;
         try {
-          await link4(candidate, join10(directory, name));
+          await link4(candidate, join9(directory, name));
           if ((await generations()).at(-1) !== name) {
-            await unlink5(join10(directory, name));
+            await unlink5(join9(directory, name));
             continue;
           }
           acquired = name;
@@ -33180,8 +33691,8 @@ class FileLiveReview {
         }
       }
       for (const name of (await generations()).slice(0, -3)) {
-        await unlink5(join10(directory, name));
-        await unlink5(join10(directory, `${name}.released`)).catch((error) => {
+        await unlink5(join9(directory, name));
+        await unlink5(join9(directory, `${name}.released`)).catch((error) => {
           if (!missing2(error))
             throw error;
         });
@@ -33189,18 +33700,18 @@ class FileLiveReview {
       for (const name of await readdir6(directory)) {
         const match = /^\.candidate-([0-9]+)-[a-f0-9-]+\.tmp$/.exec(name);
         if (match && dead(Number(match[1])))
-          await unlink5(join10(directory, name)).catch(() => {});
+          await unlink5(join9(directory, name)).catch(() => {});
       }
       await this.limits(true);
       return await run();
     } finally {
       if (acquired)
-        await writeFile5(join10(directory, `${acquired}.released`), "", { flag: "wx", mode: 384 });
+        await writeFile5(join9(directory, `${acquired}.released`), "", { flag: "wx", mode: 384 });
       await unlink5(candidate).catch(() => {});
     }
   }
   async limits(create = false) {
-    const path = join10(this.directory, "limits.json");
+    const path = join9(this.directory, "limits.json");
     try {
       const value = JSON.parse(new TextDecoder().decode(await this.boundedFile(path, 1024)));
       const parsed = z8.object({
@@ -33274,7 +33785,7 @@ class FileLiveReview {
         try {
           await this.locked(async () => {
             const previous = await this.health();
-            await this.atomic(join10(this.directory, "health.json"), JSON.stringify([...new Set([...previous, ...issues])].slice(-20)));
+            await this.atomic(join9(this.directory, "health.json"), JSON.stringify([...new Set([...previous, ...issues])].slice(-20)));
           });
           this.unreportedIssues = this.unreportedIssues.filter((value) => !issues.includes(value));
         } catch {}
@@ -33437,7 +33948,7 @@ class FileLiveReview {
     const info = await lstat6(directory);
     if (!info.isDirectory() || info.isSymbolicLink())
       throw new Error("Unsafe live directory");
-    const raw = JSON.parse(new TextDecoder().decode(await this.boundedFile(join10(directory, "record.json"), metadataLimit)));
+    const raw = JSON.parse(new TextDecoder().decode(await this.boundedFile(join9(directory, "record.json"), metadataLimit)));
     const state = stateSchema.parse(jsonValue(raw, metadataLimit));
     if (state.operation.operationId !== operationId)
       throw new Error("Invalid live identity");
@@ -33456,7 +33967,7 @@ class FileLiveReview {
       throw new Error("Invalid artifact descriptor");
     if (state.operation.captures.some((file) => !/^capture-\d{1,2}\.png$/.test(file.name)))
       throw new Error("Invalid capture descriptor");
-    state.operation.pinned = await lstat6(join10(directory, "pinned")).then((s) => {
+    state.operation.pinned = await lstat6(join9(directory, "pinned")).then((s) => {
       if (!s.isFile() || s.isSymbolicLink())
         throw new Error("Invalid live pin");
       return true;
@@ -33478,7 +33989,7 @@ class FileLiveReview {
     for (const entry of await readdir6(directory, { withFileTypes: true })) {
       if (!entry.isFile() || entry.isSymbolicLink())
         throw new Error("Invalid live directory entry");
-      bytes += (await lstat6(join10(directory, entry.name))).size;
+      bytes += (await lstat6(join9(directory, entry.name))).size;
     }
     this.storedSizes.set(state, bytes);
     return state;
@@ -33529,7 +34040,7 @@ class FileLiveReview {
   }
   async health() {
     try {
-      return z8.array(z8.string().max(500)).max(20).parse(JSON.parse(new TextDecoder().decode(await this.boundedFile(join10(this.directory, "health.json"), 16384))));
+      return z8.array(z8.string().max(500)).max(20).parse(JSON.parse(new TextDecoder().decode(await this.boundedFile(join9(this.directory, "health.json"), 16384))));
     } catch (error) {
       if (missing2(error))
         return [];
@@ -33596,8 +34107,8 @@ class FileLiveReview {
     if ((await lstat6(directory)).isSymbolicLink())
       throw new Error("Unsafe live directory");
     for (const [name, data] of Object.entries(blobs))
-      await this.atomic(join10(directory, name), data);
-    await this.atomic(join10(directory, "record.json"), JSON.stringify(state));
+      await this.atomic(join9(directory, name), data);
+    await this.atomic(join9(directory, "record.json"), JSON.stringify(state));
     await this.cleanupRecord(await this.record(state.operation.operationId));
   }
   async remove(operationId) {
@@ -33785,7 +34296,7 @@ import {
   writeFile as writeFile6
 } from "node:fs/promises";
 import { homedir, platform } from "node:os";
-import { dirname as dirname5, join as join11, relative as relative5, resolve as resolve9, sep as sep4, win32 } from "node:path";
+import { dirname as dirname5, join as join10, relative as relative5, resolve as resolve9, sep as sep4, win32 } from "node:path";
 function assertMaterialAllocation(records) {
   let bytes = 0;
   for (const record of records)
@@ -33829,7 +34340,7 @@ class FileAssetLibrary {
     return root;
   }
   revisionDirectory(collection, assetId, revisionId) {
-    return join11(this.directory(collection), assetIdSchema.parse(assetId), "revisions", assetIdSchema.parse(revisionId));
+    return join10(this.directory(collection), assetIdSchema.parse(assetId), "revisions", assetIdSchema.parse(revisionId));
   }
   async path(collection, ...parts) {
     const root = this.directory(collection);
@@ -33838,7 +34349,7 @@ class FileAssetLibrary {
     let path = root;
     for (const part of parts) {
       assetIdSchema.parse(part);
-      path = join11(path, part);
+      path = join10(path, part);
       try {
         const entry = await lstat7(path);
         if (entry.isSymbolicLink())
@@ -33881,7 +34392,7 @@ class FileAssetLibrary {
     return records.sort((a, b) => b.createdAt.localeCompare(a.createdAt) || a.revisionId.localeCompare(b.revisionId));
   }
   async file(dir, name, limit = ASSET_LIMIT) {
-    const path = join11(dir, name);
+    const path = join10(dir, name);
     const info = await lstat7(path);
     if (!info.isFile() || info.isSymbolicLink() || info.size > limit)
       throw new Error("Invalid collection file");
@@ -33997,14 +34508,14 @@ class FileAssetLibrary {
       const dest = await this.path(collection, manifest.assetId, "revisions", manifest.revisionId);
       const parent = dirname5(dest);
       await mkdir7(parent, { recursive: true });
-      const stage = join11(parent, `.write-${randomUUID7()}`);
+      const stage = join10(parent, `.write-${randomUUID7()}`);
       await mkdir7(stage);
       try {
         for (const [name, bytes] of Object.entries(files))
-          await writeFile6(join11(stage, name), bytes, { flag: "wx" });
+          await writeFile6(join10(stage, name), bytes, { flag: "wx" });
         if (record.materialResources)
-          await writeFile6(join11(stage, ASSET_MATERIAL_FILE), JSON.stringify(record.materialResources), { flag: "wx" });
-        await writeFile6(join11(stage, "manifest.json"), `${JSON.stringify(manifest, null, 2)}
+          await writeFile6(join10(stage, ASSET_MATERIAL_FILE), JSON.stringify(record.materialResources), { flag: "wx" });
+        await writeFile6(join10(stage, "manifest.json"), `${JSON.stringify(manifest, null, 2)}
 `, {
           flag: "wx"
         });
@@ -34018,7 +34529,7 @@ class FileAssetLibrary {
             throw error;
           if (record.materialResources && !existing.materialResources) {
             try {
-              await link5(join11(stage, ASSET_MATERIAL_FILE), join11(dest, ASSET_MATERIAL_FILE));
+              await link5(join10(stage, ASSET_MATERIAL_FILE), join10(dest, ASSET_MATERIAL_FILE));
             } catch (enrichmentError) {
               if (enrichmentError.code !== "EEXIST")
                 throw enrichmentError;
@@ -34036,17 +34547,17 @@ class FileAssetLibrary {
   }
 }
 function collectionConfigPath(env = process.env) {
-  return join11(localWorkspaceRoot(env), ".kiln", "collections.json");
+  return join10(localWorkspaceRoot(env), ".kiln", "collections.json");
 }
 function defaultUserLibraryRoot(env = process.env, home = homedir(), operatingSystem = platform()) {
   const dataRoot = env.XDG_DATA_HOME?.trim();
   if (dataRoot)
-    return join11(dataRoot, "kiln", "library");
+    return join10(dataRoot, "kiln", "library");
   if (operatingSystem === "darwin")
-    return join11(home, "Library", "Application Support", "Kiln", "library");
+    return join10(home, "Library", "Application Support", "Kiln", "library");
   if (operatingSystem === "win32")
-    return join11(env.LOCALAPPDATA?.trim() || join11(home, "AppData", "Local"), "Kiln", "library");
-  return join11(home, ".local", "share", "kiln", "library");
+    return join10(env.LOCALAPPDATA?.trim() || join10(home, "AppData", "Local"), "Kiln", "library");
+  return join10(home, ".local", "share", "kiln", "library");
 }
 function assertCollectionRoot(id, path, operatingSystem = platform(), source) {
   if (operatingSystem !== "win32" || windowsDrivePath.test(path) || windowsSharePath.test(path))
@@ -34065,10 +34576,10 @@ function configuredRoots(text, source, operatingSystem) {
 }
 function localAssetLibrary(env = process.env, operatingSystem = platform()) {
   if (env.KILN_COLLECTIONS)
-    return new FileAssetLibrary(configuredRoots(env.KILN_COLLECTIONS, "KILN_COLLECTIONS", operatingSystem), new FileMaterialLibrary(join11(localWorkspaceRoot(env), ".kiln", "materials")));
+    return new FileAssetLibrary(configuredRoots(env.KILN_COLLECTIONS, "KILN_COLLECTIONS", operatingSystem), new FileMaterialLibrary(join10(localWorkspaceRoot(env), ".kiln", "materials")));
   const config = collectionConfigPath(env);
   const workspace = dirname5(dirname5(config));
-  const materials = new FileMaterialLibrary(join11(workspace, ".kiln", "materials"));
+  const materials = new FileMaterialLibrary(join10(workspace, ".kiln", "materials"));
   let text;
   try {
     text = readFileSync2(config, "utf8");
@@ -34082,7 +34593,7 @@ function localAssetLibrary(env = process.env, operatingSystem = platform()) {
     return new FileAssetLibrary(configuredRoots(text, config, operatingSystem), materials);
   }
   return new FileAssetLibrary({
-    project: join11(workspace, "assets", "kiln"),
+    project: join10(workspace, "assets", "kiln"),
     library: defaultUserLibraryRoot(env, homedir(), operatingSystem)
   }, materials);
 }
@@ -34097,6 +34608,10 @@ var init_assets_node = __esm(() => {
 });
 
 // src/asset-export.ts
+var exports_asset_export = {};
+__export(exports_asset_export, {
+  exportAssetGlb: () => exportAssetGlb
+});
 async function sha2562(bytes) {
   const digest = await crypto.subtle.digest("SHA-256", Uint8Array.from(bytes));
   return `sha256:${Array.from(new Uint8Array(digest), (byte) => byte.toString(16).padStart(2, "0")).join("")}`;
@@ -34476,7 +34991,7 @@ var init_project_bundle = __esm(() => {
 // src/project-bundle-node.ts
 import { randomUUID as randomUUID8 } from "node:crypto";
 import { link as link6, lstat as lstat8, mkdir as mkdir8, readFile as readFile7, realpath as realpath7, unlink as unlink6, writeFile as writeFile7 } from "node:fs/promises";
-import { join as join12, relative as relative6, resolve as resolve10, sep as sep5 } from "node:path";
+import { join as join11, relative as relative6, resolve as resolve10, sep as sep5 } from "node:path";
 async function assetMaterials(workspace, asset) {
   return resolveSavedAssetMaterials(asset, workspace.materials);
 }
@@ -34526,7 +35041,7 @@ async function retainArchive(workspace, bytes, digest) {
   const canonical = await realpath7(root);
   let directory = root;
   for (const part of [".kiln", "imports"]) {
-    directory = join12(directory, part);
+    directory = join11(directory, part);
     await mkdir8(directory).catch((error) => {
       if (error.code !== "EEXIST")
         throw error;
@@ -34536,8 +35051,8 @@ async function retainArchive(workspace, bytes, digest) {
     if (!info.isDirectory() || info.isSymbolicLink() || rel === ".." || rel.startsWith(`..${sep5}`))
       throw new Error("Unsafe project import directory");
   }
-  const file = join12(directory, `${digest.slice(7)}.zip`);
-  const temporary = join12(directory, `.import-${randomUUID8()}.tmp`);
+  const file = join11(directory, `${digest.slice(7)}.zip`);
+  const temporary = join11(directory, `.import-${randomUUID8()}.tmp`);
   await writeFile7(temporary, bytes, { flag: "wx", mode: 384 });
   try {
     try {
@@ -34689,7 +35204,7 @@ var init_source_check = __esm(() => {
 
 // src/local-runtime.ts
 import { readFile as readFile8, stat as stat5 } from "node:fs/promises";
-import { dirname as dirname6, isAbsolute, join as join13, resolve as resolve11 } from "node:path";
+import { dirname as dirname6, isAbsolute, join as join12, resolve as resolve11 } from "node:path";
 import { fileURLToPath as fileURLToPath4 } from "node:url";
 import { Console } from "node:console";
 function workspaceSourceReader(root) {
@@ -34880,7 +35395,7 @@ async function createPackagedLocalToolContext(base = {}, env = process.env, inst
   }
   const cacheBytes = integer2(env, "KILN_BUILD_CACHE_MB", 128, 0, 1024) * 1024 * 1024;
   const store = context.programStore;
-  const directory = resolve11(env.KILN_BUILD_CACHE_DIR ?? join13(store instanceof FileProgramStore ? dirname6(store.directory) : ".kiln", "cache", "builds"));
+  const directory = resolve11(env.KILN_BUILD_CACHE_DIR ?? join12(store instanceof FileProgramStore ? dirname6(store.directory) : ".kiln", "cache", "builds"));
   context.buildCache = new FileBuildCache(directory, cacheBytes);
   context.evaluatorCacheIdentity = `${identity.identity}:${JSON.stringify({
     execution: context.localExecution,
@@ -40656,12 +41171,12 @@ var exports_part_placement = {};
 __export(exports_part_placement, {
   createPartPlacementReader: () => createPartPlacementReader
 });
-import * as THREE43 from "three";
+import * as THREE44 from "three";
 function createPartPlacementReader(root) {
   const bounds = createPartBoundsReader(root);
-  const position = new THREE43.Vector3;
-  const quaternion = new THREE43.Quaternion;
-  const scale = new THREE43.Vector3;
+  const position = new THREE44.Vector3;
+  const quaternion = new THREE44.Quaternion;
+  const scale = new THREE44.Vector3;
   return (node) => {
     node.matrixWorld.decompose(position, quaternion, scale);
     const box = bounds(node);
@@ -40812,13 +41327,13 @@ var init_inspect = __esm(() => {
 });
 
 // src/views/measurement.ts
-import { Box3 as Box322, Vector3 as Vector336 } from "three";
+import { Box3 as Box323, Vector3 as Vector337 } from "three";
 function describeSubjectFrame(root, subject) {
   const selected = selectCameraSubject(root, subject);
   selected.node.updateWorldMatrix(true, true);
   const matrix = selected.node.matrixWorld;
-  const bounds = new Box322().setFromObject(selected.node);
-  const local = new Box322;
+  const bounds = new Box323().setFromObject(selected.node);
+  const local = new Box323;
   const invertible = matrix.determinant() !== 0;
   const inverse = matrix.clone().invert();
   selected.node.traverse((node) => {
@@ -40829,10 +41344,10 @@ function describeSubjectFrame(root, subject) {
     if (!attr)
       return;
     for (let i = 0;i < attr.count; i++)
-      local.expandByPoint(new Vector336().fromBufferAttribute(attr, i).applyMatrix4(mesh.matrixWorld).applyMatrix4(inverse));
+      local.expandByPoint(new Vector337().fromBufferAttribute(attr, i).applyMatrix4(mesh.matrixWorld).applyMatrix4(inverse));
   });
   const box = (b) => b.isEmpty() ? null : { min: b.min.toArray(), max: b.max.toArray() };
-  const axis = (i) => new Vector336().setFromMatrixColumn(matrix, i).normalize().toArray();
+  const axis = (i) => new Vector337().setFromMatrixColumn(matrix, i).normalize().toArray();
   return {
     path: selected.path,
     name: selected.name,
@@ -40842,7 +41357,7 @@ function describeSubjectFrame(root, subject) {
     invertible,
     worldMatrix: matrix.toArray(),
     axes: { frame: "world", x: axis(0), y: axis(1), z: axis(2) },
-    origin: new Vector336().setFromMatrixPosition(matrix).toArray()
+    origin: new Vector337().setFromMatrixPosition(matrix).toArray()
   };
 }
 function measureAttachment(root, input) {
@@ -40855,7 +41370,7 @@ function measureAttachment(root, input) {
     return {
       path: selected.path,
       local: [...local],
-      world: new Vector336(...local).applyMatrix4(selected.node.matrixWorld).toArray()
+      world: new Vector337(...local).applyMatrix4(selected.node.matrixWorld).toArray()
     };
   };
   const from = endpoint(input.from), to = endpoint(input.to);
@@ -40865,7 +41380,7 @@ function measureAttachment(root, input) {
     method: "straight-line anchor distance",
     from,
     to,
-    distance: new Vector336(...from.world).distanceTo(new Vector336(...to.world))
+    distance: new Vector337(...from.world).distanceTo(new Vector337(...to.world))
   };
 }
 var init_measurement = __esm(() => {
@@ -40874,10 +41389,10 @@ var init_measurement = __esm(() => {
 
 // src/revision-comparison.ts
 import {
-  PropertyType as PropertyType3
+  PropertyType as PropertyType4
 } from "@gltf-transform/core";
 import { ALL_EXTENSIONS as ALL_EXTENSIONS2 } from "@gltf-transform/extensions";
-import { Box3 as Box323, Matrix4 as Matrix414, Vector3 as Vector337 } from "three";
+import { Box3 as Box324, Matrix4 as Matrix415, Vector3 as Vector338 } from "three";
 async function accessorFingerprint(accessor) {
   const array = accessor?.getArray();
   if (!accessor || !array)
@@ -40890,13 +41405,13 @@ async function accessorFingerprint(accessor) {
   ];
 }
 function lowerLevels(node) {
-  return (node.getExtension(MSFT_LOD)?.listLevels() ?? []).filter((level) => level.propertyType === PropertyType3.NODE);
+  return (node.getExtension(MSFT_LOD)?.listLevels() ?? []).filter((level) => level.propertyType === PropertyType4.NODE);
 }
 function bounds(box) {
   return box.isEmpty() ? null : {
     min: box.min.toArray(),
     max: box.max.toArray(),
-    size: box.getSize(new Vector337).toArray()
+    size: box.getSize(new Vector338).toArray()
   };
 }
 async function digest7(bytes) {
@@ -40930,7 +41445,7 @@ async function snapshot3(bytes) {
     if (depth > 128)
       throw new Error("Revision comparison hierarchy exceeds 128 levels.");
     const names = new Set;
-    const combined = new Box323;
+    const combined = new Box324;
     const placed = siblings.flatMap((node) => [
       { node, drawn: true },
       ...lowerLevels(node).map((level) => ({ node: level, drawn: false }))
@@ -40947,8 +41462,8 @@ async function snapshot3(bytes) {
       if (node.listExtensions().some((extension) => extension.extensionName !== MSFT_LOD && extension.extensionName !== "KHR_node_visibility") || mesh?.listExtensions().length)
         throw new Error("Revision comparison does not support node/mesh extensions (including instancing).");
       const primitives = mesh?.listPrimitives() ?? [];
-      const own = new Box323;
-      const matrix = parentWorld.clone().multiply(new Matrix414().fromArray(node.getMatrix()));
+      const own = new Box324;
+      const matrix = parentWorld.clone().multiply(new Matrix415().fromArray(node.getMatrix()));
       if (matrix.elements.some((value) => !Number.isFinite(value)))
         throw new Error("Revision comparison requires finite transforms.");
       for (const primitive of primitives) {
@@ -40960,7 +41475,7 @@ async function snapshot3(bytes) {
         const indices = primitive.getIndices();
         const count = indices?.getCount() ?? position.getCount();
         vertices += count;
-        if (vertices > MAX_VERTICES)
+        if (vertices > MAX_VERTICES2)
           throw new Error("Revision comparison exceeds 2,000,000 placed vertices.");
         const element = [0, 0, 0];
         for (let index = 0;index < count; index++) {
@@ -40968,7 +41483,7 @@ async function snapshot3(bytes) {
           if (!Number.isInteger(vertex) || vertex < 0 || vertex >= position.getCount())
             throw new Error("Revision comparison found an invalid vertex index.");
           position.getElement(vertex, element);
-          const point = new Vector337(...element).applyMatrix4(matrix);
+          const point = new Vector338(...element).applyMatrix4(matrix);
           if (point.toArray().some((value) => !Number.isFinite(value)))
             throw new Error("Revision comparison requires finite positions.");
           own.expandByPoint(point);
@@ -40987,7 +41502,7 @@ async function snapshot3(bytes) {
   if (scenes[0].listExtensions().length)
     throw new Error("Revision comparison does not support scene extensions.");
   const scenePath = `/${encodeURIComponent(scenes[0].getName() || "Scene")}[0]`;
-  const box = visit(scenes[0].listChildren(), "", 0, new Matrix414);
+  const box = visit(scenes[0].listChildren(), "", 0, new Matrix415);
   const nodePaths = new Map([...parts].map(([path, part]) => [part.node, path]));
   const animation = new Map;
   const clipNames = new Set;
@@ -41147,7 +41662,7 @@ async function compareRevisionGlbs(before, after, page = {}) {
     nextOffset: offset + limit < changes.length ? offset + limit : null
   };
 }
-var MAX_GLB_BYTES, MAX_NODES = 1e4, MAX_VERTICES = 2000000, ACCESSOR_IGNORED, MATERIAL_IGNORED;
+var MAX_GLB_BYTES, MAX_NODES = 1e4, MAX_VERTICES2 = 2000000, ACCESSOR_IGNORED, MATERIAL_IGNORED;
 var init_revision_comparison = __esm(() => {
   init_gltf_io();
   init_metrics();
@@ -41158,20 +41673,20 @@ var init_revision_comparison = __esm(() => {
 
 // src/views/surface-distance.ts
 import {
-  Box3 as Box324,
-  Matrix4 as Matrix415,
+  Box3 as Box325,
+  Matrix4 as Matrix416,
   Ray,
   Triangle as Triangle2,
-  Vector3 as Vector338
+  Vector3 as Vector339
 } from "three";
 function hierarchy(triangles) {
-  const box = new Box324;
+  const box = new Box325;
   for (const triangle of triangles)
     box.union(triangle.box);
   const count = triangles.length;
   if (count <= 4)
     return { box, count, triangles };
-  const size = box.getSize(new Vector338);
+  const size = box.getSize(new Vector339);
   const axis = size.x >= size.y && size.x >= size.z ? "x" : size.y >= size.z ? "y" : "z";
   const center = (triangle) => triangle.box.min[axis] / 2 + triangle.box.max[axis] / 2;
   triangles.sort((a, b) => center(a) - center(b));
@@ -41190,7 +41705,7 @@ function boxDistanceSquared(a, b) {
 }
 function collect(node, paths) {
   const triangles = [];
-  const bounds = new Box324;
+  const bounds = new Box325;
   node.updateWorldMatrix(true, true);
   node.traverseVisible((child) => {
     const mesh = child;
@@ -41214,7 +41729,7 @@ function collect(node, paths) {
     for (let instance = 0;instance < instances; instance++) {
       const matrix = mesh.matrixWorld.clone();
       if (instanced.isInstancedMesh) {
-        const local = new Matrix415;
+        const local = new Matrix416;
         instanced.getMatrixAt(instance, local);
         matrix.multiply(local);
       }
@@ -41223,13 +41738,13 @@ function collect(node, paths) {
           const id = index ? index.getX(i + offset) : i + offset;
           if (!Number.isSafeInteger(id) || id < 0 || id >= position.count)
             throw new Error("Surface distance encountered an invalid triangle index.");
-          const point = new Vector338().fromBufferAttribute(position, id).applyMatrix4(matrix);
+          const point = new Vector339().fromBufferAttribute(position, id).applyMatrix4(matrix);
           if (![point.x, point.y, point.z].every(Number.isFinite))
             throw new Error("Surface distance encountered a non-finite world position.");
           return point;
         };
         const triangle = new Triangle2(vertex(0), vertex(1), vertex(2));
-        const box = new Box324().setFromPoints([triangle.a, triangle.b, triangle.c]);
+        const box = new Box325().setFromPoints([triangle.a, triangle.b, triangle.c]);
         bounds.union(box);
         triangles.push({
           triangle,
@@ -41282,10 +41797,10 @@ function trianglePair(a, b) {
   const av = [a.a, a.b, a.c], bv = [b.a, b.b, b.c];
   if (b.getArea() > 0)
     for (const p of av)
-      record(p, b.closestPointToPoint(p, new Vector338));
+      record(p, b.closestPointToPoint(p, new Vector339));
   if (a.getArea() > 0)
     for (const q of bv)
-      record(a.closestPointToPoint(q, new Vector338), q);
+      record(a.closestPointToPoint(q, new Vector339), q);
   for (let i = 0;i < 3; i++) {
     const p = av[i], q = av[(i + 1) % 3];
     for (let j = 0;j < 3; j++)
@@ -41298,9 +41813,9 @@ function trianglePair(a, b) {
       const length = delta.length();
       if (length === 0)
         continue;
-      const hit = new Ray(origin, delta.divideScalar(length)).intersectTriangle(target.a, target.b, target.c, false, new Vector338);
+      const hit = new Ray(origin, delta.divideScalar(length)).intersectTriangle(target.a, target.b, target.c, false, new Vector339);
       if (hit && origin.distanceTo(hit) <= length) {
-        const onFace = target.closestPointToPoint(hit, new Vector338);
+        const onFace = target.closestPointToPoint(hit, new Vector339);
         if (vertices === av)
           record(hit, onFace);
         else
@@ -41459,6 +41974,221 @@ var init_surface_distance = __esm(() => {
   init_camera();
 });
 
+// src/draw-diagnostics.ts
+var exports_draw_diagnostics = {};
+__export(exports_draw_diagnostics, {
+  inspectDrawDiagnostics: () => inspectDrawDiagnostics
+});
+import { Primitive as Primitive3 } from "@gltf-transform/core";
+import { cloneDocument } from "@gltf-transform/functions";
+import * as THREE45 from "three";
+function withinLimits(doc) {
+  const root = doc.getRoot();
+  if (root.listNodes().length > MAX_NODES2 || root.listAccessors().length > 4096 || root.listMaterials().length > 2048 || root.listTextures().length > 256 || root.listScenes().length > 32 || doc.getGraph().listEdges().length > 32768)
+    return false;
+  let bytes = root.listAccessors().reduce((n, a) => n + (a.getArray()?.byteLength ?? 0), 0) + root.listTextures().reduce((n, t) => n + (t.getImage()?.byteLength ?? 0), 0);
+  let uses = 0;
+  let vertices = 0;
+  const walk = (node, depth) => {
+    if (depth > 128)
+      return false;
+    for (const p of node.getMesh()?.listPrimitives() ?? []) {
+      uses++;
+      vertices += p.getAttribute("POSITION")?.getCount() ?? 0;
+      bytes += p.listAttributes().reduce((n, a) => n + (a.getArray()?.byteLength ?? 0), 0) + (p.getIndices()?.getArray()?.byteLength ?? 0);
+    }
+    return uses <= MAX_USES && vertices <= MAX_VERTICES3 && bytes <= MAX_BYTES && node.listChildren().every((n) => walk(n, depth + 1));
+  };
+  return bytes <= MAX_BYTES && root.listScenes().every((s) => s.listChildren().every((n) => walk(n, 0)));
+}
+function collect2(doc, keep) {
+  const root = doc.getRoot();
+  const boundaries = findRigidBoundaries(doc, new Set(keep));
+  const nodeIds = new Map(root.listNodes().map((n, i) => [n, i]));
+  const anchors = new Map;
+  const uses = [];
+  for (const [sceneIndex, scene] of root.listScenes().entries()) {
+    const id = `scene:${sceneIndex}`;
+    const initial = { id, name: nameOf(scene.getName() || "Scene"), draws: 0, afterRigidMerge: 0 };
+    anchors.set(id, initial);
+    const walk = (node, anchor) => {
+      if (isHiddenGltfNode(node))
+        return;
+      const part = { id: `${id}/node:${nodeIds.get(node)}`, name: nameOf(node.getName()) };
+      if (boundaries.has(node)) {
+        anchor = { ...part, draws: 0, afterRigidMerge: 0 };
+        anchors.set(part.id, anchor);
+      }
+      for (const primitive of node.getMesh()?.listPrimitives() ?? []) {
+        anchor.draws++;
+        uses.push({ node, primitive, part });
+      }
+      for (const child of node.listChildren())
+        walk(child, anchor);
+    };
+    for (const child of scene.listChildren())
+      walk(child, initial);
+  }
+  return { anchors, uses };
+}
+function overlaps(a, b) {
+  if (Math.abs(a.normal.dot(b.normal)) < 1 - 0.00000001 || !a.bounds.intersectsBox(b.bounds))
+    return false;
+  const tolerance = Math.max(a.bounds.getSize(new THREE45.Vector3).length(), b.bounds.getSize(new THREE45.Vector3).length(), 0.000000000001) * 0.000001;
+  if (b.points.some((p) => Math.abs(a.normal.dot(p.clone().sub(a.points[0]))) > tolerance))
+    return false;
+  const normal = a.normal.toArray().map(Math.abs);
+  const drop = normal.indexOf(Math.max(...normal));
+  const project = (p) => p.toArray().filter((_, i) => i !== drop);
+  const clip = a.points.map(project);
+  if (cross22(clip[0], clip[1], clip[2]) < 0)
+    clip.reverse();
+  let polygon = b.points.map(project);
+  for (let i = 0;i < 3 && polygon.length; i++) {
+    const x = clip[i], y = clip[(i + 1) % 3];
+    const output = [];
+    for (let j = 0;j < polygon.length; j++) {
+      const p = polygon[j], q = polygon[(j + 1) % polygon.length];
+      const dp = cross22(x, y, p), dq = cross22(x, y, q);
+      if (dp >= 0)
+        output.push(p);
+      if (dp >= 0 !== dq >= 0) {
+        const t = dp / (dp - dq);
+        output.push([p[0] + t * (q[0] - p[0]), p[1] + t * (q[1] - p[1])]);
+      }
+    }
+    polygon = output;
+  }
+  let area = 0;
+  for (let i = 0;i < polygon.length; i++) {
+    const p = polygon[i], q = polygon[(i + 1) % polygon.length];
+    area += p[0] * q[1] - p[1] * q[0];
+  }
+  return Math.abs(area) / 2 > tolerance * tolerance;
+}
+function observe(uses) {
+  const mirrored = new Map;
+  const samples = [];
+  let eligibleTriangles = 0;
+  let unexaminedPrimitiveUses = 0;
+  for (const { node, primitive, part } of uses) {
+    if (node.getSkin() || node.getExtension("EXT_mesh_gpu_instancing") || primitive.listTargets().length) {
+      unexaminedPrimitiveUses++;
+      continue;
+    }
+    const matrix = new THREE45.Matrix4().fromArray(node.getWorldMatrix());
+    if (primitive.getAttribute("TANGENT") && matrix.determinant() < 0)
+      mirrored.set(part.id, part);
+    const position = primitive.getAttribute("POSITION");
+    if (!position || primitive.getMode() !== Primitive3.Mode.TRIANGLES) {
+      unexaminedPrimitiveUses++;
+      continue;
+    }
+    const indices = primitive.getIndices();
+    const count = Math.floor((indices?.getCount() ?? position.getCount()) / 3);
+    eligibleTriangles += count;
+    const amount = Math.min(count, 8, MAX_SAMPLES - samples.length);
+    for (let i = 0;i < amount; i++) {
+      const start = Math.floor(i * count / amount) * 3;
+      const points = [0, 1, 2].map((j) => new THREE45.Vector3().fromArray(position.getElement(indices ? indices.getScalar(start + j) : start + j, [])).applyMatrix4(matrix));
+      const normal = points[1].clone().sub(points[0]).cross(points[2].clone().sub(points[0]));
+      if (!Number.isFinite(normal.lengthSq()) || normal.lengthSq() === 0)
+        continue;
+      samples.push({
+        points,
+        normal: normal.normalize(),
+        bounds: new THREE45.Box3().setFromPoints(points),
+        part
+      });
+    }
+  }
+  const pairs = new Map;
+  for (let i = 0;i < samples.length; i++)
+    for (let j = i + 1;j < samples.length; j++) {
+      const a = samples[i], b = samples[j];
+      if (a.part.id === b.part.id || a.part.id.split("/")[0] !== b.part.id.split("/")[0])
+        continue;
+      const key = [a.part.id, b.part.id].sort().join("|");
+      if (!pairs.has(key) && overlaps(a, b))
+        pairs.set(key, { parts: [a.part, b.part] });
+    }
+  return {
+    mirroredTangents: {
+      count: mirrored.size,
+      omitted: Math.max(0, mirrored.size - MAX_FINDINGS),
+      parts: [...mirrored.values()].slice(0, MAX_FINDINGS),
+      evidence: "Visible static nodes with tangent attributes and negative world determinant; not proof of a shading defect. Skinned, morphed and GPU-instanced uses are not assessed."
+    },
+    coplanarParts: {
+      sampledTriangles: samples.length,
+      eligibleTriangles,
+      unexaminedPrimitiveUses,
+      candidatePairs: pairs.size,
+      omitted: Math.max(0, pairs.size - MAX_FINDINGS),
+      candidates: [...pairs.values()].slice(0, MAX_FINDINGS),
+      evidence: "Sampled overlapping coplanar triangles in separate static nodes; not proof of visible z-fighting. At most 8 triangles per primitive and 256 total; unexamined faces may contain other candidates."
+    }
+  };
+}
+function analyzeDrawDiagnostics(doc, options = {}) {
+  try {
+    if (!withinLimits(doc))
+      return skipped("input-limit");
+    const keep = options.keep ?? [];
+    const before = collect2(doc, keep);
+    const copy = cloneDocument(doc);
+    const merge = mergeRigidGroups(copy, { keep });
+    const after = collect2(copy, keep);
+    const all = [...before.anchors.values()].map((anchor) => ({
+      ...anchor,
+      afterRigidMerge: after.anchors.get(anchor.id)?.draws ?? 0
+    }));
+    const currentDraws = before.uses.length;
+    return {
+      version: "kiln.draw-diagnostics.v1",
+      status: "assessed",
+      scope: SCOPE,
+      currentDraws,
+      mergeEstimate: {
+        method: METHOD,
+        draws: after.uses.length,
+        saved: currentDraws - after.uses.length,
+        rejectedBuckets: merge.rejected.length,
+        ...merge.skipped ? { skipped: merge.skipped } : {}
+      },
+      anchors: {
+        total: all.length,
+        omitted: Math.max(0, all.length - MAX_ANCHORS),
+        items: all.slice(0, MAX_ANCHORS)
+      },
+      observations: observe(before.uses)
+    };
+  } catch {
+    return skipped("analysis-failed");
+  }
+}
+async function inspectDrawDiagnostics(bytes, options = {}) {
+  if (bytes.byteLength > MAX_BYTES)
+    return skipped("input-limit");
+  try {
+    return analyzeDrawDiagnostics(await createGltfIO().readBinary(bytes), options);
+  } catch {
+    return skipped("unreadable-glb");
+  }
+}
+var MAX_NODES2 = 2048, MAX_USES = 256, MAX_VERTICES3 = 262144, MAX_BYTES, MAX_ANCHORS = 16, MAX_SAMPLES = 256, MAX_FINDINGS = 4, SCOPE = "Static single-pass primitive draws across document scenes, respecting node visibility. Excludes culling, alternate LOD selections, shadow, reflection and depth passes, and renderer-specific extra passes; GPU instances count once per primitive. IDs use scene/node indices; names are bounded labels.", METHOD = "Current rigid-merge policy on a bounded clone with existing materials: includes layouts, boundaries, locks, shared-byte budget and vertex splits. Excludes palette consolidation and instancing; not a full-mode or GPU performance prediction.", nameOf = (name) => name.length <= 80 ? name : `${name.slice(0, 79)}…`, skipped = (reason) => ({
+  version: "kiln.draw-diagnostics.v1",
+  status: "skipped",
+  scope: SCOPE,
+  reason
+}), cross22 = (a, b, p) => (b[0] - a[0]) * (p[1] - a[1]) - (b[1] - a[1]) * (p[0] - a[0]);
+var init_draw_diagnostics = __esm(() => {
+  init_gltf_io();
+  init_metrics();
+  init_rigid_merge();
+  MAX_BYTES = 32 * 1024 * 1024;
+});
+
 // src/assets-resources.ts
 var exports_assets_resources = {};
 __export(exports_assets_resources, {
@@ -41484,8 +42214,8 @@ function assetLinks(collection, manifest) {
 function assetMime(name) {
   return name.endsWith(".glb") ? "model/gltf-binary" : name.endsWith(".png") ? "image/png" : name.endsWith(".zip") ? "application/zip" : name.endsWith(".json") ? "application/json" : "text/javascript";
 }
-async function runtimeAssetLinks(collection, record) {
-  const output = await exportAssetGlb(record, { profile: "runtime" });
+async function runtimeAssetLinks(collection, record, derived) {
+  const output = derived ?? await exportAssetGlb(record, { profile: "runtime" });
   if (output.profile !== "runtime")
     throw new Error("Expected runtime export");
   return [
@@ -41601,7 +42331,7 @@ var init_asset_widget = __esm(() => {
 
 // src/tools/registry.ts
 import { z as z21 } from "zod";
-import * as THREE44 from "three";
+import * as THREE46 from "three";
 function proceduralTextureMaterialContract(rendered, context) {
   const required = [...new Set(context.requiredProceduralTextureUsages ?? [])];
   if (required.length === 0)
@@ -41687,7 +42417,7 @@ async function renderDerivativeCell(input, context) {
         return;
       const prepare = (material) => {
         const copy = material.clone();
-        copy.side = THREE44.DoubleSide;
+        copy.side = THREE46.DoubleSide;
         return copy;
       };
       mesh.material = Array.isArray(mesh.material) ? mesh.material.map(prepare) : prepare(mesh.material);
@@ -41891,8 +42621,8 @@ function collectSceneMetrics(root) {
   let meshes = 0;
   const materialSet = new Set;
   let lowestPart;
-  const box = new THREE44.Box3;
-  const point = new THREE44.Vector3;
+  const box = new THREE46.Box3;
+  const point = new THREE46.Vector3;
   root.updateWorldMatrix(true, true);
   root.traverseVisible((node) => {
     const n = node;
@@ -41908,7 +42638,7 @@ function collectSceneMetrics(root) {
       const mesh = node;
       const position = mesh.geometry.getAttribute("position");
       const index = mesh.geometry.index;
-      const mb = new THREE44.Box3;
+      const mb = new THREE46.Box3;
       if (position) {
         for (let i = 0;i < (index?.count ?? position.count); i++) {
           point.fromBufferAttribute(position, index ? index.getX(i) : i);
@@ -41923,7 +42653,7 @@ function collectSceneMetrics(root) {
   });
   let bbox;
   if (!box.isEmpty()) {
-    const size = new THREE44.Vector3;
+    const size = new THREE46.Vector3;
     box.getSize(size);
     bbox = {
       min: [box.min.x, box.min.y, box.min.z],
@@ -42348,6 +43078,7 @@ async function runInspect(input, context) {
     if (input.measure && input.measure.mode !== "surface")
       measurement = measureAttachment(root, input.measure);
     const measurements = {
+      drawDiagnostics: await (await Promise.resolve().then(() => (init_draw_diagnostics(), exports_draw_diagnostics))).inspectDrawDiagnostics(evaluated.glb),
       ...input.listParts ? { partListing: await listPartPage(root, input.listParts) } : {},
       ...measurement ? { measurement } : {},
       ...surfaceMeasurements ? { surfaceMeasurements } : {},
@@ -43010,10 +43741,17 @@ function createKilnAssetDefs(context) {
       inputSchema: profileExportInput,
       run: async (raw) => {
         const input = profileExportInput.parse(raw);
+        const record = await readSavedRevision(library(), input.collection, input.assetId, input.revisionId);
+        await Promise.resolve().then(() => init_draw_diagnostics());
         if (input.profile === "runtime") {
-          const record = await readSavedRevision(library(), input.collection, input.assetId, input.revisionId);
+          const output = await (await Promise.resolve().then(() => (init_asset_export(), exports_asset_export))).exportAssetGlb(record, {
+            profile: "runtime"
+          });
+          if (output.profile !== "runtime")
+            throw new Error("Expected runtime export");
           return {
             ok: true,
+            drawDiagnostics: await inspectDrawDiagnostics(output.glb),
             profile: input.profile,
             collection: input.collection,
             asset: {
@@ -43021,10 +43759,13 @@ function createKilnAssetDefs(context) {
               revisionId: input.revisionId,
               name: record.manifest.name
             },
-            resources: await (await Promise.resolve().then(() => (init_assets_resources(), exports_assets_resources))).runtimeAssetLinks(input.collection, record)
+            resources: await (await Promise.resolve().then(() => (init_assets_resources(), exports_assets_resources))).runtimeAssetLinks(input.collection, record, output)
           };
         }
-        return links(input.collection, (await readSavedRevision(library(), input.collection, input.assetId, input.revisionId)).manifest);
+        return {
+          ...await links(input.collection, record.manifest),
+          drawDiagnostics: await inspectDrawDiagnostics(record.files["asset.glb"])
+        };
       }
     },
     {
@@ -43183,7 +43924,7 @@ var init_registry2 = __esm(() => {
 // render-service/src/instance.mjs
 import { createHash as createHash15 } from "node:crypto";
 import { readFileSync as readFileSync3, readdirSync, statSync } from "node:fs";
-import { join as join14, relative as relative7 } from "node:path";
+import { join as join13, relative as relative7 } from "node:path";
 function fingerprintSourceDir(dir) {
   const hash = createHash15("sha256");
   hash.update("kiln.render-service-source.v1");
@@ -43192,7 +43933,7 @@ function fingerprintSourceDir(dir) {
       for (const name of readdirSync(path).sort()) {
         if (name === "node_modules")
           continue;
-        visit(join14(path, name));
+        visit(join13(path, name));
       }
       return;
     }
@@ -43208,7 +43949,7 @@ var init_instance = () => {};
 // render-service/src/build-identity.mjs
 import { createHash as createHash16 } from "node:crypto";
 import { readFileSync as readFileSync4 } from "node:fs";
-import { dirname as dirname7, join as join15 } from "node:path";
+import { dirname as dirname7, join as join14 } from "node:path";
 import { createRequire as createRequire2 } from "node:module";
 function compatibilityFingerprint({ sourceFingerprint, dependencies }) {
   if (typeof sourceFingerprint !== "string" || !/^sha256:[a-f0-9]{64}$/.test(sourceFingerprint))
@@ -43236,7 +43977,7 @@ function resolvedRendererDependencies(anchorUrl = import.meta.url) {
     let found;
     for (;; ) {
       try {
-        const pkg = JSON.parse(readFileSync4(join15(dir, "package.json"), "utf8"));
+        const pkg = JSON.parse(readFileSync4(join14(dir, "package.json"), "utf8"));
         if (pkg.name === name) {
           found = pkg.version;
           break;
@@ -43256,8 +43997,8 @@ var RENDER_SERVICE_PROTOCOL = "kiln.render-service.v2", RENDER_SERVICE_DEPENDENC
 var init_build_identity = __esm(() => {
   init_instance();
   RENDER_SERVICE_DEPENDENCIES = Object.freeze({
-    three: "0.186.0",
-    webgpu: "0.6.1",
+    three: "0.186.1",
+    webgpu: "0.6.2",
     pngjs: "7.0.0"
   });
   REQUIRED_RENDER_CAPABILITIES = Object.freeze([
@@ -43413,7 +44154,7 @@ var init_render_service_client = __esm(() => {
 
 // src/render-service-windows.ts
 import { spawn as spawn2 } from "node:child_process";
-import { join as join16 } from "node:path";
+import { join as join15 } from "node:path";
 function powerShellLiteral(value) {
   return `'${value.replaceAll("'", "''")}'`;
 }
@@ -43428,7 +44169,7 @@ function launchWindowsRenderService(executable, args, directory, env) {
   ].join(`
 `);
   const systemRoot = env.SystemRoot ?? env.SYSTEMROOT;
-  const powerShell = systemRoot ? join16(systemRoot, "System32", "WindowsPowerShell", "v1.0", "powershell.exe") : "powershell.exe";
+  const powerShell = systemRoot ? join15(systemRoot, "System32", "WindowsPowerShell", "v1.0", "powershell.exe") : "powershell.exe";
   const child = spawn2(powerShell, [
     "-NoProfile",
     "-NonInteractive",
@@ -43479,7 +44220,7 @@ var init_render_service_windows = () => {};
 import { spawn as spawn3, spawnSync } from "node:child_process";
 import { existsSync as existsSync3 } from "node:fs";
 import { fileURLToPath as fileURLToPath6, pathToFileURL } from "node:url";
-import { join as join17 } from "node:path";
+import { join as join16 } from "node:path";
 function localRenderServicePort(env = process.env) {
   const raw = Number(env["KILN_RENDER_SERVICE_PORT"]);
   return Number.isInteger(raw) && raw > 0 && raw < 65536 ? raw : DEFAULT_LOCAL_RENDER_SERVICE_PORT;
@@ -43497,18 +44238,18 @@ function namesLocalRenderService(url, env = process.env) {
 function renderServiceNodeArguments(dir) {
   return [
     "--import",
-    pathToFileURL(join17(dir, "src/register-hooks.mjs")).href,
-    join17(dir, "src/server.mjs")
+    pathToFileURL(join16(dir, "src/register-hooks.mjs")).href,
+    join16(dir, "src/server.mjs")
   ];
 }
 function renderServiceDir() {
   return process.env["KILN_RENDER_SERVICE_DIR"] || fileURLToPath6(new URL("../render-service", import.meta.url));
 }
 function localRenderServiceState(dir = renderServiceDir()) {
-  if (!existsSync3(join17(dir, "src/server.mjs")) || !existsSync3(join17(dir, "package.json")))
+  if (!existsSync3(join16(dir, "src/server.mjs")) || !existsSync3(join16(dir, "package.json")))
     return "not-packaged";
   try {
-    const anchor = pathToFileURL(join17(dir, "src/server.mjs")).href;
+    const anchor = pathToFileURL(join16(dir, "src/server.mjs")).href;
     if (process.versions.bun) {
       const moduleUrl = new URL("../render-service/src/build-identity.mjs", import.meta.url).href;
       const result = spawnSync(nodeBinary(), [
@@ -43539,7 +44280,7 @@ function explainRenderServiceState(state, dir) {
   return "renderer dependencies are missing; reinstall the official Kiln package with optional dependencies enabled";
 }
 function renderServiceSourceFingerprint(dir) {
-  const source = join17(dir, "src");
+  const source = join16(dir, "src");
   return existsSync3(source) ? fingerprintSourceDir(source) : undefined;
 }
 async function inspectLocalRenderService(url, dir = renderServiceDir(), timeoutMs = 1500) {
@@ -44152,7 +44893,7 @@ var init_workspace_http = __esm(() => {
 // src/asset-viewer.ts
 import { createServer } from "node:http";
 import { readFile as readFile9 } from "node:fs/promises";
-import { dirname as dirname8, join as join18 } from "node:path";
+import { dirname as dirname8, join as join17 } from "node:path";
 import { fileURLToPath as fileURLToPath7 } from "node:url";
 function quoted(value) {
   if (value === undefined)
@@ -44165,7 +44906,7 @@ function refuse(res, message) {
 `);
 }
 async function startAssetViewer(library, options = {}) {
-  const staticDirectory = options.staticDirectory ?? (import.meta.url.endsWith(".ts") ? join18(dirname8(fileURLToPath7(import.meta.url)), "..", "dist", "viewer") : join18(dirname8(fileURLToPath7(import.meta.url)), "viewer"));
+  const staticDirectory = options.staticDirectory ?? (import.meta.url.endsWith(".ts") ? join17(dirname8(fileURLToPath7(import.meta.url)), "..", "dist", "viewer") : join17(dirname8(fileURLToPath7(import.meta.url)), "viewer"));
   const server = createServer(async (req, res) => {
     res.setHeader("X-Content-Type-Options", "nosniff");
     res.setHeader("Referrer-Policy", "no-referrer");
@@ -44235,7 +44976,7 @@ async function startAssetViewer(library, options = {}) {
         return;
       }
       res.setHeader("Content-Security-Policy", "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' blob: data:; connect-src 'self' blob: data:; worker-src 'self' blob:; object-src 'none'; base-uri 'none'; frame-ancestors 'none'");
-      return send(await readFile9(join18(staticDirectory, file[0])), file[1]);
+      return send(await readFile9(join17(staticDirectory, file[0])), file[1]);
     } catch (error) {
       res.statusCode = error instanceof WorkspaceHttpError ? error.status : error && typeof error === "object" && ("code" in error) && error.code === "PROJECT_CONFLICT" ? 409 : 400;
       send(JSON.stringify({ error: error instanceof Error ? error.message : "Asset unavailable" }));
@@ -44473,10 +45214,13 @@ async function assetMain(argv) {
           const parsed = rebuildOptionsSchema.safeParse(record.manifest.build?.options);
           if (!parsed.success)
             throw new Error("Saved exporter settings are incomplete; use an explicit new authoring run instead of an exact rebuild.");
+          if (parsed.data.optimize === "full" && parsed.data.optimizationPipeline !== FULL_OPTIMIZATION_PIPELINE)
+            throw new Error("Saved revision uses an unversioned full optimization pipeline; rebuild with its original pinned engine, or explicitly author and save a new child revision to migrate.");
+          const { optimizationPipeline: _pipeline, ...renderOptions } = parsed.data;
           const materialResources = await resolveAssetMaterialPayload(new FileWorkspace(localWorkspaceRoot()), record);
           const code = new TextDecoder().decode(source);
           const rendered = await context.evaluatorPort.render(code, {
-            ...parsed.data,
+            ...renderOptions,
             materialResources,
             requirements
           });
@@ -44562,6 +45306,9 @@ async function assetMain(argv) {
           revisionId,
           profile,
           format,
+          ...format !== "source" ? {
+            drawDiagnostics: await inspectDrawDiagnostics(written.find(({ kind }) => kind === "glb")?.data ?? record.files["asset.glb"])
+          } : {},
           files: written.map(({ kind, path, data }) => ({
             kind,
             path,
@@ -44644,6 +45391,7 @@ var init_asset_cli = __esm(() => {
   init_registry2();
   init_cli_output();
   init_asset_export();
+  init_draw_diagnostics();
   init_local_runtime();
   init_cli_render_mode();
   init_asset_viewer();

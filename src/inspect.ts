@@ -19,6 +19,7 @@
 import * as THREE from 'three';
 import type { RequirementsBinding } from './requirements-store';
 import type { RequirementsContext } from './requirements-context';
+import type { DrawDiagnostics } from './draw-diagnostics';
 
 import { inspectGeneratedAnimation } from './render';
 import { listHelperSpecs } from './discovery/helper-specs';
@@ -63,6 +64,8 @@ export interface InspectBoundingBox {
 
 export interface InspectResult {
   requirements: RequirementsContext;
+  /** Bounded, advisory single-pass draws and same-material merge observations. */
+  drawDiagnostics: DrawDiagnostics;
   /** Total triangle count across every mesh in the scene graph. */
   triangles: number;
   /** Unique material count (by reference equality). */
@@ -270,9 +273,11 @@ export async function inspect(
   const boundingBox = computeBoundingBox(root);
   const animationTracks = collectAnimationTracks(root, clips);
   const warnings = [...rendered.warnings, ...inspectGeneratedAnimation(root, clips)];
+  const { inspectDrawDiagnostics } = await import('./draw-diagnostics');
 
   return {
     requirements: rendered.requirements,
+    drawDiagnostics: await inspectDrawDiagnostics(rendered.glb),
     triangles,
     materials,
     boundingBox,

@@ -79,7 +79,7 @@ describe('semantic architecture roof selection', () => {
     source.add(roof, wall, opening);
 
     const rendered = await renderSceneToGLB(source, { optimize: 'full' });
-    expect(rendered.optimize?.mode).toBe('palette');
+    expect(rendered.optimize?.mode).toBe('full');
     const document = await new WebIO().readBinary(rendered.bytes);
     const reloadedOpening = document
       .getRoot()
