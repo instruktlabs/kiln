@@ -45,7 +45,7 @@ for (const [name, bytes] of authored) writeFileSync(resolve(input, name), bytes)
 const destinations: Record<string, string> = { 'amber.glb': 'models/amber.glb', 'blue.glb': 'models/blue.glb', 'cell.glb': 'cells/0-0-0.glb', 'layout.json': 'data/layout.json', 'LICENSE.txt': 'licenses/ASSET-LICENSE.txt' };
 const out = resolve(demo, 'staged/assets');
 const result = stageFiles({
-  id: 'scene-kit-demo', release: 'synthetic-1', three: '0.186.0', out,
+  id: 'scene-kit-demo', release: 'synthetic-1', three: '0.186.1', out,
   models: [{ id: 'amber', to: 'models/amber.glb' }, { id: 'blue', to: 'models/blue.glb' }], data: { layout: 'data/layout.json' },
   files: [...authored].map(([name, bytes]) => ({ from: resolve(input, name), to: destinations[name]!, sha256: sha256Pure(bytes) })),
   cells: [{ id: '0,0,0', center: [0, 0, 0], radius: 16, files: ['cells/0-0-0.glb'] }],

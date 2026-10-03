@@ -1,0 +1,552 @@
+{
+  "id": "X-02",
+  "captured": "2026-10-02T08:42:56.568Z",
+  "note": "Counts only (renderer.info for the frame just rendered, after two equal samples 20 frames apart); no timing. Golden Gate has no pilot, so these are the baseline. The drive-chase view runs 90 frames of real time before the clock freezes, so where the car stops (drive.z) and the traffic around it vary between runs.",
+  "build": {
+    "label": "draw-after",
+    "root": "packages/golden-gate/dist/draw-after/test",
+    "chunks": [
+      "index-D-gELBet.js",
+      "route-contact-CxuZU847.js"
+    ],
+    "source": "working tree",
+    "release": "g9",
+    "packSha256": "c2a1d83fce6caf07a7b3e87070ccb8a983dd68e0c7f98eee3f1ba5255ce059cb"
+  },
+  "window": {
+    "width": 1920,
+    "height": 1080,
+    "deviceScaleFactor": 1
+  },
+  "preset": "day",
+  "time": 12,
+  "unexpectedMessages": [],
+  "cases": [
+    {
+      "backend": "webgpu",
+      "tier": "high",
+      "views": [
+        {
+          "view": "arrival",
+          "drawCalls": 103,
+          "triangles": 1426047
+        },
+        {
+          "view": "postcard",
+          "drawCalls": 101,
+          "triangles": 1329477
+        },
+        {
+          "view": "pier",
+          "drawCalls": 75,
+          "triangles": 1104205
+        },
+        {
+          "view": "topdown",
+          "drawCalls": 64,
+          "triangles": 1235407
+        },
+        {
+          "view": "horizon",
+          "drawCalls": 45,
+          "triangles": 954385
+        },
+        {
+          "view": "deck",
+          "drawCalls": 116,
+          "triangles": 1516537
+        },
+        {
+          "view": "tower",
+          "drawCalls": 94,
+          "triangles": 1009189
+        },
+        {
+          "view": "span",
+          "drawCalls": 107,
+          "triangles": 1416635
+        },
+        {
+          "view": "lanes",
+          "drawCalls": 113,
+          "triangles": 1546855
+        },
+        {
+          "view": "sidewalk",
+          "drawCalls": 116,
+          "triangles": 1547917
+        },
+        {
+          "view": "traffic",
+          "drawCalls": 106,
+          "triangles": 1503153
+        },
+        {
+          "view": "hero-orbit-0deg",
+          "drawCalls": 94,
+          "triangles": 1305259
+        },
+        {
+          "view": "hero-orbit-90deg",
+          "drawCalls": 93,
+          "triangles": 1302707
+        },
+        {
+          "view": "hero-orbit-180deg",
+          "drawCalls": 101,
+          "triangles": 1434847
+        },
+        {
+          "view": "hero-orbit-270deg",
+          "drawCalls": 91,
+          "triangles": 1293595
+        },
+        {
+          "view": "drive-chase",
+          "drawCalls": 113,
+          "triangles": 1523583
+        }
+      ]
+    },
+    {
+      "backend": "webgpu",
+      "tier": "balanced",
+      "views": [
+        {
+          "view": "arrival",
+          "drawCalls": 52,
+          "triangles": 596121
+        },
+        {
+          "view": "postcard",
+          "drawCalls": 50,
+          "triangles": 567221
+        },
+        {
+          "view": "pier",
+          "drawCalls": 35,
+          "triangles": 464234
+        },
+        {
+          "view": "topdown",
+          "drawCalls": 30,
+          "triangles": 534321
+        },
+        {
+          "view": "horizon",
+          "drawCalls": 23,
+          "triangles": 408231
+        },
+        {
+          "view": "deck",
+          "drawCalls": 52,
+          "triangles": 618823
+        },
+        {
+          "view": "tower",
+          "drawCalls": 45,
+          "triangles": 391612
+        },
+        {
+          "view": "span",
+          "drawCalls": 54,
+          "triangles": 597923
+        },
+        {
+          "view": "lanes",
+          "drawCalls": 53,
+          "triangles": 631479
+        },
+        {
+          "view": "sidewalk",
+          "drawCalls": 51,
+          "triangles": 621073
+        },
+        {
+          "view": "traffic",
+          "drawCalls": 50,
+          "triangles": 616627
+        },
+        {
+          "view": "hero-orbit-0deg",
+          "drawCalls": 49,
+          "triangles": 556939
+        },
+        {
+          "view": "hero-orbit-90deg",
+          "drawCalls": 47,
+          "triangles": 557481
+        },
+        {
+          "view": "hero-orbit-180deg",
+          "drawCalls": 50,
+          "triangles": 600065
+        },
+        {
+          "view": "hero-orbit-270deg",
+          "drawCalls": 46,
+          "triangles": 554361
+        },
+        {
+          "view": "drive-chase",
+          "drawCalls": 52,
+          "triangles": 625011
+        }
+      ]
+    },
+    {
+      "backend": "webgpu",
+      "tier": "economy",
+      "views": [
+        {
+          "view": "arrival",
+          "drawCalls": 52,
+          "triangles": 344564
+        },
+        {
+          "view": "postcard",
+          "drawCalls": 51,
+          "triangles": 318506
+        },
+        {
+          "view": "pier",
+          "drawCalls": 31,
+          "triangles": 264464
+        },
+        {
+          "view": "topdown",
+          "drawCalls": 30,
+          "triangles": 285450
+        },
+        {
+          "view": "horizon",
+          "drawCalls": 23,
+          "triangles": 232289
+        },
+        {
+          "view": "deck",
+          "drawCalls": 49,
+          "triangles": 338732
+        },
+        {
+          "view": "tower",
+          "drawCalls": 42,
+          "triangles": 250465
+        },
+        {
+          "view": "span",
+          "drawCalls": 48,
+          "triangles": 337912
+        },
+        {
+          "view": "lanes",
+          "drawCalls": 50,
+          "triangles": 344210
+        },
+        {
+          "view": "sidewalk",
+          "drawCalls": 49,
+          "triangles": 341560
+        },
+        {
+          "view": "traffic",
+          "drawCalls": 47,
+          "triangles": 336548
+        },
+        {
+          "view": "hero-orbit-0deg",
+          "drawCalls": 48,
+          "triangles": 313196
+        },
+        {
+          "view": "hero-orbit-90deg",
+          "drawCalls": 47,
+          "triangles": 310460
+        },
+        {
+          "view": "hero-orbit-180deg",
+          "drawCalls": 49,
+          "triangles": 340062
+        },
+        {
+          "view": "hero-orbit-270deg",
+          "drawCalls": 46,
+          "triangles": 308186
+        },
+        {
+          "view": "drive-chase",
+          "drawCalls": 49,
+          "triangles": 339174
+        }
+      ]
+    },
+    {
+      "backend": "webgl2",
+      "tier": "high",
+      "views": [
+        {
+          "view": "arrival",
+          "drawCalls": 103,
+          "triangles": 1426047
+        },
+        {
+          "view": "postcard",
+          "drawCalls": 101,
+          "triangles": 1329477
+        },
+        {
+          "view": "pier",
+          "drawCalls": 75,
+          "triangles": 1104205
+        },
+        {
+          "view": "topdown",
+          "drawCalls": 64,
+          "triangles": 1235407
+        },
+        {
+          "view": "horizon",
+          "drawCalls": 45,
+          "triangles": 954385
+        },
+        {
+          "view": "deck",
+          "drawCalls": 116,
+          "triangles": 1516537
+        },
+        {
+          "view": "tower",
+          "drawCalls": 94,
+          "triangles": 1009189
+        },
+        {
+          "view": "span",
+          "drawCalls": 107,
+          "triangles": 1416635
+        },
+        {
+          "view": "lanes",
+          "drawCalls": 113,
+          "triangles": 1546855
+        },
+        {
+          "view": "sidewalk",
+          "drawCalls": 116,
+          "triangles": 1547917
+        },
+        {
+          "view": "traffic",
+          "drawCalls": 106,
+          "triangles": 1503153
+        },
+        {
+          "view": "hero-orbit-0deg",
+          "drawCalls": 94,
+          "triangles": 1305259
+        },
+        {
+          "view": "hero-orbit-90deg",
+          "drawCalls": 93,
+          "triangles": 1302707
+        },
+        {
+          "view": "hero-orbit-180deg",
+          "drawCalls": 101,
+          "triangles": 1434847
+        },
+        {
+          "view": "hero-orbit-270deg",
+          "drawCalls": 91,
+          "triangles": 1293595
+        },
+        {
+          "view": "drive-chase",
+          "drawCalls": 113,
+          "triangles": 1528521
+        }
+      ]
+    },
+    {
+      "backend": "webgl2",
+      "tier": "balanced",
+      "views": [
+        {
+          "view": "arrival",
+          "drawCalls": 52,
+          "triangles": 596121
+        },
+        {
+          "view": "postcard",
+          "drawCalls": 50,
+          "triangles": 567221
+        },
+        {
+          "view": "pier",
+          "drawCalls": 35,
+          "triangles": 464234
+        },
+        {
+          "view": "topdown",
+          "drawCalls": 30,
+          "triangles": 534321
+        },
+        {
+          "view": "horizon",
+          "drawCalls": 23,
+          "triangles": 408231
+        },
+        {
+          "view": "deck",
+          "drawCalls": 52,
+          "triangles": 618823
+        },
+        {
+          "view": "tower",
+          "drawCalls": 45,
+          "triangles": 391612
+        },
+        {
+          "view": "span",
+          "drawCalls": 54,
+          "triangles": 597923
+        },
+        {
+          "view": "lanes",
+          "drawCalls": 53,
+          "triangles": 631479
+        },
+        {
+          "view": "sidewalk",
+          "drawCalls": 51,
+          "triangles": 621073
+        },
+        {
+          "view": "traffic",
+          "drawCalls": 50,
+          "triangles": 616627
+        },
+        {
+          "view": "hero-orbit-0deg",
+          "drawCalls": 49,
+          "triangles": 556939
+        },
+        {
+          "view": "hero-orbit-90deg",
+          "drawCalls": 47,
+          "triangles": 557481
+        },
+        {
+          "view": "hero-orbit-180deg",
+          "drawCalls": 50,
+          "triangles": 600065
+        },
+        {
+          "view": "hero-orbit-270deg",
+          "drawCalls": 46,
+          "triangles": 554361
+        },
+        {
+          "view": "drive-chase",
+          "drawCalls": 51,
+          "triangles": 622745
+        }
+      ]
+    },
+    {
+      "backend": "webgl2",
+      "tier": "economy",
+      "views": [
+        {
+          "view": "arrival",
+          "drawCalls": 52,
+          "triangles": 344564
+        },
+        {
+          "view": "postcard",
+          "drawCalls": 51,
+          "triangles": 318506
+        },
+        {
+          "view": "pier",
+          "drawCalls": 31,
+          "triangles": 264464
+        },
+        {
+          "view": "topdown",
+          "drawCalls": 30,
+          "triangles": 285450
+        },
+        {
+          "view": "horizon",
+          "drawCalls": 23,
+          "triangles": 232289
+        },
+        {
+          "view": "deck",
+          "drawCalls": 49,
+          "triangles": 338732
+        },
+        {
+          "view": "tower",
+          "drawCalls": 42,
+          "triangles": 250465
+        },
+        {
+          "view": "span",
+          "drawCalls": 48,
+          "triangles": 337912
+        },
+        {
+          "view": "lanes",
+          "drawCalls": 50,
+          "triangles": 344210
+        },
+        {
+          "view": "sidewalk",
+          "drawCalls": 49,
+          "triangles": 341560
+        },
+        {
+          "view": "traffic",
+          "drawCalls": 47,
+          "triangles": 336548
+        },
+        {
+          "view": "hero-orbit-0deg",
+          "drawCalls": 48,
+          "triangles": 313196
+        },
+        {
+          "view": "hero-orbit-90deg",
+          "drawCalls": 47,
+          "triangles": 310460
+        },
+        {
+          "view": "hero-orbit-180deg",
+          "drawCalls": 49,
+          "triangles": 340062
+        },
+        {
+          "view": "hero-orbit-270deg",
+          "drawCalls": 46,
+          "triangles": 308186
+        },
+        {
+          "view": "drive-chase",
+          "drawCalls": 50,
+          "triangles": 343838
+        }
+      ]
+    }
+  ],
+  "provenance": {
+    "originalReceipt": "scenes/evidence/draw-after/golden-gate/x02/draw-after/x02-counts.json",
+    "originalWorktree": "kiln-draw-optimization",
+    "originalSha256": "ec58dc339b8c56018a0a1f2ecdff137915752e30ba8c9af958249db0a4ad233d",
+    "originalBytes": 70958,
+    "documentation": "scenes/packages/golden-gate/PERFORMANCE.md#x-02-re-baseline-on-the-draw-optimized-build-od-8-d-53-2026-10-02",
+    "documentedHead": "892d103200d385f3f568608449cde555eb6b220d",
+    "transformation": "Retains the original drawCalls and triangles for every case/view. Omits other per-view diagnostics and replaces the machine-specific build root with its scene-relative path. This is a retained historical receipt, not a new measurement or a clean-source attestation.",
+    "casesSha256": "65691a2e1fe98dce5afb8cfdc8c5491d0eb3cd9f2654c424431d6eef65748997"
+  }
+}

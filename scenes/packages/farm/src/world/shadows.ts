@@ -30,13 +30,14 @@ export function createFarmSun(mapSize: number): DirectionalLight {
 /**
  * farm.md section 4: what a hero keeps through the anchor merge and where its stand-ins cut. The placement wrapper, the GLB
  * clone root (the mixer root), every clip track target (mixer bindings were cached before optimization) and every node the
- * play code finds by name in a clone (Joint_*, DoorPivot). Crop soil and plant names belong to fixed owners, never merged;
+ * play code finds by name in a clone (Joint_*, DoorPivot), plus independently toggled
+ * empty-hand arm meshes so their shadow stand-ins inherit the same visibility. Crop soil and plant names belong to fixed owners, never merged;
  * Mesh_Building_Wood is read from the pack's original scene.
  */
 export function farmHeroAnchors(instance: FarmInstance): Set<Object3D> {
   const root = instance.mixer.getRoot() as Object3D, keep = new Set<Object3D>([instance.object, root]);
   for (const clip of instance.clips) for (const track of clip.tracks) { const node = PropertyBinding.findNode(root, PropertyBinding.parseTrackName(track.name).nodeName) as Object3D | undefined; if (node) keep.add(node); }
-  root.traverse(n => { if (n.name.startsWith('Joint_') || n.name === 'DoorPivot') keep.add(n); });
+  root.traverse(n => { if (n.name.startsWith('Joint_') || n.name === 'DoorPivot' || n.userData.farmPoseVisibility === true) keep.add(n); });
   return keep;
 }
 export interface FarmShadowWorld {

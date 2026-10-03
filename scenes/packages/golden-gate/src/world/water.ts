@@ -16,18 +16,19 @@ import type { GoldenGateFeatures } from '../tiers';
 import { passCameraLayers } from '@kiln-scenes/scene-kit';
 import type { PassLayers } from '@kiln-scenes/scene-kit';
 import { LAYERS } from '../constants';
+import { installReflectionDepth } from './reflection-depth';
 
 export interface WaterOptions {
   features: GoldenGateFeatures['water'];
   atmosphere: Atmosphere;
   near: WaterMapLevel; mid: WaterMapLevel; midGrid: WaterGrid;
-  /** Reflection stand-ins (High): the virtual camera drops `main` and takes `pass`; its other bits stay as cloned from the main camera. */
+  /** Reflection stand-ins (High): the virtual camera drops `main` and takes `pass`, in addition to excluding the dynamic layer. */
   passLayers?: PassLayers;
 }
 export interface Water {
   mesh: Mesh; uniforms: WaterUniforms; clipmap: ClipmapOptions;
   textures: { macroNoise: DataTexture; slopeMoments: DataTexture; flow: DataTexture };
-  /** The reflector's virtual camera (High), so the sky can hide its sun disc there; with pass layers, its two pass bits are set on every call (three may recreate it). */
+  /** The reflector's virtual camera (High): excludes traffic/player/fog, keeps world vegetation, and applies stand-in pass bits on every call (three may recreate it). */
   reflectionCamera(camera: Camera): Camera | null;
   update(camera: PerspectiveCamera, time: number): void;
   readonly stats: { tiles: number; maxTiles: number; vertices: number; reflection: string; description: ReturnType<typeof describeWater> };
@@ -49,6 +50,8 @@ export function createWater(scene: Scene, o: WaterOptions): Water {
     reflection.target.rotateX(-Math.PI / 2); reflection.target.name = 'water-reflector';
     scene.add(reflection.target);
   }
+  const reflectionDepth = reflection ? installReflectionDepth(scene, (reflection as unknown as { reflector: Parameters<typeof installReflectionDepth>[1] }).reflector) : null;
+  if (reflectionDepth) owned.push(reflectionDepth);
   const options = {
     atmosphere: o.atmosphere.uniforms, grid: f.grid, displacedWaves: f.displacedWaves, fragmentWaves: f.fragmentWaves, detailLayers: f.detailLayers,
     reflection: f.reflection, reflectionNode: reflection ?? undefined, environment: o.atmosphere.environment, depthContact: f.depthContact, waveFade: f.waveFade,
@@ -70,12 +73,16 @@ export function createWater(scene: Scene, o: WaterOptions): Water {
     reflectionCamera(camera) {
       if (!reflection) return null;
       const virtual = (reflection as unknown as { reflector: { getVirtualCamera(c: Camera): Camera } }).reflector.getVirtualCamera(camera);
+      // D-70: the clone inherits the main camera's dynamic bit; traffic (including the player car) and fog banks stay out.
+      // Vegetation cards use the world layer and remain in the reflection (D-71).
+      virtual.layers.disable(LAYERS.dynamic);
       if (o.passLayers) passCameraLayers(virtual, o.passLayers, 'pass');
       return virtual;
     },
     update(camera, time) {
+      reflectionDepth?.setCamera(camera);
       camera.updateMatrixWorld();
-      projection.multiplyMatrices(camera.projectionMatrix, camera.matrixWorldInverse); frustum.setFromProjectionMatrix(projection);
+      projection.multiplyMatrices(camera.projectionMatrix, camera.matrixWorldInverse); frustum.setFromProjectionMatrix(projection, camera.coordinateSystem, camera.reversedDepth);
       const count = selectTiles(clipmap, camera.position.x, camera.position.z, patches.array, frustum, 3);
       geometry.instanceCount = count;
       patches.clearUpdateRanges(); patches.addUpdateRange(0, count * 4); patches.needsUpdate = true;

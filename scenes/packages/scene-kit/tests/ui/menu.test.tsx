@@ -26,7 +26,7 @@ test('the HUD layer offers Hide and renders Show controls only once hidden', () 
 });
 
 test('the kit stylesheet collapses menus by the HUD width and keeps touch controls while hidden', () => {
-  expect(HUD_CSS).toContain('.ks-hud{position:absolute;inset:0;pointer-events:none;z-index:2;container:ks-hud/inline-size}');
+  expect(HUD_CSS).toContain('.ks-hud{position:absolute;inset:0;pointer-events:none;z-index:2;container:ks-hud/inline-size;contain:layout}');
   expect(HUD_CSS).toMatch(/@container ks-hud \(max-width:\d+px\)\{[^@]*\.ks-menu\[data-collapse=narrow\]/);
   expect(HUD_CSS).toContain('.ks-hud[data-ks-hidden]>:not(.ks-hud-show){visibility:hidden}');
   expect(HUD_CSS).toContain('.ks-hud[data-ks-hidden] :is(.ks-joystick,.ks-touch-buttons){visibility:visible}');

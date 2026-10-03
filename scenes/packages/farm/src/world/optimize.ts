@@ -27,7 +27,7 @@ export interface FarmShadowBuild {mapSize:number;standIns:boolean;minCasterTexel
  * material after batching, so every B-07 count is taken first, then given shadow stand-ins before freezing (stand-ins copy
  * their anchor's matrix flags). Merged geometry is shared per asset, anchor path and group through one cache (the gates), and
  * keeps the GLB's interleaved vertex layout, so a merged mesh shares the pipeline of unmerged meshes (review RK-1).
- * Stand-ins bake only sources the sun's shadow camera draws (farmShadowMask); farmers keep their small parts (RF-1).
+ * Stand-ins bake only sources the sun's shadow camera draws (farmShadowMask); farmers and trailers keep their small parts (RF-1, D-72).
  */
 export function optimizeFarmWorld(root:Scene,instances:readonly FarmInstance[],woodland:{meshes:InstancedMesh[];derivatives:number},options:{packWoodland:boolean;heroMerge?:boolean;shadow?:FarmShadowBuild|null}){
  const owners=farmInstanceOwners(instances),policy=farmBatchPolicy(),registry=new DisposeRegistry();

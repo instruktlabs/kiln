@@ -2,16 +2,17 @@ import { readdirSync } from 'node:fs';
 import { resolve } from 'node:path';
 
 // These retained author-workspace qualification suites require historical GLBs,
-// saved asset revisions or capture receipts. They remain runnable via test:integration.
+// saved asset revisions or capture receipts. They remain runnable via test:integration;
+// current release fixtures also have the fail-closed test:release-inputs gate.
 // The portable gate covers source-only contracts on a fresh checkout; it does not
 // claim to replace the exact-asset and browser qualification of a released scene.
 const authoredInputs = new Set([
   'packages/farm/tests/unit/hand-clearance.test.ts',
   ...['campus-assets', 'campus-drive', 'campus-freight', 'campus-vegetation', 'campus',
-    'determinism', 'ff3-pack', 'ff3-replacements', 'floor-rig', 'revision2-context',
+    'determinism', 'ff3-pack', 'ff3-replacements', 'floor-rig', 'glb-world', 'revision2-context',
     'revision2-drive', 'revision2-pack', 'revision2-vehicle-intake', 'sanity'].map(name =>
     `packages/foundry-floor/tests/unit/${name}.test.ts`),
-  ...['data', 'flights', 'review2-vehicles', 'workloads'].map(name =>
+  ...['data', 'flights', 'review2-vehicles', 'vehicle-models', 'workloads'].map(name =>
     `packages/golden-gate/tests/unit/${name}.test.ts`),
 ]);
 const root = resolve(import.meta.dir, '..');
@@ -24,7 +25,7 @@ function walk(directory: string) {
   }
 }
 for (const directory of ['packages/scene-kit/tests', 'packages/farm/tests/unit',
-  'packages/golden-gate/tests/unit', 'packages/foundry-floor/tests/unit']) walk(directory);
-console.log(`Portable source contracts: ${files.length} files; ${authoredInputs.size} author-input suites remain in test:integration.`);
+  'packages/golden-gate/tests/unit', 'packages/foundry-floor/tests/unit', 'scripts/tests']) walk(directory);
+console.log(`Portable source contracts: ${files.length} files; ${authoredInputs.size} input-dependent suites remain in test:integration (current fixtures: test:release-inputs).`);
 const run = Bun.spawnSync([process.execPath, 'test', ...files.sort(), '--timeout', '20000'], { cwd: root, stdout: 'inherit', stderr: 'inherit' });
 process.exitCode = run.exitCode;

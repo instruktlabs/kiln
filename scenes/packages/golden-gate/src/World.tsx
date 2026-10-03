@@ -17,7 +17,6 @@ import { WATER_DEBUG } from './world/water-material';
 import { sightlineClearance, surfaceHeight } from './world/heightfield';
 import { GoldenGateCameras } from './camera/GoldenGateCameras';
 import { Driving } from './play/Driving';
-import { LAYOUT } from './data';
 import type { DrawOptions } from './world/draw-options';
 
 const TEST = !!(import.meta.env.KILN_TEST || import.meta.env.KILN_DEV);
@@ -105,6 +104,7 @@ export function GoldenGateWorldContent() {
       clearance: (from: Vec3, to: Vec3) => sightlineClearance(world.field, from, to, .55),
       /** Diagnostics: hide or show one part of the world. */
       setPartVisible: (part: 'terrain' | 'bridge' | 'water' | 'banks' | 'sky' | 'traffic', visible: boolean) => {
+        if (part === 'banks') { if (!world.banks) return false; world.banks.hidden = !visible; return true; }
         const target = { terrain: world.terrain.root, bridge: world.bridge.root, water: world.water.mesh, banks: world.banks?.sprite, sky: world.atmosphere.sky, traffic: world.traffic.root }[part];
         if (!target) return false; target.visible = visible; return true;
       },
@@ -127,7 +127,7 @@ export function GoldenGateWorldContent() {
   useRegisterTestHooks(hooks);
 
   return world ? <>
-    <GoldenGateCameras world={world} initialView={typeof params.cam === 'string' ? params.cam : LAYOUT.cameras.default}
+    <GoldenGateCameras world={world} initialView={typeof params.cam === 'string' ? params.cam : world.layout.cameras.default}
       initialFlight={typeof params.flight === 'string' ? params.flight as FlightName : undefined} initialFlightAt={typeof params.flightAt === 'number' ? params.flightAt : 0}/>
     <Driving world={world}/>
   </> : null;

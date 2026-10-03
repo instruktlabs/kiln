@@ -1,10 +1,9 @@
-// The GLB world built headless from the accepted GLBs (the staged pack's copies, or the authors' files while they are
-// the pinned ones; read-only inputs): every accepted GLB bakes, every static placement and every driver runs over sim
+// The GLB world built headless from the accepted GLBs (restored release first; optional local runs may use identical
+// staged or author bytes): every accepted GLB bakes, every static placement and every driver runs over sim
 // time from the stored warm start without throwing, poses stay finite, the drawn FOUPs follow the twin, and the named
 // views stay inside the desktop and phone budgets (triangles and draws, D-15 / SPEC budgets). No renderer is involved:
 // the counts are what the world would submit.
 import { describe, expect, test } from 'bun:test';
-import { createHash } from 'node:crypto';
 import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { PerspectiveCamera } from 'three/webgpu';
@@ -19,16 +18,18 @@ import { prepareModelLevels } from '../../src/scene/glb/model-levels';
 import type { GlbWorld } from '../../src/scene/world/glb-world';
 import { createClock } from '../../src/sim/clock';
 import { createFab, FAB_DATA, HOUR_MS } from '../../src/sim/index';
+import { findSceneFixture } from '../../../../scripts/release-inputs';
 
 const PACKAGE = resolve(import.meta.dir, '../..'), COMMONS = resolve(PACKAGE, '../../..');
 const map = parseAssetMap(readFileSync(resolve(PACKAGE, 'data/assets.json'), 'utf8'));
 const snapshot = readFileSync(resolve(PACKAGE, `data/warm/seed-${FAB_DATA.config.seeds.default}.json`), 'utf8');
-const sha = (path: string) => createHash('sha256').update(readFileSync(path)).digest('hex');
 const accepted = Object.entries(map.entities).filter(([, e]) => e.glb && e.pins).map(([id]) => id);
 function source(id: string): string | undefined {
   const e = map.entities[id]!;
-  const candidates = [resolve(PACKAGE, 'staged/ff2', e.glb!), ...(e.source ? [resolve(COMMONS, 'showcase/authors', e.source.author, e.source.file)] : [])];
-  return candidates.find(path => existsSync(path) && sha(path) === e.pins!.sha256);
+  return findSceneFixture({ scene: 'foundry-floor', path: e.glb!, ...e.pins! }, { fallback: [
+    resolve(PACKAGE, 'staged/revision2', e.glb!),
+    ...(e.source ? [resolve(COMMONS, 'showcase/authors', e.source.author, e.source.file)] : []),
+  ] });
 }
 const available = accepted.every(id => source(id));
 /** Budgets (SPEC): desktop 1.2M triangles and 300 draws; phone 450k triangles and 150 draws. */

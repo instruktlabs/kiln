@@ -9,7 +9,7 @@ import type { FarmColliders } from '../world/colliders';
 import type { FarmInstance } from '../world/types';
 import { doorCenter, stepDoors, toggleDoor } from './doors';
 import type { DoorStepContext, FarmDoor } from './doors';
-import { captureRest, createEmptyHandedPose, createSeatRig } from './farmer-rig';
+import { captureRest, createEmptyHandedPose, createFarmerClipBlend, createSeatRig } from './farmer-rig';
 import { createTractorRig, driveTractor, findTractorExit, TRACTOR_EXITS, TRACTOR_PROBE } from './tractor';
 import type { TractorState } from './tractor';
 import { FARM_DESTINATIONS, isFarmDestination } from './destinations';
@@ -45,7 +45,7 @@ export function createFarmSim(o: { instances: readonly FarmInstance[]; colliders
   if (!fork) throw new Error('Missing farmer pitchfork joint');
   const clipIndex = (name: string) => { const index = player.clips.findIndex(clip => clip.name === name); if (index < 0) throw new Error('Missing farmer clip ' + name); return String(index); };
   const clips = { Idle: clipIndex('Idle'), Walk: clipIndex('Walk') };
-  const home = player.object.position.clone(), rest = captureRest(player.object);
+  const home = player.object.position.clone(), rest = captureRest(player.object), animation = createFarmerClipBlend(player, clips);
   const emptyHands = createEmptyHandedPose(player.object), seat = createSeatRig(player.object, tractor.object), rig = createTractorRig(tractor.object);
   const prompts = new Map(doors.map(door => [door, { open: doorPrompt(door.label, false), close: doorPrompt(door.label, true) }]));
   const mover: MoverState = { position: player.object.position, velocityY: 0, yaw: player.object.rotation.y, speedXZ: 0, status: '' };
@@ -74,16 +74,16 @@ export function createFarmSim(o: { instances: readonly FarmInstance[]; colliders
       return FARM_STRINGS.approach;
     },
     get canInteract() { return active && (driving || nearestTractor || !!nearestDoor); },
-    start, stop, interact, exitVehicle, visit, reset, update, resetCamera,
+    start, stop, interact, exitVehicle, visit, reset, update, updateAnimation, resetCamera,
     /** The last interaction input kind decides the tractor help string (SPEC 13.1). */
     setTouch(value: boolean) { touch = value; },
-    dispose() { disposed = true; active = false; follow.subject.current = null; },
+    dispose() { disposed = true; active = false; follow.subject.current = null; animation.reset(); emptyHands.dispose(); },
   };
 
-  function restoreRig() { player!.mixer.stopAllAction(); rest.restore(); currentClip = ''; }
+  function updateAnimation(dt: number) { if (!disposed && active && !driving) animation.update(dt); }
+  function restoreRig() { animation.reset(); emptyHands.restore(); rest.restore(); currentClip = ''; }
   function clip(name: 'Idle' | 'Walk', scale = 1) {
-    if (currentClip !== name) { chooseClip(player!, clips[name]); currentClip = name; }
-    if (player!.action) player!.action.timeScale = scale;
+    animation.select(name, scale); currentClip = name;
   }
   function subject() { return driving ? tractor!.object : player!.object; }
   /** Keeps the rig target on the pilot's `target()`: subject position plus 1.9 m walking or 1.6 m driving. */
@@ -187,8 +187,11 @@ export function createFarmSim(o: { instances: readonly FarmInstance[]; colliders
       doorContext.status = sim.status; stepDoors(doors, step, doorContext); sim.status = doorContext.status;
       if (!active) return;
       if (driving) driveStep(step, input);
-      else { walk(step, input, cameraForward); emptyHands.apply(); }
+      else walk(step, input, cameraForward);
     });
+    // The mixer runs on every rendered frame, including frames without a fixed step.
+    // Reapply the procedural pose after it before matrices and the follow camera consume it.
+    if (active && !driving) emptyHands.apply();
     if (active) { syncFollow(); nearestInteraction(); }
   }
   return sim;

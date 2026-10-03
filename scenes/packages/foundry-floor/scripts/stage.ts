@@ -103,7 +103,7 @@ export function stageFoundryFloor(options: StageOptions = {}) {
     { from: licenceFrom, to: LICENCE_PATH },
   ];
   const result = stageFiles({
-    id: 'foundry-floor', release, three: '0.186.0', out, force: options.force,
+    id: 'foundry-floor', release, three: '0.186.1', out, force: options.force,
     models: models.filter(m => m.placed).map(m => ({ id: m.id, to: m.to })),
     data: { 'asset-map': 'data/assets.json', ...FAB_DATA_ENTRIES, ...Object.fromEntries(warm.map(w => [w.id, w.to])) },
     files, credits: assetCredits(models, map),

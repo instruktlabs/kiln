@@ -121,10 +121,10 @@ function pinFailures(src: string, core: string, tsl: string): Record<string, str
 const clean = (pins: Record<string, string[]>) => Object.fromEntries(Object.entries(pins).filter(([, bad]) => bad.length));
 
 describe('three r186 contract for the cached sun shadow, once-per-frame and threshold', () => {
-  test('the builds three/webgpu and three/tsl resolve to are 0.186.0', () => {
+  test('the builds three/webgpu and three/tsl resolve to are 0.186.1', () => {
     expect(BUILD.replaceAll('\\', '/')).toEndWith('three/build/three.webgpu.js');
     expect(TSL_BUILD.replaceAll('\\', '/')).toEndWith('three/build/three.tsl.js');
-    expect(VERSION).toBe('0.186.0'); expect(REVISION).toBe('186');
+    expect(VERSION).toBe('0.186.1'); expect(REVISION).toBe('186');
   });
   test('every pinned snippet is present and in order', () => {
     expect(clean(pinFailures(SOURCE, CORE, TSL))).toEqual({});

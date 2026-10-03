@@ -88,7 +88,7 @@ const variant = option('--variant', 'defaults'), backend = option('--backend', '
 const CHANGED = 20;
 const budget = Number(option('--over32-budget', '100')), writeMode = option('--write', 'all'), pageMode = option('--page', 'fresh');
 if (!build) throw new Error('--build <label> is required');
-if (!(budget >= 0)) throw new Error('--over32-budget must be 0 or more');
+if (!Number.isSafeInteger(budget) || budget < 0) throw new Error('--over32-budget must be a finite nonnegative integer');
 if (!['all', 'changed', 'none'].includes(writeMode)) throw new Error('--write is all, changed or none');
 if (!['fresh', 'shared'].includes(pageMode)) throw new Error('--page is fresh or shared');
 for (const p of presets) if (!['day', 'golden', 'fog'].includes(p)) throw new Error(`Unknown preset ${p}; the scene has day, golden and fog`);
@@ -206,13 +206,13 @@ try {
   for (const [index, { tier, preset, view }] of cases.entries()) {
     const c = cases[index]!;
     const a = runs ? runs.a[index]! : await freshShot(hostA, owned, browser, c, reference), r = runs ? runs.r[index]! : await freshShot(hostA, owned, browser, c, reference), b = runs ? runs.b[index]! : await freshShot(hostB, owned, browser, c, on);
-    const parity = compareParityImages(a.png, r.png, b.png), name = `${tier}-${preset}-${view}${tag}`, onVsOff = exact(a.png, b.png), repeatVsOff = exact(a.png, r.png);
-    const lines = { over32: onVsOff.over32, noise: repeatVsOff.over32, budget, pass: onVsOff.over32 <= repeatVsOff.over32 + budget };
-    const pass = parity.pass && lines.pass;
+    const parity = compareParityImages(a.png, r.png, b.png, { over32Budget: budget }), name = `${tier}-${preset}-${view}${tag}`, onVsOff = exact(a.png, b.png), repeatVsOff = exact(a.png, r.png);
+    const lines = parity.lines;
+    const pass = parity.pass;
     if (writeMode === 'all' || (writeMode === 'changed' && (!pass || onVsOff.over32 >= repeatVsOff.over32 + CHANGED))) {
       write(resolve(out, `${name}-${nameA}.png`), a.png); write(resolve(out, `${name}-repeat.png`), r.png); write(resolve(out, `${name}-${nameB}.png`), b.png); write(resolve(out, `${name}-diff.png`), parity.diff);
     }
-    const row = { tier, preset, view, variant, before: before || null, page: pageMode, backend: b.backend, pass, b06: parity.pass, lines, globalMean: parity.globalMean, noiseGlobalMean: parity.noiseGlobalMean, passingTiles: parity.passingTiles, tiles: parity.tiles.length,
+    const row = { tier, preset, view, variant, before: before || null, page: pageMode, backend: b.backend, pass, b06: parity.pass, luminancePass: parity.luminancePass, parityScope: parity.scope, lines, globalMean: parity.globalMean, noiseGlobalMean: parity.noiseGlobalMean, passingTiles: parity.passingTiles, tiles: parity.tiles.length,
       failingTiles: parity.tiles.filter(t => !t.pass).map(t => ({ x: t.x, y: t.y, mean: +t.mean.toExponential(2), threshold: +t.threshold.toExponential(2) })),
       onVsOff, repeatVsOff, draw: { off: a.draw, on: b.draw }, bridge: { off: a.bridge, on: b.bridge }, usingFar: { off: a.usingFar, on: b.usingFar }, camera: { off: a.camera, on: b.camera } };
     results.push(row);

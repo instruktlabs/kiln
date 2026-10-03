@@ -1,6 +1,6 @@
 import { describe, expect, test } from 'bun:test';
 import { BoxGeometry, Group, InstancedMesh, Mesh, MeshStandardMaterial, PerspectiveCamera, Scene, type Object3D } from 'three/webgpu';
-import { startWarmPass, WARM_CONCURRENCY, warmChainKey, warmRenderables, type WarmPassRenderer } from '../../src/world/prewarm';
+import { startWarmPass, registerWarmPoseVariant, WARM_CONCURRENCY, warmChainKey, warmRenderables, type WarmPassRenderer } from '../../src/world/prewarm';
 
 // SPEC 6.4 warm pass (owner decision 2026-09-29 22:05; M4 item 1). No GPU: a recording renderer stands in for three's compileAsync.
 function fixture() {
@@ -114,4 +114,97 @@ describe('SPEC 6.4 warm pass', () => {
     expect(pass.step()).toBe(true); expect(proxy.frustumCulled && f.a.frustumCulled).toBe(true); expect(pass.step()).toBe(true);
     expect(seen.length).toBe(1);
   });
+});
+
+
+function poseFixture() {
+  const f = fixture(), variant = f.a.clone(false), proxy = new Mesh(f.a.geometry, f.a.material), hiddenChild = f.a.clone(false);
+  variant.name = 'relaxed pose'; variant.visible = false; variant.scale.z = -1;
+  proxy.name = 'pose shadow'; proxy.layers.set(1); proxy.frustumCulled = false;
+  hiddenChild.name = 'ordinary hidden child'; hiddenChild.visible = false;
+  variant.add(proxy, hiddenChild); f.root.add(variant);
+  const unregister = registerWarmPoseVariant(variant);
+  return { ...f, variant, proxy, hiddenChild, unregister };
+}
+async function settleAll(r: ReturnType<typeof recorder>, fail?: string) {
+  for (let i = 0; i < 5; i++) { for (const p of r.pending.splice(0)) p.settle(p.name === fail); await flush(); }
+}
+
+test('registered hidden pose and its shadow branch warm before ready, with exact visibility/culling restoration', async () => {
+  const f = poseFixture(), r = recorder(f.root), seen: boolean[][] = [];
+  // Registration cannot punch through an unrelated hidden ancestor.
+  const unregisterHidden = registerWarmPoseVariant(f.hiddenSource);
+  try {
+    expect(warmRenderables(f.root).map(o => o.name)).toContain('relaxed pose');
+    expect(warmRenderables(f.root).map(o => o.name)).toContain('pose shadow');
+    expect(warmRenderables(f.root).map(o => o.name)).not.toContain('ordinary hidden child');
+    expect(warmRenderables(f.root).map(o => o.name)).not.toContain('hidden source');
+    const pass = startWarmPass(r.renderer, f.scene, f.camera, f.root, { reveal: true,
+      onDraw: () => seen.push([f.variant.visible, f.proxy.frustumCulled, f.variant.frustumCulled, f.hiddenChild.visible]) });
+    await settleAll(r);
+    expect(r.calls.map(call => call.name)).toContain('relaxed pose');
+    expect(r.calls.map(call => call.name)).not.toContain('pose shadow');
+    expect(f.variant.visible).toBe(false); expect(f.variant.frustumCulled).toBe(true);
+    expect(pass.step()).toBe(false); expect(pass.phase).toBe('drawing');
+    expect(seen).toEqual([[true, false, false, false]]);
+    expect(pass.step()).toBe(true); expect(pass.phase).toBe('done');
+    expect(f.variant.visible).toBe(false); expect(f.a.visible).toBe(true);
+    expect(f.variant.frustumCulled).toBe(true); expect(f.proxy.frustumCulled).toBe(false);
+    expect(f.hiddenChild.visible).toBe(false); pass.dispose();
+  } finally { f.unregister(); unregisterHidden(); }
+});
+
+test('registered variants are visible only during each synchronous compile collection, including thrown/rejected compiles', async () => {
+  for (const mode of ['throw', 'reject'] as const) {
+    const f = poseFixture(), calls: string[] = [];
+    const renderer: WarmPassRenderer = { compileAsync(object) {
+      calls.push(object.name);
+      if (object === f.variant) {
+        expect(object.visible).toBe(true); expect(object.frustumCulled).toBe(false);
+        expect(object.children.every(child => !child.visible)).toBe(true);
+        if (mode === 'throw') throw new Error('compile fixture');
+        return Promise.reject(new Error('compile fixture'));
+      }
+      return Promise.resolve();
+    } };
+    try {
+      const pass = startWarmPass(renderer, f.scene, f.camera, f.root, { reveal: true }); await flush();
+      expect(calls).toContain('relaxed pose'); expect(pass.stats.failed).toBe(1);
+      expect(f.variant.visible).toBe(false); expect(f.proxy.visible).toBe(true); expect(f.hiddenChild.visible).toBe(false);
+      expect(pass.step()).toBe(false); expect(f.variant.visible).toBe(true);
+      expect(pass.step()).toBe(true); expect(f.variant.visible).toBe(false);
+      pass.dispose();
+    } finally { f.unregister(); }
+  }
+});
+
+test('disposing during compile or drawing restores only registered variant overrides; late compiles cannot reveal it', async () => {
+  for (const drawing of [false, true]) {
+    const f = poseFixture(), r = recorder(f.root);
+    try {
+      const pass = startWarmPass(r.renderer, f.scene, f.camera, f.root, { reveal: true });
+      if (drawing) { await settleAll(r); pass.step(); expect(f.variant.visible).toBe(true); }
+      pass.dispose(); pass.dispose(); await settleAll(r);
+      expect(pass.step()).toBe(false); expect(f.variant.visible).toBe(false);
+      expect(f.variant.frustumCulled).toBe(true); expect(f.proxy.frustumCulled).toBe(false);
+      expect(f.hiddenChild.visible).toBe(false); expect(f.root.visible).toBe(true);
+    } finally { f.unregister(); }
+  }
+});
+
+test('onDraw failure restores registered visibility and culling before propagating the error', async () => {
+  const f = poseFixture(), r = recorder(f.root);
+  try {
+    const pass = startWarmPass(r.renderer, f.scene, f.camera, f.root, { reveal: true, onDraw: () => { throw new Error('prime fixture'); } });
+    await settleAll(r);
+    expect(() => pass.step()).toThrow('prime fixture');
+    expect(f.variant.visible).toBe(false); expect(f.a.frustumCulled).toBe(true);
+    expect(f.proxy.frustumCulled).toBe(false); expect(pass.step()).toBe(false); pass.dispose();
+  } finally { f.unregister(); }
+});
+
+test('unregistered pose branches return to ordinary hidden behavior', () => {
+  const f = poseFixture(); f.unregister(); f.unregister();
+  expect(warmRenderables(f.root).map(object => object.name)).not.toContain('relaxed pose');
+  expect(warmRenderables(f.root).map(object => object.name)).not.toContain('pose shadow');
 });

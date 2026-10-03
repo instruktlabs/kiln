@@ -1,5 +1,5 @@
 import { expect, test } from 'bun:test';
-import { LAYOUT } from '../../src/data';
+import { LAYOUT } from '../../scripts/authored-layout';
 
 test('opening view is an elevated water-side approach looking down across the bridge', () => {
   const view = LAYOUT.cameras.named[LAYOUT.cameras.default]!;

@@ -6,8 +6,9 @@ import { resolve } from 'node:path';
 import type { Browser, Page } from 'puppeteer-core';
 import { PNG } from 'pngjs';
 import { assertOwnedUrl, launchChrome, serveOwned, waitForReady, waitFrames, workspacePath } from '../packages/scene-kit/src/testing/node';
-import { compareParityImages } from './parity-images';
+import { compareLuminanceImages, compareParityImages } from './parity-images';
 import { cropImage, type CropRectangle } from './capture-woodland-ab';
+import { closeExtraStartupPages } from './browser-startup';
 import { readPilotRendererCounts, readPilotShaderClock } from './farm-renderer-counts';
 import { compareFarmOptimizationCounts, compareStaticRendererCounts, compareX02Reference, summarizeStaticCountCoverage, validateX02Baseline, X02_BASELINE_PATH, type ColliderCounts, type X02Baseline } from './farm-count-gates';
 
@@ -56,7 +57,9 @@ export async function serveSealedPilot(workspace: string, release: 'r33' | 'r34'
       } };
     } catch (error) {
       clearTimeout(timer); if (child.exitCode === null && !child.killed) child.kill(); await exited;
-      if (!/EADDRINUSE|address already in use/i.test(entry.stderr)) throw error;
+      // The immutable pilot prints error.message only. Bun omits EADDRINUSE in that message.
+      const bunBusy = entry.stderr.split(/\r?\n/).some(line => line.trim() === `Failed to start server. Is port ${port} in use?`);
+      if (!bunBusy && !/EADDRINUSE|address already in use/i.test(entry.stderr)) throw error;
     }
   }
   throw new Error('No permitted port is available for the sealed pilot');
@@ -188,7 +191,7 @@ export async function captureFarmNew(o: { browser: Browser; url: string; ports: 
     await page.close();
   }
 }
-async function capturePilotPair(o: { browser: Browser; url: string; ports: ReadonlySet<number>; backend: ParityBackend; view: string; dir: string; play?: PlayFixture }) {
+export async function capturePilotPair(o: { browser: Browser; url: string; ports: ReadonlySet<number>; backend: ParityBackend; view: string; dir: string; play?: PlayFixture }) {
   const page = await o.browser.newPage(), diagnostics: Diagnostic[] = [];
   try {
     await configurePage(page, o.ports, diagnostics);
@@ -231,9 +234,9 @@ export async function runFarmParity(options: { workspace?: string; release?: 'r3
   // M2d calibration (PROGRESS R4-07): the pilot's 3 s old-old pair cannot bound grass-wind and stream
   // differences between time 0 and its elapsed shader clock, so the frozen rewrite takes that phase.
   const alignPhase = options.stage === 'm2d';
-  const results: any[] = [], ledger: any = { runnerPid: process.pid, closed: false }, report: any = { schema: 'kiln.farm-parity/1', date: new Date().toISOString(), release, stage: options.stage ?? 'm2a', conditions: { width: WIDTH, height: HEIGHT, dpr: 1, tier: 'high', captureDelay: '3 seconds after readiness; repeat 3 seconds later', rewriteTime: alignPhase ? "the pilot's shader clock at its first capture (midpoint of a read-only bracket), then frozen: grass wind and stream phase match; clip mixers are not aligned and stay within the old-old noise rule" : 0, rewriteHerd: false, liveGovernor: 'disabled with empty synthetic trace', oracle: 'unmodified sealed serve.mjs verifies delivery.json', normalizationCss: normalizedCss, imageMetric: 'sRGB-decoded linear luminance, Rec.709 coefficients, 16×9 tiles', tileThreshold: 'max(3 * old-old tile noise, 0.02)', tilePassFraction: .97, globalMeanExclusiveLimit: .02, diffVisualGain: 4, performanceTiming: 'not collected', countGate: countGateEnabled ? 'B-07 optimization goldens and collider counts (frozen pilot fixture) and X-02 counts at every named view and play fixture: inclusive ±2% draws/triangles, pipelines <=105% of the committed reference of the optimized build (' + X02_BASELINE_PATH + ', OD-8/D-53; the two pilot samples are recorded beside it, not gated); qualification requires every named view and play fixture on both backends' : 'Not applied: this stage records observations only',
+  const results: any[] = [], ledger: any = { runnerPid: process.pid, closed: false }, report: any = { schema: 'kiln.farm-parity/1', date: new Date().toISOString(), release, stage: options.stage ?? 'm2a', conditions: { width: WIDTH, height: HEIGHT, dpr: 1, tier: 'high', captureDelay: '3 seconds after readiness; repeat 3 seconds later', rewriteTime: alignPhase ? "the pilot's shader clock at its first capture (midpoint of a read-only bracket), then frozen: grass wind and stream phase match; clip mixers are not aligned and stay within the old-old noise rule" : 0, rewriteHerd: false, liveGovernor: 'disabled with empty synthetic trace', oracle: 'unmodified sealed serve.mjs verifies delivery.json', normalizationCss: normalizedCss, imageMetric: 'B-06/D18 full-view sRGB-decoded linear luminance, Rec.709 coefficients, 16×9 tiles; >32-channel budget 100 pixels beyond repeat noise', tileThreshold: 'max(3 * old-old tile noise, 0.02)', tilePassFraction: .97, globalMeanExclusiveLimit: .02, diffVisualGain: 4, performanceTiming: 'not collected', countGate: countGateEnabled ? 'B-07 optimization goldens and collider counts (frozen pilot fixture) and X-02 counts at every named view and play fixture: inclusive ±2% draws/triangles, pipelines <=105% of the committed reference of the optimized build (' + X02_BASELINE_PATH + ', OD-8/D-53; the two pilot samples are recorded beside it, not gated); qualification requires every named view and play fixture on both backends' : 'Not applied: this stage records observations only',
     playFixtures: Object.fromEntries(playViews.map(view => [view, PLAY_FIXTURES[view]])), playConditions: 'Rewrite: setPlaying(true) then the teleport hook (the pilot visit) under the frozen clock; the player clip is held at its start. Pilot: its #visit destination menu; E on the canvas for the door; its play status line records the farmer position',
-    streamCrop: views.includes('watermill-wheel') ? { view: 'watermill-wheel', rectangle: STREAM_CROP, rule: 'Same tile metric on the crop (16 by 9 tiles of 40 by 28 px)' } : undefined }, views, backends, results, ledger };
+    streamCrop: views.includes('watermill-wheel') ? { view: 'watermill-wheel', rectangle: STREAM_CROP, rule: 'Luminance-only historical crop diagnostic (16 by 9 tiles of 40 by 28 px); not full-view D18 qualification' } : undefined }, views, backends, results, ledger };
   const save = () => writeFile(resolve(out, 'results.json'), JSON.stringify(report, null, 2));
   let pilot: Awaited<ReturnType<typeof serveSealedPilot>> | undefined, hosted: Awaited<ReturnType<typeof serveOwned>> | undefined, browser: Browser | undefined;
   // OD-8 (D-53): X-02 compares against the committed reference of the optimized build; B-06 pixels and B-07 still use the pilot.
@@ -245,7 +248,7 @@ export async function runFarmParity(options: { workspace?: string; release?: 'r3
     pilot = await serveSealedPilot(workspace, release); ledger.pilot = { port: pilot.port, pid: pilot.pid, log: pilot.log };
     hosted = await serveOwned(workspacePath(workspace, options.newRoot ?? 'packages/farm/dist/test')); ledger.rewrite = { port: hosted.port, pid: process.pid };
     browser = await launchChrome({ workspace, name: `parity-${options.label}` }); ledger.browserPid = browser.process()?.pid; ledger.browserProfile = browser.process()?.spawnargs.find(arg => arg.startsWith('--user-data-dir='))?.slice('--user-data-dir='.length); report.browser = await browser.version();
-    for (const blank of await browser.pages()) await blank.close();
+    await closeExtraStartupPages(browser);
     const ports = new Set([pilot.port, hosted.port]);
     for (const backend of backends) for (const view of views) {
       for (let attempt = 1; attempt <= 2; attempt++) {
@@ -260,7 +263,7 @@ export async function runFarmParity(options: { workspace?: string; release?: 'r3
           const writePng = (name: string, image: { width: number; height: number; data: Uint8Array }) => writeFile(resolve(dir, name), PNG.sync.write({ width: image.width, height: image.height, data: Buffer.from(image.data) }));
           await writePng(`${view}-diff-${backend}.png`, diff);
           Object.assign(result, { fixture: play ? 'play fixture' : 'named view', metric: numbers, pilot: { first: old.firstStats, repeat: old.repeatStats, diagnostics: old.diagnostics }, rewrite: { stats: fresh.stats, diagnostics: fresh.diagnostics }, status: metric.pass ? 'pass' : 'fail' });
-          const failures: string[] = metric.pass ? [] : ['B-06 linear-luminance parity thresholds failed'];
+          const failures: string[] = metric.pass ? [] : ['B-06 luminance/thin-line parity thresholds failed'];
           if (play) {
             // Both sides stand at the same destination: the pilot's status line rounds x and z to .1 m and y to .01 m.
             const pilotAt = parsePilotPlayState((old.firstStats as any).play.state)!.position, rewriteAt = fresh.stats.sim.player.position as number[];
@@ -269,7 +272,7 @@ export async function runFarmParity(options: { workspace?: string; release?: 'r3
             if (!result.playPosition.pass) failures.push('Play fixture positions differ beyond the pilot status rounding');
           }
           if (view === 'watermill-wheel') {
-            const a = cropImage(old.first, STREAM_CROP), b = cropImage(old.repeat, STREAM_CROP), c = cropImage(fresh.png, STREAM_CROP), crop = compareParityImages(a, b, c);
+            const a = cropImage(old.first, STREAM_CROP), b = cropImage(old.repeat, STREAM_CROP), c = cropImage(fresh.png, STREAM_CROP), crop = compareLuminanceImages(a, b, c);
             await writePng(`stream-crop-pilot-${backend}.png`, a); await writePng(`stream-crop-pilot-repeat-${backend}.png`, b); await writePng(`stream-crop-new-${backend}.png`, c); await writePng(`stream-crop-diff-${backend}.png`, crop.diff);
             const { diff: _cropDiff, ...cropNumbers } = crop; result.streamCrop = { rectangle: STREAM_CROP, metric: cropNumbers };
             if (!crop.pass) failures.push('SPEC 19.7 stream crop at the mill bank failed');
@@ -280,7 +283,7 @@ export async function runFarmParity(options: { workspace?: string; release?: 'r3
             const kind = play ? 'play fixture' : 'named view';
             const x02 = compareX02Reference(x02Reference!, { view, backend, tier: 'high', viewport: [WIDTH, HEIGHT], freshPage: true }, rewriteCounts);
             const first = compareStaticRendererCounts(old.firstStats, rewriteCounts, kind), repeat = compareStaticRendererCounts(old.repeatStats, rewriteCounts, kind);
-            const b07 = compareFarmOptimizationCounts({ release, counts: fresh.stats.counts, pilot: old.firstStats, pilotRepeat: old.repeatStats, rewrite: rewriteCounts, colliders: { actual: fresh.stats.colliders, fixture: colliderFixture } });
+            const b07 = compareFarmOptimizationCounts({ release, counts: fresh.stats.counts, pilot: old.firstStats, pilotRepeat: old.repeatStats, rewrite: rewriteCounts, textureProfile: fresh.stats.counts.shadow === null ? 'prewarmed' : 'cached-shadows', colliders: { actual: fresh.stats.colliders, fixture: colliderFixture } });
             result.countChecks = { b07, x02: { ...x02, baseline: `${X02_BASELINE_PATH} (OD-8, D-53: re-baselined on the optimized build)`, pilotObservation: { first, repeat, gated: false, note: 'Both pilot samples, recorded only: the optimized build lowers draws on purpose' } } };
             if (!b07.pass) failures.push('B-07 optimization statistics failed');
             if (!result.countChecks.x02.pass) failures.push(`X-02 renderer count limits failed at this ${kind}`);

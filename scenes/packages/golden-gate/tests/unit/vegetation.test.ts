@@ -7,7 +7,8 @@
 import { describe, expect, test } from 'bun:test';
 import { MeshStandardNodeMaterial, Vector3 } from 'three/webgpu';
 import type { InstancedBufferGeometry } from 'three/webgpu';
-import { LAYOUT, TIER_DATA } from '../../src/data';
+import { TIER_DATA } from '../../src/data';
+import { LAYOUT } from '../../scripts/authored-layout';
 import { horizontalProject } from '../../src/world/alignment';
 import { polygonDistance, sideWidening } from '../../src/world/dressing';
 import { buildApproach } from '../../src/world/route';

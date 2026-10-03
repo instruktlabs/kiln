@@ -8,6 +8,7 @@ import axe from 'axe-core';
 import { assertOwnedUrl, contrastRatio, launchChrome, serveOwned, waitForReady, waitFrames, workspacePath } from '../packages/scene-kit/src/testing/node';
 import { DOOR_LABELS, doorPrompt, doorStatus, FARM_STRINGS } from '../packages/farm/src/ui/strings';
 import { FARM_CAMERA, FARM_DOORS, FARM_WALK } from '../packages/farm/src/constants';
+import { closeExtraStartupPages } from './browser-startup';
 
 /**
  * B-09 mobile flows (SPEC 14 and 18, D-22) on the Farm test output, driven by touch: CDP
@@ -232,7 +233,7 @@ export async function runFarmMobile(o: MobileRunOptions) {
       : await launchChrome({ workspace, name: `b09-${o.backend}`, windowSize: [PHONE.width, PHONE.height] });
     ledger.browserPid = device ? 'device Chrome (not owned; only this run\'s tab is closed)' : browser.process()?.pid;
     report.browser = await browser.version();
-    if (!device) for (const blank of await browser.pages()) await blank.close();
+    if (!device) await closeExtraStartupPages(browser);
     const p = page = await browser.newPage(); await configurePage(p, new Set([hosted.port]), diagnostics);
     // A device has a real touch screen: no emulation there, only the dispatched touch events.
     const cdp = device ? await p.createCDPSession() : await emulatePhone(p, String(report.browser), PHONE);

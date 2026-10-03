@@ -6,8 +6,9 @@
 // blue and red, a few green and others, no two adjacent cars alike, and free-flowing lanes at about
 // 20 m/s with natural spacing.
 import { LANES, laneX } from '../constants';
-import { LAYOUT, TRAFFIC_DATA } from '../data';
-import type { LayoutLane } from '../data';
+import { TRAFFIC_DATA } from '../data';
+import { BOOTSTRAP as LAYOUT } from '../layout-bootstrap';
+import type { LayoutBootstrap } from '../layout-contract';
 import type { TrafficDensity } from '../tiers';
 import { newRoutePoint, routePoint, routeYaw } from '../world/route';
 import type { Route, RoutePoint } from '../world/route';
@@ -20,10 +21,10 @@ import type { VehicleType } from './vehicle-models';
  * the lane's first station to its last), indices 0-2 north and 3-5 south. Anything else is a data
  * error, reported here rather than simulated differently.
  */
-function directionLanes(lanes: readonly LayoutLane[]): { lanes: LayoutLane[]; length: number } {
+function directionLanes(lanes: readonly LayoutBootstrap['lanes'][number][]): { lanes: LayoutBootstrap['lanes']; length: number } {
   const north = lanes.filter(l => l.direction === 'north'), south = lanes.filter(l => l.direction === 'south');
   if (north.length !== 3 || south.length !== 3) throw new Error('data/layout.json must define three lanes each way');
-  const length = (lane: LayoutLane) => Math.abs(lane.stations[1] - lane.stations[0]), common = length(north[0]!);
+  const length = (lane: LayoutBootstrap['lanes'][number]) => Math.abs(lane.stations[1] - lane.stations[0]), common = length(north[0]!);
   north.forEach((n, k) => {
     const s = south[k]!;
     if (n.index !== k || s.index !== k + 3 || n.speed !== s.speed || n.classes.join() !== s.classes.join() || Math.abs(n.x + s.x) > 1e-6
@@ -41,7 +42,7 @@ const DIRECTION = directionLanes(LANES);
  * traffic never fades on the deck or on the solid road before it.
  */
 function laneFade(): number {
-  const room = Math.min(...(['south', 'north'] as const).map(name => { const [from, to] = LAYOUT.approaches[name].ends.dissolve; return to - from; }));
+  const room = Math.min(...(['south', 'north'] as const).map(name => { const [from, to] = LAYOUT.approachEnds[name].dissolve; return to - from; }));
   if (!(TRAFFIC_DATA.fade > 0 && TRAFFIC_DATA.fade <= room + 1e-9)) throw new Error(`data/traffic.json fade ${TRAFFIC_DATA.fade} m must fit the approaches' dissolve stretches (${room} m)`);
   return TRAFFIC_DATA.fade;
 }

@@ -123,7 +123,12 @@ export const FARM_OPTIMIZATION_GOLDENS = {
   currentSealed96m: { cellSize: 96, cellOffset: 48, batchGroups: 83, dynamicGroups: 54, sourceMeshes: 2000, eligibleSourceMeshes: 2004, visibleSourceMeshes: 2194,
     tangentDerivatives: 11, hiddenRoots: 575, frozenPlacements: 555, frozenNodes: 4191 },
 } as const;
-export function compareFarmOptimizationCounts(options: { release: 'r33' | 'r34'; counts: any; pilot: PilotOptimizationReference; pilotRepeat: PilotOptimizationReference; rewrite: RendererCountSnapshot; colliders?: { actual: Partial<ColliderCounts> | null | undefined; fixture: ColliderCounts } }) {
+/** D-68 retains the prewarm observation and names the additional two cached-shadow textures. */
+export const FARM_TEXTURE_GOLDENS = {
+  decision: 'D-68', prewarmed: 39, 'cached-shadows': 41,
+  provenance: { prewarmed: 'DECISIONS.md D-68: 39 at every view since prewarm', 'cached-shadows': 'packages/farm/fixtures/x02-baseline.json: draw-after 0174e7d, 16 views on WebGPU and WebGL2, settled cached shadows' },
+} as const;
+export function compareFarmOptimizationCounts(options: { release: 'r33' | 'r34'; counts: any; pilot: PilotOptimizationReference; pilotRepeat: PilotOptimizationReference; rewrite: RendererCountSnapshot; textureProfile?: 'prewarmed' | 'cached-shadows'; colliders?: { actual: Partial<ColliderCounts> | null | undefined; fixture: ColliderCounts } }) {
   const { counts, pilot, pilotRepeat, rewrite } = options;
   const at = (path: string) => path.split('.').reduce((value, key) => value?.[key], counts);
   const checks: { name: string; expected: unknown; actual: unknown; pass: boolean }[] = [];
@@ -150,15 +155,18 @@ export function compareFarmOptimizationCounts(options: { release: 'r33' | 'r34';
       checks.push({ name: `texturePooling.${key} versus ${sampleName}`, expected: expected ?? null, actual: actual ?? null,
         pass: validCount(expected) && validCount(actual) && actual === expected });
     }
-    checks.push({ name: `renderer textures versus ${sampleName}`, expected: sample.textures, actual: rewrite.textures,
-      pass: validCount(sample.textures) && validCount(rewrite.textures) && sample.textures === rewrite.textures });
+    observedCount(`${sampleName} renderer textures (observation only)`, sample.textures);
   }
+  const profile = options.textureProfile ?? 'cached-shadows';
+  const textureGolden = { decision: FARM_TEXTURE_GOLDENS.decision, profile, expected: FARM_TEXTURE_GOLDENS[profile], provenance: FARM_TEXTURE_GOLDENS.provenance[profile] };
+  equal(`renderer textures (${profile}, D-68)`, rewrite.textures, textureGolden.expected);
   if (options.colliders) checks.push(...compareColliderCounts(options.colliders.actual, options.colliders.fixture));
   const reviewNotes: string[] = [];
   if (validCount(derivativeCount) && derivativeCount !== 9) reviewNotes.push(`Batch tangent derivatives are ${derivativeCount}, versus SPEC's reported pilot 9; R3-08 documents the reproduced historical 24m versus current sealed 96m difference (SPEC12.6).`);
   if (options.release === 'r34') reviewNotes.push('r34 must retain shared optimization counts; record any source-backed farmhouse-only difference from r33 (D-07).');
   return { id: 'B-07', release: options.release, scope: options.colliders ? 'Optimization statistics and collider counts' : 'Optimization statistics only; collider counts not supplied to this comparison',
-    pass: checks.every(check => check.pass), checks, reviewNotes, goldens: FARM_OPTIMIZATION_GOLDENS,
+    pass: checks.every(check => check.pass), checks, reviewNotes, goldens: FARM_OPTIMIZATION_GOLDENS, textureGolden,
+    pilotTextureObservations: { first: pilot.textures, repeat: pilotRepeat.textures, gatedAsEquality: false },
     pending: [...(options.colliders ? [] : ['Collider counts not supplied to this comparison']), ...(options.release === 'r34' ? ['r34 visible-source total versus its sealed farmhouse-only delta'] : [])],
     observed: { batchingSourceMeshes: { batched: at('optimization.batching.sourceMeshes') ?? null, total: at('optimization.batching.totalSourceMeshes') ?? null, eligible: at('optimization.batching.eligibleSourceMeshes') ?? null,
       interpretation: 'R3-08: 1,967 refers to historical 24m batching; current sealed 96m batching represents 2,000 of 2,004 eligible meshes, among 2,194 visible placement meshes (r33)' },

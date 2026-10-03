@@ -329,7 +329,7 @@ export function stageFf3(options: Ff3StageOptions = {}) {
       requestedModel:a.model,recordedModel:a.recordedModel??null,...(a.attributionNote?{attributionNote:a.attributionNote}:{}) }] as const;
   };
   const result = stageFiles({
-    id: 'foundry-floor', release, three: '0.186.0', out, force: options.force,
+    id: 'foundry-floor', release, three: '0.186.1', out, force: options.force,
     models: [
       ...interior.filter(m => m.placed).map(m => ({ id: m.id, to: m.to })),
       ...structures.map(m => ({ id: m.id, to: m.to })),

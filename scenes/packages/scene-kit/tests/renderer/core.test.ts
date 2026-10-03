@@ -25,3 +25,15 @@ test('factory awaits init and drops late results with terminal disposal', async 
   const result=factory({canvas:{} as any,powerPreference:'high-performance',antialias:true,alpha:false});
   finish(); await expect(result).rejects.toHaveProperty('name','AbortError'); expect(disposed).toBe(true);
 });
+test('reversed depth is opt-in and preserves the initialized backend fallback', async () => {
+  for (const request of [undefined, false, true]) for (const supported of [false, true]) {
+    let params: any;
+    const renderer = { backend:{isWebGLBackend:true}, reversedDepthBuffer:false,
+      async init(){this.reversedDepthBuffer=!!params.reversedDepthBuffer && supported;},
+      hasInitialized:()=>true,dispose:async()=>{} } as any;
+    const factory=createGlFactory({reversedDepthBuffer:request,isDisposed:()=>false,makeRenderer:p=>{params=p;return renderer;}});
+    const ready=await factory({canvas:{} as any,powerPreference:'high-performance',antialias:true,alpha:false});
+    expect(params.reversedDepthBuffer).toBe(request ?? false);
+    expect(ready.reversedDepthBuffer).toBe(!!request && supported);await ready.dispose();
+  }
+});

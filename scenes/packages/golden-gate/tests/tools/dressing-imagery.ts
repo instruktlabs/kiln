@@ -26,7 +26,8 @@
 // Writes evidence/captures/dressing/imagery.json and one <element>-imagery.png per element.
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { relative, resolve } from 'node:path';
-import { LAYOUT, TIER_DATA } from '../../src/data';
+import { TIER_DATA } from '../../src/data';
+import { LAYOUT } from '../../scripts/authored-layout';
 import { parkedVehicles, plazaWidening, polygonDistance, vistaRows } from '../../src/world/dressing';
 import { frame } from '../../src/world/mesh-arrays';
 import { buildApproach, type Approach } from '../../src/world/route';

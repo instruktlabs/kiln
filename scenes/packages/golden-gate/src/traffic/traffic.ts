@@ -18,7 +18,7 @@ import { LAYERS, LANE_WIDTH, laneX } from '../constants';
 import type { TrafficDensity } from '../tiers';
 import { newRoutePoint } from '../world/route';
 import type { Route } from '../world/route';
-import { LAYOUT } from '../data';
+import { BOOTSTRAP as LAYOUT } from '../layout-bootstrap';
 import { DENSITY_HEADWAY, PALETTE, TRAFFIC_FLOW, lanePose, laneStation, trafficClasses } from './config';
 import { TrafficSim, srgbToLinear } from './sim';
 import type { SimObstacle } from './sim';

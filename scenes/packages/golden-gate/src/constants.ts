@@ -1,7 +1,8 @@
 // Golden Gate scene frame (bridge REPORT.md, terrain frame.json): metres, +Y up, water at Y = 0,
 // +X west (Pacific), +Z north (Marin), south tower at Z = -640.08. Right-handed.
-// Scene values come from data/layout.json (D-21); this module only gives them convenient shapes.
-import { LAYOUT } from './data';
+// Scene values come from data/layout.json (D-21), through its generated startup projection. The
+// verified runtime layout must match this projection before world construction (./layout.ts).
+import { BOOTSTRAP as LAYOUT } from './layout-bootstrap';
 import type { CameraPose, Vec3 } from './data';
 
 export type { Vec3 } from './data';

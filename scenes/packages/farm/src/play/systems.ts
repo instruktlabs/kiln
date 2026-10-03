@@ -26,7 +26,7 @@ export function useFarmPlaySystems(world: FarmWorld | null, session: FarmSession
     // Walking is user-initiated motion (SPEC 13.4): it animates without ambient animation, on
     // the unscaled step. A frozen test/dev clock (time scale 0) holds the current clip at its
     // present time, so a clip chosen while frozen (Idle on entering play) still poses Rowan.
-    if (player?.action) player.mixer.update(clock.timeScale > 0 ? Math.min(.1, dt) : 0);
+    if (player?.action) world.sim.updateAnimation(clock.timeScale > 0 ? Math.min(.1, dt) : 0);
   });
   useSystem('farm-sim', SystemOrder.sim, dt => {
     const sim = world?.sim; if (!sim) return;

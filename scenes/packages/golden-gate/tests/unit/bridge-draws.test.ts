@@ -11,8 +11,10 @@ import { Box3, BoxGeometry, FrontSide, Group, Mesh, MeshStandardMaterial, PlaneG
 import type { BufferGeometry, Material, Object3D } from 'three/webgpu';
 import type { GLTF } from 'three/addons/loaders/GLTFLoader.js';
 import { BRIDGE, LAYERS } from '../../src/constants';
-import { LAYOUT } from '../../src/data';
-import { createBridge } from '../../src/world/bridge';
+import { LAYOUT } from '../../scripts/authored-layout';
+await import('three');
+const { createBridge } = await import('../../src/world/bridge');
+import { readGoldenGateLayout } from '../../src/layout';
 import type { BridgeOptions } from '../../src/world/bridge';
 import { drawOptions } from '../../src/world/draw-options';
 import { FEATURES } from '../../src/tiers';
@@ -54,7 +56,7 @@ function pack() {
   const materials = Object.fromEntries(NAMES.map(name => [name, new MeshStandardMaterial({ name, emissive: name === 'LampGlass' || name === 'BeaconEmissive' ? 0xffcc88 : 0, emissiveIntensity: 2 })])) as Materials;
   return { materials, web: model(materials), far: model(materials) };
 }
-const HIGH: BridgeOptions = { farSwitch: 5200, castShadow: true, merge: true, standInLayer: LAYERS.shadowStandIn, passLayers: { main: LAYERS.mainOnly, pass: LAYERS.reflectionOnly } };
+const HIGH: BridgeOptions = { layout: LAYOUT, farSwitch: 5200, castShadow: true, merge: true, standInLayer: LAYERS.shadowStandIn, passLayers: { main: LAYERS.mainOnly, pass: LAYERS.reflectionOnly } };
 const triangles = (g: BufferGeometry) => (g.index ? g.index.count : g.attributes.position!.count) / 3;
 /** What a camera on layer `layer` draws under root: visible meshes on that layer, their triangles, materials and world bounds. */
 function drawn(root: Object3D, layer = LAYERS.world, cast = false) {
@@ -76,6 +78,44 @@ function snapshot(gltf: GLTF) {
 const near = new Vector3(300, 120, 900), distant = new Vector3(0, 100, 8000);
 
 describe('bridge draws', () => {
+  test('a reversed-depth world owns its joint bias without changing another world sharing the pack', () => {
+    const p=pack(), normal=createBridge(p.web,p.far,HIGH), reversed=createBridge(p.web,p.far,{...HIGH,reversedDepthBuffer:true});
+    const joints=(bridge:ReturnType<typeof createBridge>)=>[...drawn(bridge.views.web).materials].filter(m=>m.name==='JointSteel');
+    const original=p.materials.JointSteel, own=joints(reversed)[0]!;
+    expect(joints(normal)).toEqual([original]);expect(own).not.toBe(original);
+    expect(original.polygonOffsetFactor).toBeLessThan(0);expect(own.polygonOffsetFactor).toBeGreaterThan(0);
+    let released=0;own.addEventListener('dispose',()=>released++);reversed.dispose();
+    expect(released).toBe(1);expect(original.polygonOffsetFactor).toBeLessThan(0);normal.dispose();
+  });
+  test('two worlds use their own verified dressing, and disposing one retains the other’s materials', () => {
+    const layout = (color: string) => {
+      const data = structuredClone(LAYOUT); data.dressing.paint.color = color;
+      return readGoldenGateLayout({ data: new Map([['layout', new TextEncoder().encode(JSON.stringify(data)).buffer]]) }, new AbortController().signal);
+    };
+    const p = pack(), firstLayout = layout('#123456'), secondLayout = layout('#654321');
+    const first = createBridge(p.web, p.far, { ...HIGH, layout: firstLayout }), second = createBridge(p.web, p.far, { ...HIGH, layout: secondLayout });
+    const paints = (bridge: ReturnType<typeof createBridge>) => {
+      const found = new Set<MeshStandardMaterial>();
+      bridge.approachMeshes.near.group.traverse(node => {
+        const material = (node as Mesh).material;
+        for (const item of Array.isArray(material) ? material : material ? [material] : []) if (item.name === 'PaintedSteel') found.add(item as MeshStandardMaterial);
+      });
+      return [...found];
+    };
+    const a = paints(first), b = paints(second); let disposed = 0;
+    try {
+      expect(a.map(material => material.color.getHexString())).toEqual(['123456']);
+      expect(b.map(material => material.color.getHexString())).toEqual(['654321']);
+      expect(a[0]).not.toBe(b[0]);
+      expect(first.route.north.data).toBe(firstLayout.approaches.north);
+      expect(second.route.north.data).toBe(secondLayout.approaches.north);
+      b[0]!.addEventListener('dispose', () => { disposed++; });
+    } finally { first.dispose(); }
+    try { expect(disposed).toBe(0); expect(b[0]!.color.getHexString()).toBe('654321'); }
+    finally { second.dispose(); }
+    expect(disposed).toBe(1);
+  });
+
   test('the merge draws south, north and span parts by material with the same triangles, bounds and materials', () => {
     const p = pack(), bridge = createBridge(p.web, p.far, { ...HIGH, standInLayer: undefined, passLayers: undefined });
     const source = drawn(bridge.web), web = drawn(bridge.views.web);

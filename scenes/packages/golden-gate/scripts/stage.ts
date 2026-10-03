@@ -11,7 +11,8 @@ import { fileURLToPath } from 'node:url';
 import { createHash } from 'node:crypto';
 import { stageFiles, verifyStaged, type StagePlan } from '@kiln-scenes/scene-kit/staging';
 import type { CreditEntry } from '@kiln-scenes/scene-kit';
-import { DATA_FILES, LAYOUT } from '../src/data';
+import { DATA_FILES } from '../src/data';
+import { LAYOUT } from './authored-layout';
 /** The behaviour specification staged beside the data (traffic, driving, flights, fog banks, lamps). */
 const BEHAVIOUR_FILE = 'data/BEHAVIOUR.md';
 import { laneDrift, roadGridFromBridge } from './layout';
@@ -298,7 +299,7 @@ export async function stageGoldenGate(args: readonly string[] = process.argv.sli
     ] };
   write('credits.json', JSON.stringify(creditsFile, null, 2) + '\n', 'credits.json');
 
-  const result = stageFiles({ id: 'golden-gate', release: options.release, three: '0.186.0', out, force: options.force, models,
+  const result = stageFiles({ id: 'golden-gate', release: options.release, three: '0.186.1', out, force: options.force, models,
     data: { scene: 'data/scene.json', collision: `terrain/${collision.file}`, ...DATA_FILES }, files, credits,
     source: { bridge: Object.fromEntries(Object.entries(BRIDGE_PINS).map(([k, v]) => [k, v.revision])), terrainSchema: terrain.schema, terrainManifestSha256: sha256(readFileSync(terrainManifestPath)), vehicles: Object.keys(vehicles) } });
   const verification = verifyStaged(out); if (!verification.ok) throw new Error(verification.problems.join('\n'));

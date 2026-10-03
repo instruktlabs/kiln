@@ -1,7 +1,7 @@
 import { NeutralToneMapping } from 'three/webgpu';
 import type { SceneDefinition } from '@kiln-scenes/scene-kit';
 import { CAMERA, NAMED_CAMERAS } from './constants';
-import { LAYOUT } from './data';
+import { BOOTSTRAP as LAYOUT } from './layout-bootstrap';
 import { goldenGateTiers } from './tiers';
 
 /**
@@ -15,5 +15,6 @@ export const goldenGateDefinition: SceneDefinition = {
   description: 'Orbit the Golden Gate Bridge with the camera controls, choose Day, Golden hour or Fog, and take a guided flyover. Choose Drive the sedan, or press Enter or E, to drive across the bridge: W A S D or the arrows steer and accelerate, Space brakes, Shift boosts, X is the handbrake and R turns around at the end of the deck. E or Escape leaves the car; a second Escape leaves the scene. Tab moves through and out of the controls.',
   camera: { position: NAMED_CAMERAS[LAYOUT.cameras.default]!.position, fov: NAMED_CAMERAS[LAYOUT.cameras.default]!.fov, near: CAMERA.near, far: CAMERA.far },
   tiers: goldenGateTiers,
+  reversedDepthBuffer: true,
   look: { toneMapping: NeutralToneMapping, exposure: 1, background: '#9fb0bf' },
 };

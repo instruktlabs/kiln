@@ -3,7 +3,7 @@ import { existsSync } from 'node:fs';
 import { mkdir, writeFile } from 'node:fs/promises';
 import { isAbsolute, relative, resolve, sep } from 'node:path';
 import { PNG } from 'pngjs';
-import { compareParityImages } from './parity-images';
+import { compareLuminanceImages, compareParityImages } from './parity-images';
 import type { RgbaImage } from './parity-images';
 
 interface WoodlandCapture {
@@ -77,7 +77,7 @@ export async function captureWoodlandAb(options: {
     await record('unsafe', unsafe);
     validateWoodlandAb(safe, repeat, unsafe, options.backend);
     const a = cropImage(safe.png, WOODLAND_CROP), b = cropImage(repeat.png, WOODLAND_CROP), c = cropImage(unsafe.png, WOODLAND_CROP);
-    const full = compareParityImages(safe.png, repeat.png, unsafe.png), crop = compareParityImages(a, b, c);
+    const full = compareParityImages(safe.png, repeat.png, unsafe.png), crop = compareLuminanceImages(a, b, c);
     await writePng('safe-crop.png', a); await writePng('safe-repeat-crop.png', b); await writePng('unsafe-crop.png', c);
     await writePng('diff-full.png', full.diff); await writePng('diff-crop.png', crop.diff);
     const { diff: _full, ...fullMetric } = full, { diff: _crop, ...cropMetric } = crop;

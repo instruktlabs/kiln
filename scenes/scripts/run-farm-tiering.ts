@@ -6,7 +6,7 @@ import { PNG } from 'pngjs';
 import type { Browser, Page } from 'puppeteer-core';
 import { classifyDevice, type DeviceProbe } from '../packages/scene-kit/src/quality/core';
 import { assertOwnedUrl, launchChrome, serveOwned, waitForReady, waitFrames, workspacePath } from '../packages/scene-kit/src/testing/node';
-import { compareParityImages, type RgbaImage } from './parity-images';
+import { compareLuminanceImages, compareParityImages, type RgbaImage } from './parity-images';
 
 /**
  * B-10 (tiering) and B-13 (governor path and resize on the full scene) on the Farm test output.
@@ -192,9 +192,9 @@ export async function runFarmTiering(o: { workspace?: string; label: string; roo
           await test.page.setViewport({ width: 1280, height: 720, deviceScaleFactor: 1 }); await waitFrames(test.page, 6); await settle(test.page);
           const after = await capture(test.page, resolve(out, `${view}-stepped-resized.png`), 1280, 720);
           const full = compareParityImages(reference, noise, after), control = compareParityImages(reference, noise, level0);
-          const stream = view === 'watermill-wheel' ? compareParityImages(crop(reference, STREAM_RECT), crop(noise, STREAM_RECT), crop(after, STREAM_RECT)) : null;
+          const stream = view === 'watermill-wheel' ? compareLuminanceImages(crop(reference, STREAM_RECT), crop(noise, STREAM_RECT), crop(after, STREAM_RECT)) : null;
           await writeFile(resolve(out, `${view}-diff.png`), PNG.sync.write(Object.assign(new PNG({ width: full.diff.width, height: full.diff.height }), { data: Buffer.from(full.diff.data) })));
-          results[view] = { before, stepped, reference: refState, full: { pass: full.pass, passingTiles: full.passingTiles, globalMean: full.globalMean, noiseGlobalMean: full.noiseGlobalMean }, stream: stream && { pass: stream.pass, passingTiles: stream.passingTiles, globalMean: stream.globalMean, noiseGlobalMean: stream.noiseGlobalMean },
+          results[view] = { before, stepped, reference: refState, full: { scope: full.scope, luminancePass: full.luminancePass, lines: full.lines, pass: full.pass, passingTiles: full.passingTiles, globalMean: full.globalMean, noiseGlobalMean: full.noiseGlobalMean }, stream: stream && { scope: stream.scope, pass: stream.pass, passingTiles: stream.passingTiles, globalMean: stream.globalMean, noiseGlobalMean: stream.noiseGlobalMean },
             control: { meaning: 'grass 1 (before the step) against grass .75: the difference the gate must be able to see', pass: control.pass, passingTiles: control.passingTiles, globalMean: control.globalMean } };
           if (view === 'eye-height') assert(control.globalMean > 10 * Math.max(full.globalMean, 1e-6), `grass control: the grass step is visible to the metric (${control.passingTiles}/144 tiles, mean ${control.globalMean})`);
           assert(full.pass, `${view}: ${full.passingTiles}/144 tiles, global mean ${full.globalMean}`); if (stream) assert(stream.pass, `stream crop: ${stream.passingTiles}/144, mean ${stream.globalMean}`);

@@ -3,7 +3,8 @@
 // follows and never overlaps (and that brakes for it), the road-end stop and turn-around (on the approach
 // roads since fix round 2), determinism.
 import { describe, expect, test } from 'bun:test';
-import { DRIVING_DATA, LAYOUT, TIER_DATA } from '../../src/data';
+import { DRIVING_DATA, TIER_DATA } from '../../src/data';
+import { LAYOUT } from '../../scripts/authored-layout';
 import { CARRIAGEWAY, advanceCar, carExtents, createCar, endStop, nearRoadEnd, roadEnd, startCar, stepCar, turnAround } from '../../src/play/car';
 import type { CarBody, CarInput, CarState, TrafficBox } from '../../src/play/car';
 import { TrafficSim } from '../../src/traffic/sim';

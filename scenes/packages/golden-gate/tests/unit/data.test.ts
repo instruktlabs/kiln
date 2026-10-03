@@ -4,7 +4,8 @@
 import { describe, expect, test } from 'bun:test';
 import { existsSync, readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
-import { DRIVING_DATA, LAYOUT, PRESET_DATA, TIER_DATA, TRAFFIC_DATA, WATER_DATA } from '../../src/data';
+import { DRIVING_DATA, PRESET_DATA, TIER_DATA, TRAFFIC_DATA, WATER_DATA } from '../../src/data';
+import { LAYOUT } from '../../scripts/authored-layout';
 import type { Vec3 } from '../../src/data';
 import { BRIDGE, CAMERA, LANE_CENTERS, NAMED_CAMERAS, POSTCARD, laneDirection, laneX } from '../../src/constants';
 import { PRESETS, PRESET_ORDER } from '../../src/presets';

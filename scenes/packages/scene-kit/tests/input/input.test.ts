@@ -55,4 +55,31 @@ describe('U-17 input core', () => {
     cleanup(); input.setMove(1, 0, false); doc.defaultView.dispatchEvent(new Event('blur')); expect(input.state.move.x).toBe(1);
     input.dispose(); expect(input.state.move.x).toBe(0);
   });
+  test('movement release belongs to its writer; keyboard and unowned writes supersede joystick cleanup', () => {
+    const input = createInputApi(), first = {}, second = {};
+    input.setEnabled(true);
+    input.setMove(.4, .8, true, first); input.releaseMove(second);
+    expect(input.state.move).toEqual({ x: .4, y: .8 }); expect(input.state.run).toBe(true);
+    input.setMove(-.6, 1, false, second); input.releaseMove(first);
+    expect(input.state.move).toEqual({ x: -.6, y: 1 });
+    input.releaseMove(second); expect(input.state.move).toEqual({ x: 0, y: 0 });
+    input.setMove(.4, .8, true, first);
+    // A pointer-mode subscriber may synchronously unmount/release a joystick at keydown.
+    const stop = input.subscribe(() => input.releaseMove(first));
+    input.key('KeyW', true); expect(input.state.move).toEqual({ x: 0, y: 1 }); expect(input.state.run).toBe(false);
+    input.key('ShiftLeft', true); input.releaseMove(first); expect(input.state.run).toBe(true);
+    input.key('KeyW', false); input.key('ShiftLeft', false); expect(input.state.move).toEqual({ x: 0, y: 0 }); expect(input.state.run).toBe(false);
+    input.setMove(1, 0, true, first); input.setMove(.2, -.3, false); input.releaseMove(first);
+    expect(input.state.move).toEqual({ x: .2, y: -.3 }); stop(); input.dispose();
+  });
+  test('clear, disabling and disposal invalidate movement ownership', () => {
+    const input = createInputApi(), owner = {};
+    input.setEnabled(true); input.setMove(1, 1, true, owner); input.clear(); input.releaseMove(owner);
+    expect(input.state.move).toEqual({ x: 0, y: 0 }); expect(input.state.run).toBe(false);
+    input.setMove(.5, .5, true, owner); input.setEnabled(false); input.setMove(1, 1, true, owner); input.releaseMove(owner);
+    expect(input.state.move).toEqual({ x: 0, y: 0 }); expect(input.state.run).toBe(false);
+    input.setEnabled(true); input.key('KeyD', true); input.releaseMove(owner); expect(input.state.move).toEqual({ x: 1, y: 0 });
+    input.dispose(); input.setMove(1, 1, true, owner); input.releaseMove(owner);
+    expect(input.state.move).toEqual({ x: 0, y: 0 }); expect(input.state.run).toBe(false);
+  });
 });

@@ -6,7 +6,7 @@
 // end grade (the Roadway itself is checked by scripts/layout.ts --check and tests/tools/drive-check.ts).
 import { describe, expect, test } from 'bun:test';
 import { LANES, laneX } from '../../src/constants';
-import { LAYOUT } from '../../src/data';
+import { LAYOUT } from '../../scripts/authored-layout';
 import { lanePose, laneStation, TRAFFIC_FLOW } from '../../src/traffic/config';
 import { checkProfile, horizontalAt, horizontalProject, lateral, profileAt } from '../../src/world/alignment';
 import type { RoadGrid } from '../../src/world/road';

@@ -2,12 +2,12 @@ import { useEffect, useLayoutEffect, useMemo, useRef } from 'react';
 import type { JSX, Ref, RefObject } from 'react';
 import { useThree } from '@react-three/fiber';
 import { PerspectiveCamera, Vector3 } from 'three/webgpu';
-import type { Object3D } from 'three/webgpu';
 import { SystemOrder, useSystem } from '../lifecycle';
 import { useRuntime } from '../internal/runtime';
 import { createChaseDrag, createPathController, stepChase, stepChaseZoom } from './core';
 import type { ChaseOptions, ChaseState, FollowOptions, OrbitOptions, PathDef, PathHandle, Pose, RigHandle, Vec3 } from './core';
 import { createOrbitController, type ManagedOrbit } from './orbit';
+import { createFollowController, type ManagedFollow } from './follow';
 export * from './core';
 export { createScopedControlsElement } from './scoped-controls';
 export * from './orbit';
@@ -36,41 +36,15 @@ export function OrbitRig(p: OrbitOptions): JSX.Element {
   return <></>;
 }
 export function FollowRig(p: FollowOptions & { active: boolean; rigRef?: Ref<RigHandle> }): JSX.Element {
-  const runtime = useRuntime(), state = useThree(), current = useRef(p);
-  const managed = useRef<(ManagedOrbit & { offset: Vector3; target: Vector3; previous: Vector3; desired: Vector3; delta: Vector3; correcting: boolean; initialized: boolean; visible: boolean; subject: Object3D | null; targetHeight: number }) | null>(null);
+  const runtime = useRuntime(), state = useThree(), current = useRef(p), managed = useRef<ManagedFollow | null>(null);
   useLayoutEffect(() => { current.current = p; });
   useEffect(() => {
     const root = runtime.rootRef.current; if (!root) return;
-    const orbit = createOrbitController(state.camera as PerspectiveCamera, state.gl.domElement, root, () => ({ active: current.current.active, minDistance: current.current.minDistance, maxDistance: current.current.maxDistance, maxPolar: current.current.maxPolar, pan: false }));
-    const entry = Object.assign(orbit, { offset: new Vector3(), target: new Vector3(), previous: new Vector3(), desired: new Vector3(), delta: new Vector3(), correcting: false, initialized: false, visible: true, subject: null as Object3D | null, targetHeight: current.current.targetHeight });
-    const changed = () => { if (!entry.correcting && current.current.active) entry.offset.subVectors(state.camera.position, entry.controls.target); };
-    entry.controls.addEventListener('change', changed); managed.current = entry; setRef(p.rigRef, entry.handle);
-    return () => { setRef(p.rigRef, null); entry.controls.removeEventListener('change', changed); entry.dispose(); managed.current = null; current.current.obstruction?.onSubjectVisible(true); };
+    const follow = createFollowController(state.camera as PerspectiveCamera, state.gl.domElement, root, () => current.current);
+    managed.current = follow; setRef(p.rigRef, follow.handle);
+    return () => { setRef(p.rigRef, null); follow.dispose(); managed.current = null; };
   }, [runtime, state.camera, state.gl, p.rigRef]);
-  useSystem('follow-camera', SystemOrder.camera, () => {
-    const rig = managed.current, options = current.current, subject = options.subject.current; if (!rig) return;
-    rig.controls.enabled = options.active;
-    if (!options.active || !subject) { rig.initialized = false; if (!rig.visible) { rig.visible = true; options.obstruction?.onSubjectVisible(true); } return; }
-    const camera = state.camera as PerspectiveCamera;
-    rig.controls.minDistance = options.minDistance; rig.controls.maxDistance = options.maxDistance;
-    subject.getWorldPosition(rig.target); rig.target.y += options.targetHeight;
-    rig.correcting = true;
-    if (!rig.initialized || rig.subject !== subject || rig.targetHeight !== options.targetHeight) {
-      rig.offset.fromArray(options.offset()); rig.previous.copy(rig.target); camera.position.copy(rig.target).add(rig.offset);
-      rig.controls.target.copy(rig.target); camera.fov = options.fov; camera.updateProjectionMatrix(); rig.controls.maxPolarAngle = options.maxPolar; rig.initialized = true; rig.subject = subject; rig.targetHeight = options.targetHeight;
-    } else { rig.delta.subVectors(rig.target, rig.previous); camera.position.add(rig.delta); rig.controls.target.copy(rig.target); }
-    rig.previous.copy(rig.target);
-    // Keep the user-controlled offset separate from the camera shortened by an obstruction.
-    rig.desired.copy(rig.target).add(rig.offset); const length = rig.offset.length();
-    let distance = length;
-    if (options.obstruction) distance = Math.min(length, Math.max(options.obstruction.minDistance, options.obstruction.ray(rig.target, rig.desired) - options.obstruction.pad));
-    camera.position.copy(rig.target).addScaledVector(rig.offset, distance / Math.max(1e-9, length));
-    // User zoom limits constrain the stored offset; collision pull-in may go below them.
-    const min = rig.controls.minDistance; rig.controls.minDistance = options.obstruction?.minDistance ?? min;
-    rig.controls.update(); rig.controls.minDistance = min; rig.sync(); rig.correcting = false;
-    const visible = distance >= (options.obstruction?.hideSubjectBelow ?? 0);
-    if (visible !== rig.visible) { rig.visible = visible; options.obstruction?.onSubjectVisible(visible); }
-  });
+  useSystem('follow-camera', SystemOrder.camera, () => managed.current?.update());
   return <></>;
 }
 export function VehicleRig(p: ChaseOptions): JSX.Element {

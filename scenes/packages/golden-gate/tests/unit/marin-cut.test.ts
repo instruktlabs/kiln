@@ -5,7 +5,7 @@
 // envelope unchanged on the other side and outside the cut's stations; the clip grid's columns at the profile's
 // edges; the scrub weight only where the cut lowers the terrain; and the toe wall in the near mesh only.
 import { describe, expect, test } from 'bun:test';
-import { LAYOUT } from '../../src/data';
+import { LAYOUT } from '../../scripts/authored-layout';
 import { horizontalProject } from '../../src/world/alignment';
 import { approachArrays } from '../../src/world/approach-mesh';
 import { approachCorridorPlans, applyCorridors, bedDepth, corridorHeight, cutProfile, cutWeight } from '../../src/world/corridor';

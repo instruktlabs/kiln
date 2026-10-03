@@ -16,6 +16,8 @@ export interface SceneDefinition {
   id: string; label: string; description: string; tiers: TierTable; look: RendererLook;
   hud?: ReactNode; devPanel?: ReactNode;
   camera?: { position?: [number,number,number]; fov?: number; near?: number; far?: number };
+  /** Default false. The scene must adapt skies, oblique reflection planes and polygon offsets to the effective backend setting. */
+  reversedDepthBuffer?: boolean;
   /** Optional initial model subset. Omitted models remain integrity-checked through usePackReader when requested. */
   startupModel?: (model:{id:string;path:string})=>boolean;
   /** Synchronous, idempotent CPU preparation as verified data arrives. Register owned resources immediately; the current mount owns their disposal. */

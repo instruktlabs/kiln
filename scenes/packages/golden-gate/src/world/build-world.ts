@@ -13,7 +13,7 @@ import { loadTerrain } from './terrain';
 import { approachCorridorPlans } from './corridor';
 import { parkedVehicles } from './dressing';
 import { vegetationCandidates } from './vegetation';
-import { LAYOUT } from '../data';
+import { readGoldenGateLayout } from '../layout';
 import { BRIDGE, LAYERS } from '../constants';
 import { drawOptions } from './draw-options';
 import type { DrawOptions } from './draw-options';
@@ -29,6 +29,7 @@ import type { Water } from './water';
 import { createFogBanks } from './fog-banks';
 import type { FogBanks } from './fog-banks';
 import { sceneFogNode } from './fog';
+import { prewarmContactShadows } from './prewarm-contact-shadows';
 import type { GoldenGatePreset } from '../presets';
 import type { TrafficDensity } from '../tiers';
 import { extractVehicle, VEHICLE_TYPES } from '../traffic/vehicle-models';
@@ -66,6 +67,8 @@ export async function readCollisionField(pack: LoadedPack, index: SceneIndex): P
 }
 
 export async function buildGoldenGateWorld(c: BuildContext) {
+  // The loader already fetched and verified this member. Refuse incompatible/cancelled data before allocating a world.
+  const layout = readGoldenGateLayout(c.pack, c.signal);
   const features = c.knobs.gg, draw = drawOptions(features, c.draw ?? {}), index = readSceneIndex(c.pack), owned: { dispose(): void }[] = [];
   const release = () => { for (const item of owned.splice(0).reverse()) { try { item.dispose(); } catch { /* keep releasing */ } } };
   const tiles = index.terrain.sets[features.terrainSet].reduce((sum, level) => sum + (index.terrain.levels[level]?.tiles.length ?? 0), 0);
@@ -85,8 +88,8 @@ export async function buildGoldenGateWorld(c: BuildContext) {
     const maps = index.terrain.water[features.terrainSet];
     const fetch = (path: string) => c.reader.fetchFile(path, c.signal);
     const settled = await Promise.allSettled([
-      loadTerrain(index.terrain, (path, signal) => c.reader.fetchFile(path, signal), { set: features.terrainSet, anisotropy: features.water.anisotropy, receiveShadow: c.knobs.shadows.enabled, signal: c.signal, onTile: () => step('Terrain'), corridors: approachCorridorPlans(LAYOUT.approaches, BRIDGE.roadEndZ, LAYOUT.dressing),
-        vegetation: { candidates: vegetationCandidates(LAYOUT.approaches, BRIDGE.roadEndZ, LAYOUT.dressing, features.vegetation.density), data: LAYOUT.dressing.vegetation, fade: features.vegetation.fade } }),
+      loadTerrain(index.terrain, (path, signal) => c.reader.fetchFile(path, signal), { set: features.terrainSet, anisotropy: features.water.anisotropy, receiveShadow: c.knobs.shadows.enabled, signal: c.signal, onTile: () => step('Terrain'), corridors: approachCorridorPlans(layout.approaches, BRIDGE.roadEndZ, layout.dressing),
+        vegetation: { candidates: vegetationCandidates(layout.approaches, BRIDGE.roadEndZ, layout.dressing, features.vegetation.density), data: layout.dressing.vegetation, fade: features.vegetation.fade } }),
       readCollisionField(c.pack, index),
       Promise.all([fetch(maps.near.depth.path), fetch(maps.near.shore.path)]).then(([d, s]) => decodeWaterLevel(maps.near, d, s)),
       Promise.all([fetch(maps.mid.depth.path), fetch(maps.mid.shore.path)]).then(([d, s]) => decodeWaterLevel(maps.mid, d, s)),
@@ -106,13 +109,13 @@ export async function buildGoldenGateWorld(c: BuildContext) {
     abortIfNeeded(c.signal); step('Water maps');
     const web = c.pack.models.get(index.bridge.web.model), far = c.pack.models.get(index.bridge.far.model);
     if (!web || !far) throw new Error('Bridge models are missing from the verified pack');
-    const bridge: Bridge = createBridge(web, far, { farSwitch: features.bridgeFarSwitch, castShadow: c.knobs.shadows.enabled, merge: draw.merge, standInLayer: draw.depth ? LAYERS.shadowStandIn : undefined, passLayers: pass });
+    const bridge: Bridge = createBridge(web, far, { layout, farSwitch: features.bridgeFarSwitch, castShadow: c.knobs.shadows.enabled, reversedDepthBuffer: c.renderer.reversedDepthBuffer, merge: draw.merge, standInLayer: draw.depth ? LAYERS.shadowStandIn : undefined, passLayers: pass });
     owned.push(bridge); step('Bridge');
     // The vegetation impostors switch with the approaches' near representation (fix round 3 item 5).
     bridge.approachMeshes.near.group.add(terrain.vegetation.root);
     const water: Water = createWater(c.scene, { features: features.water, atmosphere, near: near.level, mid: mid.level, midGrid: mid.grid, passLayers: pass });
     owned.push(water); step('Water');
-    const banks: FogBanks | null = features.fogBanks > 0 ? createFogBanks(atmosphere.uniforms, water.textures.macroNoise, features.fogBanks) : null;
+    const banks: FogBanks | null = features.fogBanks > 0 ? createFogBanks(atmosphere.uniforms, water.textures.macroNoise, features.fogBanks, layout.fogBanks) : null;
     if (banks) owned.push(banks);
     // Traffic on the approved vehicles: MSFT_lod levels read through each GLTF's parser. The driven
     // sedan draws with the traffic, so the vehicles load even when the development parameter empties the lanes.
@@ -126,7 +129,7 @@ export async function buildGoldenGateWorld(c: BuildContext) {
       models.set(type, model); abortIfNeeded(c.signal);
     }
     // Vista Point's parked cars (layout.json dressing) stay whether or not the lanes carry traffic.
-    const parked = parkedVehicles(LAYOUT.approaches, BRIDGE.roadEndZ, LAYOUT.dressing).map(p => {
+    const parked = parkedVehicles(layout.approaches, BRIDGE.roadEndZ, layout.dressing).map(p => {
       const type = VEHICLE_TYPES.find(t => t === p.type); if (!type) throw new Error(`layout.json dressing.vista.cars: unknown vehicle ${p.type}`);
       return { type, x: p.x, y: p.y, z: p.z, yaw: p.yaw, paint: paintLinear(p.paint) };
     });
@@ -142,8 +145,10 @@ export async function buildGoldenGateWorld(c: BuildContext) {
     root.add(terrain.root, bridge.root, traffic.root); if (banks) root.add(banks.sprite);
     c.scene.add(root); owned.push({ dispose: () => root.removeFromParent() });
     c.scene.fogNode = fogNode;
-    // No compileAsync here: its pass has no depth copy yet, so depth-reading materials (water contact,
-    // fog banks) would bind a single-sampled placeholder against a multisampled layout.
+    owned.push({ dispose() { if (c.scene.fogNode === fogNode) c.scene.fogNode = null; } });
+    // Only the hidden traffic contact quad is prepared. A whole-world compile has no depth copy
+    // yet, so water contact and fog banks would bind an incompatible placeholder.
+    owned.push(await prewarmContactShadows(c.renderer, traffic.root, c.scene, c.camera, c.signal));
     abortIfNeeded(c.signal); step('Shaders');
     const focus = new Vector3();
     const stats = {
@@ -154,7 +159,7 @@ export async function buildGoldenGateWorld(c: BuildContext) {
     };
     let vehicleLights = 0;
     const world = {
-      index, atmosphere, terrain, field, bridge, water, banks, traffic, models, root, fogNode, stats, focus,
+      index, layout, atmosphere, terrain, field, bridge, water, banks, traffic, models, root, fogNode, stats, focus,
       credits: c.pack.manifest.credits ?? [],
       /** Presets: atmosphere, water wind and lamps (called while blending and once per change). */
       applyPreset(p: GoldenGatePreset, force = false) {

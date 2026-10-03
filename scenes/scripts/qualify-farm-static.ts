@@ -3,14 +3,20 @@ import { createHash } from 'node:crypto';
 import { readFile, writeFile } from 'node:fs/promises';
 import { isAbsolute, relative, resolve, sep } from 'node:path';
 import { PNG } from 'pngjs';
-import { compareParityImages } from './parity-images';
+import { compareLuminanceImages, type RgbaImage } from './parity-images';
 import { cropImage, validateWoodlandAb, WOODLAND_CROP } from './capture-woodland-ab';
 
 const BACKENDS = ['webgpu', 'webgl2'] as const, WINDOW = 'house-window-out';
 const near = (actual: number, expected: number, message: string) => assert(Number.isFinite(actual) && Math.abs(actual - expected) <= 1e-12, message);
 
-/** Validate all144 tiles and derive the gate from raw numeric fields, never just the stored pass flag. */
+/** Replay the exact pre-D18 r33/M2a receipt shape. This archival verifier never qualifies current scene changes. */
+export function compareHistoricalStaticImages(pilot: RgbaImage, repeat: RgbaImage, rewrite: RgbaImage) {
+  const { scope: _scope, luminancePass: _luminancePass, ...metric } = compareLuminanceImages(pilot, repeat, rewrite);
+  return metric;
+}
+/** Validate all144 historical tiles and derive the original gate from raw numeric fields, never a stored pass flag. */
 export function validateMetric(metric: any, requirePass = true) {
+  assert(metric.scope === undefined && metric.lines === undefined && metric.luminancePass === undefined, 'This historical r33 verifier predates D18; use current qualification for newer receipts');
   assert.equal(metric.width, 1280); assert.equal(metric.height, 720); assert.equal(metric.tiles?.length, 144, 'Exactly144 tile metrics are required');
   let passing = 0, mean = 0, noise = 0;
   for (let i = 0; i < 144; i++) {
@@ -96,7 +102,7 @@ export async function qualifyFarmStatic(baseLabel: string, correctionLabel: stri
     const onDisk = JSON.parse(await readFile(resolve(expectedDir, 'result.json'), 'utf8')); assert.deepEqual(onDisk, result, 'Per-attempt receipt differs from aggregate report');
     const prefix = `${result.view}-`, suffix = `-${result.backend}.png`;
     const pilot = await readPng(resolve(expectedDir, prefix + 'pilot' + suffix)), repeat = await readPng(resolve(expectedDir, prefix + 'pilot-repeat' + suffix)), rewrite = await readPng(resolve(expectedDir, prefix + 'new' + suffix));
-    const measured = compareParityImages(pilot, repeat, rewrite), { diff, ...numeric } = measured;
+    const measured = compareHistoricalStaticImages(pilot, repeat, rewrite), { diff, ...numeric } = measured;
     assert.deepEqual(numeric, result.metric, 'Archived PNGs do not reproduce the stored metrics');
     const savedDiff = await readPng(resolve(expectedDir, prefix + 'diff' + suffix)); assert.equal(hash(savedDiff.data), hash(diff.data), 'Diff artifact does not match the source images');
     qualified.push({ view: result.view, backend: result.backend, attempt: result.attempt, source: reportPaths[source], evidence: portable(resolve(expectedDir, 'result.json')), globalMean: numeric.globalMean, noiseGlobalMean: numeric.noiseGlobalMean, passingTiles: numeric.passingTiles, tiles: 144, counts: result.rewrite.stats.counts });
@@ -112,16 +118,16 @@ export async function qualifyFarmStatic(baseLabel: string, correctionLabel: stri
       captures[name] = { ...capture, png: await readPng(capture.file) };
     }
     validateWoodlandAb(captures.safe, captures.repeat, captures.unsafe, backend);
-    const full = compareParityImages(captures.safe.png, captures.repeat.png, captures.unsafe.png), { diff: _full, ...fullMetric } = full;
+    const full = compareHistoricalStaticImages(captures.safe.png, captures.repeat.png, captures.unsafe.png), { diff: _full, ...fullMetric } = full;
     assert.deepEqual(fullMetric, ab.full); validateMetric(fullMetric, false);
-    const crop = compareParityImages(cropImage(captures.safe.png, WOODLAND_CROP), cropImage(captures.repeat.png, WOODLAND_CROP), cropImage(captures.unsafe.png, WOODLAND_CROP)), { diff: _crop, ...cropMetric } = crop;
+    const crop = compareHistoricalStaticImages(cropImage(captures.safe.png, WOODLAND_CROP), cropImage(captures.repeat.png, WOODLAND_CROP), cropImage(captures.unsafe.png, WOODLAND_CROP)), { diff: _crop, ...cropMetric } = crop;
     assert.deepEqual(cropMetric, ab.cropMetric); assert.equal(ab.visualReviewRequired, !full.pass || !crop.pass);
     for (const file of ab.images as string[]) if (!file.endsWith('-full.png') || file.startsWith('diff-')) await readPng(resolve(directory, file));
     woodland.push({ backend, evidence: portable(resolve(directory, 'result.json')), safeOffenders: 0, unsafeOffenders: 16, fullMean: full.globalMean, cropMean: crop.globalMean, noiseGlobalMean: full.noiseGlobalMean, visualReviewRequired: ab.visualReviewRequired });
   }
   const historical = base.results.filter((result: Result) => result.status === 'fail').map((result: Result) => ({ view: result.view, backend: result.backend, attempt: result.attempt, evidence: portable(resolve(local(result.directory), 'result.json')), error: result.error, globalMean: result.metric?.globalMean, passingTiles: result.metric?.passingTiles }));
   assert(historical.length >= 2 && historical.every((entry: any) => entry.view === WINDOW), 'Only the explained window defect may be superseded');
-  const qualification = { schema: 'kiln.farm-static-qualification/1', date: correction.date, milestone: 'M2a', status: 'pass', release: 'r33', scope: '12 static named views on both backends, pre-batching counts, and D-06 woodland A/B; M2b optimization and M2c/M2d play parity remain outstanding',
+  const qualification = { schema: 'kiln.farm-static-qualification/1', date: correction.date, milestone: 'M2a', status: 'pass', release: 'r33', scope: 'Historical r33/M2a luminance-only evidence: 12 static named views on both backends, pre-batching counts, and D-06 woodland A/B; not current D18 qualification. M2b optimization and M2c/M2d play parity remain outstanding',
     reports: { base: { path: reportPaths.base, sha256: hash(baseBytes), ledger: base.ledger }, correction: { path: reportPaths.correction, sha256: hash(correctionBytes), ledger: correction.ledger } },
     correction: { view: WINDOW, reason: 'Farm port incorrectly imposed a3m minimum orbit distance; restored the pilot0m minimum so the authored close window camera is preserved', reportMetadata: 'Runner stage label changed from M2a static pre-batching to m2a and countGate explanatory wording changed; all actual capture conditions and pre-batching counts remain identical', originalFailuresRetained: historical },
     summary: { staticCases: qualified.length, pass: qualified.length, fail: 0, backends: [...BACKENDS], views: 12, tilesPerImage: 144 }, results: qualified, woodlandAb: woodland, artifacts, timing: 'not collected' };

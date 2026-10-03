@@ -49,7 +49,20 @@ function optimization() {
       frozen: { placements: 555, nodes: 4191 }, frameGraph: { hiddenRoots: 575, dynamicRoots: 29 } } };
 }
 const pilot = () => ({ ...counts(), assetTexturePool: { uniqueBefore: 98, uniqueAfter: 29 } });
-function b07(raw = optimization()) { return compareFarmOptimizationCounts({ release: 'r33', counts: raw, pilot: pilot(), pilotRepeat: pilot(), rewrite: counts() }); }
+const rewrite = () => ({ ...counts(), textures: 41 });
+function b07(raw = optimization()) { return compareFarmOptimizationCounts({ release: 'r33', counts: raw, pilot: pilot(), pilotRepeat: pilot(), rewrite: rewrite() }); }
+
+test('D68 renderer texture goldens name prewarm and cached-shadow provenance independently of pilot view allocation', () => {
+  const current = compareFarmOptimizationCounts({ release: 'r34', counts: optimization(), pilot: pilot(), pilotRepeat: { ...pilot(), textures: 35 }, rewrite: { ...counts(), textures: 41 } });
+  expect(current.pass).toBe(true);
+  expect(current.textureGolden).toMatchObject({ decision: 'D-68', profile: 'cached-shadows', expected: 41 });
+  expect(current.pilotTextureObservations).toEqual({ first: 29, repeat: 35, gatedAsEquality: false });
+  expect(compareFarmOptimizationCounts({ release: 'r34', counts: optimization(), pilot: pilot(), pilotRepeat: pilot(), rewrite: { ...counts(), textures: 39 } }).pass).toBe(false);
+  const prewarm = compareFarmOptimizationCounts({ release: 'r34', counts: optimization(), pilot: pilot(), pilotRepeat: pilot(), rewrite: { ...counts(), textures: 39 }, textureProfile: 'prewarmed' });
+  expect(prewarm.pass).toBe(true);
+  expect(prewarm.textureGolden).toMatchObject({ profile: 'prewarmed', expected: 39 });
+  expect(compareFarmOptimizationCounts({ release: 'r34', counts: optimization(), pilot: pilot(), pilotRepeat: pilot(), rewrite: { ...counts(), textures: 42 } }).pass).toBe(false);
+});
 
 test('B-07 checks independently measured optimization fields and both pilot texture samples', () => {
   const result = b07();
@@ -62,7 +75,7 @@ test('B-07 checks independently measured optimization fields and both pilot text
   expect(b07(raw).pass).toBe(false);
   const missing = optimization(); delete (missing.optimization as any).frozen;
   expect(b07(missing).pass).toBe(false);
-  expect(compareFarmOptimizationCounts({ release: 'r33', counts: optimization(), pilot: pilot(), pilotRepeat: { ...pilot(), textures: 30 }, rewrite: counts() }).pass).toBe(false);
+  expect(compareFarmOptimizationCounts({ release: 'r33', counts: optimization(), pilot: pilot(), pilotRepeat: { ...pilot(), textures: NaN }, rewrite: rewrite() }).pass).toBe(false);
 });
 
 test('B-07 distinguishes recorded historical counts from current sealed goldens and unsafe instances', () => {
@@ -84,13 +97,13 @@ const colliderFixture = () => ({ colliders: 3, dynamic: 2, staticTriangles: 90, 
 test('B-07 collider portion equals the frozen fixture in count, kind, order and triangles', () => {
   const live = { ...colliderFixture(), keys: colliderFixture().keys.map(key => ({ ...key, key: `port ${key.key}` })) };
   expect(compareColliderCounts(live, colliderFixture()).every(check => check.pass)).toBe(true);
-  const result = compareFarmOptimizationCounts({ release: 'r33', counts: optimization(), pilot: pilot(), pilotRepeat: pilot(), rewrite: counts(), colliders: { actual: live, fixture: colliderFixture() } });
+  const result = compareFarmOptimizationCounts({ release: 'r33', counts: optimization(), pilot: pilot(), pilotRepeat: pilot(), rewrite: rewrite(), colliders: { actual: live, fixture: colliderFixture() } });
   expect(result.pass).toBe(true); expect(result.pending).toEqual([]); expect(result.scope).toBe('Optimization statistics and collider counts');
   const reordered = { ...colliderFixture(), keys: [...colliderFixture().keys].reverse() };
   expect(compareColliderCounts(reordered, colliderFixture()).find(check => check.name.startsWith('colliders.keys'))!.pass).toBe(false);
   expect(compareColliderCounts({ ...colliderFixture(), staticTriangles: 91 }, colliderFixture()).some(check => !check.pass)).toBe(true);
   expect(compareColliderCounts(null, colliderFixture()).every(check => !check.pass)).toBe(true);
-  expect(compareFarmOptimizationCounts({ release: 'r33', counts: optimization(), pilot: pilot(), pilotRepeat: pilot(), rewrite: counts(), colliders: { actual: { ...colliderFixture(), doors: 2 }, fixture: colliderFixture() } }).pass).toBe(false);
+  expect(compareFarmOptimizationCounts({ release: 'r33', counts: optimization(), pilot: pilot(), pilotRepeat: pilot(), rewrite: rewrite(), colliders: { actual: { ...colliderFixture(), doors: 2 }, fixture: colliderFixture() } }).pass).toBe(false);
 });
 
 test('X-02 names its fixture kind and the coverage summary requires play fixtures on both backends', () => {

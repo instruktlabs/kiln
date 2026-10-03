@@ -15,6 +15,8 @@
 //   node runner/timing-ab.mjs summary --dir results/<block>
 //   node runner/timing-ab.mjs transient [--device tablet]   WebGPU TRANSIENT_ATTACHMENT support (read-only)
 //   node runner/timing-ab.mjs verify
+import { gpuWorkSummary, tabletPairVerdict } from './gpu-work';
+import { acquireTimingResources, cleanupTimingResources, installTimingEvidence, sampleWithLoad, timingCollectionVerdict, timingError } from './timing-evidence';
 import { execFile } from 'node:child_process';
 import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
@@ -133,21 +135,25 @@ export function parseTop(text: string, limit = 8) {
     .map(f => ({ pid: Number(f[0]), user: f[1]!, cpuPercent: Number(f[cpu]), memPercent: Number(f[mem]), command: f.slice(command).join(' ') })).slice(0, limit);
 }
 /** The sealed pilot's hub preflight rule (8 samples of 2 s; CPU mean < 5 %, CPU max < 12 %, NVIDIA GPU <= 3 %, no screen locker). */
-export const HUB_RULE = { samples: 8, intervalSeconds: 2, cpuMeanBelow: 5, cpuMaxBelow: 12, gpuMaxAtMost: 3, source: 'sealed pilot ops/run-hub-performance.py preflight (hub-2026-09-30 tools/common.py)' } as const;
-/** This PC (plan default): CPU < 20 % and GPU < 10 %, judged on the same 8 x 2 s window. */
-export const PC_RULE = { samples: 8, intervalSeconds: 2, cpuMeanBelow: 20, cpuMaxBelow: 100, gpuMaxAtMost: 9.999, source: 'plan default for this PC: CPU < 20 %, GPU < 10 %' } as const;
+export const HUB_RULE = { samples: 8, intervalSeconds: 2, cpuMeanBelow: 5, cpuMaxBelow: 12, gpuMaxAtMost: 3, requireUnlocked: true, source: 'sealed pilot ops/run-hub-performance.py preflight (hub-2026-09-30 tools/common.py)' } as const;
+/** This PC (plan default): CPU < 20 % and GPU < 10 %, judged on the same 8 x 2 s window.
+ * An unavailable GPU counter (including a PC without NVIDIA telemetry) is unqualified, never assumed idle. */
+export const PC_RULE = { samples: 8, intervalSeconds: 2, cpuMeanBelow: 20, cpuMaxBelow: 100, gpuMaxAtMost: 9.999, requireUnlocked: true, source: 'plan default for this PC: CPU < 20 %, GPU < 10 %' } as const;
 /** The pilot's tablet preflight (farm-pilot ops/tablet-observe.py): CPU mean < 8 %, CPU max < 12 %, Mali GPU busy <= 3 %. */
 export const TABLET_RULE = { samples: 8, intervalSeconds: 2, cpuMeanBelow: 8, cpuMaxBelow: 12, gpuMaxAtMost: 3, source: 'farm-pilot ops/tablet-observe.py (golden-gate tests/tools/tablet-check.ts)' } as const;
-export type QuietRule = { samples: number; intervalSeconds: number; cpuMeanBelow: number; cpuMaxBelow: number; gpuMaxAtMost: number; source: string };
+export type QuietRule = { samples: number; intervalSeconds: number; cpuMeanBelow: number; cpuMaxBelow: number; gpuMaxAtMost: number; requireUnlocked?: boolean; source: string };
 export function quietVerdict(window: { cpu: readonly number[]; gpu: readonly (number | null)[]; screenLocked?: boolean | null }, rule: QuietRule) {
-  const cpu = window.cpu.filter(Number.isFinite), gpu = window.gpu.filter((v): v is number => typeof v === 'number' && Number.isFinite(v));
+  const cpu = window.cpu.filter(Number.isFinite), gpu = window.gpu.filter((v): v is number => typeof v === 'number' && Number.isFinite(v) && v >= 0 && v <= 100);
   const cpuMean = cpu.length ? cpu.reduce((s, v) => s + v, 0) / cpu.length : null, cpuMax = cpu.length ? Math.max(...cpu) : null, gpuMax = gpu.length ? Math.max(...gpu) : null;
   const reasons: string[] = [];
   if (cpu.length < rule.samples) reasons.push(`${cpu.length} of ${rule.samples} CPU samples`);
+  if (gpu.length < rule.samples) reasons.push(`${gpu.length} of ${rule.samples} readable GPU samples in [0, 100]`);
+  if (gpu.length !== window.gpu.length) reasons.push(`${window.gpu.length - gpu.length} GPU samples unavailable or outside [0, 100]`);
   if (cpuMean !== null && cpuMean >= rule.cpuMeanBelow) reasons.push(`CPU mean ${cpuMean.toFixed(2)} % >= ${rule.cpuMeanBelow} %`);
   if (cpuMax !== null && cpuMax >= rule.cpuMaxBelow) reasons.push(`CPU max ${cpuMax.toFixed(2)} % >= ${rule.cpuMaxBelow} %`);
   if (gpuMax !== null && gpuMax > rule.gpuMaxAtMost) reasons.push(`GPU max ${gpuMax} % > ${rule.gpuMaxAtMost} %`);
   if (window.screenLocked) reasons.push('screen locker active');
+  else if (rule.requireUnlocked && window.screenLocked !== false) reasons.push('screen locker status unknown');
   return { quiet: reasons.length === 0, cpuMean, cpuMax, gpuMax, reasons, rule };
 }
 // Tablet readings (dumpsys battery and thermalservice; the Mali sysfs nodes used by golden-gate tablet-check.ts).
@@ -174,9 +180,9 @@ export function tabletCool(state: { thermalStatus: number | null; batteryC: numb
 export interface RunMetrics { p50: number | null; p95: number | null; p99: number | null; max: number | null; fps: number | null; withinOne: number | null; withinTwo: number | null;
   over50: number; over100: number; longestMs: number | null; cpuRenderP50: number | null; cpuRenderP95: number | null; drawsMedian: number | null; trianglesMedian: number | null;
   /** Median GPU busy % over the load samples taken during the sample (hub: nvidia-smi utilization.gpu; tablet: Mali gpu_busy). At a locked refresh it shows a cost difference the frame interval cannot. */
-  gpuBusy?: number | null }
+  gpuBusy?: number | null; gpuClockMHz?: number | null; gpuBusyClockMHz?: number | null }
 export interface RunSummaryInput { side: Side; pair: number; valid: boolean; metrics: RunMetrics }
-const METRIC_KEYS = ['p50', 'p95', 'p99', 'max', 'fps', 'withinOne', 'withinTwo', 'over50', 'over100', 'longestMs', 'cpuRenderP50', 'cpuRenderP95', 'drawsMedian', 'trianglesMedian', 'gpuBusy'] as const;
+const METRIC_KEYS = ['p50', 'p95', 'p99', 'max', 'fps', 'withinOne', 'withinTwo', 'over50', 'over100', 'longestMs', 'cpuRenderP50', 'cpuRenderP95', 'drawsMedian', 'trianglesMedian', 'gpuBusy', 'gpuClockMHz', 'gpuBusyClockMHz'] as const;
 /** GPU busy % from load samples taken during a run: nvidia-smi rows (hub, this PC) or Mali gpu_busy readings (tablet). */
 export function gpuBusyMedian(samples: readonly unknown[]): number | null {
   const values = samples.map(s => { const x = s as { gpu?: Record<string, unknown> | null; gpuBusyPercent?: number | null }; return x.gpu ? x.gpu['utilization.gpu'] : x.gpuBusyPercent; })
@@ -207,7 +213,7 @@ export function summarizeCell(runs: readonly RunSummaryInput[]) {
     return [k, values.length ? { medianDelta: median(values), bLower: values.filter(v => v < 0).length, bHigher: values.filter(v => v > 0).length, equal: values.filter(v => v === 0).length } : null];
   }));
   const ratio = (k: typeof METRIC_KEYS[number]) => { const ra = a[k]?.median, rb = b[k]?.median; return typeof ra === 'number' && typeof rb === 'number' && ra !== 0 ? rb / ra : null; };
-  return { A: a, B: b, pairs: paired.length, paired, deltas, ratios: { p50: ratio('p50'), p95: ratio('p95'), cpuRenderP50: ratio('cpuRenderP50'), gpuBusy: ratio('gpuBusy') } };
+  return { A: a, B: b, pairs: paired.length, paired, deltas, ratios: { p50: ratio('p50'), p95: ratio('p95'), cpuRenderP50: ratio('cpuRenderP50'), gpuBusy: ratio('gpuBusy'), gpuClockMHz: ratio('gpuClockMHz'), gpuBusyClockMHz: ratio('gpuBusyClockMHz') } };
 }
 
 // ---------------------------------------------------------------- scenes: views, workloads and the page setup per scene
@@ -296,6 +302,10 @@ async function writeJson(path: string, value: unknown) { await mkdir(dirname(pat
 // ---------------------------------------------------------------- host load (hub, this PC) and tablet state
 
 const GPU_FIELDS = ['utilization.gpu', 'temperature.gpu', 'clocks.gr', 'memory.used', 'pstate'] as const;
+export const parseScreenLocker = (text: string | null): boolean | null => {
+  const match = text?.trim().match(/^\(\s*(true|false)\s*,?\s*\)$/);
+  return match ? match[1] === 'true' : null;
+};
 async function gpuRow() { const out = await run('nvidia-smi', [`--query-gpu=${GPU_FIELDS.join(',')}`, '--format=csv,noheader,nounits'], 8000); return out ? parseNvidiaSmi(out, GPU_FIELDS)[0] ?? null : null; }
 async function cpuCounters() {
   if (process.platform === 'linux') return parseProcStat(await readFile('/proc/stat', 'utf8'));
@@ -328,7 +338,7 @@ async function hostState() {
     governor: linux ? await read('/sys/devices/system/cpu/cpu0/cpufreq/scaling_governor') : null, who: linux ? parseWho(await run('who', []) ?? '') : null,
     loginctlSessions: linux ? parseWho(await run('loginctl', ['list-sessions', '--no-legend']) ?? '') : null,
     top: linux ? parseTop(await run('top', ['-b', '-n', '1', '-o', '%CPU', '-w', '200']) ?? '') : null,
-    screenLockerActive: locker === null ? null : /true/.test(locker), gpu: await gpuRow() };
+    screenLockerActive: parseScreenLocker(locker), gpu: await gpuRow() };
 }
 /** The quiet window: `samples` readings `intervalSeconds` apart of whole-machine CPU and NVIDIA GPU, with the busiest processes over it. */
 async function quietWindow(rule: QuietRule) {
@@ -363,7 +373,7 @@ async function tabletQuietWindow(adb: Adb) {
 }
 /** Samples load every `everyMs` while a run samples frames; stopped by the returned function. */
 function startLoadSampler(device: 'local' | 'tablet', adb: Adb | null, everyMs: number) {
-  const samples: unknown[] = []; let stopped = false, previous: { total: number; idle: number } | null = null, tick = 0;
+  const samples: unknown[] = []; let stopped = false, previous: { total: number; idle: number } | null = null, tick = 0, failure: { error: unknown } | undefined;
   const loop = (async () => {
     if (device === 'local') previous = await cpuCounters();
     while (!stopped) {
@@ -374,8 +384,8 @@ function startLoadSampler(device: 'local' | 'tablet', adb: Adb | null, everyMs: 
         else { const g = (await adb.shell('cat /sys/kernel/gpu/gpu_busy /sys/kernel/gpu/gpu_clock 2>/dev/null').catch(() => '')).trim().split(/\s+/); samples.push({ at: now(), gpuBusyPercent: g[0] ? parseFloat(g[0]) : null, gpuClockKHz: g[1] ? Number(g[1]) : null }); }
       } else { const current = await cpuCounters(); samples.push({ at: now(), cpuPercent: round(cpuPercent(previous!, current)), gpu: await gpuRow() }); previous = current; }
     }
-  })();
-  return async () => { stopped = true; await loop; return samples; };
+  })().catch(error => { failure = { error }; });
+  return async () => { stopped = true; await loop; if (failure) throw failure.error; return samples; };
 }
 
 // ---------------------------------------------------------------- page measurement
@@ -417,22 +427,23 @@ async function serve(side: Side, root: string, ports: [number, number], taken: S
     if (taken.has(port)) continue;
     try { const s = await startStaticServer({ root, port }); taken.add(port);
       // Chrome keeps connections alive (on the tablet through adb reverse), so they are cut before the server closes.
-      const close = () => Promise.race([(s.server.closeAllConnections?.(), s.close()), sleep(5000)]) as Promise<void>;
+      const close = async () => { s.server.closeAllConnections?.(); await s.close(); };
       return { side, label: build?.label ?? root, root, base: s.url, port, build: build && { label: build.label, scene: build.scene, mode: build.mode, release: build.release, chunks: build.chunks?.map((c: { name: string }) => c.name), source: build.source }, close };
     } catch (error) { if ((error as { code?: string }).code !== 'EADDRINUSE') throw error; }
   }
   throw new Error(`No free port in ${ports[0]}-${ports[1]}`);
 }
 
-interface MeasureOptions { device: 'local' | 'tablet'; seconds: number; warmupMs: number; width: number; height: number; backend: 'webgpu'; extra: Record<string, string>; adb: Adb | null; loadEveryMs: number; browserPid: number | null }
-async function measure(browser: Browser, served: Served, cell: Cell, o: MeasureOptions) {
+interface MeasureOptions { device: 'local' | 'tablet'; seconds: number; warmupMs: number; width: number; height: number; backend: 'webgpu'; extra: Record<string, string>; adb: Adb | null; loadEveryMs: number; browserPid: number | null; cleanup: Awaited<ReturnType<typeof cleanupTimingResources>> }
+export async function measureTimingRun(browser: Browser, served: Served, cell: Cell, o: MeasureOptions) {
   const page = await browser.newPage(), messages: { type: string; text: string }[] = [];
+  let failure: { error: unknown } | undefined;
   page.on('console', m => { if ((m.type() === 'error' || m.type() === 'warn') && messages.length < 100) messages.push({ type: m.type(), text: m.text().slice(0, 400) }); });
   page.on('pageerror', e => { if (messages.length < 100) messages.push({ type: 'pageerror', text: String(e).slice(0, 400) }); });
   try {
     await page.bringToFront().catch(() => undefined);
     if (o.device === 'local') await page.setViewport({ width: o.width, height: o.height, deviceScaleFactor: 1 });
-    await page.evaluateOnNewDocument(installRecorder); await page.evaluateOnNewDocument(installCss, PAGE_CSS);
+    await page.evaluateOnNewDocument(installRecorder); await page.evaluateOnNewDocument(installTimingEvidence); await page.evaluateOnNewDocument(installCss, PAGE_CSS);
     const display = await measureDisplay(page);
     const url = cellUrl(served.base, cell, o.extra), started = Date.now();
     await page.goto(url, { waitUntil: 'load', timeout: 180_000 });
@@ -441,10 +452,11 @@ async function measure(browser: Browser, served: Served, cell: Cell, o: MeasureO
       const w = window as any, api = w.__kilnScene, host = w.__kilnHarness.snapshot(); // eslint-disable-line @typescript-eslint/no-explicit-any
       if (w.__ab.error) return { error: w.__ab.error };
       api.feedFrameTimes([]); // the governor is held at the tier's level 0 (as perf.ts and perf-core.ts X-05)
-      return { error: null, errors: host.errors, readyAt: w.__ab.readyAt, backend: document.querySelector('.ks-root')?.getAttribute('data-kiln-backend') ?? null, tier: api.tierState(), msaaPolicy: api.invoke('msaaPolicy') ?? null };
+      return { error: null, errors: host.errors, readyAt: w.__ab.readyAt, backend: document.querySelector('.ks-root')?.getAttribute('data-kiln-backend') ?? null, tier: api.tierState(), msaaPolicy: api.invoke('msaaPolicy') ?? null, gpu: w.__timingEvidence.gpu() };
     });
     if (setup.error) throw new Error(`Scene failed: ${JSON.stringify(setup.error)}`);
     if (setup.backend !== o.backend) throw new Error(`${served.side} runs ${setup.backend}, not ${o.backend}`);
+    if (setup.gpu.status !== 'bound') throw new Error(`STOP: Renderer GPU device provenance is unbound: ${JSON.stringify(setup.gpu)}`);
     if (setup.tier?.tier !== cell.tier || setup.tier.level !== 0) throw new Error(`${served.side} tier is ${setup.tier?.tier} level ${setup.tier?.level}, not ${cell.tier} level 0`);
     // The page holds a screen wake lock (run-farm-tablet.ts openTab), so the tablet panel stays on through the sample.
     const wakeLock = await page.evaluate(async () => { try { (window as any).__abWakeLock = await (navigator as any).wakeLock.request('screen'); return 'held'; } catch (error) { return String(error); } }); // eslint-disable-line @typescript-eslint/no-explicit-any
@@ -453,35 +465,50 @@ async function measure(browser: Browser, served: Served, cell: Cell, o: MeasureO
     if (o.warmupMs) await sleep(o.warmupMs);
     const before = await scene.state(page), clock0 = await page.evaluate(() => (window as any).__kilnScene.motionPolicy().time as number); // eslint-disable-line @typescript-eslint/no-explicit-any
     const ticks = await procTicks(), t0 = Date.now();
-    await page.evaluate(() => { const w = window as any, rec = w.__ab; w.__kilnScene.beginMeasurement(); rec.intervals = []; rec.draws = []; rec.triangles = []; rec.last = null; rec.recording = true; }); // eslint-disable-line @typescript-eslint/no-explicit-any
+    await page.evaluate(() => { const w = window as any, rec = w.__ab; const observed = w.__timingEvidence.begin();
+      if (observed.visibility.initial !== 'visible' || !observed.focus.initial) throw new Error('STOP: Measurement page is not visible and focused');
+      w.__kilnScene.beginMeasurement(); rec.intervals = []; rec.draws = []; rec.triangles = []; rec.last = null; rec.recording = true; }); // eslint-disable-line @typescript-eslint/no-explicit-any
     const stopLoad = startLoadSampler(o.device, o.adb, o.loadEveryMs);
-    await sleep(o.seconds * 1000);
-    const end = await page.evaluate(() => {
+    const { end, loadDuring: during } = await sampleWithLoad(async () => {
+      await sleep(o.seconds * 1000);
+      return page.evaluate(() => {
       const w = window as any, api = w.__kilnScene, rec = w.__ab, host = w.__kilnHarness.snapshot(); // eslint-disable-line @typescript-eslint/no-explicit-any
       rec.recording = false; api.recordFrames(false); const s = api.stats();
       const canvas = document.querySelector('.ks-root canvas') as HTMLCanvasElement | null;
       return { intervals: rec.intervals as number[], draws: rec.draws as number[], triangles: rec.triangles as number[], cpu: api.cpuRenderTimes() as number[], tier: api.tierState(), clock: api.motionPolicy().time as number,
-        errors: host.errors, visibility: document.visibilityState, longTasks: s.longTasks ?? null, pipelines: s.pipelines ?? null, msaaPolicy: api.invoke('msaaPolicy') ?? null,
+        errors: host.errors, visibility: document.visibilityState, foreground: w.__timingEvidence.finish(), gpu: w.__timingEvidence.gpu(), longTasks: s.longTasks ?? null, pipelines: s.pipelines ?? null, msaaPolicy: api.invoke('msaaPolicy') ?? null,
         canvas: canvas ? { buffer: [canvas.width, canvas.height], css: [canvas.clientWidth, canvas.clientHeight], dpr: devicePixelRatio } : null };
-    });
-    const during = await stopLoad(), seconds = (Date.now() - t0) / 1000;
+      });
+    }, stopLoad);
+    const seconds = (Date.now() - t0) / 1000;
     const after = await scene.state(page);
     const external = process.platform === 'linux' && o.device === 'local' ? externalBusiest(ticks, await procTicks(), seconds, [process.pid, ...(o.browserPid ? [o.browserPid] : [])]) : null;
-    const env = await page.evaluate(async () => { const a = await (navigator as any).gpu?.requestAdapter?.().catch(() => null), i = a?.info; return { userAgent: navigator.userAgent, adapter: i ? { vendor: i.vendor, architecture: i.architecture, device: i.device, description: i.description } : null, inner: [innerWidth, innerHeight], dpr: devicePixelRatio }; }); // eslint-disable-line @typescript-eslint/no-explicit-any
+    const env = await page.evaluate(() => ({ userAgent: navigator.userAgent, inner: [innerWidth, innerHeight], dpr: devicePixelRatio }));
     const stats = frameStats(end.intervals), cpu = frameStats(end.cpu), share = refreshShare(end.intervals, display.periodMs ?? NaN), hitches = hitchCounts(end.intervals);
     const checks = { backend: setup.backend, tierHeldAtLevel0: end.tier?.tier === cell.tier && end.tier?.level === 0, clockAdvanced: end.clock > clock0, engaged: scene.engaged(kind, cell.name, before),
       movedForWorkload: kind === 'view' ? null : JSON.stringify(before.pose) !== JSON.stringify(after.pose), noErrors: end.errors.length === 0, pageVisible: end.visibility === 'visible',
+      visibilityMaintained: !end.foreground.visibility.hidden, focusMaintained: !end.foreground.focus.lost,
+      rendererDeviceBound: end.gpu.status === 'bound', adapterIdentified: !!(end.gpu.adapter?.vendor || end.gpu.adapter?.device || end.gpu.adapter?.description),
       coverage: round(stats.sampledMs / (o.seconds * 1000), 3), displayMeasured: !!display.periodMs,
       refreshMismatch: !!display.periodMs && stats.p50 !== null && stats.p50 < .75 * display.periodMs };
-    const valid = checks.tierHeldAtLevel0 && checks.clockAdvanced && checks.engaged && checks.movedForWorkload !== false && checks.noErrors && checks.pageVisible && (checks.coverage ?? 0) >= .9 && checks.displayMeasured && !checks.refreshMismatch;
+    const valid = checks.tierHeldAtLevel0 && checks.clockAdvanced && checks.engaged && checks.movedForWorkload !== false && checks.noErrors && checks.pageVisible && checks.visibilityMaintained && checks.focusMaintained && checks.rendererDeviceBound && checks.adapterIdentified && (checks.coverage ?? 0) >= .9 && checks.displayMeasured && !checks.refreshMismatch;
+    const gpuWork = gpuWorkSummary(during);
     const metrics: RunMetrics = { p50: stats.p50, p95: stats.p95, p99: stats.p99, max: stats.max, fps: stats.fps, withinOne: share.withinOne, withinTwo: share.withinTwo, over50: hitches.over50, over100: hitches.over100,
-      longestMs: hitches.longestMs, cpuRenderP50: cpu.p50, cpuRenderP95: cpu.p95, drawsMedian: median(end.draws), trianglesMedian: median(end.triangles), gpuBusy: gpuBusyMedian(during) };
+      longestMs: hitches.longestMs, cpuRenderP50: cpu.p50, cpuRenderP95: cpu.p95, drawsMedian: median(end.draws), trianglesMedian: median(end.triangles), gpuBusy: gpuBusyMedian(during), gpuClockMHz: gpuWork.clockMHzMean, gpuBusyClockMHz: gpuWork.busyClockMHzMean };
     return { valid, checks, url, readyMs: round(setup.readyAt, 1), wakeLock, display, frames: stats, refresh: share, hitches, d41: d41Verdict(hitches, { row: o.device === 'tablet' ? 'tablet' : 'desktop', seconds: o.seconds }),
       cpuRenderMs: { ...cpu, sampledMs: undefined }, draws: { median: median(end.draws), min: end.draws.length ? Math.min(...end.draws) : null, max: end.draws.length ? Math.max(...end.draws) : null, samples: end.draws.length },
-      triangles: { median: median(end.triangles), samples: end.triangles.length }, metrics, msaaPolicy: { atStart: setup.msaaPolicy, atEnd: end.msaaPolicy }, tier: { start: setup.tier && { tier: setup.tier.tier, level: setup.tier.level, device: setup.tier.device }, end: end.tier && { tier: end.tier.tier, level: end.tier.level } },
-      workload: { kind, before, after }, canvas: end.canvas, longTasks: end.longTasks, pipelines: end.pipelines, environment: env, loadDuring: during, externalBusiest: external, messages, sampleWallSeconds: round(seconds, 2), startedToSampleMs: t0 - started,
+      triangles: { median: median(end.triangles), samples: end.triangles.length }, metrics, gpuWork, msaaPolicy: { atStart: setup.msaaPolicy, atEnd: end.msaaPolicy }, tier: { start: setup.tier && { tier: setup.tier.tier, level: setup.tier.level, device: setup.tier.device }, end: end.tier && { tier: end.tier.tier, level: end.tier.level } },
+      workload: { kind, before, after }, canvas: end.canvas, longTasks: end.longTasks, pipelines: end.pipelines, environment: { ...env, adapter: end.gpu.adapter, gpu: end.gpu }, foreground: end.foreground, cleanup: o.cleanup, loadDuring: during, externalBusiest: external, messages, sampleWallSeconds: round(seconds, 2), startedToSampleMs: t0 - started,
       frameIntervalsMs: end.intervals.map(v => round(v)), cpuRenderTimesMs: end.cpu.map(v => round(v)) };
-  } finally { await page.close().catch(() => undefined); }
+  } catch (error) { failure = { error }; throw error; }
+  finally {
+    const closed = await cleanupTimingResources([{ name: 'measurement-page', close: () => page.close() }]); o.cleanup.push(...closed);
+    if (closed.some(result => !result.ok)) {
+      const error = new Error(`STOP: Measurement page cleanup failed: ${closed.map(result => result.error).filter(Boolean).join('; ')}`);
+      if (failure) throw new AggregateError([failure.error, error], 'STOP: Measurement and page cleanup both failed');
+      throw error;
+    }
+  }
 }
 
 // ---------------------------------------------------------------- the A/B block
@@ -547,11 +574,15 @@ async function abBlock() {
   // Two builds, two owned loopback ports (4400-4499: the device kit's range, so adb reverse maps the same numbers on the tablet).
   const taken = new Set<number>(), ports = (option('--ports', '4400-4489')!.split('-').map(Number)) as [number, number];
   const served = {} as Record<SceneId, { A: Served; B: Served }>;
-  for (const scene of [...new Set(cells.map(c => c.scene))]) served[scene] = { A: await serve('A', resolve(rootA, scene), ports, taken), B: await serve('B', resolve(rootB, scene), ports, taken) };
-  record.builds = Object.fromEntries(Object.entries(served).map(([scene, s]) => [scene, { A: { root: s.A.root, port: s.A.port, build: s.A.build }, B: { root: s.B.root, port: s.B.port, build: s.B.build } }]));
+  const ownedServers: Served[] = [];
   let browser: Browser | null = null, profile: string | null = null, browserPid: number | null = null; const adb = device === 'tablet' ? adbFor() : null;
   let stopped: string | null = null;
   try {
+    for (const scene of [...new Set(cells.map(c => c.scene))]) {
+      const [A, B] = await acquireTimingResources(ownedServers, [() => serve('A', resolve(rootA, scene), ports, taken), () => serve('B', resolve(rootB, scene), ports, taken)]);
+      served[scene] = { A: A!, B: B! };
+    }
+    record.builds = Object.fromEntries(Object.entries(served).map(([scene, s]) => [scene, { A: { root: s.A.root, port: s.A.port, build: s.A.build }, B: { root: s.B.root, port: s.B.port, build: s.B.build } }]));
     if (device === 'local') {
       record.preflight = flag('--no-preflight') ? { skipped: 'Not evidence: --no-preflight' } : await preflight(hostRule(), Number(option('--wait-quiet', '10')));
       await save();
@@ -580,7 +611,7 @@ async function abBlock() {
     await save();
     // One discarded load per side warms the HTTP and shader caches equally before the first measured run.
     if (primeSeconds > 0) {
-      const primes = [];
+      const primes: Record<string, unknown>[] = []; record.primes = primes;
       for (const cell of cells) for (const side of ['A', 'B'] as const) {
         let session: TabletSession | null = null; const prime: Record<string, unknown> = { cell: cellId(cell), side };
         try {
@@ -589,8 +620,11 @@ async function abBlock() {
           try { if (device === 'local') await page.setViewport({ width, height, deviceScaleFactor: 1 }); await page.evaluateOnNewDocument(installRecorder); await page.evaluateOnNewDocument(installCss, PAGE_CSS);
             await page.goto(cellUrl(served[cell.scene][side].base, cell, query[side]), { waitUntil: 'load', timeout: 180_000 });
             await page.waitForFunction(() => (window as any).__ab.readyAt !== null || (window as any).__ab.error, { timeout: 180_000, polling: 200 }); await sleep(primeSeconds * 1000); // eslint-disable-line @typescript-eslint/no-explicit-any
-            prime.ok = true; } finally { await page.close().catch(() => undefined); }
-        } catch (error) { prime.ok = false; prime.error = String(error).slice(0, 300); }
+            prime.ok = true; } finally {
+            const closed = await cleanupTimingResources([{ name: 'prime-page', close: () => page.close() }]); prime.cleanup = closed;
+            if (closed.some(result => !result.ok)) throw new Error(`STOP: Prime page cleanup failed: ${closed.map(result => result.error).filter(Boolean).join('; ')}`);
+          }
+        } catch (error) { prime.ok = false; prime.error = timingError(error).slice(0, 1000); if (/STOP:/.test(String(error))) stopped ??= timingError(error); }
         finally { if (device === 'tablet') { const r = await tabletRelease(adb!, session); prime.mappingsEmpty = r.empty ?? null; if (r.problems.length) stopped ??= `mapping cleanup after prime: ${r.problems.join('; ')}`; } }
         primes.push(prime); console.log(JSON.stringify({ event: 'prime', ...prime }));
         if (stopped) throw new Error(`STOP: ${stopped}`);
@@ -600,7 +634,8 @@ async function abBlock() {
     for (const planned of plan) {
       const cell = planned.cell, side = planned.side, label = `${cellId(cell)}-pair${planned.pair}-${side}`;
       let session: TabletSession | null = null, cool: unknown = null;
-      const entry: Record<string, unknown> = { label, cell: cellId(cell), pair: planned.pair, position: planned.position, side };
+      const cleanup: Awaited<ReturnType<typeof cleanupTimingResources>> = [];
+      const entry: Record<string, unknown> = { label, cell: cellId(cell), pair: planned.pair, position: planned.position, side, cleanup };
       try {
         if (device === 'tablet') {
           const c = await waitCool(adb!, Number(option('--cool-wait', '10'))); cool = c;
@@ -608,7 +643,7 @@ async function abBlock() {
           session = await tabletConnect(adb!, [served[cell.scene][side].port]);
         }
         const loadBefore = device === 'local' ? { at: now(), cpuPercent: null, gpu: await gpuRow(), loadavg: process.platform === 'linux' ? parseLoadavg(await readFile('/proc/loadavg', 'utf8')) : null } : await tabletReading(adb!);
-        const result = await measure(session?.browser ?? browser!, served[cell.scene][side], cell, { device, seconds, warmupMs, width, height, backend: 'webgpu', extra: query[side], adb, loadEveryMs: device === 'tablet' ? 2_000 : 5_000, browserPid });
+        const result = await measureTimingRun(session?.browser ?? browser!, served[cell.scene][side], cell, { device, seconds, warmupMs, width, height, backend: 'webgpu', extra: query[side], adb, loadEveryMs: device === 'tablet' ? 2_000 : 5_000, browserPid, cleanup });
         const loadAfter = device === 'local' ? { at: now(), gpu: await gpuRow(), loadavg: process.platform === 'linux' ? parseLoadavg(await readFile('/proc/loadavg', 'utf8')) : null } : await tabletReading(adb!);
         const fileRecord = { schema: 'kiln.timing-ab-run/1', block, device, cell: { ...cell, kind: cellKind(cell) }, side, label: served[cell.scene][side].label, pair: planned.pair, position: planned.position, seconds, warmupSeconds: warmupMs / 1000,
           build: served[cell.scene][side].build, query: query[side], startedAt: now(), loadBefore, loadAfter, coolBefore: cool, ...result };
@@ -617,7 +652,7 @@ async function abBlock() {
         console.log(JSON.stringify({ event: 'run', ...entry }));
         if (device === 'tablet') { const t = tabletCool(loadAfter as { thermalStatus: number | null; batteryC: number | null }); if (!t.cool) { stopped = `tablet warmed during ${label}: ${t.reasons.join('; ')}`; } }
       } catch (error) {
-        entry.error = String((error as Error)?.message ?? error).slice(0, 1000); console.log(JSON.stringify({ event: 'run-failed', ...entry }));
+        entry.error = timingError(error).slice(0, 2000); console.log(JSON.stringify({ event: 'run-failed', ...entry }));
         if (/STOP:/.test(String(error))) stopped ??= String(error);
       } finally {
         if (device === 'tablet') { const r = await tabletRelease(adb!, session); entry.mappingsAfter = r.mappings; entry.mappingsEmpty = r.empty ?? null; if (r.problems.length) { stopped ??= `mapping cleanup: ${r.problems.join('; ')}`; } }
@@ -627,14 +662,22 @@ async function abBlock() {
     }
   } catch (error) { stopped ??= String((error as Error)?.message ?? error); console.error(String((error as Error)?.stack ?? error)); }
   finally {
-    if (browser) await browser.close().catch(() => undefined);
-    if (profile) await rm(profile, { recursive: true, force: true }).catch(() => undefined);
-    for (const s of Object.values(served)) { await s.A.close().catch(() => undefined); await s.B.close().catch(() => undefined); }
+    const cleanup = await cleanupTimingResources([
+      ...(browser ? [{ name: 'browser', close: () => browser!.close() }] : []),
+      ...(profile ? [{ name: 'browser-profile', close: () => rm(profile!, { recursive: true, force: true }) }] : []),
+      ...ownedServers.map(server => ({ name: `server-${server.side}-${server.port}`, close: server.close, timeoutMs: 5000 })),
+    ]);
+    record.cleanup = cleanup;
+    if (cleanup.some(result => !result.ok)) stopped ??= `Cleanup failed: ${cleanup.filter(result => !result.ok).map(result => `${result.name}: ${result.error}`).join('; ')}`;
     if (device === 'tablet' && adb) { record.deviceAfter = await deviceState(adb).catch(e => String(e)); record.mappingsAtEnd = await listMappings(adb).catch(e => String(e)); }
+    record.collection = timingCollectionVerdict({ expected: plan.map(p => `${cellId(p.cell)}-pair${p.pair}-${p.side}`),
+      runs: record.runs as Parameters<typeof timingCollectionVerdict>[0]['runs'], expectedPrimes: primeSeconds > 0 ? cells.length * 2 : 0,
+      primes: (record.primes ?? []) as { ok?: boolean }[], cleanup, stopped });
     record.finishedAt = now(); record.stopped = stopped; await save();
   }
   const summary = await summarizeBlock(out);
-  console.log(JSON.stringify({ event: 'block', block, out, stopped, cells: summary.cells.map(c => ({ cell: c.cell, A: c.A.valid, B: c.B.valid, p95: [c.A.p95?.median, c.B.p95?.median] })) }));
+  console.log(JSON.stringify({ event: 'block', block, out, stopped, collection: record.collection, cells: summary.cells.map(c => ({ cell: c.cell, A: c.A.valid, B: c.B.valid, p95: [c.A.p95?.median, c.B.p95?.median] })) }));
+  // Collector exit zero is not acceptance: the persisted collection verdict and D41/D16 must be reviewed.
   if (stopped) process.exitCode = 2;
 }
 
@@ -649,20 +692,26 @@ export async function summarizeBlock(dir: string) {
   const ids = [...new Set(runs.map(r => `${r.cell.scene}-${r.cell.tier}-${r.cell.name}`))];
   const cells = ids.map(id => {
     const list = runs.filter(r => `${r.cell.scene}-${r.cell.tier}-${r.cell.name}` === id);
-    const s = summarizeCell(list.map(r => ({ side: r.side, pair: r.pair, valid: r.valid, metrics: { ...r.metrics, gpuBusy: r.metrics.gpuBusy ?? gpuBusyMedian(r.loadDuring ?? []) } })));
+    const normalized = list.map(r => {
+      const work = gpuWorkSummary(r.loadDuring ?? []);
+      return { side: r.side, pair: r.pair, valid: r.valid, seconds: r.seconds, gpuWork: work, metrics: { ...r.metrics,
+        gpuBusy: r.metrics.gpuBusy ?? gpuBusyMedian(r.loadDuring ?? []),
+        gpuClockMHz: work.clockMHzMean, gpuBusyClockMHz: work.busyClockMHzMean } };
+    });
+    const s = summarizeCell(normalized);
     const sideFacts = (side: Side) => { const l = list.filter(r => r.side === side); return { label: l[0]?.build?.label ?? null, chunks: l[0]?.build?.chunks ?? null, msaa: [...new Set(l.map(r => JSON.stringify(r.msaaPolicy?.atEnd ?? null)))], periodMs: median(l.map(r => r.display?.periodMs).filter(Number.isFinite)),
       d41: l.map(r => r.d41?.pass ?? null), invalid: l.filter(r => !r.valid).map(r => ({ pair: r.pair, checks: r.checks })) }; };
-    return { cell: id, scene: list[0].cell.scene, tier: list[0].cell.tier, name: list[0].cell.name, kind: list[0].cell.kind, seconds: [...new Set(list.map(r => r.seconds))], facts: { A: sideFacts('A'), B: sideFacts('B') }, ...s };
+    return { tabletAdoption: block.device === 'tablet' ? tabletPairVerdict(normalized) : null, cell: id, scene: list[0].cell.scene, tier: list[0].cell.tier, name: list[0].cell.name, kind: list[0].cell.kind, seconds: [...new Set(list.map(r => r.seconds))], facts: { A: sideFacts('A'), B: sideFacts('B') }, ...s };
   });
-  const out = { schema: 'kiln.timing-ab-summary/1', block: block.block ?? null, device: block.device ?? null, generatedAt: now(), runs: runs.length, stopped: block.stopped ?? null,
-    method: 'Per run: rAF frame intervals over the sample after a warm-up, governor held at the tier level 0. Per side: median (min-max) over valid runs. Paired: B - A within each interleaved pair (both runs valid), median over pairs, and how many pairs B was lower or higher. Refresh shares (OD-7): interval < 1.5 and < 2.5 measured display periods. D-41: 0 over 100 ms, 0 over 50 ms, longest <= 50 ms per 60 s run (tablet: at most 2 over 50 ms, 0 over 100 ms); judged only on runs of at least 60 s.',
+  const out = { schema: 'kiln.timing-ab-summary/1', block: block.block ?? null, device: block.device ?? null, generatedAt: now(), runs: runs.length, stopped: block.stopped ?? null, collection: block.collection ?? null,
+    method: 'Per run: rAF frame intervals over the sample after a warm-up, governor held at the tier level 0. Per side: median (min-max) over valid runs. Paired: B - A within each interleaved pair (both runs valid), median over pairs, and how many pairs B was lower or higher. Refresh shares (OD-7): interval < 1.5 and < 2.5 measured display periods. D-41: 0 over 100 ms, 0 over 50 ms, longest <= 50 ms per 60 s run (tablet: at most 2 over 50 ms, 0 over 100 ms); judged only on runs of at least 60 s. GPU clock is MHz (Mali sysfs kHz / 1000; NVIDIA clocks.gr MHz). GPU activity is the mean of same-sample busy fraction × MHz, not product of means or energy. D16 requires three valid tablet pairs; missing evidence is unqualified.',
     cells };
   await writeJson(resolve(dir, 'summary.json'), out);
   const md = [`# Timing A/B ${out.block ?? dir} (${out.device ?? '?'})`, '', out.method, '', `Runs: ${runs.length}.${out.stopped ? ` **Stopped: ${out.stopped}**` : ''}`, '',
-    '| Cell | Side (label) | Valid | p50 ms | p95 ms | Within 1 refresh | Within 2 | >50 ms | >100 ms | Longest ms | CPU render p50 ms | GPU busy % | Draws | Period ms |', '|---|---|---|---|---|---|---|---|---|---|---|---|---|---|'];
+    '| Cell | Side (label) | Valid | p50 ms | p95 ms | Within 1 refresh | Within 2 | >50 ms | >100 ms | Longest ms | CPU render p50 ms | GPU busy % | GPU MHz | Busy × MHz | Draws | Period ms |', '|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|'];
   for (const c of cells) for (const side of ['A', 'B'] as const) {
     const x = c[side], f = c.facts[side];
-    md.push(`| ${c.cell} | ${side} (${f.label}) | ${x.valid}/${x.runs} | ${ms(x.p50?.median)} (${ms(x.p50?.min)}-${ms(x.p50?.max)}) | ${ms(x.p95?.median)} (${ms(x.p95?.min)}-${ms(x.p95?.max)}) | ${pct(x.withinOne?.median)} | ${pct(x.withinTwo?.median)} | ${x.over50 ? `${x.over50.median} (max ${x.over50.max})` : '-'} | ${x.over100 ? `${x.over100.median} (max ${x.over100.max})` : '-'} | ${ms(x.longestMs?.max, 1)} | ${ms(x.cpuRenderP50?.median)} | ${x.gpuBusy ? `${ms(x.gpuBusy.median, 1)} (${ms(x.gpuBusy.min, 0)}-${ms(x.gpuBusy.max, 0)})` : '-'} | ${x.drawsMedian?.median ?? '-'} | ${ms(f.periodMs, 3)} |`);
+    md.push(`| ${c.cell} | ${side} (${f.label}) | ${x.valid}/${x.runs} | ${ms(x.p50?.median)} (${ms(x.p50?.min)}-${ms(x.p50?.max)}) | ${ms(x.p95?.median)} (${ms(x.p95?.min)}-${ms(x.p95?.max)}) | ${pct(x.withinOne?.median)} | ${pct(x.withinTwo?.median)} | ${x.over50 ? `${x.over50.median} (max ${x.over50.max})` : '-'} | ${x.over100 ? `${x.over100.median} (max ${x.over100.max})` : '-'} | ${ms(x.longestMs?.max, 1)} | ${ms(x.cpuRenderP50?.median)} | ${x.gpuBusy ? `${ms(x.gpuBusy.median, 1)} (${ms(x.gpuBusy.min, 0)}-${ms(x.gpuBusy.max, 0)})` : '-'} | ${ms(x.gpuClockMHz?.median, 1)} | ${ms(x.gpuBusyClockMHz?.median, 1)} | ${x.drawsMedian?.median ?? '-'} | ${ms(f.periodMs, 3)} |`);
   }
   md.push('', '| Cell | Pairs | Δp50 ms (B-A, median; B lower/higher) | Δp95 ms | Δ within 1 | Δ CPU render p50 ms | Δ GPU busy pt | p95 ratio B/A |', '|---|---|---|---|---|---|---|---|');
   for (const c of cells) {
@@ -670,6 +719,7 @@ export async function summarizeBlock(dir: string) {
     const cellText = (k: string, f: (v: number | null) => string) => d[k] ? `${f(d[k]!.medianDelta)} (${d[k]!.bLower}/${d[k]!.bHigher})` : '-';
     md.push(`| ${c.cell} | ${c.pairs} | ${cellText('p50', v => ms(v, 3))} | ${cellText('p95', v => ms(v, 3))} | ${cellText('withinOne', v => typeof v === 'number' ? `${(100 * v).toFixed(2)} pt` : '-')} | ${cellText('cpuRenderP50', v => ms(v, 3))} | ${cellText('gpuBusy', v => ms(v, 1))} | ${typeof c.ratios.p95 === 'number' ? c.ratios.p95.toFixed(3) : '-'} |`);
   }
+  for (const c of cells) if (c.tabletAdoption) md.push('', `D16 ${c.cell}: ${c.tabletAdoption.pass === null ? 'unqualified' : c.tabletAdoption.pass ? 'pass' : 'fail'}; refresh regressions ${c.tabletAdoption.refreshRegressions}/3; GPU-work regressions ${c.tabletAdoption.gpuWorkRegressions}/3. ${c.tabletAdoption.reasons.join('; ')}`);
   await writeFile(resolve(dir, 'summary.md'), md.join('\n') + '\n');
   return out;
 }

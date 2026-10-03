@@ -18,7 +18,7 @@ import { PACKAGE_ROOT, writeJson } from './owned.ts';
 import { EXTENT, SIZE, nearAlbedo } from './imagery.ts';
 import { writePng, type Image, type Rgb } from './image.ts';
 import { APPROACH_NAMES, Tin, loadTileArrays } from '../../scripts/approaches.ts';
-import { LAYOUT } from '../../src/data';
+import { LAYOUT } from '../../scripts/authored-layout';
 import { approachHorizontal } from '../../src/world/route';
 import { horizontalAt, horizontalProject, lateral, profileAt } from '../../src/world/alignment';
 

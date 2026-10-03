@@ -1,0 +1,547 @@
+{
+  "projection": {
+    "approachEnds": {
+      "north": {
+        "car": 600,
+        "dissolve": [
+          940,
+          980
+        ]
+      },
+      "south": {
+        "car": 560,
+        "dissolve": [
+          925,
+          965
+        ]
+      }
+    },
+    "approachLengths": {
+      "north": 980,
+      "south": 965
+    },
+    "bridge": {
+      "anchorages": [
+        {
+          "x0": -21.5,
+          "x1": 21.5,
+          "z0": 981.98,
+          "z1": 1033.98
+        },
+        {
+          "x0": -21.5,
+          "x1": 21.5,
+          "z0": -1033.98,
+          "z1": -981.98
+        }
+      ],
+      "curbOuter": 9.6488,
+      "jointPlates": {
+        "material": "JointSteel",
+        "notes": "Fix round 3 item 0. The four expansion-joint plates (bridge review 3) lie 1.5 mm above the Roadway, which runs on beneath them, so at range a 24-bit depth buffer cannot separate the two and the plates blink. When the bridge loads, their material (used by nothing else) takes this polygon offset toward the camera; the GLB is not changed.",
+        "polygonOffset": {
+          "factor": -1,
+          "units": -1
+        }
+      },
+      "medianHalfWidth": 0.1524,
+      "medianTop": 76.113,
+      "notes": "Dimensions measured from the bridge's review-2 runtime GLB; suspender planes are |x| 13.43 to 14.0 for |z| <= 960. obstructionNodes are the node-name prefixes that the chase camera and flights keep clear of.",
+      "obstructionNodes": [
+        "SouthTower",
+        "NorthTower",
+        "SuspendersWest",
+        "SuspendersEast",
+        "MainCableWest",
+        "MainCableEast",
+        "Deck_ArtDecoLampStandards",
+        "Deck_SidewalkRailings",
+        "Deck_TowerSidewalkBrackets"
+      ],
+      "pierFootings": [
+        {
+          "x0": -23,
+          "x1": 23,
+          "z0": 628.28,
+          "z1": 651.88
+        },
+        {
+          "x0": -23,
+          "x1": 23,
+          "z0": -651.88,
+          "z1": -628.28
+        }
+      ],
+      "railOuter": 18.26,
+      "roadEndZ": 1032.98,
+      "roadHalfWidth": 9.4488,
+      "southFender": {
+        "rx": 45.72,
+        "rz": 23.622,
+        "top": 4.572,
+        "x": 0,
+        "z": -640.08
+      },
+      "suspenderInner": 13.43,
+      "towerTop": 227.4,
+      "towerZ": 640.08
+    },
+    "cameras": {
+      "chase": {
+        "castRadius": 0.45,
+        "distance": 9.5,
+        "fov": 55,
+        "fovAtTopSpeed": 63,
+        "height": 3.1,
+        "lookAhead": 4,
+        "maxAbsX": 12.2,
+        "minDistance": 3.2,
+        "notes": "spring-arm chase camera behind the driven car; a sphere of castRadius is cast from the car to the camera against the bridge obstruction nodes and the camera moves in to pad before any hit, never closer than minDistance; |x| stays within maxAbsX, inside the suspender planes; a pinch or the mouse wheel scales distance and height by a factor within zoom (times exp(zoomRate x the kit's zoom input) each frame; 1 on entering the car); a one-finger or mouse drag swings the camera around the car and it returns behind it after three seconds (the kit's orbit offset)",
+        "pad": 0.55,
+        "positionLag": 0.18,
+        "relax": 6,
+        "targetHeight": 1.35,
+        "yawLag": 0.3,
+        "zoom": [
+          0.7,
+          1.7
+        ],
+        "zoomRate": 0.5
+      },
+      "clip": {
+        "far": 160000,
+        "near": 0.5
+      },
+      "default": "arrival",
+      "named": {
+        "arrival": {
+          "fov": 55,
+          "notes": "Aerial arrival over the Pacific channel, looking down across the bridge with water in the foreground",
+          "position": [
+            1800,
+            1100,
+            -240
+          ],
+          "target": [
+            0,
+            85,
+            0
+          ]
+        },
+        "deck": {
+          "fov": 55,
+          "notes": "chase-camera height in the northbound lanes, looking north",
+          "position": [
+            -4.8006,
+            78.4,
+            -330
+          ],
+          "target": [
+            -4.8006,
+            76.2,
+            -250
+          ]
+        },
+        "horizon": {
+          "fov": 55,
+          "notes": "deck height beside the west railing, looking west to the Pacific",
+          "position": [
+            24,
+            76.5,
+            180
+          ],
+          "target": [
+            6000,
+            58,
+            420
+          ]
+        },
+        "lanes": {
+          "fov": 40,
+          "notes": "traffic review: over the east railing, northbound lanes close up",
+          "position": [
+            -14,
+            79.5,
+            -120
+          ],
+          "target": [
+            -4,
+            76.8,
+            -100
+          ]
+        },
+        "pier": {
+          "fov": 55,
+          "notes": "low and grazing past the south pier fender, looking downstream (west on the ebb)",
+          "position": [
+            -118,
+            4.2,
+            -596
+          ],
+          "target": [
+            70,
+            1.2,
+            -654
+          ]
+        },
+        "postcard": {
+          "fov": 55,
+          "notes": "Marin Headlands viewpoint; the terrain pipeline's recommended postcard pose (validation.json)",
+          "position": [
+            357.6,
+            137.9,
+            1096
+          ],
+          "target": [
+            0,
+            105,
+            300
+          ]
+        },
+        "sidewalk": {
+          "fov": 55,
+          "notes": "traffic review: eye height on the east sidewalk",
+          "position": [
+            -11.6,
+            78.2,
+            -300
+          ],
+          "target": [
+            2,
+            76.4,
+            -262
+          ]
+        },
+        "span": {
+          "fov": 50,
+          "notes": "main span from the bay side",
+          "position": [
+            -1450,
+            210,
+            -60
+          ],
+          "target": [
+            0,
+            90,
+            0
+          ]
+        },
+        "topdown": {
+          "fov": 55,
+          "notes": "600 m over the channel, straight down",
+          "position": [
+            260,
+            600,
+            -40
+          ],
+          "target": [
+            260,
+            0,
+            -41
+          ]
+        },
+        "tower": {
+          "fov": 50,
+          "notes": "south tower paint calibration view",
+          "position": [
+            210,
+            150,
+            -470
+          ],
+          "target": [
+            0,
+            120,
+            -640
+          ]
+        },
+        "traffic": {
+          "fov": 50,
+          "notes": "traffic review: above the east railing, all six lanes toward Marin",
+          "position": [
+            -40,
+            118,
+            -420
+          ],
+          "target": [
+            0,
+            76,
+            -330
+          ]
+        }
+      },
+      "orbit": {
+        "clearance": 4,
+        "maxDistance": 3500,
+        "maxPolarDeg": 89.46,
+        "minDistance": 40,
+        "notes": "the orbit target stays inside |x|, |z| <= targetBounds and targetMinY..targetMaxY; the camera keeps clearance above terrain and water",
+        "targetBounds": 2400,
+        "targetMaxY": 420,
+        "targetMinY": 0
+      },
+      "waterReview": [
+        "postcard",
+        "pier",
+        "topdown",
+        "horizon",
+        "deck"
+      ]
+    },
+    "flightClearance": {
+      "bridge": 2,
+      "terrain": 6,
+      "terrainMinimum": 3
+    },
+    "flightLabels": {
+      "deck-run": "Deck run",
+      "fog-roll": "Fog roll",
+      "postcard-sweep": "Postcard sweep",
+      "tower-rise": "Tower rise"
+    },
+    "lanes": [
+      {
+        "classes": [
+          "sedan",
+          "suv",
+          "hatchback",
+          "pickup"
+        ],
+        "direction": "north",
+        "entry": [
+          -488.821,
+          50.389,
+          -1834.841
+        ],
+        "exit": [
+          405.415,
+          96.48,
+          1874.135
+        ],
+        "id": "nb-inner",
+        "index": 0,
+        "speed": 22,
+        "stations": [
+          -1997.98,
+          2012.98
+        ],
+        "x": -1.7018
+      },
+      {
+        "classes": [
+          "sedan",
+          "suv",
+          "hatchback",
+          "pickup",
+          "box-truck",
+          "transit-bus"
+        ],
+        "direction": "north",
+        "entry": [
+          -490.973,
+          50.389,
+          -1832.611
+        ],
+        "exit": [
+          402.507,
+          96.48,
+          1875.205
+        ],
+        "id": "nb-middle",
+        "index": 1,
+        "speed": 20.5,
+        "stations": [
+          -1997.98,
+          2012.98
+        ],
+        "x": -4.8006
+      },
+      {
+        "classes": [
+          "sedan",
+          "suv",
+          "hatchback",
+          "pickup",
+          "box-truck",
+          "transit-bus"
+        ],
+        "direction": "north",
+        "entry": [
+          -493.125,
+          50.389,
+          -1830.382
+        ],
+        "exit": [
+          399.599,
+          96.48,
+          1876.274
+        ],
+        "id": "nb-outer",
+        "index": 2,
+        "speed": 19,
+        "stations": [
+          -1997.98,
+          2012.98
+        ],
+        "x": -7.8994
+      },
+      {
+        "classes": [
+          "sedan",
+          "suv",
+          "hatchback",
+          "pickup"
+        ],
+        "direction": "south",
+        "entry": [
+          408.61,
+          96.48,
+          1872.96
+        ],
+        "exit": [
+          -486.457,
+          50.389,
+          -1837.289
+        ],
+        "id": "sb-inner",
+        "index": 3,
+        "speed": 22,
+        "stations": [
+          2012.98,
+          -1997.98
+        ],
+        "x": 1.7018
+      },
+      {
+        "classes": [
+          "sedan",
+          "suv",
+          "hatchback",
+          "pickup",
+          "box-truck",
+          "transit-bus"
+        ],
+        "direction": "south",
+        "entry": [
+          411.518,
+          96.48,
+          1871.89
+        ],
+        "exit": [
+          -484.304,
+          50.389,
+          -1839.518
+        ],
+        "id": "sb-middle",
+        "index": 4,
+        "speed": 20.5,
+        "stations": [
+          2012.98,
+          -1997.98
+        ],
+        "x": 4.8006
+      },
+      {
+        "classes": [
+          "sedan",
+          "suv",
+          "hatchback",
+          "pickup",
+          "box-truck",
+          "transit-bus"
+        ],
+        "direction": "south",
+        "entry": [
+          414.426,
+          96.48,
+          1870.82
+        ],
+        "exit": [
+          -482.152,
+          50.389,
+          -1841.748
+        ],
+        "id": "sb-outer",
+        "index": 5,
+        "speed": 19,
+        "stations": [
+          2012.98,
+          -1997.98
+        ],
+        "x": 7.8994
+      }
+    ],
+    "lights": {
+      "bridgeLamps": {
+        "materials": [
+          "LampGlass",
+          "BeaconEmissive"
+        ],
+        "presetKey": "lamps",
+        "rule": "emissive intensity = the authored emissive intensity x lamps"
+      },
+      "environment": {
+        "presetKeys": [
+          "envIntensity",
+          "envSaturation"
+        ],
+        "size": "tiers.json features.*.envSize",
+        "source": "the sky, prefiltered"
+      },
+      "sky": {
+        "model": "Preetham",
+        "presetKeys": [
+          "turbidity",
+          "rayleigh",
+          "mie",
+          "mieG",
+          "sunDisc",
+          "skyGain",
+          "overcast",
+          "overcastColor"
+        ]
+      },
+      "sun": {
+        "presetKeys": [
+          "sunAzimuthDeg",
+          "sunElevationDeg",
+          "sunColor",
+          "sunIntensity"
+        ],
+        "shadows": "tiers.json features.*.shadows",
+        "type": "directional"
+      },
+      "vehicleLamps": {
+        "brakeOff": 0.08,
+        "gain": {
+          "brake": [
+            1,
+            1.6
+          ],
+          "head": [
+            1,
+            3.5
+          ],
+          "tail": [
+            1,
+            2.4
+          ]
+        },
+        "materials": {
+          "BrakeLight": "brake",
+          "Headlight": "head",
+          "Taillight": "tail"
+        },
+        "presetKey": "lights",
+        "rule": "emissive = authored emissive colour x mix(gain[0], gain[1], lights); brake lamps are further scaled by mix(brakeOff, 1, braking); taillight emissive is scaled down so its largest channel is at most taillightPeak; parked vehicles (dressing.vista.cars) have every lamp off",
+        "taillightPeak": 0.3
+      }
+    },
+    "referenceColours": {
+      "internationalOrange": "#C0362C"
+    },
+    "schema": "golden-gate-layout/1"
+  },
+  "schema": "golden-gate-bootstrap/1",
+  "source": "data/layout.json",
+  "sourceSha256": "a66a0b1d74784b47d3b6582d1781524d0b7b7af9c472cef0815b56338095fafc"
+}

@@ -14,7 +14,7 @@ const hand = resolve(root, '../engine-work/local-v09-review/revision2-20260930/f
 const handHash = '088edfec80dc0ed8da9a3883ebf74ff75d55efdb71a056ddb271b553999c3c9e';
 const hash = (bytes: Uint8Array) => createHash('sha256').update(bytes).digest('hex');
 const files = parent.files.map(file => ({ from: file.path === 'models/farmer.glb' ? hand : resolve(before, file.path), to: file.path, sha256: file.path === 'models/farmer.glb' ? handHash : file.sha256 }));
-const result = stageFiles({ id: parent.id, release: 'r35-local-review', three: '0.186.0', out, force: true,
+const result = stageFiles({ id: parent.id, release: 'r35-local-review', three: '0.186.1', out, force: true,
   models: parent.models.map(model => ({ id: model.id, to: model.path })), data: parent.data, files, credits: parent.credits,
   source: { parentRelease: 'r34', parentPackSha256: hash(readFileSync(resolve(before, 'pack.json'))), ownerAccepted: false,
     replacements: [{ id: 'farmer', assetId: asset, parentRevision: 'r_d0e65e4d47aa4449a07ed288a78d461b', revision, sha256: handHash, exportProfile: 'runtime', canonicalSha256: '6ebf243099f0325e30c3937c41d079e95e3d98a20a92e0d6436234c926139bfd',

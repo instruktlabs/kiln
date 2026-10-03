@@ -15,10 +15,15 @@ import { launchChrome, serveOwned } from '../packages/scene-kit/src/testing/node
 import { sceneOutput } from './build-scene';
 import { checkX02Rows, FARM_X02_VIEWS, validateX02Baseline, X02_BASELINE_PATH, X02_BASELINE_SCHEMA, type X02Backend, type X02Baseline, type X02ReferenceEntry } from './farm-count-gates';
 import { enterFarmView, openFarmPage, settleFarmShadow, stableFarmCounts } from './farm-capture-pages';
+import { sceneBrowserOptions } from './browser-options.mjs';
 
 const ROOT = resolve(import.meta.dir, '..'), args = process.argv.slice(2), command = args[0];
 const option = (name: string, fallback: string) => { const at = args.indexOf(name); return at < 0 ? fallback : args[at + 1] ?? fallback; };
 const PLAY = new Set(['play-yard', 'play-house', 'play-bridge', 'play-house-door']);
+
+export function farmX02BrowserProvenance(version: string, options: { headless: boolean }) {
+  return { browser: `${options.headless ? 'headless' : 'headed'} ${version}`, browserLaunch: { headless: options.headless } };
+}
 
 async function measure(build: string, backends: X02Backend[], out: string) {
   const dir = sceneOutput('farm', build, 'test'), built = JSON.parse(readFileSync(resolve(dir, 'build.json'), 'utf8')) as { chunks: { name: string }[]; source?: unknown };
@@ -26,7 +31,8 @@ async function measure(build: string, backends: X02Backend[], out: string) {
   const git = (...a: string[]) => execFileSync('git', a, { cwd: ROOT, encoding: 'utf8' }).trim();
   const fromBuild = (built.source as { commit?: string } | null)?.commit, head = git('rev-parse', 'HEAD'), commit = fromBuild ?? git('log', '-1', '--format=%H', '--', 'packages/scene-kit/src', 'packages/farm/src', 'packages/farm/fixtures/layout.json');
   const dirty = git('status', '--porcelain', '--', 'packages/scene-kit/src', 'packages/farm/src');
-  const hosted = await serveOwned(dir), owned = new Set([hosted.port]), browser: Browser = await launchChrome({ workspace: ROOT, name: 'farm-x02-baseline', windowSize: [1280, 720] });
+  const launch = sceneBrowserOptions();
+  const hosted = await serveOwned(dir), owned = new Set([hosted.port]), browser: Browser = await launchChrome({ workspace: ROOT, name: 'farm-x02-baseline', windowSize: [1280, 720], headless: launch.headless });
   const reference: X02Baseline['backends'] = {}, details: Record<string, unknown>[] = [], version = await browser.version();
   try {
     for (const backend of backends) {
@@ -50,7 +56,7 @@ async function measure(build: string, backends: X02Backend[], out: string) {
     schema: X02_BASELINE_SCHEMA, decision: 'OD-8 (D-53): X-02 re-baselined on the optimized build; pixel parity against the sealed pilot (B-06) is unchanged',
     rule: 'Inclusive ±2% draws (renderer.info drawCalls of one frame, shadow passes included) and triangles; pipeline cache at most +5% of this reference',
     provenance: { build, commit, chunks: built.chunks.map(c => c.name).sort(), source: fromBuild ? JSON.stringify(built.source) : `${String(built.source)}; Farm and kit sources last changed in ${commit.slice(0, 7)}, ${dirty ? 'with uncommitted changes' : 'clean'} at HEAD ${head.slice(0, 7)} when measured`,
-      tool: `scripts/farm-x02-baseline.ts measure --build ${build}`, date: new Date().toISOString().slice(0, 10), browser: `headless ${version}`, viewport: '1280x720 CSS at device scale 1 (B-06 normalization)', pagePolicy: 'one fresh page per view and backend' },
+      tool: `scripts/farm-x02-baseline.ts measure --build ${build}`, date: new Date().toISOString().slice(0, 10), ...farmX02BrowserProvenance(version, launch), viewport: '1280x720 CSS at device scale 1 (B-06 normalization)', pagePolicy: 'one fresh page per view and backend' },
     conditions: { tier: 'high', viewport: [1280, 720], freshPage: true, clock: 'frozen', settled: true },
     backends: reference,
   };

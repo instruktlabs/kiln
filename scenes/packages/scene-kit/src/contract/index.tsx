@@ -192,7 +192,7 @@ export function SceneRoot({ options, definition, children }: { options: ScenePro
         if (rt.disposed) return;
         fiber = createRoot(canvas);
         unbindFiberErrors = bindFiberErrors(_roots.get(canvas)?.fiber, rt.fatal);
-        const factory = createGlFactory({ forceWebGL: options.backend === 'webgl2', isDisposed: () => rt.disposed, onBackend: backend => {
+        const factory = createGlFactory({ forceWebGL: options.backend === 'webgl2', reversedDepthBuffer: definition.reversedDepthBuffer, isDisposed: () => rt.disposed, onBackend: backend => {
           rt.backend = backend; element.dataset.kilnBackend = backend.backend; callback('onBackend', backend);
         } });
         await fiber.configure({

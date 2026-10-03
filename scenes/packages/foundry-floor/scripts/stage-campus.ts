@@ -198,7 +198,7 @@ export function stageCampus(options: CampusStageOptions = {}) {
     { from: licenceFrom, to: LICENCE_PATH },
   ];
   const result = stageFiles({
-    id: 'foundry-floor', release, three: '0.186.0', out, force: options.force,
+    id: 'foundry-floor', release, three: '0.186.1', out, force: options.force,
     models: [
       ...interior.filter(m => m.placed).map(m => ({ id: m.id, to: m.to })),
       ...structures.map(m => ({ id: m.id, to: m.to })),

@@ -1,20 +1,20 @@
 import { describe, expect, test } from 'bun:test';
-import { existsSync, readFileSync } from 'node:fs';
+import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import type { GLTF } from 'three/addons/loaders/GLTFLoader.js';
-import { createHash } from 'node:crypto';
 import { extractVehicle, LAMP_KIND, VEHICLE_TYPES, VERTEX_LAYOUT, VERTEX_STRIDE, WHEEL_KIND } from '../../src/traffic/vehicle-models';
 import type { VehicleType } from '../../src/traffic/vehicle-models';
 import { VEHICLE_PROVENANCE } from '../../scripts/stage';
 import { stagedDir } from '../../scripts/release';
+import { findSceneFixture } from '../../../../scripts/release-inputs';
 
-// The approved vehicle GLBs (pinned bytes in scripts/stage.ts): the staged copy, or the author's
-// file while it is still the approved one (read-only inputs, the folders the staging script reads).
+// The approved vehicle GLBs (pinned bytes in scripts/stage.ts): restored release first; optional local runs
+// may use identical staged or author files. test:release-inputs requires the restored release.
 const PACKAGE = resolve(import.meta.dir, '../..'), COMMONS = resolve(PACKAGE, '../../..');
 const ROOTS = ['showcase/authors/sonnet-vehicles-a/outputs', 'showcase/authors/sonnet-vehicles-b/outputs'].map(r => resolve(COMMONS, r));
-const approved = (path: string, type: VehicleType) => existsSync(path) && createHash('sha256').update(readFileSync(path)).digest('hex') === VEHICLE_PROVENANCE[type].sha256;
-const source = (type: VehicleType) => [resolve(stagedDir(), 'vehicles', `${type}.glb`), ...ROOTS.map(root => resolve(root, type, `${type}.glb`))].find(path => approved(path, type));
+const source = (type: VehicleType) => findSceneFixture({ scene: 'golden-gate', path: `vehicles/${type}.glb`, sha256: VEHICLE_PROVENANCE[type].sha256 },
+  { fallback: [resolve(stagedDir(), 'vehicles', `${type}.glb`), ...ROOTS.map(root => resolve(root, type, `${type}.glb`))] });
 const available = VEHICLE_TYPES.every(type => source(type));
 
 async function load(type: VehicleType): Promise<GLTF> {

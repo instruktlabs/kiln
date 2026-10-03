@@ -52,8 +52,6 @@ const FF_HUD_CSS = `
 .ff-bottom>.ff-dock{position:absolute;right:max(12px,env(safe-area-inset-right));bottom:max(12px,env(safe-area-inset-bottom));width:min(380px,calc(100% - 24px));
   display:flex;flex-direction:column;justify-content:flex-end;gap:8px;pointer-events:none}
 .ff-dock>*{pointer-events:auto}
-/* The kit joystick sits inside this layer, not directly under .ks-hud, so it takes its touches back explicitly. */
-.ff-hud>.ks-joystick{pointer-events:auto}
 .ff-dock>.ks-status{position:static;transform:none;max-width:none;text-align:left;pointer-events:none;padding:8px 12px;font:13px/1.45 system-ui,sans-serif}
 /* The tour caption and the follow panel show what the status line announces: it stays for assistive technology only. */
 .ff-camera-tour .ff-dock>.ks-status,.ff-camera-follow .ff-dock>.ks-status{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}

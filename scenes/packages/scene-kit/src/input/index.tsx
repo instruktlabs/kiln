@@ -18,22 +18,23 @@ export function InputProvider(p: { target: RefObject<HTMLElement | null>; action
 export function useInput(): InputApi { return useRuntime().input; }
 /** A movement stick; `axes="throttle"` makes it the only driving input (forward accelerates, back brakes or reverses, sideways steers). */
 export function VirtualJoystick(p: { label: string; axes?: JoystickAxes; runThreshold?: number | null }): JSX.Element {
-  const input = useInput(), active = useRef<number | null>(null), thumb = useRef<HTMLSpanElement>(null);
+  const input = useInput(), active = useRef<number | null>(null), thumb = useRef<HTMLSpanElement>(null), owner = useRef({});
   const center = useRef({ x: 0, y: 0 });
   const move = (event: ReactPointerEvent<HTMLDivElement>) => {
     if (active.current !== event.pointerId) return;
     const dx = event.clientX - center.current.x, dy = p.axes === 'x' ? 0 : event.clientY - center.current.y;
     const value = joystickAxes(dx, dy, 66, p.axes, p.runThreshold === undefined ? .92 : p.runThreshold);
-    input.setMove(value.x, value.y, value.run);
+    input.setMove(value.x, value.y, value.run, owner.current);
     // The thumb stays inside the ring (the throttle axes can both be full at a diagonal).
     const reach = Math.max(1, Math.hypot(value.x, value.y));
     if (thumb.current) thumb.current.style.transform = `translate(${value.x / reach * 38}px, ${-value.y / reach * 38}px)`;
   };
   const release = (event?: ReactPointerEvent<HTMLDivElement>) => {
     if (event && active.current !== event.pointerId) return;
-    active.current = null; input.setMove(0, 0, false); if (thumb.current) thumb.current.style.transform = 'translate(0px, 0px)';
+    active.current = null; input.releaseMove(owner.current); if (thumb.current) thumb.current.style.transform = 'translate(0px, 0px)';
   };
-  useEffect(() => () => { input.setMove(0, 0, false); }, [input]);
+  // A keyboard event can hide this joystick. Its cleanup must not erase that new movement.
+  useEffect(() => () => { input.releaseMove(owner.current); }, [input]);
   return <div className="ks-joystick" role="application" aria-label={p.label}
     onPointerDown={event => {
       if (active.current !== null) return;

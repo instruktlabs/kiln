@@ -7,7 +7,9 @@ export interface ActionDef { id: string; keys: readonly string[]; mode: 'edge' |
 export interface InputApi {
   readonly state: InputState; readonly enabled: boolean;
   setEnabled(on: boolean): void; press(action: 'interact' | 'cancel'): void;
-  setMove(x: number, y: number, run: boolean): void; setAction(id: string, value: number): void; clear(): void;
+  /** An owner lets a control release its movement without clearing a newer writer. */
+  setMove(x: number, y: number, run: boolean, owner?: object): void; releaseMove(owner: object): void;
+  setAction(id: string, value: number): void; clear(): void;
   endFrame(): void; configureActions(actions: readonly ActionDef[]): void;
   key(code: string, down: boolean, repeat?: boolean): boolean;
   setPointerKind(kind: InputState['lastPointer']): void;
@@ -17,14 +19,15 @@ const movement = new Set(['KeyW', 'KeyA', 'KeyS', 'KeyD', 'ArrowUp', 'ArrowDown'
 const clamp = (n: number, min: number, max: number) => Math.max(min, Math.min(max, Number.isFinite(n) ? n : 0));
 export function createInputApi(definitions: readonly ActionDef[] = []): InputApi {
   const actions: Record<string, number> = Object.create(null), defs = new Map<string, ActionDef>(), keys = new Set<string>(), listeners = new Set<() => void>();
-  let enabled = false, disposed = false;
+  let enabled = false, disposed = false, moveOwner: object | undefined;
   const state: InputState = { move: { x: 0, y: 0 }, run: false, look: { x: 0, y: 0 }, zoom: 0, interact: false, cancel: false, helpToggle: false, lastPointer: 'mouse', actions };
   const api: InputApi = {
     state, get enabled() { return enabled && !disposed; },
     setEnabled(on) { if (disposed) return; enabled = on; if (!on) api.clear(); },
-    clear() { keys.clear(); state.move.x = state.move.y = state.look.x = state.look.y = state.zoom = 0; state.run = state.interact = state.cancel = state.helpToggle = false; for (const id in actions) actions[id] = 0; },
+    clear() { keys.clear(); moveOwner = undefined; state.move.x = state.move.y = state.look.x = state.look.y = state.zoom = 0; state.run = state.interact = state.cancel = state.helpToggle = false; for (const id in actions) actions[id] = 0; },
     press(action) { if (enabled && !disposed) state[action] = true; },
-    setMove(x, y, run) { if (!enabled || disposed) return; state.move.x = clamp(x, -1, 1); state.move.y = clamp(y, -1, 1); state.run = run; },
+    setMove(x, y, run, owner) { if (!enabled || disposed) return; moveOwner = owner; state.move.x = clamp(x, -1, 1); state.move.y = clamp(y, -1, 1); state.run = run; },
+    releaseMove(owner) { if (!owner || moveOwner !== owner) return; moveOwner = undefined; state.move.x = state.move.y = 0; state.run = false; },
     setAction(id, value) {
       if (!enabled || disposed) return;
       if (id === 'interact' || id === 'cancel') { if (value > 0) api.press(id); return; }
@@ -45,6 +48,7 @@ export function createInputApi(definitions: readonly ActionDef[] = []): InputApi
       const edge = down && !repeat && !keys.has(code);
       if (down) keys.add(code); else keys.delete(code);
       if (movement.has(code)) {
+        moveOwner = undefined;
         state.move.x = Number(keys.has('KeyD') || keys.has('ArrowRight')) - Number(keys.has('KeyA') || keys.has('ArrowLeft'));
         state.move.y = Number(keys.has('KeyW') || keys.has('ArrowUp')) - Number(keys.has('KeyS') || keys.has('ArrowDown'));
         state.run = keys.has('ShiftLeft') || keys.has('ShiftRight');

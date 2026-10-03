@@ -46,7 +46,8 @@ export const FARM_DESTINATIONS = {
  * again after `settleFrames` still frames), hero depth stand-ins on `standInLayer` (never 0, below the kit's 30 and 31),
  * and casters under `minCasterTexels` shadow texels of the tier's map dropped inside stand-ins and from the herd batches.
  * Heroes of `keepSmallCasters` keep every part through that threshold: the player's own shadow is on screen in every play
- * frame, so at economy his neck, cuffs and boot contact stay in it (review RF-1); their parts still bake into stand-ins.
+ * frame, so at economy his neck, cuffs and boot contact stay in it (review RF-1). The trailer also keeps its drawbar,
+ * hitch ring and hitch pin (D-72); these retained parts still bake into stand-ins.
  */
-export const FARM_SHADOW = { cache: true, standIns: true, minCasterTexels: 2, settleFrames: 30, standInLayer: 1, keepSmallCasters: ['farmer'] as readonly string[] };
+export const FARM_SHADOW = { cache: true, standIns: true, minCasterTexels: 2, settleFrames: 30, standInLayer: 1, keepSmallCasters: ['farmer', 'trailer'] as readonly string[] };
 export const FARM_STRUCTURE = { batchingCell: 96, batchingOffset: 48, woodlandTrees: 843, woodlandCell: 64, woodlandSourceMeshes: 4, bvhLeafSize: 10, resolvePasses: 3, floorDrop: .35, porchFloorDrop: .25, routeSeconds: 30 };

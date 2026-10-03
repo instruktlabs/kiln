@@ -34,6 +34,26 @@ const option = (name: string, fallback: string) => { const at = args.indexOf(nam
 export const LEVERS = { off: 'heroMerge=false&shadowCache=false&standIns=false&casterTexels=0', merge: 'shadowCache=false&standIns=false&casterTexels=0', shadow: 'heroMerge=false' } as const;
 export type Lever = keyof typeof LEVERS;
 
+/** Judge this invocation's requested cells, never stale rows accumulated by another backend/run. */
+export function farmDrawParityVerdict(request: { tiers: readonly string[]; views: readonly string[]; backend: string }, rows: readonly {
+  tier: string; view: string; backend: string; pass: boolean; error?: unknown; messages?: Record<string, readonly unknown[]>;
+}[]) {
+  const required = request.tiers.flatMap(tier => request.views.map(view => `${tier}/${view}/${request.backend}`));
+  const key = (row: typeof rows[number]) => `${row.tier}/${row.view}/${row.backend}`, keys = rows.map(key);
+  const missing = required.filter(value => !keys.includes(value)), extra = keys.filter(value => !required.includes(value));
+  const duplicate = keys.filter((value, i) => keys.indexOf(value) !== i);
+  const failed = rows.filter(row => row.pass !== true || row.error !== undefined || Object.values(row.messages ?? {}).some(messages => messages.some(message => typeof message === 'string' && /^(?:error|pageerror):/.test(message)))).map(key);
+  const pass = required.length > 0 && !missing.length && !extra.length && !duplicate.length && !failed.length;
+  return { scope: 'Requested tier/view cells on this backend only', pass, exitCode: pass ? 0 : 1,
+    expected: required.length, checked: rows.length, missing, extra, duplicate, failed };
+}
+
+export function farmDrawParityMarkdownRow(r: any): string {
+  const number = (value: unknown, exponential = false) => typeof value === 'number' && Number.isFinite(value) ? exponential ? value.toExponential(2) : String(value) : 'unavailable';
+  const lever = (name: Lever) => r.levers?.[name] ? `${number(r.levers[name].vsBefore?.over8)}/${number(r.levers[name].vsBefore?.over32)}` : '-';
+  return `| ${r.backend} | ${r.tier} | ${r.view} | ${r.pass ? 'yes' : '**NO**'} | ${r.b06 ? 'yes' : 'NO'} | ${number(r.passingTiles)}/144 | ${number(r.globalMean, true)} | ${number(r.noiseGlobalMean, true)} | ${number(r.afterVsBefore?.over32)} / ${number(r.repeatVsBefore?.over32)} | ${number(r.afterVsBefore?.differing)} / ${number(r.repeatVsBefore?.differing)} | ${number(r.afterVsBefore?.max)} | ${lever('off')} | ${lever('merge')} | ${lever('shadow')} |`;
+}
+
 /** Exact differences: pixels differing at all, by more than 8 and by more than 32 levels in any channel, the largest delta, and where. */
 export function exactDifference(a: RgbaImage, b: RgbaImage) {
   let differing = 0, over8 = 0, over32 = 0, max = 0, x0 = Infinity, y0 = Infinity, x1 = -1, y1 = -1;
@@ -107,21 +127,24 @@ async function capture(browser: Browser, server: { url: string; port: number }, 
 
 if (import.meta.main) {
   const before = option('--before', 'draw-base'), after = option('--after', 'draw-after'), tiers = option('--tiers', 'minimal,economy,balanced,high').split(',');
-  const views = option('--views', 'all') === 'all' ? FARM_PARITY_VIEWS : option('--views', '').split(','), backend = (option('--backend', 'webgpu') === 'webgl2' ? 'webgl2' : 'webgpu') as FarmBackend;
+  const views = option('--views', 'all') === 'all' ? FARM_PARITY_VIEWS : option('--views', '').split(','), backend = option('--backend', 'webgpu') as FarmBackend;
   const out = resolve(ROOT, option('--out', 'evidence/draw-after/farm/parity')), budget = Number(option('--over32-budget', '100')), decompose = option('--decompose', 'auto');
   for (const v of views) if (!FARM_PARITY_VIEWS.includes(v)) throw new Error(`Unknown Farm parity view ${v}`);
-  if (!(budget >= 0)) throw new Error('--over32-budget must be 0 or more');
+  if (!['webgpu', 'webgl2'].includes(backend)) throw new Error('Unknown Farm parity backend');
+  if (!tiers.length || tiers.some(tier => !['minimal', 'economy', 'balanced', 'high'].includes(tier)) || new Set(tiers).size !== tiers.length || new Set(views).size !== views.length) throw new Error('Select unique valid Farm tiers and views');
+  if (!Number.isSafeInteger(budget) || budget < 0) throw new Error('--over32-budget must be a finite nonnegative integer');
   mkdirSync(out, { recursive: true });
   const servers = { before: await serveOwned(sceneOutput('farm', before, 'test')), after: await serveOwned(sceneOutput('farm', after, 'test')) };
   const browser = await launchChrome({ workspace: ROOT, name: 'farm-draw-parity', windowSize: [1280, 720] }), results: any[] = [], tag = backend === 'webgl2' ? '-webgl2' : '';
+  const request = { tiers, views, backend };
   const json = resolve(out, 'parity.json'), key = (r: any) => `${r.tier}|${r.view}|${r.backend}`;
   const flush = () => {
     const previous: any[] = existsSync(json) ? JSON.parse(readFileSync(json, 'utf8')).results ?? [] : [], fresh = new Set(results.map(key));
     const all = [...previous.filter(r => !fresh.has(key(r))), ...results];
-    writeFileSync(json, JSON.stringify({ before, after, size: [1280, 720], levers: LEVERS, over32Budget: budget, results: all }, null, 1) + '\n');
-    const lever = (r: any, name: Lever) => r.levers?.[name] ? `${r.levers[name].vsBefore.over8}/${r.levers[name].vsBefore.over32}` : '-';
+    writeFileSync(json, JSON.stringify({ before, after, size: [1280, 720], levers: LEVERS, over32Budget: budget, results: all,
+      latestRun: { request, ...farmDrawParityVerdict(request, results) } }, null, 1) + '\n');
     writeFileSync(resolve(out, 'parity.md'), ['| Backend | Tier | View | Pass | B-06 | Tiles | Mean Δ | Repeat mean | >32 levels (after / repeat) | Pixels differing (after / repeat) | Max Δ | >8 / >32 with levers off | merge alone | shadow alone |', '|---|---|---|---|---|---|---|---|---|---|---|---|---|---|',
-      ...all.sort((a, b) => a.backend.localeCompare(b.backend) || tiers.indexOf(a.tier) - tiers.indexOf(b.tier) || FARM_PARITY_VIEWS.indexOf(a.view) - FARM_PARITY_VIEWS.indexOf(b.view)).map(r => `| ${r.backend} | ${r.tier} | ${r.view} | ${r.pass ? 'yes' : '**NO**'} | ${r.b06 ? 'yes' : 'NO'} | ${r.passingTiles}/144 | ${r.globalMean.toExponential(2)} | ${r.noiseGlobalMean.toExponential(2)} | ${r.afterVsBefore.over32} / ${r.repeatVsBefore.over32} | ${r.afterVsBefore.differing} / ${r.repeatVsBefore.differing} | ${r.afterVsBefore.max} | ${lever(r, 'off')} | ${lever(r, 'merge')} | ${lever(r, 'shadow')} |`)].join('\n') + '\n');
+      ...all.sort((a, b) => a.backend.localeCompare(b.backend) || tiers.indexOf(a.tier) - tiers.indexOf(b.tier) || FARM_PARITY_VIEWS.indexOf(a.view) - FARM_PARITY_VIEWS.indexOf(b.view)).map(farmDrawParityMarkdownRow)].join('\n') + '\n');
   };
   try {
     for (const tier of tiers) for (const view of views) {
@@ -129,10 +152,10 @@ if (import.meta.main) {
       try {
         const pin = FARM_WORKLOADS.has(view) ? await discover(browser, servers.before, tier, backend, view) : null;
         const a = await capture(browser, servers.before, tier, backend, view, pin), r = await capture(browser, servers.before, tier, backend, view, pin), b = await capture(browser, servers.after, tier, backend, view, pin);
-        const metric = compareParityImages(a.png, r.png, b.png), afterVsBefore = exactDifference(a.png, b.png), repeatVsBefore = exactDifference(a.png, r.png);
-        const lines = { over32: afterVsBefore.over32, noise: repeatVsBefore.over32, budget, pass: afterVsBefore.over32 <= repeatVsBefore.over32 + budget };
+        const metric = compareParityImages(a.png, r.png, b.png, { over32Budget: budget }), afterVsBefore = exactDifference(a.png, b.png), repeatVsBefore = exactDifference(a.png, r.png);
+        const lines = metric.lines;
         const differs = afterVsBefore.differing > repeatVsBefore.differing || afterVsBefore.over8 > repeatVsBefore.over8;
-        const row: any = { tier, view, backend, pass: metric.pass && lines.pass, b06: metric.pass, lines, globalMean: metric.globalMean, noiseGlobalMean: metric.noiseGlobalMean, passingTiles: metric.passingTiles,
+        const row: any = { tier, view, backend, pass: metric.pass, b06: metric.pass, luminancePass: metric.luminancePass, parityScope: metric.scope, lines, globalMean: metric.globalMean, noiseGlobalMean: metric.noiseGlobalMean, passingTiles: metric.passingTiles,
           failingTiles: metric.tiles.filter(t => !t.pass).map(t => ({ x: t.x, y: t.y, mean: +t.mean.toExponential(2), threshold: +t.threshold.toExponential(2) })), afterVsBefore, repeatVsBefore, differs,
           pose: a.pose, settle: { before: a.settle, after: b.settle }, counts: { before: a.counts, after: b.counts }, messages: { before: a.messages, repeat: r.messages, after: b.messages } };
         if (differs || !row.pass) {
@@ -143,8 +166,8 @@ if (import.meta.main) {
         if (decompose === 'always' || (decompose === 'auto' && differs)) {
           row.levers = {};
           for (const [lever, query] of Object.entries(LEVERS) as [Lever, string][]) {
-            const c = await capture(browser, servers.after, tier, backend, view, a.pose, query), m = compareParityImages(a.png, r.png, c.png), vs = exactDifference(a.png, c.png);
-            row.levers[lever] = { query, b06: m.pass, passingTiles: m.passingTiles, globalMean: m.globalMean, vsBefore: vs, vsAfter: exactDifference(b.png, c.png), counts: c.counts, messages: c.messages };
+            const c = await capture(browser, servers.after, tier, backend, view, a.pose, query), m = compareParityImages(a.png, r.png, c.png, { over32Budget: budget }), vs = exactDifference(a.png, c.png);
+            row.levers[lever] = { query, b06: m.pass, luminancePass: m.luminancePass, parityScope: m.scope, passingTiles: m.passingTiles, globalMean: m.globalMean, vsBefore: vs, vsAfter: exactDifference(b.png, c.png), counts: c.counts, messages: c.messages };
             if (vs.differing > repeatVsBefore.differing) { writePng(resolve(out, `${name}-${lever}.png`), c.png); writePng(resolve(out, `${name}-${lever}-crop.png`), cropSheet(a.png, c.png).image); }
           }
         }
@@ -157,4 +180,6 @@ if (import.meta.main) {
       flush();
     }
   } finally { await browser.close(); await servers.before.close(); await servers.after.close(); flush(); }
+  const verdict = farmDrawParityVerdict(request, results);
+  console.log(JSON.stringify(verdict)); if (!verdict.pass) process.exitCode = verdict.exitCode;
 }

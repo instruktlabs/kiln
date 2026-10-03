@@ -5,7 +5,7 @@ import { FARM_STRINGS } from './strings';
 
 /**
  * Farm-scoped layout (M3a, D-22). The HUD lays out from 360 px wide in both orientations:
- * - the toolbar is static inside a full-HUD layer, so the help panel sizes against the HUD (GG-007) and stacks above the controls;
+ * - the toolbar shares the full-HUD layer; the kit anchors the help panel to that HUD and stacks it above the controls;
  * - the overview camera controls sit bottom-left and wrap, clear of the toolbar;
  * - the status line rises above the overview camera controls; in touch play it sits under the toolbar, away from the
  *   joystick, the context button and the player (beside the toolbar in a short landscape scene); it never takes input.

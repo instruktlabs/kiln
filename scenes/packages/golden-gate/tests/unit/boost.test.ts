@@ -1,5 +1,6 @@
 import { expect, test } from 'bun:test';
-import { DRIVING_DATA, LAYOUT } from '../../src/data';
+import { DRIVING_DATA } from '../../src/data';
+import { LAYOUT } from '../../scripts/authored-layout';
 import { createCar, stepCar, type CarInput } from '../../src/play/car';
 import { DIMS } from './helpers/vehicle-dims';
 

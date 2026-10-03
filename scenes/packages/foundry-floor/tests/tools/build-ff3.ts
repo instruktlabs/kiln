@@ -26,7 +26,7 @@ import { CEILING } from './build.ts';
 import { chunkRecords, moduleLabel } from './build-campus.ts';
 import type { ChunkRecord } from './build-campus.ts';
 import { FF3_RELEASE, FF3_STAGED_DIR, stageFf3 } from '../../scripts/stage-ff3.ts';
-import { campusStartupModel } from '../../src/campus/loading';
+import { campusStartupModel } from '../../src/campus/loading-plan';
 import { writePublicReceipt } from './public-receipt';
 
 export type BuildMode = 'public' | 'test' | 'dev';

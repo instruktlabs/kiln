@@ -1,15 +1,46 @@
 // Node-only helpers. This entry is never re-exported by the browser testing module.
 import assert from 'node:assert/strict';
-import { mkdir, mkdtemp, writeFile } from 'node:fs/promises';
-import { resolve, relative, isAbsolute, sep } from 'node:path';
+import { constants } from 'node:fs';
+import { access, mkdir, mkdtemp, rm, stat, writeFile } from 'node:fs/promises';
+import { resolve, relative, isAbsolute, sep, posix, win32 } from 'node:path';
 import { createServer } from 'node:http';
 import puppeteer from 'puppeteer-core';
-import type { Browser, Page, HTTPRequest } from 'puppeteer-core';
+import type { Browser, Page, HTTPRequest, Viewport } from 'puppeteer-core';
 import axe from 'axe-core';
 // @ts-ignore Shared Node-builtins-only implementation copied into standalone outputs.
 import { startStaticServer } from '../../../../scripts/static-server.mjs';
+// @ts-ignore Shared Node-only browser configuration, also used by website scene checks.
+import { sceneBrowserOptions } from '../../../../scripts/browser-options.mjs';
 
-export const INSTALLED_CHROME = 'C:/Program Files/Google/Chrome/Application/chrome.exe';
+/** Ordered local candidates only: never installs a browser or invokes a shell. */
+export function chromeExecutableCandidates(platform: NodeJS.Platform, env: NodeJS.ProcessEnv): string[] {
+  const windows = platform === 'win32', paths = windows ? win32 : posix;
+  const names = windows ? ['chrome.exe', 'chromium.exe'] : ['google-chrome-stable', 'google-chrome', 'chromium', 'chromium-browser', 'chrome'];
+  const path = env.PATH ?? (windows ? env.Path : '') ?? '';
+  const candidates = path.split(windows ? ';' : ':').filter(Boolean).flatMap(directory => names.map(name => paths.join(directory.replace(/^"(.*)"$/, '$1'), name)));
+  if (windows) {
+    for (const directory of [env.ProgramFiles ?? 'C:/Program Files', env['ProgramFiles(x86)'] ?? 'C:/Program Files (x86)', env.LOCALAPPDATA]) {
+      if (directory) candidates.push(win32.join(directory, 'Google/Chrome/Application/chrome.exe'));
+    }
+  } else if (platform === 'darwin') candidates.push('/Applications/Google Chrome.app/Contents/MacOS/Google Chrome', '/Applications/Chromium.app/Contents/MacOS/Chromium');
+  else candidates.push('/opt/google/chrome/chrome', '/usr/bin/google-chrome', '/usr/bin/chromium', '/usr/bin/chromium-browser', '/snap/bin/chromium');
+  return [...new Set(candidates)];
+}
+/** Explicit path wins over KILN_CHROME, CHROME and PUPPETEER_EXECUTABLE_PATH, then installed Chrome/Chromium discovery. */
+export async function resolveChromeExecutable(o: { executablePath?: string; env?: NodeJS.ProcessEnv; platform?: NodeJS.Platform } = {}): Promise<string> {
+  const env = o.env ?? process.env, platform = o.platform ?? process.platform;
+  const configured = o.executablePath ?? env.KILN_CHROME ?? env.CHROME ?? env.PUPPETEER_EXECUTABLE_PATH;
+  const executable = async (path: string) => {
+    try { await access(path, platform === 'win32' ? constants.F_OK : constants.X_OK); return (await stat(path)).isFile(); }
+    catch { return false; }
+  };
+  if (configured !== undefined) {
+    if (!configured || !await executable(configured)) throw new Error('Configured Chrome executable is not an executable file; set executablePath or KILN_CHROME to an installed Chrome/Chromium binary');
+    return configured;
+  }
+  for (const candidate of chromeExecutableCandidates(platform, env)) if (await executable(candidate)) return candidate;
+  throw new Error('No installed Chrome/Chromium found; set executablePath or KILN_CHROME to its executable (no browser was downloaded)');
+}
 export const CORRECTNESS_TIMEOUT = 120_000;
 /** A loopback port range a runner owns (GG-001 / FF-001): each builder serves only in its own range. */
 export interface PortRange { first: number; last: number }
@@ -53,6 +84,8 @@ export interface SceneContractTestReport {
 }
 const expectedFallback = /THREE\.WebGPURenderer: WebGPU is not available, running under WebGL2 backend\./;
 const browserProfiles = new WeakMap<Browser, string>();
+/** The temporary profile owned by launchChrome; retained for evidence after close. */
+export function chromeProfile(browser: Browser): string | undefined { return browserProfiles.get(browser); }
 export function workspacePath(workspace: string, path: string): string {
   const base = resolve(workspace), value = resolve(base, path), rel = relative(base, value);
   if (rel === '..' || rel.startsWith('..' + sep) || isAbsolute(rel)) throw new Error('Test output must remain in the scenes workspace');
@@ -63,15 +96,34 @@ export function assertOwnedUrl(url: string, ownedPorts: ReadonlySet<number>, por
   if (value.protocol !== 'http:' || value.hostname !== '127.0.0.1' || value.username || value.password || port < first || port > last || !ownedPorts.has(port)) throw new Error(`Browser tests may only connect to their own loopback server on ports ${first}–${last}`);
 }
 /** `windowSize` adds an explicit `--window-size` (owner rule 2026-09-29 11:40: headless runs on the dev PC name their window size); `args` are extra Chrome flags. Both optional and additive. */
-export async function launchChrome(o: { workspace?: string; executablePath?: string; headless?: boolean; name?: string; windowSize?: readonly [number, number]; args?: readonly string[] } = {}): Promise<Browser> {
+export async function launchChrome(o: { workspace?: string; executablePath?: string; headless?: boolean; name?: string; windowSize?: readonly [number, number]; defaultViewport?: Viewport | null; args?: readonly string[] } = {}): Promise<Browser> {
+  const configured = sceneBrowserOptions(o);
+  const executablePath = await resolveChromeExecutable(o);
   const workspace = o.workspace ?? process.cwd(), scratch = workspacePath(workspace, '.tmp');
   await mkdir(scratch, { recursive: true });
   const profile = await mkdtemp(workspacePath(scratch, `${o.name ?? 'contract'}-chrome-`));
-  const browser = await puppeteer.launch({ executablePath: o.executablePath ?? INSTALLED_CHROME, headless: o.headless ?? true, pipe: true,
-    userDataDir: profile,
-    args: ['--enable-unsafe-webgpu', '--no-first-run', '--no-default-browser-check', ...(o.windowSize ? [`--window-size=${o.windowSize[0]},${o.windowSize[1]}`] : []), ...(o.args ?? [])],
-    env: { ...process.env, TEMP: scratch, TMP: scratch },
-  });
+  const cleanup = () => rm(profile, { recursive: true, force: true, maxRetries: 5, retryDelay: 200 });
+  let browser: Browser;
+  try {
+    browser = await puppeteer.launch({ executablePath, headless: configured.headless, pipe: true,
+      userDataDir: profile, ...(o.defaultViewport !== undefined ? { defaultViewport: o.defaultViewport } : {}),
+      args: ['--enable-unsafe-webgpu', '--no-first-run', '--no-default-browser-check', ...(o.windowSize ? [`--window-size=${o.windowSize[0]},${o.windowSize[1]}`] : []), ...configured.args],
+      env: { ...process.env, TEMP: scratch, TMP: scratch },
+    });
+  } catch (error) {
+    try { await cleanup(); } catch (cleanupError) { throw new AggregateError([error, cleanupError], 'Chrome launch failed and its temporary profile could not be removed'); }
+    throw error;
+  }
+  const close = browser.close.bind(browser); let closing: Promise<void> | undefined;
+  browser.close = () => closing ??= (async () => {
+    let failed = false, closeError: unknown;
+    try { await close(); } catch (error) { failed = true; closeError = error; }
+    try { await cleanup(); } catch (error) {
+      if (failed) throw new AggregateError([closeError, error], 'Chrome close failed and its temporary profile could not be removed');
+      throw error;
+    }
+    if (failed) throw closeError;
+  })();
   browserProfiles.set(browser, profile);
   return browser;
 }

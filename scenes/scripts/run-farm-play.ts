@@ -7,6 +7,7 @@ import { assertOwnedUrl, launchChrome, serveOwned, waitForReady, waitFrames, wor
 import { DOOR_LABELS, doorPrompt, doorStatus, FARM_STRINGS } from '../packages/farm/src/ui/strings';
 import { FARM_CAMERA, FARM_DESTINATIONS, FARM_DOORS, FARM_WALK } from '../packages/farm/src/constants';
 import { bridgeCenter } from '../packages/farm/src/world/site-layout';
+import { closeExtraStartupPages } from './browser-startup';
 
 /**
  * B-08 desktop play flows (SPEC 18) on the rewrite's test output, driven by real puppeteer keyboard
@@ -131,7 +132,7 @@ export async function runFarmPlay(o: { workspace?: string; backend: Backend; lab
     hosted = await serveOwned(root); ledger.server = { port: hosted.port, pid: process.pid };
     browser = await launchChrome({ workspace, name: `b08-${o.backend}`, windowSize: [WIDTH, HEIGHT] }); ledger.browserPid = browser.process()?.pid;
     ledger.browserProfile = browser.process()?.spawnargs.find(arg => arg.startsWith('--user-data-dir='))?.slice('--user-data-dir='.length); report.browser = await browser.version();
-    for (const blank of await browser.pages()) await blank.close();
+    await closeExtraStartupPages(browser);
     const p = page = await browser.newPage(); await configurePage(p, new Set([hosted.port]), diagnostics);
     const url = new URL(hosted.url); url.searchParams.set('tier', 'high'); if (o.backend === 'webgl2') url.searchParams.set('backend', 'webgl2'); report.url = url.href;
     await p.goto(url.href, { waitUntil: 'load', timeout: TIMEOUT }); await waitForReady(p);

@@ -2,8 +2,8 @@
 import { disposeLoadedModels } from '@kiln-scenes/scene-kit';
 import type { LoadedPack, PackReader } from '@kiln-scenes/scene-kit';
 import type { GLTF } from 'three/addons/loaders/GLTFLoader.js';
-/** The exterior uses only these explicitly named pack families. Interior models are verified on entry. */
-export const campusStartupModel=({path}:{path:string})=>/^models\/(structures|vehicles|vegetation|freight)\//.test(path);
+import { campusStartupModel } from './loading-plan';
+export { campusStartupModel } from './loading-plan';
 
 /** Atomically attach a complete interior; failed/cancelled loads never leak a partial cell into the pack. */
 export async function loadInteriorModels(pack:LoadedPack,reader:PackReader,signal:AbortSignal){

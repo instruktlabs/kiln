@@ -11,7 +11,7 @@ import { resolve } from 'node:path';
 import { Vector3 } from 'three/webgpu';
 import { createCollisionWorld, samplePath } from '@kiln-scenes/scene-kit';
 import type { Pose } from '@kiln-scenes/scene-kit';
-import { LAYOUT } from '../../src/data';
+import { LAYOUT } from '../../scripts/authored-layout';
 import { BRIDGE } from '../../src/constants';
 import { buildFlights, flightPaths } from '../../src/camera/flights';
 import { decodePng } from '../../src/world/png16';
@@ -36,7 +36,7 @@ function bridgeBytes(): Uint8Array {
 
 interface Sample { t: number; position: Vector3; target: Vector3 }
 function sampleFlight(index: number): Sample[] {
-  const def = flightPaths()[index]!, out: Sample[] = [], pose: Pose = { position: [0, 0, 0], target: [0, 0, 0] };
+  const def = flightPaths(LAYOUT)[index]!, out: Sample[] = [], pose: Pose = { position: [0, 0, 0], target: [0, 0, 0] };
   const count = Math.ceil(def.seconds * SAMPLES_PER_SECOND);
   for (let i = 0; i <= count; i++) {
     samplePath(def, i / count, pose);
@@ -58,7 +58,7 @@ describe('guided flyovers', () => {
     /** Height of the highest terrain surface (any tier set) or the water under a point. */
     const ground = (p: Vector3) => { from.set(p.x, 3000, p.z); down.set(p.x, -200, p.z); const d = terrain.rayDistance(from, down); return Math.max(0, 3000 - d); };
     const report: Record<string, unknown> = {};
-    flightPaths().forEach((def, index) => {
+    flightPaths(LAYOUT).forEach((def, index) => {
       const samples = sampleFlight(index);
       let minTerrain = Infinity, minBridge = Infinity, maxTurn = 0, maxPitch = 0, minTarget = Infinity, maxSpeed = 0, minDeck = Infinity, maxFlow = 0, speed = 0;
       let previous: Vector3 | null = null;
@@ -113,7 +113,7 @@ describe('guided flyovers', () => {
     const scene = JSON.parse(readFileSync(resolve(STAGED, 'data/scene.json'), 'utf8')) as { terrain: { collision: { path: string; bounds: [number, number, number, number]; metresPerUnit: number; size: [number, number] } } };
     const spec = scene.terrain.collision, bytes = readFileSync(resolve(STAGED, spec.path));
     const png = await decodePng(bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength) as ArrayBuffer);
-    const flights = buildFlights(heightFieldFromU16(png.data as Uint16Array, png.width, png.height, spec.bounds, spec.metresPerUnit));
+    const flights = buildFlights(heightFieldFromU16(png.data as Uint16Array, png.width, png.height, spec.bounds, spec.metresPerUnit), LAYOUT);
     for (const info of Object.values(flights.info)) expect(info.minClearance).toBeGreaterThanOrEqual(LAYOUT.flights.clearance.terrainMinimum);
     expect(flights.info['fog-roll'].requiresPreset).toBe('fog');
   });

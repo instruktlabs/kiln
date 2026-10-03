@@ -3,12 +3,14 @@
 // never stages: it takes a sealed standalone (the site's pinned input by default), checks its pack against the sealed
 // receipt, builds the current source in public mode, copies the pack unchanged and writes a new public receipt whose
 // code fields are measured here and whose pack fields are carried from the sealed receipt.
-// The output is dist/revision2-code/standalone. It is a build, not a qualification: no browser check runs here.
+// The default output is dist/revision2-code/standalone. --out-dir selects a separate owned dist directory.
+// It is a build, not a qualification: no browser check runs here.
 // Run from the scenes root:
-//   ./scripts/toolchain-run.ps1 packages/foundry-floor/tests/tools/rebuild-code.ts [sealed standalone directory]
+//   ./scripts/toolchain-run.ps1 packages/foundry-floor/tests/tools/rebuild-code.ts [sealed standalone directory] [--out-dir packages/foundry-floor/dist/<label>]
 import { cp, readdir, readFile, rm, stat, writeFile } from 'node:fs/promises';
+import { realpathSync } from 'node:fs';
 import { createHash } from 'node:crypto';
-import { relative, resolve } from 'node:path';
+import { dirname, isAbsolute, relative, resolve } from 'node:path';
 import { build } from 'vite';
 import type { Rollup } from 'vite';
 import { sceneStandaloneConfig } from '../../../scene-kit/src/build/index.ts';
@@ -22,6 +24,51 @@ import { writePublicReceipt } from './public-receipt';
 
 const PAGE_ROOT = resolve(PACKAGE_ROOT, 'standalone-campus');
 const DIST = resolve(PACKAGE_ROOT, 'dist/revision2-code');
+
+const contains = (parent: string, child: string) => {
+  const path = relative(parent, child);
+  return path === '' || (path !== '..' && !path.startsWith('../') && !path.startsWith('..\\') && !isAbsolute(path));
+};
+function canonicalPath(path: string): string {
+  try { return realpathSync(path); }
+  catch (error) {
+    if ((error as NodeJS.ErrnoException).code !== 'ENOENT' || dirname(path) === path) throw error;
+    return resolve(canonicalPath(dirname(path)), relative(dirname(path), path));
+  }
+}
+/** Validate the directory that will be replaced before reading or deleting any build input. */
+export function codeRebuildDirectory(sealed: string, outputDir = DIST): string {
+  const directory = resolve(SCENES_ROOT, outputDir);
+  const owned = resolve(PACKAGE_ROOT, 'dist'), realOwned = resolve(canonicalPath(PACKAGE_ROOT), 'dist');
+  const realDirectory = canonicalPath(directory), input = canonicalPath(resolve(sealed));
+  if (directory === owned || !contains(owned, directory) || realDirectory === realOwned || !contains(realOwned, realDirectory)) throw new Error('Expected an owned output directory below foundry-floor/dist');
+  if (contains(realDirectory, input) || contains(input, realDirectory)) throw new Error('Sealed input and output directory must not overlap');
+  return directory;
+}
+
+/** Replace only this builder's public output and receipt; a test build may share the label directory. */
+export async function prepareCodeRebuildDirectory(sealed: string, outputDir?: string): Promise<string> {
+  const directory = codeRebuildDirectory(sealed, outputDir);
+  await Promise.all(['standalone', 'receipt'].map(name => rm(resolve(directory, name), { recursive: true, force: true })));
+  return directory;
+}
+
+export function codeRebuildArguments(args: string[]): { sealed?: string; outputDir?: string } {
+  const result: { sealed?: string; outputDir?: string } = {};
+  const usage = () => new Error('Usage: rebuild-code.ts [sealed standalone directory] [--out-dir packages/foundry-floor/dist/<label>]');
+  for (let i = 0; i < args.length; i++) {
+    const argument = args[i]!;
+    if (argument === '--out-dir') {
+      const value = args[++i];
+      if (result.outputDir !== undefined || !value || value.startsWith('--')) throw usage();
+      result.outputDir = value;
+    } else {
+      if (argument.startsWith('--') || result.sealed !== undefined) throw usage();
+      result.sealed = argument;
+    }
+  }
+  return result;
+}
 
 async function directoryBytes(path: string): Promise<{ files: number; bytes: number }> {
   let files = 0, bytes = 0;
@@ -40,13 +87,14 @@ interface SealedReceipt {
   moversChunk: { note: string };
 }
 
-export async function rebuildCode(sealed: string, options: { quiet?: boolean } = {}) {
+export async function rebuildCode(sealed: string, options: { quiet?: boolean; outputDir?: string } = {}) {
+  const directory = codeRebuildDirectory(sealed, options.outputDir);
   const receipt = JSON.parse(await readFile(resolve(sealed, 'bundle-public.json'), 'utf8')) as SealedReceipt;
   if (receipt.mode !== 'public') throw new Error('Expected a sealed public receipt');
   const packSha256 = createHash('sha256').update(await readFile(resolve(sealed, 'assets/pack.json'))).digest('hex');
   if (packSha256 !== receipt.packSha256) throw new Error('Sealed pack differs from its receipt');
-  const output = resolve(DIST, 'standalone');
-  await rm(DIST, { recursive: true, force: true });
+  const output = resolve(directory, 'standalone');
+  await prepareCodeRebuildDirectory(sealed, directory);
   const built = await build({ ...sceneStandaloneConfig({ root: PAGE_ROOT, outDir: output, mode: 'public' }), configFile: false, logLevel: options.quiet ? 'warn' : 'info' });
   const rollup = (Array.isArray(built) ? built[0] : built) as Rollup.RollupOutput;
   const chunks = await chunkRecords(output, rollup);
@@ -73,7 +121,7 @@ export async function rebuildCode(sealed: string, options: { quiet?: boolean } =
   const initialCode = { bytes: startupCode.bytes + exteriorCode.bytes, gzipBytes: startupCode.gzipBytes + exteriorCode.gzipBytes };
   const moversChunk = [...new Set(where.movers!.map(m => m.chunk))];
   const withinCeiling = initialCode.bytes <= CEILING.bytes && initialCode.gzipBytes <= CEILING.gzipBytes;
-  const record = writePublicReceipt(output, resolve(DIST, 'receipt/bundle-public.json'), {
+  const record = writePublicReceipt(output, resolve(directory, 'receipt/bundle-public.json'), {
     mode: 'public', output: relative(PACKAGE_ROOT, output).replace(/\\/g, '/'), page: relative(PACKAGE_ROOT, PAGE_ROOT).replace(/\\/g, '/'), release: receipt.release, built: new Date().toISOString(),
     chunks: chunks.map(c => ({ ...c, ceiling: againstCeiling(c) })),
     startupCode, exteriorCode, interiorCode, initialCode, initialChunks: chunks.filter(c => c.role !== 'interior').map(c => c.name),
@@ -97,8 +145,9 @@ export async function rebuildCode(sealed: string, options: { quiet?: boolean } =
 }
 
 if (import.meta.main) {
-  const sealed = resolve(process.argv[2] ?? resolve(SCENES_ROOT, '.cache/site-inputs/foundry-floor/standalone'));
-  const record = await rebuildCode(sealed, { quiet: true });
+  const args = codeRebuildArguments(process.argv.slice(2));
+  const sealed = resolve(args.sealed ?? resolve(SCENES_ROOT, '.cache/site-inputs/foundry-floor/standalone'));
+  const record = await rebuildCode(sealed, { quiet: true, outputDir: args.outputDir });
   console.log(JSON.stringify({ output: record.output, initialCode: record.initialCode, codeBytes: record.codeBytes, codeGzipBytes: record.codeGzipBytes, outputFiles: record.outputFiles, outputBytes: record.outputBytes, packSha256: record.packSha256 }));
   for (const c of record.chunks) console.log(`  ${c.role.padEnd(8)} ${c.kind.padEnd(13)} ${String(c.bytes).padStart(9)} B  ${String(c.gzipBytes).padStart(8)} B gzip  ${c.name}`);
 }

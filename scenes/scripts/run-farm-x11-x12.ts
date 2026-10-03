@@ -17,6 +17,7 @@ import { resolve } from 'node:path';
 import { gzipSync } from 'node:zlib';
 import type { Browser, CDPSession, Page } from 'puppeteer-core';
 import { launchChrome, serveOwned, workspacePath } from '../packages/scene-kit/src/testing/node';
+import { closeExtraStartupPages } from './browser-startup';
 
 const argv = process.argv.slice(2), option = (name: string, fallback: string) => { const at = argv.indexOf(name); return at < 0 ? fallback : argv[at + 1] ?? fallback; };
 const workspace = resolve(import.meta.dir, '..'), label = option('--label', 'm4'), release = option('--release', 'r34');
@@ -158,7 +159,7 @@ try {
   for (const root of Object.values(builds)) assert(existsSync(resolve(root, 'index.html')), `${root} is built`);
   const [publicHost, testHost] = [await serveOwned(builds.public), await serveOwned(builds.test)]; servers.push(publicHost!, testHost!);
   browser = await launchChrome({ workspace, name: 'farm-x11-x12', windowSize: [WIDTH, HEIGHT] });
-  for (const blank of await browser.pages()) await blank.close();
+  await closeExtraStartupPages(browser);
   report.browser = await browser.version(); report.ports = servers.map(s => s.port);
   if (run('x11')) {
     const loadBefore = await loadSample(), loads: unknown[] = [];

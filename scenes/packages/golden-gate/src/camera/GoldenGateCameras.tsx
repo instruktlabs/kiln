@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useThree } from '@react-three/fiber';
-import { LAYOUT } from '../data';
 import { Box3, Vector3 } from 'three/webgpu';
 import type { PerspectiveCamera } from 'three/webgpu';
 import { OrbitRig, PathRig, SystemOrder, usePlayMode, useSceneRootRef, useSystem } from '@kiln-scenes/scene-kit';
@@ -40,7 +39,7 @@ export function GoldenGateCameras({ world, initialView, initialFlight, initialFl
   const [mode, setModeState] = useState<CameraMode>('orbit'), modeRef = useRef<CameraMode>('orbit'), path = useRef<PathHandle | null>(null), initialized = useRef(false);
   const pose = useRef<{ position: Vec3; target: Vec3; fov: number } | null>(null);
   const setMode = (next: CameraMode) => { modeRef.current = next; setModeState(next); session.hud.set({ flight: next === 'flight' ? path.current?.playing as FlightName ?? null : null }); };
-  const flights = useMemo(() => buildFlights(world.field), [world]);
+  const flights = useMemo(() => buildFlights(world.field, world.layout), [world]);
   const floor = useMemo(() => (x: number, z: number) => surfaceHeight(world.field, x, z), [world]);
 
   const handBack = (from: Pose | { position: Vec3; target: Vec3; fov?: number }) => {
@@ -114,7 +113,7 @@ export function GoldenGateCameras({ world, initialView, initialFlight, initialFl
   });
 
   return <>
-    <OrbitRig rigRef={session.orbit} active={mode === 'orbit' && !playing} target={NAMED_CAMERAS[LAYOUT.cameras.default]!.target} minDistance={CAMERA.orbit.minDistance} maxDistance={CAMERA.orbit.maxDistance}
+    <OrbitRig rigRef={session.orbit} active={mode === 'orbit' && !playing} target={NAMED_CAMERAS[world.layout.cameras.default]!.target} minDistance={CAMERA.orbit.minDistance} maxDistance={CAMERA.orbit.maxDistance}
       maxPolar={CAMERA.orbit.maxPolar} pan floor={floor} clearance={CAMERA.orbit.clearance} bounds={TARGET_BOUNDS}/>
     <PathRig paths={flights.paths} active={mode === 'flight'} interruptible pathRef={path} time={session.motion.now}
       onInterrupt={current => { setMode('orbit'); handBack(current); }}

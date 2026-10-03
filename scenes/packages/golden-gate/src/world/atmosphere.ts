@@ -45,8 +45,11 @@ export interface Atmosphere {
 // TSL graphs are typed loosely: @types/three's node generics add no safety to shader construction.
 type N = any; // eslint-disable-line @typescript-eslint/no-explicit-any
 
-function createSky(u: AtmosphereUniforms, environment: boolean): SkyMesh {
+export function createSky(u: AtmosphereUniforms, environment: boolean): SkyMesh {
   const sky = new SkyMesh();
+  // SkyMesh forces clip z=w, which is the near plane under reversed depth.
+  // Drawing first without depth tests/writes works for both depth conventions.
+  sky.renderOrder = -1e6; sky.material.depthTest = false; sky.material.depthWrite = false;
   sky.name = environment ? 'environment-sky' : 'sky';
   sky.cloudCoverage.value = 0; // no clouds: SkyMesh's only time-dependent branch stays off
   const clear = sky.material.colorNode as N;

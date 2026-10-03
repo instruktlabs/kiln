@@ -5,7 +5,7 @@ import { keepsShadowMask, layerBit, ShadowLayers, suppressedCasters } from './la
 import type { ShadowLayerSet } from './layers';
 
 type Shadow = LightShadow & { shadowNode?: Node; filterNode?: unknown; map?: unknown };
-interface Watch { m: Float64Array; v: boolean; c: boolean; iv: number; n: number; live: boolean; quiet: number }
+interface Watch { m: Float64Array; v: boolean; c: boolean; iv: number; n: number; morph?: number[]; live: boolean; quiet: number }
 export interface CachedSunShadowOptions {
   light: DirectionalLight; liveMapSize?: number; settleFrames?: number; layers?: ShadowLayerSet;
   /**
@@ -16,9 +16,19 @@ export interface CachedSunShadowOptions {
 }
 export interface CachedSunShadowStats { staticRenders: number; liveRenders: number; staticCasters: number; liveCasters: number; readonly pendingSettle: number; invalidations: number; reasons: Record<string, number> }
 export interface CachedSunShadowTrackOptions {
-  /** Casters under a movable() node are watched: one whose matrix, visibility, casting or instances change goes live until still. */
+  /**
+   * Casters under a movable() node are watched: matrixWorld, ancestor visibility, castShadow, instanceMatrix.version,
+   * instance count and morphTargetInfluences changes go live until still. Watched skins remain live. Morph weights are
+   * compared exactly; the matrix tolerance does not apply to them. One current snapshot per watched caster is retained,
+   * replaced only on change and released with untrack/dispose; geometry/attribute contents are not scanned.
+   */
   movable?(n: Object3D): boolean;
-  /** Casters under a live() node always draw in the live map: motion the watch cannot see (instance attributes, vertex or morph animation). */
+  /**
+   * Casters under a live() node always draw in the live map while shown. Use on the first track for continuous motion
+   * outside the watch: shader/positionNode uniforms, custom instance attributes, GPU deformation or geometry edits.
+   * The cache does not inspect shader graphs or guarantee that a material's deformation supports the shadow pass.
+   * For a discrete edit of a static caster, call invalidate() after the edit instead. live takes priority over movable.
+   */
   live?(n: Object3D): boolean;
 }
 export interface TrackedCasters { readonly added: number; untrack(): void }
@@ -31,6 +41,7 @@ export interface CachedSunShadow {
    * the meshes this call tagged and re-arms the static map (a world replaced while the cache survives).
    */
   track(root: Object3D, o?: CachedSunShadowTrackOptions): TrackedCasters;
+  /** Re-render static casters after an unobserved discrete change; continuous unobserved motion belongs in live(). */
   invalidate(reason: string): void; prime(): void; update(): void; dispose(): void;
 }
 const CAMERA = ['left', 'right', 'top', 'bottom', 'near', 'far', 'zoom'] as const, VALUES = ['bias', 'normalBias', 'radius', 'intensity', 'blurSamples'] as const;
@@ -76,6 +87,8 @@ export function cachedSunShadow(o: CachedSunShadowOptions): CachedSunShadow {
   const changed = (n: Object3D, w: Watch) => {
     const e = n.matrixWorld.elements, im = n as InstancedMesh, v = shown(n), iv = im.isInstancedMesh ? im.instanceMatrix.version : 0, count = im.isInstancedMesh ? im.count : 0;
     let d = v !== w.v || n.castShadow !== w.c || iv !== w.iv || count !== w.n || !!(n as SkinnedMesh).isSkinnedMesh;
+    const morph = (n as Mesh).morphTargetInfluences;
+    if (morph?.length !== w.morph?.length || morph?.some((value, i) => !Object.is(value, w.morph?.[i]))) { w.morph = morph?.slice(); d = true; }
     for (let i = 0; i < 16; i++) if (!(Math.abs(w.m[i]! - e[i]!) <= tol)) { w.m.set(e); d = true; break; }
     w.v = v; w.c = n.castShadow; w.iv = iv; w.n = count; return d;
   };

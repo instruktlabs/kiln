@@ -127,6 +127,8 @@ The kit owns the only R3F `useFrame` registration. Add imperative work with `use
 
 Use `InputProvider`, `useInput`, `VirtualJoystick` and `TouchButtons` for root-scoped keyboard/pointer handling and named actions. For driving on touch (D-22), `VirtualJoystick axes="throttle"` is the only driving input: `move.y` is a signed throttle (forward accelerates, back brakes or reverses) and `move.x` steers, each with its own dead zone. Pinch and the wheel accumulate into `input.state.zoom` each frame. Native HUD controls keep their keyboard behavior. Tab is never captured; Escape leaves play before a subsequent Escape can reach the page. `OrbitRig` and `FollowRig` scope their OrbitControls listeners to the scene root and canvas, including the addon’s pointer-capture and Control-key tracking.
 
+Custom movement controls can pass a stable owner object to `input.setMove(x, y, run, owner)` and call `input.releaseMove(owner)` on release, cancellation or unmount. Cleanup then clears only that control's latest contribution. Keyboard movement and unowned `setMove` calls supersede the old owner; `clear()`, disable and disposal invalidate all movement. `VirtualJoystick` uses this ownership contract so hiding it cannot erase the first keyboard movement.
+
 `usePlayMode()` exposes the root’s shared `{ playing, setPlaying }` state. Use it to drive the scene’s simulation, camera mode and HUD together, so Enter on the root and the first Escape control the same mode. `useSceneRootRef()` exposes the focus target and the element for any additional scene-local listeners:
 
 ```tsx
@@ -143,6 +145,10 @@ function PlayButton() {
 ```
 
 `SceneRoot` already supplies the normal root input bindings. To declare extra named actions, call `useInput().configureActions(...)` in an effect. Avoid wrapping the same root in another `InputProvider`, which would duplicate its bindings.
+
+`HudLayer` establishes the containing block for the default fixed help and credits panels, so a short positioned toolbar does not collapse their scroll area. Panels receive pointer events and stack above the kit's touch controls; a scene that creates its own stacking contexts must keep its panel layer above its play controls. Scene CSS can still choose an inline panel (`position: static`), a bottom sheet, or other placement. Nested `VirtualJoystick` and `TouchButtons` receive input even under a layer with `pointer-events: none`; no scene-specific pointer override is needed.
+
+Run `bun packages/scene-kit/tests/browser/run-hud-layout.ts` from `scenes/` for the DOM-only panel and touch contract. It uses real kit controls with the current Farm, Golden Gate and Foundry styles at embedded narrow, short and desktop sizes, checking scrolling, stacking, Tab/Escape focus, touch movement/release and click-through. It does not replace the scenes' full browser or physical-device qualification.
 
 `PathRig` provides linear or centripetal Catmull-Rom paths, seeking and interruption. On interruption, activate `OrbitRig` and pass the supplied pose to `rigRef.current.setView(pose)` for a continuous hand-back. `VehicleRig` uses a critically damped chase camera and five obstruction rays. The demo shows all four rigs and a BVH-backed capsule, door and vehicle.
 

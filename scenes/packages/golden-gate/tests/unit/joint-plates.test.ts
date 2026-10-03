@@ -5,8 +5,9 @@
 // not changed. The material name is the GLB's; nothing else in the bridge uses it.
 import { describe, expect, test } from 'bun:test';
 import { BoxGeometry, Group, Mesh, MeshStandardMaterial } from 'three/webgpu';
-import { LAYOUT } from '../../src/data';
-import { offsetJointPlates } from '../../src/world/bridge';
+import { LAYOUT } from '../../scripts/authored-layout';
+await import('three');
+const { offsetJointPlates } = await import('../../src/world/bridge');
 
 describe('joint plates', () => {
   test('layout.json names the plates\' material and a polygon offset toward the camera', () => {
@@ -33,5 +34,17 @@ describe('joint plates', () => {
   test('a bridge without the material is left alone', () => {
     const root = new Group(); root.add(new Mesh(new BoxGeometry(), new MeshStandardMaterial({ name: 'Concrete' })));
     expect(offsetJointPlates(root)).toBe(0);
+  });
+
+  test('effective reversed depth changes the bias sign once and standard fallback restores it', () => {
+    const root = new Group(), steel = new MeshStandardMaterial({ name: 'JointSteel' }), geometry = new BoxGeometry();
+    root.add(new Mesh(geometry, steel), new Mesh(geometry, steel));
+    const { factor, units } = LAYOUT.bridge.jointPlates.polygonOffset;
+    for (const reversed of [false, true, true, false]) {
+      expect(offsetJointPlates(root, reversed)).toBe(1);
+      expect(steel.polygonOffsetFactor).toBe(reversed ? -factor : factor);
+      expect(steel.polygonOffsetUnits).toBe(reversed ? -units : units);
+    }
+    geometry.dispose();steel.dispose();
   });
 });

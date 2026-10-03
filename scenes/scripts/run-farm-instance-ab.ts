@@ -16,6 +16,7 @@ import type { Browser } from 'puppeteer-core';
 import { launchChrome, serveOwned, workspacePath } from '../packages/scene-kit/src/testing/node';
 import { captureFarmNew, type CapturedFarm, type ParityBackend } from './capture-farm-parity';
 import { compareParityImages } from './parity-images';
+import { closeExtraStartupPages } from './browser-startup';
 
 const args = process.argv.slice(2), value = (key: string, fallback: string) => { const at = args.indexOf(key); return at < 0 ? fallback : args[at + 1] ?? fallback; };
 const workspace = resolve(import.meta.dir, '..');
@@ -49,7 +50,7 @@ try {
   hosted = await serveOwned(workspacePath(workspace, build));
   browser = await launchChrome({ workspace, name: 'instance-ab', windowSize: [1280, 720] });
   report.browser = await browser.version(); report.port = hosted.port;
-  for (const blank of await browser.pages()) await blank.close();
+  await closeExtraStartupPages(browser);
   const ports = new Set([hosted.port]);
   for (const b of backends) for (const view of views) {
     const dir = resolve(out, `${view}-${b}`); await mkdir(dir, { recursive: true });

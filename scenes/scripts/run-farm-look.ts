@@ -18,8 +18,9 @@ import { cpus } from 'node:os';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import type { Browser, Page } from 'puppeteer-core';
-import { INSTALLED_CHROME, launchChrome, serveOwned, waitForReady, waitFrames, workspacePath } from '../packages/scene-kit/src/testing/node';
+import { launchChrome, serveOwned, waitForReady, waitFrames, workspacePath } from '../packages/scene-kit/src/testing/node';
 import { FARM_LOOK_PRESETS, formatFarmLook, parseFarmLook, resolveFarmLook } from '../packages/farm/src/look/options';
+import { closeExtraStartupPages } from './browser-startup';
 import { adbFor, connectDevtools, deviceState, forwardDevtools, listMappings, pcLoadSample, removeForward, removeReverse, requireNominal, reversePort, wakeAndOpenChrome } from './device-kit';
 
 export const LOOK_TIERS = ['high', 'balanced', 'economy', 'minimal'] as const;
@@ -36,9 +37,9 @@ const list = (value: string) => value === 'none' ? [] : value.split(',').map(ent
 const workspace = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const target = option('--target', 'pc') as 'pc' | 'tablet' | 'hub';
 const many = (name: string) => args.flatMap((value, at) => args[at - 1] === name ? [value] : []);
-// The hub (the laptop) launches its own Chrome: --chrome <path> (required off Windows), --chrome-arg <flag> (repeatable) and
+// The hub (the laptop) launches its own Chrome: --chrome <path> overrides shared discovery, --chrome-arg <flag> (repeatable) and
 // --headless as in runner/perf-farm.mjs; a headed window opens at 0,0. This PC always runs headless (owner rule 11:40).
-const chrome = option('--chrome', process.platform === 'win32' ? INSTALLED_CHROME : ''), headless = target !== 'hub' || args.includes('--headless');
+const chrome = option('--chrome', ''), headless = target !== 'hub' || args.includes('--headless');
 const root = option('--root', 'packages/farm/dist/m3/dev'), backend = option('--backend', 'webgpu') as 'webgpu' | 'webgl2';
 const presets = option('--presets', 'all') === 'all' ? Object.keys(FARM_LOOK_PRESETS) : list(option('--presets', ''));
 const frameTiers = list(option('--frame-tiers', target === 'pc' ? 'high,balanced,economy,minimal' : 'economy,minimal,balanced,high')) as Tier[];
@@ -189,11 +190,10 @@ try {
     await wakeAndOpenChrome(adb); forward = await forwardDevtools(adb); ledger.devtoolsForward = forward.port;
     browser = await connectDevtools(forward.browserURL);
   } else {
-    if (!chrome) throw new Error('Pass --chrome <path to the installed Chrome> (Linux WebGPU flags are unverified; add them with --chrome-arg)');
-    browser = await launchChrome({ workspace, name: 'look', executablePath: chrome, headless, windowSize: [WIDTH, HEIGHT],
+    browser = await launchChrome({ workspace, name: 'look', executablePath: chrome || undefined, headless, windowSize: [WIDTH, HEIGHT],
       args: ['--disable-gpu-vsync', '--disable-frame-rate-limit', ...(headless ? [] : ['--window-position=0,0']), ...many('--chrome-arg')] });
     ledger.window = { width: WIDTH, height: HEIGHT, headless, position: headless ? null : '0,0' };
-    for (const blank of await browser.pages()) await blank.close();
+    await closeExtraStartupPages(browser);
   }
   report.browser = await browser.version();
   const sideState = adb ? () => requireNominal(adb, 'between look blocks') : target === 'hub' ? hubLoad : pcLoad;

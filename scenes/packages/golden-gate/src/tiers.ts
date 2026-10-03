@@ -1,6 +1,7 @@
 import { defineTiers } from '@kiln-scenes/scene-kit';
 import type { DeviceClass, TierKnobs } from '@kiln-scenes/scene-kit';
-import { LAYOUT, TIER_DATA } from './data';
+import { TIER_DATA } from './data';
+import { BOOTSTRAP as LAYOUT } from './layout-bootstrap';
 import type { FeatureData, FeatureLevel } from './data';
 
 /** WATER-SPEC feature levels. `minimal`/`economy` are Low, `balanced` is Medium, `high` is High (Medium on phones). Values: data/tiers.json (D-21). */

@@ -5,7 +5,7 @@
 // the lot less its planted island triangulated whole, the stall rows inside it with aisles between them, the
 // parked cars in their stalls, the terrain pads under the lot and its throat, and the edge barrier's opening.
 import { describe, expect, test } from 'bun:test';
-import { LAYOUT } from '../../src/data';
+import { LAYOUT } from '../../scripts/authored-layout';
 import { approachArrays } from '../../src/world/approach-mesh';
 import { approachCorridorPlans, bedDepth, corridorHeight } from '../../src/world/corridor';
 import { barrierGaps, earClip, parkedVehicles, plazaWidening, polygonDistance, sideWidening, vistaLot, vistaRows } from '../../src/world/dressing';

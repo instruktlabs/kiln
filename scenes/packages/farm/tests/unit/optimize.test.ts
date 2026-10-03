@@ -161,16 +161,18 @@ test('S4b: the hero merge keeps the source vertex layout (RK-1), so a merged mes
  const buffers=new Set(Object.values(merged.geometry.attributes).map(a=>(a as InterleavedBufferAttribute).data));expect(buffers.size).toBe(1);
  o.restore();g.dispose();
 });
-test('S4: stand-ins bake exactly what the sun shadow camera draws, and every farmer part stays a caster at economy (RF-1)',()=>{
+test('S4: stand-ins keep every farmer and trailer part at economy (RF-1, D-72) while other small casters still drop',()=>{
  const root=new Scene(),{farmShadowMask}=shadowsModule;
  const house=hero('farmhouse',0,[['wall-a',shared.masonry,0],['pin',shared.brass,.8],['seen',shared.trim,1],['unseen',shared.trim,3]],[]);
  // The player rig: a 1 cm neck alone under its joint, and a 1 cm cuff beside a boot under the ankle.
  const farmer=hero('farmer',10,[['Mesh_Body',shared.hide,0],['Mesh_Neck',shared.brass,0,'Joint_Neck'],['Mesh_Cuff',shared.brass,.2,'Joint_Ankle'],['Mesh_Boot',shared.leaf,0,'Joint_Ankle']],['Joint_Neck','Joint_Ankle']);
+ const trailer=hero('trailer',20,[['Body',shared.masonry,0],['Drawbar',shared.brass,0,'Joint_Hitch'],['HitchRing',shared.iron,.2,'Joint_Hitch'],['HitchPin',shared.trim,.4,'Joint_Hitch']],['Joint_Hitch']);
  const part=(o:FarmInstance,name:string)=>o.object.getObjectByName(name) as Mesh;
  for(const name of['Mesh_Neck','Mesh_Cuff'])part(farmer,name).geometry=shared.pin;
+ for(const name of['Drawbar','HitchRing','HitchPin'])part(trailer,name).geometry=shared.pin;
  part(house,'seen').layers.set(FARM_SHADOW.standInLayer);part(house,'unseen').layers.set(5);
- root.add(house.object,farmer.object);root.traverse(n=>{if((n as Mesh).isMesh)n.castShadow=true;});root.updateMatrixWorld(true);
- const o=optimizeFarmWorld(root,[house,farmer],{meshes:[],derivatives:0},{packWoodland:false,shadow:{mapSize:512,standIns:true,minCasterTexels:2}});
+ root.add(house.object,farmer.object,trailer.object);root.traverse(n=>{if((n as Mesh).isMesh)n.castShadow=true;});root.updateMatrixWorld(true);
+ const o=optimizeFarmWorld(root,[house,farmer,trailer],{meshes:[],derivatives:0},{packWoodland:false,shadow:{mapSize:512,standIns:true,minCasterTexels:2}});
  // The sun's shadow camera sees layer 0 and the stand-in layer; a caster on another layer is never drawn, so it is left alone.
  expect(farmShadowMask(true)).toBe(1|1<<FARM_SHADOW.standInLayer);expect(farmShadowMask(false)).toBe(1);
  expect([part(house,'seen').castShadow,part(house,'unseen').castShadow]).toEqual([false,true]);
@@ -180,6 +182,8 @@ test('S4: stand-ins bake exactly what the sun shadow camera draws, and every far
  expect(proxies.sort()).toEqual(['Joint_Ankle','Joint_Neck','farmer']);
  const ankle=part(farmer,'Joint_Ankle').children.find(n=>n.userData.kilnShadowStandIn) as Mesh;
  expect(ankle.geometry.getAttribute('position').count).toBe(2*shared.pin.getAttribute('position').count);
+ const hitch=part(trailer,'Joint_Hitch').children.find(n=>n.userData.kilnShadowStandIn) as Mesh;
+ expect(hitch.geometry.getAttribute('position').count).toBe(3*shared.pin.getAttribute('position').count);
  o.restore();expect(meshes(root).every(m=>m.castShadow)).toBe(true);
 });
 

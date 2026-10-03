@@ -7,6 +7,7 @@ const { findDoor, stepDoors, toggleDoor, doorCenter } = await import('../../src/
 const { applyTractorPose, createTractorRig, driveTractor, findTractorExit, tractorAreaBlocked, TRACTOR_EXITS } = await import('../../src/play/tractor');
 const { buildFarmColliders } = await import('../../src/world/colliders');
 const { createFarmSim } = await import('../../src/play/sim');
+const { warmRenderables } = await import('../../src/world/prewarm');
 const { FARM_STRINGS, DOOR_LABELS, doorPrompt, doorStatus } = await import('../../src/ui/strings');
 const { bridgeCenter, drivingHeight, riverCenter, terrainHeight } = await import('../../src/world/site-layout');
 
@@ -116,11 +117,12 @@ test('U-09 Farm collider selection: walk-through assets, rotors, foliage, dynami
 });
 
 /** A farmer with the joints the empty-handed pose and the seat rig use, and a tractor with its joints. */
-function playFixture() {
+function playFixture(farmerClips?: AnimationClip[]) {
   const farmer = new Group(), pelvis = node(farmer, 'Joint_Pelvis', [0, .95, 0]), chest = node(pelvis, 'Joint_Chest', [0, .3, 0]);
   for (const [side, z] of [['Left', -.2], ['Right', .2]] as const) {
     const shoulder = node(chest, `Joint_${side}Shoulder`, [0, .25, z]), elbow = node(shoulder, `Joint_${side}Elbow`, [0, -.28, 0]);
-    if (side === 'Right') node(elbow, 'Joint_Pitchfork', [0, -.2, 0], true);
+    node(elbow, `Mesh_Consolidated_Joint_${side}Elbow_0`, [0, 0, 0], true);
+    if (side === 'Right') { const hand = node(elbow, 'Joint_RightHandToolAttachment', [.15, -.035, .113]); node(hand, 'Joint_Pitchfork', [0, 0, 0], true); }
     const hip = node(pelvis, `Joint_${side}Hip`, [0, -.05, z / 2]); node(node(hip, `Joint_${side}Knee`, [0, -.382, 0]), `Joint_${side}Ankle`, [0, -.382, 0]);
   }
   const tractor = new Group(); node(tractor, 'Mesh_Body', [0, .8, 0], true); node(tractor, 'Joint_SeatAttach', [-.3, 1.2, 0]);
@@ -131,7 +133,7 @@ function playFixture() {
   const shed = new Group(); for (const [x, z] of [[-20.4, 21.5], [-20.4, 18.5], [-17.8, 20]] as const) node(shed, 'Mesh_Bale', [x, 1 + terrainHeight(x, z), z], true);
   // The ground sits well below the terrain function so that dismount capsules only meet the shed.
   const ground = new Mesh(new BoxGeometry(80, 1, 80), material); ground.position.y = -10;
-  const instances = [instance('farmer-yard-0', 'farmer', farmer, [new AnimationClip('Idle', 1, []), new AnimationClip('Walk', 1, [])]),
+  const instances = [instance('farmer-yard-0', 'farmer', farmer, farmerClips ?? [new AnimationClip('Idle', 1, []), new AnimationClip('Walk', 1, [])]),
     instance('tractor-0', 'tractor', tractor), instance('farmhouse-0', 'farmhouse', house), instance('hay-bales-0', 'hay-bales', shed)];
   const colliders = buildFarmColliders({ ground, bridge: null, instances }), sim = createFarmSim({ instances, colliders });
   return { sim, colliders, farmer, tractor, door: colliders.doors[0]! };
@@ -235,3 +237,158 @@ test('walking is third person: the help says so and no pointer-capture strings r
 if (process.env.ORACLE === '1') test('M2c sealed r33 play oracle: byte-identical colliders and lockstep play within 1e-9', async () => {
   await import('../../scripts/audit-play-oracle');
 }, 120_000);
+
+
+test('empty-handed pose follows the mixer every rendered frame, including no physics step; seat and overview retain their poses', () => {
+  // Released Rowan Walk animates only the left shoulder, about z. Any mixer update
+  // resets its procedural x angle, even when the subsequent fixed-step loop does no work.
+  const swing = new QuaternionKeyframeTrack('Joint_LeftShoulder.quaternion', [0, 1],
+    [0, 0, 0, 1, ...new Quaternion().setFromAxisAngle(new Vector3(0, 0, 1), -.24).toArray()]);
+  const { sim, colliders, farmer } = playFixture([new AnimationClip('Idle', 1, []), new AnimationClip('Walk', 1, [swing])]);
+  const left = farmer.getObjectByName('Joint_LeftShoulder')!, right = farmer.getObjectByName('Joint_RightShoulder')!;
+  const fork = farmer.getObjectByName('Joint_Pitchfork')!, h = 1 / 120, moving = { move: { x: 0, y: 1 }, run: false };
+  try {
+    sim.start(); sim.update(0, idle, south);
+    expect(left.rotation.x).toBeCloseTo(.28, 12); expect(fork.visible).toBe(false);
+    sim.update(h, moving, south); expect(sim.currentClip).toBe('Walk');
+    for (const dt of [0, h / 2, h / 2, 1 / 121, 1 / 119, h, h * 2]) {
+      sim.updateAnimation(dt); sim.update(dt, moving, south);
+      expect(left.rotation.x).toBeCloseTo(.28, 12);
+      expect(right.rotation.z).toBeCloseTo(-left.rotation.z, 12);
+    }
+    farmer.position.copy(sim.tractor.object.position); sim.update(0, idle, south); sim.interact();
+    expect(sim.driving).toBe(true); const seated = left.quaternion.clone();
+    sim.update(0, idle, south); expect(left.quaternion.equals(seated)).toBe(true);
+    expect(sim.stop(true)).toBe(true); expect(fork.visible).toBe(true);
+    const restored = left.quaternion.clone(); sim.update(h, moving, south);
+    expect(left.quaternion.equals(restored)).toBe(true); expect(left.rotation.x).toBeCloseTo(0, 12);
+  } finally { sim.dispose(); colliders.dispose(); }
+});
+
+
+test('empty-handed right arm borrows the relaxed left geometry, restores tool/seat state and removes only its derivative', () => {
+  const { sim, colliders, farmer } = playFixture();
+  const left = farmer.getObjectByName('Mesh_Consolidated_Joint_LeftElbow_0') as Mesh;
+  const lower = farmer.getObjectByName('Mesh_Consolidated_Joint_RightElbow_0')!, hand = farmer.getObjectByName('Joint_RightHandToolAttachment')!;
+  const elbow = farmer.getObjectByName('Joint_RightElbow')!, elbowRest = elbow.quaternion.clone();
+  const derivative = farmer.getObjectByName('Mesh_EmptyHandedRightArm') as Mesh;
+  let geometryDisposals = 0, materialDisposals = 0;
+  left.geometry.addEventListener('dispose', () => geometryDisposals++);
+  (left.material as MeshBasicMaterial).addEventListener('dispose', () => materialDisposals++);
+  try {
+    expect(derivative).toBeDefined(); expect(derivative.visible).toBe(false);
+    expect(warmRenderables(farmer)).toContain(derivative);
+    expect(derivative.geometry).toBe(left.geometry); expect(derivative.material).toBe(left.material);
+    sim.start(); sim.update(0, idle, south); farmer.updateMatrixWorld(true);
+    expect(derivative.visible).toBe(true); expect(lower.visible).toBe(false); expect(hand.visible).toBe(false);
+    expect(elbow.quaternion.equals(elbowRest)).toBe(true);
+    expect(derivative.matrixWorld.determinant()).toBeLessThan(0);
+    sim.interact(); expect(sim.driving).toBe(true);
+    expect(derivative.visible).toBe(false); expect(lower.visible).toBe(true); expect(hand.visible).toBe(true);
+    expect(farmer.getObjectByName('Joint_Pitchfork')!.visible).toBe(false);
+    sim.stop(true); expect(lower.visible).toBe(true); expect(hand.visible).toBe(true);
+    expect(elbow.quaternion.equals(elbowRest)).toBe(true);
+    expect(farmer.getObjectByName('Joint_Pitchfork')!.visible).toBe(true);
+    sim.start(); sim.update(0, idle, south); sim.dispose(); sim.dispose();
+    expect(derivative.parent).toBeNull(); expect(lower.visible).toBe(true); expect(hand.visible).toBe(true);
+    const detached = new Group(); detached.add(derivative); expect(warmRenderables(detached)).not.toContain(derivative); derivative.removeFromParent();
+    expect(geometryDisposals).toBe(0); expect(materialDisposals).toBe(0);
+  } finally { sim.dispose(); colliders.dispose(); }
+});
+
+
+test('empty-hand variants retain independent visibility through Farm shadow stand-ins', async () => {
+  const { shadowStandIns } = await import('@kiln-scenes/scene-kit/shadows');
+  const { farmHeroAnchors } = await import('../../src/world/shadows');
+  const { sim, colliders, farmer } = playFixture();
+  farmer.traverse(node => { if ((node as Mesh).isMesh) (node as Mesh).castShadow = true; });
+  const original = farmer.getObjectByName('Mesh_Consolidated_Joint_RightElbow_0')!, relaxed = farmer.getObjectByName('Mesh_EmptyHandedRightArm')!;
+  const keep = farmHeroAnchors(sim.player);
+  const shadows = shadowStandIns(farmer, { layer: 1, shadowMask: 3, isAnchor: node => keep.has(node) });
+  try {
+    const originalProxy = shadows.proxies.find(proxy => proxy.parent === original), relaxedProxy = shadows.proxies.find(proxy => proxy.parent === relaxed);
+    expect(originalProxy).toBeDefined(); expect(relaxedProxy).toBeDefined();
+    const visible = (object: Object3D) => { for (let node: Object3D | null = object; node; node = node.parent) if (!node.visible) return false; return true; };
+    expect(visible(originalProxy!)).toBe(true); expect(visible(relaxedProxy!)).toBe(false);
+    sim.start(); sim.update(0, idle, south);
+    expect(visible(originalProxy!)).toBe(false); expect(visible(relaxedProxy!)).toBe(true);
+    sim.interact(); expect(sim.driving).toBe(true);
+    expect(visible(originalProxy!)).toBe(true); expect(visible(relaxedProxy!)).toBe(false);
+  } finally { shadows.restore(); sim.dispose(); colliders.dispose(); }
+});
+
+
+test('player clip changes blend without resetting rendered joints, keep unit weight through reversals and retire the outgoing action', () => {
+  const shoulder = new Quaternion().setFromAxisAngle(new Vector3(0, 0, 1), -.24), hip = new Quaternion().setFromAxisAngle(new Vector3(0, 0, 1), .45);
+  const walk = new AnimationClip('Walk', 1, [new QuaternionKeyframeTrack('Joint_LeftShoulder.quaternion', [0, 1], [...shoulder.toArray(), ...shoulder.toArray()]),
+    new QuaternionKeyframeTrack('Joint_RightHip.quaternion', [0, 1], [...hip.toArray(), ...hip.toArray()])]);
+  const { sim, colliders, farmer } = playFixture([new AnimationClip('Idle', 1, []), walk]);
+  sim.tractor.object.position.set(20, 0, 20); sim.tractor.object.updateMatrixWorld(true); farmer.position.set(-10, 0, 0); sim.home.copy(farmer.position);
+  const left = farmer.getObjectByName('Joint_LeftShoulder')!, rightHip = farmer.getObjectByName('Joint_RightHip')!;
+  const idleAction = sim.player.mixer.clipAction(sim.player.clips[0]!), walkAction = sim.player.mixer.clipAction(walk);
+  const h = 1 / 120, moving = { move: { x: 0, y: 1 }, run: false };
+  const update = sim.player.mixer.update.bind(sim.player.mixer); let mixerUpdates = 0, rendered = 0;
+  sim.player.mixer.update = dt => { mixerUpdates++; return update(dt); };
+  const tick = (input: typeof moving, dt = h, animationDelta = dt) => {
+    sim.updateAnimation(animationDelta); rendered++; sim.update(dt, input, south);
+    expect(mixerUpdates).toBe(rendered);
+    expect(idleAction.getEffectiveWeight() + walkAction.getEffectiveWeight()).toBeCloseTo(1, 12);
+  };
+  try {
+    sim.start(); tick(idle, 0); tick(moving);
+    const before = rightHip.quaternion.clone(); tick(moving);
+    expect(before.angleTo(rightHip.quaternion)).toBeLessThan(.1); // full authored entry jump is .45 radians
+    for (let i = 0; i < 24; i++) tick(moving);
+    expect(walkAction.isScheduled()).toBe(true); expect(idleAction.isScheduled()).toBe(false);
+    const swing = left.rotation.z; tick(idle);
+    expect(left.rotation.z).toBeCloseTo(swing, 6); // selecting Idle must not reset the already mixed frame
+    tick(idle); expect(Math.abs(left.rotation.z - swing)).toBeLessThan(.04);
+    // Freeze: neither weights nor clip time move, including a physics step and a zero-dt frame.
+    const weight = walkAction.getEffectiveWeight(), time = walkAction.time, pose = rightHip.quaternion.clone();
+    tick(idle, h, 0); tick(idle, 0, 0);
+    expect(walkAction.getEffectiveWeight()).toBe(weight); expect(walkAction.time).toBe(time);
+    expect(rightHip.quaternion.toArray()).toEqual(pose.toArray());
+    // Reverse an unfinished fade repeatedly without jumping to an endpoint or resetting phase.
+    for (let i = 0; i < 12; i++) {
+      const oldWeight = walkAction.getEffectiveWeight(), oldTime = walkAction.time;
+      tick(i % 2 ? idle : moving, h / 2); tick(i % 2 ? idle : moving, h / 2);
+      expect(Math.abs(walkAction.getEffectiveWeight() - oldWeight)).toBeLessThan(.12);
+      expect(walkAction.time).toBeGreaterThanOrEqual(oldTime);
+    }
+    for (let i = 0; i < 24; i++) tick(idle);
+    expect(walkAction.isScheduled()).toBe(false); expect(idleAction.isScheduled()).toBe(true);
+    for (let i = 0; i < 5; i++) tick(moving);
+    farmer.position.copy(sim.tractor.object.position); sim.update(0, idle, south); sim.interact();
+    expect(sim.driving).toBe(true); expect(walkAction.isScheduled()).toBe(false); expect(idleAction.isScheduled()).toBe(false);
+    const seatedUpdates = mixerUpdates; sim.updateAnimation(h); expect(mixerUpdates).toBe(seatedUpdates);
+    sim.interact(); sim.update(0, idle, south);
+    expect(sim.driving).toBe(false); expect(idleAction.getEffectiveWeight()).toBe(1); expect(walkAction.getEffectiveWeight()).toBe(0);
+    expect(farmer.getObjectByName('Mesh_EmptyHandedRightArm')!.visible).toBe(true);
+    for (const reset of [() => sim.visit('yard'), () => sim.reset()]) {
+      reset(); sim.update(h, idle, south); sim.updateAnimation(0); rendered++; sim.update(0, idle, south);
+      expect(idleAction.getEffectiveWeight()).toBe(1); expect(walkAction.isScheduled()).toBe(false);
+      expect(farmer.getObjectByName('Joint_RightHandToolAttachment')!.visible).toBe(false);
+    }
+    sim.stop(true); expect(walkAction.isScheduled()).toBe(false); expect(idleAction.isScheduled()).toBe(false);
+    expect(farmer.getObjectByName('Joint_Pitchfork')!.visible).toBe(true);
+  } finally { sim.dispose(); colliders.dispose(); }
+});
+
+
+test('constructing the player blend preserves an existing overview action until play explicitly selects a clip', async () => {
+  const { createFarmerClipBlend } = await import('../../src/play/farmer-rig');
+  const object = new Group(), player = instance('farmer-yard-0', 'farmer', object, [new AnimationClip('Idle', 1, []), new AnimationClip('Walk', 1, [])]);
+  const overview = player.mixer.clipAction(player.clips[1]!).setEffectiveWeight(.6).play(); player.action = overview; player.clipIndex = '1';
+  player.mixer.update(.2); const time = overview.time;
+  const blend = createFarmerClipBlend(player, { Idle: '0', Walk: '1' });
+  expect(overview.isScheduled()).toBe(true); expect(overview.getEffectiveWeight()).toBe(.6); expect(overview.time).toBe(time);
+  expect(player.action).toBe(overview); expect(player.clipIndex).toBe('1');
+  blend.select('Idle'); blend.update(0);
+  expect(player.action!.getClip().name).toBe('Idle'); expect(player.action!.getEffectiveWeight()).toBe(1); expect(overview.isScheduled()).toBe(false);
+  blend.reset(); expect(player.action).toBeNull(); expect(overview.getEffectiveWeight()).toBe(0);
+  // An overview action chosen after stopping remains intact until the next play entry.
+  overview.reset().setEffectiveWeight(.7).play(); player.action = overview; player.clipIndex = '1'; player.mixer.update(.1);
+  expect(overview.getEffectiveWeight()).toBe(.7);
+  blend.select('Idle'); blend.update(0); expect(player.action!.getEffectiveWeight()).toBe(1); expect(overview.isScheduled()).toBe(false);
+  blend.reset(); player.mixer.uncacheRoot(object);
+});

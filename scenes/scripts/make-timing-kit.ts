@@ -11,6 +11,7 @@ import { join, relative, resolve, sep } from 'node:path';
 import { execFileSync } from 'node:child_process';
 
 const root = resolve(import.meta.dir, '..'), args = process.argv.slice(2);
+const toolchain = JSON.parse(readFileSync(resolve(root, 'toolchain.json'), 'utf8')) as { node: string };
 const option = (name: string, fallback: string) => { const at = args.indexOf(name); return at >= 0 && args[at + 1] && !args[at + 1]!.startsWith('--') ? args[at + 1]! : fallback; };
 const a = option('--a', 'draw-base'), b = option('--b', 'wavea'), scenes = option('--scenes', 'farm,foundry-floor,golden-gate').split(',');
 const kit = resolve(root, option('--out', `dist/timing-kit/${a}-vs-${b}`));
@@ -168,7 +169,7 @@ WHAT IT MEASURES (owner decisions OD-3, OD-5, OD-6, OD-7, OD-12; D-25, D-28, D-4
 CONTENTS
   builds/${a}/<scene>/   ${a} test builds (packages/<scene>/dist/${a}/test), served as A
   builds/${b}/<scene>/   ${b} test builds, served as B (same asset pack per scene as A; checked when the kit was made)
-  runner/timing-ab.mjs   scripts/timing-ab.ts bundled for Node (ESM; puppeteer-core inside); Node 22.23.2 is the pin
+  runner/timing-ab.mjs   scripts/timing-ab.ts bundled for Node (ESM; puppeteer-core inside); Node ${toolchain.node} is the pin
   hub/run.sh             headed runner on the hub's display from SSH (session env, PRIME offload, kde-inhibit, hub flags)
   hub/mkenv.py           the Plasma session environment (2026-09-30 campaign method)
   hub/display.sh         display mode record / ensure 120 Hz / restore (kscreen-doctor)
@@ -189,7 +190,7 @@ HUB (ssh hub; CachyOS, Plasma on Wayland, GTX 1660 Ti Max-Q with PRIME offload, 
 
 TABLET (from this PC; Samsung SM-X518U, serial R52X405L12T; the device kit's adb at
         C:/Users/Mattm/AppData/Local/Microsoft/WinGet/Packages/Google.PlatformTools_Microsoft.Winget.Source_8wekyb3d8bbwe/platform-tools/adb.exe)
-  Run from this kit directory with the maintainer Node (C:/Users/Mattm/AppData/Roaming/fnm/node-versions/v22.23.2/installation/node.exe):
+  Run from this kit directory with the maintainer Node (C:/Users/Mattm/AppData/Roaming/fnm/node-versions/v${toolchain.node}/installation/node.exe):
   node runner/timing-ab.mjs transient --device tablet --out results/transient-tablet.json          (read-only WebGPU check)
   node runner/timing-ab.mjs ab --device tablet --cells farm:minimal:hero --pairs 1 --seconds 10 --prime 0 --block tablet-dry-<date>
   node runner/timing-ab.mjs ab --device tablet --cells farm:minimal:hero,farm:economy:hero,golden-gate:minimal:arrival --pairs 3 --seconds 60 --block tablet-msaa-<date>
@@ -236,6 +237,6 @@ await writeFile(resolve(kit, 'README.txt'), readme);
 const files = walk(kit).map(f => posix(kit, f)).filter(p => p !== 'MANIFEST.json').sort().map(path => { const data = readFileSync(resolve(kit, path)); return { path, bytes: data.length, sha256: sha256(data) }; });
 const runnerSource = await readFile(resolve(root, 'scripts/timing-ab.ts'));
 await writeFile(resolve(kit, 'MANIFEST.json'), JSON.stringify({ schema: 'kiln.timing-kit/1', created: new Date().toISOString(), scenesCommit: commit, runnerFilesStatus: status || 'committed',
-  labels: { A: a, B: b }, scenes, builds, runner: { source: 'scripts/timing-ab.ts', sourceSha256: sha256(runnerSource), bundled: 'runner/timing-ab.mjs', nodePin: '22.23.2' },
+  labels: { A: a, B: b }, scenes, builds, runner: { source: 'scripts/timing-ab.ts', sourceSha256: sha256(runnerSource), bundled: 'runner/timing-ab.mjs', nodePin: toolchain.node },
   totals: { files: files.length, bytes: files.reduce((s, f) => s + f.bytes, 0) }, files }, null, 2) + '\n');
 console.log(JSON.stringify({ kit: kitName, files: files.length, bytes: files.reduce((s, f) => s + f.bytes, 0), runnerBytes: files.find(f => f.path === 'runner/timing-ab.mjs')?.bytes }));

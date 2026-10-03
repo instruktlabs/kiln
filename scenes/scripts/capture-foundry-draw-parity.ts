@@ -70,7 +70,7 @@ if (args.includes('--merge')) { console.log(JSON.stringify(summarize(out))); pro
 const beforeBuild = option('--before', 'draw-base'), afterBuild = option('--after', 'draw-after'), tiers = option('--tiers', TIER_ORDER.join(',')).split(',');
 const afterQuery = option('--after-query', ''), variant = afterQuery ? afterQuery.replace(/[^a-zA-Z0-9]+/g, '_').replace(/^_|_$/g, '') : 'defaults', variantTag = afterQuery ? `-${variant}` : '';
 const views = option('--views', ALL_VIEWS.join(',')).split(','), backend = option('--backend', '') === 'webgl2' ? 'webgl2' : 'webgpu', save = option('--save', 'high'), budget = Number(option('--over32-budget', '100'));
-if (!(budget >= 0)) throw new Error('--over32-budget must be 0 or more');
+if (!Number.isSafeInteger(budget) || budget < 0) throw new Error('--over32-budget must be a finite nonnegative integer');
 for (const v of views) if (!ALL_VIEWS.includes(v)) throw new Error(`Unknown view ${v}`);
 for (const t of tiers) if (!TIER_ORDER.includes(t)) throw new Error(`Unknown tier ${t}`);
 
@@ -144,15 +144,15 @@ const hostedBefore = await serveOwned(sceneOutput('foundry-floor', beforeBuild, 
 const owned = new Set([hostedBefore.port, hostedAfter.port]), browser = await launchChrome({ workspace: ROOT, name: 'ff-draw-parity', windowSize: [WIDTH, HEIGHT] });
 const results: any[] = [], afterParams = Object.fromEntries(new URLSearchParams(afterQuery));
 function record(tier: string, view: string, before: Shot, repeat: Shot, after: Shot) {
-  const parity = compareParityImages(before.png, repeat.png, after.png), name = `${tier}-${view}${variantTag}`;
+  const parity = compareParityImages(before.png, repeat.png, after.png, { over32Budget: budget }), name = `${tier}-${view}${variantTag}`;
   const afterVsBefore = exact(before.png, after.png), repeatVsBefore = exact(before.png, repeat.png);
-  const lines = { over32: afterVsBefore.over32, noise: repeatVsBefore.over32, budget, pass: afterVsBefore.over32 <= repeatVsBefore.over32 + budget };
-  const pass = parity.pass && lines.pass;
+  const lines = parity.lines;
+  const pass = parity.pass;
   if (save === 'all' || (save === 'high' && tier === 'high' && backend === 'webgpu') || !pass) {
     const dir = resolve(out, 'captures', backend); write(resolve(dir, `${name}-before.png`), before.png); write(resolve(dir, `${name}-after.png`), after.png); write(resolve(dir, `${name}-diff.png`), parity.diff);
     if (!pass) write(resolve(dir, `${name}-repeat.png`), repeat.png);
   }
-  const row = { variant, backend, tier, view, pass, b06: parity.pass, lines, globalMean: parity.globalMean, noiseGlobalMean: parity.noiseGlobalMean, passingTiles: parity.passingTiles, tiles: parity.tiles.length,
+  const row = { variant, backend, tier, view, pass, b06: parity.pass, luminancePass: parity.luminancePass, parityScope: parity.scope, lines, globalMean: parity.globalMean, noiseGlobalMean: parity.noiseGlobalMean, passingTiles: parity.passingTiles, tiles: parity.tiles.length,
     failingTiles: parity.tiles.filter(t => !t.pass).map(t => ({ x: t.x, y: t.y, mean: +t.mean.toExponential(2), threshold: +t.threshold.toExponential(2) })), afterVsBefore, repeatVsBefore,
     backends: { before: before.backend, after: after.backend }, msaaPolicyAfter: after.msaa, messages: { before: before.messages, repeat: repeat.messages, after: after.messages } };
   results.push(row);

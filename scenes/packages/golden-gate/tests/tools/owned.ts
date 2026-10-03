@@ -1,9 +1,9 @@
 // Golden Gate process ownership helpers. The builder may serve only on ports 4600-4649.
-// The kit's serveOwned/assertOwnedUrl/runSceneContractTests are fixed to 4400-4499
-// (kit request GG-001), so this package binds its own range with the kit's static server.
+// This package retains its own range and avoid-set; browser ownership is shared with the kit.
 // Binding is attempted directly (EADDRINUSE moves on): no listener is ever probed.
 import { resolve } from 'node:path';
 import { mkdirSync, writeFileSync, existsSync, readFileSync } from 'node:fs';
+import { chromeProfile, launchChrome } from '../../../scene-kit/src/testing/node';
 // @ts-ignore Shared Node-builtins-only implementation owned by the kit builder (read-only use).
 import { startStaticServer } from '../../../../scripts/static-server.mjs';
 
@@ -31,20 +31,11 @@ export function assertOwnedUrl(url: string, owned: ReadonlySet<number>): void {
  */
 export interface OwnedBrowser { browser: import('puppeteer-core').Browser; pid: number | undefined; profile: string; close(): Promise<void> }
 export async function launchHeadless(name: string, width = 1280, height = 720): Promise<OwnedBrowser> {
-  const puppeteer = (await import('puppeteer-core')).default, { mkdtemp, rm } = await import('node:fs/promises');
-  const scratch = resolve(PACKAGE_ROOT, '.tmp'); mkdirSync(scratch, { recursive: true });
-  const profile = await mkdtemp(resolve(scratch, `${name}-chrome-`));
-  const browser = await puppeteer.launch({
-    executablePath: 'C:/Program Files/Google/Chrome/Application/chrome.exe', headless: true, pipe: true, userDataDir: profile,
+  const browser = await launchChrome({ workspace: PACKAGE_ROOT, name, headless: true, windowSize: [width, height],
     defaultViewport: { width, height, deviceScaleFactor: 1 },
-    args: ['--enable-unsafe-webgpu', '--no-first-run', '--no-default-browser-check', `--window-size=${width},${height}`, '--hide-scrollbars'],
-    env: { ...process.env, TEMP: scratch, TMP: scratch },
+    args: ['--hide-scrollbars'],
   });
-  let closed = false;
-  return { browser, pid: browser.process()?.pid, profile, async close() {
-    if (closed) return; closed = true;
-    try { await browser.close(); } finally { await rm(profile, { recursive: true, force: true, maxRetries: 5, retryDelay: 200 }).catch(() => undefined); }
-  } };
+  return { browser, pid: browser.process()?.pid, profile: chromeProfile(browser)!, close: () => browser.close() };
 }
 export function evidencePath(...parts: string[]): string { const path = resolve(PACKAGE_ROOT, 'evidence', ...parts); mkdirSync(resolve(path, '..'), { recursive: true }); return path; }
 export function writeJson(path: string, value: unknown): void { mkdirSync(resolve(path, '..'), { recursive: true }); writeFileSync(path, JSON.stringify(value, null, 2) + '\n'); }

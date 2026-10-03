@@ -1,6 +1,7 @@
 import { defineConfig } from 'vite';
 import type { Plugin, UserConfig } from 'vite';
 import react from '@vitejs/plugin-react';
+import { sceneProducerReceipt } from './producer';
 
 export type SceneBuildMode = 'public' | 'test' | 'dev';
 export const SCENE_DEDUPE = ['three', 'react', 'react-dom', '@react-three/fiber'];
@@ -17,11 +18,16 @@ export function sceneSourceConfig(mode: SceneBuildMode = 'public'): UserConfig {
   };
 }
 export function bundleModuleManifest(): Plugin {
-  return { name: 'kiln-bundle-modules', generateBundle(_options, bundle) {
+  return { name: 'kiln-bundle-modules', generateBundle: { order: 'post', handler(_options, bundle) {
     const modules = new Set<string>();
-    for (const chunk of Object.values(bundle)) if (chunk.type === 'chunk') for (const id of Object.keys(chunk.modules)) modules.add(id);
-    this.emitFile({ type: 'asset', fileName: 'bundle-modules.json', source: JSON.stringify({ modules: [...modules].sort() }, null, 2) + '\n' });
-  } };
+    const chunks: { file: string; code: string }[] = [];
+    for (const chunk of Object.values(bundle)) if (chunk.type === 'chunk') {
+      for (const id of Object.keys(chunk.modules)) modules.add(id);
+      chunks.push({ file: chunk.fileName, code: chunk.code });
+    }
+    const ordered = [...modules].sort();
+    this.emitFile({ type: 'asset', fileName: 'bundle-modules.json', source: JSON.stringify({ modules: ordered, producer: sceneProducerReceipt(ordered, chunks) }, null, 2) + '\n' });
+  } } };
 }
 export function sceneStandaloneConfig(options: { root: string; outDir: string; mode?: SceneBuildMode }): UserConfig {
   const config = sceneSourceConfig(options.mode);

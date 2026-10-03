@@ -2,7 +2,7 @@
 // roughness carried in its vertices, one instanced draw per plant type and LOD level. Synthetic plants (the real GLBs
 // are not in a fresh clone), built the way the saved ones are: three declared levels, material objects shared by level.
 import { describe, expect, test } from 'bun:test';
-import { existsSync, readFileSync } from 'node:fs';
+import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { BoxGeometry, Group, InstancedBufferGeometry, InstancedMesh, InterleavedBufferAttribute, Mesh, MeshStandardMaterial, PerspectiveCamera } from 'three/webgpu';
 import type { Object3D } from 'three/webgpu';
@@ -13,6 +13,8 @@ import { campusPlantings, PLANT_SIZES } from '../../src/campus/exterior/planting
 import type { PlantType } from '../../src/campus/exterior/planting';
 import { buildCampusVegetation } from '../../src/campus/exterior/vegetation';
 import { PLANT_COLUMNS, plantLook } from '../../src/campus/exterior/plant-material';
+import pins from '../../scripts/campus-asset-pins.json';
+import { findSceneFixture } from '../../../../scripts/release-inputs';
 
 const PACKAGE = resolve(import.meta.dir, '../..');
 const data = parseCampus(readFileSync(resolve(PACKAGE, 'data/campus.json'), 'utf8')), placements = campusPlantings(data);
@@ -173,12 +175,17 @@ describe('shared planting', () => {
   });
 });
 
-// With the saved plants (staged in the repository's pack, not in a fresh clone): every part of every level is carried.
-const STAGED = resolve(PACKAGE, 'staged/revision2/models/vegetation'), saved = existsSync(STAGED);
+// Exact saved plants, restored from the release or pinned staged copies. Required by test:release-inputs.
+const savedPlants = Object.keys(PLANT_SIZES).map(type => {
+  const pin = pins.find(p => p.id === `plant-${type}`)!;
+  return { type, path: findSceneFixture({ scene: 'foundry-floor', path: pin.to, sha256: pin.sha256, bytes: pin.bytes },
+    { fallback: [resolve(PACKAGE, 'staged/revision2', pin.to)] }) };
+});
+const saved = savedPlants.every(p => p.path);
 describe.skipIf(!saved)('shared planting with the saved plants', () => {
   test('every part of the eight saved plants is carried, so every plant draws through one material', async () => {
     const real = new Map<string, GLTF>();
-    for (const type of Object.keys(PLANT_SIZES)) { const bytes = readFileSync(resolve(STAGED, `${type}.glb`)); real.set(`plant-${type}`, await new GLTFLoader().parseAsync(bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength) as ArrayBuffer, '')); }
+    for (const { type, path } of savedPlants) { const bytes = readFileSync(path!); real.set(`plant-${type}`, await new GLTFLoader().parseAsync(bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength) as ArrayBuffer, '')); }
     const shared = (await buildCampusVegetation(data, real, placements, { shared: true }))!;
     expect(meshes(shared.root)).toHaveLength(24);
     expect(new Set(meshes(shared.root).map(m => m.material)).size).toBe(1);

@@ -1,11 +1,11 @@
 // SPEC 19.7 stream crop at the mill bank, computed from an existing parity run's retained watermill-wheel
-// captures (no new capture). Same tile metric and thresholds as B-06, on the crop only.
+// captures (no new capture). Original SPEC 19 luminance metric on the crop only; not full-view D18 qualification.
 import { mkdir, readFile, readdir, writeFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import { PNG } from 'pngjs';
 import { cropImage } from './capture-woodland-ab';
 import { STREAM_CROP } from './capture-farm-parity';
-import { compareParityImages, type RgbaImage } from './parity-images';
+import { compareLuminanceImages, type RgbaImage } from './parity-images';
 
 const workspace = resolve(import.meta.dir, '..'), run = process.argv[2];
 if (!run || !/^[a-z0-9-]+$/.test(run)) throw new Error('Usage: stream-crop-from-evidence.ts <parity run directory under evidence/parity>');
@@ -17,7 +17,7 @@ for (const backend of ['webgpu', 'webgl2']) {
   const dir = resolve(root, `watermill-wheel-${backend}`), attempts = (await readdir(dir)).filter(name => /^attempt-\d+$/.test(name)).sort();
   const attempt = attempts.at(-1)!, base = resolve(dir, attempt);
   const [pilot, repeat, rewrite] = await Promise.all(['pilot', 'pilot-repeat', 'new'].map(kind => read(resolve(base, `watermill-wheel-${kind}-${backend}.png`))));
-  const a = cropImage(pilot!, STREAM_CROP), b = cropImage(repeat!, STREAM_CROP), c = cropImage(rewrite!, STREAM_CROP), metric = compareParityImages(a, b, c);
+  const a = cropImage(pilot!, STREAM_CROP), b = cropImage(repeat!, STREAM_CROP), c = cropImage(rewrite!, STREAM_CROP), metric = compareLuminanceImages(a, b, c);
   await write(`stream-crop-pilot-${backend}.png`, a); await write(`stream-crop-pilot-repeat-${backend}.png`, b); await write(`stream-crop-new-${backend}.png`, c); await write(`stream-crop-diff-${backend}.png`, metric.diff);
   const { diff: _diff, tiles, ...numbers } = metric;
   results.push({ backend, source: `evidence/parity/${run}/watermill-wheel-${backend}/${attempt}`, ...numbers, failingTiles: tiles.filter(tile => !tile.pass) });

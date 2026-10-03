@@ -5,18 +5,15 @@
  * toolbar) sit bottom left, clear of the wrapping toolbar. The speed readout sits above the
  * status line (the deck-end prompt) at the bottom centre, or beside the joystick on a narrow HUD.
  *
- * Workaround for kit request GG-007: the kit's help and credits panels are absolutely positioned
- * with `max-height: calc(100% - 100px)`, which resolves against their containing block. Inside the
- * kit's `.ks-toolbar` (the kit's own usage) that block is the toolbar itself, about 44 px tall, so
- * the panel collapses to its padding and scrolls. Here the toolbar is static inside `.gg-top`,
- * which covers the whole HUD, so the panels size against the HUD. Where the toolbar wraps to a
+ * The shared kit anchors help and credits to the HUD, independently of toolbar height.
+ * The toolbar remains static here to share the top layout with the flyover menu. Where it wraps to a
  * second row, they open as a sheet at the bottom instead of over the toolbar. The top layer stacks
  * above the phone driving controls, so an open panel covers them rather than the reverse.
  */
 export const GG_HUD_CSS = `
 .gg-hud{position:absolute;inset:0;pointer-events:none;container:gg-hud/inline-size}
 .gg-hud>*{pointer-events:auto}
-.gg-hud>.gg-top{position:absolute;inset:0;z-index:1;pointer-events:none;display:flex;flex-direction:column;align-items:flex-end;gap:8px;box-sizing:border-box;
+.gg-hud>.gg-top{position:absolute;inset:0;z-index:2;pointer-events:none;display:flex;flex-direction:column;align-items:flex-end;gap:8px;box-sizing:border-box;
   padding:max(12px,env(safe-area-inset-top)) max(12px,env(safe-area-inset-right)) 0 max(12px,env(safe-area-inset-left))}
 .gg-top>.ks-toolbar{position:static;justify-content:flex-end;pointer-events:auto}
 .gg-top>.gg-flights{display:flex;flex-direction:column;gap:8px;padding:12px;pointer-events:auto}

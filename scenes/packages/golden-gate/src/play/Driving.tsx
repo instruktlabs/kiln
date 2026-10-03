@@ -11,7 +11,7 @@ import { Object3D, Vector3 } from 'three/webgpu';
 import type { PerspectiveCamera } from 'three/webgpu';
 import { SystemOrder, VehicleRig, registerWorkload, useFade, useInput, usePlayMode, useRegisterTestHooks, useSceneRootRef, useSystem } from '@kiln-scenes/scene-kit';
 import { CAMERA, LANES, laneX } from '../constants';
-import { DRIVING_DATA, LAYOUT } from '../data';
+import { DRIVING_DATA } from '../data';
 import { laneStation } from '../traffic/config';
 import { paintLinear } from '../traffic/traffic';
 import type { DrivenVehicle } from '../traffic/traffic';
@@ -168,7 +168,7 @@ export function Driving({ world }: { world: GoldenGateWorld }) {
       },
       /** The car's road ends and end stops (route stations), the approaches' dissolve stretches and lengths, and the road centre where each dissolve starts. */
       driveRoute: () => {
-        const route = world.bridge.route, ends = LAYOUT.approaches, at = (sigma: number) => { const p = routePoint(route, sigma, 0); return [p.x, p.y, p.z]; };
+        const route = world.bridge.route, ends = world.layout.approaches, at = (sigma: number) => { const p = routePoint(route, sigma, 0); return [p.x, p.y, p.z]; };
         return { roadEnd: { south: roadEnd(-1), north: roadEnd(1) }, endStop: { south: endStop(-1), north: endStop(1) }, roadEndZ: route.roadEndZ,
           dissolve: { south: ends.south.ends.dissolve, north: ends.north.ends.dissolve }, length: { south: route.south.length, north: route.north.length },
           dissolveStart: { south: at(-(route.roadEndZ + ends.south.ends.dissolve[0])), north: at(route.roadEndZ + ends.north.ends.dissolve[0]) } };

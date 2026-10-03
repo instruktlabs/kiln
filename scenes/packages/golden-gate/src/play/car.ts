@@ -10,7 +10,8 @@
 // is its lane direction (0 north, pi south) plus a bounded heading offset, positive to the left.
 // The car's road ends at each approach's `ends.car` station (layout.json), where it turns around;
 // traffic drives on to the approach ends.
-import { DRIVING_DATA, LAYOUT, TRAFFIC_DATA } from '../data';
+import { DRIVING_DATA, TRAFFIC_DATA } from '../data';
+import { BOOTSTRAP as LAYOUT } from '../layout-bootstrap';
 import type { SimBox } from '../traffic/sim';
 
 const D = DRIVING_DATA, BRIDGE = LAYOUT.bridge, RAD = Math.PI / 180;
@@ -67,7 +68,7 @@ export function carExtents(s: Pick<CarState, 'offset'>, body: CarBody): { ex: nu
 /** The carriageway of a direction: |x| of the car's footprint stays within [median, curb]. */
 export const CARRIAGEWAY = { median: BRIDGE.medianHalfWidth + D.curb.clearance, curb: BRIDGE.roadHalfWidth - D.curb.clearance };
 /** Station of the car's road end for a direction: the approach's `ends.car` beyond the deck end. */
-export const roadEnd = (dir: 1 | -1) => dir * (BRIDGE.roadEndZ + LAYOUT.approaches[dir > 0 ? 'north' : 'south'].ends.car);
+export const roadEnd = (dir: 1 | -1) => dir * (BRIDGE.roadEndZ + LAYOUT.approachEnds[dir > 0 ? 'north' : 'south'].car);
 /** Station of the end stop ahead for a direction, stopDistance short of its road end. */
 export const endStop = (dir: 1 | -1) => roadEnd(dir) - dir * D.roadEnd.stopDistance;
 /** Relative speed the car may keep toward something `room` metres away: `gain` per metre near, the planned brake far out. */

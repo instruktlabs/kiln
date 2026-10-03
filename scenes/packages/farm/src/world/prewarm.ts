@@ -4,7 +4,7 @@ import type { Camera, Layers, Material, Object3D, Scene } from 'three/webgpu';
 export interface WarmPassRenderer { compileAsync(object: Object3D, camera: Camera, targetScene?: Scene | null): Promise<unknown> }
 export type WarmPhase = 'compiling' | 'drawing' | 'done';
 export interface WarmPassStats {
-  /** Nodes that draw (meshes, lines, points, sprites) visible below the world root when the pass started. */
+  /** Visible drawables plus explicitly registered pose variants on the main camera layers. */
   renderables: number;
   /** Compile chains; renderables that share a material and vertex layout share a chain. */
   chains: number;
@@ -22,7 +22,7 @@ export interface WarmPass {
   readonly stats: WarmPassStats;
   /** Call once per frame before the render; true once the pass is complete (the caller may then declare the world built). */
   step(): boolean;
-  /** Restores the culling flags the pass changed and shows the world it hid; pending compiles finish without effect. */
+  /** Restores culling and registered-pose visibility, and shows the world it hid; pending compiles finish without effect. */
   dispose(): void;
 }
 
@@ -46,17 +46,30 @@ export interface WarmPassOptions {
   onDraw?(): void;
 }
 
+// Explicit Farm consumer variants only; ordinary hidden model branches stay excluded.
+const poseVariants = new WeakSet<Object3D>();
+export function registerWarmPoseVariant(object: Object3D): () => void {
+  poseVariants.add(object); return () => { poseVariants.delete(object); };
+}
+
 const drawable = (object: Object3D) => { const o = object as unknown as Record<string, unknown>; return !!(o.isMesh || o.isLine || o.isPoints || o.isSprite); };
 
-/**
- * Every drawable node below root whose own visibility and that of its ancestors below root is true (root's own flag is
- * ignored); with `layers`, only those a camera on them draws (three tests layers per object: shadow stand-ins are not).
- */
-export function warmRenderables(root: Object3D, layers?: Layers): Object3D[] {
-  const found: Object3D[] = [];
-  const visit = (object: Object3D) => { if (!object.visible) return; if (drawable(object) && (!layers || object.layers.test(layers))) found.push(object); for (const child of object.children) visit(child); };
+/** Collect visible branches plus explicitly registered hidden pose roots. A registration
+ * never pierces an unrelated hidden ancestor or makes ordinary hidden children visible. */
+function warmTargets(root: Object3D, layers?: Layers) {
+  const drawables: Object3D[] = [], variants: Object3D[] = [];
+  const visit = (object: Object3D) => {
+    if (!object.visible) { if (!poseVariants.has(object)) return; variants.push(object); }
+    if (drawable(object) && (!layers || object.layers.test(layers))) drawables.push(object);
+    for (const child of object.children) visit(child);
+  };
   for (const child of root.children) visit(child);
-  return found;
+  return { drawables, variants };
+}
+/** Drawables below root (root visibility ignored), including registered pose variants.
+ * With layers, only nodes drawn by that camera are returned; shadow proxies remain draw-only. */
+export function warmRenderables(root: Object3D, layers?: Layers): Object3D[] {
+  return warmTargets(root, layers).drawables;
 }
 
 /**
@@ -91,23 +104,30 @@ export function warmChainKey(object: Object3D): string {
  *    what compileAsync does not (shadow-map pipelines, which three skips while pre-compiling) and makes every
  *    first-draw driver variant happen before ready. Drawables off the camera's layers (shadow stand-ins) are not compiled
  *    but draw unculled here too; `onDraw` runs as this frame starts (the cached shadow re-arms at the reveal).
- * 3. done: culling is restored; the next frame is the first complete frame.
+ * Registered hidden pose variants compile individually and are shown only for the warm drawing
+ * frame, including their shadow proxies. Ordinary hidden branches stay hidden.
+ * 3. done: culling and pose visibility are restored; the next frame is the first complete frame.
  */
 export function startWarmPass(renderer: WarmPassRenderer, scene: Scene, camera: Camera, root: Object3D, options: WarmPassOptions): WarmPass {
-  const drawables = warmRenderables(root), renderables = drawables.filter(o => o.layers.test(camera.layers)), chains = new Map<string, Object3D[]>();
+  const { drawables, variants } = warmTargets(root), renderables = drawables.filter(o => o.layers.test(camera.layers)), chains = new Map<string, Object3D[]>();
   for (const object of renderables) { const key = warmChainKey(object); (chains.get(key) ?? chains.set(key, []).get(key)!).push(object); }
   const concurrency = Math.max(1, Math.min(Math.floor(options.concurrency ?? WARM_CONCURRENCY), chains.size));
   const stats: WarmPassStats = { renderables: renderables.length, chains: chains.size, concurrency: chains.size ? concurrency : 0, failed: 0, compileFrames: 0, revealed: options.reveal };
-  let phase: WarmPhase = 'compiling', compiled = false, disposed = false, unculled: Object3D[] = [];
+  let phase: WarmPhase = 'compiling', compiled = false, disposed = false, unculled: Object3D[] = [], revealedVariants: Object3D[] = [];
+  const restoreDrawing = () => {
+    for (const object of unculled) object.frustumCulled = true;
+    for (const object of revealedVariants) object.visible = false;
+    unculled = []; revealedVariants = [];
+  };
   if (options.reveal) root.visible = false;
   // compileAsync collects its render items synchronously, from the object and its descendants; each drawable is its own
   // unit here, so its children are hidden and its culling is off for exactly that synchronous part.
   const compileOne = (object: Object3D) => {
-    const children = object.children.filter(child => child.visible), culled = object.frustumCulled;
+    const children = object.children.filter(child => child.visible), culled = object.frustumCulled, visible = object.visible;
     for (const child of children) child.visible = false;
-    object.frustumCulled = false;
+    object.frustumCulled = false; object.visible = true;
     try { return renderer.compileAsync(object, camera, scene); }
-    finally { object.frustumCulled = culled; for (const child of children) child.visible = true; }
+    finally { object.frustumCulled = culled; object.visible = visible; for (const child of children) child.visible = true; }
   };
   // Each slot takes the next chain in first-seen order and compiles its drawables one after another.
   const queue = [...chains.values()];
@@ -130,12 +150,14 @@ export function startWarmPass(renderer: WarmPassRenderer, scene: Scene, camera: 
         if (options.reveal) root.visible = true;
         unculled = drawables.filter(object => object.frustumCulled);
         for (const object of unculled) object.frustumCulled = false;
-        phase = 'drawing'; options.onDraw?.();
+        revealedVariants = variants.filter(object => !object.visible);
+        for (const object of revealedVariants) object.visible = true;
+        phase = 'drawing';
+        try { options.onDraw?.(); } catch (error) { restoreDrawing(); disposed = true; throw error; }
         return false;
       }
       if (phase === 'drawing') {
-        for (const object of unculled) object.frustumCulled = true;
-        unculled = []; phase = 'done';
+        restoreDrawing(); phase = 'done';
       }
       return true;
     },
@@ -143,8 +165,7 @@ export function startWarmPass(renderer: WarmPassRenderer, scene: Scene, camera: 
       if (disposed) return;
       disposed = true;
       if (phase === 'compiling' && options.reveal) root.visible = true;
-      for (const object of unculled) object.frustumCulled = true;
-      unculled = [];
+      restoreDrawing();
     },
   };
 }

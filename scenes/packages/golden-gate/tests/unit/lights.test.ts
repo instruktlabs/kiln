@@ -5,7 +5,7 @@
 // taper; every standard near, those up to station `far` in the far representation; the pole on the barrier's top
 // and the lens at its mounting height over the shoulder.
 import { describe, expect, test } from 'bun:test';
-import { LAYOUT } from '../../src/data';
+import { LAYOUT } from '../../scripts/authored-layout';
 import { horizontalProject } from '../../src/world/alignment';
 import { approachArrays } from '../../src/world/approach-mesh';
 import type { MeshArrays } from '../../src/world/approach-mesh';

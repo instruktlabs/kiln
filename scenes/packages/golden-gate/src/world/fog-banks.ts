@@ -10,18 +10,19 @@ import { mulberry32 } from './detail-textures';
 import { fogColorNode } from './fog';
 import type { AtmosphereUniforms } from './fog';
 import { LAYERS } from '../constants';
-import { LAYOUT } from '../data';
+import type { SceneLayout } from '../data';
 
 type N = any; // eslint-disable-line @typescript-eslint/no-explicit-any
 
-/** Bank centres in scene metres (+X west, +Z north): west of the Gate, in the strait and over the headlands (layout.json fogBanks). */
-const FOG = LAYOUT.fogBanks, BANKS = FOG.banks, PUFF = FOG.puff;
-export const FOG_BANK_RANGE = FOG.wrap; // puffs drift toward -X and wrap
-export const FOG_BANK_SPEED = FOG.driftSpeed; // m/s
+export interface FogBanks {
+  sprite: Sprite;
+  /** Diagnostic visibility override, combined with the current weather opacity and retained across updates (D-70). */
+  hidden: boolean;
+  update(time: number, opacity: number): void; readonly puffs: number; dispose(): void;
+}
 
-export interface FogBanks { sprite: Sprite; update(time: number, opacity: number): void; readonly puffs: number; dispose(): void }
-
-export function createFogBanks(atmosphere: AtmosphereUniforms, noise: DataTexture, count: number): FogBanks {
+export function createFogBanks(atmosphere: AtmosphereUniforms, noise: DataTexture, count: number, FOG: SceneLayout['fogBanks']): FogBanks {
+  const BANKS = FOG.banks, PUFF = FOG.puff, FOG_BANK_RANGE = FOG.wrap, FOG_BANK_SPEED = FOG.driftSpeed;
   const banks = BANKS.slice(0, Math.max(0, Math.min(BANKS.length, count))), rand = mulberry32(FOG.seed);
   const base: number[] = [];
   for (const bank of banks) for (let i = 0; i < bank.puffs; i++) {
@@ -56,10 +57,13 @@ export function createFogBanks(atmosphere: AtmosphereUniforms, noise: DataTextur
   sprite.name = 'fog-banks'; sprite.count = puffs; sprite.frustumCulled = false; sprite.renderOrder = 20;
   sprite.layers.set(LAYERS.dynamic); sprite.castShadow = sprite.receiveShadow = false;
   const span = FOG_BANK_RANGE.west - FOG_BANK_RANGE.east;
+  let hidden = false;
   return {
     sprite, puffs,
+    get hidden() { return hidden; },
+    set hidden(value) { hidden = value; sprite.visible = !hidden && opacity.value > .001; },
     update(time, value) {
-      opacity.value = value; sprite.visible = value > .001;
+      opacity.value = value; sprite.visible = !hidden && value > .001;
       if (!sprite.visible) return;
       const a = centres.array as Float32Array;
       for (let i = 0; i < puffs; i++) {
@@ -72,4 +76,3 @@ export function createFogBanks(atmosphere: AtmosphereUniforms, noise: DataTextur
     dispose() { sprite.removeFromParent(); material.dispose(); sprite.geometry.dispose(); },
   };
 }
-export const FOG_BANK_COUNT = BANKS.length;

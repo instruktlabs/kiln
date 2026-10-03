@@ -18,7 +18,7 @@
 import { Vector3 } from 'three/webgpu';
 import type { BufferAttribute, Mesh, Object3D } from 'three/webgpu';
 import { LANES } from '../constants';
-import { LAYOUT } from '../data';
+import { BOOTSTRAP as LAYOUT } from '../layout-bootstrap';
 import { lanePose, laneStation, TRAFFIC_FLOW } from '../traffic/config';
 import type { VehicleModel } from '../traffic/vehicle-models';
 import type { Bridge } from '../world/bridge';

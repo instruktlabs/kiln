@@ -17,7 +17,8 @@
 import { InstancedBufferGeometry, InterleavedBuffer, InterleavedBufferAttribute, BufferAttribute, Box3, Color, Matrix3, Matrix4, Sphere, Vector3 } from 'three/webgpu';
 import type { Mesh, MeshStandardMaterial, Object3D } from 'three/webgpu';
 import type { GLTF } from 'three/addons/loaders/GLTFLoader.js';
-import { LAYOUT, TRAFFIC_DATA } from '../data';
+import { TRAFFIC_DATA } from '../data';
+import { BOOTSTRAP as LAYOUT } from '../layout-bootstrap';
 
 export const VEHICLE_TYPES = ['sedan', 'hatchback', 'suv', 'pickup', 'box-truck', 'transit-bus'] as const;
 export type VehicleType = typeof VEHICLE_TYPES[number];

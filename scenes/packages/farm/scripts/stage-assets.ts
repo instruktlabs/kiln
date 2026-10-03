@@ -19,11 +19,11 @@ export function stageFarm(args:readonly string[]=process.argv.slice(2)){
  for(const [path,body]of selected.archives.runtime.entries)if(path.startsWith('licenses/'))files.push({from:resolve(runtimeRoot,path),to:path,sha256:sha256(body)});
  for(const name of ['LICENSE-FIELD-GRASS.txt','LICENSE-VIEWER.txt','LICENSE-THREE.txt','LICENSE-BVH.txt']){const path=`scene/${name}`;files.push({from:resolve(sceneRoot,path),to:`licenses/${name}`,sha256:sha256(required(selected.archives.scene.entries,path))});}
  const source={projectRevision:selected.downloads.projectRevision,downloadsSha256:selected.downloadsSha256,runtimeZipSha256:selected.archives.runtime.receipt.sha256.slice(7),sceneZipSha256:selected.archives.scene.receipt.sha256.slice(7),parentDeliveryManifestSha256:selected.downloads.parentDeliveryManifestSha256.slice(7),fullPackAccepted:selected.downloads.fullPackAccepted,archives:Object.fromEntries(Object.entries(selected.archives).map(([profile,v])=>[profile,{...v.receipt,verifiedMembers:v.verifiedMembers}])),sceneMetadata:{runtimeArchiveSha256:selected.sceneManifest.runtimeArchiveSha256,deliverySha256:selected.sceneManifest.deliverySha256},memberReceiptSelfExclusion:'delivery.json only; authenticated by enclosing archive SHA-256'};
- const result=stageFiles({id:'farm',release:options.release,three:'0.186.0',out,force:options.force,models:selected.models.map(m=>({id:m.id,to:m.path})),data,files,source,credits:[
+ const result=stageFiles({id:'farm',release:options.release,three:'0.186.1',out,force:options.force,models:selected.models.map(m=>({id:m.id,to:m.path})),data,files,source,credits:[
   {name:'Shapes & Seasons Farm assets',licence:'CC0-1.0',note:'Designated CC0-1.0 by the project owner. Exact declaration and legal text: licenses/ASSET-LICENSE.txt and licenses/CC0-1.0.txt.'},
   {name:'Field Grass 0.1.0',licence:'MIT',holder:'Matthew Kissinger',note:'Vendored source, commit 2a0d3a3256dc8d8f6d9de68f3dc1636a621559c5; licenses/LICENSE-FIELD-GRASS.txt.'},
   {name:'Farm viewer derivative',licence:'MIT',holder:'Matthew Kissinger',note:'licenses/LICENSE-VIEWER.txt.'},
-  {name:'three',licence:'MIT',note:'licenses/LICENSE-THREE.txt; runtime package pinned to 0.186.0.'},
+  {name:'three',licence:'MIT',note:'licenses/LICENSE-THREE.txt; runtime package pinned to 0.186.1.'},
   {name:'three-mesh-bvh',licence:'MIT',note:'licenses/LICENSE-BVH.txt.'},
  ]});
  const verification=verifyStaged(out);if(!verification.ok)throw new Error(verification.problems.join('\n'));

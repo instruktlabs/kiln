@@ -60,6 +60,7 @@ export const MACRO_TILES = WATER_DATA.macroTiles;
 export const FLOW_PERIOD = WATER_DATA.flow.flowPeriod;        // seconds per two-phase flow cycle
 export const SHORE_BAND_PERIOD = WATER_DATA.shoreBandPeriod;  // seconds between shore-foam bands
 export const ORIGIN_SNAP = WATER_DATA.originSnap;             // metres
+const FOAM_BREAKUP_TILE = 7.3;                               // metres, unrotated
 
 export interface WaterMapBinding { texture: DataTexture; bounds: Bounds }
 export interface WaterMaterialOptions {
@@ -89,6 +90,7 @@ export function createWaterUniforms() {
     origin: uniform(new Vector2()),
     phases: GERSTNER_WAVES.map(() => uniform(0)),
     detailOffsets: DETAIL_LAYERS.map(() => uniform(new Vector2())),
+    foamOffset: uniform(new Vector2()),
     macroOffsets: MACRO_TILES.map(() => uniform(new Vector2())),
     flowPhase: uniform(0),
     shorePhase: uniform(0),
@@ -110,6 +112,7 @@ export function updateWaterUniforms(u: WaterUniforms, time: number, cameraX: num
   const ox = Math.round(cameraX / ORIGIN_SNAP) * ORIGIN_SNAP, oz = Math.round(cameraZ / ORIGIN_SNAP) * ORIGIN_SNAP;
   u.origin.value.set(ox, oz);
   GERSTNER_WAVES.forEach((w, i) => {
+    // The shader adds this to k dot (p - origin), leaving k dot p - omega*t.
     const c = waveConstants(w), phase = c.k * (c.dx * ox + c.dz * oz) - c.omega * time;
     u.phases[i]!.value = phase - Math.floor(phase / (2 * Math.PI)) * 2 * Math.PI;
   });
@@ -118,6 +121,9 @@ export function updateWaterUniforms(u: WaterUniforms, time: number, cameraX: num
     const a = layer.rotation * Math.PI / 180, c = Math.cos(a), s = Math.sin(a);
     const px = ox + layer.drift * time, pz = oz; // the pattern moves toward -X: sample at p + drift*t
     u.detailOffsets[i]!.value.set(frac((px * c - pz * s) / layer.tile), frac((px * s + pz * c) / layer.tile));
+    // Foam uses a different tile and no rotation. Preserve its existing time drift,
+    // but compensate this lookup's own origin instead of borrowing a detail-layer offset.
+    if (i === 0) u.foamOffset.value.set(frac(ox / FOAM_BREAKUP_TILE + layer.drift * time * c / layer.tile), frac(oz / FOAM_BREAKUP_TILE + layer.drift * time * s / layer.tile));
   });
   MACRO_TILES.forEach((tile, i) => u.macroOffsets[i]!.value.set(frac(ox / tile), frac(oz / tile)));
   u.flowPhase.value = frac(time / FLOW_PERIOD);
@@ -175,7 +181,7 @@ export function createWaterMaterial(o: WaterMaterialOptions, u: WaterUniforms): 
         const c = waveConstants(w);
         const fade = saturate(float(w.wavelength).div(effectiveSpacing).mul(.25).sub(1));
         const amplitude = scale.mul(fade).mul(w.amplitude);
-        const theta = rel.x.mul(c.k * c.dx).add(rel.y.mul(c.k * c.dz)).sub(u.phases[i]);
+        const theta = rel.x.mul(c.k * c.dx).add(rel.y.mul(c.k * c.dz)).add(u.phases[i]);
         const horizontal = amplitude.mul(w.steepness).mul(cos(theta));
         displaced.addAssign(vec3(horizontal.mul(c.dx), amplitude.mul(sin(theta)), horizontal.mul(c.dz)));
       });
@@ -222,7 +228,7 @@ export function createWaterMaterial(o: WaterMaterialOptions, u: WaterUniforms): 
       const filtered = saturate(float(w.wavelength).div(footprint.mul(3)).sub(1));
       const visible = distanceFade ? filtered.mul(distanceFade).toVar() : filtered;
       const amplitude = u.wind.mul(shallow).mul(w.amplitude);
-      const theta = rel.x.mul(c.k * c.dx).add(rel.y.mul(c.k * c.dz)).sub(u.phases[i]);
+      const theta = rel.x.mul(c.k * c.dx).add(rel.y.mul(c.k * c.dz)).add(u.phases[i]);
       const ct = cos(theta), st = sin(theta), ka = amplitude.mul(c.k);
       slope.addAssign(vec2(c.dx, c.dz).mul(ka.mul(ct).mul(visible)));
       lostVariance.addAssign(float(1).sub(visible.mul(visible)).mul(ka).mul(ka).mul(.5));
@@ -325,7 +331,7 @@ export function createWaterMaterial(o: WaterMaterialOptions, u: WaterUniforms): 
     const specular = min(D.mul(visibility).mul(Fs).mul(NdotL), 40).mul(sun).toVar();
 
     // Foam.
-    const breakup = smoothstep(.25, .75, macro.y.mul(.6).add(texture(o.slopeMoments, rel.div(7.3).add(u.detailOffsets[0]!)).x.mul(.12)).add(.2));
+    const breakup = smoothstep(.25, .75, macro.y.mul(.6).add(texture(o.slopeMoments, rel.div(FOAM_BREAKUP_TILE).add(u.foamOffset)).x.mul(.12)).add(.2));
     // (a) shore: slow bands travelling toward the shore, stronger where the west swell reaches.
     // World-space gradient of the shoreline distance from screen derivatives (no extra texture taps).
     const dwx = dFdx(world) as N, dwy = dFdy(world) as N, dsx = dFdx(shore) as N, dsy = dFdy(shore) as N;
@@ -372,7 +378,8 @@ const TURBULENCE_MEAN = .45;
  * the streaks never fold); their contrast fades to the mean as the view looks down, from `elevation[0]` to
  * `elevation[1]` (the sine of the view ray's elevation above the water: 14.5 to 40.5 degrees).
  */
-export const WAKE = { speed: 1.9, period: 23, warpPeriod: 23 * (1 + Math.sqrt(5)) / 2, warpAcross: 17, warp: .12, elevation: [.25, .65] } as const;
+export const WAKE = { speed: 1.9, period: 23, warpPeriod: 23 * (1 + Math.sqrt(5)) / 2, warpAcross: 17, warp: .12, elevation: [.25, .65],
+  decay: 110, spread: .08, edgeStrength: .15, gain: .35 } as const;
 /**
  * Wakes streaming downstream (with the tide) from the south fender and the north tower pier. The 23 m
  * turbulence streaks are spaced irregularly by the second, incommensurate period, and fade to their mean
@@ -393,18 +400,18 @@ function wakeFoam(world: N, u: WaterUniforms, distanceFade: N | null, viewElevat
   for (const ob of obstacles) {
     const along = world.x.sub(ob.x).mul(direction).sub(ob.halfAlong * .7);
     const across = world.y.sub(ob.z);
-    const width = along.max(0).mul(.16).add(ob.halfAcross * .9);
+    const width = along.max(0).mul(WAKE.spread).add(ob.halfAcross * .9);
     const core = exp(across.div(width).pow(2).negate());
     const edges = exp(abs(across).sub(width).div(width.mul(.22)).pow(2).negate());
-    const lengthFade = exp(along.max(0).div(280).negate()).mul(smoothstep(-ob.halfAlong * .6, 8, along));
+    const lengthFade = exp(along.max(0).div(WAKE.decay).negate()).mul(smoothstep(-ob.halfAlong * .6, 8, along));
     // turbulence advected downstream with the current, its spacing warped by the second period
     const warp = sin(along.div(WAKE.warpPeriod).sub(u.wakeWarpPhase).add(across.div(WAKE.warpAcross)).mul(2 * Math.PI)).mul(WAKE.warp);
     const streak = fract(along.div(WAKE.period).sub(u.wakePhase).add(across.div(9).mul(.37)).add(warp));
     const streaks = smoothstep(.15, .5, streak).mul(smoothstep(.95, .6, streak));
     const turbulence = mix(float(TURBULENCE_MEAN), streaks, contrast);
-    total = total.add(core.mul(.55).add(edges.mul(.6)).mul(lengthFade).mul(turbulence.mul(.6).add(.4)));
+    total = total.add(core.mul(.55).add(edges.mul(WAKE.edgeStrength)).mul(lengthFade).mul(turbulence.mul(.6).add(.4)));
   }
-  return saturate(total.mul(strength));
+  return saturate(total.mul(strength).mul(WAKE.gain));
 }
 
 /** Material features that must never change after compile, for tests and reports. */

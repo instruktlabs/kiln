@@ -1,5 +1,6 @@
 import { expect, test } from 'bun:test';
-import { BoxGeometry, DirectionalLight, Group, HalfFloatType, InstancedMesh, Layers, Mesh, MeshStandardMaterial, OrthographicCamera, PerspectiveCamera, Scene, SkinnedMesh } from 'three/webgpu';
+import { BoxGeometry, DirectionalLight, Group, HalfFloatType, InstancedBufferAttribute, InstancedMesh, Layers, Mesh, MeshStandardMaterial, MeshStandardNodeMaterial, OrthographicCamera, PerspectiveCamera, Scene, SkinnedMesh } from 'three/webgpu';
+import { attribute, positionLocal, uniform, vec3 } from 'three/tsl';
 import { cachedSunShadow } from '../../src/shadows/cache';
 import type { CachedSunShadowOptions } from '../../src/shadows/cache';
 import { keepsShadowMask, layerBit, ShadowLayers, suppressedCasters } from '../../src/shadows/layers';
@@ -124,6 +125,67 @@ test('watched casters also go live on ancestor visibility, castShadow and instan
   const skinned = new SkinnedMesh(geometry, material); skinned.castShadow = true; rig.add(skinned); cache.track(rig, { movable: () => true });
   for (let i = 0; i < 6; i++) step();
   expect(skinned.layers.mask).toBe(1 | D_BIT);                           // bones move without a matrixWorld change
+});
+
+test('watched morph influences promote with an unchanged matrix, settle, and release their history on untrack', () => {
+  const { scene, cache, S, D, step } = setup(), g = geometry.clone();
+  g.morphAttributes.position = [g.getAttribute('position').clone(), g.getAttribute('position').clone()];
+  for (const [target, positions] of g.morphAttributes.position.entries()) {
+    for (let i = 0; i < positions.count; i++) positions.setY(i, positions.getY(i) + target + 1);
+  }
+  const morph = new Mesh(g, material); morph.name = 'morph'; morph.castShadow = true;
+  scene.add(morph); scene.updateMatrixWorld(true);
+  const matrix = [...morph.matrixWorld.elements], tracked = cache.track(scene, { movable: n => n === morph });
+  step(); step(); step();
+  morph.morphTargetInfluences![1] = .75; step([main, mirror]);
+  expect(morph.matrixWorld.elements).toEqual(matrix);
+  expect(morph.layers.mask).toBe(1 | D_BIT);
+  expect([S.log.at(-1), D.log.at(-1)]).toEqual([[3], [3, 'morph']]);
+  step(); step(); expect(morph.layers.mask).toBe(1 | D_BIT);
+  step(); expect(morph.layers.mask).toBe(1 | S_BIT); // unchanged influence values calm after settleFrames
+  const settled = [S.log.length, D.log.length];
+  morph.morphTargetInfluences = [...morph.morphTargetInfluences!]; step();
+  expect([S.log.length, D.log.length]).toEqual(settled); // array identity is not deformation
+  morph.morphTargetInfluences![1] = 0; step(); expect(morph.layers.mask).toBe(1 | D_BIT);
+  tracked.untrack(); morph.morphTargetInfluences![0] = 1; step();
+  expect(morph.layers.mask).toBe(1); expect(cache.stats.liveCasters).toBe(0);
+  // Re-adding snapshots today's pose, not the previous registration's influences.
+  cache.track(scene, { movable: n => n === morph }); step(); step(); step();
+  expect(morph.layers.mask).toBe(1 | S_BIT);
+  cache.dispose(); g.dispose();
+});
+
+test('a watched caster also notices morph target addition and removal', () => {
+  const { scene, cache, step } = setup(), morph = box('morph'); scene.add(morph); scene.updateMatrixWorld(true);
+  cache.track(scene, { movable: n => n === morph }); step(); step();
+  morph.morphTargetInfluences = [0, 1]; step(); expect(morph.layers.mask).toBe(1 | D_BIT);
+  for (let i = 0; i < 3; i++) step(); expect(morph.layers.mask).toBe(1 | S_BIT);
+  morph.morphTargetInfluences = [0]; step(); expect(morph.layers.mask).toBe(1 | D_BIT);
+  for (let i = 0; i < 3; i++) step();
+  delete morph.morphTargetInfluences; step(); expect(morph.layers.mask).toBe(1 | D_BIT);
+  cache.dispose();
+});
+
+test('shader uniforms and custom instance attributes use explicit live or invalidation, without inspecting shader graphs', () => {
+  const { scene, cache, S, D, step } = setup(), liveRoot = new Group(), offset = uniform(0);
+  const g = geometry.clone(), motion = new InstancedBufferAttribute(new Float32Array([0, 1]), 1);
+  g.setAttribute('motion', motion);
+  const shader = new MeshStandardNodeMaterial(); shader.positionNode = positionLocal.add(vec3(offset, 0, 0));
+  const instanceShader = new MeshStandardNodeMaterial(); instanceShader.positionNode = positionLocal.add(vec3(attribute('motion', 'float'), 0, 0));
+  const vertex = new Mesh(geometry, shader), instances = new InstancedMesh(g, instanceShader, 2), discrete = new Mesh(geometry, shader);
+  vertex.name = 'vertex'; instances.name = 'instances'; discrete.name = 'discrete';
+  for (const m of [vertex, instances, discrete]) m.castShadow = true;
+  liveRoot.add(vertex, instances); scene.add(liveRoot, discrete); scene.updateMatrixWorld(true);
+  const matrices = [vertex, instances, discrete].map(m => [...m.matrixWorld.elements]), instanceVersion = instances.instanceMatrix.version;
+  cache.track(scene, { live: n => n === liveRoot, movable: () => true }); step(); step(); step();
+  const staticRenders = S.log.length;
+  offset.value = 2; motion.setX(0, 5); motion.needsUpdate = true; step([main, mirror]);
+  expect([vertex, instances, discrete].map(m => m.matrixWorld.elements)).toEqual(matrices);
+  expect(instances.instanceMatrix.version).toBe(instanceVersion);
+  expect(S.log.length).toBe(staticRenders); expect(D.log.at(-1)).toEqual([3, 'vertex', 'instances']);
+  // A discrete edit of the unpinned caster is the caller's responsibility.
+  cache.invalidate('shader pose'); step(); expect(S.log.at(-1)).toEqual([4, 'discrete']);
+  cache.dispose(); g.dispose(); shader.dispose(); instanceShader.dispose();
 });
 
 test('invalidate re-arms the static map and records why; prime fills the live map once, then clears it', () => {

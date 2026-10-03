@@ -7,7 +7,7 @@ import { TouchButtons, useInput } from '../input';
 import type { TouchButtonDef } from '../input';
 import type { HudStore } from './store';
 import type { LiveKnobs } from '../quality';
-import { closeScenePanelOnEscape } from './escape';
+import { closeScenePanelOnEscape, restoreScenePanelFocus } from './escape';
 export * from './store';
 export * from './fade';
 export * from './styles';
@@ -23,7 +23,7 @@ export function usePanelEscape(open: boolean, id: string, trigger: RefObject<HTM
       if (focusedPanel && focusedPanel !== panel) return;
       const expanded = target?.closest('button[aria-expanded="true"]');
       if (expanded && expanded !== trigger.current && !panel?.contains(expanded)) return;
-      closeScenePanelOnEscape(event, () => { latest.current(); trigger.current?.focus({ preventScroll: true }); });
+      closeScenePanelOnEscape(event, () => { latest.current(); restoreScenePanelFocus(trigger.current); });
     };
     root.addEventListener('keydown', key, true);
     return () => root.removeEventListener('keydown', key, true);
@@ -119,7 +119,7 @@ export function HelpOverlay(p: { children?: ReactNode; desktop?: ReactNode; touc
   const key = p.storageKey ?? `kiln.scene.${runtime.definition.id}.help`;
   const change = (value: boolean) => {
     setLocalOpen(value); p.onOpenChange?.(value);
-    if (!value) { dismissed.current = true; p.onClose?.(); trigger.current?.focus(); try { runtime.rootRef.current?.ownerDocument.defaultView?.localStorage.setItem(key, 'dismissed'); } catch {} }
+    if (!value) { dismissed.current = true; p.onClose?.(); restoreScenePanelFocus(trigger.current); try { runtime.rootRef.current?.ownerDocument.defaultView?.localStorage.setItem(key, 'dismissed'); } catch {} }
   };
   usePanelEscape(open, id, trigger, () => change(false));
   useEffect(() => {
@@ -151,7 +151,7 @@ function safeCreditUrl(source: string): string | undefined { try { const url = n
 export function CreditsPanel(p: { credits?: readonly CreditEntry[]; open?: boolean; onOpenChange?(open: boolean): void; label?: string; includeKit?: boolean }): JSX.Element {
   const runtime = useRuntime(), id = `ks-credits-${useId()}`, [localOpen, setLocalOpen] = useState(false), open = p.open ?? localOpen;
   const trigger = useRef<HTMLButtonElement>(null);
-  const change = (value: boolean) => { setLocalOpen(value); p.onOpenChange?.(value); if (!value) trigger.current?.focus(); };
+  const change = (value: boolean) => { setLocalOpen(value); p.onOpenChange?.(value); if (!value) restoreScenePanelFocus(trigger.current); };
   usePanelEscape(open, id, trigger, () => change(false));
   const credits = [...(p.credits ?? runtime.pack?.manifest.credits ?? []), ...(p.includeKit === false ? [] : KIT_NOTICES)];
   return <><HudButton ref={trigger} className="ks-credits-button" aria-expanded={open} aria-controls={id} onClick={() => change(!open)}>{p.label ?? 'Credits'}</HudButton>

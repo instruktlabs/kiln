@@ -1,8 +1,8 @@
 // The scene's truth is data (owner direction D-21): every placement, lane, light, camera, flight,
 // preset, tier and behaviour parameter lives in data/*.json, in metres and seconds, and is staged
-// beside data/scene.json so another engine can read the same files. This module only types them;
-// the components render what it exports and hold no scene values of their own.
-import layoutJson from '../data/layout.json';
+// beside data/scene.json so another engine can read the same files. Layout is loaded from the verified
+// pack by layout.ts, with generated layout-bootstrap.json supplying only the checked startup contract.
+// This module supplies its types and the other bundled configuration tables.
 import presetsJson from '../data/presets.json';
 import tiersJson from '../data/tiers.json';
 import trafficJson from '../data/traffic.json';
@@ -285,7 +285,6 @@ export interface SceneDriving {
   controls: Record<'throttle' | 'reverse' | 'left' | 'right' | 'brake' | 'handbrake' | 'boost' | 'turnAround' | 'enterOrLeave' | 'leave', string[]>;
 }
 
-export const LAYOUT = layoutJson as unknown as SceneLayout;
 export const PRESET_DATA = presetsJson as unknown as ScenePresets;
 export const TIER_DATA = tiersJson as unknown as SceneTiers;
 export const TRAFFIC_DATA = trafficJson as unknown as SceneTraffic;

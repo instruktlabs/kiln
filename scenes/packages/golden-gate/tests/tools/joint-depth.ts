@@ -25,7 +25,7 @@ import { PACKAGE_ROOT, assertOwnedUrl, launchHeadless, serveOwned, unexpectedMes
 import { outputFor } from './build.ts';
 import { luma, montage, readPng, writePng, type Image } from './image.ts';
 import { bridgeWebPath, nodeMeshes, readGlb } from '../../scripts/layout.ts';
-import { LAYOUT } from '../../src/data';
+import { LAYOUT } from '../../scripts/authored-layout';
 
 type Backend = 'webgpu' | 'webgl2';
 const WIDTH = 1280, HEIGHT = 720, FOV = 55, FOCAL = HEIGHT / 2 / Math.tan(FOV / 2 * Math.PI / 180);

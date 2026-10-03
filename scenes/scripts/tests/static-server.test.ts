@@ -3,9 +3,36 @@ import { spawnSync } from 'node:child_process';
 import { mkdir, mkdtemp, rm, writeFile } from 'node:fs/promises';
 import { relative, resolve, sep } from 'node:path';
 import { pathToFileURL } from 'node:url';
-import { isServerEntry } from '../static-server.mjs';
+import { isServerEntry, startStaticServer } from '../static-server.mjs';
 
 const root = resolve(import.meta.dir, '../..');
+
+test('WebP GET, HEAD and byte ranges use image/webp with exact bytes and nosniff', async () => {
+  await mkdir(resolve(root, '.tmp'), { recursive: true });
+  const dir = await mkdtemp(resolve(root, '.tmp', 'webp-server-'));
+  const bytes = Buffer.from('RIFF1234WEBPfixture');
+  await writeFile(resolve(dir, 'image.webp'), bytes);
+  let server: Awaited<ReturnType<typeof startStaticServer>> | undefined;
+  try {
+    server = await startStaticServer({ root: dir, port: 0 });
+    for (const method of ['GET', 'HEAD']) {
+      const response = await fetch(`${server.url}/image.webp`, { method });
+      expect(response.status).toBe(200);
+      expect(response.headers.get('content-type')).toBe('image/webp');
+      expect(response.headers.get('content-length')).toBe(String(bytes.length));
+      expect(response.headers.get('x-content-type-options')).toBe('nosniff');
+      expect(Buffer.from(await response.arrayBuffer())).toEqual(method === 'GET' ? bytes : Buffer.alloc(0));
+    }
+    const partial = await fetch(`${server.url}/image.webp`, { headers: { Range: 'bytes=8-11' } });
+    expect(partial.status).toBe(206); expect(partial.headers.get('content-type')).toBe('image/webp');
+    expect(partial.headers.get('content-range')).toBe(`bytes 8-11/${bytes.length}`);
+    expect(await partial.text()).toBe('WEBP');
+    const invalid = await fetch(`${server.url}/image.webp`, { headers: { Range: 'bytes=999-' } });
+    expect(invalid.status).toBe(416); await invalid.arrayBuffer();
+    const forbidden = await fetch(`${server.url}/%5coutside.webp`);
+    expect(forbidden.status).toBe(403); await forbidden.arrayBuffer();
+  } finally { try { await server?.close(); } finally { await rm(dir, { recursive: true, force: true }); } }
+});
 
 // FARM-005: the hub kit bundles scripts/static-server.mjs into runner/look-farm.mjs (through scene-kit's serveOwned). Inside a
 // bundle the module's import.meta.url is the bundle's own, so the file's CLI guard must not start a server there.

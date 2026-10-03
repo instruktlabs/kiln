@@ -15,6 +15,8 @@ export interface BackendInfo { backend: 'webgpu' | 'webgl2'; forced: boolean; fe
 export interface GlDefaults { canvas: HTMLCanvasElement | OffscreenCanvas; powerPreference: 'high-performance'; antialias: boolean; alpha: boolean }
 export interface RendererFactoryOptions {
   forceWebGL?: boolean; antialias?: boolean; alpha?: boolean; onBackend?: (b: BackendInfo) => void; isDisposed: () => boolean;
+  /** Opt-in depth precision for long-range scenes. Inspect renderer.reversedDepthBuffer after init: WebGL may fall back. */
+  reversedDepthBuffer?: boolean;
   makeRenderer?: (options: ConstructorParameters<typeof WebGPURenderer>[0]) => WebGPURenderer;
 }
 type Device = { destroy(): void; lost: Promise<{reason: string; message: string}>; adapterInfo?: Partial<NonNullable<BackendInfo['adapter']>> };
@@ -51,7 +53,7 @@ export function createGlFactory(o: RendererFactoryOptions): (defaults: GlDefault
     let renderer: WebGPURenderer | undefined, supplied: Device | undefined;
     try {
       if (!o.makeRenderer && typeof navigator !== 'undefined') supplied = await requestWindowsDevice({ platform:navigator.platform,forceWebGL:!!o.forceWebGL,gpu:(navigator as unknown as {gpu?: Parameters<typeof requestWindowsDevice<Device>>[0]['gpu']}).gpu });
-      const params = { canvas:defaults.canvas,antialias:o.antialias ?? true,alpha:o.alpha ?? false,powerPreference:'high-performance' as const,forceWebGL:!!o.forceWebGL,...(supplied ? {device:supplied as unknown as GPUDevice} : {}) };
+      const params = { canvas:defaults.canvas,antialias:o.antialias ?? true,alpha:o.alpha ?? false,powerPreference:'high-performance' as const,forceWebGL:!!o.forceWebGL,reversedDepthBuffer:o.reversedDepthBuffer ?? false,...(supplied ? {device:supplied as unknown as GPUDevice} : {}) };
       renderer = o.makeRenderer ? o.makeRenderer(params) : new WebGPURenderer(params);
       ownRenderer(renderer,supplied);
       await renderer.init();

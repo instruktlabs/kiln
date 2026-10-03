@@ -1,6 +1,9 @@
 import { expect, test } from 'bun:test';
+import { mkdtemp, mkdir, readFile, rm, writeFile } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 import { cellKind, cellUrl, cpuPercent, d41Verdict, displayRate, frameStats, gpuBusyMedian, hitchCounts, HUB_RULE, interleaveOrder, parseBattery, parseCell, parseLoadavg, parseNvidiaSmi, parseProcStat,
-  parseThermalStatus, parseTop, parseWho, PC_RULE, percentile, planRuns, quietVerdict, refreshShare, summarizeCell, tabletCool, type RunMetrics } from '../timing-ab';
+  parseThermalStatus, parseTop, parseWho, PC_RULE, TABLET_RULE, percentile, planRuns, quietVerdict, refreshShare, summarizeBlock, summarizeCell, tabletCool, type RunMetrics } from '../timing-ab';
 
 test('percentile uses the pilot rule (ceil(n q)-th smallest) and frame stats keep count, fps and sampled time', () => {
   const values = [10, 1, 9, 2, 8, 3, 7, 4, 6, 5];
@@ -90,15 +93,34 @@ Tasks: 300 total,   1 running, 299 sleeping,   0 stopped,   0 zombie
 });
 
 test('quiet verdicts: the hub pilot rule and this PC rule', () => {
-  const calm = { cpu: [1, 1.5, .8, 2, 1, 1, 1, 1], gpu: [0, 0, 1, 0, 0, 0, 0, 0] };
+  const calm = { cpu: [1, 1.5, .8, 2, 1, 1, 1, 1], gpu: [0, 0, 1, 0, 0, 0, 0, 0], screenLocked: false };
   expect(quietVerdict(calm, HUB_RULE).quiet).toBe(true);
   expect(quietVerdict({ ...calm, gpu: [0, 0, 4, 0, 0, 0, 0, 0] }, HUB_RULE).reasons).toEqual(['GPU max 4 % > 3 %']);
   expect(quietVerdict({ ...calm, cpu: [1, 1, 1, 13, 1, 1, 1, 1] }, HUB_RULE).reasons[0]).toMatch(/CPU max 13/);
   expect(quietVerdict({ ...calm, screenLocked: true }, HUB_RULE).quiet).toBe(false);
-  expect(quietVerdict({ cpu: [1, 1], gpu: [] }, HUB_RULE).reasons).toEqual(['2 of 8 CPU samples']);
-  const busyPc = { cpu: [35, 40, 38, 36, 37, 39, 41, 36], gpu: [22, 25, 24, 23, 22, 21, 20, 25] };
+  expect(quietVerdict({ cpu: [1, 1], gpu: [], screenLocked: false }, HUB_RULE).reasons).toEqual(['2 of 8 CPU samples', '0 of 8 readable GPU samples in [0, 100]']);
+  const busyPc = { cpu: [35, 40, 38, 36, 37, 39, 41, 36], gpu: [22, 25, 24, 23, 22, 21, 20, 25], screenLocked: false };
   expect(quietVerdict(busyPc, PC_RULE).reasons).toEqual(['CPU mean 37.75 % >= 20 %', 'GPU max 25 % > 9.999 %']);
-  expect(quietVerdict({ cpu: [10, 12, 15, 11, 9, 14, 13, 12], gpu: [5, 5, 5, 5, 5, 5, 5, 9] }, PC_RULE).quiet).toBe(true);
+  expect(quietVerdict({ cpu: [10, 12, 15, 11, 9, 14, 13, 12], gpu: [5, 5, 5, 5, 5, 5, 5, 9], screenLocked: false }, PC_RULE).quiet).toBe(true);
+});
+
+test('a quiet proof requires a complete readable bounded GPU window on every host policy', () => {
+  for (const rule of [HUB_RULE, PC_RULE, TABLET_RULE]) {
+    const cpu = Array(rule.samples).fill(1), calm = Array(rule.samples).fill(0);
+    for (const bad of [null, NaN, Infinity, -1, 101]) {
+      const gpu = [...calm]; gpu[3] = bad;
+      const result = quietVerdict({ cpu, gpu, screenLocked: false }, rule);
+      expect(result.quiet).toBe(false);
+      expect(result.reasons.some(reason => reason.includes('GPU samples'))).toBe(true);
+      // Extra valid samples must not conceal a bad reading in the observed window.
+      expect(quietVerdict({ cpu, gpu: [...gpu, 0], screenLocked: false }, rule).quiet).toBe(false);
+    }
+    expect(quietVerdict({ cpu, gpu: calm.slice(1), screenLocked: false }, rule).quiet).toBe(false);
+    expect(quietVerdict({ cpu, gpu: Array(rule.samples).fill(null), screenLocked: false }, rule)).toMatchObject({ quiet: false, gpuMax: null });
+    expect(quietVerdict({ cpu, gpu: calm, screenLocked: false }, rule).quiet).toBe(true);
+    expect(quietVerdict({ cpu, gpu: [...calm.slice(1), rule.gpuMaxAtMost], screenLocked: false }, rule).quiet).toBe(true);
+    expect(quietVerdict({ cpu, gpu: [...calm.slice(1), rule.gpuMaxAtMost + .01], screenLocked: false }, rule).quiet).toBe(false);
+  }
 });
 
 test('tablet readings and the cool rule (thermal none or light, battery at most 35 C)', () => {
@@ -141,4 +163,25 @@ test('GPU busy during a run is the median of nvidia-smi or Mali gpu_busy samples
   expect(gpuBusyMedian([{ gpu: { 'utilization.gpu': 50 } }, { gpu: { 'utilization.gpu': 40 } }, { gpu: null }, { gpu: { 'utilization.gpu': 60 } }])).toBe(50);
   expect(gpuBusyMedian([{ gpuBusyPercent: 31 }, { batteryC: 25, gpuBusyPercent: 29 }, { gpuBusyPercent: null }])).toBe(29);
   expect(gpuBusyMedian([])).toBeNull();
+});
+
+test('persisted timing summary derives GPU units and tablet acceptance from raw samples, not cached scalar claims', async () => {
+  const directory = await mkdtemp(join(tmpdir(), 'kiln-timing-summary-'));
+  try {
+    await mkdir(join(directory, 'runs'));
+    await writeFile(join(directory, 'block.json'), JSON.stringify({ device: 'tablet', block: 'fixture' }));
+    const record = (pair: number, side: 'A' | 'B') => ({ pair, side, valid: true, seconds: 60,
+      cell: { scene: 'farm', tier: 'minimal', name: 'hero', kind: 'view' },
+      metrics: { p50: 16, p95: 17, withinOne: .99, withinTwo: 1, over50: 0, over100: 0, gpuClockMHz: 999, gpuBusyClockMHz: 999 },
+      loadDuring: Array.from({ length: 30 }, () => ({ gpuBusyPercent: 20, gpuClockKHz: 500000 })) });
+    for (const pair of [1, 2, 3]) for (const side of ['A', 'B'] as const) await writeFile(join(directory, 'runs', `${pair}-${side}.json`), JSON.stringify(record(pair, side)));
+    const qualified = await summarizeBlock(directory), cell = qualified.cells[0]!;
+    expect(cell.A.gpuClockMHz?.median).toBe(500);
+    expect(cell.B.gpuBusyClockMHz?.median).toBe(100);
+    expect(cell.tabletAdoption?.pass).toBe(true);
+    expect(await readFile(join(directory, 'summary.md'), 'utf8')).toContain('Busy × MHz');
+    const missing = record(1, 'B'); missing.loadDuring = [];
+    await writeFile(join(directory, 'runs', '1-B.json'), JSON.stringify(missing));
+    expect((await summarizeBlock(directory)).cells[0]!.tabletAdoption?.pass).toBeNull();
+  } finally { await rm(directory, { recursive: true, force: true }); }
 });
