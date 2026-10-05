@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {createHash} from 'node:crypto';
 import {gzipSync} from 'node:zlib';
+import {createServer} from 'node:http';
 import {createRuntimeReader} from '../web/runtime-transport.mjs';
 const digest=bytes=>'sha256:'+createHash('sha256').update(bytes).digest('hex');
 const raw=Buffer.from('pose banks retain exactly the same decoded matrices '.repeat(1000)),gz=gzipSync(raw),base=new URL('https://fixture.test/scene/');
@@ -32,3 +33,10 @@ test('HTTP encoding claims cannot accept corrupt gzip, truncated or corrupted de
 test('HTTP decoded body exceeding its exact bound rejects despite a compressed Content-Length',async()=>{let cancelled=false;const body=new ReadableStream({start(controller){controller.enqueue(raw);controller.enqueue(new Uint8Array(1));},cancel(){cancelled=true;}}),{reader}=httpFixture(body);await assert.rejects(reader.read('runtime/a.bin'),/decoded payload byte limit/i);assert.equal(cancelled,true);reader.close();});
 test('closing an active HTTP decoded read cancels its body and rejects promptly',async()=>{let cancelled=false,started;const began=new Promise(resolve=>{started=resolve;}),body=new ReadableStream({pull(){started();return new Promise(()=>{});},cancel(){cancelled=true;}},{highWaterMark:0}),{reader}=httpFixture(body);const pending=reader.read('runtime/a.bin');await began;reader.close();await assert.rejects(pending,/runtime reader closed/i);assert.equal(cancelled,true);});
 test('decoder absence still fetches the original and verifies an HTTP decoded raw fallback',async()=>{const {reader,paths}=httpFixture(raw,{'Content-Encoding':'gzip','Content-Length':String(gz.byteLength)},{decode:null});assert.deepEqual(Buffer.from(await reader.read('runtime/a.bin')),raw);assert.deepEqual(paths,['/scene/runtime/a.bin']);reader.close();});
+test('native HTTP fetch preserves exact banks for file gzip, HTTP gzip and nested gzip',async()=>{
+ let mode='file';const server=createServer((request,response)=>{const wire=mode==='nested'?gzipSync(gz):gz;response.writeHead(200,{'Content-Length':wire.length,...(mode==='file'?{}:{'Content-Encoding':'gzip'})});response.end(wire);});
+ await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));
+ const entry={file:'runtime/a.bin.gz',encoding:'gzip',bytes:gz.byteLength,sha256:digest(gz),decodedBytes:raw.byteLength,decodedSha256:digest(raw)};
+ try{for(mode of ['file','http','nested']){const reader=createRuntimeReader({base:`http://127.0.0.1:${server.address().port}/`,manifest:{schema:'troy.runtime-transport/1',files:{'runtime/a.bin':entry}}});try{assert.deepEqual(Buffer.from(await reader.read('runtime/a.bin')),raw);}finally{reader.close();}}}
+ finally{await new Promise(resolve=>server.close(resolve));}
+});
