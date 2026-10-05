@@ -42,7 +42,7 @@ To use an already downloaded archive, run `node scripts/hydrate-runtime.mjs PATH
 Hydration is an explicit download of approximately 51.6 MB for the initial pin;
 the normal repository clone contains source, not these generated payloads.
 
-The initial runtime pin is `troy-20261005-05`. Update it to the newly sealed and
+The initial runtime pin is `troy-20261005-06`. Update it to the newly sealed and
 verified release when adopting changed model/bank inputs. A pin change requires
 rehydration; the preview refuses a cache selected for another release.
 
@@ -60,7 +60,9 @@ bun scenes/packages/troy/scripts/bundle-scene.mjs STAGED_WEB scenes/node_modules
 The transport step preserves original bank bytes and their existing clip/bounds
 contracts. Supported browsers request gzip companions; others request and verify
 the original. Exact duplicate payloads share one startup fetch, and fetch admission
-is bounded. The bundle step parses and preserves each source module's URL before
+is bounded. Servers may expose gzip file bytes or apply HTTP gzip decoding; the
+reader verifies the exact original bank identity in either case. The bundle step
+parses and preserves each source module's URL before
 relocating code, so nested bank paths still resolve correctly. It updates only the
 staged HTML entry and needs an unbundled source entry as input. Run with the pinned
 Bun 1.4.2 and installed parser; seal hashes after both steps.

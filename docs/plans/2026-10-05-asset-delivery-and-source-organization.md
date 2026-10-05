@@ -44,18 +44,27 @@ through the installed CLI. The corrected Wooden Horse child includes its parent;
 the child imports and rebuilds byte-identically. The candidate catalog, GLB and
 poster now select that child, rather than only fixing its download.
 
-Troy candidate `troy-20261005-05` preserves the accepted scene images and adds bounded
+Troy candidate `troy-20261005-06` preserves the accepted scene images and adds bounded
 fetches, verified lossless bank transport and a bundled module graph. Six frozen
 views matched the previous unbundled implementation pixel-for-pixel. Local sealed
 candidate probes reached ready and exercised those views without runtime errors.
-These local timings are functional observations under agent load. The exact sealed
-candidate also passed the quiet-hub 13-case matrix on both backends at 1440×900 balanced,
+These local timings are functional observations under agent load. The preceding sealed
+05 candidate passed the quiet-hub 13-case matrix on both backends at 1440×900 balanced,
 including combat and fleet transitions. Slowest sampled means were 63.80 FPS on WebGPU
 and 60.76 FPS on WebGL2. These are sampled averages, not a locked 60 FPS claim.
 Matched repeated fleet unloading retained approximately 25 ms p99 intervals on both
-versions, with occasional longer frames. Final production serving checks remain required.
+versions, with occasional longer frames. Repeat the affected serving and hub checks on
+the exact 06 seal before production; final production serving checks remain required.
 
-Fresh-profile network comparisons used the same admitted hub, exact sealed 04/05 inputs,
+The reader accepts compressed delivery bytes and the original bytes exposed when HTTP
+serving automatically decompresses a gzip response. Both paths retain exact identity,
+bounded allocation and cancellation. Thirteen focused reader tests and independent real
+HTTP tests cover plain, decoded and nested gzip responses, corruption and oversize data.
+The 06 archive excludes historical browser qualification fixtures and regenerates compiled
+chunks, preserving the previous archive. All 21 source inventory rows now point to canonical
+saved revisions, immutable R2 models and current scene posters.
+
+The recorded fresh-profile network comparisons used the same admitted hub, exact sealed 04/05 inputs,
 1440×900 balanced WebGPU, full shader/representation warmup, and a chosen 50 Mbps download /
 40 ms latency profile. Normal browser caching remained enabled within each page.
 
@@ -90,7 +99,9 @@ archive/model uploads remain on R2.
 
 The asset bucket originally lacked CORS. Public GET/HEAD CORS is now configured through
 the checked-in policy. All 147 published objects passed canonical URL size, SHA-256,
-CORS and immutable browser-cache checks, totaling 432,789,073 bytes. A cache rule scoped
+CORS and immutable browser-cache checks. The 146 unchanged asset objects and replacement
+06 scene archive total 432,778,435 bytes; verify the new scene archive before publishing.
+A cache rule scoped
 to the asset hostname makes ZIPs and GLBs edge-cache eligible while respecting origin
 TTLs; both demonstrated MISS followed by HIT. Missing objects bypass caching. Actual
 cross-origin gallery rendering remains part of the final production browser check.

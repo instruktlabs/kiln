@@ -25,3 +25,18 @@ test('catalog adopts every verified selected revision and retains accepted scene
   expect(old.assets[0].revisionId).toBe('parent');
   expect(() => updateTroyCatalog(old,{assets:[]},'new')).toThrow('Missing selected');
 });
+
+test('the new public candidate omits historical browser qualification fixtures without changing its seed', () => {
+  const seed = {'web/qualification/startup-cleanup.html':Buffer.from('historical fixture'),'web/banks/pose.bin':Buffer.from([1]),'web/site-frame.mjs':Buffer.from('hook')};
+  const files=overlayTroyWeb(seed,{'main.mjs':Buffer.from('scene'),'index.html':Buffer.from('<html><body></body></html>')});
+  expect(files['web/qualification/startup-cleanup.html']).toBeUndefined();
+  expect(files['web/banks/pose.bin']).toEqual(seed['web/banks/pose.bin']);
+  expect(seed['web/qualification/startup-cleanup.html'].toString()).toBe('historical fixture');
+});
+
+test('a new bundle starts without the previous release compiled chunks', () => {
+  const seed={'web/bundle/old.js':Buffer.from('old chunk'),'web/site-frame.mjs':Buffer.from('hook')};
+  const files=overlayTroyWeb(seed,{'main.mjs':Buffer.from('scene'),'index.html':Buffer.from('<html><body></body></html>')});
+  expect(files['web/bundle/old.js']).toBeUndefined();
+  expect(seed['web/bundle/old.js'].toString()).toBe('old chunk');
+});

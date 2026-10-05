@@ -35,8 +35,8 @@ inventory in the ignored mirror. `--fetch-runtime` explicitly permits fetching
 existing pinned runtime bytes instead of supplying a runtime mirror. Never reuse
 an immutable release key for changed bytes.
 
-Troy's current sealed release is `troy-20261005-05`. Normal builds consume its
-published archive; **do not regenerate release 05**. For a future release, use an
+Troy's current sealed release is `troy-20261005-06`. Normal builds consume its
+published archive; **do not regenerate release 06**. For a future release, use an
 explicit previous pin and a fresh release ID:
 
 ```sh
@@ -47,7 +47,9 @@ node scripts/prepare-troy-candidate.mjs .localdata/asset-delivery \
 Preparation overlays `scenes/packages/troy/web`, uses the unified runtime model
 pins, preserves approved scene media, builds compressed runtime transport and
 seals the scene archive. It updates `troy-delivery.json`, `troy.json` and the scene's
-`runtime-pin.json`. Include that archive record alongside the generated asset
+`runtime-pin.json`. Run `node scripts/troy-inventory.mjs` afterward to align the
+pack source inventory's selected revisions, canonical paths and public URLs.
+Include that archive record alongside the generated asset
 upload inventory before publication. The 5 October final upload list contains
 147 verified objects: 146 asset-delivery objects and the sealed Troy scene archive.
 
@@ -87,7 +89,7 @@ confirmed canonical Farm ZIP and Bridge GLB exact hashes, public CORS, second-GE
 
 Run the build and deploy contract below from clean committed `main` after required
 CI checks. The full production build must enable packs, consume the exact Troy
-05 pin, and pass static/assets/upload-set checks. `finalize-site.mjs` appends
+06 pin, and pass static/assets/upload-set checks. `finalize-site.mjs` appends
 immutable Pages rules only for individually verified sealed Troy resources;
 HTML and unsealed files retain revalidation. After deployment, match the public
 `build-info.json` commit and artifact-manifest digest to the candidate, then check

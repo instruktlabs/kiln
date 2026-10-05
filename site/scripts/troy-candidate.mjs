@@ -3,7 +3,9 @@ import { publicTroyHtml } from './troy-html.mjs';
 
 /** Replace maintained modules, retaining verified runtime inputs and the host lifecycle hook. */
 export function overlayTroyWeb(seed, sources) {
-  const files = {...seed};
+  // Qualification pages and previous compiled chunks are not inputs to a new public build.
+  // Keep the original archive intact; regenerate the bundle from maintained source.
+  const files = Object.fromEntries(Object.entries(seed).filter(([path]) => !path.startsWith('web/qualification/') && !path.startsWith('web/bundle/')));
   for (const [path, bytes] of Object.entries(sources)) files[`web/${assetPath(path)}`] = bytes;
   if (!files['web/index.html'] || !files['web/main.mjs'] || !files['web/site-frame.mjs']) throw new Error('Missing Troy browser entry or lifecycle hook');
   let html = files['web/index.html'].toString().replaceAll('"/vendor/three/', '"./vendor/three/');
