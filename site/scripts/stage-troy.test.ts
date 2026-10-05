@@ -35,11 +35,15 @@ test('Troy stages only sealed public files and rejects a changed archive before 
     const mirror = join(root, 'mirror');
     await mkdir(join(mirror, 'packs/troy'), { recursive: true });
     await writeFile(join(mirror, record.path), archive);
-    await stageTroy({ site: join(root, 'site'), record, mirror });
+    await stageTroy({ site: join(root, 'site'), record, mirror, enabled: true });
     expect(await readFile(join(root, 'site/public/scene-packs/troy/troy-01/web/index.html'), 'utf8')).toBe(body.toString());
-    await expect(stageTroy({ site: join(root, 'bad-site'), record: { ...record, sha256: '0'.repeat(64) }, mirror })).rejects.toThrow('verification failed');
+    await expect(stageTroy({ site: join(root, 'bad-site'), record: { ...record, sha256: '0'.repeat(64) }, mirror, enabled: true })).rejects.toThrow('verification failed');
     const changed = zipSync({ 'web/index.html': Buffer.from('changed'), 'delivery.json': Buffer.from(JSON.stringify(delivery)) });
     await writeFile(join(mirror, record.path), changed);
-    await expect(stageTroy({ site: join(root, 'changed-site'), record: { ...record, bytes: changed.length, sha256: hashBytes(changed) }, mirror })).rejects.toThrow('verification failed');
+    await expect(stageTroy({ site: join(root, 'changed-site'), record: { ...record, bytes: changed.length, sha256: hashBytes(changed) }, mirror, enabled: true })).rejects.toThrow('verification failed');
   } finally { await rm(root, { recursive: true, force: true }); }
+});
+
+test('asset-free Troy staging does not read an archive or write files', async () => {
+  expect(await stageTroy({ site: '/fixture-not-created', enabled: false })).toEqual({ skipped: true });
 });

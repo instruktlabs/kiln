@@ -4,8 +4,8 @@ import { pathToFileURL } from 'node:url';
 import { assetPath, fetchPinnedFile, verifyArchive } from './mirror-core.mjs';
 
 /** Reproducible public staging from the same sealed archive offered for download. */
-export async function stageTroy({ site = resolve(import.meta.dirname, '..'), record, mirror } = {}) {
-  if (['0','false'].includes(process.env.KILN_SITE_PACKS ?? '1')) return { skipped: true };
+export async function stageTroy({ site = resolve(import.meta.dirname, '..'), record, mirror, enabled = !['0','false'].includes(process.env.KILN_SITE_PACKS ?? '1') } = {}) {
+  if (!enabled) return { skipped: true };
   record ??= JSON.parse(await readFile(resolve(site, 'src/data/troy-delivery.json'), 'utf8'));
   if (!/^[a-z0-9-]+$/.test(record.release)) throw new Error('Invalid Troy release');
   const file = await fetchPinnedFile(record, { mirror, cache: resolve(site, '.cache/troy') });
