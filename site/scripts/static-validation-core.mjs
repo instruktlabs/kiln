@@ -17,7 +17,7 @@ export function resolveInternalLink(href, route) {
  * HTML the site serves inside a frame rather than as a page: the staged scene runtime documents. They are held to
  * what a frame needs (a title, a language, never indexed and no links followed), not to page metadata.
  */
-export const isEmbeddedDocument = (route) => /^\/scene-runtime\/[^/]+\/frame\.html$/.test(route);
+export const isEmbeddedDocument = (route) => /^\/scene-runtime\/[^/]+\/frame\.html$/.test(route) || /^\/scene-packs\/troy\/[^/]+\/web\/(?:qualification\/[^/]+\.html)?$/.test(route);
 export function embeddedDocumentErrors(page) {
   const errors = [];
   if (!page.title?.trim()) errors.push('Missing title');

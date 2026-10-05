@@ -49,7 +49,7 @@ const cards = [
       Scenes put individual assets into a place you can explore. They load only
       when you choose to open them.
     </p>
-    <a href="/scenes/troy/" aria-label="Troy" class="no-underline text-ink mt-12 grid gap-8 border-t border-ink pt-8 lg:grid-cols-2"><ScenePoster images={troy.posters} sizes="(max-width: 1023px) 100vw, 50vw" decorative class="border border-rule" /><div><h2 class="font-semibold">Troy</h2><p class="mt-4 max-w-prose">{troy.description}</p><p class="mt-4 max-w-prose">Explore the city, watch the fleet land, or fight as either hero.</p><span class="text-link mt-6">Open the scene preview<span class="sr-only">: Troy</span></span></div></a>
+    {PACKS_ENABLED && <a href="/scenes/troy/" aria-label="Troy" class="no-underline text-ink mt-12 grid gap-8 border-t border-ink pt-8 lg:grid-cols-2"><ScenePoster images={troy.posters} sizes="(max-width: 1023px) 100vw, 50vw" decorative class="border border-rule" /><div><h2 class="font-semibold">Troy</h2><p class="mt-4 max-w-prose">{troy.description}</p><p class="mt-4 max-w-prose">Explore the city, watch the fleet land, or fight as either hero.</p><span class="text-link mt-6">Open the scene preview<span class="sr-only">: Troy</span></span></div></a>}
     {cards.map(({ scene, staged, unstaged }) => {
       const runtime = sceneRuntimes[scene.id];
       return (

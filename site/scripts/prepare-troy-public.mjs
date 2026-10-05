@@ -5,6 +5,7 @@ import { zipSync } from 'fflate';
 import { hashBytes, verifyBytes } from './mirror-core.mjs';
 import { inspectGlb } from './generate-commons.mjs';
 import { connectRig, fitCamera } from './rig-render.mjs';
+import { publicTroyHtml } from './troy-html.mjs';
 
 // Release preparation is explicit. The normal build only fetches sealed inputs.
 const [input, output, releaseOverride] = process.argv.slice(2);
@@ -22,7 +23,7 @@ async function emit(path, bytes) {
 }
 for (const f of pack.files.filter(f => f.path.startsWith('web/') || f.path === 'serve.mjs' || /^sources\/assets\/[^/]+\/[^/]+\/(?:manifest|materials\.kiln)\.json$/.test(f.path))) {
   const bytes = await readFile(resolve(input, f.path)); verifyBytes(bytes, f);
-  await emit(f.path, bytes);
+  await emit(f.path, f.path.endsWith('.html') ? publicTroyHtml(bytes) : bytes);
 }
 const targets = pack.assets.map(pin => ({ ...pin, path: resolve(input, pin.source, 'asset.glb'), manifest: resolve(input, pin.source, 'manifest.json') }));
 for (const a of inventory.assets.filter(a => !targets.some(t => t.slug === a.slug))) {
@@ -45,7 +46,7 @@ for (const target of targets) {
   const poster = await sharp(capture.pngs[0]).webp({ quality: 88 }).toBuffer();
   await emit(`models/${target.slug}.glb`, bytes); await emit(`media/${target.slug}.webp`, poster);
   captureReceipts.push({ slug: target.slug, ...capture.receipt, posterSha256: hashBytes(poster) });
-  assets.push({ slug: target.slug, name: target.slug === 'wall-breached' ? 'Breached wall' : manifest.name, pack: 'troy', category, description: `${manifest.name}, from the Troy collection.`, assetId: manifest.assetId, revisionId: manifest.revisionId, metrics: facts, runtimeDownload: { url: `${base}models/${target.slug}.glb`, bytes: bytes.length, sha256: hashBytes(bytes) }, poster: { src: `${base}media/${target.slug}.webp`, width: 1024, height: 1024, alt: manifest.name, srcsetAvif: '', srcsetWebp: `${base}media/${target.slug}.webp 1024w` }, review: { ownerAccepted: false, status: 'published' } });
+  assets.push({ slug: target.slug, name: target.slug === 'wall-breached' ? 'Breached wall' : manifest.name, pack: 'troy', category, description: `${target.slug === 'wall-breached' ? 'Breached wall' : manifest.name}, from the Troy collection.`, assetId: manifest.assetId, revisionId: manifest.revisionId, metrics: facts, runtimeDownload: { url: `${base}models/${target.slug}.glb`, bytes: bytes.length, sha256: hashBytes(bytes) }, poster: { src: `${base}media/${target.slug}.webp`, width: 1024, height: 1024, alt: manifest.name, srcsetAvif: '', srcsetWebp: `${base}media/${target.slug}.webp 1024w` }, review: { ownerAccepted: false, status: 'published' } });
 }
 // Scene captures come from the actual playfield, supplied by its input check.
 for (const name of ['scene-coast','scene-city']) await emit(`media/${name}.webp`, await readFile(resolve(out, name + '.webp')));

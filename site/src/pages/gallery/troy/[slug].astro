@@ -21,6 +21,6 @@ const facts=await readGlbFacts(resolve('public',asset.runtimeDownload.url.slice(
   <EngineNote extensions={facts.extensionsUsed} />
   <StatRow values={[{label:'Triangles',value:number(asset.metrics.triangles)},{label:'Materials',value:asset.metrics.materials},{label:'Dimensions (m)',value:bounds(asset.metrics.bounds)}]} />
   <div class="mt-6 flex flex-wrap gap-4"><a class="btn" href={asset.runtimeDownload.url}>Download GLB ({bytes(asset.runtimeDownload.bytes)})</a><a class="btn btn-secondary" href="/scenes/troy/">Explore the scene</a></div>
-  <p class="mt-4 text-sm text-dim">{troy.license} license. {asset.metrics.clips.length ? `Animation clips: ${asset.metrics.clips.join(', ')}.` : ''}</p>
+  <p class="mt-4 text-sm text-dim">{troy.license} licence. {asset.metrics.clips.length ? `Animation clips: ${asset.metrics.clips.join(', ')}.` : ''}</p>
  </div>
 </BaseLayout>

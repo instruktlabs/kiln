@@ -81,6 +81,10 @@ test('the archive index and the reviewed gallery stay indexed and in the sitemap
 
 test('a staged scene frame is an embedded document, not a page', () => {
   expect(isEmbeddedDocument('/scene-runtime/golden-gate/frame.html')).toBe(true);
+  expect(isEmbeddedDocument('/scene-packs/troy/troy-20261005-03/web/')).toBe(true);
+  expect(isEmbeddedDocument('/scene-packs/troy/troy-20261005-03/web/qualification/pose-resources.html')).toBe(true);
+  expect(isEmbeddedDocument('/packs/troy/')).toBe(false);
+  expect(isEmbeddedDocument('/scene-packs/farm/release/web/')).toBe(false);
   expect(isEmbeddedDocument('/scenes/golden-gate/')).toBe(false);
   expect(isEmbeddedDocument('/scene-runtime/golden-gate/')).toBe(false);
   expect(isEmbeddedDocument('/frame.html')).toBe(false);

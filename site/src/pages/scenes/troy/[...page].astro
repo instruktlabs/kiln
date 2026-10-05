@@ -1,10 +1,12 @@
 ---
-import BaseLayout from '../../layouts/BaseLayout.astro';
-import PageHeader from '../../components/PageHeader.astro';
-import ScenePoster from '../../components/ScenePoster.astro';
-import troy from '../../data/troy.json';
-import { PACKS_ENABLED } from '../../lib/config';
-if (!PACKS_ENABLED) return Astro.redirect('/scenes/');
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import PageHeader from '../../../components/PageHeader.astro';
+import ScenePoster from '../../../components/ScenePoster.astro';
+import troy from '../../../data/troy.json';
+import { PACKS_ENABLED } from '../../../lib/config';
+export function getStaticPaths() {
+  return PACKS_ENABLED ? [{ params: { page: undefined } }] : [];
+}
 const runtime={url:troy.base+'web/index.html'};
 ---
 <BaseLayout title="Troy scene | Kiln" description={troy.description} breadcrumbs={[{label:'Scenes',href:'/scenes/'},{label:'Troy',href:'/scenes/troy/'}]}>
@@ -19,7 +21,7 @@ const runtime={url:troy.base+'web/index.html'};
  </div>
 </BaseLayout>
 <script>
-  import {createTroySceneSession} from '../../components/troy-scene-session';
+  import {createTroySceneSession} from '../../../components/troy-scene-session';
   class TroyScene extends HTMLElement {
     private session?: ReturnType<typeof createTroySceneSession>;
     connectedCallback(){

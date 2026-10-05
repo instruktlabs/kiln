@@ -1,12 +1,14 @@
 ---
-import BaseLayout from '../../layouts/BaseLayout.astro';
-import PageHeader from '../../components/PageHeader.astro';
-import AssetCard from '../../components/AssetCard.astro';
-import ScenePoster from '../../components/ScenePoster.astro';
-import { bytes } from '../../lib/catalog';
-import troy from '../../data/troy.json';
-import { PACKS_ENABLED } from '../../lib/config';
-if (!PACKS_ENABLED) return Astro.redirect('/packs/');
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import PageHeader from '../../../components/PageHeader.astro';
+import AssetCard from '../../../components/AssetCard.astro';
+import ScenePoster from '../../../components/ScenePoster.astro';
+import { bytes } from '../../../lib/catalog';
+import troy from '../../../data/troy.json';
+import { PACKS_ENABLED } from '../../../lib/config';
+export function getStaticPaths() {
+  return PACKS_ENABLED ? [{ params: { page: undefined } }] : [];
+}
 ---
 <BaseLayout title="Troy pack | Kiln" description="Troy heroes, soldiers, buildings, ships, equipment and vegetation. Download the models or explore the scene." breadcrumbs={[{label:'Packs',href:'/packs/'},{label:'Troy',href:'/packs/troy/'}]}>
  <div class="container py-8">
