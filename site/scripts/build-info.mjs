@@ -55,7 +55,13 @@ export async function buildInfo({ env = process.env, site = SITE, dist = join(si
     const folder = join(dist, 'scene-packs', scene.name, releases[0].name);
     const pack = await verifyPack(folder, join(folder, NOTICES));
     if (pack.id !== scene.name || pack.release !== releases[0].name) throw new Error(`Staged ${scene.name} pack identity differs from its path`);
-    const runtime = await verifyStagedRuntime(join(dist, 'scene-runtime', scene.name));
+    // Troy's entry imports sealed ES modules directly; its code and dependencies
+    // are inside the verified scene pack rather than a separate Vite chunk.
+    const entry = pack.files.find(file => file.path === 'web/index.html');
+    if (scene.name === 'troy' && !entry) throw new Error('The Troy browser entry is not sealed');
+    const runtime = scene.name === 'troy'
+      ? { file: entry.path, sha256: entry.sha256, bytes: entry.bytes }
+      : await verifyStagedRuntime(join(dist, 'scene-runtime', scene.name));
     scenes[scene.name] = {
       release: pack.release,
       packSha256: pack.packJsonSha256,

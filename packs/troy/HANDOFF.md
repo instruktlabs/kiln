@@ -1,92 +1,9 @@
-# Troy pack: handoff for the next agent
+# Continue Troy locally
 
-Written 2 October 2026 by the agent that ran the v1 readiness cycle, for an agent working on the
-owner's laptop. State: **in progress, unreviewed by the owner**; the engine work of the cycle is
-merged, the pack is local to this folder, R2 and the private evidence repository, and nothing is
-on the site.
+Scene source: `C:/Users/Mattm/X/kiln-dogfood/v1-readiness-2026-10/review/troy-expansion/scene`. Character authoring workspace: its sibling `troy-character-repair-2026-10-04/ws`; original authoring revisions remain in `troy-refine/ws`. Engine and public site: this repository.
 
-## Current direction after the hub audit
+Start with `review/troy-expansion/LOCAL-START.md` in the private repository. Its platform helper selects the local engine, pinned Node and browser. Author assets in a separate workspace; keep controllers, terrain and optimization derivatives in the scene. Current banks are infantry-v5 and archer-v9, with exact master pins in `scene/web/inputs.json`.
 
-The owner has deferred Troy scene construction until the core, existing assets/scenes,
-upgrades and Cloudflare delivery are aligned. Follow
-`docs/plans/2026-10-02-core-scenes-site-alignment.md` in the engine repository first.
-The eventual scene is full scale, inspired by the film Troy: sea and shoreline, sand
-rising toward the wall, and the city behind the wall. The saved battle composition is
-reference only; its layout and small scene budget do not define the new scene.
+Public routes are `/scenes/troy/`, `/packs/troy/` and `/gallery/troy/<slug>/`. The site build stages the exact sealed download from `site/src/data/troy-delivery.json`, without an author's absolute workspace path. Downloads are CC0 assets and MIT browser scene code. Captures are actual scene frames and master GLB renders.
 
-## Where everything is
-
-| What | Where |
-| --- | --- |
-| The pick records (source, manifest), materials, project, inventory | this folder (`README.md` has the table) |
-| Every saved revision's GLB and preview, the material maps | public R2 bucket `kiln-assets`: `https://assets.kilnstudio.tools/troy/assets/<assetId>/<revisionId>/asset.glb` and `preview.png`; `troy/materials/<id>/<revision>/`; `r2-manifest.json` here lists each object's sha256 |
-| The live Kiln workspace of the pack (project `troy`, pinned materials and every saved revision; transient program handles are not retained) | the private repository `matthew-kissinger/kiln-dogfood-v1-readiness-2026-10`, cloned to `C:\Users\Mattm\X\kiln-dogfood\v1-readiness-2026-10` on the owner's PC and to `~/X/kiln-dogfood/v1-readiness-2026-10` on the hub (Linux, user `matthewk`; its engine checkout is `~/X/kiln`): `review/troy-refine/ws`; the same workspace without its build cache as `troy/workspace/troy-refine-ws-2026-10-02.zip` on R2 (sha256 `69b4fb6b35a3a08db2ac0b67b501271cdbceefb64749fe0aef9a2165ac4f75d0`) |
-| The material-pass sources, render sheets and the scene recomposer | `review/troy-refine/{sources,out,scene}` in the private repository |
-| Picks, alternates and what changed per asset | `picks.md` in the private repository; `findings.md` has one row per session |
-| The report | `docs/reviews/2026-10-01-v1-readiness-live-sessions.md` (section 7 candidates, section 9 the owner's decisions, section 11 the follow-ups and the material pass) |
-| The viewer of every session collection plus `troy-refine` | `tools/view-troy.ps1` in the private repository (port 4318; needs a runtime folder beside it) |
-| The other composition, by Codex (279,332 triangles, 452 draws) | `sessions/s42-codex-scene/ws` in the private repository |
-
-## Resume authoring
-
-Use this procedure when the alignment work is complete and Troy authoring resumes.
-The hub workspace currently targets Claude, has no configured default project and no
-retained program handles. Saved sources and revisions are complete: restore the exact
-pick before editing, name project `troy` explicitly and set up the chosen harness rather
-than assuming that opening the folder in Codex registers its tools.
-
-1. Clone the private repository to the path above. Its `README.md` says what is excluded and how
-   to make it again (runtime clones, harness homes, caches).
-2. Make a runtime beside it: clone this repository, `bun install --frozen-lockfile`,
-   `node scripts/build-runtime.mjs all`; the evidence tools expect `runtime-<label>/` under the
-   evidence root (`runtime-0.10.0-fix3` was a clone of `3fc369c`; any later commit of `main` serves).
-   On the Linux hub, the existing `/home/matthewk/X/kiln` checkout is already the live
-   workspace's runtime; a second clone is needed only for tools that require their own
-   frozen runtime.
-3. Open `review/troy-refine/ws` as a Kiln workspace: its `kiln.mjs` and `.mcp.json` name the
-   runtime. From that runtime, run `node scripts/create-workspace.mjs /absolute/workspace --check`,
-   then `--upgrade` if required (`skills/kiln-setup-workspace`); restart the harness/MCP
-   session afterward. An installed package uses `kiln-init /absolute/workspace --check`
-   and `--upgrade`. These are setup commands, not flags on `node kiln.mjs init`.
-   Or generate a fresh workspace with `kiln-init` and import the revisions from the
-   workspace zip with `kiln_import`.
-4. Refine through `skills/kiln-refine-asset`: `inventory.json` has each pick's `assetId` and
-   `revisionId`; a call that names `projectId: "troy"` (revision 2) implies the material pins, and a
-   pin the call names replaces the project's for the same `resourceId`.
-5. Keep the pack standalone-first (AGENTS.md): scene terrain, controllers and optimization
-   derivatives belong to the scene package, never to these assets.
-
-## Troy work after foundation alignment
-
-- Revise several assets first; he has a list and will say which. Feed demonstrated authoring
-  defects back into the maintained skills at the relevant boundary.
-- Then a real scene, not the composed reference: in the manner of Farm and Golden Gate under
-  `scenes/packages/`, the wall as part of a landscape with the city inside it (houses, the temple,
-  the gate, the breach), soldiers across the battlefield, archers on the wall walk, Achilles and
-  Hector about to fight on the plain, the galleys and the wooden horse on the shore. The reference
-  composition shows every pick placed once; its layout is not the design.
-- Eventually an official pack and scene on the site. The site's gallery renders standalone
-  `examples/*.kiln.js`; project-pinned materials need site work before these assets can appear
-  there, and `scenes/packages/` is a bun workspace with a frozen lockfile, so moving the pack
-  there is a deliberate change with `bun install` in `scenes/`.
-
-## Known state
-
-- QA: every masonry revision is accepted/warn on `MATERIAL_IMAGE_COUNT_BUDGET` (the
-  `web.portable.v1/standard` four-image budget; the two textured materials add two maps each);
-  the horse, galley and bow set are accepted/pass; `GEO_PART_SELF_INTERSECTION` is observe-only.
-- The material pass maps box UVs from world position (limestone tiles every 1.2 m, plastered
-  mudbrick every 1 m) so courses run across pieces and match from the wall sections to the gate;
-  geometry, part names, pivots and clips are the parents'. The horse's body is 0.8 to 0.84 as wide
-  as deep (0.49 m over the thighs, from 0.53).
-- The reference composition is inside the project's `scene-web` budget (150 draws, 400,000
-  triangles) at 208,178 triangles and 130 draws; the shared limestone and mudbrick merge in its
-  bake (28 materials from 32).
-- Every revision was saved through the 0.10.0 CLI with project `troy`; the engine follow-ups of
-  2 October (strict-mode generated code, implied project pins, the `resourceId` alias) landed
-  after the pass, so the saved sources predate them and still run under them.
-- The hub audit verified the selected source/manifest pairs and GLB/source/preview hashes.
-  Project inventory entries still need exact asset links; `inventory.json` is the pick list.
-  Project convention says +Z forward while saved manifests declare +X. Reconcile metadata
-  and bind meaningful requirements before integration: saved structural QA and unassessed
-  visual QA do not establish passage clearance, wall joins, grips or destination behavior.
+Read `STATUS.md` and the engine's `docs/reviews/2026-10-05-troy-completion-status.md` for current evidence and limits. Keep the hub quiet before timing an identified candidate. Existing recovery parents, rejected candidates and outputs remain preserved; cleanup belongs to the separate cleanup task.

@@ -38,9 +38,11 @@ const BODY = {
 // Pack hand grip: every held item has a 0.03 m radius, 0.11 m grip centred on its origin
 // along its +Y; the fist closes to it. The socket tilts the grip 45 deg forward-down from
 // the forearm, as a sword sits diagonally across a closed palm.
-const GRIP = { radius: 0.03, length: 0.11, fistOuter: 0.05, fistLength: 0.09, socket: [0, -0.07, 0.01], tilt: 135 };
+const GRIP = { radius: 0.014, length: 0.11, fistOuter: 0.05, fistLength: 0.09, socket: [0, -0.07, 0.01], tilt: 135 };
 // Feet stay planted at these depths in every clip; legs are solved from the hips position.
 const STANCE = { left: 0.15, right: -0.14 };
+
+// Hands deliberately match the low-detail body: one solid beveled block.
 
 // ---------- geometry helpers ----------
 function xf(t = {}) {
@@ -233,8 +235,8 @@ const IDLE_KEYS = [
 const ATTACK_KEYS = [
   { t: 0, ...GUARD },
   { t: 0.38, ...pose({ hips: [0, 0.905, -0.04], spine: [-6, -38, 4], neck: [0, 0, 0], head: [0, 25, 0], shoulder_right: [-150, 0, -25], elbow_right: [-60, 0, 0], wrist_right: [-25, 0, 0], shoulder_left: [-70, 0, 15], elbow_left: [-20, 0, 0] }) },
-  { t: 0.54, ...pose({ hips: [0, 0.87, 0.07], spine: [14, 10, -3], head: [-6, -8, 0], shoulder_right: [-75, 0, -5], elbow_right: [-5, 0, 0], wrist_right: [40, 0, 0], shoulder_left: [20, 0, 12], elbow_left: [-75, 0, 0] }) },
-  { t: 0.7, ...pose({ hips: [0, 0.865, 0.08], spine: [18, 30, -4], head: [-8, -22, 0], shoulder_right: [-55, 0, 15], elbow_right: [-10, 0, 0], wrist_right: [45, 0, 0], shoulder_left: [25, 0, 15], elbow_left: [-80, 0, 0] }) },
+  { t: 0.54, ...pose({ hips: [0, 0.87, 0.07], spine: [14, 10, -3], head: [-6, -8, 0], shoulder_right: [-75, 0, -5], elbow_right: [-5, 0, 0], wrist_right: [40, 0, 0], shoulder_left: [-18, 0, 30], elbow_left: [-48, 0, 0], wrist_left: [0, 0, 0] }) },
+  { t: 0.7, ...pose({ hips: [0, 0.865, 0.08], spine: [18, 30, -4], head: [-8, -22, 0], shoulder_right: [-55, 0, 15], elbow_right: [-10, 0, 0], wrist_right: [45, 0, 0], shoulder_left: [-18, 0, 30], elbow_left: [-48, 0, 0], wrist_left: [0, 0, 0] }) },
   { t: 1.1, ...pose({ hips: [0, 0.9, 0.03], spine: [8, -5, 0], head: [-3, 6, 0], shoulder_right: [-30, 0, -8], elbow_right: [-50, 0, 0], wrist_right: [-5, 0, 0], shoulder_left: [-5, 0, 10], elbow_left: [-40, 0, 0] }) },
   { t: 1.5, ...GUARD },
 ];
@@ -250,7 +252,17 @@ function legIK(hips, side) {
   const hip = -(phi + a) / D2R, knee = (a + b) / D2R;
   return { ['hip_' + side]: [hip, 0, 0], ['knee_' + side]: [knee, 0, 0], ['ankle_' + side]: [-(hip + knee), 0, 0] };
 }
-const solve = p => ({ ...p, ...legIK(p.hips, 'right'), ...legIK(p.hips, 'left') });
+// Keep the shield in front, with the forearm running sideways across its back.
+// Solve only the left arm in the asset's +Z forward frame; other pose channels stay authored.
+function shieldSupport(p) {
+  const down = new THREE.Vector3(0, -1, 0);
+  const upper = new THREE.Quaternion().setFromUnitVectors(down, new THREE.Vector3(.14, -Math.sqrt(BODY.upperArm ** 2 - .14 ** 2 - .18 ** 2), .18).normalize());
+  const lower = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 0, 1), -Math.PI / 2);
+  const spine = new THREE.Quaternion().setFromEuler(new THREE.Euler(...p.spine.map(x => x * D2R), 'XYZ'));
+  const degrees = q => new THREE.Euler().setFromQuaternion(q, 'XYZ').toArray().slice(0, 3).map(x => x / D2R);
+  return { shoulder_left: degrees(spine.invert().multiply(upper)), elbow_left: degrees(upper.clone().invert().multiply(lower)), wrist_left: [0, 0, 0] };
+}
+const solve = p => ({ ...p, ...legIK(p.hips, 'right'), ...legIK(p.hips, 'left'), ...shieldSupport(p) });
 
 // Monotone cubic (Fritsch-Carlson) through the key values; flat at the ends.
 function pchip(ts, vs, t) {
@@ -291,17 +303,19 @@ function sampleClip(name, keys, fps, loop) {
 // ---------- build ----------
 async function build() {
   const blue = await compilePortableMaterialSpecV2({ ...LINEN, name: 'Greek blue linen', baseColor: TINT.blue });
-  const skin = await compilePortableMaterialSpecV2({ ...LINEN, name: 'Skin', baseColor: TINT.skin });
+  const skin = gameMaterial(0xc59a78); // Skin is matte, without cloth weave.
   const bronze = await compilePortableMaterialSpecV2({ ...BRONZE, name: 'Bronze', baseColor: TINT.bronze });
   // UV repeat in metres: cloth and bronze at their physical map size; skin samples the linen
   // maps at a fine repeat so the weave averages out to an even tone.
-  const mats = { blue: [blue, 0.5], skin: [skin, 0.04], bronze: [bronze, 1] };
+  const champion=copyMaterial(bronze);champion.metalness=.38;champion.roughness=.52;
+  const mats = { blue: [blue, 0.5], skin: [skin, 0.04], bronze: [champion, 1], champion: [champion, 1] };
   const part = (name, mat, parent, fill) => {
     const sh = shape(mats[mat][1]);
     fill(sh);
     return createPart(name, sh.geometry(), mats[mat][0], { parent });
   };
 
+  const blockHand=(await roundedBoxGeo(.070,.095,.050,.005,{style:'chamfer'})).translate(0,-.045,0);
   const root = createRoot('Achilles');
   const J = {};
   J.hips = createPivot('hips', [0, BODY.hipsY, 0], root);
@@ -321,7 +335,7 @@ async function build() {
 
   // Achilles' bronze cuirass: the linen cuirass's profile and shoulder flaps cast in bronze,
   // with a high neck guard rising from the dome; bronze belt.
-  part('cuirass', 'bronze', J.spine, s => {
+  part('cuirass', 'champion', J.spine, s => {
     s.add(revolve([[0.155, -0.07], [0.145, -0.02], [0.148, 0.08], [0.168, 0.2], [0.172, 0.29], [0.15, 0.36], [0.09, 0.4], [0.05, 0.41], [0, 0.41]], 10), { s: [1, 1, 0.72] });
     for (const x of [-1, 1]) s.add(boxGeo(0.15, 0.025, 0.2), { p: [x * 0.125, 0.39, 0], r: [0, 0, -x * 12] });
     s.add(revolve([[0.098, 0.36, 0.82], [0.084, 0.445, 0.85], [0.072, 0.445, 0.85], [0.082, 0.37, 0.82], [0.098, 0.36, 0.82]], 10));
@@ -359,6 +373,12 @@ async function build() {
     const socket = createPivot('socket_' + side, GRIP.socket, J['wrist_' + side]);
     socket.name = 'socket_hand_' + side;
     socket.rotation.set(GRIP.tilt * D2R, 0, 0);
+    if(side==='left'){
+      // Shield handle lies parallel to its back and touches the rear bracket.
+      const frame=xf({p:[0,.125,.065],r:[0,0,90]});
+      socket.position.copy(new THREE.Vector3(-.17,0,-.074).applyMatrix4(frame));
+      socket.rotation.set(0,0,90*D2R);
+    }
 
     part('sleeve_' + side, 'blue', J['shoulder_' + side], s => s
       .add(cylinderGeo(0.06, 0.056, 0.11, 8), { p: [0, -0.045, 0] })
@@ -371,9 +391,7 @@ async function build() {
     part('forearm_' + side, 'skin', J['elbow_' + side], s => s
       .add(cylinderGeo(0.042, 0.032, 0.26, 8), { p: [0, -0.125, 0] })
       .add(sphereGeo(0.043, 8, 6)));
-    part('hand_' + side, 'skin', J['wrist_' + side], s => s
-      .add(boxGeo(0.05, 0.07, 0.075), { p: [0, -0.035, 0.005] })
-      .add(tube(GRIP.radius, GRIP.fistOuter, GRIP.fistLength, 8), { p: GRIP.socket, r: [GRIP.tilt, 0, 0] }));
+    part('hand_' + side, 'skin', J['wrist_' + side], s => s.add(blockHand));
 
     J['hip_' + side] = createPivot('hip_' + side, [x * BODY.hipX, BODY.hipDrop, 0], J.hips);
     J['knee_' + side] = createPivot('knee_' + side, [0, -BODY.thigh, 0], J['hip_' + side]);
@@ -391,6 +409,14 @@ async function build() {
     .add(boxGeo(0.034, 0.024, 0.11), { p: [0, GRIP.length / 2 + 0.012, 0] })
     .add(blade([[0.079, 0.022, 0.007], [0.12, 0.02, 0.007], [0.3, 0.018, 0.0065], [0.47, 0.028, 0.0065], [0.57, 0.022, 0.005], [0.635, 0.008, 0.003], [0.665, 0, 0]])));
   sword.name = 'sword';
+  const shieldFrame=createPivot('shield_frame',[0,.125,.065],J.wrist_left);shieldFrame.rotation.z=90*D2R;
+  const shield=part('shield','champion',shieldFrame,s=>s.add(revolve([[0,-.012],[0.38,-.012],[0.38,.012],[0.3496,.035],[0.20900000000000002,.065],[0,.073]],28),{r:[90,0,0],s:[1,1,1]}));shield.name='shield';
+  part('shield_grip','bronze',root.getObjectByName('socket_hand_left'),s=>s.add(cylinderGeo(GRIP.radius,GRIP.radius,GRIP.length,8)));
+  part('shield_mount','bronze',shieldFrame,s=>s.add(boxGeo(.10,.045,.08),{p:[0,-.07,-.02]})).position.x=-.17;
+  part('shield_emblem','champion',shieldFrame,s=>{
+   const face=r=>r<.209?.073+(.065-.073)*r/.209:.065+(.035-.065)*(r-.209)/(.3496-.209);for(const r of [.11,.22,.32])s.add(revolve([[r-.005,face(r-.005)-.002],[r+.005,face(r+.005)-.002],[r+.005,face(r+.005)+.006],[r-.005,face(r-.005)+.006],[r-.005,face(r-.005)-.002]],28),{r:[90,0,0]});s.add(sphereGeo(1,12,8),{p:[0,0,.073],s:[.065,.065,.026]});
+  });
+
 
   // Rest pose is the first idle frame, so a static instance stands in guard.
   const p0 = solve(GUARD);

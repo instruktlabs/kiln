@@ -8,7 +8,7 @@ const categories = [...new Set(assets.map((asset) => asset.category))].sort();
 
 <BaseLayout
   title="Gallery · Kiln"
-  description="Explore Farm, road vehicles, Foundry Floor and the Golden Gate Bridge. Inspect individual 3D models, exact downloads, and saved revisions."
+  description="Explore Troy, Farm, road vehicles, Foundry Floor and the Golden Gate Bridge. Inspect individual 3D models, exact downloads, and saved revisions."
   breadcrumbs={[{ label: "Gallery", href: "/gallery/" }]}
   card="gallery"
 >
@@ -40,6 +40,7 @@ const categories = [...new Set(assets.map((asset) => asset.category))].sort();
               class="min-h-11 w-full min-w-0 border border-ink bg-sheet px-3 py-2"
             >
               <option value="all">All assets</option>
+              <option value="troy">Troy</option>
               <option value="farm">Shapes &amp; Seasons Farm</option>
               <option value="vehicles">Generic Road Vehicles</option>
               <option value="foundry-floor">Foundry Floor</option>

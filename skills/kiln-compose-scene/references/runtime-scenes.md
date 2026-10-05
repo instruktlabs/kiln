@@ -187,6 +187,15 @@ materials in shadow, depth or picking passes. Supply equivalent transforms for
 those passes or keep the affected meshes out of them. The planting example has
 no such pass and explicitly prevents the shared plant meshes from casting shadows.
 
+For an isolated animated-shadow comparison, use the actual caster geometry and
+deformation on a receiver-only image. Verify that disabling casting leaves it
+blank for both reference and derivative, and that omitting the animated shadow
+transform fails the comparison. Coplanar actor pixels can contaminate a receiver
+image even when they are grey; exclude the main-pass actor geometry while keeping
+the shadow pass active. Record pose, instance transforms, light/map settings and
+image tolerances. This checks projection equivalence; the actual scene still
+needs map coverage, contact/self-shadow, camera-transition and cost review.
+
 When a frame's main pass is never split by a mid-pass copy (for example a
 depth-texture read for water), its multisampled attachments need not be stored
 after the resolve. Discarding them changed nothing measurable on a desktop GPU.
@@ -231,6 +240,17 @@ placements the application knows will remain fixed. Keep animated and controlled
 hierarchies live, and restore or rebuild the cache before placement or variant
 changes. Check exact world transforms, visibility and culling in the consumer.
 
+Hiding draws does not necessarily stop CPU animation. Count evaluated rigs and
+motion owners as well as visible actors. A projected-error selector may demand
+exact poses behind the camera. For a qualified shared clip, the consumer can
+avoid that work when its bound, inflated by the admitted source-error budget,
+and its shadow sweep both miss the view. Preserve the receiver/light assumptions;
+sampled bounds and error evidence do not become continuous guarantees. Missing
+clips, uncertain bounds and visible shadows retain the original path. Reevaluate
+on camera, depth convention, viewport, light and culling changes, and restore
+the source before the first visible frame. Check reverse seeks and camera travel,
+not only a frozen hidden group.
+
 Treat LODs, mesh simplification, compression and impostors as optional derived
 products. Keep editable masters and derivative provenance. For aerial and side
 views, an upright billboard alone can collapse from above; compare multiview or
@@ -251,6 +271,36 @@ render pipeline is ready. Drive the application's real interaction path and mark
 the affected frames. Measure initial loading alongside any shader preparation;
 moving an interaction hitch into a long startup stall is not a demonstrated
 improvement. State which browser, network and driver caches were actually cold.
+
+Inspect the pinned renderer before assuming asynchronous main-pass compilation
+also prepares shadow pipelines. If startup uses actual offscreen passes, retain
+the production scene/light identity, restore temporary owner and target state,
+release the owned target and regenerate shadows after restoration. Include its
+completion in readiness cost; identical later images do not justify a long
+startup delay by themselves.
+
+Startup admission must recognize the actual draw representation. A plain mesh
+with instanced buffer geometry uses the geometry's instance count, rather than
+an `InstancedMesh` count. Admit only existing nonempty instance capacity, with
+valid initialized transforms, and snapshot shared geometry once. Restore its
+count separately from object visibility and culling, including when compilation
+or rendering fails. Never invent instances for empty buffers. Verify restored
+production images and resource release on each supported backend; an offline
+count test alone does not establish rendered compatibility or loading cost.
+
+Distinguish an application's ready marker from its first visible scene frame.
+An awaited preparation pass may drain the GPU queue while the reference marker
+leaves work outstanding. Record the first rendered/presented scene separately
+before treating marker differences as the user's loading-time cost. Keep any
+screenshot/readback overhead explicit and use the same observer for each mode.
+
+Compare scoped actual-phase preparation with admission of every hidden variant.
+When preparation temporarily samples a future state, restore the original clock,
+controller owners, camera, visibility and instance selection before the live loop.
+Verify restored actor/ship state and fixed images as well as failure cleanup.
+Compiling for one target and drawing another can prepare different pipelines;
+measure the complete strategy rather than assuming both steps are necessary.
+A warmed phase does not qualify other entry cameras or future representations.
 
 Check host CPU/GPU and competing processes before and during measurement. Keep
 contaminated runs with their rejection reason; do not label loaded-host timings
@@ -285,6 +335,24 @@ from the test server and observers; summed process RSS can also count shared
 mappings more than once and is not GPU memory or unique physical allocation.
 
 ## Delivery
+
+Prove reusable derivative commands through a packed, freshly installed consumer,
+using another asset family as well as small supported and rejected fixtures.
+Inject the consumer's exact dependency installation; do not resolve libraries
+from a developer's unrelated checkout. A transform bank must deliver its retained
+source GLB or an independently resolvable exact source, alongside payload hashes.
+Preserving a developer-machine path in a manifest does not supply that file.
+Keep skin/morph rejection and the original fallback explicit; rigid success
+does not qualify deformation support. Retain the source's materials and licenses
+even when an image-free sampling copy removes materials for evaluation.
+
+Where profiling identifies hierarchy work, private fixed-topology clones may
+cache named-node lookup. Preserve preorder first-match behavior for duplicate
+names, restore the original lookup before topology/name edits, and never install
+the cache on a saved master. Defer redundant world synchronization only when the
+caller owns the complete final synchronization. Compare all posed part matrices,
+contacts, forward/reverse seeks and restored visible images, then measure actual
+frame intervals. Fewer tree visits alone do not establish a device performance gain.
 
 Ship the individual editable assets and rebuilding dependencies distinctly from
 runtime assets and scene code. Preserve material/asset licenses separately from

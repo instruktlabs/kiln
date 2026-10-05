@@ -1,0 +1,38 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PageHeader from '../../components/PageHeader.astro';
+import ScenePoster from '../../components/ScenePoster.astro';
+import troy from '../../data/troy.json';
+const runtime={url:troy.base+'web/index.html'};
+---
+<BaseLayout title="Troy scene | Kiln" description={troy.description} breadcrumbs={[{label:'Scenes',href:'/scenes/'},{label:'Troy',href:'/scenes/troy/'}]}>
+ <div class="container py-8">
+  <PageHeader>Troy scene</PageHeader><p class="lead mt-4">{troy.description}</p><a class="btn btn-secondary mt-6" href="/packs/troy/">View the Troy pack</a>
+  <troy-scene class="mt-8 block border border-rule bg-stage" data-runtime-url={runtime.url}>
+   <div data-intro><div class="flex flex-wrap items-center justify-between gap-6 bg-sheet p-6"><div><p>Explore the coast, battlefield and city, or play as Achilles or Hector.</p><p class="mt-2 text-sm text-dim">Desktop and touch controls. Loads only when you choose Explore.</p></div><button class="btn" type="button" data-explore>Explore</button></div><ScenePoster images={troy.posters} sizes="(max-width: 767px) calc(100vw - 2rem), 81rem" eager /></div>
+   <div data-active role="dialog" aria-modal="true" aria-label="Troy interactive scene" hidden class="fixed inset-0 z-50 flex flex-col bg-paper"><div class="scene-topbar flex shrink-0 items-center justify-between gap-2"><button class="scene-topbar-button" type="button" data-exit>Exit scene</button><button class="scene-topbar-button" type="button" data-fullscreen>Fullscreen</button></div><p data-loading role="status" class="p-6">Loading the scene...</p><div data-mount class="min-h-0 flex-1"></div></div>
+   <p data-status role="status" class="p-6" hidden></p><noscript><p class="p-6">JavaScript is required for interactive scenes.</p></noscript>
+  </troy-scene>
+  <p class="mt-6 text-sm text-dim">WASD moves. Left click or J: light attack. Right click or K: heavy attack. Hold Space to block. Touch actions appear when playing a hero. More opens the secondary controls.</p>
+ </div>
+</BaseLayout>
+<script>
+  import {createTroySceneSession} from '../../components/troy-scene-session';
+  class TroyScene extends HTMLElement {
+    private session?: ReturnType<typeof createTroySceneSession>;
+    connectedCallback(){
+      const explore=this.querySelector<HTMLButtonElement>('[data-explore]'); if(!explore || this.session)return;
+      const active=this.querySelector<HTMLElement>('[data-active]')!,mount=this.querySelector<HTMLElement>('[data-mount]')!,loading=this.querySelector<HTMLElement>('[data-loading]')!,status=this.querySelector<HTMLElement>('[data-status]')!,exit=this.querySelector<HTMLButtonElement>('[data-exit]')!,fullscreen=this.querySelector<HTMLButtonElement>('[data-fullscreen]')!;
+      const originalInert=new Map<HTMLElement,boolean>();
+      const background=(hide:boolean)=>{if(!hide){for(const [n,value]of originalInert)n.inert=value;originalInert.clear();return;}let branch:HTMLElement=this;while(branch.parentElement){for(const n of branch.parentElement.children)if(n!==branch&&n instanceof HTMLElement&&!originalInert.has(n)){originalInert.set(n,n.inert);n.inert=true;}branch=branch.parentElement;}};
+      const leave=async()=>{if(document.fullscreenElement===active)await document.exitFullscreen();await this.session!.stop();active.hidden=true;this.querySelector<HTMLElement>('[data-intro]')!.hidden=false;background(false);explore.focus();};
+      this.session=createTroySceneSession({origin:location.origin,createFrame:()=>{const frame=document.createElement('iframe');frame.title='Troy scene';frame.allow='fullscreen';frame.className='block h-full min-h-0 w-full border-0';return frame;},mount:frame=>mount.append(frame),subscribe:listener=>{window.addEventListener('message',listener);return()=>window.removeEventListener('message',listener);},onState:(state,error)=>{this.dataset.sceneState=state;exit.disabled=state==='closing';loading.hidden=state==='ready'||state==='idle';if(state==='error'){status.hidden=false;status.textContent=error?.message??'The scene could not start.';active.hidden=true;this.querySelector<HTMLElement>('[data-intro]')!.hidden=false;background(false);explore.focus();}},onProgress:text=>{loading.textContent=text;},onExit:()=>{void leave();}});
+      explore.addEventListener('click',()=>{active.hidden=false;this.querySelector<HTMLElement>('[data-intro]')!.hidden=true;background(true);status.hidden=true;loading.hidden=false;loading.textContent='Loading the scene…';const backend=new URLSearchParams(location.search).get('backend');this.session!.start(this.dataset.runtimeUrl!+(['webgpu','webgl2'].includes(backend??'')?'?backend='+backend:''));exit.focus();});
+      exit.addEventListener('click',()=>{void leave();});
+      fullscreen.addEventListener('click',()=>{void (document.fullscreenElement?document.exitFullscreen():active.requestFullscreen()).catch(()=>{status.hidden=false;status.textContent='Fullscreen is unavailable. The scene remains playable.';});});
+      active.addEventListener('keydown',event=>{if(event.key==='Escape'&&!event.defaultPrevented&&!document.fullscreenElement){event.preventDefault();void leave();}if(event.key==='Tab'&&document.activeElement===exit&&event.shiftKey){event.preventDefault();fullscreen.focus();}});
+    }
+    disconnectedCallback(){void this.session?.stop();}
+  }
+  if(!customElements.get('troy-scene'))customElements.define('troy-scene',TroyScene);
+</script>

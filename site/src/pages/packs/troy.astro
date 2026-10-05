@@ -1,0 +1,19 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PageHeader from '../../components/PageHeader.astro';
+import AssetCard from '../../components/AssetCard.astro';
+import ScenePoster from '../../components/ScenePoster.astro';
+import { bytes } from '../../lib/catalog';
+import troy from '../../data/troy.json';
+---
+<BaseLayout title="Troy pack | Kiln" description="Troy heroes, soldiers, buildings, ships, equipment and vegetation. Download the models or explore the scene." breadcrumbs={[{label:'Packs',href:'/packs/'},{label:'Troy',href:'/packs/troy/'}]}>
+ <div class="container py-8">
+  <PageHeader>Troy</PageHeader>
+  <p class="lead mt-6">{troy.assetCount} models for a Bronze Age coast, battlefield and city.</p>
+  <div class="mt-6 flex flex-wrap gap-4"><a class="btn" href="/scenes/troy/">Explore the scene</a><a class="btn btn-secondary" href={troy.models.url}>Download all models ({bytes(troy.models.bytes)})</a><a class="btn btn-secondary" href={troy.scene.url}>Download the scene ({bytes(troy.scene.bytes)})</a></div>
+  <p class="mt-4 text-sm text-dim">Asset content is {troy.license}. Scene code and Three.js use MIT. The scene download runs locally with Node and a browser supporting WebGPU or WebGL2.</p>
+  <div class="mt-8"><ScenePoster images={troy.posters} sizes="(max-width: 767px) calc(100vw - 2rem), 81rem" eager /></div>
+  <h2 class="mt-12">Models</h2>
+  <div class="mt-8 grid grid-cols-2 gap-x-4 gap-y-10 md:grid-cols-3 lg:grid-cols-4">{troy.assets.map(asset=><AssetCard asset={{...asset,href:`/gallery/troy/${asset.slug}/`}} />)}</div>
+ </div>
+</BaseLayout>

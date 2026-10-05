@@ -4,6 +4,7 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
 import { sceneRuntimes } from "virtual:kiln-scenes";
 import { farmScene, foundryFloorScene, goldenGateScene } from "../../data/scenes";
 import { PACKS_ENABLED } from "../../lib/config";
+import troy from "../../data/troy.json";
 import ScenePoster from "../../components/ScenePoster.astro";
 
 // Each card states the scene's true status in this build: a staged runtime makes it a preview (none of the three
@@ -38,7 +39,7 @@ const cards = [
 
 <BaseLayout
   title="Scenes · Kiln"
-  description="Scenes built from Kiln assets: the Farm, a Golden Gate Bridge driving and traffic demonstration and the Foundry Floor. Each loads only when you choose Explore."
+  description="Scenes built from Kiln assets: Troy, the Farm, a Golden Gate Bridge driving and traffic demonstration and the Foundry Floor. Each loads only when you choose Explore."
   breadcrumbs={[{ label: "Scenes", href: "/scenes/" }]}
   card="scenes"
 >
@@ -48,6 +49,7 @@ const cards = [
       Scenes put individual assets into a place you can explore. They load only
       when you choose to open them.
     </p>
+    <a href="/scenes/troy/" aria-label="Troy" class="no-underline text-ink mt-12 grid gap-8 border-t border-ink pt-8 lg:grid-cols-2"><ScenePoster images={troy.posters} sizes="(max-width: 1023px) 100vw, 50vw" decorative class="border border-rule" /><div><h2 class="font-semibold">Troy</h2><p class="mt-4 max-w-prose">{troy.description}</p><p class="mt-4 max-w-prose">Explore the city, watch the fleet land, or fight as either hero.</p><span class="text-link mt-6">Open the scene preview<span class="sr-only">: Troy</span></span></div></a>
     {cards.map(({ scene, staged, unstaged }) => {
       const runtime = sceneRuntimes[scene.id];
       return (

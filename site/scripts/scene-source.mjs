@@ -127,6 +127,12 @@ export function stagedScenes(site = SITE) {
       ? { kind: runtime.kind, url: runtime.url, file: runtime.file, bytes: runtime.bytes, gzipBytes: runtime.gzipBytes, sha256: runtime.sha256, pack: servedPack(packFile) }
       : null;
   }
+  const troyFile = resolve(site, 'src/data/troy.json');
+  if (existsSync(troyFile)) {
+    const troy = JSON.parse(readFileSync(troyFile, 'utf8'));
+    const packFile = resolve(site, 'public', troy.base.replace(/^\/+/, ''), 'pack.json');
+    if (existsSync(packFile)) scenes.troy = { kind: 'frame', url: `${troy.base}web/index.html`, pack: servedPack(packFile) };
+  }
   return scenes;
 }
 

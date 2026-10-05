@@ -1,0 +1,1575 @@
+{
+  "name": "Troy",
+  "base": "/scene-packs/troy/troy-20261005-02/",
+  "release": "troy-20261005-02",
+  "license": "CC0-1.0",
+  "assetCount": 21,
+  "description": "A Bronze Age coast, battlefield and city. Explore Troy or fight as Achilles or Hector.",
+  "models": {
+    "path": "packs/troy/troy-20261005-02/troy-models.zip",
+    "bytes": 8025648,
+    "sha256": "68980f4d91366cf892f9fd5653442d40e3c4c257c7f53d3c9e0d7a3d4793a226",
+    "url": "https://assets.kilnstudio.tools/packs/troy/troy-20261005-02/troy-models.zip"
+  },
+  "scene": {
+    "release": "troy-20261005-02",
+    "path": "packs/troy/troy-20261005-02/troy-scene.zip",
+    "bytes": 48970557,
+    "sha256": "26e8bf2411b8111e8dd30f465feb99cbc175ca7562694426bb5a4619be69a534",
+    "sourceManifestSha256": "249f9949f18afd73fd38bdac9f38e24b511d1cf05e5f602cb4e23ab23b525005",
+    "url": "https://assets.kilnstudio.tools/packs/troy/troy-20261005-02/troy-scene.zip"
+  },
+  "posters": [
+    {
+      "src": "/scene-packs/troy/troy-20261005-02/media/scene-coast.webp",
+      "width": 1440,
+      "height": 900,
+      "srcsetAvif": "",
+      "srcsetWebp": "/scene-packs/troy/troy-20261005-02/media/scene-coast.webp 1440w",
+      "alt": "Troy and its landed fleet, seen from above the sea"
+    },
+    {
+      "src": "/scene-packs/troy/troy-20261005-02/media/scene-city.webp",
+      "width": 1440,
+      "height": 900,
+      "srcsetAvif": "",
+      "srcsetWebp": "/scene-packs/troy/troy-20261005-02/media/scene-city.webp 1440w",
+      "alt": "Achilles and Hector fighting before Troy, with army formations and the city walls"
+    }
+  ],
+  "assets": [
+    {
+      "slug": "wall-section",
+      "name": "Wall section",
+      "pack": "troy",
+      "category": "Buildings",
+      "description": "Wall section, from the Troy collection.",
+      "assetId": "a_784f8007d64b466ca453813913d73933",
+      "revisionId": "r_29dcf94872e74d468d005c55bcbfc3e5",
+      "metrics": {
+        "triangles": 168,
+        "meshes": 14,
+        "materials": 3,
+        "bounds": [
+          6,
+          7.999999994039536,
+          3.3999998569488525
+        ],
+        "boundsMin": [
+          -3,
+          0,
+          -1.6999999284744263
+        ],
+        "boundsMax": [
+          3,
+          7.999999994039536,
+          1.6999999284744263
+        ],
+        "clips": [],
+        "partPaths": [
+          "WallSection/Mesh_Footing",
+          "WallSection/Mesh_WallBody",
+          "WallSection/Mesh_Beam_1",
+          "WallSection/Mesh_Beam_2",
+          "WallSection/Mesh_Beam_3",
+          "WallSection/Mesh_Beam_4",
+          "WallSection/Mesh_ParapetBase",
+          "WallSection/Mesh_Merlon_0",
+          "WallSection/Mesh_Merlon_1",
+          "WallSection/Mesh_Merlon_2",
+          "WallSection/Mesh_Merlon_3",
+          "WallSection/Mesh_Merlon_4",
+          "WallSection/Mesh_Merlon_5",
+          "WallSection/Mesh_InnerCurb"
+        ]
+      },
+      "runtimeDownload": {
+        "url": "/scene-packs/troy/troy-20261005-02/models/wall-section.glb",
+        "bytes": 302776,
+        "sha256": "d2e5c1a6885f509caeb9428980d74b2760bae735af81549ae08fdd825fadffa8"
+      },
+      "poster": {
+        "src": "/scene-packs/troy/troy-20261005-02/media/wall-section.webp",
+        "width": 1024,
+        "height": 1024,
+        "alt": "Wall section",
+        "srcsetAvif": "",
+        "srcsetWebp": "/scene-packs/troy/troy-20261005-02/media/wall-section.webp 1024w"
+      },
+      "review": {
+        "ownerAccepted": false,
+        "status": "published"
+      }
+    },
+    {
+      "slug": "city-gate",
+      "name": "City gate",
+      "pack": "troy",
+      "category": "Buildings",
+      "description": "City gate, from the Troy collection.",
+      "assetId": "city-gate",
+      "revisionId": "r_932d7b9aa1714e3b8e2343b42506bc44",
+      "metrics": {
+        "triangles": 516,
+        "meshes": 7,
+        "materials": 4,
+        "bounds": [
+          6,
+          8,
+          4
+        ],
+        "boundsMin": [
+          -3,
+          0,
+          -2
+        ],
+        "boundsMax": [
+          3,
+          8,
+          2
+        ],
+        "clips": [
+          "open",
+          "close"
+        ],
+        "partPaths": [
+          "CityGate/walls/Mesh_walls_limestone",
+          "CityGate/walls/Mesh_walls_mudbrick",
+          "CityGate/walls/Mesh_walls_timber",
+          "CityGate/door_left/Mesh_door_left_timber",
+          "CityGate/door_left/Mesh_door_left_bronze",
+          "CityGate/door_right/Mesh_door_right_timber",
+          "CityGate/door_right/Mesh_door_right_bronze"
+        ]
+      },
+      "runtimeDownload": {
+        "url": "/scene-packs/troy/troy-20261005-02/models/city-gate.glb",
+        "bytes": 391512,
+        "sha256": "19322963f4704e5a9e4b31e242d7d1991126e0ffde750d57152a622089ac4f91"
+      },
+      "poster": {
+        "src": "/scene-packs/troy/troy-20261005-02/media/city-gate.webp",
+        "width": 1024,
+        "height": 1024,
+        "alt": "City gate",
+        "srcsetAvif": "",
+        "srcsetWebp": "/scene-packs/troy/troy-20261005-02/media/city-gate.webp 1024w"
+      },
+      "review": {
+        "ownerAccepted": false,
+        "status": "published"
+      }
+    },
+    {
+      "slug": "house",
+      "name": "Trojan Walk-in House",
+      "pack": "troy",
+      "category": "Buildings",
+      "description": "Trojan Walk-in House, from the Troy collection.",
+      "assetId": "a_65b2d411e2a14b41b490a575fc14e98a",
+      "revisionId": "r_de6797d6511b47a2a6da3c49448741a9",
+      "metrics": {
+        "triangles": 876,
+        "meshes": 8,
+        "materials": 3,
+        "bounds": [
+          7.315868854522705,
+          3.962836265563965,
+          6.069999933242798
+        ],
+        "boundsMin": [
+          -3.119999885559082,
+          0,
+          -2.619999885559082
+        ],
+        "boundsMax": [
+          4.195868968963623,
+          3.962836265563965,
+          3.450000047683716
+        ],
+        "clips": [],
+        "partPaths": [
+          "TrojanHouse/Mesh_DoorJambLeft",
+          "TrojanHouse/Mesh_DoorJambRight",
+          "TrojanHouse/Mesh_DoorLintel",
+          "TrojanHouse/Roof/Mesh_FlatRoofAndRim",
+          "TrojanHouse/Mesh_StoneFootingsAndHearth",
+          "TrojanHouse/Mesh_MudbrickWalls",
+          "TrojanHouse/Mesh_FloorAndEntranceRamp",
+          "TrojanHouse/Mesh_CeilingTimbersAndRoofLadder"
+        ]
+      },
+      "runtimeDownload": {
+        "url": "/scene-packs/troy/troy-20261005-02/models/house.glb",
+        "bytes": 330524,
+        "sha256": "d69aaca4db3b1963a28ea62fd5a54c9a2dbe277a083086f3c31e3270fd300b5b"
+      },
+      "poster": {
+        "src": "/scene-packs/troy/troy-20261005-02/media/house.webp",
+        "width": 1024,
+        "height": 1024,
+        "alt": "Trojan Walk-in House",
+        "srcsetAvif": "",
+        "srcsetWebp": "/scene-packs/troy/troy-20261005-02/media/house.webp 1024w"
+      },
+      "review": {
+        "ownerAccepted": false,
+        "status": "published"
+      }
+    },
+    {
+      "slug": "temple-hall",
+      "name": "Troy Citadel Temple Hall",
+      "pack": "troy",
+      "category": "Buildings",
+      "description": "Troy Citadel Temple Hall, from the Troy collection.",
+      "assetId": "a_3a4fc574c2534f21977eeed0a3560f80",
+      "revisionId": "r_85c06c033d7c4f899a6f67c53069537a",
+      "metrics": {
+        "triangles": 2024,
+        "meshes": 12,
+        "materials": 4,
+        "bounds": [
+          9.34000015258789,
+          5.2899999678134915,
+          15.699999809265137
+        ],
+        "boundsMin": [
+          -4.670000076293945,
+          -5.9604645663569045e-9,
+          -7.449999809265137
+        ],
+        "boundsMax": [
+          4.670000076293945,
+          5.289999961853027,
+          8.25
+        ],
+        "clips": [],
+        "partPaths": [
+          "TroyCitadelTempleHall/Roof/Mesh_RoofPlaster",
+          "TroyCitadelTempleHall/Roof/Mesh_RoofTimber",
+          "TroyCitadelTempleHall/Roof/Mesh_RoofStone",
+          "TroyCitadelTempleHall/Mesh_FoundationAndFloor",
+          "TroyCitadelTempleHall/Mesh_HallStone",
+          "TroyCitadelTempleHall/Mesh_HallPlaster",
+          "TroyCitadelTempleHall/Mesh_DoorwayLeftPier",
+          "TroyCitadelTempleHall/Mesh_DoorwayRightPier",
+          "TroyCitadelTempleHall/Mesh_DoorwayHeader",
+          "TroyCitadelTempleHall/Mesh_HallTimber",
+          "TroyCitadelTempleHall/Mesh_HallCrimson",
+          "TroyCitadelTempleHall/Mesh_HearthStoneRim"
+        ]
+      },
+      "runtimeDownload": {
+        "url": "/scene-packs/troy/troy-20261005-02/models/temple-hall.glb",
+        "bytes": 492876,
+        "sha256": "6609d8e4f5be92b88f5a14facad3cb9cb39f43d257bc2bcec51adeaca66f41ee"
+      },
+      "poster": {
+        "src": "/scene-packs/troy/troy-20261005-02/media/temple-hall.webp",
+        "width": 1024,
+        "height": 1024,
+        "alt": "Troy Citadel Temple Hall",
+        "srcsetAvif": "",
+        "srcsetWebp": "/scene-packs/troy/troy-20261005-02/media/temple-hall.webp 1024w"
+      },
+      "review": {
+        "ownerAccepted": false,
+        "status": "published"
+      }
+    },
+    {
+      "slug": "war-galley",
+      "name": "Greek War Galley",
+      "pack": "troy",
+      "category": "Vehicles",
+      "description": "Greek War Galley, from the Troy collection.",
+      "assetId": "a_582ae189884340d7ac23a1a23bd7bcc8",
+      "revisionId": "r_89ac2dc4345d47d4b10a99d8e4bf34f7",
+      "metrics": {
+        "triangles": 6480,
+        "meshes": 4,
+        "materials": 4,
+        "bounds": [
+          10.056769371032718,
+          9.100000381469727,
+          17.526831626892093
+        ],
+        "boundsMin": [
+          -5.028384685516359,
+          0,
+          -8.827383041381838
+        ],
+        "boundsMax": [
+          5.028384685516359,
+          9.100000381469727,
+          8.699448585510256
+        ],
+        "clips": [],
+        "partPaths": [
+          "GreekWarGalley/GalleyConstruction/Mesh_SetLinenSail",
+          "GreekWarGalley/GalleyConstruction/Mesh_PitchHullAndKeel",
+          "GreekWarGalley/GalleyConstruction/Mesh_TimberMastOarsAndRigging",
+          "GreekWarGalley/GalleyConstruction/Mesh_GreekBlueSailBands"
+        ]
+      },
+      "runtimeDownload": {
+        "url": "/scene-packs/troy/troy-20261005-02/models/war-galley.glb",
+        "bytes": 396772,
+        "sha256": "c438f0275186e34ad724dade9f22426a4ad4dab412a17ea7b1d62d468c151f4f"
+      },
+      "poster": {
+        "src": "/scene-packs/troy/troy-20261005-02/media/war-galley.webp",
+        "width": 1024,
+        "height": 1024,
+        "alt": "Greek War Galley",
+        "srcsetAvif": "",
+        "srcsetWebp": "/scene-packs/troy/troy-20261005-02/media/war-galley.webp 1024w"
+      },
+      "review": {
+        "ownerAccepted": false,
+        "status": "published"
+      }
+    },
+    {
+      "slug": "greek-soldier",
+      "name": "Greek soldier",
+      "pack": "troy",
+      "category": "Characters",
+      "description": "Greek soldier, from the Troy collection.",
+      "assetId": "greek-soldier",
+      "revisionId": "r_51a1713f71ed45d486e7cc386aeeb0cc",
+      "metrics": {
+        "triangles": 2140,
+        "meshes": 27,
+        "materials": 3,
+        "bounds": [
+          1.0350514226821486,
+          1.9253647592923826,
+          1.1825845619496447
+        ],
+        "boundsMin": [
+          -0.5195311526107893,
+          -8.940699430803889e-10,
+          -0.20375000476837157
+        ],
+        "boundsMax": [
+          0.5155202700713593,
+          1.9253647583983127,
+          0.9788345571812731
+        ],
+        "clips": [
+          "idle",
+          "attack"
+        ],
+        "partPaths": [
+          "GreekSoldier/Joint_hips/Joint_spine/Joint_neck/Joint_head/Mesh_head",
+          "GreekSoldier/Joint_hips/Joint_spine/Joint_neck/Joint_head/Mesh_helmet",
+          "GreekSoldier/Joint_hips/Joint_spine/Joint_neck/Joint_head/Mesh_crest",
+          "GreekSoldier/Joint_hips/Joint_spine/Joint_neck/Mesh_neck",
+          "GreekSoldier/Joint_hips/Joint_spine/Mesh_cuirass",
+          "GreekSoldier/Joint_hips/Joint_spine/Mesh_belt",
+          "GreekSoldier/Joint_hips/Joint_spine/Joint_shoulder_right/Joint_elbow_right/Joint_wrist_right/socket_hand_right/sword",
+          "GreekSoldier/Joint_hips/Joint_spine/Joint_shoulder_right/Joint_elbow_right/Joint_wrist_right/Mesh_hand_right",
+          "GreekSoldier/Joint_hips/Joint_spine/Joint_shoulder_right/Joint_elbow_right/Mesh_forearm_right",
+          "GreekSoldier/Joint_hips/Joint_spine/Joint_shoulder_right/Mesh_sleeve_right",
+          "GreekSoldier/Joint_hips/Joint_spine/Joint_shoulder_right/Mesh_upper_arm_right",
+          "GreekSoldier/Joint_hips/Joint_spine/Joint_shoulder_left/Joint_elbow_left/Joint_wrist_left/socket_hand_left/Mesh_shield_grip",
+          "GreekSoldier/Joint_hips/Joint_spine/Joint_shoulder_left/Joint_elbow_left/Joint_wrist_left/Mesh_hand_left",
+          "GreekSoldier/Joint_hips/Joint_spine/Joint_shoulder_left/Joint_elbow_left/Joint_wrist_left/Joint_shield_frame/shield",
+          "GreekSoldier/Joint_hips/Joint_spine/Joint_shoulder_left/Joint_elbow_left/Joint_wrist_left/Joint_shield_frame/Mesh_shield_mount",
+          "GreekSoldier/Joint_hips/Joint_spine/Joint_shoulder_left/Joint_elbow_left/Mesh_forearm_left",
+          "GreekSoldier/Joint_hips/Joint_spine/Joint_shoulder_left/Mesh_sleeve_left",
+          "GreekSoldier/Joint_hips/Joint_spine/Joint_shoulder_left/Mesh_upper_arm_left",
+          "GreekSoldier/Joint_hips/Mesh_kilt",
+          "GreekSoldier/Joint_hips/Joint_hip_right/Joint_knee_right/Joint_ankle_right/Mesh_foot_right",
+          "GreekSoldier/Joint_hips/Joint_hip_right/Joint_knee_right/Mesh_shin_right",
+          "GreekSoldier/Joint_hips/Joint_hip_right/Joint_knee_right/Mesh_greave_right",
+          "GreekSoldier/Joint_hips/Joint_hip_right/Mesh_thigh_right",
+          "GreekSoldier/Joint_hips/Joint_hip_left/Joint_knee_left/Joint_ankle_left/Mesh_foot_left",
+          "GreekSoldier/Joint_hips/Joint_hip_left/Joint_knee_left/Mesh_shin_left",
+          "GreekSoldier/Joint_hips/Joint_hip_left/Joint_knee_left/Mesh_greave_left",
+          "GreekSoldier/Joint_hips/Joint_hip_left/Mesh_thigh_left"
+        ]
+      },
+      "runtimeDownload": {
+        "url": "/scene-packs/troy/troy-20261005-02/models/greek-soldier.glb",
+        "bytes": 373008,
+        "sha256": "55361985e3353e4a87944f61c1007eb725732a128bf7a33d3a989f3b26f34af3"
+      },
+      "poster": {
+        "src": "/scene-packs/troy/troy-20261005-02/media/greek-soldier.webp",
+        "width": 1024,
+        "height": 1024,
+        "alt": "Greek soldier",
+        "srcsetAvif": "",
+        "srcsetWebp": "/scene-packs/troy/troy-20261005-02/media/greek-soldier.webp 1024w"
+      },
+      "review": {
+        "ownerAccepted": false,
+        "status": "published"
+      }
+    },
+    {
+      "slug": "trojan-soldier",
+      "name": "Trojan soldier",
+      "pack": "troy",
+      "category": "Characters",
+      "description": "Trojan soldier, from the Troy collection.",
+      "assetId": "trojan-soldier",
+      "revisionId": "r_7ab3ae9706164e38bdee28178c110f65",
+      "metrics": {
+        "triangles": 2000,
+        "meshes": 27,
+        "materials": 3,
+        "bounds": [
+          1.0350514226821486,
+          1.9203561114661916,
+          1.1825845619496447
+        ],
+        "boundsMin": [
+          -0.5195311526107893,
+          -8.940699430803889e-10,
+          -0.20375000476837157
+        ],
+        "boundsMax": [
+          0.5155202700713593,
+          1.9203561105721216,
+          0.9788345571812731
+        ],
+        "clips": [
+          "idle",
+          "attack"
+        ],
+        "partPaths": [
+          "TrojanSoldier/Joint_hips/Joint_spine/Joint_neck/Joint_head/Mesh_head",
+          "TrojanSoldier/Joint_hips/Joint_spine/Joint_neck/Joint_head/Mesh_helmet",
+          "TrojanSoldier/Joint_hips/Joint_spine/Joint_neck/Joint_head/Mesh_crest",
+          "TrojanSoldier/Joint_hips/Joint_spine/Joint_neck/Mesh_neck",
+          "TrojanSoldier/Joint_hips/Joint_spine/Mesh_cuirass",
+          "TrojanSoldier/Joint_hips/Joint_spine/Mesh_belt",
+          "TrojanSoldier/Joint_hips/Joint_spine/Joint_shoulder_right/Joint_elbow_right/Joint_wrist_right/socket_hand_right/sword",
+          "TrojanSoldier/Joint_hips/Joint_spine/Joint_shoulder_right/Joint_elbow_right/Joint_wrist_right/Mesh_hand_right",
+          "TrojanSoldier/Joint_hips/Joint_spine/Joint_shoulder_right/Joint_elbow_right/Mesh_forearm_right",
+          "TrojanSoldier/Joint_hips/Joint_spine/Joint_shoulder_right/Mesh_sleeve_right",
+          "TrojanSoldier/Joint_hips/Joint_spine/Joint_shoulder_right/Mesh_upper_arm_right",
+          "TrojanSoldier/Joint_hips/Joint_spine/Joint_shoulder_left/Joint_elbow_left/Joint_wrist_left/socket_hand_left/Mesh_shield_grip",
+          "TrojanSoldier/Joint_hips/Joint_spine/Joint_shoulder_left/Joint_elbow_left/Joint_wrist_left/Mesh_hand_left",
+          "TrojanSoldier/Joint_hips/Joint_spine/Joint_shoulder_left/Joint_elbow_left/Joint_wrist_left/Joint_shield_frame/shield",
+          "TrojanSoldier/Joint_hips/Joint_spine/Joint_shoulder_left/Joint_elbow_left/Joint_wrist_left/Joint_shield_frame/Mesh_shield_mount",
+          "TrojanSoldier/Joint_hips/Joint_spine/Joint_shoulder_left/Joint_elbow_left/Mesh_forearm_left",
+          "TrojanSoldier/Joint_hips/Joint_spine/Joint_shoulder_left/Mesh_sleeve_left",
+          "TrojanSoldier/Joint_hips/Joint_spine/Joint_shoulder_left/Mesh_upper_arm_left",
+          "TrojanSoldier/Joint_hips/Mesh_kilt",
+          "TrojanSoldier/Joint_hips/Joint_hip_right/Joint_knee_right/Joint_ankle_right/Mesh_foot_right",
+          "TrojanSoldier/Joint_hips/Joint_hip_right/Joint_knee_right/Mesh_shin_right",
+          "TrojanSoldier/Joint_hips/Joint_hip_right/Joint_knee_right/Mesh_greave_right",
+          "TrojanSoldier/Joint_hips/Joint_hip_right/Mesh_thigh_right",
+          "TrojanSoldier/Joint_hips/Joint_hip_left/Joint_knee_left/Joint_ankle_left/Mesh_foot_left",
+          "TrojanSoldier/Joint_hips/Joint_hip_left/Joint_knee_left/Mesh_shin_left",
+          "TrojanSoldier/Joint_hips/Joint_hip_left/Joint_knee_left/Mesh_greave_left",
+          "TrojanSoldier/Joint_hips/Joint_hip_left/Mesh_thigh_left"
+        ]
+      },
+      "runtimeDownload": {
+        "url": "/scene-packs/troy/troy-20261005-02/models/trojan-soldier.glb",
+        "bytes": 352016,
+        "sha256": "97f6fe97902df9af9037518dc28699524c843f0b94136ec3f9c9850d2b57df6f"
+      },
+      "poster": {
+        "src": "/scene-packs/troy/troy-20261005-02/media/trojan-soldier.webp",
+        "width": 1024,
+        "height": 1024,
+        "alt": "Trojan soldier",
+        "srcsetAvif": "",
+        "srcsetWebp": "/scene-packs/troy/troy-20261005-02/media/trojan-soldier.webp 1024w"
+      },
+      "review": {
+        "ownerAccepted": false,
+        "status": "published"
+      }
+    },
+    {
+      "slug": "achilles",
+      "name": "Achilles",
+      "pack": "troy",
+      "category": "Characters",
+      "description": "Achilles, from the Troy collection.",
+      "assetId": "achilles",
+      "revisionId": "r_4792c9467d47401f8d77367e3e5c9647",
+      "metrics": {
+        "triangles": 3468,
+        "meshes": 31,
+        "materials": 3,
+        "bounds": [
+          1.0637944921512146,
+          2.050364548169326,
+          1.115294354215458
+        ],
+        "boundsMin": [
+          -0.46827423876915586,
+          -8.940699430803889e-10,
+          -0.20375000476837157
+        ],
+        "boundsMax": [
+          0.5955202533820587,
+          2.050364547275256,
+          0.9115443494470865
+        ],
+        "clips": [
+          "idle",
+          "attack"
+        ],
+        "partPaths": [
+          "Achilles/Joint_hips/Joint_spine/Joint_neck/Joint_head/Mesh_head",
+          "Achilles/Joint_hips/Joint_spine/Joint_neck/Joint_head/Mesh_helmet",
+          "Achilles/Joint_hips/Joint_spine/Joint_neck/Joint_head/Mesh_crest",
+          "Achilles/Joint_hips/Joint_spine/Joint_neck/Mesh_neck",
+          "Achilles/Joint_hips/Joint_spine/Mesh_cuirass",
+          "Achilles/Joint_hips/Joint_spine/Mesh_belt",
+          "Achilles/Joint_hips/Joint_spine/Joint_shoulder_right/Joint_elbow_right/Joint_wrist_right/socket_hand_right/sword",
+          "Achilles/Joint_hips/Joint_spine/Joint_shoulder_right/Joint_elbow_right/Joint_wrist_right/Mesh_hand_right",
+          "Achilles/Joint_hips/Joint_spine/Joint_shoulder_right/Joint_elbow_right/Mesh_forearm_right",
+          "Achilles/Joint_hips/Joint_spine/Joint_shoulder_right/Mesh_sleeve_right",
+          "Achilles/Joint_hips/Joint_spine/Joint_shoulder_right/Mesh_pauldron_right",
+          "Achilles/Joint_hips/Joint_spine/Joint_shoulder_right/Mesh_upper_arm_right",
+          "Achilles/Joint_hips/Joint_spine/Joint_shoulder_left/Joint_elbow_left/Joint_wrist_left/socket_hand_left/Mesh_shield_grip",
+          "Achilles/Joint_hips/Joint_spine/Joint_shoulder_left/Joint_elbow_left/Joint_wrist_left/Mesh_hand_left",
+          "Achilles/Joint_hips/Joint_spine/Joint_shoulder_left/Joint_elbow_left/Joint_wrist_left/Joint_shield_frame/shield",
+          "Achilles/Joint_hips/Joint_spine/Joint_shoulder_left/Joint_elbow_left/Joint_wrist_left/Joint_shield_frame/Mesh_shield_mount",
+          "Achilles/Joint_hips/Joint_spine/Joint_shoulder_left/Joint_elbow_left/Joint_wrist_left/Joint_shield_frame/Mesh_shield_emblem",
+          "Achilles/Joint_hips/Joint_spine/Joint_shoulder_left/Joint_elbow_left/Mesh_forearm_left",
+          "Achilles/Joint_hips/Joint_spine/Joint_shoulder_left/Mesh_sleeve_left",
+          "Achilles/Joint_hips/Joint_spine/Joint_shoulder_left/Mesh_pauldron_left",
+          "Achilles/Joint_hips/Joint_spine/Joint_shoulder_left/Mesh_upper_arm_left",
+          "Achilles/Joint_hips/Mesh_kilt",
+          "Achilles/Joint_hips/Mesh_lames",
+          "Achilles/Joint_hips/Joint_hip_right/Joint_knee_right/Joint_ankle_right/Mesh_foot_right",
+          "Achilles/Joint_hips/Joint_hip_right/Joint_knee_right/Mesh_shin_right",
+          "Achilles/Joint_hips/Joint_hip_right/Joint_knee_right/Mesh_greave_right",
+          "Achilles/Joint_hips/Joint_hip_right/Mesh_thigh_right",
+          "Achilles/Joint_hips/Joint_hip_left/Joint_knee_left/Joint_ankle_left/Mesh_foot_left",
+          "Achilles/Joint_hips/Joint_hip_left/Joint_knee_left/Mesh_shin_left",
+          "Achilles/Joint_hips/Joint_hip_left/Joint_knee_left/Mesh_greave_left",
+          "Achilles/Joint_hips/Joint_hip_left/Mesh_thigh_left"
+        ]
+      },
+      "runtimeDownload": {
+        "url": "/scene-packs/troy/troy-20261005-02/models/achilles.glb",
+        "bytes": 547628,
+        "sha256": "1bb8b9b44044365a172eb5015c12b8493b6c47e3087178a7fa89b18e768e645f"
+      },
+      "poster": {
+        "src": "/scene-packs/troy/troy-20261005-02/media/achilles.webp",
+        "width": 1024,
+        "height": 1024,
+        "alt": "Achilles",
+        "srcsetAvif": "",
+        "srcsetWebp": "/scene-packs/troy/troy-20261005-02/media/achilles.webp 1024w"
+      },
+      "review": {
+        "ownerAccepted": false,
+        "status": "published"
+      }
+    },
+    {
+      "slug": "hector",
+      "name": "Hector",
+      "pack": "troy",
+      "category": "Characters",
+      "description": "Hector, from the Troy collection.",
+      "assetId": "hector",
+      "revisionId": "r_90f525d443624ad58f5fadc3a7f52fb9",
+      "metrics": {
+        "triangles": 2516,
+        "meshes": 30,
+        "materials": 3,
+        "bounds": [
+          1.013794510032608,
+          2.022106628094314,
+          1.3415013086462324
+        ],
+        "boundsMin": [
+          -0.46827423876915586,
+          -8.940699430803889e-10,
+          -0.4299569591991459
+        ],
+        "boundsMax": [
+          0.5455202712634522,
+          2.0221066272002437,
+          0.9115443494470865
+        ],
+        "clips": [
+          "idle",
+          "attack"
+        ],
+        "partPaths": [
+          "Hector/Joint_hips/Joint_spine/Joint_neck/Joint_head/Mesh_head",
+          "Hector/Joint_hips/Joint_spine/Joint_neck/Joint_head/Mesh_helmet",
+          "Hector/Joint_hips/Joint_spine/Joint_neck/Joint_head/Mesh_crest",
+          "Hector/Joint_hips/Joint_spine/Joint_neck/Mesh_neck",
+          "Hector/Joint_hips/Joint_spine/Mesh_cuirass",
+          "Hector/Joint_hips/Joint_spine/Mesh_hero_chest_lames",
+          "Hector/Joint_hips/Joint_spine/Mesh_belt",
+          "Hector/Joint_hips/Joint_spine/Mesh_cloak",
+          "Hector/Joint_hips/Joint_spine/Joint_shoulder_right/Joint_elbow_right/Joint_wrist_right/socket_hand_right/sword",
+          "Hector/Joint_hips/Joint_spine/Joint_shoulder_right/Joint_elbow_right/Joint_wrist_right/Mesh_hand_right",
+          "Hector/Joint_hips/Joint_spine/Joint_shoulder_right/Joint_elbow_right/Mesh_forearm_right",
+          "Hector/Joint_hips/Joint_spine/Joint_shoulder_right/Mesh_sleeve_right",
+          "Hector/Joint_hips/Joint_spine/Joint_shoulder_right/Mesh_upper_arm_right",
+          "Hector/Joint_hips/Joint_spine/Joint_shoulder_left/Joint_elbow_left/Joint_wrist_left/socket_hand_left/Mesh_shield_grip",
+          "Hector/Joint_hips/Joint_spine/Joint_shoulder_left/Joint_elbow_left/Joint_wrist_left/Mesh_hand_left",
+          "Hector/Joint_hips/Joint_spine/Joint_shoulder_left/Joint_elbow_left/Joint_wrist_left/Joint_shield_frame/shield",
+          "Hector/Joint_hips/Joint_spine/Joint_shoulder_left/Joint_elbow_left/Joint_wrist_left/Joint_shield_frame/Mesh_shield_mount",
+          "Hector/Joint_hips/Joint_spine/Joint_shoulder_left/Joint_elbow_left/Joint_wrist_left/Joint_shield_frame/Mesh_shield_emblem",
+          "Hector/Joint_hips/Joint_spine/Joint_shoulder_left/Joint_elbow_left/Mesh_forearm_left",
+          "Hector/Joint_hips/Joint_spine/Joint_shoulder_left/Mesh_sleeve_left",
+          "Hector/Joint_hips/Joint_spine/Joint_shoulder_left/Mesh_upper_arm_left",
+          "Hector/Joint_hips/Mesh_kilt",
+          "Hector/Joint_hips/Joint_hip_right/Joint_knee_right/Joint_ankle_right/Mesh_foot_right",
+          "Hector/Joint_hips/Joint_hip_right/Joint_knee_right/Mesh_shin_right",
+          "Hector/Joint_hips/Joint_hip_right/Joint_knee_right/Mesh_greave_right",
+          "Hector/Joint_hips/Joint_hip_right/Mesh_thigh_right",
+          "Hector/Joint_hips/Joint_hip_left/Joint_knee_left/Joint_ankle_left/Mesh_foot_left",
+          "Hector/Joint_hips/Joint_hip_left/Joint_knee_left/Mesh_shin_left",
+          "Hector/Joint_hips/Joint_hip_left/Joint_knee_left/Mesh_greave_left",
+          "Hector/Joint_hips/Joint_hip_left/Mesh_thigh_left"
+        ]
+      },
+      "runtimeDownload": {
+        "url": "/scene-packs/troy/troy-20261005-02/models/hector.glb",
+        "bytes": 428112,
+        "sha256": "70b6e63f742413ef4d3348071b8f917507d521e9e80739fcf30aaff5de5e054a"
+      },
+      "poster": {
+        "src": "/scene-packs/troy/troy-20261005-02/media/hector.webp",
+        "width": 1024,
+        "height": 1024,
+        "alt": "Hector",
+        "srcsetAvif": "",
+        "srcsetWebp": "/scene-packs/troy/troy-20261005-02/media/hector.webp 1024w"
+      },
+      "review": {
+        "ownerAccepted": false,
+        "status": "published"
+      }
+    },
+    {
+      "slug": "olive",
+      "name": "Mature courtyard olive",
+      "pack": "troy",
+      "category": "Nature",
+      "description": "Mature courtyard olive, from the Troy collection.",
+      "assetId": "a_3624be42cc4b43edadea1852c2535534",
+      "revisionId": "r_37373fde43154f928653af8c34100186",
+      "metrics": {
+        "triangles": 4634,
+        "meshes": 4,
+        "materials": 4,
+        "bounds": [
+          6.230529308319092,
+          5.024930953979492,
+          5.750202655792236
+        ],
+        "boundsMin": [
+          -3.0874783992767334,
+          0,
+          -2.6326301097869873
+        ],
+        "boundsMax": [
+          3.1430509090423584,
+          5.024930953979492,
+          3.117572546005249
+        ],
+        "clips": [],
+        "partPaths": [
+          "MatureOlive/Mesh_ConnectedWood",
+          "MatureOlive/Mesh_Foliage_0",
+          "MatureOlive/Mesh_Foliage_1",
+          "MatureOlive/Mesh_Foliage_2"
+        ]
+      },
+      "runtimeDownload": {
+        "url": "/scene-packs/troy/troy-20261005-02/models/olive.glb",
+        "bytes": 171340,
+        "sha256": "5ca97cea350d7eb751bcfb214a89e0b83cc3e7bf3c317663ae4d5d51d6e32cd9"
+      },
+      "poster": {
+        "src": "/scene-packs/troy/troy-20261005-02/media/olive.webp",
+        "width": 1024,
+        "height": 1024,
+        "alt": "Mature courtyard olive",
+        "srcsetAvif": "",
+        "srcsetWebp": "/scene-packs/troy/troy-20261005-02/media/olive.webp 1024w"
+      },
+      "review": {
+        "ownerAccepted": false,
+        "status": "published"
+      }
+    },
+    {
+      "slug": "cypress",
+      "name": "Mediterranean courtyard cypress",
+      "pack": "troy",
+      "category": "Nature",
+      "description": "Mediterranean courtyard cypress, from the Troy collection.",
+      "assetId": "a_2e4e54bb1bd04a1187f564bc4e24111a",
+      "revisionId": "r_9e34ca5dc6bf41caafe35ffb8576a6ff",
+      "metrics": {
+        "triangles": 2712,
+        "meshes": 2,
+        "materials": 2,
+        "bounds": [
+          1.5107817649841309,
+          7,
+          1.4984756112098694
+        ],
+        "boundsMin": [
+          -0.7496466636657715,
+          0,
+          -0.7579506039619446
+        ],
+        "boundsMax": [
+          0.7611351013183594,
+          7,
+          0.7405250072479248
+        ],
+        "clips": [],
+        "partPaths": [
+          "MediterraneanCypress/Mesh_ConnectedWood",
+          "MediterraneanCypress/Mesh_Foliage_0"
+        ]
+      },
+      "runtimeDownload": {
+        "url": "/scene-packs/troy/troy-20261005-02/models/cypress.glb",
+        "bytes": 82436,
+        "sha256": "0fbabf224cb33e55f3cc6480bfad8fd40175a15c0fa00f9072faa11e40e1ac89"
+      },
+      "poster": {
+        "src": "/scene-packs/troy/troy-20261005-02/media/cypress.webp",
+        "width": 1024,
+        "height": 1024,
+        "alt": "Mediterranean courtyard cypress",
+        "srcsetAvif": "",
+        "srcsetWebp": "/scene-packs/troy/troy-20261005-02/media/cypress.webp 1024w"
+      },
+      "review": {
+        "ownerAccepted": false,
+        "status": "published"
+      }
+    },
+    {
+      "slug": "fig",
+      "name": "Spreading courtyard fig",
+      "pack": "troy",
+      "category": "Nature",
+      "description": "Spreading courtyard fig, from the Troy collection.",
+      "assetId": "a_8c9f4cbf02014d448cc6f1ea64ce521e",
+      "revisionId": "r_efdd6cc6417c46a18d263a4865bfdc02",
+      "metrics": {
+        "triangles": 4676,
+        "meshes": 4,
+        "materials": 4,
+        "bounds": [
+          4.983713865280151,
+          4.021326065063477,
+          5.119784832000732
+        ],
+        "boundsMin": [
+          -2.4322996139526367,
+          0,
+          -2.608553647994995
+        ],
+        "boundsMax": [
+          2.5514142513275146,
+          4.021326065063477,
+          2.5112311840057373
+        ],
+        "clips": [],
+        "partPaths": [
+          "SpreadingFig/Mesh_ConnectedWood",
+          "SpreadingFig/Mesh_Foliage_0",
+          "SpreadingFig/Mesh_Foliage_1",
+          "SpreadingFig/Mesh_Foliage_2"
+        ]
+      },
+      "runtimeDownload": {
+        "url": "/scene-packs/troy/troy-20261005-02/models/fig.glb",
+        "bytes": 147416,
+        "sha256": "1769ec4b6d44f208af272b50056d4e01ceb7bf5a8605cbff49019595aef34fa3"
+      },
+      "poster": {
+        "src": "/scene-packs/troy/troy-20261005-02/media/fig.webp",
+        "width": 1024,
+        "height": 1024,
+        "alt": "Spreading courtyard fig",
+        "srcsetAvif": "",
+        "srcsetWebp": "/scene-packs/troy/troy-20261005-02/media/fig.webp 1024w"
+      },
+      "review": {
+        "ownerAccepted": false,
+        "status": "published"
+      }
+    },
+    {
+      "slug": "shrub",
+      "name": "Low courtyard shrub",
+      "pack": "troy",
+      "category": "Nature",
+      "description": "Low courtyard shrub, from the Troy collection.",
+      "assetId": "a_4a87639c6022456f876e8cc1f230c551",
+      "revisionId": "r_07a93557a106492ab919f72955ad0924",
+      "metrics": {
+        "triangles": 1252,
+        "meshes": 3,
+        "materials": 3,
+        "bounds": [
+          1.3751745223999023,
+          0.7991196513175964,
+          1.3373908400535583
+        ],
+        "boundsMin": [
+          -0.652458667755127,
+          0,
+          -0.6363281011581421
+        ],
+        "boundsMax": [
+          0.7227158546447754,
+          0.7991196513175964,
+          0.7010627388954163
+        ],
+        "clips": [],
+        "partPaths": [
+          "CourtyardShrub/Mesh_ConnectedWood",
+          "CourtyardShrub/Mesh_Foliage_0",
+          "CourtyardShrub/Mesh_Foliage_1"
+        ]
+      },
+      "runtimeDownload": {
+        "url": "/scene-packs/troy/troy-20261005-02/models/shrub.glb",
+        "bytes": 47456,
+        "sha256": "4b2ad9c25c2035b02ebb72cc0336842c6c5a6441aada21cfe137d8749b3de51f"
+      },
+      "poster": {
+        "src": "/scene-packs/troy/troy-20261005-02/media/shrub.webp",
+        "width": 1024,
+        "height": 1024,
+        "alt": "Low courtyard shrub",
+        "srcsetAvif": "",
+        "srcsetWebp": "/scene-packs/troy/troy-20261005-02/media/shrub.webp 1024w"
+      },
+      "review": {
+        "ownerAccepted": false,
+        "status": "published"
+      }
+    },
+    {
+      "slug": "horse",
+      "name": "Horse",
+      "pack": "troy",
+      "category": "Animals",
+      "description": "Horse, from the Troy collection.",
+      "assetId": "horse",
+      "revisionId": "r_ae20cb280150492dbf58b89860f029d2",
+      "metrics": {
+        "triangles": 4804,
+        "meshes": 54,
+        "materials": 3,
+        "bounds": [
+          0.4920000058412552,
+          1.8188892246795985,
+          1.832433820962906
+        ],
+        "boundsMin": [
+          -0.2460000029206276,
+          -5.960463789200787e-10,
+          -0.8054338073730469
+        ],
+        "boundsMax": [
+          0.2460000029206276,
+          1.8188892240835521,
+          1.0270000135898592
+        ],
+        "clips": [
+          "Stand",
+          "Gallop",
+          "stand",
+          "gallop"
+        ],
+        "partPaths": [
+          "Horse/Joint_Body/Mesh_Torso_Barrel",
+          "Horse/Joint_Body/Mesh_Withers_Ridge",
+          "Horse/Joint_Body/Mesh_Girth_Strap",
+          "Horse/Joint_Body/Mesh_Yoke_Pad",
+          "Horse/Joint_Body/Mesh_Terret_Ring_L",
+          "Horse/Joint_Body/Mesh_Terret_Ring_R",
+          "Horse/Joint_Body/Mesh_Breastcollar",
+          "Horse/Joint_Body/Mesh_Breast_Phalera",
+          "Horse/Joint_Body/Joint_Neck/Mesh_Neck_Lower",
+          "Horse/Joint_Body/Joint_Neck/Mesh_Mane_Lower",
+          "Horse/Joint_Body/Joint_Neck/Joint_Head/Mesh_Head_Skull",
+          "Horse/Joint_Body/Joint_Neck/Joint_Head/Mesh_Head_Jaw",
+          "Horse/Joint_Body/Joint_Neck/Joint_Head/Mesh_Head_Muzzle",
+          "Horse/Joint_Body/Joint_Neck/Joint_Head/Mesh_Nose_Tip",
+          "Horse/Joint_Body/Joint_Neck/Joint_Head/Mesh_Ear_L",
+          "Horse/Joint_Body/Joint_Neck/Joint_Head/Mesh_Ear_Inner_L",
+          "Horse/Joint_Body/Joint_Neck/Joint_Head/Mesh_Eye_L",
+          "Horse/Joint_Body/Joint_Neck/Joint_Head/Mesh_Nostril_L",
+          "Horse/Joint_Body/Joint_Neck/Joint_Head/Mesh_Ear_R",
+          "Horse/Joint_Body/Joint_Neck/Joint_Head/Mesh_Ear_Inner_R",
+          "Horse/Joint_Body/Joint_Neck/Joint_Head/Mesh_Eye_R",
+          "Horse/Joint_Body/Joint_Neck/Joint_Head/Mesh_Nostril_R",
+          "Horse/Joint_Body/Joint_Neck/Joint_Head/Mesh_Forelock",
+          "Horse/Joint_Body/Joint_Neck/Joint_Head/Mesh_Bridle_Browband",
+          "Horse/Joint_Body/Joint_Neck/Joint_Head/Mesh_Bridle_Noseband",
+          "Horse/Joint_Body/Joint_Neck/Joint_Head/Mesh_Mouth_Bit",
+          "Horse/Joint_Body/Joint_Neck/Joint_Head/Mesh_Cheekstrap_L",
+          "Horse/Joint_Body/Joint_Neck/Joint_Head/Mesh_Cheekstrap_R",
+          "Horse/Joint_Body/Joint_Neck/Joint_Head/Mesh_Bit_Ring_L",
+          "Horse/Joint_Body/Joint_Neck/Joint_Head/Mesh_Bit_Ring_R",
+          "Horse/Joint_Body/Joint_Neck/Joint_Head/Mesh_Bridle_Stud_L",
+          "Horse/Joint_Body/Joint_Neck/Joint_Head/Mesh_Bridle_Stud_R",
+          "Horse/Joint_Body/Joint_Tail/Mesh_Tail_Base",
+          "Horse/Joint_Body/Joint_Tail/Mesh_Tail_Hair_Upper",
+          "Horse/Joint_Body/Joint_Leg_FL_Upper/Mesh_Shoulder_FL",
+          "Horse/Joint_Body/Joint_Leg_FL_Upper/Joint_Leg_FL_Lower/Mesh_Knee_FL",
+          "Horse/Joint_Body/Joint_Leg_FL_Upper/Joint_Leg_FL_Lower/Mesh_Cannon_FL",
+          "Horse/Joint_Body/Joint_Leg_FL_Upper/Joint_Leg_FL_Lower/Joint_Leg_FL_Hoof/Mesh_Fetlock_FL",
+          "Horse/Joint_Body/Joint_Leg_FL_Upper/Joint_Leg_FL_Lower/Joint_Leg_FL_Hoof/Mesh_Hoof_FL",
+          "Horse/Joint_Body/Joint_Leg_FR_Upper/Mesh_Shoulder_FR",
+          "Horse/Joint_Body/Joint_Leg_FR_Upper/Joint_Leg_FR_Lower/Mesh_Knee_FR",
+          "Horse/Joint_Body/Joint_Leg_FR_Upper/Joint_Leg_FR_Lower/Mesh_Cannon_FR",
+          "Horse/Joint_Body/Joint_Leg_FR_Upper/Joint_Leg_FR_Lower/Joint_Leg_FR_Hoof/Mesh_Fetlock_FR",
+          "Horse/Joint_Body/Joint_Leg_FR_Upper/Joint_Leg_FR_Lower/Joint_Leg_FR_Hoof/Mesh_Hoof_FR",
+          "Horse/Joint_Body/Joint_Leg_BL_Upper/Mesh_Thigh_BL",
+          "Horse/Joint_Body/Joint_Leg_BL_Upper/Joint_Leg_BL_Lower/Mesh_Hock_BL",
+          "Horse/Joint_Body/Joint_Leg_BL_Upper/Joint_Leg_BL_Lower/Mesh_Cannon_BL",
+          "Horse/Joint_Body/Joint_Leg_BL_Upper/Joint_Leg_BL_Lower/Joint_Leg_BL_Hoof/Mesh_Fetlock_BL",
+          "Horse/Joint_Body/Joint_Leg_BL_Upper/Joint_Leg_BL_Lower/Joint_Leg_BL_Hoof/Mesh_Hoof_BL",
+          "Horse/Joint_Body/Joint_Leg_BR_Upper/Mesh_Thigh_BR",
+          "Horse/Joint_Body/Joint_Leg_BR_Upper/Joint_Leg_BR_Lower/Mesh_Hock_BR",
+          "Horse/Joint_Body/Joint_Leg_BR_Upper/Joint_Leg_BR_Lower/Mesh_Cannon_BR",
+          "Horse/Joint_Body/Joint_Leg_BR_Upper/Joint_Leg_BR_Lower/Joint_Leg_BR_Hoof/Mesh_Fetlock_BR",
+          "Horse/Joint_Body/Joint_Leg_BR_Upper/Joint_Leg_BR_Lower/Joint_Leg_BR_Hoof/Mesh_Hoof_BR"
+        ]
+      },
+      "runtimeDownload": {
+        "url": "/scene-packs/troy/troy-20261005-02/models/horse.glb",
+        "bytes": 248068,
+        "sha256": "03e257c29b54ad05f5f37381474fe6eba995f22d72fefba9e90e5d46bbe84b5c"
+      },
+      "poster": {
+        "src": "/scene-packs/troy/troy-20261005-02/media/horse.webp",
+        "width": 1024,
+        "height": 1024,
+        "alt": "Horse",
+        "srcsetAvif": "",
+        "srcsetWebp": "/scene-packs/troy/troy-20261005-02/media/horse.webp 1024w"
+      },
+      "review": {
+        "ownerAccepted": false,
+        "status": "published"
+      }
+    },
+    {
+      "slug": "wall-breached",
+      "name": "Breached wall",
+      "pack": "troy",
+      "category": "Buildings",
+      "description": "Wall section, from the Troy collection.",
+      "assetId": "a_784f8007d64b466ca453813913d73933",
+      "revisionId": "r_98d0a72a5110475a9fef34721a9dad64",
+      "metrics": {
+        "triangles": 528,
+        "meshes": 44,
+        "materials": 3,
+        "bounds": [
+          6.000000047683716,
+          8.000000000688756,
+          4.874079547132986
+        ],
+        "boundsMin": [
+          -3.000000023841858,
+          -6.6492200079260044e-9,
+          -2.4126112345878195
+        ],
+        "boundsMax": [
+          3.000000023841858,
+          7.999999994039536,
+          2.461468312545166
+        ],
+        "clips": [],
+        "partPaths": [
+          "WallSection/Mesh_Footing_Left",
+          "WallSection/Mesh_Footing_Right",
+          "WallSection/Mesh_FootingSpur_Left",
+          "WallSection/Mesh_FootingSpur_Right",
+          "WallSection/Mesh_WallBody_Lower_Left",
+          "WallSection/Mesh_WallBody_Lower_Right",
+          "WallSection/Mesh_WallBody_Upper_Left",
+          "WallSection/Mesh_WallBody_Upper_Right",
+          "WallSection/Mesh_Fracture_Mid_Left",
+          "WallSection/Mesh_Fracture_Mid_Right",
+          "WallSection/Mesh_Fracture_Upper_Left",
+          "WallSection/Mesh_Fracture_Upper_Right",
+          "WallSection/Mesh_Beam_Lower_Left_0",
+          "WallSection/Mesh_Beam_Lower_Right_0",
+          "WallSection/Mesh_Beam_Upper_Left_0",
+          "WallSection/Mesh_Beam_Upper_Right_0",
+          "WallSection/Mesh_Beam_Lower_Left_1",
+          "WallSection/Mesh_Beam_Lower_Right_1",
+          "WallSection/Mesh_Beam_Upper_Left_1",
+          "WallSection/Mesh_Beam_Upper_Right_1",
+          "WallSection/Mesh_ParapetBase_Left",
+          "WallSection/Mesh_ParapetBase_Right",
+          "WallSection/Mesh_Merlon_0",
+          "WallSection/Mesh_Merlon_5",
+          "WallSection/Mesh_InnerCurb_Left",
+          "WallSection/Mesh_InnerCurb_Right",
+          "WallSection/Mesh_RubbleApron",
+          "WallSection/Mesh_Rubble_Outer_1",
+          "WallSection/Mesh_Rubble_Outer_2",
+          "WallSection/Mesh_Rubble_Outer_3",
+          "WallSection/Mesh_Rubble_Outer_4",
+          "WallSection/Mesh_Rubble_Outer_5",
+          "WallSection/Mesh_Rubble_Outer_6",
+          "WallSection/Mesh_Rubble_Inner_1",
+          "WallSection/Mesh_Rubble_Inner_2",
+          "WallSection/Mesh_Rubble_Inner_3",
+          "WallSection/Mesh_Rubble_Inner_4",
+          "WallSection/Mesh_Rubble_Inner_5",
+          "WallSection/Mesh_Rubble_Inner_6",
+          "WallSection/Mesh_Rubble_Passage_1",
+          "WallSection/Mesh_Rubble_Passage_2",
+          "WallSection/Mesh_Beam_Fallen_1",
+          "WallSection/Mesh_Beam_Fallen_2",
+          "WallSection/Mesh_Beam_Fallen_3"
+        ]
+      },
+      "runtimeDownload": {
+        "url": "/scene-packs/troy/troy-20261005-02/models/wall-breached.glb",
+        "bytes": 333340,
+        "sha256": "77c48aa6dbff40b212c5eacc4f340838358f71ee52ccc99966cd2bdc7f9b37e7"
+      },
+      "poster": {
+        "src": "/scene-packs/troy/troy-20261005-02/media/wall-breached.webp",
+        "width": 1024,
+        "height": 1024,
+        "alt": "Wall section",
+        "srcsetAvif": "",
+        "srcsetWebp": "/scene-packs/troy/troy-20261005-02/media/wall-breached.webp 1024w"
+      },
+      "review": {
+        "ownerAccepted": false,
+        "status": "published"
+      }
+    },
+    {
+      "slug": "war-chariot",
+      "name": "Late Bronze Age war chariot",
+      "pack": "troy",
+      "category": "Vehicles",
+      "description": "Late Bronze Age war chariot, from the Troy collection.",
+      "assetId": "a_6858bae420a940b5b8798e11666070a7",
+      "revisionId": "r_b277a52b09ae48b39afd8471557ed41b",
+      "metrics": {
+        "triangles": 4156,
+        "meshes": 16,
+        "materials": 4,
+        "bounds": [
+          2.0840866565704346,
+          2.7117346868299994,
+          3.839999928474426
+        ],
+        "boundsMin": [
+          -1.0420433282852173,
+          -2.384185793236071e-8,
+          -1.920000023841858
+        ],
+        "boundsMax": [
+          1.0420433282852173,
+          2.7117346629881416,
+          1.9199999046325682
+        ],
+        "clips": [
+          "wheel_spin"
+        ],
+        "partPaths": [
+          "WarChariot/Mesh_car_frame",
+          "WarChariot/Mesh_bronze_fittings",
+          "WarChariot/Mesh_crimson_front_screen",
+          "WarChariot/Mesh_axle",
+          "WarChariot/Mesh_draft_pole",
+          "WarChariot/Mesh_two_horse_yoke",
+          "WarChariot/Mesh_yoke_bindings",
+          "WarChariot/wheel_left/Mesh_left_wooden_wheel",
+          "WarChariot/wheel_left/Mesh_left_hub_fittings",
+          "WarChariot/wheel_right/Mesh_right_wooden_wheel",
+          "WarChariot/wheel_right/Mesh_right_hub_fittings",
+          "WarChariot/right_javelin_quiver/Mesh_quiver_sheath",
+          "WarChariot/right_javelin_quiver/Mesh_quiver_bands_and_javelin_heads",
+          "WarChariot/right_javelin_quiver/Mesh_five_javelin_shafts",
+          "WarChariot/Mesh_quiver_lower_mount",
+          "WarChariot/Mesh_quiver_upper_mount"
+        ]
+      },
+      "runtimeDownload": {
+        "url": "/scene-packs/troy/troy-20261005-02/models/war-chariot.glb",
+        "bytes": 614312,
+        "sha256": "6b06d838c3f8016e5ca1f94abd6da317fc0825f83b3f12f932ae5968b5b60c29"
+      },
+      "poster": {
+        "src": "/scene-packs/troy/troy-20261005-02/media/war-chariot.webp",
+        "width": 1024,
+        "height": 1024,
+        "alt": "Late Bronze Age war chariot",
+        "srcsetAvif": "",
+        "srcsetWebp": "/scene-packs/troy/troy-20261005-02/media/war-chariot.webp 1024w"
+      },
+      "review": {
+        "ownerAccepted": false,
+        "status": "published"
+      }
+    },
+    {
+      "slug": "sword",
+      "name": "Bronze Age Sword",
+      "pack": "troy",
+      "category": "Equipment",
+      "description": "Bronze Age Sword, from the Troy collection.",
+      "assetId": "a_f71b18076a3d47f084dc86a40e038812",
+      "revisionId": "r_6f63da6600ae46bbba5636e575ae1b9e",
+      "metrics": {
+        "triangles": 208,
+        "meshes": 4,
+        "materials": 2,
+        "bounds": [
+          0.07000000029802322,
+          0.6979999918341637,
+          0.11999999731779099
+        ],
+        "boundsMin": [
+          -0.03500000014901161,
+          -0.07699999994039536,
+          -0.05999999865889549
+        ],
+        "boundsMax": [
+          0.03500000014901161,
+          0.6209999918937683,
+          0.05999999865889549
+        ],
+        "clips": [],
+        "partPaths": [
+          "Sword/Mesh_Grip",
+          "Sword/Mesh_Guard",
+          "Sword/Mesh_Pommel",
+          "Sword/Mesh_Blade"
+        ]
+      },
+      "runtimeDownload": {
+        "url": "/scene-packs/troy/troy-20261005-02/models/sword.glb",
+        "bytes": 137688,
+        "sha256": "b15e157bf0e01fab0c421e232c08ab2572a7c42738d4454f994dfa275e99b4d9"
+      },
+      "poster": {
+        "src": "/scene-packs/troy/troy-20261005-02/media/sword.webp",
+        "width": 1024,
+        "height": 1024,
+        "alt": "Bronze Age Sword",
+        "srcsetAvif": "",
+        "srcsetWebp": "/scene-packs/troy/troy-20261005-02/media/sword.webp 1024w"
+      },
+      "review": {
+        "ownerAccepted": false,
+        "status": "published"
+      }
+    },
+    {
+      "slug": "shield",
+      "name": "Round shield",
+      "pack": "troy",
+      "category": "Equipment",
+      "description": "Round shield, from the Troy collection.",
+      "assetId": "a_0a67bce7656144c2b9e1c54aa7bea6eb",
+      "revisionId": "r_b8159cce845f442181910880090d09fe",
+      "metrics": {
+        "triangles": 1272,
+        "meshes": 10,
+        "materials": 2,
+        "bounds": [
+          0.9240000247955322,
+          0.9240000247955322,
+          0.25008845742791896
+        ],
+        "boundsMin": [
+          -0.4620000123977661,
+          -0.4620000123977661,
+          -0.050588457696139816
+        ],
+        "boundsMax": [
+          0.4620000123977661,
+          0.4620000123977661,
+          0.19949999973177912
+        ],
+        "clips": [],
+        "partPaths": [
+          "RoundShield/Mesh_Board",
+          "RoundShield/Mesh_Face",
+          "RoundShield/Mesh_Rim",
+          "RoundShield/Mesh_Boss",
+          "RoundShield/Mesh_Grip",
+          "RoundShield/Mesh_BracketTop",
+          "RoundShield/Mesh_BracketBottom",
+          "RoundShield/Mesh_ArmBand",
+          "RoundShield/Mesh_BandStrutL",
+          "RoundShield/Mesh_BandStrutR"
+        ]
+      },
+      "runtimeDownload": {
+        "url": "/scene-packs/troy/troy-20261005-02/models/shield.glb",
+        "bytes": 182764,
+        "sha256": "90a164bf7cbc9c98f7877bce029ed1ab016ab8043086f724ce70b92a0feff72a"
+      },
+      "poster": {
+        "src": "/scene-packs/troy/troy-20261005-02/media/shield.webp",
+        "width": 1024,
+        "height": 1024,
+        "alt": "Round shield",
+        "srcsetAvif": "",
+        "srcsetWebp": "/scene-packs/troy/troy-20261005-02/media/shield.webp 1024w"
+      },
+      "review": {
+        "ownerAccepted": false,
+        "status": "published"
+      }
+    },
+    {
+      "slug": "bow-set",
+      "name": "Bow, arrows and quiver",
+      "pack": "troy",
+      "category": "Equipment",
+      "description": "Bow, arrows and quiver, from the Troy collection.",
+      "assetId": "bow-set",
+      "revisionId": "r_356b134d3d5e471fba86cb875c829463",
+      "metrics": {
+        "triangles": 1404,
+        "meshes": 34,
+        "materials": 2,
+        "bounds": [
+          0.3069287332102815,
+          1.2089837848504006,
+          0.1943047192263823
+        ],
+        "boundsMin": [
+          -0.1425256355807344,
+          -0.0024918924252004017,
+          -0.10800000369548798
+        ],
+        "boundsMax": [
+          0.16440309762954713,
+          1.2064918924252002,
+          0.0863047155308943
+        ],
+        "clips": [],
+        "partPaths": [
+          "BowSet/Joint_Bow/Mesh_Bow_Grip",
+          "BowSet/Joint_Bow/Mesh_Bow_Grip_TopRing",
+          "BowSet/Joint_Bow/Mesh_Bow_Grip_BottomRing",
+          "BowSet/Joint_Bow/Mesh_Bow_Limb_Upper",
+          "BowSet/Joint_Bow/Mesh_Bow_Limb_Lower",
+          "BowSet/Joint_Bow/Mesh_Bow_Nock_Top",
+          "BowSet/Joint_Bow/Mesh_Bow_Nock_Bottom",
+          "BowSet/Joint_Bow/Mesh_Bow_String",
+          "BowSet/Joint_Quiver/Mesh_Quiver_Body",
+          "BowSet/Joint_Quiver/Mesh_Quiver_BaseCap",
+          "BowSet/Joint_Quiver/Mesh_Quiver_TopRim",
+          "BowSet/Joint_Quiver/Mesh_Quiver_MidBand",
+          "BowSet/Joint_Quiver/Mesh_Quiver_Ring_Top",
+          "BowSet/Joint_Quiver/Mesh_Quiver_Ring_Bottom",
+          "BowSet/Joint_Quiver/Mesh_Quiver_Strap",
+          "BowSet/Joint_Quiver/Mesh_Quiver_Interior",
+          "BowSet/Joint_Quiver/Joint_Arrow_1/Mesh_Arrow_1_Shaft",
+          "BowSet/Joint_Quiver/Joint_Arrow_1/Mesh_Arrow_1_Head",
+          "BowSet/Joint_Quiver/Joint_Arrow_1/Mesh_Arrow_1_Nock",
+          "BowSet/Joint_Quiver/Joint_Arrow_1/Mesh_Arrow_1_Vane_0",
+          "BowSet/Joint_Quiver/Joint_Arrow_1/Mesh_Arrow_1_Vane_1",
+          "BowSet/Joint_Quiver/Joint_Arrow_1/Mesh_Arrow_1_Vane_2",
+          "BowSet/Joint_Quiver/Joint_Arrow_2/Mesh_Arrow_2_Shaft",
+          "BowSet/Joint_Quiver/Joint_Arrow_2/Mesh_Arrow_2_Head",
+          "BowSet/Joint_Quiver/Joint_Arrow_2/Mesh_Arrow_2_Nock",
+          "BowSet/Joint_Quiver/Joint_Arrow_2/Mesh_Arrow_2_Vane_0",
+          "BowSet/Joint_Quiver/Joint_Arrow_2/Mesh_Arrow_2_Vane_1",
+          "BowSet/Joint_Quiver/Joint_Arrow_2/Mesh_Arrow_2_Vane_2",
+          "BowSet/Joint_Quiver/Joint_Arrow_3/Mesh_Arrow_3_Shaft",
+          "BowSet/Joint_Quiver/Joint_Arrow_3/Mesh_Arrow_3_Head",
+          "BowSet/Joint_Quiver/Joint_Arrow_3/Mesh_Arrow_3_Nock",
+          "BowSet/Joint_Quiver/Joint_Arrow_3/Mesh_Arrow_3_Vane_0",
+          "BowSet/Joint_Quiver/Joint_Arrow_3/Mesh_Arrow_3_Vane_1",
+          "BowSet/Joint_Quiver/Joint_Arrow_3/Mesh_Arrow_3_Vane_2"
+        ]
+      },
+      "runtimeDownload": {
+        "url": "/scene-packs/troy/troy-20261005-02/models/bow-set.glb",
+        "bytes": 137780,
+        "sha256": "861da8a5dad6265aa823c4b86f73142da14accfa48f486372241fba3e51ac366"
+      },
+      "poster": {
+        "src": "/scene-packs/troy/troy-20261005-02/media/bow-set.webp",
+        "width": 1024,
+        "height": 1024,
+        "alt": "Bow, arrows and quiver",
+        "srcsetAvif": "",
+        "srcsetWebp": "/scene-packs/troy/troy-20261005-02/media/bow-set.webp 1024w"
+      },
+      "review": {
+        "ownerAccepted": false,
+        "status": "published"
+      }
+    },
+    {
+      "slug": "wooden-horse",
+      "name": "Trojan Horse",
+      "pack": "troy",
+      "category": "Buildings",
+      "description": "Trojan Horse, from the Troy collection.",
+      "assetId": "wooden-horse",
+      "revisionId": "r_7ee4d96189a4442bb0efdab61a46300f",
+      "metrics": {
+        "triangles": 2060,
+        "meshes": 14,
+        "materials": 3,
+        "bounds": [
+          4.279999989271164,
+          7.120664143562317,
+          7.456241130828857
+        ],
+        "boundsMin": [
+          -2.139999994635582,
+          -2.384185793236071e-8,
+          -3.3499999046325684
+        ],
+        "boundsMax": [
+          2.139999994635582,
+          7.120664119720459,
+          4.106241226196289
+        ],
+        "clips": [
+          "hatch_open",
+          "wheels_roll"
+        ],
+        "partPaths": [
+          "TrojanHorse/wheel_front_left/Mesh_wheel_front_left_timber",
+          "TrojanHorse/wheel_front_left/Mesh_wheel_front_left_bronze",
+          "TrojanHorse/wheel_front_right/Mesh_wheel_front_right_timber",
+          "TrojanHorse/wheel_front_right/Mesh_wheel_front_right_bronze",
+          "TrojanHorse/wheel_rear_left/Mesh_wheel_rear_left_timber",
+          "TrojanHorse/wheel_rear_left/Mesh_wheel_rear_left_bronze",
+          "TrojanHorse/wheel_rear_right/Mesh_wheel_rear_right_timber",
+          "TrojanHorse/wheel_rear_right/Mesh_wheel_rear_right_bronze",
+          "TrojanHorse/Mesh_Torso",
+          "TrojanHorse/hatch/Mesh_hatch_timber",
+          "TrojanHorse/hatch/Mesh_hatch_bronze",
+          "TrojanHorse/Mesh_static_timber",
+          "TrojanHorse/Mesh_static_dark",
+          "TrojanHorse/Mesh_static_bronze"
+        ]
+      },
+      "runtimeDownload": {
+        "url": "/scene-packs/troy/troy-20261005-02/models/wooden-horse.glb",
+        "bytes": 279516,
+        "sha256": "af734651877a9a746d94bc449dee966eb62b912ddee70db51089acb80b779fc9"
+      },
+      "poster": {
+        "src": "/scene-packs/troy/troy-20261005-02/media/wooden-horse.webp",
+        "width": 1024,
+        "height": 1024,
+        "alt": "Trojan Horse",
+        "srcsetAvif": "",
+        "srcsetWebp": "/scene-packs/troy/troy-20261005-02/media/wooden-horse.webp 1024w"
+      },
+      "review": {
+        "ownerAccepted": false,
+        "status": "published"
+      }
+    },
+    {
+      "slug": "battle-scene-reference",
+      "name": "Battle before the gate",
+      "pack": "troy",
+      "category": "Compositions",
+      "description": "Battle before the gate, from the Troy collection.",
+      "assetId": "battle-scene",
+      "revisionId": "r_4573e90abb4848c3b3d4996de6834184",
+      "metrics": {
+        "triangles": 208178,
+        "meshes": 130,
+        "materials": 28,
+        "bounds": [
+          100,
+          9.500000384449958,
+          120
+        ],
+        "boundsMin": [
+          -50,
+          -0.40000000298023225,
+          -45
+        ],
+        "boundsMax": [
+          50,
+          9.100000381469727,
+          75
+        ],
+        "clips": [],
+        "partPaths": [
+          "BattleBeforeTheGate/Mesh_Ground",
+          "BattleBeforeTheGate/CityGate/CityGate_m0",
+          "BattleBeforeTheGate/CityGate/CityGate_m1",
+          "BattleBeforeTheGate/CityGate/CityGate_m2",
+          "BattleBeforeTheGate/CityGate/door_left/Mesh_door_left_timber",
+          "BattleBeforeTheGate/CityGate/door_left/Mesh_door_left_bronze",
+          "BattleBeforeTheGate/CityGate/door_right/Mesh_door_right_timber",
+          "BattleBeforeTheGate/CityGate/door_right/Mesh_door_right_bronze",
+          "BattleBeforeTheGate/Wall_-24/Wall_-24_m0",
+          "BattleBeforeTheGate/Wall_-24/Wall_-24_m1",
+          "BattleBeforeTheGate/Wall_-24/Wall_-24_m2",
+          "BattleBeforeTheGate/Wall_-12/Wall_-12_m0",
+          "BattleBeforeTheGate/Wall_-12/Wall_-12_m1",
+          "BattleBeforeTheGate/Wall_-12/Wall_-12_m2",
+          "BattleBeforeTheGate/Wall_-6/Wall_-6_m0",
+          "BattleBeforeTheGate/Wall_-6/Wall_-6_m1",
+          "BattleBeforeTheGate/Wall_-6/Wall_-6_m2",
+          "BattleBeforeTheGate/Wall_6/Wall_6_m0",
+          "BattleBeforeTheGate/Wall_6/Wall_6_m1",
+          "BattleBeforeTheGate/Wall_6/Wall_6_m2",
+          "BattleBeforeTheGate/Wall_12/Wall_12_m0",
+          "BattleBeforeTheGate/Wall_12/Wall_12_m1",
+          "BattleBeforeTheGate/Wall_12/Wall_12_m2",
+          "BattleBeforeTheGate/Wall_18/Wall_18_m0",
+          "BattleBeforeTheGate/Wall_18/Wall_18_m1",
+          "BattleBeforeTheGate/Wall_18/Wall_18_m2",
+          "BattleBeforeTheGate/Wall_24/Wall_24_m0",
+          "BattleBeforeTheGate/Wall_24/Wall_24_m1",
+          "BattleBeforeTheGate/Wall_24/Wall_24_m2",
+          "BattleBeforeTheGate/Wall_breached_-18/Wall_breached_-18_m0",
+          "BattleBeforeTheGate/Wall_breached_-18/Wall_breached_-18_m1",
+          "BattleBeforeTheGate/Wall_breached_-18/Wall_breached_-18_m2",
+          "BattleBeforeTheGate/House_1/House_1_m0",
+          "BattleBeforeTheGate/House_1/House_1_m1",
+          "BattleBeforeTheGate/House_1/House_1_m2",
+          "BattleBeforeTheGate/House_2/House_2_m0",
+          "BattleBeforeTheGate/House_2/House_2_m1",
+          "BattleBeforeTheGate/House_2/House_2_m2",
+          "BattleBeforeTheGate/House_3/House_3_m0",
+          "BattleBeforeTheGate/House_3/House_3_m1",
+          "BattleBeforeTheGate/House_3/House_3_m2",
+          "BattleBeforeTheGate/TempleHall/TempleHall_m0",
+          "BattleBeforeTheGate/TempleHall/TempleHall_m1",
+          "BattleBeforeTheGate/TempleHall/TempleHall_m2",
+          "BattleBeforeTheGate/TempleHall/TempleHall_m3",
+          "BattleBeforeTheGate/Galley_1/Galley_1_m0",
+          "BattleBeforeTheGate/Galley_1/Galley_1_m1",
+          "BattleBeforeTheGate/Galley_1/Galley_1_m2",
+          "BattleBeforeTheGate/Galley_1/Galley_1_m3",
+          "BattleBeforeTheGate/Galley_2/Galley_2_m0",
+          "BattleBeforeTheGate/Galley_2/Galley_2_m1",
+          "BattleBeforeTheGate/Galley_2/Galley_2_m2",
+          "BattleBeforeTheGate/Galley_2/Galley_2_m3",
+          "BattleBeforeTheGate/WoodenHorse/WoodenHorse_m0",
+          "BattleBeforeTheGate/WoodenHorse/WoodenHorse_m1",
+          "BattleBeforeTheGate/WoodenHorse/WoodenHorse_m2",
+          "BattleBeforeTheGate/WoodenHorse/hatch/Mesh_hatch_timber",
+          "BattleBeforeTheGate/WoodenHorse/hatch/Mesh_hatch_bronze",
+          "BattleBeforeTheGate/WallDefenders_W/WallDefenders_W_m0",
+          "BattleBeforeTheGate/WallDefenders_W/WallDefenders_W_m1",
+          "BattleBeforeTheGate/WallDefenders_W/WallDefenders_W_m2",
+          "BattleBeforeTheGate/WallDefenders_W/WallDefenders_W_m3",
+          "BattleBeforeTheGate/WallDefenders_W/WallDefenders_W_m4",
+          "BattleBeforeTheGate/WallDefenders_W/WallDefenders_W_m5",
+          "BattleBeforeTheGate/WallDefenders_W/WallDefenders_W_m6",
+          "BattleBeforeTheGate/WallDefenders_E/WallDefenders_E_m0",
+          "BattleBeforeTheGate/WallDefenders_E/WallDefenders_E_m1",
+          "BattleBeforeTheGate/WallDefenders_E/WallDefenders_E_m2",
+          "BattleBeforeTheGate/WallDefenders_E/WallDefenders_E_m3",
+          "BattleBeforeTheGate/WallDefenders_E/WallDefenders_E_m4",
+          "BattleBeforeTheGate/WallDefenders_E/WallDefenders_E_m5",
+          "BattleBeforeTheGate/WallDefenders_E/WallDefenders_E_m6",
+          "BattleBeforeTheGate/WallDefenders_far/WallDefenders_far_m0",
+          "BattleBeforeTheGate/WallDefenders_far/WallDefenders_far_m1",
+          "BattleBeforeTheGate/WallDefenders_far/WallDefenders_far_m2",
+          "BattleBeforeTheGate/WallDefenders_far/WallDefenders_far_m3",
+          "BattleBeforeTheGate/WallDefenders_far/WallDefenders_far_m4",
+          "BattleBeforeTheGate/WallDefenders_far/WallDefenders_far_m5",
+          "BattleBeforeTheGate/WallDefenders_far/WallDefenders_far_m6",
+          "BattleBeforeTheGate/ClashA_1/ClashA_1_m0",
+          "BattleBeforeTheGate/ClashA_1/ClashA_1_m1",
+          "BattleBeforeTheGate/ClashA_1/ClashA_1_m2",
+          "BattleBeforeTheGate/ClashA_1/ClashA_1_m3",
+          "BattleBeforeTheGate/ClashA_1/ClashA_1_m4",
+          "BattleBeforeTheGate/ClashA_1/ClashA_1_m5",
+          "BattleBeforeTheGate/ClashA_2/ClashA_2_m0",
+          "BattleBeforeTheGate/ClashA_2/ClashA_2_m1",
+          "BattleBeforeTheGate/ClashA_2/ClashA_2_m2",
+          "BattleBeforeTheGate/ClashA_2/ClashA_2_m3",
+          "BattleBeforeTheGate/ClashA_2/ClashA_2_m4",
+          "BattleBeforeTheGate/ClashA_2/ClashA_2_m5",
+          "BattleBeforeTheGate/ClashB/ClashB_m0",
+          "BattleBeforeTheGate/ClashB/ClashB_m1",
+          "BattleBeforeTheGate/ClashB/ClashB_m2",
+          "BattleBeforeTheGate/ClashB/ClashB_m3",
+          "BattleBeforeTheGate/ClashB/ClashB_m4",
+          "BattleBeforeTheGate/ClashB/ClashB_m5",
+          "BattleBeforeTheGate/BreachFight/BreachFight_m0",
+          "BattleBeforeTheGate/BreachFight/BreachFight_m1",
+          "BattleBeforeTheGate/BreachFight/BreachFight_m2",
+          "BattleBeforeTheGate/BreachFight/BreachFight_m3",
+          "BattleBeforeTheGate/BreachFight/BreachFight_m4",
+          "BattleBeforeTheGate/BreachFight/BreachFight_m5",
+          "BattleBeforeTheGate/GateSortie/GateSortie_m0",
+          "BattleBeforeTheGate/GateSortie/GateSortie_m1",
+          "BattleBeforeTheGate/GateSortie/GateSortie_m2",
+          "BattleBeforeTheGate/GateSortie/GateSortie_m3",
+          "BattleBeforeTheGate/GateSortie/GateSortie_m4",
+          "BattleBeforeTheGate/Hector_Chariot/Hector_Chariot_m0",
+          "BattleBeforeTheGate/Hector_Chariot/Hector_Chariot_m1",
+          "BattleBeforeTheGate/Hector_Chariot/Hector_Chariot_m2",
+          "BattleBeforeTheGate/Hector_Chariot/Hector_Chariot_m3",
+          "BattleBeforeTheGate/Hector_Chariot/Hector_Chariot_m4",
+          "BattleBeforeTheGate/Hector_Chariot/Hector_Chariot_m5",
+          "BattleBeforeTheGate/Hector_Chariot/Hector_Chariot_m6",
+          "BattleBeforeTheGate/Hector_Chariot/Hector_Chariot_m7",
+          "BattleBeforeTheGate/Hector_Chariot/Hector_Chariot_m8",
+          "BattleBeforeTheGate/Hector_Chariot/Hector_Chariot_m9",
+          "BattleBeforeTheGate/Hector_Chariot/Hector_Chariot_m10",
+          "BattleBeforeTheGate/Achilles_Chariot/Achilles_Chariot_m0",
+          "BattleBeforeTheGate/Achilles_Chariot/Achilles_Chariot_m1",
+          "BattleBeforeTheGate/Achilles_Chariot/Achilles_Chariot_m2",
+          "BattleBeforeTheGate/Achilles_Chariot/Achilles_Chariot_m3",
+          "BattleBeforeTheGate/Achilles_Chariot/Achilles_Chariot_m4",
+          "BattleBeforeTheGate/Achilles_Chariot/Achilles_Chariot_m5",
+          "BattleBeforeTheGate/Achilles_Chariot/Achilles_Chariot_m6",
+          "BattleBeforeTheGate/Achilles_Chariot/Achilles_Chariot_m7",
+          "BattleBeforeTheGate/Achilles_Chariot/Achilles_Chariot_m8",
+          "BattleBeforeTheGate/Achilles_Chariot/Achilles_Chariot_m9",
+          "BattleBeforeTheGate/Achilles_Chariot/Achilles_Chariot_m10"
+        ]
+      },
+      "runtimeDownload": {
+        "url": "/scene-packs/troy/troy-20261005-02/models/battle-scene-reference.glb",
+        "bytes": 14464712,
+        "sha256": "d2ba5e05718c7889134d51bb89680a7dc05b5b24100c4f3e9d89b18034991dfb"
+      },
+      "poster": {
+        "src": "/scene-packs/troy/troy-20261005-02/media/battle-scene-reference.webp",
+        "width": 1024,
+        "height": 1024,
+        "alt": "Battle before the gate",
+        "srcsetAvif": "",
+        "srcsetWebp": "/scene-packs/troy/troy-20261005-02/media/battle-scene-reference.webp 1024w"
+      },
+      "review": {
+        "ownerAccepted": false,
+        "status": "published"
+      }
+    }
+  ]
+}

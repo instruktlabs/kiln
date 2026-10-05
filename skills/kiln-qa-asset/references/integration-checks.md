@@ -38,6 +38,14 @@ clearance or reach. Distinguish a demo controller's pose from clips included in 
 asset download. Limb joints need intermediate-pose views as well as endpoint
 closure; flush rest-pose joins can separate or expose caps during motion.
 
+For articulated actors carrying equipment, inspect the limb bend as well as hand
+attachment closure. A hand can reach its target while the elbow folds through the
+body. Include headgear and carried items in intermediate-pose clearance checks,
+and inspect cables or strings at their moving attachment points. A convincing
+draw or tensioning action needs compatible equipment deformation, not just a
+moving hand and an arbitrarily stretched connector. Keep controller choices and
+equipment fit in the destination; a scene repair need not change the saved master.
+
 For a payload transfer, test the actual payload against the full gripper housing,
 jaws and carrier, including pin/groove alignment and opening clearance. Matching
 attachment transforms or contact at the endpoints does not establish a valid

@@ -1,3 +1,4 @@
+import troy from '../data/troy.json';
 import foundry from '../data/packs/foundry-floor.json';
 import { catalogAssets, type CatalogImage } from './catalog';
 import { PACKS_ENABLED } from './config';
@@ -44,6 +45,13 @@ export function buildGallery(packsEnabled: boolean): GalleryCard[] {
       review: { ownerAccepted: false, status: 'awaiting-owner-review' },
     });
   }
+  cards.push(
+    ...troy.assets.map((asset) => ({
+      ...asset,
+      packs: ['troy'],
+      href: `/gallery/troy/${asset.slug}/`,
+    })),
+  );
   return cards;
 }
 

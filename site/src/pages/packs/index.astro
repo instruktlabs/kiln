@@ -1,4 +1,5 @@
 ---
+import troy from "../../data/troy.json";
 import PageHeader from "../../components/PageHeader.astro";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import ResponsiveImage from "../../components/ResponsiveImage.astro";
@@ -26,6 +27,7 @@ const featured = ["euv-scanner", "etch-cluster-tool", "vertical-furnace", "stock
       Asset packs made with Kiln. Use the GLBs in your application, or keep the
       source and revise them with your coding agent.
     </p>
+    {PACKS_ENABLED && <a class="pack-card mt-12 grid items-center gap-8 border-y border-rule py-8 lg:grid-cols-3" href="/packs/troy/" aria-label="Troy"><div class="lg:col-span-2"><ResponsiveImage image={troy.posters[0]!} eager sizes="(max-width: 1024px) 100vw, 65vw" /></div><div><h2 class="text-subheading">Troy</h2><p class="mt-5">{troy.assetCount} models: heroes, soldiers, ships, buildings, equipment and vegetation.</p><p class="mt-4">Play the scene or download the models.</p><span class="text-link mt-4">Inspect the pack and downloads</span></div></a>}
     {PACKS_ENABLED && (
       <a class="pack-card mt-12 grid items-center gap-8 border-y border-rule py-8 lg:grid-cols-3" href="/packs/farm/" aria-label="Shapes &amp; Seasons Farm">
         <div class="lg:col-span-2">

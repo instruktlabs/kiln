@@ -15,7 +15,7 @@ const {
 ---
 
 <picture>
-  <source type="image/avif" srcset={image.srcsetAvif} sizes={sizes} />
+  {image.srcsetAvif && <source type="image/avif" srcset={image.srcsetAvif} sizes={sizes} />}
   <img
     src={image.src}
     srcset={image.srcsetWebp}

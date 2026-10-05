@@ -3,6 +3,81 @@ const meta = {
   role: 'prop'
 };
 
+// Anatomy repair by gpt-6-astra / codex; requested effort max.
+// Original author/provenance remains in the immutable parent revision.
+// Sparse elliptical stations describe actual silhouette changes, not subdivided boxes.
+function contour(axis, rows, sides = 12) {
+  const positions = [], indices = [], uvs = [];
+  for (let i = 0; i < rows.length; i++) {
+    const [a, c, rx, rd, cx = 0] = rows[i];
+    for (let j = 0; j < sides; j++) {
+      const t = j * Math.PI * 2 / sides;
+      if (axis === 'z') positions.push(cx + rx * Math.cos(t), c + rd * Math.sin(t), a);
+      else positions.push(cx + rx * Math.cos(t), a, c - rd * Math.sin(t));
+      uvs.push(j / sides, (a - rows[0][0]) * 2);
+    }
+  }
+  for (let i = 0; i < rows.length - 1; i++) for (let j = 0; j < sides; j++) {
+    const a = i * sides + j, b = i * sides + (j + 1) % sides;
+    const c = a + sides, d = b + sides;
+    indices.push(a, b, c, b, d, c);
+  }
+  for (let end = 0; end < 2; end++) {
+    const row = end ? rows.length - 1 : 0, r = rows[row], center = positions.length / 3;
+    if (axis === 'z') positions.push(r[4] || 0, r[1], r[0]); else positions.push(r[4] || 0, r[0], r[1]);
+    uvs.push(0.5, 0.5);
+    for (let j = 0; j < sides; j++) {
+      const a = row * sides + j, b = row * sides + (j + 1) % sides;
+      if (end) indices.push(center, a, b); else indices.push(center, b, a);
+    }
+  }
+  return meshGeo({ positions, indices, uvs });
+}
+// A closed narrow ribbon following a path on one side of the head.
+function cheekRibbon(side) {
+  // Owner feedback: keep a clear orbital area; descend behind the eye, then below it.
+  const points = [[side * 0.085,0.116,0.014],[side * 0.101,0.06,0.014],
+    [side * 0.099,0.004,0.027],[side * 0.081,-0.05,0.115],
+    [side * 0.065,-0.084,0.205],[side * 0.086,-0.11,0.28]];
+  const sections = points.map((p,i) => {
+    const a = points[Math.max(0,i-1)], b = points[Math.min(points.length-1,i+1)];
+    const dy=b[1]-a[1], dz=b[2]-a[2], l=Math.hypot(dy,dz);
+    return { profile:[[-0.004,-0.006],[0.004,-0.006],[0.004,0.006],[-0.004,0.006]],
+      frame:{origin:p,rotation:[Math.atan2(dz,dy)*180/Math.PI,0,0]} };
+  });
+  return loftProfiles(sections);
+}
+
+// Fitted leather bands have thickness and follow the reshaped skin.
+function bandZ(rows, thickness, sides = 16) {
+  const positions=[],indices=[],uvs=[];
+  for (let r=0;r<4;r++) {
+    const end=r%2, inner=r>=2, [z,y,rx,ry]=rows[end];
+    for(let j=0;j<sides;j++) {
+      const t=j*2*Math.PI/sides;
+      positions.push((rx-(inner?thickness:0))*Math.cos(t),y+(ry-(inner?thickness:0))*Math.sin(t),z);
+      uvs.push(j/sides,end);
+    }
+  }
+  function join(ra,rb,flip) {
+    for(let j=0;j<sides;j++) {
+      const a=ra*sides+j,b=ra*sides+(j+1)%sides,c=rb*sides+j,d=rb*sides+(j+1)%sides;
+      if(flip)indices.push(a,c,b,b,c,d);else indices.push(a,b,c,b,d,c);
+    }
+  }
+  join(0,1,false);join(2,3,true);join(0,2,true);join(1,3,false);
+  return meshGeo({positions,indices,uvs});
+}
+function breastRibbon() {
+  const pts=[[-0.187,0.12,0.14],[-0.177,0.12,0.29],[-0.147,0.12,0.40],
+    [-0.09,0.12,0.471],[0,0.12,0.5],[0.09,0.12,0.471],
+    [0.147,0.12,0.40],[0.177,0.12,0.29],[0.187,0.12,0.14]];
+  return loftProfiles(pts.map((p,i)=>{
+    const a=pts[Math.max(0,i-1)],b=pts[Math.min(pts.length-1,i+1)];
+    return {profile:[[-0.027,-0.007],[0.027,-0.007],[0.027,0.007],[-0.027,0.007]],
+      frame:{origin:p,rotation:[0,-Math.atan2(b[2]-a[2],b[0]-a[0])*180/Math.PI,-90]}};
+  }));
+}
 async function build() {
   const root = createRoot('Horse');
 
@@ -57,60 +132,27 @@ async function build() {
   // Main articulated body root at Y = 0.95
   const body = createPivot('Body', [0, 0.95, 0], root);
 
-  // --- Torso / Barrel ---
-  // Mid barrel (ribcage / abdomen)
-  createPart('Torso_Barrel', cylinderGeo(0.23, 0.24, 0.50, 8), horseCoat, {
-    position: [0, 0.08, -0.02],
-    scale: [0.8, 1, 1],
-    rotation: [90, 0, 0],
-    parent: body
-  });
-
-  // Chest / forequarters
-  createPart('Torso_Chest', cylinderGeo(0.24, 0.22, 0.36, 8), horseCoat, {
-    position: [0, 0.10, 0.26],
-    scale: [0.8, 1, 1],
-    rotation: [90, 0, 0],
-    parent: body
-  });
-
-  // Breast bulge
-  createPart('Chest_Bulge', sphereGeo(0.18, 8, 6), horseCoat, {
-    position: [0, 0.04, 0.44],
-    scale: [0.85, 1.2, 0.8],
-    parent: body
-  });
-
-  // Hindquarters / Croup / Haunches
-  createPart('Torso_Croup', cylinderGeo(0.22, 0.23, 0.38, 8), horseCoat, {
-    position: [0, 0.12, -0.32],
-    scale: [0.84, 1, 1],
-    rotation: [90, 0, 0],
-    parent: body
-  });
-
-  // Buttocks
-  createPart('Buttocks', sphereGeo(0.19, 8, 6), horseCoat, {
-    position: [0, 0.08, -0.50],
-    scale: [0.95, 1.1, 0.9],
-    parent: body
-  });
-
-  // Withers ridge (peaks at shoulder height: 0.95 + 0.45 = 1.40 m)
-  createPart('Withers_Ridge', boxGeo(0.12, 0.18, 0.30), horseCoat, {
-    position: [0, 0.36, 0.28],
-    rotation: [25, 0, 0],
-    parent: body
-  });
+  // Continuous ribcage: rounded croup, tucked loin, deep forechest.
+  createPart('Torso_Barrel', contour('z', [
+    [-0.65,0.10,0.013,0.026],[-0.60,0.105,0.11,0.13],
+    [-0.49,0.095,0.18,0.207],[-0.34,0.083,0.194,0.232],
+    [-0.18,0.052,0.184,0.237],[-0.02,0.052,0.188,0.247],
+    [0.14,0.08,0.183,0.233],[0.29,0.12,0.172,0.245],
+    [0.40,0.09,0.145,0.219],[0.48,0.025,0.095,0.148],
+    [0.525,-0.018,0.012,0.035]
+  ],16), horseCoat, {parent:body});
+  // Rounded withers support the unchanged yoke pad and terret anchors.
+  createPart('Withers_Ridge', contour('z', [
+    [-0.025,0.24,0.028,0.025],[0.08,0.28,0.077,0.081],
+    [0.19,0.329,0.078,0.099],[0.28,0.322,0.077,0.112],
+    [0.38,0.26,0.09,0.13],[0.43,0.19,0.065,0.09]
+  ]), horseCoat, {parent:body});
 
   // --- Chariot Harness on Torso ---
-  // Girth strap around belly
-  createPart('Girth_Strap', cylinderGeo(0.245, 0.245, 0.07, 8), darkDetails, {
-    position: [0, 0.08, 0.14],
-    scale: [0.8, 1, 1],
-    rotation: [90, 0, 0],
-    parent: body
-  });
+  // Fitted girth, same circumferential position and width.
+  createPart('Girth_Strap', bandZ([
+    [0.105,0.074,0.19,0.242],[0.175,0.089,0.187,0.242]
+  ],0.012), darkDetails, {parent:body});
 
   // Yoke pad on withers
   createPart('Yoke_Pad', boxGeo(0.17, 0.05, 0.16), darkDetails, {
@@ -131,12 +173,9 @@ async function build() {
     parent: body
   });
 
-  // Chariot breastband / breastcollar across chest
-  createPart('Breastcollar', boxGeo(0.38, 0.07, 0.04), darkDetails, {
-    position: [0, 0.12, 0.48],
-    rotation: [-10, 0, 0],
-    parent: body
-  });
+  // Collar bends around the chest and reaches the girth at both sides.
+  // Central phalera and yoke/ring anchor coordinates remain unchanged.
+  createPart('Breastcollar', breastRibbon(), darkDetails, {parent:body});
 
   // Decorative bronze central boss / phalera on breastcollar
   createPart('Breast_Phalera', cylinderGeo(0.055, 0.055, 0.02, 8), bronzeMetal, {
@@ -148,111 +187,90 @@ async function build() {
   // --- Neck & Head Hierarchy ---
   const neck = createPivot('Neck', [0, 0.22, 0.34], body);
 
-  // Muscular neck
-  createPart('Neck_Lower', cylinderGeo(0.14, 0.20, 0.32, 6), horseCoat, {
-    position: [0, 0.15, 0.10],
-    scale: [0.78, 1, 1],
-    rotation: [-42, 0, 0],
-    parent: neck
-  });
-  createPart('Neck_Upper', cylinderGeo(0.11, 0.15, 0.28, 6), horseCoat, {
-    position: [0, 0.30, 0.24],
-    scale: [0.78, 1, 1],
-    rotation: [-48, 0, 0],
-    parent: neck
-  });
-
-  // Bronze Age standing hogged mane along neck crest
-  createPart('Mane_Lower', boxGeo(0.05, 0.10, 0.30), darkDetails, {
-    position: [0, 0.24, 0.07],
-    rotation: [-42, 0, 0],
-    parent: neck
-  });
-  createPart('Mane_Upper', boxGeo(0.05, 0.10, 0.26), darkDetails, {
-    position: [0, 0.40, 0.21],
-    rotation: [-48, 0, 0],
-    parent: neck
-  });
+  // Swept neck silhouette with a curved crest and tapered throatlatch.
+  // Root penetrates the chest; the poll overlaps the retained head joint.
+  createPart('Neck_Lower', contour('y', [
+    [-0.16,-0.055,0.103,0.11],[-0.055,-0.025,0.147,0.181],
+    [0.055,0.025,0.132,0.207],[0.16,0.112,0.108,0.169],
+    [0.265,0.203,0.086,0.129],[0.365,0.270,0.075,0.098],
+    [0.44,0.295,0.067,0.071],[0.49,0.30,0.025,0.035]
+  ],16), horseCoat, {parent:neck});
+  createPart('Mane_Lower', contour('y', [
+    [0.005,-0.166,0.022,0.022],[0.07,-0.166,0.026,0.035],
+    [0.17,-0.061,0.025,0.04],[0.265,0.067,0.024,0.034],
+    [0.365,0.162,0.022,0.033],[0.44,0.216,0.021,0.027],
+    [0.48,0.255,0.016,0.02]
+  ],8), darkDetails, {parent:neck});
 
   // Head pivot
   const head = createPivot('Head', [0, 0.40, 0.32], neck);
 
-  // Skull / forehead
-  createPart('Head_Skull', boxGeo(0.18, 0.18, 0.20), horseCoat, {
-    position: [0, 0.04, 0.06],
-    rotation: [-18, 0, 0],
-    parent: head
-  });
+  // Rounded poll and forehead; broad at eyes, narrowing toward nasal bridge.
+  createPart('Head_Skull', contour('z', [
+    [-0.09,0.032,0.017,0.037],[-0.065,0.04,0.068,0.08],
+    [-0.025,0.042,0.097,0.107],[0.035,0.035,0.102,0.112],
+    [0.095,0.008,0.087,0.097],[0.145,-0.035,0.068,0.069],
+    [0.175,-0.057,0.059,0.052]
+  ],16), horseCoat, {parent:head});
+  // Tapered lower jaw ties the cheeks into the muzzle rather than ball-like jowls.
+  createPart('Head_Jaw', contour('z', [
+    [-0.05,-0.025,0.043,0.031],[-0.005,-0.034,0.086,0.068],
+    [0.06,-0.055,0.081,0.067],[0.13,-0.09,0.059,0.04],
+    [0.22,-0.115,0.052,0.024],[0.29,-0.132,0.045,0.02]
+  ]), horseCoat, {parent:head});
+  createPart('Head_Muzzle', contour('z', [
+    [0.092,0.002,0.073,0.081],[0.16,-0.042,0.064,0.066],
+    [0.23,-0.086,0.064,0.058],[0.29,-0.111,0.071,0.053],
+    [0.335,-0.12,0.067,0.044],[0.353,-0.12,0.051,0.034]
+  ],12), horseCoat, {parent:head});
+  createPart('Nose_Tip', contour('z', [
+    [0.30,-0.128,0.058,0.034],[0.344,-0.126,0.066,0.038],
+    [0.367,-0.126,0.046,0.029]
+  ],12), darkDetails, {parent:head});
 
-  // Jowls / cheeks
-  createPart('Cheek_L', sphereGeo(0.07, 6, 4), horseCoat, {
-    position: [-0.08, 0.00, 0.02],
-    scale: [0.8, 1.1, 1.2],
-    parent: head
-  });
-  createPart('Cheek_R', sphereGeo(0.07, 6, 4), horseCoat, {
-    position: [0.08, 0.00, 0.02],
-    scale: [0.8, 1.1, 1.2],
-    parent: head
-  });
-
-  // Tapered muzzle / bridge of nose
-  createPart('Head_Muzzle', cylinderGeo(0.065, 0.09, 0.24, 6), horseCoat, {
-    position: [0, -0.06, 0.20],
-    rotation: [-62, 0, 0],
-    parent: head
-  });
-
-  // Nose tip & chin
-  createPart('Nose_Tip', boxGeo(0.11, 0.09, 0.08), darkDetails, {
-    position: [0, -0.12, 0.31],
-    rotation: [-45, 0, 0],
-    parent: head
-  });
-
-  // Ears
-  createPart('Ear_L', coneGeo(0.035, 0.14, 4), horseCoat, {
-    position: [-0.07, 0.18, -0.01],
-    rotation: [15, -12, -15],
-    parent: head
-  });
-  createPart('Ear_R', coneGeo(0.035, 0.14, 4), horseCoat, {
-    position: [0.07, 0.18, -0.01],
-    rotation: [15, 12, 15],
-    parent: head
-  });
-
-  // Forelock
-  createPart('Forelock', boxGeo(0.04, 0.07, 0.08), darkDetails, {
-    position: [0, 0.14, 0.06],
-    rotation: [-20, 0, 0],
-    parent: head
-  });
+  // Ear root rings are buried within the skull, all rigid under Joint_Head.
+  // First ring y=.081 is the exported root boundary checked during QA.
+  for (const side of [-1,1]) {
+    const suffix = side < 0 ? 'L' : 'R';
+    createPart('Ear_' + suffix, contour('y', [
+      [0,0,0.023,0.022],[0.035,0.002,0.030,0.024],
+      [0.082,0.007,0.026,0.020],[0.132,0.011,0.016,0.013],
+      [0.164,0.015,0.002,0.003]
+    ],10), horseCoat, {position:[side*0.060,0.081,-0.021],
+      rotation:[7,side*8,-side*9],parent:head});
+    // Shallow inner pinna, attached in the same ear frame.
+    createPart('Ear_Inner_' + suffix, contour('y', [
+      [0.052,0.022,0.014,0.004],[0.085,0.027,0.017,0.004],
+      [0.128,0.024,0.009,0.003],[0.149,0.020,0.001,0.002]
+    ],8), darkDetails, {position:[side*0.060,0.081,-0.021],
+      rotation:[7,side*8,-side*9],parent:head});
+    createPart('Eye_' + suffix, sphereGeo(0.014,8,6), darkDetails, {
+      position:[side*0.082,0.038,0.096],scale:[0.42,0.85,1.18],parent:head});
+    createPart('Nostril_' + suffix, sphereGeo(0.018,8,4), darkDetails, {
+      position:[side*0.063,-0.104,0.321],scale:[0.28,0.7,1.1],rotation:[0,side*10,-side*20],parent:head});
+  }
+  createPart('Forelock', contour('y', [
+    [0.055,0.129,0.005,0.01],[0.10,0.109,0.018,0.018],
+    [0.144,0.04,0.025,0.032],[0.154,0.01,0.015,0.02]
+  ],8), darkDetails, {parent:head});
 
   // --- Chariot Bridle & Bit on Head ---
-  // Browband strap
-  createPart('Bridle_Browband', boxGeo(0.20, 0.035, 0.03), darkDetails, {
-    position: [0, 0.10, 0.08],
-    rotation: [-20, 0, 0],
-    parent: head
-  });
-  // Noseband strap
-  createPart('Bridle_Noseband', cylinderGeo(0.075, 0.075, 0.035, 6), darkDetails, {
-    position: [0, -0.08, 0.23],
-    rotation: [-62, 0, 0],
-    parent: head
-  });
-  // Cheek straps
-  createPart('Cheekstrap_L', boxGeo(0.02, 0.16, 0.02), darkDetails, {
-    position: [-0.095, -0.02, 0.12],
-    rotation: [-38, 0, 0],
-    parent: head
-  });
-  createPart('Cheekstrap_R', boxGeo(0.02, 0.16, 0.02), darkDetails, {
-    position: [0.095, -0.02, 0.12],
-    rotation: [-38, 0, 0],
-    parent: head
-  });
+  createPart('Bridle_Browband', loftProfiles([
+    [-0.085,0.116,0.014],[-0.055,0.135,0.033],[0,0.145,0.045],
+    [0.055,0.135,0.033],[0.085,0.116,0.014]
+  ].map(p=>({profile:[[-0.009,-0.005],[0.009,-0.005],[0.009,0.005],[-0.009,0.005]],
+    frame:{origin:p,rotation:[0,0,-90]}}))),darkDetails,{parent:head});
+  createPart('Bridle_Noseband', bandZ([
+    [0.211,-0.075,0.07,0.064],[0.244,-0.092,0.071,0.064]
+  ],0.011,12),darkDetails,{parent:head});
+  // Bit shaft links the retained bronze mouth-corner fittings through the mouth.
+  createPart('Mouth_Bit', cylinderGeo(0.007,0.007,0.18,8),bronzeMetal,{
+    position:[0,-0.11,0.28],rotation:[0,0,90],parent:head});
+
+  // Cheek straps now run continuously between retained brow studs and bit rings.
+  createPart('Cheekstrap_L', cheekRibbon(-1), darkDetails, {parent:head});
+  createPart('Cheekstrap_R', cheekRibbon(1), darkDetails, {parent:head});
+
   // Bronze bit rings at mouth corners
   createPart('Bit_Ring_L', cylinderGeo(0.035, 0.035, 0.015, 6), bronzeMetal, {
     position: [-0.09, -0.11, 0.28],
@@ -266,107 +284,95 @@ async function build() {
   });
   // Bronze bridle boss studs
   createPart('Bridle_Stud_L', sphereGeo(0.02, 4, 3), bronzeMetal, {
-    position: [-0.10, 0.08, 0.06],
+    position: [-0.085, 0.116, 0.014],
     parent: head
   });
   createPart('Bridle_Stud_R', sphereGeo(0.02, 4, 3), bronzeMetal, {
-    position: [0.10, 0.08, 0.06],
+    position: [0.085, 0.116, 0.014],
     parent: head
   });
 
   // --- Tail ---
   const tail = createPivot('Tail', [0, 0.14, -0.56], body);
-  createPart('Tail_Base', cylinderGeo(0.06, 0.045, 0.18, 6), horseCoat, {
-    position: [0, -0.06, -0.06],
-    rotation: [35, 0, 0],
-    parent: tail
-  });
-  createPart('Tail_Hair_Upper', cylinderGeo(0.05, 0.07, 0.32, 6), darkDetails, {
-    position: [0, -0.22, -0.12],
-    rotation: [25, 0, 0],
-    parent: tail
-  });
-  createPart('Tail_Hair_Lower', cylinderGeo(0.07, 0.03, 0.35, 6), darkDetails, {
-    position: [0, -0.48, -0.18],
-    rotation: [15, 0, 0],
-    parent: tail
-  });
+  createPart('Tail_Base', contour('y',[
+    [-0.18,-0.09,0.029,0.038],[-0.09,-0.055,0.043,0.049],
+    [0.025,0.005,0.05,0.057]
+  ],10),horseCoat,{parent:tail});
+  createPart('Tail_Hair_Upper', contour('y',[
+    [-0.66,-0.218,0.009,0.019],[-0.60,-0.215,0.023,0.032],
+    [-0.48,-0.196,0.034,0.047],[-0.35,-0.147,0.041,0.054],
+    [-0.22,-0.102,0.043,0.052],[-0.12,-0.07,0.035,0.046],
+    [-0.08,-0.045,0.024,0.031]
+  ],10),darkDetails,{parent:tail});
 
   // --- Legs Helper ---
   function buildFrontLeg(prefix, side) {
     const x = side * 0.16;
     const upper = createPivot(`Leg_F${prefix}_Upper`, [x, 0.05, 0.36], body);
 
-    // Shoulder & upper arm
-    createPart(`Shoulder_F${prefix}`, cylinderGeo(0.07, 0.05, 0.44, 6), horseCoat, {
-      position: [0, -0.22, 0],
-      parent: upper
-    });
+    // Shoulder, elbow and forearm taper continuously to the knee joint.
+    createPart(`Shoulder_F${prefix}`, contour('y', [
+      [-0.46,0,0.039,0.043],[-0.37,-0.01,0.044,0.057],
+      [-0.23,-0.03,0.056,0.075],[-0.10,-0.024,0.073,0.102],
+      [0.01,-0.022,0.073,0.114,-side*0.009],
+      [0.13,-0.042,0.036,0.068,-side*0.038],[0.18,-0.04,0.012,0.026,-side*0.047]
+    ],10), horseCoat, {parent:upper});
 
     const lower = createPivot(`Leg_F${prefix}_Lower`, [0, -0.44, 0], upper);
 
-    // Knee joint
-    createPart(`Knee_F${prefix}`, cylinderGeo(0.052, 0.045, 0.08, 6), horseCoat, {
-      position: [0, 0, 0.01],
-      parent: lower
-    });
-    // Cannon bone
-    createPart(`Cannon_F${prefix}`, cylinderGeo(0.042, 0.036, 0.34, 6), horseCoat, {
-      position: [0, -0.19, 0],
-      parent: lower
-    });
+    createPart(`Knee_F${prefix}`, sphereGeo(0.051,10,6), horseCoat, {
+      position:[0,-0.005,0.002],scale:[0.95,1.14,1.04],parent:lower});
+    createPart(`Cannon_F${prefix}`, contour('y', [
+      [-0.405,0,0.029,0.032],[-0.355,0,0.034,0.035],
+      [-0.23,-0.004,0.026,0.029],[-0.075,-0.002,0.03,0.034],
+      [-0.01,0,0.036,0.04]
+    ],8), horseCoat, {parent:lower});
 
     const hoof = createPivot(`Leg_F${prefix}_Hoof`, [0, -0.42, 0], lower);
 
-    // Fetlock & pastern
-    createPart(`Fetlock_F${prefix}`, cylinderGeo(0.040, 0.045, 0.06, 6), horseCoat, {
-      position: [0, 0.02, 0.01],
-      parent: hoof
-    });
-    // Solid dark hoof: height = 0.14, base sits exactly on ground Y = 0.00
-    createPart(`Hoof_F${prefix}`, cylinderGeo(0.052, 0.070, 0.14, 8), darkDetails, {
-      position: [0, -0.07, 0.015],
-      parent: hoof
-    });
+    createPart(`Fetlock_F${prefix}`, contour('y', [
+      [-0.035,0.012,0.035,0.043],[0.012,0.008,0.039,0.048],
+      [0.063,-0.005,0.03,0.033]
+    ],8), horseCoat, {parent:hoof});
+    createPart(`Hoof_F${prefix}`, contour('y', [
+      [-0.14,0.024,0.065,0.075],[-0.118,0.024,0.065,0.077],
+      [-0.026,0.005,0.045,0.052],[-0.005,0,0.035,0.038]
+    ],10), darkDetails, {parent:hoof});
   }
+
 
   function buildHindLeg(prefix, side) {
     const x = side * 0.16;
     const upper = createPivot(`Leg_B${prefix}_Upper`, [x, 0.08, -0.38], body);
 
-    // Muscular haunch / thigh / gaskin
-    createPart(`Thigh_B${prefix}`, cylinderGeo(0.10, 0.065, 0.45, 6), horseCoat, {
-      position: [0, -0.225, -0.04],
-      rotation: [12, 0, 0],
-      parent: upper
-    });
+    // Forward stifle bulge flows back into a slender hock.
+    createPart(`Thigh_B${prefix}`, contour('y', [
+      [-0.478,-0.08,0.038,0.043],[-0.365,-0.064,0.048,0.062],
+      [-0.24,0.009,0.062,0.093],[-0.13,0.049,0.08,0.122],
+      [0.005,0.004,0.086,0.15],[0.13,-0.038,0.059,0.103],
+      [0.20,-0.04,0.026,0.046]
+    ],12), horseCoat, {parent:upper});
 
     const lower = createPivot(`Leg_B${prefix}_Lower`, [0, -0.45, -0.08], upper);
 
-    // Hock joint (angled backward)
-    createPart(`Hock_B${prefix}`, boxGeo(0.08, 0.10, 0.12), horseCoat, {
-      position: [0, 0, -0.02],
-      parent: lower
-    });
-    // Hind cannon bone
-    createPart(`Cannon_B${prefix}`, cylinderGeo(0.044, 0.038, 0.34, 6), horseCoat, {
-      position: [0, -0.19, 0.03],
-      rotation: [-8, 0, 0],
-      parent: lower
-    });
+    createPart(`Hock_B${prefix}`, sphereGeo(0.051,10,6), horseCoat, {
+      position:[0,0,-0.018],scale:[0.85,1.25,1.18],parent:lower});
+    createPart(`Cannon_B${prefix}`, contour('y', [
+      [-0.414,0.06,0.027,0.031],[-0.35,0.047,0.033,0.034],
+      [-0.23,0.029,0.025,0.029],[-0.08,0.004,0.03,0.036],
+      [0,-0.007,0.038,0.043]
+    ],8), horseCoat, {parent:lower});
 
     const hoof = createPivot(`Leg_B${prefix}_Hoof`, [0, -0.42, 0.06], lower);
 
-    // Fetlock & pastern
-    createPart(`Fetlock_B${prefix}`, cylinderGeo(0.042, 0.046, 0.06, 6), horseCoat, {
-      position: [0, 0.02, 0],
-      parent: hoof
-    });
-    // Solid dark hoof: base sits exactly on ground Y = 0.00
-    createPart(`Hoof_B${prefix}`, cylinderGeo(0.052, 0.070, 0.14, 8), darkDetails, {
-      position: [0, -0.07, 0.005],
-      parent: hoof
-    });
+    createPart(`Fetlock_B${prefix}`, contour('y', [
+      [-0.035,0.009,0.035,0.042],[0.015,0.003,0.038,0.046],
+      [0.065,-0.011,0.029,0.033]
+    ],8), horseCoat, {parent:hoof});
+    createPart(`Hoof_B${prefix}`, contour('y', [
+      [-0.16,0.021,0.064,0.073],[-0.137,0.021,0.064,0.075],
+      [-0.025,0.003,0.044,0.051],[-0.003,0,0.035,0.038]
+    ],10), darkDetails, {parent:hoof});
   }
 
   // Front legs: Left (-X) and Right (+X)

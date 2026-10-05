@@ -105,6 +105,16 @@ Weak anatomical cues can look reversed without a left/right frame error. Refine 
 shape while preserving a correct wrist pivot and attachment frame, then check hand
 clearance through the relevant motion and against the complete carried tool.
 
+For a shield or other broad carried plate, define the intended support pose as
+well as its mounting frame: which way the plate faces, where the grip lies, and
+how the forearm runs along the inner surface. Solve the elbow within a plausible
+reachable pose, keeping it clear of both plate and torso. A clearance fix can
+still pull the elbow into the body or turn the plate away from its intended
+direction. Inspect rear and side views through carry, guard and recovery, using
+the actual arm and plate surfaces rather than only their centres or boxes.
+Keep the requested pose and dimensions in the asset brief; preserve unrelated
+geometry, materials and clip channels when refining its support or grip.
+
 When reducing draw calls, consolidate compatible geometry within the same rigid
 motion parent. Give independently moving groups real, named `Joint_*` pivots and
 put their rigid geometry beneath them. Preserve attachment markers and consumer

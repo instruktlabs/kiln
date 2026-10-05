@@ -7,7 +7,7 @@ import { open } from 'node:fs/promises';
  */
 
 /** A page with a 3D view of one GLB: a reviewed asset page, or the page of one earlier example. */
-export const isAssetPageRoute = (route) => (/^\/gallery\/[^/]+\/$/.test(route) && !['/gallery/archive/', '/gallery/foundry-floor/'].includes(route)) || /^\/gallery\/(?:archive|foundry-floor)\/[^/]+\/$/.test(route);
+export const isAssetPageRoute = (route) => (/^\/gallery\/[^/]+\/$/.test(route) && !['/gallery/archive/', '/gallery/foundry-floor/'].includes(route)) || /^\/gallery\/(?:archive|foundry-floor|troy)\/[^/]+\/$/.test(route);
 
 /** The claims about the file: glTF 2.0, nothing required of the engine beyond the core, and the core's PBR model. */
 export function factsOf(document, container) {
