@@ -1,5 +1,5 @@
 import { test, expect } from 'bun:test';
-import { mkdtemp, mkdir, readFile, writeFile, rm } from 'node:fs/promises';
+import { mkdtemp, mkdir, readFile, writeFile, rm, readdir } from 'node:fs/promises';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
 import { zipSync } from 'fflate';
@@ -46,4 +46,19 @@ test('Troy stages only sealed public files and rejects a changed archive before 
 
 test('asset-free Troy staging does not read an archive or write files', async () => {
   expect(await stageTroy({ site: '/fixture-not-created', enabled: false })).toEqual({ skipped: true });
+});
+
+test('adopting a new sealed release preserves the previous generated output outside public', async () => {
+  const root=await mkdtemp(join(tmpdir(),'troy-restage-'));
+  try {
+    const site=join(root,'site'),mirror=join(root,'mirror');await mkdir(join(mirror,'packs'),{recursive:true});
+    for(const release of ['troy-01','troy-02']) {
+      const body=Buffer.from(release),archive=zipSync({'web/index.html':body,'delivery.json':Buffer.from(JSON.stringify({release,files:{'web/index.html':{bytes:body.length,sha256:hashBytes(body)}}}))});
+      const record={release,path:`packs/${release}.zip`,bytes:archive.length,sha256:hashBytes(archive)};await writeFile(join(mirror,record.path),archive);await stageTroy({site,mirror,record,enabled:true});
+    }
+    expect(await readdir(join(site,'public/scene-packs/troy'))).toEqual(['troy-02']);
+    const archived=await readdir(join(site,'.cache/troy/staged-history'));
+    expect(archived).toHaveLength(1);
+    expect(await readFile(join(site,'.cache/troy/staged-history',archived[0],'web/index.html'),'utf8')).toBe('troy-01');
+  } finally {await rm(root,{recursive:true,force:true});}
 });

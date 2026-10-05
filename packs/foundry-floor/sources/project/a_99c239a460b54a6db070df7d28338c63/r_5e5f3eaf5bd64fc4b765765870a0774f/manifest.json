@@ -1,0 +1,377 @@
+{
+  "version": "kiln.asset.v1",
+  "assetId": "a_99c239a460b54a6db070df7d28338c63",
+  "revisionId": "r_5e5f3eaf5bd64fc4b765765870a0774f",
+  "name": "s1-head-W",
+  "tags": [
+    "foundry-floor",
+    "s1",
+    "head",
+    "hand-W",
+    "full"
+  ],
+  "createdAt": "2026-09-29T17:59:50.705Z",
+  "description": "Glazed front bar (X -945..-480) with roof rising 46->70 across Z, warped taper roof to 46 at the open seam X=0, fins every 12 m, corner entrance portal 40x12, atrium void with parapets, two-level slab stack. Program constants hand='W', far=false.",
+  "brief": "Foundry Floor S1 head half, hand W, full build (briefs/s1-head-half.md, briefs/structures-contract.md).",
+  "attribution": {
+    "model": "claude-opus-5-5",
+    "harness": "claude-code"
+  },
+  "editable": true,
+  "files": {
+    "asset.glb": {
+      "sha256": "sha256:ec6943253f70c6de4beca917c47dcb821d8f4d87743745e629ca5d59887150e8",
+      "bytes": 183212
+    },
+    "source.kiln.js": {
+      "sha256": "sha256:8330d594ccf3df5004764381499cf4b3e28bde3b4d30a756b2b187075552b953",
+      "bytes": 21738
+    },
+    "preview.png": {
+      "sha256": "sha256:535d1c0b10e1cfd88ffc40ea1e4dce684c2f549c4fb369a16c4a10f033c5e63a",
+      "bytes": 16049
+    }
+  },
+  "build": {
+    "engine": "sha256:b5074a0cd52192a210c48f2fb898c24740b0fccdec5a71dc7042eda0ef87f154",
+    "options": {
+      "gltfExporter": "legacy",
+      "optimize": "off",
+      "instance": "auto",
+      "geometryPolicy": "warn",
+      "qaMode": "enforce",
+      "evaluatorMode": "subprocess",
+      "requirements": {
+        "kind": "kiln.requirements-context.v1",
+        "requirements": {
+          "kind": "kiln.asset-requirements",
+          "schemaVersion": 1,
+          "labels": [],
+          "frame": {
+            "units": "m",
+            "forward": "+X",
+            "up": "+Y",
+            "right": "+Z",
+            "groundY": 0
+          },
+          "requirements": {}
+        },
+        "policyHash": "sha256:9efcec929bf8a510c7dd0e18b687381e3824ff3d26cc20307f601d17535e5f34",
+        "adviceHash": "sha256:ca1f59b45e82e712e06149909000e2bc37b8cf159af70e32847088cecf153268"
+      }
+    },
+    "warnings": [],
+    "integration": {
+      "schemaVersion": "kiln.integration-manifest.v1",
+      "analyzerVersion": 1,
+      "artifactSha256": "ec6943253f70c6de4beca917c47dcb821d8f4d87743745e629ca5d59887150e8",
+      "units": "m",
+      "axes": {
+        "forward": "+X",
+        "up": "+Y",
+        "right": "+Z"
+      },
+      "bounds": {
+        "min": [
+          -945.5999755859375,
+          0,
+          -532.2999877929688
+        ],
+        "max": [
+          0,
+          71.19999694824219,
+          190.3000030517578
+        ],
+        "size": [
+          945.5999755859375,
+          71.19999694824219,
+          722.5999908447266
+        ],
+        "center": [
+          -472.79998779296875,
+          35.599998474121094,
+          -170.99999237060547
+        ]
+      },
+      "pivot": {
+        "convention": "author-origin",
+        "position": [
+          0,
+          0,
+          0
+        ]
+      },
+      "ground": {
+        "groundY": 0,
+        "contactTolerance": 0.02,
+        "minY": 0,
+        "offsetToGround": 0,
+        "grounded": true
+      },
+      "defaultScene": {
+        "index": 0,
+        "name": "s1-head-W"
+      },
+      "requestedRole": "building",
+      "renderMetrics": {
+        "triangles": 4707,
+        "drawCalls": 25,
+        "uniqueGeometries": 25,
+        "uniqueMaterials": 8,
+        "textureCount": 0,
+        "transparentMaterials": 0,
+        "skinned": false
+      },
+      "structuralQa": {
+        "hasDefaultScene": true,
+        "finiteBounds": true,
+        "validatorErrors": 0,
+        "validatorWarnings": 0
+      },
+      "visualQa": "not_assessed"
+    },
+    "qa": {
+      "kind": "kiln.asset-qa-report",
+      "schemaVersion": 2,
+      "qaProfile": "asset.requirements.v1",
+      "policyHash": "sha256:9efcec929bf8a510c7dd0e18b687381e3824ff3d26cc20307f601d17535e5f34",
+      "adviceHash": "sha256:ca1f59b45e82e712e06149909000e2bc37b8cf159af70e32847088cecf153268",
+      "acceptance": "accepted",
+      "disposition": "pass",
+      "dimensions": {
+        "exportIntegrity": {
+          "status": "pass",
+          "findings": [],
+          "metrics": {
+            "gltfErrors": 0,
+            "gltfWarnings": 0
+          }
+        },
+        "requirementReadiness": {
+          "status": "pass",
+          "findings": []
+        },
+        "promptAlignment": {
+          "status": "notEvaluated",
+          "findings": []
+        },
+        "visualQuality": {
+          "status": "notEvaluated",
+          "findings": [
+            {
+              "code": "GEO_PART_SELF_INTERSECTION_TRUNCATED",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "Only 0 of 89 overlapping part pairs were checked (analysis budget). Parts beyond that were not examined."
+            },
+            {
+              "code": "GEO_PART_SELF_INTERSECTION_UNMEASURED",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "22 part-volume measurements were unavailable: \"roofBar\": a valid closed solid could not be measured (Not manifold); \"roofTaper\": a valid closed solid could not be measured (Not manifold); \"frontGlazing\": a valid closed solid could not be measured (Not manifold); \"tipWall\": a valid closed solid could not be measured (Not manifold); \"taperWall\": a valid closed solid could not be measured (Not manifold); \"splitWall\": a valid closed solid could not be measured (Not manifold); \"frontFins\": a valid closed solid could not be measured (Not manifold); \"roofEdge\": a valid closed solid could not be measured (Not manifold); \"plinth\": a valid closed solid could not be measured (Not manifold); \"levelReveals\": a valid closed solid could not be measured (Not manifold); \"entrancePortal\": a valid closed solid could not be measured (Not manifold); \"atriumParapets\": a valid closed solid could not be measured (Not manifold); \"floorSlab\": a valid closed solid could not be measured (Not manifold); \"waffleSlabL1\": a valid closed solid could not be measured (Not manifold); \"cleanFloorL1\": a valid closed solid could not be measured (Not manifold); \"ffuCeilingL1\": a valid closed solid could not be measured (Not manifold); \"slabL2\": a valid closed solid could not be measured (Not manifold); \"waffleSlabL2\": a valid closed solid could not be measured (Not manifold); \"cleanFloorL2\": a valid closed solid could not be measured (Not manifold); \"ffuCeilingL2\": a valid closed solid could not be measured (Not manifold); \"topSlab\": a valid closed solid could not be measured (Not manifold); \"atriumFloor\": a valid closed solid could not be measured (Not manifold). These parts are not certified clear."
+            }
+          ],
+          "metrics": {
+            "partVolumeCoverage": "partial",
+            "partVolumeScope": "Visible static closed mesh pairs; excludes intra-mesh intersections, motion, open surfaces and usable passage space. Positive overlap may be intentional.",
+            "partVolumeEligibleParts": 22,
+            "partVolumeCandidatePairs": 89,
+            "partVolumeCandidatesLowerBound": false,
+            "partVolumePairsTested": 0,
+            "partVolumeSkipped": 22
+          }
+        },
+        "runtimeCost": {
+          "status": "pass",
+          "findings": [],
+          "metrics": {
+            "instanceabilityGrade": "D",
+            "instanceabilitySummary": "D — 8 mat / 25 geo / 25 draws, opaque",
+            "uniqueGeometries": 25,
+            "uniqueMaterials": 8,
+            "meshNodes": 22,
+            "meshInstances": 22,
+            "drawCalls": 25,
+            "textureCount": 0,
+            "skinned": false,
+            "transparentMaterials": 0,
+            "triangles": 4707,
+            "materialCount": 8,
+            "opaqueMaterials": 8,
+            "maskedMaterials": 0,
+            "blendedMaterials": 0,
+            "singleSidedMaterials": 8,
+            "doubleSidedMaterials": 0,
+            "texturedMaterials": 0,
+            "materialExtensionCount": 0,
+            "materialExtensionsUsed": "",
+            "imageCount": 0,
+            "maxImageDimension": 0,
+            "decodedImageBytesRgba8": 0,
+            "estimatedGpuBytesWithMipmaps": 0,
+            "blendedSurfaceAreaRatio": 0
+          }
+        }
+      },
+      "rules": [
+        {
+          "id": "UNIVERSAL_SCENE_CONTENT_RULE",
+          "mode": "enforce",
+          "status": "evaluated"
+        },
+        {
+          "id": "UNIVERSAL_FINITE_DATA_RULE",
+          "mode": "enforce",
+          "status": "evaluated"
+        },
+        {
+          "id": "UNIVERSAL_INDEX_RULE",
+          "mode": "enforce",
+          "status": "evaluated"
+        },
+        {
+          "id": "UNIVERSAL_ZERO_SCALE_RULE",
+          "mode": "enforce",
+          "status": "evaluated"
+        },
+        {
+          "id": "UNIVERSAL_NODE_NAME_RULE",
+          "mode": "enforce",
+          "status": "evaluated"
+        },
+        {
+          "id": "UNIVERSAL_ANIMATION_TARGET_RULE",
+          "mode": "enforce",
+          "status": "evaluated"
+        },
+        {
+          "id": "MATERIAL_PORTABLE_PBR_RULE",
+          "mode": "enforce",
+          "status": "evaluated"
+        },
+        {
+          "id": "ARCHITECTURE_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        },
+        {
+          "id": "ARCHITECTURE_ADVISORY_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "CHARACTER_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        },
+        {
+          "id": "CHARACTER_ADVISORY_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "VEHICLE_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        },
+        {
+          "id": "VEHICLE_ADVISORY_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "VEHICLE_W6_ADVISORY_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "VEGETATION_CONTACT_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        },
+        {
+          "id": "VEGETATION_ADVISORY_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "PROP_CAPABILITY_EXACT_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        },
+        {
+          "id": "PROP_ADVISORY_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "ENVIRONMENT_EXACT_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        },
+        {
+          "id": "ENVIRONMENT_ADVISORY_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "VFX_EXACT_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        },
+        {
+          "id": "VFX_ADVISORY_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "MODULAR_JOIN_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        },
+        {
+          "id": "ASSET_SCOPE_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "GEO_PART_SELF_INTERSECTION",
+          "mode": "observe",
+          "status": "notEvaluated"
+        },
+        {
+          "id": "GEO_PART_CONNECTIVITY",
+          "mode": "observe",
+          "status": "evaluated"
+        },
+        {
+          "id": "REF_COMPARISON",
+          "mode": "observe",
+          "status": "notEvaluated",
+          "reason": "Neutral measurement adapter remains to be qualified; no category fallback is used."
+        }
+      ],
+      "unevaluatedRequirements": []
+    },
+    "dependencies": [],
+    "rebuild": "engine-required"
+  },
+  "preview": {
+    "fidelity": {
+      "version": "kiln.view-fidelity.v1",
+      "requested": "full-preferred",
+      "delivered": "full-material",
+      "materialFaithful": true,
+      "exactArtifact": false,
+      "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1074",
+      "inputGlbSha256": "sha256:ec6943253f70c6de4beca917c47dcb821d8f4d87743745e629ca5d59887150e8",
+      "degraded": false,
+      "reasonCodes": [
+        "IN_LOOP_BUILD_NOT_PERSISTED"
+      ]
+    },
+    "backdrop": "neutral"
+  }
+}

@@ -1,0 +1,226 @@
+{
+  "schemaVersion": 1,
+  "materialId": "farm-woven-fabric",
+  "revisionId": "sha256:5c4fcccb2832191d7bb6ee06900a0209ac9ae169b6bc3bf9a60a629fe575f86c",
+  "name": "Neutral woven fabric",
+  "tags": [
+    "fabric",
+    "procedural"
+  ],
+  "tileable": true,
+  "physicalSizeMeters": {
+    "width": 0.5,
+    "height": 0.5
+  },
+  "parameters": {
+    "roughness": 1,
+    "metalness": 1,
+    "emissiveIntensity": 1,
+    "alphaMode": "opaque",
+    "alphaCutoff": 0.5,
+    "doubleSided": false
+  },
+  "sources": [
+    {
+      "id": "preset",
+      "kind": "procedural",
+      "provider": "Kiln material presets v1",
+      "creator": "Kiln Commons Farm pilot",
+      "assetId": "woven-fabric",
+      "license": {
+        "spdx": "CC0-1.0",
+        "url": "https://creativecommons.org/publicdomain/zero/1.0/",
+        "attribution": "Procedurally generated with Kiln; recipe and seed retained."
+      },
+      "originalFiles": []
+    }
+  ],
+  "maps": [
+    {
+      "slot": "baseColor",
+      "file": "baseColor.png",
+      "sha256": "sha256:bd6c9886599ea6217e41722e1464cb8b66d2bced69032e342198f7fcaf5411e3",
+      "bytes": 24359,
+      "width": 256,
+      "height": 256,
+      "usage": "albedo",
+      "colorSpace": "srgb",
+      "sourceId": "preset",
+      "transforms": [
+        {
+          "operation": "preset",
+          "tool": "kiln.material-presets",
+          "version": "1",
+          "parameters": {
+            "presetId": "woven-fabric",
+            "seed": 263
+          }
+        }
+      ],
+      "procedural": {
+        "compiler": "kiln.procedural-texture.v2",
+        "spec": {
+          "schemaVersion": 2,
+          "size": 256,
+          "usage": "albedo",
+          "layers": [
+            {
+              "op": "noise",
+              "colorA": 10787463,
+              "colorB": 12498079,
+              "scale": 8,
+              "octaves": 3,
+              "seed": 263,
+              "blend": "normal",
+              "opacity": 1
+            },
+            {
+              "op": "stripes",
+              "colorA": 9866361,
+              "colorB": 13682609,
+              "count": 32,
+              "angleDeg": 0,
+              "blend": "normal",
+              "opacity": 0.3
+            },
+            {
+              "op": "stripes",
+              "colorA": 9866361,
+              "colorB": 13682609,
+              "count": 32,
+              "angleDeg": 90,
+              "blend": "normal",
+              "opacity": 0.3
+            }
+          ]
+        },
+        "recipeHash": "sha256:9c8d963cabebd08aae259ddbdcd26fa1156071e45152682be8761557f5717fb9",
+        "pixelHash": "sha256:9941bf3a608564fe4d3a02ad8727d6cb116f4f56a904fd57a77b807e12d32833",
+        "encoder": {
+          "name": "sharp",
+          "version": "0.35.4"
+        }
+      }
+    },
+    {
+      "slot": "normal",
+      "file": "normal.png",
+      "sha256": "sha256:82663e741cb7acb4e05047d4dcbf1cbd9ca672628f7314aa506bdb54034cb74c",
+      "bytes": 20660,
+      "width": 256,
+      "height": 256,
+      "usage": "normal",
+      "colorSpace": "linear",
+      "normalConvention": "opengl",
+      "sourceId": "preset",
+      "transforms": [
+        {
+          "operation": "preset",
+          "tool": "kiln.material-presets",
+          "version": "1",
+          "parameters": {
+            "presetId": "woven-fabric",
+            "seed": 263
+          }
+        }
+      ],
+      "procedural": {
+        "compiler": "kiln.procedural-texture.v2",
+        "spec": {
+          "schemaVersion": 2,
+          "size": 256,
+          "usage": "normal",
+          "layers": [
+            {
+              "op": "noise",
+              "colorA": 6316128,
+              "colorB": 10066329,
+              "scale": 8,
+              "octaves": 3,
+              "seed": 263,
+              "blend": "normal",
+              "opacity": 1
+            },
+            {
+              "op": "stripes",
+              "colorA": 3355443,
+              "colorB": 13421772,
+              "count": 32,
+              "angleDeg": 0,
+              "blend": "normal",
+              "opacity": 0.4
+            },
+            {
+              "op": "stripes",
+              "colorA": 3355443,
+              "colorB": 13421772,
+              "count": 32,
+              "angleDeg": 90,
+              "blend": "normal",
+              "opacity": 0.4
+            }
+          ]
+        },
+        "derive": {
+          "kind": "normal-from-height",
+          "strength": 1
+        },
+        "recipeHash": "sha256:2cd421d4b7e7269a8ce086bddb6f98428fa89ccf5a28867cb9882f8060a10db2",
+        "pixelHash": "sha256:96328c27cd3b5967efd729aae7fb75fa747ad75d5b51afa8f54e53ec07373478",
+        "encoder": {
+          "name": "sharp",
+          "version": "0.35.4"
+        }
+      }
+    },
+    {
+      "slot": "metallicRoughness",
+      "file": "metallicRoughness.png",
+      "sha256": "sha256:84bd677c6a22b0b4fcba039799d3d698a165253f442f4d2718eb836332991da4",
+      "bytes": 20683,
+      "width": 256,
+      "height": 256,
+      "usage": "metallicRoughness",
+      "colorSpace": "linear",
+      "channelPacking": "r-occlusion-g-roughness-b-metallic",
+      "sourceId": "preset",
+      "transforms": [
+        {
+          "operation": "preset",
+          "tool": "kiln.material-presets",
+          "version": "1",
+          "parameters": {
+            "presetId": "woven-fabric",
+            "seed": 263
+          }
+        }
+      ],
+      "procedural": {
+        "compiler": "kiln.procedural-texture.v2",
+        "spec": {
+          "schemaVersion": 2,
+          "size": 256,
+          "usage": "metallicRoughness",
+          "layers": [
+            {
+              "op": "noise",
+              "colorA": 16757760,
+              "colorB": 16771840,
+              "scale": 8,
+              "octaves": 3,
+              "seed": 263,
+              "blend": "normal",
+              "opacity": 1
+            }
+          ]
+        },
+        "recipeHash": "sha256:a7cf86f7025ed091682770af6fecf1371473587c8cfdb9a76516aa7fe0aaa943",
+        "pixelHash": "sha256:1cba5ae27bce4bf915554a87d472d9c2b32335d997e1aed5d4119b5c292d74d7",
+        "encoder": {
+          "name": "sharp",
+          "version": "0.35.4"
+        }
+      }
+    }
+  ]
+}

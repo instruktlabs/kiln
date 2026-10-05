@@ -376,8 +376,9 @@ const HASHED_NAME = /[.-][A-Za-z0-9_-]{8}\.(?:js|css|woff2|svg|png|jpg|webp|avif
  * carry. HTML revalidates on every visit; only files with a content hash in their name are cached as immutable, and
  * every file under `/_astro/` is.
  */
-export function headersErrors({ text, inlineScripts = [], files = [] }) {
+export function headersErrors({ text, inlineScripts = [], files = [], sealedFiles = [] }) {
   const errors = [];
+  const sealed = new Set(sealedFiles);
   let rules;
   try { rules = parseHeaderRules(text); } catch (error) { return [error.message]; }
   const page = headersFor(rules, '/');
@@ -404,7 +405,7 @@ export function headersErrors({ text, inlineScripts = [], files = [] }) {
     const cacheControl = headersFor(rules, `/${file}`)['cache-control'] ?? '';
     if ((cacheControl.match(/max-age=/g) ?? []).length > 1) errors.push(`/${file}: Cache-Control is set twice (${cacheControl})`);
     const immutable = /immutable/.test(cacheControl);
-    if (immutable && !HASHED_NAME.test(file)) errors.push(`/${file} is cached as immutable but its name carries no content hash`);
+    if (immutable && !HASHED_NAME.test(file) && !sealed.has(file)) errors.push(`/${file} is cached as immutable but its name carries no content hash`);
     if (!immutable && file.startsWith('_astro/')) errors.push(`/${file} is a hashed build file but is not cached as immutable`);
   }
   return errors;

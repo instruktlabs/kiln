@@ -1,5 +1,6 @@
-import { mkdir, readFile, writeFile } from 'node:fs/promises';
-import { dirname, resolve } from 'node:path';
+import { mkdir, readFile, writeFile, readdir, rename } from 'node:fs/promises';
+import { dirname, resolve, sep } from 'node:path';
+import { randomUUID } from 'node:crypto';
 import { pathToFileURL } from 'node:url';
 import { assetPath, fetchPinnedFile, verifyArchive } from './mirror-core.mjs';
 
@@ -14,6 +15,16 @@ export async function stageTroy({ site = resolve(import.meta.dirname, '..'), rec
   if (!files['web/index.html']) throw new Error('Troy browser entry is missing');
   const base = `/scene-packs/troy/${record.release}/`;
   const target = resolve(site, 'public', base.slice(1));
+  const parent=dirname(target),history=resolve(site,'.cache/troy/staged-history');
+  await mkdir(parent,{recursive:true});
+  for(const entry of await readdir(parent,{withFileTypes:true})) {
+    if(entry.name===record.release)continue;
+    if(entry.isSymbolicLink()||!entry.isDirectory()||!/^[a-z0-9-]+$/.test(entry.name))throw new Error('Unexpected Troy staging entry');
+    const prior=resolve(parent,entry.name),preserved=resolve(history,entry.name+'-'+randomUUID());
+    if(!prior.startsWith(parent+sep)||!preserved.startsWith(history+sep))throw new Error('Troy staging path escaped its managed directory');
+    await mkdir(history,{recursive:true});
+    await rename(prior,preserved);
+  }
   for (const [path, bytes] of Object.entries(files)) {
     assetPath(path);
     if (path.endsWith('/')) continue;

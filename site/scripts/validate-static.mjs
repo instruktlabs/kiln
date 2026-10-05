@@ -5,6 +5,8 @@ import { HtmlValidate } from 'html-validate';
 import sharp from 'sharp';
 import { engineNoteErrors, isAssetPageRoute, readGlbFacts } from './engine-note.mjs';
 import { ARCHIVE_INDEX_ROUTE, archiveIndexingErrors, copyErrors, DESCRIPTION_WARNING_LENGTH, discoveryErrors, embeddedDocumentErrors, foundryFloorErrors, headersErrors, headersFor, inspectHtml, isArchiveItemRoute, isEmbeddedDocument, ORIGIN, parseHeaderRules, resolveInternalLink, retiredNameErrors, routeForFile, scriptHashSource, socialMetadataErrors } from './static-validation-core.mjs';
+import {sealedTroyCache} from './sealed-cache.mjs';
+import {viewerModelInput} from './viewer-model-input.mjs';
 import { glbJsonText } from './private-data.mjs';
 
 const site = resolve(dirname(fileURLToPath(import.meta.url)), '..');
@@ -170,10 +172,11 @@ const foundry = foundryFloorErrors({ pages, sitemapUrls, placement, hasCampus: f
 for (const error of foundry) add(error.page, 'foundry-floor', error.message);
 // The engine note under each 3D view is present and true of the GLB that view loads.
 const glbFacts = new Map();
+const modelPins=JSON.parse(await readFile(resolve(site,'src/data/mirror-manifest.json'),'utf8')).files;
 for (const [route, page] of pages) {
   if (!isAssetPageRoute(route) || page.viewerModels.length === 0) continue;
   const model = page.viewerModels[0].split('?')[0];
-  glbFacts.set(route, await readGlbFacts(resolve(root, model.replace(/^\//, ''))).catch((error) => ({ error: error.message })));
+  glbFacts.set(route, await viewerModelInput(model,{dist:root,mirror:resolve(site,'.cache/commons/mirror'),records:modelPins}).then(readGlbFacts).catch((error) => ({ error: error.message })));
 }
 const engine = engineNoteErrors({ pages, facts: glbFacts });
 for (const error of engine) add(error.page, 'engine-note', error.message);
@@ -204,7 +207,9 @@ const inlineScripts = [...new Set([...pages.values()].flatMap((page) => page.inl
 const distFiles = files.map((file) => relative(root, file).replaceAll('\\', '/'));
 let headersText = '';
 try { headersText = await readFile(resolve(root, '_headers'), 'utf8'); } catch { add('/_headers', 'headers', 'dist/_headers is missing (site/public/_headers)'); }
-const headerProblems = headersText ? headersErrors({ text: headersText, inlineScripts, files: distFiles }) : [];
+let sealedFiles=[];
+try {sealedFiles=(await sealedTroyCache(root)).files;} catch(error) {add('/scene-packs/troy/','headers',error.message);}
+const headerProblems = headersText ? headersErrors({ text: headersText, inlineScripts, files: distFiles, sealedFiles }) : [];
 for (const message of headerProblems) add('/_headers', 'headers', message);
 const headerRules = headersText ? parseHeaderRules(headersText) : [];
 const immutableFiles = distFiles.filter((file) => /immutable/.test(headersFor(headerRules, `/${file}`)['cache-control'] ?? ''));

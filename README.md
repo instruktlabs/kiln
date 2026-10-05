@@ -15,7 +15,8 @@ the model; Kiln does not require a separate model API key for its tools.
 
 Walk the [Farm](https://kilnstudio.tools/scenes/farm/), drive across
 [Golden Gate](https://kilnstudio.tools/scenes/golden-gate/), or explore the
-[Foundry Floor](https://kilnstudio.tools/scenes/foundry-floor/).
+[Foundry Floor](https://kilnstudio.tools/scenes/foundry-floor/), or fight as Achilles
+or Hector in [Troy](https://kilnstudio.tools/scenes/troy/).
 The scenes put Kiln assets to work with animation, levels of detail and interactive controls.
 
 | Farm | Golden Gate |
@@ -43,8 +44,11 @@ Six reusable vehicles, shown with the gallery's live body-paint controls:
 [Vehicles pack](https://kilnstudio.tools/packs/vehicles/) ·
 [Scenes](https://kilnstudio.tools/scenes/)
 
-Downloads include GLBs and editable sources where listed. The vehicle viewer includes
-live paint colours; asset and pack pages record the exact revision, licence and review status.
+All five packs offer **Runtime assets** for applications and **Editable assets** with
+authoring sources, materials and the available revisions. The vehicle viewer includes
+live paint colours. [Pack source](packs/README.md) and the maintained
+[Farm, Bridge, Foundry and Troy scene code](scenes/README.md) are in this repository.
+Large generated models and archives are downloaded explicitly from Cloudflare.
 The [Blender and Unity guide](https://kilnstudio.tools/docs/engine-handoff/)
 describes the tested import workflows and their limits.
 

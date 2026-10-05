@@ -1,0 +1,175 @@
+{
+  "schemaVersion": 1,
+  "materialId": "farm-straw-golden",
+  "revisionId": "sha256:583eb73450267db85733ef488259788e70e2757cf650d09ef84ea807f41a9279",
+  "name": "Farm compressed golden straw",
+  "tags": [],
+  "tileable": true,
+  "physicalSizeMeters": {
+    "width": 0.5,
+    "height": 1
+  },
+  "parameters": {
+    "baseColor": 16777215,
+    "roughness": 1,
+    "metalness": 0,
+    "emissiveIntensity": 1,
+    "alphaMode": "opaque",
+    "alphaCutoff": 0.5,
+    "doubleSided": false
+  },
+  "sources": [
+    {
+      "id": "procedural",
+      "kind": "procedural",
+      "provider": "Kiln procedural texture v2",
+      "creator": "Kiln Commons Farm",
+      "license": {
+        "spdx": "CC0-1.0",
+        "url": "https://creativecommons.org/publicdomain/zero/1.0/",
+        "attribution": "Original seeded procedural straw by Kiln Commons Farm; seed 92726."
+      },
+      "originalFiles": []
+    }
+  ],
+  "maps": [
+    {
+      "slot": "baseColor",
+      "file": "baseColor.png",
+      "sha256": "sha256:cba1dcdce6f2b09f716d10a3dad6ede1cb70e8deddd8df459ef5240fca582a29",
+      "bytes": 80193,
+      "width": 512,
+      "height": 512,
+      "usage": "albedo",
+      "colorSpace": "srgb",
+      "sourceId": "procedural",
+      "transforms": [],
+      "procedural": {
+        "compiler": "kiln.procedural-texture.v2",
+        "spec": {
+          "schemaVersion": 2,
+          "size": 512,
+          "usage": "albedo",
+          "layers": [
+            {
+              "op": "noise",
+              "colorA": 12555841,
+              "colorB": 14002254,
+              "scale": 12,
+              "octaves": 3,
+              "seed": 92726,
+              "blend": "normal",
+              "opacity": 1
+            },
+            {
+              "op": "stripes",
+              "colorA": 11568439,
+              "colorB": 14793831,
+              "count": 96,
+              "angleDeg": 0,
+              "blend": "normal",
+              "opacity": 0.26
+            }
+          ]
+        },
+        "recipeHash": "sha256:cfcb00e51f2b9d215fb199e620a046e78fcd4a0b7cc6cf581256ee42b448fbf8",
+        "pixelHash": "sha256:91dbdc047319479100c8649c5b79e26b48305cade4eb173e33c2b00334f9e7e3",
+        "encoder": {
+          "name": "sharp",
+          "version": "0.35.4"
+        }
+      }
+    },
+    {
+      "slot": "normal",
+      "file": "normal.png",
+      "sha256": "sha256:7afb010e74cb29b8038956c584dd25dc963c4fd0dfbef9a4730bcc1c6c3f314b",
+      "bytes": 45672,
+      "width": 512,
+      "height": 512,
+      "usage": "normal",
+      "colorSpace": "linear",
+      "normalConvention": "opengl",
+      "sourceId": "procedural",
+      "transforms": [],
+      "procedural": {
+        "compiler": "kiln.procedural-texture.v2",
+        "spec": {
+          "schemaVersion": 2,
+          "size": 512,
+          "usage": "normal",
+          "layers": [
+            {
+              "op": "noise",
+              "colorA": 8026746,
+              "colorB": 8750469,
+              "scale": 24,
+              "octaves": 2,
+              "seed": 92726,
+              "blend": "normal",
+              "opacity": 1
+            },
+            {
+              "op": "stripes",
+              "colorA": 7895160,
+              "colorB": 8947848,
+              "count": 96,
+              "angleDeg": 0,
+              "blend": "normal",
+              "opacity": 0.25
+            }
+          ]
+        },
+        "derive": {
+          "kind": "normal-from-height",
+          "strength": 0.45
+        },
+        "recipeHash": "sha256:6f018c0068c38a88f179ee14612c621da396f9fa6936930fde120042062c5a9a",
+        "pixelHash": "sha256:0c263f8b46a55755a9dd8e41f4aadbae9ec336076e46504827b1788688701c91",
+        "encoder": {
+          "name": "sharp",
+          "version": "0.35.4"
+        }
+      }
+    },
+    {
+      "slot": "metallicRoughness",
+      "file": "metallicRoughness.png",
+      "sha256": "sha256:642c22779d5843f87b4366361a1ed985fe7d58601386ec2fe553fac4c4583d94",
+      "bytes": 10096,
+      "width": 256,
+      "height": 256,
+      "usage": "metallicRoughness",
+      "colorSpace": "linear",
+      "channelPacking": "r-occlusion-g-roughness-b-metallic",
+      "sourceId": "procedural",
+      "transforms": [],
+      "procedural": {
+        "compiler": "kiln.procedural-texture.v2",
+        "spec": {
+          "schemaVersion": 2,
+          "size": 256,
+          "usage": "metallicRoughness",
+          "layers": [
+            {
+              "op": "noise",
+              "colorA": 16767744,
+              "colorB": 16772864,
+              "scale": 8,
+              "octaves": 2,
+              "seed": 92726,
+              "blend": "normal",
+              "opacity": 1
+            }
+          ]
+        },
+        "recipeHash": "sha256:f78ef0feb079ceb20e6e053de7d92b892ef3bb3a26cde6930642cbcbbf09ba41",
+        "pixelHash": "sha256:9ed8d52f68fed78bd07cb606c9cf4b86a7514991889c954e099bdcb1fb9668f0",
+        "encoder": {
+          "name": "sharp",
+          "version": "0.35.4"
+        }
+      }
+    }
+  ]
+}

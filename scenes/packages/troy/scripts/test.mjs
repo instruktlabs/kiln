@@ -1,0 +1,2 @@
+import {readdirSync} from 'node:fs';import {resolve} from 'node:path';import {spawnSync} from 'node:child_process';import {fileURLToPath} from 'node:url';
+const root=fileURLToPath(new URL('../',import.meta.url)),files=readdirSync(resolve(root,'tests')).filter(name=>name.endsWith('.test.mjs')).sort().map(name=>resolve(root,'tests',name)),run=spawnSync(process.execPath,['--test',...files],{cwd:root,stdio:'inherit'});if(run.error)throw run.error;process.exitCode=run.status??1;

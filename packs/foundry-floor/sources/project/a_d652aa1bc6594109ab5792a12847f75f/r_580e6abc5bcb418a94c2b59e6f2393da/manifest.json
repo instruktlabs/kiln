@@ -1,0 +1,666 @@
+{
+  "version": "kiln.asset.v1",
+  "assetId": "a_d652aa1bc6594109ab5792a12847f75f",
+  "revisionId": "r_580e6abc5bcb418a94c2b59e6f2393da",
+  "name": "tree-ornamental",
+  "tags": [],
+  "createdAt": "2026-09-30T16:27:07.531Z",
+  "description": "Three declared LOD tiers. Reviewed neutral material-faithful GPU views plus isolated tiers and distance shots. Intended overlapping closed plant shells; mandated repeated names across tiers.",
+  "brief": "Fixed briefs/campus-vegetation.md",
+  "attribution": {
+    "model": "gpt-6.1-sol",
+    "harness": "codex",
+    "author": "sol-ff-vegetation"
+  },
+  "editable": true,
+  "files": {
+    "asset.glb": {
+      "sha256": "sha256:8a278f31a47ec030c066b96b5643c91cb4895a74a0a2576a2c33fd6616a7d91f",
+      "bytes": 78392
+    },
+    "source.kiln.js": {
+      "sha256": "sha256:87a0219b27ce9254ec4ce5c1854d0bcaa41dcdb55b81547a736aa02edd8bbaf9",
+      "bytes": 4261
+    },
+    "preview.png": {
+      "sha256": "sha256:cb16c585980ddf3ab8b879796f289c067700ea1478686d6477bd8385d1fe1782",
+      "bytes": 33268
+    }
+  },
+  "build": {
+    "engine": "sha256:74f9c4f66f1ba1e2e84f60b45b30c64d8eff9797abe3e5bcd035420b1b79865d",
+    "options": {
+      "gltfExporter": "legacy",
+      "optimize": "off",
+      "instance": "auto",
+      "geometryPolicy": "warn",
+      "qaMode": "enforce",
+      "evaluatorMode": "subprocess",
+      "requirements": {
+        "kind": "kiln.requirements-context.v1",
+        "requirements": {
+          "kind": "kiln.asset-requirements",
+          "schemaVersion": 1,
+          "labels": [],
+          "frame": {
+            "units": "m",
+            "forward": "+X",
+            "up": "+Y",
+            "right": "+Z",
+            "groundY": 0
+          },
+          "requirements": {}
+        },
+        "policyHash": "sha256:9efcec929bf8a510c7dd0e18b687381e3824ff3d26cc20307f601d17535e5f34",
+        "adviceHash": "sha256:ca1f59b45e82e712e06149909000e2bc37b8cf159af70e32847088cecf153268"
+      }
+    },
+    "warnings": [],
+    "integration": {
+      "schemaVersion": "kiln.integration-manifest.v1",
+      "analyzerVersion": 1,
+      "artifactSha256": "8a278f31a47ec030c066b96b5643c91cb4895a74a0a2576a2c33fd6616a7d91f",
+      "units": "m",
+      "axes": {
+        "forward": "+X",
+        "up": "+Y",
+        "right": "+Z"
+      },
+      "bounds": {
+        "min": [
+          -2.5,
+          0,
+          -2.299999952316284
+        ],
+        "max": [
+          2.5,
+          6,
+          2.299999952316284
+        ],
+        "size": [
+          5,
+          6,
+          4.599999904632568
+        ],
+        "center": [
+          0,
+          3,
+          0
+        ]
+      },
+      "pivot": {
+        "convention": "author-origin",
+        "position": [
+          0,
+          0,
+          0
+        ]
+      },
+      "ground": {
+        "groundY": 0,
+        "contactTolerance": 0.02,
+        "minY": 0,
+        "offsetToGround": 0,
+        "grounded": true
+      },
+      "defaultScene": {
+        "index": 0,
+        "name": "tree-ornamental"
+      },
+      "requestedRole": "fill",
+      "renderMetrics": {
+        "triangles": 696,
+        "drawCalls": 4,
+        "uniqueGeometries": 4,
+        "uniqueMaterials": 4,
+        "textureCount": 0,
+        "transparentMaterials": 0,
+        "skinned": false
+      },
+      "levelsOfDetail": [
+        {
+          "path": "/tree-ornamental[0]/tree-ornamental[0]/LOD0[0]",
+          "screenCoverage": [
+            0.006520603202727739,
+            0.0004636873388606392,
+            0
+          ],
+          "levels": [
+            {
+              "level": 0,
+              "name": "LOD0",
+              "path": "/tree-ornamental[0]/tree-ornamental[0]/LOD0[0]",
+              "triangles": 696
+            },
+            {
+              "level": 1,
+              "name": "LOD1",
+              "path": "/tree-ornamental[0]/tree-ornamental[0]/LOD1[0]",
+              "triangles": 244
+            },
+            {
+              "level": 2,
+              "name": "LOD2",
+              "path": "/tree-ornamental[0]/tree-ornamental[0]/LOD2[0]",
+              "triangles": 60
+            }
+          ]
+        }
+      ],
+      "structuralQa": {
+        "hasDefaultScene": true,
+        "finiteBounds": true,
+        "validatorErrors": 0,
+        "validatorWarnings": 0
+      },
+      "visualQa": "not_assessed"
+    },
+    "qa": {
+      "kind": "kiln.asset-qa-report",
+      "schemaVersion": 2,
+      "qaProfile": "asset.requirements.v1",
+      "policyHash": "sha256:9efcec929bf8a510c7dd0e18b687381e3824ff3d26cc20307f601d17535e5f34",
+      "adviceHash": "sha256:ca1f59b45e82e712e06149909000e2bc37b8cf159af70e32847088cecf153268",
+      "acceptance": "accepted",
+      "disposition": "warn",
+      "dimensions": {
+        "exportIntegrity": {
+          "status": "pass",
+          "findings": [],
+          "metrics": {
+            "gltfErrors": 0,
+            "gltfWarnings": 0
+          }
+        },
+        "requirementReadiness": {
+          "status": "warn",
+          "findings": [
+            {
+              "code": "UNIVERSAL_DUPLICATE_NODE_NAME",
+              "disposition": "warn",
+              "dimension": "requirementReadiness",
+              "profile": "universal",
+              "message": "2 scene nodes share the name \"Stems\".",
+              "affected": {
+                "node": "Stems",
+                "nodePath": "tree-ornamental/LOD0/Stems | tree-ornamental/LOD1/Stems"
+              },
+              "measurement": {
+                "name": "duplicateCount",
+                "actual": 2,
+                "expected": 1
+              },
+              "repairText": "Use unique names when nodes must be addressed independently."
+            },
+            {
+              "code": "UNIVERSAL_DUPLICATE_NODE_NAME",
+              "disposition": "warn",
+              "dimension": "requirementReadiness",
+              "profile": "universal",
+              "message": "3 scene nodes share the name \"CrownMid\".",
+              "affected": {
+                "node": "CrownMid",
+                "nodePath": "tree-ornamental/LOD0/CrownMid | tree-ornamental/LOD1/CrownMid | tree-ornamental/LOD2/CrownMid"
+              },
+              "measurement": {
+                "name": "duplicateCount",
+                "actual": 3,
+                "expected": 1
+              },
+              "repairText": "Use unique names when nodes must be addressed independently."
+            },
+            {
+              "code": "UNIVERSAL_DUPLICATE_NODE_NAME",
+              "disposition": "warn",
+              "dimension": "requirementReadiness",
+              "profile": "universal",
+              "message": "2 scene nodes share the name \"CrownLight\".",
+              "affected": {
+                "node": "CrownLight",
+                "nodePath": "tree-ornamental/LOD0/CrownLight | tree-ornamental/LOD1/CrownLight"
+              },
+              "measurement": {
+                "name": "duplicateCount",
+                "actual": 2,
+                "expected": 1
+              },
+              "repairText": "Use unique names when nodes must be addressed independently."
+            },
+            {
+              "code": "UNIVERSAL_DUPLICATE_NODE_NAME",
+              "disposition": "warn",
+              "dimension": "requirementReadiness",
+              "profile": "universal",
+              "message": "2 scene nodes share the name \"CrownDark\".",
+              "affected": {
+                "node": "CrownDark",
+                "nodePath": "tree-ornamental/LOD0/CrownDark | tree-ornamental/LOD1/CrownDark"
+              },
+              "measurement": {
+                "name": "duplicateCount",
+                "actual": 2,
+                "expected": 1
+              },
+              "repairText": "Use unique names when nodes must be addressed independently."
+            }
+          ]
+        },
+        "promptAlignment": {
+          "status": "notEvaluated",
+          "findings": []
+        },
+        "visualQuality": {
+          "status": "pass",
+          "findings": [
+            {
+              "code": "GEO_PART_SELF_INTERSECTION",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "Parts \"CrownMid\" and \"CrownDark\" occupy the same space: they share 11.0 m³, which is 141.9% of the smaller part.",
+              "affected": {
+                "node": "CrownMid"
+              },
+              "measurement": {
+                "name": "intersectionVolumeFraction",
+                "actual": 1.418821181,
+                "expected": 0.001
+              },
+              "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
+            },
+            {
+              "code": "GEO_PART_SELF_INTERSECTION",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "Parts \"CrownMid\" and \"CrownLight\" occupy the same space: they share 28.5 m³, which is 133.1% of the smaller part.",
+              "affected": {
+                "node": "CrownMid"
+              },
+              "measurement": {
+                "name": "intersectionVolumeFraction",
+                "actual": 1.331250251,
+                "expected": 0.001
+              },
+              "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
+            },
+            {
+              "code": "GEO_PART_SELF_INTERSECTION",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "Parts \"CrownMid\" and \"CrownDark\" occupy the same space: they share 3.49 m³, which is 57.0% of the smaller part.",
+              "affected": {
+                "node": "CrownMid"
+              },
+              "measurement": {
+                "name": "intersectionVolumeFraction",
+                "actual": 0.570076111,
+                "expected": 0.001
+              },
+              "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
+            },
+            {
+              "code": "GEO_PART_SELF_INTERSECTION",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "Parts \"CrownMid\" and \"CrownLight\" occupy the same space: they share 5.45 m³, which is 44.1% of the smaller part.",
+              "affected": {
+                "node": "CrownMid"
+              },
+              "measurement": {
+                "name": "intersectionVolumeFraction",
+                "actual": 0.440707835,
+                "expected": 0.001
+              },
+              "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
+            },
+            {
+              "code": "GEO_PART_SELF_INTERSECTION",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "Parts \"Stems\" and \"CrownMid\" occupy the same space: they share 0.0358 m³, which is 33.5% of the smaller part.",
+              "affected": {
+                "node": "Stems"
+              },
+              "measurement": {
+                "name": "intersectionVolumeFraction",
+                "actual": 0.334764201,
+                "expected": 0.001
+              },
+              "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
+            },
+            {
+              "code": "GEO_PART_SELF_INTERSECTION",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "Parts \"Stems\" and \"CrownDark\" occupy the same space: they share 0.0354 m³, which is 33.1% of the smaller part.",
+              "affected": {
+                "node": "Stems"
+              },
+              "measurement": {
+                "name": "intersectionVolumeFraction",
+                "actual": 0.331312991,
+                "expected": 0.001
+              },
+              "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
+            },
+            {
+              "code": "GEO_PART_SELF_INTERSECTION",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "Parts \"Trunk\" and \"CrownMid\" occupy the same space: they share 0.0108 m³, which is 24.1% of the smaller part.",
+              "affected": {
+                "node": "Trunk"
+              },
+              "measurement": {
+                "name": "intersectionVolumeFraction",
+                "actual": 0.240607201,
+                "expected": 0.001
+              },
+              "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
+            },
+            {
+              "code": "GEO_PART_SELF_INTERSECTION",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "Parts \"Stems\" and \"CrownMid\" occupy the same space: they share 0.0225 m³, which is 22.9% of the smaller part.",
+              "affected": {
+                "node": "Stems"
+              },
+              "measurement": {
+                "name": "intersectionVolumeFraction",
+                "actual": 0.229481039,
+                "expected": 0.001
+              },
+              "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
+            },
+            {
+              "code": "GEO_PART_SELF_INTERSECTION",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "Parts \"Stems\" and \"CrownDark\" occupy the same space: they share 0.0211 m³, which is 21.5% of the smaller part.",
+              "affected": {
+                "node": "Stems"
+              },
+              "measurement": {
+                "name": "intersectionVolumeFraction",
+                "actual": 0.214549565,
+                "expected": 0.001
+              },
+              "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
+            },
+            {
+              "code": "GEO_PART_SELF_INTERSECTION",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "Parts \"CrownLight\" and \"CrownDark\" occupy the same space: they share 0.556 m³, which is 7.2% of the smaller part.",
+              "affected": {
+                "node": "CrownLight"
+              },
+              "measurement": {
+                "name": "intersectionVolumeFraction",
+                "actual": 0.071881083,
+                "expected": 0.001
+              },
+              "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
+            },
+            {
+              "code": "GEO_PART_SELF_INTERSECTION",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "Parts \"CrownLight\" and \"CrownDark\" occupy the same space: they share 0.402 m³, which is 6.6% of the smaller part.",
+              "affected": {
+                "node": "CrownLight"
+              },
+              "measurement": {
+                "name": "intersectionVolumeFraction",
+                "actual": 0.065631637,
+                "expected": 0.001
+              },
+              "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
+            },
+            {
+              "code": "GEO_PART_SELF_INTERSECTION",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "Parts \"Stems\" and \"CrownLight\" occupy the same space: they share 0.00112 m³, which is 1.1% of the smaller part.",
+              "affected": {
+                "node": "Stems"
+              },
+              "measurement": {
+                "name": "intersectionVolumeFraction",
+                "actual": 0.011431521,
+                "expected": 0.001
+              },
+              "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
+            },
+            {
+              "code": "GEO_PART_SELF_INTERSECTION",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "Parts \"Stems\" and \"CrownLight\" occupy the same space: they share 0.000156 m³, which is 0.1% of the smaller part.",
+              "affected": {
+                "node": "Stems"
+              },
+              "measurement": {
+                "name": "intersectionVolumeFraction",
+                "actual": 0.001457848,
+                "expected": 0.001
+              },
+              "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
+            }
+          ],
+          "metrics": {
+            "partVolumeCoverage": "complete-static-pairs",
+            "partVolumeScope": "Visible static closed mesh pairs, except alternates on different LOD levels; excludes intra-mesh intersections, motion, open surfaces and usable passage space. Positive overlap may be intentional.",
+            "partVolumeEligibleParts": 10,
+            "partVolumeCandidatePairs": 13,
+            "partVolumeCandidatesLowerBound": false,
+            "partVolumePairsTested": 13,
+            "partVolumeUnmeasurablePairs": 0,
+            "partVolumePairsNotReached": 0,
+            "partVolumeLodAlternatePairs": 32,
+            "partVolumeSkipped": 0
+          }
+        },
+        "runtimeCost": {
+          "status": "pass",
+          "findings": [],
+          "metrics": {
+            "instanceabilityGrade": "C",
+            "instanceabilitySummary": "C (informational, not a QA verdict), set by 4 distinct materials (C at 4-6). Also: 4 geometries; 4 draw calls.",
+            "uniqueGeometries": 4,
+            "uniqueMaterials": 4,
+            "meshNodes": 4,
+            "meshInstances": 4,
+            "drawCalls": 4,
+            "textureCount": 0,
+            "skinned": false,
+            "transparentMaterials": 0,
+            "triangles": 696,
+            "materialCount": 4,
+            "opaqueMaterials": 4,
+            "maskedMaterials": 0,
+            "blendedMaterials": 0,
+            "singleSidedMaterials": 4,
+            "doubleSidedMaterials": 0,
+            "texturedMaterials": 0,
+            "materialExtensionCount": 0,
+            "materialExtensionsUsed": "",
+            "imageCount": 0,
+            "maxImageDimension": 0,
+            "decodedImageBytesRgba8": 0,
+            "estimatedGpuBytesWithMipmaps": 0,
+            "blendedSurfaceAreaRatio": 0
+          }
+        }
+      },
+      "rules": [
+        {
+          "id": "UNIVERSAL_SCENE_CONTENT_RULE",
+          "mode": "enforce",
+          "status": "evaluated"
+        },
+        {
+          "id": "UNIVERSAL_FINITE_DATA_RULE",
+          "mode": "enforce",
+          "status": "evaluated"
+        },
+        {
+          "id": "UNIVERSAL_INDEX_RULE",
+          "mode": "enforce",
+          "status": "evaluated"
+        },
+        {
+          "id": "UNIVERSAL_ZERO_SCALE_RULE",
+          "mode": "enforce",
+          "status": "evaluated"
+        },
+        {
+          "id": "UNIVERSAL_NODE_NAME_RULE",
+          "mode": "enforce",
+          "status": "evaluated"
+        },
+        {
+          "id": "UNIVERSAL_ANIMATION_TARGET_RULE",
+          "mode": "enforce",
+          "status": "evaluated"
+        },
+        {
+          "id": "MATERIAL_PORTABLE_PBR_RULE",
+          "mode": "enforce",
+          "status": "evaluated"
+        },
+        {
+          "id": "ARCHITECTURE_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        },
+        {
+          "id": "ARCHITECTURE_ADVISORY_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "CHARACTER_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        },
+        {
+          "id": "CHARACTER_ADVISORY_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "VEHICLE_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        },
+        {
+          "id": "VEHICLE_ADVISORY_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "VEHICLE_W6_ADVISORY_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "VEGETATION_CONTACT_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        },
+        {
+          "id": "VEGETATION_ADVISORY_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "PROP_CAPABILITY_EXACT_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        },
+        {
+          "id": "PROP_ADVISORY_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "ENVIRONMENT_EXACT_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        },
+        {
+          "id": "ENVIRONMENT_ADVISORY_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "VFX_EXACT_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        },
+        {
+          "id": "VFX_ADVISORY_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "MODULAR_JOIN_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        },
+        {
+          "id": "ASSET_SCOPE_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "GEO_PART_SELF_INTERSECTION",
+          "mode": "observe",
+          "status": "evaluated"
+        },
+        {
+          "id": "GEO_PART_CONNECTIVITY",
+          "mode": "observe",
+          "status": "evaluated"
+        },
+        {
+          "id": "REF_COMPARISON",
+          "mode": "observe",
+          "status": "notEvaluated",
+          "reason": "Neutral measurement adapter remains to be qualified; no category fallback is used."
+        }
+      ],
+      "unevaluatedRequirements": []
+    },
+    "dependencies": [],
+    "rebuild": "engine-required"
+  },
+  "preview": {
+    "fidelity": {
+      "version": "kiln.view-fidelity.v1",
+      "requested": "full-preferred",
+      "delivered": "geometry-flat",
+      "materialFaithful": false,
+      "exactArtifact": true,
+      "rendererId": "cpu-raster:0.9.0",
+      "inputGlbSha256": "sha256:8a278f31a47ec030c066b96b5643c91cb4895a74a0a2576a2c33fd6616a7d91f",
+      "degraded": false,
+      "reasonCodes": []
+    },
+    "backdrop": "neutral"
+  }
+}

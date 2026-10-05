@@ -1,0 +1,28 @@
+import {createRigidClipPlayback} from './src/rigid-playback.mjs';
+import {createRowingHandoff} from './src/rowing-handoff.mjs';
+import {createOarPlayback} from './web/oar-playback.mjs';
+import {createEquipmentArrival as createShipArrival} from './src/ship-equipment.mjs';
+import {createArrivalCrew} from './web/arrival-crew.mjs';
+import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';import {createPoseInstances} from './web/pose-instances.mjs';
+// Staged bundle entry: CPU reference simulation stays in its local boat frame;
+// rendering applies one placement frame, keeping planning and terrain aligned.
+export async function createTroyLanding(T,{mode='hybrid'}={}){
+ if(!['hybrid','instances','hierarchy'].includes(mode))throw Error('Unknown landing renderer');const base=new URL('./',import.meta.url),manifest=await(await fetch(new URL('manifest.json',base))).json(),bytes=new Map(),hash=async b=>Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',b)),n=>n.toString(16).padStart(2,'0')).join('');
+ await Promise.all(manifest.files.map(async f=>{const r=await fetch(new URL(f.file,base));if(!r.ok)throw Error('Missing landing file '+f.file);const b=await r.arrayBuffer();if(await hash(b)!==f.sha256)throw Error('Landing identity mismatch '+f.file);bytes.set(f.file,b);}));
+ const data=JSON.parse(new TextDecoder().decode(bytes.get('queue.json'))),loader=new GLTFLoader(),ship=(await loader.parseAsync(bytes.get('ship.glb'),'')).scene,human=(await loader.parseAsync(bytes.get('crew.glb'),'')).scene;ship.scale.setScalar(1.6);ship.position.fromArray(data.shipPosition);ship.getObjectByName('BoardingPlankPivot').rotation.x=data.landing.angle;ship.getObjectByName('BoardingPlankFold').rotation.x=0;ship.updateMatrixWorld(true);
+ const oars=createOarPlayback(T,{ship,rows:data.actors});
+ const crew=createArrivalCrew(T,{ship,human,data}),actors=crew.actors,profile=JSON.parse(new TextDecoder().decode(bytes.get('profile.json')));
+ const group=new T.Group();group.name='ship-1-2/landing';group.position.fromArray(data.frame.position);group.rotation.y=data.frame.yaw;const renderedShip=ship.clone(true),shipSource=[],shipTarget=[];ship.traverse(n=>shipSource.push(n));renderedShip.traverse(n=>shipTarget.push(n));group.add(renderedShip);
+ const pose=mode!=='hierarchy'?createPoseInstances(actors.map(a=>a.root)):null,clones=[];if(pose)group.add(pose.group);else for(const a of actors){const clone=a.root.clone(true),from=[],to=[];a.root.traverse(n=>from.push(n));clone.traverse(n=>to.push(n));clones.push({clone,from,to});group.add(clone);}
+ const bankRecord=JSON.parse(new TextDecoder().decode(bytes.get('bank.json')));
+ if(bankRecord.source.sha256!=='sha256:'+await hash(bytes.get('crew.glb'))||bankRecord.ship.sha256!=='sha256:'+await hash(bytes.get('ship.glb'))||bankRecord.data.sha256!=='sha256:'+await hash(bytes.get('transforms.bin')))throw Error('Rowing bank source mismatch');
+ if(JSON.stringify(bankRecord.ship.position)!==JSON.stringify(data.shipPosition)||JSON.stringify(bankRecord.ship.scale)!==JSON.stringify([1.6,1.6,1.6]))throw Error('Rowing bank placement mismatch');
+ const baked=mode==='hybrid'?createRigidClipPlayback(human,{manifest:bankRecord.manifest,clips:bankRecord.clips,bytes:bytes.get('transforms.bin')},actors.map(a=>({id:a.entry.id,matrix:new T.Matrix4(),clip:`row-${a.entry.row}-${a.entry.side}`,time:0,loop:true}))):null;
+ if(baked)group.add(baked.group);
+ const seated=actors.map(a=>a.root.position.clone()),handoff=baked?createRowingHandoff({actors,updateCpu:crew.update,updateOars:t=>oars.update(t),updateGpu:baked.updateActorPoses}):null;
+ let owner='cpu',rigEvaluations=0;
+ group.traverse(n=>{if(n.isMesh)n.castShadow=n.receiveShadow=true;});const timeline=createShipArrival({profile,queueDuration:data.duration,landedAngle:data.landing.angle}),renderedPlank=renderedShip.getObjectByName('BoardingPlankPivot');let lastTime=-1,counts={},sequence;
+ const copy=(from,to)=>{for(let i=0;i<from.length;i++){to[i].position.copy(from[i].position);to[i].quaternion.copy(from[i].quaternion);to[i].scale.copy(from[i].scale);}};
+ function update(time){if(!Number.isFinite(time)||time<0)throw Error('Invalid landing time');const clamped=Math.min(time,timeline.duration);if(clamped===lastTime)return;lastTime=clamped;sequence=timeline.sample(clamped);group.position.fromArray(data.frame.position).add(new T.Vector3(...sequence.offset).applyQuaternion(group.quaternion));const update=handoff?handoff.update(sequence):crew.update(sequence),dirty=update.dirty;counts=update.counts;owner=update.owner??'cpu';rigEvaluations=update.rigEvaluations??dirty.length;if(baked){baked.group.visible=owner==='gpu';pose.group.visible=owner==='cpu';}if(!pose)for(const i of dirty)copy(clones[i].from,clones[i].to);if(pose)pose.update(dirty);copy(shipSource,shipTarget);renderedPlank.rotation.x=sequence.plankAngle;renderedShip.getObjectByName('BoardingPlankFold').rotation.x=sequence.plankFold;group.updateMatrixWorld(true);}
+ update(0);return {group,update,duration:timeline.duration,stats(){return {arrival:true,equipment:'dry-shore-folded-plank',dryShore:true,placement:group.position.toArray(),gait:'alternating',mode,owner,rigEvaluations,gpuPartBatches:baked?.group.children.length??0,time:lastTime,sequence,counts,frame:data.frame,shipPosition:data.shipPosition,plankAngle:sequence.plankAngle,actors:actors.map((a,i)=>({id:'ship-1-2/'+a.entry.id,position:group.localToWorld((owner==='gpu'?seated[i]:a.root.position).clone()).toArray()})),partBatches:pose?.partCount??null,qualification:'functional prototype; not performance accepted'};},dispose(){pose?.dispose();baked?.dispose();}};
+}

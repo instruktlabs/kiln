@@ -58,6 +58,13 @@ describe('U-20 pin fixture repositories', () => {
     }
   });
   test('accepts exact pins and the website React types exception', () => expect(validatePins(fixture())).toEqual([]));
+  test('accepts the direct Three.js Troy package while preserving React peers on R3F scenes', () => {
+    const f = fixture();
+    f.manifests.push({ path: 'packages/troy/package.json', json: { private: true, peerDependencies: { three: '0.186.1' }, devDependencies: { three: '0.186.1' } } });
+    expect(validatePins(f)).toEqual([]);
+    f.manifests[2]!.path = 'packages/farm/package.json';
+    expect(validatePins(f).join('\n')).toContain('missing exact react');
+  });
   test('rejects a different three in a package', () => {
     const f = fixture(); f.manifests[1]!.json.devDependencies!.three = '0.186.2';
     expect(validatePins(f).join('\n')).toContain('three must be 0.186.1');

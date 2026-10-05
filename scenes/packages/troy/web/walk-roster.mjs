@@ -1,0 +1,29 @@
+import {createSampleTimeLookup} from './runtime/motion-v1/sample-times.mjs';
+import {projectedMotionError,selectSharedMotion} from './runtime/motion-v1/projected-error.mjs';
+import {steadyCycleTime} from './runtime/walk-v1/steady-steps.mjs';
+import {intersectsViewOrShadow} from './view-culling.mjs';
+// Greek walking adapter; bank construction and screen-error helpers remain generic.
+export function createWalkRoster(T,{record,boundRecord,actorIds,sourceHash,sourcePlanSha256,errorMetres=.02,motionBindings=null,offscreenMode='reference'}){
+ if(!['reference','shadowSafe'].includes(offscreenMode))throw Error('Invalid walking offscreen mode');
+ if(record.schema!=='troy.steady-walk/1'||record.source.sha256!==sourceHash||record.sourceHashes['output/regroup-02/plans.json']!=='sha256:'+sourcePlanSha256||!Number.isFinite(errorMetres)||errorMetres<=0)throw Error('Walking source mismatch');
+ let selectedRoutes=record.routes;if(motionBindings){const source=new Map(record.routes.map(r=>[r.id,r]));if(motionBindings.length!==actorIds.length||new Set(motionBindings.map(b=>b.id)).size!==actorIds.length||actorIds.some(id=>!motionBindings.some(b=>b.id===id)))throw Error('Walking motion binding roster mismatch');selectedRoutes=motionBindings.map(b=>{const route=source.get(b.sourceId);if(!route)throw Error('Walking motion binding source mismatch');return {...route,id:b.id};});}const routes=new Map(selectedRoutes.map(r=>[r.id,r.clips])),clips=new Map(record.clips.map(c=>[c.name,c])),boxes=new Map(boundRecord.bounds.map(b=>[b.name,new T.Box3(new T.Vector3(...b.min),new T.Vector3(...b.max))]));
+ if(routes.size!==selectedRoutes.length||new Set(actorIds).size!==actorIds.length||actorIds.length!==routes.size||actorIds.some(id=>!routes.has(id)))throw Error('Walking actor roster mismatch');
+ const lookups=new Map();for(const clip of clips.values()){if(clip.sampleTimes?.length!==clip.frameCount||clip.sampleTimes.at(-1)!==clip.duration||!boxes.has(clip.name))throw Error('Walking time/bound mismatch');lookups.set(clip.name,createSampleTimeLookup(clip.sampleTimes));}
+ for(const assignments of routes.values())if(assignments.some(c=>c!==null&&!clips.has(c)))throw Error('Missing walking clip');
+ const previous=actorIds.map(()=>false),positions=actorIds.map(()=>new T.Vector3()),actorBounds=actorIds.map(()=>new T.Box3()),up=new T.Vector3(0,1,0),scale=new T.Vector3(1,1,1),frustum=new T.Frustum(),projection=new T.Matrix4();let camera=null,view=null,key='',revision=0,active=[],poses=[],transforms=[],errors=[],offscreen=[],activeSet=new Set();
+ function prepareView(nextCamera,width,height,shadow,{offscreenEnabled=true}={}){if(typeof offscreenEnabled!=='boolean')throw Error('Invalid walking offscreen switch');nextCamera.updateMatrixWorld(true);const nextKey=[...nextCamera.matrixWorldInverse.elements,...nextCamera.projectionMatrix.elements,width,height,shadow.receiverFloorY,...shadow.lightDirection.toArray(),nextCamera.coordinateSystem,nextCamera.reversedDepth,offscreenEnabled].join(',');camera=nextCamera;view={width,height,...shadow,offscreenEnabled};if(nextKey!==key){key=nextKey;revision++;projection.multiplyMatrices(camera.projectionMatrix,camera.matrixWorldInverse);frustum.setFromProjectionMatrix(projection,camera.coordinateSystem,camera.reversedDepth);}return revision;}
+ function beginFrame(){active=[];poses=[];transforms=[];errors=[];offscreen=[];activeSet=new Set();}
+ function sample({id,index,plan,time,ship}){
+  if(actorIds[index]!==id)throw Error('Walking actor index mismatch');const state=plan.sample(time),name=routes.get(id)[state.index];
+  if(!camera||state.complete||!name){previous[index]=false;return false;}
+  const clip=clips.get(name),local=new T.Matrix4().compose(new T.Vector3(state.bodyCenter[0],Math.min(state.feet.left.position[1],state.feet.right.position[1])-.085-.025*Math.sin(Math.PI*state.phase)**2,state.bodyCenter[2]),new T.Quaternion().setFromAxisAngle(up,(state.feet.left.yaw+state.feet.right.yaw)/2),scale),matrix=ship.frame.matrixWorld.clone().multiply(local),box=boxes.get(name).clone().applyMatrix4(matrix);
+  // The bound and error budget are supplied by this scene's sampled derivative
+  // qualification. Inflate before shadow extrusion so possible source visibility
+  // retains exact motion. This does not certify a continuous source error bound.
+  const hidden=offscreenMode==='shadowSafe'&&view.offscreenEnabled&&!intersectsViewOrShadow(T,frustum,box.clone().expandByScalar(errorMetres),view),error=hidden?null:projectedMotionError(T,{camera,bounds:box,errorMetres,width:view.width,height:view.height,receiverFloorY:view.receiverFloorY,lightDirection:view.lightDirection}),selected=hidden||selectSharedMotion(error,previous[index]);previous[index]=selected&&!hidden;
+  if(!selected)return false;
+  const sourceTime=steadyCycleTime(state),localFrame=lookups.get(name)(sourceTime),encodedTime=clip.duration*localFrame/(clip.frameCount-1);
+  active.push(index);activeSet.add(index);if(hidden)offscreen.push(index);else errors.push(error);poses.push({id,clip:name,time:encodedTime,loop:false});transforms.push({id,matrix});positions[index].setFromMatrixPosition(matrix);actorBounds[index].copy(box);return true;
+ }
+ return {prepareView,beginFrame,sample,positions,actorBounds,get revision(){return revision;},get active(){return active;},get poses(){return poses;},get transforms(){return transforms;},has:index=>activeSet.has(index),stats:()=>({activeActors:active.length,ids:active.map(i=>actorIds[i]),offscreenMode,offscreenEnabled:view?.offscreenEnabled??false,offscreenSharedActors:offscreen.length,offscreenIds:offscreen.map(i=>actorIds[i]),maxProjectedBudgetPixels:errors.length?Math.max(...errors):0,policy:{worldErrorBudgetMetres:errorMetres,enterPixels:.5,exitPixels:.75,scope:'Experimental budget based on sampled numerical evidence, not a continuous source error bound'}})};
+}

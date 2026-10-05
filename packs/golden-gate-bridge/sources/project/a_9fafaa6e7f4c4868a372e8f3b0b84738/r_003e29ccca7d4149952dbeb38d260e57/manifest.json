@@ -1,0 +1,1135 @@
+{
+  "version": "kiln.asset.v1",
+  "assetId": "a_9fafaa6e7f4c4868a372e8f3b0b84738",
+  "revisionId": "r_003e29ccca7d4149952dbeb38d260e57",
+  "name": "Golden Gate Bridge",
+  "tags": [],
+  "createdAt": "2026-09-29T03:57:38.308Z",
+  "description": "Stage 1 — true-scale blockout: two setback towers, portals, continuous cable sweeps, sloping deck, piers and south fender. Geometry/proportion review; detail pending.",
+  "attribution": {
+    "model": "gpt-6-astra",
+    "harness": "codex"
+  },
+  "editable": true,
+  "files": {
+    "asset.glb": {
+      "sha256": "sha256:4fc9ebb39ec906d0a472314dcc24e62b5e5039b629082bb42d48497897c87625",
+      "bytes": 1001280
+    },
+    "source.kiln.js": {
+      "sha256": "sha256:11722990b17f4bf58bc8bdf74c20f276ce8cec85abf2d63134ab977d31d5e2be",
+      "bytes": 7150
+    },
+    "preview.png": {
+      "sha256": "sha256:464c0d6a4a63ee7821810cfe521e5708ac81a498720a0eda6db877cea185d3ab",
+      "bytes": 23908
+    }
+  },
+  "build": {
+    "engine": "source-development:unverified",
+    "options": {
+      "gltfExporter": "legacy",
+      "optimize": "off",
+      "instance": "auto",
+      "geometryPolicy": "warn",
+      "qaMode": "enforce",
+      "evaluatorMode": "subprocess",
+      "requirements": {
+        "kind": "kiln.requirements-context.v1",
+        "requirements": {
+          "kind": "kiln.asset-requirements",
+          "schemaVersion": 1,
+          "labels": [],
+          "frame": {
+            "units": "m",
+            "forward": "+X",
+            "up": "+Y",
+            "right": "+Z",
+            "groundY": 0
+          },
+          "requirements": {}
+        },
+        "policyHash": "sha256:9efcec929bf8a510c7dd0e18b687381e3824ff3d26cc20307f601d17535e5f34",
+        "adviceHash": "sha256:ca1f59b45e82e712e06149909000e2bc37b8cf159af70e32847088cecf153268"
+      }
+    },
+    "warnings": [],
+    "integration": {
+      "schemaVersion": "kiln.integration-manifest.v1",
+      "analyzerVersion": 1,
+      "artifactSha256": "4fc9ebb39ec906d0a472314dcc24e62b5e5039b629082bb42d48497897c87625",
+      "units": "m",
+      "axes": {
+        "forward": "+X",
+        "up": "+Y",
+        "right": "+Z"
+      },
+      "bounds": {
+        "min": [
+          -45.720001220703125,
+          -0.6000000238418579,
+          -1032.97998046875
+        ],
+        "max": [
+          45.720001220703125,
+          227.50442504882812,
+          1032.97998046875
+        ],
+        "size": [
+          91.44000244140625,
+          228.10442507266998,
+          2065.9599609375
+        ],
+        "center": [
+          0,
+          113.45221251249313,
+          0
+        ]
+      },
+      "pivot": {
+        "convention": "author-origin",
+        "position": [
+          0,
+          0,
+          0
+        ]
+      },
+      "ground": {
+        "groundY": 0,
+        "contactTolerance": 0.02,
+        "minY": -0.6000000238418579,
+        "offsetToGround": 0.6000000238418579,
+        "grounded": false
+      },
+      "defaultScene": {
+        "index": 0,
+        "name": "Golden Gate Bridge"
+      },
+      "requestedRole": "wonder",
+      "renderMetrics": {
+        "triangles": 64832,
+        "drawCalls": 43,
+        "uniqueGeometries": 19,
+        "uniqueMaterials": 3,
+        "textureCount": 0,
+        "transparentMaterials": 0,
+        "skinned": false
+      },
+      "structuralQa": {
+        "hasDefaultScene": true,
+        "finiteBounds": true,
+        "validatorErrors": 0,
+        "validatorWarnings": 0
+      },
+      "visualQa": "not_assessed"
+    },
+    "qa": {
+      "kind": "kiln.asset-qa-report",
+      "schemaVersion": 2,
+      "qaProfile": "asset.requirements.v1",
+      "policyHash": "sha256:9efcec929bf8a510c7dd0e18b687381e3824ff3d26cc20307f601d17535e5f34",
+      "adviceHash": "sha256:ca1f59b45e82e712e06149909000e2bc37b8cf159af70e32847088cecf153268",
+      "acceptance": "accepted",
+      "disposition": "warn",
+      "dimensions": {
+        "exportIntegrity": {
+          "status": "pass",
+          "findings": [],
+          "metrics": {
+            "gltfErrors": 0,
+            "gltfWarnings": 0
+          }
+        },
+        "requirementReadiness": {
+          "status": "warn",
+          "findings": [
+            {
+              "code": "UNIVERSAL_DUPLICATE_NODE_NAME",
+              "disposition": "warn",
+              "dimension": "requirementReadiness",
+              "profile": "universal",
+              "message": "2 scene nodes share the name \"Pier\".",
+              "affected": {
+                "node": "Pier",
+                "nodePath": "GoldenGateBridge/SouthTower/Pier | GoldenGateBridge/NorthTower/Pier"
+              },
+              "measurement": {
+                "name": "duplicateCount",
+                "actual": 2,
+                "expected": 1
+              },
+              "repairText": "Use unique names when nodes must be addressed independently."
+            },
+            {
+              "code": "UNIVERSAL_DUPLICATE_NODE_NAME",
+              "disposition": "warn",
+              "dimension": "requirementReadiness",
+              "profile": "universal",
+              "message": "2 scene nodes share the name \"Mesh_Footing\".",
+              "affected": {
+                "node": "Mesh_Footing",
+                "nodePath": "GoldenGateBridge/SouthTower/Pier/Mesh_Footing | GoldenGateBridge/NorthTower/Pier/Mesh_Footing"
+              },
+              "measurement": {
+                "name": "duplicateCount",
+                "actual": 2,
+                "expected": 1
+              },
+              "repairText": "Use unique names when nodes must be addressed independently."
+            },
+            {
+              "code": "UNIVERSAL_DUPLICATE_NODE_NAME",
+              "disposition": "warn",
+              "dimension": "requirementReadiness",
+              "profile": "universal",
+              "message": "2 scene nodes share the name \"Mesh_PierBody\".",
+              "affected": {
+                "node": "Mesh_PierBody",
+                "nodePath": "GoldenGateBridge/SouthTower/Pier/Mesh_PierBody | GoldenGateBridge/NorthTower/Pier/Mesh_PierBody"
+              },
+              "measurement": {
+                "name": "duplicateCount",
+                "actual": 2,
+                "expected": 1
+              },
+              "repairText": "Use unique names when nodes must be addressed independently."
+            },
+            {
+              "code": "UNIVERSAL_DUPLICATE_NODE_NAME",
+              "disposition": "warn",
+              "dimension": "requirementReadiness",
+              "profile": "universal",
+              "message": "2 scene nodes share the name \"LegWest\".",
+              "affected": {
+                "node": "LegWest",
+                "nodePath": "GoldenGateBridge/SouthTower/LegWest | GoldenGateBridge/NorthTower/LegWest"
+              },
+              "measurement": {
+                "name": "duplicateCount",
+                "actual": 2,
+                "expected": 1
+              },
+              "repairText": "Use unique names when nodes must be addressed independently."
+            },
+            {
+              "code": "UNIVERSAL_DUPLICATE_NODE_NAME",
+              "disposition": "warn",
+              "dimension": "requirementReadiness",
+              "profile": "universal",
+              "message": "4 scene nodes share the name \"Mesh_Tier1\".",
+              "affected": {
+                "node": "Mesh_Tier1",
+                "nodePath": "GoldenGateBridge/SouthTower/LegWest/Mesh_Tier1 | GoldenGateBridge/SouthTower/LegEast/Mesh_Tier1 | GoldenGateBridge/NorthTower/LegWest/Mesh_Tier1 | GoldenGateBridge/NorthTower/LegEast/Mesh_Tier1"
+              },
+              "measurement": {
+                "name": "duplicateCount",
+                "actual": 4,
+                "expected": 1
+              },
+              "repairText": "Use unique names when nodes must be addressed independently."
+            },
+            {
+              "code": "UNIVERSAL_DUPLICATE_NODE_NAME",
+              "disposition": "warn",
+              "dimension": "requirementReadiness",
+              "profile": "universal",
+              "message": "4 scene nodes share the name \"Mesh_Tier2\".",
+              "affected": {
+                "node": "Mesh_Tier2",
+                "nodePath": "GoldenGateBridge/SouthTower/LegWest/Mesh_Tier2 | GoldenGateBridge/SouthTower/LegEast/Mesh_Tier2 | GoldenGateBridge/NorthTower/LegWest/Mesh_Tier2 | GoldenGateBridge/NorthTower/LegEast/Mesh_Tier2"
+              },
+              "measurement": {
+                "name": "duplicateCount",
+                "actual": 4,
+                "expected": 1
+              },
+              "repairText": "Use unique names when nodes must be addressed independently."
+            },
+            {
+              "code": "UNIVERSAL_DUPLICATE_NODE_NAME",
+              "disposition": "warn",
+              "dimension": "requirementReadiness",
+              "profile": "universal",
+              "message": "4 scene nodes share the name \"Mesh_Tier3\".",
+              "affected": {
+                "node": "Mesh_Tier3",
+                "nodePath": "GoldenGateBridge/SouthTower/LegWest/Mesh_Tier3 | GoldenGateBridge/SouthTower/LegEast/Mesh_Tier3 | GoldenGateBridge/NorthTower/LegWest/Mesh_Tier3 | GoldenGateBridge/NorthTower/LegEast/Mesh_Tier3"
+              },
+              "measurement": {
+                "name": "duplicateCount",
+                "actual": 4,
+                "expected": 1
+              },
+              "repairText": "Use unique names when nodes must be addressed independently."
+            },
+            {
+              "code": "UNIVERSAL_DUPLICATE_NODE_NAME",
+              "disposition": "warn",
+              "dimension": "requirementReadiness",
+              "profile": "universal",
+              "message": "4 scene nodes share the name \"Mesh_Tier4\".",
+              "affected": {
+                "node": "Mesh_Tier4",
+                "nodePath": "GoldenGateBridge/SouthTower/LegWest/Mesh_Tier4 | GoldenGateBridge/SouthTower/LegEast/Mesh_Tier4 | GoldenGateBridge/NorthTower/LegWest/Mesh_Tier4 | GoldenGateBridge/NorthTower/LegEast/Mesh_Tier4"
+              },
+              "measurement": {
+                "name": "duplicateCount",
+                "actual": 4,
+                "expected": 1
+              },
+              "repairText": "Use unique names when nodes must be addressed independently."
+            },
+            {
+              "code": "UNIVERSAL_DUPLICATE_NODE_NAME",
+              "disposition": "warn",
+              "dimension": "requirementReadiness",
+              "profile": "universal",
+              "message": "4 scene nodes share the name \"Mesh_Tier5\".",
+              "affected": {
+                "node": "Mesh_Tier5",
+                "nodePath": "GoldenGateBridge/SouthTower/LegWest/Mesh_Tier5 | GoldenGateBridge/SouthTower/LegEast/Mesh_Tier5 | GoldenGateBridge/NorthTower/LegWest/Mesh_Tier5 | GoldenGateBridge/NorthTower/LegEast/Mesh_Tier5"
+              },
+              "measurement": {
+                "name": "duplicateCount",
+                "actual": 4,
+                "expected": 1
+              },
+              "repairText": "Use unique names when nodes must be addressed independently."
+            },
+            {
+              "code": "UNIVERSAL_DUPLICATE_NODE_NAME",
+              "disposition": "warn",
+              "dimension": "requirementReadiness",
+              "profile": "universal",
+              "message": "2 scene nodes share the name \"CrownWest\".",
+              "affected": {
+                "node": "CrownWest",
+                "nodePath": "GoldenGateBridge/SouthTower/CrownWest | GoldenGateBridge/NorthTower/CrownWest"
+              },
+              "measurement": {
+                "name": "duplicateCount",
+                "actual": 2,
+                "expected": 1
+              },
+              "repairText": "Use unique names when nodes must be addressed independently."
+            },
+            {
+              "code": "UNIVERSAL_DUPLICATE_NODE_NAME",
+              "disposition": "warn",
+              "dimension": "requirementReadiness",
+              "profile": "universal",
+              "message": "4 scene nodes share the name \"Mesh_SaddleBlock\".",
+              "affected": {
+                "node": "Mesh_SaddleBlock",
+                "nodePath": "GoldenGateBridge/SouthTower/CrownWest/Mesh_SaddleBlock | GoldenGateBridge/SouthTower/CrownEast/Mesh_SaddleBlock | GoldenGateBridge/NorthTower/CrownWest/Mesh_SaddleBlock | GoldenGateBridge/NorthTower/CrownEast/Mesh_SaddleBlock"
+              },
+              "measurement": {
+                "name": "duplicateCount",
+                "actual": 4,
+                "expected": 1
+              },
+              "repairText": "Use unique names when nodes must be addressed independently."
+            },
+            {
+              "code": "UNIVERSAL_DUPLICATE_NODE_NAME",
+              "disposition": "warn",
+              "dimension": "requirementReadiness",
+              "profile": "universal",
+              "message": "2 scene nodes share the name \"LegEast\".",
+              "affected": {
+                "node": "LegEast",
+                "nodePath": "GoldenGateBridge/SouthTower/LegEast | GoldenGateBridge/NorthTower/LegEast"
+              },
+              "measurement": {
+                "name": "duplicateCount",
+                "actual": 2,
+                "expected": 1
+              },
+              "repairText": "Use unique names when nodes must be addressed independently."
+            },
+            {
+              "code": "UNIVERSAL_DUPLICATE_NODE_NAME",
+              "disposition": "warn",
+              "dimension": "requirementReadiness",
+              "profile": "universal",
+              "message": "2 scene nodes share the name \"CrownEast\".",
+              "affected": {
+                "node": "CrownEast",
+                "nodePath": "GoldenGateBridge/SouthTower/CrownEast | GoldenGateBridge/NorthTower/CrownEast"
+              },
+              "measurement": {
+                "name": "duplicateCount",
+                "actual": 2,
+                "expected": 1
+              },
+              "repairText": "Use unique names when nodes must be addressed independently."
+            },
+            {
+              "code": "UNIVERSAL_DUPLICATE_NODE_NAME",
+              "disposition": "warn",
+              "dimension": "requirementReadiness",
+              "profile": "universal",
+              "message": "2 scene nodes share the name \"Portal1\".",
+              "affected": {
+                "node": "Portal1",
+                "nodePath": "GoldenGateBridge/SouthTower/Portal1 | GoldenGateBridge/NorthTower/Portal1"
+              },
+              "measurement": {
+                "name": "duplicateCount",
+                "actual": 2,
+                "expected": 1
+              },
+              "repairText": "Use unique names when nodes must be addressed independently."
+            },
+            {
+              "code": "UNIVERSAL_DUPLICATE_NODE_NAME",
+              "disposition": "warn",
+              "dimension": "requirementReadiness",
+              "profile": "universal",
+              "message": "8 scene nodes share the name \"Mesh_Core\".",
+              "affected": {
+                "node": "Mesh_Core",
+                "nodePath": "GoldenGateBridge/SouthTower/Portal1/Mesh_Core | GoldenGateBridge/SouthTower/Portal2/Mesh_Core | GoldenGateBridge/SouthTower/Portal3/Mesh_Core | GoldenGateBridge/SouthTower/Portal4/Mesh_Core | GoldenGateBridge/NorthTower/Portal1/Mesh_Core | GoldenGateBridge/NorthTower/Portal2/Mesh_Core | GoldenGateBridge/NorthTower/Portal3/Mesh_Core | GoldenGateBridge/NorthTower/Portal4/Mesh_Core"
+              },
+              "measurement": {
+                "name": "duplicateCount",
+                "actual": 8,
+                "expected": 1
+              },
+              "repairText": "Use unique names when nodes must be addressed independently."
+            },
+            {
+              "code": "UNIVERSAL_DUPLICATE_NODE_NAME",
+              "disposition": "warn",
+              "dimension": "requirementReadiness",
+              "profile": "universal",
+              "message": "2 scene nodes share the name \"Portal2\".",
+              "affected": {
+                "node": "Portal2",
+                "nodePath": "GoldenGateBridge/SouthTower/Portal2 | GoldenGateBridge/NorthTower/Portal2"
+              },
+              "measurement": {
+                "name": "duplicateCount",
+                "actual": 2,
+                "expected": 1
+              },
+              "repairText": "Use unique names when nodes must be addressed independently."
+            },
+            {
+              "code": "UNIVERSAL_DUPLICATE_NODE_NAME",
+              "disposition": "warn",
+              "dimension": "requirementReadiness",
+              "profile": "universal",
+              "message": "2 scene nodes share the name \"Portal3\".",
+              "affected": {
+                "node": "Portal3",
+                "nodePath": "GoldenGateBridge/SouthTower/Portal3 | GoldenGateBridge/NorthTower/Portal3"
+              },
+              "measurement": {
+                "name": "duplicateCount",
+                "actual": 2,
+                "expected": 1
+              },
+              "repairText": "Use unique names when nodes must be addressed independently."
+            },
+            {
+              "code": "UNIVERSAL_DUPLICATE_NODE_NAME",
+              "disposition": "warn",
+              "dimension": "requirementReadiness",
+              "profile": "universal",
+              "message": "2 scene nodes share the name \"Portal4\".",
+              "affected": {
+                "node": "Portal4",
+                "nodePath": "GoldenGateBridge/SouthTower/Portal4 | GoldenGateBridge/NorthTower/Portal4"
+              },
+              "measurement": {
+                "name": "duplicateCount",
+                "actual": 2,
+                "expected": 1
+              },
+              "repairText": "Use unique names when nodes must be addressed independently."
+            },
+            {
+              "code": "UNIVERSAL_DUPLICATE_NODE_NAME",
+              "disposition": "warn",
+              "dimension": "requirementReadiness",
+              "profile": "universal",
+              "message": "2 scene nodes share the name \"Mesh_ContinuousCable\".",
+              "affected": {
+                "node": "Mesh_ContinuousCable",
+                "nodePath": "GoldenGateBridge/MainCableWest/Mesh_ContinuousCable | GoldenGateBridge/MainCableEast/Mesh_ContinuousCable"
+              },
+              "measurement": {
+                "name": "duplicateCount",
+                "actual": 2,
+                "expected": 1
+              },
+              "repairText": "Use unique names when nodes must be addressed independently."
+            }
+          ]
+        },
+        "promptAlignment": {
+          "status": "notEvaluated",
+          "findings": []
+        },
+        "visualQuality": {
+          "status": "notEvaluated",
+          "findings": [
+            {
+              "code": "GEO_PART_SELF_INTERSECTION",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "Parts \"Mesh_Tier2\" and \"Mesh_Core\" occupy the same space: they share 236 m³, which is 13.5% of the smaller part.",
+              "affected": {
+                "node": "Mesh_Tier2"
+              },
+              "measurement": {
+                "name": "intersectionVolumeFraction",
+                "actual": 0.134784129,
+                "expected": 0.001
+              },
+              "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
+            },
+            {
+              "code": "GEO_PART_SELF_INTERSECTION",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "Parts \"Mesh_Tier2\" and \"Mesh_Core\" occupy the same space: they share 236 m³, which is 13.5% of the smaller part.",
+              "affected": {
+                "node": "Mesh_Tier2"
+              },
+              "measurement": {
+                "name": "intersectionVolumeFraction",
+                "actual": 0.134784129,
+                "expected": 0.001
+              },
+              "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
+            },
+            {
+              "code": "GEO_PART_SELF_INTERSECTION",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "Parts \"Mesh_Tier2\" and \"Mesh_Core\" occupy the same space: they share 236 m³, which is 13.5% of the smaller part.",
+              "affected": {
+                "node": "Mesh_Tier2"
+              },
+              "measurement": {
+                "name": "intersectionVolumeFraction",
+                "actual": 0.134784129,
+                "expected": 0.001
+              },
+              "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
+            },
+            {
+              "code": "GEO_PART_SELF_INTERSECTION",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "Parts \"Mesh_Tier2\" and \"Mesh_Core\" occupy the same space: they share 236 m³, which is 13.5% of the smaller part.",
+              "affected": {
+                "node": "Mesh_Tier2"
+              },
+              "measurement": {
+                "name": "intersectionVolumeFraction",
+                "actual": 0.134784129,
+                "expected": 0.001
+              },
+              "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
+            },
+            {
+              "code": "GEO_PART_SELF_INTERSECTION",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "Parts \"Mesh_Tier3\" and \"Mesh_Core\" occupy the same space: they share 208 m³, which is 11.8% of the smaller part.",
+              "affected": {
+                "node": "Mesh_Tier3"
+              },
+              "measurement": {
+                "name": "intersectionVolumeFraction",
+                "actual": 0.118375804,
+                "expected": 0.001
+              },
+              "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
+            },
+            {
+              "code": "GEO_PART_SELF_INTERSECTION",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "Parts \"Mesh_Tier3\" and \"Mesh_Core\" occupy the same space: they share 208 m³, which is 11.8% of the smaller part.",
+              "affected": {
+                "node": "Mesh_Tier3"
+              },
+              "measurement": {
+                "name": "intersectionVolumeFraction",
+                "actual": 0.118375804,
+                "expected": 0.001
+              },
+              "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
+            },
+            {
+              "code": "GEO_PART_SELF_INTERSECTION",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "Parts \"Mesh_Tier3\" and \"Mesh_Core\" occupy the same space: they share 208 m³, which is 11.8% of the smaller part.",
+              "affected": {
+                "node": "Mesh_Tier3"
+              },
+              "measurement": {
+                "name": "intersectionVolumeFraction",
+                "actual": 0.118375804,
+                "expected": 0.001
+              },
+              "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
+            },
+            {
+              "code": "GEO_PART_SELF_INTERSECTION",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "Parts \"Mesh_Tier3\" and \"Mesh_Core\" occupy the same space: they share 208 m³, which is 11.8% of the smaller part.",
+              "affected": {
+                "node": "Mesh_Tier3"
+              },
+              "measurement": {
+                "name": "intersectionVolumeFraction",
+                "actual": 0.118375804,
+                "expected": 0.001
+              },
+              "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
+            },
+            {
+              "code": "GEO_PART_SELF_INTERSECTION",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "Parts \"Mesh_Tier4\" and \"Mesh_Core\" occupy the same space: they share 84.7 m³, which is 9.3% of the smaller part.",
+              "affected": {
+                "node": "Mesh_Tier4"
+              },
+              "measurement": {
+                "name": "intersectionVolumeFraction",
+                "actual": 0.093085249,
+                "expected": 0.001
+              },
+              "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
+            },
+            {
+              "code": "GEO_PART_SELF_INTERSECTION",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "Parts \"Mesh_Tier4\" and \"Mesh_Core\" occupy the same space: they share 84.7 m³, which is 9.3% of the smaller part.",
+              "affected": {
+                "node": "Mesh_Tier4"
+              },
+              "measurement": {
+                "name": "intersectionVolumeFraction",
+                "actual": 0.093085249,
+                "expected": 0.001
+              },
+              "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
+            },
+            {
+              "code": "GEO_PART_SELF_INTERSECTION",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "Parts \"Mesh_Tier4\" and \"Mesh_Core\" occupy the same space: they share 84.7 m³, which is 9.3% of the smaller part.",
+              "affected": {
+                "node": "Mesh_Tier4"
+              },
+              "measurement": {
+                "name": "intersectionVolumeFraction",
+                "actual": 0.093085249,
+                "expected": 0.001
+              },
+              "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
+            },
+            {
+              "code": "GEO_PART_SELF_INTERSECTION",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "Parts \"Mesh_Tier4\" and \"Mesh_Core\" occupy the same space: they share 84.7 m³, which is 9.3% of the smaller part.",
+              "affected": {
+                "node": "Mesh_Tier4"
+              },
+              "measurement": {
+                "name": "intersectionVolumeFraction",
+                "actual": 0.093085249,
+                "expected": 0.001
+              },
+              "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
+            },
+            {
+              "code": "GEO_PART_SELF_INTERSECTION",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "Parts \"Mesh_Tier5\" and \"Mesh_Core\" occupy the same space: they share 74.9 m³, which is 8.2% of the smaller part.",
+              "affected": {
+                "node": "Mesh_Tier5"
+              },
+              "measurement": {
+                "name": "intersectionVolumeFraction",
+                "actual": 0.081871505,
+                "expected": 0.001
+              },
+              "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
+            },
+            {
+              "code": "GEO_PART_SELF_INTERSECTION",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "Parts \"Mesh_Tier5\" and \"Mesh_Core\" occupy the same space: they share 74.9 m³, which is 8.2% of the smaller part.",
+              "affected": {
+                "node": "Mesh_Tier5"
+              },
+              "measurement": {
+                "name": "intersectionVolumeFraction",
+                "actual": 0.081871505,
+                "expected": 0.001
+              },
+              "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
+            },
+            {
+              "code": "GEO_PART_SELF_INTERSECTION",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "Parts \"Mesh_Tier5\" and \"Mesh_Core\" occupy the same space: they share 74.9 m³, which is 8.2% of the smaller part.",
+              "affected": {
+                "node": "Mesh_Tier5"
+              },
+              "measurement": {
+                "name": "intersectionVolumeFraction",
+                "actual": 0.081871505,
+                "expected": 0.001
+              },
+              "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
+            },
+            {
+              "code": "GEO_PART_SELF_INTERSECTION",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "Parts \"Mesh_Tier5\" and \"Mesh_Core\" occupy the same space: they share 74.9 m³, which is 8.2% of the smaller part.",
+              "affected": {
+                "node": "Mesh_Tier5"
+              },
+              "measurement": {
+                "name": "intersectionVolumeFraction",
+                "actual": 0.081871505,
+                "expected": 0.001
+              },
+              "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
+            },
+            {
+              "code": "GEO_PART_SELF_INTERSECTION",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "Parts \"Mesh_Tier2\" and \"Mesh_EastWalk\" occupy the same space: they share 7.91 m³, which is 0.4% of the smaller part.",
+              "affected": {
+                "node": "Mesh_Tier2"
+              },
+              "measurement": {
+                "name": "intersectionVolumeFraction",
+                "actual": 0.00448887,
+                "expected": 0.001
+              },
+              "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
+            },
+            {
+              "code": "GEO_PART_SELF_INTERSECTION",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "Parts \"Mesh_Tier2\" and \"Mesh_EastWalk\" occupy the same space: they share 7.91 m³, which is 0.4% of the smaller part.",
+              "affected": {
+                "node": "Mesh_Tier2"
+              },
+              "measurement": {
+                "name": "intersectionVolumeFraction",
+                "actual": 0.00448887,
+                "expected": 0.001
+              },
+              "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
+            },
+            {
+              "code": "GEO_PART_SELF_INTERSECTION",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "Parts \"Mesh_Tier2\" and \"Mesh_WestWalk\" occupy the same space: they share 7.91 m³, which is 0.4% of the smaller part.",
+              "affected": {
+                "node": "Mesh_Tier2"
+              },
+              "measurement": {
+                "name": "intersectionVolumeFraction",
+                "actual": 0.00448887,
+                "expected": 0.001
+              },
+              "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
+            },
+            {
+              "code": "GEO_PART_SELF_INTERSECTION",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "Parts \"Mesh_Tier2\" and \"Mesh_WestWalk\" occupy the same space: they share 7.91 m³, which is 0.4% of the smaller part.",
+              "affected": {
+                "node": "Mesh_Tier2"
+              },
+              "measurement": {
+                "name": "intersectionVolumeFraction",
+                "actual": 0.00448887,
+                "expected": 0.001
+              },
+              "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
+            },
+            {
+              "code": "GEO_PART_SELF_INTERSECTION",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "Parts \"Mesh_Tier5\" and \"Mesh_Core\" occupy the same space: they share 3.87 m³, which is 0.4% of the smaller part.",
+              "affected": {
+                "node": "Mesh_Tier5"
+              },
+              "measurement": {
+                "name": "intersectionVolumeFraction",
+                "actual": 0.004250438,
+                "expected": 0.001
+              },
+              "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
+            },
+            {
+              "code": "GEO_PART_SELF_INTERSECTION",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "Parts \"Mesh_Tier5\" and \"Mesh_Core\" occupy the same space: they share 3.87 m³, which is 0.4% of the smaller part.",
+              "affected": {
+                "node": "Mesh_Tier5"
+              },
+              "measurement": {
+                "name": "intersectionVolumeFraction",
+                "actual": 0.004250438,
+                "expected": 0.001
+              },
+              "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
+            },
+            {
+              "code": "GEO_PART_SELF_INTERSECTION",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "Parts \"Mesh_Tier5\" and \"Mesh_Core\" occupy the same space: they share 3.87 m³, which is 0.4% of the smaller part.",
+              "affected": {
+                "node": "Mesh_Tier5"
+              },
+              "measurement": {
+                "name": "intersectionVolumeFraction",
+                "actual": 0.004250438,
+                "expected": 0.001
+              },
+              "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
+            },
+            {
+              "code": "GEO_PART_SELF_INTERSECTION",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "Parts \"Mesh_Tier5\" and \"Mesh_Core\" occupy the same space: they share 3.87 m³, which is 0.4% of the smaller part.",
+              "affected": {
+                "node": "Mesh_Tier5"
+              },
+              "measurement": {
+                "name": "intersectionVolumeFraction",
+                "actual": 0.004250438,
+                "expected": 0.001
+              },
+              "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
+            },
+            {
+              "code": "GEO_PART_SELF_INTERSECTION",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "Parts \"Mesh_Tier2\" and \"Mesh_Underdeck\" occupy the same space: they share 5.23 m³, which is 0.1% of the smaller part.",
+              "affected": {
+                "node": "Mesh_Tier2"
+              },
+              "measurement": {
+                "name": "intersectionVolumeFraction",
+                "actual": 0.001265475,
+                "expected": 0.001
+              },
+              "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
+            },
+            {
+              "code": "GEO_PART_SELF_INTERSECTION",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "Parts \"Mesh_Tier2\" and \"Mesh_Underdeck\" occupy the same space: they share 5.23 m³, which is 0.1% of the smaller part.",
+              "affected": {
+                "node": "Mesh_Tier2"
+              },
+              "measurement": {
+                "name": "intersectionVolumeFraction",
+                "actual": 0.001265475,
+                "expected": 0.001
+              },
+              "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
+            },
+            {
+              "code": "GEO_PART_SELF_INTERSECTION",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "Parts \"Mesh_Tier2\" and \"Mesh_Underdeck\" occupy the same space: they share 5.23 m³, which is 0.1% of the smaller part.",
+              "affected": {
+                "node": "Mesh_Tier2"
+              },
+              "measurement": {
+                "name": "intersectionVolumeFraction",
+                "actual": 0.001265475,
+                "expected": 0.001
+              },
+              "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
+            },
+            {
+              "code": "GEO_PART_SELF_INTERSECTION",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "Parts \"Mesh_Tier2\" and \"Mesh_Underdeck\" occupy the same space: they share 5.23 m³, which is 0.1% of the smaller part.",
+              "affected": {
+                "node": "Mesh_Tier2"
+              },
+              "measurement": {
+                "name": "intersectionVolumeFraction",
+                "actual": 0.001265475,
+                "expected": 0.001
+              },
+              "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
+            },
+            {
+              "code": "GEO_PART_SELF_INTERSECTION_UNMEASURED",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "2 part-volume measurements were unavailable: \"Mesh_ContinuousCable\": 28800 triangles exceeds the 20000-triangle analysis budget; \"Mesh_ContinuousCable\": 28800 triangles exceeds the 20000-triangle analysis budget. These parts are not certified clear."
+            }
+          ],
+          "metrics": {
+            "partVolumeCoverage": "partial",
+            "partVolumeScope": "Visible static closed mesh pairs; excludes intra-mesh intersections, motion, open surfaces and usable passage space. Positive overlap may be intentional.",
+            "partVolumeEligibleParts": 41,
+            "partVolumeCandidatePairs": 63,
+            "partVolumeCandidatesLowerBound": false,
+            "partVolumePairsTested": 63,
+            "partVolumeSkipped": 2
+          }
+        },
+        "runtimeCost": {
+          "status": "pass",
+          "findings": [],
+          "metrics": {
+            "instanceabilityGrade": "B",
+            "instanceabilitySummary": "B — 3 mat / 19 geo / 43 draws, opaque",
+            "uniqueGeometries": 19,
+            "uniqueMaterials": 3,
+            "meshNodes": 43,
+            "meshInstances": 43,
+            "drawCalls": 43,
+            "textureCount": 0,
+            "skinned": false,
+            "transparentMaterials": 0,
+            "triangles": 64832,
+            "materialCount": 3,
+            "opaqueMaterials": 3,
+            "maskedMaterials": 0,
+            "blendedMaterials": 0,
+            "singleSidedMaterials": 3,
+            "doubleSidedMaterials": 0,
+            "texturedMaterials": 0,
+            "materialExtensionCount": 0,
+            "materialExtensionsUsed": "",
+            "imageCount": 0,
+            "maxImageDimension": 0,
+            "decodedImageBytesRgba8": 0,
+            "estimatedGpuBytesWithMipmaps": 0,
+            "blendedSurfaceAreaRatio": 0
+          }
+        }
+      },
+      "rules": [
+        {
+          "id": "UNIVERSAL_SCENE_CONTENT_RULE",
+          "mode": "enforce",
+          "status": "evaluated"
+        },
+        {
+          "id": "UNIVERSAL_FINITE_DATA_RULE",
+          "mode": "enforce",
+          "status": "evaluated"
+        },
+        {
+          "id": "UNIVERSAL_INDEX_RULE",
+          "mode": "enforce",
+          "status": "evaluated"
+        },
+        {
+          "id": "UNIVERSAL_ZERO_SCALE_RULE",
+          "mode": "enforce",
+          "status": "evaluated"
+        },
+        {
+          "id": "UNIVERSAL_NODE_NAME_RULE",
+          "mode": "enforce",
+          "status": "evaluated"
+        },
+        {
+          "id": "UNIVERSAL_ANIMATION_TARGET_RULE",
+          "mode": "enforce",
+          "status": "evaluated"
+        },
+        {
+          "id": "MATERIAL_PORTABLE_PBR_RULE",
+          "mode": "enforce",
+          "status": "evaluated"
+        },
+        {
+          "id": "ARCHITECTURE_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        },
+        {
+          "id": "ARCHITECTURE_ADVISORY_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "CHARACTER_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        },
+        {
+          "id": "CHARACTER_ADVISORY_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "VEHICLE_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        },
+        {
+          "id": "VEHICLE_ADVISORY_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "VEHICLE_W6_ADVISORY_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "VEGETATION_CONTACT_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        },
+        {
+          "id": "VEGETATION_ADVISORY_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "PROP_CAPABILITY_EXACT_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        },
+        {
+          "id": "PROP_ADVISORY_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "ENVIRONMENT_EXACT_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        },
+        {
+          "id": "ENVIRONMENT_ADVISORY_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "VFX_EXACT_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        },
+        {
+          "id": "VFX_ADVISORY_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "MODULAR_JOIN_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        },
+        {
+          "id": "ASSET_SCOPE_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "GEO_PART_SELF_INTERSECTION",
+          "mode": "observe",
+          "status": "notEvaluated"
+        },
+        {
+          "id": "GEO_PART_CONNECTIVITY",
+          "mode": "observe",
+          "status": "evaluated"
+        },
+        {
+          "id": "REF_COMPARISON",
+          "mode": "observe",
+          "status": "notEvaluated",
+          "reason": "Neutral measurement adapter remains to be qualified; no category fallback is used."
+        }
+      ],
+      "unevaluatedRequirements": []
+    },
+    "dependencies": [],
+    "rebuild": "engine-required"
+  },
+  "preview": {
+    "fidelity": {
+      "version": "kiln.view-fidelity.v1",
+      "requested": "full-preferred",
+      "delivered": "full-material",
+      "materialFaithful": true,
+      "exactArtifact": false,
+      "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1074",
+      "inputGlbSha256": "sha256:4fc9ebb39ec906d0a472314dcc24e62b5e5039b629082bb42d48497897c87625",
+      "degraded": false,
+      "reasonCodes": [
+        "IN_LOOP_BUILD_NOT_PERSISTED"
+      ]
+    },
+    "backdrop": "neutral"
+  }
+}

@@ -1,0 +1,33 @@
+import {createHeroCombatRig} from './hero-combat-rig.mjs';
+const wrap=x=>Math.atan2(Math.sin(x),Math.cos(x)),STEP=1/60,SPEED=1.4;
+// Free scene traversal. The arena/paired scene give up this pair while active.
+// No waypoint driving: input determines world movement and independent orbit.
+export function createHeroExplorer(T,{pair,groundHeight,world,gate,camera,controls,onBeforeStart=()=>{},onStart=()=>{},onStop=()=>{}}){
+ const rig=createHeroCombatRig(T,{pair,groundHeight}),initial=pair.actors.map(a=>({id:a.id,x:a.group.position.x,z:a.group.position.z,yaw:a.group.rotation.y,vx:0,vz:0,health:100,action:null,blocking:false}));let running=false,disposed=false,player=null,time=0,accumulator=0,actors=[],envelopes=new Map(),saved=null,blocked=false,soleMinimum=null,cameraState=null;
+ let intent={yaw:Math.PI,pitch:.28,distance:5};
+ const alive=()=>{if(disposed)throw Error('Hero explorer disposed');},selected=()=>actors.find(a=>a.id===player);
+ function bounds(actor){const e=envelopes.get(actor.id),h=groundHeight(actor.x,actor.z);return new T.Box3(new T.Vector3(actor.x-e.radius,h+e.minY,actor.z-e.radius),new T.Vector3(actor.x+e.radius,h+e.maxY,actor.z+e.radius));}
+ function measureEnvelope(a){let radius=0,minY=Infinity,maxY=-Infinity;const root=a.group.position;a.body.traverse(n=>{if(!n.isMesh)return;const p=n.geometry.attributes.position;for(let i=0;i<p.count;i++){const v=new T.Vector3().fromBufferAttribute(p,i).applyMatrix4(n.matrixWorld).sub(root);radius=Math.max(radius,Math.hypot(v.x,v.z));minY=Math.min(minY,v.y);maxY=Math.max(maxY,v.y);}});return {radius:radius+.18,minY:Math.min(-.2,minY-.2),maxY:maxY+.2};}
+ function render(updateRig=true){
+  if(updateRig)rig.render({time,status:'exploring',actors});let currentSoleMinimum=Infinity;
+  for(const side of ['left','right']){const foot=pair.actors.find(a=>a.id===player).get('Mesh_foot_'+side),p=foot.geometry.attributes.position;for(let i=0;i<p.count;i++){const v=new T.Vector3().fromBufferAttribute(p,i).applyMatrix4(foot.matrixWorld);currentSoleMinimum=Math.min(currentSoleMinimum,v.y-groundHeight(v.x,v.z));}}soleMinimum=Math.min(soleMinimum??Infinity,currentSoleMinimum);
+  const p=selected(),target=new T.Vector3(p.x,groundHeight(p.x,p.z)+1.3,p.z),horizontal=Math.cos(intent.pitch)*intent.distance,desired=target.clone().add(new T.Vector3(Math.sin(intent.yaw)*horizontal,Math.sin(intent.pitch)*intent.distance,Math.cos(intent.yaw)*horizontal));desired.y=Math.max(desired.y,groundHeight(desired.x,desired.z)+.25);
+  const extras=[];for(const a of pair.actors)if(a.id!==player)a.body.traverse(n=>{if(n.isMesh)extras.push(n);});
+  const radius=Math.max(.25,Math.tan(camera.fov*Math.PI/360)*camera.near*Math.hypot(1,camera.aspect)),distance=desired.distanceTo(target),allowed=world.cameraDistance(target,desired,radius,extras),actual=Math.min(distance,Math.max(.35,allowed));camera.position.copy(target).add(desired.sub(target).normalize().multiplyScalar(actual));controls.target.copy(target);camera.lookAt(target);camera.updateMatrixWorld(true);
+  cameraState={requestedDistance:intent.distance,actualDistance:actual,yaw:intent.yaw,pitch:intent.pitch,obstructed:allowed<distance,position:camera.position.toArray(),target:target.toArray()};gate.setOccupancy(bounds(p));
+ }
+ function stop(){if(!running)return stats();running=false;gate.setOccupancy(null);rig.reset();accumulator=0;for(const a of actors){a.vx=0;a.vz=0;}controls.enabled=saved.enabled;controls.enableDamping=saved.damping;camera.position.copy(saved.position);camera.quaternion.copy(saved.quaternion);controls.target.copy(saved.target);pair.reset();onStop();return stats();}
+ function start(side,spawn){
+  alive();if(!initial.some(a=>a.id===side))throw Error('Unknown exploration hero');if(spawn&&![spawn.x,spawn.z].every(Number.isFinite))throw Error('Finite exploration spawn required');onBeforeStart(side);if(running)stop();
+  saved={enabled:controls.enabled,damping:controls.enableDamping,position:camera.position.clone(),quaternion:camera.quaternion.clone(),target:controls.target.clone()};player=side;actors=initial.map(a=>({...a}));if(spawn)Object.assign(selected(),spawn);time=0;accumulator=0;intent={yaw:Math.PI,pitch:.28,distance:5};blocked=false;soleMinimum=null;rig.reset();rig.render({time,status:'exploring',actors});envelopes=new Map(pair.actors.map(a=>[a.id,measureEnvelope(a)]));if(world.blocked(bounds(selected())))throw Error('Exploration spawn intersects an obstacle');running=true;controls.enabled=false;controls.enableDamping=false;onStart();render();return stats();
+ }
+ function tick(input){
+  const p=selected(),forward=Math.max(-1,Math.min(1,input.forward??0)),right=Math.max(-1,Math.min(1,input.right??0));if(![forward,right].every(Number.isFinite))throw Error('Finite exploration input required');let dx=-Math.sin(intent.yaw)*forward+Math.cos(intent.yaw)*right,dz=-Math.cos(intent.yaw)*forward-Math.sin(intent.yaw)*right,length=Math.hypot(dx,dz);if(length>1){dx/=length;dz/=length;}const oldX=p.x,oldZ=p.z;
+  const admit=(x,z)=>{if(x<-230||x>230||z<35||z>690)return false;const candidate={...p,x,z},box=bounds(candidate);if(world.blocked(box))return false;return actors.filter(a=>a.id!==player).every(a=>!bounds(a).intersectsBox(box));};
+  dx*=SPEED*STEP;dz*=SPEED*STEP;blocked=false;
+  if(dx||dz){if(admit(p.x+dx,p.z+dz)){p.x+=dx;p.z+=dz;}else{blocked=true;if(dx&&admit(p.x+dx,p.z))p.x+=dx;if(dz&&admit(p.x,p.z+dz))p.z+=dz;}const angle=Math.atan2(dx,dz);p.yaw+=Math.max(-2.8*STEP,Math.min(2.8*STEP,wrap(angle-p.yaw)));}
+  p.vx=(p.x-oldX)/STEP;p.vz=(p.z-oldZ)/STEP;time+=STEP;
+ }
+ function stats(){return {active:running,status:running?'exploring':'inactive',player,time,actor:selected()?{...selected()}:null,blocked,soleMinimum,camera:cameraState?{...cameraState}:null,envelope:player&&envelopes.has(player)?{...envelopes.get(player)}:null,rig:rig.stats(),contacts:world.stats(),disposed};}
+ return {start,stop,active:()=>running,stats,bounds:()=>running?bounds(selected()):null,setCameraIntent(value){alive();const next={...intent,...value};if(![next.yaw,next.pitch,next.distance].every(Number.isFinite))throw Error('Finite camera intent required');intent={yaw:wrap(next.yaw),pitch:Math.max(.08,Math.min(1.1,next.pitch)),distance:Math.max(2.2,Math.min(10,next.distance))};},update(dt,input={}){alive();if(!Number.isFinite(dt)||dt<0||dt>.25)throw Error('Bounded exploration delta required');if(!running)return stats();accumulator+=dt;let rendered=false;while(accumulator+1e-12>=STEP){tick(input);accumulator-=STEP;rig.render({time,status:'exploring',actors});rendered=true;}render(!rendered);return stats();},dispose(){if(disposed)return;stop();disposed=true;envelopes.clear();actors=[];}};
+}

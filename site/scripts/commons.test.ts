@@ -167,11 +167,12 @@ describe('Commons catalog bindings', () => {
       expect(pinned(tier.editable.path)).toMatchObject({ bytes: tier.editable.bytes, sha256: tier.editable.sha256 });
       expect(tier.runtime.url).toBe(`https://assets.kilnstudio.tools/${tier.runtime.path}`);
     }
-    // The page's headline downloads are the full tier, and the build serves only that tier's GLB from the site.
+    // Full remains available; the lighter R2 preview has an exact offline validation input.
     expect(bridge.runtimeDownload.sha256).toBe(bridge.tiers[0].runtime.sha256);
     expect(build.models.filter((model) => 'path' in model && String(model.path).includes('golden-gate'))).toHaveLength(1);
-    expect(JSON.stringify(build)).not.toContain('golden-gate-web');
-    expect(JSON.stringify(build)).not.toContain('golden-gate-far');
+    expect(JSON.stringify(build.models)).not.toContain('golden-gate-web');
+    expect(JSON.stringify(build.models)).not.toContain('golden-gate-far');
+    expect(build.viewerModels).toEqual([bridge.tiers.find(tier=>tier.tier==='web')!.runtime.path]);
     expect(bridge.licence.sha256).toBe(tiers.licence.sha256);
     expect(pinned(bridge.licence.path)).toMatchObject({ bytes: tiers.licence.bytes, sha256: tiers.licence.sha256 });
     // No old revision's file remains pinned beside the new delivery.

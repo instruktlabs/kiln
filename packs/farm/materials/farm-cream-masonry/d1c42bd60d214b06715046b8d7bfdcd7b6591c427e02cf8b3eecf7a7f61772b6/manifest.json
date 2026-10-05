@@ -1,0 +1,222 @@
+{
+  "schemaVersion": 1,
+  "materialId": "farm-cream-masonry",
+  "revisionId": "sha256:d1c42bd60d214b06715046b8d7bfdcd7b6591c427e02cf8b3eecf7a7f61772b6",
+  "name": "Farm cream masonry (restrained blocks)",
+  "tags": [
+    "masonry",
+    "stone",
+    "procedural",
+    "farmhouse"
+  ],
+  "tileable": true,
+  "physicalSizeMeters": {
+    "width": 2,
+    "height": 2
+  },
+  "parameters": {
+    "baseColor": 16777215,
+    "roughness": 1,
+    "metalness": 0,
+    "emissiveIntensity": 1,
+    "alphaMode": "opaque",
+    "alphaCutoff": 0.5,
+    "doubleSided": false
+  },
+  "sources": [
+    {
+      "id": "procedural",
+      "kind": "procedural",
+      "provider": "Kiln procedural texture v2",
+      "creator": "Kiln Commons Farm",
+      "license": {
+        "spdx": "CC0-1.0",
+        "url": "https://creativecommons.org/publicdomain/zero/1.0/",
+        "attribution": "Original procedural recipe by Kiln Commons Farm (opus-farmhouse, claude-opus-5-5); seed 4101 retained."
+      },
+      "originalFiles": []
+    }
+  ],
+  "maps": [
+    {
+      "slot": "baseColor",
+      "file": "baseColor.png",
+      "sha256": "sha256:7910a7e95520b76cc7806548305dd4a680ae0069389e76aaad584da9bd37d561",
+      "bytes": 13137,
+      "width": 256,
+      "height": 256,
+      "usage": "albedo",
+      "colorSpace": "srgb",
+      "sourceId": "procedural",
+      "transforms": [
+        {
+          "operation": "procedural-recipe",
+          "tool": "kiln_material create-procedural",
+          "version": "1",
+          "parameters": {
+            "blockLengthM": 0.5,
+            "courseHeightM": 0.25,
+            "seed": 4101
+          }
+        }
+      ],
+      "procedural": {
+        "compiler": "kiln.procedural-texture.v2",
+        "spec": {
+          "schemaVersion": 2,
+          "size": 256,
+          "usage": "albedo",
+          "name": "cream-masonry-albedo",
+          "layers": [
+            {
+              "op": "solid",
+              "color": 14074778,
+              "blend": "normal",
+              "opacity": 1
+            },
+            {
+              "op": "bricks",
+              "brick": 14272416,
+              "mortar": 12561026,
+              "rows": 8,
+              "cols": 4,
+              "mortarWidth": 0.05,
+              "stagger": 0.5,
+              "blend": "normal",
+              "opacity": 0.55
+            },
+            {
+              "op": "noise",
+              "colorA": 13219212,
+              "colorB": 14733224,
+              "scale": 6,
+              "octaves": 3,
+              "seed": 4101,
+              "blend": "normal",
+              "opacity": 0.35
+            }
+          ]
+        },
+        "recipeHash": "sha256:5883100e696a296fb07db289670e1b5dca9beddb866f2f8f5a171f1aa65baad8",
+        "pixelHash": "sha256:a1442f49395731ed927900505c07c0703b5335e8577bdfcf6070cab58018487e",
+        "encoder": {
+          "name": "sharp",
+          "version": "0.35.4"
+        }
+      }
+    },
+    {
+      "slot": "normal",
+      "file": "normal.png",
+      "sha256": "sha256:fdd296a865271362ca211248e8bab39036e51c4f964b60f3724ff92a44fb8cc7",
+      "bytes": 20668,
+      "width": 256,
+      "height": 256,
+      "usage": "normal",
+      "colorSpace": "linear",
+      "normalConvention": "opengl",
+      "sourceId": "procedural",
+      "transforms": [
+        {
+          "operation": "procedural-recipe",
+          "tool": "kiln_material create-procedural",
+          "version": "1",
+          "parameters": {
+            "seed": 4101
+          }
+        }
+      ],
+      "procedural": {
+        "compiler": "kiln.procedural-texture.v2",
+        "spec": {
+          "schemaVersion": 2,
+          "size": 256,
+          "usage": "normal",
+          "name": "cream-masonry-height",
+          "layers": [
+            {
+              "op": "bricks",
+              "brick": 11579568,
+              "mortar": 5263440,
+              "rows": 8,
+              "cols": 4,
+              "mortarWidth": 0.05,
+              "stagger": 0.5,
+              "blend": "normal",
+              "opacity": 1
+            },
+            {
+              "op": "noise",
+              "colorA": 9474192,
+              "colorB": 11579568,
+              "scale": 16,
+              "octaves": 3,
+              "seed": 4101,
+              "blend": "normal",
+              "opacity": 0.4
+            }
+          ]
+        },
+        "derive": {
+          "kind": "normal-from-height",
+          "strength": 2
+        },
+        "recipeHash": "sha256:f80f8d0e9dd41b28c96555d1e2d12f9a2c84c4e5b148191371268ed4fc05746c",
+        "pixelHash": "sha256:7499b8daac8578b6eeb731ebdf0e24eda7cae8730c058ff724982d7b1079ded1",
+        "encoder": {
+          "name": "sharp",
+          "version": "0.35.4"
+        }
+      }
+    },
+    {
+      "slot": "metallicRoughness",
+      "file": "metallicRoughness.png",
+      "sha256": "sha256:5fde65df8f7ff2f4a864da0a6d97d8b55a52ede409dbb22df34eb49639d6eaad",
+      "bytes": 4709,
+      "width": 128,
+      "height": 128,
+      "usage": "metallicRoughness",
+      "colorSpace": "linear",
+      "channelPacking": "r-occlusion-g-roughness-b-metallic",
+      "sourceId": "procedural",
+      "transforms": [
+        {
+          "operation": "procedural-recipe",
+          "tool": "kiln_material create-procedural",
+          "version": "1",
+          "parameters": {
+            "seed": 4101
+          }
+        }
+      ],
+      "procedural": {
+        "compiler": "kiln.procedural-texture.v2",
+        "spec": {
+          "schemaVersion": 2,
+          "size": 128,
+          "usage": "metallicRoughness",
+          "name": "cream-masonry-mr",
+          "layers": [
+            {
+              "op": "noise",
+              "colorA": 16767232,
+              "colorB": 16773120,
+              "scale": 8,
+              "octaves": 2,
+              "seed": 4101,
+              "blend": "normal",
+              "opacity": 1
+            }
+          ]
+        },
+        "recipeHash": "sha256:67bbe1467576b87fae37c20a25fa5339764e9b63f4d8ce5c6a2385fdca3b312b",
+        "pixelHash": "sha256:fd691f83f3a13df8b3fc77dbd85f8308a49bb645b8cc922552c4581821685faf",
+        "encoder": {
+          "name": "sharp",
+          "version": "0.35.4"
+        }
+      }
+    }
+  ]
+}

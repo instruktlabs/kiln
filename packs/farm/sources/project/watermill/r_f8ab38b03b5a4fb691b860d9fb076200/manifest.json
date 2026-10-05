@@ -1,0 +1,2542 @@
+{
+  "version": "kiln.asset.v1",
+  "assetId": "watermill",
+  "revisionId": "r_f8ab38b03b5a4fb691b860d9fb076200",
+  "parentRevision": "r_81d32327d04846c0b18842a28c66bb64",
+  "name": "Watermill",
+  "tags": [],
+  "createdAt": "2026-09-27T18:58:28.300Z",
+  "description": "Original asset and Review-3 repairs authored by Gemini 3.8 Flash High (agy); original author encountered service quota twice. This immutable child is the doorway refinement by gpt-6-astra using codex. Split front plinth/cap around Z[-1.30,-0.30]; solid Y0.12 threshold links existing step and unchanged Y0.08 floor. Frame clear width0.99m, headroom2.04m; local header/keystone/frame and leaf adjusted. DoorPivot inset locally to[2.37,1.05,-1.29], closed rest; added one-shot DoorOpen to-95deg. Original Spin, roof/gables/eaves/ceiling, windows, wheel/gantry, root, sockets, materials and resource pins preserved. Exported triangle checks certify continuous door sweep and empty capsule-sized prism. 14 draws. GPU outside/inside and animation review complete. Scene capsule controller acceptance remains coordinator-owned; no performance measurements.",
+  "brief": "Doorway-only repair for Rowan, 1.90m height and 0.30m capsule radius; preserve Review-3 roof/gable/eave/ceiling/wheel repairs and original Spin.",
+  "attribution": {
+    "model": "gpt-6-astra",
+    "harness": "codex",
+    "author": "Astra — doorway refinement only; original watermill by Gemini 3.8 Flash High"
+  },
+  "editable": true,
+  "files": {
+    "asset.glb": {
+      "sha256": "sha256:15eca5715a2420c3872bf1175a4a6e5ca199c59b2f2f1dd0c9fd4e2569a825db",
+      "bytes": 580564
+    },
+    "source.kiln.js": {
+      "sha256": "sha256:1f4ce4eecbd06a160a249760ec97c29cb85a26182bc92a390d520c9027607809",
+      "bytes": 33643
+    },
+    "preview.png": {
+      "sha256": "sha256:202032a36ee89d4c4ca9e11d8a1e5dcda1b160adf69c683e12f6d786874897e0",
+      "bytes": 335631
+    }
+  },
+  "build": {
+    "engine": "source-development:unverified",
+    "options": {
+      "gltfExporter": "legacy",
+      "optimize": "off",
+      "instance": "auto",
+      "geometryPolicy": "warn",
+      "qaMode": "enforce",
+      "evaluatorMode": "subprocess",
+      "projectId": "farm-production",
+      "projectRevision": "r_0000000001_9838d1aad05c60737c93baf18b9d32093e2855d46a368e7c3943d4e88183d758",
+      "requirements": {
+        "kind": "kiln.requirements-context.v1",
+        "requirements": {
+          "kind": "kiln.asset-requirements",
+          "schemaVersion": 1,
+          "labels": [],
+          "frame": {
+            "units": "m",
+            "forward": "+X",
+            "up": "+Y",
+            "right": "+Z",
+            "groundY": 0
+          },
+          "requirements": {}
+        },
+        "policyHash": "sha256:9efcec929bf8a510c7dd0e18b687381e3824ff3d26cc20307f601d17535e5f34",
+        "adviceHash": "sha256:ca1f59b45e82e712e06149909000e2bc37b8cf159af70e32847088cecf153268"
+      }
+    },
+    "warnings": [],
+    "integration": {
+      "schemaVersion": "kiln.integration-manifest.v1",
+      "analyzerVersion": 1,
+      "artifactSha256": "15eca5715a2420c3872bf1175a4a6e5ca199c59b2f2f1dd0c9fd4e2569a825db",
+      "units": "m",
+      "axes": {
+        "forward": "+X",
+        "up": "+Y",
+        "right": "+Z"
+      },
+      "bounds": {
+        "min": [
+          -2.9200000762939453,
+          -2.3841858265427618e-8,
+          -2.7248528003692627
+        ],
+        "max": [
+          2.940000057220459,
+          4.940000057220459,
+          2.5799999237060547
+        ],
+        "size": [
+          5.860000133514404,
+          4.940000081062317,
+          5.304852724075317
+        ],
+        "center": [
+          0.009999990463256836,
+          2.4700000166893004,
+          -0.072426438331604
+        ]
+      },
+      "pivot": {
+        "convention": "author-origin",
+        "position": [
+          0,
+          0,
+          0
+        ]
+      },
+      "ground": {
+        "groundY": 0,
+        "contactTolerance": 0.02,
+        "minY": -2.3841858265427618e-8,
+        "offsetToGround": 2.3841858265427618e-8,
+        "grounded": true
+      },
+      "defaultScene": {
+        "index": 0,
+        "name": "Watermill"
+      },
+      "requestedRole": "building",
+      "renderMetrics": {
+        "triangles": 4052,
+        "drawCalls": 14,
+        "uniqueGeometries": 14,
+        "uniqueMaterials": 5,
+        "textureCount": 12,
+        "transparentMaterials": 1,
+        "skinned": false
+      },
+      "structuralQa": {
+        "hasDefaultScene": true,
+        "finiteBounds": true,
+        "validatorErrors": 0,
+        "validatorWarnings": 0
+      },
+      "visualQa": "not_assessed"
+    },
+    "qa": {
+      "kind": "kiln.asset-qa-report",
+      "schemaVersion": 2,
+      "qaProfile": "asset.requirements.v1",
+      "policyHash": "sha256:9efcec929bf8a510c7dd0e18b687381e3824ff3d26cc20307f601d17535e5f34",
+      "adviceHash": "sha256:ca1f59b45e82e712e06149909000e2bc37b8cf159af70e32847088cecf153268",
+      "acceptance": "accepted",
+      "disposition": "warn",
+      "dimensions": {
+        "exportIntegrity": {
+          "status": "pass",
+          "findings": [],
+          "metrics": {
+            "gltfErrors": 0,
+            "gltfWarnings": 0
+          }
+        },
+        "requirementReadiness": {
+          "status": "pass",
+          "findings": []
+        },
+        "promptAlignment": {
+          "status": "notEvaluated",
+          "findings": []
+        },
+        "visualQuality": {
+          "status": "pass",
+          "findings": [
+            {
+              "code": "GEO_PART_SELF_INTERSECTION",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "Parts \"Mesh_Gantry_Wood\" and \"Mesh_Gantry_Metal\" occupy the same space: they share 0.0182 m³, which is 133.1% of the smaller part.",
+              "affected": {
+                "node": "Mesh_Gantry_Wood"
+              },
+              "measurement": {
+                "name": "intersectionVolumeFraction",
+                "actual": 1.331228112,
+                "expected": 0.001
+              },
+              "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
+            },
+            {
+              "code": "GEO_PART_SELF_INTERSECTION",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "Parts \"Mesh_DoorLeaf_Wood\" and \"Mesh_DoorLeaf_Metal\" occupy the same space: they share 0.00388 m³, which is 80.4% of the smaller part.",
+              "affected": {
+                "node": "Mesh_DoorLeaf_Wood"
+              },
+              "measurement": {
+                "name": "intersectionVolumeFraction",
+                "actual": 0.804311761,
+                "expected": 0.001
+              },
+              "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
+            },
+            {
+              "code": "GEO_PART_SELF_INTERSECTION",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "Parts \"Mesh_Wheel_Wood\" and \"Mesh_Wheel_Metal\" occupy the same space: they share 0.0512 m³, which is 53.0% of the smaller part.",
+              "affected": {
+                "node": "Mesh_Wheel_Wood"
+              },
+              "measurement": {
+                "name": "intersectionVolumeFraction",
+                "actual": 0.530340136,
+                "expected": 0.001
+              },
+              "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
+            },
+            {
+              "code": "GEO_PART_SELF_INTERSECTION",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "Parts \"Mesh_Building_Wood\" and \"Mesh_WindowBack_Glass\" occupy the same space: they share 0.00306 m³, which is 25.9% of the smaller part.",
+              "affected": {
+                "node": "Mesh_Building_Wood"
+              },
+              "measurement": {
+                "name": "intersectionVolumeFraction",
+                "actual": 0.2591464,
+                "expected": 0.001
+              },
+              "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
+            },
+            {
+              "code": "GEO_PART_SELF_INTERSECTION",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "Parts \"Mesh_Building_Wood\" and \"Mesh_WindowFront_Glass\" occupy the same space: they share 0.00306 m³, which is 25.9% of the smaller part.",
+              "affected": {
+                "node": "Mesh_Building_Wood"
+              },
+              "measurement": {
+                "name": "intersectionVolumeFraction",
+                "actual": 0.2591464,
+                "expected": 0.001
+              },
+              "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
+            },
+            {
+              "code": "GEO_PART_SELF_INTERSECTION",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "Parts \"Mesh_Building_Wood\" and \"Mesh_WindowLeft_Glass\" occupy the same space: they share 0.00306 m³, which is 25.9% of the smaller part.",
+              "affected": {
+                "node": "Mesh_Building_Wood"
+              },
+              "measurement": {
+                "name": "intersectionVolumeFraction",
+                "actual": 0.259146383,
+                "expected": 0.001
+              },
+              "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
+            },
+            {
+              "code": "GEO_PART_SELF_INTERSECTION",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "Parts \"Mesh_Building_Masonry\" and \"Mesh_Gantry_Metal\" occupy the same space: they share 0.00235 m³, which is 17.2% of the smaller part.",
+              "affected": {
+                "node": "Mesh_Building_Masonry"
+              },
+              "measurement": {
+                "name": "intersectionVolumeFraction",
+                "actual": 0.172307329,
+                "expected": 0.001
+              },
+              "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
+            },
+            {
+              "code": "GEO_PART_SELF_INTERSECTION",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "Parts \"Mesh_Building_Masonry\" and \"Mesh_Gantry_Wood\" occupy the same space: they share 0.0605 m³, which is 13.8% of the smaller part.",
+              "affected": {
+                "node": "Mesh_Building_Masonry"
+              },
+              "measurement": {
+                "name": "intersectionVolumeFraction",
+                "actual": 0.13837393,
+                "expected": 0.001
+              },
+              "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
+            },
+            {
+              "code": "GEO_PART_SELF_INTERSECTION",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "Parts \"Mesh_Building_Masonry\" and \"Mesh_Building_Wood\" occupy the same space: they share 0.178 m³, which is 11.4% of the smaller part.",
+              "affected": {
+                "node": "Mesh_Building_Masonry"
+              },
+              "measurement": {
+                "name": "intersectionVolumeFraction",
+                "actual": 0.1141523,
+                "expected": 0.001
+              },
+              "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
+            },
+            {
+              "code": "GEO_PART_SELF_INTERSECTION",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "Parts \"Mesh_Gantry_Wood\" and \"Mesh_Wheel_Metal\" occupy the same space: they share 0.00815 m³, which is 8.4% of the smaller part.",
+              "affected": {
+                "node": "Mesh_Gantry_Wood"
+              },
+              "measurement": {
+                "name": "intersectionVolumeFraction",
+                "actual": 0.084436123,
+                "expected": 0.001
+              },
+              "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
+            },
+            {
+              "code": "GEO_PART_SELF_INTERSECTION",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "Parts \"Mesh_Gantry_Wood\" and \"Mesh_Wheel_Wood\" occupy the same space: they share 0.0200 m³, which is 8.0% of the smaller part.",
+              "affected": {
+                "node": "Mesh_Gantry_Wood"
+              },
+              "measurement": {
+                "name": "intersectionVolumeFraction",
+                "actual": 0.080197468,
+                "expected": 0.001
+              },
+              "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
+            },
+            {
+              "code": "GEO_PART_SELF_INTERSECTION",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "Parts \"Mesh_Roof_Shingles\" and \"Mesh_Roof_Wood\" occupy the same space: they share 0.0767 m³, which is 4.6% of the smaller part.",
+              "affected": {
+                "node": "Mesh_Roof_Shingles"
+              },
+              "measurement": {
+                "name": "intersectionVolumeFraction",
+                "actual": 0.046184533,
+                "expected": 0.001
+              },
+              "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
+            },
+            {
+              "code": "GEO_PART_SELF_INTERSECTION",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "Parts \"Mesh_Roof_Masonry\" and \"Mesh_Roof_Wood\" occupy the same space: they share 0.0377 m³, which is 2.3% of the smaller part.",
+              "affected": {
+                "node": "Mesh_Roof_Masonry"
+              },
+              "measurement": {
+                "name": "intersectionVolumeFraction",
+                "actual": 0.022718428,
+                "expected": 0.001
+              },
+              "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
+            },
+            {
+              "code": "GEO_PART_SELF_INTERSECTION",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "Parts \"Mesh_Building_Masonry\" and \"Mesh_Roof_Wood\" occupy the same space: they share 0.0127 m³, which is 0.8% of the smaller part.",
+              "affected": {
+                "node": "Mesh_Building_Masonry"
+              },
+              "measurement": {
+                "name": "intersectionVolumeFraction",
+                "actual": 0.007621361,
+                "expected": 0.001
+              },
+              "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
+            }
+          ],
+          "metrics": {
+            "partVolumeCoverage": "complete-static-pairs",
+            "partVolumeScope": "Visible static closed mesh pairs; excludes intra-mesh intersections, motion, open surfaces and usable passage space. Positive overlap may be intentional.",
+            "partVolumeEligibleParts": 14,
+            "partVolumeCandidatePairs": 26,
+            "partVolumeCandidatesLowerBound": false,
+            "partVolumePairsTested": 26,
+            "partVolumeSkipped": 0
+          }
+        },
+        "runtimeCost": {
+          "status": "warn",
+          "findings": [
+            {
+              "code": "MATERIAL_IMAGE_COUNT_BUDGET",
+              "disposition": "warn",
+              "dimension": "runtimeCost",
+              "profile": "web.portable.v1.standard",
+              "message": "12 images exceed the 4-image web.portable.v1/standard budget. Reuse approved resource IDs, remove unused images, or atlas compatible same-color-space slots; never atlas normal/data maps into an sRGB image.",
+              "measurement": {
+                "name": "imageCount",
+                "actual": 12,
+                "threshold": 4,
+                "unit": "images"
+              }
+            }
+          ],
+          "metrics": {
+            "instanceabilityGrade": "C",
+            "instanceabilitySummary": "C — 5 mat / 14 geo / 14 draws, transparent",
+            "uniqueGeometries": 14,
+            "uniqueMaterials": 5,
+            "meshNodes": 14,
+            "meshInstances": 14,
+            "drawCalls": 14,
+            "textureCount": 12,
+            "skinned": false,
+            "transparentMaterials": 1,
+            "triangles": 4052,
+            "materialCount": 5,
+            "opaqueMaterials": 4,
+            "maskedMaterials": 0,
+            "blendedMaterials": 1,
+            "singleSidedMaterials": 4,
+            "doubleSidedMaterials": 1,
+            "texturedMaterials": 4,
+            "materialExtensionCount": 0,
+            "materialExtensionsUsed": "",
+            "imageCount": 12,
+            "maxImageDimension": 256,
+            "decodedImageBytesRgba8": 2555904,
+            "estimatedGpuBytesWithMipmaps": 3407880,
+            "blendedSurfaceAreaRatio": 0.008906900059717318
+          }
+        }
+      },
+      "rules": [
+        {
+          "id": "UNIVERSAL_SCENE_CONTENT_RULE",
+          "mode": "enforce",
+          "status": "evaluated"
+        },
+        {
+          "id": "UNIVERSAL_FINITE_DATA_RULE",
+          "mode": "enforce",
+          "status": "evaluated"
+        },
+        {
+          "id": "UNIVERSAL_INDEX_RULE",
+          "mode": "enforce",
+          "status": "evaluated"
+        },
+        {
+          "id": "UNIVERSAL_ZERO_SCALE_RULE",
+          "mode": "enforce",
+          "status": "evaluated"
+        },
+        {
+          "id": "UNIVERSAL_NODE_NAME_RULE",
+          "mode": "enforce",
+          "status": "evaluated"
+        },
+        {
+          "id": "UNIVERSAL_ANIMATION_TARGET_RULE",
+          "mode": "enforce",
+          "status": "evaluated"
+        },
+        {
+          "id": "MATERIAL_PORTABLE_PBR_RULE",
+          "mode": "enforce",
+          "status": "evaluated"
+        },
+        {
+          "id": "ARCHITECTURE_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        },
+        {
+          "id": "ARCHITECTURE_ADVISORY_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "CHARACTER_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        },
+        {
+          "id": "CHARACTER_ADVISORY_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "VEHICLE_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        },
+        {
+          "id": "VEHICLE_ADVISORY_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "VEHICLE_W6_ADVISORY_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "VEGETATION_CONTACT_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        },
+        {
+          "id": "VEGETATION_ADVISORY_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "PROP_CAPABILITY_EXACT_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        },
+        {
+          "id": "PROP_ADVISORY_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "ENVIRONMENT_EXACT_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        },
+        {
+          "id": "ENVIRONMENT_ADVISORY_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "VFX_EXACT_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        },
+        {
+          "id": "VFX_ADVISORY_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "MODULAR_JOIN_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        },
+        {
+          "id": "ASSET_SCOPE_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "GEO_PART_SELF_INTERSECTION",
+          "mode": "observe",
+          "status": "evaluated"
+        },
+        {
+          "id": "GEO_PART_CONNECTIVITY",
+          "mode": "observe",
+          "status": "evaluated"
+        },
+        {
+          "id": "REF_COMPARISON",
+          "mode": "observe",
+          "status": "notEvaluated",
+          "reason": "Neutral measurement adapter remains to be qualified; no category fallback is used."
+        }
+      ],
+      "unevaluatedRequirements": []
+    },
+    "dependencies": [
+      {
+        "kind": "kiln.material.v1",
+        "delivery": "runtime",
+        "manifest": {
+          "schemaVersion": 1,
+          "materialId": "farm-brushed-metal",
+          "revisionId": "sha256:67c9159b792a918da293bffc9468ed8834957dd51d83ce290af980a72a9065d0",
+          "name": "Brushed neutral metal",
+          "tags": [
+            "metal",
+            "procedural"
+          ],
+          "tileable": true,
+          "physicalSizeMeters": {
+            "width": 1,
+            "height": 1
+          },
+          "parameters": {
+            "roughness": 1,
+            "metalness": 1,
+            "emissiveIntensity": 1,
+            "alphaMode": "opaque",
+            "alphaCutoff": 0.5,
+            "doubleSided": false
+          },
+          "sources": [
+            {
+              "id": "preset",
+              "kind": "procedural",
+              "provider": "Kiln material presets v1",
+              "creator": "Kiln Commons Farm pilot",
+              "assetId": "brushed-metal",
+              "license": {
+                "spdx": "CC0-1.0",
+                "url": "https://creativecommons.org/publicdomain/zero/1.0/",
+                "attribution": "Procedurally generated with Kiln; recipe and seed retained."
+              },
+              "originalFiles": []
+            }
+          ],
+          "maps": [
+            {
+              "slot": "baseColor",
+              "file": "baseColor.png",
+              "sha256": "sha256:dcbb7ecd3345f17b9495dcafd334581cfb2087ffd3036b3e9dbff08f6764bd81",
+              "bytes": 14095,
+              "width": 256,
+              "height": 256,
+              "usage": "albedo",
+              "colorSpace": "srgb",
+              "sourceId": "preset",
+              "transforms": [
+                {
+                  "operation": "preset",
+                  "tool": "kiln.material-presets",
+                  "version": "1",
+                  "parameters": {
+                    "presetId": "brushed-metal",
+                    "seed": 262
+                  }
+                }
+              ],
+              "procedural": {
+                "compiler": "kiln.procedural-texture.v2",
+                "spec": {
+                  "schemaVersion": 2,
+                  "size": 256,
+                  "usage": "albedo",
+                  "layers": [
+                    {
+                      "op": "noise",
+                      "colorA": 10988461,
+                      "colorB": 12370114,
+                      "scale": 4,
+                      "octaves": 3,
+                      "seed": 262,
+                      "blend": "normal",
+                      "opacity": 1
+                    },
+                    {
+                      "op": "stripes",
+                      "colorA": 10067102,
+                      "colorB": 12896201,
+                      "count": 64,
+                      "angleDeg": 0,
+                      "blend": "normal",
+                      "opacity": 0.1
+                    }
+                  ]
+                },
+                "recipeHash": "sha256:962f688fc530848012ddd7c6ee84d80f6341824dd7ef2d9473e0072dbe1d42ef",
+                "pixelHash": "sha256:4f747119802572d8b8ef8b223ba519632cc82a5e8c9e48332b12db66fc8d7fa7",
+                "encoder": {
+                  "name": "sharp",
+                  "version": "0.35.4"
+                }
+              }
+            },
+            {
+              "slot": "normal",
+              "file": "normal.png",
+              "sha256": "sha256:eaeb490c2dd99e04f930ea8bee65aa0136bf2e3a2ae7bfc2c227fd8bbc56e260",
+              "bytes": 16093,
+              "width": 256,
+              "height": 256,
+              "usage": "normal",
+              "colorSpace": "linear",
+              "normalConvention": "opengl",
+              "sourceId": "preset",
+              "transforms": [
+                {
+                  "operation": "preset",
+                  "tool": "kiln.material-presets",
+                  "version": "1",
+                  "parameters": {
+                    "presetId": "brushed-metal",
+                    "seed": 262
+                  }
+                }
+              ],
+              "procedural": {
+                "compiler": "kiln.procedural-texture.v2",
+                "spec": {
+                  "schemaVersion": 2,
+                  "size": 256,
+                  "usage": "normal",
+                  "layers": [
+                    {
+                      "op": "noise",
+                      "colorA": 7368816,
+                      "colorB": 9474192,
+                      "scale": 8,
+                      "octaves": 3,
+                      "seed": 262,
+                      "blend": "normal",
+                      "opacity": 1
+                    },
+                    {
+                      "op": "stripes",
+                      "colorA": 6710886,
+                      "colorB": 10066329,
+                      "count": 64,
+                      "angleDeg": 0,
+                      "blend": "normal",
+                      "opacity": 0.3
+                    }
+                  ]
+                },
+                "derive": {
+                  "kind": "normal-from-height",
+                  "strength": 1
+                },
+                "recipeHash": "sha256:79e1bceeb199f139f7882bd3a10f732e012c3822e7f561a1e4766e322060bd97",
+                "pixelHash": "sha256:2e8e1d18e161b89d2943d85f36558eebd1255e99d58237610863f4d44fee8a37",
+                "encoder": {
+                  "name": "sharp",
+                  "version": "0.35.4"
+                }
+              }
+            },
+            {
+              "slot": "metallicRoughness",
+              "file": "metallicRoughness.png",
+              "sha256": "sha256:0a56078595cce6e84ac43c87f5cc084703604367f4bab9956532e1fb69f678bd",
+              "bytes": 19797,
+              "width": 256,
+              "height": 256,
+              "usage": "metallicRoughness",
+              "colorSpace": "linear",
+              "channelPacking": "r-occlusion-g-roughness-b-metallic",
+              "sourceId": "preset",
+              "transforms": [
+                {
+                  "operation": "preset",
+                  "tool": "kiln.material-presets",
+                  "version": "1",
+                  "parameters": {
+                    "presetId": "brushed-metal",
+                    "seed": 262
+                  }
+                }
+              ],
+              "procedural": {
+                "compiler": "kiln.procedural-texture.v2",
+                "spec": {
+                  "schemaVersion": 2,
+                  "size": 256,
+                  "usage": "metallicRoughness",
+                  "layers": [
+                    {
+                      "op": "noise",
+                      "colorA": 16732415,
+                      "colorB": 16745215,
+                      "scale": 8,
+                      "octaves": 3,
+                      "seed": 262,
+                      "blend": "normal",
+                      "opacity": 1
+                    }
+                  ]
+                },
+                "recipeHash": "sha256:3eecdba76668c52458556350367b227ce3dfbe3b7408e259929e1809d18fcf2c",
+                "pixelHash": "sha256:b43ce88bbfeb799d4d55d3b68fdb96bb3b275ef4f90bf3c8f5a04dd37e5eb861",
+                "encoder": {
+                  "name": "sharp",
+                  "version": "0.35.4"
+                }
+              }
+            }
+          ]
+        }
+      },
+      {
+        "kind": "kiln.material.v1",
+        "delivery": "runtime",
+        "manifest": {
+          "schemaVersion": 1,
+          "materialId": "farm-charcoal-roof",
+          "revisionId": "sha256:ff552c543e787c67a870286f2eb1fab3a342891a4f7b41675a07943fad550f85",
+          "name": "Farm charcoal roof shingles",
+          "tags": [
+            "roof",
+            "shingle",
+            "procedural",
+            "farmhouse"
+          ],
+          "tileable": true,
+          "physicalSizeMeters": {
+            "width": 1,
+            "height": 1
+          },
+          "parameters": {
+            "baseColor": 16777215,
+            "roughness": 1,
+            "metalness": 0,
+            "emissiveIntensity": 1,
+            "alphaMode": "opaque",
+            "alphaCutoff": 0.5,
+            "doubleSided": false
+          },
+          "sources": [
+            {
+              "id": "procedural",
+              "kind": "procedural",
+              "provider": "Kiln procedural texture v2",
+              "creator": "Kiln Commons Farm",
+              "license": {
+                "spdx": "CC0-1.0",
+                "url": "https://creativecommons.org/publicdomain/zero/1.0/",
+                "attribution": "Original procedural recipe by Kiln Commons Farm (opus-farmhouse, claude-opus-5-5); seed 4202 retained."
+              },
+              "originalFiles": []
+            }
+          ],
+          "maps": [
+            {
+              "slot": "baseColor",
+              "file": "baseColor.png",
+              "sha256": "sha256:262c255a3ea9f242739e68d284b4b58e5208b151332c988eaae57364f6a72816",
+              "bytes": 12105,
+              "width": 256,
+              "height": 256,
+              "usage": "albedo",
+              "colorSpace": "srgb",
+              "sourceId": "procedural",
+              "transforms": [
+                {
+                  "operation": "procedural-recipe",
+                  "tool": "kiln_material create-procedural",
+                  "version": "1",
+                  "parameters": {
+                    "courseHeightM": 0.2,
+                    "seed": 4202,
+                    "shingleWidthM": 0.25
+                  }
+                }
+              ],
+              "procedural": {
+                "compiler": "kiln.procedural-texture.v2",
+                "spec": {
+                  "schemaVersion": 2,
+                  "size": 256,
+                  "usage": "albedo",
+                  "name": "charcoal-roof-albedo",
+                  "layers": [
+                    {
+                      "op": "solid",
+                      "color": 4803405,
+                      "blend": "normal",
+                      "opacity": 1
+                    },
+                    {
+                      "op": "bricks",
+                      "brick": 5132370,
+                      "mortar": 3487546,
+                      "rows": 5,
+                      "cols": 4,
+                      "mortarWidth": 0.07,
+                      "stagger": 0.5,
+                      "blend": "normal",
+                      "opacity": 0.8
+                    },
+                    {
+                      "op": "noise",
+                      "colorA": 4211268,
+                      "colorB": 5592922,
+                      "scale": 8,
+                      "octaves": 3,
+                      "seed": 4202,
+                      "blend": "normal",
+                      "opacity": 0.4
+                    }
+                  ]
+                },
+                "recipeHash": "sha256:a54f26b3f67a24910f9e10227f8c0225012b60dc926b40603ffcb0b29de6b881",
+                "pixelHash": "sha256:4a99fa4833e4db88e5235236066fd6ea2aafd95108e7b15a5d788a9f2f1cc491",
+                "encoder": {
+                  "name": "sharp",
+                  "version": "0.35.4"
+                }
+              }
+            },
+            {
+              "slot": "normal",
+              "file": "normal.png",
+              "sha256": "sha256:b9a4ee602028c7628d345dee349509a287f562b71290f36d7ee0e9e6870d3d71",
+              "bytes": 24654,
+              "width": 256,
+              "height": 256,
+              "usage": "normal",
+              "colorSpace": "linear",
+              "normalConvention": "opengl",
+              "sourceId": "procedural",
+              "transforms": [
+                {
+                  "operation": "procedural-recipe",
+                  "tool": "kiln_material create-procedural",
+                  "version": "1",
+                  "parameters": {
+                    "seed": 4202
+                  }
+                }
+              ],
+              "procedural": {
+                "compiler": "kiln.procedural-texture.v2",
+                "spec": {
+                  "schemaVersion": 2,
+                  "size": 256,
+                  "usage": "normal",
+                  "name": "charcoal-roof-height",
+                  "layers": [
+                    {
+                      "op": "bricks",
+                      "brick": 11579568,
+                      "mortar": 4210752,
+                      "rows": 5,
+                      "cols": 4,
+                      "mortarWidth": 0.07,
+                      "stagger": 0.5,
+                      "blend": "normal",
+                      "opacity": 1
+                    },
+                    {
+                      "op": "noise",
+                      "colorA": 9474192,
+                      "colorB": 11579568,
+                      "scale": 12,
+                      "octaves": 3,
+                      "seed": 4202,
+                      "blend": "normal",
+                      "opacity": 0.35
+                    }
+                  ]
+                },
+                "derive": {
+                  "kind": "normal-from-height",
+                  "strength": 2.5
+                },
+                "recipeHash": "sha256:1a475bf9e382b3cea133c45c3d7f231d72dc7373e68f39bc8d2d71298e518586",
+                "pixelHash": "sha256:7028aaa426d4e9e4e83b508bdbd8af752dc4840c050c5d7d98c2aff8c2e3415f",
+                "encoder": {
+                  "name": "sharp",
+                  "version": "0.35.4"
+                }
+              }
+            },
+            {
+              "slot": "metallicRoughness",
+              "file": "metallicRoughness.png",
+              "sha256": "sha256:4b64e7fb17694b6aeed7a92a17ccf6d95c436d0a57a8f2d81aca5272d9212aa0",
+              "bytes": 4257,
+              "width": 128,
+              "height": 128,
+              "usage": "metallicRoughness",
+              "colorSpace": "linear",
+              "channelPacking": "r-occlusion-g-roughness-b-metallic",
+              "sourceId": "procedural",
+              "transforms": [
+                {
+                  "operation": "procedural-recipe",
+                  "tool": "kiln_material create-procedural",
+                  "version": "1",
+                  "parameters": {
+                    "seed": 4202
+                  }
+                }
+              ],
+              "procedural": {
+                "compiler": "kiln.procedural-texture.v2",
+                "spec": {
+                  "schemaVersion": 2,
+                  "size": 128,
+                  "usage": "metallicRoughness",
+                  "name": "charcoal-roof-mr",
+                  "layers": [
+                    {
+                      "op": "noise",
+                      "colorA": 16768000,
+                      "colorB": 16772864,
+                      "scale": 8,
+                      "octaves": 2,
+                      "seed": 4202,
+                      "blend": "normal",
+                      "opacity": 1
+                    }
+                  ]
+                },
+                "recipeHash": "sha256:d6249feb130c8c6849f02de0a50121e07b1c7f622bad4eb973910bc3e18b1e0e",
+                "pixelHash": "sha256:7cdf6d19881b6498f7fd8c078087ddf57189f32f6558d2ddd821581d402c10d5",
+                "encoder": {
+                  "name": "sharp",
+                  "version": "0.35.4"
+                }
+              }
+            }
+          ]
+        }
+      },
+      {
+        "kind": "kiln.material.v1",
+        "delivery": "runtime",
+        "manifest": {
+          "schemaVersion": 1,
+          "materialId": "farm-cream-masonry",
+          "revisionId": "sha256:d1c42bd60d214b06715046b8d7bfdcd7b6591c427e02cf8b3eecf7a7f61772b6",
+          "name": "Farm cream masonry (restrained blocks)",
+          "tags": [
+            "masonry",
+            "stone",
+            "procedural",
+            "farmhouse"
+          ],
+          "tileable": true,
+          "physicalSizeMeters": {
+            "width": 2,
+            "height": 2
+          },
+          "parameters": {
+            "baseColor": 16777215,
+            "roughness": 1,
+            "metalness": 0,
+            "emissiveIntensity": 1,
+            "alphaMode": "opaque",
+            "alphaCutoff": 0.5,
+            "doubleSided": false
+          },
+          "sources": [
+            {
+              "id": "procedural",
+              "kind": "procedural",
+              "provider": "Kiln procedural texture v2",
+              "creator": "Kiln Commons Farm",
+              "license": {
+                "spdx": "CC0-1.0",
+                "url": "https://creativecommons.org/publicdomain/zero/1.0/",
+                "attribution": "Original procedural recipe by Kiln Commons Farm (opus-farmhouse, claude-opus-5-5); seed 4101 retained."
+              },
+              "originalFiles": []
+            }
+          ],
+          "maps": [
+            {
+              "slot": "baseColor",
+              "file": "baseColor.png",
+              "sha256": "sha256:7910a7e95520b76cc7806548305dd4a680ae0069389e76aaad584da9bd37d561",
+              "bytes": 13137,
+              "width": 256,
+              "height": 256,
+              "usage": "albedo",
+              "colorSpace": "srgb",
+              "sourceId": "procedural",
+              "transforms": [
+                {
+                  "operation": "procedural-recipe",
+                  "tool": "kiln_material create-procedural",
+                  "version": "1",
+                  "parameters": {
+                    "blockLengthM": 0.5,
+                    "courseHeightM": 0.25,
+                    "seed": 4101
+                  }
+                }
+              ],
+              "procedural": {
+                "compiler": "kiln.procedural-texture.v2",
+                "spec": {
+                  "schemaVersion": 2,
+                  "size": 256,
+                  "usage": "albedo",
+                  "name": "cream-masonry-albedo",
+                  "layers": [
+                    {
+                      "op": "solid",
+                      "color": 14074778,
+                      "blend": "normal",
+                      "opacity": 1
+                    },
+                    {
+                      "op": "bricks",
+                      "brick": 14272416,
+                      "mortar": 12561026,
+                      "rows": 8,
+                      "cols": 4,
+                      "mortarWidth": 0.05,
+                      "stagger": 0.5,
+                      "blend": "normal",
+                      "opacity": 0.55
+                    },
+                    {
+                      "op": "noise",
+                      "colorA": 13219212,
+                      "colorB": 14733224,
+                      "scale": 6,
+                      "octaves": 3,
+                      "seed": 4101,
+                      "blend": "normal",
+                      "opacity": 0.35
+                    }
+                  ]
+                },
+                "recipeHash": "sha256:5883100e696a296fb07db289670e1b5dca9beddb866f2f8f5a171f1aa65baad8",
+                "pixelHash": "sha256:a1442f49395731ed927900505c07c0703b5335e8577bdfcf6070cab58018487e",
+                "encoder": {
+                  "name": "sharp",
+                  "version": "0.35.4"
+                }
+              }
+            },
+            {
+              "slot": "normal",
+              "file": "normal.png",
+              "sha256": "sha256:fdd296a865271362ca211248e8bab39036e51c4f964b60f3724ff92a44fb8cc7",
+              "bytes": 20668,
+              "width": 256,
+              "height": 256,
+              "usage": "normal",
+              "colorSpace": "linear",
+              "normalConvention": "opengl",
+              "sourceId": "procedural",
+              "transforms": [
+                {
+                  "operation": "procedural-recipe",
+                  "tool": "kiln_material create-procedural",
+                  "version": "1",
+                  "parameters": {
+                    "seed": 4101
+                  }
+                }
+              ],
+              "procedural": {
+                "compiler": "kiln.procedural-texture.v2",
+                "spec": {
+                  "schemaVersion": 2,
+                  "size": 256,
+                  "usage": "normal",
+                  "name": "cream-masonry-height",
+                  "layers": [
+                    {
+                      "op": "bricks",
+                      "brick": 11579568,
+                      "mortar": 5263440,
+                      "rows": 8,
+                      "cols": 4,
+                      "mortarWidth": 0.05,
+                      "stagger": 0.5,
+                      "blend": "normal",
+                      "opacity": 1
+                    },
+                    {
+                      "op": "noise",
+                      "colorA": 9474192,
+                      "colorB": 11579568,
+                      "scale": 16,
+                      "octaves": 3,
+                      "seed": 4101,
+                      "blend": "normal",
+                      "opacity": 0.4
+                    }
+                  ]
+                },
+                "derive": {
+                  "kind": "normal-from-height",
+                  "strength": 2
+                },
+                "recipeHash": "sha256:f80f8d0e9dd41b28c96555d1e2d12f9a2c84c4e5b148191371268ed4fc05746c",
+                "pixelHash": "sha256:7499b8daac8578b6eeb731ebdf0e24eda7cae8730c058ff724982d7b1079ded1",
+                "encoder": {
+                  "name": "sharp",
+                  "version": "0.35.4"
+                }
+              }
+            },
+            {
+              "slot": "metallicRoughness",
+              "file": "metallicRoughness.png",
+              "sha256": "sha256:5fde65df8f7ff2f4a864da0a6d97d8b55a52ede409dbb22df34eb49639d6eaad",
+              "bytes": 4709,
+              "width": 128,
+              "height": 128,
+              "usage": "metallicRoughness",
+              "colorSpace": "linear",
+              "channelPacking": "r-occlusion-g-roughness-b-metallic",
+              "sourceId": "procedural",
+              "transforms": [
+                {
+                  "operation": "procedural-recipe",
+                  "tool": "kiln_material create-procedural",
+                  "version": "1",
+                  "parameters": {
+                    "seed": 4101
+                  }
+                }
+              ],
+              "procedural": {
+                "compiler": "kiln.procedural-texture.v2",
+                "spec": {
+                  "schemaVersion": 2,
+                  "size": 128,
+                  "usage": "metallicRoughness",
+                  "name": "cream-masonry-mr",
+                  "layers": [
+                    {
+                      "op": "noise",
+                      "colorA": 16767232,
+                      "colorB": 16773120,
+                      "scale": 8,
+                      "octaves": 2,
+                      "seed": 4101,
+                      "blend": "normal",
+                      "opacity": 1
+                    }
+                  ]
+                },
+                "recipeHash": "sha256:67bbe1467576b87fae37c20a25fa5339764e9b63f4d8ce5c6a2385fdca3b312b",
+                "pixelHash": "sha256:fd691f83f3a13df8b3fc77dbd85f8308a49bb645b8cc922552c4581821685faf",
+                "encoder": {
+                  "name": "sharp",
+                  "version": "0.35.4"
+                }
+              }
+            }
+          ]
+        }
+      },
+      {
+        "kind": "kiln.material.v1",
+        "delivery": "runtime",
+        "manifest": {
+          "schemaVersion": 1,
+          "materialId": "farm-paint-cream",
+          "revisionId": "sha256:c3c8fad2dbe4671b35c343b10c1d18b773fd25ebef95e767e06a5bb7299973eb",
+          "name": "Farm cream painted trim",
+          "tags": [
+            "paint",
+            "wood",
+            "procedural",
+            "barn",
+            "trim",
+            "derivative"
+          ],
+          "tileable": true,
+          "physicalSizeMeters": {
+            "width": 1,
+            "height": 1
+          },
+          "parameters": {
+            "baseColor": 16777215,
+            "roughness": 1,
+            "metalness": 0,
+            "emissiveIntensity": 1,
+            "alphaMode": "opaque",
+            "alphaCutoff": 0.5,
+            "doubleSided": false
+          },
+          "sources": [
+            {
+              "id": "procedural",
+              "kind": "procedural",
+              "provider": "Kiln procedural texture v2",
+              "creator": "Kiln Commons Farm",
+              "license": {
+                "spdx": "CC0-1.0",
+                "url": "https://creativecommons.org/publicdomain/zero/1.0/",
+                "attribution": "Original procedural recipe by Kiln Commons Farm (opus-barn, claude-opus-5-5): cream painted-trim derivative of the shared farm-wood-honey noise+stripes grain structure; seed 4405 retained."
+              },
+              "originalFiles": []
+            }
+          ],
+          "maps": [
+            {
+              "slot": "baseColor",
+              "file": "baseColor.png",
+              "sha256": "sha256:25a102b005450f69eafad7c16ce99af3fd80a978345defc0e812778f8a16e20c",
+              "bytes": 14887,
+              "width": 256,
+              "height": 256,
+              "usage": "albedo",
+              "colorSpace": "srgb",
+              "sourceId": "procedural",
+              "transforms": [
+                {
+                  "operation": "procedural-recipe",
+                  "tool": "kiln_material create-procedural",
+                  "version": "1",
+                  "parameters": {
+                    "derivedFrom": "farm-wood-honey sha256:710f9ab0183deb86923b3c398286f9cbcb0eaea7ec50657a72fc83c2bd3c38cd",
+                    "grainLinesPerMetre": 32,
+                    "seed": 4405,
+                    "targetColor": "#E2D2AC"
+                  }
+                }
+              ],
+              "procedural": {
+                "compiler": "kiln.procedural-texture.v2",
+                "spec": {
+                  "schemaVersion": 2,
+                  "size": 256,
+                  "usage": "albedo",
+                  "name": "cream-trim-paint-albedo",
+                  "layers": [
+                    {
+                      "op": "noise",
+                      "colorA": 14470310,
+                      "colorB": 15260086,
+                      "scale": 4,
+                      "octaves": 3,
+                      "seed": 4405,
+                      "blend": "normal",
+                      "opacity": 1
+                    },
+                    {
+                      "op": "stripes",
+                      "colorA": 14075552,
+                      "colorB": 15128242,
+                      "count": 32,
+                      "angleDeg": 0,
+                      "blend": "normal",
+                      "opacity": 0.15
+                    }
+                  ]
+                },
+                "recipeHash": "sha256:13e8067498a96fa095db0918d7b8f3c73dd47ca95f0e08c3137d47b20a60d036",
+                "pixelHash": "sha256:a6573bf358aaca22602d522b9bf558f37c29546ae29a74007411d08a5d668e48",
+                "encoder": {
+                  "name": "sharp",
+                  "version": "0.35.4"
+                }
+              }
+            },
+            {
+              "slot": "normal",
+              "file": "normal.png",
+              "sha256": "sha256:a7e57c534868cb151a0d7424fc2b0a4951f64beb0ae7902ceb9caa000837b465",
+              "bytes": 5711,
+              "width": 256,
+              "height": 256,
+              "usage": "normal",
+              "colorSpace": "linear",
+              "normalConvention": "opengl",
+              "sourceId": "procedural",
+              "transforms": [
+                {
+                  "operation": "procedural-recipe",
+                  "tool": "kiln_material create-procedural",
+                  "version": "1",
+                  "parameters": {
+                    "seed": 4405
+                  }
+                }
+              ],
+              "procedural": {
+                "compiler": "kiln.procedural-texture.v2",
+                "spec": {
+                  "schemaVersion": 2,
+                  "size": 256,
+                  "usage": "normal",
+                  "name": "cream-trim-paint-height",
+                  "layers": [
+                    {
+                      "op": "noise",
+                      "colorA": 8421504,
+                      "colorB": 9211020,
+                      "scale": 4,
+                      "octaves": 3,
+                      "seed": 4405,
+                      "blend": "normal",
+                      "opacity": 1
+                    },
+                    {
+                      "op": "stripes",
+                      "colorA": 8026746,
+                      "colorB": 10132122,
+                      "count": 32,
+                      "angleDeg": 0,
+                      "blend": "normal",
+                      "opacity": 0.3
+                    }
+                  ]
+                },
+                "derive": {
+                  "kind": "normal-from-height",
+                  "strength": 0.8
+                },
+                "recipeHash": "sha256:d5e3a5491901ded430af279dbae6fb6b04f20f101281e918a3c0bbe8d8e21470",
+                "pixelHash": "sha256:c995fcc5c4f78afaeef3099629ceab461b89530fbb8a862aa43368d7852cca10",
+                "encoder": {
+                  "name": "sharp",
+                  "version": "0.35.4"
+                }
+              }
+            },
+            {
+              "slot": "metallicRoughness",
+              "file": "metallicRoughness.png",
+              "sha256": "sha256:84692085eb866409ec5e89070dde7ce9d0fe95af973fea7088a75ec74d8188f8",
+              "bytes": 3294,
+              "width": 128,
+              "height": 128,
+              "usage": "metallicRoughness",
+              "colorSpace": "linear",
+              "channelPacking": "r-occlusion-g-roughness-b-metallic",
+              "sourceId": "procedural",
+              "transforms": [
+                {
+                  "operation": "procedural-recipe",
+                  "tool": "kiln_material create-procedural",
+                  "version": "1",
+                  "parameters": {
+                    "metalness": 0,
+                    "roughnessRange": "0.78-0.85",
+                    "seed": 4405
+                  }
+                }
+              ],
+              "procedural": {
+                "compiler": "kiln.procedural-texture.v2",
+                "spec": {
+                  "schemaVersion": 2,
+                  "size": 128,
+                  "usage": "metallicRoughness",
+                  "name": "cream-trim-paint-mr",
+                  "layers": [
+                    {
+                      "op": "noise",
+                      "colorA": 16762880,
+                      "colorB": 16767232,
+                      "scale": 6,
+                      "octaves": 2,
+                      "seed": 4405,
+                      "blend": "normal",
+                      "opacity": 1
+                    }
+                  ]
+                },
+                "recipeHash": "sha256:16f14a2634c66c24021776f72e76e9b3965134890980a12822e9347feca966bb",
+                "pixelHash": "sha256:df47a744ae2b993cdb2cb6b0c6a8f48add955570dc3ed6ac8b5431507449751f",
+                "encoder": {
+                  "name": "sharp",
+                  "version": "0.35.4"
+                }
+              }
+            }
+          ]
+        }
+      },
+      {
+        "kind": "kiln.material.v1",
+        "delivery": "runtime",
+        "manifest": {
+          "schemaVersion": 1,
+          "materialId": "farm-paint-red",
+          "revisionId": "sha256:a7639a5e03d30a34b47c4b9d4484b81070d3bb679d38872bbeced6c66bc1cce7",
+          "name": "Farm barn red painted boards",
+          "tags": [
+            "paint",
+            "wood",
+            "procedural",
+            "barn",
+            "derivative"
+          ],
+          "tileable": true,
+          "physicalSizeMeters": {
+            "width": 1,
+            "height": 1
+          },
+          "parameters": {
+            "baseColor": 16777215,
+            "roughness": 1,
+            "metalness": 0,
+            "emissiveIntensity": 1,
+            "alphaMode": "opaque",
+            "alphaCutoff": 0.5,
+            "doubleSided": false
+          },
+          "sources": [
+            {
+              "id": "procedural",
+              "kind": "procedural",
+              "provider": "Kiln procedural texture v2",
+              "creator": "Kiln Commons Farm",
+              "license": {
+                "spdx": "CC0-1.0",
+                "url": "https://creativecommons.org/publicdomain/zero/1.0/",
+                "attribution": "Original procedural recipe by Kiln Commons Farm (opus-barn, claude-opus-5-5): barn-red (#B94D36) painted-board derivative of the shared farm-wood-honey noise+stripes grain structure; seed 4404 retained."
+              },
+              "originalFiles": []
+            }
+          ],
+          "maps": [
+            {
+              "slot": "baseColor",
+              "file": "baseColor.png",
+              "sha256": "sha256:dfb5a3bf838f046ff577adbbf5086e7158303a3810b592b6bb66b87e86d4c183",
+              "bytes": 13063,
+              "width": 256,
+              "height": 256,
+              "usage": "albedo",
+              "colorSpace": "srgb",
+              "sourceId": "procedural",
+              "transforms": [
+                {
+                  "operation": "procedural-recipe",
+                  "tool": "kiln_material create-procedural",
+                  "version": "1",
+                  "parameters": {
+                    "derivedFrom": "farm-wood-honey sha256:710f9ab0183deb86923b3c398286f9cbcb0eaea7ec50657a72fc83c2bd3c38cd",
+                    "grainLinesPerMetre": 32,
+                    "seed": 4404,
+                    "targetColor": "#B94D36"
+                  }
+                }
+              ],
+              "procedural": {
+                "compiler": "kiln.procedural-texture.v2",
+                "spec": {
+                  "schemaVersion": 2,
+                  "size": 256,
+                  "usage": "albedo",
+                  "name": "barn-red-paint-albedo",
+                  "layers": [
+                    {
+                      "op": "noise",
+                      "colorA": 11552818,
+                      "colorB": 12604476,
+                      "scale": 4,
+                      "octaves": 3,
+                      "seed": 4404,
+                      "blend": "normal",
+                      "opacity": 1
+                    },
+                    {
+                      "op": "stripes",
+                      "colorA": 11093295,
+                      "colorB": 12472633,
+                      "count": 32,
+                      "angleDeg": 0,
+                      "blend": "normal",
+                      "opacity": 0.18
+                    }
+                  ]
+                },
+                "recipeHash": "sha256:c743be4b0dc1b5181f3b958e64069fe083239dd43e694473f234061247e9cd05",
+                "pixelHash": "sha256:c92edebbb790a49b50a2888d0272d5f3c2806ca1aece30b63da6f70408cff6bf",
+                "encoder": {
+                  "name": "sharp",
+                  "version": "0.35.4"
+                }
+              }
+            },
+            {
+              "slot": "normal",
+              "file": "normal.png",
+              "sha256": "sha256:ee430d0a76d25fa90cef111e67d40176712478aa3b48abc493932f446e965f59",
+              "bytes": 5904,
+              "width": 256,
+              "height": 256,
+              "usage": "normal",
+              "colorSpace": "linear",
+              "normalConvention": "opengl",
+              "sourceId": "procedural",
+              "transforms": [
+                {
+                  "operation": "procedural-recipe",
+                  "tool": "kiln_material create-procedural",
+                  "version": "1",
+                  "parameters": {
+                    "seed": 4404
+                  }
+                }
+              ],
+              "procedural": {
+                "compiler": "kiln.procedural-texture.v2",
+                "spec": {
+                  "schemaVersion": 2,
+                  "size": 256,
+                  "usage": "normal",
+                  "name": "barn-red-paint-height",
+                  "layers": [
+                    {
+                      "op": "noise",
+                      "colorA": 8421504,
+                      "colorB": 9211020,
+                      "scale": 4,
+                      "octaves": 3,
+                      "seed": 4404,
+                      "blend": "normal",
+                      "opacity": 1
+                    },
+                    {
+                      "op": "stripes",
+                      "colorA": 8026746,
+                      "colorB": 10132122,
+                      "count": 32,
+                      "angleDeg": 0,
+                      "blend": "normal",
+                      "opacity": 0.3
+                    }
+                  ]
+                },
+                "derive": {
+                  "kind": "normal-from-height",
+                  "strength": 0.8
+                },
+                "recipeHash": "sha256:c1ed209a317077949164716a2c0131c26f1851bb451dff939b75f4e193c5d53d",
+                "pixelHash": "sha256:6941d984f71d838629c258e8c3c741de22fbdf751c550facd566fe3ab861be8a",
+                "encoder": {
+                  "name": "sharp",
+                  "version": "0.35.4"
+                }
+              }
+            },
+            {
+              "slot": "metallicRoughness",
+              "file": "metallicRoughness.png",
+              "sha256": "sha256:fd7918908152e9ad09d68c899fd4fa32e593368129e3d5035ccd8896014252af",
+              "bytes": 3109,
+              "width": 128,
+              "height": 128,
+              "usage": "metallicRoughness",
+              "colorSpace": "linear",
+              "channelPacking": "r-occlusion-g-roughness-b-metallic",
+              "sourceId": "procedural",
+              "transforms": [
+                {
+                  "operation": "procedural-recipe",
+                  "tool": "kiln_material create-procedural",
+                  "version": "1",
+                  "parameters": {
+                    "metalness": 0,
+                    "roughnessRange": "0.78-0.85",
+                    "seed": 4404
+                  }
+                }
+              ],
+              "procedural": {
+                "compiler": "kiln.procedural-texture.v2",
+                "spec": {
+                  "schemaVersion": 2,
+                  "size": 128,
+                  "usage": "metallicRoughness",
+                  "name": "barn-red-paint-mr",
+                  "layers": [
+                    {
+                      "op": "noise",
+                      "colorA": 16762880,
+                      "colorB": 16767232,
+                      "scale": 6,
+                      "octaves": 2,
+                      "seed": 4404,
+                      "blend": "normal",
+                      "opacity": 1
+                    }
+                  ]
+                },
+                "recipeHash": "sha256:3c00946d4a46770327a0a2e1081cf772976c1ba6b87ed6bd9e439c5bfad50258",
+                "pixelHash": "sha256:4546dd222b249c7dfb3a6909d11afdbdc30a7172aadfd3604c60890059ec3353",
+                "encoder": {
+                  "name": "sharp",
+                  "version": "0.35.4"
+                }
+              }
+            }
+          ]
+        }
+      },
+      {
+        "kind": "kiln.material.v1",
+        "delivery": "runtime",
+        "manifest": {
+          "schemaVersion": 1,
+          "materialId": "farm-straw-golden",
+          "revisionId": "sha256:583eb73450267db85733ef488259788e70e2757cf650d09ef84ea807f41a9279",
+          "name": "Farm compressed golden straw",
+          "tags": [],
+          "tileable": true,
+          "physicalSizeMeters": {
+            "width": 0.5,
+            "height": 1
+          },
+          "parameters": {
+            "baseColor": 16777215,
+            "roughness": 1,
+            "metalness": 0,
+            "emissiveIntensity": 1,
+            "alphaMode": "opaque",
+            "alphaCutoff": 0.5,
+            "doubleSided": false
+          },
+          "sources": [
+            {
+              "id": "procedural",
+              "kind": "procedural",
+              "provider": "Kiln procedural texture v2",
+              "creator": "Kiln Commons Farm",
+              "license": {
+                "spdx": "CC0-1.0",
+                "url": "https://creativecommons.org/publicdomain/zero/1.0/",
+                "attribution": "Original seeded procedural straw by Kiln Commons Farm; seed 92726."
+              },
+              "originalFiles": []
+            }
+          ],
+          "maps": [
+            {
+              "slot": "baseColor",
+              "file": "baseColor.png",
+              "sha256": "sha256:cba1dcdce6f2b09f716d10a3dad6ede1cb70e8deddd8df459ef5240fca582a29",
+              "bytes": 80193,
+              "width": 512,
+              "height": 512,
+              "usage": "albedo",
+              "colorSpace": "srgb",
+              "sourceId": "procedural",
+              "transforms": [],
+              "procedural": {
+                "compiler": "kiln.procedural-texture.v2",
+                "spec": {
+                  "schemaVersion": 2,
+                  "size": 512,
+                  "usage": "albedo",
+                  "layers": [
+                    {
+                      "op": "noise",
+                      "colorA": 12555841,
+                      "colorB": 14002254,
+                      "scale": 12,
+                      "octaves": 3,
+                      "seed": 92726,
+                      "blend": "normal",
+                      "opacity": 1
+                    },
+                    {
+                      "op": "stripes",
+                      "colorA": 11568439,
+                      "colorB": 14793831,
+                      "count": 96,
+                      "angleDeg": 0,
+                      "blend": "normal",
+                      "opacity": 0.26
+                    }
+                  ]
+                },
+                "recipeHash": "sha256:cfcb00e51f2b9d215fb199e620a046e78fcd4a0b7cc6cf581256ee42b448fbf8",
+                "pixelHash": "sha256:91dbdc047319479100c8649c5b79e26b48305cade4eb173e33c2b00334f9e7e3",
+                "encoder": {
+                  "name": "sharp",
+                  "version": "0.35.4"
+                }
+              }
+            },
+            {
+              "slot": "normal",
+              "file": "normal.png",
+              "sha256": "sha256:7afb010e74cb29b8038956c584dd25dc963c4fd0dfbef9a4730bcc1c6c3f314b",
+              "bytes": 45672,
+              "width": 512,
+              "height": 512,
+              "usage": "normal",
+              "colorSpace": "linear",
+              "normalConvention": "opengl",
+              "sourceId": "procedural",
+              "transforms": [],
+              "procedural": {
+                "compiler": "kiln.procedural-texture.v2",
+                "spec": {
+                  "schemaVersion": 2,
+                  "size": 512,
+                  "usage": "normal",
+                  "layers": [
+                    {
+                      "op": "noise",
+                      "colorA": 8026746,
+                      "colorB": 8750469,
+                      "scale": 24,
+                      "octaves": 2,
+                      "seed": 92726,
+                      "blend": "normal",
+                      "opacity": 1
+                    },
+                    {
+                      "op": "stripes",
+                      "colorA": 7895160,
+                      "colorB": 8947848,
+                      "count": 96,
+                      "angleDeg": 0,
+                      "blend": "normal",
+                      "opacity": 0.25
+                    }
+                  ]
+                },
+                "derive": {
+                  "kind": "normal-from-height",
+                  "strength": 0.45
+                },
+                "recipeHash": "sha256:6f018c0068c38a88f179ee14612c621da396f9fa6936930fde120042062c5a9a",
+                "pixelHash": "sha256:0c263f8b46a55755a9dd8e41f4aadbae9ec336076e46504827b1788688701c91",
+                "encoder": {
+                  "name": "sharp",
+                  "version": "0.35.4"
+                }
+              }
+            },
+            {
+              "slot": "metallicRoughness",
+              "file": "metallicRoughness.png",
+              "sha256": "sha256:642c22779d5843f87b4366361a1ed985fe7d58601386ec2fe553fac4c4583d94",
+              "bytes": 10096,
+              "width": 256,
+              "height": 256,
+              "usage": "metallicRoughness",
+              "colorSpace": "linear",
+              "channelPacking": "r-occlusion-g-roughness-b-metallic",
+              "sourceId": "procedural",
+              "transforms": [],
+              "procedural": {
+                "compiler": "kiln.procedural-texture.v2",
+                "spec": {
+                  "schemaVersion": 2,
+                  "size": 256,
+                  "usage": "metallicRoughness",
+                  "layers": [
+                    {
+                      "op": "noise",
+                      "colorA": 16767744,
+                      "colorB": 16772864,
+                      "scale": 8,
+                      "octaves": 2,
+                      "seed": 92726,
+                      "blend": "normal",
+                      "opacity": 1
+                    }
+                  ]
+                },
+                "recipeHash": "sha256:f78ef0feb079ceb20e6e053de7d92b892ef3bb3a26cde6930642cbcbbf09ba41",
+                "pixelHash": "sha256:9ed8d52f68fed78bd07cb606c9cf4b86a7514991889c954e099bdcb1fb9668f0",
+                "encoder": {
+                  "name": "sharp",
+                  "version": "0.35.4"
+                }
+              }
+            }
+          ]
+        }
+      },
+      {
+        "kind": "kiln.material.v1",
+        "delivery": "runtime",
+        "manifest": {
+          "schemaVersion": 1,
+          "materialId": "farm-wood-grain",
+          "revisionId": "sha256:72660efdf55d5b2efe260bfe06e4631a0c3aef69e6226f34b4d6867ec22ef879",
+          "name": "Warm straight wood grain",
+          "tags": [
+            "wood",
+            "procedural"
+          ],
+          "tileable": true,
+          "physicalSizeMeters": {
+            "width": 1,
+            "height": 1
+          },
+          "parameters": {
+            "roughness": 1,
+            "metalness": 1,
+            "emissiveIntensity": 1,
+            "alphaMode": "opaque",
+            "alphaCutoff": 0.5,
+            "doubleSided": false
+          },
+          "sources": [
+            {
+              "id": "preset",
+              "kind": "procedural",
+              "provider": "Kiln material presets v1",
+              "creator": "Kiln Commons Farm pilot",
+              "assetId": "wood-grain",
+              "license": {
+                "spdx": "CC0-1.0",
+                "url": "https://creativecommons.org/publicdomain/zero/1.0/",
+                "attribution": "Procedurally generated with Kiln; recipe and seed retained."
+              },
+              "originalFiles": []
+            }
+          ],
+          "maps": [
+            {
+              "slot": "baseColor",
+              "file": "baseColor.png",
+              "sha256": "sha256:ac58a1956794dcdbd860d9edd25bc4848f07523d051f48ce3ed25ca8a591a4ab",
+              "bytes": 31289,
+              "width": 256,
+              "height": 256,
+              "usage": "albedo",
+              "colorSpace": "srgb",
+              "sourceId": "preset",
+              "transforms": [
+                {
+                  "operation": "preset",
+                  "tool": "kiln.material-presets",
+                  "version": "1",
+                  "parameters": {
+                    "presetId": "wood-grain",
+                    "seed": 261
+                  }
+                }
+              ],
+              "procedural": {
+                "compiler": "kiln.procedural-texture.v2",
+                "spec": {
+                  "schemaVersion": 2,
+                  "size": 256,
+                  "usage": "albedo",
+                  "layers": [
+                    {
+                      "op": "noise",
+                      "colorA": 7688503,
+                      "colorB": 12358752,
+                      "scale": 4,
+                      "octaves": 3,
+                      "seed": 261,
+                      "blend": "normal",
+                      "opacity": 1
+                    },
+                    {
+                      "op": "stripes",
+                      "colorA": 6833455,
+                      "colorB": 13280630,
+                      "count": 40,
+                      "angleDeg": 0,
+                      "blend": "normal",
+                      "opacity": 0.3
+                    }
+                  ]
+                },
+                "recipeHash": "sha256:81dfe787dcd343656a320e8063339f0523777e4c299ecc89ee4b123437240209",
+                "pixelHash": "sha256:048326ae40024df691aedbb31f1fe717a80156273b300de739056e0b1aa47a04",
+                "encoder": {
+                  "name": "sharp",
+                  "version": "0.35.4"
+                }
+              }
+            },
+            {
+              "slot": "normal",
+              "file": "normal.png",
+              "sha256": "sha256:727a6e8262b149fa0d7677f085d2455419c7d908ec39a0d01f8832c92a9352c8",
+              "bytes": 17195,
+              "width": 256,
+              "height": 256,
+              "usage": "normal",
+              "colorSpace": "linear",
+              "normalConvention": "opengl",
+              "sourceId": "preset",
+              "transforms": [
+                {
+                  "operation": "preset",
+                  "tool": "kiln.material-presets",
+                  "version": "1",
+                  "parameters": {
+                    "presetId": "wood-grain",
+                    "seed": 261
+                  }
+                }
+              ],
+              "procedural": {
+                "compiler": "kiln.procedural-texture.v2",
+                "spec": {
+                  "schemaVersion": 2,
+                  "size": 256,
+                  "usage": "normal",
+                  "layers": [
+                    {
+                      "op": "noise",
+                      "colorA": 6710886,
+                      "colorB": 10066329,
+                      "scale": 4,
+                      "octaves": 3,
+                      "seed": 261,
+                      "blend": "normal",
+                      "opacity": 1
+                    },
+                    {
+                      "op": "stripes",
+                      "colorA": 6710886,
+                      "colorB": 11184810,
+                      "count": 40,
+                      "angleDeg": 0,
+                      "blend": "normal",
+                      "opacity": 0.25
+                    }
+                  ]
+                },
+                "derive": {
+                  "kind": "normal-from-height",
+                  "strength": 1.5
+                },
+                "recipeHash": "sha256:b01a9715a261439a1daf853be34b13fb2b8fd1b6d69edce44fde48582f138f28",
+                "pixelHash": "sha256:12fa6a98401282c8cc973ab815c6de8ced309311c5c9c6152167738000a57aec",
+                "encoder": {
+                  "name": "sharp",
+                  "version": "0.35.4"
+                }
+              }
+            },
+            {
+              "slot": "metallicRoughness",
+              "file": "metallicRoughness.png",
+              "sha256": "sha256:8a8791b9af0402a1da0194c29e5110fffb4434b2c80c69adb8134dda564edd1b",
+              "bytes": 21551,
+              "width": 256,
+              "height": 256,
+              "usage": "metallicRoughness",
+              "colorSpace": "linear",
+              "channelPacking": "r-occlusion-g-roughness-b-metallic",
+              "sourceId": "preset",
+              "transforms": [
+                {
+                  "operation": "preset",
+                  "tool": "kiln.material-presets",
+                  "version": "1",
+                  "parameters": {
+                    "presetId": "wood-grain",
+                    "seed": 261
+                  }
+                }
+              ],
+              "procedural": {
+                "compiler": "kiln.procedural-texture.v2",
+                "spec": {
+                  "schemaVersion": 2,
+                  "size": 256,
+                  "usage": "metallicRoughness",
+                  "layers": [
+                    {
+                      "op": "noise",
+                      "colorA": 16744960,
+                      "colorB": 16760320,
+                      "scale": 8,
+                      "octaves": 3,
+                      "seed": 261,
+                      "blend": "normal",
+                      "opacity": 1
+                    }
+                  ]
+                },
+                "recipeHash": "sha256:5a15f015126b9156233f3e0fc0c3c563c89aced5482844201b9fce06b09f9c70",
+                "pixelHash": "sha256:5352cbc0d9c2acf817631be7cfd9e38299abf5744a5bb05d85c2322b2ee8dcf0",
+                "encoder": {
+                  "name": "sharp",
+                  "version": "0.35.4"
+                }
+              }
+            }
+          ]
+        }
+      },
+      {
+        "kind": "kiln.material.v1",
+        "delivery": "runtime",
+        "manifest": {
+          "schemaVersion": 1,
+          "materialId": "farm-wood-honey",
+          "revisionId": "sha256:710f9ab0183deb86923b3c398286f9cbcb0eaea7ec50657a72fc83c2bd3c38cd",
+          "name": "Farm honey wood (subdued grain derivative)",
+          "tags": [
+            "wood",
+            "procedural",
+            "derivative",
+            "farmhouse"
+          ],
+          "tileable": true,
+          "physicalSizeMeters": {
+            "width": 1,
+            "height": 1
+          },
+          "parameters": {
+            "baseColor": 16777215,
+            "roughness": 1,
+            "metalness": 0,
+            "emissiveIntensity": 1,
+            "alphaMode": "opaque",
+            "alphaCutoff": 0.5,
+            "doubleSided": false
+          },
+          "sources": [
+            {
+              "id": "procedural",
+              "kind": "procedural",
+              "provider": "Kiln procedural texture v2",
+              "creator": "Kiln Commons Farm",
+              "license": {
+                "spdx": "CC0-1.0",
+                "url": "https://creativecommons.org/publicdomain/zero/1.0/",
+                "attribution": "Original procedural recipe by Kiln Commons Farm (opus-farmhouse, claude-opus-5-5), a subdued derivative of the farm-wood-grain noise+stripes structure; seed 4303 retained."
+              },
+              "originalFiles": []
+            }
+          ],
+          "maps": [
+            {
+              "slot": "baseColor",
+              "file": "baseColor.png",
+              "sha256": "sha256:904bcd5f99519b7707bd546d1cdbff210c1bad34629798595a34e1b1f4324d4f",
+              "bytes": 16876,
+              "width": 256,
+              "height": 256,
+              "usage": "albedo",
+              "colorSpace": "srgb",
+              "sourceId": "procedural",
+              "transforms": [
+                {
+                  "operation": "procedural-recipe",
+                  "tool": "kiln_material create-procedural",
+                  "version": "1",
+                  "parameters": {
+                    "derivedFrom": "farm-wood-grain sha256:72660efdf55d5b2efe260bfe06e4631a0c3aef69e6226f34b4d6867ec22ef879",
+                    "grainLinesPerMetre": 24,
+                    "seed": 4303
+                  }
+                }
+              ],
+              "procedural": {
+                "compiler": "kiln.procedural-texture.v2",
+                "spec": {
+                  "schemaVersion": 2,
+                  "size": 256,
+                  "usage": "albedo",
+                  "name": "honey-wood-albedo",
+                  "layers": [
+                    {
+                      "op": "noise",
+                      "colorA": 10252352,
+                      "colorB": 11765836,
+                      "scale": 4,
+                      "octaves": 3,
+                      "seed": 4303,
+                      "blend": "normal",
+                      "opacity": 1
+                    },
+                    {
+                      "op": "stripes",
+                      "colorA": 9331000,
+                      "colorB": 12160082,
+                      "count": 24,
+                      "angleDeg": 0,
+                      "blend": "normal",
+                      "opacity": 0.22
+                    }
+                  ]
+                },
+                "recipeHash": "sha256:8e7cecfeb3ba241756fab0062ff9d1d13b6e0fe4a7caee7b31fac14fcfbfe0cc",
+                "pixelHash": "sha256:af28c338901d37a58c2d97e65608be4576788943d35ccef2ad918b99fb03b9ee",
+                "encoder": {
+                  "name": "sharp",
+                  "version": "0.35.4"
+                }
+              }
+            },
+            {
+              "slot": "normal",
+              "file": "normal.png",
+              "sha256": "sha256:2df5c9072a8ac5c618edd337137085ab2a92279f5ff5de214eb52dd5683d815b",
+              "bytes": 10978,
+              "width": 256,
+              "height": 256,
+              "usage": "normal",
+              "colorSpace": "linear",
+              "normalConvention": "opengl",
+              "sourceId": "procedural",
+              "transforms": [
+                {
+                  "operation": "procedural-recipe",
+                  "tool": "kiln_material create-procedural",
+                  "version": "1",
+                  "parameters": {
+                    "seed": 4303
+                  }
+                }
+              ],
+              "procedural": {
+                "compiler": "kiln.procedural-texture.v2",
+                "spec": {
+                  "schemaVersion": 2,
+                  "size": 256,
+                  "usage": "normal",
+                  "name": "honey-wood-height",
+                  "layers": [
+                    {
+                      "op": "noise",
+                      "colorA": 8421504,
+                      "colorB": 10132122,
+                      "scale": 4,
+                      "octaves": 3,
+                      "seed": 4303,
+                      "blend": "normal",
+                      "opacity": 1
+                    },
+                    {
+                      "op": "stripes",
+                      "colorA": 7368816,
+                      "colorB": 10526880,
+                      "count": 24,
+                      "angleDeg": 0,
+                      "blend": "normal",
+                      "opacity": 0.35
+                    }
+                  ]
+                },
+                "derive": {
+                  "kind": "normal-from-height",
+                  "strength": 1.2
+                },
+                "recipeHash": "sha256:7a363ca8b1fb4dc82ec96cac86b064253931c9dce6be6becd0c100fe32f13041",
+                "pixelHash": "sha256:502c4840fed505b3c575a376d9afda049bb28dd59ded162932ea386e55666674",
+                "encoder": {
+                  "name": "sharp",
+                  "version": "0.35.4"
+                }
+              }
+            },
+            {
+              "slot": "metallicRoughness",
+              "file": "metallicRoughness.png",
+              "sha256": "sha256:810e03d328378b372fa5d2622f22fc3c12b8268b336804b170036ee4546e6bc6",
+              "bytes": 4070,
+              "width": 128,
+              "height": 128,
+              "usage": "metallicRoughness",
+              "colorSpace": "linear",
+              "channelPacking": "r-occlusion-g-roughness-b-metallic",
+              "sourceId": "procedural",
+              "transforms": [
+                {
+                  "operation": "procedural-recipe",
+                  "tool": "kiln_material create-procedural",
+                  "version": "1",
+                  "parameters": {
+                    "seed": 4303
+                  }
+                }
+              ],
+              "procedural": {
+                "compiler": "kiln.procedural-texture.v2",
+                "spec": {
+                  "schemaVersion": 2,
+                  "size": 128,
+                  "usage": "metallicRoughness",
+                  "name": "honey-wood-mr",
+                  "layers": [
+                    {
+                      "op": "noise",
+                      "colorA": 16758784,
+                      "colorB": 16764928,
+                      "scale": 6,
+                      "octaves": 2,
+                      "seed": 4303,
+                      "blend": "normal",
+                      "opacity": 1
+                    }
+                  ]
+                },
+                "recipeHash": "sha256:ebe456360c0ea12124bd304cc558a489271568d5946e2e4f253a5f968ccbff6a",
+                "pixelHash": "sha256:6867c7f9311de20275917981888090960018e0ffe3c27fa5165605cf50285844",
+                "encoder": {
+                  "name": "sharp",
+                  "version": "0.35.4"
+                }
+              }
+            }
+          ]
+        }
+      },
+      {
+        "kind": "kiln.material.v1",
+        "delivery": "runtime",
+        "manifest": {
+          "schemaVersion": 1,
+          "materialId": "farm-woven-fabric",
+          "revisionId": "sha256:5c4fcccb2832191d7bb6ee06900a0209ac9ae169b6bc3bf9a60a629fe575f86c",
+          "name": "Neutral woven fabric",
+          "tags": [
+            "fabric",
+            "procedural"
+          ],
+          "tileable": true,
+          "physicalSizeMeters": {
+            "width": 0.5,
+            "height": 0.5
+          },
+          "parameters": {
+            "roughness": 1,
+            "metalness": 1,
+            "emissiveIntensity": 1,
+            "alphaMode": "opaque",
+            "alphaCutoff": 0.5,
+            "doubleSided": false
+          },
+          "sources": [
+            {
+              "id": "preset",
+              "kind": "procedural",
+              "provider": "Kiln material presets v1",
+              "creator": "Kiln Commons Farm pilot",
+              "assetId": "woven-fabric",
+              "license": {
+                "spdx": "CC0-1.0",
+                "url": "https://creativecommons.org/publicdomain/zero/1.0/",
+                "attribution": "Procedurally generated with Kiln; recipe and seed retained."
+              },
+              "originalFiles": []
+            }
+          ],
+          "maps": [
+            {
+              "slot": "baseColor",
+              "file": "baseColor.png",
+              "sha256": "sha256:bd6c9886599ea6217e41722e1464cb8b66d2bced69032e342198f7fcaf5411e3",
+              "bytes": 24359,
+              "width": 256,
+              "height": 256,
+              "usage": "albedo",
+              "colorSpace": "srgb",
+              "sourceId": "preset",
+              "transforms": [
+                {
+                  "operation": "preset",
+                  "tool": "kiln.material-presets",
+                  "version": "1",
+                  "parameters": {
+                    "presetId": "woven-fabric",
+                    "seed": 263
+                  }
+                }
+              ],
+              "procedural": {
+                "compiler": "kiln.procedural-texture.v2",
+                "spec": {
+                  "schemaVersion": 2,
+                  "size": 256,
+                  "usage": "albedo",
+                  "layers": [
+                    {
+                      "op": "noise",
+                      "colorA": 10787463,
+                      "colorB": 12498079,
+                      "scale": 8,
+                      "octaves": 3,
+                      "seed": 263,
+                      "blend": "normal",
+                      "opacity": 1
+                    },
+                    {
+                      "op": "stripes",
+                      "colorA": 9866361,
+                      "colorB": 13682609,
+                      "count": 32,
+                      "angleDeg": 0,
+                      "blend": "normal",
+                      "opacity": 0.3
+                    },
+                    {
+                      "op": "stripes",
+                      "colorA": 9866361,
+                      "colorB": 13682609,
+                      "count": 32,
+                      "angleDeg": 90,
+                      "blend": "normal",
+                      "opacity": 0.3
+                    }
+                  ]
+                },
+                "recipeHash": "sha256:9c8d963cabebd08aae259ddbdcd26fa1156071e45152682be8761557f5717fb9",
+                "pixelHash": "sha256:9941bf3a608564fe4d3a02ad8727d6cb116f4f56a904fd57a77b807e12d32833",
+                "encoder": {
+                  "name": "sharp",
+                  "version": "0.35.4"
+                }
+              }
+            },
+            {
+              "slot": "normal",
+              "file": "normal.png",
+              "sha256": "sha256:82663e741cb7acb4e05047d4dcbf1cbd9ca672628f7314aa506bdb54034cb74c",
+              "bytes": 20660,
+              "width": 256,
+              "height": 256,
+              "usage": "normal",
+              "colorSpace": "linear",
+              "normalConvention": "opengl",
+              "sourceId": "preset",
+              "transforms": [
+                {
+                  "operation": "preset",
+                  "tool": "kiln.material-presets",
+                  "version": "1",
+                  "parameters": {
+                    "presetId": "woven-fabric",
+                    "seed": 263
+                  }
+                }
+              ],
+              "procedural": {
+                "compiler": "kiln.procedural-texture.v2",
+                "spec": {
+                  "schemaVersion": 2,
+                  "size": 256,
+                  "usage": "normal",
+                  "layers": [
+                    {
+                      "op": "noise",
+                      "colorA": 6316128,
+                      "colorB": 10066329,
+                      "scale": 8,
+                      "octaves": 3,
+                      "seed": 263,
+                      "blend": "normal",
+                      "opacity": 1
+                    },
+                    {
+                      "op": "stripes",
+                      "colorA": 3355443,
+                      "colorB": 13421772,
+                      "count": 32,
+                      "angleDeg": 0,
+                      "blend": "normal",
+                      "opacity": 0.4
+                    },
+                    {
+                      "op": "stripes",
+                      "colorA": 3355443,
+                      "colorB": 13421772,
+                      "count": 32,
+                      "angleDeg": 90,
+                      "blend": "normal",
+                      "opacity": 0.4
+                    }
+                  ]
+                },
+                "derive": {
+                  "kind": "normal-from-height",
+                  "strength": 1
+                },
+                "recipeHash": "sha256:2cd421d4b7e7269a8ce086bddb6f98428fa89ccf5a28867cb9882f8060a10db2",
+                "pixelHash": "sha256:96328c27cd3b5967efd729aae7fb75fa747ad75d5b51afa8f54e53ec07373478",
+                "encoder": {
+                  "name": "sharp",
+                  "version": "0.35.4"
+                }
+              }
+            },
+            {
+              "slot": "metallicRoughness",
+              "file": "metallicRoughness.png",
+              "sha256": "sha256:84bd677c6a22b0b4fcba039799d3d698a165253f442f4d2718eb836332991da4",
+              "bytes": 20683,
+              "width": 256,
+              "height": 256,
+              "usage": "metallicRoughness",
+              "colorSpace": "linear",
+              "channelPacking": "r-occlusion-g-roughness-b-metallic",
+              "sourceId": "preset",
+              "transforms": [
+                {
+                  "operation": "preset",
+                  "tool": "kiln.material-presets",
+                  "version": "1",
+                  "parameters": {
+                    "presetId": "woven-fabric",
+                    "seed": 263
+                  }
+                }
+              ],
+              "procedural": {
+                "compiler": "kiln.procedural-texture.v2",
+                "spec": {
+                  "schemaVersion": 2,
+                  "size": 256,
+                  "usage": "metallicRoughness",
+                  "layers": [
+                    {
+                      "op": "noise",
+                      "colorA": 16757760,
+                      "colorB": 16771840,
+                      "scale": 8,
+                      "octaves": 3,
+                      "seed": 263,
+                      "blend": "normal",
+                      "opacity": 1
+                    }
+                  ]
+                },
+                "recipeHash": "sha256:a7cf86f7025ed091682770af6fecf1371473587c8cfdb9a76516aa7fe0aaa943",
+                "pixelHash": "sha256:1cba5ae27bce4bf915554a87d472d9c2b32335d997e1aed5d4119b5c292d74d7",
+                "encoder": {
+                  "name": "sharp",
+                  "version": "0.35.4"
+                }
+              }
+            }
+          ]
+        }
+      }
+    ],
+    "rebuild": "external-dependencies-required"
+  },
+  "preview": {
+    "fidelity": {
+      "version": "kiln.view-fidelity.v1",
+      "requested": "full-preferred",
+      "delivered": "full-material",
+      "materialFaithful": true,
+      "exactArtifact": false,
+      "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1074",
+      "inputGlbSha256": "sha256:15eca5715a2420c3872bf1175a4a6e5ca199c59b2f2f1dd0c9fd4e2569a825db",
+      "degraded": false,
+      "reasonCodes": [
+        "IN_LOOP_BUILD_NOT_PERSISTED"
+      ]
+    },
+    "backdrop": "neutral"
+  }
+}

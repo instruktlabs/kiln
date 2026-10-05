@@ -12,6 +12,14 @@ export const packSlugs = (packsEnabled: boolean) =>
   packsEnabled ? ['farm', 'vehicles', 'foundry-floor'] : ['foundry-floor'];
 export type CatalogAsset = (typeof assets)[number];
 export type VehicleAsset = (typeof vehicles.assets)[number];
+/** Keep the lighter Bridge preview independent of the downloadable full model. */
+export function assetPreview(asset: CatalogAsset) {
+  if (asset.id === 'golden-gate-bridge') {
+    const web = bridge.tiers.find((tier) => tier.tier === 'web')!;
+    return { url: web.runtime.url, revisionId: web.revisionId, tier: 'web' as const };
+  }
+  return { url: asset.modelPath, revisionId: asset.revisionId, tier: null };
+}
 export const isVehicle = (asset: CatalogAsset): asset is VehicleAsset => asset.pack === 'vehicles';
 export type CatalogImage = Pick<
   (typeof farm.assets)[number]['poster'],

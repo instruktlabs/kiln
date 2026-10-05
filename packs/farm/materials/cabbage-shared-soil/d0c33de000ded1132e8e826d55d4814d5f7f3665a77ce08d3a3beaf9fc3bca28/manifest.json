@@ -1,0 +1,210 @@
+{
+  "schemaVersion": 1,
+  "materialId": "cabbage-shared-soil",
+  "revisionId": "sha256:d0c33de000ded1132e8e826d55d4814d5f7f3665a77ce08d3a3beaf9fc3bca28",
+  "name": "Coarse brown soil",
+  "tags": [
+    "ground",
+    "procedural"
+  ],
+  "tileable": true,
+  "physicalSizeMeters": {
+    "width": 2,
+    "height": 2
+  },
+  "parameters": {
+    "roughness": 1,
+    "metalness": 1,
+    "emissiveIntensity": 1,
+    "alphaMode": "opaque",
+    "alphaCutoff": 0.5,
+    "doubleSided": false
+  },
+  "sources": [
+    {
+      "id": "preset",
+      "kind": "procedural",
+      "provider": "Kiln material presets v1",
+      "creator": "gpt-6-astra",
+      "assetId": "coarse-soil",
+      "license": {
+        "spdx": "CC0-1.0",
+        "url": "https://creativecommons.org/publicdomain/zero/1.0/",
+        "attribution": "Original deterministic Kiln procedural soil; gpt-6-astra, cabbage production, seed 27461."
+      },
+      "originalFiles": []
+    }
+  ],
+  "maps": [
+    {
+      "slot": "baseColor",
+      "file": "baseColor.png",
+      "sha256": "sha256:fec428f09cdf4847ca244671848ece8e275b270f9c89e7531e67e5e819e9f83b",
+      "bytes": 53355,
+      "width": 256,
+      "height": 256,
+      "usage": "albedo",
+      "colorSpace": "srgb",
+      "sourceId": "preset",
+      "transforms": [
+        {
+          "operation": "preset",
+          "tool": "kiln.material-presets",
+          "version": "1",
+          "parameters": {
+            "presetId": "coarse-soil",
+            "seed": 27461
+          }
+        }
+      ],
+      "procedural": {
+        "compiler": "kiln.procedural-texture.v2",
+        "spec": {
+          "schemaVersion": 2,
+          "size": 256,
+          "usage": "albedo",
+          "layers": [
+            {
+              "op": "noise",
+              "colorA": 5061676,
+              "colorB": 8942420,
+              "scale": 4,
+              "octaves": 3,
+              "seed": 27461,
+              "blend": "normal",
+              "opacity": 1
+            },
+            {
+              "op": "noise",
+              "colorA": 3418656,
+              "colorB": 10850155,
+              "scale": 32,
+              "octaves": 3,
+              "seed": 27461,
+              "blend": "normal",
+              "opacity": 0.25
+            }
+          ]
+        },
+        "recipeHash": "sha256:346360cac746ea706fc2c438c83d43e73312acd9251b3d7ffcd1d700331b5be5",
+        "pixelHash": "sha256:3f83f70cc52c38133036553833c835bbab07abbe2059407a5966163d8e0fbb02",
+        "encoder": {
+          "name": "sharp",
+          "version": "0.35.4"
+        }
+      }
+    },
+    {
+      "slot": "normal",
+      "file": "normal.png",
+      "sha256": "sha256:e90879bcdfb5e40442d53f63c6b2f57787e0218ec1bf45110fcfacffbf816936",
+      "bytes": 78562,
+      "width": 256,
+      "height": 256,
+      "usage": "normal",
+      "colorSpace": "linear",
+      "normalConvention": "opengl",
+      "sourceId": "preset",
+      "transforms": [
+        {
+          "operation": "preset",
+          "tool": "kiln.material-presets",
+          "version": "1",
+          "parameters": {
+            "presetId": "coarse-soil",
+            "seed": 27461
+          }
+        }
+      ],
+      "procedural": {
+        "compiler": "kiln.procedural-texture.v2",
+        "spec": {
+          "schemaVersion": 2,
+          "size": 256,
+          "usage": "normal",
+          "layers": [
+            {
+              "op": "noise",
+              "colorA": 5592405,
+              "colorB": 11184810,
+              "scale": 8,
+              "octaves": 3,
+              "seed": 27461,
+              "blend": "normal",
+              "opacity": 1
+            },
+            {
+              "op": "noise",
+              "colorA": 2236962,
+              "colorB": 14540253,
+              "scale": 32,
+              "octaves": 3,
+              "seed": 27461,
+              "blend": "normal",
+              "opacity": 0.3
+            }
+          ]
+        },
+        "derive": {
+          "kind": "normal-from-height",
+          "strength": 1.5
+        },
+        "recipeHash": "sha256:fcc8876f87c5fd2b9feb2443512e8b440313fef7c57d9c5174492e30e86f2db7",
+        "pixelHash": "sha256:e476b157a108f0625de55721a7119950617134efa1f246c41a16db36a05c1d57",
+        "encoder": {
+          "name": "sharp",
+          "version": "0.35.4"
+        }
+      }
+    },
+    {
+      "slot": "metallicRoughness",
+      "file": "metallicRoughness.png",
+      "sha256": "sha256:67af42d3d8726dfcfeec6b32805622621c4d311c692b1efcdcada1f46592788b",
+      "bytes": 20624,
+      "width": 256,
+      "height": 256,
+      "usage": "metallicRoughness",
+      "colorSpace": "linear",
+      "channelPacking": "r-occlusion-g-roughness-b-metallic",
+      "sourceId": "preset",
+      "transforms": [
+        {
+          "operation": "preset",
+          "tool": "kiln.material-presets",
+          "version": "1",
+          "parameters": {
+            "presetId": "coarse-soil",
+            "seed": 27461
+          }
+        }
+      ],
+      "procedural": {
+        "compiler": "kiln.procedural-texture.v2",
+        "spec": {
+          "schemaVersion": 2,
+          "size": 256,
+          "usage": "metallicRoughness",
+          "layers": [
+            {
+              "op": "noise",
+              "colorA": 16757760,
+              "colorB": 16771840,
+              "scale": 8,
+              "octaves": 3,
+              "seed": 27461,
+              "blend": "normal",
+              "opacity": 1
+            }
+          ]
+        },
+        "recipeHash": "sha256:d27277e8fdf796270b0094022cd6037da9a3466fc503db1ed8328765db6b80a5",
+        "pixelHash": "sha256:7a84f889ac9b95b97f3f7d9f0808c3e7dd3b07ed067ecf05cfcf885318d52ba2",
+        "encoder": {
+          "name": "sharp",
+          "version": "0.35.4"
+        }
+      }
+    }
+  ]
+}

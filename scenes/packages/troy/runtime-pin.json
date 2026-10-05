@@ -1,0 +1,9 @@
+{
+  "schema": "kiln.troy-runtime-pin/1",
+  "base": "https://assets.kilnstudio.tools/",
+  "release": "troy-20261005-05",
+  "path": "packs/troy/troy-20261005-05/troy-scene.zip",
+  "bytes": 51599595,
+  "sha256": "13f057ee1499c7bafff3acae0cdd68e660ffd60af05fa7472c200649fc7b2382",
+  "sourceManifestSha256": "e50172c760581571160dd6391ff421ea86e36d60c99f3cdc15ae285f4171c1c6"
+}

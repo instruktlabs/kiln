@@ -2,6 +2,7 @@ import troy from '../data/troy.json';
 import foundry from '../data/packs/foundry-floor.json';
 import { catalogAssets, type CatalogImage } from './catalog';
 import { PACKS_ENABLED } from './config';
+import { isTroyGalleryAsset } from './troy-gallery.mjs';
 
 export { foundry };
 export type FoundryAsset = (typeof foundry.assets)[number];
@@ -46,7 +47,7 @@ export function buildGallery(packsEnabled: boolean): GalleryCard[] {
     });
   }
   cards.push(
-    ...troy.assets.map((asset) => ({
+    ...troy.assets.filter(isTroyGalleryAsset).map((asset) => ({
       ...asset,
       packs: ['troy'],
       href: `/gallery/troy/${asset.slug}/`,

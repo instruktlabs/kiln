@@ -1,0 +1,419 @@
+{
+  "version": "kiln.asset.v1",
+  "assetId": "cleanroom-wall-kit",
+  "revisionId": "r_4e0249fdfb804779a0adb8c6cae9d2dd",
+  "name": "Cleanroom wall kit",
+  "tags": [
+    "foundry-floor",
+    "building",
+    "wall",
+    "cleanroom",
+    "modular",
+    "p0"
+  ],
+  "createdAt": "2026-09-29T22:15:42.233Z",
+  "description": "Cleanroom wall kit on the 3.6 m planning grid: four variants side by side 4 m apart along X (wallPanelSolid, wallPanelGlazed with a separate glazing node, wallPanelDoor with two sliding leaves and DoorOpen/DoorClose clips of 2 s, cornerPost). Each panel is 3.6 x 0.1 x 6.0 m on Y = 0; 352 triangles; four palette materials.",
+  "brief": "Brief briefs/cleanroom-wall-kit.md (Foundry Floor, P0, building). One asset, four variants at X -6, -2, +2, +6 (root origin at floor level, panel-length centre, centreplane). Panel 3.6 m long, 0.1 m thick, 6.0 m tall; glazed window 3.0 x 2.0 m, sill 1.0 m, glass as separate child glazing; door opening 1.8 x 2.2 m closed by two 0.9 m leaves (doorLeafLeft -X, doorLeafRight +X, DoorOpen and DoorClose 2 s, eased, one-shot); corner post 0.1 x 0.1 x 6.0 m. Materials tool-panel-grey, aluminium-extrusion, glass-clear, rubber-black only. Budget 336 to 2400 triangles, solid and glazed at most 400 each.",
+  "attribution": {
+    "model": "claude-sonnet-5-5",
+    "harness": "claude",
+    "author": "sonnet-ff-building"
+  },
+  "editable": true,
+  "files": {
+    "asset.glb": {
+      "sha256": "sha256:d4d24890f74cffa60d6cf57b656b4ef6206cb829026aedf2ed34f7fbbd0cffde",
+      "bytes": 31156
+    },
+    "source.kiln.js": {
+      "sha256": "sha256:0f9bc828eaa2e8256e86833321003b1152da0b79609fda5a4f28d5ea3db512df",
+      "bytes": 12789
+    },
+    "preview.png": {
+      "sha256": "sha256:89ed289cb1381c1a97ec9017d95d2ec4bb8f65155e1ed2df0e27ac6330729567",
+      "bytes": 17645
+    }
+  },
+  "build": {
+    "engine": "sha256:b5074a0cd52192a210c48f2fb898c24740b0fccdec5a71dc7042eda0ef87f154",
+    "options": {
+      "gltfExporter": "legacy",
+      "optimize": "off",
+      "instance": "auto",
+      "geometryPolicy": "warn",
+      "qaMode": "enforce",
+      "evaluatorMode": "subprocess",
+      "requirements": {
+        "kind": "kiln.requirements-context.v1",
+        "requirements": {
+          "kind": "kiln.asset-requirements",
+          "schemaVersion": 1,
+          "labels": [],
+          "frame": {
+            "units": "m",
+            "forward": "+X",
+            "up": "+Y",
+            "right": "+Z",
+            "groundY": 0
+          },
+          "requirements": {}
+        },
+        "policyHash": "sha256:9efcec929bf8a510c7dd0e18b687381e3824ff3d26cc20307f601d17535e5f34",
+        "adviceHash": "sha256:ca1f59b45e82e712e06149909000e2bc37b8cf159af70e32847088cecf153268"
+      }
+    },
+    "warnings": [],
+    "integration": {
+      "schemaVersion": "kiln.integration-manifest.v1",
+      "analyzerVersion": 1,
+      "artifactSha256": "d4d24890f74cffa60d6cf57b656b4ef6206cb829026aedf2ed34f7fbbd0cffde",
+      "units": "m",
+      "axes": {
+        "forward": "+X",
+        "up": "+Y",
+        "right": "+Z"
+      },
+      "bounds": {
+        "min": [
+          -7.799999952316284,
+          0,
+          -0.05000000074505806
+        ],
+        "max": [
+          6.050000000745058,
+          6,
+          0.05000000074505806
+        ],
+        "size": [
+          13.849999953061342,
+          6,
+          0.10000000149011612
+        ],
+        "center": [
+          -0.8749999757856131,
+          3,
+          0
+        ]
+      },
+      "pivot": {
+        "convention": "author-origin",
+        "position": [
+          0,
+          0,
+          0
+        ]
+      },
+      "ground": {
+        "groundY": 0,
+        "contactTolerance": 0.02,
+        "minY": 0,
+        "offsetToGround": 0,
+        "grounded": true
+      },
+      "defaultScene": {
+        "index": 0,
+        "name": "cleanroom-wall-kit"
+      },
+      "renderMetrics": {
+        "triangles": 352,
+        "drawCalls": 18,
+        "uniqueGeometries": 15,
+        "uniqueMaterials": 4,
+        "textureCount": 0,
+        "transparentMaterials": 1,
+        "skinned": false
+      },
+      "structuralQa": {
+        "hasDefaultScene": true,
+        "finiteBounds": true,
+        "validatorErrors": 0,
+        "validatorWarnings": 0
+      },
+      "visualQa": "not_assessed"
+    },
+    "qa": {
+      "kind": "kiln.asset-qa-report",
+      "schemaVersion": 2,
+      "qaProfile": "asset.requirements.v1",
+      "policyHash": "sha256:9efcec929bf8a510c7dd0e18b687381e3824ff3d26cc20307f601d17535e5f34",
+      "adviceHash": "sha256:ca1f59b45e82e712e06149909000e2bc37b8cf159af70e32847088cecf153268",
+      "acceptance": "accepted",
+      "disposition": "pass",
+      "dimensions": {
+        "exportIntegrity": {
+          "status": "pass",
+          "findings": [],
+          "metrics": {
+            "gltfErrors": 0,
+            "gltfWarnings": 0
+          }
+        },
+        "requirementReadiness": {
+          "status": "pass",
+          "findings": []
+        },
+        "promptAlignment": {
+          "status": "notEvaluated",
+          "findings": []
+        },
+        "visualQuality": {
+          "status": "notEvaluated",
+          "findings": [
+            {
+              "code": "GEO_PART_CONNECTIVITY",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.partConnectivity",
+              "message": "A group of 4 parts (\"wallPanelGlazedFaces\", \"wallPanelGlazedFrame\", \"wallPanelGlazedSeal\", \"glazing\") is separate from the largest component in the rest-pose bounding boxes; the nearest box gap is 0.400 m. This may be intentional. Box adjacency is not physical attachment evidence.",
+              "affected": {
+                "node": "wallPanelGlazedFaces"
+              },
+              "measurement": {
+                "name": "gapToMainComponent",
+                "actual": 0.4,
+                "expected": 0.02
+              },
+              "repairText": "Check whether the separation is intentional. If the brief requires attachment, inspect the named group and its intended interface before moving it. snapTo aligns bounding boxes; verify actual surfaces and required clearances afterward."
+            },
+            {
+              "code": "GEO_PART_CONNECTIVITY",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.partConnectivity",
+              "message": "A group of 3 parts (\"wallPanelSolidFaces\", \"wallPanelSolidFrame\", \"wallPanelSolidSeal\") is separate from the largest component in the rest-pose bounding boxes; the nearest box gap is 4.400 m. This may be intentional. Box adjacency is not physical attachment evidence.",
+              "affected": {
+                "node": "wallPanelSolidFaces"
+              },
+              "measurement": {
+                "name": "gapToMainComponent",
+                "actual": 4.4,
+                "expected": 0.02
+              },
+              "repairText": "Check whether the separation is intentional. If the brief requires attachment, inspect the named group and its intended interface before moving it. snapTo aligns bounding boxes; verify actual surfaces and required clearances afterward."
+            },
+            {
+              "code": "GEO_PART_CONNECTIVITY",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.partConnectivity",
+              "message": "A group of 2 parts (\"cornerPostBody\", \"cornerPostSeal\") is separate from the largest component in the rest-pose bounding boxes; the nearest box gap is 2.150 m. This may be intentional. Box adjacency is not physical attachment evidence.",
+              "affected": {
+                "node": "cornerPostBody"
+              },
+              "measurement": {
+                "name": "gapToMainComponent",
+                "actual": 2.15,
+                "expected": 0.02
+              },
+              "repairText": "Check whether the separation is intentional. If the brief requires attachment, inspect the named group and its intended interface before moving it. snapTo aligns bounding boxes; verify actual surfaces and required clearances afterward."
+            },
+            {
+              "code": "GEO_PART_SELF_INTERSECTION_UNMEASURED",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "18 part-volume measurements were unavailable: \"wallPanelSolidFaces\": a valid closed solid could not be measured (Not manifold); \"wallPanelSolidFrame\": a valid closed solid could not be measured (Not manifold); \"wallPanelSolidSeal\": a valid closed solid could not be measured (Not manifold); \"wallPanelGlazedFaces\": a valid closed solid could not be measured (Not manifold); \"wallPanelGlazedFrame\": a valid closed solid could not be measured (Not manifold); \"wallPanelGlazedSeal\": a valid closed solid could not be measured (Not manifold); \"glazing\": a valid closed solid could not be measured (Not manifold); \"wallPanelDoorFaces\": a valid closed solid could not be measured (Not manifold); \"wallPanelDoorFrame\": a valid closed solid could not be measured (Not manifold); \"wallPanelDoorSeal\": a valid closed solid could not be measured (Not manifold); \"doorLeafLeftPanel\": a valid closed solid could not be measured (Not manifold); \"doorLeafLeftFrame\": a valid closed solid could not be measured (Not manifold); \"doorLeafLeftGlass\": a valid closed solid could not be measured (Not manifold); \"doorLeafRightPanel\": a valid closed solid could not be measured (Not manifold); \"doorLeafRightFrame\": a valid closed solid could not be measured (Not manifold); \"doorLeafRightGlass\": a valid closed solid could not be measured (Not manifold); \"cornerPostBody\": a valid closed solid could not be measured (Not manifold); \"cornerPostSeal\": a valid closed solid could not be measured (Not manifold). These parts are not certified clear."
+            }
+          ],
+          "metrics": {
+            "partVolumeCoverage": "partial",
+            "partVolumeScope": "Visible static closed mesh pairs; excludes intra-mesh intersections, motion, open surfaces and usable passage space. Positive overlap may be intentional.",
+            "partVolumeEligibleParts": 18,
+            "partVolumeCandidatePairs": 30,
+            "partVolumeCandidatesLowerBound": false,
+            "partVolumePairsTested": 0,
+            "partVolumeSkipped": 18
+          }
+        },
+        "runtimeCost": {
+          "status": "pass",
+          "findings": [],
+          "metrics": {
+            "instanceabilityGrade": "C",
+            "instanceabilitySummary": "C — 4 mat / 15 geo / 18 draws, transparent",
+            "uniqueGeometries": 15,
+            "uniqueMaterials": 4,
+            "meshNodes": 18,
+            "meshInstances": 18,
+            "drawCalls": 18,
+            "textureCount": 0,
+            "skinned": false,
+            "transparentMaterials": 1,
+            "triangles": 352,
+            "materialCount": 4,
+            "opaqueMaterials": 3,
+            "maskedMaterials": 0,
+            "blendedMaterials": 1,
+            "singleSidedMaterials": 3,
+            "doubleSidedMaterials": 1,
+            "texturedMaterials": 0,
+            "materialExtensionCount": 0,
+            "materialExtensionsUsed": "",
+            "imageCount": 0,
+            "maxImageDimension": 0,
+            "decodedImageBytesRgba8": 0,
+            "estimatedGpuBytesWithMipmaps": 0,
+            "blendedSurfaceAreaRatio": 0.04766200368349555
+          }
+        }
+      },
+      "rules": [
+        {
+          "id": "UNIVERSAL_SCENE_CONTENT_RULE",
+          "mode": "enforce",
+          "status": "evaluated"
+        },
+        {
+          "id": "UNIVERSAL_FINITE_DATA_RULE",
+          "mode": "enforce",
+          "status": "evaluated"
+        },
+        {
+          "id": "UNIVERSAL_INDEX_RULE",
+          "mode": "enforce",
+          "status": "evaluated"
+        },
+        {
+          "id": "UNIVERSAL_ZERO_SCALE_RULE",
+          "mode": "enforce",
+          "status": "evaluated"
+        },
+        {
+          "id": "UNIVERSAL_NODE_NAME_RULE",
+          "mode": "enforce",
+          "status": "evaluated"
+        },
+        {
+          "id": "UNIVERSAL_ANIMATION_TARGET_RULE",
+          "mode": "enforce",
+          "status": "evaluated"
+        },
+        {
+          "id": "MATERIAL_PORTABLE_PBR_RULE",
+          "mode": "enforce",
+          "status": "evaluated"
+        },
+        {
+          "id": "ARCHITECTURE_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        },
+        {
+          "id": "ARCHITECTURE_ADVISORY_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "CHARACTER_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        },
+        {
+          "id": "CHARACTER_ADVISORY_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "VEHICLE_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        },
+        {
+          "id": "VEHICLE_ADVISORY_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "VEHICLE_W6_ADVISORY_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "VEGETATION_CONTACT_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        },
+        {
+          "id": "VEGETATION_ADVISORY_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "PROP_CAPABILITY_EXACT_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        },
+        {
+          "id": "PROP_ADVISORY_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "ENVIRONMENT_EXACT_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        },
+        {
+          "id": "ENVIRONMENT_ADVISORY_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "VFX_EXACT_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        },
+        {
+          "id": "VFX_ADVISORY_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "MODULAR_JOIN_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        },
+        {
+          "id": "ASSET_SCOPE_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "GEO_PART_SELF_INTERSECTION",
+          "mode": "observe",
+          "status": "notEvaluated"
+        },
+        {
+          "id": "GEO_PART_CONNECTIVITY",
+          "mode": "observe",
+          "status": "evaluated"
+        },
+        {
+          "id": "REF_COMPARISON",
+          "mode": "observe",
+          "status": "notEvaluated",
+          "reason": "Neutral measurement adapter remains to be qualified; no category fallback is used."
+        }
+      ],
+      "unevaluatedRequirements": []
+    },
+    "dependencies": [],
+    "rebuild": "engine-required"
+  },
+  "preview": {
+    "fidelity": {
+      "version": "kiln.view-fidelity.v1",
+      "requested": "full-preferred",
+      "delivered": "full-material",
+      "materialFaithful": true,
+      "exactArtifact": false,
+      "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1074",
+      "inputGlbSha256": "sha256:d4d24890f74cffa60d6cf57b656b4ef6206cb829026aedf2ed34f7fbbd0cffde",
+      "degraded": false,
+      "reasonCodes": [
+        "IN_LOOP_BUILD_NOT_PERSISTED"
+      ]
+    },
+    "backdrop": "neutral"
+  }
+}

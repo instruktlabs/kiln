@@ -1,0 +1,2 @@
+export function phaseForActor(id,duration){if(typeof id!=='string'||!id)throw Error('Actor ID required');if(!Number.isFinite(duration)||duration<=0)throw Error('Positive duration required');let hash=2166136261;for(const c of id)hash=Math.imul(hash^c.charCodeAt(0),16777619);return (hash>>>0)%16*duration/16;}
+export function partitionActors(actors){const groups={greek:[],trojan:[]};for(const actor of actors){if(!groups[actor.faction])throw Error(`Unsupported faction ${actor.faction}`);groups[actor.faction].push(actor);}return groups;}

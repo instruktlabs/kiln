@@ -1,8 +1,8 @@
 # Response headers for kilnstudio.tools on Cloudflare Pages (a direct upload of the reviewed build, decision S-4).
 # Pages applies every rule whose path matches, in this order; "! Name" removes a header an earlier rule set.
 # validate-static checks this file against the build: the CSP script hashes are exactly the inline scripts the
-# pages carry, and only files with a content hash in their name are cached as immutable.
-# finalize-site replaces the template script hashes with hashes of the emitted pages for this build mode.
+# pages carry. Immutable caching covers content-hashed files and exact sealed Troy resources verified by finalize-site.
+# finalize-site replaces template script hashes and appends the verified sealed Troy cache rules for this build.
 
 # Every response. HTML revalidates on each visit: a cached page that outlived a deployment would point at hashed
 # files the new deployment no longer has. The permissions policy turns off device features no page uses and

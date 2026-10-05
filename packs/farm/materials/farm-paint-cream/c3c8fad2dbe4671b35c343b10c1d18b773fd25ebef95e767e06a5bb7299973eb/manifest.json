@@ -1,0 +1,217 @@
+{
+  "schemaVersion": 1,
+  "materialId": "farm-paint-cream",
+  "revisionId": "sha256:c3c8fad2dbe4671b35c343b10c1d18b773fd25ebef95e767e06a5bb7299973eb",
+  "name": "Farm cream painted trim",
+  "tags": [
+    "paint",
+    "wood",
+    "procedural",
+    "barn",
+    "trim",
+    "derivative"
+  ],
+  "tileable": true,
+  "physicalSizeMeters": {
+    "width": 1,
+    "height": 1
+  },
+  "parameters": {
+    "baseColor": 16777215,
+    "roughness": 1,
+    "metalness": 0,
+    "emissiveIntensity": 1,
+    "alphaMode": "opaque",
+    "alphaCutoff": 0.5,
+    "doubleSided": false
+  },
+  "sources": [
+    {
+      "id": "procedural",
+      "kind": "procedural",
+      "provider": "Kiln procedural texture v2",
+      "creator": "Kiln Commons Farm",
+      "license": {
+        "spdx": "CC0-1.0",
+        "url": "https://creativecommons.org/publicdomain/zero/1.0/",
+        "attribution": "Original procedural recipe by Kiln Commons Farm (opus-barn, claude-opus-5-5): cream painted-trim derivative of the shared farm-wood-honey noise+stripes grain structure; seed 4405 retained."
+      },
+      "originalFiles": []
+    }
+  ],
+  "maps": [
+    {
+      "slot": "baseColor",
+      "file": "baseColor.png",
+      "sha256": "sha256:25a102b005450f69eafad7c16ce99af3fd80a978345defc0e812778f8a16e20c",
+      "bytes": 14887,
+      "width": 256,
+      "height": 256,
+      "usage": "albedo",
+      "colorSpace": "srgb",
+      "sourceId": "procedural",
+      "transforms": [
+        {
+          "operation": "procedural-recipe",
+          "tool": "kiln_material create-procedural",
+          "version": "1",
+          "parameters": {
+            "derivedFrom": "farm-wood-honey sha256:710f9ab0183deb86923b3c398286f9cbcb0eaea7ec50657a72fc83c2bd3c38cd",
+            "grainLinesPerMetre": 32,
+            "seed": 4405,
+            "targetColor": "#E2D2AC"
+          }
+        }
+      ],
+      "procedural": {
+        "compiler": "kiln.procedural-texture.v2",
+        "spec": {
+          "schemaVersion": 2,
+          "size": 256,
+          "usage": "albedo",
+          "name": "cream-trim-paint-albedo",
+          "layers": [
+            {
+              "op": "noise",
+              "colorA": 14470310,
+              "colorB": 15260086,
+              "scale": 4,
+              "octaves": 3,
+              "seed": 4405,
+              "blend": "normal",
+              "opacity": 1
+            },
+            {
+              "op": "stripes",
+              "colorA": 14075552,
+              "colorB": 15128242,
+              "count": 32,
+              "angleDeg": 0,
+              "blend": "normal",
+              "opacity": 0.15
+            }
+          ]
+        },
+        "recipeHash": "sha256:13e8067498a96fa095db0918d7b8f3c73dd47ca95f0e08c3137d47b20a60d036",
+        "pixelHash": "sha256:a6573bf358aaca22602d522b9bf558f37c29546ae29a74007411d08a5d668e48",
+        "encoder": {
+          "name": "sharp",
+          "version": "0.35.4"
+        }
+      }
+    },
+    {
+      "slot": "normal",
+      "file": "normal.png",
+      "sha256": "sha256:a7e57c534868cb151a0d7424fc2b0a4951f64beb0ae7902ceb9caa000837b465",
+      "bytes": 5711,
+      "width": 256,
+      "height": 256,
+      "usage": "normal",
+      "colorSpace": "linear",
+      "normalConvention": "opengl",
+      "sourceId": "procedural",
+      "transforms": [
+        {
+          "operation": "procedural-recipe",
+          "tool": "kiln_material create-procedural",
+          "version": "1",
+          "parameters": {
+            "seed": 4405
+          }
+        }
+      ],
+      "procedural": {
+        "compiler": "kiln.procedural-texture.v2",
+        "spec": {
+          "schemaVersion": 2,
+          "size": 256,
+          "usage": "normal",
+          "name": "cream-trim-paint-height",
+          "layers": [
+            {
+              "op": "noise",
+              "colorA": 8421504,
+              "colorB": 9211020,
+              "scale": 4,
+              "octaves": 3,
+              "seed": 4405,
+              "blend": "normal",
+              "opacity": 1
+            },
+            {
+              "op": "stripes",
+              "colorA": 8026746,
+              "colorB": 10132122,
+              "count": 32,
+              "angleDeg": 0,
+              "blend": "normal",
+              "opacity": 0.3
+            }
+          ]
+        },
+        "derive": {
+          "kind": "normal-from-height",
+          "strength": 0.8
+        },
+        "recipeHash": "sha256:d5e3a5491901ded430af279dbae6fb6b04f20f101281e918a3c0bbe8d8e21470",
+        "pixelHash": "sha256:c995fcc5c4f78afaeef3099629ceab461b89530fbb8a862aa43368d7852cca10",
+        "encoder": {
+          "name": "sharp",
+          "version": "0.35.4"
+        }
+      }
+    },
+    {
+      "slot": "metallicRoughness",
+      "file": "metallicRoughness.png",
+      "sha256": "sha256:84692085eb866409ec5e89070dde7ce9d0fe95af973fea7088a75ec74d8188f8",
+      "bytes": 3294,
+      "width": 128,
+      "height": 128,
+      "usage": "metallicRoughness",
+      "colorSpace": "linear",
+      "channelPacking": "r-occlusion-g-roughness-b-metallic",
+      "sourceId": "procedural",
+      "transforms": [
+        {
+          "operation": "procedural-recipe",
+          "tool": "kiln_material create-procedural",
+          "version": "1",
+          "parameters": {
+            "metalness": 0,
+            "roughnessRange": "0.78-0.85",
+            "seed": 4405
+          }
+        }
+      ],
+      "procedural": {
+        "compiler": "kiln.procedural-texture.v2",
+        "spec": {
+          "schemaVersion": 2,
+          "size": 128,
+          "usage": "metallicRoughness",
+          "name": "cream-trim-paint-mr",
+          "layers": [
+            {
+              "op": "noise",
+              "colorA": 16762880,
+              "colorB": 16767232,
+              "scale": 6,
+              "octaves": 2,
+              "seed": 4405,
+              "blend": "normal",
+              "opacity": 1
+            }
+          ]
+        },
+        "recipeHash": "sha256:16f14a2634c66c24021776f72e76e9b3965134890980a12822e9347feca966bb",
+        "pixelHash": "sha256:df47a744ae2b993cdb2cb6b0c6a8f48add955570dc3ed6ac8b5431507449751f",
+        "encoder": {
+          "name": "sharp",
+          "version": "0.35.4"
+        }
+      }
+    }
+  ]
+}

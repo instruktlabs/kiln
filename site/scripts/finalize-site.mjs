@@ -2,6 +2,7 @@ import { mkdir, readFile, readdir, writeFile } from 'node:fs/promises';
 import { dirname, relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { ARCHIVE_INDEX_ROUTE, inspectHtml, isArchiveItemRoute, ORIGIN, routeForFile, scriptHashSource } from './static-validation-core.mjs';
+import {sealedTroyCache} from './sealed-cache.mjs';
 
 const escapeXml = (text) => text.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;');
 const link = (page) => `- [${page.title.replace(/ · Archive · Kiln$| · Kiln docs$| · Kiln$| — Kiln$| — source and 3D model \| Kiln$| — Kiln Commons$/g, '')}](${new URL(page.route, ORIGIN).href}): ${page.description ?? ''}`;
@@ -71,7 +72,8 @@ export async function finalizeSite({ dist = resolve(dirname(fileURLToPath(import
   if (!pages.some((page) => page.route === '/')) throw new Error(`Astro home output missing in ${dist}; build the site before finalizing.`);
   const { sitemap, sitemapIndex, robots, llms } = buildIndexFiles(pages);
   const headerPath=resolve(dist,'_headers');
-  const headers=buildHeaders(await readFile(headerPath,'utf8'),pages);
+  const sealedCache=await sealedTroyCache(dist);
+  const headers=buildHeaders(await readFile(headerPath,'utf8'),pages)+sealedCache.headers;
   await mkdir(dist, { recursive: true });
   await Promise.all([
     writeFile(resolve(dist, 'sitemap.xml'), sitemap),

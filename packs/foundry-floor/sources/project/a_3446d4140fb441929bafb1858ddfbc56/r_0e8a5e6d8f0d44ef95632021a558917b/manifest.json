@@ -1,0 +1,370 @@
+{
+  "version": "kiln.asset.v1",
+  "assetId": "a_3446d4140fb441929bafb1858ddfbc56",
+  "revisionId": "r_0e8a5e6d8f0d44ef95632021a558917b",
+  "name": "s2-hall-E-far",
+  "tags": [
+    "foundry-floor",
+    "structure",
+    "s2-hall-half",
+    "hand-E",
+    "far-shell"
+  ],
+  "createdAt": "2026-09-29T17:59:26.262Z",
+  "description": "Far shell of the hall half, hand E: exact Z mirror of s2-hall-W-far. Bounds X 0..2772, Y 0..48, Z -240..260. 706 triangles, 52832 bytes.",
+  "brief": "Foundry Floor S2 hall half, hand E, bays 36, far true: mirrored far shell. Same program with constants hand E, bays 36 and far true.",
+  "attribution": {
+    "model": "claude-sonnet-5-5",
+    "harness": "Claude Code",
+    "author": "sonnet-ff-hall"
+  },
+  "editable": true,
+  "files": {
+    "asset.glb": {
+      "sha256": "sha256:87d79c60649749f70b38919c1152f13d9fee1c3ca071e9b2321d77db50198e34",
+      "bytes": 52832
+    },
+    "source.kiln.js": {
+      "sha256": "sha256:87fae74c1afb9ec47389b365603aa98316c6c1a9c11e0e12ad4d38512722874a",
+      "bytes": 12588
+    },
+    "preview.png": {
+      "sha256": "sha256:3e96546a08fefbffb045ffc087aca56d9d4712a3aeb425733c9ee428ee4240a5",
+      "bytes": 15477
+    }
+  },
+  "build": {
+    "engine": "sha256:b5074a0cd52192a210c48f2fb898c24740b0fccdec5a71dc7042eda0ef87f154",
+    "options": {
+      "gltfExporter": "legacy",
+      "optimize": "off",
+      "instance": "auto",
+      "geometryPolicy": "warn",
+      "qaMode": "enforce",
+      "evaluatorMode": "subprocess",
+      "requirements": {
+        "kind": "kiln.requirements-context.v1",
+        "requirements": {
+          "kind": "kiln.asset-requirements",
+          "schemaVersion": 1,
+          "labels": [],
+          "frame": {
+            "units": "m",
+            "forward": "+X",
+            "up": "+Y",
+            "right": "+Z",
+            "groundY": 0
+          },
+          "requirements": {}
+        },
+        "policyHash": "sha256:9efcec929bf8a510c7dd0e18b687381e3824ff3d26cc20307f601d17535e5f34",
+        "adviceHash": "sha256:ca1f59b45e82e712e06149909000e2bc37b8cf159af70e32847088cecf153268"
+      }
+    },
+    "warnings": [],
+    "integration": {
+      "schemaVersion": "kiln.integration-manifest.v1",
+      "analyzerVersion": 1,
+      "artifactSha256": "87d79c60649749f70b38919c1152f13d9fee1c3ca071e9b2321d77db50198e34",
+      "units": "m",
+      "axes": {
+        "forward": "+X",
+        "up": "+Y",
+        "right": "+Z"
+      },
+      "bounds": {
+        "min": [
+          0,
+          0,
+          -240
+        ],
+        "max": [
+          2772,
+          48,
+          260
+        ],
+        "size": [
+          2772,
+          48,
+          500
+        ],
+        "center": [
+          1386,
+          24,
+          10
+        ]
+      },
+      "pivot": {
+        "convention": "author-origin",
+        "position": [
+          0,
+          0,
+          0
+        ]
+      },
+      "ground": {
+        "groundY": 0,
+        "contactTolerance": 0.02,
+        "minY": 0,
+        "offsetToGround": 0,
+        "grounded": true
+      },
+      "defaultScene": {
+        "index": 0,
+        "name": "s2-hall-E-far"
+      },
+      "renderMetrics": {
+        "triangles": 706,
+        "drawCalls": 47,
+        "uniqueGeometries": 47,
+        "uniqueMaterials": 3,
+        "textureCount": 0,
+        "transparentMaterials": 0,
+        "skinned": false
+      },
+      "structuralQa": {
+        "hasDefaultScene": true,
+        "finiteBounds": true,
+        "validatorErrors": 0,
+        "validatorWarnings": 0
+      },
+      "visualQa": "not_assessed"
+    },
+    "qa": {
+      "kind": "kiln.asset-qa-report",
+      "schemaVersion": 2,
+      "qaProfile": "asset.requirements.v1",
+      "policyHash": "sha256:9efcec929bf8a510c7dd0e18b687381e3824ff3d26cc20307f601d17535e5f34",
+      "adviceHash": "sha256:ca1f59b45e82e712e06149909000e2bc37b8cf159af70e32847088cecf153268",
+      "acceptance": "accepted",
+      "disposition": "pass",
+      "dimensions": {
+        "exportIntegrity": {
+          "status": "pass",
+          "findings": [],
+          "metrics": {
+            "gltfErrors": 0,
+            "gltfWarnings": 0
+          }
+        },
+        "requirementReadiness": {
+          "status": "pass",
+          "findings": []
+        },
+        "promptAlignment": {
+          "status": "notEvaluated",
+          "findings": []
+        },
+        "visualQuality": {
+          "status": "notEvaluated",
+          "findings": [
+            {
+              "code": "GEO_PART_SELF_INTERSECTION_UNMEASURED",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "47 part-volume measurements were unavailable: \"outerWall\": a valid closed solid could not be measured (Not manifold); \"sweptWall\": a valid closed solid could not be measured (Not manifold); \"roofDeck\": a valid closed solid could not be measured (Not manifold); \"outerPod01\": a valid closed solid could not be measured (Not manifold); \"outerPod02\": a valid closed solid could not be measured (Not manifold); \"outerPod03\": a valid closed solid could not be measured (Not manifold); \"outerPod04\": a valid closed solid could not be measured (Not manifold); \"outerPod05\": a valid closed solid could not be measured (Not manifold); \"outerPod06\": a valid closed solid could not be measured (Not manifold); \"outerPod07\": a valid closed solid could not be measured (Not manifold); \"outerPod08\": a valid closed solid could not be measured (Not manifold); \"outerPod09\": a valid closed solid could not be measured (Not manifold); \"outerPod10\": a valid closed solid could not be measured (Not manifold); \"outerPod11\": a valid closed solid could not be measured (Not manifold); \"outerPod12\": a valid closed solid could not be measured (Not manifold); \"outerPod13\": a valid closed solid could not be measured (Not manifold); \"outerPod14\": a valid closed solid could not be measured (Not manifold); \"outerPod15\": a valid closed solid could not be measured (Not manifold); \"outerPod16\": a valid closed solid could not be measured (Not manifold); \"outerPod17\": a valid closed solid could not be measured (Not manifold); \"outerPod18\": a valid closed solid could not be measured (Not manifold); \"endWall\": a valid closed solid could not be measured (Not manifold); \"splitWall\": a valid closed solid could not be measured (Not manifold); \"splitPod01\": a valid closed solid could not be measured (Not manifold); \"splitPod02\": a valid closed solid could not be measured (Not manifold); \"splitPod03\": a valid closed solid could not be measured (Not manifold); \"splitPod04\": a valid closed solid could not be measured (Not manifold); \"splitPod05\": a valid closed solid could not be measured (Not manifold); \"splitPod06\": a valid closed solid could not be measured (Not manifold); \"splitPod07\": a valid closed solid could not be measured (Not manifold); \"splitPod08\": a valid closed solid could not be measured (Not manifold); \"splitPod09\": a valid closed solid could not be measured (Not manifold); \"splitPod10\": a valid closed solid could not be measured (Not manifold); \"splitPod11\": a valid closed solid could not be measured (Not manifold); \"splitPod12\": a valid closed solid could not be measured (Not manifold); \"splitPod13\": a valid closed solid could not be measured (Not manifold); \"splitPod14\": a valid closed solid could not be measured (Not manifold); \"splitPod15\": a valid closed solid could not be measured (Not manifold); \"splitPod16\": a valid closed solid could not be measured (Not manifold); \"splitPod17\": a valid closed solid could not be measured (Not manifold); \"roofLight01\": a valid closed solid could not be measured (Not manifold); \"roofLight02\": a valid closed solid could not be measured (Not manifold); \"roofLight03\": a valid closed solid could not be measured (Not manifold); \"roofLight04\": a valid closed solid could not be measured (Not manifold); \"roofLight05\": a valid closed solid could not be measured (Not manifold); \"roofLight06\": a valid closed solid could not be measured (Not manifold); \"roofLight07\": a valid closed solid could not be measured (Not manifold). These parts are not certified clear."
+            }
+          ],
+          "metrics": {
+            "partVolumeCoverage": "partial",
+            "partVolumeScope": "Visible static closed mesh pairs; excludes intra-mesh intersections, motion, open surfaces and usable passage space. Positive overlap may be intentional.",
+            "partVolumeEligibleParts": 47,
+            "partVolumeCandidatePairs": 49,
+            "partVolumeCandidatesLowerBound": false,
+            "partVolumePairsTested": 0,
+            "partVolumeSkipped": 47
+          }
+        },
+        "runtimeCost": {
+          "status": "pass",
+          "findings": [],
+          "metrics": {
+            "instanceabilityGrade": "B",
+            "instanceabilitySummary": "B — 3 mat / 47 geo / 47 draws, opaque",
+            "uniqueGeometries": 47,
+            "uniqueMaterials": 3,
+            "meshNodes": 47,
+            "meshInstances": 47,
+            "drawCalls": 47,
+            "textureCount": 0,
+            "skinned": false,
+            "transparentMaterials": 0,
+            "triangles": 706,
+            "materialCount": 3,
+            "opaqueMaterials": 3,
+            "maskedMaterials": 0,
+            "blendedMaterials": 0,
+            "singleSidedMaterials": 3,
+            "doubleSidedMaterials": 0,
+            "texturedMaterials": 0,
+            "materialExtensionCount": 0,
+            "materialExtensionsUsed": "",
+            "imageCount": 0,
+            "maxImageDimension": 0,
+            "decodedImageBytesRgba8": 0,
+            "estimatedGpuBytesWithMipmaps": 0,
+            "blendedSurfaceAreaRatio": 0
+          }
+        }
+      },
+      "rules": [
+        {
+          "id": "UNIVERSAL_SCENE_CONTENT_RULE",
+          "mode": "enforce",
+          "status": "evaluated"
+        },
+        {
+          "id": "UNIVERSAL_FINITE_DATA_RULE",
+          "mode": "enforce",
+          "status": "evaluated"
+        },
+        {
+          "id": "UNIVERSAL_INDEX_RULE",
+          "mode": "enforce",
+          "status": "evaluated"
+        },
+        {
+          "id": "UNIVERSAL_ZERO_SCALE_RULE",
+          "mode": "enforce",
+          "status": "evaluated"
+        },
+        {
+          "id": "UNIVERSAL_NODE_NAME_RULE",
+          "mode": "enforce",
+          "status": "evaluated"
+        },
+        {
+          "id": "UNIVERSAL_ANIMATION_TARGET_RULE",
+          "mode": "enforce",
+          "status": "evaluated"
+        },
+        {
+          "id": "MATERIAL_PORTABLE_PBR_RULE",
+          "mode": "enforce",
+          "status": "evaluated"
+        },
+        {
+          "id": "ARCHITECTURE_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        },
+        {
+          "id": "ARCHITECTURE_ADVISORY_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "CHARACTER_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        },
+        {
+          "id": "CHARACTER_ADVISORY_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "VEHICLE_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        },
+        {
+          "id": "VEHICLE_ADVISORY_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "VEHICLE_W6_ADVISORY_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "VEGETATION_CONTACT_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        },
+        {
+          "id": "VEGETATION_ADVISORY_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "PROP_CAPABILITY_EXACT_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        },
+        {
+          "id": "PROP_ADVISORY_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "ENVIRONMENT_EXACT_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        },
+        {
+          "id": "ENVIRONMENT_ADVISORY_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "VFX_EXACT_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        },
+        {
+          "id": "VFX_ADVISORY_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "MODULAR_JOIN_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        },
+        {
+          "id": "ASSET_SCOPE_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "GEO_PART_SELF_INTERSECTION",
+          "mode": "observe",
+          "status": "notEvaluated"
+        },
+        {
+          "id": "GEO_PART_CONNECTIVITY",
+          "mode": "observe",
+          "status": "evaluated"
+        },
+        {
+          "id": "REF_COMPARISON",
+          "mode": "observe",
+          "status": "notEvaluated",
+          "reason": "Neutral measurement adapter remains to be qualified; no category fallback is used."
+        }
+      ],
+      "unevaluatedRequirements": []
+    },
+    "dependencies": [],
+    "rebuild": "engine-required"
+  },
+  "preview": {
+    "fidelity": {
+      "version": "kiln.view-fidelity.v1",
+      "requested": "full-preferred",
+      "delivered": "full-material",
+      "materialFaithful": true,
+      "exactArtifact": false,
+      "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1074",
+      "inputGlbSha256": "sha256:87d79c60649749f70b38919c1152f13d9fee1c3ca071e9b2321d77db50198e34",
+      "degraded": false,
+      "reasonCodes": [
+        "IN_LOOP_BUILD_NOT_PERSISTED"
+      ]
+    },
+    "backdrop": "neutral"
+  }
+}

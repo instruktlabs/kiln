@@ -40,6 +40,8 @@ export async function buildCommons({ mirror = process.env.KILN_ASSET_MIRROR, cac
     verifyBytes(bytes, model, model.output);
     await write(join(publicDir, model.output), bytes);
   }
+  // External gallery previews still have a verified local byte source for offline validation.
+  for (const path of plan.viewerModels ?? []) await pinnedFile(path);
   for (const source of plan.sources) {
     const bytes = archives.get(source.archive).files[source.member];
     verifyBytes(bytes, source, source.output);

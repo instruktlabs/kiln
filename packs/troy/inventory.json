@@ -193,7 +193,7 @@
         ],
         "boundsMin": [
           -4.670000076293945,
-          -5.9604645663569045e-09,
+          -5.9604645663569045e-9,
           -7.449999809265137
         ],
         "boundsMax": [
@@ -868,7 +868,7 @@
         ],
         "boundsMin": [
           -3.000000023841858,
-          -6.6492200079260044e-09,
+          -6.6492200079260044e-9,
           -2.4126112345878195
         ],
         "boundsMax": [
@@ -956,7 +956,7 @@
         ],
         "boundsMin": [
           -1.0420433282852173,
-          -2.384185793236071e-08,
+          -2.384185793236071e-8,
           -1.920000023841858
         ],
         "boundsMax": [
@@ -1161,10 +1161,10 @@
       "slug": "wooden-horse",
       "name": "Trojan Horse",
       "assetId": "wooden-horse",
-      "revisionId": "r_7ee4d96189a4442bb0efdab61a46300f",
-      "parentRevision": null,
-      "createdAt": "2026-10-02T05:52:02.792Z",
-      "glb": "https://kilnstudio.tools/scene-packs/troy/troy-20261005-02/models/wooden-horse.glb",
+      "revisionId": "r_c58f87877fbf40548aed5cc051166a72",
+      "parentRevision": "r_7ee4d96189a4442bb0efdab61a46300f",
+      "createdAt": "2026-10-05T22:25:12.325Z",
+      "glb": "https://assets.kilnstudio.tools/packs/troy/delivery-20261005-01/models/wooden-horse.glb",
       "tags": [
         "troy",
         "wooden-horse",
@@ -1172,11 +1172,11 @@
         "hatch",
         "wheels"
       ],
-      "description": "Hollow lofted timber horse (boolean-cut shell) standing on a four-wheeled deck. A hinged hatch in the belly opens via the hatch_open clip; four wheel_* nodes spin via wheels_roll. Built from pinned troy-timber and troy-bronze only, tinted to palette. +Z forward per the Troy project; origin on the ground at the footprint centre.",
+      "description": "Attach both ears to the rotated head crest with a small base overlap. Retain hollow torso, belly hatch, wheel pivots, clips and pinned materials.",
       "category": "Buildings",
-      "glbSha256": "af734651877a9a746d94bc449dee966eb62b912ddee70db51089acb80b779fc9",
+      "glbSha256": "aeb622fb0a37233a707030a81a3e9b991fff0b2ed17924956bd6ab61c53d9770",
       "glbBytes": 279516,
-      "poster": "https://kilnstudio.tools/scene-packs/troy/troy-20261005-02/media/wooden-horse.webp",
+      "poster": "https://kilnstudio.tools/scene-packs/troy/troy-20261005-05/media/wooden-horse.webp",
       "metrics": {
         "triangles": 2060,
         "meshes": 14,
@@ -1188,7 +1188,7 @@
         ],
         "boundsMin": [
           -2.139999994635582,
-          -2.384185793236071e-08,
+          -2.384185793236071e-8,
           -3.3499999046325684
         ],
         "boundsMax": [

@@ -1,5 +1,8 @@
 {
   "schemaVersion": 1,
+  "viewerModels": [
+    "standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/golden-gate-web-runtime.glb"
+  ],
   "images": [
     {
       "src": "/media/rig/review-neutral-v1/foundry-floor/ff2/signal-tower.webp",

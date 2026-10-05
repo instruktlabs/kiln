@@ -4,14 +4,18 @@ import PageHeader from '../../../components/PageHeader.astro';
 import AssetViewer from '../../../components/AssetViewer.astro';
 import EngineNote from '../../../components/EngineNote.astro';
 import StatRow from '../../../components/StatRow.astro';
-import { bytes, bounds, number } from '../../../lib/catalog';
+import { bounds, number } from '../../../lib/catalog';
 import { PACKS_ENABLED } from '../../../lib/config';
 import { readGlbFacts } from '../../../../scripts/engine-note.mjs';
 import { resolve } from 'node:path';
 import troy from '../../../data/troy.json';
-export function getStaticPaths(){return PACKS_ENABLED ? troy.assets.map(asset=>({params:{slug:asset.slug},props:{asset}})) : [];}
+import { isTroyGalleryAsset } from '../../../lib/troy-gallery.mjs';
+import AssetDownloads from '../../../components/AssetDownloads.astro';
+import { assetDelivery } from '../../../lib/delivery';
+export function getStaticPaths(){return PACKS_ENABLED ? troy.assets.filter(isTroyGalleryAsset).map(asset=>({params:{slug:asset.slug},props:{asset}})) : [];}
 interface Props {asset:(typeof troy.assets)[number]}
 const {asset}=Astro.props;
+const downloads=assetDelivery('troy',asset.slug);
 const facts=await readGlbFacts(resolve('public',asset.runtimeDownload.url.slice(1)));
 ---
 <BaseLayout title={`${asset.name} | Troy | Kiln`} description={asset.description} breadcrumbs={[{label:'Gallery',href:'/gallery/'},{label:asset.name,href:`/gallery/troy/${asset.slug}/`}]}>
@@ -20,7 +24,8 @@ const facts=await readGlbFacts(resolve('public',asset.runtimeDownload.url.slice(
   <div class="mt-8 drawing-sheet"><AssetViewer name={asset.name} modelUrl={asset.runtimeDownload.url} poster={asset.poster.src} posterAlt={asset.poster.alt} posterWidth={asset.poster.width} posterHeight={asset.poster.height} /></div>
   <EngineNote extensions={facts.extensionsUsed} />
   <StatRow values={[{label:'Triangles',value:number(asset.metrics.triangles)},{label:'Materials',value:asset.metrics.materials},{label:'Dimensions (m)',value:bounds(asset.metrics.bounds)}]} />
-  <div class="mt-6 flex flex-wrap gap-4"><a class="btn" href={asset.runtimeDownload.url}>Download GLB ({bytes(asset.runtimeDownload.bytes)})</a><a class="btn btn-secondary" href="/scenes/troy/">Explore the scene</a></div>
+  <AssetDownloads runtime={downloads.runtimeDownload} editable={downloads.editableDownload} />
+  <a class="text-link mt-5" href="/scenes/troy/">Explore the scene</a>
   <p class="mt-4 text-sm text-dim">{troy.license} licence. {asset.metrics.clips.length ? `Animation clips: ${asset.metrics.clips.join(', ')}.` : ''}</p>
  </div>
 </BaseLayout>

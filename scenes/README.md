@@ -1,9 +1,26 @@
 # Kiln scenes
 
-The maintained Farm, Golden Gate, Foundry Floor and shared scene-kit sources live
-here. They were integrated from the separate authored scene workspace for the v0.9
+The maintained Farm, Golden Gate, Foundry Floor, Troy and shared scene-kit sources
+live here. Farm, Golden Gate and Foundry Floor use React Three Fiber; Troy uses
+Three.js directly. All use the same pinned Three.js version. The original three
+scenes were integrated from the separate authored scene workspace for the v0.9
 site rollout. Generated capture evidence and asset payloads are kept out of Git.
 Historical milestone documents describe their original runs, not current release acceptance.
+
+Read the source and development instructions in [Farm](packages/farm/),
+[Golden Gate](packages/golden-gate/), [Foundry Floor](packages/foundry-floor/) and
+[Troy](packages/troy/README.md). [Pack source](../packs/README.md) covers Farm,
+Vehicles, Bridge, Foundry and Troy. Scene controllers and composition remain
+separate from standalone authored asset programs.
+
+Troy's maintained modules, portable tests, bounded asset transport and bundling
+tools are public source. Its [runtime pin](packages/troy/runtime-pin.json) selects
+an optional verified Cloudflare archive: `npm run hydrate` in `packages/troy`
+restores generated models and banks into ignored `.runtime/`, and `npm run dev`
+previews editable source. It requires neither the original author workspace nor
+a `.kiln` setup. The normal portable gate includes Troy's source-only Node tests;
+its generated payloads are never downloaded automatically by dependency install
+or tests. See its README for clean-checkout commands and production staging.
 
 The [current alignment plan](../docs/plans/2026-10-02-core-scenes-site-alignment.md)
 and [backlog](../docs/backlog.md) cover core, shared tooling, all three existing

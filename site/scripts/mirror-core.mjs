@@ -58,13 +58,15 @@ export const archiveProfile = (path) => (path.startsWith('standalone/') || path.
 export function verifyArchive(bytes, profile = 'delivery') {
   const files = unzipSync(bytes);
   for (const path of Object.keys(files)) assetPath(path);
-  const manifestPath = profile === 'editable'
+  const deliveryEnvelope = profile === 'editable' && files['delivery.json']
+    && JSON.parse(new TextDecoder().decode(files['delivery.json'])).profile === 'editable';
+  const manifestPath = profile === 'editable' && !deliveryEnvelope
     ? Object.keys(files).find((path) => path.endsWith('/manifest.json'))
     : 'delivery.json';
   if (!manifestPath || !files[manifestPath]) throw new Error(`Archive lacks ${profile === 'editable' ? 'revision manifest.json' : 'delivery.json'}`);
   const manifest = JSON.parse(new TextDecoder().decode(files[manifestPath]));
   if (!manifest.files || typeof manifest.files !== 'object') throw new Error('Archive manifest has no file seals');
-  const prefix = profile === 'editable' ? manifestPath.slice(0, -'manifest.json'.length) : '';
+  const prefix = profile === 'editable' && !deliveryEnvelope ? manifestPath.slice(0, -'manifest.json'.length) : '';
   const sealed = new Set([manifestPath]);
   for (const [relativePath, record] of Object.entries(manifest.files)) {
     const path = `${prefix}${assetPath(relativePath)}`;

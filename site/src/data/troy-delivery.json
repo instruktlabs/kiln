@@ -1,7 +1,7 @@
 {
-  "release": "troy-20261005-04",
-  "path": "packs/troy/troy-20261005-04/troy-scene.zip",
-  "bytes": 48970757,
-  "sha256": "13c1708e6f59cdf2aa7d7a4aa5e92bba87f3e55a75da3c95afaf2d658bfdcb99",
-  "sourceManifestSha256": "249f9949f18afd73fd38bdac9f38e24b511d1cf05e5f602cb4e23ab23b525005"
+  "release": "troy-20261005-05",
+  "path": "packs/troy/troy-20261005-05/troy-scene.zip",
+  "bytes": 51599595,
+  "sha256": "13f057ee1499c7bafff3acae0cdd68e660ffd60af05fa7472c200649fc7b2382",
+  "sourceManifestSha256": "e50172c760581571160dd6391ff421ea86e36d60c99f3cdc15ae285f4171c1c6"
 }

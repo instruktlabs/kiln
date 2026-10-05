@@ -11,7 +11,7 @@ export interface Manifest {
 }
 export function readJson<T = Manifest>(file: string): T { return JSON.parse(readFileSync(file, 'utf8')) as T; }
 export function slash(path: string): string { return path.replaceAll('\\', '/'); }
-export const IGNORED_DIRS = new Set(['node_modules', '.git', '.tmp', 'staged', 'dist', 'evidence']);
+export const IGNORED_DIRS = new Set(['node_modules', '.git', '.tmp', '.runtime', 'staged', 'dist', 'evidence']);
 /** Never follows junctions/symlinks or reads secret files. */
 export function filesUnder(dir: string, skip = IGNORED_DIRS): string[] {
   const files: string[] = [];

@@ -1,5 +1,102 @@
 # Cloudflare deployment
 
+## Current release procedure (5 October 2026)
+
+The website remains a direct upload to the `kilnstudio` Cloudflare Pages project,
+branch `production`. Generated downloads live in the `kiln-assets` R2 bucket at
+`https://assets.kilnstudio.tools/`; lightweight asset records and scene sources stay
+in Git. Public download choices are **Runtime assets** and **Editable assets**.
+
+`src/data/asset-delivery.json` pins the Farm, Vehicles, Golden Gate Bridge,
+Foundry Floor and Troy downloads by path, byte count and SHA-256. Editable archives
+contain the declared saved revisions and their material resources. Bridge remains
+standalone. To restore only one group into a separate Kiln asset workspace, run
+from `site/`:
+
+```sh
+node scripts/hydrate-asset-sources.mjs --group vehicles --output /path/to/asset-workspace
+```
+
+Use `--mirror DIR` for a verified local mirror. Hydration verifies the complete
+included inventory before writing; logical collection `project` maps to
+`assets/kiln/`, without imposing project membership. See [asset sources](../packs/README.md)
+for authoring and rebuild instructions.
+
+Prepare new downloads only when source records change. From `site/`:
+
+```sh
+node scripts/stage-asset-delivery.mjs --mirror .localdata/asset-delivery \
+  --commons /path/to/commons-sources --troy /path/to/troy-sources \
+  --runtime-mirror /path/to/pinned-runtime-mirror --release NEW-DELIVERY-ID
+```
+
+This writes deterministic archives, lightweight source snapshots and an upload
+inventory in the ignored mirror. `--fetch-runtime` explicitly permits fetching
+existing pinned runtime bytes instead of supplying a runtime mirror. Never reuse
+an immutable release key for changed bytes.
+
+Troy's current sealed release is `troy-20261005-05`. Normal builds consume its
+published archive; **do not regenerate release 05**. For a future release, use an
+explicit previous pin and a fresh release ID:
+
+```sh
+node scripts/prepare-troy-candidate.mjs .localdata/asset-delivery \
+  /path/to/approved-horse.webp NEW-TROY-RELEASE /path/to/previous-troy-delivery.json
+```
+
+Preparation overlays `scenes/packages/troy/web`, uses the unified runtime model
+pins, preserves approved scene media, builds compressed runtime transport and
+seals the scene archive. It updates `troy-delivery.json`, `troy.json` and the scene's
+`runtime-pin.json`. Include that archive record alongside the generated asset
+upload inventory before publication. The 5 October final upload list contains
+147 verified objects: 146 asset-delivery objects and the sealed Troy scene archive.
+
+From `site/`, validate the complete upload list offline, then publish after release
+authorization:
+
+```sh
+node scripts/publish-assets.mjs .localdata/asset-delivery /path/to/upload-list.json
+node scripts/publish-assets.mjs .localdata/asset-delivery /path/to/upload-list.json --upload --oauth
+```
+
+The publisher uses pinned Wrangler `4.147.0`, verifies every local file first,
+refuses existing different bytes, assigns ZIP/GLB content types and
+`Cache-Control: public, max-age=31536000, immutable`, and reads back exact public
+bytes. `--oauth` omits an inherited API-token override only in the child process;
+it does not change stored authentication. Pre-upload probes use temporary query
+parameters to avoid caching a missing clean URL. Before publishing site links,
+verify every **canonical URL without query parameters** for status 200, exact
+size/hash, immutable TTL and CORS using `Origin: https://kilnstudio.tools`.
+
+The R2 bucket CORS configuration is [r2-cors.json](./r2-cors.json): public `GET` and
+`HEAD`, request header `Range`, exposed `Content-Length`/`ETag`, max age 3600. An
+authorized configuration update uses:
+
+```sh
+npm exec --yes --package=wrangler@4.147.0 -- wrangler r2 bucket cors set kiln-assets --file r2-cors.json --force
+```
+
+The zone now has one active cache rule, **Kiln public asset caching**, matching
+only `(http.host eq "assets.kilnstudio.tools")`. It makes responses eligible for
+cache, respects origin edge/browser TTLs, and sets HTTP 400–599 to **No store**.
+Do not change cache settings for other hosts. After changing CORS on cached
+objects, use **Caching → Configuration → Custom Purge → Hostname** with only
+`assets.kilnstudio.tools`; do not purge the whole zone. The 5 October verification
+confirmed canonical Farm ZIP and Bridge GLB exact hashes, public CORS, second-GET
+`HIT`, Range preflight 204, and missing-object 404 `BYPASS` without stale headers.
+
+Run the build and deploy contract below from clean committed `main` after required
+CI checks. The full production build must enable packs, consume the exact Troy
+05 pin, and pass static/assets/upload-set checks. `finalize-site.mjs` appends
+immutable Pages rules only for individually verified sealed Troy resources;
+HTML and unsealed files retain revalidation. After deployment, match the public
+`build-info.json` commit and artifact-manifest digest to the candidate, then check
+the real gallery, both download choices and each scene over HTTPS. Record the
+deployment ID and exact receipts; an R2 upload alone does not establish a Pages
+deployment or owner acceptance.
+
+## Historical release direction (3 October 2026)
+
 **Release direction, 3 October:** Owner confirmed the farmer fix, could not reproduce
 the water jump locally, and authorized commit, main integration and deployment after
 settling the focused performance findings. See the [release disposition](../docs/reviews/2026-10-03-release-disposition.md).
@@ -12,7 +109,7 @@ whose production branch is `production`. The code is maintained on GitHub `main`
 GitHub Actions validates the engine and website; it does not deploy the site.
 Package publication is separate and remains deferred to v1.0.
 
-## Current hub status (3 October 2026)
+## Historical hub status (3 October 2026)
 
 The migration is complete: `kilnstudio.tools` is served by this Pages project.
 Public build-info and authenticated Pages records identify production commit
@@ -73,17 +170,19 @@ bun scripts/validate-static.mjs
 bun scripts/verify-assets.mjs
 ```
 
-The default build includes Commons downloads and all three scenes. It fetches only
+The default build includes Commons downloads and all four scenes. It fetches only
 SHA-256-pinned public objects from `assets.kilnstudio.tools`. `KILN_ASSET_MIRROR`
 can name a local mirror with exactly the same relative paths and bytes. The site
 uses this repository's `docs/`, `skills/` and `scenes/` by default. Farm is bundled
 from scene source; Golden Gate and Foundry use their sealed reviewed standalone
-chunks. `scene-inputs.json` pins their complete inputs and `scene-packs.json`
-independently verifies each model, data file and runtime chunk.
+chunks. `scene-inputs.json` pins the three core scenes' complete inputs and
+`scene-packs.json` independently verifies their models, data files and runtime
+chunks. Troy is staged separately from the sealed `troy-delivery.json` archive.
 
 `KILN_SITE_PACKS=0` is the reduced CI build; never use it for the production rollout.
-The authoritative R2 upload sets are `mirror-manifest.json`, `upload-manifest.json`
-and `scene-inputs.json`. Preserve existing versioned objects; verify each upload
+The existing core R2 upload sets are `mirror-manifest.json`, `upload-manifest.json`
+and `scene-inputs.json`; unified asset delivery and Troy use the complete upload
+list described above. Preserve existing versioned objects; verify each upload
 against its declared SHA-256 and check the public download URLs before deployment.
 From `site/`, `node scripts/upload-set.mjs` validates and summarizes all three
 manifests, including scene archives, without uploading. Duplicate paths or
@@ -132,7 +231,7 @@ missing project or start interactive authentication. The selected project and br
 remain explicit. The script never invokes login, creates a project, uploads R2
 objects or changes DNS.
 
-## Rollback after an authorized release
+## Historical rollback target and rollback procedure
 
 Retain deployment `33c716c7-16e5-46c6-93bf-f2260f0082be` in `kilnstudio` as the
 recorded rollback target for this candidate: production commit `b1ac6ee`, Farm
@@ -156,7 +255,8 @@ artifact-manifest digest, restored scene runtime/pack hashes, mapped downloads
 and gallery/scene entry, controls and exit flows over HTTPS. Record the result and
 both deployment IDs. Keep all old and new versioned R2 objects unchanged: restoring
 Pages does not require deleting the new `g9-code3` or `ff3-review2-code3` objects.
-No rollback, upload or deployment has been performed during this preparation.
+The no-mutation preparation statements in the 3 October records describe that
+historical checkpoint; use the current release receipts for subsequent actions.
 
 ## Historical initial migration
 

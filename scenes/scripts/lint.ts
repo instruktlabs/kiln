@@ -15,7 +15,7 @@ const advisory = packages.filter(p => !GATED.includes(p));
 
 function files(dir: string, out: string[] = []): string[] {
   for (const name of readdirSync(dir)) {
-    if (['node_modules', 'dist', 'staged', '.tmp', 'vendor'].includes(name)) continue;
+    if (['node_modules', 'dist', 'staged', '.tmp', '.runtime', 'vendor'].includes(name)) continue;
     const path = join(dir, name), stat = statSync(path);
     if (stat.isDirectory()) files(path, out); else if (/\.(?:ts|tsx|mjs)$/.test(name)) out.push(path);
   }

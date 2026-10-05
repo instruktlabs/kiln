@@ -1,0 +1,9 @@
+import {readRuntimeBytes} from './runtime-transport.mjs';
+import {createRigidClipPlayback} from './runtime/fleet-v2/rigid-playback.mjs';import {createWalkRoster} from './walk-roster.mjs';
+export async function createSharedWalkPlayback(T,human,ids,sourceHash,sourcePlanSha256,{poseTextures=null,motionBindings=null,offscreenMode='reference'}={}){
+ const base=new URL('./runtime/walk-bank-v2/',import.meta.url),hash=async b=>'sha256:'+Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',b)),v=>v.toString(16).padStart(2,'0')).join(''),manifest=await(await fetch(new URL('manifest.json',base))).json();if(manifest.schema!=='troy.shared-walk-runtime/1'||manifest.routeSourcePlanSha256!==sourcePlanSha256)throw Error('Invalid walking manifest');
+ const read=async file=>{const b=await readRuntimeBytes(new URL(file,base));if(await hash(b)!==manifest.files[file])throw Error('Walk identity mismatch '+file);return b;};
+ const [json,bytes,boundBytes]=await Promise.all([read('bank.json'),read('transforms.bin'),read('bounds.json')]),record=JSON.parse(new TextDecoder().decode(json)),boundRecord=JSON.parse(new TextDecoder().decode(boundBytes));if(record.data.sha256!==await hash(bytes)||boundRecord.bankSha256!==await hash(json))throw Error('Walking data mismatch');
+ const texturePool=await poseTextures?.register(record.manifest,bytes);const roster=createWalkRoster(T,{record,boundRecord,actorIds:ids,sourceHash,sourcePlanSha256,motionBindings,offscreenMode}),runtime=createRigidClipPlayback(human,{manifest:record.manifest,clips:record.clips,bytes},ids.map(id=>({id,matrix:new T.Matrix4(),clip:record.clips[0].name,time:0,loop:false})),{texturePool});
+ runtime.setActive([]);return {...runtime,roster,atlasBytes:bytes.byteLength,finishFrame(){runtime.updateActorTransforms(roster.transforms);runtime.updateActorPoses(roster.poses);}};
+}

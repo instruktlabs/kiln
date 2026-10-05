@@ -1,0 +1,3045 @@
+{
+  "schemaVersion": 1,
+  "release": "delivery-20261005-01",
+  "groups": {
+    "farm": {
+      "standalone": false,
+      "downloads": [
+        {
+          "profile": "runtime",
+          "path": "packs/farm/delivery-20261005-01/farm-runtime.zip",
+          "bytes": 3003309,
+          "sha256": "ce4bd6de97dcbaf7d772cdbf0cd4be19c870a95746a953183cf273a68cb4033d",
+          "url": "https://assets.kilnstudio.tools/packs/farm/delivery-20261005-01/farm-runtime.zip"
+        },
+        {
+          "profile": "editable",
+          "path": "packs/farm/delivery-20261005-01/farm-editable.zip",
+          "bytes": 44652630,
+          "sha256": "2bc73eaf959c100fa0362d0e8a9ec6acf078024d6f7f792fbea25038bdbbcf5d",
+          "url": "https://assets.kilnstudio.tools/packs/farm/delivery-20261005-01/farm-editable.zip"
+        }
+      ],
+      "assets": [
+        {
+          "slug": "farmhouse",
+          "collection": "project",
+          "assetId": "a_793e1ebd4c32465ab937d93215ec2a50",
+          "revisionId": "r_01f97f5e943e4c2693b6db8596f3e353",
+          "includedRevisions": [
+            "r_01f97f5e943e4c2693b6db8596f3e353",
+            "r_37f835d35a1040fc9f64d6f3b271eac5",
+            "r_1cf8330fa49e41c1b19e691ee80d0aad",
+            "r_8420afabf8fb4d58997ea50b7d13c4c9"
+          ],
+          "missingParents": [],
+          "editableDownload": {
+            "path": "packs/farm/delivery-20261005-01/editable/farmhouse.zip",
+            "bytes": 3615481,
+            "sha256": "d61cd6f2a79fa8cc0d9e2bc5f8bd078d756ce09a73571aa982297360e7774ff1",
+            "url": "https://assets.kilnstudio.tools/packs/farm/delivery-20261005-01/editable/farmhouse.zip"
+          },
+          "runtimeDownload": {
+            "path": "packs/farm/r36-local-review/models/farmhouse.glb",
+            "url": "https://assets.kilnstudio.tools/packs/farm/r36-local-review/models/farmhouse.glb",
+            "bytes": 549584,
+            "sha256": "1b02596b30e3417e3f8336893694f2614002e28154408803b145154097de8512",
+            "archive": "packs/farm/r36-local-review/shapes-and-seasons-farm-runtime.zip",
+            "member": "models/farmhouse.glb"
+          }
+        },
+        {
+          "slug": "barn",
+          "collection": "project",
+          "assetId": "a_a59fa53b5b9043239ae8cc29b6a0119f",
+          "revisionId": "r_c0234dc50e0443f4a8819cdf754b22da",
+          "includedRevisions": [
+            "r_c0234dc50e0443f4a8819cdf754b22da"
+          ],
+          "missingParents": [],
+          "editableDownload": {
+            "path": "packs/farm/delivery-20261005-01/editable/barn.zip",
+            "bytes": 1130965,
+            "sha256": "85c58b5615d8847bb48d09dbf61d0f99b19681580aceb093aa0cbeb98ca7e3b8",
+            "url": "https://assets.kilnstudio.tools/packs/farm/delivery-20261005-01/editable/barn.zip"
+          },
+          "runtimeDownload": {
+            "path": "packs/farm/r36-local-review/models/barn.glb",
+            "url": "https://assets.kilnstudio.tools/packs/farm/r36-local-review/models/barn.glb",
+            "bytes": 618912,
+            "sha256": "eae958ffee9be52c2f61c86859f138a1e999be3d3056dab9cb76df6286ea0041",
+            "archive": "packs/farm/r36-local-review/shapes-and-seasons-farm-runtime.zip",
+            "member": "models/barn.glb"
+          }
+        },
+        {
+          "slug": "windmill",
+          "collection": "project",
+          "assetId": "windmill",
+          "revisionId": "r_ef9045311dd040258e0143345c171d6f",
+          "includedRevisions": [
+            "r_ef9045311dd040258e0143345c171d6f",
+            "r_3836995ebcad486b88d50b05464a390d",
+            "r_085711a1e21046feb9d11fd9c9e2046e"
+          ],
+          "missingParents": [],
+          "editableDownload": {
+            "path": "packs/farm/delivery-20261005-01/editable/windmill.zip",
+            "bytes": 2535679,
+            "sha256": "8694278d686c830f5f094f351a9e871d5bc92d58c0e830c18f6a35900940d454",
+            "url": "https://assets.kilnstudio.tools/packs/farm/delivery-20261005-01/editable/windmill.zip"
+          },
+          "runtimeDownload": {
+            "path": "packs/farm/r36-local-review/models/windmill.glb",
+            "url": "https://assets.kilnstudio.tools/packs/farm/r36-local-review/models/windmill.glb",
+            "bytes": 454760,
+            "sha256": "089e966217cbd05c81a123ab2419d9d9c172bb7567f30ef2f7020cc790c8148f",
+            "archive": "packs/farm/r36-local-review/shapes-and-seasons-farm-runtime.zip",
+            "member": "models/windmill.glb"
+          }
+        },
+        {
+          "slug": "watermill",
+          "collection": "project",
+          "assetId": "watermill",
+          "revisionId": "r_f8ab38b03b5a4fb691b860d9fb076200",
+          "includedRevisions": [
+            "r_f8ab38b03b5a4fb691b860d9fb076200",
+            "r_81d32327d04846c0b18842a28c66bb64",
+            "r_be6949c5595246a891c8a0a0e96ef0a5",
+            "r_e21e46605a38498ab1ff80c6dfc7e20d",
+            "r_8b9c8ecdf01c4de2a8ce832fac572020",
+            "r_5af83fcc55b94a55a6ad438df47d0a0b"
+          ],
+          "missingParents": [],
+          "editableDownload": {
+            "path": "packs/farm/delivery-20261005-01/editable/watermill.zip",
+            "bytes": 6493709,
+            "sha256": "0e858a257d8956b3f0fb755639a49e6092515e804992612e3c1881932a4adaf8",
+            "url": "https://assets.kilnstudio.tools/packs/farm/delivery-20261005-01/editable/watermill.zip"
+          },
+          "runtimeDownload": {
+            "path": "packs/farm/r36-local-review/models/watermill.glb",
+            "url": "https://assets.kilnstudio.tools/packs/farm/r36-local-review/models/watermill.glb",
+            "bytes": 580264,
+            "sha256": "b57f29056cf3b072058d65016b753551f146c4cace974458087bceaaab4d0ce0",
+            "archive": "packs/farm/r36-local-review/shapes-and-seasons-farm-runtime.zip",
+            "member": "models/watermill.glb"
+          }
+        },
+        {
+          "slug": "fence-straight",
+          "collection": "project",
+          "assetId": "fence-straight",
+          "revisionId": "r_05420c8a915d45e69257f61914d02ec3",
+          "includedRevisions": [
+            "r_05420c8a915d45e69257f61914d02ec3"
+          ],
+          "missingParents": [],
+          "editableDownload": {
+            "path": "packs/farm/delivery-20261005-01/editable/fence-straight.zip",
+            "bytes": 447381,
+            "sha256": "944129e0996a017ee3139a388a583275a532379e45e344ab2951e11912a5ed5f",
+            "url": "https://assets.kilnstudio.tools/packs/farm/delivery-20261005-01/editable/fence-straight.zip"
+          },
+          "runtimeDownload": {
+            "path": "packs/farm/r36-local-review/models/fence-straight.glb",
+            "url": "https://assets.kilnstudio.tools/packs/farm/r36-local-review/models/fence-straight.glb",
+            "bytes": 59260,
+            "sha256": "1468e8ca49f97a89b5a84e032960fc7b6b29e8b18adee0b1a86692aae6b2c496",
+            "archive": "packs/farm/r36-local-review/shapes-and-seasons-farm-runtime.zip",
+            "member": "models/fence-straight.glb"
+          }
+        },
+        {
+          "slug": "fence-corner",
+          "collection": "project",
+          "assetId": "fence-corner",
+          "revisionId": "r_071590a217854c5cbefb90275d3a6887",
+          "includedRevisions": [
+            "r_071590a217854c5cbefb90275d3a6887"
+          ],
+          "missingParents": [],
+          "editableDownload": {
+            "path": "packs/farm/delivery-20261005-01/editable/fence-corner.zip",
+            "bytes": 455933,
+            "sha256": "19f2791d61152d1ec7beee5408991749f7e0366c0d9e900962cdadde1f7eab18",
+            "url": "https://assets.kilnstudio.tools/packs/farm/delivery-20261005-01/editable/fence-corner.zip"
+          },
+          "runtimeDownload": {
+            "path": "packs/farm/r36-local-review/models/fence-corner.glb",
+            "url": "https://assets.kilnstudio.tools/packs/farm/r36-local-review/models/fence-corner.glb",
+            "bytes": 83084,
+            "sha256": "9af793228f396dce42eafacdd98b0203a714648b4e716c389656114217dde6cd",
+            "archive": "packs/farm/r36-local-review/shapes-and-seasons-farm-runtime.zip",
+            "member": "models/fence-corner.glb"
+          }
+        },
+        {
+          "slug": "fence-gate",
+          "collection": "project",
+          "assetId": "fence-gate",
+          "revisionId": "r_af2ceeafc87f44759b2af1448beb76b3",
+          "includedRevisions": [
+            "r_af2ceeafc87f44759b2af1448beb76b3"
+          ],
+          "missingParents": [],
+          "editableDownload": {
+            "path": "packs/farm/delivery-20261005-01/editable/fence-gate.zip",
+            "bytes": 509064,
+            "sha256": "07cf5cc79126bf1399a6a5c791c02cb8ac28b6056bc189db663d77d7c6160884",
+            "url": "https://assets.kilnstudio.tools/packs/farm/delivery-20261005-01/editable/fence-gate.zip"
+          },
+          "runtimeDownload": {
+            "path": "packs/farm/r36-local-review/models/fence-gate.glb",
+            "url": "https://assets.kilnstudio.tools/packs/farm/r36-local-review/models/fence-gate.glb",
+            "bytes": 162020,
+            "sha256": "e3e01d01c48333f7af74b2c8907eb42a2b4cfe66816570c7e4d49203a63b0366",
+            "archive": "packs/farm/r36-local-review/shapes-and-seasons-farm-runtime.zip",
+            "member": "models/fence-gate.glb"
+          }
+        },
+        {
+          "slug": "tractor",
+          "collection": "project",
+          "assetId": "tractor",
+          "revisionId": "r_ebeeb57adda343dd98d575e97ca24f92",
+          "includedRevisions": [
+            "r_ebeeb57adda343dd98d575e97ca24f92",
+            "r_da190ce15ed94159b61d4633efbc12ef",
+            "r_d7cde4de08714737bf76449e58ddcb56",
+            "r_879ebb7fd95f47278745f5c1ced8bb21"
+          ],
+          "missingParents": [],
+          "editableDownload": {
+            "path": "packs/farm/delivery-20261005-01/editable/tractor.zip",
+            "bytes": 1958921,
+            "sha256": "6a2fe2fcf94dd4e6da678a746e8900df86479e99769115201b0f3efffdfd7cfb",
+            "url": "https://assets.kilnstudio.tools/packs/farm/delivery-20261005-01/editable/tractor.zip"
+          },
+          "runtimeDownload": {
+            "path": "packs/farm/r36-local-review/models/tractor.glb",
+            "url": "https://assets.kilnstudio.tools/packs/farm/r36-local-review/models/tractor.glb",
+            "bytes": 409684,
+            "sha256": "8185aea55248ec02eb49de46eb04d85c2cdd9a9f9a1d485d649d79009c3f1117",
+            "archive": "packs/farm/r36-local-review/shapes-and-seasons-farm-runtime.zip",
+            "member": "models/tractor.glb"
+          }
+        },
+        {
+          "slug": "trailer",
+          "collection": "project",
+          "assetId": "trailer",
+          "revisionId": "r_c72e516ce16949cfbddedbc9155efa06",
+          "includedRevisions": [
+            "r_c72e516ce16949cfbddedbc9155efa06",
+            "r_840702d1024946fbbc21e95ac5f00672",
+            "r_5d3ac9b353a84acfa1b350136b37015d"
+          ],
+          "missingParents": [],
+          "editableDownload": {
+            "path": "packs/farm/delivery-20261005-01/editable/trailer.zip",
+            "bytes": 2062415,
+            "sha256": "f194dff18130da1bf7edf6a90cd1be33b75524765ef3ecac816598c6abcdf964",
+            "url": "https://assets.kilnstudio.tools/packs/farm/delivery-20261005-01/editable/trailer.zip"
+          },
+          "runtimeDownload": {
+            "path": "packs/farm/r36-local-review/models/trailer.glb",
+            "url": "https://assets.kilnstudio.tools/packs/farm/r36-local-review/models/trailer.glb",
+            "bytes": 183252,
+            "sha256": "6394d8c51b0c368a25f21d644630370cd6d8267dbd999642587460cb7a2b90de",
+            "archive": "packs/farm/r36-local-review/shapes-and-seasons-farm-runtime.zip",
+            "member": "models/trailer.glb"
+          }
+        },
+        {
+          "slug": "barrel",
+          "collection": "project",
+          "assetId": "a_4616f66723ea4946ad6a77c20520e396",
+          "revisionId": "r_5cc08ab44fe3401cb1c4184a4d362bca",
+          "includedRevisions": [
+            "r_5cc08ab44fe3401cb1c4184a4d362bca"
+          ],
+          "missingParents": [],
+          "editableDownload": {
+            "path": "packs/farm/delivery-20261005-01/editable/barrel.zip",
+            "bytes": 967369,
+            "sha256": "aab8f0d2233f800c8c6272ce4a27dc5bb2b21f53f6d9c97d8083ff15b8f412fa",
+            "url": "https://assets.kilnstudio.tools/packs/farm/delivery-20261005-01/editable/barrel.zip"
+          },
+          "runtimeDownload": {
+            "path": "packs/farm/r36-local-review/models/barrel.glb",
+            "url": "https://assets.kilnstudio.tools/packs/farm/r36-local-review/models/barrel.glb",
+            "bytes": 237868,
+            "sha256": "1d9b5c726d770a2875c52aa9bfa079c7f180877e3da0337be1a815c42c62c534",
+            "archive": "packs/farm/r36-local-review/shapes-and-seasons-farm-runtime.zip",
+            "member": "models/barrel.glb"
+          }
+        },
+        {
+          "slug": "hay-bale",
+          "collection": "project",
+          "assetId": "a_f9554e11d9704dd19187e541df8f2f94",
+          "revisionId": "r_aed1744fc5a34d32bb98f9f9bcfd5d0a",
+          "includedRevisions": [
+            "r_aed1744fc5a34d32bb98f9f9bcfd5d0a"
+          ],
+          "missingParents": [],
+          "editableDownload": {
+            "path": "packs/farm/delivery-20261005-01/editable/hay-bale.zip",
+            "bytes": 1005055,
+            "sha256": "a479dfd0a6b3063c648fdcf57874396f9f95e535fd2149ea04d036015e57efa6",
+            "url": "https://assets.kilnstudio.tools/packs/farm/delivery-20261005-01/editable/hay-bale.zip"
+          },
+          "runtimeDownload": {
+            "path": "packs/farm/r36-local-review/models/hay-bale.glb",
+            "url": "https://assets.kilnstudio.tools/packs/farm/r36-local-review/models/hay-bale.glb",
+            "bytes": 242504,
+            "sha256": "1388fb610ef8ee3240f472ce45d89eb80fd78c2bdda46c7889563b653bd3fbd4",
+            "archive": "packs/farm/r36-local-review/shapes-and-seasons-farm-runtime.zip",
+            "member": "models/hay-bale.glb"
+          }
+        },
+        {
+          "slug": "farmer",
+          "collection": "project",
+          "assetId": "a_2ff8e7e260894a879fb49e63a8521915",
+          "revisionId": "r_70907c7fd97249ce807e9948613882cd",
+          "includedRevisions": [
+            "r_70907c7fd97249ce807e9948613882cd",
+            "r_654c203b0ed3438c93d19b6709bef9f6",
+            "r_d0e65e4d47aa4449a07ed288a78d461b",
+            "r_4168ca8e7b2c40f3a6168d160c76ed64"
+          ],
+          "missingParents": [],
+          "editableDownload": {
+            "path": "packs/farm/delivery-20261005-01/editable/farmer.zip",
+            "bytes": 2754559,
+            "sha256": "bf3b50c3ee1d7a58b3570a404594e8f30e99a59de76eac3dd3f1082a1afee3ff",
+            "url": "https://assets.kilnstudio.tools/packs/farm/delivery-20261005-01/editable/farmer.zip"
+          },
+          "runtimeDownload": {
+            "path": "packs/farm/r36-local-review/models/farmer.glb",
+            "url": "https://assets.kilnstudio.tools/packs/farm/r36-local-review/models/farmer.glb",
+            "bytes": 817092,
+            "sha256": "b6c49161d0627c26e3cc7ea07e88f58c2726fe2c8b15773afcb621d3ab21b829",
+            "archive": "packs/farm/r36-local-review/shapes-and-seasons-farm-runtime.zip",
+            "member": "models/farmer.glb"
+          }
+        },
+        {
+          "slug": "cow",
+          "collection": "project",
+          "assetId": "a_9372329bbe72499583efe2ad019a0068",
+          "revisionId": "r_712f18b9a9d9450ab77bddd59bd1c515",
+          "includedRevisions": [
+            "r_712f18b9a9d9450ab77bddd59bd1c515",
+            "r_5b11e37547f143f08b7b48d7fab51df4",
+            "r_8295d1435f804ec48aaedcf7dd61da50",
+            "r_48950344f03a48129dd1a31eaab6cdf1",
+            "r_035a38e8b3d04bad8ffd53c2c43789d5",
+            "r_096543acdc2541ec8e2829d6e04122cc",
+            "r_9aa737c9bf3047fc926a9a56d97e1f4a"
+          ],
+          "missingParents": [],
+          "editableDownload": {
+            "path": "packs/farm/delivery-20261005-01/editable/cow.zip",
+            "bytes": 3968815,
+            "sha256": "3b8acab26526ad1a492063903032a110c5cbfd153ce8989174129ed026d0df6e",
+            "url": "https://assets.kilnstudio.tools/packs/farm/delivery-20261005-01/editable/cow.zip"
+          },
+          "runtimeDownload": {
+            "path": "packs/farm/r36-local-review/models/cow.glb",
+            "url": "https://assets.kilnstudio.tools/packs/farm/r36-local-review/models/cow.glb",
+            "bytes": 371896,
+            "sha256": "d79307b03c4003cee0748d15bdaf1a6593434a8ad72de9f383fc9616e7084ce6",
+            "archive": "packs/farm/r36-local-review/shapes-and-seasons-farm-runtime.zip",
+            "member": "models/cow.glb"
+          }
+        },
+        {
+          "slug": "sheep",
+          "collection": "project",
+          "assetId": "a_651be6309989462090d919031e134031",
+          "revisionId": "r_85d1e3a7c375412c9ba181f788753148",
+          "includedRevisions": [
+            "r_85d1e3a7c375412c9ba181f788753148"
+          ],
+          "missingParents": [],
+          "editableDownload": {
+            "path": "packs/farm/delivery-20261005-01/editable/sheep.zip",
+            "bytes": 674816,
+            "sha256": "24220b53dd637ccad5f4a90e0aef2f2013b350e276e5cd2921ff14ae3d9692d1",
+            "url": "https://assets.kilnstudio.tools/packs/farm/delivery-20261005-01/editable/sheep.zip"
+          },
+          "runtimeDownload": {
+            "path": "packs/farm/r36-local-review/models/sheep.glb",
+            "url": "https://assets.kilnstudio.tools/packs/farm/r36-local-review/models/sheep.glb",
+            "bytes": 391632,
+            "sha256": "41a9b3f464888e5e6f9c820d07181d64d6a544503d40401a753f8d628d76a20e",
+            "archive": "packs/farm/r36-local-review/shapes-and-seasons-farm-runtime.zip",
+            "member": "models/sheep.glb"
+          }
+        },
+        {
+          "slug": "chicken",
+          "collection": "project",
+          "assetId": "a_24662327a44745b1949873011a4b17be",
+          "revisionId": "r_b0b9b724b40e4d09a17c8dd8408fba62",
+          "includedRevisions": [
+            "r_b0b9b724b40e4d09a17c8dd8408fba62",
+            "r_954a6aab116c454896f2dc92385444f7"
+          ],
+          "missingParents": [],
+          "editableDownload": {
+            "path": "packs/farm/delivery-20261005-01/editable/chicken.zip",
+            "bytes": 1441775,
+            "sha256": "eee2dea55063a8c11a6f776e83217cf178eaf735d997e011ed05ee857a95d522",
+            "url": "https://assets.kilnstudio.tools/packs/farm/delivery-20261005-01/editable/chicken.zip"
+          },
+          "runtimeDownload": {
+            "path": "packs/farm/r36-local-review/models/chicken.glb",
+            "url": "https://assets.kilnstudio.tools/packs/farm/r36-local-review/models/chicken.glb",
+            "bytes": 373720,
+            "sha256": "8ee9087d4e0c0b9dfed9f992e133ac67d9d21e6effc788c2fb89ce80cd884e4d",
+            "archive": "packs/farm/r36-local-review/shapes-and-seasons-farm-runtime.zip",
+            "member": "models/chicken.glb"
+          }
+        },
+        {
+          "slug": "cabbage-stage-1",
+          "collection": "project",
+          "assetId": "a_09011570b0f340828c78f18e37258e4d",
+          "revisionId": "r_b2a06d73eefb4ca7b0617685bc560ef2",
+          "includedRevisions": [
+            "r_b2a06d73eefb4ca7b0617685bc560ef2",
+            "r_d12c02cad96e430abe440795c06b2cc5"
+          ],
+          "missingParents": [],
+          "editableDownload": {
+            "path": "packs/farm/delivery-20261005-01/editable/cabbage-stage-1.zip",
+            "bytes": 1977813,
+            "sha256": "c5ab1873887ebbc8f5f8bfe38d1f4d15a39ba8348a67ddf4c5bf9f60539478e1",
+            "url": "https://assets.kilnstudio.tools/packs/farm/delivery-20261005-01/editable/cabbage-stage-1.zip"
+          },
+          "runtimeDownload": {
+            "path": "packs/farm/r36-local-review/models/cabbage-stage-1.glb",
+            "url": "https://assets.kilnstudio.tools/packs/farm/r36-local-review/models/cabbage-stage-1.glb",
+            "bytes": 164988,
+            "sha256": "e6b177606ffefd4d4c9437fb9150f37a717202133796cb52e469c22e2570fe0c",
+            "archive": "packs/farm/r36-local-review/shapes-and-seasons-farm-runtime.zip",
+            "member": "models/cabbage-stage-1.glb"
+          }
+        },
+        {
+          "slug": "cabbage-stage-2",
+          "collection": "project",
+          "assetId": "a_08757663177947d9b1362c8bd03b8008",
+          "revisionId": "r_d2cb82ca31fd4fe8883da87ece0e9a1d",
+          "includedRevisions": [
+            "r_d2cb82ca31fd4fe8883da87ece0e9a1d",
+            "r_c089c9d4f93b4ac7af374e72a12b2033"
+          ],
+          "missingParents": [],
+          "editableDownload": {
+            "path": "packs/farm/delivery-20261005-01/editable/cabbage-stage-2.zip",
+            "bytes": 2176499,
+            "sha256": "66d586c174659e8cac0c87bffddcdadfd163c3e6e916af73a5fb927a88292832",
+            "url": "https://assets.kilnstudio.tools/packs/farm/delivery-20261005-01/editable/cabbage-stage-2.zip"
+          },
+          "runtimeDownload": {
+            "path": "packs/farm/r36-local-review/models/cabbage-stage-2.glb",
+            "url": "https://assets.kilnstudio.tools/packs/farm/r36-local-review/models/cabbage-stage-2.glb",
+            "bytes": 170768,
+            "sha256": "cbe951aa364a017889f03b5a60a31a6b9c5398064a5b20f7f1c5b6fb9332bec6",
+            "archive": "packs/farm/r36-local-review/shapes-and-seasons-farm-runtime.zip",
+            "member": "models/cabbage-stage-2.glb"
+          }
+        },
+        {
+          "slug": "cabbage-stage-3",
+          "collection": "project",
+          "assetId": "a_2bde941a4c8448bb827fccd8a4eb517c",
+          "revisionId": "r_8a446c3c2f514e358f8f897c420ecd0a",
+          "includedRevisions": [
+            "r_8a446c3c2f514e358f8f897c420ecd0a",
+            "r_5d4a7f112edf4aa18a6250209a4ab306"
+          ],
+          "missingParents": [],
+          "editableDownload": {
+            "path": "packs/farm/delivery-20261005-01/editable/cabbage-stage-3.zip",
+            "bytes": 2185781,
+            "sha256": "17be339f89b12a4298642ad19b258589e85a8489d69be241a35fc8f9a7e0563c",
+            "url": "https://assets.kilnstudio.tools/packs/farm/delivery-20261005-01/editable/cabbage-stage-3.zip"
+          },
+          "runtimeDownload": {
+            "path": "packs/farm/r36-local-review/models/cabbage-stage-3.glb",
+            "url": "https://assets.kilnstudio.tools/packs/farm/r36-local-review/models/cabbage-stage-3.glb",
+            "bytes": 176528,
+            "sha256": "ff9525150fe7f99142df59c36a316502d4830789e25efea70b5c9c38ecb1da9d",
+            "archive": "packs/farm/r36-local-review/shapes-and-seasons-farm-runtime.zip",
+            "member": "models/cabbage-stage-3.glb"
+          }
+        },
+        {
+          "slug": "cabbage-stage-4",
+          "collection": "project",
+          "assetId": "a_aa109475a9844b21978c64219f07308e",
+          "revisionId": "r_9bf8450fc5294c9d9dca1960625be36a",
+          "includedRevisions": [
+            "r_9bf8450fc5294c9d9dca1960625be36a",
+            "r_2c02e97337a94b0eb3750be7200ed374",
+            "r_939bc6cdf7d241bd84fa3568b02dfe8b"
+          ],
+          "missingParents": [],
+          "editableDownload": {
+            "path": "packs/farm/delivery-20261005-01/editable/cabbage-stage-4.zip",
+            "bytes": 3223139,
+            "sha256": "a4f203597c2597dc22159dd68c6c728626c3f558975c4ae6b37b5ccfcab27ff4",
+            "url": "https://assets.kilnstudio.tools/packs/farm/delivery-20261005-01/editable/cabbage-stage-4.zip"
+          },
+          "runtimeDownload": {
+            "path": "packs/farm/r36-local-review/models/cabbage-stage-4.glb",
+            "url": "https://assets.kilnstudio.tools/packs/farm/r36-local-review/models/cabbage-stage-4.glb",
+            "bytes": 187596,
+            "sha256": "8e6b8ea974b75843d7671641f2c3fa2ebd3f10a19810b6759d15ec9c4662bacb",
+            "archive": "packs/farm/r36-local-review/shapes-and-seasons-farm-runtime.zip",
+            "member": "models/cabbage-stage-4.glb"
+          }
+        },
+        {
+          "slug": "wheat",
+          "collection": "project",
+          "assetId": "a_d28071473b804df89b2b52e36100608d",
+          "revisionId": "r_254f9bdf4d004a7796033d5fe348a3e3",
+          "includedRevisions": [
+            "r_254f9bdf4d004a7796033d5fe348a3e3",
+            "r_723550c59e0a44948ebf51a3526fa455"
+          ],
+          "missingParents": [],
+          "editableDownload": {
+            "path": "packs/farm/delivery-20261005-01/editable/wheat.zip",
+            "bytes": 1903220,
+            "sha256": "f578390f88378c746eaea4dc10e384e6c39d769f8d90e6bc9cba553528012708",
+            "url": "https://assets.kilnstudio.tools/packs/farm/delivery-20261005-01/editable/wheat.zip"
+          },
+          "runtimeDownload": {
+            "path": "packs/farm/r36-local-review/models/wheat.glb",
+            "url": "https://assets.kilnstudio.tools/packs/farm/r36-local-review/models/wheat.glb",
+            "bytes": 352648,
+            "sha256": "d13360234d2092d0982f385aed401f4f926e3ccacc593cd0cb5a95dcdea79b25",
+            "archive": "packs/farm/r36-local-review/shapes-and-seasons-farm-runtime.zip",
+            "member": "models/wheat.glb"
+          }
+        },
+        {
+          "slug": "pumpkin-plant",
+          "collection": "project",
+          "assetId": "a_6cd60125b1274f1481ee2a5f37accb3f",
+          "revisionId": "r_38897e8a2b944c38a4f4428ab39f4a2b",
+          "includedRevisions": [
+            "r_38897e8a2b944c38a4f4428ab39f4a2b",
+            "r_7ee90bce755f42d9a7e338883e5ad48e",
+            "r_8fc93ed74d2544b8ab4769c7b54fc60e"
+          ],
+          "missingParents": [],
+          "editableDownload": {
+            "path": "packs/farm/delivery-20261005-01/editable/pumpkin-plant.zip",
+            "bytes": 1878467,
+            "sha256": "c3e6532cbe091a0e2eb5ebd179d2cb5b74e3e827e2d4c9074e20a48bd6b6cbc8",
+            "url": "https://assets.kilnstudio.tools/packs/farm/delivery-20261005-01/editable/pumpkin-plant.zip"
+          },
+          "runtimeDownload": {
+            "path": "packs/farm/r36-local-review/models/pumpkin-plant.glb",
+            "url": "https://assets.kilnstudio.tools/packs/farm/r36-local-review/models/pumpkin-plant.glb",
+            "bytes": 155080,
+            "sha256": "22b9c424461cbc904b21e7d17a4862e2a034545912839147b314ba6f813c8371",
+            "archive": "packs/farm/r36-local-review/shapes-and-seasons-farm-runtime.zip",
+            "member": "models/pumpkin-plant.glb"
+          }
+        },
+        {
+          "slug": "faceted-tree",
+          "collection": "project",
+          "assetId": "a_4148a17f25a141ccb3cfaf29b75af776",
+          "revisionId": "r_6d5dd832c32b4d8682942980d02cde1b",
+          "includedRevisions": [
+            "r_6d5dd832c32b4d8682942980d02cde1b"
+          ],
+          "missingParents": [],
+          "editableDownload": {
+            "path": "packs/farm/delivery-20261005-01/editable/faceted-tree.zip",
+            "bytes": 706726,
+            "sha256": "bb13a56c9a87054ce72879eeadbefcccfcf020b798f19cb3fb2e6afd4f8b3a07",
+            "url": "https://assets.kilnstudio.tools/packs/farm/delivery-20261005-01/editable/faceted-tree.zip"
+          },
+          "runtimeDownload": {
+            "path": "packs/farm/r36-local-review/models/faceted-tree.glb",
+            "url": "https://assets.kilnstudio.tools/packs/farm/r36-local-review/models/faceted-tree.glb",
+            "bytes": 123176,
+            "sha256": "0f6eceb07f207eb27071767a8d0c7fae7a618efd623942219da1f2d29497b0c4",
+            "archive": "packs/farm/r36-local-review/shapes-and-seasons-farm-runtime.zip",
+            "member": "models/faceted-tree.glb"
+          }
+        },
+        {
+          "slug": "rock-cluster",
+          "collection": "project",
+          "assetId": "a_8269607aa5f44ad5b4cb11756dba2966",
+          "revisionId": "r_37cde8b1f8d344aa8f6142aeab61a62e",
+          "includedRevisions": [
+            "r_37cde8b1f8d344aa8f6142aeab61a62e"
+          ],
+          "missingParents": [],
+          "editableDownload": {
+            "path": "packs/farm/delivery-20261005-01/editable/rock-cluster.zip",
+            "bytes": 596633,
+            "sha256": "ed95641c2eba73f332041f7feff846ecc970a6f81002085938ac2c7505aa261c",
+            "url": "https://assets.kilnstudio.tools/packs/farm/delivery-20261005-01/editable/rock-cluster.zip"
+          },
+          "runtimeDownload": {
+            "path": "packs/farm/r36-local-review/models/rock-cluster.glb",
+            "url": "https://assets.kilnstudio.tools/packs/farm/r36-local-review/models/rock-cluster.glb",
+            "bytes": 39784,
+            "sha256": "6b6e767ed170aa1631a54e5d6df3d3335146a94cdedb5c49bf17b3659a93252d",
+            "archive": "packs/farm/r36-local-review/shapes-and-seasons-farm-runtime.zip",
+            "member": "models/rock-cluster.glb"
+          }
+        }
+      ]
+    },
+    "vehicles": {
+      "standalone": false,
+      "downloads": [
+        {
+          "profile": "runtime",
+          "path": "packs/vehicles/delivery-20261005-01/vehicles-runtime.zip",
+          "bytes": 264214,
+          "sha256": "0e24f4b3676ea84d081abcb7ad0ea93f952c8d4b675deb423f33499d1b4f8384",
+          "url": "https://assets.kilnstudio.tools/packs/vehicles/delivery-20261005-01/vehicles-runtime.zip"
+        },
+        {
+          "profile": "editable",
+          "path": "packs/vehicles/delivery-20261005-01/vehicles-editable.zip",
+          "bytes": 3043266,
+          "sha256": "0d0fb309ccdefdbb5bce4db5ac3252042744aa2008ae365b25fb6ad976354c7c",
+          "url": "https://assets.kilnstudio.tools/packs/vehicles/delivery-20261005-01/vehicles-editable.zip"
+        }
+      ],
+      "assets": [
+        {
+          "slug": "hatchback",
+          "collection": "project",
+          "assetId": "generic-hatchback",
+          "revisionId": "r_74f393f06996497a9dce6c5ed50c2d62",
+          "includedRevisions": [
+            "r_74f393f06996497a9dce6c5ed50c2d62",
+            "r_0393505feabd4814907bc4b527194caf",
+            "r_67e5bfdadba745a99864e8910ba58f2b",
+            "r_4978d843f7c44dadbb574b64d78fb158",
+            "r_105b27d31fe44f2aa188a333e19e3977"
+          ],
+          "missingParents": [],
+          "editableDownload": {
+            "path": "packs/vehicles/delivery-20261005-01/editable/hatchback.zip",
+            "bytes": 919746,
+            "sha256": "8c483439bec30e155bc61db8a42fc7f4bfa5e6cc97a1dce7e1eed2c027458c9f",
+            "url": "https://assets.kilnstudio.tools/packs/vehicles/delivery-20261005-01/editable/hatchback.zip"
+          },
+          "runtimeDownload": {
+            "path": "packs/vehicles/r4-local-review/models/hatchback.glb",
+            "bytes": 118752,
+            "sha256": "4030ac7f9c3a0ee141189b01615da4016353c6302f0805cf9d66dd756a32a0f0",
+            "url": "https://assets.kilnstudio.tools/packs/vehicles/r4-local-review/models/hatchback.glb",
+            "archive": "packs/vehicles/r4-local-review/generic-road-vehicles-runtime.zip",
+            "member": "models/hatchback.glb",
+            "form": "MSFT_lod"
+          }
+        },
+        {
+          "slug": "sedan",
+          "collection": "project",
+          "assetId": "generic-sedan",
+          "revisionId": "r_92ee0ac3d5cf4b258cc97d20ec941461",
+          "includedRevisions": [
+            "r_92ee0ac3d5cf4b258cc97d20ec941461",
+            "r_7680f4bae18445b19dc11dd74b62d3e6",
+            "r_ae693b4eb528451886750fcb083d01a4",
+            "r_1cb27a0c14d44e48afff84db23013dad"
+          ],
+          "missingParents": [],
+          "editableDownload": {
+            "path": "packs/vehicles/delivery-20261005-01/editable/sedan.zip",
+            "bytes": 721177,
+            "sha256": "51fa060db44ca5d0760b170ee3d1965af097150d7aeb9ab239b581a1ff069223",
+            "url": "https://assets.kilnstudio.tools/packs/vehicles/delivery-20261005-01/editable/sedan.zip"
+          },
+          "runtimeDownload": {
+            "path": "packs/vehicles/r4-local-review/models/sedan.glb",
+            "bytes": 117780,
+            "sha256": "1bad1074f0583dfb7c650cfe6e0cae7633b93fb1dc614f50d36ed834d469b212",
+            "url": "https://assets.kilnstudio.tools/packs/vehicles/r4-local-review/models/sedan.glb",
+            "archive": "packs/vehicles/r4-local-review/generic-road-vehicles-runtime.zip",
+            "member": "models/sedan.glb",
+            "form": "MSFT_lod"
+          }
+        },
+        {
+          "slug": "suv",
+          "collection": "project",
+          "assetId": "generic-suv",
+          "revisionId": "r_b4cc9048731b4c039de0b87ca6e75c17",
+          "includedRevisions": [
+            "r_b4cc9048731b4c039de0b87ca6e75c17",
+            "r_97a598c2b8b840dd88ff162264e85860",
+            "r_881324cad46f427080e4a2fd31bae36f",
+            "r_a9760325250e4aef858b823d1dc43b7e",
+            "r_8261935e39684470b65549b1c39142fd"
+          ],
+          "missingParents": [],
+          "editableDownload": {
+            "path": "packs/vehicles/delivery-20261005-01/editable/suv.zip",
+            "bytes": 927578,
+            "sha256": "0560630cd2110e6ba5f5ac426b25e0353419aec482ea9cf3a2690b388b55fd9f",
+            "url": "https://assets.kilnstudio.tools/packs/vehicles/delivery-20261005-01/editable/suv.zip"
+          },
+          "runtimeDownload": {
+            "path": "packs/vehicles/r4-local-review/models/suv.glb",
+            "bytes": 120120,
+            "sha256": "3193157586a99fe8710be2303fea754c0b0799557a6d5757528b5b7c83e612b2",
+            "url": "https://assets.kilnstudio.tools/packs/vehicles/r4-local-review/models/suv.glb",
+            "archive": "packs/vehicles/r4-local-review/generic-road-vehicles-runtime.zip",
+            "member": "models/suv.glb",
+            "form": "MSFT_lod"
+          }
+        },
+        {
+          "slug": "pickup",
+          "collection": "project",
+          "assetId": "a_557b9bd6c2c34340804e802081a9b983",
+          "revisionId": "r_218be4189a1b43e7b307c2263ba4f954",
+          "includedRevisions": [
+            "r_218be4189a1b43e7b307c2263ba4f954",
+            "r_b74ac56a93a44c7484890f712df9c64c"
+          ],
+          "missingParents": [],
+          "editableDownload": {
+            "path": "packs/vehicles/delivery-20261005-01/editable/pickup.zip",
+            "bytes": 150956,
+            "sha256": "d479d1f4b2884cb7a918bf62cb13ca39dd47997f92e2c07451f95f99d078bf1d",
+            "url": "https://assets.kilnstudio.tools/packs/vehicles/delivery-20261005-01/editable/pickup.zip"
+          },
+          "runtimeDownload": {
+            "path": "packs/vehicles/r4-local-review/models/pickup.glb",
+            "bytes": 170184,
+            "sha256": "584240cb33df27714545c6fafc2496f1459bdadad49b2b827be13a8e936b6d8f",
+            "url": "https://assets.kilnstudio.tools/packs/vehicles/r4-local-review/models/pickup.glb",
+            "archive": "packs/vehicles/r4-local-review/generic-road-vehicles-runtime.zip",
+            "member": "models/pickup.glb",
+            "form": "MSFT_lod"
+          }
+        },
+        {
+          "slug": "box-truck",
+          "collection": "project",
+          "assetId": "a_2092ca0610c749b386c14c07dbaf4236",
+          "revisionId": "r_538b8a19c46d4086b456e27b32ee7d33",
+          "includedRevisions": [
+            "r_538b8a19c46d4086b456e27b32ee7d33",
+            "r_d5e37b6d4e7347ac863220cdbd8e49a4"
+          ],
+          "missingParents": [],
+          "editableDownload": {
+            "path": "packs/vehicles/delivery-20261005-01/editable/box-truck.zip",
+            "bytes": 130649,
+            "sha256": "f76566dd7c21517b0aa0161125496cbd1e4bba06cda3630256afa1bfa61e775f",
+            "url": "https://assets.kilnstudio.tools/packs/vehicles/delivery-20261005-01/editable/box-truck.zip"
+          },
+          "runtimeDownload": {
+            "path": "packs/vehicles/r4-local-review/models/box-truck.glb",
+            "bytes": 169728,
+            "sha256": "4cfccfdb2ddd15fc6ab9940e0406fe2b11bbef9d6098d783940cfeb572464420",
+            "url": "https://assets.kilnstudio.tools/packs/vehicles/r4-local-review/models/box-truck.glb",
+            "archive": "packs/vehicles/r4-local-review/generic-road-vehicles-runtime.zip",
+            "member": "models/box-truck.glb",
+            "form": "MSFT_lod"
+          }
+        },
+        {
+          "slug": "transit-bus",
+          "collection": "project",
+          "assetId": "a_a8c030b2570f4ae5aa54eefbd3767f4c",
+          "revisionId": "r_85ff097a61384efab445c55372d3b6f5",
+          "includedRevisions": [
+            "r_85ff097a61384efab445c55372d3b6f5",
+            "r_6ab2ee53817449c59972502fcf008f1a",
+            "r_4dc2fb11b58b4dcd9f89197a8f7e28ff"
+          ],
+          "missingParents": [],
+          "editableDownload": {
+            "path": "packs/vehicles/delivery-20261005-01/editable/transit-bus.zip",
+            "bytes": 197463,
+            "sha256": "115cb0d865521793355332bea28167e0a82964bbd6fa04d1237a704ca35de0d9",
+            "url": "https://assets.kilnstudio.tools/packs/vehicles/delivery-20261005-01/editable/transit-bus.zip"
+          },
+          "runtimeDownload": {
+            "path": "packs/vehicles/r4-local-review/models/transit-bus.glb",
+            "bytes": 194148,
+            "sha256": "14713cb461f2ecb683ea9bace5cc7a79d595aa92d322f86d3831cda7bf647067",
+            "url": "https://assets.kilnstudio.tools/packs/vehicles/r4-local-review/models/transit-bus.glb",
+            "archive": "packs/vehicles/r4-local-review/generic-road-vehicles-runtime.zip",
+            "member": "models/transit-bus.glb",
+            "form": "MSFT_lod"
+          }
+        }
+      ]
+    },
+    "foundry-floor": {
+      "standalone": false,
+      "downloads": [
+        {
+          "profile": "runtime",
+          "path": "packs/foundry-floor/delivery-20261005-01/foundry-floor-runtime.zip",
+          "bytes": 2137050,
+          "sha256": "91f05efac625a5e2cb848d21d65a54047accb9880d253b9b2e2c20b96e130375",
+          "url": "https://assets.kilnstudio.tools/packs/foundry-floor/delivery-20261005-01/foundry-floor-runtime.zip"
+        },
+        {
+          "profile": "editable",
+          "path": "packs/foundry-floor/delivery-20261005-01/foundry-floor-editable.zip",
+          "bytes": 10220964,
+          "sha256": "243fcb1fc344674f94009a25430599326a48d731406e7d1719b26c6cc312d9bd",
+          "url": "https://assets.kilnstudio.tools/packs/foundry-floor/delivery-20261005-01/foundry-floor-editable.zip"
+        }
+      ],
+      "assets": [
+        {
+          "slug": "foup",
+          "collection": "project",
+          "assetId": "foup",
+          "revisionId": "r_f639b02180994fdd978a427bffb4de15",
+          "includedRevisions": [
+            "r_f639b02180994fdd978a427bffb4de15",
+            "r_2bab2591207a4eeb922f05cc2d52eaa7"
+          ],
+          "missingParents": [],
+          "editableDownload": {
+            "path": "packs/foundry-floor/delivery-20261005-01/editable/foup.zip",
+            "bytes": 64826,
+            "sha256": "39690997e7c1c3883a73a267a9b051ba3c92aeb98d60fcde69eb505dfc491f64",
+            "url": "https://assets.kilnstudio.tools/packs/foundry-floor/delivery-20261005-01/editable/foup.zip"
+          },
+          "runtimeDownload": {
+            "path": "packs/foundry-floor/ff3-review2/models/foup.glb",
+            "bytes": 73760,
+            "sha256": "a8ca511d996868d12c5b2ae3bdec5a58da5e7e008e34a56f60026ce92b610790",
+            "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2/models/foup.glb",
+            "archive": "packs/foundry-floor/ff3-review2/foundry-floor-ff3-review2-models.zip",
+            "member": "models/foup.glb"
+          }
+        },
+        {
+          "slug": "oht-vehicle",
+          "collection": "project",
+          "assetId": "oht-vehicle",
+          "revisionId": "r_a4fd2dfb3a3f4276b28464458cb0fbb9",
+          "includedRevisions": [
+            "r_a4fd2dfb3a3f4276b28464458cb0fbb9",
+            "r_bbf8c93343da4b7b96762d731872f67f"
+          ],
+          "missingParents": [],
+          "editableDownload": {
+            "path": "packs/foundry-floor/delivery-20261005-01/editable/oht-vehicle.zip",
+            "bytes": 98436,
+            "sha256": "d8ebc58a7435addd017440a5b95bf4b14c399ae5dcd9b51cba83e45f5eb0e251",
+            "url": "https://assets.kilnstudio.tools/packs/foundry-floor/delivery-20261005-01/editable/oht-vehicle.zip"
+          },
+          "runtimeDownload": {
+            "path": "packs/foundry-floor/ff3-review2/models/oht-vehicle.glb",
+            "bytes": 107472,
+            "sha256": "27dd159eeeaeb4ed0748159e550096dda1e8faac895bfd4a1d86ed8f808a3024",
+            "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2/models/oht-vehicle.glb",
+            "archive": "packs/foundry-floor/ff3-review2/foundry-floor-ff3-review2-models.zip",
+            "member": "models/oht-vehicle.glb"
+          }
+        },
+        {
+          "slug": "load-port",
+          "collection": "project",
+          "assetId": "load-port",
+          "revisionId": "r_b45a5f436cd14d7294bc6866dcebb5f7",
+          "includedRevisions": [
+            "r_b45a5f436cd14d7294bc6866dcebb5f7",
+            "r_ad0d81fde77d4fe08fbdcdd9911c4160",
+            "r_0dff350d66984b82ae244175fadc4960"
+          ],
+          "missingParents": [],
+          "editableDownload": {
+            "path": "packs/foundry-floor/delivery-20261005-01/editable/load-port.zip",
+            "bytes": 92314,
+            "sha256": "c9629d82aacce69e6dcd11179a069f2dc6e435ee4f3b26d77df2fc425bad0716",
+            "url": "https://assets.kilnstudio.tools/packs/foundry-floor/delivery-20261005-01/editable/load-port.zip"
+          },
+          "runtimeDownload": {
+            "path": "packs/foundry-floor/ff3-review2/models/load-port.glb",
+            "bytes": 32652,
+            "sha256": "500fa5d0a1e41879e2f20ebd18d8c064a13c0f86d49798830a0273aa08aa0ed2",
+            "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2/models/load-port.glb",
+            "archive": "packs/foundry-floor/ff3-review2/foundry-floor-ff3-review2-models.zip",
+            "member": "models/load-port.glb"
+          }
+        },
+        {
+          "slug": "stocker",
+          "collection": "project",
+          "assetId": "stocker",
+          "revisionId": "r_2719dba3ca554c159e41daa769233182",
+          "includedRevisions": [
+            "r_2719dba3ca554c159e41daa769233182",
+            "r_5098431bec1849eda5e160b664ab76f8"
+          ],
+          "missingParents": [],
+          "editableDownload": {
+            "path": "packs/foundry-floor/delivery-20261005-01/editable/stocker.zip",
+            "bytes": 147190,
+            "sha256": "dc30a0e270d65858e0e5134dd84b27e93b276f0b41fd4a96b210df911e2fd234",
+            "url": "https://assets.kilnstudio.tools/packs/foundry-floor/delivery-20261005-01/editable/stocker.zip"
+          },
+          "runtimeDownload": {
+            "path": "packs/foundry-floor/ff3-review2/models/stocker.glb",
+            "bytes": 299000,
+            "sha256": "cd4e7bb6d5341a5a86b613d2657be919a106cde63d0d2d2b05d343fd597ebcf2",
+            "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2/models/stocker.glb",
+            "archive": "packs/foundry-floor/ff3-review2/foundry-floor-ff3-review2-models.zip",
+            "member": "models/stocker.glb"
+          }
+        },
+        {
+          "slug": "signal-tower",
+          "collection": "project",
+          "assetId": "signal-tower",
+          "revisionId": "r_0af702f0a7364dffbac3255c04a909ff",
+          "includedRevisions": [
+            "r_0af702f0a7364dffbac3255c04a909ff"
+          ],
+          "missingParents": [],
+          "editableDownload": {
+            "path": "packs/foundry-floor/delivery-20261005-01/editable/signal-tower.zip",
+            "bytes": 26416,
+            "sha256": "94e7e460a74d310f9f22d826f3c08b3bfbbd643cafe1e65f7a7e4ed61069df92",
+            "url": "https://assets.kilnstudio.tools/packs/foundry-floor/delivery-20261005-01/editable/signal-tower.zip"
+          },
+          "runtimeDownload": {
+            "path": "packs/foundry-floor/ff3-review2/models/signal-tower.glb",
+            "bytes": 13844,
+            "sha256": "82f69eb2a5471bc0ea242ef79aa3686a7e8025d8172437813484c5f58fe881b9",
+            "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2/models/signal-tower.glb",
+            "archive": "packs/foundry-floor/ff3-review2/foundry-floor-ff3-review2-models.zip",
+            "member": "models/signal-tower.glb"
+          }
+        },
+        {
+          "slug": "under-track-storage",
+          "collection": "project",
+          "assetId": "under-track-storage",
+          "revisionId": "r_093ce3746e9c449585f6543f9db94f87",
+          "includedRevisions": [
+            "r_093ce3746e9c449585f6543f9db94f87",
+            "r_7dabe4c644824eb4bdb014a45c276a56"
+          ],
+          "missingParents": [],
+          "editableDownload": {
+            "path": "packs/foundry-floor/delivery-20261005-01/editable/under-track-storage.zip",
+            "bytes": 44242,
+            "sha256": "baccfb000059f461e9291d9b4d8a4e30173e69c5f9dc4b5f9827fc893d342928",
+            "url": "https://assets.kilnstudio.tools/packs/foundry-floor/delivery-20261005-01/editable/under-track-storage.zip"
+          },
+          "runtimeDownload": {
+            "path": "packs/foundry-floor/ff3-review2/models/under-track-storage.glb",
+            "bytes": 32200,
+            "sha256": "f5818ef0791c74470d2d034ba9022d9f0243fa36da4f3fe15ba4ea308b2de15e",
+            "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2/models/under-track-storage.glb",
+            "archive": "packs/foundry-floor/ff3-review2/foundry-floor-ff3-review2-models.zip",
+            "member": "models/under-track-storage.glb"
+          }
+        },
+        {
+          "slug": "oht-rail-straight",
+          "collection": "project",
+          "assetId": "oht-rail-straight",
+          "revisionId": "r_ed0c4b464c3f44419b6efed936349a64",
+          "includedRevisions": [
+            "r_ed0c4b464c3f44419b6efed936349a64",
+            "r_3a30a0b877a345f8bd562a372302f666"
+          ],
+          "missingParents": [],
+          "editableDownload": {
+            "path": "packs/foundry-floor/delivery-20261005-01/editable/oht-rail-straight.zip",
+            "bytes": 37793,
+            "sha256": "6cc8d2e8da082f0abaa9e87e3d096d74822958a1fc2e490e60f199b29493e5ee",
+            "url": "https://assets.kilnstudio.tools/packs/foundry-floor/delivery-20261005-01/editable/oht-rail-straight.zip"
+          },
+          "runtimeDownload": {
+            "path": "packs/foundry-floor/ff3-review2/models/oht-rail-straight.glb",
+            "bytes": 15968,
+            "sha256": "7289d13da5a095aa5483c28864e0a96de71d0e353b4040836cc52774e05d856b",
+            "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2/models/oht-rail-straight.glb",
+            "archive": "packs/foundry-floor/ff3-review2/foundry-floor-ff3-review2-models.zip",
+            "member": "models/oht-rail-straight.glb"
+          }
+        },
+        {
+          "slug": "oht-rail-curve",
+          "collection": "project",
+          "assetId": "oht-rail-curve",
+          "revisionId": "r_a2af1537d2cc4396a4d94bce0c19598c",
+          "includedRevisions": [
+            "r_a2af1537d2cc4396a4d94bce0c19598c",
+            "r_cc370801a4df4604b629c26ff1d9264a"
+          ],
+          "missingParents": [],
+          "editableDownload": {
+            "path": "packs/foundry-floor/delivery-20261005-01/editable/oht-rail-curve.zip",
+            "bytes": 65759,
+            "sha256": "7013849f05d59deab3a2bbf5b09a2e3f0ff8d91c4097c81d9c008a54793ad08e",
+            "url": "https://assets.kilnstudio.tools/packs/foundry-floor/delivery-20261005-01/editable/oht-rail-curve.zip"
+          },
+          "runtimeDownload": {
+            "path": "packs/foundry-floor/ff3-review2/models/oht-rail-curve.glb",
+            "bytes": 33072,
+            "sha256": "66f22a7b40bf28454611578047744e5ea2400a35dbce83b2006ac2b0f1155fa9",
+            "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2/models/oht-rail-curve.glb",
+            "archive": "packs/foundry-floor/ff3-review2/foundry-floor-ff3-review2-models.zip",
+            "member": "models/oht-rail-curve.glb"
+          }
+        },
+        {
+          "slug": "oht-rail-switch",
+          "collection": "project",
+          "assetId": "oht-rail-switch",
+          "revisionId": "r_b7fcebf6547545eab077be69796ec893",
+          "includedRevisions": [
+            "r_b7fcebf6547545eab077be69796ec893",
+            "r_678517d2e36e4879b448f85f5f175266",
+            "r_a32f1161fbd64dceb4ee81056277aa05"
+          ],
+          "missingParents": [],
+          "editableDownload": {
+            "path": "packs/foundry-floor/delivery-20261005-01/editable/oht-rail-switch.zip",
+            "bytes": 125469,
+            "sha256": "e989f50bf1a0713f2d0f010d39df85219aec84ebb8fceb343d780e2a391da281",
+            "url": "https://assets.kilnstudio.tools/packs/foundry-floor/delivery-20261005-01/editable/oht-rail-switch.zip"
+          },
+          "runtimeDownload": {
+            "path": "packs/foundry-floor/ff3-review2/models/oht-rail-switch.glb",
+            "bytes": 61820,
+            "sha256": "1190709b4b55201db020cbb375001eb1d3c535ac9e8f93fefae20a11207753f4",
+            "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2/models/oht-rail-switch.glb",
+            "archive": "packs/foundry-floor/ff3-review2/foundry-floor-ff3-review2-models.zip",
+            "member": "models/oht-rail-switch.glb"
+          }
+        },
+        {
+          "slug": "raised-floor-module",
+          "collection": "project",
+          "assetId": "raised-floor-module",
+          "revisionId": "r_f0104891f44a4c99a52739033e900757",
+          "includedRevisions": [
+            "r_f0104891f44a4c99a52739033e900757",
+            "r_ca8f4b96cad641129e0f5c078f4465e5"
+          ],
+          "missingParents": [],
+          "editableDownload": {
+            "path": "packs/foundry-floor/delivery-20261005-01/editable/raised-floor-module.zip",
+            "bytes": 40672,
+            "sha256": "f9e1906d7abcdfbb5fa89f43071d0ec7ac885d1fd82f68cf97cf33d6a16c0a60",
+            "url": "https://assets.kilnstudio.tools/packs/foundry-floor/delivery-20261005-01/editable/raised-floor-module.zip"
+          },
+          "runtimeDownload": {
+            "path": "packs/foundry-floor/ff3-review2/models/raised-floor-module.glb",
+            "bytes": 26336,
+            "sha256": "30b8cfddbfaccfd572f79c40a0483e9726b69fddc3b8bea36cd708b7612008fc",
+            "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2/models/raised-floor-module.glb",
+            "archive": "packs/foundry-floor/ff3-review2/foundry-floor-ff3-review2-models.zip",
+            "member": "models/raised-floor-module.glb"
+          }
+        },
+        {
+          "slug": "ffu-ceiling-module",
+          "collection": "project",
+          "assetId": "ffu-ceiling-module",
+          "revisionId": "r_6d370c36023f401ea7ee526631bcf4df",
+          "includedRevisions": [
+            "r_6d370c36023f401ea7ee526631bcf4df",
+            "r_d73b60677ff2417ea9a0d1add4114f10"
+          ],
+          "missingParents": [],
+          "editableDownload": {
+            "path": "packs/foundry-floor/delivery-20261005-01/editable/ffu-ceiling-module.zip",
+            "bytes": 50434,
+            "sha256": "0b92cf7df4ed9448935ac5791f53c7f7ae57970c8345756e7f65b3d3447e2827",
+            "url": "https://assets.kilnstudio.tools/packs/foundry-floor/delivery-20261005-01/editable/ffu-ceiling-module.zip"
+          },
+          "runtimeDownload": {
+            "path": "packs/foundry-floor/ff3-review2/models/ffu-ceiling-module.glb",
+            "bytes": 37112,
+            "sha256": "db5aa12a0b890785664a300393484ee175f91e626cabbe5b9900cc4be2d86642",
+            "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2/models/ffu-ceiling-module.glb",
+            "archive": "packs/foundry-floor/ff3-review2/foundry-floor-ff3-review2-models.zip",
+            "member": "models/ffu-ceiling-module.glb"
+          }
+        },
+        {
+          "slug": "cleanroom-wall-kit",
+          "collection": "project",
+          "assetId": "cleanroom-wall-kit",
+          "revisionId": "r_4e0249fdfb804779a0adb8c6cae9d2dd",
+          "includedRevisions": [
+            "r_4e0249fdfb804779a0adb8c6cae9d2dd"
+          ],
+          "missingParents": [],
+          "editableDownload": {
+            "path": "packs/foundry-floor/delivery-20261005-01/editable/cleanroom-wall-kit.zip",
+            "bytes": 22572,
+            "sha256": "9823afc3a583bb03e84cd3a8a57c091216c0313b1085069c179059473d7359e1",
+            "url": "https://assets.kilnstudio.tools/packs/foundry-floor/delivery-20261005-01/editable/cleanroom-wall-kit.zip"
+          },
+          "runtimeDownload": {
+            "path": "packs/foundry-floor/ff3-review2/models/cleanroom-wall-kit.glb",
+            "bytes": 31156,
+            "sha256": "d4d24890f74cffa60d6cf57b656b4ef6206cb829026aedf2ed34f7fbbd0cffde",
+            "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2/models/cleanroom-wall-kit.glb",
+            "archive": "packs/foundry-floor/ff3-review2/foundry-floor-ff3-review2-models.zip",
+            "member": "models/cleanroom-wall-kit.glb"
+          }
+        },
+        {
+          "slug": "etch-cluster-tool",
+          "collection": "project",
+          "assetId": "etch-cluster-tool",
+          "revisionId": "r_6456090ae2cb42f09b3ff18670f55c3e",
+          "includedRevisions": [
+            "r_6456090ae2cb42f09b3ff18670f55c3e",
+            "r_c548f01cc98b4fb0adbee9b763ec1831"
+          ],
+          "missingParents": [],
+          "editableDownload": {
+            "path": "packs/foundry-floor/delivery-20261005-01/editable/etch-cluster-tool.zip",
+            "bytes": 185279,
+            "sha256": "3d9976bfc93b78ef93fee452fcb98a2b541f5fc6e5e83972f3f7b9c8b02279eb",
+            "url": "https://assets.kilnstudio.tools/packs/foundry-floor/delivery-20261005-01/editable/etch-cluster-tool.zip"
+          },
+          "runtimeDownload": {
+            "path": "packs/foundry-floor/ff3-review2/models/etch-cluster-tool.glb",
+            "bytes": 452424,
+            "sha256": "24d3ebb6818f54e7e341f9b4081ea29231b64f165ab6ffc3f2af562dea915c30",
+            "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2/models/etch-cluster-tool.glb",
+            "archive": "packs/foundry-floor/ff3-review2/foundry-floor-ff3-review2-models.zip",
+            "member": "models/etch-cluster-tool.glb"
+          }
+        },
+        {
+          "slug": "cvd-ald-cluster-tool",
+          "collection": "project",
+          "assetId": "cvd-ald-cluster-tool",
+          "revisionId": "r_5555be8ebedc496ba137ba5d47132e1b",
+          "includedRevisions": [
+            "r_5555be8ebedc496ba137ba5d47132e1b",
+            "r_bcc14a9dbb4e41a997023b3712b05779"
+          ],
+          "missingParents": [],
+          "editableDownload": {
+            "path": "packs/foundry-floor/delivery-20261005-01/editable/cvd-ald-cluster-tool.zip",
+            "bytes": 177081,
+            "sha256": "7a6a2f799bf188cb348ad5e17e8fd572dd1d92fb0d4813e7ec0cecd23284966f",
+            "url": "https://assets.kilnstudio.tools/packs/foundry-floor/delivery-20261005-01/editable/cvd-ald-cluster-tool.zip"
+          },
+          "runtimeDownload": {
+            "path": "packs/foundry-floor/ff3-review2/models/cvd-ald-cluster-tool.glb",
+            "bytes": 460756,
+            "sha256": "6c097a2ddad1305ea349f37ab44757722204b71b07323bca157d8d8a21619649",
+            "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2/models/cvd-ald-cluster-tool.glb",
+            "archive": "packs/foundry-floor/ff3-review2/foundry-floor-ff3-review2-models.zip",
+            "member": "models/cvd-ald-cluster-tool.glb"
+          }
+        },
+        {
+          "slug": "pvd-cluster-tool",
+          "collection": "project",
+          "assetId": "pvd-cluster-tool",
+          "revisionId": "r_3ef2fa3a9e594f94b65dffe40253bd0c",
+          "includedRevisions": [
+            "r_3ef2fa3a9e594f94b65dffe40253bd0c",
+            "r_5da63ee0e94648c7b2981a0021e3e616"
+          ],
+          "missingParents": [],
+          "editableDownload": {
+            "path": "packs/foundry-floor/delivery-20261005-01/editable/pvd-cluster-tool.zip",
+            "bytes": 185181,
+            "sha256": "50130280a0124ffd1cd834ac84ac66ddff0f3b961015f4c87eddbdedefec8a37",
+            "url": "https://assets.kilnstudio.tools/packs/foundry-floor/delivery-20261005-01/editable/pvd-cluster-tool.zip"
+          },
+          "runtimeDownload": {
+            "path": "packs/foundry-floor/ff3-review2/models/pvd-cluster-tool.glb",
+            "bytes": 416676,
+            "sha256": "e87669b3c87279389f7ef1035dc3994e81f74803c9b4ec2b81eec035da8998fb",
+            "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2/models/pvd-cluster-tool.glb",
+            "archive": "packs/foundry-floor/ff3-review2/foundry-floor-ff3-review2-models.zip",
+            "member": "models/pvd-cluster-tool.glb"
+          }
+        },
+        {
+          "slug": "single-wafer-clean-tool",
+          "collection": "project",
+          "assetId": "single-wafer-clean-tool",
+          "revisionId": "r_c268a0f6f6174f7ba2b87e120c4344e8",
+          "includedRevisions": [
+            "r_c268a0f6f6174f7ba2b87e120c4344e8",
+            "r_ef576d03ece64a33a331429020148625"
+          ],
+          "missingParents": [],
+          "editableDownload": {
+            "path": "packs/foundry-floor/delivery-20261005-01/editable/single-wafer-clean-tool.zip",
+            "bytes": 91435,
+            "sha256": "18d6876528fc58450702a5c11aa4e4c4755f975374ea123ef2b64e0c71097103",
+            "url": "https://assets.kilnstudio.tools/packs/foundry-floor/delivery-20261005-01/editable/single-wafer-clean-tool.zip"
+          },
+          "runtimeDownload": {
+            "path": "packs/foundry-floor/ff3-review2/models/single-wafer-clean-tool.glb",
+            "bytes": 63304,
+            "sha256": "dcc8f518e828db258990e737db96aa87b440d7772122c735f67ab32c5174b429",
+            "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2/models/single-wafer-clean-tool.glb",
+            "archive": "packs/foundry-floor/ff3-review2/foundry-floor-ff3-review2-models.zip",
+            "member": "models/single-wafer-clean-tool.glb"
+          }
+        },
+        {
+          "slug": "cmp-polisher",
+          "collection": "project",
+          "assetId": "cmp-polisher",
+          "revisionId": "r_a8c4d8680a7f4aca96b240daa294bc4b",
+          "includedRevisions": [
+            "r_a8c4d8680a7f4aca96b240daa294bc4b",
+            "r_bd4199a5d1c14b96935be86fc3316adb"
+          ],
+          "missingParents": [],
+          "editableDownload": {
+            "path": "packs/foundry-floor/delivery-20261005-01/editable/cmp-polisher.zip",
+            "bytes": 88828,
+            "sha256": "7e3072033d5ba9f2e29272461c60a0583d7d07930fe906184f95d964020693ab",
+            "url": "https://assets.kilnstudio.tools/packs/foundry-floor/delivery-20261005-01/editable/cmp-polisher.zip"
+          },
+          "runtimeDownload": {
+            "path": "packs/foundry-floor/ff3-review2/models/cmp-polisher.glb",
+            "bytes": 127912,
+            "sha256": "0e479e5ee9dfd2a4f389f18ccf82d1cd2fc39e628a18a577643503980b81b344",
+            "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2/models/cmp-polisher.glb",
+            "archive": "packs/foundry-floor/ff3-review2/foundry-floor-ff3-review2-models.zip",
+            "member": "models/cmp-polisher.glb"
+          }
+        },
+        {
+          "slug": "vertical-furnace",
+          "collection": "project",
+          "assetId": "vertical-furnace",
+          "revisionId": "r_72680f2e5830442f93afff6a94519629",
+          "includedRevisions": [
+            "r_72680f2e5830442f93afff6a94519629",
+            "r_11d06703f7c34eb2aeca0b7298a5784c"
+          ],
+          "missingParents": [],
+          "editableDownload": {
+            "path": "packs/foundry-floor/delivery-20261005-01/editable/vertical-furnace.zip",
+            "bytes": 82840,
+            "sha256": "612f70ee50be38ae1ed42acbfc28df711e1afb65e231464ce8df5651754ea3e9",
+            "url": "https://assets.kilnstudio.tools/packs/foundry-floor/delivery-20261005-01/editable/vertical-furnace.zip"
+          },
+          "runtimeDownload": {
+            "path": "packs/foundry-floor/ff3-review2/models/vertical-furnace.glb",
+            "bytes": 98668,
+            "sha256": "8f92dbbe43e0ae51e7a36f955fe1edc8f4e4cbbdf020c1ae80b8ed84a6eb36b4",
+            "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2/models/vertical-furnace.glb",
+            "archive": "packs/foundry-floor/ff3-review2/foundry-floor-ff3-review2-models.zip",
+            "member": "models/vertical-furnace.glb"
+          }
+        },
+        {
+          "slug": "ion-implanter",
+          "collection": "project",
+          "assetId": "ion-implanter",
+          "revisionId": "r_703483bb04b240bbaada2327534f7eef",
+          "includedRevisions": [
+            "r_703483bb04b240bbaada2327534f7eef",
+            "r_f053ff760e7c46018c274ec2a12ee18b"
+          ],
+          "missingParents": [],
+          "editableDownload": {
+            "path": "packs/foundry-floor/delivery-20261005-01/editable/ion-implanter.zip",
+            "bytes": 97558,
+            "sha256": "e8929592d653766dcf46109f74c4d263687722c9127082513be6a9fe86d9ec0d",
+            "url": "https://assets.kilnstudio.tools/packs/foundry-floor/delivery-20261005-01/editable/ion-implanter.zip"
+          },
+          "runtimeDownload": {
+            "path": "packs/foundry-floor/ff3-review2/models/ion-implanter.glb",
+            "bytes": 138320,
+            "sha256": "ad1a6f19be7894c0835e24cfaf4495819f25d7994ec0c5a8897aa01b4bb2af15",
+            "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2/models/ion-implanter.glb",
+            "archive": "packs/foundry-floor/ff3-review2/foundry-floor-ff3-review2-models.zip",
+            "member": "models/ion-implanter.glb"
+          }
+        },
+        {
+          "slug": "metrology-inspection-tool",
+          "collection": "project",
+          "assetId": "metrology-inspection-tool",
+          "revisionId": "r_a8395c71bb304806b3093749f7ab4ed4",
+          "includedRevisions": [
+            "r_a8395c71bb304806b3093749f7ab4ed4",
+            "r_4ee6df55b165456abe7f9002bfd7b0d1"
+          ],
+          "missingParents": [],
+          "editableDownload": {
+            "path": "packs/foundry-floor/delivery-20261005-01/editable/metrology-inspection-tool.zip",
+            "bytes": 99384,
+            "sha256": "c6cf06b5f8375613b2eec7fd3904fc5e5adc7a5608471413b96946cba846864d",
+            "url": "https://assets.kilnstudio.tools/packs/foundry-floor/delivery-20261005-01/editable/metrology-inspection-tool.zip"
+          },
+          "runtimeDownload": {
+            "path": "packs/foundry-floor/ff3-review2/models/metrology-inspection-tool.glb",
+            "bytes": 108984,
+            "sha256": "16e618ba8266ff1a87d03975b1e1b91b5e7f619bbf13152695683705ccef7f58",
+            "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2/models/metrology-inspection-tool.glb",
+            "archive": "packs/foundry-floor/ff3-review2/foundry-floor-ff3-review2-models.zip",
+            "member": "models/metrology-inspection-tool.glb"
+          }
+        },
+        {
+          "slug": "wafer-prober-tester",
+          "collection": "project",
+          "assetId": "wafer-prober-tester",
+          "revisionId": "r_7357b53066af464abb6556bdde7866d4",
+          "includedRevisions": [
+            "r_7357b53066af464abb6556bdde7866d4",
+            "r_853a936fe0dd48d299ae55585d9d276a"
+          ],
+          "missingParents": [],
+          "editableDownload": {
+            "path": "packs/foundry-floor/delivery-20261005-01/editable/wafer-prober-tester.zip",
+            "bytes": 125303,
+            "sha256": "2b34aaa6d5061346c2ffec059813278b3732fe42350bb8c8d6a678565c42637b",
+            "url": "https://assets.kilnstudio.tools/packs/foundry-floor/delivery-20261005-01/editable/wafer-prober-tester.zip"
+          },
+          "runtimeDownload": {
+            "path": "packs/foundry-floor/ff3-review2/models/wafer-prober-tester.glb",
+            "bytes": 125036,
+            "sha256": "4a53871b19898e53b7f057107eee9d2f40bbe3ba72948df3b190d21e910662af",
+            "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2/models/wafer-prober-tester.glb",
+            "archive": "packs/foundry-floor/ff3-review2/foundry-floor-ff3-review2-models.zip",
+            "member": "models/wafer-prober-tester.glb"
+          }
+        },
+        {
+          "slug": "coater-developer-track",
+          "collection": "project",
+          "assetId": "coater-developer-track",
+          "revisionId": "r_a2be2a40435341b9b196f678130109b4",
+          "includedRevisions": [
+            "r_a2be2a40435341b9b196f678130109b4",
+            "r_2bdd2517bf744bc580b1af4314fcef3a"
+          ],
+          "missingParents": [],
+          "editableDownload": {
+            "path": "packs/foundry-floor/delivery-20261005-01/editable/coater-developer-track.zip",
+            "bytes": 126576,
+            "sha256": "97df5d5cb42592cbc2f1eec099907639557ad9ad8212467c199811499946383c",
+            "url": "https://assets.kilnstudio.tools/packs/foundry-floor/delivery-20261005-01/editable/coater-developer-track.zip"
+          },
+          "runtimeDownload": {
+            "path": "packs/foundry-floor/ff3-review2/models/coater-developer-track.glb",
+            "bytes": 363352,
+            "sha256": "5b3436743daecbbff7cfdda351e67f324950767cf6d475a967d26f3aca05a11a",
+            "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2/models/coater-developer-track.glb",
+            "archive": "packs/foundry-floor/ff3-review2/foundry-floor-ff3-review2-models.zip",
+            "member": "models/coater-developer-track.glb"
+          }
+        },
+        {
+          "slug": "euv-scanner",
+          "collection": "project",
+          "assetId": "euv-scanner",
+          "revisionId": "r_5fb445d57eec47fa9c7238b1a5ee4242",
+          "includedRevisions": [
+            "r_5fb445d57eec47fa9c7238b1a5ee4242",
+            "r_f4a48de7bac1455da5a1f76be6702e4c"
+          ],
+          "missingParents": [],
+          "editableDownload": {
+            "path": "packs/foundry-floor/delivery-20261005-01/editable/euv-scanner.zip",
+            "bytes": 244146,
+            "sha256": "aabe47f90fba3ef9cd68021219aec50f8d04be9061a9ac7c36ae2cd364441f30",
+            "url": "https://assets.kilnstudio.tools/packs/foundry-floor/delivery-20261005-01/editable/euv-scanner.zip"
+          },
+          "runtimeDownload": {
+            "path": "packs/foundry-floor/ff3-review2/models/euv-scanner.glb",
+            "bytes": 591660,
+            "sha256": "0da38997d744b40180edb9d114a4fda63b336b2356747bcb8277dfc152ca69eb",
+            "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2/models/euv-scanner.glb",
+            "archive": "packs/foundry-floor/ff3-review2/foundry-floor-ff3-review2-models.zip",
+            "member": "models/euv-scanner.glb"
+          }
+        },
+        {
+          "slug": "duv-immersion-scanner",
+          "collection": "project",
+          "assetId": "duv-immersion-scanner",
+          "revisionId": "r_21ec88e7bb5b4c2c9ceae59c8142d978",
+          "includedRevisions": [
+            "r_21ec88e7bb5b4c2c9ceae59c8142d978",
+            "r_60b7dd62114248d8b39445eb7a485c0b"
+          ],
+          "missingParents": [],
+          "editableDownload": {
+            "path": "packs/foundry-floor/delivery-20261005-01/editable/duv-immersion-scanner.zip",
+            "bytes": 152907,
+            "sha256": "90b7de47237836a11f7ea7ba8a417d62335906e1f8fecc2503409fff135668c6",
+            "url": "https://assets.kilnstudio.tools/packs/foundry-floor/delivery-20261005-01/editable/duv-immersion-scanner.zip"
+          },
+          "runtimeDownload": {
+            "path": "packs/foundry-floor/ff3-review2/models/duv-immersion-scanner.glb",
+            "bytes": 408276,
+            "sha256": "53e7026c98abb8e13b5b85b51b8bc5e58ee1baec74291c6971762ee6a2853efd",
+            "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2/models/duv-immersion-scanner.glb",
+            "archive": "packs/foundry-floor/ff3-review2/foundry-floor-ff3-review2-models.zip",
+            "member": "models/duv-immersion-scanner.glb"
+          }
+        },
+        {
+          "slug": "subfab-pump-abatement-kit",
+          "collection": "project",
+          "assetId": "subfab-pump-abatement-kit",
+          "revisionId": "r_d0ff94d7e74c487b9b822f61a1ccd171",
+          "includedRevisions": [
+            "r_d0ff94d7e74c487b9b822f61a1ccd171"
+          ],
+          "missingParents": [],
+          "editableDownload": {
+            "path": "packs/foundry-floor/delivery-20261005-01/editable/subfab-pump-abatement-kit.zip",
+            "bytes": 69929,
+            "sha256": "edfd2a6339033081f08cea6c8e14b908ad1f8005e69d00e43e432517980d0d5a",
+            "url": "https://assets.kilnstudio.tools/packs/foundry-floor/delivery-20261005-01/editable/subfab-pump-abatement-kit.zip"
+          },
+          "runtimeDownload": {
+            "path": "packs/foundry-floor/ff3-review2/models/subfab-pump-abatement-kit.glb",
+            "bytes": 64780,
+            "sha256": "14b884d16dc0e56217ca8c07a0a1979b53b972750e8499ffb8eacf2ccd1d844d",
+            "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2/models/subfab-pump-abatement-kit.glb",
+            "archive": "packs/foundry-floor/ff3-review2/foundry-floor-ff3-review2-models.zip",
+            "member": "models/subfab-pump-abatement-kit.glb"
+          }
+        },
+        {
+          "slug": "visitor-gallery-segment",
+          "collection": "project",
+          "assetId": "visitor-gallery-segment",
+          "revisionId": "r_cf68f8f819f34684ac183610c45596cc",
+          "includedRevisions": [
+            "r_cf68f8f819f34684ac183610c45596cc"
+          ],
+          "missingParents": [],
+          "editableDownload": {
+            "path": "packs/foundry-floor/delivery-20261005-01/editable/visitor-gallery-segment.zip",
+            "bytes": 34866,
+            "sha256": "d0e28992d3114ee2f3f97f3c77b3c4d2cac66483ab86ae75b6824388c7aa5902",
+            "url": "https://assets.kilnstudio.tools/packs/foundry-floor/delivery-20261005-01/editable/visitor-gallery-segment.zip"
+          },
+          "runtimeDownload": {
+            "path": "packs/foundry-floor/ff3-review2/models/visitor-gallery-segment.glb",
+            "bytes": 32104,
+            "sha256": "0b0e16c3b0b6a71392e47b40a58fd36c64f20c594edcf69ac83f9f0a38326830",
+            "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2/models/visitor-gallery-segment.glb",
+            "archive": "packs/foundry-floor/ff3-review2/foundry-floor-ff3-review2-models.zip",
+            "member": "models/visitor-gallery-segment.glb"
+          }
+        },
+        {
+          "slug": "cleanroom-technician",
+          "collection": "project",
+          "assetId": "cleanroom-technician",
+          "revisionId": "r_e1d7c6935493484d9586bcf0c21604de",
+          "includedRevisions": [
+            "r_e1d7c6935493484d9586bcf0c21604de",
+            "r_3b18f7948a3d43f494af3bffd3a5c07d",
+            "r_1053692a929b459c92f762db2b4914c0"
+          ],
+          "missingParents": [],
+          "editableDownload": {
+            "path": "packs/foundry-floor/delivery-20261005-01/editable/cleanroom-technician.zip",
+            "bytes": 557869,
+            "sha256": "1762be03a6a6cdea38d2afa9c714fb4af0829426dc440429f14ab71290b61c94",
+            "url": "https://assets.kilnstudio.tools/packs/foundry-floor/delivery-20261005-01/editable/cleanroom-technician.zip"
+          },
+          "runtimeDownload": {
+            "path": "packs/foundry-floor/ff3-review2/models/cleanroom-technician.glb",
+            "bytes": 103868,
+            "sha256": "d7eb534f128a6133e0c21feb0b371e0294e1b2aca551e596cba30e73590f9fbd",
+            "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2/models/cleanroom-technician.glb",
+            "archive": "packs/foundry-floor/ff3-review2/foundry-floor-ff3-review2-models.zip",
+            "member": "models/cleanroom-technician.glb"
+          }
+        },
+        {
+          "slug": "humanoid-work-robot",
+          "collection": "project",
+          "assetId": "humanoid-work-robot",
+          "revisionId": "r_9f717d17eec74f2dbd4c338612207ed5",
+          "includedRevisions": [
+            "r_9f717d17eec74f2dbd4c338612207ed5",
+            "r_8772535d0ef94ee08a0a7137a8c1d0ca"
+          ],
+          "missingParents": [],
+          "editableDownload": {
+            "path": "packs/foundry-floor/delivery-20261005-01/editable/humanoid-work-robot.zip",
+            "bytes": 436205,
+            "sha256": "e1504d8bc022fae95ac81c356f5e5406459dc79ec1c83c5551e90bbdfa432d22",
+            "url": "https://assets.kilnstudio.tools/packs/foundry-floor/delivery-20261005-01/editable/humanoid-work-robot.zip"
+          },
+          "runtimeDownload": {
+            "path": "packs/foundry-floor/ff3-review2/models/humanoid-work-robot.glb",
+            "bytes": 200656,
+            "sha256": "cd118485e113219ce8de9bb6d3b873634fb7dadebf81028142d0f6a644f88aa2",
+            "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2/models/humanoid-work-robot.glb",
+            "archive": "packs/foundry-floor/ff3-review2/foundry-floor-ff3-review2-models.zip",
+            "member": "models/humanoid-work-robot.glb"
+          }
+        },
+        {
+          "slug": "amr-floor-robot",
+          "collection": "project",
+          "assetId": "amr-floor-robot-fit",
+          "revisionId": "r_a27481224b474e9cb1dd747c45a71e23",
+          "includedRevisions": [
+            "r_a27481224b474e9cb1dd747c45a71e23",
+            "r_d0e748e816fe4595917dc7e3e1dee102"
+          ],
+          "missingParents": [],
+          "editableDownload": {
+            "path": "packs/foundry-floor/delivery-20261005-01/editable/amr-floor-robot.zip",
+            "bytes": 92555,
+            "sha256": "639421d3413504f4c45a55e5350ecc62157b2b8aa4f5298c8915cdfaa6b5f0d5",
+            "url": "https://assets.kilnstudio.tools/packs/foundry-floor/delivery-20261005-01/editable/amr-floor-robot.zip"
+          },
+          "runtimeDownload": {
+            "path": "packs/foundry-floor/ff3-review2/models/amr-floor-robot.glb",
+            "bytes": 77144,
+            "sha256": "ceb4d9565c396bed03d9ffd704447caac5e38e665e61224e0c092ec6df05da32",
+            "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2/models/amr-floor-robot.glb",
+            "archive": "packs/foundry-floor/ff3-review2/foundry-floor-ff3-review2-models.zip",
+            "member": "models/amr-floor-robot.glb"
+          }
+        },
+        {
+          "slug": "tool-front-robot-arm",
+          "collection": "project",
+          "assetId": "tool-front-robot-arm-fit",
+          "revisionId": "r_14bc5f09d6064a6aa8c20234c34b5d78",
+          "includedRevisions": [
+            "r_14bc5f09d6064a6aa8c20234c34b5d78",
+            "r_f20e1fcc5db64ec9939367871dd43527"
+          ],
+          "missingParents": [],
+          "editableDownload": {
+            "path": "packs/foundry-floor/delivery-20261005-01/editable/tool-front-robot-arm.zip",
+            "bytes": 136794,
+            "sha256": "38f9b7863a04d12bc954b5bb3f7b6b9c3c5b0f6344b6742f16e4432fec6b6da7",
+            "url": "https://assets.kilnstudio.tools/packs/foundry-floor/delivery-20261005-01/editable/tool-front-robot-arm.zip"
+          },
+          "runtimeDownload": {
+            "path": "packs/foundry-floor/ff3-review2/models/tool-front-robot-arm.glb",
+            "bytes": 135444,
+            "sha256": "3ae581fbee8b2e7a184b9ef22d5594c6a75f85dcc5e72b2da16bc1dec06e3010",
+            "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2/models/tool-front-robot-arm.glb",
+            "archive": "packs/foundry-floor/ff3-review2/foundry-floor-ff3-review2-models.zip",
+            "member": "models/tool-front-robot-arm.glb"
+          }
+        },
+        {
+          "slug": "level-section-module",
+          "collection": "project",
+          "assetId": "level-section-module",
+          "revisionId": "r_3b3d090fa0494380bdcaafaf6f3a22f2",
+          "includedRevisions": [
+            "r_3b3d090fa0494380bdcaafaf6f3a22f2",
+            "r_31297086f3b44715ba632212acc6c728"
+          ],
+          "missingParents": [],
+          "editableDownload": {
+            "path": "packs/foundry-floor/delivery-20261005-01/editable/level-section-module.zip",
+            "bytes": 162569,
+            "sha256": "50e3851029986318cfe4152aa0606ca5125f4c36b280def57c109370565e58dd",
+            "url": "https://assets.kilnstudio.tools/packs/foundry-floor/delivery-20261005-01/editable/level-section-module.zip"
+          },
+          "runtimeDownload": {
+            "path": "packs/foundry-floor/ff3-review2/models/level-section-module.glb",
+            "bytes": 322096,
+            "sha256": "20d5f55ea0f97f29d5adccc45e090bcb605fad99e05733163a89c15a29d4cd2c",
+            "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2/models/level-section-module.glb",
+            "archive": "packs/foundry-floor/ff3-review2/foundry-floor-ff3-review2-models.zip",
+            "member": "models/level-section-module.glb"
+          }
+        },
+        {
+          "slug": "s1-head-w",
+          "collection": "project",
+          "assetId": "a_99c239a460b54a6db070df7d28338c63",
+          "revisionId": "r_c2d99522b58344b69dca0ad1ce41928a",
+          "includedRevisions": [
+            "r_c2d99522b58344b69dca0ad1ce41928a",
+            "r_b2a85c18cc8f49d7b8f0b2870db51415",
+            "r_5e5f3eaf5bd64fc4b765765870a0774f"
+          ],
+          "missingParents": [],
+          "editableDownload": {
+            "path": "packs/foundry-floor/delivery-20261005-01/editable/s1-head-w.zip",
+            "bytes": 527074,
+            "sha256": "7ee828fbc5b536e3d77fe277b47fa92f050c846a28477f3a7dda19eefbb1d661",
+            "url": "https://assets.kilnstudio.tools/packs/foundry-floor/delivery-20261005-01/editable/s1-head-w.zip"
+          },
+          "runtimeDownload": {
+            "path": "packs/foundry-floor/ff3-review2/models/s1-head-w.glb",
+            "bytes": 794948,
+            "sha256": "12be5743a5e422416602ce42ad36b8143ad203e2672a2c00043e1410564e78cf",
+            "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2/models/s1-head-w.glb",
+            "archive": "packs/foundry-floor/ff3-review2/foundry-floor-ff3-review2-models.zip",
+            "member": "models/structures/s1-head-W.glb"
+          }
+        },
+        {
+          "slug": "s1-head-e",
+          "collection": "project",
+          "assetId": "a_a56d232bf5674ad78607864566f2e4e0",
+          "revisionId": "r_df7dae73a55c46f1853280912ac1d593",
+          "includedRevisions": [
+            "r_df7dae73a55c46f1853280912ac1d593",
+            "r_bd83436808b14e87b94e3d44689521bc",
+            "r_5db4770739884cbdbe4b408752b04490"
+          ],
+          "missingParents": [],
+          "editableDownload": {
+            "path": "packs/foundry-floor/delivery-20261005-01/editable/s1-head-e.zip",
+            "bytes": 523127,
+            "sha256": "bfa9889529b283930ca4b1ed516e83061e9e4e8595d45856410ac7829fd0cd85",
+            "url": "https://assets.kilnstudio.tools/packs/foundry-floor/delivery-20261005-01/editable/s1-head-e.zip"
+          },
+          "runtimeDownload": {
+            "path": "packs/foundry-floor/ff3-review2/models/s1-head-e.glb",
+            "bytes": 794948,
+            "sha256": "694ef50d50de5f4f28be10a0b087b9493e19ad3d7083bc95c717c37a292114c0",
+            "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2/models/s1-head-e.glb",
+            "archive": "packs/foundry-floor/ff3-review2/foundry-floor-ff3-review2-models.zip",
+            "member": "models/structures/s1-head-E.glb"
+          }
+        },
+        {
+          "slug": "s1-head-w-far",
+          "collection": "project",
+          "assetId": "a_eb6754b1b7fe4c7a8560895c763cb48c",
+          "revisionId": "r_e8204a9885e14c2c9d09a22f755a80da",
+          "includedRevisions": [
+            "r_e8204a9885e14c2c9d09a22f755a80da",
+            "r_1a411646188447c5adf1ce40478a6958",
+            "r_41d923caeaa840a7b1e0e5650fa32a3d"
+          ],
+          "missingParents": [],
+          "editableDownload": {
+            "path": "packs/foundry-floor/delivery-20261005-01/editable/s1-head-w-far.zip",
+            "bytes": 103471,
+            "sha256": "85101a3039d20f778e5cbddb3b3d7a6e39de1c3747f80572eb128a4c1e507408",
+            "url": "https://assets.kilnstudio.tools/packs/foundry-floor/delivery-20261005-01/editable/s1-head-w-far.zip"
+          },
+          "runtimeDownload": {
+            "path": "packs/foundry-floor/ff3-review2/models/s1-head-w-far.glb",
+            "bytes": 32280,
+            "sha256": "0bcce2163fbbfaa787628efffc8362405ed3b42a7614d3161e6bb33e790f83ea",
+            "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2/models/s1-head-w-far.glb",
+            "archive": "packs/foundry-floor/ff3-review2/foundry-floor-ff3-review2-models.zip",
+            "member": "models/structures/s1-head-W-far.glb"
+          }
+        },
+        {
+          "slug": "s1-head-e-far",
+          "collection": "project",
+          "assetId": "a_7d13f66d7d7b45a98136055b3a759856",
+          "revisionId": "r_2e4899a609764cf6a993093253b75fd8",
+          "includedRevisions": [
+            "r_2e4899a609764cf6a993093253b75fd8",
+            "r_41195f161eee485db6ca7170ff0e5556",
+            "r_d92cdfc76a064c87b96667d7e8164ef7"
+          ],
+          "missingParents": [],
+          "editableDownload": {
+            "path": "packs/foundry-floor/delivery-20261005-01/editable/s1-head-e-far.zip",
+            "bytes": 103347,
+            "sha256": "70c2823260af0a9f3c47e713d2f990290b7309e38a54947987b52c5978a0a2e7",
+            "url": "https://assets.kilnstudio.tools/packs/foundry-floor/delivery-20261005-01/editable/s1-head-e-far.zip"
+          },
+          "runtimeDownload": {
+            "path": "packs/foundry-floor/ff3-review2/models/s1-head-e-far.glb",
+            "bytes": 32280,
+            "sha256": "6d5a620ef1a11c1964797663d0465ce48170049440e1b1df80b6eeb22374cdcb",
+            "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2/models/s1-head-e-far.glb",
+            "archive": "packs/foundry-floor/ff3-review2/foundry-floor-ff3-review2-models.zip",
+            "member": "models/structures/s1-head-E-far.glb"
+          }
+        },
+        {
+          "slug": "s4-canopy",
+          "collection": "project",
+          "assetId": "a_ac56fc354640463fabb09a9d9b1a3879",
+          "revisionId": "r_e6e9b7f634014bc6ab698dcbb0df91a5",
+          "includedRevisions": [
+            "r_e6e9b7f634014bc6ab698dcbb0df91a5",
+            "r_fe7012d9367c47368891f1150eab915b"
+          ],
+          "missingParents": [],
+          "editableDownload": {
+            "path": "packs/foundry-floor/delivery-20261005-01/editable/s4-canopy.zip",
+            "bytes": 67657,
+            "sha256": "5d968f63381238fd30414e7098b9d038081cd7d1c995da7e87d1579537bc3c25",
+            "url": "https://assets.kilnstudio.tools/packs/foundry-floor/delivery-20261005-01/editable/s4-canopy.zip"
+          },
+          "runtimeDownload": {
+            "path": "packs/foundry-floor/ff3-review2/models/s4-canopy.glb",
+            "bytes": 40252,
+            "sha256": "5a847c587b59fa62b4c6e4113a605eae1ec4a8f760d99d5817b8fd7c0b68f0c7",
+            "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2/models/s4-canopy.glb",
+            "archive": "packs/foundry-floor/ff3-review2/foundry-floor-ff3-review2-models.zip",
+            "member": "models/structures/s4-canopy.glb"
+          }
+        },
+        {
+          "slug": "s2-hall-w",
+          "collection": "project",
+          "assetId": "a_700fda75271246d686ed6ecbd9c02520",
+          "revisionId": "r_360a18d9520a47ba8f74803411d880d7",
+          "includedRevisions": [
+            "r_360a18d9520a47ba8f74803411d880d7",
+            "r_8ee2ea3269434d249c3e079041ece154",
+            "r_c8a469fde212461d97bf293005dde69c"
+          ],
+          "missingParents": [],
+          "editableDownload": {
+            "path": "packs/foundry-floor/delivery-20261005-01/editable/s2-hall-w.zip",
+            "bytes": 244606,
+            "sha256": "2be3d86790a0aa49f2e0d2909d1e51d19754f290a13aac5a964978503313a57b",
+            "url": "https://assets.kilnstudio.tools/packs/foundry-floor/delivery-20261005-01/editable/s2-hall-w.zip"
+          },
+          "runtimeDownload": {
+            "path": "packs/foundry-floor/ff3-review2/models/s2-hall-w.glb",
+            "bytes": 641092,
+            "sha256": "7b0346a7c31c8f76cdf5689089ba2c130ebf160b5df74c78b0f6a49514c0a41b",
+            "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2/models/s2-hall-w.glb",
+            "archive": "packs/foundry-floor/ff3-review2/foundry-floor-ff3-review2-models.zip",
+            "member": "models/structures/s2-hall-W.glb"
+          }
+        },
+        {
+          "slug": "s2-hall-e",
+          "collection": "project",
+          "assetId": "a_20881fa191c9400e8253ee566f285583",
+          "revisionId": "r_9240eafbf13942e4a6263b1012889b2d",
+          "includedRevisions": [
+            "r_9240eafbf13942e4a6263b1012889b2d",
+            "r_81846115af54419c918b614a6e035a7c",
+            "r_81c94a243d414e219095e2860e5326de"
+          ],
+          "missingParents": [],
+          "editableDownload": {
+            "path": "packs/foundry-floor/delivery-20261005-01/editable/s2-hall-e.zip",
+            "bytes": 235350,
+            "sha256": "83db6a63ef06013d9a826b10d88ca55459895d24ae45126b3efe99f8f20dfbe0",
+            "url": "https://assets.kilnstudio.tools/packs/foundry-floor/delivery-20261005-01/editable/s2-hall-e.zip"
+          },
+          "runtimeDownload": {
+            "path": "packs/foundry-floor/ff3-review2/models/s2-hall-e.glb",
+            "bytes": 641092,
+            "sha256": "567561f70e74675a89185701468ef9ffa995cb3307b3661130ae2b6cd00b26c7",
+            "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2/models/s2-hall-e.glb",
+            "archive": "packs/foundry-floor/ff3-review2/foundry-floor-ff3-review2-models.zip",
+            "member": "models/structures/s2-hall-E.glb"
+          }
+        },
+        {
+          "slug": "s2-hall-w-far",
+          "collection": "project",
+          "assetId": "a_c6f2f32770a741e88e2adbd699c717bb",
+          "revisionId": "r_47f890f3d7314130ade16990037c4519",
+          "includedRevisions": [
+            "r_47f890f3d7314130ade16990037c4519",
+            "r_9249ba2986d24d9ba05679479f9616f1",
+            "r_a95a76d30c7741c695676a3598855684"
+          ],
+          "missingParents": [],
+          "editableDownload": {
+            "path": "packs/foundry-floor/delivery-20261005-01/editable/s2-hall-w-far.zip",
+            "bytes": 82922,
+            "sha256": "fe193a54b1c4c4bc331b51645a367d6ed1b480391a07dabd03d8d5dc6bf982bc",
+            "url": "https://assets.kilnstudio.tools/packs/foundry-floor/delivery-20261005-01/editable/s2-hall-w-far.zip"
+          },
+          "runtimeDownload": {
+            "path": "packs/foundry-floor/ff3-review2/models/s2-hall-w-far.glb",
+            "bytes": 57480,
+            "sha256": "7eef9f8b6ffbba459d96bd5f3e6c1efc05425ad4148d68717ab26c198cf2ad35",
+            "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2/models/s2-hall-w-far.glb",
+            "archive": "packs/foundry-floor/ff3-review2/foundry-floor-ff3-review2-models.zip",
+            "member": "models/structures/s2-hall-W-far.glb"
+          }
+        },
+        {
+          "slug": "s2-hall-e-far",
+          "collection": "project",
+          "assetId": "a_3446d4140fb441929bafb1858ddfbc56",
+          "revisionId": "r_d946a31fc6c041a8b3d6ca0e6006fb36",
+          "includedRevisions": [
+            "r_d946a31fc6c041a8b3d6ca0e6006fb36",
+            "r_652c0d54ab12478f93fd511911dd1c5e",
+            "r_0e8a5e6d8f0d44ef95632021a558917b"
+          ],
+          "missingParents": [],
+          "editableDownload": {
+            "path": "packs/foundry-floor/delivery-20261005-01/editable/s2-hall-e-far.zip",
+            "bytes": 82355,
+            "sha256": "d4963c83e05027590ca4794b5bf61428cb247358a24b63f8ae10c36d659df1cb",
+            "url": "https://assets.kilnstudio.tools/packs/foundry-floor/delivery-20261005-01/editable/s2-hall-e-far.zip"
+          },
+          "runtimeDownload": {
+            "path": "packs/foundry-floor/ff3-review2/models/s2-hall-e-far.glb",
+            "bytes": 57476,
+            "sha256": "eeb5315c3d1806c3baf31fc7bb960dde0a0b3e13d8a17d123152ac73c5e8365f",
+            "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2/models/s2-hall-e-far.glb",
+            "archive": "packs/foundry-floor/ff3-review2/foundry-floor-ff3-review2-models.zip",
+            "member": "models/structures/s2-hall-E-far.glb"
+          }
+        },
+        {
+          "slug": "s3-link",
+          "collection": "project",
+          "assetId": "a_f5fc41aa4c354116908f4b2cd26c4958",
+          "revisionId": "r_b2f1a7eab1cc48fb8d2561914e8888d3",
+          "includedRevisions": [
+            "r_b2f1a7eab1cc48fb8d2561914e8888d3",
+            "r_60e610da7ea74248962ecec2830a0650",
+            "r_82e2305e27fb474ebc0ce1d205f7c0cf"
+          ],
+          "missingParents": [],
+          "editableDownload": {
+            "path": "packs/foundry-floor/delivery-20261005-01/editable/s3-link.zip",
+            "bytes": 89207,
+            "sha256": "f9847129bf101448e4a4e479c4dc9aa5b00d5fddaefd8975b1805acc882a2957",
+            "url": "https://assets.kilnstudio.tools/packs/foundry-floor/delivery-20261005-01/editable/s3-link.zip"
+          },
+          "runtimeDownload": {
+            "path": "packs/foundry-floor/ff3-review2/models/s3-link.glb",
+            "bytes": 72040,
+            "sha256": "246bbf1956c794d55720ff0ba53bd817e6cac3962dad44a3c7973bd470382a3c",
+            "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2/models/s3-link.glb",
+            "archive": "packs/foundry-floor/ff3-review2/foundry-floor-ff3-review2-models.zip",
+            "member": "models/structures/s3-link.glb"
+          }
+        },
+        {
+          "slug": "s5-split-bridge",
+          "collection": "project",
+          "assetId": "s5-split-bridge",
+          "revisionId": "r_8bbd9104498f4aad974d4f3cb29e810e",
+          "includedRevisions": [
+            "r_8bbd9104498f4aad974d4f3cb29e810e",
+            "r_9185651ad0e948b886859c266f09c62c"
+          ],
+          "missingParents": [],
+          "editableDownload": {
+            "path": "packs/foundry-floor/delivery-20261005-01/editable/s5-split-bridge.zip",
+            "bytes": 114415,
+            "sha256": "bbf2bca6e0ef086698e29beabd5cfe175be19366972bb9f0bb59c7a67c80fa5e",
+            "url": "https://assets.kilnstudio.tools/packs/foundry-floor/delivery-20261005-01/editable/s5-split-bridge.zip"
+          },
+          "runtimeDownload": {
+            "path": "packs/foundry-floor/ff3-review2/models/s5-split-bridge.glb",
+            "bytes": 356080,
+            "sha256": "1086e13f6306afe7b19fe1c520360cd37e80eda61894602060ff3a29b56a7083",
+            "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2/models/s5-split-bridge.glb",
+            "archive": "packs/foundry-floor/ff3-review2/foundry-floor-ff3-review2-models.zip",
+            "member": "models/structures/s5-split-bridge.glb"
+          }
+        },
+        {
+          "slug": "s5-split-bridge-far",
+          "collection": "project",
+          "assetId": "s5-split-bridge-far",
+          "revisionId": "r_51b50c962e754a098db9b438367ed1b1",
+          "includedRevisions": [
+            "r_51b50c962e754a098db9b438367ed1b1",
+            "r_e6ea9b7bb8ef4e24a0b733fbdbb6f8aa"
+          ],
+          "missingParents": [],
+          "editableDownload": {
+            "path": "packs/foundry-floor/delivery-20261005-01/editable/s5-split-bridge-far.zip",
+            "bytes": 53847,
+            "sha256": "25946a7f2a9e6743f8bb7cc44d0b074ffd3baa419ecdcfa6f9c299a2c63b9a74",
+            "url": "https://assets.kilnstudio.tools/packs/foundry-floor/delivery-20261005-01/editable/s5-split-bridge-far.zip"
+          },
+          "runtimeDownload": {
+            "path": "packs/foundry-floor/ff3-review2/models/s5-split-bridge-far.glb",
+            "bytes": 61004,
+            "sha256": "380887f36e9cde62d202b24244162186f35f74f71e1f99be39e809191dc81e30",
+            "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2/models/s5-split-bridge-far.glb",
+            "archive": "packs/foundry-floor/ff3-review2/foundry-floor-ff3-review2-models.zip",
+            "member": "models/structures/s5-split-bridge-far.glb"
+          }
+        },
+        {
+          "slug": "sedan",
+          "collection": "project",
+          "assetId": "generic-sedan",
+          "revisionId": "r_92ee0ac3d5cf4b258cc97d20ec941461",
+          "includedRevisions": [
+            "r_92ee0ac3d5cf4b258cc97d20ec941461",
+            "r_7680f4bae18445b19dc11dd74b62d3e6",
+            "r_ae693b4eb528451886750fcb083d01a4",
+            "r_1cb27a0c14d44e48afff84db23013dad"
+          ],
+          "missingParents": [],
+          "editableDownload": {
+            "path": "packs/foundry-floor/delivery-20261005-01/editable/sedan.zip",
+            "bytes": 721182,
+            "sha256": "5e72a71c1f2a51fa0849b13dc611a0169088ac9d2d405206a083bb60459553e7",
+            "url": "https://assets.kilnstudio.tools/packs/foundry-floor/delivery-20261005-01/editable/sedan.zip"
+          },
+          "runtimeDownload": {
+            "path": "packs/foundry-floor/ff3-review2/models/sedan.glb",
+            "bytes": 117780,
+            "sha256": "1bad1074f0583dfb7c650cfe6e0cae7633b93fb1dc614f50d36ed834d469b212",
+            "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2/models/sedan.glb",
+            "archive": "packs/foundry-floor/ff3-review2/foundry-floor-ff3-review2-models.zip",
+            "member": "models/vehicles/sedan.glb"
+          }
+        },
+        {
+          "slug": "hatchback",
+          "collection": "project",
+          "assetId": "generic-hatchback",
+          "revisionId": "r_74f393f06996497a9dce6c5ed50c2d62",
+          "includedRevisions": [
+            "r_74f393f06996497a9dce6c5ed50c2d62",
+            "r_0393505feabd4814907bc4b527194caf",
+            "r_67e5bfdadba745a99864e8910ba58f2b",
+            "r_4978d843f7c44dadbb574b64d78fb158",
+            "r_105b27d31fe44f2aa188a333e19e3977"
+          ],
+          "missingParents": [],
+          "editableDownload": {
+            "path": "packs/foundry-floor/delivery-20261005-01/editable/hatchback.zip",
+            "bytes": 919754,
+            "sha256": "3dd4951ee32d6a8b70e0cadbb7d1cdf2f6152c2620655253bbdf1445e516987e",
+            "url": "https://assets.kilnstudio.tools/packs/foundry-floor/delivery-20261005-01/editable/hatchback.zip"
+          },
+          "runtimeDownload": {
+            "path": "packs/foundry-floor/ff3-review2/models/hatchback.glb",
+            "bytes": 118752,
+            "sha256": "4030ac7f9c3a0ee141189b01615da4016353c6302f0805cf9d66dd756a32a0f0",
+            "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2/models/hatchback.glb",
+            "archive": "packs/foundry-floor/ff3-review2/foundry-floor-ff3-review2-models.zip",
+            "member": "models/vehicles/hatchback.glb"
+          }
+        },
+        {
+          "slug": "suv",
+          "collection": "project",
+          "assetId": "generic-suv",
+          "revisionId": "r_b4cc9048731b4c039de0b87ca6e75c17",
+          "includedRevisions": [
+            "r_b4cc9048731b4c039de0b87ca6e75c17",
+            "r_97a598c2b8b840dd88ff162264e85860",
+            "r_881324cad46f427080e4a2fd31bae36f",
+            "r_a9760325250e4aef858b823d1dc43b7e",
+            "r_8261935e39684470b65549b1c39142fd"
+          ],
+          "missingParents": [],
+          "editableDownload": {
+            "path": "packs/foundry-floor/delivery-20261005-01/editable/suv.zip",
+            "bytes": 927583,
+            "sha256": "88a73a234386122557040b9111364f322bd228a7b16a7507cddc234117279baa",
+            "url": "https://assets.kilnstudio.tools/packs/foundry-floor/delivery-20261005-01/editable/suv.zip"
+          },
+          "runtimeDownload": {
+            "path": "packs/foundry-floor/ff3-review2/models/suv.glb",
+            "bytes": 120120,
+            "sha256": "3193157586a99fe8710be2303fea754c0b0799557a6d5757528b5b7c83e612b2",
+            "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2/models/suv.glb",
+            "archive": "packs/foundry-floor/ff3-review2/foundry-floor-ff3-review2-models.zip",
+            "member": "models/vehicles/suv.glb"
+          }
+        },
+        {
+          "slug": "pickup",
+          "collection": "project",
+          "assetId": "a_557b9bd6c2c34340804e802081a9b983",
+          "revisionId": "r_218be4189a1b43e7b307c2263ba4f954",
+          "includedRevisions": [
+            "r_218be4189a1b43e7b307c2263ba4f954",
+            "r_b74ac56a93a44c7484890f712df9c64c"
+          ],
+          "missingParents": [],
+          "editableDownload": {
+            "path": "packs/foundry-floor/delivery-20261005-01/editable/pickup.zip",
+            "bytes": 150961,
+            "sha256": "42a23cf4397fdb9501e001e010d01ec1017404f73db83226789d114675cd10f7",
+            "url": "https://assets.kilnstudio.tools/packs/foundry-floor/delivery-20261005-01/editable/pickup.zip"
+          },
+          "runtimeDownload": {
+            "path": "packs/foundry-floor/ff3-review2/models/pickup.glb",
+            "bytes": 170184,
+            "sha256": "584240cb33df27714545c6fafc2496f1459bdadad49b2b827be13a8e936b6d8f",
+            "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2/models/pickup.glb",
+            "archive": "packs/foundry-floor/ff3-review2/foundry-floor-ff3-review2-models.zip",
+            "member": "models/vehicles/pickup.glb"
+          }
+        },
+        {
+          "slug": "box-truck",
+          "collection": "project",
+          "assetId": "a_2092ca0610c749b386c14c07dbaf4236",
+          "revisionId": "r_538b8a19c46d4086b456e27b32ee7d33",
+          "includedRevisions": [
+            "r_538b8a19c46d4086b456e27b32ee7d33",
+            "r_d5e37b6d4e7347ac863220cdbd8e49a4"
+          ],
+          "missingParents": [],
+          "editableDownload": {
+            "path": "packs/foundry-floor/delivery-20261005-01/editable/box-truck.zip",
+            "bytes": 130653,
+            "sha256": "c02d3cf7a3ddb812829cd47ee01d59cda180a7b0a96997a37d9f2f03759208fd",
+            "url": "https://assets.kilnstudio.tools/packs/foundry-floor/delivery-20261005-01/editable/box-truck.zip"
+          },
+          "runtimeDownload": {
+            "path": "packs/foundry-floor/ff3-review2/models/box-truck.glb",
+            "bytes": 169728,
+            "sha256": "4cfccfdb2ddd15fc6ab9940e0406fe2b11bbef9d6098d783940cfeb572464420",
+            "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2/models/box-truck.glb",
+            "archive": "packs/foundry-floor/ff3-review2/foundry-floor-ff3-review2-models.zip",
+            "member": "models/vehicles/box-truck.glb"
+          }
+        },
+        {
+          "slug": "transit-bus",
+          "collection": "project",
+          "assetId": "a_a8c030b2570f4ae5aa54eefbd3767f4c",
+          "revisionId": "r_85ff097a61384efab445c55372d3b6f5",
+          "includedRevisions": [
+            "r_85ff097a61384efab445c55372d3b6f5",
+            "r_6ab2ee53817449c59972502fcf008f1a",
+            "r_4dc2fb11b58b4dcd9f89197a8f7e28ff"
+          ],
+          "missingParents": [],
+          "editableDownload": {
+            "path": "packs/foundry-floor/delivery-20261005-01/editable/transit-bus.zip",
+            "bytes": 197469,
+            "sha256": "ffa8c6c8398ed96149f3399e84bb6c6e17f25b7cb3214d12fe1b274e1c8fec17",
+            "url": "https://assets.kilnstudio.tools/packs/foundry-floor/delivery-20261005-01/editable/transit-bus.zip"
+          },
+          "runtimeDownload": {
+            "path": "packs/foundry-floor/ff3-review2/models/transit-bus.glb",
+            "bytes": 194148,
+            "sha256": "14713cb461f2ecb683ea9bace5cc7a79d595aa92d322f86d3831cda7bf647067",
+            "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2/models/transit-bus.glb",
+            "archive": "packs/foundry-floor/ff3-review2/foundry-floor-ff3-review2-models.zip",
+            "member": "models/vehicles/transit-bus.glb"
+          }
+        },
+        {
+          "slug": "tree-broad-l",
+          "collection": "project",
+          "assetId": "a_b78c96bc78ba49f3ad8cea40aa50eb4c",
+          "revisionId": "r_9f23088183b1495a9d398603dae05ff5",
+          "includedRevisions": [
+            "r_9f23088183b1495a9d398603dae05ff5"
+          ],
+          "missingParents": [],
+          "editableDownload": {
+            "path": "packs/foundry-floor/delivery-20261005-01/editable/tree-broad-l.zip",
+            "bytes": 62072,
+            "sha256": "5b9bf817a7cf03705953c4194768642bfe58f37ab1bb496a9cf3dfb0d793779b",
+            "url": "https://assets.kilnstudio.tools/packs/foundry-floor/delivery-20261005-01/editable/tree-broad-l.zip"
+          },
+          "runtimeDownload": {
+            "path": "packs/foundry-floor/ff3-review2/models/tree-broad-l.glb",
+            "bytes": 85516,
+            "sha256": "0dbb15475c0fbbb8dd7bc625ba87fc3f195ab4ba3ea299323d586e88eb14163f",
+            "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2/models/tree-broad-l.glb",
+            "archive": "packs/foundry-floor/ff3-review2/foundry-floor-ff3-review2-models.zip",
+            "member": "models/vegetation/tree-broad-l.glb"
+          }
+        },
+        {
+          "slug": "tree-broad-m",
+          "collection": "project",
+          "assetId": "a_af17477e70f74a5dacd28c8440fb857d",
+          "revisionId": "r_947dbc2b30b94fdf85804e19fb665b4d",
+          "includedRevisions": [
+            "r_947dbc2b30b94fdf85804e19fb665b4d"
+          ],
+          "missingParents": [],
+          "editableDownload": {
+            "path": "packs/foundry-floor/delivery-20261005-01/editable/tree-broad-m.zip",
+            "bytes": 60008,
+            "sha256": "1195d3abc08c7a1c1d885f711bb4dfe2684e34bbb374670ee66cfaed55e5c0cb",
+            "url": "https://assets.kilnstudio.tools/packs/foundry-floor/delivery-20261005-01/editable/tree-broad-m.zip"
+          },
+          "runtimeDownload": {
+            "path": "packs/foundry-floor/ff3-review2/models/tree-broad-m.glb",
+            "bytes": 85532,
+            "sha256": "c62b5179f457c3ad4090d993c6b8b70322c9c5f908419c267dc12d82be9a1001",
+            "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2/models/tree-broad-m.glb",
+            "archive": "packs/foundry-floor/ff3-review2/foundry-floor-ff3-review2-models.zip",
+            "member": "models/vegetation/tree-broad-m.glb"
+          }
+        },
+        {
+          "slug": "tree-broad-s",
+          "collection": "project",
+          "assetId": "a_57cf88474beb46d19832ce0f43e93b9c",
+          "revisionId": "r_aad434508024485a80b48effabe15185",
+          "includedRevisions": [
+            "r_aad434508024485a80b48effabe15185"
+          ],
+          "missingParents": [],
+          "editableDownload": {
+            "path": "packs/foundry-floor/delivery-20261005-01/editable/tree-broad-s.zip",
+            "bytes": 56196,
+            "sha256": "818a39fdbf02b1b12ee18866042bd40bee92f4027b0e11a19eccb674d3416386",
+            "url": "https://assets.kilnstudio.tools/packs/foundry-floor/delivery-20261005-01/editable/tree-broad-s.zip"
+          },
+          "runtimeDownload": {
+            "path": "packs/foundry-floor/ff3-review2/models/tree-broad-s.glb",
+            "bytes": 73420,
+            "sha256": "7d6b786717862c2a75acec50a3dc401a4f40b529a9bb623c5a56063cc6964e21",
+            "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2/models/tree-broad-s.glb",
+            "archive": "packs/foundry-floor/ff3-review2/foundry-floor-ff3-review2-models.zip",
+            "member": "models/vegetation/tree-broad-s.glb"
+          }
+        },
+        {
+          "slug": "tree-conifer-l",
+          "collection": "project",
+          "assetId": "a_2314a308a2074b0089a66cd18acac29e",
+          "revisionId": "r_b7d3879520f24b349d6a6ae6701ae2c3",
+          "includedRevisions": [
+            "r_b7d3879520f24b349d6a6ae6701ae2c3",
+            "r_5d850452fffd4de9801860839f4e4994"
+          ],
+          "missingParents": [],
+          "editableDownload": {
+            "path": "packs/foundry-floor/delivery-20261005-01/editable/tree-conifer-l.zip",
+            "bytes": 111702,
+            "sha256": "219cc13f85e333ee52060fd6f2cb2d13dc9b9820904e208cd91479d5a39b3ae2",
+            "url": "https://assets.kilnstudio.tools/packs/foundry-floor/delivery-20261005-01/editable/tree-conifer-l.zip"
+          },
+          "runtimeDownload": {
+            "path": "packs/foundry-floor/ff3-review2/models/tree-conifer-l.glb",
+            "bytes": 121056,
+            "sha256": "d937b5048f3eb276aa007e8b668fe5e24053bb69e22e8f42c349e32190788a73",
+            "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2/models/tree-conifer-l.glb",
+            "archive": "packs/foundry-floor/ff3-review2/foundry-floor-ff3-review2-models.zip",
+            "member": "models/vegetation/tree-conifer-l.glb"
+          }
+        },
+        {
+          "slug": "tree-conifer-m",
+          "collection": "project",
+          "assetId": "a_9152a27cdfac4d47abfd3eeecba986f5",
+          "revisionId": "r_e551108244024278bd4ae74f4d30346e",
+          "includedRevisions": [
+            "r_e551108244024278bd4ae74f4d30346e",
+            "r_e28730149d364efb8c8e9d8247874121"
+          ],
+          "missingParents": [],
+          "editableDownload": {
+            "path": "packs/foundry-floor/delivery-20261005-01/editable/tree-conifer-m.zip",
+            "bytes": 106089,
+            "sha256": "09ec0519b834fc154e37a66001355c3ec0708d48797e0225c201fcf7a645c94a",
+            "url": "https://assets.kilnstudio.tools/packs/foundry-floor/delivery-20261005-01/editable/tree-conifer-m.zip"
+          },
+          "runtimeDownload": {
+            "path": "packs/foundry-floor/ff3-review2/models/tree-conifer-m.glb",
+            "bytes": 104352,
+            "sha256": "436fd076cafe8c7fa493076e66a726163870874adca35c56804ef9cb290210fb",
+            "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2/models/tree-conifer-m.glb",
+            "archive": "packs/foundry-floor/ff3-review2/foundry-floor-ff3-review2-models.zip",
+            "member": "models/vegetation/tree-conifer-m.glb"
+          }
+        },
+        {
+          "slug": "tree-ornamental",
+          "collection": "project",
+          "assetId": "a_d652aa1bc6594109ab5792a12847f75f",
+          "revisionId": "r_6f6398c81f134c3fb7880fd2bc7537e4",
+          "includedRevisions": [
+            "r_6f6398c81f134c3fb7880fd2bc7537e4",
+            "r_580e6abc5bcb418a94c2b59e6f2393da"
+          ],
+          "missingParents": [],
+          "editableDownload": {
+            "path": "packs/foundry-floor/delivery-20261005-01/editable/tree-ornamental.zip",
+            "bytes": 123499,
+            "sha256": "5b7d8d586dc5acaf2adfbc6cc90cc48ab4b24ab47ed0e40a68ef7ef9a960a741",
+            "url": "https://assets.kilnstudio.tools/packs/foundry-floor/delivery-20261005-01/editable/tree-ornamental.zip"
+          },
+          "runtimeDownload": {
+            "path": "packs/foundry-floor/ff3-review2/models/tree-ornamental.glb",
+            "bytes": 105728,
+            "sha256": "3d0e073b6bae2ec453c1920449684ed27b5e4c9023c5e82bf2d08b0057f3fd94",
+            "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2/models/tree-ornamental.glb",
+            "archive": "packs/foundry-floor/ff3-review2/foundry-floor-ff3-review2-models.zip",
+            "member": "models/vegetation/tree-ornamental.glb"
+          }
+        },
+        {
+          "slug": "shrub-mound",
+          "collection": "project",
+          "assetId": "a_04e07c6b49f94dce8bb469a89b253bab",
+          "revisionId": "r_37b46919727c4c8a8bafe8884635a17b",
+          "includedRevisions": [
+            "r_37b46919727c4c8a8bafe8884635a17b"
+          ],
+          "missingParents": [],
+          "editableDownload": {
+            "path": "packs/foundry-floor/delivery-20261005-01/editable/shrub-mound.zip",
+            "bytes": 31381,
+            "sha256": "8a62b5ef08cc46a944a8bc834b35c7c56ae0de36e1347d01e98218a89f71edd0",
+            "url": "https://assets.kilnstudio.tools/packs/foundry-floor/delivery-20261005-01/editable/shrub-mound.zip"
+          },
+          "runtimeDownload": {
+            "path": "packs/foundry-floor/ff3-review2/models/shrub-mound.glb",
+            "bytes": 19248,
+            "sha256": "4adab905c0337a72d6b426de941fbede75d27ad8deca7095435258758409db16",
+            "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2/models/shrub-mound.glb",
+            "archive": "packs/foundry-floor/ff3-review2/foundry-floor-ff3-review2-models.zip",
+            "member": "models/vegetation/shrub-mound.glb"
+          }
+        },
+        {
+          "slug": "hedge-4m",
+          "collection": "project",
+          "assetId": "a_4168e827aacb40aeb1847781e1c5d88d",
+          "revisionId": "r_7b34245c9ea04e96ad8e449006f1f806",
+          "includedRevisions": [
+            "r_7b34245c9ea04e96ad8e449006f1f806"
+          ],
+          "missingParents": [],
+          "editableDownload": {
+            "path": "packs/foundry-floor/delivery-20261005-01/editable/hedge-4m.zip",
+            "bytes": 14293,
+            "sha256": "9fa5466a5aa997324e8475cb48c14164859df99ebdfa87632f50c78f556eb706",
+            "url": "https://assets.kilnstudio.tools/packs/foundry-floor/delivery-20261005-01/editable/hedge-4m.zip"
+          },
+          "runtimeDownload": {
+            "path": "packs/foundry-floor/ff3-review2/models/hedge-4m.glb",
+            "bytes": 6996,
+            "sha256": "e52074d59c3f73e1cedf778d77546217c778043defd208abe359a96e7c8ef0b5",
+            "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2/models/hedge-4m.glb",
+            "archive": "packs/foundry-floor/ff3-review2/foundry-floor-ff3-review2-models.zip",
+            "member": "models/vegetation/hedge-4m.glb"
+          }
+        },
+        {
+          "slug": "truck-tractor",
+          "collection": "project",
+          "assetId": "a_94bce49c4e934f20a3c188bc1d7f51d5",
+          "revisionId": "r_bbd6fc0083764d728aa0c796fb33ab91",
+          "includedRevisions": [
+            "r_bbd6fc0083764d728aa0c796fb33ab91"
+          ],
+          "missingParents": [],
+          "editableDownload": {
+            "path": "packs/foundry-floor/delivery-20261005-01/editable/truck-tractor.zip",
+            "bytes": 53096,
+            "sha256": "38c4bab807044ac9d890d939c38cebb5cf88ae2f1d809c85760a19407d269176",
+            "url": "https://assets.kilnstudio.tools/packs/foundry-floor/delivery-20261005-01/editable/truck-tractor.zip"
+          },
+          "runtimeDownload": {
+            "path": "packs/foundry-floor/ff3-review2/models/truck-tractor.glb",
+            "bytes": 65744,
+            "sha256": "180d2ccb1d3eadb5aa00198df031b813b2a1e288ed2d48c8e22c081663184093",
+            "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2/models/truck-tractor.glb",
+            "archive": "packs/foundry-floor/ff3-review2/foundry-floor-ff3-review2-models.zip",
+            "member": "models/freight/truck-tractor.glb"
+          }
+        },
+        {
+          "slug": "trailer-dryvan",
+          "collection": "project",
+          "assetId": "a_33ef365199464573912c7c7a771b37c7",
+          "revisionId": "r_900808c392da42e899ba67a161845870",
+          "includedRevisions": [
+            "r_900808c392da42e899ba67a161845870"
+          ],
+          "missingParents": [],
+          "editableDownload": {
+            "path": "packs/foundry-floor/delivery-20261005-01/editable/trailer-dryvan.zip",
+            "bytes": 35340,
+            "sha256": "d4ecfc76fc71543203dfa283cdb7496229c45141c5188e3575cb74f208ad1cfc",
+            "url": "https://assets.kilnstudio.tools/packs/foundry-floor/delivery-20261005-01/editable/trailer-dryvan.zip"
+          },
+          "runtimeDownload": {
+            "path": "packs/foundry-floor/ff3-review2/models/trailer-dryvan.glb",
+            "bytes": 44968,
+            "sha256": "729aeda48969f322d7deb524c0ed502b53b98cd057cedfb2713fa35f67eb55ea",
+            "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2/models/trailer-dryvan.glb",
+            "archive": "packs/foundry-floor/ff3-review2/foundry-floor-ff3-review2-models.zip",
+            "member": "models/freight/trailer-dryvan.glb"
+          }
+        },
+        {
+          "slug": "trailer-flatbed",
+          "collection": "project",
+          "assetId": "a_1c0fdc7dfefd4b1593e587f5a964467f",
+          "revisionId": "r_7e81c6c0166b4142abad776a6ebb68d1",
+          "includedRevisions": [
+            "r_7e81c6c0166b4142abad776a6ebb68d1"
+          ],
+          "missingParents": [],
+          "editableDownload": {
+            "path": "packs/foundry-floor/delivery-20261005-01/editable/trailer-flatbed.zip",
+            "bytes": 36959,
+            "sha256": "a33d864c3d74a54741aa90add172bbd35e194e31cf68b92f8199b8ef1855e7f4",
+            "url": "https://assets.kilnstudio.tools/packs/foundry-floor/delivery-20261005-01/editable/trailer-flatbed.zip"
+          },
+          "runtimeDownload": {
+            "path": "packs/foundry-floor/ff3-review2/models/trailer-flatbed.glb",
+            "bytes": 49420,
+            "sha256": "e7949ebba01b3784183e9769361d98986494e26a91ecf2829d9383da609f5e1e",
+            "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2/models/trailer-flatbed.glb",
+            "archive": "packs/foundry-floor/ff3-review2/foundry-floor-ff3-review2-models.zip",
+            "member": "models/freight/trailer-flatbed.glb"
+          }
+        },
+        {
+          "slug": "trailer-tanker",
+          "collection": "project",
+          "assetId": "a_2f10f10f73ab474c9d624e25f363b469",
+          "revisionId": "r_247bb2b5dbd048889d3efd6c95aa20e0",
+          "includedRevisions": [
+            "r_247bb2b5dbd048889d3efd6c95aa20e0",
+            "r_28e1232bea19497aa407ef7e52138b07"
+          ],
+          "missingParents": [],
+          "editableDownload": {
+            "path": "packs/foundry-floor/delivery-20261005-01/editable/trailer-tanker.zip",
+            "bytes": 296193,
+            "sha256": "09612f23f378f9c05f43aa314955ced7c270952d5027c7ac5a970594664ea50c",
+            "url": "https://assets.kilnstudio.tools/packs/foundry-floor/delivery-20261005-01/editable/trailer-tanker.zip"
+          },
+          "runtimeDownload": {
+            "path": "packs/foundry-floor/ff3-review2/models/trailer-tanker.glb",
+            "bytes": 72368,
+            "sha256": "77233b130ee9b8e62924cdaa568ef4cbabcb458a3c96864dee3de46f76de44fa",
+            "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2/models/trailer-tanker.glb",
+            "archive": "packs/foundry-floor/ff3-review2/foundry-floor-ff3-review2-models.zip",
+            "member": "models/freight/trailer-tanker.glb"
+          }
+        },
+        {
+          "slug": "van-delivery",
+          "collection": "project",
+          "assetId": "a_595dd1e9c1ce4f9d9e6e9d19daace9ac",
+          "revisionId": "r_961acb32238d428192bdd939da41ae6c",
+          "includedRevisions": [
+            "r_961acb32238d428192bdd939da41ae6c"
+          ],
+          "missingParents": [],
+          "editableDownload": {
+            "path": "packs/foundry-floor/delivery-20261005-01/editable/van-delivery.zip",
+            "bytes": 43570,
+            "sha256": "63727b29c45cf5c189394f535573c5eab91f7ff6289aa4b21bc5d1b529ece5d3",
+            "url": "https://assets.kilnstudio.tools/packs/foundry-floor/delivery-20261005-01/editable/van-delivery.zip"
+          },
+          "runtimeDownload": {
+            "path": "packs/foundry-floor/ff3-review2/models/van-delivery.glb",
+            "bytes": 47228,
+            "sha256": "c89bd841fa3d108e51970d57e7371b500a6afed5a299138e97a61a80f71fd11a",
+            "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2/models/van-delivery.glb",
+            "archive": "packs/foundry-floor/ff3-review2/foundry-floor-ff3-review2-models.zip",
+            "member": "models/freight/van-delivery.glb"
+          }
+        }
+      ]
+    },
+    "golden-gate-bridge": {
+      "standalone": true,
+      "downloads": [
+        {
+          "profile": "runtime",
+          "path": "packs/golden-gate-bridge/delivery-20261005-01/golden-gate-bridge-runtime.zip",
+          "bytes": 3731082,
+          "sha256": "a52b9a8cb2d45d6fa573fc42d2b33dd8e7a343d56c82c736525dec74c9b73c99",
+          "url": "https://assets.kilnstudio.tools/packs/golden-gate-bridge/delivery-20261005-01/golden-gate-bridge-runtime.zip"
+        },
+        {
+          "profile": "editable",
+          "path": "packs/golden-gate-bridge/delivery-20261005-01/golden-gate-bridge-editable.zip",
+          "bytes": 34790662,
+          "sha256": "ee082c0470fca14d30193571841ff199c702107ecd6f4330838b4172a5b5fd6f",
+          "url": "https://assets.kilnstudio.tools/packs/golden-gate-bridge/delivery-20261005-01/golden-gate-bridge-editable.zip"
+        }
+      ],
+      "assets": [
+        {
+          "slug": "golden-gate-bridge",
+          "collection": "project",
+          "assetId": "a_9fafaa6e7f4c4868a372e8f3b0b84738",
+          "revisionId": "r_76c7a4080e7844e185896b7e1b196e5a",
+          "includedRevisions": [
+            "r_76c7a4080e7844e185896b7e1b196e5a",
+            "r_8e986268599c44ff93d451e81520aaec",
+            "r_0d1532b4a00b4663909f8edf2bd290aa",
+            "r_03e7981b4ff84159aa4533c587f033c7",
+            "r_e5cf0cd4a99d49088e7fb0c848587b03",
+            "r_cba97c6c2fc448ee9ca24741d772fa39",
+            "r_8b79b09984b14e15b9426f6db2df0140",
+            "r_6ef01791e9cf45fa9b1f4dd7b5d0aed6",
+            "r_18e4fb0aff0345669fc86efe33c85f7c",
+            "r_947dd72d3b74420e8b48bc9987049d60",
+            "r_4e2faa2ac4b24b7b91a92e735c9ac1bb",
+            "r_64633d24733040e59977e69e880b721e",
+            "r_ee0f97666f264c88b21d28d1ddf9ccfe",
+            "r_99009f9869b34133b24aae698ae52096",
+            "r_9f4b0e76ea634be083de8a5e38c4e838",
+            "r_62e15876bd6d4e6b8fb72be910eafb42",
+            "r_891f756291cf4b4c9865bc30c5627908",
+            "r_e6fc425ac972452a927d2e9e768dc3c5",
+            "r_864fdb9b078c447fb61e6db945342eb1",
+            "r_003e29ccca7d4149952dbeb38d260e57"
+          ],
+          "missingParents": [],
+          "editableDownload": {
+            "path": "packs/golden-gate-bridge/delivery-20261005-01/editable/golden-gate-bridge.zip",
+            "bytes": 28385461,
+            "sha256": "166932e00e4010c1e83c31ba79e6c1fd6b7766374844845c32b2cf8c5d1a55a5",
+            "url": "https://assets.kilnstudio.tools/packs/golden-gate-bridge/delivery-20261005-01/editable/golden-gate-bridge.zip"
+          },
+          "runtimeDownload": {
+            "path": "standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/golden-gate-runtime.glb",
+            "bytes": 12402960,
+            "sha256": "31306263a1c5f7410eab1ff65253765fb4084d9f0ec0d4c1b27e66f12a9f7f28",
+            "url": "https://assets.kilnstudio.tools/standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/golden-gate-runtime.glb"
+          }
+        },
+        {
+          "slug": "golden-gate-bridge-web",
+          "collection": "project",
+          "assetId": "a_9fafaa6e7f4c4868a372e8f3b0b84738",
+          "revisionId": "r_de88c9d5481d4642837b9d00c81cf0a9",
+          "includedRevisions": [
+            "r_de88c9d5481d4642837b9d00c81cf0a9",
+            "r_2632afa018de4ac28bde9ffc7ed19e47",
+            "r_c81f6d5fb70c492fb2c1d57e2d482437",
+            "r_e5da8e08bd424a8796a033fbb9793104",
+            "r_8285ccc5ffab4519b049936f792c15ee",
+            "r_560ce144cfad491db7729a3750da884e",
+            "r_28ac511af71d4db69a2d7cff8b243a24",
+            "r_ba838a2a86e04f2493b5d55b493a766a",
+            "r_8b79b09984b14e15b9426f6db2df0140",
+            "r_6ef01791e9cf45fa9b1f4dd7b5d0aed6",
+            "r_18e4fb0aff0345669fc86efe33c85f7c",
+            "r_947dd72d3b74420e8b48bc9987049d60",
+            "r_4e2faa2ac4b24b7b91a92e735c9ac1bb",
+            "r_64633d24733040e59977e69e880b721e",
+            "r_ee0f97666f264c88b21d28d1ddf9ccfe",
+            "r_99009f9869b34133b24aae698ae52096",
+            "r_9f4b0e76ea634be083de8a5e38c4e838",
+            "r_62e15876bd6d4e6b8fb72be910eafb42",
+            "r_891f756291cf4b4c9865bc30c5627908",
+            "r_e6fc425ac972452a927d2e9e768dc3c5",
+            "r_864fdb9b078c447fb61e6db945342eb1",
+            "r_003e29ccca7d4149952dbeb38d260e57"
+          ],
+          "missingParents": [],
+          "editableDownload": {
+            "path": "packs/golden-gate-bridge/delivery-20261005-01/editable/golden-gate-bridge-web.zip",
+            "bytes": 23920003,
+            "sha256": "8abac99e0000772318e50c8805bc64ba15a12a684d8905bb5b7563e3e609c99c",
+            "url": "https://assets.kilnstudio.tools/packs/golden-gate-bridge/delivery-20261005-01/editable/golden-gate-bridge-web.zip"
+          },
+          "runtimeDownload": {
+            "path": "standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/golden-gate-web-runtime.glb",
+            "bytes": 3508476,
+            "sha256": "6effde24b2b9dfac04451244ee533bb755ba7d4c192a280caaec70ca31656a03",
+            "url": "https://assets.kilnstudio.tools/standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/golden-gate-web-runtime.glb"
+          }
+        },
+        {
+          "slug": "golden-gate-bridge-far",
+          "collection": "project",
+          "assetId": "a_9fafaa6e7f4c4868a372e8f3b0b84738",
+          "revisionId": "r_fcddc546fa134910b2221561353d97e2",
+          "includedRevisions": [
+            "r_fcddc546fa134910b2221561353d97e2",
+            "r_d3f2f39ee4964708a0301d7e7082d12b",
+            "r_7fd11f06f23b4bfc93b9b47ab1b6ca04",
+            "r_0da2d1ae635c4f84a10e58e0e03936e7",
+            "r_8b79b09984b14e15b9426f6db2df0140",
+            "r_6ef01791e9cf45fa9b1f4dd7b5d0aed6",
+            "r_18e4fb0aff0345669fc86efe33c85f7c",
+            "r_947dd72d3b74420e8b48bc9987049d60",
+            "r_4e2faa2ac4b24b7b91a92e735c9ac1bb",
+            "r_64633d24733040e59977e69e880b721e",
+            "r_ee0f97666f264c88b21d28d1ddf9ccfe",
+            "r_99009f9869b34133b24aae698ae52096",
+            "r_9f4b0e76ea634be083de8a5e38c4e838",
+            "r_62e15876bd6d4e6b8fb72be910eafb42",
+            "r_891f756291cf4b4c9865bc30c5627908",
+            "r_e6fc425ac972452a927d2e9e768dc3c5",
+            "r_864fdb9b078c447fb61e6db945342eb1",
+            "r_003e29ccca7d4149952dbeb38d260e57"
+          ],
+          "missingParents": [],
+          "editableDownload": {
+            "path": "packs/golden-gate-bridge/delivery-20261005-01/editable/golden-gate-bridge-far.zip",
+            "bytes": 19677563,
+            "sha256": "60cd26c3f178142fc332ba0ead549677805378bc02ed9f3363623f35fc013675",
+            "url": "https://assets.kilnstudio.tools/packs/golden-gate-bridge/delivery-20261005-01/editable/golden-gate-bridge-far.zip"
+          },
+          "runtimeDownload": {
+            "path": "standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/golden-gate-far-runtime.glb",
+            "bytes": 490460,
+            "sha256": "5881f49df60bf3c05e8043de73b3b0ba68335896983097950ab2af6ff28c98a4",
+            "url": "https://assets.kilnstudio.tools/standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/golden-gate-far-runtime.glb"
+          }
+        }
+      ]
+    },
+    "troy": {
+      "standalone": false,
+      "downloads": [
+        {
+          "profile": "runtime",
+          "path": "packs/troy/delivery-20261005-01/troy-runtime.zip",
+          "bytes": 8029101,
+          "sha256": "7d62f94b7a2bf56d9afa330691f7196bc725b96f40d39d623ab3488a0f197dc4",
+          "url": "https://assets.kilnstudio.tools/packs/troy/delivery-20261005-01/troy-runtime.zip"
+        },
+        {
+          "profile": "editable",
+          "path": "packs/troy/delivery-20261005-01/troy-editable.zip",
+          "bytes": 59777904,
+          "sha256": "b2dc010cce1272d1e7e3212fb9e3e7e1e8645a8adb6f987d0d24943ef45d261a",
+          "url": "https://assets.kilnstudio.tools/packs/troy/delivery-20261005-01/troy-editable.zip"
+        }
+      ],
+      "assets": [
+        {
+          "slug": "wall-section",
+          "collection": "project",
+          "assetId": "a_784f8007d64b466ca453813913d73933",
+          "revisionId": "r_29dcf94872e74d468d005c55bcbfc3e5",
+          "includedRevisions": [
+            "r_29dcf94872e74d468d005c55bcbfc3e5",
+            "r_12fa73f24e3240c28c8bcd0d6d828a26"
+          ],
+          "missingParents": [],
+          "editableDownload": {
+            "path": "packs/troy/delivery-20261005-01/editable/wall-section.zip",
+            "bytes": 2740624,
+            "sha256": "c120b50e6bbbf44377b7dffbd088ed6960594dfeb44644870ac47cf37ce6585f",
+            "url": "https://assets.kilnstudio.tools/packs/troy/delivery-20261005-01/editable/wall-section.zip"
+          },
+          "runtimeDownload": {
+            "path": "packs/troy/delivery-20261005-01/models/wall-section.glb",
+            "bytes": 302776,
+            "sha256": "d2e5c1a6885f509caeb9428980d74b2760bae735af81549ae08fdd825fadffa8",
+            "url": "https://assets.kilnstudio.tools/packs/troy/delivery-20261005-01/models/wall-section.glb"
+          }
+        },
+        {
+          "slug": "city-gate",
+          "collection": "project",
+          "assetId": "city-gate",
+          "revisionId": "r_932d7b9aa1714e3b8e2343b42506bc44",
+          "includedRevisions": [
+            "r_932d7b9aa1714e3b8e2343b42506bc44",
+            "r_bb47b8810cd54ddd860e616bbf3e6120"
+          ],
+          "missingParents": [],
+          "editableDownload": {
+            "path": "packs/troy/delivery-20261005-01/editable/city-gate.zip",
+            "bytes": 2919899,
+            "sha256": "265e2354549ed776b76451db15d57cca754fc2057e384b8db1d7d7bba79814ea",
+            "url": "https://assets.kilnstudio.tools/packs/troy/delivery-20261005-01/editable/city-gate.zip"
+          },
+          "runtimeDownload": {
+            "path": "packs/troy/delivery-20261005-01/models/city-gate.glb",
+            "bytes": 391512,
+            "sha256": "19322963f4704e5a9e4b31e242d7d1991126e0ffde750d57152a622089ac4f91",
+            "url": "https://assets.kilnstudio.tools/packs/troy/delivery-20261005-01/models/city-gate.glb"
+          }
+        },
+        {
+          "slug": "house",
+          "collection": "project",
+          "assetId": "a_65b2d411e2a14b41b490a575fc14e98a",
+          "revisionId": "r_de6797d6511b47a2a6da3c49448741a9",
+          "includedRevisions": [
+            "r_de6797d6511b47a2a6da3c49448741a9",
+            "r_6a593b8e58af4befb3db8f3c256b9cc2"
+          ],
+          "missingParents": [],
+          "editableDownload": {
+            "path": "packs/troy/delivery-20261005-01/editable/house.zip",
+            "bytes": 2143300,
+            "sha256": "6f1f8583bac31c6d76ce860abaec02b67bf35707d2afae505ec4ccc46f336760",
+            "url": "https://assets.kilnstudio.tools/packs/troy/delivery-20261005-01/editable/house.zip"
+          },
+          "runtimeDownload": {
+            "path": "packs/troy/delivery-20261005-01/models/house.glb",
+            "bytes": 330524,
+            "sha256": "d69aaca4db3b1963a28ea62fd5a54c9a2dbe277a083086f3c31e3270fd300b5b",
+            "url": "https://assets.kilnstudio.tools/packs/troy/delivery-20261005-01/models/house.glb"
+          }
+        },
+        {
+          "slug": "temple-hall",
+          "collection": "project",
+          "assetId": "a_3a4fc574c2534f21977eeed0a3560f80",
+          "revisionId": "r_85c06c033d7c4f899a6f67c53069537a",
+          "includedRevisions": [
+            "r_85c06c033d7c4f899a6f67c53069537a",
+            "r_af557a9002e64290abe4c8e4cecabb29"
+          ],
+          "missingParents": [],
+          "editableDownload": {
+            "path": "packs/troy/delivery-20261005-01/editable/temple-hall.zip",
+            "bytes": 1931084,
+            "sha256": "263e533b8d403fe96b544abb9104f68282e0a18a178aed262ee7ae743a9afac6",
+            "url": "https://assets.kilnstudio.tools/packs/troy/delivery-20261005-01/editable/temple-hall.zip"
+          },
+          "runtimeDownload": {
+            "path": "packs/troy/delivery-20261005-01/models/temple-hall.glb",
+            "bytes": 492876,
+            "sha256": "6609d8e4f5be92b88f5a14facad3cb9cb39f43d257bc2bcec51adeaca66f41ee",
+            "url": "https://assets.kilnstudio.tools/packs/troy/delivery-20261005-01/models/temple-hall.glb"
+          }
+        },
+        {
+          "slug": "war-galley",
+          "collection": "project",
+          "assetId": "a_582ae189884340d7ac23a1a23bd7bcc8",
+          "revisionId": "r_89ac2dc4345d47d4b10a99d8e4bf34f7",
+          "includedRevisions": [
+            "r_89ac2dc4345d47d4b10a99d8e4bf34f7"
+          ],
+          "missingParents": [],
+          "editableDownload": {
+            "path": "packs/troy/delivery-20261005-01/editable/war-galley.zip",
+            "bytes": 930862,
+            "sha256": "b0b6511b00a10dfde1e14495243cf00fd52010fc62ff31562eec9d2b41955a4a",
+            "url": "https://assets.kilnstudio.tools/packs/troy/delivery-20261005-01/editable/war-galley.zip"
+          },
+          "runtimeDownload": {
+            "path": "packs/troy/delivery-20261005-01/models/war-galley.glb",
+            "bytes": 396772,
+            "sha256": "c438f0275186e34ad724dade9f22426a4ad4dab412a17ea7b1d62d468c151f4f",
+            "url": "https://assets.kilnstudio.tools/packs/troy/delivery-20261005-01/models/war-galley.glb"
+          }
+        },
+        {
+          "slug": "greek-soldier",
+          "collection": "project",
+          "assetId": "greek-soldier",
+          "revisionId": "r_51a1713f71ed45d486e7cc386aeeb0cc",
+          "includedRevisions": [
+            "r_51a1713f71ed45d486e7cc386aeeb0cc",
+            "r_318c395f73b6441592ac8aaff4289227",
+            "r_bd1ff6f9b4e04e478f0b6e9042b99919",
+            "r_49a473ec545b407bb0222709c55077a3",
+            "r_ef912524e95a4afba6ae399ad07c2280",
+            "r_b4daab9ccf294d249b4260dad13281ce",
+            "r_647e60b4c8c94640aca8a8266a371b0f"
+          ],
+          "missingParents": [],
+          "editableDownload": {
+            "path": "packs/troy/delivery-20261005-01/editable/greek-soldier.zip",
+            "bytes": 6213088,
+            "sha256": "66ff7f849008ce3ba3da7f67cc463844af8442500ebae188ac4d30c8b23f6c61",
+            "url": "https://assets.kilnstudio.tools/packs/troy/delivery-20261005-01/editable/greek-soldier.zip"
+          },
+          "runtimeDownload": {
+            "path": "packs/troy/delivery-20261005-01/models/greek-soldier.glb",
+            "bytes": 373008,
+            "sha256": "55361985e3353e4a87944f61c1007eb725732a128bf7a33d3a989f3b26f34af3",
+            "url": "https://assets.kilnstudio.tools/packs/troy/delivery-20261005-01/models/greek-soldier.glb"
+          }
+        },
+        {
+          "slug": "trojan-soldier",
+          "collection": "project",
+          "assetId": "trojan-soldier",
+          "revisionId": "r_7ab3ae9706164e38bdee28178c110f65",
+          "includedRevisions": [
+            "r_7ab3ae9706164e38bdee28178c110f65",
+            "r_95d9a5fbf6d94435a84f24fa1938c6b1",
+            "r_7f297465143a48b99205d2318c501b56",
+            "r_383d2f9bc6f24d41b4a93826e848387c",
+            "r_48286541b5df4e87b31080d01e199874",
+            "r_ce7e01326e69496cabb4a5c2eb9aafcb",
+            "r_036bd9d29d9747fa8d50899e089c695b"
+          ],
+          "missingParents": [],
+          "editableDownload": {
+            "path": "packs/troy/delivery-20261005-01/editable/trojan-soldier.zip",
+            "bytes": 6201240,
+            "sha256": "911f71da3da0f68ea2ee7a74c971c70f32ae1e3335f596dae6168101726805cd",
+            "url": "https://assets.kilnstudio.tools/packs/troy/delivery-20261005-01/editable/trojan-soldier.zip"
+          },
+          "runtimeDownload": {
+            "path": "packs/troy/delivery-20261005-01/models/trojan-soldier.glb",
+            "bytes": 352016,
+            "sha256": "97f6fe97902df9af9037518dc28699524c843f0b94136ec3f9c9850d2b57df6f",
+            "url": "https://assets.kilnstudio.tools/packs/troy/delivery-20261005-01/models/trojan-soldier.glb"
+          }
+        },
+        {
+          "slug": "achilles",
+          "collection": "project",
+          "assetId": "achilles",
+          "revisionId": "r_4792c9467d47401f8d77367e3e5c9647",
+          "includedRevisions": [
+            "r_4792c9467d47401f8d77367e3e5c9647",
+            "r_b97ee8f3a3b04edbb13d7e0e1a84af75",
+            "r_cdd88867ab6a4568bbc53f5de8e4427e",
+            "r_68f0afb7012f4917b59f206181311d75",
+            "r_d106a8a2394f4cdbb61804bfe41fa081",
+            "r_a93066062d9842cd8f0650f039edf4b3",
+            "r_c1c4ecbebd124fed98f7d5160b79af05",
+            "r_a108d7a33da5428aa24880ec5393a725"
+          ],
+          "missingParents": [],
+          "editableDownload": {
+            "path": "packs/troy/delivery-20261005-01/editable/achilles.zip",
+            "bytes": 7159262,
+            "sha256": "a9b18eb05fa604ad6dab04e318819eec658878eabc125dcfa3b6e1711e999dc1",
+            "url": "https://assets.kilnstudio.tools/packs/troy/delivery-20261005-01/editable/achilles.zip"
+          },
+          "runtimeDownload": {
+            "path": "packs/troy/delivery-20261005-01/models/achilles.glb",
+            "bytes": 547628,
+            "sha256": "1bb8b9b44044365a172eb5015c12b8493b6c47e3087178a7fa89b18e768e645f",
+            "url": "https://assets.kilnstudio.tools/packs/troy/delivery-20261005-01/models/achilles.glb"
+          }
+        },
+        {
+          "slug": "hector",
+          "collection": "project",
+          "assetId": "hector",
+          "revisionId": "r_90f525d443624ad58f5fadc3a7f52fb9",
+          "includedRevisions": [
+            "r_90f525d443624ad58f5fadc3a7f52fb9",
+            "r_ce45b003b3704e248f180f408c66bea2",
+            "r_dca568006e1144399e080c9ea3e321b2",
+            "r_55b9c8999af54542a4411033f8e64fc7",
+            "r_f30fc9db17854996a62dae714cc2c835",
+            "r_4f8e5ed47f5941f4b0ae42b6901b74f7",
+            "r_ef54c930085b486d9892764a167b308a",
+            "r_44e1d7983d16474085678924a0ab0376"
+          ],
+          "missingParents": [],
+          "editableDownload": {
+            "path": "packs/troy/delivery-20261005-01/editable/hector.zip",
+            "bytes": 7322554,
+            "sha256": "3b6173ed0e0f633dfe037ce3d80e14fa2ccdec6877b62d1a0874a1e04f52bf63",
+            "url": "https://assets.kilnstudio.tools/packs/troy/delivery-20261005-01/editable/hector.zip"
+          },
+          "runtimeDownload": {
+            "path": "packs/troy/delivery-20261005-01/models/hector.glb",
+            "bytes": 428112,
+            "sha256": "70b6e63f742413ef4d3348071b8f917507d521e9e80739fcf30aaff5de5e054a",
+            "url": "https://assets.kilnstudio.tools/packs/troy/delivery-20261005-01/models/hector.glb"
+          }
+        },
+        {
+          "slug": "olive",
+          "collection": "project",
+          "assetId": "a_3624be42cc4b43edadea1852c2535534",
+          "revisionId": "r_37373fde43154f928653af8c34100186",
+          "includedRevisions": [
+            "r_37373fde43154f928653af8c34100186",
+            "r_a49991404490475ab452fa200801193c"
+          ],
+          "missingParents": [],
+          "editableDownload": {
+            "path": "packs/troy/delivery-20261005-01/editable/olive.zip",
+            "bytes": 398406,
+            "sha256": "a5350d3d63fbbe5071d03834f4a55555016047b79411d22a571f574d78cee47a",
+            "url": "https://assets.kilnstudio.tools/packs/troy/delivery-20261005-01/editable/olive.zip"
+          },
+          "runtimeDownload": {
+            "path": "packs/troy/delivery-20261005-01/models/olive.glb",
+            "bytes": 171340,
+            "sha256": "5ca97cea350d7eb751bcfb214a89e0b83cc3e7bf3c317663ae4d5d51d6e32cd9",
+            "url": "https://assets.kilnstudio.tools/packs/troy/delivery-20261005-01/models/olive.glb"
+          }
+        },
+        {
+          "slug": "cypress",
+          "collection": "project",
+          "assetId": "a_2e4e54bb1bd04a1187f564bc4e24111a",
+          "revisionId": "r_9e34ca5dc6bf41caafe35ffb8576a6ff",
+          "includedRevisions": [
+            "r_9e34ca5dc6bf41caafe35ffb8576a6ff",
+            "r_56ebe4a50238423b83b0e2e1a47b0e25"
+          ],
+          "missingParents": [],
+          "editableDownload": {
+            "path": "packs/troy/delivery-20261005-01/editable/cypress.zip",
+            "bytes": 246482,
+            "sha256": "0d100e228b4b233f86f934f91a9f656a0241fc435a4da628d11b845a32dd2c88",
+            "url": "https://assets.kilnstudio.tools/packs/troy/delivery-20261005-01/editable/cypress.zip"
+          },
+          "runtimeDownload": {
+            "path": "packs/troy/delivery-20261005-01/models/cypress.glb",
+            "bytes": 82436,
+            "sha256": "0fbabf224cb33e55f3cc6480bfad8fd40175a15c0fa00f9072faa11e40e1ac89",
+            "url": "https://assets.kilnstudio.tools/packs/troy/delivery-20261005-01/models/cypress.glb"
+          }
+        },
+        {
+          "slug": "fig",
+          "collection": "project",
+          "assetId": "a_8c9f4cbf02014d448cc6f1ea64ce521e",
+          "revisionId": "r_efdd6cc6417c46a18d263a4865bfdc02",
+          "includedRevisions": [
+            "r_efdd6cc6417c46a18d263a4865bfdc02",
+            "r_fce835b49e724fe5ad54339fdc8a4f00"
+          ],
+          "missingParents": [],
+          "editableDownload": {
+            "path": "packs/troy/delivery-20261005-01/editable/fig.zip",
+            "bytes": 367731,
+            "sha256": "e435d6323091462f5dd31f69e231c25f901edad1fc04da064081a4c7eb148191",
+            "url": "https://assets.kilnstudio.tools/packs/troy/delivery-20261005-01/editable/fig.zip"
+          },
+          "runtimeDownload": {
+            "path": "packs/troy/delivery-20261005-01/models/fig.glb",
+            "bytes": 147416,
+            "sha256": "1769ec4b6d44f208af272b50056d4e01ceb7bf5a8605cbff49019595aef34fa3",
+            "url": "https://assets.kilnstudio.tools/packs/troy/delivery-20261005-01/models/fig.glb"
+          }
+        },
+        {
+          "slug": "shrub",
+          "collection": "project",
+          "assetId": "a_4a87639c6022456f876e8cc1f230c551",
+          "revisionId": "r_07a93557a106492ab919f72955ad0924",
+          "includedRevisions": [
+            "r_07a93557a106492ab919f72955ad0924",
+            "r_83ee23a609c54840ad317947807602af"
+          ],
+          "missingParents": [],
+          "editableDownload": {
+            "path": "packs/troy/delivery-20261005-01/editable/shrub.zip",
+            "bytes": 158786,
+            "sha256": "289e3c490a01ec433a1824b8c69423402424a795fdf660dd7b1b3c04b2ee2ff0",
+            "url": "https://assets.kilnstudio.tools/packs/troy/delivery-20261005-01/editable/shrub.zip"
+          },
+          "runtimeDownload": {
+            "path": "packs/troy/delivery-20261005-01/models/shrub.glb",
+            "bytes": 47456,
+            "sha256": "4b2ad9c25c2035b02ebb72cc0336842c6c5a6441aada21cfe137d8749b3de51f",
+            "url": "https://assets.kilnstudio.tools/packs/troy/delivery-20261005-01/models/shrub.glb"
+          }
+        },
+        {
+          "slug": "horse",
+          "collection": "project",
+          "assetId": "horse",
+          "revisionId": "r_ae20cb280150492dbf58b89860f029d2",
+          "includedRevisions": [
+            "r_ae20cb280150492dbf58b89860f029d2",
+            "r_f088964ec411466ab2c0d4afe8d20a31",
+            "r_6f5b30d1a37843e0ba8856f790e6c6ce"
+          ],
+          "missingParents": [],
+          "editableDownload": {
+            "path": "packs/troy/delivery-20261005-01/editable/horse.zip",
+            "bytes": 3053704,
+            "sha256": "f76aa1ac5bd25d22a1b065f8e1d757f39ff89ddb56b77fede155aee8401981f0",
+            "url": "https://assets.kilnstudio.tools/packs/troy/delivery-20261005-01/editable/horse.zip"
+          },
+          "runtimeDownload": {
+            "path": "packs/troy/delivery-20261005-01/models/horse.glb",
+            "bytes": 248068,
+            "sha256": "03e257c29b54ad05f5f37381474fe6eba995f22d72fefba9e90e5d46bbe84b5c",
+            "url": "https://assets.kilnstudio.tools/packs/troy/delivery-20261005-01/models/horse.glb"
+          }
+        },
+        {
+          "slug": "wall-breached",
+          "collection": "project",
+          "assetId": "a_784f8007d64b466ca453813913d73933",
+          "revisionId": "r_98d0a72a5110475a9fef34721a9dad64",
+          "includedRevisions": [
+            "r_98d0a72a5110475a9fef34721a9dad64",
+            "r_99688a42a9fb46559fd563a2378dd55d",
+            "r_12fa73f24e3240c28c8bcd0d6d828a26"
+          ],
+          "missingParents": [],
+          "editableDownload": {
+            "path": "packs/troy/delivery-20261005-01/editable/wall-breached.zip",
+            "bytes": 3916111,
+            "sha256": "1a2b7583de875549d74829f01d9789a7d483e22b45295b7e70471dc13f87e768",
+            "url": "https://assets.kilnstudio.tools/packs/troy/delivery-20261005-01/editable/wall-breached.zip"
+          },
+          "runtimeDownload": {
+            "path": "packs/troy/delivery-20261005-01/models/wall-breached.glb",
+            "bytes": 333340,
+            "sha256": "77c48aa6dbff40b212c5eacc4f340838358f71ee52ccc99966cd2bdc7f9b37e7",
+            "url": "https://assets.kilnstudio.tools/packs/troy/delivery-20261005-01/models/wall-breached.glb"
+          }
+        },
+        {
+          "slug": "war-chariot",
+          "collection": "project",
+          "assetId": "a_6858bae420a940b5b8798e11666070a7",
+          "revisionId": "r_b277a52b09ae48b39afd8471557ed41b",
+          "includedRevisions": [
+            "r_b277a52b09ae48b39afd8471557ed41b",
+            "r_e3bcea17f1ff455b99b3deb51182f964"
+          ],
+          "missingParents": [],
+          "editableDownload": {
+            "path": "packs/troy/delivery-20261005-01/editable/war-chariot.zip",
+            "bytes": 1873292,
+            "sha256": "44f32c191d36bbd839dd5c45e8a1f51f77f6eaad20f242385c64370e1590da80",
+            "url": "https://assets.kilnstudio.tools/packs/troy/delivery-20261005-01/editable/war-chariot.zip"
+          },
+          "runtimeDownload": {
+            "path": "packs/troy/delivery-20261005-01/models/war-chariot.glb",
+            "bytes": 614312,
+            "sha256": "6b06d838c3f8016e5ca1f94abd6da317fc0825f83b3f12f932ae5968b5b60c29",
+            "url": "https://assets.kilnstudio.tools/packs/troy/delivery-20261005-01/models/war-chariot.glb"
+          }
+        },
+        {
+          "slug": "sword",
+          "collection": "project",
+          "assetId": "a_f71b18076a3d47f084dc86a40e038812",
+          "revisionId": "r_6f63da6600ae46bbba5636e575ae1b9e",
+          "includedRevisions": [
+            "r_6f63da6600ae46bbba5636e575ae1b9e"
+          ],
+          "missingParents": [],
+          "editableDownload": {
+            "path": "packs/troy/delivery-20261005-01/editable/sword.zip",
+            "bytes": 711215,
+            "sha256": "0f050773a1f2310394f1b0ce73794f6e4cdf70c6f95900c3550b57ae1d10826b",
+            "url": "https://assets.kilnstudio.tools/packs/troy/delivery-20261005-01/editable/sword.zip"
+          },
+          "runtimeDownload": {
+            "path": "packs/troy/delivery-20261005-01/models/sword.glb",
+            "bytes": 137688,
+            "sha256": "b15e157bf0e01fab0c421e232c08ab2572a7c42738d4454f994dfa275e99b4d9",
+            "url": "https://assets.kilnstudio.tools/packs/troy/delivery-20261005-01/models/sword.glb"
+          }
+        },
+        {
+          "slug": "shield",
+          "collection": "project",
+          "assetId": "a_0a67bce7656144c2b9e1c54aa7bea6eb",
+          "revisionId": "r_b8159cce845f442181910880090d09fe",
+          "includedRevisions": [
+            "r_b8159cce845f442181910880090d09fe"
+          ],
+          "missingParents": [],
+          "editableDownload": {
+            "path": "packs/troy/delivery-20261005-01/editable/shield.zip",
+            "bytes": 900626,
+            "sha256": "f5f013f46fc2dc592fe5aa6b58af171366fc7180d2cee599d1bd0103ee93277b",
+            "url": "https://assets.kilnstudio.tools/packs/troy/delivery-20261005-01/editable/shield.zip"
+          },
+          "runtimeDownload": {
+            "path": "packs/troy/delivery-20261005-01/models/shield.glb",
+            "bytes": 182764,
+            "sha256": "90a164bf7cbc9c98f7877bce029ed1ab016ab8043086f724ce70b92a0feff72a",
+            "url": "https://assets.kilnstudio.tools/packs/troy/delivery-20261005-01/models/shield.glb"
+          }
+        },
+        {
+          "slug": "bow-set",
+          "collection": "project",
+          "assetId": "bow-set",
+          "revisionId": "r_356b134d3d5e471fba86cb875c829463",
+          "includedRevisions": [
+            "r_356b134d3d5e471fba86cb875c829463"
+          ],
+          "missingParents": [],
+          "editableDownload": {
+            "path": "packs/troy/delivery-20261005-01/editable/bow-set.zip",
+            "bytes": 704441,
+            "sha256": "acbb600746ce1f6cb47d84c9521dff73eabacd09952beeea0a159c8113133b97",
+            "url": "https://assets.kilnstudio.tools/packs/troy/delivery-20261005-01/editable/bow-set.zip"
+          },
+          "runtimeDownload": {
+            "path": "packs/troy/delivery-20261005-01/models/bow-set.glb",
+            "bytes": 137780,
+            "sha256": "861da8a5dad6265aa823c4b86f73142da14accfa48f486372241fba3e51ac366",
+            "url": "https://assets.kilnstudio.tools/packs/troy/delivery-20261005-01/models/bow-set.glb"
+          }
+        },
+        {
+          "slug": "wooden-horse",
+          "collection": "project",
+          "assetId": "wooden-horse",
+          "revisionId": "r_c58f87877fbf40548aed5cc051166a72",
+          "includedRevisions": [
+            "r_c58f87877fbf40548aed5cc051166a72",
+            "r_7ee4d96189a4442bb0efdab61a46300f"
+          ],
+          "missingParents": [],
+          "editableDownload": {
+            "path": "packs/troy/delivery-20261005-01/editable/wooden-horse.zip",
+            "bytes": 1890930,
+            "sha256": "c371ef8b6f52913bb5d0631fcb70ca8a837c069a57322870efcd0c753348e4a5",
+            "url": "https://assets.kilnstudio.tools/packs/troy/delivery-20261005-01/editable/wooden-horse.zip"
+          },
+          "runtimeDownload": {
+            "path": "packs/troy/delivery-20261005-01/models/wooden-horse.glb",
+            "bytes": 279516,
+            "sha256": "aeb622fb0a37233a707030a81a3e9b991fff0b2ed17924956bd6ab61c53d9770",
+            "url": "https://assets.kilnstudio.tools/packs/troy/delivery-20261005-01/models/wooden-horse.glb"
+          }
+        },
+        {
+          "slug": "battle-scene-reference",
+          "collection": "project",
+          "assetId": "battle-scene",
+          "revisionId": "r_4573e90abb4848c3b3d4996de6834184",
+          "includedRevisions": [
+            "r_4573e90abb4848c3b3d4996de6834184",
+            "r_150bbef8028442ae90ce5a957250f61b"
+          ],
+          "missingParents": [],
+          "editableDownload": {
+            "path": "packs/troy/delivery-20261005-01/editable/battle-scene-reference.zip",
+            "bytes": 9323990,
+            "sha256": "cab93c4f6b627c164f7ae407c0ee2f3202504bdf04e7149f12605a698d78159d",
+            "url": "https://assets.kilnstudio.tools/packs/troy/delivery-20261005-01/editable/battle-scene-reference.zip"
+          },
+          "runtimeDownload": {
+            "path": "packs/troy/delivery-20261005-01/models/battle-scene-reference.glb",
+            "bytes": 14464712,
+            "sha256": "d2ba5e05718c7889134d51bb89680a7dc05b5b24100c4f3e9d89b18034991dfb",
+            "url": "https://assets.kilnstudio.tools/packs/troy/delivery-20261005-01/models/battle-scene-reference.glb"
+          }
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,208 @@
+{
+  "schemaVersion": 1,
+  "materialId": "farm-brushed-metal",
+  "revisionId": "sha256:67c9159b792a918da293bffc9468ed8834957dd51d83ce290af980a72a9065d0",
+  "name": "Brushed neutral metal",
+  "tags": [
+    "metal",
+    "procedural"
+  ],
+  "tileable": true,
+  "physicalSizeMeters": {
+    "width": 1,
+    "height": 1
+  },
+  "parameters": {
+    "roughness": 1,
+    "metalness": 1,
+    "emissiveIntensity": 1,
+    "alphaMode": "opaque",
+    "alphaCutoff": 0.5,
+    "doubleSided": false
+  },
+  "sources": [
+    {
+      "id": "preset",
+      "kind": "procedural",
+      "provider": "Kiln material presets v1",
+      "creator": "Kiln Commons Farm pilot",
+      "assetId": "brushed-metal",
+      "license": {
+        "spdx": "CC0-1.0",
+        "url": "https://creativecommons.org/publicdomain/zero/1.0/",
+        "attribution": "Procedurally generated with Kiln; recipe and seed retained."
+      },
+      "originalFiles": []
+    }
+  ],
+  "maps": [
+    {
+      "slot": "baseColor",
+      "file": "baseColor.png",
+      "sha256": "sha256:dcbb7ecd3345f17b9495dcafd334581cfb2087ffd3036b3e9dbff08f6764bd81",
+      "bytes": 14095,
+      "width": 256,
+      "height": 256,
+      "usage": "albedo",
+      "colorSpace": "srgb",
+      "sourceId": "preset",
+      "transforms": [
+        {
+          "operation": "preset",
+          "tool": "kiln.material-presets",
+          "version": "1",
+          "parameters": {
+            "presetId": "brushed-metal",
+            "seed": 262
+          }
+        }
+      ],
+      "procedural": {
+        "compiler": "kiln.procedural-texture.v2",
+        "spec": {
+          "schemaVersion": 2,
+          "size": 256,
+          "usage": "albedo",
+          "layers": [
+            {
+              "op": "noise",
+              "colorA": 10988461,
+              "colorB": 12370114,
+              "scale": 4,
+              "octaves": 3,
+              "seed": 262,
+              "blend": "normal",
+              "opacity": 1
+            },
+            {
+              "op": "stripes",
+              "colorA": 10067102,
+              "colorB": 12896201,
+              "count": 64,
+              "angleDeg": 0,
+              "blend": "normal",
+              "opacity": 0.1
+            }
+          ]
+        },
+        "recipeHash": "sha256:962f688fc530848012ddd7c6ee84d80f6341824dd7ef2d9473e0072dbe1d42ef",
+        "pixelHash": "sha256:4f747119802572d8b8ef8b223ba519632cc82a5e8c9e48332b12db66fc8d7fa7",
+        "encoder": {
+          "name": "sharp",
+          "version": "0.35.4"
+        }
+      }
+    },
+    {
+      "slot": "normal",
+      "file": "normal.png",
+      "sha256": "sha256:eaeb490c2dd99e04f930ea8bee65aa0136bf2e3a2ae7bfc2c227fd8bbc56e260",
+      "bytes": 16093,
+      "width": 256,
+      "height": 256,
+      "usage": "normal",
+      "colorSpace": "linear",
+      "normalConvention": "opengl",
+      "sourceId": "preset",
+      "transforms": [
+        {
+          "operation": "preset",
+          "tool": "kiln.material-presets",
+          "version": "1",
+          "parameters": {
+            "presetId": "brushed-metal",
+            "seed": 262
+          }
+        }
+      ],
+      "procedural": {
+        "compiler": "kiln.procedural-texture.v2",
+        "spec": {
+          "schemaVersion": 2,
+          "size": 256,
+          "usage": "normal",
+          "layers": [
+            {
+              "op": "noise",
+              "colorA": 7368816,
+              "colorB": 9474192,
+              "scale": 8,
+              "octaves": 3,
+              "seed": 262,
+              "blend": "normal",
+              "opacity": 1
+            },
+            {
+              "op": "stripes",
+              "colorA": 6710886,
+              "colorB": 10066329,
+              "count": 64,
+              "angleDeg": 0,
+              "blend": "normal",
+              "opacity": 0.3
+            }
+          ]
+        },
+        "derive": {
+          "kind": "normal-from-height",
+          "strength": 1
+        },
+        "recipeHash": "sha256:79e1bceeb199f139f7882bd3a10f732e012c3822e7f561a1e4766e322060bd97",
+        "pixelHash": "sha256:2e8e1d18e161b89d2943d85f36558eebd1255e99d58237610863f4d44fee8a37",
+        "encoder": {
+          "name": "sharp",
+          "version": "0.35.4"
+        }
+      }
+    },
+    {
+      "slot": "metallicRoughness",
+      "file": "metallicRoughness.png",
+      "sha256": "sha256:0a56078595cce6e84ac43c87f5cc084703604367f4bab9956532e1fb69f678bd",
+      "bytes": 19797,
+      "width": 256,
+      "height": 256,
+      "usage": "metallicRoughness",
+      "colorSpace": "linear",
+      "channelPacking": "r-occlusion-g-roughness-b-metallic",
+      "sourceId": "preset",
+      "transforms": [
+        {
+          "operation": "preset",
+          "tool": "kiln.material-presets",
+          "version": "1",
+          "parameters": {
+            "presetId": "brushed-metal",
+            "seed": 262
+          }
+        }
+      ],
+      "procedural": {
+        "compiler": "kiln.procedural-texture.v2",
+        "spec": {
+          "schemaVersion": 2,
+          "size": 256,
+          "usage": "metallicRoughness",
+          "layers": [
+            {
+              "op": "noise",
+              "colorA": 16732415,
+              "colorB": 16745215,
+              "scale": 8,
+              "octaves": 3,
+              "seed": 262,
+              "blend": "normal",
+              "opacity": 1
+            }
+          ]
+        },
+        "recipeHash": "sha256:3eecdba76668c52458556350367b227ce3dfbe3b7408e259929e1809d18fcf2c",
+        "pixelHash": "sha256:b43ce88bbfeb799d4d55d3b68fdb96bb3b275ef4f90bf3c8f5a04dd37e5eb861",
+        "encoder": {
+          "name": "sharp",
+          "version": "0.35.4"
+        }
+      }
+    }
+  ]
+}

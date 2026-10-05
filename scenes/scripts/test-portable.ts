@@ -29,3 +29,7 @@ for (const directory of ['packages/scene-kit/tests', 'packages/farm/tests/unit',
 console.log(`Portable source contracts: ${files.length} files; ${authoredInputs.size} input-dependent suites remain in test:integration (current fixtures: test:release-inputs).`);
 const run = Bun.spawnSync([process.execPath, 'test', ...files.sort(), '--timeout', '20000'], { cwd: root, stdout: 'inherit', stderr: 'inherit' });
 process.exitCode = run.exitCode;
+if (run.exitCode === 0) {
+  const troy = Bun.spawnSync(['node', 'packages/troy/scripts/test.mjs'], { cwd: root, stdout: 'inherit', stderr: 'inherit' });
+  process.exitCode = troy.exitCode;
+}

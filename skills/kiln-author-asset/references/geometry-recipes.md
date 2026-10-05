@@ -17,6 +17,14 @@ and release. Matching endpoints can still produce a path through the payload or
 support. Keep joints, contact markers and payload motion in the intended hierarchy;
 repair the geometry or path where the swept volumes collide.
 
+For ears, handles or other details attached to a rotated or lofted body, derive
+their bases from the carrier's local surface and transform them through the same
+frame. A nearby world-space point can leave a visible gap after the body rotates.
+Use a small intentional base overlap for a solid join, then inspect the exported
+attachment from both sides and an oblique view. Preserve unrelated joints and
+animation tracks when repairing an attachment; matching names alone does not prove
+their transforms or motion survived the export.
+
 ## Surfaces from equations
 
 An asymmetric canopy or corrugated sheet can be much shorter as a function than as many primitives:

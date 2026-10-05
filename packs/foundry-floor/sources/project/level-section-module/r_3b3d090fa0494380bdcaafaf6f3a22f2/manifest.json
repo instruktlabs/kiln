@@ -1,0 +1,360 @@
+{
+  "version": "kiln.asset.v1",
+  "assetId": "level-section-module",
+  "revisionId": "r_3b3d090fa0494380bdcaafaf6f3a22f2",
+  "parentRevision": "r_31297086f3b44715ba632212acc6c728",
+  "name": "level-section-module",
+  "tags": [],
+  "createdAt": "2026-09-30T04:28:36.601Z",
+  "description": "Review 1: mains moved onto a wall rack with graphite brackets, laterals follow, kit zone cleared, subfabKitMount at (0.35,-7.5,0).",
+  "editable": true,
+  "files": {
+    "asset.glb": {
+      "sha256": "sha256:20d5f55ea0f97f29d5adccc45e090bcb605fad99e05733163a89c15a29d4cd2c",
+      "bytes": 322096
+    },
+    "source.kiln.js": {
+      "sha256": "sha256:4c3f97e92bd9f5e3384f77a50216bd0a994b1e79de2cf0d836204d1797524d21",
+      "bytes": 17662
+    },
+    "preview.png": {
+      "sha256": "sha256:50b13753efec25494ae4378028f4341832bb8513e327870eafef2c7d29396666",
+      "bytes": 39841
+    }
+  },
+  "build": {
+    "engine": "sha256:b5074a0cd52192a210c48f2fb898c24740b0fccdec5a71dc7042eda0ef87f154",
+    "options": {
+      "gltfExporter": "legacy",
+      "optimize": "off",
+      "instance": "auto",
+      "geometryPolicy": "warn",
+      "qaMode": "enforce",
+      "evaluatorMode": "subprocess",
+      "requirements": {
+        "kind": "kiln.requirements-context.v1",
+        "requirements": {
+          "kind": "kiln.asset-requirements",
+          "schemaVersion": 1,
+          "labels": [],
+          "frame": {
+            "units": "m",
+            "forward": "+X",
+            "up": "+Y",
+            "right": "+Z",
+            "groundY": 0
+          },
+          "requirements": {}
+        },
+        "policyHash": "sha256:9efcec929bf8a510c7dd0e18b687381e3824ff3d26cc20307f601d17535e5f34",
+        "adviceHash": "sha256:ca1f59b45e82e712e06149909000e2bc37b8cf159af70e32847088cecf153268"
+      }
+    },
+    "warnings": [],
+    "integration": {
+      "schemaVersion": "kiln.integration-manifest.v1",
+      "analyzerVersion": 1,
+      "artifactSha256": "20d5f55ea0f97f29d5adccc45e090bcb605fad99e05733163a89c15a29d4cd2c",
+      "units": "m",
+      "axes": {
+        "forward": "+X",
+        "up": "+Y",
+        "right": "+Z"
+      },
+      "bounds": {
+        "min": [
+          -1.2000000476837158,
+          -8,
+          -3.5999999046325684
+        ],
+        "max": [
+          1.2000000476837158,
+          14,
+          3.5999999046325684
+        ],
+        "size": [
+          2.4000000953674316,
+          22,
+          7.199999809265137
+        ],
+        "center": [
+          0,
+          3,
+          0
+        ]
+      },
+      "pivot": {
+        "convention": "author-origin",
+        "position": [
+          0,
+          0,
+          0
+        ]
+      },
+      "ground": {
+        "groundY": 0,
+        "contactTolerance": 0.02,
+        "minY": -8,
+        "offsetToGround": 8,
+        "grounded": false
+      },
+      "defaultScene": {
+        "index": 0,
+        "name": "level-section-module"
+      },
+      "requestedRole": "building",
+      "renderMetrics": {
+        "triangles": 4800,
+        "drawCalls": 23,
+        "uniqueGeometries": 23,
+        "uniqueMaterials": 8,
+        "textureCount": 0,
+        "transparentMaterials": 0,
+        "skinned": false
+      },
+      "structuralQa": {
+        "hasDefaultScene": true,
+        "finiteBounds": true,
+        "validatorErrors": 0,
+        "validatorWarnings": 0
+      },
+      "visualQa": "not_assessed"
+    },
+    "qa": {
+      "kind": "kiln.asset-qa-report",
+      "schemaVersion": 2,
+      "qaProfile": "asset.requirements.v1",
+      "policyHash": "sha256:9efcec929bf8a510c7dd0e18b687381e3824ff3d26cc20307f601d17535e5f34",
+      "adviceHash": "sha256:ca1f59b45e82e712e06149909000e2bc37b8cf159af70e32847088cecf153268",
+      "acceptance": "accepted",
+      "disposition": "pass",
+      "dimensions": {
+        "exportIntegrity": {
+          "status": "pass",
+          "findings": [],
+          "metrics": {
+            "gltfErrors": 0,
+            "gltfWarnings": 0
+          }
+        },
+        "requirementReadiness": {
+          "status": "pass",
+          "findings": []
+        },
+        "promptAlignment": {
+          "status": "notEvaluated",
+          "findings": []
+        },
+        "visualQuality": {
+          "status": "notEvaluated",
+          "findings": [
+            {
+              "code": "GEO_PART_SELF_INTERSECTION_UNMEASURED",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "23 part-volume measurements were unavailable: \"floorSlab\": a valid closed solid could not be measured (Not manifold); \"subfabColumns\": a valid closed solid could not be measured (Not manifold); \"returnAirShaft\": a valid closed solid could not be measured (Not manifold); \"backWalls_panels\": a valid closed solid could not be measured (Not manifold); \"cutFaceCaps_concrete\": a valid closed solid could not be measured (Not manifold); \"waffleSlab_concrete\": a valid closed solid could not be measured (Not manifold); \"waffleSlab_pockets\": a valid closed solid could not be measured (Not manifold); \"raisedFloor_pedestals\": a valid closed solid could not be measured (Not manifold); \"lateralPipes\": a valid closed solid could not be measured (Not manifold); \"raisedFloor_tiles\": a valid closed solid could not be measured (Not manifold); \"cutFaceCaps_raisedFloor\": a valid closed solid could not be measured (Not manifold); \"ffuPlenum_packs\": a valid closed solid could not be measured (Not manifold); \"ffuPlenum_housings\": a valid closed solid could not be measured (Not manifold); \"cutFaceCaps_ffuWhite\": a valid closed solid could not be measured (Not manifold); \"cutFaceCaps_ffuHousing\": a valid closed solid could not be measured (Not manifold); \"interstitialTruss_steel\": a valid closed solid could not be measured (Not manifold); \"interstitialTruss_deck\": a valid closed solid could not be measured (Not manifold); \"interstitialTruss_fans\": a valid closed solid could not be measured (Not manifold); \"interstitialTruss_fanBlades\": a valid closed solid could not be measured (Not manifold); \"interstitialTruss_stripes\": a valid closed solid could not be measured (Not manifold); \"roofSlab\": a valid closed solid could not be measured (Not manifold); \"mainsPipes_pipes\": a valid closed solid could not be measured (Not manifold); \"mainsPipes_brackets\": a valid closed solid could not be measured (Not manifold). These parts are not certified clear."
+            }
+          ],
+          "metrics": {
+            "partVolumeCoverage": "partial",
+            "partVolumeScope": "Visible static closed mesh pairs; excludes intra-mesh intersections, motion, open surfaces and usable passage space. Positive overlap may be intentional.",
+            "partVolumeEligibleParts": 23,
+            "partVolumeCandidatePairs": 59,
+            "partVolumeCandidatesLowerBound": false,
+            "partVolumePairsTested": 0,
+            "partVolumeSkipped": 23
+          }
+        },
+        "runtimeCost": {
+          "status": "pass",
+          "findings": [],
+          "metrics": {
+            "instanceabilityGrade": "D",
+            "instanceabilitySummary": "D — 8 mat / 23 geo / 23 draws, opaque",
+            "uniqueGeometries": 23,
+            "uniqueMaterials": 8,
+            "meshNodes": 23,
+            "meshInstances": 23,
+            "drawCalls": 23,
+            "textureCount": 0,
+            "skinned": false,
+            "transparentMaterials": 0,
+            "triangles": 4800,
+            "materialCount": 8,
+            "opaqueMaterials": 8,
+            "maskedMaterials": 0,
+            "blendedMaterials": 0,
+            "singleSidedMaterials": 8,
+            "doubleSidedMaterials": 0,
+            "texturedMaterials": 0,
+            "materialExtensionCount": 0,
+            "materialExtensionsUsed": "",
+            "imageCount": 0,
+            "maxImageDimension": 0,
+            "decodedImageBytesRgba8": 0,
+            "estimatedGpuBytesWithMipmaps": 0,
+            "blendedSurfaceAreaRatio": 0
+          }
+        }
+      },
+      "rules": [
+        {
+          "id": "UNIVERSAL_SCENE_CONTENT_RULE",
+          "mode": "enforce",
+          "status": "evaluated"
+        },
+        {
+          "id": "UNIVERSAL_FINITE_DATA_RULE",
+          "mode": "enforce",
+          "status": "evaluated"
+        },
+        {
+          "id": "UNIVERSAL_INDEX_RULE",
+          "mode": "enforce",
+          "status": "evaluated"
+        },
+        {
+          "id": "UNIVERSAL_ZERO_SCALE_RULE",
+          "mode": "enforce",
+          "status": "evaluated"
+        },
+        {
+          "id": "UNIVERSAL_NODE_NAME_RULE",
+          "mode": "enforce",
+          "status": "evaluated"
+        },
+        {
+          "id": "UNIVERSAL_ANIMATION_TARGET_RULE",
+          "mode": "enforce",
+          "status": "evaluated"
+        },
+        {
+          "id": "MATERIAL_PORTABLE_PBR_RULE",
+          "mode": "enforce",
+          "status": "evaluated"
+        },
+        {
+          "id": "ARCHITECTURE_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        },
+        {
+          "id": "ARCHITECTURE_ADVISORY_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "CHARACTER_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        },
+        {
+          "id": "CHARACTER_ADVISORY_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "VEHICLE_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        },
+        {
+          "id": "VEHICLE_ADVISORY_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "VEHICLE_W6_ADVISORY_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "VEGETATION_CONTACT_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        },
+        {
+          "id": "VEGETATION_ADVISORY_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "PROP_CAPABILITY_EXACT_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        },
+        {
+          "id": "PROP_ADVISORY_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "ENVIRONMENT_EXACT_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        },
+        {
+          "id": "ENVIRONMENT_ADVISORY_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "VFX_EXACT_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        },
+        {
+          "id": "VFX_ADVISORY_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "MODULAR_JOIN_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        },
+        {
+          "id": "ASSET_SCOPE_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "GEO_PART_SELF_INTERSECTION",
+          "mode": "observe",
+          "status": "notEvaluated"
+        },
+        {
+          "id": "GEO_PART_CONNECTIVITY",
+          "mode": "observe",
+          "status": "evaluated"
+        },
+        {
+          "id": "REF_COMPARISON",
+          "mode": "observe",
+          "status": "notEvaluated",
+          "reason": "Neutral measurement adapter remains to be qualified; no category fallback is used."
+        }
+      ],
+      "unevaluatedRequirements": []
+    },
+    "dependencies": [],
+    "rebuild": "engine-required"
+  },
+  "preview": {
+    "fidelity": {
+      "version": "kiln.view-fidelity.v1",
+      "requested": "full-preferred",
+      "delivered": "full-material",
+      "materialFaithful": true,
+      "exactArtifact": false,
+      "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1074",
+      "inputGlbSha256": "sha256:20d5f55ea0f97f29d5adccc45e090bcb605fad99e05733163a89c15a29d4cd2c",
+      "degraded": false,
+      "reasonCodes": [
+        "IN_LOOP_BUILD_NOT_PERSISTED"
+      ]
+    },
+    "backdrop": "neutral"
+  }
+}

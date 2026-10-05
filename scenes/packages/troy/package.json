@@ -1,0 +1,14 @@
+{
+  "name": "@kiln-scenes/troy",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Troy reference scene using Three.js directly",
+  "scripts": {
+    "test": "node scripts/test.mjs",
+    "hydrate": "node scripts/hydrate-runtime.mjs",
+    "dev": "node scripts/serve.mjs"
+  },
+  "peerDependencies": { "three": "0.186.1" },
+  "devDependencies": { "three": "0.186.1", "acorn": "8.18.0" }
+}

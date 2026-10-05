@@ -32,7 +32,9 @@ export function validatePins(s: PinSnapshot): string[] {
         else if (value !== expected) problems.push(`${path} ${section}: ${name} must be ${expected}, got ${value}`);
       }
     }
-    if (path !== 'package.json') for (const peer of RUNTIME_PEERS) {
+    // Troy is a direct Three.js reference scene; existing R3F scenes keep all peers.
+    const runtimePeers = path === 'packages/troy/package.json' ? ['three'] as const : RUNTIME_PEERS;
+    if (path !== 'package.json') for (const peer of runtimePeers) {
       for (const section of ['peerDependencies', 'devDependencies'] as const) {
         if (json[section]?.[peer] !== APPROVED_PINS[peer]) problems.push(`${path} ${section}: missing exact ${peer} ${APPROVED_PINS[peer]}`);
       }

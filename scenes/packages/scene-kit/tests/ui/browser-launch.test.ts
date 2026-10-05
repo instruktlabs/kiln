@@ -13,7 +13,7 @@ const workspaces: string[] = [];
 afterEach(async () => { await Promise.all(workspaces.splice(0).map(path => rm(path, { recursive: true, force: true }))); });
 async function fixture() {
   const workspace = await mkdtemp(join(tmpdir(), 'kiln chrome tests ')); workspaces.push(workspace);
-  const executablePath = join(workspace, 'chrome');
+  const executablePath = join(workspace, process.platform === 'win32' ? 'chrome.exe' : 'chrome');
   await writeFile(executablePath, '#!/bin/sh\nexit 0\n'); await chmod(executablePath, 0o700);
   return { workspace, executablePath };
 }
@@ -25,7 +25,7 @@ test('Chrome discovery prefers explicit configuration, then environment, then ex
   expect(await helpers.resolveChromeExecutable({ executablePath, env: { KILN_CHROME: '/not-selected' } })).toBe(executablePath);
   expect(await helpers.resolveChromeExecutable({ env: { CHROME: executablePath, PATH: '' } })).toBe(executablePath);
   expect(await helpers.resolveChromeExecutable({ env: { PUPPETEER_EXECUTABLE_PATH: executablePath, PATH: '' } })).toBe(executablePath);
-  expect(await helpers.resolveChromeExecutable({ env: { PATH: workspace }, platform: 'linux' })).toBe(executablePath);
+  expect(await helpers.resolveChromeExecutable({ env: { PATH: workspace }, platform: process.platform })).toBe(executablePath);
   await expect(helpers.resolveChromeExecutable({ executablePath: join(workspace, 'missing'), env })).rejects.toThrow('Configured Chrome executable');
   await expect(helpers.resolveChromeExecutable({ executablePath: workspace, env })).rejects.toThrow('Configured Chrome executable');
   if (process.platform !== 'win32') {

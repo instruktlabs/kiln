@@ -1,0 +1,2283 @@
+{
+  "version": "kiln.asset.v1",
+  "assetId": "horse",
+  "revisionId": "r_6f5b30d1a37843e0ba8856f790e6c6ce",
+  "name": "Horse",
+  "tags": [],
+  "createdAt": "2026-10-02T03:56:41.696Z",
+  "description": "Low-poly Late Bronze Age chariot horse asset for project Troy, standing 1.4 m at the withers. Fully articulated with 16 joints, clean low-poly faceted anatomy, and complete chariot harness including breastcollar with central bronze phalera, girth strap, yoke saddle pad with bronze terret rings, and bridle with bronze bit rings. Includes seamless looped 'Stand' breathing idle and dynamic 4-beat 'Gallop' animation clips.",
+  "brief": "A chariot horse at Bronze Age size, about 1.4 m at the shoulder, with a stand pose and a gallop.",
+  "attribution": {
+    "model": "Gemini 3.8 Flash",
+    "harness": "agy"
+  },
+  "editable": true,
+  "files": {
+    "asset.glb": {
+      "sha256": "sha256:4788dc1d03987c9ccefd94644f0eb2d08bd3bf7edee31108dc1de8fa6b0d32d6",
+      "bytes": 179672
+    },
+    "source.kiln.js": {
+      "sha256": "sha256:e20a528304320e7ed1542af387dd6cf3c01b067ce3f75f494c02ee9c26076dff",
+      "bytes": 20435
+    },
+    "preview.png": {
+      "sha256": "sha256:e1c8d420e9bf2e30f34c0d67fbf44fa3928b831af19e4c7596819e4f29e852ba",
+      "bytes": 277521
+    }
+  },
+  "build": {
+    "engine": "sha256:2048ebbacb60fc1f371c898a0a3ce97ef78f0b6bcd9d53811384dd01b2006c4a",
+    "options": {
+      "gltfExporter": "legacy",
+      "optimize": "off",
+      "instance": "auto",
+      "geometryPolicy": "warn",
+      "indexPolicy": "indexed",
+      "qaMode": "enforce",
+      "evaluatorMode": "subprocess",
+      "projectId": "troy",
+      "projectRevision": "r_0000000001_f9e3c426b4197bed4ed2b203cebd6316e8467406ca5732d424ed55b693eee38b",
+      "requirements": {
+        "kind": "kiln.requirements-context.v1",
+        "requirements": {
+          "kind": "kiln.asset-requirements",
+          "schemaVersion": 1,
+          "labels": [],
+          "frame": {
+            "units": "m",
+            "forward": "+X",
+            "up": "+Y",
+            "right": "+Z",
+            "groundY": 0
+          },
+          "requirements": {}
+        },
+        "policyHash": "sha256:9efcec929bf8a510c7dd0e18b687381e3824ff3d26cc20307f601d17535e5f34",
+        "adviceHash": "sha256:ca1f59b45e82e712e06149909000e2bc37b8cf159af70e32847088cecf153268"
+      }
+    },
+    "warnings": [],
+    "integration": {
+      "schemaVersion": "kiln.integration-manifest.v1",
+      "analyzerVersion": 1,
+      "artifactSha256": "4788dc1d03987c9ccefd94644f0eb2d08bd3bf7edee31108dc1de8fa6b0d32d6",
+      "units": "m",
+      "axes": {
+        "forward": "+X",
+        "up": "+Y",
+        "right": "+Z"
+      },
+      "bounds": {
+        "min": [
+          -0.2666025388240814,
+          -2.9802316170446375e-10,
+          -0.8142711062625686
+        ],
+        "max": [
+          0.2666025388240814,
+          1.8143359684374607,
+          1.0301040770330592
+        ],
+        "size": [
+          0.5332050776481628,
+          1.8143359687354839,
+          1.8443751832956279
+        ],
+        "center": [
+          0,
+          0.9071679840697188,
+          0.10791648538524529
+        ]
+      },
+      "pivot": {
+        "convention": "author-origin",
+        "position": [
+          0,
+          0,
+          0
+        ]
+      },
+      "ground": {
+        "groundY": 0,
+        "contactTolerance": 0.02,
+        "minY": -2.9802316170446375e-10,
+        "offsetToGround": 2.9802316170446375e-10,
+        "grounded": true
+      },
+      "defaultScene": {
+        "index": 0,
+        "name": "Horse"
+      },
+      "requestedRole": "prop",
+      "renderMetrics": {
+        "triangles": 1324,
+        "drawCalls": 55,
+        "uniqueGeometries": 38,
+        "uniqueMaterials": 3,
+        "textureCount": 4,
+        "transparentMaterials": 0,
+        "skinned": false
+      },
+      "structuralQa": {
+        "hasDefaultScene": true,
+        "finiteBounds": true,
+        "validatorErrors": 0,
+        "validatorWarnings": 0
+      },
+      "visualQa": "not_assessed"
+    },
+    "qa": {
+      "kind": "kiln.asset-qa-report",
+      "schemaVersion": 2,
+      "qaProfile": "asset.requirements.v1",
+      "policyHash": "sha256:9efcec929bf8a510c7dd0e18b687381e3824ff3d26cc20307f601d17535e5f34",
+      "adviceHash": "sha256:ca1f59b45e82e712e06149909000e2bc37b8cf159af70e32847088cecf153268",
+      "acceptance": "accepted",
+      "disposition": "pass",
+      "dimensions": {
+        "exportIntegrity": {
+          "status": "pass",
+          "findings": [],
+          "metrics": {
+            "gltfErrors": 0,
+            "gltfWarnings": 0
+          }
+        },
+        "requirementReadiness": {
+          "status": "pass",
+          "findings": []
+        },
+        "promptAlignment": {
+          "status": "notEvaluated",
+          "findings": []
+        },
+        "visualQuality": {
+          "status": "notEvaluated",
+          "findings": [
+            {
+              "code": "GEO_PART_SELF_INTERSECTION",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "Parts \"Mesh_Chest_Bulge\" and \"Mesh_Breast_Phalera\" occupy the same space: they share 0.000171 m³, which is 100.0% of the smaller part.",
+              "affected": {
+                "node": "Mesh_Chest_Bulge"
+              },
+              "measurement": {
+                "name": "intersectionVolumeFraction",
+                "actual": 1,
+                "expected": 0.001
+              },
+              "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
+            },
+            {
+              "code": "GEO_PART_SELF_INTERSECTION",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "Parts \"Mesh_Head_Muzzle\" and \"Mesh_Bridle_Noseband\" occupy the same space: they share 0.000511 m³, which is 100.0% of the smaller part.",
+              "affected": {
+                "node": "Mesh_Head_Muzzle"
+              },
+              "measurement": {
+                "name": "intersectionVolumeFraction",
+                "actual": 1,
+                "expected": 0.001
+              },
+              "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
+            },
+            {
+              "code": "GEO_PART_SELF_INTERSECTION",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "Parts \"Mesh_Head_Skull\" and \"Mesh_Bridle_Browband\" occupy the same space: they share 0.000189 m³, which is 90.0% of the smaller part.",
+              "affected": {
+                "node": "Mesh_Head_Skull"
+              },
+              "measurement": {
+                "name": "intersectionVolumeFraction",
+                "actual": 0.900000004,
+                "expected": 0.001
+              },
+              "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
+            },
+            {
+              "code": "GEO_PART_SELF_INTERSECTION",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "Parts \"Mesh_Torso_Barrel\" and \"Mesh_Girth_Strap\" occupy the same space: they share 0.0106 m³, which is 89.5% of the smaller part.",
+              "affected": {
+                "node": "Mesh_Torso_Barrel"
+              },
+              "measurement": {
+                "name": "intersectionVolumeFraction",
+                "actual": 0.895150432,
+                "expected": 0.001
+              },
+              "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
+            },
+            {
+              "code": "GEO_PART_SELF_INTERSECTION",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "Parts \"Mesh_Neck_Lower\" and \"Mesh_Mane_Lower\" occupy the same space: they share 0.00129 m³, which is 86.2% of the smaller part.",
+              "affected": {
+                "node": "Mesh_Neck_Lower"
+              },
+              "measurement": {
+                "name": "intersectionVolumeFraction",
+                "actual": 0.861837607,
+                "expected": 0.001
+              },
+              "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
+            },
+            {
+              "code": "GEO_PART_SELF_INTERSECTION",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "Parts \"Mesh_Buttocks\" and \"Mesh_Tail_Base\" occupy the same space: they share 0.00112 m³, which is 86.1% of the smaller part.",
+              "affected": {
+                "node": "Mesh_Buttocks"
+              },
+              "measurement": {
+                "name": "intersectionVolumeFraction",
+                "actual": 0.861055736,
+                "expected": 0.001
+              },
+              "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
+            },
+            {
+              "code": "GEO_PART_SELF_INTERSECTION",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "Parts \"Mesh_Torso_Chest\" and \"Mesh_Girth_Strap\" occupy the same space: they share 0.00988 m³, which is 83.1% of the smaller part.",
+              "affected": {
+                "node": "Mesh_Torso_Chest"
+              },
+              "measurement": {
+                "name": "intersectionVolumeFraction",
+                "actual": 0.830952405,
+                "expected": 0.001
+              },
+              "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
+            },
+            {
+              "code": "GEO_PART_SELF_INTERSECTION",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "Parts \"Mesh_Neck_Upper\" and \"Mesh_Mane_Upper\" occupy the same space: they share 0.000929 m³, which is 71.5% of the smaller part.",
+              "affected": {
+                "node": "Mesh_Neck_Upper"
+              },
+              "measurement": {
+                "name": "intersectionVolumeFraction",
+                "actual": 0.714610164,
+                "expected": 0.001
+              },
+              "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
+            },
+            {
+              "code": "GEO_PART_SELF_INTERSECTION",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "Parts \"Mesh_Chest_Bulge\" and \"Mesh_Breastcollar\" occupy the same space: they share 0.000870 m³, which is 70.6% of the smaller part.",
+              "affected": {
+                "node": "Mesh_Chest_Bulge"
+              },
+              "measurement": {
+                "name": "intersectionVolumeFraction",
+                "actual": 0.706115697,
+                "expected": 0.001
+              },
+              "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
+            },
+            {
+              "code": "GEO_PART_SELF_INTERSECTION",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "Parts \"Mesh_Withers_Ridge\" and \"Mesh_Yoke_Pad\" occupy the same space: they share 0.00112 m³, which is 70.0% of the smaller part.",
+              "affected": {
+                "node": "Mesh_Withers_Ridge"
+              },
+              "measurement": {
+                "name": "intersectionVolumeFraction",
+                "actual": 0.699999985,
+                "expected": 0.001
+              },
+              "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
+            },
+            {
+              "code": "GEO_PART_SELF_INTERSECTION",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "Parts \"Mesh_Head_Skull\" and \"Mesh_Cheek_R\" occupy the same space: they share 0.000632 m³, which is 59.0% of the smaller part.",
+              "affected": {
+                "node": "Mesh_Head_Skull"
+              },
+              "measurement": {
+                "name": "intersectionVolumeFraction",
+                "actual": 0.590045232,
+                "expected": 0.001
+              },
+              "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
+            },
+            {
+              "code": "GEO_PART_SELF_INTERSECTION",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "Parts \"Mesh_Head_Skull\" and \"Mesh_Cheek_L\" occupy the same space: they share 0.000632 m³, which is 59.0% of the smaller part.",
+              "affected": {
+                "node": "Mesh_Head_Skull"
+              },
+              "measurement": {
+                "name": "intersectionVolumeFraction",
+                "actual": 0.590045231,
+                "expected": 0.001
+              },
+              "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
+            },
+            {
+              "code": "GEO_PART_SELF_INTERSECTION",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "Parts \"Mesh_Torso_Croup\" and \"Mesh_Buttocks\" occupy the same space: they share 0.0145 m³, which is 53.0% of the smaller part.",
+              "affected": {
+                "node": "Mesh_Torso_Croup"
+              },
+              "measurement": {
+                "name": "intersectionVolumeFraction",
+                "actual": 0.52952312,
+                "expected": 0.001
+              },
+              "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
+            },
+            {
+              "code": "GEO_PART_SELF_INTERSECTION",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "Parts \"Mesh_Torso_Chest\" and \"Mesh_Chest_Bulge\" occupy the same space: they share 0.0103 m³, which is 47.4% of the smaller part.",
+              "affected": {
+                "node": "Mesh_Torso_Chest"
+              },
+              "measurement": {
+                "name": "intersectionVolumeFraction",
+                "actual": 0.474207802,
+                "expected": 0.001
+              },
+              "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
+            },
+            {
+              "code": "GEO_PART_SELF_INTERSECTION",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "Parts \"Mesh_Shoulder_FL\" and \"Mesh_Knee_FL\" occupy the same space: they share 0.000230 m³, which is 46.9% of the smaller part.",
+              "affected": {
+                "node": "Mesh_Shoulder_FL"
+              },
+              "measurement": {
+                "name": "intersectionVolumeFraction",
+                "actual": 0.469492529,
+                "expected": 0.001
+              },
+              "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
+            },
+            {
+              "code": "GEO_PART_SELF_INTERSECTION",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "Parts \"Mesh_Shoulder_FR\" and \"Mesh_Knee_FR\" occupy the same space: they share 0.000230 m³, which is 46.9% of the smaller part.",
+              "affected": {
+                "node": "Mesh_Shoulder_FR"
+              },
+              "measurement": {
+                "name": "intersectionVolumeFraction",
+                "actual": 0.469492529,
+                "expected": 0.001
+              },
+              "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
+            },
+            {
+              "code": "GEO_PART_SELF_INTERSECTION",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "Parts \"Mesh_Withers_Ridge\" and \"Mesh_Neck_Lower\" occupy the same space: they share 0.00351 m³, which is 46.4% of the smaller part.",
+              "affected": {
+                "node": "Mesh_Withers_Ridge"
+              },
+              "measurement": {
+                "name": "intersectionVolumeFraction",
+                "actual": 0.464035676,
+                "expected": 0.001
+              },
+              "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
+            },
+            {
+              "code": "GEO_PART_SELF_INTERSECTION",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "Parts \"Mesh_Head_Muzzle\" and \"Mesh_Nose_Tip\" occupy the same space: they share 0.000347 m³, which is 43.9% of the smaller part.",
+              "affected": {
+                "node": "Mesh_Head_Muzzle"
+              },
+              "measurement": {
+                "name": "intersectionVolumeFraction",
+                "actual": 0.438507166,
+                "expected": 0.001
+              },
+              "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
+            },
+            {
+              "code": "GEO_PART_SELF_INTERSECTION",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "Parts \"Mesh_Head_Skull\" and \"Mesh_Forelock\" occupy the same space: they share 0.0000957 m³, which is 42.7% of the smaller part.",
+              "affected": {
+                "node": "Mesh_Head_Skull"
+              },
+              "measurement": {
+                "name": "intersectionVolumeFraction",
+                "actual": 0.427017699,
+                "expected": 0.001
+              },
+              "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
+            },
+            {
+              "code": "GEO_PART_SELF_INTERSECTION",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "Parts \"Mesh_Yoke_Pad\" and \"Mesh_Neck_Lower\" occupy the same space: they share 0.000613 m³, which is 38.3% of the smaller part.",
+              "affected": {
+                "node": "Mesh_Yoke_Pad"
+              },
+              "measurement": {
+                "name": "intersectionVolumeFraction",
+                "actual": 0.382959493,
+                "expected": 0.001
+              },
+              "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
+            },
+            {
+              "code": "GEO_PART_SELF_INTERSECTION",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "Parts \"Mesh_Torso_Barrel\" and \"Mesh_Torso_Chest\" occupy the same space: they share 0.0206 m³, which is 38.3% of the smaller part.",
+              "affected": {
+                "node": "Mesh_Torso_Barrel"
+              },
+              "measurement": {
+                "name": "intersectionVolumeFraction",
+                "actual": 0.382596149,
+                "expected": 0.001
+              },
+              "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
+            },
+            {
+              "code": "GEO_PART_SELF_INTERSECTION",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "Parts \"Mesh_Thigh_BL\" and \"Mesh_Hock_BL\" occupy the same space: they share 0.000346 m³, which is 36.0% of the smaller part.",
+              "affected": {
+                "node": "Mesh_Thigh_BL"
+              },
+              "measurement": {
+                "name": "intersectionVolumeFraction",
+                "actual": 0.360159385,
+                "expected": 0.001
+              },
+              "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
+            },
+            {
+              "code": "GEO_PART_SELF_INTERSECTION",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "Parts \"Mesh_Thigh_BR\" and \"Mesh_Hock_BR\" occupy the same space: they share 0.000346 m³, which is 36.0% of the smaller part.",
+              "affected": {
+                "node": "Mesh_Thigh_BR"
+              },
+              "measurement": {
+                "name": "intersectionVolumeFraction",
+                "actual": 0.360159385,
+                "expected": 0.001
+              },
+              "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
+            },
+            {
+              "code": "GEO_PART_SELF_INTERSECTION",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "Parts \"Mesh_Neck_Upper\" and \"Mesh_Mane_Lower\" occupy the same space: they share 0.000513 m³, which is 34.2% of the smaller part.",
+              "affected": {
+                "node": "Mesh_Neck_Upper"
+              },
+              "measurement": {
+                "name": "intersectionVolumeFraction",
+                "actual": 0.341927278,
+                "expected": 0.001
+              },
+              "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
+            },
+            {
+              "code": "GEO_PART_SELF_INTERSECTION",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "Parts \"Mesh_Torso_Barrel\" and \"Mesh_Torso_Croup\" occupy the same space: they share 0.0184 m³, which is 33.9% of the smaller part.",
+              "affected": {
+                "node": "Mesh_Torso_Barrel"
+              },
+              "measurement": {
+                "name": "intersectionVolumeFraction",
+                "actual": 0.338622801,
+                "expected": 0.001
+              },
+              "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
+            },
+            {
+              "code": "GEO_PART_SELF_INTERSECTION",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "Parts \"Mesh_Withers_Ridge\" and \"Mesh_Mane_Lower\" occupy the same space: they share 0.000448 m³, which is 29.9% of the smaller part.",
+              "affected": {
+                "node": "Mesh_Withers_Ridge"
+              },
+              "measurement": {
+                "name": "intersectionVolumeFraction",
+                "actual": 0.298765695,
+                "expected": 0.001
+              },
+              "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
+            },
+            {
+              "code": "GEO_PART_SELF_INTERSECTION",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "Parts \"Mesh_Tail_Base\" and \"Mesh_Tail_Hair_Upper\" occupy the same space: they share 0.000372 m³, which is 28.7% of the smaller part.",
+              "affected": {
+                "node": "Mesh_Tail_Base"
+              },
+              "measurement": {
+                "name": "intersectionVolumeFraction",
+                "actual": 0.286938252,
+                "expected": 0.001
+              },
+              "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
+            },
+            {
+              "code": "GEO_PART_SELF_INTERSECTION",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "Parts \"Mesh_Torso_Chest\" and \"Mesh_Withers_Ridge\" occupy the same space: they share 0.00193 m³, which is 25.6% of the smaller part.",
+              "affected": {
+                "node": "Mesh_Torso_Chest"
+              },
+              "measurement": {
+                "name": "intersectionVolumeFraction",
+                "actual": 0.255501569,
+                "expected": 0.001
+              },
+              "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
+            },
+            {
+              "code": "GEO_PART_SELF_INTERSECTION",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "Parts \"Mesh_Torso_Chest\" and \"Mesh_Shoulder_FL\" occupy the same space: they share 0.000872 m³, which is 21.0% of the smaller part.",
+              "affected": {
+                "node": "Mesh_Torso_Chest"
+              },
+              "measurement": {
+                "name": "intersectionVolumeFraction",
+                "actual": 0.209843226,
+                "expected": 0.001
+              },
+              "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
+            },
+            {
+              "code": "GEO_PART_SELF_INTERSECTION",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "Parts \"Mesh_Torso_Chest\" and \"Mesh_Shoulder_FR\" occupy the same space: they share 0.000872 m³, which is 21.0% of the smaller part.",
+              "affected": {
+                "node": "Mesh_Torso_Chest"
+              },
+              "measurement": {
+                "name": "intersectionVolumeFraction",
+                "actual": 0.209843213,
+                "expected": 0.001
+              },
+              "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
+            },
+            {
+              "code": "GEO_PART_SELF_INTERSECTION",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "Parts \"Mesh_Yoke_Pad\" and \"Mesh_Terret_Ring_L\" occupy the same space: they share 0.00000686 m³, which is 19.6% of the smaller part.",
+              "affected": {
+                "node": "Mesh_Yoke_Pad"
+              },
+              "measurement": {
+                "name": "intersectionVolumeFraction",
+                "actual": 0.195614677,
+                "expected": 0.001
+              },
+              "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
+            },
+            {
+              "code": "GEO_PART_SELF_INTERSECTION",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "Parts \"Mesh_Yoke_Pad\" and \"Mesh_Terret_Ring_R\" occupy the same space: they share 0.00000686 m³, which is 19.6% of the smaller part.",
+              "affected": {
+                "node": "Mesh_Yoke_Pad"
+              },
+              "measurement": {
+                "name": "intersectionVolumeFraction",
+                "actual": 0.195614677,
+                "expected": 0.001
+              },
+              "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
+            },
+            {
+              "code": "GEO_PART_SELF_INTERSECTION",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "Parts \"Mesh_Torso_Croup\" and \"Mesh_Thigh_BL\" occupy the same space: they share 0.00158 m³, which is 19.6% of the smaller part.",
+              "affected": {
+                "node": "Mesh_Torso_Croup"
+              },
+              "measurement": {
+                "name": "intersectionVolumeFraction",
+                "actual": 0.19552558,
+                "expected": 0.001
+              },
+              "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
+            },
+            {
+              "code": "GEO_PART_SELF_INTERSECTION",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "Parts \"Mesh_Torso_Croup\" and \"Mesh_Thigh_BR\" occupy the same space: they share 0.00158 m³, which is 19.6% of the smaller part.",
+              "affected": {
+                "node": "Mesh_Torso_Croup"
+              },
+              "measurement": {
+                "name": "intersectionVolumeFraction",
+                "actual": 0.195525576,
+                "expected": 0.001
+              },
+              "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
+            },
+            {
+              "code": "GEO_PART_SELF_INTERSECTION",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "Parts \"Mesh_Buttocks\" and \"Mesh_Tail_Hair_Upper\" occupy the same space: they share 0.000533 m³, which is 17.6% of the smaller part.",
+              "affected": {
+                "node": "Mesh_Buttocks"
+              },
+              "measurement": {
+                "name": "intersectionVolumeFraction",
+                "actual": 0.176300577,
+                "expected": 0.001
+              },
+              "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
+            },
+            {
+              "code": "GEO_PART_SELF_INTERSECTION",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "Parts \"Mesh_Neck_Lower\" and \"Mesh_Neck_Upper\" occupy the same space: they share 0.00218 m³, which is 17.6% of the smaller part.",
+              "affected": {
+                "node": "Mesh_Neck_Lower"
+              },
+              "measurement": {
+                "name": "intersectionVolumeFraction",
+                "actual": 0.176076191,
+                "expected": 0.001
+              },
+              "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
+            },
+            {
+              "code": "GEO_PART_SELF_INTERSECTION",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "Parts \"Mesh_Head_Skull\" and \"Mesh_Head_Muzzle\" occupy the same space: they share 0.000583 m³, which is 15.4% of the smaller part.",
+              "affected": {
+                "node": "Mesh_Head_Skull"
+              },
+              "measurement": {
+                "name": "intersectionVolumeFraction",
+                "actual": 0.154374938,
+                "expected": 0.001
+              },
+              "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
+            },
+            {
+              "code": "GEO_PART_SELF_INTERSECTION",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "Parts \"Mesh_Mane_Upper\" and \"Mesh_Head_Skull\" occupy the same space: they share 0.000187 m³, which is 14.4% of the smaller part.",
+              "affected": {
+                "node": "Mesh_Mane_Upper"
+              },
+              "measurement": {
+                "name": "intersectionVolumeFraction",
+                "actual": 0.144192115,
+                "expected": 0.001
+              },
+              "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
+            },
+            {
+              "code": "GEO_PART_SELF_INTERSECTION",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "Parts \"Mesh_Torso_Chest\" and \"Mesh_Neck_Lower\" occupy the same space: they share 0.00306 m³, which is 12.6% of the smaller part.",
+              "affected": {
+                "node": "Mesh_Torso_Chest"
+              },
+              "measurement": {
+                "name": "intersectionVolumeFraction",
+                "actual": 0.126014301,
+                "expected": 0.001
+              },
+              "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
+            },
+            {
+              "code": "GEO_PART_SELF_INTERSECTION",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "Parts \"Mesh_Cheek_L\" and \"Mesh_Cheekstrap_L\" occupy the same space: they share 0.00000738 m³, which is 11.5% of the smaller part.",
+              "affected": {
+                "node": "Mesh_Cheek_L"
+              },
+              "measurement": {
+                "name": "intersectionVolumeFraction",
+                "actual": 0.115348239,
+                "expected": 0.001
+              },
+              "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
+            },
+            {
+              "code": "GEO_PART_SELF_INTERSECTION",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "Parts \"Mesh_Cheek_R\" and \"Mesh_Cheekstrap_R\" occupy the same space: they share 0.00000738 m³, which is 11.5% of the smaller part.",
+              "affected": {
+                "node": "Mesh_Cheek_R"
+              },
+              "measurement": {
+                "name": "intersectionVolumeFraction",
+                "actual": 0.115348239,
+                "expected": 0.001
+              },
+              "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
+            },
+            {
+              "code": "GEO_PART_SELF_INTERSECTION",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "Parts \"Mesh_Neck_Lower\" and \"Mesh_Mane_Upper\" occupy the same space: they share 0.000121 m³, which is 9.3% of the smaller part.",
+              "affected": {
+                "node": "Mesh_Neck_Lower"
+              },
+              "measurement": {
+                "name": "intersectionVolumeFraction",
+                "actual": 0.093131707,
+                "expected": 0.001
+              },
+              "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
+            },
+            {
+              "code": "GEO_PART_SELF_INTERSECTION",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "Parts \"Mesh_Buttocks\" and \"Mesh_Thigh_BL\" occupy the same space: they share 0.000619 m³, which is 7.7% of the smaller part.",
+              "affected": {
+                "node": "Mesh_Buttocks"
+              },
+              "measurement": {
+                "name": "intersectionVolumeFraction",
+                "actual": 0.07658695,
+                "expected": 0.001
+              },
+              "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
+            },
+            {
+              "code": "GEO_PART_SELF_INTERSECTION",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "Parts \"Mesh_Buttocks\" and \"Mesh_Thigh_BR\" occupy the same space: they share 0.000619 m³, which is 7.7% of the smaller part.",
+              "affected": {
+                "node": "Mesh_Buttocks"
+              },
+              "measurement": {
+                "name": "intersectionVolumeFraction",
+                "actual": 0.076586949,
+                "expected": 0.001
+              },
+              "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
+            },
+            {
+              "code": "GEO_PART_SELF_INTERSECTION",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "Parts \"Mesh_Chest_Bulge\" and \"Mesh_Neck_Lower\" occupy the same space: they share 0.00160 m³, which is 7.4% of the smaller part.",
+              "affected": {
+                "node": "Mesh_Chest_Bulge"
+              },
+              "measurement": {
+                "name": "intersectionVolumeFraction",
+                "actual": 0.074013338,
+                "expected": 0.001
+              },
+              "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
+            },
+            {
+              "code": "GEO_PART_SELF_INTERSECTION",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "Parts \"Mesh_Neck_Upper\" and \"Mesh_Head_Skull\" occupy the same space: they share 0.000383 m³, which is 5.9% of the smaller part.",
+              "affected": {
+                "node": "Mesh_Neck_Upper"
+              },
+              "measurement": {
+                "name": "intersectionVolumeFraction",
+                "actual": 0.059030438,
+                "expected": 0.001
+              },
+              "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
+            },
+            {
+              "code": "GEO_PART_SELF_INTERSECTION",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "Parts \"Mesh_Neck_Upper\" and \"Mesh_Cheek_R\" occupy the same space: they share 0.0000582 m³, which is 5.4% of the smaller part.",
+              "affected": {
+                "node": "Mesh_Neck_Upper"
+              },
+              "measurement": {
+                "name": "intersectionVolumeFraction",
+                "actual": 0.054319664,
+                "expected": 0.001
+              },
+              "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
+            },
+            {
+              "code": "GEO_PART_SELF_INTERSECTION",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "Parts \"Mesh_Neck_Upper\" and \"Mesh_Cheek_L\" occupy the same space: they share 0.0000582 m³, which is 5.4% of the smaller part.",
+              "affected": {
+                "node": "Mesh_Neck_Upper"
+              },
+              "measurement": {
+                "name": "intersectionVolumeFraction",
+                "actual": 0.054319657,
+                "expected": 0.001
+              },
+              "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
+            },
+            {
+              "code": "GEO_PART_SELF_INTERSECTION",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "Parts \"Mesh_Chest_Bulge\" and \"Mesh_Shoulder_FR\" occupy the same space: they share 0.000223 m³, which is 5.4% of the smaller part.",
+              "affected": {
+                "node": "Mesh_Chest_Bulge"
+              },
+              "measurement": {
+                "name": "intersectionVolumeFraction",
+                "actual": 0.053748277,
+                "expected": 0.001
+              },
+              "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
+            },
+            {
+              "code": "GEO_PART_SELF_INTERSECTION",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "Parts \"Mesh_Chest_Bulge\" and \"Mesh_Shoulder_FL\" occupy the same space: they share 0.000223 m³, which is 5.4% of the smaller part.",
+              "affected": {
+                "node": "Mesh_Chest_Bulge"
+              },
+              "measurement": {
+                "name": "intersectionVolumeFraction",
+                "actual": 0.053748274,
+                "expected": 0.001
+              },
+              "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
+            },
+            {
+              "code": "GEO_PART_SELF_INTERSECTION",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "Parts \"Mesh_Neck_Upper\" and \"Mesh_Head_Muzzle\" occupy the same space: they share 0.0000146 m³, which is 0.4% of the smaller part.",
+              "affected": {
+                "node": "Mesh_Neck_Upper"
+              },
+              "measurement": {
+                "name": "intersectionVolumeFraction",
+                "actual": 0.003856112,
+                "expected": 0.001
+              },
+              "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
+            },
+            {
+              "code": "GEO_PART_SELF_INTERSECTION_TRUNCATED",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "Tested 64 of 112 overlapping part pairs: 0 involve parts that could not be measured, 48 were beyond the analysis budget (64 booleans, 128 solids). Unreached pairs were not examined; the most overlapping bounding boxes were tested first.",
+              "measurement": {
+                "name": "overlappingPartPairsTested",
+                "actual": 64,
+                "expected": 112,
+                "breakdown": {
+                  "pairsUnmeasurable": 0,
+                  "pairsNotReached": 48
+                }
+              }
+            }
+          ],
+          "metrics": {
+            "partVolumeCoverage": "partial",
+            "partVolumeScope": "Visible static closed mesh pairs, except alternates on different LOD levels; excludes intra-mesh intersections, motion, open surfaces and usable passage space. Positive overlap may be intentional.",
+            "partVolumeEligibleParts": 55,
+            "partVolumeCandidatePairs": 112,
+            "partVolumeCandidatesLowerBound": false,
+            "partVolumePairsTested": 64,
+            "partVolumeUnmeasurablePairs": 0,
+            "partVolumePairsNotReached": 48,
+            "partVolumeLodAlternatePairs": 0,
+            "partVolumeSkipped": 0
+          }
+        },
+        "runtimeCost": {
+          "status": "pass",
+          "findings": [],
+          "metrics": {
+            "instanceabilityGrade": "B",
+            "instanceabilitySummary": "B (informational, not a QA verdict), set by 3 distinct materials (B at 2-3). Also: 38 geometries; 55 draw calls.",
+            "uniqueGeometries": 38,
+            "uniqueMaterials": 3,
+            "meshNodes": 55,
+            "meshInstances": 55,
+            "drawCalls": 55,
+            "textureCount": 4,
+            "skinned": false,
+            "transparentMaterials": 0,
+            "triangles": 1324,
+            "materialCount": 3,
+            "opaqueMaterials": 3,
+            "maskedMaterials": 0,
+            "blendedMaterials": 0,
+            "singleSidedMaterials": 3,
+            "doubleSidedMaterials": 0,
+            "texturedMaterials": 3,
+            "materialExtensionCount": 0,
+            "materialExtensionsUsed": "",
+            "imageCount": 4,
+            "maxImageDimension": 256,
+            "decodedImageBytesRgba8": 1048576,
+            "estimatedGpuBytesWithMipmaps": 1398104,
+            "blendedSurfaceAreaRatio": 0
+          }
+        }
+      },
+      "rules": [
+        {
+          "id": "UNIVERSAL_SCENE_CONTENT_RULE",
+          "mode": "enforce",
+          "status": "evaluated"
+        },
+        {
+          "id": "UNIVERSAL_FINITE_DATA_RULE",
+          "mode": "enforce",
+          "status": "evaluated"
+        },
+        {
+          "id": "UNIVERSAL_INDEX_RULE",
+          "mode": "enforce",
+          "status": "evaluated"
+        },
+        {
+          "id": "UNIVERSAL_ZERO_SCALE_RULE",
+          "mode": "enforce",
+          "status": "evaluated"
+        },
+        {
+          "id": "UNIVERSAL_NODE_NAME_RULE",
+          "mode": "enforce",
+          "status": "evaluated"
+        },
+        {
+          "id": "UNIVERSAL_ANIMATION_TARGET_RULE",
+          "mode": "enforce",
+          "status": "evaluated"
+        },
+        {
+          "id": "MATERIAL_PORTABLE_PBR_RULE",
+          "mode": "enforce",
+          "status": "evaluated"
+        },
+        {
+          "id": "ARCHITECTURE_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        },
+        {
+          "id": "ARCHITECTURE_ADVISORY_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "CHARACTER_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        },
+        {
+          "id": "CHARACTER_ADVISORY_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "VEHICLE_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        },
+        {
+          "id": "VEHICLE_ADVISORY_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "VEHICLE_W6_ADVISORY_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "VEGETATION_CONTACT_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        },
+        {
+          "id": "VEGETATION_ADVISORY_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "PROP_CAPABILITY_EXACT_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        },
+        {
+          "id": "PROP_ADVISORY_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "ENVIRONMENT_EXACT_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        },
+        {
+          "id": "ENVIRONMENT_ADVISORY_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "VFX_EXACT_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        },
+        {
+          "id": "VFX_ADVISORY_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "MODULAR_JOIN_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        },
+        {
+          "id": "ASSET_SCOPE_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "GEO_PART_SELF_INTERSECTION",
+          "mode": "observe",
+          "status": "notEvaluated"
+        },
+        {
+          "id": "GEO_PART_CONNECTIVITY",
+          "mode": "observe",
+          "status": "evaluated"
+        },
+        {
+          "id": "REF_COMPARISON",
+          "mode": "observe",
+          "status": "notEvaluated",
+          "reason": "Neutral measurement adapter remains to be qualified; no category fallback is used."
+        },
+        {
+          "id": "SWEEP_SELF_INTERSECTION",
+          "mode": "observe",
+          "status": "evaluated"
+        }
+      ],
+      "unevaluatedRequirements": []
+    },
+    "dependencies": [
+      {
+        "kind": "kiln.material.v1",
+        "delivery": "runtime",
+        "manifest": {
+          "schemaVersion": 1,
+          "materialId": "troy-bronze",
+          "revisionId": "sha256:2748d26e15d49933d18ed70d5352b51ecf5bf5c92d60b41ceddffa52750582d6",
+          "name": "Brushed neutral metal",
+          "tags": [
+            "metal",
+            "procedural"
+          ],
+          "tileable": true,
+          "physicalSizeMeters": {
+            "width": 1,
+            "height": 1
+          },
+          "parameters": {
+            "roughness": 1,
+            "metalness": 1,
+            "emissiveIntensity": 1,
+            "alphaMode": "opaque",
+            "alphaCutoff": 0.5,
+            "doubleSided": false
+          },
+          "sources": [
+            {
+              "id": "preset",
+              "kind": "procedural",
+              "provider": "Kiln material presets v1",
+              "creator": "Kiln v1 readiness dogfood (procedural preset)",
+              "assetId": "brushed-metal",
+              "license": {
+                "spdx": "CC0-1.0",
+                "url": "https://creativecommons.org/publicdomain/zero/1.0/",
+                "attribution": ""
+              },
+              "originalFiles": []
+            }
+          ],
+          "maps": [
+            {
+              "slot": "baseColor",
+              "file": "baseColor.png",
+              "sha256": "sha256:1155caf62d7b4b648b91d2d5b7f44a7ff4442fc9c825fbeabc6eaef29370b506",
+              "bytes": 14894,
+              "width": 256,
+              "height": 256,
+              "usage": "albedo",
+              "colorSpace": "srgb",
+              "sourceId": "preset",
+              "transforms": [
+                {
+                  "operation": "preset",
+                  "tool": "kiln.material-presets",
+                  "version": "1",
+                  "parameters": {
+                    "presetId": "brushed-metal",
+                    "seed": 1203
+                  }
+                }
+              ],
+              "procedural": {
+                "compiler": "kiln.procedural-texture.v2",
+                "spec": {
+                  "schemaVersion": 2,
+                  "size": 256,
+                  "usage": "albedo",
+                  "layers": [
+                    {
+                      "op": "noise",
+                      "colorA": 10988461,
+                      "colorB": 12370114,
+                      "scale": 4,
+                      "octaves": 3,
+                      "seed": 1203,
+                      "blend": "normal",
+                      "opacity": 1
+                    },
+                    {
+                      "op": "stripes",
+                      "colorA": 10067102,
+                      "colorB": 12896201,
+                      "count": 64,
+                      "angleDeg": 0,
+                      "blend": "normal",
+                      "opacity": 0.1
+                    }
+                  ]
+                },
+                "recipeHash": "sha256:d7fe21c12d515e9d2f062c2aaa1165963c9dd158a83038cf92b67bb0aaf60c9f",
+                "pixelHash": "sha256:f23389a7e63d5b6bf5528cb998de935af9329b5cac0cd544b20ff2699b40a22f",
+                "encoder": {
+                  "name": "sharp",
+                  "version": "0.35.4"
+                }
+              }
+            },
+            {
+              "slot": "normal",
+              "file": "normal.png",
+              "sha256": "sha256:8b0ee806baea93d13f60111565b5aae68645455c9a92038317f5fb81fb1f2ddb",
+              "bytes": 16005,
+              "width": 256,
+              "height": 256,
+              "usage": "normal",
+              "colorSpace": "linear",
+              "normalConvention": "opengl",
+              "sourceId": "preset",
+              "transforms": [
+                {
+                  "operation": "preset",
+                  "tool": "kiln.material-presets",
+                  "version": "1",
+                  "parameters": {
+                    "presetId": "brushed-metal",
+                    "seed": 1203
+                  }
+                }
+              ],
+              "procedural": {
+                "compiler": "kiln.procedural-texture.v2",
+                "spec": {
+                  "schemaVersion": 2,
+                  "size": 256,
+                  "usage": "normal",
+                  "layers": [
+                    {
+                      "op": "noise",
+                      "colorA": 7368816,
+                      "colorB": 9474192,
+                      "scale": 8,
+                      "octaves": 3,
+                      "seed": 1203,
+                      "blend": "normal",
+                      "opacity": 1
+                    },
+                    {
+                      "op": "stripes",
+                      "colorA": 6710886,
+                      "colorB": 10066329,
+                      "count": 64,
+                      "angleDeg": 0,
+                      "blend": "normal",
+                      "opacity": 0.3
+                    }
+                  ]
+                },
+                "derive": {
+                  "kind": "normal-from-height",
+                  "strength": 1
+                },
+                "recipeHash": "sha256:89daaeb4f1815b55049e9e88729be8bb617e6c6ac820a1df040cb57fb6b1b6b2",
+                "pixelHash": "sha256:020eebbcc4ae89ecda69572edffbca5b8db2c7354df895d82cb1674b4d72c1df",
+                "encoder": {
+                  "name": "sharp",
+                  "version": "0.35.4"
+                }
+              }
+            },
+            {
+              "slot": "metallicRoughness",
+              "file": "metallicRoughness.png",
+              "sha256": "sha256:c94eb899b82be79cbb33e7839d069299c321b7ec9e03cd9d87a509fab3da8209",
+              "bytes": 20116,
+              "width": 256,
+              "height": 256,
+              "usage": "metallicRoughness",
+              "colorSpace": "linear",
+              "channelPacking": "r-occlusion-g-roughness-b-metallic",
+              "sourceId": "preset",
+              "transforms": [
+                {
+                  "operation": "preset",
+                  "tool": "kiln.material-presets",
+                  "version": "1",
+                  "parameters": {
+                    "presetId": "brushed-metal",
+                    "seed": 1203
+                  }
+                }
+              ],
+              "procedural": {
+                "compiler": "kiln.procedural-texture.v2",
+                "spec": {
+                  "schemaVersion": 2,
+                  "size": 256,
+                  "usage": "metallicRoughness",
+                  "layers": [
+                    {
+                      "op": "noise",
+                      "colorA": 16732415,
+                      "colorB": 16745215,
+                      "scale": 8,
+                      "octaves": 3,
+                      "seed": 1203,
+                      "blend": "normal",
+                      "opacity": 1
+                    }
+                  ]
+                },
+                "recipeHash": "sha256:74e333df6db0e55f404e306a4dc4f0b4fac660c19e0f810c419765fe05be62cd",
+                "pixelHash": "sha256:78b16242bc457b9978358124b18b8b2771fc5f07fac190b218aea421bfb90910",
+                "encoder": {
+                  "name": "sharp",
+                  "version": "0.35.4"
+                }
+              }
+            }
+          ]
+        }
+      },
+      {
+        "kind": "kiln.material.v1",
+        "delivery": "runtime",
+        "manifest": {
+          "schemaVersion": 1,
+          "materialId": "troy-ground",
+          "revisionId": "sha256:a8fec5a60022707b7cb0a07cb7c98f51758a58871ac12ff83ec4738c5b8ae27e",
+          "name": "Coarse brown soil",
+          "tags": [
+            "ground",
+            "procedural"
+          ],
+          "tileable": true,
+          "physicalSizeMeters": {
+            "width": 2,
+            "height": 2
+          },
+          "parameters": {
+            "roughness": 1,
+            "metalness": 1,
+            "emissiveIntensity": 1,
+            "alphaMode": "opaque",
+            "alphaCutoff": 0.5,
+            "doubleSided": false
+          },
+          "sources": [
+            {
+              "id": "preset",
+              "kind": "procedural",
+              "provider": "Kiln material presets v1",
+              "creator": "Kiln v1 readiness dogfood (procedural preset)",
+              "assetId": "coarse-soil",
+              "license": {
+                "spdx": "CC0-1.0",
+                "url": "https://creativecommons.org/publicdomain/zero/1.0/",
+                "attribution": ""
+              },
+              "originalFiles": []
+            }
+          ],
+          "maps": [
+            {
+              "slot": "baseColor",
+              "file": "baseColor.png",
+              "sha256": "sha256:f1aecef72fc1f2ed54605c882aee63ad42531b09f8f341f923d2bd85fc337003",
+              "bytes": 53559,
+              "width": 256,
+              "height": 256,
+              "usage": "albedo",
+              "colorSpace": "srgb",
+              "sourceId": "preset",
+              "transforms": [
+                {
+                  "operation": "preset",
+                  "tool": "kiln.material-presets",
+                  "version": "1",
+                  "parameters": {
+                    "presetId": "coarse-soil",
+                    "seed": 1205
+                  }
+                }
+              ],
+              "procedural": {
+                "compiler": "kiln.procedural-texture.v2",
+                "spec": {
+                  "schemaVersion": 2,
+                  "size": 256,
+                  "usage": "albedo",
+                  "layers": [
+                    {
+                      "op": "noise",
+                      "colorA": 5061676,
+                      "colorB": 8942420,
+                      "scale": 4,
+                      "octaves": 3,
+                      "seed": 1205,
+                      "blend": "normal",
+                      "opacity": 1
+                    },
+                    {
+                      "op": "noise",
+                      "colorA": 3418656,
+                      "colorB": 10850155,
+                      "scale": 32,
+                      "octaves": 3,
+                      "seed": 1205,
+                      "blend": "normal",
+                      "opacity": 0.25
+                    }
+                  ]
+                },
+                "recipeHash": "sha256:176692ea97e7f511634e4a7b413c6e5adc739954346c8120f9de300ef62ac060",
+                "pixelHash": "sha256:c7fb5b79d94d8b62e34a7eda730e15fffd2f7910755fa8f34e1b88a2a2d525e3",
+                "encoder": {
+                  "name": "sharp",
+                  "version": "0.35.4"
+                }
+              }
+            },
+            {
+              "slot": "normal",
+              "file": "normal.png",
+              "sha256": "sha256:1a73f9a05c553ec0c7bfb629eb374641a98a7834960486d00451a06b4ae5da49",
+              "bytes": 78431,
+              "width": 256,
+              "height": 256,
+              "usage": "normal",
+              "colorSpace": "linear",
+              "normalConvention": "opengl",
+              "sourceId": "preset",
+              "transforms": [
+                {
+                  "operation": "preset",
+                  "tool": "kiln.material-presets",
+                  "version": "1",
+                  "parameters": {
+                    "presetId": "coarse-soil",
+                    "seed": 1205
+                  }
+                }
+              ],
+              "procedural": {
+                "compiler": "kiln.procedural-texture.v2",
+                "spec": {
+                  "schemaVersion": 2,
+                  "size": 256,
+                  "usage": "normal",
+                  "layers": [
+                    {
+                      "op": "noise",
+                      "colorA": 5592405,
+                      "colorB": 11184810,
+                      "scale": 8,
+                      "octaves": 3,
+                      "seed": 1205,
+                      "blend": "normal",
+                      "opacity": 1
+                    },
+                    {
+                      "op": "noise",
+                      "colorA": 2236962,
+                      "colorB": 14540253,
+                      "scale": 32,
+                      "octaves": 3,
+                      "seed": 1205,
+                      "blend": "normal",
+                      "opacity": 0.3
+                    }
+                  ]
+                },
+                "derive": {
+                  "kind": "normal-from-height",
+                  "strength": 1.5
+                },
+                "recipeHash": "sha256:e0db2c390ce48c2c5e5d08f50066cf4f0c9c0438b3bcc8bd28829cdc132aa792",
+                "pixelHash": "sha256:fb8e1bd224b5e43699b92cba6e33cd2ed6722d62967dbbce104fc0f93c6215c2",
+                "encoder": {
+                  "name": "sharp",
+                  "version": "0.35.4"
+                }
+              }
+            },
+            {
+              "slot": "metallicRoughness",
+              "file": "metallicRoughness.png",
+              "sha256": "sha256:1aa2e221324da217bc209113ade0a82f0749b7230f002c7903a3193968518851",
+              "bytes": 21206,
+              "width": 256,
+              "height": 256,
+              "usage": "metallicRoughness",
+              "colorSpace": "linear",
+              "channelPacking": "r-occlusion-g-roughness-b-metallic",
+              "sourceId": "preset",
+              "transforms": [
+                {
+                  "operation": "preset",
+                  "tool": "kiln.material-presets",
+                  "version": "1",
+                  "parameters": {
+                    "presetId": "coarse-soil",
+                    "seed": 1205
+                  }
+                }
+              ],
+              "procedural": {
+                "compiler": "kiln.procedural-texture.v2",
+                "spec": {
+                  "schemaVersion": 2,
+                  "size": 256,
+                  "usage": "metallicRoughness",
+                  "layers": [
+                    {
+                      "op": "noise",
+                      "colorA": 16757760,
+                      "colorB": 16771840,
+                      "scale": 8,
+                      "octaves": 3,
+                      "seed": 1205,
+                      "blend": "normal",
+                      "opacity": 1
+                    }
+                  ]
+                },
+                "recipeHash": "sha256:8f2e48aacbbceb2e18f70e048adeb9eae223eaf1a1339ba89678ae5c8c1b422d",
+                "pixelHash": "sha256:7ae6dd8edf0c16842bd93ac5d6df714647621101c1c22c77aa57d632b66d533e",
+                "encoder": {
+                  "name": "sharp",
+                  "version": "0.35.4"
+                }
+              }
+            }
+          ]
+        }
+      },
+      {
+        "kind": "kiln.material.v1",
+        "delivery": "runtime",
+        "manifest": {
+          "schemaVersion": 1,
+          "materialId": "troy-linen",
+          "revisionId": "sha256:b3b5d252a37410d00716cf771f6e843e6dc142bad6747ad73f748bcd6e856de8",
+          "name": "Neutral woven fabric",
+          "tags": [
+            "fabric",
+            "procedural"
+          ],
+          "tileable": true,
+          "physicalSizeMeters": {
+            "width": 0.5,
+            "height": 0.5
+          },
+          "parameters": {
+            "roughness": 1,
+            "metalness": 1,
+            "emissiveIntensity": 1,
+            "alphaMode": "opaque",
+            "alphaCutoff": 0.5,
+            "doubleSided": false
+          },
+          "sources": [
+            {
+              "id": "preset",
+              "kind": "procedural",
+              "provider": "Kiln material presets v1",
+              "creator": "Kiln v1 readiness dogfood (procedural preset)",
+              "assetId": "woven-fabric",
+              "license": {
+                "spdx": "CC0-1.0",
+                "url": "https://creativecommons.org/publicdomain/zero/1.0/",
+                "attribution": ""
+              },
+              "originalFiles": []
+            }
+          ],
+          "maps": [
+            {
+              "slot": "baseColor",
+              "file": "baseColor.png",
+              "sha256": "sha256:3dcf1f2bc42d86c926bda0af4b9a3acf8f7b657b671aefcb56d111b2e5b6935a",
+              "bytes": 24986,
+              "width": 256,
+              "height": 256,
+              "usage": "albedo",
+              "colorSpace": "srgb",
+              "sourceId": "preset",
+              "transforms": [
+                {
+                  "operation": "preset",
+                  "tool": "kiln.material-presets",
+                  "version": "1",
+                  "parameters": {
+                    "presetId": "woven-fabric",
+                    "seed": 1204
+                  }
+                }
+              ],
+              "procedural": {
+                "compiler": "kiln.procedural-texture.v2",
+                "spec": {
+                  "schemaVersion": 2,
+                  "size": 256,
+                  "usage": "albedo",
+                  "layers": [
+                    {
+                      "op": "noise",
+                      "colorA": 10787463,
+                      "colorB": 12498079,
+                      "scale": 8,
+                      "octaves": 3,
+                      "seed": 1204,
+                      "blend": "normal",
+                      "opacity": 1
+                    },
+                    {
+                      "op": "stripes",
+                      "colorA": 9866361,
+                      "colorB": 13682609,
+                      "count": 32,
+                      "angleDeg": 0,
+                      "blend": "normal",
+                      "opacity": 0.3
+                    },
+                    {
+                      "op": "stripes",
+                      "colorA": 9866361,
+                      "colorB": 13682609,
+                      "count": 32,
+                      "angleDeg": 90,
+                      "blend": "normal",
+                      "opacity": 0.3
+                    }
+                  ]
+                },
+                "recipeHash": "sha256:47aa78a70ffd59507d39679e969026d07dada0e697282fa0d6306e59f1452261",
+                "pixelHash": "sha256:304cf0a10e4c08f6820f744e2be2581789c5d6e739a8ee3974aa925afa716445",
+                "encoder": {
+                  "name": "sharp",
+                  "version": "0.35.4"
+                }
+              }
+            },
+            {
+              "slot": "normal",
+              "file": "normal.png",
+              "sha256": "sha256:5fdbce73444af96fea31ea46119e7da05ae503a7f5eb54438ab7ed9d1e405da3",
+              "bytes": 20370,
+              "width": 256,
+              "height": 256,
+              "usage": "normal",
+              "colorSpace": "linear",
+              "normalConvention": "opengl",
+              "sourceId": "preset",
+              "transforms": [
+                {
+                  "operation": "preset",
+                  "tool": "kiln.material-presets",
+                  "version": "1",
+                  "parameters": {
+                    "presetId": "woven-fabric",
+                    "seed": 1204
+                  }
+                }
+              ],
+              "procedural": {
+                "compiler": "kiln.procedural-texture.v2",
+                "spec": {
+                  "schemaVersion": 2,
+                  "size": 256,
+                  "usage": "normal",
+                  "layers": [
+                    {
+                      "op": "noise",
+                      "colorA": 6316128,
+                      "colorB": 10066329,
+                      "scale": 8,
+                      "octaves": 3,
+                      "seed": 1204,
+                      "blend": "normal",
+                      "opacity": 1
+                    },
+                    {
+                      "op": "stripes",
+                      "colorA": 3355443,
+                      "colorB": 13421772,
+                      "count": 32,
+                      "angleDeg": 0,
+                      "blend": "normal",
+                      "opacity": 0.4
+                    },
+                    {
+                      "op": "stripes",
+                      "colorA": 3355443,
+                      "colorB": 13421772,
+                      "count": 32,
+                      "angleDeg": 90,
+                      "blend": "normal",
+                      "opacity": 0.4
+                    }
+                  ]
+                },
+                "derive": {
+                  "kind": "normal-from-height",
+                  "strength": 1
+                },
+                "recipeHash": "sha256:f278290ea94f614002f435f8a07f11003a8de786849aa182fa8dd6b119c8c502",
+                "pixelHash": "sha256:eb183f114aaae1a2942cdfa9df33e64030fca0273c364dd316492d27903cb9e1",
+                "encoder": {
+                  "name": "sharp",
+                  "version": "0.35.4"
+                }
+              }
+            },
+            {
+              "slot": "metallicRoughness",
+              "file": "metallicRoughness.png",
+              "sha256": "sha256:5ad755500635bceaea5f1db7acd2da819455088f995a7aa82a60f307b60ef06a",
+              "bytes": 21428,
+              "width": 256,
+              "height": 256,
+              "usage": "metallicRoughness",
+              "colorSpace": "linear",
+              "channelPacking": "r-occlusion-g-roughness-b-metallic",
+              "sourceId": "preset",
+              "transforms": [
+                {
+                  "operation": "preset",
+                  "tool": "kiln.material-presets",
+                  "version": "1",
+                  "parameters": {
+                    "presetId": "woven-fabric",
+                    "seed": 1204
+                  }
+                }
+              ],
+              "procedural": {
+                "compiler": "kiln.procedural-texture.v2",
+                "spec": {
+                  "schemaVersion": 2,
+                  "size": 256,
+                  "usage": "metallicRoughness",
+                  "layers": [
+                    {
+                      "op": "noise",
+                      "colorA": 16757760,
+                      "colorB": 16771840,
+                      "scale": 8,
+                      "octaves": 3,
+                      "seed": 1204,
+                      "blend": "normal",
+                      "opacity": 1
+                    }
+                  ]
+                },
+                "recipeHash": "sha256:051758c3061029e9292c41b09540364ab0aae03561b5fa2190fe9d5a40bbffa4",
+                "pixelHash": "sha256:82256f6ce1395d5928930204cbb8ef8910da710f8dc7b17081490371da24eecc",
+                "encoder": {
+                  "name": "sharp",
+                  "version": "0.35.4"
+                }
+              }
+            }
+          ]
+        }
+      },
+      {
+        "kind": "kiln.material.v1",
+        "delivery": "runtime",
+        "manifest": {
+          "schemaVersion": 1,
+          "materialId": "troy-masonry",
+          "revisionId": "sha256:bdadf5681b7f781dc116ca696211c87592144b6cccab9275743e3033ccddd8aa",
+          "name": "Warm brick and mortar",
+          "tags": [
+            "architecture",
+            "procedural"
+          ],
+          "tileable": true,
+          "physicalSizeMeters": {
+            "width": 2,
+            "height": 2
+          },
+          "parameters": {
+            "roughness": 1,
+            "metalness": 1,
+            "emissiveIntensity": 1,
+            "alphaMode": "opaque",
+            "alphaCutoff": 0.5,
+            "doubleSided": false
+          },
+          "sources": [
+            {
+              "id": "preset",
+              "kind": "procedural",
+              "provider": "Kiln material presets v1",
+              "creator": "Kiln v1 readiness dogfood (procedural preset)",
+              "assetId": "warm-brick",
+              "license": {
+                "spdx": "CC0-1.0",
+                "url": "https://creativecommons.org/publicdomain/zero/1.0/",
+                "attribution": ""
+              },
+              "originalFiles": []
+            }
+          ],
+          "maps": [
+            {
+              "slot": "baseColor",
+              "file": "baseColor.png",
+              "sha256": "sha256:94efb274b3fca40959e59ae19bea95de5dd4dd1ddfe7cb07751999bf511d0570",
+              "bytes": 41211,
+              "width": 256,
+              "height": 256,
+              "usage": "albedo",
+              "colorSpace": "srgb",
+              "sourceId": "preset",
+              "transforms": [
+                {
+                  "operation": "preset",
+                  "tool": "kiln.material-presets",
+                  "version": "1",
+                  "parameters": {
+                    "presetId": "warm-brick",
+                    "seed": 1201
+                  }
+                }
+              ],
+              "procedural": {
+                "compiler": "kiln.procedural-texture.v2",
+                "spec": {
+                  "schemaVersion": 2,
+                  "size": 256,
+                  "usage": "albedo",
+                  "layers": [
+                    {
+                      "op": "bricks",
+                      "brick": 10968130,
+                      "mortar": 11840150,
+                      "rows": 12,
+                      "cols": 4,
+                      "mortarWidth": 0.07,
+                      "stagger": 0.5,
+                      "blend": "normal",
+                      "opacity": 1
+                    },
+                    {
+                      "op": "noise",
+                      "colorA": 5257516,
+                      "colorB": 15384730,
+                      "scale": 16,
+                      "octaves": 3,
+                      "seed": 1201,
+                      "blend": "normal",
+                      "opacity": 0.2
+                    }
+                  ]
+                },
+                "recipeHash": "sha256:fe88591f1e2fc8bfa22131f1af950091435a1ae237ef35cc0b15574f97606dfa",
+                "pixelHash": "sha256:68863b4c35824e44927004ed0a3bcbfc865b91990ea0732a7cf5b59f4998745d",
+                "encoder": {
+                  "name": "sharp",
+                  "version": "0.35.4"
+                }
+              }
+            },
+            {
+              "slot": "normal",
+              "file": "normal.png",
+              "sha256": "sha256:d1bdcf4d8e1586405964b6e9a792e969d1d1ddbe17dca0ec8bfa81f4119d5c38",
+              "bytes": 38165,
+              "width": 256,
+              "height": 256,
+              "usage": "normal",
+              "colorSpace": "linear",
+              "normalConvention": "opengl",
+              "sourceId": "preset",
+              "transforms": [
+                {
+                  "operation": "preset",
+                  "tool": "kiln.material-presets",
+                  "version": "1",
+                  "parameters": {
+                    "presetId": "warm-brick",
+                    "seed": 1201
+                  }
+                }
+              ],
+              "procedural": {
+                "compiler": "kiln.procedural-texture.v2",
+                "spec": {
+                  "schemaVersion": 2,
+                  "size": 256,
+                  "usage": "normal",
+                  "layers": [
+                    {
+                      "op": "bricks",
+                      "brick": 11579568,
+                      "mortar": 4210752,
+                      "rows": 12,
+                      "cols": 4,
+                      "mortarWidth": 0.07,
+                      "stagger": 0.5,
+                      "blend": "normal",
+                      "opacity": 1
+                    },
+                    {
+                      "op": "noise",
+                      "colorA": 3158064,
+                      "colorB": 13684944,
+                      "scale": 16,
+                      "octaves": 3,
+                      "seed": 1201,
+                      "blend": "normal",
+                      "opacity": 0.12
+                    }
+                  ]
+                },
+                "derive": {
+                  "kind": "normal-from-height",
+                  "strength": 3
+                },
+                "recipeHash": "sha256:ba16c57e68ad474c5d6bcccf12ac7237497398048da516957873f559515cb8b6",
+                "pixelHash": "sha256:033ff00fd46c04598532534ee64d9a84af8241da8f07493e1c70a773676ce056",
+                "encoder": {
+                  "name": "sharp",
+                  "version": "0.35.4"
+                }
+              }
+            },
+            {
+              "slot": "metallicRoughness",
+              "file": "metallicRoughness.png",
+              "sha256": "sha256:41b59948dfdd727bdf28b99b4d68c0e0e9b424a42361ccd88a7177465ccd8082",
+              "bytes": 21262,
+              "width": 256,
+              "height": 256,
+              "usage": "metallicRoughness",
+              "colorSpace": "linear",
+              "channelPacking": "r-occlusion-g-roughness-b-metallic",
+              "sourceId": "preset",
+              "transforms": [
+                {
+                  "operation": "preset",
+                  "tool": "kiln.material-presets",
+                  "version": "1",
+                  "parameters": {
+                    "presetId": "warm-brick",
+                    "seed": 1201
+                  }
+                }
+              ],
+              "procedural": {
+                "compiler": "kiln.procedural-texture.v2",
+                "spec": {
+                  "schemaVersion": 2,
+                  "size": 256,
+                  "usage": "metallicRoughness",
+                  "layers": [
+                    {
+                      "op": "noise",
+                      "colorA": 16757760,
+                      "colorB": 16771840,
+                      "scale": 8,
+                      "octaves": 3,
+                      "seed": 1201,
+                      "blend": "normal",
+                      "opacity": 1
+                    }
+                  ]
+                },
+                "recipeHash": "sha256:5f361cd635239a50d16b515e050120b07418a376b53d7548a65b91f24d7b128d",
+                "pixelHash": "sha256:c5705f8158df98d33578363572d7cd181e6e35c53dfcff71f51e3b7c9b2904fa",
+                "encoder": {
+                  "name": "sharp",
+                  "version": "0.35.4"
+                }
+              }
+            }
+          ]
+        }
+      },
+      {
+        "kind": "kiln.material.v1",
+        "delivery": "runtime",
+        "manifest": {
+          "schemaVersion": 1,
+          "materialId": "troy-timber",
+          "revisionId": "sha256:e62c1bd5bf46305aa50732b3a82cdd9c66da1c8b2d0f5e0fdd392656851feb5c",
+          "name": "Warm straight wood grain",
+          "tags": [
+            "wood",
+            "procedural"
+          ],
+          "tileable": true,
+          "physicalSizeMeters": {
+            "width": 1,
+            "height": 1
+          },
+          "parameters": {
+            "roughness": 1,
+            "metalness": 1,
+            "emissiveIntensity": 1,
+            "alphaMode": "opaque",
+            "alphaCutoff": 0.5,
+            "doubleSided": false
+          },
+          "sources": [
+            {
+              "id": "preset",
+              "kind": "procedural",
+              "provider": "Kiln material presets v1",
+              "creator": "Kiln v1 readiness dogfood (procedural preset)",
+              "assetId": "wood-grain",
+              "license": {
+                "spdx": "CC0-1.0",
+                "url": "https://creativecommons.org/publicdomain/zero/1.0/",
+                "attribution": ""
+              },
+              "originalFiles": []
+            }
+          ],
+          "maps": [
+            {
+              "slot": "baseColor",
+              "file": "baseColor.png",
+              "sha256": "sha256:1d3f050d5ccf15afc1086c9d2b0a0d5b8b7dc9ee509b1da6ee38964222c0dab3",
+              "bytes": 29666,
+              "width": 256,
+              "height": 256,
+              "usage": "albedo",
+              "colorSpace": "srgb",
+              "sourceId": "preset",
+              "transforms": [
+                {
+                  "operation": "preset",
+                  "tool": "kiln.material-presets",
+                  "version": "1",
+                  "parameters": {
+                    "presetId": "wood-grain",
+                    "seed": 1202
+                  }
+                }
+              ],
+              "procedural": {
+                "compiler": "kiln.procedural-texture.v2",
+                "spec": {
+                  "schemaVersion": 2,
+                  "size": 256,
+                  "usage": "albedo",
+                  "layers": [
+                    {
+                      "op": "noise",
+                      "colorA": 7688503,
+                      "colorB": 12358752,
+                      "scale": 4,
+                      "octaves": 3,
+                      "seed": 1202,
+                      "blend": "normal",
+                      "opacity": 1
+                    },
+                    {
+                      "op": "stripes",
+                      "colorA": 6833455,
+                      "colorB": 13280630,
+                      "count": 40,
+                      "angleDeg": 0,
+                      "blend": "normal",
+                      "opacity": 0.3
+                    }
+                  ]
+                },
+                "recipeHash": "sha256:fd30d78e7c046d4a99f2a5c439d706537da4cbe571b149190e4a8265b3ba755a",
+                "pixelHash": "sha256:ddb5f88e13397a4a5ddfb7bf5512347afd5272c9fb7dcfe650a477add0f88532",
+                "encoder": {
+                  "name": "sharp",
+                  "version": "0.35.4"
+                }
+              }
+            },
+            {
+              "slot": "normal",
+              "file": "normal.png",
+              "sha256": "sha256:94c56a70ff76a97e7a0ceb3800c915620d27cd11b8637baba45c69e1edfa06b5",
+              "bytes": 17189,
+              "width": 256,
+              "height": 256,
+              "usage": "normal",
+              "colorSpace": "linear",
+              "normalConvention": "opengl",
+              "sourceId": "preset",
+              "transforms": [
+                {
+                  "operation": "preset",
+                  "tool": "kiln.material-presets",
+                  "version": "1",
+                  "parameters": {
+                    "presetId": "wood-grain",
+                    "seed": 1202
+                  }
+                }
+              ],
+              "procedural": {
+                "compiler": "kiln.procedural-texture.v2",
+                "spec": {
+                  "schemaVersion": 2,
+                  "size": 256,
+                  "usage": "normal",
+                  "layers": [
+                    {
+                      "op": "noise",
+                      "colorA": 6710886,
+                      "colorB": 10066329,
+                      "scale": 4,
+                      "octaves": 3,
+                      "seed": 1202,
+                      "blend": "normal",
+                      "opacity": 1
+                    },
+                    {
+                      "op": "stripes",
+                      "colorA": 6710886,
+                      "colorB": 11184810,
+                      "count": 40,
+                      "angleDeg": 0,
+                      "blend": "normal",
+                      "opacity": 0.25
+                    }
+                  ]
+                },
+                "derive": {
+                  "kind": "normal-from-height",
+                  "strength": 1.5
+                },
+                "recipeHash": "sha256:a32240399e76a57c0cdde62f6423afc57f1f0deaf23d0d16ba8fcf7168410629",
+                "pixelHash": "sha256:9de2b178dfd095d96244f0e8185212761b6672cb49ec22602093d8ef89ffb5d7",
+                "encoder": {
+                  "name": "sharp",
+                  "version": "0.35.4"
+                }
+              }
+            },
+            {
+              "slot": "metallicRoughness",
+              "file": "metallicRoughness.png",
+              "sha256": "sha256:99f3c7d1140ec2ff0176941b8ac88f930632cc569af308b18dc9ee83a7508d07",
+              "bytes": 22124,
+              "width": 256,
+              "height": 256,
+              "usage": "metallicRoughness",
+              "colorSpace": "linear",
+              "channelPacking": "r-occlusion-g-roughness-b-metallic",
+              "sourceId": "preset",
+              "transforms": [
+                {
+                  "operation": "preset",
+                  "tool": "kiln.material-presets",
+                  "version": "1",
+                  "parameters": {
+                    "presetId": "wood-grain",
+                    "seed": 1202
+                  }
+                }
+              ],
+              "procedural": {
+                "compiler": "kiln.procedural-texture.v2",
+                "spec": {
+                  "schemaVersion": 2,
+                  "size": 256,
+                  "usage": "metallicRoughness",
+                  "layers": [
+                    {
+                      "op": "noise",
+                      "colorA": 16744960,
+                      "colorB": 16760320,
+                      "scale": 8,
+                      "octaves": 3,
+                      "seed": 1202,
+                      "blend": "normal",
+                      "opacity": 1
+                    }
+                  ]
+                },
+                "recipeHash": "sha256:f0ec49219836d1735911405762eae895e71493c1467c200f16c43866b03cd1fe",
+                "pixelHash": "sha256:088a0c6cc69973435ace75f114c998ec34b9434584c75fd833159755fdf897e7",
+                "encoder": {
+                  "name": "sharp",
+                  "version": "0.35.4"
+                }
+              }
+            }
+          ]
+        }
+      }
+    ],
+    "rebuild": "external-dependencies-required"
+  },
+  "preview": {
+    "fidelity": {
+      "version": "kiln.view-fidelity.v1",
+      "requested": "full-preferred",
+      "delivered": "full-material",
+      "materialFaithful": true,
+      "exactArtifact": true,
+      "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1074",
+      "inputGlbSha256": "sha256:4788dc1d03987c9ccefd94644f0eb2d08bd3bf7edee31108dc1de8fa6b0d32d6",
+      "degraded": false,
+      "reasonCodes": []
+    },
+    "backdrop": "neutral"
+  }
+}

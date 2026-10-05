@@ -1,0 +1,208 @@
+{
+  "schemaVersion": 1,
+  "materialId": "farm-wood-grain",
+  "revisionId": "sha256:72660efdf55d5b2efe260bfe06e4631a0c3aef69e6226f34b4d6867ec22ef879",
+  "name": "Warm straight wood grain",
+  "tags": [
+    "wood",
+    "procedural"
+  ],
+  "tileable": true,
+  "physicalSizeMeters": {
+    "width": 1,
+    "height": 1
+  },
+  "parameters": {
+    "roughness": 1,
+    "metalness": 1,
+    "emissiveIntensity": 1,
+    "alphaMode": "opaque",
+    "alphaCutoff": 0.5,
+    "doubleSided": false
+  },
+  "sources": [
+    {
+      "id": "preset",
+      "kind": "procedural",
+      "provider": "Kiln material presets v1",
+      "creator": "Kiln Commons Farm pilot",
+      "assetId": "wood-grain",
+      "license": {
+        "spdx": "CC0-1.0",
+        "url": "https://creativecommons.org/publicdomain/zero/1.0/",
+        "attribution": "Procedurally generated with Kiln; recipe and seed retained."
+      },
+      "originalFiles": []
+    }
+  ],
+  "maps": [
+    {
+      "slot": "baseColor",
+      "file": "baseColor.png",
+      "sha256": "sha256:ac58a1956794dcdbd860d9edd25bc4848f07523d051f48ce3ed25ca8a591a4ab",
+      "bytes": 31289,
+      "width": 256,
+      "height": 256,
+      "usage": "albedo",
+      "colorSpace": "srgb",
+      "sourceId": "preset",
+      "transforms": [
+        {
+          "operation": "preset",
+          "tool": "kiln.material-presets",
+          "version": "1",
+          "parameters": {
+            "presetId": "wood-grain",
+            "seed": 261
+          }
+        }
+      ],
+      "procedural": {
+        "compiler": "kiln.procedural-texture.v2",
+        "spec": {
+          "schemaVersion": 2,
+          "size": 256,
+          "usage": "albedo",
+          "layers": [
+            {
+              "op": "noise",
+              "colorA": 7688503,
+              "colorB": 12358752,
+              "scale": 4,
+              "octaves": 3,
+              "seed": 261,
+              "blend": "normal",
+              "opacity": 1
+            },
+            {
+              "op": "stripes",
+              "colorA": 6833455,
+              "colorB": 13280630,
+              "count": 40,
+              "angleDeg": 0,
+              "blend": "normal",
+              "opacity": 0.3
+            }
+          ]
+        },
+        "recipeHash": "sha256:81dfe787dcd343656a320e8063339f0523777e4c299ecc89ee4b123437240209",
+        "pixelHash": "sha256:048326ae40024df691aedbb31f1fe717a80156273b300de739056e0b1aa47a04",
+        "encoder": {
+          "name": "sharp",
+          "version": "0.35.4"
+        }
+      }
+    },
+    {
+      "slot": "normal",
+      "file": "normal.png",
+      "sha256": "sha256:727a6e8262b149fa0d7677f085d2455419c7d908ec39a0d01f8832c92a9352c8",
+      "bytes": 17195,
+      "width": 256,
+      "height": 256,
+      "usage": "normal",
+      "colorSpace": "linear",
+      "normalConvention": "opengl",
+      "sourceId": "preset",
+      "transforms": [
+        {
+          "operation": "preset",
+          "tool": "kiln.material-presets",
+          "version": "1",
+          "parameters": {
+            "presetId": "wood-grain",
+            "seed": 261
+          }
+        }
+      ],
+      "procedural": {
+        "compiler": "kiln.procedural-texture.v2",
+        "spec": {
+          "schemaVersion": 2,
+          "size": 256,
+          "usage": "normal",
+          "layers": [
+            {
+              "op": "noise",
+              "colorA": 6710886,
+              "colorB": 10066329,
+              "scale": 4,
+              "octaves": 3,
+              "seed": 261,
+              "blend": "normal",
+              "opacity": 1
+            },
+            {
+              "op": "stripes",
+              "colorA": 6710886,
+              "colorB": 11184810,
+              "count": 40,
+              "angleDeg": 0,
+              "blend": "normal",
+              "opacity": 0.25
+            }
+          ]
+        },
+        "derive": {
+          "kind": "normal-from-height",
+          "strength": 1.5
+        },
+        "recipeHash": "sha256:b01a9715a261439a1daf853be34b13fb2b8fd1b6d69edce44fde48582f138f28",
+        "pixelHash": "sha256:12fa6a98401282c8cc973ab815c6de8ced309311c5c9c6152167738000a57aec",
+        "encoder": {
+          "name": "sharp",
+          "version": "0.35.4"
+        }
+      }
+    },
+    {
+      "slot": "metallicRoughness",
+      "file": "metallicRoughness.png",
+      "sha256": "sha256:8a8791b9af0402a1da0194c29e5110fffb4434b2c80c69adb8134dda564edd1b",
+      "bytes": 21551,
+      "width": 256,
+      "height": 256,
+      "usage": "metallicRoughness",
+      "colorSpace": "linear",
+      "channelPacking": "r-occlusion-g-roughness-b-metallic",
+      "sourceId": "preset",
+      "transforms": [
+        {
+          "operation": "preset",
+          "tool": "kiln.material-presets",
+          "version": "1",
+          "parameters": {
+            "presetId": "wood-grain",
+            "seed": 261
+          }
+        }
+      ],
+      "procedural": {
+        "compiler": "kiln.procedural-texture.v2",
+        "spec": {
+          "schemaVersion": 2,
+          "size": 256,
+          "usage": "metallicRoughness",
+          "layers": [
+            {
+              "op": "noise",
+              "colorA": 16744960,
+              "colorB": 16760320,
+              "scale": 8,
+              "octaves": 3,
+              "seed": 261,
+              "blend": "normal",
+              "opacity": 1
+            }
+          ]
+        },
+        "recipeHash": "sha256:5a15f015126b9156233f3e0fc0c3c563c89aced5482844201b9fce06b09f9c70",
+        "pixelHash": "sha256:5352cbc0d9c2acf817631be7cfd9e38299abf5744a5bb05d85c2322b2ee8dcf0",
+        "encoder": {
+          "name": "sharp",
+          "version": "0.35.4"
+        }
+      }
+    }
+  ]
+}
