@@ -3,6 +3,8 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import PageHeader from '../../components/PageHeader.astro';
 import ScenePoster from '../../components/ScenePoster.astro';
 import troy from '../../data/troy.json';
+import { PACKS_ENABLED } from '../../lib/config';
+if (!PACKS_ENABLED) return Astro.redirect('/scenes/');
 const runtime={url:troy.base+'web/index.html'};
 ---
 <BaseLayout title="Troy scene | Kiln" description={troy.description} breadcrumbs={[{label:'Scenes',href:'/scenes/'},{label:'Troy',href:'/scenes/troy/'}]}>
