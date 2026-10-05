@@ -10,7 +10,7 @@ export function getStaticPaths() {
   return PACKS_ENABLED ? [{ params: { page: undefined } }] : [];
 }
 ---
-<BaseLayout title="Troy pack | Kiln" description="Troy heroes, soldiers, buildings, ships, equipment and vegetation. Download the models or explore the scene." breadcrumbs={[{label:'Packs',href:'/packs/'},{label:'Troy',href:'/packs/troy/'}]}>
+<BaseLayout title="Troy pack | Kiln" description="Troy heroes, soldiers, buildings, ships, equipment and vegetation. Download the models or explore the scene." breadcrumbs={[{label:'Packs',href:'/packs/'},{label:'Troy pack',href:'/packs/troy/'}]}>
  <div class="container py-8">
   <PageHeader>Troy</PageHeader>
   <p class="lead mt-6">{troy.assetCount} models for a Bronze Age coast, battlefield and city.</p>

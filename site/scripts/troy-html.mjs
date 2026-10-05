@@ -12,6 +12,7 @@ export function publicTroyHtml(bytes) {
   function visit(node) {
     if (node.tagName === 'button' && !node.attrs.some(attr => attr.name === 'type')) node.attrs.push({ name: 'type', value: 'button' });
     if (node.tagName === 'canvas' && node.attrs.some(attr => attr.name === 'aria-label') && !node.attrs.some(attr => attr.name === 'role')) node.attrs.push({ name: 'role', value: 'img' });
+    if (node.tagName === 'pre' && node.attrs.some(attr => attr.name === 'aria-label') && !node.attrs.some(attr => attr.name === 'role')) node.attrs.push({ name: 'role', value: 'log' });
     for (const child of node.childNodes ?? []) visit(child);
   }
   visit(html);

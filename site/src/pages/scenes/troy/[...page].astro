@@ -9,7 +9,7 @@ export function getStaticPaths() {
 }
 const runtime={url:troy.base+'web/index.html'};
 ---
-<BaseLayout title="Troy scene | Kiln" description={troy.description} breadcrumbs={[{label:'Scenes',href:'/scenes/'},{label:'Troy',href:'/scenes/troy/'}]}>
+<BaseLayout title="Troy scene | Kiln" description={troy.description} breadcrumbs={[{label:'Scenes',href:'/scenes/'},{label:'Troy scene',href:'/scenes/troy/'}]}>
  <div class="container py-8">
   <PageHeader>Troy scene</PageHeader><p class="lead mt-4">{troy.description}</p><a class="btn btn-secondary mt-6" href="/packs/troy/">View the Troy pack</a>
   <troy-scene class="mt-8 block border border-rule bg-stage" data-runtime-url={runtime.url}>
