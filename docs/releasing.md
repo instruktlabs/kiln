@@ -42,6 +42,10 @@ both dispatch and approve a release. The workflow itself restricts execution to
 main. Verify these settings before dispatching mode **stage**; the script refuses
 an unprotected environment rather than accepting an implicit environment creation.
 
+This GitHub environment was created and read back on 6 October 2026 with the
+settings above; see the execution record. Recheck it before staging. npm trusted
+publishing is not configured yet, and creating the environment published nothing.
+
 First-time npm staging creates a public `0.0.0-stage` placeholder. It therefore
 requires explicit authorization against the reviewed candidate. The staged code
 stays private until promotion. Do not stage a dummy package to reserve the name.

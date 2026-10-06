@@ -17,9 +17,9 @@ published yet.
 | P0 | Preserve publisher/repository setup | Complete in [publisher setup receipt](2026-10-06-publisher-setup.md); current checkout remote verified `instruktlabs/kiln` |
 | P1 | Public API, stability and migrations | In progress: all 55 public entrypoints classified in the SDK guide, experimental/re-export and deprecated-alias boundaries explicit, Discovery labels visible; final release freeze and target-version upgrade proof remain open |
 | P2 | Compiled ESM SDK and declarations | In progress: corrected 53-entry core qualification includes dependency-free arena; all 55 imports/declarations pass in fresh optional-peer installations at current and declared-minimum versions; final-version and platform evidence remain open |
-| P3 | Package identity, contents, executables and notices | In progress: unpublished `@instruktlabs/kiln@1.0.0-dev.0`, public metadata, MCP launcher, consumer doc allowlist and dependency notice refresh; development archive checks pass locally and in CI, final release audit remains open |
-| P4 | Clean installs and workspace upgrades | In progress: namespace package passes Windows/Linux/macOS and core checks without optional agent peers; target-release installed upgrades and harness workflows remain open |
-| P5 | Release automation and npm publication | In progress: manual exact-archive verification/staging workflow and owner runbook; qualified RC/final digests, live protected trust, owner staging approval, registry provenance and fresh registry install remain open |
+| P3 | Package identity, contents, executables and notices | In progress: unpublished `@instruktlabs/kiln@1.0.0-rc.1`, aligned engine/plugin identities, MCP launcher, consumer doc allowlist and dependency notices; fresh RC archive checks pass locally, final release audit remains open |
+| P4 | Clean installs and workspace upgrades | In progress: development package has platform CI evidence; official 0.10.0-to-RC upgrades pass for Claude/Codex workspaces with conflict refusal, reapplied customizations and byte-exact old assets; RC platform and final-version harness checks remain open |
+| P5 | Release automation and npm publication | In progress: manual exact-archive workflow and owner runbook; GitHub npm-release environment created with sole owner review, no admin bypass and protected branches; live npm trust, staging approval, registry provenance and fresh registry install remain open |
 | H1 | Native Cloudflare qualification | In progress: Linux image built, Trixie software renderer passes six textured views; Docker namespace probe fails closed, Bubblewrap launch-argument defect corrected; real Cloudflare isolation/execution, RSS, startup and measured cost remain pending |
 | H2 | Authenticated MCP and tenant boundary | Pending: OAuth, audience checks, user-scoped references/cache/storage, two-user negative tests, evaluator environment isolation |
 | H3 | Artifact lifecycle | Pending: durable source/revisions/GLBs/materials, authorized downloads, deletion, saved quotas and seven-day unsaved retention |
@@ -599,6 +599,81 @@ consumer declarations. Archive SHA-256:
 Receipts: `.cache/v1-hosting-runtime-tests.log` and
 `.cache/v1-hosting-runtime-package.json`. The corrected Linux image needs its
 new-head CI run; these local results do not establish host namespace availability.
+
+The corrected image ran in
+[37444497913](https://github.com/instruktlabs/kiln/actions/runs/37444497913)
+at `56c3bef44ee5c50ad040ad9a780149c422c8c2b8`. Software rendering again passed
+all six views; both CPU-stat snapshots now include the dotted kernel counter.
+Bubblewrap no longer reports the missing argument and instead reports that it has
+no permission to create a namespace. Direct `unshare` also returns `Operation not
+permitted`. The default Docker host remains unqualified, with no source evaluated;
+no seccomp, capabilities or host policy was relaxed. This does not determine
+Cloudflare's behavior. Its live probe still requires authenticated provider access.
+The archive SHA-256 is
+`c0e6dc0f358c49b87ea0848d0fb77c2cc01e3b23882f791311fdce1d93dc2e93`, and image ID is
+`sha256:b4bb2b10a189b957f2403e234a8b716271d0a8d56dd3e1043ba9ebbe5ea14ebe`.
+Receipts: `.cache/native-hosting-run-37444497913/`. The separate twelve-job
+package/engine [CI run 37444496448](https://github.com/instruktlabs/kiln/actions/runs/37444496448)
+passed all twelve jobs. [Website run 37444497764](https://github.com/instruktlabs/kiln/actions/runs/37444497764)
+also passed. The native hosting workflow remains failed independently; these
+package checks do not qualify its unsupported Docker namespace boundary.
+
+### First release candidate and historical workspace upgrades
+
+Prepared the unpublished `1.0.0-rc.1` identity across the npm package, engine and
+legacy/local plugin manifests, rebuilt runtime bundles and regenerated the small
+local plugin bundle. The maintained roadmap now targets 1.0, incorporating the
+previously planned 0.11 changes. Dated release records retain their original scope.
+The hosting image workflow now also runs for package/dependency, evaluator and
+renderer changes, so a new candidate cannot silently retain an old image receipt.
+
+The fresh Windows RC archive passes all 25 installed-package checks, 53 core
+imports and consumer declarations. SHA-256:
+`6ea9b29408b99766f0636ef27f94d9edd01526c7fb45470d811f13afa3cb755b`.
+Receipt: `.cache/v1-rc1-package.json`. Fresh current-peer and declared-floor
+installations each pass all seven optional-SDK checks, including all 55 runtime
+imports/declarations, native render/finish, composer catalog and offline provider
+construction. Receipts: `.cache/v1-rc1-optional-sdk.json` and
+`.cache/v1-rc1-optional-sdk-floor.json`. No model requests were made.
+The full RC suite passed 3,289 tests, two platform skips and no failures across
+411 files in 378.52 seconds (`.cache/v1-rc1-tests.log`). Typecheck, lint, toolchain,
+skills checks and 39 focused plugin/release tests pass. Subsequent README/runbook
+updates need the RC commit's freshly packed CI archive; the local archive above is
+retained qualification evidence, not the future publishing artifact.
+
+Downloaded the actual `kiln-engine-0.10.0.tgz` from the existing GitHub release and
+matched its published SHA-256:
+`e1ce85d7a27106cc2706bb23d2707e3904e214cf4afda329da5dbfceabf60c9f`.
+A fresh old-package installation created Claude and Codex workspaces. Both saved
+an asset through the old MCP server and verified its GLB/source/preview downloads.
+The qualification then added owner instructions, a launcher customization and an
+unmanaged note. `--check` and the refused conflicting `--upgrade` changed no file
+in a full workspace hash inventory. After retaining the edited originals and
+explicitly resolving those fixture conflicts, upgrade selected the RC runtime,
+kept the harness and note, and accepted the reapplied guide/launcher customizations.
+
+Reopened RC MCP sessions retained all seventeen tools, the exact old source and
+byte-identical downloads. An edited asset saved a new revision with the old
+revision as parent; the old downloads remained unchanged. The upgraded customized
+CLI exported the exact revised source. Eleven checks pass across the two harness
+configurations. Receipt: `.cache/v1-rc1-v010-upgrade.json`; reproducible probe:
+`.cache/v010-rc-upgrade-probe.mjs`. This proves the installed upgrade and MCP/CLI
+flows, not yet a new remote plugin-cache install or final npm registry upgrade.
+The first probe incorrectly expected `status: upgraded`; the API returns
+`status: current, upgraded: true`. That assertion was corrected without an engine
+change, and its initial failed receipt was retained.
+
+### Protected npm staging environment
+
+Created the repository-scoped GitHub `npm-release` environment through the
+[documented environment API](https://docs.github.com/en/rest/deployments/environments#create-or-update-an-environment),
+then independently read it back. It has one required reviewer,
+`matthew-kissinger`, `can_admins_bypass: false`, self-review available to that owner,
+and protected branches only. Main's protected state was read back as true.
+Receipts: `.cache/npm-release-environment-created.json` and
+`.cache/npm-release-environment-verified.json`. The existing `github-pages`
+environment was not modified. This performs the planned repository setup;
+it creates no npm package, publisher trust, token, stage, release or deployment.
 
 ## Owner handoffs
 

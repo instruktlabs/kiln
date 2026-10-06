@@ -1,6 +1,7 @@
 # Kiln roadmap
 
-Updated 5 October 2026, against main `7ed880f` and the published website.
+Updated 6 October 2026 for the active 1.0 publication cycle. Delivered website
+evidence below remains the 5 October checkpoint; it does not attest to a new release.
 [CHANGELOG.md](CHANGELOG.md) defines engine release behavior.
 The [backlog](docs/backlog.md) separates completed work, known limits and future decisions.
 Dated plans and reviews retain their original candidate scopes.
@@ -10,7 +11,8 @@ Dated plans and reviews retain their original candidate scopes.
 Kiln 0.10.0 remains the current engine tag. Standalone authoring, optional projects,
 materials, Live Review, calibrated review lighting, bounded tool results and the
 current CLI/MCP contracts are implemented. Subsequent core fixes and compatible
-dependency upgrades are on main; the planned 0.11 package release is separate.
+dependency upgrades are on main. The owner selected 1.0 as the next publication
+target, incorporating the previously planned 0.11 changes.
 
 The completed scene optimization pass landed in #131, ORM UV/transform fixes in
 #132 and the core/stabilization/site follow-ups in #133. Their bounded qualification
@@ -42,14 +44,20 @@ this dated list is not a substitute for inspecting them.
 
 ## Next engine and product milestones
 
-1. Release the main-only breaking optimizer changes as the planned 0.11 package,
-   with explicit saved-source replay/migration guidance and installed-package gates.
-   Website deployment did not publish a new engine tag or npm package.
+1. Publish `@instruktlabs/kiln@1.0.0` with the compiled SDK, CLI, local MCP and skills,
+   including the main-only optimizer changes and explicit saved-source migration.
+   Qualify the RC, upgrades, platform gates and exact registry artifact. Follow the
+   [publication plan](docs/plans/2026-10-05-v1-publication-plan.md) and
+   [execution record](docs/reviews/2026-10-06-v1-execution.md). A source candidate or
+   website deployment does not establish npm publication.
 2. Qualify broader destination/importer support when adopted, especially LOD,
    visibility and optional compressed runtime derivatives. Current scene delivery
    does not imply universal Meshopt, Draco or KTX2 loader support.
-3. Develop further packs and the public v1 package as separate milestones.
-   Ten-pack production is not unfinished work in the current Troy release.
+3. Qualify and deploy the authenticated Cloudflare service, distribute the Claude
+   Code/Codex plugins and submit applicable vendor directory candidates. Hosted
+   access stays free within quotas, with optional sponsorship and no user billing.
+   Track npm publication, hosting, plugin distribution and vendor review separately.
+   Further packs and community contribution triage stay outside this release cycle.
 
 The full optimizer now preserves semantic nodes, hierarchy, placements, animated
 targets and LOD relationships; ordinary named meshes can become empty semantic

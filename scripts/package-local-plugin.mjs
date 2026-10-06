@@ -83,7 +83,9 @@ async function expectedFiles() {
     files.set(name, bytes);
   const development = pkg.version.includes('-dev.')
     ? '**Development candidate.** This version is not published to npm. Qualification requires the reviewed local engine archive via `--archive`.\n\n'
-    : '';
+    : pkg.version.includes('-rc.')
+      ? '**Release candidate.** Use the reviewed archive via `--archive` for local qualification. Registry installation requires this exact version to be available on npm.\n\n'
+      : '';
   files.set(
     'README.md',
     Buffer.from(

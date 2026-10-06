@@ -7,7 +7,7 @@ separate milestones. The package is not published on the npm registry.
 ## Unreleased
 
 Changes since the 0.10.0 tagged package release. The checkout uses the unpublished
-`1.0.0-dev.0` development version. Source/main and website deployment are separate
+`1.0.0-rc.1` release candidate. Source/main and website deployment are separate
 from publishing a new installable package.
 
 - **Breaking:** the npm identity is now `@instruktlabs/kiln`, with compiled ESM and
@@ -37,7 +37,7 @@ from publishing a new installable package.
   before exporting. The eight-asset campaign records its incomplete handoffs and
   visual defects separately from valid exports.
 
-- **Breaking (planned 0.11):** `optimize: 'full'` replaces flatten/join with rigid-group
+- **Breaking (v1 candidate):** `optimize: 'full'` replaces flatten/join with rigid-group
   merging. Its rigid-merge pass preserves node names, hierarchy and transforms, including animated targets,
   named joint pivots, semantic nodes, composition placements and LOD levels. Ordinary
   named mesh nodes can become empty or hold merged geometry. When geometry must remain

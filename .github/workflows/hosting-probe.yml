@@ -7,6 +7,10 @@ on:
       - .github/workflows/hosting-probe.yml
       - scripts/hosting/**
       - scripts/smoke-renderer.mjs
+      - src/evaluator/**
+      - render-service/**
+      - package.json
+      - bun.lock
   workflow_dispatch:
 
 permissions:

@@ -1,13 +1,13 @@
 {
   "schemaVersion": 1,
   "kind": "kiln-local-plugin",
-  "engineVersion": "1.0.0-dev.0",
+  "engineVersion": "1.0.0-rc.1",
   "files": {
-    ".claude-plugin/plugin.json": "sha256:911dece77644051be006d2c71fabf11325838b1a6bf85eda495f634e7d143887",
+    ".claude-plugin/plugin.json": "sha256:5bf6fedd28a3b9ee3fa93bd6a89874a4ed5993c62473e05ac77960f4040be0d3",
     "LICENSE": "sha256:cdba278ebf1d6de618869936226bf03be4887179c128efc7aaa13d22034826a5",
-    "plugin.json": "sha256:65b3ae9acc0a041c124826f360ace0fa896520306c3eabb11fa9e08100d508e4",
-    "README.md": "sha256:62e8a72f0a04957db395cd8743d6a31b7010737b3a6bbecc132021e3526eb276",
-    "runtime.json": "sha256:b710f5cba3b38179468ea40570a22b1e4e229ad22780669963ef441da9e6ae26",
+    "plugin.json": "sha256:2410014ba1112930d7a1b20dd1e6ce12508b26551a6cce970a00b2c84015ef90",
+    "README.md": "sha256:5c773283968b63a29c05edf1f517cc0b5e5d9d44880442a4f76b35a540300744",
+    "runtime.json": "sha256:4deba826fd99f813d0a401add295f99b75937377af6cb45539bf63c9ff58d6f5",
     "scripts/setup-workspace.mjs": "sha256:0936f482a213706cf1576da11e57d40993b90f42b486f262e55d38d8d27b2e4d",
     "skills/kiln-setup-workspace/references/plugin-install.md": "sha256:84f4ce4c9620aae1e6b37a6a04f5c874feae507c9e7a2f24fe62e48bbe6c09bd",
     "skills/kiln-setup-workspace/SKILL.md": "sha256:9dbcb66514e21ea11b097bb1cd4b27b616834ded3e8182ea804f370add37a69f"
