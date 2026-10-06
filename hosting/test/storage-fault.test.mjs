@@ -55,6 +55,15 @@ const upload = (owner, path = '/upload') =>
   });
 const prefix = (owner) => `tenants/${namespace.idFromName(owner)}/artifacts/`;
 
+test('unsaved retention uses one creation instant even when the clock advances', async () => {
+  const db = await database('retention-clock');
+  await db.exec("INSERT INTO faults VALUES ('ticking-clock')");
+  const result = await upload('retention-clock');
+  assert.equal(result.status, 201);
+  const record = await result.json();
+  assert.equal(record.expiresAt - record.createdAt, 7 * 24 * 60 * 60 * 1000);
+});
+
 test('upload deadline includes R2 acknowledgement and retains failed-cleanup quota for retry', async () => {
   const db = await database('deadline');
   await db.exec("INSERT INTO faults VALUES ('slow-ack'), ('delete-failure')");

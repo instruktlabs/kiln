@@ -28,11 +28,13 @@ export class StorageFaultFixture extends DurableObject<{ ARTIFACTS: R2Bucket }> 
         return typeof value === 'function' ? value.bind(target) : value;
       },
     });
+    let fixtureClock = Date.now();
     this.artifacts = new ArtifactStore(
       ctx,
       bucket,
       { maxBytes: 1024 * 1024, maxObjects: 32, maxGroups: 8 },
-      () => Date.now() + (fault('aged') ? 16 * 60 * 1000 : 0),
+      () =>
+        fault('ticking-clock') ? ++fixtureClock : Date.now() + (fault('aged') ? 16 * 60 * 1000 : 0),
       500,
     );
   }

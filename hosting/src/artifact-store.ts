@@ -187,6 +187,7 @@ export class ArtifactStore {
     // Schedule recovery before reserving storage or starting an external write.
     await this.schedule(this.now() + UPLOAD_GRACE);
     const id = crypto.randomUUID().replace(/-/g, '');
+    const createdAt = this.now();
     const row: ArtifactRow = {
       id,
       object_key: this.prefix + id,
@@ -194,8 +195,8 @@ export class ArtifactStore {
       bytes,
       filename,
       media_type: mediaType,
-      created_at: this.now(),
-      expires_at: this.now() + 7 * DAY,
+      created_at: createdAt,
+      expires_at: createdAt + 7 * DAY,
       state: 'uploading',
     };
     this.ctx.storage.transactionSync(() => {
