@@ -1,0 +1,158 @@
+name: Native hosting preflight
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - .github/workflows/hosting-probe.yml
+      - scripts/hosting/**
+      - scripts/smoke-renderer.mjs
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hosting-probe-${{ github.ref }}
+  cancel-in-progress: true
+
+# This conditional provider-neutral probe is separate from the required package
+# matrix. A successful Docker run would still require qualification on Cloudflare.
+jobs:
+  image-preflight:
+    name: Linux image isolation and software rendering
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    env:
+      KILN_RENDER: cpu
+      CANDIDATE_COMMIT: ${{ github.event.pull_request.head.sha || github.sha }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2
+        with:
+          bun-version: 1.4.2
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 22.23.3
+      - run: npm install --global npm@12.2.0
+      - run: bun install --frozen-lockfile
+      - run: bun run build:runtime
+
+      - name: Prepare a six-file context and record candidate identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p .cache/hosting-ci/context .cache/hosting-ci/receipts
+          context="$PWD/.cache/hosting-ci/context"
+          receipts="$PWD/.cache/hosting-ci/receipts"
+          npm pack --ignore-scripts --pack-destination "$context"
+          set -- "$context"/*.tgz
+          test "$#" -eq 1 && test -f "$1"
+          mv "$1" "$context/candidate.tgz"
+          (cd "$context" && sha256sum candidate.tgz > candidate.sha256)
+          cp scripts/hosting/Dockerfile scripts/hosting/native-qualification.mjs \
+            scripts/hosting/run-native-qualification.mjs scripts/smoke-renderer.mjs "$context/"
+          test "$(find "$context" -mindepth 1 -maxdepth 1 -type f | wc -l)" -eq 6
+          cp "$context/candidate.sha256" "$receipts/"
+          node --input-type=module -e '
+            import { writeFileSync } from "node:fs";
+            writeFileSync(".cache/hosting-ci/receipts/provenance.json", JSON.stringify({
+              commit: process.env.CANDIDATE_COMMIT, runId: process.env.GITHUB_RUN_ID,
+              attempt: process.env.GITHUB_RUN_ATTEMPT, provider: "github-actions-docker",
+              cloudflareQualified: false
+            }, null, 2) + "\n");'
+
+      - name: Build the non-root image without publishing it
+        id: image
+        shell: bash
+        run: |
+          set -euo pipefail
+          docker build --platform linux/amd64 --tag kiln-native-probe:ci \
+            .cache/hosting-ci/context 2>&1 | tee .cache/hosting-ci/receipts/image-build.log
+          docker image inspect kiln-native-probe:ci --format \
+            '{"id":{{json .Id}},"os":{{json .Os}},"arch":{{json .Architecture}},"user":{{json .Config.User}},"layers":{{json .RootFS.Layers}}}' \
+            > .cache/hosting-ci/receipts/image.json
+          test "$(docker image inspect kiln-native-probe:ci --format '{{.Config.User}}')" = node
+          # A never-started container lets us retain the image inventories even if
+          # source isolation fails before the renderer is reached.
+          docker create --name kiln-probe-inventory kiln-native-probe:ci
+          docker cp kiln-probe-inventory:/app/package-lock.json .cache/hosting-ci/receipts/package-lock.json
+          docker cp kiln-probe-inventory:/probe/os-packages.txt .cache/hosting-ci/receipts/os-packages.txt
+          docker cp kiln-probe-inventory:/probe/node-version.txt .cache/hosting-ci/receipts/node-version.txt
+          docker rm kiln-probe-inventory
+
+      - name: Require isolated native evaluation and rendering
+        if: ${{ !cancelled() && steps.image.outcome == 'success' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          receipts="$PWD/.cache/hosting-ci/receipts"
+          docker create --name kiln-probe-isolation --network none --cpus 1 \
+            --memory 6g --memory-swap 6g --pids-limit 256 --cap-drop ALL \
+            --security-opt no-new-privileges kiln-native-probe:ci
+          set +e
+          timeout --signal=TERM --kill-after=15s 240s docker start --attach kiln-probe-isolation \
+            > "$receipts/isolation.log" 2>&1
+          attached_status=$?
+          set -e
+          if [ "$(docker inspect kiln-probe-isolation --format '{{.State.Running}}')" = true ]; then
+            docker kill kiln-probe-isolation
+          fi
+          docker inspect kiln-probe-isolation --format '{{json .State}}' > "$receipts/isolation-state.json"
+          printf '%s\n' "$attached_status" > "$receipts/isolation-attach-exit.txt"
+          # A missing receipt is a failed probe; the log/state above still survives.
+          docker cp kiln-probe-isolation:/tmp/qualification "$receipts/isolation"
+          test "$attached_status" -eq 0
+          test "$(docker inspect kiln-probe-isolation --format '{{.State.ExitCode}}')" -eq 0
+          node --input-type=module -e 'import{readFileSync}from"node:fs";if(JSON.parse(readFileSync(".cache/hosting-ci/receipts/isolation/receipt.json")).status!=="passed")process.exit(1)'
+
+      - name: Diagnose the trusted software-renderer fixture independently
+        if: ${{ !cancelled() && steps.image.outcome == 'success' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          receipts="$PWD/.cache/hosting-ci/receipts"
+          # Fixed repository fixture only. This run does not qualify untrusted source.
+          docker create --name kiln-probe-renderer --network none --cpus 1 \
+            --memory 6g --memory-swap 6g --pids-limit 256 --cap-drop ALL \
+            --security-opt no-new-privileges kiln-native-probe:ci \
+            node /probe/smoke-renderer.mjs /app/node_modules/@instruktlabs/kiln /tmp/renderer software
+          set +e
+          timeout --signal=TERM --kill-after=15s 180s docker start --attach kiln-probe-renderer \
+            > "$receipts/renderer.log" 2>&1
+          attached_status=$?
+          set -e
+          if [ "$(docker inspect kiln-probe-renderer --format '{{.State.Running}}')" = true ]; then
+            docker kill kiln-probe-renderer
+          fi
+          docker inspect kiln-probe-renderer --format '{{json .State}}' > "$receipts/renderer-state.json"
+          printf '%s\n' "$attached_status" > "$receipts/renderer-attach-exit.txt"
+          docker cp kiln-probe-renderer:/tmp/renderer "$receipts/renderer"
+          test "$attached_status" -eq 0
+          test "$(docker inspect kiln-probe-renderer --format '{{.State.ExitCode}}')" -eq 0
+          node --input-type=module -e 'import{readFileSync}from"node:fs";const r=JSON.parse(readFileSync(".cache/hosting-ci/receipts/renderer/receipt.json"));if(r.status!=="passed"||r.software!==true)process.exit(1)'
+
+      - name: Retain evidence, including unsuccessful qualification
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: native-hosting-preflight
+          path: |
+            .cache/hosting-ci/receipts/
+            .cache/hosting-ci/context/candidate.tgz
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Remove only this job's probe containers
+        if: always()
+        shell: bash
+        run: |
+          for name in kiln-probe-inventory kiln-probe-isolation kiln-probe-renderer; do
+            if docker container inspect "$name" >/dev/null 2>&1; then
+              docker rm --force "$name"
+            fi
+          done

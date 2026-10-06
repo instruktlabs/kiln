@@ -26,8 +26,14 @@ preflight, use an explicitly named fresh container, `--network none`, a memory
 limit, a CPU limit, and a PID limit. Copy `/tmp/qualification` out after exit and
 inspect its receipt before removing that specific probe container. Do not add
 privileged mode, host namespaces, extra capabilities or a looser seccomp profile
-to force a pass. The current Docker daemon is unavailable on the development PC;
-the image has not yet been built or run.
+to force a pass. The current Docker daemon is unavailable on the development PC.
+The separate `Native hosting preflight` GitHub workflow builds this six-file
+context on Linux, records the exact archive/image/dependency identities, and runs
+with no network or host mounts, one CPU, 6 GiB memory, 256 PIDs, no capabilities
+and no new privileges. It retains unsuccessful receipts and keeps the workflow
+failed when qualification fails. Its independently executed trusted renderer
+fixture can diagnose native dependencies after an isolation failure; it never
+qualifies untrusted evaluation. CI evidence does not establish Cloudflare support.
 
 The probe stops at the first failure. Successful readiness must contain all ten
 engine invariants. Only then does it evaluate a fixed box twice through the

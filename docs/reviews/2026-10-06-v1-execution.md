@@ -533,6 +533,22 @@ Node 22.23.3 package/adapter checks, not live-provider, model-quality, minimum-N
 optional-agent or Cloudflare qualification. The installation guide now gives the
 tested optional-peer command and distinguishes it from ordinary CLI/MCP setup.
 
+### Linux image preflight
+
+Added a separate, path-filtered `Native hosting preflight` workflow. It builds the
+minimal six-file context from the exact PR head archive without publishing an
+image or deployment. The two sequential containers run with networking disabled,
+no host mounts, one CPU, 6 GiB memory, 256 PIDs, dropped capabilities and no new
+privileges. Isolation failure keeps the workflow failed; the trusted software
+fixture still runs independently to diagnose image dependencies. Artifacts retain
+archive/image identities, the installed npm lock, OS inventory, logs, container
+exit state and available probe receipts/images. Provider qualification remains
+separate, and neither the package CI contract nor runtime isolation was weakened.
+
+Local validation parsed the YAML, syntax-checked all eight shell steps with Bash,
+and passed 17 existing native-probe/repository-contract tests. The first real
+image build and execution are pending this workflow's CI run.
+
 ## Owner handoffs
 
 Cloudflare CLI consent is pending. The default 474-permission request was not
