@@ -19,6 +19,7 @@ let loadContainerMcpRuntime;
 let createNativeEvaluatorPort;
 let runtime;
 let namespace;
+let runIntegratedOnce, integratedSource;
 const handlers = [];
 before(async () => {
   const outfile = fileURLToPath(
@@ -94,6 +95,15 @@ before(async () => {
     }),
   );
   namespace = await runtime.getDurableObjectNamespace('TENANTS');
+  const trial = new URL('../../.cache/hosted-mcp-test/integrated-run.mjs', import.meta.url);
+  await build({
+    entryPoints: [fileURLToPath(new URL('../probe/integrated-run.ts', import.meta.url))],
+    outfile: fileURLToPath(trial),
+    bundle: true,
+    format: 'esm',
+    platform: 'node',
+  });
+  ({ runIntegratedOnce, integratedSource } = await import(trial));
 });
 after(async () => {
   for (const handler of handlers) await handler.close();
@@ -272,6 +282,96 @@ test('real HTTP tools validate, render, save, restore and read exact source afte
   });
   assert.equal(other.isError, true);
   assert.ok(!JSON.stringify(other).includes(source));
+});
+
+test('render, save, restore and export work with a fresh native host for every MCP request', async () => {
+  const owner = 'one-request-per-vm';
+  const call = async (name, args) => {
+    const handler = host(owner);
+    try {
+      return await tool(handler, name, args);
+    } finally {
+      await handler.close();
+    }
+  };
+  const rendered = await call('kiln_render', { code: source, capture: { preset: '1x1' } });
+  const saved = await call('kiln_save', {
+    programRef: rendered.programRef,
+    collection: 'project',
+    name: 'Fresh host fixture',
+  });
+  const restored = await call('kiln_assets', {
+    action: 'restore',
+    collection: 'project',
+    assetId: saved.asset.assetId,
+    revisionId: saved.asset.revisionId,
+  });
+  assert.equal(restored.programRef, rendered.programRef);
+  const original = await call('kiln_source', { programRef: restored.programRef });
+  assert(JSON.stringify(original).includes('createRoot'));
+  const exported = await call('kiln_export', {
+    collection: 'project',
+    assetId: saved.asset.assetId,
+    revisionId: saved.asset.revisionId,
+  });
+  assert(exported);
+});
+
+test('the complete fixed provider sequence matches real fresh-host MCP and private asset contracts', async () => {
+  const values = new Map();
+  let count = 0,
+    paused = false;
+  const store = {
+    get: async (key) => structuredClone(values.get(key)),
+    put: async (key, value) => values.set(key, structuredClone(value)),
+    transaction: async (fn) => fn(store),
+  };
+  const receipts = [];
+  const result = await runIntegratedOnce(store, {
+    open: async () => {},
+    close: async () => {},
+    pause: async () => {
+      paused = true;
+    },
+    status: async () => ({ paused, activeRequests: 0, pendingCleanup: 0, maxConcurrent: 1 }),
+    retain: async (name, bytes) => {
+      receipts.push({ name, bytes });
+    },
+    dispatch: async (owner, request) => {
+      if (++count > 9) return new Response('quota', { status: 429 });
+      const handler = host(
+        owner,
+        {},
+        {
+          render: async (code, options) => {
+            assert.equal(code, integratedSource);
+            return renderGLB(code, options);
+          },
+        },
+        async (request) => {
+          const size = request.size ?? request.width;
+          return {
+            ok: true,
+            rendererId: 'dawn-vulkan:software-fixture',
+            viewsPng: (request.viewDirs ?? request.cameras).map(() =>
+              encodePng(new Uint8Array(size * size * 3).fill(128), size, size),
+            ),
+            derivativeFidelity: {
+              materialFaithful: true,
+              inputGlbSha256: `sha256:${createHash('sha256').update(request.glb).digest('hex')}`,
+            },
+          };
+        },
+      );
+      const response = await handler.fetch(new Request('http://kiln-native.internal/mcp', request));
+      const bytes = await response.arrayBuffer();
+      await handler.close();
+      return new Response(bytes, { status: response.status, headers: response.headers });
+    },
+  });
+  assert.equal(result.passed, true, JSON.stringify(result));
+  assert.equal(result.results.length, 10);
+  assert.equal(receipts.length, 10);
 });
 
 test('native MCP uses the material-view port and retains truthful CPU fallback', async () => {

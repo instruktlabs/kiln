@@ -2359,3 +2359,31 @@ does not inject one, so the SDK can report `source-development:unverified` in a
 saved manifest. A successful round trip alone must not qualify that provenance.
 The broad README, Troy images and site-content refresh remains deferred until
 the final hosted behavior is verified, as requested.
+
+## Integrated provider candidate prepared
+
+The fixed ten-step sequence is prepared in
+[the integrated trial record](../../hosting/probe/INTEGRATED.md): nine admitted
+MCP requests plus quota rejection, with a durable ceiling of seventeen VM starts.
+The actual private Worker, admission service, diagnostic allowance and R2 evidence
+path now pass local workerd tests, including replay after durable-object eviction
+and a stop issued before the trial. The complete fixed lifecycle also passes the
+actual MCP adapter with a fresh host per request and real local tenant storage.
+The generated deployment is schema-validated and checked for private-only routing,
+fixed budgets, disabled Container logs/SSH and immutable image references.
+
+The eviction test found a real early-failure defect: native startup rejection
+could leave its inbound RPC request body unread, retaining the admission caller's
+execution context. Closing an unused body in the production request boundary
+fixes the demonstrated failure. The diagnostic budget boundary now does the same
+when denying work; its focused cancellation regression also failed before the fix.
+These changes do not alter the published SDK or immutable installed images.
+
+All 270 hosted tests passed before the added deployment-configuration check, which
+also passes. Hosted types/builds, lint and redacted source/bundle scans pass. The
+preceding CI corrections have passed both hosted platforms and all image jobs;
+this new candidate still requires its own exact-source CI. No cloud upload or
+deployment has occurred, and the earlier twenty-two-job allowance remains spent.
+The proposed separate trial allowance is $1; owner approval will be requested only
+after the candidate checks pass. Live OAuth, provenance, account lifecycle,
+downloads, production operations and vendor submissions remain separate open work.

@@ -49,6 +49,10 @@ export class KilnNativeRequest extends DurableObject<RequestEnv> {
       return await this.job.run(tenant, request, deadlineAt);
     } catch (error) {
       return privateResponse(serviceFailure(error));
+    } finally {
+      // Configuration/one-use checks can reject before the RPC body is read.
+      // Close that stream so it cannot retain the caller's execution context.
+      if (!request.bodyUsed) await request.body?.cancel().catch(() => {});
     }
   }
   async storage(request: Request): Promise<Response> {
