@@ -22,7 +22,7 @@ published yet.
 | P5 | Release automation and npm publication | In progress: manual exact-archive workflow and owner runbook; GitHub npm-release environment created with sole owner review, no admin bypass and protected branches; live npm trust, staging approval, registry provenance and fresh registry install remain open |
 | H1 | Native Cloudflare qualification | In progress: Linux image built, Trixie software renderer passes six textured views; Docker namespace probe fails closed, Bubblewrap launch-argument defect corrected; real Cloudflare isolation/execution, RSS, startup and measured cost remain pending |
 | H2 | Authenticated MCP and tenant boundary | In progress: separate hosted Worker implements OAuth consent/PKCE, audience/scope checks and verified-subject tenant routing; local workerd tests cover two identities, reconnects and forged tenant headers; real sign-in, tenant engine/storage reference checks and evaluator environment isolation remain open |
-| H3 | Artifact lifecycle | In progress: tenant SQLite/R2 byte storage, atomic quotas, immutable saved groups, authenticated downloads, deletion and seven-day unsaved retention pass local workerd checks; engine program/revision/material adapters and deployed lifecycle proof remain open |
+| H3 | Artifact lifecycle | In progress: tenant SQLite/R2 bytes, engine-compatible ProgramStore, atomic quotas, immutable saved groups, authenticated downloads, deletion and seven-day unsaved retention pass local workerd checks; native dispatch, AssetLibrary/revision/material adapters and deployed lifecycle proof remain open |
 | H4 | Capacity and operations | Pending: quotas/admission/cancellation, logs without credentials, load/cost measurements, alerts, health/build identity and rollback |
 | H5 | Production deployment | Pending: approved deployment at `kiln.instruktlabs.com`; live authenticated create/edit/render/save/download/reconnect flow |
 | L1 | Local Claude Code and Codex plugins | In progress: both remote Git catalogs and real versioned caches qualified; actual development-to-RC plugin updates preserve pinned workspaces until explicit runtime upgrade, saved assets remain byte-exact and native clients discover one server; final registry/tag distribution and final-version upgrade remain open |
@@ -845,6 +845,62 @@ addition. A new complete CI run is required for the new commit.
 [Native preflight 37450009484](https://github.com/instruktlabs/kiln/actions/runs/37450009484)
 again passed software rendering but failed required namespace isolation before
 source execution. Actual Cloudflare qualification remains pending authentication.
+
+### Engine source-store adapter
+
+`HostedProgramStore` implements the engine's existing `ProgramStore` interface using
+its canonical reference, Unicode and size helpers. Exact UTF-8, including an authored
+BOM, round-trips through private storage. Canonical hashes and full-digest `p_`
+handles retain the existing engine syntax; unissued shortened prefixes do not resolve.
+This host choice avoids permanent alias growth and expired-handle reassignment.
+Ownership remains tenant-local even when two users know the same source digest.
+
+The source adapter reuses the artifact quota, checksum and retention boundary.
+Concurrent identical writes share one upload; a durable content index finds that
+same artifact after eviction. Reads and repeated writes do not extend expiry.
+Saved groups pin exact source artifacts; last-pin deletion removes their source.
+Quota failure preserves existing work and a subsequent retry can succeed after
+cleanup. Corrupt bytes are refused both on reads and idempotent writes.
+
+Six initial source lifecycle checks were observed failing before the endpoint was
+implemented; those and added shared-quota/retry coverage now pass with the adapter.
+The hosted suite now passes all 39 tests after a clean
+installation, along with hosted typecheck/build and root typecheck/lint. The four
+nearest engine program-reference suites passed 23 tests. Workerd's stricter ambient
+TextDecoder type required spelling out the existing `fatal: false` default in the
+portable helper; hashing/Unicode behavior is unchanged. Node runtime bundles were
+rebuilt after that source change.
+
+The full offline engine suite then passed 3,289 tests, two platform skips and no
+failures across 411 files in 369.08 seconds. Receipt:
+`.cache/v1-hosted-programs-engine-tests.log`. These local results supplement the
+new commit's required CI; they do not qualify live hosting or final npm publication.
+
+A fresh Windows Node 22.23.3/npm 12.2.0 installation passed 24 package checks,
+including all 53 core SDK imports, native dependency paths, CLI, stdio MCP,
+source-edit images, restart persistence and exact source export. A separate check
+against that same installed package passed all 53 consumer declaration entries.
+No models were called. Archive SHA-256:
+`1a16edd649e69eeb65008d06e22b24a5ce02b45c12fbd7fc471d0c268856e3c0`.
+Receipts: `.cache/v1-hosted-programs-package.json`,
+`.cache/v1-hosted-programs-types.json`, `.cache/v1-hosted-programs-full.log`.
+
+The tenant bundle is 25,318 bytes, SHA-256
+`08a84289e44260780c138ebe629a6e84f38a9dee7d74b67bf5072865b80fa90c`.
+Its new inputs are the portable engine program-store module and hosted adapter.
+No native engine, provider credential or fixture code enters that Worker.
+The shared portable-module dependency is now included in hosted CI path triggers.
+The `/internal/programs` endpoints remain private; native MCP dispatch still needs
+to inject the adapter and qualify actual source/edit/render/save/reconnect behavior.
+AssetLibrary, material/revision semantics and browser download tickets remain open.
+
+For the preceding `1251f360442186b437cbf9fa86275dd9cfdfa87f` commit,
+[engine/package CI 37453219496](https://github.com/instruktlabs/kiln/actions/runs/37453219496)
+passed all twelve jobs. [Hosted checks 37453219494](https://github.com/instruktlabs/kiln/actions/runs/37453219494)
+passed Linux and Windows; [Website 37453219517](https://github.com/instruktlabs/kiln/actions/runs/37453219517)
+passed. [Native preflight 37453219527](https://github.com/instruktlabs/kiln/actions/runs/37453219527)
+again passed the trusted software-renderer fixture and failed required namespace
+isolation before source execution. These are separate outcomes, not hosting acceptance.
 
 ## Owner handoffs
 

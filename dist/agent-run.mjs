@@ -32088,7 +32088,7 @@ async function programReference(code) {
   const bytes = new TextEncoder().encode(code);
   if (bytes.length > MAX_PROGRAM_BYTES)
     throw new Error("Program exceeds the 1 MiB source limit.");
-  if (new TextDecoder("utf-8", { ignoreBOM: true }).decode(bytes) !== code)
+  if (new TextDecoder("utf-8", { fatal: false, ignoreBOM: true }).decode(bytes) !== code)
     throw new Error("Program must be valid Unicode.");
   const hash = new Uint8Array(await crypto.subtle.digest("SHA-256", bytes));
   return `sha256:${Array.from(hash, (b) => b.toString(16).padStart(2, "0")).join("")}`;

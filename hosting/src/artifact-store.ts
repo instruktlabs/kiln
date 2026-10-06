@@ -84,6 +84,7 @@ export class ArtifactStore {
     );
     CREATE INDEX IF NOT EXISTS artifact_pins ON group_files(artifact_id);
     CREATE INDEX IF NOT EXISTS artifact_expiry ON artifacts(state, expires_at);
+    CREATE INDEX IF NOT EXISTS artifact_content ON artifacts(sha256, filename, media_type);
     CREATE TABLE IF NOT EXISTS maintenance (id INTEGER PRIMARY KEY, cursor TEXT NOT NULL)`);
   }
 
@@ -137,6 +138,34 @@ export class ArtifactStore {
   private async schedule(at = this.now() + DAY): Promise<void> {
     const existing = await this.ctx.storage.getAlarm();
     if (existing === null || existing > at) await this.ctx.storage.setAlarm(at);
+  }
+
+  findContent(sha256: string, filename: string, mediaType: string) {
+    const rows = this.sql
+      .exec<ArtifactRow>(
+        "SELECT * FROM artifacts WHERE sha256 = ? AND filename = ? AND media_type = ? AND state = 'ready' ORDER BY created_at DESC",
+        sha256,
+        filename,
+        mediaType,
+      )
+      .toArray();
+    const row = rows.find((candidate) => this.readable(candidate));
+    return row ? this.receipt(row) : undefined;
+  }
+
+  contentStats(filename: string, mediaType: string) {
+    const rows = this.sql
+      .exec<{ bytes: number }>(
+        `SELECT MAX(bytes) AS bytes FROM artifacts
+      WHERE filename = ? AND media_type = ? AND state = 'ready'
+      AND (expires_at > ? OR EXISTS (SELECT 1 FROM group_files WHERE artifact_id = artifacts.id))
+      GROUP BY sha256`,
+        filename,
+        mediaType,
+        this.now(),
+      )
+      .toArray();
+    return { entries: rows.length, bytes: rows.reduce((sum, row) => sum + row.bytes, 0) };
   }
 
   async upload(request: Request) {

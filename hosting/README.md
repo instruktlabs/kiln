@@ -129,14 +129,51 @@ after ordinary artifact deletion to catch late interrupted writes. Account delet
 must retire its alarm only after outstanding work and cleanup have completed;
 that owner/account lifecycle and its operating costs still need qualification.
 
-This is the byte-storage foundation, not the engine's program, revision, material
-or AssetLibrary adapter. It does not reinterpret those existing contracts. The
-private `/mcp` endpoint deliberately returns 503 until native integration is
-configured and qualified. Source evaluation, references, revision lineage and
-registry-derived tools must be connected and tested before declaring H2/H3 done.
+This storage layer now supplies the engine's `ProgramStore` contract as described
+below. AssetLibrary, revision and material adapters remain open. The private `/mcp`
+endpoint deliberately returns 503 until native integration is configured and
+qualified. Evaluation, revision lineage and registry-derived tools must be connected
+and tested before declaring H2/H3 done.
 
 Storage references: [SQLite Durable Objects](https://developers.cloudflare.com/durable-objects/api/sqlite-storage-api/),
 [R2 Worker API](https://developers.cloudflare.com/r2/api/workers/workers-api-reference/).
+
+## Durable source references
+
+`HostedProgramStore` implements the existing engine interface and imports its
+portable `src/program-store.ts` reference/Unicode/size helpers directly. It creates
+no cloud dependency in that module or the published package. Hosted CI also runs
+when this shared module changes. The tenant bundle includes the exact helper source
+in its input/hash receipt; it does not import the renderer or native evaluator.
+
+Canonical references remain `sha256:<digest>`. The host emits the engine's supported
+full-digest `p_<64 hex characters>` handle, avoiding an indefinitely growing alias
+table and preventing an expired prefix from being reassigned. It does not resolve
+unissued shorter prefixes. References are opaque identifiers, not access tokens;
+every lookup searches only the current tenant's retained source bytes.
+
+Source is valid Unicode encoded as exact UTF-8, including a leading BOM when
+authored, and is limited to the engine's existing 1 MiB bound. Use a byte-preserving
+decoder when bridging this API: ordinary `Response.text()` can strip that BOM.
+Every read verifies bytes against the engine's canonical reference. An idempotent
+put also verifies the existing source and does not repair corruption silently.
+Concurrent identical puts share one upload. After object eviction, the durable
+content index resolves the same artifact without relying on the in-memory map.
+
+The source store shares file/object quotas with GLBs and other tenant artifacts.
+Quota exhaustion never evicts existing work. Identical puts and reads do not renew
+expiry; explicit resubmission after expiry creates a fresh retained copy. A saved
+group can pin its source artifact until deletion. Source stats count live distinct
+source snapshots, whereas total tenant usage also includes other files and pending
+cleanup. The `retention` property tells tool callers about the seven-day unsaved
+lifetime; `eviction: none` means no capacity-driven eviction.
+
+The private binding serves source creation, reads and stats at `/internal/programs`
+and `/internal/programs/<reference>`. Source creation returns its reference and
+artifact id so the future AssetLibrary adapter can atomically pin that exact file.
+These paths are not public gateway endpoints or new MCP tools. Native engine
+dispatch still needs to bind this store to its tool context and prove the complete
+edit/render/save/reconnect flow.
 
 Before launch, complete native isolation on the actual Cloudflare provider,
 tenant engine/storage integration, two-user asset/download denial tests, retention,

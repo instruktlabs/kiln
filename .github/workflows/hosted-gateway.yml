@@ -5,11 +5,13 @@ on:
     branches: [main]
     paths:
       - 'hosting/**'
+      - 'src/program-store.ts'
       - '.github/workflows/hosted-gateway.yml'
   push:
     branches: [main]
     paths:
       - 'hosting/**'
+      - 'src/program-store.ts'
       - '.github/workflows/hosted-gateway.yml'
   workflow_dispatch:
 
