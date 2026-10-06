@@ -1,0 +1,52 @@
+{
+  "name": "kiln-private-manifest-qualification",
+  "main": "./worker.ts",
+  "compatibility_date": "2026-10-06",
+  "compatibility_flags": [
+    "enable_ctx_exports"
+  ],
+  "workers_dev": false,
+  "preview_urls": false,
+  "routes": [],
+  "limits": {
+    "cpu_ms": 30000,
+    "subrequests": 50
+  },
+  "observability": {
+    "enabled": true,
+    "logs": {
+      "enabled": true,
+      "invocation_logs": true
+    }
+  },
+  "containers": [
+    {
+      "name": "kiln-private-manifest-qualification-jobs",
+      "class_name": "KilnProbeJob",
+      "scheduling_policy": "durable_object",
+      "images": {
+        "kiln": {
+          "image": "registry.cloudflare.com/56adffd40534f7fe110fc661a40bbf53/kiln-evaluation@sha256:db79551579a9abd33f7589a4da4d57947364ddf3dd37b79f766e202f2703edc8"
+        }
+      },
+      "observability": {
+        "logs": {
+          "enabled": false
+        }
+      }
+    }
+  ],
+  "exports": {
+    "KilnProbeControl": {
+      "type": "worker"
+    },
+    "KilnProbeRun": {
+      "type": "durable-object",
+      "storage": "sqlite"
+    },
+    "KilnProbeJob": {
+      "type": "durable-object",
+      "storage": "sqlite"
+    }
+  }
+}

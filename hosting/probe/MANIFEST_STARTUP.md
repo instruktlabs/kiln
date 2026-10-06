@@ -1,6 +1,6 @@
 # Proposed single-platform manifest control
 
-**Prepared locally; requires a new owner-approved cloud allowance.** The original
+**Completed with owner approval on 6 October; its one job is consumed.** The original
 five-job trial is exhausted. This candidate permits one additional fixed job,
 with a $1 trial allowance covering its temporary Worker, Container and registry
 usage. The allowance is not a provider-enforced billing cap.
@@ -65,3 +65,25 @@ starting a Container. Redacted source and actual JavaScript/source-map scans pas
 `f339a35a1bc271bda9e985f03d0d0f9911979617b375bd6bcadd08ccc6d80a43`.
 Retain CI and compare deployed bytes before any approved cloud invocation.
 This diagnostic changes no engine or package code.
+
+## Provider result
+
+At 19:49:18 UTC, source `29fc0ac248f59aa1d8c6f6ca89160c85d266e8ca`
+passed this single job. Remote inspection verified the exact manifest, config and
+all ten original layers before deployment; the uploaded Worker matched the local
+hash above. Runtime output was Node `v22.23.3`, UID/GID `1000:1000`. Output
+completed at 10,865 ms; whole-instance destruction and stopped inspection completed
+at 10,959 ms. Cloudflare independently reported stopped with exit code zero.
+Replay returned the identical retained result without another execution.
+
+The application, Worker, namespace and registry tag were removed and readbacks
+verified absence. The loopback operator stopped and temporary Docker registry
+credentials were removed. Receipts are retained in the diagnostic worktree's
+`.cache/startup-manifest-trial/`; the settled billing total is not yet known.
+
+This comparison strongly implicates selection of the original index versus its
+runtime manifest. It is one controlled observation, not proof that every OCI
+index is unsupported or that the vendor has a general defect. Native Kiln
+evaluation, rendering and isolation are still unqualified. No support follow-up
+was sent. Further cloud jobs require a separately approved candidate and allowance;
+see [the proposed qualification](QUALIFICATION.md).

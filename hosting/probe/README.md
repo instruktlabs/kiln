@@ -1,5 +1,14 @@
 # Private Cloudflare availability probe
 
+**Current status:** the original five-job allowance is exhausted. A separately
+approved sixth startup-only comparison passed when selecting the original image's
+Linux/AMD64 manifest directly. All trial resources were removed. See
+[the manifest result](MANIFEST_STARTUP.md) and the separately prepared
+[four-job qualification candidate](QUALIFICATION.md). Neither the historical
+allowances below nor the old prebuilt receipt authorize another deployment.
+
+## Historical first trial
+
 This is a disposable operator probe, separate from every production bundle and
 the npm package. The owner approved a five-job trial with a $1 allowance. Its
 first job failed and all cloud trial resources were removed. The current candidate
