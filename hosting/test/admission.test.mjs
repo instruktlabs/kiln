@@ -33,7 +33,7 @@ before(async () => {
               stopped.push(id); await ctx.storage.put('stopped',stopped);
               this.pending.get(id)?.(new Response('cancelled',{status:499})); this.pending.delete(id);
             },
-          }, {maxConcurrent:2,tenantPerMinute:3,tenantPerDay:4,globalPerDay:7,globalPerMonth:8,deadlineMs:env.SHORT?250:60000},
+          }, {maxConcurrent:2,tenantPerMinute:3,tenantPerDay:4,globalPerDay:7,globalPerMonth:8,deadlineMs:env.FIXTURE_SHORT_DEADLINE===true?250:60000},
             ()=>ctx.storage.kv.get('now')??Date.now());
         }
         async dispatch(tenant,request) {
@@ -55,7 +55,7 @@ before(async () => {
         }
         alarm(){return this.admission.alarm();}
       }
-      export class ShortFixture extends Fixture {constructor(ctx,env){super(ctx,{...env,SHORT:true});}}
+      export class ShortFixture extends Fixture {constructor(ctx,env){super(ctx,{...env,FIXTURE_SHORT_DEADLINE:true});}}
       export default {async fetch(request,env) {
         const url=new URL(request.url), stub=env[url.searchParams.has('short')?'SHORT':'FIXTURE'].getByName(url.searchParams.get('fixture'));
         if(url.pathname==='/command') {const {command,value}=await request.json();return Response.json((await stub.command(command,value))??null);}
@@ -136,6 +136,20 @@ test('admission reserves before dispatch, uses a fresh job ID and releases only 
   assert.equal(s.calls[0].url, 'https://tenant.internal/mcp');
   assert.deepEqual(s.calls[0].headers, { 'content-type': 'application/json' });
   assert.ok(s.alarm > 0);
+});
+
+test('only the explicit short-deadline fixture uses the 250 ms deadline', async () => {
+  const now = Date.UTC(2030, 0, 2, 12);
+  for (const [short, deadlineMs] of [
+    [false, 60000],
+    [true, 250],
+  ]) {
+    const f = fixture(short);
+    await f.command('now', now);
+    assert.equal((await f.request()).status, 200);
+    const s = await f.command('snapshot');
+    assert.equal(s.calls[0].deadlineAt - now, deadlineMs);
+  }
 });
 
 test('concurrent admission enforces both one job per account and total capacity', async () => {

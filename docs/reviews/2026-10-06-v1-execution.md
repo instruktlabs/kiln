@@ -2315,3 +2315,47 @@ bounded approval. Account lifecycle, live identity-provider setup, material
 storage, browser downloads, representative load/costs, production deployment and
 directory submissions remain open. The broad README/Troy/site refresh remains
 deferred to launch closeout.
+
+## Progress checkpoint after stable publication
+
+The npm registry reports `latest: 1.0.0` and `next: 1.0.0-rc.1`; the public
+[GitHub release](https://github.com/instruktlabs/kiln/releases/tag/v1.0.0) is
+published. Stable package acceptance and installed local plugin checks are complete.
+The hosted service and vendor directory submissions are not complete.
+
+PR #153 at `382b40e` completed sixteen successful checks, including all twelve
+engine/package jobs, Linux hosting, the installed MCP and CPU images, and the
+website build. Two checks failed. The Windows admission fixture accidentally used
+its `SHORT` Durable Object namespace binding as a boolean, applying a 250 ms
+deadline to ordinary tests. A focused regression reproduced that mismatch before
+the fixture flag was separated. All twelve admission tests then passed. Production
+deadlines and admission policy are unchanged. The software image's actual rendering
+checks passed; its artifact upload failed while opening a private build-cache file.
+The evidence upload now excludes that cache and retains the receipts and images.
+These corrections require fresh CI before the candidate can be accepted.
+
+Local preparation of the integrated trial covers render, save, reopen, source,
+export, saved GLB/manifest reads, cross-account denial and quota rejection. The
+current working tree passes 268 hosted tests, all three hosted typechecks and all
+twelve production bundles. That total includes trial work not yet committed or
+provider-qualified. The local-only trial builder passes the installed Cloudflare
+output schemas; no image upload, deployment or cloud execution has occurred.
+It caps coordinator starts at nine, evaluator starts at four and renderer starts
+at four, with sequential requests, durable one-use allowance and cleanup checks.
+Its full worker integration and exact-source CI must pass before approval is sought.
+
+No owner authentication step is currently pending. The next concrete owner action
+is approval of the prepared integrated provider trial, followed later by live
+provider credential handoffs and qualified merge/deployment/submission candidates.
+All 22 previously approved trial jobs remain consumed. Routine implementation and
+local validation can continue without a new decision.
+
+Remaining launch work includes account link/unlink/delete, material storage,
+browser download tickets, live Google/GitHub sign-in, retention verification,
+representative load/cost evidence, operating alerts and rollback, production
+deployment and verification, and separate vendor submission receipts. Saved-build
+provenance also needs a host-verified evaluator identity: the current native host
+does not inject one, so the SDK can report `source-development:unverified` in a
+saved manifest. A successful round trip alone must not qualify that provenance.
+The broad README, Troy images and site-content refresh remains deferred until
+the final hosted behavior is verified, as requested.

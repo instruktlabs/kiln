@@ -189,6 +189,7 @@ jobs:
           name: private-evaluation-image-evidence-${{ matrix.kind }}
           path: |
             image-evidence/
+            !image-evidence/software/.kiln/**
             .cache/software-render-entry/qualification/
           include-hidden-files: true
           if-no-files-found: error
