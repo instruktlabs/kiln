@@ -414,6 +414,43 @@ share the pending cleanup. The parent must retain admission whenever cancellatio
 fails or its acknowledgement is lost. These cases have local adversarial tests;
 the new parent-cancellation RPC still needs provider qualification.
 
+## Private request dispatcher
+
+`request-worker` adds one `KilnNativeRequest` Durable Object per admitted MCP
+request. Its private `run` RPC accepts the verified tenant hash and an absolute
+deadline of at most 120 seconds. The tenant and child-job inventory remain in
+Durable Object storage, outside the coordinator VM. That VM starts offline from
+the pinned `coordinator` image with only the public origin in its environment.
+Readiness and image readback precede sending the bounded MCP request.
+
+Two fixed HTTP interceptors use host-configured loopback binding props to select
+the request object. Storage RPCs select the tenant from its durable record; URLs,
+headers and body fields cannot choose it. The storage route allowlist excludes
+administrative operations. This uses the documented Container interception API
+and Worker loopback props. Local workerd checks exercise the actual RPCs, tenant
+storage and object eviction, including cross-account source denial. Deliberate
+HTTP errors are converted to responses before RPC serialization, which does not
+preserve their custom JavaScript prototype.
+
+Each request admits at most one active child evaluation and eight children in
+total. Every child ID is persisted before dispatch and receives at most the
+remaining parent deadline. A child's cancellation acknowledgement is required
+before another child can start. Completion or cancellation first closes the
+durable request to new work, then confirms destruction of the coordinator and
+all registered children. Unknown cleanup retains the record and a recovery alarm;
+late delivery is refused through the child's durable cancellation fence. Parent
+responses are bounded to 32 MiB and withheld until cleanup completes.
+
+The default Worker route remains 404 and the gateway still returns 503 for MCP.
+The shared admission service and quotas are not yet connected. No production
+configuration, public route or new Cloudflare job is enabled by these modules.
+Provider qualification must test the coordinator/interceptor/child flow together;
+local state-machine and workerd tests do not establish that live boundary.
+
+Sources: [Container API](https://developers.cloudflare.com/containers/api/durable-object-container/),
+[loopback binding props](https://developers.cloudflare.com/workers/runtime-apis/context/#specifying-ctxprops-when-using-ctxexports),
+[RPC Request and Response transport](https://developers.cloudflare.com/workers/runtime-apis/rpc/#readablestream-writablestream-request-and-response).
+
 ## Private Node host
 
 `native-host` adapts the MCP Fetch handler through the maintained

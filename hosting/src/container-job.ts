@@ -61,7 +61,7 @@ async function capture(
   }
 }
 
-async function destroy(container: Container): Promise<void> {
+export async function destroyContainer(container: Container): Promise<void> {
   let timer: ReturnType<typeof setTimeout> | undefined;
   try {
     await Promise.race([
@@ -283,7 +283,7 @@ export class ContainerEvaluationJob {
       controls.signal?.removeEventListener('abort', onAbort);
       // A process kill can leave children running. Wait for destruction of the VM
       // before accepting output or releasing its admission reservation.
-      await destroy(container);
+      await destroyContainer(container);
       await this.context.storage.put('job', {
         ...job,
         state: 'finished',
@@ -313,7 +313,7 @@ export class ContainerEvaluationJob {
     const container = this.context.container;
     if (!container) throw new ContainerJobFailure('ISOLATION_UNAVAILABLE');
     try {
-      await destroy(container);
+      await destroyContainer(container);
       await this.context.storage.put('job', {
         ...job,
         state: 'finished',

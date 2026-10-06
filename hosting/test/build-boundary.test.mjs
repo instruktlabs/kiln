@@ -19,6 +19,7 @@ for (const module of ['github', 'account-page', 'account-actions', 'connections'
     for (const entry of [
       'tenant-worker',
       'evaluation-worker',
+      'request-worker',
       'native-programs',
       'native-assets',
       'native-mcp',

@@ -35,6 +35,34 @@ states and the evidence that superseded them.
 
 ## Execution notes
 
+### Request dispatcher and private tenant bindings
+
+The private request controller now starts a pinned offline coordinator, waits for
+readiness and image confirmation, and binds fixed storage/evaluation interceptors
+using host-owned loopback props. Tenant selection comes from the request's durable
+record. A request allows one active child and at most eight children total, records
+each child before dispatch, and withholds its bounded response until the entire VM
+tree is confirmed stopped. Failed cleanup remains unfinished for alarm recovery.
+
+The first tests failed for the missing implementation. Follow-up cases reproduced
+startup after an expired durable claim and a Node stream-forwarding incompatibility;
+both are fixed. The real workerd fixture also demonstrated loss of the custom HTTP
+error prototype across RPC. Errors are now converted before crossing that boundary,
+preserving intended statuses while redacting unexpected diagnostics. Local workerd
+checks use the actual private entrypoints, loopback props, tenant/R2 storage and
+eviction: Alice's source remains unavailable through Bob's request object.
+
+All 221 hosted tests, three hosted typechecks, nine production bundles and root
+typecheck/lint pass locally. The earlier cancellation commit `432cb2c` passed all
+eighteen CI checks, including [engine/package CI](https://github.com/instruktlabs/kiln/actions/runs/37538519458),
+[both hosted platforms](https://github.com/instruktlabs/kiln/actions/runs/37538519509)
+and [all three installed images](https://github.com/instruktlabs/kiln/actions/runs/37538519558).
+
+The shared admission service, its quotas and the gateway connection are still
+pending. The new controller has local orchestration evidence only; it has not run
+on Cloudflare and does not enable public MCP. The total approved cloud-job allowance
+remains exhausted, with no new upload, compute job or production deployment.
+
 ### Durable child cancellation
 
 The private evaluation DO now keeps a single controller and exposes a parent-only

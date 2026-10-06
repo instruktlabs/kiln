@@ -10,6 +10,7 @@ for (const entry of [
   'worker',
   'tenant-worker',
   'evaluation-worker',
+  'request-worker',
   'native-programs',
   'native-assets',
   'native-mcp',
