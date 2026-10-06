@@ -1835,3 +1835,21 @@ platforms passed in run `37515318317`. The unchanged Kiln image without engine
 imports is the next comparison; full hosted launch remains unqualified. The
 detailed startup review records why image preparation is not a supported cause:
 both this deployment and the earlier failed cf deployment reached image-ready.
+
+## Original image startup isolated; initial trial exhausted
+
+The final approved comparison at source `569fc5313f909c04ac960348b638e376cdb36239`
+used the unchanged Kiln image with the successful minimal controller. Its fixed
+Node command did not import Kiln. Deployed source, image and privacy checks passed,
+but at 19:08:40 UTC the monitor failed after 1,242 ms before the controller entered
+`exec`. Cleanup was confirmed after 1,243 ms, the provider instance list was empty,
+and replay returned the retained failure. The app, Worker, namespace, registry
+image and local operator were removed, with absence verified.
+
+All five original trial jobs are now attempted; no jobs remain. Further cloud
+execution requires a separately prepared bounded candidate and owner approval.
+Local image/startup analysis and independent npm/account work continue. The failure
+is now isolated from package evaluation, but its exact cause remains unproven.
+Current checks pass 131 hosted tests, hosted typechecks/builds, root typecheck/lint,
+dry run and redacted scans. Hosted CI run: `37516547552`. The full engine suite was
+already green on the preceding candidate; this change touched only the diagnostic.

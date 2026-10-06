@@ -173,7 +173,8 @@ measured sizing matter more than adding an SDK. Source:
 | Local plugins | Public RC installed and exercised in Claude Code and Codex | Stable-version updates and upgrade checks; directory submissions are separate |
 | Native candidate PR #147 | Exact `7f4e98e`: engine/package, gateway, image, registry matrix and website checks pass | Separate restricted-Docker preflight fails; live native qualification absent; PR remains draft |
 | Managed-image diagnostic PR #150 | Exact `c6b119b`: local gates, Linux/Windows hosted CI and deployed fixed Node command pass; resources removed | Full Kiln/hostile-source qualification remains |
-| Custom-registry diagnostic PR #150 | Exact `2c60525`: local gates, both hosted CI platforms and deployed fixed Node command pass; resources removed | Unchanged Kiln-image control next; one approved trial job remains |
+| Custom-registry diagnostic PR #150 | Exact `2c60525`: local gates, both hosted CI platforms and deployed fixed Node command pass; resources removed | Full Kiln/hostile-source qualification remains |
+| Unchanged Kiln-image diagnostic PR #150 | Exact `569fc53`: image prepared, then startup monitor failed before `exec`; cleanup verified | Investigate image/startup configuration locally; original five-job trial exhausted |
 | Browser account PR #149 | Exact `11a4f64`: hosted checks pass on Linux and Windows in run `37507203413`; website passes | Review/integration plus live identity-provider qualification; PR remains draft |
 | Connection controls | Working-tree changes pass all 144 hosted tests and all three TypeScript configurations | Uncommitted; further adversarial review, build/UI checks and CI required |
 | Persistence | Local tenant storage, revisions, quotas, download/deletion and unsaved retention tests pass | Remaining material/account lifecycle work and deployed two-user evidence |
@@ -277,3 +278,39 @@ does not explain the earlier failure. The original Kiln image uses an OCI index;
 this control uses one AMD64 manifest. That difference is unproven as a cause, and
 we should not strip provenance or rebuild the Kiln image before testing its
 unchanged bytes through this simpler controller.
+
+## Unchanged Kiln-image control failed before command execution
+
+Source `569fc5313f909c04ac960348b638e376cdb36239` deployed the unchanged Kiln
+image/index `sha256:69aff70b4f0f80d2ff13549f4b55b1053fc1d8a6e25a00168ac4078a2ebd7b8a`
+through the same ordinary Wrangler configuration and fixed controller. The command
+was only Node version/UID/GID, with numeric exec identity `1000:1000`; it did not
+import Kiln. Its local Docker run returned Node `v22.23.3`, UID/GID `1000:1000`.
+
+Before invocation, uploaded bytes matched JavaScript SHA-256
+`57c509e5b71d086f18e8b3d900d3dfc2bbbc48a369ef816c057b946abe3a018a`, the image map
+matched the original digest, and privacy/only-own-namespace binding checks passed.
+Wrangler completed image preparation. At 19:08:40 UTC, the startup monitor failed
+after 1,242 ms while setting the inactivity timeout. The phase trace never entered
+`exec`; this narrows the failure more precisely than the original probe. The fixed
+Node command and engine were not invoked by this controller. Destruction and
+stopped inspection completed after 1,243 ms, and no instance remained in the list.
+Repeat RPC returned the retained failure without a second execution.
+
+The operator, application, Worker, namespace and registry image were removed;
+readbacks verified absence and Worker 404. Receipts remain under the diagnostic
+worktree's `.cache/startup-kiln-trial/`. All five original trial jobs have now been
+attempted. Further cloud execution needs a concrete bounded scope and owner
+approval; local investigation and independent release/account work can continue.
+
+The current candidate passes 131 hosted tests, all hosted typechecks/builds,
+root typecheck/lint, deployment dry run and redacted scans. The engine source is
+unchanged from the preceding candidate's 3,290 passing tests (two platform skips).
+The current hosted CI run is
+[37516547552](https://github.com/instruktlabs/kiln/actions/runs/37516547552).
+
+The result implicates this image or startup configuration under the native API,
+not package evaluation code. It does not identify an exclusive cause. OCI index
+selection, image user/entrypoint handling and content differences remain hypotheses.
+Do not replace them with an assumed vendor fault, silently rebuild the retained
+image, weaken isolation, or spend another job under the exhausted allowance.
