@@ -28,6 +28,7 @@ const good = () => ({
     'plain-node-sdk-exports',
     'sdk-subprocess-render',
     'compiled-evaluator-worker',
+    'discovery-stability-labels',
     'npm-mcp-entry',
     'packaged-node-worker',
     'community-exporter-textured-subprocess',
@@ -78,7 +79,7 @@ describe('package receipt verification', () => {
   });
 
   test('a receipt with no checks at all reports every one of them', () => {
-    expect(receiptProblems({ ...good(), checks: undefined }, target)).toHaveLength(10);
+    expect(receiptProblems({ ...good(), checks: undefined }, target)).toHaveLength(11);
   });
 
   test.each([
@@ -86,6 +87,7 @@ describe('package receipt verification', () => {
     'plain-node-sdk-exports',
     'sdk-subprocess-render',
     'compiled-evaluator-worker',
+    'discovery-stability-labels',
     'npm-mcp-entry',
   ])('cannot claim v1 package qualification without %s', (check) => {
     const receipt = good();

@@ -533,6 +533,28 @@ console.log(JSON.stringify({ renderBytes: result.glb.length }));
     const listed = await session.call('tools/list', {});
     assert(listed.tools.some((tool) => tool.name === 'kiln_source'));
     assert(listed.tools.some((tool) => tool.name === 'kiln_render'));
+    for (const [id, stability] of [
+      ['operation:boxGeo', 'stable'],
+      ['operation:implicitSurface', 'experimental'],
+      ['recipe:steerable-wheel-v1', 'experimental'],
+    ]) {
+      const result = await session.call('tools/call', {
+        name: 'kiln_discover',
+        arguments: { query: id, limit: 1 },
+      });
+      assert.notEqual(result.isError, true);
+      assert(
+        result.content.some(
+          (item) => item.type === 'text' && item.text.includes(`${id} [${stability}]`),
+        ),
+      );
+    }
+    const cliDiscovery = await command(
+      [cli, 'discover', '--query', 'recipe:steerable-wheel-v1', '--limit', '1'],
+      root,
+    );
+    assert.match(cliDiscovery, /recipe:steerable-wheel-v1 \[experimental\]/);
+    receipt.checks.push('discovery-stability-labels');
     const read = textResult(
       await session.call('tools/call', {
         name: 'kiln_source',

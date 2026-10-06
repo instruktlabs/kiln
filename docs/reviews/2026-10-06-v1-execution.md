@@ -15,7 +15,7 @@ published yet.
 | ID | Requirement | State and required proof |
 | --- | --- | --- |
 | P0 | Preserve publisher/repository setup | Complete in [publisher setup receipt](2026-10-06-publisher-setup.md); current checkout remote verified `instruktlabs/kiln` |
-| P1 | Public API, stability and migrations | In progress: audit all existing exports; document stable/experimental contracts and Node compatibility |
+| P1 | Public API, stability and migrations | In progress: existing stability labels now visible in Discovery search/overview and installed CLI/MCP; full export stability audit and final migration contract remain open |
 | P2 | Compiled ESM SDK and declarations | In progress: all 55 exports compile; development archives pass 52 core imports, declarations without optional peers and both worker layouts; exact runtime-fix CI passes all platforms, final version remains open |
 | P3 | Package identity, contents, executables and notices | In progress: unpublished `@instruktlabs/kiln@1.0.0-dev.0`, public metadata, MCP launcher, consumer doc allowlist and dependency notice refresh; development archive checks pass locally and in CI, final release audit remains open |
 | P4 | Clean installs and workspace upgrades | In progress: namespace package passes Windows/Linux/macOS and core checks without optional agent peers; target-release installed upgrades and harness workflows remain open |
@@ -203,6 +203,56 @@ The [maintainer runbook](../releasing.md) records first-package bootstrap, its
 public-placeholder side effect, trust setup, exact stage-ID review, human 2FA
 promotion and post-publication verification. No environment configuration, npm
 stage, placeholder or release has been created by this workflow preparation.
+Committed and pushed as `3e83a9cf9f54a3e94314a11fb9e05851683d9eb2`.
+[CI run 37431427439](https://github.com/instruktlabs/kiln/actions/runs/37431427439)
+is checking this exact release-tooling commit. The separate Website workflow on
+the preceding runtime commit failed a stale migration-heading link; its engine
+CI passed. The link correction is part of the following slice, not retroactive
+website acceptance.
+
+### Discovery stability at the model boundary
+
+Added failing tests for experimental operations/recipes, stable helpers and a
+deprecated catalog fixture, including the text adapter used by both agent skins.
+Search and overview now show the existing stability value before each summary's
+execution mode and limitations. This adds no opt-in requirement, changes no
+tool input schema, and does not relabel helpers used by experimental recipes.
+All 91 focused Discovery/context tests and 52 release-receipt tests pass.
+
+Rebuilt the compiled SDK and runtime bundles. The clean installed archive passes
+24 checks, including actual CLI and stdio MCP calls for stable helpers, implicit
+modeling and an experimental recipe. Its receipt is
+`.cache/v1-discovery-labels-package.log`; SHA-256:
+`77ddc78367a4a35a55236786b5542f9c5f313b3189ea59f91be1f0429f89506f`.
+The first smoke attempt had a new test-harness assertion treating its string result
+as an object; correcting that assertion produced the passing fresh-install run.
+Release receipt verification now requires `discovery-stability-labels` explicitly.
+Typecheck/lint pass. Full offline coverage passes: 3,245 tests, two platform skips,
+zero failures in 407 files; functions 95.20% and lines 92.52%, above unchanged
+thresholds. Receipt: `.cache/v1-discovery-labels-coverage.log`. This slice still
+needs its own exact-head CI before qualification.
+
+Corrected `docs/runtime.md` to link to the current 1.0 migration heading. Rendering
+the target document through the installed Astro Markdown processor confirms that
+the fragment exists. The complete Website CI still needs to verify the next head.
+
+### Local plugin packaging preflight
+
+Current official OpenAI documentation recommends a portable root `plugin.json`
+and `mcp.json`; `.codex-plugin/plugin.json` remains a supported fallback. Public
+submission still needs its direct remote MCP endpoint, separate from local plugin
+distribution. Source: [OpenAI packaging](https://developers.openai.com/plugins/build/plugins).
+
+Claude's strict marketplace validation passes, but explicitly validating the current
+root plugin fails strict mode because root `CLAUDE.md` is not loaded as plugin
+context. This is another reason to ship the planned small plugin directory instead
+of the engine checkout. Claude's loading rules also distinguish local-path plugins
+(loaded in place, without dependency installation) from copied marketplace plugins
+(cached with eligible dependency installation). Qualification must test the copied
+installation, and durable workspace/runtime state must not live in a removable
+plugin-version directory. Sources: [Claude publishing](https://code.claude.com/docs/en/plugins/publish),
+[loading rules](https://code.claude.com/docs/en/plugins/loading).
+No local plugin installation or directory candidate is qualified by these checks.
 
 ### Release authorization timing
 

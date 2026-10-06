@@ -40571,7 +40571,7 @@ Not returned, over the result size: ${omitted.join(", ")}. Fetch them with anoth
           ...guidance,
           `Families: ${orientation.families.join(", ")}. Tags: ${orientation.tags.join(", ")}.`
         ] : [],
-        ...page.map((entry) => `${entry.id}${entry.execution ? ` (${entry.execution === "async" ? "async; await the result" : "sync"})` : ""}: ${entry.summary}${entry.limitations.length ? ` Limits: ${entry.limitations.join(" ")}` : ""}${formatMatch(entry.match)}`),
+        ...page.map((entry) => `${entry.id} [${entry.stability}]${entry.execution ? ` (${entry.execution === "async" ? "async; await the result" : "sync"})` : ""}: ${entry.summary}${entry.limitations.length ? ` Limits: ${entry.limitations.join(" ")}` : ""}${formatMatch(entry.match)}`),
         ...input.query && !page.length ? [
           "No lexical matches on this page. Try a narrower modeling operation, browse the overview for families/tags, or use custom geometry. This is not proof that the asset is impossible."
         ] : [],

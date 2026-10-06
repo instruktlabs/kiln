@@ -302,7 +302,7 @@ export function createDiscoveryService(
           : []),
         ...page.map(
           (entry) =>
-            `${entry.id}${entry.execution ? ` (${entry.execution === 'async' ? 'async; await the result' : 'sync'})` : ''}: ${entry.summary}${entry.limitations.length ? ` Limits: ${entry.limitations.join(' ')}` : ''}${formatMatch(entry.match)}`,
+            `${entry.id} [${entry.stability}]${entry.execution ? ` (${entry.execution === 'async' ? 'async; await the result' : 'sync'})` : ''}: ${entry.summary}${entry.limitations.length ? ` Limits: ${entry.limitations.join(' ')}` : ''}${formatMatch(entry.match)}`,
         ),
         ...(input.query && !page.length
           ? [

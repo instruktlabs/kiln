@@ -11,6 +11,37 @@ const index = {
 const make = () =>
   createDiscoveryService(listDiscoveryEntries(), index, async () => ({ host: 'test' }));
 
+test('compact search and overview retain stability for experimental helpers and recipes', async () => {
+  const run = make();
+  for (const entry of listDiscoveryEntries().filter(
+    (entry) => entry.stability === 'experimental',
+  )) {
+    const result = await run({ query: entry.id, limit: 1 });
+    expect(result.entries[0]?.id).toBe(entry.id);
+    expect(result.text).toContain(`${entry.id} [experimental]`);
+    for (const limitation of entry.limitations) expect(result.text).toContain(limitation);
+  }
+  const stable = await run({ query: 'boxGeo', limit: 1 });
+  expect(stable.text).toContain('operation:boxGeo [stable]');
+  let offset: number | null = 0;
+  while (offset !== null) {
+    const page = await run({ offset });
+    for (const entry of page.entries)
+      expect(page.text).toContain(`${entry.id} [${entry.stability}]`);
+    offset = page.nextOffset;
+  }
+});
+
+test('a deprecated entry is identified without silently removing it', async () => {
+  const catalog = listDiscoveryEntries().map((entry) =>
+    entry.name === 'arrayRadial' ? { ...entry, stability: 'deprecated' as const } : entry,
+  );
+  const run = createDiscoveryService(catalog, index, async () => ({}));
+  const result = await run({ query: 'repeat', limit: 1 });
+  expect(result.text).toContain('operation:arrayRadial [deprecated]');
+  expect(result.entries[0]?.stability).toBe('deprecated');
+});
+
 test('search exposes execution mode and the exact-contract next step without full detail', async () => {
   const run = make();
   for (const [name, execution] of [

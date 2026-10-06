@@ -9,6 +9,19 @@ const discovery = () =>
 type Result = DiscoveryResponse;
 
 describe('progressive capability discovery', () => {
+  it('shows stability in the compact text used by both agent transports', async () => {
+    for (const tools of [createKilnNativeToolRegistry({}, {}), createKilnProgramToolRegistry()]) {
+      const tool = tools.find((entry) => entry.name === 'kiln_discover')!;
+      for (const [id, stability] of [
+        ['operation:boxGeo', 'stable'],
+        ['operation:implicitSurface', 'experimental'],
+        ['recipe:steerable-wheel-v1', 'experimental'],
+      ]) {
+        const output = await tool.run({ query: id, limit: 1 });
+        expect(tool.text!(output)).toContain(`${id} [${stability}]`);
+      }
+    }
+  });
   it('reports each selected exporter against actual exported vertex attributes', async () => {
     const source = `function build(){const root=createRoot('Attributes');const g=boxGeo(1,1,1);g.setAttribute('color',new THREE.Float32BufferAttribute(new Array(g.getAttribute('position').count).fill([1,0,0]).flat(),3));for(const key of ['uv1','uv2','uv3'])g.setAttribute(key,g.getAttribute('uv').clone());createPart('Body',g,new THREE.MeshStandardMaterial({vertexColors:true}),{parent:root});return root;}`;
     for (const exporter of ['legacy', 'three'] as const) {

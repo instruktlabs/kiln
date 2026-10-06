@@ -68,6 +68,13 @@ community exporter retain their current limitations and opt-in behavior. CPU
 geometry previews do not establish texture or PBR material fidelity. Experimental
 labels do not waive installation, export-resolution or resource-bound checks.
 
+Discovery search and overview text include each entry's `stable`, `experimental`
+or `deprecated` label alongside its limitations. The CLI, SDK and MCP use the same
+catalog. A recipe's experimental label applies to that recipe; it does not change
+the stability of the helpers it uses. Exact details retain the same structured
+`stability` field. Implicit modeling remains available without a new opt-in switch;
+the community exporter retains its explicit selection.
+
 ## Maintainer qualification
 
 `node scripts/build-runtime.mjs all` builds both executable bundles and the ESM SDK.
