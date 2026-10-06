@@ -38,6 +38,25 @@ with input/hash/import receipts, are written to
 `../.cache/hosted-worker/`. `build` performs no upload, resource provisioning or
 deployment. `Hosted gateway checks` runs the same checks on Linux and Windows.
 
+## Account directory foundation
+
+`src/accounts.ts` defines a provider-neutral account lookup contract and a D1
+adapter. `migrations/0001_accounts.sql` owns the identity index. Verified canonical
+issuer/subject pairs map to random permanent Kiln IDs; email, provider tokens and
+profile names are not stored or used to merge accounts. Registering an identity
+and its new account is one transaction. Each operation starts a primary-backed
+session, independent of caller bookmarks. Disabled/deleting accounts cannot obtain
+a replacement account through ordinary sign-in.
+
+The workerd tests exercise concurrent first sign-ins, unique issuer/subject pairs,
+rollback after an injected identity-write failure and current account-state reads.
+They do not establish cross-region deployment behavior. The adapter is **not yet
+connected to OAuth or tenant routing**: the existing GitHub-only gateway still
+uses its original provider-derived subject. Linking, session/grant epoch checks,
+account controls and completed asset deletion remain required before launch.
+Only verified server-side provider adapters may call this contract. The JSON
+interface under `test/` exists solely for local tests and is not a public API.
+
 ## Native HTTP adapter
 
 `src/native-mcp.ts` serves the installed engine's registry through the MCP SDK's

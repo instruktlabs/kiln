@@ -1127,6 +1127,32 @@ fresh registry/plugin installation precede final 1.0 qualification. Apply the
 saved source/document changes selectively after the RC step, then regenerate plugin
 metadata and runtime bundles; never restore its stale generated build files.
 
+### Independent multi-provider account foundation
+
+The tested stdio correction was committed and pushed as
+`6a89d790ba2d786ad641bdab777a40535ef3c19c` on `codex/v1-publication`;
+[CI 37466581875](https://github.com/instruktlabs/kiln/actions/runs/37466581875)
+is its exact candidate run. Hosting implementation continues on the local
+`codex/v1-hosted-identity` branch based on that commit, preserving the PR 145
+candidate while its release checks and owner handoffs proceed.
+
+The first account-directory contract and D1 migration are implemented independently
+of the OAuth gateway. Canonical verified issuer/subject pairs map to random Kiln
+account IDs; contact data and upstream credentials are not persisted. Atomic D1
+batches and uniqueness constraints prevent duplicate owners and orphan accounts.
+Every lookup starts a new `first-primary` session. Disabled/deleting records are
+returned by state lookup but cannot sign in or create a replacement account.
+
+Six focused tests failed against the initial unimplemented contract and pass with
+the D1 adapter. They include 24 concurrent first sign-ins, distinct issuers with
+matching emails/subjects and a trigger-induced identity failure proving transaction
+rollback. Full hosted suite: 75 passed, no failures; both typechecks and all five
+existing production builds pass. Receipts: `.cache/v1-accounts-before.log`,
+`.cache/v1-accounts-after.log`, `.cache/v1-accounts-full.log`.
+No live D1 database was created. The adapter is not yet wired to authorization or
+tenant selection; Google, linking, epoch enforcement and account lifecycle remain
+open. Simulated primary reads do not prove deployed cross-region revocation.
+
 ## Owner handoffs
 
 Cloudflare CLI consent is complete. After the earlier consent expired, the owner
@@ -1148,6 +1174,8 @@ those results. No identity app or secret has been provisioned yet.
 
 The CLI's read-only `npm whoami` check reports that this machine is not signed in.
 A browser login was opened in external Chrome and the owner's password/security-key
-step was surfaced through the question tool. Login does not stage or publish a
-package. Publisher verification and final external approvals remain separate;
-missing human steps do not block independent package work.
+step was surfaced through the question tool. It did not complete; npm fell back
+to a legacy terminal username/password prompt, which was cancelled. A fresh browser
+authorization is still required. Login does not stage or publish a package.
+Publisher verification and final external approvals remain separate; missing human
+steps do not block independent package work.
