@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { mkdir } from 'node:fs/promises';
+import { mkdir, readFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 import { after, before, test } from 'node:test';
 import { build } from 'esbuild';
@@ -187,6 +187,16 @@ test('HTTP serves both protocol eras and exactly the engine registry surface', a
     .sort();
   const current = await rpc(handler, 'tools/list');
   assert.deepEqual(current.tools.map((item) => item.name).sort(), expected);
+  const manifest = JSON.parse(
+    await readFile(new URL('../src/generated/edge-manifest.json', import.meta.url), 'utf8'),
+  );
+  assert.deepEqual(current.tools, manifest.tools);
+  for (const [method, key] of [
+    ['resources/list', 'resources'],
+    ['resources/templates/list', 'resourceTemplates'],
+  ]) {
+    assert.deepEqual((await rpc(handler, method))[key], manifest[key]);
+  }
   assert.equal(current.resultType, 'complete');
   for (const version of ['2025-03-26', '2025-06-18', '2025-11-25']) {
     const initialized = await rpc(
@@ -196,6 +206,9 @@ test('HTTP serves both protocol eras and exactly the engine registry surface', a
       { modern: false },
     );
     assert.equal(initialized.protocolVersion, version);
+    assert.equal(initialized.instructions, manifest.instructions);
+    assert.deepEqual(initialized.serverInfo, manifest.serverInfo);
+    assert.deepEqual(initialized.capabilities, manifest.capabilities);
     const legacy = await rpc(
       handler,
       'tools/list',

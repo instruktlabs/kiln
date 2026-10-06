@@ -27,6 +27,7 @@ before(async () => {
     write: false,
     format: 'esm',
     platform: 'browser',
+    conditions: ['workerd'],
     external: ['cloudflare:workers'],
   });
   runtime = new Miniflare(
@@ -283,7 +284,14 @@ async function mcp(credential, options = {}) {
       'content-type': 'application/json',
       ...options.headers,
     },
-    body: options.body ?? JSON.stringify({ jsonrpc: '2.0', id: 1, method: 'tools/list' }),
+    body:
+      options.body ??
+      JSON.stringify({
+        jsonrpc: '2.0',
+        id: 1,
+        method: 'tools/call',
+        params: { name: 'kiln_validate', arguments: { code: 'function build(){}' } },
+      }),
   });
 }
 
@@ -677,6 +685,40 @@ test('MCP authorization creates a durable connection and activates it only on co
   assert.ok(!JSON.stringify(active).includes(credential.access_token));
   assert.ok(!JSON.stringify(active).includes(credential.refresh_token));
   assert.equal((await mcp(credential)).status, 200);
+});
+
+test('edge discovery requires a scoped active connection and rejects revoked cached credentials', async () => {
+  const credential = await token('alice');
+  const noScope = await token('alice', { scope: 'offline_access' });
+  for (const [method, params] of [
+    ['tools/list', {}],
+    ['tools/call', { name: 'kiln_discover', arguments: { query: 'wheel' } }],
+  ]) {
+    const options = {
+      headers: { accept: 'application/json, text/event-stream' },
+      body: JSON.stringify({ jsonrpc: '2.0', id: 1, method, params }),
+    };
+    assert.equal((await mcp({ access_token: 'invalid' }, options)).status, 401);
+    assert.equal((await mcp(noScope, options)).status, 403);
+    const response = await mcp(credential, options);
+    assert.equal(response.status, 200);
+    assert.equal(response.headers.get('cache-control'), 'no-store');
+    assert.ok(
+      (await response.text()).includes(method === 'tools/list' ? '"tools":' : '"content":'),
+    );
+  }
+  await database
+    .prepare("UPDATE kiln_connections SET state='revoked' WHERE client_id=?")
+    .bind(credential.clientId)
+    .run();
+  assert.equal(
+    (
+      await mcp(credential, {
+        body: JSON.stringify({ jsonrpc: '2.0', id: 1, method: 'tools/list' }),
+      })
+    ).status,
+    401,
+  );
 });
 
 test('primary connection revocation denies cached access and refresh while preserving another connection', async () => {
@@ -1365,6 +1407,7 @@ test('real OAuth gateway authorizes downloads from a separate tenant Worker', as
         write: false,
         format: 'esm',
         platform: 'browser',
+        conditions: ['workerd'],
         external: ['cloudflare:workers'],
       }),
     ),
@@ -1492,7 +1535,22 @@ test('real OAuth gateway authorizes downloads from a separate tenant Worker', as
       ).status,
       404,
     );
-    assert.equal((await server.dispatchFetch(`${origin}/mcp`, { headers })).status, 503);
+    assert.equal((await server.dispatchFetch(`${origin}/mcp`, { headers })).status, 405);
+    assert.equal(
+      (
+        await server.dispatchFetch(`${origin}/mcp`, {
+          method: 'POST',
+          headers: { ...headers, 'content-type': 'application/json' },
+          body: JSON.stringify({
+            jsonrpc: '2.0',
+            id: 1,
+            method: 'tools/call',
+            params: { name: 'kiln_validate', arguments: { code: 'function build(){}' } },
+          }),
+        })
+      ).status,
+      503,
+    );
     const privateWorker = await server.getWorker('tenant');
     assert.equal(
       (

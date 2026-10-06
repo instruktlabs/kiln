@@ -442,7 +442,7 @@ late delivery is refused through the child's durable cancellation fence. Parent
 responses are bounded to 32 MiB and withheld until cleanup completes.
 
 The default Worker route remains 404. The gateway uses the private admission
-binding described below and returns 503 when it is absent. No production
+binding described below and returns 503 for native calls when it is absent. No production
 configuration, public route or new Cloudflare job is enabled by these modules.
 Provider qualification must test the coordinator/interceptor/child flow together;
 local state-machine and workerd tests do not establish that live boundary.
@@ -457,8 +457,8 @@ Sources: [Container API](https://developers.cloudflare.com/containers/api/durabl
 gateway receives only a named `KilnCompute` service binding as `NATIVE_COMPUTE`;
 that entrypoint always selects `global-v1`. It cannot accept a caller-selected
 admission object or expose operator controls. Artifact downloads continue through
-tenant storage without starting compute. MCP discovery/control requests still
-need an edge-only path before launch to avoid unnecessary coordinator starts.
+tenant storage without starting compute. The authenticated edge path below serves
+metadata and helper discovery without a coordinator or compute reservation.
 
 An admitted request reserves one coordinator and at most one active child VM.
 One request per account and the configured global concurrency limit are enforced
@@ -502,6 +502,38 @@ left open and now verifies its closure. No new cloud qualification is implied.
 Implementation follows the current [SQLite transaction contract](https://developers.cloudflare.com/durable-objects/api/sqlite-storage-api/#transaction)
 and [alarm contract](https://developers.cloudflare.com/durable-objects/api/alarms/).
 Production configuration, integrated rendering and deployed qualification remain open.
+
+## Authenticated edge discovery
+
+After the same OAuth scope, account and connection checks used by native calls,
+the gateway serves initialization, protocol discovery, tool/resource lists and
+static `kiln_discover` queries directly in the Worker. Ping, notifications, malformed
+JSON and unknown tool names also stay on that path. No storage or native service is
+available to its handler. Source operations, resource reads and live capabilities
+still go through shared admission. Routing inspects the bounded JSON body; a
+forged `mcp-method` header cannot turn metadata into native execution. Both paths
+use the maintained MCP handler, with stateless legacy compatibility. HTTP responses
+remain `no-store`; protocol cache hints apply only to fixed public definitions.
+
+`node hosting/scripts/edge-manifest.mjs --write` captures metadata from the actual
+engine server with the hosted storage surface. Its sentinels throw if any host
+service is invoked. The build checks the committed snapshot; it never silently
+updates it. The actual native HTTP fixture independently checks every tool schema,
+resource, template and initialization field against that snapshot. Helper results
+and validation diagnostics are compared with the engine host. The Worker imports
+only the pure discovery algorithm/schema and a generated catalog, not the Node
+engine, renderer or evaluator. The `workerd` build condition selects the MCP SDK's
+Worker-compatible schema validator without runtime code generation.
+
+Real workerd tests cover modern discovery, legacy initialization, malformed
+messages, forged routing headers, missing native bindings and primary-database
+revocation despite retained OAuth KV records. No authentication or compute quota
+is bypassed for operations that require native execution. Provider startup/cost
+measurements and final hosted-specific instructions remain launch checks; the
+current instructions deliberately match the published engine verbatim.
+
+Sources: [MCP discovery](https://github.com/modelcontextprotocol/modelcontextprotocol/blob/main/docs/specification/2026-07-28/server/discover.mdx),
+[Cloudflare stateless MCP guidance](https://developers.cloudflare.com/agents/model-context-protocol/guides/remote-mcp-server/).
 
 ## Private Node host
 

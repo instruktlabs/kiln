@@ -35,6 +35,36 @@ states and the evidence that superseded them.
 
 ## Execution notes
 
+### Authenticated metadata and helper discovery at the edge
+
+The gateway now answers protocol metadata and static helper discovery without
+starting a coordinator VM or reserving compute. The OAuth scope, current account
+and primary-database connection checks still run first. Source/private-resource
+operations and live capabilities retain the admitted native route. Tool and resource
+definitions are captured from the actual engine protocol, checked during builds
+and compared independently with the real native HTTP host. The Worker bundles only
+the pure discovery service and generated catalog, with no native evaluator.
+
+Focused tests first demonstrated missing gateway routing and invalid Discovery
+arguments becoming transport errors. Those now pass, including engine-compatible
+error guidance and path redaction. An older assertion expected modern server identity
+at the top level; it was corrected against the current MCP discovery specification,
+which places it in result metadata. Authentication checks also prove that revoked
+credentials cannot obtain edge metadata through stale OAuth KV records.
+
+All 244 hosted tests, three hosted typechecks, ten production bundles and root
+typecheck/lint pass. The actual gateway bundle is 2,401,079 unminified bytes;
+startup CPU and deployed cost remain unmeasured. Source and production-bundle
+secret scans are clear. Receipts: `.cache/edge-hosted-tests.log`,
+`.cache/edge-source-scan.json` and `.cache/edge-bundle-scan.json`.
+The preceding admission commit `892ebd8` passed all eighteen CI checks, including
+[engine/package CI](https://github.com/instruktlabs/kiln/actions/runs/37542572710).
+The new edge changes require their own CI. Hosted-specific instructions, integrated
+rendering, account lifecycle and live qualification remain open.
+
+No cloud upload, compute job, main merge, npm change or deployment occurred. The
+approved cloud allowance is still exhausted and the public service is unpublished.
+
 ### Shared admission and gateway connection
 
 The gateway now routes MCP through a private service binding that selects one

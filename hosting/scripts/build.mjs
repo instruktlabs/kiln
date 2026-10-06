@@ -3,9 +3,11 @@ import { createHash } from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 import { build } from 'esbuild';
 import { assertProductionBoundary } from './build-boundary.mjs';
+import { checkEdgeManifest } from './edge-manifest.mjs';
 
 const output = new URL('../../.cache/hosted-worker/', import.meta.url);
 await mkdir(output, { recursive: true });
+await checkEdgeManifest();
 for (const entry of [
   'worker',
   'tenant-worker',
@@ -24,15 +26,18 @@ for (const entry of [
     write: false,
     format: 'esm',
     platform: entry.startsWith('native-') ? 'node' : 'browser',
+    conditions: entry.startsWith('native-') ? undefined : ['workerd'],
     target: 'es2022',
     metafile: true,
-    external: [
-      'cloudflare:workers',
-      '@instruktlabs/kiln',
-      '@instruktlabs/kiln/*',
-      '@modelcontextprotocol/server',
-      '@modelcontextprotocol/node',
-    ],
+    external: entry.startsWith('native-')
+      ? [
+          'cloudflare:workers',
+          '@instruktlabs/kiln',
+          '@instruktlabs/kiln/*',
+          '@modelcontextprotocol/server',
+          '@modelcontextprotocol/node',
+        ]
+      : ['cloudflare:workers'],
   });
   const bytes = result.outputFiles[0].contents;
   const inputs = Object.keys(result.metafile.inputs);

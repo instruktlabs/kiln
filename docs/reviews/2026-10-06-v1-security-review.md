@@ -236,6 +236,22 @@ outstanding. Local tests and a secret scan cannot substitute for those gates.
 
 ## Acceptance
 
+The integrated branch now also covers durable compute admission and authenticated
+edge discovery. Reservations survive unknown cleanup and eviction; only a verified
+whole-tree cancellation acknowledgement releases them. Fixed metadata/helper queries
+have no native or storage service available. OAuth scope and primary account/connection
+checks run before this path; the new real-workerd regression denies metadata after
+connection revocation even with OAuth KV records intact. Native request bytes and
+trusted tenant selection are preserved after the edge routing check.
+
+The current branch passes 244 hosted tests, three hosted typechecks, ten production
+bundles and root typecheck/lint. Redacted source and actual-bundle scans processed
+795,878 and 2,577,844 bytes respectively without matches. The package's published
+state is separate from these development checks; no production deployment occurred.
+Receipts: `.cache/edge-hosted-tests.log`, `.cache/edge-source-scan.json` and
+`.cache/edge-bundle-scan.json`. Integrated provider isolation, account deletion,
+identity linking, live OAuth, operations and final image/configuration review remain open.
+
 Open. Secret hygiene and a passing local test suite do not establish secure public
-hosting. Stable publication and production deployment still require their concrete
-reviewed candidates and the owner's existing release approvals.
+hosting. Stable npm publication is complete; production deployment still requires
+its concrete reviewed candidate and the owner's approval.
