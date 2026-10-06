@@ -48,6 +48,9 @@ export default {
         url.pathname.startsWith('/mcp/') ||
         url.pathname.startsWith('/.well-known/oauth-protected-resource')
       ) {
+        const browserOrigin = request.headers.get('origin');
+        if (browserOrigin !== null && browserOrigin !== origin)
+          throw new HttpFailure(403, 'Origin not allowed');
         if (url.search)
           throw new HttpFailure(400, 'Query parameters are not supported on resource endpoints');
         response = await protectedResource.fetch(request, env, ctx);

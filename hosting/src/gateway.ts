@@ -40,6 +40,8 @@ export async function forwardTenant(
     'accept',
     'content-type',
     'mcp-protocol-version',
+    'mcp-method',
+    'mcp-name',
     'mcp-session-id',
     'last-event-id',
   ]) {

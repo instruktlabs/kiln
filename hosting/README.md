@@ -33,10 +33,38 @@ closures survive an export/import and exact offline GLB rebuild. Unexpected exte
 real identity provider or cloud deployment is used. These tests do not establish
 untrusted native isolation, deployed persistence, global KV consistency or production capacity.
 
-The separate gateway, tenant, native source-client and native asset-client bundles,
+The separate gateway, tenant, native source-client, native asset-client and native MCP bundles,
 with input/hash/import receipts, are written to
 `../.cache/hosted-worker/`. `build` performs no upload, resource provisioning or
 deployment. `Hosted gateway checks` runs the same checks on Linux and Windows.
+
+## Native HTTP adapter
+
+`src/native-mcp.ts` serves the installed engine's registry through the MCP SDK's
+Streamable HTTP handler, including stateless compatibility for the 2025 protocols.
+The gateway preserves the current protocol's `mcp-method` and `mcp-name` headers.
+Both boundaries reject a supplied browser Origin other than the configured public
+origin. The native endpoint accepts only its fixed private hostname and path and
+refuses forwarded credentials or caller-selected tenant headers.
+
+The production loader first verifies the installed isolated evaluator. Failure
+leaves the host unavailable; there is no trusted execution fallback. Each request
+gets a fresh engine context with the native ProgramStore and AssetLibrary adapters.
+The outside container controller must bind storage to one verified tenant; it has
+not been implemented or qualified on Cloudflare. No public native port is opened.
+
+Admission defaults to one active request, with a 1 MiB request bound, 120-second
+whole-request deadline and 64 MiB streamed response ceiling. Evaluation has a
+60-second maximum deadline. These are implementation bounds, not measured launch
+capacity or global quotas. Disconnects and response cancellation abort storage
+and evaluation. An evaluator that has not settled keeps its occupied slot even
+after the HTTP response ends; the future controller must enforce process cleanup.
+
+The local HTTP tests run real registry tools against the production storage Worker:
+validate, CPU render, save, restore and exact source retrieval after reconnect.
+They also check protocol compatibility, cross-tenant denial, cancellation, stalled
+bodies, response limits and refusal of an unqualified evaluator. They deliberately
+use a fixed trusted render fixture and do not establish provider isolation.
 
 ## Authorization and tenant routing
 
@@ -53,13 +81,22 @@ their network fetches. Dynamic registration is retained for client compatibility
 Registration and other public endpoints still need operational admission limits
 before deployment.
 
-GitHub sign-in is a provisional v1 choice pending the owner's open preference
-question. The adapter requests no repository scopes, uses upstream S256 PKCE,
+The owner selected GitHub sign-in for free hosted v1 access, private saved assets
+and personal quotas. The local package needs no Kiln account. The adapter requests
+no repository scopes, uses upstream S256 PKCE,
 and resolves the current GitHub user for every login. Only `github-<immutable id>`
 becomes a subject. Login names and email addresses are not tenant identifiers.
 Upstream tokens are used only for the identity lookup and are not stored or passed
 to the backend. This needs a dedicated Instrukt Labs OAuth app; no app or secret
 has been provisioned by this implementation.
+
+Launch requires a clearly branded Kiln / Instrukt Labs connection page, a verified
+service domain, a plain explanation of the granted access, privacy/support links
+and usable disconnect/deletion controls. Verify actual provider consent, denied
+and cancelled sign-in, token expiry/revocation and cross-user access on the deployed
+service. Local fixtures are not acceptance of that end-user experience or its
+deployed security. Keep GitHub credentials only in the gateway's secret bindings;
+never send them to an evaluator, log them or store them with artifacts.
 
 Consent names the requesting client, verified domain when available, callback
 host, scopes and loopback warning. The library binds consent and upstream state

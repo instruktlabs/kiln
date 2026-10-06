@@ -5,7 +5,7 @@ import { build } from 'esbuild';
 
 const output = new URL('../../.cache/hosted-worker/', import.meta.url);
 await mkdir(output, { recursive: true });
-for (const entry of ['worker', 'tenant-worker', 'native-programs', 'native-assets']) {
+for (const entry of ['worker', 'tenant-worker', 'native-programs', 'native-assets', 'native-mcp']) {
   const result = await build({
     entryPoints: [fileURLToPath(new URL(`../src/${entry}.ts`, import.meta.url))],
     bundle: true,
@@ -14,7 +14,12 @@ for (const entry of ['worker', 'tenant-worker', 'native-programs', 'native-asset
     platform: entry.startsWith('native-') ? 'node' : 'browser',
     target: 'es2022',
     metafile: true,
-    external: ['cloudflare:workers', '@instruktlabs/kiln/*'],
+    external: [
+      'cloudflare:workers',
+      '@instruktlabs/kiln',
+      '@instruktlabs/kiln/*',
+      '@modelcontextprotocol/server',
+    ],
   });
   const bytes = result.outputFiles[0].contents;
   const inputs = Object.keys(result.metafile.inputs);

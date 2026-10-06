@@ -9,7 +9,8 @@
     "build": "node scripts/build.mjs"
   },
   "dependencies": {
-    "@cloudflare/workers-oauth-provider": "1.2.1"
+    "@cloudflare/workers-oauth-provider": "1.2.1",
+    "@modelcontextprotocol/server": "2.3.0"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "5.20261006.1",

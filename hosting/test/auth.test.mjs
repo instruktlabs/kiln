@@ -313,6 +313,8 @@ test('same user reconnects to one tenant; another user and forged headers cannot
         'cf-access-jwt-assertion': 'forged',
         'mcp-session-id': 'session-alice',
         'mcp-protocol-version': '2026-07-28',
+        'mcp-method': 'tools/call',
+        'mcp-name': 'kiln_validate',
       },
     })
   ).json();
@@ -328,7 +330,19 @@ test('same user reconnects to one tenant; another user and forged headers cannot
     assert.equal(other.headers[header], undefined);
   }
   assert.equal(other.headers['mcp-protocol-version'], '2026-07-28');
+  assert.equal(other.headers['mcp-method'], 'tools/call');
+  assert.equal(other.headers['mcp-name'], 'kiln_validate');
   assert.equal(other.headers['mcp-session-id'], 'session-alice'); // Session IDs never route a tenant.
+});
+
+test('MCP refuses a foreign browser Origin even with a valid token', async () => {
+  const credential = await token('alice');
+  assert.equal(
+    (await mcp(credential, { headers: { origin: 'https://foreign.example' } })).status,
+    403,
+  );
+  assert.equal((await mcp(credential, { headers: { origin } })).status, 200);
+  assert.equal((await mcp(credential, { headers: { 'mcp-name': 'x'.repeat(4097) } })).status, 431);
 });
 
 test('a token without the tool scope cannot reach a tenant', async () => {

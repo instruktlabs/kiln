@@ -17,19 +17,27 @@ export function serviceFailure(error: unknown): Response {
 export async function readBounded(
   body: ReadableStream<Uint8Array> | null,
   limit: number,
-): Promise<Uint8Array> {
+  signal?: AbortSignal,
+): Promise<Uint8Array<ArrayBuffer>> {
   if (!body) return new Uint8Array();
   const reader = body.getReader();
   const chunks: Uint8Array[] = [];
   let length = 0;
   let timer: ReturnType<typeof setTimeout> | undefined;
+  let onAbort: () => void = () => {};
   const timeout = new Promise<never>((_, reject) => {
+    onAbort = () => {
+      reject(new HttpFailure(499, 'Request cancelled'));
+      void reader.cancel().catch(() => {});
+    };
+    signal?.addEventListener('abort', onAbort, { once: true });
     timer = setTimeout(() => {
       reject(new HttpFailure(408, 'Request timed out'));
       void reader.cancel().catch(() => {});
     }, 10_000);
   });
   try {
+    if (signal?.aborted) onAbort();
     for (;;) {
       const { done, value } = await Promise.race([reader.read(), timeout]);
       if (done) break;
@@ -48,6 +56,7 @@ export async function readBounded(
     }
     return bytes;
   } finally {
+    signal?.removeEventListener('abort', onAbort);
     if (timer !== undefined) clearTimeout(timer);
     reader.releaseLock();
   }

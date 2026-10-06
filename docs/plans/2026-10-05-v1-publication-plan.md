@@ -978,6 +978,15 @@ make the npm package and owned marketplace available.
 
 ### Parallel preparation, separate release decisions
 
+Owner decision, 6 October: free hosted v1 uses GitHub sign-in for private saved
+assets and personal quotas. The package and local plugins require no Kiln account.
+Request public identity only, without private repository or write permissions.
+The launch must present clear Kiln / Instrukt Labs branding, verified domain,
+privacy/support links and understandable consent, and qualify real sign-in,
+disconnect, deletion, expired credentials and cross-user denial. This is an access
+and ownership mechanism, not paid billing. Local authentication fixtures alone do
+not satisfy the owner's requirement for a secure, professional deployed flow.
+
 1. Establish the selected package name and repository destination early. Inventory
    API changes and prepare portable builds while registration and transfer preflight
    are underway.

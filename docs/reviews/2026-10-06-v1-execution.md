@@ -21,9 +21,9 @@ published yet.
 | P4 | Clean installs and workspace upgrades | In progress: RC package passed all platform CI jobs; official 0.10.0-to-RC upgrades pass for Claude/Codex workspaces with conflict refusal, reapplied customizations and byte-exact old assets; final-version harness checks remain open |
 | P5 | Release automation and npm publication | In progress: manual exact-archive workflow and owner runbook; GitHub npm-release environment created with sole owner review, no admin bypass and protected branches; live npm trust, staging approval, registry provenance and fresh registry install remain open |
 | H1 | Native Cloudflare qualification | In progress: Linux image built, Trixie software renderer passes six textured views; Docker namespace probe fails closed, Bubblewrap launch-argument defect corrected; real Cloudflare isolation/execution, RSS, startup and measured cost remain pending |
-| H2 | Authenticated MCP and tenant boundary | In progress: separate hosted Worker implements OAuth consent/PKCE, audience/scope checks and verified-subject tenant routing; local workerd tests cover two identities, reconnects and forged tenant headers; real sign-in, tenant engine/storage reference checks and evaluator environment isolation remain open |
+| H2 | Authenticated MCP and tenant boundary | In progress: GitHub sign-in selected; gateway OAuth and verified-subject routing plus native registry-derived HTTP tools pass local two-user, storage and reconnect checks; production native loader refuses unqualified isolation; branded real sign-in, container dispatch and evaluator environment isolation remain open |
 | H3 | Artifact lifecycle | In progress: tenant SQLite/R2 bytes, ProgramStore and native AssetLibrary, atomic quotas/revision pins, material closures, authenticated downloads, deletion and seven-day unsaved retention pass local workerd and actual-engine checks; standalone MaterialLibrary, native dispatch, browser tickets, account deletion and deployed lifecycle proof remain open |
-| H4 | Capacity and operations | Pending: quotas/admission/cancellation, logs without credentials, load/cost measurements, alerts, health/build identity and rollback |
+| H4 | Capacity and operations | In progress: local native request admission, body/response/deadline bounds and cancellation pass; global operational quotas, process cleanup, load/cost measurements, alerts, deployed health/build identity and rollback remain open |
 | H5 | Production deployment | Pending: approved deployment at `kiln.instruktlabs.com`; live authenticated create/edit/render/save/download/reconnect flow |
 | L1 | Local Claude Code and Codex plugins | In progress: both remote Git catalogs and real versioned caches qualified; actual development-to-RC plugin updates preserve pinned workspaces until explicit runtime upgrade, saved assets remain byte-exact and native clients discover one server; final registry/tag distribution and final-version upgrade remain open |
 | L2 | Public OpenAI plugin | Pending: compliant ZIP, verified publisher/domain, working MCP, privacy/support pages, review cases/video/account, submission receipt |
@@ -1020,14 +1020,63 @@ passed. [Native preflight 37457310791](https://github.com/instruktlabs/kiln/acti
 failed the required isolated evaluation/rendering step. Exact CI for this new change
 and actual Cloudflare provider qualification remain required.
 
+### Native MCP HTTP transport
+
+The private native host now uses the pinned MCP server SDK 2.3.0 and the installed
+engine's real registry. It supports the current HTTP protocol and stateless 2025
+compatibility without duplicating tool schemas. Gateway forwarding now preserves
+the required method/name headers, and browser Origin validation is applied before
+dispatch. Credentials and tenant selectors cannot enter the private native route.
+
+The production loader requires isolated-evaluator readiness before it exposes an
+engine. Local tests use a fixed trusted fixture and make no isolation claim.
+Fresh request contexts inject the durable source and asset adapters. Body, response
+and deadline limits bound HTTP work; a cancelled evaluator retains its admission
+slot until it settles. Container execution and forced process cleanup still need
+their own implementation and real Cloudflare qualification.
+
+Tests first demonstrated missing transport behavior, dropped protocol headers and
+an accepted foreign Origin. Additional fault tests exposed cancellation/deadline
+handling and an unhandled rejection; the corrections pass the focused nine HTTP
+tests. After a clean private-package install, the complete hosted suite passes
+67 tests, both hosted typechecks and five production builds. Root typecheck, lint
+and whitespace checks pass. Receipt: `.cache/v1-native-mcp-tests.log`.
+The native MCP bundle is 33,262 bytes, SHA-256
+`0a2b1d06ecd4a5ca46141c0f6c859b6baac9cde84117c1dc372740fe34da6807`.
+
+For `1116ea6b5415482f7436e73830a60397bbc1dc5c`,
+[engine/package CI 37460519101](https://github.com/instruktlabs/kiln/actions/runs/37460519101)
+passed all twelve jobs. Hosted checks 37460519166 and Website 37460519321 passed.
+Native preflight 37460519128 failed its required isolated evaluation/rendering step.
+These results qualify that commit; this transport change needs its own CI.
+
+### Package release priority
+
+A fresh public registry lookup on 6 October still returns 404 for
+`@instruktlabs/kiln`. The RC is unpublished. Final 1.0 version/documents, exact
+candidate qualification, approved main integration, npm publisher authorization,
+publication/provenance and fresh registry installation remain open. As specified
+in the publication plan, npm release does not wait for hosted launch or directory
+approval. Those remain separate requirements of the overall active goal.
+
 ## Owner handoffs
 
-Cloudflare CLI consent is pending. The default 474-permission request was not
-approved. A replacement requested 22 permissions covering profile/account/zone
-reads and Workers, Containers, R2, D1, routes and observability. The owner was shown
-the exact browser consent page; its five-minute device window expired before
-completion. Renew the flow when the owner is available, preserving that scope.
-No account-wide credential or API token provisioning scope was requested.
+Cloudflare CLI consent is complete. After the earlier consent expired, the owner
+approved a fresh request in external Chrome. The CLI reported successful login,
+and a separate `auth whoami` check confirmed authenticated and token-valid state
+for the intended account. The consent displayed 24 permissions covering identity,
+account/zone reads, Workers, Containers, R2, KV, D1 and observability; the CLI also
+records its refresh capability. No billing or API-token management permission was
+requested. This authorizes CLI access, not evidence of a deployed service.
+
+The owner selected GitHub sign-in for free hosted v1 access, private saved assets
+and personal quotas, with explicit requirements for correct implementation,
+professional presentation and end-user security. The package and local plugins
+remain account-free. The hosted launch gate includes clear Kiln / Instrukt Labs
+branding, verified domain, minimal provider permissions, privacy/support links,
+usable disconnect/deletion controls and actual deployed consent, cancellation,
+expiry/revocation and cross-user denial checks. Local fixtures do not establish
+those results. No identity app or secret has been provisioned yet.
 
 Local npm login, publisher verification and final external approvals will be
 surfaced when a concrete candidate needs them. Missing human steps do not block
