@@ -86,12 +86,39 @@ Local site checks report 78 files with no errors, warnings or hints. Site tests
 report 620 passes, two skips and two failures: Windows denied creation of file
 symlinks (`EPERM`) in the deployment-preflight fixtures, before the assertions.
 No security assertion was weakened and no workstation permission was changed.
-The Linux website workflow must qualify the updated lockfile before acceptance.
+The Linux website workflow `37498513008` passes at `abe5a445`, qualifying the
+updated lockfile and those symlink assertions on the supported runner.
 Receipts: `site-audit{,-after}.json`, `site-check.log` and `site-tests.log`.
 The full local website build succeeds, including public-text checks and its
 private-data scan (zero findings). This is a dependency compatibility check on a
 dirty development tree, not a reviewed deployment candidate or a public content
 update. The build was not uploaded. Its receipt is `site-build.log`.
+
+### Private image layer scan
+
+The exact private trial image (`sha256:69aff70b4f0f80d2ff13549f4b55b1053fc1d8a6e25a00168ac4078a2ebd7b8a`)
+was exported locally. An initial direct OCI-archive scan read only 15,437 bytes
+of metadata; that is not layer coverage. All ten layer blobs and the image config
+were then copied to an ignored scan directory with their correct archive types,
+after verifying each blob against its SHA-256 name. No layer paths were extracted
+into the host filesystem and no image links were followed.
+
+The layer scan processed 80,577,025 bytes and reported six generic-key matches:
+one in Node's public `v8-internal.h`, five in cached public `jose` registry
+metadata. The complete header is identical to Node's official v22.23.3 source;
+the complete parsed cache metadata is identical to a fresh public npm response.
+All six therefore refer to public upstream content rather than Kiln credentials.
+The report remains intact with full redaction; no broad suppression was added.
+
+Fourteen archive-read diagnostics were examined individually. Thirteen were
+symbolic links, which were not followed. One was an 83-byte plain-text dpkg
+alternatives record with a misleading `.gz` suffix; a separate text scan passed.
+This is a bounded text/recognized-archive secret scan, not analysis of arbitrary
+binary contents or proof against unknown credential formats. The final production
+image still needs its own scan and qualification. Receipts:
+`native-image-layer-inventory.json`, `native-image-layers-redacted.json`,
+`native-image-findings-triage.json`, `native-image-scan-errors.json` and
+`native-image-fallback-redacted.json`.
 
 ## Reviewed controls and required live evidence
 

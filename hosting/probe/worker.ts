@@ -1,4 +1,4 @@
-import { DurableObject } from 'cloudflare:workers';
+import { DurableObject, WorkerEntrypoint } from 'cloudflare:workers';
 import { ContainerEvaluationJob, ContainerJobFailure } from '../src/container-job';
 import { engineRequest, glbDigest, nativeFixtures } from './fixtures';
 import { observeContainer } from './observe-container';
@@ -80,6 +80,18 @@ export class KilnProbeRun extends DurableObject {
     return runProbeOnce(this.ctx.storage, (name) =>
       bindings.KilnProbeJob.getByName(`availability-rc1/${name}`).runFixture(name),
     );
+  }
+}
+
+/** Operator-only service binding; never accepts source, commands or a new run ID. */
+export class KilnProbeControl extends WorkerEntrypoint {
+  fetch() {
+    return new Response('Not found', { status: 404 });
+  }
+
+  async runFixed() {
+    const bindings = this.ctx.exports as unknown as ProbeBindings;
+    return bindings.KilnProbeRun.getByName('availability-rc1').run();
   }
 }
 

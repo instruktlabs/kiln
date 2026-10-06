@@ -24,11 +24,14 @@ the hosted service for launch.
 - Each job uses the production controller's 60-second deadline, durable alarm,
   output bounds, immutable image check and awaited whole-VM destruction. The
   probe stops at the first failure. No user may supply source or a command.
-- A temporary five-minute cron invokes the coordinator. A durable transaction
-  claims the entire run once; concurrent, later and interrupted runs cannot
-  silently start another batch. Later triggers only report retained state.
+- The `KilnProbeControl` named service entrypoint invokes only the fixed
+  `availability-rc1` coordinator through `runFixed()`. An authenticated development
+  service binding reaches it without a public URL. Both default and named HTTP
+  handlers return 404. The prepared deployment has no cron. A durable transaction
+  claims the entire run once; concurrent, later and interrupted calls cannot
+  silently start another batch. Later calls only report retained state.
 - Read fixed result metadata through authenticated Workers logs. Never log source,
-  arbitrary native output, identity records or credentials. Remove the cron,
+  arbitrary native output, identity records or credentials. Remove the
   Worker, probe namespaces and container application after retaining receipts;
   remove the trial registry image once it is no longer needed. Do not remove any
   existing application or resource.
@@ -59,6 +62,13 @@ or isolation settings. A regression test failed before this correction and
 passes afterward. This is a plausible explanation for the internal error, still
 requiring a live check. Operator-only diagnostics now retain the first failed
 API method name, never exception text or native output.
+
+The corrected scheduled deployment and a separate private trigger produced no
+observed invocation after their documented propagation windows. Both were removed,
+along with the application, namespaces and registry image; no additional job was
+observed. The next continuation uses the documented remote service-binding route
+above with the same remaining allowance. Local workerd verifies its HTTP denial,
+fixed run and retained result. This does not establish a successful provider run.
 
 ## Local image and preparation
 
@@ -107,4 +117,5 @@ Sources: [native container API](https://developers.cloudflare.com/containers/api
 [scheduling policy](https://developers.cloudflare.com/containers/configuration/scheduling-policy/),
 [pricing](https://developers.cloudflare.com/containers/platform/pricing/),
 [loopback bindings](https://developers.cloudflare.com/workers/runtime-apis/context/#exports),
+[remote service bindings](https://developers.cloudflare.com/workers/local-development/#using-remote-resources-with-durable-objects-and-workflows),
 [cf prebuilt deployment](https://developers.cloudflare.com/cf/projects/#deploy-a-prebuilt-build).

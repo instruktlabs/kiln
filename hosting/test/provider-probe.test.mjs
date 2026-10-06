@@ -119,3 +119,57 @@ test('the private Worker exposes no HTTP execution and its loopback namespaces f
     await runtime.dispose();
   }
 });
+
+test('private service RPC can trigger only the fixed retained probe and exposes no HTTP execution', async () => {
+  const bundle = await build({
+    entryPoints: [fileURLToPath(new URL('../probe/worker.ts', import.meta.url))],
+    bundle: true,
+    write: false,
+    format: 'esm',
+    platform: 'browser',
+    external: ['cloudflare:workers'],
+  });
+  const runtime = new Miniflare(
+    convertV4MiniflareOptions({
+      workers: [
+        {
+          name: 'private-probe',
+          modules: true,
+          script: bundle.outputFiles[0].text,
+          compatibilityDate: '2026-10-06',
+          compatibilityFlags: ['enable_ctx_exports'],
+          durableObjects: {
+            RUN: { className: 'KilnProbeRun', useSQLite: true },
+            JOB: { className: 'KilnProbeJob', useSQLite: true },
+          },
+        },
+        {
+          name: 'operator',
+          modules: true,
+          compatibilityDate: '2026-10-06',
+          serviceBindings: { PROBE: { name: 'private-probe', entrypoint: 'KilnProbeControl' } },
+          script: `export default {
+            async fetch(request, env) {
+              if (new URL(request.url).pathname === '/denied') return env.PROBE.fetch(request);
+              return Response.json(await env.PROBE.runFixed());
+            }
+          }`,
+        },
+      ],
+    }),
+  );
+  try {
+    const operator = await runtime.getWorker('operator');
+    const denied = await operator.fetch('http://localhost/denied', { method: 'POST', body: '{}' });
+    assert.equal(denied.status, 404);
+    const first = await (await operator.fetch('http://localhost/run')).json();
+    assert.deepEqual(first, {
+      state: 'finished',
+      results: [{ name: 'engine-a', passed: false, reason: 'CONTAINER_UNAVAILABLE' }],
+    });
+    const second = await (await operator.fetch('http://localhost/run')).json();
+    assert.deepEqual(second, first);
+  } finally {
+    await runtime.dispose();
+  }
+});

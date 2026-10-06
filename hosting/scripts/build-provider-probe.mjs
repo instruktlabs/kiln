@@ -58,12 +58,15 @@ const workerConfig = OutputWorkerSchema.parse({
   previewUrls: false,
   domains: [],
   limits: { cpuMs: 30000, subrequests: 50 },
-  triggers: [{ type: 'scheduled', schedule: '*/5 * * * *' }],
+  // The operator uses an authenticated remote service binding. No background
+  // trigger can consume the fixed allowance before the operator is connected.
+  triggers: [],
   observability: {
     enabled: true,
     logs: { enabled: true, headSamplingRate: 1, invocationLogs: true, persist: true },
   },
   exports: {
+    KilnProbeControl: { type: 'worker' },
     KilnProbeRun: { type: 'durable-object', storage: 'sqlite' },
     KilnProbeJob: { type: 'durable-object', storage: 'sqlite', container: containerName },
   },

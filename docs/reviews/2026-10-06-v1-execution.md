@@ -22,7 +22,7 @@ states and the evidence that superseded them.
 | P3 | Package identity, contents, executables and notices | RC complete: public `@instruktlabs/kiln@1.0.0-rc.1`, aligned engine/plugin identities, MCP launcher, consumer doc allowlist and dependency notices; stable-version audit remains open |
 | P4 | Clean installs and workspace upgrades | RC complete: all seven public-registry CI jobs pass; cached Claude/Codex installers use the exact public RC, render/save/reopen/export pass; 0.10.0-to-RC upgrades preserve assets and refuse conflicts; final-version checks remain open |
 | P5 | Release automation and npm publication | RC complete: stage-only GitHub trusted publishing, owner-protected environment, package 2FA protection, exact-archive staging/promotion, public signature/provenance and fresh registry installs verified; stable `1.0.0` staging/promotion remain pending |
-| H1 | Native Cloudflare qualification | In progress: Linux image built, Trixie software renderer passes six textured views; first approved private Cloudflare job failed with a provider internal error and all trial resources were removed; numeric-user correction tested, four authorized jobs remain; provider execution/isolation, RSS, startup and measured cost remain pending |
+| H1 | Native Cloudflare qualification | In progress: Linux image built, Trixie software renderer passes six textured views; first private job failed with a provider internal error; corrected continuation had no observed invocation despite configured private schedulers; both trials cleaned up and absence verified. Provider execution/isolation, RSS, startup and measured cost remain pending |
 | H2 | Authenticated MCP and tenant boundary | In progress: Google/GitHub adapters, permanent D1 account IDs, atomic upstream login guards and current account/epoch checks pass 90 local hosted tests; linking, individual connection revocation, branded real sign-in, container dispatch and evaluator isolation remain open |
 | H3 | Artifact lifecycle | In progress: tenant SQLite/R2 bytes, ProgramStore and native AssetLibrary, atomic quotas/revision pins, material closures, authenticated downloads, deletion and seven-day unsaved retention pass local workerd and actual-engine checks; standalone MaterialLibrary, native dispatch, browser tickets, account deletion and deployed lifecycle proof remain open |
 | H4 | Capacity and operations | In progress: local native request admission, body/response/deadline bounds and cancellation pass; global operational quotas, process cleanup, load/cost measurements, alerts, deployed health/build identity and rollback remain open |
@@ -1606,3 +1606,79 @@ hosted setup and matching website/agent-readable content. Internal execution and
 security records continue now; accurate privacy, support and sign-in pages remain
 part of the hosted candidate. No public README/site refresh or Troy picture
 publication was performed during this checkpoint.
+
+## Corrected private trial: scheduling limitation and cleanup
+
+The corrected source `aabc798437184ae4ef5a5b40a5b4de00beca5624` was deployed at
+15:42:31 UTC on 6 October. Its downloaded Worker matched the prepared SHA-256
+`8ed395851f30e935d874f79af62f6a33db2098de6fc24745d54af0f3741941ac` and retained
+the original immutable image. Version `d8199c93-e870-40a6-9338-9c8c27bd141e`
+belonged to deployment `517e21c9-d3dc-4082-904d-149a7f9cd593`. The Worker had no
+public HTTP route, workers.dev or preview URL, credentials or user assets.
+
+The configured five-minute cron produced no observed invocation, log event,
+coordinator object or container instance. Reapplying its exact trigger at
+16:12:47 did not resolve this. At 16:22:10, a separate private 278-byte scheduler
+(`kiln-private-probe-trigger-20261006`) was deployed with only a binding to the
+existing coordinator. It called the same `availability-rc1` durable claim, adding
+no job, run state, image or allowance. Its downloaded module matched SHA-256
+`27233d5b3ce584d6c7ad1de140ebf92f244277419adc6c226d6fa561cf38b40d`; private URL
+settings and the exact binding were independently verified. This also produced
+no observed event. The cause is unconfirmed; the result does not demonstrate that
+the corrected evaluator failed or that Cloudflare cannot run it.
+
+At 16:54:51, both telemetry queries remained empty; the coordinator-object and
+container-instance lists were also empty. This exceeded the documented 15-minute
+cron propagation window and 30-minute new-worker event-history window for the
+helper. Cleanup removed the helper first, followed by the trial application,
+original Worker and registry image. Follow-up reads returned 404 for both Workers
+and the application, no matching image and neither trial namespace. Other account
+resources were preserved. Receipts: `.cache/provider-probe-trial-2/`.
+No successful provider evaluation/isolation result or settled billing total is
+claimed. The aggregate five-job/$1 authorization was not reset or expanded.
+
+## Security fixes and business support identity
+
+Commit `abe5a44538251ebc5d7b5051a25eec1d74200233` adds tested request cancellation,
+elapsed-time and bounded-buffer handling, plus targeted transitive dependency
+patches. All 3,290 local engine tests, the coverage ratchet, 116 hosted tests,
+typechecks, lint and the full local website build pass. Linux/Windows hosted CI,
+the private image, public-registry checks and the Linux website workflow pass on
+that commit. All twelve engine/package jobs in run `37498513040` also pass,
+including the installed Linux software-Vulkan renderer. The Linux website job
+qualifies the two symlink assertions that Windows could not execute locally.
+The separate native preflight remains unsuccessful. See the security record for
+audit scope, the remaining build-only advisory and release limitations.
+
+The owner selected `support@instruktlabs.com` for the public support identity.
+Cloudflare routing was configured and verified active, forwarding that address
+to the existing verified inbox without changing other aliases. The owner then
+created and secured a free Google Account using that address. After explicit
+approval, the account received only `roles/oauthconfig.editor` on
+`instruktlabs-kiln-auth`; the existing personal account remains project owner.
+The owner accepted the first-use Cloud Console terms and Google's API User Data
+Policy. Kiln's OAuth application is now created in external testing mode, with
+the business support address and `matt@instruktlabs.com` as developer contact.
+The narrowly scoped account can manage branding, although the overview metrics
+page separately asks for `serviceusage.quotas.get`; no extra role was granted.
+No OAuth client or client secret has been created, and outgoing support replies
+still need configuration and testing. No paid Google Workspace subscription,
+Google compute service or billing account was added.
+
+## Private invocation continuation
+
+Cloudflare documents remote development service bindings as a route to deployed
+Workers and their Durable Objects. The operator probe now exposes only a named
+`KilnProbeControl.runFixed()` RPC, accepting no source, commands, fixture selection
+or run ID. Both HTTP handlers still return 404. Its prepared deployment removes
+the cron and retains the four remaining fixed jobs, atomic run claim and original
+immutable image. This changes invocation, not the isolation or cost allowance.
+
+A workerd integration test first failed because the entrypoint did not exist,
+then passed with the implementation; it covers fixed execution, HTTP denial and
+retained results on retry. All 117 hosted tests, typechecks, five production
+bundles and root lint pass. The prepared 14,432-byte Worker has SHA-256
+`e3f30d81e40f19cb63f49d2879cb7684e9c2bad5e8f76808685d4b5233e7d3a1`;
+`cf deploy --prebuilt --dry-run` passes. This candidate has not yet run remotely.
+Receipts: `.cache/security-review-2026-10-06/probe-rpc-*.log` and
+`.cache/provider-probe-rpc-candidate/build-receipt.json`.
