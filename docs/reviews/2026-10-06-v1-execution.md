@@ -1302,8 +1302,28 @@ Rechecked main, successful source CI, archive digest and the GitHub environment:
 sole owner reviewer, protected branches only, no administrator bypass. Dispatched
 [staging run 37477014656](https://github.com/instruktlabs/kiln/actions/runs/37477014656)
 from unchanged main with the same CI run and digest. Its verification job passed;
-the stage job is waiting for the owner's GitHub environment review. No RC promotion
-or stable 1.0 publication has occurred.
+the owner approved the GitHub environment review, and the stage job succeeded.
+npm stage `6f426dc2-d6b6-41a8-9ccf-874342bd7089` is `1.0.0-rc.1`, tag `next`,
+actor `GitHub Actions` / `trusted automation`. Its registry validation completed
+with status `staged`. No RC promotion or stable 1.0 publication has occurred.
+
+Downloaded that stage from npm and independently matched its 9,154,941 bytes and
+SHA-256 to the approved archive. npm recorded signed provenance in
+[Sigstore log entry 3110722988](https://search.sigstore.dev/?logIndex=3110722988).
+The Rekor entry stores the signed payload hash rather than the statement itself.
+Reconstructed the expected statement using npm 12.2.0's deterministic schema and
+the verified archive SHA-512, then required its exact SHA-256 to match Rekor's
+`79449664bc6e679b694bcae73b78d26023b3df2f97eca215672c50fc8686c3a3`.
+Reassembled the verification bundle from that statement and the public certificate,
+signature, inclusion proof and signed timestamp. npm's installed Sigstore verifier
+successfully checked the bundle against its TUF trust root and the required
+GitHub Actions issuer and workflow identity. The verified statement binds the
+package/version/archive to repository `instruktlabs/kiln`, `release.yml`, main
+commit `ce640ccae0c621177aad176a03b5a214ae57d266` and run `37477014656` attempt 1.
+This was verification only; no new signature or provenance was generated locally.
+Retained `.cache/npm-stage-provenance-receipt.json` and
+`.cache/npm-stage-verified-provenance.json`. Public promotion is now awaiting
+the separate owner approval required by the runbook.
 
 ## Cloudflare evaluation controller implementation
 
@@ -1330,6 +1350,10 @@ TypeScript configurations, all five existing production bundle builds, repositor
 lint and whitespace checks passed. The new controller and entry are not yet wired
 into a deployed Worker. Receipts: `.cache/v1-container-entry-before.log`,
 `.cache/v1-container-entry-after.log`, `.cache/v1-container-hosting-full.log`.
+The work is in draft [PR #147](https://github.com/instruktlabs/kiln/pull/147),
+stacked on #146. Both Linux and Windows checks passed in
+[hosted CI 37477551252](https://github.com/instruktlabs/kiln/actions/runs/37477551252)
+at `7ac3b23`.
 
 An independent storage regression found during the full hosted suite was fixed in
 `76ef646`: creation and seven-day expiry now derive from one clock read. A focused

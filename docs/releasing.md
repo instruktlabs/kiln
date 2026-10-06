@@ -46,7 +46,7 @@ an unprotected environment rather than accepting an implicit environment creatio
 This GitHub environment was created and read back on 6 October 2026 with the
 settings above; see the execution record. Recheck it before staging. npm's
 stage-only trusted publisher and mandatory package 2FA were configured and verified
-the same day. The first successful OIDC stage remains the proof that trust works.
+the same day. Run `37477014656` subsequently completed the first OIDC stage.
 
 First-time npm staging creates a public `0.0.0-stage` placeholder. It therefore
 requires explicit authorization against the reviewed candidate. The staged code
