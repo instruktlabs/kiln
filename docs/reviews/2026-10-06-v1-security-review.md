@@ -33,6 +33,7 @@ again when the production candidate exists.
 | Image build context | Four-file prepared context, 2,156 non-archive bytes scanned; its package archive is covered by the extracted RC scan. | No matching secrets. Full image-layer forensic inspection and final image qualification remain separate. |
 | Production dependencies | `npm audit --omit=dev --ignore-scripts --json` for the hosting lockfile and actual registry-installed RC runtime. | Both report zero known vulnerabilities. Optional renderer and development dependencies are not covered by those two results. No automatic dependency mutation was performed. |
 | Storage deadline | Two focused tests demonstrated successful completion after the configured deadline when readable-stream microtasks delayed timers. | Fixed by checking elapsed time when headers arrive and before/after each read; timeout aborts the request and cancels the body. Both tests failed before the fix. |
+| Development image decoder | After #146 merged, GitHub identified `sharp@0.35.4` under development-only Miniflare. A full hosting audit reproduced the high-severity finding in sharp and its dependent Miniflare. | Applied a scoped Miniflare override to patched `sharp@0.35.5`, refreshed the npm lockfile and installed it with scripts disabled. The full hosting audit now reports zero vulnerabilities. All 112 hosting tests, typechecks, builds and root lint pass again. |
 
 The storage fix passes the focused source/asset integration tests, all **112 hosted
 tests**, three TypeScript configurations, five production bundle builds and root
@@ -43,6 +44,14 @@ Local redacted reports and audit JSON are retained under
 `.cache/security-review-2026-10-06/`. That ignored directory is not shipped or
 committed. Record updated scans against the final candidate rather than treating
 these development receipts as final release acceptance.
+
+The development decoder finding is
+[GHSA-wq5f-xc86-pv6w](https://github.com/advisories/GHSA-wq5f-xc86-pv6w), indexed
+by GitHub on 6 October. Remove the scoped override when the qualified Miniflare
+version itself pins a patched decoder. This change affects the local/CI test
+harness, not the already-published RC or native image. The GitHub default-branch
+alert remains open until the reviewed fix lands; it was not dismissed. Full audit
+receipts are `hosted-full-audit-before.json` and `hosted-full-audit-after.json`.
 
 ## Reviewed controls and required live evidence
 
