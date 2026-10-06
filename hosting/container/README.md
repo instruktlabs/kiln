@@ -35,7 +35,9 @@ Regression tests first reproduced accepted output after an unconfirmed shutdown,
 then passed with the verification in place, including a stalled inspection and
 recovery after an initially failed readback. All 136 hosted tests, three hosted
 typechecks, five bundle checks and root typecheck/lint passed locally. This
-controller change still needs exact-source CI and live failure-path qualification.
+controller passed exact-source Linux/Windows hosted checks in
+[run 37525915541](https://github.com/instruktlabs/kiln/actions/runs/37525915541).
+Live failure-path qualification remains open.
 
 The entry's byte limits and engine schema validation are defensive transport
 checks. A JavaScript timer, Linux user ID and the engine's local VM implementation
@@ -83,3 +85,10 @@ entry; the software variant additionally runs the packaged renderer fixture.
 While that public record still names the RC, CI does not qualify the stable
 archive by implication. A prepared, reviewed provider trial is still required
 before uploading or running this new stable image on Cloudflare.
+
+Both CI image variants passed at source `b34d56f` in
+[run 37526078285](https://github.com/instruktlabs/kiln/actions/runs/37526078285).
+That run uses the public RC archive and therefore complements, rather than
+replaces, the exact-stable local receipt above. The stable image's retained npm
+lock also returned zero known findings in an `npm audit --omit=dev` on 6 October.
+No cloud resource was created for this image preparation.
