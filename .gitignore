@@ -28,6 +28,12 @@ coverage/
 .env
 .env.*
 !.env.example
+# Cloudflare local secret bindings. Examples must contain placeholders only.
+.dev.vars
+.dev.vars.*
+!.dev.vars.example
+# Generated cf CLI build output and local project state.
+.cloudflare/
 .localdata/
 tmp/
 # Disposable Node bundle for the checked-in Discovery research source.

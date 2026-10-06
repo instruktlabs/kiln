@@ -57,11 +57,26 @@ export class NativeHttpClient {
     const parent = this.options.signal?.();
     if (parent?.aborted) throw new StorageFailure(499, `${this.label} request cancelled`);
     const controller = new AbortController();
+    const deadlineAt = Date.now() + this.timeoutMs;
     const cancel = () => controller.abort();
     let reader: ReadableStreamDefaultReader<Uint8Array> | undefined;
     let timedOut = false;
     let finished = false;
     let abortListener: () => void = () => {};
+    const expired = () => {
+      if (Date.now() >= deadlineAt) {
+        timedOut = true;
+        controller.abort();
+      }
+      return controller.signal.aborted;
+    };
+    const check = () => {
+      if (expired())
+        throw new StorageFailure(
+          timedOut ? 504 : 499,
+          timedOut ? `${this.label} request timed out` : `${this.label} request cancelled`,
+        );
+    };
     const aborted = new Promise<never>((_, reject) => {
       abortListener = () => {
         reject(
@@ -90,10 +105,11 @@ export class NativeHttpClient {
       });
       const pending = this.send(request).then((response) => {
         // Even a non-cooperative injected transport cannot leave a late body open.
-        if (finished || controller.signal.aborted) void response.body?.cancel().catch(() => {});
+        if (finished || expired()) void response.body?.cancel().catch(() => {});
         return response;
       });
       const response = await Promise.race([pending, aborted]);
+      check();
       if (!statuses.includes(response.status)) {
         void response.body?.cancel().catch(() => {});
         throw new StorageFailure(
@@ -117,7 +133,10 @@ export class NativeHttpClient {
       const chunks: Uint8Array[] = [];
       let length = 0;
       for (;;) {
+        // Continuously available chunks can starve timers with microtasks.
+        check();
         const { done, value } = await Promise.race([reader.read(), aborted]);
+        check();
         if (done) break;
         length += value.byteLength;
         if (length > limit) {

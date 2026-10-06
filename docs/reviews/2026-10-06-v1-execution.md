@@ -1568,3 +1568,41 @@ Repository lint and the corrected private deployment dry run also pass. The
 continuation Worker is 14,130 bytes with SHA-256
 `8ed395851f30e935d874f79af62f6a33db2098de6fc24745d54af0f3741941ac`;
 its preparation receipt is `.cache/provider-probe-numeric-user-candidate/build-receipt.json`.
+
+## Main merge, identity setup and security review
+
+The owner approved PR #146 at `76ef64648c3ce91d65140a43b806dcfcf3fb3af0`.
+GitHub rejected a merge commit under repository policy; the same approved change
+was squash-merged without bypassing protection. Main is
+`8d14d0e0ca89fe3ef860ff6d3568e5647a382c53`. CI run `37491254733`, hosted checks
+`37491254766` and website build `37491254759` all passed on that exact commit.
+No package publication or service deployment resulted from the merge. PR #147
+now targets main, and its branch incorporates that main revision.
+
+The owner selected the existing signed-in Google account for a dedicated Kiln
+identity project. `instruktlabs-kiln-auth` was created with display name Kiln.
+The Google Auth Platform is not configured yet: no OAuth client or client secret
+has been created, and no compute, billing or Google Cloud Run service was added.
+Hosting remains on Cloudflare.
+
+The actual GitHub ZIP of `ce640ccae0c621177aad176a03b5a214ae57d266` is
+41,888,908 bytes, contains 4,736 entries and expands to 92,216,785 bytes. SHA-256:
+`00e910c53cf75740fb2d6693853e01ef7d9d45277c64f14325adddea2b5a61ed`.
+The plugin contains nine files, the largest 15,026 bytes. This passes the checked
+Anthropic archive limits; portal validation and submission have not occurred.
+The final stable archive must be measured again. The receipt is
+`.cache/anthropic-github-main-archive-receipt.json`.
+
+The owner requested adversarial security review, now tracked in
+[the security record](2026-10-06-v1-security-review.md). Repository secret scanning
+and push protection were enabled; no open secret alerts were returned. An actual
+stream-deadline defect was reproduced and fixed with failing-then-passing tests.
+All 112 hosted tests, typechecks, production bundle builds and root lint pass.
+
+The owner explicitly deferred the broad public README/site documentation refresh
+until stable 1.0 and the public hosted service are verified. The queued refresh
+includes Troy scene pictures, npm installation, local agent/plugin onboarding,
+hosted setup and matching website/agent-readable content. Internal execution and
+security records continue now; accurate privacy, support and sign-in pages remain
+part of the hosted candidate. No public README/site refresh or Troy picture
+publication was performed during this checkpoint.
