@@ -19,9 +19,14 @@ export async function readBounded(
   limit: number,
   signal?: AbortSignal,
 ): Promise<Uint8Array<ArrayBuffer>> {
+  if (signal?.aborted) {
+    void body?.cancel().catch(() => {});
+    throw new HttpFailure(499, 'Request cancelled');
+  }
   if (!body) return new Uint8Array();
   const reader = body.getReader();
-  const chunks: Uint8Array[] = [];
+  const deadlineAt = Date.now() + 10_000;
+  let bytes = new Uint8Array(Math.min(limit, 64 * 1024));
   let length = 0;
   let timer: ReturnType<typeof setTimeout> | undefined;
   let onAbort: () => void = () => {};
@@ -36,25 +41,35 @@ export async function readBounded(
       void reader.cancel().catch(() => {});
     }, 10_000);
   });
+  void timeout.catch(() => {});
+  const check = () => {
+    if (signal?.aborted) throw new HttpFailure(499, 'Request cancelled');
+    if (Date.now() >= deadlineAt) throw new HttpFailure(408, 'Request timed out');
+  };
   try {
-    if (signal?.aborted) onAbort();
     for (;;) {
+      check();
       const { done, value } = await Promise.race([reader.read(), timeout]);
+      check();
       if (done) break;
-      length += value.byteLength;
-      if (length > limit) {
-        void reader.cancel().catch(() => {});
+      const nextLength = length + value.byteLength;
+      if (nextLength > limit) {
         throw new HttpFailure(413, 'Request too large');
       }
-      chunks.push(value);
+      if (nextLength > bytes.byteLength) {
+        const grown = new Uint8Array(Math.min(limit, Math.max(nextLength, bytes.byteLength * 2)));
+        grown.set(bytes.subarray(0, length));
+        bytes = grown;
+      }
+      // Copy before the next read; neither tiny chunks nor reused buffers retain
+      // an unbounded collection of views or change previously received bytes.
+      bytes.set(value, length);
+      length = nextLength;
     }
-    const bytes = new Uint8Array(length);
-    let offset = 0;
-    for (const chunk of chunks) {
-      bytes.set(chunk, offset);
-      offset += chunk.byteLength;
-    }
-    return bytes;
+    return bytes.byteLength === length ? bytes : bytes.slice(0, length);
+  } catch (error) {
+    void reader.cancel().catch(() => {});
+    throw error;
   } finally {
     signal?.removeEventListener('abort', onAbort);
     if (timer !== undefined) clearTimeout(timer);
@@ -69,7 +84,7 @@ export async function boundedRequest(request: Request, limit: number): Promise<R
     throw new HttpFailure(413, 'Request too large');
   }
   if (!request.body) return request;
-  const body = await readBounded(request.body, limit);
+  const body = await readBounded(request.body, limit, request.signal);
   return new Request(request, { body });
 }
 

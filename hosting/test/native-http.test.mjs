@@ -16,6 +16,30 @@ before(async () => {
   ({ NativeHttpClient } = await import(output));
 });
 
+test('storage retains bytes when the response stream reuses its read buffer', async () => {
+  const shared = new Uint8Array(1);
+  let value = 0;
+  const client = new NativeHttpClient({
+    fetch: async () =>
+      new Response(
+        new ReadableStream(
+          {
+            pull(controller) {
+              if (++value === 4) return controller.close();
+              shared[0] = value;
+              controller.enqueue(shared);
+            },
+          },
+          { highWaterMark: 0 },
+        ),
+      ),
+  });
+  assert.deepEqual(
+    await client.bytes('/internal/programs', { limit: 32 }),
+    new Uint8Array([1, 2, 3]),
+  );
+});
+
 test('a continuously readable body cannot starve the storage deadline timer', async (t) => {
   let now = 1000;
   t.mock.method(Date, 'now', () => now);

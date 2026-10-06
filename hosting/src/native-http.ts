@@ -130,7 +130,7 @@ export class NativeHttpClient {
         return new Uint8Array();
       }
       reader = response.body.getReader();
-      const chunks: Uint8Array[] = [];
+      let bytes = new Uint8Array(Math.min(limit, 64 * 1024));
       let length = 0;
       for (;;) {
         // Continuously available chunks can starve timers with microtasks.
@@ -138,22 +138,22 @@ export class NativeHttpClient {
         const { done, value } = await Promise.race([reader.read(), aborted]);
         check();
         if (done) break;
-        length += value.byteLength;
-        if (length > limit) {
+        const nextLength = length + value.byteLength;
+        if (nextLength > limit) {
           void reader.cancel().catch(() => {});
           throw new StorageFailure(502, `${this.label} response exceeds its size limit`);
         }
-        chunks.push(value);
+        if (nextLength > bytes.byteLength) {
+          const grown = new Uint8Array(Math.min(limit, Math.max(nextLength, bytes.byteLength * 2)));
+          grown.set(bytes.subarray(0, length));
+          bytes = grown;
+        }
+        bytes.set(value, length);
+        length = nextLength;
       }
       if (declared !== null && Number(declared) !== length)
         throw new StorageFailure(502, `Invalid ${this.label.toLowerCase()} response`);
-      const bytes = new Uint8Array(length);
-      let offset = 0;
-      for (const chunk of chunks) {
-        bytes.set(chunk, offset);
-        offset += chunk.byteLength;
-      }
-      return bytes;
+      return bytes.byteLength === length ? bytes : bytes.slice(0, length);
     } catch (error) {
       if (error instanceof StorageFailure) throw error;
       if (controller.signal.aborted)

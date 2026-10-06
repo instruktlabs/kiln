@@ -29,13 +29,17 @@ again when the production candidate exists.
 | Local Cloudflare bindings | `.dev.vars`, `.dev.vars.*` and generated `.cloudflare/` were absent from `.gitignore`. Added ignores and kept only `.dev.vars.example` eligible for tracking. Root and nested paths were checked. | Prevents accidental staging; examples must contain placeholders. This does not remove anything already committed. |
 | Git history | Gitleaks 8.30.1, `git --log-opts=--all --redact=100 --ignore-gitleaks-allow`: 484 locally available commits, 161.67 MB, no matching secrets. | Local reachable-history scan; not a claim about deleted remote history or every possible credential format. Raw values were never printed. |
 | Published RC contents | Validated archive paths, extracted the exact approved `f2de7eb6…ea8c2` archive, scanned 24.07 MB with Gitleaks. | No matching secrets. A preliminary scan of the compressed file processed zero bytes and is explicitly excluded from evidence. |
-| Hosted bundles | Five actual rebuilt production bundles and their build manifests, 399,777 bytes scanned with Gitleaks after the deadline fix. | No matching secrets. Build assertions exclude test/probe helpers and OAuth code from non-gateway bundles. These development bundles are not a production deployment. |
+| Hosted bundles | Five actual rebuilt production bundles and their build manifests, 402,232 bytes scanned with Gitleaks after the stream fixes. | No matching secrets. Build assertions exclude test/probe helpers and OAuth code from non-gateway bundles. These development bundles are not a production deployment. |
 | Image build context | Four-file prepared context, 2,156 non-archive bytes scanned; its package archive is covered by the extracted RC scan. | No matching secrets. Full image-layer forensic inspection and final image qualification remain separate. |
 | Production dependencies | `npm audit --omit=dev --ignore-scripts --json` for the hosting lockfile and actual registry-installed RC runtime. | Both report zero known vulnerabilities. Optional renderer and development dependencies are not covered by those two results. No automatic dependency mutation was performed. |
 | Storage deadline | Two focused tests demonstrated successful completion after the configured deadline when readable-stream microtasks delayed timers. | Fixed by checking elapsed time when headers arrive and before/after each read; timeout aborts the request and cancels the body. Both tests failed before the fix. |
 | Development image decoder | After #146 merged, GitHub identified `sharp@0.35.4` under development-only Miniflare. A full hosting audit reproduced the high-severity finding in sharp and its dependent Miniflare. | Applied a scoped Miniflare override to patched `sharp@0.35.5`, refreshed the npm lockfile and installed it with scripts disabled. The full hosting audit now reports zero vulnerabilities. All 112 hosting tests, typechecks, builds and root lint pass again. |
+| Incoming body cancellation and streaming | Four additional failing tests covered an already cancelled request, continuously available chunks delaying timers, and reused read buffers in both transports. | Forward the incoming abort signal, check elapsed time during admission, cancel failed reads and copy bytes into a bounded growing buffer before the next read. Tiny or empty chunks no longer accumulate an array of retained views. All 116 hosting tests, typechecks, builds and root lint pass. |
+| Engine maintainer dependency graph | The broader root Bun audit found eight affected transitive packages, including optional provider dependencies absent from the registry-installed runtime audit. | Updated named transitives within their declared dependency ranges, with install scripts disabled and no direct dependency changes. The root audit now reports zero known vulnerabilities. Rebuilt the Node bundles and build identity; typecheck, lint and 3,290 engine tests pass (two platform skips). |
+| Renderer dependency graph | Full `npm audit --ignore-scripts --json` in `render-service/`. | Zero known vulnerabilities; distinct from renderer execution and provider isolation evidence. |
+| Website dependency graph | Full Bun audit identified two high-severity packages and one moderate build-tool advisory. | Patched `http-cache-semantics` and `source-map-js` within their existing ranges. The remaining selector-parser advisory is recorded below, not dismissed or described as a clean audit. |
 
-The storage fix passes the focused source/asset integration tests, all **112 hosted
+The storage and body fixes pass the focused source/asset integration tests, all **116 hosted
 tests**, three TypeScript configurations, five production bundle builds and root
 lint. It changes private hosting code, not the published RC or the deployed private
 probe. No production service was deployed by these checks.
@@ -52,6 +56,42 @@ version itself pins a patched decoder. This change affects the local/CI test
 harness, not the already-published RC or native image. The GitHub default-branch
 alert remains open until the reviewed fix lands; it was not dismissed. Full audit
 receipts are `hosted-full-audit-before.json` and `hosted-full-audit-after.json`.
+
+The root lockfile refresh updates `@hono/node-server` to 2.1.3, `fast-uri` to
+3.1.8, `fast-xml-parser` to 5.11.2, `hono` to 4.13.13, `ip-address` to 10.7.3,
+`protobufjs` to 7.6.6, `proxy-addr` to 2.0.8 and `qs` to 6.16.0, plus the required
+XML parser children. The MCP SDK explicitly permits the new Hono server major
+(`^1.19.9 || ^2.0.5`); its Node >=20 requirement fits Kiln's supported Node range.
+These are maintainer-lock changes, not a claim that the immutable public RC has
+changed. Receipts: `root-audit.json`, `root-audit-after.json`,
+`render-service-full-audit.json`, `runtime-build.log` and `root-tests.log`.
+The full coverage run also passes all 3,290 tests, with functions at **95.16%**
+(minimum 94.00%) and lines at **92.50%** (minimum 92.10%). No threshold was lowered.
+The rebuilt engine also passes all 116 hosting integration tests. Receipts:
+`root-coverage.log` and `hosted-tests-rebuilt-engine.log`.
+
+The site now resolves `http-cache-semantics@4.3.0` and `source-map-js@1.2.2`.
+It still resolves `postcss-selector-parser@6.0.10` through the exact dependency
+of the current `@tailwindcss/typography@0.5.20`. The
+[moderate advisory](https://github.com/advisories/GHSA-rj75-hqrm-r3gf) concerns
+synchronous parsing of attacker-supplied selectors in a request path; it explicitly
+excludes ordinary build-time parsing of trusted sources. Kiln's website uses this
+dependency during its static build and exposes no selector-parsing request
+handler. This is a reachability assessment, not a patched dependency. Keep the
+finding tracked until the upstream dependency can be updated and re-evaluate
+before accepting user CSS or running an online CSS parser. Do not introduce a
+forced major override merely to make the audit count zero.
+
+Local site checks report 78 files with no errors, warnings or hints. Site tests
+report 620 passes, two skips and two failures: Windows denied creation of file
+symlinks (`EPERM`) in the deployment-preflight fixtures, before the assertions.
+No security assertion was weakened and no workstation permission was changed.
+The Linux website workflow must qualify the updated lockfile before acceptance.
+Receipts: `site-audit{,-after}.json`, `site-check.log` and `site-tests.log`.
+The full local website build succeeds, including public-text checks and its
+private-data scan (zero findings). This is a dependency compatibility check on a
+dirty development tree, not a reviewed deployment candidate or a public content
+update. The build was not uploaded. Its receipt is `site-build.log`.
 
 ## Reviewed controls and required live evidence
 
