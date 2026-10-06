@@ -11,6 +11,7 @@
       "hosting/src/**/*.ts",
       "hosting/test/**/*.{ts,mjs}",
       "hosting/scripts/**/*.mjs",
+      "hosting/container/**/*.mjs",
       "render-service/src/**/*.mjs",
       "render-service/test/**/*.mjs"
     ],

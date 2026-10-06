@@ -14,13 +14,17 @@ try {
   }
   const request = new TextDecoder('utf-8', { fatal: true }).decode(input.subarray(0, size));
   const { evaluateEvaluatorRequestV2 } = await import('@instruktlabs/kiln/evaluator');
-  const response = await evaluateEvaluatorRequestV2(request, {}, {
-    maxResponseBytes: MAX_OUTPUT,
-    deadlineMs: 60_000,
-  });
+  const response = await evaluateEvaluatorRequestV2(
+    request,
+    {},
+    {
+      maxResponseBytes: MAX_OUTPUT,
+      deadlineMs: 60_000,
+    },
+  );
   if (Buffer.byteLength(response) > MAX_OUTPUT) throw new Error('Output limit');
   await new Promise((resolve, reject) => {
-    process.stdout.write(response, (error) => error ? reject(error) : resolve());
+    process.stdout.write(response, (error) => (error ? reject(error) : resolve()));
   });
 } catch {
   // Never echo the request, filesystem paths, dependency diagnostics or a stack.
