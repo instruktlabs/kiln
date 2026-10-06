@@ -1391,3 +1391,33 @@ The package remains `@instruktlabs/kiln`; `next` is a distribution tag, not part
 its name. Stable `1.0.0` will be assigned `latest`, allowing the plain install
 command. Source checkout documentation now states the RC publication status.
 Stable publication, hosted deployment and directory submissions remain incomplete.
+
+## Installed container image and public-registry matrix
+
+The private CPU image built successfully on Linux amd64 in
+[run 37479877969](https://github.com/instruktlabs/kiln/actions/runs/37479877969)
+at `4267b2053236a012c590a23b62f82d5760b38bd7`. Its four-file build context contained
+only the Dockerfile, one-shot entry, approved public archive and archive checksum.
+The fixed trusted fixture ran in two fresh containers with networking disabled,
+one CPU, 6 GiB memory, 128 processes, dropped capabilities and no new privileges.
+Canonical response decoding passed; both returned the same 1,912-byte GLB with
+SHA-256 `f94d231ed3eb4843a03704872adc3f20b00c2ea24567cb5916407b40a2cf1d40`.
+The receipt explicitly leaves Cloudflare and hostile-source qualification false.
+Image metadata, installed dependency lock, OS inventory and runtime version are
+retained in the run's `private-evaluation-image-evidence` artifact and locally
+under `.cache/image-ci-37479877969/`. No image was published or deployed.
+
+Public-registry [run 37479877736](https://github.com/instruktlabs/kiln/actions/runs/37479877736)
+passed all four Linux Node versions and both macOS architectures. Windows completed
+all 24 functional checks but correctly failed receipt validation: the child helper
+selected bundled npm 10.9.9 instead of the globally upgraded 12.2.0. The workflow
+now passes the selected global npm CLI explicitly and checks its version before
+running the package fixture. The required npm version was not relaxed. This
+workflow correction still requires a successful Windows CI receipt.
+
+Docker Desktop was installed locally but its Linux engine was stopped when first
+queried. After the owner started it, `docker info` successfully reported server
+29.5.3, Linux, x86_64. No reinstall, privilege change, seccomp relaxation or Windows
+service reconfiguration was needed. This resolves local image-build availability;
+it does not resolve the separate historical Bubblewrap namespace probe or qualify
+Cloudflare isolation.

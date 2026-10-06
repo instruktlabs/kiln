@@ -93,6 +93,10 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          # Windows keeps the upgraded global npm apart from Node's bundled npm.
+          # Pass the selected CLI explicitly, as npm run would, to child checks.
+          export npm_execpath="$(npm root --global)/npm/bin/npm-cli.js"
+          test "$(node "$npm_execpath" --version)" = '${{ matrix.npm }}'
           tarball="$PWD/candidate/$(cat candidate/filename.txt)"
           node scripts/smoke-package.mjs --tarball "$tarball" > candidate/package-smoke.json
           node scripts/verify-package-receipt.mjs --platform '${{ matrix.platform }}' --arch '${{ matrix.arch }}' --node '${{ matrix.node }}' --npm '${{ matrix.npm }}' --receipt candidate/package-smoke.json

@@ -19,8 +19,9 @@ the supplied archive and installs dependencies without lifecycle scripts. Retain
 the final image digest, `/opt/kiln/package-lock.json`, `/opt/kiln/os-packages.txt`
 and `/opt/kiln/node-version.txt`; the npm archive alone does not pin transitive
 dependencies or establish the image's identity. The base image digest is shared
-with the existing native preflight. This Dockerfile has not yet been built or
-qualified on Cloudflare.
+with the existing native preflight. The Linux image build and deterministic
+installed-package fixture passed in [CI run 37479877969](https://github.com/instruktlabs/kiln/actions/runs/37479877969).
+Cloudflare execution and hostile-source isolation remain unqualified.
 
 The entry's byte limits and engine schema validation are defensive transport
 checks. A JavaScript timer, Linux user ID and the engine's local VM implementation
