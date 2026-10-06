@@ -7,6 +7,12 @@ export class HttpFailure extends Error {
   }
 }
 
+export function serviceFailure(error: unknown): Response {
+  // Only intentionally public errors may supply a response message.
+  if (error instanceof HttpFailure) return new Response(error.message, { status: error.status });
+  return new Response('Service temporarily unavailable', { status: 503 });
+}
+
 // Bound bytes while reading, including chunked bodies without Content-Length.
 export async function readBounded(
   body: ReadableStream<Uint8Array> | null,

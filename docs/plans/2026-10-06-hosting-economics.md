@@ -36,9 +36,9 @@ trial estimate before deployment. Sources and rates are below.
 flowchart TD
     Client[ChatGPT / Codex / Claude MCP client] --> Edge[Workers: HTTPS MCP, OAuth, discovery, admission]
     Browser[Kiln website and viewer] --> Edge
-    Edge --> Meta[D1: ownership, saved revisions, job metadata]
-    Edge --> Files[R2: private source, GLBs, previews]
-    Edge --> Scheduler[Durable Objects: bounded execution and lifecycle]
+    Edge --> Meta[Tenant Durable Objects + SQLite: ownership, revisions, quotas]
+    Meta --> Files[R2: private source, GLBs, previews]
+    Meta --> Scheduler[Durable Objects: bounded execution and lifecycle]
     Scheduler --> Compute[Cloudflare Linux Container: Node + native engine dependencies]
     Compute --> CPU[Existing CPU rasterizer]
     Compute --> Software[Qualified Mesa software Vulkan + Dawn renderer]
@@ -50,6 +50,12 @@ service; Workers and Sites are not substitutes for it.** Cloudflare documents Li
 images, native tools and child processes as a [Container use case](https://developers.cloudflare.com/sandbox/concepts/).
 Bake the exact Node bundle and native libraries into a pinned Linux image; install
 nothing from user input at job time. Serve the web viewer with Workers static assets.
+
+Implementation refinement: tenant ownership and quota transactions now use the
+tenant Durable Object's own SQLite database. This keeps the authoritative record
+with the tenant routing boundary; it does not need a second D1 copy of those records.
+D1 remains optional for a demonstrated shared-metadata need, not a resource to
+provision merely because it appeared in the initial diagram.
 
 Native execution does not require hardware GPU rendering. CPU geometry previews
 already exist in Kiln. Textured/material previews would use the repo's existing
@@ -130,6 +136,7 @@ Current Cloudflare rates used in the calculations:
 | Container disk | 720,000 GB-seconds | $0.00000007/GB-second |
 | R2 Standard | 10 GB-month; 1M writes/Class A; 10M reads/Class B | $0.015/GB-month; $4.50/M Class A; $0.36/M Class B |
 | Durable Objects compute | 1M requests; 400,000 GB-seconds | $0.15/M requests; $12.50/M GB-seconds |
+| Durable Objects SQLite | 25B rows read; 50M rows written; 5 GB-month | $0.001/M rows read; $1/M rows written; $0.20/GB-month |
 
 Sources: [Workers](https://developers.cloudflare.com/workers/platform/pricing/),
 [Containers](https://developers.cloudflare.com/containers/platform/pricing/),
@@ -390,3 +397,25 @@ operations across sign-in, MCP requests, refresh, revocation and expired-record
 cleanup and include them in the complete bill. The prototype keeps access tokens
 to 15 minutes and refresh grants to 30 days, with library-managed record expiry.
 Production KV propagation and account-wide usage remain unqualified.
+
+## Tenant-storage implementation costs
+
+The separate tenant Worker adds SQLite ownership/quota records, R2 object writes,
+downloads and bounded retention/reconciliation alarms. The SQLite rates above were
+rechecked on 6 October against [Cloudflare pricing](https://developers.cloudflare.com/durable-objects/platform/pricing/).
+Indexes and deletes count toward writes; setting an alarm also counts as a write.
+This is SQLite-backed Durable Object pricing, not legacy DO key-value pricing.
+
+Daily reconciliation costs persist for a tenant after ordinary artifact deletion.
+For 1,000 retained tenants with at most 100 R2 objects each, one daily listing per
+tenant is about 30,000 monthly Class A calls and 30,000 alarm invocations, before
+uploads, deletion retries, larger prefixes and other operations. The R2 list portion
+alone is $0.135 at marginal overage rates before provider rounding, or consumes
+included allowance when available. This is arithmetic, not measured provider usage.
+Account deletion must finish cleanup and retire alarms to end that recurring work.
+
+The byte quota includes file bytes and serialized saved metadata, but is not a
+physical SQLite/R2 invoice ceiling. Measure database/index overhead, transaction
+row counts, orphan recovery and DO duration with realistic retained inventories.
+Native job costs still dominate the earlier scenarios; these new storage operations
+must be included before treating any scenario as a launch forecast.

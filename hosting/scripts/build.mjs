@@ -4,29 +4,41 @@ import { fileURLToPath } from 'node:url';
 import { build } from 'esbuild';
 
 const output = new URL('../../.cache/hosted-worker/', import.meta.url);
-const result = await build({
-  entryPoints: [fileURLToPath(new URL('../src/worker.ts', import.meta.url))],
-  bundle: true,
-  write: false,
-  format: 'esm',
-  platform: 'browser',
-  target: 'es2022',
-  metafile: true,
-  external: ['cloudflare:workers'],
-});
-const bytes = result.outputFiles[0].contents;
 await mkdir(output, { recursive: true });
-await writeFile(new URL('worker.mjs', output), bytes);
-await writeFile(
-  new URL('build.json', output),
-  `${JSON.stringify(
-    {
-      sha256: createHash('sha256').update(bytes).digest('hex'),
-      bytes: bytes.byteLength,
-      inputs: Object.keys(result.metafile.inputs),
-    },
-    null,
-    2,
-  )}\n`,
-);
-console.log(`Built hosted Worker (${bytes.byteLength} bytes); no deployment performed.`);
+for (const entry of ['worker', 'tenant-worker']) {
+  const result = await build({
+    entryPoints: [fileURLToPath(new URL(`../src/${entry}.ts`, import.meta.url))],
+    bundle: true,
+    write: false,
+    format: 'esm',
+    platform: 'browser',
+    target: 'es2022',
+    metafile: true,
+    external: ['cloudflare:workers'],
+  });
+  const bytes = result.outputFiles[0].contents;
+  const inputs = Object.keys(result.metafile.inputs);
+  if (inputs.some((name) => /(?:^|\/)test\//.test(name.replaceAll('\\', '/')))) {
+    throw new Error('Production bundle includes test helpers');
+  }
+  if (
+    entry === 'tenant-worker' &&
+    inputs.some((name) => /oauth|(?:^|\/)auth\.ts$/.test(name.replaceAll('\\', '/')))
+  ) {
+    throw new Error('Tenant bundle includes authorization-server code');
+  }
+  await writeFile(new URL(`${entry}.mjs`, output), bytes);
+  await writeFile(
+    new URL(entry === 'worker' ? 'build.json' : `${entry}-build.json`, output),
+    `${JSON.stringify(
+      {
+        sha256: createHash('sha256').update(bytes).digest('hex'),
+        bytes: bytes.byteLength,
+        inputs,
+      },
+      null,
+      2,
+    )}\n`,
+  );
+  console.log(`Built ${entry} (${bytes.byteLength} bytes); no deployment performed.`);
+}

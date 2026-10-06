@@ -83,8 +83,8 @@ test('unauthenticated MCP is challenged with canonical resource metadata', async
   );
 });
 
-async function register(name = 'Fixture client') {
-  const response = await runtime.dispatchFetch(`${origin}/register`, {
+async function register(name = 'Fixture client', server = runtime) {
+  const response = await server.dispatchFetch(`${origin}/register`, {
     method: 'POST',
     headers: { 'content-type': 'application/json' },
     body: JSON.stringify({
@@ -99,8 +99,13 @@ async function register(name = 'Fixture client') {
   return (await response.json()).client_id;
 }
 
-async function consent({ clientId, scope = 'kiln:use offline_access', patch = {} } = {}) {
-  clientId ??= await register();
+async function consent({
+  clientId,
+  scope = 'kiln:use offline_access',
+  patch = {},
+  server = runtime,
+} = {}) {
+  clientId ??= await register('Fixture client', server);
   const verifier = randomBytes(32).toString('base64url');
   const params = new URLSearchParams({
     client_id: clientId,
@@ -113,11 +118,12 @@ async function consent({ clientId, scope = 'kiln:use offline_access', patch = {}
     code_challenge_method: 'S256',
     ...patch,
   });
-  const response = await runtime.dispatchFetch(`${origin}/authorize?${params}`, {
+  const response = await server.dispatchFetch(`${origin}/authorize?${params}`, {
     redirect: 'manual',
   });
   const page = await response.text();
   return {
+    server,
     response,
     page,
     verifier,
@@ -128,7 +134,7 @@ async function consent({ clientId, scope = 'kiln:use offline_access', patch = {}
 }
 
 async function approve(start, { cookie = start.cookie, decision = 'approve' } = {}) {
-  return runtime.dispatchFetch(`${origin}/authorize`, {
+  return start.server.dispatchFetch(`${origin}/authorize`, {
     method: 'POST',
     redirect: 'manual',
     headers: { 'content-type': 'application/x-www-form-urlencoded', origin, cookie },
@@ -146,7 +152,7 @@ async function grant(user = 'alice', options) {
   assert.equal(upstream.searchParams.get('code_challenge_method'), 'S256');
   assert.equal(upstream.searchParams.get('scope'), '');
   const callback = `${origin}/oauth/github/callback?${new URLSearchParams({ state: upstream.searchParams.get('state'), code: user })}`;
-  const response = await runtime.dispatchFetch(callback, {
+  const response = await start.server.dispatchFetch(callback, {
     headers: { cookie: cookies(approved) },
     redirect: 'manual',
   });
@@ -164,7 +170,7 @@ async function grant(user = 'alice', options) {
 }
 
 async function exchange(authorization, patch = {}) {
-  return runtime.dispatchFetch(`${origin}/oauth/token`, {
+  return authorization.server.dispatchFetch(`${origin}/oauth/token`, {
     method: 'POST',
     headers: { 'content-type': 'application/x-www-form-urlencoded' },
     body: new URLSearchParams({
@@ -421,4 +427,147 @@ test('a chunked MCP body is bounded without relying on Content-Length', async ()
   });
   const response = await mcp(credential, { body, duplex: 'half' });
   assert.equal(response.status, 413);
+});
+
+test('real OAuth gateway authorizes downloads from a separate tenant Worker', async () => {
+  const [gateway, storage] = await Promise.all(
+    ['worker', 'tenant-worker'].map((entry) =>
+      build({
+        entryPoints: [fileURLToPath(new URL(`../src/${entry}.ts`, import.meta.url))],
+        bundle: true,
+        write: false,
+        format: 'esm',
+        platform: 'browser',
+        external: ['cloudflare:workers'],
+      }),
+    ),
+  );
+  const server = new Miniflare(
+    convertV4MiniflareOptions({
+      workers: [
+        {
+          name: 'gateway',
+          modules: true,
+          script: gateway.outputFiles[0].text,
+          compatibilityDate: '2026-10-06',
+          compatibilityFlags: ['global_fetch_strictly_public'],
+          kvNamespaces: ['OAUTH_KV'],
+          durableObjects: {
+            TENANTS: { className: 'KilnTenant', scriptName: 'tenant', useSQLite: true },
+          },
+          bindings: {
+            PUBLIC_ORIGIN: origin,
+            GITHUB_CLIENT_ID: 'fixture-client',
+            GITHUB_CLIENT_SECRET: 'fixture-only-secret',
+          },
+          outboundService: async (request) => {
+            if (request.url === 'https://github.com/login/oauth/access_token') {
+              const form = new URLSearchParams(await request.text());
+              return Response.json({
+                access_token: `fixture-${form.get('code')}`,
+                token_type: 'bearer',
+              });
+            }
+            if (request.url === 'https://api.github.com/user') {
+              const credential = request.headers.get('authorization');
+              assert.match(credential, /^Bearer fixture-(alice|bob)$/);
+              return Response.json({ id: credential.endsWith('alice') ? 1001 : 1002 });
+            }
+            throw new Error('Unexpected network access');
+          },
+        },
+        {
+          name: 'tenant',
+          modules: true,
+          script: storage.outputFiles[0].text,
+          compatibilityDate: '2026-10-06',
+          r2Buckets: ['ARTIFACTS'],
+          durableObjects: { TENANTS: { className: 'KilnTenant', useSQLite: true } },
+          bindings: {
+            STORAGE_MAX_BYTES: '1048576',
+            STORAGE_MAX_OBJECTS: '32',
+            STORAGE_MAX_GROUPS: '8',
+          },
+          outboundService: async () => {
+            throw new Error('Tenant has no external network role');
+          },
+        },
+      ],
+    }),
+  );
+  try {
+    const alice = await token('alice', { server });
+    const bob = await token('bob', { server });
+    const reconnected = await token('alice', { server });
+    const namespace = await server.getDurableObjectNamespace('TENANTS', 'tenant');
+    const name = digest(JSON.stringify(['kiln-tenant-v1', origin, 'github-1001']));
+    const tenant = namespace.get(namespace.idFromName(name));
+    // Seed bytes through the same private binding used by the future native host.
+    const bytes = Buffer.from('private retained source');
+    const uploaded = await tenant.fetch('https://tenant.internal/internal/artifacts', {
+      method: 'POST',
+      body: bytes,
+      headers: {
+        'content-type': 'application/javascript',
+        'content-length': String(bytes.length),
+        'x-artifact-name': 'source.kiln.js',
+        'x-artifact-sha256': createHash('sha256').update(bytes).digest('hex'),
+      },
+    });
+    assert.equal(uploaded.status, 201);
+    const artifact = await uploaded.json();
+    const url = `${origin}/mcp/artifacts/${artifact.id}`;
+    assert.equal((await server.dispatchFetch(url)).status, 401);
+    for (const credential of [alice, reconnected]) {
+      const result = await server.dispatchFetch(url, {
+        headers: { authorization: `Bearer ${credential.access_token}` },
+      });
+      assert.equal(result.status, 200);
+      assert.deepEqual(Buffer.from(await result.arrayBuffer()), bytes);
+      assert.equal(result.headers.get('cache-control'), 'no-store');
+    }
+    const denied = await server.dispatchFetch(url, {
+      headers: {
+        authorization: `Bearer ${bob.access_token}`,
+        'x-tenant-id': name,
+        'mcp-session-id': name,
+        cookie: `tenant=${name}`,
+      },
+    });
+    assert.equal(denied.status, 404);
+    const headers = { authorization: `Bearer ${alice.access_token}` };
+    assert.equal(
+      (
+        await server.dispatchFetch(`${origin}/internal/artifacts`, {
+          method: 'POST',
+          body: bytes,
+          headers,
+        })
+      ).status,
+      404,
+    );
+    assert.equal(
+      (
+        await server.dispatchFetch(`${origin}/mcp/internal/artifacts`, {
+          method: 'POST',
+          body: '{}',
+          headers,
+        })
+      ).status,
+      404,
+    );
+    assert.equal((await server.dispatchFetch(`${origin}/mcp`, { headers })).status, 503);
+    const privateWorker = await server.getWorker('tenant');
+    assert.equal(
+      (
+        await privateWorker.fetch('https://tenant.internal/internal/artifacts', {
+          method: 'POST',
+          body: bytes,
+        })
+      ).status,
+      404,
+    );
+  } finally {
+    await server.dispose();
+  }
 });

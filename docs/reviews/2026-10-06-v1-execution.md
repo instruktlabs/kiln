@@ -22,7 +22,7 @@ published yet.
 | P5 | Release automation and npm publication | In progress: manual exact-archive workflow and owner runbook; GitHub npm-release environment created with sole owner review, no admin bypass and protected branches; live npm trust, staging approval, registry provenance and fresh registry install remain open |
 | H1 | Native Cloudflare qualification | In progress: Linux image built, Trixie software renderer passes six textured views; Docker namespace probe fails closed, Bubblewrap launch-argument defect corrected; real Cloudflare isolation/execution, RSS, startup and measured cost remain pending |
 | H2 | Authenticated MCP and tenant boundary | In progress: separate hosted Worker implements OAuth consent/PKCE, audience/scope checks and verified-subject tenant routing; local workerd tests cover two identities, reconnects and forged tenant headers; real sign-in, tenant engine/storage reference checks and evaluator environment isolation remain open |
-| H3 | Artifact lifecycle | Pending: durable source/revisions/GLBs/materials, authorized downloads, deletion, saved quotas and seven-day unsaved retention |
+| H3 | Artifact lifecycle | In progress: tenant SQLite/R2 byte storage, atomic quotas, immutable saved groups, authenticated downloads, deletion and seven-day unsaved retention pass local workerd checks; engine program/revision/material adapters and deployed lifecycle proof remain open |
 | H4 | Capacity and operations | Pending: quotas/admission/cancellation, logs without credentials, load/cost measurements, alerts, health/build identity and rollback |
 | H5 | Production deployment | Pending: approved deployment at `kiln.instruktlabs.com`; live authenticated create/edit/render/save/download/reconnect flow |
 | L1 | Local Claude Code and Codex plugins | In progress: both remote Git catalogs and real versioned caches qualified; actual development-to-RC plugin updates preserve pinned workspaces until explicit runtime upgrade, saved assets remain byte-exact and native clients discover one server; final registry/tag distribution and final-version upgrade remain open |
@@ -788,6 +788,63 @@ No fresh device flow was started while the existing owner-readiness question was
 unanswered. The OAuth implementation needs a dedicated KV binding; current Paid
 plan inclusions and overage rates were added to the economics report. A future
 scoped deployment authorization must cover that resource too.
+
+### Tenant storage foundation and integrated download boundary
+
+Added a separate private tenant Worker with SQLite ownership/quota records and
+private R2 bytes. The gateway and tenant produce separate bundles; the build rejects
+test helpers in either bundle and OAuth code in the tenant bundle. No identity
+secret or OAuth KV binding is present in the tenant fixture. Its default public
+handler returns 404; private storage operations require its Durable Object binding.
+
+Uploads reserve quota transactionally before R2, stream with exact length/SHA-256,
+and become visible only after acknowledged storage. Saved groups atomically pin
+their inventory and metadata quota; active keys are immutable and identical saves
+are idempotent. Unsaved files deny reads after seven days without extending expiry.
+Deletion retains files shared by other saved groups. Bounded maintenance removes
+expired and failed writes and reconciles old orphan objects within one tenant only.
+
+The deadline fault test first demonstrated a late R2 acknowledgement being accepted
+as a successful upload. The fix bounds the whole operation, denies late publication,
+retains quota through failed cleanup and lets durable maintenance recover. The
+fault fixture uses actual workerd SQLite/R2 with a delayed acknowledgement or failed
+delete; none of its controls enter a production bundle. Recovery after eviction,
+checksum/length mismatch, corrupted/missing bytes, quota races, empty-file count
+limits, metadata admission and failed cross-tenant pinning are also exercised.
+
+Thirty-two hosted tests pass locally after a clean pinned-toolchain `npm ci`:
+sixteen authorization/integration tests, thirteen storage tests and three recovery
+fault tests. The integrated test runs both production Workers, issues OAuth grants
+to two fixed upstream identities, verifies own downloads/reconnection, and denies a
+second user's copied artifact id and forged tenant headers. Internal mutation routes
+remain unavailable through the gateway. Hosted typecheck/build and root typecheck/
+lint pass. Receipt: `.cache/v1-hosted-storage-tests.log`.
+
+The tenant bundle is 18,529 bytes, SHA-256
+`1158803f7733d58e459ad7a8d4d7cc9ded2c2c694a5e467851813dac99fe0d28`.
+Its only inputs are the HTTP helpers, artifact store, tenant class and tenant entry.
+The gateway bundle remains 241,789 bytes with the previously recorded hash.
+Both receipts are in `.cache/hosted-worker/`.
+
+These checks establish the local byte-storage boundary, not live provider tenancy
+or engine semantics. The program store, AssetLibrary/revision/material adapters,
+browser download tickets, account deletion, native execution and deployed tests
+remain open. `/mcp` returns 503 until the native backend is configured and qualified.
+Daily recovery alarms and SQLite costs are now included explicitly in the economics
+record; production quotas and usage measurements remain unset.
+
+CI at `693b0700f273367daf08b920e03530647c134d4b`:
+[hosted checks 37450009673](https://github.com/instruktlabs/kiln/actions/runs/37450009673)
+passed Linux and Windows; [Website 37450009523](https://github.com/instruktlabs/kiln/actions/runs/37450009523)
+passed. [Engine/package CI 37450009480](https://github.com/instruktlabs/kiln/actions/runs/37450009480)
+passed ten jobs and failed the two engine suites solely on the expanded root
+AGENTS.md exceeding its existing 12 KiB limit. Hosting instructions were moved to
+`hosting/AGENTS.md`; the unchanged reliability gate now passes all nine tests locally.
+This corrects the earlier local full-suite receipt, which preceded that documentation
+addition. A new complete CI run is required for the new commit.
+[Native preflight 37450009484](https://github.com/instruktlabs/kiln/actions/runs/37450009484)
+again passed software rendering but failed required namespace isolation before
+source execution. Actual Cloudflare qualification remains pending authentication.
 
 ## Owner handoffs
 

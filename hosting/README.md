@@ -3,7 +3,7 @@
 This private package contains the hosted service's Worker code. It is not shipped
 inside `@instruktlabs/kiln` and introduces no cloud dependency into the engine.
 It is not deployed or ready for public traffic. Native provider qualification,
-the tenant backend, durable assets, quotas and operations remain separate work.
+engine adapters, deployed storage, operational quotas and launch checks remain open.
 
 ## Local checks
 
@@ -20,12 +20,15 @@ npm run build
 The tests execute the Worker in workerd through the pinned Miniflare package.
 Its 5.x API is currently alpha; the exported v4 option converter supplies the
 documented simulation bindings. Tests replace GitHub network responses with fixed
-identities and use a test-only Durable Object that records requests. Unexpected
-external fetches fail. No model, real identity provider or cloud deployment is
-used. This proves the authorization and routing boundary, not engine execution,
-asset persistence, global KV consistency or production capacity.
+identities. Routing tests use a recording backend; storage tests use the production
+tenant Worker with real simulated SQLite and R2 bindings. A combined test connects
+both production Workers and verifies authenticated two-user downloads and reconnects.
+Separate test-only fault injection covers late upload acknowledgement and failed
+cleanup. Unexpected external fetches fail. No model, real identity provider or
+cloud deployment is used. These tests do not establish engine execution, deployed
+persistence, global KV consistency or production capacity.
 
-The production-only bundle and input/hash receipt are written to
+The separate gateway and tenant bundles, with input/hash receipts, are written to
 `../.cache/hosted-worker/`. `build` performs no upload, resource provisioning or
 deployment. `Hosted gateway checks` runs the same checks on Linux and Windows.
 
@@ -89,6 +92,51 @@ and application error responses omit raw exceptions and upstream responses.
 Keep OAuth and GitHub secrets out of that separate tenant Worker and all evaluator
 containers. Final deployment configuration must bind the real reviewed resources;
 there is deliberately no deploy command or fabricated namespace id here.
+
+The tenant Worker requires a SQLite-backed `KilnTenant` namespace, private R2
+`ARTIFACTS` binding and positive integer `STORAGE_MAX_BYTES`, `STORAGE_MAX_OBJECTS`
+and `STORAGE_MAX_GROUPS` limits. The test limits are fixtures, not launch quotas.
+Its default HTTP handler returns 404; private operations are available only through
+the Durable Object binding. Neither identity secrets nor OAuth KV are bound to it.
+
+## Artifact storage boundary
+
+Each tenant owns SQLite records and an isolated R2 key prefix. Uploads stream to R2
+with an exact declared length, SHA-256 check and 64 MiB per-object ceiling. An
+atomic reservation counts in-progress uploads against byte and object quotas before
+external storage starts. A sixty-second deadline covers the stream and R2
+acknowledgement. Timed-out or failed writes never become readable; cleanup retains
+their quota reservation until object deletion succeeds. A late acknowledgement can
+only trigger cleanup. Private declarations use safe basenames and known media types.
+
+Unsaved bytes expire seven days after upload, and reads do not extend that clock.
+Immutable saved groups atomically pin their file inventory until deletion. Group
+metadata counts toward the tenant byte quota; a separate group-count ceiling also
+bounds small-record growth. Repeating an identical save is idempotent; reusing an
+active logical key with different contents is refused. Keys are database values,
+never filesystem paths. A group deletion removes only files with no other saved
+group reference. Server-generated blob and group ids are never reused.
+
+Downloads require a live record in the selected tenant, not possession of an id.
+They recheck access after the external read and validate stored length/checksum
+metadata. Responses stream bytes as private attachments with no caching. Bearer
+authorization is required through the gateway; browser-friendly download tickets
+and the engine's `assetDownloadUrls` adapter are not implemented yet.
+
+Alarms expire unsaved rows, retry deletion and reconcile aged orphan R2 objects in
+bounded batches within one tenant prefix. Daily reconciliation remains scheduled
+after ordinary artifact deletion to catch late interrupted writes. Account deletion
+must retire its alarm only after outstanding work and cleanup have completed;
+that owner/account lifecycle and its operating costs still need qualification.
+
+This is the byte-storage foundation, not the engine's program, revision, material
+or AssetLibrary adapter. It does not reinterpret those existing contracts. The
+private `/mcp` endpoint deliberately returns 503 until native integration is
+configured and qualified. Source evaluation, references, revision lineage and
+registry-derived tools must be connected and tested before declaring H2/H3 done.
+
+Storage references: [SQLite Durable Objects](https://developers.cloudflare.com/durable-objects/api/sqlite-storage-api/),
+[R2 Worker API](https://developers.cloudflare.com/r2/api/workers/workers-api-reference/).
 
 Before launch, complete native isolation on the actual Cloudflare provider,
 tenant engine/storage integration, two-user asset/download denial tests, retention,

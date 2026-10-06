@@ -10,5 +10,5 @@
     "skipLibCheck": true,
     "noUncheckedIndexedAccess": true
   },
-  "include": ["src/**/*.ts", "test/worker.ts"]
+  "include": ["src/**/*.ts", "test/**/*.ts"]
 }
