@@ -18,6 +18,9 @@ from publishing a new installable package.
   repository links and package publisher metadata point to Instrukt Labs.
 - Installed isolated evaluation resolves compiled workers and readiness probes
   without a TypeScript loader. Host isolation still requires its own readiness proof.
+- Isolated evaluation explicitly requires a user namespace before disabling nested
+  namespaces, satisfying Bubblewrap's launch precondition. Unsupported hosts still
+  fail closed before source execution.
 - Windows asset saves retry transient directory-rename denials within a bounded
   delay, preserving atomic publication and existing immutable revisions.
 - The `kiln-engine` local plugin uses the Instrukt Labs marketplace and installs a

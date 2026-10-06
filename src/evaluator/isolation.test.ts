@@ -129,6 +129,9 @@ describe('isolated evaluator process contract', () => {
     ]);
     expect(spec.args).not.toContain('--bounding-set=-all');
     expect(spec.args).toContain('--unshare-all');
+    // --unshare-all implies --unshare-user-try, which does not satisfy
+    // Bubblewrap's --disable-userns precondition (observed with 0.12.0).
+    expect(spec.args).toContain('--unshare-user');
     expect(spec.args).not.toContain('--share-net');
     expect(spec.args).toContain('--disable-userns');
     expect(spec.args).toContain('--cap-drop');

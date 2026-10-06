@@ -29393,6 +29393,7 @@ function isolatedEvaluatorLaunchWithLoader(workerPath, host = {}, loader = "tsx"
     isolationUnavailable();
   const bwrapArgs = [
     "--unshare-all",
+    "--unshare-user",
     "--die-with-parent",
     "--new-session",
     "--disable-userns",

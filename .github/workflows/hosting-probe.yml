@@ -98,7 +98,7 @@ jobs:
               const commands = [
                 ["/usr/bin/bwrap", "--version"],
                 ["/usr/bin/unshare", "--user", "--map-root-user", "/usr/bin/true"],
-                ["/usr/bin/bwrap", "--unshare-all", "--disable-userns", "--die-with-parent",
+                ["/usr/bin/bwrap", "--unshare-all", "--unshare-user", "--disable-userns", "--die-with-parent",
                   "--ro-bind", "/usr", "/usr", "--symlink", "usr/lib", "/lib",
                   "--symlink", "usr/lib64", "/lib64", "--", "/usr/bin/true"]
               ];

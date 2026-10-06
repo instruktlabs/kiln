@@ -20,7 +20,7 @@ published yet.
 | P3 | Package identity, contents, executables and notices | In progress: unpublished `@instruktlabs/kiln@1.0.0-dev.0`, public metadata, MCP launcher, consumer doc allowlist and dependency notice refresh; development archive checks pass locally and in CI, final release audit remains open |
 | P4 | Clean installs and workspace upgrades | In progress: namespace package passes Windows/Linux/macOS and core checks without optional agent peers; target-release installed upgrades and harness workflows remain open |
 | P5 | Release automation and npm publication | In progress: manual exact-archive verification/staging workflow and owner runbook; qualified RC/final digests, live protected trust, owner staging approval, registry provenance and fresh registry install remain open |
-| H1 | Native Cloudflare qualification | In progress: fixed native probe, pinned-base Dockerfile and exact CI archive context prepared; real provider execution, isolation, rendering, RSS, startup and measured cost remain pending |
+| H1 | Native Cloudflare qualification | In progress: Linux image built, Trixie software renderer passes six textured views; Docker namespace probe fails closed, Bubblewrap launch-argument defect corrected; real Cloudflare isolation/execution, RSS, startup and measured cost remain pending |
 | H2 | Authenticated MCP and tenant boundary | Pending: OAuth, audience checks, user-scoped references/cache/storage, two-user negative tests, evaluator environment isolation |
 | H3 | Artifact lifecycle | Pending: durable source/revisions/GLBs/materials, authorized downloads, deletion, saved quotas and seven-day unsaved retention |
 | H4 | Capacity and operations | Pending: quotas/admission/cancellation, logs without credentials, load/cost measurements, alerts, health/build identity and rollback |
@@ -565,6 +565,40 @@ The next image uses the registry-verified Node 22.23.3 Trixie digest, whose
 is 25.0.7. A separate bounded namespace diagnostic records fixed command errors
 without changing the engine's failure policy or Docker restrictions. Both changes
 require a new image run. Cloudflare CLI was rechecked and is still unauthenticated.
+
+The Trixie run at `89b3e26bf6e7cea5b0e9042eaef2357697135c83`
+([37443271908](https://github.com/instruktlabs/kiln/actions/runs/37443271908))
+passed the independent software fixture with Mesa 25.0.7/LLVM 19.1.7, six textured
+128-pixel views and all material-color checks. The neutral view was also inspected.
+Its image ID is
+`sha256:ff9bbaa930cf651d0e4e8e8a19cb9b3bf9ff0f8b9818801a948645e74d5a0f62`;
+the archive digest is unchanged from the first image, isolating the OS update.
+The first two-view renderer call took 2,296.4 ms; subsequent dark/light calls took
+691.1/102.7 ms. Those are fixture-level timings on a one-CPU Docker limit, not
+Cloudflare cold-start, capacity, cost, or an optimized performance guarantee.
+
+Isolation still failed before source execution. The fixed diagnostic returned
+`Operation not permitted` for direct user-namespace creation. Bubblewrap 0.12.0
+also rejected `--disable-userns` without explicit `--unshare-user`.
+[Upstream's manual](https://github.com/containers/bubblewrap/blob/v0.12.0/bwrap.xml)
+confirms `--unshare-all` implies only `--unshare-user-try`. The engine launch now
+explicitly requires the user namespace; no restriction or readiness invariant is
+removed. This corrects argument construction but does not establish that this
+Docker host or Cloudflare allows the namespace. The diagnostic also exposed a
+measurement omission: `core_sched.force_idle_usec` contains a dot, causing the
+probe to discard the entire `cpu.stat` snapshot. Bounded snapshot capture now
+retains that kernel format.
+
+The launch regression and two cgroup tests first failed; all 18 focused tests now
+pass. Typecheck passes, and lint passes after a test-string formatting correction.
+Runtime bundles were rebuilt. The full offline suite passed 3,289 tests with two
+platform skips and no failures across 411 files in 367.79 seconds. A fresh Windows
+package passed all 25 installation checks, including the 53 core SDK imports and
+consumer declarations. Archive SHA-256:
+`a8c382e28b4d164c64628813bc4986f1ac72c9d0e6ac9b1dcd2bd3eea433a797`.
+Receipts: `.cache/v1-hosting-runtime-tests.log` and
+`.cache/v1-hosting-runtime-package.json`. The corrected Linux image needs its
+new-head CI run; these local results do not establish host namespace availability.
 
 ## Owner handoffs
 

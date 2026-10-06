@@ -41,6 +41,20 @@ const LIMITS = {
 };
 const sha = (bytes) => createHash('sha256').update(bytes).digest('hex');
 
+export async function captureCgroupSnapshot(readText) {
+  const snapshot = {};
+  for (const name of ['memory.current', 'memory.peak', 'memory.max', 'cpu.stat']) {
+    try {
+      const value = await readText(`/sys/fs/cgroup/${name}`, 'utf8');
+      // Kernel counter names include dots, e.g. core_sched.force_idle_usec.
+      if (value.length < 2048 && /^[a-z0-9_.\s]+$/.test(value)) snapshot[name] = value.trim();
+    } catch {
+      /* Not all providers expose a readable cgroup v2 mount. */
+    }
+  }
+  return snapshot;
+}
+
 /** Fixed qualification fixtures only. No caller-supplied source and no fallback evaluator. */
 export async function qualifyNativeRuntime(ports) {
   const receipt = {

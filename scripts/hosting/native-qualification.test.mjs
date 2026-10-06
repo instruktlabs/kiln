@@ -1,5 +1,25 @@
 import { expect, test } from 'bun:test';
-import { qualifyNativeRuntime } from './native-qualification.mjs';
+import { captureCgroupSnapshot, qualifyNativeRuntime } from './native-qualification.mjs';
+
+test('cgroup evidence retains dotted kernel counters from the Linux preflight', async () => {
+  const cpu =
+    'usage_usec 58167\nuser_usec 41686\nsystem_usec 16480\ncore_sched.force_idle_usec 0\n';
+  const snapshot = await captureCgroupSnapshot(async (path) =>
+    path.endsWith('cpu.stat') ? cpu : '6442450944\n',
+  );
+  expect(snapshot['cpu.stat']).toBe(cpu.trim());
+  expect(snapshot['memory.max']).toBe('6442450944');
+});
+
+test('cgroup evidence bounds malformed values and tolerates unavailable counters', async () => {
+  const snapshot = await captureCgroupSnapshot(async (path) => {
+    if (path.endsWith('memory.current')) return '9'.repeat(2048);
+    if (path.endsWith('memory.peak')) throw new Error('not exposed');
+    if (path.endsWith('cpu.stat')) return 'usage_usec 1\u0000';
+    return 'max\n';
+  });
+  expect(snapshot).toEqual({ 'memory.max': 'max' });
+});
 
 const checks = [
   'user-namespace',

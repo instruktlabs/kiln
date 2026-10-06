@@ -35,6 +35,13 @@ failed when qualification fails. Its independently executed trusted renderer
 fixture can diagnose native dependencies after an isolation failure; it never
 qualifies untrusted evaluation. CI evidence does not establish Cloudflare support.
 
+The initial Bookworm image built but Mesa 22.3 failed Dawn's required Vulkan
+features. The pinned Trixie replacement passes the six-image software fixture.
+Its separate namespace probe still fails on the GitHub Docker host; an explicit
+user namespace is required by the engine launch, and unsupported hosts stop before
+evaluating source. See the [execution record](../../docs/reviews/2026-10-06-v1-execution.md#linux-image-preflight)
+for exact run/image/archive identities and retained failures.
+
 The probe stops at the first failure. Successful readiness must contain all ten
 engine invariants. Only then does it evaluate a fixed box twice through the
 isolated evaluator, verify matching GLB bytes and a nonblank CPU preview, enforce

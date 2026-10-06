@@ -7,7 +7,7 @@ import { mkdir, readFile, realpath, writeFile } from 'node:fs/promises';
 import { createRequire } from 'node:module';
 import { join, resolve, sep } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
-import { qualifyNativeRuntime } from './native-qualification.mjs';
+import { captureCgroupSnapshot, qualifyNativeRuntime } from './native-qualification.mjs';
 
 const [installationArg, outputArg, archiveArg] = process.argv.slice(2);
 assert(
@@ -32,18 +32,7 @@ const record = {
   provider: 'unverified',
   processMeasurements: { scope: 'probe parent process only; excludes evaluator/renderer children' },
 };
-const cgroupSnapshot = async () => {
-  const snapshot = {};
-  for (const name of ['memory.current', 'memory.peak', 'memory.max', 'cpu.stat']) {
-    try {
-      const value = await readFile(`/sys/fs/cgroup/${name}`, 'utf8');
-      if (value.length < 2048 && /^[a-z0-9_\s]+$/.test(value)) snapshot[name] = value.trim();
-    } catch {
-      /* Not all providers expose a readable cgroup v2 mount. */
-    }
-  }
-  return snapshot;
-};
+const cgroupSnapshot = () => captureCgroupSnapshot(readFile);
 try {
   const pkg = JSON.parse(await readFile(join(installation, 'package.json'), 'utf8'));
   assert.equal(pkg.name, '@instruktlabs/kiln');

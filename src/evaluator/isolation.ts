@@ -167,6 +167,8 @@ function isolatedEvaluatorLaunchWithLoader(
 
   const bwrapArgs = [
     '--unshare-all',
+    // --unshare-all only tries a user namespace; --disable-userns requires it.
+    '--unshare-user',
     '--die-with-parent',
     '--new-session',
     '--disable-userns',
