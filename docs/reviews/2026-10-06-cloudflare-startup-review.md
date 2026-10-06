@@ -339,3 +339,35 @@ one new cloud invocation would require owner approval beyond the exhausted trial
 No image was pushed, no cloud job started, and no support follow-up sent during
 this inspection. The diagnostic worktree retains `kiln-image-descriptors.json`
 and the metadata-only inspection script in its ignored cache.
+
+## Original runtime manifest passed
+
+The owner approved one additional fixed job at source
+`29fc0ac248f59aa1d8c6f6ca89160c85d266e8ca`, with a separate $1 trial allowance.
+At 19:49:18 UTC the test passed using the original image's Linux/AMD64 manifest
+directly. Before deployment, remote inspection verified its digest, original
+configuration and all ten filesystem layers. No image rebuild, package change,
+user change or entrypoint change occurred. Uploaded Worker bytes matched
+`f339a35a1bc271bda9e985f03d0d0f9911979617b375bd6bcadd08ccc6d80a43`.
+
+Node returned `v22.23.3`, UID/GID `1000:1000`; output completed at 10,865 ms.
+Whole-instance destruction and stopped inspection completed at 10,959 ms.
+Cloudflare independently reported stopped with exit code zero. Replay returned
+the same saved result without starting another job. This elapsed time is not a
+billed CPU measurement or an engine/render performance result.
+
+Application, Worker, namespace and registry tag were deleted; readbacks verified
+absence. The local operator stopped and temporary Docker registry authentication
+was removed. Receipts remain in the diagnostic worktree under
+`.cache/startup-manifest-trial/`, including the deployed identity, exact image
+metadata, phase result, replay, stopped-instance record and cleanup receipt.
+All six approved jobs are now consumed. Settled billing is not yet verified.
+
+The paired result strongly implicates index versus runtime-manifest selection in
+this startup failure. It does not prove a general OCI-index incompatibility or an
+exclusive vendor root cause. Follow the working documented packaging path and
+retain build provenance separately. No support follow-up was sent and no provider
+change is indicated. Native evaluation, rendering and hostile-input isolation
+still need independent qualification. A new bounded four-case candidate is being
+prepared around the existing engine/network/fresh-VM fixtures and the proven
+manifest; it is not authorized by the exhausted startup allowance.
