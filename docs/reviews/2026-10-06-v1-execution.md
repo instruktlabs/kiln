@@ -30,7 +30,7 @@ states and the evidence that superseded them.
 | L1 | Local Claude Code and Codex plugins | RC complete: both Git catalogs and versioned caches qualified against public npm; actual development-to-RC updates preserve pinned workspaces until explicit runtime upgrade; native clients discover the expected skills/server; final-version distribution and upgrade remain open |
 | L2 | Public OpenAI plugin | Pending: compliant ZIP, verified publisher/domain, working MCP, privacy/support pages, review cases/video/account, submission receipt |
 | L3 | Anthropic directory | Pending: owned marketplace is public and installed successfully; directory eligibility, exact final source, portal validation, reviewer materials and submission receipt remain open |
-| V1 | Exact candidate verification | RC complete. Stable PR #151 passes 3,290 local engine tests, coverage, 91 hosted foundation tests, 78 renderer tests, a clean Windows archive install and the prepared site build. Exact-main archive/platform qualification and hosted flows remain open |
+| V1 | Exact candidate verification | RC complete. Stable main `fda71ac` passes all 12 CI jobs and exact-archive release verification after the PR's 3,290 local engine tests, coverage, 91 hosted foundation tests, 78 renderer tests, Windows archive install and site build. Stable public-registry and hosted flows remain open |
 | V2 | Release documentation and receipts | Pending: changelog/migrations/install/support/security/privacy/runbook; exact commits, hashes, versions, URLs and separate vendor-review state |
 
 ## Execution notes
@@ -61,7 +61,19 @@ production controller at `d3e6ac7`. It withholds output and retains durable
 recovery when destruction cannot be confirmed. Focused regression tests first
 failed, then all 136 hosted tests, hosted/root types, lint and production bundle
 checks passed. Exact-source CI and further live failure-path qualification remain
-pending; the completed four-job allowance does not authorize another cloud run.
+pending at that point; the completed four-job allowance does not authorize another cloud run.
+
+Subsequently, `d3e6ac7` passed both Linux and Windows hosted checks in
+[run 37525915541](https://github.com/instruktlabs/kiln/actions/runs/37525915541).
+The separate software-image candidate at `b34d56f` passed both CPU and software
+image CI jobs in [run 37526078285](https://github.com/instruktlabs/kiln/actions/runs/37526078285).
+Those image CI jobs use the public RC. Independently, the exact stable archive
+was installed in local image
+`sha256:84a0fa62bcffa010b9ac1c5f2f0e2cf9045a9cdb6407f621e8049e6a37f9de99`:
+the real entry produced the expected GLB twice, the CPU preview passed, and the
+packaged software Vulkan renderer produced all six textured views. Its retained
+npm lock has zero known audit findings. The local containers were removed.
+These results do not qualify that new image on Cloudflare or authorize its upload.
 
 - Created `codex/v1-publication` from the current main checkout without altering
   the four existing untracked planning/setup documents.
