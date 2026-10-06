@@ -133,9 +133,9 @@ Advanced geometry callbacks also have operation-specific input limits. Those che
 
 ### Bake defaults
 
-The rigid-group `full` contract and `rigid-v1` rebuild policy below describe the
-unreleased alignment candidate planned for 0.11. They are not implemented by the
-downloadable 0.10.0 package; see the [migration notes](migration.md#unreleased-changes-planned-for-10).
+The rigid-group `full` contract and `rigid-v1` rebuild policy below are included in
+1.0 and its release candidate. They are not implemented by the downloadable 0.10.0
+package; see the [migration notes](migration.md#changes-in-10).
 
 `KILN_BAKE_OPTIMIZE` and `KILN_BAKE_INSTANCE` choose the bake passes for a render that does not pass `optimize` or `instance`; a value the call passes always wins.
 

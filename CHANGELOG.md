@@ -1,14 +1,16 @@
 # Changelog
 
 Changes to `@instruktlabs/kiln` (previously the private `@kiln/engine` package).
-Source releases and installable package publication are
-separate milestones. The package is not published on the npm registry.
+Source releases and installable package publication are separate milestones.
+Published versions and tags are recorded by the npm registry; changing this file
+does not publish a package.
 
-## Unreleased
+## 1.0.0
 
-Changes since the 0.10.0 tagged package release. The checkout uses the unpublished
-`1.0.0-rc.1` release candidate. Source/main and website deployment are separate
-from publishing a new installable package.
+Changes since the 0.10.0 tagged package release, qualified first through the public
+`1.0.0-rc.1` prerelease. Promotion of the stable archive to npm `latest` requires
+the separate release gates in [the runbook](docs/releasing.md).
+Hosted deployment and vendor directory acceptance remain separate milestones.
 
 - **Breaking:** the npm identity is now `@instruktlabs/kiln`, with compiled ESM and
   TypeScript declarations for its public subpaths. The root is a library entrypoint;

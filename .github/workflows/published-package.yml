@@ -1,0 +1,113 @@
+name: Published package checks
+
+on:
+  pull_request:
+    paths:
+      - .github/workflows/published-package.yml
+      - .github/published-candidate.json
+      - scripts/smoke-package*.mjs
+      - scripts/smoke-sdk-types.mjs
+      - scripts/verify-package-receipt.mjs
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: published-package-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  consumer:
+    name: Registry install · ${{ matrix.runner }} · Node ${{ matrix.node }}
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - {runner: ubuntu-22.04, platform: linux, arch: x64, node: 20.15.0, npm: 10.7.0}
+          - {runner: ubuntu-22.04, platform: linux, arch: x64, node: 22.2.0, npm: 10.7.0}
+          - {runner: ubuntu-22.04, platform: linux, arch: x64, node: 22.23.3, npm: 12.2.0}
+          - {runner: ubuntu-22.04, platform: linux, arch: x64, node: 24.20.0, npm: 11.19.0}
+          - {runner: windows-2022, platform: win32, arch: x64, node: 22.23.3, npm: 12.2.0}
+          - {runner: macos-15-intel, platform: darwin, arch: x64, node: 22.23.3, npm: 12.2.0}
+          - {runner: macos-15, platform: darwin, arch: arm64, node: 22.23.3, npm: 12.2.0}
+    env:
+      KILN_RENDER: cpu
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: ${{ matrix.node }}
+          architecture: ${{ matrix.arch }}
+      - run: npm install --global npm@${{ matrix.npm }} --ignore-scripts
+      - name: Resolve and download the exact public version
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir candidate
+          spec=$(node -e 'const p=require("./.github/published-candidate.json");if(p.name!=="@instruktlabs/kiln"||!/^\d+\.\d+\.\d+(?:-rc\.\d+)?$/.test(p.version))process.exit(1);process.stdout.write(`${p.name}@${p.version}`)')
+          npm view "$spec" --json --registry=https://registry.npmjs.org > candidate/registry.json
+          npm pack "$spec" --ignore-scripts --pack-destination candidate --json --registry=https://registry.npmjs.org > candidate/download.json
+          node --input-type=module -e '
+            import assert from "node:assert/strict";
+            import {readFileSync,writeFileSync} from "node:fs";
+            import {createHash} from "node:crypto";
+            const expected=JSON.parse(readFileSync(".github/published-candidate.json"));
+            const raw=JSON.parse(readFileSync("candidate/registry.json"));
+            const metadata=Array.isArray(raw)?raw[0]:raw;
+            assert.equal(metadata.name,expected.name);
+            assert.equal(metadata.version,expected.version);
+            const rawPack=JSON.parse(readFileSync("candidate/download.json"));
+            const pack=Array.isArray(rawPack)?rawPack[0]:Object.values(rawPack)[0];
+            assert.equal(pack.name,expected.name);assert.equal(pack.version,expected.version);
+            assert.match(pack.filename,/^[a-z0-9.-]+\.tgz$/);
+            const bytes=readFileSync(`candidate/${pack.filename}`);
+            assert.equal(createHash("sha256").update(bytes).digest("hex"),expected.sha256);
+            assert.equal(`sha512-${createHash("sha512").update(bytes).digest("base64")}`,metadata.dist.integrity);
+            writeFileSync("candidate/filename.txt",pack.filename);
+          '
+      - name: Exercise an installation by its public package name
+        shell: bash
+        run: |
+          set -euo pipefail
+          spec=$(node -p 'const p=require("./.github/published-candidate.json");`${p.name}@${p.version}`')
+          # A fresh prefix and npm cache avoid resolving the checkout or an earlier install.
+          mkdir consumer
+          (cd consumer && npm init -y >/dev/null)
+          npm install --prefix consumer --cache "$PWD/consumer-cache" "$spec" --omit=dev --ignore-scripts --no-audit --no-fund --registry=https://registry.npmjs.org
+          node consumer/node_modules/@instruktlabs/kiln/dist/cli.mjs --help > candidate/registry-cli-help.txt
+          node --input-type=module -e '
+            import assert from "node:assert/strict";import {readFileSync} from "node:fs";
+            const expected=JSON.parse(readFileSync(".github/published-candidate.json"));
+            const installed=JSON.parse(readFileSync("consumer/node_modules/@instruktlabs/kiln/package.json"));
+            const lock=JSON.parse(readFileSync("consumer/package-lock.json"));
+            const raw=JSON.parse(readFileSync("candidate/registry.json"));const metadata=Array.isArray(raw)?raw[0]:raw;
+            assert.equal(installed.version,expected.version);
+            assert.equal(lock.packages["node_modules/@instruktlabs/kiln"].integrity,metadata.dist.integrity);
+          '
+      - name: Qualify the public archive through SDK, CLI, MCP and plugin checks
+        shell: bash
+        run: |
+          set -euo pipefail
+          # Windows keeps the upgraded global npm apart from Node's bundled npm.
+          # Pass the selected CLI explicitly, as npm run would, to child checks.
+          export npm_execpath="$(npm root --global)/npm/bin/npm-cli.js"
+          test "$(node "$npm_execpath" --version)" = '${{ matrix.npm }}'
+          tarball="$PWD/candidate/$(cat candidate/filename.txt)"
+          node scripts/smoke-package.mjs --tarball "$tarball" > candidate/package-smoke.json
+          node scripts/verify-package-receipt.mjs --platform '${{ matrix.platform }}' --arch '${{ matrix.arch }}' --node '${{ matrix.node }}' --npm '${{ matrix.npm }}' --receipt candidate/package-smoke.json
+      - name: Retain public-registry evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: registry-${{ matrix.runner }}-${{ matrix.arch }}-node-${{ matrix.node }}
+          path: |
+            candidate/*.json
+            candidate/*.txt
+            consumer/package-lock.json
+          if-no-files-found: error
+          retention-days: 30

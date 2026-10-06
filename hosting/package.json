@@ -13,6 +13,11 @@
     "@modelcontextprotocol/server": "2.3.0",
     "oauth4webapi": "3.8.8"
   },
+  "overrides": {
+    "miniflare": {
+      "sharp": "0.35.5"
+    }
+  },
   "devDependencies": {
     "@cloudflare/workers-types": "5.20261006.1",
     "esbuild": "0.28.1",

@@ -1,9 +1,9 @@
 # Install Kiln for your coding agent
 
-This checkout prepares **Kiln 1.0** under the package name `@instruktlabs/kiln`.
-Its development build is not published to npm. Build a [local package](#install-a-local-package)
-to test this checkout, or use a previously released tarball with that release's
-documentation. [CHANGELOG.md](../CHANGELOG.md) lists changes; read the
+This guide covers **Kiln 1.0** under the package name `@instruktlabs/kiln`.
+Use a version available in the [npm registry](https://www.npmjs.com/package/@instruktlabs/kiln),
+or build a [local package](#install-a-local-package) to test an unpublished checkout.
+[CHANGELOG.md](../CHANGELOG.md) lists changes; read the
 [migration notes](migration.md) before upgrading an existing workspace.
 
 Kiln supports standalone authoring with optional projects, a material library and
@@ -12,7 +12,25 @@ same engine and saved-source contracts.
 
 ## Install the package
 
-The unpublished candidate packs as `instruktlabs-kiln-VERSION.tgz`; earlier releases
+Once stable 1.0 is published, install it with Node.js and npm:
+
+```sh
+mkdir kiln-install
+cd kiln-install
+npm init -y
+npm install @instruktlabs/kiln@1.0.0 --omit=dev --include=optional
+npm exec --offline -- kiln-init ../my-assets --harness codex  # or claude, opencode, hermes, agy, copilot, cursor-agent
+cd ../my-assets
+# Follow START.md for your harness
+```
+
+Until that exact version is available, use `@instruktlabs/kiln@next` or the public
+`@instruktlabs/kiln@1.0.0-rc.1` instead. The unqualified package name selects
+`latest`, which must no longer be the temporary `0.0.0-stage` holding version
+before using it. After stable publication, `npm install @instruktlabs/kiln` is the
+normal command; the explicit version above keeps this guide reproducible.
+
+Archives are also supported. The package packs as `instruktlabs-kiln-VERSION.tgz`; earlier releases
 used `kiln-engine-VERSION.tgz`. Install the actual tarball with Node.js and
 npm. Use the tarball and checksum actually attached to the current
 [release](https://github.com/instruktlabs/kiln/releases) (for 0.10.0, the
@@ -37,11 +55,11 @@ cd ../my-assets
 # Follow START.md for your harness
 ```
 
-Kiln is not published to the npm registry; do not run a registry install command yet.
 The installed package exposes `kiln`, `kiln-init` and `kiln-mcp`. The last command is
 a stdio server for MCP clients, not an interactive shell. A client can launch it
 from an existing installation with `npm exec --offline -- kiln-mcp`; package-based
-plugin definitions will pin an exact published version once the registry release exists.
+plugin definitions pin the matching engine version and require that exact version
+to be published, or its reviewed local archive during qualification.
 npm 11 may warn that the optional `webgpu` package's install script is not covered by
 `allowScripts` (`npm warn install-scripts`). That script only clears the macOS download
 quarantine from the prebuilt Dawn binary the package ships; Windows and Linux need
@@ -89,8 +107,9 @@ attached to the selected release; do not treat an older receipt or a source arch
 as qualification of the current candidate.
 
 A successful local build or an unreleased fix does not update the GitHub release: a
-checkout can be ahead of it. Do not substitute an unverified npm registry package -- this
-package is distributed through GitHub and is deliberately not published to npm.
+checkout can be ahead of it. Registry and GitHub release receipts each identify the
+exact archive they qualify; neither an unpublished checkout nor an older receipt
+proves that a newer version has been published and verified.
 
 ## Start on a Mac with a local package
 
