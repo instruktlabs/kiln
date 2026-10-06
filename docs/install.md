@@ -114,8 +114,8 @@ You do not need to change global npm or install Homebrew for this workflow.
 
 The optional built-in Strands agent requires Node **22.2.0+** and its optional SDK
 and provider dependencies. Using Kiln from Cline or another MCP/CLI agent does not
-require Strands or its model-provider packages. TypeScript library exports require
-a TypeScript-capable loader or build system; the installed commands are compiled.
+require Strands or its model-provider packages. The v1 library and commands are
+compiled; package imports need no TypeScript loader.
 Maintainer release checks still use the exact versions in the source repository's
 `toolchain.json`. Current Node 20/22-minimum/24 evidence is from
 fresh Windows package installations (Node 20.15.0 and 22.23.2); Linux floor and
@@ -232,6 +232,26 @@ ESM and TypeScript declarations through the [SDK entrypoints](sdk.md), without a
 source loader. The optional
 `kiln generate` adapter is separate and needs its agent/provider dependencies;
 connecting an existing harness does not load that stack.
+
+### Optional built-in agent dependencies
+
+Install these only when using Kiln's own generation loop or OpenRouter model
+adapter. Run npm in the engine installation directory created above, where its
+`package.json` lists `@instruktlabs/kiln`, rather than in an asset workspace or
+the disposable plugin cache:
+
+```sh
+npm install @strands-agents/sdk@1.19.0 @openrouter/ai-sdk-provider@2.10.0 @ai-sdk/provider@3.0.18
+```
+
+These exact versions passed a fresh installed-package check for all SDK imports
+and declarations, native render/completion tools and offline OpenRouter adapter
+construction. The declared minimum peers (Strands 1.18.0, OpenRouter 2.10.0,
+provider 3.0.0) passed the same bounded check. Native Anthropic, OpenAI, Google and
+Bedrock routes additionally require their selected adapter's dependencies.
+Live model availability and provider credentials are separate from installation;
+the package does not supply a model subscription. External Claude Code, Codex and
+other CLI/MCP workflows do not need any of these peers.
 
 ## Choose a harness
 

@@ -281,7 +281,10 @@ async function fixture(version = '1.0.0-rc.1') {
     name: '@instruktlabs/kiln',
     version,
     type: 'module',
-    exports: { '.': { types: './lib/index.d.ts', import: './lib/index.js' } },
+    exports: {
+      '.': { types: './lib/index.d.ts', import: './lib/index.js' },
+      './arena': { types: './lib/arena/index.d.ts', import: './lib/arena/index.js' },
+    },
     repository: { type: 'git', url: 'git+https://github.com/instruktlabs/kiln.git' },
     publishConfig: { access: 'public', provenance: true },
   };
@@ -307,9 +310,9 @@ async function fixture(version = '1.0.0-rc.1') {
         status: 'passed',
         tarballSha256: digest,
         checks: [...checks, ...(item.types ? ['sdk-consumer-types-without-optional-peers'] : [])],
-        sdk: { imports: 1, renderBytes: 64 },
+        sdk: { imports: 2, renderBytes: 64 },
         compiledWorker: { renderBytes: 64 },
-        sdkTypes: { package: manifest.name, entries: 1, status: 'passed' },
+        sdkTypes: { package: manifest.name, entries: 2, status: 'passed' },
       }),
     );
   }

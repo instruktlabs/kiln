@@ -151,7 +151,7 @@ export async function verifyReleaseArtifacts(directory, { manifest, toolchain, d
   );
   assert.deepEqual(packedManifest, manifest, 'Packed manifest differs from the release checkout');
   const coreExports = Object.keys(manifest.exports).filter(
-    (name) => !['./agent', './arena', './composer/agent'].includes(name),
+    (name) => !['./agent', './composer/agent'].includes(name),
   ).length;
   const receipts = [];
   for (const item of RELEASE_RECEIPTS) {

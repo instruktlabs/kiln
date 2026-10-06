@@ -15,8 +15,8 @@ published yet.
 | ID | Requirement | State and required proof |
 | --- | --- | --- |
 | P0 | Preserve publisher/repository setup | Complete in [publisher setup receipt](2026-10-06-publisher-setup.md); current checkout remote verified `instruktlabs/kiln` |
-| P1 | Public API, stability and migrations | In progress: existing stability labels now visible in Discovery search/overview and installed CLI/MCP; full export stability audit and final migration contract remain open |
-| P2 | Compiled ESM SDK and declarations | In progress: all 55 exports compile; development archives pass 52 core imports, declarations without optional peers and both worker layouts; exact runtime-fix CI passes all platforms, final version remains open |
+| P1 | Public API, stability and migrations | In progress: all 55 public entrypoints classified in the SDK guide, experimental/re-export and deprecated-alias boundaries explicit, Discovery labels visible; final release freeze and target-version upgrade proof remain open |
+| P2 | Compiled ESM SDK and declarations | In progress: corrected 53-entry core qualification includes dependency-free arena; all 55 imports/declarations pass in fresh optional-peer installations at current and declared-minimum versions; final-version and platform evidence remain open |
 | P3 | Package identity, contents, executables and notices | In progress: unpublished `@instruktlabs/kiln@1.0.0-dev.0`, public metadata, MCP launcher, consumer doc allowlist and dependency notice refresh; development archive checks pass locally and in CI, final release audit remains open |
 | P4 | Clean installs and workspace upgrades | In progress: namespace package passes Windows/Linux/macOS and core checks without optional agent peers; target-release installed upgrades and harness workflows remain open |
 | P5 | Release automation and npm publication | In progress: manual exact-archive verification/staging workflow and owner runbook; qualified RC/final digests, live protected trust, owner staging approval, registry provenance and fresh registry install remain open |
@@ -474,6 +474,64 @@ actual hosting proof must include a separate deployment and immutable image rece
 Cloudflare's [current Container API](https://developers.cloudflare.com/containers/api/durable-object-container/)
 is the preferred route for the eventual provider adapter; it does not prove nested
 namespace support. An unsupported boundary must remain a failed launch gate.
+
+Probe-preparation commit `16916d05b146d10699bb6c43b698233f981808c5` passed all
+twelve jobs in [CI run 37440387609](https://github.com/instruktlabs/kiln/actions/runs/37440387609)
+and [Website run 37440387590](https://github.com/instruktlabs/kiln/actions/runs/37440387590).
+The CI does not build or run this qualification image; passing those jobs does not
+close the provider execution gate.
+
+### SDK surface and optional-peer audit
+
+Reviewed the 55 export targets and their maintained consumer references. The SDK
+guide now classifies the root and 54 subpaths: all public entrypoints except
+`implicit` receive the stable v1 contract. The experimental exception follows
+`implicitSurface` through its `primitives` re-export; the existing experimental
+recipes and explicitly selected community exporter remain separately labeled.
+The deprecated `setApprovedTextureResolver` alias stays available, with its trusted
+host replacement documented. No existing public entry was removed or relabeled
+experimental to avoid supporting it. Final release freeze and upgrades still need
+their target-version evidence.
+
+The audit found a check omission: `/arena` is dependency-free ranking math, not an
+optional model adapter. Core smoke/type/release checks previously skipped it
+alongside `agent` and `composer/agent`. They now require 53 core entrypoints and
+exercise installed ranking behavior. Focused tests first demonstrated the omitted
+arena declaration and incomplete release count; all 33 type/release tests pass.
+The declaration checker also has an explicit `--with-agent-peers` mode for all 55
+entrypoints. The full offline run passed 3,287 tests, two platform skips and no
+failures across 411 files in 376.21 seconds. Typecheck/lint and the final focused
+tests pass; a lint-only fixture-cleanup guard placement was corrected separately.
+
+A fresh Windows development archive passed 25 package checks with 53 SDK imports
+and consumer declarations. SHA-256:
+`78aeaea9a5188466eeb2d28d1b3986ea1ea7388754ba7ef31b76c73b6a7dce7f`.
+Receipt: `.cache/v1-sdk-surface-package.json`. Later guide edits need the next
+exact-head CI archive; runtime bytes did not change.
+
+Two separate clean installations of that archive qualified the optional surface:
+
+| Install | Strands SDK | OpenRouter provider | AI SDK provider | Result |
+| --- | --- | --- | --- | --- |
+| Current maintainer family | 1.19.0 | 2.10.0 | 3.0.18 | Seven checks pass |
+| Declared peer floors | 1.18.0 | 2.10.0 | 3.0.0 | Seven checks pass |
+
+Each installation imports all 55 entrypoints, typechecks all declarations, builds
+an OpenRouter adapter without making a request, compares native tool names to the
+shared registry, invokes Discovery/render/finish against a fixed fixture, and
+invokes the composer catalog adapter. The retained GLB and canonical source
+reference are checked; no model runs or provider requests were made. An initial
+probe assertion incorrectly equated a public short reference with its canonical
+SHA reference. Correcting the assertion to verify their documented relationship
+passed without changing engine behavior. The failed assertion receipt is retained.
+
+Receipts: `.cache/v1-optional-sdk-receipt.json` and
+`.cache/v1-optional-sdk-floor-receipt.json`; the probe is
+`.cache/optional-sdk-probe.mjs`. They record installation paths, archive/dependency
+lock digests, runtime export inventories and native-tool results. These are Windows
+Node 22.23.3 package/adapter checks, not live-provider, model-quality, minimum-Node
+optional-agent or Cloudflare qualification. The installation guide now gives the
+tested optional-peer command and distinguishes it from ordinary CLI/MCP setup.
 
 ## Owner handoffs
 

@@ -277,7 +277,7 @@ try {
   }
   receipt.checks.push('installed-consumer-documents');
   const coreExports = Object.keys(pkg.exports).filter(
-    (name) => !['./agent', './arena', './composer/agent'].includes(name),
+    (name) => !['./agent', './composer/agent'].includes(name),
   );
   await writeFile(
     join(install, 'sdk-check.mjs'),
@@ -289,6 +289,9 @@ for (const subpath of ${JSON.stringify(coreExports)}) {
 }
 assert.equal(typeof sdk.validateKilnCode, 'function');
 assert.equal(typeof sdk.createDiscovery, 'function');
+const arena = await import(name + '/arena');
+assert.equal(arena.fitBradleyTerry([{winner:'a',loser:'b'}]).items[0].id, 'a');
+assert.deepEqual(arena.pickNextPair(['a','b'], []), {a:'a',b:'b'});
 const result = await sdk.renderGLB('function build() { return new THREE.Mesh(boxGeo(1, 1, 1), gameMaterial(0x888888)); }');
 assert.equal(result.glb.subarray(0, 4).toString('utf8'), 'glTF');
 assert.equal(sdk.engineIdentity().installUrl, ${JSON.stringify(pathToFileURL(`${runtime}/`).href)});

@@ -7,8 +7,8 @@ The packaged local host also supplies optional project, material-library and rev
 Compiled CLI/MCP commands share one Node compatibility check with workspace setup:
 20.x from 20.15.0, or 22.2.0 and later. Optional Strands generation requires 22.2.0+;
 the CLI checks this before loading its SDK or provider. These floors are separate
-from the exact maintainer versions in `toolchain.json`. Direct TypeScript library
-imports still need a loader or build system. See [installation](install.md) for
+from the exact maintainer versions in `toolchain.json`. The v1 SDK ships compiled
+ESM and declarations, so package imports need no TypeScript loader. See [installation](install.md) for
 recommended Node releases and the distinction between checkout and package evidence.
 
 ## Optional native Strands workflow

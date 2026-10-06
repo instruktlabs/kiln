@@ -4,11 +4,11 @@ import { mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
 import { join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-/** Typecheck a clean installation without resolving its optional peers from this repo. */
-export async function smokeSdkTypes(runtime) {
+/** Typecheck an installed consumer without resolving optional peers from this repo. */
+export async function smokeSdkTypes(runtime, { includeAgentPeers = false } = {}) {
   const pkg = JSON.parse(await readFile(join(runtime, 'package.json'), 'utf8'));
   const entries = Object.keys(pkg.exports).filter(
-    (name) => !['./agent', './arena', './composer/agent'].includes(name),
+    (name) => includeAgentPeers || !['./agent', './composer/agent'].includes(name),
   );
   const stage = await mkdtemp(join(runtime, '.sdk-consumer-'));
   try {
@@ -49,8 +49,16 @@ export async function smokeSdkTypes(runtime) {
 
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
   try {
-    if (!process.argv[2]) throw new Error('Pass the installed package directory.');
-    console.log(JSON.stringify(await smokeSdkTypes(resolve(process.argv[2]))));
+    const [runtime, option, ...extra] = process.argv.slice(2);
+    if (!runtime || (option && option !== '--with-agent-peers') || extra.length)
+      throw new Error('Pass the installed package directory and optional --with-agent-peers.');
+    console.log(
+      JSON.stringify(
+        await smokeSdkTypes(resolve(runtime), {
+          includeAgentPeers: option === '--with-agent-peers',
+        }),
+      ),
+    );
   } catch (error) {
     console.error(error.stdout || error.message);
     process.exitCode = 1;
