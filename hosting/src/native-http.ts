@@ -23,10 +23,15 @@ export class StorageFailure extends Error {
 export class NativeHttpClient {
   private readonly timeoutMs: number;
   private readonly send: (request: Request) => Promise<Response>;
+  private readonly origin: string;
   constructor(
     private readonly options: NativeStorageOptions = {},
     private readonly label = 'Storage',
+    private readonly service: 'storage' | 'evaluator' = 'storage',
   ) {
+    if (service !== 'storage' && service !== 'evaluator')
+      throw new Error('Invalid private service');
+    this.origin = `http://kiln-${service}.internal`;
     this.timeoutMs = options.timeoutMs ?? 15_000;
     if (!Number.isSafeInteger(this.timeoutMs) || this.timeoutMs < 1 || this.timeoutMs > 60_000)
       throw new Error('Invalid storage timeout');
@@ -34,14 +39,16 @@ export class NativeHttpClient {
   }
   async bytes(path: string, request: NativeStorageRequest): Promise<Uint8Array> {
     const { body, limit, headers, method = 'GET', statuses = [200] } = request;
-    const url = new URL(path, 'http://kiln-storage.internal');
+    const url = new URL(path, this.origin);
     if (
-      url.href !== `http://kiln-storage.internal${path}` ||
+      url.href !== `${this.origin}${path}` ||
       url.search ||
       url.hash ||
-      !(path.startsWith('/internal/') || /^\/mcp\/artifacts\/[a-f0-9]{32}$/.test(path))
+      !(this.service === 'evaluator'
+        ? path === '/evaluate'
+        : path.startsWith('/internal/') || /^\/mcp\/artifacts\/[a-f0-9]{32}$/.test(path))
     )
-      throw new Error('Invalid private storage path');
+      throw new Error('Invalid private service path');
     if (
       !Number.isSafeInteger(limit) ||
       limit < 0 ||
@@ -50,9 +57,12 @@ export class NativeHttpClient {
     )
       throw new Error('Invalid storage size limit');
     const outgoing = new Headers(headers);
+    const allowedHeaders =
+      this.service === 'evaluator'
+        ? ['content-type', 'x-kiln-deadline-ms', 'x-kiln-max-response-bytes']
+        : ['content-type', 'x-artifact-name', 'x-artifact-sha256'];
     for (const name of outgoing.keys())
-      if (!['content-type', 'x-artifact-name', 'x-artifact-sha256'].includes(name))
-        throw new Error('Invalid private storage header');
+      if (!allowedHeaders.includes(name)) throw new Error('Invalid private service header');
     if (body !== undefined) outgoing.set('content-length', String(body.byteLength));
     const parent = this.options.signal?.();
     if (parent?.aborted) throw new StorageFailure(499, `${this.label} request cancelled`);
@@ -60,6 +70,7 @@ export class NativeHttpClient {
     const deadlineAt = Date.now() + this.timeoutMs;
     const cancel = () => controller.abort();
     let reader: ReadableStreamDefaultReader<Uint8Array> | undefined;
+    let responseBody: ReadableStream<Uint8Array> | null | undefined;
     let timedOut = false;
     let finished = false;
     let abortListener: () => void = () => {};
@@ -104,6 +115,7 @@ export class NativeHttpClient {
         signal: controller.signal,
       });
       const pending = this.send(request).then((response) => {
+        responseBody = response.body;
         // Even a non-cooperative injected transport cannot leave a late body open.
         if (finished || expired()) void response.body?.cancel().catch(() => {});
         return response;
@@ -168,6 +180,9 @@ export class NativeHttpClient {
       clearTimeout(timer);
       parent?.removeEventListener('abort', cancel);
       controller.signal.removeEventListener('abort', abortListener);
+      // Cancellation can win after headers arrive but before a reader attaches.
+      // Also close a partially read stream on any validation/read failure.
+      void (reader ? reader.cancel() : responseBody?.cancel())?.catch(() => {});
       reader?.releaseLock();
     }
   }

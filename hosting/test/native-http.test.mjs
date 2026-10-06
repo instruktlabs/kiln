@@ -87,3 +87,33 @@ test('a response arriving after the deadline cannot bypass it before timers run'
   );
   assert.equal(signal.aborted, true);
 });
+
+test('fixed native services cannot cross routes or forward identity headers', async () => {
+  let calls = 0;
+  const options = {
+    fetch: async () => {
+      calls++;
+      return new Response('ok');
+    },
+  };
+  const storage = new NativeHttpClient(options);
+  const evaluator = new NativeHttpClient(options, 'Evaluator', 'evaluator');
+  assert.throws(() => new NativeHttpClient(options, 'Invalid', 'https://example.com'));
+  for (const path of ['/evaluate', '//kiln-evaluator.internal/evaluate'])
+    await assert.rejects(storage.bytes(path, { limit: 8 }));
+  for (const path of [
+    '/internal/programs',
+    '/evaluate?x=1',
+    '/evaluate#x',
+    '//example.com/evaluate',
+  ])
+    await assert.rejects(evaluator.bytes(path, { limit: 8 }));
+  for (const header of ['authorization', 'cookie', 'x-tenant', 'x-artifact-name'])
+    await assert.rejects(
+      evaluator.bytes('/evaluate', { limit: 8, headers: { [header]: 'private' } }),
+    );
+  await assert.rejects(
+    storage.bytes('/internal/programs', { limit: 8, headers: { 'x-kiln-deadline-ms': '25' } }),
+  );
+  assert.equal(calls, 0);
+});

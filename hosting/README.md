@@ -371,6 +371,38 @@ isolation. `/mcp` remains unavailable until that host is configured and qualifie
 The client uses standard Fetch types in a separate TypeScript check; Worker code
 continues to use the Cloudflare runtime types.
 
+## Private evaluator client
+
+`createNativeEvaluatorPort` speaks the published SDK's versioned evaluator
+protocol over `http://kiln-evaluator.internal/evaluate`. It accepts no URL, tenant
+selector or credentials. The SDK owns request construction, response identity,
+GLB and QA validation. This client applies the private host's ceilings: 60 seconds,
+4 MiB request/GLB and 8 MiB response. Invalid controls fail before dispatch;
+larger valid caller allowances are clamped to these limits.
+
+Storage and evaluation share bounded stream/cancellation handling, but have
+separate fixed origins, paths and allowed headers. Network diagnostics, abort
+reasons and upstream bodies do not become public errors. A failure never selects
+an in-process fallback. Tests exercise the real MCP render/save/reconnect flow
+through this protocol using a fixed trusted evaluator fixture; that fixture is
+not cloud isolation evidence.
+
+The provider controller still needs to bind this intercepted hostname to a fresh
+qualified job, retain global admission until verified VM destruction and qualify
+the complete deployed flow. A returned HTTP timeout does not prove cleanup. The
+existing default native loader still fails closed on missing nested isolation;
+no production configuration or public endpoint is enabled by this client.
+
+`evaluation-worker` supplies a private `KilnEvaluationJob` Durable Object and
+returns 404 from its default HTTP handler. Its private request handler admits
+only the fixed evaluation route, bounded JSON and numeric execution limits;
+request reading consumes the same deadline. It delegates execution and its alarm
+to `ContainerEvaluationJob`, awaiting its verified cleanup before returning output.
+No source, identity, executable or image selector is accepted through headers.
+The native client and this handler are exercised together with the actual SDK
+codec. They still need the externally tenant-bound dispatcher and global admission
+controller before an end-to-end provider qualification or deployment.
+
 ## Native saved assets
 
 `NativeAssetLibrary` implements the engine's existing collection, save, read, list,

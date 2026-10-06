@@ -35,6 +35,43 @@ states and the evidence that superseded them.
 
 ## Execution notes
 
+### Native dispatch integration branch
+
+`codex/v1-native-dispatch` combines the published stable source and release record
+with the account-controls and provider-qualified controller branches. This is
+integration work, not a main merge or deployment. The full README/site refresh
+remains a final release task as the owner requested.
+
+The new private evaluator client uses the published SDK's v2 protocol and validates
+response identity, GLB and QA through that SDK. Its separate fixed hostname carries
+no account selector or credentials and clamps hosted work to 60 seconds, 4 MiB
+input/GLB and 8 MiB output. A private evaluation Worker exposes the existing
+single-use controller through a bounded HTTP handler, with request reading charged
+against the execution deadline and no early return that bypasses job cleanup.
+The default Worker route is 404; production bindings are not configured.
+
+Focused tests first failed for the missing client/handler, then exposed a real
+cancellation race between receiving headers and attaching a body reader. The
+shared native transport now closes that stream on cancellation and other failures.
+Adversarial tests cover hostile identity headers, route confusion, mismatched
+response IDs, invalid UTF-8, declared/streamed size limits, delayed bodies,
+cancellation, redacted errors and no in-process fallback. The real MCP fixture
+renders, saves and reconnects using the new protocol transport; a separate fixture
+connects the actual native client, private HTTP handler and SDK evaluator together.
+These fixtures use fixed trusted source locally and do not extend the Cloudflare
+isolation receipt. No new cloud jobs or paid operations were started.
+
+Local qualification on Node 22.23.3/npm 12.2.0/Bun 1.4.2 passes all three hosted
+typechecks, all 193 hosted tests and seven production bundles. Root toolchain,
+typecheck and lint pass; the full offline engine suite reports 3,290 passed,
+two platform-specific skips and zero failures. Logs are retained at
+`.cache/native-dispatch-hosted-tests.log` and
+`.cache/native-dispatch-root-tests.log`. Cross-platform CI remains the next gate.
+
+The outer tenant-bound dispatcher, global admission, production renderer,
+account lifecycle and live-provider verification remain open. HTTP cancellation
+alone must never release a global slot while VM destruction is unconfirmed.
+
 ### GitHub stable release and final documentation scope
 
 The owner approved the prepared GitHub release. [Kiln 1.0.0](https://github.com/instruktlabs/kiln/releases/tag/v1.0.0)

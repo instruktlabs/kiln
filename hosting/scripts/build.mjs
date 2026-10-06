@@ -6,7 +6,15 @@ import { assertProductionBoundary } from './build-boundary.mjs';
 
 const output = new URL('../../.cache/hosted-worker/', import.meta.url);
 await mkdir(output, { recursive: true });
-for (const entry of ['worker', 'tenant-worker', 'native-programs', 'native-assets', 'native-mcp']) {
+for (const entry of [
+  'worker',
+  'tenant-worker',
+  'evaluation-worker',
+  'native-programs',
+  'native-assets',
+  'native-mcp',
+  'native-evaluator',
+]) {
   const result = await build({
     entryPoints: [fileURLToPath(new URL(`../src/${entry}.ts`, import.meta.url))],
     bundle: true,

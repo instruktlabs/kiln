@@ -16,7 +16,14 @@ for (const module of ['github', 'account-page', 'account-actions', 'connections'
     });
     const inputs = Object.keys(result.metafile.inputs);
     assert.doesNotThrow(() => assertProductionBoundary('worker', inputs));
-    for (const entry of ['tenant-worker', 'native-programs', 'native-assets', 'native-mcp']) {
+    for (const entry of [
+      'tenant-worker',
+      'evaluation-worker',
+      'native-programs',
+      'native-assets',
+      'native-mcp',
+      'native-evaluator',
+    ]) {
       assert.throws(() => assertProductionBoundary(entry, inputs), /authorization-server/);
       assert.throws(
         () =>

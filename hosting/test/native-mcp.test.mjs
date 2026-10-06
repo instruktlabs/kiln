@@ -6,12 +6,14 @@ import { build } from 'esbuild';
 import { convertV4MiniflareOptions, Miniflare } from 'miniflare';
 import { createKilnMcpServer, kilnMcpToolDefs } from '../../dist/mcp-engine.mjs';
 import { renderGLB } from '../../lib/render.js';
+import { evaluateEvaluatorRequestV2 } from '../../lib/evaluator/index.js';
 
 const publicOrigin = 'https://kiln.example.com';
 const source =
   "function build(){const r=createRoot('Box');createPart('Body',boxGeo(1,1,1),gameMaterial('#aaaaaa'),{parent:r});return r;}";
 let createNativeMcpHandler;
 let loadNativeMcpRuntime;
+let createNativeEvaluatorPort;
 let runtime;
 let namespace;
 const handlers = [];
@@ -44,6 +46,24 @@ before(async () => {
   ({ createNativeMcpHandler, loadNativeMcpRuntime } = await import(
     new URL('../../.cache/hosted-mcp-test/native-mcp.mjs', import.meta.url)
   ));
+  const evaluatorOutput = new URL(
+    '../../.cache/hosted-mcp-test/native-evaluator.mjs',
+    import.meta.url,
+  );
+  await build({
+    entryPoints: [fileURLToPath(new URL('../src/native-evaluator.ts', import.meta.url))],
+    outfile: fileURLToPath(evaluatorOutput),
+    bundle: true,
+    format: 'esm',
+    platform: 'node',
+    packages: 'external',
+    alias: {
+      '@instruktlabs/kiln/evaluator': fileURLToPath(
+        new URL('../../lib/evaluator/index.js', import.meta.url),
+      ),
+    },
+  });
+  ({ createNativeEvaluatorPort } = await import(evaluatorOutput));
   const worker = await build({
     entryPoints: [fileURLToPath(new URL('../src/tenant-worker.ts', import.meta.url))],
     bundle: true,
@@ -191,7 +211,19 @@ test('HTTP serves both protocol eras and exactly the engine registry surface', a
 });
 
 test('real HTTP tools validate, render, save, restore and read exact source after reconnect', async () => {
-  const first = host('lifecycle');
+  let evaluations = 0;
+  const port = createNativeEvaluatorPort({
+    fetch: async (request) => {
+      assert.equal(request.url, 'http://kiln-evaluator.internal/evaluate');
+      assert.equal(request.headers.get('authorization'), null);
+      const json = await request.text();
+      // Fixed trusted fixture only. Actual VM dispatch and cleanup require provider qualification.
+      assert.equal(JSON.parse(json).code, source);
+      evaluations++;
+      return new Response(await evaluateEvaluatorRequestV2(json));
+    },
+  });
+  const first = host('lifecycle', {}, port);
   const validated = await tool(first, 'kiln_validate', { code: source });
   const rendered = await rpc(first, 'tools/call', {
     name: 'kiln_render',
@@ -199,6 +231,7 @@ test('real HTTP tools validate, render, save, restore and read exact source afte
   });
   assert.equal(rendered.isError, undefined);
   assert.ok(rendered.content.some((item) => item.type === 'image'));
+  assert.ok(evaluations > 0, 'Real MCP render must cross the versioned private transport');
   const saved = await tool(first, 'kiln_save', {
     programRef: validated.programRef,
     collection: 'project',
