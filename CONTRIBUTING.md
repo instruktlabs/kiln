@@ -58,6 +58,9 @@ count read off the output is a floor.
 
 ### Version
 
+Maintainers should follow the [v1 release runbook](https://github.com/instruktlabs/kiln/blob/main/docs/releasing.md) for exact
+archive qualification, npm staging and owner promotion.
+
 `version` in `package.json` identifies the installable release. Changes on `main`
 ahead of that release go in the changelog's `Unreleased` section and can retain the
 released version until the next release is prepared. A new release must bump the

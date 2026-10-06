@@ -16,10 +16,10 @@ published yet.
 | --- | --- | --- |
 | P0 | Preserve publisher/repository setup | Complete in [publisher setup receipt](2026-10-06-publisher-setup.md); current checkout remote verified `instruktlabs/kiln` |
 | P1 | Public API, stability and migrations | In progress: audit all existing exports; document stable/experimental contracts and Node compatibility |
-| P2 | Compiled ESM SDK and declarations | In progress: all 55 exports compile; clean Windows package passes 52 core imports, declarations without optional peers and both worker layouts; namespace CI passes, latest runtime-fix CI pending |
-| P3 | Package identity, contents, executables and notices | In progress: unpublished `@instruktlabs/kiln@1.0.0-dev.0`, public metadata, MCP launcher, consumer doc allowlist and dependency notice refresh; Windows archive checks pass, CI remains required |
+| P2 | Compiled ESM SDK and declarations | In progress: all 55 exports compile; development archives pass 52 core imports, declarations without optional peers and both worker layouts; exact runtime-fix CI passes all platforms, final version remains open |
+| P3 | Package identity, contents, executables and notices | In progress: unpublished `@instruktlabs/kiln@1.0.0-dev.0`, public metadata, MCP launcher, consumer doc allowlist and dependency notice refresh; development archive checks pass locally and in CI, final release audit remains open |
 | P4 | Clean installs and workspace upgrades | In progress: namespace package passes Windows/Linux/macOS and core checks without optional agent peers; target-release installed upgrades and harness workflows remain open |
-| P5 | Release automation and npm publication | Pending: qualified RC/final archive digests, protected trusted publishing, owner staging approval, registry provenance and fresh registry install |
+| P5 | Release automation and npm publication | In progress: manual exact-archive verification/staging workflow and owner runbook; qualified RC/final digests, live protected trust, owner staging approval, registry provenance and fresh registry install remain open |
 | H1 | Native Cloudflare qualification | Pending: actual provider isolation probes, CPU/software Vulkan render, deadlines, RSS, startup and measured cost |
 | H2 | Authenticated MCP and tenant boundary | Pending: OAuth, audience checks, user-scoped references/cache/storage, two-user negative tests, evaluator environment isolation |
 | H3 | Artifact lifecycle | Pending: durable source/revisions/GLBs/materials, authorized downloads, deletion, saved quotas and seven-day unsaved retention |
@@ -170,8 +170,39 @@ Development tarball SHA-256:
 The corrected full offline coverage run passes: 3,210 tests, two platform skips,
 zero failures in 406 files; functions 95.20% and lines 92.52%, above the unchanged
 94.00%/92.10% thresholds. The previously failing packaged-save case passes in the
-full run. Receipt: `.cache/v1-runtime-fixes-coverage.log`. This runtime slice still
-requires CI against its own commit; the prior green CI cannot qualify new code.
+full run. Receipt: `.cache/v1-runtime-fixes-coverage.log`.
+Committed and pushed as `ee7ecc9daa2d58bb7cb11a546b2d62225c7fdb04`.
+[CI run 37428983292](https://github.com/instruktlabs/kiln/actions/runs/37428983292)
+completed successfully for that exact head, including all twelve engine, package
+and render-service jobs. This qualifies the development commit; no RC or final
+registry release has been produced.
+Downloaded all seven package receipts and the software-renderer artifact. Every
+package receipt and the renderer checksum identify the same CI archive SHA-256:
+`1c85bca5f66d419fab3c77612d5aada070a8b311eb6dee1e17fecc578c642976`.
+The producer reports 23 checks (including consumer types); downstream platforms
+report 22. Retained locally in `.cache/v1-ci-ee7ecc9/`.
+
+### Exact-archive release workflow
+
+Added `.github/workflows/release.yml`, a manual workflow with a read-only default.
+Its preparation script requires a successful main push at the dispatch commit,
+the original repository ID, all twelve required jobs, eight retained artifact sets,
+one reviewed archive digest, platform/SDK/type receipts and hashed software-renderer
+views. Development versions and PR qualification runs are rejected. The optional
+stage job uses the protected `npm-release` environment, repeats verification after
+approval, and stages the unchanged archive through OIDC. It never promotes a stage.
+
+Focused tests first failed on the missing workflow, then passed with it; the
+metadata and artifact regressions include missing/expired/foreign receipts,
+unprotected environments and changed bytes. All 31 focused tests, typecheck and
+lint pass. The full offline unit suite passes: 3,241 tests, two platform skips,
+zero failures in 407 files; receipt `.cache/v1-release-workflow-tests.log`.
+This changes release tooling and documentation, not engine behavior; the prior
+runtime coverage receipt remains separate. CI against this slice is still required.
+The [maintainer runbook](../releasing.md) records first-package bootstrap, its
+public-placeholder side effect, trust setup, exact stage-ID review, human 2FA
+promotion and post-publication verification. No environment configuration, npm
+stage, placeholder or release has been created by this workflow preparation.
 
 ### Release authorization timing
 

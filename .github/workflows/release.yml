@@ -1,0 +1,98 @@
+name: Prepare npm release
+
+on:
+  workflow_dispatch:
+    inputs:
+      ci_run_id:
+        description: Successful main CI run for this exact commit
+        required: true
+        type: string
+      sha256:
+        description: Reviewed SHA-256 of its node-package-candidate tarball
+        required: true
+        type: string
+      mode:
+        description: Verify evidence, or stage the qualified archive for owner npm approval
+        required: true
+        type: choice
+        default: verify
+        options: [verify, stage]
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: kiln-npm-release
+  cancel-in-progress: false
+
+env:
+  CI_RUN_ID: ${{ inputs.ci_run_id }}
+  CANDIDATE_SHA256: ${{ inputs.sha256 }}
+  RELEASE_MODE: ${{ inputs.mode }}
+
+jobs:
+  verify:
+    if: github.repository == 'instruktlabs/kiln' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 22.23.3
+      - name: Verify exact archive and all qualification receipts
+        id: prepare
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: node scripts/prepare-npm-release.mjs
+      - name: Retain review candidate
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: npm-release-review
+          path: ${{ steps.prepare.outputs.directory }}
+          if-no-files-found: error
+          retention-days: 30
+
+  stage:
+    if: inputs.mode == 'stage'
+    needs: verify
+    environment: npm-release
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+      actions: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 22.23.3
+      - run: npm install --global npm@12.2.0 --ignore-scripts
+      # Recheck live CI/environment state and download fresh bytes after approval.
+      - name: Verify the approved candidate again
+        id: prepare
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: node scripts/prepare-npm-release.mjs
+      - name: Stage the verified archive with npm trusted publishing
+        shell: bash
+        env:
+          TARBALL: ${{ steps.prepare.outputs.tarball }}
+          TAG: ${{ steps.prepare.outputs.tag }}
+          REPORT_DIR: ${{ steps.prepare.outputs.directory }}
+        run: |
+          npm stage publish "$TARBALL" --ignore-scripts --access public --provenance --tag "$TAG" --registry=https://registry.npmjs.org --json | tee "$REPORT_DIR/npm-stage.json"
+      - name: Retain staging receipt
+        if: always() && steps.prepare.outcome == 'success'
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: npm-staged-candidate
+          path: ${{ steps.prepare.outputs.directory }}
+          if-no-files-found: error
+          retention-days: 30
