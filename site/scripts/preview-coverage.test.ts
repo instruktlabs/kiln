@@ -44,14 +44,15 @@ test('Foundry pack leads its inventory with a genuine campus capture and descrip
   expect(intro).toContain('campus buildings');
 });
 
-test('the clearer Foundry campus image is immutably pinned while retaining the previous aerial capture', () => {
+test('the tighter Foundry campus image is immutably pinned while retaining the previous captures', () => {
   const campus = media['foundry-floor'].captures.campus;
-  const path = 'media/scenes/foundry-floor/preview-20261005-01/foundry-floor-campus-arrival.png';
+  const path = 'media/scenes/foundry-floor/preview-20261006-01/foundry-floor-campus-canopy.png';
   expect(campus.poster.inputPath).toBe(path);
   expect(campus.poster.alt).toContain('entrance');
   expect(campus.capture.view).toBe('Arrival');
   expect(campus.capture.source).toContain('Unretouched');
   expect(media['foundry-floor'].captures['campus-aerial'].poster.inputPath).not.toBe(path);
+  expect(media['foundry-floor'].captures['campus-arrival'].poster.inputPath).toBe('media/scenes/foundry-floor/preview-20261005-01/foundry-floor-campus-arrival.png');
   const pin = mirror.files.find(row => row.path === path)!;
   expect(pin).toBeDefined();
   expect(pin.bytes).toBe(campus.capture.pngBytes);

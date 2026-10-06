@@ -2305,6 +2305,11 @@
       "path": "media/scenes/foundry-floor/preview-20261005-01/foundry-floor-campus-arrival.png",
       "bytes": 106931,
       "sha256": "b10146e32cb3f58ead9c977169f9e0059d994fb03fb40c838bcb4c04ff38181b"
+    },
+    {
+      "path": "media/scenes/foundry-floor/preview-20261006-01/foundry-floor-campus-canopy.png",
+      "bytes": 206413,
+      "sha256": "818ab126d40a66bd754ebc99f803643ba3235472d63bc1d64ed1207137d400d9"
     }
   ]
 }
