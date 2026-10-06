@@ -162,6 +162,9 @@ export class ContainerEvaluationJob {
         await container.setInactivityTimeout(120_000);
         check();
         const process = await container.exec(['/usr/local/bin/node', '/opt/kiln/evaluate.mjs'], {
+          // Native exec requires numeric uid:gid; the pinned image's node user
+          // is 1000:1000. This selects file ownership, not an isolation boundary.
+          user: '1000:1000',
           env: { KILN_RENDER: 'cpu' },
           stdin: 'pipe',
           stdout: 'pipe',

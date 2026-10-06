@@ -46,9 +46,12 @@ test('private probe claims its fixed budget once across concurrent and later tri
   };
   await Promise.all([runProbeOnce(store, execute), runProbeOnce(store, execute)]);
   const final = await runProbeOnce(store, execute);
+  // One job from the original five-job allowance was consumed by the failed
+  // live attempt. A continuation may spend only the four remaining jobs.
+  assert.deepEqual(probeCases, ['engine-a', 'network', 'write-marker', 'read-marker']);
   assert.deepEqual(called, probeCases);
   assert.equal(final.state, 'finished');
-  assert.equal(final.results.length, 5);
+  assert.equal(final.results.length, 4);
 });
 
 test('private probe stops after a failed case and does not spend again on retry', async () => {

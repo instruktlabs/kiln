@@ -1,6 +1,7 @@
 import { DurableObject } from 'cloudflare:workers';
 import { ContainerEvaluationJob, ContainerJobFailure } from '../src/container-job';
 import { engineRequest, glbDigest, nativeFixtures } from './fixtures';
+import { observeContainer } from './observe-container';
 import { probeCases, runProbeOnce, type ProbeCase, type ProbeResult } from './run-once';
 
 interface ProbeBindings {
@@ -24,20 +25,10 @@ export class KilnProbeJob extends DurableObject {
     const script = nativeFixtures[name];
     // This substitution exists only in the private probe bundle. Production
     // ContainerEvaluationJob always invokes the immutable evaluate.mjs entry.
-    const container = script
-      ? new Proxy(actual, {
-          get(target, key) {
-            if (key === 'exec')
-              return (_command: string[], options: ContainerExecOptions) =>
-                target.exec(['/usr/local/bin/node', '--input-type=module', '-e', script], options);
-            const value = Reflect.get(target, key);
-            return typeof value === 'function' ? value.bind(target) : value;
-          },
-        })
-      : actual;
+    const observed = observeContainer(actual, script);
     try {
       const output = await new ContainerEvaluationJob({
-        container,
+        container: observed.container,
         storage: this.ctx.storage,
       }).run(script ? new TextEncoder().encode('{}') : engineRequest, {
         deadlineMs: 60_000,
@@ -73,6 +64,7 @@ export class KilnProbeJob extends DurableObject {
         elapsedMs: Date.now() - started,
         stopped: !actual.running && (await actual.inspect()) === null,
         reason: error instanceof ContainerJobFailure ? error.code : 'CHECK_FAILED',
+        failedOperation: observed.failure(),
       };
     }
   }

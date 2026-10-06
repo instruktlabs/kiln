@@ -1,10 +1,4 @@
-export const probeCases = [
-  'engine-a',
-  'engine-b',
-  'network',
-  'write-marker',
-  'read-marker',
-] as const;
+export const probeCases = ['engine-a', 'network', 'write-marker', 'read-marker'] as const;
 export type ProbeCase = (typeof probeCases)[number];
 export interface ProbeResult {
   name: ProbeCase;
@@ -14,6 +8,7 @@ export interface ProbeResult {
   elapsedMs?: number;
   digest?: string;
   reason?: string;
+  failedOperation?: string;
 }
 interface RunRecord {
   state: 'running' | 'finished';

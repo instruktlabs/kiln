@@ -1,7 +1,9 @@
 # Private Cloudflare availability probe
 
 This is a disposable operator probe, separate from every production bundle and
-the npm package. It is prepared locally; it has not been deployed or approved.
+the npm package. The owner approved a five-job trial with a $1 allowance. Its
+first job failed and all cloud trial resources were removed. The current candidate
+continues with only the four remaining jobs; it does not reset that allowance.
 The first stage answers whether the account can run the selected native image and
 whether basic network/filesystem/whole-VM cleanup checks work. It does not qualify
 the hosted service for launch.
@@ -15,7 +17,7 @@ the hosted service for launch.
 - Container application `kiln-private-evaluation-probe-jobs`, using Cloudflare's
   `durable_object` scheduling policy, SSH disabled, no snapshots, and no container
   log collection. The controller starts each image with internet disabled.
-- Five fixed jobs, sequentially: two installed-engine box fixtures, direct native
+- Four remaining fixed jobs, sequentially: one installed-engine box fixture, direct native
   TCP/DNS reachability checks, a file plus live detached child, and a fresh VM
   checking that neither marker nor child is visible. The native checks bypass the
   JavaScript sandbox deliberately so they test the provider boundary.
@@ -31,9 +33,32 @@ the hosted service for launch.
   remove the trial registry image once it is no longer needed. Do not remove any
   existing application or resource.
 
-The five-job budget is enforced in application state: the new scheduling policy
+The four-job continuation is enforced in application state: the new scheduling policy
 does not support `max_instances`. There is no public invocation path. A controller
 failure requires investigation, not an automatic new run ID or a budget reset.
+Together with the first attempted job, this uses at most the original five jobs.
+One successful provider GLB can be compared with the two local/CI fixtures; it
+would not establish repeatability across two provider executions.
+
+## First attempt and scoped correction
+
+At source `ea08a16`, the live Worker matched SHA-256
+`6babbbb9073fbb4514b03675d73ee1387f30099cd6174cfca7ac8bc6515cc2e0` and the
+registry returned the exact local image digest below. The first `engine-a` job
+failed after 2,048 ms with `WORKER_FAILED` and a provider internal error. The
+controller destroyed the VM, the coordinator stopped, and the other four jobs
+did not run. Application/instance queries showed no running instances. The
+operator then deleted the exact trial application, Worker, both namespaces and
+registry image and verified their absence. This is failure and cleanup evidence,
+not successful native evaluation or a settled billing total.
+
+Cloudflare's current native API documentation says `exec` rejects user/group
+names. The image uses `node`, verified locally as numeric `1000:1000`. The
+continuation explicitly selects that numeric identity without changing the image
+or isolation settings. A regression test failed before this correction and
+passes afterward. This is a plausible explanation for the internal error, still
+requiring a live check. Operator-only diagnostics now retain the first failed
+API method name, never exception text or native output.
 
 ## Local image and preparation
 
@@ -50,7 +75,7 @@ private configuration with pinned `@cloudflare/config@0.23.0`, and prepares Buil
 Output for `cf@1.0.0-beta.12`. It never uploads or deploys. Pass `--cf-package`,
 `--account`, `--image` (managed-registry digest reference) and `--output` explicitly.
 From that output directory, `cf deploy --prebuilt --dry-run` must succeed before
-approval. Do not rebuild or substitute an image after approval: verify the local
+deployment. Do not rebuild or substitute an image after approval: verify the local
 image ID, use `cf containers push --tag kiln-evaluation:rc1-local`, and bind only
 the returned digest for those verified bytes. Retain the Worker bundle hash and
 final registry digest alongside the deployment/version/application IDs.

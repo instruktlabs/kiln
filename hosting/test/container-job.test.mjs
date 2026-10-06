@@ -69,6 +69,9 @@ function fixture(options = {}) {
       events.push('exec');
       this.command = command;
       this.execSettings = settings;
+      // The native API rejects named Linux identities. The image uses USER node.
+      if (options.requireNumericUser && settings.user !== '1000:1000')
+        throw new Error('internal error; fixture requires numeric uid:gid');
       return options.pendingExec ? pendingExec : process;
     },
     monitor() {
@@ -156,6 +159,13 @@ test('rejects concurrent and subsequent attempts on the same durable job', async
   assert.equal(f.events.filter((event) => event === 'start').length, 1);
   assert.equal(f.events.filter((event) => event === 'destroy').length, 1);
   await assert.rejects(second.run(input, controls), code('JOB_ALREADY_USED'));
+});
+
+test('exec explicitly selects the image user by numeric uid and gid', async () => {
+  const f = fixture({ requireNumericUser: true });
+  assert.deepEqual(await new ContainerEvaluationJob(f.context).run(input, controls), response);
+  assert.equal(f.context.container.execSettings.user, '1000:1000');
+  assert.equal(f.context.container.running, false);
 });
 
 test('rejects unpinned images, excessive requests and invalid limits before starting', async () => {

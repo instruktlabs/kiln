@@ -7,8 +7,10 @@ Started 6 October 2026 by the owner's active goal. Working checkout:
 The [publication plan](../plans/2026-10-05-v1-publication-plan.md) defines scope;
 [hosting economics](../plans/2026-10-06-hosting-economics.md) records assumptions.
 This record tracks evidence, not release acceptance by implication. Community
-contributions remain outside this cycle. No package or production service is
-published yet.
+contributions remain outside this cycle. The public npm release candidate is
+available under `next`; stable `1.0.0` and the production hosted service remain
+unpublished. The table below is current; the dated execution notes retain earlier
+states and the evidence that superseded them.
 
 ## Deliverables and evidence
 
@@ -17,18 +19,18 @@ published yet.
 | P0 | Preserve publisher/repository setup | Complete in [publisher setup receipt](2026-10-06-publisher-setup.md); current checkout remote verified `instruktlabs/kiln` |
 | P1 | Public API, stability and migrations | In progress: all 55 public entrypoints classified in the SDK guide, experimental/re-export and deprecated-alias boundaries explicit, Discovery labels visible; final release freeze and target-version upgrade proof remain open |
 | P2 | Compiled ESM SDK and declarations | In progress: corrected 53-entry core qualification includes dependency-free arena; all 55 imports/declarations pass in fresh optional-peer installations at current and declared-minimum versions; final-version and platform evidence remain open |
-| P3 | Package identity, contents, executables and notices | In progress: unpublished `@instruktlabs/kiln@1.0.0-rc.1`, aligned engine/plugin identities, MCP launcher, consumer doc allowlist and dependency notices; fresh RC archive checks pass locally, final release audit remains open |
-| P4 | Clean installs and workspace upgrades | In progress: RC package passed all platform CI jobs; official 0.10.0-to-RC upgrades pass for Claude/Codex workspaces with conflict refusal, reapplied customizations and byte-exact old assets; final-version harness checks remain open |
-| P5 | Release automation and npm publication | In progress: manual exact-archive workflow and owner runbook; GitHub npm-release environment created with sole owner review, no admin bypass and protected branches; live npm trust, staging approval, registry provenance and fresh registry install remain open |
-| H1 | Native Cloudflare qualification | In progress: Linux image built, Trixie software renderer passes six textured views; Docker namespace probe fails closed, Bubblewrap launch-argument defect corrected; real Cloudflare isolation/execution, RSS, startup and measured cost remain pending |
+| P3 | Package identity, contents, executables and notices | RC complete: public `@instruktlabs/kiln@1.0.0-rc.1`, aligned engine/plugin identities, MCP launcher, consumer doc allowlist and dependency notices; stable-version audit remains open |
+| P4 | Clean installs and workspace upgrades | RC complete: all seven public-registry CI jobs pass; cached Claude/Codex installers use the exact public RC, render/save/reopen/export pass; 0.10.0-to-RC upgrades preserve assets and refuse conflicts; final-version checks remain open |
+| P5 | Release automation and npm publication | RC complete: stage-only GitHub trusted publishing, owner-protected environment, package 2FA protection, exact-archive staging/promotion, public signature/provenance and fresh registry installs verified; stable `1.0.0` staging/promotion remain pending |
+| H1 | Native Cloudflare qualification | In progress: Linux image built, Trixie software renderer passes six textured views; first approved private Cloudflare job failed with a provider internal error and all trial resources were removed; numeric-user correction tested, four authorized jobs remain; provider execution/isolation, RSS, startup and measured cost remain pending |
 | H2 | Authenticated MCP and tenant boundary | In progress: Google/GitHub adapters, permanent D1 account IDs, atomic upstream login guards and current account/epoch checks pass 90 local hosted tests; linking, individual connection revocation, branded real sign-in, container dispatch and evaluator isolation remain open |
 | H3 | Artifact lifecycle | In progress: tenant SQLite/R2 bytes, ProgramStore and native AssetLibrary, atomic quotas/revision pins, material closures, authenticated downloads, deletion and seven-day unsaved retention pass local workerd and actual-engine checks; standalone MaterialLibrary, native dispatch, browser tickets, account deletion and deployed lifecycle proof remain open |
 | H4 | Capacity and operations | In progress: local native request admission, body/response/deadline bounds and cancellation pass; global operational quotas, process cleanup, load/cost measurements, alerts, deployed health/build identity and rollback remain open |
 | H5 | Production deployment | Pending: approved deployment at `kiln.instruktlabs.com`; live authenticated create/edit/render/save/download/reconnect flow |
-| L1 | Local Claude Code and Codex plugins | In progress: both remote Git catalogs and real versioned caches qualified; actual development-to-RC plugin updates preserve pinned workspaces until explicit runtime upgrade, saved assets remain byte-exact and native clients discover one server; final registry/tag distribution and final-version upgrade remain open |
+| L1 | Local Claude Code and Codex plugins | RC complete: both Git catalogs and versioned caches qualified against public npm; actual development-to-RC updates preserve pinned workspaces until explicit runtime upgrade; native clients discover the expected skills/server; final-version distribution and upgrade remain open |
 | L2 | Public OpenAI plugin | Pending: compliant ZIP, verified publisher/domain, working MCP, privacy/support pages, review cases/video/account, submission receipt |
-| L3 | Anthropic directory | Pending: owned marketplace publication, final source path, account eligibility, reviewer materials and submission receipt |
-| V1 | Exact candidate verification | In progress: development builds have pinned local and CI evidence; final RC/version archive and target-host flows remain open |
+| L3 | Anthropic directory | Pending: owned marketplace is public and installed successfully; directory eligibility, exact final source, portal validation, reviewer materials and submission receipt remain open |
+| V1 | Exact candidate verification | RC complete: approved archive, registry provenance and all platform receipts verified; stable-version archive and hosted flows remain open |
 | V2 | Release documentation and receipts | Pending: changelog/migrations/install/support/security/privacy/runbook; exact commits, hashes, versions, URLs and separate vendor-review state |
 
 ## Execution notes
@@ -1469,3 +1471,100 @@ Availability is only the first provider gate. Native memory exhaustion, output
 floods, cancellation/deadline races, controller interruption recovery, CPU images,
 software Vulkan, measured startup/costs and authenticated storage/MCP integration
 remain separate required work before hosted launch.
+
+## Public-registry plugin qualification and documentation refresh
+
+Re-read the current [OpenAI packaging](https://developers.openai.com/plugins/build/plugins),
+[submission](https://developers.openai.com/plugins/deploy/submission),
+[Claude Code installation](https://code.claude.com/docs/en/discover-plugins),
+[publication](https://code.claude.com/docs/en/plugins/publish) and
+[Anthropic portal checks](https://claude.com/docs/plugins/pre-submission-checklist)
+on 6 October. The plan's distinction between owned marketplaces, directory
+submission and an Anthropic partner's curated-marketplace listing still applies.
+Portable OpenAI manifests and `.claude-plugin/plugin.json` remain appropriate.
+Claude Code 2.1.287 strict validation passes without warnings. Codex CLI 0.160.1
+provides the native marketplace/plugin commands used for qualification.
+
+Claude fetched `https://github.com/instruktlabs/kiln.git#main`; the downloaded
+commit was exactly `ce640ccae0c621177aad176a03b5a214ae57d266`. GitHub shorthand
+selected an unavailable SSH identity on this machine, and a full SHA in Claude's
+`#ref` position was rejected as a missing remote branch. Explicit HTTPS plus a
+branch/tag works; inspect the resolved commit rather than claiming SHA-selector
+support. Installation was scoped to a separate qualification workspace. The old
+user-scoped `kiln@kiln` 0.6.0 installation was already disabled and was not changed.
+
+Codex refreshed a Git marketplace pinned to that exact SHA with per-invocation
+configuration and materialized the RC in its normal versioned plugin cache.
+Its app server discovered the cached `kiln-engine:kiln-setup-workspace` skill,
+the workspace's three author/refine/QA skills exactly once, and `kiln_workspace`
+with all seventeen tools and server version `1.0.0-rc.1`. No model turn, profile
+relocation, permanent Codex configuration edit or authentication change was used.
+The experimental app-server interface is qualification tooling, not a product
+dependency. Both cached plugin inventories match their recorded file hashes.
+
+The cached installer downloaded the exact public RC without `--archive`. The
+installed lockfile records the approved public tarball URL and SHA-512 integrity.
+Both cached helpers then accepted their fresh managed workspace with `--check`.
+Claude's actual MCP connection check passed with a fixture-only, server-specific
+trust option. A standard MCP client exercised each generated workspace's installed
+server: capability identity, CPU images, save, process restart, exact source
+recovery and CLI GLB export all passed. Capability receipts point to the installed
+public package outside either plugin cache and report the RC engine/build identity.
+These fixed-fixture checks do not claim a model-authored asset or vendor approval.
+
+Receipts: `C:/Users/Mattm/X/kiln-dogfood/plugin-rc1-2026-10-06/codex-receipt.json`
+and `workflow-receipt.json` beside it. Probe helpers are retained under
+`.cache/registry-plugin-{codex-probe,workflow}.mjs`. Failed diagnostic assumptions
+(quoted CLI override key and JSON-only Discovery text) were corrected in the
+probe; no engine behavior or acceptance criterion was relaxed.
+
+The current repository contains 3,944 blobs totaling 92,216,785 bytes; a local
+Git ZIP of the exact main commit is 41,453,102 bytes. These are preliminary size
+checks against Anthropic's repository limits, not a substitute for the actual
+GitHub archive and portal validation of the final source. Stable-version plugin
+updates, final public distribution and both directory submissions remain open.
+
+## First private Cloudflare attempt and cleanup
+
+The owner approved the bounded five-job, $1 trial. Source `ea08a16` was uploaded
+using cf 1.0.0-beta.12. The registry returned the unchanged local image digest
+`sha256:69aff70b4f0f80d2ff13549f4b55b1053fc1d8a6e25a00168ac4078a2ebd7b8a`.
+An independent download of the deployed module matched the prepared Worker
+SHA-256 `6babbbb9073fbb4514b03675d73ee1387f30099cd6174cfca7ac8bc6515cc2e0`.
+Worker metadata verified no public routes, workers.dev or preview URLs and no
+external references. Version `d4225ffb-9951-49a6-9f8d-281542d3ab9d` belonged to
+deployment `479434b1-c5cd-4f18-b1db-88d51e9d5fce`; application/job namespace
+`e8d89496082f4e63961a8793eed7f1bf` and coordinator namespace
+`2256b6871cbc4661a2d7525a48d9fc3a` were created only for this trial.
+
+At 15:25:18 UTC on 6 October, the first `engine-a` job failed after **2,048 ms**
+with `WORKER_FAILED`; Cloudflare logged internal-error reference
+`oe4cvciv5rmllufovr4m5gcm`. The retained result has `stopped=true`, and the run
+finished after exactly one result. All four remaining fixtures were skipped.
+Provider queries showed zero active/starting instances. The operator deleted the
+exact trial application, Worker and image; follow-up reads returned no application
+or image, a Worker 404, and neither trial namespace. Other account resources were
+left in place. Receipts are retained under `.cache/provider-probe-trial-1/`.
+Actual billed usage is not yet settled; the $1 figure is the approved allowance,
+not a provider-enforced cap or a measured bill.
+
+The current [native API documentation](https://developers.cloudflare.com/containers/api/durable-object-container/)
+states that user/group names cause native `exec` errors. This image's named `node`
+identity resolves locally to `1000:1000`. A focused test rejected the old omitted
+identity; explicitly passing numeric `1000:1000` now passes. This changes file
+ownership selection, not the VM isolation boundary. The provider failure is only
+plausibly explained until the corrected code runs successfully. The operator
+probe additionally records the first failed native API method without exposing
+raw errors or output. Both observation tests failed before implementation.
+
+The continuation uses the same immutable image and at most **four remaining
+jobs**, preserving the aggregate five-job/$1 authorization. It removes the
+redundant second provider box fixture rather than increasing that scope. Any
+successful provider GLB will be compared with the independently qualified
+local/CI digest; two-run provider determinism is not claimed. Updated local gates:
+**110/110 hosted tests**, all three TypeScript configurations and all five
+production bundles pass. Production bundles exclude the operator-only observer.
+Repository lint and the corrected private deployment dry run also pass. The
+continuation Worker is 14,130 bytes with SHA-256
+`8ed395851f30e935d874f79af62f6a33db2098de6fc24745d54af0f3741941ac`;
+its preparation receipt is `.cache/provider-probe-numeric-user-candidate/build-receipt.json`.
