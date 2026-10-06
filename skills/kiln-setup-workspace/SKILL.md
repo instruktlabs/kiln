@@ -58,6 +58,13 @@ A `KILN_RENDER_PORT_URL` whose origin is exactly the shared local socket (`http:
 
 Accept the project and MCP trust prompts, then confirm the server is actually live rather than assuming it from configuration. Call `kiln_discover` on `kiln_workspace` with `{ capabilities: true }`; it returns the runtime, source, export and camera contract and proves the tools resolved. For OpenCode, `opencode debug config` from the workspace is the configuration check: it shows the resolved `kiln_workspace` entry. `opencode mcp list` reports what OpenCode's shared background service loaded, so it can print "No MCP servers configured" in a correctly configured workspace. `node kiln.mjs discover --capabilities --json` from the workspace is the harness-independent proof; it reports the same runtime, collections and source storage as the MCP server. Compare `capabilities.engine.installUrl` with `runtime` in `.kiln/workspace.json`. A server named `kiln` from a global installation is a different thing. Do not substitute it silently; report the setup problem instead. When another agent is to do the authoring, start it as a separate harness process in the workspace directory (for OpenCode, `opencode run --standalone "<brief>"` after changing into the workspace); a subagent of the current session inherits this session's tools and never sees the workspace's MCP server, so it would be left with the CLI alone.
 
+When the task includes that separate author's result, retain its process/session
+identifier and wait for its terminal result. A launch message, session ID or empty
+log proves no authoring work. Use the harness's noninteractive mode with closed
+stdin for an unattended child, preserve stdout/stderr, and check the requested
+files and saved revision before reporting completion. If it stops early, report
+the incomplete handoff; confirm it has stopped before launching a replacement.
+
 For modeling, `kiln_discover({})` supplies a compact orientation and starting signatures. Use natural-language `query` for related operations, assemblies, and optional recipes; use exact `ids` for complete contracts. Discovery needs no separate search model or asset-category selection. The local equivalent is `node kiln.mjs discover --query "curved hollow tube"`, followed by `node kiln.mjs discover --id RETURNED_ID`.
 
 Confirm the installed skills are readable at `skills/` in the workspace, and read the relevant one from there rather than a global copy. Whether the harness also registers them natively depends on the harness.

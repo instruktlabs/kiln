@@ -11,6 +11,13 @@ Authorized free models and existing subscriptions may be used, with the model,
 runtime and guidance fixed within each trial. Historical run receipts below keep
 the versions, tool names and outcomes that were actually observed.
 
+The [October 5 eight-asset campaign](reviews/2026-10-05-blind-assets.md) adds fresh
+AGY/Gemini 3.8 Flash High and OpenCode/Muse Spark Contributor 1.3 trials: four public
+clone/setup attempts, four prepared authorings and four localized edits. Its two
+assisted OpenCode recoveries remain distinct from the incomplete blind handoffs.
+The report covers native traces, independent export checks, visual defects and
+the resulting evaluation-tool and skill changes.
+
 | tier | question it answers | cost |
 | --- | --- | --- |
 | 0 · wiring smoke | can this harness reach the tools at all? | one short turn |

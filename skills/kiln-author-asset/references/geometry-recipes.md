@@ -62,6 +62,13 @@ winding or missing geometry rather than hiding the defect with double-sided shad
 deliberate thin sheets may need it. Check ceiling and trim extents against the actual sloping roof, including
 the eaves, rather than its bounding box.
 
+For a pane or panel fitted into a sloping frame, derive its corners and surface
+normal in the frame's coordinates. A bar's long axis and a sheet's plane may use
+different local axes, so copying a slope angle does not align them. Check all
+four transformed corners against the intended frame plane and opening, then
+inspect an oblique view where an out-of-plane pane is visible. Matching centers
+or bounding boxes alone cannot establish this fit.
+
 For attached veins, ribs or seams, discover `recipe:surface-detail-v1`. Its strip
 shares the carrier mesh's sampled boundary vertices and rises along local normals.
 A shared equation followed by a separately interpolated curve does not establish
@@ -244,6 +251,12 @@ Source export indexes unindexed geometry using exact full-vertex equality. The
 choice belongs to export settings, not asset source.
 
 Put repeated assemblies in ordinary functions with JSDoc parameters and named return values. Pass parent/material explicitly; return the assembly root and attachment markers. Change one parameter at the call site for a variant. Give such a function a name prefix or suffix and use it for every part it creates (`Leg_L`, `Leg_R`); calling it twice with the same names makes duplicate node names, which QA reports as `UNIVERSAL_DUPLICATE_NODE_NAME`. The runnable [reusable-frame recipe](reusable-frame.kiln.js) demonstrates this without imports or hidden dependencies.
+
+Include the assembly and element index in repeated child names as well, so each
+leaflet, slat or fastener remains addressable during revision comparison. When a
+resize must retain those children, keep their count explicit and redistribute
+their attachment positions; deriving the count from the new length can silently
+delete parts. Check the exported child inventory as well as the changed outline.
 
 When components must move or be replaced together, parent them under a real root
 at the assembly's placement datum. Name suffixes alone leave independent siblings.

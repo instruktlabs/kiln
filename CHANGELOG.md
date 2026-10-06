@@ -9,6 +9,13 @@ Changes since the 0.10.0 tagged package release. The package version stays 0.10.
 until the next package release; source/main and website deployment are separate
 from publishing a new installable package.
 
+- Blind-run receipts recognize OpenCode's recorded code-mode MCP calls and AGY's
+  generic MCP dispatcher without inferring execution from source or output text.
+  Setup and authoring guidance now covers waiting for independent authors, checking
+  sloping panel fit, retaining repeated parts during edits and saving child revisions
+  before exporting. The eight-asset campaign records its incomplete handoffs and
+  visual defects separately from valid exports.
+
 - **Breaking (planned 0.11):** `optimize: 'full'` replaces flatten/join with rigid-group
   merging. Its rigid-merge pass preserves node names, hierarchy and transforms, including animated targets,
   named joint pivots, semantic nodes, composition placements and LOD levels. Ordinary

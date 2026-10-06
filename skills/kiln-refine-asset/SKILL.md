@@ -86,6 +86,11 @@ mesh contact and final dimensions after reshaping; shared equations or control
 points alone do not prove attachment. Discovery offers optional editable-assembly
 and surface-detail recipes when these patterns fit.
 
+When resizing an assembly while retaining its children, compare their before/after
+inventory too. A length-dependent loop can remove leaflets, slats or fasteners even
+when every remaining part stays attached. Preserve the requested count and
+attachment points; see the shared geometry recipes for repeated-part naming and fit.
+
 Check the retained parts that connected to the replaced part, including their
 other ends and intermediate mounts. Unchanged geometry can become unsupported
 after its neighbor moves or disappears. Preserve the requested connection points;
@@ -112,7 +117,8 @@ dimensions separately when they differ from the usable space.
 
 Check the part in context before hiding neighbors. Isolation can reveal a surface but cannot prove its attachment. `viewFidelity.materialFaithful: false` leaves PBR appearance unverified. Animation and cutaway inspection should target the motion or occlusion in question, not add a fixed number of routine images. For CLI motion review, use `node kiln.mjs animation RETURNED_REF --clip CLIP_NAME --phases 0,0.017,0.31,0.68,1 --views motion.png --json`; add `--render gpu` when material fidelity matters. Compare `poseBounds` before and after the edit for requested ground clearance and travel, including protrusions. Sampled bounds do not prove continuous contact; include phases inside a geometric repeat, even when regular samples look identical. The [motion reference](references/revision-and-views.md#motion-and-interiors) covers phase units, cameras and separate frames.
 
-Save source and GLB from the same final reference:
+After saving the reviewed child revision of a collection asset, export source and
+GLB from that same final reference. These file writes do not create a saved revision:
 
 ```sh
 node kiln.mjs source RETURNED_REF --out revised-v1.kiln.js

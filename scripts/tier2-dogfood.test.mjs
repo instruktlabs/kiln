@@ -492,6 +492,61 @@ describe('Tier 2 blind dogfood driver', () => {
     expect(toolUsageFromEvents([{ type: 'text' }]).workspaceMcp).toBe('unknown');
   });
 
+  test('counts observed OpenCode code-mode calls without interpreting source or tool output', () => {
+    const event = {
+      type: 'tool_use',
+      part: {
+        tool: 'execute',
+        state: {
+          status: 'completed',
+          input: { code: 'tools.kiln_workspace.kiln_save({}); // not observed executing' },
+          output: '{"toolCalls":[{"tool":"kiln_workspace.kiln_save"}]}',
+          metadata: {
+            metadata: {
+              toolCalls: [
+                { tool: 'search', status: 'completed' },
+                { tool: 'kiln_workspace.kiln_discover', status: 'completed' },
+                { tool: 'kiln_workspace.kiln_render', status: 'completed' },
+              ],
+            },
+          },
+        },
+      },
+    };
+    expect(toolUsageFromEvents([event])).toEqual({
+      calls: {
+        execute: 1,
+        search: 1,
+        'kiln_workspace.kiln_discover': 1,
+        'kiln_workspace.kiln_render': 1,
+      },
+      total: 4,
+      mcpCalls: 2,
+      workspaceMcp: 'exercised',
+    });
+    delete event.part.state.metadata;
+    expect(toolUsageFromEvents([event]).mcpCalls).toBe(0);
+  });
+
+  test('resolves Agy MCP dispatcher names from the final step update once', () => {
+    const step = (conversation_id, tool_info) => ({
+      event: 'step_update',
+      step_update: { conversation_id, step_index: 12, tool_name: 'call_mcp_tool', tool_info },
+    });
+    const info = {
+      parameters: { ServerName: 'kiln_workspace', ToolName: 'kiln_render', Arguments: {} },
+    };
+    expect(
+      toolUsageFromEvents([step('c1'), step('c1', info), step('c1', info), step('c2', info)]),
+    ).toEqual({
+      calls: { kiln_workspace__kiln_render: 2 },
+      total: 2,
+      mcpCalls: 2,
+      workspaceMcp: 'exercised',
+    });
+    expect(toolUsageFromEvents([step('c1', { output: JSON.stringify(info) })]).mcpCalls).toBe(0);
+  });
+
   test('a source and GLB are necessary but remain pending human quality review', () => {
     expect(
       classifyOutcome({

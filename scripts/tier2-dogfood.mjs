@@ -476,13 +476,16 @@ const KILN_MCP_TOOL = new RegExp(
  * JSON (`{type:'tool_use', name}` inside message content), Codex JSONL
  * (`{type:'mcp_tool_call', server, tool}` and `command_execution` items), Agy stream
  * JSON (`{event:'step_update', step_update:{step_index, tool_name}}`, emitted when a
- * tool step starts and again when it ends, so one step index is one call). Anything
+ * tool step starts and again when it ends, so one step index is one call). OpenCode
+ * code-mode metadata records nested calls; count those alongside the execute wrapper,
+ * never infer execution from source or returned text. Agy's generic MCP dispatcher
+ * identifies the server and tool in its step parameters. Anything
  * else counts as no tool calls, which the receipt reports as `unknown` rather than
  * as `not-exercised`.
  */
 export function toolUsageFromEvents(events) {
   const calls = {};
-  const agySteps = new Set();
+  const agySteps = new Map();
   const record = (name) => {
     if (typeof name !== 'string' || !name) return;
     calls[name] = (calls[name] ?? 0) + 1;
@@ -497,15 +500,21 @@ export function toolUsageFromEvents(events) {
       const step = node.step_update;
       if (typeof step.tool_name === 'string') {
         const key = `${step.conversation_id ?? ''}:${step.step_index}`;
-        if (!agySteps.has(key)) {
-          agySteps.add(key);
-          record(step.tool_name);
-        }
+        const previous = agySteps.get(key);
+        agySteps.set(key, {
+          ...previous,
+          ...step,
+          tool_info: step.tool_info ?? previous?.tool_info,
+        });
       }
       return;
     }
     if (node.type === 'tool_use') {
       record(node.name ?? node.tool ?? node.part?.tool);
+      if (node.part?.tool === 'execute') {
+        const nested = node.part.state?.metadata?.metadata?.toolCalls;
+        if (Array.isArray(nested)) for (const call of nested) record(call?.tool);
+      }
       return;
     }
     if (node.type === 'mcp_tool_call') {
@@ -519,6 +528,16 @@ export function toolUsageFromEvents(events) {
     for (const value of Object.values(node)) if (value && typeof value === 'object') visit(value);
   };
   for (const event of events) visit(event);
+  for (const step of agySteps.values()) {
+    const params = step.tool_info?.parameters;
+    record(
+      step.tool_name === 'call_mcp_tool' &&
+        typeof params?.ServerName === 'string' &&
+        typeof params?.ToolName === 'string'
+        ? `${params.ServerName}__${params.ToolName}`
+        : step.tool_name,
+    );
+  }
   const total = Object.values(calls).reduce((sum, count) => sum + count, 0);
   const mcpCalls = Object.entries(calls)
     .filter(([name]) => KILN_MCP_TOOL.test(name))
