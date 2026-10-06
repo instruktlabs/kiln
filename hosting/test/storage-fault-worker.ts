@@ -16,7 +16,7 @@ export class StorageFaultFixture extends DurableObject<{ ARTIFACTS: R2Bucket }> 
         if (key === 'put')
           return async (...args: Parameters<R2Bucket['put']>) => {
             const result = await target.put(...args);
-          if (fault('slow-ack')) await new Promise((resolve) => setTimeout(resolve, 1500));
+            if (fault('slow-ack')) await new Promise((resolve) => setTimeout(resolve, 1500));
             return result;
           };
         if (key === 'delete')
