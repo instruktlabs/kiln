@@ -17,23 +17,100 @@ states and the evidence that superseded them.
 | ID | Requirement | State and required proof |
 | --- | --- | --- |
 | P0 | Preserve publisher/repository setup | Complete in [publisher setup receipt](2026-10-06-publisher-setup.md); current checkout remote verified `instruktlabs/kiln` |
-| P1 | Public API, stability and migrations | In progress: all 55 public entrypoints classified in the SDK guide, experimental/re-export and deprecated-alias boundaries explicit, Discovery labels visible; final release freeze and target-version upgrade proof remain open |
-| P2 | Compiled ESM SDK and declarations | In progress: corrected 53-entry core qualification includes dependency-free arena; all 55 imports/declarations pass in fresh optional-peer installations at current and declared-minimum versions; final-version and platform evidence remain open |
+| P1 | Public API, stability and migrations | Stable contract published: 55 public entrypoints classified, experimental/re-export and deprecated-alias boundaries documented, and explicit 0.10.0/RC-to-stable managed workspace upgrades qualified |
+| P2 | Compiled ESM SDK and declarations | Stable SDK published and qualified: compiled ESM/declarations, dependency-free core and optional-peer boundaries; public-registry installs pass across the supported Linux/Windows/macOS matrix |
 | P3 | Package identity, contents, executables and notices | Stable published: PR #151 merged as main `fda71ac`; all 12 exact-main CI jobs and release verification passed. Owner-approved staging/promotion completed, and the public archive SHA-256 `6ed3d6b9...1508` and signed provenance independently verified |
-| P4 | Clean installs and workspace upgrades | RC complete: all seven public-registry CI jobs pass; cached Claude/Codex installers use the exact public RC, render/save/reopen/export pass; 0.10.0-to-RC upgrades preserve assets and refuse conflicts; final-version checks remain open |
-| P5 | Release automation and npm publication | Stable published: owner-approved stage `6b1a5f9f-36f7-465d-ba81-9c47e5d83e66` promoted after npm security-key authentication. `latest = 1.0.0`, public archive and Sigstore provenance verified. Fresh stable registry installation checks are in progress through PR #152; the seven public-RC installation jobs already passed |
-| H1 | Native Cloudflare qualification | In progress: runtime-manifest startup and the owner-approved four-case batch at `8590c0a` passed actual RC evaluation, native network-denial checks, fresh-VM file/process checks, retained replay and whole-instance cleanup. All ten approved jobs and their resources are closed. Rendering, resource exhaustion, cancellation/alarm recovery, production integration and measured costs remain unqualified. See the [startup review](2026-10-06-cloudflare-startup-review.md) |
+| P4 | Clean installs and workspace upgrades | Stable qualified: all seven public-registry jobs pass; fresh Windows archive passes 25 consumer checks; Claude/Codex cached installers render/save/reopen/export; 0.10.0 and RC-to-stable upgrades preserve assets/customizations and refuse conflicts |
+| P5 | Release automation and npm publication | Stable published and verified: approved stage promoted after npm security-key authentication, latest=1.0.0, public archive/provenance verified. PR #152 merged as 77dfbc3 after all twelve CI and seven registry jobs passed. GitHub v1.0.0 release/tag and downloaded archive verified |
+| H1 | Native Cloudflare qualification | Fixed native qualification passed: the approved twelve-case stable batch verifies CPU/software PNGs, native network denial, fresh-VM file/process separation, cancellation/deadline/output/memory bounds and real alarm recovery. All 22 approved jobs consumed; all trial resources removed. Production integration, representative load and measured billing remain open |
 | H2 | Authenticated MCP and tenant boundary | In progress: Google/GitHub account foundation merged; PR #149 at `9e16825` adds primary-D1 connection revocation and browser/provider-bound confirmation, passing 150 tests and Linux/Windows hosted CI. Adversarial tests cover stale KV, concurrent callbacks and hostile forms. Linking/unlinking, full account deletion, live sign-in, native dispatch and remaining provider-isolation qualification remain open |
 | H3 | Artifact lifecycle | In progress: tenant SQLite/R2 bytes, ProgramStore and native AssetLibrary, atomic quotas/revision pins, material closures, authenticated downloads, deletion and seven-day unsaved retention pass local workerd and actual-engine checks; standalone MaterialLibrary, native dispatch, browser tickets, account deletion and deployed lifecycle proof remain open |
-| H4 | Capacity and operations | In progress: local native request admission, body/response/deadline bounds and cancellation pass; global operational quotas, process cleanup, load/cost measurements, alerts, deployed health/build identity and rollback remain open |
+| H4 | Capacity and operations | In progress: native request admission and bounded input/output, cancellation/deadline and whole-instance cleanup have local and fixed cloud proof; global quotas, load/cost measurements, alerts, deployed identity and rollback remain open |
 | H5 | Production deployment | Pending: approved deployment at `kiln.instruktlabs.com`; live authenticated create/edit/render/save/download/reconnect flow |
-| L1 | Local Claude Code and Codex plugins | RC complete: both Git catalogs and versioned caches qualified against public npm; actual development-to-RC updates preserve pinned workspaces until explicit runtime upgrade; native clients discover the expected skills/server; final-version distribution and upgrade remain open |
+| L1 | Local Claude Code and Codex plugins | Stable distribution qualified: both actual client catalogs install kiln-engine 1.0.0 and download the exact public npm runtime; real MCP/CLI flows and Codex skill/tool discovery pass. RC and 0.10 workspace upgrades preserve stores; final cache-update qualification remains to be recorded |
 | L2 | Public OpenAI plugin | Pending: compliant ZIP, verified publisher/domain, working MCP, privacy/support pages, review cases/video/account, submission receipt |
 | L3 | Anthropic directory | Pending: owned marketplace is public and installed successfully; directory eligibility, exact final source, portal validation, reviewer materials and submission receipt remain open |
-| V1 | Exact candidate verification | RC complete. Stable main `fda71ac` passes all 12 CI jobs and exact-archive release verification after the PR's 3,290 local engine tests, coverage, 91 hosted foundation tests, 78 renderer tests, Windows archive install and site build. Stable public-registry and hosted flows remain open |
+| V1 | Exact candidate verification | Package qualified: exact main fda71ac archive, twelve main CI jobs, release verification, public registry/provenance, seven-platform registry installs, fresh local consumer checks and stable plugin/workspace flows pass. Hosted end-to-end verification remains open |
 | V2 | Release documentation and receipts | Pending: changelog/migrations/install/support/security/privacy/runbook; exact commits, hashes, versions, URLs and separate vendor-review state |
 
 ## Execution notes
+
+### GitHub stable release and final documentation scope
+
+The owner approved the prepared GitHub release. [Kiln 1.0.0](https://github.com/instruktlabs/kiln/releases/tag/v1.0.0)
+was published at 21:19:19 UTC on 6 October 2026. Tag `v1.0.0` resolves to
+`fda71ac775750f25390b6ee30082ebc56463edc6`, matching the public npm provenance.
+The release attaches the 9,155,191-byte published archive and `SHA256SUMS.txt`.
+A fresh GitHub download hashes to
+`6ed3d6b9964429f14c3c6a0a6a13d56be509dd0f40b07061a37d491f901c1508`;
+the checksum file and remote asset digest agree. The public notes explicitly keep
+hosted access and vendor submissions pending. Receipt in the stable worktree:
+`.cache/stable-main-qualification/github-release-receipt.json`.
+
+The owner reaffirmed the final documentation pass after the remaining work.
+Audit the root README, maintained repo guides and generated/site content for old
+package identities, prerelease/default-tag claims, install commands, supported
+runtime versions, plugin setup, authentication/hosting availability and deprecated
+architecture advice. Reconcile every public promise against the shipped or live
+surface. Include the deferred Troy scene images and new user/agent onboarding.
+Keep historical review records dated; they are not current installation guides.
+Validate the final website build and real navigation/install paths before its
+separate approved publication. No broad README or site rollout happened here.
+
+### Stable installed clients, upgrades and native resilience
+
+All twelve engine/package CI jobs in [run 37528755662](https://github.com/instruktlabs/kiln/actions/runs/37528755662)
+and seven public-registry installation jobs in [run 37528755713](https://github.com/instruktlabs/kiln/actions/runs/37528755713)
+passed. The registry matrix covers Linux Node 20.15/22.2/22.23.3/24.20, Windows
+22.23.3 and macOS Intel/Apple Silicon. After explicit approval, PR #152 merged as
+`77dfbc35197e372e1039995c2160830ddda8a197`, updating the immutable public
+release record. A duplicate manual registry run was cancelled after the automatic
+PR run appeared; it is not the qualification receipt.
+
+Fresh isolated Claude Code 2.1.287 and Codex CLI 0.160.1 profiles installed the
+stable plugin from the public Instrukt Labs catalog at source `fda71ac`. Their
+cached setup helpers downloaded npm 1.0.0, verified its archive integrity and
+created managed workspaces. Each workspace completed Discovery, CPU render,
+save, process restart, exact retained source and CLI export. Codex's native
+app server discovered the cached setup skill, three workspace skills and seventeen
+MCP tools at version 1.0.0 without model calls or normal-profile changes.
+Receipts: `.cache/v1-stable-remote-plugin-install.json`,
+`.cache/v1-stable-plugin-workflow.json` and
+`.cache/v1-stable-codex-appserver.json`. An initial redundant app-server refresh
+raced its startup refresh on Windows; the failed receipt remains separate. The
+successful check uses the catalog already installed by the CLI.
+
+Explicit upgrades from the public RC runtime and the verified official 0.10.0
+archive passed for both harnesses. Check-only and conflicting launcher updates
+changed no files; resolved upgrades preserved saved source/GLB/preview bytes,
+revision parents and owner files. Compatible edits to unchanged guides survived.
+The upgraded MCP rendered retained source, saved child revisions and exported the
+exact edited source through the CLI. Receipts:
+`.cache/v1-stable-rc1-upgrade.json` and `.cache/v1-stable-v010-upgrade.json`.
+The first RC test incorrectly expected an unchanged customized guide to conflict;
+it actually upgraded successfully. Its failed assertion is retained in
+`.cache/v1-stable-workspace-upgrade.json`. The corrected probe tests a changed
+launcher conflict and preservation of an unchanged customized guide. No engine
+change or weaker upgrade rule was needed.
+
+After the owner's twelve-job/$1 approval, native source `d068a7c` passed all
+fixed Cloudflare cases: CPU preview, six software material views, native network
+denial, marker/child destruction and fresh-VM absence, native deadline,
+cancellation, stdout/stderr floods, actual memory exhaustion, actual durable alarm
+recovery and engine execution afterward. Downloaded Worker and image identities
+matched the approved candidate. Every VM was confirmed stopped by the controller
+and independently by the provider API. Replaying the RPC started no new jobs.
+All seven returned PNGs decoded independently and matched local references byte
+for byte; visual inspection confirmed the fixed geometry/material/backdrop views.
+
+The operator, application, Worker, both namespaces and registry tag were removed,
+with absence verified. All 22 jobs across the four approved scopes are consumed.
+The 101,532 ms total reported job time is not billed CPU, a load benchmark or a
+settled invoice. The diagnostic branch's `hosting/probe/RESILIENCE.md` and
+`.cache/resilience-trial/` retain the exact twelve-case and cleanup receipts.
+Authenticated native dispatch, production render integration, account lifecycle,
+private artifacts, global admission, live providers, production deployment and
+vendor submissions still remain. Broad README/Troy/site work stays deferred.
 
 ### Stable publicly published
 
@@ -62,7 +139,7 @@ deployment has occurred.
 
 [PR #152](https://github.com/instruktlabs/kiln/pull/152) updates the public candidate
 record to stable so the seven-job registry installation matrix can qualify the
-published version. [Run 37528749517](https://github.com/instruktlabs/kiln/actions/runs/37528749517)
+published version. [Run 37528755713](https://github.com/instruktlabs/kiln/actions/runs/37528755713)
 was dispatched at `6248b4c`. The fresh local Windows installation passed all 25
 checks, including SDK declarations, CLI, MCP and packaged plugin checks; its
 receipt validator accepted the exact public archive on Node 22.23.3/npm 12.2.0.
