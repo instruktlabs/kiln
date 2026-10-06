@@ -19,10 +19,10 @@ states and the evidence that superseded them.
 | P0 | Preserve publisher/repository setup | Complete in [publisher setup receipt](2026-10-06-publisher-setup.md); current checkout remote verified `instruktlabs/kiln` |
 | P1 | Public API, stability and migrations | In progress: all 55 public entrypoints classified in the SDK guide, experimental/re-export and deprecated-alias boundaries explicit, Discovery labels visible; final release freeze and target-version upgrade proof remain open |
 | P2 | Compiled ESM SDK and declarations | In progress: corrected 53-entry core qualification includes dependency-free arena; all 55 imports/declarations pass in fresh optional-peer installations at current and declared-minimum versions; final-version and platform evidence remain open |
-| P3 | Package identity, contents, executables and notices | RC complete: public `@instruktlabs/kiln@1.0.0-rc.1`, aligned engine/plugin identities, MCP launcher, consumer doc allowlist and dependency notices; stable-version audit remains open |
+| P3 | Package identity, contents, executables and notices | RC complete; stable candidate PR #151 at `2cb3d86` aligns 1.0.0 identities and passes local installed-package, archive-secret and dependency checks. Exact-commit platform CI is running; stable publication remains pending |
 | P4 | Clean installs and workspace upgrades | RC complete: all seven public-registry CI jobs pass; cached Claude/Codex installers use the exact public RC, render/save/reopen/export pass; 0.10.0-to-RC upgrades preserve assets and refuse conflicts; final-version checks remain open |
 | P5 | Release automation and npm publication | RC complete: stage-only GitHub trusted publishing, owner-protected environment, package 2FA protection, exact-archive staging/promotion, public signature/provenance and fresh registry installs verified; stable `1.0.0` staging/promotion remain pending |
-| H1 | Native Cloudflare qualification | Blocked at live qualification: local/CI image and software-renderer fixtures pass, but two actual provider jobs failed; the latest direct RPC records a native monitor failure. Trial resources were removed and absence verified. The [startup review](2026-10-06-cloudflare-startup-review.md) specifies a minimal diagnostic; root cause, provider isolation, RSS, startup and measured cost remain unqualified |
+| H1 | Native Cloudflare qualification | Blocked at live qualification: managed and minimal custom-image controls pass, but the unchanged Kiln image fails before exec. All five original jobs are consumed and their resources removed with absence verified. PR #150 at `29fc0ac` prepares one separately approved platform-manifest comparison, based on local image inspection and Cloudflare's builder defaults. Root cause, native execution, provider isolation and measured costs remain unqualified; see the [startup review](2026-10-06-cloudflare-startup-review.md) |
 | H2 | Authenticated MCP and tenant boundary | In progress: Google/GitHub account foundation merged; browser sign-in/session PR #149 at `11a4f64` passes hosted CI on Linux and Windows. Uncommitted connection-revocation work passes the current 144-test hosted suite and three typechecks. Linking/unlinking, full account deletion, live sign-in, native dispatch and provider isolation remain open |
 | H3 | Artifact lifecycle | In progress: tenant SQLite/R2 bytes, ProgramStore and native AssetLibrary, atomic quotas/revision pins, material closures, authenticated downloads, deletion and seven-day unsaved retention pass local workerd and actual-engine checks; standalone MaterialLibrary, native dispatch, browser tickets, account deletion and deployed lifecycle proof remain open |
 | H4 | Capacity and operations | In progress: local native request admission, body/response/deadline bounds and cancellation pass; global operational quotas, process cleanup, load/cost measurements, alerts, deployed health/build identity and rollback remain open |
@@ -30,7 +30,7 @@ states and the evidence that superseded them.
 | L1 | Local Claude Code and Codex plugins | RC complete: both Git catalogs and versioned caches qualified against public npm; actual development-to-RC updates preserve pinned workspaces until explicit runtime upgrade; native clients discover the expected skills/server; final-version distribution and upgrade remain open |
 | L2 | Public OpenAI plugin | Pending: compliant ZIP, verified publisher/domain, working MCP, privacy/support pages, review cases/video/account, submission receipt |
 | L3 | Anthropic directory | Pending: owned marketplace is public and installed successfully; directory eligibility, exact final source, portal validation, reviewer materials and submission receipt remain open |
-| V1 | Exact candidate verification | RC complete: approved archive, registry provenance and all platform receipts verified; stable-version archive and hosted flows remain open |
+| V1 | Exact candidate verification | RC complete. Stable PR #151 passes 3,290 local engine tests, coverage, 91 hosted foundation tests, 78 renderer tests, a clean Windows archive install and the prepared site build. Exact-main archive/platform qualification and hosted flows remain open |
 | V2 | Release documentation and receipts | Pending: changelog/migrations/install/support/security/privacy/runbook; exact commits, hashes, versions, URLs and separate vendor-review state |
 
 ## Execution notes
@@ -1853,3 +1853,38 @@ is now isolated from package evaluation, but its exact cause remains unproven.
 Current checks pass 131 hosted tests, hosted typechecks/builds, root typecheck/lint,
 dry run and redacted scans. Hosted CI run: `37516547552`. The full engine suite was
 already green on the preceding candidate; this change touched only the diagnostic.
+
+## Stable candidate and manifest comparison prepared
+
+The separate managed worktree `kiln-stable-release` prepares stable 1.0.0 from
+current main `8d14d0e`. PR #151 at `2cb3d864eaced99cbd56c5e7dfb8d8a92773ec31`
+contains release identities, minimal packaged installation/migration corrections,
+targeted dependency patches, secret-file ignores and the RC publication receipt.
+It excludes native execution and account-controls changes. Its detailed candidate
+record lives at `docs/reviews/2026-10-06-stable-package-candidate.md` on that branch.
+
+Local final gates pass: 3,290 engine tests with two platform skips; coverage at
+95.16% functions and 92.50% lines; root types/lint/toolchain/skills; 78 renderer
+tests; 91 hosted foundation tests/types/builds; a clean Windows Node 22.23.3/npm
+12.2.0 archive installation with SDK/CLI/MCP/local-plugin checks; and the complete
+prepared website build. The first coverage run's Windows rename EPERM is retained;
+a focused retry and the final full run pass without a source change. Root, hosted
+and installed runtime audits report no known vulnerabilities. The optional agent
+lockfile now resolves the patched MCP SDK 1.32.1. Extracted package and source
+secret scans pass. No stable version was staged or published and nothing deployed.
+
+The local archive digest is `6ed3d6b9964429f14c3c6a0a6a13d56be509dd0f40b07061a37d491f901c1508`.
+This archive is not a substitute for the exact main-CI archive in the release
+runbook. PR CI is running; owner-approved merge, main qualification, staging and
+owner promotion still follow. The broad README/Troy/site refresh remains deferred.
+
+In parallel, local inspection verified the original Container image's runtime
+manifest and unchanged layers. Cloudflare's builder omits provenance by default;
+selecting the existing platform manifest directly tests that format difference.
+PR #150 at `29fc0ac248f59aa1d8c6f6ca89160c85d266e8ca` prepares exactly one fixed
+private job. All 133 local hosted tests, types/builds, root types/lint, deployment
+dry run and source/actual-bundle scans pass. Its hosted CI run is `37520300880`.
+No new cloud execution is authorized yet. The original five-job allowance remains
+exhausted; the new candidate needs a separate owner decision, with its exact image,
+60-second deadline, cleanup, privacy settings and $1 allowance documented in
+`hosting/probe/MANIFEST_STARTUP.md`.

@@ -314,3 +314,28 @@ not package evaluation code. It does not identify an exclusive cause. OCI index
 selection, image user/entrypoint handling and content differences remain hypotheses.
 Do not replace them with an assumed vendor fault, silently rebuild the retained
 image, weaken isolation, or spend another job under the exhausted allowance.
+
+## Local image-format comparison
+
+Further source review found that Cloudflare's current image builder invokes
+Docker with `--platform linux/amd64` and `--provenance=false` by default:
+[build implementation](https://github.com/cloudflare/workers-sdk/blob/main/packages/containers-shared/src/build.ts).
+This gives a specific next hypothesis without changing the execution architecture.
+
+Read-only inspection of the retained OCI archive verified the descriptor hashes.
+The failing `69aff70b...` index contains one Linux/AMD64 runtime manifest,
+`sha256:db79551579a9abd33f7589a4da4d57947364ddf3dd37b79f766e202f2703edc8`,
+and a separate attestation manifest with unknown OS/architecture. The successful
+minimal custom control used a platform manifest directly. The runtime manifest
+selects the same config `fe7ab6cb...` and ten layers already inspected and scanned;
+selecting it directly would preserve Node, installed package bytes, user,
+entrypoint and filesystem contents.
+
+This difference does not prove that Cloudflare rejects OCI indexes or attestations.
+The next bounded candidate should test the existing platform manifest directly,
+with the same fixed command and controller, before rebuilding dependencies or
+changing the image user. Prepare its exact configuration and local checks first;
+one new cloud invocation would require owner approval beyond the exhausted trial.
+No image was pushed, no cloud job started, and no support follow-up sent during
+this inspection. The diagnostic worktree retains `kiln-image-descriptors.json`
+and the metadata-only inspection script in its ignored cache.
