@@ -43,6 +43,17 @@ const deferred = () => {
   });
   return { promise, resolve };
 };
+const rendering = () =>
+  new Request('http://kiln-renderer.internal/render', {
+    method: 'POST',
+    headers: {
+      'content-type': 'application/json',
+      'content-length': '2',
+      'x-kiln-deadline-ms': '30000',
+      'x-kiln-max-response-bytes': '20971520',
+    },
+    body: '{}',
+  });
 const turn = () => new Promise((resolve) => setImmediate(resolve));
 
 function fixture(options = {}) {
@@ -117,12 +128,18 @@ function fixture(options = {}) {
     publicOrigin: 'https://kiln.example.com',
     storageInterceptor: {},
     evaluationInterceptor: {},
+    renderInterceptor: {},
     async storage(owner, req) {
       storageCalls.push({ owner, url: req.url, headers: Object.fromEntries(req.headers) });
       return new Response('source bytes');
     },
     async evaluate(id, req) {
-      assert(values.get('request').children.includes(id), 'child must be durable before dispatch');
+      assert(
+        values
+          .get('request')
+          .children.some((child) => child.id === id && child.kind === 'evaluation'),
+        'child must be durable before dispatch',
+      );
       assert.equal(children.has(id), false);
       children.set(id, true);
       events.push(`child:${id}`);
@@ -131,6 +148,20 @@ function fixture(options = {}) {
     async cancelEvaluation(id) {
       events.push(`cancel:${id}`);
       if (failChildren) throw new Error('PRIVATE_CHILD_FAILURE');
+      children.set(id, false);
+    },
+    async render(id, req) {
+      assert(
+        values.get('request').children.some((child) => child.id === id && child.kind === 'render'),
+      );
+      assert.equal(children.has(id), false);
+      children.set(id, true);
+      events.push(`render:${id}`);
+      return options.render ? options.render(id, req) : Response.json({ rendered: true });
+    },
+    async cancelRender(id) {
+      events.push(`cancel-render:${id}`);
+      if (failChildren) throw new Error('PRIVATE_RENDER_FAILURE');
       children.set(id, false);
     },
   };
@@ -155,6 +186,96 @@ function fixture(options = {}) {
     },
   };
 }
+
+test('render children are durable, separately routed, and share the parent execution limit', async () => {
+  const f = fixture({
+    native: async (_, job) => {
+      for (let i = 0; i < 8; i++) {
+        if (i % 2) await job.evaluateRequest(evaluation());
+        else await job.renderRequest(rendering());
+      }
+      await assert.rejects(job.renderRequest(rendering()), (error) => error.status === 429);
+      await assert.rejects(job.evaluateRequest(evaluation()), (error) => error.status === 429);
+      return Response.json({ ok: true });
+    },
+  });
+  await f.run();
+  const children = f.values.get('request').children;
+  assert.equal(new Set(children.map((child) => child.id)).size, 8);
+  assert.equal(children.filter((child) => child.kind === 'render').length, 4);
+  assert.equal([...f.children.values()].some(Boolean), false);
+  for (const child of children) {
+    const prefix = child.kind === 'render' ? 'cancel-render:' : 'cancel:';
+    assert(f.events.includes(prefix + child.id));
+    assert(!f.events.includes((child.kind === 'render' ? 'cancel:' : 'cancel-render:') + child.id));
+  }
+});
+
+test('a pending render excludes evaluation until its cleanup acknowledgement', async () => {
+  const entered = deferred(),
+    finish = deferred(),
+    renderStarted = deferred(),
+    renderFinish = deferred();
+  const f = fixture({
+    native: async () => {
+      entered.resolve();
+      await finish.promise;
+      return Response.json({ ok: true });
+    },
+    render: async (_id, req) => {
+      assert(Number(req.headers.get('x-kiln-deadline-ms')) <= 2000);
+      renderStarted.resolve();
+      await renderFinish.promise;
+      return Response.json({ ok: true });
+    },
+  });
+  const run = f.run();
+  await entered.promise;
+  const rendered = f.job.renderRequest(rendering());
+  await renderStarted.promise;
+  await assert.rejects(f.job.evaluateRequest(evaluation()), (error) => error.status === 429);
+  await assert.rejects(f.job.renderRequest(rendering()), (error) => error.status === 429);
+  renderFinish.resolve();
+  await rendered;
+  await f.job.evaluateRequest(evaluation());
+  finish.resolve();
+  await run;
+});
+
+test('render cleanup failure retains parent admission state and recovery routes by persisted kind', async () => {
+  const f = fixture({
+    failChildren: true,
+    native: async (_, job) => {
+      await job.renderRequest(rendering());
+      return Response.json({ ok: true });
+    },
+  });
+  await assert.rejects(f.run(), (error) => error.code === 'CLEANUP_FAILED');
+  assert.equal(f.values.get('request').state, 'closing');
+  const child = f.values.get('request').children[0];
+  assert.equal(child.kind, 'render');
+  f.repair();
+  await new NativeRequestJob(f.context, f.ports).alarm();
+  assert.equal(f.values.get('request').state, 'finished');
+  assert(f.events.includes(`cancel-render:${child.id}`));
+  assert(!f.events.includes(`cancel:${child.id}`));
+});
+
+test('render route rejects caller-selected authority and fails after parent cancellation', async () => {
+  const f = fixture({
+    native: async (_, job) => {
+      await assert.rejects(job.renderRequest(evaluation()), (error) => error.status === 400);
+      await assert.rejects(
+        job.renderRequest(new Request(rendering(), { headers: { 'x-tenant': 'other' } })),
+        (error) => error.status === 400,
+      );
+      return Response.json({ ok: true });
+    },
+  });
+  await f.run();
+  await assert.rejects(f.job.renderRequest(rendering()));
+  assert.equal(f.values.get('request').children.length, 0);
+});
 
 test('request host binds storage outside its offline VM and stops the whole job tree before returning', async () => {
   const f = fixture({
@@ -181,7 +302,11 @@ test('request host binds storage outside its offline VM and stops the whole job 
   assert.equal(f.context.container.settings.image, image);
   assert.deepEqual(
     f.events.filter((v) => v.startsWith('intercept:')),
-    ['intercept:kiln-storage.internal', 'intercept:kiln-evaluator.internal'],
+    [
+      'intercept:kiln-storage.internal',
+      'intercept:kiln-evaluator.internal',
+      'intercept:kiln-renderer.internal',
+    ],
   );
   assert.ok(f.events.indexOf('alarm') < f.events.indexOf('start'));
   assert.deepEqual(f.storageCalls, [
@@ -278,7 +403,7 @@ test('only one child runs at a time and subsequent evaluations get fresh IDs', a
   childFinish.resolve();
   await first;
   await f.job.evaluateRequest(evaluation());
-  assert.equal(new Set(f.values.get('request').children).size, 2);
+  assert.equal(new Set(f.values.get('request').children.map((child) => child.id)).size, 2);
   finish.resolve();
   await run;
   assert.equal([...f.children.values()].some(Boolean), false);

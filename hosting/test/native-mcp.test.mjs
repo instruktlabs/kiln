@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { createHash } from 'node:crypto';
 import { mkdir, readFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 import { after, before, test } from 'node:test';
@@ -7,6 +8,7 @@ import { convertV4MiniflareOptions, Miniflare } from 'miniflare';
 import { createKilnMcpServer, kilnMcpToolDefs } from '../../dist/mcp-engine.mjs';
 import { renderGLB } from '../../lib/render.js';
 import { evaluateEvaluatorRequestV2 } from '../../lib/evaluator/index.js';
+import { encodePng } from '../../lib/views/png.js';
 
 const publicOrigin = 'https://kiln.example.com';
 const source =
@@ -38,6 +40,7 @@ before(async () => {
         ['assets/node', 'assets-node'],
         ['material-library/node', 'material-library-node'],
         ['evaluator', 'evaluator/index'],
+        ['composer', 'composer/index'],
       ].map(([name, file]) => [
         `@instruktlabs/kiln/${name}`,
         fileURLToPath(new URL(`../../lib/${file}.js`, import.meta.url)),
@@ -107,9 +110,10 @@ function host(
       return renderGLB(code, renderOptions);
     },
   },
+  viewRenderPort,
 ) {
   const handler = createNativeMcpHandler(
-    { createServer: createKilnMcpServer, evaluatorPort: evaluator },
+    { createServer: createKilnMcpServer, evaluatorPort: evaluator, viewRenderPort },
     {
       publicOrigin,
       storage: {
@@ -268,6 +272,55 @@ test('real HTTP tools validate, render, save, restore and read exact source afte
   });
   assert.equal(other.isError, true);
   assert.ok(!JSON.stringify(other).includes(source));
+});
+
+test('native MCP uses the material-view port and retains truthful CPU fallback', async () => {
+  const metal =
+    'function build(){return new THREE.Mesh(boxGeo(1,1,1),pbrMaterial({albedo:0x8899aa,metalness:0.5,roughness:0.5}));}';
+  let views = 0;
+  const evaluate = {
+    render: async (code, options) => {
+      assert.equal(code, metal);
+      return renderGLB(code, options);
+    },
+  };
+  const handler = host('material', {}, evaluate, async (request, execution) => {
+    views++;
+    assert(execution.signal);
+    assert.equal(execution.signal.aborted, false);
+    const size = request.size ?? request.width;
+    return {
+      ok: true,
+      rendererId: 'dawn-vulkan:software-fixture',
+      viewsPng: (request.viewDirs ?? request.cameras).map(() =>
+        encodePng(new Uint8Array(size * size * 3).fill(128), size, size),
+      ),
+      derivativeFidelity: {
+        materialFaithful: true,
+        inputGlbSha256: `sha256:${createHash('sha256').update(request.glb).digest('hex')}`,
+      },
+    };
+  });
+  const result = await rpc(handler, 'tools/call', {
+    name: 'kiln_render',
+    arguments: { code: metal, capture: { preset: '1x1' } },
+  });
+  assert.equal(result.isError, undefined);
+  assert.equal(views, 1);
+  assert.ok(result.content.some((value) => value.type === 'image'));
+  assert.match(JSON.stringify(result), /full-material/);
+  const unavailable = host('material-fallback', {}, evaluate, async () => ({
+    ok: false,
+    rendererId: 'unavailable',
+    error: 'Hosted software rendering is unavailable',
+  }));
+  const fallback = await rpc(unavailable, 'tools/call', {
+    name: 'kiln_render',
+    arguments: { code: metal, capture: { preset: '1x1' } },
+  });
+  assert.equal(fallback.isError, undefined);
+  assert.ok(fallback.content.some((value) => value.type === 'image'));
+  assert.match(JSON.stringify(fallback), /geometry-flat/);
 });
 
 test('native HTTP validates its private route, Origin, body and credentials before engine dispatch', async () => {

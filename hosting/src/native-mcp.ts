@@ -1,15 +1,19 @@
 import { createMcpHandler, type Server } from '@modelcontextprotocol/server';
 import type { KilnToolContext } from '@instruktlabs/kiln/tools';
 import type { EvaluatorPortV2, IsolatedEvaluatorHost } from '@instruktlabs/kiln/evaluator';
+import type { PbrRenderPort } from '@instruktlabs/kiln/composer';
 import { NativeProgramStore } from './native-programs';
 import { NativeAssetLibrary } from './native-assets';
 import type { NativeStorageOptions } from './native-http';
 import { createNativeEvaluatorPort, type NativeEvaluatorOptions } from './native-evaluator';
 import { HttpFailure, privateResponse, readBounded, serviceFailure } from './http';
+import { createNativeRenderPort } from './native-render';
+import { RENDER_LIMITS } from './render-limits';
 
 export interface NativeMcpRuntime {
   createServer: (context: KilnToolContext) => Server;
   evaluatorPort: EvaluatorPortV2;
+  viewRenderPort?: PbrRenderPort;
 }
 
 async function loadInstalledEngine(): Promise<NativeMcpRuntime['createServer']> {
@@ -52,10 +56,12 @@ export async function loadNativeMcpRuntime(
  */
 export async function loadContainerMcpRuntime(
   options: NativeEvaluatorOptions = {},
+  rendering: { fetch?: (request: Request) => Promise<Response> } = {},
 ): Promise<NativeMcpRuntime> {
   return {
     createServer: await loadInstalledEngine(),
     evaluatorPort: createNativeEvaluatorPort(options),
+    viewRenderPort: createNativeRenderPort(rendering),
   };
 }
 
@@ -197,6 +203,29 @@ export function createNativeMcpHandler(runtime: NativeMcpRuntime, options: Nativ
                     release();
                   }
                 },
+              },
+              ...(runtime.viewRenderPort
+                ? {
+                    viewRenderPort: async (input, execution) => {
+                      if (controller.signal.aborted) throw abortError();
+                      evaluations++;
+                      try {
+                        return await runtime.viewRenderPort!(input, {
+                          signal: execution?.signal
+                            ? AbortSignal.any([execution.signal, controller.signal])
+                            : controller.signal,
+                        });
+                      } finally {
+                        evaluations--;
+                        release();
+                      }
+                    },
+                    viewRenderTimeoutMs: RENDER_LIMITS.deadlineMs,
+                  }
+                : {}),
+              captureLimits: {
+                maxTotalPixels: 8 * 1024 * 1024,
+                maxOutputBytes: RENDER_LIMITS.pngBytes,
               },
               evaluationControls: () => ({
                 signal: controller.signal,

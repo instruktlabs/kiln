@@ -19,12 +19,14 @@ for (const module of ['github', 'account-page', 'account-actions', 'connections'
     for (const entry of [
       'tenant-worker',
       'evaluation-worker',
+      'render-worker',
       'request-worker',
       'native-programs',
       'native-assets',
       'native-mcp',
       'native-host',
       'native-evaluator',
+      'native-render',
     ]) {
       assert.throws(() => assertProductionBoundary(entry, inputs), /authorization-server/);
       assert.throws(

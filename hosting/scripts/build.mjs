@@ -15,6 +15,7 @@ for (const entry of [
   'worker',
   'tenant-worker',
   'evaluation-worker',
+  'render-worker',
   'request-worker',
   'admission-worker',
   'native-programs',
@@ -22,6 +23,7 @@ for (const entry of [
   'native-mcp',
   'native-host',
   'native-evaluator',
+  'native-render',
 ]) {
   // The installed-image build must not depend on a checkout SDK or edge snapshot.
   if (nativeOnly && !entry.startsWith('native-')) continue;

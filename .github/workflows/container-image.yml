@@ -7,9 +7,12 @@ on:
       - .github/published-candidate.json
       - hosting/container/**
       - hosting/src/native-*.ts
+      - hosting/src/render-limits.ts
       - hosting/scripts/build*.mjs
       - hosting/scripts/prepare-native-host.mjs
       - hosting/scripts/smoke-native-host.mjs
+      - hosting/scripts/smoke-native-render.mjs
+      - hosting/scripts/software-render-fixture.mjs
       - hosting/package*.json
       - scripts/smoke-renderer.mjs
   workflow_dispatch:
@@ -89,7 +92,13 @@ jobs:
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: 22.23.3
-      - name: Prepare only the reviewed four-file context
+      - name: Build the private software-rendering transport
+        if: matrix.kind == 'software'
+        run: |
+          npm install --global npm@12.2.0 --ignore-scripts --no-fund
+          npm ci --prefix hosting --ignore-scripts --no-fund
+          npm run build --prefix hosting -- --native-only
+      - name: Prepare only the reviewed minimal context
         shell: bash
         run: |
           set -euo pipefail
@@ -115,7 +124,12 @@ jobs:
           '
           cp 'hosting/container/${{ matrix.dockerfile }}' image-context/Dockerfile
           cp hosting/container/evaluate.mjs image-context/
-          test "$(find image-context -mindepth 1 -maxdepth 1 -type f | wc -l)" -eq 4
+          if [ '${{ matrix.kind }}' = software ]; then
+            cp .cache/hosted-worker/native-render.mjs hosting/container/render.mjs image-context/
+            test "$(find image-context -mindepth 1 -maxdepth 1 -type f | wc -l)" -eq 6
+          else
+            test "$(find image-context -mindepth 1 -maxdepth 1 -type f | wc -l)" -eq 4
+          fi
       - name: Build without registry publication
         id: image
         shell: bash
@@ -165,12 +179,18 @@ jobs:
           docker inspect kiln-software-fixture --format '{{json .State}}' > image-evidence/software-state.json
           test "$(docker inspect kiln-software-fixture --format '{{.State.ExitCode}}')" -eq 0
           node --input-type=module -e 'import assert from"node:assert/strict";import{readFileSync}from"node:fs";const r=JSON.parse(readFileSync("image-evidence/software/receipt.json"));assert.equal(r.status,"passed");assert.equal(r.software,true);assert.equal(r.views.length,6)'
+      - name: Qualify the one-shot render entry and private port
+        if: matrix.kind == 'software'
+        run: node hosting/scripts/smoke-native-render.mjs kiln-evaluation:ci
       - name: Retain image evidence without publishing the image
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: private-evaluation-image-evidence-${{ matrix.kind }}
-          path: image-evidence/
+          path: |
+            image-evidence/
+            .cache/software-render-entry/qualification/
+          include-hidden-files: true
           if-no-files-found: error
           retention-days: 30
       - name: Remove only this job's test containers

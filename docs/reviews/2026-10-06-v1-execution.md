@@ -2260,3 +2260,58 @@ No new cloud execution is authorized yet. The original five-job allowance remain
 exhausted; the new candidate needs a separate owner decision, with its exact image,
 60-second deadline, cleanup, privacy settings and $1 allowance documented in
 `hosting/probe/MANIFEST_STARTUP.md`.
+
+## Private renderer and request-tree integration
+
+Stable npm 1.0.0 and the GitHub v1.0.0 release are now published; their separate
+release receipts remain authoritative for package acceptance. Draft PR #153
+continues hosted integration. Its preceding commit `6fca99d` passes all eighteen
+CI checks. The new private renderer/controller work below needs its own fresh CI
+and has not been deployed.
+
+The coordinator now injects a bounded private `PbrRenderPort`. It sends exact GLB
+bytes and view options to a fixed renderer route; the response must match the
+request ID, GLB digest, camera values, dimensions and renderer class. Published
+engine code retains PNG validation, capture deadlines and truthful CPU fallback.
+Tests demonstrate full-material views on success and geometry-only fallback when
+the port fails. No published package or public tool schema was changed.
+
+The fixed one-shot rendering entry validates requests and self-contained GLBs
+before graphics initialization and explicitly selects the software Vulkan ICD.
+Its private `KilnRenderJob` shares the evaluator's durable one-use lifecycle,
+deadline, cancellation fence, recovery and verified whole-VM destruction. The
+parent registers a third host-owned interceptor and persists each child ID and
+kind before dispatch. Renders and evaluations share one active-child allowance
+and eight total children. Recovery routes cancellation through the recorded kind;
+unknown cleanup retains the parent reservation and suppresses its response.
+
+All 261 hosted tests, three hosted typechecks, twelve production bundles and root
+typecheck/lint pass locally. New behavior was tested failing before implementation.
+Adversarial checks cover forged response identity, caller authority, request/output
+limits, failed PNGs, cancellation, late response disposal, shared child limits,
+cleanup failure and recovery. A real local workerd loopback/RPC fixture verifies
+renderer routing through host-selected request props, cancellation acknowledgement
+and denial after parent closure and eviction. These are local guarantees, not
+evidence of provider isolation or complete hosted acceptance.
+
+The exact installed renderer image
+`sha256:64022900f0c298668076db054c44e019dad6a3813751a92dec7a06ceb734fe24`
+passes its real entry/port fixture under offline local Docker with two CPUs and
+4 GiB memory. Eight decoded 128px PNGs preserve textured materials across three
+backdrops, a beauty image and an explicit camera. Malformed input is rejected
+before device startup. The rebuilt coordinator image
+`sha256:029c4fba6f0521a5a18c9dde364d07b5ffc076fe4d988358868950de40134b66`
+passes readiness, current/legacy MCP, hostile-header denial and failure without
+private services. Both install the exact published stable archive, retain their
+dependency inventories and remove their local test containers. Procedures and
+receipt paths are in [the image guide](../../hosting/container/README.md).
+
+The thirty-second render deadline is a candidate setting informed by the earlier
+13,286 ms fixed provider fixture, not a measured production SLO. No additional
+cloud upload, execution or public route was enabled. All 22 previously approved
+cloud jobs remain consumed. The next provider trial must qualify the integrated
+admission/coordinator/interceptor/evaluation/render/storage path with a concrete
+bounded approval. Account lifecycle, live identity-provider setup, material
+storage, browser downloads, representative load/costs, production deployment and
+directory submissions remain open. The broad README/Troy/site refresh remains
+deferred to launch closeout.

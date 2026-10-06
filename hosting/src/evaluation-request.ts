@@ -1,5 +1,6 @@
 import { ContainerJobFailure, type ContainerEvaluationJob } from './container-job';
 import { HttpFailure, privateResponse, readBounded, serviceFailure } from './http';
+import { EXECUTION_PROFILES, type ExecutionKind } from './execution-profiles';
 
 const allowedHeaders = new Set([
   'content-type',
@@ -27,24 +28,26 @@ function limit(header: string | null, max: number): number {
  * and holds admission; this handler cannot choose a tenant, image or executable.
  * Never expose this route directly from a public Worker.
  */
-export async function handleEvaluationRequest(
+async function handleExecutionRequest(
   request: Request,
   job: Pick<ContainerEvaluationJob, 'run'>,
+  kind: ExecutionKind,
 ): Promise<Response> {
+  const profile = EXECUTION_PROFILES[kind];
   try {
-    if (request.url !== 'http://kiln-evaluator.internal/evaluate' || request.method !== 'POST')
+    if (request.url !== profile.url || request.method !== 'POST')
       throw new HttpFailure(400, 'Invalid evaluation request');
     for (const [name, value] of request.headers)
       if (!allowedHeaders.has(name) || value.length > 512)
         throw new HttpFailure(400, 'Invalid evaluation header');
     if (request.headers.get('content-type') !== 'application/json')
       throw new HttpFailure(415, 'Evaluation requires application/json');
-    const deadlineMs = limit(request.headers.get('x-kiln-deadline-ms'), 60_000);
+    const deadlineMs = limit(request.headers.get('x-kiln-deadline-ms'), profile.deadlineMs);
     const maxResponseBytes = limit(
       request.headers.get('x-kiln-max-response-bytes'),
-      8 * 1024 * 1024,
+      profile.responseBytes,
     );
-    const declared = limit(request.headers.get('content-length'), 4 * 1024 * 1024);
+    const declared = limit(request.headers.get('content-length'), profile.requestBytes);
     const deadlineAt = Date.now() + deadlineMs;
     const reading = new AbortController();
     const cancelRead = () => reading.abort();
@@ -57,7 +60,7 @@ export async function handleEvaluationRequest(
     }, deadlineMs);
     let body: Uint8Array<ArrayBuffer>;
     try {
-      body = await readBounded(request.body, 4 * 1024 * 1024, reading.signal);
+      body = await readBounded(request.body, profile.requestBytes, reading.signal);
     } catch (error) {
       if (expired) throw new HttpFailure(504, 'Evaluation deadline exceeded');
       throw error;
@@ -109,3 +112,11 @@ export async function handleEvaluationRequest(
     return privateResponse(serviceFailure(error));
   }
 }
+
+export const handleEvaluationRequest = (
+  request: Request,
+  job: Pick<ContainerEvaluationJob, 'run'>,
+) => handleExecutionRequest(request, job, 'evaluation');
+
+export const handleRenderRequest = (request: Request, job: Pick<ContainerEvaluationJob, 'run'>) =>
+  handleExecutionRequest(request, job, 'render');

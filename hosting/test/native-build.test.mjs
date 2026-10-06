@@ -35,7 +35,7 @@ test('native-only build works without checkout engine bundles or SDK files', asy
     assert.equal(result.status, 0, result.stderr);
     const output = join(fixture, '.cache', 'hosted-worker');
     const entries = await readdir(output);
-    assert.equal(entries.filter((name) => name.endsWith('.mjs')).length, 5);
+    assert.equal(entries.filter((name) => name.endsWith('.mjs')).length, 6);
     assert.ok(entries.every((name) => name.startsWith('native-')));
     for (const name of entries.filter((name) => name.endsWith('-build.json'))) {
       const manifest = JSON.parse(await readFile(join(output, name), 'utf8'));

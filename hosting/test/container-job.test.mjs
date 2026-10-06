@@ -3,7 +3,7 @@ import { fileURLToPath } from 'node:url';
 import { before, test } from 'node:test';
 import { build } from 'esbuild';
 
-let ContainerEvaluationJob;
+let ContainerEvaluationJob, ContainerRenderJob;
 const image = `registry.cloudflare.com/fixture/kiln@sha256:${'a'.repeat(64)}`;
 const encoder = new TextEncoder();
 const input = encoder.encode('{"version":"kiln.evaluator.request.v2"}');
@@ -20,7 +20,7 @@ before(async () => {
     format: 'esm',
     platform: 'node',
   });
-  ({ ContainerEvaluationJob } = await import(output));
+  ({ ContainerEvaluationJob, ContainerRenderJob } = await import(output));
 });
 
 function fixture(options = {}) {
@@ -58,7 +58,7 @@ function fixture(options = {}) {
     exitCode: options.hanging ? new Promise(() => {}) : Promise.resolve(options.exitCode ?? 0),
   };
   const container = {
-    images: { kiln: options.image ?? image },
+    images: { kiln: options.image ?? image, renderer: options.image ?? image },
     running: false,
     start(settings) {
       events.push('start');
@@ -133,6 +133,55 @@ function fixture(options = {}) {
     },
   };
 }
+
+test('render jobs use a fixed software image and entry with the same cleanup fence', async () => {
+  const f = fixture();
+  const result = await new ContainerRenderJob(f.context).run(input, controls);
+  assert.deepEqual(result, response);
+  assert.deepEqual(f.context.container.command, ['/usr/local/bin/node', '/opt/kiln/render.mjs']);
+  assert.deepEqual(f.context.container.execSettings.env, {});
+  assert.equal(f.context.container.settings.enableInternet, false);
+  assert.equal(f.context.container.running, false);
+  assert.equal(f.values.get('job').state, 'finished');
+  for (const limits of [
+    { ...controls, deadlineMs: 30001 },
+    { ...controls, maxResponseBytes: 20 * 1024 * 1024 + 1 },
+  ]) {
+    const rejected = fixture();
+    await assert.rejects(
+      new ContainerRenderJob(rejected.context).run(input, limits),
+      code('INPUT_INVALID'),
+    );
+    assert.equal(rejected.events.includes('start'), false);
+  }
+  const wrongImage = fixture();
+  delete wrongImage.context.container.images.renderer;
+  await assert.rejects(
+    new ContainerRenderJob(wrongImage.context).run(input, controls),
+    code('INPUT_INVALID'),
+  );
+  assert.equal(wrongImage.events.includes('start'), false);
+});
+
+test('render cancellation survives eviction and unconfirmed cleanup suppresses output', async () => {
+  const cancelled = fixture();
+  await new ContainerRenderJob(cancelled.context).cancel();
+  await assert.rejects(
+    new ContainerRenderJob(cancelled.context).run(input, controls),
+    code('JOB_ALREADY_USED'),
+  );
+  assert.equal(cancelled.events.includes('start'), false);
+  const f = fixture({ failCleanup: true });
+  await assert.rejects(
+    new ContainerRenderJob(f.context).run(input, controls),
+    code('CLEANUP_FAILED'),
+  );
+  assert.equal(f.values.get('job').state, 'running');
+  f.repairCleanup();
+  await new ContainerRenderJob(f.context).cancel();
+  assert.equal(f.context.container.running, false);
+  assert.equal(f.values.get('job').state, 'finished');
+});
 
 test('starts one pinned, offline VM and destroys it before returning any output', async () => {
   const f = fixture();

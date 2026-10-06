@@ -380,16 +380,16 @@ GLB and QA validation. This client applies the private host's ceilings: 60 secon
 4 MiB request/GLB and 8 MiB response. Invalid controls fail before dispatch;
 larger valid caller allowances are clamped to these limits.
 
-Storage and evaluation share bounded stream/cancellation handling, but have
+Storage, evaluation and rendering share bounded stream/cancellation handling, but have
 separate fixed origins, paths and allowed headers. Network diagnostics, abort
 reasons and upstream bodies do not become public errors. A failure never selects
 an in-process fallback. Tests exercise the real MCP render/save/reconnect flow
 through this protocol using a fixed trusted evaluator fixture; that fixture is
 not cloud isolation evidence.
 
-The provider controller still needs to bind this intercepted hostname to a fresh
-qualified job, retain global admission until verified VM destruction and qualify
-the complete deployed flow. A returned HTTP timeout does not prove cleanup. The
+The provider controller binds this intercepted hostname to a fresh job and retains
+global admission until verified VM destruction. The complete deployed flow still
+needs qualification. A returned HTTP timeout does not prove cleanup. The
 existing default native loader still fails closed on missing nested isolation;
 no production configuration or public endpoint is enabled by this client.
 
@@ -400,8 +400,8 @@ request reading consumes the same deadline. It delegates execution and its alarm
 to `ContainerEvaluationJob`, awaiting its verified cleanup before returning output.
 No source, identity, executable or image selector is accepted through headers.
 The native client and this handler are exercised together with the actual SDK
-codec. They still need the externally tenant-bound dispatcher and global admission
-controller before an end-to-end provider qualification or deployment.
+codec. The externally tenant-bound dispatcher and global admission controller are
+implemented below; end-to-end provider qualification and deployment remain open.
 
 The private evaluation DO also exposes `cancel()` to its parent dispatcher. One
 controller lives for the DO instance, so cancellation reaches an evaluation still
@@ -414,6 +414,39 @@ share the pending cleanup. The parent must retain admission whenever cancellatio
 fails or its acknowledgement is lost. These cases have local adversarial tests;
 the new parent-cancellation RPC still needs provider qualification.
 
+## Private software rendering
+
+`createNativeRenderPort` sends only a self-contained GLB and validated view options
+to `http://kiln-renderer.internal/render`. It accepts no URL, source program,
+tenant, image or credential selector. The versioned response must match the exact
+request ID, GLB digest, view count, camera values, dimensions and presentation rig.
+Only the fixed software Vulkan backend is admitted. Engine `captureViewsViaPort`
+continues to own PNG validation, its deadline and truthful CPU degradation; this
+transport never implements a second fallback policy.
+
+The private limits are 4 MiB GLB, 6 MiB request, 20 MiB wire response, 12 MiB PNG
+bytes, 1,024 pixels per dimension and 3,145,728 pixels across requested images.
+The MCP host admits 8,388,608 pixels including grid composition and a 12 MiB
+capture output. The render deadline is 30 seconds, bounded further by the parent
+deadline. This is a qualification candidate, not a measured production latency
+promise; the earlier six-view provider fixture took 13,286 ms including cleanup.
+
+`render-worker` exposes only the private `KilnRenderJob` DO. It shares evaluation's
+HTTP limits, one-use durable lifecycle, cancellation fence, alarm recovery and
+whole-VM destruction through fixed host profiles. `RENDERS` must bind this class;
+its immutable named image is `renderer`. `EVALUATIONS` remains a separate binding
+with image `kiln`. No request can select the profile or executable. The renderer
+runs `/opt/kiln/render.mjs` as `1000:1000` with networking disabled and no secrets.
+Its input and self-contained GLB are checked before graphics initialization. The
+entry explicitly selects the pinned Mesa ICD because native exec does not inherit
+the image's environment.
+
+Local Docker qualification exercises that actual entry and installed port, producing
+eight independently decoded PNGs across three backdrops, a beauty image and an
+exact camera. Real workerd loopback/RPC tests verify host-owned routing and reject
+forged identity fields. These do not qualify the integrated Cloudflare path. See
+[the image procedure](container/README.md#one-shot-software-render-entry).
+
 ## Private request dispatcher
 
 `request-worker` adds one `KilnNativeRequest` Durable Object per admitted MCP
@@ -423,7 +456,7 @@ Durable Object storage, outside the coordinator VM. That VM starts offline from
 the pinned `coordinator` image with only the public origin in its environment.
 Readiness and image readback precede sending the bounded MCP request.
 
-Two fixed HTTP interceptors use host-configured loopback binding props to select
+Three fixed HTTP interceptors use host-configured loopback binding props to select
 the request object. Storage RPCs select the tenant from its durable record; URLs,
 headers and body fields cannot choose it. The storage route allowlist excludes
 administrative operations. This uses the documented Container interception API
@@ -432,12 +465,12 @@ storage and object eviction, including cross-account source denial. Deliberate
 HTTP errors are converted to responses before RPC serialization, which does not
 preserve their custom JavaScript prototype.
 
-Each request admits at most one active child evaluation and eight children in
-total. Every child ID is persisted before dispatch and receives at most the
+Each request admits at most one active child evaluation or render and eight
+children in total. Every child ID and kind is persisted before dispatch and receives at most the
 remaining parent deadline. A child's cancellation acknowledgement is required
 before another child can start. Completion or cancellation first closes the
 durable request to new work, then confirms destruction of the coordinator and
-all registered children. Unknown cleanup retains the record and a recovery alarm;
+all registered children, routing cancellation by their persisted kind. Unknown cleanup retains the record and a recovery alarm;
 late delivery is refused through the child's durable cancellation fence. Parent
 responses are bounded to 32 MiB and withheld until cleanup completes.
 

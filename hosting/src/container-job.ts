@@ -1,3 +1,5 @@
+import { EXECUTION_PROFILES, type ExecutionKind } from './execution-profiles';
+
 type FailureCode =
   | 'INPUT_INVALID'
   | 'JOB_ALREADY_USED'
@@ -22,8 +24,6 @@ interface JobRecord {
 }
 
 /** Private host limits, deliberately below the engine protocol's general limits. */
-const REQUEST_BYTES = 4 * 1024 * 1024;
-const RESPONSE_BYTES = 8 * 1024 * 1024;
 const STDERR_BYTES = 16 * 1024;
 const CLEANUP_MS = 5_000;
 
@@ -91,12 +91,15 @@ export async function destroyContainer(container: Container): Promise<void> {
  * the caller must validate the engine's versioned evaluator response.
  * Unit tests cover orchestration, not the provider's isolation guarantees.
  */
-export class ContainerEvaluationJob {
+class ContainerExecutionJob {
   private readonly cancellation = new AbortController();
   private activeRun?: Promise<Uint8Array>;
   private cancellationWork?: Promise<void>;
 
-  constructor(private readonly context: Pick<DurableObjectState, 'container' | 'storage'>) {}
+  constructor(
+    private readonly context: Pick<DurableObjectState, 'container' | 'storage'>,
+    private readonly kind: ExecutionKind,
+  ) {}
 
   run(
     request: Uint8Array,
@@ -167,16 +170,17 @@ export class ContainerEvaluationJob {
   ): Promise<Uint8Array> {
     const container = this.context.container;
     if (!container) throw new ContainerJobFailure('ISOLATION_UNAVAILABLE');
-    const image = container.images.kiln;
+    const profile = EXECUTION_PROFILES[this.kind];
+    const image = container.images[profile.image];
     if (
       typeof image !== 'string' ||
       image.length > 512 ||
       !/^[a-zA-Z0-9._:/-]+@sha256:[a-f0-9]{64}$/.test(image) ||
       !(request instanceof Uint8Array) ||
       request.byteLength === 0 ||
-      request.byteLength > REQUEST_BYTES ||
-      !boundedInteger(controls.deadlineMs, 60_000) ||
-      !boundedInteger(controls.maxResponseBytes, RESPONSE_BYTES)
+      request.byteLength > profile.requestBytes ||
+      !boundedInteger(controls.deadlineMs, profile.deadlineMs) ||
+      !boundedInteger(controls.maxResponseBytes, profile.responseBytes)
     )
       throw new ContainerJobFailure('INPUT_INVALID');
     if (controls.signal?.aborted) throw new ContainerJobFailure('CANCELLED');
@@ -238,11 +242,11 @@ export class ContainerEvaluationJob {
         // A fallback for abandoned requests, never a substitute for the watchdog.
         await container.setInactivityTimeout(120_000);
         check();
-        const process = await container.exec(['/usr/local/bin/node', '/opt/kiln/evaluate.mjs'], {
+        const process = await container.exec(['/usr/local/bin/node', profile.entry], {
           // Native exec requires numeric uid:gid; the pinned image's node user
           // is 1000:1000. This selects file ownership, not an isolation boundary.
           user: '1000:1000',
-          env: { KILN_RENDER: 'cpu' },
+          env: profile.env,
           stdin: 'pipe',
           stdout: 'pipe',
           stderr: 'pipe',
@@ -324,5 +328,17 @@ export class ContainerEvaluationJob {
       await this.context.storage.setAlarm(Date.now() + 30_000);
       throw new ContainerJobFailure('CLEANUP_FAILED');
     }
+  }
+}
+
+export class ContainerEvaluationJob extends ContainerExecutionJob {
+  constructor(context: Pick<DurableObjectState, 'container' | 'storage'>) {
+    super(context, 'evaluation');
+  }
+}
+
+export class ContainerRenderJob extends ContainerExecutionJob {
+  constructor(context: Pick<DurableObjectState, 'container' | 'storage'>) {
+    super(context, 'render');
   }
 }

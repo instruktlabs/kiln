@@ -3,7 +3,7 @@ import { before, test } from 'node:test';
 import { fileURLToPath } from 'node:url';
 import { build } from 'esbuild';
 
-let handleEvaluationRequest;
+let handleEvaluationRequest, handleRenderRequest;
 before(async () => {
   const output = new URL('../../.cache/hosted-evaluation-request/handler.mjs', import.meta.url);
   await build({
@@ -13,7 +13,7 @@ before(async () => {
     format: 'esm',
     platform: 'node',
   });
-  ({ handleEvaluationRequest } = await import(output));
+  ({ handleEvaluationRequest, handleRenderRequest } = await import(output));
 });
 
 function request(options = {}) {
@@ -31,6 +31,36 @@ function request(options = {}) {
     signal: options.signal,
   });
 }
+
+test('private rendering admits its own bounds but denies evaluation routes and caller authority', async () => {
+  const url = 'http://kiln-renderer.internal/render';
+  let calls = 0;
+  const job = {
+    run: async (bytes, controls) => {
+      calls++;
+      assert.equal(controls.maxResponseBytes, 20 * 1024 * 1024);
+      return bytes;
+    },
+  };
+  const valid = await handleRenderRequest(
+    request({ url, headers: { 'x-kiln-max-response-bytes': String(20 * 1024 * 1024) } }),
+    job,
+  );
+  assert.equal(valid.status, 200);
+  assert.equal(await valid.text(), '{}');
+  for (const options of [
+    { url: 'http://kiln-evaluator.internal/evaluate' },
+    { headers: { 'x-kiln-deadline-ms': '30001' } },
+    { headers: { 'content-length': String(6 * 1024 * 1024 + 1) } },
+    { headers: { 'x-kiln-max-response-bytes': String(20 * 1024 * 1024 + 1) } },
+    { headers: { 'x-image': 'other' } },
+    { headers: { authorization: 'Bearer PRIVATE' } },
+  ]) {
+    const result = await handleRenderRequest(request({ url, ...options }), job);
+    assert(result.status >= 400);
+  }
+  assert.equal(calls, 1);
+});
 
 test('private evaluator forwards only bounded bytes and controls and waits for the job to settle', async () => {
   let entered, finish;

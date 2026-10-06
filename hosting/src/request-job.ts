@@ -1,11 +1,12 @@
 import { ContainerJobFailure, destroyContainer } from './container-job';
 import { HttpFailure, privateResponse, readBounded } from './http';
+import { EXECUTION_PROFILES, type ExecutionKind } from './execution-profiles';
 
 interface RequestRecord {
   state: 'running' | 'closing' | 'finished';
   tenant?: string;
   deadlineAt: number;
-  children: string[];
+  children: { id: string; kind: ExecutionKind }[];
   activeChild?: string;
 }
 
@@ -13,9 +14,12 @@ export interface NativeRequestPorts {
   publicOrigin: string;
   storageInterceptor: Fetcher;
   evaluationInterceptor: Fetcher;
+  renderInterceptor: Fetcher;
   storage(tenant: string, request: Request): Promise<Response>;
   evaluate(id: string, request: Request): Promise<Response>;
   cancelEvaluation(id: string): Promise<void>;
+  render(id: string, request: Request): Promise<Response>;
+  cancelRender(id: string): Promise<void>;
 }
 
 const MCP_HEADERS = new Set([
@@ -184,6 +188,11 @@ export class NativeRequestJob {
         signal,
       );
       check();
+      await untilAbort(
+        container.interceptOutboundHttp('kiln-renderer.internal', this.ports.renderInterceptor),
+        signal,
+      );
+      check();
       container.start({
         image,
         enableInternet: false,
@@ -283,9 +292,22 @@ export class NativeRequestJob {
     return untilAbort(pending, signal);
   }
 
-  async evaluateRequest(request: Request): Promise<Response> {
-    if (request.url !== 'http://kiln-evaluator.internal/evaluate' || request.method !== 'POST')
-      throw new HttpFailure(400, 'Invalid evaluation request');
+  evaluateRequest(request: Request): Promise<Response> {
+    return this.executionRequest('evaluation', request);
+  }
+
+  renderRequest(request: Request): Promise<Response> {
+    return this.executionRequest('render', request);
+  }
+
+  private cancelChild(kind: ExecutionKind, id: string): Promise<void> {
+    return kind === 'evaluation' ? this.ports.cancelEvaluation(id) : this.ports.cancelRender(id);
+  }
+
+  private async executionRequest(kind: ExecutionKind, request: Request): Promise<Response> {
+    const profile = EXECUTION_PROFILES[kind];
+    if (request.url !== profile.url || request.method !== 'POST')
+      throw new HttpFailure(400, 'Invalid execution request');
     const headers = checkHeaders(request, EVALUATION_HEADERS, true);
     const id = crypto.randomUUID();
     const record = await this.context.storage.transaction(async (tx) => {
@@ -295,8 +317,8 @@ export class NativeRequestJob {
       if (record?.state !== 'running' || Date.now() >= record.deadlineAt)
         throw new HttpFailure(409, 'Native request is not active');
       if (record.activeChild || record.children.length >= 8)
-        throw new HttpFailure(429, 'Evaluation limit reached');
-      record.children.push(id);
+        throw new HttpFailure(429, 'Execution limit reached');
+      record.children.push({ id, kind });
       record.activeChild = id;
       await tx.put('request', record);
       return record;
@@ -306,19 +328,20 @@ export class NativeRequestJob {
     try {
       this.check();
       const requested = Number(headers.get('x-kiln-deadline-ms'));
-      if (!Number.isSafeInteger(requested) || requested < 1 || requested > 60_000)
-        throw new HttpFailure(400, 'Invalid evaluation limit');
+      if (!Number.isSafeInteger(requested) || requested < 1 || requested > profile.deadlineMs)
+        throw new HttpFailure(400, 'Invalid execution limit');
       const remaining = Math.min(requested, record.deadlineAt - Date.now());
       if (remaining < 1) throw new HttpFailure(504, 'Native request timed out');
       headers.set('x-kiln-deadline-ms', String(remaining));
-      const pending = this.ports
-        .evaluate(id, new Request(request, { headers, signal }))
-        .then((result) => {
-          if (signal.aborted) void result.body?.cancel().catch(() => {});
-          return result;
-        });
+      const incoming = new Request(request, { headers, signal });
+      const execution =
+        kind === 'evaluation' ? this.ports.evaluate(id, incoming) : this.ports.render(id, incoming);
+      const pending = execution.then((result) => {
+        if (signal.aborted) void result.body?.cancel().catch(() => {});
+        return result;
+      });
       response = await untilAbort(pending, signal);
-      await cleanupChild(this.ports.cancelEvaluation(id));
+      await cleanupChild(this.cancelChild(kind, id));
       await this.context.storage.transaction(async (tx) => {
         const current = await tx.get<RequestRecord>('request');
         if (current?.activeChild === id) {
@@ -369,7 +392,7 @@ export class NativeRequestJob {
       if (!container) throw new ContainerJobFailure('CLEANUP_FAILED');
       const results = await Promise.allSettled([
         destroyContainer(container),
-        ...record.children.map((id) => cleanupChild(this.ports.cancelEvaluation(id))),
+        ...record.children.map(({ id, kind }) => cleanupChild(this.cancelChild(kind, id))),
       ]);
       if (results.some((result) => result.status === 'rejected'))
         throw new ContainerJobFailure('CLEANUP_FAILED');

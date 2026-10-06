@@ -65,8 +65,9 @@ fallback to this entry.
 
 ## Software-rendering candidate
 
-`Dockerfile.software` uses the same four-file context and evaluator entry, adding
-Mesa's software Vulkan implementation. Copy it into the context as `Dockerfile`.
+`Dockerfile.software` extends the four-file evaluator context with the built
+`native-render.mjs` and `render.mjs`, for exactly six files. It adds Mesa's software
+Vulkan implementation. Copy it into the context as `Dockerfile`.
 Build with `--platform linux/amd64 --provenance=false` to retain the directly
 addressable runtime manifest. The final immutable image digest, rather than the
 Dockerfile alone, identifies installed OS and npm dependencies. No probe script,
@@ -98,6 +99,43 @@ That run uses the public RC archive and therefore complements, rather than
 replaces, the exact-stable local receipt above. The stable image's retained npm
 lock also returned zero known findings in an `npm audit --omit=dev` on 6 October.
 No cloud resource was created for this image preparation.
+
+## One-shot software render entry
+
+The current software image includes `/opt/kiln/render.mjs`, a fixed one-shot
+producer selected only by `KilnRenderJob`. The private coordinator sends GLB bytes
+and view options through the versioned renderer port. The entry validates the
+request and self-contained GLB before loading graphics, explicitly selects the
+pinned Mesa ICD, emits bounded JSON and exits. It opens no listener and receives
+no source program, tenant information, storage binding or credentials.
+
+After building the hosting bundles, put `.cache/hosted-worker/native-render.mjs`
+and `hosting/container/render.mjs` into the otherwise unchanged minimal software
+context. Verify the built file against `native-render-build.json`. Build for
+Linux AMD64 without provenance, then run:
+
+```sh
+node hosting/scripts/smoke-native-render.mjs kiln-software-entry:local-v1
+```
+
+The script creates and removes one uniquely named offline local container with
+two CPUs, 4 GiB memory, 128 PIDs, dropped capabilities and no privilege escalation.
+The fixed trusted fixture is passed over stdin, without a workspace mount. It
+exercises the actual renderer entry through the installed private port and decodes
+eight 128px PNGs: six views across three backdrops, a beauty image and an explicit
+camera view. Each retains red/green material evidence. Request identity, exact
+camera metadata and malformed-input rejection are checked. The entry succeeds
+without inheriting the image's Vulkan environment. CI runs the same check.
+
+Local final image manifest
+`sha256:64022900f0c298668076db054c44e019dad6a3813751a92dec7a06ceb734fe24`
+passes this procedure with the exact published stable archive. Its dependency
+lock remains `fdcb5cd754cdb78de52eb530efb9a993a30c8742e83c939103edc6112fd77ba1`.
+Receipts, PNGs, inventories and the six-file context receipt are retained under
+`.cache/software-render-entry/final-qualification/` and its parent directory.
+The test container's removal was independently read back. No cloud upload or
+execution occurred. The newly integrated coordinator/render job path still needs
+provider qualification; the earlier twelve-case trial used the historical image.
 
 ## Private MCP coordinator image
 
@@ -142,5 +180,13 @@ tools. Its retained dependency lock SHA-256 is
 `f635b9ba48046e4fdb265eb980df55cf1303c4bc0fd109db477ef870ef0b273f`.
 Both the hosting lock and generated image lock reported zero known npm audit
 findings. This image has not been uploaded or qualified on Cloudflare. Storage,
-child evaluation dispatch, global admission and software-renderer integration
-remain prerequisites for an end-to-end hosted candidate.
+child evaluation/render dispatch and global admission are now implemented and
+locally tested; the combined deployed path remains an end-to-end qualification
+requirement. The historical coordinator image above predates render-port injection
+and must not be used as the integrated launch candidate.
+
+The render-enabled coordinator was rebuilt locally as manifest
+`sha256:029c4fba6f0521a5a18c9dde364d07b5ffc076fe4d988358868950de40134b66`.
+Its exact stable archive, unchanged dependency lock and all six coordinator checks
+pass. The receipt is `.cache/native-host-render/qualification/receipt.json`.
+It has not been uploaded to Cloudflare.

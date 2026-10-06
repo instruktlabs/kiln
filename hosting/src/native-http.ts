@@ -27,9 +27,9 @@ export class NativeHttpClient {
   constructor(
     private readonly options: NativeStorageOptions = {},
     private readonly label = 'Storage',
-    private readonly service: 'storage' | 'evaluator' = 'storage',
+    private readonly service: 'storage' | 'evaluator' | 'renderer' = 'storage',
   ) {
-    if (service !== 'storage' && service !== 'evaluator')
+    if (service !== 'storage' && service !== 'evaluator' && service !== 'renderer')
       throw new Error('Invalid private service');
     this.origin = `http://kiln-${service}.internal`;
     this.timeoutMs = options.timeoutMs ?? 15_000;
@@ -46,7 +46,9 @@ export class NativeHttpClient {
       url.hash ||
       !(this.service === 'evaluator'
         ? path === '/evaluate'
-        : path.startsWith('/internal/') || /^\/mcp\/artifacts\/[a-f0-9]{32}$/.test(path))
+        : this.service === 'renderer'
+          ? path === '/render'
+          : path.startsWith('/internal/') || /^\/mcp\/artifacts\/[a-f0-9]{32}$/.test(path))
     )
       throw new Error('Invalid private service path');
     if (
@@ -58,7 +60,7 @@ export class NativeHttpClient {
       throw new Error('Invalid storage size limit');
     const outgoing = new Headers(headers);
     const allowedHeaders =
-      this.service === 'evaluator'
+      this.service !== 'storage'
         ? ['content-type', 'x-kiln-deadline-ms', 'x-kiln-max-response-bytes']
         : ['content-type', 'x-artifact-name', 'x-artifact-sha256'];
     for (const name of outgoing.keys())
