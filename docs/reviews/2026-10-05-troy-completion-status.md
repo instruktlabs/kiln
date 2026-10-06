@@ -1,5 +1,10 @@
 # Kiln and Troy completion status, 5 October 2026
 
+Historical pre-publication checkpoint: the stage-36/38 measurements and pending
+release statements below retain their original scope. Troy is now public at
+runtime 07; use the [maintained status](../../packs/troy/STATUS.md) and
+[reconciliation record](2026-10-05-status-reconciliation.md) for current disposition.
+
 The hub work and in-progress source are on this computer. The current scene is source stage 38; the public artifact is `troy-20261005-02`. This computer owns development and asset authoring. The hub is reserved for isolated performance testing.
 
 Completed: connected coast/city terrain and ocean, procedural sand/rock detail, fleet arrival/unloading/formations, 48 archers with corrected poses, simple hands/grips, differentiated playable heroes, light/heavy attacks, stamina, blocking and bots. Shield rest is at the side; blocking raises it in front with the forearm across the inner plate. A/D strafe correctly. Left/right mouse attacks supplement J/K and touch. Primary controls remain visible; secondary controls start folded, as in Farm/Fab/Bridge.

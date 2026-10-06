@@ -1,13 +1,40 @@
-# Troy status, 5 October 2026
+# Troy status
 
-The hub work and in-progress source are on this computer. The current scene is source stage 38; the public artifact is `troy-20261005-02`. This computer owns development and asset authoring. The hub is reserved for isolated performance testing.
+Updated 5 October 2026, against main `7ed880f`.
 
-Completed: connected coast/city terrain and ocean, procedural sand/rock detail, fleet arrival/unloading/formations, 48 archers with corrected poses, simple hands/grips, differentiated playable heroes, light/heavy attacks, stamina, blocking and bots. Shield rest is at the side; blocking raises it in front with the forearm across the inner plate. A/D strafe correctly. Left/right mouse attacks supplement J/K and touch. Primary controls remain visible; secondary controls start folded, as in Farm/Fab/Bridge.
+Troy is published at `/scenes/troy/`, `/packs/troy/` and its normal gallery pages.
+The current runtime pin is `troy-20261005-07`. The maintained source is
+[scenes/packages/troy](../../scenes/packages/troy/README.md), with an explicit
+runtime-data hydration step for a clean checkout. Development is local; the hub
+is reserved for isolated performance testing.
 
-Stage 38 passes 265 scene tests, 14 actual browser input cases, and three public open/play/Exit cycles on each graphics backend with complete resource release. Twenty-one assets have normal gallery pages and 3D previews, CC0 downloads and actual captured pictures. The public scene and pack follow the other website entries.
+Delivered: connected coast/city terrain and ocean, procedural sand/rock detail,
+fleet arrival/unloading/formations, 720 ordinary actors and two heroes, corrected
+48-archer poses, simple hands/grips, differentiated playable Achilles/Hector,
+light/heavy attacks, stamina, blocking and bots. Shield rest is lateral; blocking
+raises it in front with the forearm across the inner plate. A/D strafe correctly.
+Mouse attacks supplement J/K and touch. Primary controls remain visible and
+secondary controls start folded consistently with the other Kiln scenes.
 
-The retained stage-36 quiet hub matrix measured 52 windows at 1440x900 balanced. All WebGPU case means met 60 FPS; its slowest mean was 62.26 FPS. WebGL2 later unloading measured 59.46–59.93 FPS. Frame tails remain above 16.7 ms, so this is not a locked-60 claim. GPU timestamps were unavailable. Samsung tablet minimal mode measured about 38–56 FPS. These timings qualify stage 36, not the later input/pose edits in stage 38.
+The public pack has CC0 Runtime and Editable asset downloads, saved source/revision
+resources and normal gallery previews. Browser scene code is MIT. Source packaging,
+startup transport/bundling, the horse-ear child revision, public text cleanup and
+the selected scene pictures have shipped. The private playfield-review prototype
+is superseded and retired.
 
-Engine typecheck, lint and focused checks pass. Broad local Windows runs retain one asset-import EPERM failure; two site fixtures cannot create file symlinks here. Their assertions remain intact. Exact-commit CI and the clean production build govern release readiness.
+Performance acceptance targets 60 FPS on the quiet hub at 1440x900 balanced,
+including combat and fleet transitions. Exact-candidate checks are retained;
+release 07 corrects text while preserving release 06 model/bank payloads.
+Frame tails remain, so this is not a locked-60 guarantee. Samsung reduced-tier
+measurements do not establish tablet 60 FPS. Earlier stage-36/38 results retain
+their original source scope in the
+[historical completion report](../../docs/reviews/2026-10-05-troy-completion-status.md).
 
-The endpoint is this environment and two-hero interaction. Full army casualties, projectile damage, boarding, wall climbing and an RTS campaign are outside it. The optional horse is supplied as an asset; its running-contact work remains outside the active scene.
+The delivered endpoint is this environment and two-hero interaction. Full army
+casualties/projectile damage, boarding, wall climbing, an RTS campaign and optional
+living-horse running contacts are outside it. The [current backlog](../../docs/backlog.md)
+records separate engine/package milestones and known limits.
+
+Use the current runtime and delivery manifests for subsequent changes.
+[HANDOFF.md](HANDOFF.md) gives the local continuation path; dated reviews and recovery
+archives preserve history rather than redefining the latest source.
