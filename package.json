@@ -249,6 +249,8 @@
     "plugin.json",
     ".claude-plugin/",
     ".codex-plugin/",
+    ".agents/plugins/",
+    "plugins/kiln-engine/",
     ".mcp.json",
     "scripts/create-workspace.mjs",
     "scripts/package-plugin.mjs",

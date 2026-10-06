@@ -1,0 +1,38 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "kiln-engine",
+  "version": "1.0.0-dev.0",
+  "description": "Set up a local Kiln workspace to create, inspect and revise editable 3D assets with Claude Code or Codex.",
+  "author": {
+    "name": "Instrukt Labs"
+  },
+  "homepage": "https://github.com/instruktlabs/kiln",
+  "repository": "https://github.com/instruktlabs/kiln",
+  "license": "MIT",
+  "keywords": [
+    "3d",
+    "glb",
+    "gltf",
+    "asset-generation",
+    "gamedev"
+  ],
+  "extensions": {
+    "com.openai": {
+      "interface": {
+        "displayName": "Kiln Engine",
+        "shortDescription": "Create editable 3D assets in a local workspace",
+        "longDescription": "Install the pinned Kiln engine and set up a workspace with local MCP tools and maintained authoring skills. Your coding agent supplies the model.",
+        "developerName": "Instrukt Labs",
+        "category": "Developer Tools",
+        "capabilities": [
+          "Read",
+          "Write"
+        ],
+        "defaultPrompt": [
+          "Set up a Kiln workspace for this coding agent.",
+          "Check and upgrade my existing Kiln workspace."
+        ]
+      }
+    }
+  }
+}

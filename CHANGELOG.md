@@ -20,6 +20,12 @@ from publishing a new installable package.
   without a TypeScript loader. Host isolation still requires its own readiness proof.
 - Windows asset saves retry transient directory-rename denials within a bounded
   delay, preserving atomic publication and existing immutable revisions.
+- The `kiln-engine` local plugin uses the Instrukt Labs marketplace and installs a
+  pinned engine outside its disposable cache. It registers setup only; managed
+  workspaces own the authoring skills and one MCP server. Upgrades preserve stores
+  and refuse conflicts. The npm archive includes the small bundle and both catalogs.
+  Replacing an older `kiln@kiln` installation requires the explicit plugin migration;
+  public directory submission and hosted access remain separate release work.
 
 - Blind-run receipts recognize OpenCode's recorded code-mode MCP calls and AGY's
   generic MCP dispatcher without inferring execution from source or output text.

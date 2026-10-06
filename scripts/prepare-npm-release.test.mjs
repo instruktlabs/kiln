@@ -266,6 +266,7 @@ const checks = [
   'sdk-subprocess-render',
   'compiled-evaluator-worker',
   'discovery-stability-labels',
+  'local-plugin-bundle',
   'npm-mcp-entry',
   'packaged-node-worker',
   'community-exporter-textured-subprocess',

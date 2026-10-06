@@ -376,10 +376,55 @@ server session; changing the file requires a new session. The default remains
 neutral authoring. See [host requirements](migration.md#migrate-evaluator-integrations-together)
 for the binding format and task/asset lineage boundary.
 
-The Claude plugin manifest also launches the Node bundle. A plugin clone alone does
-not establish that its runtime dependencies were installed: verify tool discovery
-and a render before considering that path ready. Use project setup when the host
-cannot install the plugin's dependencies.
+The legacy root plugin manifests launch the Node bundle from an engine installation.
+The v1 local plugin below uses a smaller bundle and creates an explicit workspace.
+
+## Local Claude Code and Codex plugins
+
+**The current branch is a development candidate.** The `v1.0.0` tag and npm release
+must exist before using these release commands. Maintainers qualify development
+bundles with the reviewed local engine archive instead.
+
+The plugin is `kiln-engine` in the Instrukt Labs marketplace `instruktlabs`. Its
+cache contains setup guidance and an installer, while the pinned engine and asset
+workspaces stay in persistent directories outside that cache. Installing the plugin
+does not start a second global Kiln MCP server.
+
+For Claude Code:
+
+```sh
+claude plugin marketplace add instruktlabs/kiln#v1.0.0 --sparse .claude-plugin plugins/kiln-engine
+claude plugin install kiln-engine@instruktlabs
+```
+
+For Codex:
+
+```sh
+codex plugin marketplace add instruktlabs/kiln --ref v1.0.0 --sparse .agents/plugins --sparse plugins/kiln-engine
+codex plugin add kiln-engine@instruktlabs
+```
+
+Ask your agent to set up a Kiln asset workspace. The setup skill installs the exact
+package version in `runtime.json` through npm, with optional dependencies included
+and lifecycle scripts disabled. Node.js and npm are required; an engine checkout,
+Bun and a separate model API key are not. An existing working workspace can be used
+as-is. Otherwise choose an empty directory and follow its generated `START.md` to
+open a new authoring session. Accept the host's project/MCP trust prompts, then
+verify `kiln_discover({capabilities:true})` on `kiln_workspace` and an actual render.
+
+The workspace owns its author/refine/QA skills and MCP configuration. The plugin
+registers only setup, avoiding duplicate authoring skills and servers. It does not
+redirect saved assets or rewrite an existing workspace when its cached version
+changes. For an intended engine update, use the new plugin's helper with `--check`
+and `--upgrade`, following its bundled `references/plugin-install.md`; customized
+managed files require explicit conflict resolution. Select the desired release tag
+when changing the marketplace source. Removing the plugin leaves the persistent
+runtime and authored assets in place.
+
+An older `kiln@kiln` installation can expose a separate global `kiln` server.
+Disable or uninstall that old plugin in the relevant host before using the new
+workspace workflow, after recording any custom store paths. Do not delete its
+source store. See [the v1 migration notes](migration.md#local-plugin-transition).
 
 ## Verify a distribution as a contributor
 
@@ -393,6 +438,17 @@ and publishes nothing. It packs the current files, installs without devDependenc
 in a temporary directory, tests CSG and UV WASM, CPU images, MCP discovery, reference
 editing, persistence across restart, and exact source export. It retains a JSON
 receipt and artifacts at the printed path. Normal unit tests do not run npm installs.
+
+The maintained local plugin is generated with
+`node scripts/package-local-plugin.mjs FRESH_OUTPUT_DIRECTORY`.
+Review the generated files before copying them into `plugins/kiln-engine`, then run
+`node scripts/package-local-plugin.mjs plugins/kiln-engine --check`.
+The unit suite checks those bytes, including the version pin and complete setup
+reference. The package smoke checks that the installed npm archive contains both
+catalogs and every file named by the plugin's hash inventory. Validate the plugin
+itself with `claude plugin validate plugins/kiln-engine --strict`, in addition to
+the marketplace manifest. A local-path Claude installation loads in place; use a
+Git-backed marketplace to qualify a copied cache installation.
 
 To test an existing package instead of packing the checkout, run
 `node scripts/smoke-package.mjs --tarball /absolute/candidate.tgz`. For Linux, run

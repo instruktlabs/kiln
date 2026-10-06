@@ -1,19 +1,19 @@
 {
   "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
-  "name": "kiln",
-  "description": "Kiln: local tools and skills for building, inspecting and revising procedural 3D assets.",
+  "name": "instruktlabs",
+  "description": "Instrukt Labs developer tools, including Kiln Engine for editable 3D assets.",
   "owner": {
     "name": "Instrukt Labs"
   },
   "plugins": [
     {
-      "name": "kiln",
-      "description": "Build 3D assets, inspect selected views, edit saved source revisions and export GLB files with your coding agent.",
+      "name": "kiln-engine",
+      "description": "Set up a pinned local Kiln engine and an asset workspace with MCP tools and authoring skills.",
       "author": {
-        "name": "Matthew Kissinger"
+        "name": "Instrukt Labs"
       },
       "category": "development",
-      "source": "./"
+      "source": "./plugins/kiln-engine"
     }
   ]
 }

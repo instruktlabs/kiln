@@ -25,7 +25,7 @@ published yet.
 | H3 | Artifact lifecycle | Pending: durable source/revisions/GLBs/materials, authorized downloads, deletion, saved quotas and seven-day unsaved retention |
 | H4 | Capacity and operations | Pending: quotas/admission/cancellation, logs without credentials, load/cost measurements, alerts, health/build identity and rollback |
 | H5 | Production deployment | Pending: approved deployment at `kiln.instruktlabs.com`; live authenticated create/edit/render/save/download/reconnect flow |
-| L1 | Local Claude Code and Codex plugins | In progress: persistent exact-version runtime/workspace bootstrap passes focused tests and a real development-archive probe; small distributions, maintained skill wiring, strict validation and actual harness-cached installs remain open |
+| L1 | Local Claude Code and Codex plugins | In progress: persistent bootstrap, small pinned bundle, maintained setup skill and catalogs; strict Claude manifest validation, installed npm bundle and isolated Codex cached install pass; remote marketplace installs, cached workspace lifecycle and final release distribution remain open |
 | L2 | Public OpenAI plugin | Pending: compliant ZIP, verified publisher/domain, working MCP, privacy/support pages, review cases/video/account, submission receipt |
 | L3 | Anthropic directory | Pending: owned marketplace publication, final source path, account eligibility, reviewer materials and submission receipt |
 | V1 | Exact candidate verification | In progress: development builds have pinned local and CI evidence; final RC/version archive and target-host flows remain open |
@@ -304,6 +304,65 @@ redirected-store guard was added; the final helper's separate 23-test run and
 repeated ten-check installed-archive probe pass. Exact-head CI is still required
 for this implementation slice. Engine source and its coverage thresholds did not
 change.
+
+### Small local plugin bundle and owned catalogs
+
+Added `plugins/kiln-engine`, generated from the engine version, the standalone
+bootstrap and the maintained setup skill with its new plugin reference. It has a
+portable root manifest, a Claude manifest and a hash inventory. Both owned catalogs
+use `instruktlabs` and select this subdirectory. No engine implementation, examples,
+dependencies or assets are present in the cached bundle. The plugin registers only
+setup; the workspace supplies author/refine/QA skills and its one authoring MCP
+server. This implements the plan's pinned local launcher through managed workspace
+configuration instead of also declaring a global server.
+
+Updated the maintained skill and its two registered copies. The new reference
+explains persistent runtime locations, exact archive qualification, existing
+workspace reuse and conflict-preserving upgrades. The install/migration guides
+document the `kiln@kiln` transition and clearly mark the v1 release commands as
+unavailable until the release tag and npm package exist. The hosted public OpenAI
+candidate remains separate and will require its own remote MCP connection.
+
+The initial package-generator tests failed against the stub, and package/receipt
+tests first rejected the absent bundle and missing required receipt check. The
+implemented generator refuses existing output, detects byte drift and extra
+components in check mode, and has eight passing contract tests. It is checked by
+the normal unit suite. The npm archive now includes both catalogs and their complete
+target bundle; platform smoke receipts require `local-plugin-bundle` and verify
+each inventoried file against its digest.
+
+Validation for this slice: typecheck/lint and skill alignment pass; the full offline
+suite passed 3,277 tests, two platform skips, no failures across 409 files
+(`.cache/v1-local-plugin-bundle-tests.log`). The real installed Windows archive
+passes 25 checks, including the plugin bundle, SDK declarations and CLI/MCP flows.
+Its SHA-256 is `48f1f91887e80769897f4d4324401a4c496f95e6adfeb0ce3d7ff7eacc0fa1ff`;
+receipt: `.cache/v1-local-plugin-bundle-package.log`. Documentation edits after
+that archive still need the next exact-head CI archive.
+
+Claude's strict plugin and marketplace manifest validation reports no warnings or
+errors. Codex CLI 0.160.0 installed and enabled the portable plugin from the local
+catalog into an isolated profile's real versioned cache. Receipt:
+`.cache/v1-codex-local-plugin-install.json`. That isolated temporary profile emitted
+a helper-PATH warning; plugin installation succeeded, but this alone is not a live
+authoring-session qualification. The next probe uses a non-temporary isolated
+profile and the Git-backed marketplace, with no normal-profile mutation or model
+calls. Claude's local-path mode is loaded in place, so its copied cache must be
+qualified with a Git-backed source.
+
+Current primary references: [OpenAI portable packaging and marketplace sources](https://developers.openai.com/plugins/build/plugins),
+[Claude plugin loading](https://code.claude.com/docs/en/plugins/loading), and
+[Claude marketplace source formats](https://code.claude.com/docs/en/plugins/marketplace-reference).
+
+### Bootstrap CI shutdown retry
+
+Bootstrap commit `41738812bc9f2b86119caec17f843473a1047c24` completed
+[CI run 37434989839](https://github.com/instruktlabs/kiln/actions/runs/37434989839)
+with eleven jobs passing initially. Intel macOS passed its installed package work
+through the npm MCP entry, then exceeded the five-second stdin-close check. The
+unchanged job rerun passed, making the run successful. This is an intermittent
+shutdown failure followed by a passing retry, not a diagnosed engine fix. The next
+smoke script retains the same bound and adds the exact launch command and captured
+stderr to any repeat failure. The final release still needs its own platform proof.
 
 ### Release authorization timing
 

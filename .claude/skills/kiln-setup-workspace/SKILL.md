@@ -8,7 +8,7 @@ metadata:
 
 # Set up a workspace for asset authoring
 
-This repository is the engine. Asset authoring happens in a separate workspace, and the two are different tasks with different tools. Establish which one is being asked before running anything.
+Kiln's engine installation and its asset workspaces serve different tasks. Establish whether the user wants asset authoring or engine development before running anything.
 
 Authoring an asset needs a workspace. Changing the engine's own behaviour does not; read `AGENTS.md` at the repository root instead and stay in the checkout.
 
@@ -18,13 +18,15 @@ Do not author assets inside the engine checkout. The authoring skills assume a w
 
 ## Create the workspace
 
+When this skill comes from the **Kiln Engine local plugin**, its plugin root contains `runtime.json` and `scripts/setup-workspace.mjs`. Follow [plugin installation and upgrades](references/plugin-install.md) to install the pinned engine and configure a separate workspace. Do not run the checkout command below from a plugin cache. The plugin registers setup only; the workspace supplies its authoring skills and `kiln_workspace` server.
+
 Choose an absolute path to an empty directory outside the checkout.
 
 ```bash
 node scripts/create-workspace.mjs /absolute/empty-workspace --harness claude
 ```
 
-From an installed package, the equivalent is `kiln-init /absolute/empty-workspace --harness claude`. Author, refine and QA skills are installed by default; `--skills compose,batch` adds the optional scene-composition and trial-dispatch workflows. Ask the user which harness they use rather than assuming; the choice writes different configuration and cannot be changed afterwards without a fresh workspace.
+From an installed package, the equivalent is `kiln-init /absolute/empty-workspace --harness claude`. Author, refine and QA skills are installed by default; `--skills compose,batch` adds the optional scene-composition and trial-dispatch workflows. Use the harness already selected by the user or current host; ask only when it is unknown. The choice writes different configuration and cannot be changed afterwards without a fresh workspace.
 
 CLI/MCP workspaces use the shared skills under `skills/`. Kiln's optional built-in Strands agent adds its workflow internally, outside that directory. Do not copy its system prompt, native workflow skill or completion protocol into another harness's skills or instructions. This applies to manual setup and plugin installs too; the engine's `src/agent/` directory is not a skill source.
 

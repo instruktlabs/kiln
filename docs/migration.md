@@ -33,6 +33,28 @@ Experimental implicit modeling and the opt-in community exporter retain their
 labels and limitations. The shared tool registry, Discovery metadata and dedicated
 documentation remain authoritative for those boundaries.
 
+### Local plugin transition
+
+The v1 local plugin is `kiln-engine@instruktlabs`. Its small cached bundle registers
+setup only; the generated workspace owns its `kiln_workspace` MCP server and
+authoring skills. It installs an exact engine version in persistent storage outside
+the plugin cache. The [installation guide](install.md#local-claude-code-and-codex-plugins)
+documents the release commands and current development status.
+
+If you installed the earlier `kiln@kiln` plugin, record its custom source/asset store
+paths before disabling or uninstalling it through the host. That global `kiln`
+server is a different installation from a managed workspace; do not leave both
+active and silently choose one. Removing the plugin is not a request to delete
+saved source, engine installations or exported assets. Add the new marketplace and
+plugin explicitly. A checkout used for engine development can retain its own
+project MCP configuration; authoring takes place in a separate workspace.
+
+Installing or updating the new plugin leaves existing managed workspaces unchanged.
+Reopen a current workspace normally, or intentionally run its new plugin helper's
+`--check` and `--upgrade` flow. Resolve modified managed files before upgrading and
+restart the harness. Plugin-cache cleanup cannot invalidate the workspace's engine
+path, because the runtime is stored separately.
+
 ### Engine behavior
 
 - **Full optimization.** `optimize: 'full'` replaces flatten/join with rigid-group

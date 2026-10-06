@@ -131,7 +131,11 @@ async function connect(server, cwd, store) {
       if (child.exitCode !== null || child.signalCode !== null) return done();
       const timer = setTimeout(() => {
         child.kill();
-        fail(new Error('MCP process did not exit after stdin closed'));
+        fail(
+          new Error(
+            `MCP process did not exit within 5000 ms after stdin closed: ${JSON.stringify(server)}; exit=${child.exitCode}, signal=${child.signalCode}; stderr: ${stderr}`,
+          ),
+        );
       }, 5000);
       child.once('exit', () => {
         clearTimeout(timer);
@@ -218,6 +222,35 @@ try {
   receipt.engineVersion = pkg.version;
   assert.equal(pkg.name, '@instruktlabs/kiln');
   assert.equal(pkg.bin['kiln-mcp'], './dist/mcp-server.mjs');
+  const plugin = join(runtime, 'plugins/kiln-engine');
+  const pluginJson = async (path) => JSON.parse(await readFile(join(plugin, path), 'utf8'));
+  const portablePlugin = await pluginJson('plugin.json');
+  assert.equal(
+    portablePlugin.$schema,
+    'https://agent-plugins.org/schemas/1.0.0/plugin.schema.json',
+  );
+  assert.equal(portablePlugin.name, 'kiln-engine');
+  assert.equal(portablePlugin.version, pkg.version);
+  assert.equal((await pluginJson('.claude-plugin/plugin.json')).version, pkg.version);
+  assert.deepEqual(await pluginJson('runtime.json'), { name: pkg.name, version: pkg.version });
+  assert.deepEqual(await readdir(join(plugin, 'skills')), ['kiln-setup-workspace']);
+  const pluginReceipt = await pluginJson('package-provenance.json');
+  assert.equal(pluginReceipt.kind, 'kiln-local-plugin');
+  assert.equal(pluginReceipt.engineVersion, pkg.version);
+  for (const [name, digest] of Object.entries(pluginReceipt.files))
+    assert.equal(
+      `sha256:${sha(await readFile(join(plugin, name)))}`,
+      digest,
+      `Plugin file ${name}`,
+    );
+  for (const catalog of ['.agents/plugins/marketplace.json', '.claude-plugin/marketplace.json']) {
+    const marketplace = JSON.parse(await readFile(join(runtime, catalog), 'utf8'));
+    assert.equal(marketplace.name, 'instruktlabs');
+    assert.equal(marketplace.plugins[0].name, portablePlugin.name);
+    const source = marketplace.plugins[0].source;
+    assert.equal(typeof source === 'string' ? source : source.path, './plugins/kiln-engine');
+  }
+  receipt.checks.push('local-plugin-bundle');
   // Check the installed tree too: CI consumers receive a prepacked archive,
   // so checking only this checkout's `npm pack` inventory would miss them.
   const docs = await readdir(join(runtime, 'docs'), { withFileTypes: true });

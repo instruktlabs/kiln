@@ -21,6 +21,8 @@ it('declares Node commands and the files needed by an installed workspace', asyn
     'src/**/*.mjs',
     'plugin.json',
     '.claude-plugin/',
+    '.agents/plugins/',
+    'plugins/kiln-engine/',
   ]) {
     expect(pkg.files).toContain(path);
   }
