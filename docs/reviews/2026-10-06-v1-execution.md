@@ -1421,3 +1421,51 @@ queried. After the owner started it, `docker info` successfully reported server
 service reconfiguration was needed. This resolves local image-build availability;
 it does not resolve the separate historical Bubblewrap namespace probe or qualify
 Cloudflare isolation.
+
+The corrected public-registry [run 37480967896](https://github.com/instruktlabs/kiln/actions/runs/37480967896)
+passed all seven jobs at `3a5d00a8a35f9434d42aae4d39ef5824916d9539`. Downloaded
+every receipt and verified `status=passed`, all 24 required checks, package name,
+RC version and the approved archive SHA-256. Linux covered Node 20.15.0, 22.2.0,
+22.23.3 and 24.20.0; Windows x64 and both macOS architectures covered Node 22.23.3.
+The Windows receipt now records npm 12.2.0. Evidence is retained under
+`.cache/registry-ci-37480967896/`. This closes the public-registry platform matrix,
+not stable publication or actual agent-harness plugin installation.
+
+The local Docker build subsequently passed its own two fresh-container fixtures.
+Its immutable image ID is
+`sha256:69aff70b4f0f80d2ff13549f4b55b1053fc1d8a6e25a00168ac4078a2ebd7b8a`;
+both GLBs match the Linux CI fixture's digest above. The local image's metadata,
+dependency lock and OS/runtime inventory are in `.cache/evaluation-image-local-evidence/`.
+Only the named test containers were removed; the qualified local image is retained.
+
+## Private Cloudflare availability candidate
+
+Prepared the bounded [probe and teardown plan](../../hosting/probe/README.md).
+It has no public HTTP routes or external bindings, uses five fixed sequential
+jobs, and atomically claims its run once. The first failure stops the batch;
+interrupted claims do not automatically spend again. The production image is
+unchanged; native boundary fixtures exist only in the separate probe Worker.
+Production bundle builds now reject both test and probe helpers.
+
+Three initial run-control tests failed before implementation and passed afterward.
+A fourth workerd integration check verifies loopback namespace routing, closed
+HTTP access and retained failure when no real container is bound. The full hosted
+suite passed **107/107**, all three TypeScript configurations and five production
+bundles passed, and repository lint passed. `@cloudflare/config@0.23.0` is a pinned
+private development dependency for validating the cf beta Build Output; it does
+not enter the engine package or production Worker bundle.
+
+The final probe Worker bundle is 13,190 bytes, SHA-256
+`6babbbb9073fbb4514b03675d73ee1387f30099cd6174cfca7ac8bc6515cc2e0`.
+`cf@1.0.0-beta.12 deploy --prebuilt --dry-run` succeeded for the prepared private
+Worker and `durable_object` container application. No upload, deployment, cron
+provisioning or live probe was performed. Its managed-registry image reference is
+the intended destination, not evidence that the image has been pushed. Retain the
+actual returned registry digest and deployed identities after the concrete owner
+approval. Estimated container metering is about $0.012 for the five-job worst-case
+runtime; the proposed total trial allowance is $1, not a provider-enforced cap.
+
+Availability is only the first provider gate. Native memory exhaustion, output
+floods, cancellation/deadline races, controller interruption recovery, CPU images,
+software Vulkan, measured startup/costs and authenticated storage/MCP integration
+remain separate required work before hosted launch.

@@ -1,0 +1,5 @@
+{
+  "extends": "./tsconfig.json",
+  "include": ["probe/**/*.ts", "src/container-job.ts"],
+  "exclude": []
+}

@@ -23,8 +23,8 @@ for (const entry of ['worker', 'tenant-worker', 'native-programs', 'native-asset
   });
   const bytes = result.outputFiles[0].contents;
   const inputs = Object.keys(result.metafile.inputs);
-  if (inputs.some((name) => /(?:^|\/)test\//.test(name.replaceAll('\\', '/')))) {
-    throw new Error('Production bundle includes test helpers');
+  if (inputs.some((name) => /(?:^|\/)(?:test|probe)\//.test(name.replaceAll('\\', '/')))) {
+    throw new Error('Production bundle includes test or probe helpers');
   }
   if (
     entry !== 'worker' &&

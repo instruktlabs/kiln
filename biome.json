@@ -12,6 +12,7 @@
       "hosting/test/**/*.{ts,mjs}",
       "hosting/scripts/**/*.mjs",
       "hosting/container/**/*.mjs",
+      "hosting/probe/**/*.ts",
       "render-service/src/**/*.mjs",
       "render-service/test/**/*.mjs"
     ],
