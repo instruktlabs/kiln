@@ -17,6 +17,7 @@ on:
     paths:
       - 'examples/**'
       - 'site/**'
+      - 'scenes/**'
       - 'docs/**'
       - 'skills/**'
       - 'bun.lock'
@@ -30,6 +31,7 @@ on:
     paths:
       - 'examples/**'
       - 'site/**'
+      - 'scenes/**'
       - 'docs/**'
       - 'skills/**'
       - 'bun.lock'

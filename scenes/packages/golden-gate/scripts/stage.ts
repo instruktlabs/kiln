@@ -18,6 +18,7 @@ const BEHAVIOUR_FILE = 'data/BEHAVIOUR.md';
 import { laneDrift, roadGridFromBridge } from './layout';
 import { deckEnds } from './approaches';
 import { verifyCanonical } from './terrain-canonical';
+import { decodeUtf8, readUtf8 } from './utf8';
 import { BRIDGE_ASSET, BRIDGE_FULL, BRIDGE_LIBRARY, BRIDGE_LICENCE, BRIDGE_PINS, BRIDGE_SOURCE, STAGED_RELEASE, type BridgePin } from './release';
 
 export const TRADEMARK_NOTE = 'The Golden Gate Bridge name and likeness are trademarks of the Golden Gate Bridge, Highway and Transportation District. The CC0 dedication covers copyright in this model only and grants no trademark rights.';
@@ -100,7 +101,7 @@ export function checkVehicleLicence(type: VehicleType, text: string): void {
 /** Checks the MSFT_lod convention: LOD0 references LOD1 and LOD2, four named wheels at the root. */
 export function checkVehicleGlb(type: VehicleType, bytes: Uint8Array): void {
   const view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength), length = view.getUint32(12, true);
-  const json = JSON.parse(new TextDecoder().decode(bytes.subarray(20, 20 + length))) as { nodes: { name?: string; children?: number[]; extensions?: { MSFT_lod?: { ids: number[] } } }[]; scenes: { nodes: number[] }[]; extensionsRequired?: string[] };
+  const json = JSON.parse(decodeUtf8(bytes.subarray(20, 20 + length), `Vehicle ${type} GLB JSON`)) as { nodes: { name?: string; children?: number[]; extensions?: { MSFT_lod?: { ids: number[] } } }[]; scenes: { nodes: number[] }[]; extensionsRequired?: string[] };
   const root = json.nodes[json.scenes[0]!.nodes[0]!]!, children = (root.children ?? []).map(i => json.nodes[i]!);
   const lod0 = children.find(n => n.name === 'LOD0'), ids = lod0?.extensions?.MSFT_lod?.ids ?? [];
   if (!lod0 || ids.length !== 2 || json.nodes[ids[0]!]?.name !== 'LOD1' || json.nodes[ids[1]!]?.name !== 'LOD2') throw new Error(`Vehicle ${type}: LOD0 does not reference LOD1 and LOD2 through MSFT_lod`);
@@ -109,7 +110,7 @@ export function checkVehicleGlb(type: VehicleType, bytes: Uint8Array): void {
 }
 
 const sha256 = (bytes: Uint8Array) => createHash('sha256').update(bytes).digest('hex');
-const json = <T>(path: string): T => JSON.parse(readFileSync(path, 'utf8')) as T;
+const json = <T>(path: string): T => JSON.parse(readUtf8(path)) as T;
 
 interface TerrainFile { file: string; bytes: number; sha256: string; kind: string; tile_key: string | null; level: string; scene_bounds_xz_m: [number, number, number, number] | null; triangle_count: number; texture_size?: [number, number] | null; resolution?: [number, number]; metres_per_unit?: number; offset_m?: number }
 interface TerrainManifest {
@@ -182,7 +183,7 @@ export async function stageGoldenGate(args: readonly string[] = process.argv.sli
   // as in g1; the full tier is verified and recorded in the staging evidence only.
   const licencePath = resolve(options.bridge, BRIDGE_LICENCE.file), licenceBytes = readFileSync(licencePath);
   if (licenceBytes.length !== BRIDGE_LICENCE.bytes || sha256(licenceBytes) !== BRIDGE_LICENCE.sha256) throw new Error(`Bridge licence ${licencePath}: ${licenceBytes.length} B, SHA-256 ${sha256(licenceBytes).slice(0, 16)}; pinned ${BRIDGE_LICENCE.bytes} B, ${BRIDGE_LICENCE.sha256.slice(0, 16)}`);
-  const licence = new TextDecoder().decode(licenceBytes), fixup = licence.indexOf(BRIDGE_LICENCE.section);
+  const licence = decodeUtf8(licenceBytes, `Bridge licence ${BRIDGE_LICENCE.file}`), fixup = licence.indexOf(BRIDGE_LICENCE.section);
   if (!licence.includes('CC0-1.0') || !licence.includes(TRADEMARK_NOTE) || fixup < 0) throw new Error('Bridge licence lacks CC0, the trademark note or its fix-up section');
   const bridgeInputs: Record<string, unknown>[] = [{ file: relative(COMMONS, licencePath).split('\\').join('/'), bytes: licenceBytes.length, sha256: sha256(licenceBytes), section: BRIDGE_LICENCE.section }];
   const checkBridge = (id: string, spec: BridgePin) => {
@@ -280,7 +281,7 @@ export async function stageGoldenGate(args: readonly string[] = process.argv.sli
     add(glbPath, `vehicles/${type}.glb`, undefined, { licence: 'CC0-1.0', revision: provenance.revision, asset: provenance.asset, lod: 'MSFT_lod', ...(provenance.parentRevision ? { parentRevision: provenance.parentRevision, author: provenance.author, refinedBy: provenance.refinedBy } : {}) });
     const licence = [resolve(REVIEW2_VEHICLES, 'licenses', `${type}.ASSET-LICENSE.txt`), ...[`${type}.ASSET-LICENSE.txt`, 'ASSET-LICENSE.txt', `${type}-runtime.ASSET-LICENSE.txt`].map(n => resolve(dir, n))].find(p => existsSync(p));
     if (licence) {
-      checkVehicleLicence(type, readFileSync(licence, 'utf8'));
+      checkVehicleLicence(type, readUtf8(licence));
       add(licence, `licenses/vehicles/${type}.ASSET-LICENSE.txt`);
     } else write(`licenses/vehicles/${type}.ASSET-LICENSE.txt`, vehicleLicenceText(type, sha256(glbBytes)), `licenses/vehicles/${type}.ASSET-LICENSE.txt`, { note: 'generated: the author folder ships no licence file' });
     models.push({ id: `vehicle-${type}`, to: `vehicles/${type}.glb` });

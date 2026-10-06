@@ -1549,6 +1549,15 @@
       "srcsetWebp": "/media/scenes/golden-gate/g9-code5/golden-gate-scene-drive-320.webp 320w, /media/scenes/golden-gate/g9-code5/golden-gate-scene-drive-480.webp 480w, /media/scenes/golden-gate/g9-code5/golden-gate-scene-drive-672.webp 672w, /media/scenes/golden-gate/g9-code5/golden-gate-scene-drive-768.webp 768w, /media/scenes/golden-gate/g9-code5/golden-gate-scene-drive-1024.webp 1024w, /media/scenes/golden-gate/g9-code5/golden-gate-scene-drive-1440.webp 1440w",
       "srcsetAvif": "/media/scenes/golden-gate/g9-code5/golden-gate-scene-drive-320.avif 320w, /media/scenes/golden-gate/g9-code5/golden-gate-scene-drive-480.avif 480w, /media/scenes/golden-gate/g9-code5/golden-gate-scene-drive-672.avif 672w, /media/scenes/golden-gate/g9-code5/golden-gate-scene-drive-768.avif 768w, /media/scenes/golden-gate/g9-code5/golden-gate-scene-drive-1024.avif 1024w, /media/scenes/golden-gate/g9-code5/golden-gate-scene-drive-1440.avif 1440w",
       "inputPath": "media/scenes/golden-gate/g9-code5/golden-gate-scene-drive.png"
+    },
+    {
+      "src": "/media/scenes/foundry-floor/preview-20261005-01/foundry-floor-campus-arrival.webp",
+      "width": 1440,
+      "height": 925,
+      "alt": "The Foundry Floor campus entrance, with the head buildings and long fab halls, a glazed connecting canopy, roads, parking and planting.",
+      "srcsetWebp": "/media/scenes/foundry-floor/preview-20261005-01/foundry-floor-campus-arrival-320.webp 320w, /media/scenes/foundry-floor/preview-20261005-01/foundry-floor-campus-arrival-480.webp 480w, /media/scenes/foundry-floor/preview-20261005-01/foundry-floor-campus-arrival-672.webp 672w, /media/scenes/foundry-floor/preview-20261005-01/foundry-floor-campus-arrival-768.webp 768w, /media/scenes/foundry-floor/preview-20261005-01/foundry-floor-campus-arrival-1024.webp 1024w, /media/scenes/foundry-floor/preview-20261005-01/foundry-floor-campus-arrival-1440.webp 1440w",
+      "srcsetAvif": "/media/scenes/foundry-floor/preview-20261005-01/foundry-floor-campus-arrival-320.avif 320w, /media/scenes/foundry-floor/preview-20261005-01/foundry-floor-campus-arrival-480.avif 480w, /media/scenes/foundry-floor/preview-20261005-01/foundry-floor-campus-arrival-672.avif 672w, /media/scenes/foundry-floor/preview-20261005-01/foundry-floor-campus-arrival-768.avif 768w, /media/scenes/foundry-floor/preview-20261005-01/foundry-floor-campus-arrival-1024.avif 1024w, /media/scenes/foundry-floor/preview-20261005-01/foundry-floor-campus-arrival-1440.avif 1440w",
+      "inputPath": "media/scenes/foundry-floor/preview-20261005-01/foundry-floor-campus-arrival.png"
     }
   ],
   "archives": [

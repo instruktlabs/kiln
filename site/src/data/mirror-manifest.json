@@ -2300,6 +2300,11 @@
       "path": "media/scenes/golden-gate/g9-code5/golden-gate-scene-drive.png",
       "bytes": 728452,
       "sha256": "487793596f730d5424c1b25016fbc27408d6d2ab707c57343acbbc6a52b1bc56"
+    },
+    {
+      "path": "media/scenes/foundry-floor/preview-20261005-01/foundry-floor-campus-arrival.png",
+      "bytes": 106931,
+      "sha256": "b10146e32cb3f58ead9c977169f9e0059d994fb03fb40c838bcb4c04ff38181b"
     }
   ]
 }

@@ -53,7 +53,7 @@ it('registers the existing local skill tree for OpenCode and preserves edits whe
 it('defaults to core skills, supports optional skills, and refuses invalid setup before writing', async () => {
   const root = await mkdtemp(join(tmpdir(), 'kiln-bootstrap-'));
   try {
-    const task = join(root, 'assets cafÃ©');
+    const task = join(root, 'assets caf\u00e9');
     const invalid = run([task, '--harness', 'codex', '--skills', 'unknown'], root);
     expect(invalid.status).toBe(1);
     expect(await readdir(root)).toEqual([]);
@@ -80,7 +80,7 @@ it('repairs a moved workspace without replacing assets or silently overwriting e
   const root = await mkdtemp(join(tmpdir(), 'kiln-bootstrap-'));
   try {
     const before = join(root, 'before');
-    const after = join(root, 'after cafÃ©');
+    const after = join(root, 'after caf\u00e9');
     expect(run([before, '--harness', 'opencode'], root).status).toBe(0);
     await writeFile(join(before, 'keep.kiln.js'), '// authored source');
     await rename(before, after);

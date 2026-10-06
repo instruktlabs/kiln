@@ -6,7 +6,7 @@ import {randomUUID} from 'node:crypto';
 import {assetPath,verifyBytes,ASSET_BASE} from './mirror-core.mjs';
 import {resolveNpmCli,WRANGLER_VERSION} from './deploy.mjs';
 
-export function assetContentType(path){if(path.endsWith('.zip'))return 'application/zip';if(path.endsWith('.glb'))return 'model/gltf-binary';throw Error('Unsupported asset upload type: '+path);}
+export function assetContentType(path){if(path.endsWith('.zip'))return 'application/zip';if(path.endsWith('.glb'))return 'model/gltf-binary';if(path.endsWith('.png'))return 'image/png';throw Error('Unsupported asset upload type: '+path);}
 /** New immutable keys only. Existing different bytes are never overwritten. */
 export async function publishAssets({mirror,records,request=fetch,upload,log=()=>{}}){
  const seen=new Set();

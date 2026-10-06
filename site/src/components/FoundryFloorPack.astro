@@ -7,12 +7,14 @@ import { modelName, harnessName, groupAssetAttribution } from "../lib/attributio
 import ResponsiveImage from "./ResponsiveImage.astro";
 import pack from "../data/packs/foundry-floor.json";
 import foundryFloor from "../data/foundry-floor.json";
+import sceneMedia from "../data/scene-media.json";
 import { bytes, bounds, listOf as list, number } from "../lib/catalog";
 import { foundryGalleryHref } from "../lib/gallery";
 
 // Everything on this page is read from src/data/packs/foundry-floor.json, which scripts/stage-foundry-floor.mjs
 // writes from the staged scene pack (pack.json, data/assets.json, licenses/ASSET-LICENSE.txt) and the GLBs.
 const hasCampus = pack.assets.some(asset => asset.group === "campus");
+const foundryCampusPoster = sceneMedia["foundry-floor"].captures.campus.poster;
 type Asset = (typeof pack.assets)[number];
 type RecordedAsset = Asset & { attribution?: { author:string; requestedEffort:string|null; note?:string }; reviewStatus?:string; lod: (Asset['lod'] & {form?:string}) | null };
 const groups = pack.groups.map((group) => ({
@@ -46,6 +48,20 @@ const triangleSplit = (metrics: Asset["metrics"]) =>
     people and robots who work there{hasCampus ? ", plus the campus models included in this release." : "."}
   </p>
 </div>
+{hasCampus && (
+  <figure class="mt-4">
+    <ResponsiveImage
+      image={foundryCampusPoster}
+      sizes="(max-width: 767px) calc(100vw - 32px), (max-width: 1279px) calc(100vw - 64px), (max-width: 1439px) calc(100vw - 144px), 1296px"
+      eager
+      class="block w-full"
+    />
+    <figcaption class="mt-3 text-caption text-dim">
+      The campus buildings assembled from the pack’s head and hall modules,
+      with roads, parking and planting. The scene also opens the working fab interior.
+    </figcaption>
+  </figure>
+)}
 <div class="mt-4 border-y border-ink py-6">
   <div>
     <p class="max-w-reading">

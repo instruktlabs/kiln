@@ -77,7 +77,7 @@ export function createTroySceneSession(options: Options) {
         if (data?.source !== 'kiln-scene') return;
         if (data.state === 'progress' || data.state === 'started') {
           renew();
-          options.onProgress(data.text ?? 'Loading the sceneâ€¦');
+          options.onProgress(data.text ?? 'Loading the scene...');
         } else if (data.state === 'ready') {
           untimer();
           options.onState('ready');

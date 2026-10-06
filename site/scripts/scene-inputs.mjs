@@ -4,13 +4,18 @@ import { pathToFileURL } from 'node:url';
 import { unzipSync } from 'fflate';
 import { assetPath, fetchPinnedFile, verifyBytes } from './mirror-core.mjs';
 import { resolveScenesDir } from './scene-source.mjs';
+import {decodeUtf8} from './public-text.mjs';
+import {isPublicTextFile} from './validate-public-text.mjs';
 
 const SITE = resolve(import.meta.dirname, '..');
 
 export function checkedSceneArchive(bytes, record) {
   verifyBytes(bytes, record);
   const files = unzipSync(bytes);
-  for (const path of Object.keys(files)) assetPath(path);
+  for (const [path,content] of Object.entries(files)) {
+    assetPath(path);
+    if (isPublicTextFile(path)) decodeUtf8(content, `Scene archive ${record.path}: ${path}`);
+  }
   return files;
 }
 

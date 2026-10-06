@@ -102,28 +102,35 @@
     "captures": {
       "campus": {
         "poster": {
-          "src": "/media/scenes/foundry-floor/ff3-review2/foundry-floor-scene-campus.webp",
+          "src": "/media/scenes/foundry-floor/preview-20261005-01/foundry-floor-campus-arrival.webp",
           "width": 1440,
           "height": 925,
-          "alt": "The Foundry Floor campus from above: paired fab buildings along a central road, with parking and planting at the near entrance.",
-          "srcsetWebp": "/media/scenes/foundry-floor/ff3-review2/foundry-floor-scene-campus-320.webp 320w, /media/scenes/foundry-floor/ff3-review2/foundry-floor-scene-campus-480.webp 480w, /media/scenes/foundry-floor/ff3-review2/foundry-floor-scene-campus-672.webp 672w, /media/scenes/foundry-floor/ff3-review2/foundry-floor-scene-campus-768.webp 768w, /media/scenes/foundry-floor/ff3-review2/foundry-floor-scene-campus-1024.webp 1024w, /media/scenes/foundry-floor/ff3-review2/foundry-floor-scene-campus-1440.webp 1440w",
-          "srcsetAvif": "/media/scenes/foundry-floor/ff3-review2/foundry-floor-scene-campus-320.avif 320w, /media/scenes/foundry-floor/ff3-review2/foundry-floor-scene-campus-480.avif 480w, /media/scenes/foundry-floor/ff3-review2/foundry-floor-scene-campus-672.avif 672w, /media/scenes/foundry-floor/ff3-review2/foundry-floor-scene-campus-768.avif 768w, /media/scenes/foundry-floor/ff3-review2/foundry-floor-scene-campus-1024.avif 1024w, /media/scenes/foundry-floor/ff3-review2/foundry-floor-scene-campus-1440.avif 1440w",
-          "inputPath": "media/scenes/foundry-floor/ff3-review2/foundry-floor-scene-campus.png"
+          "alt": "The Foundry Floor campus entrance, with the head buildings and long fab halls, a glazed connecting canopy, roads, parking and planting.",
+          "srcsetWebp": "/media/scenes/foundry-floor/preview-20261005-01/foundry-floor-campus-arrival-320.webp 320w, /media/scenes/foundry-floor/preview-20261005-01/foundry-floor-campus-arrival-480.webp 480w, /media/scenes/foundry-floor/preview-20261005-01/foundry-floor-campus-arrival-672.webp 672w, /media/scenes/foundry-floor/preview-20261005-01/foundry-floor-campus-arrival-768.webp 768w, /media/scenes/foundry-floor/preview-20261005-01/foundry-floor-campus-arrival-1024.webp 1024w, /media/scenes/foundry-floor/preview-20261005-01/foundry-floor-campus-arrival-1440.webp 1440w",
+          "srcsetAvif": "/media/scenes/foundry-floor/preview-20261005-01/foundry-floor-campus-arrival-320.avif 320w, /media/scenes/foundry-floor/preview-20261005-01/foundry-floor-campus-arrival-480.avif 480w, /media/scenes/foundry-floor/preview-20261005-01/foundry-floor-campus-arrival-672.avif 672w, /media/scenes/foundry-floor/preview-20261005-01/foundry-floor-campus-arrival-768.avif 768w, /media/scenes/foundry-floor/preview-20261005-01/foundry-floor-campus-arrival-1024.avif 1024w, /media/scenes/foundry-floor/preview-20261005-01/foundry-floor-campus-arrival-1440.avif 1440w",
+          "inputPath": "media/scenes/foundry-floor/preview-20261005-01/foundry-floor-campus-arrival.png"
         },
         "capture": {
-          "tool": "scripts/capture-scene-poster.mjs",
-          "view": "campus",
-          "release": "ff3-review2",
+          "tool": ".localdata/preview-coverage/capture-campus-candidate.mjs",
+          "view": "Arrival",
+          "release": "ff3-review2-code5",
           "size": [
             1440,
             925
           ],
-          "browser": "Chrome/154.0.8037.58",
-          "source": "The staged scene runtime, captured from its canvas with controls hidden; nothing composited or retouched.",
-          "runtimeSha256": "fdf0724ffc38717f3289aaaa0de3891be907a74a2a1570b1a9e926e4e306398d",
-          "packJsonSha256": "6ce49d05791bf42d21f3628237a5cf005ce9f2fa15938f0c321430d781c2c5d4",
-          "pngBytes": 116562,
-          "pngSha256": "7f841f81e7030b4dff5ed2f6a0605644dd32f3730028767841ead7ed8b808229"
+          "browser": "Chrome/154.0.8037.93",
+          "source": "Actual staged Foundry Floor scene; Arrival view, orbit drag up30px, wheel -100, controls hidden. Unretouched canvas capture.",
+          "camera": {
+            "drag": [
+              0,
+              -30
+            ],
+            "wheel": -100
+          },
+          "runtimeSha256": "252a06c4a8812d803942e581182e5e3a73951982def9e4ae1fea686d7c5a3899",
+          "packJsonSha256": "822be1171621273dfdf857fe6ca320ed41d16e03c49fc49860c13e7092be4836",
+          "pngBytes": 106931,
+          "pngSha256": "b10146e32cb3f58ead9c977169f9e0059d994fb03fb40c838bcb4c04ff38181b"
         }
       },
       "interior": {
@@ -150,6 +157,32 @@
           "packJsonSha256": "6ce49d05791bf42d21f3628237a5cf005ce9f2fa15938f0c321430d781c2c5d4",
           "pngBytes": 264001,
           "pngSha256": "083d6d07d4038edc49ee665a5b542494b6606116259029879d41614b2bc74c5b"
+        }
+      },
+      "campus-aerial": {
+        "poster": {
+          "src": "/media/scenes/foundry-floor/ff3-review2/foundry-floor-scene-campus.webp",
+          "width": 1440,
+          "height": 925,
+          "alt": "The Foundry Floor campus from above: paired fab buildings along a central road, with parking and planting at the near entrance.",
+          "srcsetWebp": "/media/scenes/foundry-floor/ff3-review2/foundry-floor-scene-campus-320.webp 320w, /media/scenes/foundry-floor/ff3-review2/foundry-floor-scene-campus-480.webp 480w, /media/scenes/foundry-floor/ff3-review2/foundry-floor-scene-campus-672.webp 672w, /media/scenes/foundry-floor/ff3-review2/foundry-floor-scene-campus-768.webp 768w, /media/scenes/foundry-floor/ff3-review2/foundry-floor-scene-campus-1024.webp 1024w, /media/scenes/foundry-floor/ff3-review2/foundry-floor-scene-campus-1440.webp 1440w",
+          "srcsetAvif": "/media/scenes/foundry-floor/ff3-review2/foundry-floor-scene-campus-320.avif 320w, /media/scenes/foundry-floor/ff3-review2/foundry-floor-scene-campus-480.avif 480w, /media/scenes/foundry-floor/ff3-review2/foundry-floor-scene-campus-672.avif 672w, /media/scenes/foundry-floor/ff3-review2/foundry-floor-scene-campus-768.avif 768w, /media/scenes/foundry-floor/ff3-review2/foundry-floor-scene-campus-1024.avif 1024w, /media/scenes/foundry-floor/ff3-review2/foundry-floor-scene-campus-1440.avif 1440w",
+          "inputPath": "media/scenes/foundry-floor/ff3-review2/foundry-floor-scene-campus.png"
+        },
+        "capture": {
+          "tool": "scripts/capture-scene-poster.mjs",
+          "view": "campus",
+          "release": "ff3-review2",
+          "size": [
+            1440,
+            925
+          ],
+          "browser": "Chrome/154.0.8037.58",
+          "source": "The staged scene runtime, captured from its canvas with controls hidden; nothing composited or retouched.",
+          "runtimeSha256": "fdf0724ffc38717f3289aaaa0de3891be907a74a2a1570b1a9e926e4e306398d",
+          "packJsonSha256": "6ce49d05791bf42d21f3628237a5cf005ce9f2fa15938f0c321430d781c2c5d4",
+          "pngBytes": 116562,
+          "pngSha256": "7f841f81e7030b4dff5ed2f6a0605644dd32f3730028767841ead7ed8b808229"
         }
       }
     }

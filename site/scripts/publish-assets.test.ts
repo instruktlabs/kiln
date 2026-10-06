@@ -5,6 +5,10 @@ import {tmpdir} from 'node:os';
 import {hashBytes} from './mirror-core.mjs';
 import {publishAssets,assetContentType} from './publish-assets.mjs';
 
+test('checked scene captures publish with the PNG MIME type',()=>{
+ expect(assetContentType('media/scenes/foundry-floor/preview-20261005-01/campus.png')).toBe('image/png');
+});
+
 test('publication verifies every local pin before any mutation and refuses different immutable bytes',async()=>{
  const mirror=await mkdtemp(join(tmpdir(),'kiln-upload-'));
  try {

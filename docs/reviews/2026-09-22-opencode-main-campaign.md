@@ -63,8 +63,8 @@ as the footprint. The seating span changes from 22.932 to 28.655 m, approximatel
 
 All saved manifest hashes and sizes match files. Saved GLBs, sources and previews
 match the corresponding CLI exports. The three revisions form one immutable chain:
-`r_1e5ad3a8f83f4608ba4ab999c465c0b4` â†’
-`r_395cbca9ba894dfba3a0f4ffb2a73958` â†’
+`r_1e5ad3a8f83f4608ba4ab999c465c0b4` →
+`r_395cbca9ba894dfba3a0f4ffb2a73958` →
 `r_a2928f16a361493e86ec421eeb512aff`, under asset
 `a_36a8507dbf4044c6abbd7060df1eb177`.
 All six successful anchored edit calls independently reconstruct the exact stored
@@ -154,8 +154,8 @@ No model process from this trial remains active.
 All source/GLB exports match their recorded hashes and saved revision bytes. Every
 saved manifest file hash/size verifies. The revision chain under
 `a_9afcb207e7574dd580ead6ce3278a6f8` is
-`r_b9d240ee916e4a8c9597ce6e7001c05c` â†’
-`r_2892bc6abcf14f08a87d0d3f088127ed` â†’
+`r_b9d240ee916e4a8c9597ce6e7001c05c` →
+`r_2892bc6abcf14f08a87d0d3f088127ed` →
 `r_00511ac2e7cc42f79e74505d98a7cebb`.
 Every exported PNG was read by the model, with matching attachment bytes. Saved
 previews and exported PNGs differ: the former use the default sheet, while the
@@ -460,9 +460,9 @@ read. All source/GLB bytes match saved immutable revisions and manifest hashes.
 | Copper insert swap | `p_ab28f74078f9` | 4,840 / 53 | Eight copper components replace 28 steel plate/ridge meshes. All 45 retained meshes keep geometry and world transforms; paint and texture bytes remain. Grooves are geometric channels. Flat plates stay 70 mm apart, but screws leave 68 mm usable separation. |
 
 Asset `a_47c3a3b976ce46d4bf753b066cb9649d`; lineage:
-`r_1343a75251a84171a3da0f5a8cb82819` â†’ `r_f160360f7878460cb142586395aab056`
-â†’ `r_c02ee31fda2d4d46861630edf56039fc`.
-Bounds are 0.292 Ã— 0.152 Ã— 0.192 m initially, then 0.322 Ã— 0.152 Ã— 0.192 m.
+`r_1343a75251a84171a3da0f5a8cb82819` → `r_f160360f7878460cb142586395aab056`
+→ `r_c02ee31fda2d4d46861630edf56039fc`.
+Bounds are 0.292 × 0.152 × 0.192 m initially, then 0.322 × 0.152 × 0.192 m.
 
 Grouping and local edit behavior succeed. The recipe itself was not retrieved, and
 the brief explicitly requested roots, so this run does not isolate the effect of
@@ -562,8 +562,8 @@ hashes match. Runtime stayed at `sha256:e74ee5812a5fd5532011ab9c0bc9c2575af321e1
 | Cantilever fork | `p_b7cf308b8ee1` | 12,668 / 120 | Dedicated local `Joint_FrontFork` under steering contains five components on the +Z side. Two new and five removed meshes, three changed retained fork components; the other 115 meshes preserve geometry and world transforms. Both clips and materials remain identical. |
 
 Asset `a_f203184c04ac427eb4da17be5118c10c`; lineage:
-`r_1473cfff296c485487cc312385359db9` â†’ `r_200f98dd65e94c11a55e40ef9ff78f4d`
-â†’ `r_04dbffc0fd3142678c430548cc5464c6`.
+`r_1473cfff296c485487cc312385359db9` → `r_200f98dd65e94c11a55e40ef9ff78f4d`
+→ `r_04dbffc0fd3142678c430548cc5464c6`.
 The front-view steering sheets show the fork/wheel/handlebars moving together while
 the rear assembly stays fixed. The final -Z hub face is open. This is useful local
 replacement evidence, not proof of mechanical strength or continuous clearances.
@@ -622,7 +622,7 @@ R04 remains open. Raw `THREE.DataTexture` construction is rejected by generated-
 policy; it must not be taught as an available route. The existing approved
 `kiln.texture.leaf-mask-albedo.v1` works with `loadApprovedTexture` and
 `foliageMaterial`: actual CPU CLI export contains MASK, doubleSided and embedded
-alpha. It is a 4Ã—4 placeholder, not production foliage. External
+alpha. It is a 4×4 placeholder, not production foliage. External
 `cutout-approved-recipe-probe-review.json` preserves the result; GPU, destination
 and optional executable recipe publication remain to do. No scored source or
 approved resource bytes were altered for this investigation.
@@ -639,7 +639,7 @@ wheel centers, 0.84 m rear track and both clips remain unchanged.
 Repair source `p_db37b5bbc024`, GLB `5622715c00cd465bd1604d94a941a1d4ec6006de15d3ea3cefa3d68aa9e4c47d`;
 child `r_29d718006acf4273939726486dbf6c0b` of `r_04dbffc0fd3142678c430548cc5464c6`
 in the existing trike asset. Manifest/source/GLB identity and PNG reads match.
-The independent 81-phase sampler now measures 0.857â€“2.195 mm wheel clearance.
+The independent 81-phase sampler now measures 0.857–2.195 mm wheel clearance.
 Sampled penetration is corrected, but exact Y=0 rolling contact is not established.
 The source comment claiming at least 1.5 mm at every phase is wrong; the final
 model report acknowledges approximately 0.86 mm minimum. The scored baseline and
@@ -653,7 +653,7 @@ sweep perimeter/path UVs through a reflected bend. Two helper examples now actua
 bind alpha and invoke foliageMaterial instead of showing an untextured baseline.
 Skills point to optional recipes without selecting an asset category.
 
-The foliage resource is explicitly a 4Ã—4 placeholder. GPU review shows a crude
+The foliage resource is explicitly a 4×4 placeholder. GPU review shows a crude
 masked card, not production-quality foliage. Its GLB contains MASK cutoff 0.5,
 doubleSided and alpha values 0/96/180/255. The striped sweep visibly follows both
 bends, but its planar cap UVs need separate end-grain treatment. Recipes distinguish
@@ -707,8 +707,8 @@ itself stays 4.8 m. Intentional submerged geometry does not acquire a ground rul
 
 Saved source/GLB hashes, manifest sizes, exported PNG reads and parent lineage all
 verify. Asset `a_f68d3902665a4a59aff380bd139f822b` has revisions
-`r_0c9e941e70484aecbcb20ae865ba4a62` â†’ `r_dfb205b118a84983942dea7c4e29760b`
-â†’ `r_d94499193c9c40b7b4ce593381bbc177`. Final GLB:
+`r_0c9e941e70484aecbcb20ae865ba4a62` → `r_dfb205b118a84983942dea7c4e29760b`
+→ `r_d94499193c9c40b7b4ce593381bbc177`. Final GLB:
 `e8b36c73103e8d8a0888c25ecf296d92e8d95e315337bf410a4dc6b331c10dbb`.
 Maintainer reviewed all final source revisions and GPU sheets. Original assets
 remain unchanged. Evidence: `evidence-main-07-river-skiff-mcp/`, including independent
@@ -793,12 +793,12 @@ other fans, and leaves ten alpha cards. Its longer leaves extend the footprint t
 0.946257 by 0.958431 m. All materials/textures remain identical across revisions.
 The three-leaf replacement has geometric silhouettes; alpha cards remain elsewhere.
 Asset `a_39222feda8584e5faa3a1af10ec71d8c` has revisions
-`r_a682002d216c49f2b958c6d8ea51cf22` â†’ `r_49978fca95014a0ab3b2138fc2968ac4`
-â†’ `r_45dda45f92194d2086db0d7b9ca52e76`. Final GLB:
+`r_a682002d216c49f2b958c6d8ea51cf22` → `r_49978fca95014a0ab3b2138fc2968ac4`
+→ `r_45dda45f92194d2086db0d7b9ca52e76`. Final GLB:
 `1f4efdd4a55a83ae490ac9bd87a567bab67c6e0bb6c1060dbe1f10749d0bdf31`.
 
 F202 now has fresh-model evidence: the author reads and accurately discloses the
-4Ã—4 teaching texture limitation. Pale cutouts remain visibly jagged. The model's
+4×4 teaching texture limitation. Pale cutouts remain visibly jagged. The model's
 claim that every leaf base sits on its stem is stronger than the evidence: exported
 cutout origins are up to 71.087 mm from their own stem/tip surface after widening.
 This point-distance check alone does not establish disconnected leaf surfaces;

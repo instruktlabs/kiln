@@ -17,6 +17,7 @@ import { Matrix4, Quaternion, Vector3 } from 'three/webgpu';
 import type { BufferAttribute, Mesh, Object3D } from 'three/webgpu';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { MeshoptDecoder } from 'three/addons/libs/meshopt_decoder.module.js';
+import { decodeUtf8, readUtf8 } from './utf8';
 
 const PACKAGE_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const COMMONS = resolve(PACKAGE_ROOT, '../../..');
@@ -117,7 +118,7 @@ export function assertEquivalent(c: TileComparison): void {
 /** Copies the pipeline's pre-compression tiles into source-data/terrain and indexes them. */
 export function copyCanonical(): CanonicalIndex {
   mkdirSync(CANONICAL_DIR, { recursive: true });
-  const manifest = JSON.parse(readFileSync(resolve(PIPELINE_OUT, 'manifest.json'), 'utf8')) as { files: { file: string; bytes: number; sha256: string }[] };
+  const manifest = JSON.parse(readUtf8(resolve(PIPELINE_OUT, 'manifest.json'))) as { files: { file: string; bytes: number; sha256: string }[] };
   const tiles = TILE_KEYS.map(key => {
     const from = resolve(PIPELINE_RAW, `${key}_raw.glb`), to = resolve(CANONICAL_DIR, `${key}.glb`);
     copyFileSync(from, to);
@@ -141,12 +142,12 @@ export function copyCanonical(): CanonicalIndex {
 interface GlbJson { extensionsUsed?: string[]; extensionsRequired?: string[]; meshes: { primitives: { attributes: Record<string, number>; indices?: number }[] }[]; accessors: { count: number }[] }
 function glbJson(bytes: Uint8Array): GlbJson {
   const view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength), length = view.getUint32(12, true);
-  return JSON.parse(new TextDecoder().decode(bytes.subarray(20, 20 + length))) as GlbJson;
+  return JSON.parse(decodeUtf8(bytes.subarray(20, 20 + length), 'Terrain GLB JSON')) as GlbJson;
 }
 
 /** Checks the canonical files against their index, then each derivative (by path) against its canonical tile. */
 export async function verifyCanonical(derivativePath: (key: string) => string): Promise<TileComparison[]> {
-  const index = JSON.parse(readFileSync(CANONICAL_INDEX, 'utf8')) as CanonicalIndex, out: TileComparison[] = [];
+  const index = JSON.parse(readUtf8(CANONICAL_INDEX)) as CanonicalIndex, out: TileComparison[] = [];
   for (const tile of index.tiles) {
     const canonical = readFileSync(resolve(CANONICAL_DIR, tile.file)), derivative = readFileSync(derivativePath(tile.key));
     if (canonical.length !== tile.bytes || sha256(canonical) !== tile.sha256) throw new Error(`Canonical terrain ${tile.file} differs from source-data/terrain/canonical.json`);

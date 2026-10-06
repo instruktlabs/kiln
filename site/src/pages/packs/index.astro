@@ -7,8 +7,10 @@ import { farm, vehicles } from "../../lib/catalog";
 import { PACKS_ENABLED } from "../../lib/config";
 import foundryFloor from "../../data/foundry-floor.json";
 import foundryFloorPack from "../../data/packs/foundry-floor.json";
+import sceneMedia from "../../data/scene-media.json";
+const foundryCampusPoster = sceneMedia["foundry-floor"].captures.campus.poster;
 // Six of the Foundry Floor models stand for the pack on its card; each must be in the staged catalog.
-const featured = ["euv-scanner", "etch-cluster-tool", "vertical-furnace", "stocker", "oht-vehicle", "foup"].map((slug) => {
+const featured = ["s1-head-w", "s2-hall-w", "euv-scanner", "etch-cluster-tool", "stocker", "oht-vehicle"].map((slug) => {
   const asset = foundryFloorPack.assets.find((candidate) => candidate.slug === slug);
   if (!asset) throw new Error(`The Foundry Floor catalog has no model ${slug}`);
   return asset;
@@ -81,7 +83,9 @@ const featured = ["euv-scanner", "etch-cluster-tool", "vertical-furnace", "stock
     )}
     {PACKS_ENABLED && (
       <a href="/packs/foundry-floor/" aria-label="Foundry Floor" class="mt-12 grid items-center gap-8 border-b border-rule pb-8 lg:grid-cols-3">
-        <div class="grid grid-cols-3 gap-2 lg:col-span-2">
+        <div class="lg:col-span-2">
+          <ResponsiveImage image={foundryCampusPoster} sizes="(max-width: 1024px) 100vw, 65vw" />
+          <div class="mt-2 grid grid-cols-3 gap-2">
           {featured.map((asset) => (
             <div class="bg-stage">
               <ResponsiveImage
@@ -91,12 +95,13 @@ const featured = ["euv-scanner", "etch-cluster-tool", "vertical-furnace", "stock
               />
             </div>
           ))}
+          </div>
         </div>
         <div>
           <h2 class="text-subheading">{foundryFloorPack.name}</h2>
           <p class="mt-5">
             {foundryFloorPack.assetCount} models for a fictional 2 nm-class chip
-            fab: process tools, wafer transport and storage, the cleanroom’s
+            fab: campus buildings, process tools, wafer transport and storage, the cleanroom’s
             floor, ceiling and walls, and the people and robots who work there.
           </p>
           <p class="mt-4 text-dim">

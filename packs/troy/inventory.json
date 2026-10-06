@@ -19,7 +19,7 @@
       "category": "Buildings",
       "glbSha256": "d2e5c1a6885f509caeb9428980d74b2760bae735af81549ae08fdd825fadffa8",
       "glbBytes": 302776,
-      "poster": "https://kilnstudio.tools/scene-packs/troy/troy-20261005-06/media/wall-section.webp",
+      "poster": "https://kilnstudio.tools/scene-packs/troy/troy-20261005-07/media/wall-section.webp",
       "metrics": {
         "triangles": 168,
         "meshes": 14,
@@ -90,7 +90,7 @@
       "category": "Buildings",
       "glbSha256": "19322963f4704e5a9e4b31e242d7d1991126e0ffde750d57152a622089ac4f91",
       "glbBytes": 391512,
-      "poster": "https://kilnstudio.tools/scene-packs/troy/troy-20261005-06/media/city-gate.webp",
+      "poster": "https://kilnstudio.tools/scene-packs/troy/troy-20261005-07/media/city-gate.webp",
       "metrics": {
         "triangles": 516,
         "meshes": 7,
@@ -157,7 +157,7 @@
       "category": "Buildings",
       "glbSha256": "d69aaca4db3b1963a28ea62fd5a54c9a2dbe277a083086f3c31e3270fd300b5b",
       "glbBytes": 330524,
-      "poster": "https://kilnstudio.tools/scene-packs/troy/troy-20261005-06/media/house.webp",
+      "poster": "https://kilnstudio.tools/scene-packs/troy/troy-20261005-07/media/house.webp",
       "metrics": {
         "triangles": 876,
         "meshes": 8,
@@ -222,7 +222,7 @@
       "category": "Buildings",
       "glbSha256": "6609d8e4f5be92b88f5a14facad3cb9cb39f43d257bc2bcec51adeaca66f41ee",
       "glbBytes": 492876,
-      "poster": "https://kilnstudio.tools/scene-packs/troy/troy-20261005-06/media/temple-hall.webp",
+      "poster": "https://kilnstudio.tools/scene-packs/troy/troy-20261005-07/media/temple-hall.webp",
       "metrics": {
         "triangles": 2024,
         "meshes": 12,
@@ -293,7 +293,7 @@
       "category": "Vehicles",
       "glbSha256": "c438f0275186e34ad724dade9f22426a4ad4dab412a17ea7b1d62d468c151f4f",
       "glbBytes": 396772,
-      "poster": "https://kilnstudio.tools/scene-packs/troy/troy-20261005-06/media/war-galley.webp",
+      "poster": "https://kilnstudio.tools/scene-packs/troy/troy-20261005-07/media/war-galley.webp",
       "metrics": {
         "triangles": 6480,
         "meshes": 4,
@@ -362,7 +362,7 @@
       "category": "Characters",
       "glbSha256": "55361985e3353e4a87944f61c1007eb725732a128bf7a33d3a989f3b26f34af3",
       "glbBytes": 373008,
-      "poster": "https://kilnstudio.tools/scene-packs/troy/troy-20261005-06/media/greek-soldier.webp",
+      "poster": "https://kilnstudio.tools/scene-packs/troy/troy-20261005-07/media/greek-soldier.webp",
       "metrics": {
         "triangles": 2140,
         "meshes": 27,
@@ -464,7 +464,7 @@
       "category": "Characters",
       "glbSha256": "97f6fe97902df9af9037518dc28699524c843f0b94136ec3f9c9850d2b57df6f",
       "glbBytes": 352016,
-      "poster": "https://kilnstudio.tools/scene-packs/troy/troy-20261005-06/media/trojan-soldier.webp",
+      "poster": "https://kilnstudio.tools/scene-packs/troy/troy-20261005-07/media/trojan-soldier.webp",
       "metrics": {
         "triangles": 2000,
         "meshes": 27,
@@ -559,7 +559,7 @@
       "category": "Characters",
       "glbSha256": "1bb8b9b44044365a172eb5015c12b8493b6c47e3087178a7fa89b18e768e645f",
       "glbBytes": 547628,
-      "poster": "https://kilnstudio.tools/scene-packs/troy/troy-20261005-06/media/achilles.webp",
+      "poster": "https://kilnstudio.tools/scene-packs/troy/troy-20261005-07/media/achilles.webp",
       "metrics": {
         "triangles": 3468,
         "meshes": 31,
@@ -659,7 +659,7 @@
       "category": "Characters",
       "glbSha256": "70b6e63f742413ef4d3348071b8f917507d521e9e80739fcf30aaff5de5e054a",
       "glbBytes": 428112,
-      "poster": "https://kilnstudio.tools/scene-packs/troy/troy-20261005-06/media/hector.webp",
+      "poster": "https://kilnstudio.tools/scene-packs/troy/troy-20261005-07/media/hector.webp",
       "metrics": {
         "triangles": 2516,
         "meshes": 30,
@@ -748,7 +748,7 @@
       "glb": "https://assets.kilnstudio.tools/packs/troy/delivery-20261005-01/models/olive.glb",
       "glbSha256": "5ca97cea350d7eb751bcfb214a89e0b83cc3e7bf3c317663ae4d5d51d6e32cd9",
       "glbBytes": 171340,
-      "poster": "https://kilnstudio.tools/scene-packs/troy/troy-20261005-06/media/olive.webp",
+      "poster": "https://kilnstudio.tools/scene-packs/troy/troy-20261005-07/media/olive.webp",
       "metrics": {
         "triangles": 4634,
         "meshes": 4,
@@ -812,7 +812,7 @@
       "glb": "https://assets.kilnstudio.tools/packs/troy/delivery-20261005-01/models/cypress.glb",
       "glbSha256": "0fbabf224cb33e55f3cc6480bfad8fd40175a15c0fa00f9072faa11e40e1ac89",
       "glbBytes": 82436,
-      "poster": "https://kilnstudio.tools/scene-packs/troy/troy-20261005-06/media/cypress.webp",
+      "poster": "https://kilnstudio.tools/scene-packs/troy/troy-20261005-07/media/cypress.webp",
       "metrics": {
         "triangles": 2712,
         "meshes": 2,
@@ -874,7 +874,7 @@
       "glb": "https://assets.kilnstudio.tools/packs/troy/delivery-20261005-01/models/fig.glb",
       "glbSha256": "1769ec4b6d44f208af272b50056d4e01ceb7bf5a8605cbff49019595aef34fa3",
       "glbBytes": 147416,
-      "poster": "https://kilnstudio.tools/scene-packs/troy/troy-20261005-06/media/fig.webp",
+      "poster": "https://kilnstudio.tools/scene-packs/troy/troy-20261005-07/media/fig.webp",
       "metrics": {
         "triangles": 4676,
         "meshes": 4,
@@ -938,7 +938,7 @@
       "glb": "https://assets.kilnstudio.tools/packs/troy/delivery-20261005-01/models/shrub.glb",
       "glbSha256": "4b2ad9c25c2035b02ebb72cc0336842c6c5a6441aada21cfe137d8749b3de51f",
       "glbBytes": 47456,
-      "poster": "https://kilnstudio.tools/scene-packs/troy/troy-20261005-06/media/shrub.webp",
+      "poster": "https://kilnstudio.tools/scene-packs/troy/troy-20261005-07/media/shrub.webp",
       "metrics": {
         "triangles": 1252,
         "meshes": 3,
@@ -1010,7 +1010,7 @@
       "category": "Animals",
       "glbSha256": "03e257c29b54ad05f5f37381474fe6eba995f22d72fefba9e90e5d46bbe84b5c",
       "glbBytes": 248068,
-      "poster": "https://kilnstudio.tools/scene-packs/troy/troy-20261005-06/media/horse.webp",
+      "poster": "https://kilnstudio.tools/scene-packs/troy/troy-20261005-07/media/horse.webp",
       "metrics": {
         "triangles": 4804,
         "meshes": 54,
@@ -1128,7 +1128,7 @@
       "category": "Buildings",
       "glbSha256": "77c48aa6dbff40b212c5eacc4f340838358f71ee52ccc99966cd2bdc7f9b37e7",
       "glbBytes": 333340,
-      "poster": "https://kilnstudio.tools/scene-packs/troy/troy-20261005-06/media/wall-breached.webp",
+      "poster": "https://kilnstudio.tools/scene-packs/troy/troy-20261005-07/media/wall-breached.webp",
       "metrics": {
         "triangles": 528,
         "meshes": 44,
@@ -1231,7 +1231,7 @@
       "category": "Vehicles",
       "glbSha256": "6b06d838c3f8016e5ca1f94abd6da317fc0825f83b3f12f932ae5968b5b60c29",
       "glbBytes": 614312,
-      "poster": "https://kilnstudio.tools/scene-packs/troy/troy-20261005-06/media/war-chariot.webp",
+      "poster": "https://kilnstudio.tools/scene-packs/troy/troy-20261005-07/media/war-chariot.webp",
       "metrics": {
         "triangles": 4156,
         "meshes": 16,
@@ -1306,7 +1306,7 @@
       "category": "Equipment",
       "glbSha256": "b15e157bf0e01fab0c421e232c08ab2572a7c42738d4454f994dfa275e99b4d9",
       "glbBytes": 137688,
-      "poster": "https://kilnstudio.tools/scene-packs/troy/troy-20261005-06/media/sword.webp",
+      "poster": "https://kilnstudio.tools/scene-packs/troy/troy-20261005-07/media/sword.webp",
       "metrics": {
         "triangles": 208,
         "meshes": 4,
@@ -1361,7 +1361,7 @@
       "category": "Equipment",
       "glbSha256": "90a164bf7cbc9c98f7877bce029ed1ab016ab8043086f724ce70b92a0feff72a",
       "glbBytes": 182764,
-      "poster": "https://kilnstudio.tools/scene-packs/troy/troy-20261005-06/media/shield.webp",
+      "poster": "https://kilnstudio.tools/scene-packs/troy/troy-20261005-07/media/shield.webp",
       "metrics": {
         "triangles": 1272,
         "meshes": 10,
@@ -1422,7 +1422,7 @@
       "category": "Equipment",
       "glbSha256": "861da8a5dad6265aa823c4b86f73142da14accfa48f486372241fba3e51ac366",
       "glbBytes": 137780,
-      "poster": "https://kilnstudio.tools/scene-packs/troy/troy-20261005-06/media/bow-set.webp",
+      "poster": "https://kilnstudio.tools/scene-packs/troy/troy-20261005-07/media/bow-set.webp",
       "metrics": {
         "triangles": 1404,
         "meshes": 34,
@@ -1513,7 +1513,7 @@
       "category": "Buildings",
       "glbSha256": "aeb622fb0a37233a707030a81a3e9b991fff0b2ed17924956bd6ab61c53d9770",
       "glbBytes": 279516,
-      "poster": "https://kilnstudio.tools/scene-packs/troy/troy-20261005-06/media/wooden-horse.webp",
+      "poster": "https://kilnstudio.tools/scene-packs/troy/troy-20261005-07/media/wooden-horse.webp",
       "metrics": {
         "triangles": 2060,
         "meshes": 14,
@@ -1587,7 +1587,7 @@
       "category": "Compositions",
       "glbSha256": "d2ba5e05718c7889134d51bb89680a7dc05b5b24100c4f3e9d89b18034991dfb",
       "glbBytes": 14464712,
-      "poster": "https://kilnstudio.tools/scene-packs/troy/troy-20261005-06/media/battle-scene-reference.webp",
+      "poster": "https://kilnstudio.tools/scene-packs/troy/troy-20261005-07/media/battle-scene-reference.webp",
       "metrics": {
         "triangles": 208178,
         "meshes": 130,
@@ -1762,5 +1762,5 @@
   "license": "CC0-1.0",
   "release": "troy-20261005-02",
   "sourceRoot": "sources",
-  "sceneRelease": "troy-20261005-06"
+  "sceneRelease": "troy-20261005-07"
 }

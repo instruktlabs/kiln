@@ -8,6 +8,7 @@ import { ARCHIVE_INDEX_ROUTE, archiveIndexingErrors, copyErrors, DESCRIPTION_WAR
 import {sealedTroyCache} from './sealed-cache.mjs';
 import {viewerModelInput} from './viewer-model-input.mjs';
 import { glbJsonText } from './private-data.mjs';
+import {validatePublicText} from './validate-public-text.mjs';
 
 const site = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const args = process.argv.slice(2);
@@ -35,6 +36,8 @@ for (const file of htmlFiles) {
 const foundryFloorPack = JSON.parse(await readFile(resolve(site, 'src/data/packs/foundry-floor.json'), 'utf8'));
 const errors = [];
 const add = (page, kind, message) => errors.push({ page, kind, message });
+const textValidation=await validatePublicText({roots:[root],base:root});
+for(const error of textValidation.errors)add('/'+error.file,'encoding',`${error.kind}: ${error.context}: ${error.message}`);
 const warnings = [];
 const external = new Map();
 const imageChecks = new Map();

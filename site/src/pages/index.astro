@@ -27,6 +27,7 @@ import {
 import exchange from "../data/home-exchange.json";
 import foundryFloor from "../data/foundry-floor.json";
 import foundryFloorPack from "../data/packs/foundry-floor.json";
+import troy from "../data/troy.json";
 import { sceneRuntimes } from "virtual:kiln-scenes";
 import { farmScene, foundryFloorScene, goldenGateScene } from "../data/scenes";
 import { PUBLIC_EXAMPLES } from "../../scripts/collection.mjs";
@@ -92,7 +93,7 @@ kiln_save(${JSON.stringify(save!.arguments, null, 2)})
 // → asset.revisionId: ${save!.result.asset!.revisionId}
 // … project arguments, file hashes and further result fields omitted`;
 const floorIncluded = house.revisionId === floor.asset.revisionId;
-const CARD_SIZES = "(max-width: 767px) 100vw, 33vw";
+const CARD_SIZES = "(max-width: 767px) calc(100vw - 32px), (max-width: 1279px) calc(50vw - 48px), (max-width: 1439px) calc(50vw - 88px), 632px";
 ---
 
 <BaseLayout
@@ -379,7 +380,7 @@ const CARD_SIZES = "(max-width: 767px) 100vw, 33vw";
     </p>
     {PACKS_ENABLED ? (
       <>
-      <div class="mt-8 grid gap-10 md:grid-cols-3 md:gap-8">
+      <div class="mt-8 grid gap-10 md:grid-cols-2 md:gap-8">
         <article>
           <a href="/packs/farm/" class="block no-underline text-ink" aria-label="Shapes &amp; Seasons Farm">
             <ScenePoster images={farmScene.posterImages} sizes={CARD_SIZES} decorative />
@@ -426,6 +427,20 @@ const CARD_SIZES = "(max-width: 767px) 100vw, 33vw";
               {sceneRuntimes["foundry-floor"] ? "The scene preview" : "The scene status"}
             </a>
             <a class="text-link" href={foundryFloor.packRoute}>The Foundry Floor pack</a>
+          </div>
+        </article>
+        <article>
+          <a href="/scenes/troy/" class="block no-underline text-ink" aria-label="Troy scene">
+            <ScenePoster images={troy.posters} sizes={CARD_SIZES} decorative />
+            <h3 class="mt-5 text-ink">Troy</h3>
+          </a>
+          <p class="mt-2 text-dim">
+            A Bronze Age coast, city and battlefield. Explore Troy or fight as
+            Achilles or Hector, with {troy.assetCount} reusable assets.
+          </p>
+          <div class="mt-2 flex flex-wrap gap-x-6">
+            <a class="text-link" href="/scenes/troy/">Open the scene</a>
+            <a class="text-link" href="/packs/troy/">Browse the Troy pack</a>
           </div>
         </article>
       </div>

@@ -10,10 +10,10 @@
     },
     {
       "id": "golden-gate",
-      "release": "g9-code5",
-      "path": "scene-inputs/alignment-motion3-20261003/golden-gate.zip",
-      "bytes": 8329648,
-      "sha256": "78f956059db0b6265f250f64b96bbc5bf4e52e02eec629cc9dcf7cb4aa991f8d"
+      "release": "g9-code6",
+      "path": "scene-inputs/text-cleanup-20261005/golden-gate.zip",
+      "bytes": 8329691,
+      "sha256": "a2c5425ea357d1ef55237a89a05d364db3d891188d3a2453e6189941da14238f"
     },
     {
       "id": "foundry-floor",

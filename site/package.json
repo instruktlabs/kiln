@@ -6,7 +6,7 @@
   "scripts": {
     "assets": "bun scripts/build-assets.mjs",
     "dev": "astro dev",
-    "build": "node scripts/fetch-mirror.mjs && node scripts/build-site-media.mjs && node scripts/scene-inputs.mjs && node scripts/scene-pack.mjs && node scripts/scene-runtime.mjs && node scripts/stage-troy.mjs && astro build && node scripts/finalize-site.mjs && node scripts/subset-site-fonts.mjs && node scripts/troy-publication.mjs && node scripts/build-info.mjs",
+    "build": "node scripts/validate-public-text.mjs --source && node scripts/fetch-mirror.mjs && node scripts/build-site-media.mjs && node scripts/scene-inputs.mjs && node scripts/scene-pack.mjs && node scripts/scene-runtime.mjs && node scripts/stage-troy.mjs && astro build && node scripts/finalize-site.mjs && node scripts/subset-site-fonts.mjs && node scripts/troy-publication.mjs && node scripts/build-info.mjs && node scripts/validate-public-text.mjs",
     "stage:scene": "node scripts/scene-inputs.mjs && node scripts/scene-pack.mjs && node scripts/scene-runtime.mjs",
     "preview": "astro preview",
     "check": "astro check",
