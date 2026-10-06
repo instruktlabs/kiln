@@ -1,13 +1,19 @@
 import assert from 'node:assert/strict';
-import { createHash, randomBytes } from 'node:crypto';
+import { createHash, generateKeyPairSync, randomBytes, sign } from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 import { after, before, test } from 'node:test';
 import { build } from 'esbuild';
 import { convertV4MiniflareOptions, Miniflare } from 'miniflare';
+import { migrateAccounts } from './database.mjs';
 
 const origin = 'https://kiln.example.com';
 let runtime;
+let database;
 let outboundCalls = 0;
+const googleIssuer = 'https://accounts.google.com';
+const googleKeys = generateKeyPairSync('rsa', { modulusLength: 2048 });
+const googleCodes = new Map();
+const encode = (value) => Buffer.from(JSON.stringify(value)).toString('base64url');
 const digest = (value) => createHash('sha256').update(value).digest('base64url');
 const cookies = (response) =>
   response.headers
@@ -30,14 +36,56 @@ before(async () => {
       compatibilityDate: '2026-10-06',
       compatibilityFlags: ['global_fetch_strictly_public'],
       kvNamespaces: ['OAUTH_KV'],
+      d1Databases: ['ACCOUNTS'],
       durableObjects: { TENANTS: 'TestTenant' },
       bindings: {
         PUBLIC_ORIGIN: origin,
         GITHUB_CLIENT_ID: 'fixture-client',
         GITHUB_CLIENT_SECRET: 'fixture-secret-not-a-real-credential',
+        GOOGLE_CLIENT_ID: 'fixture-google-client',
+        GOOGLE_CLIENT_SECRET: 'fixture-google-secret',
       },
       outboundService: async (request) => {
         outboundCalls++;
+        if (request.url === `${googleIssuer}/.well-known/openid-configuration`) {
+          return Response.json({
+            issuer: googleIssuer,
+            authorization_endpoint: `${googleIssuer}/o/oauth2/v2/auth`,
+            token_endpoint: 'https://oauth2.googleapis.com/token',
+            jwks_uri: 'https://www.googleapis.com/oauth2/v3/certs',
+            id_token_signing_alg_values_supported: ['RS256'],
+            code_challenge_methods_supported: ['S256'],
+          });
+        }
+        if (request.url === 'https://www.googleapis.com/oauth2/v3/certs') {
+          return Response.json({
+            keys: [
+              {
+                ...googleKeys.publicKey.export({ format: 'jwk' }),
+                kid: 'test',
+                alg: 'RS256',
+                use: 'sig',
+              },
+            ],
+          });
+        }
+        if (request.url === 'https://oauth2.googleapis.com/token') {
+          const form = new URLSearchParams(await request.text());
+          const flow = googleCodes.get(form.get('code'));
+          assert.ok(flow);
+          assert.equal(digest(form.get('code_verifier')), flow.challenge);
+          assert.equal(form.get('client_id'), 'fixture-google-client');
+          assert.equal(form.get('client_secret'), 'fixture-google-secret');
+          assert.equal(form.get('redirect_uri'), `${origin}/oauth/google/callback`);
+          const now = Math.floor(Date.now() / 1000);
+          const input = `${encode({ alg: 'RS256', kid: 'test' })}.${encode({ iss: googleIssuer, sub: flow.user === 'alice' ? '1001' : '1002', aud: 'fixture-google-client', exp: now + 300, iat: now, nonce: flow.nonce })}`;
+          return Response.json({
+            access_token: 'fixture-google-token',
+            token_type: 'Bearer',
+            expires_in: 300,
+            id_token: `${input}.${sign('RSA-SHA256', Buffer.from(input), googleKeys.privateKey).toString('base64url')}`,
+          });
+        }
         if (
           [
             'https://client.example/metadata.json',
@@ -87,6 +135,8 @@ before(async () => {
       },
     }),
   );
+  database = await runtime.getD1Database('ACCOUNTS');
+  await migrateAccounts(database);
 });
 after(async () => runtime?.dispose());
 
@@ -149,7 +199,7 @@ async function consent({
   };
 }
 
-async function approve(start, { cookie = start.cookie, decision = 'approve' } = {}) {
+async function approve(start, { cookie = start.cookie, decision = 'github' } = {}) {
   return start.server.dispatchFetch(`${origin}/authorize`, {
     method: 'POST',
     redirect: 'manual',
@@ -158,16 +208,24 @@ async function approve(start, { cookie = start.cookie, decision = 'approve' } = 
   });
 }
 
-async function grant(user = 'alice', options) {
+async function grant(user = 'alice', options = {}) {
   const start = await consent(options);
   assert.equal(start.response.status, 200);
-  const approved = await approve(start);
+  const provider = options.provider ?? 'github';
+  const approved = await approve(start, { decision: provider });
   assert.equal(approved.status, 302);
   const upstream = new URL(approved.headers.get('location'));
-  assert.equal(upstream.origin, 'https://github.com');
+  assert.equal(upstream.origin, provider === 'github' ? 'https://github.com' : googleIssuer);
   assert.equal(upstream.searchParams.get('code_challenge_method'), 'S256');
-  assert.equal(upstream.searchParams.get('scope'), '');
-  const callback = `${origin}/oauth/github/callback?${new URLSearchParams({ state: upstream.searchParams.get('state'), code: user })}`;
+  assert.equal(upstream.searchParams.get('scope'), provider === 'github' ? '' : 'openid profile');
+  const code = provider === 'github' ? user : randomBytes(24).toString('base64url');
+  if (provider === 'google')
+    googleCodes.set(code, {
+      user,
+      nonce: upstream.searchParams.get('nonce'),
+      challenge: upstream.searchParams.get('code_challenge'),
+    });
+  const callback = `${origin}/oauth/${provider}/callback?${new URLSearchParams({ state: upstream.searchParams.get('state'), code })}`;
   const response = await start.server.dispatchFetch(callback, {
     headers: { cookie: cookies(approved) },
     redirect: 'manual',
@@ -351,6 +409,141 @@ test('same user reconnects to one tenant; another user and forged headers cannot
   assert.equal(other.headers['mcp-session-id'], 'session-alice'); // Session IDs never route a tenant.
 });
 
+test('both sign-in choices resolve permanent Kiln accounts, with no cross-provider auto-link', async () => {
+  const page = (await consent()).page;
+  assert.match(page, /Continue with Google/);
+  assert.match(page, /Continue with GitHub/);
+  const first = await token('alice', { provider: 'google' });
+  const again = await token('alice', { provider: 'google' });
+  const github = await token('alice');
+  const googleTenant = (await (await mcp(first)).json()).tenant;
+  assert.equal((await (await mcp(again)).json()).tenant, googleTenant);
+  assert.notEqual((await (await mcp(github)).json()).tenant, googleTenant);
+  const rows = await database
+    .prepare('SELECT issuer, account_id FROM kiln_identities WHERE subject=?')
+    .bind('1001')
+    .all();
+  assert.equal(rows.results.length, 2);
+  for (const row of rows.results) assert.match(row.account_id, /^ka_[a-f0-9]{32}$/);
+});
+
+const refreshToken = (credential) =>
+  runtime.dispatchFetch(`${origin}/oauth/token`, {
+    method: 'POST',
+    headers: { 'content-type': 'application/x-www-form-urlencoded' },
+    body: new URLSearchParams({
+      grant_type: 'refresh_token',
+      refresh_token: credential.refresh_token,
+      client_id: credential.clientId,
+      resource: `${origin}/mcp`,
+    }),
+  });
+
+test('current account state and epoch gate tools, downloads, code exchange and refresh', async () => {
+  for (const mutation of ['disable', 'delete', 'epoch']) {
+    const credential = await token('bob');
+    const pendingCode = await grant('bob');
+    const identity = await database
+      .prepare('SELECT account_id FROM kiln_identities WHERE issuer=? AND subject=?')
+      .bind('https://github.com', '1002')
+      .first();
+    const state =
+      mutation === 'disable' ? 'disabled' : mutation === 'delete' ? 'deleting' : 'active';
+    await database
+      .prepare(
+        'UPDATE kiln_accounts SET state=?, authorization_epoch=authorization_epoch+? WHERE id=?',
+      )
+      .bind(state, mutation === 'epoch' ? 1 : 0, identity.account_id)
+      .run();
+    assert.equal((await mcp(credential)).status, 401);
+    assert.equal(
+      (
+        await runtime.dispatchFetch(`${origin}/mcp/artifacts/${'a'.repeat(32)}`, {
+          headers: { authorization: `Bearer ${credential.access_token}` },
+        })
+      ).status,
+      401,
+    );
+    assert.equal((await exchange(pendingCode)).status, 400);
+    const refused = await refreshToken(credential);
+    assert.equal(refused.status, 400);
+    assert.equal((await refused.json()).error, 'invalid_grant');
+    await database
+      .prepare(
+        'UPDATE kiln_accounts SET state=?, authorization_epoch=authorization_epoch+1 WHERE id=?',
+      )
+      .bind('active', identity.account_id)
+      .run();
+    // Re-enabling never revives old credentials; an explicit new login is required.
+    assert.equal((await mcp(credential)).status, 401);
+    assert.equal((await mcp(await token('bob'))).status, 200);
+  }
+});
+
+test('an unavailable account authority fails closed for access and refresh', async () => {
+  const credential = await token('alice');
+  await database.prepare('ALTER TABLE kiln_accounts RENAME TO fixture_unavailable_accounts').run();
+  try {
+    const access = await mcp(credential);
+    assert.equal(access.status, 503);
+    assert.ok(!(await access.text()).includes('kiln_accounts'));
+    assert.equal((await refreshToken(credential)).status, 503);
+  } finally {
+    await database
+      .prepare('ALTER TABLE fixture_unavailable_accounts RENAME TO kiln_accounts')
+      .run();
+  }
+  assert.equal((await mcp(credential)).status, 200);
+});
+
+test('a provider callback cannot be swapped onto the other provider route', async () => {
+  for (const provider of ['github', 'google']) {
+    const start = await consent();
+    const approved = await approve(start, { decision: provider });
+    assert.equal(approved.status, 302);
+    const state = new URL(approved.headers.get('location')).searchParams.get('state');
+    const count = outboundCalls;
+    const other = provider === 'google' ? 'github' : 'google';
+    const response = await runtime.dispatchFetch(
+      `${origin}/oauth/${other}/callback?${new URLSearchParams({ state, code: 'alice' })}`,
+      { headers: { cookie: cookies(approved) }, redirect: 'manual' },
+    );
+    assert.equal(response.status, 400);
+    assert.equal(outboundCalls, count);
+  }
+});
+
+test('stale upstream KV cannot replay consent or a completed sign-in', async () => {
+  const kv = await runtime.getKVNamespace('OAUTH_KV');
+  const snapshot = async () => {
+    const { keys } = await kv.list();
+    return Promise.all(keys.map(async ({ name }) => [name, await kv.get(name)]));
+  };
+  const restore = async (records) => {
+    for (const [name, value] of records) if (value !== null) await kv.put(name, value);
+  };
+  const start = await consent();
+  const beforeConsent = await snapshot();
+  const approved = await approve(start);
+  assert.equal(approved.status, 302);
+  await restore(beforeConsent);
+  const count = outboundCalls;
+  assert.equal((await approve(start)).status, 400);
+  assert.equal(outboundCalls, count);
+  const beforeCallback = await snapshot();
+  const state = new URL(approved.headers.get('location')).searchParams.get('state');
+  const callback = () =>
+    runtime.dispatchFetch(
+      `${origin}/oauth/github/callback?${new URLSearchParams({ state, code: 'alice' })}`,
+      { headers: { cookie: cookies(approved) }, redirect: 'manual' },
+    );
+  assert.equal((await callback()).status, 302);
+  await restore(beforeCallback);
+  const afterFirst = outboundCalls;
+  assert.equal((await callback()).status, 400);
+  assert.equal(outboundCalls, afterFirst);
+});
+
 test('MCP refuses a foreign browser Origin even with a valid token', async () => {
   const credential = await token('alice');
   assert.equal(
@@ -501,6 +694,7 @@ test('real OAuth gateway authorizes downloads from a separate tenant Worker', as
           compatibilityDate: '2026-10-06',
           compatibilityFlags: ['global_fetch_strictly_public'],
           kvNamespaces: ['OAUTH_KV'],
+          d1Databases: ['ACCOUNTS'],
           durableObjects: {
             TENANTS: { className: 'KilnTenant', scriptName: 'tenant', useSQLite: true },
           },
@@ -508,6 +702,8 @@ test('real OAuth gateway authorizes downloads from a separate tenant Worker', as
             PUBLIC_ORIGIN: origin,
             GITHUB_CLIENT_ID: 'fixture-client',
             GITHUB_CLIENT_SECRET: 'fixture-only-secret',
+            GOOGLE_CLIENT_ID: 'fixture-google-client',
+            GOOGLE_CLIENT_SECRET: 'fixture-google-secret',
           },
           outboundService: async (request) => {
             if (request.url === 'https://github.com/login/oauth/access_token') {
@@ -545,11 +741,17 @@ test('real OAuth gateway authorizes downloads from a separate tenant Worker', as
     }),
   );
   try {
+    const accounts = await server.getD1Database('ACCOUNTS', 'gateway');
+    await migrateAccounts(accounts);
     const alice = await token('alice', { server });
     const bob = await token('bob', { server });
     const reconnected = await token('alice', { server });
     const namespace = await server.getDurableObjectNamespace('TENANTS', 'tenant');
-    const name = digest(JSON.stringify(['kiln-tenant-v1', origin, 'github-1001']));
+    const identity = await accounts
+      .prepare('SELECT account_id FROM kiln_identities WHERE issuer=? AND subject=?')
+      .bind('https://github.com', '1001')
+      .first();
+    const name = digest(JSON.stringify(['kiln-tenant-v1', origin, identity.account_id]));
     const tenant = namespace.get(namespace.idFromName(name));
     // Seed bytes through the same private binding used by the future native host.
     const bytes = Buffer.from('private retained source');

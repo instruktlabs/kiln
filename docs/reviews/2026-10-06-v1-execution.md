@@ -21,7 +21,7 @@ published yet.
 | P4 | Clean installs and workspace upgrades | In progress: RC package passed all platform CI jobs; official 0.10.0-to-RC upgrades pass for Claude/Codex workspaces with conflict refusal, reapplied customizations and byte-exact old assets; final-version harness checks remain open |
 | P5 | Release automation and npm publication | In progress: manual exact-archive workflow and owner runbook; GitHub npm-release environment created with sole owner review, no admin bypass and protected branches; live npm trust, staging approval, registry provenance and fresh registry install remain open |
 | H1 | Native Cloudflare qualification | In progress: Linux image built, Trixie software renderer passes six textured views; Docker namespace probe fails closed, Bubblewrap launch-argument defect corrected; real Cloudflare isolation/execution, RSS, startup and measured cost remain pending |
-| H2 | Authenticated MCP and tenant boundary | In progress: Google and GitHub selected with one Kiln account; existing GitHub-only OAuth and native HTTP pass local two-user, storage and reconnect checks; provider-neutral account storage, Google/linking, branded real sign-in, container dispatch and evaluator isolation remain open |
+| H2 | Authenticated MCP and tenant boundary | In progress: Google/GitHub adapters, permanent D1 account IDs, atomic upstream login guards and current account/epoch checks pass 90 local hosted tests; linking, individual connection revocation, branded real sign-in, container dispatch and evaluator isolation remain open |
 | H3 | Artifact lifecycle | In progress: tenant SQLite/R2 bytes, ProgramStore and native AssetLibrary, atomic quotas/revision pins, material closures, authenticated downloads, deletion and seven-day unsaved retention pass local workerd and actual-engine checks; standalone MaterialLibrary, native dispatch, browser tickets, account deletion and deployed lifecycle proof remain open |
 | H4 | Capacity and operations | In progress: local native request admission, body/response/deadline bounds and cancellation pass; global operational quotas, process cleanup, load/cost measurements, alerts, deployed health/build identity and rollback remain open |
 | H5 | Production deployment | Pending: approved deployment at `kiln.instruktlabs.com`; live authenticated create/edit/render/save/download/reconnect flow |
@@ -1132,7 +1132,12 @@ metadata and runtime bundles; never restore its stale generated build files.
 The tested stdio correction was committed and pushed as
 `6a89d790ba2d786ad641bdab777a40535ef3c19c` on `codex/v1-publication`;
 [CI 37466581875](https://github.com/instruktlabs/kiln/actions/runs/37466581875)
-is its exact candidate run. Hosting implementation continues on the local
+passed all twelve jobs, including Intel macOS shutdown, coverage and installed
+software Vulkan. Hosted gateway checks 37466581806 and Website 37466582044 also
+passed at the same commit; native preflight 37466581995 still fails isolation.
+PR 145 is ready for review, with approval to merge this exact RC requested through
+the question tool. No merge, npm stage or deployment has occurred.
+Hosting implementation continues on the local
 `codex/v1-hosted-identity` branch based on that commit, preserving the PR 145
 candidate while its release checks and owner handoffs proceed.
 
@@ -1152,6 +1157,44 @@ existing production builds pass. Receipts: `.cache/v1-accounts-before.log`,
 No live D1 database was created. The adapter is not yet wired to authorization or
 tenant selection; Google, linking, epoch enforcement and account lifecycle remain
 open. Simulated primary reads do not prove deployed cross-region revocation.
+
+## Hosted identity integration
+
+The owner-selected Google and GitHub flow is now connected to the D1 account
+directory on `codex/v1-hosted-identity`, separately from the frozen npm RC. Google
+uses pinned `oauth4webapi@3.8.8`; signatures, both documented Google issuers,
+audience/authorized-party, nonce, expiry, state and exact callback checks are
+exercised with locally generated signing keys. It requests `openid profile` and
+discards upstream credentials. GitHub continues to request no repository scopes.
+Only a permanent Kiln account ID enters a grant or tenant-routing hash.
+
+`0002_login_intents.sql` and its D1 adapter close the upstream same-browser KV
+replay window with atomic, origin/state/provider/purpose-bound claims, after the
+OAuth library verifies its browser cookie. Tests include 24 simultaneous consent
+claims and callback consumes, stale-KV replay, provider swaps, expiry and bounded
+input. No raw state or upstream credentials are stored in these D1 tables.
+Every protected access, code exchange and refresh also reads current primary
+account state and epoch. Disabled/deleting accounts, old epochs and missing
+authority fail closed. Re-enabling after an epoch increment does not restore old
+credentials. These checks use public provider hooks, with no vendor internals
+modified and no custom JWT decoder.
+
+The Google tests first failed against their stub, and a single-audience foreign
+`azp` fixture exposed an additional check now enforced. The login-intent stub
+failed all four contract tests; the new routing contract failed before wiring.
+Full hosted result: **90 passed, no failures**; both hosting typechecks, all five
+production builds and root lint (933 files) pass. Receipts:
+`.cache/v1-google-before.log`, `.cache/v1-google-after.log`,
+`.cache/v1-login-intents-before.log`, `.cache/v1-login-intents-after.log`,
+`.cache/v1-provider-routing-before.log`, `.cache/v1-hosted-identity-full.log`.
+
+This is local implementation evidence, not hosted launch acceptance. No provider
+app, live D1 resource or hosted deployment was created. Explicit account linking,
+browser account sessions, individual connection revocation, deletion orchestration,
+public-endpoint admission limits, completed branding/privacy/support pages and
+actual deployed provider/client and cross-region checks remain open. Native
+provider isolation and dispatch remain independent blockers. PR #145's npm RC
+head is unchanged; npm login and main-merge owner handoffs remain pending.
 
 ## Owner handoffs
 

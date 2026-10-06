@@ -21,8 +21,8 @@ npm run build
 
 The tests execute the Worker in workerd through the pinned Miniflare package.
 Its 5.x API is currently alpha; the exported v4 option converter supplies the
-documented simulation bindings. Tests replace GitHub network responses with fixed
-identities. Routing tests use a recording backend; storage tests use the production
+documented simulation bindings. Tests replace GitHub responses with fixed identities
+and Google responses with locally signed OIDC fixtures. Routing tests use a recording backend; storage tests use the production
 tenant Worker with real simulated SQLite and R2 bindings. A combined test connects
 both production Workers and verifies authenticated two-user downloads and reconnects.
 Separate test-only fault injection covers late upload acknowledgement and failed
@@ -38,7 +38,7 @@ with input/hash/import receipts, are written to
 `../.cache/hosted-worker/`. `build` performs no upload, resource provisioning or
 deployment. `Hosted gateway checks` runs the same checks on Linux and Windows.
 
-## Account directory foundation
+## Provider-neutral accounts
 
 `src/accounts.ts` defines a provider-neutral account lookup contract and a D1
 adapter. `migrations/0001_accounts.sql` owns the identity index. Verified canonical
@@ -50,10 +50,14 @@ a replacement account through ordinary sign-in.
 
 The workerd tests exercise concurrent first sign-ins, unique issuer/subject pairs,
 rollback after an injected identity-write failure and current account-state reads.
-They do not establish cross-region deployment behavior. The adapter is **not yet
-connected to OAuth or tenant routing**: the existing GitHub-only gateway still
-uses its original provider-derived subject. Linking, session/grant epoch checks,
-account controls and completed asset deletion remain required before launch.
+They do not establish cross-region deployment behavior. Both provider adapters now
+resolve this directory before issuing Kiln grants. Every protected-resource token
+validation, authorization-code exchange and refresh checks the current primary
+account state and authorization epoch. Missing/disabled/deleting accounts and old
+epochs fail closed; database outages return unavailable rather than permitting
+cached access. Account lifecycle mutations must increment the epoch atomically.
+Explicit identity linking, browser sessions, connection controls and completed
+asset deletion remain required before launch.
 Only verified server-side provider adapters may call this contract. The JSON
 interface under `test/` exists solely for local tests and is not a public API.
 
@@ -102,16 +106,22 @@ before deployment.
 
 The owner selected Google and GitHub sign-in for free hosted v1 access, private
 saved assets and personal quotas; email can follow. The local package needs no
-Kiln account. The current adapter implements GitHub only. It requests no repository scopes, uses upstream S256 PKCE,
-and resolves the current GitHub user for every login. Only `github-<immutable id>`
-becomes a subject. Login names and email addresses are not tenant identifiers.
-Upstream tokens are used only for the identity lookup and are not stored or passed
-to the backend. This needs a dedicated Instrukt Labs OAuth app; no app or secret
-has been provisioned by this implementation.
+Kiln account. GitHub requests no repository scopes, uses upstream S256 PKCE and
+resolves the immutable user ID for every login. Google uses `oauth4webapi@3.8.8`
+for discovery, code exchange, nonce/issuer/audience/expiry checks and application-level
+signature verification. It requests `openid profile`, uses S256 PKCE, rejects a
+foreign `azp`, and canonicalizes Google's two documented issuer spellings. Network
+responses are bounded and redirects/foreign endpoint origins are refused. Upstream
+access/ID tokens are discarded at the adapter boundary; only verified issuer/subject
+pairs enter the account directory. Login names and email never select a tenant.
 
-Before launch, replace this direct provider subject with a permanent Kiln account
-id resolved from verified `(issuer, subject)` bindings. Google, account storage,
-explicit linking and recovery/account controls are not implemented yet. See the
+The gateway needs `ACCOUNTS` bound to D1 with both migrations applied, plus
+`GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `GITHUB_CLIENT_ID` and
+`GITHUB_CLIENT_SECRET`. Register exact `/oauth/google/callback` and
+`/oauth/github/callback` URLs under the configured `PUBLIC_ORIGIN`, using separate
+test and production provider apps. No live database, provider app or secret has
+been provisioned by this implementation. Existing prototype provider-derived grants
+are deliberately invalid; no deployed user migration is being claimed. See the
 [authentication architecture review](../docs/plans/2026-10-05-v1-publication-plan.md#authentication-architecture-review-6-october)
 for the selected provider-independent boundary, library comparison, KV consistency
 limits and required deployed checks. Equal email addresses never imply permission
@@ -119,24 +129,34 @@ to merge accounts or libraries.
 
 Launch requires a clearly branded Kiln / Instrukt Labs connection page, a verified
 service domain, a plain explanation of the granted access, privacy/support links
-and usable disconnect/deletion controls. Verify actual provider consent, denied
+and usable disconnect/deletion controls. The current minimal consent page is not
+the accepted launch design. Verify actual provider consent, denied
 and cancelled sign-in, token expiry/revocation and cross-user access on the deployed
 service. Local fixtures are not acceptance of that end-user experience or its
-deployed security. Keep GitHub credentials only in the gateway's secret bindings;
+deployed security. Keep provider credentials only in the gateway's secret bindings;
 never send them to an evaluator, log them or store them with artifacts.
 
 Consent names the requesting client, verified domain when available, callback
 host, scopes and loopback warning. The library binds consent and upstream state
 to HttpOnly, Secure browser cookies; the form additionally checks its exact
 origin. Client-supplied strings are escaped. The page forbids scripts and framing.
+`src/login-intents.ts` adds atomic D1 claims after the library's browser validation:
+one consent choice per handle, and one callback per origin/state/provider/purpose
+intent. The database stores hashes, not raw state, verifier or nonce. Consent claims
+last one day (longer than the library's ten-minute transaction); upstream intents
+last ten minutes. Indexed cleanup removes at most 128 expired rows per write.
+Replayed stale KV snapshots and concurrent D1 claims are exercised locally.
 The `kiln:use` scope permits the engine's asset lifecycle, including deletion;
 `offline_access` permits a renewable connection with a fixed 30-day lifetime.
 Access tokens expire after 15 minutes. Revocation uses the advertised endpoint.
 Production KV propagation means the local revocation test does not promise
 instant global revocation; this needs explicit operational qualification.
 
-Verified OAuth subjects alone select a Durable Object, using a versioned hash of
-issuer and subject. Reconnecting through another client selects the same tenant.
+Verified permanent Kiln account IDs alone select a Durable Object, using a versioned
+hash of the configured Kiln origin and account ID. Reconnecting through another
+client selects the same tenant. Different provider identities are separate until
+an explicit linking flow is implemented; matching email or subject strings do not
+merge their accounts.
 Bearer tokens, cookies, session ids, caller tenant headers and program references
 cannot choose the object. Only bounded MCP transport headers and request bodies
 cross the private binding. The tenant backend must still authorize all references

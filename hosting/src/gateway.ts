@@ -13,8 +13,7 @@ export async function forwardTenant(
 ): Promise<Response> {
   if (!ctx.auth.scope.includes('kiln:use')) return insufficientScope(ctx.auth, ['kiln:use']);
   const userId = ctx.auth.userId;
-  if (!userId || !/^[A-Za-z0-9_-]{1,256}$/.test(userId))
-    throw new HttpFailure(401, 'Invalid identity');
+  if (!userId || !/^ka_[a-f0-9]{32}$/.test(userId)) throw new HttpFailure(401, 'Invalid identity');
   const url = new URL(request.url);
   const isMcp = url.pathname === '/mcp';
   const isArtifact = /^\/mcp\/artifacts\/[A-Za-z0-9_-]{16,128}$/.test(url.pathname);

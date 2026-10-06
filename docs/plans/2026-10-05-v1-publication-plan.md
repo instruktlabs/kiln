@@ -1026,11 +1026,14 @@ Sources: [Better Auth account linking](https://better-auth.com/docs/concepts/use
 
 #### Remaining security and user-flow gates
 
-The current gateway follows the upstream library's consent/PKCE pattern, strips
-credentials before private dispatch and tests tenant separation. It lacks Google,
-an internal account registry, account settings/linking/deletion, production public
-endpoint quotas and the branded end-user flow. The current bare consent form is
-an implementation fixture, not the approved launch presentation.
+The gateway follows the upstream library's consent/PKCE pattern, strips credentials
+before private dispatch and tests tenant separation. On 6 October the separate
+`codex/v1-hosted-identity` branch connected Google and GitHub adapters to permanent
+D1 Kiln accounts, atomic upstream login guards and current account/epoch checks;
+90 local hosted tests pass. See the [execution record](../reviews/2026-10-06-v1-execution.md#hosted-identity-integration).
+Account settings/linking/deletion, individual connection revocation, production
+public-endpoint quotas and the branded end-user flow remain open. The current bare
+consent form is an implementation fixture, not the approved launch presentation.
 
 The provider documents a same-browser concurrent replay window because KV cannot
 atomically consume a consent/upstream handle. KV also propagates changes across

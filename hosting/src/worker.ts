@@ -1,4 +1,9 @@
-import { OAuthAuthorizationServer, OAuthResourceServer } from '@cloudflare/workers-oauth-provider';
+import {
+  OAuthAuthorizationServer,
+  OAuthError,
+  OAuthResourceServer,
+} from '@cloudflare/workers-oauth-provider';
+import { isCurrentAccountGrant } from './accounts';
 import { authorize, authorizationFailure, SCOPES, type SignInEnv } from './auth';
 import { forwardTenant, type TenantEnv } from './gateway';
 import { boundedRequest, HttpFailure, privateResponse } from './http';
@@ -29,14 +34,27 @@ export default {
         scopesSupported: SCOPES,
         accessTokenTTL: 900,
         refreshTokenTTL: 30 * 24 * 60 * 60,
+        tokenExchangeCallback: async ({ env: bindings, userId, props }) => {
+          if (!(await isCurrentAccountGrant(bindings.ACCOUNTS, userId, props)))
+            throw new OAuthError('invalid_grant', {
+              description: 'Account authorization changed; sign in again',
+            });
+        },
         // Deliberately do not log request data or provider error descriptions.
         onError: () => {},
       });
       const protectedResource = new OAuthResourceServer<Env>({
         resourceMetadata: { resource, authorization_servers: [origin] },
         requiredScopes: ['kiln:use'],
-        validateToken: (bindings) => (audience, token) =>
-          auth.validateToken(audience, token, bindings),
+        validateToken: (bindings) => async (audience, token) => {
+          const verified = await auth.validateToken(audience, token, bindings);
+          if (!verified) return null;
+          if (!(await isCurrentAccountGrant(bindings.ACCOUNTS, verified.userId, verified.props)))
+            throw new OAuthError('invalid_token', {
+              description: 'Account authorization changed; sign in again',
+            });
+          return verified;
+        },
         handler: {
           fetch: (incoming, bindings, context) =>
             forwardTenant(incoming, bindings, context, origin),
@@ -54,8 +72,18 @@ export default {
         if (url.search)
           throw new HttpFailure(400, 'Query parameters are not supported on resource endpoints');
         response = await protectedResource.fetch(request, env, ctx);
-      } else if (url.pathname === '/authorize' || url.pathname === '/oauth/github/callback') {
-        if (!env.GITHUB_CLIENT_ID || !env.GITHUB_CLIENT_SECRET)
+      } else if (
+        url.pathname === '/authorize' ||
+        url.pathname === '/oauth/github/callback' ||
+        url.pathname === '/oauth/google/callback'
+      ) {
+        if (
+          !env.GITHUB_CLIENT_ID ||
+          !env.GITHUB_CLIENT_SECRET ||
+          !env.GOOGLE_CLIENT_ID ||
+          !env.GOOGLE_CLIENT_SECRET ||
+          !env.ACCOUNTS
+        )
           throw new HttpFailure(503, 'Sign-in is not configured');
         response = await authorize(
           await boundedRequest(request, 16_384),

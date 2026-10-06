@@ -5,11 +5,22 @@ import {
   type OAuthHelpers,
 } from '@cloudflare/workers-oauth-provider';
 import { HttpFailure, readBounded, sha256 } from './http';
+import { D1AccountDirectory, IDENTITY_ISSUERS, type VerifiedIdentity } from './accounts';
+import { googleAuthorizationUrl, type GoogleEnv, googleIdentity } from './google';
+import { D1LoginIntents, type SignInProvider } from './login-intents';
 
 export const SCOPES = ['kiln:use', 'offline_access'];
-export interface SignInEnv {
+export interface SignInEnv extends GoogleEnv {
   GITHUB_CLIENT_ID: string;
   GITHUB_CLIENT_SECRET: string;
+  ACCOUNTS: D1Database;
+}
+interface SignInTransaction {
+  intentId: string;
+  provider: SignInProvider;
+  purpose: 'sign-in';
+  verifier: string;
+  nonce: string;
 }
 const escapeHtml = (value: string) =>
   value.replace(/[&<>"']/g, (char) => `&#${char.charCodeAt(0)};`);
@@ -26,9 +37,11 @@ function consentPage(details: ConsentDescription, handle: string): string {
 <p>Access will be returned to <strong>${escapeHtml(details.redirectHost)}</strong>.</p>
 ${details.redirectIsLoopback ? '<p>This connects an app on your computer. Continue only if you started that connection.</p>' : ''}
 <ul>${details.scope.map((scope) => `<li>${escapeHtml(descriptions[scope] ?? scope)}</li>`).join('')}</ul>
-<p>Sign in with GitHub to identify your Kiln account. Kiln requests no repository access.</p>
+<p>Hosted access is free within your quota. Sign in to keep saved assets private. Kiln requests no GitHub repository access or Google Drive access.</p>
+<p>Use the same sign-in method when returning to your library.</p>
 <form method="post" action="/authorize"><input type="hidden" name="handle" value="${escapeHtml(handle)}">
-<button name="decision" value="approve">Continue with GitHub</button>
+<button name="decision" value="google">Continue with Google</button>
+<button name="decision" value="github">Continue with GitHub</button>
 <button name="decision" value="deny">Cancel</button></form></main></html>`;
 }
 
@@ -55,7 +68,7 @@ async function githubIdentity(
   verifier: string,
   origin: string,
   env: SignInEnv,
-): Promise<string> {
+): Promise<VerifiedIdentity> {
   const token = await upstreamJson('https://github.com/login/oauth/access_token', {
     method: 'POST',
     headers: { accept: 'application/json', 'content-type': 'application/x-www-form-urlencoded' },
@@ -88,8 +101,8 @@ async function githubIdentity(
     throw new HttpFailure(502, 'Invalid sign-in identity');
   }
   // Immutable provider id, never a mutable login or email. Upstream tokens are
-  // discarded here; only this subject is retained by Kiln's OAuth grants.
-  return `github-${user.id}`;
+  // discarded here; the account directory owns the provider-neutral subject.
+  return { issuer: IDENTITY_ISSUERS.github, subject: String(user.id) };
 }
 
 export async function authorize(
@@ -99,6 +112,7 @@ export async function authorize(
   env: SignInEnv,
 ): Promise<Response> {
   const url = new URL(request.url);
+  const intents = new D1LoginIntents(env.ACCOUNTS, origin);
   if (url.pathname === '/authorize' && request.method === 'GET') {
     const auth = await oauth.parseAuthRequest(request);
     if (
@@ -131,19 +145,49 @@ export async function authorize(
       throw new HttpFailure(415, 'Expected form data');
     }
     const form = await request.formData();
+    if (form.getAll('handle').length !== 1 || form.getAll('decision').length !== 1)
+      throw new HttpFailure(400, 'Invalid sign-in form');
     const handle = String(form.get('handle') ?? '');
     const decision = form.get('decision');
     if (decision === 'deny') {
       const result = await oauth.denyConsent(request, handle);
+      await intents.claimConsent(handle);
       return new Response(null, { status: 302, headers: result.headers });
     }
-    if (decision !== 'approve') throw new HttpFailure(400, 'Choose whether to connect');
+    if (decision !== 'google' && decision !== 'github')
+      throw new HttpFailure(400, 'Choose how to connect');
     const approved = await oauth.approveConsent(request, handle);
+    await intents.claimConsent(handle);
     const verifier = crypto.randomUUID().replace(/-/g, '') + crypto.randomUUID().replace(/-/g, '');
+    const data: SignInTransaction = {
+      intentId: crypto.randomUUID(),
+      provider: decision,
+      purpose: 'sign-in',
+      verifier,
+      nonce: crypto.randomUUID().replace(/-/g, ''),
+    };
     const upstream = await oauth.beginUpstream(approved.request, {
-      data: { verifier },
+      data,
       headers: approved.headers,
     });
+    await intents.create({
+      id: data.intentId,
+      state: upstream.state,
+      provider: data.provider,
+      purpose: data.purpose,
+    });
+    if (decision === 'google') {
+      upstream.headers.set(
+        'location',
+        await googleAuthorizationUrl(
+          origin,
+          { state: upstream.state, verifier, nonce: data.nonce },
+          env,
+          request.signal,
+        ),
+      );
+      return new Response(null, { status: 302, headers: upstream.headers });
+    }
     const target = new URL('https://github.com/login/oauth/authorize');
     target.search = new URLSearchParams({
       client_id: env.GITHUB_CLIENT_ID,
@@ -156,8 +200,31 @@ export async function authorize(
     upstream.headers.set('location', target.href);
     return new Response(null, { status: 302, headers: upstream.headers });
   }
-  if (url.pathname === '/oauth/github/callback' && request.method === 'GET') {
-    const resumed = await oauth.finishUpstream<{ verifier: string }>(request);
+  const callbackProvider =
+    url.pathname === '/oauth/google/callback'
+      ? 'google'
+      : url.pathname === '/oauth/github/callback'
+        ? 'github'
+        : null;
+  if (callbackProvider && request.method === 'GET') {
+    if (url.searchParams.getAll('state').length !== 1)
+      throw new HttpFailure(400, 'Invalid sign-in state');
+    const resumed = await oauth.finishUpstream<SignInTransaction>(request);
+    if (
+      !resumed.data ||
+      resumed.data.provider !== callbackProvider ||
+      resumed.data.purpose !== 'sign-in'
+    )
+      throw new HttpFailure(400, 'Invalid sign-in provider');
+    const state = url.searchParams.get('state') ?? '';
+    // The library validates this state against its browser-bound transaction;
+    // D1 additionally compares its server-retained hash and atomically consumes it.
+    await intents.consume({
+      id: resumed.data.intentId,
+      state,
+      provider: callbackProvider,
+      purpose: resumed.data.purpose,
+    });
     if (url.searchParams.has('error')) {
       resumed.headers.set('location', authorizationErrorRedirect(resumed.request, 'access_denied'));
       return new Response(null, { status: 302, headers: resumed.headers });
@@ -165,13 +232,23 @@ export async function authorize(
     const code = url.searchParams.get('code');
     if (!code || code.length > 1024 || url.searchParams.getAll('code').length !== 1)
       throw new HttpFailure(400, 'Missing sign-in code');
-    const userId = await githubIdentity(code, resumed.data.verifier, origin, env);
+    const identity =
+      callbackProvider === 'google'
+        ? await googleIdentity(
+            request,
+            origin,
+            { state, verifier: resumed.data.verifier, nonce: resumed.data.nonce },
+            env,
+          )
+        : await githubIdentity(code, resumed.data.verifier, origin, env);
+    const account = await new D1AccountDirectory(env.ACCOUNTS).resolveIdentity(identity);
+    const userId = account.id;
     const { redirectTo } = await oauth.completeAuthorization({
       request: resumed.request,
       userId,
       metadata: {},
       scope: resumed.request.scope,
-      props: { userId },
+      props: { userId, accountEpoch: account.authorizationEpoch },
     });
     resumed.headers.set('location', redirectTo);
     return new Response(null, { status: 302, headers: resumed.headers });

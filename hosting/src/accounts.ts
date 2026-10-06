@@ -24,6 +24,30 @@ export interface AccountDirectory {
   getAccount(id: string): Promise<KilnAccount | null>;
 }
 
+/** A grant can outlive sign-in, but never the account's current authorization epoch. */
+export async function isCurrentAccountGrant(
+  database: D1Database,
+  userId: unknown,
+  props: unknown,
+): Promise<boolean> {
+  if (
+    typeof userId !== 'string' ||
+    !/^ka_[a-f0-9]{32}$/.test(userId) ||
+    !props ||
+    typeof props !== 'object'
+  )
+    return false;
+  const grant = props as Record<string, unknown>;
+  if (
+    grant.userId !== userId ||
+    !Number.isSafeInteger(grant.accountEpoch) ||
+    Number(grant.accountEpoch) < 1
+  )
+    return false;
+  const account = await new D1AccountDirectory(database).getAccount(userId);
+  return account?.state === 'active' && account.authorizationEpoch === grant.accountEpoch;
+}
+
 const accountColumns = 'id, state, authorization_epoch AS authorizationEpoch';
 
 export class D1AccountDirectory implements AccountDirectory {
