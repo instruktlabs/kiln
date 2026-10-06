@@ -371,3 +371,36 @@ change is indicated. Native evaluation, rendering and hostile-input isolation
 still need independent qualification. A new bounded four-case candidate is being
 prepared around the existing engine/network/fresh-VM fixtures and the proven
 manifest; it is not authorized by the exhausted startup allowance.
+
+## Native engine and basic provider-boundary checks passed
+
+The owner separately approved the four-case candidate at
+`8590c0abfcaedbfa8a34dfd76ac3322f01c0fb55`, after both Linux and Windows passed
+[CI run 37522530858](https://github.com/instruktlabs/kiln/actions/runs/37522530858).
+The private deployment used the same original runtime manifest and the existing
+production job controller. Remote config/layers and uploaded Worker SHA-256
+`0e97f19c8617d20f1bc96880aaa95b9e9303e45b560c7f242f7e19146527fede`
+were verified before its one-use coordinator was invoked at 20:04:01 UTC.
+
+All four sequential jobs passed: actual installed-RC evaluation produced the
+expected 1,912-byte GLB with digest
+`f94d231ed3eb4843a03704872adc3f20b00c2ea24567cb5916407b40a2cf1d40`;
+direct native TCP/DNS checks found the tested endpoints inaccessible; one VM wrote
+a marker and confirmed a detached child was live; the next fresh VM found neither
+marker nor matching child. Elapsed times including cleanup were 3,398, 15,320,
+1,260 and 1,283 ms. They are not billed CPU or representative load measurements.
+
+Each result confirmed stopped state and Cloudflare independently reported all four
+instances stopped with exit code zero. Replay returned the retained batch without
+new executions. The application, Worker, both namespaces and registry tag were
+deleted, with absence verified. The local operator and temporary registry login
+were closed. Evidence is retained under the diagnostic worktree's
+`.cache/manifest-qualification-trial/`.
+
+This qualifies this installed-engine fixture and the tested provider boundaries.
+It does not qualify CPU previews/software rendering, hostile resource exhaustion,
+cancellation and alarm recovery, public admission, live identity/tenant/storage
+integration or production deployment. Those remain required. The original Linux
+nested-namespace preflight still fails and must not be relabelled successful.
+All ten jobs across the three approved trial scopes are consumed; a later trial
+needs its own concrete scope and authorization. No support follow-up was sent.
