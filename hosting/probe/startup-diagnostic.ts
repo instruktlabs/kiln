@@ -1,6 +1,8 @@
 const IMAGE = 'cloudflare/debian-trixie';
 const KILN_IMAGE =
   'registry.cloudflare.com/56adffd40534f7fe110fc661a40bbf53/kiln-evaluation@sha256:69aff70b4f0f80d2ff13549f4b55b1053fc1d8a6e25a00168ac4078a2ebd7b8a';
+const KILN_MANIFEST_IMAGE =
+  'registry.cloudflare.com/56adffd40534f7fe110fc661a40bbf53/kiln-evaluation@sha256:db79551579a9abd33f7589a4da4d57947364ddf3dd37b79f766e202f2703edc8';
 const DEADLINE_MS = 60_000;
 const CLEANUP_MS = 5_000;
 const COMMAND = [
@@ -135,7 +137,7 @@ async function cleanup(container: Container | undefined, record: StartupRecord):
 export class ManagedStartupDiagnostic {
   constructor(
     private readonly context: Pick<DurableObjectState, 'container' | 'storage'>,
-    private readonly imageSource: 'managed' | 'configured' | 'kiln' = 'managed',
+    private readonly imageSource: 'managed' | 'configured' | 'kiln' | 'kiln-manifest' = 'managed',
   ) {}
 
   async run(): Promise<StartupRecord> {
@@ -199,6 +201,12 @@ export class ManagedStartupDiagnostic {
     try {
       const execute = async () => {
         if (!container) throw new DiagnosticFailure('ISOLATION_UNAVAILABLE');
+        const kilnImage =
+          this.imageSource === 'kiln'
+            ? KILN_IMAGE
+            : this.imageSource === 'kiln-manifest'
+              ? KILN_MANIFEST_IMAGE
+              : undefined;
         const image = this.imageSource === 'managed' ? IMAGE : container.images?.control;
         if (
           this.imageSource !== 'managed' &&
@@ -208,8 +216,7 @@ export class ManagedStartupDiagnostic {
             ))
         )
           throw new DiagnosticFailure('IMAGE_UNAVAILABLE');
-        if (this.imageSource === 'kiln' && image !== KILN_IMAGE)
-          throw new DiagnosticFailure('IMAGE_UNAVAILABLE');
+        if (kilnImage && image !== kilnImage) throw new DiagnosticFailure('IMAGE_UNAVAILABLE');
         if (container.running) throw new DiagnosticFailure('PREEXISTING_CONTAINER');
         await step('start', 'START_FAILED', () =>
           container.start({
@@ -243,7 +250,7 @@ export class ManagedStartupDiagnostic {
           container.exec(COMMAND, {
             stdout: 'pipe',
             stderr: 'pipe',
-            ...(this.imageSource === 'kiln' ? { user: '1000:1000' } : {}),
+            ...(kilnImage ? { user: '1000:1000' } : {}),
           }),
         );
         await step('inspect', 'INSPECT_FAILED', async () => {
@@ -268,8 +275,8 @@ export class ManagedStartupDiagnostic {
           if (
             Object.keys(data).sort().join(',') !== 'gid,uid,version' ||
             typeof data.version !== 'string' ||
-            data.version !== (this.imageSource === 'kiln' ? 'v22.23.3' : 'v24.20.0') ||
-            (this.imageSource === 'kiln' && (data.uid !== 1000 || data.gid !== 1000)) ||
+            data.version !== (kilnImage ? 'v22.23.3' : 'v24.20.0') ||
+            (kilnImage && (data.uid !== 1000 || data.gid !== 1000)) ||
             !Number.isSafeInteger(data.uid) ||
             !Number.isSafeInteger(data.gid) ||
             Number(data.uid) < 0 ||

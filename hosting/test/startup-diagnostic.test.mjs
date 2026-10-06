@@ -337,10 +337,51 @@ test('Kiln-image control selects its exact original image and numeric identity w
   assert.equal(substituted.calls.includes('start'), false);
 });
 
+test('Kiln platform-manifest control preserves runtime identity and rejects the original index', async () => {
+  const image =
+    'registry.cloudflare.com/56adffd40534f7fe110fc661a40bbf53/kiln-evaluation@sha256:db79551579a9abd33f7589a4da4d57947364ddf3dd37b79f766e202f2703edc8';
+  const output = JSON.stringify({ version: 'v22.23.3', uid: 1000, gid: 1000 });
+  const f = fixture({ images: { control: image }, output });
+  const diagnostic = new ManagedStartupDiagnostic(f.context, 'kiln-manifest');
+  const result = await diagnostic.run();
+  assert.equal(result.passed, true);
+  assert.equal(result.stopped, true);
+  assert.equal(f.container.settings.image, image);
+  assert.equal(f.container.execSettings.user, '1000:1000');
+  assert.equal(f.container.settings.enableInternet, false);
+  assert.deepEqual(await diagnostic.run(), result);
+  assert.equal(f.calls.filter((call) => call === 'start').length, 1);
+  for (const digest of [
+    '69aff70b4f0f80d2ff13549f4b55b1053fc1d8a6e25a00168ac4078a2ebd7b8a',
+    'a'.repeat(64),
+  ]) {
+    const mismatch = fixture({
+      images: { control: image.replace(/sha256:.*/, `sha256:${digest}`) },
+      output,
+    });
+    assert.equal(
+      (await new ManagedStartupDiagnostic(mismatch.context, 'kiln-manifest').run()).reason,
+      'IMAGE_UNAVAILABLE',
+    );
+    assert.equal(mismatch.calls.includes('start'), false);
+  }
+  for (const runtime of [
+    { version: 'v24.20.0', uid: 1000, gid: 1000 },
+    { version: 'v22.23.3', uid: 0, gid: 0 },
+  ]) {
+    const mismatch = fixture({ images: { control: image }, output: JSON.stringify(runtime) });
+    assert.equal(
+      (await new ManagedStartupDiagnostic(mismatch.context, 'kiln-manifest').run()).reason,
+      'OUTPUT_FAILED',
+    );
+  }
+});
+
 for (const [entryFile, className, entrypoint] of [
   ['startup-worker.ts', 'KilnManagedStartupJob', 'KilnStartupControl'],
   ['custom-startup-worker.ts', 'KilnCustomStartupJob', 'KilnCustomStartupControl'],
   ['kiln-startup-worker.ts', 'KilnImageStartupJob', 'KilnImageStartupControl'],
+  ['manifest-startup-worker.ts', 'KilnManifestStartupJob', 'KilnManifestStartupControl'],
 ]) {
   test(`${entryFile} uses its private binding, denies HTTP and retains a missing-container result`, async () => {
     const bundle = await build({
