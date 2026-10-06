@@ -1,8 +1,8 @@
 # Unchanged Kiln-image startup control
 
-The managed and minimal custom-registry controls passed. Four of five approved
-jobs have been attempted. This candidate consumes at most the final job of the
-original $1 trial. Do not retry it by changing the name or recreating its namespace.
+The managed and minimal custom-registry controls passed. This completed candidate
+consumed the fifth and final job of the original $1 trial. No jobs remain.
+Do not retry it by changing the name or recreating its namespace.
 
 Use the existing `kiln-evaluation:rc1-local` image unchanged, including its original
 OCI index, Node 22.23.3 runtime, installed public RC, entrypoint and `USER node`.
@@ -36,3 +36,35 @@ hostile-source isolation, CPU/software rendering or hosted launch. After this
 attempt, further cloud jobs require a concrete new scope and owner approval.
 
 Source: [native process identity](https://developers.cloudflare.com/containers/api/durable-object-container/).
+
+## Completed attempt: image startup failed
+
+Source `569fc5313f909c04ac960348b638e376cdb36239` was deployed with the exact
+original image on 6 October 2026. The uploaded JavaScript was read back and matched
+SHA-256 `57c509e5b71d086f18e8b3d900d3dfc2bbbc48a369ef816c057b946abe3a018a`.
+The deployed image map matched the original digest, public URL flags were false,
+and the version had no URLs or bindings beyond its job namespace. Wrangler reported
+the image prepared and ready before deployment.
+
+At 19:08:40 UTC the fixed invocation failed with `MONITOR_FAILED` after 1,242 ms.
+The trace reached `start` and `setInactivityTimeout`, but never entered `exec`.
+The Node command and Kiln engine were therefore not executed by this controller.
+Destruction and stopped inspection completed after 1,243 ms. The instance list was
+empty, and replay returned the exact retained failure without another attempt.
+
+The local operator was stopped; the application, Worker, namespace and registry
+image were removed. Readbacks verified absence and Worker 404. Receipts remain
+in the diagnostic worktree's ignored `.cache/startup-kiln-trial/`. The original
+five-job allowance is exhausted; no further cloud execution is authorized by it.
+
+Local checks passed all 131 hosted tests, all hosted typechecks/builds, root
+typecheck/lint, deployment dry run and redacted source/bundle scans. No engine
+source or package content changed; its full 3,290-test suite had passed on the
+preceding custom-image candidate. The current hosted CI run is
+[37516547552](https://github.com/instruktlabs/kiln/actions/runs/37516547552).
+
+This narrows the failure to this image or its startup configuration under the
+native API; the same controller starts managed and minimal custom images. It does
+not establish that OCI indexes, image `USER node`, a particular layer or Cloudflare
+itself is defective. Continue local image analysis before preparing a separately
+bounded next trial. Native evaluation and hosted launch remain unqualified.

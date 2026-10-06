@@ -12,7 +12,8 @@ the hosted service for launch.
 attempted another job and failed during native startup. All cloud resources were
 removed and absence was verified. Subsequent smaller controls in
 [STARTUP.md](STARTUP.md) and [CUSTOM_STARTUP.md](CUSTOM_STARTUP.md) both passed.
-Four jobs total have now been attempted; only one remains.
+The unchanged image control in [KILN_STARTUP.md](KILN_STARTUP.md) then failed
+before its fixed Node command. Five jobs total have now been attempted; none remain.
 Do not redeploy this four-case candidate to a new coordinator. Prepare a revised
 diagnostic within the remaining scope, or obtain approval for a changed trial.
 The details below retain the reviewed four-case candidate for reproducibility.
