@@ -1,8 +1,9 @@
 # Minimal custom-registry startup control
 
 The managed-image control in [STARTUP.md](STARTUP.md) passed and consumed the
-third of five approved jobs. This candidate consumes at most one more job,
-leaving one. It does not repeat the managed control or expand the $1 allowance.
+third of five approved jobs. This completed candidate consumed one more job,
+leaving one. Do not rerun it. It did not repeat the managed control or expand
+the $1 allowance.
 
 Use the documented source of the managed image, official Node 24.20.0 on Debian
 Trixie slim, copied to the account's private Cloudflare registry. Its Linux AMD64
@@ -43,3 +44,34 @@ Worker, namespace and registry image. Read back absence. A pass establishes the
 minimal custom-image path only; it does not qualify Kiln or hostile-source isolation.
 
 Source: [Cloudflare image management](https://developers.cloudflare.com/containers/guides/image-management/).
+
+## Completed private control
+
+Source `2c605257b8990a3bb9c9f0fffb5a9abc45092bc3` passed on 6 October 2026 at
+18:59:29 UTC. Its uploaded JavaScript matched SHA-256
+`84b82608d9baa9ea59cc49c56a5c34c66dc9482e22af14f5219c54945316ba7e`.
+The read-back image map matched the pinned custom registry reference above,
+both public URL flags were false, and the version advertised no URLs. Local Docker
+and the deployed fixed command both returned Node `v24.20.0` with UID/GID `0:0`.
+
+Output completed after 7,000 ms and awaited whole-instance destruction/inspection
+after 7,102 ms. The instance API separately reported stopped with exit code zero.
+These are one cold control's elapsed timings, not billed CPU or Kiln performance.
+A repeated RPC returned exactly the retained record without a new job.
+
+The operator was stopped; application, Worker, namespace and registry image were
+removed. Application/namespace lists, Worker 404, registry listing and absence of
+the local listener verified cleanup. Receipts remain in the diagnostic worktree's
+ignored `.cache/startup-custom-trial/`. Four of five approved jobs have now been
+attempted; one remains. No production deployment or support follow-up occurred.
+
+The candidate passed 129 hosted tests, all hosted typechecks/builds, root
+typecheck/lint, 3,290 root tests (two platform skips), Wrangler dry run and redacted
+source/bundle scans. Its hosted CI run is
+[37515318317](https://github.com/instruktlabs/kiln/actions/runs/37515318317).
+
+Wrangler explicitly prepared the image and waited for readiness before deployment.
+The earlier cf prebuilt deployment receipt also records the same preparation and
+ready transition; an omitted preparation step is therefore not supported as an
+explanation. The remaining image-index/content/controller differences require the
+unchanged Kiln-image control, still without importing the engine.
