@@ -49,7 +49,7 @@ const invoke = (root: string, runtime: string, options = {}, node = 'node', harn
 async function fixture(runtime: string, revision: string) {
   await put(
     join(runtime, 'package.json'),
-    JSON.stringify({ name: '@kiln/engine', version: '1.0.0' }),
+    JSON.stringify({ name: '@instruktlabs/kiln', version: '1.0.0' }),
   );
   const entries: Record<string, unknown> = {};
   for (const [key, file] of [

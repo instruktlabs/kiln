@@ -52,7 +52,7 @@ describe('Tier 2 blind dogfood driver', () => {
   test('the prompt contains only the public repository and outcome-shaped asset goal', () => {
     const prompt = composeBlindPrompt('a tide-powered cliffside signal station');
 
-    expect(prompt).toContain('https://github.com/matthew-kissinger/kiln');
+    expect(prompt).toContain('https://github.com/instruktlabs/kiln');
     expect(prompt).toContain('a tide-powered cliffside signal station');
     expect(prompt).toContain('launch your own headless coding agent');
     expect(prompt).toContain('inside your current run directory');

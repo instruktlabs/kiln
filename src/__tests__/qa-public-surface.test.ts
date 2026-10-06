@@ -1,5 +1,5 @@
 import { expect, test } from 'bun:test';
-import * as qa from '@kiln/engine/qa';
+import * as qa from '@instruktlabs/kiln/qa';
 import { resolveRequirementsContext } from '../requirements-context';
 import { BoxGeometry, Group, Mesh, MeshStandardMaterial } from 'three';
 

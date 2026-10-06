@@ -16,7 +16,7 @@ async function fixture(root: string) {
   await writeFile(
     join(root, 'package.json'),
     JSON.stringify({
-      name: '@kiln/engine',
+      name: '@instruktlabs/kiln',
       version: '1.0.0',
       dependencies: { 'geometry-runtime': '^1' },
     }),
@@ -195,7 +195,7 @@ it('keeps engine-owned generation peers outside the worker closure', async () =>
     await writeFile(
       join(root, 'package.json'),
       JSON.stringify({
-        name: '@kiln/engine',
+        name: '@instruktlabs/kiln',
         version: '1.0.0',
         dependencies: { 'geometry-runtime': '^1' },
         peerDependencies: { 'kiln-fixture-generation': '^1' },

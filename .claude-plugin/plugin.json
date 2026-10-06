@@ -1,11 +1,11 @@
 {
   "name": "kiln",
   "description": "Build and revise 3D assets with your coding agent. Write JavaScript, inspect selected views, edit saved source revisions, and export GLB files locally.",
-  "version": "0.10.0",
+  "version": "1.0.0-dev.0",
   "author": {
     "name": "Matthew Kissinger"
   },
-  "homepage": "https://github.com/matthew-kissinger/kiln",
+  "homepage": "https://github.com/instruktlabs/kiln",
   "license": "MIT",
   "keywords": [
     "3d",

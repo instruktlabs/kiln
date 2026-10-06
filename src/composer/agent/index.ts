@@ -1,7 +1,7 @@
 /**
- * `@kiln/engine/composer/agent` — the Strands-driven scene-composition loop.
+ * `@instruktlabs/kiln/composer/agent` — the Strands-driven scene-composition loop.
  *
- * The agent counterpart to the pure `@kiln/engine/composer` core: it exposes the
+ * The agent counterpart to the pure `@instruktlabs/kiln/composer` core: it exposes the
  * `scene_*` tool surface over a `PlacementModel` and drives any Strands `Model`
  * through it via {@link runKilnComposer}. Isolated on its own subpath so the
  * `@strands-agents/sdk` dependency does not leak into the composer core (which is

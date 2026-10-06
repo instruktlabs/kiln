@@ -2,7 +2,7 @@
  * Kiln instanceability metrics + grader.
  *
  * A pure, deterministic, GPU-free static analysis over a baked glTF Document.
- * Lives in @kiln/engine so it can be computed at every natural point with
+ * Lives in @instruktlabs/kiln so it can be computed at every natural point with
  * zero deploy coupling:
  *   - in render.ts -> render.meta for CLI / MCP / batch (never crosses the wire)
  *   - web-side in Kiln Studio from the persisted GLB

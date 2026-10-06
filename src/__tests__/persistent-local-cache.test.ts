@@ -15,7 +15,7 @@ it('reuses a packaged Node build across fresh CLI host instances and invalidates
     await writeFile(
       join(root, 'package.json'),
       JSON.stringify({
-        name: '@kiln/engine',
+        name: '@instruktlabs/kiln',
         version: pkg.version,
         dependencies: pkg.dependencies,
         type: 'module',

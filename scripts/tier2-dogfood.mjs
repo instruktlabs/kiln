@@ -23,7 +23,7 @@ import {
 } from './dogfood-gallery.mjs';
 import { parseDuration, quoteArg, resolveBin } from './harness.mjs';
 
-export const PUBLIC_REPOSITORY = 'https://github.com/matthew-kissinger/kiln';
+export const PUBLIC_REPOSITORY = 'https://github.com/instruktlabs/kiln';
 const REPO = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const SUPPORTED_HARNESSES = ['agy', 'claude', 'codex', 'hermes', 'opencode'];
 const ARTIFACT_EXCLUDED_SEGMENTS = new Set([

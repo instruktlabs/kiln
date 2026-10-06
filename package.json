@@ -1,7 +1,6 @@
 {
-  "name": "@kiln/engine",
-  "private": true,
-  "version": "0.10.0",
+  "name": "@instruktlabs/kiln",
+  "version": "1.0.0-dev.0",
   "description": "Create and refine procedural 3D assets with JavaScript, image feedback, and reusable source revisions.",
   "license": "MIT",
   "author": "Matthew Kissinger",
@@ -12,7 +11,8 @@
   },
   "bin": {
     "kiln": "./dist/cli.mjs",
-    "kiln-init": "./scripts/create-workspace.mjs"
+    "kiln-init": "./scripts/create-workspace.mjs",
+    "kiln-mcp": "./dist/mcp-server.mjs"
   },
   "exports": {
     "./assets": {
@@ -257,7 +257,27 @@
     "render-service/package-lock.json",
     "render-service/README.md",
     "skills/",
-    "docs/",
+    "docs/architecture.md",
+    "docs/cameras.md",
+    "docs/chatgpt.md",
+    "docs/collections.md",
+    "docs/community-exporter.md",
+    "docs/engine-handoff.md",
+    "docs/examples.md",
+    "docs/export-profiles.md",
+    "docs/extending.md",
+    "docs/geometry.md",
+    "docs/google.md",
+    "docs/harnesses.md",
+    "docs/install.md",
+    "docs/material-library.md",
+    "docs/migration.md",
+    "docs/programs.md",
+    "docs/projects-and-live-review.md",
+    "docs/rendering.md",
+    "docs/runtime.md",
+    "docs/sdk.md",
+    "docs/tools.md",
     "README.md",
     "CONTRIBUTING.md",
     "LICENSE",
@@ -349,5 +369,17 @@
   "optionalDependencies": {
     "@napi-rs/canvas": "1.0.10",
     "webgpu": "0.6.2"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/instruktlabs/kiln.git"
+  },
+  "homepage": "https://github.com/instruktlabs/kiln",
+  "bugs": {
+    "url": "https://github.com/instruktlabs/kiln/issues"
+  },
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
   }
 }

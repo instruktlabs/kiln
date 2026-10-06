@@ -4,26 +4,26 @@ Kiln builds JavaScript programs into GLB assets, validates structure, and render
 
 ## Entry points
 
-The checkout is `@kiln/engine`; its package exports point to TypeScript source. Use a compatible TypeScript runtime or bundler. There is no published npm release yet.
+The checkout is `@instruktlabs/kiln`; its package exports point to TypeScript source. Use a compatible TypeScript runtime or bundler. There is no published npm release yet.
 
 | Subpath | Purpose |
 |---|---|
-| `@kiln/engine/tools` | SDK-independent tool definitions and registry factories |
-| `@kiln/engine/agent` | Optional Strands program-reference loop, model factory and exact-revision completion |
-| `@kiln/engine/discovery` | Offline ranked catalog search and exact helper/recipe contracts |
-| `@kiln/engine/requirements` | Host-bound, category-independent asset requirements |
-| `@kiln/engine/render` | Build, serialize, inspect, and compose GLBs |
-| `@kiln/engine/views` | Shared cameras, CPU images, capture limits, GPU port helpers and cell caches |
-| `@kiln/engine/validation` | Syntax and structural checks |
-| `@kiln/engine/primitives` | Geometry and helper catalog |
-| `@kiln/engine/geometry`, `/deform`, `/sweep` | Custom mesh/surface helpers, deformation and profile modeling |
-| `@kiln/engine/implicit` | Experimental bounded field sampling |
-| `@kiln/engine/programs`, `/programs/node` | Immutable memory/file stores and storage statistics |
-| `@kiln/engine/cache`, `/cache/node` | Disposable memory/file build caches |
-| `@kiln/engine/contracts` | Asset and integration manifests |
-| `@kiln/engine/composer` | Layout and overlap helpers |
-| `@kiln/engine/qa` | Deterministic QA gates and corpora |
-| `@kiln/engine/arena` | Pairwise model evaluation |
+| `@instruktlabs/kiln/tools` | SDK-independent tool definitions and registry factories |
+| `@instruktlabs/kiln/agent` | Optional Strands program-reference loop, model factory and exact-revision completion |
+| `@instruktlabs/kiln/discovery` | Offline ranked catalog search and exact helper/recipe contracts |
+| `@instruktlabs/kiln/requirements` | Host-bound, category-independent asset requirements |
+| `@instruktlabs/kiln/render` | Build, serialize, inspect, and compose GLBs |
+| `@instruktlabs/kiln/views` | Shared cameras, CPU images, capture limits, GPU port helpers and cell caches |
+| `@instruktlabs/kiln/validation` | Syntax and structural checks |
+| `@instruktlabs/kiln/primitives` | Geometry and helper catalog |
+| `@instruktlabs/kiln/geometry`, `/deform`, `/sweep` | Custom mesh/surface helpers, deformation and profile modeling |
+| `@instruktlabs/kiln/implicit` | Experimental bounded field sampling |
+| `@instruktlabs/kiln/programs`, `/programs/node` | Immutable memory/file stores and storage statistics |
+| `@instruktlabs/kiln/cache`, `/cache/node` | Disposable memory/file build caches |
+| `@instruktlabs/kiln/contracts` | Asset and integration manifests |
+| `@instruktlabs/kiln/composer` | Layout and overlap helpers |
+| `@instruktlabs/kiln/qa` | Deterministic QA gates and corpora |
+| `@instruktlabs/kiln/arena` | Pairwise model evaluation |
 
 See [package.json](../package.json) for all exports.
 
@@ -68,6 +68,6 @@ bun run test
 bun run test:coverage
 ```
 
-Offline tests pin CPU rendering and exercise the checked-in example programs. The coverage ratchet lives in [scripts/check-coverage.mjs](../scripts/check-coverage.mjs). Threshold decreases require an explicit measured rationale. Live provider tests require an explicit opt-in.
+Offline tests pin CPU rendering and exercise the checked-in example programs. The coverage ratchet lives in [scripts/check-coverage.mjs](https://github.com/instruktlabs/kiln/blob/main/scripts/check-coverage.mjs). Threshold decreases require an explicit measured rationale. Live provider tests require an explicit opt-in.
 
 Core dependencies include Three.js, glTF Transform, Manifold, Acorn, and Zod. The agent SDK is an optional peer. Keep provider adapters compatible with the SDK's declared interface version; a TypeScript cast cannot fix a runtime protocol mismatch.

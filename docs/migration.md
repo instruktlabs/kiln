@@ -4,10 +4,36 @@ Existing inline-code transport and the legacy capture format remain supported. T
 Discovery and authoring-helper changes below require explicit migration; retired
 names have no callable compatibility aliases.
 
-## Unreleased changes planned for 0.11
+## Unreleased changes planned for 1.0
 
 These changes describe the local alignment candidate, not the downloadable 0.10.0
 release. Use the documentation and package from the same release when upgrading.
+
+### Package and SDK identity
+
+The npm package becomes `@instruktlabs/kiln`. The previous `@kiln/engine` name was
+used by downloaded private-package tarballs; this change does not publish an alias
+under that old namespace. The current `1.0.0-dev.0` checkout is still unpublished.
+
+Update application imports to `@instruktlabs/kiln` and its documented subpaths.
+Exports now provide compiled ESM and TypeScript declarations, so Node consumers no
+longer need a source loader. The root is a library entrypoint, not the CLI. Run
+`kiln` for CLI commands, `kiln-init` for workspace setup, and `kiln-mcp` for stdio MCP.
+CommonJS and unlisted internal file paths are not public v1 APIs.
+
+Keep the previous installation available while testing the new package in a separate
+installation directory. Stop active harness sessions, run the new installation's
+`kiln-init EXISTING_WORKSPACE --check`, then use `--upgrade` after resolving reported
+customizations. Upgrade refreshes managed runtime paths and skills; it preserves
+saved assets, source revisions and user-authored instruction changes, refusing
+conflicts instead of overwriting them. Keep original engine versions for historical
+artifact replay; a new build does not retroactively qualify an old asset.
+
+Experimental implicit modeling and the opt-in community exporter retain their
+labels and limitations. The shared tool registry, Discovery metadata and dedicated
+documentation remain authoritative for those boundaries.
+
+### Engine behavior
 
 - **Full optimization.** `optimize: 'full'` replaces flatten/join with rigid-group
   merging. The rigid-merge pass keeps every node's name, parent and transform, but an
@@ -332,8 +358,8 @@ identity and lineage history before retaining source. It reports
 Older assets without a current receipt require explicit migration before restore
 or revision; download and inspection of their saved records remain available.
 
-Hosts import the current contract/store from `@kiln/engine/requirements` and the
-explicit legacy converter from `@kiln/engine/requirements/migration`. CLI `render`,
+Hosts import the current contract/store from `@instruktlabs/kiln/requirements` and the
+explicit legacy converter from `@instruktlabs/kiln/requirements/migration`. CLI `render`,
 `generate`, `save`, and `asset --restore` accept
 `--requirements <host-binding.json>`. The file contains a complete current binding
 returned by the host store, not source-authored metadata, a bare category or an
@@ -357,9 +383,9 @@ Tool arguments and source metadata cannot select or replace the host binding.
 
 ## Review explicit legacy data conversion
 
-Library callers of `@kiln/engine/qa` now use `collectRequirementsSceneEvidence`
+Library callers of `@instruktlabs/kiln/qa` now use `collectRequirementsSceneEvidence`
 and `runRequirementsSceneQa` with a context from `resolveRequirementsContext`
-(`@kiln/engine/requirements`). Pass the collected evidence to the runner and
+(`@instruktlabs/kiln/requirements`). Pass the collected evidence to the runner and
 use `appendRequirementsFinalQa` for exported-artifact checks. Scene-only QA is
 not final-GLB acceptance. Reports carry schema version 2 and the policy identity.
 
@@ -385,7 +411,7 @@ and exit 2 means invalid command arguments. Inputs must be regular UTF-8 JSON fi
 no larger than 1 MiB. No renderer, model, asset-store write or source execution occurs.
 
 The manifest API is `migrateAssetManifestV1ToRequirements` from
-`@kiln/engine/requirements/migration`; the existing intent API is
+`@instruktlabs/kiln/requirements/migration`; the existing intent API is
 `migrateAssetIntentV1ToRequirements`. A manifest proposal keeps the old revision and
 file hashes, carries non-policy build options as review data, and requires a rebuild.
 It is a versioned migration proposal, **not a new saved manifest**. Old QA, preview
@@ -475,7 +501,7 @@ remain separate mechanisms.
 
 ## Use the native program-reference loop
 
-The public `@kiln/engine/tools` export no longer includes
+The public `@instruktlabs/kiln/tools` export no longer includes
 `createKilnToolRegistry` or `kilnToolRegistry`. Those factories recreated the
 retired four-tool workflow. Use `createKilnProgramToolRegistry` for a host-managed
 workflow, or `createKilnNativeToolRegistry` with native completion. Both use
@@ -497,12 +523,12 @@ module and thinking A/B runner are retired. Use runtime-cost metrics from the
 reviewed artifact and request explicit refinement before selecting its final
 revision. Do not re-execute source just to retrieve a post-completion grade.
 
-The category-driven `@kiln/engine/prompt` subpath, `getSystemPrompt`,
+The category-driven `@instruktlabs/kiln/prompt` subpath, `getSystemPrompt`,
 `buildUserPrompt` and their full/trimmed/current/unified prompt variants are
 removed. They advertised retired tools and injected category-specific generation
 rules. There is no fallback or alias. Use `runKilnAgent` for Kiln's native
 bootstrap, or build a custom harness over the current registry and Discovery.
-`@kiln/engine/prompt-api` remains a pure catalog text formatter; it does not
+`@instruktlabs/kiln/prompt-api` remains a pure catalog text formatter; it does not
 configure an agent or generate the maintained skills. The old `kiln-glb` skill
 drift checks and absent `kiln:gen-skill` command are retired; use `check:skills`
 for the maintained `skills/` tree.
@@ -550,7 +576,7 @@ evidence. Other live routes and cold installed-package qualification remain
 separate. See [native workflow and support limits](runtime.md#optional-native-strands-workflow).
 
 The package version moves with every change that ships, so the version you are moving to
-is whatever the [latest release](https://github.com/matthew-kissinger/kiln/releases/latest)
+is whatever the [latest release](https://github.com/instruktlabs/kiln/releases/latest)
 says; see [CHANGELOG.md](../CHANGELOG.md) for what changed between any two.
 
 ## Retain the source once
@@ -586,7 +612,7 @@ The GPU service now preserves HDR values until tone mapping and conversion to
 sRGB. Earlier previews could clip highlights despite reporting full-material
 rendering. Regenerate comparison images with the updated service; its capture
 identity invalidates older cached cells. The legacy beauty-image route also works
-again. [Measured display correction](evaluation/results/gpu-display-output.md).
+again. [Measured display correction](https://github.com/instruktlabs/kiln/blob/main/docs/evaluation/results/gpu-display-output.md).
 
 ## Replace removed authoring helpers
 
@@ -698,8 +724,8 @@ project's `kiln_workspace` server to avoid selecting an older global plugin.
 
 `implicitSurface` is experimental and bounded. General bevel, shell and remeshing
 are not stable helpers in this release. Their trials and adoption decisions are
-documented in [geometry experiments](experiments/geometry-frontier.md) and the
-[additional acceptance cases](experiments/geometry-acceptance.md). Ordinary
+documented in [geometry experiments](https://github.com/instruktlabs/kiln/blob/main/docs/experiments/geometry-frontier.md) and the
+[additional acceptance cases](https://github.com/instruktlabs/kiln/blob/main/docs/experiments/geometry-acceptance.md). Ordinary
 JavaScript functions remain the supported way to reuse parameterized parts.
 
 ## Assembly roots and physical roof frames

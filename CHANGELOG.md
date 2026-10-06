@@ -1,13 +1,21 @@
 # Changelog
 
-Changes to `@kiln/engine`. Source releases and installable package publication are
+Changes to `@instruktlabs/kiln` (previously the private `@kiln/engine` package).
+Source releases and installable package publication are
 separate milestones. The package is not published on the npm registry.
 
 ## Unreleased
 
-Changes since the 0.10.0 tagged package release. The package version stays 0.10.0
-until the next package release; source/main and website deployment are separate
+Changes since the 0.10.0 tagged package release. The checkout uses the unpublished
+`1.0.0-dev.0` development version. Source/main and website deployment are separate
 from publishing a new installable package.
+
+- **Breaking:** the npm identity is now `@instruktlabs/kiln`, with compiled ESM and
+  TypeScript declarations for its public subpaths. The root is a library entrypoint;
+  use the `kiln` executable for the CLI. `kiln-mcp` starts the stdio MCP server.
+- Consumer archives contain the maintained installation/API/workflow documentation;
+  historical plans, reviews and model traces remain in the repository. Current
+  repository links and package publisher metadata point to Instrukt Labs.
 
 - Blind-run receipts recognize OpenCode's recorded code-mode MCP calls and AGY's
   generic MCP dispatcher without inferring execution from source or output text.

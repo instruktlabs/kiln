@@ -1,6 +1,6 @@
 {
   "name": "kiln",
-  "version": "0.10.0",
+  "version": "1.0.0-dev.0",
   "description": "Create, review, save, and refine procedural 3D assets with portable source and GLB collections.",
   "author": {
     "name": "Matthew Kissinger"
@@ -10,7 +10,7 @@
     "displayName": "Kiln",
     "shortDescription": "Build and collect editable 3D assets",
     "longDescription": "Author JavaScript, inspect camera views, and save GLBs with source revisions for later refinement.",
-    "developerName": "Matthew Kissinger",
+    "developerName": "Instrukt Labs",
     "category": "Developer Tools",
     "capabilities": [
       "Read",

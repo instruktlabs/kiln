@@ -9,8 +9,9 @@ organization are created with two security keys and 2FA enforcement verified.
 The local recovery backup is encrypted and verified, and its staging plaintext is
 removed. Local npm CLI login remains unconfigured until publishing requires it.
 Cloudflare's dashboard confirms Workers Paid and R2 Paid are already active;
-no subscription purchase or upgrade was needed. No implementation
-commit, hosted production deployment or npm release has been performed.
+no subscription purchase or upgrade was needed. Implementation is now underway on
+`codex/v1-publication`, tracked in the execution record. No hosted production
+deployment or npm release has been performed.
 
 Use with the [full publication plan](2026-10-05-v1-publication-plan.md) and
 [hosting economics](2026-10-06-hosting-economics.md). Current code, `AGENTS.md` and the

@@ -96,7 +96,7 @@ when the client cannot save them. No binary data is put into tool text.
 ## TypeScript library
 
 ```ts
-import { exportAssetGlb } from '@kiln/engine/asset-export';
+import { exportAssetGlb } from '@instruktlabs/kiln/asset-export';
 
 const record = await library.read('project', assetId, revisionId);
 const output = await exportAssetGlb(record, {
@@ -212,5 +212,5 @@ of exporter backend qualification and optional geometry/texture compression.
 5. Report the files, measured sizes, checks performed and remaining limits. A smaller
    GLB does not establish lower draw calls, texture memory or higher frame rate.
 
-[Qualification results and repeatable local dogfood](https://github.com/matthew-kissinger/kiln/blob/main/docs/evaluation/export-profiles.md)
+[Qualification results and repeatable local dogfood](https://github.com/instruktlabs/kiln/blob/main/docs/evaluation/export-profiles.md)
 cover generated source, CLI/MCP/HTTP delivery, native playback and a full Jaeger asset.

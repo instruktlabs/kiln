@@ -119,7 +119,10 @@ it('refuses an otherwise loadable installation without the packaged worker befor
   try {
     const runtime = join(root, 'runtime');
     await mkdir(join(runtime, 'dist'), { recursive: true });
-    await writeFile(join(runtime, 'package.json'), '{"name":"@kiln/engine","version":"1.0.0"}');
+    await writeFile(
+      join(runtime, 'package.json'),
+      '{"name":"@instruktlabs/kiln","version":"1.0.0"}',
+    );
     await writeFile(join(runtime, 'dist/cli.mjs'), 'export function main() {}');
     await writeFile(join(runtime, 'dist/mcp-server.mjs'), '');
     await writeFile(join(runtime, 'dist/mcp-engine.mjs'), '');

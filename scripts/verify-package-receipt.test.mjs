@@ -6,6 +6,7 @@ import { join } from 'node:path';
 import { receiptProblems, verifyReceipt } from './verify-package-receipt.mjs';
 
 const manifest = {
+  name: '@instruktlabs/kiln',
   version: '0.7.0',
   engines: { node: '^20.15.0 || >=22.2.0' },
 };
@@ -19,9 +20,14 @@ const good = () => ({
   node: 'v22.23.2',
   npm: '12.0.2',
   engineVersion: '0.7.0',
+  engineName: '@instruktlabs/kiln',
   tarballSha256: 'unchecked-here',
   tarball: '/nonexistent.tgz',
   checks: [
+    'installed-consumer-documents',
+    'plain-node-sdk-exports',
+    'sdk-subprocess-render',
+    'npm-mcp-entry',
     'packaged-node-worker',
     'community-exporter-textured-subprocess',
     'source-reference-edit-images',
@@ -57,6 +63,7 @@ describe('package receipt verification', () => {
     ['node', { node: 'v22.22.0' }, 'node'],
     ['npm', { npm: '11.0.0' }, 'npm'],
     ['engineVersion', { engineVersion: '0.6.0' }, 'engineVersion'],
+    ['engineName', { engineName: '@kiln/engine' }, 'engineName'],
   ])('a receipt disagreeing about %s is rejected', (_label, patch, named) => {
     const problems = receiptProblems({ ...good(), ...patch }, target);
     expect(problems).toHaveLength(1);
@@ -70,7 +77,18 @@ describe('package receipt verification', () => {
   });
 
   test('a receipt with no checks at all reports every one of them', () => {
-    expect(receiptProblems({ ...good(), checks: undefined }, target)).toHaveLength(5);
+    expect(receiptProblems({ ...good(), checks: undefined }, target)).toHaveLength(9);
+  });
+
+  test.each([
+    'installed-consumer-documents',
+    'plain-node-sdk-exports',
+    'sdk-subprocess-render',
+    'npm-mcp-entry',
+  ])('cannot claim v1 package qualification without %s', (check) => {
+    const receipt = good();
+    receipt.checks = receipt.checks.filter((item) => item !== check);
+    expect(receiptProblems(receipt, target)).toEqual([`missing check: ${check}`]);
   });
 
   test('a package missing candidate texture coverage is rejected', () => {

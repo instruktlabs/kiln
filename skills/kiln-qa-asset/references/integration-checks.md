@@ -2,7 +2,7 @@
 
 These library APIs run in the destination project's TypeScript toolchain, not inside generated `.kiln.js` source. Use the project's installed Kiln package; do not copy engine implementation into the asset workspace.
 
-`inspectGlbIntegration(bytes)` from `@kiln/engine/render` reads the actual GLB and returns an integration manifest or `undefined` when no usable scene bounds exist. Check that result before using bounds, axes, ground correction, structural findings, or artifact hash.
+`inspectGlbIntegration(bytes)` from `@instruktlabs/kiln/render` reads the actual GLB and returns an integration manifest or `undefined` when no usable scene bounds exist. Check that result before using bounds, axes, ground correction, structural findings, or artifact hash.
 
 Kiln authors metres, +X forward, +Y up, +Z right. Confirm importer conversion in the destination. Ground correction must be applied in the frame it describes, especially under rotated/scaled parents. Bounds alone cannot prove that feet, wheels, or collision geometry make the intended contact.
 

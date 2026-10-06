@@ -6,7 +6,7 @@
  * renders it through the host `SceneRenderPort` to SEE the result, and finalizes.
  * Reuses the asset-gen `MetricsCollector` (tool/step/usage + the runaway step cap)
  * and `unifiedDiff` (the refine patch artifact). The `@strands-agents/sdk`
- * dependency lives ONLY here on `@kiln/engine/composer/agent` — the composer core
+ * dependency lives ONLY here on `@instruktlabs/kiln/composer/agent` — the composer core
  * (model / dsl / overlap / layout / render-port) never imports it.
  *
  * Never throws: failures come back on `result.error` with whatever the sink

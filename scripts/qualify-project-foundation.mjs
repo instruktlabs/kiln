@@ -211,7 +211,7 @@ try {
     install,
   );
   receipt.checks.push('fresh-tarball-install-without-model-peers');
-  const runtime = join(install, 'node_modules/@kiln/engine');
+  const runtime = join(install, 'node_modules/@instruktlabs/kiln');
   receipt.runtime = runtime;
   const pkg = JSON.parse(await readFile(join(runtime, 'package.json'), 'utf8'));
   receipt.engineVersion = pkg.version;
@@ -264,7 +264,7 @@ try {
   const importProbe = join(install, 'source-exports.ts');
   await writeFile(
     importProbe,
-    `import { listMaterialPresets } from '@kiln/engine/material-presets'; import { FileMaterialLibrary } from '@kiln/engine/material-library/node'; import { FileProjectStore } from '@kiln/engine/projects/node'; if(listMaterialPresets().length !== 5 || !FileMaterialLibrary || !FileProjectStore) throw new Error('Source export mismatch'); console.log('source-exports-ok');`,
+    `import { listMaterialPresets } from '@instruktlabs/kiln/material-presets'; import { FileMaterialLibrary } from '@instruktlabs/kiln/material-library/node'; import { FileProjectStore } from '@instruktlabs/kiln/projects/node'; if(listMaterialPresets().length !== 5 || !FileMaterialLibrary || !FileProjectStore) throw new Error('Source export mismatch'); console.log('source-exports-ok');`,
   );
   await pass([importProbe], install, {}, process.env.BUN_BINARY ?? 'bun');
   receipt.checks.push(

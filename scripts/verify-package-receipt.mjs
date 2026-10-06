@@ -23,6 +23,10 @@ import { fileURLToPath } from 'node:url';
 
 /** Checks the smoke run must report, named individually so a silent drop is a failure. */
 const REQUIRED_CHECKS = [
+  'installed-consumer-documents',
+  'plain-node-sdk-exports',
+  'sdk-subprocess-render',
+  'npm-mcp-entry',
   'packaged-node-worker',
   'community-exporter-textured-subprocess',
   'source-reference-edit-images',
@@ -50,6 +54,7 @@ export function receiptProblems(receipt, { platform, arch, manifest, toolchain, 
   mustBe(receipt.node, `v${node ?? toolchain.node}`, 'node');
   mustBe(receipt.npm, npm ?? toolchain.npm, 'npm');
   mustBe(receipt.engineVersion, manifest.version, 'engineVersion');
+  mustBe(receipt.engineName, manifest.name, 'engineName');
 
   for (const check of REQUIRED_CHECKS) {
     if (!receipt.checks?.includes(check)) problems.push(`missing check: ${check}`);

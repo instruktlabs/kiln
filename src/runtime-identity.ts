@@ -57,7 +57,7 @@ export async function installedRuntimeIdentity(
   };
   try {
     const pkg = await manifest(root);
-    if (pkg.name !== '@kiln/engine') throw new Error('Not a Kiln installation.');
+    if (pkg.name !== '@instruktlabs/kiln') throw new Error('Not a Kiln installation.');
     const build = JSON.parse(await readFile(join(root, 'dist', 'build.json'), 'utf8'));
     const worker = build.entries?.worker;
     if (

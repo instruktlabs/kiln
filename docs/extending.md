@@ -23,8 +23,8 @@ Inspect the exported GLB as well as the authored scene. Topology diagnostics do 
 The package exposes TypeScript source through explicit subpaths. Use a TypeScript runtime or bundler for library imports; the packaged CLI and MCP entry points run on Node.
 
 ```ts
-import { createKilnProgramToolRegistry } from '@kiln/engine/tools';
-import { MemoryProgramStore } from '@kiln/engine/programs';
+import { createKilnProgramToolRegistry } from '@instruktlabs/kiln/tools';
+import { MemoryProgramStore } from '@instruktlabs/kiln/programs';
 
 const tools = createKilnProgramToolRegistry({
   programStore: new MemoryProgramStore(),

@@ -1,9 +1,9 @@
 /**
- * `@kiln/engine/agent` — the agnostic, tool-driven Kiln codegen foundation
+ * `@instruktlabs/kiln/agent` — the agnostic, tool-driven Kiln codegen foundation
  * (validated in the pixel-forge kiln-bench harness, folded in 2026-06).
  *
  * Isolated on its own subpath export so the `@strands-agents/sdk` dependency
- * does not leak into the rest of the engine — import from `@kiln/engine/agent`
+ * does not leak into the rest of the engine — import from `@instruktlabs/kiln/agent`
  * only when you want the agent loop.
  *
  * - {@link runKilnAgent}      — drive any Strands Model through the kiln tool loop

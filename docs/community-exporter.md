@@ -82,8 +82,8 @@ choice guarantees identical materials after conversion.
 
 Reusable tools:
 
-- [Existing-source corpus comparison](evaluation/community-exporter.md)
-- [Blender/Unity importer assertions](../scripts/integration/README.md)
+- [Existing-source corpus comparison](https://github.com/instruktlabs/kiln/blob/main/docs/evaluation/community-exporter.md)
+- [Blender/Unity importer assertions](https://github.com/instruktlabs/kiln/blob/main/scripts/integration/README.md)
 - `node scripts/exporter-cli-check.mjs`: built CLI, worker and cross-backend disk-cache smoke.
 
 KTX2/runtime optimization is a separate packaging concern. The exporter migration does not change

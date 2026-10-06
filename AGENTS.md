@@ -5,12 +5,11 @@
 This repository turns model-authored source into GLBs: deterministic rendering, QA,
 primitives, agent tools, arena ranking, scene composition, CLI and MCP + skills.
 
-Read [README.md](./README.md) before changing exports or package contents. Runtime and tests
-live under `src/`; repository checks under `scripts/`. `package.json` lists shipped files
-through `files` and `exports`. [CHANGELOG.md](./CHANGELOG.md) states what each
-release changed. Dated files under `docs/plans/` and `docs/reviews/` are records of their
-day: they never override current code, this guide or the changelog, and never imply release
-acceptance.
+Read [README.md](./README.md) before changing exports or shipped files. `src/` holds
+runtime/tests; `scripts/` holds repo checks. `package.json` owns `files` and `exports`;
+[CHANGELOG.md](./CHANGELOG.md) records releases. Dated `docs/plans/` and `docs/reviews/`
+are historical records, never overrides of code, this guide or the changelog, and
+never release acceptance.
 
 ## Authoring an asset is a different task from changing the engine
 
@@ -169,11 +168,10 @@ bun run test:render-service
 bun run test:coverage
 ```
 
-`bun run build` is a typecheck only and refreshes neither `dist/` nor its build identity. After
-runtime source changes, rebuild the Node bundles with `node scripts/build-runtime.mjs all`
-(`bun run build:runtime` when viewer assets also changed) before CLI/MCP dogfood and full gates.
-That command also refreshes the compiled SDK in `lib/`. On a fresh checkout, run
-`bun run build:sdk` before typechecking or tests that import public package entrypoints.
+`bun run build` only typechecks. After runtime changes, run `node scripts/build-runtime.mjs all`
+to rebuild `dist/`, its identity and SDK `lib/` before CLI/MCP dogfood and full gates.
+Use `bun run build:runtime` when viewer assets also changed. Fresh checkouts need
+`bun run build:sdk` before typechecking or public-entrypoint tests.
 
 Fast loop: nearest test file first, then `bun run typecheck && bun run lint && bun run test`.
 The full offline gate adds `bun run test:coverage`, which emits `coverage/lcov.info` and

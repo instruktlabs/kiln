@@ -3,13 +3,15 @@
   "name": "kiln",
   "description": "Kiln: local tools and skills for building, inspecting and revising procedural 3D assets.",
   "owner": {
-    "name": "Matthew Kissinger"
+    "name": "Instrukt Labs"
   },
   "plugins": [
     {
       "name": "kiln",
       "description": "Build 3D assets, inspect selected views, edit saved source revisions and export GLB files with your coding agent.",
-      "author": { "name": "Matthew Kissinger" },
+      "author": {
+        "name": "Matthew Kissinger"
+      },
       "category": "development",
       "source": "./"
     }

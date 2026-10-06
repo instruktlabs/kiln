@@ -25720,7 +25720,7 @@ function engineVersion() {
     try {
       const raw = readFileSync(new URL(path, import.meta.url), "utf8");
       const pkg = JSON.parse(raw);
-      if (pkg.name === "@kiln/engine" && typeof pkg.version === "string" && pkg.version) {
+      if (pkg.name === "@instruktlabs/kiln" && typeof pkg.version === "string" && pkg.version) {
         return pkg.version;
       }
     } catch {}

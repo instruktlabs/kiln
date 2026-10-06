@@ -28490,7 +28490,7 @@ function engineVersion() {
     try {
       const raw = readFileSync(new URL(path, import.meta.url), "utf8");
       const pkg = JSON.parse(raw);
-      if (pkg.name === "@kiln/engine" && typeof pkg.version === "string" && pkg.version) {
+      if (pkg.name === "@instruktlabs/kiln" && typeof pkg.version === "string" && pkg.version) {
         return pkg.version;
       }
     } catch {}
@@ -32940,7 +32940,7 @@ function createKilnSourceDef(store) {
 }
 
 // src/engine-identity.ts
-var ENGINE_VERSION = "0.10.0";
+var ENGINE_VERSION = "1.0.0-dev.0";
 var ENGINE_INSTALL_URL = new URL("../", import.meta.url).href;
 function engineIdentity() {
   return { version: ENGINE_VERSION, installUrl: ENGINE_INSTALL_URL };

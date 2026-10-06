@@ -22,7 +22,7 @@ beforeAll(async () => {
   await writeFile(
     join(root, 'package.json'),
     JSON.stringify({
-      name: '@kiln/engine',
+      name: '@instruktlabs/kiln',
       version: pkg.version,
       dependencies: { ...pkg.dependencies, 'kiln-provenance-fixture': '1' },
       type: 'module',

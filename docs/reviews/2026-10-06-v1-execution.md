@@ -17,7 +17,7 @@ published yet.
 | P0 | Preserve publisher/repository setup | Complete in [publisher setup receipt](2026-10-06-publisher-setup.md); current checkout remote verified `instruktlabs/kiln` |
 | P1 | Public API, stability and migrations | In progress: audit all existing exports; document stable/experimental contracts and Node compatibility |
 | P2 | Compiled ESM SDK and declarations | In progress: compiled all 55 exports; clean Windows package passes 52 core imports, consumer declarations without optional peers and subprocess render; cross-platform CI and isolated evaluator path remain open |
-| P3 | Package identity, contents, executables and notices | Pending: `@instruktlabs/kiln`, public metadata, CLI/MCP launchers, consumer doc allowlist, exact dependency notices |
+| P3 | Package identity, contents, executables and notices | In progress: unpublished `@instruktlabs/kiln@1.0.0-dev.0`, public metadata, MCP launcher, consumer doc allowlist and dependency notice refresh; Windows archive checks pass, CI remains required |
 | P4 | Clean installs and workspace upgrades | Pending: Windows/Linux/macOS matrix, optional dependency absence, custom instructions and revisions preserved |
 | P5 | Release automation and npm publication | Pending: qualified RC/final archive digests, protected trusted publishing, owner staging approval, registry provenance and fresh registry install |
 | H1 | Native Cloudflare qualification | Pending: actual provider isolation probes, CPU/software Vulkan render, deadlines, RSS, startup and measured cost |
@@ -75,9 +75,66 @@ private `@kiln/engine@0.10.0` identity; it is not a release candidate or npm
 publication. The package identity change is a separate tracked step.
 
 CI now checks installed consumer declarations against the exact tarball distributed
-to its Windows, Linux and macOS jobs. Cross-platform receipts are pending.
+to its Windows, Linux and macOS jobs. Full cross-platform qualification remains open.
+The foundation was committed as `ea56ccdf10052a869b64280f64de1267a0261da8`
+and pushed to the approved branch. [Draft PR #145](https://github.com/instruktlabs/kiln/pull/145)
+started [CI run 37425306532](https://github.com/instruktlabs/kiln/actions/runs/37425306532).
+That run completed with the portable package build, Linux consumer matrix, Windows
+package installation, render-service tests and software Vulkan checks passing.
+The separate website workflow also passed. Two defects prevented an all-green run:
+
+- macOS ARM64/x64 package assertions compared the `/var` temporary-directory alias
+  with Node's canonical `/private/var` module URL. The smoke check now canonicalizes
+  its temporary root; the Windows package rerun passes with that correction.
+- Both engine-check jobs rejected the enlarged agent guide: 12,441 bytes exceeded
+  the 12,288-byte repository budget. Condensing its wording preserves the instructions
+  at 12,235 bytes; the focused repository-contract tests pass.
+
+These fixes require CI against the next commit. Passing adjacent jobs does not
+qualify the failed jobs or the new package identity.
 The current isolated evaluator still locates source TypeScript workers; its installed
 compiled path needs qualification before any hosted acceptance claim.
+
+### Public package identity and installed commands
+
+The next slice adopts `@instruktlabs/kiln` with the explicitly unpublished version
+`1.0.0-dev.0`. Package, engine and plugin versions stay aligned. Public repository,
+support and publish metadata point at Instrukt Labs; maintained SDK examples and
+runtime identity checks use the new scope. Historical planning/release records keep
+their original names and versions.
+
+The archive's documentation now uses a 21-file consumer allowlist instead of the
+whole research/planning tree. The new `kiln-mcp` executable points to the existing
+thin Node MCP entry. Package smoke checks exercise that command through npm, and
+inspect the installed documentation even when CI supplies a prepacked archive.
+Receipt verification now requires the chosen package name and SDK/documentation/
+MCP-command checks. Negative fixtures first demonstrated the old verifier accepting
+missing evidence; the updated focused suite passes.
+
+The Windows dependency-notice inventory was refreshed against installed manifests
+and native-library metadata. This does not qualify the native binary inventory on
+other platforms. Thirty links from consumer documents to excluded repository files
+now point to GitHub source pages. The installed-document check first rejected the
+previous archive for a broken link, then passed after rebuilding it.
+
+Pinned local results for this slice:
+
+- Toolchain, skill alignment, typechecking and lint pass.
+- Fresh npm installation: all 22 checks pass, including 52 core SDK imports and
+  declarations, subprocess rendering, installed document links, all three npm
+  executables, source edits and persistence. Receipt verification accepts its
+  package name/version, runtime and archive digest.
+- Archive inventory: 922 files, 21 consumer documents, no planning/review/evaluation
+  records or test files. Receipt: `.cache/v1-namespace-package-final.log`.
+- Final development archive SHA-256:
+  `ff8a1863ab54e6875092a4a5dc9319b429b4496beb90dd5140cb1cbcb93818fd`.
+- Full offline coverage run: 3,195 pass, two platform skips, one failure in 404 files.
+  The same Windows `EPERM` at the immutable asset-revision directory rename
+  recurred in `packaged-save-provenance.test.ts`. This is now a reproducible release
+  concern, not closed by the prior focused rerun. A bounded atomic-save correction
+  and another full gate are required.
+- The separately checked LCOV thresholds still pass at 95.20% functions and 92.52%
+  lines. This does not make the failed full run green.
 
 ### Hosting probe preparation
 

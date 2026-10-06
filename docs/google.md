@@ -11,7 +11,7 @@ Install Kiln using the [installation guide](install.md). For the current tool se
 from a checkout:
 
 ```sh
-git clone https://github.com/matthew-kissinger/kiln
+git clone https://github.com/instruktlabs/kiln
 cd kiln
 bun install --frozen-lockfile
 bun run build:runtime

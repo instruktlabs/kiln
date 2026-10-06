@@ -65,7 +65,7 @@ try {
 
 `--render gpu` requires a working GPU renderer and fails if unavailable; it does not accept
 a CPU fallback as material evidence. See Kiln's
-[GPU setup](https://github.com/matthew-kissinger/kiln/blob/main/docs/rendering.md#running-the-gpu-renderer).
+[GPU setup](https://github.com/instruktlabs/kiln/blob/main/docs/rendering.md#running-the-gpu-renderer).
 In a repository clone, use `node dist/cli.mjs` instead of `node kiln.mjs`, after
 `bun install --frozen-lockfile` and `bun run build:runtime`. For an installed distribution,
 use the CLI launcher you already use, from a distribution containing this feature.

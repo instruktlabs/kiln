@@ -18,11 +18,11 @@ const PATHS = new Set([
   '/usr/bin/setpriv',
   '/usr/bin/prlimit',
   '/usr/local/bin/node',
-  '/app/node_modules/@kiln/engine/src/evaluator/worker.ts',
+  '/app/node_modules/@instruktlabs/kiln/src/evaluator/worker.ts',
 ]);
 
 function launch() {
-  return isolatedEvaluatorLaunch('/app/node_modules/@kiln/engine/src/evaluator/worker.ts', {
+  return isolatedEvaluatorLaunch('/app/node_modules/@instruktlabs/kiln/src/evaluator/worker.ts', {
     platform: 'linux',
     pathExists: (path) => PATHS.has(path),
   });
@@ -168,12 +168,12 @@ describe('isolated evaluator process contract', () => {
   test('refuses non-Linux hosts, missing binaries, and workers outside installed dependencies', () => {
     for (const invoke of [
       () =>
-        isolatedEvaluatorLaunch('/app/node_modules/@kiln/engine/src/evaluator/worker.ts', {
+        isolatedEvaluatorLaunch('/app/node_modules/@instruktlabs/kiln/src/evaluator/worker.ts', {
           platform: 'win32',
           pathExists: () => true,
         }),
       () =>
-        isolatedEvaluatorLaunch('/app/node_modules/@kiln/engine/src/evaluator/worker.ts', {
+        isolatedEvaluatorLaunch('/app/node_modules/@instruktlabs/kiln/src/evaluator/worker.ts', {
           platform: 'linux',
           pathExists: () => false,
         }),

@@ -84,9 +84,9 @@ recording meters does not silently change geometry or UVs.
 
 ```ts
 import { FileMaterialLibrary, createMaterialLibraryPayload,
-  decodeMaterialLibraryPayload } from '@kiln/engine/material-library/node';
-import { createMaterialPresetDraft } from '@kiln/engine/material-presets';
-import { createMaterialRecordV1 } from '@kiln/engine/material-library/node';
+  decodeMaterialLibraryPayload } from '@instruktlabs/kiln/material-library/node';
+import { createMaterialPresetDraft } from '@instruktlabs/kiln/material-presets';
+import { createMaterialRecordV1 } from '@instruktlabs/kiln/material-library/node';
 
 const library = new FileMaterialLibrary('/workspace/.kiln/materials');
 const record = await createMaterialRecordV1(createMaterialPresetDraft('wood-grain', {

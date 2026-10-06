@@ -5,7 +5,7 @@
  *
  * PURE DATA + a text helper. NO `three`, NO node, NO gltf-transform imports — so
  * it is browser-safe and can be consumed anywhere (the leaf subpath
- * `@kiln/engine/palette`) without dragging runtime code into a bundle.
+ * `@instruktlabs/kiln/palette`) without dragging runtime code into a bundle.
  *
  * Why it lives in the engine: the palette is the shared contract both the
  * authoring prompt (instruct the model to build against these roles) and a later

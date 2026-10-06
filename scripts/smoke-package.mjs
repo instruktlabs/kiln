@@ -3,7 +3,7 @@
 import assert from 'node:assert/strict';
 import { spawn } from 'node:child_process';
 import { createHash } from 'node:crypto';
-import { mkdir, mkdtemp, readFile, stat, writeFile } from 'node:fs/promises';
+import { mkdir, mkdtemp, readFile, readdir, realpath, stat, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
@@ -11,7 +11,9 @@ import { smokePackageExporter } from './smoke-package-exporter.mjs';
 import { smokeSdkTypes } from './smoke-sdk-types.mjs';
 
 const repo = resolve(dirname(fileURLToPath(import.meta.url)), '..');
-const root = await mkdtemp(join(tmpdir(), 'kiln-package-café-'));
+// macOS exposes /var through /private/var. Match Node's canonical module URLs
+// before asserting that the installed SDK identifies its own package directory.
+const root = await realpath(await mkdtemp(join(tmpdir(), 'kiln-package-café-')));
 const receipt = {
   root,
   platform: process.platform,
@@ -76,7 +78,7 @@ async function npmCli() {
 }
 
 async function connect(server, cwd, store) {
-  const child = spawn(process.execPath, [server], {
+  const child = spawn(process.execPath, Array.isArray(server) ? server : [server], {
     cwd,
     windowsHide: true,
     env: { ...process.env, KILN_RENDER: 'cpu', KILN_PROGRAM_STORE: store },
@@ -122,9 +124,21 @@ async function connect(server, cwd, store) {
       });
       child.stdin.write(`${JSON.stringify({ jsonrpc: '2.0', id, method, params })}\n`);
     });
-  const close = () => {
-    child.kill();
-  };
+  // EOF also reaches the server when npm is its parent. Killing only the npm
+  // wrapper can leave a running server behind on Windows.
+  const close = () =>
+    new Promise((done, fail) => {
+      if (child.exitCode !== null || child.signalCode !== null) return done();
+      const timer = setTimeout(() => {
+        child.kill();
+        fail(new Error('MCP process did not exit after stdin closed'));
+      }, 5000);
+      child.once('exit', () => {
+        clearTimeout(timer);
+        done();
+      });
+      child.stdin.end();
+    });
   child.on('error', (error) => {
     for (const resolve of pending.values()) resolve({ error: { message: error.message } });
     pending.clear();
@@ -145,7 +159,7 @@ async function connect(server, cwd, store) {
     );
     return { call, close };
   } catch (error) {
-    close();
+    await close();
     throw error;
   }
 }
@@ -198,9 +212,37 @@ try {
     [npm, 'install', receipt.tarball, '--omit=dev', '--no-audit', '--no-fund'],
     install,
   );
-  const runtime = join(install, 'node_modules/@kiln/engine');
+  const runtime = join(install, 'node_modules/@instruktlabs/kiln');
   const pkg = JSON.parse(await readFile(join(runtime, 'package.json'), 'utf8'));
+  receipt.engineName = pkg.name;
   receipt.engineVersion = pkg.version;
+  assert.equal(pkg.name, '@instruktlabs/kiln');
+  assert.equal(pkg.bin['kiln-mcp'], './dist/mcp-server.mjs');
+  // Check the installed tree too: CI consumers receive a prepacked archive,
+  // so checking only this checkout's `npm pack` inventory would miss them.
+  const docs = await readdir(join(runtime, 'docs'), { withFileTypes: true });
+  assert(docs.every((entry) => entry.isFile() && entry.name.endsWith('.md')));
+  assert.deepEqual(
+    docs.map((entry) => `docs/${entry.name}`).sort(),
+    pkg.files.filter((entry) => entry.startsWith('docs/')).sort(),
+    'Installed documentation must match the explicit consumer allowlist',
+  );
+  for (const entry of docs) {
+    const document = join(runtime, 'docs', entry.name);
+    const body = await readFile(document, 'utf8');
+    for (const [, href] of body.matchAll(/\]\(([^)\s]+)\)/g)) {
+      if (/^(?:[a-z]+:|\/|#)/i.test(href)) continue;
+      const target = fileURLToPath(new URL(href, pathToFileURL(document)));
+      assert(
+        await stat(target).then(
+          () => true,
+          () => false,
+        ),
+        `Broken installed documentation link in ${entry.name}: ${href}`,
+      );
+    }
+  }
+  receipt.checks.push('installed-consumer-documents');
   const coreExports = Object.keys(pkg.exports).filter(
     (name) => !['./agent', './arena', './composer/agent'].includes(name),
   );
@@ -453,6 +495,14 @@ console.log(JSON.stringify({ imports: ${coreExports.length}, renderBytes: result
   receipt.checks.push('community-exporter-textured-subprocess');
   const server = join(runtime, 'dist/mcp-server.mjs'),
     store = join(workspace, '.kiln/programs');
+  const binSession = await connect([npm, 'exec', '--offline', '--', 'kiln-mcp'], install, store);
+  try {
+    const listed = await binSession.call('tools/list', {});
+    assert(listed.tools.some((tool) => tool.name === 'kiln_render'));
+    receipt.checks.push('npm-mcp-entry');
+  } finally {
+    await binSession.close();
+  }
   const session = await connect(server, root, store);
   let changed;
   try {
@@ -479,7 +529,7 @@ console.log(JSON.stringify({ imports: ${coreExports.length}, renderBytes: result
     assert(result.content.some((item) => item.type === 'image' && item.data.length > 100));
     receipt.editResult = { programRef: changed.programRef, parentRef: changed.parentRef };
   } finally {
-    session.close();
+    await session.close();
   }
   const restarted = await connect(server, install, store);
   try {
@@ -491,7 +541,7 @@ console.log(JSON.stringify({ imports: ${coreExports.length}, renderBytes: result
     );
     assert.match(after.code, /0xaa8844/);
   } finally {
-    restarted.close();
+    await restarted.close();
   }
   await command(
     [cli, 'source', changed.programRef, '--out', join(workspace, 'revised.kiln.js')],

@@ -2,11 +2,11 @@
 
 Seven coding-agent CLIs can drive Kiln unattended. This is the operational reference for
 keeping exactly one install of each, invoking them headlessly, and running the repeatable
-checks. For what a dispatch run *is*, see [headless asset generation](dispatch.md); for how
+checks. For what a dispatch run *is*, see [headless asset generation](https://github.com/instruktlabs/kiln/blob/main/docs/dispatch.md); for how
 to compare runs fairly, see the `kiln-batch-dispatch` skill; for dated results, see
-[harness checks](dogfooding.md).
+[harness checks](https://github.com/instruktlabs/kiln/blob/main/docs/dogfooding.md).
 
-The registry of record is [scripts/harness.mjs](../scripts/harness.mjs). Every flag below is
+The registry of record is [scripts/harness.mjs](https://github.com/instruktlabs/kiln/blob/main/scripts/harness.mjs). Every flag below is
 there with the diagnosis that put it there. When the two disagree, that file is right.
 
 **September 23 qualification note:** OpenCode dispatch now targets V2 using the
@@ -15,20 +15,20 @@ requested edits have completed with frozen checkout runtimes: 36 main authorings
 and 12 held-outs, each with two edits. Native13 also completed generation and two
 refinements through the official Google adapter. These are bounded checkout
 results; asset-quality defects, broader provider/platform support and installed
-qualification remain explicit. See the [native trace audit](reviews/2026-09-23-native-trace-audit.md),
-[campaign and trace review](reviews/2026-09-22-opencode-main-campaign.md) and
-[migration receipt](reviews/2026-09-22-linux-and-opencode-v2.md).
+qualification remain explicit. See the [native trace audit](https://github.com/instruktlabs/kiln/blob/main/docs/reviews/2026-09-23-native-trace-audit.md),
+[campaign and trace review](https://github.com/instruktlabs/kiln/blob/main/docs/reviews/2026-09-22-opencode-main-campaign.md) and
+[migration receipt](https://github.com/instruktlabs/kiln/blob/main/docs/reviews/2026-09-22-linux-and-opencode-v2.md).
 Cline CLI 3.0.64 is an additional experimental route: Kiln CLI plus native image-file
 loading completed a correction, but Cline's MCP adapter serializes image results
 as text before inference. Do not treat those MCP results as visual review or
 increase text limits to carry base64. See the
-[reproduction and supported route](reviews/2026-09-22-cline-image-qualification.md).
+[reproduction and supported route](https://github.com/instruktlabs/kiln/blob/main/docs/reviews/2026-09-22-cline-image-qualification.md).
 OpenCode 2.0.14 preserves standard MCP images in captured provider requests.
 Hermes 0.21.4 preserves MCP images as cached files; its vision tool can load them
 for the main model when that route supports images. Activated Cline VS Code 4.1.20
 tests preserve MCP images in Legacy and reproduce the CLI defect in Next/SDK.
 The shared SDK conversion is implicated, not every Cline implementation. See the
-[cross-harness evidence and limits](reviews/2026-09-22-mcp-image-cross-harness.md).
+[cross-harness evidence and limits](https://github.com/instruktlabs/kiln/blob/main/docs/reviews/2026-09-22-mcp-image-cross-harness.md).
 
 ## Cline CLI and Next: image review
 
@@ -350,14 +350,14 @@ the images. Provider metadata alone verifies neither.
 
 ## Adding a harness
 
-1. Add an entry to `HARNESSES` in [scripts/harness.mjs](../scripts/harness.mjs): `bin`,
+1. Add an entry to `HARNESSES` in [scripts/harness.mjs](https://github.com/instruktlabs/kiln/blob/main/scripts/harness.mjs): `bin`,
    `defaultModel` (`null` when account entitlement is unknowable), `probe`, `argv`, and
    `fallbackModels`. Record *why* each flag is there.
 2. Add its MCP config spelling to `managedFiles` in
    [scripts/create-workspace.mjs](../scripts/create-workspace.mjs) and its name to the
    `harnesses` list beside it.
 3. Add a case to the workspace test in
-   [src/\_\_tests\_\_/workspace-bootstrap.test.ts](../src/__tests__/workspace-bootstrap.test.ts)
+   [src/\_\_tests\_\_/workspace-bootstrap.test.ts](https://github.com/instruktlabs/kiln/blob/main/src/__tests__/workspace-bootstrap.test.ts)
    asserting the generated config names the runtime's `dist/mcp-server.mjs`.
 4. Run `bun run smoke:harness -- --harness <name>` before trusting it with a brief.
 

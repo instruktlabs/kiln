@@ -48,7 +48,7 @@ the official Google adapter with Gemini 3.8 Flash and high thinking, in 33, 15
 and 18 model calls. Retained source/export identities, GPU images, selected
 interfaces and protected components were independently reviewed. Earlier failed
 and partial provider attempts remain recorded. See the
-[native trace audit](reviews/2026-09-23-native-trace-audit.md#trial13-completed-baseline-and-both-refinements).
+[native trace audit](https://github.com/instruktlabs/kiln/blob/main/docs/reviews/2026-09-23-native-trace-audit.md#trial13-completed-baseline-and-both-refinements).
 
 That trial qualifies this bounded route, not every provider or asset type. Other
 adapters have offline contract evidence; their model access, quotas, tool schemas,

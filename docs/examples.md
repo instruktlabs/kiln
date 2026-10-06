@@ -1,6 +1,6 @@
 # Example collection
 
-[How credits and build records work](example-provenance.md).
+[How credits and build records work](https://github.com/instruktlabs/kiln/blob/main/docs/example-provenance.md).
 
 The public gallery contains 62 selected examples. Archived studies remain in the
 repository but are not presented in this gallery.
@@ -130,7 +130,7 @@ Still images are rendered from the source by `bun scripts/hero-shots.ts`. The [i
 
 The collection includes historical studies and current authoring runs. Each example retains its recorded model credit and any known refinement history; missing isolation evidence is marked as unrecorded. These examples are not a comparative model benchmark.
 
-These are examples, not a controlled model ranking. The [dogfooding notes](dogfooding.md) distinguish new-asset generation from targeted editing and explain the context supplied for the latest runs.
+These are examples, not a controlled model ranking. The [dogfooding notes](https://github.com/instruktlabs/kiln/blob/main/docs/dogfooding.md) distinguish new-asset generation from targeted editing and explain the context supplied for the latest runs.
 
 ## Animation
 
@@ -160,7 +160,7 @@ refits every frame. Because the projection is orthographic and the fit is exact,
 put back onto one shared camera by a scale and a translation that are both computable, which is a
 correction rather than an approximation.
 
-![Six-view contact sheet of a procedurally generated field gun](../examples/hero-sheet.png)
+![Six-view contact sheet of a procedurally generated field gun](https://github.com/instruktlabs/kiln/blob/main/examples/hero-sheet.png)
 
 *The contact sheet the model looks at. `../examples/field-gun.kiln.js`, 15,544 triangles: a revolved
 bronze barrel bored with a boolean, a stepped oak carriage carrying strapwork and bolt heads, and

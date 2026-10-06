@@ -225,7 +225,7 @@ edges while leaving all topology counts green. `extrudeProfile` adds no side-wal
 rings unless `divisions` asks for them (default 0, or 16 when it twists). Holed `extrudeProfile` supports
 twist/taper, but twist accuracy depends on `divisions`, and its output needs UV
 projection or unwrapping before directional textures. See the
-[bounded construction comparison](reviews/2026-09-22-loft-alternatives.md) for
+[bounded construction comparison](https://github.com/instruktlabs/kiln/blob/main/docs/reviews/2026-09-22-loft-alternatives.md) for
 measured alternatives and limits.
 
 Lofts and profile sweeps reject corresponding profile edges that collapse between
@@ -343,7 +343,7 @@ toward -Z; its new surfaces have no inherited UVs. Converting angle units alone
 therefore does not make partial surface and solid revolutions interchangeable.
 
 These distinctions are preserved rather than hidden behind a mode-dependent
-return contract. The [bounded comparison](reviews/2026-09-23-path-revolution-contracts.md)
+return contract. The [bounded comparison](https://github.com/instruktlabs/kiln/blob/main/docs/reviews/2026-09-23-path-revolution-contracts.md)
 records the shared implementations and unchanged geometry/export checks.
 
 ## Experiment with implicit fields
@@ -357,7 +357,7 @@ const blob = await implicitSurface(
 
 The field is **positive inside**. Bounds and `edgeLength` are required. Smaller spacing can increase cost sharply and is necessary for thin features. The default limits are one million estimated grid cells and eight million actual callback evaluations; `maxCells` and `maxEvaluations` are explicit overrides. An evaluation counter cannot stop a callback that never returns: use the host's process-bounded evaluator for untrusted source.
 
-Output is experimental, has no UVs, and records resolution and evaluation counts. A finite grid cannot guarantee preservation of every thin feature or exact CAD dimensions. See the [candidate measurements and adoption decisions](experiments/geometry-frontier.md) for implicit surfaces, general beveling, normal-offset shells, and mesh-to-field remeshing.
+Output is experimental, has no UVs, and records resolution and evaluation counts. A finite grid cannot guarantee preservation of every thin feature or exact CAD dimensions. See the [candidate measurements and adoption decisions](https://github.com/instruktlabs/kiln/blob/main/docs/experiments/geometry-frontier.md) for implicit surfaces, general beveling, normal-offset shells, and mesh-to-field remeshing.
 
 
 ### Computational bounds
@@ -415,7 +415,7 @@ Specialized factories also check finite dimensions and bounded counts. Cards acc
 pivots outside their panel when the resulting coordinates remain finite. Wings
 accept a zero tip chord; stairs accept signed rise/run for descending or reversed
 flights. Blade bevels produce one closed cross-section, with partial bevels and a
-full diamond at `edgeBevel: 1`. See the [specialized-domain evidence](reviews/2026-09-21-specialized-primitive-domains.md) for limits and changed bevel topology.
+full diamond at `edgeBevel: 1`. See the [specialized-domain evidence](https://github.com/instruktlabs/kiln/blob/main/docs/reviews/2026-09-21-specialized-primitive-domains.md) for limits and changed bevel topology.
 
 ## Generate UVs in an explicit frame
 

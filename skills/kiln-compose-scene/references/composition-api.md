@@ -1,6 +1,6 @@
 # Composition API notes
 
-Use these through the destination project's TypeScript toolchain. `inspectGlbIntegration` and `composeSceneGLB` are exported from `@kiln/engine/render`; overlap helpers are exported from `@kiln/engine/composer`. Generated Kiln source itself still has no imports.
+Use these through the destination project's TypeScript toolchain. `inspectGlbIntegration` and `composeSceneGLB` are exported from `@instruktlabs/kiln/render`; overlap helpers are exported from `@instruktlabs/kiln/composer`. Generated Kiln source itself still has no imports.
 
 ```ts
 const composed = await composeSceneGLB([

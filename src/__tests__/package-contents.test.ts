@@ -4,20 +4,29 @@ import { resolve } from 'node:path';
 
 it('declares Node commands and the files needed by an installed workspace', async () => {
   const pkg = JSON.parse(await readFile(resolve(import.meta.dir, '../../package.json'), 'utf8'));
-  expect(pkg.private).toBe(true);
+  expect(pkg.name).toBe('@instruktlabs/kiln');
+  expect(pkg.private).not.toBe(true);
+  expect(pkg.publishConfig).toEqual({ access: 'public', provenance: true });
+  expect(pkg.repository.url).toBe('git+https://github.com/instruktlabs/kiln.git');
+  expect(pkg.bugs.url).toBe('https://github.com/instruktlabs/kiln/issues');
   expect(pkg.bin.kiln).toBe('./dist/cli.mjs');
   expect(pkg.bin['kiln-init']).toBe('./scripts/create-workspace.mjs');
+  expect(pkg.bin['kiln-mcp']).toBe('./dist/mcp-server.mjs');
   for (const path of [
     'dist/*.mjs',
     'scripts/create-workspace.mjs',
     'skills/',
-    'docs/',
+    'docs/install.md',
+    'docs/sdk.md',
     'src/**/*.mjs',
     'plugin.json',
     '.claude-plugin/',
   ]) {
     expect(pkg.files).toContain(path);
   }
+  expect(pkg.files).not.toContain('docs/');
+  for (const path of pkg.files as string[])
+    expect(path).not.toMatch(/^docs\/(?:plans|reviews|evaluation)(?:\/|$)/);
   for (const [name, file] of Object.entries({
     './geometry': './src/geometry.ts',
     './deform': './src/deform.ts',
@@ -49,7 +58,7 @@ it('advertises one version everywhere a client or installer can read it', async 
   const read = async (file: string) =>
     JSON.parse(await readFile(resolve(import.meta.dir, '../..', file), 'utf8')).version;
   const engine = await read('package.json');
-  expect(engine).toMatch(/^\d+\.\d+\.\d+$/);
+  expect(engine).toMatch(/^\d+\.\d+\.\d+(?:-[0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*)?$/);
   for (const manifest of [
     'plugin.json',
     '.claude-plugin/plugin.json',

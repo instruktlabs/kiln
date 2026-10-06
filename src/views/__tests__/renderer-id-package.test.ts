@@ -16,7 +16,7 @@ it('reads its own package version when bundled rather than the consuming applica
     );
     await writeFile(
       join(pkg, 'package.json'),
-      JSON.stringify({ name: '@kiln/engine', version: '1.2.3-test' }),
+      JSON.stringify({ name: '@instruktlabs/kiln', version: '1.2.3-test' }),
     );
     const target = join(pkg, 'dist/renderer.mjs');
     const built = spawnSync(

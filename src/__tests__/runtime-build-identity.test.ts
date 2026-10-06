@@ -12,7 +12,11 @@ it('derives reproducible runtime identity from source and lockfile rather than t
     await writeFile(join(root, 'render-service/src/server.mjs'), 'export const protocol = 1;');
     await writeFile(
       join(root, 'package.json'),
-      JSON.stringify({ name: '@kiln/engine', version: '1.0.0', packageManager: 'bun@1.3.14' }),
+      JSON.stringify({
+        name: '@instruktlabs/kiln',
+        version: '1.0.0',
+        packageManager: 'bun@1.3.14',
+      }),
     );
     await writeFile(join(root, 'bun.lock'), 'dependency-lock');
     await writeFile(join(root, 'src/a.ts'), 'export const n = 1;');

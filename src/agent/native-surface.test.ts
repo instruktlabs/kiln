@@ -3,7 +3,7 @@ import { existsSync, readFileSync } from 'node:fs';
 import * as skin from './tools';
 import * as agent from './index';
 import { createKilnNativeToolRegistry } from '../tools/registry';
-import * as publicTools from '@kiln/engine/tools';
+import * as publicTools from '@instruktlabs/kiln/tools';
 
 test('native discovery uses the registry presentation once, preserving long structured detail', async () => {
   const def = createKilnNativeToolRegistry({}, {}).find((t) => t.name === 'kiln_discover')!;
@@ -37,7 +37,7 @@ test('the retired category-driven prompt module has no public or source fallback
   const pkg = JSON.parse(readFileSync(new URL('../../package.json', import.meta.url), 'utf8'));
   expect(Object.hasOwn(pkg.exports, './prompt')).toBe(false);
   expect(existsSync(new URL('../prompt.ts', import.meta.url))).toBe(false);
-  expect(() => import.meta.resolve('@kiln/engine/prompt')).toThrow();
+  expect(() => import.meta.resolve('@instruktlabs/kiln/prompt')).toThrow();
   expect(typeof agent.runKilnAgent).toBe('function');
 });
 

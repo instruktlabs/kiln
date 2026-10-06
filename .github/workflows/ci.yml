@@ -401,7 +401,7 @@ jobs:
       # This explicit probe permits software adapters. Production rendering still
       # rejects them; this tests native Vulkan plumbing, not physical GPU support.
       - name: Exercise textured readback on software Vulkan
-        run: node scripts/smoke-renderer.mjs ./installation/node_modules/@kiln/engine renderer-receipt software
+        run: node scripts/smoke-renderer.mjs ./installation/node_modules/@instruktlabs/kiln renderer-receipt software
       - name: Retain renderer identity and images
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4

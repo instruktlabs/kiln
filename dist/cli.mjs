@@ -29573,7 +29573,7 @@ function engineVersion() {
     try {
       const raw = readFileSync(new URL(path, import.meta.url), "utf8");
       const pkg = JSON.parse(raw);
-      if (pkg.name === "@kiln/engine" && typeof pkg.version === "string" && pkg.version) {
+      if (pkg.name === "@instruktlabs/kiln" && typeof pkg.version === "string" && pkg.version) {
         return pkg.version;
       }
     } catch {}
@@ -32594,7 +32594,7 @@ async function installedRuntimeIdentity(root, limits = {}) {
   };
   try {
     const pkg = await manifest(root);
-    if (pkg.name !== "@kiln/engine")
+    if (pkg.name !== "@instruktlabs/kiln")
       throw new Error("Not a Kiln installation.");
     const build = JSON.parse(await readFile4(join6(root, "dist", "build.json"), "utf8"));
     const worker = build.entries?.worker;
@@ -36139,7 +36139,7 @@ var init_program_artifacts = __esm(() => {
 function engineIdentity() {
   return { version: ENGINE_VERSION, installUrl: ENGINE_INSTALL_URL };
 }
-var ENGINE_VERSION = "0.10.0", ENGINE_INSTALL_URL;
+var ENGINE_VERSION = "1.0.0-dev.0", ENGINE_INSTALL_URL;
 var init_engine_identity = __esm(() => {
   ENGINE_INSTALL_URL = new URL("../", import.meta.url).href;
 });

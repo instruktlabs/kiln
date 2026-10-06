@@ -87,7 +87,7 @@ and set `diffTruncated`; use source reads for the rest.
 
 ## Library use
 
-`createKilnProgramToolRegistry(context)` is exported from `@kiln/engine/tools` and returns the
+`createKilnProgramToolRegistry(context)` is exported from `@instruktlabs/kiln/tools` and returns the
 same twelve definitions used by MCP. Inject `context.programStore`, with asynchronous
 `put(code)` and `get(programRef)` methods, to share revisions between instances. Without
 it, one registry instance keeps an in-memory store bounded to 64 MiB. Keep that instance
