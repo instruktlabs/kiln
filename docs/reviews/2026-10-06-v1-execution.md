@@ -62,7 +62,10 @@ deployment has occurred.
 
 [PR #152](https://github.com/instruktlabs/kiln/pull/152) updates the public candidate
 record to stable so the seven-job registry installation matrix can qualify the
-published version. A fresh local Windows installation check is also running.
+published version. [Run 37528749517](https://github.com/instruktlabs/kiln/actions/runs/37528749517)
+was dispatched at `6248b4c`. The fresh local Windows installation passed all 25
+checks, including SDK declarations, CLI, MCP and packaged plugin checks; its
+receipt validator accepted the exact public archive on Node 22.23.3/npm 12.2.0.
 Receipts and the npm screenshot are retained under the stable worktree's
 `.cache/stable-main-qualification/public-registry/`.
 
