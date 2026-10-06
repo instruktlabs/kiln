@@ -1,9 +1,10 @@
 # Stable native rendering and recovery qualification
 
-Prepared on 6 October 2026. **Not yet authorized or executed on Cloudflare.**
-All ten jobs in the earlier three scopes are consumed and their resources removed.
-This candidate proposes a new, single twelve-job batch with a separate $1 trial
-allowance. It must stop on the first failure and cannot reset or repeat its claim.
+Prepared and executed on 6 October 2026. **All twelve approved Cloudflare cases
+passed; trial resources were removed and absence verified.** The owner approved
+source `d068a7c` and a separate $1 allowance after both CI platforms passed.
+All 22 jobs across the four authorized scopes are now consumed. The batch stopped
+after its fixed cases and cannot reset or repeat its claim.
 The allowance is a planning bound, not a Cloudflare-enforced invoice cap.
 
 ## Exact candidate
@@ -108,3 +109,56 @@ Passing this trial would qualify these native/rendering/failure paths only.
 Authenticated MCP routing, account controls, private artifact lifecycle, global
 admission, load/cost measurement, production deployment and directory submissions
 remain separate launch work.
+
+## Approved Cloudflare result
+
+Exact-source Linux/Windows hosted CI passed in
+[run 37529896878](https://github.com/instruktlabs/kiln/actions/runs/37529896878).
+The owner then approved all twelve jobs. The remote registry manifest, config and
+layers matched the local image. `cf@1.0.0-beta.12 deploy --prebuilt` deployed the
+exact compiled Worker; downloaded JavaScript matched the digest above. Version
+`af273169-3a66-4350-b7d8-6dede08f1bf2` and deployment
+`11289978-acde-4f2d-8036-02cd5c30197e` had no public route, URL, cron or external
+binding. The Container application disabled SSH and native logs. The loopback
+operator used Wrangler 4.147.0's remote service binding.
+
+| Case | Result | Elapsed including cleanup |
+| --- | --- | --- |
+| CPU preview | Passed; expected PNG digest | 13,583 ms |
+| Six software views | Passed; all PNGs retained and independently decoded | 13,286 ms |
+| Native network denial | Passed for the fixed TCP/DNS targets | 14,913 ms |
+| Marker and detached child | Passed; child alive before VM destruction | 7,644 ms |
+| Fresh VM | Passed; no prior marker or child | 1,102 ms |
+| Native deadline | Passed; ready at 929 ms, then deadline outcome | 15,101 ms |
+| Native cancellation | Passed; ready at 1,043 ms, then cancellation | 1,375 ms |
+| stdout flood | Passed; readiness and output-limit outcome | 963 ms |
+| stderr flood | Passed; readiness and output-limit outcome | 880 ms |
+| Memory exhaustion | Passed; child SIGKILL and one `/proc/vmstat` OOM kill | 15,412 ms |
+| Real alarm recovery | Passed; native ready at 950 ms and `ALARM_RECOVERED` | 15,079 ms |
+| Engine afterward | Passed; expected 1,912-byte GLB digest | 2,194 ms |
+
+All results confirmed whole-instance destruction. The provider API separately
+reported twelve stopped instances, with no active ones. The private RPC replay
+matched the retained result without starting another batch. These elapsed values
+are functional trial observations, not billed CPU, representative cold-start
+percentiles, throughput or a production cost forecast.
+
+All seven downloaded 128px PNGs passed an independent Windows pngjs decode, digest
+and colour-count check. Every image matched its local reference byte for byte.
+Visual inspection showed the matte cube, red/green textured cube and blue metallic
+sphere, both camera angles and all three backdrops. These small fixed fixtures
+qualify this software-rendering path, not comprehensive asset quality or capacity.
+
+The loopback operator stopped. Application `64098a73380d4e51b49fe937c6ccb99f`, Worker
+`3d13aa984bcb4b3dafb2de79288950a1`, both trial namespaces and the
+`kiln-evaluation:stable-resilience-control` registry tag were deleted. Follow-up
+reads verified absence. The temporary registry login was removed. Receipts,
+decoded images, immutable deployment metadata and cleanup readbacks are under
+the diagnostic worktree's `.cache/resilience-trial/`. No settled invoice is claimed.
+
+The original image-format and restricted nested-namespace failures remain in the
+earlier records. This result establishes the listed native VM paths and removes
+those specific qualification gaps. It does not turn the local Node MCP host into
+a deployed service: authenticated dispatch, production render adapters, private
+artifact lifecycle, account controls, admission/load/operations and end-to-end
+launch checks still require implementation or deployment evidence.
