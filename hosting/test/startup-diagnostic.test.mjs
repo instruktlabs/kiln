@@ -40,6 +40,7 @@ function fixture(options = {}) {
       },
     });
   const container = {
+    images: options.images ?? {},
     running: false,
     start(settings) {
       calls.push('start');
@@ -75,7 +76,7 @@ function fixture(options = {}) {
     async inspect() {
       calls.push('inspect');
       if (!this.running) return null;
-      return { image: options.image ?? 'cloudflare/debian-trixie' };
+      return { image: options.image ?? this.settings.image };
     },
     async destroy() {
       calls.push('destroy');
@@ -269,54 +270,92 @@ test('cleanup itself is bounded and preserves recovery without granting a second
   assert.equal(f.calls.filter((x) => x === 'start').length, 1);
 });
 
-test('actual Worker uses its explicit private binding and denies HTTP while retaining a missing-container result', async () => {
-  const bundle = await build({
-    entryPoints: [fileURLToPath(new URL('../probe/startup-worker.ts', import.meta.url))],
-    bundle: true,
-    write: false,
-    format: 'esm',
-    platform: 'browser',
-    external: ['cloudflare:workers'],
-  });
-  const runtime = new Miniflare(
-    convertV4MiniflareOptions({
-      workers: [
-        {
-          name: 'diagnostic',
-          modules: true,
-          script: bundle.outputFiles[0].text,
-          compatibilityDate: '2026-10-06',
-          durableObjects: { STARTUP_JOB: { className: 'KilnManagedStartupJob', useSQLite: true } },
-        },
-        {
-          name: 'operator',
-          modules: true,
-          compatibilityDate: '2026-10-06',
-          serviceBindings: { DIAGNOSTIC: { name: 'diagnostic', entrypoint: 'KilnStartupControl' } },
-          script: `export default {
+test('configured control uses only a pinned Cloudflare image from its host binding', async () => {
+  const image = `registry.cloudflare.com/${'a'.repeat(32)}/kiln-startup-control@sha256:${'b'.repeat(64)}`;
+  const f = fixture({ images: { control: image } });
+  const result = await new ManagedStartupDiagnostic(f.context, 'configured').run();
+  assert.equal(result.passed, true);
+  assert.equal(f.container.settings.image, image);
+  assert.equal(f.container.settings.enableInternet, false);
+  for (const invalid of [
+    undefined,
+    '',
+    'cloudflare/debian-trixie',
+    'node:24.20.0-trixie-slim',
+    image.replace(/@sha256:.*/, ':latest'),
+  ]) {
+    const denied = fixture({ images: { control: invalid } });
+    const failed = await new ManagedStartupDiagnostic(denied.context, 'configured').run();
+    assert.equal(failed.reason, 'IMAGE_UNAVAILABLE');
+    assert.equal(failed.passed, false);
+    assert.equal(denied.calls.includes('start'), false);
+    assert.equal(denied.calls.includes('exec'), false);
+  }
+});
+
+test('configured control verifies the running image independently of the selected reference', async () => {
+  const image = `registry.cloudflare.com/${'a'.repeat(32)}/kiln-startup-control@sha256:${'b'.repeat(64)}`;
+  const f = fixture({ images: { control: image }, image: 'cloudflare/debian-trixie' });
+  const result = await new ManagedStartupDiagnostic(f.context, 'configured').run();
+  assert.equal(result.passed, false);
+  assert.equal(result.reason, 'INSPECT_FAILED');
+  assert.equal(result.stopped, true);
+});
+
+for (const [entryFile, className, entrypoint] of [
+  ['startup-worker.ts', 'KilnManagedStartupJob', 'KilnStartupControl'],
+  ['custom-startup-worker.ts', 'KilnCustomStartupJob', 'KilnCustomStartupControl'],
+]) {
+  test(`${entryFile} uses its private binding, denies HTTP and retains a missing-container result`, async () => {
+    const bundle = await build({
+      entryPoints: [fileURLToPath(new URL(`../probe/${entryFile}`, import.meta.url))],
+      bundle: true,
+      write: false,
+      format: 'esm',
+      platform: 'browser',
+      external: ['cloudflare:workers'],
+    });
+    const runtime = new Miniflare(
+      convertV4MiniflareOptions({
+        workers: [
+          {
+            name: 'diagnostic',
+            modules: true,
+            script: bundle.outputFiles[0].text,
+            compatibilityDate: '2026-10-06',
+            durableObjects: { STARTUP_JOB: { className, useSQLite: true } },
+          },
+          {
+            name: 'operator',
+            modules: true,
+            compatibilityDate: '2026-10-06',
+            serviceBindings: { DIAGNOSTIC: { name: 'diagnostic', entrypoint } },
+            script: `export default {
           async fetch(request, env) {
             if (new URL(request.url).pathname === '/denied') return env.DIAGNOSTIC.fetch(request);
             return Response.json(await env.DIAGNOSTIC.runFixed());
           }
         }`,
-        },
-      ],
-    }),
-  );
-  try {
-    const diagnostic = await runtime.getWorker('diagnostic');
-    assert.equal(
-      (await diagnostic.fetch('http://localhost/run-fixed', { method: 'POST', body: '{}' })).status,
-      404,
+          },
+        ],
+      }),
     );
-    const operator = await runtime.getWorker('operator');
-    assert.equal((await operator.fetch('http://localhost/denied')).status, 404);
-    const first = await (await operator.fetch('http://localhost/run')).json();
-    assert.equal(first.passed, false);
-    assert.equal(first.reason, 'ISOLATION_UNAVAILABLE');
-    assert.equal(first.stopped, true);
-    assert.deepEqual(await (await operator.fetch('http://localhost/run')).json(), first);
-  } finally {
-    await runtime.dispose();
-  }
-});
+    try {
+      const diagnostic = await runtime.getWorker('diagnostic');
+      assert.equal(
+        (await diagnostic.fetch('http://localhost/run-fixed', { method: 'POST', body: '{}' }))
+          .status,
+        404,
+      );
+      const operator = await runtime.getWorker('operator');
+      assert.equal((await operator.fetch('http://localhost/denied')).status, 404);
+      const first = await (await operator.fetch('http://localhost/run')).json();
+      assert.equal(first.passed, false);
+      assert.equal(first.reason, 'ISOLATION_UNAVAILABLE');
+      assert.equal(first.stopped, true);
+      assert.deepEqual(await (await operator.fetch('http://localhost/run')).json(), first);
+    } finally {
+      await runtime.dispose();
+    }
+  });
+}

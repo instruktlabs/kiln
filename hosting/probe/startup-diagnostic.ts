@@ -18,6 +18,7 @@ type Operation =
   | 'stopped';
 type Reason =
   | 'ISOLATION_UNAVAILABLE'
+  | 'IMAGE_UNAVAILABLE'
   | 'PREEXISTING_CONTAINER'
   | 'START_FAILED'
   | 'MONITOR_FAILED'
@@ -130,7 +131,10 @@ async function cleanup(container: Container | undefined, record: StartupRecord):
 
 /** Fixed platform diagnostic only. No source, image, command or run ID is accepted. */
 export class ManagedStartupDiagnostic {
-  constructor(private readonly context: Pick<DurableObjectState, 'container' | 'storage'>) {}
+  constructor(
+    private readonly context: Pick<DurableObjectState, 'container' | 'storage'>,
+    private readonly imageSource: 'managed' | 'configured' = 'managed',
+  ) {}
 
   async run(): Promise<StartupRecord> {
     const storage = this.context.storage;
@@ -193,10 +197,19 @@ export class ManagedStartupDiagnostic {
     try {
       const execute = async () => {
         if (!container) throw new DiagnosticFailure('ISOLATION_UNAVAILABLE');
+        const image = this.imageSource === 'configured' ? container.images?.control : IMAGE;
+        if (
+          this.imageSource === 'configured' &&
+          (typeof image !== 'string' ||
+            !/^registry\.cloudflare\.com\/[a-f0-9]{32}\/[a-z0-9][a-z0-9._/-]*@sha256:[a-f0-9]{64}$/.test(
+              image,
+            ))
+        )
+          throw new DiagnosticFailure('IMAGE_UNAVAILABLE');
         if (container.running) throw new DiagnosticFailure('PREEXISTING_CONTAINER');
         await step('start', 'START_FAILED', () =>
           container.start({
-            image: IMAGE,
+            image,
             instance: 'standard-2',
             enableInternet: false,
             entrypoint: ['sleep', 'infinity'],
@@ -230,7 +243,7 @@ export class ManagedStartupDiagnostic {
         );
         await step('inspect', 'INSPECT_FAILED', async () => {
           const observed = await container.inspect();
-          if (observed?.image !== IMAGE) throw new DiagnosticFailure('INSPECT_FAILED');
+          if (observed?.image !== image) throw new DiagnosticFailure('INSPECT_FAILED');
         });
         record.runtime = await step('output', 'OUTPUT_FAILED', async () => {
           const [stdout, stderr, exitCode] = await Promise.all([
