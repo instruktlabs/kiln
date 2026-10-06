@@ -181,6 +181,12 @@ lower them without a measured rationale. Live model tests are opt-in via `bun ru
 `bun run test` is `bun test src scripts` and does **not** reach `render-service/`; run
 `bun run test:render-service` whenever you change it (CI requires it).
 
+The private hosted service is under `hosting/` with its own npm lockfile. Its cloud
+dependencies never enter the engine package. Changes there require `npm ci --ignore-scripts`,
+`npm run typecheck`, `npm test` and `npm run build` from that directory using the pinned
+maintainer tools. `Hosted gateway checks` runs those gates separately; workerd fixture
+tests do not establish live OAuth, native evaluation or production tenant isolation.
+
 Tests use `--timeout 20000` for cold Windows startup; a larger budget needs an explicit third
 `test()` argument with a measured-duration comment. Tests and CI pin `KILN_RENDER=cpu` so the
 coverage ratchet cannot vary with the runner's GPU; coverage is measured over `src/` alone, and

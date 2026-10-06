@@ -8,6 +8,9 @@
       "site/*.ts",
       "scripts/**/*.mjs",
       "scripts/**/*.ts",
+      "hosting/src/**/*.ts",
+      "hosting/test/**/*.{ts,mjs}",
+      "hosting/scripts/**/*.mjs",
       "render-service/src/**/*.mjs",
       "render-service/test/**/*.mjs"
     ],

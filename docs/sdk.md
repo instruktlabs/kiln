@@ -50,7 +50,7 @@ except `implicit` are stable entrypoints for v1: their declared public signature
 record shapes and documented behavior receive normal semantic-versioning
 compatibility. Optional dependencies do not make the two agent APIs experimental.
 The `arena` entry is pure ranking math and needs no model SDK or provider key.
-This development checkout is not yet the published 1.0 contract.
+This release candidate is not yet the published 1.0 contract.
 
 The exception follows the feature across imports: `implicitSurface` remains
 experimental when re-exported by `primitives` or used in authoring globals, and
@@ -88,10 +88,12 @@ probes, without a TypeScript loader. Linux hosts still need the required namespa
 and resource-limit tools and must pass the actual readiness probe. An unavailable
 boundary fails closed; a successful local worker render is not proof of isolation.
 
-Optional Strands workflows (`agent` and `composer/agent`) require their documented peer dependencies. Core SDK
-imports and consumer types must work without those optional peers. Shared tool
-contracts contain host-neutral interfaces; they do not require the Strands SDK to
-typecheck an ordinary CLI/MCP host.
+Optional Strands workflows (`agent` and `composer/agent`) require Node **22.2.0+**
+and their documented peer dependencies. The core SDK, CLI and MCP retain the
+separate Node compatibility contract in the [installation guide](install.md).
+Core SDK imports and consumer types must work without those optional peers.
+Shared tool contracts contain host-neutral interfaces; they do not require the
+Strands SDK to typecheck an ordinary CLI/MCP host.
 
 Existing experimental features remain explicit: `/implicit` keeps its current
 availability and limitations, and the community exporter stays explicitly selected. CPU

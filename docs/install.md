@@ -112,15 +112,16 @@ The last line should say `darwin arm64` or `darwin x64`. The npm supplied with N
 can install the package; contributor CI pins npm 12.2.0 for reproducible receipts.
 You do not need to change global npm or install Homebrew for this workflow.
 
-The optional built-in Strands agent requires Node **22.2.0+** and its optional SDK
-and provider dependencies. Using Kiln from Cline or another MCP/CLI agent does not
+The optional built-in Strands agent and SDK subpaths `agent` and `composer/agent`
+require Node **22.2.0+** and their optional SDK and provider dependencies.
+Using Kiln from Cline or another MCP/CLI agent does not
 require Strands or its model-provider packages. The v1 library and commands are
 compiled; package imports need no TypeScript loader.
 Maintainer release checks still use the exact versions in the source repository's
-`toolchain.json`. Current Node 20/22-minimum/24 evidence is from
-fresh Windows package installations (Node 20.15.0 and 22.23.2); Linux floor and
-macOS package jobs qualify the current release through CI. Physical GPU coverage
-and distribution-specific Debian/Cline setup remain separate checks.
+`toolchain.json`. Package CI checks Linux Node 20.15.0, 22.2.0 and 24.20.0,
+plus Node 22.23.3 on Linux, Windows and both macOS architectures. Each receipt
+qualifies only its named tarball; a later candidate needs its own passing checks.
+Physical GPU coverage and distribution-specific Debian/Cline setup remain separate checks.
 
 Cline CLI 3.0.64 and VS Code 4.1.20 Next/SDK have a known MCP-to-model limitation:
 image responses become text, with larger results also truncated. The tested

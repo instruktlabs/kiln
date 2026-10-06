@@ -18,14 +18,14 @@ published yet.
 | P1 | Public API, stability and migrations | In progress: all 55 public entrypoints classified in the SDK guide, experimental/re-export and deprecated-alias boundaries explicit, Discovery labels visible; final release freeze and target-version upgrade proof remain open |
 | P2 | Compiled ESM SDK and declarations | In progress: corrected 53-entry core qualification includes dependency-free arena; all 55 imports/declarations pass in fresh optional-peer installations at current and declared-minimum versions; final-version and platform evidence remain open |
 | P3 | Package identity, contents, executables and notices | In progress: unpublished `@instruktlabs/kiln@1.0.0-rc.1`, aligned engine/plugin identities, MCP launcher, consumer doc allowlist and dependency notices; fresh RC archive checks pass locally, final release audit remains open |
-| P4 | Clean installs and workspace upgrades | In progress: development package has platform CI evidence; official 0.10.0-to-RC upgrades pass for Claude/Codex workspaces with conflict refusal, reapplied customizations and byte-exact old assets; RC platform and final-version harness checks remain open |
+| P4 | Clean installs and workspace upgrades | In progress: RC package passed all platform CI jobs; official 0.10.0-to-RC upgrades pass for Claude/Codex workspaces with conflict refusal, reapplied customizations and byte-exact old assets; final-version harness checks remain open |
 | P5 | Release automation and npm publication | In progress: manual exact-archive workflow and owner runbook; GitHub npm-release environment created with sole owner review, no admin bypass and protected branches; live npm trust, staging approval, registry provenance and fresh registry install remain open |
 | H1 | Native Cloudflare qualification | In progress: Linux image built, Trixie software renderer passes six textured views; Docker namespace probe fails closed, Bubblewrap launch-argument defect corrected; real Cloudflare isolation/execution, RSS, startup and measured cost remain pending |
-| H2 | Authenticated MCP and tenant boundary | Pending: OAuth, audience checks, user-scoped references/cache/storage, two-user negative tests, evaluator environment isolation |
+| H2 | Authenticated MCP and tenant boundary | In progress: separate hosted Worker implements OAuth consent/PKCE, audience/scope checks and verified-subject tenant routing; local workerd tests cover two identities, reconnects and forged tenant headers; real sign-in, tenant engine/storage reference checks and evaluator environment isolation remain open |
 | H3 | Artifact lifecycle | Pending: durable source/revisions/GLBs/materials, authorized downloads, deletion, saved quotas and seven-day unsaved retention |
 | H4 | Capacity and operations | Pending: quotas/admission/cancellation, logs without credentials, load/cost measurements, alerts, health/build identity and rollback |
 | H5 | Production deployment | Pending: approved deployment at `kiln.instruktlabs.com`; live authenticated create/edit/render/save/download/reconnect flow |
-| L1 | Local Claude Code and Codex plugins | In progress: both remote Git catalogs and real versioned caches qualified; native MCP discovery, installed workspace render/save/reconnect, cache removal and reinstall preserve assets and one-server setup; final registry/tag distribution and version upgrade remain open |
+| L1 | Local Claude Code and Codex plugins | In progress: both remote Git catalogs and real versioned caches qualified; actual development-to-RC plugin updates preserve pinned workspaces until explicit runtime upgrade, saved assets remain byte-exact and native clients discover one server; final registry/tag distribution and final-version upgrade remain open |
 | L2 | Public OpenAI plugin | Pending: compliant ZIP, verified publisher/domain, working MCP, privacy/support pages, review cases/video/account, submission receipt |
 | L3 | Anthropic directory | Pending: owned marketplace publication, final source path, account eligibility, reviewer materials and submission receipt |
 | V1 | Exact candidate verification | In progress: development builds have pinned local and CI evidence; final RC/version archive and target-host flows remain open |
@@ -674,6 +674,120 @@ Receipts: `.cache/npm-release-environment-created.json` and
 `.cache/npm-release-environment-verified.json`. The existing `github-pages`
 environment was not modified. This performs the planned repository setup;
 it creates no npm package, publisher trust, token, stage, release or deployment.
+
+### Real plugin updates to the release candidate
+
+Updated the existing isolated Claude Code and Codex qualification profiles through
+their actual marketplace and plugin commands. Both moved `kiln-engine@instruktlabs`
+from `1.0.0-dev.0` to `1.0.0-rc.1` in new versioned caches. Claude's marketplace
+checkout resolves to `3f4bd38d1d8a6a2a849f3f634bbc1cc8709ff25c`; both cached
+bundles have the RC runtime pin and verified file inventories. Ordinary owner
+profiles were not changed.
+
+Full workspace hashes stayed unchanged after each plugin update: the workspace
+continued to use its pinned development runtime. The helper's `--check` stayed
+read-only. Explicit `--upgrade` then installed the reviewed local RC archive in
+persistent storage outside the plugin cache and retained the unmanaged owner note.
+Reopened MCP sessions reported `1.0.0-rc.1`, seventeen tools and rendered images;
+old saved source, GLB and preview downloads remained byte-identical. The upgraded
+CLI exported exact source. All ten checks passed in
+`.cache/v1-rc1-plugin-upgrade.json`; probe:
+`.cache/rc1-plugin-upgrade-probe.mjs`.
+
+Claude's real `mcp list` reported the fixture's workspace server connected using
+server-specific fixture trust. Codex's real app server reported one
+`kiln_workspace`, seventeen tools and no tool-list error, and loaded each of the
+three workspace authoring skills and the plugin setup skill exactly once.
+Receipt: `.cache/v1-rc1-codex-appserver.json`; probe:
+`.cache/rc1-codex-appserver-probe.mjs`. No model request was made. These flows use
+the locally qualified archive with SHA-256
+`6ea9b29408b99766f0636ef27f94d9edd01526c7fb45470d811f13afa3cb755b`;
+they do not establish final registry/tag installation or a final 1.0 upgrade.
+
+The SDK and installation guides now state explicitly that both optional Strands
+SDK subpaths require Node 22.2.0+, like the built-in agent. The core package's
+Node 20.15 compatibility remains unchanged. Current and floor optional-SDK peer
+qualification used Node 22.23.3; it is not optional-Strands evidence for Node 20.
+
+### Release-candidate Linux image
+
+The RC image workflow
+[37446490940](https://github.com/instruktlabs/kiln/actions/runs/37446490940)
+at `3f4bd38d1d8a6a2a849f3f634bbc1cc8709ff25c` again passed all six textured
+software-renderer views. Its native isolation probe failed at `wrapper-launch`
+before evaluating source. Fixed diagnostics show the same namespace permission
+denial for both `unshare` and Bubblewrap; container CPU counters were retained.
+This is a failed hosting qualification, independently of renderer success, and
+does not establish Cloudflare's namespace behavior or provider costs.
+
+RC hosting archive SHA-256:
+`0f266b65ad4e8cae1e2c7cce18cac9a508b3ce96010bca2912ed81b3cfac9197`.
+Image ID:
+`sha256:ae6073107808c16384729fe655f116d76a5e1720ce359a7075772e506d5c4c67`.
+Receipts: `.cache/native-hosting-run-37446490940/`.
+The separate [Website run 37446490916](https://github.com/instruktlabs/kiln/actions/runs/37446490916)
+passed. Package/engine [CI 37446490984](https://github.com/instruktlabs/kiln/actions/runs/37446490984)
+subsequently completed successfully with all twelve jobs passed, including the
+Linux coverage/exporter gates, Windows suite, every installed-package platform
+and the separate installed software-renderer check. These results qualify that
+commit's artifacts; subsequent documentation or source edits need new release
+artifacts. They do not turn the failed hosting probe into a pass.
+
+### Hosted OAuth gateway and tenant routing
+
+Created the private `hosting/` package without changing the engine's dependencies
+or shipped file list. The production Worker combines the separate authorization
+and resource-server roles from `@cloudflare/workers-oauth-provider@1.2.1`.
+It uses the configured HTTPS issuer and `/mcp` audience, browser-bound consent,
+S256 PKCE for both client and upstream sign-in, metadata-based and dynamically
+registered clients, fifteen-minute access tokens, refresh and revocation.
+Scope enforcement happens before any tenant request. GitHub identity is the
+provisional adapter pending the owner's new sign-in preference question; no
+identity app or secret has been provisioned.
+
+Verified subjects select a private Durable Object using a versioned issuer/subject
+hash. Different OAuth clients for the same account reconnect to the same object;
+another account cannot choose it through tenant headers or MCP session ids.
+Bearer tokens, cookies and untrusted identity headers are removed before forwarding.
+GitHub tokens are discarded after resolving the immutable user id. Hosted MCP
+schemas are not duplicated: the future native backend must consume the registry.
+
+Fifteen workerd integration tests pass through the real OAuth library, KV and
+Durable Object simulation. They cover challenges/discovery, consent escaping and
+browser/origin binding, denial, missing audience/PKCE and unsupported scopes,
+authorization-code/state replay, wrong verifier, cross-account routing, scope
+denial, metadata clients, resource-bound refresh/revocation, request-size limits
+including chunked bodies, and absence of raw credentials from stored OAuth records.
+Ten initial tests were observed failing against the unavailable-handler baseline
+before implementation. The simulator caught two actual integration problems:
+Workers reject `redirect: error`, and the OAuth library forbids colons in subject
+ids. The adapter now refuses redirects through manual response checks and uses
+`github-<numeric id>`. The revocation test follows the advertised endpoint rather
+than assuming a path. See `hosting/README.md` for scope and limitations.
+
+The backend in these tests only records requests; it does not emulate successful
+engine tool calls. These passes do not establish native evaluation, cross-user
+asset/reference denial, production KV propagation or an authenticated live client
+connection. Public OAuth admission controls and deployed storage/tenant bindings
+remain mandatory. The separate tenant Worker and evaluator must not receive OAuth
+or identity-provider credentials.
+
+The Worker builds to 241,789 bytes, SHA-256
+`01c02255d7fc2aca4f81c6f28d40d05de56995530a8f4ebb122b7c28a793f975`,
+with only the OAuth library and four hosted modules in its input inventory.
+`build` produces `.cache/hosted-worker/` without deploying. A dedicated workflow
+runs hosted typechecking, workerd tests and bundle generation on Linux and Windows.
+Repository and hosted typechecking and lint pass. The full offline engine run
+passed 3,289 tests, two platform skips and no failures across 411 files in
+366.92 seconds (`.cache/v1-hosted-gateway-engine-tests.log`). The hosted receipt
+is `.cache/v1-hosted-gateway-tests.log`. The new workflow's remote result remains
+pending until the committed branch is checked in CI.
+
+Rechecked `cf auth whoami`: `authenticated: false`, `Not logged in`.
+No fresh device flow was started while the existing owner-readiness question was
+unanswered. The OAuth implementation needs a dedicated KV binding; current Paid
+plan inclusions and overage rates were added to the economics report. A future
+scoped deployment authorization must cover that resource too.
 
 ## Owner handoffs
 

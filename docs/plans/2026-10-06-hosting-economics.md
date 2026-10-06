@@ -369,3 +369,24 @@ and does not make current Wrangler configuration interchangeable automatically.
 
 Scratch CLI receipt location:
 `C:/Users/Mattm/X/kiln-dogfood/cf-cli-probe-2026-10-06/`.
+
+## OAuth storage addition during implementation
+
+The hosted OAuth gateway uses a dedicated Workers KV namespace for the maintained
+Cloudflare OAuth library. This stays within the selected provider; user sources
+and assets retain their separate storage boundary. It does not require another
+subscription beyond the existing Workers Paid plan.
+
+Rechecked [KV pricing](https://developers.cloudflare.com/kv/platform/pricing/)
+on 6 October: Paid includes 10 million key reads per month, one million each of
+writes, deletes and list requests, and 1 GB stored. Overage is $0.50 per million
+reads, $5 per million writes/deletes/list requests, and $0.50 per GB-month.
+Account-wide existing usage consumes those same allowances. Failed lookups are
+billable reads, so anonymous token/registration abuse still needs admission controls.
+
+At modest initial use, authentication can fit within the included allowance; this
+is a planning inference, not measured usage. The live qualification must count
+operations across sign-in, MCP requests, refresh, revocation and expired-record
+cleanup and include them in the complete bill. The prototype keeps access tokens
+to 15 minutes and refresh grants to 30 days, with library-managed record expiry.
+Production KV propagation and account-wide usage remain unqualified.

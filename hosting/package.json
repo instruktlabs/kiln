@@ -1,0 +1,20 @@
+{
+  "name": "@instruktlabs/kiln-hosted",
+  "version": "1.0.0-rc.1",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test": "node --test test/*.test.mjs",
+    "build": "node scripts/build.mjs"
+  },
+  "dependencies": {
+    "@cloudflare/workers-oauth-provider": "1.2.1"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "5.20261006.1",
+    "esbuild": "0.28.1",
+    "miniflare": "5.20261001.0-alpha",
+    "typescript": "7.0.2"
+  }
+}
