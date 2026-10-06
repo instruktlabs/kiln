@@ -54,3 +54,32 @@ adversarial fixtures in this private probe, with bounded concurrency, compute,
 cost and teardown. Record cold starts and billed resources separately from engine
 compute time. The old Bubblewrap adapter remains fail-closed and has no automatic
 fallback to this entry.
+
+## Software-rendering candidate
+
+`Dockerfile.software` uses the same four-file context and evaluator entry, adding
+Mesa's software Vulkan implementation. Copy it into the context as `Dockerfile`.
+Build with `--platform linux/amd64 --provenance=false` to retain the directly
+addressable runtime manifest. The final immutable image digest, rather than the
+Dockerfile alone, identifies installed OS and npm dependencies. No probe script,
+credential, network listener or storage mount is included in the image.
+
+The exact main `1.0.0` archive (`6ed3d6b9...1508`) was installed locally in image
+`sha256:84a0fa62bcffa010b9ac1c5f2f0e2cf9045a9cdb6407f621e8049e6a37f9de99`.
+With networking disabled, all capabilities dropped, no privilege escalation,
+two CPUs and a 4 GiB memory limit, the real entry produced the same 1,912-byte
+GLB twice and its CPU preview passed at 128 pixels. The packaged renderer also
+produced six textured views across all three backdrops using llvmpipe/Mesa
+25.0.7 and Vulkan; each view retained red and green texture evidence. Temporary
+test containers were removed. These are local functionality checks, not
+Cloudflare isolation, throughput or cost measurements.
+
+The image lock SHA-256 is
+`fdcb5cd754cdb78de52eb530efb9a993a30c8742e83c939103edc6112fd77ba1`.
+The diagnostic worktree retains its inventories, exact image, CPU GLB/PNG and six
+software images under `.cache/stable-software-image/`. CI now builds both image
+variants using the explicitly recorded public package and tests the installed
+entry; the software variant additionally runs the packaged renderer fixture.
+While that public record still names the RC, CI does not qualify the stable
+archive by implication. A prepared, reviewed provider trial is still required
+before uploading or running this new stable image on Cloudflare.
