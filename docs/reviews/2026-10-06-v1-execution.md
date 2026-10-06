@@ -1682,3 +1682,40 @@ bundles and root lint pass. The prepared 14,432-byte Worker has SHA-256
 `cf deploy --prebuilt --dry-run` passes. This candidate has not yet run remotely.
 Receipts: `.cache/security-review-2026-10-06/probe-rpc-*.log` and
 `.cache/provider-probe-rpc-candidate/build-receipt.json`.
+
+### Direct invocation result and cleanup
+
+Source `cfbcb2a5f3116ece4fa21ce4dc6967f842290e68` was deployed at 17:11:54 UTC.
+Downloaded code matched the prepared hash. Version
+`b4755a77-5835-4de5-84ea-c548d755294c` belonged to deployment
+`18d6f30e-b729-4b32-bca8-017dd393ad9b`; the application was
+`0772425387194d20804b5222688b8f26`. Both public URL flags were false and no
+domain or scheduled trigger was deployed.
+
+On Windows, `cf dev` failed with `spawn EFTYPE` before starting its backend.
+The installed Wrangler 4.147.0 backend was launched directly with the same
+`cloudflare.config.ts` and its documented experimental configuration mode. It
+established the remote service binding; the local operator listened only on
+127.0.0.1 and rejected browser-origin requests. No source or arbitrary command
+could be submitted.
+
+The direct RPC reached the deployed coordinator. Its first `engine-a` case failed
+after 2,038 ms with `WORKER_FAILED`; the first failed native operation was
+`monitor`, and Cloudflare returned internal-error reference
+`3fp1nn0uot4akgi20vs4fdjs`. The VM was confirmed stopped and all later cases were
+skipped. Repeating the RPC returned the exact retained result without another
+job. No container instance remained. Numeric exec identity did not resolve the
+failure; successful engine execution and isolation remain unqualified.
+
+The local operator was stopped, then the exact cloud application, Worker and image
+were removed. Follow-up reads returned 404 for the Worker and application, neither
+trial namespace existed, and no matching registry image remained. CLI deletion
+initially declined noninteractive confirmation despite returning exit code zero;
+the operator detected this through readback and completed the authorized cleanup
+using `--force`. Receipts: `.cache/provider-probe-trial-3/`.
+
+Two jobs have now been attempted in total, leaving three of the original five-job
+allowance. The four-case candidate must not be redeployed to a new coordinator:
+doing so would exceed that remaining allowance. Further trials need a revised
+bounded candidate and diagnosis of the startup failure, not a new run ID or an
+automatic retry. No settled billing total or successful native hosting is claimed.

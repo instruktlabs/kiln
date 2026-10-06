@@ -8,6 +8,13 @@ The first stage answers whether the account can run the selected native image an
 whether basic network/filesystem/whole-VM cleanup checks work. It does not qualify
 the hosted service for launch.
 
+**Current stop condition:** the direct-RPC continuation at `cfbcb2a` has now
+attempted another job and failed during native startup. All cloud resources were
+removed and absence was verified. Two jobs total were consumed; only three remain.
+Do not redeploy this four-case candidate to a new coordinator. Prepare a revised
+diagnostic within the remaining scope, or obtain approval for a changed trial.
+The details below retain the reviewed four-case candidate for reproducibility.
+
 ## Exact scope
 
 - Worker `kiln-private-evaluation-probe`, with no custom domain, route, workers.dev
