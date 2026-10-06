@@ -17,6 +17,7 @@ export class ContainerJobFailure extends Error {
 interface JobRecord {
   state: 'running' | 'finished';
   deadlineAt: number;
+  cancelled?: boolean;
   outcome?: FailureCode | 'completed';
 }
 
@@ -91,9 +92,76 @@ async function destroy(container: Container): Promise<void> {
  * Unit tests cover orchestration, not the provider's isolation guarantees.
  */
 export class ContainerEvaluationJob {
+  private readonly cancellation = new AbortController();
+  private activeRun?: Promise<Uint8Array>;
+  private cancellationWork?: Promise<void>;
+
   constructor(private readonly context: Pick<DurableObjectState, 'container' | 'storage'>) {}
 
-  async run(
+  run(
+    request: Uint8Array,
+    controls: { deadlineMs: number; maxResponseBytes: number; signal?: AbortSignal },
+  ): Promise<Uint8Array> {
+    if (this.activeRun) return Promise.reject(new ContainerJobFailure('JOB_ALREADY_USED'));
+    const pending = this.runOnce(request, {
+      ...controls,
+      signal: controls.signal
+        ? AbortSignal.any([controls.signal, this.cancellation.signal])
+        : this.cancellation.signal,
+    });
+    this.activeRun = pending;
+    const finished = () => {
+      if (this.activeRun === pending) this.activeRun = undefined;
+    };
+    void pending.then(finished, finished);
+    return pending;
+  }
+
+  /**
+   * Private parent-controller RPC: fence even an as-yet-undelivered child request.
+   * Keep one controller per DO instance so cancellation reaches a pending claim
+   * before it can start compute. Durable state protects subsequent incarnations.
+   * Success means no child VM remains; failure must retain outer admission.
+   */
+  cancel(): Promise<void> {
+    if (this.cancellationWork) return this.cancellationWork;
+    const pending = this.cancelOnce().catch(() => {
+      throw new ContainerJobFailure('CLEANUP_FAILED');
+    });
+    this.cancellationWork = pending;
+    const finished = () => {
+      if (this.cancellationWork === pending) this.cancellationWork = undefined;
+    };
+    void pending.then(finished, finished);
+    return pending;
+  }
+
+  private async cancelOnce(): Promise<void> {
+    this.cancellation.abort();
+    await this.context.storage.transaction(async (transaction) => {
+      const job = await transaction.get<JobRecord>('job');
+      if (job?.state === 'finished') return;
+      if (!job) {
+        // A VM is never started before its durable record exists. This tombstone
+        // denies a request still in transport, including after this DO is evicted.
+        await transaction.put('job', {
+          state: 'finished',
+          deadlineAt: Date.now(),
+          outcome: 'CANCELLED',
+        } satisfies JobRecord);
+        return;
+      }
+      await transaction.put('job', { ...job, cancelled: true } satisfies JobRecord);
+      await transaction.setAlarm(Date.now());
+    });
+    // A live run owns its cleanup. Do not race its pending startup with a separate
+    // destruction and then return success while that run can still resume.
+    await this.activeRun?.catch(() => {});
+    const job = await this.context.storage.get<JobRecord>('job');
+    if (job?.state === 'running') await this.recover(job);
+  }
+
+  private async runOnce(
     request: Uint8Array,
     controls: { deadlineMs: number; maxResponseBytes: number; signal?: AbortSignal },
   ): Promise<Uint8Array> {
@@ -231,10 +299,17 @@ export class ContainerEvaluationJob {
       await this.context.storage.deleteAlarm();
       return;
     }
+    // Coalesce an at-least-once alarm with a live parent cancellation instead of
+    // starting a second cleanup while the run still owns its destruction.
+    if (job.cancelled) return this.cancel();
     if (Date.now() < job.deadlineAt) {
       await this.context.storage.setAlarm(job.deadlineAt);
       return;
     }
+    await this.recover(job);
+  }
+
+  private async recover(job: JobRecord): Promise<void> {
     const container = this.context.container;
     if (!container) throw new ContainerJobFailure('ISOLATION_UNAVAILABLE');
     try {
@@ -242,7 +317,7 @@ export class ContainerEvaluationJob {
       await this.context.storage.put('job', {
         ...job,
         state: 'finished',
-        outcome: 'DEADLINE_EXCEEDED',
+        outcome: job.cancelled ? 'CANCELLED' : 'DEADLINE_EXCEEDED',
       } satisfies JobRecord);
       await this.context.storage.deleteAlarm();
     } catch {

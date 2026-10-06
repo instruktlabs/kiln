@@ -4,12 +4,18 @@ import { handleEvaluationRequest } from './evaluation-request';
 
 /** Only the private dispatcher receives this binding; never the public gateway. */
 export class KilnEvaluationJob extends DurableObject {
+  private readonly job = new ContainerEvaluationJob(this.ctx);
+
   fetch(request: Request): Promise<Response> {
-    return handleEvaluationRequest(request, new ContainerEvaluationJob(this.ctx));
+    return handleEvaluationRequest(request, this.job);
+  }
+
+  cancel(): Promise<void> {
+    return this.job.cancel();
   }
 
   alarm(): Promise<void> {
-    return new ContainerEvaluationJob(this.ctx).alarm();
+    return this.job.alarm();
   }
 }
 

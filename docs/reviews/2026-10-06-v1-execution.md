@@ -35,6 +35,30 @@ states and the evidence that superseded them.
 
 ## Execution notes
 
+### Durable child cancellation
+
+The private evaluation DO now keeps a single controller and exposes a parent-only
+cancellation RPC. Before any child request arrives, cancellation writes a permanent
+terminal record that survives reconstruction. During a pending durable claim it
+also aborts the live controller, preventing late startup. Active cancellation
+persists a recovery flag and alarm and waits for verified whole-instance cleanup;
+failed cleanup retains the unfinished job for recovery, even before the original
+execution deadline. A completed job remains unchanged by repeated cancellation.
+
+Five focused cases failed before implementation and now pass. An additional
+overlap assertion reproduced duplicate destruction from cancellation plus an
+alarm; the alarm now joins the same pending cancellation. Local checks pass all
+204 hosted tests, three hosted typechecks, eight bundles and root types/lint.
+The Node-host commit `f6a7d39` independently passed Linux/Windows hosted checks
+and all three image jobs in [run 37537769251](https://github.com/instruktlabs/kiln/actions/runs/37537769251).
+
+The implementation follows the current [Container API](https://developers.cloudflare.com/containers/api/durable-object-container/)
+and [alarm contract](https://developers.cloudflare.com/durable-objects/api/alarms/),
+including repeated alarm delivery and explicit recovery scheduling. This new RPC
+is locally qualified only; the earlier fixed cloud receipts do not establish its
+provider behavior. No live job or deployment occurred, and the parent/global
+admission implementation remains open.
+
 ### Private Node host and installed coordinator image
 
 The native coordinator now has an actual HTTP entry using the maintained MCP Node

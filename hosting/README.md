@@ -403,6 +403,17 @@ The native client and this handler are exercised together with the actual SDK
 codec. They still need the externally tenant-bound dispatcher and global admission
 controller before an end-to-end provider qualification or deployment.
 
+The private evaluation DO also exposes `cancel()` to its parent dispatcher. One
+controller lives for the DO instance, so cancellation reaches an evaluation still
+waiting to claim its durable record. A cancelled child that has not arrived gets
+a permanent terminal record; later delivery cannot start it after object eviction.
+For active work, the cancellation flag and immediate recovery alarm are persisted,
+then the caller waits for confirmed whole-VM cleanup. Failed cleanup keeps the
+record unfinished and schedules recovery. Repeated cancellation and its alarm
+share the pending cleanup. The parent must retain admission whenever cancellation
+fails or its acknowledgement is lost. These cases have local adversarial tests;
+the new parent-cancellation RPC still needs provider qualification.
+
 ## Private Node host
 
 `native-host` adapts the MCP Fetch handler through the maintained

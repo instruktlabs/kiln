@@ -317,3 +317,112 @@ test('startup or native process failures are bounded public errors with cleanup'
     assert.equal(f.context.container.running, false);
   }
 });
+
+test('durable cancellation fences a child before arrival and survives object reconstruction', async () => {
+  const f = fixture();
+  const job = new ContainerEvaluationJob(f.context);
+  await job.cancel();
+  assert.equal(f.values.get('job').state, 'finished');
+  assert.equal(f.values.get('job').outcome, 'CANCELLED');
+  await assert.rejects(
+    new ContainerEvaluationJob(f.context).run(input, controls),
+    code('JOB_ALREADY_USED'),
+  );
+  assert.equal(f.events.includes('start'), false);
+  assert.equal(f.alarmAt, undefined);
+});
+
+test('durable cancellation during the persisted claim cannot start a late VM', async () => {
+  const f = fixture();
+  const job = new ContainerEvaluationJob(f.context);
+  assert.equal(typeof job.cancel, 'function');
+  let release;
+  const gate = new Promise((resolve) => {
+    release = resolve;
+  });
+  const transaction = f.context.storage.transaction;
+  f.context.storage.transaction = (callback) =>
+    transaction(async (tx) => {
+      await gate;
+      return callback(tx);
+    });
+  const rejected = assert.rejects(job.run(input, controls), code('CANCELLED'));
+  const cancelled = job.cancel();
+  release();
+  await Promise.all([rejected, cancelled]);
+  assert.equal(f.events.includes('start'), false);
+  assert.equal(f.values.get('job').state, 'finished');
+  assert.equal(f.values.get('job').outcome, 'CANCELLED');
+  assert.equal(f.alarmAt, undefined);
+});
+
+test('durable cancellation waits for confirmed cleanup and prevents late startup input', async () => {
+  const f = fixture({ pendingExec: true });
+  const job = new ContainerEvaluationJob(f.context);
+  assert.equal(typeof job.cancel, 'function');
+  let release;
+  const gate = new Promise((resolve) => {
+    release = resolve;
+  });
+  const destroy = f.context.container.destroy.bind(f.context.container);
+  f.context.container.destroy = async () => {
+    await gate;
+    await destroy();
+  };
+  const rejected = assert.rejects(job.run(input, controls), code('CANCELLED'));
+  while (!f.events.includes('exec')) await new Promise((resolve) => setImmediate(resolve));
+  let returned = false;
+  const cancelled = job.cancel().then(() => {
+    returned = true;
+  });
+  await new Promise((resolve) => setImmediate(resolve));
+  assert.equal(returned, false);
+  assert.equal(f.context.container.running, true);
+  assert.equal(f.values.get('job').cancelled, true);
+  const repeated = job.cancel();
+  const alarm = job.alarm();
+  release();
+  await Promise.all([rejected, cancelled, repeated, alarm]);
+  assert.equal(f.context.container.running, false);
+  assert.equal(f.values.get('job').state, 'finished');
+  assert.equal(f.events.filter((event) => event === 'destroy').length, 1);
+  f.finishStartup();
+  await new Promise((resolve) => setImmediate(resolve));
+  assert.deepEqual(f.received, []);
+});
+
+test('failed cancellation retains a durable fence and alarm for recovery after eviction', async () => {
+  const f = fixture({ pendingExec: true, failCleanup: true });
+  const job = new ContainerEvaluationJob(f.context);
+  assert.equal(typeof job.cancel, 'function');
+  const rejected = assert.rejects(job.run(input, controls), code('CLEANUP_FAILED'));
+  while (!f.events.includes('exec')) await new Promise((resolve) => setImmediate(resolve));
+  await assert.rejects(job.cancel(), code('CLEANUP_FAILED'));
+  await rejected;
+  assert.equal(f.values.get('job').state, 'running');
+  assert.equal(f.values.get('job').cancelled, true);
+  assert.ok(Number.isSafeInteger(f.alarmAt));
+  f.repairCleanup();
+  await new ContainerEvaluationJob(f.context).alarm();
+  assert.equal(f.values.get('job').state, 'finished');
+  assert.equal(f.values.get('job').outcome, 'CANCELLED');
+  assert.equal(f.context.container.running, false);
+  assert.equal(f.alarmAt, undefined);
+  await assert.rejects(
+    new ContainerEvaluationJob(f.context).run(input, controls),
+    code('JOB_ALREADY_USED'),
+  );
+});
+
+test('repeated cancellation preserves completed work and never restarts or destroys it again', async () => {
+  const f = fixture();
+  const job = new ContainerEvaluationJob(f.context);
+  assert.equal(typeof job.cancel, 'function');
+  await job.run(input, controls);
+  const previous = structuredClone(f.values.get('job'));
+  await Promise.all([job.cancel(), job.cancel()]);
+  await new ContainerEvaluationJob(f.context).cancel();
+  assert.deepEqual(f.values.get('job'), previous);
+  assert.equal(f.events.filter((event) => event === 'start').length, 1);
+  assert.equal(f.events.filter((event) => event === 'destroy').length, 1);
+});
