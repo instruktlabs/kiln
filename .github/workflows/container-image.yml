@@ -1,0 +1,102 @@
+name: Private evaluation image checks
+
+on:
+  pull_request:
+    paths:
+      - .github/workflows/container-image.yml
+      - .github/published-candidate.json
+      - hosting/container/**
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: container-image-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  image:
+    name: Installed CPU image · Linux amd64
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 22.23.3
+      - name: Prepare only the reviewed four-file context
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p image-context image-evidence
+          node --input-type=module -e '
+            import assert from "node:assert/strict";
+            import {readFileSync,writeFileSync} from "node:fs";
+            import {createHash} from "node:crypto";
+            const p=JSON.parse(readFileSync(".github/published-candidate.json"));
+            assert.equal(p.name,"@instruktlabs/kiln");
+            assert.match(p.version,/^\d+\.\d+\.\d+(?:-rc\.\d+)?$/);
+            assert.match(p.sha256,/^[a-f0-9]{64}$/);
+            const metadataResponse=await fetch(`https://registry.npmjs.org/@instruktlabs%2fkiln/${p.version}`,{redirect:"error"});
+            assert.equal(metadataResponse.status,200);const m=await metadataResponse.json();
+            assert.equal(m.name,p.name);assert.equal(m.version,p.version);
+            assert.equal(new URL(m.dist.tarball).origin,"https://registry.npmjs.org");
+            const response=await fetch(m.dist.tarball,{redirect:"error"});assert.equal(response.status,200);
+            const bytes=Buffer.from(await response.arrayBuffer());
+            assert.equal(createHash("sha256").update(bytes).digest("hex"),p.sha256);
+            writeFileSync("image-context/candidate.tgz",bytes);
+            writeFileSync("image-context/candidate.sha256",`${p.sha256}  candidate.tgz\n`);
+            writeFileSync("image-evidence/candidate.json",JSON.stringify(p,null,2));
+          '
+          cp hosting/container/Dockerfile hosting/container/evaluate.mjs image-context/
+          test "$(find image-context -mindepth 1 -maxdepth 1 -type f | wc -l)" -eq 4
+      - name: Build without registry publication
+        id: image
+        shell: bash
+        run: |
+          set -euo pipefail
+          docker build --platform linux/amd64 --tag kiln-evaluation:ci image-context 2>&1 | tee image-evidence/build.log
+          docker image inspect kiln-evaluation:ci > image-evidence/image.json
+          docker create --name kiln-evaluation-inventory kiln-evaluation:ci
+          docker cp kiln-evaluation-inventory:/opt/kiln/package-lock.json image-evidence/package-lock.json
+          docker cp kiln-evaluation-inventory:/opt/kiln/os-packages.txt image-evidence/os-packages.txt
+          docker cp kiln-evaluation-inventory:/opt/kiln/node-version.txt image-evidence/node-version.txt
+          docker rm kiln-evaluation-inventory
+      - name: Exercise the actual entry using a fixed trusted fixture
+        shell: bash
+        run: |
+          set -euo pipefail
+          # This checks image functionality, not hostile-source or Cloudflare isolation.
+          docker run --rm --network none --cpus 1 --memory 6g --memory-swap 6g --pids-limit 128 --cap-drop ALL --security-opt no-new-privileges kiln-evaluation:ci \
+            node --input-type=module -e 'import{createEvaluatorRequestV2}from"@instruktlabs/kiln/evaluator";process.stdout.write(createEvaluatorRequestV2({requestId:"image-fixture",code:"function build(){return new THREE.Mesh(boxGeo(1,1,1),gameMaterial(0x8899aa));}",maxGlbBytes:2097152}).json)' \
+            > image-evidence/request.json
+          for attempt in 1 2; do
+            docker create --interactive --name "kiln-evaluation-$attempt" --network none --cpus 1 --memory 6g --memory-swap 6g --pids-limit 128 --cap-drop ALL --security-opt no-new-privileges \
+              --env KILN_RENDER=cpu kiln-evaluation:ci /usr/local/bin/node /opt/kiln/evaluate.mjs
+            timeout --signal=TERM --kill-after=5s 90s docker start --attach --interactive "kiln-evaluation-$attempt" \
+              < image-evidence/request.json > "image-evidence/result-$attempt.json" 2> "image-evidence/stderr-$attempt.txt"
+            test "$(docker inspect "kiln-evaluation-$attempt" --format '{{.State.ExitCode}}')" -eq 0
+            docker inspect "kiln-evaluation-$attempt" --format '{{json .State}}' > "image-evidence/state-$attempt.json"
+          done
+          docker run --rm --interactive --network none --cpus 1 --memory 6g --memory-swap 6g --pids-limit 128 --cap-drop ALL --security-opt no-new-privileges kiln-evaluation:ci \
+            node --input-type=module -e 'import assert from"node:assert/strict";import{readFileSync}from"node:fs";import{createHash}from"node:crypto";import{decodeEvaluatorResultV2}from"@instruktlabs/kiln/evaluator";const r=decodeEvaluatorResultV2(readFileSync(0,"utf8"),2097152,"image-fixture");assert.equal(r.ok,true);assert.equal(r.render.glb.subarray(0,4).toString(),"glTF");console.log(JSON.stringify({status:"passed",cloudflareQualified:false,hostileSourceQualified:false,bytes:r.render.glb.length,sha256:createHash("sha256").update(r.render.glb).digest("hex")}))' \
+            < image-evidence/result-1.json > image-evidence/receipt.json
+          node --input-type=module -e 'import assert from"node:assert/strict";import{readFileSync}from"node:fs";const a=JSON.parse(readFileSync("image-evidence/result-1.json"));const b=JSON.parse(readFileSync("image-evidence/result-2.json"));assert.equal(a.render.glbBase64,b.render.glbBase64)'
+      - name: Retain image evidence without publishing the image
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: private-evaluation-image-evidence
+          path: image-evidence/
+          if-no-files-found: error
+          retention-days: 30
+      - name: Remove only this job's test containers
+        if: always()
+        shell: bash
+        run: |
+          for name in kiln-evaluation-inventory kiln-evaluation-1 kiln-evaluation-2; do
+            if docker container inspect "$name" >/dev/null 2>&1; then docker rm --force "$name"; fi
+          done
