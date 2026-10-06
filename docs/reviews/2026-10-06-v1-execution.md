@@ -547,7 +547,24 @@ separate, and neither the package CI contract nor runtime isolation was weakened
 
 Local validation parsed the YAML, syntax-checked all eight shell steps with Bash,
 and passed 17 existing native-probe/repository-contract tests. The first real
-image build and execution are pending this workflow's CI run.
+image build and execution were then performed in
+[run 37442916260](https://github.com/instruktlabs/kiln/actions/runs/37442916260)
+at `cbcaeece3db9d2884a73aeacc52fcd3fb648759a`. The image built, ran as UID 1000,
+and retained both failures: isolation `wrapper-launch` before any source execution,
+and no usable software adapter. The renderer log identifies missing Vulkan
+`shaderUniform*ArrayDynamicIndexing` support with Mesa 22.3.6 from Bookworm.
+The separate trusted fixture did build its GLB; this is not isolated evaluation.
+
+The first image ID is
+`sha256:5e248d4b7ebcf2d88a2e37495bc884c818d747e5468ee87546699da121edb120`;
+archive SHA-256 is
+`27aa75d582150473a8ffe10a0b89b20934cbffbb43587463184a1cc171038dc2`.
+Downloaded receipts are in `.cache/native-hosting-run-37442916260/`.
+The next image uses the registry-verified Node 22.23.3 Trixie digest, whose
+[Debian Mesa package](https://packages.debian.org/trixie/mesa-vulkan-drivers)
+is 25.0.7. A separate bounded namespace diagnostic records fixed command errors
+without changing the engine's failure policy or Docker restrictions. Both changes
+require a new image run. Cloudflare CLI was rechecked and is still unauthenticated.
 
 ## Owner handoffs
 

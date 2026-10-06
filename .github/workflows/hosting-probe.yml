@@ -84,6 +84,38 @@ jobs:
           docker cp kiln-probe-inventory:/probe/node-version.txt .cache/hosting-ci/receipts/node-version.txt
           docker rm kiln-probe-inventory
 
+      - name: Record bounded namespace diagnostics without changing restrictions
+        if: ${{ !cancelled() && steps.image.outcome == 'success' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          docker create --name kiln-probe-diagnostics --network none --cpus 1 \
+            --memory 6g --memory-swap 6g --pids-limit 256 --cap-drop ALL \
+            --security-opt no-new-privileges kiln-native-probe:ci \
+            node --input-type=module -e '
+              import { spawnSync } from "node:child_process";
+              import { readFileSync } from "node:fs";
+              const commands = [
+                ["/usr/bin/bwrap", "--version"],
+                ["/usr/bin/unshare", "--user", "--map-root-user", "/usr/bin/true"],
+                ["/usr/bin/bwrap", "--unshare-all", "--disable-userns", "--die-with-parent",
+                  "--ro-bind", "/usr", "/usr", "--symlink", "usr/lib", "/lib",
+                  "--symlink", "usr/lib64", "/lib64", "--", "/usr/bin/true"]
+              ];
+              const checks = commands.map(([command, ...args]) => {
+                const r = spawnSync(command, args, {env: {}, encoding: "utf8", timeout: 5000, maxBuffer: 16384});
+                return {command, args, status: r.status, signal: r.signal, error: r.error?.code,
+                  stdout: r.stdout, stderr: r.stderr};
+              });
+              const files = {};
+              for (const path of ["/proc/sys/user/max_user_namespaces", "/proc/sys/kernel/unprivileged_userns_clone",
+                  "/proc/sys/kernel/apparmor_restrict_unprivileged_userns", "/sys/fs/cgroup/cpu.stat"]) {
+                try { files[path] = readFileSync(path, "utf8").slice(0, 4096); } catch { files[path] = null; }
+              }
+              console.log(JSON.stringify({scope: "fixed diagnostics only; not isolation qualification", uid: process.getuid(), checks, files}));'
+          timeout --signal=TERM --kill-after=5s 30s docker start --attach kiln-probe-diagnostics \
+            > .cache/hosting-ci/receipts/namespace-diagnostics.json
+
       - name: Require isolated native evaluation and rendering
         if: ${{ !cancelled() && steps.image.outcome == 'success' }}
         shell: bash
@@ -151,7 +183,7 @@ jobs:
         if: always()
         shell: bash
         run: |
-          for name in kiln-probe-inventory kiln-probe-isolation kiln-probe-renderer; do
+          for name in kiln-probe-inventory kiln-probe-diagnostics kiln-probe-isolation kiln-probe-renderer; do
             if docker container inspect "$name" >/dev/null 2>&1; then
               docker rm --force "$name"
             fi
