@@ -37,7 +37,7 @@ jobs:
         run: |
           npm install --global npm@12.2.0 --ignore-scripts --no-fund
           npm ci --prefix hosting --ignore-scripts --no-fund
-          npm run build --prefix hosting
+          npm run build --prefix hosting -- --native-only
       - name: Prepare the isolated image context from the exact published archive
         shell: bash
         run: |

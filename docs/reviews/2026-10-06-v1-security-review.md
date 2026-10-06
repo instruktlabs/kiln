@@ -244,7 +244,7 @@ checks run before this path; the new real-workerd regression denies metadata aft
 connection revocation even with OAuth KV records intact. Native request bytes and
 trusted tenant selection are preserved after the edge routing check.
 
-The current branch passes 244 hosted tests, three hosted typechecks, ten production
+The current branch passes 245 hosted tests, three hosted typechecks, ten production
 bundles and root typecheck/lint. Redacted source and actual-bundle scans processed
 795,878 and 2,577,844 bytes respectively without matches. The package's published
 state is separate from these development checks; no production deployment occurred.

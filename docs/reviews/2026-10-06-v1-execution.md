@@ -52,14 +52,21 @@ at the top level; it was corrected against the current MCP discovery specificati
 which places it in result metadata. Authentication checks also prove that revoked
 credentials cannot obtain edge metadata through stale OAuth KV records.
 
-All 244 hosted tests, three hosted typechecks, ten production bundles and root
+All 245 hosted tests, three hosted typechecks, ten production bundles and root
 typecheck/lint pass. The actual gateway bundle is 2,401,079 unminified bytes;
 startup CPU and deployed cost remain unmeasured. Source and production-bundle
 secret scans are clear. Receipts: `.cache/edge-hosted-tests.log`,
 `.cache/edge-source-scan.json` and `.cache/edge-bundle-scan.json`.
 The preceding admission commit `892ebd8` passed all eighteen CI checks, including
 [engine/package CI](https://github.com/instruktlabs/kiln/actions/runs/37542572710).
-The new edge changes require their own CI. Hosted-specific instructions, integrated
+Both hosted platforms passed the edge commit `82dd546` in
+[run 37544102514](https://github.com/instruktlabs/kiln/actions/runs/37544102514).
+Its independent native-image job exposed an unconditional checkout SDK import
+in the combined build script. The native-only build now skips that edge dependency;
+an isolated-checkout regression first reproduced the failure without `dist/` or
+`lib/`, then passed. The image workflow uses that path, while the ordinary Worker
+build retains its required metadata check. The build correction needs fresh CI.
+Hosted-specific instructions, integrated
 rendering, account lifecycle and live qualification remain open.
 
 No cloud upload, compute job, main merge, npm change or deployment occurred. The

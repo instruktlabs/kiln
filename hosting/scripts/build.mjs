@@ -3,11 +3,14 @@ import { createHash } from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 import { build } from 'esbuild';
 import { assertProductionBoundary } from './build-boundary.mjs';
-import { checkEdgeManifest } from './edge-manifest.mjs';
 
 const output = new URL('../../.cache/hosted-worker/', import.meta.url);
 await mkdir(output, { recursive: true });
-await checkEdgeManifest();
+const nativeOnly = process.argv.includes('--native-only');
+if (!nativeOnly) {
+  const { checkEdgeManifest } = await import('./edge-manifest.mjs');
+  await checkEdgeManifest();
+}
 for (const entry of [
   'worker',
   'tenant-worker',
@@ -20,6 +23,8 @@ for (const entry of [
   'native-host',
   'native-evaluator',
 ]) {
+  // The installed-image build must not depend on a checkout SDK or edge snapshot.
+  if (nativeOnly && !entry.startsWith('native-')) continue;
   const result = await build({
     entryPoints: [fileURLToPath(new URL(`../src/${entry}.ts`, import.meta.url))],
     bundle: true,

@@ -525,6 +525,12 @@ only the pure discovery algorithm/schema and a generated catalog, not the Node
 engine, renderer or evaluator. The `workerd` build condition selects the MCP SDK's
 Worker-compatible schema validator without runtime code generation.
 
+The independent installed-image workflow uses `npm run build -- --native-only`.
+That path builds only the private Node adapters, without loading checkout engine
+bundles or generated edge metadata. An isolated-checkout test verifies it with no
+`dist/` or `lib/`; the normal build still requires metadata parity. This preserves
+the image workflow's qualification against the published npm archive.
+
 Real workerd tests cover modern discovery, legacy initialization, malformed
 messages, forged routing headers, missing native bindings and primary-database
 revocation despite retained OAuth KV records. No authentication or compute quota
