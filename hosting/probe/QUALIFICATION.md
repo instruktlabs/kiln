@@ -1,10 +1,10 @@
-# Proposed manifest-based native qualification
+# Manifest-based native qualification
 
 Completed with owner approval on 6 October. All four jobs passed; this allowance
 is now consumed and all temporary resources were removed. The original five-job allowance and
 the separately approved one-job manifest comparison are consumed. Do not recreate
-their namespaces or reset their claims. This candidate requests up to four new,
-sequential jobs with a separate $1 trial allowance; stop on the first failure.
+their namespaces or reset their claims. The approved scope was up to four new,
+sequential jobs with a separate $1 trial allowance, stopping on the first failure.
 The allowance is a planning bound, not a provider-enforced billing cap.
 
 `qualification.wrangler.jsonc` uses the proven original runtime manifest
@@ -54,7 +54,7 @@ with the missing candidate, then passed after its addition. Pinned Wrangler
 4.147.0 dry-run deployment passes. Actual JavaScript and source-map secret scanning
 reports no matches across 43.09 KB. The Worker JavaScript SHA-256 is
 `0e97f19c8617d20f1bc96880aaa95b9e9303e45b560c7f242f7e19146527fede`.
-Exact-commit Linux/Windows CI is still required. Runtime source is unchanged from
+Exact-commit Linux/Windows CI passed as recorded below. Runtime source is unchanged from
 the existing probe; this preparation changes configuration, tests and records only.
 
 ## Approved provider execution
