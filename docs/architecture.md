@@ -4,7 +4,11 @@ Kiln builds JavaScript programs into GLB assets, validates structure, and render
 
 ## Entry points
 
-The checkout is `@instruktlabs/kiln`; its package exports point to TypeScript source. Use a compatible TypeScript runtime or bundler. There is no published npm release yet.
+The v1 checkout prepares `@instruktlabs/kiln` with compiled ESM and TypeScript
+declarations. Node consumers need no source loader. Build the SDK on a fresh source
+checkout before using package imports; the installed archive already contains it.
+See the [SDK contract](sdk.md) for runtime and experimental-feature boundaries.
+There is no published npm release yet.
 
 | Subpath | Purpose |
 |---|---|

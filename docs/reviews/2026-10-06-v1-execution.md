@@ -20,12 +20,12 @@ published yet.
 | P3 | Package identity, contents, executables and notices | In progress: unpublished `@instruktlabs/kiln@1.0.0-dev.0`, public metadata, MCP launcher, consumer doc allowlist and dependency notice refresh; development archive checks pass locally and in CI, final release audit remains open |
 | P4 | Clean installs and workspace upgrades | In progress: namespace package passes Windows/Linux/macOS and core checks without optional agent peers; target-release installed upgrades and harness workflows remain open |
 | P5 | Release automation and npm publication | In progress: manual exact-archive verification/staging workflow and owner runbook; qualified RC/final digests, live protected trust, owner staging approval, registry provenance and fresh registry install remain open |
-| H1 | Native Cloudflare qualification | Pending: actual provider isolation probes, CPU/software Vulkan render, deadlines, RSS, startup and measured cost |
+| H1 | Native Cloudflare qualification | In progress: fixed native probe, pinned-base Dockerfile and exact CI archive context prepared; real provider execution, isolation, rendering, RSS, startup and measured cost remain pending |
 | H2 | Authenticated MCP and tenant boundary | Pending: OAuth, audience checks, user-scoped references/cache/storage, two-user negative tests, evaluator environment isolation |
 | H3 | Artifact lifecycle | Pending: durable source/revisions/GLBs/materials, authorized downloads, deletion, saved quotas and seven-day unsaved retention |
 | H4 | Capacity and operations | Pending: quotas/admission/cancellation, logs without credentials, load/cost measurements, alerts, health/build identity and rollback |
 | H5 | Production deployment | Pending: approved deployment at `kiln.instruktlabs.com`; live authenticated create/edit/render/save/download/reconnect flow |
-| L1 | Local Claude Code and Codex plugins | In progress: persistent bootstrap, small pinned bundle, maintained setup skill and catalogs; strict Claude manifest validation, installed npm bundle and isolated Codex cached install pass; remote marketplace installs, cached workspace lifecycle and final release distribution remain open |
+| L1 | Local Claude Code and Codex plugins | In progress: both remote Git catalogs and real versioned caches qualified; native MCP discovery, installed workspace render/save/reconnect, cache removal and reinstall preserve assets and one-server setup; final registry/tag distribution and version upgrade remain open |
 | L2 | Public OpenAI plugin | Pending: compliant ZIP, verified publisher/domain, working MCP, privacy/support pages, review cases/video/account, submission receipt |
 | L3 | Anthropic directory | Pending: owned marketplace publication, final source path, account eligibility, reviewer materials and submission receipt |
 | V1 | Exact candidate verification | In progress: development builds have pinned local and CI evidence; final RC/version archive and target-host flows remain open |
@@ -353,6 +353,53 @@ Current primary references: [OpenAI portable packaging and marketplace sources](
 [Claude plugin loading](https://code.claude.com/docs/en/plugins/loading), and
 [Claude marketplace source formats](https://code.claude.com/docs/en/plugins/marketplace-reference).
 
+### Remote plugin and persistent workspace qualification
+
+Both installed harnesses fetched the Git-backed marketplace at commit
+`775491b638d978652bdba4fc688f24a6e3b7f7ab`: Claude Code 2.1.287 and Codex CLI
+0.160.0. Isolated profiles under the local application-data directory held real
+versioned plugin caches. Normal user profiles were untouched. Cached file hashes
+match the bundle inventory. Receipt: `.cache/v1-remote-plugin-install.json`.
+
+Each cached helper installed the reviewed development archive with digest
+`48f1f91887e80769897f4d4324401a4c496f95e6adfeb0ce3d7ff7eacc0fa1ff` into the shared
+persistent engine directory and created a separate authoring workspace. Twelve
+checks passed, covering native harness MCP inventory, all seventeen local tools,
+Discovery, CPU render, save, reconnect to exact retained source, workspace upgrade
+and CLI rendering. Receipt: `.cache/v1-cached-plugin-workflows.json`.
+
+Claude initially reported the expected project-server approval requirement. Its
+qualification command supplied approval for only the known fixture's
+`kiln_workspace` server through `--settings`; it then reported Connected. This
+did not approve arbitrary projects, change normal profile trust, or make the
+plugin approve itself. The user-facing installation still requires normal project
+and MCP trust. See [Claude's project-server approval rules](https://code.claude.com/docs/en/mcp#project-server-approvals-and-workspace-trust).
+
+The actual Codex app-server protocol returned one `kiln_workspace` with seventeen
+tools, engine version `1.0.0-dev.0` and no tool-discovery error. Skill inventory
+contains one each of workspace author/refine/QA plus the cached plugin's setup
+skill. No model turn was run; `runtimeStatus` is null without an active thread,
+so this receipt does not claim an active conversation connection status.
+Receipt: `.cache/v1-codex-plugin-appserver.json`.
+
+Actual CLI uninstall and reinstall passed five more checks. Claude retains
+uninstalled cache files until cleanup; after verifying uninstallation, the probe
+removed only its own retired test cache after canonical containment checks. Codex
+removed its cache itself. With each cache absent, the persistent runtime still
+served exact saved GLB, source and PNG bytes, verified by SHA-256, and its CLI read
+the source. Reinstall beside each existing workspace preserved launcher and MCP
+configuration bytes. Codex app-server discovery was repeated after reinstall and
+still returned one server and one copy of each Kiln skill. Receipt:
+`.cache/v1-plugin-removal-reinstall.json`. This is not yet an RC-to-final upgrade.
+
+The same commit passed all twelve jobs in
+[CI run 37436913727](https://github.com/instruktlabs/kiln/actions/runs/37436913727),
+including Intel macOS on its first attempt, and the separate
+[Website run 37436913674](https://github.com/instruktlabs/kiln/actions/runs/37436913674).
+Those jobs qualify their exact development archive. The local harness probe used
+the earlier archive digest above, with the same plugin/runtime bytes; it is not
+described as an installation of the CI archive or a final npm publication.
+
 ### Bootstrap CI shutdown retry
 
 Bootstrap commit `41738812bc9f2b86119caec17f843473a1047c24` completed
@@ -389,6 +436,44 @@ isolation and rendering probe.
 The later bounded daemon recheck also timed out; a fresh `cf auth whoami` still
 reports not logged in. The owner has been asked to finish any Docker Desktop
 startup/setup screen. No provider deployment has been attempted.
+
+### Repeatable native execution probe
+
+Added `scripts/hosting/` with a fixed one-shot runner and a non-root Dockerfile.
+It runs all ten existing engine isolation invariants before evaluating any source,
+then checks repeated isolated GLB output, a nonblank CPU preview, deadlines,
+cancellation, output limits, recovery and the existing textured software-Vulkan
+fixture. It cannot accept caller source, has no HTTP endpoint or fallback
+evaluator, and performs no provider deployment. The renderer fixture is trusted;
+its output is separate from the source-isolation evidence.
+
+All eight focused tests first failed against the stub and pass after implementation.
+Typecheck and lint pass. A real invocation against the installed development
+archive on Windows failed at the host gate with `UNSUPPORTED_HOST`, no evaluation
+and no render artifact, as required. Its receipt is
+`.cache/native-windows-negative/receipt.json`. This is negative-path qualification,
+not a passing Linux probe. The full offline suite passed 3,285 tests with two
+platform skips and no failures across 410 files in 364.88 seconds
+(`.cache/v1-native-qualification-tests.log`). No engine runtime source changed.
+Two stale consumer-guide statements about TypeScript source exports were also
+corrected to match the compiled SDK.
+
+The minimal six-file context in `.cache/native-probe-context/` uses the downloaded
+archive from CI run 37436913727. Its SHA-256
+`141a907f792beded74c7e6965b072cdfe6669c86b95d67c77b56a70c8e1f89a2` matches the
+run's installed SDK receipt. The Node 22.23.3 bookworm image index digest was read
+from Docker's registry and pinned in the Dockerfile; the final image, OS package
+inventory and resolved npm dependencies are still unqualified. The local Docker
+daemon again timed out after fifteen seconds, and `cf auth whoami` remains
+unauthenticated. No image was built, pushed or deployed.
+
+The runner records first/repeated call timings, parent-only process usage and
+available cgroup counters with explicit scope. These are not provider cold-start,
+per-job RSS, billed CPU or user-capacity claims. Its `provider` remains `unverified`;
+actual hosting proof must include a separate deployment and immutable image receipt.
+Cloudflare's [current Container API](https://developers.cloudflare.com/containers/api/durable-object-container/)
+is the preferred route for the eventual provider adapter; it does not prove nested
+namespace support. An unsupported boundary must remain a failed launch gate.
 
 ## Owner handoffs
 

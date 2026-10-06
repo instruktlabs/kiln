@@ -226,9 +226,10 @@ npm exec --offline -- kiln-init ../my-assets --harness opencode  # or claude, co
 ```
 
 `kiln` renders programs and imports/exports source revisions. `kiln-init` creates a
-workspace. These are installed package commands, not currently published npm
-package names. Library exports remain TypeScript source for Bun or a compatible
-bundler; ordinary Node callers should use the CLI/MCP bundles. The optional
+workspace, and `kiln-mcp` starts the stdio server. These are installed commands from
+the still-unpublished `@instruktlabs/kiln` package. Library consumers use its compiled
+ESM and TypeScript declarations through the [SDK entrypoints](sdk.md), without a
+source loader. The optional
 `kiln generate` adapter is separate and needs its agent/provider dependencies;
 connecting an existing harness does not load that stack.
 
