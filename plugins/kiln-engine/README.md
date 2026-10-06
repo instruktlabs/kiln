@@ -1,11 +1,9 @@
 # Kiln Engine local plugin
 
-**Release candidate.** Use the reviewed archive via `--archive` for local qualification. Registry installation requires this exact version to be available on npm.
-
-Version 1.0.0-rc.1, published by Instrukt Labs under the MIT license.
+Version 1.0.0, published by Instrukt Labs under the MIT license.
 
 Ask your coding agent to set up a Kiln workspace. The setup skill installs
-`@instruktlabs/kiln@1.0.0-rc.1` with npm and creates a separate asset workspace.
+`@instruktlabs/kiln@1.0.0` with npm and creates a separate asset workspace.
 Use a supported Node.js installation with npm; no Bun, engine clone or separate
 model API key is required. The workspace's START.md explains how to reopen it.
 

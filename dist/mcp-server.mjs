@@ -2085,7 +2085,7 @@ import { readFile } from "node:fs/promises";
 var KILN_ASSET_WIDGET_URI = "ui://kiln/asset-v5.html";
 
 // src/engine-identity.ts
-var ENGINE_VERSION = "1.0.0-rc.1";
+var ENGINE_VERSION = "1.0.0";
 var ENGINE_INSTALL_URL = new URL("../", import.meta.url).href;
 
 // src/requirements-json.ts

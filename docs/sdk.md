@@ -1,7 +1,8 @@
 # Kiln JavaScript and TypeScript SDK
 
-This describes the v1 package contract under development. Registry publication is
-a separate release gate; examples use the selected name `@instruktlabs/kiln`.
+This describes the v1 package contract. Examples use `@instruktlabs/kiln`; install
+a published version or a qualified local archive as described in the
+[installation guide](install.md). Registry publication is a separate release gate.
 
 ## Imports
 
@@ -56,7 +57,8 @@ except `implicit` are stable entrypoints for v1: their declared public signature
 record shapes and documented behavior receive normal semantic-versioning
 compatibility. Optional dependencies do not make the two agent APIs experimental.
 The `arena` entry is pure ranking math and needs no model SDK or provider key.
-This release candidate is not yet the published 1.0 contract.
+Use the documentation shipped with the installed version; a checkout does not
+change an already installed package's contract.
 
 The exception follows the feature across imports: `implicitSurface` remains
 experimental when re-exported by `primitives` or used in authoring globals, and

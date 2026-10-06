@@ -4,16 +4,17 @@ Existing inline-code transport and the legacy capture format remain supported. T
 Discovery and authoring-helper changes below require explicit migration; retired
 names have no callable compatibility aliases.
 
-## Unreleased changes planned for 1.0
+## Changes in 1.0
 
-These changes describe the 1.0 release candidate, not the downloadable 0.10.0
-release. Use the documentation and package from the same release when upgrading.
+These changes describe version 1.0 and its public RC, following the downloadable
+0.10.0 release. Use the documentation and package from the same release when upgrading.
 
 ### Package and SDK identity
 
 The npm package becomes `@instruktlabs/kiln`. The previous `@kiln/engine` name was
 used by downloaded private-package tarballs; this change does not publish an alias
-under that old namespace. The current `1.0.0-rc.1` checkout is still unpublished.
+under that old namespace. See the [installation guide](install.md) for the stable
+and prerelease npm channels and local candidate qualification.
 
 Update application imports to `@instruktlabs/kiln` and its documented subpaths.
 Exports now provide compiled ESM and TypeScript declarations, so Node consumers no
