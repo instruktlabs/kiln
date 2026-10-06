@@ -2,6 +2,7 @@ import { IDENTITY_ISSUERS } from './accounts';
 import { D1BrowserSessions, type BrowserSession } from './browser-sessions';
 import { HttpFailure } from './http';
 import { GOOGLE_SIGN_IN_BUTTON } from './google-button';
+import { D1Connections } from './connections';
 
 const escapeHtml = (value: string) =>
   value.replace(/[&<>"']/g, (char) => `&#${char.charCodeAt(0)};`);
@@ -19,6 +20,9 @@ header span,footer{font-size:.9rem;color:#59594f}h1{font-size:2rem;line-height:1
 p,li{line-height:1.6}section{border:1px solid #d6d3c9;background:#fff;border-radius:.75rem;padding:1.5rem;margin:1.5rem 0}
 h2{font-size:1.15rem;margin-top:0}button{font:inherit;font-weight:600;min-height:2.75rem;padding:.65rem 1.2rem;border:0;border-radius:.35rem;background:#3d5139;color:#fff;cursor:pointer}
 button:focus-visible,a:focus-visible{outline:3px solid #a25c24;outline-offset:4px}a{color:#365231}
+article+article{border-top:1px solid #d6d3c9;margin-top:1.5rem;padding-top:1.5rem}article h3,article p{overflow-wrap:anywhere}
+article form{display:flex;align-items:center;flex-wrap:wrap;gap:.75rem}select{font:inherit;min-height:2.75rem;border:1px solid #747775;border-radius:.35rem;background:#fff;color:#292821;padding:.4rem}
+select:focus-visible{outline:3px solid #a25c24;outline-offset:4px}
 .provider-buttons{display:flex;flex-wrap:wrap;gap:.75rem}.google-button{padding:0;background:transparent;line-height:0}
 .google-button img{display:block;width:198px;height:44px}.github-button{width:198px;min-height:44px;padding:0;background:#fff;color:#1f1f1f;border:1px solid #747775;font-size:14px;font-weight:500}
 footer{margin-top:2rem}footer a{margin-right:1rem}
@@ -86,8 +90,33 @@ export async function accountPage(
         ? 'GitHub'
         : 'Unknown provider',
   );
+  const connections = await new D1Connections(database).list(
+    session.accountId,
+    session.accountEpoch,
+  );
+  const providerOptions = identities.results
+    .flatMap(({ issuer }) =>
+      issuer === IDENTITY_ISSUERS.google
+        ? ['<option value="google">Google</option>']
+        : issuer === IDENTITY_ISSUERS.github
+          ? ['<option value="github">GitHub</option>']
+          : [],
+    )
+    .join('');
+  const connectionCards = connections
+    .map(
+      (connection) => `<article><h3>${escapeHtml(connection.clientName)}</h3>
+<p>${connection.clientDomain ? `Client domain: ${escapeHtml(connection.clientDomain)}.` : 'This client registered its own name; that name is not verified.'}
+Return address: ${escapeHtml(new URL(connection.redirectUri).host)}.</p>
+<p>${connection.state === 'pending' ? 'Waiting for the app to finish connecting.' : 'Connected'} · ${escapeHtml(new Date(connection.createdAt).toISOString().slice(0, 16).replace('T', ' '))} UTC</p>
+<form method="post" action="/account/action"><input type="hidden" name="csrf" value="${escapeHtml(session.csrf)}">
+<input type="hidden" name="action" value="disconnect"><input type="hidden" name="connectionId" value="${escapeHtml(connection.id)}">
+<label>Confirm using <select name="provider">${providerOptions}</select></label> <button type="submit">Disconnect this app</button></form></article>`,
+    )
+    .join('');
   return page(`<h1>Your Kiln account</h1><p>Free hosted access, with private saved assets and a personal usage quota.</p>
 <section><h2>Sign-in methods</h2><ul>${providers.map((provider) => `<li>${escapeHtml(provider)}</li>`).join('')}</ul></section>
+<section><h2>Connected apps</h2><p>Disconnecting blocks new requests from that connection. Confirm with a sign-in method to continue.</p>${connectionCards || '<p>No connected apps.</p>'}</section>
 <section><h2>This browser</h2><p>Signing out here leaves your connected apps working.</p>
 <form method="post" action="/account/logout"><input type="hidden" name="csrf" value="${escapeHtml(session.csrf)}">
 <button type="submit">Sign out of this browser</button></form></section>`);

@@ -5,7 +5,7 @@ export function assertProductionBoundary(entry, inputs) {
   if (
     entry !== 'worker' &&
     paths.some((name) =>
-      /oauth|(?:^|\/)(?:auth|github|google|account-page|browser-(?:login|sessions|cookies))\.ts$/.test(
+      /oauth|(?:^|\/)(?:auth|github|google|connections|account-(?:page|actions)|browser-(?:login|sessions|cookies))\.ts$/.test(
         name,
       ),
     )

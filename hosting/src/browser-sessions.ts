@@ -1,4 +1,4 @@
-import { D1AccountDirectory, type VerifiedIdentity } from './accounts';
+import { D1AccountDirectory, type KilnAccount, type VerifiedIdentity } from './accounts';
 import { HttpFailure, sha256 } from './http';
 import {
   BROWSER_COOKIE_ATTRIBUTES as cookieAttributes,
@@ -12,6 +12,8 @@ const IDLE_MS = 1_800_000;
 const denied = () => new HttpFailure(401, 'Sign in to continue');
 
 export interface BrowserSession {
+  /** Server-only session binding. Never render it or accept it as a credential. */
+  binding: string;
   accountId: string;
   accountEpoch: number;
   authenticatedAt: number;
@@ -32,6 +34,29 @@ export class D1BrowserSessions {
   /** Call only after a provider adapter has verified a fresh sign-in response. */
   async issue(identity: VerifiedIdentity, previousRequest?: Request) {
     const account = await new D1AccountDirectory(this.database).resolveIdentity(identity);
+    return this.issueAccount(account, previousRequest);
+  }
+
+  async renew(identity: VerifiedIdentity, proof: BrowserSession, request: Request) {
+    if ((await this.requestHash(request)) !== proof.binding) throw denied();
+    const account = await new D1AccountDirectory(this.database).getAccount(proof.accountId);
+    const binding = await this.database
+      .withSession('first-primary')
+      .prepare(
+        'SELECT account_id FROM kiln_identities WHERE issuer=? AND subject=? AND account_id=?',
+      )
+      .bind(identity.issuer, identity.subject, proof.accountId)
+      .first();
+    if (
+      account?.state !== 'active' ||
+      account.authorizationEpoch !== proof.accountEpoch ||
+      !binding
+    )
+      throw denied();
+    return this.issueAccount(account, request);
+  }
+
+  private async issueAccount(account: KilnAccount, previousRequest?: Request) {
     const token = randomBrowserToken();
     const hash = await this.hash(token);
     const csrf = randomBrowserToken();
@@ -83,19 +108,34 @@ export class D1BrowserSessions {
   }
 
   async read(request: Request): Promise<BrowserSession> {
+    return this.readCurrent(request, null);
+  }
+
+  async authorizeForm(request: Request, csrf: string): Promise<BrowserSession> {
+    if (
+      request.method !== 'POST' ||
+      request.headers.get('origin') !== this.origin ||
+      typeof csrf !== 'string' ||
+      !/^[a-f0-9]{64}$/.test(csrf)
+    )
+      throw new HttpFailure(403, 'Invalid account form');
+    return this.readCurrent(request, csrf);
+  }
+
+  private async readCurrent(request: Request, csrf: string | null): Promise<BrowserSession> {
     const hash = await this.requestHash(request);
     const now = Date.now();
     const session = await this.database
       .withSession('first-primary')
       .prepare(`UPDATE kiln_browser_sessions SET idle_expires_at=MIN(expires_at, ?)
-        WHERE token_hash=? AND expires_at>? AND idle_expires_at>?
+        WHERE token_hash=? AND expires_at>? AND idle_expires_at>? AND (? IS NULL OR csrf=?)
         AND EXISTS (SELECT 1 FROM kiln_accounts a WHERE a.id=kiln_browser_sessions.account_id
           AND a.state='active' AND a.authorization_epoch=kiln_browser_sessions.account_epoch)
-        RETURNING account_id AS accountId, account_epoch AS accountEpoch,
+        RETURNING token_hash AS binding, account_id AS accountId, account_epoch AS accountEpoch,
           authenticated_at AS authenticatedAt, expires_at AS expiresAt, csrf`)
-      .bind(now + IDLE_MS, hash, now, now)
+      .bind(now + IDLE_MS, hash, now, now, csrf, csrf)
       .first<BrowserSession>();
-    if (!session) throw denied();
+    if (!session) throw csrf === null ? denied() : new HttpFailure(403, 'Invalid account form');
     return session;
   }
 

@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { createHash, generateKeyPairSync, randomBytes, sign } from 'node:crypto';
 import { fileURLToPath } from 'node:url';
-import { after, before, test } from 'node:test';
+import { after, before, beforeEach, test } from 'node:test';
 import { build } from 'esbuild';
 import { convertV4MiniflareOptions, Miniflare } from 'miniflare';
 import { migrateAccounts } from './database.mjs';
@@ -139,6 +139,10 @@ before(async () => {
   await migrateAccounts(database);
 });
 after(async () => runtime?.dispose());
+// Each scenario owns its connections; prior scenarios must not consume its quota.
+beforeEach(async () => {
+  await database.prepare('DELETE FROM kiln_connections').run();
+});
 
 test('unauthenticated MCP is challenged with canonical resource metadata', async () => {
   const response = await runtime.dispatchFetch(`${origin}/mcp`, { redirect: 'manual' });
@@ -649,6 +653,327 @@ test('metadata advertises the configured audience, scopes, issuer and S256', asy
   ).json();
   assert.equal(auth.issuer, origin);
   assert.ok(auth.code_challenge_methods_supported.includes('S256'));
+});
+
+test('MCP authorization creates a durable connection and activates it only on code exchange', async () => {
+  const authorization = await grant();
+  const pending = await database
+    .prepare('SELECT * FROM kiln_connections WHERE client_id=?')
+    .bind(authorization.clientId)
+    .first();
+  assert.ok(pending);
+  assert.match(pending.id, /^kc_[a-f0-9]{32}$/);
+  assert.equal(pending.state, 'pending');
+  assert.equal(pending.grant_id, null);
+  const credential = await (await exchange(authorization)).json();
+  const active = await database
+    .prepare('SELECT * FROM kiln_connections WHERE id=?')
+    .bind(pending.id)
+    .first();
+  assert.equal(active.state, 'active');
+  assert.ok(active.grant_id);
+  assert.ok(!JSON.stringify(active).includes(credential.access_token));
+  assert.ok(!JSON.stringify(active).includes(credential.refresh_token));
+  assert.equal((await mcp(credential)).status, 200);
+});
+
+test('primary connection revocation denies cached access and refresh while preserving another connection', async () => {
+  const first = await token('alice');
+  const second = await token('alice');
+  const own = await database
+    .prepare('SELECT id FROM kiln_connections WHERE client_id=?')
+    .bind(first.clientId)
+    .first();
+  assert.ok(own);
+  // Leave every provider KV record intact: this models a remote cache seeing stale data.
+  await database
+    .prepare("UPDATE kiln_connections SET state='revoked' WHERE id=?")
+    .bind(own.id)
+    .run();
+  assert.equal((await mcp(first)).status, 401);
+  assert.equal((await mcp(second)).status, 200);
+  const refresh = await runtime.dispatchFetch(`${origin}/oauth/token`, {
+    method: 'POST',
+    headers: { 'content-type': 'application/x-www-form-urlencoded' },
+    body: new URLSearchParams({
+      grant_type: 'refresh_token',
+      refresh_token: first.refresh_token,
+      client_id: first.clientId,
+      resource: `${origin}/mcp`,
+    }),
+  });
+  assert.equal(refresh.status, 400);
+  assert.equal((await refresh.json()).error, 'invalid_grant');
+});
+
+test('stale provider KV cannot exchange an already consumed authorization code again', async () => {
+  const authorization = await grant();
+  const kv = await runtime.getKVNamespace('OAUTH_KV');
+  const saved = await Promise.all(
+    (await kv.list({ prefix: 'grant:' })).keys.map(async ({ name }) => [name, await kv.get(name)]),
+  );
+  assert.equal((await exchange(authorization)).status, 200);
+  for (const [name, value] of saved) await kv.put(name, value);
+  const again = await exchange(authorization);
+  assert.equal(again.status, 400);
+  assert.equal((await again.json()).error, 'invalid_grant');
+});
+
+async function connectionFor(authorization) {
+  return database
+    .prepare('SELECT * FROM kiln_connections WHERE client_id=?')
+    .bind(authorization.clientId)
+    .first();
+}
+
+async function startDisconnect(authorization, connectionId, provider = 'github', extra = {}) {
+  const page = await (
+    await runtime.dispatchFetch(`${origin}/account`, {
+      headers: { cookie: authorization.browserCookie },
+    })
+  ).text();
+  const csrf = page.match(/name="csrf" value="([a-f0-9]{64})"/)?.[1];
+  assert.ok(csrf);
+  return runtime.dispatchFetch(`${origin}/account/action`, {
+    method: 'POST',
+    redirect: 'manual',
+    headers: {
+      origin,
+      cookie: authorization.browserCookie,
+      'content-type': 'application/x-www-form-urlencoded',
+      ...extra.headers,
+    },
+    body: new URLSearchParams({
+      csrf,
+      action: 'disconnect',
+      connectionId,
+      provider,
+      ...extra.form,
+    }),
+  });
+}
+
+async function actionCallback(start, authorization, user = 'alice') {
+  assert.equal(start.status, 302);
+  const upstream = new URL(start.headers.get('location'));
+  assert.equal(upstream.searchParams.get('prompt'), 'select_account');
+  const provider = upstream.origin === googleIssuer ? 'google' : 'github';
+  const code = provider === 'github' ? user : randomBytes(24).toString('base64url');
+  if (provider === 'google')
+    googleCodes.set(code, {
+      user,
+      nonce: upstream.searchParams.get('nonce'),
+      challenge: upstream.searchParams.get('code_challenge'),
+    });
+  return {
+    callback: `${origin}/oauth/${provider}/callback?${new URLSearchParams({ state: upstream.searchParams.get('state'), code })}`,
+    cookie: `${authorization.browserCookie}; ${cookies(start)}`,
+  };
+}
+
+test('disconnect requires fresh verification of an existing provider and preserves other connections', async () => {
+  for (const provider of ['github', 'google']) {
+    const second = await token('alice', { provider });
+    const authorization = await grant('alice', { provider });
+    const credential = await (await exchange(authorization)).json();
+    const connection = await connectionFor(authorization);
+    const page = await (
+      await runtime.dispatchFetch(`${origin}/account`, {
+        headers: { cookie: authorization.browserCookie },
+      })
+    ).text();
+    assert.match(page, /Connected apps/);
+    assert.ok(page.includes(connection.id));
+    const start = await startDisconnect(authorization, connection.id, provider);
+    const flow = await actionCallback(start, authorization);
+    // Initiating confirmation alone must not revoke the connection.
+    assert.equal((await mcp(credential)).status, 200);
+    const response = await runtime.dispatchFetch(flow.callback, {
+      headers: { cookie: flow.cookie },
+      redirect: 'manual',
+    });
+    assert.equal(response.status, 303);
+    assert.equal(response.headers.get('location'), '/account');
+    assert.match(response.headers.get('set-cookie'), /__Host-kiln-session=/);
+    assert.equal((await mcp(credential)).status, 401);
+    assert.equal((await mcp(second)).status, 200);
+    assert.equal(
+      (
+        await runtime.dispatchFetch(`${origin}/account`, {
+          headers: { cookie: authorization.browserCookie },
+        })
+      ).status,
+      401,
+    );
+    assert.equal(
+      (await runtime.dispatchFetch(`${origin}/account`, { headers: { cookie: cookies(response) } }))
+        .status,
+      200,
+    );
+    assert.equal(
+      (
+        await runtime.dispatchFetch(flow.callback, {
+          headers: { cookie: flow.cookie },
+          redirect: 'manual',
+        })
+      ).status,
+      400,
+    );
+  }
+});
+
+test('disconnect refuses another account, unlinked provider, forged CSRF and cross-origin actions', async () => {
+  const bob = await grant('bob');
+  await exchange(bob);
+  const alice = await grant('alice');
+  const credential = await (await exchange(alice)).json();
+  const aliceConnection = await connectionFor(alice);
+  const bobConnection = await connectionFor(bob);
+  const count = outboundCalls;
+  for (const [id, provider, extra] of [
+    [bobConnection.id, 'github', {}],
+    [aliceConnection.id, 'google', {}],
+    [aliceConnection.id, 'github', { form: { csrf: '0'.repeat(64) } }],
+    [aliceConnection.id, 'github', { headers: { origin: 'https://evil.example' } }],
+    [aliceConnection.id, 'github', { form: { accountId: bobConnection.account_id } }],
+  ])
+    assert.equal((await startDisconnect(alice, id, provider, extra)).status, 403);
+  assert.equal(outboundCalls, count);
+  assert.equal((await mcp(credential)).status, 200);
+});
+
+test('disconnect rejects a different provider identity and a copied action without its session', async () => {
+  const authorization = await grant();
+  const credential = await (await exchange(authorization)).json();
+  const connection = await connectionFor(authorization);
+  const start = await startDisconnect(authorization, connection.id);
+  const wrong = await actionCallback(start, authorization, 'bob');
+  assert.equal(
+    (
+      await runtime.dispatchFetch(wrong.callback, {
+        headers: { cookie: cookies(start) },
+        redirect: 'manual',
+      })
+    ).status,
+    400,
+  );
+  assert.equal(
+    (
+      await runtime.dispatchFetch(wrong.callback, {
+        headers: { cookie: wrong.cookie },
+        redirect: 'manual',
+      })
+    ).status,
+    403,
+  );
+  assert.equal((await mcp(credential)).status, 200);
+});
+
+test('disconnect cancellation and expiry cannot revoke access or replay provider confirmation', async () => {
+  const authorization = await grant();
+  const credential = await (await exchange(authorization)).json();
+  const connection = await connectionFor(authorization);
+  const start = await startDisconnect(authorization, connection.id);
+  const flow = await actionCallback(start, authorization);
+  const cancelled = new URL(flow.callback);
+  cancelled.searchParams.delete('code');
+  cancelled.searchParams.set('error', 'access_denied');
+  const beforeCalls = outboundCalls;
+  const options = { headers: { cookie: flow.cookie }, redirect: 'manual' };
+  assert.equal((await runtime.dispatchFetch(cancelled.href, options)).status, 400);
+  assert.equal((await runtime.dispatchFetch(flow.callback, options)).status, 400);
+  assert.equal(outboundCalls, beforeCalls);
+  assert.equal((await mcp(credential)).status, 200);
+  const next = await actionCallback(
+    await startDisconnect(authorization, connection.id),
+    authorization,
+  );
+  await database.prepare('UPDATE kiln_account_actions SET expires_at=0').run();
+  assert.equal(
+    (
+      await runtime.dispatchFetch(next.callback, {
+        headers: { cookie: next.cookie },
+        redirect: 'manual',
+      })
+    ).status,
+    400,
+  );
+  assert.equal(outboundCalls, beforeCalls);
+  assert.equal((await mcp(credential)).status, 200);
+});
+
+test('concurrent disconnect callbacks consume one confirmation and perform one provider exchange', async () => {
+  const authorization = await grant();
+  const credential = await (await exchange(authorization)).json();
+  const connection = await connectionFor(authorization);
+  const flow = await actionCallback(
+    await startDisconnect(authorization, connection.id),
+    authorization,
+  );
+  const beforeCalls = outboundCalls;
+  const results = await Promise.all(
+    [0, 1].map(() =>
+      runtime.dispatchFetch(flow.callback, {
+        headers: { cookie: flow.cookie },
+        redirect: 'manual',
+      }),
+    ),
+  );
+  assert.deepEqual(results.map((result) => result.status).sort(), [303, 400]);
+  assert.equal(outboundCalls - beforeCalls, 2); // One token exchange and one GitHub identity read.
+  assert.equal((await mcp(credential)).status, 401);
+});
+
+test('a revoked browser session cannot finish its pending disconnect', async () => {
+  const authorization = await grant();
+  const credential = await (await exchange(authorization)).json();
+  const connection = await connectionFor(authorization);
+  const flow = await actionCallback(
+    await startDisconnect(authorization, connection.id),
+    authorization,
+  );
+  await database
+    .prepare('DELETE FROM kiln_browser_sessions WHERE account_id=?')
+    .bind(connection.account_id)
+    .run();
+  const beforeCalls = outboundCalls;
+  assert.equal(
+    (
+      await runtime.dispatchFetch(flow.callback, {
+        headers: { cookie: flow.cookie },
+        redirect: 'manual',
+      })
+    ).status,
+    400,
+  );
+  assert.equal(outboundCalls, beforeCalls);
+  assert.equal((await mcp(credential)).status, 200);
+});
+
+test('connected app display escapes registered names and oversized action forms never contact a provider', async () => {
+  const clientId = await register('<img src=x onerror="alert(1)">');
+  const authorization = await grant('alice', { clientId });
+  const credential = await (await exchange(authorization)).json();
+  const page = await runtime.dispatchFetch(`${origin}/account`, {
+    headers: { cookie: authorization.browserCookie },
+  });
+  const html = await page.text();
+  assert.ok(!html.includes('<img src=x'));
+  assert.ok(html.includes('&#60;img src=x'));
+  assert.match(page.headers.get('content-security-policy'), /default-src 'none'/);
+  const beforeCalls = outboundCalls;
+  const rejected = await runtime.dispatchFetch(`${origin}/account/action`, {
+    method: 'POST',
+    headers: {
+      origin,
+      cookie: authorization.browserCookie,
+      'content-type': 'application/x-www-form-urlencoded',
+    },
+    body: `csrf=${'a'.repeat(4096)}`,
+  });
+  assert.equal(rejected.status, 413);
+  assert.equal(outboundCalls, beforeCalls);
+  assert.equal((await mcp(credential)).status, 200);
 });
 
 test('consent escapes client content and binds approval to its browser', async () => {

@@ -3,9 +3,10 @@ import {
   OAuthError,
   OAuthResourceServer,
 } from '@cloudflare/workers-oauth-provider';
-import { isCurrentAccountGrant } from './accounts';
+import { D1Connections } from './connections';
 import { accountPage } from './account-page';
 import { beginBrowserLogin } from './browser-login';
+import { beginAccountAction } from './account-actions';
 import { authorize, authorizationFailure, SCOPES, type SignInEnv } from './auth';
 import { forwardTenant, type TenantEnv } from './gateway';
 import { boundedRequest, HttpFailure, privateResponse } from './http';
@@ -36,8 +37,23 @@ export default {
         scopesSupported: SCOPES,
         accessTokenTTL: 900,
         refreshTokenTTL: 30 * 24 * 60 * 60,
-        tokenExchangeCallback: async ({ env: bindings, userId, props }) => {
-          if (!(await isCurrentAccountGrant(bindings.ACCOUNTS, userId, props)))
+        tokenExchangeCallback: async ({
+          env: bindings,
+          userId,
+          props,
+          clientId,
+          grantId,
+          grantType,
+        }) => {
+          if (
+            !(await new D1Connections(bindings.ACCOUNTS).exchange(
+              userId,
+              props,
+              clientId,
+              grantId,
+              grantType,
+            ))
+          )
             throw new OAuthError('invalid_grant', {
               description: 'Account authorization changed; sign in again',
             });
@@ -51,7 +67,13 @@ export default {
         validateToken: (bindings) => async (audience, token) => {
           const verified = await auth.validateToken(audience, token, bindings);
           if (!verified) return null;
-          if (!(await isCurrentAccountGrant(bindings.ACCOUNTS, verified.userId, verified.props)))
+          if (
+            !(await new D1Connections(bindings.ACCOUNTS).accepts(
+              verified.userId,
+              verified.props,
+              verified.clientId,
+            ))
+          )
             throw new OAuthError('invalid_token', {
               description: 'Account authorization changed; sign in again',
             });
@@ -79,6 +101,7 @@ export default {
       } else if (
         url.pathname === '/authorize' ||
         url.pathname === '/account/login' ||
+        url.pathname === '/account/action' ||
         url.pathname === '/oauth/github/callback' ||
         url.pathname === '/oauth/google/callback'
       ) {
@@ -91,14 +114,17 @@ export default {
         )
           throw new HttpFailure(503, 'Sign-in is not configured');
         response =
-          url.pathname === '/account/login'
-            ? await beginBrowserLogin(await boundedRequest(request, 4096), origin, env)
-            : await authorize(
-                await boundedRequest(request, 16_384),
-                auth.getOAuthApi(env),
-                origin,
-                env,
-              );
+          url.pathname === '/account/action'
+            ? await beginAccountAction(await boundedRequest(request, 4096), origin, env)
+            : url.pathname === '/account/login'
+              ? await beginBrowserLogin(await boundedRequest(request, 4096), origin, env)
+              : await authorize(
+                  await boundedRequest(request, 16_384),
+                  auth.getOAuthApi(env),
+                  origin,
+                  env,
+                  ctx,
+                );
       } else if (
         url.pathname === '/register' ||
         url.pathname.startsWith('/oauth/token') ||

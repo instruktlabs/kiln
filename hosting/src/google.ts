@@ -12,6 +12,7 @@ export interface GoogleFlow {
   state: string;
   verifier: string;
   nonce: string;
+  selectAccount?: boolean;
 }
 
 const issuer = new URL(IDENTITY_ISSUERS.google);
@@ -111,6 +112,7 @@ export async function googleAuthorizationUrl(
     nonce: flow.nonce,
     code_challenge: await oauth.calculatePKCECodeChallenge(flow.verifier),
     code_challenge_method: 'S256',
+    ...(flow.selectAccount ? { prompt: 'select_account' } : {}),
   }).toString();
   return target.href;
 }

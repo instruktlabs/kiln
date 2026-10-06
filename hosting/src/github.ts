@@ -71,6 +71,7 @@ export async function githubAuthorizationUrl(
   state: string,
   verifier: string,
   env: GitHubEnv,
+  selectAccount = false,
 ): Promise<string> {
   const target = new URL('https://github.com/login/oauth/authorize');
   target.search = new URLSearchParams({
@@ -80,6 +81,7 @@ export async function githubAuthorizationUrl(
     state,
     code_challenge: await sha256(verifier),
     code_challenge_method: 'S256',
+    ...(selectAccount ? { prompt: 'select_account' } : {}),
   }).toString();
   return target.href;
 }

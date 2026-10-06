@@ -8,6 +8,8 @@ import { HttpFailure } from './http';
 import { githubAuthorizationUrl, githubIdentity, type GitHubEnv } from './github';
 import { D1BrowserSessions } from './browser-sessions';
 import { finishBrowserLogin } from './browser-login';
+import { D1Connections } from './connections';
+import { finishAccountAction } from './account-actions';
 import { googleAuthorizationUrl, type GoogleEnv, googleIdentity } from './google';
 import { D1LoginIntents, type SignInProvider } from './login-intents';
 
@@ -50,6 +52,7 @@ export async function authorize(
   oauth: OAuthHelpers,
   origin: string,
   env: SignInEnv,
+  ctx: ExecutionContext,
 ): Promise<Response> {
   const url = new URL(request.url);
   const intents = new D1LoginIntents(env.ACCOUNTS, origin);
@@ -145,6 +148,8 @@ export async function authorize(
       throw new HttpFailure(400, 'Invalid sign-in state');
     if (url.searchParams.get('state')?.startsWith('kb1_'))
       return finishBrowserLogin(request, origin, env, callbackProvider);
+    if (url.searchParams.get('state')?.startsWith('ka1_'))
+      return finishAccountAction(request, origin, env, callbackProvider, oauth, ctx);
     const resumed = await oauth.finishUpstream<SignInTransaction>(request);
     if (
       !resumed.data ||
@@ -180,13 +185,28 @@ export async function authorize(
     const browser = await new D1BrowserSessions(env.ACCOUNTS, origin).issue(identity, request);
     const account = browser.account;
     const userId = account.id;
-    const { redirectTo } = await oauth.completeAuthorization({
-      request: resumed.request,
-      userId,
-      metadata: {},
-      scope: resumed.request.scope,
-      props: { userId, accountEpoch: account.authorizationEpoch },
-    });
+    const connections = new D1Connections(env.ACCOUNTS);
+    const props = await connections.create(
+      account,
+      resumed.request,
+      await oauth.describeConsent(resumed.request),
+    );
+    let redirectTo: string;
+    try {
+      ({ redirectTo } = await oauth.completeAuthorization({
+        request: resumed.request,
+        userId,
+        metadata: { connectionId: props.connectionId },
+        scope: resumed.request.scope,
+        props,
+        // Each consent is an independently revocable connection. Do not silently
+        // revoke another installation that shares this MCP client's identifier.
+        revokeExistingGrants: false,
+      }));
+    } catch (error) {
+      await connections.cancelPending(props);
+      throw error;
+    }
     resumed.headers.set('location', redirectTo);
     resumed.headers.append('set-cookie', browser.cookie);
     return new Response(null, { status: 302, headers: resumed.headers });

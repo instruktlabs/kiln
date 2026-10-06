@@ -57,7 +57,7 @@ account state and authorization epoch. Missing/disabled/deleting accounts and ol
 epochs fail closed; database outages return unavailable rather than permitting
 cached access. Account lifecycle mutations must increment the epoch atomically.
 Browser sessions and direct sign-in now have local qualification. Explicit
-identity linking, connection controls and completed asset deletion remain required
+identity linking, deployed connection controls and completed asset deletion remain required
 before launch.
 Only verified server-side provider adapters may call this contract. The JSON
 interface under `test/` exists solely for local tests and is not a public API.
@@ -99,6 +99,38 @@ provided button image embedded locally; see [asset provenance](assets/README.md)
 Local desktop/375px layout checks establish presentation only, not live provider
 authentication or final launch acceptance. Privacy pages, full account controls
 and the branded MCP consent experience remain open.
+
+### Connected-app controls
+
+Migrations `0005_connections.sql` and `0006_account_actions.sql` add independently
+revocable MCP connections and purpose-bound confirmation transactions. A connection
+becomes active through one atomic primary-D1 claim during authorization-code
+exchange. Every resource request and refresh checks its current account, epoch,
+client and connection state after the OAuth library's token validation. Stale KV
+records cannot replay an exchanged code or re-enable a revoked connection.
+Connections expire after 30 days; at most 32 pending/active connections are admitted
+per account. Expired pending connections are retired after ten minutes.
+
+`/account` lists connections and accepts a same-origin, CSRF-protected disconnect
+form. Confirmation requires the current browser session, an independent action
+cookie, one-use state, PKCE and a freshly verified identity already linked to that
+account. Google also verifies the OIDC nonce. The primary SQL revocation commits
+before optional OAuth KV cleanup; other connections remain usable. The browser
+session rotates after confirmation. This blocks subsequent requests; it does not
+cancel already admitted computation. Public rate/admission controls remain required.
+
+Both providers' `prompt=select_account` asks the user to choose an account; it
+does not prove a new password or MFA challenge. Sources:
+[GitHub OAuth](https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/authorizing-oauth-apps),
+[Google OIDC](https://developers.google.com/identity/openid-connect/openid-connect).
+Identity linking and deletion require their own purpose-bound designs; this
+disconnect flow must not be repurposed to merge or delete accounts.
+
+Local workerd checks cover concurrent callbacks, cancellation, expiry, copied
+state, wrong identities, revoked sessions, forged forms, hostile client names,
+oversized requests and retained access by another connection. Layout checks use
+synthetic identities only. Live provider confirmation, cross-region denial and
+production migration/rollback remain unqualified.
 
 ## Native HTTP adapter
 

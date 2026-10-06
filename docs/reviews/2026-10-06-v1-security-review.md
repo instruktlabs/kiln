@@ -200,6 +200,40 @@ connection revocation, account/asset deletion, public admission limits and deplo
 cross-region/user tests remain launch gates. Local screenshots establish only the
 account page's desktop and mobile layout.
 
+## Connection-authority continuation
+
+The account-controls candidate now records each MCP authorization in primary D1.
+Authorization-code exchange atomically activates a pending connection once;
+resource and refresh validation check the same connection after library token
+validation. A stale-KV regression restores the old grant record and proves that
+the consumed code cannot exchange again. Disconnect first commits the primary
+deny, then performs supplemental KV cleanup. No provider token or MCP bearer
+value is stored in connection rows.
+
+Disconnect confirmation is bound to its account, epoch, browser session, purpose,
+target, selected linked provider, action cookie, state and PKCE/nonce. A consumed
+state cannot be retried, including concurrent callbacks. Cancellation, expiry,
+wrong identity, missing/revoked browser sessions and forged/oversized forms fail
+closed. Other connections keep working. Provider account selection is not proof
+of a fresh password or MFA challenge; this narrower confirmation policy applies
+only to disconnecting an app, not linking identities or account deletion.
+
+The actual connections dependency graph exposed another build-guard gap. Its
+focused test failed before the guard was extended, then passed for every
+non-gateway output and Windows path form. All five actual bundles pass. The
+account page escapes registered client text; local desktop and 375px checks show
+wrapped names and 44px controls without horizontal overflow. The fixture contains
+no real account data and makes no network requests.
+
+The complete hosted suite passes 150 tests, all three hosted typechecks and all
+five bundle builds. Root typecheck/lint pass. Redacted scanning of the actual
+442.03 KB production output reports no matching secrets. Receipts are retained
+under `.cache/security-review-2026-10-06/`; exact-commit Linux/Windows CI follows.
+
+Public admission/rate controls, global account/storage bounds, provider linking,
+account deletion, live confirmation, deployed revocation and recovery remain
+outstanding. Local tests and a secret scan cannot substitute for those gates.
+
 ## Acceptance
 
 Open. Secret hygiene and a passing local test suite do not establish secure public
