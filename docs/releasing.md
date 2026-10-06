@@ -1,7 +1,8 @@
 # Publishing Kiln 1.0
 
-This is the maintainer runbook for `@instruktlabs/kiln`. The release workflow is
-prepared; it has not published a package. Development, registry publication,
+This is the maintainer runbook for `@instruktlabs/kiln`. npm publishing access is
+configured and the public bootstrap placeholder exists; no RC or stable engine
+version has been promoted. Development, registry publication,
 hosted deployment and directory acceptance have separate evidence requirements.
 See the [v1 execution record](reviews/2026-10-06-v1-execution.md) for current status.
 
@@ -43,8 +44,9 @@ main. Verify these settings before dispatching mode **stage**; the script refuse
 an unprotected environment rather than accepting an implicit environment creation.
 
 This GitHub environment was created and read back on 6 October 2026 with the
-settings above; see the execution record. Recheck it before staging. npm trusted
-publishing is not configured yet, and creating the environment published nothing.
+settings above; see the execution record. Recheck it before staging. npm's
+stage-only trusted publisher and mandatory package 2FA were configured and verified
+the same day. The first successful OIDC stage remains the proof that trust works.
 
 First-time npm staging creates a public `0.0.0-stage` placeholder. It therefore
 requires explicit authorization against the reviewed candidate. The staged code

@@ -1248,8 +1248,9 @@ Verification passed. Downloaded `npm-release-review`, inspected `review.json` an
 independently matched its archive digest. The stage job was skipped as intended.
 All 15 checks on hosted identity PR #146 at `255df6a` also passed; that PR remains
 unmerged and does not change this npm candidate. The owner staging/access-setup
-question is now pending because first-time npm staging creates a public placeholder.
-No npm package has been staged or published, and no hosted service has been deployed.
+question was pending at this checkpoint because first-time npm staging creates a
+public placeholder. The subsequent authorized setup is recorded below. No hosted
+service has been deployed.
 
 ## Owner handoffs
 
@@ -1273,4 +1274,65 @@ those results. No identity app or secret has been provisioned yet.
 The initial npm browser login did not complete and its terminal-password fallback
 was cancelled. The fresh owner-attended attempt succeeded, as recorded above.
 Trusted publishing configuration, exact-archive staging and owner promotion remain
-separate steps. No package has been staged or published yet.
+separate steps, with subsequent progress recorded below.
+
+## npm bootstrap and package protections
+
+The owner explicitly approved staging the verified RC and configuring stage-only
+GitHub publishing access. The exact archive above was uploaded using npm 12.2.0
+with lifecycle scripts disabled and local provenance disabled only for bootstrap.
+npm created stage `36c3dbd9-5908-4e0c-b394-b08e12379e31` and the public
+`0.0.0-stage` holding version. The RC itself was not promoted. The package website
+confirmed the placeholder even while public registry metadata was still returning
+404; these are different observations, not evidence that no public write occurred.
+
+Owner security-key authentication completed the trusted publisher configuration:
+repository `instruktlabs/kiln`, workflow `release.yml`, environment `npm-release`,
+permission **npm stage publish only**. npm's Settings UI independently showed
+those values. A second owner security-key step saved **Require two-factor
+authentication and disallow bypass 2fa tokens**; the success notification and
+selected setting were verified. No bypass token or `NPM_TOKEN` was created.
+
+As prescribed by the runbook, the bootstrap was rejected with owner 2FA after
+trust was saved. The CLI confirmed rejection and `npm stage list` returned an
+empty list. This removed only the temporary unpromoted stage, not the package or
+its settings. The exact archive remains retained in the CI artifacts and locally.
+
+Rechecked main, successful source CI, archive digest and the GitHub environment:
+sole owner reviewer, protected branches only, no administrator bypass. Dispatched
+[staging run 37477014656](https://github.com/instruktlabs/kiln/actions/runs/37477014656)
+from unchanged main with the same CI run and digest. Its verification job passed;
+the stage job is waiting for the owner's GitHub environment review. No RC promotion
+or stable 1.0 publication has occurred.
+
+## Cloudflare evaluation controller implementation
+
+The private host now has a one-job container controller with a durable claim and
+deadline alarm recorded before compute starts. It requires a pinned image digest,
+disables internet, sends no storage or identity credentials, bounds request/stdout/
+stderr bytes, and destroys the whole VM before returning output. Cancellation,
+startup failures, output flooding and deadlines converge on that cleanup. Failed
+cleanup suppresses success and leaves a durable alarm to retry. Completed job IDs
+remain unavailable for reuse. Returned bytes still require the engine's strict
+versioned result validation outside the VM.
+
+The companion one-shot entry imports the compiled engine package, accepts one
+bounded UTF-8 request and emits one canonical evaluator response. It is designed
+only for an externally isolated VM; its in-process handler and JavaScript timeout
+do not provide a security boundary. Fixed trusted fixtures passed deterministic
+GLB, malformed-envelope, invalid-UTF-8 and oversized-input checks on the development
+host. Nine controller tests passed for orchestration and cleanup. These checks do
+not establish Cloudflare isolation, image deployment, hostile-source containment
+or production routing. Those gates remain open.
+
+With these additions, the local hosted suite passed **103/103** tests. Both hosted
+TypeScript configurations, all five existing production bundle builds, repository
+lint and whitespace checks passed. The new controller and entry are not yet wired
+into a deployed Worker. Receipts: `.cache/v1-container-entry-before.log`,
+`.cache/v1-container-entry-after.log`, `.cache/v1-container-hosting-full.log`.
+
+An independent storage regression found during the full hosted suite was fixed in
+`76ef646`: creation and seven-day expiry now derive from one clock read. A focused
+advancing-clock test failed before the change and passed afterward. The fix is on
+hosted identity PR #146; both hosted CI platforms passed. It does not change the
+frozen main-branch npm archive.
