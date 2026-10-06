@@ -4,6 +4,7 @@ import type { EvaluatorPortV2, IsolatedEvaluatorHost } from '@instruktlabs/kiln/
 import { NativeProgramStore } from './native-programs';
 import { NativeAssetLibrary } from './native-assets';
 import type { NativeStorageOptions } from './native-http';
+import { createNativeEvaluatorPort, type NativeEvaluatorOptions } from './native-evaluator';
 import { HttpFailure, privateResponse, readBounded, serviceFailure } from './http';
 
 export interface NativeMcpRuntime {
@@ -11,25 +12,29 @@ export interface NativeMcpRuntime {
   evaluatorPort: EvaluatorPortV2;
 }
 
-/** Installed-package production route. A failed isolation probe has no fallback. */
-export async function loadNativeMcpRuntime(
-  host: IsolatedEvaluatorHost = { bwrapPath: '/usr/bin/bwrap' },
-): Promise<NativeMcpRuntime> {
-  let engine: { createKilnMcpServer: NativeMcpRuntime['createServer'] };
-  let evaluator: typeof import('@instruktlabs/kiln/evaluator');
+async function loadInstalledEngine(): Promise<NativeMcpRuntime['createServer']> {
   try {
     const entry = new URL(import.meta.resolve('@instruktlabs/kiln'));
     // This private host pins the engine's shipped bundle alongside its SDK.
     // Do not resolve a checkout source file or a caller-supplied module URL.
-    engine = await import(new URL('../dist/mcp-engine.mjs', entry).href);
-    evaluator = await import('@instruktlabs/kiln/evaluator');
+    const engine = await import(new URL('../dist/mcp-engine.mjs', entry).href);
+    if (typeof engine.createKilnMcpServer !== 'function') throw new Error('Invalid engine');
+    return engine.createKilnMcpServer;
   } catch {
     throw new Error('Native engine installation is unavailable');
   }
+}
+
+/** Installed-package nested-isolation route. A failed probe has no fallback. */
+export async function loadNativeMcpRuntime(
+  host: IsolatedEvaluatorHost = { bwrapPath: '/usr/bin/bwrap' },
+): Promise<NativeMcpRuntime> {
+  const createServer = await loadInstalledEngine();
   try {
+    const evaluator = await import('@instruktlabs/kiln/evaluator');
     await evaluator.assertIsolatedEvaluatorReady(host);
     return {
-      createServer: engine.createKilnMcpServer,
+      createServer,
       evaluatorPort: {
         render: (code, options, controls) =>
           evaluator.renderGLBViaIsolatedEvaluator(code, options, { ...controls, host }),
@@ -38,6 +43,20 @@ export async function loadNativeMcpRuntime(
   } catch {
     throw new Error('Native isolation readiness failed; no evaluator is available');
   }
+}
+
+/**
+ * Explicit externally isolated profile. The controller supplies the private
+ * evaluator route; unavailable transport fails closed on calls. Never selected
+ * automatically after a failed nested-isolation readiness check.
+ */
+export async function loadContainerMcpRuntime(
+  options: NativeEvaluatorOptions = {},
+): Promise<NativeMcpRuntime> {
+  return {
+    createServer: await loadInstalledEngine(),
+    evaluatorPort: createNativeEvaluatorPort(options),
+  };
 }
 
 export interface NativeMcpOptions {

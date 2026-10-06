@@ -1,5 +1,11 @@
 # Private evaluation image
 
+Current qualification: the exact stable software image and per-job controller
+passed the twelve fixed Cloudflare cases in [the resilience record](../probe/RESILIENCE.md).
+The earlier preparation notes below retain their narrower evidence. Production
+dispatch, representative load and costs remain open. The separate MCP coordinator
+image described below has local Docker proof only.
+
 This is the CPU-only image for the explicit Cloudflare per-job adapter. It opens
 no network listener. A private Durable Object starts a fresh VM from an immutable
 digest with internet disabled, executes `evaluate.mjs` with piped input/output,
@@ -92,3 +98,49 @@ That run uses the public RC archive and therefore complements, rather than
 replaces, the exact-stable local receipt above. The stable image's retained npm
 lock also returned zero known findings in an `npm audit --omit=dev` on 6 October.
 No cloud resource was created for this image preparation.
+
+## Private MCP coordinator image
+
+`Dockerfile.host` serves the installed package's actual MCP factory through the
+private Node adapter. Unlike the evaluator image, it has a private port 3000
+listener. Its explicit remote evaluator profile sends source only to the outside
+controller's fixed evaluation endpoint. It contains no identity-provider secrets,
+tenant identifier, storage mount or public route. `KILN_PUBLIC_ORIGIN` is its only
+application setting and must be an exact HTTPS origin.
+
+From the checkout root, using the pinned Node/npm tools:
+
+```sh
+npm run build --prefix hosting
+node hosting/scripts/prepare-native-host.mjs /path/to/qualified-kiln-1.0.0.tgz
+cd .cache/native-host-image/context
+npm install --package-lock-only --ignore-scripts --no-fund
+cd ../../..
+docker build --platform linux/amd64 --provenance=false --tag kiln-native-host:local .cache/native-host-image/context
+node hosting/scripts/smoke-native-host.mjs kiln-native-host:local
+```
+
+The preparer requires an empty directory inside this checkout's `.cache`, verifies
+the archive against `.github/published-candidate.json` and copies the checked
+runtime bundles, entrypoint and Dockerfile. Its seven-file context becomes eight
+files after lock generation. Never expand the build context to include the repo,
+credentials or other caches. Retain the generated lock and inventories: separate
+builds can resolve different transitive dependencies and have different image
+digests even when the package archive is identical.
+
+The qualification script creates one disposable local container with networking
+disabled, a read-only filesystem, non-root user, dropped capabilities and bounded
+memory/CPU. It checks readiness, modern tool discovery, legacy initialization,
+foreign-host/credential rejection and failure without private services. No host
+port is published. The script removes its uniquely named container and saves
+identities, inventories and the result under `.cache/native-host-image/qualification`.
+CI runs the same procedure without registry publication or Cloudflare access.
+
+Local image `sha256:5402d67069e8b5c9d355e4f49b9ae92d353171b381d27496f85f5794adf95d75`
+passed all six checks with the exact published 1.0.0 archive and fourteen registry
+tools. Its retained dependency lock SHA-256 is
+`f635b9ba48046e4fdb265eb980df55cf1303c4bc0fd109db477ef870ef0b273f`.
+Both the hosting lock and generated image lock reported zero known npm audit
+findings. This image has not been uploaded or qualified on Cloudflare. Storage,
+child evaluation dispatch, global admission and software-renderer integration
+remain prerequisites for an end-to-end hosted candidate.

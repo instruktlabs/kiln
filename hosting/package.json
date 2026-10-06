@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@cloudflare/workers-oauth-provider": "1.2.1",
+    "@modelcontextprotocol/node": "2.1.1",
     "@modelcontextprotocol/server": "2.3.0",
     "oauth4webapi": "3.8.8"
   },

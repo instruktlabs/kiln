@@ -403,6 +403,29 @@ The native client and this handler are exercised together with the actual SDK
 codec. They still need the externally tenant-bound dispatcher and global admission
 controller before an end-to-end provider qualification or deployment.
 
+## Private Node host
+
+`native-host` adapts the MCP Fetch handler through the maintained
+`@modelcontextprotocol/node` adapter. It listens only inside the coordinator VM
+on port 3000, requires the fixed `kiln-native.internal` Host and exposes a minimal
+`/_ready` route. Header/body bounds, an upload deadline and client-disconnect
+propagation precede the MCP handler's own execution and response limits. A chunked
+body flood may close the socket before the adapter can deliver its 413 response;
+either outcome must occur before MCP dispatch.
+
+`container/serve.mjs` requires an exact HTTPS public origin and selects the explicit
+remote evaluator profile. Missing private storage or evaluation services fail
+closed; they never enable in-process source evaluation. The default local loader
+still retains its separate isolation requirements. Neither profile is an automatic
+fallback for the other.
+
+Build and qualify the minimal image through
+[the container instructions](container/README.md#private-mcp-coordinator-image).
+Local Docker evidence establishes installed MCP startup, protocol compatibility
+and request rejection. It does not establish Cloudflare routing or tenant
+isolation. The outside dispatcher must bind the storage/evaluation interceptors,
+retain admission through all child-job cleanup and destroy the coordinator VM.
+
 ## Native saved assets
 
 `NativeAssetLibrary` implements the engine's existing collection, save, read, list,

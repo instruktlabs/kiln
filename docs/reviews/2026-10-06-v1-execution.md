@@ -27,13 +27,67 @@ states and the evidence that superseded them.
 | H3 | Artifact lifecycle | In progress: tenant SQLite/R2 bytes, ProgramStore and native AssetLibrary, atomic quotas/revision pins, material closures, authenticated downloads, deletion and seven-day unsaved retention pass local workerd and actual-engine checks; standalone MaterialLibrary, native dispatch, browser tickets, account deletion and deployed lifecycle proof remain open |
 | H4 | Capacity and operations | In progress: native request admission and bounded input/output, cancellation/deadline and whole-instance cleanup have local and fixed cloud proof; global quotas, load/cost measurements, alerts, deployed identity and rollback remain open |
 | H5 | Production deployment | Pending: approved deployment at `kiln.instruktlabs.com`; live authenticated create/edit/render/save/download/reconnect flow |
-| L1 | Local Claude Code and Codex plugins | Stable distribution qualified: both actual client catalogs install kiln-engine 1.0.0 and download the exact public npm runtime; real MCP/CLI flows and Codex skill/tool discovery pass. RC and 0.10 workspace upgrades preserve stores; final cache-update qualification remains to be recorded |
+| L1 | Local Claude Code and Codex plugins | Stable distribution qualified: both actual client catalogs install kiln-engine 1.0.0 and download the exact public npm runtime; real MCP/CLI flows and Codex skill/tool discovery pass. RC and 0.10 workspace upgrades preserve stores. Same-profile RC-to-stable cache updates also pass, retaining the pinned workspace runtime and original saved assets |
 | L2 | Public OpenAI plugin | Pending: compliant ZIP, verified publisher/domain, working MCP, privacy/support pages, review cases/video/account, submission receipt |
 | L3 | Anthropic directory | Pending: owned marketplace is public and installed successfully; directory eligibility, exact final source, portal validation, reviewer materials and submission receipt remain open |
 | V1 | Exact candidate verification | Package qualified: exact main fda71ac archive, twelve main CI jobs, release verification, public registry/provenance, seven-platform registry installs, fresh local consumer checks and stable plugin/workspace flows pass. Hosted end-to-end verification remains open |
 | V2 | Release documentation and receipts | Pending: changelog/migrations/install/support/security/privacy/runbook; exact commits, hashes, versions, URLs and separate vendor-review state |
 
 ## Execution notes
+
+### Private Node host and installed coordinator image
+
+The native coordinator now has an actual HTTP entry using the maintained MCP Node
+adapter, separate from the untrusted evaluator image. The entry selects the remote
+evaluator explicitly and requires an exact public HTTPS origin. Socket-level tests
+cover the fixed internal Host/path, request limits, stalled uploads and propagation
+of disconnects. Invalid startup settings and missing private services fail closed;
+there is no fallback to in-process source evaluation.
+
+The focused tests were observed failing before implementation. All 199 hosted
+tests, three hosted typechecks and eight production bundles now pass locally.
+The prior integration commit `4e7a304` also passed all engine/package checks in
+[run 37535301751](https://github.com/instruktlabs/kiln/actions/runs/37535301751),
+Linux/Windows hosted checks, both evaluator images and the website build.
+
+The new coordinator image was built with a minimal eight-file context and the
+exact published stable archive. Image
+`sha256:5402d67069e8b5c9d355e4f49b9ae92d353171b381d27496f85f5794adf95d75`
+passes readiness, modern MCP discovery, legacy initialization, foreign-host and
+credential rejection, and failure without private services. It advertises the
+fourteen actual registry tools. The Docker fixture used no host port, disabled
+networking and a non-root, read-only, resource-bounded container; that container
+was removed. The image/lock/bundle identities and inventories are retained at
+`.cache/native-host-image/qualification/receipt.json`. Both hosting and generated
+image locks reported zero known npm audit findings. CI now builds and exercises
+this image in a separate job without cloud access or image publication.
+
+These are local coordinator checks, not an extension of the Cloudflare isolation
+receipt. No new cloud job, deployment or registry write occurred. The dispatcher
+still needs tenant-bound interceptors, whole-job-tree recovery/global admission,
+software rendering and complete hosted lifecycle qualification.
+
+### Stable plugin cache updates
+
+Both isolated qualification profiles now have `kiln-engine@instruktlabs` version
+1.0.0, upgraded from their existing 1.0.0-rc.1 caches through the actual Claude
+and Codex CLIs. Cached provenance inventories verify byte-for-byte. Their managed
+workspaces remain pinned to the RC until an explicit workspace upgrade; the
+original saved asset hashes and owner notes remain intact. The separate previously
+qualified RC-to-stable workspace upgrade is still the intentional next step.
+Receipt: `.cache/v1-stable-cache-upgrade.json`.
+
+These test profiles had explicitly selected the development catalog branch,
+`codex/v1-publication`. Both CLIs correctly refused replacing a declared catalog
+with a different source through `marketplace add`. Only the isolated profiles'
+declared ref was changed to `main`, followed by normal marketplace/plugin updates.
+The refusals and continuation are retained in the receipts; no normal user profile
+was changed. Full before/after workspace snapshots bracket the Codex update and
+the repeated Claude refresh. Claude's first update is supported by the CLI's
+RC-to-stable result and verification of the original saved file hashes afterward.
+Do not recommend deleting a marketplace as the normal upgrade route: Claude's
+current CLI documentation states that this also uninstalls its plugins and may
+delete plugin-managed data. [Claude plugin commands](https://code.claude.com/docs/en/plugins/cli-reference#plugin-marketplace-remove).
 
 ### Native dispatch integration branch
 

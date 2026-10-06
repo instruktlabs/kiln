@@ -13,6 +13,7 @@ for (const entry of [
   'native-programs',
   'native-assets',
   'native-mcp',
+  'native-host',
   'native-evaluator',
 ]) {
   const result = await build({
@@ -28,6 +29,7 @@ for (const entry of [
       '@instruktlabs/kiln',
       '@instruktlabs/kiln/*',
       '@modelcontextprotocol/server',
+      '@modelcontextprotocol/node',
     ],
   });
   const bytes = result.outputFiles[0].contents;

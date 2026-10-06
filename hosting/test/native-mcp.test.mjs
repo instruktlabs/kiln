@@ -13,6 +13,7 @@ const source =
   "function build(){const r=createRoot('Box');createPart('Body',boxGeo(1,1,1),gameMaterial('#aaaaaa'),{parent:r});return r;}";
 let createNativeMcpHandler;
 let loadNativeMcpRuntime;
+let loadContainerMcpRuntime;
 let createNativeEvaluatorPort;
 let runtime;
 let namespace;
@@ -43,7 +44,7 @@ before(async () => {
       ]),
     ),
   });
-  ({ createNativeMcpHandler, loadNativeMcpRuntime } = await import(
+  ({ createNativeMcpHandler, loadNativeMcpRuntime, loadContainerMcpRuntime } = await import(
     new URL('../../.cache/hosted-mcp-test/native-mcp.mjs', import.meta.url)
   ));
   const evaluatorOutput = new URL(
@@ -341,6 +342,26 @@ test('production runtime refuses an unqualified host and never selects a trusted
     loadNativeMcpRuntime({ bwrapPath: '/kiln-fixture-no-such-executable' }),
     /isolation readiness/i,
   );
+});
+
+test('explicit container runtime loads the installed engine and fails closed when its remote evaluator is unavailable', async () => {
+  let calls = 0;
+  const runtime = await loadContainerMcpRuntime({
+    fetch: async () => {
+      calls++;
+      throw new Error('PRIVATE_NETWORK_ERROR');
+    },
+  });
+  assert.equal(typeof runtime.createServer, 'function');
+  const handler = host('remote-failure', {}, runtime.evaluatorPort);
+  const result = await rpc(handler, 'tools/call', {
+    name: 'kiln_render',
+    arguments: { code: source },
+  });
+  assert.equal(result.isError, true);
+  assert.ok(!result.content.some((item) => item.type === 'image'));
+  assert.doesNotMatch(JSON.stringify(result), /PRIVATE_NETWORK_ERROR/);
+  assert.ok(calls > 0);
 });
 
 test('slow request bodies expire, cancel their stream and release admission', async () => {

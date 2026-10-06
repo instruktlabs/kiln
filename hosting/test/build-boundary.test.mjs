@@ -22,6 +22,7 @@ for (const module of ['github', 'account-page', 'account-actions', 'connections'
       'native-programs',
       'native-assets',
       'native-mcp',
+      'native-host',
       'native-evaluator',
     ]) {
       assert.throws(() => assertProductionBoundary(entry, inputs), /authorization-server/);

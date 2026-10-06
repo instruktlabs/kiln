@@ -1,4 +1,4 @@
-name: Private evaluation image checks
+name: Private native image checks
 
 on:
   pull_request:
@@ -6,6 +6,11 @@ on:
       - .github/workflows/container-image.yml
       - .github/published-candidate.json
       - hosting/container/**
+      - hosting/src/native-*.ts
+      - hosting/scripts/build*.mjs
+      - hosting/scripts/prepare-native-host.mjs
+      - hosting/scripts/smoke-native-host.mjs
+      - hosting/package*.json
       - scripts/smoke-renderer.mjs
   workflow_dispatch:
 
@@ -17,6 +22,52 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  native-host:
+    name: Installed MCP host image · Linux amd64
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 22.23.3
+      - name: Install the pinned build tools
+        run: |
+          npm install --global npm@12.2.0 --ignore-scripts --no-fund
+          npm ci --prefix hosting --ignore-scripts --no-fund
+          npm run build --prefix hosting
+      - name: Prepare the isolated image context from the exact published archive
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p .cache/native-host-image
+          version=$(node --input-type=module -e 'import assert from "node:assert/strict";import{readFileSync}from"node:fs";const p=JSON.parse(readFileSync(".github/published-candidate.json"));assert.equal(p.name,"@instruktlabs/kiln");assert.match(p.version,/^\d+\.\d+\.\d+(?:-rc\.\d+)?$/);process.stdout.write(p.version)')
+          npm pack --ignore-scripts --registry=https://registry.npmjs.org --pack-destination .cache/native-host-image "@instruktlabs/kiln@$version"
+          node hosting/scripts/prepare-native-host.mjs ".cache/native-host-image/instruktlabs-kiln-$version.tgz"
+      - name: Resolve and retain the private image lock
+        working-directory: .cache/native-host-image/context
+        run: npm install --package-lock-only --ignore-scripts --no-fund
+      - name: Build and exercise the private MCP entry without cloud access
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(find .cache/native-host-image/context -mindepth 1 -maxdepth 1 -type f | wc -l)" -eq 8
+          docker build --platform linux/amd64 --provenance=false --tag kiln-native-host:ci .cache/native-host-image/context 2>&1 | tee .cache/native-host-image/build.log
+          node hosting/scripts/smoke-native-host.mjs kiln-native-host:ci
+      - name: Retain native host identities and test results
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: private-native-host-image-evidence
+          path: |
+            .cache/native-host-image/context-receipt.json
+            .cache/native-host-image/build.log
+            .cache/native-host-image/qualification/
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 30
   image:
     name: Installed ${{ matrix.label }} image · Linux amd64
     strategy:
