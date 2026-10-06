@@ -8,22 +8,7 @@ import {
 } from '../../src/program-store';
 import { HOSTED_PROGRAM_RETENTION } from './program-contract';
 
-interface NativeStorageOptions {
-  /** Fixed-origin transport. The production interceptor selects the tenant outside the container. */
-  fetch?: (request: Request) => Promise<Response>;
-  /** Read from the host's per-request context, never from a mutable shared current request. */
-  signal?: () => AbortSignal | undefined;
-  timeoutMs?: number;
-}
-
-class StorageFailure extends Error {
-  constructor(
-    readonly status: number,
-    message: string,
-  ) {
-    super(message);
-  }
-}
+import { NativeHttpClient, StorageFailure, type NativeStorageOptions } from './native-http';
 
 const malformed = () => new StorageFailure(502, 'Invalid source storage response');
 const record = (value: unknown): value is Record<string, unknown> =>
@@ -34,14 +19,9 @@ const count = (value: unknown): value is number =>
 /** Native host adapter only. No tenant selector, cloud credential or arbitrary URL is accepted. */
 export class NativeProgramStore implements ProgramStore {
   readonly retention = HOSTED_PROGRAM_RETENTION;
-  private readonly timeoutMs: number;
-  private readonly send: (request: Request) => Promise<Response>;
-
-  constructor(private readonly options: NativeStorageOptions = {}) {
-    this.timeoutMs = options.timeoutMs ?? 15_000;
-    if (!Number.isSafeInteger(this.timeoutMs) || this.timeoutMs < 1 || this.timeoutMs > 60_000)
-      throw new Error('Invalid source storage timeout');
-    this.send = options.fetch ?? ((request) => fetch(request));
+  private readonly storage: NativeHttpClient;
+  constructor(options: NativeStorageOptions = {}) {
+    this.storage = new NativeHttpClient(options, 'Source storage');
   }
 
   private canonical(ref: string): string {
@@ -55,116 +35,14 @@ export class NativeProgramStore implements ProgramStore {
     return programNotFound(ref, 'This account has no retained source for that reference.');
   }
 
-  private async bytes(
-    path: string,
-    limit: number,
-    body?: Uint8Array<ArrayBuffer>,
-  ): Promise<Uint8Array> {
-    const parent = this.options.signal?.();
-    if (parent?.aborted) throw new StorageFailure(499, 'Source storage request cancelled');
-    const controller = new AbortController();
-    const cancel = () => controller.abort();
-    let reader: ReadableStreamDefaultReader<Uint8Array> | undefined;
-    let timedOut = false;
-    let finished = false;
-    let abortListener: () => void = () => {};
-    const aborted = new Promise<never>((_, reject) => {
-      abortListener = () => {
-        reject(
-          new StorageFailure(
-            timedOut ? 504 : 499,
-            timedOut ? 'Source storage request timed out' : 'Source storage request cancelled',
-          ),
-        );
-        void reader?.cancel().catch(() => {});
-      };
-      controller.signal.addEventListener('abort', abortListener, { once: true });
-    });
-    parent?.addEventListener('abort', cancel, { once: true });
-    const timer = setTimeout(() => {
-      timedOut = true;
-      controller.abort();
-    }, this.timeoutMs);
-    try {
-      const request = new Request(`http://kiln-storage.internal${path}`, {
-        method: body === undefined ? 'GET' : 'POST',
-        body,
-        headers:
-          body === undefined
-            ? undefined
-            : {
-                'content-type': 'application/javascript',
-                'content-length': String(body.byteLength),
-              },
-        redirect: 'error',
-        credentials: 'omit',
-        signal: controller.signal,
-      });
-      const pending = this.send(request).then((response) => {
-        // Even a non-cooperative injected transport cannot leave a late body open.
-        if (finished || controller.signal.aborted) void response.body?.cancel().catch(() => {});
-        return response;
-      });
-      const response = await Promise.race([pending, aborted]);
-      if (response.status !== (body === undefined ? 200 : 201)) {
-        void response.body?.cancel().catch(() => {});
-        throw new StorageFailure(
-          response.status,
-          response.status === 507
-            ? 'Source storage quota reached; delete unneeded saved work and retry'
-            : 'Source storage unavailable; retry the request',
-        );
-      }
-      const declared = response.headers.get('content-length');
-      if (declared !== null && (!/^\d+$/.test(declared) || Number(declared) > limit)) {
-        void response.body?.cancel().catch(() => {});
-        throw malformed();
-      }
-      if (!response.body) {
-        if (declared !== null && Number(declared) !== 0) throw malformed();
-        return new Uint8Array();
-      }
-      reader = response.body.getReader();
-      const chunks: Uint8Array[] = [];
-      let length = 0;
-      for (;;) {
-        const { done, value } = await Promise.race([reader.read(), aborted]);
-        if (done) break;
-        length += value.byteLength;
-        if (length > limit) {
-          void reader.cancel().catch(() => {});
-          throw new StorageFailure(502, 'Source storage response exceeds its size limit');
-        }
-        chunks.push(value);
-      }
-      if (declared !== null && Number(declared) !== length) throw malformed();
-      const bytes = new Uint8Array(length);
-      let offset = 0;
-      for (const chunk of chunks) {
-        bytes.set(chunk, offset);
-        offset += chunk.byteLength;
-      }
-      return bytes;
-    } catch (error) {
-      if (error instanceof StorageFailure) throw error;
-      if (controller.signal.aborted)
-        throw new StorageFailure(
-          timedOut ? 504 : 499,
-          timedOut ? 'Source storage request timed out' : 'Source storage request cancelled',
-        );
-      // Never expose network diagnostics, response bodies, paths or abort reasons.
-      throw new StorageFailure(503, 'Source storage unavailable; retry the request');
-    } finally {
-      finished = true;
-      clearTimeout(timer);
-      parent?.removeEventListener('abort', cancel);
-      controller.signal.removeEventListener('abort', abortListener);
-      reader?.releaseLock();
-    }
-  }
-
   private async json(body?: Uint8Array<ArrayBuffer>): Promise<Record<string, unknown>> {
-    const bytes = await this.bytes('/internal/programs', 2048, body);
+    const bytes = await this.storage.bytes('/internal/programs', {
+      limit: 2048,
+      body,
+      method: body === undefined ? 'GET' : 'POST',
+      statuses: body === undefined ? [200] : [201],
+      headers: body === undefined ? undefined : { 'content-type': 'application/javascript' },
+    });
     try {
       const value: unknown = JSON.parse(new TextDecoder('utf-8', { fatal: true }).decode(bytes));
       if (!record(value)) throw malformed();
@@ -191,7 +69,9 @@ export class NativeProgramStore implements ProgramStore {
     const canonical = this.canonical(ref);
     let bytes: Uint8Array;
     try {
-      bytes = await this.bytes(`/internal/programs/${encodeURIComponent(ref)}`, MAX_PROGRAM_BYTES);
+      bytes = await this.storage.bytes(`/internal/programs/${encodeURIComponent(ref)}`, {
+        limit: MAX_PROGRAM_BYTES,
+      });
     } catch (error) {
       if (error instanceof StorageFailure && error.status === 404) throw this.notFound(ref);
       throw error;

@@ -5,6 +5,7 @@ import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 import { FileWorkspace } from './workspace-node';
 import { FileAssetLibrary } from './assets-node';
+import { FileLiveReview } from './live-review-node';
 import { createMaterialPresetDraft } from './material-presets';
 import { createMaterialLibraryPayload, createMaterialRecordV1 } from './material-library-node';
 import { materialLibraryPortableSpec } from './material-library';
@@ -35,7 +36,7 @@ test('CLI rebuild after project import uses exact saved source/options/materials
       createMaterialPresetDraft('warm-brick', { ...preset, seed: 2 }),
     );
     await source.materials.import([old, newer]);
-    const code = `const meta={name:'Brick cube'}; async function build(){const root=createRoot('Root');const material=await compilePortableMaterialSpecV2(${JSON.stringify(materialLibraryPortableSpec(old.manifest))});createPart('Body',boxGeo(1,1,1),material,{parent:root});return root;}`;
+    const code = `\ufeffconst meta={name:'Brick cube'}; async function build(){const root=createRoot('Root');const material=await compilePortableMaterialSpecV2(${JSON.stringify(materialLibraryPortableSpec(old.manifest))});createPart('Body',boxGeo(1,1,1),material,{parent:root});return root;}`;
     const result = await renderGLBInProcess(code, {
       gltfExporter: 'legacy',
       optimize: 'off',
@@ -100,6 +101,7 @@ test('CLI rebuild after project import uses exact saved source/options/materials
             KILN_COLLECTIONS: '',
             KILN_EVALUATOR_MODE: 'in-process',
             KILN_BUILD_CACHE: 'memory',
+            KILN_LIVE_REVIEW: 'on',
             KILN_RENDER: 'cpu',
             KILN_BAKE_INSTANCE: 'on',
             KILN_BAKE_OPTIMIZE: 'full',
@@ -112,6 +114,14 @@ test('CLI rebuild after project import uses exact saved source/options/materials
     expect(rebuilt.status, rebuilt.stderr).toBe(0);
     expect(JSON.parse(rebuilt.stdout).matchesSavedArtifact).toBe(true);
     expect(new Uint8Array(await readFile(output))).toEqual(Uint8Array.from(result.glb));
+    const liveReview = new FileLiveReview(target.root);
+    const operation = (await liveReview.snapshot()).operations.find(
+      (item) => item.tool === 'kiln_asset_rebuild',
+    );
+    expect(operation).toBeDefined();
+    expect(await liveReview.readFile(operation!.operationId, 'source.kiln.js')).toEqual(
+      new TextEncoder().encode(code),
+    );
     expect(run().status).toBe(1);
     expect(new Uint8Array(await readFile(output))).toEqual(Uint8Array.from(result.glb));
   } finally {

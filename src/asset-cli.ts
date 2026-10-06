@@ -309,7 +309,7 @@ export async function assetMain(argv: readonly string[]): Promise<number> {
             new FileWorkspace(localWorkspaceRoot()),
             record,
           );
-          const code = new TextDecoder().decode(source);
+          const code = new TextDecoder('utf-8', { fatal: true, ignoreBOM: true }).decode(source);
           const rendered = await context.evaluatorPort!.render(code, {
             ...renderOptions,
             materialResources,

@@ -25,6 +25,12 @@ The existing 55 export paths are retained. The root exposes rendering, validatio
 Discovery and engine identity; it does not re-export every name from every module.
 CommonJS is not part of this release's contract.
 
+Custom `AssetLibrary` hosts can import `verifyAssetRecord` and
+`resolveSavedAssetMaterials` from `@instruktlabs/kiln/assets/node`. The latter resolves
+the exact saved dependency manifests from a record's embedded material payload or
+an injected `MaterialLibrary`; it never substitutes a newer material revision.
+Use the existing material payload and asset-bundle encoders for portable delivery.
+
 | Area | Subpaths |
 | --- | --- |
 | Root library | `@instruktlabs/kiln` |

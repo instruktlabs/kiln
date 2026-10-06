@@ -2974,7 +2974,10 @@ export function createKilnAssetDefs(context: KilnToolContext): KilnToolDef[] {
         if (!code) throw new Error('Source unavailable: this asset contains only a GLB');
         return {
           ...(await links(input.collection, record.manifest)),
-          programRef: await retainProgram(context.programStore!, new TextDecoder().decode(code)),
+          programRef: await retainProgram(
+            context.programStore!,
+            new TextDecoder('utf-8', { fatal: true, ignoreBOM: true }).decode(code),
+          ),
           requirements: activeRequirements,
           savedRequirements: saved,
           acceptance: 'reevaluation-required',

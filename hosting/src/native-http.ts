@@ -1,0 +1,155 @@
+export interface NativeStorageOptions {
+  fetch?: (request: Request) => Promise<Response>;
+  /** Supply the native host's per-request signal. */
+  signal?: () => AbortSignal | undefined;
+  timeoutMs?: number;
+}
+export interface NativeStorageRequest {
+  method?: 'GET' | 'POST' | 'DELETE';
+  body?: Uint8Array<ArrayBuffer>;
+  headers?: Record<string, string>;
+  limit: number;
+  statuses?: readonly number[];
+}
+export class StorageFailure extends Error {
+  constructor(
+    readonly status: number,
+    message: string,
+  ) {
+    super(message);
+  }
+}
+/** Fixed-origin native transport; ownership is bound by an interceptor outside the image. */
+export class NativeHttpClient {
+  private readonly timeoutMs: number;
+  private readonly send: (request: Request) => Promise<Response>;
+  constructor(
+    private readonly options: NativeStorageOptions = {},
+    private readonly label = 'Storage',
+  ) {
+    this.timeoutMs = options.timeoutMs ?? 15_000;
+    if (!Number.isSafeInteger(this.timeoutMs) || this.timeoutMs < 1 || this.timeoutMs > 60_000)
+      throw new Error('Invalid storage timeout');
+    this.send = options.fetch ?? ((request) => fetch(request));
+  }
+  async bytes(path: string, request: NativeStorageRequest): Promise<Uint8Array> {
+    const { body, limit, headers, method = 'GET', statuses = [200] } = request;
+    const url = new URL(path, 'http://kiln-storage.internal');
+    if (
+      url.href !== `http://kiln-storage.internal${path}` ||
+      url.search ||
+      url.hash ||
+      !(path.startsWith('/internal/') || /^\/mcp\/artifacts\/[a-f0-9]{32}$/.test(path))
+    )
+      throw new Error('Invalid private storage path');
+    if (
+      !Number.isSafeInteger(limit) ||
+      limit < 0 ||
+      limit > 64 * 1024 * 1024 ||
+      (body?.byteLength ?? 0) > 64 * 1024 * 1024
+    )
+      throw new Error('Invalid storage size limit');
+    const outgoing = new Headers(headers);
+    for (const name of outgoing.keys())
+      if (!['content-type', 'x-artifact-name', 'x-artifact-sha256'].includes(name))
+        throw new Error('Invalid private storage header');
+    if (body !== undefined) outgoing.set('content-length', String(body.byteLength));
+    const parent = this.options.signal?.();
+    if (parent?.aborted) throw new StorageFailure(499, `${this.label} request cancelled`);
+    const controller = new AbortController();
+    const cancel = () => controller.abort();
+    let reader: ReadableStreamDefaultReader<Uint8Array> | undefined;
+    let timedOut = false;
+    let finished = false;
+    let abortListener: () => void = () => {};
+    const aborted = new Promise<never>((_, reject) => {
+      abortListener = () => {
+        reject(
+          new StorageFailure(
+            timedOut ? 504 : 499,
+            timedOut ? `${this.label} request timed out` : `${this.label} request cancelled`,
+          ),
+        );
+        void reader?.cancel().catch(() => {});
+      };
+      controller.signal.addEventListener('abort', abortListener, { once: true });
+    });
+    parent?.addEventListener('abort', cancel, { once: true });
+    const timer = setTimeout(() => {
+      timedOut = true;
+      controller.abort();
+    }, this.timeoutMs);
+    try {
+      const request = new Request(url, {
+        method,
+        body,
+        headers: outgoing,
+        redirect: 'error',
+        credentials: 'omit',
+        signal: controller.signal,
+      });
+      const pending = this.send(request).then((response) => {
+        // Even a non-cooperative injected transport cannot leave a late body open.
+        if (finished || controller.signal.aborted) void response.body?.cancel().catch(() => {});
+        return response;
+      });
+      const response = await Promise.race([pending, aborted]);
+      if (!statuses.includes(response.status)) {
+        void response.body?.cancel().catch(() => {});
+        throw new StorageFailure(
+          response.status,
+          response.status === 507
+            ? `${this.label} quota reached; delete unneeded saved work and retry`
+            : `${this.label} unavailable; retry the request`,
+        );
+      }
+      const declared = response.headers.get('content-length');
+      if (declared !== null && (!/^\d+$/.test(declared) || Number(declared) > limit)) {
+        void response.body?.cancel().catch(() => {});
+        throw new StorageFailure(502, `Invalid ${this.label.toLowerCase()} response`);
+      }
+      if (!response.body) {
+        if (declared !== null && Number(declared) !== 0)
+          throw new StorageFailure(502, `Invalid ${this.label.toLowerCase()} response`);
+        return new Uint8Array();
+      }
+      reader = response.body.getReader();
+      const chunks: Uint8Array[] = [];
+      let length = 0;
+      for (;;) {
+        const { done, value } = await Promise.race([reader.read(), aborted]);
+        if (done) break;
+        length += value.byteLength;
+        if (length > limit) {
+          void reader.cancel().catch(() => {});
+          throw new StorageFailure(502, `${this.label} response exceeds its size limit`);
+        }
+        chunks.push(value);
+      }
+      if (declared !== null && Number(declared) !== length)
+        throw new StorageFailure(502, `Invalid ${this.label.toLowerCase()} response`);
+      const bytes = new Uint8Array(length);
+      let offset = 0;
+      for (const chunk of chunks) {
+        bytes.set(chunk, offset);
+        offset += chunk.byteLength;
+      }
+      return bytes;
+    } catch (error) {
+      if (error instanceof StorageFailure) throw error;
+      if (controller.signal.aborted)
+        throw new StorageFailure(
+          timedOut ? 504 : 499,
+          timedOut ? `${this.label} request timed out` : `${this.label} request cancelled`,
+        );
+      // Never expose network diagnostics, response bodies, paths or abort reasons.
+      throw new StorageFailure(503, `${this.label} unavailable; retry the request`);
+    } finally {
+      finished = true;
+      clearTimeout(timer);
+      parent?.removeEventListener('abort', cancel);
+      controller.signal.removeEventListener('abort', abortListener);
+      reader?.releaseLock();
+    }
+  }
+}

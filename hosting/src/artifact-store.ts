@@ -319,7 +319,15 @@ export class ArtifactStore {
     });
   }
 
-  save(input: unknown) {
+  assertFileNames(files: Record<string, string>): void {
+    for (const [name, id] of Object.entries(files)) {
+      const row = this.artifact(id);
+      if (!this.readable(row)) throw new HttpFailure(404, 'Artifact not found');
+      if (row.filename !== name) throw new HttpFailure(400, 'Saved filename mismatch');
+    }
+  }
+
+  save(input: unknown, conditions: { parentKey?: string; absentPrefix?: string } = {}) {
     if (!input || typeof input !== 'object' || Array.isArray(input))
       throw new HttpFailure(400, 'Invalid saved revision');
     const { key, files, metadata } = input as Record<string, unknown>;
@@ -355,6 +363,9 @@ export class ArtifactStore {
           throw new HttpFailure(409, 'Saved revision is immutable');
         return { created: false, record: this.groupReceipt(existing) };
       }
+      if (conditions.parentKey) this.groupByKey(conditions.parentKey);
+      if (conditions.absentPrefix && this.groupPage(conditions.absentPrefix).records.length)
+        throw new HttpFailure(409, 'An existing asset requires parentRevision');
       for (const [, id] of entries)
         if (!this.readable(this.artifact(id as string)))
           throw new HttpFailure(404, 'Artifact not found');
@@ -400,6 +411,30 @@ export class ArtifactStore {
     return this.groupReceipt(row);
   }
 
+  groupByKey(key: string) {
+    const row = this.sql
+      .exec<GroupRow>('SELECT * FROM saved_groups WHERE logical_key = ?', key)
+      .toArray()[0];
+    if (!row) throw new HttpFailure(404, 'Saved revision not found');
+    return this.groupReceipt(row);
+  }
+
+  groupPage(prefix: string, after = '') {
+    const rows = this.sql
+      .exec<GroupRow>(
+        `SELECT * FROM saved_groups WHERE logical_key >= ? AND logical_key < ? AND logical_key > ?
+       ORDER BY logical_key LIMIT 33`,
+        prefix,
+        `${prefix}\uffff`,
+        after,
+      )
+      .toArray();
+    return {
+      records: rows.slice(0, 32).map((row) => this.groupReceipt(row)),
+      next: rows.length > 32 ? rows[31]!.logical_key : null,
+    };
+  }
+
   async deleteGroup(id: string): Promise<void> {
     await this.schedule(this.now() + 60_000);
     this.ctx.storage.transactionSync(() => {
@@ -410,6 +445,25 @@ export class ArtifactStore {
         if (!this.pinned(artifact))
           this.sql.exec("UPDATE artifacts SET state = 'deleting' WHERE id = ?", artifact);
       }
+    });
+    await this.sweep();
+  }
+
+  async discard(input: unknown): Promise<void> {
+    if (
+      !Array.isArray(input) ||
+      input.length > 16 ||
+      input.some((id) => typeof id !== 'string' || !idPattern.test(id))
+    )
+      throw new HttpFailure(400, 'Invalid staging inventory');
+    await this.schedule(this.now() + 60_000);
+    this.ctx.storage.transactionSync(() => {
+      for (const id of input)
+        if (!this.pinned(id))
+          this.sql.exec(
+            "UPDATE artifacts SET state = 'deleting' WHERE id = ? AND state = 'ready'",
+            id,
+          );
     });
     await this.sweep();
   }

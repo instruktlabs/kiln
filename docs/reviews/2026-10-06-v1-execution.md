@@ -22,7 +22,7 @@ published yet.
 | P5 | Release automation and npm publication | In progress: manual exact-archive workflow and owner runbook; GitHub npm-release environment created with sole owner review, no admin bypass and protected branches; live npm trust, staging approval, registry provenance and fresh registry install remain open |
 | H1 | Native Cloudflare qualification | In progress: Linux image built, Trixie software renderer passes six textured views; Docker namespace probe fails closed, Bubblewrap launch-argument defect corrected; real Cloudflare isolation/execution, RSS, startup and measured cost remain pending |
 | H2 | Authenticated MCP and tenant boundary | In progress: separate hosted Worker implements OAuth consent/PKCE, audience/scope checks and verified-subject tenant routing; local workerd tests cover two identities, reconnects and forged tenant headers; real sign-in, tenant engine/storage reference checks and evaluator environment isolation remain open |
-| H3 | Artifact lifecycle | In progress: tenant SQLite/R2 bytes, engine-compatible ProgramStore, atomic quotas, immutable saved groups, authenticated downloads, deletion and seven-day unsaved retention pass local workerd checks; native dispatch, AssetLibrary/revision/material adapters and deployed lifecycle proof remain open |
+| H3 | Artifact lifecycle | In progress: tenant SQLite/R2 bytes, ProgramStore and native AssetLibrary, atomic quotas/revision pins, material closures, authenticated downloads, deletion and seven-day unsaved retention pass local workerd and actual-engine checks; standalone MaterialLibrary, native dispatch, browser tickets, account deletion and deployed lifecycle proof remain open |
 | H4 | Capacity and operations | Pending: quotas/admission/cancellation, logs without credentials, load/cost measurements, alerts, health/build identity and rollback |
 | H5 | Production deployment | Pending: approved deployment at `kiln.instruktlabs.com`; live authenticated create/edit/render/save/download/reconnect flow |
 | L1 | Local Claude Code and Codex plugins | In progress: both remote Git catalogs and real versioned caches qualified; actual development-to-RC plugin updates preserve pinned workspaces until explicit runtime upgrade, saved assets remain byte-exact and native clients discover one server; final registry/tag distribution and final-version upgrade remain open |
@@ -950,6 +950,75 @@ passed. [Native preflight 37455478603](https://github.com/instruktlabs/kiln/acti
 again failed required isolation before source execution while its independent
 trusted software-rendering fixture passed. Cloudflare authentication is still
 required for provider qualification; no production service or npm package is live.
+
+### Native saved assets and exact source restoration
+
+The private storage index and `NativeAssetLibrary` now implement the engine's
+existing project/library save, read, list, import and export contracts. The native
+adapter imports the public SDK's verifier and material dependency resolver;
+`resolveSavedAssetMaterials` is now exported from `@instruktlabs/kiln/assets/node`.
+Cloud code remains outside the published package, and Workers do not import the
+native engine. The shared HTTP transport preserves the source client's existing
+timeouts, cancellation, fixed internal origin and redacted diagnostics.
+
+Revision ownership, filename inventories, immutable ids and parent/first-revision
+conditions are enforced in tenant storage. Commit checks and file pins are atomic,
+so competing first saves cannot silently create independent histories. Imports
+validate the complete input first and commit each revision separately. Copies keep
+their collection identity; deleting one does not delete the other. A retry of an
+identical imported revision retains the same records without new quota consumption.
+
+Material resources use the canonical SDK closure semantics. The local fixture
+exports and imports a textured GLB with its source/materials, then rebuilds it
+byte-for-byte without the original material library. Imported closures are also
+installed in an injected MaterialLibrary. Implementing that library's standalone
+durable hosted adapter remains open.
+
+New tests were observed failing before the index/adapter implementation and missing
+SDK export were added. The full hosted suite now passes 57 checks, including actual
+registry save/list/restore/export, fresh hosts, storage eviction, cross-tenant
+denial, pagination, immutable conflicts, partial-upload cleanup, concurrent-save
+cleanup, lost commit acknowledgement, retained pins and corruption rejection.
+The lost-acknowledgement test confirms cleanup leaves all committed files readable
+after reconnect. Unacknowledged uploads or interrupted cleanup can remain charged
+until normal unsaved expiry; the controller's per-job recovery remains open.
+
+The source round trip exposed a real engine defect: default UTF-8 decoding removed
+an authored BOM and changed the program reference. Restore, MCP source reads,
+reviewed saves and CLI rebuild observations now preserve those exact source bytes.
+The focused 23 tests across five files passed after observing the failures, and
+runtime bundles were regenerated. Build identity:
+`sha256:4024be2f88cbe9582a83fc9250a90e44f1e2ec9255a65ba81f94db3a9ac08624`.
+
+The full engine suite passed 3,289 tests with two platform skips and no failures
+across 411 files in 369.68 seconds. Hosted typechecks, all four hosted builds, root
+typecheck and lint passed. Receipts: `.cache/v1-hosted-assets-engine-tests.log`,
+`.cache/v1-hosted-assets-tests.log` and `.cache/hosted-worker/`.
+These fixtures use fixed trusted local source. They do not establish untrusted
+native isolation, production persistence, live OAuth or capacity/costs.
+
+A fresh Windows Node 22.23.3/npm 12.2.0 installation passed 25 package checks,
+including all 53 core SDK imports/declarations, CLI, MCP, native dependency paths,
+source-edit images and restart persistence. Archive SHA-256:
+`c3fbbef710fbd56cc42897a10d803a5a534f9dcc27f713c7142fba93787aa951`.
+Receipt: `.cache/v1-hosted-assets-package.log`. Both separately built production
+native adapters also loaded against that exact fresh installation, including the
+new public material resolver; no test alias or repository SDK path was used.
+
+Build receipts identify the native asset adapter as 19,226 bytes, SHA-256
+`ea7055048ecd9f946f5537aeb89d0daf7ab4b9344f166e958d57d3e8bffa0995`,
+with three external public SDK imports. The tenant Worker is 31,244 bytes, SHA-256
+`dadf4d9d5d8be7d848479c2c2f9665e47e7a9670e1195529a0e309154ab2dbe9`.
+No model call, cloud provisioning, npm publication or production deployment was
+performed by this validation.
+
+For the preceding `194b0ba1d0080f4360fba5ae05e3feeb6b33266e` commit,
+[engine/package CI 37457310643](https://github.com/instruktlabs/kiln/actions/runs/37457310643),
+[hosted checks 37457310650](https://github.com/instruktlabs/kiln/actions/runs/37457310650)
+and [Website 37457310654](https://github.com/instruktlabs/kiln/actions/runs/37457310654)
+passed. [Native preflight 37457310791](https://github.com/instruktlabs/kiln/actions/runs/37457310791)
+failed the required isolated evaluation/rendering step. Exact CI for this new change
+and actual Cloudflare provider qualification remain required.
 
 ## Owner handoffs
 

@@ -206,7 +206,7 @@ export function createKilnReviewDef(context: {
             .manifest,
           active,
         );
-      const code = new TextDecoder().decode(source);
+      const code = new TextDecoder('utf-8', { fatal: true, ignoreBOM: true }).decode(source);
       const checkpoint = evaluation.requirements.binding
         ? createRequirementsCheckpoint(
             await programReference(code),

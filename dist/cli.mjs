@@ -34635,6 +34635,7 @@ var init_assets_node = __esm(() => {
   init_material_library_node();
   init_asset_materials_node();
   init_atomic_directory();
+  init_asset_materials_node();
   windowsDrivePath = /^[A-Za-z]:[\\/]/;
   windowsSharePath = /^[\\/]{2}[^\\/]+[\\/][^\\/]+/;
 });
@@ -40616,7 +40617,7 @@ function createKilnReviewDef(context) {
         throw new Error("Reviewed requirements do not match the current trusted host binding");
       if (input.assetId && input.parentRevision)
         assertSavedRequirementsAuthorized((await context.assetLibrary.read(collection, input.assetId, input.parentRevision)).manifest, active);
-      const code = new TextDecoder().decode(source);
+      const code = new TextDecoder("utf-8", { fatal: true, ignoreBOM: true }).decode(source);
       const checkpoint = evaluation.requirements.binding ? createRequirementsCheckpoint(await programReference(code), evaluation.requirements.binding) : undefined;
       const dependencies = [
         ...evaluation.materialResourceProvenance ?? [],
@@ -43714,7 +43715,7 @@ function createKilnAssetDefs(context) {
           throw new Error("Source unavailable: this asset contains only a GLB");
         return {
           ...await links(input.collection, record.manifest),
-          programRef: await retainProgram(context.programStore, new TextDecoder().decode(code)),
+          programRef: await retainProgram(context.programStore, new TextDecoder("utf-8", { fatal: true, ignoreBOM: true }).decode(code)),
           requirements: activeRequirements,
           savedRequirements: saved,
           acceptance: "reevaluation-required"
@@ -45250,7 +45251,7 @@ async function assetMain(argv) {
             throw new Error("Saved revision uses an unversioned full optimization pipeline; rebuild with its original pinned engine, or explicitly author and save a new child revision to migrate.");
           const { optimizationPipeline: _pipeline, ...renderOptions } = parsed.data;
           const materialResources = await resolveAssetMaterialPayload(new FileWorkspace(localWorkspaceRoot()), record);
-          const code = new TextDecoder().decode(source);
+          const code = new TextDecoder("utf-8", { fatal: true, ignoreBOM: true }).decode(source);
           const rendered = await context.evaluatorPort.render(code, {
             ...renderOptions,
             materialResources,

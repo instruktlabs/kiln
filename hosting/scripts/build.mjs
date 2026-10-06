@@ -5,16 +5,16 @@ import { build } from 'esbuild';
 
 const output = new URL('../../.cache/hosted-worker/', import.meta.url);
 await mkdir(output, { recursive: true });
-for (const entry of ['worker', 'tenant-worker', 'native-programs']) {
+for (const entry of ['worker', 'tenant-worker', 'native-programs', 'native-assets']) {
   const result = await build({
     entryPoints: [fileURLToPath(new URL(`../src/${entry}.ts`, import.meta.url))],
     bundle: true,
     write: false,
     format: 'esm',
-    platform: entry === 'native-programs' ? 'node' : 'browser',
+    platform: entry.startsWith('native-') ? 'node' : 'browser',
     target: 'es2022',
     metafile: true,
-    external: ['cloudflare:workers'],
+    external: ['cloudflare:workers', '@instruktlabs/kiln/*'],
   });
   const bytes = result.outputFiles[0].contents;
   const inputs = Object.keys(result.metafile.inputs);
@@ -35,6 +35,7 @@ for (const entry of ['worker', 'tenant-worker', 'native-programs']) {
         sha256: createHash('sha256').update(bytes).digest('hex'),
         bytes: bytes.byteLength,
         inputs,
+        imports: result.metafile.outputs[Object.keys(result.metafile.outputs)[0]].imports,
       },
       null,
       2,

@@ -23,6 +23,8 @@ import { FileMaterialLibrary, createMaterialLibraryPayload } from './material-li
 import { dependencyManifests, resolveSavedAssetMaterials } from './asset-materials-node';
 import { renameDirectoryAtomically } from './atomic-directory';
 
+export { resolveSavedAssetMaterials } from './asset-materials-node';
+
 const digest = (bytes: Uint8Array) => `sha256:${createHash('sha256').update(bytes).digest('hex')}`;
 function assertMaterialAllocation(records: AssetRecord[]): void {
   let bytes = 0;

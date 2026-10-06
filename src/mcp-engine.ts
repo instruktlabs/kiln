@@ -241,7 +241,9 @@ export function createKilnToolHost(
  * as they are.
  */
 function resourceText(name: string, bytes: Uint8Array): string {
-  const text = new TextDecoder().decode(bytes);
+  const text = new TextDecoder('utf-8', { fatal: true, ignoreBOM: name.endsWith('.js') }).decode(
+    bytes,
+  );
   if (!name.endsWith('.json')) return text;
   try {
     return JSON.stringify(JSON.parse(text));

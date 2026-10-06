@@ -3,6 +3,7 @@ import { ArtifactStore } from './artifact-store';
 import { boundedRequest, HttpFailure, privateResponse, readBounded, serviceFailure } from './http';
 import { decodeProgram, HostedProgramStore } from './programs';
 import { MAX_PROGRAM_BYTES } from '../../src/program-store';
+import { AssetIndex } from './asset-index';
 
 export interface TenantStorageEnv {
   ARTIFACTS: R2Bucket;
@@ -14,6 +15,7 @@ export interface TenantStorageEnv {
 export class KilnTenant extends DurableObject<TenantStorageEnv> {
   private readonly artifacts: ArtifactStore;
   private readonly programs: HostedProgramStore;
+  private readonly assets: AssetIndex;
 
   constructor(ctx: DurableObjectState, env: TenantStorageEnv) {
     super(ctx, env);
@@ -23,6 +25,7 @@ export class KilnTenant extends DurableObject<TenantStorageEnv> {
       maxGroups: Number(env.STORAGE_MAX_GROUPS),
     });
     this.programs = new HostedProgramStore(this.artifacts);
+    this.assets = new AssetIndex(this.artifacts);
   }
 
   async alarm(): Promise<void> {
@@ -34,6 +37,27 @@ export class KilnTenant extends DurableObject<TenantStorageEnv> {
       const url = new URL(request.url);
       if (url.origin !== 'https://tenant.internal' || url.search)
         throw new HttpFailure(400, 'Invalid internal request');
+      if (
+        ['/internal/assets/commit', '/internal/assets/list'].includes(url.pathname) &&
+        request.method === 'POST'
+      ) {
+        const bounded = await boundedRequest(request, 2048);
+        let input: unknown;
+        try {
+          input = await bounded.json();
+        } catch {
+          throw new HttpFailure(400, 'Invalid saved asset');
+        }
+        if (url.pathname.endsWith('/list'))
+          return privateResponse(Response.json(this.assets.list(input)));
+        const result = this.assets.commit(input);
+        return privateResponse(
+          Response.json(result.record, { status: result.created ? 201 : 200 }),
+        );
+      }
+      const asset = url.pathname.match(/^\/internal\/assets\/([^/]+)\/([^/]+)\/([^/]+)$/);
+      if (asset && request.method === 'GET')
+        return privateResponse(Response.json(this.assets.read(asset[1], asset[2], asset[3])));
       if (url.pathname === '/internal/programs' && request.method === 'GET') {
         return privateResponse(
           Response.json({ ...(await this.programs.stats()), retention: this.programs.retention }),
@@ -82,6 +106,17 @@ export class KilnTenant extends DurableObject<TenantStorageEnv> {
         return privateResponse(
           Response.json(await this.artifacts.upload(request), { status: 201 }),
         );
+      }
+      if (url.pathname === '/internal/artifacts/discard' && request.method === 'POST') {
+        const bounded = await boundedRequest(request, 1024);
+        let ids: unknown;
+        try {
+          ids = await bounded.json();
+        } catch {
+          throw new HttpFailure(400, 'Invalid staging inventory');
+        }
+        await this.artifacts.discard(ids);
+        return privateResponse(Response.json({ discarded: true }));
       }
       if (url.pathname === '/internal/groups' && request.method === 'POST') {
         const bounded = await boundedRequest(request, 131_072);

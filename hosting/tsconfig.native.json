@@ -1,9 +1,14 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
-    "lib": ["ES2022", "DOM"],
-    "types": []
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "types": [],
+    "paths": {
+      "@instruktlabs/kiln/assets": ["../lib/assets.d.ts"],
+      "@instruktlabs/kiln/assets/node": ["../lib/assets-node.d.ts"],
+      "@instruktlabs/kiln/material-library/node": ["../lib/material-library-node.d.ts"]
+    }
   },
-  "include": ["src/native-programs.ts"],
+  "include": ["src/native-*.ts"],
   "exclude": []
 }

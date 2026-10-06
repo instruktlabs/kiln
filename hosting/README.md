@@ -1,9 +1,9 @@
 # Hosted Kiln
 
-This private package contains the hosted service's Worker code and native storage adapter. It is not shipped
+This private package contains the hosted service's Worker code and native storage adapters. It is not shipped
 inside `@instruktlabs/kiln` and introduces no cloud dependency into the engine.
 It is not deployed or ready for public traffic. Native provider qualification,
-engine adapters, deployed storage, operational quotas and launch checks remain open.
+native dispatch, deployed storage, operational quotas and launch checks remain open.
 
 ## Local checks
 
@@ -27,12 +27,14 @@ tenant Worker with real simulated SQLite and R2 bindings. A combined test connec
 both production Workers and verifies authenticated two-user downloads and reconnects.
 Separate test-only fault injection covers late upload acknowledgement and failed
 cleanup. A fixed trusted fixture also runs the actual bundled Node engine against
-the production storage Worker: validate, read, edit, CPU render and retrieval from
-a fresh host after storage eviction. Unexpected external fetches fail. No model,
+the production storage Worker: validate, read, edit, CPU render, saved revisions,
+restore/export and retrieval from a fresh host after storage eviction. Material
+closures survive an export/import and exact offline GLB rebuild. Unexpected external fetches fail. No model,
 real identity provider or cloud deployment is used. These tests do not establish
 untrusted native isolation, deployed persistence, global KV consistency or production capacity.
 
-The separate gateway, tenant and native source-client bundles, with input/hash receipts, are written to
+The separate gateway, tenant, native source-client and native asset-client bundles,
+with input/hash/import receipts, are written to
 `../.cache/hosted-worker/`. `build` performs no upload, resource provisioning or
 deployment. `Hosted gateway checks` runs the same checks on Linux and Windows.
 
@@ -133,10 +135,11 @@ after ordinary artifact deletion to catch late interrupted writes. Account delet
 must retire its alarm only after outstanding work and cleanup have completed;
 that owner/account lifecycle and its operating costs still need qualification.
 
-This storage layer now supplies the engine's `ProgramStore` contract as described
-below. AssetLibrary, revision and material adapters remain open. The private `/mcp`
+This storage layer now supplies the engine's `ProgramStore` and `AssetLibrary`
+contracts as described below. The standalone MaterialLibrary and production native
+dispatch remain open. The private `/mcp`
 endpoint deliberately returns 503 until native integration is configured and
-qualified. Evaluation, revision lineage and registry-derived tools must be connected
+qualified. Evaluation and registry-derived tools must be connected
 and tested before declaring H2/H3 done.
 
 Storage references: [SQLite Durable Objects](https://developers.cloudflare.com/durable-objects/api/sqlite-storage-api/),
@@ -174,11 +177,11 @@ lifetime; `eviction: none` means no capacity-driven eviction.
 
 The private binding serves source creation, reads and stats at `/internal/programs`
 and `/internal/programs/<reference>`. Source creation returns its reference and
-artifact id so the future AssetLibrary adapter can atomically pin that exact file.
+artifact id. Saved asset records currently retain their own exact source artifact;
+cross-adapter source deduplication is not implemented.
 These paths are not public gateway endpoints or new MCP tools. The native client
 and its engine integration tests are described below. Production native dispatch,
-AssetLibrary integration and the complete deployed edit/render/save/reconnect flow
-remain open.
+and the complete deployed edit/render/save/reconnect flow remain open.
 
 ## Native source client
 
@@ -211,6 +214,53 @@ bundles. The production host still requires `evaluator-required` and qualified
 isolation. `/mcp` remains unavailable until that host is configured and qualified.
 The client uses standard Fetch types in a separate TypeScript check; Worker code
 continues to use the Cloudflare runtime types.
+
+## Native saved assets
+
+`NativeAssetLibrary` implements the engine's existing collection, save, read, list,
+import and export contract. Its `project` collection is workspace storage, not
+project membership; `library` is a second user-owned destination. Asset and revision
+ids remain collection-qualified. No extra MCP tool or schema is introduced.
+The actual registry's `kiln_save`, `kiln_assets` restore/list and `kiln_export` are
+exercised through this adapter in the local fixture.
+
+The adapter uses the published SDK's record verifier and material resolver; GLB,
+source, preview, manifest and any required editable material closure are separate
+quota-counted artifacts. Native bundles retain external imports of the three public
+SDK modules, which the eventual image must install at the same qualified version.
+Workers own tenancy, quotas and atomic revision indexing; they do not import the
+native engine or decide whether an asset is structurally valid.
+
+Saving a new revision requires a parent when the asset already exists. The Worker
+checks the parent or absence of prior revisions in the same transaction as pinning
+the inventory, including competing saves. Imports retain immutable revisions and
+unknown provenance, can carry a revision without its ancestors, and are idempotent
+when the existing record is identical. Every input is validated before an import
+writes anything; commits are atomic per revision, not per batch. A later network
+failure can leave earlier imported revisions saved, so retries use the same ids.
+
+Each batch is limited to 100 revisions and 64 MiB including manifests and material
+closures; each manifest is limited to 1 MiB. Lists page the private index in groups
+of 32, and the native result is bounded to 10,000 manifests and 64 MiB. These are
+implementation ceilings, not measured public usage quotas.
+
+Failed saves attempt an independently bounded cleanup of acknowledged staging
+files. The Worker checks saved pins atomically, so a lost commit acknowledgement
+cannot cause cleanup to delete the committed revision. An unacknowledged upload,
+a process crash or failed cleanup can leave unsaved bytes charged until the normal
+seven-day expiry/recovery path removes them. `deleteRevision` is a host UI/account
+operation; it preserves copies in other collections. Browser/account deletion UI
+and its deployed lifecycle remain open.
+
+Embedded material records are retained and verified using the SDK's canonical
+dependency semantics. An injected MaterialLibrary receives the closure on import;
+the separate durable hosted MaterialLibrary is still unimplemented. A textured
+fixture rebuilds the exported/imported GLB byte-for-byte without its original
+library. This does not qualify software rendering or native isolation on Cloudflare.
+
+Source restoration, MCP source reads, reviewed saves and CLI rebuild observations
+preserve a leading UTF-8 BOM. Otherwise restoring an asset could change the exact
+source bytes and its program reference; focused engine tests cover those paths.
 
 Before launch, complete native isolation on the actual Cloudflare provider,
 tenant engine/storage integration, two-user asset/download denial tests, retention,

@@ -13,7 +13,7 @@ test('review save preserves recorded GLB/source and refuses revision or policy m
   const root = await mkdtemp(join(tmpdir(), 'kiln-exact-review-'));
   try {
     const code =
-      "const meta={name:'Reviewed'};function build(){const r=createRoot('Root');createPart('Body',boxGeo(1,1,1),gameMaterial('#887766'),{parent:r});return r;}";
+      "\ufeffconst meta={name:'Reviewed'};function build(){const r=createRoot('Root');createPart('Body',boxGeo(1,1,1),gameMaterial('#887766'),{parent:r});return r;}";
     const rendered = await renderGLBInProcess(code, { optimize: 'off' });
     const op: LiveOperation = {
       version: 'kiln.live.v1',
@@ -84,7 +84,7 @@ test('review save preserves recorded GLB/source and refuses revision or policy m
     const saved = (await tool.run(input)) as { asset: { assetId: string; revisionId: string } };
     const record = await library.read('project', saved.asset.assetId, saved.asset.revisionId);
     expect(record.files['asset.glb']).toEqual(glb);
-    expect(new TextDecoder().decode(record.files['source.kiln.js'])).toBe(code);
+    expect(record.files['source.kiln.js']).toEqual(new TextEncoder().encode(code));
     expect(record.manifest.build?.options.reviewOperationId).toBe(op.operationId);
     expect(record.manifest.build?.options.instance).toBe(rendered.rebuildOptions!.instance);
     expect(record.manifest.preview?.backdrop).toBe('dark');

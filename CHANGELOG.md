@@ -23,6 +23,11 @@ from publishing a new installable package.
   fail closed before source execution.
 - Windows asset saves retry transient directory-rename denials within a bounded
   delay, preserving atomic publication and existing immutable revisions.
+- Source restoration, MCP source resources, reviewed saves and CLI rebuild
+  observations preserve an authored UTF-8 BOM instead of silently changing the
+  source and its program reference. Invalid source UTF-8 is rejected on those reads.
+- Custom asset-library hosts can reuse the canonical saved-material resolver
+  through `@instruktlabs/kiln/assets/node`.
 - The `kiln-engine` local plugin uses the Instrukt Labs marketplace and installs a
   pinned engine outside its disposable cache. It registers setup only; managed
   workspaces own the authoring skills and one MCP server. Upgrades preserve stores

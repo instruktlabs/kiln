@@ -22,7 +22,7 @@ test('MCP saves an editable revision, exposes exact downloadable bytes, and rest
   });
   const programStore = new MemoryProgramStore();
   const code =
-    "const meta = { name: 'Box', category: 'prop' }; function build() { const root = createRoot('Box'); createPart('Body', boxGeo(1,1,1), gameMaterial(0x88aa66), {parent: root, position: [0,0.5,0]}); return root; }";
+    "\ufeffconst meta = { name: 'Box', category: 'prop' }; function build() { const root = createRoot('Box'); createPart('Body', boxGeo(1,1,1), gameMaterial(0x88aa66), {parent: root, position: [0,0.5,0]}); return root; }";
   const programRef = await retainProgram(programStore, code);
   const server = createKilnMcpServer(
     {
