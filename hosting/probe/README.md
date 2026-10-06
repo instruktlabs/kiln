@@ -4,7 +4,8 @@
 approved sixth startup-only comparison passed when selecting the original image's
 Linux/AMD64 manifest directly. All trial resources were removed. See
 [the manifest result](MANIFEST_STARTUP.md) and the separately prepared
-[four-job qualification candidate](QUALIFICATION.md). Neither the historical
+[four-job qualification result](QUALIFICATION.md), which also passed all four cases
+and completed cleanup. All ten approved jobs are consumed. Neither the historical
 allowances below nor the old prebuilt receipt authorize another deployment.
 
 ## Historical first trial
