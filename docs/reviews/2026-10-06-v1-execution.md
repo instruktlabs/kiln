@@ -1194,7 +1194,30 @@ browser account sessions, individual connection revocation, deletion orchestrati
 public-endpoint admission limits, completed branding/privacy/support pages and
 actual deployed provider/client and cross-region checks remain open. Native
 provider isolation and dispatch remain independent blockers. PR #145's npm RC
-head is unchanged; npm login and main-merge owner handoffs remain pending.
+head was unchanged during this work; its subsequent merge is recorded below.
+
+## RC merge and npm authentication handoff
+
+The owner explicitly approved merging PR #145 at reviewed head
+`6a89d790ba2d786ad641bdab777a40535ef3c19c`. Its complete check set was **15 passed,
+one failed**: all 12 engine/package jobs, both hosted gateway platform jobs and the
+website build passed. The native-hosting preflight remained failed. Its downloaded
+receipt reports `isolation / wrapper-launch`; diagnostics show `unshare` denied
+with `Operation not permitted` and Bubblewrap unable to create a namespace. The
+separate software-renderer receipt passed six views. This is an unresolved hosted
+launch blocker, not an all-green PR and not Cloudflare provider qualification.
+
+GitHub's required linear-history rule rejected a merge commit. A normal squash
+merge of the exact approved head succeeded, with no admin bypass or protection
+change, on 6 October at 13:31 UTC. Main commit:
+`ce640ccae0c621177aad176a03b5a214ae57d266`. The hosting identity branch was rebased
+onto that main commit without changing its implementation. Exact main CI, archive
+review and verify-mode release preparation are now required before staging.
+
+The owner also completed a fresh npm CLI browser sign-in in external Chrome. The
+CLI reported success and an independent `npm whoami` returned `matthew-kissinger`.
+No password, security-key response, recovery code or npm token was read into chat.
+Login and merge published no package and deployed no hosted service.
 
 ## Owner handoffs
 
@@ -1215,10 +1238,7 @@ usable disconnect/deletion controls and actual deployed consent, cancellation,
 expiry/revocation and cross-user denial checks. Local fixtures do not establish
 those results. No identity app or secret has been provisioned yet.
 
-The CLI's read-only `npm whoami` check reports that this machine is not signed in.
-A browser login was opened in external Chrome and the owner's password/security-key
-step was surfaced through the question tool. It did not complete; npm fell back
-to a legacy terminal username/password prompt, which was cancelled. A fresh browser
-authorization is still required. Login does not stage or publish a package.
-Publisher verification and final external approvals remain separate; missing human
-steps do not block independent package work.
+The initial npm browser login did not complete and its terminal-password fallback
+was cancelled. The fresh owner-attended attempt succeeded, as recorded above.
+Trusted publishing configuration, exact-archive staging and owner promotion remain
+separate steps. No package has been staged or published yet.
