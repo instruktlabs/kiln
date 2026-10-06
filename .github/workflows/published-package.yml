@@ -99,7 +99,12 @@ jobs:
           test "$(node "$npm_execpath" --version)" = '${{ matrix.npm }}'
           tarball="$PWD/candidate/$(cat candidate/filename.txt)"
           node scripts/smoke-package.mjs --tarball "$tarball" > candidate/package-smoke.json
-          node scripts/verify-package-receipt.mjs --platform '${{ matrix.platform }}' --arch '${{ matrix.arch }}' --node '${{ matrix.node }}' --npm '${{ matrix.npm }}' --receipt candidate/package-smoke.json
+          # The checkout may already target the next release. Verify this receipt
+          # against the committed public-release record, whose digest was checked above.
+          mkdir candidate/receipt-target
+          cp .github/published-candidate.json candidate/receipt-target/package.json
+          cp toolchain.json candidate/receipt-target/toolchain.json
+          node scripts/verify-package-receipt.mjs --root candidate/receipt-target --platform '${{ matrix.platform }}' --arch '${{ matrix.arch }}' --node '${{ matrix.node }}' --npm '${{ matrix.npm }}' --receipt candidate/package-smoke.json
       - name: Retain public-registry evidence
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4

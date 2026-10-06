@@ -80,6 +80,14 @@ assessing the site build; do not change bundler behavior to hide missing inputs.
 After those preparation steps, the full site build passes with no public-text
 errors or private-data findings. Nothing was uploaded or deployed.
 
+PR registry CI exposed a verification-target bug: the immutable public RC passed
+installation but its receipt was compared with the checkout's new 1.0.0 manifest.
+The registry workflow now uses the committed public-release record as its explicit
+receipt target, with the same toolchain expectations and unchanged hash checks.
+The retained Linux CI receipt and a freshly downloaded, digest-verified public RC
+reproduce the rejection against the checkout and pass against the public record.
+The stable package/main-release gates still use the actual checkout manifest.
+
 Every final candidate must pass the release matrix on its exact commit; earlier
 RC, native or account receipts cannot qualify these changed package bytes.
 
