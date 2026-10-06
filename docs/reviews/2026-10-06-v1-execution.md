@@ -16,9 +16,9 @@ published yet.
 | --- | --- | --- |
 | P0 | Preserve publisher/repository setup | Complete in [publisher setup receipt](2026-10-06-publisher-setup.md); current checkout remote verified `instruktlabs/kiln` |
 | P1 | Public API, stability and migrations | In progress: audit all existing exports; document stable/experimental contracts and Node compatibility |
-| P2 | Compiled ESM SDK and declarations | In progress: compiled all 55 exports; clean Windows package passes 52 core imports, consumer declarations without optional peers and subprocess render; cross-platform CI and isolated evaluator path remain open |
+| P2 | Compiled ESM SDK and declarations | In progress: all 55 exports compile; clean Windows package passes 52 core imports, declarations without optional peers and both worker layouts; namespace CI passes, latest runtime-fix CI pending |
 | P3 | Package identity, contents, executables and notices | In progress: unpublished `@instruktlabs/kiln@1.0.0-dev.0`, public metadata, MCP launcher, consumer doc allowlist and dependency notice refresh; Windows archive checks pass, CI remains required |
-| P4 | Clean installs and workspace upgrades | Pending: Windows/Linux/macOS matrix, optional dependency absence, custom instructions and revisions preserved |
+| P4 | Clean installs and workspace upgrades | In progress: namespace package passes Windows/Linux/macOS and core checks without optional agent peers; target-release installed upgrades and harness workflows remain open |
 | P5 | Release automation and npm publication | Pending: qualified RC/final archive digests, protected trusted publishing, owner staging approval, registry provenance and fresh registry install |
 | H1 | Native Cloudflare qualification | Pending: actual provider isolation probes, CPU/software Vulkan render, deadlines, RSS, startup and measured cost |
 | H2 | Authenticated MCP and tenant boundary | Pending: OAuth, audience checks, user-scoped references/cache/storage, two-user negative tests, evaluator environment isolation |
@@ -28,7 +28,7 @@ published yet.
 | L1 | Local Claude Code and Codex plugins | Pending: small pinned distributions, maintained skills, strict validation and actual cached installs in separate workspaces |
 | L2 | Public OpenAI plugin | Pending: compliant ZIP, verified publisher/domain, working MCP, privacy/support pages, review cases/video/account, submission receipt |
 | L3 | Anthropic directory | Pending: owned marketplace publication, final source path, account eligibility, reviewer materials and submission receipt |
-| V1 | Exact candidate verification | Pending: pinned tools, full offline/coverage/render-service gates, rebuilt bundles, tarball consumer/platform and target-host flows |
+| V1 | Exact candidate verification | In progress: development builds have pinned local and CI evidence; final RC/version archive and target-host flows remain open |
 | V2 | Release documentation and receipts | Pending: changelog/migrations/install/support/security/privacy/runbook; exact commits, hashes, versions, URLs and separate vendor-review state |
 
 ## Execution notes
@@ -90,10 +90,10 @@ The separate website workflow also passed. Two defects prevented an all-green ru
   the 12,288-byte repository budget. Condensing its wording preserves the instructions
   at 12,235 bytes; the focused repository-contract tests pass.
 
-These fixes require CI against the next commit. Passing adjacent jobs does not
-qualify the failed jobs or the new package identity.
-The current isolated evaluator still locates source TypeScript workers; its installed
-compiled path needs qualification before any hosted acceptance claim.
+Both fixes passed in the next commit's CI run, recorded below. Passing adjacent jobs
+in the original failed run did not qualify them.
+At that foundation commit, the isolated evaluator still located source TypeScript
+workers. The correction and its separate qualification are recorded below.
 
 ### Public package identity and installed commands
 
@@ -136,6 +136,55 @@ Pinned local results for this slice:
 - The separately checked LCOV thresholds still pass at 95.20% functions and 92.52%
   lines. This does not make the failed full run green.
 
+Committed as `c7c578ee5bde6928ee78a1a70eeff23782ace458` and pushed to the approved
+branch. [CI run 37427644449](https://github.com/instruktlabs/kiln/actions/runs/37427644449)
+completed successfully, including Linux/Windows engine checks, every package
+platform job, both macOS architectures and software Vulkan. Downloaded platform and producer receipts all match
+the same CI tarball SHA-256:
+`68795af7d2641dd2723d99a3d937ef45dcbe24c299344f990644879dcc561047`.
+The producer reports 22 checks including consumer types; each downstream platform
+reports 21 checks because it does not install the TypeScript qualification toolchain.
+These receipts qualify this commit, not the following runtime corrections.
+
+### Atomic saves and compiled isolated workers
+
+Focused regressions first demonstrated both defects: transient Windows rename
+denials aborted saves, and the SDK build omitted workers reached only through URLs.
+The save path now retries Windows `EPERM`/`EACCES`/`EBUSY` only when the destination
+is absent, with a total delay budget of 770 ms. Existing destinations and other
+errors return to the existing immutable-import handling. The operation remains an
+atomic rename; it never deletes or copies over a destination. All 24 focused atomic,
+asset-library and packaged-save tests pass.
+
+The SDK build now includes the evaluator, readiness and transport worker entryfiles.
+Source, installed SDK and executable-bundle paths resolve their corresponding
+workers; installed JavaScript uses Node directly without `tsx`. Existing namespace,
+environment, filesystem/network and resource-limit controls remain mandatory.
+Package tests execute a trusted fixture through the actual installed compiled
+worker; this does not run or qualify the OS isolation boundary.
+
+Typecheck/lint and all 23 fresh-install checks pass, including consumer types and
+the compiled worker. Receipt: `.cache/v1-runtime-fixes-package.log`.
+Development tarball SHA-256:
+`f0511c21b1e1857a9a22a039a78b0da88253880e8043eab3cdaa5f0ecfbad0ec`.
+The corrected full offline coverage run passes: 3,210 tests, two platform skips,
+zero failures in 406 files; functions 95.20% and lines 92.52%, above the unchanged
+94.00%/92.10% thresholds. The previously failing packaged-save case passes in the
+full run. Receipt: `.cache/v1-runtime-fixes-coverage.log`. This runtime slice still
+requires CI against its own commit; the prior green CI cannot qualify new code.
+
+### Release authorization timing
+
+Rechecked npm's current docs on 6 October. First-time staging creates a public
+`0.0.0-stage` placeholder, so it still waits for the reviewed candidate and the
+appropriate authorization. Configure trust close to the first workflow publish:
+unvalidated configurations now expire after 48 hours. Routine CI should have
+stage-only publishing access, with owner 2FA for promotion; use a permitted event
+such as `workflow_dispatch`, not `issue_comment` or `pull_request_target`.
+Sources: [staged publishing](https://docs.npmjs.com/staged-publishing/),
+[trusted publishing](https://docs.npmjs.com/trusted-publishers/),
+[October 2 trust-expiry update](https://github.blog/changelog/2026-10-02-unvalidated-npm-trusted-publishing-configurations-now-expire/).
+
 ### Hosting probe preparation
 
 The new `cf` CLI (1.0.0-beta.12) runs under the pinned Node toolchain. Its read-only
@@ -146,6 +195,9 @@ The Docker CLI is installed, but daemon/status checks timed out after starting
 Docker Desktop. No local container execution has been qualified. Neither
 local Docker nor package tests substitute for the required actual Cloudflare
 isolation and rendering probe.
+The later bounded daemon recheck also timed out; a fresh `cf auth whoami` still
+reports not logged in. The owner has been asked to finish any Docker Desktop
+startup/setup screen. No provider deployment has been attempted.
 
 ## Owner handoffs
 

@@ -269,6 +269,27 @@ console.log(JSON.stringify({ imports: ${coreExports.length}, renderBytes: result
     }),
   );
   receipt.checks.push('plain-node-sdk-exports', 'sdk-subprocess-render');
+  // Qualify the compiled worker's native imports and wire protocol. This runs
+  // trusted fixture code without an OS sandbox; provider isolation is a separate gate.
+  await writeFile(
+    join(install, 'compiled-worker-check.mjs'),
+    `import assert from 'node:assert/strict';
+import { renderGLBViaProcessLaunch, sanitizedEvaluatorEnv } from ${JSON.stringify(pathToFileURL(join(runtime, 'lib/evaluator/subprocess.js')).href)};
+const result = await renderGLBViaProcessLaunch(
+  'function build() { return new THREE.Mesh(boxGeo(1, 1, 1), gameMaterial(0x888888)); }',
+  {}, {}, {
+    command: process.execPath,
+    args: ['--max-old-space-size=512', ${JSON.stringify(join(runtime, 'lib/evaluator/worker.js'))}],
+    env: sanitizedEvaluatorEnv(),
+  });
+assert.equal(result.glb.subarray(0, 4).toString('utf8'), 'glTF');
+console.log(JSON.stringify({ renderBytes: result.glb.length }));
+`,
+  );
+  receipt.compiledWorker = JSON.parse(
+    await command([join(install, 'compiled-worker-check.mjs')], install),
+  );
+  receipt.checks.push('compiled-evaluator-worker');
   if (checkTypes) {
     receipt.sdkTypes = await smokeSdkTypes(runtime);
     receipt.checks.push('sdk-consumer-types-without-optional-peers');
@@ -278,6 +299,9 @@ console.log(JSON.stringify({ imports: ${coreExports.length}, renderBytes: result
     'dist/mcp-server.mjs',
     'dist/mcp-engine.mjs',
     'dist/evaluator-worker.mjs',
+    'lib/evaluator/worker.js',
+    'lib/evaluator/probe-worker.js',
+    'lib/evaluator/transport-worker.mjs',
     'scripts/create-workspace.mjs',
     'plugin.json',
     '.claude-plugin/plugin.json',

@@ -11,14 +11,28 @@ test('SDK output supports Node imports, dynamic imports and consumer declaration
   const root = await mkdtemp(join(tmpdir(), 'kiln-sdk-build-café-'));
   try {
     await mkdir(join(root, 'src/nested'), { recursive: true });
+    await mkdir(join(root, 'src/evaluator'), { recursive: true });
     await mkdir(join(root, 'service'), { recursive: true });
     await writeFile(
       join(root, 'package.json'),
-      JSON.stringify({ type: 'module', exports: { '.': './src/index.ts' } }),
+      JSON.stringify({
+        type: 'module',
+        exports: { '.': './src/index.ts', './evaluator': './src/evaluator/index.ts' },
+      }),
     );
     await writeFile(join(root, 'service/id.mjs'), 'export const protocol = "fixture-v1";\n');
     await writeFile(join(root, 'src/nested/index.ts'), 'export const value: number = 42;\n');
     await writeFile(join(root, 'src/lazy.ts'), 'export const label = "loaded";\n');
+    await writeFile(join(root, 'src/evaluator/index.ts'), 'export const available = true;\n');
+    for (const name of ['worker', 'probe-worker'])
+      await writeFile(
+        join(root, `src/evaluator/${name}.ts`),
+        'import { value } from "../nested"; console.log(value);\n',
+      );
+    await writeFile(
+      join(root, 'src/evaluator/transport-worker.mjs'),
+      'console.log("transport");\n',
+    );
     await writeFile(
       join(root, 'src/index.ts'),
       'export { value } from "./nested";\n' +
@@ -29,7 +43,21 @@ test('SDK output supports Node imports, dynamic imports and consumer declaration
     const result = await buildSdk(root);
     expect(result.entries).toEqual({
       '.': { types: './lib/index.d.ts', import: './lib/index.js' },
+      './evaluator': { types: './lib/evaluator/index.d.ts', import: './lib/evaluator/index.js' },
     });
+    // These entry files are opened by URL at runtime, not by TS import edges.
+    for (const [worker, value] of [
+      ['worker.js', '42'],
+      ['probe-worker.js', '42'],
+      ['transport-worker.mjs', 'transport'],
+    ])
+      expect(
+        execFileSync('node', [join(root, 'lib/evaluator', worker)], {
+          cwd: root,
+          encoding: 'utf8',
+          windowsHide: true,
+        }).trim(),
+      ).toBe(value);
     const output = execFileSync(
       'node',
       [

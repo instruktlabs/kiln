@@ -2,6 +2,7 @@ import { spawn } from 'node:child_process';
 import { existsSync } from 'node:fs';
 import { posix } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { isolatedWorkerUrls } from './worker-urls';
 import type { RenderGlbOptions, RenderResult } from '../render';
 import {
   EvaluatorSubprocessError,
@@ -137,7 +138,7 @@ function runtimeMounts(runtimeRoot: string, pathExists: (path: string) => boolea
 }
 
 /**
- * Build the exact Linux process boundary used by production AgentCore images.
+ * Build the Linux process boundary; each hosting environment must qualify it.
  * The outer image runs as a non-root user. setpriv clears inheritable/ambient
  * capabilities and locks no-new-privs before bubblewrap creates fresh user,
  * PID, network, mount, IPC, UTS, and cgroup namespaces. bubblewrap drops the
@@ -232,7 +233,11 @@ export function isolatedEvaluatorLaunch(
   workerPath: string,
   host: IsolatedEvaluatorHost = {},
 ): EvaluatorProcessLaunch {
-  return isolatedEvaluatorLaunchWithLoader(workerPath, host, 'tsx');
+  return isolatedEvaluatorLaunchWithLoader(
+    workerPath,
+    host,
+    /\.tsx?$/.test(workerPath) ? 'tsx' : 'module',
+  );
 }
 
 export async function renderGLBViaIsolatedEvaluator(
@@ -240,7 +245,7 @@ export async function renderGLBViaIsolatedEvaluator(
   options: RenderGlbOptions = {},
   controls: IsolatedEvaluatorControls = {},
 ): Promise<RenderResult> {
-  const workerPath = fileURLToPath(new URL('./worker.ts', import.meta.url));
+  const workerPath = fileURLToPath(isolatedWorkerUrls(import.meta.url).worker);
   const launch = isolatedEvaluatorLaunch(workerPath, controls.host);
   const { host: _, ...processControls } = controls;
   return renderGLBViaProcessLaunch(code, options, processControls, launch);
@@ -431,8 +436,9 @@ export async function assertIsolatedEvaluatorReady(
   if (typeof process.getuid !== 'function' || process.getuid() === 0) {
     throw new EvaluatorIsolationReadinessError('invariant-namespace');
   }
-  const transportPath = fileURLToPath(new URL('./transport-worker.mjs', import.meta.url));
-  const probePath = fileURLToPath(new URL('./probe-worker.ts', import.meta.url));
+  const workers = isolatedWorkerUrls(import.meta.url);
+  const transportPath = fileURLToPath(workers.transport);
+  const probePath = fileURLToPath(workers.probe);
   let transportLaunch: EvaluatorProcessLaunch;
   let probeLaunch: EvaluatorProcessLaunch;
   try {

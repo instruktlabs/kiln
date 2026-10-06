@@ -28511,6 +28511,19 @@ var init_handler = __esm(() => {
   init_protocol();
 });
 
+// src/evaluator/worker-urls.ts
+function isolatedWorkerUrls(moduleUrl) {
+  const source = new URL(moduleUrl).pathname.endsWith(".ts");
+  const sdk = new URL(moduleUrl).pathname.endsWith("/isolation.js");
+  const base = new URL(source || sdk ? "./" : "../lib/evaluator/", moduleUrl);
+  const extension = source ? "ts" : "js";
+  return {
+    worker: new URL(`worker.${extension}`, base),
+    probe: new URL(`probe-worker.${extension}`, base),
+    transport: new URL("transport-worker.mjs", base)
+  };
+}
+
 // src/evaluator/isolation.ts
 import { existsSync as existsSync3 } from "node:fs";
 import { posix } from "node:path";
@@ -28609,10 +28622,10 @@ function isolatedEvaluatorLaunchWithLoader(workerPath, host = {}, loader = "tsx"
   };
 }
 function isolatedEvaluatorLaunch(workerPath, host = {}) {
-  return isolatedEvaluatorLaunchWithLoader(workerPath, host, "tsx");
+  return isolatedEvaluatorLaunchWithLoader(workerPath, host, /\.tsx?$/.test(workerPath) ? "tsx" : "module");
 }
 async function renderGLBViaIsolatedEvaluator(code, options = {}, controls = {}) {
-  const workerPath = fileURLToPath3(new URL("./worker.ts", import.meta.url));
+  const workerPath = fileURLToPath3(isolatedWorkerUrls(import.meta.url).worker);
   const launch = isolatedEvaluatorLaunch(workerPath, controls.host);
   const { host: _, ...processControls } = controls;
   return renderGLBViaProcessLaunch(code, options, processControls, launch);
@@ -32895,17 +32908,7 @@ import { fileURLToPath as fileURLToPath6 } from "node:url";
 // src/assets-node.ts
 import { createHash as createHash3, randomUUID as randomUUID2 } from "node:crypto";
 import { readFileSync } from "node:fs";
-import {
-  link,
-  lstat as lstat2,
-  mkdir as mkdir2,
-  readFile as readFile2,
-  readdir as readdir2,
-  realpath as realpath2,
-  rename as rename2,
-  rm as rm2,
-  writeFile as writeFile2
-} from "node:fs/promises";
+import { link, lstat as lstat3, mkdir as mkdir2, readFile as readFile2, readdir as readdir2, realpath as realpath2, rm as rm2, writeFile as writeFile2 } from "node:fs/promises";
 import { homedir, platform } from "node:os";
 import { dirname as dirname3, join as join3, relative as relative2, resolve as resolve3, sep as sep2, win32 } from "node:path";
 
@@ -32977,6 +32980,31 @@ async function resolveSavedAssetMaterials(asset, library) {
   }));
 }
 
+// src/atomic-directory.ts
+import { lstat as lstat2, rename as rename2 } from "node:fs/promises";
+import { setTimeout as pause } from "node:timers/promises";
+async function renameDirectoryAtomically(source, destination, controls = {}) {
+  const renameOperation = controls.renameOperation ?? rename2;
+  const platform = controls.platform ?? process.platform;
+  const wait = controls.pause ?? pause;
+  const delays = [20, 50, 100, 200, 400];
+  for (let attempt = 0;; attempt++) {
+    try {
+      await renameOperation(source, destination);
+      return;
+    } catch (error) {
+      const delay = delays[attempt];
+      const code = error?.code;
+      if (platform !== "win32" || delay === undefined || !["EPERM", "EACCES", "EBUSY"].includes(code ?? ""))
+        throw error;
+      const absent = await lstat2(destination).then(() => false, (statError) => statError.code === "ENOENT");
+      if (!absent)
+        throw error;
+      await wait(delay);
+    }
+  }
+}
+
 // src/assets-node.ts
 var digest2 = (bytes) => `sha256:${createHash3("sha256").update(bytes).digest("hex")}`;
 function assertMaterialAllocation(records) {
@@ -33033,7 +33061,7 @@ class FileAssetLibrary {
       assetIdSchema.parse(part);
       path = join3(path, part);
       try {
-        const entry = await lstat2(path);
+        const entry = await lstat3(path);
         if (entry.isSymbolicLink())
           throw new Error("Collection symlinks are not supported");
         const rel = relative2(canonical, await realpath2(path));
@@ -33075,7 +33103,7 @@ class FileAssetLibrary {
   }
   async file(dir, name, limit = ASSET_LIMIT) {
     const path = join3(dir, name);
-    const info = await lstat2(path);
+    const info = await lstat3(path);
     if (!info.isFile() || info.isSymbolicLink() || info.size > limit)
       throw new Error("Invalid collection file");
     return new Uint8Array(await readFile2(path));
@@ -33202,7 +33230,7 @@ class FileAssetLibrary {
           flag: "wx"
         });
         try {
-          await rename2(stage, dest);
+          await renameDirectoryAtomically(stage, dest);
         } catch (error) {
           const existing = await this.read(collection, manifest.assetId, manifest.revisionId).catch(() => {
             return;
@@ -33989,7 +34017,7 @@ import { createHash as createHash7, randomUUID as randomUUID3 } from "node:crypt
 import {
   link as link2,
   mkdir as mkdir3,
-  lstat as lstat3,
+  lstat as lstat4,
   readdir as readdir3,
   readFile as readFile3,
   rename as rename3,
@@ -34254,7 +34282,7 @@ class FileLiveReview {
           if (!collision(error))
             throw error;
         });
-      const info = await lstat3(path);
+      const info = await lstat4(path);
       if (!info.isDirectory() || info.isSymbolicLink())
         throw new Error("Unsafe live directory");
       const rel = relative4(canonical, await realpath3(path));
@@ -34263,7 +34291,7 @@ class FileLiveReview {
     }
   }
   async boundedFile(path, limit) {
-    const info = await lstat3(path);
+    const info = await lstat4(path);
     if (!info.isFile() || info.isSymbolicLink() || info.size > limit)
       throw new Error("Invalid live file");
     const data = new Uint8Array(await readFile3(path));
@@ -34291,7 +34319,7 @@ class FileLiveReview {
       if (!collision(error))
         throw error;
     });
-    const info = await lstat3(directory);
+    const info = await lstat4(directory);
     if (!info.isDirectory() || info.isSymbolicLink())
       throw new Error("Unsafe live lock directory");
     const candidate = join8(directory, `.candidate-${process.pid}-${token}.tmp`);
@@ -34312,7 +34340,7 @@ class FileLiveReview {
         if (latest) {
           try {
             const prior = z3.object({ pid: z3.number().int().positive(), token: z3.string().uuid() }).strict().parse(JSON.parse(new TextDecoder().decode(await this.boundedFile(join8(directory, latest), 1024))));
-            const released = await lstat3(join8(directory, `${latest}.released`)).then((entry) => {
+            const released = await lstat4(join8(directory, `${latest}.released`)).then((entry) => {
               if (!entry.isFile() || entry.isSymbolicLink() || entry.size !== 0)
                 throw new Error("Invalid lock release");
               return true;
@@ -34599,7 +34627,7 @@ class FileLiveReview {
   async record(operationId) {
     await this.root();
     const directory = this.path(operationId);
-    const info = await lstat3(directory);
+    const info = await lstat4(directory);
     if (!info.isDirectory() || info.isSymbolicLink())
       throw new Error("Unsafe live directory");
     const raw = JSON.parse(new TextDecoder().decode(await this.boundedFile(join8(directory, "record.json"), metadataLimit)));
@@ -34621,7 +34649,7 @@ class FileLiveReview {
       throw new Error("Invalid artifact descriptor");
     if (state.operation.captures.some((file) => !/^capture-\d{1,2}\.png$/.test(file.name)))
       throw new Error("Invalid capture descriptor");
-    state.operation.pinned = await lstat3(join8(directory, "pinned")).then((s) => {
+    state.operation.pinned = await lstat4(join8(directory, "pinned")).then((s) => {
       if (!s.isFile() || s.isSymbolicLink())
         throw new Error("Invalid live pin");
       return true;
@@ -34643,7 +34671,7 @@ class FileLiveReview {
     for (const entry of await readdir3(directory, { withFileTypes: true })) {
       if (!entry.isFile() || entry.isSymbolicLink())
         throw new Error("Invalid live directory entry");
-      bytes += (await lstat3(join8(directory, entry.name))).size;
+      bytes += (await lstat4(join8(directory, entry.name))).size;
     }
     this.storedSizes.set(state, bytes);
     return state;
@@ -34758,7 +34786,7 @@ class FileLiveReview {
       if (!collision(error))
         throw error;
     });
-    if ((await lstat3(directory)).isSymbolicLink())
+    if ((await lstat4(directory)).isSymbolicLink())
       throw new Error("Unsafe live directory");
     for (const [name, data] of Object.entries(blobs))
       await this.atomic(join8(directory, name), data);
@@ -34767,7 +34795,7 @@ class FileLiveReview {
   }
   async remove(operationId) {
     const directory = this.path(operationId);
-    const info = await lstat3(directory);
+    const info = await lstat4(directory);
     if (!info.isDirectory() || info.isSymbolicLink())
       throw new Error("Unsafe live directory");
     await rm3(directory, { recursive: true, force: true });
@@ -34832,7 +34860,7 @@ init_isolation();
 init_render();
 
 // src/program-store-node.ts
-import { link as link3, lstat as lstat4, mkdir as mkdir4, readFile as readFile4, readdir as readdir4, stat, unlink as unlink2, writeFile as writeFile4 } from "node:fs/promises";
+import { link as link3, lstat as lstat5, mkdir as mkdir4, readFile as readFile4, readdir as readdir4, stat, unlink as unlink2, writeFile as writeFile4 } from "node:fs/promises";
 import { randomUUID as randomUUID4 } from "node:crypto";
 import { join as join9 } from "node:path";
 
@@ -34975,7 +35003,7 @@ class FileProgramStore {
   async readHandle(handle) {
     const path = join9(this.directory, "refs", `${handle}.ref`);
     try {
-      const info = await lstat4(path);
+      const info = await lstat5(path);
       if (!info.isFile() || info.size !== 71)
         throw new Error(`Program handle integrity check failed: ${handle}`);
       const canonical = await readFile4(path, "utf8");
@@ -35331,7 +35359,7 @@ class FileBuildCache {
 
 // src/runtime-identity.ts
 import { createHash as createHash16 } from "node:crypto";
-import { lstat as lstat5, readFile as readFile6, readdir as readdir6, realpath as realpath4, stat as stat3 } from "node:fs/promises";
+import { lstat as lstat6, readFile as readFile6, readdir as readdir6, realpath as realpath4, stat as stat3 } from "node:fs/promises";
 import { createRequire as createRequire2 } from "node:module";
 import { dirname as dirname5, join as join11, relative as relative5 } from "node:path";
 var digest6 = (bytes) => createHash16("sha256").update(bytes).digest("hex");
@@ -35389,7 +35417,7 @@ async function installedRuntimeIdentity(root, limits = {}) {
           for (const modules of require2.resolve.paths(name) ?? []) {
             const candidate = join11(modules, name);
             try {
-              await lstat5(candidate);
+              await lstat6(candidate);
             } catch (error) {
               if (error.code === "ENOENT")
                 continue;
@@ -35508,7 +35536,7 @@ import { join as join13 } from "node:path";
 
 // src/projects-node.ts
 import { createHash as createHash17, randomUUID as randomUUID6 } from "node:crypto";
-import { link as link4, lstat as lstat6, mkdir as mkdir6, open, readdir as readdir7, realpath as realpath5, unlink as unlink4 } from "node:fs/promises";
+import { link as link4, lstat as lstat7, mkdir as mkdir6, open, readdir as readdir7, realpath as realpath5, unlink as unlink4 } from "node:fs/promises";
 import { join as join12, relative as relative6, resolve as resolve6, sep as sep4 } from "node:path";
 init_projects();
 var missing2 = (error) => error.code === "ENOENT";
@@ -35549,7 +35577,7 @@ class FileProjectStore {
           if (!exists(error))
             throw error;
         });
-      const info = await lstat6(path);
+      const info = await lstat7(path);
       if (info.isSymbolicLink())
         throw new Error("Project symlinks are not supported");
       if (!info.isDirectory())
@@ -35576,7 +35604,7 @@ class FileProjectStore {
   }
   async load(projectId, directory, sequence) {
     const path = join12(directory, filename(sequence));
-    const info = await lstat6(path);
+    const info = await lstat7(path);
     if (!info.isFile() || info.isSymbolicLink() || info.size > MAX_PROJECT_BYTES)
       throw new Error("Invalid or oversized project revision file");
     const handle = await open(path, "r");

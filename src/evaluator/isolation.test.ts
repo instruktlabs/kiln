@@ -144,6 +144,21 @@ describe('isolated evaluator process contract', () => {
     expect(spec.args).not.toContain('/etc');
   });
 
+  test('compiled workers retain isolation controls without requiring a TypeScript loader', () => {
+    const worker = '/app/node_modules/@instruktlabs/kiln/lib/evaluator/worker.js';
+    const spec = isolatedEvaluatorLaunch(worker, {
+      platform: 'linux',
+      pathExists: (path) => PATHS.has(path) || path === worker,
+    });
+    expect(spec.args.at(-1)).toBe(worker);
+    expect(spec.args).not.toContain('tsx');
+    expect(spec.args).not.toContain('--import');
+    expect(spec.args).toContain('--unshare-all');
+    expect(spec.args).toContain('--clearenv');
+    expect(spec.args).toContain('--cpu=65:65');
+    expect(spec.args).toContain('--max-old-space-size=512');
+  });
+
   test('requires every Linux capability set to be present and empty', () => {
     const emptyStatus = [
       'Name:\tnode',

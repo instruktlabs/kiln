@@ -26,6 +26,7 @@ const REQUIRED_CHECKS = [
   'installed-consumer-documents',
   'plain-node-sdk-exports',
   'sdk-subprocess-render',
+  'compiled-evaluator-worker',
   'npm-mcp-entry',
   'packaged-node-worker',
   'community-exporter-textured-subprocess',

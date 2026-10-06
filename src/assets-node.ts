@@ -1,17 +1,7 @@
 /** Local durable collections; immutable revisions become visible by directory rename. */
 import { createHash, randomUUID } from 'node:crypto';
 import { readFileSync, type Dirent } from 'node:fs';
-import {
-  link,
-  lstat,
-  mkdir,
-  readFile,
-  readdir,
-  realpath,
-  rename,
-  rm,
-  writeFile,
-} from 'node:fs/promises';
+import { link, lstat, mkdir, readFile, readdir, realpath, rm, writeFile } from 'node:fs/promises';
 import { homedir, platform } from 'node:os';
 import { dirname, join, relative, resolve, sep, win32 } from 'node:path';
 import { localWorkspaceRoot } from './workspace-location';
@@ -31,6 +21,7 @@ import {
 import type { MaterialLibrary, MaterialRecordV1 } from './material-library';
 import { FileMaterialLibrary, createMaterialLibraryPayload } from './material-library-node';
 import { dependencyManifests, resolveSavedAssetMaterials } from './asset-materials-node';
+import { renameDirectoryAtomically } from './atomic-directory';
 
 const digest = (bytes: Uint8Array) => `sha256:${createHash('sha256').update(bytes).digest('hex')}`;
 function assertMaterialAllocation(records: AssetRecord[]): void {
@@ -295,7 +286,7 @@ export class FileAssetLibrary implements AssetLibrary {
           flag: 'wx',
         });
         try {
-          await rename(stage, dest);
+          await renameDirectoryAtomically(stage, dest);
         } catch (error) {
           const existing = await this.read(collection, manifest.assetId, manifest.revisionId).catch(
             () => undefined,

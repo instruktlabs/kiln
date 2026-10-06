@@ -52,6 +52,10 @@ export async function buildSdk(root = repo) {
     roots.push(sourcePath);
     entries[name] = { types: declarationPath(output), import: output };
   }
+  // Worker URLs are runtime data, so the TypeScript import graph omits them.
+  if (pkg.exports['./evaluator'])
+    for (const name of ['worker.ts', 'probe-worker.ts', 'transport-worker.mjs'])
+      roots.push(join(root, 'src/evaluator', name));
   await mkdir(join(root, '.cache'), { recursive: true });
   const stage = await mkdtemp(join(root, '.cache', 'sdk-'));
   const out = join(stage, 'output');

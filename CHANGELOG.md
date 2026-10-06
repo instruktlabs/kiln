@@ -16,6 +16,10 @@ from publishing a new installable package.
 - Consumer archives contain the maintained installation/API/workflow documentation;
   historical plans, reviews and model traces remain in the repository. Current
   repository links and package publisher metadata point to Instrukt Labs.
+- Installed isolated evaluation resolves compiled workers and readiness probes
+  without a TypeScript loader. Host isolation still requires its own readiness proof.
+- Windows asset saves retry transient directory-rename denials within a bounded
+  delay, preserving atomic publication and existing immutable revisions.
 
 - Blind-run receipts recognize OpenCode's recorded code-mode MCP calls and AGY's
   generic MCP dispatcher without inferring execution from source or output text.

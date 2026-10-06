@@ -29328,6 +29328,19 @@ var init_handler = __esm(() => {
   init_protocol();
 });
 
+// src/evaluator/worker-urls.ts
+function isolatedWorkerUrls(moduleUrl) {
+  const source = new URL(moduleUrl).pathname.endsWith(".ts");
+  const sdk = new URL(moduleUrl).pathname.endsWith("/isolation.js");
+  const base = new URL(source || sdk ? "./" : "../lib/evaluator/", moduleUrl);
+  const extension = source ? "ts" : "js";
+  return {
+    worker: new URL(`worker.${extension}`, base),
+    probe: new URL(`probe-worker.${extension}`, base),
+    transport: new URL("transport-worker.mjs", base)
+  };
+}
+
 // src/evaluator/isolation.ts
 import { existsSync } from "node:fs";
 import { posix } from "node:path";
@@ -29426,10 +29439,10 @@ function isolatedEvaluatorLaunchWithLoader(workerPath, host = {}, loader = "tsx"
   };
 }
 function isolatedEvaluatorLaunch(workerPath, host = {}) {
-  return isolatedEvaluatorLaunchWithLoader(workerPath, host, "tsx");
+  return isolatedEvaluatorLaunchWithLoader(workerPath, host, /\.tsx?$/.test(workerPath) ? "tsx" : "module");
 }
 async function renderGLBViaIsolatedEvaluator(code, options = {}, controls = {}) {
-  const workerPath = fileURLToPath2(new URL("./worker.ts", import.meta.url));
+  const workerPath = fileURLToPath2(isolatedWorkerUrls(import.meta.url).worker);
   const launch = isolatedEvaluatorLaunch(workerPath, controls.host);
   const { host: _, ...processControls } = controls;
   return renderGLBViaProcessLaunch(code, options, processControls, launch);
@@ -34274,6 +34287,32 @@ var init_asset_materials_node = __esm(() => {
   init_material_library_node();
 });
 
+// src/atomic-directory.ts
+import { lstat as lstat7, rename as rename5 } from "node:fs/promises";
+import { setTimeout as pause } from "node:timers/promises";
+async function renameDirectoryAtomically(source, destination, controls = {}) {
+  const renameOperation = controls.renameOperation ?? rename5;
+  const platform = controls.platform ?? process.platform;
+  const wait = controls.pause ?? pause;
+  const delays = [20, 50, 100, 200, 400];
+  for (let attempt = 0;; attempt++) {
+    try {
+      await renameOperation(source, destination);
+      return;
+    } catch (error) {
+      const delay = delays[attempt];
+      const code = error?.code;
+      if (platform !== "win32" || delay === undefined || !["EPERM", "EACCES", "EBUSY"].includes(code ?? ""))
+        throw error;
+      const absent = await lstat7(destination).then(() => false, (statError) => statError.code === "ENOENT");
+      if (!absent)
+        throw error;
+      await wait(delay);
+    }
+  }
+}
+var init_atomic_directory = () => {};
+
 // src/assets-node.ts
 var exports_assets_node = {};
 __export(exports_assets_node, {
@@ -34285,17 +34324,7 @@ __export(exports_assets_node, {
 });
 import { createHash as createHash14, randomUUID as randomUUID7 } from "node:crypto";
 import { readFileSync as readFileSync2 } from "node:fs";
-import {
-  link as link5,
-  lstat as lstat7,
-  mkdir as mkdir7,
-  readFile as readFile6,
-  readdir as readdir7,
-  realpath as realpath6,
-  rename as rename5,
-  rm as rm3,
-  writeFile as writeFile6
-} from "node:fs/promises";
+import { link as link5, lstat as lstat8, mkdir as mkdir7, readFile as readFile6, readdir as readdir7, realpath as realpath6, rm as rm3, writeFile as writeFile6 } from "node:fs/promises";
 import { homedir, platform } from "node:os";
 import { dirname as dirname5, join as join10, relative as relative5, resolve as resolve9, sep as sep4, win32 } from "node:path";
 function assertMaterialAllocation(records) {
@@ -34352,7 +34381,7 @@ class FileAssetLibrary {
       assetIdSchema.parse(part);
       path = join10(path, part);
       try {
-        const entry = await lstat7(path);
+        const entry = await lstat8(path);
         if (entry.isSymbolicLink())
           throw new Error("Collection symlinks are not supported");
         const rel = relative5(canonical, await realpath6(path));
@@ -34394,7 +34423,7 @@ class FileAssetLibrary {
   }
   async file(dir, name, limit = ASSET_LIMIT) {
     const path = join10(dir, name);
-    const info = await lstat7(path);
+    const info = await lstat8(path);
     if (!info.isFile() || info.isSymbolicLink() || info.size > limit)
       throw new Error("Invalid collection file");
     return new Uint8Array(await readFile6(path));
@@ -34521,7 +34550,7 @@ class FileAssetLibrary {
           flag: "wx"
         });
         try {
-          await rename5(stage, dest);
+          await renameDirectoryAtomically(stage, dest);
         } catch (error) {
           const existing = await this.read(collection, manifest.assetId, manifest.revisionId).catch(() => {
             return;
@@ -34604,6 +34633,7 @@ var init_assets_node = __esm(() => {
   init_assets();
   init_material_library_node();
   init_asset_materials_node();
+  init_atomic_directory();
   windowsDrivePath = /^[A-Za-z]:[\\/]/;
   windowsSharePath = /^[\\/]{2}[^\\/]+[\\/][^\\/]+/;
 });
@@ -34991,7 +35021,7 @@ var init_project_bundle = __esm(() => {
 
 // src/project-bundle-node.ts
 import { randomUUID as randomUUID8 } from "node:crypto";
-import { link as link6, lstat as lstat8, mkdir as mkdir8, readFile as readFile7, realpath as realpath7, unlink as unlink6, writeFile as writeFile7 } from "node:fs/promises";
+import { link as link6, lstat as lstat9, mkdir as mkdir8, readFile as readFile7, realpath as realpath7, unlink as unlink6, writeFile as writeFile7 } from "node:fs/promises";
 import { join as join11, relative as relative6, resolve as resolve10, sep as sep5 } from "node:path";
 async function assetMaterials(workspace, asset) {
   return resolveSavedAssetMaterials(asset, workspace.materials);
@@ -35047,7 +35077,7 @@ async function retainArchive(workspace, bytes, digest) {
       if (error.code !== "EEXIST")
         throw error;
     });
-    const info = await lstat8(directory);
+    const info = await lstat9(directory);
     const rel = relative6(canonical, await realpath7(directory));
     if (!info.isDirectory() || info.isSymbolicLink() || rel === ".." || rel.startsWith(`..${sep5}`))
       throw new Error("Unsafe project import directory");
@@ -35061,7 +35091,7 @@ async function retainArchive(workspace, bytes, digest) {
     } catch (error) {
       if (error.code !== "EEXIST")
         throw error;
-      const info = await lstat8(file);
+      const info = await lstat9(file);
       if (!info.isFile() || info.isSymbolicLink() || info.size !== bytes.length || await projectBundleHash(new Uint8Array(await readFile7(file))) !== digest)
         throw new Error("Imported archive integrity mismatch");
     }

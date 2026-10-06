@@ -53,6 +53,11 @@ untrusted programs must inject or select the qualified isolated evaluator descri
 in the runtime contract. A subprocess provides a worker boundary; it does not alone
 establish filesystem, network or tenant isolation.
 
+The installed isolated evaluator uses compiled JavaScript workers and readiness
+probes, without a TypeScript loader. Linux hosts still need the required namespace
+and resource-limit tools and must pass the actual readiness probe. An unavailable
+boundary fails closed; a successful local worker render is not proof of isolation.
+
 Optional Strands workflows require their documented peer dependencies. Core SDK
 imports and consumer types must work without those optional peers. Shared tool
 contracts contain host-neutral interfaces; they do not require the Strands SDK to
