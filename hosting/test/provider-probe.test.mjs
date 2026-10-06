@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { readFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 import { before, test } from 'node:test';
 import { build } from 'esbuild';
@@ -6,6 +7,29 @@ import { convertV4MiniflareOptions, Miniflare } from 'miniflare';
 
 let runProbeOnce;
 let probeCases;
+test('the manifest qualification has no public route or automatic trigger and pins the proven runtime image', async () => {
+  const config = JSON.parse(
+    await readFile(new URL('../probe/qualification.wrangler.jsonc', import.meta.url), 'utf8'),
+  );
+  assert.equal(config.workers_dev, false);
+  assert.equal(config.preview_urls, false);
+  assert.deepEqual(config.routes, []);
+  assert.equal(config.triggers, undefined);
+  assert.equal(config.main, './worker.ts');
+  assert.equal(config.containers.length, 1);
+  assert.equal(config.containers[0].scheduling_policy, 'durable_object');
+  assert.equal(config.containers[0].class_name, 'KilnProbeJob');
+  assert.equal(config.containers[0].observability.logs.enabled, false);
+  assert.equal(
+    config.containers[0].images.kiln.image,
+    'registry.cloudflare.com/56adffd40534f7fe110fc661a40bbf53/kiln-evaluation@sha256:db79551579a9abd33f7589a4da4d57947364ddf3dd37b79f766e202f2703edc8',
+  );
+  assert.deepEqual(config.exports, {
+    KilnProbeControl: { type: 'worker' },
+    KilnProbeRun: { type: 'durable-object', storage: 'sqlite' },
+    KilnProbeJob: { type: 'durable-object', storage: 'sqlite' },
+  });
+});
 before(async () => {
   const output = new URL('../../.cache/hosted-probe-test/run-once.mjs', import.meta.url);
   await build({
@@ -46,8 +70,8 @@ test('private probe claims its fixed budget once across concurrent and later tri
   };
   await Promise.all([runProbeOnce(store, execute), runProbeOnce(store, execute)]);
   const final = await runProbeOnce(store, execute);
-  // One job from the original five-job allowance was consumed by the failed
-  // live attempt. A continuation may spend only the four remaining jobs.
+  // The fixed candidate has four cases. Any new deployment requires its own
+  // approval; this code cannot reset the exhausted earlier trial allowance.
   assert.deepEqual(probeCases, ['engine-a', 'network', 'write-marker', 'read-marker']);
   assert.deepEqual(called, probeCases);
   assert.equal(final.state, 'finished');
@@ -147,7 +171,9 @@ test('private service RPC can trigger only the fixed retained probe and exposes 
           name: 'operator',
           modules: true,
           compatibilityDate: '2026-10-06',
-          serviceBindings: { PROBE: { name: 'private-probe', entrypoint: 'KilnProbeControl' } },
+          serviceBindings: {
+            PROBE: { name: 'private-probe', entrypoint: 'KilnProbeControl' },
+          },
           script: `export default {
             async fetch(request, env) {
               if (new URL(request.url).pathname === '/denied') return env.PROBE.fetch(request);
@@ -160,7 +186,10 @@ test('private service RPC can trigger only the fixed retained probe and exposes 
   );
   try {
     const operator = await runtime.getWorker('operator');
-    const denied = await operator.fetch('http://localhost/denied', { method: 'POST', body: '{}' });
+    const denied = await operator.fetch('http://localhost/denied', {
+      method: 'POST',
+      body: '{}',
+    });
     assert.equal(denied.status, 404);
     const first = await (await operator.fetch('http://localhost/run')).json();
     assert.deepEqual(first, {

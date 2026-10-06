@@ -64,7 +64,16 @@ async function destroy(container: Container): Promise<void> {
   let timer: ReturnType<typeof setTimeout> | undefined;
   try {
     await Promise.race([
-      container.destroy(),
+      (async () => {
+        await container.destroy();
+        // Keep the watchdog and suppress output unless the provider confirms
+        // destruction. Inspection shares the cleanup deadline, including errors
+        // and a hung readback; a successful destroy acknowledgement alone is
+        // insufficient to release admission for an unconfirmed VM.
+        const remaining = await container.inspect();
+        if (container.running || remaining !== null)
+          throw new ContainerJobFailure('CLEANUP_FAILED');
+      })(),
       new Promise<never>((_, reject) => {
         timer = setTimeout(() => reject(new ContainerJobFailure('CLEANUP_FAILED')), CLEANUP_MS);
       }),

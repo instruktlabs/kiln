@@ -1,0 +1,23 @@
+{
+  "name": "kiln-private-stable-resilience",
+  "main": "./resilience-worker.ts",
+  "compatibility_date": "2026-10-06",
+  "compatibility_flags": ["enable_ctx_exports"],
+  "workers_dev": false,
+  "preview_urls": false,
+  "routes": [],
+  "limits": {"cpu_ms": 30000, "subrequests": 50},
+  "observability": {"enabled": true, "logs": {"enabled": true, "invocation_logs": true}},
+  "containers": [{
+    "name": "kiln-private-stable-resilience-jobs",
+    "class_name": "KilnResilienceJob",
+    "scheduling_policy": "durable_object",
+    "images": {"kiln": {"image": "registry.cloudflare.com/56adffd40534f7fe110fc661a40bbf53/kiln-evaluation@sha256:84a0fa62bcffa010b9ac1c5f2f0e2cf9045a9cdb6407f621e8049e6a37f9de99"}},
+    "observability": {"logs": {"enabled": false}}
+  }],
+  "exports": {
+    "KilnResilienceControl": {"type": "worker"},
+    "KilnResilienceRun": {"type": "durable-object", "storage": "sqlite"},
+    "KilnResilienceJob": {"type": "durable-object", "storage": "sqlite"}
+  }
+}

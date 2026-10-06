@@ -6,6 +6,7 @@ on:
       - .github/workflows/container-image.yml
       - .github/published-candidate.json
       - hosting/container/**
+      - scripts/smoke-renderer.mjs
   workflow_dispatch:
 
 permissions:
@@ -17,7 +18,17 @@ concurrency:
 
 jobs:
   image:
-    name: Installed CPU image · Linux amd64
+    name: Installed ${{ matrix.label }} image · Linux amd64
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - kind: cpu
+            label: CPU
+            dockerfile: Dockerfile
+          - kind: software
+            label: software Vulkan
+            dockerfile: Dockerfile.software
     runs-on: ubuntu-24.04
     timeout-minutes: 20
     steps:
@@ -51,14 +62,15 @@ jobs:
             writeFileSync("image-context/candidate.sha256",`${p.sha256}  candidate.tgz\n`);
             writeFileSync("image-evidence/candidate.json",JSON.stringify(p,null,2));
           '
-          cp hosting/container/Dockerfile hosting/container/evaluate.mjs image-context/
+          cp 'hosting/container/${{ matrix.dockerfile }}' image-context/Dockerfile
+          cp hosting/container/evaluate.mjs image-context/
           test "$(find image-context -mindepth 1 -maxdepth 1 -type f | wc -l)" -eq 4
       - name: Build without registry publication
         id: image
         shell: bash
         run: |
           set -euo pipefail
-          docker build --platform linux/amd64 --tag kiln-evaluation:ci image-context 2>&1 | tee image-evidence/build.log
+          docker build --platform linux/amd64 --provenance=false --tag kiln-evaluation:ci image-context 2>&1 | tee image-evidence/build.log
           docker image inspect kiln-evaluation:ci > image-evidence/image.json
           docker create --name kiln-evaluation-inventory kiln-evaluation:ci
           docker cp kiln-evaluation-inventory:/opt/kiln/package-lock.json image-evidence/package-lock.json
@@ -85,11 +97,28 @@ jobs:
             node --input-type=module -e 'import assert from"node:assert/strict";import{readFileSync}from"node:fs";import{createHash}from"node:crypto";import{decodeEvaluatorResultV2}from"@instruktlabs/kiln/evaluator";const r=decodeEvaluatorResultV2(readFileSync(0,"utf8"),2097152,"image-fixture");assert.equal(r.ok,true);assert.equal(r.render.glb.subarray(0,4).toString(),"glTF");console.log(JSON.stringify({status:"passed",cloudflareQualified:false,hostileSourceQualified:false,bytes:r.render.glb.length,sha256:createHash("sha256").update(r.render.glb).digest("hex")}))' \
             < image-evidence/result-1.json > image-evidence/receipt.json
           node --input-type=module -e 'import assert from"node:assert/strict";import{readFileSync}from"node:fs";const a=JSON.parse(readFileSync("image-evidence/result-1.json"));const b=JSON.parse(readFileSync("image-evidence/result-2.json"));assert.equal(a.render.glbBase64,b.render.glbBase64)'
+      - name: Qualify packaged software rendering with a fixed trusted fixture
+        if: matrix.kind == 'software'
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir image-evidence/software
+          # Only this disposable output directory is writable by the image's UID.
+          chmod 0777 image-evidence/software
+          docker create --name kiln-software-fixture --network none --cpus 2 --memory 4g --memory-swap 4g --pids-limit 128 --cap-drop ALL --security-opt no-new-privileges \
+            --mount "type=bind,source=$PWD/scripts/smoke-renderer.mjs,target=/probe/smoke-renderer.mjs,readonly" \
+            --mount "type=bind,source=$PWD/image-evidence/software,target=/out" \
+            kiln-evaluation:ci node /probe/smoke-renderer.mjs /opt/kiln/node_modules/@instruktlabs/kiln /out software
+          timeout --signal=TERM --kill-after=5s 60s docker start --attach kiln-software-fixture \
+            > image-evidence/software-stdout.log 2> image-evidence/software-stderr.log
+          docker inspect kiln-software-fixture --format '{{json .State}}' > image-evidence/software-state.json
+          test "$(docker inspect kiln-software-fixture --format '{{.State.ExitCode}}')" -eq 0
+          node --input-type=module -e 'import assert from"node:assert/strict";import{readFileSync}from"node:fs";const r=JSON.parse(readFileSync("image-evidence/software/receipt.json"));assert.equal(r.status,"passed");assert.equal(r.software,true);assert.equal(r.views.length,6)'
       - name: Retain image evidence without publishing the image
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
-          name: private-evaluation-image-evidence
+          name: private-evaluation-image-evidence-${{ matrix.kind }}
           path: image-evidence/
           if-no-files-found: error
           retention-days: 30
@@ -97,6 +126,6 @@ jobs:
         if: always()
         shell: bash
         run: |
-          for name in kiln-evaluation-inventory kiln-evaluation-1 kiln-evaluation-2; do
+          for name in kiln-evaluation-inventory kiln-evaluation-1 kiln-evaluation-2 kiln-software-fixture; do
             if docker container inspect "$name" >/dev/null 2>&1; then docker rm --force "$name"; fi
           done

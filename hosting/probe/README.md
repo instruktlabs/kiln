@@ -1,5 +1,15 @@
 # Private Cloudflare availability probe
 
+**Current status:** the original five-job allowance is exhausted. A separately
+approved sixth startup-only comparison passed when selecting the original image's
+Linux/AMD64 manifest directly. All trial resources were removed. See
+[the manifest result](MANIFEST_STARTUP.md) and the separately prepared
+[four-job qualification result](QUALIFICATION.md), which also passed all four cases
+and completed cleanup. All ten approved jobs are consumed. Neither the historical
+allowances below nor the old prebuilt receipt authorize another deployment.
+
+## Historical first trial
+
 This is a disposable operator probe, separate from every production bundle and
 the npm package. The owner approved a five-job trial with a $1 allowance. Its
 first job failed and all cloud trial resources were removed. The current candidate
@@ -10,7 +20,10 @@ the hosted service for launch.
 
 **Current stop condition:** the direct-RPC continuation at `cfbcb2a` has now
 attempted another job and failed during native startup. All cloud resources were
-removed and absence was verified. Two jobs total were consumed; only three remain.
+removed and absence was verified. Subsequent smaller controls in
+[STARTUP.md](STARTUP.md) and [CUSTOM_STARTUP.md](CUSTOM_STARTUP.md) both passed.
+The unchanged image control in [KILN_STARTUP.md](KILN_STARTUP.md) then failed
+before its fixed Node command. Five jobs total have now been attempted; none remain.
 Do not redeploy this four-case candidate to a new coordinator. Prepare a revised
 diagnostic within the remaining scope, or obtain approval for a changed trial.
 The details below retain the reviewed four-case candidate for reproducibility.
