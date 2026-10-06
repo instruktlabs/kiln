@@ -1719,3 +1719,55 @@ allowance. The four-case candidate must not be redeployed to a new coordinator:
 doing so would exceed that remaining allowance. Further trials need a revised
 bounded candidate and diagnosis of the startup failure, not a new run ID or an
 automatic retry. No settled billing total or successful native hosting is claimed.
+
+With explicit owner approval, the prepared P4 diagnostic was submitted to
+Cloudflare as case `02363339`. The portal confirmed receipt. It includes the error
+reference, time and runtime configuration, with no credentials, user assets or
+attachments. No provider response has been received. The confirmation is retained
+in `.cache/provider-probe-trial-3/support-case.json` and its screenshot.
+
+## Browser account access continuation
+
+PR #147's exact head `7f4e98ebc3691bf025e7ea712d8ef549c4d6a516` now has successful
+engine/package, Linux/Windows gateway, installed image, seven-platform public
+registry and website checks. The separate restricted-Docker native preflight still
+fails. Neither this status nor the support case qualifies native hosting.
+
+The separate `codex/v1-account-controls` branch adds real D1 browser sessions,
+direct Google/GitHub account sign-in and browser logout. Callback adapters remain
+shared with MCP authorization; direct account access does not invent an MCP client
+or issue downstream tokens. Independent browser bindings, purpose/origin-separated
+state hashes and atomic D1 consumption prevent stolen or concurrent callback reuse.
+No upstream token reaches a browser cookie or asset service.
+
+Session credentials are 256-bit random host cookies with only their SHA-256
+verifiers retained. Primary-backed checks enforce account state/epoch, 30-minute
+idle and 24-hour absolute expiry. Fresh sign-in rotates the current browser's
+session; an eight-session account cap does not discard another device during a
+rotation. The focused cap test exposed that ordering defect before its fix.
+Logout requires the session's CSRF proof and exact Origin and leaves existing MCP
+connections usable. Browser cookies and MCP tokens cannot substitute for one another.
+
+The new cases were first observed failing, then fixed. The focused account and
+authentication suite passes 43 tests; the complete hosted suite passes 138 tests,
+all three hosted type configurations and five production bundles. Additional
+adversarial cases cover expired intents, rollback, provider swapping, bounded
+pending-login storage and same-browser concurrent replay. Receipts are in
+`.cache/security-review-2026-10-06/browser-*.log` and `account-*.log`.
+
+The root gate also passes 3,290 tests with two platform skips, typecheck and lint.
+Two further failing-then-passing build tests ensure extracted provider/browser
+modules cannot enter tenant or native bundles. Candidate secret scans are redacted;
+no secrets were found in the staged source patch or rebuilt hosting bundles.
+
+The account page has local desktop and 375px presentation evidence, with no
+horizontal overflow and 44px sign-in buttons. Google's current pre-approved PNG
+is embedded unmodified, avoiding external image/font/script requests; provenance
+is recorded in `hosting/assets/README.md`. The preview uses only disposable local
+fixture identities and is not evidence of live Google/GitHub authentication.
+
+Provider linking/unlinking, purpose-bound sensitive-action reauthentication,
+individual connection revocation, complete account/asset deletion, public admission
+limits, privacy pages and deployed user flows remain open. A fresh OAuth callback
+is not being presented as proof of a fresh password or MFA challenge. No production
+deployment or npm publication occurred in this continuation.

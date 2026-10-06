@@ -167,6 +167,39 @@ Checked on 6 October 2026:
   npm token. Registry staging, maintainer approval and public promotion remain
   separate steps in this repository's release runbook.
 
+## Browser account continuation
+
+The separate account-controls branch now has locally tested direct sign-in,
+browser sessions and logout. Review checked fresh random credentials, hashed
+storage, host-only Secure/HttpOnly cookies, idle and absolute expiry, session
+rotation, current primary account/epoch checks, origin and CSRF validation,
+single-use login state and provider/browser binding. A concurrent callback test
+admits exactly one exchange; expired, swapped or stolen callbacks make no provider
+request. Database-failure fixtures verify rollback. Sign-in state is capped at
+4,096 pending rows, which is a storage safeguard rather than a public rate limit.
+
+The session-cap review found that replacing one browser's session could prune
+another device unnecessarily. A focused test failed first; deletion of the old
+browser token now precedes cap pruning in the same transaction. All nine session
+tests and 34 authentication tests pass. The complete hosted suite passes 138 tests.
+Signing out of the browser leaves MCP grants intact; MCP cookies and bearer tokens
+are never interchangeable. No test-only issuance endpoint enters production.
+
+Extracting the GitHub adapter exposed a gap in the build guard: a future accidental
+import could evade its old `auth.ts` filename check. Two tests build the actual
+GitHub/account-page dependency graphs and first demonstrated that gap. The guard
+now rejects those provider and browser modules from every non-gateway bundle,
+including paths reported with Windows separators. All five actual production
+bundles pass the guard.
+
+These controls follow the current [OWASP session guidance](https://cheatsheetseries.owasp.org/cheatsheets/Session_Management_Cheat_Sheet.html)
+and [CSRF guidance](https://cheatsheetseries.owasp.org/cheatsheets/Cross-Site_Request_Forgery_Prevention_Cheat_Sheet.html).
+This does not yet qualify sensitive account actions: fresh provider responses do
+not necessarily prove a fresh password or MFA challenge. Explicit linking,
+connection revocation, account/asset deletion, public admission limits and deployed
+cross-region/user tests remain launch gates. Local screenshots establish only the
+account page's desktop and mobile layout.
+
 ## Acceptance
 
 Open. Secret hygiene and a passing local test suite do not establish secure public

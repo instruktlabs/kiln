@@ -4,6 +4,8 @@ import {
   OAuthResourceServer,
 } from '@cloudflare/workers-oauth-provider';
 import { isCurrentAccountGrant } from './accounts';
+import { accountPage } from './account-page';
+import { beginBrowserLogin } from './browser-login';
 import { authorize, authorizationFailure, SCOPES, type SignInEnv } from './auth';
 import { forwardTenant, type TenantEnv } from './gateway';
 import { boundedRequest, HttpFailure, privateResponse } from './http';
@@ -72,8 +74,11 @@ export default {
         if (url.search)
           throw new HttpFailure(400, 'Query parameters are not supported on resource endpoints');
         response = await protectedResource.fetch(request, env, ctx);
+      } else if (url.pathname === '/account' || url.pathname === '/account/logout') {
+        response = await accountPage(await boundedRequest(request, 4096), env.ACCOUNTS, origin);
       } else if (
         url.pathname === '/authorize' ||
+        url.pathname === '/account/login' ||
         url.pathname === '/oauth/github/callback' ||
         url.pathname === '/oauth/google/callback'
       ) {
@@ -85,12 +90,15 @@ export default {
           !env.ACCOUNTS
         )
           throw new HttpFailure(503, 'Sign-in is not configured');
-        response = await authorize(
-          await boundedRequest(request, 16_384),
-          auth.getOAuthApi(env),
-          origin,
-          env,
-        );
+        response =
+          url.pathname === '/account/login'
+            ? await beginBrowserLogin(await boundedRequest(request, 4096), origin, env)
+            : await authorize(
+                await boundedRequest(request, 16_384),
+                auth.getOAuthApi(env),
+                origin,
+                env,
+              );
       } else if (
         url.pathname === '/register' ||
         url.pathname.startsWith('/oauth/token') ||

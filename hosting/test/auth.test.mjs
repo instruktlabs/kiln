@@ -240,6 +240,8 @@ async function grant(user = 'alice', options = {}) {
     code: redirect.searchParams.get('code'),
     callback,
     upstreamCookie: cookies(approved),
+    browserCookie: cookies(response),
+    callbackHeaders: response.headers,
   };
 }
 
@@ -278,6 +280,362 @@ async function mcp(credential, options = {}) {
     body: options.body ?? JSON.stringify({ jsonrpc: '2.0', id: 1, method: 'tools/list' }),
   });
 }
+
+test('browser account sign-in establishes a private session for either verified provider', async () => {
+  for (const provider of ['google', 'github']) {
+    const authorization = await grant('alice', { provider });
+    assert.match(authorization.browserCookie, /__Host-kiln-session=[a-f0-9]{64}/);
+    const page = await runtime.dispatchFetch(`${origin}/account`, {
+      headers: { cookie: authorization.browserCookie },
+    });
+    assert.equal(page.status, 200);
+    assert.equal(page.headers.get('cache-control'), 'no-store');
+    assert.equal(page.headers.get('referrer-policy'), 'no-referrer');
+    assert.match(page.headers.get('content-security-policy'), /frame-ancestors 'none'/);
+    const html = await page.text();
+    assert.match(html, /Your Kiln account/);
+    assert.match(html, provider === 'google' ? /Google/ : /GitHub/);
+    assert.match(html, /name="csrf" value="[a-f0-9]{64}"/);
+    assert.ok(!html.includes(authorization.browserCookie));
+    assert.ok(!html.includes('fixture-secret'));
+    const sessionCookie = authorization.callbackHeaders
+      .getSetCookie()
+      .find((value) => value.startsWith('__Host-kiln-session='));
+    for (const attribute of ['Secure', 'HttpOnly', 'SameSite=Lax', 'Path=/'])
+      assert.ok(sessionCookie.includes(attribute));
+  }
+});
+
+test('browser account logout is CSRF protected and leaves MCP connections authorized', async () => {
+  const authorization = await grant();
+  const credential = await (await exchange(authorization)).json();
+  const headers = { cookie: authorization.browserCookie };
+  const page = await (await runtime.dispatchFetch(`${origin}/account`, { headers })).text();
+  const csrf = page.match(/name="csrf" value="([a-f0-9]{64})"/)?.[1];
+  assert.ok(csrf);
+  const post = (body, extra = {}) =>
+    runtime.dispatchFetch(`${origin}/account/logout`, {
+      method: 'POST',
+      redirect: 'manual',
+      headers: {
+        ...headers,
+        origin,
+        'content-type': 'application/x-www-form-urlencoded',
+        ...extra,
+      },
+      body,
+    });
+  assert.equal((await runtime.dispatchFetch(`${origin}/account/logout`, { headers })).status, 405);
+  for (const body of ['', `csrf=${'0'.repeat(64)}`, `csrf=${csrf}&csrf=${csrf}`])
+    assert.equal((await post(body)).status, 403);
+  for (const badOrigin of ['', 'https://evil.example', 'https://sibling.kiln.example.com'])
+    assert.equal((await post(`csrf=${csrf}`, { origin: badOrigin })).status, 403);
+  assert.equal(
+    (await post(JSON.stringify({ csrf }), { 'content-type': 'application/json' })).status,
+    415,
+  );
+  assert.equal((await runtime.dispatchFetch(`${origin}/account`, { headers })).status, 200);
+  const loggedOut = await post(`csrf=${csrf}`);
+  assert.equal(loggedOut.status, 303);
+  assert.equal(loggedOut.headers.get('location'), '/account');
+  assert.match(loggedOut.headers.get('set-cookie'), /Max-Age=0/);
+  assert.equal((await runtime.dispatchFetch(`${origin}/account`, { headers })).status, 401);
+  assert.equal((await mcp(credential)).status, 200);
+});
+
+test('browser account sessions cannot substitute for MCP tokens or another browser CSRF', async () => {
+  const alice = await grant('alice');
+  const bob = await grant('bob');
+  const alicePage = await (
+    await runtime.dispatchFetch(`${origin}/account`, {
+      headers: { cookie: alice.browserCookie },
+    })
+  ).text();
+  const csrf = alicePage.match(/name="csrf" value="([a-f0-9]{64})"/)?.[1];
+  assert.ok(csrf);
+  assert.equal(
+    (
+      await runtime.dispatchFetch(`${origin}/account/logout`, {
+        method: 'POST',
+        headers: {
+          cookie: bob.browserCookie,
+          origin,
+          'content-type': 'application/x-www-form-urlencoded',
+        },
+        body: `csrf=${csrf}`,
+        redirect: 'manual',
+      })
+    ).status,
+    403,
+  );
+  assert.equal(
+    (
+      await runtime.dispatchFetch(`${origin}/mcp`, {
+        method: 'POST',
+        headers: { cookie: alice.browserCookie },
+        body: '{}',
+      })
+    ).status,
+    401,
+  );
+  const credential = await (await exchange(alice)).json();
+  assert.equal(
+    (
+      await runtime.dispatchFetch(`${origin}/account`, {
+        headers: { authorization: `Bearer ${credential.access_token}` },
+      })
+    ).status,
+    401,
+  );
+  assert.equal(
+    (
+      await runtime.dispatchFetch(
+        `${origin}/account?cookie=${encodeURIComponent(alice.browserCookie)}`,
+      )
+    ).status,
+    400,
+  );
+});
+
+async function browserLogin(provider = 'github', user = 'alice', server = runtime, cookie = '') {
+  const start = await server.dispatchFetch(`${origin}/account/login`, {
+    method: 'POST',
+    redirect: 'manual',
+    headers: { origin, cookie, 'content-type': 'application/x-www-form-urlencoded' },
+    body: new URLSearchParams({ provider }),
+  });
+  assert.equal(start.status, 302);
+  const upstream = new URL(start.headers.get('location'));
+  assert.equal(upstream.origin, provider === 'github' ? 'https://github.com' : googleIssuer);
+  assert.equal(upstream.searchParams.get('code_challenge_method'), 'S256');
+  assert.equal(upstream.searchParams.get('scope'), provider === 'github' ? '' : 'openid profile');
+  const code = provider === 'github' ? user : randomBytes(24).toString('base64url');
+  if (provider === 'google')
+    googleCodes.set(code, {
+      user,
+      nonce: upstream.searchParams.get('nonce'),
+      challenge: upstream.searchParams.get('code_challenge'),
+    });
+  return {
+    start,
+    callback: `${origin}/oauth/${provider}/callback?${new URLSearchParams({ state: upstream.searchParams.get('state'), code })}`,
+    cookie: cookies(start),
+  };
+}
+
+test('direct browser login uses either provider, no MCP client and no upstream token in cookies', async () => {
+  const signedOut = await runtime.dispatchFetch(`${origin}/account`);
+  assert.equal(signedOut.status, 401);
+  const html = await signedOut.text();
+  assert.match(html, /action="\/account\/login"/);
+  for (const provider of ['google', 'github']) {
+    const flow = await browserLogin(provider);
+    assert.match(flow.cookie, /__Host-kiln-login=[a-f0-9]{64}/);
+    const callback = await runtime.dispatchFetch(flow.callback, {
+      headers: { cookie: flow.cookie },
+      redirect: 'manual',
+    });
+    assert.equal(callback.status, 303);
+    assert.equal(callback.headers.get('location'), '/account');
+    assert.match(callback.headers.get('set-cookie'), /__Host-kiln-session=[a-f0-9]{64}/);
+    assert.ok(!callback.headers.get('set-cookie').includes('fixture-'));
+    assert.ok(
+      callback.headers
+        .getSetCookie()
+        .some((value) => value.startsWith('__Host-kiln-login=;') && value.includes('Max-Age=0')),
+    );
+    assert.equal(
+      (await runtime.dispatchFetch(`${origin}/account`, { headers: { cookie: cookies(callback) } }))
+        .status,
+      200,
+    );
+  }
+});
+
+test('direct browser login requires its browser, exact provider and one-time state before contacting a provider', async () => {
+  const flow = await browserLogin();
+  const count = outboundCalls;
+  for (const [url, cookie] of [
+    [flow.callback, ''],
+    [flow.callback, `${flow.cookie}; ${flow.cookie}`],
+    [flow.callback.replace('/github/', '/google/'), flow.cookie],
+    [`${flow.callback}&state=kb1_invalid`, flow.cookie],
+    [flow.callback.replace(/state=[^&]+/, `state=kb1_${'0'.repeat(64)}`), flow.cookie],
+  ]) {
+    const denied = await runtime.dispatchFetch(url, { headers: { cookie }, redirect: 'manual' });
+    assert.equal(denied.status, 400);
+    assert.ok(!denied.headers.get('set-cookie')?.includes('__Host-kiln-session='));
+  }
+  assert.equal(outboundCalls, count);
+  const results = await Promise.all(
+    Array.from({ length: 5 }, () =>
+      runtime.dispatchFetch(flow.callback, {
+        headers: { cookie: flow.cookie },
+        redirect: 'manual',
+      }),
+    ),
+  );
+  assert.deepEqual(results.map((r) => r.status).sort(), [303, 400, 400, 400, 400]);
+  assert.equal(outboundCalls - count, 2);
+});
+
+test('direct browser login rejects forged forms and arbitrary return URLs before outbound calls', async () => {
+  const count = outboundCalls;
+  const post = (body, extra = {}, method = 'POST') =>
+    runtime.dispatchFetch(`${origin}/account/login`, {
+      method,
+      redirect: 'manual',
+      headers: { origin, 'content-type': 'application/x-www-form-urlencoded', ...extra },
+      ...(method === 'POST' ? { body } : {}),
+    });
+  assert.equal((await post('', {}, 'GET')).status, 405);
+  assert.equal((await post('provider=github', { origin: 'https://evil.example' })).status, 403);
+  assert.equal((await post('provider=github', { origin: '' })).status, 403);
+  for (const body of [
+    'provider=unknown',
+    'provider=github&provider=google',
+    'provider=github&returnTo=https://evil.example',
+    '',
+  ])
+    assert.equal((await post(body)).status, 400);
+  assert.equal((await post('{}', { 'content-type': 'application/json' })).status, 415);
+  assert.equal(outboundCalls, count);
+});
+
+test('direct browser login cancellation consumes its state and returns a safe retry page', async () => {
+  const flow = await browserLogin();
+  const cancellation = new URL(flow.callback);
+  cancellation.searchParams.delete('code');
+  cancellation.searchParams.set('error', 'access_denied');
+  cancellation.searchParams.set('error_description', '<script>provider-detail</script>');
+  const count = outboundCalls;
+  const response = await runtime.dispatchFetch(cancellation, {
+    headers: { cookie: flow.cookie },
+    redirect: 'manual',
+  });
+  assert.equal(response.status, 400);
+  assert.ok(!(await response.text()).includes('provider-detail'));
+  assert.equal(
+    (
+      await runtime.dispatchFetch(flow.callback, {
+        headers: { cookie: flow.cookie },
+        redirect: 'manual',
+      })
+    ).status,
+    400,
+  );
+  assert.equal(outboundCalls, count);
+});
+
+test('direct browser login stores hashed state and binding and rejects expiry without provider calls', async () => {
+  const flow = await browserLogin();
+  const rows = await database.prepare('SELECT * FROM kiln_browser_logins').all();
+  const serialized = JSON.stringify(rows.results);
+  assert.ok(!serialized.includes(new URL(flow.callback).searchParams.get('state')));
+  assert.ok(!serialized.includes(flow.cookie.split('=')[1]));
+  await database.prepare('UPDATE kiln_browser_logins SET expires_at=0').run();
+  const count = outboundCalls;
+  assert.equal(
+    (
+      await runtime.dispatchFetch(flow.callback, {
+        headers: { cookie: flow.cookie },
+        redirect: 'manual',
+      })
+    ).status,
+    400,
+  );
+  assert.equal(outboundCalls, count);
+});
+
+test('restarting direct browser login retires the old intent and database failure rolls back that retirement', async () => {
+  const first = await browserLogin();
+  const second = await browserLogin('github', 'alice', runtime, first.cookie);
+  const count = outboundCalls;
+  assert.equal(
+    (
+      await runtime.dispatchFetch(first.callback, {
+        headers: { cookie: first.cookie },
+        redirect: 'manual',
+      })
+    ).status,
+    400,
+  );
+  assert.equal(outboundCalls, count);
+  await database
+    .prepare(`CREATE TRIGGER reject_browser_login BEFORE INSERT ON kiln_browser_logins
+    BEGIN SELECT RAISE(ABORT, 'fixture rejection'); END`)
+    .run();
+  try {
+    const rejected = await runtime.dispatchFetch(`${origin}/account/login`, {
+      method: 'POST',
+      headers: {
+        origin,
+        cookie: second.cookie,
+        'content-type': 'application/x-www-form-urlencoded',
+      },
+      body: 'provider=github',
+      redirect: 'manual',
+    });
+    assert.equal(rejected.status, 503);
+    assert.equal(rejected.headers.get('set-cookie'), null);
+    assert.equal(await rejected.text(), 'Service temporarily unavailable');
+  } finally {
+    await database.prepare('DROP TRIGGER reject_browser_login').run();
+  }
+  assert.equal(
+    (
+      await runtime.dispatchFetch(second.callback, {
+        headers: { cookie: second.cookie },
+        redirect: 'manual',
+      })
+    ).status,
+    303,
+  );
+});
+
+test('direct browser login has a bounded global intent table and cleans expired reservations', async () => {
+  await database
+    .prepare(`WITH RECURSIVE numbers(n) AS (
+    SELECT 1 UNION ALL SELECT n+1 FROM numbers WHERE n<4096)
+    INSERT INTO kiln_browser_logins(state_hash,binding_hash,provider,verifier,nonce,expires_at)
+    SELECT 'fixture-cap-'||n,'fixture-cap-'||n,'github','fixture','fixture',? FROM numbers
+    LIMIT MAX(0, 4096-(SELECT COUNT(*) FROM kiln_browser_logins))`)
+    .bind(Date.now() + 600_000)
+    .run();
+  try {
+    const count = outboundCalls;
+    const replies = await Promise.all(
+      Array.from({ length: 3 }, () =>
+        runtime.dispatchFetch(`${origin}/account/login`, {
+          method: 'POST',
+          headers: { origin, 'content-type': 'application/x-www-form-urlencoded' },
+          body: 'provider=github',
+          redirect: 'manual',
+        }),
+      ),
+    );
+    assert.deepEqual(
+      replies.map((r) => r.status),
+      [429, 429, 429],
+    );
+    assert.equal(
+      (await database.prepare('SELECT COUNT(*) AS n FROM kiln_browser_logins').first()).n,
+      4096,
+    );
+    assert.equal(outboundCalls, count);
+    await database
+      .prepare("UPDATE kiln_browser_logins SET expires_at=0 WHERE state_hash LIKE 'fixture-cap-%'")
+      .run();
+    await browserLogin();
+    assert.ok(
+      (await database.prepare('SELECT COUNT(*) AS n FROM kiln_browser_logins').first()).n < 4096,
+    );
+  } finally {
+    await database
+      .prepare("DELETE FROM kiln_browser_logins WHERE state_hash LIKE 'fixture-cap-%'")
+      .run();
+  }
+});
 
 test('metadata advertises the configured audience, scopes, issuer and S256', async () => {
   const resource = await (

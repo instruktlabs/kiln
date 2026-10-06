@@ -56,10 +56,49 @@ validation, authorization-code exchange and refresh checks the current primary
 account state and authorization epoch. Missing/disabled/deleting accounts and old
 epochs fail closed; database outages return unavailable rather than permitting
 cached access. Account lifecycle mutations must increment the epoch atomically.
-Explicit identity linking, browser sessions, connection controls and completed
-asset deletion remain required before launch.
+Browser sessions and direct sign-in now have local qualification. Explicit
+identity linking, connection controls and completed asset deletion remain required
+before launch.
 Only verified server-side provider adapters may call this contract. The JSON
 interface under `test/` exists solely for local tests and is not a public API.
+
+### Browser account access
+
+`/account` renders sign-in or the current account's linked provider names. Direct
+sign-in and MCP authorization share the verified Google/GitHub adapters and exact
+provider callbacks. Direct sign-in does not register a synthetic MCP client or
+issue MCP tokens. Its `kb1_` state selects a separate D1 transaction namespace;
+the state and an independent browser cookie must both match before a provider
+exchange. D1 atomically consumes the transaction, including cancellation. Stored
+state and cookie bindings are hashed with the service origin and their purpose.
+PKCE verifiers and nonces remain server-side for at most ten minutes. The table
+admits at most 4,096 pending transactions and opportunistically removes expired
+rows. This storage bound does not replace the required public rate/admission limits.
+
+Successful verified callbacks issue a new `__Host-kiln-session` cookie with Secure,
+HttpOnly, SameSite=Lax and Path=/, never Domain. D1 stores only its SHA-256 verifier,
+with a separate CSRF value, account ID and authorization epoch. Sessions expire
+after 30 minutes idle or 24 hours absolute, whichever comes first. Each successful
+read atomically renews only the idle deadline and checks the current primary account
+state/epoch. Fresh sign-in revokes that browser's previous session; at most eight
+sessions remain per account. Rotation at the cap preserves the other seven devices.
+
+Logout requires a same-origin POST, a bounded form and that session's CSRF value.
+It revokes only the browser session; it deliberately leaves MCP connections and
+other devices intact. Browser cookies cannot authorize `/mcp`, and MCP bearer
+tokens cannot authorize account pages. No account selection comes from a form or
+URL. Session issuance accepts only verified server-side identities. A recent
+callback is not proof of a fresh password/MFA challenge; linking/deletion still
+need their own explicit, purpose-bound confirmation and reauthentication policy.
+
+Migrations `0003_browser_sessions.sql` and `0004_browser_logins.sql` add these
+tables. Workerd tests cover expiry, rotation, concurrent callbacks, cross-provider
+and cross-browser rejection, SQL rollback, storage bounds and logout/connection
+separation. The account page uses a nonce-restricted style block and a Google-
+provided button image embedded locally; see [asset provenance](assets/README.md).
+Local desktop/375px layout checks establish presentation only, not live provider
+authentication or final launch acceptance. Privacy pages, full account controls
+and the branded MCP consent experience remain open.
 
 ## Native HTTP adapter
 
@@ -115,12 +154,13 @@ responses are bounded and redirects/foreign endpoint origins are refused. Upstre
 access/ID tokens are discarded at the adapter boundary; only verified issuer/subject
 pairs enter the account directory. Login names and email never select a tenant.
 
-The gateway needs `ACCOUNTS` bound to D1 with both migrations applied, plus
+The gateway needs `ACCOUNTS` bound to D1 with all numbered migrations applied, plus
 `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `GITHUB_CLIENT_ID` and
 `GITHUB_CLIENT_SECRET`. Register exact `/oauth/google/callback` and
 `/oauth/github/callback` URLs under the configured `PUBLIC_ORIGIN`, using separate
-test and production provider apps. No live database, provider app or secret has
-been provisioned by this implementation. Existing prototype provider-derived grants
+test and production provider apps. Google OAuth branding now exists in testing
+mode; no live database or provider client secret has been provisioned by this
+implementation. Existing prototype provider-derived grants
 are deliberately invalid; no deployed user migration is being claimed. See the
 [authentication architecture review](../docs/plans/2026-10-05-v1-publication-plan.md#authentication-architecture-review-6-october)
 for the selected provider-independent boundary, library comparison, KV consistency

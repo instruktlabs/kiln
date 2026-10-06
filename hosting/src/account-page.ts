@@ -1,0 +1,94 @@
+import { IDENTITY_ISSUERS } from './accounts';
+import { D1BrowserSessions, type BrowserSession } from './browser-sessions';
+import { HttpFailure } from './http';
+import { GOOGLE_SIGN_IN_BUTTON } from './google-button';
+
+const escapeHtml = (value: string) =>
+  value.replace(/[&<>"']/g, (char) => `&#${char.charCodeAt(0)};`);
+
+function page(content: string, status = 200): Response {
+  const nonce = crypto.randomUUID().replace(/-/g, '');
+  return new Response(
+    `<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1"><title>Your account · Kiln</title>
+<style nonce="${nonce}">
+:root{font-family:system-ui,sans-serif;color:#292821;background:#f6f4ef;color-scheme:light}
+*{box-sizing:border-box}body{margin:0}main{max-width:42rem;margin:8vh auto;padding:1.5rem}
+header{display:flex;align-items:baseline;gap:.8rem;margin-bottom:2.5rem}header strong{font-size:1.7rem}
+header span,footer{font-size:.9rem;color:#59594f}h1{font-size:2rem;line-height:1.2}
+p,li{line-height:1.6}section{border:1px solid #d6d3c9;background:#fff;border-radius:.75rem;padding:1.5rem;margin:1.5rem 0}
+h2{font-size:1.15rem;margin-top:0}button{font:inherit;font-weight:600;min-height:2.75rem;padding:.65rem 1.2rem;border:0;border-radius:.35rem;background:#3d5139;color:#fff;cursor:pointer}
+button:focus-visible,a:focus-visible{outline:3px solid #a25c24;outline-offset:4px}a{color:#365231}
+.provider-buttons{display:flex;flex-wrap:wrap;gap:.75rem}.google-button{padding:0;background:transparent;line-height:0}
+.google-button img{display:block;width:198px;height:44px}.github-button{width:198px;min-height:44px;padding:0;background:#fff;color:#1f1f1f;border:1px solid #747775;font-size:14px;font-weight:500}
+footer{margin-top:2rem}footer a{margin-right:1rem}
+</style></head><body><main><header><strong>Kiln</strong><span>by Instrukt Labs</span></header>
+${content}<footer><a href="mailto:support@instruktlabs.com">Contact support</a>
+<a href="https://github.com/instruktlabs/kiln">Open source</a></footer></main></body></html>`,
+    {
+      status,
+      headers: {
+        'content-type': 'text/html; charset=utf-8',
+        'content-security-policy': `default-src 'none'; img-src data:; style-src 'nonce-${nonce}'; base-uri 'none'; form-action 'self'; frame-ancestors 'none'`,
+      },
+    },
+  );
+}
+
+export async function accountPage(
+  request: Request,
+  database: D1Database,
+  origin: string,
+): Promise<Response> {
+  const url = new URL(request.url);
+  if (url.search) throw new HttpFailure(400, 'Query parameters are not supported on account pages');
+  const sessions = new D1BrowserSessions(database, origin);
+  if (url.pathname === '/account/logout') {
+    if (request.method !== 'POST')
+      return new Response('Method not allowed', { status: 405, headers: { allow: 'POST' } });
+    if (request.headers.get('origin') !== origin)
+      throw new HttpFailure(403, 'Invalid account form');
+    if (request.headers.get('content-type')?.split(';')[0] !== 'application/x-www-form-urlencoded')
+      throw new HttpFailure(415, 'Expected form data');
+    const form = await request.formData();
+    if (form.getAll('csrf').length !== 1 || [...form.keys()].some((key) => key !== 'csrf'))
+      throw new HttpFailure(403, 'Invalid account form');
+    const cookie = await sessions.logout(request, String(form.get('csrf')));
+    return new Response(null, {
+      status: 303,
+      headers: { location: '/account', 'set-cookie': cookie },
+    });
+  }
+  if (request.method !== 'GET')
+    return new Response('Method not allowed', { status: 405, headers: { allow: 'GET' } });
+  let session: BrowserSession;
+  try {
+    session = await sessions.read(request);
+  } catch (error) {
+    if (!(error instanceof HttpFailure) || error.status !== 401) throw error;
+    return page(
+      `<h1>Sign in to Kiln</h1><p>Free hosted access, with private saved assets and a personal usage quota.</p>
+<section><h2>Welcome back</h2><p>Use the same sign-in method as before to reach your saved work. Kiln requests no GitHub repository access or Google Drive access.</p>
+<form class="provider-buttons" method="post" action="/account/login"><button class="google-button" name="provider" value="google"><img src="${GOOGLE_SIGN_IN_BUTTON}" width="198" height="44" alt="Sign in with Google"></button>
+<button class="github-button" name="provider" value="github">Sign in with GitHub</button></form></section>`,
+      401,
+    );
+  }
+  const identities = await database
+    .withSession('first-primary')
+    .prepare('SELECT issuer FROM kiln_identities WHERE account_id=? ORDER BY issuer LIMIT 3')
+    .bind(session.accountId)
+    .all<{ issuer: string }>();
+  const providers = identities.results.map(({ issuer }) =>
+    issuer === IDENTITY_ISSUERS.google
+      ? 'Google'
+      : issuer === IDENTITY_ISSUERS.github
+        ? 'GitHub'
+        : 'Unknown provider',
+  );
+  return page(`<h1>Your Kiln account</h1><p>Free hosted access, with private saved assets and a personal usage quota.</p>
+<section><h2>Sign-in methods</h2><ul>${providers.map((provider) => `<li>${escapeHtml(provider)}</li>`).join('')}</ul></section>
+<section><h2>This browser</h2><p>Signing out here leaves your connected apps working.</p>
+<form method="post" action="/account/logout"><input type="hidden" name="csrf" value="${escapeHtml(session.csrf)}">
+<button type="submit">Sign out of this browser</button></form></section>`);
+}

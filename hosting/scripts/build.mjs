@@ -2,6 +2,7 @@ import { mkdir, writeFile } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 import { build } from 'esbuild';
+import { assertProductionBoundary } from './build-boundary.mjs';
 
 const output = new URL('../../.cache/hosted-worker/', import.meta.url);
 await mkdir(output, { recursive: true });
@@ -23,15 +24,7 @@ for (const entry of ['worker', 'tenant-worker', 'native-programs', 'native-asset
   });
   const bytes = result.outputFiles[0].contents;
   const inputs = Object.keys(result.metafile.inputs);
-  if (inputs.some((name) => /(?:^|\/)(?:test|probe)\//.test(name.replaceAll('\\', '/')))) {
-    throw new Error('Production bundle includes test or probe helpers');
-  }
-  if (
-    entry !== 'worker' &&
-    inputs.some((name) => /oauth|(?:^|\/)auth\.ts$/.test(name.replaceAll('\\', '/')))
-  ) {
-    throw new Error('Storage bundle includes authorization-server code');
-  }
+  assertProductionBoundary(entry, inputs);
   await writeFile(new URL(`${entry}.mjs`, output), bytes);
   await writeFile(
     new URL(entry === 'worker' ? 'build.json' : `${entry}-build.json`, output),
