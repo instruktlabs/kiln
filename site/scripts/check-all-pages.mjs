@@ -4,6 +4,7 @@ import puppeteer from 'puppeteer-core';
 import { chromeExecutable } from './build-site-media.mjs';
 import { inspectHtml, routeForFile, isEmbeddedDocument } from './static-validation-core.mjs';
 import { compareSitemapRoutes } from './sitemap-routes.mjs';
+import {assertReadableControlText,collectReadableControlText} from './scene-controls-proof.mjs';
 const base = process.argv[2] ?? 'http://127.0.0.1:4175';
 const out = resolve(process.argv[3] ?? '.cache/validation');
 const root = resolve('dist');
@@ -41,7 +42,9 @@ try {
         const response = await page.goto(new URL(route, base).href, { waitUntil: 'networkidle0', timeout: 30000 });
         const status = response?.status();
         if (status !== 200 && !(route === '/404.html' && status === 404)) report.errors.push({ route, type: 'http', status });
-        report.pages.push({ route, status });
+        const renderedText=await page.evaluate(collectReadableControlText);
+        try{assertReadableControlText(renderedText,route);}catch(error){report.errors.push({route,type:'text',message:error.message});}
+        report.pages.push({ route, status, renderedText });
       } catch (error) { report.errors.push({ route, type: 'navigation', message: error.message }); }
     }
     await page.close();
@@ -52,5 +55,5 @@ try {
   await mkdir(out, { recursive: true });
   await writeFile(join(out, 'all-page-console.json'), JSON.stringify(report, null, 2));
 }
-console.log(`${report.pages.length} routes visited; ${report.errors.length} console, script, navigation or HTTP errors.`);
+console.log(`${report.pages.length} routes visited; ${report.errors.length} text, console, script, navigation or HTTP errors.`);
 if (report.errors.length) process.exitCode = 1;

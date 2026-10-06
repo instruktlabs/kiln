@@ -1,5 +1,23 @@
 import { expect, test } from 'bun:test';
-import { assertControlBackend, assertPanelObservation, assertPositionMotion, movingFreightKinds, freightScanPlan, visibleFreightKinds, assertFreightScanCamera } from './scene-controls-proof.mjs';
+import { assertControlBackend, assertPanelObservation, assertPositionMotion, movingFreightKinds, freightScanPlan, visibleFreightKinds, assertFreightScanCamera, assertReadableControlText, collectReadableControlText } from './scene-controls-proof.mjs';
+
+test('rendered control proof rejects damaged visible text and accessibility labels while retaining legitimate international copy',()=>{
+ const good={text:'Troy · Loading... café 日本語',labels:[{attribute:'aria-label',value:'± m² Ελληνικά'}]};const before=JSON.stringify(good);expect(()=>assertReadableControlText(good,'troy/webgpu')).not.toThrow();expect(JSON.stringify(good)).toBe(before);
+ for(const damaged of [
+  {...good,text:'Loading \u00e2\u20ac\u00a6'},
+  {...good,labels:[{attribute:'aria-label',value:'caf\u00c3\u00a9'}]},
+  {...good,labels:[{attribute:'title',value:'\ufffd'}]},
+ ])expect(()=>assertReadableControlText(damaged,'troy/webgl2')).toThrow(/troy\/webgl2.*(?:text|aria-label|title)/);
+ for(const missing of [null,{labels:[]},{text:'Ready'},{text:'Ready',labels:[{attribute:'title'}]}])expect(()=>assertReadableControlText(missing)).toThrow();
+});
+test('serialized rendered-text collection reads only visible labels without changing document or observer state',()=>{
+ const checks:unknown[]=[];const element=(attributes:Record<string,string>,visible=true)=>({tagName:'BUTTON',id:'more',checkVisibility:(options:unknown)=>{checks.push(options);return visible;},getAttribute:(name:string)=>attributes[name]??null});
+ const visible=element({'aria-label':'More controls',title:'café'}),hidden=element({'aria-label':'hidden \ufffd'},false);
+ const scope:any={document:{body:{innerText:'Farm · Ready'},querySelectorAll:()=>[visible,hidden]}};const prior=scope.document.body.innerText;
+ const serialized=new Function(`return (${collectReadableControlText.toString()})`)();const result=serialized(scope);
+ expect(result).toEqual({text:'Farm · Ready',labels:[{element:'button#more',attribute:'aria-label',value:'More controls'},{element:'button#more',attribute:'title',value:'café'}]});expect(scope.document.body.innerText).toBe(prior);expect(()=>assertReadableControlText(result)).not.toThrow();
+ expect(checks).toEqual([{visibilityProperty:true,opacityProperty:true},{visibilityProperty:true,opacityProperty:true}]);
+});
 
 test('movement evidence requires finite positions of the same observed subject and meaningful horizontal travel', () => {
   const before = { subject: 'farmer-yard-0', position: [0, 1, 0] };

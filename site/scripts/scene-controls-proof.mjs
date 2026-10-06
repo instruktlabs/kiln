@@ -1,4 +1,22 @@
 import assert from 'node:assert/strict';
+import {textProblems} from './public-text.mjs';
+
+export function assertReadableControlText(observation,context='rendered controls'){
+  assert.ok(typeof observation?.text==='string'&&Array.isArray(observation.labels),`${context}: rendered text/labels missing`);
+  const check=(value,name)=>assert.equal(textProblems(value).length,0,`${context}: damaged ${name}: ${JSON.stringify(value)}`);
+  check(observation.text,'text');
+  for(const label of observation.labels){assert.ok(typeof label.attribute==='string'&&typeof label.value==='string',`${context}: label evidence missing`);check(label.value,`${label.attribute} (${label.element??'element'})`);}
+}
+/** DOM-readable body copy and CSS-visible label attributes; no pixel-visibility
+ * claim. Serialized into verifiers without touching scene controllers. */
+export function collectReadableControlText(scope=globalThis){
+  const attributes=['aria-label','aria-description','aria-valuetext','title','alt','placeholder'],labels=[];
+  for(const node of scope.document.querySelectorAll(attributes.map(name=>'['+name+']').join(','))){
+    if(!node.checkVisibility({visibilityProperty:true,opacityProperty:true}))continue;
+    for(const attribute of attributes){const value=node.getAttribute(attribute);if(value!==null)labels.push({element:node.tagName.toLowerCase()+(node.id?'#'+node.id:''),attribute,value});}
+  }
+  return {text:scope.document.body?.innerText??'',labels};
+}
 
 const position = value => Array.isArray(value) && value.length >= 3 && value.every(Number.isFinite);
 const freightKind = name => /^traffic-truck-tractor-lod\d$/.test(name) ? 'tractor' : /^traffic-trailer-(dryvan|flatbed|tanker)-lod\d$/.test(name) ? 'trailer' : null;

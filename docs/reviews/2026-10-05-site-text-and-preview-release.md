@@ -16,6 +16,9 @@ remain available. This site change does not publish a new engine package.
 - Hash-pinned textual scene archive members are decoded strictly before
   extraction. Bridge's authoring readers also fail on malformed UTF-8. Website
   CI now runs on scene changes, and production builds check their full output.
+- Maintained browser verifiers check DOM-readable copy and CSS-visible labels,
+  retaining offending text in failure evidence. Hidden labels are excluded until
+  revealed. This check does not claim pixel visibility or performance acceptance.
 - The homepage includes both Troy coast and battle pictures and its scene/pack
   links. Four scene cards use a two-column desktop grid.
 - Foundry's listing leads with a lower real campus capture and includes building,
@@ -52,14 +55,16 @@ browser visits all 223 with zero script, console, navigation or HTTP errors.
 Typechecks, lint and Astro diagnostics pass. Scene tests pass 716 portable
 contracts plus 53 Troy tests; the corrected workspace fixture passes 15 tests.
 
-Local site tests pass 618, with two existing skips and two Windows file-symlink
-permission failures. Those symlink assertions remain intact for Linux CI.
+Local site tests pass 620, with two existing skips and two Windows file-symlink
+permission failures. Those symlink assertions remain intact and passed Linux CI.
 
 Independent review found and closed three prevention gaps: escaped Astro
 expression literals, scene-only CI triggers, and malformed UTF-8 archive members
 accepted before staging. It also checked multilingual false positives, invalid
 syntax, actual loading/control/error states, cold/cached entry, renderer fallback,
 image decoding, links, desktop/narrow layouts and immutable payload identities.
+The final browser-verifier follow-up also passed independent Chrome checks for
+hidden/revealed labels, legitimate accented text and retained failure evidence.
 
 Ignored evidence is retained under `site/.localdata/`: `text-*` build/test/static
 and route reports, `site-text-review/`, `preview-coverage/`, and the Troy/Bridge

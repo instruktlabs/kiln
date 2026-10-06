@@ -7,7 +7,7 @@ import puppeteer from 'puppeteer-core';
 import { sceneBrowserOptions } from '../../scenes/scripts/browser-options.mjs';
 import { installTimingEvidence } from '../../scenes/scripts/timing-evidence.ts';
 import { chromeExecutable } from './build-site-media.mjs';
-import { assertControlBackend, assertPanelObservation, assertPositionMotion, movingFreightKinds, freightScanPlan, visibleFreightKinds, assertFreightScanCamera } from './scene-controls-proof.mjs';
+import { assertControlBackend, assertPanelObservation, assertPositionMotion, movingFreightKinds, freightScanPlan, visibleFreightKinds, assertFreightScanCamera, assertReadableControlText, collectReadableControlText } from './scene-controls-proof.mjs';
 
 const site = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const hash = bytes => createHash('sha256').update(bytes).digest('hex');
@@ -65,7 +65,7 @@ export async function main(argv = process.argv.slice(2)) {
     scope: 'Actual public HUDs and real desktop-emulated touch; no physical-device, performance, owner appearance, collision completeness or freight joint-alignment acceptance.',
     browserOptions: options, verifierSha256: hash(await readFile(fileURLToPath(import.meta.url))),
     dependencies: {}, selected: { sceneFilter, backendFilter }, scenarios: [], errors: [], complete: false };
-  for (const path of ['./scene-controls-proof.mjs', '../../scenes/scripts/timing-evidence.ts']) report.dependencies[path] = hash(await readFile(new URL(path, import.meta.url)));
+  for (const path of ['./scene-controls-proof.mjs', './public-text.mjs', '../../scenes/scripts/timing-evidence.ts']) report.dependencies[path] = hash(await readFile(new URL(path, import.meta.url)));
   async function pin() {
     assert.equal(hash(await readFile(join(site, 'dist/artifact-files.json'))), expected, 'Local artifact changed');
     const response = await fetch(new URL('/_review/receipt.json', base)); assert.equal(response.status, 200);
@@ -97,7 +97,13 @@ export async function main(argv = process.argv.slice(2)) {
         const iframe = await page.$('[data-mount] iframe');
         const frame = iframe ? await iframe.contentFrame() : page.mainFrame(); assert.ok(frame);
         await frame.waitForSelector('.ks-root canvas');
-        const snapshot = () => frame.evaluate(() => window.__siteControlSnapshot());
+        const snapshot = async () => {
+          const observation=await frame.evaluate(() => window.__siteControlSnapshot());
+          observation.renderedText=await frame.evaluate(collectReadableControlText);
+          result.observations.lastRenderedText=observation.renderedText;
+          assertReadableControlText(observation.renderedText,`${backend}/${scene}`);
+          return observation;
+        };
         const record = (name, detail) => { result.checks.push({ name, pass: true, detail }); console.log(`ok ${backend}/${scene}: ${name}`); };
         await sleep(2000);
         result.observations.initial = await snapshot();
