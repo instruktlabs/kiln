@@ -37,6 +37,7 @@ function fixture(options = {}) {
     releaseExec = resolve;
   });
   let failCleanup = options.failCleanup ?? false;
+  let unconfirmedCleanup = options.unconfirmedCleanup;
   const received = [];
   const stream = (bytes, hanging = false) =>
     new ReadableStream({
@@ -79,12 +80,18 @@ function fixture(options = {}) {
     },
     async inspect() {
       events.push('inspect');
-      return { image: options.observedImage ?? image };
+      if (events.includes('destroy')) {
+        if (unconfirmedCleanup === 'inspect-error') throw new Error('private inspection failure');
+        if (unconfirmedCleanup === 'inspect-pending') return new Promise(() => {});
+        if (unconfirmedCleanup === 'inspect-live') return { image };
+      }
+      return this.running ? { image: options.observedImage ?? image } : null;
     },
     async setInactivityTimeout() {},
     async destroy() {
       events.push('destroy');
       if (failCleanup) throw new Error('private cleanup diagnostic');
+      if (unconfirmedCleanup === 'running') return;
       this.running = false;
       stopped();
     },
@@ -122,6 +129,7 @@ function fixture(options = {}) {
     },
     repairCleanup() {
       failCleanup = false;
+      unconfirmedCleanup = undefined;
     },
   };
 }
@@ -262,6 +270,41 @@ test('cleanup failure suppresses output and a durable recovery alarm retries des
   assert.equal(f.values.get('job').state, 'finished');
   assert.equal(f.values.get('job').outcome, 'DEADLINE_EXCEEDED');
   assert.equal(f.alarmAt, undefined);
+});
+
+test('cleanup must confirm both stopped state and inspection before releasing output or its alarm', async () => {
+  for (const unconfirmedCleanup of ['running', 'inspect-live', 'inspect-error']) {
+    const f = fixture({ unconfirmedCleanup });
+    await assert.rejects(
+      new ContainerEvaluationJob(f.context).run(input, controls),
+      code('CLEANUP_FAILED'),
+    );
+    assert.equal(f.values.get('job').state, 'running');
+    assert.ok(Number.isSafeInteger(f.alarmAt));
+    f.values.get('job').deadlineAt = Date.now() - 1;
+    await assert.rejects(new ContainerEvaluationJob(f.context).alarm(), code('CLEANUP_FAILED'));
+    assert.equal(f.values.get('job').state, 'running');
+    assert.ok(f.alarmAt > Date.now());
+    f.repairCleanup();
+    await new ContainerEvaluationJob(f.context).alarm();
+    assert.equal(f.context.container.running, false);
+    assert.equal(f.values.get('job').state, 'finished');
+    assert.equal(f.alarmAt, undefined);
+  }
+});
+
+test('the same cleanup deadline bounds a stalled stopped-state inspection', async (t) => {
+  t.mock.timers.enable({ apis: ['setTimeout'] });
+  const f = fixture({ unconfirmedCleanup: 'inspect-pending' });
+  const pending = new ContainerEvaluationJob(f.context).run(input, controls);
+  const rejected = assert.rejects(pending, code('CLEANUP_FAILED'));
+  // Let real promise/stream callbacks reach cleanup before advancing the clock.
+  await new Promise((resolve) => setImmediate(resolve));
+  assert.ok(f.events.includes('destroy'));
+  t.mock.timers.tick(5_000);
+  await rejected;
+  assert.equal(f.values.get('job').state, 'running');
+  assert.ok(Number.isSafeInteger(f.alarmAt));
 });
 
 test('startup or native process failures are bounded public errors with cleanup', async () => {

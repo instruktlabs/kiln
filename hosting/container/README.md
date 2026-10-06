@@ -21,7 +21,21 @@ and `/opt/kiln/node-version.txt`; the npm archive alone does not pin transitive
 dependencies or establish the image's identity. The base image digest is shared
 with the existing native preflight. The Linux image build and deterministic
 installed-package fixture passed in [CI run 37479877969](https://github.com/instruktlabs/kiln/actions/runs/37479877969).
-Cloudflare execution and hostile-source isolation remain unqualified.
+The RC image's runtime manifest subsequently passed the fixed evaluation and
+basic provider-boundary checks in [the qualification record](../probe/QUALIFICATION.md).
+Rendering, adversarial resource limits, recovery and production routing remain
+unqualified.
+
+The production controller now requires both `running === false` and a `null`
+inspection after `destroy()` before releasing output or deleting its watchdog.
+Destruction and inspection share a five-second budget. Unknown or failed readback
+keeps the job unfinished for durable recovery. This follows the documented
+[Container API shutdown contract](https://developers.cloudflare.com/containers/api/durable-object-container/).
+Regression tests first reproduced accepted output after an unconfirmed shutdown,
+then passed with the verification in place, including a stalled inspection and
+recovery after an initially failed readback. All 136 hosted tests, three hosted
+typechecks, five bundle checks and root typecheck/lint passed locally. This
+controller change still needs exact-source CI and live failure-path qualification.
 
 The entry's byte limits and engine schema validation are defensive transport
 checks. A JavaScript timer, Linux user ID and the engine's local VM implementation
