@@ -161,6 +161,7 @@ canary or implicit latest for a release gate.
 bun install --frozen-lockfile
 bun run check:toolchain
 bun run check:skills
+bun run build:sdk
 bun run typecheck
 bun run lint
 bun run test
@@ -171,6 +172,8 @@ bun run test:coverage
 `bun run build` is a typecheck only and refreshes neither `dist/` nor its build identity. After
 runtime source changes, rebuild the Node bundles with `node scripts/build-runtime.mjs all`
 (`bun run build:runtime` when viewer assets also changed) before CLI/MCP dogfood and full gates.
+That command also refreshes the compiled SDK in `lib/`. On a fresh checkout, run
+`bun run build:sdk` before typechecking or tests that import public package entrypoints.
 
 Fast loop: nearest test file first, then `bun run typecheck && bun run lint && bun run test`.
 The full offline gate adds `bun run test:coverage`, which emits `coverage/lcov.info` and

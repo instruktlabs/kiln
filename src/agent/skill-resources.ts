@@ -2,14 +2,8 @@ import { lstat, open, readdir, realpath, stat } from 'node:fs/promises';
 import { basename, dirname, extname, join, relative, resolve, sep } from 'node:path';
 import { createHash } from 'node:crypto';
 import { Skill } from '@strands-agents/sdk/vended-plugins/skills';
-
-export interface SkillResourceRequest {
-  skill: string;
-  path?: string;
-  offset: number;
-  limit: number;
-}
-export type SkillResourceReader = (input: SkillResourceRequest) => unknown;
+import type { SkillResourceReader } from '../tools/skill-resource';
+export type { SkillResourceReader, SkillResourceRequest } from '../tools/skill-resource';
 
 const MAX_FILE_BYTES = 256 * 1024;
 const MAX_TOTAL_BYTES = 1024 * 1024;

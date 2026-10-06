@@ -135,11 +135,12 @@ export async function renderGLBViaProcessLaunch(
   }
 
   const sourceModule = import.meta.url.endsWith('.ts');
+  const sdkModule = import.meta.url.endsWith('/subprocess.js');
   const workerPath = fileURLToPath(
     new URL(
       process.versions.bun && sourceModule
         ? './worker.ts'
-        : sourceModule
+        : sourceModule || sdkModule
           ? '../../dist/evaluator-worker.mjs'
           : './evaluator-worker.mjs',
       import.meta.url,

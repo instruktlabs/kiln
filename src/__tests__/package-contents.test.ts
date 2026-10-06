@@ -28,7 +28,11 @@ it('declares Node commands and the files needed by an installed workspace', asyn
     './cache': './src/build-cache.ts',
     './cache/node': './src/build-cache-node.ts',
   })) {
-    expect(pkg.exports[name]).toBe(file);
+    const compiled = file.replace('./src/', './lib/').replace(/\.ts$/, '.js');
+    expect(pkg.exports[name]).toEqual({
+      types: compiled.replace(/\.js$/, '.d.ts'),
+      import: compiled,
+    });
     expect(
       (await readFile(resolve(import.meta.dir, '../..', file), 'utf8')).length,
     ).toBeGreaterThan(0);

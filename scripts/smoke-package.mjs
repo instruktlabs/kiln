@@ -8,6 +8,7 @@ import { tmpdir } from 'node:os';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { smokePackageExporter } from './smoke-package-exporter.mjs';
+import { smokeSdkTypes } from './smoke-sdk-types.mjs';
 
 const repo = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const root = await mkdtemp(join(tmpdir(), 'kiln-package-café-'));
@@ -157,9 +158,10 @@ const textResult = (result) => {
 try {
   const npm = await npmCli();
   receipt.npm = (await command([npm, '--version'], root)).trim();
-  const args = process.argv.slice(2);
+  const checkTypes = process.argv.includes('--types');
+  const args = process.argv.slice(2).filter((argument) => argument !== '--types');
   if (args.length !== 0 && (args.length !== 2 || args[0] !== '--tarball'))
-    throw new Error('Usage: smoke-package.mjs [--tarball /absolute/package.tgz]');
+    throw new Error('Usage: smoke-package.mjs [--tarball /absolute/package.tgz] [--types]');
   if (args.length) {
     receipt.tarball = resolve(args[1]);
     assert((await stat(receipt.tarball)).isFile(), 'Tarball must be a file.');
@@ -199,6 +201,36 @@ try {
   const runtime = join(install, 'node_modules/@kiln/engine');
   const pkg = JSON.parse(await readFile(join(runtime, 'package.json'), 'utf8'));
   receipt.engineVersion = pkg.version;
+  const coreExports = Object.keys(pkg.exports).filter(
+    (name) => !['./agent', './arena', './composer/agent'].includes(name),
+  );
+  await writeFile(
+    join(install, 'sdk-check.mjs'),
+    `import assert from 'node:assert/strict';
+const name = ${JSON.stringify(pkg.name)};
+const sdk = await import(name);
+for (const subpath of ${JSON.stringify(coreExports)}) {
+  await import(subpath === '.' ? name : name + '/' + subpath.slice(2));
+}
+assert.equal(typeof sdk.validateKilnCode, 'function');
+assert.equal(typeof sdk.createDiscovery, 'function');
+const result = await sdk.renderGLB('function build() { return new THREE.Mesh(boxGeo(1, 1, 1), gameMaterial(0x888888)); }');
+assert.equal(result.glb.subarray(0, 4).toString('utf8'), 'glTF');
+assert.equal(sdk.engineIdentity().installUrl, ${JSON.stringify(pathToFileURL(`${runtime}/`).href)});
+console.log(JSON.stringify({ imports: ${coreExports.length}, renderBytes: result.glb.length }));
+`,
+  );
+  receipt.sdk = JSON.parse(
+    await command([join(install, 'sdk-check.mjs')], install, {
+      KILN_RENDER: 'cpu',
+      KILN_EVALUATOR_MODE: 'subprocess',
+    }),
+  );
+  receipt.checks.push('plain-node-sdk-exports', 'sdk-subprocess-render');
+  if (checkTypes) {
+    receipt.sdkTypes = await smokeSdkTypes(runtime);
+    receipt.checks.push('sdk-consumer-types-without-optional-peers');
+  }
   for (const required of [
     'dist/cli.mjs',
     'dist/mcp-server.mjs',

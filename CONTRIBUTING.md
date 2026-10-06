@@ -14,6 +14,7 @@ Read [AGENTS.md](AGENTS.md) and the [README](README.md). Contributor checks use 
 bun install --frozen-lockfile
 bun run check:toolchain
 bun run check:skills
+bun run build:sdk
 bun run typecheck
 bun run lint
 bun run test

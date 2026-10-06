@@ -15,63 +15,229 @@
     "kiln-init": "./scripts/create-workspace.mjs"
   },
   "exports": {
-    "./assets": "./src/assets.ts",
-    "./assets/node": "./src/assets-node.ts",
-    "./projects": "./src/projects.ts",
-    "./projects/node": "./src/projects-node.ts",
-    "./project-bundle": "./src/project-bundle.ts",
-    "./project-bundle/node": "./src/project-bundle-node.ts",
-    "./workspace": "./src/workspace.ts",
-    "./workspace/node": "./src/workspace-node.ts",
-    "./material-library": "./src/material-library.ts",
-    "./material-library/node": "./src/material-library-node.ts",
-    "./material-presets": "./src/material-presets.ts",
-    "./live-review": "./src/live-review.ts",
-    "./live-review/node": "./src/live-review-node.ts",
-    "./asset-export": "./src/asset-export.ts",
-    ".": "./src/cli.ts",
-    "./agent": "./src/agent/index.ts",
-    "./tools": "./src/tools/registry.ts",
-    "./arena": "./src/arena/index.ts",
-    "./render": "./src/render.ts",
-    "./evaluator": "./src/evaluator/index.ts",
-    "./requirements": "./src/requirements.ts",
-    "./requirements/migration": "./src/contracts/requirements-migration.ts",
-    "./kit": "./src/kit.ts",
-    "./palette": "./src/palette.ts",
-    "./views": "./src/views/index.ts",
-    "./validation": "./src/validation.ts",
-    "./primitives": "./src/primitives.ts",
-    "./geometry": "./src/geometry.ts",
-    "./deform": "./src/deform.ts",
-    "./sweep": "./src/sweep.ts",
-    "./implicit": "./src/implicit.ts",
-    "./programs": "./src/program-store.ts",
-    "./programs/node": "./src/program-store-node.ts",
-    "./cache": "./src/build-cache.ts",
-    "./cache/node": "./src/build-cache-node.ts",
-    "./profile": "./src/profile.ts",
-    "./architecture": "./src/architecture.ts",
-    "./assembly": "./src/assembly.ts",
-    "./character": "./src/character.ts",
-    "./vehicle": "./src/vehicle.ts",
-    "./material-recipes": "./src/material-recipes.ts",
-    "./material-resources": "./src/material-resources.ts",
-    "./texture-resolver": "./src/texture-resolver.ts",
-    "./material-recipe-runtime": "./src/material-recipe-runtime.ts",
-    "./material-recipe-prompt": "./src/material-recipe-prompt.ts",
-    "./material-metrics": "./src/material-metrics.ts",
-    "./prompt-api": "./src/prompt-api.ts",
-    "./discovery": "./src/discovery/index.ts",
-    "./metrics": "./src/metrics.ts",
-    "./inspect": "./src/inspect.ts",
-    "./contracts": "./src/contracts/index.ts",
-    "./qa": "./src/qa/index.ts",
-    "./composer": "./src/composer/index.ts",
-    "./composer/agent": "./src/composer/agent/index.ts",
-    "./world-runtime": "./src/composer/terrain-runtime.ts"
+    "./assets": {
+      "types": "./lib/assets.d.ts",
+      "import": "./lib/assets.js"
+    },
+    "./assets/node": {
+      "types": "./lib/assets-node.d.ts",
+      "import": "./lib/assets-node.js"
+    },
+    "./projects": {
+      "types": "./lib/projects.d.ts",
+      "import": "./lib/projects.js"
+    },
+    "./projects/node": {
+      "types": "./lib/projects-node.d.ts",
+      "import": "./lib/projects-node.js"
+    },
+    "./project-bundle": {
+      "types": "./lib/project-bundle.d.ts",
+      "import": "./lib/project-bundle.js"
+    },
+    "./project-bundle/node": {
+      "types": "./lib/project-bundle-node.d.ts",
+      "import": "./lib/project-bundle-node.js"
+    },
+    "./workspace": {
+      "types": "./lib/workspace.d.ts",
+      "import": "./lib/workspace.js"
+    },
+    "./workspace/node": {
+      "types": "./lib/workspace-node.d.ts",
+      "import": "./lib/workspace-node.js"
+    },
+    "./material-library": {
+      "types": "./lib/material-library.d.ts",
+      "import": "./lib/material-library.js"
+    },
+    "./material-library/node": {
+      "types": "./lib/material-library-node.d.ts",
+      "import": "./lib/material-library-node.js"
+    },
+    "./material-presets": {
+      "types": "./lib/material-presets.d.ts",
+      "import": "./lib/material-presets.js"
+    },
+    "./live-review": {
+      "types": "./lib/live-review.d.ts",
+      "import": "./lib/live-review.js"
+    },
+    "./live-review/node": {
+      "types": "./lib/live-review-node.d.ts",
+      "import": "./lib/live-review-node.js"
+    },
+    "./asset-export": {
+      "types": "./lib/asset-export.d.ts",
+      "import": "./lib/asset-export.js"
+    },
+    ".": {
+      "types": "./lib/index.d.ts",
+      "import": "./lib/index.js"
+    },
+    "./agent": {
+      "types": "./lib/agent/index.d.ts",
+      "import": "./lib/agent/index.js"
+    },
+    "./tools": {
+      "types": "./lib/tools/registry.d.ts",
+      "import": "./lib/tools/registry.js"
+    },
+    "./arena": {
+      "types": "./lib/arena/index.d.ts",
+      "import": "./lib/arena/index.js"
+    },
+    "./render": {
+      "types": "./lib/render.d.ts",
+      "import": "./lib/render.js"
+    },
+    "./evaluator": {
+      "types": "./lib/evaluator/index.d.ts",
+      "import": "./lib/evaluator/index.js"
+    },
+    "./requirements": {
+      "types": "./lib/requirements.d.ts",
+      "import": "./lib/requirements.js"
+    },
+    "./requirements/migration": {
+      "types": "./lib/contracts/requirements-migration.d.ts",
+      "import": "./lib/contracts/requirements-migration.js"
+    },
+    "./kit": {
+      "types": "./lib/kit.d.ts",
+      "import": "./lib/kit.js"
+    },
+    "./palette": {
+      "types": "./lib/palette.d.ts",
+      "import": "./lib/palette.js"
+    },
+    "./views": {
+      "types": "./lib/views/index.d.ts",
+      "import": "./lib/views/index.js"
+    },
+    "./validation": {
+      "types": "./lib/validation.d.ts",
+      "import": "./lib/validation.js"
+    },
+    "./primitives": {
+      "types": "./lib/primitives.d.ts",
+      "import": "./lib/primitives.js"
+    },
+    "./geometry": {
+      "types": "./lib/geometry.d.ts",
+      "import": "./lib/geometry.js"
+    },
+    "./deform": {
+      "types": "./lib/deform.d.ts",
+      "import": "./lib/deform.js"
+    },
+    "./sweep": {
+      "types": "./lib/sweep.d.ts",
+      "import": "./lib/sweep.js"
+    },
+    "./implicit": {
+      "types": "./lib/implicit.d.ts",
+      "import": "./lib/implicit.js"
+    },
+    "./programs": {
+      "types": "./lib/program-store.d.ts",
+      "import": "./lib/program-store.js"
+    },
+    "./programs/node": {
+      "types": "./lib/program-store-node.d.ts",
+      "import": "./lib/program-store-node.js"
+    },
+    "./cache": {
+      "types": "./lib/build-cache.d.ts",
+      "import": "./lib/build-cache.js"
+    },
+    "./cache/node": {
+      "types": "./lib/build-cache-node.d.ts",
+      "import": "./lib/build-cache-node.js"
+    },
+    "./profile": {
+      "types": "./lib/profile.d.ts",
+      "import": "./lib/profile.js"
+    },
+    "./architecture": {
+      "types": "./lib/architecture.d.ts",
+      "import": "./lib/architecture.js"
+    },
+    "./assembly": {
+      "types": "./lib/assembly.d.ts",
+      "import": "./lib/assembly.js"
+    },
+    "./character": {
+      "types": "./lib/character.d.ts",
+      "import": "./lib/character.js"
+    },
+    "./vehicle": {
+      "types": "./lib/vehicle.d.ts",
+      "import": "./lib/vehicle.js"
+    },
+    "./material-recipes": {
+      "types": "./lib/material-recipes.d.ts",
+      "import": "./lib/material-recipes.js"
+    },
+    "./material-resources": {
+      "types": "./lib/material-resources.d.ts",
+      "import": "./lib/material-resources.js"
+    },
+    "./texture-resolver": {
+      "types": "./lib/texture-resolver.d.ts",
+      "import": "./lib/texture-resolver.js"
+    },
+    "./material-recipe-runtime": {
+      "types": "./lib/material-recipe-runtime.d.ts",
+      "import": "./lib/material-recipe-runtime.js"
+    },
+    "./material-recipe-prompt": {
+      "types": "./lib/material-recipe-prompt.d.ts",
+      "import": "./lib/material-recipe-prompt.js"
+    },
+    "./material-metrics": {
+      "types": "./lib/material-metrics.d.ts",
+      "import": "./lib/material-metrics.js"
+    },
+    "./prompt-api": {
+      "types": "./lib/prompt-api.d.ts",
+      "import": "./lib/prompt-api.js"
+    },
+    "./discovery": {
+      "types": "./lib/discovery/index.d.ts",
+      "import": "./lib/discovery/index.js"
+    },
+    "./metrics": {
+      "types": "./lib/metrics.d.ts",
+      "import": "./lib/metrics.js"
+    },
+    "./inspect": {
+      "types": "./lib/inspect.d.ts",
+      "import": "./lib/inspect.js"
+    },
+    "./contracts": {
+      "types": "./lib/contracts/index.d.ts",
+      "import": "./lib/contracts/index.js"
+    },
+    "./qa": {
+      "types": "./lib/qa/index.d.ts",
+      "import": "./lib/qa/index.js"
+    },
+    "./composer": {
+      "types": "./lib/composer/index.d.ts",
+      "import": "./lib/composer/index.js"
+    },
+    "./composer/agent": {
+      "types": "./lib/composer/agent/index.d.ts",
+      "import": "./lib/composer/agent/index.js"
+    },
+    "./world-runtime": {
+      "types": "./lib/composer/terrain-runtime.d.ts",
+      "import": "./lib/composer/terrain-runtime.js"
+    }
   },
   "files": [
+    "lib/",
     "dist/viewer/",
     "src/**/*.ts",
     "src/**/*.mjs",
@@ -124,7 +290,9 @@
     "site:build": "bun run --cwd site build",
     "smoke:harness": "node scripts/harness-smoke.mjs",
     "dogfood:gallery": "node scripts/dogfood-gallery.mjs",
-    "dogfood:tier2": "node scripts/tier2-dogfood.mjs"
+    "dogfood:tier2": "node scripts/tier2-dogfood.mjs",
+    "build:sdk": "node scripts/build-sdk.mjs",
+    "test:sdk": "node scripts/smoke-sdk.mjs"
   },
   "dependencies": {
     "@gltf-transform/core": "4.5.1",

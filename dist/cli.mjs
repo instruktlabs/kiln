@@ -31903,7 +31903,8 @@ async function renderGLBViaProcessLaunch(code, options = {}, controls = {}, laun
     throw new EvaluatorSubprocessError("INPUT_INVALID", "Evaluator request exceeds its size limit.");
   }
   const sourceModule = import.meta.url.endsWith(".ts");
-  const workerPath = fileURLToPath3(new URL(process.versions.bun && sourceModule ? "./worker.ts" : sourceModule ? "../../dist/evaluator-worker.mjs" : "./evaluator-worker.mjs", import.meta.url));
+  const sdkModule = import.meta.url.endsWith("/subprocess.js");
+  const workerPath = fileURLToPath3(new URL(process.versions.bun && sourceModule ? "./worker.ts" : sourceModule || sdkModule ? "../../dist/evaluator-worker.mjs" : "./evaluator-worker.mjs", import.meta.url));
   const maxHeapMb = boundedInteger(controls.maxHeapMb, 512, 4096);
   if (maxHeapMb < 64 || process.versions.bun && controls.maxHeapMb !== undefined) {
     throw new EvaluatorSubprocessError("INPUT_INVALID", "Heap limits require a Node worker and 64–4096 MiB.");
@@ -44906,7 +44907,7 @@ function refuse(res, message) {
 `);
 }
 async function startAssetViewer(library, options = {}) {
-  const staticDirectory = options.staticDirectory ?? (import.meta.url.endsWith(".ts") ? join17(dirname8(fileURLToPath7(import.meta.url)), "..", "dist", "viewer") : join17(dirname8(fileURLToPath7(import.meta.url)), "viewer"));
+  const staticDirectory = options.staticDirectory ?? (!import.meta.url.endsWith(".mjs") ? join17(dirname8(fileURLToPath7(import.meta.url)), "..", "dist", "viewer") : join17(dirname8(fileURLToPath7(import.meta.url)), "viewer"));
   const server = createServer(async (req, res) => {
     res.setHeader("X-Content-Type-Options", "nosniff");
     res.setHeader("Referrer-Policy", "no-referrer");

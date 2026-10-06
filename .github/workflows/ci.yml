@@ -47,6 +47,9 @@ jobs:
       - name: Install
         run: bun install --frozen-lockfile
 
+      - name: Build compiled SDK for public-entrypoint checks
+        run: bun run build:sdk
+
       - name: Typecheck
         run: bun run typecheck
 
@@ -126,6 +129,9 @@ jobs:
       - name: Install
         run: bun install --frozen-lockfile
 
+      - name: Build compiled SDK for public-entrypoint checks
+        run: bun run build:sdk
+
       - name: Typecheck
         run: bun run typecheck
 
@@ -201,10 +207,17 @@ jobs:
         run: |
           mkdir candidate
           npm pack --ignore-scripts --pack-destination candidate
+      - name: Verify installed SDK and consumer types
+        run: |
+          set -- candidate/*.tgz
+          test "$#" -eq 1
+          node scripts/smoke-package.mjs --tarball "$1" --types > candidate/candidate-sdk-receipt.json
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: node-package-candidate
-          path: candidate/*.tgz
+          path: |
+            candidate/*.tgz
+            candidate/candidate-sdk-receipt.json
           if-no-files-found: error
           retention-days: 14
 

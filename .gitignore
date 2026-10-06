@@ -1,4 +1,6 @@
 node_modules/
+# Compiled module-preserving SDK and declarations, built for the release tarball.
+/lib/
 # `dist/*` and not `dist/`: git never descends into an excluded DIRECTORY, so a
 # negation under `dist/` can never match and the bundle below stayed ignored
 # while the docs said it was committed.

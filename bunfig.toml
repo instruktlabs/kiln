@@ -22,6 +22,8 @@ coveragePathIgnorePatterns = [
   "**/generated/**",
   "**/*.generated.ts",
   "dist/**",
+  # Compiled SDK mirrors src/; installed-import tests must not count it twice.
+  "lib/**",
   "coverage/**",
   "vendor/**",
 ]

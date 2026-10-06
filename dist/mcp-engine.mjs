@@ -31086,7 +31086,8 @@ async function renderGLBViaProcessLaunch(code, options = {}, controls = {}, laun
     throw new EvaluatorSubprocessError("INPUT_INVALID", "Evaluator request exceeds its size limit.");
   }
   const sourceModule = import.meta.url.endsWith(".ts");
-  const workerPath = fileURLToPath4(new URL(process.versions.bun && sourceModule ? "./worker.ts" : sourceModule ? "../../dist/evaluator-worker.mjs" : "./evaluator-worker.mjs", import.meta.url));
+  const sdkModule = import.meta.url.endsWith("/subprocess.js");
+  const workerPath = fileURLToPath4(new URL(process.versions.bun && sourceModule ? "./worker.ts" : sourceModule || sdkModule ? "../../dist/evaluator-worker.mjs" : "./evaluator-worker.mjs", import.meta.url));
   const maxHeapMb = boundedInteger(controls.maxHeapMb, 512, 4096);
   if (maxHeapMb < 64 || process.versions.bun && controls.maxHeapMb !== undefined) {
     throw new EvaluatorSubprocessError("INPUT_INVALID", "Heap limits require a Node worker and 64–4096 MiB.");

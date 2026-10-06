@@ -4,6 +4,7 @@ import { spawnSync } from 'node:child_process';
 import { mkdir, readFile, readdir, writeFile } from 'node:fs/promises';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { buildSdk } from './build-sdk.mjs';
 
 const sha = (value) => createHash('sha256').update(value).digest('hex');
 const repo = resolve(dirname(fileURLToPath(import.meta.url)), '..');
@@ -135,6 +136,7 @@ if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.ur
       const entry = await buildRuntime(target);
       console.log(`${entry.file} ${entry.bundleHash} (${entry.identity})`);
     }
+    if (process.argv[2] === 'all') await buildSdk();
   } catch (error) {
     console.error(error.message);
     process.exitCode = 1;

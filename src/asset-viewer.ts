@@ -34,7 +34,7 @@ export async function startAssetViewer(
 ) {
   const staticDirectory =
     options.staticDirectory ??
-    (import.meta.url.endsWith('.ts')
+    (!import.meta.url.endsWith('.mjs')
       ? join(dirname(fileURLToPath(import.meta.url)), '..', 'dist', 'viewer')
       : join(dirname(fileURLToPath(import.meta.url)), 'viewer'));
   const server = createServer(async (req, res) => {
