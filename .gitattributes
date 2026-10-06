@@ -25,6 +25,11 @@ plugin.json -text
 .claude-plugin/** -text
 docs/**/*.mjs -text
 
+# These two Troy sources are byte-sealed inputs of the pinned archer pose bank.
+# Preserve their original bytes; text checkout conversion invalidates that bank.
+scenes/packages/troy/web/archer-bank.mjs -text
+scenes/packages/troy/web/archer-bow.mjs -text
+
 # `render-service/src/**` was in the list above and is deliberately not any more.
 # Its bytes ARE hashed -- `fingerprintRendererInputs` walks that directory into the
 # renderer's capture identity -- but `-text` only froze whatever was committed, and

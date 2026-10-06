@@ -46,6 +46,11 @@ The initial runtime pin is `troy-20261005-06`. Update it to the newly sealed and
 verified release when adopting changed model/bank inputs. A pin change requires
 rehydration; the preview refuses a cache selected for another release.
 
+The archer bank also checks the exact bytes of its source inputs. Two retained
+modules have a trailing CRLF line and scoped Git attributes preserve those bytes.
+Keep those line endings when using the initial pin; editing bank inputs requires
+rebaking and verifying the bank, rather than changing or bypassing its hashes.
+
 ## Build a public runtime
 
 Keep source modules editable and prepare derivatives in a separate staged web
