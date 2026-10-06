@@ -31,6 +31,7 @@ before(async () => {
   });
   runtime = new Miniflare(
     convertV4MiniflareOptions({
+      name: 'auth-fixture',
       modules: true,
       script: bundle.outputFiles[0].text,
       compatibilityDate: '2026-10-06',
@@ -38,6 +39,7 @@ before(async () => {
       kvNamespaces: ['OAUTH_KV'],
       d1Databases: ['ACCOUNTS'],
       durableObjects: { TENANTS: 'TestTenant' },
+      serviceBindings: { NATIVE_COMPUTE: { name: 'auth-fixture', entrypoint: 'TestCompute' } },
       bindings: {
         PUBLIC_ORIGIN: origin,
         GITHUB_CLIENT_ID: 'fixture-client',

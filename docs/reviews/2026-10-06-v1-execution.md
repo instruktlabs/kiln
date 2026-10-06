@@ -25,7 +25,7 @@ states and the evidence that superseded them.
 | H1 | Native Cloudflare qualification | Fixed native qualification passed: the approved twelve-case stable batch verifies CPU/software PNGs, native network denial, fresh-VM file/process separation, cancellation/deadline/output/memory bounds and real alarm recovery. All 22 approved jobs consumed; all trial resources removed. Production integration, representative load and measured billing remain open |
 | H2 | Authenticated MCP and tenant boundary | In progress: Google/GitHub account foundation merged; PR #149 at `9e16825` adds primary-D1 connection revocation and browser/provider-bound confirmation, passing 150 tests and Linux/Windows hosted CI. Adversarial tests cover stale KV, concurrent callbacks and hostile forms. Linking/unlinking, full account deletion, live sign-in, native dispatch and remaining provider-isolation qualification remain open |
 | H3 | Artifact lifecycle | In progress: tenant SQLite/R2 bytes, ProgramStore and native AssetLibrary, atomic quotas/revision pins, material closures, authenticated downloads, deletion and seven-day unsaved retention pass local workerd and actual-engine checks; standalone MaterialLibrary, native dispatch, browser tickets, account deletion and deployed lifecycle proof remain open |
-| H4 | Capacity and operations | In progress: native request admission and bounded input/output, cancellation/deadline and whole-instance cleanup have local and fixed cloud proof; global quotas, load/cost measurements, alerts, deployed identity and rollback remain open |
+| H4 | Capacity and operations | In progress: shared SQLite admission, global/per-account quotas, private operator pause and recovery are implemented and connected locally. Native isolation and bounded cleanup have earlier fixed cloud proof; the new integrated admission/dispatcher, launch quota values, load/cost measurements, alerts, deployed identity and rollback remain open |
 | H5 | Production deployment | Pending: approved deployment at `kiln.instruktlabs.com`; live authenticated create/edit/render/save/download/reconnect flow |
 | L1 | Local Claude Code and Codex plugins | Stable distribution qualified: both actual client catalogs install kiln-engine 1.0.0 and download the exact public npm runtime; real MCP/CLI flows and Codex skill/tool discovery pass. RC and 0.10 workspace upgrades preserve stores. Same-profile RC-to-stable cache updates also pass, retaining the pinned workspace runtime and original saved assets |
 | L2 | Public OpenAI plugin | Pending: compliant ZIP, verified publisher/domain, working MCP, privacy/support pages, review cases/video/account, submission receipt |
@@ -34,6 +34,42 @@ states and the evidence that superseded them.
 | V2 | Release documentation and receipts | Pending: changelog/migrations/install/support/security/privacy/runbook; exact commits, hashes, versions, URLs and separate vendor-review state |
 
 ## Execution notes
+
+### Shared admission and gateway connection
+
+The gateway now routes MCP through a private service binding that selects one
+fixed global SQLite admission object. Artifact downloads stay on the storage
+path. Required configuration controls per-account minute/day usage, global
+day/month usage, concurrent requests and deadlines. A request reserves capacity
+before dispatch and keeps it until its coordinator and children confirm cleanup.
+Unknown cleanup stays reserved across eviction and alarm recovery. A separate
+operator binding supports durable pause without exposing that control to the
+gateway. Launch values have not been adopted from the test fixtures.
+
+Focused tests first failed for the missing controller/entrypoint and the old
+gateway routing. An adversarial same-turn cancellation case then reproduced an
+unclosed discarded response body; the fix retains and cancels that response even
+when the cancellation wins the promise race. Real local workerd tests also cover
+concurrent requests, denied-attempt accounting, UTC quota rollover, missing
+configuration, operator separation and recovery after eviction. Provider
+qualification and an inexpensive edge path for MCP discovery remain pending.
+
+All 237 hosted tests, three hosted typechecks, ten production bundles and root
+typecheck/lint pass. The full offline engine suite passes 3,290 tests with two
+platform-specific skips and zero failures. Production source and bundle scans
+report no secrets. Logs are retained in `.cache/admission-hosted-tests.log` and
+`.cache/admission-root-tests.log`; source and bundle scan
+receipts use `.cache/admission-{source,bundle}-scan.json`.
+
+The previous commit `83a8272` is now green across all eighteen CI checks. Its
+Windows hosted job initially failed one of 221 tests with Miniflare `fetch failed`.
+The focused test and all 221 tests passed locally; a single rerun of the failed
+Windows job in [run 37540274823](https://github.com/instruktlabs/kiln/actions/runs/37540274823)
+passed unchanged. The first transport failure remains unexplained; no test was
+weakened or removed. The new changes require their own cross-platform CI.
+
+No cloud upload, compute job, public route, main merge or deployment occurred.
+The approved cloud allowance remains exhausted. The stable public package is unchanged.
 
 ### Request dispatcher and private tenant bindings
 

@@ -1,8 +1,10 @@
 import { insufficientScope, type OAuthResourceContext } from '@cloudflare/workers-oauth-provider';
 import { boundedRequest, HttpFailure, sha256 } from './http';
+import type { KilnCompute } from './admission-worker';
 
 export interface TenantEnv {
   TENANTS: DurableObjectNamespace;
+  NATIVE_COMPUTE?: Service<KilnCompute>;
 }
 
 export async function forwardTenant(
@@ -55,5 +57,9 @@ export async function forwardTenant(
     signal: bounded.signal,
     redirect: 'manual',
   });
+  if (isMcp) {
+    if (!env.NATIVE_COMPUTE) throw new HttpFailure(503, 'Native compute is not configured');
+    return env.NATIVE_COMPUTE.dispatch(tenant, internal);
+  }
   return env.TENANTS.getByName(tenant).fetch(internal);
 }

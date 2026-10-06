@@ -60,6 +60,16 @@ function checkHeaders(request: Request, allowed: Set<string>, transport = false)
   return headers;
 }
 
+export function nativeRequestHeaders(tenant: string, request: Request): Headers {
+  if (
+    !/^[A-Za-z0-9_-]{43}$/.test(tenant) ||
+    request.url !== 'https://tenant.internal/mcp' ||
+    !['GET', 'POST', 'DELETE'].includes(request.method)
+  )
+    throw new HttpFailure(400, 'Invalid native request');
+  return checkHeaders(request, MCP_HEADERS);
+}
+
 async function untilAbort<T>(pending: Promise<T>, signal: AbortSignal): Promise<T> {
   let abort: () => void = () => {};
   const stopped = new Promise<never>((_, reject) => {
@@ -130,15 +140,12 @@ export class NativeRequestJob {
     )
       throw new HttpFailure(503, 'Native host is not configured');
     if (
-      !/^[A-Za-z0-9_-]{43}$/.test(tenant) ||
-      request.url !== 'https://tenant.internal/mcp' ||
-      !['GET', 'POST', 'DELETE'].includes(request.method) ||
       !Number.isSafeInteger(deadlineAt) ||
       deadlineAt <= Date.now() ||
       deadlineAt > Date.now() + 120_000
     )
       throw new HttpFailure(400, 'Invalid native request');
-    const headers = checkHeaders(request, MCP_HEADERS);
+    const headers = nativeRequestHeaders(tenant, request);
     const admitted = await this.context.storage.transaction(async (tx) => {
       if (await tx.get('request')) return false;
       await tx.put('request', {

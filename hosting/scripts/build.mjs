@@ -11,6 +11,7 @@ for (const entry of [
   'tenant-worker',
   'evaluation-worker',
   'request-worker',
+  'admission-worker',
   'native-programs',
   'native-assets',
   'native-mcp',

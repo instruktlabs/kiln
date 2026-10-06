@@ -1,4 +1,4 @@
-import { DurableObject } from 'cloudflare:workers';
+import { DurableObject, WorkerEntrypoint } from 'cloudflare:workers';
 export { default } from '../src/worker';
 
 // This test-only backend records routing and transport data. It never evaluates
@@ -11,5 +11,12 @@ export class TestTenant extends DurableObject {
       headers: Object.fromEntries(request.headers),
       body: request.method === 'POST' ? await request.text() : null,
     });
+  }
+}
+
+// Auth tests observe routing only. Actual admission/compute has separate fixtures.
+export class TestCompute extends WorkerEntrypoint<{ TENANTS: DurableObjectNamespace }> {
+  dispatch(tenant: string, request: Request): Promise<Response> {
+    return this.env.TENANTS.getByName(tenant).fetch(request);
   }
 }

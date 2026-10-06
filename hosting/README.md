@@ -441,8 +441,8 @@ all registered children. Unknown cleanup retains the record and a recovery alarm
 late delivery is refused through the child's durable cancellation fence. Parent
 responses are bounded to 32 MiB and withheld until cleanup completes.
 
-The default Worker route remains 404 and the gateway still returns 503 for MCP.
-The shared admission service and quotas are not yet connected. No production
+The default Worker route remains 404. The gateway uses the private admission
+binding described below and returns 503 when it is absent. No production
 configuration, public route or new Cloudflare job is enabled by these modules.
 Provider qualification must test the coordinator/interceptor/child flow together;
 local state-machine and workerd tests do not establish that live boundary.
@@ -450,6 +450,58 @@ local state-machine and workerd tests do not establish that live boundary.
 Sources: [Container API](https://developers.cloudflare.com/containers/api/durable-object-container/),
 [loopback binding props](https://developers.cloudflare.com/workers/runtime-apis/context/#specifying-ctxprops-when-using-ctxexports),
 [RPC Request and Response transport](https://developers.cloudflare.com/workers/runtime-apis/rpc/#readablestream-writablestream-request-and-response).
+
+## Shared compute admission
+
+`admission-worker` owns one global `KilnAdmission` SQLite Durable Object. The
+gateway receives only a named `KilnCompute` service binding as `NATIVE_COMPUTE`;
+that entrypoint always selects `global-v1`. It cannot accept a caller-selected
+admission object or expose operator controls. Artifact downloads continue through
+tenant storage without starting compute. MCP discovery/control requests still
+need an edge-only path before launch to avoid unnecessary coordinator starts.
+
+An admitted request reserves one coordinator and at most one active child VM.
+One request per account and the configured global concurrency limit are enforced
+atomically with per-account minute/day and global day/month attempt counters.
+Counters use UTC calendar windows. Failed admitted work consumes its attempt;
+rejected work does not. There is no queue of unbounded pending requests.
+429 responses include `Retry-After`. Required settings have no implicit defaults:
+
+| Setting | Meaning |
+| --- | --- |
+| `COMPUTE_MAX_CONCURRENT` | Concurrent request trees; implementation ceiling 16 |
+| `COMPUTE_TENANT_PER_MINUTE` | Admitted requests per account per UTC minute |
+| `COMPUTE_TENANT_PER_DAY` | Admitted requests per account per UTC day |
+| `COMPUTE_GLOBAL_PER_DAY` | All admitted requests per UTC day |
+| `COMPUTE_GLOBAL_PER_MONTH` | All admitted requests per UTC month |
+| `COMPUTE_DEADLINE_MS` | Absolute request lifetime, at most 120,000 ms |
+
+These are configuration controls, not adopted launch quotas or an invoice cap.
+Provider measurements must include both VM types, cold starts, retries, and
+non-compute services. The global ceiling is a validation bound, not demonstrated
+capacity. Launch values and total capacity still require measurement.
+
+The reservation and recovery alarm commit together before the parent RPC. A
+deadline or disconnect triggers out-of-band parent cancellation. Admission is
+released only after the parent confirms whole-tree cleanup, including children
+and its durable fence against late requests. Unknown cleanup suppresses output,
+retains capacity, and schedules another recovery attempt. Eviction and elapsed
+time never free a slot by themselves. Expired usage counters are cleaned in
+bounded batches. No OAuth credentials or source content enter admission storage.
+
+The separate private `KilnComputeControl` binding exposes pause/resume and
+aggregate status. Bind it only to an authenticated operator service. Pause is
+durable, rejects new compute and attempts cancellation of every active request;
+unconfirmed cleanup remains visible in `pendingCleanup` and retains its slot.
+Resuming does not bypass those reservations or reset usage counters.
+
+Local workerd tests cover the actual SQLite/RPC boundary, concurrent admission,
+quota rollover, operator separation, eviction/recovery, stalled calls and a
+response/cancellation race. The race test reproduced a discarded response body
+left open and now verifies its closure. No new cloud qualification is implied.
+Implementation follows the current [SQLite transaction contract](https://developers.cloudflare.com/durable-objects/api/sqlite-storage-api/#transaction)
+and [alarm contract](https://developers.cloudflare.com/durable-objects/api/alarms/).
+Production configuration, integrated rendering and deployed qualification remain open.
 
 ## Private Node host
 
