@@ -21,7 +21,7 @@ published yet.
 | P4 | Clean installs and workspace upgrades | In progress: RC package passed all platform CI jobs; official 0.10.0-to-RC upgrades pass for Claude/Codex workspaces with conflict refusal, reapplied customizations and byte-exact old assets; final-version harness checks remain open |
 | P5 | Release automation and npm publication | In progress: manual exact-archive workflow and owner runbook; GitHub npm-release environment created with sole owner review, no admin bypass and protected branches; live npm trust, staging approval, registry provenance and fresh registry install remain open |
 | H1 | Native Cloudflare qualification | In progress: Linux image built, Trixie software renderer passes six textured views; Docker namespace probe fails closed, Bubblewrap launch-argument defect corrected; real Cloudflare isolation/execution, RSS, startup and measured cost remain pending |
-| H2 | Authenticated MCP and tenant boundary | In progress: GitHub sign-in selected; gateway OAuth and verified-subject routing plus native registry-derived HTTP tools pass local two-user, storage and reconnect checks; production native loader refuses unqualified isolation; branded real sign-in, container dispatch and evaluator environment isolation remain open |
+| H2 | Authenticated MCP and tenant boundary | In progress: Google and GitHub selected with one Kiln account; existing GitHub-only OAuth and native HTTP pass local two-user, storage and reconnect checks; provider-neutral account storage, Google/linking, branded real sign-in, container dispatch and evaluator isolation remain open |
 | H3 | Artifact lifecycle | In progress: tenant SQLite/R2 bytes, ProgramStore and native AssetLibrary, atomic quotas/revision pins, material closures, authenticated downloads, deletion and seven-day unsaved retention pass local workerd and actual-engine checks; standalone MaterialLibrary, native dispatch, browser tickets, account deletion and deployed lifecycle proof remain open |
 | H4 | Capacity and operations | In progress: local native request admission, body/response/deadline bounds and cancellation pass; global operational quotas, process cleanup, load/cost measurements, alerts, deployed health/build identity and rollback remain open |
 | H5 | Production deployment | Pending: approved deployment at `kiln.instruktlabs.com`; live authenticated create/edit/render/save/download/reconnect flow |
@@ -1059,6 +1059,35 @@ publication/provenance and fresh registry installation remain open. As specified
 in the publication plan, npm release does not wait for hosted launch or directory
 approval. Those remain separate requirements of the overall active goal.
 
+### Authentication architecture and current client compatibility
+
+The owner expanded hosted v1 sign-in to Google and GitHub, with email later, and
+requested a current, provider-agnostic architecture review. The publication plan's
+[authentication review](../plans/2026-10-05-v1-publication-plan.md#authentication-architecture-review-6-october)
+records primary sources, the account boundary, library alternatives and required
+implementation/qualification. It recommends retaining the maintained Cloudflare
+MCP issuer, adding a standards-based Google adapter and a permanent internal Kiln
+account id, and keeping identity/lifecycle data separate from tenant artifacts.
+The existing `github-<id>` subject is not the final multi-provider account model.
+
+Live registry metadata confirms the existing Cloudflare OAuth provider pin 1.2.1
+is the current stable release. Read-only Google discovery and ChatGPT CIMD probes
+confirmed the documented endpoints, S256 and the current public/signed method
+offer. Two new checks prove the production gateway can negotiate the supported
+public method when the metadata's legacy preference is signed, still rejects a
+missing PKCE verifier, and refuses a signed-only client. All 19 focused auth
+checks and the complete 69-test hosted suite pass; root lint and whitespace checks
+pass after formatting the added fixtures. Receipts:
+`.cache/v1-auth-architecture-tests.log`, `.cache/v1-auth-review-hosted-tests.log`.
+This does not constitute
+live Google/OpenAI login or signed-client assertion support.
+
+Production dependency audit reported zero known advisories in the current private
+hosting package; `.cache/v1-auth-audit.json`. It is not a security certification.
+The review explicitly records the library's KV concurrent-consumption limitation,
+cross-region revocation concerns, missing account/linking/deletion controls and
+unfinished branded UI. No provider app, secret or cloud resource was created.
+
 ## Owner handoffs
 
 Cloudflare CLI consent is complete. After the earlier consent expired, the owner
@@ -1069,8 +1098,8 @@ account/zone reads, Workers, Containers, R2, KV, D1 and observability; the CLI a
 records its refresh capability. No billing or API-token management permission was
 requested. This authorizes CLI access, not evidence of a deployed service.
 
-The owner selected GitHub sign-in for free hosted v1 access, private saved assets
-and personal quotas, with explicit requirements for correct implementation,
+The owner selected Google and GitHub sign-in for free hosted v1 access, private
+saved assets and personal quotas, with email sign-in deferred and explicit requirements for correct implementation,
 professional presentation and end-user security. The package and local plugins
 remain account-free. The hosted launch gate includes clear Kiln / Instrukt Labs
 branding, verified domain, minimal provider permissions, privacy/support links,

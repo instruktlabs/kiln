@@ -84,3 +84,9 @@ D8 was explicitly accepted on 6 October: free hosted access within quotas, optio
 sponsorship and no subscription billing. The owner accepts justified provider usage
 overages and is open to a suitable paid Cloudflare plan. Exact technical quotas still
 require measurements; no further business-model preference question is needed.
+
+The owner also selected Google and GitHub sign-in through one Kiln-owned account,
+with email sign-in deferred. Correct security and a professional, clearly branded
+end-user flow are explicit acceptance requirements. Follow the publication plan's
+6 October authentication architecture review; do not treat the current GitHub-only
+fixture or passing local OAuth checks as deployed multi-provider acceptance.

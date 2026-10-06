@@ -38,12 +38,28 @@ before(async () => {
       },
       outboundService: async (request) => {
         outboundCalls++;
-        if (request.url === 'https://client.example/metadata.json') {
+        if (
+          [
+            'https://client.example/metadata.json',
+            'https://client.example/choices.json',
+            'https://client.example/signed-only.json',
+          ].includes(request.url)
+        ) {
+          const choice = request.url.endsWith('/choices.json');
+          const signedOnly = request.url.endsWith('/signed-only.json');
           return Response.json({
             client_id: request.url,
             client_name: 'Metadata fixture client',
             redirect_uris: ['https://client.example/callback'],
-            token_endpoint_auth_method: 'none',
+            token_endpoint_auth_method: choice || signedOnly ? 'private_key_jwt' : 'none',
+            ...(choice || signedOnly
+              ? {
+                  token_endpoint_auth_methods_supported: signedOnly
+                    ? ['private_key_jwt']
+                    : ['none', 'private_key_jwt'],
+                  jwks_uri: 'https://client.example/jwks.json',
+                }
+              : {}),
             grant_types: ['authorization_code', 'refresh_token'],
             response_types: ['code'],
           });
@@ -359,6 +375,25 @@ test('a client metadata document can authorize without dynamic registration', as
   assert.match(start.page, /Client domain: <strong>client\.example<\/strong>/);
   const credential = await token('alice', { clientId });
   assert.equal((await mcp(credential)).status, 200);
+});
+
+test('CIMD negotiates the supported public method from current OpenAI-style choices and still requires PKCE', async () => {
+  // Public metadata observed 2026-10-06: a plural offer plus a legacy signed-method
+  // preference. Fixed local metadata proves negotiation, not a live OpenAI login.
+  const clientId = 'https://client.example/choices.json';
+  const credential = await token('alice', { clientId });
+  assert.equal((await mcp(credential)).status, 200);
+  const authorization = await grant('alice', { clientId });
+  const missingVerifier = await exchange(authorization, { code_verifier: '' });
+  assert.equal(missingVerifier.status, 400);
+  assert.equal((await missingVerifier.json()).access_token, undefined);
+});
+
+test('CIMD cannot silently downgrade a client that requires signed assertions only', async () => {
+  const start = await consent({ clientId: 'https://client.example/signed-only.json' });
+  assert.ok([400, 503].includes(start.response.status));
+  assert.equal(start.response.headers.get('location'), null);
+  assert.ok(!start.page.includes('Continue with GitHub'));
 });
 
 test('refresh stays bound to its resource and revocation denies subsequent requests', async () => {

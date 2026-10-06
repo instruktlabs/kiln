@@ -81,14 +81,22 @@ their network fetches. Dynamic registration is retained for client compatibility
 Registration and other public endpoints still need operational admission limits
 before deployment.
 
-The owner selected GitHub sign-in for free hosted v1 access, private saved assets
-and personal quotas. The local package needs no Kiln account. The adapter requests
-no repository scopes, uses upstream S256 PKCE,
+The owner selected Google and GitHub sign-in for free hosted v1 access, private
+saved assets and personal quotas; email can follow. The local package needs no
+Kiln account. The current adapter implements GitHub only. It requests no repository scopes, uses upstream S256 PKCE,
 and resolves the current GitHub user for every login. Only `github-<immutable id>`
 becomes a subject. Login names and email addresses are not tenant identifiers.
 Upstream tokens are used only for the identity lookup and are not stored or passed
 to the backend. This needs a dedicated Instrukt Labs OAuth app; no app or secret
 has been provisioned by this implementation.
+
+Before launch, replace this direct provider subject with a permanent Kiln account
+id resolved from verified `(issuer, subject)` bindings. Google, account storage,
+explicit linking and recovery/account controls are not implemented yet. See the
+[authentication architecture review](../docs/plans/2026-10-05-v1-publication-plan.md#authentication-architecture-review-6-october)
+for the selected provider-independent boundary, library comparison, KV consistency
+limits and required deployed checks. Equal email addresses never imply permission
+to merge accounts or libraries.
 
 Launch requires a clearly branded Kiln / Instrukt Labs connection page, a verified
 service domain, a plain explanation of the granted access, privacy/support links

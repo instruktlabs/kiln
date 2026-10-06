@@ -900,6 +900,182 @@ material resources. Download-link expiry is separate from artifact deletion. Cho
 per-user and total storage/admission limits from measured sizes and the initial
 $20/month target with an explicit growth policy; do not promise unlimited users.
 
+### Authentication architecture review, 6 October
+
+The owner selected **Google and GitHub for hosted v1; email sign-in can follow**.
+Access stays free within quotas. The package, local tools and local plugins need
+no Kiln account. Correct implementation, clear branding and end-user security are
+explicit launch requirements. This decision supersedes the earlier GitHub-only
+choice. The present implementation still supports GitHub alone; this section
+records the target architecture and remaining work, not deployed acceptance.
+
+#### Recommended boundaries
+
+Keep the existing MCP authorization server on Cloudflare, backed by the maintained
+`@cloudflare/workers-oauth-provider` library. Add provider adapters around one
+Kiln-owned account identity; do not use a Google or GitHub id as the storage owner.
+Use a maintained standards client such as `oauth4webapi` for Google OIDC validation,
+not hand-written JWT decoding or signature checks. Its documented runtime support
+includes Workers, it implements OAuth/OIDC validation, and it has no dependencies.
+Exact library adoption still requires a pinned installation and workerd proof.
+[Cloudflare authorization options](https://developers.cloudflare.com/agents/model-context-protocol/protocol/authorization/),
+[oauth4webapi](https://github.com/panva/oauth4webapi).
+
+```mermaid
+flowchart LR
+    U[User chooses Google or GitHub] --> I[Verified provider identity]
+    I --> A[Permanent Kiln account ID]
+    A --> C[Consent for a particular MCP client]
+    C --> O[Kiln OAuth token for kiln.instruktlabs.com/mcp]
+    O --> T[Account-owned assets and quotas]
+```
+
+The diagram separates roles, not browser ordering. Unregistered/dynamic clients
+must receive Kiln consent before an upstream provider redirect, as the existing
+library's browser-bound consent helpers require. A logged-in browser session is
+not an MCP access token. Google/GitHub tokens never authorize `/mcp`, never become
+asset ownership selectors and never enter native evaluation. The gateway issues
+its own resource-bound tokens. [MCP security requirements](https://modelcontextprotocol.io/specification/2026-07-28/basic/authorization/security-considerations).
+
+Define a small provider-neutral account interface: resolve verified identity,
+start/finish explicit linking, revoke a connection, disable/delete account and
+check access state. Store accounts and unique `(issuer, subject)` identity bindings
+in a dedicated SQL authority. A small D1 database is the preferred initial fit
+for this shared identity index; tenant asset data stays in Durable Object SQLite
+and R2. This is a demonstrated shared-metadata need, not a second asset catalogue.
+Use transactional batches, unique constraints and primary-backed security reads;
+do not derive security guarantees from eventual KV reads or arbitrary read replicas.
+Prove concurrent registration/linking and rollback against the actual schema.
+[D1 database API](https://developers.cloudflare.com/d1/worker-api/d1-database/),
+[read consistency](https://developers.cloudflare.com/d1/best-practices/read-replication/).
+
+Generate one immutable Kiln account ID independent of email and provider. Explicitly
+linking another verified identity retains that ID and its assets/quotas. Bind link
+intent to a recent authenticated Kiln session and one-time server-side transaction;
+require control of the new provider too. Refuse linking an identity already owned
+by another account. Do not silently merge existing libraries. Do not let unlinking
+remove the last usable sign-in method. Revoke affected sessions/grants on sensitive
+account changes. Recovery in v1 uses a previously linked provider or that provider's
+own recovery; support cannot reassign assets merely because an email matches.
+
+Google identities use its validated immutable `sub` with canonical issuer. GitHub
+uses the immutable numeric user id from its authenticated API. Email is optional
+contact/display data, not an ownership key or automatic link signal. Start Google
+with `openid profile` unless a concrete product need requires verified email; do
+not request Gmail, Drive or Calendar. Keep GitHub's empty additional scope set.
+Provider-specific callback paths and server-bound provider/purpose state prevent
+cross-provider mix-up. Validate issuer, audience, expiry, nonce, PKCE, state and
+signatures through the selected client library.
+[Google OIDC](https://developers.google.com/identity/openid-connect/openid-connect),
+[GitHub scopes](https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/scopes-for-oauth-apps).
+
+This is provider-agnostic and MCP-client-agnostic at the interfaces. Deployment
+still intentionally uses Cloudflare. Adding another provider must not change
+asset ownership, the npm SDK or the public MCP resource URL. Exportable identity
+bindings and SQL migrations preserve a future hosting/library migration path.
+
+#### Current standards and concrete checks
+
+Checked the MCP 2026-07-28 authorization profile, current OpenAI plugin auth docs,
+Claude Code docs, installed library documentation/source and public provider metadata.
+Registry checks report Cloudflare OAuth provider **1.2.1** (already installed,
+published 28 September), Better Auth **1.7.7**, oauth4webapi **3.8.8** and jose
+**6.2.12**. These are observations, not permission to float release dependencies.
+
+CIMD is preferred for current clients; retain bounded DCR only for compatibility.
+Keep RFC 9728 protected-resource discovery, RFC 8414 issuer discovery, S256 PKCE,
+resource/audience binding and RFC 9207 issuer identification. OpenAI supports CIMD
+public exchange (`none`) or signed exchange (`private_key_jwt`); current Cloudflare
+1.2.1 implements only the public option and negotiates it from the offered set.
+It must reject a signed-only client. Do not advertise or claim signed-client
+authentication. Claude Code also documents CIMD and preconfigured-client fallback.
+[OpenAI authentication](https://developers.openai.com/plugins/build/auth),
+[Claude Code MCP](https://code.claude.com/docs/en/mcp),
+[Cloudflare provider behavior](https://github.com/cloudflare/workers-oauth-provider/blob/main/docs/authorization-server.md).
+
+Read-only live metadata probes confirmed Google's issuer/endpoints and S256 support,
+and ChatGPT's current CIMD offer of both methods with a legacy signed preference.
+Two new workerd checks exercise that negotiation, missing PKCE rejection and
+signed-only refusal. All 19 focused authentication checks pass. This is a simulated
+client with real production gateway/library code, not a live OpenAI connection.
+`npm audit --omit=dev` reported zero known production dependency advisories; that
+does not establish the absence of design or deployment vulnerabilities.
+
+Keep upstream sign-in scopes separate from scopes exposed to MCP clients. The
+current gateway advertises `kiln:use` and `offline_access`, not OIDC user identity
+scopes. OpenAI's optional enterprise domain restrictions require issuer OIDC
+discovery and verified-email UserInfo; Kiln does not implement that feature today.
+Do not advertise `openid`/`email` downstream without actually implementing it.
+
+#### Alternatives considered
+
+| Option | Finding and v1 disposition |
+| --- | --- |
+| Cloudflare OAuth provider plus narrow identity adapters | Retain. Current supported MCP server library, own-domain consent and no separate identity SaaS subscription. Kiln still owns account lifecycle, SQL correctness, UI and deployed qualification; using a library does not remove those obligations. |
+| Better Auth on Cloudflare D1 | Viable broader application-auth framework. Supports social providers, sessions and explicit linking; disable implicit email linking if adopted. Its current user model requires email, including when a provider omits it. Avoid fabricated recovery addresses or silently expanding GitHub permissions solely to fit that model. Reconsider with the email/passkey milestone rather than replacing the working MCP issuer just for two sign-in buttons. |
+| Better Auth MCP/OAuth stack | Current docs use `@better-auth/mcp`, `@better-auth/cimd` and the OAuth provider/JWT machinery. It is a real alternative, not a deprecated path. Do not install a second MCP issuer alongside the Cloudflare issuer. A replacement needs full client, key rotation and storage qualification. |
+| WorkOS AuthKit | Managed sign-in reduces owned lifecycle work. Published user management allowance is up to one million MAU, but a hosted custom domain is listed at $99/month. That branded hosted option exceeds the initial hosting target and introduces another identity service; not the default. Custom UI has a different integration tradeoff. |
+| Cloudflare Access | Useful for operator/admin access. Standard Cloudflare One Access users consume seats; do not make a public community service depend on an assumed unlimited seat allowance. No Access plan change is required for the selected architecture. |
+
+Sources: [Better Auth account linking](https://better-auth.com/docs/concepts/users-accounts),
+[email requirement](https://better-auth.com/docs/concepts/oauth#handling-providers-without-email),
+[D1 support](https://better-auth.com/docs/concepts/database),
+[current MCP plugin](https://better-auth.com/docs/plugins/mcp),
+[WorkOS pricing](https://workos.com/pricing),
+[Cloudflare seat accounting](https://developers.cloudflare.com/cloudflare-one/team-and-resources/users/seat-management/).
+
+#### Remaining security and user-flow gates
+
+The current gateway follows the upstream library's consent/PKCE pattern, strips
+credentials before private dispatch and tests tenant separation. It lacks Google,
+an internal account registry, account settings/linking/deletion, production public
+endpoint quotas and the branded end-user flow. The current bare consent form is
+an implementation fixture, not the approved launch presentation.
+
+The provider documents a same-browser concurrent replay window because KV cannot
+atomically consume a consent/upstream handle. KV also propagates changes across
+locations asynchronously. Add an authoritative, transactional guard for one-time
+application login/link intents and strong account-disable/deletion checks on the
+protected path; qualify grant revocation and refresh behavior separately. A guard
+around login does not automatically fix every token-endpoint race. Do not claim
+instant global revocation from the local test. If the supported library integration
+cannot meet the required guarantees, compare a SQL-backed issuer before public
+launch; do not patch private library internals or weaken isolation checks.
+[Provider limitation](https://github.com/cloudflare/workers-oauth-provider/blob/main/docs/upstream-sign-in.md),
+[KV consistency](https://developers.cloudflare.com/kv/api/read-key-value-pairs/).
+
+Implement and qualify in this order:
+
+1. Freeze the provider-neutral account contract and identity uniqueness/deletion
+   rules; test primary SQL concurrency before changing tenant routing.
+2. Add Google through the maintained OIDC client, preserving GitHub behavior and
+   binding callback purpose/provider. Negative fixtures must cover issuer, audience,
+   signature, expiry, nonce, state, replay and provider-swap failures.
+3. Add explicit linking, connection revocation and account deletion with recent
+   reauthentication, atomic consumption and protection against deleting the last
+   login. Prove linked providers reach one unchanged library and quota.
+4. Finish a mobile-usable Kiln / Instrukt Labs sign-in and consent experience with
+   exact requesting-client identity, free-access explanation, privacy/support,
+   denial/retry states and account controls. Keep secrets out of pages and logs.
+5. Configure separate test/production provider clients with exact callbacks and
+   minimal scopes. Complete Google's brand verification for the displayed public
+   app name/logo. Surface owner login/verification steps when required.
+6. Run deployed two-user and two-provider flows in the actual target MCP clients,
+   including sign-out versus disconnect, account deletion, refresh/expiry, outage,
+   cross-region revocation and public-endpoint admission/cost tests. Capture separate
+   receipts; no model calls are needed for protocol qualification.
+
+[Google production branding](https://developers.google.com/identity/protocols/oauth2/production-readiness/brand-verification).
+Email is not a v1 requirement. Cloudflare Email Service currently offers outbound
+transactional sending in beta on Workers Paid, including sign-in links, so a future
+email route need not introduce another hosting vendor. Verify account access,
+deliverability, costs, abuse controls and recovery semantics before enabling it.
+[Cloudflare Email Service](https://developers.cloudflare.com/email-service/).
+
+No provider app, secret, SQL resource or production authentication change was
+created during this review. This hosted work does not block the independently
+qualified npm 1.0 publication.
+
 ## 7. Development-cycle sequence and acceptance
 
 ### Opening sequence while the owner is available
@@ -978,9 +1154,10 @@ make the npm package and owned marketplace available.
 
 ### Parallel preparation, separate release decisions
 
-Owner decision, 6 October: free hosted v1 uses GitHub sign-in for private saved
-assets and personal quotas. The package and local plugins require no Kiln account.
-Request public identity only, without private repository or write permissions.
+Owner decision, 6 October: free hosted v1 uses Google and GitHub sign-in for private
+saved assets and personal quotas; email can follow. The package and local plugins
+require no Kiln account. Request basic identity only, without repository or
+Gmail/Drive/Calendar permissions. The architecture review above defines the account boundary.
 The launch must present clear Kiln / Instrukt Labs branding, verified domain,
 privacy/support links and understandable consent, and qualify real sign-in,
 disconnect, deletion, expired credentials and cross-user denial. This is an access
@@ -1134,6 +1311,7 @@ This settles D8 and reinforces that $20 is a target, not a guaranteed billing ca
 | D6 | Private user artifacts, clear retention/deletion, controlled support/privacy domain | Before persistence policy and OAuth identity are fixed | Owner selected saved assets retained until deleted within a quota, unsaved work expires after 7 days, and `kiln.instruktlabs.com` on 6 October; exact quotas and publisher account details still open |
 | D7 | Public OpenAI plugin plus Anthropic directory; local owned distribution available independently | Before exact artifacts are submitted/published | Requested outcome; final candidates and applicable approvals still required |
 | D8 | Free quota-limited hosted access initially, optional sponsorship, no subscription billing in v1 | Implement within measured hosting capacity and storage/admission limits | Owner explicitly accepted on 6 October; accepts justified provider overages and may seek sponsorship/grants; do not ask again |
+| D9 | Google and GitHub sign-in through one Kiln-owned account; email later | Before provisioning provider applications | Owner accepted on 6 October, requiring correct, secure implementation and professional presentation; architecture reviewed above, multi-provider implementation and deployed qualification remain open |
 
 Do not present D4's provider decision as passed production qualification or D5 as a measured forecast. Legal
 entity/account fields must come from the owner; do not infer exact legal details
