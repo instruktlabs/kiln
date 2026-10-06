@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "typecheck": "tsc --noEmit",
+    "typecheck": "tsc --noEmit && tsc --noEmit -p tsconfig.native.json",
     "test": "node --test test/*.test.mjs",
     "build": "node scripts/build.mjs"
   },

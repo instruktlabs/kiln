@@ -1,6 +1,6 @@
 # Hosted Kiln
 
-This private package contains the hosted service's Worker code. It is not shipped
+This private package contains the hosted service's Worker code and native storage adapter. It is not shipped
 inside `@instruktlabs/kiln` and introduces no cloud dependency into the engine.
 It is not deployed or ready for public traffic. Native provider qualification,
 engine adapters, deployed storage, operational quotas and launch checks remain open.
@@ -10,6 +10,8 @@ engine adapters, deployed storage, operational quotas and launch checks remain o
 Use the repository's Node 22.23.3 and npm 12.2.0 maintainer toolchain:
 
 ```sh
+bun install --frozen-lockfile
+node scripts/build-runtime.mjs all
 cd hosting
 npm ci --ignore-scripts
 npm run typecheck
@@ -24,11 +26,13 @@ identities. Routing tests use a recording backend; storage tests use the product
 tenant Worker with real simulated SQLite and R2 bindings. A combined test connects
 both production Workers and verifies authenticated two-user downloads and reconnects.
 Separate test-only fault injection covers late upload acknowledgement and failed
-cleanup. Unexpected external fetches fail. No model, real identity provider or
-cloud deployment is used. These tests do not establish engine execution, deployed
-persistence, global KV consistency or production capacity.
+cleanup. A fixed trusted fixture also runs the actual bundled Node engine against
+the production storage Worker: validate, read, edit, CPU render and retrieval from
+a fresh host after storage eviction. Unexpected external fetches fail. No model,
+real identity provider or cloud deployment is used. These tests do not establish
+untrusted native isolation, deployed persistence, global KV consistency or production capacity.
 
-The separate gateway and tenant bundles, with input/hash receipts, are written to
+The separate gateway, tenant and native source-client bundles, with input/hash receipts, are written to
 `../.cache/hosted-worker/`. `build` performs no upload, resource provisioning or
 deployment. `Hosted gateway checks` runs the same checks on Linux and Windows.
 
@@ -171,9 +175,42 @@ lifetime; `eviction: none` means no capacity-driven eviction.
 The private binding serves source creation, reads and stats at `/internal/programs`
 and `/internal/programs/<reference>`. Source creation returns its reference and
 artifact id so the future AssetLibrary adapter can atomically pin that exact file.
-These paths are not public gateway endpoints or new MCP tools. Native engine
-dispatch still needs to bind this store to its tool context and prove the complete
-edit/render/save/reconnect flow.
+These paths are not public gateway endpoints or new MCP tools. The native client
+and its engine integration tests are described below. Production native dispatch,
+AssetLibrary integration and the complete deployed edit/render/save/reconnect flow
+remain open.
+
+## Native source client
+
+`NativeProgramStore` implements the same engine contract over bounded HTTP. It
+accepts no tenant selector, credentials or configurable URL. Its only destination
+is `http://kiln-storage.internal/internal/programs`; redirects and cookies are
+disabled. A future controller must register a scoped outbound interceptor for
+that hostname and select the tenant outside the container. Cloudflare documents
+virtual-host HTTP access to Worker bindings and `interceptOutboundHttp` on the
+Durable Object Container API. The intended container configuration disables Internet
+access and permits only this intercepted hostname. This integration still needs
+implementation and testing on the provider.
+[Worker connections](https://developers.cloudflare.com/containers/configuration/workers-connections/),
+[Container API](https://developers.cloudflare.com/containers/api/durable-object-container/).
+
+The client rejects malformed references and source before sending, verifies
+returned source hashes and exact UTF-8 bytes, and bounds streamed source to 1 MiB
+and response metadata to 2 KiB. Its configurable deadline defaults to 15 seconds
+and includes both response headers and body reads. Request cancellation must be
+supplied from the native host's per-request context. It cancels stalled reads,
+cleans up late responses and returns fixed errors instead of network diagnostics,
+upstream bodies or caller-supplied abort reasons. Reads never create an authority
+to access another tenant's source.
+
+The six native-client checks include actual registry tools with a fixed trusted
+fixture, source preservation after editing, new host construction, storage eviction,
+cross-tenant denial, integrity failures, size limits, deadlines and cancellation.
+This fixture explicitly uses `trusted-local`; it is test code excluded from production
+bundles. The production host still requires `evaluator-required` and qualified
+isolation. `/mcp` remains unavailable until that host is configured and qualified.
+The client uses standard Fetch types in a separate TypeScript check; Worker code
+continues to use the Cloudflare runtime types.
 
 Before launch, complete native isolation on the actual Cloudflare provider,
 tenant engine/storage integration, two-user asset/download denial tests, retention,

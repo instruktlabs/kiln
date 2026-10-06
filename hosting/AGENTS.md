@@ -4,7 +4,10 @@ This package has its own npm lockfile. Cloud dependencies and hosting modules mu
 not enter the engine's published package. Keep the OAuth gateway, tenant Worker and
 native evaluator separate; only the gateway receives identity-provider credentials.
 
-For changes here, use the pinned root maintainer tools and run from this directory:
+For changes here, use the pinned root maintainer tools. First install the root
+dependencies with `bun install --frozen-lockfile` and rebuild the engine with
+`node scripts/build-runtime.mjs all`; the integration fixture imports that actual
+Node bundle. Then run from this directory:
 
 ```sh
 npm ci --ignore-scripts

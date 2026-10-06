@@ -5,13 +5,13 @@ import { build } from 'esbuild';
 
 const output = new URL('../../.cache/hosted-worker/', import.meta.url);
 await mkdir(output, { recursive: true });
-for (const entry of ['worker', 'tenant-worker']) {
+for (const entry of ['worker', 'tenant-worker', 'native-programs']) {
   const result = await build({
     entryPoints: [fileURLToPath(new URL(`../src/${entry}.ts`, import.meta.url))],
     bundle: true,
     write: false,
     format: 'esm',
-    platform: 'browser',
+    platform: entry === 'native-programs' ? 'node' : 'browser',
     target: 'es2022',
     metafile: true,
     external: ['cloudflare:workers'],
@@ -22,10 +22,10 @@ for (const entry of ['worker', 'tenant-worker']) {
     throw new Error('Production bundle includes test helpers');
   }
   if (
-    entry === 'tenant-worker' &&
+    entry !== 'worker' &&
     inputs.some((name) => /oauth|(?:^|\/)auth\.ts$/.test(name.replaceAll('\\', '/')))
   ) {
-    throw new Error('Tenant bundle includes authorization-server code');
+    throw new Error('Storage bundle includes authorization-server code');
   }
   await writeFile(new URL(`${entry}.mjs`, output), bytes);
   await writeFile(

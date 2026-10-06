@@ -8,6 +8,7 @@ import {
 } from '../../src/program-store';
 import type { ArtifactStore } from './artifact-store';
 import { HttpFailure, readBounded } from './http';
+import { HOSTED_PROGRAM_RETENTION } from './program-contract';
 
 const SOURCE_NAME = 'source.kiln.js';
 const SOURCE_MEDIA = 'application/javascript';
@@ -23,8 +24,7 @@ export function decodeProgram(bytes: Uint8Array): string {
 /** A host adapter for the existing engine contract, scoped to one tenant store. */
 export class HostedProgramStore implements ProgramStore {
   private readonly pending = new Map<string, Promise<string>>();
-  readonly retention =
-    'unsaved source is kept for seven days after upload; saved source is retained until its last saved revision is deleted, within tenant quotas';
+  readonly retention = HOSTED_PROGRAM_RETENTION;
 
   constructor(private readonly artifacts: ArtifactStore) {}
 

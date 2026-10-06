@@ -902,6 +902,55 @@ passed. [Native preflight 37453219527](https://github.com/instruktlabs/kiln/acti
 again passed the trusted software-renderer fixture and failed required namespace
 isolation before source execution. These are separate outcomes, not hosting acceptance.
 
+### Native source client and engine integration
+
+`NativeProgramStore` connects the real engine's source-reference tools to the
+tenant storage API. It uses one fixed internal hostname and carries no tenant
+selector, OAuth token or cloud credential. The future Cloudflare container
+controller must bind that hostname to the authenticated tenant outside the image;
+that interceptor and native MCP entrypoint remain unimplemented. The adapter alone
+does not create or qualify a hosted evaluator.
+
+Six new checks were first observed failing because the adapter did not exist.
+They now pass, including an actual `createKilnToolHost` fixture calling
+`kiln_validate`, `kiln_source`, `kiln_edit` and `kiln_render`. The edit produces a
+PNG and an immutable new source reference. A fresh host after Durable Object
+eviction retrieves both exact revisions and renders again; a separate tenant is
+denied the same reference. This is fixed trusted local execution, not a native
+process restart, production isolation or live Cloudflare evidence.
+
+The client verifies exact source bytes, Unicode and hashes, validates acknowledgements
+and stats, bounds streamed replies, disables redirects and credentials, and limits
+the entire HTTP operation. Fault checks cover stalled headers/bodies, invalid
+lengths, corruption, quota errors, cancellation and redacted diagnostics. A test
+exposed a cancellation race where closing the reader could resolve an empty body
+before the abort rejection; the abort now wins that race.
+
+After a clean private-package installation, all 45 hosted tests passed (6.23
+seconds), as did both hosted typechecks, the three hosted builds, root typecheck,
+root lint and whitespace checks. Receipt: `.cache/v1-native-programs-tests.log`.
+The Node adapter is separately built and absent from both Worker entrypoints.
+Gateway output remains unchanged. Current build receipts:
+
+- Native source client: 8,141 bytes, SHA-256
+  `2ce285fb5fde64b2ceefb42430ad0bfbdf5c1e82c076cfbf099c792884a6ed1d`.
+- Tenant Worker: 25,403 bytes, SHA-256
+  `740d86ef71653d63de7550f2e257be114ccd810406bf69cebff85c9c602f0250`.
+
+Hosted CI now rebuilds the current engine before the same integration tests on
+Linux and Windows, and triggers on engine source/dependency changes. The image,
+container controller, MCP HTTP transport, AssetLibrary/material/revision adapters,
+browser downloads, account deletion and deployed qualification remain open.
+
+At the preceding `349cf89e7652a075dbc0777ff883f2ca7b58fa5c` commit,
+[engine/package CI 37455478543](https://github.com/instruktlabs/kiln/actions/runs/37455478543)
+passed all twelve jobs, [hosted checks 37455478554](https://github.com/instruktlabs/kiln/actions/runs/37455478554)
+passed both platforms, and [Website 37455478462](https://github.com/instruktlabs/kiln/actions/runs/37455478462)
+passed. [Native preflight 37455478603](https://github.com/instruktlabs/kiln/actions/runs/37455478603)
+again failed required isolation before source execution while its independent
+trusted software-rendering fixture passed. Cloudflare authentication is still
+required for provider qualification; no production service or npm package is live.
+
 ## Owner handoffs
 
 Cloudflare CLI consent is pending. The default 474-permission request was not
