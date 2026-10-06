@@ -7,9 +7,9 @@ Started 6 October 2026 by the owner's active goal. Working checkout:
 The [publication plan](../plans/2026-10-05-v1-publication-plan.md) defines scope;
 [hosting economics](../plans/2026-10-06-hosting-economics.md) records assumptions.
 This record tracks evidence, not release acceptance by implication. Community
-contributions remain outside this cycle. The public npm release candidate is
-available under `next`; stable `1.0.0` and the production hosted service remain
-unpublished. The table below is current; the dated execution notes retain earlier
+contributions remain outside this cycle. Stable `@instruktlabs/kiln@1.0.0` is now
+public on npm under `latest`; the release candidate remains under `next`. The
+production hosted service remains unpublished. The table below is current; the dated execution notes retain earlier
 states and the evidence that superseded them.
 
 ## Deliverables and evidence
@@ -19,9 +19,9 @@ states and the evidence that superseded them.
 | P0 | Preserve publisher/repository setup | Complete in [publisher setup receipt](2026-10-06-publisher-setup.md); current checkout remote verified `instruktlabs/kiln` |
 | P1 | Public API, stability and migrations | In progress: all 55 public entrypoints classified in the SDK guide, experimental/re-export and deprecated-alias boundaries explicit, Discovery labels visible; final release freeze and target-version upgrade proof remain open |
 | P2 | Compiled ESM SDK and declarations | In progress: corrected 53-entry core qualification includes dependency-free arena; all 55 imports/declarations pass in fresh optional-peer installations at current and declared-minimum versions; final-version and platform evidence remain open |
-| P3 | Package identity, contents, executables and notices | RC complete; stable PR #151 merged as main `fda71ac`. All 12 exact-main CI jobs and release verification passed; SHA-256 `6ed3d6b9...1508`. Stable staging is waiting for the owner's protected-environment review in run `37525019084`; public promotion remains pending |
+| P3 | Package identity, contents, executables and notices | Stable published: PR #151 merged as main `fda71ac`; all 12 exact-main CI jobs and release verification passed. Owner-approved staging/promotion completed, and the public archive SHA-256 `6ed3d6b9...1508` and signed provenance independently verified |
 | P4 | Clean installs and workspace upgrades | RC complete: all seven public-registry CI jobs pass; cached Claude/Codex installers use the exact public RC, render/save/reopen/export pass; 0.10.0-to-RC upgrades preserve assets and refuse conflicts; final-version checks remain open |
-| P5 | Release automation and npm publication | RC complete: stage-only GitHub trusted publishing, owner-protected environment, package 2FA protection, exact-archive staging/promotion, public signature/provenance and fresh registry installs verified. Stable `1.0.0` verification passed; staging awaits the owner's GitHub review, with public promotion and registry verification still pending |
+| P5 | Release automation and npm publication | Stable published: owner-approved stage `6b1a5f9f-36f7-465d-ba81-9c47e5d83e66` promoted after npm security-key authentication. `latest = 1.0.0`, public archive and Sigstore provenance verified. Fresh stable registry installation checks are in progress through PR #152; the seven public-RC installation jobs already passed |
 | H1 | Native Cloudflare qualification | In progress: runtime-manifest startup and the owner-approved four-case batch at `8590c0a` passed actual RC evaluation, native network-denial checks, fresh-VM file/process checks, retained replay and whole-instance cleanup. All ten approved jobs and their resources are closed. Rendering, resource exhaustion, cancellation/alarm recovery, production integration and measured costs remain unqualified. See the [startup review](2026-10-06-cloudflare-startup-review.md) |
 | H2 | Authenticated MCP and tenant boundary | In progress: Google/GitHub account foundation merged; PR #149 at `9e16825` adds primary-D1 connection revocation and browser/provider-bound confirmation, passing 150 tests and Linux/Windows hosted CI. Adversarial tests cover stale KV, concurrent callbacks and hostile forms. Linking/unlinking, full account deletion, live sign-in, native dispatch and remaining provider-isolation qualification remain open |
 | H3 | Artifact lifecycle | In progress: tenant SQLite/R2 bytes, ProgramStore and native AssetLibrary, atomic quotas/revision pins, material closures, authenticated downloads, deletion and seven-day unsaved retention pass local workerd and actual-engine checks; standalone MaterialLibrary, native dispatch, browser tickets, account deletion and deployed lifecycle proof remain open |
@@ -34,6 +34,42 @@ states and the evidence that superseded them.
 | V2 | Release documentation and receipts | Pending: changelog/migrations/install/support/security/privacy/runbook; exact commits, hashes, versions, URLs and separate vendor-review state |
 
 ## Execution notes
+
+### Stable publicly published
+
+The owner approved the protected environment and
+[staging run 37525019084](https://github.com/instruktlabs/kiln/actions/runs/37525019084)
+completed successfully. npm reports stage
+`6b1a5f9f-36f7-465d-ba81-9c47e5d83e66` as `staged`, version `1.0.0`, intended
+tag `latest`, published by trusted automation. Downloading that exact stage
+reproduced SHA-256
+`6ed3d6b9964429f14c3c6a0a6a13d56be509dd0f40b07061a37d491f901c1508`.
+Sigstore verification passed for the main-branch release workflow identity,
+GitHub Actions issuer, exact commit `fda71ac775750f25390b6ee30082ebc56463edc6`,
+staging run and archive digest against
+[Rekor entry 3116120928](https://search.sigstore.dev/?logIndex=3116120928).
+The local receipt is retained in the stable worktree at
+`.cache/stable-main-qualification/provenance-receipt.json`.
+
+The owner's environment approval authorized private staging only. The owner then
+separately approved public promotion of this exact stable candidate and completed
+npm security-key authentication. The CLI confirmed successful publication.
+Public registry metadata now reads `latest = 1.0.0`, with `next = 1.0.0-rc.1`.
+The independently downloaded public archive matches the digest above, and its
+public Sigstore provenance verifies against the same workflow, commit, run and
+archive. The npm website also displays `1.0.0`, Public. No production hosted
+deployment has occurred.
+
+[PR #152](https://github.com/instruktlabs/kiln/pull/152) updates the public candidate
+record to stable so the seven-job registry installation matrix can qualify the
+published version. A fresh local Windows installation check is also running.
+Receipts and the npm screenshot are retained under the stable worktree's
+`.cache/stable-main-qualification/public-registry/`.
+
+Independent hosted resilience work continues: native cancellation,
+deadline/output/memory bounds, actual durable-alarm recovery and stable-image
+rendering are being prepared for local verification and a separately approved
+Cloudflare trial. No new cloud trial allowance has been requested or consumed.
 
 ### Stable exact-main qualification
 
