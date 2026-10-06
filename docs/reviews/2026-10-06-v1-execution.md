@@ -22,8 +22,8 @@ states and the evidence that superseded them.
 | P3 | Package identity, contents, executables and notices | RC complete: public `@instruktlabs/kiln@1.0.0-rc.1`, aligned engine/plugin identities, MCP launcher, consumer doc allowlist and dependency notices; stable-version audit remains open |
 | P4 | Clean installs and workspace upgrades | RC complete: all seven public-registry CI jobs pass; cached Claude/Codex installers use the exact public RC, render/save/reopen/export pass; 0.10.0-to-RC upgrades preserve assets and refuse conflicts; final-version checks remain open |
 | P5 | Release automation and npm publication | RC complete: stage-only GitHub trusted publishing, owner-protected environment, package 2FA protection, exact-archive staging/promotion, public signature/provenance and fresh registry installs verified; stable `1.0.0` staging/promotion remain pending |
-| H1 | Native Cloudflare qualification | In progress: Linux image built, Trixie software renderer passes six textured views; first private job failed with a provider internal error; corrected continuation had no observed invocation despite configured private schedulers; both trials cleaned up and absence verified. Provider execution/isolation, RSS, startup and measured cost remain pending |
-| H2 | Authenticated MCP and tenant boundary | In progress: Google/GitHub adapters, permanent D1 account IDs, atomic upstream login guards and current account/epoch checks pass 90 local hosted tests; linking, individual connection revocation, branded real sign-in, container dispatch and evaluator isolation remain open |
+| H1 | Native Cloudflare qualification | Blocked at live qualification: local/CI image and software-renderer fixtures pass, but two actual provider jobs failed; the latest direct RPC records a native monitor failure. Trial resources were removed and absence verified. The [startup review](2026-10-06-cloudflare-startup-review.md) specifies a minimal diagnostic; root cause, provider isolation, RSS, startup and measured cost remain unqualified |
+| H2 | Authenticated MCP and tenant boundary | In progress: Google/GitHub account foundation merged; browser sign-in/session PR #149 at `11a4f64` passes hosted CI on Linux and Windows. Uncommitted connection-revocation work passes the current 144-test hosted suite and three typechecks. Linking/unlinking, full account deletion, live sign-in, native dispatch and provider isolation remain open |
 | H3 | Artifact lifecycle | In progress: tenant SQLite/R2 bytes, ProgramStore and native AssetLibrary, atomic quotas/revision pins, material closures, authenticated downloads, deletion and seven-day unsaved retention pass local workerd and actual-engine checks; standalone MaterialLibrary, native dispatch, browser tickets, account deletion and deployed lifecycle proof remain open |
 | H4 | Capacity and operations | In progress: local native request admission, body/response/deadline bounds and cancellation pass; global operational quotas, process cleanup, load/cost measurements, alerts, deployed health/build identity and rollback remain open |
 | H5 | Production deployment | Pending: approved deployment at `kiln.instruktlabs.com`; live authenticated create/edit/render/save/download/reconnect flow |
@@ -1771,3 +1771,48 @@ individual connection revocation, complete account/asset deletion, public admiss
 limits, privacy pages and deployed user flows remain open. A fresh OAuth callback
 is not being presented as proof of a fresh password or MFA challenge. No production
 deployment or npm publication occurred in this continuation.
+
+## Startup research and current status refresh
+
+The owner requested further documentation/community research before treating the
+native error as a vendor blocker. The [startup review](2026-10-06-cloudflare-startup-review.md)
+records the current API/SDK comparison, related public reports, limits of the
+existing diagnostics and a smaller managed-image/custom-image sequence. No new
+cloud execution, provider change or support message occurred in this review.
+
+PR #149's exact `11a4f64` now passes both Linux and Windows hosted jobs in
+[run 37507203413](https://github.com/instruktlabs/kiln/actions/runs/37507203413).
+The working tree additionally implements primary-backed connection records,
+single-use code activation, protected-request revocation checks and browser-bound
+provider confirmation for disconnect. All 144 hosted tests and three TypeScript
+configurations pass locally. These additions remain uncommitted and need their
+remaining review/build/UI checks and CI; they are not deployed account controls.
+
+A fresh public registry read still returns `next=1.0.0-rc.1` and
+`latest=0.0.0-stage`. Stable publication and local distribution can proceed through
+their own gates while native hosting is investigated. The support case is not a
+reason to suspend independent work or to claim the rest of hosted v1 is complete.
+
+## Managed-image startup control passed
+
+The research-led minimal control now passes on Cloudflare. PR #150 source
+`c6b119b4a6358d51c27406f6fb3e74cafd289782` uses documented Wrangler configuration,
+an explicit private service binding and Cloudflare's managed Debian image. Its
+fixed Node command returned the expected version/identity; output completed after
+470 ms and awaited whole-instance cleanup after 573 ms. The provider instance API
+also reported stopped with exit code zero. A repeat RPC returned the retained
+result without starting a second job.
+
+The tested bundle was compared with uploaded bytes before invocation. Public URLs
+were disabled and no provider credentials, user assets or custom image were used.
+After retaining evidence, the local operator, Container application, Worker and
+namespace were removed; follow-up reads verified absence. Three of the five
+approved trial jobs have now been attempted, leaving two. No additional support
+message, production deployment or package publication occurred.
+
+All 126 hosted tests on this isolated branch, its hosted typechecks/builds,
+3,290 root tests (two platform skips), root typecheck/lint and redacted scans pass.
+Both hosted CI platforms pass in run `37513405377`. The account-control branch's
+separate uncommitted changes remain at 144 locally passing tests. The detailed
+[startup review](2026-10-06-cloudflare-startup-review.md) records the receipt,
+remaining custom-image/Kiln controls and unchanged hosted-launch requirements.
