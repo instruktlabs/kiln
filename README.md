@@ -5,9 +5,13 @@
 
 **Build and revise 3D assets with your coding agent.**
 
-**The v1 package is a release candidate.** This checkout prepares `@instruktlabs/kiln@1.0.0-rc.1`,
-which is not published to npm yet. npm 1.0 publication and the
-hosted service remain separate, uncompleted release steps. The [SDK guide](docs/sdk.md)
+**The v1 package is a release candidate.** Install the published RC with
+`npm install @instruktlabs/kiln@next`, or pin `@instruktlabs/kiln@1.0.0-rc.1`.
+The package name is `@instruktlabs/kiln`; `next` selects its prerelease channel.
+Stable npm 1.0 publication and the hosted service remain separate, uncompleted
+release steps. Until stable 1.0 is published, use the explicit RC version or `next`:
+the unqualified package name still selects npm's temporary holding version.
+The [SDK guide](docs/sdk.md)
 describes the compiled ESM library; use the [local package build](docs/install.md#install-a-local-package)
 to test this checkout. The 0.10.0 release described below remains a historical release.
 

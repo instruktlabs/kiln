@@ -1,8 +1,8 @@
 # Publishing Kiln 1.0
 
 This is the maintainer runbook for `@instruktlabs/kiln`. npm publishing access is
-configured and the public bootstrap placeholder exists; no RC or stable engine
-version has been promoted. Development, registry publication,
+configured and `1.0.0-rc.1` is public under `next`; stable `1.0.0` has not been
+published. Development, registry publication,
 hosted deployment and directory acceptance have separate evidence requirements.
 See the [v1 execution record](reviews/2026-10-06-v1-execution.md) for current status.
 

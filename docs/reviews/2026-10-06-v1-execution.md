@@ -1323,7 +1323,8 @@ commit `ce640ccae0c621177aad176a03b5a214ae57d266` and run `37477014656` attempt 
 This was verification only; no new signature or provenance was generated locally.
 Retained `.cache/npm-stage-provenance-receipt.json` and
 `.cache/npm-stage-verified-provenance.json`. Public promotion is now awaiting
-the separate owner approval required by the runbook.
+the separate owner approval required by the runbook at this checkpoint; its
+subsequent promotion and public-registry verification are recorded below.
 
 ## Cloudflare evaluation controller implementation
 
@@ -1360,3 +1361,33 @@ An independent storage regression found during the full hosted suite was fixed i
 advancing-clock test failed before the change and passed afterward. The fix is on
 hosted identity PR #146; both hosted CI platforms passed. It does not change the
 frozen main-branch npm archive.
+
+## Public release candidate promotion
+
+The owner explicitly approved public promotion of the verified RC under `next`
+and completed npm's security-key authentication. `npm stage approve` succeeded
+for stage `6f426dc2-d6b6-41a8-9ccf-874342bd7089`. The public registry independently
+confirmed `@instruktlabs/kiln@1.0.0-rc.1` and `next=1.0.0-rc.1`. `latest` remains
+`0.0.0-stage`; users must select `@next` or the exact RC version until stable
+1.0 is published. This is a published prerelease, not completion of the v1 goal.
+
+Fetched the tarball from its public npm URL without authentication. Its bytes,
+SHA-256 and SHA-512 integrity match the approved candidate. Downloaded the public
+registry provenance bundle and verified it with Sigstore against the GitHub Actions
+issuer and exact workflow identity. Its statement exactly matches the independently
+verified staging statement, including package digest, source commit and workflow
+invocation. Public receipts are retained in `.cache/npm-public-rc1/`.
+
+Installed that public-registry archive into a fresh Windows x64 consumer directory
+using Node 22.23.3 and npm 12.2.0. All 25 package checks passed, including SDK imports
+and consumer types, CLI, CSG/UV WASM, CPU PNGs, the compiled evaluator, MCP discovery,
+source editing/export, restart persistence, and the local plugin bundle. The receipt
+validator accepted its exact runtime, package version, digest and required checks.
+This verifies Windows consumption of the public archive; the remaining public-
+registry platform matrix and actual plugin harness installation remain open. The
+prepublication exact-archive platform matrix is separately complete.
+
+The package remains `@instruktlabs/kiln`; `next` is a distribution tag, not part of
+its name. Stable `1.0.0` will be assigned `latest`, allowing the plain install
+command. Source checkout documentation now states the RC publication status.
+Stable publication, hosted deployment and directory submissions remain incomplete.
