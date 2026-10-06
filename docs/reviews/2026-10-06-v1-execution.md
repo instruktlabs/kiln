@@ -25,7 +25,7 @@ published yet.
 | H3 | Artifact lifecycle | Pending: durable source/revisions/GLBs/materials, authorized downloads, deletion, saved quotas and seven-day unsaved retention |
 | H4 | Capacity and operations | Pending: quotas/admission/cancellation, logs without credentials, load/cost measurements, alerts, health/build identity and rollback |
 | H5 | Production deployment | Pending: approved deployment at `kiln.instruktlabs.com`; live authenticated create/edit/render/save/download/reconnect flow |
-| L1 | Local Claude Code and Codex plugins | Pending: small pinned distributions, maintained skills, strict validation and actual cached installs in separate workspaces |
+| L1 | Local Claude Code and Codex plugins | In progress: persistent exact-version runtime/workspace bootstrap passes focused tests and a real development-archive probe; small distributions, maintained skill wiring, strict validation and actual harness-cached installs remain open |
 | L2 | Public OpenAI plugin | Pending: compliant ZIP, verified publisher/domain, working MCP, privacy/support pages, review cases/video/account, submission receipt |
 | L3 | Anthropic directory | Pending: owned marketplace publication, final source path, account eligibility, reviewer materials and submission receipt |
 | V1 | Exact candidate verification | In progress: development builds have pinned local and CI evidence; final RC/version archive and target-host flows remain open |
@@ -253,6 +253,57 @@ installation, and durable workspace/runtime state must not live in a removable
 plugin-version directory. Sources: [Claude publishing](https://code.claude.com/docs/en/plugins/publish),
 [loading rules](https://code.claude.com/docs/en/plugins/loading).
 No local plugin installation or directory candidate is qualified by these checks.
+
+### Verified Discovery candidate
+
+Commit `4ea07c62ef13f518f1ff15b32d0c7d7d33bf451a` completed all twelve jobs in
+[CI run 37432619561](https://github.com/instruktlabs/kiln/actions/runs/37432619561)
+successfully, including Windows and Linux engine tests, both macOS architectures,
+the consumer Node matrix and installed Linux software Vulkan. The separate
+[Website run 37432619572](https://github.com/instruktlabs/kiln/actions/runs/37432619572)
+also passed. This qualifies the development candidate's checks, not a published
+1.0.0 or the subsequent plugin bootstrap changes.
+
+### Local plugin workspace bootstrap
+
+Added `scripts/setup-plugin-workspace.mjs` as a standalone helper for the planned
+small local plugin. It pins `@instruktlabs/kiln` to an exact version, installs with
+optional dependencies and lifecycle scripts disabled, and keeps the installation
+in a persistent version directory outside the plugin cache and asset workspace.
+The existing engine generator remains the owner of `kiln_workspace` configuration,
+skill selection and conflict-preserving check/upgrade/repair. The planned plugin
+does not also start a global authoring MCP server.
+
+The helper verifies package identity and its dependency lock before reuse,
+refuses unknown existing runtime directories, checks canonical path separation,
+and serializes setup through an exclusive lock. An explicit qualification archive
+is bound to its SHA-256; different bytes with the same version require a separate
+data directory. No cleanup replaces an existing runtime or user workspace.
+
+The initial fifteen focused tests failed against the stub, then passed after
+implementation. Additional checks found and fixed a CLI exit-status mismatch:
+workspace checks report `status`, rather than a `current` boolean. A redirected
+`runtimes` directory also exposed a pre-install path-validation gap; the helper now
+rejects it before npm runs. All 23 focused tests pass, covering drift, interrupted
+setup, path aliases, dependency-lock changes, conflicting setup, argument validation
+and immutable candidate reuse.
+
+A separate local probe installed the actual development archive with SHA-256
+`77ddc78367a4a35a55236786b5542f9c5f313b3189ea59f91be1f0429f89506f` under
+Node 22.23.3 on Windows. All ten checks passed: both harness workspace layouts,
+one configured workspace MCP server, check/upgrade, CPU GLB rendering and working
+CLI discovery after the plugin directory was relocated. Receipt:
+`.cache/v1-local-plugin-setup-receipt.json`. This tests the copied helper against
+the installed engine; it does not yet prove an actual Claude or Codex marketplace
+cache installation, a live harness connection, or a published plugin.
+
+Typecheck and lint pass. The full offline unit run passed 3,267 tests with two
+platform skips and no failures across 408 files
+(`.cache/v1-plugin-bootstrap-tests.log`). That run started before the final
+redirected-store guard was added; the final helper's separate 23-test run and
+repeated ten-check installed-archive probe pass. Exact-head CI is still required
+for this implementation slice. Engine source and its coverage thresholds did not
+change.
 
 ### Release authorization timing
 
