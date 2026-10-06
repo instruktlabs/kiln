@@ -54,8 +54,10 @@ nothing from user input at job time. Serve the web viewer with Workers static as
 Implementation refinement: tenant ownership and quota transactions now use the
 tenant Durable Object's own SQLite database. This keeps the authoritative record
 with the tenant routing boundary; it does not need a second D1 copy of those records.
-D1 remains optional for a demonstrated shared-metadata need, not a resource to
-provision merely because it appeared in the initial diagram.
+D1 now has a specific shared-metadata role: permanent Kiln accounts, verified
+Google/GitHub identity mappings and atomic login intents. Those adapters are
+implemented locally; no live D1 resource has been provisioned. Tenant asset and
+quota records stay in the tenant Durable Object rather than being duplicated.
 
 Native execution does not require hardware GPU rendering. CPU geometry previews
 already exist in Kiln. Textured/material previews would use the repo's existing
@@ -73,13 +75,17 @@ not an isolation boundary. Keep OAuth tokens, R2 credentials and other users' fi
 in the trusted Worker. Apply outbound network restrictions outside the sandbox.
 The Worker remains authoritative for ownership, quotas and permitted output handling.
 
-The critical spike is whether Kiln's current `setpriv`/`bwrap`/namespace restrictions
-work inside the actual Container. Native binary support alone does not prove this.
-If they do not, qualify an explicit per-job sandbox adapter; do not silently weaken
-the current evaluator. Test filesystem escape, network denial, CPU/native-memory
-limits, cancellation and tenant separation along with rendering. Treat Container
-outputs as untrusted inputs at the host boundary. A successful local Docker run or
-existing software-renderer CI job is insufficient to accept hosted isolation.
+The restricted Docker preflight has now demonstrated that its outer environment
+denies nested namespace creation. The [isolation review](../reviews/2026-10-06-hosted-isolation-review.md)
+therefore selects an explicit per-job Cloudflare microVM adapter as the next
+implementation to qualify, using the existing evaluator protocol. Keep credentials,
+ownership and quotas outside that VM; start from the pinned image without job
+snapshots and destroy the whole instance on completion, cancellation or failure.
+Preserve the existing Bubblewrap adapter and its fail-closed checks for compatible
+Linux hosts. Do not weaken them or claim a process username isolates a managed VM.
+Test network denial, cross-job access, CPU/native-memory limits, output limits and
+crash/cleanup recovery on Cloudflare itself. Local Docker or software-renderer CI
+does not establish the provider boundary or hosted launch acceptance.
 
 Start with `standard-2` as a conservative test fixture, then measure a custom
 one-vCPU/3-GiB configuration if RSS and image size permit. Current

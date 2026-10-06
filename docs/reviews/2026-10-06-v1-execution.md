@@ -1219,6 +1219,38 @@ CLI reported success and an independent `npm whoami` returned `matthew-kissinger
 No password, security-key response, recovery code or npm token was read into chat.
 Login and merge published no package and deployed no hosted service.
 
+## Isolation review and exact-main qualification
+
+The owner requested current-practice research on the Docker namespace failure and
+offered their HOL Guard fork as a possible reference. The
+[hosted isolation review](2026-10-06-hosted-isolation-review.md) records the actual
+CI denial, current Cloudflare microVM controls, the fork's local/OCI/gVisor code,
+and upstream's separately provisioned containment test environments. No HOL Guard
+code was installed or run. The owner explicitly deferred its contribution and
+integration work until after a polished v1.
+
+The next hosted implementation is an explicit adapter for a fresh Cloudflare
+microVM per evaluation job, with external network, lifetime and output controls.
+This does not weaken or bypass the existing Linux Bubblewrap readiness contract.
+Cloudflare deployment and adversarial qualification remain open; no workstation
+Docker change is required from the owner at this stage.
+
+All 12 engine/package jobs passed on exact merged main
+`ce640ccae0c621177aad176a03b5a214ae57d266` in
+[CI run 37471433457](https://github.com/instruktlabs/kiln/actions/runs/37471433457).
+Downloaded `node-package-candidate` without repacking: the RC archive is 9,154,941
+bytes, SHA-256
+`f2de7eb69f6e16dd618c77249b1f46eda1b5d032789f5b0d9048b2b2a08ea8c2`.
+Its SDK receipt agrees with that digest. Dispatched
+[release verification 37473250032](https://github.com/instruktlabs/kiln/actions/runs/37473250032)
+from the same main commit, in **verify** mode with no npm staging permission.
+Verification passed. Downloaded `npm-release-review`, inspected `review.json` and
+independently matched its archive digest. The stage job was skipped as intended.
+All 15 checks on hosted identity PR #146 at `255df6a` also passed; that PR remains
+unmerged and does not change this npm candidate. The owner staging/access-setup
+question is now pending because first-time npm staging creates a public placeholder.
+No npm package has been staged or published, and no hosted service has been deployed.
+
 ## Owner handoffs
 
 Cloudflare CLI consent is complete. After the earlier consent expired, the owner
