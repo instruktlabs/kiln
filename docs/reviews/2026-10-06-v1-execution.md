@@ -19,9 +19,9 @@ states and the evidence that superseded them.
 | P0 | Preserve publisher/repository setup | Complete in [publisher setup receipt](2026-10-06-publisher-setup.md); current checkout remote verified `instruktlabs/kiln` |
 | P1 | Public API, stability and migrations | In progress: all 55 public entrypoints classified in the SDK guide, experimental/re-export and deprecated-alias boundaries explicit, Discovery labels visible; final release freeze and target-version upgrade proof remain open |
 | P2 | Compiled ESM SDK and declarations | In progress: corrected 53-entry core qualification includes dependency-free arena; all 55 imports/declarations pass in fresh optional-peer installations at current and declared-minimum versions; final-version and platform evidence remain open |
-| P3 | Package identity, contents, executables and notices | RC complete; stable candidate PR #151 at `ade0c71` passes all 12 engine/package CI jobs, both hosted foundation jobs, the website build and all seven public-RC install jobs. Owner-approved merge completed as main `fda71ac`; exact-main qualification and stable publication remain pending |
+| P3 | Package identity, contents, executables and notices | RC complete; stable PR #151 merged as main `fda71ac`. All 12 exact-main CI jobs and release verification passed; SHA-256 `6ed3d6b9...1508`. Stable staging is waiting for the owner's protected-environment review in run `37525019084`; public promotion remains pending |
 | P4 | Clean installs and workspace upgrades | RC complete: all seven public-registry CI jobs pass; cached Claude/Codex installers use the exact public RC, render/save/reopen/export pass; 0.10.0-to-RC upgrades preserve assets and refuse conflicts; final-version checks remain open |
-| P5 | Release automation and npm publication | RC complete: stage-only GitHub trusted publishing, owner-protected environment, package 2FA protection, exact-archive staging/promotion, public signature/provenance and fresh registry installs verified; stable `1.0.0` staging/promotion remain pending |
+| P5 | Release automation and npm publication | RC complete: stage-only GitHub trusted publishing, owner-protected environment, package 2FA protection, exact-archive staging/promotion, public signature/provenance and fresh registry installs verified. Stable `1.0.0` verification passed; staging awaits the owner's GitHub review, with public promotion and registry verification still pending |
 | H1 | Native Cloudflare qualification | In progress: runtime-manifest startup and the owner-approved four-case batch at `8590c0a` passed actual RC evaluation, native network-denial checks, fresh-VM file/process checks, retained replay and whole-instance cleanup. All ten approved jobs and their resources are closed. Rendering, resource exhaustion, cancellation/alarm recovery, production integration and measured costs remain unqualified. See the [startup review](2026-10-06-cloudflare-startup-review.md) |
 | H2 | Authenticated MCP and tenant boundary | In progress: Google/GitHub account foundation merged; PR #149 at `9e16825` adds primary-D1 connection revocation and browser/provider-bound confirmation, passing 150 tests and Linux/Windows hosted CI. Adversarial tests cover stale KV, concurrent callbacks and hostile forms. Linking/unlinking, full account deletion, live sign-in, native dispatch and remaining provider-isolation qualification remain open |
 | H3 | Artifact lifecycle | In progress: tenant SQLite/R2 bytes, ProgramStore and native AssetLibrary, atomic quotas/revision pins, material closures, authenticated downloads, deletion and seven-day unsaved retention pass local workerd and actual-engine checks; standalone MaterialLibrary, native dispatch, browser tickets, account deletion and deployed lifecycle proof remain open |
@@ -34,6 +34,34 @@ states and the evidence that superseded them.
 | V2 | Release documentation and receipts | Pending: changelog/migrations/install/support/security/privacy/runbook; exact commits, hashes, versions, URLs and separate vendor-review state |
 
 ## Execution notes
+
+### Stable exact-main qualification
+
+Main `fda71ac775750f25390b6ee30082ebc56463edc6` passed every job in
+[CI run 37523234644](https://github.com/instruktlabs/kiln/actions/runs/37523234644),
+including both engine platforms, the installed package matrix and six software
+Vulkan images. The downloaded archive SHA-256 is
+`6ed3d6b9964429f14c3c6a0a6a13d56be509dd0f40b07061a37d491f901c1508`.
+[Release verification 37524905058](https://github.com/instruktlabs/kiln/actions/runs/37524905058)
+validated repository/commit identity, all CI jobs, the archive and all eight
+qualification artifacts. Its downloaded archive independently matches that digest.
+
+The protected `npm-release` environment still requires the owner as sole reviewer,
+forbids administrator bypass and allows only protected branches. The same main
+commit and digest were dispatched for staging in
+[run 37525019084](https://github.com/instruktlabs/kiln/actions/runs/37525019084).
+Its verification passed and the staging job is waiting for the owner's browser
+review. No new package version has been uploaded or promoted at this point.
+Public metadata still reads `next = 1.0.0-rc.1` and `latest = 0.0.0-stage`.
+The concrete handoff was opened in Chrome with `npm-release` selected. Final
+promotion remains a separate owner decision and npm security-key step.
+
+The native startup branch separately adds stopped-state confirmation to the
+production controller at `d3e6ac7`. It withholds output and retains durable
+recovery when destruction cannot be confirmed. Focused regression tests first
+failed, then all 136 hosted tests, hosted/root types, lint and production bundle
+checks passed. Exact-source CI and further live failure-path qualification remain
+pending; the completed four-job allowance does not authorize another cloud run.
 
 - Created `codex/v1-publication` from the current main checkout without altering
   the four existing untracked planning/setup documents.
