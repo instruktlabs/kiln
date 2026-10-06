@@ -1,4 +1,6 @@
 const IMAGE = 'cloudflare/debian-trixie';
+const KILN_IMAGE =
+  'registry.cloudflare.com/56adffd40534f7fe110fc661a40bbf53/kiln-evaluation@sha256:69aff70b4f0f80d2ff13549f4b55b1053fc1d8a6e25a00168ac4078a2ebd7b8a';
 const DEADLINE_MS = 60_000;
 const CLEANUP_MS = 5_000;
 const COMMAND = [
@@ -133,7 +135,7 @@ async function cleanup(container: Container | undefined, record: StartupRecord):
 export class ManagedStartupDiagnostic {
   constructor(
     private readonly context: Pick<DurableObjectState, 'container' | 'storage'>,
-    private readonly imageSource: 'managed' | 'configured' = 'managed',
+    private readonly imageSource: 'managed' | 'configured' | 'kiln' = 'managed',
   ) {}
 
   async run(): Promise<StartupRecord> {
@@ -197,14 +199,16 @@ export class ManagedStartupDiagnostic {
     try {
       const execute = async () => {
         if (!container) throw new DiagnosticFailure('ISOLATION_UNAVAILABLE');
-        const image = this.imageSource === 'configured' ? container.images?.control : IMAGE;
+        const image = this.imageSource === 'managed' ? IMAGE : container.images?.control;
         if (
-          this.imageSource === 'configured' &&
+          this.imageSource !== 'managed' &&
           (typeof image !== 'string' ||
             !/^registry\.cloudflare\.com\/[a-f0-9]{32}\/[a-z0-9][a-z0-9._/-]*@sha256:[a-f0-9]{64}$/.test(
               image,
             ))
         )
+          throw new DiagnosticFailure('IMAGE_UNAVAILABLE');
+        if (this.imageSource === 'kiln' && image !== KILN_IMAGE)
           throw new DiagnosticFailure('IMAGE_UNAVAILABLE');
         if (container.running) throw new DiagnosticFailure('PREEXISTING_CONTAINER');
         await step('start', 'START_FAILED', () =>
@@ -239,6 +243,7 @@ export class ManagedStartupDiagnostic {
           container.exec(COMMAND, {
             stdout: 'pipe',
             stderr: 'pipe',
+            ...(this.imageSource === 'kiln' ? { user: '1000:1000' } : {}),
           }),
         );
         await step('inspect', 'INSPECT_FAILED', async () => {
@@ -262,7 +267,9 @@ export class ManagedStartupDiagnostic {
           const data = value as Record<string, unknown>;
           if (
             Object.keys(data).sort().join(',') !== 'gid,uid,version' ||
-            data.version !== 'v24.20.0' ||
+            typeof data.version !== 'string' ||
+            data.version !== (this.imageSource === 'kiln' ? 'v22.23.3' : 'v24.20.0') ||
+            (this.imageSource === 'kiln' && (data.uid !== 1000 || data.gid !== 1000)) ||
             !Number.isSafeInteger(data.uid) ||
             !Number.isSafeInteger(data.gid) ||
             Number(data.uid) < 0 ||

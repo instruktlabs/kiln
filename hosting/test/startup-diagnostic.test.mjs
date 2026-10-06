@@ -302,9 +302,45 @@ test('configured control verifies the running image independently of the selecte
   assert.equal(result.stopped, true);
 });
 
+test('Kiln-image control selects its exact original image and numeric identity without importing Kiln', async () => {
+  const image =
+    'registry.cloudflare.com/56adffd40534f7fe110fc661a40bbf53/kiln-evaluation@sha256:69aff70b4f0f80d2ff13549f4b55b1053fc1d8a6e25a00168ac4078a2ebd7b8a';
+  const output = JSON.stringify({ version: 'v22.23.3', uid: 1000, gid: 1000 });
+  const f = fixture({ images: { control: image }, output });
+  const result = await new ManagedStartupDiagnostic(f.context, 'kiln').run();
+  assert.equal(result.passed, true);
+  assert.equal(f.container.settings.image, image);
+  assert.equal(f.container.execSettings.user, '1000:1000');
+  assert.deepEqual(f.container.command, [
+    '/usr/local/bin/node',
+    '--eval',
+    'process.stdout.write(JSON.stringify({version:process.version,uid:process.getuid(),gid:process.getgid()}))',
+  ]);
+  for (const runtime of [
+    { version: 'v24.20.0', uid: 1000, gid: 1000 },
+    { version: 'v22.23.3', uid: 0, gid: 0 },
+  ]) {
+    const mismatch = fixture({ images: { control: image }, output: JSON.stringify(runtime) });
+    assert.equal(
+      (await new ManagedStartupDiagnostic(mismatch.context, 'kiln').run()).reason,
+      'OUTPUT_FAILED',
+    );
+  }
+  const substituted = fixture({
+    images: { control: image.replace('69aff70b', 'ffffffff') },
+    output,
+  });
+  assert.equal(
+    (await new ManagedStartupDiagnostic(substituted.context, 'kiln').run()).reason,
+    'IMAGE_UNAVAILABLE',
+  );
+  assert.equal(substituted.calls.includes('start'), false);
+});
+
 for (const [entryFile, className, entrypoint] of [
   ['startup-worker.ts', 'KilnManagedStartupJob', 'KilnStartupControl'],
   ['custom-startup-worker.ts', 'KilnCustomStartupJob', 'KilnCustomStartupControl'],
+  ['kiln-startup-worker.ts', 'KilnImageStartupJob', 'KilnImageStartupControl'],
 ]) {
   test(`${entryFile} uses its private binding, denies HTTP and retains a missing-container result`, async () => {
     const bundle = await build({
