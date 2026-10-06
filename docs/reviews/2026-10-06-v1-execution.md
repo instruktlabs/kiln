@@ -1816,3 +1816,22 @@ Both hosted CI platforms pass in run `37513405377`. The account-control branch's
 separate uncommitted changes remain at 144 locally passing tests. The detailed
 [startup review](2026-10-06-cloudflare-startup-review.md) records the receipt,
 remaining custom-image/Kiln controls and unchanged hosted-launch requirements.
+
+## Minimal custom-registry control passed
+
+PR #150 source `2c605257b8990a3bb9c9f0fffb5a9abc45092bc3` passed the next private
+control at 18:59:29 UTC. The official Node 24.20.0 Debian Trixie AMD64 image was
+copied without changes to the private Cloudflare registry and selected through
+the documented named-image binding. Deployed code/image/privacy readbacks passed.
+The fixed command returned the expected version and identity, output completed
+after 7,000 ms, and whole-instance cleanup after 7,102 ms. Provider state separately
+confirmed stopped with exit code zero; replay returned the retained result.
+
+All diagnostic cloud resources, its registry image and local operator were removed
+with absence verified. Four of five approved trial jobs are now consumed; one
+remains. Local gates include 129 hosted tests, all hosted builds/typechecks,
+3,290 root tests (two platform skips), typecheck/lint and redacted scans. Both CI
+platforms passed in run `37515318317`. The unchanged Kiln image without engine
+imports is the next comparison; full hosted launch remains unqualified. The
+detailed startup review records why image preparation is not a supported cause:
+both this deployment and the earlier failed cf deployment reached image-ready.

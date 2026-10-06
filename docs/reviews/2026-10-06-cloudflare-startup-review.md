@@ -172,7 +172,8 @@ measured sizing matter more than adding an SDK. Source:
 | Public npm package | Registry returns `next=1.0.0-rc.1`, `latest=0.0.0-stage` | Final version, exact-main archive checks, approved stable promotion and fresh installs |
 | Local plugins | Public RC installed and exercised in Claude Code and Codex | Stable-version updates and upgrade checks; directory submissions are separate |
 | Native candidate PR #147 | Exact `7f4e98e`: engine/package, gateway, image, registry matrix and website checks pass | Separate restricted-Docker preflight fails; live native qualification absent; PR remains draft |
-| Managed-image diagnostic PR #150 | Exact `c6b119b`: local gates, Linux/Windows hosted CI and deployed fixed Node command pass; resources removed | Custom-image/Kiln controls and hostile-source qualification remain; two trial jobs left |
+| Managed-image diagnostic PR #150 | Exact `c6b119b`: local gates, Linux/Windows hosted CI and deployed fixed Node command pass; resources removed | Full Kiln/hostile-source qualification remains |
+| Custom-registry diagnostic PR #150 | Exact `2c60525`: local gates, both hosted CI platforms and deployed fixed Node command pass; resources removed | Unchanged Kiln-image control next; one approved trial job remains |
 | Browser account PR #149 | Exact `11a4f64`: hosted checks pass on Linux and Windows in run `37507203413`; website passes | Review/integration plus live identity-provider qualification; PR remains draft |
 | Connection controls | Working-tree changes pass all 144 hosted tests and all three TypeScript configurations | Uncommitted; further adversarial review, build/UI checks and CI required |
 | Persistence | Local tenant storage, revisions, quotas, download/deletion and unsaved retention tests pass | Remaining material/account lifecycle work and deployed two-user evidence |
@@ -238,3 +239,41 @@ The registry still returns `next=1.0.0-rc.1` and `latest=0.0.0-stage`. GitHub's 
 high-severity development-dependency alert is for `sharp <0.35.5`; the pending
 native branch already pins `0.35.5`, but main has not received that fix. Do not
 describe that main-branch alert as closed before its merge and readback.
+
+## Custom-registry control also passed
+
+At 18:59:29 UTC, the same fixed controller passed with the documented managed
+image's upstream Node 24.20.0 Debian Trixie AMD64 image, copied into the account's
+private Cloudflare registry. Its single-platform manifest digest was
+`sha256:a747ad80c8a161b650d79a6da9c422005b91148b18b8d2c669eb5a0b7c07e600`.
+No package installation, Kiln import, user data or credentials were added.
+
+The candidate used the documented `images.control` map and
+`ctx.container.images.control`, with the same fixed command, no egress and
+bounded whole-instance cleanup. Source `2c605257b8990a3bb9c9f0fffb5a9abc45092bc3`
+matched the uploaded JavaScript SHA-256
+`84b82608d9baa9ea59cc49c56a5c34c66dc9482e22af14f5219c54945316ba7e`.
+Deployed metadata verified the image reference and disabled public URLs before
+invocation. Output completed after 7,000 ms and destruction/inspection after
+7,102 ms; the provider separately reported stopped with exit code zero. A repeat
+RPC returned the same retained result without another job. These are one control's
+elapsed times, not billed CPU measurements or a Kiln performance forecast.
+
+The operator, application, Worker, namespace and registry image were removed;
+readbacks verified absence. Receipts remain under the diagnostic worktree's
+`.cache/startup-custom-trial/`. Four of five approved jobs have now been attempted,
+leaving one for the unchanged Kiln image without importing the engine. No expanded
+trial, production deployment or support message occurred.
+
+The source passes 129 hosted tests, all hosted typechecks/builds, 3,290 engine
+tests (two platform skips), root typecheck/lint, deployment dry run and redacted
+secret scans. Both hosted CI platforms passed in
+[run 37515318317](https://github.com/instruktlabs/kiln/actions/runs/37515318317).
+
+Source inspection showed Wrangler explicitly prepares custom images and waits for
+readiness before deployment. The earlier cf prebuilt deployment receipt also
+records that preparation and ready transition, so an omitted preparation step
+does not explain the earlier failure. The original Kiln image uses an OCI index;
+this control uses one AMD64 manifest. That difference is unproven as a cause, and
+we should not strip provenance or rebuild the Kiln image before testing its
+unchanged bytes through this simpler controller.
