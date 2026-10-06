@@ -18,6 +18,8 @@ from publishing a new installable package.
   repository links and package publisher metadata point to Instrukt Labs.
 - Installed isolated evaluation resolves compiled workers and readiness probes
   without a TypeScript loader. Host isolation still requires its own readiness proof.
+- The stdio executable cancels pending engine warmup when its client disconnects;
+  a tool-list-only session no longer starts unused engine work after closing stdin.
 - Isolated evaluation explicitly requires a user namespace before disabling nested
   namespaces, satisfying Bubblewrap's launch precondition. Unsupported hosts still
   fail closed before source execution.

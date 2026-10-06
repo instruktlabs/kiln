@@ -17,7 +17,7 @@
  * arrive with no engine bundle on disk at all.
  */
 import { afterAll, beforeAll, describe, expect, it } from 'bun:test';
-import { copyFile, mkdir, mkdtemp, readFile, rm } from 'node:fs/promises';
+import { copyFile, mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 
 import {
@@ -69,6 +69,36 @@ afterAll(async () => {
 });
 
 describe('contract rule 2: the first answers come before the engine', () => {
+  it('does not warm the engine after a tool-list-only client disconnects', async () => {
+    const directory = join(root, 'closed-before-warmup');
+    await mkdir(directory);
+    const bundle = join(directory, 'mcp-server.mjs');
+    await copyFile(SERVER_BUNDLE, bundle);
+    // A speculative import must not outlive its client. An engine with a live
+    // handle makes that mistake observable instead of depending on disk speed.
+    await writeFile(
+      join(directory, 'mcp-engine.mjs'),
+      `console.error('unexpected-engine-warmup');
+setInterval(() => {}, 1000);
+export function createPackagedKilnHost() { throw new Error('unused engine'); }
+`,
+    );
+    const server = await start({ bundle, cwd: directory });
+    expect((await legacyInit(server)).error).toBeUndefined();
+    server.notify('notifications/initialized');
+    expect((await server.request('tools/list', {})).error).toBeUndefined();
+    const timer = setTimeout(() => server.kill(), 2000);
+    try {
+      const closed = await server.close();
+      expect(server.stderr()).not.toContain('unexpected-engine-warmup');
+      expect(closed.code).toBe(0);
+      expect(closed.signal).toBeNull();
+    } finally {
+      clearTimeout(timer);
+      server.kill();
+    }
+  });
+
   it('the entry bundle imports only the protocol library and Node built-ins', async () => {
     const source = await readFile(SERVER_BUNDLE, 'utf8');
     expect(source.length).toBeLessThan(MAX_ENTRY_BYTES);

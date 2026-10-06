@@ -90,6 +90,13 @@ if (isDirectEntry(import.meta.url)) {
     process.exit(1);
   }
   const host = packagedEngineHost({ requirements });
+  let warmup: ReturnType<typeof setTimeout> | undefined;
+  const cancelWarmup = () => {
+    if (warmup !== undefined) clearTimeout(warmup);
+    warmup = undefined;
+  };
+  process.stdin.once('end', cancelWarmup);
+  process.stdin.once('close', cancelWarmup);
   // stdout is the MCP transport; diagnostics must never touch it.
   console.error(`kiln MCP server ${MCP_SERVER_VERSION} on stdio`);
   void serveKilnStdio({
@@ -99,7 +106,13 @@ if (isDirectEntry(import.meta.url)) {
     // which takes seconds: load the engine meanwhile so the first call is quick.
     // A failure here is reported by that call, not here.
     afterFirstToolList: () => {
-      setTimeout(() => void host().catch(() => {}), 50);
+      if (process.stdin.readableEnded || process.stdin.destroyed) return;
+      warmup = setTimeout(() => {
+        warmup = undefined;
+        if (!process.stdin.readableEnded && !process.stdin.destroyed) void host().catch(() => {});
+      }, 50);
+      // Speculative work must not keep a disconnected stdio process alive.
+      warmup.unref();
     },
   });
 }

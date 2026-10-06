@@ -1088,6 +1088,45 @@ The review explicitly records the library's KV concurrent-consumption limitation
 cross-region revocation concerns, missing account/linking/deletion controls and
 unfinished branded UI. No provider app, secret or cloud resource was created.
 
+### RC shutdown qualification and final-version preparation
+
+At `aa5bc2cba745f616a4775a60016cefb097621bcf`,
+[engine/package CI 37464347265](https://github.com/instruktlabs/kiln/actions/runs/37464347265)
+completed with eleven successful jobs. Intel macOS failed because the npm-launched
+MCP process did not exit within five seconds of stdin closing, after successfully
+listing tools. Hosted checks 37464347226 and Website 37464347348 passed. Native
+preflight 37464347408 failed required isolation, as before. This is not an
+all-green package candidate.
+
+A focused regression reproduced a real lifecycle defect locally: the executable's
+delayed warmup imported an unused engine after a tool-list-only client disconnected.
+The executable now cancels pending warmup on stdin end/close, checks the stream
+before starting it and unreferences the speculative timer. It does not force the
+process to exit or loosen the package smoke test's shutdown deadline. All six
+startup checks pass after rebuilding; the macOS outcome still requires fresh CI.
+Before/after receipts: `.cache/v1-mcp-close-before-fix.log` and
+`.cache/v1-mcp-close-after-fix.log`.
+The full offline unit suite passed 3,290 tests with two platform skips and no
+failures across 411 files (367.11 seconds); `.cache/v1-mcp-close-tests.log`.
+Typechecking, root lint and whitespace checks also pass. Exact-commit CI still
+must qualify coverage, other operating systems and installed software rendering.
+
+The corrected RC's fresh Windows installation passed all 25 package checks,
+including 53 core imports/declarations, npm-launched MCP shutdown, real CLI/MCP
+render/edit/save flows and textured community export. Archive SHA-256:
+`aab4be74024f93d1ef20a397d15807204b04cd81fb959fbee779c2e32997d14b`;
+receipt `.cache/v1-mcp-close-package.json`. Its installed production dependency
+audit reported zero known advisories in `.cache/v1-rc-consumer-audit.json`.
+Neither result is a security certification or a registry publication receipt.
+
+Final `1.0.0` version/documents/plugin preparation is preserved in
+`.cache/v1-final-preparation.patch`. Its preliminary Windows package check passed,
+but that archive predates this shutdown correction and is not a final candidate.
+The working branch remains `1.0.0-rc.1` so the plan's authorized RC publication and
+fresh registry/plugin installation precede final 1.0 qualification. Apply the
+saved source/document changes selectively after the RC step, then regenerate plugin
+metadata and runtime bundles; never restore its stale generated build files.
+
 ## Owner handoffs
 
 Cloudflare CLI consent is complete. After the earlier consent expired, the owner
@@ -1107,6 +1146,8 @@ usable disconnect/deletion controls and actual deployed consent, cancellation,
 expiry/revocation and cross-user denial checks. Local fixtures do not establish
 those results. No identity app or secret has been provisioned yet.
 
-Local npm login, publisher verification and final external approvals will be
-surfaced when a concrete candidate needs them. Missing human steps do not block
-independent package work.
+The CLI's read-only `npm whoami` check reports that this machine is not signed in.
+A browser login was opened in external Chrome and the owner's password/security-key
+step was surfaced through the question tool. Login does not stage or publish a
+package. Publisher verification and final external approvals remain separate;
+missing human steps do not block independent package work.
