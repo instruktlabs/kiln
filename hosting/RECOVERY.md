@@ -6,6 +6,13 @@ this runbook authorizes a deployment, restore, new cloud trial or data deletion.
 The pending storage/Cron trial at `37c962e` is a separate frozen candidate and does
 not test maintenance deployment or point-in-time recovery.
 
+The local transition test changes the actual gateway module to maintenance and
+back without replacing D1, DO, KV or R2 storage. It verifies continued deletion
+recovery during maintenance, old-token denial after restoration, and the other
+account's unchanged primary record, valid access and exact saved source. This
+qualifies local handler/state continuity only, not Cloudflare version deployment,
+provider Cron, backup restore or arbitrary historical-version compatibility.
+
 ## Choose the recovery operation
 
 | Failure | First action | What must remain current |

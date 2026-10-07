@@ -34,6 +34,18 @@ Local logs are `.cache/maintenance-red.log`,
 `.cache/recovery-build.log`, `.cache/recovery-lint.log` and
 `.cache/recovery-secrets.json`. These are local evidence, not deployed proof.
 
+A subsequent local transition test switches the actual gateway from normal code
+to maintenance and back inside the same workerd deployment, keeping storage
+identities and contents. The scheduled handler finishes the first account's
+already-requested deletion during maintenance; after restoring normal code the
+old token stays denied and the other account's primary record, valid access and
+exact saved source remain intact. The five-test operations suite passes in
+`.cache/maintenance-transition-test.log`. The expanded full hosting suite passes
+all 446 tests in `.cache/recovery-transition-full-tests.log`; all three typechecks,
+fourteen builds and root lint also pass in the `recovery-transition-*` logs. The
+scheduled invocation is explicit and local; this is not provider rollback, Cron
+or data-restore evidence.
+
 ## Security findings and remaining qualification
 
 Cloudflare documents code rollback separately from connected storage. D1 Time

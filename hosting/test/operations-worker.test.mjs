@@ -55,33 +55,35 @@ before(async () => {
       external: ['cloudflare:workers'],
     })
   ).outputFiles[0].text;
-  bundles.scheduled = (
-    await build({
-      stdin: {
-        contents: `import gateway from '../src/worker';
+  for (const entry of ['worker', 'maintenance-worker']) {
+    bundles[entry] = (
+      await build({
+        stdin: {
+          contents: `import gateway from '../src/${entry}';
     export default {async fetch(r,env,ctx){
       if(new URL(r.url).pathname==='/local-scheduled') {
         await gateway.scheduled({cron:'* * * * *',scheduledTime:Date.now(),noRetry(){}},env);
         return new Response('ok');
       }return gateway.fetch(r,env,ctx);
     }}`,
-        resolveDir: fileURLToPath(new URL('.', import.meta.url)),
-        loader: 'ts',
-      },
-      bundle: true,
-      write: false,
-      format: 'esm',
-      platform: 'browser',
-      external: ['cloudflare:workers'],
-    })
-  ).outputFiles[0].text;
+          resolveDir: fileURLToPath(new URL('.', import.meta.url)),
+          loader: 'ts',
+        },
+        bundle: true,
+        write: false,
+        format: 'esm',
+        platform: 'browser',
+        external: ['cloudflare:workers'],
+      })
+    ).outputFiles[0].text;
+  }
 });
-function worker(role) {
+function worker(role, gatewayEntry = 'worker') {
   const c = config.workers[role];
   const w = {
     name: c.name,
     modules: true,
-    script: role === 'gateway' ? bundles.scheduled : bundles[role],
+    script: role === 'gateway' ? bundles[gatewayEntry] : bundles[role],
     compatibilityDate: c.compatibilityDate,
     compatibilityFlags: c.compatibilityFlags,
     bindings: {},
@@ -114,10 +116,10 @@ function worker(role) {
   return w;
 }
 async function fixture() {
-  const runtime = new Miniflare(
+  const options = (entry = 'worker') =>
     convertV4MiniflareOptions({
       workers: [
-        ...Object.keys(config.workers).map(worker),
+        ...Object.keys(config.workers).map((role) => worker(role, entry)),
         {
           name: 'observer',
           modules: true,
@@ -141,17 +143,96 @@ async function fixture() {
       return Response.json(await e.PROBE.status());}}`,
         },
       ],
-    }),
-  );
+    });
+  const runtime = new Miniflare(options());
   const database = await runtime.getD1Database('ACCOUNTS', config.workers.gateway.name);
   await migrateAccounts(database);
-  const observer = await runtime.getWorker('observer');
   return {
     runtime,
     database,
-    send: async (path) => (await observer.fetch(`https://observer.internal${path}`)).json(),
+    async send(path) {
+      const observer = await runtime.getWorker('observer');
+      return (await observer.fetch(`https://observer.internal${path}`)).json();
+    },
+    async gatewayVersion(entry) {
+      await runtime.setOptions(options(entry));
+      this.database = await runtime.getD1Database('ACCOUNTS', config.workers.gateway.name);
+      return runtime.getWorker(config.workers.gateway.name);
+    },
   };
 }
+
+test('maintenance and code restoration retain current revocation and finish deletion without losing the other account', async () => {
+  const f = await fixture();
+  try {
+    const begun = await f.send('/begin');
+    assert.equal(begun.state, 'waiting');
+    assert.equal(begun.revocationVerified, true);
+    const accountSnapshot = async (state) =>
+      (
+        await f.database
+          .prepare('SELECT * FROM kiln_accounts WHERE state=? ORDER BY id')
+          .bind(state)
+          .all()
+      ).results;
+    const owner = await accountSnapshot('deleting'),
+      foreign = await accountSnapshot('active');
+    assert.equal(owner.length, 1);
+    assert.equal(foreign.length, 1);
+    const gateway = await f.gatewayVersion('maintenance-worker');
+    assert.deepEqual(await accountSnapshot('deleting'), owner);
+    assert.deepEqual(await accountSnapshot('active'), foreign);
+    const paused = await f.send('/inspect');
+    assert.equal(paused.record.startedAt, begun.startedAt);
+    assert.equal(paused.privateStatePresent, true);
+    assert.equal(paused.admission.paused, true);
+    assert.equal(paused.admission.activeRequests, 0);
+    for (const path of [
+      '/mcp',
+      '/account',
+      '/oauth/token',
+      '/oauth/github/callback',
+      '/downloads/private-ticket',
+    ]) {
+      const response = await gateway.fetch(`${manifest.origin}${path}`);
+      assert.equal(response.status, 503);
+      assert.equal(response.headers.get('retry-after'), '60');
+      assert.equal(response.headers.get('set-cookie'), null);
+      await response.body?.cancel();
+    }
+    // Explicit local invocation qualifies handler continuity, not provider Cron.
+    for (let i = 0; i < 5; i++) {
+      await f.database.exec('UPDATE kiln_deletions SET retry_at=0,lease_until=0');
+      assert.equal((await gateway.fetch(`${manifest.origin}/local-scheduled`)).status, 200);
+    }
+    assert.deepEqual(await accountSnapshot('deleting'), []);
+    assert.deepEqual(await accountSnapshot('active'), foreign);
+    const restored = await f.gatewayVersion('worker');
+    const anonymous = await restored.fetch(`${manifest.origin}/mcp`);
+    assert.equal(anonymous.status, 401);
+    await anonymous.body?.cancel();
+    const deadline = Date.now() + 12000;
+    let result;
+    do {
+      result = await f.send('/progress');
+      if (result.state !== 'waiting') break;
+      await new Promise((resolve) => setTimeout(resolve, 100));
+    } while (Date.now() < deadline);
+    // The actual operator checks its retained revoked token, both tenant stores,
+    // the foreign account's valid token and exact saved source after restoration.
+    assert.equal(result.state, 'finished');
+    assert.equal(result.passed, true);
+    assert.equal(result.deletionRecovered, true);
+    assert.equal(result.foreignAccountPreserved, true);
+    assert.deepEqual(await accountSnapshot('active'), foreign);
+    const clean = await f.send('/inspect');
+    assert.equal(clean.privateStatePresent, false);
+    assert.equal(clean.alarmAt, null);
+    assert.equal(clean.admission.pendingCleanup, 0);
+  } finally {
+    await f.runtime.dispose();
+  }
+});
 test('operations runner waits for actual retention and separately invoked scheduled recovery, without native execution', async () => {
   const f = await fixture();
   try {
