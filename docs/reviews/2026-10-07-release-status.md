@@ -107,9 +107,12 @@ from production's explicit fresh-VM route. A subsequent additive VM test preserv
 all evaluator checks and leaves the Docker job unchanged. Local validation passes
 3,348 tests with two platform-specific skips. Its first VM run also fails at
 wrapper startup; the bounded diagnostic identifies an unsupported Bubblewrap
-`--preserve-fds` argument in the optional nested evaluator. Its removal has a
-failing-then-passing regression and rebuilt bundles; actual VM qualification of
-the fixed candidate is still required. This defect also exists in published
+`--preserve-fds` argument in the optional nested evaluator. Its removal and the
+subsequent namespace/environment corrections have failing-then-passing regressions
+and rebuilt bundles. At `71aac00`, the actual VM passes all ten readiness checks,
+then fails its first evaluation with `EXECUTION_REJECTED`. No asset is produced;
+the full evaluator remains unqualified while a fixed-fixture diagnostic proceeds.
+The unsupported launcher option also exists in published
 1.0.0's optional nested adapter and is recorded in the unpublished changelog.
 No gate is waived. Recovery commit `88ebe58` separately passed hosted CI on Linux
 and Windows; this does not satisfy the unfinished provider restore gate.

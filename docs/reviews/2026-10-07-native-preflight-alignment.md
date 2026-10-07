@@ -164,3 +164,15 @@ The launch also uses `/usr/bin/env -i` under the existing resource limits to
 remove wrapper-added `PWD` before Node starts. The exact two-variable environment
 invariant remains unchanged. These changes have failing-then-passing focused
 regressions; the actual VM must still pass every invariant and evaluation check.
+
+At source `71aac00`, [run 37682807529](https://github.com/instruktlabs/kiln/actions/runs/37682807529)
+passes all ten readiness invariants through the exact installed archive
+`eedebd4ec4040bc5b0daad41d82f79202a6a2a7d06c5b01ba53c7a14b30cc63e`.
+It then fails the first actual evaluation with `EXECUTION_REJECTED`, producing
+no artifact. The receipt remains failed; readiness alone is not qualification.
+The same fixed box successfully renders through the local packaged Node worker
+(1,912 GLB bytes), which validates the fixture but proves no Linux isolation.
+The CI-only diagnostic now evaluates that fixed box directly inside the unchanged
+boundary and records capped exception details. It accepts no user source and
+does not change the sanitized public evaluator protocol. The retained failed
+evidence is `.cache/nested-evaluator-71aac00/`.

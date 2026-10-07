@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// CI-only diagnostics for the fixed installed transport worker. No user source,
+// CI-only diagnostics for the fixed installed transport worker and box fixture. No user source,
 // provider access, inherited child environment or security-policy changes.
 import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
@@ -73,6 +73,42 @@ try {
       error: inspected.error?.code ?? null,
       stdout: String(inspected.stdout ?? '').slice(0, 4096),
       stderr: String(inspected.stderr ?? '').slice(0, 4096),
+    };
+    // The public worker deliberately strips exception details. For this fixed
+    // repository fixture only, inspect the installed renderer under the same
+    // boundary. There is no source input, host environment or product storage.
+    // Never add this diagnostic path to the evaluator protocol or public host.
+    const fixedRender = `
+      try {
+        const { renderGLBInProcess } = await import('file:///app/node_modules/@instruktlabs/kiln/lib/render.js');
+        const result = await renderGLBInProcess('function build(){return new THREE.Mesh(boxGeo(1,1,1),gameMaterial(0x8899aa));}');
+        console.log(JSON.stringify({status: 'passed', bytes: result.glb.length}));
+      } catch (error) {
+        console.log(JSON.stringify({status: 'failed', name: error?.name,
+          code: error?.code, message: String(error?.message ?? '').slice(0, 1024),
+          stack: String(error?.stack ?? '').slice(0, 2048)}));
+        process.exitCode = 1;
+      }
+    `;
+    const rendered = spawnSync(
+      launch.command,
+      [...launch.args.slice(0, -1), '--input-type=module', '--eval', fixedRender],
+      {
+        env: launch.env,
+        detached: true,
+        stdio: ['ignore', 'pipe', 'pipe', 'pipe'],
+        encoding: 'utf8',
+        timeout: 30000,
+        killSignal: 'SIGKILL',
+        maxBuffer: 16 * 1024,
+      },
+    );
+    record.fixedRender = {
+      status: rendered.status,
+      signal: rendered.signal,
+      error: rendered.error?.code ?? null,
+      stdout: String(rendered.stdout ?? '').slice(0, 4096),
+      stderr: String(rendered.stderr ?? '').slice(0, 4096),
     };
   }
 } catch {
