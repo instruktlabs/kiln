@@ -635,14 +635,42 @@ operation; it preserves copies in other collections. Browser/account deletion UI
 and its deployed lifecycle remain open.
 
 Embedded material records are retained and verified using the SDK's canonical
-dependency semantics. An injected MaterialLibrary receives the closure on import;
-the separate durable hosted MaterialLibrary is still unimplemented. A textured
-fixture rebuilds the exported/imported GLB byte-for-byte without its original
-library. This does not qualify software rendering or native isolation on Cloudflare.
+dependency semantics. An injected MaterialLibrary receives the closure on import.
+A textured fixture rebuilds the exported/imported GLB byte-for-byte without its
+original library. This does not qualify software rendering or native isolation on
+Cloudflare.
 
 Source restoration, MCP source reads, reviewed saves and CLI rebuild observations
 preserve a leading UTF-8 BOM. Otherwise restoring an asset could change the exact
 source bytes and its program reference; focused engine tests cover those paths.
+
+## Durable material adapter
+
+`NativeMaterialLibrary` implements the published SDK's immutable material import,
+list and read contract over private tenant storage. The Worker owns the fixed
+`materials/<materialId>/<revisionHash>` index and pins the exact manifest and PNG
+inventory under the existing artifact quotas. The native SDK verifies identity,
+PNG bytes, dimensions and procedural recipe/output hashes. Provenance URLs remain
+metadata and are never fetched.
+
+Imports validate and snapshot the complete batch before any write. The host limits
+each batch to 100 distinct revisions, 64 MiB including manifests and 16 million
+decoded pixels (16 * 1024 * 1024); the SDK's per-record limits also apply. Commits
+are atomic per revision. A later failure can leave earlier revisions saved; retry
+with the same identities. Concurrent identical imports are idempotent and discard
+losing staging files. A lost commit acknowledgement cannot delete pinned bytes.
+Unacknowledged uploads or failed cleanup remain quota-counted until normal expiry.
+
+Lists page 32 records at a time and verify manifest identities without decoding
+all PNGs. Exact reads verify the complete material record. Saved records survive
+the seven-day unsaved expiry. Local tests cover fresh hosts and Durable Object
+eviction, account separation, concurrent imports, corruption, quota exhaustion,
+multi-page listing, caller mutation and partial failures.
+
+This adapter is not yet injected into native MCP or asset imports. Workspace
+dependency binding, request-route admission, registry-derived tool advertisement
+and deployed material workflows remain to be connected and qualified. No new
+material tool is advertised by this change.
 
 ## Private browser downloads
 

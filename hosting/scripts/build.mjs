@@ -20,6 +20,7 @@ for (const entry of [
   'admission-worker',
   'native-programs',
   'native-assets',
+  'native-materials',
   'native-mcp',
   'native-host',
   'native-evaluator',

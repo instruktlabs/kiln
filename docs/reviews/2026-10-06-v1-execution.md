@@ -2455,3 +2455,41 @@ retained original bundle/images. No cloud resources were created or changed.
 Account lifecycle, material persistence, saved-build identity, live OAuth,
 representative operations/cost evidence, production deployment and vendor
 submissions remain open. The root README/Troy/site refresh remains deferred.
+
+## Durable material storage foundation and progress checkpoint
+
+Fresh registry/release readback still confirms public npm `latest: 1.0.0` and the
+non-prerelease GitHub `v1.0.0` archive/checksum. The download integration at
+`72a3b61` passes seventeen CI checks, including both hosted platforms and all
+three installed images; the Linux engine gate remains running at this checkpoint.
+No completed check has failed. PR #153 remains a draft and is not a hosted launch.
+
+The new native material adapter and tenant index pass nine focused tests and the
+complete 295-test hosted suite. All three typechecks, thirteen production bundles,
+root lint, whitespace checks and redacted source/bundle scans pass. Storage reuses
+artifact quotas and immutable pins; verification imports the published SDK's
+material contract. Tests cover persistence after host replacement and tenant
+eviction, cross-account denial, concurrent identical imports, mutation of caller
+buffers, corruption, quota exhaustion, paging and partial/lost-acknowledgement
+failures. The first corruption-batch fixture reused the same material identity,
+so duplicate validation correctly rejected it before hash validation. Giving the
+corrupt second fixture a distinct valid identity now tests the intended integrity
+boundary; duplicate rejection remains separately checked.
+
+The material adapter is not yet connected to native MCP, asset imports or workspace
+dependency binding. No material tool is advertised yet. This is local storage
+evidence, not installed-image or Cloudflare material qualification.
+
+The private integrated Cloudflare candidate still awaits the existing owner
+approval question for a separate $1 allowance. Its retained Worker hash remains
+`3ff536d4e99b8ee348d2a55e5a0de58ca04895643f53ccba4a68cf5ee570312a`;
+the later download/material changes have not replaced that candidate. No cloud
+resources were provisioned or run. All twenty-two earlier authorized jobs remain
+consumed, and no owner authentication step is currently pending.
+
+Remaining work is material integration, account link/unlink/delete, saved-build
+identity, live Google/GitHub setup and end-to-end sign-in, integrated provider
+qualification, retention/load/cost evidence, operating alerts and rollback, public
+deployment with real clients, vendor directory submissions, and the deferred
+README/Troy/site refresh. Independent implementation can continue while awaiting
+the private trial decision.

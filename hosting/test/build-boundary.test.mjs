@@ -29,6 +29,7 @@ for (const module of [
       'request-worker',
       'native-programs',
       'native-assets',
+      'native-materials',
       'native-mcp',
       'native-host',
       'native-evaluator',

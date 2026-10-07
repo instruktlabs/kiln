@@ -6,6 +6,7 @@ import { MAX_PROGRAM_BYTES } from '../../src/program-store';
 import { AssetIndex } from './asset-index';
 import { AssetDownloadTickets } from './asset-downloads';
 import { parseDownloadPath } from './download-path';
+import { MaterialIndex } from './material-index';
 
 export interface TenantStorageEnv {
   ARTIFACTS: R2Bucket;
@@ -19,6 +20,7 @@ export class KilnTenant extends DurableObject<TenantStorageEnv> {
   private readonly programs: HostedProgramStore;
   private readonly assets: AssetIndex;
   private readonly downloads: AssetDownloadTickets;
+  private readonly materials: MaterialIndex;
 
   constructor(ctx: DurableObjectState, env: TenantStorageEnv) {
     super(ctx, env);
@@ -29,6 +31,7 @@ export class KilnTenant extends DurableObject<TenantStorageEnv> {
     });
     this.programs = new HostedProgramStore(this.artifacts);
     this.assets = new AssetIndex(this.artifacts);
+    this.materials = new MaterialIndex(this.artifacts);
     this.downloads = new AssetDownloadTickets(ctx.storage, this.artifacts, this.assets);
   }
 
@@ -99,6 +102,29 @@ export class KilnTenant extends DurableObject<TenantStorageEnv> {
       const asset = url.pathname.match(/^\/internal\/assets\/([^/]+)\/([^/]+)\/([^/]+)$/);
       if (asset && request.method === 'GET')
         return privateResponse(Response.json(this.assets.read(asset[1], asset[2], asset[3])));
+      if (
+        ['/internal/materials/commit', '/internal/materials/list'].includes(url.pathname) &&
+        request.method === 'POST'
+      ) {
+        const bounded = await boundedRequest(request, 2048);
+        let input: unknown;
+        try {
+          input = await bounded.json();
+        } catch {
+          throw new HttpFailure(400, 'Invalid saved material');
+        }
+        if (url.pathname.endsWith('/list'))
+          return privateResponse(Response.json(this.materials.list(input)));
+        const result = this.materials.commit(input);
+        return privateResponse(
+          Response.json(result.record, { status: result.created ? 201 : 200 }),
+        );
+      }
+      const material = url.pathname.match(/^\/internal\/materials\/([^/]+)\/([a-f0-9]{64})$/);
+      if (material && request.method === 'GET')
+        return privateResponse(
+          Response.json(this.materials.read(material[1], `sha256:${material[2]}`)),
+        );
       if (url.pathname === '/internal/programs' && request.method === 'GET') {
         return privateResponse(
           Response.json({ ...(await this.programs.stats()), retention: this.programs.retention }),
