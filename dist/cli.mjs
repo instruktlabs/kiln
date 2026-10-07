@@ -29420,7 +29420,7 @@ function isolatedEvaluatorLaunchWithLoader(workerPath, host = {}, loader = "tsx"
   for (const mount of runtimeMounts(runtimeRoot, pathExists)) {
     bwrapArgs.push("--ro-bind", mount, mount);
   }
-  const nodeArgs = [nodePath, "--max-old-space-size=512", "--disable-proto=throw"];
+  const nodeArgs = [nodePath, "--max-old-space-size=512", "--disable-proto=delete"];
   if (loader === "tsx")
     nodeArgs.push("--import", "tsx");
   nodeArgs.push(resolvedWorkerPath);

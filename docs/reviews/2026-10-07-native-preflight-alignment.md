@@ -176,3 +176,19 @@ The CI-only diagnostic now evaluates that fixed box directly inside the unchange
 boundary and records capped exception details. It accepts no user source and
 does not change the sanitized public evaluator protocol. The retained failed
 evidence is `.cache/nested-evaluator-71aac00/`.
+
+The fixed-fixture diagnostic in [run 37683757970](https://github.com/instruktlabs/kiln/actions/runs/37683757970)
+confirms `ERR_PROTO_ACCESS` inside the installed Khronos validator's startup
+feature detection. The same failure reproduces locally with Node 22.23.3 and the
+isolated launcher's `--disable-proto=throw`. It is a runtime/dependency interaction,
+not an invalid qualification scene or a namespace-permission failure.
+
+The corrected launcher uses Node's documented `--disable-proto=delete`, removing
+the legacy mutation accessor entirely. See the [Node CLI contract](https://nodejs.org/api/cli.html#--disable-protomode).
+Readiness additionally requires that absence and checks generated constructor-chain
+denial. The focused regression derives Node flags from the actual launcher,
+initializes the actual Khronos dependency, validates a rendered GLB and verifies
+that an assigned JSON `__proto__` key cannot mutate the target prototype. It fails
+with the old flags and passes with the fix. No validator bypass, source-policy
+exception or OS/resource restriction change is introduced. Actual VM qualification
+of this corrected candidate is still required.

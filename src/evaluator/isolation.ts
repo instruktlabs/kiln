@@ -196,7 +196,9 @@ function isolatedEvaluatorLaunchWithLoader(
   for (const mount of runtimeMounts(runtimeRoot, pathExists)) {
     bwrapArgs.push('--ro-bind', mount, mount);
   }
-  const nodeArgs = [nodePath, '--max-old-space-size=512', '--disable-proto=throw'];
+  // Remove the legacy mutation accessor. Throw mode breaks the Khronos
+  // validator's feature detection before any GLB can be validated.
+  const nodeArgs = [nodePath, '--max-old-space-size=512', '--disable-proto=delete'];
   if (loader === 'tsx') nodeArgs.push('--import', 'tsx');
   nodeArgs.push(resolvedWorkerPath);
   bwrapArgs.push(

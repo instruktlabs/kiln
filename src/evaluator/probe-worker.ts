@@ -109,12 +109,14 @@ function groupedFailure(failedChecks: readonly string[]): ProbeFailure {
 }
 
 function generatedDenials(): boolean {
+  if (Object.hasOwn(Object.prototype, '__proto__')) return false;
   const prelude = "const meta = { name: 'probe' }; function build(){ return createRoot('probe'); }";
   const probes = [
     `const leak = process.env; ${prelude}`,
     `const leak = fetch('http://169.254.169.254/'); ${prelude}`,
     `const leak = globalThis.process.mainModule.require('fs'); ${prelude}`,
     `const leak = globalThis.process.mainModule.require('child_process'); ${prelude}`,
+    `const leak = ({}).constructor.constructor('return process')(); ${prelude}`,
   ];
   return probes.every((source) => !validate(source).valid);
 }

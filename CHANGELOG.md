@@ -30,6 +30,10 @@ release or an accepted plugin listing.
   the parent, accounting for Bubblewrap's nested mapping when further user
   namespaces are disabled. The final worker environment is cleared again to
   remove Bubblewrap's injected `PWD` while retaining the exact allowed variables.
+- The isolated worker removes Node's legacy `__proto__` accessor instead of
+  throwing on reads, allowing Khronos glTF validation to initialize. Readiness
+  verifies that the accessor is absent; a regression also checks that assigning
+  a JSON `__proto__` key cannot change an object's prototype.
 
 ## 1.0.0
 
