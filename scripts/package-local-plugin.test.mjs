@@ -3,6 +3,7 @@ import { createHash } from 'node:crypto';
 import { mkdir, mkdtemp, readFile, readdir, realpath, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join, resolve, sep } from 'node:path';
+import { PNG } from 'pngjs';
 import { packageLocalPlugin } from './package-local-plugin.mjs';
 
 const roots = [];
@@ -41,6 +42,11 @@ test('local plugin has portable and Claude identities pinned to the engine', asy
   expect(portable.extensions['com.openai'].interface.displayName).toBe('Kiln Engine');
   expect(portable.mcpServers).toBeUndefined();
   expect(claude.mcpServers).toBeUndefined();
+  const icon = await readFile(join(directory, '.claude-plugin/icon.png'));
+  const decoded = PNG.sync.read(icon);
+  expect(decoded.width).toBe(512);
+  expect(decoded.height).toBe(512);
+  expect(icon.length).toBeLessThan(2 * 1024 * 1024);
 });
 
 test('bundle registers setup alone and keeps its complete maintained reference and helper', async () => {
@@ -87,9 +93,7 @@ test('bundle retains an exact inventory and deterministic hashes', async () => {
         .update(await readFile(join(first, file)))
         .digest('hex')}`,
     );
-    expect(await readFile(join(first, file), 'utf8')).toBe(
-      await readFile(join(second, file), 'utf8'),
-    );
+    expect(await readFile(join(first, file))).toEqual(await readFile(join(second, file)));
   }
 });
 

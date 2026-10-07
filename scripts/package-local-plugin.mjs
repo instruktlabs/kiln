@@ -69,6 +69,7 @@ async function expectedFiles() {
   const files = new Map([
     ['plugin.json', json(portable)],
     ['.claude-plugin/plugin.json', json(identity)],
+    ['.claude-plugin/icon.png', await readFile(join(repo, 'assets/branding/kiln-512.png'))],
     ['runtime.json', json({ name: pkg.name, version: pkg.version })],
     ['LICENSE', await readFile(join(repo, 'LICENSE'))],
     [

@@ -162,3 +162,65 @@ are `.cache/hosted-terms-preview.png` and `.cache/public-plugin-listing-preview.
 No provider credential, public route, paid trial or submission was created. The
 Google client approval remains the one pending owner question. The gateway change
 requires refreshing the frozen lifecycle candidate before its approval request.
+
+## Publisher portals and Claude validation, October 7
+
+Read-only inspection found the existing **Instrukt Labs** OpenAI organization
+marked **Verified** and its Plugins portal available. No ZIP was uploaded. This
+removes a presumed new verification step; the submission still needs a selected
+developer identity, MCP domain proof and live qualification. Organization
+verification alone does not prove the final listing identity or domain challenge.
+
+Anthropic's current signed-in account can open the submission form. Its portal
+validated public `instruktlabs/kiln`, folder `plugins/kiln-engine`, tag `v1.0.0`,
+resolving to `fda71ac775750f25390b6ee30082ebc56463edc6`. The source folder matched
+the local bundle before the icon addition below. Seven checks finished: validation
+passed with one warning and two policy holds. Repository retrieval, size, name and
+publisher checks passed. The portal reports fourteen entries and 36.4 kB, including
+directories; the local file inventory counts regular files separately.
+
+The warning is a missing raster icon. The portal requires a square PNG/JPEG and
+captures the first listing icon when saving/submitting the initial draft. A 512px
+PNG export of `site/public/favicon.svg` is now maintained at
+`assets/branding/kiln-512.png` and included by the local plugin packager at the
+default `.claude-plugin/icon.png` path. Sharp 0.35.5 rendered the existing SVG at
+density 1152, resized to 512 square, with PNG compression level 9. The 4,481-byte
+file's SHA-256 is
+`b4b651c402793b7e27cab780f04b14f80daec6d0cd5b7e4e90313930581a54e9`.
+Its dimensions decode correctly and its appearance was inspected. The plugin's
+runtime remains pinned to the published engine 1.0.0; no executable or engine
+version changed. The published tag and npm archive remain immutable.
+
+Both holds use `MCP_FORWARDS_CREDENTIAL_ENV`, referring to the installer's `pin`
+beside `registry.npmjs.org` and combining that with setup guidance about a host.
+The source review distinguishes the actual data flow:
+
+- `pin` comes from the plugin's public `runtime.json`: package name and exact
+  version. It is not an authentication PIN or token.
+- Direct environment reads select local storage and the npm executable:
+  `LOCALAPPDATA`, `XDG_DATA_HOME` and `npm_execpath`.
+- The ordinary npm child inherits the caller's environment and npm configuration.
+  npm can therefore use configured npm credentials with its registry. Do not claim
+  that all credentials are stripped. Kiln passes a fixed public package/version
+  and npm registry, disables install scripts and does not implement a separate
+  credential collection or forwarding mechanism.
+- Optional remote-renderer credentials in the shared setup guidance are configured
+  by the user for that renderer. They are unrelated to the package-version pin.
+
+Retain this explanation for the reviewer; a local code review cannot dismiss a
+portal hold or predict Anthropic's decision. Do not rename or hide legitimate code
+to evade the scan, or ask the user for a secret to replace the public version pin.
+The [portal guidance](https://claude.com/docs/plugins/pre-submission-checklist)
+distinguishes a hold from a blocking failure. Final GitHub push-access verification,
+data-handling declarations, compliance acknowledgements and submission remain open.
+No final submission or compliance acknowledgement was made, and no GitHub access
+was granted. The validation form remains local to its browser tab until saved.
+
+The new icon assertion failed first and all eight local-plugin packaging tests
+now pass. The full offline gate passes 3,290 tests with two skips and no failures;
+function coverage is 95.16% and line coverage 92.50%, above both thresholds.
+Typechecking, lint and skill checks pass. Claude Code 2.1.287 validates the
+manifest. Revalidate the exact new
+commit in the portal before saving the listing, since the `v1.0.0` result cannot
+qualify the added icon. Local evidence: `.cache/claude-directory-stable-validation.txt`,
+`.cache/claude-directory-stable-validation.png`, and `.cache/claude-icon-*.log`.

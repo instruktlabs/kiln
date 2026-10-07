@@ -28,8 +28,8 @@ states and the evidence that superseded them.
 | H4 | Capacity and operations | In progress: shared SQLite admission, global/per-account quotas, operator pause, native cleanup and durable account-deletion recovery are implemented. Launch quota values, representative load/costs, deployed Cron recovery, retention/alerts/escalation, deployed identity and rollback verification remain open |
 | H5 | Production deployment | Pending: approved deployment at `kiln.instruktlabs.com`; live authenticated create/edit/render/save/download/reconnect flow |
 | L1 | Local Claude Code and Codex plugins | Stable distribution qualified: both actual client catalogs install kiln-engine 1.0.0 and download the exact public npm runtime; real MCP/CLI flows and Codex skill/tool discovery pass. RC and 0.10 workspace upgrades preserve stores. Same-profile RC-to-stable cache updates also pass, retaining the pinned workspace runtime and original saved assets |
-| L2 | Public OpenAI plugin | Pending: compliant ZIP, verified publisher/domain, working MCP, privacy/support pages, review cases/video/account, submission receipt |
-| L3 | Anthropic directory | Pending: owned marketplace is public and installed successfully; directory eligibility, exact final source, portal validation, reviewer materials and submission receipt remain open |
+| L2 | Public OpenAI plugin | In progress: portable ZIP, hosted skill, listing metadata, review cases and public policy pages are prepared. Existing Instrukt Labs organization is verified in OpenAI's portal. Live MCP, selected publisher/domain proof, owner-reviewed terms, executed cases/demo/review account and submission remain open |
+| L3 | Anthropic directory | In progress: owned marketplace works; portal validation of the stable v1.0.0 folder passed with one icon warning and two credential policy holds. A raster icon is prepared and the actual installer data flow is documented for review. Exact-source revalidation, GitHub push access, declarations, reviewer outcome and submission receipt remain open |
 | V1 | Exact candidate verification | Package qualified: exact main fda71ac archive, twelve main CI jobs, release verification, public registry/provenance, seven-platform registry installs, fresh local consumer checks and stable plugin/workspace flows pass. Hosted end-to-end verification remains open |
 | V2 | Release documentation and receipts | Pending: changelog/migrations/install/support/security/privacy/runbook; exact commits, hashes, versions, URLs and separate vendor-review state |
 
@@ -3229,3 +3229,27 @@ renders in the local browser. Details and remaining gates are appended to the
 credential, paid job or publication occurred. Google client creation remains the
 pending approval. Refresh the frozen lifecycle trial to the new source before
 seeking its allowance; final README/Troy/site updates remain deferred until launch.
+
+## Publisher portal preflight and local plugin icon (October 7)
+
+All eighteen CI checks passed on `69d0326`. OpenAI's existing Instrukt Labs
+organization is marked Verified and the Plugins page is accessible; no upload was
+made. The selected listing identity and MCP domain challenge remain to be verified.
+
+Anthropic's portal validated the published stable tag at `fda71ac`, folder
+`plugins/kiln-engine`: repository, size, name and publisher checks passed. One
+missing-icon warning and two credential policy holds were reported. The latter
+refer to the public package-version pin beside npm's registry and the shared setup
+guidance. The actual environment/npm data flow is documented in the
+[directory preflight](2026-10-07-directory-preflight.md#publisher-portals-and-claude-validation-october-7)
+for reviewer assessment. No credential was requested or submitted in response to
+these findings, and no compliance acknowledgement or final submission occurred.
+
+The local plugin now includes a 512px PNG derived from the existing Kiln SVG.
+The maintained packager copies it and records its hash; the published 1.0.0 engine
+pin, executable and tag remain unchanged. The missing-icon test failed first;
+all eight focused packaging tests, skill checks, typechecking, lint and the
+Claude Code 2.1.287 manifest validator pass. The full offline gate passes 3,290
+tests with two skips, no failures, 95.16% function coverage and 92.50% line coverage.
+Exact new-source portal validation
+and CI remain necessary before saving or submitting the directory candidate.

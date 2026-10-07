@@ -3,6 +3,7 @@
   "kind": "kiln-local-plugin",
   "engineVersion": "1.0.0",
   "files": {
+    ".claude-plugin/icon.png": "sha256:b4b651c402793b7e27cab780f04b14f80daec6d0cd5b7e4e90313930581a54e9",
     ".claude-plugin/plugin.json": "sha256:c40c7eafed4c0822faef83178633f3bf3449311220f709d5155aed4a9c74cd6b",
     "LICENSE": "sha256:cdba278ebf1d6de618869936226bf03be4887179c128efc7aaa13d22034826a5",
     "plugin.json": "sha256:f80ecc90d141adf45e5fadfe5092c325e9174f02b364c1e0059cd5bd345eaaf1",
