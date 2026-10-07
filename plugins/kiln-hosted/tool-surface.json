@@ -1,0 +1,38 @@
+{
+  "kind": "kiln.hosted-public-interface.v1",
+  "hostedToolSurface": "kiln.hosted-tools.v1",
+  "engine": {
+    "name": "@instruktlabs/kiln",
+    "version": "1.0.0",
+    "sourceCommit": "fda71ac775750f25390b6ee30082ebc56463edc6",
+    "sha256": "6ed3d6b9964429f14c3c6a0a6a13d56be509dd0f40b07061a37d491f901c1508"
+  },
+  "tools": [
+    "kiln_assets_catalog",
+    "kiln_assets_collections",
+    "kiln_assets_get",
+    "kiln_assets_list",
+    "kiln_assets_restore",
+    "kiln_capabilities",
+    "kiln_discover",
+    "kiln_edit",
+    "kiln_export",
+    "kiln_import",
+    "kiln_inspect",
+    "kiln_material_create_preset",
+    "kiln_material_create_procedural",
+    "kiln_material_get",
+    "kiln_material_import",
+    "kiln_material_list",
+    "kiln_material_presets",
+    "kiln_present",
+    "kiln_render",
+    "kiln_renderer_reprobe",
+    "kiln_renderer_status",
+    "kiln_save",
+    "kiln_screenshot_animation",
+    "kiln_source",
+    "kiln_validate",
+    "kiln_view_interior"
+  ]
+}

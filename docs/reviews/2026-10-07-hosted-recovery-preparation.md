@@ -1,6 +1,6 @@
 # Hosted recovery preparation, October 7, 2026
 
-The maintenance gateway and [recovery runbook](../../hosting/RECOVERY.md) are
+The maintenance gateway and [recovery runbook](https://github.com/instruktlabs/kiln/blob/f99f1b894cf8277077c0b1377fdc8a37a0990a28/hosting/RECOVERY.md) are
 prepared separately from the frozen private operations candidate `37c962e`.
 This work does not deploy a service, restore data, create resources or expand
 that trial's scope. PR #153 and the separate operations trial remain subject to
@@ -65,7 +65,7 @@ Real maintenance activation, compatible rollback, provider recovery, revocation
 preservation, saved-byte integrity and cleanup need an independently prepared
 bounded trial. The pending operations trial tests retention and Cron recovery,
 not these additional operations. See the runbook's official sources and the
-[deployment gates](../../hosting/DEPLOYMENT.md#ordered-deployment-and-launch-gates).
+[deployment gates](https://github.com/instruktlabs/kiln/blob/f99f1b894cf8277077c0b1377fdc8a37a0990a28/hosting/DEPLOYMENT.md#ordered-deployment-and-launch-gates).
 
 ## Cloudflare CLI build-output qualification
 

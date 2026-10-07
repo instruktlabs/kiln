@@ -8,11 +8,6 @@
       "site/*.ts",
       "scripts/**/*.mjs",
       "scripts/**/*.ts",
-      "hosting/src/**/*.ts",
-      "hosting/test/**/*.{ts,mjs}",
-      "hosting/scripts/**/*.mjs",
-      "hosting/container/**/*.mjs",
-      "hosting/probe/**/*.ts",
       "render-service/src/**/*.mjs",
       "render-service/test/**/*.mjs"
     ],

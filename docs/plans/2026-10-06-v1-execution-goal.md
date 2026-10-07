@@ -1,92 +1,161 @@
-# Kiln 1.0 execution goal
+# Kiln release-cycle execution goal
 
-Prepared 6 October 2026. Status: activated by the owner's explicit goal on 6 October.
-Track current progress in [the execution record](../reviews/2026-10-06-v1-execution.md).
-The owner previously authorized the early transfer and npm setup separately:
-the native transfer is complete with preservation verified, an Actions-policy
-compatibility fix is applied with a passing Linux CI rerun, and the npm account/free
-organization are created with two security keys and 2FA enforcement verified.
-The local recovery backup is encrypted and verified, and its staging plaintext is
-removed. Local npm CLI login remains unconfigured until publishing requires it.
-Cloudflare's dashboard confirms Workers Paid and R2 Paid are already active;
-no subscription purchase or upgrade was needed. Implementation is now underway on
-`codex/v1-publication`, tracked in the execution record. No hosted production
-deployment or npm release has been performed.
+Updated 7 October 2026 for the owner's public-engine/private-hosting decision.
+The existing goal remains active with the accepted public/private split. This text
+records that goal and its current completion boundaries; it does not create a
+second goal. The owner separately approved
+GitHub Team at $4/month for one seat, billed monthly. The owner completed the
+upgrade, and GitHub's organization API now verifies `plan.name: team`, `seats: 1`
+and `filled_seats: 1`.
 
-Use with the [full publication plan](2026-10-05-v1-publication-plan.md) and
-[hosting economics](2026-10-06-hosting-economics.md). Current code, `AGENTS.md` and the
-owner's subsequent instructions take precedence over dated planning observations.
+Stable `@instruktlabs/kiln@1.0.0` and the GitHub release are already published.
+Reuse the completed GitHub transfer, npm security/trusted-publishing setup,
+Cloudflare subscriptions, the completed GitHub Team upgrade and existing OAuth
+applications. Do not repeat that work.
+Current evidence and unfinished tasks are in the
+[release status](../reviews/2026-10-07-release-status.md).
 
 ## Copyable goal statement
 
-Execute the entire Kiln Engine 1.0 publication plan in
-`docs/plans/2026-10-05-v1-publication-plan.md`, using
-`docs/plans/2026-10-06-hosting-economics.md` for hosting assumptions. Target sustained
-overnight execution from the completed publisher setup. Work in
-`C:/Users/Mattm/X/kiln-oss`; the sibling dogfood directory contains setup evidence,
-not the release checkout. Keep every outcome in scope; do not call the goal complete until all
-required work within our control has passed and its result is verified.
+Complete this Kiln release cycle with a public, community-maintained engine and
+integrations, an independently buildable private hosted application under Instrukt
+Labs, a working authenticated Cloudflare service, and the applicable OpenAI and
+Anthropic directory submissions. Use the
+`docs/plans/2026-10-07-private-hosting-separation.md` migration scope, the existing
+publication plan and hosting economics, and my subsequent decisions. Preserve the
+full end state; migration alone does not complete this goal.
 
-**First, confirm the completed setup and establish the v1 contract.** The existing
-repository moved from `matthew-kissinger/kiln` to `instruktlabs/kiln` with identity,
-history, stars, watchers, forks, issues, PRs and releases preserved. Read the transfer
-receipts and current status; do not repeat the transfer. Verify the completed
-Actions-policy fix and its CI result, operational access and publishing
-bindings. Keep redirects and my personal pin intact. Do not recreate the repository
-or triage, close or merge incoming community contributions. Surface any unexplained
-preservation discrepancy immediately.
+Work from `C:/Users/Mattm/X/kiln-oss` and the separate private application checkout
+at `C:/Users/Mattm/X/kiln-hosted`. Preserve the reviewed hosting source,
+tests, origin and evidence in `instruktlabs/kiln-hosted`. Keep it able to install, build and
+test from a clean checkout with explicit pinned engine dependencies, with no
+adjacent developer checkout or unpublished local files required. Keep reusable
+engine contracts public and derive MCP metadata from the shared registry.
 
-**Second, prepare publishing access when the candidate needs it.** Reuse the created personal account
-`matthew-kissinger` and free `instruktlabs` organization; do not recreate them. Verify
-2FA/recovery readiness and prepare `@instruktlabs/kiln` publishing access. Bring any
-remaining verification, login, 2FA and recovery handoffs to me through the
-visible browser and chat. Never ask for secrets in chat. Configure GitHub trusted
-publishing and staged release approval when the package is ready; organization
-registration does not itself authorize publishing a placeholder or release. Do not
-repeat completed email, 2FA or recovery setup, or let a pending interactive login
-block independent package engineering.
+Use the already-active GitHub Team organization plan to protect the private
+repository's `main` branch with pull requests, required passing checks and
+protection against force pushes and deletion. Verify the rules through readback
+and a controlled check. Keep build/test CI free of production credentials and
+track private Actions usage against its included allowance. Team does not provide
+required environment reviewers in private repositories, so production deployment
+remains an explicitly approved operator action. The public npm release workflow
+retains its existing protected environment. There is no private branch within the
+public engine repository; repository visibility and branch protection are separate.
 
-**Then implement and qualify the full release:** the supported ESM/TypeScript SDK,
-CLI, local MCP, skills, package contents and migrations; installable Claude Code and
-Codex plugins; and the authenticated service at `kiln.instruktlabs.com` on Cloudflare
-Workers, Containers, R2, D1 and Durable Objects. Qualify native evaluation, tenant
-isolation, CPU rendering and software Vulkan, downloads, retention, quotas, load and
-cost against the plan. Retain existing experimental features with explicit labels.
-Keep saved assets until deletion within quotas and expire unsaved work after seven
-days. Treat $20/month as an initial target, not a spending authorization or hard cap.
-Hosted access is free within quotas, with optional sponsorship and no subscription
-billing in v1. Reuse the already-active Cloudflare Workers Paid and R2 subscriptions;
-do not buy a duplicate plan. Evaluate reasonable usage growth against measured costs
-and the existing $10 budget alert; keep account purchases distinct from billing users.
+Then remove `hosting/` and private-service-only CI from the public default branch
+through a reviewed cleanup PR. Relocate public plugin manifests, skills and
+connection documentation first, and retain generic evaluator tests. Preserve
+repository identity, stars, forks, issues, PRs, releases, redirects and my personal
+pin. Use a normal deletion/relocation PR and preserve public Git history and
+existing license notices. The owner accepts the old hosting source remaining in
+history; do not rewrite commits, force-push or remove historical release tags.
+Reconcile our open release PRs without losing their
+work. Incoming community PRs remain outside this cycle's scope.
 
-Use a `codex/` branch and commit/push tested work needed for CI. Follow current
-repository instructions, preserve unrelated changes, and verify exact packed
-artifacts and real installed/hosted flows. Prepare the complete release and directory
-candidates, surface any still-required approval against concrete artifacts or costs,
-and carry out authorized publication, deployment and submissions. Use the same
-qualified engine version across package and hosted integrations.
+Reuse the published 1.0.0 package. Finish and publish the appropriately versioned
+follow-up needed for shared setup in existing projects and new workspaces, and
+the already-developed fixes. Verify actual installed Claude Code and Codex flows,
+preservation of users' files and settings, and agent-agnostic local MCP/skills.
+Local use remains account-free. Never replace an already-published version.
 
-Sequence consequential decisions through the question tool, honor settled answers,
-and continue independent work while I handle account steps. Surface missing
-permissions, provider blockers and material scope/cost changes promptly. Do not
-silently weaken checks, skip scope or switch hosts to finish overnight.
+Finish qualification and deploy the private application to `kiln.instruktlabs.com`
+on Cloudflare. Prove real Google and GitHub sign-in, account controls, tenant
+isolation, native evaluation, CPU/software rendering, saved assets, downloads,
+retention/deletion, quotas, practical load/cost limits and rollback. Keep saved
+assets until deleted within quotas; expire unsaved work after seven days. Use
+in-app security notices. Resolve the existing backup-scope decision before adding
+a backup system. Complete an adversarial review of the actual release and deployed
+configuration; secrets and user data stay outside source repositories.
 
-Finish with verified npm `1.0.0`, working local plugin distribution, a verified hosted
-service and submission receipts for the applicable OpenAI and Anthropic directories.
-Report each milestone separately with exact versions, hashes, URLs and evidence.
-Vendor review/acceptance may remain pending after submission; unfinished engineering,
-authentication or publication work must remain explicitly open. Keep a durable
-progress record so the run can continue accurately through interruptions.
+Keep hosted use free within quotas, with optional sponsorship and no user billing.
+Optimize initial hosting toward $20/month without treating it as a hard cap.
+Surface exact subscription costs, bounded trial spending and material increases
+before purchase or execution; reuse existing Cloudflare plans. Record the separate
+GitHub Team development subscription at $4/month for one seat before tax or
+metered usage. Monthly billing is settled; do not buy another plan or seat by
+default.
 
-## Hosted-access decision resolved
+After verifying the service, complete the public README, Troy imagery, site and
+installation documentation. Review the complete directory dossiers with me,
+including Kiln naming, Instrukt Labs publisher ownership, supported clients and
+skills. Then submit the applicable OpenAI and Anthropic candidates once authorized.
+Track vendor review separately from submission; do not claim pending review as
+acceptance. Preserve my hold on further Claude portal changes or outreach until
+the concrete dossier is aligned.
 
-D8 was explicitly accepted on 6 October: free hosted access within quotas, optional
-sponsorship and no subscription billing. The owner accepts justified provider usage
-overages and is open to a suitable paid Cloudflare plan. Exact technical quotas still
-require measurements; no further business-model preference question is needed.
+Target the migration and remaining controllable engineering within the next
+focused day. Use the current implementation and passing evidence, make only the
+boundary changes and demonstrated fixes needed to finish, and avoid adding
+general frameworks, unrelated features or repetitive validation. Run checks
+affected by changes and required final release gates. Surface concrete blockers
+early; timing never substitutes for working behavior or security.
 
-The owner also selected Google and GitHub sign-in through one Kiln-owned account,
-with email sign-in deferred. Correct security and a professional, clearly branded
-end-user flow are explicit acceptance requirements. Follow the publication plan's
-6 October authentication architecture review; do not treat the current GitHub-only
-fixture or passing local OAuth checks as deployed multi-provider acceptance.
+Use `codex/` branches and preserve unrelated changes. Continue authorized local
+implementation and tested commits/pushes needed for CI. Reuse the already-created
+private remote. Sequence remaining paid trials, main merges, publication, production deployment and
+submission approvals against concrete candidates. Put authentication in the
+browser and decisions in the question tool; never request secrets in chat. Do not
+repeat settled decisions. Continue independent work while awaiting owner steps.
+
+Finish only when private-repository independence and public cleanup, package/local
+plugin publication, real hosted operation, current public documentation and
+directory submissions each have direct evidence. Report exact versions, source
+commits, URLs and relevant artifact hashes, with any external review still pending.
+
+## Completed private-repository checkpoint
+
+The private repository is created and [PR #1](https://github.com/instruktlabs/kiln-hosted/pull/1)
+is merged with owner approval as `e84d79f15d4c143e0855bf57ea1b5709e32dd165`.
+Its tree matches approved `1d6bd74` exactly. All five CI checks passed, including
+459 application tests on Linux and Windows; all 14 production modules matched
+local and both CI builds. Main protections are configured and verified, with no
+production secrets in repository Actions. Public cleanup is prepared locally and
+still requires qualification and explicit merge approval.
+
+The private app consumes published 1.0.0 independently. Its two documented
+compatibility adapters still need supported public engine exports in the follow-up;
+independent builds do not by themselves complete the long-term API boundary.
+
+## Delivery order and acceptance
+
+| Step | Completion evidence |
+| --- | --- |
+| 1. Preserve and extract hosting | Existing Team plan reused; private repository/permissions and branch-rule readback; reviewed source and attribution retained; secrets absent from import |
+| 2. Make the private application independent | Fresh-checkout install/typecheck/test/build and private CI pass against recorded engine input; no sibling checkout required |
+| 3. Clean the public default branch | Approved cleanup PR merged; `hosting/` absent; public plugins and generic evaluator checks retained; no private source copied into another public path or artifact |
+| 4. Close package and local onboarding work | Qualified follow-up package and plugin artifacts published; real Claude Code and Codex existing/new-project flows verified |
+| 5. Complete hosted qualification and launch | Real provider/account/storage/render/retention/rollback flows and scoped security/cost evidence; approved public deployment and actual MCP client verification |
+| 6. Finish public docs and directory submissions | README/site show actual install and hosted behavior; owner-aligned submission receipts; vendor review tracked separately |
+
+Current unanswered paid-trial/onboarding and backup decisions remain unanswered.
+Reconcile the frozen trial inputs with the repository move; do not silently swap
+an approved artifact for a different candidate. The one-day target is an execution
+priority, not a promise about owner availability or vendor turnaround.
+
+## GitHub Team status and operating constraints
+
+**Completed 7 October 2026:** the owner purchased the monthly Team upgrade.
+Authenticated `gh api orgs/instruktlabs` independently returned `plan.name: team`,
+`plan.seats: 1` and `plan.filled_seats: 1`. Checkout previously showed **Pay monthly**,
+**one seat** and **$4/month** before tax or usage. The final invoice/tax amount was
+not inspected. Billing address and payment data remain outside this repository.
+
+GitHub advertises 3,000 included Actions minutes/month on Team. Track private CI
+and artifact usage; the $4 base is not a cap on metered services or extra seats.
+This development subscription is separate from the Cloudflare hosting target.
+Legal business name is verified as **Instrukt Labs, LLC**, Virginia SCC entity
+11834137; public publisher branding remains **Instrukt Labs**.
+
+Team does **not** provide required environment reviewers for private repositories.
+Keep v1 deployment as an explicitly approved operator action with production
+credentials outside build/test CI; do not promise Enterprise-only gates or buy
+Enterprise just to reproduce the public npm environment. The public npm release
+workflow and its existing approvals remain in the public engine repository.
+
+Sources checked 7 October 2026:
+
+- [GitHub pricing](https://github.com/pricing)
+- [Protected branches](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-protected-branches/about-protected-branches)
+- [License users](https://docs.github.com/en/billing/reference/github-license-users)
+- [Deployment environment restrictions](https://docs.github.com/en/actions/reference/workflows-and-actions/deployments-and-environments)
+- [Virginia SCC entity 11834137](https://cis.scc.virginia.gov/EntitySearch/BusinessInformation?businessId=11834137)

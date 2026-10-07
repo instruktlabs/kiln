@@ -139,8 +139,10 @@ and produces a deterministic ZIP. Its receipt deliberately remains
 `submissionReady: false`; demo URL, live case receipts, immediately usable review
 access, publisher/domain verification and portal validation remain outstanding.
 The draft README must be updated to reflect actual availability before submission.
-Use the [maintainer command](../../hosting/README.md#public-plugin-preparation)
-instead of uploading incomplete source files.
+After the repository split, use the relocated
+[maintainer command](../../plugins/kiln-hosted/README.md#source-and-packaging-boundary)
+instead of uploading incomplete source files. The public packager no longer needs
+the private application checkout; this relocation does not approve a submission.
 
 The gateway now serves a draft `/terms` page, linked from the public, consent and
 account footer. It follows the owner's choices: free access within quotas, no

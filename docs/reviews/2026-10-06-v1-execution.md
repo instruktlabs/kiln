@@ -1814,7 +1814,7 @@ Only the named test containers were removed; the qualified local image is retain
 
 ## Private Cloudflare availability candidate
 
-Prepared the bounded [probe and teardown plan](../../hosting/probe/README.md).
+Prepared the bounded [probe and teardown plan](https://github.com/instruktlabs/kiln/blob/f99f1b894cf8277077c0b1377fdc8a37a0990a28/hosting/probe/README.md).
 It has no public HTTP routes or external bindings, uses five fixed sequential
 jobs, and atomically claims its run once. The first failure stops the batch;
 interrupted claims do not automatically spend again. The production image is
@@ -2304,7 +2304,7 @@ before device startup. The rebuilt coordinator image
 passes readiness, current/legacy MCP, hostile-header denial and failure without
 private services. Both install the exact published stable archive, retain their
 dependency inventories and remove their local test containers. Procedures and
-receipt paths are in [the image guide](../../hosting/container/README.md).
+receipt paths are in [the image guide](https://github.com/instruktlabs/kiln/blob/f99f1b894cf8277077c0b1377fdc8a37a0990a28/hosting/container/README.md).
 
 The thirty-second render deadline is a candidate setting informed by the earlier
 13,286 ms fixed provider fixture, not a measured production SLO. No additional
@@ -2363,7 +2363,7 @@ the final hosted behavior is verified, as requested.
 ## Integrated provider candidate prepared
 
 The fixed ten-step sequence is prepared in
-[the integrated trial record](../../hosting/probe/INTEGRATED.md): nine admitted
+[the integrated trial record](https://github.com/instruktlabs/kiln/blob/f99f1b894cf8277077c0b1377fdc8a37a0990a28/hosting/probe/INTEGRATED.md): nine admitted
 MCP requests plus quota rejection, with a durable ceiling of seventeen VM starts.
 The actual private Worker, admission service, diagnostic allowance and R2 evidence
 path now pass local workerd tests, including replay after durable-object eviction
@@ -2818,7 +2818,7 @@ cause is not established; no test was weakened or automatically retried in code.
 Seventeen of eighteen checks have passed; the root Linux community-exporter step
 is still running at this checkpoint. New preparation changes require their own CI.
 
-The [deployment guide](../../hosting/DEPLOYMENT.md) records the dependency order,
+The [deployment guide](https://github.com/instruktlabs/kiln/blob/f99f1b894cf8277077c0b1377fdc8a37a0990a28/hosting/DEPLOYMENT.md) records the dependency order,
 secret/migration requirements, recovery verification and remaining launch gates.
 The example manifest deliberately contains invalid identifiers and qualification
 policy examples, not public quota decisions. Actual resource ownership, image
@@ -2898,7 +2898,7 @@ one-minute evaluation and five-minute windows with hourly repeat proposals.
 They are not enabled and have no destination. Queries use the newer Analytics SQL
 API dialect, whose sampling rules differ from the legacy Analytics Engine API.
 Live catalog access, query validation, thresholds and notification delivery remain
-unverified. [OPERATIONS.md](../../hosting/OPERATIONS.md) records the schema,
+unverified. [OPERATIONS.md](https://github.com/instruktlabs/kiln/blob/f99f1b894cf8277077c0b1377fdc8a37a0990a28/hosting/OPERATIONS.md) records the schema,
 limitations, retention, volume assumptions and deployment qualification steps.
 
 Focused observation and deployment regressions failed before implementation.
@@ -2978,7 +2978,7 @@ Production dependency checks exclude every test/probe helper from all bundles.
 Evidence is under `.cache/gateway-preflight-*.log`. All eighteen CI checks on
 preceding head `e421455` now pass; this change needs its own exact-source CI.
 
-[GATEWAY_PREFLIGHT.md](../../hosting/probe/GATEWAY_PREFLIGHT.md) states the scope
+[GATEWAY_PREFLIGHT.md](https://github.com/instruktlabs/kiln/blob/f99f1b894cf8277077c0b1377fdc8a37a0990a28/hosting/probe/GATEWAY_PREFLIGHT.md) states the scope
 and remaining work: a bounded private operator and updated native/material/image
 phase, explicit VM/evidence budgets, complete cleanup, then renewed trial approval.
 Live OAuth/account actions/deletion, real scheduled recovery, retention, load,
@@ -3029,7 +3029,7 @@ completion cannot resume the failed sequence.
 
 All 385 hosted tests, three typechecks, thirteen production builds, root lint and
 redacted probe-source/bundle scans pass locally. Logs are under
-`.cache/lifecycle-*.log`. [NATIVE_LIFECYCLE.md](../../hosting/probe/NATIVE_LIFECYCLE.md)
+`.cache/lifecycle-*.log`. [NATIVE_LIFECYCLE.md](https://github.com/instruktlabs/kiln/blob/f99f1b894cf8277077c0b1377fdc8a37a0990a28/hosting/probe/NATIVE_LIFECYCLE.md)
 records scope and limitations. Wiring the unchanged production gateway/tenant/
 admission services to diagnostic budget wrappers, the private operator, exact
 image/config verification and full cleanup is next; only then is another paid

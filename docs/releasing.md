@@ -1,10 +1,17 @@
 # Publishing Kiln 1.0
 
 This is the maintainer runbook for `@instruktlabs/kiln`. npm publishing access is
-configured and `1.0.0-rc.1` is public under `next`; stable `1.0.0` has not been
-published. Development, registry publication,
+configured and stable `1.0.0` is published under `latest`. Follow-up changes need
+a new version and the qualification process below. Development, registry publication,
 hosted deployment and directory acceptance have separate evidence requirements.
-See the [v1 execution record](reviews/2026-10-06-v1-execution.md) for current status.
+See the [release status](reviews/2026-10-07-release-status.md) for current status.
+
+The official hosted application has its own private `instruktlabs/kiln-hosted`
+repository, dependency lockfile, CI and deployment runbooks. Its source and
+credentials do not belong in public package archives or artifacts. This public
+repository retains the npm release workflow, local integrations, public hosted
+plugin metadata and generic engine qualification. A private application merge
+does not authorize a package release or public service deployment.
 
 ## Qualify the candidate
 

@@ -2,7 +2,8 @@
 
 Research dates: 5-6 October 2026. Repository audited at
 `cf4abe6c7b142da56d005751e21d0f9c57a9dd21`.
-Plan updated: 6 October 2026, including release sequencing, ownership, hosting economics and decision handling.
+Plan updated: 7 October 2026 for the public-engine/private-hosting boundary and
+the revised execution goal. Earlier research sections retain their dated context.
 
 Execution checkpoint, 7 October: stable `@instruktlabs/kiln@1.0.0` and the GitHub
 release are public. The goal is active. Shared project setup is being qualified;
@@ -32,7 +33,30 @@ The owner has set the next publication target to **1.0**.
 Older references to a separate 0.11 release remain historical until the maintained
 roadmap and release documents are aligned during implementation.
 
-## Goal statement
+## Goal statement, updated 7 October
+
+Complete the release cycle with the public Kiln engine and agent integrations,
+an independently buildable private hosted application under Instrukt Labs, the
+authenticated Cloudflare service and applicable directory submissions. Stable
+1.0.0 is already published; deliver a qualified follow-up for the approved shared
+setup and fixes rather than replacing that version. Preserve the public repository
+and its community history while removing `hosting/` from its current default branch
+after a verified private import. Public integration metadata and generic evaluator
+checks remain public.
+
+The [updated execution goal](2026-10-06-v1-execution-goal.md) is the copyable current
+goal. The [migration scope](2026-10-07-private-hosting-separation.md) records
+the file/dependency boundary and acceptance requirements. Target a focused day of
+remaining controllable engineering, reuse completed evidence and avoid unrelated
+redesign. This target never waives explicit approvals or unfinished launch work.
+
+The monthly one-seat GitHub Team upgrade is complete. The separate private
+`instruktlabs/kiln-hosted` import is independently qualified and merged with owner
+approval. Next, remove the hosting implementation through a normal public cleanup
+PR while preserving existing history and public integrations. The owner accepts
+old hosting code remaining visible in history; no history rewrite is planned.
+
+### Original 6 October goal and setup context
 
 Deliver Kiln Engine 1.0 as a verified public npm package with a supported SDK, CLI,
 local MCP server and installable Claude Code/Codex plugins; qualify and launch an
@@ -1348,6 +1372,8 @@ This settles D8 and reinforces that $20 is a target, not a guaranteed billing ca
 | D10 | In-app security notices only for v1 | Settled; do not ask again | Owner selected on 6 October. No separate security contact email collection or outbound security mail; Google/GitHub sign-in unchanged. Out-of-band notifications can follow later. |
 | D11 | Kiln as product display name if available; Instrukt Labs as public publisher; exact LLC identity in legal fields | Verify availability and publisher ownership before a concrete submission | Owner selected on 7 October; supersedes D1's earlier display-name recommendation. No plugin identifier rename or submission authorized by this choice. |
 | D12 | One shared local setup process supporting existing projects and new workspaces, with thin agent integrations | Qualify preservation, upgrades and real client onboarding before release | Owner selected on 7 October. The development extension passes local tests and an installed Windows storage-reuse check; cross-platform candidate CI and real onboarding remain. Published 1.0.0 still requires an empty folder. |
+| D13 | Public engine and integrations; separate private hosted application under Instrukt Labs | Verify private import and independent builds/tests before removing the public `hosting/` folder | Owner selected on 7 October. Private `instruktlabs/kiln-hosted` PR #1 is qualified and merged as `e84d79f`. Remove public files through a normal cleanup PR, preserving history and licenses. Cleanup merge and deployment remain separate approvals. |
+| D14 | Target migration and remaining controllable engineering within a focused day; reuse active GitHub Team billed monthly | Configure and verify branch rules and private CI during migration | Owner completed the $4/month one-seat upgrade on 7 October. Organization API verifies Team with one purchased/filled seat. This supplies protection rules in the separate private repository, not a private branch in the public repository. Private Actions usage remains metered beyond allowances. |
 
 Do not present D4's provider decision as passed production qualification or D5 as a measured forecast. Legal
 entity/account fields must come from the owner; do not infer exact legal details

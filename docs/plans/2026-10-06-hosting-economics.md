@@ -2,6 +2,17 @@
 
 Research date: 6 October 2026. Companion to the [v1 publication plan](2026-10-05-v1-publication-plan.md).
 These are calculated scenarios, not measured Cloudflare performance or an invoice forecast.
+The [updated execution goal](2026-10-06-v1-execution-goal.md#github-team-status-and-operating-constraints)
+records a separate development cost for the private hosted repository: the owner
+completed **GitHub Team, billed monthly**, on 7 October. GitHub's organization API
+verifies Team with one purchased/filled seat. Checkout showed **$4/month** before
+tax and usage; the final invoice was not inspected. This is separate from
+Cloudflare hosting and end-user billing. Private Actions usage must be tracked
+against its included 3,000-minute allowance, alongside storage and other metered
+services. Do not purchase another plan or add seats by default.
+Source: [GitHub pricing](https://github.com/pricing).
+
+The following no-action statement describes the original 6 October research:
 No paid Cloudflare deployment, DNS change, sponsorship application or account upgrade
 was performed. The existing, separately authorized private Sites probe remains active.
 

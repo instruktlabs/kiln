@@ -181,7 +181,7 @@ lower them without a measured rationale. Live model tests are opt-in via `bun ru
 `bun run test` is `bun test src scripts` and does **not** reach `render-service/`; run
 `bun run test:render-service` whenever you change it (CI requires it).
 
-For hosted-service changes, follow [hosting/AGENTS.md](hosting/AGENTS.md).
+Private hosting: `instruktlabs/kiln-hosted`; public metadata: `plugins/kiln-hosted/`.
 
 Tests use `--timeout 20000` for cold Windows startup; a larger budget needs an explicit third
 `test()` argument with a measured-duration comment. Tests and CI pin `KILN_RENDER=cpu` so the

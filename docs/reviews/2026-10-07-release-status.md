@@ -4,8 +4,50 @@
 and remaining launch work. The dated research plan remains the scope record;
 older statements within it are not the current execution status.
 
+## New owner decision: private hosted application
+
+The owner selected a separate private hosted application while keeping the engine
+and integrations public. The [migration scope](../plans/2026-10-07-private-hosting-separation.md)
+records the created private `instruktlabs/kiln-hosted` repository, dependency/CI
+work, preservation of public history and the limits of removing already-published
+code. Private PR #1 is now merged with owner approval. Further hosted-only
+PR work belongs in that repository; the
+existing trial approvals remain unanswered and are not supplied by this decision.
+
+The PR sequence below predates this decision. #154/#155 should be preserved in the
+private migration instead of proceeding through the earlier public merge sequence;
+#156's public setup/isolation work must be separated from its hosted changes.
+The owner requested an updated [execution goal](../plans/2026-10-06-v1-execution-goal.md)
+covering the full cycle and a focused-day migration target. GitHub Team is the
+approved plan for protection rules on the new private repository's branches.
+There is no private branch inside the public repository. The owner selected
+monthly billing and completed the upgrade. GitHub's organization API independently
+confirms `plan.name: team`, `seats: 1`, `filled_seats: 1`; checkout showed $4/month
+before tax/usage. The private remote is established; public cleanup is not merged.
+
+The separate `C:/Users/Mattm/X/kiln-hosted` checkout records preserved source from
+`f99f1b8`, with 251 original-source hash records. Private PR #1 at `1d6bd74`
+merged as `e84d79f15d4c143e0855bf57ea1b5709e32dd165`; the merged tree is identical
+to the approved candidate. Independent dependency resolution, typechecking, all
+459 application tests and builds pass locally and on both CI platforms. All five
+CI checks passed, including three native image checks; all 14 production modules
+match across local/Linux/Windows builds. The import secret scan passed and private
+main protections are verified. Two temporary installed-package adapters remain
+documented follow-up API work.
+
+The public cleanup candidate removes the hosting application and its two dedicated
+workflows, relocates public plugin metadata/packaging, and retains generic engine
+checks. It is being qualified in an isolated worktree; public main still contains
+the old folder. The owner accepts historical source remaining visible: use a
+normal cleanup PR without history rewriting, force pushes or release-tag removal.
+
 ## Completed
 
+- GitHub Team upgrade for Instrukt Labs, monthly with one seat, completed by the
+  owner and independently verified through the organization API. Private branch
+  protection is configured on the separate private repository.
+- The independent private application import is merged, with passing CI and
+  source/output identity verified. This deploys no public service.
 - GitHub transfer to `instruktlabs/kiln`, with repository/community preservation
   and the personal-profile pin checked. npm account/organization and publishing
   protections are established. Cloudflare Workers Paid and R2 Paid were already
@@ -96,6 +138,9 @@ follow functioning, verified user journeys.
 
 ## Remaining sequence
 
+0. Qualify and approve the public cleanup PR after the verified private merge.
+   Preserve public setup/isolation work and close superseded release PRs only
+   after confirming their content and obtaining the owner's approval.
 1. Finish shared setup qualification and exact package/plugin version selection.
    Published 1.0.0 cannot gain this new feature in place. Test actual onboarding
    in both advertised clients, then qualify and approve the new artifact.
@@ -170,5 +215,7 @@ separately passed hosted CI on Linux and Windows; provider restore remains unfin
 No immediate authentication is required for the local implementation. Later
 provider transitions and final publication/deployment actions will be surfaced
 as concrete handoffs. The contributor's #140, #141 and #142 remain outside today's
-scope for the owner to review separately. Only the explicitly approved #153 merge
-and #147/#149/#150 closures have been performed.
+scope for the owner to review separately. The public #153 merge and
+#147/#149/#150 closures have been performed. Separately, private
+`instruktlabs/kiln-hosted` PR #1 is merged with owner approval; public cleanup and
+closures of #154/#155/#156 remain pending.
