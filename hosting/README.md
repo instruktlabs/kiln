@@ -901,6 +901,13 @@ The redirect and request-context boundaries follow the checked
 [OAuth security BCP](https://www.rfc-editor.org/rfc/rfc9700.html#section-4.11)
 and [Fetch Metadata guidance](https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/Fetch_metadata).
 
+## Operational monitoring
+
+Operational monitoring is described in [OPERATIONS.md](OPERATIONS.md). The gateway
+emits explicit response counters/timing and scheduled deletion/compute health;
+raw request data and user identities are excluded. Preparation includes alert
+candidates, but no deployed ingestion or notification delivery is qualified yet.
+
 ## Request abuse protection
 
 Both edge and account rate-limit bindings are required on the gateway. Before

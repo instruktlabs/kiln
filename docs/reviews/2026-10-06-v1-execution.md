@@ -2872,3 +2872,74 @@ unsubmitted. The earlier private trial allowance is consumed and was not reused.
 
 Reference checked:
 [Cloudflare rate-limit configuration, locality and accuracy](https://developers.cloudflare.com/workers/runtime-apis/bindings/rate-limit/).
+
+## Sanitized operational observations and alert candidates
+
+The gateway now writes explicit Analytics Engine points for HTTP response class,
+status and handler elapsed time, plus scheduled deletion and compute health. No
+request/response object, body, arbitrary URL, IP, account ID, token, download
+capability or exception enters a point. Fixed indexes separate HTTP from the two
+health streams. Persistent request logs and traces remain disabled.
+
+Deletion health queries primary D1 with indexed phase selection, reporting pending
+count, oldest age and jobs at least fifteen minutes old. A narrow private compute
+RPC exposes existing aggregate admission state without pause control or tenant
+identifiers. Both reads have independent two-second deadlines; unavailable data
+is marked explicitly with `-1` values, not zero. Scheduled recovery emits both
+components even after a failure and fails the invocation when recovery or either
+component is unavailable. A telemetry write failure does not change access,
+returned bytes or cleanup; external missing-heartbeat detection is required.
+
+The complete deployment binds only the gateway to its derived operations dataset
+and hashes `monitoring-candidate.json`. Six proposed Cloudflare Custom Alerts
+cover missing recovery/compute heartbeats, overdue deletion, persistent cleanup,
+HTTP errors and request rejections. They contain the exact account/dataset,
+one-minute evaluation and five-minute windows with hourly repeat proposals.
+They are not enabled and have no destination. Queries use the newer Analytics SQL
+API dialect, whose sampling rules differ from the legacy Analytics Engine API.
+Live catalog access, query validation, thresholds and notification delivery remain
+unverified. [OPERATIONS.md](../../hosting/OPERATIONS.md) records the schema,
+limitations, retention, volume assumptions and deployment qualification steps.
+
+Focused observation and deployment regressions failed before implementation.
+All 373 hosted tests, three typechecks, thirteen production builds and root lint
+pass locally. Real local D1, gateway and scheduled-handler fixtures establish
+empty/pending/completed aggregate behavior, secret-free fields, independent
+component failures and unaffected HTTP responses when telemetry fails. The
+read-only compute RPC test verifies unchanged admission and continued denial of
+public/operator access. A stalled read exercises the actual two-second timeout.
+Local tests do not establish remote Analytics Engine ingestion, SQL acceptance,
+sampling or alert delivery.
+
+Redacted source and generated-candidate scans found no leaks. Wrangler 4.147.0
+dry-ran the changed gateway with its Analytics Engine binding. Evidence is under
+`.cache/hosted-deployment-operations/` and `.cache/operations-*.log`; synthetic
+IDs/images and the dirty-checkout receipt are not release qualification. No cloud
+resource, dataset point, alert, email, credential or paid trial was created.
+
+CI on preceding head `71347d6` passed sixteen checks but the Windows hosted run
+failed its existing chunked-body test with `TypeError: fetch failed`, before the
+413 assertion. The root Windows check was still running at that checkpoint.
+The exact hosted failure log is retained locally and one unchanged failed-job
+rerun was requested. Cause and rerun outcome are not yet established; assertions
+and retry behavior in the suite are unchanged. This monitoring change requires
+its own CI. The pending owner security-email decision and prepared, unsubmitted
+Google client form remain unchanged.
+
+The unchanged Windows hosted rerun subsequently passed (run `37561702455`,
+attempt 2). Current upstream workerd issue
+[#7634](https://github.com/cloudflare/workerd/issues/7634) describes Windows
+connection resets after early responses through service bindings, and related
+workers-sdk issue [#15709](https://github.com/cloudflare/workers-sdk/issues/15709)
+covers oversized-body cancellation. These reports are consistent with the local
+failure shape, not proof of its precise cause or of deployed behavior. No drain,
+automatic retry or relaxed assertion was introduced. Live gateway qualification
+must include early 401/413/429 responses to streamed bodies and subsequent normal
+requests, confirming client-visible errors and continued service availability.
+
+References checked:
+[Analytics Engine writing](https://developers.cloudflare.com/analytics/analytics-engine/get-started/),
+[retention](https://developers.cloudflare.com/analytics/analytics-engine/limits/),
+[pricing](https://developers.cloudflare.com/analytics/analytics-engine/pricing/),
+[Custom Alerts](https://developers.cloudflare.com/notifications/notification-available/#custom-alerts-beta),
+[Analytics SQL datasets](https://developers.cloudflare.com/analytics/sql-api/datasets/).

@@ -78,6 +78,7 @@ async function main() {
   );
   assert.equal(schemaPackage.version, receipt.configSchema);
   await json('.cloudflare/output/v0/config.json', configuration.root);
+  await json('monitoring-candidate.json', configuration.monitoring);
   for (const [role, entry] of Object.entries(configuration.entries)) {
     const result = await build({
       entryPoints: [resolve(root, 'hosting/src', `${entry}.ts`)],

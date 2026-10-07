@@ -71,6 +71,10 @@ export class KilnCompute extends WorkerEntrypoint<ComputeBinding> {
   fetch(): Response {
     return new Response('Not found', { status: 404 });
   }
+  /** Aggregate read-only health, with no tenant identifiers or operator controls. */
+  health() {
+    return this.env.ADMISSION.getByName('global-v1').status();
+  }
   async dispatch(tenant: string, request: Request): Promise<Response> {
     try {
       return await this.env.ADMISSION.getByName('global-v1').dispatch(tenant, request);

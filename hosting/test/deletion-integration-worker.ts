@@ -4,6 +4,9 @@ import gateway, { type Env } from '../src/worker';
 // No native job is started in this identity/storage fixture. The real admission
 // cancellation contract is exercised separately by admission-worker.test.mjs.
 export class EmptyCompute extends WorkerEntrypoint<Env> {
+  health() {
+    return { paused: false, activeRequests: 0, pendingCleanup: 0, maxConcurrent: 1 };
+  }
   dispatch(): Response {
     return new Response('Native execution excluded from fixture', { status: 503 });
   }

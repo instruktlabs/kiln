@@ -72,6 +72,7 @@ before(async () => {
       export default {async fetch(request,env){
         const url=new URL(request.url);
         if(url.pathname==='/private-http')return env.COMPUTE.fetch(request);
+        if(url.pathname==='/health')return Response.json(await env.COMPUTE.health());
         if(url.pathname==='/missing-policy')return env.UNCONFIGURED.dispatch('a'.repeat(43),new Request('https://tenant.internal/mcp'));
         if(url.pathname==='/try-pause') {try {await env.COMPUTE.setPaused(true);return new Response('exposed');}catch{return new Response('unavailable',{status:404});}}
         if(url.pathname==='/retire') {await env.COMPUTE.retireTenant('z'.repeat(43));return Response.json({retired:true});}
@@ -110,6 +111,14 @@ test('private entrypoint selects one global authority across accounts and expose
     assert.equal((await (await operator.fetch('https://test.invalid/')).json()).activeRequests, 0);
   }
   assert.equal((await compute.fetch('https://test.invalid/?tenant=c')).status, 429);
+});
+
+test('read-only compute health exposes aggregates without changing admission or exposing pause', async () => {
+  const before = await (await operator.fetch('https://test.invalid/')).json();
+  assert.deepEqual(await (await compute.fetch('https://test.invalid/health')).json(), before);
+  assert.deepEqual(await (await operator.fetch('https://test.invalid/')).json(), before);
+  assert.equal((await compute.fetch('https://test.invalid/try-pause')).status, 404);
+  assert.equal((await raw.fetch('https://test.invalid/health')).status, 404);
 });
 
 test('separate operator binding pauses and resumes without exposing account identifiers', async () => {

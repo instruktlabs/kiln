@@ -46,7 +46,7 @@ async function check(
 }
 
 /** Fixed classes bound anonymous work without storing IPs, credentials or URLs. */
-function routeClass(path: string): string {
+export function routeClass(path: string): string {
   if (path === '/register') return 'registration';
   if (path.startsWith('/oauth/token')) return 'token';
   if (path === '/authorize' || path === '/account/login') return 'sign-in';

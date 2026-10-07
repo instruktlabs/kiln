@@ -15,8 +15,14 @@ import { forwardTenant, type TenantEnv } from './gateway';
 import { boundedRequest, HttpFailure, privateResponse } from './http';
 import { recoverAccountDeletions } from './deletion-recovery';
 import { limitIngress, type RequestLimitEnv } from './request-limits';
+import {
+  recordResponse,
+  recordHealth,
+  readOperationalHealth,
+  type OperationsEnv,
+} from './operations';
 
-export interface Env extends SignInEnv, TenantEnv, RequestLimitEnv {
+export interface Env extends SignInEnv, TenantEnv, RequestLimitEnv, OperationsEnv {
   OAUTH_KV: KVNamespace;
   PUBLIC_ORIGIN: string;
 }
@@ -65,7 +71,7 @@ function authorizationServer(origin: string) {
   });
 }
 
-export default {
+const gateway = {
   async scheduled(_event: ScheduledController, env: Env): Promise<void> {
     const origin = publicOrigin(env);
     try {
@@ -175,5 +181,32 @@ export default {
     } catch (error) {
       return privateResponse(authorizationFailure(error));
     }
+  },
+} satisfies ExportedHandler<Env>;
+
+export default {
+  async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
+    const started = performance.now();
+    const response = await gateway.fetch(request, env, ctx);
+    recordResponse(
+      env,
+      new URL(request.url).pathname,
+      response.status,
+      performance.now() - started,
+    );
+    return response;
+  },
+  async scheduled(event: ScheduledController, env: Env): Promise<void> {
+    let recovered = false;
+    try {
+      await gateway.scheduled(event, env);
+      recovered = true;
+    } catch {
+      /* Emit component health without recording the underlying exception. */
+    }
+    const health = await readOperationalHealth(env);
+    recordHealth(env, health, recovered);
+    if (!recovered || !health.deletion || !health.compute)
+      throw new Error('Hosted recovery or health check unavailable');
   },
 } satisfies ExportedHandler<Env>;

@@ -24,6 +24,51 @@ function count(value, maximum = Number.MAX_SAFE_INTEGER) {
   if (!Number.isSafeInteger(value) || value < 1 || value > maximum) fail();
 }
 
+// Inputs have already passed manifest validation. This is a reviewable candidate,
+// not a Notifications API payload or evidence of live alert delivery.
+function monitoringCandidate(account, datasetName) {
+  const dataset = `events.analyticsEngine.${datasetName}`;
+  const query = (filters) =>
+    `SELECT COUNT(*) AS value\nFROM ${dataset}\nWHERE accountTag = '${account}'\n  AND timestamp >= NOW() - INTERVAL '5' MINUTE\n  AND blob1 = 'kiln.ops.v1'\n  AND ${filters}`;
+  return {
+    schemaVersion: 1,
+    configured: false,
+    destination: null,
+    dataset,
+    dialect: 'Cloudflare Analytics SQL API',
+    alerts: [
+      [
+        'deletion-heartbeat',
+        "blob2 = 'health' AND blob3 = 'deletion' AND blob4 = 'ok' AND double5 = 1",
+        '<',
+        1,
+      ],
+      ['compute-heartbeat', "blob2 = 'health' AND blob3 = 'compute' AND blob4 = 'ok'", '<', 1],
+      [
+        'deletion-overdue',
+        "blob2 = 'health' AND blob3 = 'deletion' AND blob4 = 'ok' AND double4 > 0",
+        '>=',
+        1,
+      ],
+      [
+        'compute-cleanup',
+        "blob2 = 'health' AND blob3 = 'compute' AND blob4 = 'ok' AND double4 > 0",
+        '>=',
+        3,
+      ],
+      ['gateway-errors', "blob2 = 'http' AND blob4 LIKE '5%'", '>=', 5],
+      ['gateway-rejections', "blob2 = 'http' AND blob4 = '429'", '>=', 100],
+    ].map(([name, filters, comparison, threshold]) => ({
+      name,
+      query: query(filters),
+      comparison,
+      threshold,
+      executionIntervalMinutes: 1,
+      repeatIntervalMinutes: 60,
+    })),
+  };
+}
+
 /** Pure preparation: no Cloudflare requests, credentials, resource creation or public routes. */
 export function deploymentConfig(m) {
   fields(m, [
@@ -128,6 +173,10 @@ export function deploymentConfig(m) {
       env: {
         ACCOUNTS: { type: 'd1', ...m.database },
         OAUTH_KV: { type: 'kv', id: m.oauthKv },
+        OPERATIONS: {
+          type: 'analytics-engine-dataset',
+          name: `${m.prefix.replaceAll('-', '_')}_ops`,
+        },
         PUBLIC_ORIGIN: text(m.origin),
         ...Object.fromEntries(
           [
@@ -256,6 +305,7 @@ export function deploymentConfig(m) {
     wrangler[role] = config;
   }
   return {
+    monitoring: monitoringCandidate(m.account, definitions.gateway.env.OPERATIONS.name),
     root: OutputRootConfigSchema.parse({
       accountId: m.account,
       buildContext: { isPreview: false },

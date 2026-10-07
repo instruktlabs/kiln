@@ -77,8 +77,11 @@ denial still require provider readback and a real trial.
 Gateway URLs may contain OAuth codes or private download capabilities. The
 prepared Workers disable persistent invocation logs and traces and request query
 redaction. These settings do not establish a complete observability plan or
-absence of provider-managed operational data. Public launch still needs sanitized
-aggregate metrics and alerts, without source, identity or credential payloads.
+absence of provider-managed operational data. The gateway's Analytics Engine
+binding emits only explicit aggregate fields, and preparation hashes six proposed
+alert queries in `monitoring-candidate.json`. Ingestion, account eligibility,
+thresholds and alert delivery remain launch gates. See [operations](OPERATIONS.md)
+for the schema, retention, expected volume and qualification sequence.
 
 The gateway now limits fixed route classes before OAuth or database work, then
 limits verified accounts across MCP clients and browser downloads before storage
@@ -115,6 +118,10 @@ an exact worldwide request ceiling.
    and rollback. Cloudflare's edge rate-limit binding is local and approximate;
    it must not replace global compute admission or be represented as a billing
    cap. Review public quotas and the final cost model with the owner.
+   Exercise streamed oversized/unauthenticated/rate-limited requests followed by
+   ordinary requests through the real public gateway. Verify client-visible
+   401/413/429 behavior and continued availability; local workerd early-response
+   reset reports are not deployed acceptance evidence.
 7. Prepare the exact gateway route change at `kiln.instruktlabs.com` for approval.
    Do not infer permission from preparation or an earlier private-trial allowance.
    Following approved deployment, verify deployed identity, live lifecycle and

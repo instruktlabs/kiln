@@ -52,6 +52,13 @@ test('the complete deployment has separate gateway, storage, admission and three
   const { gateway, tenant, admission, request, evaluation, render } = result.workers;
   assert.deepEqual(gateway.env.ACCOUNTS, { type: 'd1', ...fixture().database });
   assert.deepEqual(gateway.env.OAUTH_KV, { type: 'kv', id: fixture().oauthKv });
+  assert.deepEqual(gateway.env.OPERATIONS, {
+    type: 'analytics-engine-dataset',
+    name: 'kiln_qualification_v1_ops',
+  });
+  assert.deepEqual(result.wrangler.gateway.analytics_engine_datasets, [
+    { binding: 'OPERATIONS', dataset: 'kiln_qualification_v1_ops' },
+  ]);
   assert.deepEqual(gateway.env.NATIVE_COMPUTE, {
     type: 'worker',
     worker: admission.name,
@@ -86,6 +93,32 @@ test('the complete deployment has separate gateway, storage, admission and three
   assert.equal(tenant.env.STORAGE_MAX_BYTES.value, '67108864');
 });
 
+test('prepared alert queries require an exact dataset and account without enabling delivery', () => {
+  const plan = deploymentConfig(fixture()).monitoring;
+  assert.equal(plan.configured, false);
+  assert.equal(plan.destination, null);
+  assert.equal(plan.dataset, 'events.analyticsEngine.kiln_qualification_v1_ops');
+  assert.equal(plan.alerts.length, 6);
+  for (const alert of plan.alerts) {
+    assert(alert.query.startsWith('SELECT COUNT(*) AS value\n'));
+    assert(alert.query.includes(`FROM ${plan.dataset}\n`));
+    assert(alert.query.includes(`accountTag = '${fixture().account}'`));
+    assert(alert.query.includes("timestamp >= NOW() - INTERVAL '5' MINUTE"));
+    assert(alert.query.includes("blob1 = 'kiln.ops.v1'"));
+    assert(!alert.query.endsWith(';'));
+    assert.equal(alert.executionIntervalMinutes, 1);
+    assert.equal(alert.repeatIntervalMinutes, 60);
+  }
+  const heartbeats = plan.alerts.filter((a) => a.name.endsWith('heartbeat'));
+  assert.equal(heartbeats.length, 2);
+  for (const alert of heartbeats) {
+    assert.equal(alert.comparison, '<');
+    assert.equal(alert.threshold, 1);
+    // An aggregate without GROUP BY retains a zero row for missing heartbeat.
+    assert(!alert.query.includes('GROUP BY'));
+  }
+});
+
 test('configuration contains secret names only and exposes no operator, native or HTTP access', () => {
   const result = deploymentConfig(fixture());
   for (const [role, worker] of Object.entries(result.workers)) {
@@ -97,6 +130,7 @@ test('configuration contains secret names only and exposes no operator, native o
     assert.equal(worker.observability.logs.enabled, false);
     assert.equal(worker.observability.traces.enabled, false);
     if (role !== 'gateway') {
+      assert.equal(worker.env.OPERATIONS, undefined);
       assert.deepEqual(worker.triggers, []);
       for (const name of Object.keys(worker.env))
         assert(!/ACCOUNTS|OAUTH|GOOGLE|GITHUB/.test(name));
@@ -142,6 +176,7 @@ test('offline preparation builds actual role-specific bundles and migrations wit
     assert.equal(receipt.resourcesCreated, false);
     assert.equal(receipt.workers.length, 6);
     assert.equal(receipt.migrations.length, 9);
+    assert(receipt.files.some((file) => file.path === 'monitoring-candidate.json'));
     assert.equal(new Set(receipt.files.map((file) => file.path)).size, receipt.files.length);
     for (const file of receipt.files) {
       const bytes = await readFile(resolve(output, file.path));
