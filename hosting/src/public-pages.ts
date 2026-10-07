@@ -49,10 +49,33 @@ function support(): Response {
   );
 }
 
+function terms(): Response {
+  return htmlPage(
+    'Terms',
+    `<h1>Terms of hosted use</h1><p>These terms describe use of the hosted Kiln service operated by Instrukt Labs. By using hosted Kiln, you agree to these terms. Questions can be sent to ${contact}.</p>
+<section><h2>Access and accounts</h2>
+<p>Hosted access is free within usage and storage quotas. Kiln does not collect payment details or charge your account for exceeding a quota. Requests can be limited, refused or paused when capacity is unavailable. Voluntary sponsorship does not create a paid service level or change your quotas.</p>
+<p>Use an identity you control when signing in with Google or GitHub. Keep that account secure and review which apps you connect to Kiln. A connected app can act on the work in your Kiln account within the access you grant. Account controls let you disconnect an app or request account deletion after identity confirmation.</p>
+<p>Security activity is shown in your account. Kiln v1 does not send email alerts about sign-in changes or deletion requests.</p></section>
+<section><h2>Your work and permissions</h2>
+<p>You retain whatever rights you hold in your inputs and outputs. Instrukt Labs does not claim ownership of your assets. You authorize Kiln and its service providers to process, store, render and return your submitted work as needed to operate the service and fulfill your requests. This does not authorize publication of your private assets.</p>
+<p>Submit only material you have permission to use. You are responsible for respecting copyright, licenses and other rights in your inputs and in how you use the results. Kiln does not determine whether an asset is legally cleared for your intended use.</p>
+<p>The <a href="/privacy">privacy notice</a> explains account data, service providers, retention and deletion. Unsaved work expires after seven days; saved work remains within quota until deleted. Download copies you need to keep independently. Your assistant and other apps may retain their own copies under their own terms.</p></section>
+<section><h2>Acceptable use</h2>
+<p>Use Kiln lawfully. Do not attempt to access another person's private assets, bypass account or resource limits, interfere with the service, or run code intended to escape evaluation boundaries. Do not submit passwords, provider keys, authentication codes or payment information as source or tool arguments.</p>
+<p>We may limit or suspend hosted access to address abuse, security problems, capacity or service maintenance. Contact support if you believe a restriction is mistaken.</p></section>
+<section><h2>Availability and results</h2>
+<p>Hosted Kiln is provided as available, without a guaranteed uptime or response time. Features and limits may change. Experimental helpers are labeled in the catalog. Inspect outputs before relying on them: syntax checks, structural QA and rendered previews do not guarantee suitability for your destination application.</p>
+<p>These hosted-use terms do not replace the MIT license for the open source Kiln software or any licenses attached to material resources. You can use the local package independently of the hosted service.</p></section>
+<section><h2>Changes and contact</h2>
+<p>Updates to these terms will be posted here. Material changes to hosted access or data handling will be surfaced in the service before they take effect; a policy edit does not authorize an undisclosed new use of existing private data. For support, privacy or security questions, contact ${contact}.</p></section>`,
+  );
+}
+
 /** Public information is available without authentication or a storage lookup. */
 export function publicPage(request: Request, origin: string): Response | undefined {
   const url = new URL(request.url);
-  if (!['/', '/privacy', '/support'].includes(url.pathname)) return undefined;
+  if (!['/', '/privacy', '/support', '/terms'].includes(url.pathname)) return undefined;
   if (url.search)
     throw new HttpFailure(400, 'Query parameters are not supported on information pages');
   if (request.method !== 'GET' && request.method !== 'HEAD') {
@@ -60,6 +83,12 @@ export function publicPage(request: Request, origin: string): Response | undefin
     return new Response('Method not allowed', { status: 405, headers: { allow: 'GET, HEAD' } });
   }
   const response =
-    url.pathname === '/' ? home(origin) : url.pathname === '/privacy' ? privacy() : support();
+    url.pathname === '/'
+      ? home(origin)
+      : url.pathname === '/privacy'
+        ? privacy()
+        : url.pathname === '/terms'
+          ? terms()
+          : support();
   return request.method === 'HEAD' ? new Response(null, { headers: response.headers }) : response;
 }

@@ -934,3 +934,27 @@ Sources checked 6 October 2026:
 [Cloudflare OAuth library](https://github.com/cloudflare/workers-oauth-provider),
 [MCP authorization](https://modelcontextprotocol.io/specification/2026-07-28/basic/authorization),
 [GitHub OAuth flow](https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/authorizing-oauth-apps).
+
+## Public plugin preparation
+
+`plugin/` contains the source for the hosted OpenAI submission candidate. It is
+separate from `plugins/kiln-engine`, the published local setup plugin. From the
+repository root, using the pinned maintainer Node, package a fresh output directory:
+
+```sh
+node hosting/scripts/package-public-plugin.mjs .cache/public-plugin-draft
+```
+
+The output contains a complete `plugin/` folder, `kiln-engine-draft.zip` and a
+receipt with source/file/archive hashes. Shared authoring references and the
+existing icon are copied during packaging, so do not upload the source folder
+directly. The packager refuses an existing output directory and includes only its
+explicit file list. It never contacts a provider or publishes anything.
+
+The draft has one remote MCP connection, a hosted workflow skill, listing metadata
+and five positive/three negative review cases. Its receipt always says
+`submissionReady: false`: offline packaging cannot establish live OAuth, endpoint
+availability, review-account access, demo evidence or portal acceptance. Keep
+reviewer credentials outside the repository and ZIP. See the
+[directory preflight](../docs/reviews/2026-10-07-directory-preflight.md) for the
+remaining qualification and submission steps.

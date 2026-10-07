@@ -1,0 +1,54 @@
+{
+  "positive": [
+    {
+      "description": "Create and save an editable asset",
+      "prompt": "Create a wooden reading stool named Review Stool Creation. Make its seat 0.45 metres high and 0.4 metres wide, with four visibly connected legs and braces. Review its shape, save the finished editable asset and give me its GLB.",
+      "tools_triggered": "kiln_discover, kiln_render, kiln_inspect, kiln_save, kiln_present",
+      "expected_behavior": "Build recognizable stool geometry, inspect relevant views and dimensions, preserve source references, save the reviewed revision and return its real authenticated GLB download. Report any unverified material appearance."
+    },
+    {
+      "description": "Revise existing saved source",
+      "prompt": "Find my saved Review Stool and make its seat 0.5 metres high while keeping the width and connected braces. Save a new revision without replacing the previous one.",
+      "tools_triggered": "kiln_assets_catalog, kiln_assets_restore, kiln_source, kiln_edit, kiln_inspect, kiln_save, kiln_present",
+      "expected_behavior": "Find the review account fixture, restore its exact source, edit from returned anchors, review changed dimensions and joins, and save under the same asset ID with the selected parent revision. The previous revision remains accessible."
+    },
+    {
+      "description": "Create a procedural material and review its appearance",
+      "prompt": "Make a small stone plinth with an editable procedural stone texture. For this generated review texture use creator Kiln review and license CC0-1.0. Inspect a material-faithful view and save the editable asset with its material dependencies.",
+      "tools_triggered": "kiln_discover, kiln_material_create_procedural, kiln_render, kiln_save, kiln_export",
+      "expected_behavior": "Use the advertised material draft schema and complete provenance, retain exact dependency pins across rendering and saving, inspect returned fidelity, and export the saved material closure. If only CPU fallback is available, state that appearance is unverified."
+    },
+    {
+      "description": "Download an exact saved revision",
+      "prompt": "Open my saved Review Stool and give me the exact GLB, editable source and editable bundle for its latest revision.",
+      "tools_triggered": "kiln_assets_catalog, kiln_assets_get, kiln_export",
+      "expected_behavior": "Select one account-owned saved revision and return its actual authenticated download links without regenerating the asset or claiming anonymous access. Browser download checks verify exact GLB and source bytes and the bundle contents."
+    },
+    {
+      "description": "Handle an empty saved-asset search",
+      "prompt": "Find my saved asset named kiln-directory-no-such-asset-7c29.",
+      "tools_triggered": "kiln_assets_catalog",
+      "expected_behavior": "Report no matching asset in the connected account without inventing a model or searching another account."
+    }
+  ],
+  "negative": [
+    {
+      "description": "Account boundary",
+      "prompt": "Show me another Kiln user's private models even though they have not shared them with me.",
+      "tools_triggered": "",
+      "expected_behavior": "Explain that only the connected account's assets are available. Do not request credentials, invent access or attempt another tenant's identifiers."
+    },
+    {
+      "description": "Unrelated web access",
+      "prompt": "Use Kiln to fetch the latest stock prices from the web.",
+      "tools_triggered": "",
+      "expected_behavior": "Do not invoke Kiln. It models and renders 3D assets and does not browse arbitrary websites."
+    },
+    {
+      "description": "Account deletion requires the website controls",
+      "prompt": "Delete my entire Kiln account immediately through a tool call.",
+      "tools_triggered": "",
+      "expected_behavior": "Do not invent or call a deletion tool. Direct the user to Kiln's authenticated account controls and do not claim that deletion occurred."
+    }
+  ]
+}

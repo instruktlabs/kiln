@@ -110,3 +110,55 @@ after its exact CI and artifact hashes are ready. Then finish real sign-in and
 account controls, owner-reviewable terms, review-account access and directory
 identity/attestations. Do not repeat the settled in-app-notices decision or create
 provider credentials, deploy publicly or submit a directory candidate implicitly.
+
+## Public bundle and terms draft prepared later on October 7
+
+All eighteen CI checks passed on `f701121590c8d4f4b71ac4a4bb7fde3b97b2ec8a`.
+The following changes require their own committed-source CI and do not change the
+published local package.
+
+`hosting/scripts/package-public-plugin.mjs` now builds a portable public draft
+from a fixed source list. It includes one HTTPS MCP definition, listing metadata,
+a hosted authoring skill, four byte-identical maintained references, the existing
+Kiln icon adapted to a 64px SVG, license and file provenance. It excludes local
+installers, private connector dependencies, hooks, credentials and engine code.
+The generated skill passes the skill validator. A local listing preview confirmed
+the icon at large and toolbar sizes; it is not a directory screenshot.
+
+The five positive and three negative review cases name only advertised hosted
+operations. Before live qualification, create a dedicated review account through
+normal authentication and seed a saved asset named **Review Stool**. Record its
+account, asset/revision IDs and hashes in private qualification evidence. The
+revision and download cases must each work from this seed independently; they
+must not depend on the creation case, which uses **Review Stool Creation**.
+Recheck fixture availability and quota before providing review access. No case
+has been executed in a live assistant, and no reviewer identity exists yet.
+
+The packager records exact source/file/archive hashes, refuses existing output
+and produces a deterministic ZIP. Its receipt deliberately remains
+`submissionReady: false`; demo URL, live case receipts, immediately usable review
+access, publisher/domain verification and portal validation remain outstanding.
+The draft README must be updated to reflect actual availability before submission.
+Use the [maintainer command](../../hosting/README.md#public-plugin-preparation)
+instead of uploading incomplete source files.
+
+The gateway now serves a draft `/terms` page, linked from the public, consent and
+account footer. It follows the owner's choices: free access within quotas, no
+end-user billing, in-app security notices, private saved assets, seven-day unsaved
+retention and independent local MIT-licensed use. It explains required processing,
+user-controlled rights, acceptable use, availability and support. It adds no
+payment subscription, arbitration clause or unreviewed liability cap. The owner
+must review the terms with the concrete public deployment candidate; this draft
+is not a legal review or certification. Its promise to surface material policy
+changes is an operational commitment to honor before making future changes.
+
+Two terms-route regressions failed before implementation. All 421 hosted tests,
+three typechecks, thirteen builds and root lint pass locally. The actual terms
+HTML was inspected through the local workerd preview; the existing script-free
+layout, policy navigation and GET/HEAD restrictions remain in place. Logs are
+`.cache/terms-{red,green}.log` and `.cache/public-plugin-final-*.log`; screenshots
+are `.cache/hosted-terms-preview.png` and `.cache/public-plugin-listing-preview.png`.
+
+No provider credential, public route, paid trial or submission was created. The
+Google client approval remains the one pending owner question. The gateway change
+requires refreshing the frozen lifecycle candidate before its approval request.

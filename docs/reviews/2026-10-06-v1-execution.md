@@ -3205,3 +3205,27 @@ sources, Claude source-archive measurements and remaining submission work.
 The previous frozen trial candidate must be refreshed before approval because the
 gateway and operator source changed. No cloud resource, credential, paid job or
 directory submission was created. Google client approval remains pending.
+
+## Portable hosted plugin and terms draft (October 7)
+
+All eighteen CI checks passed on `f701121`. The public plugin draft now packages
+one hosted MCP, listing metadata, a hosted workflow skill with maintained geometry
+references, the existing icon and eight review cases. Deterministic output and
+allowlisted inputs are tested; private connectors, credential configuration and
+hidden components are rejected. The generated skill validates. A local icon and
+listing preview is retained, without claiming actual directory presentation.
+
+A draft terms page and shared footer link are implemented. They reflect free
+quota-based access, no end-user billing, private assets and in-app notices only.
+Owner review remains required with the concrete deployment candidate. The review
+cases require a populated independent review account; no account, live case
+receipt, demo URL or submission has been fabricated. The packager's receipt always
+records that live qualification remains incomplete.
+
+The terms regressions failed before implementation. All 421 hosted tests, three
+typechecks, thirteen production builds and root lint pass. The actual terms page
+renders in the local browser. Details and remaining gates are appended to the
+[directory preflight](2026-10-07-directory-preflight.md). No new cloud resource,
+credential, paid job or publication occurred. Google client creation remains the
+pending approval. Refresh the frozen lifecycle trial to the new source before
+seeking its allowance; final README/Troy/site updates remain deferred until launch.

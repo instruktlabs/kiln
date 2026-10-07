@@ -35,8 +35,8 @@ before(async () => {
 });
 after(async () => runtime?.dispose());
 
-test('home, privacy and support are available before sign-in without credentials or storage', async () => {
-  for (const path of ['/', '/privacy', '/support']) {
+test('home and policy pages are available before sign-in without credentials or storage', async () => {
+  for (const path of ['/', '/privacy', '/support', '/terms']) {
     const response = await runtime.dispatchFetch(origin + path);
     assert.equal(response.status, 200, path);
     assert.match(response.headers.get('content-type'), /text\/html/);
@@ -50,7 +50,7 @@ test('home, privacy and support are available before sign-in without credentials
     assert.match(csp, /default-src 'none'/);
     assert.match(csp, /frame-ancestors 'none'/);
     assert.doesNotMatch(html, /<script|<iframe|<link[^>]+href="https?:/i);
-    for (const link of ['/privacy', '/support', '/account'])
+    for (const link of ['/privacy', '/support', '/terms', '/account'])
       assert.ok(html.includes(`href="${link}"`));
   }
   assert.equal(outgoing, 0);
@@ -81,7 +81,7 @@ test('public content explains hosted data access, retention, notices and private
 });
 
 test('information pages allow HEAD but reject mutation methods and query reflection', async () => {
-  for (const path of ['/', '/privacy', '/support']) {
+  for (const path of ['/', '/privacy', '/support', '/terms']) {
     const head = await runtime.dispatchFetch(origin + path, { method: 'HEAD' });
     assert.equal(head.status, 200);
     assert.equal(await head.text(), '');

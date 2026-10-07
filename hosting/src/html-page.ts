@@ -29,7 +29,7 @@ select:focus-visible{outline:3px solid #a25c24;outline-offset:4px}
 .secondary{background:transparent;color:#365231;border:1px solid #747775}.permission-list{padding-left:1.25rem}.client-detail{overflow-wrap:anywhere}
 footer{margin-top:2rem}footer nav{display:flex;gap:1rem;flex-wrap:wrap}
 </style></head><body><main><header><strong><a href="/">Kiln</a></strong><span>by Instrukt Labs</span></header>
-${content}<footer><nav aria-label="Support and policies"><a href="/account">Your account</a><a href="/privacy">Privacy</a><a href="/support">Support</a>
+${content}<footer><nav aria-label="Support and policies"><a href="/account">Your account</a><a href="/privacy">Privacy</a><a href="/terms">Terms</a><a href="/support">Support</a>
 <a href="https://github.com/instruktlabs/kiln">Open source</a></nav></footer></main></body></html>`,
     { ...options, headers },
   );
