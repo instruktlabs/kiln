@@ -5,6 +5,7 @@ import { after, before, beforeEach, test } from 'node:test';
 import { build } from 'esbuild';
 import { convertV4MiniflareOptions, Miniflare } from 'miniflare';
 import { migrateAccounts } from './database.mjs';
+import { rateLimitBindings } from './rate-limit-bindings.mjs';
 
 const origin = 'https://kiln.example.com';
 let runtime;
@@ -47,6 +48,7 @@ before(async () => {
       compatibilityDate: '2026-10-06',
       compatibilityFlags: ['global_fetch_strictly_public'],
       kvNamespaces: ['OAUTH_KV'],
+      ratelimits: rateLimitBindings,
       d1Databases: ['ACCOUNTS'],
       durableObjects: { TENANTS: 'TestTenant' },
       serviceBindings: { NATIVE_COMPUTE: { name: 'auth-fixture', entrypoint: 'TestCompute' } },
@@ -1508,6 +1510,7 @@ test('real OAuth gateway authorizes downloads and completes deletion through pri
           compatibilityDate: '2026-10-06',
           compatibilityFlags: ['global_fetch_strictly_public'],
           kvNamespaces: ['OAUTH_KV'],
+          ratelimits: rateLimitBindings,
           d1Databases: ['ACCOUNTS'],
           serviceBindings: { NATIVE_COMPUTE: { name: 'gateway', entrypoint: 'EmptyCompute' } },
           durableObjects: {

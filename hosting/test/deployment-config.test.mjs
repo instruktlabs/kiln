@@ -32,6 +32,10 @@ function fixture() {
       deadlineMs: 120000,
     },
     storage: { maxBytes: 67108864, maxObjects: 256, maxGroups: 64 },
+    requestLimits: {
+      edge: { namespace: '1001', perMinute: 600 },
+      account: { namespace: '1002', perMinute: 120 },
+    },
   };
 }
 
@@ -220,6 +224,71 @@ test('Wrangler conversion keeps self bindings local and external bindings explic
       result.wrangler[role].containers[0].images[image].image,
       fixture().images[role === 'request' ? 'coordinator' : 'software'],
     );
+});
+
+test('gateway limits are explicit, isolated namespaces with one-minute windows', () => {
+  const result = deploymentConfig(fixture());
+  for (const [role, worker] of Object.entries(result.workers)) {
+    for (const [kind, name] of [
+      ['edge', 'EDGE_REQUEST_LIMIT'],
+      ['account', 'ACCOUNT_REQUEST_LIMIT'],
+    ]) {
+      if (role !== 'gateway') {
+        assert.equal(worker.env[name], undefined);
+        continue;
+      }
+      const policy = fixture().requestLimits[kind];
+      assert.deepEqual(worker.env[name], {
+        type: 'rate-limit',
+        namespace: policy.namespace,
+        simple: { limit: policy.perMinute, period: 60 },
+      });
+      assert.deepEqual(
+        result.wrangler.gateway.ratelimits.find((x) => x.name === name),
+        {
+          name,
+          namespace_id: policy.namespace,
+          simple: { limit: policy.perMinute, period: 60 },
+        },
+      );
+    }
+  }
+  for (const mutate of [
+    (x) => {
+      delete x.requestLimits;
+    },
+    (x) => {
+      x.requestLimits.account.namespace = x.requestLimits.edge.namespace;
+    },
+    (x) => {
+      x.requestLimits.edge.namespace = '0';
+    },
+    (x) => {
+      x.requestLimits.edge.namespace = '1\n';
+    },
+    (x) => {
+      x.requestLimits.edge.namespace = '01';
+    },
+    (x) => {
+      x.requestLimits.edge.namespace = '9007199254740992';
+    },
+    (x) => {
+      x.requestLimits.edge.perMinute = 0;
+    },
+    (x) => {
+      x.requestLimits.edge.perMinute = 1.1;
+    },
+    (x) => {
+      x.requestLimits.edge.perMinute = Infinity;
+    },
+    (x) => {
+      x.requestLimits.edge.period = 10;
+    },
+  ]) {
+    const manifest = fixture();
+    mutate(manifest);
+    assert.throws(() => deploymentConfig(manifest), /Invalid deployment manifest/);
+  }
 });
 
 test('unknown fields, secret values, unbounded policies and mutable or foreign images are rejected', () => {

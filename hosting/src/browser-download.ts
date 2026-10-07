@@ -3,10 +3,14 @@ import { D1BrowserSessions, type BrowserSession } from './browser-sessions';
 import { parseDownloadPath } from './download-path';
 import { HttpFailure } from './http';
 import { tenantForAccount } from './tenant-identity';
+import { limitAccount, type RequestLimitEnv } from './request-limits';
 
 export async function browserDownload(
   request: Request,
-  env: { ACCOUNTS: D1Database; TENANTS: DurableObjectNamespace },
+  env: { ACCOUNTS: D1Database; TENANTS: DurableObjectNamespace } & Pick<
+    RequestLimitEnv,
+    'ACCOUNT_REQUEST_LIMIT'
+  >,
   origin: string,
 ): Promise<Response> {
   const url = new URL(request.url);
@@ -35,6 +39,8 @@ export async function browserDownload(
       ? new Response(null, { status: 401 })
       : signInPage(url.pathname);
   }
+  const limited = await limitAccount(request, env, origin, session.accountId);
+  if (limited) return limited;
   const tenant = await tenantForAccount(origin, session.accountId);
   // Forward no caller headers, cookies, bearer tokens or object selectors.
   const response = await env.TENANTS.getByName(tenant).fetch(

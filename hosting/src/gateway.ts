@@ -3,6 +3,7 @@ import { boundedRequest, HttpFailure } from './http';
 import { tenantForAccount } from './tenant-identity';
 import type { KilnCompute } from './admission-worker';
 import { tryEdgeMcp } from './edge-mcp';
+import { limitAccount, type RequestLimitEnv } from './request-limits';
 
 export interface TenantEnv {
   TENANTS: DurableObjectNamespace;
@@ -11,13 +12,15 @@ export interface TenantEnv {
 
 export async function forwardTenant(
   request: Request,
-  env: TenantEnv,
+  env: TenantEnv & Pick<RequestLimitEnv, 'ACCOUNT_REQUEST_LIMIT'>,
   ctx: OAuthResourceContext<unknown>,
   origin: string,
 ): Promise<Response> {
   if (!ctx.auth.scope.includes('kiln:use')) return insufficientScope(ctx.auth, ['kiln:use']);
   const userId = ctx.auth.userId;
   if (!userId || !/^ka_[a-f0-9]{32}$/.test(userId)) throw new HttpFailure(401, 'Invalid identity');
+  const limited = await limitAccount(request, env, origin, userId);
+  if (limited) return limited;
   const url = new URL(request.url);
   const isMcp = url.pathname === '/mcp';
   const isArtifact = /^\/mcp\/artifacts\/[A-Za-z0-9_-]{16,128}$/.test(url.pathname);

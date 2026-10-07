@@ -14,8 +14,9 @@ import { authorize, authorizationFailure, SCOPES, type SignInEnv } from './auth'
 import { forwardTenant, type TenantEnv } from './gateway';
 import { boundedRequest, HttpFailure, privateResponse } from './http';
 import { recoverAccountDeletions } from './deletion-recovery';
+import { limitIngress, type RequestLimitEnv } from './request-limits';
 
-export interface Env extends SignInEnv, TenantEnv {
+export interface Env extends SignInEnv, TenantEnv, RequestLimitEnv {
   OAUTH_KV: KVNamespace;
   PUBLIC_ORIGIN: string;
 }
@@ -79,6 +80,8 @@ export default {
       const url = new URL(request.url);
       if (url.origin !== origin) throw new HttpFailure(421, 'Invalid request origin');
       if (url.href.length > 16_384) throw new HttpFailure(414, 'URL too long');
+      const limited = await limitIngress(request, env, origin);
+      if (limited) return limited;
       const resource = `${origin}/mcp`;
       const auth = authorizationServer(origin);
       const protectedResource = new OAuthResourceServer<Env>({

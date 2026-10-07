@@ -4,6 +4,7 @@ import { fileURLToPath } from 'node:url';
 import { before, after, test } from 'node:test';
 import { build } from 'esbuild';
 import { Miniflare, convertV4MiniflareOptions } from 'miniflare';
+import { rateLimitBindings } from './rate-limit-bindings.mjs';
 
 let runtime;
 const origin = 'https://kiln.example.com',
@@ -20,9 +21,9 @@ before(async () => {
       contents: `
     import {forwardTenant} from './src/gateway';
     import {serviceFailure} from './src/http';
-    export default {async fetch(request){
+    export default {async fetch(request,bindings){
       const result=async(target,tenant,incoming)=>Response.json({target,tenant,path:new URL(incoming.url).pathname,headers:Object.fromEntries(incoming.headers),body:await incoming.text()});
-      const env={TENANTS:{getByName:tenant=>({fetch:incoming=>result('storage',tenant,incoming)})}};
+      const env={ACCOUNT_REQUEST_LIMIT:bindings.ACCOUNT_REQUEST_LIMIT,TENANTS:{getByName:tenant=>({fetch:incoming=>result('storage',tenant,incoming)})}};
       if(!request.headers.has('x-fixture-no-compute'))env.NATIVE_COMPUTE={dispatch:(tenant,incoming)=>result('compute',tenant,incoming)};
       try{return await forwardTenant(request,env,{auth:{userId:'${user}',scope:['kiln:use']}},'${origin}');}catch(e){return serviceFailure(e);}
     }};`,
@@ -42,6 +43,7 @@ before(async () => {
       script: bundle.outputFiles[0].text,
       compatibilityDate: '2026-10-06',
       compatibilityFlags: ['global_fetch_strictly_public'],
+      ratelimits: rateLimitBindings,
     }),
   );
 });

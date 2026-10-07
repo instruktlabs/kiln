@@ -12,9 +12,18 @@ Copy `deployment.example.json` to an ignored local manifest. Its placeholders ar
 intentionally invalid. Fill it only with verified non-secret resource IDs,
 account-owned registry digests and reviewed numeric quotas. Never add a client
 secret or token; unknown fields are rejected without echoing their values.
-The example's nine-request limits are for qualification planning, not public
+The example's nine-request compute limits are for qualification planning, not public
 launch quotas or a VM-start allowance. A paid run needs its own bounded candidate
 and approval, including child starts and cleanup.
+
+`requestLimits` declares separate edge and account rate-limit namespaces and
+per-minute thresholds. Choose distinct positive integer namespace IDs that are
+unused elsewhere in this Cloudflare account; the provider shares counters across
+Workers with the same namespace. Verify that inventory before deployment. The
+example's 600 ingress requests per route class and 120 authenticated MCP/download
+requests per account are candidate thresholds for qualification, not accepted
+public quotas. Each window is 60 seconds. These are approximate per-location
+limits, separate from the durable compute/storage budgets.
 
 From the repository root:
 
@@ -45,7 +54,7 @@ it does not verify remote bindings, image availability, secrets or permissions.
 
 | Role | Private capabilities | Public entrypoint |
 | --- | --- | --- |
-| Gateway | Account D1, OAuth KV, four provider secret names, owning tenant DOs, `KilnCompute` | None in prepared output |
+| Gateway | Account D1, OAuth KV, edge/account rate limits, four provider secret names, owning tenant DOs, `KilnCompute` | None in prepared output |
 | Tenant | Private R2 and tenant SQLite quotas, saved assets/materials, downloads and retirement | None |
 | Admission | Global admission SQLite and native request DOs | None |
 | Request | Tenant storage, fresh evaluation/render DOs and three host-bound interceptors | None |
@@ -70,6 +79,17 @@ prepared Workers disable persistent invocation logs and traces and request query
 redaction. These settings do not establish a complete observability plan or
 absence of provider-managed operational data. Public launch still needs sanitized
 aggregate metrics and alerts, without source, identity or credential payloads.
+
+The gateway now limits fixed route classes before OAuth or database work, then
+limits verified accounts across MCP clients and browser downloads before storage
+or native dispatch. No IP, bearer token, cookie, source or arbitrary URL enters a
+counter key. Denial returns 429 with a 60-second retry suggestion; missing or
+failed bindings return 503. Local tests cover these boundaries and real local
+binding exhaustion. No production binding or threshold is deployed yet. Coarse
+ingress exhaustion can temporarily deny every user in the affected route class
+and location; representative load and abuse qualification must assess that
+availability tradeoff. It does not prevent billed Worker invocations or provide
+an exact worldwide request ceiling.
 
 ## Ordered deployment and launch gates
 

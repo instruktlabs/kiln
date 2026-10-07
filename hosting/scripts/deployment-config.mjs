@@ -36,6 +36,7 @@ export function deploymentConfig(m) {
     'images',
     'compute',
     'storage',
+    'requestLimits',
   ]);
   fields(m.database, ['id', 'name']);
   fields(m.images, ['coordinator', 'software']);
@@ -48,6 +49,14 @@ export function deploymentConfig(m) {
     'deadlineMs',
   ]);
   fields(m.storage, ['maxBytes', 'maxObjects', 'maxGroups']);
+  fields(m.requestLimits, ['edge', 'account']);
+  for (const policy of Object.values(m.requestLimits)) {
+    fields(policy, ['namespace', 'perMinute']);
+    matches(policy.namespace, /^[1-9][0-9]*$/);
+    count(Number(policy.namespace));
+    count(policy.perMinute);
+  }
+  if (m.requestLimits.edge.namespace === m.requestLimits.account.namespace) fail();
   matches(m.account, /^[a-f0-9]{32}$/);
   matches(m.prefix, /^kiln-[a-z0-9]+(?:-[a-z0-9]+)*$/);
   if (m.prefix.length > 40) fail();
@@ -120,6 +129,19 @@ export function deploymentConfig(m) {
         ACCOUNTS: { type: 'd1', ...m.database },
         OAUTH_KV: { type: 'kv', id: m.oauthKv },
         PUBLIC_ORIGIN: text(m.origin),
+        ...Object.fromEntries(
+          [
+            ['edge', 'EDGE_REQUEST_LIMIT'],
+            ['account', 'ACCOUNT_REQUEST_LIMIT'],
+          ].map(([kind, name]) => [
+            name,
+            {
+              type: 'rate-limit',
+              namespace: m.requestLimits[kind].namespace,
+              simple: { limit: m.requestLimits[kind].perMinute, period: 60 },
+            },
+          ]),
+        ),
         TENANTS: object('tenant', 'KilnTenant'),
         NATIVE_COMPUTE: workerBinding('admission', 'KilnCompute'),
         ...Object.fromEntries(

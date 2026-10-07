@@ -5,6 +5,7 @@ import { before, after, test } from 'node:test';
 import { build } from 'esbuild';
 import { Miniflare, convertV4MiniflareOptions } from 'miniflare';
 import { migrateAccounts } from './database.mjs';
+import { rateLimitBindings } from './rate-limit-bindings.mjs';
 import { mkdir } from 'node:fs/promises';
 import { createKilnMcpServer } from '../../dist/mcp-engine.mjs';
 import { renderGLB } from '../../lib/render.js';
@@ -30,6 +31,7 @@ before(async () => {
       compatibilityDate: '2026-10-06',
       compatibilityFlags: ['global_fetch_strictly_public'],
       kvNamespaces: ['OAUTH_KV'],
+      ratelimits: rateLimitBindings,
       d1Databases: ['ACCOUNTS'],
       durableObjects: { TENANTS: { className: 'DownloadTenant', useSQLite: true } },
       r2Buckets: ['ARTIFACTS'],

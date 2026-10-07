@@ -2825,3 +2825,50 @@ policy examples, not public quota decisions. Actual resource ownership, image
 identity, live OAuth, combined provider qualification, monitoring/load/costs,
 retention/rollback and an approved public route remain unfinished. The unanswered
 security-email question and unsubmitted Google client form are unchanged.
+
+## Request abuse limits locally qualified
+
+The gateway now requires separate edge and authenticated-account rate-limit
+bindings. Fixed route classes bound anonymous work before OAuth, D1 or body
+processing. Verified permanent account IDs select hashed counters shared across
+MCP clients, bearer tokens and browser downloads before storage or compute. No
+IP, credential, source or arbitrary URL enters those keys. Exhaustion returns
+429 with a 60-second retry suggestion; missing, failing, malformed or stalled
+bindings fail closed with 503. An unread rejected body is cancelled.
+
+The offline deployment manifest now requires distinct positive integer namespace
+IDs and per-minute thresholds, emitted only on the gateway. Verify account-wide
+namespace uniqueness before deployment. Example thresholds are 600 requests per
+route class and 120 per account, for qualification planning only. Cloudflare
+documents these counters as approximate and local to each location; durable
+global/tenant compute quotas remain unchanged. Coarse ingress exhaustion can
+temporarily affect all users of a route class in that location. Provider/load
+qualification must assess that tradeoff; no exact request or billing cap is
+claimed, and rejected requests still invoke the Worker.
+
+Focused limiter and deployment regressions failed before implementation. All
+363 hosted tests, three typechecks, thirteen production builds and root lint
+pass locally. Integration tests use real local rate-limit bindings to exhaust
+ingress and share an account budget across MCP and browser downloads while
+leaving another account usable. Separate forbidden-I/O fixtures prove rejected
+registration, token, callback, account, MCP and download requests never reach
+OAuth/database work; denied accounts never reach storage or native compute.
+The limiter deadline test observes the real one-second timeout. Ordinary auth
+and storage tests retain real bindings with generous fixture limits.
+
+Redacted source and six-worker candidate bundle scans found no leaks. The
+changed gateway configuration passed a Wrangler 4.147.0 no-bundle dry run with
+synthetic resource IDs and images. Evidence is under
+`.cache/hosted-deployment-rate-limits/` and `.cache/request-limits-*.log`; its
+receipt correctly records a dirty checkout and is not a release receipt.
+No provider resource, credential, threshold, route or image was deployed.
+Seventeen of eighteen checks on preceding head `293affa` have passed; the root
+Linux check is still running. The new change needs its own CI.
+
+Live OAuth, the pending security-email decision, sanitized operational alerts,
+updated combined-provider qualification, load/costs, backup retention/rollback
+and public-launch approval remain outstanding. The Google client form remains
+unsubmitted. The earlier private trial allowance is consumed and was not reused.
+
+Reference checked:
+[Cloudflare rate-limit configuration, locality and accuracy](https://developers.cloudflare.com/workers/runtime-apis/bindings/rate-limit/).

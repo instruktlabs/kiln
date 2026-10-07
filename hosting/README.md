@@ -901,6 +901,23 @@ The redirect and request-context boundaries follow the checked
 [OAuth security BCP](https://www.rfc-editor.org/rfc/rfc9700.html#section-4.11)
 and [Fetch Metadata guidance](https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/Fetch_metadata).
 
+## Request abuse protection
+
+Both edge and account rate-limit bindings are required on the gateway. Before
+OAuth, D1 or body processing, requests share bounded route-class counters. After
+authentication, MCP calls and browser downloads share a hash of the permanent
+Kiln account and origin, independent of client, token and network address. Counter
+keys never contain bearer tokens, cookies, IP addresses, source or download URLs.
+Exhaustion returns a private 429 response with `Retry-After: 60`. A missing,
+malformed, failing or stalled binding fails closed with 503.
+
+These bindings provide approximate, per-Cloudflare-location abuse protection.
+They do not replace durable compute admission or storage quotas, and cannot cap
+the hosting bill. Coarse route limits also affect legitimate users sharing a
+location when exhausted. The deployment manifest makes both namespaces and
+thresholds explicit; qualification and public thresholds remain to be reviewed
+and tested on the provider. No rate-limit configuration has been deployed.
+
 Before launch, complete native isolation on the actual Cloudflare provider,
 tenant engine/storage integration, two-user asset/download denial tests, retention,
 admission/cancellation and cost controls, identity-provider setup, live client
