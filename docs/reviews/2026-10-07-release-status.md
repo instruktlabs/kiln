@@ -41,8 +41,9 @@ workflows, relocates public plugin metadata/packaging, and retains generic engin
 checks. PR #157 passed all 22 checks at `52b27f4` and merged as
 `7581ac469b3af9eecde334f42d91a2da4c77d89e`. The merged tree exactly matches the
 approved tree `f61605fda838cb6b6bfe4c9e7bc5c000aade6220`; prior main remains an
-ancestor, and the removed paths are absent from current main. Its post-merge CI
-is running. Historical source remains visible, with no history rewrite, force push
+ancestor, and the removed paths are absent from current main. All 12 post-merge CI
+jobs passed in run `37697370091`; website run `37697370109` also passed.
+Historical source remains visible, with no history rewrite, force push
 or release-tag removal. This merge publishes and deploys nothing.
 
 ### PR #153 post-merge CI investigation
@@ -67,6 +68,43 @@ disabled. The approved and merged trees both equal
 The public cleanup [PR #157](https://github.com/instruktlabs/kiln/pull/157) separately
 passed all 22 checks at `52b27f4`, including software rendering, and subsequently
 merged with owner approval as `7581ac4`. The PR #153 CI concern is resolved.
+
+### Follow-up work after the split
+
+Public [PR #158](https://github.com/instruktlabs/kiln/pull/158) at `46f950b` adds
+four reusable host SDK entries and permits properly versioned 1.x follow-ups in
+the release verifier. Local coverage passes with 3,363 tests, two platform skips,
+95.16% functions and 92.49% lines. The 40 release-verifier tests pass, including
+new cases observed failing before the fix. Actual archive installation, SDK
+consumer types, CLI/MCP, rendering and project-adoption checks pass. All 15 checks
+at `46f950b` now pass, including the full Linux/Windows and package matrix. Release
+preparation aligns the package, engine identity and generated local plugin to the
+unreleased `1.1.0` candidate; its 88 affected tests, package-content contracts,
+typecheck, lint, skills and clean Windows archive installation pass. The new
+version still needs CI and the remaining release gates; no follow-up version has
+been published.
+
+The latest OpenAI submission guide adds a readiness gap: OAuth plugins are asked
+to expose verified email through UserInfo and advertise `openid`/`email`. Kiln's
+current identity-only implementation and no-email-retention privacy statement do
+not meet that requirement. A separate owner question proposes explicit, scoped
+email-sharing consent while retaining stable account IDs, no email auto-linking
+and in-app security notices. No provider permissions or privacy behavior have
+changed. See the [submission requirement](https://developers.openai.com/plugins/guides/submit-claude-plugin#prepare-and-submit-the-mcp-server).
+
+Private [PR #2](https://github.com/instruktlabs/kiln-hosted/pull/2) at `f4eaaeb`
+records the owner's recovery scope and asset-recovery disclosure. Its Windows
+probe fixtures now avoid the upstream unread-body response-reset issue
+([workerd #7634](https://github.com/cloudflare/workerd/issues/7634)); application
+modules are unchanged by that fixture correction. All 459 tests pass locally and
+both CI platforms pass in run `37698088636`.
+
+The prepared private retention/deletion trial now uses `f4eaaeb`, replacing the
+older unanswered public-source proposal. Its four modules match the previous
+prepared application bytes, have no native execution capability, and pass secret
+scanning. Temporary resource names and rate-limit namespaces were checked unused.
+The owner question requests one ten-minute run, a $1 allowance and cleanup; it
+remains unanswered. No trial resources have been created or deployed.
 
 ## Completed
 
@@ -202,7 +240,7 @@ PRs. The public release stack is reconciled; community PRs remain open.
 | [#154](https://github.com/instruktlabs/kiln/pull/154) | Retention and scheduled recovery | Closed with owner approval; source preserved privately; provider trial still needs authorization |
 | [#155](https://github.com/instruktlabs/kiln/pull/155) | Maintenance and recovery preparation | Closed with owner approval; source preserved privately; recovery qualification remains |
 | [#156](https://github.com/instruktlabs/kiln/pull/156) | Shared setup and isolation fixes | Closed with owner approval; public work included in #157; actual onboarding remains |
-| [#157](https://github.com/instruktlabs/kiln/pull/157) | Public/private source separation | Merged as `7581ac4`, identical to approved `52b27f4`; post-merge CI running |
+| [#157](https://github.com/instruktlabs/kiln/pull/157) | Public/private source separation | Merged as `7581ac4`, identical to approved `52b27f4`; all 12 main CI jobs and website build pass |
 
 GitHub requires linear main history. The merge-commit attempt was refused; the
 approved squash merge was used without changing branch protections. Main's tree

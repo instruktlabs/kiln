@@ -5,12 +5,10 @@
 
 **Build and revise 3D assets with your coding agent.**
 
-**The package name is `@instruktlabs/kiln`.** This checkout targets version 1.0.0.
-Stable releases use npm's `latest` tag; release candidates use `next`.
-Until 1.0.0 is available in the [npm registry](https://www.npmjs.com/package/@instruktlabs/kiln),
-install the public RC with `npm install @instruktlabs/kiln@next`, or pin
-`@instruktlabs/kiln@1.0.0-rc.1`. Do not use the unqualified name while `latest`
-still points to the temporary `0.0.0-stage` holding version.
+**Install the published package with `npm install @instruktlabs/kiln`.**
+Stable 1.0.0 is available in the [npm registry](https://www.npmjs.com/package/@instruktlabs/kiln)
+under `latest`; release candidates use `next`. This checkout prepares the
+unreleased 1.1.0 follow-up. Use a reviewed local archive to test its changes.
 Package publication and the hosted service have separate release gates. The [SDK guide](docs/sdk.md)
 describes the compiled ESM library; use the [local package build](docs/install.md#install-a-local-package)
 to test this checkout. The 0.10.0 release described below remains a historical release.

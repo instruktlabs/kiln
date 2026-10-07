@@ -1,6 +1,6 @@
 # Install Kiln for your coding agent
 
-This guide covers **Kiln 1.0** under the package name `@instruktlabs/kiln`.
+This guide covers **Kiln 1.x** under the package name `@instruktlabs/kiln`.
 Use a version available in the [npm registry](https://www.npmjs.com/package/@instruktlabs/kiln),
 or build a [local package](#install-a-local-package) to test an unpublished checkout.
 [CHANGELOG.md](../CHANGELOG.md) lists changes; read the
@@ -12,7 +12,7 @@ same engine and saved-source contracts.
 
 ## Install the package
 
-Once stable 1.0 is published, install it with Node.js and npm:
+Stable 1.0.0 is published. Install it with Node.js and npm:
 
 ```sh
 mkdir kiln-install
@@ -24,11 +24,11 @@ cd ../my-assets
 # Follow START.md for your harness
 ```
 
-Until that exact version is available, use `@instruktlabs/kiln@next` or the public
-`@instruktlabs/kiln@1.0.0-rc.1` instead. The unqualified package name selects
-`latest`, which must no longer be the temporary `0.0.0-stage` holding version
-before using it. After stable publication, `npm install @instruktlabs/kiln` is the
-normal command; the explicit version above keeps this guide reproducible.
+`npm install @instruktlabs/kiln` selects the current stable `latest` tag; the
+explicit version above keeps this guide reproducible. This checkout prepares
+unreleased 1.1.0. Its existing-project adoption and new SDK interfaces require a
+reviewed local archive until that version is published. The `next` tag is for
+prereleases and is not required for ordinary installation.
 
 Archives are also supported. The package packs as `instruktlabs-kiln-VERSION.tgz`; earlier releases
 used `kiln-engine-VERSION.tgz`. Install the actual tarball with Node.js and

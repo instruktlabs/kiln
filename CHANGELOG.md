@@ -5,10 +5,10 @@ Source releases and installable package publication are separate milestones.
 Published versions and tags are recorded by the npm registry; changing this file
 does not publish a package.
 
-## 1.1.0-dev.1 (unreleased)
+## 1.1.0 (unreleased)
 
-Development candidate for shared project setup. Published npm 1.0.0 remains
-unchanged. This candidate requires a reviewed local archive; it is not a registry
+Release candidate for shared project setup and public host interfaces. Published
+npm 1.0.0 remains unchanged. This candidate requires a reviewed local archive; it is not a registry
 release or an accepted plugin listing.
 
 - `kiln-init --adopt` configures an existing project or a new workspace through

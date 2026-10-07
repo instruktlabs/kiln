@@ -1,7 +1,7 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "kiln-engine",
-  "version": "1.1.0-dev.1",
+  "version": "1.1.0",
   "description": "Create, review and revise editable 3D assets, with private saved revisions and GLB downloads.",
   "author": {
     "name": "Instrukt Labs",
@@ -11,7 +11,13 @@
   "homepage": "https://kiln.instruktlabs.com",
   "repository": "https://github.com/instruktlabs/kiln",
   "license": "MIT",
-  "keywords": ["3d", "glb", "gltf", "procedural-modeling", "gamedev"],
+  "keywords": [
+    "3d",
+    "glb",
+    "gltf",
+    "procedural-modeling",
+    "gamedev"
+  ],
   "extensions": {
     "com.openai": {
       "interface": {
@@ -20,7 +26,12 @@
         "longDescription": "Create procedural 3D assets from a brief, review rendered views, revise their editable source, and save private versions in your Kiln account. Reopen saved work and download GLBs, source and editable bundles. Your agent authors the source; Kiln evaluates and renders it. Connect with Google or GitHub. Hosted rendering and storage use account quotas. Experimental geometry helpers are labeled in the catalog.",
         "developerName": "Instrukt Labs",
         "category": "Developer Tools",
-        "capabilities": ["Create 3D assets", "Render asset views", "Save private revisions", "Export GLBs"],
+        "capabilities": [
+          "Create 3D assets",
+          "Render asset views",
+          "Save private revisions",
+          "Export GLBs"
+        ],
         "websiteURL": "https://kiln.instruktlabs.com",
         "supportURL": "https://kiln.instruktlabs.com/support",
         "privacyPolicyURL": "https://kiln.instruktlabs.com/privacy",

@@ -102,7 +102,7 @@ Dispatch the same reviewed candidate with mode **stage**. Review the verificatio
 artifact, then approve the GitHub environment. The second job downloads and checks
 the original CI artifacts again before staging the exact tarball. It does not
 install package dependencies, rebuild the package, or execute its lifecycle scripts.
-RC versions use `next`; `1.0.0` uses `latest`. The job retains `npm-stage.json` and the
+RC versions use `next`; stable 1.x versions use `latest`. The job retains `npm-stage.json` and the
 full candidate evidence in `npm-staged-candidate`.
 
 On a logged-in maintainer machine, use the returned **stage ID**:

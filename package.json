@@ -1,6 +1,6 @@
 {
   "name": "@instruktlabs/kiln",
-  "version": "1.1.0-dev.1",
+  "version": "1.1.0",
   "description": "Create and refine procedural 3D assets with JavaScript, image feedback, and reusable source revisions.",
   "license": "MIT",
   "author": "Matthew Kissinger",
