@@ -98,3 +98,21 @@ and fresh CI remain required for a later deployment candidate.
 Logs: `.cache/build-output-{red,green,full-tests,typecheck,build,lint}.log`,
 `.cache/maintenance-cf-version-dry-run.log` (the original failure), and
 `.cache/maintenance-cf-version-fixed-dry-run.log` (the corrected pass).
+
+### Clean-source follow-up
+
+All 25 CI checks passed on the build-output fix at `c9bf266`. After that fix and
+the separate local-setup prerequisite were committed, a fresh maintenance
+preparation at `253cf94b6c2f9e54e13b973ef26ec9fd08cb684b` recorded
+`sourceDirty: false`. The real `cf` 1.0.0-beta.12 version-upload dry-run succeeded.
+The gateway bundle remains byte-identical, SHA-256
+`d17dc921fd23af67bb4ae27b740ad432a38fba24a43b2dc36ea2cdf9ebbc7138`.
+
+This is still offline qualification with synthetic resource identifiers. No
+version was uploaded, resource provisioned or service deployed. The production
+tenant-class warning above still applies. Preserve live binding identities and
+settings through a separately prepared and approved provider rehearsal.
+
+Evidence: `.cache/maintenance-candidate-253cf94/`,
+`.cache/maintenance-253cf94-prepare.log` and
+`.cache/maintenance-253cf94-cf-dry-run.log`.
