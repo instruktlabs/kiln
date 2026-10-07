@@ -11,6 +11,7 @@ import { finishBrowserLogin } from './browser-login';
 import { D1Connections } from './connections';
 import { finishAccountAction } from './account-actions';
 import { finishIdentityAction } from './identity-actions';
+import { finishDeletionAction } from './deletion-actions';
 import { googleAuthorizationUrl, type GoogleEnv, googleIdentity } from './google';
 import { D1LoginIntents, type SignInProvider } from './login-intents';
 
@@ -153,6 +154,8 @@ export async function authorize(
       return finishAccountAction(request, origin, env, callbackProvider, oauth, ctx);
     if (url.searchParams.get('state')?.startsWith('ki1_'))
       return finishIdentityAction(request, origin, env, callbackProvider);
+    if (url.searchParams.get('state')?.startsWith('kd1_'))
+      return finishDeletionAction(request, origin, env, callbackProvider);
     const resumed = await oauth.finishUpstream<SignInTransaction>(request);
     if (
       !resumed.data ||

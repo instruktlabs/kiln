@@ -61,6 +61,18 @@ export function accountNoticePage(message: string): Response {
   );
 }
 
+export function deletionStatusPage(status: {
+  id: string;
+  state: 'pending' | 'complete';
+  createdAt: number;
+}): Response {
+  return page(
+    status.state === 'complete'
+      ? `<h1>Account deleted</h1><p>Your Kiln account and files have been removed from the active service. Access from this account remains revoked.</p><p>This does not remove copies you previously downloaded or shared. Inaccessible authorization records and provider backups follow the retention policy.</p><p>This private receipt is available for seven days. You can <a href="/account">create a new, empty account</a> if you return.</p>`
+      : `<h1>Deletion in progress</h1><p>Access to your account is blocked while Kiln stops outstanding work and removes your files and sign-in records. You can close this page; cleanup continues automatically.</p><p><a href="/account/deletion">Refresh deletion status</a>. If this remains pending, contact support with reference <strong>${escapeHtml(status.id)}</strong>.</p><p>Requested ${escapeHtml(new Date(status.createdAt).toISOString())}.</p>`,
+  );
+}
+
 export async function accountPage(
   request: Request,
   database: D1Database,
@@ -165,5 +177,10 @@ Return address: ${escapeHtml(new URL(connection.redirectUri).host)}.</p>
 <section><h2>Connected apps</h2><p>Disconnecting blocks new requests from that connection. Confirm with a sign-in method to continue.</p>${connectionCards || '<p>No connected apps.</p>'}</section>
 <section><h2>This browser</h2><p>Signing out here leaves your connected apps working.</p>
 <form method="post" action="/account/logout"><input type="hidden" name="csrf" value="${escapeHtml(session.csrf)}">
-<button type="submit">Sign out of this browser</button></form></section>`);
+<button type="submit">Sign out of this browser</button></form></section>
+<section><h2>Delete your account</h2><p>This permanently removes your hosted Kiln account and saved files. Download anything you want to keep first. Your local npm package and local files are unaffected.</p>
+<form method="post" action="/account/delete"><input type="hidden" name="csrf" value="${escapeHtml(session.csrf)}">
+<p><label><input type="checkbox" name="confirmation" value="delete-my-account" required> I understand that my hosted files will be deleted.</label></p>
+<p><label>Confirm using <select name="provider">${providerOptions}</select></label></p><button type="submit">Confirm account deletion</button></form>
+<p>Next, confirm control of a linked sign-in method. Cancelling that step leaves your account unchanged. After confirmation, access is revoked and deletion cannot be undone.</p></section>`);
 }

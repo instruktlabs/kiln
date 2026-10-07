@@ -22,10 +22,10 @@ states and the evidence that superseded them.
 | P3 | Package identity, contents, executables and notices | Stable published: PR #151 merged as main `fda71ac`; all 12 exact-main CI jobs and release verification passed. Owner-approved staging/promotion completed, and the public archive SHA-256 `6ed3d6b9...1508` and signed provenance independently verified |
 | P4 | Clean installs and workspace upgrades | Stable qualified: all seven public-registry jobs pass; fresh Windows archive passes 25 consumer checks; Claude/Codex cached installers render/save/reopen/export; 0.10.0 and RC-to-stable upgrades preserve assets/customizations and refuse conflicts |
 | P5 | Release automation and npm publication | Stable published and verified: approved stage promoted after npm security-key authentication, latest=1.0.0, public archive/provenance verified. PR #152 merged as 77dfbc3 after all twelve CI and seven registry jobs passed. GitHub v1.0.0 release/tag and downloaded archive verified |
-| H1 | Native Cloudflare qualification | Fixed native qualification passed: the approved twelve-case stable batch verifies CPU/software PNGs, native network denial, fresh-VM file/process separation, cancellation/deadline/output/memory bounds and real alarm recovery. All 22 approved jobs consumed; all trial resources removed. Production integration, representative load and measured billing remain open |
-| H2 | Authenticated MCP and tenant boundary | In progress: Google/GitHub account foundation merged; PR #149 at `9e16825` adds primary-D1 connection revocation and browser/provider-bound confirmation, passing 150 tests and Linux/Windows hosted CI. Adversarial tests cover stale KV, concurrent callbacks and hostile forms. Linking/unlinking, full account deletion, live sign-in, native dispatch and remaining provider-isolation qualification remain open |
-| H3 | Artifact lifecycle | In progress: tenant SQLite/R2 bytes, ProgramStore and native AssetLibrary, atomic quotas/revision pins, material closures, authenticated downloads, deletion and seven-day unsaved retention pass local workerd and actual-engine checks; standalone MaterialLibrary, native dispatch, browser tickets, account deletion and deployed lifecycle proof remain open |
-| H4 | Capacity and operations | In progress: shared SQLite admission, global/per-account quotas, private operator pause and recovery are implemented and connected locally. Native isolation and bounded cleanup have earlier fixed cloud proof; the new integrated admission/dispatcher, launch quota values, load/cost measurements, alerts, deployed identity and rollback remain open |
+| H1 | Native Cloudflare qualification | Fixed native qualification and private integrated candidate `c755434` passed. The latter passed ten lifecycle/isolation/quota checks using thirteen of seventeen allowed VM starts; all resources were removed and absence verified. Thirty-five actual VM starts across approved trials are recorded. Latest combined source/image qualification, representative load and settled billing remain open |
+| H2 | Authenticated MCP and tenant boundary | In progress in draft PR #153: primary-D1 access/revocation, browser confirmation, Google/GitHub linking/unlinking and durable full-account deletion are implemented and locally tested. Upstream provider exchanges are mocked. Live sign-in, final combined-service qualification and the security-notification decision/setup remain open |
+| H3 | Artifact lifecycle | In progress in draft PR #153: native dispatch, private saved assets/material closures, verified evaluator identity, browser download tickets, quotas/retention and account retirement are locally tested. The earlier frozen private trial proves render/save/reopen/export/isolation for its recorded scope; newer material/download/deletion work still needs deployed qualification |
+| H4 | Capacity and operations | In progress: shared SQLite admission, global/per-account quotas, operator pause, native cleanup and durable account-deletion recovery are implemented. Launch quota values, representative load/costs, deployed Cron recovery, retention/alerts/escalation, deployed identity and rollback verification remain open |
 | H5 | Production deployment | Pending: approved deployment at `kiln.instruktlabs.com`; live authenticated create/edit/render/save/download/reconnect flow |
 | L1 | Local Claude Code and Codex plugins | Stable distribution qualified: both actual client catalogs install kiln-engine 1.0.0 and download the exact public npm runtime; real MCP/CLI flows and Codex skill/tool discovery pass. RC and 0.10 workspace upgrades preserve stores. Same-profile RC-to-stable cache updates also pass, retaining the pinned workspace runtime and original saved assets |
 | L2 | Public OpenAI plugin | Pending: compliant ZIP, verified publisher/domain, working MCP, privacy/support pages, review cases/video/account, submission receipt |
@@ -2725,3 +2725,58 @@ Current references:
 [R2 consistency](https://developers.cloudflare.com/r2/reference/consistency/),
 [R2 durability](https://developers.cloudflare.com/r2/reference/durability/),
 [Durable Object alarms](https://developers.cloudflare.com/durable-objects/api/alarms/).
+
+## Account deletion controller and user flow locally qualified
+
+The gateway now connects explicit account-page confirmation to durable cleanup.
+A separate five-minute provider flow binds the browser, account epoch and linked
+identity. Confirmation atomically creates a primary-D1 job, revokes account
+access and removes browser sessions. Cleanup proceeds through compute retirement,
+private storage purge, OAuth-helper grant revocation and final identity/account
+erasure. Leases, deadlines and retry backoff prevent concurrent or delayed work
+from falsely advancing another claim. Failure keeps access disabled and the
+receipt pending. The completed receipt retains no account link and expires after
+seven days. The receipt secret exists only in an HttpOnly cookie; its database
+value is hashed.
+
+All 349 hosted tests pass, along with three hosted typechecks, thirteen production
+builds, root lint and redacted source/bundle secret scans. Focused regressions
+failed before implementation. The real gateway/D1/OAuth-helper/private-tenant/R2
+fixture now exercises deletion of saved work, denial of old credentials,
+preservation of another account and a new empty account on subsequent sign-in.
+Provider identity exchanges are mocked and the fixture starts no native VM.
+Additional cases cover enqueue/final-erasure rollback, wrong identities, hostile
+forms, callback replay/races, epoch/session changes during provider I/O,
+bounded intents, expired/replaced leases, cleanup failures and delayed completion.
+The deadline fixture observes the real 20-second timeout and records the later
+completion in the originating request context before checking that the job did
+not advance. This avoids mistaking workerd's cancellation of a cross-request
+promise for proof about late completion. Test-only controls are absent from all
+thirteen production bundles.
+
+Desktop and 375px browser previews show the confirmation and pending/completed
+receipt pages without horizontal overflow, using synthetic data only. Screenshots
+are under `.cache/security-review-2026-10-06/account-deletion-*.png`. The local
+preview server was stopped and its listener absence verified.
+
+Apply additive migration `0009_account_deletion.sql` before the gateway and
+retirement-aware compute/storage before accepting deletions. The scheduled
+handler is implemented but no deployed Cron Trigger has been configured. Verify
+recurring recovery, stalled-job escalation and real account deletion on the next
+approved combined-service qualification. Rollback must preserve retirement and
+primary revocation. Completion concerns active application storage, not immediate
+erasure of provider backups or eventually consistent OAuth KV records. In-flight
+authorized token writes can outlive inventory cleanup but primary account state
+denies their use; configured access/refresh expiry remains 15 minutes/30 days.
+Public retention disclosures and restore procedures remain launch gates.
+
+The preceding head `1e609b3` passed all eighteen CI checks. This change has only
+the local results above until its own exact-head CI finishes. It does not change
+the published npm archive or native image. No additional paid run, deployment,
+live credential creation or email delivery occurred. The security-email owner
+decision remains pending; the prepared Google client form is still unsubmitted.
+
+References checked:
+[D1 batch transactions](https://developers.cloudflare.com/d1/worker-api/d1-database/#batch),
+[Worker scheduled handler](https://developers.cloudflare.com/workers/runtime-apis/handlers/scheduled/),
+[KV consistency](https://developers.cloudflare.com/kv/concepts/how-kv-works/).

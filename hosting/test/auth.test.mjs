@@ -1477,11 +1477,18 @@ test('a chunked MCP body is bounded without relying on Content-Length', async ()
   assert.equal(response.status, 413);
 });
 
-test('real OAuth gateway authorizes downloads from a separate tenant Worker', async () => {
+test('real OAuth gateway authorizes downloads and completes deletion through private tenant storage', async () => {
   const [gateway, storage] = await Promise.all(
     ['worker', 'tenant-worker'].map((entry) =>
       build({
-        entryPoints: [fileURLToPath(new URL(`../src/${entry}.ts`, import.meta.url))],
+        entryPoints: [
+          fileURLToPath(
+            new URL(
+              entry === 'worker' ? './deletion-integration-worker.ts' : `../src/${entry}.ts`,
+              import.meta.url,
+            ),
+          ),
+        ],
         bundle: true,
         write: false,
         format: 'esm',
@@ -1502,6 +1509,7 @@ test('real OAuth gateway authorizes downloads from a separate tenant Worker', as
           compatibilityFlags: ['global_fetch_strictly_public'],
           kvNamespaces: ['OAUTH_KV'],
           d1Databases: ['ACCOUNTS'],
+          serviceBindings: { NATIVE_COMPUTE: { name: 'gateway', entrypoint: 'EmptyCompute' } },
           durableObjects: {
             TENANTS: { className: 'KilnTenant', scriptName: 'tenant', useSQLite: true },
           },
@@ -1640,9 +1648,319 @@ test('real OAuth gateway authorizes downloads from a separate tenant Worker', as
       ).status,
       404,
     );
+    // Pin the source as a saved revision so deletion must remove retained work.
+    assert.equal(
+      (
+        await tenant.fetch('https://tenant.internal/internal/groups', {
+          method: 'POST',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify({
+            key: 'library/saved/revision',
+            files: { 'source.kiln.js': artifact.id },
+            metadata: { title: 'Private saved work' },
+          }),
+        })
+      ).status,
+      201,
+    );
+    const authorization = await grant('alice', { server });
+    const flow = await actionCallback(await startDeletion(authorization), authorization, 'alice');
+    const confirmed = await server.dispatchFetch(flow.callback, {
+      headers: { cookie: flow.cookie },
+      redirect: 'manual',
+    });
+    assert.equal(confirmed.status, 303);
+    const receiptCookie = cookies(confirmed);
+    for (let i = 0; i < 12; i++) {
+      const progress = await accounts.prepare('SELECT phase FROM kiln_deletions').first();
+      if (progress?.phase === 'complete') break;
+      // Advance retry eligibility only, never steal the live recovery lease.
+      await accounts.prepare('UPDATE kiln_deletions SET retry_at=0').run();
+      assert.equal((await server.dispatchFetch(`${origin}/fixture/recover`)).status, 200);
+    }
+    const receipt = await server.dispatchFetch(`${origin}/account/deletion`, {
+      headers: { cookie: receiptCookie },
+    });
+    assert.match(await receipt.text(), /Account deleted/);
+    assert.equal(
+      await accounts
+        .prepare('SELECT 1 FROM kiln_accounts WHERE id=?')
+        .bind(identity.account_id)
+        .first(),
+      null,
+    );
+    assert.equal(
+      (await accounts.prepare('SELECT tenant FROM fixture_retired').first()).tenant,
+      name,
+    );
+    assert.equal((await tenant.fetch('https://tenant.internal/internal/usage')).status, 410);
+    const bucket = await server.getR2Bucket('ARTIFACTS', 'tenant');
+    assert.equal(
+      (await bucket.list({ prefix: `tenants/${namespace.idFromName(name)}/` })).objects.length,
+      0,
+    );
+    for (const credential of [alice, reconnected])
+      assert.equal(
+        (
+          await server.dispatchFetch(url, {
+            headers: { authorization: `Bearer ${credential.access_token}` },
+          })
+        ).status,
+        401,
+      );
+    assert.equal(
+      (
+        await server.dispatchFetch(url, {
+          headers: { authorization: `Bearer ${bob.access_token}` },
+        })
+      ).status,
+      404,
+    );
+    const fresh = await grant('alice', { server });
+    const freshIdentity = await accounts
+      .prepare('SELECT account_id FROM kiln_identities WHERE issuer=? AND subject=?')
+      .bind('https://github.com', '1001')
+      .first();
+    assert.notEqual(freshIdentity.account_id, identity.account_id);
+    assert.equal(
+      (
+        await server.dispatchFetch(`${origin}/account`, {
+          headers: { cookie: fresh.browserCookie },
+        })
+      ).status,
+      200,
+    );
   } finally {
     await server.dispose();
   }
+});
+
+async function startDeletion(authorization, provider = 'github', extra = {}) {
+  const server = authorization.server ?? runtime;
+  const page = await (
+    await server.dispatchFetch(`${origin}/account`, {
+      headers: { cookie: authorization.browserCookie },
+    })
+  ).text();
+  const csrf = page.match(/name="csrf" value="([a-f0-9]{64})"/)?.[1];
+  assert.ok(csrf);
+  return server.dispatchFetch(`${origin}/account/delete`, {
+    method: 'POST',
+    redirect: 'manual',
+    headers: {
+      origin,
+      cookie: authorization.browserCookie,
+      'content-type': 'application/x-www-form-urlencoded',
+      ...extra.headers,
+    },
+    body: new URLSearchParams({ csrf, provider, confirmation: 'delete-my-account', ...extra.form }),
+  });
+}
+
+test('account deletion confirms either linked provider then revokes browsers and MCP before background cleanup', async () => {
+  for (const provider of ['github', 'google']) {
+    const user = `delete-${provider}`,
+      authorization = await grant(user, { provider });
+    const credential = await (await exchange(authorization)).json();
+    const account = (await connectionFor(authorization)).account_id;
+    const start = await startDeletion(authorization, provider);
+    const flow = await actionCallback(start, authorization, user);
+    assert.match(new URL(flow.callback).searchParams.get('state'), /^kd1_/);
+    assert.equal((await mcp(credential)).status, 200);
+    const response = await finishIdentity(flow);
+    assert.equal(response.status, 303);
+    assert.equal(response.headers.get('location'), '/account/deletion');
+    assert.match(cookies(response), /__Host-kiln-deletion-receipt=[a-f0-9]{64}/);
+    assert.equal((await mcp(credential)).status, 401);
+    assert.equal(
+      (await refreshToken({ ...credential, clientId: authorization.clientId })).status,
+      400,
+    );
+    assert.equal(
+      (
+        await runtime.dispatchFetch(`${origin}/account`, {
+          headers: { cookie: authorization.browserCookie },
+        })
+      ).status,
+      401,
+    );
+    const current = await database
+      .prepare('SELECT state,authorization_epoch FROM kiln_accounts WHERE id=?')
+      .bind(account)
+      .first();
+    assert.equal(current.state, 'deleting');
+    assert.equal(current.authorization_epoch, 2);
+    const receipt = await runtime.dispatchFetch(`${origin}/account/deletion`, {
+      headers: { cookie: cookies(response) },
+    });
+    assert.equal(receipt.status, 200);
+    assert.match(await receipt.text(), /Deletion in progress/);
+    assert.equal((await runtime.dispatchFetch(`${origin}/account/deletion`)).status, 404);
+    assert.equal((await finishIdentity(flow)).status, 400);
+  }
+});
+
+test('deletion forms and wrong upstream identities cannot select or destroy another account', async () => {
+  const user = 'delete-invalid',
+    authorization = await grant(user);
+  const credential = await (await exchange(authorization)).json();
+  for (const extra of [
+    { form: { csrf: '0'.repeat(64) } },
+    { form: { confirmation: 'no' } },
+    { form: { accountId: 'victim' } },
+    { headers: { origin: 'https://foreign.example' } },
+  ])
+    assert.equal((await startDeletion(authorization, 'github', extra)).status, 403);
+  assert.equal((await startDeletion(authorization, 'google')).status, 403);
+  const flow = await actionCallback(
+    await startDeletion(authorization),
+    authorization,
+    'foreign-person',
+  );
+  assert.equal((await finishIdentity(flow)).status, 403);
+  assert.equal((await finishIdentity(flow)).status, 400);
+  assert.equal((await mcp(credential)).status, 200);
+});
+
+test('deletion confirmations reject cancellation, expiry, copied cookies and cross-provider replay', async () => {
+  for (const mode of ['cancel', 'expired', 'cookie', 'provider']) {
+    const user = `deletion-${mode}`,
+      authorization = await grant(user);
+    const credential = await (await exchange(authorization)).json();
+    const flow = await actionCallback(await startDeletion(authorization), authorization, user);
+    const count = outboundCalls;
+    if (mode === 'cancel') flow.callback += '&error=access_denied';
+    if (mode === 'expired')
+      await database.prepare('UPDATE kiln_deletion_actions SET expires_at=0').run();
+    if (mode === 'cookie') flow.cookie = authorization.browserCookie;
+    if (mode === 'provider') flow.callback = flow.callback.replace('/github/', '/google/');
+    assert.equal((await finishIdentity(flow)).status, 400);
+    assert.equal(outboundCalls, count);
+    assert.equal((await mcp(credential)).status, 200);
+  }
+});
+
+test('deletion rechecks session, epoch and confirmed identity after upstream I/O', async () => {
+  for (const mode of ['session', 'epoch', 'identity']) {
+    const user = `deletion-inflight-${mode}`,
+      authorization = await grant(user);
+    const account = (await connectionFor(authorization)).account_id;
+    const flow = await actionCallback(await startDeletion(authorization), authorization, user);
+    beforeProviderReply = async () => {
+      beforeProviderReply = undefined;
+      const query =
+        mode === 'session'
+          ? 'DELETE FROM kiln_browser_sessions WHERE account_id=?'
+          : mode === 'epoch'
+            ? 'UPDATE kiln_accounts SET authorization_epoch=authorization_epoch+1 WHERE id=?'
+            : 'DELETE FROM kiln_identities WHERE account_id=?';
+      await database.prepare(query).bind(account).run();
+    };
+    try {
+      assert.equal((await finishIdentity(flow)).status, 403);
+    } finally {
+      beforeProviderReply = undefined;
+    }
+    assert.equal(
+      await database
+        .prepare('SELECT 1 FROM kiln_deletions WHERE account_id=?')
+        .bind(account)
+        .first(),
+      null,
+    );
+    assert.equal(
+      (await database.prepare('SELECT state FROM kiln_accounts WHERE id=?').bind(account).first())
+        .state,
+      'active',
+    );
+  }
+});
+
+test('deletion callback races enqueue one job and a failed enqueue leaves account access unchanged', async () => {
+  const authorization = await grant('deletion-race');
+  const account = (await connectionFor(authorization)).account_id;
+  const flow = await actionCallback(
+    await startDeletion(authorization),
+    authorization,
+    'deletion-race',
+  );
+  const results = await Promise.all([finishIdentity(flow), finishIdentity(flow)]);
+  assert.deepEqual(results.map((value) => value.status).sort(), [303, 400]);
+  assert.equal(
+    (
+      await database
+        .prepare('SELECT COUNT(*) AS n FROM kiln_deletions WHERE account_id=?')
+        .bind(account)
+        .first()
+    ).n,
+    1,
+  );
+
+  const other = await grant('deletion-enqueue-failure');
+  const credential = await (await exchange(other)).json();
+  const confirmation = await actionCallback(
+    await startDeletion(other),
+    other,
+    'deletion-enqueue-failure',
+  );
+  await database.exec(
+    "CREATE TRIGGER deletion_failure BEFORE INSERT ON kiln_deletions BEGIN SELECT RAISE(ABORT,'fixture'); END",
+  );
+  try {
+    assert.equal((await finishIdentity(confirmation)).status, 503);
+  } finally {
+    await database.exec('DROP TRIGGER deletion_failure');
+  }
+  assert.equal((await mcp(credential)).status, 200);
+  assert.equal((await finishIdentity(confirmation)).status, 400);
+});
+
+test('deletion intents are bounded and hashed, and receipt reads reject caller-selected targets', async () => {
+  const authorization = await grant('deletion-bounds');
+  const account = (await connectionFor(authorization)).account_id;
+  for (let i = 0; i < 4; i++) {
+    const response = await startDeletion(authorization);
+    assert.equal(response.status, 302);
+    const state = new URL(response.headers.get('location')).searchParams.get('state');
+    const binding = cookies(response).split('=')[1];
+    const stored = JSON.stringify(
+      (
+        await database
+          .prepare('SELECT * FROM kiln_deletion_actions WHERE account_id=?')
+          .bind(account)
+          .all()
+      ).results,
+    );
+    assert(!stored.includes(state));
+    assert(!stored.includes(binding));
+  }
+  const count = outboundCalls;
+  assert.equal((await startDeletion(authorization)).status, 403);
+  for (const body of [
+    'x'.repeat(4097),
+    'csrf=bad&provider=github&confirmation=delete-my-account&confirmation=delete-my-account',
+  ]) {
+    const result = await runtime.dispatchFetch(`${origin}/account/delete`, {
+      method: 'POST',
+      headers: {
+        origin,
+        cookie: authorization.browserCookie,
+        'content-type': 'application/x-www-form-urlencoded',
+      },
+      body,
+    });
+    assert.equal(result.status, body.length > 4096 ? 413 : 403);
+  }
+  assert.equal(outboundCalls, count);
+  assert.equal(
+    (await runtime.dispatchFetch(`${origin}/account/deletion?accountId=${account}`)).status,
+    400,
+  );
+  assert.equal(
+    (await runtime.dispatchFetch(`${origin}/account/deletion`, { method: 'POST' })).status,
+    405,
+  );
+  assert.equal((await runtime.dispatchFetch(`${origin}/account/delete`)).status, 405);
 });
 
 async function startIdentity(authorization, action, target, provider, extra = {}) {

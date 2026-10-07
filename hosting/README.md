@@ -88,8 +88,8 @@ It revokes only the browser session; it deliberately leaves MCP connections and
 other devices intact. Browser cookies cannot authorize `/mcp`, and MCP bearer
 tokens cannot authorize account pages. No account selection comes from a form or
 URL. Session issuance accepts only verified server-side identities. A recent
-callback is not proof of a fresh password/MFA challenge. The explicit linking flow
-below confirms provider control; deletion still needs its own purpose-bound flow.
+callback is not proof of a fresh password/MFA challenge. The explicit linking and
+deletion flows below confirm provider control with separate purpose-bound state.
 
 Migrations `0003_browser_sessions.sql` and `0004_browser_logins.sql` add these
 tables. Workerd tests cover expiry, rotation, concurrent callbacks, cross-provider
@@ -180,15 +180,20 @@ provider UI and external notification delivery remain launch work. Sources check
 [NIST federation account management](https://pages.nist.gov/800-63-4/sp800-63c.html),
 [D1 transactions](https://developers.cloudflare.com/d1/worker-api/d1-database/#batch).
 
-### Account deletion infrastructure
+### Account deletion
 
-The private compute and storage services now support permanent retirement of one
-tenant. This is infrastructure only: the user confirmation, primary-D1 deletion
-job, identity/token cleanup and completion page are not connected yet. No public
-account-deletion endpoint is enabled by this change.
+The account page requires explicit acknowledgement and confirmation through a
+linked Google/GitHub identity. The bounded same-origin POST starts a five-minute,
+one-use flow bound to the current browser session, account epoch and provider.
+Cancellation leaves the account unchanged; an unrelated identity cannot confirm
+deletion. The callback rechecks account/session ownership after provider I/O.
+It then atomically creates a durable D1 deletion job, sets the account to
+`deleting`, increments its epoch, revokes connections and removes browser sessions.
+No external cleanup begins before that transaction commits. Old access and refresh
+tokens are denied by primary account state, including during retries.
 
-The required order is primary account revocation, verified compute retirement,
-then storage retirement, followed by identity cleanup. `KilnCompute.retireTenant`
+The cleanup order is verified compute retirement, storage retirement, OAuth grant
+cleanup, then identity/account removal. `KilnCompute.retireTenant`
 durably denies new work and waits for cancellation of the selected account's
 coordinator and children. Unknown cleanup keeps its admission slot and recovery
 alarm. Other accounts continue; global usage counters retain already-admitted
@@ -213,10 +218,44 @@ Use the deletion controller only after every compute/storage instance runs this
 contract and older uploads have drained. Rolling back to code that ignores these
 records after accepting a deletion would be unsafe; pause service instead.
 
-Local workerd fault tests cover late writes, unknown acknowledgements, failed R2
+`D1AccountDeletions` leases each phase for 60 seconds. Recovery admits at most
+four phases within a 25-second work budget; external steps have a maximum
+20-second deadline. Incomplete cleanup retries after a minute; errors back off
+to at most an hour. Expired leases can be recovered; replaced leases cannot
+advance another worker's job. Grant cleanup uses the pinned OAuth library's
+public helpers, up to four grants per step, and clears known D1 grant IDs only
+after revocation acknowledges them. Identity/account removal and completion are
+one guarded transaction. Errors never record provider responses or exception text.
+
+The private status page requires a random HttpOnly receipt cookie; D1 stores only
+its purpose-bound hash. A support reference cannot read the receipt. Completed
+receipts lose their account mapping and expire after seven days; the browser
+cookie has a 30-day upper bound to cover pending cleanup. A returning user gets
+a new empty account, never the retired tenant. Completion means removal from the
+active service. Already-downloaded copies cannot be recalled. Eventually
+consistent OAuth KV records or concurrent, already-authorized token writes may
+outlive inventory cleanup but cannot restore access. Access-token records expire
+after 15 minutes and refresh-token records after 30 days. Provider backups need
+separate retention disclosure and a restore procedure that preserves revocation.
+
+Apply additive migration `0009_account_deletion.sql` after the earlier account
+migrations and deploy retirement-aware compute/storage before the gateway.
+The gateway provides a scheduled recovery handler and a bounded immediate attempt
+after confirmation. Production must configure and verify a recurring Cron Trigger
+(initially every minute), monitor old pending jobs and escalate unresolved writes.
+No trigger or public deployment has been created by these source changes.
+
+Local workerd tests exercise real gateway/D1/OAuth-helper/tenant/R2 cleanup with
+mocked upstream identity exchange and a no-VM compute fixture, including old-token
+denial, another account's continued access and fresh sign-in after deletion.
+Fault tests cover rollback, stale proofs, callbacks, lease takeover, actual
+deadline/late completion, late writes, unknown acknowledgements, failed R2
 deletion, eviction/retry, overlapping maintenance, prefix isolation and bounded
-orphan batches. Live provider deletion, operations escalation and the complete
-user flow remain unqualified. References:
+orphan batches. Live provider deletion, scheduled recovery, operations escalation
+and public retention disclosures remain launch gates. References:
+[D1 transactions](https://developers.cloudflare.com/d1/worker-api/d1-database/#batch),
+[Scheduled handlers](https://developers.cloudflare.com/workers/runtime-apis/handlers/scheduled/),
+[KV consistency](https://developers.cloudflare.com/kv/concepts/how-kv-works/),
 [R2 consistency](https://developers.cloudflare.com/r2/reference/consistency/),
 [R2 durability](https://developers.cloudflare.com/r2/reference/durability/),
 [Durable Object alarms](https://developers.cloudflare.com/durable-objects/api/alarms/).
@@ -756,8 +795,8 @@ files. The Worker checks saved pins atomically, so a lost commit acknowledgement
 cannot cause cleanup to delete the committed revision. An unacknowledged upload,
 a process crash or failed cleanup can leave unsaved bytes charged until the normal
 seven-day expiry/recovery path removes them. `deleteRevision` is a host UI/account
-operation; it preserves copies in other collections. Browser/account deletion UI
-and its deployed lifecycle remain open.
+operation; it preserves copies in other collections. Whole-account deletion is
+implemented above; its deployed lifecycle remains unqualified.
 
 Embedded material records are retained and verified using the SDK's canonical
 dependency semantics. An injected MaterialLibrary receives the closure on import.

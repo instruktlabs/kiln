@@ -10,6 +10,7 @@ export async function migrateAccounts(database) {
     '0006_account_actions.sql',
     '0007_browser_login_return.sql',
     '0008_identity_actions.sql',
+    '0009_account_deletion.sql',
   ]) {
     const source = await readFile(new URL(`../migrations/${file}`, import.meta.url), 'utf8');
     await database.batch(
