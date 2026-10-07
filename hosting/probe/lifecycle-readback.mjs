@@ -11,7 +11,35 @@ const one = (values, predicate) => {
 const identifier = (value) => assert(typeof value === 'string' && /^[a-f0-9-]{28,64}$/.test(value));
 const hash = (bytes) => createHash('sha256').update(bytes).digest('hex');
 
-function verifyBindings(expected, actual, namespaces) {
+function verifyDisabledLogging(worker, settings) {
+  assert(settings && Object.hasOwn(settings, 'observability'), 'Raw script settings are required');
+  assert.equal(settings.logpush, false);
+  assert(settings.tail_consumers === null || Array.isArray(settings.tail_consumers));
+  assert.deepEqual(settings.tail_consumers ?? [], []);
+  assert.equal(worker.logpush, false);
+  assert.deepEqual(worker.tail_consumers, []);
+  const checkDisabled = (observability) => {
+    assert.equal(observability.enabled, false);
+    assert.equal(observability.logs.enabled, false);
+    assert.equal(observability.traces.enabled, false);
+    assert.deepEqual(observability.logs.destinations ?? [], []);
+    assert.deepEqual(observability.traces.destinations ?? [], []);
+  };
+  checkDisabled(worker.observability);
+  // The script-settings API returns null when observability is disabled. The
+  // CLI normalizes that into inactive defaults (including persist:true). Require
+  // the independent raw readback; missing evidence must never mean disabled.
+  if (settings.observability === null) return;
+  checkDisabled(settings.observability);
+  for (const observability of [settings.observability, worker.observability]) {
+    assert.equal(observability.redact_query_string, true);
+    assert.equal(observability.logs.invocation_logs, false);
+    assert.equal(observability.logs.persist, false);
+    assert.equal(observability.traces.persist, false);
+  }
+}
+
+function verifyBindings(expected, actual = [], namespaces) {
   assert.deepEqual(sorted(actual.map((b) => b.name)), sorted(Object.keys(expected)));
   for (const [name, binding] of Object.entries(expected)) {
     const observed = one(actual, (b) => b.name === name);
@@ -22,6 +50,7 @@ function verifyBindings(expected, actual, namespaces) {
         break;
       case 'd1':
         value = { name, type: 'd1', id: binding.id };
+        if (observed.database_id !== undefined) value.database_id = binding.id;
         break;
       case 'kv':
         value = { name, type: 'kv_namespace', namespace_id: binding.id };
@@ -113,7 +142,7 @@ export function verifyLifecycleDeployment(manifest, receipt, snapshot) {
   for (const role of c.deployOrder) {
     const expected = c.workers[role],
       wrangler = c.wrangler[role];
-    const { worker, version, deployments, routes, schedules } = snapshot.workers[role];
+    const { worker, version, deployments, routes, schedules, scriptSettings } = snapshot.workers[role];
     const prepared = one(receipt.workers, (w) => w.role === role);
     assert.equal(prepared.name, expected.name);
     identifier(worker.id);
@@ -121,15 +150,7 @@ export function verifyLifecycleDeployment(manifest, receipt, snapshot) {
     assert.equal(worker.name, expected.name);
     assert.equal(worker.subdomain.enabled, false);
     assert.equal(worker.subdomain.previews_enabled, false);
-    assert.equal(worker.logpush, false);
-    assert.deepEqual(worker.tail_consumers, []);
-    assert.equal(worker.observability.enabled, false);
-    assert.equal(worker.observability.redact_query_string, true);
-    assert.equal(worker.observability.logs.enabled, false);
-    assert.equal(worker.observability.logs.invocation_logs, false);
-    assert.equal(worker.observability.logs.persist, false);
-    assert.equal(worker.observability.traces.enabled, false);
-    assert.equal(worker.observability.traces.persist, false);
+    verifyDisabledLogging(worker, scriptSettings);
     for (const key of ['domains', 'queues', 'dispatch_namespace_outbounds'])
       assert.deepEqual(worker.references[key], []);
     assert.deepEqual(routes, []);
@@ -138,7 +159,7 @@ export function verifyLifecycleDeployment(manifest, receipt, snapshot) {
     assert.equal(version.compatibility_date, expected.compatibilityDate);
     assert.deepEqual(sorted(version.compatibility_flags), sorted(expected.compatibilityFlags));
     assert.deepEqual(version.limits, wrangler.limits);
-    assert.deepEqual(version.exports, expected.exports);
+    assert.deepEqual(version.exports ?? {}, expected.exports);
     assert.equal(version.main_module, 'worker.mjs');
     assert.equal(version.modules.length, 1);
     assert.equal(version.modules[0].name, 'worker.mjs');

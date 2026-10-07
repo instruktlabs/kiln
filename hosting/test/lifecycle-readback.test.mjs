@@ -70,6 +70,11 @@ function fixture() {
             tail_consumers: [],
             references: { domains: [], queues: [], dispatch_namespace_outbounds: [] },
           },
+          scriptSettings: {
+            logpush: false,
+            tail_consumers: [],
+            observability: structuredClone(config.wrangler[role].observability),
+          },
           version: {
             id: versionId,
             main_module: 'worker.mjs',
@@ -179,6 +184,104 @@ test('private deployment readback binds exact deployed code, versions, resources
   assert.equal(f.verified.privateConfigurationVerified, true);
   assert.equal(f.verified.sourceCommit, f.receipt.sourceCommit);
   assert.equal(f.verified.database.id, f.manifest.database.id);
+});
+
+function disabledProviderSettings(snapshot) {
+  for (const entry of Object.values(snapshot.workers)) {
+    entry.scriptSettings = { logpush: false, tail_consumers: null, observability: null };
+    entry.worker.observability = {
+      enabled: false,
+      head_sampling_rate: 1,
+      redact_query_string: false,
+      logs: {
+        enabled: false,
+        head_sampling_rate: 1,
+        invocation_logs: true,
+        persist: true,
+        destinations: [],
+      },
+      traces: { enabled: false, head_sampling_rate: 1, persist: true, destinations: [] },
+    };
+  }
+}
+
+test('readback accepts provider-disabled raw observability with inactive CLI defaults', () => {
+  const f = fixture();
+  disabledProviderSettings(f.snapshot);
+  assert.equal(
+    verifyLifecycleDeployment(f.manifest, f.receipt, f.snapshot).privateConfigurationVerified,
+    true,
+  );
+});
+
+test('readback handles omitted empty collections and the D1 database_id alias', () => {
+  const f = fixture();
+  delete f.snapshot.workers.allowance.version.bindings;
+  delete f.snapshot.workers.gateway.version.exports;
+  for (const role of ['gateway', 'operator']) {
+    const binding = f.snapshot.workers[role].version.bindings.find((b) => b.type === 'd1');
+    binding.database_id = binding.id;
+  }
+  assert.equal(
+    verifyLifecycleDeployment(f.manifest, f.receipt, f.snapshot).privateConfigurationVerified,
+    true,
+  );
+  f.snapshot.workers.gateway.version.bindings.find((b) => b.type === 'd1').database_id = 'other';
+  assert.throws(() => verifyLifecycleDeployment(f.manifest, f.receipt, f.snapshot));
+});
+
+test('omitted bindings or exports still fail when the candidate requires them', () => {
+  for (const field of ['bindings', 'exports']) {
+    const f = fixture();
+    delete f.snapshot.workers.request.version[field];
+    assert.throws(() => verifyLifecycleDeployment(f.manifest, f.receipt, f.snapshot));
+  }
+});
+
+test('disabled readback requires explicit raw evidence and rejects active or contradictory logging', () => {
+  for (const edit of [
+    (e) => {
+      delete e.scriptSettings;
+    },
+    (e) => {
+      delete e.scriptSettings.observability;
+    },
+    (e) => {
+      delete e.scriptSettings.logpush;
+    },
+    (e) => {
+      delete e.scriptSettings.tail_consumers;
+    },
+    (e) => {
+      e.scriptSettings.logpush = true;
+    },
+    (e) => {
+      e.scriptSettings.tail_consumers = [{ service: 'external' }];
+    },
+    (e) => {
+      e.scriptSettings.observability = { enabled: true };
+    },
+    (e) => {
+      e.worker.observability.enabled = true;
+    },
+    (e) => {
+      e.worker.observability.logs.enabled = true;
+    },
+    (e) => {
+      e.worker.observability.traces.enabled = true;
+    },
+    (e) => {
+      e.worker.observability.logs.destinations = ['external'];
+    },
+    (e) => {
+      e.worker.observability.traces.destinations = ['external'];
+    },
+  ]) {
+    const f = fixture();
+    disabledProviderSettings(f.snapshot);
+    edit(f.snapshot.workers.gateway);
+    assert.throws(() => verifyLifecycleDeployment(f.manifest, f.receipt, f.snapshot));
+  }
 });
 
 test('readback rejects code, public surfaces, stored logs and inactive-version discrepancies', () => {

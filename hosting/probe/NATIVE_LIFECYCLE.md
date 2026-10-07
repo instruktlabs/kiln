@@ -156,6 +156,18 @@ logs and SSH, no routes/Cron, and no active/starting instances before admission.
 Unexpected bindings, including secrets, fail verification. The collector must
 retain complete pages and re-read them; synthetic fixtures are not cloud evidence.
 
+For each Worker the collector also retains `scriptSettings`, the raw result of
+[`GET .../workers/scripts/{name}/script-settings`](https://developers.cloudflare.com/api/resources/workers/subresources/scripts/subresources/settings/methods/get/).
+Cloudflare returned `observability: null` for the disabled configuration in the
+October 7 private deployment. The CLI displayed inactive nested defaults such as
+`persist: true`; those defaults did not mean logs were enabled. The verifier accepts
+that representation only with explicit raw null evidence, disabled master/log/trace
+flags, disabled Logpush, and no tail consumers or log/trace destinations. Missing
+raw evidence and contradictory active settings fail. Non-null settings retain the
+strict redaction, invocation-log and persistence checks. Omitted empty binding/export
+collections are compared against the candidate's empty collections; required entries
+cannot be omitted. When present, D1's `database_id` alias must equal the expected ID.
+
 Its cleanup planner requires a stopped operator, closed allowance, paused idle
 admission, no recovery alarm and only stopped, correctly imaged VMs matched to
 recorded budget claims. Failed starts may consume a claim without producing a VM;
