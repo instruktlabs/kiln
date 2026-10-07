@@ -168,7 +168,14 @@ export class NativeRequestJob {
       if (Date.now() >= deadlineAt) throw new HttpFailure(504, 'Native request timed out');
       if (signal.aborted) throw new HttpFailure(499, 'Request cancelled');
     };
-    const timer = setTimeout(() => this.stopped.abort(), Math.max(0, deadlineAt - Date.now()));
+    let deadlineExpired = false;
+    const timer = setTimeout(
+      () => {
+        deadlineExpired = true;
+        this.stopped.abort();
+      },
+      Math.max(0, deadlineAt - Date.now()),
+    );
     let response: Response | undefined;
     try {
       check();
@@ -249,7 +256,8 @@ export class NativeRequestJob {
       );
     } catch (error) {
       void response?.body?.cancel().catch(() => {});
-      if (Date.now() >= deadlineAt) throw new HttpFailure(504, 'Native request timed out');
+      if (deadlineExpired || Date.now() >= deadlineAt)
+        throw new HttpFailure(504, 'Native request timed out');
       throw error instanceof HttpFailure
         ? error
         : new HttpFailure(503, 'Native host is unavailable');

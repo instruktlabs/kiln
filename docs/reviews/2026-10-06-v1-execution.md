@@ -3087,3 +3087,28 @@ exact image verification, a fresh private observer, concrete resource/readback a
 cleanup qualification, then a sequenced trial allowance. Live OAuth/deletion,
 scheduled recovery, retention/load/costs/alerts, production publication and directory
 submissions remain incomplete. Root README/Troy/site refresh remains deferred.
+
+## Native deadline classification corrected after Linux CI
+
+The Linux hosted job on `602700e` failed one of 394 tests: a native response
+interrupted by its deadline timer returned cancellation (499) instead of timeout
+(504). A deterministic regression reproduces that result when the deadline timer
+fires while the wall clock still reads one millisecond before the deadline. The
+controller now retains the timer-expiry cause, so catch handling reports timeout
+without relying solely on a second wall-clock read. Cancellation, late-response
+discard and whole-instance cleanup remain enforced. The original real-timer test
+and all its assertions remain in place.
+
+The new test failed before the fix; all 21 request-controller tests and the full
+395 hosted tests now pass locally, along with three typechecks, thirteen production
+builds and root lint. Logs are `.cache/request-deadline-*.log`. This changes the
+request Worker, not the installed native images. A fresh branch CI run is required.
+
+Read-only Cloudflare inventory confirms the fixed `kiln-private-lifecycle-v1` names
+are absent across Workers, Durable Objects, D1, KV, R2 and Container applications.
+There are no Container applications or registry images currently in this account.
+The existing local coordinator and software-image IDs still match their retained
+qualification receipts. Inventory receipt: `.cache/lifecycle-readonly-inventory-refreshed/receipt.json`.
+These observations authorize no resource creation or paid starts; image upload,
+remote configuration readback, a fresh observer and verified teardown remain trial
+preparation work. Google client creation remains the pending owner approval.

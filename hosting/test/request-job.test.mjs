@@ -590,6 +590,42 @@ test('an unexpected coordinator image is destroyed before it receives the MCP bo
   assert.equal(f.values.get('request').state, 'finished');
 });
 
+test('deadline timer expiry stays a timeout when the wall clock is one millisecond behind', async (t) => {
+  let now = 1_000_000;
+  t.mock.method(Date, 'now', () => now);
+  t.mock.timers.enable({ apis: ['setTimeout'] });
+  const entered = deferred(),
+    result = deferred();
+  const f = fixture({
+    native: async () => {
+      entered.resolve();
+      return result.promise;
+    },
+  });
+  const rejected = assert.rejects(
+    f.job.run(tenant, request(), now + 50),
+    (error) => error.status === 504,
+  );
+  await entered.promise;
+  now += 49;
+  t.mock.timers.tick(50);
+  await rejected;
+  let cancelled = false;
+  result.resolve(
+    new Response(
+      new ReadableStream({
+        cancel() {
+          cancelled = true;
+        },
+      }),
+    ),
+  );
+  await turn();
+  assert.equal(cancelled, true);
+  assert.equal(f.context.container.running, false);
+  assert.equal(f.values.get('request').state, 'finished');
+});
+
 test('a timed-out native response cannot revive work or leak a late body', async () => {
   const entered = deferred(),
     result = deferred();
