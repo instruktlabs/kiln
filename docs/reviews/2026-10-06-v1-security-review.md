@@ -234,6 +234,34 @@ Public admission/rate controls, global account/storage bounds, provider linking,
 account deletion, live confirmation, deployed revocation and recovery remain
 outstanding. Local tests and a secret scan cannot substitute for those gates.
 
+## 7 October candidate refresh
+
+The focused sign-in/account review at `2087faa` checked explicit identity linking,
+primary account/epoch validation, one-use provider-bound callbacks, consent and
+browser-origin checks, and separation of provider credentials from tenant/native
+modules. This pass did not establish a new account-flow defect; real provider
+sign-in and deployed revocation remain unqualified. Existing CI evidence was reused
+rather than rerunning the unchanged functional suite.
+
+Gitleaks 8.30.1 was rerun with full redaction, default rules and inline allow
+comments ignored. No custom rule configuration or ignore file was present. All
+four reports are empty:
+
+| Current input | Coverage |
+| --- | --- |
+| Exact `1.1.0-dev.1` package archive `ce0d7e18…878f` | 954 validated archive entries, extracted before scanning; 24,141,849 scanned bytes |
+| Generated local plugin `1.1.0-dev.1` | All eleven provenance-listed files hash-verified; 53,995 scanned bytes including provenance |
+| Rebuilt hosted output | Fourteen runtime/maintenance modules and build records; 5,250,824 scanned bytes; all bundle digests checked and the module bytes retained |
+| Reachable history after stable `fda71ac` through `2087faa` | 103 commits; 2,534,626 scanned bytes |
+
+Retained evidence: `.cache/security-candidate-2087faa/receipt.json`, the four
+redacted scan reports/logs, extracted archive, plugin and hosted module copies.
+Only documentation differed from the recorded source while building; all actual
+build dependency-boundary checks passed. This closes the stale artifact-scan
+check for these bytes, not final image/deployed-configuration review or proof
+against unknown secret formats. No provider credential was read or changed and
+no service was deployed.
+
 ## Acceptance
 
 The integrated branch now also covers durable compute admission and authenticated

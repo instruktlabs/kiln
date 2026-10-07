@@ -46,6 +46,13 @@ older statements within it are not the current execution status.
   [bounded live onboarding plan](2026-10-07-local-onboarding-qualification.md)
   awaits its separate model allowance and isolated Codex-profile sign-in.
   This development version does not replace the published stable package.
+  The newer `2087faa` archive has now passed all seven downloaded installation
+  receipt checks, including project adoption, cross-client saved storage and six
+  software-rendered views. The independently verified archive SHA-256 is
+  `ce0d7e182705159d70daa19ab58e8fc063e81a8a43a8e4df203cfb1d88c2878f`.
+  All twelve package CI jobs now pass at this exact source, including Linux and
+  Windows full tests. These receipts do not replace the outstanding actual-client
+  sessions.
 - Hosted retention and scheduled deletion have a frozen private trial candidate.
   The maintenance gateway and recovery runbook have offline tests, including a
   state-preserving local transition, but need provider qualification.
@@ -55,6 +62,37 @@ older statements within it are not the current execution status.
   capture or restore implementation; full provider recovery remains a launch gate.
 - Public pages, terms, account controls and directory bundles are prepared
   candidates. They have not been approved as a public service or submitted listing.
+- Current package, plugin, fourteen rebuilt hosted modules and all 103 post-stable
+  commits pass redacted secret scans at `2087faa`. The focused account-flow review
+  identified no new defect in this pass. See the [security record](2026-10-06-v1-security-review.md#7-october-candidate-refresh);
+  live provider sign-in, final image/configuration review and real-client behavior
+  are still separate launch requirements.
+- Recovery scope is awaiting owner alignment: the original plan requires rollback
+  readiness, while the later checklist also adds broader backup and restore
+  qualification. The pending decision distinguishes provider database recovery plus
+  tested code rollback from a new source/GLB backup system. Until answered, the
+  existing checklist remains in force; no new backup storage is provisioned.
+
+## Execution focus after the owner progress review
+
+The owner raised the elapsed time and asked whether process was displacing
+delivery. The core native execution problem now has positive installed evidence;
+all 27 checks at `2087faa` pass. The project is not waiting for another rerun of
+that candidate. It still lacks actual-client onboarding, live hosted identity
+flows, deployed retention/rollback proof and directory submissions.
+
+Stop adding general recovery automation ahead of those flows. The newly started
+gateway code-change helper test was removed before implementation or commit;
+the documented rollback procedure and its required provider rehearsal remain.
+The existing backup-scope question is an owner decision, not evidence that the
+original plan required a new cross-store backup product.
+
+Prioritize the prepared merge and trial handoffs, then test the integrated hosted
+journey and fix only demonstrated launch defects. Keep frozen approval candidates
+unchanged. Reuse passing exact-artifact evidence; rerun affected checks after
+meaningful changes, not merely to refresh a status report. Consolidate the PR
+queue after the approved foundational merge. Final docs and submission dossiers
+follow functioning, verified user journeys.
 
 ## Remaining sequence
 
@@ -79,18 +117,27 @@ older statements within it are not the current execution status.
 
 ## PR sequence and outstanding handoffs
 
-Git ancestry was checked against current remote PR heads. There are seven open
-release PRs, but not seven independent changes to merge:
+Git ancestry and merged content were checked against current remote PR heads.
+The owner approved #153 and closure of its three superseded PRs. There are now
+three open release PRs:
 
 | PR | Role | Disposition |
 | --- | --- | --- |
-| [#147](https://github.com/instruktlabs/kiln/pull/147) | Initial native execution | All commits included in #153; close as superseded after that merge |
-| [#149](https://github.com/instruktlabs/kiln/pull/149) | Initial account controls | All commits included in #153; no separate merge needed |
-| [#150](https://github.com/instruktlabs/kiln/pull/150) | Native startup/isolation qualification | All commits included in #153; no separate merge needed |
-| [#153](https://github.com/instruktlabs/kiln/pull/153) | Integrated hosted foundation | First main merge awaiting owner approval at `39083d7`; all 25 reported checks pass |
-| [#154](https://github.com/instruktlabs/kiln/pull/154) | Retention and scheduled recovery | Follows #153; frozen private trial at `37c962e` awaits its separate $1 allowance |
-| [#155](https://github.com/instruktlabs/kiln/pull/155) | Maintenance and recovery preparation | Follows #154; implementation is distinct from unfinished provider restore evidence |
-| [#156](https://github.com/instruktlabs/kiln/pull/156) | Shared local setup | Follows #155; current adoption extension still being qualified |
+| [#147](https://github.com/instruktlabs/kiln/pull/147) | Initial native execution | Closed as superseded after inclusion in #153 was verified |
+| [#149](https://github.com/instruktlabs/kiln/pull/149) | Initial account controls | Closed as superseded; no separate merge needed |
+| [#150](https://github.com/instruktlabs/kiln/pull/150) | Native startup/isolation qualification | Closed as superseded; no separate merge needed |
+| [#153](https://github.com/instruktlabs/kiln/pull/153) | Integrated hosted foundation | Merged as `6f41a1a`; merged tree is identical to approved `39083d7`; main CI running |
+| [#154](https://github.com/instruktlabs/kiln/pull/154) | Retention and scheduled recovery | Based on main; history reconciled at `7fc5bbb` without changing any file; frozen private trial still uses `37c962e` and awaits its separate $1 allowance |
+| [#155](https://github.com/instruktlabs/kiln/pull/155) | Maintenance and recovery preparation | Review base is #154's branch; restore/provider evidence remains unfinished |
+| [#156](https://github.com/instruktlabs/kiln/pull/156) | Shared setup and isolation fixes | Review base is #155's branch; all 27 checks pass at `2087faa`; actual onboarding remains |
+
+GitHub requires linear main history. The merge-commit attempt was refused; the
+approved squash merge was used without changing branch protections. Main's tree
+`8547cb35133b6efe2a78b20a24f9873e8abb24ab` equals the approved source tree exactly.
+Operations history was then reconciled using that verified common content;
+`7fc5bbb` has the unchanged `37c962e` tree `7802a86fd2fdea78e8a57e0ecb9c16415d5aeec9`.
+No history was force-pushed. The remaining PRs show successive changes for review;
+each still needs explicit approval before its eventual main merge.
 
 The hosted foundation merge deploys and publishes nothing. The pending retention
 trial uses four private Workers with temporary D1/KV/R2, no VMs, provider secrets
@@ -107,15 +154,21 @@ environment and Khronos-validator compatibility fixes have regressions and rebui
 bundles; the optional-adapter fixes remain unpublished. All 118 focused evaluator
 and qualification tests pass; full exact-candidate package CI remains required.
 
-The preserved Docker job still fails in that run. Its prepared replacement now
-requires explicit kernel-denial and evaluator-refusal evidence, no artifact, and
-the unchanged trusted software-renderer fixture. The positive VM job remains a
-separate requirement. Fifteen focused qualification tests pass; actual CI proof of
-the revised Docker refusal job is pending. No restriction is relaxed and no failed
-positive probe automatically selects the refusal mode. Recovery commit `88ebe58`
+The preserved Docker job still fails in that earlier run. Its replacement requires
+explicit kernel-denial and evaluator-refusal evidence, no artifact, and the unchanged
+trusted software-renderer fixture. At `2087faa`, both the positive VM and restricted
+Docker/renderer jobs pass in run `37685410198`; the two exact archives and all eight
+output artifact hashes were independently verified. Local full tests pass 3,353
+tests with two skips; fifteen qualification tests cover the subsequent refusal
+extension. All twelve package CI jobs now pass, including Linux and Windows full
+tests and all installation jobs. Hosted gateway checks, public-registry install
+checks, private image checks and the website build all pass at the same source:
+27 checks total. No restriction is relaxed and no
+failed positive probe automatically selects the refusal mode. Recovery commit `88ebe58`
 separately passed hosted CI on Linux and Windows; provider restore remains unfinished.
 
 No immediate authentication is required for the local implementation. Later
 provider transitions and final publication/deployment actions will be surfaced
 as concrete handoffs. The contributor's #140, #141 and #142 remain outside today's
-scope for the owner to review separately. No PR is closed or merged by this report.
+scope for the owner to review separately. Only the explicitly approved #153 merge
+and #147/#149/#150 closures have been performed.

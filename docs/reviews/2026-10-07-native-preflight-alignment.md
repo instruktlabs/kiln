@@ -218,3 +218,18 @@ job remains mandatory for this workflow; no failing positive probe automatically
 switches to the negative mode. Fifteen focused qualification tests pass, including
 the new failing-then-passing refusal cases. Actual CI proof of this revised job
 remains required before its status can be reported as passing.
+
+The revised workflow [37685410198](https://github.com/instruktlabs/kiln/actions/runs/37685410198)
+passes both jobs at `2087faac07e6c86245abd78a55ddfd481bae275d`. Both downloaded
+archives match `ce0d7e182705159d70daa19ab58e8fc063e81a8a43a8e4df203cfb1d88c2878f`.
+The positive VM repeats all nine checks and ten readiness invariants. Docker's
+refusal receipt reports kernel permission denial, `wrapper-launch`, `WORKER_FAILED`
+and no artifact, followed by a separate passed software-Vulkan receipt. The GLB,
+CPU PNG and all six software-view digests were independently verified. Local
+full tests for the runtime correction pass 3,353 tests with two platform skips;
+the later refusal extension separately passes fifteen qualification tests.
+Full package CI subsequently passed all twelve jobs at the same source, including
+Linux and Windows regressions. All seven downloaded installation receipts verify
+against that exact archive; six software-rendered view hashes also verify. This
+resolves the native preflight failure for this candidate without qualifying public
+hosted launch.
