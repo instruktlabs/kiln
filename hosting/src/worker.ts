@@ -10,6 +10,7 @@ import { beginAccountAction } from './account-actions';
 import { beginIdentityAction } from './identity-actions';
 import { beginDeletionAction, accountDeletionStatus } from './deletion-actions';
 import { browserDownload } from './browser-download';
+import { publicPage } from './public-pages';
 import { authorize, authorizationFailure, SCOPES, type SignInEnv } from './auth';
 import { forwardTenant, type TenantEnv } from './gateway';
 import { boundedRequest, HttpFailure, privateResponse } from './http';
@@ -88,6 +89,8 @@ const gateway = {
       if (url.href.length > 16_384) throw new HttpFailure(414, 'URL too long');
       const limited = await limitIngress(request, env, origin);
       if (limited) return limited;
+      const information = publicPage(request, origin);
+      if (information) return privateResponse(information);
       const resource = `${origin}/mcp`;
       const auth = authorizationServer(origin);
       const protectedResource = new OAuthResourceServer<Env>({

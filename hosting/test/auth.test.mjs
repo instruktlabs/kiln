@@ -1108,6 +1108,14 @@ test('consent escapes client content and binds approval to its browser', async (
   assert.match(start.page, /client\.example/);
   assert.match(start.response.headers.get('content-security-policy'), /frame-ancestors 'none'/);
   assert.match(start.response.headers.get('set-cookie'), /HttpOnly/);
+  for (const link of ['/privacy', '/support', '/account'])
+    assert.ok(start.page.includes(`href="${link}"`));
+  const nonce = start.page.match(/<style nonce="([a-f0-9]+)">/)?.[1];
+  assert.ok(nonce);
+  assert.ok(
+    start.response.headers.get('content-security-policy').includes(`style-src 'nonce-${nonce}'`),
+  );
+  assert.match(start.page, /by Instrukt Labs/);
   const count = outboundCalls;
   assert.equal((await approve(start, { cookie: '' })).status, 400);
   assert.equal(outboundCalls, count);

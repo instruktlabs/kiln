@@ -4,40 +4,10 @@ import { HttpFailure } from './http';
 import { GOOGLE_SIGN_IN_BUTTON } from './google-button';
 import { D1Connections } from './connections';
 import { validLoginReturn } from './download-path';
-
-const escapeHtml = (value: string) =>
-  value.replace(/[&<>"']/g, (char) => `&#${char.charCodeAt(0)};`);
+import { escapeHtml, htmlPage } from './html-page';
 
 function page(content: string, status = 200): Response {
-  const nonce = crypto.randomUUID().replace(/-/g, '');
-  return new Response(
-    `<!doctype html><html lang="en"><head><meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1"><title>Your account · Kiln</title>
-<style nonce="${nonce}">
-:root{font-family:system-ui,sans-serif;color:#292821;background:#f6f4ef;color-scheme:light}
-*{box-sizing:border-box}body{margin:0}main{max-width:42rem;margin:8vh auto;padding:1.5rem}
-header{display:flex;align-items:baseline;gap:.8rem;margin-bottom:2.5rem}header strong{font-size:1.7rem}
-header span,footer{font-size:.9rem;color:#59594f}h1{font-size:2rem;line-height:1.2}
-p,li{line-height:1.6}section{border:1px solid #d6d3c9;background:#fff;border-radius:.75rem;padding:1.5rem;margin:1.5rem 0}
-h2{font-size:1.15rem;margin-top:0}button{font:inherit;font-weight:600;min-height:2.75rem;padding:.65rem 1.2rem;border:0;border-radius:.35rem;background:#3d5139;color:#fff;cursor:pointer}
-button:focus-visible,a:focus-visible{outline:3px solid #a25c24;outline-offset:4px}a{color:#365231}
-article+article{border-top:1px solid #d6d3c9;margin-top:1.5rem;padding-top:1.5rem}article h3,article p{overflow-wrap:anywhere}
-article form{display:flex;align-items:center;flex-wrap:wrap;gap:.75rem}select{font:inherit;min-height:2.75rem;border:1px solid #747775;border-radius:.35rem;background:#fff;color:#292821;padding:.4rem}
-select:focus-visible{outline:3px solid #a25c24;outline-offset:4px}
-.provider-buttons{display:flex;flex-wrap:wrap;gap:.75rem}.google-button{padding:0;background:transparent;line-height:0}
-.google-button img{display:block;width:198px;height:44px}.github-button{width:198px;min-height:44px;padding:0;background:#fff;color:#1f1f1f;border:1px solid #747775;font-size:14px;font-weight:500}
-footer{margin-top:2rem}footer a{margin-right:1rem}
-</style></head><body><main><header><strong>Kiln</strong><span>by Instrukt Labs</span></header>
-${content}<footer><a href="mailto:support@instruktlabs.com">Contact support</a>
-<a href="https://github.com/instruktlabs/kiln">Open source</a></footer></main></body></html>`,
-    {
-      status,
-      headers: {
-        'content-type': 'text/html; charset=utf-8',
-        'content-security-policy': `default-src 'none'; img-src data:; style-src 'nonce-${nonce}'; base-uri 'none'; form-action 'self'; frame-ancestors 'none'`,
-      },
-    },
-  );
+  return htmlPage('Your account', content, { status });
 }
 
 export function signInPage(returnTo = '/account'): Response {
@@ -173,7 +143,7 @@ Return address: ${escapeHtml(new URL(connection.redirectUri).host)}.</p>
   return page(`<h1>Your Kiln account</h1><p>Free hosted access, with private saved assets and a personal usage quota.</p>
 <section><h2>Sign-in methods</h2><ul>${providers.map((provider) => `<li>${escapeHtml(provider)}</li>`).join('')}</ul>
 <p>Adding a method asks you to confirm your current provider, then the new one. Removing a method asks you to confirm the one you will keep. Each change signs out all browsers and connected apps. Saved assets stay in this account. Already separate Kiln accounts cannot be merged.</p><div class="provider-buttons">${identityControls}</div></section>
-<section><h2>Recent security activity</h2>${activity ? `<ul>${activity}</ul>` : '<p>No sign-in method changes.</p>'}</section>
+<section><h2>Recent security activity</h2>${activity ? `<ul>${activity}</ul>` : '<p>No sign-in method changes.</p>'}<p>Kiln shows security notices in the app. It does not send email alerts for sign-in method changes or account deletion.</p></section>
 <section><h2>Connected apps</h2><p>Disconnecting blocks new requests from that connection. Confirm with a sign-in method to continue.</p>${connectionCards || '<p>No connected apps.</p>'}</section>
 <section><h2>This browser</h2><p>Signing out here leaves your connected apps working.</p>
 <form method="post" action="/account/logout"><input type="hidden" name="csrf" value="${escapeHtml(session.csrf)}">

@@ -3168,3 +3168,20 @@ the fixed trial prefix; `.cache/lifecycle-operator/surface-inventory.json` retai
 the timestamped result. No cloud resource, native start or provider credential was
 created during this preparation. A new allowance and exact-candidate CI are still
 required. Google client approval remains pending; production launch is incomplete.
+
+## Hosted information and consent presentation (October 7)
+
+All eighteen CI checks passed on `4867aaf`. While Google client approval remained
+pending, the gateway gained public home/privacy/support routes and a shared account
+and consent layout. The pages describe the implemented identity, storage, telemetry,
+deletion and in-app-notice behavior without requiring sign-in. Existing consent
+cookies, CSRF/browser binding, escaped client identity and scope disclosure remain
+enforced. The account page now states that security changes do not send email.
+
+The new assertions failed first. All 410 hosted tests, three typechecks, thirteen
+production builds and root lint pass locally. Desktop and narrow-viewport checks
+cover the actual HTML functions with synthetic data. See the
+[page review and source mapping](2026-10-07-hosted-pages.md) for receipts and limits.
+Nothing was deployed or submitted; Google client approval, the next private trial,
+live sign-in/deletion, operational verification and public launch remain pending.
+The final README/Troy/site refresh remains deferred.

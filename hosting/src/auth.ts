@@ -14,6 +14,8 @@ import { finishIdentityAction } from './identity-actions';
 import { finishDeletionAction } from './deletion-actions';
 import { googleAuthorizationUrl, type GoogleEnv, googleIdentity } from './google';
 import { D1LoginIntents, type SignInProvider } from './login-intents';
+import { escapeHtml, htmlPage } from './html-page';
+import { GOOGLE_SIGN_IN_BUTTON } from './google-button';
 
 export const SCOPES = ['kiln:use', 'offline_access'];
 export interface SignInEnv extends GoogleEnv, GitHubEnv {
@@ -26,27 +28,27 @@ interface SignInTransaction {
   verifier: string;
   nonce: string;
 }
-const escapeHtml = (value: string) =>
-  value.replace(/[&<>"']/g, (char) => `&#${char.charCodeAt(0)};`);
-
-function consentPage(details: ConsentDescription, handle: string): string {
+function consentPage(details: ConsentDescription, handle: string, headers: Headers): Response {
   const descriptions: Record<string, string> = {
     'kiln:use':
       'Create, inspect, edit, save, download and delete your Kiln assets within your quota.',
     offline_access: 'Keep this connection working without signing in again for up to 30 days.',
   };
-  return `<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width">
-<title>Connect to Kiln</title><main><h1>Connect ${escapeHtml(details.clientName)} to Kiln</h1>
-<p>${details.clientDomain ? `Client domain: <strong>${escapeHtml(details.clientDomain)}</strong>.` : 'This client registered its own name; that name is not verified.'}</p>
-<p>Access will be returned to <strong>${escapeHtml(details.redirectHost)}</strong>.</p>
+  return htmlPage(
+    'Connect to Kiln',
+    `<h1>Connect ${escapeHtml(details.clientName)} to Kiln</h1>
+<section><h2>Review this connection</h2><p class="client-detail">${details.clientDomain ? `Client domain: <strong>${escapeHtml(details.clientDomain)}</strong>.` : 'This client registered its own name; that name is not verified.'}</p>
+<p class="client-detail">Access will be returned to <strong>${escapeHtml(details.redirectHost)}</strong>.</p>
 ${details.redirectIsLoopback ? '<p>This connects an app on your computer. Continue only if you started that connection.</p>' : ''}
-<ul>${details.scope.map((scope) => `<li>${escapeHtml(descriptions[scope] ?? scope)}</li>`).join('')}</ul>
+<ul class="permission-list">${details.scope.map((scope) => `<li>${escapeHtml(descriptions[scope] ?? scope)}</li>`).join('')}</ul></section>
 <p>Hosted access is free within your quota. Sign in to keep saved assets private. Kiln requests no GitHub repository access or Google Drive access.</p>
 <p>Use the same sign-in method when returning to your library.</p>
 <form method="post" action="/authorize"><input type="hidden" name="handle" value="${escapeHtml(handle)}">
-<button name="decision" value="google">Continue with Google</button>
-<button name="decision" value="github">Continue with GitHub</button>
-<button name="decision" value="deny">Cancel</button></form></main></html>`;
+<div class="provider-buttons"><button class="google-button" name="decision" value="google" aria-label="Continue with Google"><img src="${GOOGLE_SIGN_IN_BUTTON}" width="198" height="44" alt="Sign in with Google"></button>
+<button class="github-button" name="decision" value="github">Continue with GitHub</button></div>
+<p><button class="secondary" name="decision" value="deny">Cancel connection</button></p></form>`,
+    { headers },
+  );
 }
 
 export async function authorize(
@@ -75,12 +77,7 @@ export async function authorize(
     }
     const details = await oauth.describeConsent(auth);
     const consent = await oauth.beginConsent(auth);
-    consent.headers.set('content-type', 'text/html; charset=utf-8');
-    consent.headers.set(
-      'content-security-policy',
-      "default-src 'none'; base-uri 'none'; form-action 'self'; frame-ancestors 'none'",
-    );
-    return new Response(consentPage(details, consent.handle), { headers: consent.headers });
+    return consentPage(details, consent.handle, consent.headers);
   }
   if (url.pathname === '/authorize' && request.method === 'POST') {
     if (request.headers.get('origin') !== origin) throw new HttpFailure(403, 'Invalid form origin');
