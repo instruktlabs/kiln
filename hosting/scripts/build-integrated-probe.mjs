@@ -1,4 +1,4 @@
-// Local-only build. Upload, R2 provisioning and cf deploy require a reviewed allowance.
+// Local-only build. Upload, R2 provisioning and deployment require a reviewed allowance.
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
@@ -10,6 +10,7 @@ import {
   OutputRootConfigSchema,
   OutputWorkerSchema,
   OutputContainerSchema,
+  convertToWranglerConfig,
 } from '@cloudflare/config';
 
 const { values } = parseArgs({
@@ -130,6 +131,25 @@ const bytes = compiled.outputFiles[0].contents,
   path = resolve(output, '.cloudflare/output/v0/workers/default/bundle/worker.mjs');
 await mkdir(dirname(path), { recursive: true });
 await writeFile(path, bytes);
+// cf beta.12 serializes every named DO binding with script_name, even when the
+// target is this Worker. Container deployment rejects that external-binding form.
+// Keep the Build Output for inspection and emit an equivalent Wrangler config
+// referencing these exact bytes. The seven self-bindings are explicitly local.
+const wrangler = convertToWranglerConfig({
+  accountId: values.account,
+  worker: { ...worker, entrypoint: './.cloudflare/output/v0/workers/default/bundle/worker.mjs' },
+  containers: applications.map(
+    ([kind]) => files[`containers/${name}-${kind}/container.config.json`],
+  ),
+});
+assert.equal(wrangler.durable_objects.bindings.length, 7);
+for (const binding of wrangler.durable_objects.bindings) {
+  assert.equal(binding.script_name, worker.name);
+  assert.equal(worker.exports[binding.class_name]?.type, 'durable-object');
+  delete binding.script_name;
+}
+wrangler.routes = [];
+await writeFile(resolve(output, 'wrangler.json'), `${JSON.stringify(wrangler, null, 2)}\n`);
 const receipt = {
   worker: name,
   bucket,
@@ -138,6 +158,8 @@ const receipt = {
   workerSha256: createHash('sha256').update(bytes).digest('hex'),
   bytes: bytes.length,
   cli: cli.version,
+  deploymentConfig: 'wrangler.json',
+  deployWithoutBundling: true,
   inputs,
   maxMcpRequests: 9,
   quotaRejectionRequests: 1,

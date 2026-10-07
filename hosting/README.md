@@ -534,7 +534,22 @@ response/cancellation race. The race test reproduced a discarded response body
 left open and now verifies its closure. No new cloud qualification is implied.
 Implementation follows the current [SQLite transaction contract](https://developers.cloudflare.com/durable-objects/api/sqlite-storage-api/#transaction)
 and [alarm contract](https://developers.cloudflare.com/durable-objects/api/alarms/).
-Production configuration, integrated rendering and deployed qualification remain open.
+Production configuration and the final deployment remain open. A bounded private
+integration at `c755434` passed the render/save/reopen/export lifecycle, tenant
+denial and quota rejection; see the
+[qualification receipt](../docs/reviews/2026-10-06-hosted-integration-receipt.json).
+That evidence does not qualify later changes or a public service.
+
+For a reviewed private integrated probe, `scripts/build-integrated-probe.mjs`
+emits both Cloudflare Build Output and `wrangler.json`, pointing to the same
+compiled module. Use the generated Wrangler configuration with `--no-bundle`;
+a `--dry-run` validates locally before any approved deployment. The tested
+Wrangler version is `4.147.0`. `cf 1.0.0-beta.12` converts same-Worker Durable
+Object bindings into external `script_name` references and rejects the Container
+bindings. The Wrangler output uses local bindings while preserving exports,
+images, quotas and disabled public routing. The script only builds local files;
+it does not provision or deploy anything, and rebuilding creates a new candidate
+that must be qualified separately.
 
 ## Authenticated edge discovery
 

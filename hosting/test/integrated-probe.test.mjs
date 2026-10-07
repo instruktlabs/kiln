@@ -380,6 +380,27 @@ test('the prepared deployment keeps all execution private and pins bounded immut
     assert.equal(worker.env.COMPUTE_MAX_CONCURRENT.value, '1');
     assert.equal(worker.env.COMPUTE_GLOBAL_PER_MONTH.value, '9');
     assert.equal(worker.env.COMPUTE_DEADLINE_MS.value, '120000');
+    const wrangler = JSON.parse(await readFile(resolve(directory, 'wrangler.json')));
+    assert.equal(wrangler.workers_dev, false);
+    assert.equal(wrangler.preview_urls, false);
+    assert.deepEqual(wrangler.routes, []);
+    assert.equal(wrangler.account_id, '0'.repeat(32));
+    assert.equal(
+      resolve(directory, wrangler.main),
+      resolve(output, 'workers/default/bundle/worker.mjs'),
+    );
+    assert.deepEqual(wrangler.exports, worker.exports);
+    assert.equal(wrangler.durable_objects.bindings.length, 7);
+    for (const binding of wrangler.durable_objects.bindings) {
+      assert.equal(Object.hasOwn(binding, 'script_name'), false);
+      assert.equal(binding.class_name, worker.env[binding.name].exportName);
+    }
+    assert.deepEqual(wrangler.limits, { cpu_ms: 30000, subrequests: 500 });
+    for (const [key, binding] of Object.entries(worker.env))
+      if (binding.type === 'text') assert.equal(wrangler.vars[key], binding.value);
+    assert.deepEqual(wrangler.r2_buckets, [
+      { binding: 'ARTIFACTS', bucket_name: worker.env.ARTIFACTS.name },
+    ]);
     assert.equal(
       Object.values(worker.exports).filter((e) => e.type === 'durable-object').length,
       7,
@@ -403,6 +424,11 @@ test('the prepared deployment keeps all execution private and pins bounded immut
         kind === 'coordinator' ? receipt.coordinator : receipt.software,
       );
       assert.match(container.images[key].reference, /@sha256:[a-f0-9]{64}$/);
+      const deployed = wrangler.containers.find((item) => item.name === container.name);
+      assert.equal(deployed.scheduling_policy, 'durable_object');
+      assert.equal(deployed.ssh.enabled, false);
+      assert.equal(deployed.observability.logs.enabled, false);
+      assert.deepEqual(deployed.images, { [key]: { image: container.images[key].reference } });
     }
     assert(
       !receipt.inputs.some((input) =>

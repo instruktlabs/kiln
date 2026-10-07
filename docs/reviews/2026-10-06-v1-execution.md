@@ -2532,3 +2532,66 @@ candidate only, not the newer material/download changes. Account lifecycle,
 verified saved-build identity, live sign-in, operational
 qualification, public deployment, submissions and the final documentation refresh
 remain open; the overall goal remains active.
+
+## Approved integrated Cloudflare trial passed and was removed
+
+The owner's separate $1 allowance was used for the exact frozen `c755434`
+candidate. All ten checks passed: material-faithful rendering, save, restore,
+exact source retrieval, export, GLB and manifest reads, denial of another
+account's source/GLB reads, and quota rejection before another VM starts.
+Nine admitted MCP requests used thirteen fresh VMs: nine coordinators, two
+evaluators and two software renderers, within the approved seventeen-start
+ceiling. This run is complete; its unused allowance is not permission for a new
+candidate or a replay that allocates new VMs.
+
+The deployed Worker SHA-256 matched
+`3ff536d4e99b8ee348d2a55e5a0de58ca04895643f53ccba4a68cf5ee570312a`.
+Both image manifests matched the reviewed immutable digests. Worker URLs,
+preview URLs and public routes were disabled; bindings, limits, image references,
+Container SSH/logging and all seven SQLite namespaces were verified by API.
+
+The initial `cf 1.0.0-beta.12` deployment failed locally because its converter
+serialized the Worker's own Durable Object bindings as external `script_name`
+references, which Container deployment rejects. Wrangler `4.147.0` deployed the
+same prebuilt bytes after removing only those seven explicit self-references.
+The generated probe now also emits this equivalent `wrangler.json`; its regression
+test first failed on the missing output and then passed. No dependency was patched
+and no code, image, quota or routing change was made to the approved trial.
+
+The long-lived local operator RPC returned 502 after approximately 81 seconds.
+The durable run continued and finished successfully. Reading its persisted status
+recovered all results without restarting the sequence; calling the completed run
+returned the identical record and left the thirteen budget claims unchanged.
+This transport interruption remains recorded and must inform the next operator
+implementation. It is not a successful long-lived client-connection claim.
+
+Every retained response hash was verified. Saved GLB/source/preview sizes and
+hashes match the manifest. Both the in-loop image and saved six-view preview were
+visually inspected: checker texture and reflective blue sphere are present.
+The saved preview names the exact saved GLB and reports full material fidelity
+without fallback. The run measured approximately 39.9 seconds for initial render,
+35.6 seconds for save, and 3.6-4.5 seconds for subsequent admitted reads/restore/
+export. These are one small sequential fixture's end-to-end times, not a load
+benchmark or an estimate for every asset. Settled billing remains unknown.
+
+Provider readback confirmed all thirteen instances stopped. Cleanup removed the
+three Container applications, Worker, seven namespaces, fifteen objects,
+temporary bucket and both uploaded image tags; subsequent API reads verified
+their absence. The local operator was stopped and its listener disappeared.
+The checked-in [receipt](2026-10-06-hosted-integration-receipt.json) records hashes,
+timings, limits, replay behavior and cleanup. Raw responses, provider snapshots
+and image/GLB evidence remain under `.cache/integrated-trial/`.
+
+The newer download/material implementation at `8775750` separately passed all
+eighteen CI checks. It was not substituted into this cloud trial. Hosted launch
+still requires qualification of those changes, host-owned saved-build identity
+(this trial correctly retains `source-development:unverified`), account lifecycle,
+live Google/GitHub sign-in, retention/load/cost and operating checks, production
+approval and real client verification. Directory submissions and the deferred
+README/Troy/site refresh remain open. No further owner action is needed for the
+completed trial; ordinary implementation continues under the active release goal.
+
+The configuration correction passes all 301 hosted tests, three typechecks,
+thirteen production builds, root lint, redacted source/record scans and an actual
+Wrangler no-bundle dry run. It changes local preparation only and has not been
+used for another cloud deployment. The published npm package remains unchanged.

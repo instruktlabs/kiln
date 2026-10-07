@@ -1,0 +1,229 @@
+{
+  "schemaVersion": 1,
+  "qualification": "private-cloudflare-integrated-mcp",
+  "sourceCommit": "c7554346c12b14eb7dd5c25db7520314f201012b",
+  "workerSha256": "3ff536d4e99b8ee348d2a55e5a0de58ca04895643f53ccba4a68cf5ee570312a",
+  "workerVersion": "2e8535a8-0f8d-40c5-ac5f-309e5ef9bb2b",
+  "images": [
+    {
+      "kind": "coordinator",
+      "references": [
+        "registry.cloudflare.com/56adffd40534f7fe110fc661a40bbf53/kiln-coordinator@sha256:029c4fba6f0521a5a18c9dde364d07b5ffc076fe4d988358868950de40134b66"
+      ]
+    },
+    {
+      "kind": "evaluation",
+      "references": [
+        "registry.cloudflare.com/56adffd40534f7fe110fc661a40bbf53/kiln-software@sha256:64022900f0c298668076db054c44e019dad6a3813751a92dec7a06ceb734fe24"
+      ]
+    },
+    {
+      "kind": "render",
+      "references": [
+        "registry.cloudflare.com/56adffd40534f7fe110fc661a40bbf53/kiln-software@sha256:64022900f0c298668076db054c44e019dad6a3813751a92dec7a06ceb734fe24"
+      ]
+    }
+  ],
+  "allowed": {
+    "usd": 1,
+    "mcpRequests": 9,
+    "vmStarts": 17
+  },
+  "result": {
+    "state": "finished",
+    "passed": true,
+    "results": [
+      {
+        "name": "render",
+        "passed": true,
+        "elapsedMs": 39887,
+        "status": 200,
+        "bytes": 58568,
+        "sha256": "6f561ec80fc8f43628b1309a7690bfdd81acc4fddccfde7460b27db79d0ee1a2"
+      },
+      {
+        "name": "save",
+        "passed": true,
+        "elapsedMs": 35598,
+        "status": 200,
+        "bytes": 2086,
+        "sha256": "544ee7236880fffd6c8ff639fb703d3519f8353e5df3a8fa33b7c8e1853ef97e"
+      },
+      {
+        "name": "restore",
+        "passed": true,
+        "elapsedMs": 3802,
+        "status": 200,
+        "bytes": 3108,
+        "sha256": "fb1df871dc8209d20a0d445cd0f769f74601b7220214f73ad3fc5a2bf7ecd861"
+      },
+      {
+        "name": "source",
+        "passed": true,
+        "elapsedMs": 3634,
+        "status": 200,
+        "bytes": 795,
+        "sha256": "645e8ec5b67ff4b07bf9e282f45e953e75aa2c174b6d9f9b792489f9d9eadd25"
+      },
+      {
+        "name": "export",
+        "passed": true,
+        "elapsedMs": 4035,
+        "status": 200,
+        "bytes": 3578,
+        "sha256": "aa2d98728fe1a0b892be57467cabda18812b0a355b21bc29ca8ca91b122dedf1"
+      },
+      {
+        "name": "glb",
+        "passed": true,
+        "elapsedMs": 4516,
+        "status": 200,
+        "bytes": 8035,
+        "sha256": "27bda861204e5ed03f14da9e9f599345f0dec789a5c9976f72f7fc11ca6e4b4b"
+      },
+      {
+        "name": "manifest",
+        "passed": true,
+        "elapsedMs": 4493,
+        "status": 200,
+        "bytes": 7620,
+        "sha256": "356703778d377a84e2f9afc7b46d30f386579cb4a593579cd2037ac4af6928fa",
+        "savedEngine": "source-development:unverified"
+      },
+      {
+        "name": "other-source",
+        "passed": true,
+        "elapsedMs": 3767,
+        "status": 200,
+        "bytes": 456,
+        "sha256": "7cd73362118a076fa3a953a542d7dddf9a9bf37a3e889a363c104b538a20a32a"
+      },
+      {
+        "name": "other-glb",
+        "passed": true,
+        "elapsedMs": 3552,
+        "status": 200,
+        "bytes": 101,
+        "sha256": "b61378c9b7e84274711ef35e385a82dc2cf689eb678a525944fe900354a2c234"
+      },
+      {
+        "name": "quota",
+        "passed": true,
+        "elapsedMs": 147,
+        "status": 429,
+        "bytes": 33,
+        "sha256": "9f05a9d8bc352ea80fb29673348cbe4a5432dde498ad90d2420350520aeba4aa"
+      }
+    ],
+    "cleanupConfirmed": true
+  },
+  "actual": {
+    "admittedMcpRequests": 9,
+    "quotaRejections": 1,
+    "vmStarts": 13,
+    "resources": {
+      "coordinator": {
+        "starts": 9,
+        "vcpu": 0.5,
+        "memoryMiB": 4096,
+        "diskMB": 8000,
+        "observedRunningSeconds": 95.484
+      },
+      "evaluation": {
+        "starts": 2,
+        "vcpu": 1,
+        "memoryMiB": 6144,
+        "diskMB": 12000,
+        "observedRunningSeconds": 20.656
+      },
+      "render": {
+        "starts": 2,
+        "vcpu": 1,
+        "memoryMiB": 6144,
+        "diskMB": 12000,
+        "observedRunningSeconds": 27.352
+      }
+    }
+  },
+  "artifacts": {
+    "glbSha256": "d183547f474f07bba897ce43d836986026666784f4476fb9daede7196fc3eae2",
+    "files": {
+      "asset.glb": {
+        "sha256": "sha256:d183547f474f07bba897ce43d836986026666784f4476fb9daede7196fc3eae2",
+        "bytes": 5772
+      },
+      "source.kiln.js": {
+        "sha256": "sha256:d1b15b61094af9d4f01eace7d60154edd020f259dce2174143ecdf86ace7e55f",
+        "bytes": 434
+      },
+      "preview.png": {
+        "sha256": "sha256:6e7fd6b85f887e2ddd3359a7ec80cd9a1d6426d1a51e8fab3e043dc006387f1b",
+        "bytes": 208582
+      }
+    },
+    "preview": {
+      "fidelity": {
+        "version": "kiln.view-fidelity.v1",
+        "requested": "full-preferred",
+        "delivered": "full-material",
+        "materialFaithful": true,
+        "exactArtifact": true,
+        "rendererId": "dawn-vulkan:llvmpipe-llvm-19-1-7-256-bits-:llvmpipe: Mesa 25.0.7-2+deb13u1 (LLVM 19.1.7) 0.0.1",
+        "inputGlbSha256": "sha256:d183547f474f07bba897ce43d836986026666784f4476fb9daede7196fc3eae2",
+        "degraded": false,
+        "reasonCodes": []
+      },
+      "backdrop": "neutral"
+    },
+    "sourceMatches": true,
+    "responseHashesVerified": true
+  },
+  "durableReplay": {
+    "unchanged": true,
+    "additionalVmStarts": 0
+  },
+  "operator": {
+    "initialRpcStatus": 502,
+    "recoveredFromDurableStatus": true,
+    "trialRestarted": false,
+    "localListenerStopped": true
+  },
+  "deployment": {
+    "tool": "wrangler",
+    "version": "4.147.0",
+    "publicHttp": false,
+    "correction": "Equivalent local Durable Object bindings; cf 1.0.0-beta.12 emitted external script_name self-references. No code or image change."
+  },
+  "cleanup": {
+    "sourceCommit": "c7554346c12b14eb7dd5c25db7520314f201012b",
+    "workerAbsent": true,
+    "applicationsAbsent": [
+      "eba88d54878946b8a1be75454b329384",
+      "b343ca54194e4392ae7a4eeed9b7a009",
+      "ddc9433871834a6d874a44ce3b290929"
+    ],
+    "namespacesAbsent": [
+      "ddc9433871834a6d874a44ce3b290929",
+      "43aa2a0166f24a65bf4e6f3061d9f6e7",
+      "412dae0abc094c89acce6fc63ad46360",
+      "b343ca54194e4392ae7a4eeed9b7a009",
+      "d41ebfadfee246a2bcc44e6c16c479b0",
+      "eba88d54878946b8a1be75454b329384",
+      "6abfc7963b6b4e979eb30b6ac06cc71c"
+    ],
+    "bucketAbsent": true,
+    "objectsDeleted": 15,
+    "registryTagsAbsent": true,
+    "verifiedStoppedInstances": 13,
+    "checkedAt": "2026-10-07T00:49:52.405Z"
+  },
+  "settledCostUsd": null,
+  "limitations": [
+    "Only the frozen candidate is qualified; later download and material changes require their own provider qualification.",
+    "Saved build.engine remains source-development:unverified; host-owned execution identity is still required.",
+    "One small fixture with sequential admission; no representative load, multi-region latency or settled-cost claim.",
+    "No live OAuth, public hostname, real external MCP client or directory submission was exercised."
+  ],
+  "evidenceDirectory": ".cache/integrated-trial",
+  "checkedAt": "2026-10-07T00:51:49.383Z"
+}
