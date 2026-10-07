@@ -12,6 +12,8 @@ import { assertProductionBoundary } from './build-boundary.mjs';
 import { deploymentConfig } from './deployment-config.mjs';
 import { lifecycleConfig } from '../probe/lifecycle-config.mjs';
 import { assertLifecycleBoundary } from '../probe/lifecycle-build-boundary.mjs';
+import { operationsConfig } from '../probe/operations-config.mjs';
+import { assertOperationsBoundary } from '../probe/operations-build-boundary.mjs';
 
 const root = fileURLToPath(new URL('../../', import.meta.url));
 const hash = (bytes) => createHash('sha256').update(bytes).digest('hex');
@@ -21,6 +23,7 @@ async function main() {
       manifest: { type: 'string' },
       output: { type: 'string' },
       'private-lifecycle': { type: 'boolean', default: false },
+      'private-operations': { type: 'boolean', default: false },
     },
   });
   assert(values.manifest && values.output);
@@ -28,7 +31,13 @@ async function main() {
   assert(raw.length <= 16384);
   const manifest = JSON.parse(raw);
   const privateLifecycle = values['private-lifecycle'];
-  const configuration = privateLifecycle ? lifecycleConfig(manifest) : deploymentConfig(manifest);
+  const privateOperations = values['private-operations'];
+  assert(!(privateLifecycle && privateOperations));
+  const configuration = privateOperations
+    ? operationsConfig(manifest)
+    : privateLifecycle
+      ? lifecycleConfig(manifest)
+      : deploymentConfig(manifest);
   const cache = await realpath(resolve(root, '.cache'));
   const output = resolve(values.output),
     parent = await realpath(dirname(output));
@@ -51,7 +60,11 @@ async function main() {
   const sourceDirty = Boolean(await git('status', '--porcelain'));
   const receipt = {
     schemaVersion: 1,
-    mode: privateLifecycle ? 'private-lifecycle' : 'production-candidate',
+    mode: privateOperations
+      ? 'private-operations'
+      : privateLifecycle
+        ? 'private-lifecycle'
+        : 'production-candidate',
     sourceCommit,
     sourceDirty,
     configSchema: '0.23.0',
@@ -63,30 +76,40 @@ async function main() {
     requiredGatewaySecrets: Object.keys(configuration.workers.gateway.env).filter(
       (name) => configuration.workers.gateway.env[name].type === 'secret',
     ),
-    images: manifest.images,
+    images: privateOperations ? {} : manifest.images,
+    nativeExecutionPossible: !privateOperations,
     workers: [],
     migrations: [],
     files,
-    launchGates: privateLifecycle
+    launchGates: privateOperations
       ? [
           'exact-source CI',
           'disposable resource ownership',
-          'immutable image identity',
-          'verified dependency-order deployment',
           'no-public-route readback',
+          'actual provider Cron and alarm evidence',
           'bounded operator and verified cleanup',
-          'owner private-trial approval',
+          'owner private-operations approval',
         ]
-      : [
-          'exact-source CI',
-          'resource ownership',
-          'image identity',
-          'provider secrets',
-          'public ingress protection',
-          'sanitized operational monitoring',
-          'live OAuth and lifecycle qualification',
-          'owner deployment approval',
-        ],
+      : privateLifecycle
+        ? [
+            'exact-source CI',
+            'disposable resource ownership',
+            'immutable image identity',
+            'verified dependency-order deployment',
+            'no-public-route readback',
+            'bounded operator and verified cleanup',
+            'owner private-trial approval',
+          ]
+        : [
+            'exact-source CI',
+            'resource ownership',
+            'image identity',
+            'provider secrets',
+            'public ingress protection',
+            'sanitized operational monitoring',
+            'live OAuth and lifecycle qualification',
+            'owner deployment approval',
+          ],
   };
   const schemaPackage = JSON.parse(
     await readFile(
@@ -111,7 +134,8 @@ async function main() {
     });
     const bytes = result.outputFiles[0].contents;
     const inputs = Object.keys(result.metafile.inputs);
-    if (privateLifecycle) assertLifecycleBoundary(role, inputs);
+    if (privateOperations) assertOperationsBoundary(role, inputs);
+    else if (privateLifecycle) assertLifecycleBoundary(role, inputs);
     else assertProductionBoundary(entry, inputs);
     const built = Object.values(result.metafile.outputs)[0];
     const worker = configuration.workers[role];

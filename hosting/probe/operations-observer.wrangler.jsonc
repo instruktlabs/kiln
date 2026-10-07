@@ -1,0 +1,15 @@
+{
+  "name": "kiln-private-operations-observer",
+  "main": "./operations-observer.ts",
+  "compatibility_date": "2026-10-06",
+  "workers_dev": false,
+  "preview_urls": false,
+  "routes": [],
+  "dev": { "ip": "127.0.0.1", "port": 8799, "local_protocol": "http" },
+  "services": [{
+    "binding": "PROBE",
+    "service": "kiln-private-operations-v1-operator",
+    "entrypoint": "KilnOperationsControl",
+    "remote": true
+  }]
+}

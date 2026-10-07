@@ -72,6 +72,14 @@ returned one numeric zero for an empty interval. No Cron was deployed in this
 trial and no alert destination was configured; scheduled-health and delivery
 qualification remain open.
 
+A subsequent separately approved notification test delivered a sample email to
+the owner's business address at 13:41:56 UTC. The temporary alert was disabled
+after inbox verification, with the existing budget alert unchanged. This is
+sample delivery evidence only; automatic triggering, scheduled health and return
+to normal still require qualification. The minimal receipt and disabled-state
+screenshot are `.cache/cloudflare-alert-delivery-receipt.json` and
+`.cache/cloudflare-alert-test-disabled.png`.
+
 Provider start-to-stopped intervals totaled 145.923 instance-seconds. At the current
 [Container rates](https://developers.cloudflare.com/containers/platform/pricing/),
 modeling fully allocated CPU over those intervals gives about **$0.0036** for

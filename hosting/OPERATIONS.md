@@ -1,9 +1,9 @@
 # Hosted operations and alert qualification
 
-This is implemented locally, not deployed or monitored yet. The complete
-deployment builder emits a gateway `OPERATIONS` Analytics Engine binding and a
-hashed `monitoring-candidate.json`. Its six alert queries are candidates for
-provider validation; none has an enabled destination or delivery receipt.
+Production operational monitoring is not deployed yet. The complete deployment
+builder emits a gateway `OPERATIONS` Analytics Engine binding and a hashed
+`monitoring-candidate.json`. Private ingestion, query preview and sample email
+delivery evidence appear below; no production alert destination is enabled.
 
 ## Data collected
 
@@ -85,8 +85,9 @@ Before public launch:
    construction, not remote query execution or sampling behavior.
 4. Configure an owner-approved operational destination and these thresholds in
    Custom Alerts. Read back the enabled settings and prove both alert and recovery
-   delivery. Never assume a configured query will notify anyone. No operational
-   email or webhook has been sent by this implementation.
+   delivery where supported. Never assume a configured query will notify anyone.
+   The private sample email does not qualify production alert triggering or return
+   to normal; verify those independently.
 5. Also configure provider billing/usage alerts and an independent public endpoint
    check. A Cloudflare-wide outage can affect both service and Cloudflare alerts.
    Provider alerts do not impose a spending cap. Keep private pause/restore and
@@ -119,3 +120,14 @@ delivery. No alert was created or message sent by these read-only checks.
 
 Receipts are `analytics-*.json` under `.cache/lifecycle-cleanup-4b3dc62/`.
 See the [trial result](../docs/reviews/2026-10-07-private-lifecycle-result.md).
+
+With separate owner approval, a temporary custom alert subsequently sent a sample
+email to `matt@instruktlabs.com`. The connected inbox confirmed delivery at
+13:41:56 UTC on October 7; the alert was then disabled and the pre-existing budget
+alert remained enabled. Receipt: `.cache/cloudflare-alert-delivery-receipt.json`.
+This proves sample delivery only, not automatic query triggering or recovery email.
+The current Custom Alerts documentation does not establish recovery-email behavior;
+verify product support and the return to normal separately before promising it.
+
+The next [private storage/recovery candidate](probe/OPERATIONS.md) retains the real
+gateway Cron and excludes all Container capabilities. It remains undeployed.
