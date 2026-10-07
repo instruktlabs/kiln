@@ -41,6 +41,10 @@ const LIMITS = {
 };
 const sha = (bytes) => createHash('sha256').update(bytes).digest('hex');
 
+export async function qualifyNestedEvaluator(ports) {
+  return qualifyRuntime(ports, false);
+}
+
 export async function captureCgroupSnapshot(readText) {
   const snapshot = {};
   for (const name of ['memory.current', 'memory.peak', 'memory.max', 'cpu.stat']) {
@@ -57,8 +61,14 @@ export async function captureCgroupSnapshot(readText) {
 
 /** Fixed qualification fixtures only. No caller-supplied source and no fallback evaluator. */
 export async function qualifyNativeRuntime(ports) {
+  return qualifyRuntime(ports, true);
+}
+
+async function qualifyRuntime(ports, includeSoftware) {
   const receipt = {
-    version: 'kiln.host-native-qualification.v1',
+    version: includeSoftware
+      ? 'kiln.host-native-qualification.v1'
+      : 'kiln.nested-evaluator-qualification.v1',
     status: 'running',
     checks: [],
     artifacts: [],
@@ -139,13 +149,15 @@ export async function qualifyNativeRuntime(ports) {
       rejects('OUTPUT_LIMIT_EXCEEDED', () => ports.render(BOX, { ...LIMITS, maxGlbBytes: 32 })),
     );
     await check('post-limit-recovery', async () => assert.equal(sha(await render()), sha(glb)));
-    receipt.software = await check('software-vulkan', async () => {
-      const result = await ports.software();
-      assert.equal(result.status, 'passed');
-      assert.equal(result.software, true);
-      assert(typeof result.rendererId === 'string' && result.rendererId.length < 256);
-      return { status: result.status, software: true, rendererId: result.rendererId };
-    });
+    if (includeSoftware) {
+      receipt.software = await check('software-vulkan', async () => {
+        const result = await ports.software();
+        assert.equal(result.status, 'passed');
+        assert.equal(result.software, true);
+        assert(typeof result.rendererId === 'string' && result.rendererId.length < 256);
+        return { status: result.status, software: true, rendererId: result.rendererId };
+      });
+    }
     receipt.status = 'passed';
   } catch (error) {
     const code = ports.readinessCode(error) ?? error?.code;

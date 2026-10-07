@@ -1,5 +1,9 @@
 import { expect, test } from 'bun:test';
-import { captureCgroupSnapshot, qualifyNativeRuntime } from './native-qualification.mjs';
+import {
+  captureCgroupSnapshot,
+  qualifyNativeRuntime,
+  qualifyNestedEvaluator,
+} from './native-qualification.mjs';
 
 test('cgroup evidence retains dotted kernel counters from the Linux preflight', async () => {
   const cpu =
@@ -132,6 +136,44 @@ test('successful qualification retains bounded artifacts and separate safety che
   expect(calls.every((item) => item.deadlineMs <= 30000 && item.maxResponseBytes <= 4194304)).toBe(
     true,
   );
+});
+
+test('VM evaluator qualification preserves every isolation and execution check without a renderer claim', async () => {
+  const { ports } = fixture();
+  ports.software = async () => {
+    throw new Error('Software rendering belongs to its own image test');
+  };
+  const result = await qualifyNestedEvaluator(ports);
+  expect(result.version).toBe('kiln.nested-evaluator-qualification.v1');
+  expect(result.status).toBe('passed');
+  expect(result.checks.map((item) => item.name)).toEqual([
+    'host',
+    'isolation',
+    'first-evaluation',
+    'repeat-evaluation',
+    'cpu-preview',
+    'deadline',
+    'cancellation',
+    'output-limit',
+    'post-limit-recovery',
+  ]);
+  expect(result.isolation.checks).toEqual(checks);
+  expect(result.artifacts.map((item) => item.name)).toEqual(['fixture.glb', 'cpu-preview.png']);
+  expect(result).not.toHaveProperty('software');
+});
+
+test('VM evaluator qualification cannot relabel unavailable isolation as success', async () => {
+  const { ports, calls } = fixture();
+  ports.ready = async () => {
+    throw { readinessCode: 'wrapper-launch' };
+  };
+  expect(await qualifyNestedEvaluator(ports)).toMatchObject({
+    version: 'kiln.nested-evaluator-qualification.v1',
+    status: 'failed',
+    failure: { phase: 'isolation', code: 'wrapper-launch' },
+    artifacts: [],
+  });
+  expect(calls).toHaveLength(0);
 });
 
 test('a deadline check that resolves instead of rejecting is a failure', async () => {

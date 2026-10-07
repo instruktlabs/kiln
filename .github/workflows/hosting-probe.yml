@@ -23,6 +23,124 @@ concurrency:
 # This conditional provider-neutral probe is separate from the required package
 # matrix. A successful Docker run would still require qualification on Cloudflare.
 jobs:
+  nested-evaluator:
+    name: Installed nested evaluator · unprivileged Linux VM
+    runs-on: ubuntu-22.04
+    timeout-minutes: 20
+    env:
+      KILN_RENDER: cpu
+      CANDIDATE_COMMIT: ${{ github.event.pull_request.head.sha || github.sha }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2
+        with:
+          bun-version: 1.4.2
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 22.23.3
+      - run: npm install --global npm@12.2.0
+      - run: bun install --frozen-lockfile
+      - run: bun run build:runtime
+
+      - name: Prepare exact archive and non-setuid Bubblewrap
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p .cache/nested-evaluator/context .cache/nested-evaluator/receipts
+          context="$PWD/.cache/nested-evaluator/context"
+          receipts="$PWD/.cache/nested-evaluator/receipts"
+          npm pack --ignore-scripts --pack-destination "$context"
+          set -- "$context"/*.tgz
+          test "$#" -eq 1 && test -f "$1"
+          mv "$1" "$context/candidate.tgz"
+          (cd "$context" && sha256sum candidate.tgz > candidate.sha256)
+          cp "$context/candidate.sha256" "$receipts/"
+          # Build v0.12.0 from its immutable upstream commit. Runner sudo is used
+          # only to install build prerequisites/binaries, never to run evaluation.
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends meson ninja-build libcap-dev libcap2-bin pkg-config
+          curl --fail --location --proto '=https' --tlsv1.2 \
+            https://codeload.github.com/containers/bubblewrap/tar.gz/2a76602a8c71f36c1527cf9fc3417d9149822e0c \
+            --output "$context/bubblewrap.tar.gz"
+          printf '%s  %s\n' d1383cdc691a335f531564c6d0a1e06165932a4bb9e62a42f952eb0286995431 \
+            "$context/bubblewrap.tar.gz" | sha256sum --check
+          mkdir "$context/bubblewrap"
+          tar -xzf "$context/bubblewrap.tar.gz" --strip-components=1 -C "$context/bubblewrap"
+          meson setup "$context/bubblewrap-build" "$context/bubblewrap" \
+            -Dman=disabled -Dtests=false -Dbash_completion=disabled -Dzsh_completion=disabled
+          meson compile -C "$context/bubblewrap-build"
+          test ! -e /usr/local/bin/kiln-probe-bwrap
+          test ! -e /usr/local/bin/kiln-probe-node
+          sudo install -m 0755 "$context/bubblewrap-build/bwrap" /usr/local/bin/kiln-probe-bwrap
+          sudo install -m 0755 "$(command -v node)" /usr/local/bin/kiln-probe-node
+          test ! -u /usr/local/bin/kiln-probe-bwrap
+          test ! -g /usr/local/bin/kiln-probe-bwrap
+          test -z "$(getcap /usr/local/bin/kiln-probe-bwrap /usr/local/bin/kiln-probe-node)"
+          /usr/local/bin/kiln-probe-bwrap --version > "$receipts/bwrap-version.txt"
+          /usr/local/bin/kiln-probe-node --version > "$receipts/node-version.txt"
+          sha256sum /usr/local/bin/kiln-probe-bwrap /usr/local/bin/kiln-probe-node > "$receipts/executables.sha256"
+          dpkg-query -W > "$receipts/os-packages.txt"
+          uname -a > "$receipts/kernel.txt"
+          # Do not change sysctl, AppArmor, seccomp, capabilities or runner policy.
+          node --input-type=module -e '
+            import {readFileSync, writeFileSync} from "node:fs";
+            const policy = {};
+            for (const path of ["/proc/sys/user/max_user_namespaces", "/proc/sys/kernel/unprivileged_userns_clone",
+                "/proc/sys/kernel/apparmor_restrict_unprivileged_userns"]) {
+              try { policy[path] = readFileSync(path, "utf8").slice(0, 4096); } catch { policy[path] = null; }
+            }
+            writeFileSync(".cache/nested-evaluator/receipts/provenance.json", JSON.stringify({
+              commit: process.env.CANDIDATE_COMMIT, runId: process.env.GITHUB_RUN_ID,
+              attempt: process.env.GITHUB_RUN_ATTEMPT, provider: "github-actions-ubuntu-22.04-vm",
+              uid: process.getuid(), policy, cloudflareQualified: false,
+              bubblewrapCommit: "2a76602a8c71f36c1527cf9fc3417d9149822e0c"
+            }, null, 2) + "\n");'
+
+      - name: Install archive outside the checkout and require the complete evaluator proof
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(id -u)" -ne 0
+          test ! -e /app
+          sudo mkdir /app
+          sudo chown "$(id -u):$(id -g)" /app
+          archive="$PWD/.cache/nested-evaluator/context/candidate.tgz"
+          receipts="$PWD/.cache/nested-evaluator/receipts"
+          (cd /app && npm init -y && npm install "$archive" --omit=dev --include=optional --ignore-scripts --no-audit --no-fund)
+          cp /app/package-lock.json "$receipts/package-lock.json"
+          # The fixed source fixture runs as the ordinary runner user. The engine
+          # itself creates the isolated namespace and strips the child environment.
+          set +e
+          timeout --signal=TERM --kill-after=15s 180s /usr/local/bin/kiln-probe-node \
+            scripts/hosting/run-native-qualification.mjs /app/node_modules/@instruktlabs/kiln \
+            "$receipts/isolation" "$archive" --isolation-only > "$receipts/probe.log" 2>&1
+          probe_exit=$?
+          set -e
+          printf '%s\n' "$probe_exit" > "$receipts/probe-exit.txt"
+          test "$probe_exit" -eq 0
+          node --input-type=module -e '
+            import assert from "node:assert/strict";import{readFileSync}from"node:fs";
+            const r=JSON.parse(readFileSync(".cache/nested-evaluator/receipts/isolation/receipt.json"));
+            assert.equal(r.version,"kiln.nested-evaluator-qualification.v1");
+            assert.equal(r.status,"passed");assert.equal(r.checks.length,9);
+            assert.equal(r.isolation.checks.length,10);assert.equal(r.artifacts.length,2);
+            assert(!r.software);assert(r.uid>0);'
+
+      - name: Retain VM evaluator evidence, including failed prerequisites
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: nested-evaluator-preflight
+          path: |
+            .cache/nested-evaluator/receipts/
+            .cache/nested-evaluator/context/candidate.tgz
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 14
+
   image-preflight:
     name: Linux image isolation and software rendering
     runs-on: ubuntu-24.04

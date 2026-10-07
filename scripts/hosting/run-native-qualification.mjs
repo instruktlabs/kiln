@@ -7,13 +7,21 @@ import { mkdir, readFile, realpath, writeFile } from 'node:fs/promises';
 import { createRequire } from 'node:module';
 import { join, resolve, sep } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
-import { captureCgroupSnapshot, qualifyNativeRuntime } from './native-qualification.mjs';
+import {
+  captureCgroupSnapshot,
+  qualifyNativeRuntime,
+  qualifyNestedEvaluator,
+} from './native-qualification.mjs';
 
-const [installationArg, outputArg, archiveArg] = process.argv.slice(2);
+const [installationArg, outputArg, archiveArg, mode] = process.argv.slice(2);
 assert(
-  installationArg && outputArg && archiveArg && process.argv.length === 5,
-  'Usage: run-native-qualification.mjs INSTALLED_PACKAGE NEW_OUTPUT_DIRECTORY EXACT_ARCHIVE',
+  installationArg &&
+    outputArg &&
+    archiveArg &&
+    (process.argv.length === 5 || (process.argv.length === 6 && mode === '--isolation-only')),
+  'Usage: run-native-qualification.mjs INSTALLED_PACKAGE NEW_OUTPUT_DIRECTORY EXACT_ARCHIVE [--isolation-only]',
 );
+const isolationOnly = mode === '--isolation-only';
 const installation = await realpath(resolve(installationArg));
 const output = resolve(outputArg);
 const parent = await realpath(resolve(output, '..'));
@@ -52,11 +60,14 @@ try {
   );
   const module = (path) => import(pathToFileURL(join(installation, path)).href);
   const evaluator = await module('lib/evaluator/index.js');
-  const host = { bwrapPath: '/usr/bin/bwrap' };
+  const host = isolationOnly
+    ? { bwrapPath: '/usr/local/bin/kiln-probe-bwrap', nodePath: process.execPath }
+    : { bwrapPath: '/usr/bin/bwrap' };
   const require = createRequire(pathToFileURL(join(installation, 'package.json')));
   const { PNG } = require('pngjs');
   record.cgroupBefore = await cgroupSnapshot();
-  const result = await qualifyNativeRuntime({
+  const qualify = isolationOnly ? qualifyNestedEvaluator : qualifyNativeRuntime;
+  const result = await qualify({
     platform: process.platform,
     uid: record.uid,
     ready: () => evaluator.assertIsolatedEvaluatorReady(host),
@@ -109,7 +120,9 @@ try {
   Object.assign(record, result);
 } catch {
   Object.assign(record, {
-    version: 'kiln.host-native-qualification.v1',
+    version: isolationOnly
+      ? 'kiln.nested-evaluator-qualification.v1'
+      : 'kiln.host-native-qualification.v1',
     status: 'failed',
     checks: [],
     artifacts: [],

@@ -26,7 +26,8 @@ preflight, use an explicitly named fresh container, `--network none`, a memory
 limit, a CPU limit, and a PID limit. Copy `/tmp/qualification` out after exit and
 inspect its receipt before removing that specific probe container. Do not add
 privileged mode, host namespaces, extra capabilities or a looser seccomp profile
-to force a pass. The current Docker daemon is unavailable on the development PC.
+to force a pass. Check the current daemon state before a local run; earlier
+unavailable-daemon records do not describe its present state.
 The separate `Native hosting preflight` GitHub workflow builds this six-file
 context on Linux, records the exact archive/image/dependency identities, and runs
 with no network or host mounts, one CPU, 6 GiB memory, 256 PIDs, no capabilities
@@ -34,6 +35,16 @@ and no new privileges. It retains unsuccessful receipts and keeps the workflow
 failed when qualification fails. Its independently executed trusted renderer
 fixture can diagnose native dependencies after an isolation failure; it never
 qualifies untrusted evaluation. CI evidence does not establish Cloudflare support.
+
+An additional `Installed nested evaluator` job tests the archive on an
+unprivileged Ubuntu 22.04 VM, with a source-pinned non-setuid Bubblewrap build and
+no changes to host security policy. Its explicit `--isolation-only` mode emits a
+different receipt, `kiln.nested-evaluator-qualification.v1`: all ten readiness
+invariants and nine host/evaluation/CPU/limit checks must pass. It uses dedicated
+`/usr/local/bin/kiln-probe-bwrap` and `kiln-probe-node` binaries, records their
+hashes and installs the archive at `/app` outside the source checkout. This mode
+does not test software rendering or qualify Cloudflare. The original Docker job
+is retained unchanged while the additional VM evidence is being established.
 
 The initial Bookworm image built but Mesa 22.3 failed Dawn's required Vulkan
 features. The pinned Trixie replacement passes the six-image software fixture.

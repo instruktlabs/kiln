@@ -103,7 +103,11 @@ an evidenced check replacement before final readiness; it is not the result of
 the private Cloudflare fresh-VM tests. Do not hide it by weakening isolation.
 The [preflight alignment review](2026-10-07-native-preflight-alignment.md)
 records the exact downloaded failure and distinguishes the nested SDK adapter
-from production's explicit fresh-VM route. No workflow was changed or gate waived.
+from production's explicit fresh-VM route. A subsequent additive VM test preserves
+all evaluator checks and leaves the Docker job unchanged. Local validation passes
+3,348 tests with two platform-specific skips; its actual VM evidence is pending.
+No gate is waived. Recovery commit `88ebe58` separately passed hosted CI on Linux
+and Windows; this does not satisfy the unfinished provider restore gate.
 
 No immediate authentication is required for the local implementation. Later
 provider transitions and final publication/deployment actions will be surfaced

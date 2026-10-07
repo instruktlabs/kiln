@@ -81,3 +81,27 @@ documents a Firecracker microVM with a separate kernel/network per instance and
 the [Durable Object Container lifecycle](https://developers.cloudflare.com/containers/concepts/architecture/).
 Those platform statements inform the architecture; actual deployment receipts
 are still required to qualify Kiln's use of it.
+
+## Additive VM qualification candidate
+
+The follow-up keeps the existing Docker job unchanged and adds an installed-package
+evaluator job on an ordinary Ubuntu 22.04 GitHub VM. It compiles Bubblewrap 0.12.0
+from upstream commit `2a76602a8c71f36c1527cf9fc3417d9149822e0c`, verifies the source
+archive SHA-256, and installs dedicated non-setuid, capability-free executables.
+Evaluation runs as the unprivileged runner user. No sysctl, AppArmor, seccomp or
+capability restriction is changed. This job is a candidate until CI provides an
+actual passing receipt; merely choosing the VM does not establish compatibility.
+
+`--isolation-only` selects the separate
+`kiln.nested-evaluator-qualification.v1` receipt. It requires all ten readiness
+invariants, repeatable evaluation, a nonblank CPU preview, deadline/cancellation/
+output limits and successful execution after those limits. It makes no software
+renderer claim. The unchanged Docker job continues testing that renderer and
+continues to fail on unavailable nested namespaces. This addition does not
+replace or waive either the old check or actual Cloudflare isolation qualification.
+
+Focused tests first failed for the missing separate qualification result, then
+passed after implementation. The same shared evaluator checks serve both modes;
+the original combined probe still requires its software-renderer result.
+Local validation passes 3,348 tests with two platform-specific skips, typecheck,
+repository lint, YAML parsing and Bash syntax. Actual VM qualification awaits CI.
