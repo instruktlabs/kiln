@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { OutputWorkerSchema, convertToWranglerConfig } from '@cloudflare/config';
-import { deploymentConfig } from '../scripts/deployment-config.mjs';
+import { deploymentConfig, workerOutputPath } from '../scripts/deployment-config.mjs';
 
 /** Private storage/recovery qualification. No container binding or native image
  * is deployed, so this topology cannot spend a VM-start allowance. */
@@ -46,7 +46,7 @@ export function operationsConfig(manifest) {
   for(const [role,worker] of Object.entries(c.workers)) {
     c.workers[role] = OutputWorkerSchema.parse(worker);
     const config = convertToWranglerConfig({accountId:manifest.account,
-      worker:{...worker,entrypoint:`./.cloudflare/output/v0/workers/${role}/bundle/worker.mjs`},containers:[]});
+      worker:{...worker,entrypoint:`./${workerOutputPath(role)}/bundle/worker.mjs`},containers:[]});
     for(const binding of config.durable_objects?.bindings ?? [])
       if(binding.script_name===worker.name) delete binding.script_name;
     config.routes=[];

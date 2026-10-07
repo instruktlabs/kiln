@@ -35,7 +35,7 @@ test('maintenance preparation emits only the gateway, preserving recovery bindin
     assert(!receipt.workers[0].inputs.some((p) => /(?:^|\/)(test|probe)\//.test(p)));
     assert(!receipt.files.some((f) => /\/containers\/|^migrations\//.test(f.path)));
     const worker = JSON.parse(
-      await readFile(resolve(output, '.cloudflare/output/v0/workers/gateway/worker.config.json')),
+      await readFile(resolve(output, '.cloudflare/output/v0/workers/default/worker.config.json')),
     );
     assert.deepEqual(worker, base.workers.gateway);
     const wrangler = JSON.parse(await readFile(resolve(output, 'gateway.wrangler.json')));

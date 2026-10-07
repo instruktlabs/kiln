@@ -44,6 +44,13 @@ expected image bytes; verify those separately before deployment.
 
 Outputs include Cloudflare Build Output plus six equivalent `*.wrangler.json`
 files and `deployment-receipt.json`. Both use pinned `@cloudflare/config@0.23.0`.
+The gateway occupies `workers/default` as required by the Build Output reader;
+other directory names match their receipt roles. This does not rename deployed
+Workers. Tests load every topology with the pinned reader used by `cf`, not only
+the individual JSON schemas. From a prepared candidate directory,
+`cf workers versions create --prebuilt --dry-run` checks the default gateway
+without uploading a version. Selecting another Worker does not remove the
+format's requirement for a default entry.
 Its API is currently unstable, so changes require renewed validation. The Wrangler
 conversion corrects only local DO self-bindings; cross-Worker bindings retain their
 explicit target. Use a tested CLI and `--no-bundle` to deploy the reviewed bytes.

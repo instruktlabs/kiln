@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { OutputWorkerSchema, convertToWranglerConfig } from '@cloudflare/config';
-import { deploymentConfig } from '../scripts/deployment-config.mjs';
+import { deploymentConfig, workerOutputPath } from '../scripts/deployment-config.mjs';
 
 /** Offline diagnostic topology, derived from production with no public route. */
 export function lifecycleConfig(manifest) {
@@ -56,7 +56,7 @@ export function lifecycleConfig(manifest) {
     c.workers[role] = OutputWorkerSchema.parse(worker);
     const config = convertToWranglerConfig({
       accountId: manifest.account,
-      worker: { ...worker, entrypoint: `./.cloudflare/output/v0/workers/${role}/bundle/worker.mjs` },
+      worker: { ...worker, entrypoint: `./${workerOutputPath(role)}/bundle/worker.mjs` },
       containers: c.containers[role] ? [c.containers[role]] : [],
     });
     for (const binding of config.durable_objects?.bindings ?? [])

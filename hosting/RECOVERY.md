@@ -55,6 +55,11 @@ does not create resources, mutate data or deploy code. The receipt's
 it does not certify shutdown of existing jobs or remove the compute binding used
 by scheduled deletion recovery.
 
+The maintenance build has one default Worker entry for `cf`. A local
+`cf workers versions create --prebuilt --dry-run` accepts the corrected output.
+It does not verify existing resource IDs, secrets, active versions or permissions,
+and is not an authorization to upload or activate that version.
+
 Like ordinary preparation, the configuration has empty routes and disabled
 workers.dev/preview URLs. **Do not deploy that configuration over a live gateway
 as an incident command.** Prepare a code-only version operation from the actual

@@ -66,3 +66,35 @@ preservation, saved-byte integrity and cleanup need an independently prepared
 bounded trial. The pending operations trial tests retention and Cron recovery,
 not these additional operations. See the runbook's official sources and the
 [deployment gates](../../hosting/DEPLOYMENT.md#ordered-deployment-and-launch-gates).
+
+## Cloudflare CLI build-output qualification
+
+All 25 CI checks passed on `663ff4a`. A subsequent offline `cf workers versions
+create --prebuilt --dry-run` exposed a preparation defect missed by the separate
+Wrangler check: the Build Output Specification requires `workers/default`, while
+the multi-Worker preparer had written only a `workers/gateway` entry. Selecting
+the gateway with the CLI's worker option does not bypass that reader requirement.
+
+The gateway now occupies the default directory in every generated topology.
+Deployed Worker names, receipt roles, bundle content, resource bindings, quotas
+and deployment order are unchanged. A shared path helper keeps Wrangler's main
+path aligned. Existing frozen artifacts and the pending trial at `37c962e` are
+not rewritten or replaced by this fix.
+
+Four tests failed on the original output through the actual Cloudflare
+`readBuildOutput` implementation, then passed after the change. The reader is
+pinned as a private development dependency at `@cloudflare/build-output-utils`
+0.8.5, using the same config 0.23.0. It is not an engine or hosted runtime
+dependency. All 20 focused tests, all 450 hosted tests, three typechecks,
+fourteen builds and root lint pass. Installation reports no known vulnerabilities.
+
+The corrected maintenance candidate also passed the real `cf` version-upload
+dry-run, with no upload or deployment. Its synthetic D1/KV placeholders do not
+describe provisioned resources. It still binds the production tenant class, so
+it must not be deployed over the distinct private operations topology. That
+working-tree candidate is dry-run evidence only; exact clean-source preparation
+and fresh CI remain required for a later deployment candidate.
+
+Logs: `.cache/build-output-{red,green,full-tests,typecheck,build,lint}.log`,
+`.cache/maintenance-cf-version-dry-run.log` (the original failure), and
+`.cache/maintenance-cf-version-fixed-dry-run.log` (the corrected pass).

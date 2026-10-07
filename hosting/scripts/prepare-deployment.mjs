@@ -9,7 +9,7 @@ import { fileURLToPath } from 'node:url';
 import { parseArgs, promisify } from 'node:util';
 import { build } from 'esbuild';
 import { assertProductionBoundary } from './build-boundary.mjs';
-import { deploymentConfig } from './deployment-config.mjs';
+import { deploymentConfig, workerOutputPath } from './deployment-config.mjs';
 import { maintenanceConfig } from './maintenance-config.mjs';
 import { lifecycleConfig } from '../probe/lifecycle-config.mjs';
 import { assertLifecycleBoundary } from '../probe/lifecycle-build-boundary.mjs';
@@ -158,9 +158,9 @@ async function main() {
     for (const name of ['default', ...Object.keys(worker.exports)])
       assert(built.exports.includes(name));
     assert(built.imports.every((item) => item.external && item.path === 'cloudflare:workers'));
-    const bundle = `.cloudflare/output/v0/workers/${role}/bundle/worker.mjs`;
+    const bundle = `${workerOutputPath(role)}/bundle/worker.mjs`;
     await put(bundle, bytes);
-    await json(`.cloudflare/output/v0/workers/${role}/worker.config.json`, worker);
+    await json(`${workerOutputPath(role)}/worker.config.json`, worker);
     await json(`${role}.wrangler.json`, configuration.wrangler[role]);
     receipt.workers.push({
       role,

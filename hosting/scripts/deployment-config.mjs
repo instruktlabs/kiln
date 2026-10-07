@@ -5,6 +5,11 @@ import {
   convertToWranglerConfig,
 } from '@cloudflare/config';
 
+// The Build Output Specification requires one default Worker directory. Keep
+// receipt roles and deployed names unchanged; the gateway owns that entry.
+export const workerOutputPath = (role) =>
+  `.cloudflare/output/v0/workers/${role === 'gateway' ? 'default' : role}`;
+
 const fail = () => {
   throw new Error('Invalid deployment manifest');
 };
@@ -292,7 +297,7 @@ export function deploymentConfig(m) {
       accountId: m.account,
       worker: {
         ...worker,
-        entrypoint: `./.cloudflare/output/v0/workers/${role}/bundle/worker.mjs`,
+        entrypoint: `./${workerOutputPath(role)}/bundle/worker.mjs`,
       },
       containers: containers[role] ? [containers[role]] : [],
     });
