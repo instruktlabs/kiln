@@ -136,6 +136,11 @@ Do not restore pre-deletion code or a backup that reactivates retired accounts;
 pause access and reconcile first. Existing private data must never be silently
 replaced with fresh namespaces to obtain a passing check.
 
+The next private combined candidate is prepared with `--private-lifecycle`; its
+fixed eight-Worker topology, bounds and cleanup procedure are documented in
+[NATIVE_LIFECYCLE.md](probe/NATIVE_LIFECYCLE.md). That mode has no provider secrets
+or public routes and cannot serve as a production launch configuration.
+
 Current references:
 [Cloudflare configuration](https://developers.cloudflare.com/workers/wrangler/configuration/),
 [Cron Triggers](https://developers.cloudflare.com/workers/configuration/cron-triggers/),

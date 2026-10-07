@@ -10,18 +10,25 @@ import { parseArgs, promisify } from 'node:util';
 import { build } from 'esbuild';
 import { assertProductionBoundary } from './build-boundary.mjs';
 import { deploymentConfig } from './deployment-config.mjs';
+import { lifecycleConfig } from '../probe/lifecycle-config.mjs';
+import { assertLifecycleBoundary } from '../probe/lifecycle-build-boundary.mjs';
 
 const root = fileURLToPath(new URL('../../', import.meta.url));
 const hash = (bytes) => createHash('sha256').update(bytes).digest('hex');
 async function main() {
   const { values } = parseArgs({
-    options: { manifest: { type: 'string' }, output: { type: 'string' } },
+    options: {
+      manifest: { type: 'string' },
+      output: { type: 'string' },
+      'private-lifecycle': { type: 'boolean', default: false },
+    },
   });
   assert(values.manifest && values.output);
   const raw = await readFile(values.manifest);
   assert(raw.length <= 16384);
   const manifest = JSON.parse(raw);
-  const configuration = deploymentConfig(manifest);
+  const privateLifecycle = values['private-lifecycle'];
+  const configuration = privateLifecycle ? lifecycleConfig(manifest) : deploymentConfig(manifest);
   const cache = await realpath(resolve(root, '.cache'));
   const output = resolve(values.output),
     parent = await realpath(dirname(output));
@@ -44,6 +51,7 @@ async function main() {
   const sourceDirty = Boolean(await git('status', '--porcelain'));
   const receipt = {
     schemaVersion: 1,
+    mode: privateLifecycle ? 'private-lifecycle' : 'production-candidate',
     sourceCommit,
     sourceDirty,
     configSchema: '0.23.0',
@@ -59,16 +67,26 @@ async function main() {
     workers: [],
     migrations: [],
     files,
-    launchGates: [
-      'exact-source CI',
-      'resource ownership',
-      'image identity',
-      'provider secrets',
-      'public ingress protection',
-      'sanitized operational monitoring',
-      'live OAuth and lifecycle qualification',
-      'owner deployment approval',
-    ],
+    launchGates: privateLifecycle
+      ? [
+          'exact-source CI',
+          'disposable resource ownership',
+          'immutable image identity',
+          'verified dependency-order deployment',
+          'no-public-route readback',
+          'bounded operator and verified cleanup',
+          'owner private-trial approval',
+        ]
+      : [
+          'exact-source CI',
+          'resource ownership',
+          'image identity',
+          'provider secrets',
+          'public ingress protection',
+          'sanitized operational monitoring',
+          'live OAuth and lifecycle qualification',
+          'owner deployment approval',
+        ],
   };
   const schemaPackage = JSON.parse(
     await readFile(
@@ -93,7 +111,8 @@ async function main() {
     });
     const bytes = result.outputFiles[0].contents;
     const inputs = Object.keys(result.metafile.inputs);
-    assertProductionBoundary(entry, inputs);
+    if (privateLifecycle) assertLifecycleBoundary(role, inputs);
+    else assertProductionBoundary(entry, inputs);
     const built = Object.values(result.metafile.outputs)[0];
     const worker = configuration.workers[role];
     for (const name of ['default', ...Object.keys(worker.exports)])

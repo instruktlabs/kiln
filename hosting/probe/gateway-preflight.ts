@@ -3,6 +3,7 @@ import { D1BrowserSessions } from '../src/browser-sessions';
 import { D1Connections } from '../src/connections';
 import { tenantForAccount } from '../src/tenant-identity';
 import { readBounded } from '../src/http';
+import { qualificationControl } from './qualification-rpc';
 import {
   assertQualification,
   privateJson,
@@ -81,8 +82,10 @@ export async function runGatewayPreflight(
     });
     await step('pause-native', async () => {
       touchedCompute = true;
-      await env.CONTROL.setPaused(true);
-      const status = await env.COMPUTE.health();
+      await qualificationControl(env.CONTROL.setPaused(true));
+      const status = await qualificationControl<Awaited<ReturnType<KilnCompute['health']>>>(
+        env.COMPUTE.health(),
+      );
       check(status.paused && status.activeRequests === 0 && status.pendingCleanup === 0);
       record.computePaused = true;
     });
@@ -259,8 +262,10 @@ export async function runGatewayPreflight(
   } finally {
     if (touchedCompute) {
       try {
-        await env.CONTROL.setPaused(true);
-        const status = await env.COMPUTE.health();
+        await qualificationControl(env.CONTROL.setPaused(true));
+        const status = await qualificationControl<Awaited<ReturnType<KilnCompute['health']>>>(
+          env.COMPUTE.health(),
+        );
         record.computePaused =
           status.paused && status.activeRequests === 0 && status.pendingCleanup === 0;
       } catch {

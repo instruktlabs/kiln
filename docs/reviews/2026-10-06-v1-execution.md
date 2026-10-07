@@ -3035,3 +3035,55 @@ admission services to diagnostic budget wrappers, the private operator, exact
 image/config verification and full cleanup is next; only then is another paid
 trial ready for approval. Live OAuth, account actions/deletion, scheduled recovery,
 retention, load/costs, alerts and actual public-client verification remain open.
+
+## Combined private operator and deployment candidate
+
+The native lifecycle and gateway preflight are now connected through a fixed private
+operator. It creates fresh grants for the same two synthetic accounts only after
+the preflight passes, opens the separate durable allowance, then sends every native
+request and browser download through the production gateway. Three wrappers add
+only startup claims around the production native jobs; gateway, tenant and admission
+implementations stay unchanged. The combined local test passes gateway checks,
+stops at the first missing VM, seals admission and retains its failure receipt.
+It does not pretend to qualify successful cloud native execution.
+
+The private allowance has its own Worker to eliminate a circular deployment
+dependency. The resulting eight roles have a tested order in which every dependency
+precedes its caller. The gateway omits provider secrets and Cron in this private
+candidate. All eight disable public routes, workers.dev, preview URLs and persisted
+logs/traces. The generic production preparation path retains its no-probe guard.
+The new `--private-lifecycle` path validates fixed quotas/origin/names and hashes
+eight separate bundles/configurations plus nine migrations. Unexpected helpers and
+native identity-provider dependencies cause rejection; output cannot overwrite an
+existing candidate.
+
+Operator controls include a 15-minute terminal alarm, one-minute recovery when
+cleanup remains unknown or non-idle, and status with explicit alarm/stop state.
+The startup ceiling remains 14/4/4, 22 total, with no refunds. Local tests cover
+concurrent invocation, failed preflight, stop before identity creation, body
+cancellation at all three closed native wrappers, eviction/replay and uncertain
+cleanup retaining its alarm. These do not prove remote alarm delivery.
+
+An eviction test exposed retained RPC capabilities in the initial diagnostic
+operator. Explicit disposal of control-call promises/results and copying plain
+receipt values fixes it; the same eviction/replay assertion now passes. The Workers
+type configuration includes the standard disposable declarations used by this code.
+This follows [Cloudflare RPC lifetime guidance](https://developers.cloudflare.com/workers/runtime-apis/rpc/lifecycle/).
+The initial default HTTP service binding also incorrectly named the `default`
+entrypoint; omitting the named-entrypoint field now reaches the actual gateway as
+documented for [HTTP service bindings](https://developers.cloudflare.com/workers/runtime-apis/bindings/service-bindings/http/).
+
+All 394 hosted tests, three typechecks, thirteen production builds, root lint and
+redacted source/bundle scans pass. All eight generated Wrangler 4.147.0 configurations
+pass no-bundle dry runs using synthetic IDs. The fixture candidate and logs are in
+`.cache/lifecycle-preview-final-13af43d`; its source was intentionally dirty while
+preparing the change, and it is not an approved deployment artifact. All eighteen CI
+checks passed on preceding commit `13af43d`; this new source needs its own CI.
+
+No Cloudflare resources, image uploads, paid starts or provider credentials were
+created. In-app security notices remain the settled v1 choice; Google client
+creation remains pending owner confirmation. Next steps are a clean candidate,
+exact image verification, a fresh private observer, concrete resource/readback and
+cleanup qualification, then a sequenced trial allowance. Live OAuth/deletion,
+scheduled recovery, retention/load/costs/alerts, production publication and directory
+submissions remain incomplete. Root README/Troy/site refresh remains deferred.
