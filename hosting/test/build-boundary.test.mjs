@@ -4,6 +4,20 @@ import { fileURLToPath } from 'node:url';
 import { build } from 'esbuild';
 import { assertProductionBoundary } from '../scripts/build-boundary.mjs';
 
+test('private recovery inspection cannot enter a production bundle', async () => {
+  const result = await build({
+    entryPoints: [fileURLToPath(new URL('../src/recovery-artifact-audit.ts', import.meta.url))],
+    bundle: true,
+    write: false,
+    metafile: true,
+    format: 'esm',
+    platform: 'browser',
+  });
+  const inputs = Object.keys(result.metafile.inputs);
+  for (const entry of ['worker', 'maintenance-worker', 'tenant-worker', 'native-mcp'])
+    assert.throws(() => assertProductionBoundary(entry, inputs), /recovery operator/);
+});
+
 for (const module of [
   'github',
   'account-page',

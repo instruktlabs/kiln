@@ -139,7 +139,17 @@ allowlist of OS environment variables and empty npm configuration files, without
 provider credentials or model calls. An initial assertion expected the older
 two-field runtime pin; it now checks the full new pin against the installed
 initializer's adapter list. The same archive was used for the successful rerun.
-Exact committed-source CI and real client onboarding are still separate gates.
+Committed source `76c869aa7c8637b222b5bdf956fd1e70c3f9d83a` passed all twelve
+engine/package jobs in [CI run 37668542892](https://github.com/instruktlabs/kiln/actions/runs/37668542892).
+Its downloaded CI archive has SHA-256
+`98407508d8ec599189851aa0bd8b86313ac3abbd25e6337ac97f8510cc72215b`.
+All seven downloaded installation receipts independently verify against those
+bytes, including project adoption and shared storage; software Vulkan also
+passes against the same archive. The separate legacy Docker isolation preflight
+still fails. Four external first-use fixtures are prepared from this CI archive:
+new workspace and existing project in each client. Their owner MCP fixtures and
+baseline files pass validation, but no model conversations have run. These are
+test preparations, not completed onboarding evidence.
 Hosted typechecking, all 450 offline tests and the Worker build also pass. The
 version bump required refreshing the generated edge metadata and draft plugin
 version; their protocol/packaging checks caught that drift before qualification.

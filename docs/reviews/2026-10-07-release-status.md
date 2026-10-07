@@ -37,11 +37,22 @@ older statements within it are not the current execution status.
 - Independent setup review found a copied-OpenCode migration defect and a
   plugin-helper adapter restriction. Both have focused regressions and fixes in
   the `1.1.0-dev.1` follow-up. Full local tests, coverage and an installed Windows
-  archive pass; exact committed-source CI and real client onboarding remain.
+  archive pass. At `76c869a`, all twelve engine/package CI jobs pass and seven
+  downloaded installation receipts verify against the exact CI archive. Real
+  client onboarding remains outstanding; four isolated new/existing-project
+  fixtures are prepared, with no model calls made.
+  The exact plugin installs in isolated Claude/Codex profiles; Codex sees one
+  setup skill alongside the fixture's existing skill and MCP server. The
+  [bounded live onboarding plan](2026-10-07-local-onboarding-qualification.md)
+  awaits its separate model allowance and isolated Codex-profile sign-in.
   This development version does not replace the published stable package.
 - Hosted retention and scheduled deletion have a frozen private trial candidate.
   The maintenance gateway and recovery runbook have offline tests, including a
   state-preserving local transition, but need provider qualification.
+- A private recovery verification component now checks actual saved bytes against
+  current tenant metadata without storage writes. All 463 hosted tests, three
+  hosting typechecks and repository lint pass. It has no production route, backup
+  capture or restore implementation; full provider recovery remains a launch gate.
 - Public pages, terms, account controls and directory bundles are prepared
   candidates. They have not been approved as a public service or submitted listing.
 
@@ -86,10 +97,13 @@ trial uses four private Workers with temporary D1/KV/R2, no VMs, provider secret
 or public route, with a bounded run and identity-checked cleanup. Earlier paid
 trial allowances do not authorize it.
 
-The #156 implementation at `225d74a` has 25 passing checks and a separate failing legacy Linux
+The #156 implementation at `76c869a` has 25 passing checks and a separate failing legacy Linux
 Docker isolation preflight. That failure remains visible and needs resolution or
 an evidenced check replacement before final readiness; it is not the result of
 the private Cloudflare fresh-VM tests. Do not hide it by weakening isolation.
+The [preflight alignment review](2026-10-07-native-preflight-alignment.md)
+records the exact downloaded failure and distinguishes the nested SDK adapter
+from production's explicit fresh-VM route. No workflow was changed or gate waived.
 
 No immediate authentication is required for the local implementation. Later
 provider transitions and final publication/deployment actions will be surfaced

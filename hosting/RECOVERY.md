@@ -130,6 +130,36 @@ must be reviewed against the public privacy policy before implementation.
 
 ## Quarantined restore procedure and remaining gate
 
+### Private artifact integrity component
+
+`src/recovery-artifact-audit.ts` implements a read-only verification component for
+a future private operator. It is not registered in a production Worker; the build
+boundary rejects its dependency graph from production bundles. There is no public
+recovery endpoint or deployable operator wired to this component yet.
+
+For one explicitly selected artifact, it requires the current storage format,
+ready metadata and a consistent saved-group pin, rejects retirement or unresolved
+writes, and derives the R2 key from the current tenant identity. It verifies the
+returned key, size and checksum, then streams and hashes the actual bytes within
+a deadline. Metadata is rechecked after asynchronous reads. Missing, mismatched,
+changed and unavailable results remain distinct; only a verified result includes
+its byte count and digest. A timed-out unresolved R2 read retains admission until
+the underlying operation settles, and late or overflowing bodies are cancelled.
+
+The local fixture uses real Miniflare SQLite/R2 and faults the provider boundary.
+It verifies unchanged SQL, alarms and object identity, false checksum metadata,
+cross-tenant key rejection, retirement races, incomplete writes, dangling saved
+indexes, truncated/overflowing streams and stalled reads. All 463 hosted tests,
+three hosting typechecks and repository lint pass with this component.
+
+This proves neither a complete saved-group inventory nor a tenant-wide snapshot.
+The caller still needs current account authorization, quiescence and the security
+reconciliation below. The component captures no backup, restores no bytes or
+metadata, changes no retention policy, and does not satisfy the provider restore
+gate. Its fixtures have not run on Cloudflare.
+
+### Procedure still to qualify
+
 This is a procedure to qualify, not an implemented one-command restore:
 
 1. Close HTTP and pause compute as above. A data restore additionally requires
