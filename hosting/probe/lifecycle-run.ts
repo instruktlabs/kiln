@@ -294,17 +294,16 @@ export async function runLifecycleOnce(
             switch (name) {
               case 'material-create':
                 params = {
-                  name: 'kiln_material',
-                  arguments: { action: 'create-procedural', draft: materialDraft },
+                  name: 'kiln_material_create_procedural',
+                  arguments: { draft: materialDraft },
                 };
                 break;
               case 'material-get':
               case 'foreign-material':
               case 'imported-material':
                 params = {
-                  name: 'kiln_material',
+                  name: 'kiln_material_get',
                   arguments: {
-                    action: 'get',
                     materialId: 'qualification-stone',
                     revisionId: materialRevision,
                   },
@@ -334,7 +333,7 @@ export async function runLifecycleOnce(
                 };
                 break;
               case 'restore':
-                params = { name: 'kiln_assets', arguments: { ...selection, action: 'restore' } };
+                params = { name: 'kiln_assets_restore', arguments: selection };
                 break;
               case 'export':
                 params = { name: 'kiln_export', arguments: selection };

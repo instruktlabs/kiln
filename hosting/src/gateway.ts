@@ -2,7 +2,7 @@ import { insufficientScope, type OAuthResourceContext } from '@cloudflare/worker
 import { boundedRequest, HttpFailure } from './http';
 import { tenantForAccount } from './tenant-identity';
 import type { KilnCompute } from './admission-worker';
-import { tryEdgeMcp } from './edge-mcp';
+import { routeEdgeMcp } from './edge-mcp';
 import { limitAccount, type RequestLimitEnv } from './request-limits';
 
 export interface TenantEnv {
@@ -63,10 +63,10 @@ export async function forwardTenant(
     redirect: 'manual',
   });
   if (isMcp) {
-    const edge = await tryEdgeMcp(internal);
-    if (edge) return edge;
+    const edge = await routeEdgeMcp(internal);
+    if (edge instanceof Response) return edge;
     if (!env.NATIVE_COMPUTE) throw new HttpFailure(503, 'Native compute is not configured');
-    return env.NATIVE_COMPUTE.dispatch(tenant, internal);
+    return env.NATIVE_COMPUTE.dispatch(tenant, edge);
   }
   return env.TENANTS.getByName(tenant).fetch(internal);
 }

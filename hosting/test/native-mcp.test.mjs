@@ -21,6 +21,7 @@ let runtime;
 let namespace;
 let runIntegratedOnce, integratedSource;
 let runLifecycleOnce, lifecycleCases, lifecycleBudget;
+let routeEdgeMcp;
 const handlers = [];
 before(async () => {
   const outfile = fileURLToPath(
@@ -116,6 +117,15 @@ before(async () => {
     platform: 'node',
   });
   ({ runLifecycleOnce, lifecycleCases, lifecycleBudget } = await import(lifecycle));
+  const edge = new URL('../../.cache/hosted-mcp-test/edge.mjs', import.meta.url);
+  await build({
+    entryPoints: [fileURLToPath(new URL('../src/edge-mcp.ts', import.meta.url))],
+    outfile: fileURLToPath(edge),
+    bundle: true,
+    format: 'esm',
+    platform: 'node',
+  });
+  ({ routeEdgeMcp } = await import(edge));
 });
 after(async () => {
   for (const handler of handlers) await handler.close();
@@ -619,6 +629,8 @@ test('private lifecycle trial qualifies fresh hosts, editable materials, exact d
     mcp: async (account, request) => {
       assert.equal(request.headers.get('authorization'), null);
       assert.equal(request.headers.get('cookie'), null);
+      const routed = await routeEdgeMcp(request);
+      if (routed instanceof Response) return routed;
       if (++calls > lifecycleBudget.coordinator) return new Response('quota', { status: 429 });
       const handler = host(
         ownerName(account),
@@ -640,7 +652,7 @@ test('private lifecycle trial qualifies fresh hosts, editable materials, exact d
           };
         },
       );
-      const response = await handler.fetch(new Request('http://kiln-native.internal/mcp', request));
+      const response = await handler.fetch(new Request('http://kiln-native.internal/mcp', routed));
       const bytes = await response.arrayBuffer();
       await handler.close();
       return new Response(bytes, { status: response.status, headers: response.headers });

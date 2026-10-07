@@ -6,6 +6,7 @@ import { build } from 'esbuild';
 import { Miniflare, convertV4MiniflareOptions } from 'miniflare';
 import { generateEdgeManifest } from '../scripts/edge-manifest.mjs';
 import { createKilnToolHost } from '../../dist/mcp-engine.mjs';
+import { createPublicTools, hostedInstructions } from '../src/public-tools.ts';
 
 let runtime, manifest;
 before(async () => {
@@ -15,8 +16,8 @@ before(async () => {
   const bundle = await build({
     stdin: {
       contents: `
-    import {tryEdgeMcp} from './src/edge-mcp';
-    export default {async fetch(request){return (await tryEdgeMcp(request))??new Response('compute',{status:599});}};
+    import {routeEdgeMcp} from './src/edge-mcp';
+    export default {async fetch(request){const routed=await routeEdgeMcp(request);return routed instanceof Response?routed:new Response('compute',{status:599});}};
   `,
       resolveDir: fileURLToPath(new URL('../', import.meta.url)),
       loader: 'ts',
@@ -84,7 +85,7 @@ test('committed metadata is regenerated from the actual native engine protocol',
   assert.deepEqual(manifest, await generateEdgeManifest());
   assert.equal(manifest.tools.length, 15);
 });
-test('modern metadata and legacy initialization require no compute and preserve the engine definitions', async () => {
+test('modern metadata and legacy initialization expose the derived hosted contract without compute', async () => {
   for (const [method, key] of [
     ['tools/list', 'tools'],
     ['resources/list', 'resources'],
@@ -92,7 +93,10 @@ test('modern metadata and legacy initialization require no compute and preserve 
   ]) {
     const r = await request(method);
     assert.equal(r.status, 200);
-    assert.deepEqual((await message(r)).result[key], manifest[key]);
+    assert.deepEqual(
+      (await message(r)).result[key],
+      key === 'tools' ? createPublicTools(manifest.tools).tools : manifest[key],
+    );
   }
   const discover = await message(await request('server/discover'));
   assert.deepEqual(
@@ -112,7 +116,7 @@ test('modern metadata and legacy initialization require no compute and preserve 
   const result = (await message(legacy)).result;
   assert.deepEqual(result.serverInfo, manifest.serverInfo);
   assert.deepEqual(result.capabilities, manifest.capabilities);
-  assert.equal(result.instructions, manifest.instructions);
+  assert.equal(result.instructions, hostedInstructions);
 });
 test('helper discovery uses the engine service and preserves exact compact results and errors', async () => {
   const native = createKilnToolHost();
@@ -121,9 +125,7 @@ test('helper discovery uses the engine service and preserves exact compact resul
     { query: 'wheel spokes' },
     { ids: ['createPart'] },
     { ids: ['shape:capture'] },
-    { category: 'prop' },
-    { query: 'x', capabilities: true },
-    { 'C:/Users/private/input': true },
+    { query: 1 },
   ]) {
     const r = await request('tools/call', { name: 'kiln_discover', arguments: args });
     assert.equal(r.status, 200);
@@ -133,6 +135,20 @@ test('helper discovery uses the engine service and preserves exact compact resul
     });
     assert.deepEqual(actual.content, expected.content);
     assert.equal(actual.isError, expected.isError);
+  }
+});
+
+test('hosted discovery rejects local-only aliases and hostile keys without echoing private paths', async () => {
+  for (const args of [
+    { category: 'prop' },
+    { 'C:/Users/private/input': true },
+    { capabilities: true },
+  ]) {
+    const result = await message(
+      await request('tools/call', { name: 'kiln_discover', arguments: args }),
+    );
+    assert.equal(result.error.code, -32602);
+    assert.doesNotMatch(JSON.stringify(result), /C:\/Users|private\/input/);
   }
 });
 test('source operations, private resource reads and live host capabilities still require the admitted native path', async () => {
@@ -147,8 +163,7 @@ test('source operations, private resource reads and live host capabilities still
   );
   assert.equal((await request('resources/read', { uri: 'kiln://assets/private' })).status, 599);
   assert.equal(
-    (await request('tools/call', { name: 'kiln_discover', arguments: { capabilities: true } }))
-      .status,
+    (await request('tools/call', { name: 'kiln_capabilities', arguments: {} })).status,
     599,
   );
 });

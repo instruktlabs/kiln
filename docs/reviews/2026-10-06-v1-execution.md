@@ -3185,3 +3185,23 @@ cover the actual HTML functions with synthetic data. See the
 Nothing was deployed or submitted; Google client approval, the next private trial,
 live sign-in/deletion, operational verification and public launch remain pending.
 The final README/Troy/site refresh remains deferred.
+
+## Hosted public operation mapping (October 7)
+
+All eighteen CI checks passed on `0b680d3`. A fresh official-document review found
+that directory preparation still needs terms, immediately usable review access and
+separately exposed hosted operations. The hosted adapter now derives 26 named
+operations from the pinned engine's 15-tool manifest. Input schemas stay owned by
+the registry; hidden action selectors and unrelated fields cannot reach native
+admission. Native jobs are conservatively annotated as writes, including reads
+that start stateful jobs. The published local package and tool contract are unchanged.
+
+The lifecycle fixture now traverses the actual public adapter before native MCP.
+Both initial regressions failed first; all 417 hosted tests, three typechecks,
+thirteen builds and root lint pass. Modern header/metadata translation, hidden-tool
+denial, hostile keys and registry drift have focused coverage. See
+[directory preflight](2026-10-07-directory-preflight.md) for the mapping, official
+sources, Claude source-archive measurements and remaining submission work.
+The previous frozen trial candidate must be refreshed before approval because the
+gateway and operator source changed. No cloud resource, credential, paid job or
+directory submission was created. Google client approval remains pending.
