@@ -1,0 +1,28 @@
+{
+  "account": "REPLACE_WITH_VERIFIED_ACCOUNT_ID",
+  "prefix": "kiln-qualification-v1",
+  "origin": "https://kiln.instruktlabs.com",
+  "database": {
+    "id": "REPLACE_WITH_VERIFIED_D1_ID",
+    "name": "kiln-qualification-v1-accounts"
+  },
+  "oauthKv": "REPLACE_WITH_VERIFIED_KV_ID",
+  "bucket": "kiln-qualification-v1-artifacts",
+  "images": {
+    "coordinator": "REPLACE_WITH_VERIFIED_ACCOUNT_REGISTRY_DIGEST",
+    "software": "REPLACE_WITH_VERIFIED_ACCOUNT_REGISTRY_DIGEST"
+  },
+  "compute": {
+    "maxConcurrent": 1,
+    "tenantPerMinute": 9,
+    "tenantPerDay": 9,
+    "globalPerDay": 9,
+    "globalPerMonth": 9,
+    "deadlineMs": 120000
+  },
+  "storage": {
+    "maxBytes": 67108864,
+    "maxObjects": 256,
+    "maxGroups": 64
+  }
+}

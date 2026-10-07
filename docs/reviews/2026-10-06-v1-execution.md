@@ -2780,3 +2780,48 @@ References checked:
 [D1 batch transactions](https://developers.cloudflare.com/d1/worker-api/d1-database/#batch),
 [Worker scheduled handler](https://developers.cloudflare.com/workers/runtime-apis/handlers/scheduled/),
 [KV consistency](https://developers.cloudflare.com/kv/concepts/how-kv-works/).
+
+## Complete hosted deployment preparation
+
+Added an offline candidate builder for the actual six production Workers: gateway,
+tenant storage, admission, native request, evaluation and rendering. It builds
+each entrypoint with its production dependency boundary, checks required exports,
+copies the numbered D1 migrations and hashes every configuration, bundle and
+migration. The input accepts only non-secret resource identifiers, pinned
+account-owned image digests and bounded numeric policies. Provider credential
+values are neither accepted nor copied; only the gateway declares the four
+required secret names. Output is fresh, local and never overwrites prior evidence.
+
+The prepared gateway has no public route, workers.dev endpoint or preview URL.
+Its every-minute deletion-recovery trigger is explicit but has not been deployed.
+Only the tenant Worker owns the R2 binding; only the gateway owns account D1 and
+OAuth KV. Gateway compute access uses `KilnCompute`, never its operator export.
+Cross-service DO bindings retain their target script, while self bindings use the
+local form required by the previously observed cf beta conversion issue.
+Invocation logs, persistent traces, Container logs and SSH are disabled; sanitized
+operational monitoring and ingress-abuse controls remain required before launch.
+
+Five new configuration/preparation tests failed before implementation and now
+pass. All 354 hosted tests, three hosted typechecks, thirteen production builds,
+root lint and redacted preparation-source/generated-output scans pass locally.
+Wrangler 4.147.0 successfully dry-ran all six generated no-bundle configurations.
+Those dry runs used synthetic account/resource IDs and image digests; they establish
+local configuration validity, not remote resource existence or execution.
+Evidence is under `.cache/hosted-deployment-dryrun-v1/`, the final hashed receipt
+under `.cache/hosted-deployment-dryrun-v2/`, and six adjacent dry-run logs. No cloud
+resource, secret, trigger, route or image was created by this work.
+
+CI on preceding deletion head `5d91f2f` initially failed the existing Windows
+resilience-probe HTTP-denial request with `TypeError: fetch failed`. The focused
+test passed locally, and the unchanged failed-job rerun passed on Windows. The
+cause is not established; no test was weakened or automatically retried in code.
+Seventeen of eighteen checks have passed; the root Linux community-exporter step
+is still running at this checkpoint. New preparation changes require their own CI.
+
+The [deployment guide](../../hosting/DEPLOYMENT.md) records the dependency order,
+secret/migration requirements, recovery verification and remaining launch gates.
+The example manifest deliberately contains invalid identifiers and qualification
+policy examples, not public quota decisions. Actual resource ownership, image
+identity, live OAuth, combined provider qualification, monitoring/load/costs,
+retention/rollback and an approved public route remain unfinished. The unanswered
+security-email question and unsubmitted Google client form are unchanged.

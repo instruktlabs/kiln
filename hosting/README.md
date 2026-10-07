@@ -5,6 +5,9 @@ inside `@instruktlabs/kiln` and introduces no cloud dependency into the engine.
 It is not deployed or ready for public traffic. Native provider qualification,
 native dispatch, deployed storage, operational quotas and launch checks remain open.
 
+The [deployment guide](DEPLOYMENT.md) prepares the six-service configuration,
+immutable bundles and migrations locally without creating resources or public routes.
+
 ## Local checks
 
 Use the repository's Node 22.23.3 and npm 12.2.0 maintainer toolchain:
