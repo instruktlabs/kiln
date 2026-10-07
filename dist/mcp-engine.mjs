@@ -28607,7 +28607,7 @@ function isolatedEvaluatorLaunchWithLoader(workerPath, host = {}, loader = "tsx"
   if (loader === "tsx")
     nodeArgs.push("--import", "tsx");
   nodeArgs.push(resolvedWorkerPath);
-  bwrapArgs.push("--chdir", runtimeRoot, "--preserve-fds", "1", "--", prlimitPath, "--cpu=65:65", "--as=6442450944:6442450944", "--fsize=100663296:100663296", "--nofile=64:64", "--nproc=64:64", "--", ...nodeArgs);
+  bwrapArgs.push("--chdir", runtimeRoot, "--", prlimitPath, "--cpu=65:65", "--as=6442450944:6442450944", "--fsize=100663296:100663296", "--nofile=64:64", "--nproc=64:64", "--", ...nodeArgs);
   return {
     command: setprivPath,
     args: [

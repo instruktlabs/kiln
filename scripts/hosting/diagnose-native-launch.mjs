@@ -44,6 +44,37 @@ try {
   record.stdout = String(child.output[1] ?? '').slice(0, 4096);
   record.stderr = String(child.output[2] ?? '').slice(0, 4096);
   record.fd3 = String(child.output[3] ?? '').slice(0, 4096);
+  // This fixed inspection runs with the exact same launch boundary after a
+  // successful transport. It reads only kernel identity flags and env key names.
+  if (child.status === 0) {
+    const fixedInspection = `
+      import { readFileSync } from 'node:fs';
+      const status = readFileSync('/proc/self/status', 'utf8').split('\\n')
+        .filter(line => /^(Uid|Gid|NoNewPrivs|CapInh|CapPrm|CapEff|CapBnd|CapAmb|Seccomp):/.test(line));
+      console.log(JSON.stringify({status, uidMap: readFileSync('/proc/self/uid_map', 'utf8'),
+        envKeys: Object.keys(process.env).sort(), pwd: process.env.PWD ?? null}));
+    `;
+    const inspected = spawnSync(
+      launch.command,
+      [...launch.args.slice(0, -1), '--input-type=module', '--eval', fixedInspection],
+      {
+        env: launch.env,
+        detached: true,
+        stdio: ['ignore', 'pipe', 'pipe', 'pipe'],
+        encoding: 'utf8',
+        timeout: 8000,
+        killSignal: 'SIGKILL',
+        maxBuffer: 16 * 1024,
+      },
+    );
+    record.invariants = {
+      status: inspected.status,
+      signal: inspected.signal,
+      error: inspected.error?.code ?? null,
+      stdout: String(inspected.stdout ?? '').slice(0, 4096),
+      stderr: String(inspected.stderr ?? '').slice(0, 4096),
+    };
+  }
 } catch {
   record.failure = 'Fixed launch could not be prepared';
 }
