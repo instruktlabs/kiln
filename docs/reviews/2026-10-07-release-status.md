@@ -4,6 +4,45 @@
 and remaining launch work. The dated research plan remains the scope record;
 older statements within it are not the current execution status.
 
+## Owner scope change: public release first
+
+The owner now asks to stabilize and merge the private hosting handoff, then focus
+on public Kiln documentation/README/site, Troy imagery, substantial blind clone/npm
+dogfooding and the next package/release. Hosted deployment and vendor submissions
+are deferred. The [current goal](../plans/2026-10-07-public-release-goal.md) supersedes
+the earlier requirement to launch hosting before updating public documentation.
+Private PR #3 contains PR #2's work, the approved consented-email implementation,
+18 preserved research records and the unexecuted operations-trial proposal. All
+468 offline tests, typechecks and 14 builds pass locally. The current handoff
+candidate also removes the private repo's blanket MIT license with owner approval,
+retaining the inherited notice and earlier rights. Public Kiln stays MIT. The
+owner explicitly authorized the private main handoff merge after required checks;
+see the private PR for current CI and merge status.
+
+Public PR #158 at `617c982` failed CI run `37699710117` in two renderer lifecycle
+tests: Windows reconnection after an old service exits, and Linux concurrent cold
+starts with zero health warmup. All package install jobs passed. A deterministic
+regression now reproduces and fixes the reconnection race. The Linux failure has
+not reproduced across 120 lifecycle tests under pinned Node/Bun in Docker; the
+startup diagnostic now retains the bounded child error instead of only its stack
+footer. The diagnostic regression was observed failing before the fix and passing
+afterward. No startup assertion or timeout has been relaxed.
+
+Local full-suite validation passed 3,372 tests with two expected platform skips;
+the two bundle-identity assertions failed because the diagnostic source changed
+while that run was in progress. After rebuilding all runtime artifacts, those two
+assertions and all 38 targeted CLI/MCP/renderer tests passed. Typecheck and lint
+passed. Fresh full CI remains required, and the original Linux startup failure
+still needs an explanation. See the [branch investigation](2026-10-07-branch-inventory.md).
+
+The eight public remote branches are `main`, active `codex/sdk-host-release`
+(#158), and six branches from closed/superseded PRs: `codex/v1-container-execution`
+(#147), `codex/v1-account-controls` (#149), `codex/v1-native-startup-diagnostic`
+(#150), `codex/v1-operations-qualification` (#154), `codex/v1-recovery-runbook`
+(#155), and `codex/v1-agnostic-setup` (#156). Preserve/audit those tips before
+proposing cleanup; none has been deleted in response to this discussion. Community
+PRs #140–142 remain open and untouched.
+
 ## New owner decision: private hosted application
 
 The owner selected a separate private hosted application while keeping the engine
@@ -81,8 +120,13 @@ at `46f950b` now pass, including the full Linux/Windows and package matrix. Rele
 preparation aligns the package, engine identity and generated local plugin to the
 unreleased `1.1.0` candidate; its 88 affected tests, package-content contracts,
 typecheck, lint, skills and clean Windows archive installation pass. The new
-version still needs CI and the remaining release gates; no follow-up version has
-been published.
+version commit `617c982` still needs all CI and the remaining release gates; no
+follow-up version has been published. Its exact CI archive has been downloaded
+and selected for fresh local onboarding fixtures. Both native client installations
+and all eleven plugin-file hashes pass; Codex loads setup once, while both
+existing-project fixtures retain seven original files and their owner MCP tool.
+No model sessions have run. The [onboarding record](2026-10-07-local-onboarding-qualification.md)
+records the archive and remaining bounded-run approval/authentication.
 
 The latest OpenAI submission guide adds a readiness gap: OAuth plugins are asked
 to expose verified email through UserInfo and advertise `openid`/`email`. Kiln's

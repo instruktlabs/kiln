@@ -203,6 +203,22 @@ test('a renderer that exits before health is reported as startup failure', async
     else process.env.KILN_RENDER_SERVICE_STARTUP_MS = oldBudget;
   }
 });
+
+test('startup failure retains the child error instead of only its stack footer', async () => {
+  const { dir } = await installation();
+  await writeFile(
+    join(dir, 'src/server.mjs'),
+    `console.error('Error: KILN_STARTUP_FIXTURE failed to bind');
+     console.error('    at start (fixture:1:1)\\n    at run (fixture:2:1)\\n}\\nNode.js fixture');
+     process.exit(9);`,
+  );
+  // Windows launches through a detached process and intentionally has no stderr pipe.
+  await expect(startLocalRenderService(dir)).rejects.toThrow(
+    process.platform === 'win32'
+      ? 'render service exited during startup'
+      : 'Error: KILN_STARTUP_FIXTURE failed to bind',
+  );
+});
 test('explicit local stop rechecks identity and never signals a remote-reported pid', async () => {
   const { dir, port, url } = await installation();
   const child = await spawnFakeRenderService(dir, port);
@@ -281,4 +297,58 @@ test('local lazy clients restart after a refused socket without retrying a rende
   await new Promise<void>((done) => servers[0]!.close(() => done()));
   expect((await port({ glb: new Uint8Array([1]) })).ok).toBe(true);
   expect(starts).toBe(2);
+});
+
+test('a delayed old-socket failure joins the replacement another capture already started', async () => {
+  const originalFetch = globalThis.fetch;
+  const url = 'http://127.0.0.1:31337';
+  let healthy = false;
+  let healthCalls = 0;
+  let starts = 0;
+  let rejectFirst: (reason: Error) => void = () => {};
+  let firstSeen: () => void = () => {};
+  const entered = new Promise<void>((resolve) => {
+    firstSeen = resolve;
+  });
+  const refused = () =>
+    Object.assign(new Error('Fixture socket refused'), { code: 'ECONNREFUSED' });
+  globalThis.fetch = (async (input, init) => {
+    const target = input instanceof Request ? input.url : String(input);
+    if (!target.startsWith(`${url}/`)) return originalFetch(input, init);
+    if (target.endsWith('/health')) {
+      healthCalls++;
+      if (healthCalls === 1) {
+        firstSeen();
+        return new Promise<Response>((_resolve, reject) => {
+          rejectFirst = reject;
+        });
+      }
+      if (!healthy) throw refused();
+      return Response.json(fakeRenderHealth({ rendererId: FAKE_RENDERER_ID }));
+    }
+    return Response.json({ ok: true, rendererId: FAKE_RENDERER_ID, views: [] });
+  }) as typeof fetch;
+  try {
+    const port = makeLazyRenderPort(
+      async () => {
+        starts++;
+        healthy = true;
+        return url;
+      },
+      undefined,
+      undefined,
+      url,
+    );
+    const delayed = port({ glb: new Uint8Array([1]) });
+    // Observe rejection immediately, even if an assertion below fails first.
+    void delayed.catch(() => {});
+    await entered;
+    expect((await port({ glb: new Uint8Array([1]) })).ok).toBe(true);
+    rejectFirst(refused());
+    expect((await delayed).ok).toBe(true);
+    expect(starts).toBe(1);
+  } finally {
+    rejectFirst(refused());
+    globalThis.fetch = originalFetch;
+  }
 });

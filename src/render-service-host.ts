@@ -264,7 +264,7 @@ export async function startLocalRenderService(
       // A failed spawn has no such race; absent/unknown never count as success.
       if (spawnError || (exitedAt !== undefined && Date.now() - exitedAt >= 1500))
         throw new Error(
-          `render service exited during startup${spawnError ? `: ${spawnError.message}` : ''}${stderr.trim() ? `: ${stderr.trim().split('\n').slice(-3).join(' ')}` : windowsLaunch ? '; launch the renderer manually to inspect native-driver errors' : ''}`,
+          `render service exited during startup${spawnError ? `: ${spawnError.message}` : ''}${stderr.trim() ? `: ${stderr.trim()}` : windowsLaunch ? '; launch the renderer manually to inspect native-driver errors' : ''}`,
         );
       await new Promise((done) => setTimeout(done, 250));
     }

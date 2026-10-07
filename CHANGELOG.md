@@ -29,6 +29,9 @@ release or an accepted plugin listing.
 - The release verifier accepts versioned 1.x follow-ups and release candidates,
   retaining exact-archive evidence and owner promotion approval. Development
   builds and unsupported prerelease tags remain ineligible for staging.
+- Concurrent captures rejoin a replacement local renderer when a delayed failure
+  arrives from the old connection. Startup failures preserve their bounded child
+  error output instead of reporting only the stack footer.
 - The optional Linux isolated evaluator no longer passes an unsupported
   `--preserve-fds` option to Bubblewrap. Its explicit fd3 protocol pipe uses
   inherited descriptors; namespace, capability, filesystem and resource limits

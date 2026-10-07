@@ -1,5 +1,12 @@
 # Kiln release-cycle execution goal
 
+**Superseded scope, 7 October 2026:** the owner now prioritizes the public package,
+README/site refresh, Troy imagery and blind clone/npm dogfooding. Hosted deployment
+and directory submission are deferred to another agent after a tested private-main
+handoff. Use the [current public release goal](2026-10-07-public-release-goal.md).
+The earlier goal below is retained as historical decision context, not a requirement
+to finish hosting before public work.
+
 Updated 7 October 2026 for the owner's public-engine/private-hosting decision.
 The existing goal remains active with the accepted public/private split. This text
 records that goal and its current completion boundaries; it does not create a
@@ -19,7 +26,7 @@ onboarding and hosted launch work continue under this same goal.
 Current evidence and unfinished tasks are in the
 [release status](../reviews/2026-10-07-release-status.md).
 
-## Copyable goal statement
+## Earlier goal statement (superseded by the public release goal)
 
 Complete this Kiln release cycle with a public, community-maintained engine and
 integrations, an independently buildable private hosted application under Instrukt

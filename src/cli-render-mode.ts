@@ -71,16 +71,16 @@ export function makeLazyRenderPort(
       return await port(req, execution);
     } catch (error) {
       if (execution?.signal?.aborted || (error as Error).name === 'TimeoutError') throw error;
-      if (
-        (
-          await readRenderServiceHealth(url, {
-            token,
-            signal: execution?.signal,
-          })
-        ).kind !== 'absent'
-      )
-        throw error;
+      // A different capture may already have replaced this failed connection.
+      // Its healthy socket must not make us rethrow a late error from the old one.
+      if (resolving !== pending) return (await resolve()).port(req, execution);
+      const health = await readRenderServiceHealth(url, {
+        token,
+        signal: execution?.signal,
+      });
       execution?.signal?.throwIfAborted();
+      if (resolving !== pending) return (await resolve()).port(req, execution);
+      if (health.kind !== 'absent') throw error;
       // Concurrent captures can all observe the old socket disappearing. Only
       // the first retires its connection; the others share the replacement.
       if (resolving === pending) resolving = undefined;
