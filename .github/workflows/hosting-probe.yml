@@ -100,6 +100,7 @@ jobs:
             }, null, 2) + "\n");'
 
       - name: Install archive outside the checkout and require the complete evaluator proof
+        id: isolation
         shell: bash
         run: |
           set -euo pipefail
@@ -128,6 +129,14 @@ jobs:
             assert.equal(r.status,"passed");assert.equal(r.checks.length,9);
             assert.equal(r.isolation.checks.length,10);assert.equal(r.artifacts.length,2);
             assert(!r.software);assert(r.uid>0);'
+
+      - name: Diagnose the fixed transport launch without changing restrictions
+        if: ${{ !cancelled() && steps.isolation.outcome == 'failure' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          node scripts/hosting/diagnose-native-launch.mjs \
+            .cache/nested-evaluator/receipts/transport-diagnostic.json
 
       - name: Retain VM evaluator evidence, including failed prerequisites
         if: always()

@@ -105,7 +105,9 @@ The [preflight alignment review](2026-10-07-native-preflight-alignment.md)
 records the exact downloaded failure and distinguishes the nested SDK adapter
 from production's explicit fresh-VM route. A subsequent additive VM test preserves
 all evaluator checks and leaves the Docker job unchanged. Local validation passes
-3,348 tests with two platform-specific skips; its actual VM evidence is pending.
+3,348 tests with two platform-specific skips. Its first VM run also fails at
+wrapper startup; a bounded fixed-transport diagnostic is prepared to identify
+the cause without relaxing restrictions.
 No gate is waived. Recovery commit `88ebe58` separately passed hosted CI on Linux
 and Windows; this does not satisfy the unfinished provider restore gate.
 

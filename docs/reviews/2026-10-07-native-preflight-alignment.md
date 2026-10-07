@@ -104,4 +104,19 @@ Focused tests first failed for the missing separate qualification result, then
 passed after implementation. The same shared evaluator checks serve both modes;
 the original combined probe still requires its software-renderer result.
 Local validation passes 3,348 tests with two platform-specific skips, typecheck,
-repository lint, YAML parsing and Bash syntax. Actual VM qualification awaits CI.
+repository lint, YAML parsing and Bash syntax.
+
+The first actual VM run, [37679591488](https://github.com/instruktlabs/kiln/actions/runs/37679591488),
+failed at `isolation/wrapper-launch` at source `494dee6`. Its exact installed
+archive still matches SHA-256 `98407508d8ec599189851aa0bd8b86313ac3abbd25e6337ac97f8510cc72215b`.
+The runner is non-root (1001), permits unprivileged user namespaces, and reports
+AppArmor user-namespace restriction as zero. No GLB or preview was produced.
+These facts rule out treating Docker alone as the explanation; they do not yet
+identify the failing launch component. The retained evidence is
+`.cache/nested-evaluator-494dee6/`.
+
+A bounded diagnostic now prepares the actual installed evaluator's launch for
+its fixed transport worker and records capped stdout/stderr/fd3 after failure.
+The child retains the evaluator's stripped environment and all restrictions.
+Its receipt is explicitly diagnostic, never qualification. The original failed
+receipt remains authoritative until a later actual run proves the full boundary.
