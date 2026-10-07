@@ -56,9 +56,9 @@ validation, authorization-code exchange and refresh checks the current primary
 account state and authorization epoch. Missing/disabled/deleting accounts and old
 epochs fail closed; database outages return unavailable rather than permitting
 cached access. Account lifecycle mutations must increment the epoch atomically.
-Browser sessions and direct sign-in now have local qualification. Explicit
-identity linking, deployed connection controls and completed asset deletion remain required
-before launch.
+Browser sessions, direct sign-in and explicit identity linking now have local
+qualification. Deployed account/connection controls and completed asset deletion
+remain required before launch.
 Only verified server-side provider adapters may call this contract. The JSON
 interface under `test/` exists solely for local tests and is not a public API.
 
@@ -88,8 +88,8 @@ It revokes only the browser session; it deliberately leaves MCP connections and
 other devices intact. Browser cookies cannot authorize `/mcp`, and MCP bearer
 tokens cannot authorize account pages. No account selection comes from a form or
 URL. Session issuance accepts only verified server-side identities. A recent
-callback is not proof of a fresh password/MFA challenge; linking/deletion still
-need their own explicit, purpose-bound confirmation and reauthentication policy.
+callback is not proof of a fresh password/MFA challenge. The explicit linking flow
+below confirms provider control; deletion still needs its own purpose-bound flow.
 
 Migrations `0003_browser_sessions.sql` and `0004_browser_logins.sql` add these
 tables. Workerd tests cover expiry, rotation, concurrent callbacks, cross-provider
@@ -123,14 +123,62 @@ Both providers' `prompt=select_account` asks the user to choose an account; it
 does not prove a new password or MFA challenge. Sources:
 [GitHub OAuth](https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/authorizing-oauth-apps),
 [Google OIDC](https://developers.google.com/identity/openid-connect/openid-connect).
-Identity linking and deletion require their own purpose-bound designs; this
-disconnect flow must not be repurposed to merge or delete accounts.
+Identity linking uses its separate purpose-bound flow below. This disconnect flow
+must not be repurposed to merge or delete accounts.
 
 Local workerd checks cover concurrent callbacks, cancellation, expiry, copied
 state, wrong identities, revoked sessions, forged forms, hostile client names,
 oversized requests and retained access by another connection. Layout checks use
 synthetic identities only. Live provider confirmation, cross-region denial and
 production migration/rollback remain unqualified.
+
+### Explicit sign-in method changes
+
+Migration `0008_identity_actions.sql` adds separate linking transactions, a unique
+provider-per-account constraint and bounded account security activity. Apply it
+before the new gateway. It leaves existing accounts and identity keys intact;
+preflight the uniqueness constraint against any existing database before migration.
+The earlier gateway can run with these additive tables, but rollback must preserve
+committed identity changes and authorization epochs, not restore an old database.
+
+`/account/identity` accepts only a bounded, same-origin, CSRF-protected form from a
+current browser session. Adding a method confirms an existing provider first,
+then authenticates the new provider using a new state, cookie, PKCE verifier and
+nonce. Each phase expires after five minutes and is atomically consumed before
+provider I/O. Both callbacks are tied to the original session and current account
+epoch. Account, session and confirmed-identity checks run again inside the final
+database transaction. An identity owned by another account is refused; email is
+never compared, and existing libraries cannot be merged.
+
+Removing a method confirms control of the other method that will remain. The last
+method cannot be removed, including concurrent requests from different browsers.
+Each successful change updates the identity, appends a security event, increments
+the account epoch and revokes all browser sessions atomically. Existing MCP access
+and refresh credentials fail their primary state checks even if provider KV still
+contains the old grants; those records expire under their existing TTL. Users sign
+in again and reconnect their apps. Already admitted jobs are not cancelled by this
+change. The permanent account ID and asset/usage namespace stay unchanged.
+
+The UI explains these effects before confirmation and shows the latest 20 security
+events. Events record provider, action and time, without tokens, email or IP address.
+Pending intents are capped at four per account and 4,096 globally. These limits do
+not replace public rate limits. Session deletion cascades to pending confirmations.
+The success page and activity list are **in-app notices only**. Out-of-band security
+email and verified contact collection are a pending owner decision, not implemented
+or qualified. Provider confirmation can reuse an existing provider session; it is
+not evidence of a fresh password or MFA challenge. No assurance-level certification
+is claimed.
+
+Workerd fixtures exercise real gateway, provider validators and D1 transactions
+with mocked upstream providers: both link directions, stable account ownership,
+foreign-identity refusal, cancellation, expiry, replay, concurrent callbacks,
+concurrent unlink, database rollback, revocation during provider I/O, old access
+and refresh denial, CSRF/origin/bounds and hashed transaction storage. Live OAuth,
+provider UI and external notification delivery remain launch work. Sources checked
+6 October 2026:
+[OWASP federated linking](https://cheatsheetseries.owasp.org/cheatsheets/Authentication_Cheat_Sheet.html#secure-federated-account-linking),
+[NIST federation account management](https://pages.nist.gov/800-63-4/sp800-63c.html),
+[D1 transactions](https://developers.cloudflare.com/d1/worker-api/d1-database/#batch).
 
 ## Native HTTP adapter
 

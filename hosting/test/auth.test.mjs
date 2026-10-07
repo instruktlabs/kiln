@@ -10,9 +10,18 @@ const origin = 'https://kiln.example.com';
 let runtime;
 let database;
 let outboundCalls = 0;
+let beforeProviderReply;
 const googleIssuer = 'https://accounts.google.com';
 const googleKeys = generateKeyPairSync('rsa', { modulusLength: 2048 });
 const googleCodes = new Map();
+const subjectIds = new Map([
+  ['alice', '1001'],
+  ['bob', '1002'],
+]);
+function subjectId(user) {
+  if (!subjectIds.has(user)) subjectIds.set(user, String(1001 + subjectIds.size));
+  return subjectIds.get(user);
+}
 const encode = (value) => Buffer.from(JSON.stringify(value)).toString('base64url');
 const digest = (value) => createHash('sha256').update(value).digest('base64url');
 const cookies = (response) =>
@@ -73,6 +82,7 @@ before(async () => {
           });
         }
         if (request.url === 'https://oauth2.googleapis.com/token') {
+          if (beforeProviderReply) await beforeProviderReply();
           const form = new URLSearchParams(await request.text());
           const flow = googleCodes.get(form.get('code'));
           assert.ok(flow);
@@ -81,7 +91,7 @@ before(async () => {
           assert.equal(form.get('client_secret'), 'fixture-google-secret');
           assert.equal(form.get('redirect_uri'), `${origin}/oauth/google/callback`);
           const now = Math.floor(Date.now() / 1000);
-          const input = `${encode({ alg: 'RS256', kid: 'test' })}.${encode({ iss: googleIssuer, sub: flow.user === 'alice' ? '1001' : '1002', aud: 'fixture-google-client', exp: now + 300, iat: now, nonce: flow.nonce })}`;
+          const input = `${encode({ alg: 'RS256', kid: 'test' })}.${encode({ iss: googleIssuer, sub: subjectId(flow.user), aud: 'fixture-google-client', exp: now + 300, iat: now, nonce: flow.nonce })}`;
           return Response.json({
             access_token: 'fixture-google-token',
             token_type: 'Bearer',
@@ -127,10 +137,11 @@ before(async () => {
           });
         }
         if (request.url === 'https://api.github.com/user') {
+          if (beforeProviderReply) await beforeProviderReply();
           const token = request.headers.get('authorization');
-          assert.match(token, /^Bearer fixture-(alice|bob)$/);
+          assert.match(token, /^Bearer fixture-[a-zA-Z0-9_-]+$/);
           return Response.json({
-            id: token.endsWith('alice') ? 1001 : 1002,
+            id: Number(subjectId(token.slice('Bearer fixture-'.length))),
             login: 'not-used-as-identity',
           });
         }
@@ -1632,4 +1643,417 @@ test('real OAuth gateway authorizes downloads from a separate tenant Worker', as
   } finally {
     await server.dispose();
   }
+});
+
+async function startIdentity(authorization, action, target, provider, extra = {}) {
+  const page = await (
+    await runtime.dispatchFetch(`${origin}/account`, {
+      headers: { cookie: authorization.browserCookie },
+    })
+  ).text();
+  const csrf = page.match(/name="csrf" value="([a-f0-9]{64})"/)?.[1];
+  assert.ok(csrf);
+  return runtime.dispatchFetch(`${origin}/account/identity`, {
+    method: 'POST',
+    redirect: 'manual',
+    headers: {
+      origin,
+      cookie: authorization.browserCookie,
+      'content-type': 'application/x-www-form-urlencoded',
+      ...extra.headers,
+    },
+    body: new URLSearchParams({ csrf, action, target, provider, ...extra.form }),
+  });
+}
+const finishIdentity = (flow) =>
+  runtime.dispatchFetch(flow.callback, {
+    headers: { cookie: flow.cookie },
+    redirect: 'manual',
+  });
+async function linkIdentity(authorization, user, provider = 'github', target = 'google') {
+  const first = await actionCallback(
+    await startIdentity(authorization, 'link', target, provider),
+    authorization,
+    user,
+  );
+  const next = await finishIdentity(first);
+  const second = await actionCallback(next, authorization, user);
+  return { first, second, response: await finishIdentity(second) };
+}
+
+test('explicit linking preserves the account and invalidates old browser and MCP access', async () => {
+  for (const provider of ['github', 'google']) {
+    const user = `link-${provider}`,
+      target = provider === 'github' ? 'google' : 'github';
+    const authorization = await grant(user, { provider });
+    const credential = await (await exchange(authorization)).json();
+    const account = (await connectionFor(authorization)).account_id;
+    const linked = await linkIdentity(authorization, user, provider, target);
+    assert.equal(linked.response.status, 200);
+    assert.match(await linked.response.text(), /Sign-in method added/);
+    assert.match(linked.response.headers.get('set-cookie'), /Max-Age=0/);
+    assert.equal((await mcp(credential)).status, 401);
+    assert.equal(
+      (
+        await runtime.dispatchFetch(`${origin}/account`, {
+          headers: { cookie: authorization.browserCookie },
+        })
+      ).status,
+      401,
+    );
+    assert.equal((await finishIdentity(linked.second)).status, 400);
+    const returning = await grant(user, { provider: target });
+    assert.equal((await connectionFor(returning)).account_id, account);
+    const html = await (
+      await runtime.dispatchFetch(`${origin}/account`, {
+        headers: { cookie: returning.browserCookie },
+      })
+    ).text();
+    assert.match(html, /Recent security activity/);
+    assert.match(html, /Sign-in method added/);
+    assert.match(html, /Remove Google|Remove GitHub/);
+  }
+});
+
+test('identity linking requires both identities, same-session proof and an unused target', async () => {
+  const authorization = await grant('link-denials');
+  const credential = await (await exchange(authorization)).json();
+  const before = outboundCalls;
+  for (const extra of [
+    { form: { csrf: '0'.repeat(64) } },
+    { headers: { origin: 'https://evil.example' } },
+    { form: { accountId: `ka_${'0'.repeat(32)}` } },
+  ])
+    assert.equal(
+      (await startIdentity(authorization, 'link', 'google', 'github', extra)).status,
+      403,
+    );
+  assert.equal(outboundCalls, before);
+  const wrong = await actionCallback(
+    await startIdentity(authorization, 'link', 'google', 'github'),
+    authorization,
+    'bob',
+  );
+  assert.equal((await finishIdentity(wrong)).status, 403);
+  const first = await actionCallback(
+    await startIdentity(authorization, 'link', 'google', 'github'),
+    authorization,
+    'link-denials',
+  );
+  const next = await finishIdentity(first);
+  assert.equal(next.status, 302);
+  // A Google identity already owned by another Kiln account must not merge libraries.
+  const other = await grant('link-other', { provider: 'google' });
+  const second = await actionCallback(next, authorization, 'link-other');
+  const calls = outboundCalls;
+  assert.equal(
+    (
+      await runtime.dispatchFetch(second.callback, {
+        headers: { cookie: cookies(next) },
+        redirect: 'manual',
+      })
+    ).status,
+    400,
+  );
+  assert.equal(outboundCalls, calls);
+  assert.equal((await finishIdentity(second)).status, 403);
+  assert.equal((await mcp(credential)).status, 200);
+  assert.notEqual(
+    (await connectionFor(other)).account_id,
+    (await connectionFor(authorization)).account_id,
+  );
+});
+
+test('unlink confirms the retained method, never removes the last login and revokes prior access', async () => {
+  const user = 'unlink-user';
+  const first = await grant(user);
+  assert.equal((await startIdentity(first, 'unlink', 'github', 'github')).status, 403);
+  assert.equal((await linkIdentity(first, user)).response.status, 200);
+  const authorization = await grant(user, { provider: 'google' });
+  const credential = await (await exchange(authorization)).json();
+  const account = (await connectionFor(authorization)).account_id;
+  assert.equal((await startIdentity(authorization, 'unlink', 'github', 'github')).status, 403);
+  const flow = await actionCallback(
+    await startIdentity(authorization, 'unlink', 'github', 'google'),
+    authorization,
+    user,
+  );
+  const response = await finishIdentity(flow);
+  assert.equal(response.status, 200);
+  assert.match(await response.text(), /Sign-in method removed/);
+  assert.equal((await mcp(credential)).status, 401);
+  const retained = await grant(user, { provider: 'google' });
+  assert.equal((await connectionFor(retained)).account_id, account);
+  const removed = await grant(user);
+  assert.notEqual((await connectionFor(removed)).account_id, account);
+  assert.equal((await startIdentity(retained, 'unlink', 'google', 'github')).status, 403);
+});
+
+test('link callbacks are one-use across races and cannot cross provider or phase', async () => {
+  const user = 'link-races',
+    authorization = await grant(user);
+  const first = await actionCallback(
+    await startIdentity(authorization, 'link', 'google', 'github'),
+    authorization,
+    user,
+  );
+  const before = outboundCalls;
+  const responses = await Promise.all([finishIdentity(first), finishIdentity(first)]);
+  assert.deepEqual(responses.map((r) => r.status).sort(), [302, 400]);
+  // One GitHub exchange and identity read, plus discovery for the second phase.
+  assert.equal(outboundCalls - before, 3);
+  const next = responses.find((r) => r.status === 302);
+  const second = await actionCallback(next, authorization, user);
+  const wrongProvider = second.callback.replace('/oauth/google/', '/oauth/github/');
+  const count = outboundCalls;
+  assert.equal((await finishIdentity({ ...second, callback: wrongProvider })).status, 400);
+  assert.equal(outboundCalls, count);
+  const done = await Promise.all([finishIdentity(second), finishIdentity(second)]);
+  assert.deepEqual(done.map((r) => r.status).sort(), [200, 400]);
+  const account = (await connectionFor(authorization)).account_id;
+  const row = await database
+    .prepare('SELECT COUNT(*) AS n FROM kiln_account_events WHERE account_id=?')
+    .bind(account)
+    .first();
+  assert.equal(row.n, 1);
+});
+
+test('cancelled, expired and revoked link confirmations cannot change sign-in methods', async () => {
+  for (const mode of ['cancel', 'expiry', 'epoch', 'session']) {
+    const user = `link-state-${mode}`,
+      authorization = await grant(user);
+    const account = (await connectionFor(authorization)).account_id;
+    const first = await actionCallback(
+      await startIdentity(authorization, 'link', 'google', 'github'),
+      authorization,
+      user,
+    );
+    const next = await finishIdentity(first);
+    const second = await actionCallback(next, authorization, user);
+    const before = outboundCalls;
+    if (mode === 'cancel') {
+      const url = new URL(second.callback);
+      url.searchParams.delete('code');
+      url.searchParams.set('error', 'access_denied');
+      assert.equal((await finishIdentity({ ...second, callback: url.href })).status, 400);
+    } else if (mode === 'expiry')
+      await database
+        .prepare('UPDATE kiln_identity_actions SET expires_at=0 WHERE account_id=?')
+        .bind(account)
+        .run();
+    else if (mode === 'epoch')
+      await database
+        .prepare('UPDATE kiln_accounts SET authorization_epoch=2 WHERE id=?')
+        .bind(account)
+        .run();
+    else
+      await database
+        .prepare('DELETE FROM kiln_browser_sessions WHERE account_id=?')
+        .bind(account)
+        .run();
+    assert.equal((await finishIdentity(second)).status, 400);
+    assert.equal(outboundCalls, before);
+    assert.equal(
+      (
+        await database
+          .prepare('SELECT COUNT(*) AS n FROM kiln_identities WHERE account_id=?')
+          .bind(account)
+          .first()
+      ).n,
+      1,
+    );
+  }
+});
+
+test('failed security-event writes roll back identity changes, epochs and sessions', async () => {
+  const user = 'link-rollback',
+    authorization = await grant(user);
+  const credential = await (await exchange(authorization)).json();
+  const account = (await connectionFor(authorization)).account_id;
+  await database
+    .prepare(`CREATE TRIGGER reject_security_event BEFORE INSERT ON kiln_account_events
+    BEGIN SELECT RAISE(ABORT, 'fixture rejection'); END`)
+    .run();
+  try {
+    const linked = await linkIdentity(authorization, user);
+    assert.equal(linked.response.status, 503);
+    assert.equal(
+      (
+        await database
+          .prepare('SELECT COUNT(*) AS n FROM kiln_identities WHERE account_id=?')
+          .bind(account)
+          .first()
+      ).n,
+      1,
+    );
+    assert.equal(
+      (
+        await database
+          .prepare('SELECT authorization_epoch AS n FROM kiln_accounts WHERE id=?')
+          .bind(account)
+          .first()
+      ).n,
+      1,
+    );
+    assert.equal((await mcp(credential)).status, 200);
+    assert.equal(
+      (
+        await runtime.dispatchFetch(`${origin}/account`, {
+          headers: { cookie: authorization.browserCookie },
+        })
+      ).status,
+      200,
+    );
+    // The consumed provider callback cannot be replayed, even though mutation rolled back.
+    assert.equal((await finishIdentity(linked.second)).status, 400);
+  } finally {
+    await database.prepare('DROP TRIGGER reject_security_event').run();
+  }
+  assert.equal((await linkIdentity(authorization, user)).response.status, 200);
+});
+
+test('unlink races preserve a usable identity and primary revocation rejects stale refresh tokens', async () => {
+  const user = 'unlink-race',
+    first = await grant(user);
+  assert.equal((await linkIdentity(first, user)).response.status, 200);
+  const a = await grant(user),
+    b = await grant(user, { provider: 'google' });
+  const credential = await (await exchange(a)).json();
+  const removeGoogle = await actionCallback(
+    await startIdentity(a, 'unlink', 'google', 'github'),
+    a,
+    user,
+  );
+  const removeGithub = await actionCallback(
+    await startIdentity(b, 'unlink', 'github', 'google'),
+    b,
+    user,
+  );
+  const results = await Promise.all([finishIdentity(removeGoogle), finishIdentity(removeGithub)]);
+  assert.equal(results.filter((r) => r.status === 200).length, 1);
+  assert.ok(
+    results.filter((r) => r.status !== 200).every((r) => r.status === 400 || r.status === 403),
+  );
+  const account = (await connectionFor(a)).account_id;
+  assert.equal(
+    (
+      await database
+        .prepare('SELECT COUNT(*) AS n FROM kiln_identities WHERE account_id=?')
+        .bind(account)
+        .first()
+    ).n,
+    1,
+  );
+  const refreshed = await runtime.dispatchFetch(`${origin}/oauth/token`, {
+    method: 'POST',
+    headers: { 'content-type': 'application/x-www-form-urlencoded' },
+    body: new URLSearchParams({
+      grant_type: 'refresh_token',
+      refresh_token: credential.refresh_token,
+      client_id: a.clientId,
+      resource: `${origin}/mcp`,
+    }),
+  });
+  assert.equal(refreshed.status, 400);
+  assert.equal((await refreshed.json()).error, 'invalid_grant');
+});
+
+test('state changes during the upstream exchange are rechecked before linking', async () => {
+  for (const mutation of ['disabled', 'epoch', 'session', 'confirmer']) {
+    const user = `link-inflight-${mutation}`,
+      authorization = await grant(user);
+    const account = (await connectionFor(authorization)).account_id;
+    const first = await actionCallback(
+      await startIdentity(authorization, 'link', 'google', 'github'),
+      authorization,
+      user,
+    );
+    const second = await actionCallback(await finishIdentity(first), authorization, user);
+    beforeProviderReply = async () => {
+      beforeProviderReply = undefined;
+      if (mutation === 'disabled')
+        await database
+          .prepare("UPDATE kiln_accounts SET state='disabled' WHERE id=?")
+          .bind(account)
+          .run();
+      else if (mutation === 'epoch')
+        await database
+          .prepare('UPDATE kiln_accounts SET authorization_epoch=2 WHERE id=?')
+          .bind(account)
+          .run();
+      else if (mutation === 'session')
+        await database
+          .prepare('DELETE FROM kiln_browser_sessions WHERE account_id=?')
+          .bind(account)
+          .run();
+      else
+        await database
+          .prepare('DELETE FROM kiln_identities WHERE account_id=?')
+          .bind(account)
+          .run();
+    };
+    try {
+      assert.equal((await finishIdentity(second)).status, 403);
+    } finally {
+      beforeProviderReply = undefined;
+    }
+    assert.equal(
+      (
+        await database
+          .prepare('SELECT COUNT(*) AS n FROM kiln_identities WHERE account_id=? AND issuer=?')
+          .bind(account, googleIssuer)
+          .first()
+      ).n,
+      0,
+    );
+    assert.equal(
+      (
+        await database
+          .prepare('SELECT COUNT(*) AS n FROM kiln_account_events WHERE account_id=?')
+          .bind(account)
+          .first()
+      ).n,
+      0,
+    );
+  }
+});
+
+test('identity intents are bounded, store hashes and reject oversized or duplicate forms before provider I/O', async () => {
+  const user = 'link-bounds',
+    authorization = await grant(user);
+  const account = (await connectionFor(authorization)).account_id;
+  for (let i = 0; i < 4; i++) {
+    const start = await startIdentity(authorization, 'link', 'google', 'github');
+    assert.equal(start.status, 302);
+    const state = new URL(start.headers.get('location')).searchParams.get('state');
+    const binding = cookies(start).split('=')[1];
+    const stored = JSON.stringify(
+      (
+        await database
+          .prepare('SELECT * FROM kiln_identity_actions WHERE account_id=?')
+          .bind(account)
+          .all()
+      ).results,
+    );
+    assert.ok(!stored.includes(state));
+    assert.ok(!stored.includes(binding));
+  }
+  const count = outboundCalls;
+  assert.equal((await startIdentity(authorization, 'link', 'google', 'github')).status, 403);
+  for (const body of [
+    'x'.repeat(4097),
+    'csrf=bad&csrf=bad&action=link&target=google&provider=github',
+  ]) {
+    const response = await runtime.dispatchFetch(`${origin}/account/identity`, {
+      method: 'POST',
+      headers: {
+        origin,
+        cookie: authorization.browserCookie,
+        'content-type': 'application/x-www-form-urlencoded',
+      },
+      body,
+    });
+    assert.equal(response.status, body.length > 4096 ? 413 : 403);
+  }
+  assert.equal(outboundCalls, count);
 });

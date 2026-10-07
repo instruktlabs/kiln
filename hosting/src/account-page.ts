@@ -55,6 +55,12 @@ export function signInPage(returnTo = '/account'): Response {
   );
 }
 
+export function accountNoticePage(message: string): Response {
+  return page(
+    `<h1>${escapeHtml(message)}</h1><p>Your saved assets and Kiln account stay the same. All browser sessions and connected apps have been signed out.</p><p><a href="/account">Sign in to continue</a>, then reconnect any apps you want to use.</p>`,
+  );
+}
+
 export async function accountPage(
   request: Request,
   database: D1Database,
@@ -124,8 +130,38 @@ Return address: ${escapeHtml(new URL(connection.redirectUri).host)}.</p>
 <label>Confirm using <select name="provider">${providerOptions}</select></label> <button type="submit">Disconnect this app</button></form></article>`,
     )
     .join('');
+  const identityControls = (['google', 'github'] as const)
+    .map((target) => {
+      const linked = identities.results.some(({ issuer }) => issuer === IDENTITY_ISSUERS[target]);
+      const confirmer = (['google', 'github'] as const).find(
+        (provider) =>
+          provider !== target &&
+          identities.results.some(({ issuer }) => issuer === IDENTITY_ISSUERS[provider]),
+      );
+      if (!confirmer) return '';
+      const label = target === 'google' ? 'Google' : 'GitHub';
+      return `<form method="post" action="/account/identity"><input type="hidden" name="csrf" value="${escapeHtml(session.csrf)}">
+<input type="hidden" name="action" value="${linked ? 'unlink' : 'link'}"><input type="hidden" name="target" value="${target}">
+<input type="hidden" name="provider" value="${confirmer}"><button type="submit">${linked ? 'Remove' : 'Add'} ${label}</button></form>`;
+    })
+    .join('');
+  const events = await database
+    .withSession('first-primary')
+    .prepare(
+      'SELECT kind,provider,created_at AS createdAt FROM kiln_account_events WHERE account_id=? ORDER BY created_at DESC,id DESC LIMIT 20',
+    )
+    .bind(session.accountId)
+    .all<{ kind: 'link' | 'unlink'; provider: string; createdAt: number }>();
+  const activity = events.results
+    .map(
+      (event) =>
+        `<li>${event.kind === 'link' ? 'Sign-in method added' : 'Sign-in method removed'}: ${event.provider === 'google' ? 'Google' : 'GitHub'} · ${escapeHtml(new Date(event.createdAt).toISOString().slice(0, 16).replace('T', ' '))} UTC</li>`,
+    )
+    .join('');
   return page(`<h1>Your Kiln account</h1><p>Free hosted access, with private saved assets and a personal usage quota.</p>
-<section><h2>Sign-in methods</h2><ul>${providers.map((provider) => `<li>${escapeHtml(provider)}</li>`).join('')}</ul></section>
+<section><h2>Sign-in methods</h2><ul>${providers.map((provider) => `<li>${escapeHtml(provider)}</li>`).join('')}</ul>
+<p>Adding a method asks you to confirm your current provider, then the new one. Removing a method asks you to confirm the one you will keep. Each change signs out all browsers and connected apps. Saved assets stay in this account. Already separate Kiln accounts cannot be merged.</p><div class="provider-buttons">${identityControls}</div></section>
+<section><h2>Recent security activity</h2>${activity ? `<ul>${activity}</ul>` : '<p>No sign-in method changes.</p>'}</section>
 <section><h2>Connected apps</h2><p>Disconnecting blocks new requests from that connection. Confirm with a sign-in method to continue.</p>${connectionCards || '<p>No connected apps.</p>'}</section>
 <section><h2>This browser</h2><p>Signing out here leaves your connected apps working.</p>
 <form method="post" action="/account/logout"><input type="hidden" name="csrf" value="${escapeHtml(session.csrf)}">

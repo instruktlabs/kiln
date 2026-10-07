@@ -7,6 +7,7 @@ import {
 } from './browser-cookies';
 
 const COOKIE = '__Host-kiln-session';
+export const clearBrowserSessionCookie = `${COOKIE}=; ${cookieAttributes}; Max-Age=0`;
 const LIFETIME_MS = 86_400_000;
 const IDLE_MS = 1_800_000;
 const denied = () => new HttpFailure(401, 'Sign in to continue');
@@ -158,7 +159,7 @@ export class D1BrowserSessions {
       .bind(hash, csrf, Date.now(), Date.now())
       .first();
     if (!row) throw new HttpFailure(403, 'Invalid account form');
-    return `${COOKIE}=; ${cookieAttributes}; Max-Age=0`;
+    return clearBrowserSessionCookie;
   }
 
   private hash(token: string): Promise<string> {

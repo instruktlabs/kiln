@@ -7,6 +7,7 @@ import { D1Connections } from './connections';
 import { accountPage } from './account-page';
 import { beginBrowserLogin } from './browser-login';
 import { beginAccountAction } from './account-actions';
+import { beginIdentityAction } from './identity-actions';
 import { browserDownload } from './browser-download';
 import { authorize, authorizationFailure, SCOPES, type SignInEnv } from './auth';
 import { forwardTenant, type TenantEnv } from './gateway';
@@ -105,6 +106,7 @@ export default {
         url.pathname === '/authorize' ||
         url.pathname === '/account/login' ||
         url.pathname === '/account/action' ||
+        url.pathname === '/account/identity' ||
         url.pathname === '/oauth/github/callback' ||
         url.pathname === '/oauth/google/callback'
       ) {
@@ -117,17 +119,19 @@ export default {
         )
           throw new HttpFailure(503, 'Sign-in is not configured');
         response =
-          url.pathname === '/account/action'
-            ? await beginAccountAction(await boundedRequest(request, 4096), origin, env)
-            : url.pathname === '/account/login'
-              ? await beginBrowserLogin(await boundedRequest(request, 4096), origin, env)
-              : await authorize(
-                  await boundedRequest(request, 16_384),
-                  auth.getOAuthApi(env),
-                  origin,
-                  env,
-                  ctx,
-                );
+          url.pathname === '/account/identity'
+            ? await beginIdentityAction(await boundedRequest(request, 4096), origin, env)
+            : url.pathname === '/account/action'
+              ? await beginAccountAction(await boundedRequest(request, 4096), origin, env)
+              : url.pathname === '/account/login'
+                ? await beginBrowserLogin(await boundedRequest(request, 4096), origin, env)
+                : await authorize(
+                    await boundedRequest(request, 16_384),
+                    auth.getOAuthApi(env),
+                    origin,
+                    env,
+                    ctx,
+                  );
       } else if (
         url.pathname === '/register' ||
         url.pathname.startsWith('/oauth/token') ||

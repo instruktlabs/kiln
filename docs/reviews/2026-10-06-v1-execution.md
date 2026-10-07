@@ -2639,3 +2639,46 @@ the new coordinator deliberately rejects old responses without identity.
 Account link/unlink/delete, live OAuth, operating and load evidence, approved
 public deployment, vendor submissions and deferred public documentation remain
 open. No additional cloud spend or user authentication was used for this work.
+
+## Explicit Google/GitHub linking and unlinking locally qualified
+
+The gateway now has separate, purpose-bound identity-change flows. Linking first
+confirms an already-linked provider, then validates the new provider in a separate
+one-use, browser-bound phase. Unlinking verifies the provider that will remain.
+The unique provider constraint and atomic final mutation prevent account merges,
+last-login removal and concurrent unlink races. Account ownership and the tenant
+namespace remain unchanged. Every successful change records account activity,
+increments the authorization epoch and revokes browser sessions together. Old MCP
+access and refresh credentials are denied by the existing primary authority.
+
+Regression tests failed on the absent route before implementation. All 317 hosted
+tests pass, including both link directions, foreign-account refusal, same-session
+binding, replay/races, cancellation/expiry, rollback on event-write failure and
+state changes during the provider exchange. Three hosted typechecks, thirteen
+production builds, root lint and redacted source/bundle scans pass. A local
+presentation-only fixture was inspected at the normal browser width and a 375px
+viewport, including linked-method controls, activity and completion messaging.
+The mobile controls have separated touch targets and no horizontal overflow.
+The fixture uses synthetic identities, does no external I/O, and proves layout
+only. Screenshot: `.cache/security-review-2026-10-06/account-identity-controls-mobile.jpg`.
+
+Apply additive migration `0008_identity_actions.sql` before the gateway, after
+checking existing per-account provider uniqueness. Rollback preserves committed
+identity changes and account epochs. The private native image does not change.
+Live sign-in and real provider confirmation remain unqualified, as do full account
+deletion and production operation. This work was not deployed or merged to main.
+
+Current OWASP, NIST federation, Google/GitHub and D1 documentation were checked.
+Provider selection/confirmation can reuse an upstream session and does not prove
+a fresh password/MFA challenge. The current notices are in-app only. A sequenced
+owner question is pending about collecting a verified security contact email and
+sending out-of-band identity-change/deletion notices through Cloudflare. This is
+separate from email-based sign-in, which remains deferred; no scopes, live email
+configuration or mail delivery were changed. Cloudflare's documented Workers Paid
+allowance is 3,000 outbound messages per account/month, then $0.35 per 1,000. Actual
+sender-domain readiness and delivery still need qualification if adopted.
+
+Sources:
+[OWASP federation linking](https://cheatsheetseries.owasp.org/cheatsheets/Authentication_Cheat_Sheet.html#secure-federated-account-linking),
+[NIST federation](https://pages.nist.gov/800-63-4/sp800-63c.html),
+[Cloudflare Email pricing](https://developers.cloudflare.com/email-service/platform/pricing/).
