@@ -41,6 +41,7 @@ before(async () => {
           try{return await this.admission.dispatch(tenant,new Request(request,{signal:this.requestAbort.signal}));}catch(e){return admissionFailure(e);}
         }
         async command(command,value) {
+          if(command==='retire') {try{await this.admission.retireTenant(value);return {retired:true};}catch(e){return {retired:false,status:admissionFailure(e).status};}}
           if(command==='pause') return this.admission.setPaused(value);
           if(command==='alarm') return this.admission.alarm();
           if(command==='expire') {this.ctx.storage.sql.exec('UPDATE compute_active SET recover_at = 0');return;}
@@ -293,4 +294,73 @@ test('a response arriving in the same turn as cancellation has its discarded bod
   const s = await f.command('snapshot');
   assert.equal(s.active.length, 0);
   assert.equal(s.cancelledBodies, 1);
+});
+
+test('retired tenants cannot start work or consume quotas, including after eviction and resume', async () => {
+  const f = fixture(),
+    owner = 'a'.repeat(43);
+  assert.deepEqual(await f.command('retire', owner), { retired: true });
+  assert.equal((await f.request('a')).status, 410);
+  assert.deepEqual((await f.command('snapshot')).usage, []);
+  const ns = await runtime.getDurableObjectNamespace('FIXTURE');
+  await runtime.unsafeEvictDurableObject('admission-fixture', 'Fixture', {
+    id: ns.idFromName(f.id).toString(),
+  });
+  await f.command('pause', true);
+  await f.command('pause', false);
+  assert.equal((await f.request('a')).status, 410);
+  assert.equal((await f.request('b')).status, 200);
+  assert.deepEqual(await f.command('retire', owner), { retired: true });
+  assert.equal((await f.command('snapshot')).calls.length, 1);
+});
+
+test('retirement cancels only the selected tenant and preserves global usage charges', async () => {
+  const f = fixture();
+  await f.command('hold', true);
+  const a = f.request('a'),
+    b = f.request('b');
+  await waitFor(f, (s) => s.calls.length === 2);
+  const results = await Promise.all([
+    f.command('retire', 'a'.repeat(43)),
+    f.command('retire', 'a'.repeat(43)),
+  ]);
+  assert.deepEqual(results, [{ retired: true }, { retired: true }]);
+  assert.equal((await a).status, 410);
+  const current = await f.command('snapshot');
+  assert.equal(current.active.length, 1);
+  assert.equal(current.active[0].tenant, 'b'.repeat(43));
+  assert.equal(current.stopped.length, 1);
+  assert.ok(current.usage.every((row) => row.owner !== 'a'.repeat(43)));
+  assert.equal(
+    current.usage.find((row) => row.owner === 'global' && row.period === 'month').used,
+    2,
+  );
+  await f.command('pause', true);
+  await b;
+});
+
+test('unknown retirement cleanup retains capacity and the permanent deny until confirmed recovery', async () => {
+  const f = fixture();
+  await f.command('cancelFail', true);
+  assert.equal((await f.request()).status, 503);
+  assert.deepEqual(await f.command('retire', 'a'.repeat(43)), { retired: false, status: 503 });
+  assert.equal((await f.request()).status, 410);
+  assert.equal((await f.command('snapshot')).active.length, 1);
+  const ns = await runtime.getDurableObjectNamespace('FIXTURE');
+  await runtime.unsafeEvictDurableObject('admission-fixture', 'Fixture', {
+    id: ns.idFromName(f.id).toString(),
+  });
+  await f.command('cancelFail', false);
+  await f.command('expire');
+  await f.command('alarm');
+  assert.deepEqual(await f.command('retire', 'a'.repeat(43)), { retired: true });
+  assert.equal((await f.command('snapshot')).active.length, 0);
+  assert.equal((await f.request()).status, 410);
+});
+
+test('retirement validates exact tenant identity before mutating admission', async () => {
+  const f = fixture();
+  for (const owner of ['', 'a'.repeat(42), 'a'.repeat(44), `${'a'.repeat(43)}\n`, null, 123])
+    assert.deepEqual(await f.command('retire', owner), { retired: false, status: 400 });
+  assert.equal((await f.request()).status, 200);
 });

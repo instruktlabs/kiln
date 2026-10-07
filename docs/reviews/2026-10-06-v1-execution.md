@@ -2682,3 +2682,46 @@ Sources:
 [OWASP federation linking](https://cheatsheetseries.owasp.org/cheatsheets/Authentication_Cheat_Sheet.html#secure-federated-account-linking),
 [NIST federation](https://pages.nist.gov/800-63-4/sp800-63c.html),
 [Cloudflare Email pricing](https://developers.cloudflare.com/email-service/platform/pricing/).
+
+## Compute and storage retirement locally qualified
+
+Added private account-retirement primitives, with no public deletion form or
+gateway lifecycle route yet. Compute retirement records a permanent tenant deny,
+marks any admitted job closing and requires verified whole-request cancellation.
+Failure retains admission capacity and recovery intent. Eviction or global
+pause/resume cannot reopen the account. Only that tenant's quota history is
+removed; global counters still account for its admitted work.
+
+Storage retirement denies further operations, revokes download tickets, removes
+saved metadata and purges only that tenant's R2 prefix. Batches and retry alarms
+bound cleanup. Outstanding uploads retain durable write evidence until the put
+settles or matching committed immutable bytes establish its completion. Neither
+a timeout nor an empty listing proves that an unresolved write is cancelled.
+Unknown outcomes after a crash remain pending with a daily recovery alarm and
+require escalation if they cannot be resolved. Verified purge requires an empty
+prefix, no artifact rows and no unresolved writes, then removes its alarm while
+retaining the small denial record.
+
+Focused tests first reproduced two races: ordinary maintenance removed an
+unresolved write's metadata, and an older sweep recreated maintenance state after
+purge. Both are fixed and covered, alongside delayed writes, failed deletion,
+lost acknowledgement, eviction, account isolation, 105-object bounded cleanup,
+hostile retirement requests and refusal from the native storage interceptor.
+Further red/green cases enforce atomic download-ticket revocation and ensure a
+batch of unresolved writes cannot starve ordinary expiry of other files.
+All 331 hosted tests, three hosted typechecks, thirteen production builds and
+root lint pass locally. The npm package/native image is unchanged. No cloud
+trial, resource creation or deployment occurred for this change.
+
+The full deletion flow still needs purpose-bound owner confirmation, primary-D1
+revocation and durable retry orchestration, identity/token cleanup, truthful user
+status, and provider qualification. Deploy retirement-aware compute/storage
+before connecting that controller; rollback must not restore code that ignores
+retirement after accepting deletions. Provider backup retention and unresolved
+write escalation also remain operational launch work. The pending security-email
+decision is unchanged.
+
+Current references:
+[R2 consistency](https://developers.cloudflare.com/r2/reference/consistency/),
+[R2 durability](https://developers.cloudflare.com/r2/reference/durability/),
+[Durable Object alarms](https://developers.cloudflare.com/durable-objects/api/alarms/).

@@ -6,17 +6,36 @@ import { serviceFailure } from '../src/http';
 // acknowledgement or reject deletion, while SQLite inspection controls faults.
 export class StorageFaultFixture extends DurableObject<{ ARTIFACTS: R2Bucket }> {
   private readonly artifacts: ArtifactStore;
+  private held = new Map<string, () => void>();
+  private heldOnce = new Set<string>();
   constructor(ctx: DurableObjectState, env: { ARTIFACTS: R2Bucket }) {
     super(ctx, env);
     ctx.storage.sql.exec('CREATE TABLE IF NOT EXISTS faults (name TEXT PRIMARY KEY)');
     const fault = (name: string) =>
       ctx.storage.sql.exec('SELECT 1 FROM faults WHERE name = ?', name).toArray().length > 0;
+    const hold = (name: string) => {
+      this.heldOnce.add(name);
+      return new Promise<void>((resolve) => this.held.set(name, resolve));
+    };
+    const heldOnce = this.heldOnce;
     const bucket = new Proxy(env.ARTIFACTS, {
       get(target, key) {
         if (key === 'put')
           return async (...args: Parameters<R2Bucket['put']>) => {
+            if (fault('hold-put')) {
+              // The provider has accepted the bytes, but its commit can arrive
+              // after our request deadline. This test control never ships.
+              args[1] = await new Response(args[1]).arrayBuffer();
+              await hold('put');
+            }
             const result = await target.put(...args);
             if (fault('slow-ack')) await new Promise((resolve) => setTimeout(resolve, 1500));
+            return result;
+          };
+        if (key === 'list')
+          return async (...args: Parameters<R2Bucket['list']>) => {
+            const result = await target.list(...args);
+            if (fault('hold-list') && !heldOnce.has('list')) await hold('list');
             return result;
           };
         if (key === 'delete')
@@ -32,7 +51,7 @@ export class StorageFaultFixture extends DurableObject<{ ARTIFACTS: R2Bucket }> 
     this.artifacts = new ArtifactStore(
       ctx,
       bucket,
-      { maxBytes: 1024 * 1024, maxObjects: 32, maxGroups: 8 },
+      { maxBytes: 1024 * 1024, maxObjects: 64, maxGroups: 8 },
       () =>
         fault('ticking-clock') ? ++fixtureClock : Date.now() + (fault('aged') ? 16 * 60 * 1000 : 0),
       500,
@@ -44,6 +63,23 @@ export class StorageFaultFixture extends DurableObject<{ ARTIFACTS: R2Bucket }> 
   async fetch(request: Request): Promise<Response> {
     try {
       const path = new URL(request.url).pathname;
+      if (path === '/held') return Response.json([...this.held.keys()]);
+      if (path.startsWith('/release/')) {
+        const name = path.slice('/release/'.length);
+        this.held.get(name)?.();
+        this.held.delete(name);
+        return new Response('Released');
+      }
+      if (path === '/retire') return Response.json(await this.artifacts.retire());
+      if (path === '/status')
+        return Response.json({
+          ...this.artifacts.retirementStatus(),
+          alarm: await this.ctx.storage.getAlarm(),
+        });
+      if (path === '/run-alarm') {
+        await this.alarm();
+        return new Response('Alarm finished');
+      }
       if (path === '/upload-short' || path === '/upload-large' || path === '/upload-negative') {
         const headers = new Headers(request.headers);
         headers.set(

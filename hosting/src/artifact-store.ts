@@ -41,6 +41,7 @@ export interface StoragePolicy {
 export class ArtifactStore {
   private readonly sql: SqlStorage;
   private readonly prefix: string;
+  private purging?: Promise<ReturnType<ArtifactStore['retirementStatus']>>;
 
   constructor(
     private readonly ctx: DurableObjectState,
@@ -85,7 +86,131 @@ export class ArtifactStore {
     CREATE INDEX IF NOT EXISTS artifact_pins ON group_files(artifact_id);
     CREATE INDEX IF NOT EXISTS artifact_expiry ON artifacts(state, expires_at);
     CREATE INDEX IF NOT EXISTS artifact_content ON artifacts(sha256, filename, media_type);
-    CREATE TABLE IF NOT EXISTS maintenance (id INTEGER PRIMARY KEY, cursor TEXT NOT NULL)`);
+    CREATE TABLE IF NOT EXISTS maintenance (id INTEGER PRIMARY KEY, cursor TEXT NOT NULL);
+    CREATE TABLE IF NOT EXISTS storage_retirement (id INTEGER PRIMARY KEY, state TEXT NOT NULL);
+    CREATE TABLE IF NOT EXISTS artifact_writes (artifact_id TEXT PRIMARY KEY NOT NULL)`);
+  }
+
+  retirementStatus() {
+    const state =
+      this.sql
+        .exec<{ state: 'retiring' | 'purged' }>('SELECT state FROM storage_retirement WHERE id=1')
+        .toArray()[0]?.state ?? 'active';
+    return {
+      state,
+      pendingWrites: this.sql.exec<{ n: number }>('SELECT COUNT(*) AS n FROM artifact_writes').one()
+        .n,
+      remainingObjects: this.sql.exec<{ n: number }>('SELECT COUNT(*) AS n FROM artifacts').one().n,
+    };
+  }
+
+  assertActive(): void {
+    if (this.sql.exec('SELECT 1 FROM storage_retirement WHERE id=1').toArray().length)
+      throw new HttpFailure(410, 'Account storage has been retired');
+  }
+
+  /** Caller must first revoke account access and verify compute retirement. */
+  async retire(revokeDownloads: () => void = () => {}) {
+    await this.ctx.storage.transaction(async () => {
+      this.sql.exec("INSERT OR IGNORE INTO storage_retirement VALUES (1,'retiring')");
+      // The tenant's ticket store shares this SQLite transaction. No issuance
+      // can interleave between revocation and the durable storage deny.
+      revokeDownloads();
+      // Preserve evidence of old interrupted uploads too. Absence in R2 alone is
+      // not proof that an unacknowledged write can no longer arrive.
+      this.sql.exec(
+        "INSERT OR IGNORE INTO artifact_writes SELECT id FROM artifacts WHERE state='uploading'",
+      );
+      this.sql.exec("UPDATE artifacts SET state='deleting'");
+      this.sql.exec('DELETE FROM group_files; DELETE FROM saved_groups; DELETE FROM maintenance');
+      if (this.retirementStatus().state !== 'purged') await this.schedule(this.now() + 30_000);
+    });
+    return this.purge();
+  }
+
+  purge(): Promise<ReturnType<ArtifactStore['retirementStatus']>> {
+    if (this.purging) return this.purging;
+    const work = this.purgeOnce();
+    this.purging = work;
+    const clear = () => {
+      if (this.purging === work) this.purging = undefined;
+    };
+    void work.then(clear, clear);
+    return work;
+  }
+
+  private async purgeOnce() {
+    if (this.retirementStatus().state === 'active')
+      throw new HttpFailure(409, 'Storage is not retired');
+    let retry = 30_000;
+    try {
+      // A matching immutable R2 object is positive evidence that its unique,
+      // create-only put committed. This also recovers a lost acknowledgement.
+      const pending = this.sql
+        .exec<ArtifactRow>(`SELECT a.* FROM artifacts a
+        JOIN artifact_writes w ON w.artifact_id=a.id LIMIT 32`)
+        .toArray();
+      for (const row of pending) {
+        await this.settleCommittedWrite(row);
+      }
+      const candidates = this.sql
+        .exec<ArtifactRow>(`SELECT * FROM artifacts a
+        WHERE NOT EXISTS (SELECT 1 FROM artifact_writes w WHERE w.artifact_id=a.id) LIMIT 32`)
+        .toArray();
+      if (candidates.length) {
+        await this.bucket.delete(candidates.map((row) => row.object_key));
+        for (const row of candidates) this.sql.exec('DELETE FROM artifacts WHERE id=?', row.id);
+      }
+      // Delete all retired-prefix orphans, including recent/nonstandard keys.
+      // Never delete a key whose put is still unresolved, or any other prefix.
+      const listing = await this.bucket.list({ prefix: this.prefix, limit: 100 });
+      const keys = listing.objects
+        .filter(
+          (object) =>
+            !this.sql
+              .exec(
+                'SELECT 1 FROM artifact_writes WHERE artifact_id=?',
+                object.key.slice(this.prefix.length),
+              )
+              .toArray().length,
+        )
+        .map((object) => object.key);
+      if (keys.length) await this.bucket.delete(keys);
+      const status = this.retirementStatus();
+      if (!status.pendingWrites && !status.remainingObjects) {
+        const remaining = await this.bucket.list({ prefix: this.prefix, limit: 1 });
+        if (!remaining.objects.length && !remaining.truncated)
+          this.sql.exec("UPDATE storage_retirement SET state='purged' WHERE id=1");
+      }
+      if (listing.truncated || candidates.length === 32) retry = 10_000;
+      // Unknown writes after a crash retain a daily recovery alarm. They are not
+      // declared erased based on a timeout. Positive commit evidence or a live
+      // failed-put acknowledgement can settle them on a later pass.
+      else if (this.retirementStatus().pendingWrites) retry = DAY;
+      return this.retirementStatus();
+    } finally {
+      await this.ctx.storage.transaction(async () => {
+        if (this.retirementStatus().state === 'purged') await this.ctx.storage.deleteAlarm();
+        else await this.schedule(this.now() + retry);
+      });
+    }
+  }
+
+  private pendingWrite(id: string): boolean {
+    return (
+      this.sql.exec('SELECT 1 FROM artifact_writes WHERE artifact_id=?', id).toArray().length > 0
+    );
+  }
+
+  private async settleCommittedWrite(row: ArtifactRow): Promise<void> {
+    if (!this.pendingWrite(row.id)) return;
+    const object = await this.bucket.head(row.object_key);
+    const digest = object?.checksums.sha256;
+    const hex = digest
+      ? Array.from(new Uint8Array(digest), (b) => b.toString(16).padStart(2, '0')).join('')
+      : '';
+    if (object && object.size === row.bytes && hex === row.sha256)
+      this.sql.exec('DELETE FROM artifact_writes WHERE artifact_id=?', row.id);
   }
 
   private artifact(id: string): ArtifactRow | undefined {
@@ -101,7 +226,12 @@ export class ArtifactStore {
   }
 
   private readable(row: ArtifactRow | undefined): row is ArtifactRow {
-    return !!row && row.state === 'ready' && (row.expires_at > this.now() || this.pinned(row.id));
+    return (
+      !this.sql.exec('SELECT 1 FROM storage_retirement WHERE id=1').toArray().length &&
+      !!row &&
+      row.state === 'ready' &&
+      (row.expires_at > this.now() || this.pinned(row.id))
+    );
   }
 
   usage() {
@@ -137,6 +267,8 @@ export class ArtifactStore {
 
   private async schedule(at = this.now() + DAY): Promise<void> {
     const existing = await this.ctx.storage.getAlarm();
+    // An older upload or maintenance pass may resume after account retirement.
+    if (this.retirementStatus().state === 'purged') return;
     if (existing === null || existing > at) await this.ctx.storage.setAlarm(at);
   }
 
@@ -169,6 +301,7 @@ export class ArtifactStore {
   }
 
   async upload(request: Request) {
+    this.assertActive();
     const rawSize = request.headers.get('content-length') ?? '';
     const bytes = Number(rawSize);
     const sha256 = request.headers.get('x-artifact-sha256') ?? '';
@@ -200,6 +333,7 @@ export class ArtifactStore {
       state: 'uploading',
     };
     this.ctx.storage.transactionSync(() => {
+      this.assertActive();
       const usage = this.usage();
       if (
         usage.objects >= this.policy.maxObjects ||
@@ -219,6 +353,7 @@ export class ArtifactStore {
         row.expires_at,
         row.state,
       );
+      this.sql.exec('INSERT INTO artifact_writes VALUES (?)', id);
     });
     const abort = new AbortController();
     let timer: ReturnType<typeof setTimeout> | undefined;
@@ -234,16 +369,22 @@ export class ArtifactStore {
     const pipe = (request.body ?? new Blob([]).stream()).pipeTo(fixed.writable, {
       signal: abort.signal,
     });
-    const put = Promise.resolve().then(() =>
-      this.bucket.put(row.object_key, fixed.readable, {
-        sha256,
-        onlyIf: { etagDoesNotMatch: '*' },
-        httpMetadata: { contentType: mediaType },
-      }),
-    );
+    const put = Promise.resolve()
+      .then(() => {
+        this.assertActive();
+        return this.bucket.put(row.object_key, fixed.readable, {
+          sha256,
+          onlyIf: { etagDoesNotMatch: '*' },
+          httpMetadata: { contentType: mediaType },
+        });
+      })
+      .finally(() => {
+        this.sql.exec('DELETE FROM artifact_writes WHERE artifact_id=?', id);
+      });
     try {
       const [, stored] = await Promise.race([Promise.all([pipe, put]), timeout]);
       if (!stored || stored.size !== bytes) throw new Error('Artifact write did not complete');
+      this.assertActive();
       const updated = this.sql
         .exec<{ id: string }>(
           "UPDATE artifacts SET state = 'ready' WHERE id = ? AND state = 'uploading' RETURNING id",
@@ -260,6 +401,7 @@ export class ArtifactStore {
       this.sql.exec("UPDATE artifacts SET state = 'deleting' WHERE id = ?", id);
       const cleanup = (async () => {
         await Promise.allSettled([pipe, put]);
+        this.sql.exec('DELETE FROM artifact_writes WHERE artifact_id=?', id);
         try {
           await this.bucket.delete(row.object_key);
           this.sql.exec("DELETE FROM artifacts WHERE id = ? AND state = 'deleting'", id);
@@ -329,6 +471,7 @@ export class ArtifactStore {
   }
 
   save(input: unknown, conditions: { parentKey?: string; absentPrefix?: string } = {}) {
+    this.assertActive();
     if (!input || typeof input !== 'object' || Array.isArray(input))
       throw new HttpFailure(400, 'Invalid saved revision');
     const { key, files, metadata } = input as Record<string, unknown>;
@@ -470,21 +613,31 @@ export class ArtifactStore {
   }
 
   async sweep(): Promise<{ removed: number }> {
+    if (this.retirementStatus().state !== 'active') {
+      const before = this.retirementStatus().remainingObjects;
+      const after = await this.purge();
+      return { removed: before - after.remainingObjects };
+    }
     const now = this.now();
     let removed = 0;
     try {
-      const candidates = this.sql
+      let candidates = this.sql
         .exec<ArtifactRow>(
           `SELECT * FROM artifacts WHERE state = 'deleting'
         OR (state = 'uploading' AND created_at <= ?)
         OR (state = 'ready' AND expires_at <= ? AND NOT EXISTS
-          (SELECT 1 FROM group_files WHERE artifact_id = artifacts.id)) LIMIT 32`,
+          (SELECT 1 FROM group_files WHERE artifact_id = artifacts.id))
+        ORDER BY EXISTS (SELECT 1 FROM artifact_writes WHERE artifact_id=artifacts.id)
+        LIMIT 32`,
           now - UPLOAD_GRACE,
           now,
         )
         .toArray();
       for (const row of candidates)
         this.sql.exec("UPDATE artifacts SET state = 'deleting' WHERE id = ?", row.id);
+      for (const row of candidates) await this.settleCommittedWrite(row);
+      if (this.retirementStatus().state !== 'active') return { removed };
+      candidates = candidates.filter((row) => !this.pendingWrite(row.id));
       if (candidates.length) {
         await this.bucket.delete(candidates.map((row) => row.object_key));
         this.ctx.storage.transactionSync(() => {
@@ -503,6 +656,7 @@ export class ArtifactStore {
         limit: 100,
         cursor: cursor || undefined,
       });
+      if (this.retirementStatus().state !== 'active') return { removed };
       const orphans = listing.objects.filter(
         (object) =>
           object.uploaded.getTime() <= now - UPLOAD_GRACE &&
@@ -510,6 +664,7 @@ export class ArtifactStore {
           !this.artifact(object.key.slice(this.prefix.length)),
       );
       if (orphans.length) await this.bucket.delete(orphans.map((object) => object.key));
+      if (this.retirementStatus().state !== 'active') return { removed };
       this.sql.exec(
         'INSERT OR REPLACE INTO maintenance VALUES (1, ?)',
         listing.truncated ? listing.cursor : '',

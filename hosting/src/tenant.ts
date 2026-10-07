@@ -8,6 +8,17 @@ import { AssetDownloadTickets } from './asset-downloads';
 import { parseDownloadPath } from './download-path';
 import { MaterialIndex } from './material-index';
 
+const retirementHeaders = new Set([
+  'content-length',
+  'accept',
+  'accept-encoding',
+  'accept-language',
+  'connection',
+  'host',
+  'user-agent',
+  'sec-fetch-mode',
+]);
+
 export interface TenantStorageEnv {
   ARTIFACTS: R2Bucket;
   STORAGE_MAX_BYTES: string;
@@ -36,6 +47,7 @@ export class KilnTenant extends DurableObject<TenantStorageEnv> {
   }
 
   async alarm(): Promise<void> {
+    if (this.artifacts.retirementStatus().state !== 'active') this.downloads.revokeAll();
     this.downloads.sweep();
     await this.artifacts.sweep();
   }
@@ -45,6 +57,20 @@ export class KilnTenant extends DurableObject<TenantStorageEnv> {
       const url = new URL(request.url);
       if (url.origin !== 'https://tenant.internal' || url.search)
         throw new HttpFailure(400, 'Invalid internal request');
+      if (url.pathname === '/internal/account-deletion') {
+        if (
+          request.method !== 'POST' ||
+          [...request.headers].some(
+            ([name, value]) => !retirementHeaders.has(name) || value.length > 512,
+          ) ||
+          ![null, '0'].includes(request.headers.get('content-length'))
+        )
+          throw new HttpFailure(400, 'Invalid storage retirement');
+        await readBounded(request.body, 0, request.signal);
+        const result = await this.artifacts.retire(() => this.downloads.revokeAll());
+        return privateResponse(Response.json(result));
+      }
+      this.artifacts.assertActive();
       if (url.pathname === '/internal/downloads' && request.method === 'POST') {
         if (request.headers.get('content-type')?.split(';')[0] !== 'application/json')
           throw new HttpFailure(415, 'Expected download selection');

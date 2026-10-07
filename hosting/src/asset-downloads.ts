@@ -32,6 +32,10 @@ export class AssetDownloadTickets {
     CREATE INDEX IF NOT EXISTS asset_download_expiry ON asset_download_tickets(expires_at)`);
   }
 
+  revokeAll(): void {
+    this.sql.exec('DELETE FROM asset_download_tickets');
+  }
+
   async issue(collection: unknown, assetId: unknown, revisionId: unknown) {
     const group = this.assets.read(collection, assetId, revisionId);
     const files = Object.keys(group.files).sort();

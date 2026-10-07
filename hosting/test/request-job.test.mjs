@@ -340,6 +340,7 @@ test('storage interceptor refuses supplied identity, foreign origins and adminis
     new Request('http://kiln-storage.internal/internal/programs?tenant=victim'),
     new Request('http://attacker.example/internal/programs'),
     new Request('http://kiln-storage.internal/internal/maintenance', { method: 'POST' }),
+    new Request('http://kiln-storage.internal/internal/account-deletion', { method: 'POST' }),
   ])
     await assert.rejects(f.job.storageRequest(req));
   assert.equal(f.storageCalls.length, 0);

@@ -58,6 +58,9 @@ export class KilnAdmission extends DurableObject<AdmissionEnv> {
     await this.admission.setPaused(paused);
     return this.admission.status();
   }
+  retireTenant(tenant: string): Promise<void> {
+    return this.admission.retireTenant(tenant);
+  }
   alarm(): Promise<void> {
     return this.admission.alarm();
   }
@@ -74,6 +77,10 @@ export class KilnCompute extends WorkerEntrypoint<ComputeBinding> {
     } catch (error) {
       return admissionFailure(error);
     }
+  }
+  /** Only the gateway's verified account-deletion controller may call this. */
+  retireTenant(tenant: string): Promise<void> {
+    return this.env.ADMISSION.getByName('global-v1').retireTenant(tenant);
   }
 }
 

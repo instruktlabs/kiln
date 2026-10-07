@@ -74,6 +74,7 @@ before(async () => {
         if(url.pathname==='/private-http')return env.COMPUTE.fetch(request);
         if(url.pathname==='/missing-policy')return env.UNCONFIGURED.dispatch('a'.repeat(43),new Request('https://tenant.internal/mcp'));
         if(url.pathname==='/try-pause') {try {await env.COMPUTE.setPaused(true);return new Response('exposed');}catch{return new Response('unavailable',{status:404});}}
+        if(url.pathname==='/retire') {await env.COMPUTE.retireTenant('z'.repeat(43));return Response.json({retired:true});}
         return env.COMPUTE.dispatch(url.searchParams.get('tenant').repeat(43),new Request('https://tenant.internal/mcp',{method:'POST',headers:{'content-type':'application/json'},body:'{}'}));
       }};`,
         },
@@ -130,4 +131,15 @@ test('absent quota configuration refuses work instead of selecting implicit laun
   const response = await compute.fetch('https://test.invalid/missing-policy');
   assert.equal(response.status, 503);
   assert.equal(await response.text(), 'Service temporarily unavailable');
+});
+
+test('verified gateway lifecycle RPC permanently retires a tenant without a public route', async () => {
+  assert.equal((await raw.fetch('https://test.invalid/retire')).status, 404);
+  assert.deepEqual(await (await compute.fetch('https://test.invalid/retire')).json(), {
+    retired: true,
+  });
+  assert.equal((await compute.fetch('https://test.invalid/?tenant=z')).status, 410);
+  assert.deepEqual(await (await compute.fetch('https://test.invalid/retire')).json(), {
+    retired: true,
+  });
 });

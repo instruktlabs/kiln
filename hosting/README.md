@@ -180,6 +180,47 @@ provider UI and external notification delivery remain launch work. Sources check
 [NIST federation account management](https://pages.nist.gov/800-63-4/sp800-63c.html),
 [D1 transactions](https://developers.cloudflare.com/d1/worker-api/d1-database/#batch).
 
+### Account deletion infrastructure
+
+The private compute and storage services now support permanent retirement of one
+tenant. This is infrastructure only: the user confirmation, primary-D1 deletion
+job, identity/token cleanup and completion page are not connected yet. No public
+account-deletion endpoint is enabled by this change.
+
+The required order is primary account revocation, verified compute retirement,
+then storage retirement, followed by identity cleanup. `KilnCompute.retireTenant`
+durably denies new work and waits for cancellation of the selected account's
+coordinator and children. Unknown cleanup keeps its admission slot and recovery
+alarm. Other accounts continue; global usage counters retain already-admitted
+costs. An opaque account-derived deny record survives eviction and pause/resume.
+
+The tenant's private `/internal/account-deletion` accepts only an empty POST from
+the owning service binding. The native coordinator's storage allowlist rejects
+that administrative path. Retirement removes download tickets and saved revision
+metadata, denies all normal tenant operations and purges the exact R2 prefix in
+bounded batches. Durable markers retain unresolved uploads: an HTTP timeout or an
+empty bucket listing does not establish that a write cannot arrive later. A
+settled put or matching committed immutable R2 bytes permits cleanup. A crash
+with neither kind of evidence remains pending with daily recovery; it must be
+reported as incomplete and escalated, never silently declared erased. Earlier
+ordinary maintenance cannot discard those markers or recreate state after purge.
+
+`purged` requires zero unresolved writes, zero artifact rows and a final empty R2
+listing. It removes the storage alarm but preserves the small permanent deny
+record. Already-delivered files cannot be recalled. These checks concern active
+application storage; provider backups/retention need their separate launch policy.
+Use the deletion controller only after every compute/storage instance runs this
+contract and older uploads have drained. Rolling back to code that ignores these
+records after accepting a deletion would be unsafe; pause service instead.
+
+Local workerd fault tests cover late writes, unknown acknowledgements, failed R2
+deletion, eviction/retry, overlapping maintenance, prefix isolation and bounded
+orphan batches. Live provider deletion, operations escalation and the complete
+user flow remain unqualified. References:
+[R2 consistency](https://developers.cloudflare.com/r2/reference/consistency/),
+[R2 durability](https://developers.cloudflare.com/r2/reference/durability/),
+[Durable Object alarms](https://developers.cloudflare.com/durable-objects/api/alarms/).
+
 ## Native HTTP adapter
 
 `src/native-mcp.ts` serves the installed engine's registry through the MCP SDK's

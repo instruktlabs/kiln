@@ -54,6 +54,135 @@ const upload = (owner, path = '/upload') =>
     },
   });
 const prefix = (owner) => `tenants/${namespace.idFromName(owner)}/artifacts/`;
+const status = async (owner) => (await send(owner, '/status')).json();
+async function until(predicate) {
+  const deadline = Date.now() + 4000;
+  while (!(await predicate())) {
+    assert(Date.now() < deadline, 'Fixture did not reach the expected state');
+    await delay(10);
+  }
+}
+
+test('retirement waits for a late write and maintenance preserves its durable evidence', async () => {
+  const owner = 'retire-late-put';
+  const db = await database(owner);
+  await db.exec("INSERT INTO faults VALUES ('hold-put')");
+  const pending = upload(owner);
+  try {
+    await until(async () => (await (await send(owner, '/held')).json()).includes('put'));
+    assert.equal((await pending).status, 502);
+    assert.equal((await send(owner, '/sweep')).status, 200);
+    assert.equal((await status(owner)).remainingObjects, 1, 'retain unresolved write metadata');
+    const retired = await (await send(owner, '/retire')).json();
+    assert.equal(retired.state, 'retiring');
+    assert.equal(retired.pendingWrites, 1);
+    assert.equal((await upload(owner)).status, 410);
+    await send(owner, '/release/put');
+    await until(async () => (await status(owner)).pendingWrites === 0);
+    await send(owner, '/run-alarm');
+    assert.deepEqual(await status(owner), {
+      state: 'purged',
+      pendingWrites: 0,
+      remainingObjects: 0,
+      alarm: null,
+    });
+    assert.equal(
+      (await (await runtime.getR2Bucket('ARTIFACTS')).list({ prefix: prefix(owner) })).objects
+        .length,
+      0,
+    );
+  } finally {
+    await send(owner, '/release/put');
+    await pending;
+  }
+});
+
+test('failed retirement stays denied across eviction and retries deletion before clearing its alarm', async () => {
+  const owner = 'retire-failed-delete';
+  const db = await database(owner);
+  const record = await (await upload(owner)).json();
+  await db.exec("INSERT INTO faults VALUES ('delete-failure')");
+  assert.equal((await send(owner, '/retire')).status, 503);
+  assert.equal((await status(owner)).state, 'retiring');
+  assert.equal((await status(owner)).remainingObjects, 1);
+  assert.notEqual((await status(owner)).alarm, null);
+  await runtime.unsafeEvictDurableObject('faults', 'StorageFaultFixture', {
+    id: namespace.idFromName(owner).toString(),
+  });
+  assert.equal((await upload(owner)).status, 410);
+  assert.equal((await send(owner, `/download/${record.id}`)).status, 404);
+  await db.exec('DELETE FROM faults');
+  assert.equal((await send(owner, '/run-alarm')).status, 200);
+  assert.deepEqual(await status(owner), {
+    state: 'purged',
+    pendingWrites: 0,
+    remainingObjects: 0,
+    alarm: null,
+  });
+});
+
+test('retirement recovers a lost put acknowledgement only from matching committed bytes', async () => {
+  for (const committed of [false, true]) {
+    const owner = `retire-lost-ack-${committed}`;
+    const db = await database(owner);
+    const record = await (await upload(owner)).json();
+    await db.exec("UPDATE artifacts SET state='uploading',created_at=1");
+    await db.exec('INSERT INTO artifact_writes VALUES (?)', record.id);
+    if (!committed)
+      await (await runtime.getR2Bucket('ARTIFACTS')).delete(prefix(owner) + record.id);
+    await runtime.unsafeEvictDurableObject('faults', 'StorageFaultFixture', {
+      id: namespace.idFromName(owner).toString(),
+    });
+    const result = await (await send(owner, '/retire')).json();
+    assert.equal(result.state, committed ? 'purged' : 'retiring');
+    assert.equal(result.pendingWrites, committed ? 0 : 1);
+    assert.equal((await upload(owner)).status, 410);
+    if (!committed) assert.notEqual((await status(owner)).alarm, null);
+  }
+});
+
+test('an older maintenance pass cannot recreate metadata or alarms after retirement', async () => {
+  const owner = 'retire-maintenance-race';
+  const db = await database(owner);
+  await db.exec("INSERT INTO faults VALUES ('hold-list')");
+  const pending = send(owner, '/sweep');
+  try {
+    await until(async () => (await (await send(owner, '/held')).json()).includes('list'));
+    assert.equal((await (await send(owner, '/retire')).json()).state, 'purged');
+    await send(owner, '/release/list');
+    assert.equal((await pending).status, 200);
+    assert.equal((await db.exec('SELECT COUNT(*) AS n FROM maintenance'))[0].n, 0);
+    assert.equal((await status(owner)).alarm, null);
+  } finally {
+    await send(owner, '/release/list');
+    await pending;
+  }
+});
+
+test('an unresolved write batch cannot indefinitely block retention of other expired files', async () => {
+  const owner = 'retention-pending-batch';
+  const db = await database(owner);
+  const record = await (await upload(owner)).json();
+  for (let i = 0; i < 32; i++) {
+    const id = randomBytes(16).toString('hex');
+    await db.exec(
+      "INSERT INTO artifacts SELECT ?,?,sha256,bytes,filename,media_type,1,1,'uploading' FROM artifacts WHERE id=?",
+      id,
+      prefix(owner) + id,
+      record.id,
+    );
+    await db.exec('INSERT INTO artifact_writes VALUES (?)', id);
+  }
+  await send(owner, '/sweep');
+  await db.exec('UPDATE artifacts SET expires_at=1 WHERE id=?', record.id);
+  assert.equal((await send(owner, '/sweep')).status, 200);
+  assert.equal(
+    await (await runtime.getR2Bucket('ARTIFACTS')).head(prefix(owner) + record.id),
+    null,
+  );
+  assert.equal((await status(owner)).pendingWrites, 32);
+  assert.equal((await status(owner)).remainingObjects, 32);
+});
 
 test('unsaved retention uses one creation instant even when the clock advances', async () => {
   const db = await database('retention-clock');

@@ -77,6 +77,7 @@ export class ComputeAdmission {
       );
       CREATE INDEX IF NOT EXISTS compute_expiry ON compute_usage(expires_at);
       CREATE TABLE IF NOT EXISTS compute_control (id INTEGER PRIMARY KEY, paused INTEGER NOT NULL);
+      CREATE TABLE IF NOT EXISTS compute_retired (tenant TEXT PRIMARY KEY NOT NULL);
       INSERT OR IGNORE INTO compute_control VALUES (1,0);
     `);
     const versions = this.sql
@@ -95,6 +96,10 @@ export class ComputeAdmission {
       this.sql.exec<{ paused: number }>('SELECT paused FROM compute_control WHERE id = 1').one()
         .paused !== 0
     );
+  }
+  private assertAvailable(tenant: string): void {
+    if (this.sql.exec('SELECT 1 FROM compute_retired WHERE tenant=?', tenant).toArray().length)
+      throw new HttpFailure(410, 'Account compute has been retired');
   }
   status(): {
     paused: boolean;
@@ -163,6 +168,7 @@ export class ComputeAdmission {
   private async reserve(tenant: string): Promise<Active> {
     return this.storage.transaction(async () => {
       const now = this.now();
+      this.assertAvailable(tenant);
       if (this.paused()) throw new HttpFailure(503, 'Compute is temporarily paused');
       const count = this.sql
         .exec<{ total: number }>('SELECT COUNT(*) AS total FROM compute_active')
@@ -227,6 +233,7 @@ export class ComputeAdmission {
     let failed = false;
     let failure: unknown;
     try {
+      this.assertAvailable(tenant);
       // Pause/recovery may have run while the durable reservation was committing.
       if (this.paused() || this.active(record.id)?.state !== 'running')
         throw new HttpFailure(503, 'Compute is temporarily paused');
@@ -267,6 +274,14 @@ export class ComputeAdmission {
     }
     if (failed) {
       throw failure;
+    }
+    // A completed result cannot escape after account retirement interleaved with
+    // the run or its verified cleanup. Previously delivered bytes cannot be recalled.
+    try {
+      this.assertAvailable(tenant);
+    } catch (error) {
+      void response?.body?.cancel().catch(() => {});
+      throw error;
     }
     if (!response) throw new Error('Missing compute result');
     return response;
@@ -326,6 +341,37 @@ export class ComputeAdmission {
       return active;
     });
     await Promise.allSettled(active.map((row) => this.close(row.id)));
+  }
+
+  /** Permanent account-deletion fence, followed by verified whole-request cleanup. */
+  async retireTenant(tenant: string): Promise<void> {
+    if (typeof tenant !== 'string' || !/^[A-Za-z0-9_-]{43}(?![\s\S])/.test(tenant))
+      throw new HttpFailure(400, 'Invalid compute identity');
+    const active = await this.storage.transaction(async () => {
+      this.sql.exec('INSERT OR IGNORE INTO compute_retired VALUES (?)', tenant);
+      const active = this.sql
+        .exec<Active>('SELECT * FROM compute_active WHERE tenant=?', tenant)
+        .toArray()[0];
+      if (active)
+        this.sql.exec(
+          "UPDATE compute_active SET state='closing',recover_at=? WHERE id=?",
+          this.now(),
+          active.id,
+        );
+      await this.schedule();
+      return active;
+    });
+    // Cleanup failure deliberately rejects: a caller must not proceed as if the
+    // tenant is drained. The deny and the active lease survive eviction/retry.
+    if (active) await this.close(active.id);
+    await this.storage.transaction(async () => {
+      if (this.sql.exec('SELECT 1 FROM compute_active WHERE tenant=?', tenant).toArray().length)
+        throw new Error('Account compute cleanup is not confirmed');
+      this.sql.exec('DELETE FROM compute_usage WHERE owner=?', tenant);
+      // Global counters retain the cost of admitted work. The opaque deny record
+      // persists without its own alarm and cannot be cleared by pause/resume.
+      await this.schedule();
+    });
   }
 
   async alarm(): Promise<void> {

@@ -64,7 +64,110 @@ const save = (owner, key, files, metadata = {}) =>
   });
 const get = (owner, id) => send(owner, `/mcp/artifacts/${id}`);
 const sweep = (owner) => send(owner, '/internal/maintenance', { method: 'POST' });
+const retire = (owner) => send(owner, '/internal/account-deletion', { method: 'POST' });
 const usage = async (owner) => (await send(owner, '/internal/usage')).json();
+
+test('account storage retirement erases saved and unsaved bytes while preserving another tenant', async () => {
+  const owner = 'retire-account',
+    other = 'retire-account-other';
+  const saved = (await upload(owner)).record,
+    unsaved = (await upload(owner, Buffer.from('unsaved'))).record;
+  const foreign = (await upload(other)).record;
+  assert.equal(
+    (
+      await save(
+        owner,
+        'library/saved/revision',
+        { 'asset.glb': saved.id },
+        { name: 'Private title' },
+      )
+    ).status,
+    201,
+  );
+  const response = await retire(owner);
+  assert.equal(response.status, 200);
+  assert.equal((await response.json()).state, 'purged');
+  for (const path of [
+    '/internal/usage',
+    '/internal/programs',
+    `/mcp/artifacts/${saved.id}`,
+    `/mcp/artifacts/${unsaved.id}`,
+  ])
+    assert.equal((await send(owner, path)).status, 410);
+  assert.equal((await upload(owner)).response.status, 410);
+  assert.equal(
+    (await save(owner, 'library/recreate/revision', { 'asset.glb': saved.id })).status,
+    410,
+  );
+  const bucket = await runtime.getR2Bucket('ARTIFACTS');
+  assert.equal(
+    (await bucket.list({ prefix: `tenants/${namespace.idFromName(owner)}/artifacts/` })).objects
+      .length,
+    0,
+  );
+  assert.equal((await get(other, foreign.id)).status, 200);
+  const db = await database(owner);
+  for (const table of ['saved_groups', 'group_files', 'artifacts', 'asset_download_tickets'])
+    assert.equal((await db.exec(`SELECT COUNT(*) AS n FROM ${table}`))[0].n, 0);
+  await runtime.unsafeEvictDurableObject('tenant', 'KilnTenant', {
+    id: namespace.idFromName(owner).toString(),
+  });
+  assert.equal((await upload(owner)).response.status, 410);
+  assert.equal((await (await retire(owner)).json()).state, 'purged');
+});
+
+test('retirement removes every orphan in bounded prefix-only batches', async () => {
+  const owner = 'retire-orphans';
+  await send(owner, '/internal/usage');
+  const bucket = await runtime.getR2Bucket('ARTIFACTS');
+  const prefix = `tenants/${namespace.idFromName(owner)}/artifacts/`;
+  for (let i = 0; i < 105; i++) await bucket.put(`${prefix}orphan-${i}`, 'discard');
+  const foreign = `tenants/${namespace.idFromName('retire-orphans-other')}/artifacts/other`;
+  await bucket.put(foreign, 'keep');
+  const first = await (await retire(owner)).json();
+  assert.equal(first.state, 'retiring');
+  assert.equal((await bucket.list({ prefix })).objects.length, 5);
+  assert.equal((await (await retire(owner)).json()).state, 'purged');
+  assert.equal(await (await bucket.get(foreign)).text(), 'keep');
+});
+
+test('storage retirement rejects identity selectors, bodies and unsupported methods before any mutation', async () => {
+  const owner = 'retire-invalid';
+  for (const init of [
+    { method: 'GET' },
+    { method: 'DELETE' },
+    { method: 'POST', headers: { authorization: 'Bearer attacker' } },
+    { method: 'POST', headers: { 'x-tenant-id': 'other' } },
+    { method: 'POST', headers: { cookie: 'session=attacker' } },
+    { method: 'POST', body: '{}' },
+  ]) {
+    assert.equal((await send(owner, '/internal/account-deletion', init)).status, 400);
+    assert.equal((await send(owner, '/internal/usage')).status, 200);
+  }
+});
+
+test('download ticket revocation commits in the same retirement transaction as the storage deny', async () => {
+  const owner = 'retire-atomic-tickets';
+  const record = (await upload(owner)).record;
+  const group = await (await save(owner, 'saved/revision', { 'asset.glb': record.id })).json();
+  const db = await database(owner);
+  await db.exec(
+    'INSERT INTO asset_download_tickets VALUES (?,?,?,0)',
+    'synthetic-ticket',
+    group.id,
+    Date.now() + 600_000,
+  );
+  await db.exec(
+    "CREATE TRIGGER retirement_fault BEFORE UPDATE ON artifacts BEGIN SELECT RAISE(ABORT,'injected'); END",
+  );
+  assert.equal((await retire(owner)).status, 503);
+  assert.equal((await send(owner, '/internal/usage')).status, 200);
+  assert.equal((await db.exec('SELECT COUNT(*) AS n FROM asset_download_tickets'))[0].n, 1);
+  assert.equal((await get(owner, record.id)).status, 200);
+  await db.exec('DROP TRIGGER retirement_fault');
+  assert.equal((await (await retire(owner)).json()).state, 'purged');
+  assert.equal((await db.exec('SELECT COUNT(*) AS n FROM asset_download_tickets'))[0].n, 0);
+});
 async function database(owner) {
   return runtime.unsafeGetDurableObjectStorage('tenant', 'KilnTenant', {
     id: namespace.idFromName(owner).toString(),
@@ -77,6 +180,14 @@ test('private tenant worker has no public upload or download route', async () =>
       await runtime.dispatchFetch('https://anything.example/internal/artifacts', {
         method: 'POST',
         body: 'data',
+      })
+    ).status,
+    404,
+  );
+  assert.equal(
+    (
+      await runtime.dispatchFetch('https://anything.example/internal/account-deletion', {
+        method: 'POST',
       })
     ).status,
     404,
