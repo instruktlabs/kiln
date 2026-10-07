@@ -83,6 +83,14 @@
       "types": "./lib/tools/registry.d.ts",
       "import": "./lib/tools/registry.js"
     },
+    "./tools/input": {
+      "types": "./lib/tools/actions.d.ts",
+      "import": "./lib/tools/actions.js"
+    },
+    "./mcp": {
+      "types": "./lib/mcp.d.ts",
+      "import": "./lib/mcp.js"
+    },
     "./arena": {
       "types": "./lib/arena/index.d.ts",
       "import": "./lib/arena/index.js"
@@ -114,6 +122,10 @@
     "./views": {
       "types": "./lib/views/index.d.ts",
       "import": "./lib/views/index.js"
+    },
+    "./views/port": {
+      "types": "./lib/views/port.d.ts",
+      "import": "./lib/views/port.js"
     },
     "./validation": {
       "types": "./lib/validation.d.ts",
@@ -206,6 +218,10 @@
     "./discovery": {
       "types": "./lib/discovery/index.d.ts",
       "import": "./lib/discovery/index.js"
+    },
+    "./discovery/portable": {
+      "types": "./lib/discovery/portable.d.ts",
+      "import": "./lib/discovery/portable.js"
     },
     "./metrics": {
       "types": "./lib/metrics.d.ts",

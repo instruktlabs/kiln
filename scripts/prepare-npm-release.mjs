@@ -124,7 +124,7 @@ export async function verifyReleaseArtifacts(directory, { manifest, toolchain, d
   assert.equal(manifest.name, '@instruktlabs/kiln', 'Wrong release package');
   assert.match(
     manifest.version,
-    /^1\.0\.0(?:-rc\.(?:0|[1-9]\d*))?$/,
+    /^1\.(?:0|[1-9]\d*)\.(?:0|[1-9]\d*)(?:-rc\.(?:0|[1-9]\d*))?$/,
     'Expected a v1 release version',
   );
   assert.notEqual(manifest.private, true, 'Private packages cannot be staged');

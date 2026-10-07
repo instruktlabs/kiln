@@ -14,16 +14,17 @@ code. Private PR #1 is now merged with owner approval. Further hosted-only
 PR work belongs in that repository; the
 existing trial approvals remain unanswered and are not supplied by this decision.
 
-The PR sequence below predates this decision. #154/#155 should be preserved in the
-private migration instead of proceeding through the earlier public merge sequence;
-#156's public setup/isolation work must be separated from its hosted changes.
+Public cleanup PR #157 is now merged with owner approval. #154/#155's hosted work
+is preserved privately, and #156's public setup/isolation work is retained in main.
+Those three superseded PRs are closed with owner approval; contributor PRs #140,
+#141 and #142 remain open and untouched.
 The owner requested an updated [execution goal](../plans/2026-10-06-v1-execution-goal.md)
 covering the full cycle and a focused-day migration target. GitHub Team is the
 approved plan for protection rules on the new private repository's branches.
 There is no private branch inside the public repository. The owner selected
 monthly billing and completed the upgrade. GitHub's organization API independently
 confirms `plan.name: team`, `seats: 1`, `filled_seats: 1`; checkout showed $4/month
-before tax/usage. The private remote is established; public cleanup is not merged.
+before tax/usage. The private import and public cleanup are both merged.
 
 The separate `C:/Users/Mattm/X/kiln-hosted` checkout records preserved source from
 `f99f1b8`, with 251 original-source hash records. Private PR #1 at `1d6bd74`
@@ -35,11 +36,37 @@ match across local/Linux/Windows builds. The import secret scan passed and priva
 main protections are verified. Two temporary installed-package adapters remain
 documented follow-up API work.
 
-The public cleanup candidate removes the hosting application and its two dedicated
+The public cleanup removes the hosting application and its two dedicated
 workflows, relocates public plugin metadata/packaging, and retains generic engine
-checks. It is being qualified in an isolated worktree; public main still contains
-the old folder. The owner accepts historical source remaining visible: use a
-normal cleanup PR without history rewriting, force pushes or release-tag removal.
+checks. PR #157 passed all 22 checks at `52b27f4` and merged as
+`7581ac469b3af9eecde334f42d91a2da4c77d89e`. The merged tree exactly matches the
+approved tree `f61605fda838cb6b6bfe4c9e7bc5c000aade6220`; prior main remains an
+ancestor, and the removed paths are absent from current main. Its post-merge CI
+is running. Historical source remains visible, with no history rewrite, force push
+or release-tag removal. This merge publishes and deploys nothing.
+
+### PR #153 post-merge CI investigation
+
+The owner reported a failed status on #153. Its approved source `39083d7` had all
+25 PR checks passing, and merged `6f41a1a` has the identical source tree. In main's
+[CI run 37688830647](https://github.com/instruktlabs/kiln/actions/runs/37688830647),
+Linux/Windows engine checks and package installations passed. The software Vulkan
+job stalled during `apt-get update`, before installing the candidate or rendering,
+and exceeded its 20-minute job limit. The dependent Linux summary check failed
+because that required renderer result was cancelled. The affected renderer job
+and dependent summary passed on rerun attempt 2 at the unchanged `6f41a1a` commit.
+All 12 main CI jobs are now successful. The renderer installed Mesa and the exact
+candidate in 25 seconds, completed textured software Vulkan readback in 18 seconds,
+and retained its identity and images. No source change was needed.
+
+Repository identity remains `1278326592`, public with 244 stars and 19 forks at
+verification. Main remains protected, with force pushes and branch deletion
+disabled. The approved and merged trees both equal
+`8547cb35133b6efe2a78b20a24f9873e8abb24ab`. No history rewrite occurred.
+
+The public cleanup [PR #157](https://github.com/instruktlabs/kiln/pull/157) separately
+passed all 22 checks at `52b27f4`, including software rendering, and subsequently
+merged with owner approval as `7581ac4`. The PR #153 CI concern is resolved.
 
 ## Completed
 
@@ -109,11 +136,11 @@ normal cleanup PR without history rewriting, force pushes or release-tag removal
   identified no new defect in this pass. See the [security record](2026-10-06-v1-security-review.md#7-october-candidate-refresh);
   live provider sign-in, final image/configuration review and real-client behavior
   are still separate launch requirements.
-- Recovery scope is awaiting owner alignment: the original plan requires rollback
-  readiness, while the later checklist also adds broader backup and restore
-  qualification. The pending decision distinguishes provider database recovery plus
-  tested code rollback from a new source/GLB backup system. Until answered, the
-  existing checklist remains in force; no new backup storage is provisioned.
+- Recovery scope is now owner-aligned: provider database recovery plus tested code
+  rollback, with explicit disclosure that deleted source/GLB bytes cannot be
+  recovered. Automatic asset backups and cross-store snapshots are outside v1.
+  Provider recovery and rollback still need qualification; no backup storage is
+  provisioned. The private runbook and draft privacy page reflect this choice.
 
 ## Execution focus after the owner progress review
 
@@ -144,7 +171,7 @@ follow functioning, verified user journeys.
 1. Finish shared setup qualification and exact package/plugin version selection.
    Published 1.0.0 cannot gain this new feature in place. Test actual onboarding
    in both advertised clients, then qualify and approve the new artifact.
-2. Complete deployed retention/Cron, backup/restore and rollback qualification.
+2. Complete deployed retention/Cron, provider database recovery and rollback qualification.
    Prove that recovery retains current revocations and saved bytes.
 3. Complete real Google/GitHub sign-in and account actions, production Google
    audience/branding, monitoring, representative abuse/load/cost checks, and
@@ -163,26 +190,27 @@ follow functioning, verified user journeys.
 ## PR sequence and outstanding handoffs
 
 Git ancestry and merged content were checked against current remote PR heads.
-The owner approved #153 and closure of its three superseded PRs. There are now
-three open release PRs:
+The owner approved #153 and then #157, with closure of their superseded release
+PRs. The public release stack is reconciled; community PRs remain open.
 
 | PR | Role | Disposition |
 | --- | --- | --- |
 | [#147](https://github.com/instruktlabs/kiln/pull/147) | Initial native execution | Closed as superseded after inclusion in #153 was verified |
 | [#149](https://github.com/instruktlabs/kiln/pull/149) | Initial account controls | Closed as superseded; no separate merge needed |
 | [#150](https://github.com/instruktlabs/kiln/pull/150) | Native startup/isolation qualification | Closed as superseded; no separate merge needed |
-| [#153](https://github.com/instruktlabs/kiln/pull/153) | Integrated hosted foundation | Merged as `6f41a1a`; merged tree is identical to approved `39083d7`; main CI running |
-| [#154](https://github.com/instruktlabs/kiln/pull/154) | Retention and scheduled recovery | Based on main; history reconciled at `7fc5bbb` without changing any file; frozen private trial still uses `37c962e` and awaits its separate $1 allowance |
-| [#155](https://github.com/instruktlabs/kiln/pull/155) | Maintenance and recovery preparation | Review base is #154's branch; restore/provider evidence remains unfinished |
-| [#156](https://github.com/instruktlabs/kiln/pull/156) | Shared setup and isolation fixes | Review base is #155's branch; all 27 checks pass at `2087faa`; actual onboarding remains |
+| [#153](https://github.com/instruktlabs/kiln/pull/153) | Integrated hosted foundation | Merged as `6f41a1a`; merged tree is identical to approved `39083d7`; all 12 main CI jobs pass after the dependency-download timeout was rerun |
+| [#154](https://github.com/instruktlabs/kiln/pull/154) | Retention and scheduled recovery | Closed with owner approval; source preserved privately; provider trial still needs authorization |
+| [#155](https://github.com/instruktlabs/kiln/pull/155) | Maintenance and recovery preparation | Closed with owner approval; source preserved privately; recovery qualification remains |
+| [#156](https://github.com/instruktlabs/kiln/pull/156) | Shared setup and isolation fixes | Closed with owner approval; public work included in #157; actual onboarding remains |
+| [#157](https://github.com/instruktlabs/kiln/pull/157) | Public/private source separation | Merged as `7581ac4`, identical to approved `52b27f4`; post-merge CI running |
 
 GitHub requires linear main history. The merge-commit attempt was refused; the
 approved squash merge was used without changing branch protections. Main's tree
 `8547cb35133b6efe2a78b20a24f9873e8abb24ab` equals the approved source tree exactly.
 Operations history was then reconciled using that verified common content;
 `7fc5bbb` has the unchanged `37c962e` tree `7802a86fd2fdea78e8a57e0ecb9c16415d5aeec9`.
-No history was force-pushed. The remaining PRs show successive changes for review;
-each still needs explicit approval before its eventual main merge.
+No history was force-pushed. The later cleanup retained the public setup changes
+and preserved hosted source privately before closing the superseded PRs.
 
 The hosted foundation merge deploys and publishes nothing. The pending retention
 trial uses four private Workers with temporary D1/KV/R2, no VMs, provider secrets
@@ -217,5 +245,6 @@ provider transitions and final publication/deployment actions will be surfaced
 as concrete handoffs. The contributor's #140, #141 and #142 remain outside today's
 scope for the owner to review separately. The public #153 merge and
 #147/#149/#150 closures have been performed. Separately, private
-`instruktlabs/kiln-hosted` PR #1 is merged with owner approval; public cleanup and
-closures of #154/#155/#156 remain pending.
+`instruktlabs/kiln-hosted` PR #1 and public #157 are merged with owner approval;
+#154/#155/#156 are closed. Hosted launch, follow-up package publication and directory
+submissions remain unfinished.

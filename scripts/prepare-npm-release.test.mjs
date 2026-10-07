@@ -366,6 +366,28 @@ test('stable v1 uses latest; unpublished development builds cannot be staged', a
   await expect(verifyReleaseArtifacts(dev.root, dev.target)).rejects.toThrow('release version');
 });
 
+test.each([
+  ['1.0.1', 'latest'],
+  ['1.1.0', 'latest'],
+  ['1.1.0-rc.1', 'next'],
+])('qualifies the exact follow-up archive for %s under %s', async (version, tag) => {
+  const data = await fixture(version);
+  expect(await verifyReleaseArtifacts(data.root, data.target)).toMatchObject({
+    version,
+    tag,
+    digest: data.target.digest,
+    tarball: data.tarball,
+  });
+});
+
+test.each(['1.1.0-dev.1', '1.01.0', '1.1.00', '1.1.0-rc.01', '1.1.0-beta.1', '2.0.0'])(
+  'refuses unsupported release identity %s before inspecting artifacts',
+  async (version) => {
+    const data = await fixture(version);
+    await expect(verifyReleaseArtifacts(data.root, data.target)).rejects.toThrow('release version');
+  },
+);
+
 test.each(['digest', 'version', 'receipt', 'missing', 'types', 'image'])(
   'rejects %s evidence drift',
   async (kind) => {

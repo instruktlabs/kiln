@@ -22,7 +22,8 @@ const result = await renderGLB(code);
 ```
 
 The complete authoring and host APIs remain available through documented subpaths.
-The existing 55 export paths are retained. The root exposes rendering, validation,
+The original 55 export paths are retained; the 1.1 development candidate adds four
+host entrypoints below. The root exposes rendering, validation,
 Discovery and engine identity; it does not re-export every name from every module.
 CommonJS is not part of this release's contract.
 
@@ -37,8 +38,8 @@ Use the existing material payload and asset-bundle encoders for portable deliver
 | Root library | `@instruktlabs/kiln` |
 | Authoring | `primitives`, `geometry`, `deform`, `sweep`, `architecture`, `assembly`, `character`, `vehicle`, `palette` |
 | Materials | `material-library`, `material-library/node`, `material-presets`, `material-recipes`, `material-resources`, `material-recipe-runtime`, `material-recipe-prompt`, `material-metrics`, `texture-resolver` |
-| Rendering and inspection | `render`, `views`, `validation`, `metrics`, `inspect`, `qa`, `asset-export`, `kit` |
-| Host contracts | `tools`, `evaluator`, `discovery`, `requirements`, `requirements/migration`, `contracts`, `prompt-api`, `profile` |
+| Rendering and inspection | `render`, `views`, `views/port`, `validation`, `metrics`, `inspect`, `qa`, `asset-export`, `kit` |
+| Host contracts | `tools`, `tools/input`, `mcp`, `evaluator`, `discovery`, `discovery/portable`, `requirements`, `requirements/migration`, `contracts`, `prompt-api`, `profile` |
 | Records and storage | `assets`, `projects`, `project-bundle`, `workspace`, `live-review`, `programs`, `cache`, and each corresponding `/node` adapter |
 | Composition | `composer`, `world-runtime` |
 | Ranking math | `arena` |
@@ -52,7 +53,7 @@ entrypoint list. Files inside `lib/`, including declaration dependencies under
 
 ## Stability in 1.x
 
-The table classifies all 55 public entrypoints. The root and every listed subpath
+The table classifies all 59 public entrypoints in this development candidate. The root and every listed subpath
 except `implicit` are stable entrypoints for v1: their declared public signatures,
 record shapes and documented behavior receive normal semantic-versioning
 compatibility. Optional dependencies do not make the two agent APIs experimental.
@@ -85,6 +86,26 @@ The root SDK is Node-oriented. `/node` adapters use filesystem or server service
 the remaining names do not by themselves promise browser compatibility. Portable
 record modules retain their existing boundaries. Browser use must follow a
 documented, qualified entrypoint rather than importing the entire Node host.
+
+### Embedding interfaces added in the 1.1 candidate
+
+- `mcp` exports `createKilnMcpServer`, `createKilnToolHost` and `kilnMcpToolDefs`
+  for Node hosts, using the shared tool registry and injected `KilnToolContext`.
+  It is an in-process embedding API. The `kiln-mcp` executable keeps its separate
+  lazy engine loading; importing `mcp` loads the Node engine.
+- `discovery/portable` provides catalog/request validation, lexical indexing,
+  `createDiscoveryService` and retired-helper guidance. Supply a catalog generated
+  from the matching engine version. This browser-qualified entrypoint does not
+  import Node's built-in catalog construction or execute authored programs.
+- `tools/input` exposes the shared action requirements and input-error formatting
+  helpers without importing the engine registry or Node runtime.
+- `views/port` exposes the existing renderer-port helpers and types, including
+  `captureViewPngsViaPort`. Reuse their deadline, cancellation and PNG-validation
+  policy rather than implementing a second renderer adapter. It does not provide
+  a renderer or authorize trusted execution of untrusted source.
+
+These entries require the follow-up package; published 1.0.0 does not expose them.
+They contain no cloud-provider, account, tenant or hosted-service policy.
 
 `renderGLB` defaults to trusted in-process execution. A hosted service accepting
 untrusted programs must inject or select the qualified isolated evaluator described

@@ -3,8 +3,8 @@
 7 October 2026. Owner decision: keep the Kiln engine/package and integrations
 public; separate the official hosted application into a private Instrukt Labs
 repository. The accepted release goal authorized its creation; the owner then
-approved the verified private import's main merge. Public cleanup and deployment
-remain separate approvals. The owner separately
+approved the verified private import's main merge and public cleanup PR #157.
+Deployment remains a separate approval. The owner separately
 approved and completed GitHub Team at $4/month for one seat, billed monthly.
 The organization API independently verifies Team with one purchased/filled seat.
 
@@ -109,12 +109,15 @@ The redacted import secret scan passed. The repository is verified private, with
 required PR/check rules enforced for administrators and force pushes/deletion
 disabled. Build/test CI has no repository Actions secrets.
 
-The public cleanup is prepared in an isolated worktree: remove `hosting/`,
+Public cleanup PR #157 passed all 22 checks at `52b27f4` and merged with owner
+approval as `7581ac469b3af9eecde334f42d91a2da4c77d89e`. It removes `hosting/`,
 `hosted-gateway.yml` and `container-image.yml`; relocate public metadata to
 `plugins/kiln-hosted/` and its packager/tests to `scripts/`; retain generic engine
 evaluator qualification. Plugin packaging passes with no hosting directory present.
-Full public qualification and approval of the cleanup merge remain outstanding.
-The public default branch has not been changed by this extraction.
+The merged tree exactly matches the approved tree
+`f61605fda838cb6b6bfe4c9e7bc5c000aade6220`; previous main remains an ancestor.
+The removed paths are absent from current main. Post-merge CI is running.
+Superseded #154/#155/#156 are closed with owner approval; community PRs remain open.
 
 ## Public removal and history
 
@@ -180,5 +183,5 @@ Removing files from the public default branch does not erase old commits, public
 PRs, forks or existing copies. Preserve public history and existing licenses;
 do not claim retroactive confidentiality. This split protects future unpublished
 hosting development. The separately authorized Team upgrade and private repository
-import are complete. The existing public repository remains public; public cleanup
-and the hosted launch are still pending.
+import and public cleanup are complete. The existing public repository remains
+public. Follow-up package qualification and the hosted launch are still pending.

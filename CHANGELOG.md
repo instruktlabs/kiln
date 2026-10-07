@@ -22,6 +22,13 @@ release or an accepted plugin listing.
 - The local plugin's setup helper uses the pinned engine's adapter list. Plugin
   installation remains specific to Claude Code and Codex; those clients can also
   configure another supported workspace adapter through the shared helper.
+- Public `mcp`, `discovery/portable`, `tools/input` and `views/port` SDK entries
+  expose existing host contracts without requiring imports of internal package
+  files. Portable Discovery accepts an engine-generated catalog without loading
+  Node's catalog builder. The local stdio entry keeps lazy engine loading.
+- The release verifier accepts versioned 1.x follow-ups and release candidates,
+  retaining exact-archive evidence and owner promotion approval. Development
+  builds and unsupported prerelease tags remain ineligible for staging.
 - The optional Linux isolated evaluator no longer passes an unsupported
   `--preserve-fds` option to Bubblewrap. Its explicit fd3 protocol pipe uses
   inherited descriptors; namespace, capability, filesystem and resource limits
