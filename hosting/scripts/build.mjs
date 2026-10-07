@@ -13,6 +13,7 @@ if (!nativeOnly) {
 }
 for (const entry of [
   'worker',
+  'maintenance-worker',
   'tenant-worker',
   'evaluation-worker',
   'render-worker',

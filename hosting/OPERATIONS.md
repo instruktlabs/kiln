@@ -92,6 +92,9 @@ Before public launch:
    check. A Cloudflare-wide outage can affect both service and Cloudflare alerts.
    Provider alerts do not impose a spending cap. Keep private pause/restore and
    retirement-safe rollback procedures available during an outage.
+   Use the [recovery runbook](RECOVERY.md): maintenance closes HTTP while leaving
+   scheduled deletion recovery active; a data restore requires additional write
+   quiescence and preservation of current revocations.
 
 ## Expected telemetry volume
 

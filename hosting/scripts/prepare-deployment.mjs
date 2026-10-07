@@ -10,6 +10,7 @@ import { parseArgs, promisify } from 'node:util';
 import { build } from 'esbuild';
 import { assertProductionBoundary } from './build-boundary.mjs';
 import { deploymentConfig } from './deployment-config.mjs';
+import { maintenanceConfig } from './maintenance-config.mjs';
 import { lifecycleConfig } from '../probe/lifecycle-config.mjs';
 import { assertLifecycleBoundary } from '../probe/lifecycle-build-boundary.mjs';
 import { operationsConfig } from '../probe/operations-config.mjs';
@@ -24,6 +25,7 @@ async function main() {
       output: { type: 'string' },
       'private-lifecycle': { type: 'boolean', default: false },
       'private-operations': { type: 'boolean', default: false },
+      maintenance: { type: 'boolean', default: false },
     },
   });
   assert(values.manifest && values.output);
@@ -32,12 +34,15 @@ async function main() {
   const manifest = JSON.parse(raw);
   const privateLifecycle = values['private-lifecycle'];
   const privateOperations = values['private-operations'];
-  assert(!(privateLifecycle && privateOperations));
-  const configuration = privateOperations
-    ? operationsConfig(manifest)
-    : privateLifecycle
-      ? lifecycleConfig(manifest)
-      : deploymentConfig(manifest);
+  const maintenance = values.maintenance;
+  assert([privateLifecycle, privateOperations, maintenance].filter(Boolean).length <= 1);
+  const configuration = maintenance
+    ? maintenanceConfig(manifest)
+    : privateOperations
+      ? operationsConfig(manifest)
+      : privateLifecycle
+        ? lifecycleConfig(manifest)
+        : deploymentConfig(manifest);
   const cache = await realpath(resolve(root, '.cache'));
   const output = resolve(values.output),
     parent = await realpath(dirname(output));
@@ -60,11 +65,13 @@ async function main() {
   const sourceDirty = Boolean(await git('status', '--porcelain'));
   const receipt = {
     schemaVersion: 1,
-    mode: privateOperations
-      ? 'private-operations'
-      : privateLifecycle
-        ? 'private-lifecycle'
-        : 'production-candidate',
+    mode: maintenance
+      ? 'maintenance-candidate'
+      : privateOperations
+        ? 'private-operations'
+        : privateLifecycle
+          ? 'private-lifecycle'
+          : 'production-candidate',
     sourceCommit,
     sourceDirty,
     configSchema: '0.23.0',
@@ -76,40 +83,49 @@ async function main() {
     requiredGatewaySecrets: Object.keys(configuration.workers.gateway.env).filter(
       (name) => configuration.workers.gateway.env[name].type === 'secret',
     ),
-    images: privateOperations ? {} : manifest.images,
-    nativeExecutionPossible: !privateOperations,
+    images: privateOperations || maintenance ? {} : manifest.images,
+    nativeExecutionPossible: !privateOperations && !maintenance,
     workers: [],
     migrations: [],
     files,
-    launchGates: privateOperations
+    launchGates: maintenance
       ? [
           'exact-source CI',
-          'disposable resource ownership',
-          'no-public-route readback',
-          'actual provider Cron and alarm evidence',
-          'bounded operator and verified cleanup',
-          'owner private-operations approval',
+          'existing gateway bindings, secrets, routes and Cron readback',
+          'code-only version change with current resource identities',
+          'paused admission and drained or cancelled existing work',
+          'actual HTTP denial and scheduled recovery evidence',
+          'owner maintenance deployment approval',
         ]
-      : privateLifecycle
+      : privateOperations
         ? [
             'exact-source CI',
             'disposable resource ownership',
-            'immutable image identity',
-            'verified dependency-order deployment',
             'no-public-route readback',
+            'actual provider Cron and alarm evidence',
             'bounded operator and verified cleanup',
-            'owner private-trial approval',
+            'owner private-operations approval',
           ]
-        : [
-            'exact-source CI',
-            'resource ownership',
-            'image identity',
-            'provider secrets',
-            'public ingress protection',
-            'sanitized operational monitoring',
-            'live OAuth and lifecycle qualification',
-            'owner deployment approval',
-          ],
+        : privateLifecycle
+          ? [
+              'exact-source CI',
+              'disposable resource ownership',
+              'immutable image identity',
+              'verified dependency-order deployment',
+              'no-public-route readback',
+              'bounded operator and verified cleanup',
+              'owner private-trial approval',
+            ]
+          : [
+              'exact-source CI',
+              'resource ownership',
+              'image identity',
+              'provider secrets',
+              'public ingress protection',
+              'sanitized operational monitoring',
+              'live OAuth and lifecycle qualification',
+              'owner deployment approval',
+            ],
   };
   const schemaPackage = JSON.parse(
     await readFile(
@@ -162,7 +178,7 @@ async function main() {
       container,
     );
   const migrations = resolve(root, 'hosting/migrations');
-  for (const name of (await readdir(migrations))
+  for (const name of (maintenance ? [] : await readdir(migrations))
     .filter((name) => /^\d{4}_[a-z_]+\.sql$/.test(name))
     .sort()) {
     const bytes = await readFile(resolve(migrations, name));

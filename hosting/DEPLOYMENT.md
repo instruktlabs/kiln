@@ -135,6 +135,9 @@ Rollback must preserve primary account revocation and permanent tenant retiremen
 Do not restore pre-deletion code or a backup that reactivates retired accounts;
 pause access and reconcile first. Existing private data must never be silently
 replaced with fresh namespaces to obtain a passing check.
+The [recovery runbook](RECOVERY.md) separates code rollback from data restore,
+documents the offline maintenance artifact and lists the remaining provider
+qualification. Neither local tests nor provider retention alone passes this gate.
 
 The next private combined candidate is prepared with `--private-lifecycle`; its
 fixed eight-Worker topology, bounds and cleanup procedure are documented in

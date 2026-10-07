@@ -22,6 +22,7 @@ for (const module of [
     });
     const inputs = Object.keys(result.metafile.inputs);
     assert.doesNotThrow(() => assertProductionBoundary('worker', inputs));
+    assert.doesNotThrow(() => assertProductionBoundary('maintenance-worker', inputs));
     for (const entry of [
       'tenant-worker',
       'evaluation-worker',

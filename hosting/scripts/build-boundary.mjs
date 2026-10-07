@@ -4,6 +4,7 @@ export function assertProductionBoundary(entry, inputs) {
     throw new Error('Production bundle includes test or probe helpers');
   if (
     entry !== 'worker' &&
+    entry !== 'maintenance-worker' &&
     paths.some((name) =>
       /oauth|(?:^|\/)(?:auth|github|google|connections|account-(?:page|actions)|browser-(?:login|sessions|cookies))\.ts$/.test(
         name,
