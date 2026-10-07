@@ -70,3 +70,23 @@ test('observer configuration binds only the fixed private control and stays loop
     },
   ]);
 });
+
+test('observer exposes only aggregate cleanup inspection with no caller arguments', async () => {
+  const expected = { alarmAt: null, privateStatePresent: false };
+  const response = await observer.fetch(
+    new Request('http://127.0.0.1:8799/inspect', {
+      method: 'POST',
+      headers: { 'X-Kiln-Operator': 'private-operations-v1' },
+    }),
+    {
+      PROBE: {
+        inspect: async (...args) => {
+          assert.deepEqual(args, []);
+          return expected;
+        },
+      },
+    },
+  );
+  assert.equal(response.status, 200);
+  assert.deepEqual(await response.json(), expected);
+});

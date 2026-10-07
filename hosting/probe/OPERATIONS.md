@@ -50,11 +50,17 @@ Observation is a separate private RPC: no public HTTP handler can start it.
 
 `operations-observer.wrangler.jsonc` is a local-only facade on
 `http://127.0.0.1:8799`. It binds only the private `KilnOperationsControl` entrypoint
-and accepts POST `/begin`, `/status`, `/progress` and `/stop` with header
+and accepts POST `/begin`, `/status`, `/progress`, `/stop` and `/inspect` with header
 `X-Kiln-Operator: private-operations-v1`. Browser-origin requests, query parameters,
 other hosts and arbitrary methods are refused; request bodies never become RPC
 arguments. Do not deploy this observer. Its per-observation timeout does not
 authorize restarting the durable run.
+
+`/inspect` returns only the sanitized run record, alarm timestamp, a private-state
+presence bit and aggregate admission health. It must show a terminal run, no
+alarm, no retained synthetic credentials, and paused idle admission before the
+cleanup planner will produce targets. A failed test can still be cleaned up;
+cleanup does not turn that failure into qualification evidence.
 
 ## Deployment and evidence
 
@@ -69,6 +75,11 @@ bounded storage/Worker spend, test execution and cleanup. An earlier consumed
 native trial allowance cannot be reused. Read back exact active module hashes,
 bindings, disabled HTTP/log surfaces, private bucket and scheduled trigger before
 invocation. Store only sanitized provider records in the operator receipt.
+`verifyOperationsDeployment` in `operations-readback.mjs` verifies that snapshot
+against the prepared candidate, including the exact one-minute gateway Cron and
+absence of native capability. The shared verifier keeps the earlier lifecycle
+candidate's schedule-free requirement. `planOperationsCleanup` only returns
+recorded targets; it does not delete them or imply authorization.
 
 New Cron configurations can take time to propagate. Before starting the one-use
 run, require real successful scheduled health points in the candidate's Analytics

@@ -1,6 +1,6 @@
 import { qualificationControl } from './qualification-rpc';
 
-type Action = 'begin' | 'status' | 'progress' | 'stop';
+type Action = 'begin' | 'status' | 'progress' | 'stop' | 'inspect';
 interface Env {
   PROBE: Record<Action, () => Promise<unknown>>;
 }
@@ -14,6 +14,7 @@ export default {
       ['/status', 'status'],
       ['/progress', 'progress'],
       ['/stop', 'stop'],
+      ['/inspect', 'inspect'],
     ]).get(url.pathname);
     void request.body?.cancel().catch(() => {});
     if (

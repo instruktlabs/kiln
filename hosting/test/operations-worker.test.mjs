@@ -137,6 +137,7 @@ async function fixture() {
       if(path==='/begin')return Response.json(await e.PROBE.begin());
       if(path==='/progress')return Response.json(await e.PROBE.progress());
       if(path==='/stop')return Response.json(await e.PROBE.stop());
+      if(path==='/inspect')return Response.json(await e.PROBE.inspect());
       return Response.json(await e.PROBE.status());}}`,
         },
       ],
@@ -182,6 +183,13 @@ test('operations runner waits for actual retention and separately invoked schedu
     assert.equal(receipt.deletionRecovered, true);
     assert.equal(receipt.foreignAccountPreserved, true);
     assert.equal(receipt.computePaused, true);
+    const inspected = await f.send('/inspect');
+    assert.equal(inspected.record.state, 'finished');
+    assert.equal(inspected.alarmAt, null);
+    assert.equal(inspected.privateStatePresent, false);
+    assert.equal(inspected.admission.paused, true);
+    assert.equal(inspected.admission.activeRequests, 0);
+    assert.equal(inspected.admission.pendingCleanup, 0);
     assert.doesNotMatch(
       JSON.stringify(receipt),
       /accessToken|refreshToken|__Host-|ka_|kd_|receipt_hash/,
@@ -216,6 +224,10 @@ test('a forged complete deletion receipt cannot pass while the owner or saved by
     assert.equal(await f.send('/has-private-state'), true);
     assert.equal((await f.send('/stop')).state, 'failed');
     assert.equal(await f.send('/has-private-state'), false);
+    const inspected = await f.send('/inspect');
+    assert.equal(inspected.record.state, 'failed');
+    assert.equal(inspected.alarmAt, null);
+    assert.equal(inspected.privateStatePresent, false);
   } finally {
     await f.runtime.dispose();
   }
@@ -225,6 +237,10 @@ test('a terminal stop cannot be overwritten by progress or a second begin', asyn
   const f = await fixture();
   try {
     assert.equal((await f.send('/begin')).state, 'waiting');
+    const active = await f.send('/inspect');
+    assert.equal(active.privateStatePresent, true);
+    assert.equal(typeof active.alarmAt, 'number');
+    assert.doesNotMatch(JSON.stringify(active), /ownerToken|foreignToken|deletionReceipt|ka_|kd_/);
     const stopped = await f.send('/stop');
     assert.equal(stopped.state, 'stopped');
     assert.equal(stopped.passed, false);

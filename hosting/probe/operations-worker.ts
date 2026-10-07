@@ -82,6 +82,15 @@ export class KilnOperationsRun extends DurableObject<Env> {
   async status() {
     return (await this.ctx.storage.get<Receipt>('operations-run')) ?? null;
   }
+  /** Aggregate cleanup evidence only. Synthetic credentials never leave storage. */
+  async inspect() {
+    const local = await this.ctx.storage.transaction(async (tx) => ({
+      record: (await tx.get<Receipt>('operations-run')) ?? null,
+      alarmAt: await tx.getAlarm(),
+      privateStatePresent: (await tx.get('operations-private')) !== undefined,
+    }));
+    return { ...local, admission: await control(this.env.COMPUTE.health()) };
+  }
   async begin(): Promise<Receipt> {
     assertQualification(this.env);
     const record = initial();
@@ -324,6 +333,10 @@ export class KilnOperationsControl extends WorkerEntrypoint<Env> {
   status() {
     assertQualification(this.env);
     return this.env.RUN.getByName('once-v1').status();
+  }
+  inspect() {
+    assertQualification(this.env);
+    return this.env.RUN.getByName('once-v1').inspect();
   }
   progress() {
     assertQualification(this.env);
