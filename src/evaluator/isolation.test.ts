@@ -138,7 +138,10 @@ describe('isolated evaluator process contract', () => {
     expect(spec.args).toContain('--clearenv');
     expect(spec.args).toContain('--tmpfs');
     expect(spec.args).toContain('--ro-bind');
-    expect(spec.args).toContain('--preserve-fds');
+    // Bubblewrap inherits the explicit fd3 pipe; --preserve-fds is an OCI-runtime
+    // option, and --sync-fd would consume the descriptor for its own monitor.
+    expect(spec.args).not.toContain('--preserve-fds');
+    expect(spec.args).not.toContain('--sync-fd');
     expect(spec.args).toContain('--cpu=65:65');
     expect(spec.args).toContain('--as=6442450944:6442450944');
     expect(spec.args).toContain('--nproc=64:64');

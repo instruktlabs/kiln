@@ -201,8 +201,8 @@ function isolatedEvaluatorLaunchWithLoader(
   bwrapArgs.push(
     '--chdir',
     runtimeRoot,
-    '--preserve-fds',
-    '1',
+    // Bubblewrap passes inherited fds to the command. The spawn caller supplies
+    // only stdio and the fd3 protocol pipe; no descriptor-preservation flag exists.
     '--',
     prlimitPath,
     '--cpu=65:65',

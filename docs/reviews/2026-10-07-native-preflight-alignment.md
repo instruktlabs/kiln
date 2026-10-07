@@ -120,3 +120,27 @@ its fixed transport worker and records capped stdout/stderr/fd3 after failure.
 The child retains the evaluator's stripped environment and all restrictions.
 Its receipt is explicitly diagnostic, never qualification. The original failed
 receipt remains authoritative until a later actual run proves the full boundary.
+
+## Confirmed launcher defect
+
+The diagnostic from [run 37680296814](https://github.com/instruktlabs/kiln/actions/runs/37680296814),
+source `75e6682`, reports `bwrap: Unknown option --preserve-fds`. Every required
+executable and the installed transport worker exists. The wrapper exits before
+Node starts, with empty stdout/fd3 and no evaluated artifact. The independent
+Docker namespace diagnostics do not explain this earlier argument-parser failure.
+
+Bubblewrap 0.12.0 already passes inherited descriptors to its command; its monitor
+and namespace-init process close their own extra descriptors separately. See the
+[pinned upstream implementation](https://github.com/containers/bubblewrap/blob/2a76602a8c71f36c1527cf9fc3417d9149822e0c/bubblewrap.c#L3453).
+Kiln explicitly supplies only stdio and its fd3 protocol pipe to the child.
+The fix removes the nonexistent option, preserves every isolation/resource
+restriction, and retains the readiness transport proof. The regression first
+failed against the old launch, then passed with the fix; 23 focused tests,
+typecheck, lint and rebuilt SDK/runtime bundles pass. Full candidate CI remains
+required, including actual Linux transport and all ten readiness invariants.
+
+The invalid option is also present in published source `fda71ac` (1.0.0).
+It prevents the optional nested Linux evaluator from starting. The fix belongs
+to the unpublished candidate; publication will require a separately qualified
+archive and approval. Cloudflare's explicit fresh-VM adapter has a different
+execution boundary and does not use this launcher.

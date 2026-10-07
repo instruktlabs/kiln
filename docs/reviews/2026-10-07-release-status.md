@@ -106,8 +106,11 @@ records the exact downloaded failure and distinguishes the nested SDK adapter
 from production's explicit fresh-VM route. A subsequent additive VM test preserves
 all evaluator checks and leaves the Docker job unchanged. Local validation passes
 3,348 tests with two platform-specific skips. Its first VM run also fails at
-wrapper startup; a bounded fixed-transport diagnostic is prepared to identify
-the cause without relaxing restrictions.
+wrapper startup; the bounded diagnostic identifies an unsupported Bubblewrap
+`--preserve-fds` argument in the optional nested evaluator. Its removal has a
+failing-then-passing regression and rebuilt bundles; actual VM qualification of
+the fixed candidate is still required. This defect also exists in published
+1.0.0's optional nested adapter and is recorded in the unpublished changelog.
 No gate is waived. Recovery commit `88ebe58` separately passed hosted CI on Linux
 and Windows; this does not satisfy the unfinished provider restore gate.
 

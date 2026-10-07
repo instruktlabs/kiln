@@ -22,6 +22,10 @@ release or an accepted plugin listing.
 - The local plugin's setup helper uses the pinned engine's adapter list. Plugin
   installation remains specific to Claude Code and Codex; those clients can also
   configure another supported workspace adapter through the shared helper.
+- The optional Linux isolated evaluator no longer passes an unsupported
+  `--preserve-fds` option to Bubblewrap. Its explicit fd3 protocol pipe uses
+  inherited descriptors; namespace, capability, filesystem and resource limits
+  remain required by readiness qualification.
 
 ## 1.0.0
 
