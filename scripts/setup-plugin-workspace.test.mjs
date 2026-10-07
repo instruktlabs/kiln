@@ -216,7 +216,7 @@ test('CLI check returns failure for workspace drift without running an installat
     join(runtime, 'scripts/create-workspace.mjs'),
     'export async function createWorkspace() { return {status:"update-required"}; }',
   );
-  const script = join(f.options.pluginRoot, 'scripts/setup-workspace.mjs');
+  const script = join(f.options.pluginRoot, 'bin/kiln-setup-workspace.mjs');
   await mkdir(dirname(script));
   await cp(new URL('./setup-plugin-workspace.mjs', import.meta.url), script);
   const result = spawnSync(

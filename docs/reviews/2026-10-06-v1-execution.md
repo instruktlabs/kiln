@@ -29,7 +29,7 @@ states and the evidence that superseded them.
 | H5 | Production deployment | Pending: approved deployment at `kiln.instruktlabs.com`; live authenticated create/edit/render/save/download/reconnect flow |
 | L1 | Local Claude Code and Codex plugins | Stable distribution qualified: both actual client catalogs install kiln-engine 1.0.0 and download the exact public npm runtime; real MCP/CLI flows and Codex skill/tool discovery pass. RC and 0.10 workspace upgrades preserve stores. Same-profile RC-to-stable cache updates also pass, retaining the pinned workspace runtime and original saved assets |
 | L2 | Public OpenAI plugin | In progress: portable ZIP, hosted skill, listing metadata, review cases and public policy pages are prepared. Existing Instrukt Labs organization is verified in OpenAI's portal. Live MCP, selected publisher/domain proof, owner-reviewed terms, executed cases/demo/review account and submission remain open |
-| L3 | Anthropic directory | In progress: owned marketplace works; portal validation of the stable v1.0.0 folder passed with one icon warning and two credential policy holds. A raster icon is prepared and the actual installer data flow is documented for review. Exact-source revalidation, GitHub push access, declarations, reviewer outcome and submission receipt remain open |
+| L3 | Anthropic directory | In progress: portal revalidated 2339681 with the icon warning resolved and two credential policy holds. The listing exposed unsupported chat/Cowork classification; plugin 1.0.1 moves the actual installer to documented bin/ and retains engine 1.0.0. Isolated client installs and workspace flows pass locally. Exact-source platform readback, privacy/data declarations, submitting identity, executable attestation, GitHub push access and submission remain open |
 | V1 | Exact candidate verification | Package qualified: exact main fda71ac archive, twelve main CI jobs, release verification, public registry/provenance, seven-platform registry installs, fresh local consumer checks and stable plugin/workspace flows pass. Hosted end-to-end verification remains open |
 | V2 | Release documentation and receipts | Pending: changelog/migrations/install/support/security/privacy/runbook; exact commits, hashes, versions, URLs and separate vendor-review state |
 
@@ -3253,3 +3253,32 @@ Claude Code 2.1.287 manifest validator pass. The full offline gate passes 3,290
 tests with two skips, no failures, 95.16% function coverage and 92.50% line coverage.
 Exact new-source portal validation
 and CI remain necessary before saving or submitting the directory candidate.
+
+### Local-plugin platform correction and remaining submission declarations
+
+All 18 CI checks passed on `2339681`; Anthropic revalidation removed the icon
+warning. Listing details exposed a separate mismatch: the local installer was
+offered on chat and Cowork. The prepared plugin 1.0.1 now puts its actual
+Node installer in the documented `bin/` component with executable permission.
+Both maintained setup registries, provenance and installer instructions agree.
+Plugin versioning is independent of its unchanged published engine pin, 1.0.0.
+The npm package and v1.0.0 tag have not been replaced.
+
+The new regressions failed first; all 32 packaging/setup tests pass. In isolated
+profiles, Claude Code 2.1.287 and Codex 0.160.0 install the new cached plugin and
+create workspaces from the verified public 1.0.0 package. Both discover, render,
+save, reopen and export; Codex app-server confirms one setup skill, three workspace
+skills and one 17-tool MCP server. No normal user profile changed, model call ran,
+cloud job started, credential was created or final directory submission occurred.
+
+The portal also exposed unanswered data-handling declarations and a submitting
+identity of Matthew Kissinger. Its executable attestation needs resolving for a
+local installer before acceptance. Details and official documentation are in the
+[directory preflight](2026-10-07-directory-preflight.md#correcting-local-plugin-platform-support-october-7).
+The in-app-notices choice remains settled; the Google OAuth-client creation
+question remains the sole pending owner approval. New-source CI, portal readback
+and refreshed private-trial artifacts are separate from the completed local checks.
+
+The final offline gate passes 3,291 tests with two skips and no failures; coverage
+is 95.16% functions and 92.50% lines. Toolchain, typechecking, lint, maintained-skill
+consistency and Claude manifest validation also pass.

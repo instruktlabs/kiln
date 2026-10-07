@@ -1,16 +1,20 @@
 {
   "schemaVersion": 1,
   "kind": "kiln-local-plugin",
+  "pluginVersion": "1.0.1",
   "engineVersion": "1.0.0",
+  "executables": [
+    "bin/kiln-setup-workspace.mjs"
+  ],
   "files": {
     ".claude-plugin/icon.png": "sha256:b4b651c402793b7e27cab780f04b14f80daec6d0cd5b7e4e90313930581a54e9",
-    ".claude-plugin/plugin.json": "sha256:c40c7eafed4c0822faef83178633f3bf3449311220f709d5155aed4a9c74cd6b",
+    ".claude-plugin/plugin.json": "sha256:0b76fcd58faa70be2bf6fd8d165294665d8157562d57a68894694bfc8efee754",
+    "bin/kiln-setup-workspace.mjs": "sha256:31cd8c0b1028b8df487b7b333655d0dd5e456ae8d7dcadad687557dd3202cf3e",
     "LICENSE": "sha256:cdba278ebf1d6de618869936226bf03be4887179c128efc7aaa13d22034826a5",
-    "plugin.json": "sha256:f80ecc90d141adf45e5fadfe5092c325e9174f02b364c1e0059cd5bd345eaaf1",
-    "README.md": "sha256:3a9482e4e8e47b8ef7fb27d2d880253397a7f903b7ccdd64794995fd3075d2dd",
+    "plugin.json": "sha256:0ca56cc6ca715b1e1606edf42c94b16adab4b2e8927bb86c6b2559a47e18fa11",
+    "README.md": "sha256:a6a4c1c59e1de3616215ab91e93e9f6042eb6db0adeed1d1bb54116733a0d845",
     "runtime.json": "sha256:18129a1d310c468aeba0966792940242f0359ab14c41a4c9ef240310d07d3bd2",
-    "scripts/setup-workspace.mjs": "sha256:0936f482a213706cf1576da11e57d40993b90f42b486f262e55d38d8d27b2e4d",
-    "skills/kiln-setup-workspace/references/plugin-install.md": "sha256:84f4ce4c9620aae1e6b37a6a04f5c874feae507c9e7a2f24fe62e48bbe6c09bd",
-    "skills/kiln-setup-workspace/SKILL.md": "sha256:9dbcb66514e21ea11b097bb1cd4b27b616834ded3e8182ea804f370add37a69f"
+    "skills/kiln-setup-workspace/references/plugin-install.md": "sha256:a8e1758d851b8d52f3b9266c27be05d25134f10257501f8d8c7429e8687935e2",
+    "skills/kiln-setup-workspace/SKILL.md": "sha256:7101b92d34c478e63d4cd96183cfebd383c7134883ab758a2c93d883f7066c5b"
   }
 }

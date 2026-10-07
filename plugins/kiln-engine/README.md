@@ -1,11 +1,14 @@
 # Kiln Engine local plugin
 
-Version 1.0.0, published by Instrukt Labs under the MIT license.
+Plugin version 1.0.1, published by Instrukt Labs under the MIT license. Engine version 1.0.0.
 
 Ask your coding agent to set up a Kiln workspace. The setup skill installs
 `@instruktlabs/kiln@1.0.0` with npm and creates a separate asset workspace.
 Use a supported Node.js installation with npm; no Bun, engine clone or separate
 model API key is required. The workspace's START.md explains how to reopen it.
+
+Use this plugin in Claude Code or Codex. Its executable requires a local shell and
+persistent filesystem; Claude chat and Cowork are not supported.
 
 The plugin registers setup only. The workspace supplies the authoring skills
 and one local MCP server, `kiln_workspace`. Open Claude Code in that workspace;

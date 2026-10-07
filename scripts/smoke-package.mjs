@@ -230,13 +230,14 @@ try {
     'https://agent-plugins.org/schemas/1.0.0/plugin.schema.json',
   );
   assert.equal(portablePlugin.name, 'kiln-engine');
-  assert.equal(portablePlugin.version, pkg.version);
-  assert.equal((await pluginJson('.claude-plugin/plugin.json')).version, pkg.version);
+  assert.equal((await pluginJson('.claude-plugin/plugin.json')).version, portablePlugin.version);
   assert.deepEqual(await pluginJson('runtime.json'), { name: pkg.name, version: pkg.version });
   assert.deepEqual(await readdir(join(plugin, 'skills')), ['kiln-setup-workspace']);
   const pluginReceipt = await pluginJson('package-provenance.json');
   assert.equal(pluginReceipt.kind, 'kiln-local-plugin');
   assert.equal(pluginReceipt.engineVersion, pkg.version);
+  // Published plugin 1.0.0 coupled these versions; newer plugin-only revisions do not.
+  assert.equal(portablePlugin.version, pluginReceipt.pluginVersion ?? pkg.version);
   for (const [name, digest] of Object.entries(pluginReceipt.files))
     assert.equal(
       `sha256:${sha(await readFile(join(plugin, name)))}`,

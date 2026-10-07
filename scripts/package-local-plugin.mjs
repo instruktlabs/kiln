@@ -1,11 +1,13 @@
 #!/usr/bin/env node
 import { createHash } from 'node:crypto';
-import { lstat, mkdir, readFile, readdir, writeFile } from 'node:fs/promises';
+import { chmod, lstat, mkdir, readFile, readdir, writeFile } from 'node:fs/promises';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const repo = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const json = (value) => Buffer.from(`${JSON.stringify(value, null, 2)}\n`);
+const executable = 'bin/kiln-setup-workspace.mjs';
+const exactVersion = /^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-(?:rc|dev)\.(0|[1-9]\d*))?$/;
 
 async function inventory(directory, prefix = '') {
   const files = new Map();
@@ -29,14 +31,16 @@ async function inventory(directory, prefix = '') {
 
 async function expectedFiles() {
   const pkg = JSON.parse(await readFile(join(repo, 'package.json'), 'utf8'));
-  if (
-    pkg.name !== '@instruktlabs/kiln' ||
-    !/^\d+\.\d+\.\d+(?:-(?:rc|dev)\.\d+)?$/.test(pkg.version)
-  )
+  if (pkg.name !== '@instruktlabs/kiln' || !exactVersion.test(pkg.version))
     throw new Error('The local plugin requires the exact Kiln release identity.');
+  const release = JSON.parse(
+    await readFile(join(repo, 'plugins/kiln-engine.release.json'), 'utf8'),
+  );
+  if (!exactVersion.test(release.version) || release.engineVersion !== pkg.version)
+    throw new Error('The local plugin needs its own exact version and the current engine pin.');
   const identity = {
     name: 'kiln-engine',
-    version: pkg.version,
+    version: release.version,
     description:
       'Set up a local Kiln workspace to create, inspect and revise editable 3D assets with Claude Code or Codex.',
     author: { name: 'Instrukt Labs' },
@@ -72,10 +76,7 @@ async function expectedFiles() {
     ['.claude-plugin/icon.png', await readFile(join(repo, 'assets/branding/kiln-512.png'))],
     ['runtime.json', json({ name: pkg.name, version: pkg.version })],
     ['LICENSE', await readFile(join(repo, 'LICENSE'))],
-    [
-      'scripts/setup-workspace.mjs',
-      await readFile(join(repo, 'scripts/setup-plugin-workspace.mjs')),
-    ],
+    [executable, await readFile(join(repo, 'scripts/setup-plugin-workspace.mjs'))],
   ]);
   for (const [name, bytes] of await inventory(
     join(repo, 'skills/kiln-setup-workspace'),
@@ -90,7 +91,10 @@ async function expectedFiles() {
   files.set(
     'README.md',
     Buffer.from(
-      `# Kiln Engine local plugin\n\n${development}Version ${pkg.version}, published by Instrukt Labs under the MIT license.\n\nAsk your coding agent to set up a Kiln workspace. The setup skill installs\n\`${pkg.name}@${pkg.version}\` with npm and creates a separate asset workspace.\nUse a supported Node.js installation with npm; no Bun, engine clone or separate\nmodel API key is required. The workspace's START.md explains how to reopen it.\n\nThe plugin registers setup only. The workspace supplies the authoring skills\nand one local MCP server, \`kiln_workspace\`. Open Claude Code in that workspace;\nlaunch Codex there with \`node codex.mjs\`. Accept the host's ordinary trust prompts\nand verify live tool discovery before authoring.\n\nThe engine installation and your assets stay outside the disposable plugin cache.\nPlugin removal or updating its cached files does not delete them. An existing\nworkspace remains on its installed engine until an explicit managed upgrade.\nRead [setup and upgrade guidance](skills/kiln-setup-workspace/references/plugin-install.md).\n\nCPU rendering is available locally. Material appearance requires a qualified\nrenderer; follow the setup skill's renderer checks rather than assuming GPU support.\nHosted ChatGPT access is a separate integration, and this local bundle is not a\npublic OpenAI directory submission.\n\n[Source and issues](https://github.com/instruktlabs/kiln)\n`,
+      `# Kiln Engine local plugin\n\n${development}Plugin version ${release.version}, published by Instrukt Labs under the MIT license. Engine version ${pkg.version}.\n\nAsk your coding agent to set up a Kiln workspace. The setup skill installs\n\`${pkg.name}@${pkg.version}\` with npm and creates a separate asset workspace.\nUse a supported Node.js installation with npm; no Bun, engine clone or separate\nmodel API key is required. The workspace's START.md explains how to reopen it.\n\nUse this plugin in Claude Code or Codex. Its executable requires a local shell and
+persistent filesystem; Claude chat and Cowork are not supported.
+
+The plugin registers setup only. The workspace supplies the authoring skills\nand one local MCP server, \`kiln_workspace\`. Open Claude Code in that workspace;\nlaunch Codex there with \`node codex.mjs\`. Accept the host's ordinary trust prompts\nand verify live tool discovery before authoring.\n\nThe engine installation and your assets stay outside the disposable plugin cache.\nPlugin removal or updating its cached files does not delete them. An existing\nworkspace remains on its installed engine until an explicit managed upgrade.\nRead [setup and upgrade guidance](skills/kiln-setup-workspace/references/plugin-install.md).\n\nCPU rendering is available locally. Material appearance requires a qualified\nrenderer; follow the setup skill's renderer checks rather than assuming GPU support.\nHosted ChatGPT access is a separate integration, and this local bundle is not a\npublic OpenAI directory submission.\n\n[Source and issues](https://github.com/instruktlabs/kiln)\n`,
     ),
   );
   const hashes = Object.fromEntries(
@@ -103,11 +107,13 @@ async function expectedFiles() {
     json({
       schemaVersion: 1,
       kind: 'kiln-local-plugin',
+      pluginVersion: release.version,
       engineVersion: pkg.version,
+      executables: [executable],
       files: hashes,
     }),
   );
-  return { files, version: pkg.version };
+  return { files, version: release.version };
 }
 
 export async function packageLocalPlugin(destination, options = {}) {
@@ -123,6 +129,11 @@ export async function packageLocalPlugin(destination, options = {}) {
       throw new Error(
         `Local plugin is stale: ${changed.join(', ')}. Generate a fresh bundle and review its changes.`,
       );
+    if (
+      process.platform !== 'win32' &&
+      ((await lstat(join(directory, executable))).mode & 0o111) !== 0o111
+    )
+      throw new Error(`Local plugin entry must be executable: ${executable}`);
     return { directory, version, files: files.size - 1, current: true };
   }
   // Refuse both populated and empty existing destinations, including symlinks.
@@ -137,6 +148,7 @@ export async function packageLocalPlugin(destination, options = {}) {
   for (const [name, bytes] of files) {
     await mkdir(dirname(join(directory, name)), { recursive: true });
     await writeFile(join(directory, name), bytes, { flag: 'wx' });
+    if (name === executable) await chmod(join(directory, name), 0o755);
   }
   return { directory, version, files: files.size - 1 };
 }

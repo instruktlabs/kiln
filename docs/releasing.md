@@ -9,8 +9,12 @@ See the [v1 execution record](reviews/2026-10-06-v1-execution.md) for current st
 ## Qualify the candidate
 
 1. Complete the release contract, consumer documentation, notices and changelog.
-   Align `package.json`, engine metadata and plugin manifests to `1.0.0-rc.N` or
-   `1.0.0`, then rebuild the runtime. A version change creates a new candidate.
+   Align `package.json`, engine metadata and the `engineVersion` pin in
+   `plugins/kiln-engine.release.json`, then rebuild the runtime. The local plugin's
+   own `version` changes when its manifest, executable or guidance changes; it can
+   advance independently while retaining the same published engine. Generate and
+   review the local bundle with `scripts/package-local-plugin.mjs`. A version
+   change creates a new candidate, not permission to republish an existing version.
 2. Review the changes and obtain authorization to merge. After merging, wait for
    **every** job in `.github/workflows/ci.yml` to pass on that exact main commit.
    PR receipts are useful during development but cannot authorize a release.

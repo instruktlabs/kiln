@@ -1,6 +1,17 @@
 import { afterEach, expect, test } from 'bun:test';
+import { spawnSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
-import { mkdir, mkdtemp, readFile, readdir, realpath, rm, writeFile } from 'node:fs/promises';
+import {
+  chmod,
+  mkdir,
+  mkdtemp,
+  readFile,
+  readdir,
+  realpath,
+  rm,
+  stat,
+  writeFile,
+} from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join, resolve, sep } from 'node:path';
 import { PNG } from 'pngjs';
@@ -21,20 +32,22 @@ async function destination() {
 }
 const readJson = async (file) => JSON.parse(await readFile(file, 'utf8'));
 
-test('local plugin has portable and Claude identities pinned to the engine', async () => {
+test('local plugin versions independently while retaining its exact engine pin', async () => {
   const directory = await destination();
   await packageLocalPlugin(directory);
   const pkg = await readJson(resolve('package.json'));
+  const release = await readJson(resolve('plugins/kiln-engine.release.json'));
   const portable = await readJson(join(directory, 'plugin.json'));
   const claude = await readJson(join(directory, '.claude-plugin/plugin.json'));
   expect(portable.$schema).toBe('https://agent-plugins.org/schemas/1.0.0/plugin.schema.json');
   expect(portable).toMatchObject({
     name: 'kiln-engine',
-    version: pkg.version,
+    version: release.version,
     author: { name: 'Instrukt Labs' },
   });
   expect(claude.name).toBe(portable.name);
   expect(claude.version).toBe(portable.version);
+  expect(release.engineVersion).toBe(pkg.version);
   expect(await readJson(join(directory, 'runtime.json'))).toEqual({
     name: pkg.name,
     version: pkg.version,
@@ -58,7 +71,7 @@ test('bundle registers setup alone and keeps its complete maintained reference a
       await readFile(resolve('skills/kiln-setup-workspace', file), 'utf8'),
     );
   }
-  expect(await readFile(join(directory, 'scripts/setup-workspace.mjs'), 'utf8')).toBe(
+  expect(await readFile(join(directory, 'bin/kiln-setup-workspace.mjs'), 'utf8')).toBe(
     await readFile(resolve('scripts/setup-plugin-workspace.mjs'), 'utf8'),
   );
   const entries = await readdir(directory);
@@ -74,8 +87,38 @@ test('bundle registers setup alone and keeps its complete maintained reference a
     'AGENTS.md',
     'package.json',
     'hooks',
+    'scripts',
   ])
     expect(entries).not.toContain(excluded);
+});
+
+test('the shipped executable runs outside the checkout and is executable on POSIX', async () => {
+  const directory = await destination();
+  await packageLocalPlugin(directory);
+  const script = join(directory, 'bin/kiln-setup-workspace.mjs');
+  expect((await readFile(script, 'utf8')).startsWith('#!/usr/bin/env node\n')).toBe(true);
+  const run = spawnSync(process.execPath, [script, '--help'], {
+    cwd: directory,
+    encoding: 'utf8',
+    timeout: 10000,
+    windowsHide: true,
+  });
+  expect(run.error).toBeUndefined();
+  expect(run.status).toBe(0);
+  expect(run.stdout).toContain('bin/kiln-setup-workspace.mjs');
+  if (process.platform !== 'win32') {
+    expect((await stat(script)).mode & 0o111).toBe(0o111);
+    const direct = spawnSync(script, ['--help'], {
+      cwd: directory,
+      encoding: 'utf8',
+      timeout: 10000,
+    });
+    expect(direct.error).toBeUndefined();
+    expect(direct.status).toBe(0);
+    expect(direct.stdout).toBe(run.stdout);
+    await chmod(script, 0o644);
+    await expect(packageLocalPlugin(directory, { check: true })).rejects.toThrow('executable');
+  }
 });
 
 test('bundle retains an exact inventory and deterministic hashes', async () => {
@@ -86,6 +129,10 @@ test('bundle retains an exact inventory and deterministic hashes', async () => {
   const receipt = await readJson(join(first, 'package-provenance.json'));
   expect(receipt.kind).toBe('kiln-local-plugin');
   expect(receipt.engineVersion).toBe((await readJson(resolve('package.json'))).version);
+  expect(receipt.pluginVersion).toBe(
+    (await readJson(resolve('plugins/kiln-engine.release.json'))).version,
+  );
+  expect(receipt.executables).toEqual(['bin/kiln-setup-workspace.mjs']);
   expect(Object.keys(receipt.files).length).toBe(result.files);
   for (const [file, digest] of Object.entries(receipt.files)) {
     expect(digest).toBe(

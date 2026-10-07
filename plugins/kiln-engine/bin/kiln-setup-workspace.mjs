@@ -323,7 +323,7 @@ if (
     const options = parseSetupArguments(process.argv.slice(2));
     if (options.help)
       console.log(
-        'Usage: node scripts/setup-workspace.mjs <directory> [--harness claude|codex] [--skills compose,batch]\n       node scripts/setup-workspace.mjs <managed-workspace> --check|--upgrade|--repair\nOptions: --data-dir <persistent-directory>, --archive <qualification.tgz>, --npm-cli <npm-cli.js>',
+        'Usage: node bin/kiln-setup-workspace.mjs <directory> [--harness claude|codex] [--skills compose,batch]\n       node bin/kiln-setup-workspace.mjs <managed-workspace> --check|--upgrade|--repair\nOptions: --data-dir <persistent-directory>, --archive <qualification.tgz>, --npm-cli <npm-cli.js>',
       );
     else {
       const result = await setupPluginWorkspace(options);

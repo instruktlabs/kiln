@@ -224,3 +224,68 @@ manifest. Revalidate the exact new
 commit in the portal before saving the listing, since the `v1.0.0` result cannot
 qualify the added icon. Local evidence: `.cache/claude-directory-stable-validation.txt`,
 `.cache/claude-directory-stable-validation.png`, and `.cache/claude-icon-*.log`.
+
+## Correcting local-plugin platform support (October 7)
+
+The portal revalidated `2339681`: the icon warning is gone and both credential
+policy holds remain. All 18 CI checks passed on that source. Listing details then
+exposed an inaccurate result: the skills-only component classification offered
+Claude Code, Cowork and Claude apps. Kiln's installer requires a local shell and
+persistent runtime/workspace directories; chat and Cowork are not qualified.
+
+Anthropic's [platform support](https://claude.com/docs/plugins/platform-support)
+and [executable documentation](https://code.claude.com/docs/en/plugins/components#executables)
+identify a top-level `bin/` executable as a Claude Code component that excludes
+chat and Cowork. The maintained installer is now actually shipped at
+`bin/kiln-setup-workspace.mjs`, with a shebang and executable permission, and the
+setup skill invokes that file. No dummy component or scanner-specific obfuscation
+was added. Explicit Node invocation remains portable on Windows.
+
+`plugins/kiln-engine.release.json` owns plugin version **1.0.1** and engine pin
+**1.0.0** independently. Both plugin manifests and provenance use the plugin
+version; `runtime.json` retains the exact published npm engine. This invalidates
+plugin caches without replacing the public package, tag, installed engines or
+assets. Maintained skills and both registered copies agree and explain the older
+1.0.0 helper path. The package smoke check still accepts the published 1.0.0
+provenance format while checking separate versions for newer bundles.
+
+Four focused regressions failed before implementation. All 32 packaging/setup
+tests now pass, including invocation from outside the checkout and POSIX
+executable-mode checks (the latter execute in Linux/macOS CI). Isolated Claude
+Code 2.1.287 and Codex 0.160.0 profiles installed 1.0.1 and ran the cached helper.
+Both created a workspace with the public 1.0.0 npm archive, checked its integrity,
+discovered 17 MCP tools, rendered, saved, reopened source and exported a GLB.
+Codex app-server loaded exactly one setup skill, the three workspace skills and
+one connected 1.0.0 MCP server. These probes made no model calls and changed no
+normal user profile. Receipts are `.cache/plugin-101-{install,workflow,codex-appserver}.json`.
+Exact-source CI and portal platform readback remain required after commit.
+
+The full offline gate passes **3,291 tests**, with two skips, zero failures,
+95.16% function coverage and 92.50% line coverage. Toolchain, skill consistency,
+typechecking, lint and Claude manifest validation pass. Logs:
+`.cache/claude-platform-{red,green,full-tests,types,lint,skills}.log`.
+
+### Additional submission gates observed in the form
+
+Data handling asks about personal data, outbound services, retention and intended
+under-18 use. No answers were submitted. Prepare precise local-plugin disclosures:
+installation contacts npm/GitHub, absolute local paths can contain a user name,
+assets persist on the user's machine, and a user-selected remote renderer is
+separate from the unlaunched hosted service. Add the appropriate local-plugin
+privacy link and three documented use cases before owner review.
+
+The compliance page currently names **Matthew Kissinger**, not Instrukt Labs, as
+the submitting identity. Publisher identity needs resolving before acceptance.
+It also asks the submitter to attest that the plugin does not execute code outside
+declared MCP servers. The local setup executable does run npm and workspace setup
+before a workspace MCP exists, so do not tick that statement without resolving its
+meaning for documented executable plugins. A fresh candidate may change the form;
+otherwise obtain clarification or select another supported submission path.
+This is a directory-submission question, not evidence of a hosted execution flaw.
+
+The [Software Directory Terms](https://support.claude.com/en/articles/13145338-anthropic-software-directory-terms)
+and [Directory Policy](https://support.claude.com/en/articles/13145358-anthropic-software-directory-policy)
+require accurate disclosures and applicable privacy/support information. They do
+not resolve the form's executable wording. All declarations and legal acceptance
+remain untouched; no submission, GitHub grant or external support message occurred.
+Preserve the Google OAuth-client question as the sole pending owner approval.

@@ -4,19 +4,24 @@ The local `kiln-engine` plugin installs Kiln's exact pinned npm version and crea
 an asset workspace. It carries setup guidance and a small installer; the engine,
 source stores and authored assets live outside the plugin cache. It needs a
 supported Node.js installation with npm, network access for first installation,
-and no separate model API key.
+and no separate model API key. Use it in Claude Code or Codex; it requires a local
+shell and persistent filesystem and is not a Claude chat or Cowork plugin.
 
 Resolve the plugin root from this installed skill's absolute path: it is two
 directories above `skills/kiln-setup-workspace`. Confirm `runtime.json` and
-`scripts/setup-workspace.mjs` exist there. Do not assume plugin path variables are
+`bin/kiln-setup-workspace.mjs` exist there. Do not assume plugin path variables are
 available in an ordinary shell, and do not substitute an engine checkout.
+
+Plugin version 1.0.0 used `scripts/setup-workspace.mjs`; if using that older
+installation, confirm and use that file instead. Plugin and engine versions are
+independent. `runtime.json` always names the exact engine to install.
 
 For a fresh workspace, use an absolute empty destination outside both the plugin
 and its runtime data directory. Select `claude` or `codex` from the current host
 or the user's stated choice:
 
 ```sh
-node "/absolute/plugin/scripts/setup-workspace.mjs" "/absolute/my-assets" --harness codex
+node "/absolute/plugin/bin/kiln-setup-workspace.mjs" "/absolute/my-assets" --harness codex
 ```
 
 The installer verifies the package name and exact version from `runtime.json`.
@@ -43,8 +48,8 @@ For an existing managed workspace, stop its harness session and run the new
 plugin's helper with `--check`, then `--upgrade` when an update is intended:
 
 ```sh
-node "/absolute/plugin/scripts/setup-workspace.mjs" "/absolute/my-assets" --check
-node "/absolute/plugin/scripts/setup-workspace.mjs" "/absolute/my-assets" --upgrade
+node "/absolute/plugin/bin/kiln-setup-workspace.mjs" "/absolute/my-assets" --check
+node "/absolute/plugin/bin/kiln-setup-workspace.mjs" "/absolute/my-assets" --upgrade
 ```
 
 Check is read-only and reports a missing pinned engine without installing it.
