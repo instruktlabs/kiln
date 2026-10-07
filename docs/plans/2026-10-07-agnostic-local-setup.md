@@ -107,6 +107,11 @@ Implementation checkpoint: the pure JSON/JSONC and TOML configuration merge laye
 has focused preservation/conflict tests and installed-client configuration
 readback. See the [evidence and remaining integration work](../reviews/2026-10-07-project-config-preservation.md).
 Existing-project adoption and multiple agent registrations are not yet enabled.
+The recoverable write layer now has focused process-interruption and conflict
+tests. Its [evidence and limits](../reviews/2026-10-07-setup-recovery.md) also correct
+the old assumption that Claude's project skill discovery includes `.agents/skills`.
+Use client-specific registration paths around the same maintained skills until
+actual client qualification demonstrates an alternative.
 
 - [OpenAI's Claude-plugin portability guide](https://developers.openai.com/plugins/guides/submit-claude-plugin)
   distinguishes reusable skills/server implementations from host-specific

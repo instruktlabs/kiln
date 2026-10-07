@@ -33,7 +33,10 @@ neither opens files, reads credentials, writes settings or grants trust.
   skipped, no failures. Typechecking, skill consistency, toolchain validation and
   lint (1,085 files) passed. A registry advisory audit found no known
   vulnerabilities among 309 packages; that is not a guarantee of absence of
-  vulnerabilities. Coverage qualification is still pending at this checkpoint.
+  vulnerabilities. The subsequent coverage run also passed all 3,307 tests and
+  the existing ratchet: 95.16% functions (minimum 94.00%) and 92.50% lines
+  (minimum 92.10%). Coverage measures `src/`; the script's preservation behavior
+  is proved by its focused tests, not those engine percentages.
 - Runtime bundles rebuilt. The SDK directory replacement encountered a Windows
   `EPERM` once and restored the prior output; a direct SDK build retry succeeded
   with all 55 entrypoints and 522 emitted files. No permissions or running user
@@ -65,3 +68,22 @@ Complete the adapter projections, skill registration without duplicates, safe
 addition/removal of agent integrations and installed-package tests. Full real
 client onboarding, asset preservation and cross-agent reuse remain release gates.
 No public directory draft or outbound message was changed by this work.
+
+CI at `e76c591` also retriggered the older conditional Docker hosting probe
+because dependencies changed. Its retained receipt failed at
+`isolation / wrapper-launch`, before evaluating source, matching the failure
+phase already recorded in the hosted isolation review. This is an unresolved
+hosting check, not a passing setup or production-isolation receipt. Evidence:
+GitHub run `37650504451`, artifact `11495249713`, and the local copy under
+`.cache/pr156-native-preflight-receipts/receipts/isolation/`. No workflow was
+weakened or failure hidden.
+
+The Windows hosted check at the same commit separately reported `fetch failed`
+from the real Worker-RPC denial request in `resilience.test.mjs:444` (run
+`37650504502`, first attempt). Three exact focused local reproductions passed,
+followed by all 450 local hosted tests. The failure was retained and one rerun of
+only the failed CI job was requested without changing assertions or source.
+Attempt two passed on unchanged source. This is an unreproduced failure, not a
+root-cause fix. All 25 other checks now pass; the separate Docker probe above
+still fails. Log: `.cache/pr156-hosted-windows-failure.log`; local evidence:
+`.cache/resilience-repro-{1,2,3}.log` and `.cache/agnostic-hosted-repro.log`.
