@@ -31,10 +31,14 @@ unavailable-daemon records do not describe its present state.
 The separate `Native hosting preflight` GitHub workflow builds this six-file
 context on Linux, records the exact archive/image/dependency identities, and runs
 with no network or host mounts, one CPU, 6 GiB memory, 256 PIDs, no capabilities
-and no new privileges. It retains unsuccessful receipts and keeps the workflow
-failed when qualification fails. Its independently executed trusted renderer
-fixture can diagnose native dependencies after an isolation failure; it never
-qualifies untrusted evaluation. CI evidence does not establish Cloudflare support.
+and no new privileges. Its explicit `--expect-unsupported-isolation` mode requires
+kernel namespace permission denial, readiness rejection and a failed source
+request with no artifact. This emits `kiln.unsupported-evaluator-rejection.v1`,
+which records `isolatedExecutionAvailable: false`; it never counts as successful
+isolation. Unexpected readiness success, source execution or a different failure
+fails this negative-host test. The separate software-renderer fixture must also
+pass. Original failed receipts remain retained; CI evidence does not establish
+Cloudflare support.
 
 An additional `Installed nested evaluator` job tests the archive on an
 unprivileged Ubuntu 22.04 VM, with a source-pinned non-setuid Bubblewrap build and
@@ -43,8 +47,13 @@ different receipt, `kiln.nested-evaluator-qualification.v1`: all ten readiness
 invariants and nine host/evaluation/CPU/limit checks must pass. It uses dedicated
 `/usr/local/bin/kiln-probe-bwrap` and `kiln-probe-node` binaries, records their
 hashes and installs the archive at `/app` outside the source checkout. This mode
-does not test software rendering or qualify Cloudflare. The original Docker job
-is retained unchanged while the additional VM evidence is being established.
+does not test software rendering or qualify Cloudflare. Both the positive VM job
+and the restricted Docker refusal/renderer job must pass. The former passed all
+nine checks at `5b1094c`, with archive and artifact hashes independently verified;
+see the [preflight evidence](../../docs/reviews/2026-10-07-native-preflight-alignment.md).
+The negative-host mode is selected explicitly, never as a fallback after failed
+positive qualification. The default command still requires complete positive
+evaluation and software rendering on a compatible host.
 
 The initial Bookworm image built but Mesa 22.3 failed Dawn's required Vulkan
 features. The pinned Trixie replacement passes the six-image software fixture.
@@ -69,12 +78,12 @@ startup or earlier work; retain the before/after snapshots without relabeling th
 as per-job RSS or billed CPU. Load, tenancy, persistence, retention and cost remain
 separate service tests.
 
-Cloudflare's current documentation recommends the Durable Object Container API
-for new applications and describes a separate microVM per container. Neither fact
-guarantees that this image can create Kiln's nested namespaces. Run this unchanged
-probe on the provider before selecting its production execution boundary. If it
-fails, record the specific failure and evaluate a reviewed per-job/per-user
-provider sandbox design; do not silently substitute ordinary subprocess execution.
+Cloudflare's documented microVM boundary does not guarantee nested namespace
+support. Kiln's hosted candidate explicitly selects its separately qualified
+fresh-VM adapter; these generic SDK probes do not qualify that provider boundary.
+Never silently substitute ordinary subprocess execution when nested isolation
+fails. Keep provider image/controller, tenancy and whole-instance cleanup evidence
+separate from these two CI host profiles.
 
 References checked 6 October 2026:
 [container lifecycle](https://developers.cloudflare.com/containers/concepts/architecture/),

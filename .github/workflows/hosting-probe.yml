@@ -20,8 +20,8 @@ concurrency:
   group: hosting-probe-${{ github.ref }}
   cancel-in-progress: true
 
-# This conditional provider-neutral probe is separate from the required package
-# matrix. A successful Docker run would still require qualification on Cloudflare.
+# This provider-neutral probe is separate from the package matrix. Both positive
+# VM evaluation and restricted-host refusal must pass. Neither qualifies Cloudflare.
 jobs:
   nested-evaluator:
     name: Installed nested evaluator · unprivileged Linux VM
@@ -151,7 +151,7 @@ jobs:
           retention-days: 14
 
   image-preflight:
-    name: Linux image isolation and software rendering
+    name: Restricted Docker refusal and software rendering
     runs-on: ubuntu-24.04
     timeout-minutes: 25
     env:
@@ -247,7 +247,7 @@ jobs:
           timeout --signal=TERM --kill-after=5s 30s docker start --attach kiln-probe-diagnostics \
             > .cache/hosting-ci/receipts/namespace-diagnostics.json
 
-      - name: Require isolated native evaluation and rendering
+      - name: Require refusal when Docker denies nested isolation
         if: ${{ !cancelled() && steps.image.outcome == 'success' }}
         shell: bash
         run: |
@@ -255,7 +255,10 @@ jobs:
           receipts="$PWD/.cache/hosting-ci/receipts"
           docker create --name kiln-probe-isolation --network none --cpus 1 \
             --memory 6g --memory-swap 6g --pids-limit 256 --cap-drop ALL \
-            --security-opt no-new-privileges kiln-native-probe:ci
+            --security-opt no-new-privileges kiln-native-probe:ci \
+            node /probe/hosting/run-native-qualification.mjs \
+            /app/node_modules/@instruktlabs/kiln /tmp/qualification /probe/candidate.tgz \
+            --expect-unsupported-isolation
           set +e
           timeout --signal=TERM --kill-after=15s 240s docker start --attach kiln-probe-isolation \
             > "$receipts/isolation.log" 2>&1
@@ -270,7 +273,18 @@ jobs:
           docker cp kiln-probe-isolation:/tmp/qualification "$receipts/isolation"
           test "$attached_status" -eq 0
           test "$(docker inspect kiln-probe-isolation --format '{{.State.ExitCode}}')" -eq 0
-          node --input-type=module -e 'import{readFileSync}from"node:fs";if(JSON.parse(readFileSync(".cache/hosting-ci/receipts/isolation/receipt.json")).status!=="passed")process.exit(1)'
+          node --input-type=module -e '
+            import assert from "node:assert/strict";
+            import { readFileSync } from "node:fs";
+            const r = JSON.parse(readFileSync(".cache/hosting-ci/receipts/isolation/receipt.json"));
+            assert.equal(r.version, "kiln.unsupported-evaluator-rejection.v1");
+            assert.equal(r.status, "passed");
+            assert.equal(r.isolatedExecutionAvailable, false);
+            assert.equal(r.namespaceProbe.permissionDenied, true);
+            assert.equal(r.readinessFailure, "wrapper-launch");
+            assert.equal(r.evaluationFailure, "WORKER_FAILED");
+            assert.deepEqual(r.checks.map(c => c.name), ["host", "kernel-namespace-denied", "readiness-refused", "source-request-refused"]);
+            assert.deepEqual(r.artifacts, []);'
 
       - name: Diagnose the trusted software-renderer fixture independently
         if: ${{ !cancelled() && steps.image.outcome == 'success' }}

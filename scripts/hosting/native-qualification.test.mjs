@@ -3,6 +3,7 @@ import {
   captureCgroupSnapshot,
   qualifyNativeRuntime,
   qualifyNestedEvaluator,
+  qualifyUnsupportedEvaluator,
 } from './native-qualification.mjs';
 
 test('cgroup evidence retains dotted kernel counters from the Linux preflight', async () => {
@@ -183,6 +184,87 @@ test('a deadline check that resolves instead of rejecting is a failure', async (
     status: 'failed',
     failure: { phase: 'deadline', code: 'CHECK_FAILED' },
   });
+});
+
+function unsupportedFixture() {
+  const { ports } = fixture();
+  ports.namespaceDenied = async () => true;
+  ports.ready = async () => {
+    throw { readinessCode: 'wrapper-launch' };
+  };
+  ports.render = async () => {
+    throw { code: 'WORKER_FAILED', message: 'private diagnostic must not escape' };
+  };
+  ports.cpu =
+    ports.software =
+    ports.artifact =
+      async () => {
+        throw new Error('A refused source request cannot produce an artifact');
+      };
+  return ports;
+}
+
+test('an unsupported host qualifies refusal only, with kernel denial and both API rejections', async () => {
+  const receipt = await qualifyUnsupportedEvaluator(unsupportedFixture());
+  expect(receipt).toMatchObject({
+    version: 'kiln.unsupported-evaluator-rejection.v1',
+    status: 'passed',
+    isolatedExecutionAvailable: false,
+    readinessFailure: 'wrapper-launch',
+    evaluationFailure: 'WORKER_FAILED',
+    artifacts: [],
+  });
+  expect(receipt.checks.map((check) => check.name)).toEqual([
+    'host',
+    'kernel-namespace-denied',
+    'readiness-refused',
+    'source-request-refused',
+  ]);
+  expect(JSON.stringify(receipt)).not.toContain('private diagnostic');
+  expect(receipt).not.toHaveProperty('isolation');
+  expect(receipt).not.toHaveProperty('software');
+});
+
+test('readiness success, unproven kernel denial and source execution cannot pass a refusal check', async () => {
+  for (const overrides of [
+    { namespaceDenied: async () => false },
+    { ready: fixture().ports.ready },
+    { render: fixture().ports.render },
+    {
+      ready: async () => {
+        throw { readinessCode: 'deadline' };
+      },
+    },
+    {
+      render: async () => {
+        throw { code: 'EXECUTION_REJECTED' };
+      },
+    },
+    {
+      render: async () => {
+        throw { code: 'DEADLINE_EXCEEDED' };
+      },
+    },
+  ]) {
+    const receipt = await qualifyUnsupportedEvaluator({ ...unsupportedFixture(), ...overrides });
+    expect(receipt.status).toBe('failed');
+    expect(receipt.artifacts).toEqual([]);
+  }
+});
+
+test('unsupported-host qualification rejects root before either readiness or evaluation', async () => {
+  let invoked = false;
+  const ports = unsupportedFixture();
+  ports.uid = 0;
+  ports.namespaceDenied = async () => {
+    invoked = true;
+    return true;
+  };
+  expect(await qualifyUnsupportedEvaluator(ports)).toMatchObject({
+    status: 'failed',
+    failure: { phase: 'host', code: 'CHECK_FAILED' },
+  });
+  expect(invoked).toBe(false);
 });
 
 test('wrong negative outcome is not accepted as a successful limit', async () => {

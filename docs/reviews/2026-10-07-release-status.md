@@ -97,25 +97,23 @@ trial uses four private Workers with temporary D1/KV/R2, no VMs, provider secret
 or public route, with a bounded run and identity-checked cleanup. Earlier paid
 trial allowances do not authorize it.
 
-The #156 implementation at `76c869a` has 25 passing checks and a separate failing legacy Linux
-Docker isolation preflight. That failure remains visible and needs resolution or
-an evidenced check replacement before final readiness; it is not the result of
-the private Cloudflare fresh-VM tests. Do not hide it by weakening isolation.
-The [preflight alignment review](2026-10-07-native-preflight-alignment.md)
-records the exact downloaded failure and distinguishes the nested SDK adapter
-from production's explicit fresh-VM route. A subsequent additive VM test preserves
-all evaluator checks and leaves the Docker job unchanged. Local validation passes
-3,348 tests with two platform-specific skips. Its first VM run also fails at
-wrapper startup; the bounded diagnostic identifies an unsupported Bubblewrap
-`--preserve-fds` argument in the optional nested evaluator. Its removal and the
-subsequent namespace/environment corrections have failing-then-passing regressions
-and rebuilt bundles. At `71aac00`, the actual VM passes all ten readiness checks,
-then fails its first evaluation with `EXECUTION_REJECTED`. No asset is produced;
-the full evaluator remains unqualified while a fixed-fixture diagnostic proceeds.
-The unsupported launcher option also exists in published
-1.0.0's optional nested adapter and is recorded in the unpublished changelog.
-No gate is waived. Recovery commit `88ebe58` separately passed hosted CI on Linux
-and Windows; this does not satisfy the unfinished provider restore gate.
+The [preflight alignment review](2026-10-07-native-preflight-alignment.md) records
+the exact Docker/VM failures and distinguishes the optional nested SDK evaluator
+from production's explicit Cloudflare fresh-VM adapter. Actual installed VM
+qualification now passes at `5b1094c`: all ten readiness invariants, deterministic
+GLBs, CPU preview, deadline/cancellation/output bounds and post-limit recovery.
+Archive and artifact hashes were independently checked. Launcher, namespace,
+environment and Khronos-validator compatibility fixes have regressions and rebuilt
+bundles; the optional-adapter fixes remain unpublished. All 118 focused evaluator
+and qualification tests pass; full exact-candidate package CI remains required.
+
+The preserved Docker job still fails in that run. Its prepared replacement now
+requires explicit kernel-denial and evaluator-refusal evidence, no artifact, and
+the unchanged trusted software-renderer fixture. The positive VM job remains a
+separate requirement. Fifteen focused qualification tests pass; actual CI proof of
+the revised Docker refusal job is pending. No restriction is relaxed and no failed
+positive probe automatically selects the refusal mode. Recovery commit `88ebe58`
+separately passed hosted CI on Linux and Windows; provider restore remains unfinished.
 
 No immediate authentication is required for the local implementation. Later
 provider transitions and final publication/deployment actions will be surfaced

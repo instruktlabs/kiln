@@ -45,6 +45,58 @@ export async function qualifyNestedEvaluator(ports) {
   return qualifyRuntime(ports, false);
 }
 
+/** Explicit negative-host test. Never an alternate successful isolation route. */
+export async function qualifyUnsupportedEvaluator(ports) {
+  const receipt = {
+    version: 'kiln.unsupported-evaluator-rejection.v1',
+    status: 'running',
+    checks: [],
+    artifacts: [],
+  };
+  let phase = 'host';
+  async function check(name, run) {
+    phase = name;
+    const start = performance.now();
+    await run();
+    receipt.checks.push({ name, elapsedMs: performance.now() - start });
+  }
+  async function requireRejection(invoke, classify, expected) {
+    try {
+      await invoke();
+    } catch (error) {
+      assert.equal(classify(error), expected);
+      return;
+    }
+    assert.fail('Unsupported boundary unexpectedly accepted the request');
+  }
+  try {
+    await check('host', () => {
+      assert(ports.platform === 'linux' && Number.isInteger(ports.uid) && ports.uid > 0);
+    });
+    await check('kernel-namespace-denied', async () => {
+      assert.equal(await ports.namespaceDenied(), true);
+    });
+    await check('readiness-refused', () =>
+      requireRejection(ports.ready, ports.readinessCode, 'wrapper-launch'),
+    );
+    receipt.readinessFailure = 'wrapper-launch';
+    await check('source-request-refused', () =>
+      requireRejection(
+        () => ports.render(BOX, { ...LIMITS }),
+        (error) => error?.code,
+        'WORKER_FAILED',
+      ),
+    );
+    receipt.evaluationFailure = 'WORKER_FAILED';
+    receipt.isolatedExecutionAvailable = false;
+    receipt.status = 'passed';
+  } catch {
+    receipt.status = 'failed';
+    receipt.failure = { phase, code: 'CHECK_FAILED' };
+  }
+  return receipt;
+}
+
 export async function captureCgroupSnapshot(readText) {
   const snapshot = {};
   for (const name of ['memory.current', 'memory.peak', 'memory.max', 'cpu.stat']) {

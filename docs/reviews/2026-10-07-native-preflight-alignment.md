@@ -192,3 +192,29 @@ that an assigned JSON `__proto__` key cannot mutate the target prototype. It fai
 with the old flags and passes with the fix. No validator bypass, source-policy
 exception or OS/resource restriction change is introduced. Actual VM qualification
 of this corrected candidate is still required.
+
+## Positive installed proof and restricted-host regression
+
+[Run 37684601572](https://github.com/instruktlabs/kiln/actions/runs/37684601572)
+at `5b1094c` passes the complete installed VM qualification: all ten readiness
+invariants, two identical GLB evaluations, a nonblank 128px CPU preview, deadline,
+cancellation, output limits and successful execution after the limits. The
+downloaded archive SHA-256 is
+`ce0d7e182705159d70daa19ab58e8fc063e81a8a43a8e4df203cfb1d88c2878f`.
+Both artifact sizes and digests were independently checked; the 1,912-byte GLB
+hash is `f94d231ed3eb4843a03704872adc3f20b00c2ea24567cb5916407b40a2cf1d40`.
+The CPU image was inspected and shows the expected box. This is VM/SDK evidence,
+not material or Cloudflare qualification. The original Docker job remains failed
+in this preserved run. All 118 focused evaluator/qualification tests pass locally.
+
+With positive evidence established, the Docker job now explicitly requests
+`--expect-unsupported-isolation` and requires a distinct refusal-only receipt.
+It must observe kernel namespace permission denial, readiness `wrapper-launch`,
+and `WORKER_FAILED` for the valid fixed source, producing no artifact. Successful
+readiness/source execution, missing kernel evidence, an authoring rejection or
+a timeout cannot satisfy this test. It still separately requires the complete
+software-renderer fixture under unchanged Docker restrictions. The positive VM
+job remains mandatory for this workflow; no failing positive probe automatically
+switches to the negative mode. Fifteen focused qualification tests pass, including
+the new failing-then-passing refusal cases. Actual CI proof of this revised job
+remains required before its status can be reported as passing.
