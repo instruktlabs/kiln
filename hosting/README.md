@@ -166,11 +166,11 @@ The UI explains these effects before confirmation and shows the latest 20 securi
 events. Events record provider, action and time, without tokens, email or IP address.
 Pending intents are capped at four per account and 4,096 globally. These limits do
 not replace public rate limits. Session deletion cascades to pending confirmations.
-The success page and activity list are **in-app notices only**. Out-of-band security
-email and verified contact collection are a pending owner decision, not implemented
-or qualified. Provider confirmation can reuse an existing provider session; it is
-not evidence of a fresh password or MFA challenge. No assurance-level certification
-is claimed.
+The success page and activity list are **in-app notices only**, as selected by the
+owner for v1. Out-of-band security email and verified contact collection are deferred,
+not implemented or qualified. Provider confirmation can reuse an existing provider
+session; it is not evidence of a fresh password or MFA challenge. No assurance-level
+certification is claimed.
 
 Workerd fixtures exercise real gateway, provider validators and D1 transactions
 with mocked upstream providers: both link directions, stable account ownership,

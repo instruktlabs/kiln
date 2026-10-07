@@ -23,7 +23,7 @@ states and the evidence that superseded them.
 | P4 | Clean installs and workspace upgrades | Stable qualified: all seven public-registry jobs pass; fresh Windows archive passes 25 consumer checks; Claude/Codex cached installers render/save/reopen/export; 0.10.0 and RC-to-stable upgrades preserve assets/customizations and refuse conflicts |
 | P5 | Release automation and npm publication | Stable published and verified: approved stage promoted after npm security-key authentication, latest=1.0.0, public archive/provenance verified. PR #152 merged as 77dfbc3 after all twelve CI and seven registry jobs passed. GitHub v1.0.0 release/tag and downloaded archive verified |
 | H1 | Native Cloudflare qualification | Fixed native qualification and private integrated candidate `c755434` passed. The latter passed ten lifecycle/isolation/quota checks using thirteen of seventeen allowed VM starts; all resources were removed and absence verified. Thirty-five actual VM starts across approved trials are recorded. Latest combined source/image qualification, representative load and settled billing remain open |
-| H2 | Authenticated MCP and tenant boundary | In progress in draft PR #153: primary-D1 access/revocation, browser confirmation, Google/GitHub linking/unlinking and durable full-account deletion are implemented and locally tested. A thirteen-check preflight now exercises gateway/token/storage/revocation paths across the prepared six-Worker topology with synthetic accounts and paused native admission. Live sign-in, final combined-service qualification and the security-notification decision/setup remain open |
+| H2 | Authenticated MCP and tenant boundary | In progress in draft PR #153: primary-D1 access/revocation, browser confirmation, Google/GitHub linking/unlinking and durable full-account deletion are implemented and locally tested. A thirteen-check preflight now exercises gateway/token/storage/revocation paths across the prepared six-Worker topology with synthetic accounts and paused native admission. Owner selected in-app security notices only for v1. Live sign-in and final combined-service qualification remain open |
 | H3 | Artifact lifecycle | In progress in draft PR #153: native dispatch, private saved assets/material closures, verified evaluator identity, browser download tickets, quotas/retention and account retirement are locally tested. The earlier frozen private trial proves render/save/reopen/export/isolation for its recorded scope; newer material/download/deletion work still needs deployed qualification |
 | H4 | Capacity and operations | In progress: shared SQLite admission, global/per-account quotas, operator pause, native cleanup and durable account-deletion recovery are implemented. Launch quota values, representative load/costs, deployed Cron recovery, retention/alerts/escalation, deployed identity and rollback verification remain open |
 | H5 | Production deployment | Pending: approved deployment at `kiln.instruktlabs.com`; live authenticated create/edit/render/save/download/reconnect flow |
@@ -2985,3 +2985,53 @@ Live OAuth/account actions/deletion, real scheduled recovery, retention, load,
 costs, alerts and public-client behavior remain launch gates. No cloud resource,
 provider credential, public route, paid run or email was created. The existing
 security-email decision remains pending and the Google client form unsubmitted.
+
+## Security notice decision and native lifecycle component
+
+The owner selected **in-app notices only for v1**. This supersedes the pending
+security-email question above. The plan's D10 and hosting guide now record that no
+separate security contact email, additional email scopes or outbound security mail
+will be added to v1. Google/GitHub sign-in remains unchanged. The next sequenced
+browser approval is creating the prepared Google web client with the sole callback
+`https://kiln.instruktlabs.com/oauth/google/callback`; the form remains unsubmitted.
+
+All eighteen CI checks passed on `dd33b5a`. The next native trial now has a locally
+qualified lifecycle runner and independent durable allowance. Twenty-one fixed
+stages cover material creation, fresh-host rendering/save/restore/source/export,
+GLB/manifest reads, exact browser download contents, account isolation, material
+closure restoration after removing the disposable live material, rerender and
+quota rejection. The actual engine fixture observes fourteen admitted MCP calls,
+three evaluations and three synthetic view calls; the fifteenth MCP call is denied.
+Manifest acceptance requires the exact evaluator-image identity. Local synthetic
+views do not qualify software Vulkan fidelity or cloud VM behavior.
+
+The proposed private allowance caps coordinator/evaluation/render starts at 14/4/4,
+22 total, once connected to diagnostic wrappers. It is transactional and one-use;
+failed starts cannot be refunded, and closing before opening forbids any later run.
+The old trial and its consumed allowance remain unchanged. No new paid execution,
+cloud resources, image upload or public route was created.
+
+The lifecycle uses fixed request/control deadlines, an 8 MiB response ceiling,
+64 MiB aggregate evidence ceiling, stop-on-failure, and terminal allowance closure
+with paused/idle admission verification. A retained interrupted record cannot
+resume or recreate the run. Raw synthetic response evidence stays private; public
+receipts exclude credentials, URLs, source and exception details. Paused/idle
+admission is not a cloud-resource-deletion receipt.
+
+Focused failing tests preceded implementation. Adversarial replays of real engine
+responses exposed weaknesses in the new trial's initial acceptance checks: it
+missed JSON-escaped source in an error and trusted download denial status without
+checking for leaked content. Both checks were corrected. Replays now reject those
+leaks, leaked material data, modified GLB downloads and unverified engine identity.
+Other tests exercise concurrent allowance claims, reconstruction, invalid inputs,
+oversized responses and the actual ten-second stalled-evidence deadline; late
+completion cannot resume the failed sequence.
+
+All 385 hosted tests, three typechecks, thirteen production builds, root lint and
+redacted probe-source/bundle scans pass locally. Logs are under
+`.cache/lifecycle-*.log`. [NATIVE_LIFECYCLE.md](../../hosting/probe/NATIVE_LIFECYCLE.md)
+records scope and limitations. Wiring the unchanged production gateway/tenant/
+admission services to diagnostic budget wrappers, the private operator, exact
+image/config verification and full cleanup is next; only then is another paid
+trial ready for approval. Live OAuth, account actions/deletion, scheduled recovery,
+retention, load/costs, alerts and actual public-client verification remain open.

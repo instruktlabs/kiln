@@ -20,6 +20,7 @@ let createNativeEvaluatorPort;
 let runtime;
 let namespace;
 let runIntegratedOnce, integratedSource;
+let runLifecycleOnce, lifecycleCases, lifecycleBudget;
 const handlers = [];
 before(async () => {
   const outfile = fileURLToPath(
@@ -106,6 +107,15 @@ before(async () => {
     platform: 'node',
   });
   ({ runIntegratedOnce, integratedSource } = await import(trial));
+  const lifecycle = new URL('../../.cache/hosted-mcp-test/lifecycle-run.mjs', import.meta.url);
+  await build({
+    entryPoints: [fileURLToPath(new URL('../probe/lifecycle-run.ts', import.meta.url))],
+    outfile: fileURLToPath(lifecycle),
+    bundle: true,
+    format: 'esm',
+    platform: 'node',
+  });
+  ({ runLifecycleOnce, lifecycleCases, lifecycleBudget } = await import(lifecycle));
 });
 after(async () => {
   for (const handler of handlers) await handler.close();
@@ -556,6 +566,230 @@ test('the complete fixed provider sequence matches real fresh-host MCP and priva
   assert.equal(result.passed, true, JSON.stringify(result));
   assert.equal(result.results.length, 10);
   assert.equal(receipts.length, 10);
+});
+
+test('private lifecycle trial qualifies fresh hosts, editable materials, exact downloads and pinned provenance', async () => {
+  const values = new Map();
+  const store = {
+    get: async (key) => structuredClone(values.get(key)),
+    put: async (key, value) => values.set(key, structuredClone(value)),
+    transaction: async (fn) => fn(store),
+  };
+  const fixtureOrigin = 'https://kiln-private-qualification.invalid';
+  const expectedImage = `sha256:${'b'.repeat(64)}`;
+  let calls = 0,
+    evaluations = 0,
+    renders = 0,
+    paused = true,
+    opened = 0,
+    closed = 0;
+  const evidence = [];
+  const ownerName = (account) => `full-lifecycle-${account}`;
+  const evaluator = createNativeEvaluatorPort({
+    fetch: async (request) => {
+      const json = await request.text();
+      const input = JSON.parse(json);
+      assert.equal(input.options.materialResources.records.length, 1);
+      assert.equal(
+        input.options.materialResources.records[0].manifest.materialId,
+        'qualification-stone',
+      );
+      evaluations++;
+      return new Response(await evaluateEvaluatorRequestV2(json), {
+        headers: { 'x-kiln-execution-image': expectedImage },
+      });
+    },
+  });
+  const ports = {
+    expectedImage,
+    open: async () => {
+      opened++;
+      paused = false;
+    },
+    close: async () => {
+      closed++;
+    },
+    pause: async () => {
+      paused = true;
+    },
+    status: async () => ({ paused, activeRequests: 0, pendingCleanup: 0 }),
+    retain: async (name, bytes) => {
+      evidence.push({ name, bytes: Buffer.from(bytes) });
+    },
+    mcp: async (account, request) => {
+      assert.equal(request.headers.get('authorization'), null);
+      assert.equal(request.headers.get('cookie'), null);
+      if (++calls > lifecycleBudget.coordinator) return new Response('quota', { status: 429 });
+      const handler = host(
+        ownerName(account),
+        { publicOrigin: fixtureOrigin },
+        evaluator,
+        async (input) => {
+          renders++;
+          const size = input.size ?? input.width;
+          return {
+            ok: true,
+            rendererId: 'dawn-vulkan:software-fixture',
+            viewsPng: (input.viewDirs ?? input.cameras).map(() =>
+              encodePng(new Uint8Array(size * size * 3).fill(128), size, size),
+            ),
+            derivativeFidelity: {
+              materialFaithful: true,
+              inputGlbSha256: `sha256:${createHash('sha256').update(input.glb).digest('hex')}`,
+            },
+          };
+        },
+      );
+      const response = await handler.fetch(new Request('http://kiln-native.internal/mcp', request));
+      const bytes = await response.arrayBuffer();
+      await handler.close();
+      return new Response(bytes, { status: response.status, headers: response.headers });
+    },
+    download: async (account, path, signal) => {
+      if (account === 'anonymous') return new Response(null, { status: 401 });
+      return namespace
+        .getByName(ownerName(account))
+        .fetch(`https://tenant.internal/internal${path}`, { signal });
+    },
+    dropMaterial: async (materialId, revisionId) => {
+      const tenant = namespace.getByName(ownerName('owner'));
+      const group = await (
+        await tenant.fetch(
+          `https://tenant.internal/internal/materials/${materialId}/${revisionId.slice(7)}`,
+        )
+      ).json();
+      assert.equal(
+        (
+          await tenant.fetch(`https://tenant.internal/internal/groups/${group.id}`, {
+            method: 'DELETE',
+          })
+        ).status,
+        200,
+      );
+    },
+  };
+  const result = await runLifecycleOnce(store, ports);
+  assert.equal(result.passed, true, JSON.stringify(result));
+  assert.equal(result.results.length, 21);
+  assert.deepEqual(
+    result.results.map((value) => value.name),
+    lifecycleCases,
+  );
+  assert.equal(calls, 15);
+  assert.equal(evaluations, 3);
+  assert.equal(renders, 3);
+  assert.equal(opened, 1);
+  assert.equal(closed, 1);
+  assert.equal(paused, true);
+  assert.equal(
+    result.results.find((value) => value.name === 'manifest').savedEngine,
+    `cloudflare-container:${expectedImage}`,
+  );
+  assert.equal(evidence.length, 20);
+  assert.deepEqual(await runLifecycleOnce(store, ports), result);
+  assert.equal(calls, 15);
+  assert.equal(opened, 1);
+  assert.equal(closed, 1);
+  // Reuse actual engine responses to attack the trial's acceptance checks.
+  const recorded = new Map(evidence.map((item) => [item.name, item.bytes]));
+  const sourceMessage = JSON.parse(recorded.get('source').toString());
+  const source = JSON.parse(
+    sourceMessage.result.content.find((item) => item.type === 'text').text,
+  ).code;
+  const attacks = [
+    ['foreign-download', () => Buffer.from(source)],
+    ['anonymous-download', () => Buffer.from(source)],
+    [
+      'manifest',
+      (bytes) => {
+        const message = JSON.parse(bytes.toString());
+        const manifest = JSON.parse(message.result.contents[0].text);
+        manifest.build.engine = 'unverified';
+        message.result.contents[0].text = JSON.stringify(manifest);
+        return Buffer.from(JSON.stringify(message));
+      },
+    ],
+    [
+      'glb-download',
+      (bytes) => {
+        const changed = Buffer.from(bytes);
+        changed[changed.length - 1] ^= 1;
+        return changed;
+      },
+    ],
+    [
+      'foreign-source',
+      (bytes) => {
+        const message = JSON.parse(bytes.toString());
+        message.debug = { source };
+        return Buffer.from(JSON.stringify(message));
+      },
+    ],
+    [
+      'foreign-source',
+      (bytes) => {
+        const message = JSON.parse(bytes.toString());
+        message.debug = { text: JSON.stringify({ code: source }) };
+        return Buffer.from(JSON.stringify(message));
+      },
+    ],
+    [
+      'foreign-material',
+      (bytes) => {
+        const message = JSON.parse(bytes.toString());
+        const materialMessage = JSON.parse(recorded.get('material-get').toString());
+        message.debug = JSON.parse(
+          materialMessage.result.content.find((item) => item.type === 'text').text,
+        ).material;
+        return Buffer.from(JSON.stringify(message));
+      },
+    ],
+  ];
+  for (const [failedCase, mutate] of attacks) {
+    let index = 0,
+      sealed = false,
+      halted = false;
+    const replayStoreValues = new Map();
+    const replayStore = {
+      get: async (key) => structuredClone(replayStoreValues.get(key)),
+      put: async (key, value) => {
+        replayStoreValues.set(key, structuredClone(value));
+      },
+      transaction: async (fn) => fn(replayStore),
+    };
+    const response = () => {
+      const name = lifecycleCases[index++];
+      const original = recorded.get(name);
+      assert(original, name);
+      const bytes = name === failedCase ? mutate(original) : original;
+      return new Response(bytes, {
+        status: result.results.find((item) => item.name === name).status,
+        headers: { 'cache-control': 'no-store' },
+      });
+    };
+    const failed = await runLifecycleOnce(replayStore, {
+      expectedImage,
+      open: async () => {},
+      close: async () => {
+        sealed = true;
+      },
+      pause: async () => {
+        halted = true;
+      },
+      status: async () => ({ paused: halted, activeRequests: 0, pendingCleanup: 0 }),
+      mcp: async () => response(),
+      download: async () => response(),
+      retain: async () => {},
+      dropMaterial: async () => {
+        index++;
+      },
+    });
+    assert.equal(failed.passed, false, failedCase);
+    assert.equal(failed.results.at(-1).name, failedCase);
+    assert.equal(failed.results.at(-1).passed, false);
+    assert.equal(index, lifecycleCases.indexOf(failedCase) + 1);
+    assert.equal(sealed && halted, true);
+  }
 });
 
 test('native MCP uses the material-view port and retains truthful CPU fallback', async () => {

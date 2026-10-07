@@ -1075,6 +1075,13 @@ email route need not introduce another hosting vendor. Verify account access,
 deliverability, costs, abuse controls and recovery semantics before enabling it.
 [Cloudflare Email Service](https://developers.cloudflare.com/email-service/).
 
+The owner selected **in-app security notices only for v1** on 6 October. Keep the
+account activity and confirmation notices for sign-in method changes and account
+deletion. Do not collect a separate security contact email, expand provider scopes
+for email, or configure outbound security mail in this release. Users will not
+receive an out-of-band warning of these actions; describe this limitation honestly.
+Email notifications remain a possible later improvement, separate from email login.
+
 No provider app, secret, SQL resource or production authentication change was
 created during this review. This hosted work does not block the independently
 qualified npm 1.0 publication.
@@ -1315,6 +1322,7 @@ This settles D8 and reinforces that $20 is a target, not a guaranteed billing ca
 | D7 | Public OpenAI plugin plus Anthropic directory; local owned distribution available independently | Before exact artifacts are submitted/published | Requested outcome; final candidates and applicable approvals still required |
 | D8 | Free quota-limited hosted access initially, optional sponsorship, no subscription billing in v1 | Implement within measured hosting capacity and storage/admission limits | Owner explicitly accepted on 6 October; accepts justified provider overages and may seek sponsorship/grants; do not ask again |
 | D9 | Google and GitHub sign-in through one Kiln-owned account; email later | Before provisioning provider applications | Owner accepted on 6 October, requiring correct, secure implementation and professional presentation; architecture reviewed above, multi-provider implementation and deployed qualification remain open |
+| D10 | In-app security notices only for v1 | Settled; do not ask again | Owner selected on 6 October. No separate security contact email collection or outbound security mail; Google/GitHub sign-in unchanged. Out-of-band notifications can follow later. |
 
 Do not present D4's provider decision as passed production qualification or D5 as a measured forecast. Legal
 entity/account fields must come from the owner; do not infer exact legal details
