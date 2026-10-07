@@ -289,3 +289,56 @@ require accurate disclosures and applicable privacy/support information. They do
 not resolve the form's executable wording. All declarations and legal acceptance
 remain untouched; no submission, GitHub grant or external support message occurred.
 Preserve the Google OAuth-client question as the sole pending owner approval.
+
+## Local privacy and listing disclosures (October 7)
+
+All **25 CI checks passed on `6a213b6`**, including the seven public-registry
+installation jobs. Anthropic validated that exact source and now lists **Claude
+Code only**; chat and Cowork are unavailable for the executable component. The
+icon warning is absent, and the same two policy holds remain. Receipts are
+`.cache/claude-directory-6a213b6-{validation,platforms,compliance}.txt` and the
+platform screenshot. The executable acknowledgement remained unchanged after
+this revalidation, so component classification alone does not resolve it.
+
+The maintained local plugin now packages a [draft privacy notice](../local-plugin-privacy.md),
+support and license links, and three setup examples: create, check and managed
+upgrade. Both manifests advertise the same destinations. The notice distinguishes
+local persistence and assistant tool results from hosted retention; it documents
+npm/GitHub downloads, inherited npm configuration, normal cache/log writes,
+explicit remote rendering and support-email forwarding. It does not promise to
+strip npm credentials or erase copies controlled by another application.
+
+The privacy URL targets `main`, where this new file does not yet exist. Owner
+review and an approved merge are necessary before that URL can serve as a live
+directory policy. The draft marker is intentional; this work does not claim
+legal acceptance or submission readiness. Plugin version remains the unreleased
+1.0.1 candidate, with the immutable published engine 1.0.0 pin.
+
+The two packaging regressions failed first. All 32 packaging/setup tests pass;
+typechecking, lint and strict Claude manifest validation pass. The full offline
+gate passes 3,291 tests with two skips, no failures, 95.16% function coverage and
+92.50% line coverage. The final cache/log prose clarification was followed by
+regeneration, the 32 focused tests and lint. Fresh isolated Claude Code 2.1.287
+and Codex 0.160.0 installations accepted the new metadata and included the privacy
+file. Their actual engine/workspace behavior was already qualified on `6a213b6`;
+the helper and engine pin are unchanged. Logs are
+`.cache/local-plugin-disclosures-*.log`; installation receipt is
+`.cache/plugin-101-disclosures-install.json`.
+
+### Listing ownership and clarification queue
+
+Anthropic's current [publishing guidance](https://claude.com/docs/directory/publish)
+allows a personal Pro or Max account to submit. The first submitting Claude
+organization owns the repository-folder listing; GitHub organization ownership
+does not select that publisher. The page does not establish whether a personal
+listing can later transfer to a business organization. Resolve the desired owner
+before creating or submitting the official listing; do not purchase another plan
+or assume a future transfer.
+
+A local, unsent clarification draft asks `directory@anthropic.com` about the
+executable acknowledgement, the two policy holds and publisher ownership. It
+contains public repository details only. No external message, saved portal draft,
+GitHub grant, declaration or legal acceptance has been made. Sending that draft
+requires the owner's explicit authorization, sequenced after the already pending
+Google OAuth-client creation question. Hosted in-app notices remain settled and
+are unrelated to this support correspondence.

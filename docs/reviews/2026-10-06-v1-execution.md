@@ -3282,3 +3282,28 @@ and refreshed private-trial artifacts are separate from the completed local chec
 The final offline gate passes 3,291 tests with two skips and no failures; coverage
 is 95.16% functions and 92.50% lines. Toolchain, typechecking, lint, maintained-skill
 consistency and Claude manifest validation also pass.
+
+### Local plugin disclosures and exact-source portal result
+
+All 25 CI checks passed on `6a213b6`. Anthropic validated that exact source and
+now lists the plugin for Claude Code only, with no icon warning. Two policy holds
+and the executable acknowledgement remain unresolved; no submission or acceptance
+occurred. The local plugin now includes a draft privacy notice, explicit
+execution/network disclosures, three setup examples and listing links in both
+manifests. Its engine pin and executable are unchanged.
+
+The metadata/privacy regressions failed first. The full offline gate passes 3,291
+tests with two skips and no failures, at 95.16% function and 92.50% line coverage.
+All 32 focused packaging/setup tests, typechecking, lint and strict Claude
+validation pass. Fresh isolated Claude/Codex installations accept the metadata and
+include the notice. A final prose clarification about npm caches/logs was checked
+with regeneration, focused tests and lint.
+
+The policy remains a draft and its intended `main` URL will not exist until an
+approved merge. Official Anthropic documentation also makes the first submitting
+Claude organization the listing owner; the current personal-account identity
+needs an owner decision before submission. A concrete clarification email is
+prepared locally but unsent. See the
+[directory preflight](2026-10-07-directory-preflight.md#local-privacy-and-listing-disclosures-october-7).
+Google OAuth-client creation remains the sole pending owner question; no cloud
+trial, credential or deployment was added. Hosted in-app notices remain settled.

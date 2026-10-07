@@ -4,7 +4,8 @@
   "version": "1.0.1",
   "description": "Set up a local Kiln workspace to create, inspect and revise editable 3D assets with Claude Code or Codex.",
   "author": {
-    "name": "Instrukt Labs"
+    "name": "Instrukt Labs",
+    "email": "support@instruktlabs.com"
   },
   "homepage": "https://github.com/instruktlabs/kiln",
   "repository": "https://github.com/instruktlabs/kiln",
@@ -23,6 +24,10 @@
         "shortDescription": "Create editable 3D assets in a local workspace",
         "longDescription": "Install the pinned Kiln engine and set up a workspace with local MCP tools and maintained authoring skills. Your coding agent supplies the model.",
         "developerName": "Instrukt Labs",
+        "websiteURL": "https://github.com/instruktlabs/kiln/tree/main/plugins/kiln-engine",
+        "supportURL": "https://github.com/instruktlabs/kiln/blob/main/plugins/kiln-engine/README.md#support-and-security",
+        "privacyPolicyURL": "https://github.com/instruktlabs/kiln/blob/main/docs/local-plugin-privacy.md",
+        "termsOfServiceURL": "https://github.com/instruktlabs/kiln/blob/main/LICENSE",
         "category": "Developer Tools",
         "capabilities": [
           "Read",
@@ -30,7 +35,8 @@
         ],
         "defaultPrompt": [
           "Set up a Kiln workspace for this coding agent.",
-          "Check and upgrade my existing Kiln workspace."
+          "Check my existing Kiln workspace without changing it.",
+          "Upgrade my managed Kiln workspace while preserving my assets."
         ]
       }
     }

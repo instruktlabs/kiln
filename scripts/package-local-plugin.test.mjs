@@ -47,6 +47,13 @@ test('local plugin versions independently while retaining its exact engine pin',
   });
   expect(claude.name).toBe(portable.name);
   expect(claude.version).toBe(portable.version);
+  expect(claude.icon).toBe('./.claude-plugin/icon.png');
+  expect(claude.privacyPolicyUrl).toBe(
+    'https://github.com/instruktlabs/kiln/blob/main/docs/local-plugin-privacy.md',
+  );
+  expect(portable.extensions['com.openai'].interface.privacyPolicyURL).toBe(
+    claude.privacyPolicyUrl,
+  );
   expect(release.engineVersion).toBe(pkg.version);
   expect(await readJson(join(directory, 'runtime.json'))).toEqual({
     name: pkg.name,
@@ -73,6 +80,9 @@ test('bundle registers setup alone and keeps its complete maintained reference a
   }
   expect(await readFile(join(directory, 'bin/kiln-setup-workspace.mjs'), 'utf8')).toBe(
     await readFile(resolve('scripts/setup-plugin-workspace.mjs'), 'utf8'),
+  );
+  expect(await readFile(join(directory, 'PRIVACY.md'), 'utf8')).toBe(
+    await readFile(resolve('docs/local-plugin-privacy.md'), 'utf8'),
   );
   const entries = await readdir(directory);
   for (const excluded of [

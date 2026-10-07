@@ -3,7 +3,8 @@
   "version": "1.0.1",
   "description": "Set up a local Kiln workspace to create, inspect and revise editable 3D assets with Claude Code or Codex.",
   "author": {
-    "name": "Instrukt Labs"
+    "name": "Instrukt Labs",
+    "email": "support@instruktlabs.com"
   },
   "homepage": "https://github.com/instruktlabs/kiln",
   "repository": "https://github.com/instruktlabs/kiln",
@@ -14,5 +15,10 @@
     "gltf",
     "asset-generation",
     "gamedev"
-  ]
+  ],
+  "icon": "./.claude-plugin/icon.png",
+  "documentationUrl": "https://github.com/instruktlabs/kiln/tree/main/plugins/kiln-engine",
+  "supportUrl": "https://github.com/instruktlabs/kiln/blob/main/plugins/kiln-engine/README.md#support-and-security",
+  "privacyPolicyUrl": "https://github.com/instruktlabs/kiln/blob/main/docs/local-plugin-privacy.md",
+  "termsOfServiceUrl": "https://github.com/instruktlabs/kiln/blob/main/LICENSE"
 }
