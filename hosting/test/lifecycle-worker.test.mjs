@@ -28,6 +28,15 @@ before(async () => {
     if (['request', 'evaluation', 'render'].includes(role))
       assert.doesNotMatch(inputs, /oauth|\/src\/(?:auth|google|github|browser-|account-)/);
   }
+  bundles.observer = (
+    await build({
+      entryPoints: [fileURLToPath(new URL('../probe/lifecycle-observer.ts', import.meta.url))],
+      bundle: true,
+      write: false,
+      format: 'esm',
+      platform: 'browser',
+    })
+  ).outputFiles[0].text;
 });
 function worker(role) {
   const config = c.workers[role];
@@ -109,6 +118,15 @@ async function fixture(fault) {
           export default {fetch(){return new Response('Not found',{status:404});}};`,
         },
         {
+          name: 'loopback-observer',
+          modules: true,
+          compatibilityDate: '2026-10-06',
+          script: bundles.observer,
+          serviceBindings: {
+            PROBE: { name: c.workers.operator.name, entrypoint: 'KilnLifecycleControl' },
+          },
+        },
+        {
           name: 'local-observer',
           modules: true,
           compatibilityDate: '2026-10-06',
@@ -134,9 +152,6 @@ async function fixture(fault) {
           },
           script: `export default {async fetch(request,env){
           switch(new URL(request.url).pathname){
-            case '/run': {using result=await env.PROBE.runFixed();return Response.json(result);}
-            case '/stop': {using result=await env.PROBE.stop();return Response.json(result);}
-            case '/status': {using result=await env.PROBE.status();return Response.json(result);}
             case '/denied': {
               const outcomes=[];
               for(const name of ['REQUEST','EVALUATION','RENDER']) {
@@ -170,7 +185,16 @@ async function fixture(fault) {
     await migrateAccounts(database);
     const namespace = await runtime.getDurableObjectNamespace('RUN', name);
     const observer = await runtime.getWorker('local-observer');
-    const call = async (path) => (await observer.fetch(`https://observer.invalid/${path}`)).json();
+    const loopback = await runtime.getWorker('loopback-observer');
+    const call = async (path) =>
+      (
+        await (path === 'denied'
+          ? observer.fetch('https://observer.invalid/denied')
+          : loopback.fetch(`http://127.0.0.1:8798/${path === 'run' ? 'run-fixed' : path}`, {
+              method: 'POST',
+              headers: { 'X-Kiln-Operator': 'private-lifecycle-v1' },
+            }))
+      ).json();
     return {
       runtime,
       database,

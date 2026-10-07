@@ -129,7 +129,26 @@ The next approved cloud execution must follow this sequence:
    namespaces and D1/KV/R2 data/resources. Inventory again to verify absence.
    Preserve pre-existing registry images unless explicitly included in cleanup.
 
-The cloud observer, concrete resource manifest/readback and deletion receipts are
-pending. This procedure does not authorize deployment or claim cleanup happened.
+The local observer is `lifecycle-observer.ts`, with a dedicated
+`lifecycle-observer.wrangler.jsonc`. After trial approval and verified deployment,
+start it with the pinned Wrangler's `dev --config` command. Never deploy this
+facade. Its configured listener is `http://127.0.0.1:8798`; only POSTs with
+`X-Kiln-Operator: private-lifecycle-v1` to `/run-fixed`, `/status` and `/stop`
+are accepted. Browser origin/fetch metadata, other hosts/ports, query parameters
+and arbitrary controls are refused. This header is a browser-request guard, not
+a credential protecting against other programs running as the local user.
+
+It sends no RPC arguments, cancels uploaded bodies, returns `no-store` JSON,
+limits receipts to 128 KiB and redacts RPC failures. Status/stop observations have
+a ten-second deadline; the run observation allows sixteen minutes around the
+operator's fifteen-minute terminal alarm. Observation failure is an unknown result,
+not permission to repeat or replace the trial. Read the same run's durable status.
+Both promise and result capabilities are released, including late results after
+the observer deadline. The combined local topology/eviction tests now use this
+actual facade; focused tests cover its guards, timeout, disposal and size limit.
+Its config passes a Wrangler dry run. No listener or remote proxy was started.
+
+Concrete resource manifest/readback, cloud observer behavior and deletion receipts
+remain pending. This procedure does not authorize deployment or claim cleanup happened.
 Real alarm firing, upstream sign-in, account actions, retention, monitoring and
 production load remain separate qualification requirements.

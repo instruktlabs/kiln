@@ -3112,3 +3112,28 @@ qualification receipts. Inventory receipt: `.cache/lifecycle-readonly-inventory-
 These observations authorize no resource creation or paid starts; image upload,
 remote configuration readback, a fresh observer and verified teardown remain trial
 preparation work. Google client creation remains the pending owner approval.
+
+## Local lifecycle observer prepared
+
+The next trial has a fresh tracked loopback observer rather than reusing the
+consumed integration-trial operator. It forwards only three fixed, argument-free
+RPC controls. Host/port, method, query and browser-request guards reject unrelated
+traffic; unread bodies are cancelled. Private JSON observations are capped at
+128 KiB. Status/stop expire after ten seconds and the run observation after sixteen
+minutes around the cloud operator's fifteen-minute terminal alarm. A missing
+observation is explicitly unknown and never triggers another operation. Promise
+and result capabilities are disposed, including results that arrive after timeout.
+
+Six focused tests cover these controls and the fixed remote-binding/loopback
+configuration. The combined Miniflare topology now routes its run/status/stop and
+eviction checks through this actual facade. The forwarding, failure and deadline
+tests failed against a refusal-only stub before implementation; all 401 hosted
+tests, three typechecks, thirteen production builds and root lint pass locally.
+The observer configuration also passes Wrangler 4.147.0 dry-run validation.
+Logs are `.cache/lifecycle-observer-*.log`.
+
+No observer listener, remote development proxy, new cloud resource, credential or
+paid native start was created. Concrete cloud deployment readback and cleanup
+orchestration still need preparation before the next trial allowance is requested.
+Google client approval remains pending. Public hosting and directory submissions
+remain open, and the final README/Troy/site refresh is still deferred.
