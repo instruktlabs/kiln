@@ -74,9 +74,12 @@ Before public launch:
 1. Read back the gateway dataset binding and recurring trigger. Deploy the
    admission health RPC before the gateway that calls it. Missing old RPC support
    is an unavailable observation, not a passing health check.
-2. Query the account catalog with `cf sql datasets --account-tag <account-id>`
+2. Query the account catalog with `cf analytics sql introspection get --account-tag <account-id>`
    using authorized Account Analytics Read access. Discover the exact dataset
    after a bounded synthetic request and scheduled invocation produce points.
+   For SQL queries that already contain `accountTag`, do not also pass a request
+   scope: the current API rejects duplicated tenancy predicates. Use timezone-aware
+   ISO 8601 literals for fixed timestamp windows.
 3. Preview each prepared query and verify normal, unavailable, empty-window and
    delayed-deletion cases. Tests currently validate the local schema and query
    construction, not remote query execution or sampling behavior.
@@ -102,3 +105,17 @@ read queries for Workers Paid, then $0.25/million writes and $1/million reads;
 the page also says charging has not started yet. Treat those as planning rates,
 not proof of the account's bill. Verify current billing at deployment and include
 other datasets' usage. [Pricing](https://developers.cloudflare.com/analytics/analytics-engine/pricing/).
+
+## Private ingestion evidence, October 7
+
+The account catalog exposed `events.analyticsEngine.kiln_private_lifecycle_v1_ops`
+after the approved lifecycle trial. A scoped query returned the expected fixed HTTP
+route/status categories, including 401, 404, 413 and 429. All six prepared alert
+queries executed successfully. Their empty five-minute windows returned a numeric
+zero row, so heartbeat absence can produce a threshold signal rather than no row.
+The private candidate deliberately had no Cron; this does not prove successful
+scheduled health ingestion, Custom Alerts eligibility, notifications or recovery
+delivery. No alert was created or message sent by these read-only checks.
+
+Receipts are `analytics-*.json` under `.cache/lifecycle-cleanup-4b3dc62/`.
+See the [trial result](../docs/reviews/2026-10-07-private-lifecycle-result.md).
