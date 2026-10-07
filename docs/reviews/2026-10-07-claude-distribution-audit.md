@@ -165,3 +165,14 @@ Its design-workflow exception may be relevant, but does not guarantee acceptance
 
 The branding preference is aligned, subject to availability. The remaining
 sequence is a recommendation, not an approved rename or authorization to submit.
+
+## Subsequent owner alignment
+
+After this audit, the owner clarified that Kiln must remain agent and harness
+agnostic, with seamless Claude Code compatibility through thin integrations or
+shared architectural improvements. The owner selected support for both existing
+projects and new workspaces through the question tool. The earlier setup-only
+versus Claude-specific-redesign question is superseded. See the
+[local setup plan](../plans/2026-10-07-agnostic-local-setup.md) for the shared
+extension and qualification requirements. This does not close the findings above,
+change the published package, or authorize further directory activity.
