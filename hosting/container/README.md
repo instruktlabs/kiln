@@ -190,3 +190,11 @@ The render-enabled coordinator was rebuilt locally as manifest
 Its exact stable archive, unchanged dependency lock and all six coordinator checks
 pass. The receipt is `.cache/native-host-render/qualification/receipt.json`.
 It has not been uploaded to Cloudflare.
+
+The browser-download host change has a separate locally qualified coordinator:
+`sha256:2f85a87cb48e360e9de3994d898413695a87c11b3d9f39f466fbf9d88c090d34`.
+Its receipt is `.cache/native-host-download/qualification/receipt.json`; the
+published archive and dependency lock are unchanged and all six offline checks
+pass. The uniquely named test container's absence was independently verified.
+This does not replace the immutable image in the pending `c755434` Cloudflare
+trial, and neither image has been qualified for public launch.

@@ -350,6 +350,38 @@ test('storage interceptor refuses supplied identity, foreign origins and adminis
   );
 });
 
+test('native download ticket issuance stays bound to the active parent tenant without browser redemption authority', async () => {
+  const f = fixture({
+    native: async (_req, job) => {
+      const response = await job.storageRequest(
+        new Request('http://kiln-storage.internal/internal/downloads', {
+          method: 'POST',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify({ collection: 'project', assetId: 'a_box', revisionId: 'r_one' }),
+        }),
+      );
+      assert.equal(await response.text(), 'source bytes');
+      await assert.rejects(
+        job.storageRequest(
+          new Request(
+            `http://kiln-storage.internal/internal/downloads/${'a'.repeat(64)}/asset.glb`,
+          ),
+        ),
+      );
+      return Response.json({ ok: true });
+    },
+  });
+  await (await f.run()).arrayBuffer();
+  assert.equal(f.storageCalls.length, 1);
+  assert.equal(f.storageCalls[0].owner, tenant);
+  assert.equal(f.storageCalls[0].url, 'https://tenant.internal/internal/downloads');
+  await assert.rejects(
+    f.job.storageRequest(
+      new Request('http://kiln-storage.internal/internal/downloads', { method: 'POST' }),
+    ),
+  );
+});
+
 test('a cancelled parent refuses a late request after reconstruction without starting a VM', async () => {
   const f = fixture();
   await f.job.cancel();

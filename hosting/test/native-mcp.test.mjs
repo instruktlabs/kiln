@@ -265,6 +265,15 @@ test('real HTTP tools validate, render, save, restore and read exact source afte
     collection: 'project',
     name: 'HTTP box',
   });
+  assert.match(
+    saved.downloadUrls['asset.glb'],
+    /^https:\/\/kiln\.example\.com\/downloads\/[a-f0-9]{64}\/asset\.glb$/,
+  );
+  const link = new URL(saved.downloadUrls['source.kiln.js']);
+  const browserBytes = await namespace
+    .getByName('lifecycle')
+    .fetch(`https://tenant.internal/internal${link.pathname}`);
+  assert.equal(await browserBytes.text(), source);
   await first.close();
   const second = host('lifecycle');
   const restored = await tool(second, 'kiln_assets', {

@@ -1,5 +1,6 @@
 import { insufficientScope, type OAuthResourceContext } from '@cloudflare/workers-oauth-provider';
-import { boundedRequest, HttpFailure, sha256 } from './http';
+import { boundedRequest, HttpFailure } from './http';
+import { tenantForAccount } from './tenant-identity';
 import type { KilnCompute } from './admission-worker';
 import { tryEdgeMcp } from './edge-mcp';
 
@@ -36,7 +37,7 @@ export async function forwardTenant(
   const bounded = await boundedRequest(request, 1024 * 1024);
   // Only verified authorization identity selects the object. Token, client id,
   // session id, source refs, cookies and caller tenant headers cannot select it.
-  const tenant = await sha256(JSON.stringify(['kiln-tenant-v1', origin, userId]));
+  const tenant = await tenantForAccount(origin, userId);
   const headers = new Headers();
   for (const name of [
     'accept',

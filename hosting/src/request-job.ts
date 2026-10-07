@@ -275,6 +275,7 @@ export class NativeRequestJob {
               '/internal/artifacts/discard',
               '/internal/assets/list',
               '/internal/assets/commit',
+              '/internal/downloads',
             ].includes(path)
           : request.method === 'DELETE' && /^\/internal\/groups\/[a-f0-9]{32}$/.test(path);
     if (url.href !== `http://kiln-storage.internal${path}` || !permitted)

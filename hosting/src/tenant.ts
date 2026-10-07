@@ -4,6 +4,8 @@ import { boundedRequest, HttpFailure, privateResponse, readBounded, serviceFailu
 import { decodeProgram, HostedProgramStore } from './programs';
 import { MAX_PROGRAM_BYTES } from '../../src/program-store';
 import { AssetIndex } from './asset-index';
+import { AssetDownloadTickets } from './asset-downloads';
+import { parseDownloadPath } from './download-path';
 
 export interface TenantStorageEnv {
   ARTIFACTS: R2Bucket;
@@ -16,6 +18,7 @@ export class KilnTenant extends DurableObject<TenantStorageEnv> {
   private readonly artifacts: ArtifactStore;
   private readonly programs: HostedProgramStore;
   private readonly assets: AssetIndex;
+  private readonly downloads: AssetDownloadTickets;
 
   constructor(ctx: DurableObjectState, env: TenantStorageEnv) {
     super(ctx, env);
@@ -26,9 +29,11 @@ export class KilnTenant extends DurableObject<TenantStorageEnv> {
     });
     this.programs = new HostedProgramStore(this.artifacts);
     this.assets = new AssetIndex(this.artifacts);
+    this.downloads = new AssetDownloadTickets(ctx.storage, this.artifacts, this.assets);
   }
 
   async alarm(): Promise<void> {
+    this.downloads.sweep();
     await this.artifacts.sweep();
   }
 
@@ -37,6 +42,42 @@ export class KilnTenant extends DurableObject<TenantStorageEnv> {
       const url = new URL(request.url);
       if (url.origin !== 'https://tenant.internal' || url.search)
         throw new HttpFailure(400, 'Invalid internal request');
+      if (url.pathname === '/internal/downloads' && request.method === 'POST') {
+        if (request.headers.get('content-type')?.split(';')[0] !== 'application/json')
+          throw new HttpFailure(415, 'Expected download selection');
+        const bounded = await boundedRequest(request, 1024);
+        let value: unknown;
+        try {
+          value = await bounded.json();
+        } catch {
+          throw new HttpFailure(400, 'Invalid download selection');
+        }
+        if (
+          !value ||
+          typeof value !== 'object' ||
+          Array.isArray(value) ||
+          Object.keys(value).some((key) => !['collection', 'assetId', 'revisionId'].includes(key))
+        )
+          throw new HttpFailure(400, 'Invalid download selection');
+        const input = value as Record<string, unknown>;
+        return privateResponse(
+          Response.json(
+            await this.downloads.issue(input.collection, input.assetId, input.revisionId),
+            { status: 201 },
+          ),
+        );
+      }
+      if (url.pathname.startsWith('/internal/downloads/')) {
+        const selected = parseDownloadPath(url.pathname.slice('/internal'.length));
+        if (!selected) throw new HttpFailure(404, 'Download link unavailable; request a new link');
+        if (!['GET', 'HEAD'].includes(request.method))
+          return new Response('Method not allowed', { status: 405 });
+        return await this.downloads.download(
+          selected.token,
+          selected.filename,
+          request.method === 'HEAD',
+        );
+      }
       if (
         ['/internal/assets/commit', '/internal/assets/list'].includes(url.pathname) &&
         request.method === 'POST'
@@ -140,8 +181,10 @@ export class KilnTenant extends DurableObject<TenantStorageEnv> {
       }
       if (url.pathname === '/internal/usage' && request.method === 'GET')
         return privateResponse(Response.json(this.artifacts.usage()));
-      if (url.pathname === '/internal/maintenance' && request.method === 'POST')
+      if (url.pathname === '/internal/maintenance' && request.method === 'POST') {
+        this.downloads.sweep();
         return privateResponse(Response.json(await this.artifacts.sweep()));
+      }
       if (url.pathname === '/mcp')
         return new Response('Native engine is not configured or qualified', { status: 503 });
       return new Response('Not found', { status: 404 });

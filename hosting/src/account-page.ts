@@ -3,6 +3,7 @@ import { D1BrowserSessions, type BrowserSession } from './browser-sessions';
 import { HttpFailure } from './http';
 import { GOOGLE_SIGN_IN_BUTTON } from './google-button';
 import { D1Connections } from './connections';
+import { validLoginReturn } from './download-path';
 
 const escapeHtml = (value: string) =>
   value.replace(/[&<>"']/g, (char) => `&#${char.charCodeAt(0)};`);
@@ -39,6 +40,21 @@ ${content}<footer><a href="mailto:support@instruktlabs.com">Contact support</a>
   );
 }
 
+export function signInPage(returnTo = '/account'): Response {
+  if (!validLoginReturn(returnTo)) throw new HttpFailure(400, 'Invalid sign-in destination');
+  return page(
+    `<h1>Sign in to Kiln</h1><p>${
+      returnTo === '/account'
+        ? 'Free hosted access, with private saved assets and a personal usage quota.'
+        : 'Sign in to the Kiln account that saved this asset to download it. This link expires after ten minutes; you can request a new link from your connected app.'
+    }</p>
+<section><h2>Welcome back</h2><p>Use the same sign-in method as before to reach your saved work. Kiln requests no GitHub repository access or Google Drive access.</p>
+<form class="provider-buttons" method="post" action="/account/login"><input type="hidden" name="returnTo" value="${escapeHtml(returnTo)}"><button class="google-button" name="provider" value="google"><img src="${GOOGLE_SIGN_IN_BUTTON}" width="198" height="44" alt="Sign in with Google"></button>
+<button class="github-button" name="provider" value="github">Sign in with GitHub</button></form></section>`,
+    401,
+  );
+}
+
 export async function accountPage(
   request: Request,
   database: D1Database,
@@ -70,13 +86,7 @@ export async function accountPage(
     session = await sessions.read(request);
   } catch (error) {
     if (!(error instanceof HttpFailure) || error.status !== 401) throw error;
-    return page(
-      `<h1>Sign in to Kiln</h1><p>Free hosted access, with private saved assets and a personal usage quota.</p>
-<section><h2>Welcome back</h2><p>Use the same sign-in method as before to reach your saved work. Kiln requests no GitHub repository access or Google Drive access.</p>
-<form class="provider-buttons" method="post" action="/account/login"><button class="google-button" name="provider" value="google"><img src="${GOOGLE_SIGN_IN_BUTTON}" width="198" height="44" alt="Sign in with Google"></button>
-<button class="github-button" name="provider" value="github">Sign in with GitHub</button></form></section>`,
-      401,
-    );
+    return signInPage();
   }
   const identities = await database
     .withSession('first-primary')

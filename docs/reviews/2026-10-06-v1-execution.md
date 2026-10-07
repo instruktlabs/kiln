@@ -2387,3 +2387,71 @@ deployment has occurred, and the earlier twenty-two-job allowance remains spent.
 The proposed separate trial allowance is $1; owner approval will be requested only
 after the candidate checks pass. Live OAuth, provenance, account lifecycle,
 downloads, production operations and vendor submissions remain separate open work.
+
+## Owner progress checkpoint: package published, hosted integration open
+
+Live readback confirms npm `latest` is `1.0.0` and the public GitHub `v1.0.0`
+release contains the matching archive and checksum. PR #153 at `c755434` now
+passes all eighteen CI checks, including both hosted platforms, all three
+installed images, the twelve engine/package jobs and the website build. The PR
+remains a draft; passing these checks does not qualify a public hosted launch.
+
+The separate $1 private integration trial at that exact commit is prepared and
+awaiting the owner's answer to the existing approval question. No new upload,
+provisioning or trial execution has occurred. All twenty-two earlier approved
+jobs remain consumed. No owner authentication step is currently pending.
+
+Independent download work adds a tenant-local ticket store and six adversarial
+tests. The current working tree passes all three hosted typechecks and all 277
+hosted tests. Tests cover account separation, hashed tickets, expiry during a
+read, revision deletion, concurrent transfer limits and bounded ticket issuance.
+This foundation is still uncommitted and is not yet connected to the browser
+gateway or MCP download URLs; it is not a completed download feature.
+
+The remaining milestones are the integrated provider trial; browser downloads,
+material persistence, account link/unlink/delete and verified saved-build
+identity; live Google/GitHub configuration and sign-in; retention, representative
+load/costs, alerts and rollback; an approved production deployment with real client
+verification; separate directory submissions; and the deferred README/Troy/site
+refresh. Existing provider trials establish native execution and software-render
+feasibility, not completion of this integrated service.
+
+## Private download flow integrated locally
+
+The native MCP host now supplies download URLs through the published engine's
+existing hook. Exact saved revisions receive ten-minute, hashed, tenant-local
+tickets with atomic issuance/transfer limits. Browser requests derive their tenant
+from the current primary-backed session, require the owning account, and recheck
+revocation after storage awaits. No credentials are passed to storage or native
+compute, and browser downloads start no VM. Deleted revisions and expired tickets
+cannot release bytes, including when deletion or expiry interleaves with a read.
+
+The existing branded sign-in page handles anonymous download navigation. Both
+providers resume a strictly validated server-retained relative path. The additive
+`0007_browser_login_return.sql` migration defaults existing transactions to the
+account page; callback parameters cannot retarget the redirect. The page was
+visually inspected in the local in-app browser. Its presentation-only listener
+was stopped afterward; no real provider or credentials were used for that preview.
+
+Focused tests first demonstrated missing ticket routing, missing native links,
+the dispatch allowlist denial and rejected sign-in continuation. The completed
+local gates pass all 286 hosted tests, three hosted typechecks, twelve production
+bundles, root lint, diff checks and redacted source/bundle secret scans. The actual
+MCP save/reopen output is exercised through the real browser gateway, D1 sessions,
+SQLite tenant index and R2 with two fixture accounts. GLB hashes, exact source,
+manifest identity and PNG signatures agree; hostile routes, foreign embedding,
+cross-account reads, callback replay and revoked browser sessions are denied.
+Provider exchanges remain mocked, so these checks do not claim live OAuth.
+
+The rebuilt native coordinator uses the exact public 1.0.0 archive and unchanged
+dependency lock. Image
+`sha256:2f85a87cb48e360e9de3994d898413695a87c11b3d9f39f466fbf9d88c090d34`
+passes the six offline Docker checks; its test container was removed and absence
+read back. Evidence is under `.cache/native-host-download/qualification/`.
+This image and the changed gateway/storage code require their own CI/provider
+qualification. The pending private trial remains pinned to `c755434` and its
+retained original bundle/images. No cloud resources were created or changed.
+
+Account lifecycle, material persistence, saved-build identity, live OAuth,
+representative operations/cost evidence, production deployment and vendor
+submissions remain open. The root README/Troy/site refresh remains deferred.

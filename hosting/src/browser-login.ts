@@ -5,6 +5,7 @@ import { githubAuthorizationUrl, githubIdentity } from './github';
 import { googleAuthorizationUrl, googleIdentity } from './google';
 import { HttpFailure, sha256 } from './http';
 import type { SignInProvider } from './login-intents';
+import { validLoginReturn } from './download-path';
 
 const COOKIE = '__Host-kiln-login';
 const invalid = () => new HttpFailure(400, 'Invalid or expired sign-in; restart sign-in');
@@ -25,9 +26,12 @@ export async function beginBrowserLogin(
   if (new URL(request.url).search) throw invalid();
   const form = await request.formData();
   const provider = form.get('provider');
+  const returnTo = form.get('returnTo') ?? '/account';
   if (
     form.getAll('provider').length !== 1 ||
-    [...form.keys()].some((key) => key !== 'provider') ||
+    form.getAll('returnTo').length > 1 ||
+    !validLoginReturn(returnTo) ||
+    [...form.keys()].some((key) => key !== 'provider' && key !== 'returnTo') ||
     (provider !== 'google' && provider !== 'github')
   )
     throw invalid();
@@ -49,8 +53,8 @@ export async function beginBrowserLogin(
       .prepare('DELETE FROM kiln_browser_logins WHERE binding_hash=?')
       .bind(previous ? await hash(origin, 'binding', previous) : ''),
     database
-      .prepare(`INSERT INTO kiln_browser_logins(state_hash, binding_hash, provider, verifier, nonce, expires_at)
-      SELECT ?, ?, ?, ?, ?, ? WHERE (SELECT COUNT(*) FROM kiln_browser_logins)<4096 RETURNING state_hash`)
+      .prepare(`INSERT INTO kiln_browser_logins(state_hash, binding_hash, provider, verifier, nonce, expires_at, return_to)
+      SELECT ?, ?, ?, ?, ?, ?, ? WHERE (SELECT COUNT(*) FROM kiln_browser_logins)<4096 RETURNING state_hash`)
       .bind(
         await hash(origin, 'state', flow.state),
         await hash(origin, 'binding', binding),
@@ -58,6 +62,7 @@ export async function beginBrowserLogin(
         flow.verifier,
         flow.nonce,
         now + 600_000,
+        returnTo,
       ),
   ]);
   if (results[2]?.results.length !== 1)
@@ -96,7 +101,7 @@ export async function finishBrowserLogin(
   const flow = await env.ACCOUNTS.withSession('first-primary')
     .prepare(
       `DELETE FROM kiln_browser_logins WHERE state_hash=? AND binding_hash=? AND provider=? AND expires_at>?
-      RETURNING verifier, nonce`,
+      RETURNING verifier, nonce, return_to AS returnTo`,
     )
     .bind(
       await hash(origin, 'state', state),
@@ -104,8 +109,8 @@ export async function finishBrowserLogin(
       provider,
       Date.now(),
     )
-    .first<{ verifier: string; nonce: string }>();
-  if (!flow) throw invalid();
+    .first<{ verifier: string; nonce: string; returnTo: string }>();
+  if (!flow || !validLoginReturn(flow.returnTo)) throw invalid();
   if (url.searchParams.has('error'))
     return new Response('Sign-in was cancelled. Return to the account page to try again.', {
       status: 400,
@@ -118,7 +123,7 @@ export async function finishBrowserLogin(
       ? await googleIdentity(request, origin, { ...flow, state }, env)
       : await githubIdentity(code, flow.verifier, origin, env);
   const session = await new D1BrowserSessions(env.ACCOUNTS, origin).issue(identity, request);
-  const headers = new Headers({ location: '/account' });
+  const headers = new Headers({ location: flow.returnTo });
   headers.append('set-cookie', clearCookie);
   headers.append('set-cookie', session.cookie);
   return new Response(null, { status: 303, headers });

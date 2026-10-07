@@ -7,6 +7,7 @@ import { D1Connections } from './connections';
 import { accountPage } from './account-page';
 import { beginBrowserLogin } from './browser-login';
 import { beginAccountAction } from './account-actions';
+import { browserDownload } from './browser-download';
 import { authorize, authorizationFailure, SCOPES, type SignInEnv } from './auth';
 import { forwardTenant, type TenantEnv } from './gateway';
 import { boundedRequest, HttpFailure, privateResponse } from './http';
@@ -96,6 +97,8 @@ export default {
         if (url.search)
           throw new HttpFailure(400, 'Query parameters are not supported on resource endpoints');
         response = await protectedResource.fetch(request, env, ctx);
+      } else if (url.pathname.startsWith('/downloads/')) {
+        response = await browserDownload(request, env, origin);
       } else if (url.pathname === '/account' || url.pathname === '/account/logout') {
         response = await accountPage(await boundedRequest(request, 4096), env.ACCOUNTS, origin);
       } else if (

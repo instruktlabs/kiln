@@ -644,6 +644,48 @@ Source restoration, MCP source reads, reviewed saves and CLI rebuild observation
 preserve a leading UTF-8 BOM. Otherwise restoring an asset could change the exact
 source bytes and its program reference; focused engine tests cover those paths.
 
+## Private browser downloads
+
+The native host supplies the published engine's `assetDownloadUrls` hook. Saved
+revision summaries return `/downloads/<ticket>/<filename>` links for their exact
+GLB, source, manifest, preview and material closure when present. `kiln_assets`
+with `action: 'get'` can issue fresh links. No public tool schema is changed.
+
+Links require a current browser session for the owning Kiln account. The gateway
+derives the same private tenant as MCP from the primary-backed account identity;
+the URL never selects a tenant or R2 object. An anonymous visitor sees the branded
+Google/GitHub sign-in form. Migration `0007_browser_login_return.sql` stores a
+strictly validated relative download path in the one-use browser transaction.
+Callbacks use that stored destination, never a callback query parameter. Apply
+all numbered migrations before deploying the gateway. Rollback to the preceding
+gateway can leave the additive column in place.
+
+Each random ticket lasts ten minutes, is stored only as a hash, and permits at
+most 32 transfer attempts across its files, including HEAD and failed reads.
+There are at most 128 unexpired tickets per tenant; issuance and redemption are
+atomic. This fixed metadata ceiling is separate from the artifact-byte quota.
+Expired rows are reclaimed on issuance, maintenance and tenant alarms. Links do
+not extend artifact retention, and deleting the selected revision invalidates
+its links even if another revision pins the same bytes. Ticket limits return 429;
+they do not delete saved work. Browser requests do not start a compute VM.
+
+The gateway rechecks the browser session after storage awaits, and storage
+rechecks ticket expiry and the saved revision before returning bytes. Responses
+use attachment disposition, no-store, no-referrer and nosniff. Foreign Origins
+and cross-origin embedding are denied while ordinary top-level link navigation
+is allowed. Browser credentials never enter the tenant Worker or native host.
+
+Local tests exercise the actual MCP save/reopen output, browser gateway, D1
+sessions, SQLite tenant index and R2 downloads for two accounts. Separate mocked
+provider exchanges verify both sign-in continuations, replay denial and hostile
+redirect rejection. This proves local integration, not live provider sign-in or
+Cloudflare delivery. The coordinator image must be rebuilt for this host change;
+the separately prepared `c755434` trial retains its original bundle and images.
+
+The redirect and request-context boundaries follow the checked
+[OAuth security BCP](https://www.rfc-editor.org/rfc/rfc9700.html#section-4.11)
+and [Fetch Metadata guidance](https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/Fetch_metadata).
+
 Before launch, complete native isolation on the actual Cloudflare provider,
 tenant engine/storage integration, two-user asset/download denial tests, retention,
 admission/cancellation and cost controls, identity-provider setup, live client

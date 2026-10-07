@@ -188,9 +188,12 @@ export function createNativeMcpHandler(runtime: NativeMcpRuntime, options: Nativ
         transport = createMcpHandler(
           () => {
             const storage = { ...options.storage, signal: () => controller.signal };
+            const assets = new NativeAssetLibrary(storage);
             return runtime.createServer({
               programStore: new NativeProgramStore(storage),
-              assetLibrary: new NativeAssetLibrary(storage),
+              assetLibrary: assets,
+              assetDownloadUrls: (collection, assetId, revisionId) =>
+                assets.downloadUrls(options.publicOrigin, collection, assetId, revisionId),
               evaluatorProfile: 'evaluator-required',
               evaluatorPort: {
                 render: async (code, renderOptions, controls) => {

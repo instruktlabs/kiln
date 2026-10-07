@@ -16,6 +16,7 @@ import { createMaterialLibraryPayload } from '@instruktlabs/kiln/material-librar
 import type { MaterialLibrary, MaterialRecordV1 } from '../../src/material-library';
 import { programReference } from '../../src/program-store';
 import { NativeHttpClient, StorageFailure, type NativeStorageOptions } from './native-http';
+import { DOWNLOAD_FILES, DOWNLOAD_TOKEN } from './download-path';
 
 type Group = {
   id: string;
@@ -393,6 +394,39 @@ export class NativeAssetLibrary implements AssetLibrary {
   }
   async exportBundle(input: AssetRecord[]): Promise<Uint8Array> {
     return encodeAssetBundle(await this.prepare(input));
+  }
+  /** Browser delivery uses the current Kiln account; links never embed a tenant or bearer credential. */
+  async downloadUrls(
+    publicOrigin: string,
+    target: string,
+    assetId: string,
+    revisionId: string,
+  ): Promise<Record<string, string>> {
+    const origin = new URL(publicOrigin);
+    if (origin.protocol !== 'https:' || origin.origin !== publicOrigin)
+      throw new Error('Invalid public origin');
+    const raw = await this.json('/internal/downloads', {
+      collection: collection(target),
+      assetId: identity(assetId),
+      revisionId: identity(revisionId),
+    });
+    if (!raw || typeof raw !== 'object' || Array.isArray(raw)) throw failure();
+    const value = raw as { ticket: string; expiresAt: number; files: string[] };
+    if (
+      typeof value.ticket !== 'string' ||
+      !DOWNLOAD_TOKEN.test(value.ticket) ||
+      !Number.isSafeInteger(value.expiresAt) ||
+      value.expiresAt <= Date.now() ||
+      !Array.isArray(value.files) ||
+      !value.files.length ||
+      value.files.length > DOWNLOAD_FILES.size ||
+      new Set(value.files).size !== value.files.length ||
+      value.files.some((name) => typeof name !== 'string' || !DOWNLOAD_FILES.has(name))
+    )
+      throw failure();
+    return Object.fromEntries(
+      value.files.map((name) => [name, `${publicOrigin}/downloads/${value.ticket}/${name}`]),
+    );
   }
   /** Host UI/account operation; the engine's MCP registry defines no extra delete tool. */
   async deleteRevision(target: string, assetId: string, revisionId: string): Promise<void> {

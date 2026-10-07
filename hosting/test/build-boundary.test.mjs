@@ -4,7 +4,13 @@ import { fileURLToPath } from 'node:url';
 import { build } from 'esbuild';
 import { assertProductionBoundary } from '../scripts/build-boundary.mjs';
 
-for (const module of ['github', 'account-page', 'account-actions', 'connections']) {
+for (const module of [
+  'github',
+  'account-page',
+  'account-actions',
+  'connections',
+  'browser-download',
+]) {
   test(`the actual ${module} dependency graph is gateway-only`, async () => {
     const result = await build({
       entryPoints: [fileURLToPath(new URL(`../src/${module}.ts`, import.meta.url))],

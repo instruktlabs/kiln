@@ -411,12 +411,18 @@ test('browser account sessions cannot substitute for MCP tokens or another brows
   );
 });
 
-async function browserLogin(provider = 'github', user = 'alice', server = runtime, cookie = '') {
+async function browserLogin(
+  provider = 'github',
+  user = 'alice',
+  server = runtime,
+  cookie = '',
+  returnTo,
+) {
   const start = await server.dispatchFetch(`${origin}/account/login`, {
     method: 'POST',
     redirect: 'manual',
     headers: { origin, cookie, 'content-type': 'application/x-www-form-urlencoded' },
-    body: new URLSearchParams({ provider }),
+    body: new URLSearchParams({ provider, ...(returnTo === undefined ? {} : { returnTo }) }),
   });
   assert.equal(start.status, 302);
   const upstream = new URL(start.headers.get('location'));
@@ -509,10 +515,72 @@ test('direct browser login rejects forged forms and arbitrary return URLs before
     'provider=unknown',
     'provider=github&provider=google',
     'provider=github&returnTo=https://evil.example',
+    `provider=github&returnTo=${encodeURIComponent('//evil.example')}`,
+    `provider=github&returnTo=${encodeURIComponent(`/downloads/${'a'.repeat(64)}/asset.glb?redirect=https://evil.example`)}`,
+    `provider=github&returnTo=${encodeURIComponent(`/downloads/${'a'.repeat(64)}/asset.glb\n`)}`,
+    'provider=github&returnTo=/account&returnTo=/account',
     '',
   ])
     assert.equal((await post(body)).status, 400);
   assert.equal((await post('{}', { 'content-type': 'application/json' })).status, 415);
+  assert.equal(outboundCalls, count);
+});
+
+test('both browser providers resume only the server-retained download path after sign-in', async () => {
+  const returnTo = `/downloads/${'a'.repeat(64)}/source.kiln.js`;
+  for (const provider of ['google', 'github']) {
+    const flow = await browserLogin(provider, 'alice', runtime, '', returnTo);
+    const upstream = new URL(flow.start.headers.get('location'));
+    assert.ok(!upstream.href.includes(encodeURIComponent(returnTo)));
+    const callback = await runtime.dispatchFetch(`${flow.callback}&returnTo=https://evil.example`, {
+      headers: { cookie: flow.cookie },
+      redirect: 'manual',
+    });
+    assert.equal(callback.status, 303);
+    assert.equal(callback.headers.get('location'), returnTo);
+    assert.match(callback.headers.get('set-cookie'), /__Host-kiln-session=/);
+    assert.equal(
+      (
+        await runtime.dispatchFetch(flow.callback, {
+          headers: { cookie: flow.cookie },
+          redirect: 'manual',
+        })
+      ).status,
+      400,
+    );
+  }
+});
+
+test('invalid server-retained download continuation fails before provider exchange or session creation', async () => {
+  const flow = await browserLogin(
+    'github',
+    'alice',
+    runtime,
+    '',
+    `/downloads/${'b'.repeat(64)}/asset.glb`,
+  );
+  await database
+    .prepare('UPDATE kiln_browser_logins SET return_to=? WHERE state_hash=?')
+    .bind(
+      '//evil.example',
+      digest(
+        JSON.stringify([
+          'kiln-browser-login-v1',
+          origin,
+          'state',
+          new URL(flow.callback).searchParams.get('state'),
+        ]),
+      ),
+    )
+    .run();
+  const count = outboundCalls;
+  const response = await runtime.dispatchFetch(flow.callback, {
+    headers: { cookie: flow.cookie },
+    redirect: 'manual',
+  });
+  assert.equal(response.status, 400);
+  assert.equal(response.headers.get('location'), null);
+  assert.equal(response.headers.get('set-cookie'), null);
   assert.equal(outboundCalls, count);
 });
 
