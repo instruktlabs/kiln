@@ -29342,7 +29342,7 @@ function isolatedWorkerUrls(moduleUrl) {
 }
 
 // src/evaluator/isolation.ts
-import { existsSync } from "node:fs";
+import { existsSync, readlinkSync } from "node:fs";
 import { posix } from "node:path";
 import { fileURLToPath as fileURLToPath2 } from "node:url";
 function isolationUnavailable() {
@@ -29384,7 +29384,7 @@ function isolatedEvaluatorLaunchWithLoader(workerPath, host = {}, loader = "tsx"
   const setprivPath = requiredAbsolutePath(host.setprivPath ?? DEFAULT_SETPRIV_PATH);
   const prlimitPath = requiredAbsolutePath(host.prlimitPath ?? DEFAULT_PRLIMIT_PATH);
   const nodePath = requiredAbsolutePath(host.nodePath ?? DEFAULT_NODE_PATH);
-  for (const executable of [bwrapPath, setprivPath, prlimitPath, nodePath]) {
+  for (const executable of [bwrapPath, setprivPath, prlimitPath, nodePath, ENV_PATH]) {
     if (!pathExists(executable))
       isolationUnavailable();
   }
@@ -29424,7 +29424,7 @@ function isolatedEvaluatorLaunchWithLoader(workerPath, host = {}, loader = "tsx"
   if (loader === "tsx")
     nodeArgs.push("--import", "tsx");
   nodeArgs.push(resolvedWorkerPath);
-  bwrapArgs.push("--chdir", runtimeRoot, "--", prlimitPath, "--cpu=65:65", "--as=6442450944:6442450944", "--fsize=100663296:100663296", "--nofile=64:64", "--nproc=64:64", "--", ...nodeArgs);
+  bwrapArgs.push("--chdir", runtimeRoot, "--", prlimitPath, "--cpu=65:65", "--as=6442450944:6442450944", "--fsize=100663296:100663296", "--nofile=64:64", "--nproc=64:64", "--", ENV_PATH, "-i", "NODE_ENV=production", "NO_COLOR=1", ...nodeArgs);
   return {
     command: setprivPath,
     args: [
@@ -29448,7 +29448,7 @@ async function renderGLBViaIsolatedEvaluator(code, options = {}, controls = {}) 
   const { host: _, ...processControls } = controls;
   return renderGLBViaProcessLaunch(code, options, processControls, launch);
 }
-var DEFAULT_RUNTIME_ROOT = "/app", DEFAULT_BWRAP_PATH = "/usr/local/bin/bwrap", DEFAULT_SETPRIV_PATH = "/usr/bin/setpriv", DEFAULT_PRLIMIT_PATH = "/usr/bin/prlimit", DEFAULT_NODE_PATH = "/usr/local/bin/node", MAX_READINESS_PROTOCOL_BYTES;
+var DEFAULT_RUNTIME_ROOT = "/app", DEFAULT_BWRAP_PATH = "/usr/local/bin/bwrap", DEFAULT_SETPRIV_PATH = "/usr/bin/setpriv", DEFAULT_PRLIMIT_PATH = "/usr/bin/prlimit", DEFAULT_NODE_PATH = "/usr/local/bin/node", ENV_PATH = "/usr/bin/env", MAX_READINESS_PROTOCOL_BYTES;
 var init_isolation = __esm(() => {
   init_subprocess();
   MAX_READINESS_PROTOCOL_BYTES = 16 * 1024;

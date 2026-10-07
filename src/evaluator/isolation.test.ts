@@ -17,6 +17,7 @@ const PATHS = new Set([
   '/usr/local/bin/bwrap',
   '/usr/bin/setpriv',
   '/usr/bin/prlimit',
+  '/usr/bin/env',
   '/usr/local/bin/node',
   '/app/node_modules/@instruktlabs/kiln/src/evaluator/worker.ts',
 ]);
@@ -148,6 +149,19 @@ describe('isolated evaluator process contract', () => {
     expect(spec.args).toContain('--max-old-space-size=512');
     expect(spec.args).not.toContain('/app/agent-runtime');
     expect(spec.args).not.toContain('/etc');
+  });
+
+  test('clears wrapper-generated environment before starting the isolated worker', () => {
+    const spec = launch();
+    const envIndex = spec.args.indexOf('/usr/bin/env');
+    expect(envIndex).toBeGreaterThan(spec.args.indexOf('/usr/bin/prlimit'));
+    expect(spec.args.slice(envIndex, envIndex + 5)).toEqual([
+      '/usr/bin/env',
+      '-i',
+      'NODE_ENV=production',
+      'NO_COLOR=1',
+      '/usr/local/bin/node',
+    ]);
   });
 
   test('compiled workers retain isolation controls without requiring a TypeScript loader', () => {

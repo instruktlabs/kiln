@@ -26,6 +26,10 @@ release or an accepted plugin listing.
   `--preserve-fds` option to Bubblewrap. Its explicit fd3 protocol pipe uses
   inherited descriptors; namespace, capability, filesystem and resource limits
   remain required by readiness qualification.
+- Isolated readiness compares the child's namespace and non-root identity with
+  the parent, accounting for Bubblewrap's nested mapping when further user
+  namespaces are disabled. The final worker environment is cleared again to
+  remove Bubblewrap's injected `PWD` while retaining the exact allowed variables.
 
 ## 1.0.0
 

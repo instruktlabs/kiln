@@ -144,3 +144,23 @@ It prevents the optional nested Linux evaluator from starting. The fix belongs
 to the unpublished candidate; publication will require a separately qualified
 archive and approval. Cloudflare's explicit fresh-VM adapter has a different
 execution boundary and does not use this launcher.
+
+After removing the invalid option, run `37681127385` starts the real Node
+transport successfully and returns the exact fd3 envelope. Its subsequent
+readiness failure is `invariant-namespace`, so wrapper startup is no longer the
+blocking point. The fixed kernel inspection from run `37681948282` records UID
+1001, all five capability sets empty, `NoNewPrivs: 1`, UID map `1001 0 1`, and
+exactly `NODE_ENV`, `NO_COLOR`, `PWD` with `PWD=/app`.
+
+The additional user namespace is how pinned Bubblewrap disables further user
+namespaces; the map's outside UID refers to the intermediate namespace. The old
+probe mistook that UID for the original host UID. The corrected probe requires
+the child's namespace identifier to differ from the trusted parent's, real and
+effective UIDs to equal the non-root caller, and a single-ID mapping matching
+Bubblewrap's supported layout. Root/elevated callers, the parent namespace,
+broad/multiple mappings, changed UIDs and missing parent evidence all fail.
+
+The launch also uses `/usr/bin/env -i` under the existing resource limits to
+remove wrapper-added `PWD` before Node starts. The exact two-variable environment
+invariant remains unchanged. These changes have failing-then-passing focused
+regressions; the actual VM must still pass every invariant and evaluation check.
