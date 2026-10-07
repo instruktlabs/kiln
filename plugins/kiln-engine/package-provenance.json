@@ -9,13 +9,14 @@
   "files": {
     ".claude-plugin/icon.png": "sha256:b4b651c402793b7e27cab780f04b14f80daec6d0cd5b7e4e90313930581a54e9",
     ".claude-plugin/plugin.json": "sha256:1c9a759df304878ca9b730b1c317fea48f07840e4cc38ae68b2a9d5a6670f8b4",
-    "bin/kiln-setup-workspace.mjs": "sha256:31cd8c0b1028b8df487b7b333655d0dd5e456ae8d7dcadad687557dd3202cf3e",
+    "bin/kiln-setup-workspace.mjs": "sha256:cdeaca8e27c911d23fc2b809ce3909a291ce0b00a0fcf4e34fe8bcdedfc82c8a",
     "LICENSE": "sha256:cdba278ebf1d6de618869936226bf03be4887179c128efc7aaa13d22034826a5",
     "plugin.json": "sha256:a877b48b4ddad084cc8ddffd819a7f091bd00991306f62753e5576a034490b2b",
     "PRIVACY.md": "sha256:4bd5eb34e9a936a2356aca8633c0f1bceeccb320b161dd47abbe608170fd2cd4",
     "README.md": "sha256:c71f9b9c2dd7cb56b87ca4dce454de128e3da8812b27d06275a7d4db35b5d689",
     "runtime.json": "sha256:18129a1d310c468aeba0966792940242f0359ab14c41a4c9ef240310d07d3bd2",
-    "skills/kiln-setup-workspace/references/plugin-install.md": "sha256:a8e1758d851b8d52f3b9266c27be05d25134f10257501f8d8c7429e8687935e2",
-    "skills/kiln-setup-workspace/SKILL.md": "sha256:7101b92d34c478e63d4cd96183cfebd383c7134883ab758a2c93d883f7066c5b"
+    "skills/kiln-setup-workspace/references/plugin-install.md": "sha256:1e3c743b7f46ed5b68444d1540de118d2ce2fdf833d657b015c1ff303627324f",
+    "skills/kiln-setup-workspace/references/renderer-setup.md": "sha256:b743b1b2827fa814385990e1e5b849391cb427413e9c016d273aa19cebd46031",
+    "skills/kiln-setup-workspace/SKILL.md": "sha256:041e4fe55e80c72133dabb6d25be78cfc0aae45edc057eca3c7a5a1c8db0fef1"
   }
 }

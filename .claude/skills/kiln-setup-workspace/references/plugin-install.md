@@ -32,10 +32,22 @@ or `$XDG_DATA_HOME/instruktlabs/kiln` on other systems, falling back to
 Do not place it or the asset workspace inside a removable plugin version directory.
 
 Read the returned workspace's `START.md`. Open Claude Code in that workspace, or
-launch Codex there with `node codex.mjs`. Accept the host's ordinary project/MCP
+launch Codex there with `codex`. The `node codex.mjs "TASK"` launcher is for
+headless execution with an explicit prompt. Accept the host's ordinary project/MCP
 trust prompts, then call `kiln_discover({capabilities:true})` on `kiln_workspace`.
 Compare its installation identity to `.kiln/workspace.json`; a config file alone
 does not prove the server loaded. The plugin itself starts no global MCP server.
+
+For an existing project, use a plugin whose helper advertises `--adopt` and whose
+pinned engine supports project adoption. The published engine 1.0.0 predates this
+feature. The helper checks the engine capability and refuses unsupported adoption
+instead of silently falling back to empty-folder setup. Preview with
+`--adopt --check --harness codex`, then apply with `--adopt --harness codex`.
+Use the same path with another `--harness` to add an integration around the same
+assets. Read the returned `instructions` path and `.kiln/START.md`; existing project
+instruction files remain intact. The helper still leaves normal client trust
+prompts to the host. No manual changes to a plugin's runtime pin are needed or
+appropriate.
 
 If the current workspace already has a working `kiln_workspace`, keep it. Do not
 create a second server. Use its installed authoring skills, which come from its

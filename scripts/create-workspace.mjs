@@ -20,13 +20,14 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 import { assertNodeRuntime } from '../src/runtime-support.mjs';
 
 const installation = resolve(dirname(fileURLToPath(import.meta.url)), '..');
+export const workspaceSetupCapabilities = Object.freeze({ projectAdoption: 1, recovery: 1 });
 const quote = JSON.stringify;
 const hash = (value) => createHash('sha256').update(value).digest('hex');
 const harnesses = ['claude', 'codex', 'opencode', 'hermes', 'agy', 'copilot', 'cursor-agent'];
 /**
  * Where the chosen harness looks for project skills, relative to the workspace, as
- * measured on the installed CLIs (docs/harnesses.md). Claude Code names `.claude/skills`
- * and `.agents/skills`, so a workspace that carried both registered every skill twice;
+ * measured on the installed CLIs (docs/harnesses.md). Fresh-profile probes on
+ * 2026-10-07 load Claude skills from `.claude/skills`, not `.agents/skills`;
  * codex, hermes, agy, copilot and cursor-agent name `.agents/skills`; opencode reads only
  * the `skills.paths` its generated config names, which is `skills/` itself. One registry
  * per harness: every copy is bytes an upgrade must track and a reader may edit.
@@ -304,7 +305,7 @@ try {
 }
 
 function startGuide(root, runtime, harness, nodeExecutable, server) {
-  const launchers = { agy: 'node agy.mjs', codex: 'node codex.mjs', hermes: 'node hermes.mjs' };
+  const launchers = { agy: 'node agy.mjs', hermes: 'node hermes.mjs' };
   const command = launchers[harness] ?? harness;
   const launch =
     harness === 'hermes'
@@ -573,13 +574,30 @@ export async function renderServiceNotice(runtime) {
 /** Preflight first; create a complete project in a staging directory before installing it. */
 export async function createWorkspace(directory, harness = 'claude', options = {}) {
   let root = resolve(directory);
+  if (options.recover) {
+    if (options.repair || options.upgrade || options.check || options.adopt || options.skills)
+      throw new Error('Use --recover alone before retrying setup.');
+    const { recoverProjectEdits } = await import('./workspace-transaction.mjs');
+    return recoverProjectEdits(root, { stateDirectory: options.stateDirectory });
+  }
   const runtime = await realpath(resolve(options.installation ?? installation));
   if ([options.repair, options.upgrade, options.check].filter(Boolean).length > 1)
     throw new Error('Choose only one of --repair, --upgrade or --check.');
-  if ((options.repair || options.upgrade || options.check) && options.skills)
+  if ((options.repair || options.upgrade || (options.check && !options.adopt)) && options.skills)
     throw new Error('Maintenance does not change the installed skill selection.');
-  const previous =
-    options.repair || options.upgrade || options.check ? await readManifest(root) : undefined;
+  let previous;
+  if (options.adopt) {
+    const bytes = await workspaceFile(root, '.kiln/workspace.json');
+    if (bytes !== undefined) {
+      try {
+        previous = JSON.parse(bytes.toString('utf8'));
+        if (!previous || typeof previous !== 'object' || Array.isArray(previous)) throw new Error();
+      } catch {
+        throw new Error('Invalid Kiln workspace manifest; no files were changed.');
+      }
+    }
+  } else if (options.repair || options.upgrade || options.check)
+    previous = await readManifest(root);
   // A read-only check validates the configured interpreter, not whichever supported
   // Node the caller's shell selected. Setup/repair/upgrade deliberately repin it.
   // A missing recorded executable remains drift; do not silently accept that case.
@@ -588,17 +606,20 @@ export async function createWorkspace(directory, harness = 'claude', options = {
     options.check && typeof previous?.node === 'string' && existsSync(previous.node)
       ? previous.node
       : realpathSync(process.execPath);
-  if (previous) harness = previous.harness;
+  if (previous && !options.adopt) harness = previous.harness;
   if (!harnesses.includes(harness)) throw new Error(`Choose ${harnesses.join(', ')}.`);
   const extras = options.skills ?? [];
   if (extras.some((name) => !Object.hasOwn(optional, name)))
     throw new Error('Optional skills: compose,batch.');
-  const skills = previous?.skills ?? [...core, ...new Set(extras.map((name) => optional[name]))];
+  const previousSkills = previous?.skills ?? core;
   if (
-    !Array.isArray(skills) ||
-    skills.some((name) => ![...core, ...Object.values(optional)].includes(name))
+    !Array.isArray(previousSkills) ||
+    !core.every((name) => previousSkills.includes(name)) ||
+    new Set(previousSkills).size !== previousSkills.length ||
+    previousSkills.some((name) => ![...core, ...Object.values(optional)].includes(name))
   )
     throw new Error('Invalid workspace skill manifest.');
+  const skills = [...new Set([...previousSkills, ...extras.map((name) => optional[name])])];
   const pkg = await preflightRuntime(runtime, skills, !options.check);
   let exists = false;
   try {
@@ -631,7 +652,7 @@ export async function createWorkspace(directory, harness = 'claude', options = {
   }
   if (inside(runtime, root) || inside(runtime, ancestor))
     throw new Error('Choose a directory outside the Kiln installation.');
-  if (!previous && exists && (await readdir(root)).length)
+  if (!options.adopt && !previous && exists && (await readdir(root)).length)
     throw new Error('The destination must be empty; no existing files were changed.');
   const { files, store, server } = managedFiles(root, runtime, harness, nodeExecutable);
   const manifest = {
@@ -660,6 +681,29 @@ export async function createWorkspace(directory, harness = 'claude', options = {
       : undefined,
     generated: Object.fromEntries(Object.entries(files).map(([name, body]) => [name, hash(body)])),
   };
+  if (options.adopt || previous?.schemaVersion === 2) {
+    const { setupProject } = await import('./workspace-project.mjs');
+    return setupProject({
+      root,
+      runtime,
+      harness,
+      previous,
+      metadata: manifest,
+      exists,
+      options,
+      guide,
+      allowedHarnesses: harnesses,
+      projectFiles: (selected) => managedFiles(root, runtime, selected, nodeExecutable).files,
+      startGuide: (selected) => startGuide(root, runtime, selected, nodeExecutable, server),
+      skillFiles: async () => {
+        const result = {};
+        for (const skill of skills)
+          for (const name of Object.keys(await fileHashes(join(runtime, 'skills', skill))).sort())
+            result[`${skill}/${name}`] = await readFile(join(runtime, 'skills', skill, name));
+        return result;
+      },
+    });
+  }
   if (previous && (options.upgrade || options.check))
     return upgradeWorkspace(root, runtime, previous, manifest, files, options.check);
   if (previous) {
@@ -773,7 +817,7 @@ if (isDirectSetupEntry()) {
     const args = process.argv.slice(2);
     if (args.includes('--help') || args.includes('-h')) {
       console.log(
-        `Usage: kiln-init <empty-directory> [--harness ${harnesses.join('|')}] [--skills compose,batch]\n       kiln-init <managed-workspace> --repair|--check|--upgrade`,
+        `Usage: kiln-init <empty-directory> [--harness ${harnesses.join('|')}] [--skills compose,batch]\n       kiln-init <project-or-new-workspace> --adopt [--harness NAME] [--check]\n       kiln-init <managed-workspace> --repair|--check|--upgrade\n       kiln-init <project> --recover`,
       );
     } else {
       const directory = args.shift();
@@ -786,6 +830,8 @@ if (isDirectSetupEntry()) {
         if (flag === '--repair') options.repair = true;
         else if (flag === '--upgrade') options.upgrade = true;
         else if (flag === '--check') options.check = true;
+        else if (flag === '--adopt') options.adopt = true;
+        else if (flag === '--recover') options.recover = true;
         else if (flag === '--harness' || flag === '--skills') {
           const value = args.shift();
           if (!value || value.startsWith('--')) throw new Error(`${flag} requires a value.`);

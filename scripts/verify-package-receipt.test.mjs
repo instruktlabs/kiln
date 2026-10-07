@@ -83,6 +83,30 @@ describe('package receipt verification', () => {
     expect(receiptProblems({ ...good(), checks: undefined }, target)).toHaveLength(12);
   });
 
+  test('a package shipping project adoption requires its installed storage-reuse proof', () => {
+    const candidate = {
+      ...target,
+      manifest: { ...manifest, files: ['scripts/workspace-project.mjs'] },
+    };
+    expect(receiptProblems(good(), candidate)).toContain(
+      'missing check: installed-project-adoption-and-cross-client-storage',
+    );
+    const receipt = good();
+    receipt.checks.push('installed-project-adoption-and-cross-client-storage');
+    expect(
+      receiptProblems(
+        { ...receipt, projectAdoption: { status: 'not-supported-by-this-release' } },
+        candidate,
+      ),
+    ).toContain(
+      'projectAdoption.status: expected passed, receipt says not-supported-by-this-release',
+    );
+    expect(
+      receiptProblems({ ...receipt, projectAdoption: { status: 'passed' } }, candidate),
+    ).toEqual([]);
+    expect(receiptProblems(good(), target)).toEqual([]);
+  });
+
   test.each([
     'installed-consumer-documents',
     'plain-node-sdk-exports',

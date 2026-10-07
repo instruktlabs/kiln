@@ -9,6 +9,7 @@ import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { smokePackageExporter } from './smoke-package-exporter.mjs';
 import { smokeSdkTypes } from './smoke-sdk-types.mjs';
+import { smokePackageAdoption } from './smoke-package-adoption.mjs';
 
 const repo = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 // macOS exposes /var through /private/var. Match Node's canonical module URLs
@@ -77,11 +78,11 @@ async function npmCli() {
   throw new Error('Run this check with npm run test:package so npm can locate its CLI.');
 }
 
-async function connect(server, cwd, store) {
-  const child = spawn(process.execPath, Array.isArray(server) ? server : [server], {
+async function connect(server, cwd, store, env = {}, executable = process.execPath) {
+  const child = spawn(executable, Array.isArray(server) ? server : [server], {
     cwd,
     windowsHide: true,
-    env: { ...process.env, KILN_RENDER: 'cpu', KILN_PROGRAM_STORE: store },
+    env: { ...process.env, ...env, KILN_RENDER: 'cpu', KILN_PROGRAM_STORE: store },
     stdio: ['pipe', 'pipe', 'pipe'],
   });
   let next = 0,
@@ -640,6 +641,15 @@ console.log(JSON.stringify({ renderBytes: result.glb.length }));
     'server-restart-persistence',
     'exact-source-export',
   );
+  receipt.projectAdoption = await smokePackageAdoption({
+    runtime,
+    root,
+    command,
+    connect,
+    textResult,
+  });
+  if (receipt.projectAdoption.status === 'passed')
+    receipt.checks.push('installed-project-adoption-and-cross-client-storage');
   receipt.status = 'passed';
 } catch (error) {
   receipt.status = 'failed';

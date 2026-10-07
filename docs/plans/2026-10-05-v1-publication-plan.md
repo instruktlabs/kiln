@@ -4,6 +4,12 @@ Research dates: 5-6 October 2026. Repository audited at
 `cf4abe6c7b142da56d005751e21d0f9c57a9dd21`.
 Plan updated: 6 October 2026, including release sequencing, ownership, hosting economics and decision handling.
 
+Execution checkpoint, 7 October: stable `@instruktlabs/kiln@1.0.0` and the GitHub
+release are public. The goal is active. Shared project setup is being qualified;
+public hosting and directory submissions remain unfinished. See the
+[current status and PR sequence](../reviews/2026-10-07-release-status.md).
+The research and earlier setup observations below retain their original context.
+
 Status: documented v1 plan, with owner decisions recorded in section 9 and remaining
 choices proposed for review. This document records research and planned work;
 the document itself does not authorize a repository transfer, account creation, paid deployment,
@@ -1341,7 +1347,7 @@ This settles D8 and reinforces that $20 is a target, not a guaranteed billing ca
 | D9 | Google and GitHub sign-in through one Kiln-owned account; email later | Before provisioning provider applications | Owner accepted on 6 October, requiring correct, secure implementation and professional presentation; architecture reviewed above, multi-provider implementation and deployed qualification remain open |
 | D10 | In-app security notices only for v1 | Settled; do not ask again | Owner selected on 6 October. No separate security contact email collection or outbound security mail; Google/GitHub sign-in unchanged. Out-of-band notifications can follow later. |
 | D11 | Kiln as product display name if available; Instrukt Labs as public publisher; exact LLC identity in legal fields | Verify availability and publisher ownership before a concrete submission | Owner selected on 7 October; supersedes D1's earlier display-name recommendation. No plugin identifier rename or submission authorized by this choice. |
-| D12 | One shared local setup process supporting existing projects and new workspaces, with thin agent integrations | Implement and qualify preservation, upgrades and real client onboarding before claiming support | Owner selected on 7 October. Published 1.0.0 currently requires an empty folder; the shared extension is planned release work. |
+| D12 | One shared local setup process supporting existing projects and new workspaces, with thin agent integrations | Qualify preservation, upgrades and real client onboarding before release | Owner selected on 7 October. The development extension passes local tests and an installed Windows storage-reuse check; cross-platform candidate CI and real onboarding remain. Published 1.0.0 still requires an empty folder. |
 
 Do not present D4's provider decision as passed production qualification or D5 as a measured forecast. Legal
 entity/account fields must come from the owner; do not infer exact legal details

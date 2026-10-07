@@ -1,8 +1,9 @@
 # Kiln local setup across agents
 
-Status: owner-selected direction with a proposed implementation sequence, 7 October
-2026. This records release work, not an implemented feature or a directory
-submission. The existing published package remains unchanged.
+Status: shared setup is implemented in the development candidate, 7 October 2026.
+Focused preservation tests and an installed Windows archive pass; cross-platform
+candidate CI and real client onboarding still need qualification. This is not a
+new package release or a directory submission. Published 1.0.0 remains unchanged.
 
 ## Decisions and intent
 
@@ -24,10 +25,10 @@ direction is recorded.
 
 ## Current implementation and gaps
 
-- `scripts/create-workspace.mjs` rejects a nonempty destination for first setup.
-  It generates instructions, skills, a local runtime launcher and one selected
-  harness's configuration. Its repair/check/upgrade paths preserve the recorded
-  single `harness` value.
+- Published 1.0.0 requires an empty destination for first setup. The development
+  initializer adds `--adopt` for populated projects and new workspaces, with a
+  read-only `--adopt --check` preview. Schema 2 records multiple registrations
+  around one store; plain legacy creation and schema 1 maintenance remain available.
 - `scripts/setup-plugin-workspace.mjs` installs a pinned npm engine outside the
   disposable plugin cache and invokes the same workspace generator. The local
   plugin currently exposes only the setup skill; author/refine/QA skills arrive
@@ -35,15 +36,13 @@ direction is recorded.
 - `scripts/package-local-plugin.mjs` already generates Claude and OpenAI
   manifests from shared identity and maintained setup files. Preserve that source
   ownership instead of maintaining independent copies by hand.
-- Shared source, program references, saved assets, runtime identity and ordinary
-  CLI/MCP behavior should survive adding another agent integration. Multiple
-  registrations are a proposed extension; concurrent editing is not thereby
-  proven safe.
-- Current setup guidance overstates Codex's lack of project configuration. The
-  generator itself already writes `.codex/config.toml` and explains its trust
-  requirement. Reconcile the guidance with current documentation and installed
-  client behavior; retain an explicit launcher only where it serves a measured
-  compatibility or unattended-execution need.
+- The installed development archive preserves source, program references, saved
+  revisions and exact GLB bytes when adding Codex after Claude. This uses two
+  separately launched MCP servers from their generated registrations, not model
+  conversations or proof of concurrent authoring safety.
+- Maintained setup guidance now explains trusted `.codex/config.toml`, interactive
+  `codex`, and the explicit-prompt headless launcher. Real first-use conversations
+  remain required. Broader public documentation refresh is still deferred.
 
 ## Proposed implementation boundary
 
@@ -103,15 +102,13 @@ directory is an application project.
 
 ## Current documentation basis
 
-Implementation checkpoint: the pure JSON/JSONC and TOML configuration merge layer
-has focused preservation/conflict tests and installed-client configuration
-readback. See the [evidence and remaining integration work](../reviews/2026-10-07-project-config-preservation.md).
-Existing-project adoption and multiple agent registrations are not yet enabled.
-The recoverable write layer now has focused process-interruption and conflict
-tests. Its [evidence and limits](../reviews/2026-10-07-setup-recovery.md) also correct
-the old assumption that Claude's project skill discovery includes `.agents/skills`.
-Use client-specific registration paths around the same maintained skills until
-actual client qualification demonstrates an alternative.
+The [configuration preservation](../reviews/2026-10-07-project-config-preservation.md)
+and [recoverable writes](../reviews/2026-10-07-setup-recovery.md) foundations now
+serve the shared initializer. The [adoption checkpoint](../reviews/2026-10-07-project-adoption.md)
+records installed-archive evidence, preservation boundaries and unfinished
+release work. Keep client-specific skill registration paths around the same
+maintained sources; a fresh Claude probe loads `.claude/skills` and does not
+establish `.agents/skills` as a substitute.
 
 - [OpenAI's Claude-plugin portability guide](https://developers.openai.com/plugins/guides/submit-claude-plugin)
   distinguishes reusable skills/server implementations from host-specific

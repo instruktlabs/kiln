@@ -234,12 +234,14 @@ export async function setupPluginWorkspace(options = {}) {
   const harness = options.harness || 'claude';
   if (!['claude', 'codex'].includes(harness)) throw new Error('Choose harness claude or codex.');
   const mode = options.mode || 'create';
-  if (!['create', 'check', 'upgrade', 'repair'].includes(mode))
+  if (!['create', 'check', 'upgrade', 'repair', 'recover'].includes(mode))
     throw new Error('Unknown workspace setup mode.');
+  if (mode === 'recover' && (options.adopt || options.skills))
+    throw new Error('Use --recover alone before retrying setup.');
   if (!options.directory) throw new Error('Provide a workspace directory.');
   if (
     options.skills &&
-    (mode !== 'create' ||
+    ((mode !== 'create' && !(mode === 'check' && options.adopt)) ||
       !Array.isArray(options.skills) ||
       options.skills.some((name) => !['compose', 'batch'].includes(name)))
   )
@@ -260,7 +262,7 @@ export async function setupPluginWorkspace(options = {}) {
   ])
     if (inside(a, b) || inside(b, a))
       throw new Error('Keep workspace, runtime data and plugin cache in separate directories.');
-  if (mode === 'create' && (await exists(directory))) {
+  if (mode === 'create' && !options.adopt && (await exists(directory))) {
     if (!(await lstat(directory)).isDirectory() || (await readdir(directory)).length)
       throw new Error(
         'The workspace destination must be an empty directory; no existing files were changed.',
@@ -273,13 +275,22 @@ export async function setupPluginWorkspace(options = {}) {
     { name: pin.name, version: pin.version },
     archive,
     archiveHash,
-    { ...options, mode },
+    { ...options, mode: mode === 'recover' ? 'check' : mode },
   );
-  const { createWorkspace } = await import(
+  const { createWorkspace, workspaceSetupCapabilities } = await import(
     pathToFileURL(join(runtime, 'scripts/create-workspace.mjs')).href
   );
+  if (options.adopt && workspaceSetupCapabilities?.projectAdoption !== 1)
+    throw new Error(
+      'The pinned engine does not support project adoption. Use a plugin release that pins a supporting engine; no project files were changed.',
+    );
+  if (mode === 'recover' && workspaceSetupCapabilities?.recovery !== 1)
+    throw new Error(
+      'The pinned engine does not support project recovery. No project files were changed.',
+    );
   const workspace = await createWorkspace(directory, harness, {
     installation: runtime,
+    ...(options.adopt ? { adopt: true } : {}),
     ...(mode === 'create' ? {} : { [mode]: true }),
     ...(options.skills ? { skills: options.skills } : {}),
   });
@@ -302,9 +313,13 @@ export function parseSetupArguments(args) {
   };
   while (values.length) {
     const flag = values.shift();
-    if (['--check', '--upgrade', '--repair'].includes(flag)) {
-      if (result.mode) throw new Error('Choose only one of --check, --upgrade or --repair.');
+    if (['--check', '--upgrade', '--repair', '--recover'].includes(flag)) {
+      if (result.mode)
+        throw new Error('Choose only one of --check, --upgrade, --repair or --recover.');
       result.mode = flag.slice(2);
+    } else if (flag === '--adopt') {
+      if (result.adopt) throw new Error('Repeated option --adopt.');
+      result.adopt = true;
     } else if (Object.hasOwn(valueFlags, flag)) {
       const value = values.shift();
       if (!value || value.startsWith('--')) throw new Error(`Missing value for ${flag}.`);
@@ -312,6 +327,8 @@ export function parseSetupArguments(args) {
       result[valueFlags[flag]] = flag === '--skills' ? value.split(',') : value;
     } else throw new Error(`Unknown option ${flag}.`);
   }
+  if (result.mode === 'recover' && (result.adopt || result.skills))
+    throw new Error('Use --recover alone before retrying setup.');
   return result;
 }
 
@@ -323,7 +340,7 @@ if (
     const options = parseSetupArguments(process.argv.slice(2));
     if (options.help)
       console.log(
-        'Usage: node bin/kiln-setup-workspace.mjs <directory> [--harness claude|codex] [--skills compose,batch]\n       node bin/kiln-setup-workspace.mjs <managed-workspace> --check|--upgrade|--repair\nOptions: --data-dir <persistent-directory>, --archive <qualification.tgz>, --npm-cli <npm-cli.js>',
+        'Usage: node bin/kiln-setup-workspace.mjs <directory> [--harness claude|codex] [--skills compose,batch]\n       node bin/kiln-setup-workspace.mjs <project-or-new-workspace> --adopt [--check]\n       node bin/kiln-setup-workspace.mjs <managed-workspace> --check|--upgrade|--repair|--recover\nOptions: --data-dir <persistent-directory>, --archive <qualification.tgz>, --npm-cli <npm-cli.js>',
       );
     else {
       const result = await setupPluginWorkspace(options);

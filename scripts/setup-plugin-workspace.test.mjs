@@ -130,6 +130,46 @@ test('does not install or touch an existing nonempty directory when creation was
   expect(f.calls).toHaveLength(0);
 });
 
+test('explicit project adoption delegates to a capable pinned engine without touching owner files', async () => {
+  const f = await fixture();
+  await mkdir(f.options.directory);
+  await writeFile(join(f.options.directory, 'AGENTS.md'), 'Owner instructions');
+  const install = f.options.run;
+  const result = await setupPluginWorkspace({
+    ...f.options,
+    adopt: true,
+    run: async (...args) => {
+      await install(...args);
+      const module = join(args[1], 'node_modules/@instruktlabs/kiln/scripts/create-workspace.mjs');
+      await writeFile(
+        module,
+        (await readFile(module, 'utf8')) +
+          '\nexport const workspaceSetupCapabilities = {projectAdoption:1,recovery:1};\n',
+      );
+    },
+  });
+  expect(result.workspace.options.adopt).toBe(true);
+  expect(await readFile(join(f.options.directory, 'AGENTS.md'), 'utf8')).toBe('Owner instructions');
+});
+
+test('adoption never falls back to an older engine that can only create empty workspaces', async () => {
+  const f = await fixture();
+  await mkdir(f.options.directory);
+  await writeFile(join(f.options.directory, 'keep.txt'), 'owner');
+  await expect(setupPluginWorkspace({ ...f.options, adopt: true })).rejects.toThrow(
+    'does not support project adoption',
+  );
+  expect(await readFile(join(f.options.directory, 'keep.txt'), 'utf8')).toBe('owner');
+  expect(await readdir(f.options.directory)).toEqual(['keep.txt']);
+});
+
+test('CLI can preview project adoption and cannot combine recovery with setup changes', () => {
+  expect(
+    parseSetupArguments(['/project', '--adopt', '--check', '--harness', 'codex']),
+  ).toMatchObject({ adopt: true, mode: 'check', harness: 'codex' });
+  expect(() => parseSetupArguments(['/project', '--adopt', '--recover'])).toThrow('recover');
+});
+
 test('check is read-only when the pinned engine has not been installed', async () => {
   const f = await fixture();
   await expect(setupPluginWorkspace({ ...f.options, mode: 'check' })).rejects.toThrow(

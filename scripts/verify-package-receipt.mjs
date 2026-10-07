@@ -62,6 +62,11 @@ export function receiptProblems(receipt, { platform, arch, manifest, toolchain, 
   for (const check of REQUIRED_CHECKS) {
     if (!receipt.checks?.includes(check)) problems.push(`missing check: ${check}`);
   }
+  if (manifest.files?.includes('scripts/workspace-project.mjs')) {
+    const check = 'installed-project-adoption-and-cross-client-storage';
+    if (!receipt.checks?.includes(check)) problems.push(`missing check: ${check}`);
+    mustBe(receipt.projectAdoption?.status, 'passed', 'projectAdoption.status');
+  }
   return problems;
 }
 
