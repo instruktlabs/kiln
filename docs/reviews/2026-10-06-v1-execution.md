@@ -3137,3 +3137,34 @@ paid native start was created. Concrete cloud deployment readback and cleanup
 orchestration still need preparation before the next trial allowance is requested.
 Google client approval remains pending. Public hosting and directory submissions
 remain open, and the final README/Troy/site refresh is still deferred.
+
+## Private deployment readback and cleanup preparation (October 7)
+
+All eighteen CI checks passed on `23fa54f`, including both hosted platforms and
+all three installed native-image jobs. The new pure readback verifier binds the
+eight deployed Workers to the clean candidate's hashes, active versions, exact
+bindings, three pinned Container images, seven SQLite namespaces and nine D1
+migrations. It rejects public routes, domains or previews, Cron, unexpected
+bindings, enabled logs/SSH and active or starting instances before admission.
+These checks use modeled provider responses locally; actual remote readback of
+this candidate remains a gate before any native invocation.
+
+The cleanup planner requires a stopped operator, closed one-use budget, paused
+idle admission, no recovery alarm and stopped VMs matched to recorded claims.
+It selects only the recorded temporary resources and reverses Worker dependency
+order. Failed starts can consume claims without leaving instances. The separate
+local collector and teardown scripts retain bounded synthetic evidence, recheck
+resource identities, stop on a partial failure and require final absence readback.
+They have not deployed or deleted anything. Registry images are preserved;
+Analytics Engine's documented three-month retention is not represented as data
+deletion by resource teardown.
+
+Six focused tests include deliberate code, binding, image, namespace, public
+surface, quota and cleanup-state mismatches. Positive cases failed against the
+initial refusal-only stub. All 407 hosted tests, three typechecks, thirteen
+production builds and root lint pass. Logs: `.cache/lifecycle-readback-*.log`.
+Read-only route inventory checked all five account zones and found no route for
+the fixed trial prefix; `.cache/lifecycle-operator/surface-inventory.json` retains
+the timestamped result. No cloud resource, native start or provider credential was
+created during this preparation. A new allowance and exact-candidate CI are still
+required. Google client approval remains pending; production launch is incomplete.

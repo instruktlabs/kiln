@@ -148,7 +148,31 @@ the observer deadline. The combined local topology/eviction tests now use this
 actual facade; focused tests cover its guards, timeout, disposal and size limit.
 Its config passes a Wrangler dry run. No listener or remote proxy was started.
 
-Concrete resource manifest/readback, cloud observer behavior and deletion receipts
+`lifecycle-readback.mjs` verifies complete provider snapshots against the frozen
+manifest and clean candidate receipt. It requires exact code hashes and active
+versions, expected bindings and image digests, seven owned SQLite namespaces,
+private bucket surfaces, all nine recorded migrations, disabled Worker/Container
+logs and SSH, no routes/Cron, and no active/starting instances before admission.
+Unexpected bindings, including secrets, fail verification. The collector must
+retain complete pages and re-read them; synthetic fixtures are not cloud evidence.
+
+Its cleanup planner requires a stopped operator, closed allowance, paused idle
+admission, no recovery alarm and only stopped, correctly imaged VMs matched to
+recorded budget claims. Failed starts may consume a claim without producing a VM;
+failed qualification does not prevent cleanup once those safety conditions hold.
+The resulting plan selects only recorded trial resources, with Workers in reverse
+dependency order. Re-read resource IDs/versions immediately before deleting,
+retain bounded synthetic evidence, and verify absence afterward. A partial
+teardown failure needs inspection of its mutation receipts and current identities;
+never rerun the compute trial or force-delete unrelated references to recover.
+
+Deleting the private Workers/D1/KV/R2 resources is separate from erasing
+provider-managed operational data. The configured Analytics Engine dataset emits
+fixed, sanitized metrics, and Cloudflare documents **three months** of retention.
+The cleanup plan preserves registry images and explicitly does not assert that
+metrics were deleted. See [Analytics Engine limits](https://developers.cloudflare.com/analytics/analytics-engine/limits/).
+
+Concrete deployed resource IDs, cloud observer behavior and deletion receipts
 remain pending. This procedure does not authorize deployment or claim cleanup happened.
 Real alarm firing, upstream sign-in, account actions, retention, monitoring and
 production load remain separate qualification requirements.
