@@ -5,6 +5,24 @@ Source releases and installable package publication are separate milestones.
 Published versions and tags are recorded by the npm registry; changing this file
 does not publish a package.
 
+## 1.1.0-dev.1 (unreleased)
+
+Development candidate for shared project setup. Published npm 1.0.0 remains
+unchanged. This candidate requires a reviewed local archive; it is not a registry
+release or an accepted plugin listing.
+
+- `kiln-init --adopt` configures an existing project or a new workspace through
+  the same initializer. Preview with `--adopt --check`; existing instructions,
+  unrelated configuration, saved assets and customized skills remain intact.
+- Multiple compatible client registrations share one program store. Managed
+  upgrades retain narrow configuration ownership and recover interrupted setup
+  writes without putting recovery snapshots inside the project.
+- Explicit migration of a copied legacy OpenCode workspace replaces its old
+  owned skill path instead of loading both original and copied instructions.
+- The local plugin's setup helper uses the pinned engine's adapter list. Plugin
+  installation remains specific to Claude Code and Codex; those clients can also
+  configure another supported workspace adapter through the shared helper.
+
 ## 1.0.0
 
 Changes since the 0.10.0 tagged package release, qualified first through the public

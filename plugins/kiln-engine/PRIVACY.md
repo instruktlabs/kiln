@@ -15,6 +15,14 @@ data directory outside the plugin cache. Paths can contain your device account
 name; paths, package identity and file hashes appear in local configuration,
 installation records and command results returned to your assistant.
 
+When adding Kiln to an existing project, setup reads the selected client's
+configuration and records ownership of Kiln's own entries. It preserves unrelated
+settings and existing project instructions. A recoverable setup transaction
+temporarily copies the affected files into private local recovery storage outside
+the project. Those copies can contain credentials already present in the client's
+configuration. They are not uploaded, printed or added to the workspace manifest.
+This storage uses filesystem permissions; Kiln does not encrypt these snapshots.
+
 Your workspace and configured asset libraries hold authored JavaScript, material
 files, asset names, metadata, previews and GLBs. Local tools read and write the
 work you ask them to handle and return requested source, images and results to
@@ -59,6 +67,15 @@ Local source, saved assets, runtime installations and workspace configuration
 remain until you delete them. Uninstalling the plugin removes neither your assets
 nor its separately installed engine. Plugin updates also leave existing
 workspaces on their installed engine until you request a managed upgrade.
+
+Setup removes recovery snapshots after a successful transaction or completed
+recovery. Interrupted setup can leave them until recovery succeeds or you resolve
+the interruption. The default location is
+`%LOCALAPPDATA%/InstruktLabs/Kiln/setup-transactions` on Windows, or
+`$XDG_DATA_HOME/instruktlabs/kiln/setup-transactions` elsewhere, falling back to
+`~/.local/share/instruktlabs/kiln/setup-transactions`. Use the setup helper's
+`--recover` operation before retrying an interrupted change. Do not upload recovery
+files to a public issue or delete them while setup or recovery is active.
 
 There is no automatic seven-day expiry for local work; that is a separate hosted
 service policy. Remove selected local work using Kiln's library controls or your

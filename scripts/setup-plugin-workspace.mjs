@@ -232,7 +232,6 @@ async function installRuntime(data, pin, archive, archiveHash, options) {
 
 export async function setupPluginWorkspace(options = {}) {
   const harness = options.harness || 'claude';
-  if (!['claude', 'codex'].includes(harness)) throw new Error('Choose harness claude or codex.');
   const mode = options.mode || 'create';
   if (!['create', 'check', 'upgrade', 'repair', 'recover'].includes(mode))
     throw new Error('Unknown workspace setup mode.');
@@ -253,6 +252,18 @@ export async function setupPluginWorkspace(options = {}) {
   if (pin.name !== packageName) throw new Error(`The plugin must pin package ${packageName}.`);
   if (typeof pin.version !== 'string' || !exactVersion.test(pin.version))
     throw new Error('The plugin runtime needs an exact stable, rc.N or dev.N version.');
+  // New bundles derive adapters from their pinned engine's initializer. Keep the
+  // original two-client contract for older bundles that have no capability list.
+  const harnesses = pin.harnesses === undefined ? ['claude', 'codex'] : pin.harnesses;
+  if (
+    !Array.isArray(harnesses) ||
+    !harnesses.length ||
+    harnesses.some((name) => typeof name !== 'string' || !/^[a-z][a-z0-9-]{0,63}$/.test(name)) ||
+    new Set(harnesses).size !== harnesses.length
+  )
+    throw new Error('Invalid workspace harness capabilities in the plugin runtime pin.');
+  if (!harnesses.includes(harness))
+    throw new Error(`Choose a supported workspace harness: ${harnesses.join(', ')}.`);
   const directory = await canonical(options.directory);
   const data = await canonical(options.dataDirectory || defaultDataDirectory());
   for (const [a, b] of [
@@ -340,7 +351,7 @@ if (
     const options = parseSetupArguments(process.argv.slice(2));
     if (options.help)
       console.log(
-        'Usage: node bin/kiln-setup-workspace.mjs <directory> [--harness claude|codex] [--skills compose,batch]\n       node bin/kiln-setup-workspace.mjs <project-or-new-workspace> --adopt [--check]\n       node bin/kiln-setup-workspace.mjs <managed-workspace> --check|--upgrade|--repair|--recover\nOptions: --data-dir <persistent-directory>, --archive <qualification.tgz>, --npm-cli <npm-cli.js>',
+        'Usage: node bin/kiln-setup-workspace.mjs <directory> [--harness NAME] [--skills compose,batch]\n       node bin/kiln-setup-workspace.mjs <project-or-new-workspace> --adopt [--check]\n       node bin/kiln-setup-workspace.mjs <managed-workspace> --check|--upgrade|--repair|--recover\nOptions: --data-dir <persistent-directory>, --archive <qualification.tgz>, --npm-cli <npm-cli.js>\nWorkspace adapters are declared by the pinned engine in runtime.json.',
       );
     else {
       const result = await setupPluginWorkspace(options);

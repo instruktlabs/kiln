@@ -16,6 +16,7 @@ import { tmpdir } from 'node:os';
 import { join, resolve, sep } from 'node:path';
 import { PNG } from 'pngjs';
 import { packageLocalPlugin } from './package-local-plugin.mjs';
+import { workspaceSetupCapabilities } from './create-workspace.mjs';
 
 const roots = [];
 afterEach(async () => {
@@ -58,6 +59,7 @@ test('local plugin versions independently while retaining its exact engine pin',
   expect(await readJson(join(directory, 'runtime.json'))).toEqual({
     name: pkg.name,
     version: pkg.version,
+    harnesses: workspaceSetupCapabilities.harnesses,
   });
   expect(portable.extensions['com.openai'].interface.displayName).toBe('Kiln Engine');
   expect(portable.mcpServers).toBeUndefined();

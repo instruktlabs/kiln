@@ -2,6 +2,7 @@ import { expect, test } from 'bun:test';
 import { createHash } from 'node:crypto';
 import { spawnSync } from 'node:child_process';
 import {
+  cp,
   mkdir,
   mkdtemp,
   readFile,
@@ -56,14 +57,14 @@ async function fixture(fn) {
     const name = skill.includes('-') ? `kiln-${skill}` : `kiln-${skill}-asset`;
     await put(runtime, `skills/${name}/SKILL.md`, `# ${name}\n`);
   }
-  const run = (harness = 'claude', options = {}) =>
+  const run = (harness = 'claude', options = {}, destination = root) =>
     spawnSync(
       'node',
       [
         '--input-type=module',
         '-e',
         `import {createWorkspace} from ${JSON.stringify(entry)}; try { console.log(JSON.stringify(await createWorkspace(process.argv[1],process.argv[3],JSON.parse(process.argv[2])))); } catch(error) { console.error(error.message); process.exitCode=1; }`,
-        root,
+        destination,
         JSON.stringify({ installation: runtime, stateDirectory, adopt: true, ...options }),
         harness,
       ],
@@ -185,6 +186,26 @@ test('an explicit legacy migration retains saved assets and allows a second inte
     expect((await json(root, '.kiln/workspace.json')).harnesses).toEqual(['claude', 'codex']);
     expect(await readFile(join(root, '.kiln/programs/preserved.txt'), 'utf8')).toBe('original');
     expect(passed(run('codex', { adopt: false, check: true })).status).toBe('current');
+  }));
+
+test('adopting a copied legacy OpenCode workspace replaces only its owned old skill path', () =>
+  fixture(async ({ root, temp, run }) => {
+    passed(run('opencode', { adopt: false }));
+    const originalConfig = await readFile(join(root, 'opencode.json'));
+    const originalManifest = await readFile(join(root, '.kiln/workspace.json'));
+    await put(root, '.kiln/programs/retained.txt', 'saved source');
+    const moved = join(temp, 'copied-project');
+    await cp(root, moved, { recursive: true });
+    passed(run('opencode', {}, moved));
+    const config = await json(moved, 'opencode.json');
+    expect(config.skills.paths).toEqual([join(moved, 'skills')]);
+    expect(config.mcp.kiln_workspace.environment.KILN_PROGRAM_STORE).toBe(
+      join(moved, '.kiln/programs'),
+    );
+    expect(await readFile(join(moved, '.kiln/programs/retained.txt'), 'utf8')).toBe('saved source');
+    expect(await readFile(join(root, 'opencode.json'))).toEqual(originalConfig);
+    expect(await readFile(join(root, '.kiln/workspace.json'))).toEqual(originalManifest);
+    expect(passed(run('opencode', {}, moved)).changed).toEqual([]);
   }));
 
 test('the same adoption path creates a new workspace with optional skills', () =>

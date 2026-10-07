@@ -1,9 +1,10 @@
 # Kiln local setup across agents
 
 Status: shared setup is implemented in the development candidate, 7 October 2026.
-Focused preservation tests and an installed Windows archive pass; cross-platform
-candidate CI and real client onboarding still need qualification. This is not a
-new package release or a directory submission. Published 1.0.0 remains unchanged.
+Focused preservation tests and installed archives pass, including cross-platform
+CI at `225d74a`. Independent review produced two fixes; their `1.1.0-dev.1`
+follow-up and real client onboarding need fresh qualification. This is not a new
+package release or a directory submission. Published 1.0.0 remains unchanged.
 
 ## Decisions and intent
 

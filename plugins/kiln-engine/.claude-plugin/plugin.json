@@ -1,6 +1,6 @@
 {
   "name": "kiln-engine",
-  "version": "1.0.1",
+  "version": "1.1.0-dev.1",
   "description": "Set up a local Kiln workspace to create, inspect and revise editable 3D assets with Claude Code or Codex.",
   "author": {
     "name": "Instrukt Labs",

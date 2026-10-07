@@ -30,7 +30,7 @@ test('public draft ZIP has one hosted MCP, complete referenced assets and no loc
   const files = unzipSync(zip);
   const manifest = JSON.parse(Buffer.from(files['plugin.json']));
   assert.equal(manifest.name, 'kiln-engine');
-  assert.equal(manifest.version, '1.0.0');
+  assert.equal(manifest.version, (await json(join(repo, 'package.json'))).version);
   const metadata = manifest.extensions['com.openai'];
   assert.ok(metadata.interface.shortDescription.length <= 30);
   assert.equal(metadata.interface.termsOfServiceURL, 'https://kiln.instruktlabs.com/terms');

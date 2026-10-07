@@ -232,7 +232,16 @@ try {
   );
   assert.equal(portablePlugin.name, 'kiln-engine');
   assert.equal((await pluginJson('.claude-plugin/plugin.json')).version, portablePlugin.version);
-  assert.deepEqual(await pluginJson('runtime.json'), { name: pkg.name, version: pkg.version });
+  const { workspaceSetupCapabilities } = await import(
+    pathToFileURL(join(runtime, 'scripts/create-workspace.mjs')).href
+  );
+  assert.deepEqual(await pluginJson('runtime.json'), {
+    name: pkg.name,
+    version: pkg.version,
+    ...(workspaceSetupCapabilities?.harnesses
+      ? { harnesses: workspaceSetupCapabilities.harnesses }
+      : {}),
+  });
   assert.deepEqual(await readdir(join(plugin, 'skills')), ['kiln-setup-workspace']);
   const pluginReceipt = await pluginJson('package-provenance.json');
   assert.equal(pluginReceipt.kind, 'kiln-local-plugin');

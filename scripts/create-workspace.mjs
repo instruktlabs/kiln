@@ -20,10 +20,22 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 import { assertNodeRuntime } from '../src/runtime-support.mjs';
 
 const installation = resolve(dirname(fileURLToPath(import.meta.url)), '..');
-export const workspaceSetupCapabilities = Object.freeze({ projectAdoption: 1, recovery: 1 });
 const quote = JSON.stringify;
 const hash = (value) => createHash('sha256').update(value).digest('hex');
-const harnesses = ['claude', 'codex', 'opencode', 'hermes', 'agy', 'copilot', 'cursor-agent'];
+const harnesses = Object.freeze([
+  'claude',
+  'codex',
+  'opencode',
+  'hermes',
+  'agy',
+  'copilot',
+  'cursor-agent',
+]);
+export const workspaceSetupCapabilities = Object.freeze({
+  projectAdoption: 1,
+  recovery: 1,
+  harnesses,
+});
 /**
  * Where the chosen harness looks for project skills, relative to the workspace, as
  * measured on the installed CLIs (docs/harnesses.md). Fresh-profile probes on

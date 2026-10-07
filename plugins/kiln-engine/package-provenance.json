@@ -1,21 +1,21 @@
 {
   "schemaVersion": 1,
   "kind": "kiln-local-plugin",
-  "pluginVersion": "1.0.1",
-  "engineVersion": "1.0.0",
+  "pluginVersion": "1.1.0-dev.1",
+  "engineVersion": "1.1.0-dev.1",
   "executables": [
     "bin/kiln-setup-workspace.mjs"
   ],
   "files": {
     ".claude-plugin/icon.png": "sha256:b4b651c402793b7e27cab780f04b14f80daec6d0cd5b7e4e90313930581a54e9",
-    ".claude-plugin/plugin.json": "sha256:1c9a759df304878ca9b730b1c317fea48f07840e4cc38ae68b2a9d5a6670f8b4",
-    "bin/kiln-setup-workspace.mjs": "sha256:cdeaca8e27c911d23fc2b809ce3909a291ce0b00a0fcf4e34fe8bcdedfc82c8a",
+    ".claude-plugin/plugin.json": "sha256:db990218cbc1a73c3d4bc2ac927980fc8ae58c6cf35f959d972101d1a80247ba",
+    "bin/kiln-setup-workspace.mjs": "sha256:3d9a30236919a6ca91acb6b26f808cec442e6edc3dd88fe010645b010d76e838",
     "LICENSE": "sha256:cdba278ebf1d6de618869936226bf03be4887179c128efc7aaa13d22034826a5",
-    "plugin.json": "sha256:a877b48b4ddad084cc8ddffd819a7f091bd00991306f62753e5576a034490b2b",
-    "PRIVACY.md": "sha256:4bd5eb34e9a936a2356aca8633c0f1bceeccb320b161dd47abbe608170fd2cd4",
-    "README.md": "sha256:c71f9b9c2dd7cb56b87ca4dce454de128e3da8812b27d06275a7d4db35b5d689",
-    "runtime.json": "sha256:18129a1d310c468aeba0966792940242f0359ab14c41a4c9ef240310d07d3bd2",
-    "skills/kiln-setup-workspace/references/plugin-install.md": "sha256:1e3c743b7f46ed5b68444d1540de118d2ce2fdf833d657b015c1ff303627324f",
+    "plugin.json": "sha256:3d55aab0e160cc067c78b3a4757a7973e03e6e1b716f1ecdec189b3133a30fef",
+    "PRIVACY.md": "sha256:5f58d981667e40441e21c2dec411f269a9a67a6141cec61976d27088fb12573b",
+    "README.md": "sha256:64a6b0f1ef5665ecad019930eda09903deaf8ad74b58c361b57c509f1084acd4",
+    "runtime.json": "sha256:2b93480e54e9b662893bfa9a7f90ee8dd80364fbde982fe4e8244960ffaac19e",
+    "skills/kiln-setup-workspace/references/plugin-install.md": "sha256:c338fb792e7fad0364c3e1a13c94c506afa1395489ec1b6e83b36d04728935fb",
     "skills/kiln-setup-workspace/references/renderer-setup.md": "sha256:b743b1b2827fa814385990e1e5b849391cb427413e9c016d273aa19cebd46031",
     "skills/kiln-setup-workspace/SKILL.md": "sha256:041e4fe55e80c72133dabb6d25be78cfc0aae45edc057eca3c7a5a1c8db0fef1"
   }

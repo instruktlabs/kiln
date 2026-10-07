@@ -80,6 +80,33 @@ test('plugin setup installs an exact package once outside the cache and delegate
   expect(f.calls).toHaveLength(1);
 });
 
+test.each(['opencode', 'hermes', 'agy', 'copilot', 'cursor-agent'])(
+  'the plugin helper can register the engine-supported %s adapter',
+  async (harness) => {
+    const f = await fixture();
+    await writeFile(
+      join(f.options.pluginRoot, 'runtime.json'),
+      JSON.stringify({ ...f.pin, harnesses: ['claude', 'codex', harness] }),
+    );
+    const result = await setupPluginWorkspace({ ...f.options, harness });
+    expect(result.workspace.harness).toBe(harness);
+    expect(f.calls).toHaveLength(1);
+  },
+);
+
+test('invalid advertised adapters fail before installation or workspace changes', async () => {
+  const f = await fixture();
+  for (const harnesses of [[], ['claude', 'claude'], ['../other'], 'claude']) {
+    await writeFile(
+      join(f.options.pluginRoot, 'runtime.json'),
+      JSON.stringify({ ...f.pin, harnesses }),
+    );
+    await expect(setupPluginWorkspace(f.options)).rejects.toThrow('harness');
+  }
+  expect(f.calls).toHaveLength(0);
+  await expect(readdir(f.options.directory)).rejects.toMatchObject({ code: 'ENOENT' });
+});
+
 test.each(['latest', '^1.0.0', '../other', 'file:/private', 'https://example.com/p.tgz'])(
   'rejects a non-exact runtime pin %s before invoking npm',
   async (version) => {

@@ -30,8 +30,15 @@ older statements within it are not the current execution status.
 - Shared setup for existing projects and new workspaces is implemented locally.
   An installed candidate preserves owner files and reopens the same source,
   revision and exact GLB across Claude and Codex registrations. Full local tests
-  pass. [Adoption evidence](2026-10-07-project-adoption.md) separates these results
-  from coverage, exact-source CI and actual first-use conversations.
+  and all twelve engine/package CI jobs pass at `225d74a`; seven installed
+  receipts were independently checked against the exact CI archive.
+  [Adoption evidence](2026-10-07-project-adoption.md) separates these results
+  from actual client first-use conversations, which remain outstanding.
+- Independent setup review found a copied-OpenCode migration defect and a
+  plugin-helper adapter restriction. Both have focused regressions and fixes in
+  the `1.1.0-dev.1` follow-up. Full local tests, coverage and an installed Windows
+  archive pass; exact committed-source CI and real client onboarding remain.
+  This development version does not replace the published stable package.
 - Hosted retention and scheduled deletion have a frozen private trial candidate.
   The maintenance gateway and recovery runbook have offline tests, including a
   state-preserving local transition, but need provider qualification.
@@ -79,7 +86,7 @@ trial uses four private Workers with temporary D1/KV/R2, no VMs, provider secret
 or public route, with a bounded run and identity-checked cleanup. Earlier paid
 trial allowances do not authorize it.
 
-The previous #156 head has 25 passing checks and a separate failing legacy Linux
+The #156 implementation at `225d74a` has 25 passing checks and a separate failing legacy Linux
 Docker isolation preflight. That failure remains visible and needs resolution or
 an evidenced check replacement before final readiness; it is not the result of
 the private Cloudflare fresh-VM tests. Do not hide it by weakening isolation.

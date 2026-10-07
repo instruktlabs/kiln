@@ -17,8 +17,11 @@ installation, confirm and use that file instead. Plugin and engine versions are
 independent. `runtime.json` always names the exact engine to install.
 
 For a fresh workspace, use an absolute empty destination outside both the plugin
-and its runtime data directory. Select `claude` or `codex` from the current host
-or the user's stated choice:
+and its runtime data directory. Select the current host or the user's stated
+adapter. New bundles list the engine's supported adapters in `runtime.json`;
+older bundles without that list accept `claude` or `codex` only. The plugin itself
+is installed in Claude Code or Codex, but its helper can configure another adapter
+supported by the pinned engine:
 
 ```sh
 node "/absolute/plugin/bin/kiln-setup-workspace.mjs" "/absolute/my-assets" --harness codex

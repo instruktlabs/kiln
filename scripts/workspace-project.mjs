@@ -302,7 +302,11 @@ export async function setupProject({
           );
         } else {
           const current = listValue(merged, entry.path);
-          const oldPath = prior?.value;
+          // Schema 1 owns the unchanged generated config as a whole. Its single
+          // skill path belongs to the original workspace, which may have moved.
+          // Never infer this ownership from a modified or adopted user config.
+          const oldPath =
+            prior?.value ?? (legacyOwned && current.length === 1 ? current[0] : undefined);
           const value = current.filter((item) => item !== oldPath || oldPath === entry.value);
           if (!value.includes(entry.value)) value.push(entry.value);
           merged = mergeJsonConfig(merged, [{ path: entry.path, value, previous: current }], {

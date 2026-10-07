@@ -2,7 +2,7 @@
   "kind": "kiln.hosted-edge.v1",
   "serverInfo": {
     "name": "kiln",
-    "version": "1.0.0"
+    "version": "1.1.0-dev.1"
   },
   "capabilities": {
     "tools": {},

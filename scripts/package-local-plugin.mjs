@@ -3,6 +3,7 @@ import { createHash } from 'node:crypto';
 import { chmod, lstat, mkdir, readFile, readdir, writeFile } from 'node:fs/promises';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { workspaceSetupCapabilities } from './create-workspace.mjs';
 
 const repo = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const json = (value) => Buffer.from(`${JSON.stringify(value, null, 2)}\n`);
@@ -89,7 +90,14 @@ async function expectedFiles() {
       json({ ...identity, icon: './.claude-plugin/icon.png', ...listingLinks }),
     ],
     ['.claude-plugin/icon.png', await readFile(join(repo, 'assets/branding/kiln-512.png'))],
-    ['runtime.json', json({ name: pkg.name, version: pkg.version })],
+    [
+      'runtime.json',
+      json({
+        name: pkg.name,
+        version: pkg.version,
+        harnesses: workspaceSetupCapabilities.harnesses,
+      }),
+    ],
     ['LICENSE', await readFile(join(repo, 'LICENSE'))],
     ['PRIVACY.md', await readFile(join(repo, 'docs/local-plugin-privacy.md'))],
     [executable, await readFile(join(repo, 'scripts/setup-plugin-workspace.mjs'))],
@@ -112,7 +120,7 @@ async function expectedFiles() {
 ${development}Plugin version ${release.version}, maintained by Instrukt Labs under the MIT license.
 This plugin installs engine ${pkg.version}.
 
-Set up a persistent Kiln workspace for Claude Code or Codex, then create and revise
+Set up Kiln in an existing project or a new asset workspace, then create and revise
 editable 3D assets with your coding agent. Use a supported Node.js installation
 with npm. No Bun, engine checkout, Kiln account or separate model API key is needed.
 The plugin requires a local shell and filesystem; Claude chat and Cowork are not
@@ -137,24 +145,34 @@ codex plugin add kiln-engine@instruktlabs
 Restart or reload your coding agent's plugins as its installation message directs.
 Then ask it to set up a Kiln workspace. The maintained setup skill runs this
 plugin's \`bin/kiln-setup-workspace.mjs\` with Node, installs
-\`${pkg.name}@${pkg.version}\` and creates a separate asset workspace.
+\`${pkg.name}@${pkg.version}\` outside the project and configures your chosen
+workspace. The same initializer supports existing projects and new workspaces.
 
 The plugin registers setup only. The workspace supplies authoring skills and one
-local MCP server, \`kiln_workspace\`. Open Claude Code in that workspace; launch
-Codex there with \`node codex.mjs\`. Follow \`START.md\`, accept the host's ordinary
-trust prompts and verify live tool discovery before authoring.
+local MCP server, \`kiln_workspace\`. Open Claude Code in that workspace or launch
+Codex there with \`codex\`. For headless Codex execution, use
+\`node codex.mjs "TASK"\` with an explicit prompt. Read \`.kiln/START.md\` after
+adoption or \`START.md\` in a legacy workspace, accept the host's ordinary trust
+prompts and verify live tool discovery before authoring.
 
-## Three setup examples
+## Setup examples
 
 1. **Create:** “Set up a new Kiln workspace in an empty directory outside this
    checkout, using my current coding agent. Verify its tools before I author an
    asset.” The installer downloads the pinned engine when needed, creates the
    selected workspace and keeps its engine in a separate runtime store. npm also
    uses its normal cache and log directories.
-2. **Check:** “Check my existing Kiln workspace without changing it.” The helper's
+2. **Adopt:** “Add Kiln to this project without replacing my instructions or other
+   MCP settings. Show the planned changes first.” Use \`--adopt --check\` to
+   preview, then \`--adopt\` to apply. Read \`.kiln/AGENTS.md\` alongside the
+   project's instructions. Repeat with another supported \`--harness\` to add
+   that integration around the same saved assets. The engine's adapter list is
+   included in \`runtime.json\`; it does not imply this plugin can be installed
+   in every listed client. Published engine 1.0.0 does not support adoption.
+3. **Check:** “Check my existing Kiln workspace without changing it.” The helper's
    \`--check\` mode reports whether managed files and the installed engine are
    current. A missing runtime is reported without installing one.
-3. **Upgrade:** “Upgrade my managed Kiln workspace while preserving my sources,
+4. **Upgrade:** “Upgrade my managed Kiln workspace while preserving my sources,
    saved assets and customizations.” Stop the workspace's harness session first.
    The helper's \`--upgrade\` mode uses the pinned engine and refuses conflicts
    rather than replacing customized managed files.
@@ -171,6 +189,13 @@ The setup skill asks your coding agent to execute a bundled Node installer. That
 installer runs npm with lifecycle scripts disabled and invokes Kiln's workspace
 generator. It does this before the workspace MCP server exists; it does not
 silently install a global MCP server or grant itself shell permissions.
+
+Adoption and managed project updates temporarily keep recovery copies outside
+the project. Client configuration can already contain credentials, so these
+private copies may too. They are removed after successful setup or recovery;
+interrupted transactions retain them. See [local privacy](PRIVACY.md) for the
+storage location and protection limits. Use \`--recover\` before retrying an
+interrupted project update.
 
 Marketplace installation and updates contact \`https://github.com\`. First engine
 installation and dependency downloads use \`https://registry.npmjs.org\`. npm can
