@@ -113,6 +113,10 @@ an exact worldwide request ceiling.
    materials, browser downloads, link/unlink/delete, quotas, retention and cleanup.
    Verify live Google/GitHub consent and real MCP clients separately. The earlier
    `c755434` receipt covers only its recorded code and scope.
+   The [gateway preflight stage](probe/GATEWAY_PREFLIGHT.md) locally exercises
+   the prepared six-Worker topology with synthetic accounts and paused native
+   admission. It is a component of the next trial, not live qualification or
+   authorization to reuse the prior allowance.
 6. Before public exposure, qualify ingress abuse protection, representative
    load/costs, operational alerts, backup retention/restore, privacy/support pages
    and rollback. Cloudflare's edge rate-limit binding is local and approximate;

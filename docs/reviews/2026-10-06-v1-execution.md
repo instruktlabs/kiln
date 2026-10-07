@@ -23,7 +23,7 @@ states and the evidence that superseded them.
 | P4 | Clean installs and workspace upgrades | Stable qualified: all seven public-registry jobs pass; fresh Windows archive passes 25 consumer checks; Claude/Codex cached installers render/save/reopen/export; 0.10.0 and RC-to-stable upgrades preserve assets/customizations and refuse conflicts |
 | P5 | Release automation and npm publication | Stable published and verified: approved stage promoted after npm security-key authentication, latest=1.0.0, public archive/provenance verified. PR #152 merged as 77dfbc3 after all twelve CI and seven registry jobs passed. GitHub v1.0.0 release/tag and downloaded archive verified |
 | H1 | Native Cloudflare qualification | Fixed native qualification and private integrated candidate `c755434` passed. The latter passed ten lifecycle/isolation/quota checks using thirteen of seventeen allowed VM starts; all resources were removed and absence verified. Thirty-five actual VM starts across approved trials are recorded. Latest combined source/image qualification, representative load and settled billing remain open |
-| H2 | Authenticated MCP and tenant boundary | In progress in draft PR #153: primary-D1 access/revocation, browser confirmation, Google/GitHub linking/unlinking and durable full-account deletion are implemented and locally tested. Upstream provider exchanges are mocked. Live sign-in, final combined-service qualification and the security-notification decision/setup remain open |
+| H2 | Authenticated MCP and tenant boundary | In progress in draft PR #153: primary-D1 access/revocation, browser confirmation, Google/GitHub linking/unlinking and durable full-account deletion are implemented and locally tested. A thirteen-check preflight now exercises gateway/token/storage/revocation paths across the prepared six-Worker topology with synthetic accounts and paused native admission. Live sign-in, final combined-service qualification and the security-notification decision/setup remain open |
 | H3 | Artifact lifecycle | In progress in draft PR #153: native dispatch, private saved assets/material closures, verified evaluator identity, browser download tickets, quotas/retention and account retirement are locally tested. The earlier frozen private trial proves render/save/reopen/export/isolation for its recorded scope; newer material/download/deletion work still needs deployed qualification |
 | H4 | Capacity and operations | In progress: shared SQLite admission, global/per-account quotas, operator pause, native cleanup and durable account-deletion recovery are implemented. Launch quota values, representative load/costs, deployed Cron recovery, retention/alerts/escalation, deployed identity and rollback verification remain open |
 | H5 | Production deployment | Pending: approved deployment at `kiln.instruktlabs.com`; live authenticated create/edit/render/save/download/reconnect flow |
@@ -2943,3 +2943,45 @@ References checked:
 [pricing](https://developers.cloudflare.com/analytics/analytics-engine/pricing/),
 [Custom Alerts](https://developers.cloudflare.com/notifications/notification-available/#custom-alerts-beta),
 [Analytics SQL datasets](https://developers.cloudflare.com/analytics/sql-api/datasets/).
+
+## Combined-service gateway preflight locally qualified
+
+The next private trial now has a reusable gateway preflight component. Its local
+fixture builds all six production Worker entrypoints and derives service, D1,
+KV, R2, rate-limit and DO links from the deployment configuration. It registers
+declared DO namespaces using Miniflare's local representation; remote namespace
+ownership, Container images, Cron and Analytics Engine remain unqualified.
+
+Thirteen fixed checks cover metadata, real helper-issued OAuth grants and PKCE
+exchange, edge tool discovery, anonymous and oversized-body denial, exact bearer
+and browser downloads, foreign-account denial, primary connection revocation,
+denial of retained access/refresh credentials and preservation of another account.
+Admission is paused through its real private operator RPC before setup and stays
+paused afterward. No step invokes native tooling or starts a VM. Fixtures bypass
+upstream identity verification and seed routing-test files directly; this is not
+evidence of provider consent, engine save, rendering or validated asset contents.
+
+The helper requires an explicit private-fixture mode and fixed `.invalid` origin.
+Existing account, OAuth or artifact data causes refusal before provisioning.
+A transaction claims the run once. Concurrent calls and terminal replay cannot
+create additional accounts or retry a failed sequence. The receipt contains only
+stage outcomes and pause state; credentials, identifiers, download capabilities,
+source and exception details stay out of it. An intentionally misbound gateway
+database fails at synthetic authorization and replay leaves that partial state
+unchanged. No HTTP route or provider-deployable operator was added.
+
+All 379 hosted tests pass, including six new preflight cases. Three typechecks,
+thirteen production builds, root lint and redacted probe-source/bundle scans also pass.
+The test preceded the implementation; local harness corrections then registered
+export-owned namespaces and serialized RPC receipts for deterministic comparison.
+Production dependency checks exclude every test/probe helper from all bundles.
+Evidence is under `.cache/gateway-preflight-*.log`. All eighteen CI checks on
+preceding head `e421455` now pass; this change needs its own exact-source CI.
+
+[GATEWAY_PREFLIGHT.md](../../hosting/probe/GATEWAY_PREFLIGHT.md) states the scope
+and remaining work: a bounded private operator and updated native/material/image
+phase, explicit VM/evidence budgets, complete cleanup, then renewed trial approval.
+Live OAuth/account actions/deletion, real scheduled recovery, retention, load,
+costs, alerts and public-client behavior remain launch gates. No cloud resource,
+provider credential, public route, paid run or email was created. The existing
+security-email decision remains pending and the Google client form unsubmitted.
