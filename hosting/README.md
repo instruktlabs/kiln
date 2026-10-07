@@ -667,10 +667,30 @@ the seven-day unsaved expiry. Local tests cover fresh hosts and Durable Object
 eviction, account separation, concurrent imports, corruption, quota exhaustion,
 multi-page listing, caller mutation and partial failures.
 
-This adapter is not yet injected into native MCP or asset imports. Workspace
-dependency binding, request-route admission, registry-derived tool advertisement
-and deployed material workflows remain to be connected and qualified. No new
-material tool is advertised by this change.
+The native MCP host injects this library into the engine and asset imports. Its
+fifteen tools include the registry-owned `kiln_material`; edge metadata is generated
+from that same configured registry. A standalone workspace binding resolves each
+call's explicit `materialDependencies` before evaluation. Nested operations inherit
+pins unless `projectId: null` resets the binding; overlapping operations use separate
+async contexts. Revisions and hashes must agree, and the host does not infer a
+project from the `project` collection. Hosted project/review stores are not supplied
+or advertised; explicit project selection reports that limitation.
+
+Each invocation resolves at most sixteen pinned materials within the SDK's payload
+byte/pixel budgets. The existing private evaluator transport additionally limits
+the serialized evaluation request, including source and embedded material bytes,
+to 4 MiB. Large dependency closures can therefore exceed the hosted transport limit
+even when individual saved materials are valid. They fail closed; no dependencies
+are silently dropped or replaced. Private request dispatch permits only the exact
+material index routes and continues to bind the tenant outside the coordinator VM.
+
+The MCP fixture creates, lists and reads a material, renders with explicit pins,
+saves and exports an asset across fresh hosts, and rejects another account before
+evaluation. After deletion of the live material entry, copying the saved asset to
+another collection reinstalls its embedded material closure, preserves GLB bytes
+and supports a fresh render. Installed-image checks also verify the material tool,
+binding schema and preset discovery against the exact public package. These are
+local qualification; deployed Cloudflare material workflows remain unverified.
 
 ## Private browser downloads
 

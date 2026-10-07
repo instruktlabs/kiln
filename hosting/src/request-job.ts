@@ -267,6 +267,7 @@ export class NativeRequestJob {
         ? path === '/internal/programs' ||
           /^\/internal\/programs\/[^/]+$/.test(path) ||
           /^\/internal\/assets\/[^/]+\/[^/]+\/[^/]+$/.test(path) ||
+          /^\/internal\/materials\/[a-z][a-z0-9_-]{0,79}\/[a-f0-9]{64}$/.test(path) ||
           /^\/mcp\/artifacts\/[a-f0-9]{32}$/.test(path)
         : request.method === 'POST'
           ? [
@@ -275,6 +276,8 @@ export class NativeRequestJob {
               '/internal/artifacts/discard',
               '/internal/assets/list',
               '/internal/assets/commit',
+              '/internal/materials/list',
+              '/internal/materials/commit',
               '/internal/downloads',
             ].includes(path)
           : request.method === 'DELETE' && /^\/internal\/groups\/[a-f0-9]{32}$/.test(path);

@@ -2493,3 +2493,42 @@ qualification, retention/load/cost evidence, operating alerts and rollback, publ
 deployment with real clients, vendor directory submissions, and the deferred
 README/Troy/site refresh. Independent implementation can continue while awaiting
 the private trial decision.
+
+## Material library connected to hosted MCP
+
+The storage-foundation commit `7a85ba2` was pushed after the preceding download
+commit `72a3b61` completed all eighteen CI checks. The native MCP host now injects
+the durable material library and a standalone async workspace binding through
+published SDK interfaces. Assets also receive the library so copying/importing a
+saved revision restores its embedded editable material closure. Edge metadata is
+regenerated from the same registry: fifteen hosted tools, including `kiln_material`,
+with the engine's existing dependency-selection schema on authoring operations.
+Hosted project/review stores remain unavailable and are not advertised.
+
+Focused failing tests first demonstrated the missing material tool, workspace
+binding and dispatch routes. The implementation now passes the complete 301-test
+hosted suite, all three typechecks, thirteen production builds, root lint and
+redacted source/bundle scans. A further extension to the passing material lifecycle
+test also passes: delete the live material entry, import a saved asset into another
+collection, confirm exact material restoration and byte-identical GLB delivery,
+then render again. Overlapping and nested bindings, explicit standalone reset,
+bad locks/paths, oversized pin sets, identity-swapped records and cross-account
+denial before evaluation are covered. No provider credentials or actual cloud
+execution were involved in these local tests.
+
+Coordinator image
+`sha256:b31f2395c43610c1cf2d2630cde3d130ce24a973a83fece6c0722d3ec3a9c599`
+uses the exact stable npm archive and unchanged dependency lock. Its eight offline
+Docker checks pass, including the registry's material-binding schema and preset
+discovery from the installed package. The named test container was removed;
+receipts are under `.cache/native-host-materials/qualification/`. The image still
+requires exact-source CI and provider qualification. The separately reviewed
+`c755434` integration trial retains its original bundle and images.
+
+The owner requested decisions through the question tool and then explicitly
+approved the frozen `c755434` private trial with the same nine-request,
+seventeen-start limits and separate $1 allowance. That approval covers the original
+candidate only, not the newer material/download changes. Account lifecycle,
+verified saved-build identity, live sign-in, operational
+qualification, public deployment, submissions and the final documentation refresh
+remain open; the overall goal remains active.

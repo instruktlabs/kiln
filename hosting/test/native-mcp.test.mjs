@@ -40,6 +40,8 @@ before(async () => {
         ['assets', 'assets'],
         ['assets/node', 'assets-node'],
         ['material-library/node', 'material-library-node'],
+        ['material-library', 'material-library'],
+        ['workspace', 'workspace'],
         ['evaluator', 'evaluator/index'],
         ['composer', 'composer/index'],
       ].map(([name, file]) => [
@@ -196,7 +198,12 @@ async function tool(handler, name, args, options) {
 
 test('HTTP serves both protocol eras and exactly the engine registry surface', async () => {
   const handler = host('protocol');
-  const expected = kilnMcpToolDefs({ programStore: {}, assetLibrary: {} })
+  const expected = kilnMcpToolDefs({
+    programStore: {},
+    assetLibrary: {},
+    materialLibrary: {},
+    workspace: {},
+  })
     .map((def) => def.name)
     .sort();
   const current = await rpc(handler, 'tools/list');
@@ -324,6 +331,161 @@ test('render, save, restore and export work with a fresh native host for every M
     revisionId: saved.asset.revisionId,
   });
   assert(exported);
+});
+
+test('durable materials bind exact revisions across fresh MCP hosts, save their closure and deny foreign accounts', async () => {
+  const owner = 'material-lifecycle';
+  let evaluations = 0,
+    expectedSource;
+  const port = createNativeEvaluatorPort({
+    fetch: async (request) => {
+      const json = await request.text();
+      const input = JSON.parse(json);
+      assert.equal(input.code, expectedSource);
+      assert.equal(input.options.materialResources.records.length, 1);
+      evaluations++;
+      return new Response(await evaluateEvaluatorRequestV2(json));
+    },
+  });
+  const call = async (name, args, account = owner, raw = false) => {
+    const handler = host(account, {}, port);
+    try {
+      return raw
+        ? await rpc(handler, 'tools/call', { name, arguments: args })
+        : await tool(handler, name, args);
+    } finally {
+      await handler.close();
+    }
+  };
+  const created = await call('kiln_material', {
+    action: 'create-procedural',
+    draft: {
+      materialId: 'mcp-stone',
+      name: 'MCP stone',
+      tileable: true,
+      sources: [
+        {
+          id: 'authored',
+          kind: 'procedural',
+          provider: 'Kiln',
+          creator: 'Fixture author',
+          license: {
+            spdx: 'CC0-1.0',
+            url: 'https://creativecommons.org/publicdomain/zero/1.0/',
+            attribution: '',
+          },
+          originalFiles: [],
+        },
+      ],
+      maps: [
+        {
+          slot: 'baseColor',
+          sourceId: 'authored',
+          transforms: [],
+          procedural: {
+            schemaVersion: 2,
+            size: 8,
+            usage: 'albedo',
+            layers: [
+              { op: 'noise', colorA: 0x779944, colorB: 0xeeeecc, seed: 17, scale: 4, octaves: 2 },
+            ],
+          },
+        },
+      ],
+    },
+  });
+  const { material, portableSpec } = created;
+  const { materialId, revisionId } = material;
+  assert.equal(
+    (await call('kiln_material', { action: 'list' })).materials[0].revisionId,
+    revisionId,
+  );
+  assert.deepEqual(
+    (await call('kiln_material', { action: 'get', materialId, revisionId })).material,
+    material,
+  );
+  const materialDependencies = [{ resourceId: materialId, revisionId, sha256: revisionId }];
+  expectedSource = `async function build(){const r=createRoot('Root');const m=await compilePortableMaterialSpecV2(${JSON.stringify(portableSpec)});createPart('Body',boxGeo(1,1,1),m,{parent:r});return r;}`;
+  const rendered = await call('kiln_render', {
+    code: expectedSource,
+    materialDependencies,
+    capture: { preset: '1x1' },
+  });
+  const saved = await call('kiln_save', {
+    programRef: rendered.programRef,
+    materialDependencies,
+    collection: 'project',
+    name: 'Material box',
+  });
+  assert.ok(saved.downloadUrls['materials.kiln.json']);
+  const path = new URL(saved.downloadUrls['materials.kiln.json']).pathname;
+  const closure = await (
+    await namespace.getByName(owner).fetch(`https://tenant.internal/internal${path}`)
+  ).json();
+  assert.deepEqual(closure.records[0].manifest, material);
+  const exportResult = await call('kiln_export', {
+    collection: 'project',
+    assetId: saved.asset.assetId,
+    revisionId: saved.asset.revisionId,
+  });
+  assert(exportResult);
+  const before = evaluations;
+  const foreign = await call(
+    'kiln_render',
+    { code: expectedSource, materialDependencies, capture: { preset: '1x1' } },
+    'material-foreign',
+    true,
+  );
+  assert.equal(foreign.isError, true);
+  assert.match(JSON.stringify(foreign), /Locked material unavailable/);
+  assert.equal(evaluations, before, 'Foreign material denial occurs before native evaluation');
+  assert.deepEqual(
+    (await call('kiln_material', { action: 'list' }, 'material-foreign')).materials,
+    [],
+  );
+  // A saved asset's editable closure is independent of the live material library.
+  const tenant = namespace.getByName(owner);
+  const indexed = await (
+    await tenant.fetch(
+      `https://tenant.internal/internal/materials/${materialId}/${revisionId.slice(7)}`,
+    )
+  ).json();
+  assert.equal(
+    (
+      await tenant.fetch(`https://tenant.internal/internal/groups/${indexed.id}`, {
+        method: 'DELETE',
+      })
+    ).status,
+    200,
+  );
+  assert.deepEqual((await call('kiln_material', { action: 'list' })).materials, []);
+  const imported = await call('kiln_import', {
+    sourceCollection: 'project',
+    collection: 'library',
+    assetId: saved.asset.assetId,
+    revisionId: saved.asset.revisionId,
+  });
+  assert.deepEqual(
+    (await call('kiln_material', { action: 'get', materialId, revisionId })).material,
+    material,
+  );
+  const originalGlb = await (
+    await tenant.fetch(
+      `https://tenant.internal/internal${new URL(saved.downloadUrls['asset.glb']).pathname}`,
+    )
+  ).arrayBuffer();
+  const importedGlb = await (
+    await tenant.fetch(
+      `https://tenant.internal/internal${new URL(imported.downloadUrls['asset.glb']).pathname}`,
+    )
+  ).arrayBuffer();
+  assert.deepEqual(Buffer.from(importedGlb), Buffer.from(originalGlb));
+  const rebuilt = await call('kiln_render', {
+    programRef: rendered.programRef,
+    materialDependencies,
+    capture: { preset: '1x1' },
+  });
+  assert.equal(rebuilt.programRef, rendered.programRef);
 });
 
 test('the complete fixed provider sequence matches real fresh-host MCP and private asset contracts', async () => {

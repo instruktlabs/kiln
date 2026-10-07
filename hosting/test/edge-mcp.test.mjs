@@ -82,7 +82,7 @@ async function message(response) {
 }
 test('committed metadata is regenerated from the actual native engine protocol', async () => {
   assert.deepEqual(manifest, await generateEdgeManifest());
-  assert.equal(manifest.tools.length, 14);
+  assert.equal(manifest.tools.length, 15);
 });
 test('modern metadata and legacy initialization require no compute and preserve the engine definitions', async () => {
   for (const [method, key] of [

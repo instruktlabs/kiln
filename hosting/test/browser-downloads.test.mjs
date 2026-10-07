@@ -61,6 +61,8 @@ before(async () => {
         ['assets', 'assets'],
         ['assets/node', 'assets-node'],
         ['material-library/node', 'material-library-node'],
+        ['material-library', 'material-library'],
+        ['workspace', 'workspace'],
         ['evaluator', 'evaluator/index'],
         ['composer', 'composer/index'],
       ].map(([name, path]) => [

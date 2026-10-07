@@ -20,6 +20,8 @@ export async function generateEdgeManifest() {
     createKilnMcpServer({
       assetLibrary: service,
       programStore: service,
+      materialLibrary: service,
+      workspace: { run: unavailable, current: () => undefined },
       evaluatorProfile: 'evaluator-required',
       evaluatorPort: { render: unavailable },
       cacheEvaluations: false,

@@ -4,6 +4,8 @@ import type { EvaluatorPortV2, IsolatedEvaluatorHost } from '@instruktlabs/kiln/
 import type { PbrRenderPort } from '@instruktlabs/kiln/composer';
 import { NativeProgramStore } from './native-programs';
 import { NativeAssetLibrary } from './native-assets';
+import { NativeMaterialLibrary } from './native-materials';
+import { NativeMaterialWorkspace } from './native-workspace';
 import type { NativeStorageOptions } from './native-http';
 import { createNativeEvaluatorPort, type NativeEvaluatorOptions } from './native-evaluator';
 import { HttpFailure, privateResponse, readBounded, serviceFailure } from './http';
@@ -188,10 +190,13 @@ export function createNativeMcpHandler(runtime: NativeMcpRuntime, options: Nativ
         transport = createMcpHandler(
           () => {
             const storage = { ...options.storage, signal: () => controller.signal };
-            const assets = new NativeAssetLibrary(storage);
+            const materials = new NativeMaterialLibrary(storage);
+            const assets = new NativeAssetLibrary({ ...storage, materials });
             return runtime.createServer({
               programStore: new NativeProgramStore(storage),
               assetLibrary: assets,
+              materialLibrary: materials,
+              workspace: new NativeMaterialWorkspace(materials),
               assetDownloadUrls: (collection, assetId, revisionId) =>
                 assets.downloadUrls(options.publicOrigin, collection, assetId, revisionId),
               evaluatorProfile: 'evaluator-required',

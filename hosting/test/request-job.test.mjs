@@ -350,6 +350,51 @@ test('storage interceptor refuses supplied identity, foreign origins and adminis
   );
 });
 
+test('material storage routes stay bound to the parent tenant and reject arbitrary paths or identity headers', async () => {
+  const f = fixture({
+    native: async (_req, job) => {
+      for (const [path, method] of [
+        ['/internal/materials/list', 'POST'],
+        ['/internal/materials/commit', 'POST'],
+        [`/internal/materials/stone/${'a'.repeat(64)}`, 'GET'],
+      ]) {
+        const response = await job.storageRequest(
+          new Request(`http://kiln-storage.internal${path}`, {
+            method,
+            ...(method === 'POST'
+              ? { body: '{}', headers: { 'content-type': 'application/json' } }
+              : {}),
+          }),
+        );
+        await response.text();
+      }
+      for (const path of [
+        '/internal/materials/stone/invalid',
+        '/internal/materials/list?tenant=victim',
+        '/internal/materials/delete',
+      ])
+        await assert.rejects(
+          job.storageRequest(new Request(`http://kiln-storage.internal${path}`)),
+          (error) => error.status === 400,
+        );
+      await assert.rejects(
+        job.storageRequest(
+          new Request('http://kiln-storage.internal/internal/materials/list', {
+            method: 'POST',
+            body: '{}',
+            headers: { 'x-kiln-tenant': 'victim' },
+          }),
+        ),
+        (error) => error.status === 400,
+      );
+      return Response.json({ ok: true });
+    },
+  });
+  await f.run();
+  assert.equal(f.storageCalls.length, 3);
+  assert(f.storageCalls.every((call) => call.owner === tenant));
+});
+
 test('native download ticket issuance stays bound to the active parent tenant without browser redemption authority', async () => {
   const f = fixture({
     native: async (_req, job) => {
