@@ -614,6 +614,27 @@ retain admission through all child-job cleanup and destroy the coordinator VM.
 
 ## Native saved assets
 
+New saves through the Container profile record
+`build.engine: cloudflare-container:sha256:<image digest>`. The outside controller
+inspects the running evaluator image and only releases its digest with the exact
+output after whole-VM cleanup succeeds. The coordinator requires this private
+response header and the SDK's validated evaluator response. A request-local,
+bounded proof map binds the digest to exact source and GLB hashes; saving different
+bytes or missing proof fails before uploading assets. The evaluator's stdout,
+authored source and caller request headers cannot select this identity.
+
+The digest identifies the immutable evaluator image, including its installed
+engine, dependencies and Node runtime. It is descriptive build provenance, not a
+portable signature or a guarantee that imported metadata is trustworthy. Imports
+preserve their original provenance without attaching a fresh-host claim. Existing
+historical `source-development:unverified` records are not rewritten.
+
+Deploy the updated private evaluation controller before a coordinator that
+requires the identity header. Older coordinators ignore the additional response
+header; a new coordinator fails closed against an older controller. Qualify both
+exact artifacts together before production or rollback. Local tests cover this
+contract; the previous `c755434` provider trial predates it.
+
 `NativeAssetLibrary` implements the engine's existing collection, save, read, list,
 import and export contract. Its `project` collection is workspace storage, not
 project membership; `library` is a second user-owned destination. Asset and revision

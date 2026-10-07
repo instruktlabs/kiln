@@ -185,7 +185,10 @@ test('render cancellation survives eviction and unconfirmed cleanup suppresses o
 
 test('starts one pinned, offline VM and destroys it before returning any output', async () => {
   const f = fixture();
-  const result = await new ContainerEvaluationJob(f.context).run(input, controls);
+  const job = new ContainerEvaluationJob(f.context);
+  const result = await job.run(input, controls);
+  assert.equal(job.executionImage(result), image);
+  assert.equal(job.executionImage(Uint8Array.from(result)), undefined);
   assert.deepEqual(result, response);
   assert.equal(f.context.container.running, false);
   assert.deepEqual(f.received, [input]);
@@ -198,6 +201,15 @@ test('starts one pinned, offline VM and destroys it before returning any output'
   assert.ok(f.events.indexOf('inspect') < f.events.indexOf('input'));
   assert.equal(f.values.get('job').state, 'finished');
   assert.equal(f.alarmAt, undefined);
+});
+
+test('execution identity is unavailable for failed isolation or unconfirmed cleanup', async () => {
+  for (const options of [{ observedImage: 'wrong-image' }, { failCleanup: true }]) {
+    const f = fixture(options);
+    const job = new ContainerEvaluationJob(f.context);
+    await assert.rejects(job.run(input, controls));
+    assert.equal(job.executionImage(response), undefined);
+  }
 });
 
 test('rejects concurrent and subsequent attempts on the same durable job', async () => {

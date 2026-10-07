@@ -92,6 +92,7 @@ export async function destroyContainer(container: Container): Promise<void> {
  * Unit tests cover orchestration, not the provider's isolation guarantees.
  */
 class ContainerExecutionJob {
+  private readonly verifiedOutputs = new WeakMap<Uint8Array, string>();
   private readonly cancellation = new AbortController();
   private activeRun?: Promise<Uint8Array>;
   private cancellationWork?: Promise<void>;
@@ -100,6 +101,11 @@ class ContainerExecutionJob {
     private readonly context: Pick<DurableObjectState, 'container' | 'storage'>,
     private readonly kind: ExecutionKind,
   ) {}
+
+  /** Only a returned output after verified image inspection and complete VM cleanup. */
+  executionImage(output: Uint8Array): string | undefined {
+    return this.verifiedOutputs.get(output);
+  }
 
   run(
     request: Uint8Array,
@@ -111,6 +117,9 @@ class ContainerExecutionJob {
       signal: controls.signal
         ? AbortSignal.any([controls.signal, this.cancellation.signal])
         : this.cancellation.signal,
+    }).then(({ output, image }) => {
+      this.verifiedOutputs.set(output, image);
+      return output;
     });
     this.activeRun = pending;
     const finished = () => {
@@ -167,7 +176,7 @@ class ContainerExecutionJob {
   private async runOnce(
     request: Uint8Array,
     controls: { deadlineMs: number; maxResponseBytes: number; signal?: AbortSignal },
-  ): Promise<Uint8Array> {
+  ): Promise<{ output: Uint8Array; image: string }> {
     const container = this.context.container;
     if (!container) throw new ContainerJobFailure('ISOLATION_UNAVAILABLE');
     const profile = EXECUTION_PROFILES[this.kind];
@@ -276,7 +285,7 @@ class ContainerExecutionJob {
           throw new ContainerJobFailure('WORKER_FAILED');
         return stdout;
       };
-      return await Promise.race([execute(), stopped]);
+      return { output: await Promise.race([execute(), stopped]), image };
     } catch (error) {
       failure =
         error instanceof ContainerJobFailure ? error : new ContainerJobFailure('WORKER_FAILED');

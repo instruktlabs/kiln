@@ -16,6 +16,8 @@ const allowedHeaders = new Set([
   'user-agent',
   'sec-fetch-mode',
 ]);
+type ExecutionJob = Pick<ContainerEvaluationJob, 'run'> &
+  Partial<Pick<ContainerEvaluationJob, 'executionImage'>>;
 
 function limit(header: string | null, max: number): number {
   if (header === null || !/^[1-9]\d{0,8}$/.test(header) || Number(header) > max)
@@ -30,7 +32,7 @@ function limit(header: string | null, max: number): number {
  */
 async function handleExecutionRequest(
   request: Request,
-  job: Pick<ContainerEvaluationJob, 'run'>,
+  job: ExecutionJob,
   kind: ExecutionKind,
 ): Promise<Response> {
   const profile = EXECUTION_PROFILES[kind];
@@ -84,12 +86,23 @@ async function handleExecutionRequest(
       output.byteLength > maxResponseBytes
     )
       throw new Error('Invalid evaluation output');
+    const headers = new Headers({
+      'content-type': 'application/json',
+      'content-length': String(output.byteLength),
+    });
+    if (kind === 'evaluation') {
+      const image = job.executionImage?.(output);
+      const digest =
+        typeof image === 'string' && image.length <= 512
+          ? /^[a-zA-Z0-9._:/-]+@(sha256:[a-f0-9]{64})(?![\s\S])/.exec(image)?.[1]
+          : undefined;
+      if (!digest) throw new ContainerJobFailure('ISOLATION_UNAVAILABLE');
+      // This header is outside the VM's stdout and is never copied from a request.
+      headers.set('x-kiln-execution-image', digest);
+    }
     return privateResponse(
       new Response(output, {
-        headers: {
-          'content-type': 'application/json',
-          'content-length': String(output.byteLength),
-        },
+        headers,
       }),
     );
   } catch (error) {
@@ -113,10 +126,8 @@ async function handleExecutionRequest(
   }
 }
 
-export const handleEvaluationRequest = (
-  request: Request,
-  job: Pick<ContainerEvaluationJob, 'run'>,
-) => handleExecutionRequest(request, job, 'evaluation');
+export const handleEvaluationRequest = (request: Request, job: ExecutionJob) =>
+  handleExecutionRequest(request, job, 'evaluation');
 
 export const handleRenderRequest = (request: Request, job: Pick<ContainerEvaluationJob, 'run'>) =>
   handleExecutionRequest(request, job, 'render');

@@ -174,6 +174,13 @@ port is published. The script removes its uniquely named container and saves
 identities, inventories and the result under `.cache/native-host-image/qualification`.
 CI runs the same procedure without registry publication or Cloudflare access.
 
+Two additional installed-package checks exercise the private evaluation adapter
+with a fixed trusted source and synthetic controller headers: the accepted result
+retains its own image identity, and an otherwise valid response without identity
+fails closed. These are protocol checks inside the offline coordinator fixture;
+they do not prove provider execution or isolation. The current private controller
+must supply the verified evaluator digest before the newer coordinator can run.
+
 Local image `sha256:5402d67069e8b5c9d355e4f49b9ae92d353171b381d27496f85f5794adf95d75`
 passed all six checks with the exact published 1.0.0 archive and fourteen registry
 tools. Its retained dependency lock SHA-256 is

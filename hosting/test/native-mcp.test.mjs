@@ -255,7 +255,9 @@ test('real HTTP tools validate, render, save, restore and read exact source afte
       // Fixed trusted fixture only. Actual VM dispatch and cleanup require provider qualification.
       assert.equal(JSON.parse(json).code, source);
       evaluations++;
-      return new Response(await evaluateEvaluatorRequestV2(json));
+      return new Response(await evaluateEvaluatorRequestV2(json), {
+        headers: { 'x-kiln-execution-image': `sha256:${'a'.repeat(64)}` },
+      });
     },
   });
   const first = host('lifecycle', {}, port);
@@ -272,6 +274,7 @@ test('real HTTP tools validate, render, save, restore and read exact source afte
     collection: 'project',
     name: 'HTTP box',
   });
+  assert.equal(saved.asset.build.engine, `cloudflare-container:sha256:${'a'.repeat(64)}`);
   assert.match(
     saved.downloadUrls['asset.glb'],
     /^https:\/\/kiln\.example\.com\/downloads\/[a-f0-9]{64}\/asset\.glb$/,
@@ -292,6 +295,14 @@ test('real HTTP tools validate, render, save, restore and read exact source afte
   assert.equal(restored.programRef, validated.programRef);
   const uri = `kiln://assets/project/${saved.asset.assetId}/${saved.asset.revisionId}/source.kiln.js`;
   assert.equal((await rpc(second, 'resources/read', { uri })).contents[0].text, source);
+  const savedManifest = JSON.parse(
+    (
+      await rpc(second, 'resources/read', {
+        uri: uri.replace('source.kiln.js', 'manifest.json'),
+      })
+    ).contents[0].text,
+  );
+  assert.equal(savedManifest.build.engine, `cloudflare-container:sha256:${'a'.repeat(64)}`);
   const other = await rpc(host('other'), 'tools/call', {
     name: 'kiln_source',
     arguments: { programRef: restored.programRef },
@@ -344,7 +355,9 @@ test('durable materials bind exact revisions across fresh MCP hosts, save their 
       assert.equal(input.code, expectedSource);
       assert.equal(input.options.materialResources.records.length, 1);
       evaluations++;
-      return new Response(await evaluateEvaluatorRequestV2(json));
+      return new Response(await evaluateEvaluatorRequestV2(json), {
+        headers: { 'x-kiln-execution-image': `sha256:${'b'.repeat(64)}` },
+      });
     },
   });
   const call = async (name, args, account = owner, raw = false) => {

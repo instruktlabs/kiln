@@ -10,6 +10,8 @@ export interface NativeStorageRequest {
   headers?: Record<string, string>;
   limit: number;
   statuses?: readonly number[];
+  /** Synchronous validation of metadata from the fixed private service. */
+  onResponseHeaders?: (headers: Headers) => void;
 }
 export class StorageFailure extends Error {
   constructor(
@@ -38,7 +40,7 @@ export class NativeHttpClient {
     this.send = options.fetch ?? ((request) => fetch(request));
   }
   async bytes(path: string, request: NativeStorageRequest): Promise<Uint8Array> {
-    const { body, limit, headers, method = 'GET', statuses = [200] } = request;
+    const { body, limit, headers, method = 'GET', statuses = [200], onResponseHeaders } = request;
     const url = new URL(path, this.origin);
     if (
       url.href !== `${this.origin}${path}` ||
@@ -138,6 +140,7 @@ export class NativeHttpClient {
         void response.body?.cancel().catch(() => {});
         throw new StorageFailure(502, `Invalid ${this.label.toLowerCase()} response`);
       }
+      onResponseHeaders?.(new Headers(response.headers));
       if (!response.body) {
         if (declared !== null && Number(declared) !== 0)
           throw new StorageFailure(502, `Invalid ${this.label.toLowerCase()} response`);

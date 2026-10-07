@@ -2595,3 +2595,47 @@ The configuration correction passes all 301 hosted tests, three typechecks,
 thirteen production builds, root lint, redacted source/record scans and an actual
 Wrangler no-bundle dry run. It changes local preparation only and has not been
 used for another cloud deployment. The published npm package remains unchanged.
+
+## Host-owned saved-build identity implemented and tested locally
+
+New Container evaluations now acquire image identity at the outside controller.
+The controller associates only the exact output returned after image inspection,
+process completion and verified whole-VM cleanup with the selected immutable
+image. Its private HTTP response carries the digest; it never accepts an identity
+from request fields or evaluator stdout. The coordinator requires that header,
+validates the normal SDK response, and binds the digest to that exact accepted
+result. Overlapping responses have independent state.
+
+Each admitted MCP request has a bounded proof map keyed by exact source and GLB
+hashes. The new-save adapter requires a matching entry and replaces the draft's
+engine claim with `cloudflare-container:sha256:<digest>`. Missing proof, altered
+source/output, conflicting identities and excessive retained entries fail closed.
+Saved code/GLB bytes are snapshotted before storage awaits. Imports retain their
+original metadata and do not acquire a claim from this host. The digest identifies
+the complete pinned evaluator image; this does not sign arbitrary imported
+provenance or retroactively qualify historical records.
+
+Focused regressions failed before implementation at the controller, transport,
+asset-save and actual MCP boundaries. All 308 hosted tests now pass, including
+fresh storage reads after reconnect, imports with original provenance, refusal
+before storage writes and overlapping evaluation identities. All three hosted
+typechecks, thirteen production bundles and root lint pass. The public SDK and
+npm package are unchanged; these changes belong to the private hosting package.
+
+The strengthened offline image check failed against the previous material image
+because it had no identity contract. Rebuilt coordinator image
+`sha256:d78f29a8565e2df4957f60607ee25645bff81e8221bc75b56b2992d7e17d4482`
+passes all ten installed-image checks against the exact stable archive and the
+unchanged dependency lock. The native MCP bundle SHA-256 is
+`331ced56fab784f24ebaad644354f423d585a6346f22957d17dd9925c1e6d8f2`.
+Both uniquely named test containers were removed. Receipts and inventories are
+under `.cache/native-host-identity/`; this image has not been uploaded or deployed.
+
+The prior `c755434` trial remains valid for its recorded scope and still accurately
+records its unverified saved engine field. The new controller/coordinator pair,
+downloads and material changes need their own exact-source CI and provider
+qualification. Update the evaluation controller before the coordinator because
+the new coordinator deliberately rejects old responses without identity.
+Account link/unlink/delete, live OAuth, operating and load evidence, approved
+public deployment, vendor submissions and deferred public documentation remain
+open. No additional cloud spend or user authentication was used for this work.

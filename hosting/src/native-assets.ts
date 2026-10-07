@@ -65,7 +65,11 @@ async function hash(bytes: Uint8Array): Promise<string> {
 export class NativeAssetLibrary implements AssetLibrary {
   private readonly http: NativeHttpClient;
   constructor(
-    private readonly options: NativeStorageOptions & { materials?: MaterialLibrary } = {},
+    private readonly options: NativeStorageOptions & {
+      materials?: MaterialLibrary;
+      /** Host-only proof for newly evaluated saves; imports retain original provenance. */
+      executionIdentity?: (draft: Pick<AssetDraft, 'code' | 'glb'>) => string;
+    } = {},
   ) {
     this.http = new NativeHttpClient(
       { ...options, timeoutMs: options.timeoutMs ?? 60_000 },
@@ -361,11 +365,26 @@ export class NativeAssetLibrary implements AssetLibrary {
   }
   async save(target: string, draft: AssetDraft): Promise<AssetManifest> {
     collection(target);
+    const code = draft.code,
+      glb = Uint8Array.from(draft.glb);
+    const build = draft.build
+      ? { ...draft.build, rebuild: draft.build.rebuild ?? ('engine-required' as const) }
+      : undefined;
+    if (this.options.executionIdentity) {
+      if (!build) throw new Error('Saved asset has no matching verified evaluation');
+      const engine = this.options.executionIdentity({ code, glb });
+      if (
+        typeof engine !== 'string' ||
+        !/^cloudflare-container:sha256:[a-f0-9]{64}(?![\s\S])/.test(engine)
+      )
+        throw new Error('Saved asset has no matching verified evaluation');
+      build.engine = engine;
+    }
     const assetId = identity(draft.assetId ?? `a_${crypto.randomUUID().replaceAll('-', '')}`);
     if (draft.parentRevision) await this.read(target, assetId, draft.parentRevision);
-    if (draft.code !== undefined) await programReference(draft.code);
-    const files: Record<string, Uint8Array> = { 'asset.glb': Uint8Array.from(draft.glb) };
-    if (draft.code !== undefined) files['source.kiln.js'] = new TextEncoder().encode(draft.code);
+    if (code !== undefined) await programReference(code);
+    const files: Record<string, Uint8Array> = { 'asset.glb': glb };
+    if (code !== undefined) files['source.kiln.js'] = new TextEncoder().encode(code);
     if (draft.preview) files['preview.png'] = Uint8Array.from(draft.preview);
     const inventory: AssetManifest['files'] = {};
     for (const [name, bytes] of Object.entries(files))
@@ -381,11 +400,9 @@ export class NativeAssetLibrary implements AssetLibrary {
       description: draft.description,
       brief: draft.brief,
       attribution: draft.attribution,
-      editable: draft.code !== undefined,
+      editable: code !== undefined,
       files: inventory,
-      build: draft.build
-        ? { ...draft.build, rebuild: draft.build.rebuild ?? 'engine-required' }
-        : undefined,
+      build,
       preview: draft.previewInfo,
     });
     const [record] = await this.prepare([{ manifest, files }]);

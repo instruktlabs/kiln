@@ -7,14 +7,19 @@ import { NativeAssetLibrary } from './native-assets';
 import { NativeMaterialLibrary } from './native-materials';
 import { NativeMaterialWorkspace } from './native-workspace';
 import type { NativeStorageOptions } from './native-http';
-import { createNativeEvaluatorPort, type NativeEvaluatorOptions } from './native-evaluator';
+import {
+  createNativeEvaluatorPort,
+  type NativeEvaluatorOptions,
+  type NativeEvaluatorPort,
+} from './native-evaluator';
+import { NativeBuildIdentities } from './native-build-identity';
 import { HttpFailure, privateResponse, readBounded, serviceFailure } from './http';
 import { createNativeRenderPort } from './native-render';
 import { RENDER_LIMITS } from './render-limits';
 
 export interface NativeMcpRuntime {
   createServer: (context: KilnToolContext) => Server;
-  evaluatorPort: EvaluatorPortV2;
+  evaluatorPort: EvaluatorPortV2 & Partial<Pick<NativeEvaluatorPort, 'executionImage'>>;
   viewRenderPort?: PbrRenderPort;
 }
 
@@ -191,7 +196,14 @@ export function createNativeMcpHandler(runtime: NativeMcpRuntime, options: Nativ
           () => {
             const storage = { ...options.storage, signal: () => controller.signal };
             const materials = new NativeMaterialLibrary(storage);
-            const assets = new NativeAssetLibrary({ ...storage, materials });
+            const builds = runtime.evaluatorPort.executionImage
+              ? new NativeBuildIdentities()
+              : undefined;
+            const assets = new NativeAssetLibrary({
+              ...storage,
+              materials,
+              executionIdentity: builds ? (draft) => builds.forDraft(draft) : undefined,
+            });
             return runtime.createServer({
               programStore: new NativeProgramStore(storage),
               assetLibrary: assets,
@@ -205,7 +217,18 @@ export function createNativeMcpHandler(runtime: NativeMcpRuntime, options: Nativ
                   if (controller.signal.aborted) throw abortError();
                   evaluations++;
                   try {
-                    return await runtime.evaluatorPort.render(code, renderOptions, controls);
+                    const result = await runtime.evaluatorPort.render(
+                      code,
+                      renderOptions,
+                      controls,
+                    );
+                    if (controller.signal.aborted) throw abortError();
+                    builds?.record(
+                      code,
+                      result.glb,
+                      runtime.evaluatorPort.executionImage?.(result),
+                    );
+                    return result;
                   } finally {
                     evaluations--;
                     release();

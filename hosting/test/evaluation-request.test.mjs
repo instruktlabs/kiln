@@ -72,6 +72,7 @@ test('private evaluator forwards only bounded bytes and controls and waits for t
   });
   let returned = false;
   const pending = handleEvaluationRequest(request(), {
+    executionImage: () => `registry.cloudflare.com/fixture/kiln@sha256:${'a'.repeat(64)}`,
     async run(bytes, controls) {
       assert.equal(new TextDecoder().decode(bytes), '{}');
       assert.ok(controls.deadlineMs > 0 && controls.deadlineMs <= 30000);
@@ -92,8 +93,25 @@ test('private evaluator forwards only bounded bytes and controls and waits for t
   assert.equal(result.status, 200);
   assert.equal(result.headers.get('cache-control'), 'no-store');
   assert.equal(result.headers.get('content-type'), 'application/json');
+  assert.equal(result.headers.get('x-kiln-execution-image'), `sha256:${'a'.repeat(64)}`);
   const bytes = await result.arrayBuffer();
   assert.equal(Number(result.headers.get('content-length')), bytes.byteLength);
+});
+
+test('evaluator output cannot claim its own image identity or omit the host proof', async () => {
+  for (const identity of [undefined, 'mutable:latest', `sha256:${'a'.repeat(64)}`]) {
+    const result = await handleEvaluationRequest(request(), {
+      run: async () => new TextEncoder().encode('{"image":"forged","ok":true}'),
+      executionImage: () => identity,
+    });
+    assert.equal(result.status, 503);
+    assert.equal(result.headers.get('x-kiln-execution-image'), null);
+  }
+  const forged = await handleEvaluationRequest(
+    request({ headers: { 'x-kiln-execution-image': `sha256:${'a'.repeat(64)}` } }),
+    { run: async () => assert.fail('caller identity must be rejected before execution') },
+  );
+  assert.equal(forged.status, 400);
 });
 
 test('private evaluator rejects authority, route and malformed limits before starting compute', async () => {

@@ -79,7 +79,19 @@ const legacy=await call('/mcp','POST',{'content-type':'application/json',accept:
 assert.equal((await call('/mcp','POST',{...headers,host:'foreign.example'},body)).status,421);
 assert.equal((await call('/mcp','POST',{...headers,authorization:'Bearer PRIVATE_FIXTURE'},body)).status,403);
 const failed=await call('/mcp','POST',{...headers,'mcp-method':'tools/call','mcp-name':'kiln_render'},JSON.stringify({jsonrpc:'2.0',id:3,method:'tools/call',params:{_meta:meta,name:'kiln_render',arguments:{code:'function build(){return new THREE.Mesh(boxGeo(1,1,1),gameMaterial(0x8899aa));}'}}}));assert.equal(failed.status,200);const failure=JSON.parse(failed.text).result;assert.equal(failure.isError,true);assert(!failure.content.some(x=>x.type==='image'));
-console.log(JSON.stringify({version:pkg.version,archiveSha256:hash(await readFile('/opt/kiln/candidate.tgz')),tools:names,checks:['ready','modern-tool-catalog','material-binding-schema','material-presets-from-installed-package','legacy-initialize','foreign-host-denied','credentials-denied','missing-private-services-fail-closed'],bundleSha256:Object.fromEntries(await Promise.all(['native-host.mjs','native-mcp.mjs','serve.mjs'].map(async name=>[name,hash(await readFile('/opt/kiln/'+name))])))}));
+// Trusted fixed fixture tests the installed protocol adapter, not VM isolation.
+const {loadContainerMcpRuntime}=await import('/opt/kiln/native-mcp.mjs');
+const {evaluateEvaluatorRequestV2}=await import('/opt/kiln/node_modules/@instruktlabs/kiln/lib/evaluator/index.js');
+const fixtureSource='function build(){return new THREE.Mesh(boxGeo(1,1,1),gameMaterial(0x8899aa));}';
+const fixtureImage='sha256:'+'a'.repeat(64);
+const fixtureTransport=withIdentity=>async request=>{const input=await request.text();assert.equal(JSON.parse(input).code,fixtureSource);return new Response(await evaluateEvaluatorRequestV2(input),{headers:withIdentity?{'x-kiln-execution-image':fixtureImage}:{}});};
+const qualified=await loadContainerMcpRuntime({fetch:fixtureTransport(true)});
+const evaluated=await qualified.evaluatorPort.render(fixtureSource);
+assert.equal(qualified.evaluatorPort.executionImage(evaluated),fixtureImage);
+assert.equal(qualified.evaluatorPort.executionImage({...evaluated}),undefined);
+const unqualified=await loadContainerMcpRuntime({fetch:fixtureTransport(false)});
+await assert.rejects(unqualified.evaluatorPort.render(fixtureSource),error=>error.code==='WORKER_FAILED');
+console.log(JSON.stringify({version:pkg.version,archiveSha256:hash(await readFile('/opt/kiln/candidate.tgz')),tools:names,checks:['ready','modern-tool-catalog','material-binding-schema','material-presets-from-installed-package','legacy-initialize','foreign-host-denied','credentials-denied','missing-private-services-fail-closed','controller-image-bound-to-installed-evaluation','missing-controller-image-denied'],bundleSha256:Object.fromEntries(await Promise.all(['native-host.mjs','native-mcp.mjs','serve.mjs'].map(async name=>[name,hash(await readFile('/opt/kiln/'+name))])))}));
 `;
 
 try {

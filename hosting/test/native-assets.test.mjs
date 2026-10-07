@@ -96,6 +96,50 @@ const usage = async (owner) =>
     await namespace.get(namespace.idFromName(owner)).fetch('https://tenant.internal/internal/usage')
   ).json();
 
+test('new saves require matching host proof when configured, while imports preserve original provenance', async () => {
+  let proofs = 0;
+  const assets = new NativeAssetLibrary({
+    fetch: fetchFor('build-proof'),
+    executionIdentity: (draft) => {
+      proofs++;
+      assert.equal(draft.code, source);
+      assert.deepEqual(draft.glb, Uint8Array.from(glb));
+      return `cloudflare-container:sha256:${'a'.repeat(64)}`;
+    },
+  });
+  const saved = await assets.save('project', {
+    name: 'Verified box',
+    code: source,
+    glb,
+    build: { engine: 'source-claimed-forgery', options: {}, warnings: [] },
+  });
+  assert.equal(proofs, 1);
+  assert.equal(saved.build.engine, `cloudflare-container:sha256:${'a'.repeat(64)}`);
+  const record = await assets.read('project', saved.assetId, saved.revisionId);
+  record.manifest.build.engine = 'imported:unknown-original-host';
+  const imported = await assets.import('library', [record]);
+  assert.equal(proofs, 1);
+  assert.equal(imported[0].build.engine, 'imported:unknown-original-host');
+  const before = await usage('build-proof');
+  await assert.rejects(assets.save('project', { name: 'Missing build', code: source, glb }));
+  const unavailable = new NativeAssetLibrary({
+    fetch: fetchFor('build-proof'),
+    executionIdentity: () => {
+      throw new Error('No verified evaluation');
+    },
+  });
+  await assert.rejects(
+    unavailable.save('project', {
+      name: 'Missing proof',
+      code: source,
+      glb,
+      build: { engine: 'forged', options: {}, warnings: [] },
+    }),
+    /verified evaluation/,
+  );
+  assert.deepEqual(await usage('build-proof'), before);
+});
+
 test('native links use server-issued tickets for exact saved revisions and never accept backend URLs', async () => {
   const assets = library('download-links');
   const saved = await assets.save('project', { name: 'Box', code: source, glb });
