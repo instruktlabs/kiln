@@ -8,14 +8,14 @@ name: Website
 # downloads, no asset mirror), which must stay green on its own.
 #
 # The gallery is built, not published from a folder of exported meshes: every GLB
-# it serves comes out of running `examples/*.kiln.js` through the engine on the
+# it serves comes out of running pinned historical programs through the engine on the
 # runner. That is the point of it -- a program and the model the page shows cannot
 # drift apart -- and it also means a program that stops building fails here.
 on:
   push:
     branches: [main]
     paths:
-      - 'examples/**'
+      - 'scripts/example-archive.mjs'
       - 'site/**'
       - 'scenes/**'
       - 'docs/**'
@@ -29,7 +29,7 @@ on:
   workflow_dispatch:
   pull_request:
     paths:
-      - 'examples/**'
+      - 'scripts/example-archive.mjs'
       - 'site/**'
       - 'scenes/**'
       - 'docs/**'
@@ -85,6 +85,9 @@ jobs:
 
       - name: Install the engine
         run: bun install --frozen-lockfile
+
+      - name: Restore the pinned archive gallery
+        run: node scripts/example-archive.mjs --fetch
 
       # Before the build, deliberately: the gallery images live in R2 now, and
       # whether they are still served and still byte-identical to their receipts

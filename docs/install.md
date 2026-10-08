@@ -1,6 +1,6 @@
 # Install Kiln for your coding agent
 
-This guide covers **Kiln 1.x** under the package name `@instruktlabs/kiln`.
+This guide describes **Kiln 1.1** under the package name `@instruktlabs/kiln`.
 Use a version available in the [npm registry](https://www.npmjs.com/package/@instruktlabs/kiln),
 or build a [local package](#install-a-local-package) to test an unpublished checkout.
 [CHANGELOG.md](../CHANGELOG.md) lists changes; read the
@@ -24,10 +24,10 @@ cd ../my-assets
 # Follow START.md for your harness
 ```
 
-This selects npm's stable `latest` tag. Version 1.0.0 is published; this checkout
-prepares 1.1.0. Existing-project adoption and the new SDK host interfaces need
-1.1 or later, so use a [local package](#install-a-local-package) until it is
-published. The `next` tag is only for prereleases.
+This selects npm's stable `latest` tag. Existing-project adoption and the new SDK
+host interfaces require 1.1 or later. Check the installed version with
+`npm ls @instruktlabs/kiln`. When qualifying an unpublished candidate, use a
+[local package](#install-a-local-package). The `next` tag is only for prereleases.
 
 The package includes the built CLI/MCP runtimes, renderer code, plugins and skills.
 You do not need Bun, a source checkout, a build step or a separate model API key
@@ -299,11 +299,13 @@ other CLI/MCP workflows do not need any of these peers.
 | Codex | `.codex/config.toml`, read once `$CODEX_HOME/config.toml` marks the project trusted | `node codex.mjs` (applies the same values per run) |
 | OpenCode | `opencode.json` | `opencode` |
 | Antigravity | `.agents/mcp_config.json` | `node agy.mjs` |
-| Hermes | Separate `.hermes/config.yaml` profile | `node hermes.mjs --ignore-rules` |
+| Hermes | One user-level MCP registration; workspace launcher supplies paths | `node hermes.mjs` |
 
-Sign in to your harness and accept its normal project/MCP trust prompts. Hermes's
-separate profile needs its own authentication or provider credentials supplied
-through the environment; setup does not copy credentials. The Antigravity launcher
+Sign in to your harness and accept its normal project/MCP trust prompts. Hermes
+has no project-local MCP registration; follow its generated `START.md` for the
+one user-level registration. Its launcher preserves your existing provider and
+authentication and supplies this workspace's paths per run. Do not add
+`--ignore-rules` unless you intend to suppress project instructions. The Antigravity launcher
 sets the absolute project directory and disables automatic skill expansion in print
 mode. Name `kiln_workspace` in the brief, use the project skill copies, and pass
 absolute task-file paths. See [clean-room setup](https://github.com/instruktlabs/kiln/blob/main/docs/clean-room.md) for evaluation controls and limitations.
@@ -440,10 +442,11 @@ The v1 local plugin below uses a smaller bundle and creates an explicit workspac
 
 ## Local Claude Code and Codex plugins
 
-The commands below install the published 1.0.0 plugin. It creates new workspaces.
-The 1.1 candidate also supports existing-project adoption; qualify that bundle
-with a local engine archive until the matching tag and npm version are published.
-Select a published release tag rather than an unreleased branch for normal use.
+The commands below select the 1.1.0 plugin, which supports new workspaces and
+existing-project adoption. Use them once the matching GitHub tag and npm version
+are available. To qualify an unpublished candidate, select its exact source ref
+and supply the matching local engine archive as described in its bundled setup
+reference. Normal use should select a published release tag.
 
 The product is Kiln; its local plugin installation ID is `kiln-engine` in the
 Instrukt Labs marketplace `instruktlabs`. Its
@@ -454,14 +457,14 @@ does not start a second global Kiln MCP server.
 For Claude Code:
 
 ```sh
-claude plugin marketplace add instruktlabs/kiln#v1.0.0 --sparse .claude-plugin plugins/kiln-engine
+claude plugin marketplace add instruktlabs/kiln#v1.1.0 --sparse .claude-plugin plugins/kiln-engine
 claude plugin install kiln-engine@instruktlabs
 ```
 
 For Codex:
 
 ```sh
-codex plugin marketplace add instruktlabs/kiln --ref v1.0.0 --sparse .agents/plugins --sparse plugins/kiln-engine
+codex plugin marketplace add instruktlabs/kiln --ref v1.1.0 --sparse .agents/plugins --sparse plugins/kiln-engine
 codex plugin add kiln-engine@instruktlabs
 ```
 
@@ -469,8 +472,9 @@ Ask your agent to set up a Kiln asset workspace. The setup skill installs the ex
 package version in `runtime.json` through npm, with optional dependencies included
 and lifecycle scripts disabled. Node.js and npm are required; an engine checkout,
 Bun and a separate model API key are not. An existing working workspace can be used
-as-is. Otherwise choose an empty directory and follow its generated `START.md` to
-open a new authoring session. Accept the host's project/MCP trust prompts, then
+as-is. Otherwise choose a new workspace or preview adoption of an existing project,
+then follow the generated startup instructions to open an authoring session.
+Accept the host's project/MCP trust prompts, then
 verify `kiln_discover({capabilities:true})` on `kiln_workspace` and an actual render.
 
 The workspace owns its author/refine/QA skills and MCP configuration. The plugin

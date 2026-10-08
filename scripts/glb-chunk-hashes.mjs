@@ -19,13 +19,12 @@
  */
 import { createHash } from 'node:crypto';
 import { readFile } from 'node:fs/promises';
-import { dirname, join, resolve } from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { join } from 'node:path';
+import { exampleArchivePath } from './example-archive.mjs';
 
 import { resolveEvaluatorPortV2 } from '../src/evaluator/protocol';
 
-const REPO = resolve(dirname(fileURLToPath(import.meta.url)), '..');
-const EXAMPLES = join(REPO, 'examples');
+const EXAMPLES = exampleArchivePath();
 const sha = (bytes) => createHash('sha256').update(bytes).digest('hex').slice(0, 16);
 
 /**

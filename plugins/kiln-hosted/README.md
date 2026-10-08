@@ -1,12 +1,12 @@
-# Kiln Engine hosted integration
+# Kiln hosted integration (draft)
 
 This is the public-directory submission candidate, not a launched or approved
 listing. Live service qualification, terms publication, review access and directory review
 remain pending. The published local package is a separate distribution.
 
 Kiln turns agent-authored JavaScript into editable 3D assets. This integration
-connects ChatGPT or Codex to the hosted service at `kiln.instruktlabs.com` using
-OAuth. Sign in with Google or GitHub to keep assets private and apply personal
+is prepared to connect ChatGPT or Codex to a future hosted service at
+`kiln.instruktlabs.com` using OAuth. The planned Google or GitHub sign-in keeps assets private and applies personal
 quotas. No local engine installation or model-provider API key is required for
 hosted operation.
 
@@ -53,5 +53,5 @@ parity checks establish these names; the packaging tests validate review cases
 against them. Refresh this generated record when the qualified service contract
 changes. The plugin version and hosted engine version are recorded separately.
 
-This relocation changes neither the pending product-name decision nor submission
-status. The owner review and live-service qualification still precede submission.
+The public product name is Kiln, published by Instrukt Labs. Directory submissions
+and live-service qualification remain deferred to the private hosting work.

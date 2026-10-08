@@ -11,6 +11,7 @@ import { isPublicExample } from './collection.mjs';
 import { buildExampleHistory } from './history.mjs';
 import { runtimeBuildIdentity } from '../../scripts/build-runtime.mjs';
 import { galleryRuntimeDownload } from './runtime-downloads.mjs';
+import { exampleArchivePath } from '../../scripts/example-archive.mjs';
 const sha256 = (value) => createHash('sha256').update(value).digest('hex');
 
 import { readAuthorship, readCategory } from '../../scripts/authorship';
@@ -18,7 +19,7 @@ import { resolveEvaluatorPortV2 } from '../../src/evaluator/protocol';
 
 const SITE = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const REPO = resolve(SITE, '..');
-const EXAMPLES = join(REPO, 'examples');
+const EXAMPLES = exampleArchivePath();
 const OUT = join(SITE, 'public', 'assets');
 const THUMBS = join(SITE, 'public', 'thumbs');
 const buildInputs = await runtimeBuildIdentity(REPO);
@@ -34,7 +35,7 @@ function captions(readme) {
   return out;
 }
 
-const readme = await readFile(join(REPO, 'docs/examples.md'), 'utf8');
+const readme = await readFile(exampleArchivePath('docs/examples.md'), 'utf8');
 const caption = captions(readme);
 
 const names = (await readdir(EXAMPLES))
@@ -95,7 +96,7 @@ for (const name of names) {
     sourceHash: sha256(src),
     artifactHash: sha256(r.glb),
     provenance: credit?.provenance ?? exampleProvenance(src),
-    history: await buildExampleHistory(name, src, join(SITE, 'examples', 'history', name), OUT),
+    history: await buildExampleHistory(name, src, join(exampleArchivePath('site/examples/history'), name), OUT),
     ...(['orbital-station', 'abyssal-surveyor'].includes(name)
       ? { poster: `thumbs/${name}-hero.webp` }
       : {}),
@@ -139,15 +140,15 @@ for (const name of names) {
   if (['orbital-station', 'abyssal-surveyor'].includes(name)) {
     let posterPath = await posterFile(name);
     try {
-      const record = JSON.parse(await readFile(join(SITE, `examples/${name}.poster.json`), 'utf8'));
-      const image = await readFile(join(SITE, `examples/${name}.poster.png`));
+      const record = JSON.parse(await readFile(exampleArchivePath(`site/examples/${name}.poster.json`), 'utf8'));
+      const image = await readFile(exampleArchivePath(`site/examples/${name}.poster.png`));
       if (
         record.sourceHash === sha256(src) &&
         record.artifactHash === sha256(r.glb) &&
         record.imageHash === sha256(image) &&
         record.cameraRecipeHash === sha256(await readFile(join(SITE, 'src/hero-camera.ts')))
       ) {
-        posterPath = join(SITE, `examples/${name}.poster.png`);
+        posterPath = exampleArchivePath(`site/examples/${name}.poster.png`);
         manifest.at(-1).heroPoster = record;
         await writeFile(join(OUT, `${name}.hero-poster.json`), JSON.stringify(record, null, 2) + '\n');
       }

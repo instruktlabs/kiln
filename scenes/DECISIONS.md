@@ -1,5 +1,9 @@
 # Decisions on SPEC.md section 26
 
+Historical decisions from the original scene workspace. References to its local
+review packets do not imply those files are included here. Current integrated
+source and staging instructions are in [README.md](README.md).
+
 ## Current coordination state: owner review revision 2, 2026-09-30 local date
 
 The owner approved a representative level-1 floor at its measured south-west building location, an explicit entrance-to-floor transition and a bounded context cutaway. A continuous lobby/stair/lift route is outside this round. The registered context, corrected section viewing aperture, projected-size tree detail, Shift boost, separate touch driving controls and persistent Enter/Exit are implemented and technically qualified. The separate rear-repair checkpoint passes 173 full Foundry CPU tests plus a later focused vehicle test, both 8/8 Chromium contracts and desktop/touch/lifecycle checks. Its initial code is 1,525,112 B / 445,765 gzip under unchanged D-15; the 31 interior model files and interior code load only after Enter. [REVISION2.md](packages/foundry-floor/REVISION2.md) identifies the exact source, runtime and receipts.

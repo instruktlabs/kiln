@@ -6,7 +6,7 @@ names have no callable compatibility aliases.
 
 ## Changes in 1.1
 
-Version 1.1 is the current development candidate. It adds existing-project setup
+Version 1.1 adds existing-project setup
 and host SDK entrypoints without changing the stable 1.0 tool contracts.
 
 Use `kiln-init PROJECT --adopt --harness NAME --check` to preview adding Kiln to an

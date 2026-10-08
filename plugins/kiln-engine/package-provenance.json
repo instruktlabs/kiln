@@ -17,6 +17,6 @@
     "runtime.json": "sha256:253f76044dcc162295ca760ff584d1d6894068357c727a56b077b44278f38eb3",
     "skills/kiln-setup-workspace/references/plugin-install.md": "sha256:c338fb792e7fad0364c3e1a13c94c506afa1395489ec1b6e83b36d04728935fb",
     "skills/kiln-setup-workspace/references/renderer-setup.md": "sha256:b743b1b2827fa814385990e1e5b849391cb427413e9c016d273aa19cebd46031",
-    "skills/kiln-setup-workspace/SKILL.md": "sha256:041e4fe55e80c72133dabb6d25be78cfc0aae45edc057eca3c7a5a1c8db0fef1"
+    "skills/kiln-setup-workspace/SKILL.md": "sha256:65ed926b3503a33f4fe793e84e4a045ce36e3967f0e6b340e456a15dd010ce54"
   }
 }

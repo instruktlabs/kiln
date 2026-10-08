@@ -115,6 +115,7 @@ git clone --filter=blob:none https://github.com/instruktlabs/kiln
 cd kiln
 bun install --frozen-lockfile
 bun run build:sdk
+node scripts/example-archive.mjs --fetch
 bun run typecheck
 bun run test
 ```

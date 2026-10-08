@@ -1,6 +1,6 @@
 # Contributing to Kiln
 
-Small fixes, clear bug reports, examples and documentation improvements are welcome.
+Small fixes, clear bug reports, minimal reproductions and documentation improvements are welcome.
 For a behavior bug, include a minimal `.kiln.js` program, the command or tool call,
 and the error or image you saw. Include your OS, Node version and whether rendering
 used CPU or GPU. Remove credentials and private paths from shared logs.
@@ -15,6 +15,7 @@ bun install --frozen-lockfile
 bun run check:toolchain
 bun run check:skills
 bun run build:sdk
+node scripts/example-archive.mjs --fetch
 bun run typecheck
 bun run lint
 bun run test
@@ -27,6 +28,12 @@ separate npm project with its own lockfile and a native dependency.
 `bun run test:render-service` does, after `npm --prefix render-service ci
 --ignore-scripts` once. This suite needs no GPU or Dawn build; CI requires it.
 
+The archive preparation restores pinned historical programs into ignored
+`.cache/example-archive/` for the regression corpus and website archive. It makes
+no model calls, changes no working files and verifies the original Git blob bytes.
+Run it once after cloning; subsequent tests are offline. Old showcase assets are
+not current teaching examples or part of the npm package.
+
 The maintained scenes have a separate lockfile and validation commands:
 
 ```sh
@@ -37,12 +44,11 @@ bun run check:pins
 bun run typecheck
 bun run lint
 bun run test
-bun test ./scripts/tests --timeout 20000
 ```
 
 The pin check reads the engine, render service and site from the same checkout.
-The portable test runner covers scene source contracts; the separate script-test
-command covers the validation and evidence tooling. Asset and browser qualification
+The portable test runner covers scene source contracts and script tests for
+validation and evidence tooling. Asset and browser qualification
 require staged inputs; see [scenes/README.md](scenes/README.md).
 
 `lint` reports **nothing** on a clean tree, and a warning fails it. There is no
@@ -98,7 +104,8 @@ must be empty and outside the engine installation. Setup copies project-local
 skills and configuration without changing global agent settings or authentication.
 
 In a pull request, describe the problem, resulting behavior and checks you ran.
-Keep generated source examples and their provenance together. If you change a
+Keep generated showcase assets in separate authoring workspaces; include only the
+small reproduction or regression fixture needed for an engine fix. If you change a
 public tool, update its shared registry definition rather than duplicating a
 transport-specific definition.
 

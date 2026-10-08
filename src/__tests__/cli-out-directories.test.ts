@@ -15,7 +15,7 @@ it('creates the directories leading to every CLI destination', async () => {
   await mkdir(base, { recursive: true });
   const directory = await mkdtemp(join(base, 'cli-out-dirs-'));
   const cli = resolve(import.meta.dir, '../cli.ts');
-  const example = resolve(import.meta.dir, '../../examples/crate.kiln.js');
+  const example = resolve(import.meta.dir, 'fixtures/crate.kiln.js');
   const run = (args: string[]) =>
     Bun.spawnSync([process.execPath, cli, ...args], {
       cwd: directory,

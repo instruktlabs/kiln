@@ -4,11 +4,11 @@ Kiln builds JavaScript programs into GLB assets, validates structure, and render
 
 ## Entry points
 
-The v1 checkout prepares `@instruktlabs/kiln` with compiled ESM and TypeScript
+The npm package `@instruktlabs/kiln` ships compiled ESM and TypeScript
 declarations. Node consumers need no source loader. Build the SDK on a fresh source
 checkout before using package imports; the installed archive already contains it.
 See the [SDK contract](sdk.md) for runtime and experimental-feature boundaries.
-There is no published npm release yet.
+See [installation](install.md) for package, source-checkout and plugin setup.
 
 | Subpath | Purpose |
 |---|---|
@@ -66,12 +66,15 @@ CPU render paths are deterministic for the same inputs. GPU images can vary by d
 ## Development
 
 ```bash
+node scripts/example-archive.mjs --fetch
 bun run typecheck
 bun run lint
 bun run test
 bun run test:coverage
 ```
 
-Offline tests pin CPU rendering and exercise the checked-in example programs. The coverage ratchet lives in [scripts/check-coverage.mjs](https://github.com/instruktlabs/kiln/blob/main/scripts/check-coverage.mjs). Threshold decreases require an explicit measured rationale. Live provider tests require an explicit opt-in.
+Prepare the pinned historical corpus once with the explicit fetch command above.
+Subsequent tests stay offline, pin CPU rendering and include those archived programs.
+The coverage ratchet lives in [scripts/check-coverage.mjs](https://github.com/instruktlabs/kiln/blob/main/scripts/check-coverage.mjs). Threshold decreases require an explicit measured rationale. Live provider tests require an explicit opt-in.
 
 Core dependencies include Three.js, glTF Transform, Manifold, Acorn, and Zod. The agent SDK is an optional peer. Keep provider adapters compatible with the SDK's declared interface version; a TypeScript cast cannot fix a runtime protocol mismatch.

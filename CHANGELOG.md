@@ -32,6 +32,10 @@ release or an accepted plugin listing.
 - Concurrent captures rejoin a replacement local renderer when a delayed failure
   arrives from the old connection. Startup failures preserve their bounded child
   error output instead of reporting only the stack footer.
+- The README and maintained guides lead with npm installation and distinguish
+  released local functionality from deferred hosting. Real Troy captures replace
+  the old README showcase. Historical examples move out of the active source tree;
+  pinned Git-history restoration preserves the website archive and regression corpus.
 - The optional Linux isolated evaluator no longer passes an unsupported
   `--preserve-fds` option to Bubblewrap. Its explicit fd3 protocol pipe uses
   inherited descriptors; namespace, capability, filesystem and resource limits
@@ -47,9 +51,9 @@ release or an accepted plugin listing.
 
 ## 1.0.0
 
-Changes since the 0.10.0 tagged package release, qualified first through the public
-`1.0.0-rc.1` prerelease. Promotion of the stable archive to npm `latest` requires
-the separate release gates in [the runbook](docs/releasing.md).
+Published on npm as `@instruktlabs/kiln@1.0.0` under `latest`, following the public
+`1.0.0-rc.1` prerelease. These are the changes since the 0.10.0 tagged package.
+Future publication follows the separate release gates in [the runbook](docs/releasing.md).
 Hosted deployment and vendor directory acceptance remain separate milestones.
 
 - **Breaking:** the npm identity is now `@instruktlabs/kiln`, with compiled ESM and

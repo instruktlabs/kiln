@@ -28,7 +28,7 @@ test('CLI saves, exports, imports, and restores a revision across independent st
   try {
     const saved = run('first', [
       'save',
-      resolve('examples/crate.kiln.js'),
+      resolve('src/__tests__/fixtures/crate.kiln.js'),
       '--name',
       'Crate',
       '--model',
@@ -256,7 +256,7 @@ test('CLI save paints its preview on the named backdrop and records it, like kil
   try {
     const saved = run([
       'save',
-      resolve('examples/crate.kiln.js'),
+      resolve('src/__tests__/fixtures/crate.kiln.js'),
       '--name',
       'Crate',
       '--render',
@@ -279,7 +279,7 @@ test('CLI save paints its preview on the named backdrop and records it, like kil
     // A free colour is refused by the same validation the tool applies.
     const free = run([
       'save',
-      resolve('examples/crate.kiln.js'),
+      resolve('src/__tests__/fixtures/crate.kiln.js'),
       '--name',
       'Crate',
       '--backdrop',
@@ -316,7 +316,7 @@ test('CLI asset without a revision reads the newest one, and save --help prints 
     expect(help.stdout).toContain('kiln save <source.js|programRef>');
     expect(help.stdout).not.toContain('kiln view');
     expect(help.stdout.length).toBeLessThan(1500);
-    const crate = resolve('examples/crate.kiln.js');
+    const crate = resolve('src/__tests__/fixtures/crate.kiln.js');
     const first = run(['save', crate, '--name', 'Crate', '--render', 'cpu']);
     expect(first.status).toBe(0);
     const parent = JSON.parse(first.stdout).asset;

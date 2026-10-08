@@ -1,5 +1,9 @@
 # Scenes build report — M1 released; M2 closed as the record (D-20); M3 Farm features delivered; M4 Farm hardening delivered, hub runs pending
 
+Historical report from the original scene workspace. Evidence paths below refer
+to that workspace's retained local captures, which are not shipped in this repo.
+Use [README.md](README.md) for current source, build and staging instructions.
+
 Date: 2026-09-30 (M4; earlier sections dated 2026-09-29 keep their dates). Workspace: `C:/Users/Mattm/X/kiln-commons/scenes/`. Branch remains `work/scenes-v1`.
 
 M0 passed its continuation gate and M1 is **released** at `KIT-M1: READY 2026-09-29`. **M2 (Farm parity) is closed as the record under owner direction D-20**: parity with the sealed pilot is the baseline, and M2 closes on the evidence gathered, without tightening thresholds or chasing residual differences. M2a (staging, static world) and M2b (optimization stack; 24 of 24 static view/backend pairs) pass. M2c (collision, walking, doors, tractor, follow camera, HUD) passes a 4,291-frame lockstep against the sealed `play.mjs` and B-08 on both backends. M2d records the play positions, the stream crop, the r34 staging run, the Farm contract suite on both releases and profiles, bundle sizes and the hub run kit. P-16 and P-19 were deferred with reasons at that close.

@@ -22,10 +22,9 @@ a `.kiln` setup. The normal portable gate includes Troy's source-only Node tests
 its generated payloads are never downloaded automatically by dependency install
 or tests. See its README for clean-checkout commands and production staging.
 
-The [current alignment plan](../docs/plans/2026-10-02-core-scenes-site-alignment.md)
-and [backlog](../docs/backlog.md) cover core, shared tooling, all three existing
-scenes and their assets before new Troy scene construction. Request ledgers retain
-the original reports; their current dispositions are summarized in the backlog.
+The [backlog](../docs/backlog.md) tracks remaining engine and scene work. The
+[October alignment plan](../docs/plans/2026-10-02-core-scenes-site-alignment.md)
+and milestone ledgers are historical context; Troy source is now included here.
 
 Install with `bun install --frozen-lockfile` in this directory. Scene dependencies
 are separate from engine and site dependencies. Run `bun run check:toolchain` and

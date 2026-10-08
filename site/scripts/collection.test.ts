@@ -1,6 +1,6 @@
 import { expect, test } from 'bun:test';
 import { readdirSync } from 'node:fs';
-import { resolve } from 'node:path';
+import { exampleArchivePath } from '../../scripts/example-archive.mjs';
 import { PUBLIC_EXAMPLES, isPublicExample } from './collection.mjs';
 
 test('public gallery excludes archived examples and teaching programs', () => {
@@ -12,7 +12,7 @@ test('publishing is an explicit allowlist rather than an implicit file scan', ()
   expect(isPublicExample('new-unreviewed-asset')).toBe(false);
   expect(PUBLIC_EXAMPLES).toHaveLength(80);
   expect(new Set(PUBLIC_EXAMPLES).size).toBe(PUBLIC_EXAMPLES.length);
-  const selected = readdirSync(resolve(import.meta.dir, '../../examples'))
+  const selected = readdirSync(exampleArchivePath())
     .filter((name) => name.endsWith('.kiln.js'))
     .map((name) => name.slice(0, -'.kiln.js'.length))
     .filter(isPublicExample)

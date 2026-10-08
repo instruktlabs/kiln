@@ -18,7 +18,7 @@ Do not author assets inside the engine checkout. The authoring skills assume a w
 
 ## Create the workspace
 
-When this skill comes from the **Kiln Engine local plugin**, its plugin root contains `runtime.json` and `bin/kiln-setup-workspace.mjs` (plugin 1.0.0 used `scripts/setup-workspace.mjs`). Follow [plugin installation and upgrades](references/plugin-install.md) to install the pinned engine and configure a separate workspace. Do not run the checkout command below from a plugin cache. The plugin registers setup only; the workspace supplies its authoring skills and `kiln_workspace` server.
+When this skill comes from the **Kiln local plugin**, its plugin root contains `runtime.json` and `bin/kiln-setup-workspace.mjs` (plugin 1.0.0 used `scripts/setup-workspace.mjs`). Follow [plugin installation and upgrades](references/plugin-install.md) to install the pinned engine and configure a separate workspace. Do not run the checkout command below from a plugin cache. The plugin registers setup only; the workspace supplies its authoring skills and `kiln_workspace` server.
 
 Choose the user's existing project or an absolute path for a new workspace outside the engine installation. Check the installed initializer's `--help`: this setup version supports `--adopt`; older engines support only empty destinations. Upgrade an older installation explicitly before adopting a populated project.
 

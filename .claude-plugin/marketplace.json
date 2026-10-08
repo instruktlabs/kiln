@@ -1,7 +1,7 @@
 {
   "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
   "name": "instruktlabs",
-  "description": "Instrukt Labs developer tools, including Kiln Engine for editable 3D assets.",
+  "description": "Instrukt Labs developer tools, including Kiln for editable 3D assets.",
   "owner": {
     "name": "Instrukt Labs"
   },

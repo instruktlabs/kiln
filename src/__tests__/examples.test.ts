@@ -1,12 +1,9 @@
 /**
  * Historical example sources still execute; their public inventory and credits agree.
  *
- * The examples are not decoration: they are the gallery in the README, they are
- * what a reader looks at first, and `scripts/hero-shots.ts` regenerates the
- * published renders straight from them. Until this file existed, none of that
- * was covered. Two examples were deleted during a gallery edit and the suite did
- * not move by a single test, and a triangle count in the README sat 552 wrong
- * for as long as it took someone to re-render the asset by hand and notice.
+ * Inputs are restored explicitly from pinned Git history into an ignored cache.
+ * Keep the historical corpus coverage without putting old showcases in authoring
+ * workspaces or maintaining them as current API examples.
  *
  * These are unvetted assets from earlier engine versions, not golden geometry.
  * Current helper improvements may change tessellation. Published triangle counts
@@ -18,15 +15,15 @@
  */
 import { createHash } from 'node:crypto';
 import { readdir, readFile } from 'node:fs/promises';
-import { basename, join, resolve } from 'node:path';
+import { basename, join } from 'node:path';
 
 import { describe, expect, it } from 'bun:test';
 
 import { readAuthorship } from '../../scripts/authorship';
+import { exampleArchivePath } from '../../scripts/example-archive.mjs';
 import { resolveEvaluatorPortV2 } from '../evaluator/protocol';
 
-const REPO = resolve(import.meta.dir, '..', '..');
-const EXAMPLES = join(REPO, 'examples');
+const EXAMPLES = exampleArchivePath();
 const RENDERS = join(EXAMPLES, 'renders');
 
 const names = (await readdir(EXAMPLES))
@@ -103,13 +100,13 @@ describe('hero gallery', () => {
    * drift from what the script actually renders.
    */
   const heroes = (async () => {
-    const src = await readFile(join(REPO, 'scripts', 'hero-shots.ts'), 'utf8');
+    const src = await readFile(exampleArchivePath('scripts/hero-shots.ts'), 'utf8');
     const block = /const HEROES = \[([^\]]*)\] as const;/.exec(src);
     if (!block) throw new Error('could not find the HEROES list in scripts/hero-shots.ts');
     return [...block[1]!.matchAll(/'([^']+)'/g)].map((m) => m[1]!);
   })();
 
-  const readme = readFile(join(REPO, 'docs/examples.md'), 'utf8').then((text) =>
+  const readme = readFile(exampleArchivePath('docs/examples.md'), 'utf8').then((text) =>
     text
       .replaceAll('https://github.com/instruktlabs/kiln/blob/main/examples/', 'examples/')
       .replaceAll('../examples/', 'examples/'),
@@ -189,7 +186,7 @@ describe('hero gallery', () => {
    * the cells in the README all have to agree.
    */
   it('has a GIF for every animated example the README shows, and no orphans', async () => {
-    const script = await readFile(join(REPO, 'scripts', 'anim-gifs.ts'), 'utf8');
+    const script = await readFile(exampleArchivePath('scripts/anim-gifs.ts'), 'utf8');
     const block =
       /const GIFS: readonly \{ name: string; clip: string \}\[\] = \[([\s\S]*?)\];/.exec(script);
     if (!block) throw new Error('could not find the GIFS list in scripts/anim-gifs.ts');

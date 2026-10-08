@@ -1,5 +1,8 @@
 # Golden Gate scene: report
 
+Historical authoring report. Local evidence paths refer to the original workspace;
+see the [scene development guide](../../README.md) for current integrated use.
+
 - **Builder:** Claude Code subagent (Opus 5.5) for the coordinator, 2026-09-29.
 - **Package:** `scenes/packages/golden-gate/` (`@kiln-scenes/golden-gate`, private).
 - **Stack:** the released scene-kit, with three 0.186.0, React Three Fiber 9.8.1, React 19.3.0 and Vite 8.3.0. Bun 1.4.2 and Node 22.23.2.

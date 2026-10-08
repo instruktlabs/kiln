@@ -2,7 +2,7 @@
 
 This describes the v1 package contract. Examples use `@instruktlabs/kiln`; install
 a published version or a qualified local archive as described in the
-[installation guide](install.md). Registry publication is a separate release gate.
+[installation guide](install.md). Use documentation matching the installed version.
 
 ## Imports
 
@@ -22,7 +22,7 @@ const result = await renderGLB(code);
 ```
 
 The complete authoring and host APIs remain available through documented subpaths.
-The original 55 export paths are retained; the 1.1 development candidate adds four
+The original 55 export paths are retained; version 1.1 adds four
 host entrypoints below. The root exposes rendering, validation,
 Discovery and engine identity; it does not re-export every name from every module.
 CommonJS is not part of this release's contract.
@@ -53,7 +53,7 @@ entrypoint list. Files inside `lib/`, including declaration dependencies under
 
 ## Stability in 1.x
 
-The table classifies all 59 public entrypoints in this development candidate. The root and every listed subpath
+The table classifies all 59 public entrypoints in version 1.1. The root and every listed subpath
 except `implicit` are stable entrypoints for v1: their declared public signatures,
 record shapes and documented behavior receive normal semantic-versioning
 compatibility. Optional dependencies do not make the two agent APIs experimental.
@@ -87,7 +87,7 @@ the remaining names do not by themselves promise browser compatibility. Portable
 record modules retain their existing boundaries. Browser use must follow a
 documented, qualified entrypoint rather than importing the entire Node host.
 
-### Embedding interfaces added in the 1.1 candidate
+### Embedding interfaces added in 1.1
 
 - `mcp` exports `createKilnMcpServer`, `createKilnToolHost` and `kilnMcpToolDefs`
   for Node hosts, using the shared tool registry and injected `KilnToolContext`.
@@ -104,7 +104,7 @@ documented, qualified entrypoint rather than importing the entire Node host.
   policy rather than implementing a second renderer adapter. It does not provide
   a renderer or authorize trusted execution of untrusted source.
 
-These entries require the follow-up package; published 1.0.0 does not expose them.
+These entries require 1.1 or later; 1.0.0 does not expose them.
 They contain no cloud-provider, account, tenant or hosted-service policy.
 
 `renderGLB` defaults to trusted in-process execution. A hosted service accepting

@@ -9,6 +9,7 @@ import { createGltfIO, MSFT_LOD } from '../src/gltf-io.ts';
 import { findRigidBoundaries } from '../src/rigid-merge.ts';
 import { optimizeGlbBytes, renderGLBInProcess } from '../src/render.ts';
 import { runtimeBuildIdentity } from './build-runtime.mjs';
+import { exampleArchivePath } from './example-archive.mjs';
 
 const hash = (value) => createHash('sha256').update(value).digest('hex');
 const rounded = (values) => Array.from(values, (value) => Math.round(value * 1e10) / 1e10);
@@ -310,7 +311,7 @@ async function main() {
   const troy = value('--troy', null);
   const output = resolve(value('--out', 'tmp/full-optimizer-corpus/results.json'));
   const inputs = [
-    ...(await filesUnder(join(repo, 'examples'), '.kiln.js')),
+    ...(await filesUnder(exampleArchivePath(), '.kiln.js')),
     ...(await filesUnder(join(repo, 'scenes/.cache/site-inputs'), '.glb')),
     ...(troy ? await filesUnder(resolve(troy), 'asset.glb') : []),
   ].filter((file) => file.includes(value('--filter', '')));

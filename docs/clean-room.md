@@ -3,13 +3,16 @@
 Install Kiln once, then create asset projects outside its installation:
 
 ```sh
-node scripts/create-workspace.mjs ../my-assets --harness opencode
+npm exec --offline -- kiln-init ../my-assets --harness opencode
 ```
 
-An installed local package also provides `kiln-init`; see [installation](install.md).
-Choose `claude`, `codex`, `opencode`, `hermes`, `agy`, `copilot`, or `cursor-agent`. Setup preflights the runtime,
-stages the complete workspace and refuses a nonempty destination. It never writes
-global configuration or copies credentials.
+Run this from the package installation directory; see [installation](install.md).
+In a built source checkout, use `node scripts/create-workspace.mjs` instead.
+Choose `claude`, `codex`, `opencode`, `hermes`, `agy`, `copilot`, or `cursor-agent`.
+Plain creation requires an empty destination. Kiln 1.1+ also supports `--adopt`
+for an existing project, with a read-only `--adopt --check` preview. Both routes
+preflight the runtime and preserve unrelated files, global configuration and
+credentials. Independent evaluations use fresh workspaces.
 
 ## What the workspace contains
 
@@ -26,15 +29,18 @@ path after relocation and preserves edited skills and supporting references.
 CLI and MCP share `.kiln/programs`. Engine implementation and examples stay outside
 the workspace. For a refinement task, supply only the intended `.kiln.js` source.
 For creation, supply a brief with no starting asset. Follow the generated `START.md`
-and ask the agent to read `AGENTS.md` and the relevant skill.
+and ask the agent to read `AGENTS.md` and the relevant skill. In an adopted project,
+Kiln's instructions are `.kiln/START.md` and `.kiln/AGENTS.md`; existing project
+instructions still apply.
 
 If the brief depends on texture, roughness, metalness, glass or other material evidence,
 check the optional [GPU renderer setup](rendering.md#running-the-gpu-renderer) before the
 first authoring session. Auto mode starts a compatible local service lazily when dependencies
 are available. CPU views are sufficient for shape and contact, but not materials. Restart a
-session created without renderer support, or one with a cached startup failure, after repairing
-the installation. The CLI's `service reprobe` checks current readiness but cannot reconfigure
-another running MCP session.
+session only if its client cannot refresh tools. After repairing the installation,
+`kiln_renderer` with `action: 'reprobe'` refreshes the current MCP session's renderer
+state. The CLI's `service reprobe` checks its own process; it does not update a
+different running MCP session.
 
 The MCP server is loaded by the harness process that runs in the workspace directory, and only
 by that process. An agent that hands the authoring to a subagent of its own session gives it the

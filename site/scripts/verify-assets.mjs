@@ -5,6 +5,7 @@ import { fileURLToPath } from 'node:url';
 import sharp from 'sharp';
 import { posterBytes } from './posters.mjs';
 import { verifyRecordedPoster } from './provenance.mjs';
+import { exampleArchivePath } from '../../scripts/example-archive.mjs';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '../public');
 const hash = (value) => createHash('sha256').update(value).digest('hex');
@@ -85,7 +86,7 @@ for (const row of rows) {
     // re-imposed one line later.
     if (publicReceipt.sourceHash !== row.sourceHash) throw new Error(`Public poster record mismatch: ${row.name}`);
   }
-  if (row.heroPoster) verifyRecordedPoster(row.heroPoster, source, await readFile(resolve(root, '../examples', `${row.name}.poster.png`)));
+  if (row.heroPoster) verifyRecordedPoster(row.heroPoster, source, await readFile(exampleArchivePath(`site/examples/${row.name}.poster.png`)));
 }
 const build = JSON.parse(await readFile(join(root, 'assets/build.json'), 'utf8'));
 if (build.indexHash !== hash(await readFile(join(root, 'assets/index.json')))) throw new Error('Gallery index differs from its build receipt');

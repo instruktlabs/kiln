@@ -23,11 +23,10 @@
  */
 import { createHash } from 'node:crypto';
 import { readFile, readdir } from 'node:fs/promises';
-import { dirname, join, resolve } from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { join } from 'node:path';
+import { exampleArchivePath } from './example-archive.mjs';
 
-const REPO = resolve(dirname(fileURLToPath(import.meta.url)), '..');
-const RECEIPTS = join(REPO, 'examples', 'renders');
+const RECEIPTS = exampleArchivePath('examples/renders');
 const BASE = process.env.KILN_POSTER_BASE ?? 'https://assets.kilnstudio.tools/renders';
 
 const sha = (bytes) => createHash('sha256').update(bytes).digest('hex');

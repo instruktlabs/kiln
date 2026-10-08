@@ -1,4 +1,4 @@
-# Publishing Kiln 1.0
+# Publishing Kiln
 
 This is the maintainer runbook for `@instruktlabs/kiln`. npm publishing access is
 configured and stable `1.0.0` is published under `latest`. Follow-up changes need

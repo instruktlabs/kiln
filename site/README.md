@@ -10,6 +10,7 @@ Use the maintainer versions in `../toolchain.json`, with the pinned Node on PATH
 The media pipeline also needs an installed Chrome or Chromium.
 
 ```sh
+node scripts/example-archive.mjs --fetch
 cd scenes
 bun install --frozen-lockfile
 cd ../site
@@ -38,6 +39,7 @@ build as qualifying the gallery or scenes. Release checks use packs enabled.
 | npm release identity and install command | `src/data/release.json` and `src/lib/config.ts` |
 | Homepage | `src/pages/index.astro` |
 | Gallery, packs and download records | `src/data/packs/`, `src/data/standalone/` and sealed delivery manifests |
+| Historical gallery programs and credits | Pinned Git history restored to `../.cache/example-archive/` by `../scripts/example-archive.mjs` |
 | Maintained scene source | `../scenes/packages/` |
 | Scene archives and media | `src/data/scene-packs.json`, `scene-inputs.json` and `troy-delivery.json` |
 | Shared layout, navigation and style | `src/layouts/BaseLayout.astro`, `src/styles/global.css` |

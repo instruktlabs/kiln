@@ -9,6 +9,7 @@ checks. Passing glTF validation alone does not prove that authored features surv
 Run from the repository root with the pinned Bun toolchain:
 
 ```powershell
+node scripts/example-archive.mjs --fetch
 bun scripts/integration-corpus.mjs --self-test
 bun scripts/integration-corpus.mjs --out tmp/exporter-corpus/baseline
 $env:KILN_GLTF_EXPORTER = 'three'
@@ -16,7 +17,8 @@ bun scripts/integration-corpus.mjs --out tmp/exporter-corpus/candidate --compare
 Remove-Item Env:KILN_GLTF_EXPORTER
 ```
 
-The runner exports every `examples/*.kiln.js` source twice with optimization disabled. Use `--input`
+The runner exports every pinned historical `.kiln.js` source twice with optimization
+disabled. Archive preparation is explicit; subsequent corpus runs remain offline. Use `--input`
 for a separate authoring workspace, `--filter` for a filename substring, or `--limit` for a smoke run.
 It invokes no image renderer and no live model. Corpus geometry export is independent of CPU/GPU
 view rendering; use GPU rendering in the separate visual qualification.

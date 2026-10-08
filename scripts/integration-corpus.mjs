@@ -7,6 +7,7 @@ import { fileURLToPath } from 'node:url';
 import { Document, NodeIO } from '@gltf-transform/core';
 import { ALL_EXTENSIONS } from '@gltf-transform/extensions';
 import sharp from 'sharp';
+import { exampleArchivePath } from './example-archive.mjs';
 
 const io = new NodeIO().registerExtensions(ALL_EXTENSIONS);
 const digest = (bytes) => createHash('sha256').update(bytes).digest('hex');
@@ -217,7 +218,7 @@ async function main() {
   if (args.includes('--self-test')) return selfTest();
   const option = (name, fallback) =>
     args.includes(name) ? args[args.indexOf(name) + 1] : fallback;
-  const input = path.resolve(option('--input', 'examples'));
+  const input = path.resolve(option('--input', null) ?? exampleArchivePath());
   const output = path.resolve(option('--out', 'tmp/exporter-corpus/current'));
   const compare = option('--compare', null);
   const filter = option('--filter', '');

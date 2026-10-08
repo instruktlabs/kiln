@@ -2,17 +2,26 @@
 
 Shared React Three Fiber foundation for independently mounted scenes. This package is private and ships TypeScript source for a host build. Its standalone demo bundles React and the renderer into static files.
 
-Read the milestone state in [PROGRESS.md](../../PROGRESS.md). The consumer release gate is the explicit `KIT-M1: READY <date>` entry there; this README is not a readiness declaration. [SPEC.md](../../SPEC.md) and [DECISIONS.md](../../DECISIONS.md) remain normative. Add requests for compatible kit extensions to the workspace `KIT-REQUESTS.md` after M1.
+Read the [scene development guide](../../README.md) for current setup and staging.
+The original milestone decisions are historical records. This package is consumed
+by the scene workspace and is not a separately published npm package.
 
 ## Run the demo
 
-From the workspace root, with the pinned Bun 1.4.2 toolchain and the existing lockfile:
+From `scenes/`, with the pinned Bun 1.4.2 toolchain and the existing lockfile,
+run the portable checks first:
 
 ```powershell
 bun run check:toolchain
 bun run check:pins
 bun run typecheck
-bun test
+bun run test
+```
+
+The standalone demo additionally requires its staged asset inputs; it is not a
+source-only checkout check:
+
+```powershell
 bun run demo:build
 bun run demo:serve
 ```
@@ -23,7 +32,9 @@ Open `http://127.0.0.1:4400/`. Stop the foreground server with Ctrl+C when finis
 
 ## Host build configuration
 
-Use the pinned single copies of `react` / `react-dom` 19.3.0, `@react-three/fiber` 9.8.1 and `three` / `@types/three` 0.186.0. Do not add drei or a second three build. The source configuration supplies the required aliases, deduplication and explicit public/test/dev constants:
+Use the workspace pins: `react` / `react-dom` 19.3.0, `@react-three/fiber` 9.8.1,
+`three` 0.186.1 and `@types/three` 0.186.0. Do not add drei or a second three build.
+The source configuration supplies the required aliases, deduplication and explicit public/test/dev constants:
 
 ```ts
 // vite.config.ts

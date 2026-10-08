@@ -47452,11 +47452,11 @@ EXPORT ENVIRONMENT
   KILN_INDEX_POLICY      indexed (default) | asBuilt (requires optimization off)
 
 EXAMPLES
-  kiln render examples/crate.kiln.js --out crate.glb --views sheet.png
+  kiln render my-asset.kiln.js --out asset.glb --views sheet.png
   kiln generate "a weathered wooden crate" --out crate.glb --views sheet.png
-  kiln render examples/crate.kiln.js --render cpu --views sheet.png
+  kiln render my-asset.kiln.js --render cpu --views sheet.png
   kiln render p_RETURNED_HANDLE --capture cameras.json --views chosen.png
-  kiln render examples/crate.kiln.js --views sheet.png --backdrop light
+  kiln render my-asset.kiln.js --views sheet.png --backdrop light
 `;
 function parseArgs(argv) {
   let renderOption;

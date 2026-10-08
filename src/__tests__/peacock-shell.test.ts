@@ -6,7 +6,7 @@ import { resolveEvaluatorPortV2 } from '../evaluator/protocol';
 
 it('Peacock enamel shell faces outward without double-sided masking', async () => {
   const source = await readFile(
-    new URL('../../examples/mechanical-peacock.kiln.js', import.meta.url),
+    new URL('./fixtures/mechanical-peacock.kiln.js', import.meta.url),
     'utf8',
   );
   const { glb } = await resolveEvaluatorPortV2(undefined, 'trusted-local').render(source);

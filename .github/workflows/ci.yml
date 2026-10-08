@@ -59,6 +59,10 @@ jobs:
       # KILN_SPIKE_LIVE=0 (the `test:coverage` script default) keeps tests offline — no model
       # calls, no provider key. `test:live` is the opt-in live path, not run in CI.
       # bunfig.toml reports text + LCOV and enforces the checked-in coverage ratchet.
+      - name: Restore pinned historical regression inputs
+        # Preparation is explicit; the subsequent engine/corpus tests stay offline.
+        run: node scripts/example-archive.mjs --fetch
+
       - name: Unit tests and coverage gate
         run: bun run test:coverage
 
@@ -137,6 +141,9 @@ jobs:
 
       - name: Lint (Biome)
         run: bun run lint
+
+      - name: Restore pinned historical regression inputs
+        run: node scripts/example-archive.mjs --fetch
 
       - name: Unit tests
         run: bun run test

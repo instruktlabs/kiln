@@ -338,7 +338,7 @@ All successful refinement runs used references without inline source in subseque
 
 ### New asset trial
 
-Muse Spark 1.3 Contributor also authored [the tidal observatory](../examples/tidal-observatory.kiln.js) from a design brief, with no starting asset. It used the tools to build and review the structure, then refined the island shape and category metadata after reviewer feedback using saved references.
+Muse Spark 1.3 Contributor also authored [the tidal observatory](https://github.com/instruktlabs/kiln/blob/fda71ac775750f25390b6ee30082ebc56463edc6/examples/tidal-observatory.kiln.js) from a design brief, with no starting asset. It used the tools to build and review the structure, then refined the island shape and category metadata after reviewer feedback using saved references.
 
 The final geometry has 10,968 triangles. A separate GPU gallery render was inspected after authoring; the model's own views were CPU-only because the local render service required an authentication token. The result is a stylized specimen: its shiny copper and simplified rock do not fully match the requested aged surfaces. It is not evidence that material review succeeded in the model loop.
 
