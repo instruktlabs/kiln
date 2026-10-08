@@ -5,6 +5,12 @@ Source releases and installable package publication are separate milestones.
 Published versions and tags are recorded by the npm registry; changing this file
 does not publish a package.
 
+## Unreleased
+
+- Universal QA: `UNIVERSAL_MESH_TOPOLOGY` rejects open meshes tagged `kilnSolidRock`.
+- `summarizeAxisAlignedFacets` helper (and tests) for detecting large axis-aligned facet areas (implicit bounds clipping suspect).
+- Organic authoring helpers: `metaballSurface`, `taperedTube` (incl. `sectionScale`), `catmullRomPath`, `spiralPath`, `smoothOrganic`, `rockDisplace`, `rockBoulder`, and SDF utilities `smoothUnion` / `sphereInside`. Discovery catalog and geometry-recipes skill updates.
+
 ## 1.1.0
 
 Existing-project setup, public host interfaces and simpler onboarding. Hosted

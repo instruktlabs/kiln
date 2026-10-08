@@ -320,6 +320,27 @@ const blob = await implicitSurface(([x,y,z]) => 1 - Math.hypot(x,y,z), {
 
 Positive values are inside. Bounds/resolution are required; smaller cells cost more and thin features can disappear. Explicit grid/evaluation limits apply. Output has no UVs. Use this for a deliberate organic/cellular experiment, not an unsupported promise of general shelling, remeshing, or CAD accuracy.
 
+## Organic creatures, plants and rocks
+
+Prefer smooth paths and round profiles before adding detail:
+
+```js
+const path = catmullRomPath([[0,0,0],[0.2,0.4,0.1],[0.5,0.2,0]], 8);
+const limb = taperedTube(path, [0.06, 0.04, 0.02], { radialSegments: 16, creaseAngle: 180 });
+const soft = smoothOrganic(limb, { iterations: 1, creaseAngle: 50 });
+```
+
+`metaballSurface` smooth-unions spheres for torsos, bells and heads without visible CSG seams:
+
+```js
+const torso = await metaballSurface(
+  [{ center: [0,0.4,0], radius: 0.3 }, { center: [0.2,0.45,0], radius: 0.22 }],
+  { bounds: { min: [-0.4,0,-0.35], max: [0.45,0.7,0.35] }, edgeLength: 0.06, blend: 0.08 },
+);
+```
+
+Prefer `await rockBoulder({ halfExtents, seed })` for watertight angular boulders (Manifold box intersection, corner chips, mild warp). Use `rockDisplace` only for light erosion on an already-closed mesh. Compose custom fields with `sphereInside` and `smoothUnion` inside `implicitSurface` when metaballs are not enough. See `benchmark/organic-comparison/` for paired before/after briefs.
+
 
 For textures, preserve valid primitive UVs. Use `copyGeometry` before independent
 buffer edits, `remapUV` to scale/offset UVs, and `projectUV` for explicit planar,
