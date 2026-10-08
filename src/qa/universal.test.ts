@@ -47,6 +47,17 @@ describe('universal scene QA', () => {
     );
   });
 
+  test('blocks open kilnSolidRock meshes', () => {
+    const root = new THREE.Group();
+    root.name = 'Root';
+    const geometry = new THREE.PlaneGeometry(1, 1);
+    geometry.userData.kilnSolidRock = true;
+    const mesh = new THREE.Mesh(geometry, new THREE.MeshStandardMaterial());
+    mesh.name = 'Shard';
+    root.add(mesh);
+    expect(codes(root)).toContain('UNIVERSAL_MESH_TOPOLOGY');
+  });
+
   test('blocks an out-of-range geometry index', () => {
     const root = new THREE.Group();
     root.name = 'Root';

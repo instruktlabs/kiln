@@ -1,3 +1,6 @@
+import * as THREE from 'three';
+
+import { geometryDiagnostics } from '../geometry';
 import {
   conformancePromotionAuthorization,
   KILN_ENGINE_QA_OWNER,
@@ -200,6 +203,43 @@ function finiteDataFindings(context: UniversalQaInput): QaFinding[] {
   return findings;
 }
 
+function meshTopologyFindings(context: UniversalQaInput): QaFinding[] {
+  const findings: QaFinding[] = [];
+  for (const node of sceneNodes(context)) {
+    if (!node.isMesh || !node.geometry) continue;
+    const geometry = node.geometry as THREE.BufferGeometry;
+    if (!(geometry instanceof THREE.BufferGeometry)) continue;
+    const position = geometry.getAttribute('position');
+    if (!position?.count || position.count < 3) continue;
+    const diag = geometryDiagnostics(geometry);
+    if (diag.invalidIndices > 0 || diag.nonFiniteVertices > 0) continue;
+    const solidRock = Boolean((geometry.userData as { kilnSolidRock?: boolean }).kilnSolidRock);
+    const defects: string[] = [];
+    if (solidRock && diag.boundaryEdges > 0) defects.push(`${diag.boundaryEdges} boundary edge(s)`);
+    if (solidRock && diag.nonManifoldEdges > 0)
+      defects.push(`${diag.nonManifoldEdges} non-manifold edge(s)`);
+    const tornShell = diag.boundaryEdges >= Math.max(8, Math.floor(diag.triangles * 1.25));
+    if (!solidRock && tornShell) defects.push(`${diag.boundaryEdges} boundary edge(s)`);
+    if (!defects.length) continue;
+    findings.push({
+      code: 'UNIVERSAL_MESH_TOPOLOGY',
+      disposition: 'block',
+      dimension: 'exportIntegrity',
+      profile: 'universal',
+      message: `Mesh ${JSON.stringify(nodeName(node))} is not a watertight manifold solid (${defects.join(', ')}).`,
+      affected: affectedNode(node),
+      measurement: {
+        name: 'topologyDefects',
+        actual: defects.length,
+        expected: 0,
+      },
+      repairText:
+        'Rebuild the mesh as a closed solid (for example Manifold CSG or rockBoulder) before export; avoid per-vertex Voronoi offsets that tear the hull.',
+    });
+  }
+  return findings;
+}
+
 function invalidIndexFindings(context: UniversalQaInput): QaFinding[] {
   const findings: QaFinding[] = [];
   for (const node of sceneNodes(context)) {
@@ -376,7 +416,7 @@ export const UNIVERSAL_QA_RULES: readonly QaRule[] = [
     promotion: conformancePromotionAuthorization(
       'universal-qa-v1',
       'src/qa/universal.test.ts',
-      '82c1b26db0a7900141aa44fd40e90fb858e80c51347dc6975ef1691f62730c78',
+      '13b6fc4bb3deccd456a5bd89d5b4b1fd91e74787d65eb56ab2c0b513c95d95c9',
     ),
     defaultMode: 'enforce',
     evaluate: (context) =>
@@ -396,11 +436,31 @@ export const UNIVERSAL_QA_RULES: readonly QaRule[] = [
     promotion: conformancePromotionAuthorization(
       'universal-qa-v1',
       'src/qa/universal.test.ts',
-      '82c1b26db0a7900141aa44fd40e90fb858e80c51347dc6975ef1691f62730c78',
+      '13b6fc4bb3deccd456a5bd89d5b4b1fd91e74787d65eb56ab2c0b513c95d95c9',
     ),
     defaultMode: 'enforce',
     evaluate: (context) =>
       finiteDataFindings({
+        scene: context.scene,
+        clips: context.clips,
+        requiredParts: context.intent.requiredParts,
+        animation: context.intent.animation,
+      }),
+  },
+  {
+    id: 'UNIVERSAL_MESH_TOPOLOGY_RULE',
+    profile: 'universal',
+    scope: { kind: 'universal' },
+    ruleClass: 'exact',
+    owner: KILN_ENGINE_QA_OWNER,
+    promotion: conformancePromotionAuthorization(
+      'universal-qa-v1',
+      'src/qa/universal.test.ts',
+      '13b6fc4bb3deccd456a5bd89d5b4b1fd91e74787d65eb56ab2c0b513c95d95c9',
+    ),
+    defaultMode: 'enforce',
+    evaluate: (context) =>
+      meshTopologyFindings({
         scene: context.scene,
         clips: context.clips,
         requiredParts: context.intent.requiredParts,
@@ -416,7 +476,7 @@ export const UNIVERSAL_QA_RULES: readonly QaRule[] = [
     promotion: conformancePromotionAuthorization(
       'universal-qa-v1',
       'src/qa/universal.test.ts',
-      '82c1b26db0a7900141aa44fd40e90fb858e80c51347dc6975ef1691f62730c78',
+      '13b6fc4bb3deccd456a5bd89d5b4b1fd91e74787d65eb56ab2c0b513c95d95c9',
     ),
     defaultMode: 'enforce',
     evaluate: (context) =>
@@ -436,7 +496,7 @@ export const UNIVERSAL_QA_RULES: readonly QaRule[] = [
     promotion: conformancePromotionAuthorization(
       'universal-qa-v1',
       'src/qa/universal.test.ts',
-      '82c1b26db0a7900141aa44fd40e90fb858e80c51347dc6975ef1691f62730c78',
+      '13b6fc4bb3deccd456a5bd89d5b4b1fd91e74787d65eb56ab2c0b513c95d95c9',
     ),
     defaultMode: 'enforce',
     evaluate: (context) =>
@@ -456,7 +516,7 @@ export const UNIVERSAL_QA_RULES: readonly QaRule[] = [
     promotion: conformancePromotionAuthorization(
       'universal-qa-v1',
       'src/qa/universal.test.ts',
-      '82c1b26db0a7900141aa44fd40e90fb858e80c51347dc6975ef1691f62730c78',
+      '13b6fc4bb3deccd456a5bd89d5b4b1fd91e74787d65eb56ab2c0b513c95d95c9',
     ),
     defaultMode: 'enforce',
     evaluate: (context) =>
@@ -476,7 +536,7 @@ export const UNIVERSAL_QA_RULES: readonly QaRule[] = [
     promotion: conformancePromotionAuthorization(
       'universal-qa-v1',
       'src/qa/universal.test.ts',
-      '82c1b26db0a7900141aa44fd40e90fb858e80c51347dc6975ef1691f62730c78',
+      '13b6fc4bb3deccd456a5bd89d5b4b1fd91e74787d65eb56ab2c0b513c95d95c9',
     ),
     defaultMode: 'enforce',
     evaluate: (context) =>
@@ -499,6 +559,7 @@ export const UNIVERSAL_QA_KERNELS: Readonly<
 > = {
   UNIVERSAL_SCENE_CONTENT_RULE: emptyOutputFindings,
   UNIVERSAL_FINITE_DATA_RULE: finiteDataFindings,
+  UNIVERSAL_MESH_TOPOLOGY_RULE: meshTopologyFindings,
   UNIVERSAL_INDEX_RULE: invalidIndexFindings,
   UNIVERSAL_ZERO_SCALE_RULE: zeroScaleFindings,
   UNIVERSAL_NODE_NAME_RULE: duplicateNameFindings,
