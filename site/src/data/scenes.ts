@@ -87,8 +87,7 @@ export const farmScene = {
   ] satisfies SceneLink[],
   copy: {
     available: 'Explore the Farm in your browser.',
-    preview:
-      'Explore the Farm in your browser, or download the runnable scene and its assets.',
+    preview: 'Explore the Farm in your browser, or download the runnable scene and its assets.',
     unavailable:
       'The browser scene is not included in this build. Explore opens its current status and downloads.',
     devices: 'Desktop and touch play. Loads only when you choose Explore.',
