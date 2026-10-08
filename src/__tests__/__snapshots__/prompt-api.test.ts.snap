@@ -169,6 +169,22 @@ await implicitSurface(sample: ([x,y,z]) => signedValue, { bounds: { min, max }, 
   // boundary. Thin features and geometric accuracy require inspection.
   // e.g. const blob = await implicitSurface(([x,y,z]) => 1-Math.hypot(x,y,z), { bounds: { min:
   // [-1.2,-1.2,-1.2], max: [1.2,1.2,1.2] }, edgeLength: 0.15 });
+await metaballSurface(spheres: { center: [x,y,z], radius }[], { bounds, edgeLength, blend?, maxCells?, maxEvaluations? })
+  // Experimental smooth union of spheres meshed through implicitSurface. Uses polynomial
+  // blending; output has no UVs.
+  // NOTE: Prefer this over hand-rolling smoothUnion fields for creatures, blobs and rounded
+  // junctions. Match edgeLength to feature size.
+  // e.g. const body = await metaballSurface([{ center: [0,0.4,0], radius: 0.35 }, { center:
+  // [0.2,0.55,0], radius: 0.22 }], { bounds: { min: [-0.6,-0.1,-0.5], max: [0.6,1,0.5] },
+  // edgeLength: 0.08 });
+smoothUnion(a: number, b: number, blend: number)
+  // Polynomial smooth maximum for positive-inside implicit fields. Compose inside
+  // implicitSurface callbacks.
+  // e.g. smoothUnion(sphereInside(p,[0,0,0],0.5), sphereInside(p,[0.3,0,0],0.4), 0.12)
+sphereInside(point: [x,y,z], center: [x,y,z], radius: number)
+  // Positive-inside sphere field sample for implicitSurface. Returns radius minus distance to
+  // center.
+  // e.g. sphereInside(p, [0,0.4,0], 0.25)
 boxGeo(width: number, height: number, depth: number)  // 6-face box. 12 tris regardless of size. Cheapest geometry.
   // e.g. const geo = boxGeo(1, 0.5, 2);
 sphereGeo(radius: number, widthSegments?: 8, heightSegments?: 6)
@@ -496,6 +512,17 @@ displace(geometry, offset: ([x,y,z], t) => [dx,dy,dz], opts?: { frame?: { origin
   // Adds an authored displacement vector in the chosen local frame. Returns owned geometry;
   // callback coordinates are local and t is normalized along the interval.
   // e.g. const rippled = displace(surface, ([x,y,z]) => [0, 0.1*Math.sin(x*8), 0]);
+smoothOrganic(geometry, opts?: { iterations?: 1, creaseAngle?: 55, preserveUV?: false })
+  // Runs subdivide then creaseNormals with organic-friendly defaults.
+  // e.g. const soft = smoothOrganic(tube, { iterations: 1, creaseAngle: 50 });
+await rockBoulder(opts?: { halfExtents?: [x,y,z], seed?: 1, facetingAngle?: 24 })
+  // Manifold boulder (ellipsoid hull, random plane facets, surface chips) — default rock
+  // primitive.
+  // e.g. const chunk = await rockBoulder({ halfExtents: [0.14, 0.1, 0.12], seed: 5 });
+rockDisplace(geometry, opts?: { amplitude?: 0.018, frequency?: 1.05, octaves?: 2, seed?: 1 })
+  // Mild fractal normal displacement on an existing closed mesh; prefer rockBoulder for new
+  // rocks.
+  // e.g. const rough = rockDisplace(boxGeo(0.3, 0.2, 0.25), { seed: 4, amplitude: 0.01 });
 subdivide(geometry: BufferGeometry, iterations?: 1, opts?: { preserveUV?: boolean, split?: boolean, uvSmooth?: boolean, preserveEdges?: boolean, flatOnly?: boolean, weld?: boolean })
   // Loop subdivision returns new geometry; each iteration roughly quadruples triangles and
   // smooths the surface. Use preserveUV:true for textured meshes. Legacy position-only welding
@@ -533,6 +560,18 @@ loftProfiles(sections: { profile: [x,z][], frame?: { origin, rotation } }[], opt
   // self-intersections.
   // e.g. const hull = loftProfiles([{ profile: wide }, { profile: narrow, frame: { origin:
   // [0,2,0] } }]);
+taperedTube(path: [x,y,z][], radii: number[], opts?: { radialSegments?: 20, creaseAngle?: 180, cap?: true, closed?: false, up?, twist?, sectionScale?: [side,depth][] })
+  // Circular sweep with one radius per path station. Default creaseAngle 180 shades round
+  // profiles smoothly; sample splines with catmullRomPath first.
+  // e.g. const tail = taperedTube(catmullRomPath([[0,0.5,0],[0.3,0.7,0],[0.5,0.4,0]], 6),
+  // [0.08,0.05,0.02]);
+catmullRomPath(controlPoints: [x,y,z][], samplesPerSpan?: 8, closed?: false)
+  // Samples a Catmull-Rom spline through waypoints for smooth tubes, tentacles and branches.
+  // e.g. const path = catmullRomPath([[0,0,0],[0.2,0.4,0.1],[0.5,0.2,0]], 10);
+spiralPath(opts: { center, radius, rise, turns, axis?, forward?, samples? })
+  // Rising spiral path for prehensile tails and curled appendages.
+  // e.g. const curl = spiralPath({ center: [0,0.05,0], radius: 0.03, rise: 0.12, turns: 1.75,
+  // forward: [0,0,1] });
 curveToMesh(points: [x,y,z][], radius, tubularSegs?: 32, radialSegs?: 8, closed?: false)
   // Sweeps a circular profile along a path. Equivalent to Blender's Curve to Mesh node with a
   // circle profile. Use for pipes, cables, tubular frames.

@@ -212,4 +212,92 @@ export const geometryPrimitives: readonly HelperSpec[] = [
     example:
       'const blob = await implicitSurface(([x,y,z]) => 1-Math.hypot(x,y,z), { bounds: { min: [-1.2,-1.2,-1.2], max: [1.2,1.2,1.2] }, edgeLength: 0.15 });',
   },
+  {
+    name: 'metaballSurface',
+    signature:
+      'await metaballSurface(spheres: { center: [x,y,z], radius }[], { bounds, edgeLength, blend?, maxCells?, maxEvaluations? })',
+    returns: 'Promise<THREE.BufferGeometry>',
+    category: 'geometry',
+    description:
+      'Experimental smooth union of spheres meshed through implicitSurface. Uses polynomial blending; output has no UVs.',
+    promptNotes:
+      'Prefer this over hand-rolling smoothUnion fields for creatures, blobs and rounded junctions. Match edgeLength to feature size.',
+    example:
+      'const body = await metaballSurface([{ center: [0,0.4,0], radius: 0.35 }, { center: [0.2,0.55,0], radius: 0.22 }], { bounds: { min: [-0.6,-0.1,-0.5], max: [0.6,1,0.5] }, edgeLength: 0.08 });',
+  },
+  {
+    name: 'taperedTube',
+    signature:
+      'taperedTube(path: [x,y,z][], radii: number[], opts?: { radialSegments?: 20, creaseAngle?: 180, cap?: true, closed?: false, up?, twist?, sectionScale?: [side,depth][] })',
+    returns: 'THREE.BufferGeometry',
+    category: 'curves',
+    description:
+      'Circular sweep with one radius per path station. Default creaseAngle 180 shades round profiles smoothly; sample splines with catmullRomPath first.',
+    example:
+      'const tail = taperedTube(catmullRomPath([[0,0.5,0],[0.3,0.7,0],[0.5,0.4,0]], 6), [0.08,0.05,0.02]);',
+  },
+  {
+    name: 'catmullRomPath',
+    signature: 'catmullRomPath(controlPoints: [x,y,z][], samplesPerSpan?: 8, closed?: false)',
+    returns: '[x,y,z][]',
+    category: 'curves',
+    description:
+      'Samples a Catmull-Rom spline through waypoints for smooth tubes, tentacles and branches.',
+    example: 'const path = catmullRomPath([[0,0,0],[0.2,0.4,0.1],[0.5,0.2,0]], 10);',
+  },
+  {
+    name: 'spiralPath',
+    signature: 'spiralPath(opts: { center, radius, rise, turns, axis?, forward?, samples? })',
+    returns: '[x,y,z][]',
+    category: 'curves',
+    description: 'Rising spiral path for prehensile tails and curled appendages.',
+    example:
+      'const curl = spiralPath({ center: [0,0.05,0], radius: 0.03, rise: 0.12, turns: 1.75, forward: [0,0,1] });',
+  },
+  {
+    name: 'smoothOrganic',
+    signature:
+      'smoothOrganic(geometry, opts?: { iterations?: 1, creaseAngle?: 55, preserveUV?: false })',
+    returns: 'THREE.BufferGeometry',
+    category: 'mesh-ops',
+    description: 'Runs subdivide then creaseNormals with organic-friendly defaults.',
+    example: 'const soft = smoothOrganic(tube, { iterations: 1, creaseAngle: 50 });',
+  },
+  {
+    name: 'rockBoulder',
+    signature: 'await rockBoulder(opts?: { halfExtents?: [x,y,z], seed?: 1, facetingAngle?: 24 })',
+    returns: 'THREE.BufferGeometry',
+    category: 'mesh-ops',
+    description:
+      'Manifold boulder (ellipsoid hull, random plane facets, surface chips) — default rock primitive.',
+    example: 'const chunk = await rockBoulder({ halfExtents: [0.14, 0.1, 0.12], seed: 5 });',
+  },
+  {
+    name: 'rockDisplace',
+    signature:
+      'rockDisplace(geometry, opts?: { amplitude?: 0.018, frequency?: 1.05, octaves?: 2, seed?: 1 })',
+    returns: 'THREE.BufferGeometry',
+    category: 'mesh-ops',
+    description:
+      'Mild fractal normal displacement on an existing closed mesh; prefer rockBoulder for new rocks.',
+    example: 'const rough = rockDisplace(boxGeo(0.3, 0.2, 0.25), { seed: 4, amplitude: 0.01 });',
+  },
+  {
+    name: 'smoothUnion',
+    signature: 'smoothUnion(a: number, b: number, blend: number)',
+    returns: 'number',
+    category: 'geometry',
+    description:
+      'Polynomial smooth maximum for positive-inside implicit fields. Compose inside implicitSurface callbacks.',
+    example: 'smoothUnion(sphereInside(p,[0,0,0],0.5), sphereInside(p,[0.3,0,0],0.4), 0.12)',
+  },
+  {
+    name: 'sphereInside',
+    signature: 'sphereInside(point: [x,y,z], center: [x,y,z], radius: number)',
+    returns: 'number',
+    category: 'geometry',
+    description:
+      'Positive-inside sphere field sample for implicitSurface. Returns radius minus distance to center.',
+    example: 'sphereInside(p, [0,0.4,0], 0.25)',
+  },
 ];

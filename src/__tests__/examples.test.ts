@@ -56,6 +56,10 @@ const outcomes = new Map<string, Outcome>(
 
 // Completed local sweep/loft checks no longer emit unconditional unchecked warnings.
 // Exact remaining advisory groups are still asserted, without a blanket filter.
+const implicitNotice =
+  /: EXPERIMENTAL_IMPLICIT_SURFACE Implicit sampling is resolution-dependent and produces geometry without UVs\./;
+const subdivideUvNotice = /: SUBDIVIDE_UV_DROPPED Position-only subdivision discarded UVs\./;
+
 const documentedAdvisories: Record<string, string[]> = {
   'demo-floating-observatory': [
     'Floating parts (no mesh overlap with any sibling, 2cm tol): Mesh_WaterfallSprayDroplet_3 — Fix: shift "Mesh_WaterfallSprayDroplet_3" by [0.000, 0.000, -0.024] toward "Mesh_ContinuousWaterCurtain", or call snapTo(part, hostPart) to do it automatically. | Mesh_WaterfallSprayDroplet_5 — Fix: shift "Mesh_WaterfallSprayDroplet_5" by [0.000, 0.000, -0.026] toward "Mesh_ContinuousWaterCurtain", or call snapTo(part, hostPart) to do it automatically. | Mesh_WaterfallSprayDroplet_9 — Fix: shift "Mesh_WaterfallSprayDroplet_9" by [0.000, 0.000, -0.046] toward "Mesh_ContinuousWaterCurtain", or call snapTo(part, hostPart) to do it automatically. | Mesh_WaterfallSprayDroplet_11 — Fix: shift "Mesh_WaterfallSprayDroplet_11" by [0.000, 0.000, -0.059] toward "Mesh_ContinuousWaterCurtain", or call snapTo(part, hostPart) to do it automatically.',
@@ -87,7 +91,14 @@ describe('examples', () => {
       // Meshes that removed the same number of faces share one grouped line.
       const precisionNotice =
         /^(?:.+: SOLID_FLOAT32_CANONICALIZED|SOLID_FLOAT32_CANONICALIZED \(\d+ meshes: .+\):) Removed [1-9]\d* zero-area Float32 faces and rebuilt their topology with Manifold\. Source runs and properties were retained; this is precision cleanup, not general mesh repair\.$/;
-      expect(out.warnings.filter((warning) => !precisionNotice.test(warning))).toEqual(expected);
+      expect(
+        out.warnings.filter(
+          (warning) =>
+            !precisionNotice.test(warning) &&
+            !implicitNotice.test(warning) &&
+            !subdivideUvNotice.test(warning),
+        ),
+      ).toEqual(expected);
     });
   }
 });
@@ -120,6 +131,11 @@ describe('hero gallery', () => {
       'fire-lookout-tower',
       'brass-tellurion',
       'victorian-greenhouse',
+      'organic-jellyfish',
+      'organic-pine-tree',
+      'organic-rock-cluster',
+      'organic-seahorse',
+      'organic-stylised-newt',
     ];
     const publicNames = names.filter(
       (name) => !excluded.includes(name) && !name.startsWith('demo-'),

@@ -56,9 +56,6 @@ site/dist/
 # moment a skill changed if a copy were committed here instead.
 site/public/.well-known/
 
-# Locally staged, revision-bound Troy owner-review bundles.
-site/public/troy-review/
-
 # Local agent config (launch profiles, per-machine settings). The shipped
 # plugin manifest lives in .claude-plugin/, which is tracked.
 # .claude/ is local state. The exception is .claude/skills/, which is committed so
@@ -91,6 +88,5 @@ assets/video/
 # Local qualification captures and build caches; preserved outside release source.
 /qa/
 /.cache/
-
-# Troy public files are staged from their sealed asset-host archive.
-site/public/scene-packs/troy/
+output/
+output/organic-benchmark/

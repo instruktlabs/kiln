@@ -355,6 +355,13 @@ const blob = await implicitSurface(
 );
 ```
 
+Higher-level organic helpers build on the same positive-inside convention:
+`metaballSurface` smooth-unions spheres; `taperedTube` and `catmullRomPath` author
+smooth limbs and tentacles; `smoothOrganic` subdivides then limits crease angles;
+`rockBoulder` authors angular fractured boulders; `rockDisplace` roughens existing closed meshes along normals (optional Voronoi facets). `smoothUnion` and `sphereInside`
+compose custom fields inside `implicitSurface` callbacks. See
+`benchmark/organic-comparison/` for reproducible before/after benchmark programs.
+
 The field is **positive inside**. Bounds and `edgeLength` are required. Smaller spacing can increase cost sharply and is necessary for thin features. The default limits are one million estimated grid cells and eight million actual callback evaluations; `maxCells` and `maxEvaluations` are explicit overrides. An evaluation counter cannot stop a callback that never returns: use the host's process-bounded evaluator for untrusted source.
 
 Output is experimental, has no UVs, and records resolution and evaluation counts. A finite grid cannot guarantee preservation of every thin feature or exact CAD dimensions. See the [candidate measurements and adoption decisions](https://github.com/instruktlabs/kiln/blob/main/docs/experiments/geometry-frontier.md) for implicit surfaces, general beveling, normal-offset shells, and mesh-to-field remeshing.
