@@ -89,7 +89,7 @@ confirmed canonical Farm ZIP and Bridge GLB exact hashes, public CORS, second-GE
 
 Run the build and deploy contract below from clean committed `main` after required
 CI checks. The full production build must enable packs, consume the exact Troy
-06 pin, and pass static/assets/upload-set checks. `finalize-site.mjs` appends
+release pinned in `src/data/troy-delivery.json`, and pass static/assets/upload-set checks. `finalize-site.mjs` appends
 immutable Pages rules only for individually verified sealed Troy resources;
 HTML and unsealed files retain revalidation. After deployment, match the public
 `build-info.json` commit and artifact-manifest digest to the candidate, then check

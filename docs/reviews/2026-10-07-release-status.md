@@ -1,10 +1,46 @@
 # Kiln release goal status
 
-7 October 2026. This checkpoint distinguishes shipped work, private qualification
-and remaining launch work. The dated research plan remains the scope record;
-older statements within it are not the current execution status.
+7 October 2026. The publication checkpoint below supersedes the earlier execution
+notes in this file. Those notes preserve the decisions and failures encountered;
+they are historical, not current release instructions. Use the README, changelog
+and [release runbook](../releasing.md) for maintained guidance.
 
-## Owner scope change: public release first
+## Kiln 1.1.0 publication checkpoint
+
+`@instruktlabs/kiln@1.1.0` is publicly available under npm's `latest` tag. The owner
+approved promotion after private staging. Independent registry verification
+downloaded the public archive and verified its integrity and signed provenance:
+
+- Source: `cf2c3a799e97b29f4d98b33b48ebd81ddf96c03d`, the approved #158 merge.
+- Archive SHA-256: `ffc4914da8857271860f6d5ac35dd6c321f2e7212883da2086b9d5f9f6fd972d`.
+- All 12 exact-main [CI jobs](https://github.com/instruktlabs/kiln/actions/runs/37714048009)
+  passed; [release verification](https://github.com/instruktlabs/kiln/actions/runs/37714832570)
+  and the protected [staging run](https://github.com/instruktlabs/kiln/actions/runs/37714928078)
+  also passed. The registry archive matches their original bytes without repacking.
+- Provenance binds that archive to this repository, main commit, release workflow
+  and staging run; its signature and transparency-log inclusion verified.
+
+The [blind-trial report](2026-10-07-public-blind-trials.md) records the three
+pre-publication setup routes, five independently reopened/exported assets and
+their limits. The public-registry workflow now selects the published 1.1.0 identity
+from `.github/published-candidate.json`; it checks fresh installations separately
+from the unpublished candidate tests.
+
+The merged README retains all ten previous pictures plus both Troy captures.
+Maintained onboarding is npm-first, including global `kiln` and PowerShell-safe
+project commands. Old examples are archived through pinned Git history, preserving
+the website gallery and regression corpus. Six superseded release branches were
+removed after preservation checks; community PRs remain untouched.
+
+The static website candidate from this main commit built successfully and passed
+224-page validation with zero errors or warnings. Package publication does not
+establish a GitHub release/tag or website deployment; those retain their separate
+approval and public verification steps. Hosting and directory submissions remain
+deferred to the private application handoff.
+
+## Historical execution notes
+
+### Owner scope change: public release first
 
 The owner now asks to stabilize and merge the private hosting handoff, then focus
 on public Kiln documentation/README/site, Troy imagery, substantial blind clone/npm

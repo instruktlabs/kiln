@@ -1,7 +1,7 @@
 # Publishing Kiln
 
 This is the maintainer runbook for `@instruktlabs/kiln`. npm publishing access is
-configured and stable `1.0.0` is published under `latest`. Follow-up changes need
+configured and stable `1.1.0` is published under `latest`. Follow-up changes need
 a new version and the qualification process below. Development, registry publication,
 hosted deployment and directory acceptance have separate evidence requirements.
 See the [release status](reviews/2026-10-07-release-status.md) for current status.
