@@ -2,8 +2,8 @@
 
 Updated 7 October 2026 following the owner's explicit scope change. This replaces
 the earlier requirement to launch hosting before completing public documentation.
-The private application is being stabilized, documented and saved on private main
-for another agent. Hosted deployment and directory submissions are deferred and
+The private application handoff is merged on private main at `d71e66d`, with all
+five required checks passing. Another agent can resume from its `HANDOFF.md`. Hosted deployment and directory submissions are deferred and
 are not completion requirements for this public release cycle.
 
 ## Goal statement
@@ -37,12 +37,18 @@ commits and npm artifacts. Do not launch or advertise a ready hosted service.
    worktrees or dirty files as part of a remote-branch cleanup. Diagnose #158's
    Windows renderer reconnection and Linux concurrent-start failures with focused
    reproduction. A local pass is not proof the CI failure is harmless.
-3. **Refresh public documentation.** Lead with npm installation, stable package
+3. **Refresh public documentation.** Keep the README concise and end-user focused; remove stale migration/provenance
+   narration and link to deeper references. Audit all maintained Markdown, including
+   package/skill/agent guides and site operations notes. Lead with npm installation, stable package
    identity, prerequisites and useful first-run workflows. Cover existing projects
    and new workspaces, SDK/CLI/MCP, Claude Code/Codex and other harnesses, rendering
    capabilities, optional dependencies and experimental boundaries. Reconcile
    README, maintained docs, site content and shipped skills/examples against actual
    behavior. Clearly separate shipped local functionality from deferred hosting.
+   Archive the old example collection outside the normal checkout, preserving the
+   website archive and necessary regression fixtures. Do not add teaching examples
+   or expose whole showcase assets through Discovery. Prefer the existing immutable
+   Git history as the archive source over a new storage or indexing system.
 4. **Add Troy imagery.** Locate the maintained Troy scene and existing captures,
    verify provenance and current appearance, and choose real scene images for the
    README and site. Capture fresh views if necessary. Use accessible alt text,
@@ -50,12 +56,18 @@ commits and npm artifacts. Do not launch or advertise a ready hosted service.
    screenshots or imply that historical showcase assets are quality baselines.
 5. **Run blind dogfooding.** Use fresh independent agents with no inherited release
    context, ordinary user-facing instructions and separate asset workspaces. Test
-   clean-clone/build/setup and installed-package paths; include Claude Code and
-   Codex, new workspaces and adoption of an existing project. Begin with bounded
+   clean-clone/build/setup and installed-package paths, new workspaces and adoption
+   of an existing project. The owner selected AGY `gemini-3.8-flash-high` with high
+   effort and OpenCode `opencode/muse-spark-1.3-contributor-free` for live blind runs.
+   Keep documented Claude Code/Codex integrations compatible through their existing
+   offline/plugin checks; do not substitute them for the requested live models. Begin with bounded
    setup/authoring trials, then exercise representative geometry, materials,
    inspection, refinement, save/reopen/export and user-file preservation. Keep
-   prompts task-oriented; do not coach agents through exact tools or APIs. Record
-   model/harness versions, package/source identity, traces, assistance, failures,
+   prompts minimal: here is the repo or package,
+   set it up and launch headless agents to dogfood it. Keep known defects, setup
+   commands, tool names and the evaluator's acceptance checklist out of their
+   context. The evaluator chooses coverage and inspects results independently.
+   Record model/harness versions, package/source identity, traces, assistance, failures,
    output files and actual rendered views. Inspect outputs independently rather
    than accepting an agent's completion claim. Test the published 1.0.0 baseline
    where useful and the exact follow-up candidate; repeat final installation from
@@ -85,7 +97,7 @@ commits and npm artifacts. Do not launch or advertise a ready hosted service.
 - README and site give a truthful npm-first onboarding path and show real Troy
   imagery; no stale version or unsupported hosted-ready claim remains in current
   user guidance. Dated records retain their historical meaning.
-- Blind runs cover both delivery paths and both target coding clients, with
+- Blind runs cover both delivery paths and both requested harness/model routes, with
   independent artifact/render inspection and preserved failure/assistance records.
 - The approved follow-up is actually published on npm with the corresponding
   GitHub release/tag, and post-publication installed use is verified.

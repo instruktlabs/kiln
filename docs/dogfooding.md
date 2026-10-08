@@ -4,9 +4,12 @@ Three tiers, and they answer different questions. Running the cheap one does not
 what the expensive one would have. Per-harness install, flags and MCP config locations are in
 [headless harnesses](harnesses.md).
 
-The current V1 campaign is tracked in the [progress checkpoint](plans/2026-09-22-progress-checkpoint.md)
-and [reviewed run evidence](reviews/2026-09-22-opencode-main-campaign.md). It uses
-frozen checkout workspaces; later installed-package acceptance remains separate.
+The current [1.1 release goal](plans/2026-10-07-public-release-goal.md) covers blind
+clone and installed-package trials with AGY Gemini 3.8 Flash High and OpenCode
+Muse Spark 1.3 Contributor, for both new workspaces and existing projects.
+The September [checkpoint](plans/2026-09-22-progress-checkpoint.md) and
+[run evidence](reviews/2026-09-22-opencode-main-campaign.md) are historical;
+their frozen-checkout results do not qualify newer packages.
 Authorized free models and existing subscriptions may be used, with the model,
 runtime and guidance fixed within each trial. Historical run receipts below keep
 the versions, tool names and outcomes that were actually observed.

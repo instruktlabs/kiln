@@ -12,38 +12,56 @@ same engine and saved-source contracts.
 
 ## Install the package
 
-Stable 1.0.0 is published. Install it with Node.js and npm:
+Install the current stable package with Node.js and npm:
 
 ```sh
 mkdir kiln-install
 cd kiln-install
 npm init -y
-npm install @instruktlabs/kiln@1.0.0 --omit=dev --include=optional
+npm install @instruktlabs/kiln
 npm exec --offline -- kiln-init ../my-assets --harness codex  # or claude, opencode, hermes, agy, copilot, cursor-agent
 cd ../my-assets
 # Follow START.md for your harness
 ```
 
-`npm install @instruktlabs/kiln` selects the current stable `latest` tag; the
-explicit version above keeps this guide reproducible. This checkout prepares
-unreleased 1.1.0. Its existing-project adoption and new SDK interfaces require a
-reviewed local archive until that version is published. The `next` tag is for
-prereleases and is not required for ordinary installation.
+This selects npm's stable `latest` tag. Version 1.0.0 is published; this checkout
+prepares 1.1.0. Existing-project adoption and the new SDK host interfaces need
+1.1 or later, so use a [local package](#install-a-local-package) until it is
+published. The `next` tag is only for prereleases.
+
+The package includes the built CLI/MCP runtimes, renderer code, plugins and skills.
+You do not need Bun, a source checkout, a build step or a separate model API key
+to use its tools. Choose the appropriate harness and follow `START.md` in the
+generated workspace.
+
+## Add Kiln to an existing project
+
+With Kiln 1.1+, run these commands from the installation directory:
+
+```sh
+npm exec --offline -- kiln-init /absolute/path/to/my-project --adopt --harness codex --check
+npm exec --offline -- kiln-init /absolute/path/to/my-project --adopt --harness codex
+```
+
+The first command previews changes without writing and exits 1 when setup is
+needed. The second adds Kiln while preserving existing instructions, unrelated
+MCP settings and user files. Conflicting owned paths stop setup before it replaces
+them. Read `.kiln/START.md` and `.kiln/AGENTS.md` alongside your project's existing
+instructions. Repeat with another supported `--harness` to add its connection
+around the same source store and assets.
+
+Adoption also works for a new directory. To update an already managed workspace,
+use [check and upgrade](#move-or-repair-an-installation). Do not copy a new set of
+skills over local customizations by hand.
+
+## Install a release archive
 
 Archives are also supported. The package packs as `instruktlabs-kiln-VERSION.tgz`; earlier releases
 used `kiln-engine-VERSION.tgz`. Install the actual tarball with Node.js and
-npm. Use the tarball and checksum actually attached to the current
-[release](https://github.com/instruktlabs/kiln/releases) (for 0.10.0, the
-[v0.10.0 release](https://github.com/instruktlabs/kiln/releases/tag/v0.10.0)): download
-the tarball and `SHA256SUMS.txt`, check the tarball against the checksum file before
-installing (`sha256sum -c SHA256SUMS.txt` beside it, or `Get-FileHash` on Windows), and read
-that release's documentation; the release also attaches the installed-package receipts that
-name the tarball. A source-only release does not imply that a built tarball is available;
-a source-only release, like a checkout ahead of the release, builds its own package under
-[Install a local package](#install-a-local-package).
-The package includes the built CLI/MCP runtimes, renderer code, plugins and skills.
-You do not need Bun, a source checkout, a build step or a separate model API key to
-use the CLI/MCP tools. Use the real tarball path and filename:
+npm. Download the archive and `SHA256SUMS.txt` from the selected
+[release](https://github.com/instruktlabs/kiln/releases), then verify its checksum
+with `sha256sum -c SHA256SUMS.txt` or Windows `Get-FileHash`. Use that release's
+documentation and the actual downloaded filename:
 
 ```sh
 mkdir kiln-install
@@ -247,7 +265,7 @@ npm exec --offline -- kiln-init ../my-assets --harness opencode  # or claude, co
 
 `kiln` renders programs and imports/exports source revisions. `kiln-init` creates a
 workspace, and `kiln-mcp` starts the stdio server. These are installed commands from
-the still-unpublished `@instruktlabs/kiln` package. Library consumers use its compiled
+that exact build of `@instruktlabs/kiln`. Library consumers use its compiled
 ESM and TypeScript declarations through the [SDK entrypoints](sdk.md), without a
 source loader. The optional
 `kiln generate` adapter is separate and needs its agent/provider dependencies;
@@ -422,11 +440,13 @@ The v1 local plugin below uses a smaller bundle and creates an explicit workspac
 
 ## Local Claude Code and Codex plugins
 
-**The current branch is a development candidate.** The `v1.0.0` tag and npm release
-must exist before using these release commands. Maintainers qualify development
-bundles with the reviewed local engine archive instead.
+The commands below install the published 1.0.0 plugin. It creates new workspaces.
+The 1.1 candidate also supports existing-project adoption; qualify that bundle
+with a local engine archive until the matching tag and npm version are published.
+Select a published release tag rather than an unreleased branch for normal use.
 
-The plugin is `kiln-engine` in the Instrukt Labs marketplace `instruktlabs`. Its
+The product is Kiln; its local plugin installation ID is `kiln-engine` in the
+Instrukt Labs marketplace `instruktlabs`. Its
 cache contains setup guidance and an installer, while the pinned engine and asset
 workspaces stay in persistent directories outside that cache. Installing the plugin
 does not start a second global Kiln MCP server.

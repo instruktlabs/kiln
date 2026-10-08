@@ -65,8 +65,10 @@ archive qualification, npm staging and owner promotion.
 ahead of that release go in the changelog's `Unreleased` section and can retain the
 released version until the next release is prepared. A new release must bump the
 version before producing its tarball: two different releases must never share a
-package version. Patch for a fix, minor for changed or added capability; this
-package is pre-1.0 and unpublished, so a minor is the normal case.
+package version. Use a patch for compatible fixes, a minor for compatible added
+capabilities, and a major for breaking changes to stable APIs. Kiln 1.0.0 is
+published; the [SDK stability contract](docs/sdk.md#stability-in-1x) identifies
+the explicitly experimental exceptions.
 
 Bumping it means rebuilding: `runtimeBuildIdentity` hashes the version into each
 entry's `identity` in `dist/build.json`, which is the value a build receipt cites. Run

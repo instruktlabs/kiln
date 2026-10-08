@@ -57,3 +57,14 @@ lines were retained in the reported error. The fix exposes the already-bounded
 the diagnostic regression. Keep the candidate unqualified until the unresolved
 Linux failure has been investigated and required checks pass; do not mask it with
 unconditional retries or relaxed assertions.
+
+### Follow-up at `9312eb4`
+
+All 15 required checks passed, including both full engine jobs, all seven native
+package platform/version jobs, software Vulkan, render-service tests, website
+build and both isolation checks. The engine run is
+[37703664546](https://github.com/instruktlabs/kiln/actions/runs/37703664546).
+This closes the failing-check handoff for that candidate. The original Linux
+startup exception remains unreproduced and its exact cause is unknown; the new
+bounded diagnostic is retained for a recurrence. No retry or assertion weakening
+was introduced.

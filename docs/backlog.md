@@ -1,6 +1,7 @@
 # Kiln current backlog
 
-Updated 5 October 2026, against main `7ed880f` and the published website.
+Updated 7 October 2026 for the published 1.0 package and active 1.1 candidate.
+Scene delivery evidence below retains its 5 October scope.
 This is a work queue and known-limit inventory, not a count of defects.
 The [roadmap](../ROADMAP.md) describes the delivered state and future milestones.
 [Historical reports](reviews/2026-10-05-status-reconciliation.md) keep their original
@@ -45,19 +46,20 @@ They remain useful regression contracts when a later change touches that surface
 | FF-1 | Optimized Foundry runtime with retained campus/interior behavior |
 | PERF-1 | Intended focused investigation completed; failed strict results preserved, no actionable new regression established |
 | SITE-1, SITE-2, SITE-3 | Portable deploy preflight, sealed deliveries and qualified public flows, including Troy |
-| RELEASE-1 | Scoped installed-package/workspace qualification; a new tagged package release is separate |
+| RELEASE-1 | Published npm 1.0.0 and GitHub v1.0.0, with exact archive and installed-package qualification |
 
 PR #131 completed the scene runtime optimization pass. #132 fixed ORM UV/transform
 handling; CORE-1's shared-image isolation and the remaining core changes landed
-through #133. The v0.10.0 tag predates those later changes. Main/site delivery does
-not publish an npm release or retroactively qualify new package bytes.
+through #133 and shipped in npm 1.0.0. Later candidate changes still require their
+own package qualification and publication.
 
 ## Remaining package and product work
 
 | Item | Completion boundary |
 | --- | --- |
-| Planned 0.11 engine package | Tag/package release with breaking full-mode contract, original-engine replay versus explicit child-revision migration, exact runtime/skills bytes and installed-package gates |
-| Public v1 and further packs | Separate product milestones; ten-pack production is not a Troy release chore |
+| Public 1.1 package and docs | Shared setup, host SDK interfaces, clone/npm blind dogfooding, exact archive qualification, approved package/tag/site publication; see the [release goal](plans/2026-10-07-public-release-goal.md) |
+| Hosted service and directory submissions | Deferred to the private hosted application's documented handoff; not required for the public 1.1 package |
+| Further packs | Separate product work; ten-pack production is not a Troy release chore |
 | Broader importer qualification | Actual destination tests for LOD, visibility and supported export profiles |
 | Optional compressed runtime derivatives | Explicit loader/profile adoption and measured size/startup/render tradeoffs; current shared runtime loading is not universal Meshopt/Draco/KTX2 support |
 | New derivative guidance | Demonstrated authoring/workflow evidence beyond Troy before promoting a scene-specific lesson to shared guidance |

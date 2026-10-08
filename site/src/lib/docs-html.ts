@@ -1,4 +1,4 @@
-const REPOSITORY = 'https://github.com/matthew-kissinger/kiln';
+const REPOSITORY = 'https://github.com/instruktlabs/kiln';
 
 /** Resolve only URLs emitted by the repository Markdown renderer, never code examples. */
 export function rewriteDocsUrl(href: string, slug: string, available: Set<string>): string | null {

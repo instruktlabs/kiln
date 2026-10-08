@@ -110,7 +110,9 @@ describe('hero gallery', () => {
   })();
 
   const readme = readFile(join(REPO, 'docs/examples.md'), 'utf8').then((text) =>
-    text.replaceAll('../examples/', 'examples/'),
+    text
+      .replaceAll('https://github.com/instruktlabs/kiln/blob/main/examples/', 'examples/')
+      .replaceAll('../examples/', 'examples/'),
   );
 
   it('names every public example and matches the documented collection count', async () => {

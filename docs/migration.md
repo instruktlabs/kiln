@@ -4,6 +4,26 @@ Existing inline-code transport and the legacy capture format remain supported. T
 Discovery and authoring-helper changes below require explicit migration; retired
 names have no callable compatibility aliases.
 
+## Changes in 1.1
+
+Version 1.1 is the current development candidate. It adds existing-project setup
+and host SDK entrypoints without changing the stable 1.0 tool contracts.
+
+Use `kiln-init PROJECT --adopt --harness NAME --check` to preview adding Kiln to an
+existing project, then omit `--check` to apply. Existing instructions and unrelated
+configuration remain in place; Kiln's guidance lives under `.kiln/`. Multiple
+supported clients can share the same workspace. Existing managed workspaces
+continue to use `--check` and `--upgrade`. See [setup and recovery](install.md).
+
+Hosts can replace internal-file imports with the public `mcp`, `tools/input`,
+`views/port` and `discovery/portable` entrypoints. The portable Discovery API reads
+an engine-generated catalog without loading its Node builder. The [SDK guide](sdk.md)
+describes each boundary. No migration is required for ordinary CLI/MCP use.
+
+The local plugin helper is now `bin/kiln-setup-workspace.mjs`; version 1.0 used
+`scripts/setup-workspace.mjs`. Follow the helper path documented by the installed
+plugin. Updating a plugin cache does not automatically upgrade existing workspaces.
+
 ## Changes in 1.0
 
 These changes describe version 1.0 and its public RC, following the downloadable

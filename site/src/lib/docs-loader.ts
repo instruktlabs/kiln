@@ -29,7 +29,7 @@ export function repositoryDocs(): Loader {
               error.code === 'ENOENT'
             ) {
               logger.warn(
-                `Optional 0.9 documentation is absent: ${page.slug}.md. Set KILN_SITE_DOCS_DIR to the 0.9 docs directory to include it.`,
+                `Optional documentation is absent: ${page.slug}.md. Check KILN_SITE_DOCS_DIR to include it.`,
               );
             } else {
               throw error;
@@ -52,7 +52,7 @@ export function repositoryDocs(): Loader {
               description: page.description,
               group: page.group,
               order,
-              source: `https://github.com/matthew-kissinger/kiln/blob/main/docs/${page.slug}.md`,
+              source: `https://github.com/instruktlabs/kiln/blob/main/docs/${page.slug}.md`,
             },
           });
           store.set({

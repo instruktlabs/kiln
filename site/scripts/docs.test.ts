@@ -8,9 +8,9 @@ describe('published documentation links', () => {
     expect(rewriteDocsUrl('../docs/install.md?source=guide#start', 'programs', available)).toBe('/docs/install/?source=guide#start');
   });
   test('sends unpublished docs and repository files to their repository location', () => {
-    expect(rewriteDocsUrl('projects-and-live-review.md', 'install', available)).toBe('https://github.com/matthew-kissinger/kiln/blob/main/docs/projects-and-live-review.md');
-    expect(rewriteDocsUrl('../src/tools/registry.ts#L12', 'install', available)).toBe('https://github.com/matthew-kissinger/kiln/blob/main/src/tools/registry.ts#L12');
-    expect(rewriteDocsUrl('plans/internal.md', 'install', available)).toBe('https://github.com/matthew-kissinger/kiln/blob/main/docs/plans/internal.md');
+    expect(rewriteDocsUrl('projects-and-live-review.md', 'install', available)).toBe('https://github.com/instruktlabs/kiln/blob/main/docs/projects-and-live-review.md');
+    expect(rewriteDocsUrl('../src/tools/registry.ts#L12', 'install', available)).toBe('https://github.com/instruktlabs/kiln/blob/main/src/tools/registry.ts#L12');
+    expect(rewriteDocsUrl('plans/internal.md', 'install', available)).toBe('https://github.com/instruktlabs/kiln/blob/main/docs/plans/internal.md');
   });
   test('keeps external, origin-relative and same-page references', () => {
     for (const href of ['https://example.com/a?q=b#c', '#revision', '/gallery/', 'mailto:hello@example.com']) {

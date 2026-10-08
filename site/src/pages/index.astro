@@ -15,11 +15,8 @@ import { hero, HERO_IMAGE_SIZES } from "../lib/hero";
 import {
   HARNESSES,
   INSTALL_COMMAND,
-  PACKAGE_TARBALL,
   WORKSPACE_COMMAND,
   PACKS_ENABLED,
-  RELEASE_TAG,
-  RELEASE_URL,
   REPO,
   VERSION,
   VERSION_SHORT,
@@ -511,15 +508,14 @@ const CARD_SIZES = "(max-width: 767px) calc(100vw - 32px), (max-width: 1279px) c
       <div class="lg:col-span-4">
         <h2 id="start-heading" class="text-subheading">Try Kiln {VERSION_SHORT} locally.</h2>
         <p class="mt-5 max-w-reading">
-          Use Node.js 20.15+ on the 20.x line, or 22.2 and later. Kiln is not
-          published to the npm registry: download <code>{PACKAGE_TARBALL}</code>{" "}
-          and <code>SHA256SUMS.txt</code> from the{" "}
-          <a href={RELEASE_URL} class="text-link">{RELEASE_TAG} release</a>, check
-          the tarball against the checksum file, then install it with npm.
+          Install <code>@instruktlabs/kiln</code> from npm, then connect your coding
+          agent to a local asset workspace. Use Node.js 22 or 24 LTS; the
+          installation guide lists the complete compatibility range.
         </p>
         <p class="mt-4 max-w-reading text-dim">
-          The {VERSION} release is for dogfooding. Package publication is planned
-          for v1.0 after feedback. Give npm the downloaded tarball’s real path.
+          Local use is free and account-free. Your agent supplies the model;
+          Kiln's tools need no separate model API key. Bun is only needed for
+          engine development.
         </p>
         <a href="/docs/install/" class="text-link mt-3">
           Read the installation guide <span aria-hidden="true">→</span>

@@ -1,6 +1,6 @@
 # Cloudflare deployment
 
-## Current release procedure (5 October 2026)
+## Release procedure
 
 The website remains a direct upload to the `kilnstudio` Cloudflare Pages project,
 branch `production`. Generated downloads live in the `kiln-assets` R2 bucket at
@@ -35,8 +35,8 @@ inventory in the ignored mirror. `--fetch-runtime` explicitly permits fetching
 existing pinned runtime bytes instead of supplying a runtime mirror. Never reuse
 an immutable release key for changed bytes.
 
-Troy's current sealed release is `troy-20261005-06`. Normal builds consume its
-published archive; **do not regenerate release 06**. For a future release, use an
+Troy's current sealed release is `troy-20261005-07`. Normal builds consume its
+published archive; **do not regenerate that release**. For a future release, use an
 explicit previous pin and a fresh release ID:
 
 ```sh

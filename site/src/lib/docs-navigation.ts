@@ -108,6 +108,11 @@ export const DOC_GROUPS: { title: string; description: string; pages: DocDefinit
         description: 'Tool schemas, parameters and returned data.',
       },
       {
+        slug: 'sdk',
+        label: 'JavaScript and TypeScript SDK',
+        description: 'Public ESM imports, host interfaces and stability guarantees.',
+      },
+      {
         slug: 'extending',
         label: 'Extend Kiln',
         description: 'Add parts and integrate Kiln with your own applications.',

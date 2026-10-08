@@ -2,16 +2,26 @@
 
 Kiln's local CLI and stdio MCP server share the same collection store and tool registry. ChatGPT web needs a reachable MCP connection: a private Secure MCP Tunnel can carry this existing stdio server without making a public endpoint. The tunnel process must remain running while ChatGPT discovers or calls tools.
 
+This is an owner-managed development connection. Kiln's public hosted service and
+directory listing are deferred. Local CLI/MCP use needs no Kiln account; the
+optional OpenAI tunnel separately requires Platform access and a runtime API key.
+
 ## Connect a private development server
 
-1. Build with the supported toolchain: `bun run build:runtime`.
-2. Create a tunnel in OpenAI Platform, scoped to the intended ChatGPT workspace. The account needs Tunnels Read and Manage; its runtime API key needs Read and Use. Existing organization roles may already grant these. Do not broaden other permissions.
-3. Download a pinned official `openai/tunnel-client` release and verify its release digest. This dogfood used Windows amd64 v0.0.14. Keep credentials in the environment or a supported secret reference, never in the plugin.
+1. [Install Kiln](install.md) and create a dedicated asset workspace. The npm package already contains the built server; an engine checkout needs `bun run build:runtime` first.
+2. Create a tunnel in OpenAI Platform and associate it with the intended ChatGPT workspace and Platform organization. Creating it requires Tunnels Read and Manage; running or selecting it requires Read and Use. ChatGPT workspace policy also applies.
+3. Obtain the client through the [official tunnel setup guide](https://developers.openai.com/api/docs/guides/secure-mcp-tunnels#set-up-tunnel-client). Record the version you test. Keep credentials outside the plugin and source repository.
 4. Configure the tunnel's stdio command to launch `node /absolute/path/dist/mcp-server.mjs` in a dedicated asset workspace. Set `KILN_PROGRAM_STORE` and `KILN_COLLECTIONS` explicitly. The server does not need provider keys. The tunnel control process needs its OpenAI key, which should not be inherited by the MCP child.
-5. Run `tunnel-client doctor`, then `tunnel-client run` with the configured profile. In ChatGPT's Plugins page choose Create app, Tunnel, the intended tunnel, and No Auth for the stdio server. Access is still controlled by the private tunnel; this does not create a public unauthenticated service.
+5. Run `tunnel-client doctor --profile NAME --explain`, then `tunnel-client run --profile NAME`. In ChatGPT Plugins, use the plus button, Add custom MCP server, then Tunnel. Select your tunnel, configure authentication, review the warning and create the plugin. Kiln's local stdio server has no separate OAuth; access is controlled by the private tunnel.
 6. Verify the seventeen-tool MCP surface appears, including `kiln_discover`, `kiln_renderer`, `kiln_present` and `kiln_project`. Test source submission, actual render-image visibility, save/list, copy, restore/edit, and exact revision export. Refresh connector metadata after changing tools.
 
 Local subprocess evaluation has deadlines and a sanitized environment; it is not the Linux isolated evaluator's OS security boundary. This setup is for an owner-controlled development test. A hosted multi-user deployment needs tenant-scoped storage, authentication, and the isolated evaluator posture.
+
+A private tunnel is not eligible as a public plugin endpoint. OpenAI's
+[connection guide](https://developers.openai.com/plugins/deploy/connect-chatgpt)
+requires a public HTTPS endpoint for submission. The steps above were checked
+against official documentation on 7 October 2026; that is a documentation check,
+not a new end-to-end ChatGPT qualification.
 
 ## Expose the skills
 
@@ -45,4 +55,9 @@ The local viewer (`kiln view`) provides browser downloads, revision selection, c
 
 The Node and Bun JavaScript runtimes can produce tiny floating-point differences in regenerated GLB JSON. Preserve the original artifact for byte-exact delivery and rebuild with the recorded engine's supported Node toolchain for reproducibility. ZIP import/export preserves original bytes regardless of runtime.
 
-Official references checked September 6, 2026: [Connect ChatGPT](https://developers.openai.com/plugins/deploy/connect-chatgpt), [Secure MCP Tunnels](https://developers.openai.com/api/docs/guides/secure-mcp-tunnels), and [Package plugins](https://developers.openai.com/plugins/build/plugins). Surface availability can change; verify the actual host before claiming installation or download support.
+The uploader and download observations above are historical tests from September 6,
+2026, not claims about every current account. Check the actual client's installation,
+image display and file download behavior before advertising support. See
+[Connect ChatGPT](https://developers.openai.com/plugins/deploy/connect-chatgpt),
+[Secure MCP Tunnels](https://developers.openai.com/api/docs/guides/secure-mcp-tunnels)
+and [Package plugins](https://developers.openai.com/plugins/build/plugins).

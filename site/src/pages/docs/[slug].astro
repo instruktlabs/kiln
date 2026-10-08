@@ -1,21 +1,9 @@
 ---
 import DocsMobileNav from "../../components/docs/DocsMobileNav.astro";
 import PageHeader from "../../components/PageHeader.astro";
-import Callout from "../../components/Callout.astro";
 import { getCollection, render } from "astro:content";
 import type { CollectionEntry } from "astro:content";
 import DocsLayout from "../../layouts/DocsLayout.astro";
-import CodeBlock from "../../components/CodeBlock.astro";
-import {
-  INSTALL_COMMAND,
-  PACKAGE_TARBALL,
-  WORKSPACE_COMMAND,
-  RELEASE_TAG,
-  RELEASE_URL,
-  VERSION,
-  VERSION_SHORT,
-} from "../../lib/config";
-import { installGuideNote } from "../../lib/install-note";
 export async function getStaticPaths() {
   const docs = await getCollection("docs");
   return docs.map((entry) => ({
@@ -42,30 +30,5 @@ const { Content, headings } = await render(entry);
     {entry.data.title}
     <DocsMobileNav slot="navigation" current={entry.id} headings={headings} />
   </PageHeader>
-  {entry.id === "install" && (
-    <Callout label={`${VERSION_SHORT} release status`} boundary>
-      <h2 class="text-xl font-semibold">
-        Install the {VERSION_SHORT} package
-      </h2>
-      <p>
-        <code>{PACKAGE_TARBALL}</code> is attached to the{" "}
-        <a href={RELEASE_URL} class="text-link">{RELEASE_TAG} release</a> with{" "}
-        <code>SHA256SUMS.txt</code> and the installed-package receipts. Download the
-        tarball and the checksum file, check the tarball against it, then install it
-        from its real path. Kiln is not published to the npm registry; publication is
-        planned for v1.0 after feedback.
-      </p>
-      <CodeBlock
-        code={`mkdir kiln-install\ncd kiln-install\nnpm init -y\n${INSTALL_COMMAND}`}
-        lang="sh"
-        label={`${VERSION_SHORT} package install`}
-      />
-      <p>
-        Create the workspace with <code>{WORKSPACE_COMMAND}</code>, then run
-        <code>cd ../my-assets</code> and follow <code>START.md</code> for your harness.
-      </p>
-      <p class="text-sm text-dim">{installGuideNote(entry.body ?? "", VERSION)}</p>
-    </Callout>
-  )}
   <Content />
 </DocsLayout>
