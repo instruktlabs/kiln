@@ -11,7 +11,7 @@ export const PACKAGE_TARBALL = `instruktlabs-kiln-${VERSION}.tgz`;
 export const RELEASE_URL = `${REPO}/releases/tag/${RELEASE_TAG}`;
 export const PACKAGE_DOWNLOAD_URL = `${REPO}/releases/download/${RELEASE_TAG}/${PACKAGE_TARBALL}`;
 export const INSTALL_COMMAND = 'npm install @instruktlabs/kiln';
-export const WORKSPACE_COMMAND = 'npm exec --offline -- kiln-init ../my-assets --harness opencode';
+export const WORKSPACE_COMMAND = 'npx --offline --no -- kiln-init ../my-assets --harness opencode';
 export const HARNESSES = [
   'claude',
   'codex',

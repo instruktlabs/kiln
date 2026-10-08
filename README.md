@@ -23,12 +23,28 @@ do not require a separate model API key.
 | --- | --- |
 | [![Troy's walled city, army formations and fleet along the coast](assets/readme/troy-coast.webp)](https://kilnstudio.tools/scenes/troy/) | [![Achilles and Hector outside Troy's gate, with army formations behind them](assets/readme/troy-city.webp)](https://kilnstudio.tools/scenes/troy/) |
 
+| Farm | Golden Gate |
+| --- | --- |
+| [![Explore the Farm scene](assets/readme/farm-v09.png)](https://kilnstudio.tools/scenes/farm/) | [![Golden Gate over the water](assets/readme/golden-gate-v09.png)](https://kilnstudio.tools/scenes/golden-gate/) |
+
+| Foundry Floor: the campus | Inside the fab |
+| --- | --- |
+| [![Foundry campus exterior](assets/readme/foundry-campus-v09.png)](https://kilnstudio.tools/scenes/foundry-floor/) | [![Container transport inside the Foundry Floor](assets/readme/foundry-floor-v09.png)](https://kilnstudio.tools/scenes/foundry-floor/) |
+
 Play [Troy](https://kilnstudio.tools/scenes/troy/), explore the
 [Farm](https://kilnstudio.tools/scenes/farm/), drive across
 [Golden Gate](https://kilnstudio.tools/scenes/golden-gate/), or walk the
 [Foundry Floor](https://kilnstudio.tools/scenes/foundry-floor/).
 The scenes combine Kiln assets with application code; their [source](scenes/README.md)
 and [asset packs](packs/README.md) are available separately.
+
+Six reusable vehicles, shown with the gallery's live body-paint controls:
+
+| Hatchback | Sedan | SUV |
+| --- | --- | --- |
+| [![Yellow hatchback](assets/readme/hatchback-yellow.png)](https://kilnstudio.tools/gallery/hatchback/) | [![Blue sedan](assets/readme/sedan-blue.png)](https://kilnstudio.tools/gallery/sedan/) | [![Green SUV](assets/readme/suv-green.png)](https://kilnstudio.tools/gallery/suv/) |
+| Pickup | Box truck | Transit bus |
+| [![Red pickup](assets/readme/pickup-red.png)](https://kilnstudio.tools/gallery/pickup/) | [![Silver box truck](assets/readme/box-truck-silver.png)](https://kilnstudio.tools/gallery/box-truck/) | [![Blue transit bus](assets/readme/transit-bus-blue.png)](https://kilnstudio.tools/gallery/transit-bus/) |
 
 ## Install
 
@@ -40,7 +56,7 @@ mkdir kiln-install
 cd kiln-install
 npm init -y
 npm install @instruktlabs/kiln
-npm exec --offline -- kiln-init ../my-assets --harness codex
+npx --offline --no -- kiln-init ../my-assets --harness codex
 cd ../my-assets
 ```
 
@@ -58,8 +74,8 @@ For an **existing project**, Kiln 1.1+ supports a preview followed by adoption:
 
 ```sh
 # Run from kiln-install; replace the path and harness for your project.
-npm exec --offline -- kiln-init /absolute/path/to/my-project --adopt --harness codex --check
-npm exec --offline -- kiln-init /absolute/path/to/my-project --adopt --harness codex
+npx --offline --no -- kiln-init /absolute/path/to/my-project --adopt --harness codex --check
+npx --offline --no -- kiln-init /absolute/path/to/my-project --adopt --harness codex
 ```
 
 The preview writes nothing and exits 1 when changes are needed. Adoption preserves
@@ -89,7 +105,20 @@ their [stability boundaries](docs/sdk.md#stability-in-1x) are documented separat
 ## CLI and SDK
 
 The package installs three commands: `kiln`, `kiln-init` and `kiln-mcp`.
-Inside a generated workspace, the launcher uses that workspace's installation and stores:
+For a command available throughout your terminal, install it globally:
+
+```sh
+npm install -g @instruktlabs/kiln
+kiln discover --capabilities --json
+kiln render my-asset.kiln.js --out my-asset.glb --views sheet.png
+```
+
+With a project-local installation, use `npx --no -- kiln discover --capabilities --json`
+from that project. The [CLI installation guide](docs/install.md#run-the-cli) covers PATH
+and the equivalent `npm exec` command.
+
+Inside a generated authoring workspace, use its launcher to match the MCP server's
+Kiln installation, Node version and source store:
 
 ```sh
 node kiln.mjs discover --capabilities --json

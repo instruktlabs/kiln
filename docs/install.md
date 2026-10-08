@@ -19,7 +19,7 @@ mkdir kiln-install
 cd kiln-install
 npm init -y
 npm install @instruktlabs/kiln
-npm exec --offline -- kiln-init ../my-assets --harness codex  # or claude, opencode, hermes, agy, copilot, cursor-agent
+npx --offline --no -- kiln-init ../my-assets --harness codex  # or claude, opencode, hermes, agy, copilot, cursor-agent
 cd ../my-assets
 # Follow START.md for your harness
 ```
@@ -34,13 +34,54 @@ You do not need Bun, a source checkout, a build step or a separate model API key
 to use its tools. Choose the appropriate harness and follow `START.md` in the
 generated workspace.
 
+## Run the CLI
+
+The executable is named **`kiln`**, even though its npm package is `@instruktlabs/kiln`.
+For a terminal-wide command:
+
+```sh
+npm install -g @instruktlabs/kiln
+kiln discover --capabilities --json
+kiln render my-asset.kiln.js --out my-asset.glb --views sheet.png
+```
+
+npm puts global commands directly in its prefix on Windows and in `PREFIX/bin` on
+macOS/Linux. If the shell cannot find `kiln`, run `npm prefix -g`, ensure that
+executable directory is on PATH, and open a new terminal. See
+[npm's executable locations](https://docs.npmjs.com/cli/v12/configuring-npm/folders/#executables).
+`kiln-init` and `kiln-mcp` are available the same way.
+
+For a project-local installation, run from the project that contains the dependency:
+
+```sh
+npm install @instruktlabs/kiln
+npx --no -- kiln discover --capabilities --json
+# Equivalent:
+npm exec --offline -- kiln discover --capabilities --json
+```
+
+`npx --no --` refuses an automatic package download when the command is missing.
+Install the scoped package first; the unscoped package name `kiln` is a different
+package. npm scripts can call `kiln` directly because npm adds local executables to
+their PATH. See [npm exec](https://docs.npmjs.com/cli/v12/commands/npm-exec/).
+In PowerShell, use `npm.cmd exec --offline -- kiln …` for the equivalent command:
+PowerShell's npm script wrapper can consume the separator before forwarding flags.
+
+Generated asset workspaces also contain **`kiln.mjs`**. Run `node kiln.mjs …` there
+to use the exact installation, Node interpreter and source store selected for that
+workspace's MCP server. It also checks whether the managed setup needs an upgrade
+or repair. This is useful when multiple Kiln versions are installed: a global
+`kiln` command uses whichever installation your PATH selects. Without an explicit
+`KILN_WORKSPACE` or `KILN_PROGRAM_STORE`, the direct CLI stores work beneath the
+current directory's `.kiln/`; run it from the intended workspace root.
+
 ## Add Kiln to an existing project
 
 With Kiln 1.1+, run these commands from the installation directory:
 
 ```sh
-npm exec --offline -- kiln-init /absolute/path/to/my-project --adopt --harness codex --check
-npm exec --offline -- kiln-init /absolute/path/to/my-project --adopt --harness codex
+npx --offline --no -- kiln-init /absolute/path/to/my-project --adopt --harness codex --check
+npx --offline --no -- kiln-init /absolute/path/to/my-project --adopt --harness codex
 ```
 
 The first command previews changes without writing and exits 1 when setup is
@@ -68,7 +109,7 @@ mkdir kiln-install
 cd kiln-install
 npm init -y
 npm install /absolute/path/to/PACKAGE.tgz --omit=dev --include=optional
-npm exec --offline -- kiln-init ../my-assets --harness opencode  # or claude, codex, hermes, agy, copilot, cursor-agent
+npx --offline --no -- kiln-init ../my-assets --harness opencode  # or claude, codex, hermes, agy, copilot, cursor-agent
 cd ../my-assets
 # Follow START.md for your harness
 ```

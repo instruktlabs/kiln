@@ -6,7 +6,8 @@ exact main-branch archive qualification.
 
 ## Changes
 
-- README onboarding is npm-first and includes real Troy coast/city captures.
+- README onboarding is npm-first and includes real Troy coast/city captures,
+  all ten earlier scene/vehicle images and their existing destinations.
   Maintained guides describe package installation, project adoption, upgrades,
   SDK boundaries and local plugins. The architecture guide's incorrect claim
   that npm publication had not happened is removed. Hermes instructions now
@@ -41,6 +42,12 @@ exact main-branch archive qualification.
 - Installed candidate smoke checks, including consumer TypeScript declarations,
   pass all 26 checks. CI must qualify its own exact final archive; the local
   archive is not a substitute for the main-branch release artifact.
+- The CI archive at `86262ebc` also passes global-command discovery in a private
+  npm prefix, project-local `npx --no --` discovery, `npm.cmd exec` discovery,
+  workspace creation and the managed-current check. The quick starts use
+  `npx --offline --no --`: PowerShell's npm wrapper consumed the separator in the
+  original command and npm 12 rejected Kiln flags. Global commands do not replace
+  the workspace launcher's runtime/interpreter/store alignment.
 - Claude Code 2.1.287 strict validation passes with no warnings. Codex CLI 0.160.0
   supports the documented marketplace/ref/sparse and plugin-install commands.
   Manifest and CLI checks do not substitute for the pending live Codex trial.
