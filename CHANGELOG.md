@@ -5,11 +5,10 @@ Source releases and installable package publication are separate milestones.
 Published versions and tags are recorded by the npm registry; changing this file
 does not publish a package.
 
-## 1.1.0 (unreleased)
+## 1.1.0
 
-Release candidate for shared project setup and public host interfaces. Published
-npm 1.0.0 remains unchanged. This candidate requires a reviewed local archive; it is not a registry
-release or an accepted plugin listing.
+Existing-project setup, public host interfaces and simpler onboarding. Hosted
+deployment and directory submissions remain deferred.
 
 - `kiln-init --adopt` configures an existing project or a new workspace through
   the same initializer. Preview with `--adopt --check`; existing instructions,
@@ -33,8 +32,10 @@ release or an accepted plugin listing.
   arrives from the old connection. Startup failures preserve their bounded child
   error output instead of reporting only the stack footer.
 - The README and maintained guides lead with npm installation and distinguish
-  released local functionality from deferred hosting. Real Troy captures replace
-  the old README showcase. Historical examples move out of the active source tree;
+  released local functionality from deferred hosting. Real Troy captures join the
+  existing scene and vehicle previews. Global and project-local CLI instructions
+  explain the workspace launcher and avoid PowerShell argument forwarding errors.
+  Historical examples move out of the active source tree;
   pinned Git-history restoration preserves the website archive and regression corpus.
 - The optional Linux isolated evaluator no longer passes an unsupported
   `--preserve-fds` option to Bubblewrap. Its explicit fd3 protocol pipe uses
