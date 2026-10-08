@@ -88,7 +88,7 @@ export const farmScene = {
   copy: {
     available: 'Explore the Farm in your browser.',
     preview:
-      'Explore opens the current Farm. The scene download is an earlier build with the same assets; it walks in first person.',
+      'Explore the Farm in your browser, or download the runnable scene and its assets.',
     unavailable:
       'The browser scene is not included in this build. Explore opens its current status and downloads.',
     devices: 'Desktop and touch play. Loads only when you choose Explore.',
