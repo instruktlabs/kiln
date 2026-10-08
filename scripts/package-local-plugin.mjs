@@ -63,7 +63,7 @@ async function expectedFiles() {
     extensions: {
       'com.openai': {
         interface: {
-          displayName: 'Kiln Engine',
+          displayName: 'Kiln',
           shortDescription: 'Create editable 3D assets in a local workspace',
           longDescription:
             'Install the pinned Kiln engine and set up a workspace with local MCP tools and maintained authoring skills. Your coding agent supplies the model.',
@@ -115,10 +115,13 @@ async function expectedFiles() {
   files.set(
     'README.md',
     Buffer.from(
-      `# Kiln Engine local plugin
+      `# Kiln local plugin
 
 ${development}Plugin version ${release.version}, maintained by Instrukt Labs under the MIT license.
-This plugin installs engine ${pkg.version}.
+This plugin pins engine ${pkg.version}. Registry setup requires that exact version
+to be published. Use a published release tag for normal installation or a reviewed
+local archive for development qualification. The installation ID remains
+\`kiln-engine@instruktlabs\`.
 
 Set up Kiln in an existing project or a new asset workspace, then create and revise
 editable 3D assets with your coding agent. Use a supported Node.js installation

@@ -20,7 +20,7 @@
   "extensions": {
     "com.openai": {
       "interface": {
-        "displayName": "Kiln Engine",
+        "displayName": "Kiln",
         "shortDescription": "Create editable 3D assets in a local workspace",
         "longDescription": "Install the pinned Kiln engine and set up a workspace with local MCP tools and maintained authoring skills. Your coding agent supplies the model.",
         "developerName": "Instrukt Labs",

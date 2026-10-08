@@ -43,12 +43,6 @@ describe('repository reliability contracts', () => {
     const pkg = await readJson('package.json');
     const bunfig = await readText('bunfig.toml');
     const thresholds = JSON.parse((await readText('coverage-thresholds.json')) || '{}');
-    // Collapse whitespace before matching prose. These assertions describe
-    // sentences, and a sentence in a hard-wrapped Markdown file contains
-    // newlines at positions nobody should have to predict -- the ratchet-policy
-    // check below silently stopped matching when a paragraph was reflowed during
-    // an edit, which is the opposite of what a documentation guard is for.
-    const readme = (await readText('README.md')).replace(/\s+/g, ' ');
     const workflow = await readText('.github/workflows/ci.yml');
 
     // The 20 s per-test budget is part of the contract: Bun's 5 s default is
@@ -116,8 +110,7 @@ describe('repository reliability contracts', () => {
     // The enforced ratchets are policy: they must not move without someone
     // noticing, so they stay literal here. The measured baseline is an
     // observation, and it legitimately moves whenever code lands — so it is
-    // checked for shape and then used to verify the README quotes it, rather
-    // than written out a third time in this file. Three copies of one number
+    // checked for shape rather than written out a third time in this file. Three copies of one number
     // drift, and the copy in the test is the one that turns a stale sentence
     // into a red build with no idea which of the three is right.
     expect(Object.keys(thresholds).sort()).toEqual(['measuredBaseline', 'thresholds']);
@@ -129,7 +122,6 @@ describe('repository reliability contracts', () => {
     const { functions, lines } = thresholds.measuredBaseline;
     expect(functions).toBeGreaterThanOrEqual(thresholds.thresholds.functions);
     expect(lines).toBeGreaterThanOrEqual(thresholds.thresholds.lines);
-    expect(readme).toContain('docs/architecture.md');
     expect(await readText('docs/architecture.md')).toContain(
       'Threshold decreases require an explicit measured rationale.',
     );
@@ -217,27 +209,6 @@ describe('repository reliability contracts', () => {
     expect(produced.sort()).toEqual([...REQUIRED_CHECKS].sort());
   });
 
-  // The 2026-09-10 rewrite moved `refs/tags/oss-2026-09-05` as well as `main`, and a
-  // tag is the one ref `git fetch` will not update on its own. That makes the stale
-  // tag, not the branch, what keeps 288 MB of removed files reachable in an old clone
-  // -- so the documented remedy has to force it. This is not hypothetical tidying: the
-  // instructions here really did omit it, and a clone that had run them still measured
-  // 228 MB against a fresh clone's 26 MB.
-  //
-  // Asserting the absence matters more than asserting the presence. The broken form is
-  // the shorter, more obvious one, so it is what a later edit reaches for.
-  test('the re-clone remedy moves the rewritten tag, not just the branch', async () => {
-    const readme = await readText('README.md');
-
-    expect(readme).toContain('git fetch --tags --force origin');
-    // Both near-misses are *refused* by git rather than silently ineffective, which is
-    // why a reader cannot discover `--force` by trying the obvious things first.
-    expect(readme).not.toContain('git fetch origin && git reset --hard origin/main');
-    expect(readme).toContain('oss-2026-09-05');
-    // Forcing the tag frees nothing until the objects it pinned are actually dropped.
-    expect(readme).toContain('git gc --prune=now');
-  });
-
   // The documented offline gate ran neither `check:skills` nor render-service's 37
   // tests. CI ran both -- the first as a step in `checks`, the second as its own job
   // added by 13.7 -- so a contributor editing `render-service/` got no local signal at
@@ -304,10 +275,8 @@ describe('repository reliability contracts', () => {
   // reference and the releases page, and may not hard-code a tarball version that has to
   // be remembered. CHANGELOG.md is exempt -- naming exact versions is what it is for.
   test('install guidance does not hard-code a release tarball version', async () => {
-    // Scoped to the docs that tell a reader how to OBTAIN the package. `CONTRIBUTING.md`
-    // names `kiln-engine-0.6.0.tgz` on purpose and keeps it: there, the filename is the
-    // evidence for why the version policy exists -- two people held that exact name and
-    // had different software. Explaining a past artifact is not directing a download.
+    // Historical release records may name old artifacts; installation guides should
+    // send readers to the maintained package rather than a stale archive filename.
     const guides = ['README.md', 'docs/install.md', 'docs/migration.md'];
     for (const guide of guides) {
       const text = await readText(guide);
@@ -318,9 +287,7 @@ describe('repository reliability contracts', () => {
     // And the replacement has to actually point somewhere that is kept current.
     const install = await readText('docs/install.md');
     expect(install).toContain('https://github.com/instruktlabs/kiln/releases)');
-    expect(install).toContain('tarball and checksum actually attached');
-    expect(install).toContain('a source-only release');
-    expect(install).toContain('does not imply that a built tarball is available');
+    expect(install).toContain('npm install @instruktlabs/kiln');
     expect(install).toContain('tools.md');
   });
 

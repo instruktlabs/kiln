@@ -1,8 +1,26 @@
 # Public branch inventory
 
-Verified through GitHub on 7 October 2026. Eight branches exist in
-`instruktlabs/kiln`; contributor PR branches live in the contributor's fork and are
-not part of this list. No branch or worktree was deleted during this audit.
+## Cleanup completed
+
+On 7 October 2026, the owner authorized branch cleanup. The six superseded remote
+branches below were removed together with an atomic push after rechecking their
+exact tips and open PR dependencies. Public branches now consist of `main` and
+`codex/sdk-host-release` (PR #158). Contributor PRs #140, #141 and #142 remain open
+and unchanged in their author's fork. Local branches and worktrees were retained.
+
+All 251 files in the private import manifest were checked against public source
+`f99f1b894cf8277077c0b1377fdc8a37a0990a28`. They match the manifest on private
+`instruktlabs/kiln-hosted` main `d71e66d25db6c96908e52b798eb7064bae6e3ab7`.
+Five retired tips are ancestors of that import; the operations branch adds
+reconciliation merges with no unique file changes. Shared public setup was already
+retained by #157. Local `refs/archive/2026-10-07/<branch>` references also preserve
+each retired tip. No commit history, repository identity, release or user files
+were rewritten or deleted.
+
+## Original inventory
+
+Eight branches were present at the start of the audit. The dispositions below
+record that initial state; their six cleanup candidates have now been removed.
 
 | Branch | Tip | Purpose and current disposition |
 | --- | --- | --- |
@@ -68,3 +86,20 @@ This closes the failing-check handoff for that candidate. The original Linux
 startup exception remains unreproduced and its exact cause is unknown; the new
 bounded diagnostic is retained for a recurrence. No retry or assertion weakening
 was introduced.
+
+### Documentation follow-up at `e1d3ac0`
+
+[Run 37706343871](https://github.com/instruktlabs/kiln/actions/runs/37706343871)
+failed on both engine platforms and the portable package build. The plugin README
+had been edited directly without updating its generator or recorded hashes. Three
+documentation assertions also still required retired README/install text,
+including the September history-rewrite instructions. The skipped package jobs
+were downstream of the failed archive smoke check, not separate platform defects.
+
+The fix updates the plugin generator and regenerates the bundle, retains the
+coverage-policy assertions without requiring a particular README link, removes
+the obsolete rewrite-remedy assertion, and checks npm installation guidance
+instead of old source-only release wording. CI now prints the package receipt on
+failure before rejecting the candidate. All 17 focused checks and the installed
+archive smoke with consumer TypeScript checks pass locally. Full-suite and CI
+results still determine release qualification.

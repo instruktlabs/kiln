@@ -1,9 +1,10 @@
 # Kiln local plugin
 
 Plugin version 1.1.0, maintained by Instrukt Labs under the MIT license.
-This candidate pins engine 1.1.0. Until that npm version is published, use the
-published `v1.0.0` tag for normal installation or a reviewed local archive for
-development qualification. The installation ID remains `kiln-engine@instruktlabs`.
+This plugin pins engine 1.1.0. Registry setup requires that exact version
+to be published. Use a published release tag for normal installation or a reviewed
+local archive for development qualification. The installation ID remains
+`kiln-engine@instruktlabs`.
 
 Set up Kiln in an existing project or a new asset workspace, then create and revise
 editable 3D assets with your coding agent. Use a supported Node.js installation

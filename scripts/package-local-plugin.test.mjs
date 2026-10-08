@@ -61,7 +61,7 @@ test('local plugin versions independently while retaining its exact engine pin',
     version: pkg.version,
     harnesses: workspaceSetupCapabilities.harnesses,
   });
-  expect(portable.extensions['com.openai'].interface.displayName).toBe('Kiln Engine');
+  expect(portable.extensions['com.openai'].interface.displayName).toBe('Kiln');
   expect(portable.mcpServers).toBeUndefined();
   expect(claude.mcpServers).toBeUndefined();
   const icon = await readFile(join(directory, '.claude-plugin/icon.png'));
