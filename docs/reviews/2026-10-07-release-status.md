@@ -22,9 +22,14 @@ downloaded the public archive and verified its integrity and signed provenance:
 
 The [blind-trial report](2026-10-07-public-blind-trials.md) records the three
 pre-publication setup routes, five independently reopened/exported assets and
-their limits. The public-registry workflow now selects the published 1.1.0 identity
-from `.github/published-candidate.json`; it checks fresh installations separately
-from the unpublished candidate tests.
+their limits. A subsequent public 1.1.0 trial produced two more assets with
+independently checked GPU previews, reopen and editable export. All seven
+[registry install jobs](https://github.com/instruktlabs/kiln/actions/runs/37717357297)
+passed using the published identity in `.github/published-candidate.json`.
+
+The approved [GitHub release and tag v1.1.0](https://github.com/instruktlabs/kiln/releases/tag/v1.1.0)
+are public at the same npm source commit. Its attached archive was downloaded
+again and matches the npm SHA-256; the attached checksum agrees.
 
 The merged README retains all ten previous pictures plus both Troy captures.
 Maintained onboarding is npm-first, including global `kiln` and PowerShell-safe
@@ -33,10 +38,10 @@ the website gallery and regression corpus. Six superseded release branches were
 removed after preservation checks; community PRs remain untouched.
 
 The static website candidate from this main commit built successfully and passed
-224-page validation with zero errors or warnings. Package publication does not
-establish a GitHub release/tag or website deployment; those retain their separate
-approval and public verification steps. Hosting and directory submissions remain
-deferred to the private application handoff.
+224-page validation with zero errors or warnings. A final copy correction removes
+the obsolete release-preview labels before deployment. Website deployment still
+requires its own approval and live verification. Hosting and directory submissions
+remain deferred to the private application handoff.
 
 ## Historical execution notes
 
