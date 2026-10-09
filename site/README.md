@@ -2,7 +2,8 @@
 
 The public documentation, gallery, asset packs and interactive scenes live at
 [kilnstudio.tools](https://kilnstudio.tools). This is a static Astro site on
-Cloudflare Pages. It is separate from the deferred hosted MCP application.
+Cloudflare Pages. It is separate from the private hosted MCP application, which
+has not launched publicly.
 
 ## Develop and check
 
@@ -36,7 +37,7 @@ build as qualifying the gallery or scenes. Release checks use packs enabled.
 | Content | Source |
 | --- | --- |
 | Installation and API guides | `../docs/`; `src/lib/docs-navigation.ts` selects published pages |
-| npm release identity and install command | `src/data/release.json` and `src/lib/config.ts` |
+| npm release identity and install command | `../.github/published-candidate.json` and `src/lib/config.ts` |
 | Homepage | `src/pages/index.astro` |
 | Gallery, packs and download records | `src/data/packs/`, `src/data/standalone/` and sealed delivery manifests |
 | Historical gallery programs and credits | Pinned Git history restored to `../.cache/example-archive/` by `../scripts/example-archive.mjs` |
@@ -50,7 +51,9 @@ inside an Astro template. Include new public guides in the navigation allowlist.
 The build generates the agent-readable `llms.txt` and skills discovery index from
 the same maintained sources.
 
-The release value describes the published npm package. An unreleased checkout
+Version labels, release/download links and share cards read the same verified
+publication record used by package CI. Update that record after verifying a
+registry publication; no separate site version edit is needed. An unreleased checkout
 must label its new features accordingly. Package promotion and static website
 deployment are separate release steps.
 

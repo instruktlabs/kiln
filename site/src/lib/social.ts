@@ -1,6 +1,6 @@
 import { existsSync, readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
-import release from '../data/release.json';
+import release from '../../../.github/published-candidate.json';
 import foundryFloor from '../data/foundry-floor.json';
 import { hero } from './hero';
 import { farm, vehicles, bridge } from './catalog';
