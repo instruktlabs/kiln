@@ -97,7 +97,7 @@ node kiln.mjs render RETURNED_REF --out asset-v1.glb --views asset-v1.png
 
 Replace `RETURNED_REF` with the final reference returned by Kiln. Keep `.kiln/programs`, including its mappings, while using saved references. Pass `--out` whenever you want a GLB: `render` with neither `--out` nor `--views` writes `out.glb` in the current directory.
 
-Add `--json` to CLI `render` for a receipt with the source reference, requirements, output paths, image fidelity and the compact review (`--detail full` only when every instance of a finding matters); read the image file separately. On failure, check `ok` and `files`: a GLB may have been written before a failed image.
+Use `render --json` for the source reference, requirements, paths, fidelity and compact review (`--detail full` only for a closer look). Read images separately. Check `ok` and `files` on every export, even when redirected; a later command can hide failure. Deliver source, GLB and bundles from the same final reference or revision.
 
 To save a chosen camera view, write the `capture` object to `cameras.json` and run `node kiln.mjs render RETURNED_REF --capture cameras.json --views hero.png`, the same camera schema and pipeline as MCP; the CLI is the route that writes review PNGs to disk. With `"output": "separate"` it writes `hero.shot-01.png`, `hero.shot-02.png` and so on and lists each in `files`; add `--backdrop light` or `dark` when the grey hides the silhouette. Do not copy image base64 into shell commands.
 
